@@ -7,5 +7,6 @@
         <file alias="login">resources/icons/login_sl.svg</file>
         <file alias="logout-big">resources/icons/logout_bl.svg</file>
         <file alias="logout">resources/icons/logout_sl.svg</file>
+        <file alias="user-settings">resources/icons/user-settings_sl.svg</file>
     </qresource>
 </RCC>

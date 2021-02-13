@@ -6,8 +6,20 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     // Build the form
     setupUi(this);
 
-    // Add Actions
-    mainToolBar->addAction(actionLogIn);
+    // Populate Toolbar
+    QMenu *userMenu = new QMenu();
+    userMenu->addAction(actionLogIn);
+    userMenu->addAction(actionUserProfile);
+    userMenu->addAction(actionLogOut);
+    userButton = new QToolButton(this);
+    userButton->setIcon(QIcon(":/icons/login-big"));
+    userButton->setText("Log in");
+    userButton->setMenu(userMenu);
+    userButton->setPopupMode(QToolButton::MenuButtonPopup);
+    mainToolBar->addWidget(userButton);
+
+    actionLogOut->setEnabled(false);
+    actionUserProfile->setEnabled(false);
 
     // Add default stuff
     duqf_initUi();
@@ -19,12 +31,17 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     // Add pages
     LoginPage *lp = new LoginPage(this);
     mainLayout->addWidget(lp);
+    UserProfilePage *up = new UserProfilePage(this);
+    mainStack->addWidget(up);
 
     // Set UI
     mainStack->setCurrentIndex(0);
 
     // Connect events
     connect(actionLogIn,SIGNAL(triggered()), this, SLOT(loginAction()));
+    connect(actionLogOut,SIGNAL(triggered()), this, SLOT(logoutAction()));
+    connect(actionUserProfile,SIGNAL(triggered()), this, SLOT(userProfile()));
+    connect(userButton,SIGNAL(clicked()),this, SLOT(userButton_clicked()));
     connect(lp, &LoginPage::serverSettings, this, &MainWindow::serverSettings);
     connect(DBInterface::instance(),&DBInterface::log, this, &MainWindow::log);
     connect(Ramses::instance(),&Ramses::loggedIn, this, &MainWindow::loggedIn);
@@ -292,20 +309,41 @@ void MainWindow::serverSettings()
 
 void MainWindow::loginAction()
 {
-    if (Ramses::instance()->isConnected()) Ramses::instance()->logout();
-    else mainStack->setCurrentIndex(0);
+    mainStack->setCurrentIndex(0);
+}
+
+void MainWindow::logoutAction()
+{
+    Ramses::instance()->logout();
+}
+
+void MainWindow::userProfile()
+{
+    mainStack->setCurrentIndex(2);
+}
+
+void MainWindow::userButton_clicked()
+{
+    if (Ramses::instance()->isConnected()) userProfile();
+    else loginAction();
 }
 
 void MainWindow::loggedIn()
 {
-    actionLogIn->setText("Log out");
-    actionLogIn->setIcon(QIcon(":/icons/logout-big"));
+    userButton->setText("User");
+    userButton->setIcon(QIcon(":/icons/user-settings"));
+    actionLogIn->setEnabled(false);
+    actionUserProfile->setEnabled(true);
+    actionLogOut->setEnabled(true);
 }
 
 void MainWindow::loggedOut()
 {
-    actionLogIn->setText("Log in");
-    actionLogIn->setIcon(QIcon(":/icons/login-big"));
+    userButton->setText("Log in");
+    userButton->setIcon(QIcon(":/icons/login"));
+    actionLogIn->setEnabled(true);
+    actionUserProfile->setEnabled(false);
+    actionLogOut->setEnabled(false);
 }
 
 bool MainWindow::eventFilter(QObject *obj, QEvent *event)

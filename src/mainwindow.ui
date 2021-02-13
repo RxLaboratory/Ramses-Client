@@ -189,10 +189,28 @@
   <action name="actionLogIn">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/icons/login-big</normaloff>:/icons/login-big</iconset>
+     <normaloff>:/icons/login</normaloff>:/icons/login</iconset>
    </property>
    <property name="text">
     <string>Log in...</string>
+   </property>
+  </action>
+  <action name="actionLogOut">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/logout</normaloff>:/icons/logout</iconset>
+   </property>
+   <property name="text">
+    <string>Log out</string>
+   </property>
+  </action>
+  <action name="actionUserProfile">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/user-settings</normaloff>:/icons/user-settings</iconset>
+   </property>
+   <property name="text">
+    <string>Profile</string>
    </property>
   </action>
  </widget>

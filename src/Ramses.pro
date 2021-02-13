@@ -39,7 +39,8 @@ SOURCES += \
     ramobject.cpp \
     ramses.cpp \
     ramuser.cpp \
-    serversettingswidget.cpp
+    serversettingswidget.cpp \
+    userprofilepage.cpp
 
 HEADERS += \
     dbinterface.h \
@@ -61,7 +62,8 @@ HEADERS += \
     ramobject.h \
     ramses.h \
     ramuser.h \
-    serversettingswidget.h
+    serversettingswidget.h \
+    userprofilepage.h
 
 FORMS += \
     duqf-widgets/aboutdialog.ui \
@@ -70,7 +72,8 @@ FORMS += \
     duqf-widgets/toolbarspacer.ui \
     loginpage.ui \
     mainwindow.ui \
-    serversettingswidget.ui
+    serversettingswidget.ui \
+    userprofilepage.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

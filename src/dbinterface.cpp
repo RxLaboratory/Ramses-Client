@@ -36,6 +36,30 @@ void DBInterface::getUsers()
     request(q);
 }
 
+void DBInterface::updateUser(QString uuid, QString shortName, QString name)
+{
+    QString q = "?type=updateUser";
+    QJsonObject obj;
+    obj.insert("uuid",uuid);
+    obj.insert("name",name);
+    obj.insert("shortName",shortName);
+    QJsonDocument json(obj);
+
+    request(q,json);
+}
+
+void DBInterface::updateUserPassword(QString uuid, QString c, QString n)
+{
+    QString q = "?type=updatePassword";
+    QJsonObject obj;
+    obj.insert("uuid",uuid);
+    obj.insert("current",generatePassHash(c));
+    obj.insert("new",generatePassHash(n));
+    QJsonDocument json(obj);
+
+    request(q,json);
+}
+
 DBInterface::DBInterface(QObject *parent) : QObject(parent)
 {
     // LOCAL
@@ -88,6 +112,10 @@ void DBInterface::dataReceived(QNetworkReply * rep)
     {
         emit log(repMessage, LogUtils::Warning);
         return;
+    }
+    else
+    {
+        emit log(repMessage, LogUtils::Information);
     }
 
     emit data(repObj);

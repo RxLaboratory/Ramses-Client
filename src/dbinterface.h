@@ -24,6 +24,8 @@ public:
     void setOffline();
     //users
     void getUsers();
+    void updateUser(QString uuid, QString shortName, QString name);
+    void updateUserPassword(QString uuid, QString c, QString n);
 
 signals:
     void log(QString, LogUtils::LogType);

@@ -15,6 +15,10 @@ public:
     UserRole role() const;
     void setRole(const UserRole &role);
 
+    void update();
+
+    void updatePassword(QString c, QString n);
+
 signals:
 
 private:

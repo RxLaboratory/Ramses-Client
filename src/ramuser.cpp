@@ -15,3 +15,13 @@ void RamUser::setRole(const UserRole &role)
 {
     _role = role;
 }
+
+void RamUser::update()
+{
+    _dbi->updateUser(_uuid, _shortName, _name);
+}
+
+void RamUser::updatePassword(QString c, QString n)
+{
+    _dbi->updateUserPassword(_uuid, c, n);
+}

@@ -24,19 +24,15 @@ LoginPage::LoginPage(QWidget *parent) :
 
 void LoginPage::loggedIn(RamUser *user)
 {
-    usernameEdit->setEnabled(false);
     usernameEdit->setText(user->shortName());
-    passwordEdit->setEnabled(false);
     passwordEdit->setText("");
-    loginButton->setEnabled(false);
+    loginWidget->hide();
     connectionStatusLabel->setText("Connected as " + user->name());
 }
 
 void LoginPage::loggedOut()
 {
-    usernameEdit->setEnabled(true);
-    passwordEdit->setEnabled(true);
-    loginButton->setEnabled(true);
+    loginWidget->show();
     connectionStatusLabel->setText("Ready");
 }
 

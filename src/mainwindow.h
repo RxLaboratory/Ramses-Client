@@ -10,6 +10,7 @@
 
 #include "serversettingswidget.h"
 #include "loginpage.h"
+#include "userprofilepage.h"
 #include "dbinterface.h"
 #include "duqf-utils/utils.h"
 
@@ -57,6 +58,8 @@ private:
     QLabel *title;
     QMenu *helpMenu;
 
+    QToolButton *userButton;
+
 private slots:
     void duqf_maximize(bool max);
     void duqf_maximize();
@@ -73,6 +76,9 @@ private slots:
 
     void serverSettings();
     void loginAction();
+    void logoutAction();
+    void userProfile();
+    void userButton_clicked();
     void loggedIn();
     void loggedOut();
 

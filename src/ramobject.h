@@ -1,6 +1,8 @@
 #ifndef RAMOBJECT_H
 #define RAMOBJECT_H
 
+#include "dbinterface.h"
+
 #include <QObject>
 
 class RamObject : public QObject
@@ -25,6 +27,7 @@ signals:
 
 
 protected:
+    DBInterface *_dbi;
     QString _shortName;
     QString _name;
     QString _folderPath;

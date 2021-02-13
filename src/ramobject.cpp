@@ -8,6 +8,7 @@ RamObject::RamObject(QString shortName, QString name, QString uuid, QString path
     if(_name == "" ) _name = shortName;
     _folderPath = path;
     _uuid = uuid;
+    _dbi = DBInterface::instance();
 }
 
 QString RamObject::shortName() const
