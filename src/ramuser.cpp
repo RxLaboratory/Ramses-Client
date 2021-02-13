@@ -23,5 +23,5 @@ void RamUser::update()
 
 void RamUser::updatePassword(QString c, QString n)
 {
-    _dbi->updateUserPassword(_uuid, c, n);
+    _dbi->updateUserPassword(_uuid, _shortName, c, n);
 }

@@ -15,7 +15,7 @@ void DBInterface::login(QString username, QString password)
 
     QJsonObject obj;
     obj.insert("username",username);
-    obj.insert("password",generatePassHash(password));
+    obj.insert("password", generatePassHash(password, username) );
     QJsonDocument json(obj);
 
     _status = NetworkUtils::Connecting;
@@ -48,13 +48,13 @@ void DBInterface::updateUser(QString uuid, QString shortName, QString name)
     request(q,json);
 }
 
-void DBInterface::updateUserPassword(QString uuid, QString c, QString n)
+void DBInterface::updateUserPassword(QString uuid, QString username, QString c, QString n)
 {
     QString q = "?type=updatePassword";
     QJsonObject obj;
     obj.insert("uuid",uuid);
-    obj.insert("current",generatePassHash(c));
-    obj.insert("new",generatePassHash(n));
+    obj.insert("current",generatePassHash(c, username));
+    obj.insert("new",generatePassHash(n, username));
     QJsonDocument json(obj);
 
     request(q,json);
@@ -305,7 +305,10 @@ void DBInterface::request(QString req, QJsonDocument content)
 
 QString DBInterface::generatePassHash(QString password, QString salt)
 {
-    //hash password //TODO Use UUID of User as salt
-    QString passToHash = salt + password;
+    //hash password
+    QString passToHash = password + salt;
+    qDebug() << password;
+    qDebug() << salt;
+    //qDebug() << QCryptographicHash::hash(passToHash.toUtf8(), QCryptographicHash::Sha3_512).toHex();
     return QCryptographicHash::hash(passToHash.toUtf8(), QCryptographicHash::Sha3_512).toHex();
 }
