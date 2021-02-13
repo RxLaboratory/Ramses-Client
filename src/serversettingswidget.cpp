@@ -7,12 +7,15 @@ ServerSettingsWidget::ServerSettingsWidget(QWidget *parent) :
 
     serverAddressEdit->setText(settings.value("server/address", "localhost/ramses/").toString());
     sslCheckBox->setChecked( settings.value("server/ssl", true).toBool() );
+    updateFreqSpinBox->setValue( settings.value("server/updateFreq", 2).toInt());
+    _app = (DuApplication *)qApp;
 
     logoutWidget->hide();
 
     connect(serverAddressEdit, SIGNAL(editingFinished()), this, SLOT(serverAddressEdit_edingFinished()));
     connect(sslCheckBox, SIGNAL(clicked(bool)), this, SLOT(sslCheckBox_clicked(bool)));
     connect(logoutButton, SIGNAL(clicked()), this, SLOT(logout()));
+    connect(updateFreqSpinBox, SIGNAL(editingFinished()), this, SLOT( updateFreqSpinBox_editingFinished()));
     connect(DBInterface::instance(), &DBInterface::statusChanged, this, &ServerSettingsWidget::dbiStatusChanged);
 }
 
@@ -30,6 +33,13 @@ void ServerSettingsWidget::serverAddressEdit_edingFinished()
 void ServerSettingsWidget::sslCheckBox_clicked(bool checked)
 {
     settings.setValue("server/ssl", checked);
+}
+
+void ServerSettingsWidget::updateFreqSpinBox_editingFinished()
+{
+    int to = updateFreqSpinBox->value();
+    settings.setValue("server/updateFreq", to );
+    _app->setIdleTimeOut( to*60*1000 );
 }
 
 void ServerSettingsWidget::logout()

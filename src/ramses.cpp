@@ -19,6 +19,7 @@ Ramses::Ramses(QObject *parent) : QObject(parent)
     _connected = false;
 
     connect( _dbi, &DBInterface::data, this, &Ramses::newData );
+    connect( (DuApplication *)qApp, &DuApplication::idle, this, &Ramses::update);
 }
 
 void Ramses::login(QString username, QString password)
@@ -79,7 +80,6 @@ void Ramses::gotUsers(QJsonArray users)
     _currentUser = _defaultUser;
     _connected = false;
     emit loggedOut();
-
 }
 
 void Ramses::login(QJsonObject user)

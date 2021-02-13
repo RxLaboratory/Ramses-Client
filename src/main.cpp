@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
     DuApplication a(argc, argv);
 
     // process CLI arguments
-    if ( duqf_processArgs(argc, argv) ) return 0;
+    if ( a.processArgs() ) return 0;
 
     // show splashscreen
     a.showSplashScreen();

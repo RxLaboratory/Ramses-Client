@@ -22,6 +22,7 @@ CONFIG += c++11
 SOURCES += \
     dbinterface.cpp \
     duqf-app/app-style.cpp \
+    duqf-app/app-utils.cpp \
     duqf-utils/language-utils.cpp \
     duqf-utils/utils.cpp \
     duqf-widgets/aboutdialog.cpp \

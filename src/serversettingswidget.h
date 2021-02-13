@@ -4,6 +4,7 @@
 #include "ui_serversettingswidget.h"
 
 #include "ramses.h"
+#include "duqf-app/app-utils.h"
 
 #include <QSettings>
 
@@ -16,10 +17,12 @@ public:
 private slots:
     void serverAddressEdit_edingFinished();
     void sslCheckBox_clicked(bool checked);
+    void updateFreqSpinBox_editingFinished();
     void logout();
     void dbiStatusChanged(NetworkUtils::NetworkStatus s, QString m);
 private:
     QSettings settings;
+    DuApplication *_app;
 };
 
 #endif // SERVERSETTINGSWIDGET_H
