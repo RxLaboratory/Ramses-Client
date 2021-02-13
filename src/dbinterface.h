@@ -21,6 +21,7 @@ public:
     static DBInterface *instance();
     //connection
     void login(QString username, QString password);
+    void setOffline();
     //users
     void getUsers();
 

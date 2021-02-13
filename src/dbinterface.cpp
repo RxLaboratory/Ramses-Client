@@ -24,6 +24,12 @@ void DBInterface::login(QString username, QString password)
     request(requestString, json);
 }
 
+void DBInterface::setOffline()
+{
+    _status = NetworkUtils::Offline;
+    emit statusChanged(_status, "Got offline");
+}
+
 void DBInterface::getUsers()
 {
     QString q = "?type=getUsers";

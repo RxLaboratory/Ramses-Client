@@ -94,6 +94,7 @@ void Ramses::logout()
 {
     _connected = false;
     _currentUser = _defaultUser;
+    _dbi->setOffline();
     emit loggedOut();
 }
 
