@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/icons">
+        <file alias="icon-large">resources/icons/ramses-icon-large.svg</file>
+    </qresource>
+</RCC>
