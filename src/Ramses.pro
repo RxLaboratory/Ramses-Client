@@ -1,4 +1,6 @@
-QT       += core gui
+QT       += core gui \
+            sql \
+            network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -18,6 +20,7 @@ CONFIG += c++11
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    dbinterface.cpp \
     duqf-app/app-style.cpp \
     duqf-utils/language-utils.cpp \
     duqf-utils/utils.cpp \
@@ -29,10 +32,16 @@ SOURCES += \
     duqf-widgets/duqfspinbox.cpp \
     duqf-widgets/settingswidget.cpp \
     duqf-widgets/toolbarspacer.cpp \
+    loginpage.cpp \
     main.cpp \
     mainwindow.cpp \
+    ramobject.cpp \
+    ramses.cpp \
+    ramuser.cpp \
+    serversettingswidget.cpp
 
 HEADERS += \
+    dbinterface.h \
     duqf-app/app-style.h \
     duqf-app/app-utils.h \
     duqf-app/app-version.h \
@@ -46,14 +55,21 @@ HEADERS += \
     duqf-widgets/duqfspinbox.h \
     duqf-widgets/settingswidget.h \
     duqf-widgets/toolbarspacer.h \
+    loginpage.h \
     mainwindow.h \
+    ramobject.h \
+    ramses.h \
+    ramuser.h \
+    serversettingswidget.h
 
 FORMS += \
     duqf-widgets/aboutdialog.ui \
     duqf-widgets/appearancesettingswidget.ui \
     duqf-widgets/settingswidget.ui \
     duqf-widgets/toolbarspacer.ui \
+    loginpage.ui \
     mainwindow.ui \
+    serversettingswidget.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

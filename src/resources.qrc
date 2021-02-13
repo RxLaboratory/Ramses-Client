@@ -1,5 +1,11 @@
 <RCC>
     <qresource prefix="/icons">
         <file alias="icon-large">resources/icons/ramses-icon-large.svg</file>
+        <file alias="server-settings">resources/icons/server-settings.svg</file>
+        <file alias="logo-large">resources/icons/ramses-logo-large.svg</file>
+        <file alias="login-big">resources/icons/login_bl.svg</file>
+        <file alias="login">resources/icons/login_sl.svg</file>
+        <file alias="logout-big">resources/icons/logout_bl.svg</file>
+        <file alias="logout">resources/icons/logout_sl.svg</file>
     </qresource>
 </RCC>

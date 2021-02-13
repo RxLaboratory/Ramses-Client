@@ -37,7 +37,7 @@
     <item>
      <widget class="QStackedWidget" name="mainStack">
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="mainPage">
        <layout class="QVBoxLayout" name="mainLayout">
@@ -186,6 +186,15 @@
     <bool>false</bool>
    </attribute>
   </widget>
+  <action name="actionLogIn">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/login-big</normaloff>:/icons/login-big</iconset>
+   </property>
+   <property name="text">
+    <string>Log in...</string>
+   </property>
+  </action>
  </widget>
  <resources>
   <include location="resources.qrc"/>

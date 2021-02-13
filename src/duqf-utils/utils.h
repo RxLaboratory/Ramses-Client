@@ -103,6 +103,15 @@ namespace MediaUtils
     qint64 convertToBytes( qint64 value, SizeUnit from );
 };
 
+namespace NetworkUtils
+{
+    Q_NAMESPACE
+
+    enum NetworkStatus { Connecting, Online, Offline };
+    Q_ENUM_NS(NetworkStatus)
+
+};
+
 namespace LogUtils
 {
     Q_NAMESPACE
@@ -110,7 +119,7 @@ namespace LogUtils
     /**
      * @brief The LogType enum Log level for printing the debug log
      */
-    enum LogType { Debug, Information, Warning, Critical, Fatal };
+    enum LogType { Debug, Information, Warning, Critical, Fatal, Remote };
     Q_ENUM_NS(LogType)
 };
 

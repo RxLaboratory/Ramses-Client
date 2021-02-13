@@ -13,6 +13,9 @@ public:
     explicit SettingsWidget(QWidget *parent = nullptr);
     void addPage(QWidget *ui, QString title, QIcon icon=QIcon());
 
+public slots:
+    void setCurrentIndex(int index);
+
 private slots:
     void on_mainList_currentRowChanged(int currentRow);
 };

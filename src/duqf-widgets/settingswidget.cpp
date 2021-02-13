@@ -13,6 +13,11 @@ void SettingsWidget::addPage(QWidget *ui, QString title, QIcon icon)
     mainList->addItem(tab);
 }
 
+void SettingsWidget::setCurrentIndex(int index)
+{
+    mainStackWidget->setCurrentIndex(index);
+}
+
 void SettingsWidget::on_mainList_currentRowChanged(int currentRow)
 {
     mainStackWidget->setCurrentIndex(currentRow);

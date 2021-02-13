@@ -8,6 +8,11 @@
 #include "duqf-widgets/settingswidget.h"
 #include "duqf-widgets/aboutdialog.h"
 
+#include "serversettingswidget.h"
+#include "loginpage.h"
+#include "dbinterface.h"
+#include "duqf-utils/utils.h"
+
 #include <QMouseEvent>
 #include <QLabel>
 #include <QToolButton>
@@ -64,8 +69,16 @@ private slots:
     void duqf_reinitSettings();
     void duqf_about();
 
+    void log(QString m, LogUtils::LogType type);
+
+    void serverSettings();
+    void loginAction();
+    void loggedIn();
+    void loggedOut();
+
 protected:
     void closeEvent(QCloseEvent *event);
     bool eventFilter(QObject *obj, QEvent *event);
+
 };
 #endif // MAINWINDOW_H

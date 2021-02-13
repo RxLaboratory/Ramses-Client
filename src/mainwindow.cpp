@@ -5,10 +5,30 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
 {
     // Build the form
     setupUi(this);
+
+    // Add Actions
+    mainToolBar->addAction(actionLogIn);
+
     // Add default stuff
     duqf_initUi();
 
+    // Add settings
+    ServerSettingsWidget *csw = new ServerSettingsWidget(this);
+    settingsWidget->addPage(csw, "Server", QIcon(":/icons/server-settings"));
 
+    // Add pages
+    LoginPage *lp = new LoginPage(this);
+    mainLayout->addWidget(lp);
+
+    // Set UI
+    mainStack->setCurrentIndex(0);
+
+    // Connect events
+    connect(actionLogIn,SIGNAL(triggered()), this, SLOT(loginAction()));
+    connect(lp, &LoginPage::serverSettings, this, &MainWindow::serverSettings);
+    connect(DBInterface::instance(),&DBInterface::log, this, &MainWindow::log);
+    connect(Ramses::instance(),&Ramses::loggedIn, this, &MainWindow::loggedIn);
+    connect(Ramses::instance(),&Ramses::loggedOut, this, &MainWindow::loggedOut);
 
     // Set style
     duqf_setStyle();
@@ -229,6 +249,63 @@ void MainWindow::duqf_reinitSettings()
 void MainWindow::duqf_about()
 {
     duqf_aboutDialog->show();
+}
+
+void MainWindow::log(QString m, LogUtils::LogType type)
+{
+    if (m == "") return;
+
+    if (type == LogUtils::Debug)
+    {
+        qDebug().noquote() << m;
+    }
+    else if (type == LogUtils::Information)
+    {
+        mainStatusBar->showMessage(m,5000);
+        qInfo().noquote() << m;
+    }
+    else if (type == LogUtils::Warning)
+    {
+        mainStatusBar->showMessage(m,10000);
+        qWarning().noquote() << m;
+    }
+    else if (type == LogUtils::Critical)
+    {
+        mainStatusBar->showMessage(m);
+        qCritical().noquote() << m;
+    }
+    else if (type == LogUtils::Fatal)
+    {
+        mainStatusBar->showMessage(m);
+    }
+    else if (type == LogUtils::Remote)
+    {
+        qDebug().noquote() << "REMOTE === " + m;
+    }
+}
+
+void MainWindow::serverSettings()
+{
+    mainStack->setCurrentIndex(1);
+    settingsWidget->setCurrentIndex(1);
+}
+
+void MainWindow::loginAction()
+{
+    if (Ramses::instance()->isConnected()) Ramses::instance()->logout();
+    else mainStack->setCurrentIndex(0);
+}
+
+void MainWindow::loggedIn()
+{
+    actionLogIn->setText("Log out");
+    actionLogIn->setIcon(QIcon(":/icons/logout-big"));
+}
+
+void MainWindow::loggedOut()
+{
+    actionLogIn->setText("Log in");
+    actionLogIn->setIcon(QIcon(":/icons/login-big"));
 }
 
 bool MainWindow::eventFilter(QObject *obj, QEvent *event)
