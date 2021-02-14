@@ -307,8 +307,5 @@ QString DBInterface::generatePassHash(QString password, QString salt)
 {
     //hash password
     QString passToHash = password + salt;
-    qDebug() << password;
-    qDebug() << salt;
-    //qDebug() << QCryptographicHash::hash(passToHash.toUtf8(), QCryptographicHash::Sha3_512).toHex();
     return QCryptographicHash::hash(passToHash.toUtf8(), QCryptographicHash::Sha3_512).toHex();
 }
