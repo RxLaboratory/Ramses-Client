@@ -33,14 +33,18 @@ SOURCES += \
     duqf-widgets/duqfspinbox.cpp \
     duqf-widgets/settingswidget.cpp \
     duqf-widgets/toolbarspacer.cpp \
+    listmanagerwidget.cpp \
     loginpage.cpp \
     main.cpp \
     mainwindow.cpp \
     ramobject.cpp \
     ramses.cpp \
     ramuser.cpp \
+    ramuuid.cpp \
     serversettingswidget.cpp \
-    userprofilepage.cpp
+    usereditwidget.cpp \
+    userprofilepage.cpp \
+    usersmanagerwidget.cpp
 
 HEADERS += \
     dbinterface.h \
@@ -57,23 +61,28 @@ HEADERS += \
     duqf-widgets/duqfspinbox.h \
     duqf-widgets/settingswidget.h \
     duqf-widgets/toolbarspacer.h \
+    listmanagerwidget.h \
     loginpage.h \
     mainwindow.h \
     ramobject.h \
     ramses.h \
     ramuser.h \
+    ramuuid.h \
     serversettingswidget.h \
-    userprofilepage.h
+    usereditwidget.h \
+    userprofilepage.h \
+    usersmanagerwidget.h
 
 FORMS += \
     duqf-widgets/aboutdialog.ui \
     duqf-widgets/appearancesettingswidget.ui \
-    duqf-widgets/settingswidget.ui \
     duqf-widgets/toolbarspacer.ui \
+    listmanagerwidget.ui \
     loginpage.ui \
     mainwindow.ui \
     serversettingswidget.ui \
-    userprofilepage.ui
+    usereditwidget.ui \
+    userprofilepage.ui \
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

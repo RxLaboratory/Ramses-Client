@@ -13,7 +13,7 @@ LoginPage::LoginPage(QWidget *parent) :
 
 #ifdef QT_DEBUG
     // Test mode (auto login)
-    usernameEdit->setText("Admin");
+    usernameEdit->setText("Duduf");
     passwordEdit->setText("password");
 #endif
 
@@ -50,9 +50,6 @@ void LoginPage::dbiLog(QString m, LogUtils::LogType t)
 
 void LoginPage::dbiData(QJsonObject data)
 {
-    qDebug() << "login page data";
-    qDebug() << data.value("query").toString();
-    qDebug() << data.value("success").toBool();
     if (data.value("query").toString() == "login")
     {
         if (data.value("success").toBool())

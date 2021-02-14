@@ -17,12 +17,16 @@ public:
 
     QList<RamUser *> users() const;
     RamUser *currentUser() const;
+    RamUser *defaultUser() const;
+    RamUser *createUser();
+    void removeUser(QString uuid);
 
     bool isConnected() const;
 
 signals:
     void loggedIn(RamUser*);
     void loggedOut();
+    void newUser(RamUser *user);
 
 protected:
     static Ramses *_instance;

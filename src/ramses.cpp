@@ -14,7 +14,6 @@ Ramses::Ramses(QObject *parent) : QObject(parent)
 
     _defaultUser = new RamUser("Guest", "J. Doe", "", "", this);
     _currentUser = _defaultUser;
-    _users << _defaultUser;
 
     _connected = false;
 
@@ -39,31 +38,61 @@ void Ramses::newData(QJsonObject data)
 
 void Ramses::gotUsers(QJsonArray users)
 {
-    while( _users.count() > 1)
+    // loop through existing users to update them
+    for (int i = _users.count() - 1; i >= 0; i--)
     {
-        RamUser *u = _users.takeLast();
-        u->deleteLater();
+        RamUser *existingUser = _users[i];
+        // loop through new users to update
+        bool found = false;
+        for (int j = 0; j < users.count(); j++)
+        {
+            QJsonObject newUser = users[j].toObject();
+            QString uuid = newUser.value("uuid").toString();
+            // Found, update
+            if (uuid == existingUser->uuid())
+            {
+                found = true;
+                //Emit just one signal
+                QSignalBlocker b(existingUser);
+                existingUser->setName( newUser.value("name").toString());
+                existingUser->setShortName( newUser.value("shortName").toString());
+                existingUser->setFolderPath( newUser.value("folderPath").toString());
+                //send the signal
+                b.unblock();
+                QString r = newUser.value("role").toString("standard");
+                if (r == "admin") existingUser->setRole(RamUser::Admin);
+                else if (r == "lead") existingUser->setRole(RamUser::Lead);
+                else existingUser->setRole(RamUser::Standard);
+                //remove from new users
+                users.removeAt(j);
+                break;
+            }
+        }
+        // Not found, remove from existing
+        if (!found)
+        {
+            RamUser *u = _users.takeAt(i);
+            u->deleteLater();
+        }
     }
+
+    // loop through remaining new users to add them
     for (int i = 0; i < users.count(); i++)
     {
         QJsonObject u = users[i].toObject();
-
-        qDebug() << u;
-
         RamUser *user = new RamUser(
                     u.value("shortName").toString(),
                     u.value("name").toString(),
                     u.value("uuid").toString(),
-                    u.value("folderPath").toString(),
-                    this);
+                    u.value("folderPath").toString()
+                    );
 
         QString r = u.value("role").toString("standard");
         if (r == "admin") user->setRole(RamUser::Admin);
         else if (r == "lead") user->setRole(RamUser::Lead);
-
-        qDebug() << "Got user: " + user->shortName();
-
         _users << user;
+
+        emit newUser(user);
     }
 
     // Set the current user
@@ -101,11 +130,38 @@ void Ramses::login(QJsonObject user)
     update();
 }
 
+RamUser *Ramses::defaultUser() const
+{
+    return _defaultUser;
+}
+
+RamUser *Ramses::createUser()
+{
+    RamUser *user = new RamUser("New","J. Doe");
+    _users << user;
+    _dbi->createUser(user->shortName(), user->name(), user->uuid());
+    emit newUser(user);
+    return user;
+}
+
+void Ramses::removeUser(QString uuid)
+{
+    qDebug() << uuid;
+    for (int i = _users.count() -1; i >= 0; i--)
+    {
+        if (_users[i]->uuid() == uuid)
+        {
+            _dbi->removeUser(uuid);
+            RamUser *u = _users.takeAt(i);
+            u->deleteLater();
+        }
+    }
+}
+
 void Ramses::logout()
 {
     _connected = false;
     _currentUser = _defaultUser;
-    _dbi->setOffline();
     emit loggedOut();
 }
 

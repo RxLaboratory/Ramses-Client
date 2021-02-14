@@ -2,6 +2,7 @@
 #define RAMOBJECT_H
 
 #include "dbinterface.h"
+#include "ramuuid.h"
 
 #include <QObject>
 
@@ -24,7 +25,7 @@ public:
     void setUuid(const QString &uuid);
 
 signals:
-
+    void changed();
 
 protected:
     DBInterface *_dbi;

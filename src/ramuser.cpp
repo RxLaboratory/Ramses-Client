@@ -14,6 +14,7 @@ RamUser::UserRole RamUser::role() const
 void RamUser::setRole(const UserRole &role)
 {
     _role = role;
+    emit changed();
 }
 
 void RamUser::update()

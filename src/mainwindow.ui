@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>1280</width>
+    <height>720</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -213,10 +213,22 @@
     <string>Profile</string>
    </property>
   </action>
+  <action name="actionAdmin">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="duqf_resources.qrc">
+     <normaloff>:/icons/settings</normaloff>:/icons/settings</iconset>
+   </property>
+   <property name="text">
+    <string>Admin</string>
+   </property>
+  </action>
  </widget>
  <resources>
-  <include location="resources.qrc"/>
   <include location="duqf_resources.qrc"/>
+  <include location="resources.qrc"/>
  </resources>
  <connections/>
 </ui>

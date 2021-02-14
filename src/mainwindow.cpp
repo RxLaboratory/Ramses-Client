@@ -7,26 +7,35 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     setupUi(this);
 
     // Populate Toolbar
-    QMenu *userMenu = new QMenu();
-    userMenu->addAction(actionLogIn);
+    userMenu = new QMenu();
     userMenu->addAction(actionUserProfile);
     userMenu->addAction(actionLogOut);
     userButton = new QToolButton(this);
-    userButton->setIcon(QIcon(":/icons/login-big"));
-    userButton->setText("Log in");
+    userButton->setIcon(QIcon(":/icons/user-settings"));
+    userButton->setText("");
     userButton->setMenu(userMenu);
     userButton->setPopupMode(QToolButton::MenuButtonPopup);
     mainToolBar->addWidget(userButton);
 
-    actionLogOut->setEnabled(false);
-    actionUserProfile->setEnabled(false);
+    userButton->hide();
+
+    mainToolBar->addAction(actionLogIn);
+
+    mainToolBar->addAction(actionAdmin);
+    actionAdmin->setVisible(false);
 
     //Populate status bar
     networkButton = new QToolButton(this);
     networkButton->setToolButtonStyle(Qt::ToolButtonTextOnly);
     networkButton->setText("Offline");
-    networkButton->setMinimumWidth(100);
-    mainStatusBar->addPermanentWidget(networkButton,1);
+    networkButton->setMinimumWidth(75);
+    mainStatusBar->addPermanentWidget(networkButton);
+
+    userRoleButton = new QToolButton();
+    userRoleButton->setToolButtonStyle(Qt::ToolButtonTextOnly);
+    userRoleButton->setText("Guest");
+    userRoleButton->setMinimumWidth(100);
+    mainStatusBar->addPermanentWidget(userRoleButton);
 
     // Add default stuff
     duqf_initUi();
@@ -40,6 +49,10 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     mainLayout->addWidget(lp);
     UserProfilePage *up = new UserProfilePage(this);
     mainStack->addWidget(up);
+    adminPage = new SettingsWidget(this);
+    mainStack->addWidget(adminPage);
+    // Admin tabs
+    adminPage->addPage(new UsersManagerWidget(this),"Users");
 
     // Set UI
     mainStack->setCurrentIndex(0);
@@ -48,8 +61,11 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     connect(actionLogIn,SIGNAL(triggered()), this, SLOT(loginAction()));
     connect(actionLogOut,SIGNAL(triggered()), this, SLOT(logoutAction()));
     connect(actionUserProfile,SIGNAL(triggered()), this, SLOT(userProfile()));
+    connect(actionAdmin,SIGNAL(triggered(bool)), this, SLOT(admin(bool)));
     connect(userButton,SIGNAL(clicked()),this, SLOT(userButton_clicked()));
     connect(networkButton,SIGNAL(clicked()),this, SLOT(networkButton_clicked()));
+    connect(userRoleButton,SIGNAL(clicked()),this, SLOT(userProfile()));
+    connect(mainStack,SIGNAL(currentChanged(int)), this, SLOT(pageChanged(int)));
     connect(lp, &LoginPage::serverSettings, this, &MainWindow::serverSettings);
     connect(DBInterface::instance(),&DBInterface::log, this, &MainWindow::log);
     connect(Ramses::instance(),&Ramses::loggedIn, this, &MainWindow::loggedIn);
@@ -310,6 +326,12 @@ void MainWindow::log(QString m, LogUtils::LogType type)
     }
 }
 
+void MainWindow::pageChanged(int i)
+{
+
+    actionAdmin->setChecked(i == 3);
+}
+
 void MainWindow::serverSettings()
 {
     mainStack->setCurrentIndex(1);
@@ -331,6 +353,12 @@ void MainWindow::userProfile()
     mainStack->setCurrentIndex(2);
 }
 
+void MainWindow::admin(bool show)
+{
+    if (show) mainStack->setCurrentIndex(3);
+    else mainStack->setCurrentIndex(0);
+}
+
 void MainWindow::userButton_clicked()
 {
     if (Ramses::instance()->isConnected()) userProfile();
@@ -346,20 +374,46 @@ void MainWindow::networkButton_clicked()
 
 void MainWindow::loggedIn()
 {
-    userButton->setText("User");
-    userButton->setIcon(QIcon(":/icons/user-settings"));
-    actionLogIn->setEnabled(false);
-    actionUserProfile->setEnabled(true);
-    actionLogOut->setEnabled(true);
+    actionLogIn->setVisible(false);
+    userButton->setVisible(true);
+
+    RamUser *user = Ramses::instance()->currentUser();
+    _currentUserConnection = connect(user, &RamUser::changed, this, &MainWindow::currentUserChanged);
+    currentUserChanged();
 }
 
 void MainWindow::loggedOut()
 {
-    userButton->setText("Log in");
-    userButton->setIcon(QIcon(":/icons/login"));
-    actionLogIn->setEnabled(true);
-    actionUserProfile->setEnabled(false);
-    actionLogOut->setEnabled(false);
+    disconnect(_currentUserConnection);
+
+    actionLogIn->setVisible(true);
+    userButton->setVisible(false);
+
+    actionAdmin->setVisible(false);
+    userRoleButton->setText("Guest");
+}
+
+void MainWindow::currentUserChanged()
+{
+    RamUser *user = Ramses::instance()->currentUser();
+
+    if (user->role() == RamUser::Admin)
+    {
+        actionAdmin->setVisible(true);
+        userRoleButton->setText(user->shortName() + " (Admin)");
+    }
+    else if (user->role() == RamUser::Lead)
+    {
+        actionAdmin->setVisible(false);
+        actionAdmin->setChecked(false);
+        userRoleButton->setText(user->shortName() + " (Lead)");
+    }
+    else
+    {
+        actionAdmin->setVisible(false);
+        actionAdmin->setChecked(false);
+        userRoleButton->setText(user->shortName() + " (User)");
+    }
 }
 
 void MainWindow::dbiConnectionStatusChanged(NetworkUtils::NetworkStatus s)

@@ -20,9 +20,7 @@ void DBInterface::login(QString username, QString password)
 
 void DBInterface::setOffline()
 {
-    _status = NetworkUtils::Offline;
-    _sessionToken = "";
-    emit connectionStatusChanged(_status);
+    setConnectionStatus(NetworkUtils::Offline);
 }
 
 void DBInterface::setOnline()
@@ -54,6 +52,25 @@ void DBInterface::updateUserPassword(QString uuid, QString c, QString n)
     q << "uuid=" + uuid;
     q << "current=" + generatePassHash(c);
     q << "new=" + generatePassHash(n);
+
+    request(q);
+}
+
+void DBInterface::createUser(QString shortName, QString name, QString uuid, QString password)
+{
+    QStringList q("createUser");
+    q << "uuid=" + uuid;
+    q << "shortName=" + shortName;
+    q << "name=" + name;
+    q << "password=" + generatePassHash(password);
+
+    request(q);
+}
+
+void DBInterface::removeUser(QString uuid)
+{
+    QStringList q("removeUser");
+    q << "uuid=" + uuid;
 
     request(q);
 }
@@ -137,7 +154,7 @@ void DBInterface::sslError(QNetworkReply* /*rep*/, QList<QSslError> errs)
 
 void DBInterface::networkError(QNetworkReply::NetworkError err)
 {
-    QString reason;
+    QString reason = "";
     if (err == QNetworkReply::ConnectionRefusedError)
     {
         reason = "The server refused the connection,\nplease try again later.";
@@ -264,7 +281,6 @@ void DBInterface::networkError(QNetworkReply::NetworkError err)
     {
         reason = "Unknown server error.";
     }
-
     setConnectionStatus( NetworkUtils::Offline );
     emit log(reason, LogUtils::Critical);
 }
@@ -272,6 +288,7 @@ void DBInterface::networkError(QNetworkReply::NetworkError err)
 void DBInterface::setConnectionStatus(NetworkUtils::NetworkStatus s)
 {
     _status = s;
+    if (s == NetworkUtils::Offline) _sessionToken = "";
     emit connectionStatusChanged(s);
 }
 

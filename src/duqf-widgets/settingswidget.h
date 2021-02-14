@@ -1,11 +1,12 @@
 #ifndef SETTINGSWIDGET_H
 #define SETTINGSWIDGET_H
 
-#include "ui_settingswidget.h"
+#include <QWidget>
+#include <QListWidget>
+#include <QHBoxLayout>
+#include <QStackedWidget>
 
-#include "duqf-widgets/appearancesettingswidget.h"
-
-class SettingsWidget : public QWidget, private Ui::SettingsWidget
+class SettingsWidget : public QWidget
 {
     Q_OBJECT
 
@@ -17,7 +18,12 @@ public slots:
     void setCurrentIndex(int index);
 
 private slots:
-    void on_mainList_currentRowChanged(int currentRow);
+    void mainList_currentRowChanged(int currentRow);
+
+private:
+    void setupUi();
+    QListWidget *mainList;
+    QStackedWidget *mainStackWidget;
 };
 
 #endif // SETTINGSWIDGET_H

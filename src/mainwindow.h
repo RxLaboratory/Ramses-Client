@@ -6,11 +6,13 @@
 #include "duqf-app/app-style.h"
 #include "duqf-widgets/toolbarspacer.h"
 #include "duqf-widgets/settingswidget.h"
+#include "duqf-widgets/appearancesettingswidget.h"
 #include "duqf-widgets/aboutdialog.h"
 
 #include "serversettingswidget.h"
 #include "loginpage.h"
 #include "userprofilepage.h"
+#include "usersmanagerwidget.h"
 #include "dbinterface.h"
 #include "duqf-utils/utils.h"
 
@@ -58,8 +60,13 @@ private:
     QLabel *title;
     QMenu *helpMenu;
 
+    SettingsWidget *adminPage;
+    QMenu *userMenu;
     QToolButton *userButton;
     QToolButton *networkButton;
+    QToolButton *userRoleButton;
+
+    QMetaObject::Connection _currentUserConnection;
 
 private slots:
     void duqf_maximize(bool max);
@@ -75,14 +82,17 @@ private slots:
 
     void log(QString m, LogUtils::LogType type);
 
+    void pageChanged(int i);
     void serverSettings();
     void loginAction();
     void logoutAction();
     void userProfile();
+    void admin(bool show = true);
     void userButton_clicked();
     void networkButton_clicked();
     void loggedIn();
     void loggedOut();
+    void currentUserChanged();
     void dbiConnectionStatusChanged(NetworkUtils::NetworkStatus s);
 
 protected:

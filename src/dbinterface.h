@@ -30,7 +30,8 @@ public:
     void getUsers();
     void updateUser(QString uuid, QString shortName, QString name);
     void updateUserPassword(QString uuid, QString c, QString n);
-
+    void createUser(QString shortName, QString name, QString uuid, QString password = "password");
+    void removeUser(QString uuid);
 signals:
     void log(QString, LogUtils::LogType);
     void connectionStatusChanged(NetworkUtils::NetworkStatus);
