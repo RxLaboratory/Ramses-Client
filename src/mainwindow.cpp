@@ -21,6 +21,13 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     actionLogOut->setEnabled(false);
     actionUserProfile->setEnabled(false);
 
+    //Populate status bar
+    networkButton = new QToolButton(this);
+    networkButton->setToolButtonStyle(Qt::ToolButtonTextOnly);
+    networkButton->setText("Offline");
+    networkButton->setMinimumWidth(100);
+    mainStatusBar->addPermanentWidget(networkButton,1);
+
     // Add default stuff
     duqf_initUi();
 
@@ -42,10 +49,12 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     connect(actionLogOut,SIGNAL(triggered()), this, SLOT(logoutAction()));
     connect(actionUserProfile,SIGNAL(triggered()), this, SLOT(userProfile()));
     connect(userButton,SIGNAL(clicked()),this, SLOT(userButton_clicked()));
+    connect(networkButton,SIGNAL(clicked()),this, SLOT(networkButton_clicked()));
     connect(lp, &LoginPage::serverSettings, this, &MainWindow::serverSettings);
     connect(DBInterface::instance(),&DBInterface::log, this, &MainWindow::log);
     connect(Ramses::instance(),&Ramses::loggedIn, this, &MainWindow::loggedIn);
     connect(Ramses::instance(),&Ramses::loggedOut, this, &MainWindow::loggedOut);
+    connect(DBInterface::instance(),&DBInterface::connectionStatusChanged, this, &MainWindow::dbiConnectionStatusChanged);
 
     // Set style
     duqf_setStyle();
@@ -328,6 +337,13 @@ void MainWindow::userButton_clicked()
     else loginAction();
 }
 
+void MainWindow::networkButton_clicked()
+{
+    DBInterface *dbi = DBInterface::instance();
+    if (dbi->connectionStatus() != NetworkUtils::Online) dbi->setOnline();
+    else dbi->setOffline();
+}
+
 void MainWindow::loggedIn()
 {
     userButton->setText("User");
@@ -344,6 +360,13 @@ void MainWindow::loggedOut()
     actionLogIn->setEnabled(true);
     actionUserProfile->setEnabled(false);
     actionLogOut->setEnabled(false);
+}
+
+void MainWindow::dbiConnectionStatusChanged(NetworkUtils::NetworkStatus s)
+{
+    if (s == NetworkUtils::Online) networkButton->setText("Online");
+    else if (s == NetworkUtils::Connecting) networkButton->setText("Connecting...");
+    else if (s == NetworkUtils::Offline) networkButton->setText("Offline");
 }
 
 bool MainWindow::eventFilter(QObject *obj, QEvent *event)

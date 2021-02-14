@@ -18,8 +18,9 @@ private slots:
     void serverAddressEdit_edingFinished();
     void sslCheckBox_clicked(bool checked);
     void updateFreqSpinBox_editingFinished();
+    void timeoutSpinBox_editingFinished();
     void logout();
-    void dbiStatusChanged(NetworkUtils::NetworkStatus s, QString m);
+    void dbiConnectionStatusChanged(NetworkUtils::NetworkStatus s);
 private:
     QSettings settings;
     DuApplication *_app;

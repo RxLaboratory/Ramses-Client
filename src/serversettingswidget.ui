@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>474</width>
-    <height>187</height>
+    <height>255</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -152,6 +152,38 @@
         </property>
         <property name="value">
          <number>2</number>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="0">
+       <widget class="QLabel" name="label_12">
+        <property name="text">
+         <string>Server timeout</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="1">
+       <widget class="QSpinBox" name="timeoutSpinBox">
+        <property name="maximumSize">
+         <size>
+          <width>100</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="frame">
+         <bool>false</bool>
+        </property>
+        <property name="suffix">
+         <string> seconds</string>
+        </property>
+        <property name="minimum">
+         <number>1</number>
+        </property>
+        <property name="maximum">
+         <number>10</number>
+        </property>
+        <property name="value">
+         <number>3</number>
         </property>
        </widget>
       </item>

@@ -59,6 +59,7 @@ private:
     QMenu *helpMenu;
 
     QToolButton *userButton;
+    QToolButton *networkButton;
 
 private slots:
     void duqf_maximize(bool max);
@@ -79,8 +80,10 @@ private slots:
     void logoutAction();
     void userProfile();
     void userButton_clicked();
+    void networkButton_clicked();
     void loggedIn();
     void loggedOut();
+    void dbiConnectionStatusChanged(NetworkUtils::NetworkStatus s);
 
 protected:
     void closeEvent(QCloseEvent *event);

@@ -29,10 +29,10 @@ void Ramses::login(QString username, QString password)
 
 void Ramses::newData(QJsonObject data)
 {
-    QString type = data.value("type").toString();
+    QString query = data.value("query").toString();
 
-    if (type == "login") login( data.value("content").toObject() );
-    else if (type == "getUsers") gotUsers( data.value("content").toArray());
+    if (query == "login") login( data.value("content").toObject() );
+    else if (query == "getUsers") gotUsers( data.value("content").toArray());
 }
 
 void Ramses::gotUsers(QJsonArray users)

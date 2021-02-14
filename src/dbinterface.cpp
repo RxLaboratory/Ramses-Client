@@ -11,53 +11,51 @@ DBInterface *DBInterface::instance()
 void DBInterface::login(QString username, QString password)
 {
     //request url
-    QString requestString = "?type=login";
+    QStringList q("login");
+    q << "username=" + username;
+    q << "password=" + generatePassHash(password);
 
-    QJsonObject obj;
-    obj.insert("username",username);
-    obj.insert("password", generatePassHash(password, username) );
-    QJsonDocument json(obj);
-
-    _status = NetworkUtils::Connecting;
-    emit statusChanged(_status,"Connecting..");
-    emit log("Connecting...", LogUtils::Remote);
-    request(requestString, json);
+    request(q);
 }
 
 void DBInterface::setOffline()
 {
     _status = NetworkUtils::Offline;
-    emit statusChanged(_status, "Got offline");
+    _sessionToken = "";
+    emit connectionStatusChanged(_status);
+}
+
+void DBInterface::setOnline()
+{
+    //ping
+    _status = NetworkUtils::Connecting;
+    request("?ping", false);
 }
 
 void DBInterface::getUsers()
 {
-    QString q = "?type=getUsers";
+    QString q = "?getUsers";
     request(q);
 }
 
 void DBInterface::updateUser(QString uuid, QString shortName, QString name)
 {
-    QString q = "?type=updateUser";
-    QJsonObject obj;
-    obj.insert("uuid",uuid);
-    obj.insert("name",name);
-    obj.insert("shortName",shortName);
-    QJsonDocument json(obj);
+    QStringList q("updateUser");
+    q << "uuid=" + uuid;
+    q << "shortName=" + shortName;
+    q << "name=" + name;
 
-    request(q,json);
+    request(q);
 }
 
-void DBInterface::updateUserPassword(QString uuid, QString username, QString c, QString n)
+void DBInterface::updateUserPassword(QString uuid, QString c, QString n)
 {
-    QString q = "?type=updatePassword";
-    QJsonObject obj;
-    obj.insert("uuid",uuid);
-    obj.insert("current",generatePassHash(c, username));
-    obj.insert("new",generatePassHash(n, username));
-    QJsonDocument json(obj);
+    QStringList q("updatePassword");
+    q << "uuid=" + uuid;
+    q << "current=" + generatePassHash(c);
+    q << "new=" + generatePassHash(n);
 
-    request(q,json);
+    request(q);
 }
 
 DBInterface::DBInterface(QObject *parent) : QObject(parent)
@@ -72,6 +70,7 @@ DBInterface::DBInterface(QObject *parent) : QObject(parent)
     // REMOTE
 
     _network.setCookieJar(new QNetworkCookieJar());
+    _sessionToken = "";
 
     // Connect events
     connect( &_network, &QNetworkAccessManager::finished, this, &DBInterface::dataReceived);
@@ -81,15 +80,14 @@ DBInterface::DBInterface(QObject *parent) : QObject(parent)
     _status = NetworkUtils::Offline;
 }
 
+NetworkUtils::NetworkStatus DBInterface::connectionStatus() const
+{
+    return _status;
+}
+
 void DBInterface::dataReceived(QNetworkReply * rep)
 {
     if (rep->error() != QNetworkReply::NoError) return;
-
-    if (_status != NetworkUtils::Online)
-    {
-        _status = NetworkUtils::Online;
-        emit statusChanged(_status, "Online");
-    }
 
     QString repAll = rep->readAll();
 
@@ -102,11 +100,11 @@ void DBInterface::dataReceived(QNetworkReply * rep)
         repObj.insert("accepted",false);
     }
 
-    QString repType = repObj.value("type").toString();
+    QString repQuery = repObj.value("query").toString();
     QString repMessage = repObj.value("message").toString();
     bool repSuccess = repObj.value("success").toBool();
 
-    emit log(repType + "\n" + repMessage + "\nContent:\n" + repAll, LogUtils::Remote);
+    emit log(repQuery + "\n" + repMessage + "\nContent:\n" + repAll, LogUtils::Remote);
 
     if (!repSuccess)
     {
@@ -117,6 +115,14 @@ void DBInterface::dataReceived(QNetworkReply * rep)
     {
         emit log(repMessage, LogUtils::Information);
     }
+
+    //if we recieved the reply from the ping, set online
+    if (repQuery == "ping" && repSuccess) setConnectionStatus(NetworkUtils::Online);
+    else if (repQuery == "ping") setConnectionStatus(NetworkUtils::Offline);
+
+    //if login, get the token
+    if (repQuery == "login" && repSuccess) _sessionToken = repObj.value("content").toObject().value("token").toString();
+    else if (repQuery == "login") _sessionToken = "";
 
     emit data(repObj);
 }
@@ -259,48 +265,75 @@ void DBInterface::networkError(QNetworkReply::NetworkError err)
     {
         reason = "Unknown server error.";
     }
-    _status = NetworkUtils::Offline;
-    emit statusChanged(_status, reason);
+
+    setConnectionStatus( NetworkUtils::Offline );
     emit log(reason, LogUtils::Critical);
 }
 
-void DBInterface::request(QString req, QJsonDocument content)
+void DBInterface::setConnectionStatus(NetworkUtils::NetworkStatus s)
 {
+    _status = s;
+    emit connectionStatusChanged(s);
+}
+
+void DBInterface::request(QString req, bool waitPing)
+{
+    if (waitPing)
+    {
+        // If not online or connecting, we need to get online
+        if (_status == NetworkUtils::Offline) setOnline();
+        //wait three seconds when connecting or set offline
+        int timeout = QSettings().value("server/timeout", 3000).toInt();
+        QDeadlineTimer t(timeout);
+        while (_status != NetworkUtils::Online)
+        {
+            qApp->processEvents();
+            if ( t.hasExpired() || _status == NetworkUtils::Offline )
+            {
+                setOffline();
+                emit log("Cannot process request, server unavailable.", LogUtils::Critical);
+                return;
+            }
+        }
+    }
+
     QSettings settings;
 
+    //Get server address
     QString protocol = "http://";
     if (settings.value("server/ssl", true).toBool()) protocol = "https://";
-
     QString serverAddress = settings.value("server/address", "localhost/ramses/").toString();
 
+    //add token to the request
+    if (_sessionToken != "") req += "&token=" + _sessionToken;
+
     //request
-    emit log("New request: " + protocol + serverAddress + req, LogUtils::Remote);
     QUrl url(protocol + serverAddress + req);
     QNetworkRequest request;
     request.setUrl(QUrl(url));
     request.setHeader(QNetworkRequest::UserAgentHeader, QString(STR_INTERNALNAME) + " v" + QString(STR_VERSION));
-    if (content.isEmpty())
+    _reply = _network.get(request);
+
+    if (req.indexOf("login") >= 0)
     {
-        _reply = _network.get(request);
+#ifdef QT_DEBUG
+        emit log("New request: " + protocol + serverAddress + req, LogUtils::Remote);
+#else
+        emit log("New request: " + protocol + serverAddress + "[Hidden login info]", LogUtils::Remote);
+#endif
     }
     else
     {
-        request.setHeader(QNetworkRequest::ContentTypeHeader,"application/json");
-        if (req.indexOf("login") >= 0)
-        {
-#ifdef QT_DEBUG
-            emit log("Request Content: " + content.toJson(), LogUtils::Remote);
-#else
-            emit log("Request Content: [hidden login informations]", LogUtils::Remote);
-#endif
-        }
-        else
-        {
-            emit log("Request Content: " + content.toJson(), LogUtils::Remote);
-        }
-        _reply = _network.post(request,content.toJson());
+        emit log("New request: " + protocol + serverAddress + req, LogUtils::Remote);
     }
+
     connect(_reply, SIGNAL(error(QNetworkReply::NetworkError)), this,SLOT(networkError(QNetworkReply::NetworkError)));
+}
+
+void DBInterface::request(QStringList args)
+{
+    QString q = "?" + args.join("&");
+    request(q);
 }
 
 QString DBInterface::generatePassHash(QString password, QString salt)

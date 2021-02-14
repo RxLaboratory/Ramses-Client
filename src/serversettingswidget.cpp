@@ -8,7 +8,9 @@ ServerSettingsWidget::ServerSettingsWidget(QWidget *parent) :
     serverAddressEdit->setText(settings.value("server/address", "localhost/ramses/").toString());
     sslCheckBox->setChecked( settings.value("server/ssl", true).toBool() );
     updateFreqSpinBox->setValue( settings.value("server/updateFreq", 2).toInt());
+    timeoutSpinBox->setValue( settings.value("server/timeout", 3000).toInt()/1000 );
     _app = (DuApplication *)qApp;
+    _app->setIdleTimeOut( settings.value("server/updateFreq", 2).toInt()*60*1000 );
 
     logoutWidget->hide();
 
@@ -16,7 +18,8 @@ ServerSettingsWidget::ServerSettingsWidget(QWidget *parent) :
     connect(sslCheckBox, SIGNAL(clicked(bool)), this, SLOT(sslCheckBox_clicked(bool)));
     connect(logoutButton, SIGNAL(clicked()), this, SLOT(logout()));
     connect(updateFreqSpinBox, SIGNAL(editingFinished()), this, SLOT( updateFreqSpinBox_editingFinished()));
-    connect(DBInterface::instance(), &DBInterface::statusChanged, this, &ServerSettingsWidget::dbiStatusChanged);
+    connect(timeoutSpinBox, SIGNAL(editingFinished()), this, SLOT( timeoutSpinBox_editingFinished()));
+    connect(DBInterface::instance(), &DBInterface::connectionStatusChanged, this, &ServerSettingsWidget::dbiConnectionStatusChanged);
 }
 
 void ServerSettingsWidget::serverAddressEdit_edingFinished()
@@ -42,12 +45,18 @@ void ServerSettingsWidget::updateFreqSpinBox_editingFinished()
     _app->setIdleTimeOut( to*60*1000 );
 }
 
+void ServerSettingsWidget::timeoutSpinBox_editingFinished()
+{
+    int to = timeoutSpinBox->value();
+    settings.setValue("server/timeout", to*1000 );
+}
+
 void ServerSettingsWidget::logout()
 {
     Ramses::instance()->logout();
 }
 
-void ServerSettingsWidget::dbiStatusChanged(NetworkUtils::NetworkStatus s, QString /*m*/)
+void ServerSettingsWidget::dbiConnectionStatusChanged(NetworkUtils::NetworkStatus s)
 {
     bool online = s == NetworkUtils::Online;
     logoutWidget->setVisible(online);
