@@ -19,6 +19,7 @@ Ramses::Ramses(QObject *parent) : QObject(parent)
     _connected = false;
 
     connect( _dbi, &DBInterface::data, this, &Ramses::newData );
+    connect( _dbi, &DBInterface::connectionStatusChanged, this, &Ramses::dbiConnectionStatusChanged);
     connect( (DuApplication *)qApp, &DuApplication::idle, this, &Ramses::update);
 }
 
@@ -29,8 +30,9 @@ void Ramses::login(QString username, QString password)
 
 void Ramses::newData(QJsonObject data)
 {
-    QString query = data.value("query").toString();
+    if (!data.value("success").toBool()) return;
 
+    QString query = data.value("query").toString();
     if (query == "login") login( data.value("content").toObject() );
     else if (query == "getUsers") gotUsers( data.value("content").toArray());
 }
@@ -80,6 +82,15 @@ void Ramses::gotUsers(QJsonArray users)
     _currentUser = _defaultUser;
     _connected = false;
     emit loggedOut();
+}
+
+void Ramses::dbiConnectionStatusChanged(NetworkUtils::NetworkStatus s)
+{
+    if (s != NetworkUtils::Online)
+    {
+        QSignalBlocker b(_dbi);
+        logout();
+    }
 }
 
 void Ramses::login(QJsonObject user)

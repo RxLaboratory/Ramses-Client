@@ -31,6 +31,8 @@ private slots:
     void update();
     void newData(QJsonObject data);
     void gotUsers(QJsonArray users);
+    //TODO This should be modified when implementing offline version
+    void dbiConnectionStatusChanged(NetworkUtils::NetworkStatus s);
 private:
     /**
      * @brief Ramses is the class managing all data. It is a singleton
@@ -40,6 +42,9 @@ private:
 
     DBInterface *_dbi;
     void login(QJsonObject user);
+    /**
+     * @brief True when loogged in, false otherwise.
+     */
     bool _connected;
 
     QList<RamUser *> _users;

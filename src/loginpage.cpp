@@ -6,6 +6,10 @@ LoginPage::LoginPage(QWidget *parent) :
     setupUi(this);
 
     _ramses = Ramses::instance();
+    _failedTimer = new QTimer(this);
+    _failedTimer->setSingleShot(true);
+    _uiTimer = new QTimer(this);
+    _failedAttempts = 0;
 
 #ifdef QT_DEBUG
     // Test mode (auto login)
@@ -18,8 +22,11 @@ LoginPage::LoginPage(QWidget *parent) :
     connect(usernameEdit, &QLineEdit::returnPressed, this, &LoginPage::loginButton_clicked);
     connect(passwordEdit, &QLineEdit::returnPressed, this, &LoginPage::loginButton_clicked);
     connect(DBInterface::instance(), &DBInterface::log, this, &LoginPage::dbiLog);
+    connect(DBInterface::instance(), &DBInterface::data, this, &LoginPage::dbiData);
     connect(serverSettingsButton, SIGNAL(clicked()), this, SLOT(serverSettingsButton_clicked()));
     connect(loginButton, SIGNAL(clicked()), this, SLOT(loginButton_clicked()));
+    connect(_failedTimer, &QTimer::timeout, this, &LoginPage::unFreeze);
+    connect(_uiTimer, &QTimer::timeout, this, &LoginPage::updateFreeze);
 }
 
 void LoginPage::loggedIn(RamUser *user)
@@ -39,6 +46,26 @@ void LoginPage::loggedOut()
 void LoginPage::dbiLog(QString m, LogUtils::LogType t)
 {
     if (t != LogUtils::Remote && t != LogUtils::Debug) connectionStatusLabel->setText(m);
+}
+
+void LoginPage::dbiData(QJsonObject data)
+{
+    qDebug() << "login page data";
+    qDebug() << data.value("query").toString();
+    qDebug() << data.value("success").toBool();
+    if (data.value("query").toString() == "login")
+    {
+        if (data.value("success").toBool())
+        {
+            unFreeze();
+            _failedAttempts = 0;
+        }
+        else
+        {
+            _failedAttempts++;
+            freeze();
+        }
+    }
 }
 
 void LoginPage::loginButton_clicked()
@@ -62,5 +89,30 @@ void LoginPage::loginButton_clicked()
 void LoginPage::serverSettingsButton_clicked()
 {
     emit serverSettings();
+}
+
+void LoginPage::freeze()
+{
+    loginWidget->hide();
+    int timeout = _failedAttempts * _failedAttempts;
+    qDebug() << "Freezing login page for " + QString::number(timeout) + " seconds";
+    _failedTimer->start(timeout*1000);
+    _uiTimer->start(1000);
+    connectionStatusLabel->setEnabled(true);
+}
+
+void LoginPage::unFreeze()
+{
+    loginWidget->show();
+    connectionStatusLabel->setText("Ready.");
+    connectionStatusLabel->setEnabled(false);
+    _uiTimer->stop();
+    _failedTimer->stop();
+}
+
+void LoginPage::updateFreeze()
+{
+    int remaining = _failedTimer->remainingTime() / 1000;
+    connectionStatusLabel->setText(QString::number(_failedAttempts) + " failed Attempts.\nPlease wait " + QString::number(remaining) + " seconds.");
 }
 

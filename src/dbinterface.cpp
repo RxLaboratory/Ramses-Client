@@ -109,7 +109,6 @@ void DBInterface::dataReceived(QNetworkReply * rep)
     if (!repSuccess)
     {
         emit log(repMessage, LogUtils::Warning);
-        return;
     }
     else
     {
