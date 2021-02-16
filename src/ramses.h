@@ -4,6 +4,7 @@
 #include "duqf-app/app-utils.h"
 #include "dbinterface.h"
 #include "ramuser.h"
+#include "dbisuspender.h"
 
 #include <QObject>
 

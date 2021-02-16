@@ -38,6 +38,8 @@ void Ramses::newData(QJsonObject data)
 
 void Ramses::gotUsers(QJsonArray users)
 {
+    DBISuspender s;
+
     // loop through existing users to update them
     for (int i = _users.count() - 1; i >= 0; i--)
     {
@@ -140,7 +142,6 @@ RamUser *Ramses::createUser()
 {
     RamUser *user = new RamUser("New","J. Doe");
     _users << user;
-    _dbi->createUser(user->shortName(), user->name(), user->uuid());
     emit newUser(user);
     return user;
 }
