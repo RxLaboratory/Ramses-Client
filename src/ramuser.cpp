@@ -4,6 +4,7 @@ RamUser::RamUser(QString shortName, QString name, QString uuid, QString path, QO
     RamObject(shortName, name, uuid, path, parent)
 {
     _role = Standard;
+    _dbi->createUser(_shortName, _name, _uuid);
 }
 
 RamUser::UserRole RamUser::role() const
