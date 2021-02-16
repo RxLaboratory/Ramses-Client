@@ -8,6 +8,7 @@ UserEditWidget::UserEditWidget(QWidget *parent) :
     roleBox->setCurrentIndex(2);
 
     connect(profileUpdateButton, SIGNAL(clicked()), this, SLOT(update()));
+    connect(revertButton, SIGNAL(clicked()), this, SLOT(revert()));
     connect(shortNameEdit, &QLineEdit::textChanged, this, &UserEditWidget::checkInput);
     connect(cpasswordEdit, &QLineEdit::textChanged, this, &UserEditWidget::checkInput);
     connect(npassword1Edit, &QLineEdit::textChanged, this, &UserEditWidget::checkInput);
@@ -27,7 +28,10 @@ void UserEditWidget::setUser(RamUser *user)
     _user = user;
     nameEdit->setText(user->name());
     shortNameEdit->setText(user->shortName());
-    qDebug() << user->role();
+    cpasswordEdit->setText("");
+    npassword1Edit->setText("");
+    npassword2Edit->setText("");
+
     if (user->role() == RamUser::Admin) roleBox->setCurrentIndex(0);
     else if (user->role() == RamUser::Lead) roleBox->setCurrentIndex(1);
     else roleBox->setCurrentIndex(2);
@@ -44,7 +48,7 @@ void UserEditWidget::setUser(RamUser *user)
         roleBox->setEnabled(true);
         roleBox->setToolTip("");
         cpasswordEdit->setEnabled(false);
-        this->setEnabled(user->role() == RamUser::Admin);
+        this->setEnabled(Ramses::instance()->currentUser()->role() == RamUser::Admin);
     }
 }
 
@@ -81,6 +85,11 @@ void UserEditWidget::update()
     cpasswordEdit->setText("");
 
     this->setEnabled(true);
+}
+
+void UserEditWidget::revert()
+{
+    setUser(_user);
 }
 
 bool UserEditWidget::checkInput()

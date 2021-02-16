@@ -16,6 +16,7 @@ public:
 
 private slots:
     void update();
+    void revert();
     bool checkInput();
     void dbiLog(QString m, LogUtils::LogType t);
 
