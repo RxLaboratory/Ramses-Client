@@ -5,11 +5,16 @@ UserEditWidget::UserEditWidget(QWidget *parent) :
 {
     setupUi(this);
 
+    roleBox->setCurrentIndex(2);
+
     connect(profileUpdateButton, SIGNAL(clicked()), this, SLOT(update()));
     connect(shortNameEdit, &QLineEdit::textChanged, this, &UserEditWidget::checkInput);
     connect(cpasswordEdit, &QLineEdit::textChanged, this, &UserEditWidget::checkInput);
     connect(npassword1Edit, &QLineEdit::textChanged, this, &UserEditWidget::checkInput);
     connect(npassword2Edit, &QLineEdit::textChanged, this, &UserEditWidget::checkInput);
+    connect(DBInterface::instance(),&DBInterface::log, this, &UserEditWidget::dbiLog);
+
+    this->setEnabled(false);
 }
 
 RamUser *UserEditWidget::user() const
@@ -22,6 +27,7 @@ void UserEditWidget::setUser(RamUser *user)
     _user = user;
     nameEdit->setText(user->name());
     shortNameEdit->setText(user->shortName());
+    qDebug() << user->role();
     if (user->role() == RamUser::Admin) roleBox->setCurrentIndex(0);
     else if (user->role() == RamUser::Lead) roleBox->setCurrentIndex(1);
     else roleBox->setCurrentIndex(2);
@@ -31,12 +37,14 @@ void UserEditWidget::setUser(RamUser *user)
         roleBox->setEnabled(false);
         roleBox->setToolTip("You cannot change your own role!");
         cpasswordEdit->setEnabled(true);
+        this->setEnabled(true);
     }
     else
     {
         roleBox->setEnabled(true);
         roleBox->setToolTip("");
-        if (user->role() == RamUser::Admin) cpasswordEdit->setEnabled(false);
+        cpasswordEdit->setEnabled(false);
+        this->setEnabled(user->role() == RamUser::Admin);
     }
 }
 
@@ -53,6 +61,12 @@ void UserEditWidget::update()
 
     _user->setName( nameEdit->text() );
     _user->setShortName( shortNameEdit->text() );
+
+    int roleIndex = roleBox->currentIndex();
+    if (roleIndex == 0) _user->setRole(RamUser::Admin);
+    else if (roleIndex == 1) _user->setRole(RamUser::Lead);
+    else _user->setRole(RamUser::Standard);
+
     _user->update();
 
     if (npassword1Edit->text() != "")
@@ -80,7 +94,7 @@ bool UserEditWidget::checkInput()
 
     if (npassword1Edit->text() != "")
     {
-        if (cpasswordEdit->text() == "" && _user->role() != RamUser::Admin && _user->uuid() != Ramses::instance()->currentUser()->uuid())
+        if (cpasswordEdit->text() == "" && _user->uuid() == Ramses::instance()->currentUser()->uuid())
         {
             statusLabel->setText("You must specify your current password to be able to modify it.");
             profileUpdateButton->setEnabled(false);
@@ -97,4 +111,9 @@ bool UserEditWidget::checkInput()
     statusLabel->setText("");
     profileUpdateButton->setEnabled(true);
     return true;
+}
+
+void UserEditWidget::dbiLog(QString m, LogUtils::LogType t)
+{
+    if (t != LogUtils::Remote && t != LogUtils::Debug) statusLabel->setText(m);
 }

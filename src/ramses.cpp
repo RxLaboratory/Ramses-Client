@@ -90,6 +90,7 @@ void Ramses::gotUsers(QJsonArray users)
         QString r = u.value("role").toString("standard");
         if (r == "admin") user->setRole(RamUser::Admin);
         else if (r == "lead") user->setRole(RamUser::Lead);
+        else user->setRole(RamUser::Standard);
         _users << user;
 
         emit newUser(user);

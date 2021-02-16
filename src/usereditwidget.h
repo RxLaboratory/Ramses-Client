@@ -17,6 +17,7 @@ public:
 private slots:
     void update();
     bool checkInput();
+    void dbiLog(QString m, LogUtils::LogType t);
 
 private:
     RamUser *_user;
