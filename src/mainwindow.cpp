@@ -32,9 +32,9 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     mainStatusBar->addPermanentWidget(networkButton);
 
     userRoleButton = new QToolButton();
-    userRoleButton->setToolButtonStyle(Qt::ToolButtonTextOnly);
+    userRoleButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     userRoleButton->setText("Guest");
-    userRoleButton->setMinimumWidth(100);
+    userRoleButton->setMinimumWidth(75);
     mainStatusBar->addPermanentWidget(userRoleButton);
 
     // Add default stuff
@@ -52,7 +52,7 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     adminPage = new SettingsWidget(this);
     mainStack->addWidget(adminPage);
     // Admin tabs
-    adminPage->addPage(new UsersManagerWidget(this),"Users");
+    adminPage->addPage(new UsersManagerWidget(this),"Users", QIcon(":/icons/users"));
 
     // Set UI
     mainStack->setCurrentIndex(0);
@@ -378,6 +378,7 @@ void MainWindow::loggedIn()
     userButton->setVisible(true);
 
     RamUser *user = Ramses::instance()->currentUser();
+    disconnect(_currentUserConnection);
     _currentUserConnection = connect(user, &RamUser::changed, this, &MainWindow::currentUserChanged);
     currentUserChanged();
 }
@@ -391,28 +392,32 @@ void MainWindow::loggedOut()
 
     actionAdmin->setVisible(false);
     userRoleButton->setText("Guest");
+    userRoleButton->setIcon(QIcon(""));
 }
 
 void MainWindow::currentUserChanged()
 {
     RamUser *user = Ramses::instance()->currentUser();
 
+    userRoleButton->setText(user->shortName());
+
     if (user->role() == RamUser::Admin)
     {
         actionAdmin->setVisible(true);
-        userRoleButton->setText(user->shortName() + " (Admin)");
+        userRoleButton->setIcon(QIcon(":/icons/admin"));
+
     }
     else if (user->role() == RamUser::Lead)
     {
         actionAdmin->setVisible(false);
         actionAdmin->setChecked(false);
-        userRoleButton->setText(user->shortName() + " (Lead)");
+        userRoleButton->setIcon(QIcon(":/icons/lead"));
     }
     else
     {
         actionAdmin->setVisible(false);
         actionAdmin->setChecked(false);
-        userRoleButton->setText(user->shortName() + " (User)");
+        userRoleButton->setIcon(QIcon(":/icons/user"));
     }
 }
 

@@ -12,6 +12,7 @@ Ramses::Ramses(QObject *parent) : QObject(parent)
 {
     _dbi = DBInterface::instance();
 
+    DBISuspender s;
     _defaultUser = new RamUser("Guest", "J. Doe", "", "", this);
     _currentUser = _defaultUser;
 

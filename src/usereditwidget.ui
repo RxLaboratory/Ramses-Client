@@ -63,15 +63,27 @@
         <property name="text">
          <string>Administrator</string>
         </property>
+        <property name="icon">
+         <iconset resource="resources.qrc">
+          <normaloff>:/icons/admin</normaloff>:/icons/admin</iconset>
+        </property>
        </item>
        <item>
         <property name="text">
          <string>Lead</string>
         </property>
+        <property name="icon">
+         <iconset resource="resources.qrc">
+          <normaloff>:/icons/lead</normaloff>:/icons/lead</iconset>
+        </property>
        </item>
        <item>
         <property name="text">
          <string>Standard User</string>
+        </property>
+        <property name="icon">
+         <iconset resource="resources.qrc">
+          <normaloff>:/icons/user</normaloff>:/icons/user</iconset>
         </property>
        </item>
       </widget>
@@ -170,16 +182,37 @@
         <number>0</number>
        </property>
        <item>
-        <widget class="QPushButton" name="revertButton">
+        <spacer name="horizontalSpacer_3">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QToolButton" name="revertButton">
          <property name="text">
           <string>Revert</string>
+         </property>
+         <property name="icon">
+          <iconset resource="resources.qrc">
+           <normaloff>:/icons/undo</normaloff>:/icons/undo</iconset>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="profileUpdateButton">
+        <widget class="QToolButton" name="profileUpdateButton">
          <property name="text">
           <string>Apply</string>
+         </property>
+         <property name="icon">
+          <iconset resource="resources.qrc">
+           <normaloff>:/icons/apply</normaloff>:/icons/apply</iconset>
          </property>
         </widget>
        </item>
@@ -228,6 +261,8 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="resources.qrc"/>
+ </resources>
  <connections/>
 </ui>

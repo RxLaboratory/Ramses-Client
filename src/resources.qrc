@@ -8,5 +8,13 @@
         <file alias="logout-big">resources/icons/logout_bl.svg</file>
         <file alias="logout">resources/icons/logout_sl.svg</file>
         <file alias="user-settings">resources/icons/user-settings_sl.svg</file>
+        <file alias="users">resources/icons/users_bl.svg</file>
+        <file alias="add">resources/icons/add_sl.svg</file>
+        <file alias="remove">resources/icons/remove_sl.svg</file>
+        <file alias="admin">resources/icons/admininstrator_sl.svg</file>
+        <file alias="apply">resources/icons/check_sl.svg</file>
+        <file alias="lead">resources/icons/leader-head-checker_sl.svg</file>
+        <file alias="undo">resources/icons/undo_sl.svg</file>
+        <file alias="user">resources/icons/user_sl.svg</file>
     </qresource>
 </RCC>

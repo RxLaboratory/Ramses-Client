@@ -63,14 +63,22 @@
          <item>
           <widget class="QToolButton" name="removeButton">
            <property name="text">
-            <string>-</string>
+            <string/>
+           </property>
+           <property name="icon">
+            <iconset resource="duqf_resources.qrc">
+             <normaloff>:/icons/remove</normaloff>:/icons/remove</iconset>
            </property>
           </widget>
          </item>
          <item>
           <widget class="QToolButton" name="addButton">
            <property name="text">
-            <string>+</string>
+            <string/>
+           </property>
+           <property name="icon">
+            <iconset resource="resources.qrc">
+             <normaloff>:/icons/add</normaloff>:/icons/add</iconset>
            </property>
           </widget>
          </item>
@@ -108,6 +116,9 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="duqf_resources.qrc"/>
+  <include location="resources.qrc"/>
+ </resources>
  <connections/>
 </ui>
