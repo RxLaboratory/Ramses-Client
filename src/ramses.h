@@ -14,6 +14,7 @@ class Ramses : public QObject
     Q_OBJECT
 public:
     static Ramses *instance();
+    ~Ramses();
     void login(QString username, QString password);
     void logout();
     bool isConnected() const;

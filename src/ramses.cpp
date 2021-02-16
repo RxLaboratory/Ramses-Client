@@ -8,6 +8,11 @@ Ramses *Ramses::instance()
     return _instance;
 }
 
+Ramses::~Ramses()
+{
+    DBInterface::instance()->suspend(true);
+}
+
 Ramses::Ramses(QObject *parent) : QObject(parent)
 {
     _dbi = DBInterface::instance();
@@ -215,6 +220,7 @@ QList<RamProject *> Ramses::projects() const
 RamProject *Ramses::createProject()
 {
     RamProject *project = new RamProject("New","Project");
+    project->setParent(this);
     _projects << project;
     emit newProject(project);
     return project;
@@ -240,6 +246,7 @@ RamUser *Ramses::defaultUser() const
 RamUser *Ramses::createUser()
 {
     RamUser *user = new RamUser("New","J. Doe");
+    user->setParent(this);
     _users << user;
     emit newUser(user);
     return user;
