@@ -91,12 +91,24 @@ DBInterface::DBInterface(QObject *parent) : QObject(parent)
     _network.setCookieJar(new QNetworkCookieJar());
     _sessionToken = "";
 
+    _suspended = false;
+
     // Connect events
     connect( &_network, &QNetworkAccessManager::finished, this, &DBInterface::dataReceived);
     connect(&_network, SIGNAL(sslErrors(QNetworkReply *,QList<QSslError>)), this,SLOT(sslError(QNetworkReply *,QList<QSslError>)));
 
 
     _status = NetworkUtils::Offline;
+}
+
+bool DBInterface::isSuspended() const
+{
+    return _suspended;
+}
+
+void DBInterface::suspend(bool suspended)
+{
+    _suspended = suspended;
 }
 
 NetworkUtils::NetworkStatus DBInterface::connectionStatus() const
@@ -296,6 +308,8 @@ void DBInterface::setConnectionStatus(NetworkUtils::NetworkStatus s)
 
 void DBInterface::request(QString req, bool waitPing)
 {
+    if (_suspended) return;
+
     if (waitPing)
     {
         // If not online or connecting, we need to get online

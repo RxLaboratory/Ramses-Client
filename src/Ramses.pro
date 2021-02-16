@@ -21,6 +21,7 @@ CONFIG += c++11
 
 SOURCES += \
     dbinterface.cpp \
+    dbisuspender.cpp \
     duqf-app/app-style.cpp \
     duqf-app/app-utils.cpp \
     duqf-utils/language-utils.cpp \
@@ -48,6 +49,7 @@ SOURCES += \
 
 HEADERS += \
     dbinterface.h \
+    dbisuspender.h \
     duqf-app/app-style.h \
     duqf-app/app-utils.h \
     duqf-app/app-version.h \

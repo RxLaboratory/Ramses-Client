@@ -32,6 +32,9 @@ public:
     void updateUserPassword(QString uuid, QString c, QString n);
     void createUser(QString shortName, QString name, QString uuid, QString password = "password");
     void removeUser(QString uuid);
+    bool isSuspended() const;
+    void suspend(bool suspended);
+
 signals:
     void log(QString, LogUtils::LogType);
     void connectionStatusChanged(NetworkUtils::NetworkStatus);
@@ -70,6 +73,10 @@ private:
      * @brief Online / Offline status
      */
     NetworkUtils::NetworkStatus _status;
+    /**
+     * @brief True to suspend the interface, used when creating Ramses objects from a database update
+     */
+    bool _suspended;
     /**
      * @brief The token given by the server when logging in.
      */
