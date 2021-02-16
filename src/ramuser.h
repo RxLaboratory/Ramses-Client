@@ -11,6 +11,7 @@ public:
     Q_ENUM( UserRole )
 
     explicit RamUser(QString shortName, QString name = "", QString uuid = "", QString path = "", QObject *parent = nullptr);
+    ~RamUser();
 
     UserRole role() const;
     void setRole(const UserRole &role);
@@ -26,3 +27,4 @@ private:
 };
 
 #endif // RAMUSER_H
+

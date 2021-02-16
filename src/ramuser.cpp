@@ -7,6 +7,11 @@ RamUser::RamUser(QString shortName, QString name, QString uuid, QString path, QO
     _dbi->createUser(_shortName, _name, _uuid);
 }
 
+RamUser::~RamUser()
+{
+    _dbi->removeUser(_uuid);
+}
+
 RamUser::UserRole RamUser::role() const
 {
     return _role;

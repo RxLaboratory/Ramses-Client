@@ -95,6 +95,8 @@ void Ramses::gotUsers(QJsonArray users)
         else user->setRole(RamUser::Standard);
         _users << user;
 
+        connect(user,&RamUser::destroyed, this, &Ramses::userDestroyed);
+
         emit newUser(user);
     }
 
@@ -114,6 +116,12 @@ void Ramses::gotUsers(QJsonArray users)
     _currentUser = _defaultUser;
     _connected = false;
     emit loggedOut();
+}
+
+void Ramses::userDestroyed(QObject *o)
+{
+    RamUser *u = (RamUser*)o;
+    removeUser(u->uuid());
 }
 
 void Ramses::dbiConnectionStatusChanged(NetworkUtils::NetworkStatus s)
@@ -148,12 +156,10 @@ RamUser *Ramses::createUser()
 
 void Ramses::removeUser(QString uuid)
 {
-    qDebug() << uuid;
     for (int i = _users.count() -1; i >= 0; i--)
     {
         if (_users[i]->uuid() == uuid)
         {
-            _dbi->removeUser(uuid);
             RamUser *u = _users.takeAt(i);
             u->deleteLater();
         }

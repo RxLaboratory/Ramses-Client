@@ -35,7 +35,9 @@ protected:
 private slots:
     void update();
     void newData(QJsonObject data);
+    //users
     void gotUsers(QJsonArray users);
+    void userDestroyed(QObject *o);
     //TODO This should be modified when implementing offline version
     void dbiConnectionStatusChanged(NetworkUtils::NetworkStatus s);
 private:
