@@ -53,6 +53,7 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     mainStack->addWidget(adminPage);
     // Admin tabs
     adminPage->addPage(new UsersManagerWidget(this),"Users", QIcon(":/icons/users"));
+    adminPage->addPage(new ProjectsManagerWidget(this), "Projects", QIcon(":/icons/projects"));
 
     // Set UI
     mainStack->setCurrentIndex(0);
@@ -474,6 +475,7 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
+    DBInterface::instance()->suspend(true);
     QFontDatabase::removeAllApplicationFonts();
     event->accept();
 }

@@ -77,6 +77,59 @@ void DBInterface::removeUser(QString uuid)
     request(q);
 }
 
+void DBInterface::createProject(QString shortName, QString name, QString uuid)
+{
+    QStringList q("createProject");
+    q << "uuid=" + uuid;
+    q << "shortName=" + shortName;
+    q << "name=" + name;
+
+    request(q);
+}
+
+void DBInterface::getProjects()
+{
+    QString q = "?getProjects";
+    request(q);
+}
+
+void DBInterface::updateProject(QString uuid, QString shortName, QString name, QString folderPath)
+{
+    QStringList q("updateProject");
+    q << "uuid=" + uuid;
+    q << "shortName=" + shortName;
+    q << "name=" + name;
+    q << "folderPath=" + folderPath;
+
+    request(q);
+}
+
+void DBInterface::removeProject(QString uuid)
+{
+    QStringList q("removeProject");
+    q << "uuid=" + uuid;
+
+    request(q);
+}
+
+void DBInterface::assignStep(QString stepUuid, QString projectUuid)
+{
+    QStringList q("assignStep");
+    q << "stepUuid=" + stepUuid;
+    q << "projectUuid=" + projectUuid;
+
+    request(q);
+}
+
+void DBInterface::unassignStep(QString stepUuid, QString projectUuid)
+{
+    QStringList q("unassignStep");
+    q << "stepUuid=" + stepUuid;
+    q << "projectUuid=" + projectUuid;
+
+    request(q);
+}
+
 DBInterface::DBInterface(QObject *parent) : QObject(parent)
 {
     // LOCAL
@@ -96,7 +149,7 @@ DBInterface::DBInterface(QObject *parent) : QObject(parent)
     // Connect events
     connect( &_network, &QNetworkAccessManager::finished, this, &DBInterface::dataReceived);
     connect(&_network, SIGNAL(sslErrors(QNetworkReply *,QList<QSslError>)), this,SLOT(sslError(QNetworkReply *,QList<QSslError>)));
-
+    connect(qApp,SIGNAL(aboutToQuit()), this, SLOT(suspend()));
 
     _status = NetworkUtils::Offline;
 }

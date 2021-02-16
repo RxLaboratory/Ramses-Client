@@ -25,6 +25,7 @@ public:
     NetworkUtils::NetworkStatus connectionStatus() const;
     void setOffline();
     void setOnline();
+    bool isSuspended() const;
     //users
     void login(QString username, QString password);
     void getUsers();
@@ -32,8 +33,16 @@ public:
     void updateUserPassword(QString uuid, QString c, QString n);
     void createUser(QString shortName, QString name, QString uuid, QString password = "password");
     void removeUser(QString uuid);
-    bool isSuspended() const;
-    void suspend(bool suspended);
+    //projects
+    void createProject(QString name, QString shortName, QString uuid);
+    void getProjects();
+    void updateProject(QString uuid, QString shortName, QString name, QString folderPath = "");
+    void removeProject(QString uuid);
+    void assignStep(QString stepUuid, QString projectUuid);
+    void unassignStep(QString stepUuid, QString projectUuid);
+
+public slots:
+    void suspend(bool suspended = true);
 
 signals:
     void log(QString, LogUtils::LogType);

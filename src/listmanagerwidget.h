@@ -2,6 +2,7 @@
 #define LISTMANAGERWIDGET_H
 
 #include <QtDebug>
+#include <QMessageBox>
 
 #include "ui_listmanagerwidget.h"
 

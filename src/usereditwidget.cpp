@@ -25,12 +25,21 @@ RamUser *UserEditWidget::user() const
 
 void UserEditWidget::setUser(RamUser *user)
 {
+    disconnect(_currentUserConnection);
+
     _user = user;
-    nameEdit->setText(user->name());
-    shortNameEdit->setText(user->shortName());
+    nameEdit->setText("");
+    shortNameEdit->setText("");
     cpasswordEdit->setText("");
     npassword1Edit->setText("");
     npassword2Edit->setText("");
+    roleBox->setCurrentIndex(2);
+    this->setEnabled(false);
+
+    if (!user) return;
+
+    nameEdit->setText(user->name());
+    shortNameEdit->setText(user->shortName());
 
     if (user->role() == RamUser::Admin) roleBox->setCurrentIndex(0);
     else if (user->role() == RamUser::Lead) roleBox->setCurrentIndex(1);
@@ -48,12 +57,17 @@ void UserEditWidget::setUser(RamUser *user)
         roleBox->setEnabled(true);
         roleBox->setToolTip("");
         cpasswordEdit->setEnabled(false);
-        this->setEnabled(Ramses::instance()->currentUser()->role() == RamUser::Admin);
+        this->setEnabled(Ramses::instance()->isAdmin());
     }
+
+    _currentUserConnection = connect(user,&RamUser::destroyed, this, &UserEditWidget::userDestroyed);
+
 }
 
 void UserEditWidget::update()
 {
+    if (!_user) return;
+
     this->setEnabled(false);
 
     //check if everything is alright
@@ -94,6 +108,8 @@ void UserEditWidget::revert()
 
 bool UserEditWidget::checkInput()
 {
+    if (!_user) return false;
+
     if (shortNameEdit->text() == "")
     {
         statusLabel->setText("You must choose a user name!");
@@ -120,6 +136,11 @@ bool UserEditWidget::checkInput()
     statusLabel->setText("");
     profileUpdateButton->setEnabled(true);
     return true;
+}
+
+void UserEditWidget::userDestroyed(QObject */*o*/)
+{
+    setUser(nullptr);
 }
 
 void UserEditWidget::dbiLog(QString m, LogUtils::LogType t)

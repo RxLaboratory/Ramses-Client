@@ -18,10 +18,12 @@ private slots:
     void update();
     void revert();
     bool checkInput();
+    void userDestroyed(QObject *o);
     void dbiLog(QString m, LogUtils::LogType t);
 
 private:
     RamUser *_user;
+    QMetaObject::Connection _currentUserConnection;
 };
 
 #endif // USEREDITWIDGET_H

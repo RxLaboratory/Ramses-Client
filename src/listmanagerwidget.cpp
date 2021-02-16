@@ -18,7 +18,17 @@ void ListManagerWidget::setWidget(QWidget *w)
 void ListManagerWidget::addItem(QListWidgetItem *item)
 {
     list->addItem(item);
+    QVariant currentData = item->data(Qt::UserRole);
     list->sortItems();
+    //reselect
+    for (int row = 0; row < list->count(); row++)
+    {
+        if (list->item(row)->data(Qt::UserRole) == currentData)
+        {
+            list->setCurrentRow(row);
+            return;
+        }
+    }
 }
 
 void ListManagerWidget::list_currentRowChanged(int currentRow)
@@ -81,6 +91,12 @@ void ListManagerWidget::remove_clicked()
     QListWidgetItem *i = list->currentItem();
     if (i)
     {
-        removeItem(i->data(Qt::UserRole));
+        QMessageBox::StandardButton confirm = QMessageBox::question(this,
+                                                                    "Confirm deletion",
+                                                                    "Are you sure you want to premanently remove " + i->text() + "?" );
+        if (confirm == QMessageBox::Yes)
+        {
+            removeItem(i->data(Qt::UserRole));
+        }
     }
 }

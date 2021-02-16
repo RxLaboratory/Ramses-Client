@@ -16,5 +16,6 @@
         <file alias="lead">resources/icons/leader-head-checker_sl.svg</file>
         <file alias="undo">resources/icons/undo_sl.svg</file>
         <file alias="user">resources/icons/user_sl.svg</file>
+        <file alias="projects">resources/icons/cinema-movie-settings_sl.svg</file>
     </qresource>
 </RCC>

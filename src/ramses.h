@@ -4,6 +4,7 @@
 #include "duqf-app/app-utils.h"
 #include "dbinterface.h"
 #include "ramuser.h"
+#include "ramproject.h"
 #include "dbisuspender.h"
 
 #include <QObject>
@@ -15,19 +16,24 @@ public:
     static Ramses *instance();
     void login(QString username, QString password);
     void logout();
-
+    bool isConnected() const;
+    // Users
     QList<RamUser *> users() const;
     RamUser *currentUser() const;
     RamUser *defaultUser() const;
     RamUser *createUser();
     void removeUser(QString uuid);
-
-    bool isConnected() const;
+    bool isAdmin();
+    // Projects
+    QList<RamProject *> projects() const;
+    RamProject *createProject();
+    void removeProject(QString uuid);
 
 signals:
     void loggedIn(RamUser*);
     void loggedOut();
     void newUser(RamUser *user);
+    void newProject(RamProject *project);
 
 protected:
     static Ramses *_instance;
@@ -38,6 +44,9 @@ private slots:
     //users
     void gotUsers(QJsonArray users);
     void userDestroyed(QObject *o);
+    //projects
+    void gotProjects(QJsonArray projects);
+    void projectDestroyed(QObject *o);
     //TODO This should be modified when implementing offline version
     void dbiConnectionStatusChanged(NetworkUtils::NetworkStatus s);
 private:
@@ -54,10 +63,14 @@ private:
      */
     bool _connected;
 
+    // Users
     QList<RamUser *> _users;
     RamUser *_currentUser;
     RamUser *_defaultUser;
     QString _currentUserShortName;
+
+    // Projects
+    QList<RamProject *> _projects;
 };
 
 #endif // RAMSES_H

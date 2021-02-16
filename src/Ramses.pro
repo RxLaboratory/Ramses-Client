@@ -38,7 +38,10 @@ SOURCES += \
     loginpage.cpp \
     main.cpp \
     mainwindow.cpp \
+    projecteditwidget.cpp \
+    projectsmanagerwidget.cpp \
     ramobject.cpp \
+    ramproject.cpp \
     ramses.cpp \
     ramuser.cpp \
     ramuuid.cpp \
@@ -66,7 +69,10 @@ HEADERS += \
     listmanagerwidget.h \
     loginpage.h \
     mainwindow.h \
+    projecteditwidget.h \
+    projectsmanagerwidget.h \
     ramobject.h \
+    ramproject.h \
     ramses.h \
     ramuser.h \
     ramuuid.h \
@@ -82,6 +88,7 @@ FORMS += \
     listmanagerwidget.ui \
     loginpage.ui \
     mainwindow.ui \
+    projecteditwidget.ui \
     serversettingswidget.ui \
     usereditwidget.ui \
     userprofilepage.ui \
