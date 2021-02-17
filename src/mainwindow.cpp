@@ -54,6 +54,7 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     // Admin tabs
     adminPage->addPage(new UsersManagerWidget(this),"Users", QIcon(":/icons/users"));
     adminPage->addPage(new ProjectsManagerWidget(this), "Projects", QIcon(":/icons/projects"));
+    adminPage->addPage(new TemplateStepsManagerWidget(this), "Template Steps", QIcon(":/icons/steps"));
 
     // Set UI
     mainStack->setCurrentIndex(0);

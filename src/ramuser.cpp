@@ -1,7 +1,7 @@
 #include "ramuser.h"
 
-RamUser::RamUser(QString shortName, QString name, QString uuid, QString path, QObject *parent) :
-    RamObject(shortName, name, uuid, path, parent)
+RamUser::RamUser(QString shortName, QString name, QString uuid, QObject *parent) :
+    RamObject(shortName, name, uuid, parent)
 {
     _role = Standard;
     _dbi->createUser(_shortName, _name, _uuid);
@@ -20,6 +20,17 @@ RamUser::UserRole RamUser::role() const
 void RamUser::setRole(const UserRole &role)
 {
     _role = role;
+    emit changed();
+}
+
+QString RamUser::folderPath() const
+{
+    return _folderPath;
+}
+
+void RamUser::setFolderPath(const QString &folderPath)
+{
+    _folderPath = folderPath;
     emit changed();
 }
 

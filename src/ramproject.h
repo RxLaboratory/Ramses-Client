@@ -7,10 +7,16 @@ class RamProject : public RamObject
 {
     Q_OBJECT
 public:
-    RamProject(QString shortName, QString name = "", QString uuid = "", QString path = "", QObject *parent = nullptr);
+    RamProject(QString shortName, QString name = "", QString uuid = "", QObject *parent = nullptr);
     ~RamProject();
 
+    QString folderPath() const;
+    void setFolderPath(const QString &folderPath);
+
     void update();
+
+private:
+    QString _folderPath;
 
 };
 

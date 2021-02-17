@@ -17,5 +17,10 @@
         <file alias="undo">resources/icons/undo_sl.svg</file>
         <file alias="user">resources/icons/user_sl.svg</file>
         <file alias="projects">resources/icons/cinema-movie-settings_sl.svg</file>
+        <file alias="steps">resources/icons/connections_sl.svg</file>
+        <file alias="asset">resources/icons/property-asset_sl.svg</file>
+        <file alias="shot">resources/icons/shot-frame_sl.svg</file>
+        <file alias="film">resources/icons/film_sl.svg</file>
+        <file alias="project">resources/icons/cinema-movie_sl.svg</file>
     </qresource>
 </RCC>

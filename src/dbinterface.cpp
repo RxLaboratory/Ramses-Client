@@ -130,6 +130,41 @@ void DBInterface::unassignStep(QString stepUuid, QString projectUuid)
     request(q);
 }
 
+void DBInterface::createTemplateStep(QString name, QString shortName, QString uuid)
+{
+    QStringList q("createTemplateStep");
+    q << "uuid=" + uuid;
+    q << "shortName=" + shortName;
+    q << "name=" + name;
+
+    request(q);
+}
+
+void DBInterface::getTemplateSteps()
+{
+    QString q = "?getTemplateSteps";
+    request(q);
+}
+
+void DBInterface::updateTemplateStep(QString uuid, QString shortName, QString name, QString type)
+{
+    QStringList q("updateTemplateStep");
+    q << "uuid=" + uuid;
+    q << "shortName=" + shortName;
+    q << "name=" + name;
+    q << "type=" + type;
+
+    request(q);
+}
+
+void DBInterface::removeTemplateStep(QString uuid)
+{
+    QStringList q("removeTemplateStep");
+    q << "uuid=" + uuid;
+
+    request(q);
+}
+
 DBInterface::DBInterface(QObject *parent) : QObject(parent)
 {
     // LOCAL

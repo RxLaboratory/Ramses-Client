@@ -1,12 +1,11 @@
 #include "ramobject.h"
 
 
-RamObject::RamObject(QString shortName, QString name, QString uuid, QString path, QObject *parent) : QObject(parent)
+RamObject::RamObject(QString shortName, QString name, QString uuid, QObject *parent) : QObject(parent)
 {
     _shortName = shortName;
     _name = name;
     if(_name == "" ) _name = shortName;
-    _folderPath = path;
     if (uuid != "") _uuid = uuid;
     else _uuid = RamUuid::generateUuidString(_shortName);
     _dbi = DBInterface::instance();
@@ -31,17 +30,6 @@ QString RamObject::name() const
 void RamObject::setName(const QString &name)
 {
     _name = name;
-    emit changed();
-}
-
-QString RamObject::folderPath() const
-{
-    return _folderPath;
-}
-
-void RamObject::setFolderPath(const QString &folderPath)
-{
-    _folderPath = folderPath;
     emit changed();
 }
 

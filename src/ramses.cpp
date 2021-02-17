@@ -18,7 +18,8 @@ Ramses::Ramses(QObject *parent) : QObject(parent)
     _dbi = DBInterface::instance();
 
     DBISuspender s;
-    _defaultUser = new RamUser("Guest", "J. Doe", "", "", this);
+    _defaultUser = new RamUser("Guest", "J. Doe");
+    _defaultUser->setParent(this);
     _currentUser = _defaultUser;
 
     _connected = false;
@@ -41,6 +42,7 @@ void Ramses::newData(QJsonObject data)
     if (query == "login") login( data.value("content").toObject() );
     else if (query == "getUsers") gotUsers( data.value("content").toArray());
     else if (query == "getProjects") gotProjects( data.value("content").toArray());
+    else if (query == "getTemplateSteps") gotTemplateSteps( data.value("content").toArray());
 }
 
 void Ramses::gotUsers(QJsonArray users)
@@ -92,9 +94,9 @@ void Ramses::gotUsers(QJsonArray users)
         RamUser *user = new RamUser(
                     u.value("shortName").toString(),
                     u.value("name").toString(),
-                    u.value("uuid").toString(),
-                    u.value("folderPath").toString()
+                    u.value("uuid").toString()
                     );
+        user->setFolderPath(u.value("folderPath").toString());
 
         QString r = u.value("role").toString("standard");
         if (r == "admin") user->setRole(RamUser::Admin);
@@ -176,9 +178,9 @@ void Ramses::gotProjects(QJsonArray projects)
         RamProject *project = new RamProject(
                     p.value("shortName").toString(),
                     p.value("name").toString(),
-                    p.value("uuid").toString(),
-                    p.value("folderPath").toString()
+                    p.value("uuid").toString()
                     );
+        project->setFolderPath( p.value("folderPath").toString());
 
         _projects << project;
 
@@ -193,6 +195,70 @@ void Ramses::projectDestroyed(QObject *o)
 {
     RamProject *p = (RamProject*)o;
     removeProject(p->uuid());
+}
+
+void Ramses::gotTemplateSteps(QJsonArray steps)
+{
+    DBISuspender s;
+
+    // loop through existing steps to update them
+    for (int i = _templateSteps.count() - 1; i >= 0; i--)
+    {
+        RamStep *existingStep = _templateSteps[i];
+        // loop through new steps to update
+        bool found = false;
+        for (int j = 0; j < steps.count(); j++)
+        {
+            QJsonObject newStep = steps[j].toObject();
+            QString uuid = newStep.value("uuid").toString();
+            // Found, update
+            if (uuid == existingStep->uuid())
+            {
+                found = true;
+                //Emit just one signal
+                QSignalBlocker b(existingStep);
+                existingStep->setName( newStep.value("name").toString());
+                existingStep->setShortName( newStep.value("shortName").toString());
+                //send the signal
+                b.unblock();
+                existingStep->setType(newStep.value("type").toString());
+                //remove from new projects
+                steps.removeAt(j);
+                break;
+            }
+        }
+        // Not found, remove from existing
+        if (!found)
+        {
+            RamStep *s = _templateSteps.takeAt(i);
+            s->deleteLater();
+        }
+    }
+
+    // loop through remaining new projects to add them
+    for (int i = 0; i < steps.count(); i++)
+    {
+        QJsonObject s = steps[i].toObject();
+        RamStep *step = new RamStep(
+                    s.value("shortName").toString(),
+                    s.value("name").toString(),
+                    true,
+                    s.value("uuid").toString()
+                    );
+        step->setType( s.value("type").toString());
+
+        _templateSteps << step;
+
+        connect(step,&RamStep::destroyed, this, &Ramses::templateStepDestroyed);
+
+        emit newTemplateStep(step);
+    }
+}
+
+void Ramses::templateStepDestroyed(QObject *o)
+{
+    RamStep *s = (RamStep*)o;
+    removeTemplateStep(s->uuid());
 }
 
 void Ramses::dbiConnectionStatusChanged(NetworkUtils::NetworkStatus s)
@@ -210,6 +276,32 @@ void Ramses::login(QJsonObject user)
     _currentUserShortName = user.value("shortName").toString("Guest");
     // Update
     update();
+}
+
+QList<RamStep *> Ramses::templateSteps() const
+{
+    return _templateSteps;
+}
+
+RamStep *Ramses::createTemplateStep()
+{
+    RamStep *step = new RamStep("New", "Step", true);
+    step->setParent(this);
+    _templateSteps << step;
+    emit newTemplateStep(step);
+    return step;
+}
+
+void Ramses::removeTemplateStep(QString uuid)
+{
+    for (int i = _templateSteps.count() -1; i >= 0; i--)
+    {
+        if (_templateSteps[i]->uuid() == uuid)
+        {
+            RamStep *s = _templateSteps.takeAt(i);
+            s->deleteLater();
+        }
+    }
 }
 
 QList<RamProject *> Ramses::projects() const
@@ -283,6 +375,8 @@ void Ramses::update()
     _dbi->getUsers();
     // Get Projects
     _dbi->getProjects();
+    // Get Template Steps
+    _dbi->getTemplateSteps();
 }
 
 bool Ramses::isConnected() const

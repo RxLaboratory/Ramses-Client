@@ -5,6 +5,7 @@
 #include "dbinterface.h"
 #include "ramuser.h"
 #include "ramproject.h"
+#include "ramstep.h"
 #include "dbisuspender.h"
 
 #include <QObject>
@@ -29,12 +30,17 @@ public:
     QList<RamProject *> projects() const;
     RamProject *createProject();
     void removeProject(QString uuid);
+    // Template Steps
+    QList<RamStep *> templateSteps() const;
+    RamStep *createTemplateStep();
+    void removeTemplateStep(QString uuid);
 
 signals:
     void loggedIn(RamUser*);
     void loggedOut();
     void newUser(RamUser *user);
     void newProject(RamProject *project);
+    void newTemplateStep(RamStep *step);
 
 protected:
     static Ramses *_instance;
@@ -48,6 +54,9 @@ private slots:
     //projects
     void gotProjects(QJsonArray projects);
     void projectDestroyed(QObject *o);
+    //template steps
+    void gotTemplateSteps(QJsonArray steps);
+    void templateStepDestroyed(QObject *o);
     //TODO This should be modified when implementing offline version
     void dbiConnectionStatusChanged(NetworkUtils::NetworkStatus s);
 private:
@@ -72,6 +81,9 @@ private:
 
     // Projects
     QList<RamProject *> _projects;
+
+    // Template steps
+    QList<RamStep *> _templateSteps;
 };
 
 #endif // RAMSES_H

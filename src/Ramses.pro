@@ -43,9 +43,12 @@ SOURCES += \
     ramobject.cpp \
     ramproject.cpp \
     ramses.cpp \
+    ramstep.cpp \
     ramuser.cpp \
     ramuuid.cpp \
     serversettingswidget.cpp \
+    stepeditwidget.cpp \
+    templatestepsmanagerwidget.cpp \
     usereditwidget.cpp \
     userprofilepage.cpp \
     usersmanagerwidget.cpp
@@ -74,9 +77,12 @@ HEADERS += \
     ramobject.h \
     ramproject.h \
     ramses.h \
+    ramstep.h \
     ramuser.h \
     ramuuid.h \
     serversettingswidget.h \
+    stepeditwidget.h \
+    templatestepsmanagerwidget.h \
     usereditwidget.h \
     userprofilepage.h \
     usersmanagerwidget.h
@@ -90,6 +96,7 @@ FORMS += \
     mainwindow.ui \
     projecteditwidget.ui \
     serversettingswidget.ui \
+    stepeditwidget.ui \
     usereditwidget.ui \
     userprofilepage.ui \
 

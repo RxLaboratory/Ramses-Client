@@ -40,6 +40,11 @@ public:
     void removeProject(QString uuid);
     void assignStep(QString stepUuid, QString projectUuid);
     void unassignStep(QString stepUuid, QString projectUuid);
+    //template steps
+    void createTemplateStep(QString name, QString shortName, QString uuid);
+    void getTemplateSteps();
+    void updateTemplateStep(QString uuid, QString shortName, QString name, QString type = "");
+    void removeTemplateStep(QString uuid);
 
 public slots:
     void suspend(bool suspended = true);
