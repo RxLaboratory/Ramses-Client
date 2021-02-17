@@ -43,6 +43,7 @@ SOURCES += \
     ramobject.cpp \
     ramproject.cpp \
     ramses.cpp \
+    ramstate.cpp \
     ramstep.cpp \
     ramuser.cpp \
     ramuuid.cpp \
@@ -77,6 +78,7 @@ HEADERS += \
     ramobject.h \
     ramproject.h \
     ramses.h \
+    ramstate.h \
     ramstep.h \
     ramuser.h \
     ramuuid.h \

@@ -34,17 +34,22 @@ public:
     void createUser(QString shortName, QString name, QString uuid, QString password = "password");
     void removeUser(QString uuid);
     //projects
-    void createProject(QString name, QString shortName, QString uuid);
+    void createProject(QString shortName, QString name, QString uuid);
     void getProjects();
     void updateProject(QString uuid, QString shortName, QString name, QString folderPath = "");
     void removeProject(QString uuid);
     void assignStep(QString stepUuid, QString projectUuid);
     void unassignStep(QString stepUuid, QString projectUuid);
     //template steps
-    void createTemplateStep(QString name, QString shortName, QString uuid);
+    void createTemplateStep(QString shortName, QString name, QString uuid);
     void getTemplateSteps();
     void updateTemplateStep(QString uuid, QString shortName, QString name, QString type = "");
     void removeTemplateStep(QString uuid);
+    //states
+    void createState(QString shortName, QString name, QString uuid);
+    void getStates();
+    void updateState(QString uuid, QString shortName, QString name, QString color = "", QString completionRatio = "");
+    void removeState(QString uuid);
 
 public slots:
     void suspend(bool suspended = true);

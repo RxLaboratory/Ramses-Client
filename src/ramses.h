@@ -6,6 +6,7 @@
 #include "ramuser.h"
 #include "ramproject.h"
 #include "ramstep.h"
+#include "ramstate.h"
 #include "dbisuspender.h"
 
 #include <QObject>
@@ -34,6 +35,10 @@ public:
     QList<RamStep *> templateSteps() const;
     RamStep *createTemplateStep();
     void removeTemplateStep(QString uuid);
+    // States
+    QList<RamState *> states() const;
+    RamState *createState();
+    void removeState(QString uuid);
 
 signals:
     void loggedIn(RamUser*);
@@ -41,6 +46,7 @@ signals:
     void newUser(RamUser *user);
     void newProject(RamProject *project);
     void newTemplateStep(RamStep *step);
+    void newState(RamState *state);
 
 protected:
     static Ramses *_instance;
@@ -57,6 +63,9 @@ private slots:
     //template steps
     void gotTemplateSteps(QJsonArray steps);
     void templateStepDestroyed(QObject *o);
+    //states
+    void gotStates(QJsonArray states);
+    void stateDestroyed(QObject *o);
     //TODO This should be modified when implementing offline version
     void dbiConnectionStatusChanged(NetworkUtils::NetworkStatus s);
 private:
@@ -84,6 +93,9 @@ private:
 
     // Template steps
     QList<RamStep *> _templateSteps;
+
+    // States
+    QList<RamState *> _states;
 };
 
 #endif // RAMSES_H

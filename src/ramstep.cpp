@@ -5,7 +5,7 @@ RamStep::RamStep(QString shortName, QString name, bool tplt, QString uuid, QObje
 {
     _template = tplt;
     _type = AssetProduction;
-    if (_template) _dbi->createTemplateStep(_name, _shortName, _uuid);
+    if (_template) _dbi->createTemplateStep(_shortName, _name, _uuid);
 }
 
 RamStep::~RamStep()

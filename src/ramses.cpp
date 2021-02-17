@@ -43,6 +43,7 @@ void Ramses::newData(QJsonObject data)
     else if (query == "getUsers") gotUsers( data.value("content").toArray());
     else if (query == "getProjects") gotProjects( data.value("content").toArray());
     else if (query == "getTemplateSteps") gotTemplateSteps( data.value("content").toArray());
+    else if (query == "getStates") gotStates( data.value("content").toArray());
 }
 
 void Ramses::gotUsers(QJsonArray users)
@@ -261,6 +262,71 @@ void Ramses::templateStepDestroyed(QObject *o)
     removeTemplateStep(s->uuid());
 }
 
+void Ramses::gotStates(QJsonArray states)
+{
+    DBISuspender s;
+
+    // loop through existing steps to update them
+    for (int i = _states.count() - 1; i >= 0; i--)
+    {
+        RamState *existingState = _states[i];
+        // loop through new steps to update
+        bool found = false;
+        for (int j = 0; j < states.count(); j++)
+        {
+            QJsonObject newState = states[j].toObject();
+            QString uuid = newState.value("uuid").toString();
+            // Found, update
+            if (uuid == existingState->uuid())
+            {
+                found = true;
+                //Emit just one signal
+                QSignalBlocker b(existingState);
+                existingState->setName( newState.value("name").toString());
+                existingState->setShortName( newState.value("shortName").toString());
+                existingState->setColor( QColor(newState.value("color").toString()));
+                //send the signal
+                b.unblock();
+                existingState->setCompletionRatio(newState.value("completionRatio").toInt());
+                //remove from new projects
+                states.removeAt(j);
+                break;
+            }
+        }
+        // Not found, remove from existing
+        if (!found)
+        {
+            RamState *s = _states.takeAt(i);
+            s->deleteLater();
+        }
+    }
+
+    // loop through remaining new projects to add them
+    for (int i = 0; i < states.count(); i++)
+    {
+        QJsonObject s = states[i].toObject();
+        RamState *state = new RamState(
+                    s.value("shortName").toString(),
+                    s.value("name").toString(),
+                    s.value("uuid").toString()
+                    );
+        state->setColor( QColor( s.value("color").toString()) );
+        state->setCompletionRatio( s.value("completionRatio").toInt() );
+
+        _states << state;
+
+        connect(state,&RamState::destroyed, this, &Ramses::stateDestroyed);
+
+        emit newTemplateStep(state);
+    }
+}
+
+void Ramses::stateDestroyed(QObject *o)
+{
+    RamState *s = (RamState*)o;
+    removeState(s->uuid());
+}
+
 void Ramses::dbiConnectionStatusChanged(NetworkUtils::NetworkStatus s)
 {
     if (s != NetworkUtils::Online)
@@ -299,6 +365,32 @@ void Ramses::removeTemplateStep(QString uuid)
         if (_templateSteps[i]->uuid() == uuid)
         {
             RamStep *s = _templateSteps.takeAt(i);
+            s->deleteLater();
+        }
+    }
+}
+
+QList<RamState *> Ramses::states() const
+{
+    return _states;
+}
+
+RamState *Ramses::createState()
+{
+    RamState *state = new RamState("New", "State");
+    state->setParent(this);
+    _states << state;
+    emit newState(state);
+    return state;
+}
+
+void Ramses::removeState(QString uuid)
+{
+    for (int i = _states.count() -1; i >= 0; i--)
+    {
+        if (_states[i]->uuid() == uuid)
+        {
+            RamState *s = _states.takeAt(i);
             s->deleteLater();
         }
     }

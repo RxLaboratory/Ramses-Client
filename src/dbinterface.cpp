@@ -130,7 +130,7 @@ void DBInterface::unassignStep(QString stepUuid, QString projectUuid)
     request(q);
 }
 
-void DBInterface::createTemplateStep(QString name, QString shortName, QString uuid)
+void DBInterface::createTemplateStep(QString shortName, QString name, QString uuid)
 {
     QStringList q("createTemplateStep");
     q << "uuid=" + uuid;
@@ -160,6 +160,42 @@ void DBInterface::updateTemplateStep(QString uuid, QString shortName, QString na
 void DBInterface::removeTemplateStep(QString uuid)
 {
     QStringList q("removeTemplateStep");
+    q << "uuid=" + uuid;
+
+    request(q);
+}
+
+void DBInterface::createState(QString shortName, QString name, QString uuid)
+{
+    QStringList q("createState");
+    q << "uuid=" + uuid;
+    q << "shortName=" + shortName;
+    q << "name=" + name;
+
+    request(q);
+}
+
+void DBInterface::getStates()
+{
+    QString q = "?getStates";
+    request(q);
+}
+
+void DBInterface::updateState(QString uuid, QString shortName, QString name, QString color, QString completionRatio)
+{
+    QStringList q("updateTemplateStep");
+    q << "uuid=" + uuid;
+    q << "shortName=" + shortName;
+    q << "name=" + name;
+    q << "color=" + color;
+    q << "completionRatio=" + completionRatio;
+
+    request(q);
+}
+
+void DBInterface::removeState(QString uuid)
+{
+    QStringList q("removeState");
     q << "uuid=" + uuid;
 
     request(q);
