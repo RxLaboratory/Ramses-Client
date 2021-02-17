@@ -48,6 +48,8 @@ SOURCES += \
     ramuser.cpp \
     ramuuid.cpp \
     serversettingswidget.cpp \
+    stateeditwidget.cpp \
+    statesmanagerwidget.cpp \
     stepeditwidget.cpp \
     templatestepsmanagerwidget.cpp \
     usereditwidget.cpp \
@@ -83,6 +85,8 @@ HEADERS += \
     ramuser.h \
     ramuuid.h \
     serversettingswidget.h \
+    stateeditwidget.h \
+    statesmanagerwidget.h \
     stepeditwidget.h \
     templatestepsmanagerwidget.h \
     usereditwidget.h \
@@ -98,6 +102,7 @@ FORMS += \
     mainwindow.ui \
     projecteditwidget.ui \
     serversettingswidget.ui \
+    stateeditwidget.ui \
     stepeditwidget.ui \
     usereditwidget.ui \
     userprofilepage.ui \

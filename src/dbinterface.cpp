@@ -183,11 +183,11 @@ void DBInterface::getStates()
 
 void DBInterface::updateState(QString uuid, QString shortName, QString name, QString color, QString completionRatio)
 {
-    QStringList q("updateTemplateStep");
+    QStringList q("updateState");
     q << "uuid=" + uuid;
     q << "shortName=" + shortName;
     q << "name=" + name;
-    q << "color=" + color;
+    q << "color=" + color.replace("#","%23");
     q << "completionRatio=" + completionRatio;
 
     request(q);

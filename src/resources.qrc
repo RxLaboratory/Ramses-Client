@@ -22,5 +22,6 @@
         <file alias="shot">resources/icons/shot-frame_sl.svg</file>
         <file alias="film">resources/icons/film_sl.svg</file>
         <file alias="project">resources/icons/cinema-movie_sl.svg</file>
+        <file alias="state">resources/icons/state.svg</file>
     </qresource>
 </RCC>

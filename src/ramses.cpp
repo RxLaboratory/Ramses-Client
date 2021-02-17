@@ -311,13 +311,15 @@ void Ramses::gotStates(QJsonArray states)
                     s.value("uuid").toString()
                     );
         state->setColor( QColor( s.value("color").toString()) );
+        qDebug() << " ==================== ";
+        qDebug() << s.value("completionRatio").toInt();
         state->setCompletionRatio( s.value("completionRatio").toInt() );
 
         _states << state;
 
         connect(state,&RamState::destroyed, this, &Ramses::stateDestroyed);
 
-        emit newTemplateStep(state);
+        emit newState(state);
     }
 }
 
@@ -469,6 +471,8 @@ void Ramses::update()
     _dbi->getProjects();
     // Get Template Steps
     _dbi->getTemplateSteps();
+    // Get States
+    _dbi->getStates();
 }
 
 bool Ramses::isConnected() const
