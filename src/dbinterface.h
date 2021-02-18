@@ -39,12 +39,18 @@ public:
     void updateProject(QString uuid, QString shortName, QString name, QString folderPath = "");
     void removeProject(QString uuid);
     void assignStep(QString stepUuid, QString projectUuid);
-    void unassignStep(QString stepUuid, QString projectUuid);
     //template steps
     void createTemplateStep(QString shortName, QString name, QString uuid);
     void getTemplateSteps();
     void updateTemplateStep(QString uuid, QString shortName, QString name, QString type = "");
     void removeTemplateStep(QString uuid);
+    //steps
+    void createStep(QString shortName, QString name, QString projectUuid, QString uuid);
+    void getSteps();
+    void updateStep(QString uuid, QString shortName, QString name, QString type);
+    void removeStep(QString uuid);
+    void assignUser(QString stepUuid, QString userUuid);
+    void unassignUser(QString stepUuid, QString userUuid);
     //states
     void createState(QString shortName, QString name, QString uuid);
     void getStates();

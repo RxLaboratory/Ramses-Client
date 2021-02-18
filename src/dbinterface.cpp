@@ -121,15 +121,6 @@ void DBInterface::assignStep(QString stepUuid, QString projectUuid)
     request(q);
 }
 
-void DBInterface::unassignStep(QString stepUuid, QString projectUuid)
-{
-    QStringList q("unassignStep");
-    q << "stepUuid=" + stepUuid;
-    q << "projectUuid=" + projectUuid;
-
-    request(q);
-}
-
 void DBInterface::createTemplateStep(QString shortName, QString name, QString uuid)
 {
     QStringList q("createTemplateStep");
@@ -161,6 +152,60 @@ void DBInterface::removeTemplateStep(QString uuid)
 {
     QStringList q("removeTemplateStep");
     q << "uuid=" + uuid;
+
+    request(q);
+}
+
+void DBInterface::createStep(QString shortName, QString name, QString projectUuid, QString uuid)
+{
+    QStringList q("createStep");
+    q << "uuid=" + uuid;
+    q << "shortName=" + shortName;
+    q << "name=" + name;
+    q << "projectUuid=" + projectUuid;
+
+    request(q);
+}
+
+void DBInterface::getSteps()
+{
+    QString q = "?getSteps";
+    request(q);
+}
+
+void DBInterface::updateStep(QString uuid, QString shortName, QString name, QString type)
+{
+    QStringList q("updateStep");
+    q << "uuid=" + uuid;
+    q << "shortName=" + shortName;
+    q << "name=" + name;
+    q << "type=" + type;
+
+    request(q);
+}
+
+void DBInterface::removeStep(QString uuid)
+{
+    QStringList q("removeStep");
+    q << "uuid=" + uuid;
+
+    request(q);
+}
+
+void DBInterface::assignUser(QString stepUuid, QString userUuid)
+{
+    QStringList q("assignUser");
+    q << "stepUuid=" + stepUuid;
+    q << "userUuid=" + userUuid;
+
+    request(q);
+}
+
+void DBInterface::unassignUser(QString stepUuid, QString userUuid)
+{
+    QStringList q("unassignUser");
+    q << "stepUuid=" + stepUuid;
+    q << "userUuid=" + userUuid;
 
     request(q);
 }
