@@ -25,6 +25,8 @@ void RamProject::setFolderPath(const QString &folderPath)
 
 void RamProject::update()
 {
-    _dbi->updateProject(_uuid, _shortName, _name, _folderPath);
+    QString path = _folderPath;
+    if (path == "") path = "auto";
+    _dbi->updateProject(_uuid, _shortName, _name, path);
 }
 
