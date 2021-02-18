@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout" rowstretch="1,0,1" columnstretch="25,50,25">
+  <layout class="QGridLayout" name="gridLayout" rowstretch="1,0,1,0" columnstretch="25,50,25">
    <property name="leftMargin">
     <number>0</number>
    </property>
@@ -29,21 +29,21 @@
    <property name="spacing">
     <number>3</number>
    </property>
-   <item row="0" column="0">
-    <spacer name="horizontalSpacer">
+   <item row="0" column="1">
+    <spacer name="verticalSpacer">
      <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+      <enum>Qt::Vertical</enum>
      </property>
      <property name="sizeHint" stdset="0">
       <size>
-       <width>40</width>
-       <height>20</height>
+       <width>20</width>
+       <height>136</height>
       </size>
      </property>
     </spacer>
    </item>
-   <item row="0" column="1">
-    <spacer name="verticalSpacer">
+   <item row="3" column="1">
+    <spacer name="verticalSpacer_2">
      <property name="orientation">
       <enum>Qt::Vertical</enum>
      </property>
@@ -159,16 +159,6 @@
        </property>
       </widget>
      </item>
-     <item row="2" column="1">
-      <widget class="QLineEdit" name="colorEdit">
-       <property name="inputMask">
-        <string>\#HHHHHH</string>
-       </property>
-       <property name="placeholderText">
-        <string>#434343</string>
-       </property>
-      </widget>
-     </item>
      <item row="3" column="1">
       <layout class="QHBoxLayout" name="completionLayout"/>
      </item>
@@ -179,23 +169,51 @@
        </property>
       </widget>
      </item>
+     <item row="2" column="1">
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <property name="spacing">
+        <number>3</number>
+       </property>
+       <item>
+        <widget class="QToolButton" name="colorButton">
+         <property name="text">
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset resource="resources.qrc">
+           <normaloff>:/icons/color-dialog</normaloff>:/icons/color-dialog</iconset>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="colorEdit">
+         <property name="inputMask">
+          <string>\#HHHHHH</string>
+         </property>
+         <property name="placeholderText">
+          <string>#434343</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
     </layout>
    </item>
-   <item row="2" column="1">
-    <spacer name="verticalSpacer_2">
+   <item row="0" column="2">
+    <spacer name="horizontalSpacer_2">
      <property name="orientation">
-      <enum>Qt::Vertical</enum>
+      <enum>Qt::Horizontal</enum>
      </property>
      <property name="sizeHint" stdset="0">
       <size>
-       <width>20</width>
-       <height>136</height>
+       <width>40</width>
+       <height>20</height>
       </size>
      </property>
     </spacer>
    </item>
-   <item row="0" column="2">
-    <spacer name="horizontalSpacer_2">
+   <item row="0" column="0">
+    <spacer name="horizontalSpacer">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>

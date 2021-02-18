@@ -1,6 +1,8 @@
 #ifndef STATEEDITWIDGET_H
 #define STATEEDITWIDGET_H
 
+#include <QColorDialog>
+
 #include "ui_stateeditwidget.h"
 #include "ramses.h"
 #include "duqf-widgets/duqfspinbox.h"
@@ -22,6 +24,7 @@ private slots:
     void stateDestroyed(QObject *o);
     void dbiLog(QString m, LogUtils::LogType t);
     void updateColorEditStyle();
+    void selectColor();
 
 private:
     DuQFSpinBox *completionSpinBox;

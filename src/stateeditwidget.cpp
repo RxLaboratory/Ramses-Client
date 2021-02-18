@@ -12,6 +12,7 @@ StateEditWidget::StateEditWidget(QWidget *parent) :
     connect(updateButton, SIGNAL(clicked()), this, SLOT(update()));
     connect(revertButton, SIGNAL(clicked()), this, SLOT(revert()));
     connect(colorEdit, SIGNAL(editingFinished()), this, SLOT(updateColorEditStyle()));
+    connect(colorButton, SIGNAL(clicked()), this, SLOT(selectColor()));
     connect(shortNameEdit, &QLineEdit::textChanged, this, &StateEditWidget::checkInput);
     connect(DBInterface::instance(),&DBInterface::log, this, &StateEditWidget::dbiLog);
 
@@ -110,4 +111,20 @@ void StateEditWidget::updateColorEditStyle()
         if (c.lightness() > 80) style += "color: #232323;";
         colorEdit->setStyleSheet(style);
     }
+}
+
+void StateEditWidget::selectColor()
+{
+    this->setEnabled(false);
+    QColorDialog cd(QColor(_state->color()));
+    cd.setOptions(QColorDialog::DontUseNativeDialog);
+    //cd.setWindowFlags(Qt::FramelessWindowHint);
+    //cd.move(this->parentWidget()->parentWidget()->geometry().center().x()-cd.geometry().width()/2,this->parentWidget()->parentWidget()->geometry().center().y()-cd.geometry().height()/2);
+    if (cd.exec())
+    {
+        QColor color = cd.selectedColor();
+        colorEdit->setText(color.name());
+        updateColorEditStyle();
+    }
+    this->setEnabled(true);
 }
