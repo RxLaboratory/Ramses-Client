@@ -24,7 +24,10 @@
         <file alias="project">resources/icons/cinema-movie_sl.svg</file>
         <file alias="state">resources/icons/state.svg</file>
         <file alias="color-dialog">resources/icons/color-palette_sl.svg</file>
-        <file alias="admin">resources/icons/admin.svg</file>
+        <file alias="admin-settings">resources/icons/admin.svg</file>
         <file alias="project-settings">resources/icons/cinema-movie-settings_bl.svg</file>
+        <file alias="reveal-folder">resources/icons/go-to-explore-reveal-folder_sl.svg</file>
+        <file alias="browse-folder">resources/icons/set-folder_sl.svg</file>
+        <file alias="storage">resources/icons/storage_sl.svg</file>
     </qresource>
 </RCC>

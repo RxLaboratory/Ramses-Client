@@ -18,6 +18,7 @@
 #include "statesmanagerwidget.h"
 #include "dbinterface.h"
 #include "projectselectorwidget.h"
+#include "localsettingswidget.h"
 #include "duqf-utils/utils.h"
 #include "duqf-widgets/toolbarspacer.h"
 
@@ -66,6 +67,7 @@ private:
     QMenu *helpMenu;
 
     SettingsWidget *adminPage;
+    SettingsWidget *projectSettingsPage;
     QMenu *userMenu;
     QToolButton *userButton;
     QToolButton *networkButton;
@@ -90,8 +92,11 @@ private slots:
     void serverSettings();
     void loginAction();
     void logoutAction();
+    void home();
     void userProfile();
+    void revealUserFolder();
     void admin(bool show = true);
+    void projectSettings(bool show = true);
     void networkButton_clicked();
     void loggedIn();
     void loggedOut();

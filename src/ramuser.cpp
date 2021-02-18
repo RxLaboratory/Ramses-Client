@@ -39,7 +39,11 @@ void RamUser::update()
     QString role = "standard";
     if (_role == Admin) role = "admin";
     else if (_role == Lead) role = "lead";
-    _dbi->updateUser(_uuid, _shortName, _name, role, _folderPath);
+
+    QString path = _folderPath;
+    if (path == "") path = "auto";
+
+    _dbi->updateUser(_uuid, _shortName, _name, role, path);
 }
 
 void RamUser::updatePassword(QString c, QString n)

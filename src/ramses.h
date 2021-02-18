@@ -20,6 +20,14 @@ public:
     void login(QString username, QString password);
     void logout();
     bool isConnected() const;
+    QString mainPath() const;
+    // Tree
+    void setMainPath(const QString &mainPath);
+    QString usersPath() const;
+    QString userPath(RamUser *u) const;
+    QString userPath(QString p) const;
+    QString projectsPath() const;
+    QString projectPath(RamProject *p) const;
     // Users
     QList<RamUser *> users() const;
     RamUser *currentUser() const;
@@ -79,12 +87,17 @@ private:
      */
     explicit Ramses(QObject *parent = nullptr);
 
+    QSettings _settings;
+
     DBInterface *_dbi;
     void login(QJsonObject user);
     /**
      * @brief True when loogged in, false otherwise.
      */
     bool _connected;
+
+    // Tree
+    QString _mainPath;
 
     // Users
     QList<RamUser *> _users;

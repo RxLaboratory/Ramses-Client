@@ -30,11 +30,13 @@ SOURCES += \
     duqf-widgets/appearancesettingswidget.cpp \
     duqf-widgets/duqfdoubleslider.cpp \
     duqf-widgets/duqfdoublespinbox.cpp \
+    duqf-widgets/duqffolderselectorwidget.cpp \
     duqf-widgets/duqfslider.cpp \
     duqf-widgets/duqfspinbox.cpp \
     duqf-widgets/settingswidget.cpp \
     duqf-widgets/toolbarspacer.cpp \
     listmanagerwidget.cpp \
+    localsettingswidget.cpp \
     loginpage.cpp \
     main.cpp \
     mainwindow.cpp \
@@ -69,11 +71,13 @@ HEADERS += \
     duqf-widgets/appearancesettingswidget.h \
     duqf-widgets/duqfdoubleslider.h \
     duqf-widgets/duqfdoublespinbox.h \
+    duqf-widgets/duqffolderselectorwidget.h \
     duqf-widgets/duqfslider.h \
     duqf-widgets/duqfspinbox.h \
     duqf-widgets/settingswidget.h \
     duqf-widgets/toolbarspacer.h \
     listmanagerwidget.h \
+    localsettingswidget.h \
     loginpage.h \
     mainwindow.h \
     projecteditwidget.h \
@@ -98,8 +102,10 @@ HEADERS += \
 FORMS += \
     duqf-widgets/aboutdialog.ui \
     duqf-widgets/appearancesettingswidget.ui \
+    duqf-widgets/duqffolderselectorwidget.ui \
     duqf-widgets/toolbarspacer.ui \
     listmanagerwidget.ui \
+    localsettingswidget.ui \
     loginpage.ui \
     mainwindow.ui \
     projecteditwidget.ui \

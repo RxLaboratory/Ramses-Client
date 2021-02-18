@@ -219,7 +219,7 @@
    </property>
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/icons/admin</normaloff>:/icons/admin</iconset>
+     <normaloff>:/icons/admin-settings</normaloff>:/icons/admin-settings</iconset>
    </property>
    <property name="text">
     <string>Admin</string>
@@ -235,6 +235,15 @@
    </property>
    <property name="text">
     <string>Project Settings</string>
+   </property>
+  </action>
+  <action name="actionUserFolder">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/reveal-folder</normaloff>:/icons/reveal-folder</iconset>
+   </property>
+   <property name="text">
+    <string>User folder</string>
    </property>
   </action>
  </widget>

@@ -12,6 +12,8 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
 
     mainToolBar->addAction(actionAdmin);
     actionAdmin->setVisible(false);
+    mainToolBar->addAction(actionProjectSettings);
+    actionProjectSettings->setVisible(false);
 
     mainToolBar->addWidget(new ToolBarSpacer(this));
 
@@ -26,6 +28,8 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
 
     userMenu = new QMenu();
     userMenu->addAction(actionLogIn);
+    userMenu->addAction(actionUserFolder);
+    actionUserFolder->setVisible(false);
     userMenu->addAction(actionUserProfile);
     actionUserProfile->setVisible(false);
     userMenu->addAction(actionLogOut);
@@ -42,14 +46,20 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     duqf_initUi();
 
     // Add settings
+    LocalSettingsWidget *lsw = new LocalSettingsWidget(this);
+    settingsWidget->addPage(lsw, "Ramses data", QIcon(":/icons/storage"));
     ServerSettingsWidget *csw = new ServerSettingsWidget(this);
     settingsWidget->addPage(csw, "Server", QIcon(":/icons/server-settings"));
 
+
     // Add pages
+    // login
     LoginPage *lp = new LoginPage(this);
     mainLayout->addWidget(lp);
+    // user profile
     UserProfilePage *up = new UserProfilePage(this);
     mainStack->addWidget(up);
+    // admin
     adminPage = new SettingsWidget(this);
     mainStack->addWidget(adminPage);
     // Admin tabs
@@ -57,6 +67,9 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     adminPage->addPage(new ProjectsManagerWidget(this), "Projects", QIcon(":/icons/projects"));
     adminPage->addPage(new TemplateStepsManagerWidget(this), "Template Steps", QIcon(":/icons/steps"));
     adminPage->addPage(new StatesManagerWidget(this), "States", QIcon(":/icons/state"));
+    // project settings
+    projectSettingsPage = new SettingsWidget(this);
+    mainStack->addWidget(projectSettingsPage);
 
     // Set UI
     mainStack->setCurrentIndex(0);
@@ -65,7 +78,9 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     connect(actionLogIn,SIGNAL(triggered()), this, SLOT(loginAction()));
     connect(actionLogOut,SIGNAL(triggered()), this, SLOT(logoutAction()));
     connect(actionUserProfile,SIGNAL(triggered()), this, SLOT(userProfile()));
+    connect(actionUserFolder,SIGNAL(triggered()), this, SLOT(revealUserFolder()));
     connect(actionAdmin,SIGNAL(triggered(bool)), this, SLOT(admin(bool)));
+    connect(actionProjectSettings,SIGNAL(triggered(bool)), this, SLOT(projectSettings(bool)));
     connect(networkButton,SIGNAL(clicked()),this, SLOT(networkButton_clicked()));
     connect(mainStack,SIGNAL(currentChanged(int)), this, SLOT(pageChanged(int)));
     connect(lp, &LoginPage::serverSettings, this, &MainWindow::serverSettings);
@@ -330,8 +345,8 @@ void MainWindow::log(QString m, LogUtils::LogType type)
 
 void MainWindow::pageChanged(int i)
 {
-
     actionAdmin->setChecked(i == 3);
+    actionProjectSettings->setChecked(i == 4);
 }
 
 void MainWindow::serverSettings()
@@ -350,15 +365,32 @@ void MainWindow::logoutAction()
     Ramses::instance()->logout();
 }
 
+void MainWindow::home()
+{
+    mainStack->setCurrentIndex(0);
+}
+
 void MainWindow::userProfile()
 {
     mainStack->setCurrentIndex(2);
 }
 
+void MainWindow::revealUserFolder()
+{
+    RamUser *current = Ramses::instance()->currentUser();
+    if (current) FileUtils::openInExplorer( Ramses::instance()->userPath(current) );
+}
+
 void MainWindow::admin(bool show)
 {
     if (show) mainStack->setCurrentIndex(3);
-    else mainStack->setCurrentIndex(0);
+    else home();
+}
+
+void MainWindow::projectSettings(bool show)
+{
+    if (show) mainStack->setCurrentIndex(4);
+    else home();
 }
 
 void MainWindow::networkButton_clicked()
@@ -392,7 +424,10 @@ void MainWindow::currentUserChanged()
     userButton->setIcon(QIcon(""));
     actionAdmin->setVisible(false);
     actionAdmin->setChecked(false);
+    actionProjectSettings->setVisible(false);
+    actionProjectSettings->setChecked(false);
     actionUserProfile->setVisible(false);
+    actionUserFolder->setVisible(false);
 
     RamUser *user = Ramses::instance()->currentUser();
     if (!user) return;
@@ -401,12 +436,13 @@ void MainWindow::currentUserChanged()
 
     userButton->setText(user->shortName());
     actionUserProfile->setVisible(true);
+    actionUserFolder->setVisible(true);
 
     if (user->role() == RamUser::Admin)
     {
         actionAdmin->setVisible(true);
+        actionProjectSettings->setVisible(true);
         userButton->setIcon(QIcon(":/icons/admin"));
-
     }
     else if (user->role() == RamUser::Lead)
     {
