@@ -3,6 +3,7 @@
 
 #include "ui_usereditwidget.h"
 #include "ramses.h"
+#include "duqf-widgets/duqffolderselectorwidget.h"
 
 class UserEditWidget : public QWidget, private Ui::UserEditWidget
 {
@@ -18,10 +19,12 @@ private slots:
     void update();
     void revert();
     bool checkInput();
+    void updateFolderLabel(QString path);
     void userDestroyed(QObject *o);
     void dbiLog(QString m, LogUtils::LogType t);
 
 private:
+    DuQFFolderSelectorWidget *folderSelector;
     RamUser *_user;
     QMetaObject::Connection _currentUserConnection;
 };
