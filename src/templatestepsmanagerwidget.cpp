@@ -6,6 +6,8 @@ TemplateStepsManagerWidget::TemplateStepsManagerWidget(QWidget *parent): ListMan
     this->setWidget(stepWidget);
     stepWidget->setEnabled(false);
 
+    this->setRole(RamUser::Admin);
+
     foreach(RamStep *step, Ramses::instance()->templateSteps()) newStep(step);
 
     connect(Ramses::instance(), &Ramses::newTemplateStep, this, &TemplateStepsManagerWidget::newStep);

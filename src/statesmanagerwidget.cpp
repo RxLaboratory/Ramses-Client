@@ -6,6 +6,8 @@ StatesManagerWidget::StatesManagerWidget(QWidget *parent): ListManagerWidget(par
     this->setWidget(stateWidget);
     stateWidget->setEnabled(false);
 
+    this->setRole(RamUser::Admin);
+
     foreach(RamState *state, Ramses::instance()->states()) newState(state);
 
     connect(Ramses::instance(), &Ramses::newState, this, &StatesManagerWidget::newState);

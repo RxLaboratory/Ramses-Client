@@ -69,7 +69,6 @@ private:
     QMenu *userMenu;
     QToolButton *userButton;
     QToolButton *networkButton;
-    QToolButton *userRoleButton;
 
     QMetaObject::Connection _currentUserConnection;
 
@@ -93,7 +92,6 @@ private slots:
     void logoutAction();
     void userProfile();
     void admin(bool show = true);
-    void userButton_clicked();
     void networkButton_clicked();
     void loggedIn();
     void loggedOut();

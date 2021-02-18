@@ -27,16 +27,20 @@ void UserEditWidget::setUser(RamUser *user)
 {
     disconnect(_currentUserConnection);
 
-    _user = user;
     nameEdit->setText("");
     shortNameEdit->setText("");
     cpasswordEdit->setText("");
     npassword1Edit->setText("");
     npassword2Edit->setText("");
     roleBox->setCurrentIndex(2);
+    roleBox->setEnabled(true);
+    roleBox->setToolTip("");
+    cpasswordEdit->setEnabled(false);
     this->setEnabled(false);
 
-    if (!user) return;
+    _user = user;
+    RamUser *current = Ramses::instance()->currentUser();
+    if (!user || !current) return;
 
     nameEdit->setText(user->name());
     shortNameEdit->setText(user->shortName());
@@ -45,7 +49,7 @@ void UserEditWidget::setUser(RamUser *user)
     else if (user->role() == RamUser::Lead) roleBox->setCurrentIndex(1);
     else roleBox->setCurrentIndex(2);
 
-    if (user->uuid() == Ramses::instance()->currentUser()->uuid())
+    if (user->uuid() == current->uuid())
     {
         roleBox->setEnabled(false);
         roleBox->setToolTip("You cannot change your own role!");
@@ -54,9 +58,6 @@ void UserEditWidget::setUser(RamUser *user)
     }
     else
     {
-        roleBox->setEnabled(true);
-        roleBox->setToolTip("");
-        cpasswordEdit->setEnabled(false);
         this->setEnabled(Ramses::instance()->isAdmin());
     }
 

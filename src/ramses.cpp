@@ -18,10 +18,8 @@ Ramses::Ramses(QObject *parent) : QObject(parent)
     _dbi = DBInterface::instance();
 
     DBISuspender s;
-    _defaultUser = new RamUser("Guest", "J. Doe");
-    _defaultUser->setParent(this);
-    _currentUser = _defaultUser;
 
+    _currentUser = nullptr;
     _currentProject = nullptr;
 
     _connected = false;
@@ -108,7 +106,6 @@ void Ramses::gotUsers(QJsonArray users)
         _users << user;
 
         connect(user,&RamUser::destroyed, this, &Ramses::userDestroyed);
-
         emit newUser(user);
     }
 
@@ -120,12 +117,13 @@ void Ramses::gotUsers(QJsonArray users)
             _currentUser = user;
             _connected = true;
             emit loggedIn(_currentUser);
+
             return;
         }
     }
 
     // Not found
-    _currentUser = _defaultUser;
+    _currentUser = nullptr;
     _connected = false;
     emit loggedOut();
 }
@@ -449,11 +447,6 @@ void Ramses::removeProject(QString uuid)
     }
 }
 
-RamUser *Ramses::defaultUser() const
-{
-    return _defaultUser;
-}
-
 RamUser *Ramses::createUser()
 {
     RamUser *user = new RamUser("New","J. Doe");
@@ -484,7 +477,7 @@ bool Ramses::isAdmin()
 void Ramses::logout()
 {
     _connected = false;
-    _currentUser = _defaultUser;
+    _currentUser = nullptr;
     emit loggedOut();
 }
 

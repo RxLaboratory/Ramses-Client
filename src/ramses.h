@@ -23,7 +23,6 @@ public:
     // Users
     QList<RamUser *> users() const;
     RamUser *currentUser() const;
-    RamUser *defaultUser() const;
     RamUser *createUser();
     void removeUser(QString uuid);
     bool isAdmin();
@@ -90,7 +89,6 @@ private:
     // Users
     QList<RamUser *> _users;
     RamUser *_currentUser;
-    RamUser *_defaultUser;
     QString _currentUserShortName;
 
     // Projects

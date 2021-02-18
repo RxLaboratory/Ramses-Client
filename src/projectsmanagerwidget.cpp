@@ -6,6 +6,8 @@ ProjectsManagerWidget::ProjectsManagerWidget(QWidget *parent): ListManagerWidget
     this->setWidget(projectWidget);
     projectWidget->setEnabled(false);
 
+    this->setRole(RamUser::Admin);
+
     foreach(RamProject *project, Ramses::instance()->projects()) newProject(project);
 
     connect(Ramses::instance(), &Ramses::newProject, this, &ProjectsManagerWidget::newProject);

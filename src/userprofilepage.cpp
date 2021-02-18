@@ -21,7 +21,7 @@ void UserProfilePage::loggedIn(RamUser *user)
 
 void UserProfilePage::loggedOut()
 {
-    profileWidget->setUser(Ramses::instance()->defaultUser());
+    profileWidget->setUser(nullptr);
     profileWidget->setEnabled(false);
 }
 

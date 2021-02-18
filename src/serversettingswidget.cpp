@@ -54,6 +54,7 @@ void ServerSettingsWidget::timeoutSpinBox_editingFinished()
 void ServerSettingsWidget::logout()
 {
     Ramses::instance()->logout();
+    DBInterface::instance()->setOffline();
 }
 
 void ServerSettingsWidget::dbiConnectionStatusChanged(NetworkUtils::NetworkStatus s)

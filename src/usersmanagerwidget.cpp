@@ -6,11 +6,11 @@ UsersManagerWidget::UsersManagerWidget(QWidget *parent): ListManagerWidget(paren
     this->setWidget(userWidget);
     userWidget->setEnabled(false);
 
+    this->setRole(RamUser::Admin);
+
     foreach(RamUser *user, Ramses::instance()->users()) newUser(user);
 
     connect(Ramses::instance(), &Ramses::newUser, this, &UsersManagerWidget::newUser);
-    connect(Ramses::instance(), &Ramses::loggedIn, this, &UsersManagerWidget::loggedIn);
-    connect(Ramses::instance(), &Ramses::loggedOut, this, &UsersManagerWidget::loggedOut);
 }
 
 void UsersManagerWidget::currentDataChanged(QVariant data)
@@ -39,6 +39,7 @@ void UsersManagerWidget::removeItem(QVariant data)
 
 void UsersManagerWidget::newUser(RamUser *user)
 {
+    if (!user) return;
     if (user->uuid() != "")
     {
         QListWidgetItem *userItem = new QListWidgetItem(user->name());
@@ -54,16 +55,6 @@ void UsersManagerWidget::removeUser(QObject *user)
     RamUser *u = (RamUser*)user;
 
     removeData(u->uuid());
-}
-
-void UsersManagerWidget::loggedIn(RamUser *user)
-{
-    this->setEnabled(user->role() == RamUser::Admin);
-}
-
-void UsersManagerWidget::loggedOut()
-{
-    this->setEnabled(false);
 }
 
 void UsersManagerWidget::userChanged()

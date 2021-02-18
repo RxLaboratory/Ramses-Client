@@ -7,17 +7,6 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     setupUi(this);
 
     // Populate Toolbar
-    userMenu = new QMenu();
-    userMenu->addAction(actionUserProfile);
-    userMenu->addAction(actionLogOut);
-    userButton = new QToolButton(this);
-    userButton->setIcon(QIcon(":/icons/user-settings"));
-    userButton->setText("");
-    userButton->setMenu(userMenu);
-    userButton->setPopupMode(QToolButton::MenuButtonPopup);
-    mainToolBar->addWidget(userButton);
-
-    userButton->hide();
 
     mainToolBar->addAction(actionLogIn);
 
@@ -35,11 +24,19 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     networkButton->setMinimumWidth(75);
     mainStatusBar->addPermanentWidget(networkButton);
 
-    userRoleButton = new QToolButton();
-    userRoleButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-    userRoleButton->setText("Guest");
-    userRoleButton->setMinimumWidth(75);
-    mainStatusBar->addPermanentWidget(userRoleButton);
+    userMenu = new QMenu();
+    userMenu->addAction(actionLogIn);
+    userMenu->addAction(actionUserProfile);
+    actionUserProfile->setVisible(false);
+    userMenu->addAction(actionLogOut);
+    actionLogOut->setVisible(false);
+    userButton = new QToolButton();
+    userButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    userButton->setText("Guest");
+    userButton->setMinimumWidth(75);
+    userButton->setMenu(userMenu);
+    userButton->setPopupMode(QToolButton::InstantPopup);
+    mainStatusBar->addPermanentWidget(userButton);
 
     // Add default stuff
     duqf_initUi();
@@ -69,9 +66,7 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     connect(actionLogOut,SIGNAL(triggered()), this, SLOT(logoutAction()));
     connect(actionUserProfile,SIGNAL(triggered()), this, SLOT(userProfile()));
     connect(actionAdmin,SIGNAL(triggered(bool)), this, SLOT(admin(bool)));
-    connect(userButton,SIGNAL(clicked()),this, SLOT(userButton_clicked()));
     connect(networkButton,SIGNAL(clicked()),this, SLOT(networkButton_clicked()));
-    connect(userRoleButton,SIGNAL(clicked()),this, SLOT(userProfile()));
     connect(mainStack,SIGNAL(currentChanged(int)), this, SLOT(pageChanged(int)));
     connect(lp, &LoginPage::serverSettings, this, &MainWindow::serverSettings);
     connect(DBInterface::instance(),&DBInterface::log, this, &MainWindow::log);
@@ -366,12 +361,6 @@ void MainWindow::admin(bool show)
     else mainStack->setCurrentIndex(0);
 }
 
-void MainWindow::userButton_clicked()
-{
-    if (Ramses::instance()->isConnected()) userProfile();
-    else loginAction();
-}
-
 void MainWindow::networkButton_clicked()
 {
     DBInterface *dbi = DBInterface::instance();
@@ -382,49 +371,50 @@ void MainWindow::networkButton_clicked()
 void MainWindow::loggedIn()
 {
     actionLogIn->setVisible(false);
-    userButton->setVisible(true);
-
-    RamUser *user = Ramses::instance()->currentUser();
-    disconnect(_currentUserConnection);
-    _currentUserConnection = connect(user, &RamUser::changed, this, &MainWindow::currentUserChanged);
+    actionLogOut->setVisible(true);
     currentUserChanged();
 }
 
 void MainWindow::loggedOut()
 {
-    disconnect(_currentUserConnection);
-
     actionLogIn->setVisible(true);
-    userButton->setVisible(false);
-
-    actionAdmin->setVisible(false);
-    userRoleButton->setText("Guest");
-    userRoleButton->setIcon(QIcon(""));
+    actionLogOut->setVisible(false);
+    currentUserChanged();
+    if (mainStack->currentIndex() != 1) mainStack->setCurrentIndex(0);
 }
 
 void MainWindow::currentUserChanged()
 {
-    RamUser *user = Ramses::instance()->currentUser();
+    disconnect(_currentUserConnection);
 
-    userRoleButton->setText(user->shortName());
+    //defaults
+    userButton->setText("Guest");
+    userButton->setIcon(QIcon(""));
+    actionAdmin->setVisible(false);
+    actionAdmin->setChecked(false);
+    actionUserProfile->setVisible(false);
+
+    RamUser *user = Ramses::instance()->currentUser();
+    if (!user) return;
+
+    _currentUserConnection = connect(user, &RamUser::changed, this, &MainWindow::currentUserChanged);
+
+    userButton->setText(user->shortName());
+    actionUserProfile->setVisible(true);
 
     if (user->role() == RamUser::Admin)
     {
         actionAdmin->setVisible(true);
-        userRoleButton->setIcon(QIcon(":/icons/admin"));
+        userButton->setIcon(QIcon(":/icons/admin"));
 
     }
     else if (user->role() == RamUser::Lead)
     {
-        actionAdmin->setVisible(false);
-        actionAdmin->setChecked(false);
-        userRoleButton->setIcon(QIcon(":/icons/lead"));
+        userButton->setIcon(QIcon(":/icons/lead"));
     }
     else
     {
-        actionAdmin->setVisible(false);
-        actionAdmin->setChecked(false);
-        userRoleButton->setIcon(QIcon(":/icons/user"));
+        userButton->setIcon(QIcon(":/icons/user"));
     }
 }
 

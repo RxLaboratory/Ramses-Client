@@ -5,9 +5,13 @@ ListManagerWidget::ListManagerWidget(QWidget *parent) :
 {
     setupUi(this);
 
+    _role = RamUser::Standard;
+
     connect(list, SIGNAL(currentRowChanged(int)), this, SLOT(list_currentRowChanged(int)));
     connect(addButton, SIGNAL(clicked()), this, SLOT(createItem()));
     connect(removeButton, SIGNAL(clicked()), this, SLOT(remove_clicked()));
+    connect(Ramses::instance(), &Ramses::loggedIn, this, &ListManagerWidget::loggedIn);
+    connect(Ramses::instance(), &Ramses::loggedOut, this, &ListManagerWidget::loggedOut);
 }
 
 void ListManagerWidget::setWidget(QWidget *w)
@@ -86,6 +90,11 @@ void ListManagerWidget::updateItem(QVariant data, QString text)
     }
 }
 
+void ListManagerWidget::setRole(RamUser::UserRole r)
+{
+    _role = r;
+}
+
 void ListManagerWidget::remove_clicked()
 {
     QListWidgetItem *i = list->currentItem();
@@ -99,4 +108,16 @@ void ListManagerWidget::remove_clicked()
             removeItem(i->data(Qt::UserRole));
         }
     }
+}
+
+void ListManagerWidget::loggedIn(RamUser *user)
+{
+    this->setEnabled(false);
+    if (!user) return;
+    this->setEnabled(user->role() >= _role);
+}
+
+void ListManagerWidget::loggedOut()
+{
+    this->setEnabled(false);
 }

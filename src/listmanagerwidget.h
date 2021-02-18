@@ -5,6 +5,7 @@
 #include <QMessageBox>
 
 #include "ui_listmanagerwidget.h"
+#include "ramses.h"
 
 class ListManagerWidget : public QWidget, private Ui::ListManagerWidget
 {
@@ -24,9 +25,15 @@ protected slots:
     void removeRow(int i);
     void removeData(QVariant data);
     void updateItem(QVariant data, QString text);
+    void setRole(RamUser::UserRole r);
 
 private slots:
     void remove_clicked();
+    void loggedIn(RamUser *user);
+    void loggedOut();
+
+private:
+    RamUser::UserRole _role;
 };
 
 #endif // LISTMANAGERWIDGET_H

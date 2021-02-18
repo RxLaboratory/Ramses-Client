@@ -24,5 +24,7 @@
         <file alias="project">resources/icons/cinema-movie_sl.svg</file>
         <file alias="state">resources/icons/state.svg</file>
         <file alias="color-dialog">resources/icons/color-palette_sl.svg</file>
+        <file alias="admin">resources/icons/admin.svg</file>
+        <file alias="project-settings">resources/icons/cinema-movie-settings_bl.svg</file>
     </qresource>
 </RCC>
