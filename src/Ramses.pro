@@ -39,6 +39,7 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     projecteditwidget.cpp \
+    projectselectorwidget.cpp \
     projectsmanagerwidget.cpp \
     ramobject.cpp \
     ramproject.cpp \
@@ -76,6 +77,7 @@ HEADERS += \
     loginpage.h \
     mainwindow.h \
     projecteditwidget.h \
+    projectselectorwidget.h \
     projectsmanagerwidget.h \
     ramobject.h \
     ramproject.h \

@@ -17,7 +17,9 @@
 #include "templatestepsmanagerwidget.h"
 #include "statesmanagerwidget.h"
 #include "dbinterface.h"
+#include "projectselectorwidget.h"
 #include "duqf-utils/utils.h"
+#include "duqf-widgets/toolbarspacer.h"
 
 #include <QMouseEvent>
 #include <QLabel>

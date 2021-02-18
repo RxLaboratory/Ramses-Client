@@ -29,8 +29,12 @@ public:
     bool isAdmin();
     // Projects
     QList<RamProject *> projects() const;
+    RamProject *project(QString uuid);
     RamProject *createProject();
     void removeProject(QString uuid);
+    RamProject *currentProject() const;
+    void setCurrentProject(RamProject *currentProject);
+    void setCurrentProject(QString uuid);
     // Template Steps
     QList<RamStep *> templateSteps() const;
     RamStep *createTemplateStep();
@@ -43,6 +47,7 @@ public:
 signals:
     void loggedIn(RamUser*);
     void loggedOut();
+    void projectChanged(RamProject*);
     void newUser(RamUser *user);
     void newProject(RamProject *project);
     void newTemplateStep(RamStep *step);
@@ -90,6 +95,7 @@ private:
 
     // Projects
     QList<RamProject *> _projects;
+    RamProject *_currentProject;
 
     // Template steps
     QList<RamStep *> _templateSteps;

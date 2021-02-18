@@ -22,6 +22,8 @@ Ramses::Ramses(QObject *parent) : QObject(parent)
     _defaultUser->setParent(this);
     _currentUser = _defaultUser;
 
+    _currentProject = nullptr;
+
     _connected = false;
 
     connect( _dbi, &DBInterface::data, this, &Ramses::newData );
@@ -311,8 +313,6 @@ void Ramses::gotStates(QJsonArray states)
                     s.value("uuid").toString()
                     );
         state->setColor( QColor( s.value("color").toString()) );
-        qDebug() << " ==================== ";
-        qDebug() << s.value("completionRatio").toInt();
         state->setCompletionRatio( s.value("completionRatio").toInt() );
 
         _states << state;
@@ -344,6 +344,22 @@ void Ramses::login(QJsonObject user)
     _currentUserShortName = user.value("shortName").toString("Guest");
     // Update
     update();
+}
+
+RamProject *Ramses::currentProject() const
+{
+    return _currentProject;
+}
+
+void Ramses::setCurrentProject(RamProject *currentProject)
+{
+    _currentProject = currentProject;
+    emit projectChanged(_currentProject);
+}
+
+void Ramses::setCurrentProject(QString uuid)
+{
+    setCurrentProject( project(uuid) );
 }
 
 QList<RamStep *> Ramses::templateSteps() const
@@ -401,6 +417,15 @@ void Ramses::removeState(QString uuid)
 QList<RamProject *> Ramses::projects() const
 {
     return _projects;
+}
+
+RamProject *Ramses::project(QString uuid)
+{
+    foreach(RamProject *p, _projects)
+    {
+        if (p->uuid() == uuid) return p;
+    }
+    return nullptr;
 }
 
 RamProject *Ramses::createProject()

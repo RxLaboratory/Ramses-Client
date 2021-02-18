@@ -24,6 +24,10 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     mainToolBar->addAction(actionAdmin);
     actionAdmin->setVisible(false);
 
+    mainToolBar->addWidget(new ToolBarSpacer(this));
+
+    mainToolBar->addWidget(new ProjectSelectorWidget(this));
+
     //Populate status bar
     networkButton = new QToolButton(this);
     networkButton->setToolButtonStyle(Qt::ToolButtonTextOnly);

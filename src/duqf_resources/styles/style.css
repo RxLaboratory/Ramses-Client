@@ -605,6 +605,10 @@ QToolBar QToolButton:checked {
     background-color: @color-dark-grey;
 }
 
+QToolBar QComboBox:hover {
+    background-color: @color-very-dark-grey;
+}
+
 /* STATUSBAR */
 
 QStatusBar {
