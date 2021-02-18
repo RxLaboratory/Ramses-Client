@@ -5,9 +5,14 @@ ProjectEditWidget::ProjectEditWidget(QWidget *parent) :
 {
     setupUi(this);
 
+    folderSelector = new DuQFFolderSelectorWidget(this);
+    folderSelector->setPlaceHolderText("Default (Ramses/Users/User_ShortName)");
+    folderLayout->addWidget(folderSelector);
+
     connect(updateButton, SIGNAL(clicked()), this, SLOT(update()));
     connect(revertButton, SIGNAL(clicked()), this, SLOT(revert()));
     connect(shortNameEdit, &QLineEdit::textChanged, this, &ProjectEditWidget::checkInput);
+    connect(folderSelector, &DuQFFolderSelectorWidget::pathChanging, this, &ProjectEditWidget::updateFolderLabel);
     connect(DBInterface::instance(),&DBInterface::log, this, &ProjectEditWidget::dbiLog);
 
 
@@ -26,12 +31,19 @@ void ProjectEditWidget::setProject(RamProject *project)
     _project = project;
     nameEdit->setText("");
     shortNameEdit->setText("");
+    folderSelector->setPath("");
+    folderSelector->setPlaceHolderText("Default (Ramses/Projects/Project_ShortName)");
     this->setEnabled(false);
 
     if(!project) return;
 
     nameEdit->setText(project->name());
     shortNameEdit->setText(project->shortName());
+
+    if (project->folderPath() != "auto") folderSelector->setPath( project->folderPath() );
+    folderSelector->setPlaceHolderText( Ramses::instance()->defaultProjectPath(project) );
+    folderLabel->setText( Ramses::instance()->projectPath(project) );
+
 
     this->setEnabled( Ramses::instance()->isAdmin() );
 
@@ -53,6 +65,7 @@ void ProjectEditWidget::update()
 
     _project->setName(nameEdit->text());
     _project->setShortName(shortNameEdit->text());
+    _project->setFolderPath( folderSelector->path() );
 
     _project->update();
 
@@ -79,6 +92,12 @@ bool ProjectEditWidget::checkInput()
     statusLabel->setText("");
     updateButton->setEnabled(true);
     return true;
+}
+
+void ProjectEditWidget::updateFolderLabel(QString path)
+{
+    if (path != "") folderLabel->setText( Ramses::instance()->pathFromMain(path));
+    else if (_project) folderLabel->setText( Ramses::instance()->projectPath(_project) );
 }
 
 void ProjectEditWidget::projectDestroyed(QObject */*o*/)

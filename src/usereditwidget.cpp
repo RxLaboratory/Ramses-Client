@@ -61,7 +61,7 @@ void UserEditWidget::setUser(RamUser *user)
     else roleBox->setCurrentIndex(2);
 
     if (user->folderPath() != "auto") folderSelector->setPath( user->folderPath() );
-    folderSelector->setPlaceHolderText( Ramses::instance()->userPath(user) );
+    folderSelector->setPlaceHolderText( Ramses::instance()->defaultUserPath(user) );
     folderLabel->setText( Ramses::instance()->userPath(user) );
 
     if (user->uuid() == current->uuid())
@@ -157,7 +157,7 @@ bool UserEditWidget::checkInput()
 
 void UserEditWidget::updateFolderLabel(QString path)
 {
-    if (path != "") folderLabel->setText( Ramses::instance()->userPath(path) );
+    if (path != "") folderLabel->setText( Ramses::instance()->pathFromMain(path) );
     else if (_user) folderLabel->setText( Ramses::instance()->userPath(_user) );
 }
 

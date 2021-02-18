@@ -23,11 +23,13 @@ public:
     QString mainPath() const;
     // Tree
     void setMainPath(const QString &mainPath);
+    QString pathFromMain(QString p) const;
     QString usersPath() const;
     QString userPath(RamUser *u) const;
-    QString userPath(QString p) const;
+    QString defaultUserPath(RamUser *u) const;
     QString projectsPath() const;
     QString projectPath(RamProject *p) const;
+    QString defaultProjectPath(RamProject *p);
     // Users
     QList<RamUser *> users() const;
     RamUser *currentUser() const;

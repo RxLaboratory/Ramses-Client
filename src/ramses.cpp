@@ -355,21 +355,7 @@ void Ramses::setMainPath(const QString &mainPath)
     _mainPath = mainPath;
 }
 
-QString Ramses::usersPath() const
-{
-    return mainPath() + "/Users";
-}
-
-QString Ramses::userPath(RamUser *u) const
-{
-    if (!u) return userPath("");
-
-    QString path = u->folderPath();
-    if (path == "" || path == "auto") path = usersPath() + "/" + u->shortName();
-    return userPath( path );
-}
-
-QString Ramses::userPath(QString p) const
+QString Ramses::pathFromMain(QString p) const
 {
     if (QFileInfo( p ).isRelative())
     {
@@ -381,6 +367,25 @@ QString Ramses::userPath(QString p) const
     }
 }
 
+QString Ramses::usersPath() const
+{
+    return mainPath() + "/Users";
+}
+
+QString Ramses::userPath(RamUser *u) const
+{
+    if (!u) return pathFromMain("");
+
+    QString path = u->folderPath();
+    if (path == "" || path == "auto") path = usersPath() + "/" + u->shortName();
+    return pathFromMain( path );
+}
+
+QString Ramses::defaultUserPath(RamUser *u) const
+{
+    return usersPath() + "/" + u->shortName();
+}
+
 QString Ramses::projectsPath() const
 {
     return mainPath() + "/Projects";
@@ -388,18 +393,16 @@ QString Ramses::projectsPath() const
 
 QString Ramses::projectPath(RamProject *p) const
 {
-    if (p->folderPath() == "" || p->folderPath() == "auto")
-    {
-        return projectsPath() + "/" + p->shortName();
-    }
-    else if (QFileInfo(p->folderPath()).isRelative())
-    {
-        return mainPath() + "/" + p->folderPath();
-    }
-    else
-    {
-        return p->folderPath();
-    }
+    if (!p) return pathFromMain("");
+
+    QString path = p->folderPath();
+    if (path == "" || path == "auto") path = projectsPath() + "/" + p->shortName();
+    return pathFromMain( path );
+}
+
+QString Ramses::defaultProjectPath(RamProject *p)
+{
+    return projectsPath() + "/" + p->shortName();
 }
 
 RamProject *Ramses::currentProject() const

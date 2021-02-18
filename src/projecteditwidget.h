@@ -3,6 +3,7 @@
 
 #include "ui_projecteditwidget.h"
 #include "ramses.h"
+#include "duqf-widgets/duqffolderselectorwidget.h"
 
 class ProjectEditWidget : public QWidget, private Ui::ProjectEditWidget
 {
@@ -18,10 +19,12 @@ private slots:
     void update();
     void revert();
     bool checkInput();
+    void updateFolderLabel(QString path);
     void projectDestroyed(QObject *o);
     void dbiLog(QString m, LogUtils::LogType t);
 
 private:
+    DuQFFolderSelectorWidget *folderSelector;
     RamProject *_project;
     QMetaObject::Connection _currentProjectConnection;
 };
