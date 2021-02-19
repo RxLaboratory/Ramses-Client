@@ -22,6 +22,9 @@
         <file alias="move-up">duqf_resources/icons/move-up.svg</file>
         <file alias="remove">duqf_resources/icons/remove.svg</file>
         <file alias="reinit">duqf_resources/icons/reinit.svg</file>
+        <file alias="close-dark">duqf_resources/icons/close_sd.svg</file>
+        <file alias="hide-dark">duqf_resources/icons/hide_sd.svg</file>
+        <file alias="show-dark">duqf_resources/icons/show_sd.svg</file>
     </qresource>
     <qresource prefix="/images"/>
     <qresource prefix="/styles">

@@ -29,5 +29,8 @@
         <file alias="reveal-folder">resources/icons/go-to-explore-reveal-folder_sl.svg</file>
         <file alias="browse-folder">resources/icons/set-folder_sl.svg</file>
         <file alias="storage">resources/icons/storage_sl.svg</file>
+        <file alias="tray-color">resources/icons/ramses_sc.svg</file>
+        <file alias="tray-dark">resources/icons/ramses_sd.svg</file>
+        <file alias="tray-light">resources/icons/ramses_sl.svg</file>
     </qresource>
 </RCC>

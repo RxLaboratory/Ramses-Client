@@ -31,6 +31,7 @@
 #include <QSettings>
 #include <QProcess>
 #include <QMessageBox>
+#include <QSystemTrayIcon>
 
 class MainWindow : public QMainWindow, private Ui::MainWindow
 {
@@ -61,6 +62,7 @@ private:
     QToolButton *duqf_maximizeButton;
     QToolButton *duqf_settingsButton;
     AboutDialog *duqf_aboutDialog;
+    QAction *duqf_actionShowHide;
     QSettings settings;
     SettingsWidget *settingsWidget;
     QLabel *title;
@@ -85,6 +87,8 @@ private slots:
     void duqf_closeSettings();
     void duqf_reinitSettings();
     void duqf_about();
+    void duqf_trayClicked(QSystemTrayIcon::ActivationReason reason);
+    void duqf_showHide();
 
     void log(QString m, LogUtils::LogType type);
 

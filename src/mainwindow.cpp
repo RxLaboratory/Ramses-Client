@@ -95,7 +95,31 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
 
 void MainWindow::duqf_initUi()
 {
-        // ===== ABOUT ========
+    // ===== SYSTRAY ======
+    duqf_actionShowHide = new QAction("Hide " + QString(STR_INTERNALNAME), this);
+    duqf_actionShowHide->setIcon(QIcon(":/icons/hide-dark"));
+    bool useSysTray = QSystemTrayIcon::isSystemTrayAvailable() && USE_SYSTRAY;
+    if (useSysTray)
+    {
+        QMenu *trayMenu = new QMenu(QString(STR_INTERNALNAME),this);
+#ifdef Q_OS_LINUX
+        QString trayIconType = settings.value("appearance/trayIconType", "light").toString();
+#else
+        QString trayIconType = settings.value("appearance/trayIconType", "color").toString();
+#endif
+        QSystemTrayIcon *trayIcon = new QSystemTrayIcon(QIcon(":/icons/tray-" + trayIconType),this);
+        trayMenu->addAction(duqf_actionShowHide);
+        QAction *actionQuit = new QAction("Quit");
+        actionQuit->setIcon(QIcon(":/icons/close-dark"));
+        trayMenu->addAction(actionQuit);
+        trayIcon->setContextMenu(trayMenu);
+        trayIcon->show();
+        connect(trayIcon,SIGNAL(activated(QSystemTrayIcon::ActivationReason)),this,SLOT(duqf_trayClicked(QSystemTrayIcon::ActivationReason)));
+        connect(duqf_actionShowHide, &QAction::triggered, this, &MainWindow::duqf_showHide);
+        connect(actionQuit, &QAction::triggered, this, &MainWindow::close);
+    }
+
+    // ===== ABOUT ========
     duqf_aboutDialog = new AboutDialog();
 
     // ===== TOOLBAR ======
@@ -205,7 +229,8 @@ void MainWindow::duqf_initUi()
 #ifndef Q_OS_MAC
     connect(minimizeButton,SIGNAL(clicked()),this,SLOT(showMinimized()));
 #endif
-    connect(quitButton,SIGNAL(clicked()),this,SLOT(close()));
+    if (useSysTray) connect(quitButton, SIGNAL(clicked()), this, SLOT(duqf_showHide()));
+    else connect(quitButton,SIGNAL(clicked()),this,SLOT(close()));
 
     connect(aboutQtAction, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
     connect(duqf_settingsButton, SIGNAL(clicked(bool)), this, SLOT(duqf_settings(bool)));
@@ -308,6 +333,31 @@ void MainWindow::duqf_reinitSettings()
 void MainWindow::duqf_about()
 {
     duqf_aboutDialog->show();
+}
+
+void MainWindow::duqf_trayClicked(QSystemTrayIcon::ActivationReason reason)
+{
+
+    if (reason == QSystemTrayIcon::Trigger)
+    {
+        duqf_showHide();
+    }
+}
+
+void MainWindow::duqf_showHide()
+{
+    if (this->isVisible())
+    {
+        this->hide();
+        duqf_actionShowHide->setIcon(QIcon(":/icons/show-dark"));
+        duqf_actionShowHide->setText("Show " + QString(STR_INTERNALNAME));
+    }
+    else
+    {
+        this->show();
+        duqf_actionShowHide->setIcon(QIcon(":/icons/hide-dark"));
+        duqf_actionShowHide->setText("Hide " + QString(STR_INTERNALNAME));
+    }
 }
 
 void MainWindow::log(QString m, LogUtils::LogType type)
