@@ -2,7 +2,7 @@
 
 TemplateStepsManagerWidget::TemplateStepsManagerWidget(QWidget *parent): ListManagerWidget(parent)
 {
-    stepWidget = new StepEditWidget(this);
+    stepWidget = new TemplateStepEditWidget(this);
     this->setWidget(stepWidget);
     stepWidget->setEnabled(false);
 

@@ -70,6 +70,7 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     // project settings
     projectSettingsPage = new SettingsWidget(this);
     mainStack->addWidget(projectSettingsPage);
+    projectSettingsPage->addPage(new StepsManagerWidget(this), "Steps", QIcon(":/icons/steps"));
 
     // Set UI
     mainStack->setCurrentIndex(0);

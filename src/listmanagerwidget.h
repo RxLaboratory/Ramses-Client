@@ -7,7 +7,7 @@
 #include "ui_listmanagerwidget.h"
 #include "ramses.h"
 
-class ListManagerWidget : public QWidget, private Ui::ListManagerWidget
+class ListManagerWidget : public QWidget, protected Ui::ListManagerWidget
 {
     Q_OBJECT
 

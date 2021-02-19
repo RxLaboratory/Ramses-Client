@@ -1,6 +1,6 @@
-#include "stepeditwidget.h"
+#include "templatestepeditwidget.h"
 
-StepEditWidget::StepEditWidget(QWidget *parent) :
+TemplateStepEditWidget::TemplateStepEditWidget(QWidget *parent) :
     QWidget(parent)
 {
     setupUi(this);
@@ -12,23 +12,22 @@ StepEditWidget::StepEditWidget(QWidget *parent) :
 
     connect(updateButton, SIGNAL(clicked()), this, SLOT(update()));
     connect(revertButton, SIGNAL(clicked()), this, SLOT(revert()));
-    connect(shortNameEdit, &QLineEdit::textChanged, this, &StepEditWidget::checkInput);
-    connect(DBInterface::instance(),&DBInterface::log, this, &StepEditWidget::dbiLog);
+    connect(shortNameEdit, &QLineEdit::textChanged, this, &TemplateStepEditWidget::checkInput);
+    connect(DBInterface::instance(),&DBInterface::log, this, &TemplateStepEditWidget::dbiLog);
 
     this->setEnabled(false);
 }
 
-RamStep *StepEditWidget::step() const
+RamStep *TemplateStepEditWidget::step() const
 {
     return _step;
 }
 
-void StepEditWidget::setStep(RamStep *step)
+void TemplateStepEditWidget::setStep(RamStep *step)
 {
     disconnect(_currentStepConnection);
 
     _step = step;
-
     nameEdit->setText("");
     shortNameEdit->setText("");
     typeBox->setCurrentIndex(1);
@@ -44,14 +43,12 @@ void StepEditWidget::setStep(RamStep *step)
     else if (step->type() == RamStep::ShotProduction) typeBox->setCurrentIndex(2);
     else if (step->type() == RamStep::PostProduction) typeBox->setCurrentIndex(3);
 
-    // Load Users (TODO)
-
     this->setEnabled(Ramses::instance()->isAdmin());
 
-    _currentStepConnection = connect(step, &RamStep::destroyed, this, &StepEditWidget::stepDestroyed);
+    _currentStepConnection = connect(step, &RamStep::destroyed, this, &TemplateStepEditWidget::stepDestroyed);
 }
 
-void StepEditWidget::update()
+void TemplateStepEditWidget::update()
 {
     if (!_step) return;
 
@@ -71,14 +68,15 @@ void StepEditWidget::update()
     _step->update();
 
     this->setEnabled(true);
+
 }
 
-void StepEditWidget::revert()
+void TemplateStepEditWidget::revert()
 {
     setStep(_step);
 }
 
-bool StepEditWidget::checkInput()
+bool TemplateStepEditWidget::checkInput()
 {
     if (!_step) return false;
 
@@ -94,12 +92,12 @@ bool StepEditWidget::checkInput()
     return true;
 }
 
-void StepEditWidget::stepDestroyed(QObject */*o*/)
+void TemplateStepEditWidget::stepDestroyed(QObject */*o*/)
 {
     setStep(nullptr);
 }
 
-void StepEditWidget::dbiLog(QString m, LogUtils::LogType t)
+void TemplateStepEditWidget::dbiLog(QString m, LogUtils::LogType t)
 {
     if (t != LogUtils::Remote && t != LogUtils::Debug) statusLabel->setText(m);
 }

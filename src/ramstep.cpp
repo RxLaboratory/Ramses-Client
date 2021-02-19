@@ -3,19 +3,40 @@
 RamStep::RamStep(QString shortName, QString name, bool tplt, QString uuid, QObject *parent) :
     RamObject(shortName, name, uuid, parent)
 {
+    _projectUuid = "";
     _template = tplt;
     _type = AssetProduction;
     if (_template) _dbi->createTemplateStep(_shortName, _name, _uuid);
 }
 
+RamStep::RamStep(QString shortName, QString name, QString projectUuid, QString uuid, QObject *parent):
+    RamObject(shortName, name, uuid, parent)
+{
+    _projectUuid = projectUuid;
+    _template = false;
+    _type = AssetProduction;
+    _dbi->createStep(_shortName, _name, projectUuid, _uuid);
+}
+
 RamStep::~RamStep()
 {
-    _dbi->removeTemplateStep(_uuid);
+    if (_template) _dbi->removeTemplateStep(_uuid);
+    else _dbi->removeStep(_uuid);
 }
 
 bool RamStep::isTemplate() const
 {
     return _template;
+}
+
+RamStep* RamStep::createFromTemplate(QString projectUuid)
+{
+    // Create
+    RamStep *step = new RamStep(_shortName, _name, projectUuid);
+    step->setType(_type);
+    // and update
+    step->update();
+    return step;
 }
 
 RamStep::Type RamStep::type() const
@@ -43,5 +64,16 @@ void RamStep::update()
     if (_type == PostProduction) type = "post";
     else if (_type == PreProduction) type = "pre";
     else if (_type == ShotProduction) type = "shot";
-    _dbi->updateTemplateStep(_uuid, _shortName, _name, type);
+    if (_template) _dbi->updateTemplateStep(_uuid, _shortName, _name, type);
+    else _dbi->updateStep(_uuid, _shortName, _name, type);
+}
+
+QString RamStep::projectUuid() const
+{
+    return _projectUuid;
+}
+
+void RamStep::setProjectUuid(const QString &projectUuid)
+{
+    _projectUuid = projectUuid;
 }

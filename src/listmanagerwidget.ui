@@ -80,6 +80,9 @@
             <iconset resource="resources.qrc">
              <normaloff>:/icons/add</normaloff>:/icons/add</iconset>
            </property>
+           <property name="popupMode">
+            <enum>QToolButton::InstantPopup</enum>
+           </property>
           </widget>
          </item>
         </layout>

@@ -27,7 +27,7 @@ Ramses::Ramses(QObject *parent) : QObject(parent)
 
     connect( _dbi, &DBInterface::data, this, &Ramses::newData );
     connect( _dbi, &DBInterface::connectionStatusChanged, this, &Ramses::dbiConnectionStatusChanged);
-    connect( (DuApplication *)qApp, &DuApplication::idle, this, &Ramses::update);
+    connect( (DuApplication *)qApp, &DuApplication::idle, this, &Ramses::refresh);
 }
 
 void Ramses::login(QString username, QString password)
@@ -157,6 +157,7 @@ void Ramses::gotProjects(QJsonArray projects)
                 QSignalBlocker b(existingProject);
                 existingProject->setName( newProject.value("name").toString());
                 existingProject->setShortName( newProject.value("shortName").toString());
+                gotSteps( newProject.value("steps").toArray(), existingProject);
                 //send the signal
                 b.unblock();
                 existingProject->setFolderPath( newProject.value("folderPath").toString());
@@ -183,6 +184,9 @@ void Ramses::gotProjects(QJsonArray projects)
                     p.value("uuid").toString()
                     );
         project->setFolderPath( p.value("folderPath").toString());
+
+        // Add steps
+        gotSteps( p.value("steps").toArray(), project);
 
         _projects << project;
 
@@ -328,6 +332,64 @@ void Ramses::stateDestroyed(QObject *o)
     removeState(s->uuid());
 }
 
+void Ramses::gotSteps(QJsonArray steps, RamProject *project)
+{
+    DBISuspender s;
+
+    QList<RamStep*> projectSteps = project->steps();
+
+    // loop through existing steps to update them
+    for (int i = projectSteps.count() - 1; i >= 0; i--)
+    {
+        RamStep *existingStep = projectSteps[i];
+        // loop through new steps to update
+        bool found = false;
+        for (int j = 0; j < steps.count(); j++)
+        {
+            QJsonObject newStep = steps[j].toObject();
+            QString uuid = newStep.value("uuid").toString();
+            // Found, update
+            if (uuid == existingStep->uuid())
+            {
+                found = true;
+                //Emit just one signal
+                QSignalBlocker b(existingStep);
+                existingStep->setName( newStep.value("name").toString());
+                existingStep->setShortName( newStep.value("shortName").toString());
+                //send the signal
+                b.unblock();
+                existingStep->setType(newStep.value("type").toString());
+                //remove from new steps
+                steps.removeAt(j);
+                break;
+            }
+        }
+        // Not found, remove from existing
+        if (!found)
+        {
+            project->removeStep(existingStep);
+        }
+    }
+
+    // loop through remaining new steps to add them
+    for (int i = 0; i < steps.count(); i++)
+    {
+        QJsonObject s = steps[i].toObject();
+        RamStep *step = new RamStep(
+                    s.value("shortName").toString(),
+                    s.value("name").toString(),
+                    false,
+                    s.value("uuid").toString()
+                    );
+        step->setType( s.value("type").toString());
+        step->setProjectUuid( s.value("projectUuid").toString());
+
+        project->addStep(step);
+
+        emit newStep(step);
+    }
+}
+
 void Ramses::dbiConnectionStatusChanged(NetworkUtils::NetworkStatus s)
 {
     if (s != NetworkUtils::Online)
@@ -342,7 +404,7 @@ void Ramses::login(QJsonObject user)
     // Set the current user shortName
     _currentUserShortName = user.value("shortName").toString("Guest");
     // Update
-    update();
+    refresh();
 }
 
 QString Ramses::mainPath() const
@@ -447,6 +509,15 @@ void Ramses::removeTemplateStep(QString uuid)
     }
 }
 
+RamStep *Ramses::templateStep(QString uuid)
+{
+    foreach(RamStep *step, _templateSteps)
+    {
+        if (step->uuid() == uuid) return step;
+    }
+    return nullptr;
+}
+
 QList<RamState *> Ramses::states() const
 {
     return _states;
@@ -542,16 +613,16 @@ void Ramses::logout()
     emit loggedOut();
 }
 
-void Ramses::update()
+void Ramses::refresh()
 {
     // Get Users
     _dbi->getUsers();
-    // Get Projects
-    _dbi->getProjects();
     // Get Template Steps
     _dbi->getTemplateSteps();
     // Get States
     _dbi->getStates();
+    // Get Projects
+    _dbi->getProjects();
 }
 
 bool Ramses::isConnected() const

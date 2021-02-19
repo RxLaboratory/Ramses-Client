@@ -167,12 +167,6 @@ void DBInterface::createStep(QString shortName, QString name, QString projectUui
     request(q);
 }
 
-void DBInterface::getSteps()
-{
-    QString q = "?getSteps";
-    request(q);
-}
-
 void DBInterface::updateStep(QString uuid, QString shortName, QString name, QString type)
 {
     QStringList q("updateStep");

@@ -15,6 +15,7 @@
 #include "usersmanagerwidget.h"
 #include "projectsmanagerwidget.h"
 #include "templatestepsmanagerwidget.h"
+#include "stepsmanagerwidget.h"
 #include "statesmanagerwidget.h"
 #include "dbinterface.h"
 #include "projectselectorwidget.h"

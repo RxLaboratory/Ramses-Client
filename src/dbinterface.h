@@ -46,7 +46,6 @@ public:
     void removeTemplateStep(QString uuid);
     //steps
     void createStep(QString shortName, QString name, QString projectUuid, QString uuid);
-    void getSteps();
     void updateStep(QString uuid, QString shortName, QString name, QString type);
     void removeStep(QString uuid);
     void assignUser(QString stepUuid, QString userUuid);

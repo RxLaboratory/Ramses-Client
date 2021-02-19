@@ -2,7 +2,7 @@
 #define TEMPLATESTEPSMANAGERWIDGET_H
 
 #include "listmanagerwidget.h"
-#include "stepeditwidget.h"
+#include "templatestepeditwidget.h"
 
 class TemplateStepsManagerWidget : public ListManagerWidget
 {
@@ -21,7 +21,7 @@ private slots:
     void stepChanged();
 
 private:
-    StepEditWidget *stepWidget;
+    TemplateStepEditWidget *stepWidget;
 };
 
 #endif // TEMPLATESTEPSMANAGERWIDGET_H

@@ -48,6 +48,7 @@ public:
     QList<RamStep *> templateSteps() const;
     RamStep *createTemplateStep();
     void removeTemplateStep(QString uuid);
+    RamStep *templateStep(QString uuid);
     // States
     QList<RamState *> states() const;
     RamState *createState();
@@ -61,12 +62,13 @@ signals:
     void newProject(RamProject *project);
     void newTemplateStep(RamStep *step);
     void newState(RamState *state);
+    void newStep(RamStep *);
 
 protected:
     static Ramses *_instance;
 
 private slots:
-    void update();
+    void refresh();
     void newData(QJsonObject data);
     //users
     void gotUsers(QJsonArray users);
@@ -80,6 +82,8 @@ private slots:
     //states
     void gotStates(QJsonArray states);
     void stateDestroyed(QObject *o);
+    // steps
+    void gotSteps(QJsonArray steps, RamProject *project);
     //TODO This should be modified when implementing offline version
     void dbiConnectionStatusChanged(NetworkUtils::NetworkStatus s);
 private:
@@ -115,6 +119,7 @@ private:
 
     // States
     QList<RamState *> _states;
+
 };
 
 #endif // RAMSES_H

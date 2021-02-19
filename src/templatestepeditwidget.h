@@ -1,15 +1,15 @@
-#ifndef STEPEDITWIDGET_H
-#define STEPEDITWIDGET_H
+#ifndef TEMPLATESTEPEDITWIDGET_H
+#define TEMPLATESTEPEDITWIDGET_H
 
-#include "ui_stepeditwidget.h"
+#include "ui_templatestepeditwidget.h"
 #include "ramses.h"
 
-class StepEditWidget : public QWidget, private Ui::StepEditWidget
+class TemplateStepEditWidget : public QWidget, private Ui::TemplateStepEditWidget
 {
     Q_OBJECT
 
 public:
-    explicit StepEditWidget(QWidget *parent = nullptr);
+    explicit TemplateStepEditWidget(QWidget *parent = nullptr);
 
     RamStep *step() const;
     void setStep(RamStep *step);
@@ -24,7 +24,6 @@ private slots:
 private:
     RamStep *_step;
     QMetaObject::Connection _currentStepConnection;
-
 };
 
-#endif // STEPEDITWIDGET_H
+#endif // TEMPLATESTEPEDITWIDGET_H

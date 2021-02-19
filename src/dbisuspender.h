@@ -9,8 +9,12 @@ public:
     /**
      * @brief Helper class to suspend the DBInterface. It will be unsuspended by the destructor
      */
-    DBISuspender();
+    DBISuspender(bool release = false);
     ~DBISuspender();
+    void release();
+    void suspend();
+private:
+    bool _wasSuspended;
 };
 
 #endif // DBISUSPENDER_H

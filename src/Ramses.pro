@@ -53,7 +53,9 @@ SOURCES += \
     serversettingswidget.cpp \
     stateeditwidget.cpp \
     statesmanagerwidget.cpp \
+    stepsmanagerwidget.cpp \
     stepeditwidget.cpp \
+    templatestepeditwidget.cpp \
     templatestepsmanagerwidget.cpp \
     usereditwidget.cpp \
     userprofilepage.cpp \
@@ -93,7 +95,9 @@ HEADERS += \
     serversettingswidget.h \
     stateeditwidget.h \
     statesmanagerwidget.h \
+    stepsmanagerwidget.h \
     stepeditwidget.h \
+    templatestepeditwidget.h \
     templatestepsmanagerwidget.h \
     usereditwidget.h \
     userprofilepage.h \
@@ -112,6 +116,7 @@ FORMS += \
     serversettingswidget.ui \
     stateeditwidget.ui \
     stepeditwidget.ui \
+    templatestepeditwidget.ui \
     usereditwidget.ui \
     userprofilepage.ui \
 
