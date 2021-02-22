@@ -70,7 +70,7 @@ void Daemon::ping(QTcpSocket *client)
     obj.insert("ramses", STR_INTERNALNAME);
     QJsonDocument json(obj);
 
-    log("New request: ping", LogUtils::Information);
+    log("Daemon received a new request: ping", LogUtils::Information);
     client->write( json.toJson() );
 }
 

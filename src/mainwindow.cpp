@@ -50,7 +50,8 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     settingsWidget->addPage(lsw, "Ramses data", QIcon(":/icons/storage"));
     ServerSettingsWidget *csw = new ServerSettingsWidget(this);
     settingsWidget->addPage(csw, "Server", QIcon(":/icons/server-settings"));
-
+    DaemonSettingsWidget *dsw = new DaemonSettingsWidget(this);
+    settingsWidget->addPage(dsw, "Daemon", QIcon(":/icons/daemon"));
 
     // Add pages
     // login
@@ -154,6 +155,15 @@ void MainWindow::duqf_initUi()
     duqf_maximizeButton->setIcon(QIcon(":/icons/maximize"));
     duqf_maximizeButton->setObjectName("windowButton");
     mainToolBar->addWidget(duqf_maximizeButton);
+    //hide
+    QToolButton *hideButton;
+    if (useSysTray)
+    {
+        hideButton = new QToolButton();
+        hideButton->setIcon(QIcon(":/icons/hide"));
+        hideButton->setObjectName("windowButton");
+        mainToolBar->addWidget(hideButton);
+    }
     //quit
     QToolButton *quitButton = new QToolButton(this);
     quitButton->setIcon(QIcon(":/icons/quit"));
@@ -233,7 +243,11 @@ void MainWindow::duqf_initUi()
 #ifndef Q_OS_MAC
     connect(minimizeButton,SIGNAL(clicked()),this,SLOT(showMinimized()));
 #endif
-    if (useSysTray) connect(quitButton, SIGNAL(clicked()), this, SLOT(duqf_showHide()));
+    if (useSysTray)
+    {
+        connect(quitButton, SIGNAL(clicked()), this, SLOT(duqf_askBeforeClose()));
+        connect(hideButton, SIGNAL(clicked()), this, SLOT(duqf_showHide()));
+    }
     else connect(quitButton,SIGNAL(clicked()),this,SLOT(close()));
 
     connect(aboutQtAction, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
@@ -362,6 +376,12 @@ void MainWindow::duqf_showHide()
         duqf_actionShowHide->setIcon(QIcon(":/icons/hide-dark"));
         duqf_actionShowHide->setText("Hide " + QString(STR_INTERNALNAME));
     }
+}
+
+void MainWindow::duqf_askBeforeClose()
+{
+    QMessageBox::StandardButton r = QMessageBox::question(this, "Quitting Ramses", "Are you sure you want to quit Ramses?");
+    if (r == QMessageBox::Yes) this->close();
 }
 
 void MainWindow::log(QString m, LogUtils::LogType type)

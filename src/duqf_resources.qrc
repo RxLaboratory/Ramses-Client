@@ -25,6 +25,7 @@
         <file alias="close-dark">duqf_resources/icons/close_sd.svg</file>
         <file alias="hide-dark">duqf_resources/icons/hide_sd.svg</file>
         <file alias="show-dark">duqf_resources/icons/show_sd.svg</file>
+        <file alias="hide">duqf_resources/icons/hide_sl.svg</file>
     </qresource>
     <qresource prefix="/images"/>
     <qresource prefix="/styles">

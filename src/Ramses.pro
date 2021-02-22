@@ -21,6 +21,7 @@ CONFIG += c++11
 
 SOURCES += \
     daemon.cpp \
+    daemonsettingswidget.cpp \
     dbinterface.cpp \
     dbisuspender.cpp \
     duqf-app/app-style.cpp \
@@ -64,6 +65,7 @@ SOURCES += \
 
 HEADERS += \
     daemon.h \
+    daemonsettingswidget.h \
     dbinterface.h \
     dbisuspender.h \
     duqf-app/app-style.h \
@@ -106,6 +108,7 @@ HEADERS += \
     usersmanagerwidget.h
 
 FORMS += \
+    daemonsettingswidget.ui \
     duqf-widgets/aboutdialog.ui \
     duqf-widgets/appearancesettingswidget.ui \
     duqf-widgets/duqffolderselectorwidget.ui \

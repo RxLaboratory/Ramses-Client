@@ -10,6 +10,7 @@
 #include "duqf-widgets/aboutdialog.h"
 
 #include "serversettingswidget.h"
+#include "daemonsettingswidget.h"
 #include "loginpage.h"
 #include "userprofilepage.h"
 #include "usersmanagerwidget.h"
@@ -91,6 +92,7 @@ private slots:
     void duqf_about();
     void duqf_trayClicked(QSystemTrayIcon::ActivationReason reason);
     void duqf_showHide();
+    void duqf_askBeforeClose();
 
     void log(QString m, LogUtils::LogType type);
 
