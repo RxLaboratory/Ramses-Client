@@ -1,6 +1,8 @@
 #ifndef STEPEDITWIDGET_H
 #define STEPEDITWIDGET_H
 
+#include <QMenu>
+
 #include "ui_stepeditwidget.h"
 #include "ramses.h"
 
@@ -19,12 +21,19 @@ private slots:
     void revert();
     bool checkInput();
     void stepDestroyed(QObject *o);
+    void newUser(RamUser *user);
+    void assignUser();
+    void removeUser();
+    void userAssigned(RamUser *user);
+    void userRemoved(QString uuid);
+    void userChanged();
+    void userDestroyed(QObject *o);
     void dbiLog(QString m, LogUtils::LogType t);
 
 private:
     RamStep *_step;
-    QMetaObject::Connection _currentStepConnection;
-
+    QMenu *assignMenu;
+    QList<QMetaObject::Connection> _stepConnections;
 };
 
 #endif // STEPEDITWIDGET_H

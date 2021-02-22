@@ -31,7 +31,7 @@
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
-     <widget class="QWidget" name="">
+     <widget class="QWidget" name="layoutWidget">
       <layout class="QGridLayout" name="gridLayout" rowstretch="1,0,1" columnstretch="25,50,0,25">
        <item row="0" column="3">
         <spacer name="horizontalSpacer_4">
@@ -233,7 +233,7 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="">
+     <widget class="QWidget" name="layoutWidget">
       <layout class="QVBoxLayout" name="verticalLayout">
        <property name="spacing">
         <number>3</number>
@@ -275,7 +275,7 @@
             <string/>
            </property>
            <property name="icon">
-            <iconset resource="duqf_resources.qrc">
+            <iconset resource="resources.qrc">
              <normaloff>:/icons/remove</normaloff>:/icons/remove</iconset>
            </property>
           </widget>
@@ -297,7 +297,7 @@
         </layout>
        </item>
        <item>
-        <widget class="QListWidget" name="listWidget"/>
+        <widget class="QListWidget" name="usersList"/>
        </item>
       </layout>
      </widget>
@@ -306,7 +306,6 @@
   </layout>
  </widget>
  <resources>
-  <include location="duqf_resources.qrc"/>
   <include location="resources.qrc"/>
  </resources>
  <connections/>

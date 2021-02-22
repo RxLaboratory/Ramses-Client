@@ -34,6 +34,7 @@ public:
     QList<RamUser *> users() const;
     RamUser *currentUser() const;
     RamUser *createUser();
+    RamUser *user(QString uuid);
     void removeUser(QString uuid);
     bool isAdmin();
     // Projects

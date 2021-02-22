@@ -21,6 +21,7 @@ private slots:
     void assignStep();
     void createStep();
     void newStep(RamStep *step);
+    void stepRemoved(QString uuid);
     void removeStep(QObject *step);
     void stepChanged();
     void newTemplateStep(RamStep *step);
@@ -35,8 +36,8 @@ private:
     QToolButton *downButton;
     QToolButton *upButton;
     QAction *actionCreateStep;
-    QMetaObject::Connection _currentProjectConnection;
     void updateStepsOrder();
+    QList<QMetaObject::Connection> _projectConnections;
 };
 
 #endif // STEPSMANAGERWIDGET_H

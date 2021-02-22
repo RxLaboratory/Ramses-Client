@@ -351,6 +351,11 @@ void Ramses::gotSteps(QJsonArray steps, RamProject *project)
                 existingStep->setName( newStep.value("name").toString());
                 existingStep->setShortName( newStep.value("shortName").toString());
                 existingStep->setOrder( newStep.value("order").toInt());
+                existingStep->clearUsers();
+                foreach( QJsonValue u, newStep.value("users").toArray())
+                {
+                    existingStep->assignUser( user(u.toString()) );
+                }
                 //send the signal
                 b.unblock();
                 existingStep->setType(newStep.value("type").toString());
@@ -379,6 +384,10 @@ void Ramses::gotSteps(QJsonArray steps, RamProject *project)
         step->setType( s.value("type").toString());
         step->setOrder( s.value("order").toInt() );
         step->setProjectUuid( s.value("projectUuid").toString());
+        foreach( QJsonValue u, s.value("users").toArray())
+        {
+            step->assignUser( user(u.toString()) );
+        }
 
         project->addStep(step);
 
@@ -585,6 +594,15 @@ RamUser *Ramses::createUser()
     _users << user;
     emit newUser(user);
     return user;
+}
+
+RamUser *Ramses::user(QString uuid)
+{
+    foreach(RamUser *user, _users)
+    {
+        if (user->uuid() == uuid) return user;
+    }
+    return nullptr;
 }
 
 void Ramses::removeUser(QString uuid)

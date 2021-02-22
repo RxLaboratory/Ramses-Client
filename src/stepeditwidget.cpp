@@ -10,10 +10,16 @@ StepEditWidget::StepEditWidget(QWidget *parent) :
     typeBox->setItemData(2, "shot");
     typeBox->setItemData(3, "post");
 
+    // Add menu
+    assignMenu = new QMenu(this);
+    assignUserButton->setMenu(assignMenu);
+
     connect(updateButton, SIGNAL(clicked()), this, SLOT(update()));
     connect(revertButton, SIGNAL(clicked()), this, SLOT(revert()));
     connect(shortNameEdit, &QLineEdit::textChanged, this, &StepEditWidget::checkInput);
     connect(DBInterface::instance(),&DBInterface::log, this, &StepEditWidget::dbiLog);
+    connect(Ramses::instance(), &Ramses::newUser, this, &StepEditWidget::newUser);
+    connect(removeUserButton, &QToolButton::clicked, this, &StepEditWidget::removeUser);
 
     this->setEnabled(false);
 }
@@ -25,7 +31,7 @@ RamStep *StepEditWidget::step() const
 
 void StepEditWidget::setStep(RamStep *step)
 {
-    disconnect(_currentStepConnection);
+    while (_stepConnections.count() > 0) disconnect( _stepConnections.takeLast() );
 
     _step = step;
 
@@ -44,11 +50,15 @@ void StepEditWidget::setStep(RamStep *step)
     else if (step->type() == RamStep::ShotProduction) typeBox->setCurrentIndex(2);
     else if (step->type() == RamStep::PostProduction) typeBox->setCurrentIndex(3);
 
-    // Load Users (TODO)
+    // Load Users
+    usersList->clear();
+    foreach( RamUser *user, step->users()) userAssigned(user);
+
+    _stepConnections << connect(step, &RamStep::newUser, this, &StepEditWidget::userAssigned);
+    _stepConnections << connect(step, &RamStep::userRemoved, this, &StepEditWidget::userRemoved);
+    _stepConnections << connect(step, &RamStep::destroyed, this, &StepEditWidget::stepDestroyed);
 
     this->setEnabled(Ramses::instance()->isAdmin());
-
-    _currentStepConnection = connect(step, &RamStep::destroyed, this, &StepEditWidget::stepDestroyed);
 }
 
 void StepEditWidget::update()
@@ -97,6 +107,98 @@ bool StepEditWidget::checkInput()
 void StepEditWidget::stepDestroyed(QObject */*o*/)
 {
     setStep(nullptr);
+}
+
+void StepEditWidget::newUser(RamUser *user)
+{
+    if (!user) return;
+    if (user->uuid() == "") return;
+    QAction *userAction = new QAction(user->name());
+    userAction->setData(user->uuid());
+    assignMenu->addAction(userAction);
+    connect(user, &RamUser::changed, this, &StepEditWidget::userChanged);
+    connect(user, &RamUser::destroyed, this, &StepEditWidget::userDestroyed);
+    connect(userAction, &QAction::triggered, this, &StepEditWidget::assignUser);
+}
+
+void StepEditWidget::assignUser()
+{
+    if(!_step) return;
+    QAction *userAction = (QAction*)sender();
+    RamUser *user = Ramses::instance()->user( userAction->data().toString());
+    if (!user) return;
+    _step->assignUser(user);
+}
+
+void StepEditWidget::removeUser()
+{
+    if (!_step) return;
+    _step->removeUser( usersList->currentItem()->data(Qt::UserRole).toString() );
+}
+
+void StepEditWidget::userAssigned(RamUser *user)
+{
+    if (!user) return;
+    if (user->uuid() == "") return;
+
+    QListWidgetItem *userItem = new QListWidgetItem(user->name());
+    userItem->setData(Qt::UserRole, user->uuid());
+    usersList->addItem(userItem);
+    connect(user, &RamUser::destroyed, this, &StepEditWidget::userDestroyed);
+    connect(user, &RamUser::changed, this, &StepEditWidget::userChanged);
+}
+
+void StepEditWidget::userRemoved(QString uuid)
+{
+    for (int i = usersList->count() - 1; i >= 0; i--)
+    {
+        if (usersList->item(i)->data(Qt::UserRole).toString() == uuid)
+        {
+            QListWidgetItem *item = usersList->takeItem(i);
+            delete item;
+        }
+    }
+}
+
+void StepEditWidget::userChanged()
+{
+    RamUser *user = (RamUser*)sender();
+    QList<QAction *> actions = assignMenu->actions();
+    for (int i = actions.count() -1; i >= 0; i--)
+    {
+        if (actions[i]->data().toString() == user->uuid()) actions[i]->setText(user->name());
+    }
+
+    for (int i = usersList->count() -1; i >= 0; i--)
+    {
+        if (usersList->item(i)->data(Qt::UserRole).toString() == user->uuid())
+        {
+            usersList->item(i)->setText(user->name());
+        }
+    }
+}
+
+void StepEditWidget::userDestroyed(QObject *o)
+{
+    RamUser *u = (RamUser *)o;
+    QList<QAction *> actions = assignMenu->actions();
+    for (int i = actions.count() -1; i >= 0; i--)
+    {
+        if (actions[i]->data().toString() == u->uuid())
+        {
+            assignMenu->removeAction(actions[i]);
+            actions[i]->deleteLater();
+        }
+    }
+
+    for (int i = usersList->count() -1; i >= 0; i--)
+    {
+        if (usersList->item(i)->data(Qt::UserRole).toString() == u->uuid())
+        {
+            QListWidgetItem *item = usersList->takeItem(i);
+            delete item;
+        }
+    }
 }
 
 void StepEditWidget::dbiLog(QString m, LogUtils::LogType t)

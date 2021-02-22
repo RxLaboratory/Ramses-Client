@@ -77,6 +77,7 @@ void RamProject::removeStep(QString uuid)
         {
             _steps.removeAt(i);
             s->deleteLater();
+            emit stepRemoved(uuid);
         }
     }
 }

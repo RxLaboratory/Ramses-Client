@@ -6,7 +6,7 @@ StepsManagerWidget::StepsManagerWidget(QWidget *parent): ListManagerWidget(paren
     this->setWidget(stepWidget);
     stepWidget->setEnabled(false);
 
-    this->setRole(RamUser::Admin);
+    this->setRole(RamUser::ProjectAdmin);
 
     // Add menu
     assignMenu = new QMenu(this);
@@ -57,7 +57,7 @@ void StepsManagerWidget::changeProject(RamProject *project)
 {
     this->setEnabled(false);
 
-    disconnect(_currentProjectConnection);
+    while (_projectConnections.count() > 0) disconnect( _projectConnections.takeLast() );
 
     // empty list
     list->blockSignals(true);
@@ -69,7 +69,8 @@ void StepsManagerWidget::changeProject(RamProject *project)
 
     //add steps
     foreach(RamStep *step, project->steps()) newStep(step);
-    _currentProjectConnection = connect(project, &RamProject::newStep, this, &StepsManagerWidget::newStep);
+    _projectConnections << connect(project, &RamProject::newStep, this, &StepsManagerWidget::newStep);
+    _projectConnections << connect(project, &RamProject::stepRemoved, this, &StepsManagerWidget::stepRemoved);
 
     this->setEnabled(true);
 }
@@ -106,6 +107,11 @@ void StepsManagerWidget::newStep(RamStep *step)
     }
 }
 
+void StepsManagerWidget::stepRemoved(QString uuid)
+{
+    removeData(uuid);
+}
+
 void StepsManagerWidget::removeStep(QObject *step)
 {
     RamStep *s = (RamStep*)step;
@@ -135,9 +141,13 @@ void StepsManagerWidget::removeTemplateStep(QObject *o)
 {
     RamStep *s = (RamStep *)o;
     QList<QAction *> actions = assignMenu->actions();
-    for (int i = list->count() -1; i >= 0; i--)
+    for (int i = actions.count() -1; i >= 0; i--)
     {
-        if (actions[i]->data().toString() == s->uuid()) actions[i]->deleteLater();
+        if (actions[i]->data().toString() == s->uuid())
+        {
+            assignMenu->removeAction(actions[i]);
+            actions[i]->deleteLater();
+        }
     }
 }
 
@@ -145,7 +155,7 @@ void StepsManagerWidget::templateStepChanged()
 {
     RamStep *s = (RamStep*)sender();
     QList<QAction *> actions = assignMenu->actions();
-    for (int i = list->count() -1; i >= 0; i--)
+    for (int i = actions.count() -1; i >= 0; i--)
     {
         if (actions[i]->data().toString() == s->uuid()) actions[i]->setText(s->name());
     }

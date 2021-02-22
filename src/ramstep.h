@@ -2,6 +2,7 @@
 #define RAMSTEP_H
 
 #include "ramobject.h"
+#include "ramuser.h"
 
 class RamStep : public RamObject
 {
@@ -27,13 +28,27 @@ public:
     int order() const;
     void setOrder(int order);
 
+    QList<RamUser *> users() const;
+    void clearUsers();
+    void assignUser(RamUser *user);
+    void removeUser(RamUser *user);
+    void removeUser(QString uuid);
+
     void update();
+
+signals:
+    void newUser(RamUser *);
+    void userRemoved(QString);
+
+private slots:
+    void userDestroyed(QObject *o);
 
 private:
     bool _template;
     Type _type;
     QString _projectUuid;
     int _order;
+    QList<RamUser*> _users;
 };
 
 #endif // RAMSTEP_H

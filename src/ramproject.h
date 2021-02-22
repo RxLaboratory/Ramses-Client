@@ -31,6 +31,7 @@ public slots:
 
 signals:
     void newStep(RamStep *);
+    void stepRemoved(QString uuid);
 
 private:
     QString _folderPath;

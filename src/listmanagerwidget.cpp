@@ -12,6 +12,8 @@ ListManagerWidget::ListManagerWidget(QWidget *parent) :
     connect(removeButton, SIGNAL(clicked()), this, SLOT(remove_clicked()));
     connect(Ramses::instance(), &Ramses::loggedIn, this, &ListManagerWidget::loggedIn);
     connect(Ramses::instance(), &Ramses::loggedOut, this, &ListManagerWidget::loggedOut);
+
+    this->setEnabled(false);
 }
 
 void ListManagerWidget::setWidget(QWidget *w)
