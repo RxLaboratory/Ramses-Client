@@ -18,6 +18,7 @@
 #include "stepsmanagerwidget.h"
 #include "statesmanagerwidget.h"
 #include "dbinterface.h"
+#include "daemon.h"
 #include "projectselectorwidget.h"
 #include "localsettingswidget.h"
 #include "duqf-utils/utils.h"

@@ -86,6 +86,9 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     connect(mainStack,SIGNAL(currentChanged(int)), this, SLOT(pageChanged(int)));
     connect(lp, &LoginPage::serverSettings, this, &MainWindow::serverSettings);
     connect(DBInterface::instance(),&DBInterface::log, this, &MainWindow::log);
+    connect(Daemon::instance(), &Daemon::log, this, &MainWindow::log);
+    connect(Daemon::instance(), &Daemon::raise, this, &MainWindow::raise);
+    connect(Daemon::instance(), &Daemon::raise, this, &MainWindow::show);
     connect(Ramses::instance(),&Ramses::loggedIn, this, &MainWindow::loggedIn);
     connect(Ramses::instance(),&Ramses::loggedOut, this, &MainWindow::loggedOut);
     connect(DBInterface::instance(),&DBInterface::connectionStatusChanged, this, &MainWindow::dbiConnectionStatusChanged);
