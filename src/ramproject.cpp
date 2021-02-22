@@ -40,6 +40,15 @@ QList<RamStep *> RamProject::steps() const
     return _steps;
 }
 
+RamStep *RamProject::step(QString uuid) const
+{
+    foreach (RamStep *s, _steps)
+    {
+        if (s->uuid() == uuid) return s;
+    }
+    return nullptr;
+}
+
 void RamProject::addStep(RamStep *step)
 {
     _steps << step;
@@ -75,4 +84,14 @@ void RamProject::removeStep(QString uuid)
 void RamProject::removeStep(RamStep *step)
 {
     removeStep(step->uuid());
+}
+
+bool stepsSorter( RamStep *a, RamStep *b)
+{
+    return a->order() > b->order();
+}
+
+void RamProject::sortSteps()
+{
+    std::sort(_steps.begin(), _steps.end(), stepsSorter);
 }

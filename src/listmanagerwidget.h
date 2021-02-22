@@ -17,6 +17,7 @@ public:
 
 protected slots:
     void addItem(QListWidgetItem *item);
+    void insertItem(int index, QListWidgetItem *item);
     void list_currentRowChanged(int currentRow);
     virtual void currentRowChanged(int currentRow);
     virtual void currentDataChanged(QVariant data);

@@ -16,11 +16,13 @@ public:
     void setFolderPath(const QString &folderPath);
 
     QList<RamStep *> steps() const;
+    RamStep *step(QString uuid) const;
     void addStep(RamStep *step);
     void assignStep(RamStep *templateStep);
     void createStep(QString shortName = "NEW", QString name = "Step");
     void removeStep(QString uuid);
     void removeStep(RamStep *step);
+    void sortSteps();
 
     void update();
 

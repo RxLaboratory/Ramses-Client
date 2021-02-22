@@ -24,12 +24,16 @@ public:
     QString projectUuid() const;
     void setProjectUuid(const QString &projectUuid);
 
+    int order() const;
+    void setOrder(int order);
+
     void update();
 
 private:
     bool _template;
     Type _type;
     QString _projectUuid;
+    int _order;
 };
 
 #endif // RAMSTEP_H

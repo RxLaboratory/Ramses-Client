@@ -356,6 +356,7 @@ void Ramses::gotSteps(QJsonArray steps, RamProject *project)
                 QSignalBlocker b(existingStep);
                 existingStep->setName( newStep.value("name").toString());
                 existingStep->setShortName( newStep.value("shortName").toString());
+                existingStep->setOrder( newStep.value("order").toInt());
                 //send the signal
                 b.unblock();
                 existingStep->setType(newStep.value("type").toString());
@@ -382,12 +383,16 @@ void Ramses::gotSteps(QJsonArray steps, RamProject *project)
                     s.value("uuid").toString()
                     );
         step->setType( s.value("type").toString());
+        step->setOrder( s.value("order").toInt() );
         step->setProjectUuid( s.value("projectUuid").toString());
 
         project->addStep(step);
 
         emit newStep(step);
     }
+
+    // sort the steps
+    project->sortSteps();
 }
 
 void Ramses::dbiConnectionStatusChanged(NetworkUtils::NetworkStatus s)

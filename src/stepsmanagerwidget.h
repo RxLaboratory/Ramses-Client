@@ -26,12 +26,17 @@ private slots:
     void newTemplateStep(RamStep *step);
     void removeTemplateStep(QObject *o);
     void templateStepChanged();
+    void moveStepUp();
+    void moveStepDown();
 
 private:
     StepEditWidget *stepWidget;
     QMenu *assignMenu;
+    QToolButton *downButton;
+    QToolButton *upButton;
     QAction *actionCreateStep;
     QMetaObject::Connection _currentProjectConnection;
+    void updateStepsOrder();
 };
 
 #endif // STEPSMANAGERWIDGET_H

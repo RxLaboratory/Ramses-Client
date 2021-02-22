@@ -40,7 +40,7 @@
         <number>3</number>
        </property>
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout">
+        <layout class="QHBoxLayout" name="buttonsLayout">
          <property name="spacing">
           <number>3</number>
          </property>
@@ -66,7 +66,7 @@
             <string/>
            </property>
            <property name="icon">
-            <iconset resource="duqf_resources.qrc">
+            <iconset resource="resources.qrc">
              <normaloff>:/icons/remove</normaloff>:/icons/remove</iconset>
            </property>
           </widget>
@@ -120,7 +120,6 @@
   </layout>
  </widget>
  <resources>
-  <include location="duqf_resources.qrc"/>
   <include location="resources.qrc"/>
  </resources>
  <connections/>

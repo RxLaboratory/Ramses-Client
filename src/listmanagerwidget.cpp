@@ -35,6 +35,12 @@ void ListManagerWidget::addItem(QListWidgetItem *item)
     }
 }
 
+void ListManagerWidget::insertItem(int index, QListWidgetItem *item)
+{
+    list->insertItem(index, item);
+    list->setCurrentRow(index);
+}
+
 void ListManagerWidget::list_currentRowChanged(int currentRow)
 {
     currentRowChanged( currentRow );

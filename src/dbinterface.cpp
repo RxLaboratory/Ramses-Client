@@ -167,13 +167,14 @@ void DBInterface::createStep(QString shortName, QString name, QString projectUui
     request(q);
 }
 
-void DBInterface::updateStep(QString uuid, QString shortName, QString name, QString type)
+void DBInterface::updateStep(QString uuid, QString shortName, QString name, QString type, int order)
 {
     QStringList q("updateStep");
     q << "uuid=" + uuid;
     q << "shortName=" + shortName;
     q << "name=" + name;
     q << "type=" + type;
+    q << "order=" + QString::number(order);
 
     request(q);
 }

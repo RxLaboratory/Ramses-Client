@@ -15,28 +15,35 @@ StepsManagerWidget::StepsManagerWidget(QWidget *parent): ListManagerWidget(paren
     assignMenu->addSeparator();
     addButton->setMenu(assignMenu);
 
+    // Add order buttons
+    upButton = new QToolButton(this);
+    upButton->setIcon(QIcon(":/icons/move-up"));
+    downButton = new QToolButton(this);
+    downButton->setIcon(QIcon(":/icons/move-down"));
+    buttonsLayout->insertWidget(0, upButton);
+    buttonsLayout->insertWidget(0, downButton);
+
     foreach(RamStep *step, Ramses::instance()->templateSteps()) newTemplateStep(step);
 
     connect(actionCreateStep, &QAction::triggered, this, &StepsManagerWidget::createStep);
     connect(Ramses::instance(), &Ramses::projectChanged, this, &StepsManagerWidget::changeProject);
     connect(Ramses::instance(), &Ramses::newTemplateStep, this, &StepsManagerWidget::newTemplateStep);
+    connect(upButton, &QToolButton::clicked, this, &StepsManagerWidget::moveStepUp);
+    connect(downButton, &QToolButton::clicked, this, &StepsManagerWidget::moveStepDown);
 }
 
 void StepsManagerWidget::currentDataChanged(QVariant data)
 {
+    stepWidget->setEnabled(false);
+
     RamProject *project = Ramses::instance()->currentProject();
     if (!project) return;
 
-    foreach(RamStep *step, project->steps())
-    {
-        if (step->uuid() == data.toString())
-        {
-            stepWidget->setStep(step);
-            stepWidget->setEnabled(true);
-            return;
-        }
-    }
-    stepWidget->setEnabled(false);
+    RamStep *step = project->step( data.toString() );
+    if (!step) return;
+
+    stepWidget->setStep(step);
+    stepWidget->setEnabled(true);
 }
 
 void StepsManagerWidget::removeItem(QVariant data)
@@ -88,11 +95,12 @@ void StepsManagerWidget::createStep()
 void StepsManagerWidget::newStep(RamStep *step)
 {
     if (!step) return;
+
     if (step->uuid() != "")
     {
         QListWidgetItem *stepItem = new QListWidgetItem(step->name());
         stepItem->setData(Qt::UserRole, step->uuid());
-        this->addItem(stepItem);
+        this->insertItem(step->order(), stepItem);
         connect(step, &RamStep::destroyed, this, &StepsManagerWidget::removeStep);
         connect(step, &RamStep::changed, this, &StepsManagerWidget::stepChanged);
     }
@@ -140,5 +148,43 @@ void StepsManagerWidget::templateStepChanged()
     for (int i = list->count() -1; i >= 0; i--)
     {
         if (actions[i]->data().toString() == s->uuid()) actions[i]->setText(s->name());
+    }
+}
+
+void StepsManagerWidget::moveStepUp()
+{
+    int currentRow = list->currentRow();
+    if (currentRow == 0) return;
+    QListWidgetItem *stepItem = list->takeItem( currentRow );
+    if (!stepItem) return;
+
+    list->insertItem( currentRow - 1, stepItem);
+    list->setCurrentRow( currentRow - 1);
+    updateStepsOrder();
+}
+
+void StepsManagerWidget::moveStepDown()
+{
+    int currentRow = list->currentRow();
+    if (currentRow == list->count() - 1) return;
+    QListWidgetItem *stepItem = list->takeItem( currentRow );
+    if (!stepItem) return;
+
+    list->insertItem( currentRow + 1, stepItem);
+    list->setCurrentRow( currentRow + 1);
+    updateStepsOrder();
+}
+
+void StepsManagerWidget::updateStepsOrder()
+{
+    RamProject *project = Ramses::instance()->currentProject();
+    if (!project) return;
+
+    for (int i = 0; i < list->count(); i++)
+    {
+        RamStep *step = project->step( list->item(i)->data(Qt::UserRole).toString() );
+        if (!step) continue;
+        step->setOrder(i);
+        step->update();
     }
 }

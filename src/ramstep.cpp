@@ -6,6 +6,7 @@ RamStep::RamStep(QString shortName, QString name, bool tplt, QString uuid, QObje
     _projectUuid = "";
     _template = tplt;
     _type = AssetProduction;
+    _order = 0;
     if (_template) _dbi->createTemplateStep(_shortName, _name, _uuid);
 }
 
@@ -15,6 +16,7 @@ RamStep::RamStep(QString shortName, QString name, QString projectUuid, QString u
     _projectUuid = projectUuid;
     _template = false;
     _type = AssetProduction;
+    _order = 0;
     _dbi->createStep(_shortName, _name, projectUuid, _uuid);
 }
 
@@ -65,7 +67,18 @@ void RamStep::update()
     else if (_type == PreProduction) type = "pre";
     else if (_type == ShotProduction) type = "shot";
     if (_template) _dbi->updateTemplateStep(_uuid, _shortName, _name, type);
-    else _dbi->updateStep(_uuid, _shortName, _name, type);
+    else _dbi->updateStep(_uuid, _shortName, _name, type, _order);
+}
+
+int RamStep::order() const
+{
+    return _order;
+}
+
+void RamStep::setOrder(int order)
+{
+    _order = order;
+    emit changed();
 }
 
 QString RamStep::projectUuid() const
