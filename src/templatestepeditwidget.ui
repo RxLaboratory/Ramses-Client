@@ -137,7 +137,7 @@
       <widget class="QComboBox" name="typeBox">
        <item>
         <property name="text">
-         <string>Pre-Production</string>
+         <string>       Pre-Production</string>
         </property>
         <property name="icon">
          <iconset resource="resources.qrc">
@@ -146,7 +146,7 @@
        </item>
        <item>
         <property name="text">
-         <string>Asset Production</string>
+         <string>       Asset Production</string>
         </property>
         <property name="icon">
          <iconset resource="resources.qrc">
@@ -155,7 +155,7 @@
        </item>
        <item>
         <property name="text">
-         <string>Shot Production</string>
+         <string>       Shot Production</string>
         </property>
         <property name="icon">
          <iconset resource="resources.qrc">
@@ -164,7 +164,7 @@
        </item>
        <item>
         <property name="text">
-         <string>Post-Production</string>
+         <string>       Post-Production</string>
         </property>
         <property name="icon">
          <iconset resource="resources.qrc">

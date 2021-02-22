@@ -61,7 +61,7 @@
       <widget class="QComboBox" name="roleBox">
        <item>
         <property name="text">
-         <string>Administrator</string>
+         <string>       Administrator</string>
         </property>
         <property name="icon">
          <iconset resource="resources.qrc">
@@ -70,7 +70,7 @@
        </item>
        <item>
         <property name="text">
-         <string>Lead</string>
+         <string>       Lead</string>
         </property>
         <property name="icon">
          <iconset resource="resources.qrc">
@@ -79,7 +79,7 @@
        </item>
        <item>
         <property name="text">
-         <string>Standard User</string>
+         <string>       Standard User</string>
         </property>
         <property name="icon">
          <iconset resource="resources.qrc">
