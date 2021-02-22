@@ -52,6 +52,12 @@ void StepEditWidget::setStep(RamStep *step)
 
     // Load Users
     usersList->clear();
+    // Reset assign list too
+    QList<QAction *> actions = assignMenu->actions();
+    for (int i = 0; i < actions.count(); i++)
+    {
+        actions[i]->setVisible(true);
+    }
     foreach( RamUser *user, step->users()) userAssigned(user);
 
     _stepConnections << connect(step, &RamStep::newUser, this, &StepEditWidget::userAssigned);
@@ -146,6 +152,13 @@ void StepEditWidget::userAssigned(RamUser *user)
     usersList->addItem(userItem);
     connect(user, &RamUser::destroyed, this, &StepEditWidget::userDestroyed);
     connect(user, &RamUser::changed, this, &StepEditWidget::userChanged);
+
+    //hide from assign list
+    QList<QAction *> actions = assignMenu->actions();
+    for (int i = 0; i < actions.count(); i++)
+    {
+        if (actions[i]->data().toString() == user->uuid()) actions[i]->setVisible(false);
+    }
 }
 
 void StepEditWidget::userRemoved(QString uuid)
@@ -157,6 +170,13 @@ void StepEditWidget::userRemoved(QString uuid)
             QListWidgetItem *item = usersList->takeItem(i);
             delete item;
         }
+    }
+
+    //hide from assign list
+    QList<QAction *> actions = assignMenu->actions();
+    for (int i = 0; i < actions.count(); i++)
+    {
+        if (actions[i]->data().toString() == uuid) actions[i]->setVisible(true);
     }
 }
 
