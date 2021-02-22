@@ -23,6 +23,14 @@ void RamUser::setRole(const UserRole &role)
     emit changed();
 }
 
+void RamUser::setRole(const QString role)
+{
+    if (role == "admin")setRole(Admin);
+    else if (role == "project") setRole(ProjectAdmin);
+    else if (role == "lead") setRole(Lead);
+    else setRole(Standard);
+}
+
 QString RamUser::folderPath() const
 {
     return _folderPath;
@@ -38,6 +46,7 @@ void RamUser::update()
 {
     QString role = "standard";
     if (_role == Admin) role = "admin";
+    else if (_role == ProjectAdmin) role = "project";
     else if (_role == Lead) role = "lead";
 
     QString path = _folderPath;

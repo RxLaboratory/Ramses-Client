@@ -32,5 +32,6 @@
         <file alias="tray-color">resources/icons/ramses_sc.svg</file>
         <file alias="tray-dark">resources/icons/ramses_sd.svg</file>
         <file alias="tray-light">resources/icons/ramses_sl.svg</file>
+        <file alias="project-admin">resources/icons/project-leader-head-admin_sl.svg</file>
     </qresource>
 </RCC>

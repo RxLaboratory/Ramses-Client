@@ -61,11 +61,11 @@
       <widget class="QComboBox" name="roleBox">
        <item>
         <property name="text">
-         <string>       Administrator</string>
+         <string>       Standard User</string>
         </property>
         <property name="icon">
          <iconset resource="resources.qrc">
-          <normaloff>:/icons/admin</normaloff>:/icons/admin</iconset>
+          <normaloff>:/icons/user</normaloff>:/icons/user</iconset>
         </property>
        </item>
        <item>
@@ -79,11 +79,20 @@
        </item>
        <item>
         <property name="text">
-         <string>       Standard User</string>
+         <string>       Project Administrator</string>
         </property>
         <property name="icon">
          <iconset resource="resources.qrc">
-          <normaloff>:/icons/user</normaloff>:/icons/user</iconset>
+          <normaloff>:/icons/project-admin</normaloff>:/icons/project-admin</iconset>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>       Administrator</string>
+        </property>
+        <property name="icon">
+         <iconset resource="resources.qrc">
+          <normaloff>:/icons/admin</normaloff>:/icons/admin</iconset>
         </property>
        </item>
       </widget>

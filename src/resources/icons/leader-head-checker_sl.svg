@@ -26,8 +26,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="11.313708"
-     inkscape:cx="24.944174"
-     inkscape:cy="25.951322"
+     inkscape:cx="8.857494"
+     inkscape:cy="25.597769"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -61,7 +61,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -78,8 +78,9 @@
        sodipodi:nodetypes="scscssssssss" />
     <path
        id="path894"
-       d="m 4.2451129,288.53334 a 2.114575,2.114575 0 0 0 -2.114575,2.11458 2.114575,2.114575 0 0 0 2.114575,2.11457 2.114575,2.114575 0 0 0 2.1145754,-2.11457 2.114575,2.114575 0 0 0 -2.1145754,-2.11458 z m 0.6842941,0.9259 c 0.057323,0 0.1147635,0.0218 0.1584902,0.0656 l 0.2803258,0.28033 c 0.087453,0.0875 0.087453,0.22922 0,0.31673 l -0.2638056,0.2638 -0.5970475,-0.59705 0.2638056,-0.26381 c 0.043727,-0.0437 0.1009092,-0.0656 0.1582315,-0.0656 z m -0.5276112,0.43469 0.5970476,0.59731 -1.2965711,1.29657 -0.5322575,0.0586 c -0.071269,0.008 -0.1315719,-0.0524 -0.1236427,-0.12364 L 3.1057411,291.19 Z"
-       style="opacity:1;fill:#e3e3e3;fill-opacity:1;stroke:none;stroke-width:0.78172684;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
-       inkscape:connector-curvature="0" />
+       d="m 5.4642418,288.53334 c 0.1017769,0 0.2037625,0.0387 0.2813991,0.11647 l 0.497718,0.49773 c 0.1552727,0.15535 0.1552727,0.40698 0,0.56235 l -0.4683864,0.46838 -1.0600569,-1.06006 0.4683865,-0.4684 c 0.077637,-0.0776 0.1791641,-0.11647 0.2809397,-0.11647 z m -0.9367728,0.77179 1.0600571,1.06052 -2.30206,2.30206 -0.9450223,0.10405 c -0.126538,0.0142 -0.2336057,-0.093 -0.2195274,-0.21953 L 2.226326,291.6063 Z"
+       style="opacity:1;fill:#e3e3e3;fill-opacity:1;stroke:none;stroke-width:1.38795471;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="sccccccsccccccc" />
   </g>
 </svg>

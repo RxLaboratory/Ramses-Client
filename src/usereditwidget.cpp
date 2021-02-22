@@ -11,7 +11,7 @@ UserEditWidget::UserEditWidget(QWidget *parent) :
     folderSelector->setPlaceHolderText("Default (Ramses/Users/User_ShortName)");
     folderLayout->addWidget(folderSelector);
 
-    roleBox->setCurrentIndex(2);
+    roleBox->setCurrentIndex(0);
 
     connect(profileUpdateButton, SIGNAL(clicked()), this, SLOT(update()));
     connect(revertButton, SIGNAL(clicked()), this, SLOT(revert()));
@@ -40,7 +40,7 @@ void UserEditWidget::setUser(RamUser *user)
     cpasswordEdit->setText("");
     npassword1Edit->setText("");
     npassword2Edit->setText("");
-    roleBox->setCurrentIndex(2);
+    roleBox->setCurrentIndex(0);
     roleBox->setEnabled(true);
     roleBox->setToolTip("");
     cpasswordEdit->setEnabled(false);
@@ -56,9 +56,7 @@ void UserEditWidget::setUser(RamUser *user)
     nameEdit->setText(user->name());
     shortNameEdit->setText(user->shortName());
 
-    if (user->role() == RamUser::Admin) roleBox->setCurrentIndex(0);
-    else if (user->role() == RamUser::Lead) roleBox->setCurrentIndex(1);
-    else roleBox->setCurrentIndex(2);
+    roleBox->setCurrentIndex(user->role());
 
     if (user->folderPath() != "auto") folderSelector->setPath( user->folderPath() );
     folderSelector->setPlaceHolderText( Ramses::instance()->defaultUserPath(user) );
@@ -98,7 +96,8 @@ void UserEditWidget::update()
     _user->setFolderPath( folderSelector->path());
 
     int roleIndex = roleBox->currentIndex();
-    if (roleIndex == 0) _user->setRole(RamUser::Admin);
+    if (roleIndex == 3) _user->setRole(RamUser::Admin);
+    else if (roleIndex == 2) _user->setRole(RamUser::ProjectAdmin);
     else if (roleIndex == 1) _user->setRole(RamUser::Lead);
     else _user->setRole(RamUser::Standard);
 

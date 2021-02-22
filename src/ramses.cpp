@@ -72,10 +72,7 @@ void Ramses::gotUsers(QJsonArray users)
                 existingUser->setFolderPath( newUser.value("folderPath").toString());
                 //send the signal
                 b.unblock();
-                QString r = newUser.value("role").toString("standard");
-                if (r == "admin") existingUser->setRole(RamUser::Admin);
-                else if (r == "lead") existingUser->setRole(RamUser::Lead);
-                else existingUser->setRole(RamUser::Standard);
+                existingUser->setRole( newUser.value("role").toString("standard") );
                 //remove from new users
                 users.removeAt(j);
                 break;
@@ -99,11 +96,8 @@ void Ramses::gotUsers(QJsonArray users)
                     u.value("uuid").toString()
                     );
         user->setFolderPath(u.value("folderPath").toString());
+        user->setRole( u.value("role").toString("standard") );
 
-        QString r = u.value("role").toString("standard");
-        if (r == "admin") user->setRole(RamUser::Admin);
-        else if (r == "lead") user->setRole(RamUser::Lead);
-        else user->setRole(RamUser::Standard);
         _users << user;
 
         connect(user,&RamUser::destroyed, this, &Ramses::userDestroyed);

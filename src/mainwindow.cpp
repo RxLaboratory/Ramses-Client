@@ -495,6 +495,11 @@ void MainWindow::currentUserChanged()
         actionProjectSettings->setVisible(true);
         userButton->setIcon(QIcon(":/icons/admin"));
     }
+    else if (user->role() == RamUser::ProjectAdmin)
+    {
+        actionProjectSettings->setVisible(true);
+        userButton->setIcon(QIcon(":/icons/project-admin"));
+    }
     else if (user->role() == RamUser::Lead)
     {
         userButton->setIcon(QIcon(":/icons/lead"));

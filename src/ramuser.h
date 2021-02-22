@@ -7,7 +7,8 @@ class RamUser : public RamObject
 {
     Q_OBJECT
 public:
-    enum UserRole { Admin = 2,
+    enum UserRole { Admin = 3,
+                    ProjectAdmin = 2,
                     Lead = 1,
                     Standard = 0 };
     Q_ENUM( UserRole )
@@ -17,6 +18,7 @@ public:
 
     UserRole role() const;
     void setRole(const UserRole &role);
+    void setRole(const QString role);
 
     QString folderPath() const;
     void setFolderPath(const QString &folderPath);
