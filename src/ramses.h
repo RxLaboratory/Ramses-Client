@@ -55,6 +55,9 @@ public:
     RamState *createState();
     void removeState(QString uuid);
 
+public slots:
+    void refresh();
+
 signals:
     void loggedIn(RamUser*);
     void loggedOut();
@@ -69,7 +72,6 @@ protected:
     static Ramses *_instance;
 
 private slots:
-    void refresh();
     void newData(QJsonObject data);
     //users
     void gotUsers(QJsonArray users);

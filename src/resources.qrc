@@ -35,5 +35,6 @@
         <file alias="project-admin">resources/icons/project-leader-head-admin_sl.svg</file>
         <file alias="bash">resources/icons/bash-terminal_sl.svg</file>
         <file alias="daemon">resources/icons/daemon.svg</file>
+        <file alias="reload">resources/icons/reload_sl.svg</file>
     </qresource>
 </RCC>

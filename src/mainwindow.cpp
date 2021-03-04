@@ -20,6 +20,14 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     mainToolBar->addWidget(new ProjectSelectorWidget(this));
 
     //Populate status bar
+
+    refreshButton = new QToolButton(this);
+    refreshButton->setToolButtonStyle(Qt::ToolButtonIconOnly);
+    refreshButton->setText("");
+    refreshButton->setIcon(QIcon(":/icons/reload"));
+    mainStatusBar->addPermanentWidget(refreshButton);
+    refreshButton->hide();
+
     networkButton = new QToolButton(this);
     networkButton->setToolButtonStyle(Qt::ToolButtonTextOnly);
     networkButton->setText("Offline");
@@ -84,6 +92,7 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     connect(actionAdmin,SIGNAL(triggered(bool)), this, SLOT(admin(bool)));
     connect(actionProjectSettings,SIGNAL(triggered(bool)), this, SLOT(projectSettings(bool)));
     connect(networkButton,SIGNAL(clicked()),this, SLOT(networkButton_clicked()));
+    connect(refreshButton, SIGNAL(clicked()), Ramses::instance(), SLOT(refresh()));
     connect(mainStack,SIGNAL(currentChanged(int)), this, SLOT(pageChanged(int)));
     connect(lp, &LoginPage::serverSettings, this, &MainWindow::serverSettings);
     connect(DBInterface::instance(),&DBInterface::log, this, &MainWindow::log);
@@ -93,6 +102,7 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     connect(Ramses::instance(),&Ramses::loggedIn, this, &MainWindow::loggedIn);
     connect(Ramses::instance(),&Ramses::loggedOut, this, &MainWindow::loggedOut);
     connect(DBInterface::instance(),&DBInterface::connectionStatusChanged, this, &MainWindow::dbiConnectionStatusChanged);
+
 
     // Set style
     duqf_setStyle();
@@ -535,9 +545,17 @@ void MainWindow::currentUserChanged()
 
 void MainWindow::dbiConnectionStatusChanged(NetworkUtils::NetworkStatus s)
 {
-    if (s == NetworkUtils::Online) networkButton->setText("Online");
+    if (s == NetworkUtils::Online)
+    {
+        refreshButton->show();
+        networkButton->setText("Online");
+    }
     else if (s == NetworkUtils::Connecting) networkButton->setText("Connecting...");
-    else if (s == NetworkUtils::Offline) networkButton->setText("Offline");
+    else if (s == NetworkUtils::Offline)
+    {
+        refreshButton->hide();
+        networkButton->setText("Offline");
+    }
 }
 
 bool MainWindow::eventFilter(QObject *obj, QEvent *event)

@@ -76,6 +76,7 @@ private:
     QMenu *userMenu;
     QToolButton *userButton;
     QToolButton *networkButton;
+    QToolButton *refreshButton;
 
     QMetaObject::Connection _currentUserConnection;
 
