@@ -1,18 +1,29 @@
 #include "settingswidget.h"
 
-SettingsWidget::SettingsWidget(QWidget *parent) :
+SettingsWidget::SettingsWidget(QString title, QWidget *parent) :
     QWidget(parent)
 {
-    setupUi();
+    setupUi(title);
 
+    connect(titleBar, &TitleBar::reinitRequested, this, &SettingsWidget::reinitRequested);
+    connect(titleBar, &TitleBar::closeRequested, this, &SettingsWidget::closeRequested);
     connect(mainList, SIGNAL(currentRowChanged(int)), this, SLOT(mainList_currentRowChanged(int)));
 }
 
-void SettingsWidget::setupUi()
+void SettingsWidget::setupUi(QString title)
 {
     this->setObjectName(QStringLiteral("SettingsWidget"));
     this->resize(878, 479);
-    QHBoxLayout *horizontalLayout = new QHBoxLayout(this);
+    QVBoxLayout *verticalLayout = new QVBoxLayout(this);
+    verticalLayout->setContentsMargins(0, 0, 0, 0);
+
+    titleBar = new TitleBar(title,this);
+    titleBar->setObjectName("titleBar");
+    verticalLayout->addWidget(titleBar);
+
+    QWidget *mainWidget = new QWidget(this);
+    verticalLayout->addWidget(mainWidget);
+    QHBoxLayout *horizontalLayout = new QHBoxLayout(mainWidget);
     horizontalLayout->setSpacing(0);
     horizontalLayout->setObjectName(QStringLiteral("horizontalLayout"));
     horizontalLayout->setContentsMargins(0, 0, 0, 0);
@@ -56,6 +67,11 @@ void SettingsWidget::addPage(QWidget *ui, QString title, QIcon icon)
 void SettingsWidget::setCurrentIndex(int index)
 {
     mainStackWidget->setCurrentIndex(index);
+}
+
+void SettingsWidget::showReinitButton(bool show)
+{
+    titleBar->showReinitButton(show);
 }
 
 void SettingsWidget::mainList_currentRowChanged(int currentRow)
