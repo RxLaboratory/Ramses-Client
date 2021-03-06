@@ -35,7 +35,7 @@
       <enum>Qt::Horizontal</enum>
      </property>
      <widget class="QTextEdit" name="console"/>
-     <widget class="QWidget" name="">
+     <widget class="QWidget" name="layoutWidget">
       <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,1,0,1">
        <property name="spacing">
         <number>0</number>
@@ -49,17 +49,6 @@
           <number>3</number>
          </property>
          <item>
-          <widget class="QToolButton" name="consoleButton">
-           <property name="text">
-            <string/>
-           </property>
-           <property name="icon">
-            <iconset resource="resources.qrc">
-             <normaloff>:/icons/bash</normaloff>:/icons/bash</iconset>
-           </property>
-          </widget>
-         </item>
-         <item>
           <spacer name="verticalSpacer_4">
            <property name="orientation">
             <enum>Qt::Vertical</enum>
@@ -71,6 +60,17 @@
             </size>
            </property>
           </spacer>
+         </item>
+         <item>
+          <widget class="QToolButton" name="consoleButton">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="icon">
+            <iconset resource="resources.qrc">
+             <normaloff>:/icons/bash</normaloff>:/icons/bash</iconset>
+           </property>
+          </widget>
          </item>
         </layout>
        </item>

@@ -36,6 +36,7 @@ SOURCES += \
     duqf-widgets/duqfslider.cpp \
     duqf-widgets/duqfspinbox.cpp \
     duqf-widgets/settingswidget.cpp \
+    duqf-widgets/titlebar.cpp \
     duqf-widgets/toolbarspacer.cpp \
     listmanagerwidget.cpp \
     localsettingswidget.cpp \
@@ -45,6 +46,7 @@ SOURCES += \
     projecteditwidget.cpp \
     projectselectorwidget.cpp \
     projectsmanagerwidget.cpp \
+    ramassetgroup.cpp \
     ramobject.cpp \
     ramproject.cpp \
     ramses.cpp \
@@ -57,6 +59,8 @@ SOURCES += \
     statesmanagerwidget.cpp \
     stepsmanagerwidget.cpp \
     stepeditwidget.cpp \
+    templateassetgroupeditwidget.cpp \
+    templateassetgroupsmanagerwidget.cpp \
     templatestepeditwidget.cpp \
     templatestepsmanagerwidget.cpp \
     usereditwidget.cpp \
@@ -81,6 +85,7 @@ HEADERS += \
     duqf-widgets/duqfslider.h \
     duqf-widgets/duqfspinbox.h \
     duqf-widgets/settingswidget.h \
+    duqf-widgets/titlebar.h \
     duqf-widgets/toolbarspacer.h \
     listmanagerwidget.h \
     localsettingswidget.h \
@@ -89,6 +94,7 @@ HEADERS += \
     projecteditwidget.h \
     projectselectorwidget.h \
     projectsmanagerwidget.h \
+    ramassetgroup.h \
     ramobject.h \
     ramproject.h \
     ramses.h \
@@ -101,6 +107,8 @@ HEADERS += \
     statesmanagerwidget.h \
     stepsmanagerwidget.h \
     stepeditwidget.h \
+    templateassetgroupeditwidget.h \
+    templateassetgroupsmanagerwidget.h \
     templatestepeditwidget.h \
     templatestepsmanagerwidget.h \
     usereditwidget.h \
@@ -112,6 +120,7 @@ FORMS += \
     duqf-widgets/aboutdialog.ui \
     duqf-widgets/appearancesettingswidget.ui \
     duqf-widgets/duqffolderselectorwidget.ui \
+    duqf-widgets/titlebar.ui \
     duqf-widgets/toolbarspacer.ui \
     listmanagerwidget.ui \
     localsettingswidget.ui \
@@ -121,6 +130,7 @@ FORMS += \
     serversettingswidget.ui \
     stateeditwidget.ui \
     stepeditwidget.ui \
+    templateassetgroupeditwidget.ui \
     templatestepeditwidget.ui \
     usereditwidget.ui \
     userprofilepage.ui \

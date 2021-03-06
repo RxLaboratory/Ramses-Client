@@ -16,6 +16,7 @@
 #include "usersmanagerwidget.h"
 #include "projectsmanagerwidget.h"
 #include "templatestepsmanagerwidget.h"
+#include "templateassetgroupsmanagerwidget.h"
 #include "stepsmanagerwidget.h"
 #include "statesmanagerwidget.h"
 #include "dbinterface.h"
@@ -105,7 +106,9 @@ private slots:
     void userProfile();
     void revealUserFolder();
     void admin(bool show = true);
+    void closeAdmin();
     void projectSettings(bool show = true);
+    void closeProjectSettings();
     void networkButton_clicked();
     void loggedIn();
     void loggedOut();

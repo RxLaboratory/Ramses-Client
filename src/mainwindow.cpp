@@ -69,15 +69,18 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     UserProfilePage *up = new UserProfilePage(this);
     mainStack->addWidget(up);
     // admin
-    adminPage = new SettingsWidget(this);
+    adminPage = new SettingsWidget("Admin", this);
+    adminPage->showReinitButton(false);
     mainStack->addWidget(adminPage);
     // Admin tabs
     adminPage->addPage(new UsersManagerWidget(this),"Users", QIcon(":/icons/users"));
     adminPage->addPage(new ProjectsManagerWidget(this), "Projects", QIcon(":/icons/projects"));
     adminPage->addPage(new TemplateStepsManagerWidget(this), "Template Steps", QIcon(":/icons/steps"));
+    adminPage->addPage(new TemplateAssetGroupsManagerWidget(this), "Template Asset Groups", QIcon(":/icons/asset-groups"));
     adminPage->addPage(new StatesManagerWidget(this), "States", QIcon(":/icons/state"));
     // project settings
-    projectSettingsPage = new SettingsWidget(this);
+    projectSettingsPage = new SettingsWidget("Projects", this);
+    projectSettingsPage->showReinitButton(false);
     mainStack->addWidget(projectSettingsPage);
     projectSettingsPage->addPage(new StepsManagerWidget(this), "Steps", QIcon(":/icons/steps"));
 
@@ -91,6 +94,8 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     connect(actionUserFolder,SIGNAL(triggered()), this, SLOT(revealUserFolder()));
     connect(actionAdmin,SIGNAL(triggered(bool)), this, SLOT(admin(bool)));
     connect(actionProjectSettings,SIGNAL(triggered(bool)), this, SLOT(projectSettings(bool)));
+    connect(adminPage, SIGNAL(closeRequested()), this, SLOT(closeAdmin()));
+    connect(projectSettingsPage, SIGNAL(closeRequested()), this, SLOT(closeProjectSettings()));
     connect(networkButton,SIGNAL(clicked()),this, SLOT(networkButton_clicked()));
     connect(refreshButton, SIGNAL(clicked()), Ramses::instance(), SLOT(refresh()));
     connect(mainStack,SIGNAL(currentChanged(int)), this, SLOT(pageChanged(int)));
@@ -243,7 +248,6 @@ void MainWindow::duqf_initUi()
 
     settingsWidget = new SettingsWidget();
     duqf_settingsLayout->addWidget(settingsWidget);
-    duqf_closeSettingsButton->setObjectName("windowButton");
 
     AppearanceSettingsWidget *asw = new AppearanceSettingsWidget();
     settingsWidget->addPage(asw, "Appearance", QIcon(":/icons/color"));
@@ -262,8 +266,8 @@ void MainWindow::duqf_initUi()
 
     connect(aboutQtAction, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
     connect(duqf_settingsButton, SIGNAL(clicked(bool)), this, SLOT(duqf_settings(bool)));
-    connect(duqf_closeSettingsButton, SIGNAL(clicked()), this, SLOT(duqf_closeSettings()));
-    connect(duqf_reinitSettingsButton, SIGNAL(clicked()), this, SLOT(duqf_reinitSettings()));
+    connect(settingsWidget, SIGNAL(closeRequested()), this, SLOT(duqf_closeSettings()));
+    connect(settingsWidget, SIGNAL(reinitRequested()), this, SLOT(duqf_reinitSettings()));
 }
 
 void MainWindow::duqf_setStyle()
@@ -471,10 +475,20 @@ void MainWindow::admin(bool show)
     else home();
 }
 
+void MainWindow::closeAdmin()
+{
+    admin(false);
+}
+
 void MainWindow::projectSettings(bool show)
 {
     if (show) mainStack->setCurrentIndex(4);
     else home();
+}
+
+void MainWindow::closeProjectSettings()
+{
+    projectSettings(false);
 }
 
 void MainWindow::networkButton_clicked()
