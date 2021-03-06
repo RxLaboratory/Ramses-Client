@@ -156,6 +156,40 @@ void DBInterface::removeTemplateStep(QString uuid)
     request(q);
 }
 
+void DBInterface::createTemplateAssetGroup(QString shortName, QString name, QString uuid)
+{
+    QStringList q("createTemplateAssetGroup");
+    q << "uuid=" + uuid;
+    q << "shortName=" + shortName;
+    q << "name=" + name;
+
+    request(q);
+}
+
+void DBInterface::getTemplateAssetGroups()
+{
+    QString q = "?getTemplateAssetGroups";
+    request(q);
+}
+
+void DBInterface::updateTemplateAssetGroup(QString uuid, QString shortName, QString name)
+{
+    QStringList q("updateTemplateAssetGroup");
+    q << "uuid=" + uuid;
+    q << "shortName=" + shortName;
+    q << "name=" + name;
+
+    request(q);
+}
+
+void DBInterface::removeTemplateAssetGroup(QString uuid)
+{
+    QStringList q("removeTemplateAssetGroup");
+    q << "uuid=" + uuid;
+
+    request(q);
+}
+
 void DBInterface::createStep(QString shortName, QString name, QString projectUuid, QString uuid)
 {
     QStringList q("createStep");
@@ -201,6 +235,35 @@ void DBInterface::unassignUser(QString stepUuid, QString userUuid)
     QStringList q("unassignUser");
     q << "stepUuid=" + stepUuid;
     q << "userUuid=" + userUuid;
+
+    request(q);
+}
+
+void DBInterface::createAssetGroup(QString shortName, QString name, QString projectUuid, QString uuid)
+{
+    QStringList q("createAssetGroup");
+    q << "uuid=" + uuid;
+    q << "shortName=" + shortName;
+    q << "name=" + name;
+    q << "projectUuid=" + projectUuid;
+
+    request(q);
+}
+
+void DBInterface::updateAssetGroup(QString uuid, QString shortName, QString name)
+{
+    QStringList q("updateAssetGroup");
+    q << "uuid=" + uuid;
+    q << "shortName=" + shortName;
+    q << "name=" + name;
+
+    request(q);
+}
+
+void DBInterface::removeAssetGroup(QString uuid)
+{
+    QStringList q("removeAssetGroup");
+    q << "uuid=" + uuid;
 
     request(q);
 }

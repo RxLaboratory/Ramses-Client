@@ -7,6 +7,7 @@
 #include "ramproject.h"
 #include "ramstep.h"
 #include "ramstate.h"
+#include "ramassetgroup.h"
 #include "dbisuspender.h"
 
 #include <QObject>
@@ -50,6 +51,11 @@ public:
     RamStep *createTemplateStep();
     void removeTemplateStep(QString uuid);
     RamStep *templateStep(QString uuid);
+    // Template Asset Groups
+    QList<RamAssetGroup *> templateAssetGroups() const;
+    RamAssetGroup *createTemplateAssetGroup();
+    void removeTemplateAssetGroup(QString uuid);
+    RamAssetGroup *templateAssetGroup(QString uuid);
     // States
     QList<RamState *> states() const;
     RamState *createState();
@@ -65,6 +71,7 @@ signals:
     void newUser(RamUser *user);
     void newProject(RamProject *project);
     void newTemplateStep(RamStep *step);
+    void newTemplateAssetGroup(RamAssetGroup *assetGroup);
     void newState(RamState *state);
     void newStep(RamStep *);
 
@@ -82,6 +89,9 @@ private slots:
     //template steps
     void gotTemplateSteps(QJsonArray steps);
     void templateStepDestroyed(QObject *o);
+    //template asset groups
+    void gotTemplateAssetGroups(QJsonArray assetGroups);
+    void templateAssetGroupDestroyed(QObject *o);
     //states
     void gotStates(QJsonArray states);
     void stateDestroyed(QObject *o);
@@ -119,6 +129,9 @@ private:
 
     // Template steps
     QList<RamStep *> _templateSteps;
+
+    // Template asset groups
+    QList<RamAssetGroup *> _templateAssetGroups;
 
     // States
     QList<RamState *> _states;

@@ -44,6 +44,7 @@ void Ramses::newData(QJsonObject data)
     else if (query == "getUsers") gotUsers( data.value("content").toArray());
     else if (query == "getProjects") gotProjects( data.value("content").toArray());
     else if (query == "getTemplateSteps") gotTemplateSteps( data.value("content").toArray());
+    else if (query == "getTemplateAssetGroups") gotTemplateAssetGroups( data.value("content").toArray());
     else if (query == "getStates") gotStates( data.value("content").toArray());
 }
 
@@ -259,6 +260,68 @@ void Ramses::templateStepDestroyed(QObject *o)
 {
     RamStep *s = (RamStep*)o;
     removeTemplateStep(s->uuid());
+}
+
+void Ramses::gotTemplateAssetGroups(QJsonArray assetGroups)
+{
+    DBISuspender s;
+
+    // loop through existing asset groups to update them
+    for (int i = _templateAssetGroups.count() - 1; i >= 0; i--)
+    {
+        RamAssetGroup *existingAssetGroup = _templateAssetGroups[i];
+        // loop through new steps to update
+        bool found = false;
+        for (int j = 0; j < assetGroups.count(); j++)
+        {
+            QJsonObject newAssetGroup = assetGroups[j].toObject();
+            QString uuid = newAssetGroup.value("uuid").toString();
+            // Found, update
+            if (uuid == existingAssetGroup->uuid())
+            {
+                found = true;
+                //Emit just one signal
+                QSignalBlocker b(existingAssetGroup);
+                existingAssetGroup->setName( newAssetGroup.value("name").toString());
+                //send the signal
+                b.unblock();
+                existingAssetGroup->setShortName( newAssetGroup.value("shortName").toString());
+                //remove from new projects
+                assetGroups.removeAt(j);
+                break;
+            }
+        }
+        // Not found, remove from existing
+        if (!found)
+        {
+            RamAssetGroup *ag = _templateAssetGroups.takeAt(i);
+            ag->deleteLater();
+        }
+    }
+
+    // loop through remaining new projects to add them
+    for (int i = 0; i < assetGroups.count(); i++)
+    {
+        QJsonObject ag = assetGroups[i].toObject();
+        RamAssetGroup *assetGroup = new RamAssetGroup(
+                    ag.value("shortName").toString(),
+                    ag.value("name").toString(),
+                    true,
+                    ag.value("uuid").toString()
+                    );
+
+        _templateAssetGroups << assetGroup;
+
+        connect(assetGroup,&RamAssetGroup::destroyed, this, &Ramses::templateAssetGroupDestroyed);
+
+        emit newTemplateAssetGroup(assetGroup);
+    }
+}
+
+void Ramses::templateAssetGroupDestroyed(QObject *o)
+{
+    RamAssetGroup *ag = (RamAssetGroup*)o;
+    removeTemplateAssetGroup(ag->uuid());
 }
 
 void Ramses::gotStates(QJsonArray states)
@@ -526,6 +589,41 @@ RamStep *Ramses::templateStep(QString uuid)
     return nullptr;
 }
 
+QList<RamAssetGroup *> Ramses::templateAssetGroups() const
+{
+    return _templateAssetGroups;
+}
+
+RamAssetGroup *Ramses::createTemplateAssetGroup()
+{
+    RamAssetGroup *ag = new RamAssetGroup("New", "Step", true);
+    ag->setParent(this);
+    _templateAssetGroups << ag;
+    emit newTemplateAssetGroup(ag);
+    return ag;
+}
+
+void Ramses::removeTemplateAssetGroup(QString uuid)
+{
+    for (int i = _templateAssetGroups.count() -1; i >= 0; i--)
+    {
+        if (_templateAssetGroups[i]->uuid() == uuid)
+        {
+            RamAssetGroup *ag = _templateAssetGroups.takeAt(i);
+            ag->deleteLater();
+        }
+    }
+}
+
+RamAssetGroup *Ramses::templateAssetGroup(QString uuid)
+{
+    foreach(RamAssetGroup *ag, _templateAssetGroups)
+    {
+        if (ag->uuid() == uuid) return ag;
+    }
+    return nullptr;
+}
+
 QList<RamState *> Ramses::states() const
 {
     return _states;
@@ -636,6 +734,8 @@ void Ramses::refresh()
     _dbi->getUsers();
     // Get Template Steps
     _dbi->getTemplateSteps();
+    // Get Template Asset Groups
+    _dbi->getTemplateAssetGroups();
     // Get States
     _dbi->getStates();
     // Get Projects

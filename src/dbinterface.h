@@ -44,12 +44,21 @@ public:
     void getTemplateSteps();
     void updateTemplateStep(QString uuid, QString shortName, QString name, QString type = "");
     void removeTemplateStep(QString uuid);
+    //template asset groups
+    void createTemplateAssetGroup(QString shortName, QString name, QString uuid);
+    void getTemplateAssetGroups();
+    void updateTemplateAssetGroup(QString uuid, QString shortName, QString name);
+    void removeTemplateAssetGroup(QString uuid);
     //steps
     void createStep(QString shortName, QString name, QString projectUuid, QString uuid);
     void updateStep(QString uuid, QString shortName, QString name, QString type, int order);
     void removeStep(QString uuid);
     void assignUser(QString stepUuid, QString userUuid);
     void unassignUser(QString stepUuid, QString userUuid);
+    //asset groups
+    void createAssetGroup(QString shortName, QString name, QString projectUuid, QString uuid);
+    void updateAssetGroup(QString uuid, QString shortName, QString name);
+    void removeAssetGroup(QString uuid);
     //states
     void createState(QString shortName, QString name, QString uuid);
     void getStates();
