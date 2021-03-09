@@ -20,8 +20,8 @@ StepsManagerWidget::StepsManagerWidget(QWidget *parent): ListManagerWidget(paren
     upButton->setIcon(QIcon(":/icons/move-up"));
     downButton = new QToolButton(this);
     downButton->setIcon(QIcon(":/icons/move-down"));
-    buttonsLayout->insertWidget(0, upButton);
-    buttonsLayout->insertWidget(0, downButton);
+    buttonsLayout->insertWidget(2, downButton);
+    buttonsLayout->insertWidget(2, upButton);
 
     foreach(RamStep *step, Ramses::instance()->templateSteps()) newTemplateStep(step);
 

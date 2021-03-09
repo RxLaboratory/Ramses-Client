@@ -41,9 +41,9 @@ void TemplateAssetGroupsManagerWidget::newAssetGroup(RamAssetGroup *ag)
 {
     if (ag->uuid() != "")
     {
-        QListWidgetItem *stepItem = new QListWidgetItem(ag->name());
-        stepItem->setData(Qt::UserRole, ag->uuid());
-        this->addItem(stepItem);
+        QListWidgetItem *agItem = new QListWidgetItem(ag->name());
+        agItem->setData(Qt::UserRole, ag->uuid());
+        this->addItem(agItem);
         connect(ag, &RamStep::destroyed, this, &TemplateAssetGroupsManagerWidget::removeAssetGroup);
         connect(ag, &RamStep::changed, this, &TemplateAssetGroupsManagerWidget::assetGroupChanged);
     }

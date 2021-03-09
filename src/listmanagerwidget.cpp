@@ -5,6 +5,8 @@ ListManagerWidget::ListManagerWidget(QWidget *parent) :
 {
     setupUi(this);
 
+    splitter->setSizes(QList<int>() << 20 << 100);
+
     _role = RamUser::Standard;
 
     connect(list, SIGNAL(currentRowChanged(int)), this, SLOT(list_currentRowChanged(int)));
