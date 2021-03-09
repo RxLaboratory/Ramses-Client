@@ -20,6 +20,8 @@ CONFIG += c++11
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    assetgroupeditwidget.cpp \
+    assetgroupsmanagerwidget.cpp \
     daemon.cpp \
     daemonsettingswidget.cpp \
     dbinterface.cpp \
@@ -68,6 +70,8 @@ SOURCES += \
     usersmanagerwidget.cpp
 
 HEADERS += \
+    assetgroupeditwidget.h \
+    assetgroupsmanagerwidget.h \
     daemon.h \
     daemonsettingswidget.h \
     dbinterface.h \
@@ -116,6 +120,7 @@ HEADERS += \
     usersmanagerwidget.h
 
 FORMS += \
+    assetgroupeditwidget.ui \
     daemonsettingswidget.ui \
     duqf-widgets/aboutdialog.ui \
     duqf-widgets/appearancesettingswidget.ui \

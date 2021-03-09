@@ -38,6 +38,7 @@ public:
     RamUser *user(QString uuid);
     void removeUser(QString uuid);
     bool isAdmin();
+    bool isProjectAdmin();
     // Projects
     QList<RamProject *> projects() const;
     RamProject *project(QString uuid);

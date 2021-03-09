@@ -18,6 +18,7 @@
 #include "templatestepsmanagerwidget.h"
 #include "templateassetgroupsmanagerwidget.h"
 #include "stepsmanagerwidget.h"
+#include "assetgroupsmanagerwidget.h"
 #include "statesmanagerwidget.h"
 #include "dbinterface.h"
 #include "daemon.h"

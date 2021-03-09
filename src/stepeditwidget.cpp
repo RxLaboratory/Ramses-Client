@@ -64,7 +64,7 @@ void StepEditWidget::setStep(RamStep *step)
     _stepConnections << connect(step, &RamStep::userRemoved, this, &StepEditWidget::userRemoved);
     _stepConnections << connect(step, &RamStep::destroyed, this, &StepEditWidget::stepDestroyed);
 
-    this->setEnabled(Ramses::instance()->isAdmin());
+    this->setEnabled(Ramses::instance()->isProjectAdmin());
 }
 
 void StepEditWidget::update()

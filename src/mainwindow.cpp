@@ -83,6 +83,7 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     projectSettingsPage->showReinitButton(false);
     mainStack->addWidget(projectSettingsPage);
     projectSettingsPage->addPage(new StepsManagerWidget(this), "Steps", QIcon(":/icons/steps"));
+    projectSettingsPage->addPage(new AssetGroupsManagerWidget(this), "Asset Groups", QIcon(":/icons/asset-groups"));
 
     // Set UI
     mainStack->setCurrentIndex(0);

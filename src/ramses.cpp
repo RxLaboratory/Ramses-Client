@@ -779,6 +779,12 @@ bool Ramses::isAdmin()
     return _currentUser->role() == RamUser::Admin;
 }
 
+bool Ramses::isProjectAdmin()
+{
+    if (!_currentUser) return false;
+    return _currentUser->role() == RamUser::ProjectAdmin;
+}
+
 void Ramses::logout()
 {
     _connected = false;
