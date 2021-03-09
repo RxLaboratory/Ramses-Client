@@ -12,6 +12,7 @@ public:
     ~RamAssetGroup();
 
     bool isTemplate() const;
+    RamAssetGroup *createFromTemplate(QString projectUuid);
 
     QString projectUuid() const;
     void setProjectUuid(const QString &projectUuid);

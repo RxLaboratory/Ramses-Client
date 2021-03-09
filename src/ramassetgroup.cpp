@@ -27,6 +27,13 @@ bool RamAssetGroup::isTemplate() const
     return _template;
 }
 
+RamAssetGroup *RamAssetGroup::createFromTemplate(QString projectUuid)
+{
+    // Create
+    RamAssetGroup *assetGroup = new RamAssetGroup(_shortName, _name, projectUuid);
+    return assetGroup;
+}
+
 QString RamAssetGroup::projectUuid() const
 {
     return _projectUuid;

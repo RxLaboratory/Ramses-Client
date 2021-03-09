@@ -3,6 +3,7 @@
 
 #include "ramobject.h"
 #include "ramstep.h"
+#include "ramassetgroup.h"
 #include "dbisuspender.h"
 
 class RamProject : public RamObject
@@ -15,6 +16,7 @@ public:
     QString folderPath() const;
     void setFolderPath(const QString &folderPath);
 
+    // Steps
     QList<RamStep *> steps() const;
     RamStep *step(QString uuid) const;
     void addStep(RamStep *step);
@@ -24,18 +26,32 @@ public:
     void removeStep(RamStep *step);
     void sortSteps();
 
+    // Asset Groups
+    QList<RamAssetGroup *> assetGroups() const;
+    RamAssetGroup *assetGroup(QString uuid) const;
+    void addAssetGroup(RamAssetGroup *assetGroup);
+    void assignAssetGroup(RamAssetGroup *templateAssetGroup);
+    void createAssetGroup(QString shortName = "NEW", QString name = "Asset Group");
+    void removeAssetGroup(QString uuid);
+    void removeAssetGroup(RamAssetGroup *assetGroup);
+    void sortAssetGroups();
+
     void update();
 
 public slots:
-    void stepDesstroyed(QObject *o);
+    void stepDestroyed(QObject *o);
+    void assetGroupDestroyed(QObject *o);
 
 signals:
     void newStep(RamStep *);
     void stepRemoved(QString uuid);
+    void newAssetGroup(RamAssetGroup *);
+    void assetGroupRemoved(QString uuid);
 
 private:
     QString _folderPath;
     QList<RamStep *> _steps;
+    QList<RamAssetGroup *> _assetGroups;
 };
 
 #endif // RAMPROJECT_H

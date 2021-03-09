@@ -153,6 +153,7 @@ void Ramses::gotProjects(QJsonArray projects)
                 existingProject->setName( newProject.value("name").toString());
                 existingProject->setShortName( newProject.value("shortName").toString());
                 gotSteps( newProject.value("steps").toArray(), existingProject);
+                gotAssetGroups( newProject.value("assetGroups").toArray(), existingProject);
                 //send the signal
                 b.unblock();
                 existingProject->setFolderPath( newProject.value("folderPath").toString());
@@ -182,6 +183,7 @@ void Ramses::gotProjects(QJsonArray projects)
 
         // Add steps
         gotSteps( p.value("steps").toArray(), project);
+        gotAssetGroups( p.value("assetGroups").toArray(), project);
 
         _projects << project;
 
@@ -189,7 +191,6 @@ void Ramses::gotProjects(QJsonArray projects)
 
         emit newProject(project);
     }
-
 }
 
 void Ramses::projectDestroyed(QObject *o)
@@ -461,6 +462,63 @@ void Ramses::gotSteps(QJsonArray steps, RamProject *project)
     project->sortSteps();
 }
 
+void Ramses::gotAssetGroups(QJsonArray assetGroups, RamProject *project)
+{
+    DBISuspender s;
+
+    QList<RamAssetGroup*> projectAssetGroups = project->assetGroups();
+
+    // loop through existing asset groups to update them
+    for (int i = projectAssetGroups.count() - 1; i >= 0; i--)
+    {
+        RamAssetGroup *existingAssetGroup = projectAssetGroups[i];
+        // loop through new steps to update
+        bool found = false;
+        for (int j = 0; j < assetGroups.count(); j++)
+        {
+            QJsonObject newAG = assetGroups[j].toObject();
+            QString uuid = newAG.value("uuid").toString();
+            // Found, update
+            if (uuid == existingAssetGroup->uuid())
+            {
+                found = true;
+                //Emit just one signal
+                QSignalBlocker b(existingAssetGroup);
+                existingAssetGroup->setName( newAG.value("name").toString());
+                b.unblock();
+                existingAssetGroup->setShortName( newAG.value("shortName").toString());
+                //remove from new asset groups
+                assetGroups.removeAt(j);
+                break;
+            }
+        }
+        // Not found, remove from existing
+        if (!found)
+        {
+            project->removeAssetGroup(existingAssetGroup);
+        }
+    }
+
+    // loop through remaining new asset groups to add them
+    for (int i = 0; i < assetGroups.count(); i++)
+    {
+        QJsonObject ag = assetGroups[i].toObject();
+        RamAssetGroup *assetGroup = new RamAssetGroup(
+                    ag.value("shortName").toString(),
+                    ag.value("name").toString(),
+                    false
+                    );
+        assetGroup->setProjectUuid( ag.value("projectUuid").toString());
+
+        project->addAssetGroup(assetGroup);
+
+        emit newAssetGroup(assetGroup);
+    }
+
+    // sort the asset groups
+    project->sortAssetGroups();
+}
+
 void Ramses::dbiConnectionStatusChanged(NetworkUtils::NetworkStatus s)
 {
     if (s != NetworkUtils::Online)
@@ -596,7 +654,7 @@ QList<RamAssetGroup *> Ramses::templateAssetGroups() const
 
 RamAssetGroup *Ramses::createTemplateAssetGroup()
 {
-    RamAssetGroup *ag = new RamAssetGroup("New", "Step", true);
+    RamAssetGroup *ag = new RamAssetGroup("NEW", "Asset Group", true);
     ag->setParent(this);
     _templateAssetGroups << ag;
     emit newTemplateAssetGroup(ag);

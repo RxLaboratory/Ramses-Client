@@ -29,10 +29,78 @@ void RamProject::update()
     _dbi->updateProject(_uuid, _shortName, _name, path);
 }
 
-void RamProject::stepDesstroyed(QObject *o)
+void RamProject::stepDestroyed(QObject *o)
 {
     RamStep *s = (RamStep*)o;
     removeStep(s);
+}
+
+void RamProject::assetGroupDestroyed(QObject *o)
+{
+    RamAssetGroup *ag = (RamAssetGroup*)o;
+    removeAssetGroup(ag);
+}
+
+QList<RamAssetGroup *> RamProject::assetGroups() const
+{
+    return _assetGroups;
+}
+
+RamAssetGroup *RamProject::assetGroup(QString uuid) const
+{
+    foreach (RamAssetGroup *ag, _assetGroups)
+    {
+        if (ag->uuid() == uuid) return ag;
+    }
+    return nullptr;
+}
+
+void RamProject::addAssetGroup(RamAssetGroup *assetGroup)
+{
+    _assetGroups << assetGroup;
+    connect(assetGroup, &RamAssetGroup::destroyed, this, &RamProject::assetGroupDestroyed);
+    emit newAssetGroup(assetGroup);
+}
+
+void RamProject::assignAssetGroup(RamAssetGroup *templateAssetGroup)
+{
+    RamAssetGroup *assetGroup = templateAssetGroup->createFromTemplate(_uuid);
+    addAssetGroup(assetGroup);
+}
+
+void RamProject::createAssetGroup(QString shortName, QString name)
+{
+    RamAssetGroup *assetGroup = new RamAssetGroup(shortName, name, _uuid);
+    addAssetGroup(assetGroup);
+}
+
+void RamProject::removeAssetGroup(QString uuid)
+{
+    for (int i = _assetGroups.count() -1; i >= 0; i--)
+    {
+        RamAssetGroup *ag = _assetGroups[i];
+        if (ag->uuid() == uuid)
+        {
+            _assetGroups.removeAt(i);
+            ag->deleteLater();
+            emit assetGroupRemoved(uuid);
+        }
+    }
+}
+
+void RamProject::removeAssetGroup(RamAssetGroup *assetGroup)
+{
+    removeAssetGroup(assetGroup->uuid());
+}
+
+bool assetGroupSorter(RamAssetGroup *a, RamAssetGroup *b)
+{
+    return a->shortName() > b->shortName();
+}
+
+void RamProject::sortAssetGroups()
+{
+    std::sort(_assetGroups.begin(), _assetGroups.end(), assetGroupSorter);
 }
 
 QList<RamStep *> RamProject::steps() const
@@ -52,7 +120,7 @@ RamStep *RamProject::step(QString uuid) const
 void RamProject::addStep(RamStep *step)
 {
     _steps << step;
-    connect(step, &RamStep::destroyed, this, &RamProject::stepDesstroyed);
+    connect(step, &RamStep::destroyed, this, &RamProject::stepDestroyed);
     emit newStep(step);
 }
 

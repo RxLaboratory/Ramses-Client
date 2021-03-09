@@ -74,6 +74,7 @@ signals:
     void newTemplateAssetGroup(RamAssetGroup *assetGroup);
     void newState(RamState *state);
     void newStep(RamStep *);
+    void newAssetGroup(RamAssetGroup *);
 
 protected:
     static Ramses *_instance;
@@ -97,6 +98,8 @@ private slots:
     void stateDestroyed(QObject *o);
     // steps
     void gotSteps(QJsonArray steps, RamProject *project);
+    // asset groups
+    void gotAssetGroups(QJsonArray assetGroups, RamProject *project);
     //TODO This should be modified when implementing offline version
     void dbiConnectionStatusChanged(NetworkUtils::NetworkStatus s);
 private:
