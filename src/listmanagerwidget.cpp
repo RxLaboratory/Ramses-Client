@@ -5,7 +5,7 @@ ListManagerWidget::ListManagerWidget(QWidget *parent) :
 {
     setupUi(this);
 
-    splitter->setSizes(QList<int>() << 20 << 100);
+    filterWidget->hide();
 
     _role = RamUser::Standard;
 
@@ -14,13 +14,45 @@ ListManagerWidget::ListManagerWidget(QWidget *parent) :
     connect(removeButton, SIGNAL(clicked()), this, SLOT(remove_clicked()));
     connect(Ramses::instance(), &Ramses::loggedIn, this, &ListManagerWidget::loggedIn);
     connect(Ramses::instance(), &Ramses::loggedOut, this, &ListManagerWidget::loggedOut);
+    connect(filterBox, SIGNAL(currentIndexChanged(int)), this, SLOT(filterIndexChanged(int)));
 
     this->setEnabled(false);
+
+    splitter->setSizes(QList<int>() << 20 << 100);
 }
 
 void ListManagerWidget::setWidget(QWidget *w)
 {
     mainLayout->addWidget(w);
+}
+
+void ListManagerWidget::addFilter(QString name, QString data)
+{
+    filterBox->addItem(name, data);
+    filterWidget->show();
+}
+
+void ListManagerWidget::updateFilterName(QString name, QString data)
+{
+    for(int i =0; i < filterBox->count(); i++)
+    {
+        if (filterBox->itemData(i).toString() == data) filterBox->setItemText(i, name);
+    }
+}
+
+void ListManagerWidget::clearFilters()
+{
+    filterBox->clear();
+    filterWidget->hide();
+}
+
+void ListManagerWidget::removeFilter(QString data)
+{
+    for(int i =0; i < filterBox->count(); i++)
+    {
+        if (filterBox->itemData(i).toString() == data) filterBox->removeItem(i);
+    }
+    if (filterBox->count() == 0) filterWidget->hide();
 }
 
 void ListManagerWidget::addItem(QListWidgetItem *item)
@@ -130,4 +162,9 @@ void ListManagerWidget::loggedIn(RamUser *user)
 void ListManagerWidget::loggedOut()
 {
     this->setEnabled(false);
+}
+
+void ListManagerWidget::filterIndexChanged(int i)
+{
+    emit filterChanged( filterBox->itemData(i).toString() );
 }

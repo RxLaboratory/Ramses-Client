@@ -5,6 +5,8 @@ AssetGroupEditWidget::AssetGroupEditWidget(QWidget *parent) :
 {
     setupUi(this);
 
+    _assetGroup = nullptr;
+
     connect(updateButton, SIGNAL(clicked()), this, SLOT(update()));
     connect(revertButton, SIGNAL(clicked()), this, SLOT(revert()));
     connect(shortNameEdit, &QLineEdit::textChanged, this, &AssetGroupEditWidget::checkInput);

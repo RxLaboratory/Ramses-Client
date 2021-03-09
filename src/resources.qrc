@@ -37,5 +37,7 @@
         <file alias="daemon">resources/icons/daemon.svg</file>
         <file alias="reload">resources/icons/reload_sl.svg</file>
         <file alias="asset-groups">resources/icons/assetgroups_sl.svg</file>
+        <file alias="assets">resources/icons/assets_sl.svg</file>
+        <file alias="filter">resources/icons/filter_sl.svg</file>
     </qresource>
 </RCC>

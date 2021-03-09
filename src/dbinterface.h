@@ -59,6 +59,10 @@ public:
     void createAssetGroup(QString shortName, QString name, QString projectUuid, QString uuid);
     void updateAssetGroup(QString uuid, QString shortName, QString name);
     void removeAssetGroup(QString uuid);
+    //assets
+    void createAsset(QString shortName, QString name, QString assetGroupUuid, QString tags, QString uuid);
+    void updateAsset(QString uuid, QString shortName, QString name, QString assetGroupUuid, QString tags);
+    void removeAsset(QString uuid);
     //states
     void createState(QString shortName, QString name, QString uuid);
     void getStates();

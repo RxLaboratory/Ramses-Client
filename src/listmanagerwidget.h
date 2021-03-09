@@ -14,6 +14,13 @@ class ListManagerWidget : public QWidget, protected Ui::ListManagerWidget
 public:
     explicit ListManagerWidget(QWidget *parent = nullptr);
     void setWidget(QWidget *w);
+    void addFilter(QString name, QString data);
+    void updateFilterName(QString name, QString data);
+    void clearFilters();
+    void removeFilter(QString data);
+
+signals:
+    void filterChanged(QString);
 
 protected slots:
     void addItem(QListWidgetItem *item);
@@ -32,6 +39,7 @@ private slots:
     void remove_clicked();
     void loggedIn(RamUser *user);
     void loggedOut();
+    void filterIndexChanged(int i);
 
 private:
     RamUser::UserRole _role;

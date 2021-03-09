@@ -20,8 +20,10 @@ CONFIG += c++11
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    asseteditwidget.cpp \
     assetgroupeditwidget.cpp \
     assetgroupsmanagerwidget.cpp \
+    assetsmanagerwidget.cpp \
     daemon.cpp \
     daemonsettingswidget.cpp \
     dbinterface.cpp \
@@ -48,6 +50,7 @@ SOURCES += \
     projecteditwidget.cpp \
     projectselectorwidget.cpp \
     projectsmanagerwidget.cpp \
+    ramasset.cpp \
     ramassetgroup.cpp \
     ramobject.cpp \
     ramproject.cpp \
@@ -70,8 +73,10 @@ SOURCES += \
     usersmanagerwidget.cpp
 
 HEADERS += \
+    asseteditwidget.h \
     assetgroupeditwidget.h \
     assetgroupsmanagerwidget.h \
+    assetsmanagerwidget.h \
     daemon.h \
     daemonsettingswidget.h \
     dbinterface.h \
@@ -98,6 +103,7 @@ HEADERS += \
     projecteditwidget.h \
     projectselectorwidget.h \
     projectsmanagerwidget.h \
+    ramasset.h \
     ramassetgroup.h \
     ramobject.h \
     ramproject.h \
@@ -120,6 +126,7 @@ HEADERS += \
     usersmanagerwidget.h
 
 FORMS += \
+    asseteditwidget.ui \
     assetgroupeditwidget.ui \
     daemonsettingswidget.ui \
     duqf-widgets/aboutdialog.ui \

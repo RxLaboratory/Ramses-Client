@@ -28,13 +28,17 @@ public:
 
     // Asset Groups
     QList<RamAssetGroup *> assetGroups() const;
-    RamAssetGroup *assetGroup(QString uuid) const;
+    RamAssetGroup *assetGroup(QString uuid);
     void addAssetGroup(RamAssetGroup *assetGroup);
     void assignAssetGroup(RamAssetGroup *templateAssetGroup);
     void createAssetGroup(QString shortName = "NEW", QString name = "Asset Group");
     void removeAssetGroup(QString uuid);
     void removeAssetGroup(RamAssetGroup *assetGroup);
     void sortAssetGroups();
+
+    // Assets
+    RamAsset *asset(QString uuid);
+    void removeAsset(QString uuid);
 
     void update();
 

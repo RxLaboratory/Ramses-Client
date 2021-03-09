@@ -485,6 +485,7 @@ void Ramses::gotAssetGroups(QJsonArray assetGroups, RamProject *project)
                 //Emit just one signal
                 QSignalBlocker b(existingAssetGroup);
                 existingAssetGroup->setName( newAG.value("name").toString());
+                gotAssets( newAG.value("assets").toArray(), existingAssetGroup);
                 b.unblock();
                 existingAssetGroup->setShortName( newAG.value("shortName").toString());
                 //remove from new asset groups
@@ -511,6 +512,9 @@ void Ramses::gotAssetGroups(QJsonArray assetGroups, RamProject *project)
                     );
         assetGroup->setProjectUuid( ag.value("projectUuid").toString());
 
+        //add assets
+        gotAssets( ag.value("assets").toArray(), assetGroup);
+
         project->addAssetGroup(assetGroup);
 
         emit newAssetGroup(assetGroup);
@@ -518,6 +522,63 @@ void Ramses::gotAssetGroups(QJsonArray assetGroups, RamProject *project)
 
     // sort the asset groups
     project->sortAssetGroups();
+}
+
+void Ramses::gotAssets(QJsonArray assets, RamAssetGroup *assetGroup)
+{
+    DBISuspender s;
+
+    QList<RamAsset*> groupAssets = assetGroup->assets();
+
+    // loop through existing assets to update them
+    for (int i = groupAssets.count() - 1; i >= 0; i--)
+    {
+        RamAsset *existingAsset = groupAssets[i];
+        // loop through new steps to update
+        bool found = false;
+        for (int j = 0; j < assets.count(); j++)
+        {
+            QJsonObject newA = assets[j].toObject();
+            QString uuid = newA.value("uuid").toString();
+            // Found, update
+            if (uuid == existingAsset->uuid())
+            {
+                found = true;
+                //Emit just one signal
+                QSignalBlocker b(existingAsset);
+                existingAsset->setName( newA.value("name").toString());
+                existingAsset->setTags(newA.value("tags").toString());
+                b.unblock();
+                existingAsset->setShortName( newA.value("shortName").toString());
+                //remove from new asset groups
+                assets.removeAt(j);
+                break;
+            }
+        }
+        // Not found, remove from existing
+        if (!found)
+        {
+            assetGroup->removeAsset(existingAsset);
+        }
+    }
+
+    // loop through remaining new assets to add them
+    for (int i = 0; i < assets.count(); i++)
+    {
+        QJsonObject a = assets[i].toObject();
+        RamAsset *asset = new RamAsset(
+                    a.value("shortName").toString(),
+                    a.value("name").toString(),
+                    a.value("assetGroupUuid").toString(),
+                    a.value("uuid").toString()
+                    );
+        asset->setTags( a.value("tags").toString());
+
+        assetGroup->addAsset(asset);
+    }
+
+    // sort the asset groups
+    assetGroup->sortAssets();
 }
 
 void Ramses::dbiConnectionStatusChanged(NetworkUtils::NetworkStatus s)
@@ -777,13 +838,19 @@ void Ramses::removeUser(QString uuid)
 bool Ramses::isAdmin()
 {
     if (!_currentUser) return false;
-    return _currentUser->role() == RamUser::Admin;
+    return _currentUser->role() >= RamUser::Admin;
 }
 
 bool Ramses::isProjectAdmin()
 {
     if (!_currentUser) return false;
-    return _currentUser->role() == RamUser::ProjectAdmin;
+    return _currentUser->role() >= RamUser::ProjectAdmin;
+}
+
+bool Ramses::isLead()
+{
+    if (!_currentUser) return false;
+    return _currentUser->role() >= RamUser::Lead;
 }
 
 void Ramses::logout()

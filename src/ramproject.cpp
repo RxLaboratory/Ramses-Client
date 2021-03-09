@@ -46,7 +46,7 @@ QList<RamAssetGroup *> RamProject::assetGroups() const
     return _assetGroups;
 }
 
-RamAssetGroup *RamProject::assetGroup(QString uuid) const
+RamAssetGroup *RamProject::assetGroup(QString uuid)
 {
     foreach (RamAssetGroup *ag, _assetGroups)
     {
@@ -101,6 +101,24 @@ bool assetGroupSorter(RamAssetGroup *a, RamAssetGroup *b)
 void RamProject::sortAssetGroups()
 {
     std::sort(_assetGroups.begin(), _assetGroups.end(), assetGroupSorter);
+}
+
+RamAsset *RamProject::asset(QString uuid)
+{
+    foreach(RamAssetGroup *ag, _assetGroups)
+    {
+        foreach(RamAsset *a, ag->assets())
+        {
+            if (a->uuid() == uuid) return a;
+        }
+    }
+
+    return nullptr;
+}
+
+void RamProject::removeAsset(QString uuid)
+{
+    foreach(RamAssetGroup *ag, _assetGroups) ag->removeAsset(uuid);
 }
 
 QList<RamStep *> RamProject::steps() const

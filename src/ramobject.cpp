@@ -3,6 +3,7 @@
 
 RamObject::RamObject(QString shortName, QString name, QString uuid, QObject *parent) : QObject(parent)
 {
+    _removing = false;
     _shortName = shortName;
     _name = name;
     if(_name == "" ) _name = shortName;
@@ -42,4 +43,12 @@ void RamObject::setUuid(const QString &uuid)
 {
     _uuid = uuid;
     emit changed();
+}
+
+void RamObject::remove()
+{
+    if (_removing) return;
+
+    emit removed();
+    this->deleteLater();
 }

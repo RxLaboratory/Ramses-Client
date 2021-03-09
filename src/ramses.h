@@ -39,6 +39,7 @@ public:
     void removeUser(QString uuid);
     bool isAdmin();
     bool isProjectAdmin();
+    bool isLead();
     // Projects
     QList<RamProject *> projects() const;
     RamProject *project(QString uuid);
@@ -101,6 +102,8 @@ private slots:
     void gotSteps(QJsonArray steps, RamProject *project);
     // asset groups
     void gotAssetGroups(QJsonArray assetGroups, RamProject *project);
+    // assets
+    void gotAssets(QJsonArray assets, RamAssetGroup *assetGroup);
     //TODO This should be modified when implementing offline version
     void dbiConnectionStatusChanged(NetworkUtils::NetworkStatus s);
 private:

@@ -44,8 +44,70 @@ void RamAssetGroup::setProjectUuid(const QString &projectUuid)
     _projectUuid = projectUuid;
 }
 
+QList<RamAsset *> RamAssetGroup::assets() const
+{
+    return _assets;
+}
+
+RamAsset *RamAssetGroup::asset(QString uuid)
+{
+    foreach (RamAsset *a, _assets)
+    {
+        if (a->uuid() == uuid) return a;
+    }
+    return nullptr;
+}
+
+void RamAssetGroup::addAsset(RamAsset *asset)
+{
+    _assets << asset;
+    connect(asset, &RamAsset::destroyed, this, &RamAssetGroup::assetDestroyed);
+    emit newAsset(asset);
+}
+
+void RamAssetGroup::createAsset(QString shortName, QString name)
+{
+    RamAsset *asset = new RamAsset(shortName, name, _uuid);
+    addAsset(asset);
+}
+
+void RamAssetGroup::removeAsset(QString uuid)
+{
+    for (int i = _assets.count() -1; i >= 0; i--)
+    {
+        RamAsset *a = _assets[i];
+        if (a->uuid() == uuid)
+        {
+            _assets.removeAt(i);
+            a->deleteLater();
+            emit assetRemoved(uuid);
+        }
+    }
+}
+
+void RamAssetGroup::removeAsset(RamAsset *asset)
+{
+    removeAsset(asset->uuid());
+}
+
+bool assetSorter(RamAsset *a, RamAsset *b)
+{
+    return a->shortName() > b->shortName();
+}
+
+void RamAssetGroup::sortAssets()
+{
+    std::sort(_assets.begin(), _assets.end(), assetSorter);
+}
+
 void RamAssetGroup::update()
 {
     if (_template) _dbi->updateTemplateAssetGroup(_uuid, _shortName, _name);
     else _dbi->updateAssetGroup(_uuid, _shortName, _name);
+}
+
+void RamAssetGroup::assetDestroyed(QObject *o)
+{
+    RamAsset *a = (RamAsset*)o;
+    removeAsset(a);
 }

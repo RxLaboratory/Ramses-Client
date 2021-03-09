@@ -502,7 +502,7 @@ QListWidget::item:hover {
 
 QListWidget::item:selected {
     color: @color-light-grey;
-    background-color: @color-dark-grey;
+    background-color: @color-darker-grey;
  }
 
 /* TABLES */

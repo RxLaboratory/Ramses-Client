@@ -21,14 +21,18 @@ public:
     QString uuid() const;
     void setUuid(const QString &uuid);
 
+    void remove();
+
 signals:
     void changed();
+    void removed();
 
 protected:
     DBInterface *_dbi;
     QString _shortName;
     QString _name;
     QString _uuid;
+    bool _removing;
 };
 
 #endif // RAMOBJECT_H

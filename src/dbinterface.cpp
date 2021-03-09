@@ -268,6 +268,38 @@ void DBInterface::removeAssetGroup(QString uuid)
     request(q);
 }
 
+void DBInterface::createAsset(QString shortName, QString name, QString assetGroupUuid, QString tags, QString uuid)
+{
+    QStringList q("createAsset");
+    q << "uuid=" + uuid;
+    q << "shortName=" + shortName;
+    q << "name=" + name;
+    q << "assetGroupUuid=" + assetGroupUuid;
+    q << "tags=" + tags;
+
+    request(q);
+}
+
+void DBInterface::updateAsset(QString uuid, QString shortName, QString name, QString assetGroupUuid, QString tags)
+{
+    QStringList q("updateAsset");
+    q << "uuid=" + uuid;
+    q << "shortName=" + shortName;
+    q << "name=" + name;
+    q << "assetGroupUuid=" + assetGroupUuid;
+    q << "tags=" + tags;
+
+    request(q);
+}
+
+void DBInterface::removeAsset(QString uuid)
+{
+    QStringList q("removeAsset");
+    q << "uuid=" + uuid;
+
+    request(q);
+}
+
 void DBInterface::createState(QString shortName, QString name, QString uuid)
 {
     QStringList q("createState");
