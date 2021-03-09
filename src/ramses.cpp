@@ -506,7 +506,8 @@ void Ramses::gotAssetGroups(QJsonArray assetGroups, RamProject *project)
         RamAssetGroup *assetGroup = new RamAssetGroup(
                     ag.value("shortName").toString(),
                     ag.value("name").toString(),
-                    false
+                    false,
+                    ag.value("uuid").toString()
                     );
         assetGroup->setProjectUuid( ag.value("projectUuid").toString());
 

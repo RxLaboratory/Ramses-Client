@@ -172,7 +172,7 @@ void StepEditWidget::userRemoved(QString uuid)
         }
     }
 
-    //hide from assign list
+    //show in assign list
     QList<QAction *> actions = assignMenu->actions();
     for (int i = 0; i < actions.count(); i++)
     {

@@ -102,9 +102,9 @@ void AssetGroupsManagerWidget::assetGroupRemoved(QString uuid)
     removeData(uuid);
 }
 
-void AssetGroupsManagerWidget::removeAssetGroup(QObject *assetGroup)
+void AssetGroupsManagerWidget::removeAssetGroup(QObject *o)
 {
-    RamAssetGroup *ag = (RamAssetGroup*)assetGroup;
+    RamAssetGroup *ag = (RamAssetGroup*)o;
 
     removeData(ag->uuid());
 }
