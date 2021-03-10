@@ -83,7 +83,7 @@ void Ramses::gotUsers(QJsonArray users)
         if (!found)
         {
             RamUser *u = _users.takeAt(i);
-            u->deleteLater();
+            u->remove();
         }
     }
 
@@ -167,7 +167,7 @@ void Ramses::gotProjects(QJsonArray projects)
         if (!found)
         {
             RamProject *p = _projects.takeAt(i);
-            p->deleteLater();
+            p->remove();
         }
     }
 

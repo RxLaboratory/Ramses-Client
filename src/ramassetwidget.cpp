@@ -21,7 +21,7 @@ RamAssetWidget::RamAssetWidget(RamAsset *asset, QWidget *parent) :
     userChanged();
 
     connect(asset, &RamAsset::changed, this, &RamAssetWidget::assetChanged);
-    connect(asset, &RamAsset::destroyed, this, &RamAssetWidget::deleteLater);
+    connect(asset, &RamAsset::removed, this, &RamAssetWidget::deleteLater);
     connect(Ramses::instance(), &Ramses::loggedIn, this, &RamAssetWidget::userChanged);
     connect(editButton, SIGNAL(clicked()), this, SLOT(edit()));
     connect(aw, SIGNAL(accepted()), _editDialog, SLOT(accept()));

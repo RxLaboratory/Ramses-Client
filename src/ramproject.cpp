@@ -88,7 +88,7 @@ void RamProject::removeAssetGroup(QString uuid)
         if (ag->uuid() == uuid)
         {
             _assetGroups.removeAt(i);
-            ag->deleteLater();
+            ag->remove();
             emit assetGroupRemoved(uuid);
         }
     }
@@ -162,7 +162,7 @@ void RamProject::removeSequence(QString uuid)
         if (s->uuid() == uuid)
         {
             _sequences.removeAt(i);
-            s->deleteLater();
+            s->remove();
             emit sequenceRemoved(uuid);
         }
     }
@@ -224,7 +224,7 @@ void RamProject::removeStep(QString uuid)
         if (s->uuid() == uuid)
         {
             _steps.removeAt(i);
-            s->deleteLater();
+            s->remove();
             emit stepRemoved(uuid);
         }
     }
