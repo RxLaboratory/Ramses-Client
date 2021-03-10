@@ -20,7 +20,7 @@ QString RamObject::shortName() const
 void RamObject::setShortName(const QString &shortName)
 {
     _shortName = shortName;
-    emit changed();
+    emit changed(this);
 }
 
 QString RamObject::name() const
@@ -31,7 +31,7 @@ QString RamObject::name() const
 void RamObject::setName(const QString &name)
 {
     _name = name;
-    emit changed();
+    emit changed(this);
 }
 
 QString RamObject::uuid() const
@@ -42,7 +42,7 @@ QString RamObject::uuid() const
 void RamObject::setUuid(const QString &uuid)
 {
     _uuid = uuid;
-    emit changed();
+    emit changed(this);
 }
 
 void RamObject::remove()
@@ -50,6 +50,6 @@ void RamObject::remove()
     if (_removing) return;
     _removing = true;
 
-    emit removed();
+    emit removed(this);
     this->deleteLater();
 }

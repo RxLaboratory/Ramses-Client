@@ -17,9 +17,9 @@ QString RamSequence::projectUuid() const
     return _projectUuid;
 }
 
-void RamSequence::setProjectUuid(const QString &projectUuid)
+void RamSequence::setProjectUuid(const QString puuid)
 {
-    _projectUuid = projectUuid;
+    _projectUuid = puuid;
 }
 
 void RamSequence::update()

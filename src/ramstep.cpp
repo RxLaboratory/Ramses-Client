@@ -49,7 +49,7 @@ RamStep::Type RamStep::type() const
 void RamStep::setType(const Type &type)
 {
     _type = type;
-    emit changed();
+    emit changed(this);
 }
 
 void RamStep::setType(QString type)
@@ -121,7 +121,7 @@ int RamStep::order() const
 void RamStep::setOrder(int order)
 {
     _order = order;
-    emit changed();
+    emit changed(this);
 }
 
 QString RamStep::projectUuid() const

@@ -19,7 +19,7 @@ QString RamProject::folderPath() const
 void RamProject::setFolderPath(const QString &folderPath)
 {
     _folderPath = folderPath;
-    emit changed();
+    emit changed(this);
 }
 
 void RamProject::update()
@@ -162,8 +162,8 @@ void RamProject::removeSequence(QString uuid)
         if (s->uuid() == uuid)
         {
             _sequences.removeAt(i);
+            emit sequenceRemoved(s);
             s->remove();
-            emit sequenceRemoved(uuid);
         }
     }
 }

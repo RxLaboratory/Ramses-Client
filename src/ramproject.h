@@ -58,7 +58,7 @@ signals:
     void newAssetGroup(RamAssetGroup *);
     void assetGroupRemoved(QString uuid);
     void newSequence(RamSequence *);
-    void sequenceRemoved(QString uuid);
+    void sequenceRemoved(RamSequence *);
 
 private slots:
     void stepDestroyed(QObject *o);

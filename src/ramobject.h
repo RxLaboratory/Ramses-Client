@@ -24,8 +24,8 @@ public:
     void remove();
 
 signals:
-    void changed();
-    void removed();
+    void changed(RamObject *);
+    void removed(RamObject *);
 
 protected:
     DBInterface *_dbi;

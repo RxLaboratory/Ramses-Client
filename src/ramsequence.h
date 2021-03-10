@@ -11,9 +11,13 @@ public:
     ~RamSequence();
 
     QString projectUuid() const;
-    void setProjectUuid(const QString &projectUuid);
+    void setProjectUuid(const QString puuid);
 
     void update();
+
+signals:
+    void removed(RamSequence*);
+    void changed(RamSequence*);
 
 private:
     QString _projectUuid;

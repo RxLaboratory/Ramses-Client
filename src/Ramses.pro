@@ -65,6 +65,8 @@ SOURCES += \
     ramstep.cpp \
     ramuser.cpp \
     ramuuid.cpp \
+    sequenceeditwidget.cpp \
+    sequencesmanagerwidget.cpp \
     serversettingswidget.cpp \
     stateeditwidget.cpp \
     statesmanagerwidget.cpp \
@@ -124,6 +126,8 @@ HEADERS += \
     ramstep.h \
     ramuser.h \
     ramuuid.h \
+    sequenceeditwidget.h \
+    sequencesmanagerwidget.h \
     serversettingswidget.h \
     stateeditwidget.h \
     statesmanagerwidget.h \
@@ -152,6 +156,7 @@ FORMS += \
     mainwindow.ui \
     projecteditwidget.ui \
     ramassetwidget.ui \
+    sequenceeditwidget.ui \
     serversettingswidget.ui \
     stateeditwidget.ui \
     stepeditwidget.ui \

@@ -20,7 +20,7 @@ RamUser::UserRole RamUser::role() const
 void RamUser::setRole(const UserRole &role)
 {
     _role = role;
-    emit changed();
+    emit changed(this);
 }
 
 void RamUser::setRole(const QString role)
@@ -39,7 +39,7 @@ QString RamUser::folderPath() const
 void RamUser::setFolderPath(const QString &folderPath)
 {
     _folderPath = folderPath;
-    emit changed();
+    emit changed(this);
 }
 
 void RamUser::update()

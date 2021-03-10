@@ -20,6 +20,7 @@
 #include "stepsmanagerwidget.h"
 #include "assetgroupsmanagerwidget.h"
 #include "assetsmanagerwidget.h"
+#include "sequencesmanagerwidget.h"
 #include "statesmanagerwidget.h"
 #include "dbinterface.h"
 #include "daemon.h"

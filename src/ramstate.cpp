@@ -19,7 +19,7 @@ QColor RamState::color() const
 void RamState::setColor(const QColor &color)
 {
     _color = color;
-    emit changed();
+    emit changed(this);
 }
 
 int RamState::completionRatio() const
@@ -30,7 +30,7 @@ int RamState::completionRatio() const
 void RamState::setCompletionRatio(int completionRatio)
 {
     _completionRatio = completionRatio;
-    emit changed();
+    emit changed(this);
 }
 
 void RamState::update()
