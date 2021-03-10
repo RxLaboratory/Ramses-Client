@@ -3,6 +3,7 @@
 
 #include "ui_assetgroupeditwidget.h"
 #include "ramses.h"
+#include "ramassetwidget.h"
 
 class AssetGroupEditWidget : public QWidget, private Ui::AssetGroupEditWidget
 {
@@ -19,6 +20,10 @@ private slots:
     void revert();
     bool checkInput();
     void assetGroupDestroyed(QObject *o);
+    void addAsset();
+    void removeAsset();
+    void newAsset(RamAsset *a);
+    void assetRemoved(QString uuid);
     void dbiLog(DuQFLog m);
 
 private:

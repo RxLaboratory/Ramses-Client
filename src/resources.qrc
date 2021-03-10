@@ -39,5 +39,6 @@
         <file alias="asset-groups">resources/icons/assetgroups_sl.svg</file>
         <file alias="assets">resources/icons/assets_sl.svg</file>
         <file alias="filter">resources/icons/filter_sl.svg</file>
+        <file alias="edit">resources/icons/edit-comment-modify_sl.svg</file>
     </qresource>
 </RCC>

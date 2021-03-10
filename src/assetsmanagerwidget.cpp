@@ -52,7 +52,6 @@ void AssetsManagerWidget::changeProject(RamProject *project)
 
     list->clear();
     assetWidget->setAsset(nullptr);
-    assetWidget->setProject(project);
     this->clearFilters();
 
     list->blockSignals(false);

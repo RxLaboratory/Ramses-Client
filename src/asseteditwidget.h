@@ -16,6 +16,10 @@ public:
 
     void setProject(RamProject *project);
 
+signals:
+    void accepted();
+    void rejected();
+
 private slots:
     void update();
     void revert();

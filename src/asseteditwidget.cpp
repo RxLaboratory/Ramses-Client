@@ -31,19 +31,28 @@ void AssetEditWidget::setAsset(RamAsset *asset)
     nameEdit->setText("");
     shortNameEdit->setText("");
     tagsEdit->setText("");
+    setProject(nullptr);
 
     this->setEnabled(false);
 
     if (!asset) return;
-    if (!_project) return;
 
     nameEdit->setText(asset->name());
     shortNameEdit->setText(asset->shortName());
     tagsEdit->setText(asset->tags().join(", "));
 
-    // set group
-    assetGroupBox->setCurrentIndex(-1);
+    _assetConnections << connect(asset, &RamAsset::destroyed, this, &AssetEditWidget::assetDestroyed);
 
+    // set project and group
+    assetGroupBox->setCurrentIndex(-1);
+    RamAssetGroup *assetGroup = Ramses::instance()->assetGroup( asset->assetGroupUuid() );
+    if (!assetGroup) return;
+
+    // set project
+    setProject( Ramses::instance()->project( assetGroup->projectUuid() ));
+    if (!_project) return;
+
+    // set group
     for (int i = 0; i < assetGroupBox->count(); i++)
     {
         if (assetGroupBox->itemData(i).toString() == asset->assetGroupUuid())
@@ -52,8 +61,6 @@ void AssetEditWidget::setAsset(RamAsset *asset)
             break;
         }
     }
-
-    _assetConnections << connect(asset, &RamAsset::destroyed, this, &AssetEditWidget::assetDestroyed);
 
     this->setEnabled(Ramses::instance()->isLead());
 }
@@ -99,11 +106,15 @@ void AssetEditWidget::update()
     _asset->update();
 
     this->setEnabled(true);
+
+    emit accepted();
 }
 
 void AssetEditWidget::revert()
 {
     setAsset(_asset);
+
+    emit rejected();
 }
 
 bool AssetEditWidget::checkInput()
@@ -162,3 +173,4 @@ void AssetEditWidget::dbiLog(DuQFLog m)
 {
     if (m.type() != DuQFLog::Debug) statusLabel->setText(m.message());
 }
+

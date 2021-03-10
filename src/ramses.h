@@ -58,6 +58,8 @@ public:
     RamAssetGroup *createTemplateAssetGroup();
     void removeTemplateAssetGroup(QString uuid);
     RamAssetGroup *templateAssetGroup(QString uuid);
+    // Asset groups
+    RamAssetGroup *assetGroup(QString uuid);
     // States
     QList<RamState *> states() const;
     RamState *createState();

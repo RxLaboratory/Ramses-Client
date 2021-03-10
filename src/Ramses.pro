@@ -56,6 +56,7 @@ SOURCES += \
     projectsmanagerwidget.cpp \
     ramasset.cpp \
     ramassetgroup.cpp \
+    ramassetwidget.cpp \
     ramobject.cpp \
     ramproject.cpp \
     ramsequence.cpp \
@@ -114,6 +115,7 @@ HEADERS += \
     projectsmanagerwidget.h \
     ramasset.h \
     ramassetgroup.h \
+    ramassetwidget.h \
     ramobject.h \
     ramproject.h \
     ramsequence.h \
@@ -149,6 +151,7 @@ FORMS += \
     loginpage.ui \
     mainwindow.ui \
     projecteditwidget.ui \
+    ramassetwidget.ui \
     serversettingswidget.ui \
     stateeditwidget.ui \
     stepeditwidget.ui \

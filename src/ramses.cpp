@@ -803,6 +803,18 @@ RamAssetGroup *Ramses::templateAssetGroup(QString uuid)
     return nullptr;
 }
 
+RamAssetGroup *Ramses::assetGroup(QString uuid)
+{
+    foreach(RamProject *p, _projects)
+    {
+        foreach(RamAssetGroup *ag, p->assetGroups())
+        {
+            if (ag->uuid() == uuid) return ag;
+        }
+    }
+    return nullptr;
+}
+
 QList<RamState *> Ramses::states() const
 {
     return _states;

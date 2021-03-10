@@ -505,6 +505,10 @@ QListWidget::item:selected {
     background-color: @color-darker-grey;
  }
 
+QListWidget::item QWidget:hover {
+    color: @color-light-grey;
+ }
+
 /* TABLES */
 
 QTreeWidget, QTableWidget {
