@@ -26,6 +26,10 @@
         <file alias="hide-dark">duqf_resources/icons/hide_sd.svg</file>
         <file alias="show-dark">duqf_resources/icons/show_sd.svg</file>
         <file alias="hide">duqf_resources/icons/hide_sl.svg</file>
+        <file alias="critical">duqf_resources/icons/critical_bl.svg</file>
+        <file alias="fatal">duqf_resources/icons/fatal_bl.svg</file>
+        <file alias="ok">duqf_resources/icons/ok_sl.svg</file>
+        <file alias="warning">duqf_resources/icons/warning_bl.svg</file>
     </qresource>
     <qresource prefix="/images"/>
     <qresource prefix="/styles">

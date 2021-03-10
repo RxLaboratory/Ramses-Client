@@ -28,11 +28,14 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     mainStatusBar->addPermanentWidget(refreshButton);
     refreshButton->hide();
 
+    mainStatusBar->addPermanentWidget(new DuQFLogToolButton(this));
+
     networkButton = new QToolButton(this);
     networkButton->setToolButtonStyle(Qt::ToolButtonTextOnly);
     networkButton->setText("Offline");
-    networkButton->setMinimumWidth(75);
+    networkButton->setMinimumWidth(50);
     mainStatusBar->addPermanentWidget(networkButton);
+
 
     userMenu = new QMenu();
     userMenu->addAction(actionLogIn);

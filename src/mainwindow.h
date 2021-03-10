@@ -27,6 +27,7 @@
 #include "localsettingswidget.h"
 #include "duqf-utils/utils.h"
 #include "duqf-widgets/toolbarspacer.h"
+#include "duqf-widgets/duqflogtoolbutton.h"
 
 #include <QMouseEvent>
 #include <QLabel>
