@@ -15,10 +15,6 @@ public:
 
     void update();
 
-signals:
-    void removed(RamSequence*);
-    void changed(RamSequence*);
-
 private:
     QString _projectUuid;
     //QList<RamAsset*> _assets;

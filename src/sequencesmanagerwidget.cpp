@@ -76,12 +76,12 @@ void SequencesManagerWidget::newSequence(RamSequence *seq)
     }
 }
 
-void SequencesManagerWidget::removeSequence(RamSequence *seq)
+void SequencesManagerWidget::removeSequence(RamObject *seq)
 {
     removeData(seq->uuid());
 }
 
-void SequencesManagerWidget::sequenceChanged(RamSequence( *seq))
+void SequencesManagerWidget::sequenceChanged(RamObject *seq)
 {
     updateItem(seq->uuid(), seq->name());
 }

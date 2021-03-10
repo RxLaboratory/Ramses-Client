@@ -18,8 +18,8 @@ protected slots:
 private slots:
     void changeProject(RamProject *project);
     void newSequence(RamSequence *seq);
-    void removeSequence(RamSequence *seq);
-    void sequenceChanged(RamSequence *seq);
+    void removeSequence(RamObject *seq);
+    void sequenceChanged(RamObject *seq);
 
 private:
     SequenceEditWidget *sequenceWidget;

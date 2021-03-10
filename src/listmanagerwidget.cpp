@@ -63,20 +63,13 @@ void ListManagerWidget::addItem(QListWidgetItem *item)
     QVariant currentData = item->data(Qt::UserRole);
     //list->sortItems();
     //reselect
-    for (int row = 0; row < list->count(); row++)
-    {
-        if (list->item(row)->data(Qt::UserRole) == currentData)
-        {
-            selectRow(row);
-            return;
-        }
-    }
+    list->setCurrentItem(item, QItemSelectionModel::ClearAndSelect);
 }
 
 void ListManagerWidget::insertItem(int index, QListWidgetItem *item)
 {
     list->insertItem(index, item);
-    selectRow(index);
+    list->setCurrentItem(item, QItemSelectionModel::ClearAndSelect);
 }
 
 void ListManagerWidget::list_currentRowChanged(int currentRow)
