@@ -15,11 +15,13 @@ class RamAssetWidget : public QWidget, private Ui::RamAssetWidget
 public:
     explicit RamAssetWidget(RamAsset *asset, QWidget *parent = nullptr);
     RamAsset *asset() const;
+public slots:
+    void edit();
 
 private slots:
     void assetChanged();
     void userChanged();
-    void edit();
+
 private:
     RamAsset *_asset;
     QDialog *_editDialog;
