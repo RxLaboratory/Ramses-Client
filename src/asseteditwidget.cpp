@@ -12,7 +12,7 @@ AssetEditWidget::AssetEditWidget(QWidget *parent) :
     connect(revertButton, SIGNAL(clicked()), this, SLOT(revert()));
     connect(shortNameEdit, &QLineEdit::textChanged, this, &AssetEditWidget::checkInput);
     connect(assetGroupBox, SIGNAL(currentIndexChanged(int)), this, SLOT(checkInput()));
-    connect(DBInterface::instance(),&DBInterface::log, this, &AssetEditWidget::dbiLog);
+    connect(DBInterface::instance(),&DBInterface::newLog, this, &AssetEditWidget::dbiLog);
 
     this->setEnabled(false);
 }
@@ -158,7 +158,7 @@ void AssetEditWidget::assetGroupRemoved(QString uuid)
     }
 }
 
-void AssetEditWidget::dbiLog(QString m, LogUtils::LogType t)
+void AssetEditWidget::dbiLog(DuQFLog m)
 {
-    if (t != LogUtils::Remote && t != LogUtils::Debug) statusLabel->setText(m);
+    if (m.type() != DuQFLog::Debug) statusLabel->setText(m.message());
 }

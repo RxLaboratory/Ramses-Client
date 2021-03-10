@@ -17,7 +17,7 @@ StepEditWidget::StepEditWidget(QWidget *parent) :
     connect(updateButton, SIGNAL(clicked()), this, SLOT(update()));
     connect(revertButton, SIGNAL(clicked()), this, SLOT(revert()));
     connect(shortNameEdit, &QLineEdit::textChanged, this, &StepEditWidget::checkInput);
-    connect(DBInterface::instance(),&DBInterface::log, this, &StepEditWidget::dbiLog);
+    connect(DBInterface::instance(),&DBInterface::newLog, this, &StepEditWidget::dbiLog);
     connect(Ramses::instance(), &Ramses::newUser, this, &StepEditWidget::newUser);
     connect(removeUserButton, &QToolButton::clicked, this, &StepEditWidget::removeUser);
 
@@ -221,7 +221,7 @@ void StepEditWidget::userDestroyed(QObject *o)
     }
 }
 
-void StepEditWidget::dbiLog(QString m, LogUtils::LogType t)
+void StepEditWidget::dbiLog(DuQFLog m)
 {
-    if (t != LogUtils::Remote && t != LogUtils::Debug) statusLabel->setText(m);
+    if (m.type() != DuQFLog::Debug) statusLabel->setText(m.message());
 }

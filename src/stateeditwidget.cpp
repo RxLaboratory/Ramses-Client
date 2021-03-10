@@ -14,7 +14,7 @@ StateEditWidget::StateEditWidget(QWidget *parent) :
     connect(colorEdit, SIGNAL(editingFinished()), this, SLOT(updateColorEditStyle()));
     connect(colorButton, SIGNAL(clicked()), this, SLOT(selectColor()));
     connect(shortNameEdit, &QLineEdit::textChanged, this, &StateEditWidget::checkInput);
-    connect(DBInterface::instance(),&DBInterface::log, this, &StateEditWidget::dbiLog);
+    connect(DBInterface::instance(),&DBInterface::newLog, this, &StateEditWidget::dbiLog);
 
     this->setEnabled(false);
 }
@@ -97,9 +97,9 @@ void StateEditWidget::stateDestroyed(QObject *o)
     setState(nullptr);
 }
 
-void StateEditWidget::dbiLog(QString m, LogUtils::LogType t)
+void StateEditWidget::dbiLog(DuQFLog m)
 {
-    if (t != LogUtils::Remote && t != LogUtils::Debug) statusLabel->setText(m);
+    if (m.type() != DuQFLog::Debug) statusLabel->setText(m.message());
 }
 
 void StateEditWidget::updateColorEditStyle()

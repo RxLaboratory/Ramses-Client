@@ -102,8 +102,7 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     connect(refreshButton, SIGNAL(clicked()), Ramses::instance(), SLOT(refresh()));
     connect(mainStack,SIGNAL(currentChanged(int)), this, SLOT(pageChanged(int)));
     connect(lp, &LoginPage::serverSettings, this, &MainWindow::serverSettings);
-    connect(DBInterface::instance(),&DBInterface::log, this, &MainWindow::log);
-    connect(Daemon::instance(), &Daemon::log, this, &MainWindow::log);
+    connect(DuQFLogger::instance(), &DuQFLogger::newLog, this, &MainWindow::log);
     connect(Daemon::instance(), &Daemon::raise, this, &MainWindow::raise);
     connect(Daemon::instance(), &Daemon::raise, this, &MainWindow::show);
     connect(Ramses::instance(),&Ramses::loggedIn, this, &MainWindow::loggedIn);
@@ -400,37 +399,17 @@ void MainWindow::duqf_askBeforeClose()
     if (r == QMessageBox::Yes) this->close();
 }
 
-void MainWindow::log(QString m, LogUtils::LogType type)
+void MainWindow::log(DuQFLog m)
 {
-    if (m == "") return;
+    QString message  =m.message();
+    if (message == "") return;
 
-    if (type == LogUtils::Debug)
-    {
-        qDebug().noquote() << m;
-    }
-    else if (type == LogUtils::Information)
-    {
-        mainStatusBar->showMessage(m,5000);
-        qInfo().noquote() << m;
-    }
-    else if (type == LogUtils::Warning)
-    {
-        mainStatusBar->showMessage(m,10000);
-        qWarning().noquote() << m;
-    }
-    else if (type == LogUtils::Critical)
-    {
-        mainStatusBar->showMessage(m);
-        qCritical().noquote() << m;
-    }
-    else if (type == LogUtils::Fatal)
-    {
-        mainStatusBar->showMessage(m);
-    }
-    else if (type == LogUtils::Remote)
-    {
-        qDebug().noquote() << "REMOTE === " + m;
-    }
+    DuQFLog::LogType type = m.type();
+
+    if (type == DuQFLog::Information) mainStatusBar->showMessage(message,5000);
+    else if (type == DuQFLog::Warning) mainStatusBar->showMessage(message,10000);
+    else if (type == DuQFLog::Critical) mainStatusBar->showMessage(message);
+    else if (type == DuQFLog::Fatal) mainStatusBar->showMessage(message);
 }
 
 void MainWindow::pageChanged(int i)

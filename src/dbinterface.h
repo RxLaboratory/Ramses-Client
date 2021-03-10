@@ -15,8 +15,9 @@
 
 #include "duqf-utils/utils.h"
 #include "duqf-app/app-version.h"
+#include "duqf-utils/duqflogger.h"
 
-class DBInterface : public QObject
+class DBInterface : public DuQFLoggerObject
 {
     Q_OBJECT
 public:
@@ -73,7 +74,6 @@ public slots:
     void suspend(bool suspended = true);
 
 signals:
-    void log(QString, LogUtils::LogType);
     void connectionStatusChanged(NetworkUtils::NetworkStatus);
     void data(QJsonObject);
 

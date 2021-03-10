@@ -20,7 +20,7 @@ UserEditWidget::UserEditWidget(QWidget *parent) :
     connect(npassword1Edit, &QLineEdit::textChanged, this, &UserEditWidget::checkInput);
     connect(npassword2Edit, &QLineEdit::textChanged, this, &UserEditWidget::checkInput);
     connect(folderSelector, &DuQFFolderSelectorWidget::pathChanging, this, &UserEditWidget::updateFolderLabel);
-    connect(DBInterface::instance(),&DBInterface::log, this, &UserEditWidget::dbiLog);
+    connect(DBInterface::instance(),&DBInterface::newLog, this, &UserEditWidget::dbiLog);
 
 
     this->setEnabled(false);
@@ -165,7 +165,7 @@ void UserEditWidget::userDestroyed(QObject */*o*/)
     setUser(nullptr);
 }
 
-void UserEditWidget::dbiLog(QString m, LogUtils::LogType t)
+void UserEditWidget::dbiLog(DuQFLog m)
 {
-    if (t != LogUtils::Remote && t != LogUtils::Debug) statusLabel->setText(m);
+    if (m.type() != DuQFLog::Debug) statusLabel->setText(m.message());
 }

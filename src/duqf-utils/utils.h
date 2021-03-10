@@ -116,17 +116,6 @@ namespace NetworkUtils
 
 };
 
-namespace LogUtils
-{
-    Q_NAMESPACE
-
-    /**
-     * @brief The LogType enum Log level for printing the debug log
-     */
-    enum LogType { Debug, Information, Warning, Critical, Fatal, Remote };
-    Q_ENUM_NS(LogType)
-};
-
 namespace RegExUtils {
     QRegularExpression getRegEx( QString name );
 };

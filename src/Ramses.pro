@@ -30,6 +30,7 @@ SOURCES += \
     dbisuspender.cpp \
     duqf-app/app-style.cpp \
     duqf-app/app-utils.cpp \
+    duqf-utils/duqflogger.cpp \
     duqf-utils/language-utils.cpp \
     duqf-utils/utils.cpp \
     duqf-widgets/aboutdialog.cpp \
@@ -37,6 +38,7 @@ SOURCES += \
     duqf-widgets/duqfdoubleslider.cpp \
     duqf-widgets/duqfdoublespinbox.cpp \
     duqf-widgets/duqffolderselectorwidget.cpp \
+    duqf-widgets/duqfloggingtextedit.cpp \
     duqf-widgets/duqfslider.cpp \
     duqf-widgets/duqfspinbox.cpp \
     duqf-widgets/settingswidget.cpp \
@@ -84,6 +86,7 @@ HEADERS += \
     duqf-app/app-style.h \
     duqf-app/app-utils.h \
     duqf-app/app-version.h \
+    duqf-utils/duqflogger.h \
     duqf-utils/language-utils.h \
     duqf-utils/utils.h \
     duqf-widgets/aboutdialog.h \
@@ -91,6 +94,7 @@ HEADERS += \
     duqf-widgets/duqfdoubleslider.h \
     duqf-widgets/duqfdoublespinbox.h \
     duqf-widgets/duqffolderselectorwidget.h \
+    duqf-widgets/duqfloggingtextedit.h \
     duqf-widgets/duqfslider.h \
     duqf-widgets/duqfspinbox.h \
     duqf-widgets/settingswidget.h \

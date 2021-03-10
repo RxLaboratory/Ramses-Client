@@ -8,7 +8,7 @@ TemplateAssetGroupEditWidget::TemplateAssetGroupEditWidget(QWidget *parent) :
     connect(updateButton, SIGNAL(clicked()), this, SLOT(update()));
     connect(revertButton, SIGNAL(clicked()), this, SLOT(revert()));
     connect(shortNameEdit, &QLineEdit::textChanged, this, &TemplateAssetGroupEditWidget::checkInput);
-    connect(DBInterface::instance(),&DBInterface::log, this, &TemplateAssetGroupEditWidget::dbiLog);
+    connect(DBInterface::instance(),&DBInterface::newLog, this, &TemplateAssetGroupEditWidget::dbiLog);
 
     this->setEnabled(false);
 }
@@ -86,7 +86,7 @@ void TemplateAssetGroupEditWidget::assetGroupDestroyed(QObject */*o*/)
     setAssetGroup(nullptr);
 }
 
-void TemplateAssetGroupEditWidget::dbiLog(QString m, LogUtils::LogType t)
+void TemplateAssetGroupEditWidget::dbiLog(DuQFLog m)
 {
-    if (t != LogUtils::Remote && t != LogUtils::Debug) statusLabel->setText(m);
+    if (m.type() != DuQFLog::Debug) statusLabel->setText(m.message());
 }

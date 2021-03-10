@@ -98,7 +98,7 @@ private slots:
     void duqf_showHide();
     void duqf_askBeforeClose();
 
-    void log(QString m, LogUtils::LogType type);
+    void log(DuQFLog m);
 
     void pageChanged(int i);
     void serverSettings();

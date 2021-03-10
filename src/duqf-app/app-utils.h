@@ -15,6 +15,7 @@
 #include "app-version.h"
 #include "app-style.h"
 #include "../duqf-utils/utils.h"
+#include "../duqf-utils/duqflogger.h"
 
 #ifdef Q_OS_WIN
 #include "windows.h"
@@ -70,10 +71,10 @@ public:
     }
 
 public slots:
-    void newMessage(QString message, LogUtils::LogType lt = LogUtils::Information)
+    void newMessage(QString message, DuQFLog::LogType lt = DuQFLog::Information)
     {
         if (!this->isVisible()) return;
-        if (lt == LogUtils::Debug) return;
+        if (lt == DuQFLog::Debug) return;
         _progressBar->setFormat( "%p% - " + message );
 #ifdef QT_DEBUG
     qDebug().noquote() << message;

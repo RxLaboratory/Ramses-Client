@@ -13,7 +13,7 @@ TemplateStepEditWidget::TemplateStepEditWidget(QWidget *parent) :
     connect(updateButton, SIGNAL(clicked()), this, SLOT(update()));
     connect(revertButton, SIGNAL(clicked()), this, SLOT(revert()));
     connect(shortNameEdit, &QLineEdit::textChanged, this, &TemplateStepEditWidget::checkInput);
-    connect(DBInterface::instance(),&DBInterface::log, this, &TemplateStepEditWidget::dbiLog);
+    connect(DBInterface::instance(),&DBInterface::newLog, this, &TemplateStepEditWidget::dbiLog);
 
     this->setEnabled(false);
 }
@@ -97,7 +97,7 @@ void TemplateStepEditWidget::stepDestroyed(QObject */*o*/)
     setStep(nullptr);
 }
 
-void TemplateStepEditWidget::dbiLog(QString m, LogUtils::LogType t)
+void TemplateStepEditWidget::dbiLog(DuQFLog m)
 {
-    if (t != LogUtils::Remote && t != LogUtils::Debug) statusLabel->setText(m);
+    if (m.type() != DuQFLog::Debug) statusLabel->setText(m.message());
 }

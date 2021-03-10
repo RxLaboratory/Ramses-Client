@@ -21,7 +21,7 @@ private slots:
     bool checkInput();
     void updateFolderLabel(QString path);
     void userDestroyed(QObject *o);
-    void dbiLog(QString m, LogUtils::LogType t);
+    void dbiLog(DuQFLog m);
 
 private:
     DuQFFolderSelectorWidget *folderSelector;

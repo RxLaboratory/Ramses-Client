@@ -10,8 +10,9 @@
 
 #include "duqf-app/app-version.h"
 #include "duqf-utils/utils.h"
+#include "duqf-utils/duqflogger.h"
 
-class Daemon : public QObject
+class Daemon : public DuQFLoggerObject
 {
     Q_OBJECT
 public:
@@ -21,7 +22,6 @@ public:
     void restart();
 
 signals:
-    void log(QString, LogUtils::LogType);
     void raise();
 
 protected:

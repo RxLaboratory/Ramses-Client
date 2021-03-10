@@ -28,7 +28,7 @@ private slots:
     void userRemoved(QString uuid);
     void userChanged();
     void userDestroyed(QObject *o);
-    void dbiLog(QString m, LogUtils::LogType t);
+    void dbiLog(DuQFLog m);
 
 private:
     RamStep *_step;

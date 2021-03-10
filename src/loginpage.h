@@ -7,6 +7,7 @@
 
 #include "daemon.h"
 #include "ramses.h"
+#include "duqf-widgets/duqfloggingtextedit.h"
 
 class LoginPage : public QWidget, private Ui::LoginPage
 {
@@ -21,8 +22,6 @@ signals:
 private slots:
     void loggedIn(RamUser *user);
     void loggedOut();
-    void dbiLog(QString m, LogUtils::LogType t);
-    void daemonLog(QString m, LogUtils::LogType t);
     void dbiData(QJsonObject data);
 
     void loginButton_clicked();

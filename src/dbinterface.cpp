@@ -336,7 +336,7 @@ void DBInterface::removeState(QString uuid)
     request(q);
 }
 
-DBInterface::DBInterface(QObject *parent) : QObject(parent)
+DBInterface::DBInterface(QObject *parent) : DuQFLoggerObject("Database Interface", parent)
 {
     // LOCAL
 
@@ -394,15 +394,15 @@ void DBInterface::dataReceived(QNetworkReply * rep)
     QString repMessage = repObj.value("message").toString();
     bool repSuccess = repObj.value("success").toBool();
 
-    emit log(repQuery + "\n" + repMessage + "\nContent:\n" + repAll, LogUtils::Remote);
+    log(repQuery + "\n" + repMessage + "\nContent:\n" + repAll, DuQFLog::Debug);
 
     if (!repSuccess)
     {
-        emit log(repMessage, LogUtils::Warning);
+        log(repMessage, DuQFLog::Warning);
     }
     else
     {
-        emit log(repMessage, LogUtils::Information);
+        log(repMessage, DuQFLog::Information);
     }
 
     //if we recieved the reply from the ping, set online
@@ -420,9 +420,9 @@ void DBInterface::sslError(QNetworkReply* /*rep*/, QList<QSslError> errs)
 {
     foreach (QSslError err, errs)
     {
-        emit log(err.errorString(), LogUtils::Warning);
+        log(err.errorString(), DuQFLog::Warning);
     }
-    emit log("SSL Error. Connection may not be secured.", LogUtils::Warning);
+    log("SSL Error. Connection may not be secured.", DuQFLog::Warning);
 }
 
 void DBInterface::networkError(QNetworkReply::NetworkError err)
@@ -555,7 +555,7 @@ void DBInterface::networkError(QNetworkReply::NetworkError err)
         reason = "Unknown server error.";
     }
     setConnectionStatus( NetworkUtils::Offline );
-    emit log(reason, LogUtils::Critical);
+    log(reason, DuQFLog::Critical);
 }
 
 void DBInterface::setConnectionStatus(NetworkUtils::NetworkStatus s)
@@ -582,7 +582,7 @@ void DBInterface::request(QString req, bool waitPing)
             if ( t.hasExpired() || _status == NetworkUtils::Offline )
             {
                 setOffline();
-                emit log("Cannot process request, server unavailable.", LogUtils::Critical);
+                log("Cannot process request, server unavailable.", DuQFLog::Critical);
                 return;
             }
         }
@@ -608,14 +608,14 @@ void DBInterface::request(QString req, bool waitPing)
     if (req.indexOf("login") >= 0)
     {
 #ifdef QT_DEBUG
-        emit log("New request: " + protocol + serverAddress + req, LogUtils::Remote);
+        log("New request: " + protocol + serverAddress + req, DuQFLog::Debug);
 #else
-        emit log("New request: " + protocol + serverAddress + "[Hidden login info]", LogUtils::Remote);
+        log("New request: " + protocol + serverAddress + "[Hidden login info]", DuQFLog::Remote);
 #endif
     }
     else
     {
-        emit log("New request: " + protocol + serverAddress + req, LogUtils::Remote);
+        log("New request: " + protocol + serverAddress + req, DuQFLog::Debug);
     }
 
     connect(_reply, SIGNAL(error(QNetworkReply::NetworkError)), this,SLOT(networkError(QNetworkReply::NetworkError)));

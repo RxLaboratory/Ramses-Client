@@ -24,7 +24,7 @@ private slots:
     void newAssetGroup(RamAssetGroup *ag);
     void assetGroupChanged();
     void assetGroupRemoved(QString uuid);
-    void dbiLog(QString m, LogUtils::LogType t);
+    void dbiLog(DuQFLog m);
 
 private:
     RamAsset *_asset;

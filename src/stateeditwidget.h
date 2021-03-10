@@ -22,7 +22,7 @@ private slots:
     void revert();
     bool checkInput();
     void stateDestroyed(QObject *o);
-    void dbiLog(QString m, LogUtils::LogType t);
+    void dbiLog(DuQFLog m);
     void updateColorEditStyle();
     void selectColor();
 

@@ -19,7 +19,7 @@ private slots:
     void revert();
     bool checkInput();
     void stepDestroyed(QObject *o);
-    void dbiLog(QString m, LogUtils::LogType t);
+    void dbiLog(DuQFLog m);
 
 private:
     RamStep *_step;
