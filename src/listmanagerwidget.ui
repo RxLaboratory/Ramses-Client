@@ -92,9 +92,21 @@
         </widget>
        </item>
        <item>
-        <widget class="QListWidget" name="list">
+        <widget class="DuQFListWidget" name="list">
          <property name="frameShape">
           <enum>QFrame::NoFrame</enum>
+         </property>
+         <property name="dragEnabled">
+          <bool>true</bool>
+         </property>
+         <property name="dragDropMode">
+          <enum>QAbstractItemView::InternalMove</enum>
+         </property>
+         <property name="defaultDropAction">
+          <enum>Qt::MoveAction</enum>
+         </property>
+         <property name="selectionMode">
+          <enum>QAbstractItemView::ExtendedSelection</enum>
          </property>
         </widget>
        </item>
@@ -180,6 +192,13 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>DuQFListWidget</class>
+   <extends>QListWidget</extends>
+   <header>duqf-widgets/duqflistwidget.h</header>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="resources.qrc"/>
  </resources>

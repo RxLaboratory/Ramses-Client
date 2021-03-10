@@ -8,6 +8,8 @@ StepsManagerWidget::StepsManagerWidget(QWidget *parent): ListManagerWidget(paren
 
     this->setRole(RamUser::ProjectAdmin);
 
+    list->setDragEnabled(true);
+
     // Add menu
     assignMenu = new QMenu(this);
     actionCreateStep = new QAction("Create new step");
@@ -30,6 +32,7 @@ StepsManagerWidget::StepsManagerWidget(QWidget *parent): ListManagerWidget(paren
     connect(Ramses::instance(), &Ramses::newTemplateStep, this, &StepsManagerWidget::newTemplateStep);
     connect(upButton, &QToolButton::clicked, this, &StepsManagerWidget::moveStepUp);
     connect(downButton, &QToolButton::clicked, this, &StepsManagerWidget::moveStepDown);
+    connect(list, &DuQFListWidget::itemDropped, this, &StepsManagerWidget::updateStepsOrder);
 }
 
 void StepsManagerWidget::currentDataChanged(QVariant data)

@@ -13,12 +13,11 @@ SettingsWidget::SettingsWidget(QString title, QWidget *parent) :
 void SettingsWidget::setupUi(QString title)
 {
     this->setObjectName(QStringLiteral("SettingsWidget"));
-    this->resize(878, 479);
     QVBoxLayout *verticalLayout = new QVBoxLayout(this);
     verticalLayout->setContentsMargins(0, 0, 0, 0);
+    verticalLayout->setSpacing(0);
 
     titleBar = new TitleBar(title,this);
-    titleBar->setObjectName("titleBar");
     verticalLayout->addWidget(titleBar);
 
     QWidget *mainWidget = new QWidget(this);

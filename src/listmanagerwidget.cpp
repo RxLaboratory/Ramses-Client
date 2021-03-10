@@ -6,6 +6,8 @@ ListManagerWidget::ListManagerWidget(QWidget *parent) :
     setupUi(this);
 
     filterWidget->hide();
+    list->setDragEnabled(false);
+    list->setSelectionMode(QAbstractItemView::SingleSelection);
 
     _role = RamUser::Standard;
 
@@ -59,13 +61,13 @@ void ListManagerWidget::addItem(QListWidgetItem *item)
 {
     list->addItem(item);
     QVariant currentData = item->data(Qt::UserRole);
-    list->sortItems();
+    //list->sortItems();
     //reselect
     for (int row = 0; row < list->count(); row++)
     {
         if (list->item(row)->data(Qt::UserRole) == currentData)
         {
-            list->setCurrentRow(row);
+            selectRow(row);
             return;
         }
     }
@@ -74,7 +76,7 @@ void ListManagerWidget::addItem(QListWidgetItem *item)
 void ListManagerWidget::insertItem(int index, QListWidgetItem *item)
 {
     list->insertItem(index, item);
-    list->setCurrentRow(index);
+    selectRow(index);
 }
 
 void ListManagerWidget::list_currentRowChanged(int currentRow)
@@ -167,4 +169,12 @@ void ListManagerWidget::loggedOut()
 void ListManagerWidget::filterIndexChanged(int i)
 {
     emit filterChanged( filterBox->itemData(i).toString() );
+}
+
+void ListManagerWidget::selectRow(int r)
+{
+    for (int i = 0; i < list->count(); i++)
+    {
+        list->item(i)->setSelected(i == r);
+    }
 }

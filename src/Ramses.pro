@@ -38,6 +38,7 @@ SOURCES += \
     duqf-widgets/duqfdoubleslider.cpp \
     duqf-widgets/duqfdoublespinbox.cpp \
     duqf-widgets/duqffolderselectorwidget.cpp \
+    duqf-widgets/duqflistwidget.cpp \
     duqf-widgets/duqfloggingtextedit.cpp \
     duqf-widgets/duqflogtoolbutton.cpp \
     duqf-widgets/duqfslider.cpp \
@@ -96,6 +97,7 @@ HEADERS += \
     duqf-widgets/duqfdoubleslider.h \
     duqf-widgets/duqfdoublespinbox.h \
     duqf-widgets/duqffolderselectorwidget.h \
+    duqf-widgets/duqflistwidget.h \
     duqf-widgets/duqfloggingtextedit.h \
     duqf-widgets/duqflogtoolbutton.h \
     duqf-widgets/duqfslider.h \

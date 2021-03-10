@@ -29,6 +29,7 @@ private slots:
     void templateStepChanged();
     void moveStepUp();
     void moveStepDown();
+    void updateStepsOrder();
 
 private:
     StepEditWidget *stepWidget;
@@ -36,7 +37,6 @@ private:
     QToolButton *downButton;
     QToolButton *upButton;
     QAction *actionCreateStep;
-    void updateStepsOrder();
     QList<QMetaObject::Connection> _projectConnections;
 };
 

@@ -101,7 +101,7 @@ void RamProject::removeAssetGroup(RamAssetGroup *assetGroup)
 
 bool assetGroupSorter(RamAssetGroup *a, RamAssetGroup *b)
 {
-    return a->shortName() > b->shortName();
+    return a->shortName() < b->shortName();
 }
 
 void RamProject::sortAssetGroups()
@@ -175,7 +175,7 @@ void RamProject::removeSequence(RamSequence *seq)
 
 bool sequenceSorter(RamSequence *a, RamSequence *b)
 {
-    return a->shortName() > b->shortName();
+    return a->shortName() < b->shortName();
 }
 
 void RamProject::sortSequences()
@@ -237,7 +237,7 @@ void RamProject::removeStep(RamStep *step)
 
 bool stepsSorter( RamStep *a, RamStep *b)
 {
-    return a->order() > b->order();
+    return a->order() < b->order();
 }
 
 void RamProject::sortSteps()

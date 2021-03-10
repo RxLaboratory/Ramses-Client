@@ -40,6 +40,7 @@ private slots:
     void loggedIn(RamUser *user);
     void loggedOut();
     void filterIndexChanged(int i);
+    void selectRow(int r);
 
 private:
     RamUser::UserRole _role;

@@ -72,7 +72,7 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     UserProfilePage *up = new UserProfilePage(this);
     mainStack->addWidget(up);
     // admin
-    adminPage = new SettingsWidget("Admin", this);
+    adminPage = new SettingsWidget("Administration", this);
     adminPage->showReinitButton(false);
     mainStack->addWidget(adminPage);
     // Admin tabs
@@ -82,7 +82,7 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     adminPage->addPage(new TemplateAssetGroupsManagerWidget(this), "Template Asset Groups", QIcon(":/icons/asset-groups"));
     adminPage->addPage(new StatesManagerWidget(this), "States", QIcon(":/icons/state"));
     // project settings
-    projectSettingsPage = new SettingsWidget("Projects", this);
+    projectSettingsPage = new SettingsWidget("Project Administration", this);
     projectSettingsPage->showReinitButton(false);
     mainStack->addWidget(projectSettingsPage);
     projectSettingsPage->addPage(new StepsManagerWidget(this), "Steps", QIcon(":/icons/steps"));
