@@ -57,6 +57,7 @@ SOURCES += \
     ramassetgroup.cpp \
     ramobject.cpp \
     ramproject.cpp \
+    ramsequence.cpp \
     ramses.cpp \
     ramstate.cpp \
     ramstep.cpp \
@@ -113,6 +114,7 @@ HEADERS += \
     ramassetgroup.h \
     ramobject.h \
     ramproject.h \
+    ramsequence.h \
     ramses.h \
     ramstate.h \
     ramstep.h \

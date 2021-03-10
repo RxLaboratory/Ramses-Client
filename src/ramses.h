@@ -104,6 +104,8 @@ private slots:
     void gotAssetGroups(QJsonArray assetGroups, RamProject *project);
     // assets
     void gotAssets(QJsonArray assets, RamAssetGroup *assetGroup);
+    // sequences
+    void gotSequences(QJsonArray sequences, RamProject *project);
     //TODO This should be modified when implementing offline version
     void dbiConnectionStatusChanged(NetworkUtils::NetworkStatus s);
 private:

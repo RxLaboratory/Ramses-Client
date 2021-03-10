@@ -300,6 +300,35 @@ void DBInterface::removeAsset(QString uuid)
     request(q);
 }
 
+void DBInterface::createSequence(QString shortName, QString name, QString projectUuid, QString uuid)
+{
+    QStringList q("createSequence");
+    q << "uuid=" + uuid;
+    q << "shortName=" + shortName;
+    q << "name=" + name;
+    q << "projectUuid=" + projectUuid;
+
+    request(q);
+}
+
+void DBInterface::updateSequence(QString uuid, QString shortName, QString name)
+{
+    QStringList q("updateSequence");
+    q << "uuid=" + uuid;
+    q << "shortName=" + shortName;
+    q << "name=" + name;
+
+    request(q);
+}
+
+void DBInterface::removeSequence(QString uuid)
+{
+    QStringList q("removeSequence");
+    q << "uuid=" + uuid;
+
+    request(q);
+}
+
 void DBInterface::createState(QString shortName, QString name, QString uuid)
 {
     QStringList q("createState");

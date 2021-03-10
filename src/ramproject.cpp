@@ -41,6 +41,12 @@ void RamProject::assetGroupDestroyed(QObject *o)
     removeAssetGroup(ag);
 }
 
+void RamProject::sequenceDestroyed(QObject *o)
+{
+    RamSequence *s = (RamSequence*)o;
+    removeSequence(s);
+}
+
 QList<RamAssetGroup *> RamProject::assetGroups() const
 {
     return _assetGroups;
@@ -119,6 +125,62 @@ RamAsset *RamProject::asset(QString uuid)
 void RamProject::removeAsset(QString uuid)
 {
     foreach(RamAssetGroup *ag, _assetGroups) ag->removeAsset(uuid);
+}
+
+QList<RamSequence *> RamProject::sequences() const
+{
+    return _sequences;
+}
+
+RamSequence *RamProject::sequence(QString uuid)
+{
+    foreach (RamSequence *s, _sequences)
+    {
+        if (s->uuid() == uuid) return s;
+    }
+    return nullptr;
+}
+
+void RamProject::addSequence(RamSequence *seq)
+{
+    _sequences << seq;
+    connect(seq, &RamSequence::destroyed, this, &RamProject::sequenceDestroyed);
+    emit newSequence(seq);
+}
+
+void RamProject::createSequence(QString shortName, QString name)
+{
+    RamSequence *seq = new RamSequence(shortName, name, _uuid);
+    addSequence(seq);
+}
+
+void RamProject::removeSequence(QString uuid)
+{
+    for (int i = _sequences.count() -1; i >= 0; i--)
+    {
+        RamSequence *s = _sequences[i];
+        if (s->uuid() == uuid)
+        {
+            _sequences.removeAt(i);
+            s->deleteLater();
+            emit sequenceRemoved(uuid);
+        }
+    }
+}
+
+void RamProject::removeSequence(RamSequence *seq)
+{
+    removeSequence(seq->uuid());
+}
+
+bool sequenceSorter(RamSequence *a, RamSequence *b)
+{
+    return a->shortName() > b->shortName();
+}
+
+void RamProject::sortSequences()
+{
+    std::sort(_sequences.begin(), _sequences.end(), sequenceSorter);
 }
 
 QList<RamStep *> RamProject::steps() const

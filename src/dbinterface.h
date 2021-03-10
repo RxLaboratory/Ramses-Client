@@ -64,6 +64,10 @@ public:
     void createAsset(QString shortName, QString name, QString assetGroupUuid, QString tags, QString uuid);
     void updateAsset(QString uuid, QString shortName, QString name, QString assetGroupUuid, QString tags);
     void removeAsset(QString uuid);
+    //sequences
+    void createSequence(QString shortName, QString name, QString projectUuid, QString uuid);
+    void updateSequence(QString uuid, QString shortName, QString name);
+    void removeSequence(QString uuid);
     //states
     void createState(QString shortName, QString name, QString uuid);
     void getStates();

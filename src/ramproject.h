@@ -4,6 +4,7 @@
 #include "ramobject.h"
 #include "ramstep.h"
 #include "ramassetgroup.h"
+#include "ramsequence.h"
 #include "dbisuspender.h"
 
 class RamProject : public RamObject
@@ -40,22 +41,35 @@ public:
     RamAsset *asset(QString uuid);
     void removeAsset(QString uuid);
 
-    void update();
+    // Sequences
+    QList<RamSequence *> sequences() const;
+    RamSequence *sequence(QString uuid);
+    void addSequence(RamSequence *seq);
+    void createSequence(QString shortName = "NEW", QString name = "Sequence");
+    void removeSequence(QString uuid);
+    void removeSequence(RamSequence *seq);
+    void sortSequences();
 
-public slots:
-    void stepDestroyed(QObject *o);
-    void assetGroupDestroyed(QObject *o);
+    void update();
 
 signals:
     void newStep(RamStep *);
     void stepRemoved(QString uuid);
     void newAssetGroup(RamAssetGroup *);
     void assetGroupRemoved(QString uuid);
+    void newSequence(RamSequence *);
+    void sequenceRemoved(QString uuid);
+
+private slots:
+    void stepDestroyed(QObject *o);
+    void assetGroupDestroyed(QObject *o);
+    void sequenceDestroyed(QObject *o);
 
 private:
     QString _folderPath;
     QList<RamStep *> _steps;
     QList<RamAssetGroup *> _assetGroups;
+    QList<RamSequence *> _sequences;
 };
 
 #endif // RAMPROJECT_H

@@ -154,6 +154,7 @@ void Ramses::gotProjects(QJsonArray projects)
                 existingProject->setShortName( newProject.value("shortName").toString());
                 gotSteps( newProject.value("steps").toArray(), existingProject);
                 gotAssetGroups( newProject.value("assetGroups").toArray(), existingProject);
+                gotSequences( newProject.value("sequences").toArray(), existingProject);
                 //send the signal
                 b.unblock();
                 existingProject->setFolderPath( newProject.value("folderPath").toString());
@@ -184,6 +185,7 @@ void Ramses::gotProjects(QJsonArray projects)
         // Add steps
         gotSteps( p.value("steps").toArray(), project);
         gotAssetGroups( p.value("assetGroups").toArray(), project);
+        gotSequences( p.value("sequences").toArray(), project);
 
         _projects << project;
 
@@ -516,8 +518,6 @@ void Ramses::gotAssetGroups(QJsonArray assetGroups, RamProject *project)
         gotAssets( ag.value("assets").toArray(), assetGroup);
 
         project->addAssetGroup(assetGroup);
-
-        emit newAssetGroup(assetGroup);
     }
 
     // sort the asset groups
@@ -579,6 +579,65 @@ void Ramses::gotAssets(QJsonArray assets, RamAssetGroup *assetGroup)
 
     // sort the asset groups
     assetGroup->sortAssets();
+}
+
+void Ramses::gotSequences(QJsonArray sequences, RamProject *project)
+{
+    DBISuspender s;
+
+    QList<RamSequence*> projectSequences = project->sequences();
+
+    // loop through existing asset groups to update them
+    for (int i = projectSequences.count() - 1; i >= 0; i--)
+    {
+        RamSequence *existingSequence = projectSequences[i];
+        // loop through new sequences to update
+        bool found = false;
+        for (int j = 0; j < sequences.count(); j++)
+        {
+            QJsonObject newS = sequences[j].toObject();
+            QString uuid = newS.value("uuid").toString();
+            // Found, update
+            if (uuid == existingSequence->uuid())
+            {
+                found = true;
+                //Emit just one signal
+                QSignalBlocker b(existingSequence);
+                existingSequence->setName( newS.value("name").toString());
+                //gotShots( newS.value("shots").toArray(), existingSequence);
+                b.unblock();
+                existingSequence->setShortName( newS.value("shortName").toString());
+                //remove from new asset groups
+                sequences.removeAt(j);
+                break;
+            }
+        }
+        // Not found, remove from existing
+        if (!found)
+        {
+            project->removeSequence(existingSequence);
+        }
+    }
+
+    // loop through remaining new asset groups to add them
+    for (int i = 0; i < sequences.count(); i++)
+    {
+        QJsonObject s = sequences[i].toObject();
+        RamSequence *sequence = new RamSequence(
+                    s.value("shortName").toString(),
+                    s.value("name").toString(),
+                    s.value("uuid").toString()
+                    );
+        sequence->setProjectUuid( s.value("projectUuid").toString());
+
+        //add shots
+        //gotShots( s.value("shots").toArray(), sequence);
+
+        project->addSequence(sequence);
+    }
+
+    // sort the sequences
+    project->sortSequences();
 }
 
 void Ramses::dbiConnectionStatusChanged(NetworkUtils::NetworkStatus s)
