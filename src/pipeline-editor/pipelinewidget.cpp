@@ -6,6 +6,9 @@ PipelineWidget::PipelineWidget(QWidget *parent) :
     setupUi(this);
 
     titleBar = new TitleBar("Pipeline Editor",this);
+
+    titleBar->insertLeft(actionAddNode);
+
     titleBar->insertRight(actionViewAll);
     titleBar->insertRight(actionViewSelected);
     titleBar->showReinitButton(false);
@@ -31,4 +34,5 @@ PipelineWidget::PipelineWidget(QWidget *parent) :
     connect(actionViewSelected, SIGNAL(triggered()), view, SLOT(frameSelected()));
     connect(zoomBox, SIGNAL(valueChanged(int)), view, SLOT(setZoom(int)));
     connect(view, SIGNAL(zoomed(int)), zoomBox, SLOT(setValue(int)));
+    connect(actionAddNode, SIGNAL(triggered()), scene, SLOT(addNode()));
 }

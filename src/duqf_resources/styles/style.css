@@ -9,7 +9,8 @@ MainWindow, QDialog {
 }
 
 QWidget {
-    font-weight:500;
+    font-weight: @font-weight-medium;
+    font-size: @font-size-medium;
     background-color: @color-dark-grey;
 }
 
@@ -571,8 +572,12 @@ QMenu::separator {
 
 /* TITLE BAR */
 
-#titleWidget, #titleBar, TitleBar {
+#titleBar {
     background-color: @color-less-dark-grey;
+}
+
+#titleBar QWidget {
+    background-color: rgba(0,0,0,0);
 }
 
 /* TOOLBAR */
@@ -592,20 +597,16 @@ QToolBar QWidget {
     height: @small-button-size;
 }
 
-QToolBar QWidget {
-    background-color: rgba(0,0,0,0);
-}
-
-QToolBar QToolButton:hover {
+QToolBar QToolButton:hover, #titleBar QToolButton:hover {
     background-color: @color-dark-grey;
 }
 
-QToolBar QToolButton:pressed {
+QToolBar QToolButton:pressed, #titleBar QToolButton:pressed {
     background-color: @color-abyss-grey;
 }
 
-QToolBar QToolButton:disabled {
-    background: @color-medium-grey;
+QToolBar QToolButton:disabled, #titleBar QToolButton:disabled {
+    background-color: @color-medium-grey;
     color: @color-less-light-grey;
 }
 
@@ -613,27 +614,27 @@ QToolBar QLabel {
     color: @color-light-grey;
 }
 
-QToolBar QToolButton:checked {
+QToolBar QToolButton:checked, #titleBar QToolButton:checked  {
     background-color: @color-dark-grey;
 }
 
-QToolBar QComboBox:hover {
+QToolBar QComboBox:hover, #titleBar QComboBox:hover {
     background-color: @color-very-dark-grey;
 }
 
-QToolBar DuQFSlider, QToolBar DuQFDoubleSlider {
+#titleBar DuQFSlider, #titleBar DuQFDoubleSlider {
     color: @color-light-grey;
     border-radius: @padding-small;
     height: @small-button-size;
     background-color:@color-very-dark-grey;
 }
 
-DuQFSlider::chunk, QToolBar DuQFDoubleSlider::chunk {
+#titleBar DuQFSlider::chunk, #titleBar DuQFDoubleSlider::chunk {
     border-radius: @padding-small;
     background-color:@color-dark-grey;
 }
 
-DuQFSlider::chunk:hover, QToolBar DuQFDoubleSlider::chunk:hover {
+#titleBar DuQFSlider::chunk:hover, #titleBar DuQFDoubleSlider::chunk:hover {
     background-color: @color-medium-grey;
 }
 

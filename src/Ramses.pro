@@ -30,7 +30,11 @@ SOURCES += \
     dbisuspender.cpp \
     duqf-app/app-style.cpp \
     duqf-app/app-utils.cpp \
+    duqf-nodeview/duqfconnection.cpp \
+    duqf-nodeview/duqfconnectionmanager.cpp \
+    duqf-nodeview/duqfconnector.cpp \
     duqf-nodeview/duqfgrid.cpp \
+    duqf-nodeview/duqfnode.cpp \
     duqf-nodeview/duqfnodescene.cpp \
     duqf-nodeview/duqfnodeview.cpp \
     duqf-utils/duqflogger.cpp \
@@ -96,7 +100,11 @@ HEADERS += \
     duqf-app/app-style.h \
     duqf-app/app-utils.h \
     duqf-app/app-version.h \
+    duqf-nodeview/duqfconnection.h \
+    duqf-nodeview/duqfconnectionmanager.h \
+    duqf-nodeview/duqfconnector.h \
     duqf-nodeview/duqfgrid.h \
+    duqf-nodeview/duqfnode.h \
     duqf-nodeview/duqfnodescene.h \
     duqf-nodeview/duqfnodeview.h \
     duqf-utils/duqflogger.h \

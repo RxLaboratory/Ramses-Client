@@ -4,6 +4,7 @@
 #include <QGraphicsView>
 #include <cmath>
 #include <QGraphicsItemGroup>
+#include <QGraphicsSceneHoverEvent>
 
 #include "duqf-app/app-style.h"
 #include "duqf-nodeview/duqfgrid.h"

@@ -375,6 +375,15 @@ QColor DuUI::getColor(QString colorName)
     return QColor();
 }
 
+int DuUI::getSize(QString type, QString name)
+{
+    foreach(QStringList cssValue, DuUI::instance()->cssValues())
+    {
+        if (cssValue[0] == type && cssValue[1] == name) return cssValue[2].replace("px", "").toInt();
+    }
+    return 0;
+}
+
 void DuUI::addCssValue(QStringList value) {
     _cssValues << value;
 }

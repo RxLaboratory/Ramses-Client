@@ -3,10 +3,6 @@
 DuQFNodeScene::DuQFNodeScene()
 {
     setSceneRect(-m_initialSize, -m_initialSize, m_initialSize * 2, m_initialSize * 2);
-
-    //add a test item
-    QGraphicsRectItem *item = new QGraphicsRectItem(-50,-50,100,100);
-    this->addItem(item);
 }
 
 void DuQFNodeScene::adjustSceneRect()
@@ -19,6 +15,64 @@ void DuQFNodeScene::adjustSceneRect()
 QRectF DuQFNodeScene::zoomToFit(bool isForExport) const
 {
     return calculateRectangle(isForExport);
+}
+
+void DuQFNodeScene::addNode()
+{
+    DuQFNode *node = new DuQFNode();
+    this->addItem(node);
+
+    connect(node, &DuQFNode::connectionInitiated, this, &DuQFNodeScene::initiateConnection);
+    connect(node, &DuQFNode::connectionMoved, this, &DuQFNodeScene::moveConnection);
+    connect(node, &DuQFNode::connectionFinished, this, &DuQFNodeScene::finishConnection);
+}
+
+void DuQFNodeScene::moveConnection(QPointF to)
+{
+    if (m_connecting && m_connectingItem)
+    {
+        m_connectingItem->setTo(to);
+    }
+}
+
+void DuQFNodeScene::finishConnection(QPointF to, QPointF from)
+{
+    m_connecting = false;
+
+    // Check the item we're connecting to
+    DuQFConnector *input = nullptr;
+    foreach(QGraphicsItem *item, items(to))
+    {
+        input = dynamic_cast< DuQFConnector* >(item);
+        if(input) break;
+    }
+
+    // Find the item we're connecting from
+    DuQFConnector *output = nullptr;
+    foreach(QGraphicsItem *item, items(from))
+    {
+        output = dynamic_cast< DuQFConnector* >(item);
+        if(output) break;
+    }
+
+    // remove connection
+    if (!input || !output)
+    {
+        delete m_connectingItem;
+        m_connectingItem = nullptr;
+        return;
+    }
+
+    m_connections << new DuQFConnectionManager(output, input, m_connectingItem, this);
+}
+
+void DuQFNodeScene::initiateConnection(QPointF from)
+{
+    m_connecting = true;
+
+    DuQFConnection *c = new DuQFConnection(from);
+    this->addItem(c);
+    m_connectingItem = c;
 }
 
 bool DuQFNodeScene::containsAll() const

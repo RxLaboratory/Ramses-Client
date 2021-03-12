@@ -47,6 +47,8 @@ public:
 
     static QColor getColor(QString colorName);
 
+    static int getSize(QString type, QString name = "");
+
     void addCssValue(QStringList value);
     QList<QStringList> cssValues();
     void clearCssValues();

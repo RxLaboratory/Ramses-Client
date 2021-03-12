@@ -26,6 +26,11 @@
 @padding-large = 10px
 @padding-extra-large = 15px
 
+@font-size-very-small= 8px
+@font-size-small= 10px
+@font-size-medium = 12px
+@font-weight-medium = 500;
+
 @big-button-size = 30px
 @small-button-size = 12px
 @very-small-button-size = 8px
