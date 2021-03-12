@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>PipelineWidget</class>
+ <widget class="QWidget" name="PipelineWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>934</width>
+    <height>635</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QVBoxLayout" name="mainLayout">
+   <property name="spacing">
+    <number>0</number>
+   </property>
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
+  </layout>
+  <action name="actionViewAll">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/icons/view-all</normaloff>:/icons/view-all</iconset>
+   </property>
+   <property name="text">
+    <string>View All</string>
+   </property>
+   <property name="toolTip">
+    <string>Reset view.</string>
+   </property>
+  </action>
+  <action name="actionViewSelected">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/icons/view-selected</normaloff>:/icons/view-selected</iconset>
+   </property>
+   <property name="text">
+    <string>View Selected</string>
+   </property>
+   <property name="toolTip">
+    <string>Resize and center view on (selected) nodes.</string>
+   </property>
+  </action>
+ </widget>
+ <resources>
+  <include location="../resources.qrc"/>
+ </resources>
+ <connections/>
+</ui>

@@ -1,19 +1,45 @@
 #ifndef TITLEBAR_H
 #define TITLEBAR_H
 
-#include "ui_titlebar.h"
+#include <QToolBar>
+#include <QtCore/QVariant>
+#include <QtWidgets/QAction>
+#include <QtWidgets/QApplication>
+#include <QtWidgets/QButtonGroup>
+#include <QtWidgets/QHBoxLayout>
+#include <QtWidgets/QHeaderView>
+#include <QtWidgets/QLabel>
+#include <QtWidgets/QSpacerItem>
+#include <QtWidgets/QToolButton>
+#include <QtWidgets/QWidget>
 
-class TitleBar : public QWidget, private Ui::TitleBar
+#include "toolbarspacer.h"
+
+class TitleBar : public QToolBar
 {
     Q_OBJECT
 
 public:
     explicit TitleBar(QString title, QWidget *parent = nullptr);
     void showReinitButton(bool show);
+    void insertRight(QWidget *w);
+    void insertRight(QAction *a);
+    void insertLeft(QWidget *w);
+    void insertLeft(QAction *a);
 
 signals:
     void reinitRequested();
     void closeRequested();
+
+private:
+    void setupUi();
+
+    QLabel *titleLabel;
+    QToolButton *reinitButton;
+    QToolButton *closeButton;
+    QAction *reinitAction;
+    QAction *leftAction;
+    QAction *rightAction;
 };
 
 #endif // TITLEBAR_H

@@ -41,5 +41,8 @@
         <file alias="filter">resources/icons/filter_sl.svg</file>
         <file alias="edit">resources/icons/edit-comment-modify_sl.svg</file>
         <file alias="sequences">resources/icons/sequences.svg</file>
+        <file alias="pipeline">resources/icons/edit-connections-pipeline_bl.svg</file>
+        <file alias="view-selected">resources/icons/frame-focus-center-target-nodes_sl.svg</file>
+        <file alias="view-all">resources/icons/frame-focus-center-target_sl.svg</file>
     </qresource>
 </RCC>

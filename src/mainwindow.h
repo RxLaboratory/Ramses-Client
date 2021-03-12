@@ -15,6 +15,7 @@
 #include "userprofilepage.h"
 #include "usersmanagerwidget.h"
 #include "projectsmanagerwidget.h"
+#include "pipeline-editor/pipelinewidget.h"
 #include "templatestepsmanagerwidget.h"
 #include "templateassetgroupsmanagerwidget.h"
 #include "stepsmanagerwidget.h"
@@ -76,8 +77,6 @@ private:
     QLabel *title;
     QMenu *helpMenu;
 
-    SettingsWidget *adminPage;
-    SettingsWidget *projectSettingsPage;
     QMenu *userMenu;
     QToolButton *userButton;
     QToolButton *networkButton;
@@ -113,6 +112,8 @@ private slots:
     void closeAdmin();
     void projectSettings(bool show = true);
     void closeProjectSettings();
+    void pipeline(bool show = true);
+    void closePipeline();
     void networkButton_clicked();
     void loggedIn();
     void loggedOut();

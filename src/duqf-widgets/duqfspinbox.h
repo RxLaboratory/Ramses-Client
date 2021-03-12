@@ -20,13 +20,8 @@ public:
     void setPrefix(const QString &prefix);
 
     int minimum() const;
-    void setMinimum(int min);
-
     int maximum() const;
-    void setMaximum(int max);
-
     int value() const;
-    void setValue(int value);
 
     bool valueVisible() const;
     void showValue(bool showValue);
@@ -34,6 +29,11 @@ public:
     DuQFSlider *slider() const;
 
     QSpinBox *spinBox() const;
+
+public slots:
+    void setValue(int value);
+    void setMaximum(int max);
+    void setMinimum(int min);
 
 signals:
     void valueChanged(int value);

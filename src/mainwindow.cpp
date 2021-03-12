@@ -7,13 +7,9 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     setupUi(this);
 
     // Populate Toolbar
-
-    mainToolBar->addAction(actionLogIn);
-
-    mainToolBar->addAction(actionAdmin);
     actionAdmin->setVisible(false);
-    mainToolBar->addAction(actionProjectSettings);
     actionProjectSettings->setVisible(false);
+    actionPipeline->setVisible(false);
 
     mainToolBar->addWidget(new ToolBarSpacer(this));
 
@@ -72,7 +68,7 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     UserProfilePage *up = new UserProfilePage(this);
     mainStack->addWidget(up);
     // admin
-    adminPage = new SettingsWidget("Administration", this);
+    SettingsWidget *adminPage = new SettingsWidget("Administration", this);
     adminPage->showReinitButton(false);
     mainStack->addWidget(adminPage);
     // Admin tabs
@@ -81,14 +77,17 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     adminPage->addPage(new TemplateStepsManagerWidget(this), "Template Steps", QIcon(":/icons/steps"));
     adminPage->addPage(new TemplateAssetGroupsManagerWidget(this), "Template Asset Groups", QIcon(":/icons/asset-groups"));
     adminPage->addPage(new StatesManagerWidget(this), "States", QIcon(":/icons/state"));
-    // project settings
-    projectSettingsPage = new SettingsWidget("Project Administration", this);
+    // Project settings
+    SettingsWidget *projectSettingsPage = new SettingsWidget("Project Administration", this);
     projectSettingsPage->showReinitButton(false);
     mainStack->addWidget(projectSettingsPage);
     projectSettingsPage->addPage(new StepsManagerWidget(this), "Steps", QIcon(":/icons/steps"));
     projectSettingsPage->addPage(new AssetGroupsManagerWidget(this), "Asset Groups", QIcon(":/icons/asset-groups"));
     projectSettingsPage->addPage(new AssetsManagerWidget(this), "Assets", QIcon(":/icons/assets"));
     projectSettingsPage->addPage(new SequencesManagerWidget(this), "Sequences", QIcon(":/icons/sequences"));
+    // Pipeline editor
+    PipelineWidget *pipelineEditor = new PipelineWidget(this);
+    mainStack->addWidget(pipelineEditor);
 
     // Set UI
     mainStack->setCurrentIndex(0);
@@ -100,6 +99,8 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     connect(actionUserFolder,SIGNAL(triggered()), this, SLOT(revealUserFolder()));
     connect(actionAdmin,SIGNAL(triggered(bool)), this, SLOT(admin(bool)));
     connect(actionProjectSettings,SIGNAL(triggered(bool)), this, SLOT(projectSettings(bool)));
+    connect(actionPipeline, SIGNAL(triggered(bool)), this, SLOT(pipeline(bool)));
+    connect(pipelineEditor, SIGNAL(closeRequested()), this, SLOT(closePipeline()));
     connect(adminPage, SIGNAL(closeRequested()), this, SLOT(closeAdmin()));
     connect(projectSettingsPage, SIGNAL(closeRequested()), this, SLOT(closeProjectSettings()));
     connect(networkButton,SIGNAL(clicked()),this, SLOT(networkButton_clicked()));
@@ -420,6 +421,7 @@ void MainWindow::pageChanged(int i)
 {
     actionAdmin->setChecked(i == 3);
     actionProjectSettings->setChecked(i == 4);
+    actionPipeline->setChecked(i == 5);
 }
 
 void MainWindow::serverSettings()
@@ -476,6 +478,17 @@ void MainWindow::closeProjectSettings()
     projectSettings(false);
 }
 
+void MainWindow::pipeline(bool show)
+{
+    if (show) mainStack->setCurrentIndex(5);
+    else home();
+}
+
+void MainWindow::closePipeline()
+{
+    pipeline(false);
+}
+
 void MainWindow::networkButton_clicked()
 {
     DBInterface *dbi = DBInterface::instance();
@@ -511,6 +524,8 @@ void MainWindow::currentUserChanged()
     actionProjectSettings->setChecked(false);
     actionUserProfile->setVisible(false);
     actionUserFolder->setVisible(false);
+    actionPipeline->setVisible(false);
+    actionPipeline->setChecked(false);
 
     RamUser *user = Ramses::instance()->currentUser();
     if (!user) return;
@@ -525,11 +540,13 @@ void MainWindow::currentUserChanged()
     {
         actionAdmin->setVisible(true);
         actionProjectSettings->setVisible(true);
+        actionPipeline->setVisible(true);
         userButton->setIcon(QIcon(":/icons/admin"));
     }
     else if (user->role() == RamUser::ProjectAdmin)
     {
         actionProjectSettings->setVisible(true);
+        actionPipeline->setVisible(true);
         userButton->setIcon(QIcon(":/icons/project-admin"));
     }
     else if (user->role() == RamUser::Lead)

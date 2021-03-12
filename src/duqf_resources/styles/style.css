@@ -592,6 +592,10 @@ QToolBar QWidget {
     height: @small-button-size;
 }
 
+QToolBar QWidget {
+    background-color: rgba(0,0,0,0);
+}
+
 QToolBar QToolButton:hover {
     background-color: @color-dark-grey;
 }
@@ -616,6 +620,23 @@ QToolBar QToolButton:checked {
 QToolBar QComboBox:hover {
     background-color: @color-very-dark-grey;
 }
+
+QToolBar DuQFSlider, QToolBar DuQFDoubleSlider {
+    color: @color-light-grey;
+    border-radius: @padding-small;
+    height: @small-button-size;
+    background-color:@color-very-dark-grey;
+}
+
+DuQFSlider::chunk, QToolBar DuQFDoubleSlider::chunk {
+    border-radius: @padding-small;
+    background-color:@color-dark-grey;
+}
+
+DuQFSlider::chunk:hover, QToolBar DuQFDoubleSlider::chunk:hover {
+    background-color: @color-medium-grey;
+}
+
 
 /* STATUSBAR */
 

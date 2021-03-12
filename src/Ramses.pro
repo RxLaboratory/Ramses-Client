@@ -30,6 +30,9 @@ SOURCES += \
     dbisuspender.cpp \
     duqf-app/app-style.cpp \
     duqf-app/app-utils.cpp \
+    duqf-nodeview/duqfgrid.cpp \
+    duqf-nodeview/duqfnodescene.cpp \
+    duqf-nodeview/duqfnodeview.cpp \
     duqf-utils/duqflogger.cpp \
     duqf-utils/language-utils.cpp \
     duqf-utils/utils.cpp \
@@ -51,6 +54,7 @@ SOURCES += \
     loginpage.cpp \
     main.cpp \
     mainwindow.cpp \
+    pipeline-editor/pipelinewidget.cpp \
     projecteditwidget.cpp \
     projectselectorwidget.cpp \
     projectsmanagerwidget.cpp \
@@ -92,6 +96,9 @@ HEADERS += \
     duqf-app/app-style.h \
     duqf-app/app-utils.h \
     duqf-app/app-version.h \
+    duqf-nodeview/duqfgrid.h \
+    duqf-nodeview/duqfnodescene.h \
+    duqf-nodeview/duqfnodeview.h \
     duqf-utils/duqflogger.h \
     duqf-utils/language-utils.h \
     duqf-utils/utils.h \
@@ -112,6 +119,7 @@ HEADERS += \
     localsettingswidget.h \
     loginpage.h \
     mainwindow.h \
+    pipeline-editor/pipelinewidget.h \
     projecteditwidget.h \
     projectselectorwidget.h \
     projectsmanagerwidget.h \
@@ -148,12 +156,12 @@ FORMS += \
     duqf-widgets/aboutdialog.ui \
     duqf-widgets/appearancesettingswidget.ui \
     duqf-widgets/duqffolderselectorwidget.ui \
-    duqf-widgets/titlebar.ui \
     duqf-widgets/toolbarspacer.ui \
     listmanagerwidget.ui \
     localsettingswidget.ui \
     loginpage.ui \
     mainwindow.ui \
+    pipeline-editor/pipelinewidget.ui \
     projecteditwidget.ui \
     ramassetwidget.ui \
     sequenceeditwidget.ui \

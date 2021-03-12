@@ -104,6 +104,10 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+   <addaction name="actionLogIn"/>
+   <addaction name="actionAdmin"/>
+   <addaction name="actionProjectSettings"/>
+   <addaction name="actionPipeline"/>
   </widget>
   <action name="actionLogIn">
    <property name="icon">
@@ -155,6 +159,9 @@
    <property name="text">
     <string>Project Settings</string>
    </property>
+   <property name="toolTip">
+    <string>Project Admin</string>
+   </property>
   </action>
   <action name="actionUserFolder">
    <property name="icon">
@@ -163,6 +170,18 @@
    </property>
    <property name="text">
     <string>User folder</string>
+   </property>
+  </action>
+  <action name="actionPipeline">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/pipeline</normaloff>:/icons/pipeline</iconset>
+   </property>
+   <property name="text">
+    <string>Pipeline</string>
    </property>
   </action>
  </widget>
