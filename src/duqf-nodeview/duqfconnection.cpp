@@ -45,8 +45,14 @@ void DuQFConnection::remove()
 {
     if (m_removing) return;
     m_removing = true;
-    // disconnect all slots
     m_connector->remove();
+
+    DuQFNode *outputParent = (DuQFNode*)m_output->parentItem();
+    DuQFNode *inputParent = (DuQFNode*)m_input->parentItem();
+
+    outputParent->removeChildNode(inputParent);
+    inputParent->removeParentNode(outputParent);
+
     emit removed();
     deleteLater();
 }
