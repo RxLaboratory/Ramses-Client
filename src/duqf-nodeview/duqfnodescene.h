@@ -10,12 +10,13 @@
 #include "duqfconnector.h"
 #include "duqfconnection.h"
 #include "duqfconnectionmanager.h"
+#include "duqfgrid.h"
 
 class DuQFNodeScene : public QGraphicsScene
 {
     Q_OBJECT
 public:
-    DuQFNodeScene();
+    DuQFNodeScene(DuQFGrid &grid);
     void adjustSceneRect();
     QRectF zoomToFit(bool isForExport = false) const;
 
@@ -30,6 +31,8 @@ private slots:
     void finishConnection(QPointF to, QPointF from);
 
 private:
+    DuQFGrid &m_grid;
+
     bool containsAll() const;
     QRectF calculateRectangle(bool isForExport = false) const;
 

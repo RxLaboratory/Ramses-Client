@@ -10,14 +10,15 @@
 
 #include "duqf-app/app-style.h"
 
-#include "duqf-nodeview/duqfslot.h"
+#include "duqfslot.h"
+#include "duqfgrid.h"
 
 class DuQFNode : public QGraphicsObject
 {
     Q_OBJECT
     Q_INTERFACES(QGraphicsItem)
 public:
-    DuQFNode(QString title = "Node");
+    DuQFNode(DuQFGrid &grid, QString title = "Node");
     //! Copy constructor.
     DuQFNode(const DuQFNode & other);
     ~DuQFNode() Q_DECL_OVERRIDE;
@@ -31,6 +32,8 @@ public:
     QString title() const;
     void setTitle(const QString &title);
 
+    DuQFGrid &grid() const;
+
 public slots:
     void remove();
 
@@ -42,8 +45,11 @@ signals:
 
 protected:
     //void mousePressEvent(QGraphicsSceneMouseEvent * event) Q_DECL_OVERRIDE;
+    QVariant itemChange(GraphicsItemChange change, const QVariant &value) Q_DECL_OVERRIDE;
 
 private:
+    DuQFGrid &m_grid;
+
     bool m_removing = false;
     // Appearance
     //QSizeF m_size = QSizeF(150.0,30.0);

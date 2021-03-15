@@ -1,6 +1,7 @@
 #include "duqfnode.h"
 
-DuQFNode::DuQFNode(QString title)
+DuQFNode::DuQFNode(DuQFGrid &grid, QString title):
+     m_grid(grid)
 {
     setAcceptHoverEvents(true);
 
@@ -12,7 +13,7 @@ DuQFNode::DuQFNode(QString title)
 
     m_cornerRadius = DuUI::getSize( "padding", "small" );
 
-    setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable);
+    setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable | ItemSendsGeometryChanges);
     setSelected(false);
 
     // Connectors
@@ -43,7 +44,8 @@ DuQFNode::DuQFNode(QString title)
     connect(m_defaultOutputConnector, &DuQFSlot::connectionFinished, this, &DuQFNode::connectionFinished);
 }
 
-DuQFNode::DuQFNode(const DuQFNode &other)
+DuQFNode::DuQFNode(const DuQFNode &other):
+    m_grid(other.grid())
 {
     setTitle(other.title());
 }
@@ -88,6 +90,19 @@ void DuQFNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
     // Inputs
 
     painter->restore();
+}
+
+QVariant DuQFNode::itemChange(GraphicsItemChange change, const QVariant &value)
+{
+    if (change == ItemPositionChange && scene() && QApplication::mouseButtons() == Qt::LeftButton)
+            return m_grid.snapToGrid(value.toPointF());
+
+    return QGraphicsItem::itemChange(change, value);
+}
+
+DuQFGrid &DuQFNode::grid() const
+{
+    return m_grid;
 }
 
 QString DuQFNode::title() const

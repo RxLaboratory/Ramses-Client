@@ -1,6 +1,8 @@
 #ifndef PIPELINEWIDGET_H
 #define PIPELINEWIDGET_H
 
+#include <QCheckBox>
+
 #include "ui_pipelinewidget.h"
 #include "duqf-nodeview/duqfnodeview.h"
 #include "duqf-nodeview/duqfnodescene.h"

@@ -1,6 +1,7 @@
 #include "duqfnodescene.h"
 
-DuQFNodeScene::DuQFNodeScene()
+DuQFNodeScene::DuQFNodeScene(DuQFGrid &grid):
+    m_grid(grid)
 {
     setSceneRect(-m_initialSize, -m_initialSize, m_initialSize * 2, m_initialSize * 2);
 }
@@ -22,7 +23,7 @@ void DuQFNodeScene::addNode()
     // remove selection
     foreach(QGraphicsItem *i, items()) i->setSelected(false);
 
-    DuQFNode *node = new DuQFNode();
+    DuQFNode *node = new DuQFNode(m_grid);
     this->addItem(node);
     node->setSelected(true);
 

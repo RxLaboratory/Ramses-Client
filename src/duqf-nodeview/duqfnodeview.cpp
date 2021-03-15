@@ -16,8 +16,10 @@ DuQFNodeView::DuQFNodeView(QWidget *parent): QGraphicsView(parent)
 
     setFocusPolicy(Qt::StrongFocus);
 
-    m_scene = new DuQFNodeScene();
+    m_scene = new DuQFNodeScene(m_grid);
     setScene(m_scene);
+
+    connect(&m_grid, SIGNAL(gridSizeChanged()), this, SLOT(update()));
 }
 
 const DuQFGrid &DuQFNodeView::grid() const

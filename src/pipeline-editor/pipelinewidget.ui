@@ -30,30 +30,6 @@
     <number>0</number>
    </property>
   </layout>
-  <action name="actionViewAll">
-   <property name="icon">
-    <iconset resource="../resources.qrc">
-     <normaloff>:/icons/view-all</normaloff>:/icons/view-all</iconset>
-   </property>
-   <property name="text">
-    <string>Reset View</string>
-   </property>
-   <property name="toolTip">
-    <string>Reset view.</string>
-   </property>
-  </action>
-  <action name="actionViewSelected">
-   <property name="icon">
-    <iconset resource="../resources.qrc">
-     <normaloff>:/icons/view-selected</normaloff>:/icons/view-selected</iconset>
-   </property>
-   <property name="text">
-    <string>View Selected</string>
-   </property>
-   <property name="toolTip">
-    <string>Resize and center view on (selected) nodes.</string>
-   </property>
-  </action>
   <action name="actionAddNode">
    <property name="text">
     <string>Add node</string>
@@ -76,8 +52,6 @@
    </property>
   </action>
  </widget>
- <resources>
-  <include location="../resources.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>
