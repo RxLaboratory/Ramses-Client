@@ -37,6 +37,7 @@ public:
     //projects
     void createProject(QString shortName, QString name, QString uuid);
     void getProjects();
+    void getProject(QString uuid);
     void updateProject(QString uuid, QString shortName, QString name, QString folderPath = "");
     void removeProject(QString uuid);
     void assignStep(QString stepUuid, QString projectUuid);

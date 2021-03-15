@@ -27,7 +27,7 @@ Ramses::Ramses(QObject *parent) : QObject(parent)
 
     connect( _dbi, &DBInterface::data, this, &Ramses::newData );
     connect( _dbi, &DBInterface::connectionStatusChanged, this, &Ramses::dbiConnectionStatusChanged);
-    connect( (DuApplication *)qApp, &DuApplication::idle, this, &Ramses::refresh);
+    connect( (DuApplication *)qApp, &DuApplication::idle, this, &Ramses::refreshCurrentProject);
 }
 
 void Ramses::login(QString username, QString password)
@@ -943,6 +943,21 @@ void Ramses::refresh()
     _dbi->getStates();
     // Get Projects
     _dbi->getProjects();
+}
+
+void Ramses::refreshCurrentProject()
+{
+    // Get Users
+    _dbi->getUsers();
+    // Get Template Steps
+    _dbi->getTemplateSteps();
+    // Get Template Asset Groups
+    _dbi->getTemplateAssetGroups();
+    // Get States
+    _dbi->getStates();
+    // Get current project
+    if (_currentProject) _dbi->getProject(_currentProject->uuid());
+    else _dbi->getProjects();
 }
 
 bool Ramses::isConnected() const

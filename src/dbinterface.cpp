@@ -93,6 +93,14 @@ void DBInterface::getProjects()
     request(q);
 }
 
+void DBInterface::getProject(QString uuid)
+{
+    QStringList q("getProject");
+    q << "uuid=" + uuid;
+
+    request(q);
+}
+
 void DBInterface::updateProject(QString uuid, QString shortName, QString name, QString folderPath)
 {
     QStringList q("updateProject");

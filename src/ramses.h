@@ -67,6 +67,7 @@ public:
 
 public slots:
     void refresh();
+    void refreshCurrentProject();
 
 signals:
     void loggedIn(RamUser*);
