@@ -5,6 +5,8 @@ DuQFConnector::DuQFConnector(QPointF from)
     m_from = from;
     m_width = DuUI::getSize("margin");
     setZValue(-1000);
+
+    setFlags(ItemIsSelectable);
 }
 
 QRectF DuQFConnector::boundingRect() const
@@ -40,6 +42,19 @@ QRectF DuQFConnector::boundingRect() const
     return QRectF(x, y, w, h).adjusted(-m_width, -m_width, m_width, m_width);
 }
 
+QPainterPath DuQFConnector::shape() const
+{
+    QPainterPath path;
+    QPolygonF polygon;
+    polygon << m_from;
+    polygon << m_fromHandle;
+    polygon << m_to;
+    polygon << m_toHandle;
+    path.addPolygon(polygon);
+
+    return path;
+}
+
 void DuQFConnector::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
     Q_UNUSED(widget)
@@ -47,12 +62,22 @@ void DuQFConnector::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
 
     painter->save();
 
+    // Get handle coordinates
+    float handleWeight = QSettings().value("nodeViews/curvature", 0.5).toFloat();
+    m_fromHandle.setX((m_from.x()*(1.0-handleWeight) + m_to.x()*handleWeight));
+    m_fromHandle.setY(m_from.y());
+    m_toHandle.setX((m_from.x()*handleWeight + m_to.x()*(1.0-handleWeight)));
+    m_toHandle.setY(m_to.y());
+
+    // Create path
     QPainterPath path( QPointF( m_from.x(), m_from.y() ) );
+    path.cubicTo( m_fromHandle, m_toHandle, m_to);
 
-    path.cubicTo( (m_from.x()*2 + m_to.x())/3, m_from.y(), (m_from.x() + m_to.x()*2)/3, m_to.y(), m_to.x(), m_to.y());
-
+    // And draw
     painter->setBrush(QBrush(Qt::transparent));
-    QPen pen( DuUI::getColor("less-light-grey") );
+    QPen pen;
+    if (isSelected()) pen.setColor( DuUI::getColor("light-grey") );
+    else pen.setColor( DuUI::getColor("less-light-grey") );
     pen.setWidth( m_width );
     pen.setCapStyle(Qt::RoundCap);
     painter->setPen(pen);

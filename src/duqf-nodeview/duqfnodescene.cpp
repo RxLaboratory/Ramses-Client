@@ -21,6 +21,7 @@ void DuQFNodeScene::addNode()
 {
     DuQFNode *node = new DuQFNode();
     this->addItem(node);
+    node->setSelected(true);
 
     connect(node, &DuQFNode::connectionInitiated, this, &DuQFNodeScene::initiateConnection);
     connect(node, &DuQFNode::connectionMoved, this, &DuQFNodeScene::moveConnection);
