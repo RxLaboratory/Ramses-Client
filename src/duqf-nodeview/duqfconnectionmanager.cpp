@@ -13,17 +13,24 @@ void DuQFConnectionManager::addConnection(DuQFConnection *connection)
 
 bool DuQFConnectionManager::addConnection(DuQFSlot *output, DuQFSlot *input, DuQFConnector *connector)
 {
+    // If input and output are the same
+    if (input == output)
+    {
+        connector->remove();
+        return false;
+    }
+
     // If one slot is missing
     if (!input || !output)
     {
-        delete connector;
+        connector->remove();
         return false;
     }
 
     // Won't connect two inputs or two outputs together
     if (input->slotType() && input->slotType() == output->slotType())
     {
-        delete connector;
+        connector->remove();
         return false;
     }
 
@@ -36,7 +43,7 @@ bool DuQFConnectionManager::addConnection(DuQFSlot *output, DuQFSlot *input, DuQ
         if (output  == c->output() && output->isSingleConnection()) ok = false;
         if (!ok)
         {
-            delete connector;
+            connector->remove();
             return false;
         }
     }

@@ -19,6 +19,9 @@ QRectF DuQFNodeScene::zoomToFit(bool isForExport) const
 
 void DuQFNodeScene::addNode()
 {
+    // remove selection
+    foreach(QGraphicsItem *i, items()) i->setSelected(false);
+
     DuQFNode *node = new DuQFNode();
     this->addItem(node);
     node->setSelected(true);
@@ -48,6 +51,18 @@ void DuQFNodeScene::removeSelectedNodes()
 
 void DuQFNodeScene::moveConnection(QPointF to)
 {
+    // Snap
+    // Check the item we're connecting to
+    foreach(QGraphicsItem *item, items(to))
+    {
+        DuQFSlot *input = qgraphicsitem_cast<DuQFSlot*>(item);
+        if(input)
+        {
+            to = input->scenePos();
+            break;
+        }
+    }
+
     if (m_connecting && m_connectingItem)
     {
         m_connectingItem->setTo(to);
@@ -75,7 +90,7 @@ void DuQFNodeScene::finishConnection(QPointF to, QPointF from)
     }
 
     // Connect
-    qDebug() << m_connectionManager.addConnection(output, input, m_connectingItem);
+    m_connectionManager.addConnection(output, input, m_connectingItem);
 }
 
 void DuQFNodeScene::initiateConnection(QPointF from)

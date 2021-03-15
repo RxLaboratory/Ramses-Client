@@ -18,7 +18,7 @@ DuQFSlot::DuQFSlot(SlotType type, bool singleConnection, QColor color)
 
 QRectF DuQFSlot::boundingRect() const
 {
-    return m_boundingRect;
+    return m_boundingRect.adjusted(-10,-10,10,10);
 }
 
 void DuQFSlot::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)

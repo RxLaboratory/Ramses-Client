@@ -3,6 +3,7 @@
 DuQFConnector::DuQFConnector(QPointF from)
 {
     m_from = from;
+    m_to = m_from;
     m_width = DuUI::getSize("margin");
     setZValue(-1000);
 
