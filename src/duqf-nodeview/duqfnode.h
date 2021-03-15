@@ -22,21 +22,29 @@ public:
     DuQFNode(const DuQFNode & other);
     ~DuQFNode() Q_DECL_OVERRIDE;
 
+    enum { Type = UserType + 3 };
+    int type() const Q_DECL_OVERRIDE { return Type; }
+
     QRectF boundingRect() const Q_DECL_OVERRIDE;
     void paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = nullptr) Q_DECL_OVERRIDE;
 
     QString title() const;
     void setTitle(const QString &title);
 
+public slots:
+    void remove();
+
 signals:
     void connectionInitiated(QPointF);
     void connectionMoved(QPointF);
     void connectionFinished(QPointF, QPointF);
+    void removed();
 
 protected:
-    void mousePressEvent(QGraphicsSceneMouseEvent * event) Q_DECL_OVERRIDE;
+    //void mousePressEvent(QGraphicsSceneMouseEvent * event) Q_DECL_OVERRIDE;
 
 private:
+    bool m_removing = false;
     // Appearance
     //QSizeF m_size = QSizeF(150.0,30.0);
     int m_cornerRadius = 5;

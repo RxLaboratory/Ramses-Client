@@ -696,6 +696,12 @@ QSplashScreen QLabel {
     color: @color-dark-grey;
 }
 
+/* GRAPHICS VIEW */
+
+QGraphicsView {
+    selection-background-color: rgba(129, 9, 173, 127);
+}
+
 /* DUQF CUSTOM WIDGETS */
 
 #duqf_block {

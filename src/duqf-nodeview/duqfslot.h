@@ -17,6 +17,9 @@ public:
                Output = 2 };
     Q_ENUM(SlotType)
 
+    enum { Type = UserType + 2 };
+    int type() const Q_DECL_OVERRIDE { return Type; }
+
     DuQFSlot(SlotType type = All, bool singleConnection = false, QColor color = QColor());
 
     QRectF boundingRect() const Q_DECL_OVERRIDE;
@@ -30,10 +33,14 @@ public:
     SlotType slotType() const;
     void setSlotType(const SlotType &slotType);
 
+public slots:
+    void remove();
+
 signals:
     void connectionInitiated(QPointF);
     void connectionMoved(QPointF);
     void connectionFinished(QPointF, QPointF);
+    void removed();
 
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event) Q_DECL_OVERRIDE;
@@ -43,6 +50,8 @@ protected:
     void hoverLeaveEvent(QGraphicsSceneHoverEvent *event) Q_DECL_OVERRIDE;
 
 private:
+    bool m_removing = false;
+
     // Attributes
     SlotType m_slotType;
     bool m_singleConnection;

@@ -90,19 +90,6 @@ void DuQFNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
     painter->restore();
 }
 
-void DuQFNode::mousePressEvent(QGraphicsSceneMouseEvent *event)
-{
-    if (event->button() == Qt::LeftButton)
-    {
-        setSelected(true);
-        event->accept();
-        return;
-    }
-
-    QGraphicsItem::mousePressEvent(event);
-    event->ignore();
-}
-
 QString DuQFNode::title() const
 {
     return m_titleItem->toPlainText();
@@ -116,4 +103,14 @@ void DuQFNode::setTitle(const QString &title)
 
     m_defaultOutputConnector->setPos(m_boundingRect.right(), m_boundingRect.center().y());
     m_defaultInputConnector->setPos(m_boundingRect.left() , m_boundingRect.center().y());
+}
+
+void DuQFNode::remove()
+{
+    if (m_removing) return;
+    m_removing = true;
+    m_defaultInputConnector->remove();
+    m_defaultOutputConnector->remove();
+    emit removed();
+    deleteLater();
 }

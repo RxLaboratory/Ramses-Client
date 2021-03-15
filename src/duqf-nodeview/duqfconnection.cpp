@@ -13,6 +13,9 @@ DuQFConnection::DuQFConnection(DuQFSlot *output, DuQFSlot *input, DuQFConnector 
     connect(outputParent, &QGraphicsObject::yChanged, this, &DuQFConnection::outputMoved);
     connect(inputParent, &QGraphicsObject::xChanged, this, &DuQFConnection::inputMoved);
     connect(inputParent, &QGraphicsObject::yChanged, this, &DuQFConnection::inputMoved);
+    connect(output, &DuQFSlot::removed, this, &DuQFConnection::remove);
+    connect(input, &DuQFSlot::removed, this, &DuQFConnection::remove);
+    connect(connector, &DuQFConnector::removed, this, &DuQFConnection::remove);
 }
 
 DuQFSlot *DuQFConnection::input() const
@@ -33,6 +36,16 @@ DuQFSlot *DuQFConnection::output() const
 void DuQFConnection::setOutput(DuQFSlot *output)
 {
     m_output = output;
+}
+
+void DuQFConnection::remove()
+{
+    if (m_removing) return;
+    m_removing = true;
+    // disconnect all slots
+    m_connector->remove();
+    emit removed();
+    deleteLater();
 }
 
 void DuQFConnection::outputMoved()

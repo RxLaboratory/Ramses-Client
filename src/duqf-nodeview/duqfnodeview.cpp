@@ -15,6 +15,9 @@ DuQFNodeView::DuQFNodeView(QWidget *parent): QGraphicsView(parent)
     setDragMode(QGraphicsView::RubberBandDrag);
 
     setFocusPolicy(Qt::StrongFocus);
+
+    m_scene = new DuQFNodeScene();
+    setScene(m_scene);
 }
 
 const DuQFGrid &DuQFNodeView::grid() const
@@ -38,6 +41,11 @@ qreal DuQFNodeView::currentZoom()
     QPoint p1 = mapFromScene(QPointF(1000.0,0.0));
     QPoint p2 = mapFromScene(QPointF(0.0,0.0));
     return qreal(p1.x() - p2.x()) / 1000.0;
+}
+
+DuQFNodeScene *DuQFNodeView::nodeScene()
+{
+    return m_scene;
 }
 
 void DuQFNodeView::frameSelected()
@@ -81,6 +89,12 @@ void DuQFNodeView::setZoom(int zoomPercent)
     setTransform(t);
 }
 
+void DuQFNodeView::removeSelectedItems()
+{
+    m_scene->removeSelectedNodes();
+    m_scene->removeSelectedConnections();
+}
+
 void DuQFNodeView::wheelEvent(QWheelEvent *event)
 {
     QPoint numPixels = event->pixelDelta();
@@ -100,13 +114,24 @@ void DuQFNodeView::wheelEvent(QWheelEvent *event)
 
 void DuQFNodeView::keyPressEvent(QKeyEvent *event)
 {
-    if (event->key() == Qt::Key_Period || event->key() == Qt::Key_F)
-    {
+    int key = event->key();
+
+    if (key == Qt::Key_Period || key == Qt::Key_F) {
         frameSelected();
+        event->accept();
+        return;
     }
-    else if (event->key() == Qt::Key_Home)
-    {
+
+    if (key == Qt::Key_Home) {
         reinitTransform();
+        event->accept();
+        return;
+    }
+
+    if (key == Qt::Key_Backspace || key == Qt::Key_Delete) {
+        removeSelectedItems();
+        event->accept();
+        return;
     }
 
     // Default action

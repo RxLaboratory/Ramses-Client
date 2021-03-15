@@ -8,6 +8,7 @@
 
 #include "duqf-app/app-style.h"
 #include "duqf-nodeview/duqfgrid.h"
+#include "duqf-nodeview/duqfnodescene.h"
 
 class DuQFNodeView : public QGraphicsView
 {
@@ -21,10 +22,13 @@ public:
     void zoom(double amount);
     qreal currentZoom();
 
+    DuQFNodeScene * nodeScene();
+
 public slots:
     void frameSelected();
     void reinitTransform();
     void setZoom(int zoomPercent);
+    void removeSelectedItems();
 
 signals:
     void zoomed(qreal zoom);
@@ -45,6 +49,7 @@ private:
     DuQFGrid m_grid;
     bool m_gridVisible = true;
     QRectF m_nodeBoundingRect;
+    DuQFNodeScene *m_scene;
 
     // settings
     double m_zoomSensitivity = 0.2;

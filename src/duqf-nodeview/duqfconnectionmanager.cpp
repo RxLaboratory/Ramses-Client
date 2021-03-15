@@ -7,6 +7,7 @@ DuQFConnectionManager::DuQFConnectionManager(QObject *parent) : QObject(parent)
 
 void DuQFConnectionManager::addConnection(DuQFConnection *connection)
 {
+    connect(connection, &DuQFConnection::removed, this, &DuQFConnectionManager::removeConnection);
     m_connections << connection;
 }
 
@@ -40,11 +41,17 @@ bool DuQFConnectionManager::addConnection(DuQFSlot *output, DuQFSlot *input, DuQ
         }
     }
 
-    m_connections << new DuQFConnection(output, input, connector, this);
+    addConnection( new DuQFConnection(output, input, connector, this) );
     return true;
 }
 
 QList<DuQFConnection *> DuQFConnectionManager::connections() const
 {
     return m_connections;
+}
+
+void DuQFConnectionManager::removeConnection()
+{
+    DuQFConnection *c = (DuQFConnection*)sender();
+    m_connections.removeAll(c);
 }

@@ -98,3 +98,11 @@ void DuQFConnector::setFrom(const QPointF &from)
     m_from = from;
     prepareGeometryChange();
 }
+
+void DuQFConnector::remove()
+{
+    if (m_removing) return;
+    m_removing = true;
+    emit removed();
+    deleteLater();
+}

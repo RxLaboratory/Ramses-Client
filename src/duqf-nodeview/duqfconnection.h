@@ -21,13 +21,18 @@ public:
     DuQFSlot *output() const;
     void setOutput(DuQFSlot *output);
 
+public slots:
+    void remove();
+
 signals:
+    void removed();
 
 private slots:
     void outputMoved();
     void inputMoved();
 
 private:
+    bool m_removing = false;
     DuQFSlot *m_input;
     DuQFSlot *m_output;
     DuQFConnector *m_connector;

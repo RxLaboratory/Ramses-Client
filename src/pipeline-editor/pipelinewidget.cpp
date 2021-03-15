@@ -8,6 +8,8 @@ PipelineWidget::PipelineWidget(QWidget *parent) :
     titleBar = new TitleBar("Pipeline Editor",this);
 
     titleBar->insertLeft(actionAddNode);
+    titleBar->insertLeft(actionDeleteNodes);
+    titleBar->insertLeft(actionDeleteConnections);
 
     titleBar->insertRight(actionViewAll);
     titleBar->insertRight(actionViewSelected);
@@ -24,8 +26,7 @@ PipelineWidget::PipelineWidget(QWidget *parent) :
     mainLayout->addWidget(titleBar);
 
     DuQFNodeView *view = new DuQFNodeView(this);
-    DuQFNodeScene *scene = new DuQFNodeScene();
-    view->setScene(scene);
+    DuQFNodeScene *scene = view->nodeScene();
     mainLayout->addWidget(view);
 
     // Connections
@@ -35,4 +36,6 @@ PipelineWidget::PipelineWidget(QWidget *parent) :
     connect(zoomBox, SIGNAL(valueChanged(int)), view, SLOT(setZoom(int)));
     connect(view, SIGNAL(zoomed(int)), zoomBox, SLOT(setValue(int)));
     connect(actionAddNode, SIGNAL(triggered()), scene, SLOT(addNode()));
+    connect(actionDeleteNodes, SIGNAL(triggered()), scene, SLOT(removeSelectedNodes()));
+    connect(actionDeleteConnections, SIGNAL(triggered()), scene, SLOT(removeSelectedConnections()));
 }

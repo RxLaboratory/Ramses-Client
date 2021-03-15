@@ -28,6 +28,24 @@ void DuQFNodeScene::addNode()
     connect(node, &DuQFNode::connectionFinished, this, &DuQFNodeScene::finishConnection);
 }
 
+void DuQFNodeScene::removeSelectedConnections()
+{
+    foreach(QGraphicsItem *item, selectedItems())
+    {
+        DuQFConnector *c = qgraphicsitem_cast<DuQFConnector*>(item);
+        if (c) c->remove();
+    }
+}
+
+void DuQFNodeScene::removeSelectedNodes()
+{
+    foreach(QGraphicsItem *item, selectedItems())
+    {
+        DuQFNode *n = qgraphicsitem_cast<DuQFNode*>(item);
+        if (n) n->remove();
+    }
+}
+
 void DuQFNodeScene::moveConnection(QPointF to)
 {
     if (m_connecting && m_connectingItem)
@@ -44,7 +62,7 @@ void DuQFNodeScene::finishConnection(QPointF to, QPointF from)
     DuQFSlot *input = nullptr;
     foreach(QGraphicsItem *item, items(to))
     {
-        input = dynamic_cast< DuQFSlot* >(item);
+        input = qgraphicsitem_cast<DuQFSlot*>(item);
         if(input) break;
     }
 
@@ -52,7 +70,7 @@ void DuQFNodeScene::finishConnection(QPointF to, QPointF from)
     DuQFSlot *output = nullptr;
     foreach(QGraphicsItem *item, items(from))
     {
-        output = dynamic_cast< DuQFSlot* >(item);
+        output = qgraphicsitem_cast<DuQFSlot*>(item);
         if(output) break;
     }
 

@@ -104,6 +104,14 @@ void DuQFSlot::setSlotType(const SlotType &slotType)
     m_slotType = slotType;
 }
 
+void DuQFSlot::remove()
+{
+    if (m_removing) return;
+    m_removing = true;
+    emit removed();
+    deleteLater();
+}
+
 bool DuQFSlot::isSingleConnection() const
 {
     return m_singleConnection;

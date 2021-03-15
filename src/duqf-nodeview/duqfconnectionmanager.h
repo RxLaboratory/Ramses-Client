@@ -9,6 +9,7 @@
  */
 class DuQFConnectionManager : public QObject
 {
+    Q_OBJECT
 public:
     explicit DuQFConnectionManager(QObject *parent = nullptr);
     /**
@@ -25,6 +26,9 @@ public:
      */
     bool addConnection(DuQFSlot *output, DuQFSlot *input, DuQFConnector *connector);
     QList<DuQFConnection *> connections() const;
+
+public slots:
+    void removeConnection();
 
 private:
     QList<DuQFConnection*> m_connections;

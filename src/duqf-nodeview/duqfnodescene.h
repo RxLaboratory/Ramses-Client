@@ -21,6 +21,8 @@ public:
 
 public slots:
     void addNode();
+    void removeSelectedConnections();
+    void removeSelectedNodes();
 
 private slots:
     void initiateConnection(QPointF from);
