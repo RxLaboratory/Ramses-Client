@@ -40,37 +40,30 @@ void DuQFNodeScene::finishConnection(QPointF to, QPointF from)
     m_connecting = false;
 
     // Check the item we're connecting to
-    DuQFConnector *input = nullptr;
+    DuQFSlot *input = nullptr;
     foreach(QGraphicsItem *item, items(to))
     {
-        input = dynamic_cast< DuQFConnector* >(item);
+        input = dynamic_cast< DuQFSlot* >(item);
         if(input) break;
     }
 
     // Find the item we're connecting from
-    DuQFConnector *output = nullptr;
+    DuQFSlot *output = nullptr;
     foreach(QGraphicsItem *item, items(from))
     {
-        output = dynamic_cast< DuQFConnector* >(item);
+        output = dynamic_cast< DuQFSlot* >(item);
         if(output) break;
     }
 
-    // remove connection
-    if (!input || !output)
-    {
-        delete m_connectingItem;
-        m_connectingItem = nullptr;
-        return;
-    }
-
-    m_connections << new DuQFConnectionManager(output, input, m_connectingItem, this);
+    // Connect
+    qDebug() << m_connectionManager.addConnection(output, input, m_connectingItem);
 }
 
 void DuQFNodeScene::initiateConnection(QPointF from)
 {
     m_connecting = true;
 
-    DuQFConnection *c = new DuQFConnection(from);
+    DuQFConnector *c = new DuQFConnector(from);
     this->addItem(c);
     m_connectingItem = c;
 }

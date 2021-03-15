@@ -6,9 +6,10 @@
 
 #include <QGraphicsRectItem>
 
-#include "duqf-nodeview/duqfnode.h"
-#include "duqf-nodeview/duqfconnection.h"
-#include "duqf-nodeview/duqfconnectionmanager.h"
+#include "duqfnode.h"
+#include "duqfconnector.h"
+#include "duqfconnection.h"
+#include "duqfconnectionmanager.h"
 
 class DuQFNodeScene : public QGraphicsScene
 {
@@ -35,9 +36,9 @@ private:
 
     // Interactions
     bool m_connecting = false;
-    DuQFConnection *m_connectingItem = nullptr;
+    DuQFConnector *m_connectingItem = nullptr;
 
-    QList<DuQFConnectionManager*> m_connections;
+    DuQFConnectionManager m_connectionManager;
 };
 
 #endif // DUQFNODESCENE_H

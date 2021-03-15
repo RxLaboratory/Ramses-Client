@@ -17,9 +17,9 @@ DuQFNode::DuQFNode(QString title)
 
     // Connectors
 
-    m_defaultInputConnector = new DuQFConnector( DuQFConnector::Input, DuUI::getColor("light-blue") );
+    m_defaultInputConnector = new DuQFSlot( DuQFSlot::Input, false, DuUI::getColor("light-blue") );
     m_defaultInputConnector->setParentItem(this);
-    m_defaultOutputConnector = new DuQFConnector( DuQFConnector::Output, DuUI::getColor("light-green") );
+    m_defaultOutputConnector = new DuQFSlot( DuQFSlot::Output, false, DuUI::getColor("light-green") );
     m_defaultOutputConnector->setParentItem(this);
 
     // Title
@@ -35,12 +35,12 @@ DuQFNode::DuQFNode(QString title)
 
     setTitle(title);
 
-    connect(m_defaultInputConnector, &DuQFConnector::connectionInitiated, this, &DuQFNode::connectionInitiated);
-    connect(m_defaultInputConnector, &DuQFConnector::connectionMoved, this, &DuQFNode::connectionMoved);
-    connect(m_defaultInputConnector, &DuQFConnector::connectionFinished, this, &DuQFNode::connectionFinished);
-    connect(m_defaultOutputConnector, &DuQFConnector::connectionInitiated, this, &DuQFNode::connectionInitiated);
-    connect(m_defaultOutputConnector, &DuQFConnector::connectionMoved, this, &DuQFNode::connectionMoved);
-    connect(m_defaultOutputConnector, &DuQFConnector::connectionFinished, this, &DuQFNode::connectionFinished);
+    connect(m_defaultInputConnector, &DuQFSlot::connectionInitiated, this, &DuQFNode::connectionInitiated);
+    connect(m_defaultInputConnector, &DuQFSlot::connectionMoved, this, &DuQFNode::connectionMoved);
+    connect(m_defaultInputConnector, &DuQFSlot::connectionFinished, this, &DuQFNode::connectionFinished);
+    connect(m_defaultOutputConnector, &DuQFSlot::connectionInitiated, this, &DuQFNode::connectionInitiated);
+    connect(m_defaultOutputConnector, &DuQFSlot::connectionMoved, this, &DuQFNode::connectionMoved);
+    connect(m_defaultOutputConnector, &DuQFSlot::connectionFinished, this, &DuQFNode::connectionFinished);
 }
 
 DuQFNode::DuQFNode(const DuQFNode &other)

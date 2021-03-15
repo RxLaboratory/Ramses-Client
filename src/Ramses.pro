@@ -37,6 +37,7 @@ SOURCES += \
     duqf-nodeview/duqfnode.cpp \
     duqf-nodeview/duqfnodescene.cpp \
     duqf-nodeview/duqfnodeview.cpp \
+    duqf-nodeview/duqfslot.cpp \
     duqf-utils/duqflogger.cpp \
     duqf-utils/language-utils.cpp \
     duqf-utils/utils.cpp \
@@ -107,6 +108,7 @@ HEADERS += \
     duqf-nodeview/duqfnode.h \
     duqf-nodeview/duqfnodescene.h \
     duqf-nodeview/duqfnodeview.h \
+    duqf-nodeview/duqfslot.h \
     duqf-utils/duqflogger.h \
     duqf-utils/language-utils.h \
     duqf-utils/utils.h \

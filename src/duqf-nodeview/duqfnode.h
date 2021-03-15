@@ -10,7 +10,7 @@
 
 #include "duqf-app/app-style.h"
 
-#include "duqf-nodeview/duqfconnector.h"
+#include "duqf-nodeview/duqfslot.h"
 
 class DuQFNode : public QGraphicsObject
 {
@@ -45,8 +45,8 @@ private:
 
     // Children
     QGraphicsTextItem *m_titleItem;
-    DuQFConnector *m_defaultInputConnector;
-    DuQFConnector *m_defaultOutputConnector;
+    DuQFSlot *m_defaultInputConnector;
+    DuQFSlot *m_defaultOutputConnector;
 };
 
 #endif // DUQFNODE_H

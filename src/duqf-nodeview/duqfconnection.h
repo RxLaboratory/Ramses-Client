@@ -1,28 +1,36 @@
 #ifndef DUQFCONNECTION_H
 #define DUQFCONNECTION_H
 
-#include <QGraphicsObject>
-#include <QPainter>
+#include <QObject>
 
-#include "duqf-app/app-style.h"
+#include "duqfslot.h"
+#include "duqfconnector.h"
 
-class DuQFConnection : public QGraphicsObject
+/**
+ * @brief The DuQFConnection class represents a connexion between two slots and transmits the move signals to the DuQFConnector
+ */
+class DuQFConnection : public QObject
 {
     Q_OBJECT
 public:
-    DuQFConnection(QPointF from);
+    explicit DuQFConnection(DuQFSlot *output, DuQFSlot *input, DuQFConnector *connector, QObject *parent = nullptr);
 
-    QRectF boundingRect() const Q_DECL_OVERRIDE;
-    void paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = nullptr) Q_DECL_OVERRIDE;
+    DuQFSlot *input() const;
+    void setInput(DuQFSlot *input);
 
-public slots:
-    void setTo(const QPointF &to);
-    void setFrom(const QPointF &from);
+    DuQFSlot *output() const;
+    void setOutput(DuQFSlot *output);
+
+signals:
+
+private slots:
+    void outputMoved();
+    void inputMoved();
 
 private:
-    QPointF m_from;
-    QPointF m_to;
-    qreal m_width;
+    DuQFSlot *m_input;
+    DuQFSlot *m_output;
+    DuQFConnector *m_connector;
 };
 
-#endif // DUQFCONNECTION_H
+#endif // DUQFCONNECTIONMANAGER_H
