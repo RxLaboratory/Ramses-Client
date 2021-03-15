@@ -3,7 +3,7 @@
 
 #include <QObject>
 
-#include "duqfslot.h"
+#include "duqfnode.h"
 #include "duqfconnector.h"
 
 /**

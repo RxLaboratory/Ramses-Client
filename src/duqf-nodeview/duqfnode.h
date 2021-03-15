@@ -18,7 +18,7 @@ class DuQFNode : public QGraphicsObject
     Q_OBJECT
     Q_INTERFACES(QGraphicsItem)
 public:
-    DuQFNode(DuQFGrid &grid, QString title = "Node");
+    DuQFNode(QString title = "Node");
     //! Copy constructor.
     DuQFNode(const DuQFNode & other);
     ~DuQFNode() Q_DECL_OVERRIDE;
@@ -32,7 +32,19 @@ public:
     QString title() const;
     void setTitle(const QString &title);
 
-    DuQFGrid &grid() const;
+    void setGrid(DuQFGrid *grid);
+    DuQFGrid *grid() const;
+
+    void addChildNode(DuQFNode *childNode);
+    void addParentNode(DuQFNode *parentNode);
+    void removeChildNode(DuQFNode *childNode);
+    void removeParentNode(DuQFNode *parentNode);
+
+    QList<DuQFNode *> childrenNodes() const;
+    QList<DuQFNode *> parentNodes() const;
+    bool isOrphan() const;
+    bool hasChildren() const;
+    bool hasParents() const;
 
 public slots:
     void remove();
@@ -48,11 +60,10 @@ protected:
     QVariant itemChange(GraphicsItemChange change, const QVariant &value) Q_DECL_OVERRIDE;
 
 private:
-    DuQFGrid &m_grid;
+    DuQFGrid *m_grid;
 
     bool m_removing = false;
     // Appearance
-    //QSizeF m_size = QSizeF(150.0,30.0);
     int m_cornerRadius = 5;
     int m_padding = 5;
     QRectF m_boundingRect;
@@ -61,6 +72,10 @@ private:
     QGraphicsTextItem *m_titleItem;
     DuQFSlot *m_defaultInputConnector;
     DuQFSlot *m_defaultOutputConnector;
+
+    // Connected nodes
+    QList<DuQFNode*> m_childrenNodes;
+    QList<DuQFNode*> m_parentNodes;
 };
 
 #endif // DUQFNODE_H

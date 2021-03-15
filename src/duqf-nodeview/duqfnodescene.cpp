@@ -18,12 +18,37 @@ QRectF DuQFNodeScene::zoomToFit(bool isForExport) const
     return calculateRectangle(isForExport);
 }
 
+QList<DuQFNode *> DuQFNodeScene::nodes()
+{
+    QList<DuQFNode*> nodes;
+    foreach(QGraphicsItem *i, items())
+    {
+        DuQFNode *n = qgraphicsitem_cast<DuQFNode*>(i);
+        if (n) nodes << n;
+    }
+    return nodes;
+}
+
+QGraphicsItemGroup *DuQFNodeScene::createNodeGroup(QList<DuQFNode *> nodes)
+{
+    QGraphicsItemGroup *g = new QGraphicsItemGroup();
+    addItem(g);
+    foreach(DuQFNode *n, nodes) g->addToGroup(n);
+
+    return g;
+}
+
 void DuQFNodeScene::addNode()
+{
+    addNode(new DuQFNode());
+}
+
+void DuQFNodeScene::addNode(DuQFNode *node)
 {
     // remove selection
     foreach(QGraphicsItem *i, items()) i->setSelected(false);
 
-    DuQFNode *node = new DuQFNode(m_grid);
+    node->setGrid(&m_grid);
     this->addItem(node);
     node->setSelected(true);
 
@@ -48,6 +73,102 @@ void DuQFNodeScene::removeSelectedNodes()
         DuQFNode *n = qgraphicsitem_cast<DuQFNode*>(item);
         if (n) n->remove();
     }
+}
+
+void DuQFNodeScene::autoLayoutNodes()
+{
+    QList<DuQFNode*> allNodes = nodes();
+
+    // 1- Move orphan nodes appart
+    qreal x = 0.0;
+    qreal y = 0.0;
+
+    QGraphicsItemGroup *orphanGroup = new QGraphicsItemGroup();
+    addItem(orphanGroup);
+    for (int i = allNodes.count()-1; i >= 0; i--)
+    {
+        DuQFNode *n = allNodes.at(i);
+        if (n->isOrphan())
+        {
+            n->setPos( x, y );
+            y += n->boundingRect().height() + m_grid.size();
+            orphanGroup->addToGroup(n);
+            allNodes.removeAt(i);
+        }
+    }
+
+    x = orphanGroup->boundingRect().width() + m_grid.gridSize();
+    y = 0.0;
+    destroyItemGroup(orphanGroup);
+
+    // 2- If we still have nodes to arrange
+    if (allNodes.count() > 0)
+    {
+        // Find ancestors
+        QList<DuQFNode*> ancestors;
+        foreach(DuQFNode *n, allNodes)
+        {
+            if (!n->hasParents())
+            {
+                ancestors << n;
+                // Move right to orphans
+                n->setPos( x, y);
+            }
+        }
+
+        // If no ancestor (it's a loop), pick the first node
+        if (ancestors.count() == 0)
+        {
+            DuQFNode *n = allNodes.at(0);
+            n->setPos( x, y);
+            ancestors << n;
+        }
+
+        // Layout each generation one after the other
+        while (ancestors.count() > 0 && allNodes.count() > 0)
+        {
+            // For each ancestor, arrange children
+            QList<DuQFNode*> nextGeneration;
+            QList<QGraphicsItemGroup*> trees;
+
+            foreach (DuQFNode *n, ancestors)
+            {
+                // This one is now ok
+                allNodes.removeAll(n);
+
+                // Get children which are still to be arranged
+                QList<DuQFNode *> childrenNodes;
+                foreach(DuQFNode *n, n->childrenNodes())
+                    if (allNodes.contains(n)) childrenNodes << n;
+                nextGeneration.append(childrenNodes);
+
+                // Layout'em
+                x = n->scenePos().x() + n->boundingRect().width() + m_grid.gridSize();
+                y = n->scenePos().y() + n->boundingRect().height();
+                layoutNodesInColumn( childrenNodes , x, y );
+
+                QGraphicsItemGroup *tree = createNodeGroup( childrenNodes );
+                tree->addToGroup(n);
+                trees << tree;
+            }
+            layoutGroupsInColumn( trees );
+
+            ancestors.clear();
+            foreach(DuQFNode *n, nextGeneration)
+                if (allNodes.contains(n)) ancestors << n;
+        }
+    }
+
+    // Center all
+    //moveNodesToCenter();
+}
+
+void DuQFNodeScene::moveNodesToCenter()
+{
+    QGraphicsItemGroup *group = createItemGroup(nodesAsItems());
+    QRectF rect = group->boundingRect();
+    group->setPos(-rect.width()/2, -rect.height()/2);
+    destroyItemGroup(group);
 }
 
 void DuQFNodeScene::moveConnection(QPointF to)
@@ -92,6 +213,67 @@ void DuQFNodeScene::finishConnection(QPointF to, QPointF from)
 
     // Connect
     m_connectionManager.addConnection(output, input, m_connectingItem);
+}
+
+QList<QGraphicsItem *> DuQFNodeScene::nodesAsItems()
+{
+    QList<QGraphicsItem*> nodes;
+    foreach(QGraphicsItem *i, items())
+    {
+        DuQFNode *n = qgraphicsitem_cast<DuQFNode*>(i);
+        if (n) nodes << i;
+    }
+    return nodes;
+}
+
+void DuQFNodeScene::layoutNodesInColumn(QList<DuQFNode *> nodes, QPointF center)
+{
+    layoutNodesInColumn(nodes, center.x(), center.y());
+}
+
+void DuQFNodeScene::layoutNodesInColumn(QList<DuQFNode *> nodes, qreal x, qreal y)
+{
+    if (nodes.count() == 0) return;
+
+    // Get the total height (initialize with spacing)
+    qreal h = m_grid.gridSize() * (nodes.count() -1)/2;
+    foreach(DuQFNode *node, nodes) h += node->boundingRect().height();
+
+    y -= h/2;
+    // set y
+    foreach(DuQFNode *node, nodes)
+    {
+        node->setPos( x,y );
+        y += node->boundingRect().height() + m_grid.gridSize()/2;
+    }
+}
+
+void DuQFNodeScene::layoutGroupsInColumn(QList<QGraphicsItemGroup *> groups)
+{
+    if (groups.count() == 0) return;
+    // for each item, arrange vertically
+    // Get the total height (initialize with spacing)
+    qreal h = m_grid.gridSize() * (groups.count() -1)/2;
+    qreal y = 0.0;
+    qreal x = 0.0;
+    foreach(QGraphicsItemGroup *item, groups)
+    {
+        h += item->boundingRect().height();
+        y += item->scenePos().y();
+        x += item->scenePos().x();
+    }
+    // Get the mean pos as initial coordinate
+    y /= groups.count();
+    x /= groups.count();
+    // First item y pos
+    y -= h/2;
+    // set y
+    foreach(QGraphicsItemGroup *item, groups)
+    {
+        item->setPos( x, y );
+        y += item->boundingRect().height() + m_grid.gridSize()/2;
+        destroyItemGroup(item);
+    }
 }
 
 void DuQFNodeScene::initiateConnection(QPointF from)

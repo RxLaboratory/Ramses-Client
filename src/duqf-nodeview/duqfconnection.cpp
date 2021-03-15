@@ -6,8 +6,11 @@ DuQFConnection::DuQFConnection(DuQFSlot *output, DuQFSlot *input, DuQFConnector 
     m_input = input;
     m_connector = connector;
 
-    QGraphicsObject *outputParent = (QGraphicsObject*)output->parentItem();
-    QGraphicsObject *inputParent = (QGraphicsObject*)input->parentItem();
+    DuQFNode *outputParent = (DuQFNode*)output->parentItem();
+    DuQFNode *inputParent = (DuQFNode*)input->parentItem();
+
+    outputParent->addChildNode(inputParent);
+    inputParent->addParentNode(outputParent);
 
     connect(outputParent, &QGraphicsObject::xChanged, this, &DuQFConnection::outputMoved);
     connect(outputParent, &QGraphicsObject::yChanged, this, &DuQFConnection::outputMoved);

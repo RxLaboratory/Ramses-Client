@@ -19,11 +19,16 @@ public:
     DuQFNodeScene(DuQFGrid &grid);
     void adjustSceneRect();
     QRectF zoomToFit(bool isForExport = false) const;
+    QList<DuQFNode*> nodes();
+    QGraphicsItemGroup *createNodeGroup(QList<DuQFNode*> nodes);
 
 public slots:
     void addNode();
+    void addNode(DuQFNode *node);
     void removeSelectedConnections();
     void removeSelectedNodes();
+    void autoLayoutNodes();
+    void moveNodesToCenter();
 
 private slots:
     void initiateConnection(QPointF from);
@@ -33,9 +38,17 @@ private slots:
 private:
     DuQFGrid &m_grid;
 
+    // Utils
+    QList<QGraphicsItem*> nodesAsItems();
+    void layoutNodesInColumn(QList<DuQFNode*> nodes, QPointF center);
+    void layoutNodesInColumn(QList<DuQFNode*> nodes, qreal x, qreal y);
+    void layoutGroupsInColumn(QList<QGraphicsItemGroup*> groups);
+
+    //TEMP
     bool containsAll() const;
     QRectF calculateRectangle(bool isForExport = false) const;
 
+    // Settings
     int m_initialSize = 10000;
     double m_margin = .25;
 

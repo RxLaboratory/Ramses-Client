@@ -60,6 +60,7 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     pipeline-editor/pipelinewidget.cpp \
+    pipeline-editor/ramobjectnode.cpp \
     projecteditwidget.cpp \
     projectselectorwidget.cpp \
     projectsmanagerwidget.cpp \
@@ -130,6 +131,7 @@ HEADERS += \
     loginpage.h \
     mainwindow.h \
     pipeline-editor/pipelinewidget.h \
+    pipeline-editor/ramobjectnode.h \
     projecteditwidget.h \
     projectselectorwidget.h \
     projectsmanagerwidget.h \

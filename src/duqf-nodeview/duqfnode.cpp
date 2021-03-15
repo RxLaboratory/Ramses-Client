@@ -1,14 +1,14 @@
 #include "duqfnode.h"
 
-DuQFNode::DuQFNode(DuQFGrid &grid, QString title):
-     m_grid(grid)
+DuQFNode::DuQFNode(QString title)
 {
     setAcceptHoverEvents(true);
+    m_grid = nullptr;
 
     QGraphicsDropShadowEffect *shadow = new QGraphicsDropShadowEffect();
-    shadow->setBlurRadius(5.0);
+    shadow->setBlurRadius(10.0);
     shadow->setColor(DuUI::getColor("obsidian"));
-    shadow->setOffset(3.0,3.0);
+    shadow->setOffset(5.0,5.0);
     setGraphicsEffect(shadow);
 
     m_cornerRadius = DuUI::getSize( "padding", "small" );
@@ -44,10 +44,10 @@ DuQFNode::DuQFNode(DuQFGrid &grid, QString title):
     connect(m_defaultOutputConnector, &DuQFSlot::connectionFinished, this, &DuQFNode::connectionFinished);
 }
 
-DuQFNode::DuQFNode(const DuQFNode &other):
-    m_grid(other.grid())
+DuQFNode::DuQFNode(const DuQFNode &other)
 {
     setTitle(other.title());
+    setGrid(other.grid());
 }
 
 DuQFNode::~DuQFNode()
@@ -57,7 +57,7 @@ DuQFNode::~DuQFNode()
 
 QRectF DuQFNode::boundingRect() const
 {
-    return m_boundingRect;
+    return m_titleItem->boundingRect().adjusted(-m_padding-7, -m_padding-3, m_padding+7, m_padding+3);
 }
 
 void DuQFNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
@@ -71,7 +71,7 @@ void DuQFNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
 
     QPainterPath path;
     //const QRectF rect(-m_size.width() / 2, -m_size.height() / 2, m_size.width(), m_size.height());
-    const QRectF rect = boundingRect();
+    const QRectF rect = boundingRect().adjusted(2,2,-2,-2);
     path.addRoundedRect(rect, m_cornerRadius, m_cornerRadius);
     painter->setRenderHint(QPainter::Antialiasing);
 
@@ -94,15 +94,65 @@ void DuQFNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
 
 QVariant DuQFNode::itemChange(GraphicsItemChange change, const QVariant &value)
 {
-    if (change == ItemPositionChange && scene() && QApplication::mouseButtons() == Qt::LeftButton)
-            return m_grid.snapToGrid(value.toPointF());
+    if (change == ItemPositionChange && scene() && m_grid)
+            return m_grid->snapToGrid(value.toPointF());
 
     return QGraphicsItem::itemChange(change, value);
 }
 
-DuQFGrid &DuQFNode::grid() const
+QList<DuQFNode *> DuQFNode::parentNodes() const
+{
+    return m_parentNodes;
+}
+
+bool DuQFNode::isOrphan() const
+{
+    return !hasChildren() && !hasParents();
+}
+
+bool DuQFNode::hasChildren() const
+{
+    return m_childrenNodes.count() != 0;
+}
+
+bool DuQFNode::hasParents() const
+{
+    return m_parentNodes.count() != 0;
+}
+
+QList<DuQFNode *> DuQFNode::childrenNodes() const
+{
+    return m_childrenNodes;
+}
+
+DuQFGrid *DuQFNode::grid() const
 {
     return m_grid;
+}
+
+void DuQFNode::addChildNode(DuQFNode *childNode)
+{
+    m_childrenNodes << childNode;
+}
+
+void DuQFNode::addParentNode(DuQFNode *parentNode)
+{
+    m_parentNodes << parentNode;
+}
+
+void DuQFNode::removeChildNode(DuQFNode *childNode)
+{
+    m_childrenNodes.removeAll(childNode);
+}
+
+void DuQFNode::removeParentNode(DuQFNode *parentNode)
+{
+    m_parentNodes.removeAll(parentNode);
+}
+
+void DuQFNode::setGrid(DuQFGrid *grid)
+{
+    m_grid = grid;
 }
 
 QString DuQFNode::title() const
@@ -113,11 +163,9 @@ QString DuQFNode::title() const
 void DuQFNode::setTitle(const QString &title)
 {
     m_titleItem->setPlainText(title);
-    m_boundingRect = m_titleItem->boundingRect().adjusted(-m_padding-7, -m_padding-7, m_padding+7, m_padding+7);
-    prepareGeometryChange();
-
-    m_defaultOutputConnector->setPos(m_boundingRect.right(), m_boundingRect.center().y());
-    m_defaultInputConnector->setPos(m_boundingRect.left() , m_boundingRect.center().y());
+    QRectF rect = m_titleItem->boundingRect().adjusted(-m_padding-7, -m_padding-3, m_padding+7, m_padding+3);
+    m_defaultOutputConnector->setPos(rect.right() , rect.center().y());
+    m_defaultInputConnector->setPos(rect.left(), rect.center().y());
 }
 
 void DuQFNode::remove()

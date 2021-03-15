@@ -9,6 +9,10 @@
 #include "duqf-widgets/titlebar.h"
 #include "duqf-widgets/duqfspinbox.h"
 
+#include "ramobjectnode.h"
+
+#include "ramses.h"
+
 class PipelineWidget : public QWidget, private Ui::PipelineWidget
 {
     Q_OBJECT
@@ -16,10 +20,16 @@ class PipelineWidget : public QWidget, private Ui::PipelineWidget
 public:
     explicit PipelineWidget(QWidget *parent = nullptr);
 signals:
-    void reinitRequested();
     void closeRequested();
+private slots:
+    void changeProject(RamProject *project);
+    void newStep(RamStep *step);
+
 private:
     TitleBar *titleBar;
+    DuQFNodeScene *_nodeScene;
+    DuQFNodeView *_nodeView;
+    QList<QMetaObject::Connection> _projectConnections;
 };
 
 #endif // PIPELINEWIDGET_H

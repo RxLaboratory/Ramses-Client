@@ -63,7 +63,7 @@ void DuQFNodeView::frameSelected()
     {
         boundingRect = scene()->itemsBoundingRect().adjusted(-30,-30,30,30);
     }
-qDebug() << boundingRect;
+
     fitInView( boundingRect, Qt::KeepAspectRatio);
 
     if (group) scene()->destroyItemGroup(group);
