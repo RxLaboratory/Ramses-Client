@@ -74,6 +74,11 @@ public:
     void getStates();
     void updateState(QString uuid, QString shortName, QString name, QString color = "", QString completionRatio = "");
     void removeState(QString uuid);
+    //File types
+    void createFileType(QString shortName, QString name, QStringList extensions, QString uuid);
+    void getFileTypes();
+    void updateFileType(QString uuid, QString shortName, QString name, QStringList extensions);
+    void removeFileType(QString uuid);
 
 public slots:
     void suspend(bool suspended = true);

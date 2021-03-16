@@ -373,6 +373,42 @@ void DBInterface::removeState(QString uuid)
     request(q);
 }
 
+void DBInterface::createFileType(QString shortName, QString name, QStringList extensions, QString uuid)
+{
+    QStringList q("createFileType");
+    q << "uuid=" + uuid;
+    q << "shortName=" + shortName;
+    q << "name=" + name;
+    q << "extensions=" + extensions.join(",");
+
+    request(q);
+}
+
+void DBInterface::getFileTypes()
+{
+    QString q = "?getFileTypes";
+    request(q);
+}
+
+void DBInterface::updateFileType(QString uuid, QString shortName, QString name, QStringList extensions)
+{
+    QStringList q("updateFileType");
+    q << "uuid=" + uuid;
+    q << "shortName=" + shortName;
+    q << "name=" + name;
+    q << "extensions=" + extensions.join(",");
+
+    request(q);
+}
+
+void DBInterface::removeFileType(QString uuid)
+{
+    QStringList q("removeFileType");
+    q << "uuid=" + uuid;
+
+    request(q);
+}
+
 DBInterface::DBInterface(QObject *parent) : DuQFLoggerObject("Database Interface", parent)
 {
     // LOCAL
