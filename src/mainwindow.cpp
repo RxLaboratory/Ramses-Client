@@ -452,7 +452,7 @@ void MainWindow::userProfile()
 void MainWindow::revealUserFolder()
 {
     RamUser *current = Ramses::instance()->currentUser();
-    if (current) FileUtils::openInExplorer( Ramses::instance()->userPath(current) );
+    if (current) FileUtils::openInExplorer( Ramses::instance()->path(current) );
 }
 
 void MainWindow::admin(bool show)

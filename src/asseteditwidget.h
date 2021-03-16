@@ -3,6 +3,7 @@
 
 #include "ui_asseteditwidget.h"
 #include "ramses.h"
+#include "duqf-widgets/duqffolderdisplaywidget.h"
 
 class AssetEditWidget : public QWidget, private Ui::AssetEditWidget
 {
@@ -31,6 +32,7 @@ private slots:
     void dbiLog(DuQFLog m);
 
 private:
+    DuQFFolderDisplayWidget *folderWidget;
     RamAsset *_asset;
     RamProject *_project;
     QList<QMetaObject::Connection> _assetConnections;

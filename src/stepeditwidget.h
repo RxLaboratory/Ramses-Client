@@ -5,6 +5,7 @@
 
 #include "ui_stepeditwidget.h"
 #include "ramses.h"
+#include "duqf-widgets/duqffolderdisplaywidget.h"
 
 class StepEditWidget : public QWidget, private Ui::StepEditWidget
 {
@@ -33,6 +34,7 @@ private slots:
 private:
     RamStep *_step;
     QMenu *assignMenu;
+    DuQFFolderDisplayWidget *folderWidget;
     QList<QMetaObject::Connection> _stepConnections;
 };
 

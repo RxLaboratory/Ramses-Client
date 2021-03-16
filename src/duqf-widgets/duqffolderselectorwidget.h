@@ -1,13 +1,15 @@
 #ifndef DUQFFOLDERSELECTORWIDGET_H
 #define DUQFFOLDERSELECTORWIDGET_H
 
-#include "ui_duqffolderselectorwidget.h"
-
 #include <QFileDialog>
+#include <QMessageBox>
+#include <QHBoxLayout>
+#include <QLineEdit>
+#include <QToolButton>
 
 #include "duqf-utils/utils.h"
 
-class DuQFFolderSelectorWidget : public QWidget, private Ui::DuQFFolderSelectorWidget
+class DuQFFolderSelectorWidget : public QWidget
 {
     Q_OBJECT
 
@@ -26,6 +28,11 @@ private slots:
     void folderEdit_editingFinished();
 private:
     QString _dialogTitle;
+    void setupUi();
+
+    QLineEdit *folderEdit;
+    QToolButton *browseButton;
+    QToolButton *exploreButton;
 };
 
 #endif // DUQFFOLDERSELECTORWIDGET_H

@@ -16,5 +16,5 @@ LocalSettingsWidget::LocalSettingsWidget(QWidget *parent) :
 void LocalSettingsWidget::setRamsesPath(QString p)
 {
     _settings.setValue("ramsesPath", p);
-    Ramses::instance()->setMainPath(p);
+    Ramses::instance()->setRamsesPath(p);
 }

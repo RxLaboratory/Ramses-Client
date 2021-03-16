@@ -22,7 +22,6 @@ UserEditWidget::UserEditWidget(QWidget *parent) :
     connect(folderSelector, &DuQFFolderSelectorWidget::pathChanging, this, &UserEditWidget::updateFolderLabel);
     connect(DBInterface::instance(),&DBInterface::newLog, this, &UserEditWidget::dbiLog);
 
-
     this->setEnabled(false);
 }
 
@@ -60,7 +59,7 @@ void UserEditWidget::setUser(RamUser *user)
 
     if (user->folderPath() != "auto") folderSelector->setPath( user->folderPath() );
     folderSelector->setPlaceHolderText( Ramses::instance()->defaultUserPath(user) );
-    folderLabel->setText( Ramses::instance()->userPath(user) );
+    folderLabel->setText( Ramses::instance()->path(user) );
 
     if (user->uuid() == current->uuid())
     {
@@ -156,8 +155,8 @@ bool UserEditWidget::checkInput()
 
 void UserEditWidget::updateFolderLabel(QString path)
 {
-    if (path != "") folderLabel->setText( Ramses::instance()->pathFromMain(path) );
-    else if (_user) folderLabel->setText( Ramses::instance()->userPath(_user) );
+    if (path != "") folderLabel->setText( Ramses::instance()->pathFromRamses(path) );
+    else if (_user) folderLabel->setText( Ramses::instance()->path(_user) );
 }
 
 void UserEditWidget::userDestroyed(QObject */*o*/)

@@ -5,6 +5,9 @@ StepEditWidget::StepEditWidget(QWidget *parent) :
 {
     setupUi(this);
 
+    folderWidget = new DuQFFolderDisplayWidget(this);
+    folderLayout->addWidget(folderWidget);
+
     typeBox->setItemData(0, "pre");
     typeBox->setItemData(1, "asset");
     typeBox->setItemData(2, "shot");
@@ -38,12 +41,14 @@ void StepEditWidget::setStep(RamStep *step)
     nameEdit->setText("");
     shortNameEdit->setText("");
     typeBox->setCurrentIndex(1);
+    folderWidget->setPath("");
     this->setEnabled(false);
 
     if (!step) return;
 
     nameEdit->setText(step->name());
     shortNameEdit->setText(step->shortName());
+    folderWidget->setPath(Ramses::instance()->path(step));
 
     if (step->type() == RamStep::PreProduction) typeBox->setCurrentIndex(0);
     else if (step->type() == RamStep::AssetProduction) typeBox->setCurrentIndex(1);

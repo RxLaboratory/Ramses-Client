@@ -41,21 +41,14 @@
      <property name="spacing">
       <number>3</number>
      </property>
-     <item row="2" column="0">
-      <widget class="QLabel" name="label_5">
-       <property name="text">
-        <string>Short name</string>
+     <item row="1" column="1">
+      <widget class="QLineEdit" name="nameEdit">
+       <property name="placeholderText">
+        <string>Full Name</string>
        </property>
       </widget>
      </item>
-     <item row="4" column="0">
-      <widget class="QLabel" name="label_7">
-       <property name="text">
-        <string>Asset group</string>
-       </property>
-      </widget>
-     </item>
-     <item row="5" column="1">
+     <item row="6" column="1">
       <layout class="QHBoxLayout" name="horizontalLayout">
        <property name="spacing">
         <number>3</number>
@@ -103,30 +96,6 @@
        </item>
       </layout>
      </item>
-     <item row="1" column="0">
-      <widget class="QLabel" name="label_4">
-       <property name="text">
-        <string>Name</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="1">
-      <widget class="QLineEdit" name="shortNameEdit">
-       <property name="placeholderText">
-        <string>Short Name</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="1">
-      <widget class="QLineEdit" name="nameEdit">
-       <property name="placeholderText">
-        <string>Full Name</string>
-       </property>
-      </widget>
-     </item>
-     <item row="4" column="1">
-      <widget class="QComboBox" name="assetGroupBox"/>
-     </item>
      <item row="3" column="1">
       <widget class="QLineEdit" name="tagsEdit">
        <property name="placeholderText">
@@ -134,7 +103,7 @@
        </property>
       </widget>
      </item>
-     <item row="6" column="1">
+     <item row="7" column="1">
       <spacer name="verticalSpacer">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
@@ -147,10 +116,51 @@
        </property>
       </spacer>
      </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="label_4">
+       <property name="text">
+        <string>Name</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="0">
+      <widget class="QLabel" name="label_7">
+       <property name="text">
+        <string>Asset group</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="1">
+      <widget class="QComboBox" name="assetGroupBox"/>
+     </item>
+     <item row="5" column="0">
+      <widget class="QLabel" name="label_8">
+       <property name="text">
+        <string>Folder</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="label_5">
+       <property name="text">
+        <string>Short name</string>
+       </property>
+      </widget>
+     </item>
      <item row="3" column="0">
       <widget class="QLabel" name="label_6">
        <property name="text">
         <string>Tags</string>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="1">
+      <layout class="QHBoxLayout" name="folderLayout"/>
+     </item>
+     <item row="2" column="1">
+      <widget class="QLineEdit" name="shortNameEdit">
+       <property name="placeholderText">
+        <string>Short Name</string>
        </property>
       </widget>
      </item>

@@ -5,6 +5,9 @@ AssetEditWidget::AssetEditWidget(QWidget *parent) :
 {
     setupUi(this);
 
+    folderWidget = new DuQFFolderDisplayWidget(this);
+    folderLayout->addWidget(folderWidget);
+
     _asset = nullptr;
     _project = nullptr;
 
@@ -31,6 +34,7 @@ void AssetEditWidget::setAsset(RamAsset *asset)
     nameEdit->setText("");
     shortNameEdit->setText("");
     tagsEdit->setText("");
+    folderWidget->setPath("");
     setProject(nullptr);
 
     this->setEnabled(false);
@@ -40,6 +44,7 @@ void AssetEditWidget::setAsset(RamAsset *asset)
     nameEdit->setText(asset->name());
     shortNameEdit->setText(asset->shortName());
     tagsEdit->setText(asset->tags().join(", "));
+    folderWidget->setPath(Ramses::instance()->path(asset));
 
     _assetConnections << connect(asset, &RamAsset::destroyed, this, &AssetEditWidget::assetDestroyed);
 

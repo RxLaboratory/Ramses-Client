@@ -4,6 +4,7 @@
 #include "ui_assetgroupeditwidget.h"
 #include "ramses.h"
 #include "ramassetwidget.h"
+#include "duqf-widgets/duqffolderdisplaywidget.h"
 
 class AssetGroupEditWidget : public QWidget, private Ui::AssetGroupEditWidget
 {
@@ -27,6 +28,7 @@ private slots:
     void dbiLog(DuQFLog m);
 
 private:
+    DuQFFolderDisplayWidget *folderWidget;
     RamAssetGroup *_assetGroup;
     QList<QMetaObject::Connection> _assetGroupConnections;
 };

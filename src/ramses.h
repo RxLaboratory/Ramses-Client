@@ -21,16 +21,47 @@ public:
     void login(QString username, QString password);
     void logout();
     bool isConnected() const;
-    QString mainPath() const;
-    // Tree
-    void setMainPath(const QString &mainPath);
-    QString pathFromMain(QString p) const;
+    // Tree base
+    void setRamsesPath(const QString &ramsesPath);
+    QString pathFromRamses(QString p) const;
+    QString ramsesPath() const;
     QString usersPath() const;
-    QString userPath(RamUser *u) const;
-    QString defaultUserPath(RamUser *u) const;
     QString projectsPath() const;
-    QString projectPath(RamProject *p) const;
+    QString configPath() const;
+    QString defaultUserPath(RamUser *u) const;
     QString defaultProjectPath(RamProject *p);
+    // Tree Users
+    QString path(RamUser *u) const;
+    QDir dir(RamUser *u);
+    QString configPath(RamUser *u);
+    QDir configDir(RamUser *u);
+    // Tree Projects
+    QString path(RamProject *p) const;
+    QDir dir(RamProject *p);
+    QString configPath(RamProject *p);
+    QDir configDir(RamProject *p);
+    QString adminPath(RamProject *p);
+    QDir adminDir(RamProject *p);
+    QString preProdPath(RamProject *p);
+    QDir preProdDir(RamProject *p);
+    QString prodPath(RamProject *p);
+    QDir prodDir(RamProject *p);
+    QString postProdPath(RamProject *p);
+    QDir postProdDir(RamProject *p);
+    QString assetsPath(RamProject *p);
+    QDir assetsDir(RamProject *p);
+    QString shotsPath(RamProject *p);
+    QDir shotsDir(RamProject *p);
+    QString exportPath(RamProject *p);
+    QDir exportDir(RamProject *p);
+    // Tree steps
+    QString path(RamStep *s);
+    QDir dir(RamStep *s);
+    // Tree assets
+    QString path(RamAssetGroup *ag);
+    QDir dir(RamAssetGroup *ag);
+    QString path(RamAsset *a);
+    QDir dir(RamAsset *a);
     // Users
     QList<RamUser *> users() const;
     RamUser *currentUser() const;
@@ -128,7 +159,8 @@ private:
     bool _connected;
 
     // Tree
-    QString _mainPath;
+    QString _ramsesPath;
+    QDir createPath(QString p);
 
     // Users
     QList<RamUser *> _users;

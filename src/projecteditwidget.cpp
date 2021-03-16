@@ -42,7 +42,7 @@ void ProjectEditWidget::setProject(RamProject *project)
 
     if (project->folderPath() != "auto") folderSelector->setPath( project->folderPath() );
     folderSelector->setPlaceHolderText( Ramses::instance()->defaultProjectPath(project) );
-    folderLabel->setText( Ramses::instance()->projectPath(project) );
+    folderLabel->setText( Ramses::instance()->path(project) );
 
 
     this->setEnabled( Ramses::instance()->isAdmin() );
@@ -96,8 +96,8 @@ bool ProjectEditWidget::checkInput()
 
 void ProjectEditWidget::updateFolderLabel(QString path)
 {
-    if (path != "") folderLabel->setText( Ramses::instance()->pathFromMain(path));
-    else if (_project) folderLabel->setText( Ramses::instance()->projectPath(_project) );
+    if (path != "") folderLabel->setText( Ramses::instance()->pathFromRamses(path));
+    else if (_project) folderLabel->setText( Ramses::instance()->path(_project) );
 }
 
 void ProjectEditWidget::projectDestroyed(QObject */*o*/)

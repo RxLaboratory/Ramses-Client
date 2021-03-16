@@ -5,6 +5,9 @@ AssetGroupEditWidget::AssetGroupEditWidget(QWidget *parent) :
 {
     setupUi(this);
 
+    folderWidget = new DuQFFolderDisplayWidget(this);
+    folderLayout->addWidget(folderWidget);
+
     _assetGroup = nullptr;
 
     connect(updateButton, SIGNAL(clicked()), this, SLOT(update()));
@@ -30,12 +33,14 @@ void AssetGroupEditWidget::setAssetGroup(RamAssetGroup *assetGroup)
 
     nameEdit->setText("");
     shortNameEdit->setText("");
+    folderWidget->setPath("");
     this->setEnabled(false);
 
     if (!assetGroup) return;
 
     nameEdit->setText(assetGroup->name());
     shortNameEdit->setText(assetGroup->shortName());
+    folderWidget->setPath(Ramses::instance()->path(assetGroup));
 
     assetsList->blockSignals(true);
     assetsList->clear();
