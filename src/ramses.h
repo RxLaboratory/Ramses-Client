@@ -145,6 +145,8 @@ private slots:
     //states
     void gotStates(QJsonArray states);
     void stateDestroyed(QObject *o);
+    //file types
+    void gotFileTypes(QJsonArray fileTypes);
     // steps
     void gotSteps(QJsonArray steps, RamProject *project);
     // asset groups

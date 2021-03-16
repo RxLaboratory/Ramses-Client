@@ -405,6 +405,63 @@ void Ramses::stateDestroyed(QObject *o)
     removeState(s->uuid());
 }
 
+void Ramses::gotFileTypes(QJsonArray fileTypes)
+{
+    DBISuspender s;
+
+    // loop through existing steps to update them
+    for (int i = _fileTypes.count() - 1; i >= 0; i--)
+    {
+        RamFileType *existingFileType = _fileTypes[i];
+        // loop through new steps to update
+        bool found = false;
+        for (int j = 0; j < fileTypes.count(); j++)
+        {
+            QJsonObject newFileType = fileTypes[j].toObject();
+            QString uuid = newFileType.value("uuid").toString();
+            // Found, update
+            if (uuid == existingFileType->uuid())
+            {
+                found = true;
+                //Emit just one signal
+                QSignalBlocker b(existingFileType);
+                existingFileType->setName( newFileType.value("name").toString());
+                existingFileType->setShortName( newFileType.value("shortName").toString());
+                //send the signal
+                b.unblock();
+                existingFileType->setExtensions(newFileType.value("extensions").toString());
+                //remove from new projects
+                fileTypes.removeAt(j);
+                break;
+            }
+        }
+        // Not found, remove from existing
+        if (!found)
+        {
+            RamFileType *ft = _fileTypes.takeAt(i);
+            ft->remove();
+        }
+    }
+
+    // loop through remaining new projects to add them
+    for (int i = 0; i < fileTypes.count(); i++)
+    {
+        QJsonObject ft = fileTypes[i].toObject();
+        RamFileType *fileType = new RamFileType(
+                    ft.value("shortName").toString(),
+                    ft.value("name").toString(),
+                    ft.value("extensions").toString(),
+                    ft.value("uuid").toString()
+                    );
+
+        _fileTypes << fileType;
+
+        connect(fileType,SIGNAL(removed(RamObject*)), this, SLOT(removeFileType(RamObject*)));
+
+        emit newFileType(fileType);
+    }
+}
+
 void Ramses::gotSteps(QJsonArray steps, RamProject *project)
 {
     DBISuspender s;

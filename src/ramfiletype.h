@@ -8,7 +8,10 @@ class RamFileType : public RamObject
     Q_OBJECT
 public:
     RamFileType(QString shortName, QString name = "", QStringList extensions = QStringList(), QString uuid = "", QObject *parent = nullptr);
+    RamFileType(QString shortName, QString name, QString extensions, QString uuid = "", QObject *parent = nullptr);
     ~RamFileType();
+
+    void setExtensions(QString extensions);
 
     void update();
 
