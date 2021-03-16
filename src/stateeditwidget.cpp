@@ -39,7 +39,6 @@ void StateEditWidget::setState(RamState *state)
 
     nameEdit->setText(state->name());
     shortNameEdit->setText(state->shortName());
-    QString color = state->color().name();
     colorEdit->setText(state->color().name());
     updateColorEditStyle();
     completionSpinBox->setValue(state->completionRatio());
@@ -94,6 +93,7 @@ bool StateEditWidget::checkInput()
 
 void StateEditWidget::stateDestroyed(QObject *o)
 {
+    Q_UNUSED(o);
     setState(nullptr);
 }
 

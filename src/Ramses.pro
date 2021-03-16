@@ -55,6 +55,8 @@ SOURCES += \
     duqf-widgets/settingswidget.cpp \
     duqf-widgets/titlebar.cpp \
     duqf-widgets/toolbarspacer.cpp \
+    filetypeeditwidget.cpp \
+    filetypesmanagerwidget.cpp \
     listmanagerwidget.cpp \
     localsettingswidget.cpp \
     loginpage.cpp \
@@ -129,6 +131,8 @@ HEADERS += \
     duqf-widgets/settingswidget.h \
     duqf-widgets/titlebar.h \
     duqf-widgets/toolbarspacer.h \
+    filetypeeditwidget.h \
+    filetypesmanagerwidget.h \
     listmanagerwidget.h \
     localsettingswidget.h \
     loginpage.h \
@@ -173,6 +177,7 @@ FORMS += \
     duqf-widgets/appearancesettingswidget.ui \
     duqf-widgets/duqffolderselectorwidget.ui \
     duqf-widgets/toolbarspacer.ui \
+    filetypeeditwidget.ui \
     listmanagerwidget.ui \
     localsettingswidget.ui \
     loginpage.ui \

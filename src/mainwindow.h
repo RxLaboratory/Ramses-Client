@@ -23,6 +23,7 @@
 #include "assetsmanagerwidget.h"
 #include "sequencesmanagerwidget.h"
 #include "statesmanagerwidget.h"
+#include "filetypesmanagerwidget.h"
 #include "dbinterface.h"
 #include "daemon.h"
 #include "projectselectorwidget.h"

@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>StateEditWidget</class>
- <widget class="QWidget" name="StateEditWidget">
+ <class>FileTypeEditWidget</class>
+ <widget class="QWidget" name="FileTypeEditWidget">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>719</width>
-    <height>435</height>
+    <width>960</width>
+    <height>502</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout" rowstretch="1,0,1,0" columnstretch="10,80,10">
+  <layout class="QGridLayout" name="gridLayout" rowstretch="1,0,1" columnstretch="10,80,10">
    <property name="leftMargin">
     <number>0</number>
    </property>
@@ -27,7 +27,7 @@
     <number>0</number>
    </property>
    <property name="spacing">
-    <number>3</number>
+    <number>0</number>
    </property>
    <item row="0" column="1">
     <spacer name="verticalSpacer">
@@ -36,8 +36,21 @@
      </property>
      <property name="sizeHint" stdset="0">
       <size>
-       <width>20</width>
-       <height>136</height>
+       <width>308</width>
+       <height>188</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item row="1" column="0">
+    <spacer name="horizontalSpacer">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>93</width>
+       <height>118</height>
       </size>
      </property>
     </spacer>
@@ -47,80 +60,31 @@
      <property name="spacing">
       <number>3</number>
      </property>
-     <item row="0" column="0">
-      <widget class="QLabel" name="label_4">
-       <property name="text">
-        <string>Name</string>
-       </property>
-      </widget>
-     </item>
      <item row="0" column="1">
       <widget class="QLineEdit" name="nameEdit">
-       <property name="placeholderText">
-        <string>Full Name</string>
+       <property name="maxLength">
+        <number>255</number>
        </property>
-      </widget>
-     </item>
-     <item row="1" column="0">
-      <widget class="QLabel" name="label_5">
-       <property name="text">
-        <string>Short name</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="1">
-      <widget class="QLineEdit" name="shortNameEdit">
        <property name="placeholderText">
-        <string>Short Name</string>
+        <string>File Type description</string>
        </property>
       </widget>
      </item>
      <item row="2" column="0">
       <widget class="QLabel" name="label_6">
        <property name="text">
-        <string>Color</string>
+        <string>Extensions</string>
        </property>
       </widget>
      </item>
-     <item row="2" column="1">
-      <layout class="QHBoxLayout" name="horizontalLayout_2">
-       <property name="spacing">
-        <number>3</number>
-       </property>
-       <item>
-        <widget class="QLineEdit" name="colorEdit">
-         <property name="inputMask">
-          <string>\#HHHHHH</string>
-         </property>
-         <property name="placeholderText">
-          <string>#434343</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QToolButton" name="colorButton">
-         <property name="text">
-          <string/>
-         </property>
-         <property name="icon">
-          <iconset resource="resources.qrc">
-           <normaloff>:/icons/color-dialog</normaloff>:/icons/color-dialog</iconset>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-     <item row="3" column="0">
-      <widget class="QLabel" name="label_7">
+     <item row="1" column="0">
+      <widget class="QLabel" name="label_5">
        <property name="text">
-        <string>Completion Ratio</string>
+        <string>Default extension</string>
        </property>
       </widget>
      </item>
      <item row="3" column="1">
-      <layout class="QHBoxLayout" name="completionLayout"/>
-     </item>
-     <item row="4" column="1">
       <layout class="QHBoxLayout" name="horizontalLayout">
        <property name="spacing">
         <number>3</number>
@@ -168,20 +132,34 @@
        </item>
       </layout>
      </item>
+     <item row="0" column="0">
+      <widget class="QLabel" name="label_4">
+       <property name="text">
+        <string>Name</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QLineEdit" name="extensionsEdit">
+       <property name="maxLength">
+        <number>255</number>
+       </property>
+       <property name="placeholderText">
+        <string>ext1, ext2, ext3...</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QLineEdit" name="shortNameEdit">
+       <property name="maxLength">
+        <number>10</number>
+       </property>
+       <property name="placeholderText">
+        <string>.ext</string>
+       </property>
+      </widget>
+     </item>
     </layout>
-   </item>
-   <item row="1" column="0">
-    <spacer name="horizontalSpacer">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>40</width>
-       <height>20</height>
-      </size>
-     </property>
-    </spacer>
    </item>
    <item row="1" column="2">
     <spacer name="horizontalSpacer_2">
@@ -190,8 +168,8 @@
      </property>
      <property name="sizeHint" stdset="0">
       <size>
-       <width>40</width>
-       <height>20</height>
+       <width>93</width>
+       <height>118</height>
       </size>
      </property>
     </spacer>
@@ -203,8 +181,8 @@
      </property>
      <property name="sizeHint" stdset="0">
       <size>
-       <width>20</width>
-       <height>136</height>
+       <width>288</width>
+       <height>187</height>
       </size>
      </property>
     </spacer>

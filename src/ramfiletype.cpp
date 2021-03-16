@@ -26,6 +26,11 @@ void RamFileType::setExtensions(QString extensions)
     foreach(QString ext, exts) _extensions << ext.trimmed();
 }
 
+QStringList RamFileType::extensions() const
+{
+    return _extensions;
+}
+
 void RamFileType::update()
 {
     _dbi->updateFileType(_uuid, _shortName, _name, _extensions);

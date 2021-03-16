@@ -12,6 +12,7 @@ public:
     ~RamFileType();
 
     void setExtensions(QString extensions);
+    QStringList extensions() const;
 
     void update();
 
