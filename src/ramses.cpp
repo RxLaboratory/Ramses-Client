@@ -30,7 +30,7 @@ Ramses::Ramses(QObject *parent) : QObject(parent)
 
     connect( _dbi, &DBInterface::data, this, &Ramses::newData );
     connect( _dbi, &DBInterface::connectionStatusChanged, this, &Ramses::dbiConnectionStatusChanged);
-    connect( (DuApplication *)qApp, &DuApplication::idle, this, &Ramses::refreshCurrentProject);
+    connect( (DuApplication *)qApp, &DuApplication::idle, this, &Ramses::refresh);
 }
 
 void Ramses::login(QString username, QString password)
@@ -49,6 +49,7 @@ void Ramses::newData(QJsonObject data)
     else if (query == "getTemplateSteps") gotTemplateSteps( data.value("content").toArray());
     else if (query == "getTemplateAssetGroups") gotTemplateAssetGroups( data.value("content").toArray());
     else if (query == "getStates") gotStates( data.value("content").toArray());
+    else if (query == "getFileTypes") gotFileTypes( data.value("content").toArray());
 }
 
 void Ramses::gotUsers(QJsonArray users)
@@ -1246,20 +1247,8 @@ void Ramses::refresh()
     _dbi->getTemplateAssetGroups();
     // Get States
     _dbi->getStates();
-    // Get Projects
-    _dbi->getProjects();
-}
-
-void Ramses::refreshCurrentProject()
-{
-    // Get Users
-    _dbi->getUsers();
-    // Get Template Steps
-    _dbi->getTemplateSteps();
-    // Get Template Asset Groups
-    _dbi->getTemplateAssetGroups();
-    // Get States
-    _dbi->getStates();
+    // Get file types
+    _dbi->getFileTypes();
     // Get current project
     if (_currentProject) _dbi->getProject(_currentProject->uuid());
     else _dbi->getProjects();
