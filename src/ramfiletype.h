@@ -17,7 +17,6 @@ public:
     void update();
 
 private:
-    bool _removing = false;
     QStringList _extensions;
 };
 

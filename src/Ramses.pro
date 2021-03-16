@@ -67,6 +67,7 @@ SOURCES += \
     projecteditwidget.cpp \
     projectselectorwidget.cpp \
     projectsmanagerwidget.cpp \
+    ramapplication.cpp \
     ramasset.cpp \
     ramassetgroup.cpp \
     ramassetwidget.cpp \
@@ -142,6 +143,7 @@ HEADERS += \
     projecteditwidget.h \
     projectselectorwidget.h \
     projectsmanagerwidget.h \
+    ramapplication.h \
     ramasset.h \
     ramassetgroup.h \
     ramassetwidget.h \

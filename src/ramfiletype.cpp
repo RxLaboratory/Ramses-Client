@@ -24,6 +24,8 @@ void RamFileType::setExtensions(QString extensions)
     QStringList exts = extensions.split(",");
     _extensions.clear();
     foreach(QString ext, exts) _extensions << ext.trimmed();
+
+    emit changed(this);
 }
 
 QStringList RamFileType::extensions() const
