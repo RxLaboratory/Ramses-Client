@@ -9,6 +9,7 @@
 #include "ramstate.h"
 #include "ramassetgroup.h"
 #include "ramfiletype.h"
+#include "ramapplication.h"
 #include "dbisuspender.h"
 
 #include <QObject>
@@ -107,6 +108,11 @@ public:
     RamFileType *createFileType();
     void removeFileType(QString uuid);
     void removeFileType(RamObject *ft);
+    // Applications
+    QList<RamApplication*> applications() const;
+    RamApplication *createApplication();
+    void removeApplication(QString uuid);
+    void removeApplication(RamObject *a);
 
 public slots:
     void refresh();
@@ -123,6 +129,7 @@ signals:
     void newStep(RamStep *);
     void newAssetGroup(RamAssetGroup *);
     void newFileType(RamFileType *);
+    void newApplication(RamApplication *);
 
 protected:
     static Ramses *_instance;
@@ -146,6 +153,8 @@ private slots:
     void stateDestroyed(QObject *o);
     //file types
     void gotFileTypes(QJsonArray fileTypes);
+    //applications
+    void gotApplications(QJsonArray applications);
     // steps
     void gotSteps(QJsonArray steps, RamProject *project);
     // asset groups
@@ -197,6 +206,9 @@ private:
 
     // File types
     QList<RamFileType*> _fileTypes;
+
+    // Applications
+    QList<RamApplication*> _applications;
 
 };
 

@@ -50,6 +50,7 @@ void Ramses::newData(QJsonObject data)
     else if (query == "getTemplateAssetGroups") gotTemplateAssetGroups( data.value("content").toArray());
     else if (query == "getStates") gotStates( data.value("content").toArray());
     else if (query == "getFileTypes") gotFileTypes( data.value("content").toArray());
+    else if (query == "getApplications") gotApplications( data.value("content").toArray());
 }
 
 void Ramses::gotUsers(QJsonArray users)
@@ -460,6 +461,63 @@ void Ramses::gotFileTypes(QJsonArray fileTypes)
         connect(fileType,SIGNAL(removed(RamObject*)), this, SLOT(removeFileType(RamObject*)));
 
         emit newFileType(fileType);
+    }
+}
+
+void Ramses::gotApplications(QJsonArray applications)
+{
+    DBISuspender s;
+
+    // loop through existing steps to update them
+    for (int i = _applications.count() - 1; i >= 0; i--)
+    {
+        RamApplication *existingApplication = _applications[i];
+        // loop through new steps to update
+        bool found = false;
+        for (int j = 0; j < applications.count(); j++)
+        {
+            QJsonObject newApplication = applications[j].toObject();
+            QString uuid = newApplication.value("uuid").toString();
+            // Found, update
+            if (uuid == existingApplication->uuid())
+            {
+                found = true;
+                //Emit just one signal
+                QSignalBlocker b(existingApplication);
+                existingApplication->setName( newApplication.value("name").toString());
+                existingApplication->setShortName( newApplication.value("shortName").toString());
+                //send the signal
+                b.unblock();
+                existingApplication->setExecutableFilePath(newApplication.value("executableFilePath").toString());
+                //remove from new projects
+                applications.removeAt(j);
+                break;
+            }
+        }
+        // Not found, remove from existing
+        if (!found)
+        {
+            RamApplication *a = _applications.takeAt(i);
+            a->remove();
+        }
+    }
+
+    // loop through remaining new projects to add them
+    for (int i = 0; i < applications.count(); i++)
+    {
+        QJsonObject a = applications[i].toObject();
+        RamApplication *app = new RamApplication(
+                    a.value("shortName").toString(),
+                    a.value("name").toString(),
+                    a.value("executableFilePath").toString(),
+                    a.value("uuid").toString()
+                    );
+
+        _applications << app;
+
+        connect(app,SIGNAL(removed(RamObject*)), this, SLOT(removeApplication(RamObject*)));
+
+        emit newApplication(app);
     }
 }
 
@@ -1123,11 +1181,6 @@ RamFileType *Ramses::createFileType()
     return ft;
 }
 
-void Ramses::removeFileType(RamObject *ft)
-{
-    if (ft) removeFileType(ft->uuid());
-}
-
 void Ramses::removeFileType(QString uuid)
 {
     for (int i = _fileTypes.count() -1; i >= 0; i--)
@@ -1138,6 +1191,43 @@ void Ramses::removeFileType(QString uuid)
             ft->remove();
         }
     }
+}
+
+void Ramses::removeFileType(RamObject *ft)
+{
+    if (ft) removeFileType(ft->uuid());
+}
+
+QList<RamApplication *> Ramses::applications() const
+{
+    return _applications;
+}
+
+RamApplication *Ramses::createApplication()
+{
+    RamApplication *a = new RamApplication("New", "New Application");
+    a->setParent(this);
+    _applications << a;
+    connect(a, SIGNAL(removed(RamObject*)), this, SLOT(removeApplication(RamObject*)));
+    emit newApplication(a);
+    return a;
+}
+
+void Ramses::removeApplication(QString uuid)
+{
+    for (int i = _applications.count() -1; i >= 0; i--)
+    {
+        if (_applications[i]->uuid() == uuid)
+        {
+            RamApplication *a = _applications.takeAt(i);
+            a->remove();
+        }
+    }
+}
+
+void Ramses::removeApplication(RamObject *a)
+{
+    if (a) removeApplication(a->uuid());
 }
 
 QList<RamProject *> Ramses::projects() const
@@ -1249,6 +1339,8 @@ void Ramses::refresh()
     _dbi->getStates();
     // Get file types
     _dbi->getFileTypes();
+    // Get applications
+    _dbi->getApplications();
     // Get current project
     if (_currentProject) _dbi->getProject(_currentProject->uuid());
     else _dbi->getProjects();
