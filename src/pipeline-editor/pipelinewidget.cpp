@@ -140,7 +140,7 @@ PipelineWidget::PipelineWidget(QWidget *parent) :
     zoomBox->setValue(100);
     titleBar->insertRight(zoomBox);
 
-    DuQFSpinBox *gridSizeBox = new DuQFSpinBox(this);
+    gridSizeBox = new DuQFSpinBox(this);
     gridSizeBox->setMinimum(10);
     gridSizeBox->setMaximum(100);
     gridSizeBox->setMaximumWidth(100);
@@ -148,7 +148,7 @@ PipelineWidget::PipelineWidget(QWidget *parent) :
     gridSizeBox->setPrefix("Grid size: ");
     titleBar->insertRight(gridSizeBox);
 
-    QCheckBox *snapButton = new QCheckBox("Snap to grid");
+    snapButton = new QCheckBox("Snap to grid");
     titleBar->insertRight(snapButton);
 
     mainLayout->addWidget(titleBar);
@@ -156,6 +156,9 @@ PipelineWidget::PipelineWidget(QWidget *parent) :
     _nodeView = new DuQFNodeView(this);
     _nodeScene = _nodeView->nodeScene();
     mainLayout->addWidget(_nodeView);
+
+    userSettings = new QSettings(QSettings::IniFormat, QSettings::UserScope, STR_COMPANYNAME, STR_INTERNALNAME);
+    userSettings->beginGroup("nodeView");
 
     // Connections
     connect(titleBar, &TitleBar::closeRequested, this, &PipelineWidget::closeRequested);
@@ -170,8 +173,8 @@ PipelineWidget::PipelineWidget(QWidget *parent) :
     connect(actionDeleteStep, SIGNAL(triggered()), _nodeScene, SLOT(removeSelectedNodes()));
     connect(actionDeleteConnections, SIGNAL(triggered()), _nodeScene, SLOT(removeSelectedConnections()));
     connect(actionDeleteSelection, SIGNAL(triggered()), _nodeScene, SLOT(removeSelection()));
-    connect(snapButton, SIGNAL(clicked(bool)), &_nodeView->grid(), SLOT(setSnapEnabled(bool)));
-    connect(gridSizeBox, SIGNAL(valueChanged(int)), &_nodeView->grid(), SLOT(setGridSize(int)));
+    connect(snapButton, SIGNAL(clicked(bool)), this, SLOT(setSnapEnabled(bool)));
+    connect(gridSizeBox, SIGNAL(valueChanged(int)), this, SLOT(setGridSize(int)));
     connect(actionLayoutAll, SIGNAL(triggered()), _nodeScene, SLOT(autoLayoutAll()));
     connect(actionLayoutAll, SIGNAL(triggered()), _nodeView, SLOT(frameSelected()));
     connect(actionLayoutSelected, SIGNAL(triggered()), _nodeScene, SLOT(autoLayoutSelectedNodes()));
@@ -180,6 +183,7 @@ PipelineWidget::PipelineWidget(QWidget *parent) :
     connect(actionSelectParents, SIGNAL(triggered()), _nodeScene, SLOT(selectParentNodes()));
     // Ramses connections
     connect(Ramses::instance(), &Ramses::projectChanged, this, &PipelineWidget::changeProject);
+    connect(Ramses::instance(), &Ramses::loggedIn, this, &PipelineWidget::userChanged);
 }
 
 void PipelineWidget::changeProject(RamProject *project)
@@ -201,7 +205,6 @@ void PipelineWidget::changeProject(RamProject *project)
 
     // Layout
     _nodeScene->clearSelection();
-    _nodeScene->autoLayoutAll();
     _nodeView->frameSelected();
 
     this->setEnabled(true);
@@ -209,5 +212,60 @@ void PipelineWidget::changeProject(RamProject *project)
 
 void PipelineWidget::newStep(RamStep *step)
 {
-    _nodeScene->addNode( new RamObjectNode(step) );
+    RamObjectNode *stepNode = new RamObjectNode(step);
+    _nodeScene->addNode( stepNode );
+
+    // Reset position
+    userSettings->beginGroup("nodeLocations");
+    QPointF pos = userSettings->value(step->uuid(), QPointF(0.0,0.0)).toPointF();
+    if (pos.x() != 0.0 && pos.y() != 0.0) stepNode->setPos( pos );
+    userSettings->endGroup();
+
+    connect(stepNode, &DuQFNode::moved, this, &PipelineWidget::nodeMoved);
 }
+
+void PipelineWidget::nodeMoved(QPointF pos)
+{
+    RamObjectNode *node = (RamObjectNode*)sender();
+    RamObject *step = node->ramObject();
+
+    userSettings->beginGroup("nodeLocations");
+    userSettings->setValue(step->uuid(), pos);
+    userSettings->endGroup();
+}
+
+void PipelineWidget::setSnapEnabled(bool enabled)
+{
+    QSignalBlocker b(snapButton);
+
+    snapButton->setChecked(enabled);
+
+    userSettings->setValue("snapToGrid", enabled);
+    _nodeView->grid()->setSnapEnabled(enabled);
+}
+
+void PipelineWidget::setGridSize(int size)
+{
+    QSignalBlocker b(gridSizeBox);
+
+    gridSizeBox->setValue(size);
+
+    userSettings->setValue("gridSize", size);
+    _nodeView->grid()->setSize(size);
+    _nodeView->update();
+}
+
+void PipelineWidget::userChanged(RamUser *u)
+{
+    Q_UNUSED(u);
+
+    userSettings->endGroup();
+
+    userSettings->setPath(QSettings::IniFormat, QSettings::UserScope, Ramses::instance()->currentUserSettingsFile());
+
+    userSettings->beginGroup("nodeView");
+
+    setSnapEnabled(userSettings->value("snapToGrid", false).toBool());
+    setGridSize(userSettings->value("gridSize", 20).toInt());
+}
+

@@ -16,13 +16,14 @@ DuQFNodeView::DuQFNodeView(QWidget *parent): QGraphicsView(parent)
 
     setFocusPolicy(Qt::StrongFocus);
 
-    m_scene = new DuQFNodeScene(m_grid);
+    m_grid = new DuQFGrid(this);
+    m_scene = new DuQFNodeScene(*m_grid);
     setScene(m_scene);
 
-    connect(&m_grid, SIGNAL(gridSizeChanged()), this, SLOT(update()));
+    connect(m_grid, SIGNAL(gridSizeChanged()), this, SLOT(update()));
 }
 
-const DuQFGrid &DuQFNodeView::grid() const
+DuQFGrid *DuQFNodeView::grid() const
 {
     return m_grid;
 }
@@ -215,7 +216,7 @@ void DuQFNodeView::drawBackground(QPainter *painter, const QRectF &rect)
 
     painter->fillRect(rect, QBrush( DuUI::getColor("very-dark-grey")  ) );
 
-    const int gridSize = m_grid.size();
+    const int gridSize = m_grid->size();
 
     if (m_gridVisible && gridSize != 0)
     {

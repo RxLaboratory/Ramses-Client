@@ -18,7 +18,7 @@ public:
     Q_ENUM(Transformation)
 
     DuQFNodeView(QWidget *parent = nullptr);
-    const DuQFGrid & grid() const;
+    DuQFGrid *grid() const;
     void zoom(double amount);
     qreal currentZoom();
 
@@ -45,7 +45,7 @@ private:
     void drawBackground(QPainter * painter, const QRectF & rect) Q_DECL_OVERRIDE;
 
     // members
-    DuQFGrid m_grid;
+    DuQFGrid *m_grid;
     bool m_gridVisible = true;
     QRectF m_nodeBoundingRect;
     DuQFNodeScene *m_scene;

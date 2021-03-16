@@ -61,6 +61,38 @@ void DuQFNodeScene::addNode(DuQFNode *node)
 
     node->setGrid(&m_grid);
     this->addItem(node);
+
+    // Move node if needed
+    qreal y = 0.0;
+    qreal x = 0.0;
+
+    // Check if there's already a node here
+    DuQFNode *n = nullptr;
+    foreach(QGraphicsItem *i, items( QPointF(x,y) ))
+    {
+        n = qgraphicsitem_cast<DuQFNode*>(i);
+        if (n)
+        {
+            y += n->sceneBoundingRect().height() + m_grid.size();
+            break;
+        }
+    }
+
+    while (n)
+    {
+        n = nullptr;
+        foreach(QGraphicsItem *i, items( QPointF(x,y) ))
+        {
+            n = qgraphicsitem_cast<DuQFNode*>(i);
+            if (n)
+            {
+                y += n->sceneBoundingRect().height() + m_grid.size();
+                break;
+            }
+        }
+    }
+
+    node->setPos(x, y);
     node->setSelected(true);
 
     connect(node, &DuQFNode::connectionInitiated, this, &DuQFNodeScene::initiateConnection);
@@ -90,6 +122,7 @@ void DuQFNodeScene::removeSelection()
 
 void DuQFNodeScene::autoLayoutAll()
 {
+    clearSelection();
     autoLayoutNodes(nodes());
 
     // Center all

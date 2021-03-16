@@ -29,39 +29,43 @@ public:
     QString projectsPath() const;
     QString configPath() const;
     QString defaultUserPath(RamUser *u) const;
-    QString defaultProjectPath(RamProject *p);
+    QString defaultProjectPath(RamProject *p) const;
     // Tree Users
     QString path(RamUser *u) const;
-    QDir dir(RamUser *u);
-    QString configPath(RamUser *u);
-    QDir configDir(RamUser *u);
+    QDir dir(RamUser *u)const;
+    QString currentUserPath() const;
+    QDir currentUserDir() const;
+    QString configPath(RamUser *u)const;
+    QDir configDir(RamUser *u)const;
+    QString currentUserConfigPath() const;
+    QDir currentUserCondigDir() const;
     // Tree Projects
     QString path(RamProject *p) const;
-    QDir dir(RamProject *p);
-    QString configPath(RamProject *p);
-    QDir configDir(RamProject *p);
-    QString adminPath(RamProject *p);
-    QDir adminDir(RamProject *p);
-    QString preProdPath(RamProject *p);
-    QDir preProdDir(RamProject *p);
-    QString prodPath(RamProject *p);
-    QDir prodDir(RamProject *p);
-    QString postProdPath(RamProject *p);
-    QDir postProdDir(RamProject *p);
-    QString assetsPath(RamProject *p);
-    QDir assetsDir(RamProject *p);
-    QString shotsPath(RamProject *p);
-    QDir shotsDir(RamProject *p);
-    QString exportPath(RamProject *p);
-    QDir exportDir(RamProject *p);
+    QDir dir(RamProject *p)const;
+    QString configPath(RamProject *p) const;
+    QDir configDir(RamProject *p) const;
+    QString adminPath(RamProject *p) const;
+    QDir adminDir(RamProject *p) const;
+    QString preProdPath(RamProject *p) const;
+    QDir preProdDir(RamProject *p) const;
+    QString prodPath(RamProject *p) const;
+    QDir prodDir(RamProject *p) const;
+    QString postProdPath(RamProject *p) const;
+    QDir postProdDir(RamProject *p) const;
+    QString assetsPath(RamProject *p) const;
+    QDir assetsDir(RamProject *p) const;
+    QString shotsPath(RamProject *p) const;
+    QDir shotsDir(RamProject *p) const;
+    QString exportPath(RamProject *p) const;
+    QDir exportDir(RamProject *p) const;
     // Tree steps
-    QString path(RamStep *s);
-    QDir dir(RamStep *s);
+    QString path(RamStep *s) const;
+    QDir dir(RamStep *s) const;
     // Tree assets
-    QString path(RamAssetGroup *ag);
-    QDir dir(RamAssetGroup *ag);
-    QString path(RamAsset *a);
-    QDir dir(RamAsset *a);
+    QString path(RamAssetGroup *ag) const;
+    QDir dir(RamAssetGroup *ag) const;
+    QString path(RamAsset *a) const;
+    QDir dir(RamAsset *a) const;
     // Users
     QList<RamUser *> users() const;
     RamUser *currentUser() const;
@@ -71,9 +75,10 @@ public:
     bool isAdmin();
     bool isProjectAdmin();
     bool isLead();
+    QString currentUserSettingsFile();
     // Projects
     QList<RamProject *> projects() const;
-    RamProject *project(QString uuid);
+    RamProject *project(QString uuid) const;
     RamProject *createProject();
     void removeProject(QString uuid);
     RamProject *currentProject() const;
@@ -90,7 +95,7 @@ public:
     void removeTemplateAssetGroup(QString uuid);
     RamAssetGroup *templateAssetGroup(QString uuid);
     // Asset groups
-    RamAssetGroup *assetGroup(QString uuid);
+    RamAssetGroup *assetGroup(QString uuid) const;
     // States
     QList<RamState *> states() const;
     RamState *createState();
@@ -160,7 +165,7 @@ private:
 
     // Tree
     QString _ramsesPath;
-    QDir createPath(QString p);
+    QDir createPath(QString p) const;
 
     // Users
     QList<RamUser *> _users;

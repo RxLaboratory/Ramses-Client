@@ -95,7 +95,10 @@ void DuQFNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
 QVariant DuQFNode::itemChange(GraphicsItemChange change, const QVariant &value)
 {
     if (change == ItemPositionChange && scene() && m_grid)
-            return m_grid->snapToGrid(value.toPointF());
+    {
+        emit moved(value.toPointF());
+        return m_grid->snapToGrid(value.toPointF());
+    }
 
     return QGraphicsItem::itemChange(change, value);
 }

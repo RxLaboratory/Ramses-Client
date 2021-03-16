@@ -54,6 +54,7 @@ signals:
     void connectionMoved(QPointF);
     void connectionFinished(QPointF, QPointF);
     void removed();
+    void moved(QPointF);
 
 protected:
     //void mousePressEvent(QGraphicsSceneMouseEvent * event) Q_DECL_OVERRIDE;
