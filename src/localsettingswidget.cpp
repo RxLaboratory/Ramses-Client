@@ -5,7 +5,7 @@ LocalSettingsWidget::LocalSettingsWidget(QWidget *parent) :
 {
     setupUi(this);
 
-    folderSelector = new DuQFFolderSelectorWidget(this);
+    folderSelector = new DuQFFolderSelectorWidget(DuQFFolderSelectorWidget::Folder, this);
     mainFolderLayout->addWidget(folderSelector);
 
     folderSelector->setPath(_settings.value("ramsesPath", QDir::homePath() + "/Ramses").toString());

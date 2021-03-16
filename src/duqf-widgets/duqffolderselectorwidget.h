@@ -14,7 +14,10 @@ class DuQFFolderSelectorWidget : public QWidget
     Q_OBJECT
 
 public:
-    explicit DuQFFolderSelectorWidget(QWidget *parent = nullptr);
+    enum SelectorType { Folder, File };
+    Q_ENUM(SelectorType)
+
+    explicit DuQFFolderSelectorWidget(SelectorType type = Folder, QWidget *parent = nullptr);
     QString path();
     void setPath(QString p);
     void setPlaceHolderText(QString t);
@@ -33,6 +36,8 @@ private:
     QLineEdit *folderEdit;
     QToolButton *browseButton;
     QToolButton *exploreButton;
+
+    SelectorType _type;
 };
 
 #endif // DUQFFOLDERSELECTORWIDGET_H

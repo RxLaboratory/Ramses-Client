@@ -50,5 +50,7 @@
         <file alias="view">resources/icons/view.svg</file>
         <file alias="steps-menu">resources/icons/steps-menu.svg</file>
         <file alias="files">resources/icons/files_sd.svg</file>
+        <file alias="application">resources/icons/application_sl.svg</file>
+        <file alias="applications">resources/icons/applications_sl.svg</file>
     </qresource>
 </RCC>

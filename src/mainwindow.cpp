@@ -78,6 +78,7 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     adminPage->addPage(new TemplateAssetGroupsManagerWidget(this), "Template Asset Groups", QIcon(":/icons/asset-groups"));
     adminPage->addPage(new StatesManagerWidget(this), "States", QIcon(":/icons/state"));
     adminPage->addPage(new FileTypesManagerWidget(this), "File Types", QIcon(":/icons/files"));
+    adminPage->addPage(new ApplicationsManagerWidget(this), "Applications", QIcon(":/icons/applications"));
     // Project settings
     SettingsWidget *projectSettingsPage = new SettingsWidget("Project Administration", this);
     projectSettingsPage->showReinitButton(false);

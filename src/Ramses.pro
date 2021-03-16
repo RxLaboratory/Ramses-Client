@@ -20,6 +20,8 @@ CONFIG += c++11
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    applicationeditwidget.cpp \
+    applicationsmanagerwidget.cpp \
     asseteditwidget.cpp \
     assetgroupeditwidget.cpp \
     assetgroupsmanagerwidget.cpp \
@@ -96,6 +98,8 @@ SOURCES += \
     usersmanagerwidget.cpp
 
 HEADERS += \
+    applicationeditwidget.h \
+    applicationsmanagerwidget.h \
     asseteditwidget.h \
     assetgroupeditwidget.h \
     assetgroupsmanagerwidget.h \
@@ -172,6 +176,7 @@ HEADERS += \
     usersmanagerwidget.h
 
 FORMS += \
+    applicationeditwidget.ui \
     asseteditwidget.ui \
     assetgroupeditwidget.ui \
     daemonsettingswidget.ui \

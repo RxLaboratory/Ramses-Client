@@ -1,11 +1,14 @@
 #include "duqffolderselectorwidget.h"
 
-DuQFFolderSelectorWidget::DuQFFolderSelectorWidget(QWidget *parent) :
+DuQFFolderSelectorWidget::DuQFFolderSelectorWidget(SelectorType type, QWidget *parent) :
     QWidget(parent)
 {
     setupUi();
 
+    _type = type;
     _dialogTitle = "";
+
+    if (type == File) exploreButton->hide();
 
     connect(browseButton, &QToolButton::clicked, this, &DuQFFolderSelectorWidget::browseButton_clicked);
     connect(exploreButton, &QToolButton::clicked, this, &DuQFFolderSelectorWidget::exploreButton_clicked);
@@ -40,7 +43,12 @@ void DuQFFolderSelectorWidget::setDialogTitle(QString t)
 
 void DuQFFolderSelectorWidget::browseButton_clicked()
 {
-    QString p = QFileDialog::getExistingDirectory(this, _dialogTitle, folderEdit->text());
+    QString p = "";
+    QString d = folderEdit->text();
+    if (d == "") d = folderEdit->toolTip();
+    if (d == "") d = folderEdit->placeholderText();
+    if (_type == Folder) p = QFileDialog::getExistingDirectory(this, _dialogTitle, folderEdit->text());
+    else p = QFileDialog::getOpenFileName(this, _dialogTitle, folderEdit->text());
     if (p != "")
     {
         setPath(p);

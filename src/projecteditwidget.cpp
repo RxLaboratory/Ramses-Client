@@ -5,7 +5,7 @@ ProjectEditWidget::ProjectEditWidget(QWidget *parent) :
 {
     setupUi(this);
 
-    folderSelector = new DuQFFolderSelectorWidget(this);
+    folderSelector = new DuQFFolderSelectorWidget(DuQFFolderSelectorWidget::Folder, this);
     folderSelector->setPlaceHolderText("Default (Ramses/Users/User_ShortName)");
     folderLayout->addWidget(folderSelector);
 
