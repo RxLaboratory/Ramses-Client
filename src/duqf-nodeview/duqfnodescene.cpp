@@ -75,7 +75,13 @@ void DuQFNodeScene::removeSelectedNodes()
     }
 }
 
-void DuQFNodeScene::autoLayoutNodes()
+void DuQFNodeScene::removeSelection()
+{
+    removeSelectedNodes();
+    removeSelectedConnections();
+}
+
+void DuQFNodeScene::autoLayoutAll()
 {
     QList<DuQFNode*> allNodes = nodes();
 
@@ -138,7 +144,7 @@ void DuQFNodeScene::autoLayoutNodes()
 
                 // Get children which are still to be arranged
                 QList<DuQFNode *> childrenNodes;
-                foreach(DuQFNode *n, n->childrenNodes())
+                foreach(DuQFNode *n, n->childNodes())
                     if (allNodes.contains(n)) childrenNodes << n;
                 nextGeneration.append(childrenNodes);
 
@@ -163,12 +169,47 @@ void DuQFNodeScene::autoLayoutNodes()
     //moveNodesToCenter();
 }
 
-void DuQFNodeScene::moveNodesToCenter()
+void DuQFNodeScene::moveAllToCenter()
 {
-    QGraphicsItemGroup *group = createItemGroup(nodesAsItems());
+    QGraphicsItemGroup *group = createNodeGroup(nodes());
     QRectF rect = group->boundingRect();
     group->setPos(-rect.width()/2, -rect.height()/2);
     destroyItemGroup(group);
+}
+
+void DuQFNodeScene::selectAllNodes()
+{
+    clearSelection();
+    foreach(DuQFNode *n, nodes())
+    {
+        n->setSelected(true);
+    }
+}
+
+void DuQFNodeScene::selectNodes(QList<DuQFNode*> nodes)
+{
+    foreach(DuQFNode *n, nodes)
+    {
+        n->setSelected(true);
+    }
+}
+
+void DuQFNodeScene::selectChildNodes()
+{
+    foreach(QGraphicsItem *i, selectedItems())
+    {
+        DuQFNode *n = qgraphicsitem_cast<DuQFNode*>(i);
+        if (n) if (n->isSelected()) selectNodes(n->childNodes());
+    }
+}
+
+void DuQFNodeScene::selectParentNodes()
+{
+    foreach(QGraphicsItem *i, selectedItems())
+    {
+        DuQFNode *n = qgraphicsitem_cast<DuQFNode*>(i);
+        if (n) if (n->isSelected()) selectNodes(n->parentNodes());
+    }
 }
 
 void DuQFNodeScene::moveConnection(QPointF to)
@@ -213,17 +254,6 @@ void DuQFNodeScene::finishConnection(QPointF to, QPointF from)
 
     // Connect
     m_connectionManager.addConnection(output, input, m_connectingItem);
-}
-
-QList<QGraphicsItem *> DuQFNodeScene::nodesAsItems()
-{
-    QList<QGraphicsItem*> nodes;
-    foreach(QGraphicsItem *i, items())
-    {
-        DuQFNode *n = qgraphicsitem_cast<DuQFNode*>(i);
-        if (n) nodes << i;
-    }
-    return nodes;
 }
 
 void DuQFNodeScene::layoutNodesInColumn(QList<DuQFNode *> nodes, QPointF center)

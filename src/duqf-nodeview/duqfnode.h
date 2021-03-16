@@ -40,7 +40,7 @@ public:
     void removeChildNode(DuQFNode *childNode);
     void removeParentNode(DuQFNode *parentNode);
 
-    QList<DuQFNode *> childrenNodes() const;
+    QList<DuQFNode *> childNodes() const;
     QList<DuQFNode *> parentNodes() const;
     bool isOrphan() const;
     bool hasChildren() const;

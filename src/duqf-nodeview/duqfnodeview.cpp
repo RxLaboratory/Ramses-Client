@@ -91,11 +91,6 @@ void DuQFNodeView::setZoom(int zoomPercent)
     setTransform(t);
 }
 
-void DuQFNodeView::removeSelectedItems()
-{
-    m_scene->removeSelectedNodes();
-    m_scene->removeSelectedConnections();
-}
 
 void DuQFNodeView::wheelEvent(QWheelEvent *event)
 {
@@ -131,7 +126,7 @@ void DuQFNodeView::keyPressEvent(QKeyEvent *event)
     }
 
     if (key == Qt::Key_Backspace || key == Qt::Key_Delete) {
-        removeSelectedItems();
+        m_scene->removeSelection();
         event->accept();
         return;
     }

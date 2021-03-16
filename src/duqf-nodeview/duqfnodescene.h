@@ -27,8 +27,13 @@ public slots:
     void addNode(DuQFNode *node);
     void removeSelectedConnections();
     void removeSelectedNodes();
-    void autoLayoutNodes();
-    void moveNodesToCenter();
+    void removeSelection();
+    void autoLayoutAll();
+    void moveAllToCenter();
+    void selectAllNodes();
+    void selectNodes(QList<DuQFNode *> nodes);
+    void selectChildNodes();
+    void selectParentNodes();
 
 private slots:
     void initiateConnection(QPointF from);
@@ -39,12 +44,11 @@ private:
     DuQFGrid &m_grid;
 
     // Utils
-    QList<QGraphicsItem*> nodesAsItems();
     void layoutNodesInColumn(QList<DuQFNode*> nodes, QPointF center);
     void layoutNodesInColumn(QList<DuQFNode*> nodes, qreal x, qreal y);
     void layoutGroupsInColumn(QList<QGraphicsItemGroup*> groups);
 
-    //TEMP
+    // TEMP
     bool containsAll() const;
     QRectF calculateRectangle(bool isForExport = false) const;
 

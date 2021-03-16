@@ -30,27 +30,6 @@
     <number>0</number>
    </property>
   </layout>
-  <action name="actionAddNode">
-   <property name="text">
-    <string>Add node</string>
-   </property>
-  </action>
-  <action name="actionDeleteNodes">
-   <property name="text">
-    <string>Delete nodes</string>
-   </property>
-   <property name="toolTip">
-    <string>Deletes selected nodes</string>
-   </property>
-  </action>
-  <action name="actionDeleteConnections">
-   <property name="text">
-    <string>Delete connections</string>
-   </property>
-   <property name="toolTip">
-    <string>Deletes selected connections.</string>
-   </property>
-  </action>
  </widget>
  <resources/>
  <connections/>

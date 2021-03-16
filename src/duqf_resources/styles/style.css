@@ -638,6 +638,14 @@ QToolBar QComboBox:hover, #titleBar QComboBox:hover {
     background-color: @color-medium-grey;
 }
 
+#titleBar #menuButton {
+    background-color: @color-dark-grey;
+    max-height: @padding-extra-large;
+}
+
+#titleBar #menuButton:hover {
+    background-color: @color-very-dark-grey;
+}
 
 /* STATUSBAR */
 

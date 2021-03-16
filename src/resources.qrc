@@ -44,5 +44,10 @@
         <file alias="pipeline">resources/icons/edit-connections-pipeline_bl.svg</file>
         <file alias="view-selected">resources/icons/frame-focus-center-target-nodes_sl.svg</file>
         <file alias="view-all">resources/icons/frame-focus-center-target_sl.svg</file>
+        <file alias="step">resources/icons/step-node_sl.svg</file>
+        <file alias="connection">resources/icons/connection_sl.svg</file>
+        <file alias="select-menu">resources/icons/select.svg</file>
+        <file alias="view">resources/icons/view.svg</file>
+        <file alias="steps-menu">resources/icons/steps-menu.svg</file>
     </qresource>
 </RCC>

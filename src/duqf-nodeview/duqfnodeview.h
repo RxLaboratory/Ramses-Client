@@ -28,7 +28,6 @@ public slots:
     void frameSelected();
     void reinitTransform();
     void setZoom(int zoomPercent);
-    void removeSelectedItems();
 
 signals:
     void zoomed(qreal zoom);

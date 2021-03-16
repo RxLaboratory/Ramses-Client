@@ -120,7 +120,7 @@ bool DuQFNode::hasParents() const
     return m_parentNodes.count() != 0;
 }
 
-QList<DuQFNode *> DuQFNode::childrenNodes() const
+QList<DuQFNode *> DuQFNode::childNodes() const
 {
     return m_childrenNodes;
 }

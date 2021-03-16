@@ -359,6 +359,7 @@ void DuUI::setToolButtonStyle(Qt::ToolButtonStyle style)
         else if (QToolButton *tb = qobject_cast<QToolButton*>(w))
         {
             if (tb->objectName() == "windowButton") continue;
+            if (tb->objectName() == "menuButton") continue;
             if (tb->text() == "") continue;
             if (tb->icon().isNull()) continue;
             tb->setToolButtonStyle(style);
