@@ -174,6 +174,7 @@ PipelineWidget::PipelineWidget(QWidget *parent) :
     connect(gridSizeBox, SIGNAL(valueChanged(int)), &_nodeView->grid(), SLOT(setGridSize(int)));
     connect(actionLayoutAll, SIGNAL(triggered()), _nodeScene, SLOT(autoLayoutAll()));
     connect(actionLayoutAll, SIGNAL(triggered()), _nodeView, SLOT(frameSelected()));
+    connect(actionLayoutSelected, SIGNAL(triggered()), _nodeScene, SLOT(autoLayoutSelectedNodes()));
     connect(actionSelectAll, SIGNAL(triggered()), _nodeScene, SLOT(selectAllNodes()));
     connect(actionSelectChildren, SIGNAL(triggered()), _nodeScene, SLOT(selectChildNodes()));
     connect(actionSelectParents, SIGNAL(triggered()), _nodeScene, SLOT(selectParentNodes()));

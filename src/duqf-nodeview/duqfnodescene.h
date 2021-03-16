@@ -20,6 +20,7 @@ public:
     void adjustSceneRect();
     QRectF zoomToFit(bool isForExport = false) const;
     QList<DuQFNode*> nodes();
+    QList<DuQFNode*> selectedNodes();
     QGraphicsItemGroup *createNodeGroup(QList<DuQFNode*> nodes);
 
 public slots:
@@ -29,6 +30,8 @@ public slots:
     void removeSelectedNodes();
     void removeSelection();
     void autoLayoutAll();
+    void autoLayoutSelectedNodes();
+    void autoLayoutNodes(QList<DuQFNode*> nodes);
     void moveAllToCenter();
     void selectAllNodes();
     void selectNodes(QList<DuQFNode *> nodes);

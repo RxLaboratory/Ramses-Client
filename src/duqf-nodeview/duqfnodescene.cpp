@@ -29,6 +29,17 @@ QList<DuQFNode *> DuQFNodeScene::nodes()
     return nodes;
 }
 
+QList<DuQFNode *> DuQFNodeScene::selectedNodes()
+{
+    QList<DuQFNode*> nodes;
+    foreach(QGraphicsItem *item, selectedItems())
+    {
+        DuQFNode *n = qgraphicsitem_cast<DuQFNode*>(item);
+        if (n) if (n->isSelected()) nodes << n;
+    }
+    return nodes;
+}
+
 QGraphicsItemGroup *DuQFNodeScene::createNodeGroup(QList<DuQFNode *> nodes)
 {
     QGraphicsItemGroup *g = new QGraphicsItemGroup();
@@ -68,11 +79,7 @@ void DuQFNodeScene::removeSelectedConnections()
 
 void DuQFNodeScene::removeSelectedNodes()
 {
-    foreach(QGraphicsItem *item, selectedItems())
-    {
-        DuQFNode *n = qgraphicsitem_cast<DuQFNode*>(item);
-        if (n) n->remove();
-    }
+    foreach(DuQFNode *n, selectedNodes()) n->remove();
 }
 
 void DuQFNodeScene::removeSelection()
@@ -83,23 +90,34 @@ void DuQFNodeScene::removeSelection()
 
 void DuQFNodeScene::autoLayoutAll()
 {
-    QList<DuQFNode*> allNodes = nodes();
+    autoLayoutNodes(nodes());
 
+    // Center all
+    moveAllToCenter();
+}
+
+void DuQFNodeScene::autoLayoutSelectedNodes()
+{
+    autoLayoutNodes(selectedNodes());
+}
+
+void DuQFNodeScene::autoLayoutNodes(QList<DuQFNode *> nodes)
+{
     // 1- Move orphan nodes appart
     qreal x = 0.0;
     qreal y = 0.0;
 
     QGraphicsItemGroup *orphanGroup = new QGraphicsItemGroup();
     addItem(orphanGroup);
-    for (int i = allNodes.count()-1; i >= 0; i--)
+    for (int i = nodes.count()-1; i >= 0; i--)
     {
-        DuQFNode *n = allNodes.at(i);
+        DuQFNode *n = nodes.at(i);
         if (n->isOrphan())
         {
             n->setPos( x, y );
             y += n->boundingRect().height() + m_grid.size();
             orphanGroup->addToGroup(n);
-            allNodes.removeAt(i);
+            nodes.removeAt(i);
         }
     }
 
@@ -108,11 +126,11 @@ void DuQFNodeScene::autoLayoutAll()
     destroyItemGroup(orphanGroup);
 
     // 2- If we still have nodes to arrange
-    if (allNodes.count() > 0)
+    if (nodes.count() > 0)
     {
         // Find ancestors
         QList<DuQFNode*> ancestors;
-        foreach(DuQFNode *n, allNodes)
+        foreach(DuQFNode *n, nodes)
         {
             if (!n->hasParents())
             {
@@ -125,13 +143,13 @@ void DuQFNodeScene::autoLayoutAll()
         // If no ancestor (it's a loop), pick the first node
         if (ancestors.count() == 0)
         {
-            DuQFNode *n = allNodes.at(0);
+            DuQFNode *n = nodes.at(0);
             n->setPos( x, y);
             ancestors << n;
         }
 
         // Layout each generation one after the other
-        while (ancestors.count() > 0 && allNodes.count() > 0)
+        while (ancestors.count() > 0 && nodes.count() > 0)
         {
             // For each ancestor, arrange children
             QList<DuQFNode*> nextGeneration;
@@ -140,12 +158,12 @@ void DuQFNodeScene::autoLayoutAll()
             foreach (DuQFNode *n, ancestors)
             {
                 // This one is now ok
-                allNodes.removeAll(n);
+                nodes.removeAll(n);
 
                 // Get children which are still to be arranged
                 QList<DuQFNode *> childrenNodes;
                 foreach(DuQFNode *n, n->childNodes())
-                    if (allNodes.contains(n)) childrenNodes << n;
+                    if (nodes.contains(n)) childrenNodes << n;
                 nextGeneration.append(childrenNodes);
 
                 // Layout'em
@@ -161,12 +179,9 @@ void DuQFNodeScene::autoLayoutAll()
 
             ancestors.clear();
             foreach(DuQFNode *n, nextGeneration)
-                if (allNodes.contains(n)) ancestors << n;
+                if (nodes.contains(n)) ancestors << n;
         }
     }
-
-    // Center all
-    //moveNodesToCenter();
 }
 
 void DuQFNodeScene::moveAllToCenter()
