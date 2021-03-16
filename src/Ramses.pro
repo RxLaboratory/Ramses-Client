@@ -68,6 +68,7 @@ SOURCES += \
     ramasset.cpp \
     ramassetgroup.cpp \
     ramassetwidget.cpp \
+    ramfiletype.cpp \
     ramobject.cpp \
     ramproject.cpp \
     ramsequence.cpp \
@@ -140,6 +141,7 @@ HEADERS += \
     ramasset.h \
     ramassetgroup.h \
     ramassetwidget.h \
+    ramfiletype.h \
     ramobject.h \
     ramproject.h \
     ramsequence.h \

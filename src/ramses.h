@@ -8,6 +8,7 @@
 #include "ramstep.h"
 #include "ramstate.h"
 #include "ramassetgroup.h"
+#include "ramfiletype.h"
 #include "dbisuspender.h"
 
 #include <QObject>
@@ -99,7 +100,13 @@ public:
     // States
     QList<RamState *> states() const;
     RamState *createState();
+    void removeState(RamObject *s);
     void removeState(QString uuid);
+    // File Types
+    QList<RamFileType*> fileTypes() const;
+    RamFileType *createFileType();
+    void removeFileType(QString uuid);
+    void removeFileType(RamObject *ft);
 
 public slots:
     void refresh();
@@ -116,6 +123,7 @@ signals:
     void newState(RamState *state);
     void newStep(RamStep *);
     void newAssetGroup(RamAssetGroup *);
+    void newFileType(RamFileType *);
 
 protected:
     static Ramses *_instance;
@@ -185,6 +193,9 @@ private:
 
     // States
     QList<RamState *> _states;
+
+    // File types
+    QList<RamFileType*> _fileTypes;
 
 };
 

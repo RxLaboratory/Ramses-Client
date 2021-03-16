@@ -929,7 +929,6 @@ void Ramses::setCurrentProject(RamProject *currentProject)
     }
 
     emit projectChanged(_currentProject);
-    qDebug() << "sent";
 }
 
 void Ramses::setCurrentProject(QString uuid)
@@ -1029,8 +1028,14 @@ RamState *Ramses::createState()
     RamState *state = new RamState("New", "State");
     state->setParent(this);
     _states << state;
+    connect(state, SIGNAL(removed(RamObject*)), this, SLOT(removeState(RamObject*)));
     emit newState(state);
     return state;
+}
+
+void Ramses::removeState(RamObject *s)
+{
+    if (s) removeState(s->uuid());
 }
 
 void Ramses::removeState(QString uuid)
@@ -1040,7 +1045,39 @@ void Ramses::removeState(QString uuid)
         if (_states[i]->uuid() == uuid)
         {
             RamState *s = _states.takeAt(i);
-            s->deleteLater();
+            s->remove();
+        }
+    }
+}
+
+QList<RamFileType *> Ramses::fileTypes() const
+{
+    return _fileTypes;
+}
+
+RamFileType *Ramses::createFileType()
+{
+    RamFileType *ft = new RamFileType(".new", "New File Type", QStringList("new"));
+    ft->setParent(this);
+    _fileTypes << ft;
+    connect(ft, SIGNAL(removed(RamObject*)), this, SLOT(removeFileType(RamObject*)));
+    emit newFileType(ft);
+    return ft;
+}
+
+void Ramses::removeFileType(RamObject *ft)
+{
+    if (ft) removeFileType(ft->uuid());
+}
+
+void Ramses::removeFileType(QString uuid)
+{
+    for (int i = _fileTypes.count() -1; i >= 0; i--)
+    {
+        if (_fileTypes[i]->uuid() == uuid)
+        {
+            RamFileType *ft = _fileTypes.takeAt(i);
+            ft->remove();
         }
     }
 }
