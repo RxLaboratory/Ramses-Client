@@ -155,6 +155,7 @@ private:
     explicit Ramses(QObject *parent = nullptr);
 
     QSettings _settings;
+    QSettings *_userSettings;
 
     DBInterface *_dbi;
     void login(QJsonObject user);

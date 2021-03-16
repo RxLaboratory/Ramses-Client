@@ -260,9 +260,8 @@ void PipelineWidget::userChanged(RamUser *u)
     Q_UNUSED(u);
 
     userSettings->endGroup();
-
-    userSettings->setPath(QSettings::IniFormat, QSettings::UserScope, Ramses::instance()->currentUserSettingsFile());
-
+    delete userSettings;
+    userSettings = new QSettings(Ramses::instance()->currentUserSettingsFile(), QSettings::IniFormat, this);
     userSettings->beginGroup("nodeView");
 
     setSnapEnabled(userSettings->value("snapToGrid", false).toBool());

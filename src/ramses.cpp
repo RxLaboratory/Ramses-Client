@@ -25,6 +25,9 @@ Ramses::Ramses(QObject *parent) : QObject(parent)
 
     _connected = false;
 
+    _userSettings = new QSettings(QSettings::IniFormat, QSettings::UserScope, STR_COMPANYNAME, STR_INTERNALNAME);
+    _userSettings->beginGroup("ramses");
+
     connect( _dbi, &DBInterface::data, this, &Ramses::newData );
     connect( _dbi, &DBInterface::connectionStatusChanged, this, &Ramses::dbiConnectionStatusChanged);
     connect( (DuApplication *)qApp, &DuApplication::idle, this, &Ramses::refreshCurrentProject);
@@ -112,6 +115,7 @@ void Ramses::gotUsers(QJsonArray users)
         {
             _currentUser = user;
             _connected = true;
+
             emit loggedIn(_currentUser);
 
             return;
@@ -121,6 +125,7 @@ void Ramses::gotUsers(QJsonArray users)
     // Not found
     _currentUser = nullptr;
     _connected = false;
+    setCurrentProject(nullptr);
     emit loggedOut();
 }
 
@@ -193,6 +198,14 @@ void Ramses::gotProjects(QJsonArray projects)
 
         emit newProject(project);
     }
+
+    // Set settings
+    _userSettings->endGroup();
+    delete _userSettings;
+    _userSettings = new QSettings(Ramses::instance()->currentUserSettingsFile(), QSettings::IniFormat, this);
+    _userSettings->beginGroup("ramses");
+
+    setCurrentProject(_userSettings->value("currentProject", "").toString());
 }
 
 void Ramses::projectDestroyed(QObject *o)
@@ -910,7 +923,13 @@ RamProject *Ramses::currentProject() const
 void Ramses::setCurrentProject(RamProject *currentProject)
 {
     _currentProject = currentProject;
+    if (_currentProject)
+    {
+        _userSettings->setValue("currentProject", _currentProject->uuid() );
+    }
+
     emit projectChanged(_currentProject);
+    qDebug() << "sent";
 }
 
 void Ramses::setCurrentProject(QString uuid)

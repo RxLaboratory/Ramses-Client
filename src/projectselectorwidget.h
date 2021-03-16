@@ -15,6 +15,7 @@ private slots:
     void removeProject(QObject *o);
     void projectChanged();
     void setCurrentProject(int index);
+    void currentProjectChanged(RamProject *p);
 };
 
 #endif // PROJECTSELECTORWIDGET_H
