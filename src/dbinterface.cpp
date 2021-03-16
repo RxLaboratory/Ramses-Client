@@ -409,6 +409,42 @@ void DBInterface::removeFileType(QString uuid)
     request(q);
 }
 
+void DBInterface::createApplication(QString shortName, QString name, QString executableFilePath, QString uuid)
+{
+    QStringList q("createApplication");
+    q << "uuid=" + uuid;
+    q << "shortName=" + shortName;
+    q << "name=" + name;
+    q << "executableFilePath=" + executableFilePath;
+
+    request(q);
+}
+
+void DBInterface::getApplications()
+{
+    QString q = "?getApplications";
+    request(q);
+}
+
+void DBInterface::updateApplication(QString uuid, QString shortName, QString name, QString executableFilePath)
+{
+    QStringList q("updateApplication");
+    q << "uuid=" + uuid;
+    q << "shortName=" + shortName;
+    q << "name=" + name;
+    q << "executableFilePath=" + executableFilePath;
+
+    request(q);
+}
+
+void DBInterface::removeApplication(QString uuid)
+{
+    QStringList q("removeApplication");
+    q << "uuid=" + uuid;
+
+    request(q);
+}
+
 DBInterface::DBInterface(QObject *parent) : DuQFLoggerObject("Database Interface", parent)
 {
     // LOCAL
@@ -667,6 +703,7 @@ void DBInterface::request(QString req, bool waitPing)
     QString protocol = "http://";
     if (settings.value("server/ssl", true).toBool()) protocol = "https://";
     QString serverAddress = settings.value("server/address", "localhost/ramses/").toString();
+    //if (!serverAddress.endsWith("/")) serverAddress += "/";
 
     //add token to the request
     if (_sessionToken != "") req += "&token=" + _sessionToken;
@@ -674,21 +711,21 @@ void DBInterface::request(QString req, bool waitPing)
     //request
     QUrl url(protocol + serverAddress + req);
     QNetworkRequest request;
-    request.setUrl(QUrl(url));
+    request.setUrl(url);
     request.setHeader(QNetworkRequest::UserAgentHeader, QString(STR_INTERNALNAME) + " v" + QString(STR_VERSION));
     _reply = _network.get(request);
 
     if (req.indexOf("login") >= 0)
     {
 #ifdef QT_DEBUG
-        log("New request: " + protocol + serverAddress + req, DuQFLog::Debug);
+        log("New request: " + url.toString(QUrl::None), DuQFLog::Debug);
 #else
         log("New request: " + protocol + serverAddress + "[Hidden login info]", DuQFLog::Remote);
 #endif
     }
     else
     {
-        log("New request: " + protocol + serverAddress + req, DuQFLog::Debug);
+        log("New request: " + url.toString(QUrl::RemovePassword), DuQFLog::Debug);
     }
 
     connect(_reply, SIGNAL(error(QNetworkReply::NetworkError)), this,SLOT(networkError(QNetworkReply::NetworkError)));
@@ -696,7 +733,14 @@ void DBInterface::request(QString req, bool waitPing)
 
 void DBInterface::request(QStringList args)
 {
-    QString q = "?" + args.join("&");
+    QString q = "?";
+    bool first = true;
+    foreach(QString arg, args)
+    {
+        if (!first) q += "&";
+        first = false;
+        q += QUrl::toPercentEncoding(arg, "=");
+    }
     request(q);
 }
 

@@ -79,6 +79,11 @@ public:
     void getFileTypes();
     void updateFileType(QString uuid, QString shortName, QString name, QStringList extensions);
     void removeFileType(QString uuid);
+    //Applications
+    void createApplication(QString shortName, QString name, QString executableFilePath, QString uuid);
+    void getApplications();
+    void updateApplication(QString uuid, QString shortName, QString name, QString executableFilePath);
+    void removeApplication(QString uuid);
 
 public slots:
     void suspend(bool suspended = true);
