@@ -35,5 +35,16 @@ QStringList RamFileType::extensions() const
 
 void RamFileType::update()
 {
-    _dbi->updateFileType(_uuid, _shortName, _name, _extensions);
+    _dbi->updateFileType(_uuid, _shortName, _name, _extensions, _previewable);
+}
+
+bool RamFileType::isPreviewable() const
+{
+    return _previewable;
+}
+
+void RamFileType::setPreviewable(bool previewable)
+{
+    _previewable = previewable;
+    emit changed(this);
 }

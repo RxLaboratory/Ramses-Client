@@ -60,6 +60,16 @@
      <property name="spacing">
       <number>3</number>
      </property>
+     <item row="1" column="1">
+      <widget class="QLineEdit" name="shortNameEdit">
+       <property name="maxLength">
+        <number>10</number>
+       </property>
+       <property name="placeholderText">
+        <string>.ext</string>
+       </property>
+      </widget>
+     </item>
      <item row="0" column="1">
       <widget class="QLineEdit" name="nameEdit">
        <property name="maxLength">
@@ -77,6 +87,13 @@
        </property>
       </widget>
      </item>
+     <item row="0" column="0">
+      <widget class="QLabel" name="label_4">
+       <property name="text">
+        <string>Name</string>
+       </property>
+      </widget>
+     </item>
      <item row="1" column="0">
       <widget class="QLabel" name="label_5">
        <property name="text">
@@ -84,7 +101,7 @@
        </property>
       </widget>
      </item>
-     <item row="3" column="1">
+     <item row="4" column="1">
       <layout class="QHBoxLayout" name="horizontalLayout">
        <property name="spacing">
         <number>3</number>
@@ -132,13 +149,6 @@
        </item>
       </layout>
      </item>
-     <item row="0" column="0">
-      <widget class="QLabel" name="label_4">
-       <property name="text">
-        <string>Name</string>
-       </property>
-      </widget>
-     </item>
      <item row="2" column="1">
       <widget class="QLineEdit" name="extensionsEdit">
        <property name="maxLength">
@@ -149,13 +159,17 @@
        </property>
       </widget>
      </item>
-     <item row="1" column="1">
-      <widget class="QLineEdit" name="shortNameEdit">
-       <property name="maxLength">
-        <number>10</number>
+     <item row="3" column="0">
+      <widget class="QLabel" name="label_7">
+       <property name="text">
+        <string>Previewable</string>
        </property>
-       <property name="placeholderText">
-        <string>.ext</string>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <widget class="QCheckBox" name="previewableBox">
+       <property name="text">
+        <string>Can be used for previewing.</string>
        </property>
       </widget>
      </item>

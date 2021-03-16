@@ -106,16 +106,17 @@ public:
     // File Types
     QList<RamFileType*> fileTypes() const;
     RamFileType *createFileType();
-    void removeFileType(QString uuid);
-    void removeFileType(RamObject *ft);
+    void removeFileType(QString uuid); 
     // Applications
     QList<RamApplication*> applications() const;
     RamApplication *createApplication();
     void removeApplication(QString uuid);
-    void removeApplication(RamObject *a);
+
 
 public slots:
     void refresh();
+    void removeApplication(RamObject *a);
+    void removeFileType(RamObject *ft);
 
 signals:
     void loggedIn(RamUser*);

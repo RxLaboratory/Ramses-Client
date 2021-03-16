@@ -106,7 +106,7 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     connect(adminPage, SIGNAL(closeRequested()), this, SLOT(closeAdmin()));
     connect(projectSettingsPage, SIGNAL(closeRequested()), this, SLOT(closeProjectSettings()));
     connect(networkButton,SIGNAL(clicked()),this, SLOT(networkButton_clicked()));
-    connect(refreshButton, SIGNAL(clicked()), Ramses::instance(), SLOT(refreshCurrentProject()));
+    connect(refreshButton, SIGNAL(clicked()), Ramses::instance(), SLOT(refresh()));
     connect(mainStack,SIGNAL(currentChanged(int)), this, SLOT(pageChanged(int)));
     connect(lp, &LoginPage::serverSettings, this, &MainWindow::serverSettings);
     connect(DuQFLogger::instance(), &DuQFLogger::newLog, this, &MainWindow::log);

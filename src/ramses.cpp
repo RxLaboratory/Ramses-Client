@@ -411,11 +411,11 @@ void Ramses::gotFileTypes(QJsonArray fileTypes)
 {
     DBISuspender s;
 
-    // loop through existing steps to update them
+    // loop through existing file types to update them
     for (int i = _fileTypes.count() - 1; i >= 0; i--)
     {
         RamFileType *existingFileType = _fileTypes[i];
-        // loop through new steps to update
+        // loop through new file types to update
         bool found = false;
         for (int j = 0; j < fileTypes.count(); j++)
         {
@@ -428,7 +428,9 @@ void Ramses::gotFileTypes(QJsonArray fileTypes)
                 //Emit just one signal
                 QSignalBlocker b(existingFileType);
                 existingFileType->setName( newFileType.value("name").toString());
-                existingFileType->setShortName( newFileType.value("shortName").toString());
+                existingFileType->setShortName( newFileType.value("shortName").toString() );
+                existingFileType->setPreviewable( newFileType.value("previewable").toInt() != 0 );
+                qDebug() << newFileType.value("previewable").toInt();
                 //send the signal
                 b.unblock();
                 existingFileType->setExtensions(newFileType.value("extensions").toString());
@@ -445,7 +447,7 @@ void Ramses::gotFileTypes(QJsonArray fileTypes)
         }
     }
 
-    // loop through remaining new projects to add them
+    // loop through remaining new file types to add them
     for (int i = 0; i < fileTypes.count(); i++)
     {
         QJsonObject ft = fileTypes[i].toObject();
@@ -455,6 +457,8 @@ void Ramses::gotFileTypes(QJsonArray fileTypes)
                     ft.value("extensions").toString(),
                     ft.value("uuid").toString()
                     );
+        fileType->setPreviewable( ft.value("previewable").toInt() != 0 );
+        qDebug() << ft.value("previewable").toInt();
 
         _fileTypes << fileType;
 

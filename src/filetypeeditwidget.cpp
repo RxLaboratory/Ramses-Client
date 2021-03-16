@@ -27,12 +27,14 @@ void FileTypeEditWidget::setFileType(RamFileType *fileType)
     nameEdit->setText("");
     shortNameEdit->setText("");
     extensionsEdit->setText("");
+    previewableBox->setChecked(false);
 
     if (!fileType) return;
 
     nameEdit->setText(fileType->name());
     shortNameEdit->setText(fileType->shortName());
     extensionsEdit->setText(fileType->extensions().join(", "));
+    previewableBox->setChecked(fileType->isPreviewable());
 
     this->setEnabled(Ramses::instance()->isProjectAdmin());
 
@@ -54,6 +56,7 @@ void FileTypeEditWidget::update()
     _fileType->setName(nameEdit->text());
     _fileType->setShortName(shortNameEdit->text());
     _fileType->setExtensions(extensionsEdit->text());
+    _fileType->setPreviewable(previewableBox->isChecked());
 
     _fileType->update();
 

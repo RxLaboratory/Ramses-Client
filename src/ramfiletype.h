@@ -14,10 +14,15 @@ public:
     void setExtensions(QString extensions);
     QStringList extensions() const;
 
+    bool isPreviewable() const;
+    void setPreviewable(bool previewable);
+
     void update();
+
 
 private:
     QStringList _extensions;
+    bool _previewable = false;
 };
 
 #endif // RAMFILETYPE_H

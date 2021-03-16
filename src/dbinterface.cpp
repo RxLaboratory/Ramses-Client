@@ -390,13 +390,15 @@ void DBInterface::getFileTypes()
     request(q);
 }
 
-void DBInterface::updateFileType(QString uuid, QString shortName, QString name, QStringList extensions)
+void DBInterface::updateFileType(QString uuid, QString shortName, QString name, QStringList extensions, bool previewable)
 {
     QStringList q("updateFileType");
     q << "uuid=" + uuid;
     q << "shortName=" + shortName;
     q << "name=" + name;
     q << "extensions=" + extensions.join(",");
+    if (previewable) q << "previewable=1";
+    else q << "previewable=0";
 
     request(q);
 }

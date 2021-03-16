@@ -77,7 +77,7 @@ public:
     //File types
     void createFileType(QString shortName, QString name, QStringList extensions, QString uuid);
     void getFileTypes();
-    void updateFileType(QString uuid, QString shortName, QString name, QStringList extensions);
+    void updateFileType(QString uuid, QString shortName, QString name, QStringList extensions, bool previewable = false);
     void removeFileType(QString uuid);
     //Applications
     void createApplication(QString shortName, QString name, QString executableFilePath, QString uuid);
