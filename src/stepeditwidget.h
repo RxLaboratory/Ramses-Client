@@ -24,7 +24,7 @@ private slots:
     void stepDestroyed(QObject *o);
     void newUser(RamUser *user);
     void assignUser();
-    void removeUser();
+    void unassignUser();
     void userAssigned(RamUser *user);
     void userRemoved(QString uuid);
     void userChanged();

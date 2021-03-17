@@ -22,7 +22,7 @@ StepEditWidget::StepEditWidget(QWidget *parent) :
     connect(shortNameEdit, &QLineEdit::textChanged, this, &StepEditWidget::checkInput);
     connect(DBInterface::instance(),&DBInterface::newLog, this, &StepEditWidget::dbiLog);
     connect(Ramses::instance(), &Ramses::newUser, this, &StepEditWidget::newUser);
-    connect(removeUserButton, &QToolButton::clicked, this, &StepEditWidget::removeUser);
+    connect(removeUserButton, &QToolButton::clicked, this, &StepEditWidget::unassignUser);
 
     this->setEnabled(false);
 }
@@ -141,7 +141,7 @@ void StepEditWidget::assignUser()
     _step->assignUser(user);
 }
 
-void StepEditWidget::removeUser()
+void StepEditWidget::unassignUser()
 {
     if (!_step) return;
     _step->removeUser( usersList->currentItem()->data(Qt::UserRole).toString() );

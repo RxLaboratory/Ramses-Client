@@ -447,6 +447,26 @@ void DBInterface::removeApplication(QString uuid)
     request(q);
 }
 
+void DBInterface::assignFileType(QString applicationUuid, QString fileTypeUuid, QString type)
+{
+    QStringList q("assignFileType");
+    q << "applicationUuid=" + applicationUuid;
+    q << "fileTypeUuid=" + fileTypeUuid;
+    q << "type=" + type;
+
+    request(q);
+}
+
+void DBInterface::unassignFileType(QString applicationUuid, QString fileTypeUuid, QString type)
+{
+    QStringList q("unassignFileType");
+    q << "applicationUuid=" + applicationUuid;
+    q << "fileTypeUuid=" + fileTypeUuid;
+    q << "type=" + type;
+
+    request(q);
+}
+
 DBInterface::DBInterface(QObject *parent) : DuQFLoggerObject("Database Interface", parent)
 {
     // LOCAL

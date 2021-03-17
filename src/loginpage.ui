@@ -190,6 +190,19 @@
              </widget>
             </item>
             <item>
+             <widget class="QLabel" name="capsLockLabel">
+              <property name="text">
+               <string>Be careful, CAPS LOCK is on!</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+              <property name="wordWrap">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
              <widget class="QPushButton" name="loginButton">
               <property name="text">
                <string>Log in</string>

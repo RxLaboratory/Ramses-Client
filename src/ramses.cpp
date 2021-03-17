@@ -490,6 +490,19 @@ void Ramses::gotApplications(QJsonArray applications)
                 QSignalBlocker b(existingApplication);
                 existingApplication->setName( newApplication.value("name").toString());
                 existingApplication->setShortName( newApplication.value("shortName").toString());
+                existingApplication->clearExportFileTypes();
+                existingApplication->clearImportFileTypes();
+                existingApplication->clearNativeFileTypes();
+                foreach( QJsonValue ft, newApplication.value("fileTypes").toArray())
+                {
+                    QJsonObject fileT = ft.toObject();
+                    if (fileT.value("type").toString() == "import" )
+                        existingApplication->assignImportFileType( fileType( fileT.value("uuid").toString() ) );
+                    else if (fileT.value("type").toString() == "export" )
+                        existingApplication->assignExportFileType( fileType( fileT.value("uuid").toString() ) );
+                    else
+                        existingApplication->assignNativeFileType( fileType( fileT.value("uuid").toString() ) );
+                }
                 //send the signal
                 b.unblock();
                 existingApplication->setExecutableFilePath(newApplication.value("executableFilePath").toString());
@@ -516,6 +529,18 @@ void Ramses::gotApplications(QJsonArray applications)
                     a.value("executableFilePath").toString(),
                     a.value("uuid").toString()
                     );
+
+        foreach( QJsonValue ft, a.value("fileTypes").toArray())
+        {
+            QJsonObject fileT = ft.toObject();
+            qDebug() << fileT.value("type");
+            if (fileT.value("type").toString() == "import" )
+                app->assignImportFileType( fileType( fileT.value("uuid").toString() ) );
+            else if (fileT.value("type").toString() == "export" )
+                app->assignExportFileType( fileType( fileT.value("uuid").toString() ) );
+            else
+                app->assignNativeFileType( fileType( fileT.value("uuid").toString() ) );
+        }
 
         _applications << app;
 
@@ -1173,6 +1198,15 @@ void Ramses::removeState(QString uuid)
 QList<RamFileType *> Ramses::fileTypes() const
 {
     return _fileTypes;
+}
+
+RamFileType *Ramses::fileType(const QString uuid) const
+{
+    foreach(RamFileType *ft, _fileTypes)
+    {
+        if (ft->uuid() == uuid) return ft;
+    }
+    return nullptr;
 }
 
 RamFileType *Ramses::createFileType()

@@ -105,10 +105,11 @@ public:
     void removeState(QString uuid);
     // File Types
     QList<RamFileType*> fileTypes() const;
+    RamFileType *fileType(const QString uuid) const;
     RamFileType *createFileType();
     void removeFileType(QString uuid); 
     // Applications
-    QList<RamApplication*> applications() const;
+    QList<RamApplication *> applications() const;
     RamApplication *createApplication();
     void removeApplication(QString uuid);
 

@@ -84,6 +84,8 @@ public:
     void getApplications();
     void updateApplication(QString uuid, QString shortName, QString name, QString executableFilePath);
     void removeApplication(QString uuid);
+    void assignFileType(QString applicationUuid, QString fileTypeUuid, QString type = "");
+    void unassignFileType(QString applicationUuid, QString fileTypeUuid, QString type = "");
 
 public slots:
     void suspend(bool suspended = true);

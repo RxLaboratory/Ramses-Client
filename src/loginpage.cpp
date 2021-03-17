@@ -5,6 +5,8 @@ LoginPage::LoginPage(QWidget *parent) :
 {
     setupUi(this);
 
+    capsLockLabel->hide(); // TODO implement CAPS Lock detection
+
     splitter->insertWidget(0, new DuQFLoggingTextEdit(this));
 
     _ramses = Ramses::instance();
