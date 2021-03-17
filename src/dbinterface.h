@@ -57,6 +57,8 @@ public:
     void removeStep(QString uuid);
     void assignUser(QString stepUuid, QString userUuid);
     void unassignUser(QString stepUuid, QString userUuid);
+    void assignApplication(QString stepUuid, QString applicationUuid);
+    void unassignnApplication(QString stepUuid, QString applicationUuid);
     //asset groups
     void createAssetGroup(QString shortName, QString name, QString projectUuid, QString uuid);
     void updateAssetGroup(QString uuid, QString shortName, QString name);

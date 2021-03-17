@@ -247,6 +247,25 @@ void DBInterface::unassignUser(QString stepUuid, QString userUuid)
     request(q);
 }
 
+void DBInterface::assignApplication(QString stepUuid, QString applicationUuid)
+{
+    QStringList q("assignApplication");
+    q << "stepUuid=" + stepUuid;
+    q << "applicationUuid=" + applicationUuid;
+
+    request(q);
+}
+
+void DBInterface::unassignnApplication(QString stepUuid, QString applicationUuid)
+{
+    QStringList q("unassignnApplication");
+    q << "stepUuid=" + stepUuid;
+    q << "applicationUuid=" + applicationUuid;
+
+    request(q);
+}
+}
+
 void DBInterface::createAssetGroup(QString shortName, QString name, QString projectUuid, QString uuid)
 {
     QStringList q("createAssetGroup");
