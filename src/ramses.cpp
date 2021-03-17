@@ -573,13 +573,17 @@ void Ramses::gotSteps(QJsonArray steps, RamProject *project)
                 existingStep->setShortName( newStep.value("shortName").toString());
                 existingStep->setOrder( newStep.value("order").toInt());
                 existingStep->clearUsers();
+
                 foreach( QJsonValue u, newStep.value("users").toArray())
-                {
                     existingStep->assignUser( user(u.toString()) );
-                }
+
+                foreach(QJsonValue a, newStep.value("applications").toArray())
+                    existingStep->assignApplication( application(a.toString()));
+
                 //send the signal
                 b.unblock();
                 existingStep->setType(newStep.value("type").toString());
+
                 //remove from new steps
                 steps.removeAt(j);
                 break;
@@ -605,10 +609,12 @@ void Ramses::gotSteps(QJsonArray steps, RamProject *project)
         step->setType( s.value("type").toString());
         step->setOrder( s.value("order").toInt() );
         step->setProjectUuid( s.value("projectUuid").toString());
+
         foreach( QJsonValue u, s.value("users").toArray())
-        {
             step->assignUser( user(u.toString()) );
-        }
+
+        foreach(QJsonValue a, s.value("applications").toArray())
+            step->assignApplication( application(a.toString()));
 
         project->addStep(step);
 
@@ -1236,6 +1242,15 @@ void Ramses::removeFileType(RamObject *ft)
 QList<RamApplication *> Ramses::applications() const
 {
     return _applications;
+}
+
+RamApplication *Ramses::application(QString uuid)
+{
+    foreach(RamApplication *app, _applications)
+    {
+        if (app->uuid() == uuid) return app;
+    }
+    return nullptr;
 }
 
 RamApplication *Ramses::createApplication()

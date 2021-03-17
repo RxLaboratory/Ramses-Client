@@ -75,15 +75,15 @@ void RamStep::assignUser(RamUser *user)
     _users << user;
     _dbi->assignUser(_uuid, user->uuid());
     connect(user, &RamUser::destroyed, this, &RamStep::userDestroyed);
-    emit newUser(user);
+    emit userAssigned(user);
 }
 
-void RamStep::removeUser(RamUser *user)
+void RamStep::unassignUser(RamUser *user)
 {
-    removeUser( user->uuid() );
+    unassignUser( user->uuid() );
 }
 
-void RamStep::removeUser(QString uuid)
+void RamStep::unassignUser(QString uuid)
 {
     _dbi->unassignUser(_uuid, uuid);
     for (int i = _users.count() -1; i >= 0; i--)
@@ -92,7 +92,44 @@ void RamStep::removeUser(QString uuid)
         if (u->uuid() == uuid)
         {
             _users.removeAt(i);
-            emit userRemoved(uuid);
+            emit userUnassigned(uuid);
+        }
+    }
+}
+
+QList<RamApplication *> RamStep::applications() const
+{
+    return _applications;
+}
+
+void RamStep::clearApplications()
+{
+    _applications.clear();
+}
+
+void RamStep::assignApplication(RamApplication *app)
+{
+    _applications << app;
+    _dbi->assignApplication(_uuid, app->uuid());
+    connect(app, &RamApplication::removed, this, &RamStep::applicationRemoved);
+    emit applicationAssigned(app);
+}
+
+void RamStep::unassignApplication(RamApplication *app)
+{
+    unassignApplication( app->uuid() );
+}
+
+void RamStep::unassignApplication(QString uuid)
+{
+    _dbi->unassignApplication(_uuid, uuid);
+    for (int i = _applications.count() -1; i >= 0; i--)
+    {
+        RamApplication *a = _applications[i];
+        if (a->uuid() == uuid)
+        {
+            _applications.removeAt(i);
+            emit applicationUnassigned(uuid);
         }
     }
 }
@@ -110,7 +147,12 @@ void RamStep::update()
 void RamStep::userDestroyed(QObject *o)
 {
     RamUser *u = (RamUser*)o;
-    removeUser(u);
+    unassignUser(u);
+}
+
+void RamStep::applicationRemoved(RamObject *o)
+{
+    unassignApplication(o->uuid());
 }
 
 int RamStep::order() const

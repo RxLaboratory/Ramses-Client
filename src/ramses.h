@@ -110,9 +110,9 @@ public:
     void removeFileType(QString uuid); 
     // Applications
     QList<RamApplication *> applications() const;
+    RamApplication *application(QString uuid);
     RamApplication *createApplication();
     void removeApplication(QString uuid);
-
 
 public slots:
     void refresh();
@@ -167,6 +167,7 @@ private slots:
     void gotSequences(QJsonArray sequences, RamProject *project);
     //TODO This should be modified when implementing offline version
     void dbiConnectionStatusChanged(NetworkUtils::NetworkStatus s);
+
 private:
     /**
      * @brief Ramses is the class managing all data. It is a singleton

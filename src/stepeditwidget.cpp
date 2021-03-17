@@ -65,8 +65,8 @@ void StepEditWidget::setStep(RamStep *step)
     }
     foreach( RamUser *user, step->users()) userAssigned(user);
 
-    _stepConnections << connect(step, &RamStep::newUser, this, &StepEditWidget::userAssigned);
-    _stepConnections << connect(step, &RamStep::userRemoved, this, &StepEditWidget::userRemoved);
+    _stepConnections << connect(step, &RamStep::userAssigned, this, &StepEditWidget::userAssigned);
+    _stepConnections << connect(step, &RamStep::userUnassigned, this, &StepEditWidget::userRemoved);
     _stepConnections << connect(step, &RamStep::destroyed, this, &StepEditWidget::stepDestroyed);
 
     this->setEnabled(Ramses::instance()->isProjectAdmin());
@@ -144,7 +144,7 @@ void StepEditWidget::assignUser()
 void StepEditWidget::unassignUser()
 {
     if (!_step) return;
-    _step->removeUser( usersList->currentItem()->data(Qt::UserRole).toString() );
+    _step->unassignUser( usersList->currentItem()->data(Qt::UserRole).toString() );
 }
 
 void StepEditWidget::userAssigned(RamUser *user)

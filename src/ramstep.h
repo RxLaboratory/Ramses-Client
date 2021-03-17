@@ -3,6 +3,7 @@
 
 #include "ramobject.h"
 #include "ramuser.h"
+#include "ramapplication.h"
 
 class RamStep : public RamObject
 {
@@ -31,17 +32,26 @@ public:
     QList<RamUser *> users() const;
     void clearUsers();
     void assignUser(RamUser *user);
-    void removeUser(RamUser *user);
-    void removeUser(QString uuid);
+    void unassignUser(RamUser *user);
+    void unassignUser(QString uuid);
+
+    QList<RamApplication *> applications() const;
+    void clearApplications();
+    void assignApplication(RamApplication *app);
+    void unassignApplication(RamApplication *app);
+    void unassignApplication(QString uuid);
 
     void update();
 
 signals:
-    void newUser(RamUser *);
-    void userRemoved(QString);
+    void userAssigned(RamUser *);
+    void userUnassigned(QString);
+    void applicationAssigned(RamApplication *);
+    void applicationUnassigned(QString);
 
 private slots:
     void userDestroyed(QObject *o);
+    void applicationRemoved(RamObject *o);
 
 private:
     bool _template;
@@ -49,6 +59,7 @@ private:
     QString _projectUuid;
     int _order;
     QList<RamUser*> _users;
+    QList<RamApplication*> _applications;
 };
 
 #endif // RAMSTEP_H
