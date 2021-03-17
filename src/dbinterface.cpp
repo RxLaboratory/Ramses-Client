@@ -258,7 +258,7 @@ void DBInterface::assignApplication(QString stepUuid, QString applicationUuid)
 
 void DBInterface::unassignApplication(QString stepUuid, QString applicationUuid)
 {
-    QStringList q("unassignnApplication");
+    QStringList q("unassignApplication");
     q << "stepUuid=" + stepUuid;
     q << "applicationUuid=" + applicationUuid;
 
