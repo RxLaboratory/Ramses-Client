@@ -5,6 +5,7 @@
 #include <QListWidget>
 #include <QHBoxLayout>
 #include <QStackedWidget>
+#include <QSplitter>
 
 #include "duqf-widgets/titlebar.h"
 

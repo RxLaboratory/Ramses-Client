@@ -436,12 +436,10 @@ DuQFSlider::chunk:hover, DuQFDoubleSlider::chunk:hover {
 
 /* SPLITTERS */
 
-QSplitter {
-    background-color: @color-very-dark-grey
-}
-
 QSplitter::handle {
     image: none;
+    min-width: @padding-large;
+    min-height: @padding-large;
 }
 
 /* TABS */

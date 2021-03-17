@@ -22,36 +22,30 @@ void SettingsWidget::setupUi(QString title)
 
     QWidget *mainWidget = new QWidget(this);
     verticalLayout->addWidget(mainWidget);
+
     QHBoxLayout *horizontalLayout = new QHBoxLayout(mainWidget);
     horizontalLayout->setSpacing(0);
-    horizontalLayout->setObjectName(QStringLiteral("horizontalLayout"));
     horizontalLayout->setContentsMargins(0, 0, 0, 0);
+
+    QSplitter *splitter = new QSplitter(this);
+    splitter->setHandleWidth(9);
+
     mainList = new QListWidget(this);
-    mainList->setObjectName(QStringLiteral("mainList"));
-    QSizePolicy sizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
-    sizePolicy.setHorizontalStretch(0);
-    sizePolicy.setVerticalStretch(0);
-    sizePolicy.setHeightForWidth(mainList->sizePolicy().hasHeightForWidth());
-    mainList->setSizePolicy(sizePolicy);
     mainList->setFrameShape(QFrame::NoFrame);
     mainList->setLineWidth(0);
-    mainList->setResizeMode(QListView::Fixed);
+    mainList->setResizeMode(QListView::Adjust);
     mainList->setLayoutMode(QListView::SinglePass);
 
-    horizontalLayout->addWidget(mainList);
+    splitter->addWidget(mainList);
 
     mainStackWidget = new QStackedWidget(this);
     mainStackWidget->setObjectName(QStringLiteral("mainStackWidget"));
     QSizePolicy sizePolicy1(QSizePolicy::Expanding, QSizePolicy::Preferred);
-    sizePolicy1.setHorizontalStretch(0);
-    sizePolicy1.setVerticalStretch(0);
-    sizePolicy1.setHeightForWidth(mainStackWidget->sizePolicy().hasHeightForWidth());
     mainStackWidget->setSizePolicy(sizePolicy1);
 
-    horizontalLayout->addWidget(mainStackWidget);
+    splitter->addWidget(mainStackWidget);
 
-    horizontalLayout->setStretch(0, 1);
-    horizontalLayout->setStretch(1, 10);
+    horizontalLayout->addWidget(splitter);
 
     mainStackWidget->setCurrentIndex(-1);
 }

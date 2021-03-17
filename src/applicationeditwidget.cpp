@@ -16,6 +16,7 @@ ApplicationEditWidget::ApplicationEditWidget(QWidget *parent) :
     exportMenu = new QMenu(this);
     assignExportButton->setMenu(exportMenu);
 
+
     connect(updateButton, SIGNAL(clicked()), this, SLOT(update()));
     connect(revertButton, SIGNAL(clicked()), this, SLOT(revert()));
     connect(shortNameEdit, &QLineEdit::textChanged, this, &ApplicationEditWidget::checkInput);
