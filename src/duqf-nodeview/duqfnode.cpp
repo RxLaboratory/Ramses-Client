@@ -171,6 +171,16 @@ void DuQFNode::setTitle(const QString &title)
     m_defaultInputConnector->setPos(rect.left(), rect.center().y());
 }
 
+QString DuQFNode::titleToolTip() const
+{
+    return m_titleItem->toolTip();
+}
+
+void DuQFNode::setTitleToolTip(const QString &toolTip)
+{
+    m_titleItem->setToolTip(toolTip);
+}
+
 void DuQFNode::remove()
 {
     if (m_removing) return;

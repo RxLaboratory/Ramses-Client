@@ -11,8 +11,9 @@
 #include "duqf-widgets/titlebar.h"
 #include "duqf-widgets/duqfspinbox.h"
 #include "duqf-app/app-version.h"
+#include "duqf-utils/guiutils.h"
 
-#include "ramobjectnode.h"
+#include "objectnode.h"
 #include "ramses.h"
 
 class PipelineWidget : public QWidget, private Ui::PipelineWidget
@@ -30,7 +31,9 @@ private slots:
     void setSnapEnabled(bool enabled);
     void setGridSize(int size);
     void userChanged(RamUser *u);
-
+protected:
+    void showEvent(QShowEvent *event) Q_DECL_OVERRIDE;
+    void hideEvent(QHideEvent *event) Q_DECL_OVERRIDE;
 private:
     QSettings *userSettings;
     TitleBar *titleBar;

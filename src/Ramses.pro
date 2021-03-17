@@ -26,6 +26,7 @@ SOURCES += \
     assetgroupeditwidget.cpp \
     assetgroupsmanagerwidget.cpp \
     assetsmanagerwidget.cpp \
+    bigstepeditwidget.cpp \
     daemon.cpp \
     daemonsettingswidget.cpp \
     dbinterface.cpp \
@@ -41,10 +42,12 @@ SOURCES += \
     duqf-nodeview/duqfnodeview.cpp \
     duqf-nodeview/duqfslot.cpp \
     duqf-utils/duqflogger.cpp \
+    duqf-utils/guiutils.cpp \
     duqf-utils/language-utils.cpp \
     duqf-utils/utils.cpp \
     duqf-widgets/aboutdialog.cpp \
     duqf-widgets/appearancesettingswidget.cpp \
+    duqf-widgets/duqfdocktitle.cpp \
     duqf-widgets/duqfdoubleslider.cpp \
     duqf-widgets/duqfdoublespinbox.cpp \
     duqf-widgets/duqffolderdisplaywidget.cpp \
@@ -64,8 +67,10 @@ SOURCES += \
     loginpage.cpp \
     main.cpp \
     mainwindow.cpp \
+    objectdockwidget.cpp \
+    objecteditwidget.cpp \
+    pipeline-editor/objectnode.cpp \
     pipeline-editor/pipelinewidget.cpp \
-    pipeline-editor/ramobjectnode.cpp \
     projecteditwidget.cpp \
     projectselectorwidget.cpp \
     projectsmanagerwidget.cpp \
@@ -87,8 +92,8 @@ SOURCES += \
     serversettingswidget.cpp \
     stateeditwidget.cpp \
     statesmanagerwidget.cpp \
-    stepsmanagerwidget.cpp \
     stepeditwidget.cpp \
+    stepsmanagerwidget.cpp \
     templateassetgroupeditwidget.cpp \
     templateassetgroupsmanagerwidget.cpp \
     templatestepeditwidget.cpp \
@@ -104,6 +109,7 @@ HEADERS += \
     assetgroupeditwidget.h \
     assetgroupsmanagerwidget.h \
     assetsmanagerwidget.h \
+    bigstepeditwidget.h \
     daemon.h \
     daemonsettingswidget.h \
     dbinterface.h \
@@ -120,10 +126,12 @@ HEADERS += \
     duqf-nodeview/duqfnodeview.h \
     duqf-nodeview/duqfslot.h \
     duqf-utils/duqflogger.h \
+    duqf-utils/guiutils.h \
     duqf-utils/language-utils.h \
     duqf-utils/utils.h \
     duqf-widgets/aboutdialog.h \
     duqf-widgets/appearancesettingswidget.h \
+    duqf-widgets/duqfdocktitle.h \
     duqf-widgets/duqfdoubleslider.h \
     duqf-widgets/duqfdoublespinbox.h \
     duqf-widgets/duqffolderdisplaywidget.h \
@@ -142,8 +150,10 @@ HEADERS += \
     localsettingswidget.h \
     loginpage.h \
     mainwindow.h \
+    objectdockwidget.h \
+    objecteditwidget.h \
+    pipeline-editor/objectnode.h \
     pipeline-editor/pipelinewidget.h \
-    pipeline-editor/ramobjectnode.h \
     projecteditwidget.h \
     projectselectorwidget.h \
     projectsmanagerwidget.h \
@@ -165,8 +175,8 @@ HEADERS += \
     serversettingswidget.h \
     stateeditwidget.h \
     statesmanagerwidget.h \
-    stepsmanagerwidget.h \
     stepeditwidget.h \
+    stepsmanagerwidget.h \
     templateassetgroupeditwidget.h \
     templateassetgroupsmanagerwidget.h \
     templatestepeditwidget.h \
@@ -189,6 +199,7 @@ FORMS += \
     localsettingswidget.ui \
     loginpage.ui \
     mainwindow.ui \
+    objecteditwidget.ui \
     pipeline-editor/pipelinewidget.ui \
     projecteditwidget.ui \
     ramassetwidget.ui \

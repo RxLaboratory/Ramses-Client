@@ -12,6 +12,7 @@
 #include <QtWidgets/QSpacerItem>
 #include <QtWidgets/QToolButton>
 #include <QtWidgets/QWidget>
+#include <QtDebug>
 
 #include "toolbarspacer.h"
 
@@ -20,7 +21,7 @@ class TitleBar : public QToolBar
     Q_OBJECT
 
 public:
-    explicit TitleBar(QString title, QWidget *parent = nullptr);
+    explicit TitleBar(QString title, bool mini = false, QWidget *parent = nullptr);
     void showReinitButton(bool show);
     void insertRight(QWidget *w);
     void insertRight(QAction *a);
@@ -32,8 +33,9 @@ signals:
     void closeRequested();
 
 private:
-    void setupUi();
+    void setupUi(bool mini);
 
+    ToolBarSpacer *spacer;
     QLabel *titleLabel;
     QToolButton *reinitButton;
     QToolButton *closeButton;

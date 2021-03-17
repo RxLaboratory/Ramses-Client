@@ -31,6 +31,8 @@ public:
 
     QString title() const;
     void setTitle(const QString &title);
+    QString titleToolTip() const;
+    void setTitleToolTip(const QString &toolTip);
 
     void setGrid(DuQFGrid *grid);
     DuQFGrid *grid() const;

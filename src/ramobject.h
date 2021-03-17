@@ -23,6 +23,9 @@ public:
 
     void remove();
 
+public slots:
+    virtual void update() = 0;
+
 signals:
     void changed(RamObject *);
     void removed(RamObject *);

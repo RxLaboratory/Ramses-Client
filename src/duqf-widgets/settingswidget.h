@@ -6,8 +6,11 @@
 #include <QHBoxLayout>
 #include <QStackedWidget>
 #include <QSplitter>
+#include <QShowEvent>
+#include <QHideEvent>
 
 #include "duqf-widgets/titlebar.h"
+#include "duqf-utils/guiutils.h"
 
 class SettingsWidget : public QWidget
 {
@@ -22,6 +25,9 @@ public slots:
 signals:
     void reinitRequested();
     void closeRequested();
+protected:
+    void showEvent(QShowEvent *event) Q_DECL_OVERRIDE;
+    void hideEvent(QHideEvent *event) Q_DECL_OVERRIDE;
 private slots:
     void mainList_currentRowChanged(int currentRow);
 private:

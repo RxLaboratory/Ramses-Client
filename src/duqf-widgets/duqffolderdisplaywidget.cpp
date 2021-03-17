@@ -4,6 +4,8 @@ DuQFFolderDisplayWidget::DuQFFolderDisplayWidget(QWidget *parent) : QWidget(pare
 {
     setupUi();
 
+    _path = "";
+
     connect(exploreButton, &QToolButton::clicked, this, &DuQFFolderDisplayWidget::exploreButton_clicked);
 
     exploreButton->setEnabled(false);
@@ -12,6 +14,8 @@ DuQFFolderDisplayWidget::DuQFFolderDisplayWidget(QWidget *parent) : QWidget(pare
 void DuQFFolderDisplayWidget::setPath(QString p)
 {
     p = QDir::toNativeSeparators(p);
+    _path = p;
+    if (p.count() > 30) p = p.replace(0, p.count()-30, "(...)");
     folderLabel->setText(p);
     folderLabel->setToolTip(p);
     exploreButton->setToolTip("Reveal folder at " + p);
@@ -20,18 +24,17 @@ void DuQFFolderDisplayWidget::setPath(QString p)
 
 void DuQFFolderDisplayWidget::exploreButton_clicked()
 {
-    QString path = folderLabel->text();
-    if (path == "") return;
-    if(!QFileInfo::exists(path))
+    if (_path == "") return;
+    if(!QFileInfo::exists(_path))
     {
         QMessageBox::StandardButton rep = QMessageBox::question(this,
                                                                 "The folder does not exist",
-                                                                "This folder:\n\n" + path + "\n\ndoes not exist yet.\nDo you want to create it now?",
+                                                                "This folder:\n\n" + _path + "\n\ndoes not exist yet.\nDo you want to create it now?",
                                                                 QMessageBox::Yes | QMessageBox::No,
                                                                 QMessageBox::Yes);
-        if (rep == QMessageBox::Yes) QDir(path).mkpath(".");
+        if (rep == QMessageBox::Yes) QDir(_path).mkpath(".");
     }
-    FileUtils::openInExplorer( path );
+    FileUtils::openInExplorer( _path );
 }
 
 

@@ -2,7 +2,7 @@
 
 StepsManagerWidget::StepsManagerWidget(QWidget *parent): ListManagerWidget(parent)
 {
-    stepWidget = new StepEditWidget(this);
+    stepWidget = new BigStepEditWidget(this);
     this->setWidget(stepWidget);
     stepWidget->setEnabled(false);
 

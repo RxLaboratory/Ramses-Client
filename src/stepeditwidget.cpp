@@ -1,70 +1,41 @@
 #include "stepeditwidget.h"
 
-StepEditWidget::StepEditWidget(QWidget *parent) :
-    QWidget(parent)
+StepEditWidget::StepEditWidget(QWidget *parent) : ObjectEditWidget(parent)
 {
-    setupUi(this);
-
-    folderWidget = new DuQFFolderDisplayWidget(this);
-    folderLayout->addWidget(folderWidget);
-
-    typeBox->setItemData(0, "pre");
-    typeBox->setItemData(1, "asset");
-    typeBox->setItemData(2, "shot");
-    typeBox->setItemData(3, "post");
-
-    // Add menu
-    assignUserMenu = new QMenu(this);
-    assignUserButton->setMenu(assignUserMenu);
-
-    assignAppMenu = new QMenu(this);
-    assignApplicationButton->setMenu(assignAppMenu);
-
-    connect(updateButton, SIGNAL(clicked()), this, SLOT(update()));
-    connect(revertButton, SIGNAL(clicked()), this, SLOT(revert()));
-    connect(shortNameEdit, &QLineEdit::textChanged, this, &StepEditWidget::checkInput);
-    connect(DBInterface::instance(),&DBInterface::newLog, this, &StepEditWidget::dbiLog);
-    connect(Ramses::instance(), &Ramses::newUser, this, &StepEditWidget::newUser);
-    connect(Ramses::instance(), &Ramses::newApplication, this, &StepEditWidget::newApplication);
-    connect(removeUserButton, &QToolButton::clicked, this, &StepEditWidget::unassignUser);
-    connect(removeApplicationButton, &QToolButton::clicked, this, &StepEditWidget::unassignApplication);
-
-    this->setEnabled(false);
+    setupUi();
+    populateMenus();
+    connectEvents();
 }
 
-RamStep *StepEditWidget::step() const
+StepEditWidget::StepEditWidget(RamStep *s, QWidget *parent) : ObjectEditWidget(parent)
 {
-    return _step;
+    setupUi();
+    populateMenus();
+    connectEvents();
+
+    setStep(s);
 }
 
 void StepEditWidget::setStep(RamStep *step)
 {
-    while (_stepConnections.count() > 0) disconnect( _stepConnections.takeLast() );
+    this->setEnabled(false);
 
-    _step = step;
+    setObject(step);
 
-    nameEdit->setText("");
-    shortNameEdit->setText("");
     typeBox->setCurrentIndex(1);
     folderWidget->setPath("");
     usersList->clear();
     applicationList->clear();
-    this->setEnabled(false);
 
     if (!step) return;
 
-    nameEdit->setText(step->name());
-    shortNameEdit->setText(step->shortName());
     folderWidget->setPath(Ramses::instance()->path(step));
-
     if (step->type() == RamStep::PreProduction) typeBox->setCurrentIndex(0);
     else if (step->type() == RamStep::AssetProduction) typeBox->setCurrentIndex(1);
     else if (step->type() == RamStep::ShotProduction) typeBox->setCurrentIndex(2);
     else if (step->type() == RamStep::PostProduction) typeBox->setCurrentIndex(3);
 
     // Load Users
-
-    // Reset assign list too
     foreach (QAction *a , assignUserMenu->actions())
         a->setVisible(true);
     foreach( RamUser *user, step->users()) userAssigned(user);
@@ -74,62 +45,128 @@ void StepEditWidget::setStep(RamStep *step)
         a->setVisible(true);
     foreach( RamApplication *app, step->applications()) applicationAssigned(app);
 
-
-    _stepConnections << connect(step, &RamStep::userAssigned, this, &StepEditWidget::userAssigned);
-    _stepConnections << connect(step, &RamStep::userUnassigned, this, &StepEditWidget::userUnassigned);
-    _stepConnections << connect(step, &RamStep::applicationAssigned, this, &StepEditWidget::applicationAssigned);
-    _stepConnections << connect(step, &RamStep::applicationUnassigned, this, &StepEditWidget::applicationUnassigned);
-    _stepConnections << connect(step, &RamStep::destroyed, this, &StepEditWidget::stepDestroyed);
+    _objectConnections << connect(step, &RamStep::userAssigned, this, &StepEditWidget::userAssigned);
+    _objectConnections << connect(step, &RamStep::userUnassigned, this, &StepEditWidget::userUnassigned);
+    _objectConnections << connect(step, &RamStep::applicationAssigned, this, &StepEditWidget::applicationAssigned);
+    _objectConnections << connect(step, &RamStep::applicationUnassigned, this, &StepEditWidget::applicationUnassigned);
 
     this->setEnabled(Ramses::instance()->isProjectAdmin());
 }
 
 void StepEditWidget::update()
 {
-    if (!_step) return;
+    RamStep *step = qobject_cast<RamStep*>(object());
+    if(!step) return;
 
-    this->setEnabled(false);
+    step->setType(typeBox->currentData().toString());
 
-    //check if everything is alright
-    if (!checkInput())
-    {
-        this->setEnabled(true);
-        return;
-    }
-
-    _step->setName(nameEdit->text());
-    _step->setShortName(shortNameEdit->text());
-    _step->setType(typeBox->currentData().toString());
-
-    _step->update();
-
-    this->setEnabled(true);
+    ObjectEditWidget::update();
 }
 
-void StepEditWidget::revert()
+void StepEditWidget::setupUi()
 {
-    setStep(_step);
+    QLabel *typeLabel = new QLabel("Type", this);
+    mainFormLayout->addWidget(typeLabel, 2,0);
+
+    typeBox = new QComboBox(this);
+    typeBox->addItem(QIcon(":/icons/project"), "Pre-Production", "pre");
+    typeBox->addItem(QIcon(":/icons/asset"), "Asset Production", "asset");
+    typeBox->addItem(QIcon(":/icons/shot"), "Shot Production", "shot");
+    typeBox->addItem(QIcon(":/icons/film"), "Post-Production", "post");
+    mainFormLayout->addWidget(typeBox, 2, 1);
+
+    folderWidget = new DuQFFolderDisplayWidget(this);
+    mainFormLayout->addWidget(folderWidget, 3, 1);
+
+    QSplitter *splitter = new QSplitter(this);
+    splitter->setOrientation(Qt::Vertical);
+
+    QWidget *usersWidget = new QWidget(splitter);
+    QHBoxLayout *usersLayout = new QHBoxLayout(usersWidget);
+    usersLayout->setSpacing(3);
+    usersLayout->setContentsMargins(0, 0, 0, 0);
+    QLabel *usersLabel = new QLabel("Users", usersWidget);
+    usersLabel->setAlignment(Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop);
+    usersLayout->addWidget(usersLabel);
+
+    QVBoxLayout *usersButtonsLayout = new QVBoxLayout();
+    usersButtonsLayout->setSpacing(3);
+    usersButtonsLayout->setContentsMargins(3, 0, 0, 0);
+
+    assignUserButton = new QToolButton(usersWidget);
+    assignUserButton->setIcon(QIcon(":/icons/add"));
+    assignUserButton->setPopupMode(QToolButton::InstantPopup);
+    usersButtonsLayout->addWidget(assignUserButton);
+
+    removeUserButton = new QToolButton(usersWidget);
+    removeUserButton->setIcon(QIcon(":/icons/remove"));
+    removeUserButton->setPopupMode(QToolButton::InstantPopup);
+    usersButtonsLayout->addWidget(removeUserButton);
+
+    usersButtonsLayout->addStretch();
+
+    usersLayout->addLayout(usersButtonsLayout);
+
+    usersList = new QListWidget(usersWidget);
+    usersList->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    usersLayout->addWidget(usersList);
+
+    splitter->addWidget(usersWidget);
+
+    QWidget *applicationsWidget = new QWidget(splitter);
+    QHBoxLayout *applicationsLayout = new QHBoxLayout(applicationsWidget);
+    applicationsLayout->setSpacing(3);
+    applicationsLayout->setContentsMargins(0, 0, 0, 0);
+    QLabel *applicationsLabel = new QLabel("Apps", applicationsWidget);
+    applicationsLabel->setAlignment(Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop);
+    applicationsLayout->addWidget(applicationsLabel);
+
+    QVBoxLayout *applicationsButtonsLayout = new QVBoxLayout();
+    applicationsButtonsLayout->setSpacing(3);
+    applicationsButtonsLayout->setContentsMargins(3, 0, 0, 0);
+
+    assignApplicationButton = new QToolButton(applicationsWidget);
+    assignApplicationButton->setIcon(QIcon(":/icons/add"));
+    assignApplicationButton->setPopupMode(QToolButton::InstantPopup);
+    applicationsButtonsLayout->addWidget(assignApplicationButton);
+
+    removeApplicationButton = new QToolButton(applicationsWidget);
+    removeApplicationButton->setIcon(QIcon(":/icons/remove"));
+    removeApplicationButton->setPopupMode(QToolButton::InstantPopup);
+    applicationsButtonsLayout->addWidget(removeApplicationButton);
+
+    applicationsButtonsLayout->addStretch();
+
+    applicationsLayout->addLayout(applicationsButtonsLayout);
+
+    applicationList = new QListWidget(applicationsWidget);
+    applicationList->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    applicationsLayout->addWidget(applicationList);
+
+    splitter->addWidget(applicationsWidget);
+
+    mainLayout->insertWidget(2, splitter);
+
+    // Add menu
+    assignUserMenu = new QMenu(this);
+    assignUserButton->setMenu(assignUserMenu);
+
+    assignAppMenu = new QMenu(this);
+    assignApplicationButton->setMenu(assignAppMenu);
 }
 
-bool StepEditWidget::checkInput()
+void StepEditWidget::populateMenus()
 {
-    if (!_step) return false;
-
-    if (shortNameEdit->text() == "")
-    {
-        statusLabel->setText("Short name cannot be empty!");
-        updateButton->setEnabled(false);
-        return false;
-    }
-
-    statusLabel->setText("");
-    updateButton->setEnabled(true);
-    return true;
+    foreach(RamUser *u, Ramses::instance()->users()) newUser(u);
+    foreach(RamApplication *a, Ramses::instance()->applications()) newApplication(a);
 }
 
-void StepEditWidget::stepDestroyed(QObject */*o*/)
+void StepEditWidget::connectEvents()
 {
-    setStep(nullptr);
+    connect(Ramses::instance(), &Ramses::newUser, this, &StepEditWidget::newUser);
+    connect(Ramses::instance(), &Ramses::newApplication, this, &StepEditWidget::newApplication);
+    connect(removeUserButton, &QToolButton::clicked, this, &StepEditWidget::unassignUser);
+    connect(removeApplicationButton, &QToolButton::clicked, this, &StepEditWidget::unassignApplication);
 }
 
 void StepEditWidget::newUser(RamUser *user)
@@ -146,17 +183,21 @@ void StepEditWidget::newUser(RamUser *user)
 
 void StepEditWidget::assignUser()
 {
-    if(!_step) return;
+    RamStep *step = qobject_cast<RamStep*>(object());
+
+    if(!step) return;
     QAction *userAction = (QAction*)sender();
     RamUser *user = Ramses::instance()->user( userAction->data().toString());
     if (!user) return;
-    _step->assignUser(user);
+    step->assignUser(user);
 }
 
 void StepEditWidget::unassignUser()
 {
-    if (!_step) return;
-    _step->unassignUser( usersList->currentItem()->data(Qt::UserRole).toString() );
+    RamStep *step = qobject_cast<RamStep*>(object());
+
+    if (!step) return;
+    step->unassignUser( usersList->currentItem()->data(Qt::UserRole).toString() );
 }
 
 void StepEditWidget::userAssigned(RamUser *user)
@@ -228,17 +269,21 @@ void StepEditWidget::newApplication(RamApplication *app)
 
 void StepEditWidget::assignApplication()
 {
-    if(!_step) return;
+    RamStep *step = qobject_cast<RamStep*>(object());
+
+    if(!step) return;
     QAction *appAction = (QAction*)sender();
     RamApplication *app = Ramses::instance()->application( appAction->data().toString());
     if (!app) return;
-    _step->assignApplication(app);
+    step->assignApplication(app);
 }
 
 void StepEditWidget::unassignApplication()
 {
-    if (!_step) return;
-    _step->unassignApplication( applicationList->currentItem()->data(Qt::UserRole).toString() );
+    RamStep *step = qobject_cast<RamStep*>(object());
+
+    if (!step) return;
+    step->unassignApplication( applicationList->currentItem()->data(Qt::UserRole).toString() );
 }
 
 void StepEditWidget::applicationAssigned(RamApplication *app)
@@ -289,9 +334,4 @@ void StepEditWidget::applicationRemoved(RamObject *o)
     for (int i = applicationList->count() -1; i >= 0; i--)
         if (applicationList->item(i)->data(Qt::UserRole).toString() == o->uuid())
             delete applicationList->takeItem(i);
-}
-
-void StepEditWidget::dbiLog(DuQFLog m)
-{
-    if (m.type() != DuQFLog::Debug) statusLabel->setText(m.message());
 }

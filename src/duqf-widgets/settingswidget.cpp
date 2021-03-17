@@ -17,8 +17,15 @@ void SettingsWidget::setupUi(QString title)
     verticalLayout->setContentsMargins(0, 0, 0, 0);
     verticalLayout->setSpacing(0);
 
-    titleBar = new TitleBar(title,this);
-    verticalLayout->addWidget(titleBar);
+    // Get the mainwindow to add the titlebar
+    QMainWindow *mw = GuiUtils::appMainWindow();
+    //mw->addToolBarBreak(Qt::TopToolBarArea);
+
+    titleBar = new TitleBar(title, true, mw);
+    //mw->addToolBar(Qt::TopToolBarArea,titleBar);
+    mw->insertToolBar(mw->findChild<QToolBar*>("mainToolBar"), titleBar);
+    titleBar->setFloatable(false);
+    titleBar->hide();
 
     QWidget *mainWidget = new QWidget(this);
     verticalLayout->addWidget(mainWidget);
@@ -60,6 +67,18 @@ void SettingsWidget::addPage(QWidget *ui, QString title, QIcon icon)
 void SettingsWidget::setCurrentIndex(int index)
 {
     mainStackWidget->setCurrentIndex(index);
+}
+
+void SettingsWidget::showEvent(QShowEvent *event)
+{
+    if (!event->spontaneous()) titleBar->show();
+    QWidget::showEvent(event);
+}
+
+void SettingsWidget::hideEvent(QHideEvent *event)
+{
+    if (!event->spontaneous()) titleBar->hide();
+    QWidget::hideEvent(event);
 }
 
 void SettingsWidget::showReinitButton(bool show)

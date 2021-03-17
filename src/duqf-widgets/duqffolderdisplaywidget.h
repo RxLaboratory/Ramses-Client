@@ -27,6 +27,7 @@ private:
     void setupUi();
     QLabel *folderLabel;
     QToolButton *exploreButton;
+    QString _path;
 };
 
 #endif // DUQFFOLDERDISPLAYWIDGET_H

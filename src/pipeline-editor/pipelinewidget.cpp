@@ -5,8 +5,15 @@ PipelineWidget::PipelineWidget(QWidget *parent) :
 {
     setupUi(this);
 
-    titleBar = new TitleBar("Pipeline Editor",this);
+    // Get the mainwindow to add the titlebar
+    QMainWindow *mw = GuiUtils::appMainWindow();
+    mw->addToolBarBreak(Qt::TopToolBarArea);
+
+    titleBar = new TitleBar("Pipeline Editor",false, mw);
     titleBar->showReinitButton(false);
+    mw->addToolBar(Qt::TopToolBarArea,titleBar);
+    titleBar->setFloatable(false);
+    titleBar->hide();
 
     // View menu
     QMenu *viewMenu = new QMenu(this);
@@ -151,8 +158,6 @@ PipelineWidget::PipelineWidget(QWidget *parent) :
     snapButton = new QCheckBox("Snap to grid");
     titleBar->insertRight(snapButton);
 
-    mainLayout->addWidget(titleBar);
-
     _nodeView = new DuQFNodeView(this);
     _nodeScene = _nodeView->nodeScene();
     mainLayout->addWidget(_nodeView);
@@ -205,14 +210,14 @@ void PipelineWidget::changeProject(RamProject *project)
 
     // Layout
     _nodeScene->clearSelection();
-    _nodeView->frameSelected();
+    //_nodeView->frameSelected();
 
     this->setEnabled(true);
 }
 
 void PipelineWidget::newStep(RamStep *step)
 {
-    RamObjectNode *stepNode = new RamObjectNode(step);
+    ObjectNode *stepNode = new ObjectNode(step);
     _nodeScene->addNode( stepNode );
 
     // Reset position
@@ -226,7 +231,7 @@ void PipelineWidget::newStep(RamStep *step)
 
 void PipelineWidget::nodeMoved(QPointF pos)
 {
-    RamObjectNode *node = (RamObjectNode*)sender();
+    ObjectNode *node = (ObjectNode*)sender();
     RamObject *step = node->ramObject();
 
     userSettings->beginGroup("nodeLocations");
@@ -266,5 +271,22 @@ void PipelineWidget::userChanged(RamUser *u)
 
     setSnapEnabled(userSettings->value("snapToGrid", false).toBool());
     setGridSize(userSettings->value("gridSize", 20).toInt());
+}
+
+void PipelineWidget::showEvent(QShowEvent *event)
+{
+    if (!event->spontaneous()) titleBar->show();
+    QWidget::showEvent(event);
+}
+
+void PipelineWidget::hideEvent(QHideEvent *event)
+{
+    if (!event->spontaneous())
+    {
+        _nodeScene->clearSelection();
+        _nodeScene->clearFocus();
+        titleBar->hide();
+    }
+    QWidget::hideEvent(event);
 }
 

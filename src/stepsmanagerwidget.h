@@ -4,7 +4,7 @@
 #include <QMenu>
 
 #include "listmanagerwidget.h"
-#include "stepeditwidget.h"
+#include "bigstepeditwidget.h"
 
 class StepsManagerWidget : public ListManagerWidget
 {
@@ -32,7 +32,7 @@ private slots:
     void updateStepsOrder();
 
 private:
-    StepEditWidget *stepWidget;
+    BigStepEditWidget *stepWidget;
     QMenu *assignMenu;
     QToolButton *downButton;
     QToolButton *upButton;
