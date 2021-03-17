@@ -430,7 +430,6 @@ void Ramses::gotFileTypes(QJsonArray fileTypes)
                 existingFileType->setName( newFileType.value("name").toString());
                 existingFileType->setShortName( newFileType.value("shortName").toString() );
                 existingFileType->setPreviewable( newFileType.value("previewable").toInt() != 0 );
-                qDebug() << newFileType.value("previewable").toInt();
                 //send the signal
                 b.unblock();
                 existingFileType->setExtensions(newFileType.value("extensions").toString());
@@ -458,7 +457,6 @@ void Ramses::gotFileTypes(QJsonArray fileTypes)
                     ft.value("uuid").toString()
                     );
         fileType->setPreviewable( ft.value("previewable").toInt() != 0 );
-        qDebug() << ft.value("previewable").toInt();
 
         _fileTypes << fileType;
 
@@ -533,7 +531,6 @@ void Ramses::gotApplications(QJsonArray applications)
         foreach( QJsonValue ft, a.value("fileTypes").toArray())
         {
             QJsonObject fileT = ft.toObject();
-            qDebug() << fileT.value("type");
             if (fileT.value("type").toString() == "import" )
                 app->assignImportFileType( fileType( fileT.value("uuid").toString() ) );
             else if (fileT.value("type").toString() == "export" )

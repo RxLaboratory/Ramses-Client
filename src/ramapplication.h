@@ -16,7 +16,6 @@ public:
 
     void update();
 
-    void unassignFileType(RamObject *o);
     void unassignFileType(QString uuid);
 
     bool canExportFileType(RamFileType *ft) const;
@@ -41,6 +40,9 @@ public:
     void assignExportFileType(RamFileType * const ft);
     void unassignExportFileType(RamFileType *ft);
     void unassignExportFileType(QString uuid);
+
+public slots:
+    void unassignFileType(RamObject *o);
 
 signals:
     void fileTypeAssigned(RamFileType*);
