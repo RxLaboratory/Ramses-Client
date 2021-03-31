@@ -88,9 +88,10 @@ PipelineWidget::PipelineWidget(QWidget *parent) :
     // Step menu
     QMenu *stepMenu = new QMenu(this);
 
-    QAction *actionAddStep = new QAction("New step", this);
+    QAction *actionAddStep = new QAction("Create new step", this);
     actionAddStep->setShortcut(QKeySequence("Shift+A"));
     stepMenu->addAction(actionAddStep);
+    stepMenu->addSeparator();
 
     QAction *actionDeleteStep = new QAction("Remove selected steps", this);
     actionDeleteStep->setShortcut(QKeySequence("Shift+X"));
@@ -173,7 +174,7 @@ PipelineWidget::PipelineWidget(QWidget *parent) :
     connect(actionViewAll, SIGNAL(triggered()), _nodeView, SLOT(frameSelected()));
     connect(zoomBox, SIGNAL(valueChanged(int)), _nodeView, SLOT(setZoom(int)));
     connect(_nodeView, SIGNAL(zoomed(int)), zoomBox, SLOT(setValue(int)));
-    connect(actionAddStep, SIGNAL(triggered()), _nodeScene, SLOT(addNode()));
+    connect(actionAddStep, SIGNAL(triggered()), this, SLOT(createStep()));
     connect(actionAddStep, SIGNAL(triggered()), _nodeView, SLOT(reinitTransform()));
     connect(actionDeleteStep, SIGNAL(triggered()), _nodeScene, SLOT(removeSelectedNodes()));
     connect(actionDeleteConnections, SIGNAL(triggered()), _nodeScene, SLOT(removeSelectedConnections()));
@@ -271,6 +272,14 @@ void PipelineWidget::userChanged(RamUser *u)
 
     setSnapEnabled(userSettings->value("snapToGrid", false).toBool());
     setGridSize(userSettings->value("gridSize", 20).toInt());
+}
+
+void PipelineWidget::createStep()
+{
+    RamProject *project = Ramses::instance()->currentProject();
+    if (!project) return;
+
+    project->createStep();
 }
 
 void PipelineWidget::showEvent(QShowEvent *event)

@@ -31,6 +31,7 @@ private slots:
     void setSnapEnabled(bool enabled);
     void setGridSize(int size);
     void userChanged(RamUser *u);
+    void createStep();
 protected:
     void showEvent(QShowEvent *event) Q_DECL_OVERRIDE;
     void hideEvent(QHideEvent *event) Q_DECL_OVERRIDE;
