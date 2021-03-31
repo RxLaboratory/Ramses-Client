@@ -29,22 +29,19 @@ void RamProject::update()
     _dbi->updateProject(_uuid, _shortName, _name, path);
 }
 
-void RamProject::stepDestroyed(QObject *o)
+void RamProject::stepRemoved(RamObject *o)
 {
-    RamStep *s = (RamStep*)o;
-    removeStep(s);
+    removeStep(o);
 }
 
-void RamProject::assetGroupDestroyed(QObject *o)
+void RamProject::assetGroupRemoved(RamObject *o)
 {
-    RamAssetGroup *ag = (RamAssetGroup*)o;
-    removeAssetGroup(ag);
+    removeAssetGroup(o);
 }
 
-void RamProject::sequenceDestroyed(QObject *o)
+void RamProject::sequenceRemoved(RamObject *o)
 {
-    RamSequence *s = (RamSequence*)o;
-    removeSequence(s);
+    removeSequence(o);
 }
 
 QList<RamAssetGroup *> RamProject::assetGroups() const
@@ -64,7 +61,7 @@ RamAssetGroup *RamProject::assetGroup(QString uuid)
 void RamProject::addAssetGroup(RamAssetGroup *assetGroup)
 {
     _assetGroups << assetGroup;
-    connect(assetGroup, &RamAssetGroup::destroyed, this, &RamProject::assetGroupDestroyed);
+    connect(assetGroup, SIGNAL(removed(RamObject*)), this, SLOT(assetGroupRemoved(RamObject*)));
     emit newAssetGroup(assetGroup);
 }
 
@@ -94,7 +91,7 @@ void RamProject::removeAssetGroup(QString uuid)
     }
 }
 
-void RamProject::removeAssetGroup(RamAssetGroup *assetGroup)
+void RamProject::removeAssetGroup(RamObject *assetGroup)
 {
     removeAssetGroup(assetGroup->uuid());
 }
@@ -144,7 +141,7 @@ RamSequence *RamProject::sequence(QString uuid)
 void RamProject::addSequence(RamSequence *seq)
 {
     _sequences << seq;
-    connect(seq, &RamSequence::destroyed, this, &RamProject::sequenceDestroyed);
+    connect(seq, SIGNAL(removed(RamObject*)), this, SLOT(sequenceRemoved(RamObject*)));
     emit newSequence(seq);
 }
 
@@ -168,7 +165,7 @@ void RamProject::removeSequence(QString uuid)
     }
 }
 
-void RamProject::removeSequence(RamSequence *seq)
+void RamProject::removeSequence(RamObject *seq)
 {
     removeSequence(seq->uuid());
 }
@@ -200,7 +197,7 @@ RamStep *RamProject::step(QString uuid) const
 void RamProject::addStep(RamStep *step)
 {
     _steps << step;
-    connect(step, &RamStep::destroyed, this, &RamProject::stepDestroyed);
+    connect(step,SIGNAL(removed(RamObject*)), this,SLOT(stepRemoved(RamObject*)));
     emit newStep(step);
 }
 
@@ -230,7 +227,7 @@ void RamProject::removeStep(QString uuid)
     }
 }
 
-void RamProject::removeStep(RamStep *step)
+void RamProject::removeStep(RamObject *step)
 {
     removeStep(step->uuid());
 }

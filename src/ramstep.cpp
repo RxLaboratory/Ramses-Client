@@ -74,11 +74,11 @@ void RamStep::assignUser(RamUser *user)
 {
     _users << user;
     _dbi->assignUser(_uuid, user->uuid());
-    connect(user, &RamUser::destroyed, this, &RamStep::userDestroyed);
+    connect(user, &RamUser::removed, this, &RamStep::userRemoved);
     emit userAssigned(user);
 }
 
-void RamStep::unassignUser(RamUser *user)
+void RamStep::unassignUser(RamObject *user)
 {
     unassignUser( user->uuid() );
 }
@@ -144,10 +144,9 @@ void RamStep::update()
     else _dbi->updateStep(_uuid, _shortName, _name, type, _order);
 }
 
-void RamStep::userDestroyed(QObject *o)
+void RamStep::userRemoved(RamObject *o)
 {
-    RamUser *u = (RamUser*)o;
-    unassignUser(u);
+    unassignUser(o);
 }
 
 void RamStep::applicationRemoved(RamObject *o)

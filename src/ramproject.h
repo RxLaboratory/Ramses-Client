@@ -24,7 +24,7 @@ public:
     void assignStep(RamStep *templateStep);
     void createStep(QString shortName = "NEW", QString name = "Step");
     void removeStep(QString uuid);
-    void removeStep(RamStep *step);
+    void removeStep(RamObject *step);
     void sortSteps();
 
     // Asset Groups
@@ -34,7 +34,7 @@ public:
     void assignAssetGroup(RamAssetGroup *templateAssetGroup);
     void createAssetGroup(QString shortName = "NEW", QString name = "Asset Group");
     void removeAssetGroup(QString uuid);
-    void removeAssetGroup(RamAssetGroup *assetGroup);
+    void removeAssetGroup(RamObject *assetGroup);
     void sortAssetGroups();
 
     // Assets
@@ -47,7 +47,7 @@ public:
     void addSequence(RamSequence *seq);
     void createSequence(QString shortName = "NEW", QString name = "Sequence");
     void removeSequence(QString uuid);
-    void removeSequence(RamSequence *seq);
+    void removeSequence(RamObject *seq);
     void sortSequences();
 
     void update();
@@ -61,9 +61,9 @@ signals:
     void sequenceRemoved(RamSequence *);
 
 private slots:
-    void stepDestroyed(QObject *o);
-    void assetGroupDestroyed(QObject *o);
-    void sequenceDestroyed(QObject *o);
+    void stepRemoved(RamObject *o);
+    void assetGroupRemoved(RamObject *o);
+    void sequenceRemoved(RamObject *o);
 
 private:
     QString _folderPath;

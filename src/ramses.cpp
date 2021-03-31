@@ -106,7 +106,7 @@ void Ramses::gotUsers(QJsonArray users)
 
         _users << user;
 
-        connect(user,&RamUser::destroyed, this, &Ramses::userDestroyed);
+        connect(user,&RamUser::removed, this, &Ramses::userRemoved);
         emit newUser(user);
     }
 
@@ -131,10 +131,9 @@ void Ramses::gotUsers(QJsonArray users)
     emit loggedOut();
 }
 
-void Ramses::userDestroyed(QObject *o)
+void Ramses::userRemoved(RamObject *o)
 {
-    RamUser *u = (RamUser*)o;
-    removeUser(u->uuid());
+    removeUser(o->uuid());
 }
 
 void Ramses::gotProjects(QJsonArray projects)
@@ -196,7 +195,7 @@ void Ramses::gotProjects(QJsonArray projects)
 
         _projects << project;
 
-        connect(project,&RamProject::destroyed, this, &Ramses::projectDestroyed);
+        connect(project,&RamProject::removed, this, &Ramses::projectRemoved);
 
         emit newProject(project);
     }
@@ -210,10 +209,9 @@ void Ramses::gotProjects(QJsonArray projects)
     setCurrentProject(_userSettings->value("currentProject", "").toString());
 }
 
-void Ramses::projectDestroyed(QObject *o)
+void Ramses::projectRemoved(RamObject *o)
 {
-    RamProject *p = (RamProject*)o;
-    removeProject(p->uuid());
+    removeProject(o->uuid());
 }
 
 void Ramses::gotTemplateSteps(QJsonArray steps)
@@ -268,16 +266,15 @@ void Ramses::gotTemplateSteps(QJsonArray steps)
 
         _templateSteps << step;
 
-        connect(step,&RamStep::destroyed, this, &Ramses::templateStepDestroyed);
+        connect(step,&RamStep::removed, this, &Ramses::templateStepRemoved);
 
         emit newTemplateStep(step);
     }
 }
 
-void Ramses::templateStepDestroyed(QObject *o)
+void Ramses::templateStepRemoved(RamObject *o)
 {
-    RamStep *s = (RamStep*)o;
-    removeTemplateStep(s->uuid());
+    removeTemplateStep(o->uuid());
 }
 
 void Ramses::gotTemplateAssetGroups(QJsonArray assetGroups)
@@ -330,16 +327,15 @@ void Ramses::gotTemplateAssetGroups(QJsonArray assetGroups)
 
         _templateAssetGroups << assetGroup;
 
-        connect(assetGroup,&RamAssetGroup::destroyed, this, &Ramses::templateAssetGroupDestroyed);
+        connect(assetGroup,&RamAssetGroup::removed, this, &Ramses::templateAssetGroupRemoved);
 
         emit newTemplateAssetGroup(assetGroup);
     }
 }
 
-void Ramses::templateAssetGroupDestroyed(QObject *o)
+void Ramses::templateAssetGroupRemoved(RamObject *o)
 {
-    RamAssetGroup *ag = (RamAssetGroup*)o;
-    removeTemplateAssetGroup(ag->uuid());
+    removeTemplateAssetGroup(o->uuid());
 }
 
 void Ramses::gotStates(QJsonArray states)
@@ -395,16 +391,15 @@ void Ramses::gotStates(QJsonArray states)
 
         _states << state;
 
-        connect(state,&RamState::destroyed, this, &Ramses::stateDestroyed);
+        connect(state,&RamState::removed, this, &Ramses::stateRemoved);
 
         emit newState(state);
     }
 }
 
-void Ramses::stateDestroyed(QObject *o)
+void Ramses::stateRemoved(RamObject *o)
 {
-    RamState *s = (RamState*)o;
-    removeState(s->uuid());
+    removeState(o->uuid());
 }
 
 void Ramses::gotFileTypes(QJsonArray fileTypes)

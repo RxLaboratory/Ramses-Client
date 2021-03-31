@@ -14,8 +14,14 @@ ObjectNode::ObjectNode(RamObject *obj)
     this->setTitle(_object->shortName());
     this->setTitleToolTip(_object->name());
 
+    connect(this, &DuQFNode::removed, this, &ObjectNode::removeObject);
     connect(obj, &RamStep::changed, this, &ObjectNode::objectChanged);
     connect(obj, &RamStep::removed, this, &ObjectNode::objectRemoved);
+}
+
+ObjectNode::~ObjectNode()
+{
+    _dockWidget->deleteLater();
 }
 
 RamObject *ObjectNode::ramObject() const
@@ -38,6 +44,11 @@ void ObjectNode::setEditWidget(ObjectEditWidget *w)
     _hasEditWidget = true;
 }
 
+void ObjectNode::removeObject()
+{
+    _object->remove();
+}
+
 void ObjectNode::objectChanged()
 {
     this->setTitle(_object->shortName());
@@ -46,5 +57,6 @@ void ObjectNode::objectChanged()
 
 void ObjectNode::objectRemoved()
 {
+    qDebug() << "removing object";
     this->remove();
 }

@@ -22,10 +22,10 @@ private slots:
     void createStep();
     void newStep(RamStep *step);
     void stepRemoved(QString uuid);
-    void removeStep(QObject *step);
+    void stepRemoved(RamObject *step);
     void stepChanged();
     void newTemplateStep(RamStep *step);
-    void removeTemplateStep(QObject *o);
+    void templateStepRemoved(RamObject *o);
     void templateStepChanged();
     void moveStepUp();
     void moveStepDown();

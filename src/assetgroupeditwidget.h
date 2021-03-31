@@ -20,7 +20,7 @@ private slots:
     void update();
     void revert();
     bool checkInput();
-    void assetGroupDestroyed(QObject *o);
+    void assetGroupRemoved(RamObject *o);
     void addAsset();
     void removeAsset();
     void newAsset(RamAsset *a);

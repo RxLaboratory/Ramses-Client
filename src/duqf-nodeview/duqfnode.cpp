@@ -183,7 +183,10 @@ void DuQFNode::setTitleToolTip(const QString &toolTip)
 
 void DuQFNode::remove()
 {
+    qDebug() << "Removing DuQFNode";
     if (m_removing) return;
+    qDebug() << "> Accepted";
+
     m_removing = true;
     m_defaultInputConnector->remove();
     m_defaultOutputConnector->remove();

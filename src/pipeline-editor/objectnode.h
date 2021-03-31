@@ -15,6 +15,7 @@ class ObjectNode : public DuQFNode
 {
 public:
     ObjectNode(RamObject *obj);
+    ~ObjectNode();
     RamObject *ramObject() const;
 
 protected:
@@ -22,6 +23,7 @@ protected:
     void setEditWidget(ObjectEditWidget *w);
 
 private slots:
+    void removeObject();
     virtual void objectChanged();
     void objectRemoved();
 

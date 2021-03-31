@@ -45,7 +45,7 @@ void StateEditWidget::setState(RamState *state)
 
     this->setEnabled(Ramses::instance()->isAdmin());
 
-    _currentStateConnection = connect(state, &RamStep::destroyed, this, &StateEditWidget::stateDestroyed);
+    _currentStateConnection = connect(state, &RamState::removed, this, &StateEditWidget::stateRemoved);
 }
 
 void StateEditWidget::update()
@@ -91,7 +91,7 @@ bool StateEditWidget::checkInput()
     return true;
 }
 
-void StateEditWidget::stateDestroyed(QObject *o)
+void StateEditWidget::stateRemoved(RamObject *o)
 {
     Q_UNUSED(o);
     setState(nullptr);

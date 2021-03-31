@@ -57,7 +57,7 @@ void SequencesManagerWidget::changeProject(RamProject *project)
     //add steps
     foreach(RamSequence *seq, project->sequences()) newSequence(seq);
     _projectConnections << connect(project, &RamProject::newSequence, this, &SequencesManagerWidget::newSequence);
-    _projectConnections << connect(project, &RamProject::sequenceRemoved, this, &SequencesManagerWidget::removeSequence);
+    _projectConnections << connect(project, SIGNAL(sequenceRemoved(QString)), this, SLOT(removeSequence(QString)));
 
     this->setEnabled(true);
 }

@@ -181,7 +181,7 @@ void StepEditWidget::newUser(RamUser *user)
     userAction->setData(user->uuid());
     assignUserMenu->addAction(userAction);
     connect(user, &RamUser::changed, this, &StepEditWidget::userChanged);
-    connect(user, &RamUser::destroyed, this, &StepEditWidget::userDestroyed);
+    connect(user, &RamUser::removed, this, &StepEditWidget::userRemoved);
     connect(userAction, &QAction::triggered, this, &StepEditWidget::assignUser);
 }
 
@@ -212,7 +212,7 @@ void StepEditWidget::userAssigned(RamUser *user)
     QListWidgetItem *userItem = new QListWidgetItem(user->name());
     userItem->setData(Qt::UserRole, user->uuid());
     usersList->addItem(userItem);
-    connect(user, &RamUser::destroyed, this, &StepEditWidget::userDestroyed);
+    connect(user, &RamUser::removed, this, &StepEditWidget::userRemoved);
     connect(user, &RamUser::changed, this, &StepEditWidget::userChanged);
 
     //hide from assign list
@@ -246,16 +246,14 @@ void StepEditWidget::userChanged()
             usersList->item(i)->setText(user->name());
 }
 
-void StepEditWidget::userDestroyed(QObject *o)
+void StepEditWidget::userRemoved(RamObject *o)
 {
-    RamUser *u = (RamUser *)o;
-
     foreach (QAction *a, assignUserMenu->actions())
-        if (a->data().toString() == u->uuid())
+        if (a->data().toString() == o->uuid())
             a->deleteLater();
 
     for (int i = usersList->count() -1; i >= 0; i--)
-        if (usersList->item(i)->data(Qt::UserRole).toString() == u->uuid())
+        if (usersList->item(i)->data(Qt::UserRole).toString() == o->uuid())
             delete usersList->takeItem(i);
 }
 

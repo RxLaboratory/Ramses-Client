@@ -17,7 +17,7 @@ protected slots:
 
 private slots:
     void newAssetGroup(RamAssetGroup *ag);
-    void removeAssetGroup(QObject *assetGroup);
+    void assetGroupRemoved(RamObject *assetGroup);
     void assetGroupChanged();
 
 private:

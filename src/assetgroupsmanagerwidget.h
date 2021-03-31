@@ -22,10 +22,10 @@ private slots:
     void createAssetGroup();
     void newAssetGroup(RamAssetGroup *assetGroup);
     void assetGroupRemoved(QString uuid);
-    void removeAssetGroup(QObject *o);
+    void assetGroupRemoved(RamObject *o);
     void assetGroupChanged();
     void newTemplateAssetGroup(RamAssetGroup *assetGroup);
-    void removeTemplateAssetGroup(QObject *o);
+    void templateAssetGroupRemoved(RamObject *o);
     void templateAssetGroupChanged();
 
 private:

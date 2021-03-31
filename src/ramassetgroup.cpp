@@ -61,7 +61,7 @@ RamAsset *RamAssetGroup::asset(QString uuid)
 void RamAssetGroup::addAsset(RamAsset *asset)
 {
     _assets << asset;
-    connect(asset, &RamAsset::destroyed, this, &RamAssetGroup::assetDestroyed);
+    connect(asset, SIGNAL(removed(RamObject*)), this, SLOT(assetRemoved(RamObject*)));
     emit newAsset(asset);
 }
 
@@ -85,7 +85,7 @@ void RamAssetGroup::removeAsset(QString uuid)
     }
 }
 
-void RamAssetGroup::removeAsset(RamAsset *asset)
+void RamAssetGroup::removeAsset(RamObject *asset)
 {
     removeAsset(asset->uuid());
 }
@@ -106,8 +106,7 @@ void RamAssetGroup::update()
     else _dbi->updateAssetGroup(_uuid, _shortName, _name);
 }
 
-void RamAssetGroup::assetDestroyed(QObject *o)
+void RamAssetGroup::assetRemoved(RamObject *o)
 {
-    RamAsset *a = (RamAsset*)o;
-    removeAsset(a);
+    removeAsset(o);
 }

@@ -60,7 +60,7 @@ void AssetGroupsManagerWidget::changeProject(RamProject *project)
     //add steps
     foreach(RamAssetGroup *assetGroup, project->assetGroups()) newAssetGroup(assetGroup);
     _projectConnections << connect(project, &RamProject::newAssetGroup, this, &AssetGroupsManagerWidget::newAssetGroup);
-    _projectConnections << connect(project, &RamProject::assetGroupRemoved, this, &AssetGroupsManagerWidget::assetGroupRemoved);
+    _projectConnections << connect(project, SIGNAL(assetGroupRemoved(QString)), this, SLOT(assetGroupRemoved(QString)));
 
     this->setEnabled(true);
 }
@@ -92,7 +92,7 @@ void AssetGroupsManagerWidget::newAssetGroup(RamAssetGroup *assetGroup)
         QListWidgetItem *assetGroupItem = new QListWidgetItem(assetGroup->name());
         assetGroupItem->setData(Qt::UserRole, assetGroup->uuid());
         this->addItem(assetGroupItem);
-        connect(assetGroup, &RamAssetGroup::destroyed, this, &AssetGroupsManagerWidget::removeAssetGroup);
+        connect(assetGroup, SIGNAL(removed(RamObject*)), this, SLOT(assetGroupRemoved(RamObject*)));
         connect(assetGroup, &RamAssetGroup::changed, this, &AssetGroupsManagerWidget::assetGroupChanged);
     }
 }
@@ -102,11 +102,9 @@ void AssetGroupsManagerWidget::assetGroupRemoved(QString uuid)
     removeData(uuid);
 }
 
-void AssetGroupsManagerWidget::removeAssetGroup(QObject *o)
+void AssetGroupsManagerWidget::assetGroupRemoved(RamObject *o)
 {
-    RamAssetGroup *ag = (RamAssetGroup*)o;
-
-    removeData(ag->uuid());
+    removeData(o->uuid());
 }
 
 void AssetGroupsManagerWidget::assetGroupChanged()
@@ -123,17 +121,16 @@ void AssetGroupsManagerWidget::newTemplateAssetGroup(RamAssetGroup *assetGroup)
     agAction->setData(assetGroup->uuid());
     assignMenu->addAction(agAction);
     connect(agAction, &QAction::triggered, this, &AssetGroupsManagerWidget::assignAssetGroup);
-    connect(assetGroup, &RamAssetGroup::destroyed, this, &AssetGroupsManagerWidget::removeTemplateAssetGroup);
+    connect(assetGroup, &RamAssetGroup::removed, this, &AssetGroupsManagerWidget::templateAssetGroupRemoved);
     connect(assetGroup, &RamAssetGroup::changed, this, &AssetGroupsManagerWidget::templateAssetGroupChanged);
 }
 
-void AssetGroupsManagerWidget::removeTemplateAssetGroup(QObject *o)
+void AssetGroupsManagerWidget::templateAssetGroupRemoved(RamObject *o)
 {
-    RamAssetGroup *ag = (RamAssetGroup *)o;
     QList<QAction *> actions = assignMenu->actions();
     for (int i = actions.count() -1; i >= 0; i--)
     {
-        if (actions[i]->data().toString() == ag->uuid())
+        if (actions[i]->data().toString() == o->uuid())
         {
             assignMenu->removeAction(actions[i]);
             actions[i]->deleteLater();

@@ -44,16 +44,14 @@ void TemplateStepsManagerWidget::newStep(RamStep *step)
         QListWidgetItem *stepItem = new QListWidgetItem(step->name());
         stepItem->setData(Qt::UserRole, step->uuid());
         this->addItem(stepItem);
-        connect(step, &RamStep::destroyed, this, &TemplateStepsManagerWidget::removeStep);
+        connect(step, &RamStep::removed, this, &TemplateStepsManagerWidget::stepRemoved);
         connect(step, &RamStep::changed, this, &TemplateStepsManagerWidget::stepChanged);
     }
 }
 
-void TemplateStepsManagerWidget::removeStep(QObject *step)
+void TemplateStepsManagerWidget::stepRemoved(RamObject *step)
 {
-    RamStep *s = (RamStep*)step;
-
-    removeData(s->uuid());
+    removeData(step->uuid());
 }
 
 void TemplateStepsManagerWidget::stepChanged()

@@ -23,13 +23,13 @@ public:
     void addAsset(RamAsset *asset);
     void createAsset(QString shortName = "NEW", QString name = "Asset");
     void removeAsset(QString uuid);
-    void removeAsset(RamAsset *asset);
+    void removeAsset(RamObject *asset);
     void sortAssets();
 
     void update();
 
 public slots:
-    void assetDestroyed(QObject *o);
+    void assetRemoved(RamObject *o);
 
 signals:
     void newAsset(RamAsset *);

@@ -18,7 +18,7 @@ private slots:
     void update();
     void revert();
     bool checkInput();
-    void assetGroupDestroyed(QObject *o);
+    void assetGroupRemoved(RamObject *o);
     void dbiLog(DuQFLog m);
 
 private:

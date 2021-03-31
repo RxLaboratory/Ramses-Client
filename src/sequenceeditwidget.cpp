@@ -35,7 +35,7 @@ void SequenceEditWidget::setSequence(RamSequence *sequence)
     nameEdit->setText(sequence->name());
     shortNameEdit->setText(sequence->shortName());
 
-    _sequenceConnections << connect(sequence, &RamSequence::destroyed, this, &SequenceEditWidget::sequenceDestroyed);
+    _sequenceConnections << connect(sequence, &RamSequence::removed, this, &SequenceEditWidget::sequenceRemoved);
 
     this->setEnabled(Ramses::instance()->isProjectAdmin());
 }
@@ -82,7 +82,7 @@ bool SequenceEditWidget::checkInput()
     return true;
 }
 
-void SequenceEditWidget::sequenceDestroyed(QObject */*o*/)
+void SequenceEditWidget::sequenceRemoved(RamObject */*o*/)
 {
     setSequence(nullptr);
 }

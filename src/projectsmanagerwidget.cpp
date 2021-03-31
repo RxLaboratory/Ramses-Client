@@ -44,16 +44,14 @@ void ProjectsManagerWidget::newProject(RamProject *project)
         QListWidgetItem *projectItem = new QListWidgetItem(project->name());
         projectItem->setData(Qt::UserRole, project->uuid());
         this->addItem(projectItem);
-        connect(project, &RamProject::destroyed, this, &ProjectsManagerWidget::removeProject);
+        connect(project, &RamProject::removed, this, &ProjectsManagerWidget::projectRemoved);
         connect(project, &RamProject::changed, this, &ProjectsManagerWidget::projectChanged);
     }
 }
 
-void ProjectsManagerWidget::removeProject(QObject *project)
+void ProjectsManagerWidget::projectRemoved(RamObject *project)
 {
-    RamProject *p = (RamProject*)project;
-
-    removeData(p->uuid());
+    removeData(project->uuid());
 }
 
 void ProjectsManagerWidget::projectChanged()

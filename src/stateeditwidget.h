@@ -21,7 +21,7 @@ private slots:
     void update();
     void revert();
     bool checkInput();
-    void stateDestroyed(QObject *o);
+    void stateRemoved(RamObject *o);
     void dbiLog(DuQFLog m);
     void updateColorEditStyle();
     void selectColor();

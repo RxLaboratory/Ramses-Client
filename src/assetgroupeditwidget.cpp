@@ -49,9 +49,9 @@ void AssetGroupEditWidget::setAssetGroup(RamAssetGroup *assetGroup)
     // Load assets
     foreach(RamAsset *a, assetGroup->assets()) newAsset(a);
 
-    _assetGroupConnections << connect(assetGroup, &RamAssetGroup::destroyed, this, &AssetGroupEditWidget::assetGroupDestroyed);
+    _assetGroupConnections << connect(assetGroup, &RamAssetGroup::removed, this, &AssetGroupEditWidget::assetGroupRemoved);
     _assetGroupConnections << connect(assetGroup, &RamAssetGroup::newAsset, this, &AssetGroupEditWidget::newAsset);
-    _assetGroupConnections << connect(assetGroup, &RamAssetGroup::assetRemoved, this, &AssetGroupEditWidget::assetRemoved);
+    _assetGroupConnections << connect(assetGroup, SIGNAL(assetRemoved(QString)), this, SLOT(assetRemoved(QString)));
 
     this->setEnabled(Ramses::instance()->isProjectAdmin());
 }
@@ -98,7 +98,7 @@ bool AssetGroupEditWidget::checkInput()
     return true;
 }
 
-void AssetGroupEditWidget::assetGroupDestroyed(QObject */*o*/)
+void AssetGroupEditWidget::assetGroupRemoved(RamObject */*o*/)
 {
     setAssetGroup(nullptr);
 }

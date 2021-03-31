@@ -44,16 +44,14 @@ void TemplateAssetGroupsManagerWidget::newAssetGroup(RamAssetGroup *ag)
         QListWidgetItem *agItem = new QListWidgetItem(ag->name());
         agItem->setData(Qt::UserRole, ag->uuid());
         this->addItem(agItem);
-        connect(ag, &RamStep::destroyed, this, &TemplateAssetGroupsManagerWidget::removeAssetGroup);
+        connect(ag, &RamStep::removed, this, &TemplateAssetGroupsManagerWidget::assetGroupRemoved);
         connect(ag, &RamStep::changed, this, &TemplateAssetGroupsManagerWidget::assetGroupChanged);
     }
 }
 
-void TemplateAssetGroupsManagerWidget::removeAssetGroup(QObject *assetGroup)
+void TemplateAssetGroupsManagerWidget::assetGroupRemoved(RamObject *assetGroup)
 {
-    RamAssetGroup *ag = (RamAssetGroup*)assetGroup;
-
-    removeData(ag->uuid());
+    removeData(assetGroup->uuid());
 }
 
 void TemplateAssetGroupsManagerWidget::assetGroupChanged()

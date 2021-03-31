@@ -47,7 +47,7 @@ void ProjectEditWidget::setProject(RamProject *project)
 
     this->setEnabled( Ramses::instance()->isAdmin() );
 
-    _currentProjectConnection = connect(project,&RamProject::destroyed, this, &ProjectEditWidget::projectDestroyed);
+    _currentProjectConnection = connect(project,&RamProject::removed, this, &ProjectEditWidget::projectRemoved);
 }
 
 void ProjectEditWidget::update()
@@ -100,7 +100,7 @@ void ProjectEditWidget::updateFolderLabel(QString path)
     else if (_project) folderLabel->setText( Ramses::instance()->path(_project) );
 }
 
-void ProjectEditWidget::projectDestroyed(QObject */*o*/)
+void ProjectEditWidget::projectRemoved(RamObject */*o*/)
 {
     setProject(nullptr);
 }

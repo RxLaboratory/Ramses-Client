@@ -21,7 +21,7 @@ private slots:
     void update();
     void revert();
     bool checkInput();
-    void stepDestroyed(QObject *o);
+    void stepRemoved(RamObject *o);
     // Users
     void newUser(RamUser *user);
     void assignUser();
@@ -29,7 +29,7 @@ private slots:
     void userAssigned(RamUser *user);
     void userUnassigned(QString uuid);
     void userChanged();
-    void userDestroyed(QObject *o);
+    void userRemoved(RamObject *o);
     // Applications
     void newApplication(RamApplication *app);
     void assignApplication();

@@ -46,7 +46,7 @@ void AssetEditWidget::setAsset(RamAsset *asset)
     tagsEdit->setText(asset->tags().join(", "));
     folderWidget->setPath(Ramses::instance()->path(asset));
 
-    _assetConnections << connect(asset, &RamAsset::destroyed, this, &AssetEditWidget::assetDestroyed);
+    _assetConnections << connect(asset, &RamAsset::removed, this, &AssetEditWidget::assetRemoved);
 
     // set project and group
     assetGroupBox->setCurrentIndex(-1);
@@ -83,7 +83,7 @@ void AssetEditWidget::setProject(RamProject *project)
 
     foreach(RamAssetGroup *ag, project->assetGroups()) newAssetGroup(ag);
 
-    connect(project, &RamProject::assetGroupRemoved, this, &AssetEditWidget::assetGroupRemoved);
+    connect(project,SIGNAL(assetGroupRemoved(QString)), this, SLOT(assetGroupRemoved(QString)));
     connect(project, &RamProject::newAssetGroup, this, &AssetEditWidget::newAssetGroup);
 
     this->setEnabled(true);
@@ -145,7 +145,7 @@ bool AssetEditWidget::checkInput()
     return true;
 }
 
-void AssetEditWidget::assetDestroyed(QObject */*o*/)
+void AssetEditWidget::assetRemoved(RamObject */*o*/)
 {
     setAsset(nullptr);
 }

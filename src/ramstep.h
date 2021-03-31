@@ -32,7 +32,7 @@ public:
     QList<RamUser *> users() const;
     void clearUsers();
     void assignUser(RamUser *user);
-    void unassignUser(RamUser *user);
+    void unassignUser(RamObject *user);
     void unassignUser(QString uuid);
 
     QList<RamApplication *> applications() const;
@@ -50,7 +50,7 @@ signals:
     void applicationUnassigned(QString);
 
 private slots:
-    void userDestroyed(QObject *o);
+    void userRemoved(RamObject *o);
     void applicationRemoved(RamObject *o);
 
 private:

@@ -45,16 +45,14 @@ void UsersManagerWidget::newUser(RamUser *user)
         QListWidgetItem *userItem = new QListWidgetItem(user->name());
         userItem->setData(Qt::UserRole, user->uuid());
         this->addItem(userItem);
-        connect(user,&RamUser::destroyed,this,&UsersManagerWidget::removeUser);
+        connect(user,&RamUser::removed,this,&UsersManagerWidget::userRemoved);
         connect(user,&RamUser::changed, this, &UsersManagerWidget::userChanged);
     }
 }
 
-void UsersManagerWidget::removeUser(QObject *user)
+void UsersManagerWidget::userRemoved(RamObject *user)
 {
-    RamUser *u = (RamUser*)user;
-
-    removeData(u->uuid());
+    removeData(user->uuid());
 }
 
 void UsersManagerWidget::userChanged()

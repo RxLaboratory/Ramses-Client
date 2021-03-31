@@ -19,18 +19,17 @@ void ProjectSelectorWidget::newProject(RamProject *project)
     if (project->uuid() != "")
     {
         this->addItem(project->name(), project->uuid());
-        connect(project, &RamProject::destroyed, this, &ProjectSelectorWidget::removeProject);
+        connect(project, &RamProject::removed, this, &ProjectSelectorWidget::projectRemoved);
         connect(project, &RamProject::changed, this, &ProjectSelectorWidget::projectChanged);
     }
     setCurrentIndex(i);
 }
 
-void ProjectSelectorWidget::removeProject(QObject *o)
+void ProjectSelectorWidget::projectRemoved(RamObject *o)
 {
-    RamProject *p = (RamProject*)o;
     for (int i = this->count() - 1; i >= 0; i--)
     {
-        if (this->itemData(i).toString() == p->uuid())
+        if (this->itemData(i).toString() == o->uuid())
         {
             this->removeItem(i);
         }

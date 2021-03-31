@@ -17,7 +17,7 @@ protected slots:
 
 private slots:
     void newUser(RamUser *user);
-    void removeUser(QObject *user);
+    void userRemoved(RamObject *user);
     void userChanged();
 private:
     UserEditWidget *userWidget;

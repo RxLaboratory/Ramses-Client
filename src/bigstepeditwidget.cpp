@@ -79,7 +79,7 @@ void BigStepEditWidget::setStep(RamStep *step)
     _stepConnections << connect(step, &RamStep::userUnassigned, this, &BigStepEditWidget::userUnassigned);
     _stepConnections << connect(step, &RamStep::applicationAssigned, this, &BigStepEditWidget::applicationAssigned);
     _stepConnections << connect(step, &RamStep::applicationUnassigned, this, &BigStepEditWidget::applicationUnassigned);
-    _stepConnections << connect(step, &RamStep::destroyed, this, &BigStepEditWidget::stepDestroyed);
+    _stepConnections << connect(step, &RamStep::removed, this, &BigStepEditWidget::stepRemoved);
 
     this->setEnabled(Ramses::instance()->isProjectAdmin());
 }
@@ -127,7 +127,7 @@ bool BigStepEditWidget::checkInput()
     return true;
 }
 
-void BigStepEditWidget::stepDestroyed(QObject */*o*/)
+void BigStepEditWidget::stepRemoved(RamObject */*o*/)
 {
     setStep(nullptr);
 }
@@ -140,7 +140,7 @@ void BigStepEditWidget::newUser(RamUser *user)
     userAction->setData(user->uuid());
     assignUserMenu->addAction(userAction);
     connect(user, &RamUser::changed, this, &BigStepEditWidget::userChanged);
-    connect(user, &RamUser::destroyed, this, &BigStepEditWidget::userDestroyed);
+    connect(user, &RamUser::removed, this, &BigStepEditWidget::userRemoved);
     connect(userAction, &QAction::triggered, this, &BigStepEditWidget::assignUser);
 }
 
@@ -167,7 +167,7 @@ void BigStepEditWidget::userAssigned(RamUser *user)
     QListWidgetItem *userItem = new QListWidgetItem(user->name());
     userItem->setData(Qt::UserRole, user->uuid());
     usersList->addItem(userItem);
-    connect(user, &RamUser::destroyed, this, &BigStepEditWidget::userDestroyed);
+    connect(user, &RamUser::removed, this, &BigStepEditWidget::userRemoved);
     connect(user, &RamUser::changed, this, &BigStepEditWidget::userChanged);
 
     //hide from assign list
@@ -201,16 +201,14 @@ void BigStepEditWidget::userChanged()
             usersList->item(i)->setText(user->name());
 }
 
-void BigStepEditWidget::userDestroyed(QObject *o)
+void BigStepEditWidget::userRemoved(RamObject *o)
 {
-    RamUser *u = (RamUser *)o;
-
     foreach (QAction *a, assignUserMenu->actions())
-        if (a->data().toString() == u->uuid())
+        if (a->data().toString() == o->uuid())
             a->deleteLater();
 
     for (int i = usersList->count() -1; i >= 0; i--)
-        if (usersList->item(i)->data(Qt::UserRole).toString() == u->uuid())
+        if (usersList->item(i)->data(Qt::UserRole).toString() == o->uuid())
             delete usersList->takeItem(i);
 }
 

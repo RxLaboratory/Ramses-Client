@@ -73,7 +73,7 @@ void UserEditWidget::setUser(RamUser *user)
         this->setEnabled(Ramses::instance()->isAdmin());
     }
 
-    _currentUserConnection = connect(user,&RamUser::destroyed, this, &UserEditWidget::userDestroyed);
+    _currentUserConnection = connect(user,&RamUser::removed, this, &UserEditWidget::userRemoved);
 
 }
 
@@ -159,8 +159,9 @@ void UserEditWidget::updateFolderLabel(QString path)
     else if (_user) folderLabel->setText( Ramses::instance()->path(_user) );
 }
 
-void UserEditWidget::userDestroyed(QObject */*o*/)
+void UserEditWidget::userRemoved(RamObject *o)
 {
+    Q_UNUSED(o);
     setUser(nullptr);
 }
 

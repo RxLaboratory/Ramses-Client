@@ -31,7 +31,7 @@ private slots:
     void userAssigned(RamUser *user);
     void userUnassigned(QString uuid);
     void userChanged();
-    void userDestroyed(QObject *o);
+    void userRemoved(RamObject *o);
     // Applications
     void newApplication(RamApplication *app);
     void assignApplication();

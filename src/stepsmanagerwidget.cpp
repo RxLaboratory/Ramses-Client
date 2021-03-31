@@ -73,7 +73,7 @@ void StepsManagerWidget::changeProject(RamProject *project)
     //add steps
     foreach(RamStep *step, project->steps()) newStep(step);
     _projectConnections << connect(project, &RamProject::newStep, this, &StepsManagerWidget::newStep);
-    _projectConnections << connect(project, &RamProject::stepRemoved, this, &StepsManagerWidget::stepRemoved);
+    _projectConnections << connect(project, SIGNAL(stepRemoved(QString)), this, SLOT(stepRemoved(QString)));
 
     this->setEnabled(true);
 }
@@ -105,7 +105,7 @@ void StepsManagerWidget::newStep(RamStep *step)
         QListWidgetItem *stepItem = new QListWidgetItem(step->name());
         stepItem->setData(Qt::UserRole, step->uuid());
         this->insertItem(step->order(), stepItem);
-        connect(step, &RamStep::destroyed, this, &StepsManagerWidget::removeStep);
+        connect(step, SIGNAL(removed(RamObject*)), this, SLOT(stepRemoved(RamObject*)));
         connect(step, &RamStep::changed, this, &StepsManagerWidget::stepChanged);
     }
 }
@@ -115,11 +115,9 @@ void StepsManagerWidget::stepRemoved(QString uuid)
     removeData(uuid);
 }
 
-void StepsManagerWidget::removeStep(QObject *step)
+void StepsManagerWidget::stepRemoved(RamObject *step)
 {
-    RamStep *s = (RamStep*)step;
-
-    removeData(s->uuid());
+    removeData(step->uuid());
 }
 
 void StepsManagerWidget::stepChanged()
@@ -136,17 +134,16 @@ void StepsManagerWidget::newTemplateStep(RamStep *step)
     stepAction->setData(step->uuid());
     assignMenu->addAction(stepAction);
     connect(stepAction, &QAction::triggered, this, &StepsManagerWidget::assignStep);
-    connect(step, &RamStep::destroyed, this, &StepsManagerWidget::removeTemplateStep);
+    connect(step, &RamStep::removed, this, &StepsManagerWidget::templateStepRemoved);
     connect(step, &RamStep::changed, this, &StepsManagerWidget::templateStepChanged);
 }
 
-void StepsManagerWidget::removeTemplateStep(QObject *o)
+void StepsManagerWidget::templateStepRemoved(RamObject *o)
 {
-    RamStep *s = (RamStep *)o;
     QList<QAction *> actions = assignMenu->actions();
     for (int i = actions.count() -1; i >= 0; i--)
     {
-        if (actions[i]->data().toString() == s->uuid())
+        if (actions[i]->data().toString() == o->uuid())
         {
             assignMenu->removeAction(actions[i]);
             actions[i]->deleteLater();

@@ -35,7 +35,7 @@ void TemplateAssetGroupEditWidget::setAssetGroup(RamAssetGroup *assetGroup)
 
     this->setEnabled(Ramses::instance()->isAdmin());
 
-    _currentAssetGroupConnection = connect(assetGroup, &RamAssetGroup::destroyed, this, &TemplateAssetGroupEditWidget::assetGroupDestroyed);
+    _currentAssetGroupConnection = connect(assetGroup, &RamAssetGroup::removed, this, &TemplateAssetGroupEditWidget::assetGroupRemoved);
 }
 
 void TemplateAssetGroupEditWidget::update()
@@ -81,8 +81,9 @@ bool TemplateAssetGroupEditWidget::checkInput()
     return true;
 }
 
-void TemplateAssetGroupEditWidget::assetGroupDestroyed(QObject */*o*/)
+void TemplateAssetGroupEditWidget::assetGroupRemoved(RamObject *o)
 {
+    Q_UNUSED(o);
     setAssetGroup(nullptr);
 }
 

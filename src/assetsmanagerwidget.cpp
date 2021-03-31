@@ -67,7 +67,7 @@ void AssetsManagerWidget::changeProject(RamProject *project)
 
     filterBox->blockSignals(false);
 
-    _projectConnections << connect(project, &RamProject::assetGroupRemoved, this, &AssetsManagerWidget::assetGroupRemoved);
+    _projectConnections << connect(project, SIGNAL(assetGroupRemoved(QString)), this, SLOT(assetGroupRemoved(QString)));
     _projectConnections << connect(project, &RamProject::newAssetGroup, this, &AssetsManagerWidget::newAssetGroup);
 
     this->setEnabled(true);
@@ -118,7 +118,7 @@ void AssetsManagerWidget::addAssets(RamAssetGroup *assetGroup)
         newAsset(asset);
     }
     _assetGroupsConnections << connect(assetGroup, &RamAssetGroup::newAsset, this, &AssetsManagerWidget::newAsset);
-    _assetGroupsConnections << connect(assetGroup, &RamAssetGroup::assetRemoved, this, &AssetsManagerWidget::assetRemoved);
+    _assetGroupsConnections << connect(assetGroup, SIGNAL(assetRemoved(QString)), this, SLOT(assetRemoved(QString)));
 }
 
 void AssetsManagerWidget::assetGroupChanged()

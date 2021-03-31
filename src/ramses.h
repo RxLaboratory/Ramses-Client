@@ -140,19 +140,19 @@ private slots:
     void newData(QJsonObject data);
     //users
     void gotUsers(QJsonArray users);
-    void userDestroyed(QObject *o);
+    void userRemoved(RamObject *o);
     //projects
     void gotProjects(QJsonArray projects);
-    void projectDestroyed(QObject *o);
+    void projectRemoved(RamObject *o);
     //template steps
     void gotTemplateSteps(QJsonArray steps);
-    void templateStepDestroyed(QObject *o);
+    void templateStepRemoved(RamObject *o);
     //template asset groups
     void gotTemplateAssetGroups(QJsonArray assetGroups);
-    void templateAssetGroupDestroyed(QObject *o);
+    void templateAssetGroupRemoved(RamObject *o);
     //states
     void gotStates(QJsonArray states);
-    void stateDestroyed(QObject *o);
+    void stateRemoved(RamObject *o);
     //file types
     void gotFileTypes(QJsonArray fileTypes);
     //applications

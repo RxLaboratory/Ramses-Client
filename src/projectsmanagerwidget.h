@@ -17,7 +17,7 @@ protected slots:
 
 private slots:
     void newProject(RamProject *project);
-    void removeProject(QObject *project);
+    void projectRemoved(RamObject *project);
     void projectChanged();
 
 private:

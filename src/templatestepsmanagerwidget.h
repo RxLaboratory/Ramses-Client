@@ -17,7 +17,7 @@ protected slots:
 
 private slots:
     void newStep(RamStep *step);
-    void removeStep(QObject *step);
+    void stepRemoved(RamObject *step);
     void stepChanged();
 
 private:

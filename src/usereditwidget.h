@@ -20,7 +20,7 @@ private slots:
     void revert();
     bool checkInput();
     void updateFolderLabel(QString path);
-    void userDestroyed(QObject *o);
+    void userRemoved(RamObject *o);
     void dbiLog(DuQFLog m);
 
 private:

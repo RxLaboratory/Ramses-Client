@@ -17,7 +17,7 @@ protected slots:
 
 private slots:
     void newState(RamState *state);
-    void removeState(QObject *state);
+    void stateRemoved(RamObject *state);
     void stateChanged();
 
 private:

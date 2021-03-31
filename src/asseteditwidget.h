@@ -25,7 +25,7 @@ private slots:
     void update();
     void revert();
     bool checkInput();
-    void assetDestroyed(QObject *o);
+    void assetRemoved(RamObject *o);
     void newAssetGroup(RamAssetGroup *ag);
     void assetGroupChanged();
     void assetGroupRemoved(QString uuid);

@@ -12,7 +12,7 @@ public:
     ProjectSelectorWidget(QWidget *parent = nullptr);
 private slots:
     void newProject(RamProject *project);
-    void removeProject(QObject *o);
+    void projectRemoved(RamObject *o);
     void projectChanged();
     void setCurrentProject(int index);
     void currentProjectChanged(RamProject *p);

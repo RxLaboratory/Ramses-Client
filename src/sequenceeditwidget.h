@@ -18,7 +18,7 @@ private slots:
     void update();
     void revert();
     bool checkInput();
-    void sequenceDestroyed(QObject *o);
+    void sequenceRemoved(RamObject *o);
     void dbiLog(DuQFLog m);
 
 private:

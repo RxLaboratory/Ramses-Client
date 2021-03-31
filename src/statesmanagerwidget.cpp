@@ -45,16 +45,14 @@ void StatesManagerWidget::newState(RamState *state)
         QListWidgetItem *stateItem = new QListWidgetItem(state->name());
         stateItem->setData(Qt::UserRole, state->uuid());
         this->addItem(stateItem);
-        connect(state, &RamState::destroyed, this, &StatesManagerWidget::removeState);
+        connect(state, &RamState::removed, this, &StatesManagerWidget::stateRemoved);
         connect(state, &RamState::changed, this, &StatesManagerWidget::stateChanged);
     }
 }
 
-void StatesManagerWidget::removeState(QObject *state)
+void StatesManagerWidget::stateRemoved(RamObject *state)
 {
-    RamState *s = (RamState*)state;
-
-    removeData(s->uuid());
+    removeData(state->uuid());
 }
 
 void StatesManagerWidget::stateChanged()

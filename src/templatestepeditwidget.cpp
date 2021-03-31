@@ -45,7 +45,7 @@ void TemplateStepEditWidget::setStep(RamStep *step)
 
     this->setEnabled(Ramses::instance()->isAdmin());
 
-    _currentStepConnection = connect(step, &RamStep::destroyed, this, &TemplateStepEditWidget::stepDestroyed);
+    _currentStepConnection = connect(step, &RamStep::removed, this, &TemplateStepEditWidget::stepRemoved);
 }
 
 void TemplateStepEditWidget::update()
@@ -92,8 +92,9 @@ bool TemplateStepEditWidget::checkInput()
     return true;
 }
 
-void TemplateStepEditWidget::stepDestroyed(QObject */*o*/)
+void TemplateStepEditWidget::stepRemoved(RamObject *o)
 {
+    Q_UNUSED(o);
     setStep(nullptr);
 }
 
