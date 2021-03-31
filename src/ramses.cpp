@@ -248,7 +248,7 @@ void Ramses::gotTemplateSteps(QJsonArray steps)
         if (!found)
         {
             RamStep *s = _templateSteps.takeAt(i);
-            s->deleteLater();
+            s->remove();
         }
     }
 
@@ -310,7 +310,7 @@ void Ramses::gotTemplateAssetGroups(QJsonArray assetGroups)
         if (!found)
         {
             RamAssetGroup *ag = _templateAssetGroups.takeAt(i);
-            ag->deleteLater();
+            ag->remove();
         }
     }
 
@@ -373,7 +373,7 @@ void Ramses::gotStates(QJsonArray states)
         if (!found)
         {
             RamState *s = _states.takeAt(i);
-            s->deleteLater();
+            s->remove();
         }
     }
 
@@ -1100,7 +1100,7 @@ void Ramses::removeTemplateStep(QString uuid)
         if (_templateSteps[i]->uuid() == uuid)
         {
             RamStep *s = _templateSteps.takeAt(i);
-            s->deleteLater();
+            s->remove();
         }
     }
 }
@@ -1135,7 +1135,7 @@ void Ramses::removeTemplateAssetGroup(QString uuid)
         if (_templateAssetGroups[i]->uuid() == uuid)
         {
             RamAssetGroup *ag = _templateAssetGroups.takeAt(i);
-            ag->deleteLater();
+            ag->remove();
         }
     }
 }
@@ -1305,7 +1305,7 @@ void Ramses::removeProject(QString uuid)
         if (_projects[i]->uuid() == uuid)
         {
             RamProject *p = _projects.takeAt(i);
-            p->deleteLater();
+            p->remove();
         }
     }
 }
@@ -1335,7 +1335,7 @@ void Ramses::removeUser(QString uuid)
         if (_users[i]->uuid() == uuid)
         {
             RamUser *u = _users.takeAt(i);
-            u->deleteLater();
+            u->remove();
         }
     }
 }
