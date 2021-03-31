@@ -34,11 +34,11 @@ DuQFNode::DuQFNode(QString title)
     m_padding = DuUI::getSize("padding", "small");
     //m_titleItem->setPos(m_padding, m_padding);
 
-    setTitle(title);
-
     // Icon
 
     m_iconItem = new QGraphicsSvgItem(this);
+
+    setTitle(title);
 
     connect(m_defaultInputConnector, &DuQFSlot::connectionInitiated, this, &DuQFNode::connectionInitiated);
     connect(m_defaultInputConnector, &DuQFSlot::connectionMoved, this, &DuQFNode::connectionMoved);
@@ -188,7 +188,10 @@ void DuQFNode::setTitle(const QString &title)
 {
     m_titleItem->setPlainText(title);
     QRectF rect = m_titleItem->boundingRect().adjusted(-m_padding-7, -m_padding-3, m_padding+7, m_padding+3);
-    m_defaultOutputConnector->setPos(rect.right()-2 , rect.center().y());
+    qreal right = rect.right()-2;
+    if (m_iconItem->boundingRect().width() != 0)
+        right += m_iconItem->boundingRect().right() * m_iconItem->scale() + m_padding;
+    m_defaultOutputConnector->setPos(right , rect.center().y());
     m_defaultInputConnector->setPos(rect.left()+2, rect.center().y());
 }
 
