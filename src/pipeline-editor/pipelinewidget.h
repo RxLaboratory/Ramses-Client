@@ -13,7 +13,7 @@
 #include "duqf-app/app-version.h"
 #include "duqf-utils/guiutils.h"
 
-#include "objectnode.h"
+#include "stepnode.h"
 #include "ramses.h"
 
 class PipelineWidget : public QWidget, private Ui::PipelineWidget

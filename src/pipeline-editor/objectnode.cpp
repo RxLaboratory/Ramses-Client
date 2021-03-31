@@ -8,11 +8,6 @@ ObjectNode::ObjectNode(RamObject *obj)
     QMainWindow *mw = GuiUtils::appMainWindow();
     _dockWidget = new ObjectDockWidget(obj, mw);
 
-    //_dockWidget->setWidget(new ObjectEditWidget(obj, _dockWidget));
-    StepEditWidget *stepWidget = new StepEditWidget(_dockWidget);
-    stepWidget->setStep((RamStep*)obj);
-    _dockWidget->setWidget(stepWidget);
-
     mw->addDockWidget(Qt::RightDockWidgetArea, _dockWidget);
     _dockWidget->hide();
 
@@ -30,10 +25,17 @@ RamObject *ObjectNode::ramObject() const
 
 QVariant ObjectNode::itemChange(QGraphicsItem::GraphicsItemChange change, const QVariant &value)
 {
-    if (change == ItemSelectedChange && scene())
+    if (change == ItemSelectedChange && scene() && _hasEditWidget)
         _dockWidget->setVisible(value.toBool());
 
     return DuQFNode::itemChange(change, value);
+}
+
+void ObjectNode::setEditWidget(ObjectEditWidget *w)
+{
+    w->setParent(_dockWidget);
+    _dockWidget->setWidget(w);
+    _hasEditWidget = true;
 }
 
 void ObjectNode::objectChanged()

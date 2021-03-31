@@ -71,6 +71,7 @@ SOURCES += \
     objecteditwidget.cpp \
     pipeline-editor/objectnode.cpp \
     pipeline-editor/pipelinewidget.cpp \
+    pipeline-editor/stepnode.cpp \
     projecteditwidget.cpp \
     projectselectorwidget.cpp \
     projectsmanagerwidget.cpp \
@@ -154,6 +155,7 @@ HEADERS += \
     objecteditwidget.h \
     pipeline-editor/objectnode.h \
     pipeline-editor/pipelinewidget.h \
+    pipeline-editor/stepnode.h \
     projecteditwidget.h \
     projectselectorwidget.h \
     projectsmanagerwidget.h \

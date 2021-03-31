@@ -1,5 +1,5 @@
-#ifndef STEPNODE_H
-#define STEPNODE_H
+#ifndef OBJECTNODE_H
+#define OBJECTNODE_H
 
 #include <QDockWidget>
 
@@ -19,12 +19,14 @@ public:
 
 protected:
     QVariant itemChange(GraphicsItemChange change, const QVariant &value) Q_DECL_OVERRIDE;
+    void setEditWidget(ObjectEditWidget *w);
 
 private slots:
     virtual void objectChanged();
     void objectRemoved();
 
 private:
+    bool _hasEditWidget = false;
     RamObject *_object;
     ObjectDockWidget *_dockWidget;
 };

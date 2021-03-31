@@ -217,7 +217,7 @@ void PipelineWidget::changeProject(RamProject *project)
 
 void PipelineWidget::newStep(RamStep *step)
 {
-    ObjectNode *stepNode = new ObjectNode(step);
+    StepNode *stepNode = new StepNode(step);
     _nodeScene->addNode( stepNode );
 
     // Reset position
