@@ -6,6 +6,7 @@
 #include <QPainter>
 #include <QGraphicsSceneMouseEvent>
 #include <QGraphicsTextItem>
+#include <QGraphicsSvgItem>
 #include <QApplication>
 
 #include "duqf-app/app-style.h"
@@ -33,6 +34,7 @@ public:
     void setTitle(const QString &title);
     QString titleToolTip() const;
     void setTitleToolTip(const QString &toolTip);
+    void setIcon(QString icon);
 
     void setGrid(DuQFGrid *grid);
     DuQFGrid *grid() const;
@@ -73,6 +75,7 @@ private:
 
     // Children
     QGraphicsTextItem *m_titleItem;
+    QGraphicsSvgItem *m_iconItem;
     DuQFSlot *m_defaultInputConnector;
     DuQFSlot *m_defaultOutputConnector;
 

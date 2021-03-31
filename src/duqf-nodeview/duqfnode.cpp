@@ -36,6 +36,10 @@ DuQFNode::DuQFNode(QString title)
 
     setTitle(title);
 
+    // Icon
+
+    m_iconItem = new QGraphicsSvgItem(this);
+
     connect(m_defaultInputConnector, &DuQFSlot::connectionInitiated, this, &DuQFNode::connectionInitiated);
     connect(m_defaultInputConnector, &DuQFSlot::connectionMoved, this, &DuQFNode::connectionMoved);
     connect(m_defaultInputConnector, &DuQFSlot::connectionFinished, this, &DuQFNode::connectionFinished);
@@ -57,7 +61,24 @@ DuQFNode::~DuQFNode()
 
 QRectF DuQFNode::boundingRect() const
 {
-    return m_titleItem->boundingRect().adjusted(-m_padding-7, -m_padding-3, m_padding+7, m_padding+3);
+    // Icon rect
+    QRectF rect = m_iconItem->boundingRect();
+    rect.setWidth( rect.width() * m_iconItem->scale() );
+
+    //add padding between icon & text
+    if (m_iconItem->boundingRect().width() > 0)
+        rect.adjust(0,0,m_padding, 0);
+
+    //add text width
+    rect.adjust(0,0, + m_titleItem->boundingRect().width(),0);
+
+    //set correct height
+    rect.setHeight( m_titleItem->boundingRect().height() );
+
+    //set margins
+    rect.adjust(-m_padding-7, -m_padding-3, m_padding+7, m_padding+3);
+
+    return rect;
 }
 
 void DuQFNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
@@ -167,8 +188,8 @@ void DuQFNode::setTitle(const QString &title)
 {
     m_titleItem->setPlainText(title);
     QRectF rect = m_titleItem->boundingRect().adjusted(-m_padding-7, -m_padding-3, m_padding+7, m_padding+3);
-    m_defaultOutputConnector->setPos(rect.right() , rect.center().y());
-    m_defaultInputConnector->setPos(rect.left(), rect.center().y());
+    m_defaultOutputConnector->setPos(rect.right()-2 , rect.center().y());
+    m_defaultInputConnector->setPos(rect.left()+2, rect.center().y());
 }
 
 QString DuQFNode::titleToolTip() const
@@ -179,6 +200,27 @@ QString DuQFNode::titleToolTip() const
 void DuQFNode::setTitleToolTip(const QString &toolTip)
 {
     m_titleItem->setToolTip(toolTip);
+}
+
+void DuQFNode::setIcon(QString icon)
+{
+    qreal size = m_titleItem->boundingRect().height();
+
+    m_iconItem->deleteLater();
+    m_iconItem = new QGraphicsSvgItem(icon, this);
+
+    qreal currentHeight = m_iconItem->boundingRect().height();
+    qreal width = m_iconItem->boundingRect().width();
+
+    if (size != 0 && currentHeight != 0)
+    {
+        qreal scale = size/currentHeight;
+        m_iconItem->setScale(scale);
+        width = width*scale;
+    }
+
+    m_titleItem->setPos(width + m_padding, 0);
+    m_defaultOutputConnector->setPos(width + m_padding + m_titleItem->boundingRect().right() + 10, m_titleItem->boundingRect().center().y());
 }
 
 void DuQFNode::remove()

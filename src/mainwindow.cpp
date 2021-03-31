@@ -123,7 +123,7 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
 void MainWindow::addStepDockWidget(QDockWidget *w)
 {
     w->setParent(this);
-    this->addDockWidget(Qt::LeftDockWidgetArea, w);
+    this->addDockWidget(Qt::RightDockWidgetArea, w);
     if (_stepDock.count() > 0)
     {
         this->tabifyDockWidget(_stepDock.last(), w);
