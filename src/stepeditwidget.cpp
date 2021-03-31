@@ -86,6 +86,8 @@ void StepEditWidget::setupUi()
     usersLayout->setSpacing(3);
     usersLayout->setContentsMargins(0, 0, 0, 0);
     QLabel *usersLabel = new QLabel("Users", usersWidget);
+    usersLabel->setMinimumWidth(50);
+    usersLabel->setMaximumWidth(50);
     usersLabel->setAlignment(Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop);
     usersLayout->addWidget(usersLabel);
 
@@ -118,6 +120,8 @@ void StepEditWidget::setupUi()
     applicationsLayout->setSpacing(3);
     applicationsLayout->setContentsMargins(0, 0, 0, 0);
     QLabel *applicationsLabel = new QLabel("Apps", applicationsWidget);
+    applicationsLabel->setMinimumWidth(50);
+    applicationsLabel->setMaximumWidth(50);
     applicationsLabel->setAlignment(Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop);
     applicationsLayout->addWidget(applicationsLabel);
 

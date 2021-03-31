@@ -3,14 +3,14 @@
 DuQFDockTitle::DuQFDockTitle(QString title, QWidget *parent) : QWidget(parent)
 {
     QVBoxLayout *vlayout = new QVBoxLayout(this);
-    vlayout->setContentsMargins(0,0,0,0);
+    vlayout->setContentsMargins(0,3,0,3);
     vlayout->setSpacing(0);
 
     // include in a frame for the BG
     QFrame *mainFrame = new QFrame(this);
 
     QHBoxLayout *layout = new QHBoxLayout(this);
-    layout->setContentsMargins(3,3,3,3);
+    layout->setContentsMargins(3,0,3,0);
     layout->setSpacing(3);
 
     QToolButton *pinButton = new QToolButton(this);
