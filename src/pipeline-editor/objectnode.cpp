@@ -57,6 +57,5 @@ void ObjectNode::objectChanged()
 
 void ObjectNode::objectRemoved()
 {
-    qDebug() << "removing object";
     this->remove();
 }
