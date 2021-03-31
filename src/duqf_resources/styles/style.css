@@ -708,6 +708,12 @@ QGraphicsView {
     selection-background-color: rgba(129, 9, 173, 127);
 }
 
+/* DOCKS */
+
+DuQFDockTitle QFrame {
+    background-color: @color-less-dark-grey;
+}
+
 DuQFDockTitle QToolButton:checked {
     background-color: @color-darker-grey;
 }
@@ -715,6 +721,7 @@ DuQFDockTitle QToolButton:checked {
 DuQFDockTitle #windowButton {
     max-width: @padding-large;
 }
+
 
 /* DUQF CUSTOM WIDGETS */
 

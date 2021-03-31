@@ -5,7 +5,8 @@ ObjectDockWidget::ObjectDockWidget(RamObject *obj, QWidget *parent):
 {
     _object = obj;
 
-    _titleWidget = new DuQFDockTitle(obj->shortName(), this);
+    _titleWidget = new DuQFDockTitle(obj->name(), this);
+    _titleWidget->setObjectName("dockTitle");
 
     this->setTitleBarWidget(_titleWidget);
 

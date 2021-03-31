@@ -2,6 +2,13 @@
 
 DuQFDockTitle::DuQFDockTitle(QString title, QWidget *parent) : QWidget(parent)
 {
+    QVBoxLayout *vlayout = new QVBoxLayout(this);
+    vlayout->setContentsMargins(0,0,0,0);
+    vlayout->setSpacing(0);
+
+    // include in a frame for the BG
+    QFrame *mainFrame = new QFrame(this);
+
     QHBoxLayout *layout = new QHBoxLayout(this);
     layout->setContentsMargins(3,3,3,3);
     layout->setSpacing(3);
@@ -24,6 +31,11 @@ DuQFDockTitle::DuQFDockTitle(QString title, QWidget *parent) : QWidget(parent)
     closeButton->setObjectName("windowButton");
 
     layout->addWidget(closeButton);
+
+    mainFrame->setLayout(layout);
+    vlayout->addWidget(mainFrame);
+
+    this->setLayout(vlayout);
 
     connect(closeButton, &QToolButton::clicked, this, &DuQFDockTitle::closeDockWidget);
     connect(pinButton, &QToolButton::clicked, this, &DuQFDockTitle::pinDockWidget);
