@@ -120,6 +120,17 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     duqf_setStyle();
 }
 
+void MainWindow::addStepDockWidget(QDockWidget *w)
+{
+    w->setParent(this);
+    this->addDockWidget(Qt::LeftDockWidgetArea, w);
+    if (_stepDock.count() > 0)
+    {
+        this->tabifyDockWidget(_stepDock.last(), w);
+    }
+    _stepDock << w;
+}
+
 void MainWindow::duqf_initUi()
 {
     // ===== SYSTRAY ======

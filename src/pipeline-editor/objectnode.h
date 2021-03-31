@@ -18,6 +18,8 @@ public:
     ~ObjectNode();
     RamObject *ramObject() const;
 
+    ObjectDockWidget *dockWidget() const;
+
 protected:
     QVariant itemChange(GraphicsItemChange change, const QVariant &value) Q_DECL_OVERRIDE;
     void setEditWidget(ObjectEditWidget *w);

@@ -51,6 +51,8 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
 public:
     explicit MainWindow(QStringList args, QWidget *parent = nullptr);
 
+    void addStepDockWidget(QDockWidget *w);
+
 private:
     // ========= RxOT UI ==============
     /**
@@ -83,6 +85,8 @@ private:
     QToolButton *userButton;
     QToolButton *networkButton;
     QToolButton *refreshButton;
+
+    QList<QDockWidget *> _stepDock;
 
     QMetaObject::Connection _currentUserConnection;
 

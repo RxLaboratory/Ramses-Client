@@ -5,10 +5,8 @@ ObjectNode::ObjectNode(RamObject *obj)
     _object = obj;
 
     // Build a dock widget to edit details
-    QMainWindow *mw = GuiUtils::appMainWindow();
-    _dockWidget = new ObjectDockWidget(obj, mw);
+    _dockWidget = new ObjectDockWidget(obj);
 
-    mw->addDockWidget(Qt::RightDockWidgetArea, _dockWidget);
     _dockWidget->hide();
 
     this->setTitle(_object->shortName());
@@ -58,4 +56,9 @@ void ObjectNode::objectChanged()
 void ObjectNode::objectRemoved()
 {
     this->remove();
+}
+
+ObjectDockWidget *ObjectNode::dockWidget() const
+{
+    return _dockWidget;
 }
