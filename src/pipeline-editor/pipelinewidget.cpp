@@ -86,12 +86,13 @@ PipelineWidget::PipelineWidget(QWidget *parent) :
     titleBar->insertLeft(layButton);
 
     // Step menu
-    QMenu *stepMenu = new QMenu(this);
+    stepMenu = new QMenu(this);
 
     QAction *actionAddStep = new QAction("Create new step", this);
     actionAddStep->setShortcut(QKeySequence("Shift+A"));
     stepMenu->addAction(actionAddStep);
     stepMenu->addSeparator();
+    stepMenuSeparator = stepMenu->addSeparator();
 
     QAction *actionDeleteStep = new QAction("Remove selected steps", this);
     actionDeleteStep->setShortcut(QKeySequence("Shift+X"));
@@ -109,6 +110,8 @@ PipelineWidget::PipelineWidget(QWidget *parent) :
     stepButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     stepButton->setPopupMode(QToolButton::InstantPopup);
     stepButton->setMenu(stepMenu);
+
+    foreach(RamStep *step, Ramses::instance()->templateSteps()) newTemplateStep(step);
 
     titleBar->insertLeft(stepButton);
 
@@ -188,6 +191,7 @@ PipelineWidget::PipelineWidget(QWidget *parent) :
     connect(actionSelectChildren, SIGNAL(triggered()), _nodeScene, SLOT(selectChildNodes()));
     connect(actionSelectParents, SIGNAL(triggered()), _nodeScene, SLOT(selectParentNodes()));
     // Ramses connections
+    connect(Ramses::instance(), &Ramses::newTemplateStep, this, &PipelineWidget::newTemplateStep);
     connect(Ramses::instance(), &Ramses::projectChanged, this, &PipelineWidget::changeProject);
     connect(Ramses::instance(), &Ramses::loggedIn, this, &PipelineWidget::userChanged);
 }
@@ -280,6 +284,52 @@ void PipelineWidget::createStep()
     if (!project) return;
 
     project->createStep();
+}
+
+void PipelineWidget::newTemplateStep(RamStep *step)
+{
+    if (!step) return;
+    if (step->uuid() == "") return;
+    QAction *stepAction = new QAction(step->name());
+    stepAction->setData(step->uuid());
+    stepMenu->insertAction(stepMenuSeparator, stepAction);
+    connect(stepAction, &QAction::triggered, this, &PipelineWidget::assignStep);
+    connect(step, &RamStep::removed, this, &PipelineWidget::templateStepRemoved);
+    connect(step, &RamStep::changed, this, &PipelineWidget::templateStepChanged);
+
+}
+
+void PipelineWidget::templateStepRemoved(RamObject *o)
+{
+    QList<QAction *> actions = stepMenu->actions();
+    for (int i = actions.count() -1; i >= 0; i--)
+    {
+        if (actions[i]->data().toString() == o->uuid())
+        {
+            stepMenu->removeAction(actions[i]);
+            actions[i]->deleteLater();
+        }
+    }
+}
+
+void PipelineWidget::templateStepChanged()
+{
+    RamStep *s = (RamStep*)sender();
+    QList<QAction *> actions = stepMenu->actions();
+    for (int i = actions.count() -1; i >= 0; i--)
+    {
+        if (actions[i]->data().toString() == s->uuid()) actions[i]->setText(s->name());
+    }
+}
+
+void PipelineWidget::assignStep()
+{
+    RamProject *project = Ramses::instance()->currentProject();
+    if (!project) return;
+    QAction *stepAction = (QAction*)sender();
+    RamStep *templateStep = Ramses::instance()->templateStep(stepAction->data().toString());
+    if (!templateStep) return;
+    project->assignStep(templateStep);
 }
 
 void PipelineWidget::showEvent(QShowEvent *event)

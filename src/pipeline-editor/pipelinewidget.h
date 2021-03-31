@@ -32,6 +32,10 @@ private slots:
     void setGridSize(int size);
     void userChanged(RamUser *u);
     void createStep();
+    void newTemplateStep(RamStep *step);
+    void templateStepRemoved(RamObject *o);
+    void templateStepChanged();
+    void assignStep();
 protected:
     void showEvent(QShowEvent *event) Q_DECL_OVERRIDE;
     void hideEvent(QHideEvent *event) Q_DECL_OVERRIDE;
@@ -42,6 +46,8 @@ private:
     QCheckBox *snapButton;
     DuQFNodeScene *_nodeScene;
     DuQFNodeView *_nodeView;
+    QMenu *stepMenu;
+    QAction *stepMenuSeparator;
     QList<QMetaObject::Connection> _projectConnections;
 };
 
