@@ -88,6 +88,10 @@ public:
     void removeApplication(QString uuid);
     void assignFileType(QString applicationUuid, QString fileTypeUuid, QString type = "");
     void unassignFileType(QString applicationUuid, QString fileTypeUuid, QString type = "");
+    //Pipes
+    void createPipe(QString outputUuid, QString inputUuid, QString uuid);
+    void updatePipe(QString uuid, QString inputUuid, QString outputUuid, QString colorSpaceUuid = "", QString filetypeUuid = "");
+    void removePipe(QString uuid);
 
 public slots:
     void suspend(bool suspended = true);

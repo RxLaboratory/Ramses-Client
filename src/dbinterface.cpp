@@ -485,6 +485,36 @@ void DBInterface::unassignFileType(QString applicationUuid, QString fileTypeUuid
     request(q);
 }
 
+void DBInterface::createPipe(QString outputUuid, QString inputUuid, QString uuid)
+{
+    QStringList q("createPipe");
+    q << "uuid=" + uuid;
+    q << "outputUuid=" + outputUuid;
+    q << "inputUuid=" + inputUuid;
+
+    request(q);
+}
+
+void DBInterface::updatePipe(QString uuid, QString inputUuid, QString outputUuid, QString colorSpaceUuid, QString filetypeUuid)
+{
+    QStringList q("updatePipe");
+    q << "uuid=" + uuid;
+    q << "inputUuid=" + inputUuid;
+    q << "outputUuid=" + outputUuid;
+    q << "colorSpaceUuid=" + colorSpaceUuid;
+    q << "filetypeUuid=" + filetypeUuid;
+
+    request(q);
+}
+
+void DBInterface::removePipe(QString uuid)
+{
+    QStringList q("removePipe");
+    q << "uuid=" + uuid;
+
+    request(q);
+}
+
 DBInterface::DBInterface(QObject *parent) : DuQFLoggerObject("Database Interface", parent)
 {
     // LOCAL
