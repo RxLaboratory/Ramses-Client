@@ -853,6 +853,9 @@ void Ramses::gotPipes(QJsonArray pipes, RamProject *project)
                         p.value("uuid").toString()
                         );
 
+            RamFileType *ft = fileType( p.value("filetypeUuid").toString()) ;
+            if (ft) pipe->setFileType( ft );
+
             project->addPipe(pipe);
         }
     }

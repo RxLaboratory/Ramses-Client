@@ -57,7 +57,7 @@ void SequencesManagerWidget::changeProject(RamProject *project)
     //add steps
     foreach(RamSequence *seq, project->sequences()) newSequence(seq);
     _projectConnections << connect(project, &RamProject::newSequence, this, &SequencesManagerWidget::newSequence);
-    _projectConnections << connect(project, SIGNAL(sequenceRemoved(QString)), this, SLOT(removeSequence(QString)));
+    _projectConnections << connect(project, SIGNAL(sequenceRemoved(RamSequence*)), this, SLOT(removeSequence(RamSequence*)));
 
     this->setEnabled(true);
 }
@@ -71,12 +71,17 @@ void SequencesManagerWidget::newSequence(RamSequence *seq)
         QListWidgetItem *seqItem = new QListWidgetItem(seq->name());
         seqItem->setData(Qt::UserRole, seq->uuid());
         this->addItem(seqItem);
-        connect(seq, &RamSequence::removed, this, &SequencesManagerWidget::removeSequence);
+        connect(seq, SIGNAL(removed(RamObject*)), this, SLOT(removeSequence(RamObject*)));
         connect(seq, &RamSequence::changed, this, &SequencesManagerWidget::sequenceChanged);
     }
 }
 
 void SequencesManagerWidget::removeSequence(RamObject *seq)
+{
+    removeData(seq->uuid());
+}
+
+void SequencesManagerWidget::removeSequence(RamSequence *seq)
 {
     removeData(seq->uuid());
 }

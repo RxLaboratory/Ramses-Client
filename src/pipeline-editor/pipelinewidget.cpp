@@ -353,7 +353,11 @@ void PipelineWidget::newPipe(RamPipe *pipe)
         if (inputNode && outputNode) break;
     }
 
-    _nodeScene->connectNodes(outputNode, inputNode);
+    DuQFConnection *co = _nodeScene->connectNodes(outputNode, inputNode);
+    RamFileType *ft = pipe->fileType();
+    if (ft) co->connector()->setTitle( ft->shortName() );
+
+    connect(pipe, SIGNAL(removed(RamObject*)), co, SLOT(remove()));
 }
 
 void PipelineWidget::stepsConnected(DuQFConnection *co)
