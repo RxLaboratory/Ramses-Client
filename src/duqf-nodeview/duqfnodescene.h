@@ -23,6 +23,8 @@ public:
     QList<DuQFNode*> selectedNodes();
     QGraphicsItemGroup *createNodeGroup(QList<DuQFNode*> nodes);
 
+    DuQFConnectionManager *connectionManager() const;
+
 public slots:
     void addNode();
     void addNode(DuQFNode *node);
@@ -63,7 +65,7 @@ private:
     bool m_connecting = false;
     DuQFConnector *m_connectingItem = nullptr;
 
-    DuQFConnectionManager m_connectionManager;
+    DuQFConnectionManager *m_connectionManager;
 };
 
 #endif // DUQFNODESCENE_H

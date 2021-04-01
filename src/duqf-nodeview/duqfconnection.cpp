@@ -79,4 +79,19 @@ void DuQFConnection::inputMoved()
     m_connector->setTo( m_input->scenePos() );
 }
 
+DuQFConnector *DuQFConnection::connector() const
+{
+    return m_connector;
+}
+
+DuQFNode *DuQFConnection::inputNode()
+{
+    return (DuQFNode*)m_input->parentItem();
+}
+
+DuQFNode *DuQFConnection::outputNode()
+{
+    return (DuQFNode*)m_output->parentItem();
+}
+
 

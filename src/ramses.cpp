@@ -161,6 +161,7 @@ void Ramses::gotProjects(QJsonArray projects)
                 gotSteps( newProject.value("steps").toArray(), existingProject);
                 gotAssetGroups( newProject.value("assetGroups").toArray(), existingProject);
                 gotSequences( newProject.value("sequences").toArray(), existingProject);
+                gotPipes( newProject.value("pipes").toArray(), existingProject);
                 //send the signal
                 b.unblock();
                 existingProject->setFolderPath( newProject.value("folderPath").toString());
@@ -192,6 +193,7 @@ void Ramses::gotProjects(QJsonArray projects)
         gotSteps( p.value("steps").toArray(), project);
         gotAssetGroups( p.value("assetGroups").toArray(), project);
         gotSequences( p.value("sequences").toArray(), project);
+        gotPipes( p.value("pipes").toArray(), project);
 
         _projects << project;
 
@@ -794,6 +796,66 @@ void Ramses::gotSequences(QJsonArray sequences, RamProject *project)
 
     // sort the sequences
     project->sortSequences();
+}
+
+void Ramses::gotPipes(QJsonArray pipes, RamProject *project)
+{
+    DBISuspender s;
+
+    QList<RamPipe*> projectPipeline = project->pipeline();
+
+    // loop through existing pipeline to update pipes
+    for (int i = projectPipeline.count() - 1; i >= 0; i--)
+    {
+        RamPipe *existingPipe = projectPipeline[i];
+        // loop through new pipes to update
+        bool found = false;
+        for (int j = 0; j < pipes.count(); j++)
+        {
+            QJsonObject newP = pipes[j].toObject();
+            QString uuid = newP.value("uuid").toString();
+            // Found, update
+            if (uuid == existingPipe->uuid())
+            {
+                found = true;
+                //Emit just one signal
+                QSignalBlocker b(existingPipe);
+                RamStep *inputStep =  project->step(newP.value("inputStepUuid").toString());
+                if (inputStep) existingPipe->setInputStep( inputStep );
+                RamStep *outputStep =  project->step(newP.value("outputStepUuid").toString());
+                if (outputStep) existingPipe->setOutputStep( outputStep );
+                b.unblock();
+                RamFileType *ft = fileType( newP.value("filetypeUuid").toString()) ;
+                if (ft) existingPipe->setFileType( ft );
+                //remove from new pipes
+                pipes.removeAt(j);
+                break;
+            }
+        }
+        // Not found, remove from existing
+        if (!found)
+        {
+            project->removePipe(existingPipe);
+        }
+    }
+
+    // loop through remaining new asset groups to add them
+    for (int i = 0; i < pipes.count(); i++)
+    {
+        QJsonObject p = pipes[i].toObject();
+        RamStep *inputStep =  project->step(p.value("inputStepUuid").toString());
+        RamStep *outputStep =  project->step(p.value("outputStepUuid").toString());
+        if (inputStep && outputStep)
+        {
+            RamPipe *pipe = new RamPipe(
+                        inputStep,
+                        outputStep,
+                        p.value("uuid").toString()
+                        );
+
+            project->addPipe(pipe);
+        }
+    }
 }
 
 void Ramses::dbiConnectionStatusChanged(NetworkUtils::NetworkStatus s)

@@ -82,6 +82,7 @@ SOURCES += \
     ramassetwidget.cpp \
     ramfiletype.cpp \
     ramobject.cpp \
+    rampipe.cpp \
     ramproject.cpp \
     ramsequence.cpp \
     ramses.cpp \
@@ -166,6 +167,7 @@ HEADERS += \
     ramassetwidget.h \
     ramfiletype.h \
     ramobject.h \
+    rampipe.h \
     ramproject.h \
     ramsequence.h \
     ramses.h \

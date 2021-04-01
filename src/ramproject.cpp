@@ -180,6 +180,52 @@ void RamProject::sortSequences()
     std::sort(_sequences.begin(), _sequences.end(), sequenceSorter);
 }
 
+QList<RamPipe *> RamProject::pipeline()
+{
+    return _pipeline;
+}
+
+RamPipe *RamProject::pipe(QString uuid)
+{
+    foreach(RamPipe *pipe, _pipeline)
+        if (pipe->uuid() == uuid) return pipe;
+
+    return nullptr;
+}
+
+RamPipe *RamProject::createPipe(RamStep *output, RamStep *input)
+{
+    RamPipe *p = new RamPipe(output, input);
+    addPipe(p);
+    return p;
+}
+
+void RamProject::addPipe(RamPipe *pipe)
+{
+    pipe->setProjectUuid( _uuid );
+    _pipeline << pipe;
+    emit newPipe(pipe);
+}
+
+void RamProject::removePipe(QString uuid)
+{
+    for(int i = _pipeline.count(); i >= 0; i--)
+    {
+        RamPipe *p = _pipeline.at(i);
+        if (p->uuid() == uuid)
+        {
+            _pipeline.removeAt(i);
+            emit pipeRemoved(p);
+            p->remove();
+        }
+    }
+}
+
+void RamProject::removePipe(RamPipe *pipe)
+{
+    removePipe(pipe->uuid());
+}
+
 QList<RamStep *> RamProject::steps() const
 {
     return _steps;

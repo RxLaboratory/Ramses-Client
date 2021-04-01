@@ -92,7 +92,6 @@ void DuQFNodeView::setZoom(int zoomPercent)
     setTransform(t);
 }
 
-
 void DuQFNodeView::wheelEvent(QWheelEvent *event)
 {
     QPoint numPixels = event->pixelDelta();

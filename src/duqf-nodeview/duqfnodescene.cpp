@@ -3,6 +3,7 @@
 DuQFNodeScene::DuQFNodeScene(DuQFGrid &grid):
     m_grid(grid)
 {
+    m_connectionManager = new DuQFConnectionManager(this);
     setSceneRect(-m_initialSize, -m_initialSize, m_initialSize * 2, m_initialSize * 2);
 }
 
@@ -301,7 +302,7 @@ void DuQFNodeScene::finishConnection(QPointF to, QPointF from)
     }
 
     // Connect
-    m_connectionManager.addConnection(output, input, m_connectingItem);
+    m_connectionManager->addConnection(output, input, m_connectingItem);
 }
 
 void DuQFNodeScene::layoutNodesInColumn(QList<DuQFNode *> nodes, QPointF center)
@@ -404,5 +405,10 @@ QRectF DuQFNodeScene::calculateRectangle(bool isForExport) const
     const double density = nodeArea / rect.width() / rect.height();
     const double adjust = 3.0 * std::max(density * rect.width(), density * rect.height()) / pow(nodes, 1.5);
     return rect.adjusted(-adjust / 2, -adjust / 2, adjust / 2, adjust / 2).adjusted(-margin, -margin, margin, margin);
+}
+
+DuQFConnectionManager *DuQFNodeScene::connectionManager() const
+{
+    return m_connectionManager;
 }
 

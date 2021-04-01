@@ -118,12 +118,12 @@ PipelineWidget::PipelineWidget(QWidget *parent) :
     // Connections menu
     QMenu *coMenu = new QMenu(this);
 
-    QAction *actionDeleteConnections = new QAction("Remove selected connections", this);
+    QAction *actionDeleteConnections = new QAction("Remove selected pipes", this);
     actionDeleteConnections->setShortcut(QKeySequence("Alt+X"));
     coMenu->addAction(actionDeleteConnections);
 
     QToolButton *coButton = new QToolButton(this);
-    coButton->setText("Connection");
+    coButton->setText("Pipe");
     coButton->setIcon(QIcon(":/icons/connection"));
     coButton->setIconSize(QSize(16,16));
     coButton->setObjectName("menuButton");
@@ -190,6 +190,7 @@ PipelineWidget::PipelineWidget(QWidget *parent) :
     connect(actionSelectAll, SIGNAL(triggered()), _nodeScene, SLOT(selectAllNodes()));
     connect(actionSelectChildren, SIGNAL(triggered()), _nodeScene, SLOT(selectChildNodes()));
     connect(actionSelectParents, SIGNAL(triggered()), _nodeScene, SLOT(selectParentNodes()));
+    connect(_nodeScene->connectionManager(), SIGNAL(newConnection(DuQFConnection*)), this, SLOT(stepsConnected(DuQFConnection*)));
     // Ramses connections
     connect(Ramses::instance(), &Ramses::newTemplateStep, this, &PipelineWidget::newTemplateStep);
     connect(Ramses::instance(), &Ramses::projectChanged, this, &PipelineWidget::changeProject);
@@ -330,6 +331,23 @@ void PipelineWidget::assignStep()
     RamStep *templateStep = Ramses::instance()->templateStep(stepAction->data().toString());
     if (!templateStep) return;
     project->assignStep(templateStep);
+}
+
+void PipelineWidget::stepsConnected(DuQFConnection *co)
+{
+    RamProject *project = Ramses::instance()->currentProject();
+    if (!project) return;
+    // Get steps
+    StepNode *outputNode = (StepNode*)co->outputNode();
+    StepNode *inputNode = (StepNode*)co->inputNode();
+    if (!outputNode) return;
+    if (!inputNode) return;
+    RamStep *output = outputNode->step();
+    RamStep *input = inputNode->step();
+    if (!output) return;
+    if (!input) return;
+
+    project->createPipe(output, input);
 }
 
 void PipelineWidget::showEvent(QShowEvent *event)

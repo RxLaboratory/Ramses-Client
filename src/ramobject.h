@@ -21,10 +21,9 @@ public:
     QString uuid() const;
     void setUuid(const QString &uuid);
 
-    void remove();
-
 public slots:
     virtual void update() = 0;
+    void remove();
 
 signals:
     void changed(RamObject *);

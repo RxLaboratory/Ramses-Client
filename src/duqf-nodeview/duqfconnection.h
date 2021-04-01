@@ -21,6 +21,11 @@ public:
     DuQFSlot *output() const;
     void setOutput(DuQFSlot *output);
 
+    DuQFConnector *connector() const;
+
+    DuQFNode *inputNode();
+    DuQFNode *outputNode();
+
 public slots:
     void remove();
 

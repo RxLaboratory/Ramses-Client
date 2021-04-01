@@ -5,6 +5,7 @@
 #include "ramstep.h"
 #include "ramassetgroup.h"
 #include "ramsequence.h"
+#include "rampipe.h"
 #include "dbisuspender.h"
 
 class RamProject : public RamObject
@@ -50,6 +51,14 @@ public:
     void removeSequence(RamObject *seq);
     void sortSequences();
 
+    // Pipeline
+    QList<RamPipe *> pipeline();
+    RamPipe *pipe(QString uuid);
+    RamPipe* createPipe(RamStep *output, RamStep *input);
+    void addPipe(RamPipe *pipe);
+    void removePipe(QString uuid);
+    void removePipe(RamPipe *pipe);
+
     void update();
 
 signals:
@@ -59,6 +68,8 @@ signals:
     void assetGroupRemoved(QString uuid);
     void newSequence(RamSequence *);
     void sequenceRemoved(RamSequence *);
+    void newPipe(RamPipe *);
+    void pipeRemoved(RamPipe *p);
 
 private slots:
     void stepRemoved(RamObject *o);
@@ -70,6 +81,7 @@ private:
     QList<RamStep *> _steps;
     QList<RamAssetGroup *> _assetGroups;
     QList<RamSequence *> _sequences;
+    QList<RamPipe *> _pipeline;
 };
 
 #endif // RAMPROJECT_H

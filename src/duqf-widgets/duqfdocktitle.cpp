@@ -9,7 +9,7 @@ DuQFDockTitle::DuQFDockTitle(QString title, QWidget *parent) : QWidget(parent)
     // include in a frame for the BG
     QFrame *mainFrame = new QFrame(this);
 
-    QHBoxLayout *layout = new QHBoxLayout(this);
+    QHBoxLayout *layout = new QHBoxLayout(mainFrame);
     layout->setContentsMargins(3,0,3,0);
     layout->setSpacing(3);
 

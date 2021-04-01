@@ -2,6 +2,8 @@
 
 StepNode::StepNode(RamStep *step): ObjectNode(step)
 {
+    _step = step;
+
     if (step->type() == RamStep::AssetProduction)
         this->setIcon(":/icons/asset");
     else if (step->type() == RamStep::ShotProduction)
@@ -15,4 +17,9 @@ StepNode::StepNode(RamStep *step): ObjectNode(step)
     setEditWidget(stepWidget);
     MainWindow *mw = (MainWindow*)GuiUtils::appMainWindow();
     mw->addStepDockWidget(this->dockWidget());
+}
+
+RamStep *StepNode::step() const
+{
+    return _step;
 }

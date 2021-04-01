@@ -36,6 +36,7 @@ private slots:
     void templateStepRemoved(RamObject *o);
     void templateStepChanged();
     void assignStep();
+    void stepsConnected(DuQFConnection *co);
 protected:
     void showEvent(QShowEvent *event) Q_DECL_OVERRIDE;
     void hideEvent(QHideEvent *event) Q_DECL_OVERRIDE;

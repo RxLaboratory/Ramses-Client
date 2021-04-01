@@ -9,6 +9,7 @@ void DuQFConnectionManager::addConnection(DuQFConnection *connection)
 {
     connect(connection, &DuQFConnection::removed, this, &DuQFConnectionManager::removeConnection);
     m_connections << connection;
+    emit newConnection(connection);
 }
 
 bool DuQFConnectionManager::addConnection(DuQFSlot *output, DuQFSlot *input, DuQFConnector *connector)
