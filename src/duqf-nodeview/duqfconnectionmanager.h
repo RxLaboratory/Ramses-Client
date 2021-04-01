@@ -32,6 +32,7 @@ public slots:
 
 signals:
     void newConnection(DuQFConnection *);
+    void connectionRemoved(DuQFConnection *);
 
 private:
     QList<DuQFConnection*> m_connections;

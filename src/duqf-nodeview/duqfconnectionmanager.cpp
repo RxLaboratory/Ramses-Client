@@ -61,5 +61,6 @@ QList<DuQFConnection *> DuQFConnectionManager::connections() const
 void DuQFConnectionManager::removeConnection()
 {
     DuQFConnection *c = (DuQFConnection*)sender();
+    emit connectionRemoved(c);
     m_connections.removeAll(c);
 }

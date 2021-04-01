@@ -39,6 +39,7 @@ public slots:
     void selectNodes(QList<DuQFNode *> nodes);
     void selectChildNodes();
     void selectParentNodes();
+    void connectNodes(DuQFNode *o, DuQFNode *i);
 
 private slots:
     void initiateConnection(QPointF from);

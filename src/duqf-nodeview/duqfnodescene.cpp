@@ -261,6 +261,14 @@ void DuQFNodeScene::selectParentNodes()
     }
 }
 
+void DuQFNodeScene::connectNodes(DuQFNode *o, DuQFNode *i)
+{
+    DuQFConnector *c = new DuQFConnector();
+    this->addItem(c);
+
+    m_connectionManager->addConnection(o->defaultOutputSlot(), i->defaultInputSlot(), c);
+}
+
 void DuQFNodeScene::moveConnection(QPointF to)
 {
     // Snap

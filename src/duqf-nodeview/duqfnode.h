@@ -50,6 +50,9 @@ public:
     bool hasChildren() const;
     bool hasParents() const;
 
+    DuQFSlot *defaultInputSlot() const;
+    DuQFSlot *defaultOutputSlot() const;
+
 public slots:
     void remove();
 
@@ -76,8 +79,8 @@ private:
     // Children
     QGraphicsTextItem *m_titleItem;
     QGraphicsSvgItem *m_iconItem;
-    DuQFSlot *m_defaultInputConnector;
-    DuQFSlot *m_defaultOutputConnector;
+    DuQFSlot *m_defaultInputSlot;
+    DuQFSlot *m_defaultOutputSlot;
 
     // Connected nodes
     QList<DuQFNode*> m_childrenNodes;

@@ -54,6 +54,7 @@ public:
     // Pipeline
     QList<RamPipe *> pipeline();
     RamPipe *pipe(QString uuid);
+    RamPipe *pipe(RamStep *o, RamStep *i);
     RamPipe* createPipe(RamStep *output, RamStep *input);
     void addPipe(RamPipe *pipe);
     void removePipe(QString uuid);

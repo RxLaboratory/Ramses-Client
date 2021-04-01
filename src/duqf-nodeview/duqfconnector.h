@@ -11,7 +11,8 @@ class DuQFConnector : public QGraphicsObject
 {
     Q_OBJECT
 public:
-    DuQFConnector(QPointF from);
+    DuQFConnector(QString title = "");
+    DuQFConnector(QPointF from, QString title = "");
 
     enum { Type = UserType + 1 };
     int type() const Q_DECL_OVERRIDE { return Type; }
@@ -19,6 +20,9 @@ public:
     QRectF boundingRect() const Q_DECL_OVERRIDE;
     QPainterPath shape() const Q_DECL_OVERRIDE;
     void paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = nullptr) Q_DECL_OVERRIDE;
+
+    QString title() const;
+    void setTitle(const QString &title);
 
 public slots:
     void setTo(const QPointF &to);
@@ -29,6 +33,9 @@ signals:
     void removed();
 
 private:
+    void setupUi();
+    void updateTitlePos();
+
     bool m_removing = false;
 
     QPointF m_from;
@@ -38,6 +45,13 @@ private:
     // Coordinates of the handles
     QPointF m_fromHandle;
     QPointF m_toHandle;
+
+    // Appearance
+    int m_cornerRadius = 5;
+    int m_padding = 5;
+
+    // Children
+    QGraphicsTextItem *m_titleItem;
 };
 
 #endif // DUQFCONNECTOR_H

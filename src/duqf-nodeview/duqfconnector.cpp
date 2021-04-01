@@ -1,13 +1,31 @@
 #include "duqfconnector.h"
 
-DuQFConnector::DuQFConnector(QPointF from)
+DuQFConnector::DuQFConnector(QString title)
 {
+    setupUi();
+
+    m_from = QPointF();
+    m_to = m_from;
+    m_width = DuUI::getSize("margin");
+    setZValue(-1000);
+
+    setFlags(ItemIsSelectable);
+
+    m_titleItem->setPlainText(title);
+}
+
+DuQFConnector::DuQFConnector(QPointF from, QString title)
+{
+    setupUi();
+
     m_from = from;
     m_to = m_from;
     m_width = DuUI::getSize("margin");
     setZValue(-1000);
 
     setFlags(ItemIsSelectable);
+
+    m_titleItem->setPlainText(title);
 }
 
 QRectF DuQFConnector::boundingRect() const
@@ -40,7 +58,7 @@ QRectF DuQFConnector::boundingRect() const
         h = m_from.y() - m_to.y();
     }
 
-    return QRectF(x, y, w, h).adjusted(-m_width, -m_width, m_width, m_width);
+    return QRectF(x, y, w, h).adjusted(-m_width - m_titleItem->boundingRect().width(), -m_width - m_titleItem->boundingRect().height(), m_width + m_titleItem->boundingRect().width(), m_width + m_titleItem->boundingRect().height());
 }
 
 QPainterPath DuQFConnector::shape() const
@@ -85,18 +103,57 @@ void DuQFConnector::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
 
     painter->drawPath(path);
 
+    // Title Background
+    if (title() != "")
+    {
+        QPainterPath path;
+        const QRectF rect(m_titleItem->pos().x(),
+                          m_titleItem->pos().y(),
+                          m_titleItem->boundingRect().width() +2,
+                          m_titleItem->boundingRect().height() + 2);
+        path.addRoundedRect(rect, m_cornerRadius, m_cornerRadius);
+         painter->setRenderHint(QPainter::Antialiasing);
+
+         const QBrush brush( DuUI::getColor("less-light-grey") );
+         painter->fillPath(path, brush);
+
+         // Selection Stroke
+
+         if (isSelected())
+         {
+             QPen pen( DuUI::getColor("light-grey") );
+             pen.setWidth(2);
+             painter->strokePath(path, pen);
+         }
+    }
+
+
+
     painter->restore();
+}
+
+QString DuQFConnector::title() const
+{
+    return m_titleItem->toPlainText();
+}
+
+void DuQFConnector::setTitle(const QString &title)
+{
+    m_titleItem->setPlainText(title);
+    updateTitlePos();
 }
 
 void DuQFConnector::setTo(const QPointF &to)
 {
     m_to = to;
+    updateTitlePos();
     prepareGeometryChange();
 }
 
 void DuQFConnector::setFrom(const QPointF &from)
 {
     m_from = from;
+    updateTitlePos();
     prepareGeometryChange();
 }
 
@@ -106,4 +163,25 @@ void DuQFConnector::remove()
     m_removing = true;
     emit removed();
     deleteLater();
+}
+
+void DuQFConnector::setupUi()
+{
+    m_titleItem = new QGraphicsTextItem("");
+    QFont f = qApp->font();
+    f.setPixelSize( DuUI::getSize("font", "size-small") );
+    m_titleItem->setFont(f);
+    m_titleItem->setDefaultTextColor(DuUI::getColor("dark-grey"));
+    m_titleItem->setParentItem(this);
+    m_padding = DuUI::getSize("padding", "small");
+}
+
+void DuQFConnector::updateTitlePos()
+{
+    QPointF p = (m_from + m_to) / 2;
+    // Adjust with text size
+    p = p - m_titleItem->boundingRect().center();
+    m_titleItem->setPos(p);
+    //m_titleItem->setPos(boundingRect().width() / 2 - m_titleItem->boundingRect().width() / 2 + pos().x(),
+    //                    boundingRect().height() / 2 - m_titleItem->boundingRect().height() / 2 + pos().y());
 }

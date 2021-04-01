@@ -36,7 +36,9 @@ private slots:
     void templateStepRemoved(RamObject *o);
     void templateStepChanged();
     void assignStep();
+    void newPipe(RamPipe *pipe);
     void stepsConnected(DuQFConnection *co);
+    void connectionRemoved(DuQFConnection *co);
 protected:
     void showEvent(QShowEvent *event) Q_DECL_OVERRIDE;
     void hideEvent(QHideEvent *event) Q_DECL_OVERRIDE;

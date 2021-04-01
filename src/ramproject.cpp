@@ -193,6 +193,13 @@ RamPipe *RamProject::pipe(QString uuid)
     return nullptr;
 }
 
+RamPipe *RamProject::pipe(RamStep *o, RamStep *i)
+{
+    foreach(RamPipe *p, _pipeline)
+        if (p->outputStep()->uuid() == o->uuid() && p->inputStep()->uuid() == i->uuid()) return p;
+    return nullptr;
+}
+
 RamPipe *RamProject::createPipe(RamStep *output, RamStep *input)
 {
     RamPipe *p = new RamPipe(output, input);

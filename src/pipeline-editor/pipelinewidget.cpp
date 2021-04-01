@@ -191,6 +191,7 @@ PipelineWidget::PipelineWidget(QWidget *parent) :
     connect(actionSelectChildren, SIGNAL(triggered()), _nodeScene, SLOT(selectChildNodes()));
     connect(actionSelectParents, SIGNAL(triggered()), _nodeScene, SLOT(selectParentNodes()));
     connect(_nodeScene->connectionManager(), SIGNAL(newConnection(DuQFConnection*)), this, SLOT(stepsConnected(DuQFConnection*)));
+    connect(_nodeScene->connectionManager(), SIGNAL(connectionRemoved(DuQFConnection*)), this, SLOT(connectionRemoved(DuQFConnection*)));
     // Ramses connections
     connect(Ramses::instance(), &Ramses::newTemplateStep, this, &PipelineWidget::newTemplateStep);
     connect(Ramses::instance(), &Ramses::projectChanged, this, &PipelineWidget::changeProject);
@@ -211,6 +212,9 @@ void PipelineWidget::changeProject(RamProject *project)
 
     // add steps
     foreach(RamStep *step, project->steps()) newStep(step);
+
+    // add pipes
+    foreach(RamPipe *pipe, project->pipeline()) newPipe(pipe);
 
     _projectConnections << connect(project, &RamProject::newStep, this, &PipelineWidget::newStep);
 
@@ -333,6 +337,25 @@ void PipelineWidget::assignStep()
     project->assignStep(templateStep);
 }
 
+void PipelineWidget::newPipe(RamPipe *pipe)
+{
+    // Get nodes
+    DuQFNode *inputNode = nullptr;
+    DuQFNode *outputNode = nullptr;
+    foreach(DuQFNode *n, _nodeScene->nodes())
+    {
+        StepNode *is = (StepNode*)n;
+        if (is) if (is->step()->uuid() == pipe->inputStep()->uuid()) inputNode = n;
+
+        StepNode *os = (StepNode*)n;
+        if (os) if (os->step()->uuid() == pipe->outputStep()->uuid()) outputNode = n;
+
+        if (inputNode && outputNode) break;
+    }
+
+    _nodeScene->connectNodes(outputNode, inputNode);
+}
+
 void PipelineWidget::stepsConnected(DuQFConnection *co)
 {
     RamProject *project = Ramses::instance()->currentProject();
@@ -348,6 +371,24 @@ void PipelineWidget::stepsConnected(DuQFConnection *co)
     if (!input) return;
 
     project->createPipe(output, input);
+}
+
+void PipelineWidget::connectionRemoved(DuQFConnection *co)
+{
+    RamProject *project = Ramses::instance()->currentProject();
+    if (!project) return;
+    // Get steps
+    StepNode *outputNode = (StepNode*)co->outputNode();
+    StepNode *inputNode = (StepNode*)co->inputNode();
+    if (!outputNode) return;
+    if (!inputNode) return;
+    RamStep *output = outputNode->step();
+    RamStep *input = inputNode->step();
+    if (!output) return;
+    if (!input) return;
+
+    RamPipe *p = project->pipe(output, input);
+    if (p) p->remove();
 }
 
 void PipelineWidget::showEvent(QShowEvent *event)

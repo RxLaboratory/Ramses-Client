@@ -18,10 +18,10 @@ DuQFNode::DuQFNode(QString title)
 
     // Connectors
 
-    m_defaultInputConnector = new DuQFSlot( DuQFSlot::Input, false, DuUI::getColor("light-blue") );
-    m_defaultInputConnector->setParentItem(this);
-    m_defaultOutputConnector = new DuQFSlot( DuQFSlot::Output, false, DuUI::getColor("light-green") );
-    m_defaultOutputConnector->setParentItem(this);
+    m_defaultInputSlot = new DuQFSlot( DuQFSlot::Input, false, DuUI::getColor("light-blue") );
+    m_defaultInputSlot->setParentItem(this);
+    m_defaultOutputSlot = new DuQFSlot( DuQFSlot::Output, false, DuUI::getColor("light-green") );
+    m_defaultOutputSlot->setParentItem(this);
 
     // Title
 
@@ -40,12 +40,12 @@ DuQFNode::DuQFNode(QString title)
 
     setTitle(title);
 
-    connect(m_defaultInputConnector, &DuQFSlot::connectionInitiated, this, &DuQFNode::connectionInitiated);
-    connect(m_defaultInputConnector, &DuQFSlot::connectionMoved, this, &DuQFNode::connectionMoved);
-    connect(m_defaultInputConnector, &DuQFSlot::connectionFinished, this, &DuQFNode::connectionFinished);
-    connect(m_defaultOutputConnector, &DuQFSlot::connectionInitiated, this, &DuQFNode::connectionInitiated);
-    connect(m_defaultOutputConnector, &DuQFSlot::connectionMoved, this, &DuQFNode::connectionMoved);
-    connect(m_defaultOutputConnector, &DuQFSlot::connectionFinished, this, &DuQFNode::connectionFinished);
+    connect(m_defaultInputSlot, &DuQFSlot::connectionInitiated, this, &DuQFNode::connectionInitiated);
+    connect(m_defaultInputSlot, &DuQFSlot::connectionMoved, this, &DuQFNode::connectionMoved);
+    connect(m_defaultInputSlot, &DuQFSlot::connectionFinished, this, &DuQFNode::connectionFinished);
+    connect(m_defaultOutputSlot, &DuQFSlot::connectionInitiated, this, &DuQFNode::connectionInitiated);
+    connect(m_defaultOutputSlot, &DuQFSlot::connectionMoved, this, &DuQFNode::connectionMoved);
+    connect(m_defaultOutputSlot, &DuQFSlot::connectionFinished, this, &DuQFNode::connectionFinished);
 }
 
 DuQFNode::DuQFNode(const DuQFNode &other)
@@ -124,6 +124,16 @@ QVariant DuQFNode::itemChange(GraphicsItemChange change, const QVariant &value)
     return QGraphicsItem::itemChange(change, value);
 }
 
+DuQFSlot *DuQFNode::defaultOutputSlot() const
+{
+    return m_defaultOutputSlot;
+}
+
+DuQFSlot *DuQFNode::defaultInputSlot() const
+{
+    return m_defaultInputSlot;
+}
+
 QList<DuQFNode *> DuQFNode::parentNodes() const
 {
     return m_parentNodes;
@@ -191,8 +201,8 @@ void DuQFNode::setTitle(const QString &title)
     qreal right = rect.right()-2;
     if (m_iconItem->boundingRect().width() != 0)
         right += m_iconItem->boundingRect().right() * m_iconItem->scale() + m_padding;
-    m_defaultOutputConnector->setPos(right , rect.center().y());
-    m_defaultInputConnector->setPos(rect.left()+2, rect.center().y());
+    m_defaultOutputSlot->setPos(right , rect.center().y());
+    m_defaultInputSlot->setPos(rect.left()+2, rect.center().y());
 }
 
 QString DuQFNode::titleToolTip() const
@@ -223,7 +233,7 @@ void DuQFNode::setIcon(QString icon)
     }
 
     m_titleItem->setPos(width + m_padding, 0);
-    m_defaultOutputConnector->setPos(width + m_padding + m_titleItem->boundingRect().right() + 10, m_titleItem->boundingRect().center().y());
+    m_defaultOutputSlot->setPos(width + m_padding + m_titleItem->boundingRect().right() + 10, m_titleItem->boundingRect().center().y());
 }
 
 void DuQFNode::remove()
@@ -233,8 +243,8 @@ void DuQFNode::remove()
     qDebug() << "> Accepted";
 
     m_removing = true;
-    m_defaultInputConnector->remove();
-    m_defaultOutputConnector->remove();
+    m_defaultInputSlot->remove();
+    m_defaultOutputSlot->remove();
     emit removed();
     deleteLater();
 }

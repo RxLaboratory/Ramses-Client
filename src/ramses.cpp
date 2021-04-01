@@ -848,8 +848,8 @@ void Ramses::gotPipes(QJsonArray pipes, RamProject *project)
         if (inputStep && outputStep)
         {
             RamPipe *pipe = new RamPipe(
-                        inputStep,
                         outputStep,
+                        inputStep,
                         p.value("uuid").toString()
                         );
 
