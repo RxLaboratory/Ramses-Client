@@ -19,6 +19,17 @@ ObjectDockWidget::ObjectDockWidget(RamObject *obj, QWidget *parent):
     connect(_titleWidget, &DuQFDockTitle::pinDockWidget, this, &ObjectDockWidget::pin);
 }
 
+void ObjectDockWidget::setTitle(QString title)
+{
+    _titleWidget->setTitle(title);
+    this->setWindowTitle(title);
+}
+
+void ObjectDockWidget::setIcon(QString icon)
+{
+    _titleWidget->setIcon(icon);
+}
+
 void ObjectDockWidget::pin(bool p)
 {
     _pinned = p;

@@ -14,6 +14,9 @@ class ObjectDockWidget : public QDockWidget
 public:
     ObjectDockWidget(RamObject *obj, QWidget *parent = nullptr);
 
+    void setTitle(QString title);
+    void setIcon(QString icon);
+
     bool pinned() const;
 
 public slots:
