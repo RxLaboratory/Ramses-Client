@@ -64,12 +64,21 @@ QRectF DuQFConnector::boundingRect() const
 QPainterPath DuQFConnector::shape() const
 {
     QPainterPath path;
-    QPolygonF polygon;
-    polygon << m_from;
-    polygon << m_fromHandle;
-    polygon << m_to;
-    polygon << m_toHandle;
-    path.addPolygon(polygon);
+    QRectF rect = QRectF(m_from, m_to);
+
+    if (rect.height() > 20 && rect.width() > 20)
+    {
+        QPolygonF polygon;
+        polygon << m_from;
+        polygon << m_fromHandle;
+        polygon << m_to;
+        polygon << m_toHandle;
+        path.addPolygon(polygon);
+    }
+    else
+    {
+        path.addRect( rect.adjusted( -10,-10,10,10));
+    }
 
     return path;
 }
@@ -163,6 +172,14 @@ void DuQFConnector::remove()
     m_removing = true;
     emit removed();
     deleteLater();
+}
+
+QVariant DuQFConnector::itemChange(QGraphicsItem::GraphicsItemChange change, const QVariant &value)
+{
+    if (change == ItemSelectedChange && scene())
+        emit selected(value.toBool());
+
+    return QGraphicsItem::itemChange(change, value);
 }
 
 void DuQFConnector::setupUi()

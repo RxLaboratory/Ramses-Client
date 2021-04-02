@@ -31,6 +31,11 @@ public slots:
 
 signals:
     void removed();
+    void selected(bool);
+
+protected:
+    QVariant itemChange(GraphicsItemChange change, const QVariant &value) Q_DECL_OVERRIDE;
+
 
 private:
     void setupUi();
