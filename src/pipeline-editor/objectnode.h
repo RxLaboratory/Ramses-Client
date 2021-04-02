@@ -9,7 +9,6 @@
 #include "ramstep.h"
 #include "objecteditwidget.h"
 #include "objectdockwidget.h"
-#include "stepeditwidget.h"
 
 class ObjectNode : public DuQFNode
 {

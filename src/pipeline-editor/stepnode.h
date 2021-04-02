@@ -5,13 +5,15 @@
 
 #include "ramstep.h"
 #include "mainwindow.h"
+#include "stepeditwidget.h"
 
 class StepNode : public ObjectNode
 {
 public:
     StepNode(RamStep *step);
     RamStep *step() const;
-
+private slots:
+    void stepChanged();
 private:
     RamStep *_step;
 };

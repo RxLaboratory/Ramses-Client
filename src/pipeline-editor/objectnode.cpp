@@ -30,7 +30,7 @@ RamObject *ObjectNode::ramObject() const
 QVariant ObjectNode::itemChange(QGraphicsItem::GraphicsItemChange change, const QVariant &value)
 {
     if (change == ItemSelectedChange && scene() && _hasEditWidget)
-        _dockWidget->setVisible(value.toBool());
+        _dockWidget->setVisible(value.toBool() || _dockWidget->pinned());
 
     return DuQFNode::itemChange(change, value);
 }

@@ -70,6 +70,7 @@ SOURCES += \
     mainwindow.cpp \
     objectdockwidget.cpp \
     objecteditwidget.cpp \
+    pipeeditwidget.cpp \
     pipeline-editor/objectnode.cpp \
     pipeline-editor/pipelinewidget.cpp \
     pipeline-editor/stepnode.cpp \
@@ -155,6 +156,7 @@ HEADERS += \
     mainwindow.h \
     objectdockwidget.h \
     objecteditwidget.h \
+    pipeeditwidget.h \
     pipeline-editor/objectnode.h \
     pipeline-editor/pipelinewidget.h \
     pipeline-editor/stepnode.h \
