@@ -131,6 +131,17 @@ void MainWindow::addStepDockWidget(QDockWidget *w)
     _stepDock << w;
 }
 
+void MainWindow::addPipeDockWidget(QDockWidget *w)
+{
+    w->setParent(this);
+    this->addDockWidget(Qt::RightDockWidgetArea, w);
+    if (_pipeDock.count() > 0)
+    {
+        this->tabifyDockWidget(_pipeDock.last(), w);
+    }
+    _pipeDock << w;
+}
+
 void MainWindow::duqf_initUi()
 {
     // ===== SYSTRAY ======

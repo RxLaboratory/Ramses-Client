@@ -52,6 +52,7 @@ public:
     explicit MainWindow(QStringList args, QWidget *parent = nullptr);
 
     void addStepDockWidget(QDockWidget *w);
+    void addPipeDockWidget(QDockWidget *w);
 
 private:
     // ========= RxOT UI ==============
@@ -87,6 +88,7 @@ private:
     QToolButton *refreshButton;
 
     QList<QDockWidget *> _stepDock;
+    QList<QDockWidget *> _pipeDock;
 
     QMetaObject::Connection _currentUserConnection;
 
