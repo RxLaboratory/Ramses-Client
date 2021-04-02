@@ -14,23 +14,13 @@ DuQFConnection::DuQFConnection(DuQFSlot *output, DuQFSlot *input, DuQFConnector 
     }
     m_connector = connector;
 
-    DuQFNode *outputParent = (DuQFNode*)m_output->parentItem();
-    DuQFNode *inputParent = (DuQFNode*)m_input->parentItem();
+    m_input = input;
+    m_output = output;
 
-    outputParent->addChildNode(inputParent);
-    inputParent->addParentNode(outputParent);
+    setInput(m_input);
+    setOutput(m_output);
 
-    connect(outputParent, &QGraphicsObject::xChanged, this, &DuQFConnection::outputMoved);
-    connect(outputParent, &QGraphicsObject::yChanged, this, &DuQFConnection::outputMoved);
-    connect(inputParent, &QGraphicsObject::xChanged, this, &DuQFConnection::inputMoved);
-    connect(inputParent, &QGraphicsObject::yChanged, this, &DuQFConnection::inputMoved);
-
-    connect(output, &DuQFSlot::removed, this, &DuQFConnection::remove);
-    connect(input, &DuQFSlot::removed, this, &DuQFConnection::remove);
     connect(connector, &DuQFConnector::removed, this, &DuQFConnection::remove);
-
-    outputMoved();
-    inputMoved();
 }
 
 DuQFSlot *DuQFConnection::input() const
@@ -40,7 +30,26 @@ DuQFSlot *DuQFConnection::input() const
 
 void DuQFConnection::setInput(DuQFSlot *input)
 {
+    while(m_inputConnections.count() > 0) disconnect( m_inputConnections.takeLast());
+
+    DuQFNode *outputParent = (DuQFNode*)m_output->parentItem();
+    DuQFNode *inputParent = (DuQFNode*)m_input->parentItem();
+
+    outputParent->removeChildNode(inputParent);
+    inputParent->removeParentNode(outputParent);
+
     m_input = input;
+
+    inputParent = (DuQFNode*)m_input->parentItem();
+
+    outputParent->addChildNode(inputParent);
+    inputParent->addParentNode(outputParent);
+
+    m_inputConnections << connect(inputParent, &QGraphicsObject::xChanged, this, &DuQFConnection::inputMoved);
+    m_inputConnections << connect(inputParent, &QGraphicsObject::yChanged, this, &DuQFConnection::inputMoved);
+    m_inputConnections << connect(input, &DuQFSlot::removed, this, &DuQFConnection::remove);
+
+    inputMoved();
 }
 
 DuQFSlot *DuQFConnection::output() const
@@ -50,7 +59,26 @@ DuQFSlot *DuQFConnection::output() const
 
 void DuQFConnection::setOutput(DuQFSlot *output)
 {
+    while(m_outputConnections.count() > 0) disconnect( m_outputConnections.takeLast());
+
+    DuQFNode *outputParent = (DuQFNode*)m_output->parentItem();
+    DuQFNode *inputParent = (DuQFNode*)m_input->parentItem();
+
+    outputParent->removeChildNode(inputParent);
+    inputParent->removeParentNode(outputParent);
+
     m_output = output;
+
+    outputParent = (DuQFNode*)m_output->parentItem();
+
+    outputParent->addChildNode(inputParent);
+    inputParent->addParentNode(outputParent);
+
+    m_outputConnections << connect(outputParent, &QGraphicsObject::xChanged, this, &DuQFConnection::outputMoved);
+    m_outputConnections << connect(outputParent, &QGraphicsObject::yChanged, this, &DuQFConnection::outputMoved);
+    m_outputConnections << connect(output, &DuQFSlot::removed, this, &DuQFConnection::remove);
+
+    outputMoved();
 }
 
 void DuQFConnection::remove()

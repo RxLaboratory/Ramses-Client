@@ -357,7 +357,9 @@ void PipelineWidget::newPipe(RamPipe *pipe)
     RamFileType *ft = pipe->fileType();
     if (ft) co->connector()->setTitle( ft->shortName() );
 
-    connect(pipe, SIGNAL(removed(RamObject*)), co, SLOT(remove()));
+    connect(pipe, SIGNAL(removed(RamObject*)), this, SLOT(pipeRemoved(RamObject*)));
+    connect(pipe, SIGNAL(changed(RamObject*)), this, SLOT(pipeChanged(RamObject*)));
+    _pipeConnections[pipe->uuid()] = co;
 }
 
 void PipelineWidget::stepsConnected(DuQFConnection *co)
@@ -393,6 +395,54 @@ void PipelineWidget::connectionRemoved(DuQFConnection *co)
 
     RamPipe *p = project->pipe(output, input);
     if (p) p->remove();
+}
+
+void PipelineWidget::pipeChanged(RamObject *p)
+{
+    RamPipe *pipe = (RamPipe*)p;
+    qDebug() << "Pipe Changed";
+    qDebug() << pipe->uuid();
+
+    if (_pipeConnections.contains(pipe->uuid()))
+    {
+        DuQFConnection *co = _pipeConnections.value(pipe->uuid());
+        //update stepnodes
+        bool outputOk = false;
+        bool inputOk = false;
+        foreach(DuQFNode *n, _nodeScene->nodes())
+        {
+            StepNode *outputNode = (StepNode*)n;
+            if (outputNode) if (outputNode->step()->uuid() == pipe->outputStep()->uuid())
+            {
+                co->setOutput(outputNode->defaultOutputSlot());
+                outputOk = true;
+            }
+
+            StepNode *inputNode = (StepNode*)n;
+            if (inputNode) if (inputNode->step()->uuid() == pipe->inputStep()->uuid())
+            {
+                co->setInput(inputNode->defaultInputSlot());
+                inputOk = true;
+            }
+
+            if (inputOk && outputOk) break;
+        }
+
+        RamFileType *ft = pipe->fileType();
+        if (ft) co->connector()->setTitle(ft->shortName());
+    }
+
+}
+
+void PipelineWidget::pipeRemoved(RamObject *p)
+{
+    if (_pipeConnections.contains(p->uuid()))
+    {
+        //remove connection
+        _pipeConnections.value(p->uuid())->remove();
+        //and remove its pointer from the list
+        _pipeConnections.remove(p->uuid());
+    }
 }
 
 void PipelineWidget::showEvent(QShowEvent *event)

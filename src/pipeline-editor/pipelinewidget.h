@@ -39,6 +39,8 @@ private slots:
     void newPipe(RamPipe *pipe);
     void stepsConnected(DuQFConnection *co);
     void connectionRemoved(DuQFConnection *co);
+    void pipeChanged(RamObject *p);
+    void pipeRemoved(RamObject *p);
 protected:
     void showEvent(QShowEvent *event) Q_DECL_OVERRIDE;
     void hideEvent(QHideEvent *event) Q_DECL_OVERRIDE;
@@ -52,6 +54,7 @@ private:
     QMenu *stepMenu;
     QAction *stepMenuSeparator;
     QList<QMetaObject::Connection> _projectConnections;
+    QMap<QString,DuQFConnection*> _pipeConnections;
 };
 
 #endif // PIPELINEWIDGET_H

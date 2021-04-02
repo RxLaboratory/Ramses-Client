@@ -216,7 +216,7 @@ void RamProject::addPipe(RamPipe *pipe)
 
 void RamProject::removePipe(QString uuid)
 {
-    for(int i = _pipeline.count(); i >= 0; i--)
+    for(int i = _pipeline.count() -1; i >= 0; i--)
     {
         RamPipe *p = _pipeline.at(i);
         if (p->uuid() == uuid)

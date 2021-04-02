@@ -69,7 +69,7 @@ void RamPipe::setFileType(RamFileType *fileType)
 {
     disconnect(_fileTypeConnection);
     _fileType = fileType;
-    _fileTypeConnection = connect(_fileType, &RamFileType::removed, this, &RamPipe::removeFileType);
+    if (fileType) _fileTypeConnection = connect(_fileType, &RamFileType::removed, this, &RamPipe::removeFileType);
     emit changed(this);
 }
 

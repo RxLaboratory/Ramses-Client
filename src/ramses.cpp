@@ -46,6 +46,7 @@ void Ramses::newData(QJsonObject data)
     if (query == "login") login( data.value("content").toObject() );
     else if (query == "getUsers") gotUsers( data.value("content").toArray());
     else if (query == "getProjects") gotProjects( data.value("content").toArray());
+    else if (query == "getProject") gotProject( data.value("content").toObject());
     else if (query == "getTemplateSteps") gotTemplateSteps( data.value("content").toArray());
     else if (query == "getTemplateAssetGroups") gotTemplateAssetGroups( data.value("content").toArray());
     else if (query == "getStates") gotStates( data.value("content").toArray());
@@ -63,7 +64,7 @@ void Ramses::gotUsers(QJsonArray users)
         RamUser *existingUser = _users[i];
         // loop through new users to update
         bool found = false;
-        for (int j = 0; j < users.count(); j++)
+        for (int j = users.count() - 1; j >= 0; j--)
         {
             QJsonObject newUser = users[j].toObject();
             QString uuid = newUser.value("uuid").toString();
@@ -140,66 +141,22 @@ void Ramses::gotProjects(QJsonArray projects)
 {
     DBISuspender s;
 
-    // loop through existing projects to update them
+    QStringList uuids;
+    // Update projects
+    for (int j = 0; j < projects.count(); j++)
+    {
+        uuids << gotProject( projects[j].toObject() );
+    }
+
+    // Remove deleted projects
     for (int i = _projects.count() - 1; i >= 0; i--)
     {
         RamProject *existingProject = _projects[i];
-        // loop through new projects to update
-        bool found = false;
-        for (int j = 0; j < projects.count(); j++)
-        {
-            QJsonObject newProject = projects[j].toObject();
-            QString uuid = newProject.value("uuid").toString();
-            // Found, update
-            if (uuid == existingProject->uuid())
-            {
-                found = true;
-                //Emit just one signal
-                QSignalBlocker b(existingProject);
-                existingProject->setName( newProject.value("name").toString());
-                existingProject->setShortName( newProject.value("shortName").toString());
-                gotSteps( newProject.value("steps").toArray(), existingProject);
-                gotAssetGroups( newProject.value("assetGroups").toArray(), existingProject);
-                gotSequences( newProject.value("sequences").toArray(), existingProject);
-                gotPipes( newProject.value("pipes").toArray(), existingProject);
-                //send the signal
-                b.unblock();
-                existingProject->setFolderPath( newProject.value("folderPath").toString());
-                //remove from new projects
-                projects.removeAt(j);
-                break;
-            }
-        }
-        // Not found, remove from existing
-        if (!found)
+        if (!uuids.contains(existingProject->uuid()))
         {
             RamProject *p = _projects.takeAt(i);
             p->remove();
         }
-    }
-
-    // loop through remaining new projects to add them
-    for (int i = 0; i < projects.count(); i++)
-    {
-        QJsonObject p = projects[i].toObject();
-        RamProject *project = new RamProject(
-                    p.value("shortName").toString(),
-                    p.value("name").toString(),
-                    p.value("uuid").toString()
-                    );
-        project->setFolderPath( p.value("folderPath").toString());
-
-        // Add steps
-        gotSteps( p.value("steps").toArray(), project);
-        gotAssetGroups( p.value("assetGroups").toArray(), project);
-        gotSequences( p.value("sequences").toArray(), project);
-        gotPipes( p.value("pipes").toArray(), project);
-
-        _projects << project;
-
-        connect(project,&RamProject::removed, this, &Ramses::projectRemoved);
-
-        emit newProject(project);
     }
 
     // Set settings
@@ -209,6 +166,56 @@ void Ramses::gotProjects(QJsonArray projects)
     _userSettings->beginGroup("ramses");
 
     setCurrentProject(_userSettings->value("currentProject", "").toString());
+}
+
+QString Ramses::gotProject(QJsonObject newP)
+{
+    DBISuspender s;
+    QString uuid = newP.value("uuid").toString();
+
+    // loop through existing projects to update them
+    for (int i = _projects.count() - 1; i >= 0; i--)
+    {
+        RamProject *existingProject = _projects[i];
+
+        if (uuid == existingProject->uuid())
+        {
+            //Emit just one signal
+            QSignalBlocker b(existingProject);
+            existingProject->setName( newP.value("name").toString());
+            existingProject->setShortName( newP.value("shortName").toString());
+            gotSteps( newP.value("steps").toArray(), existingProject);
+            gotAssetGroups( newP.value("assetGroups").toArray(), existingProject);
+            gotSequences( newP.value("sequences").toArray(), existingProject);
+            gotPipes( newP.value("pipes").toArray(), existingProject);
+            //send the signal
+            b.unblock();
+            existingProject->setFolderPath( newP.value("folderPath").toString());
+            return uuid;
+        }
+    }
+
+    // not existing, let's create it
+    RamProject *project = new RamProject(
+                newP.value("shortName").toString(),
+                newP.value("name").toString(),
+                newP.value("uuid").toString()
+                );
+    project->setFolderPath( newP.value("folderPath").toString());
+
+    // Add steps
+    gotSteps( newP.value("steps").toArray(), project);
+    gotAssetGroups( newP.value("assetGroups").toArray(), project);
+    gotSequences( newP.value("sequences").toArray(), project);
+    gotPipes( newP.value("pipes").toArray(), project);
+
+    _projects << project;
+
+    connect(project,&RamProject::removed, this, &Ramses::projectRemoved);
+
+    emit newProject(project);
+
+    return uuid;
 }
 
 void Ramses::projectRemoved(RamObject *o)
@@ -226,7 +233,7 @@ void Ramses::gotTemplateSteps(QJsonArray steps)
         RamStep *existingStep = _templateSteps[i];
         // loop through new steps to update
         bool found = false;
-        for (int j = 0; j < steps.count(); j++)
+        for (int j = steps.count() - 1; j >= 0; j--)
         {
             QJsonObject newStep = steps[j].toObject();
             QString uuid = newStep.value("uuid").toString();
@@ -289,7 +296,7 @@ void Ramses::gotTemplateAssetGroups(QJsonArray assetGroups)
         RamAssetGroup *existingAssetGroup = _templateAssetGroups[i];
         // loop through new steps to update
         bool found = false;
-        for (int j = 0; j < assetGroups.count(); j++)
+        for (int j = assetGroups.count() - 1; j >= 0; j--)
         {
             QJsonObject newAssetGroup = assetGroups[j].toObject();
             QString uuid = newAssetGroup.value("uuid").toString();
@@ -350,7 +357,7 @@ void Ramses::gotStates(QJsonArray states)
         RamState *existingState = _states[i];
         // loop through new steps to update
         bool found = false;
-        for (int j = 0; j < states.count(); j++)
+        for (int j = states.count() - 1; j >= 0; j--)
         {
             QJsonObject newState = states[j].toObject();
             QString uuid = newState.value("uuid").toString();
@@ -414,7 +421,7 @@ void Ramses::gotFileTypes(QJsonArray fileTypes)
         RamFileType *existingFileType = _fileTypes[i];
         // loop through new file types to update
         bool found = false;
-        for (int j = 0; j < fileTypes.count(); j++)
+        for (int j = fileTypes.count() - 1; j >= 0; j--)
         {
             QJsonObject newFileType = fileTypes[j].toObject();
             QString uuid = newFileType.value("uuid").toString();
@@ -473,7 +480,7 @@ void Ramses::gotApplications(QJsonArray applications)
         RamApplication *existingApplication = _applications[i];
         // loop through new steps to update
         bool found = false;
-        for (int j = 0; j < applications.count(); j++)
+        for (int j = applications.count() - 1; j >= 0; j--)
         {
             QJsonObject newApplication = applications[j].toObject();
             QString uuid = newApplication.value("uuid").toString();
@@ -556,7 +563,7 @@ void Ramses::gotSteps(QJsonArray steps, RamProject *project)
         RamStep *existingStep = projectSteps[i];
         // loop through new steps to update
         bool found = false;
-        for (int j = 0; j < steps.count(); j++)
+        for (int j = steps.count() - 1; j >= 0; j--)
         {
             QJsonObject newStep = steps[j].toObject();
             QString uuid = newStep.value("uuid").toString();
@@ -634,7 +641,7 @@ void Ramses::gotAssetGroups(QJsonArray assetGroups, RamProject *project)
         RamAssetGroup *existingAssetGroup = projectAssetGroups[i];
         // loop through new steps to update
         bool found = false;
-        for (int j = 0; j < assetGroups.count(); j++)
+        for (int j = assetGroups.count() - 1; j >= 0; j--)
         {
             QJsonObject newAG = assetGroups[j].toObject();
             QString uuid = newAG.value("uuid").toString();
@@ -694,7 +701,7 @@ void Ramses::gotAssets(QJsonArray assets, RamAssetGroup *assetGroup)
         RamAsset *existingAsset = groupAssets[i];
         // loop through new steps to update
         bool found = false;
-        for (int j = 0; j < assets.count(); j++)
+        for (int j = assets.count() - 1; j >= 0; j--)
         {
             QJsonObject newA = assets[j].toObject();
             QString uuid = newA.value("uuid").toString();
@@ -751,7 +758,7 @@ void Ramses::gotSequences(QJsonArray sequences, RamProject *project)
         RamSequence *existingSequence = projectSequences[i];
         // loop through new sequences to update
         bool found = false;
-        for (int j = 0; j < sequences.count(); j++)
+        for (int j = sequences.count() - 1; j >= 0; j--)
         {
             QJsonObject newS = sequences[j].toObject();
             QString uuid = newS.value("uuid").toString();
@@ -810,7 +817,7 @@ void Ramses::gotPipes(QJsonArray pipes, RamProject *project)
         RamPipe *existingPipe = projectPipeline[i];
         // loop through new pipes to update
         bool found = false;
-        for (int j = 0; j < pipes.count(); j++)
+        for (int j = pipes.count() - 1; j >= 0; j--)
         {
             QJsonObject newP = pipes[j].toObject();
             QString uuid = newP.value("uuid").toString();
@@ -826,7 +833,7 @@ void Ramses::gotPipes(QJsonArray pipes, RamProject *project)
                 if (outputStep) existingPipe->setOutputStep( outputStep );
                 b.unblock();
                 RamFileType *ft = fileType( newP.value("filetypeUuid").toString()) ;
-                if (ft) existingPipe->setFileType( ft );
+                existingPipe->setFileType( ft );
                 //remove from new pipes
                 pipes.removeAt(j);
                 break;

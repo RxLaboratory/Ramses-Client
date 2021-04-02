@@ -41,6 +41,8 @@ private:
     DuQFSlot *m_input;
     DuQFSlot *m_output;
     DuQFConnector *m_connector;
+    QList<QMetaObject::Connection> m_inputConnections;
+    QList<QMetaObject::Connection> m_outputConnections;
 };
 
 #endif // DUQFCONNECTIONMANAGER_H

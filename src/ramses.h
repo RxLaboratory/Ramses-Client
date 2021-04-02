@@ -143,6 +143,7 @@ private slots:
     void userRemoved(RamObject *o);
     //projects
     void gotProjects(QJsonArray projects);
+    QString gotProject(QJsonObject newP);
     void projectRemoved(RamObject *o);
     //template steps
     void gotTemplateSteps(QJsonArray steps);
