@@ -14,6 +14,7 @@ public:
     explicit DuQFDockTitle(QString title, QWidget *parent = nullptr);
 
     void setTitle(QString title);
+    void setIcon(QString icon);
 
 signals:
     void pinDockWidget(bool);
@@ -24,6 +25,7 @@ private slots:
 
 private:
     QLabel *_titleLabel;
+    QLabel *_iconLabel;
 
 };
 
