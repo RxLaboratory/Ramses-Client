@@ -17,13 +17,13 @@ class StepEditWidget : public ObjectEditWidget
 {
     Q_OBJECT
 public:
-    StepEditWidget(QWidget *parent = nullptr);
-    StepEditWidget(RamStep *s, QWidget *parent = nullptr);
+    StepEditWidget(RamStep *s = nullptr, QWidget *parent = nullptr);
 
     void setStep(RamStep *s);
 
 private slots:
     void update() Q_DECL_OVERRIDE;
+    void stepChanged(RamObject *o);
     // Users
     void newUser(RamUser *user);
     void assignUser();
@@ -45,6 +45,8 @@ private:
     void setupUi();
     void populateMenus();
     void connectEvents();
+
+    RamStep *_step;
 
     QComboBox *typeBox;
     DuQFFolderDisplayWidget *folderWidget;

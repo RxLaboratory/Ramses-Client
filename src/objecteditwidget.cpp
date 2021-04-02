@@ -1,19 +1,5 @@
 #include "objecteditwidget.h"
 
-ObjectEditWidget::ObjectEditWidget(QWidget *parent) :
-    QScrollArea(parent)
-{
-    QWidget *dummy = new QWidget(this);
-    setupUi(dummy);
-    this->setWidget(dummy);
-    this->setWidgetResizable(true);
-    this->setFrameStyle(QFrame::NoFrame);
-
-    setObject(nullptr);
-
-    connectEvents();
-}
-
 ObjectEditWidget::ObjectEditWidget(RamObject *o, QWidget *parent) :
     QScrollArea(parent)
 {
@@ -50,11 +36,11 @@ void ObjectEditWidget::setObject(RamObject *object)
     shortNameEdit->setText(object->shortName());
 
     _objectConnections << connect( object, &RamObject::removed, this, &ObjectEditWidget::objectRemoved);
+    _objectConnections << connect( object, &RamObject::changed, this, &ObjectEditWidget::setObject);
 }
 
 void ObjectEditWidget::update()
 {
-    qDebug() << checkInput();
     if (!_object) return;
 
     if (!checkInput()) return;
@@ -65,11 +51,6 @@ void ObjectEditWidget::update()
     _object->update();
 }
 
-void ObjectEditWidget::revert()
-{
-    setObject(nullptr);
-}
-
 bool ObjectEditWidget::checkInput()
 {
     if (!_object) return false;
@@ -77,12 +58,10 @@ bool ObjectEditWidget::checkInput()
     if (shortNameEdit->text() == "")
     {
         statusLabel->setText("Short name cannot be empty!");
-        updateButton->setEnabled(false);
         return false;
     }
 
     statusLabel->setText("");
-    updateButton->setEnabled(true);
     return true;
 }
 
@@ -94,7 +73,7 @@ void ObjectEditWidget::objectRemoved(RamObject *o)
 
 void ObjectEditWidget::connectEvents()
 {
-    connect(updateButton, SIGNAL(clicked()), this, SLOT(update()));
-    connect(revertButton, SIGNAL(clicked()), this, SLOT(revert()));
     connect(shortNameEdit, &QLineEdit::textChanged, this, &ObjectEditWidget::checkInput);
+    connect(shortNameEdit, &QLineEdit::editingFinished, this, &ObjectEditWidget::update);
+    connect(nameEdit, &QLineEdit::editingFinished, this, &ObjectEditWidget::update);
 }

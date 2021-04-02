@@ -11,15 +11,15 @@ class ObjectEditWidget : public QScrollArea, protected Ui::ObjectEditWidget
     Q_OBJECT
 
 public:
-    explicit ObjectEditWidget(QWidget *parent = nullptr);
-    explicit ObjectEditWidget(RamObject *o, QWidget *parent = nullptr);
+    explicit ObjectEditWidget(RamObject *o = nullptr, QWidget *parent = nullptr);
 
     RamObject *object() const;
+
+public slots:
     void setObject(RamObject *object);
 
 protected slots:
     virtual void update();
-    void revert();
     virtual bool checkInput();
 
 protected:
