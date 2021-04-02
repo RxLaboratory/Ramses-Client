@@ -38,15 +38,9 @@ DuQFConnection * DuQFConnectionManager::addConnection(DuQFSlot *output, DuQFSlot
     // Check if a connection already exists with the same input/output
     foreach(DuQFConnection *c, m_connections)
     {
-        bool ok = true;
-        if (input == c->input() && output == c->output()) ok = false;
-        if (input == c->input() && input->isSingleConnection()) ok =  false;
-        if (output  == c->output() && output->isSingleConnection()) ok = false;
-        if (!ok)
-        {
-            connector->remove();
-            return nullptr;
-        }
+        if (input == c->input() && output == c->output()) return c;
+        if (input == c->input() && input->isSingleConnection()) return nullptr;
+        if (output  == c->output() && output->isSingleConnection()) return nullptr;
     }
 
     DuQFConnection *co =  new DuQFConnection(output, input, connector, this);
