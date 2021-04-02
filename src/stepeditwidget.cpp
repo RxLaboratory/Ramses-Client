@@ -1,13 +1,6 @@
 #include "stepeditwidget.h"
 
-StepEditWidget::StepEditWidget(QWidget *parent) : ObjectEditWidget(parent)
-{
-    setupUi();
-    populateMenus();
-    connectEvents();
-}
-
-StepEditWidget::StepEditWidget(RamStep *s, QWidget *parent) : ObjectEditWidget(parent)
+StepEditWidget::StepEditWidget(RamStep *s, QWidget *parent) : ObjectEditWidget(s, parent)
 {
     setupUi();
     populateMenus();
@@ -21,6 +14,9 @@ void StepEditWidget::setStep(RamStep *step)
     this->setEnabled(false);
 
     setObject(step);
+    _step = step;
+
+    QSignalBlocker b(typeBox);
 
     typeBox->setCurrentIndex(1);
     folderWidget->setPath("");
@@ -49,18 +45,24 @@ void StepEditWidget::setStep(RamStep *step)
     _objectConnections << connect(step, &RamStep::userUnassigned, this, &StepEditWidget::userUnassigned);
     _objectConnections << connect(step, &RamStep::applicationAssigned, this, &StepEditWidget::applicationAssigned);
     _objectConnections << connect(step, &RamStep::applicationUnassigned, this, &StepEditWidget::applicationUnassigned);
+    _objectConnections << connect(step, &RamStep::changed, this, &StepEditWidget::stepChanged);
 
     this->setEnabled(Ramses::instance()->isProjectAdmin());
 }
 
 void StepEditWidget::update()
 {
-    RamStep *step = qobject_cast<RamStep*>(object());
-    if(!step) return;
+    if(!_step) return;
 
-    step->setType(typeBox->currentData().toString());
+    _step->setType(typeBox->currentData().toString());
 
     ObjectEditWidget::update();
+}
+
+void StepEditWidget::stepChanged(RamObject *o)
+{
+    Q_UNUSED(o);
+    setStep(_step);
 }
 
 void StepEditWidget::setupUi()
@@ -69,10 +71,10 @@ void StepEditWidget::setupUi()
     mainFormLayout->addWidget(typeLabel, 2,0);
 
     typeBox = new QComboBox(this);
-    typeBox->addItem(QIcon(":/icons/project"), "Pre-Production", "pre");
-    typeBox->addItem(QIcon(":/icons/asset"), "Asset Production", "asset");
-    typeBox->addItem(QIcon(":/icons/shot"), "Shot Production", "shot");
-    typeBox->addItem(QIcon(":/icons/film"), "Post-Production", "post");
+    typeBox->addItem(QIcon(":/icons/project"), "        Pre-Production", "pre");
+    typeBox->addItem(QIcon(":/icons/asset"), "        Asset Production", "asset");
+    typeBox->addItem(QIcon(":/icons/shot"), "        Shot Production", "shot");
+    typeBox->addItem(QIcon(":/icons/film"), "        Post-Production", "post");
     mainFormLayout->addWidget(typeBox, 2, 1);
 
     folderWidget = new DuQFFolderDisplayWidget(this);
@@ -169,6 +171,7 @@ void StepEditWidget::connectEvents()
 {
     connect(Ramses::instance(), &Ramses::newUser, this, &StepEditWidget::newUser);
     connect(Ramses::instance(), &Ramses::newApplication, this, &StepEditWidget::newApplication);
+    connect(typeBox, SIGNAL(currentIndexChanged(int)), this, SLOT(update()));
     connect(removeUserButton, &QToolButton::clicked, this, &StepEditWidget::unassignUser);
     connect(removeApplicationButton, &QToolButton::clicked, this, &StepEditWidget::unassignApplication);
 }
@@ -187,21 +190,17 @@ void StepEditWidget::newUser(RamUser *user)
 
 void StepEditWidget::assignUser()
 {
-    RamStep *step = qobject_cast<RamStep*>(object());
-
-    if(!step) return;
+    if(!_step) return;
     QAction *userAction = (QAction*)sender();
     RamUser *user = Ramses::instance()->user( userAction->data().toString());
     if (!user) return;
-    step->assignUser(user);
+    _step->assignUser(user);
 }
 
 void StepEditWidget::unassignUser()
 {
-    RamStep *step = qobject_cast<RamStep*>(object());
-
-    if (!step) return;
-    step->unassignUser( usersList->currentItem()->data(Qt::UserRole).toString() );
+    if (!_step) return;
+    _step->unassignUser( usersList->currentItem()->data(Qt::UserRole).toString() );
 }
 
 void StepEditWidget::userAssigned(RamUser *user)
@@ -271,21 +270,17 @@ void StepEditWidget::newApplication(RamApplication *app)
 
 void StepEditWidget::assignApplication()
 {
-    RamStep *step = qobject_cast<RamStep*>(object());
-
-    if(!step) return;
+    if(!_step) return;
     QAction *appAction = (QAction*)sender();
     RamApplication *app = Ramses::instance()->application( appAction->data().toString());
     if (!app) return;
-    step->assignApplication(app);
+    _step->assignApplication(app);
 }
 
 void StepEditWidget::unassignApplication()
 {
-    RamStep *step = qobject_cast<RamStep*>(object());
-
-    if (!step) return;
-    step->unassignApplication( applicationList->currentItem()->data(Qt::UserRole).toString() );
+    if (!_step) return;
+    _step->unassignApplication( applicationList->currentItem()->data(Qt::UserRole).toString() );
 }
 
 void StepEditWidget::applicationAssigned(RamApplication *app)
