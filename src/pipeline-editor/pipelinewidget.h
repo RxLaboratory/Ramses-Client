@@ -15,6 +15,8 @@
 
 #include "stepnode.h"
 #include "ramses.h"
+#include "pipeeditwidget.h"
+#include "objectdockwidget.h"
 
 class PipelineWidget : public QWidget, private Ui::PipelineWidget
 {

@@ -217,6 +217,7 @@ void PipelineWidget::changeProject(RamProject *project)
     foreach(RamPipe *pipe, project->pipeline()) newPipe(pipe);
 
     _projectConnections << connect(project, &RamProject::newStep, this, &PipelineWidget::newStep);
+    _projectConnections << connect(project, &RamProject::newPipe, this, &PipelineWidget::newPipe);
 
     // Layout
     _nodeScene->clearSelection();
@@ -353,12 +354,27 @@ void PipelineWidget::newPipe(RamPipe *pipe)
         if (inputNode && outputNode) break;
     }
 
+    // Get or create the node connections
     DuQFConnection *co = _nodeScene->connectNodes(outputNode, inputNode);
+    if (!co) return;
+
     RamFileType *ft = pipe->fileType();
     if (ft) co->connector()->setTitle( ft->shortName() );
 
+    // Create an edit dockwidget
+    ObjectDockWidget *dockWidget = new ObjectDockWidget(pipe);
+    dockWidget->setTitle("Pipe");
+    dockWidget->setIcon(":/icons/connection");
+    PipeEditWidget *editWidget = new PipeEditWidget(pipe, dockWidget);
+    dockWidget->setWidget(editWidget);
+    MainWindow *mw = (MainWindow*)GuiUtils::appMainWindow();
+    mw->addPipeDockWidget(dockWidget);
+    dockWidget->hide();
+
     connect(pipe, SIGNAL(removed(RamObject*)), this, SLOT(pipeRemoved(RamObject*)));
     connect(pipe, SIGNAL(changed(RamObject*)), this, SLOT(pipeChanged(RamObject*)));
+    connect(co->connector(), SIGNAL(selected(bool)), dockWidget, SLOT(setVisible(bool)));
+
     _pipeConnections[pipe->uuid()] = co;
 }
 
@@ -428,6 +444,7 @@ void PipelineWidget::pipeChanged(RamObject *p)
 
         RamFileType *ft = pipe->fileType();
         if (ft) co->connector()->setTitle(ft->shortName());
+        else co->connector()->setTitle("");
     }
 
 }
