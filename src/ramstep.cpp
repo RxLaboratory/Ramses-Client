@@ -134,6 +134,32 @@ void RamStep::unassignApplication(QString uuid)
     }
 }
 
+QList<RamFileType *> RamStep::inputFileTypes()
+{
+    QList<RamFileType *> fts;
+
+    for (RamApplication *app: qAsConst(_applications))
+    {
+        fts.append( app->importFileTypes() );
+        fts.append( app->nativeFileTypes() );
+    }
+
+    return fts;
+}
+
+QList<RamFileType *> RamStep::outputFileTypes()
+{
+    QList<RamFileType *> fts;
+
+    for (RamApplication *app: qAsConst(_applications))
+    {
+        fts.append( app->exportFileTypes() );
+        fts.append( app->nativeFileTypes() );
+    }
+
+    return fts;
+}
+
 void RamStep::update()
 {
     QString type = "asset";

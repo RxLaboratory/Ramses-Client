@@ -41,6 +41,9 @@ public:
     void unassignApplication(RamApplication *app);
     void unassignApplication(QString uuid);
 
+    QList<RamFileType *> inputFileTypes();
+    QList<RamFileType *> outputFileTypes();
+
     void update();
 
 signals:
