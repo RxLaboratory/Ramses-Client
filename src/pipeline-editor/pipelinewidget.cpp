@@ -400,8 +400,6 @@ void PipelineWidget::connectionRemoved(DuQFConnection *co)
 void PipelineWidget::pipeChanged(RamObject *p)
 {
     RamPipe *pipe = (RamPipe*)p;
-    qDebug() << "Pipe Changed";
-    qDebug() << pipe->uuid();
 
     if (_pipeConnections.contains(pipe->uuid()))
     {
