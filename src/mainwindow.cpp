@@ -87,6 +87,7 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     projectSettingsPage->addPage(new AssetGroupsManagerWidget(this), "Asset Groups", QIcon(":/icons/asset-groups"));
     projectSettingsPage->addPage(new AssetsManagerWidget(this), "Assets", QIcon(":/icons/assets"));
     projectSettingsPage->addPage(new SequencesManagerWidget(this), "Sequences", QIcon(":/icons/sequences"));
+    projectSettingsPage->addPage(new ShotsManagerWidget(this), "Shots", QIcon(":/icons/shots"));
     // Pipeline editor
     PipelineWidget *pipelineEditor = new PipelineWidget(this);
     mainStack->addWidget(pipelineEditor);

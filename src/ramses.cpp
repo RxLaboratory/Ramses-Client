@@ -1306,6 +1306,18 @@ RamAssetGroup *Ramses::assetGroup(QString uuid) const
     return nullptr;
 }
 
+RamSequence *Ramses::sequence(QString uuid) const
+{
+    foreach(RamProject *p, _projects)
+    {
+        foreach(RamSequence *s, p->sequences())
+        {
+            if (s->uuid() == uuid) return s;
+        }
+    }
+    return nullptr;
+}
+
 QList<RamState *> Ramses::states() const
 {
     return _states;

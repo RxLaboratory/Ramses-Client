@@ -22,6 +22,56 @@ void RamProject::setFolderPath(const QString &folderPath)
     emit changed(this);
 }
 
+qreal RamProject::framerate() const
+{
+    return _framerate;
+}
+
+void RamProject::setFramerate(const qreal &framerate)
+{
+    _framerate = framerate;
+    emit changed(this);
+}
+
+int RamProject::width() const
+{
+    return _width;
+}
+
+void RamProject::setWidth(const int width, const qreal &pixelAspect)
+{
+    _width = width;
+    updateAspectRatio(pixelAspect);
+}
+
+int RamProject::height() const
+{
+    return _height;
+}
+
+void RamProject::setHeight(const int height, const qreal &pixelAspect)
+{
+    _height = height;
+    updateAspectRatio(pixelAspect);
+}
+
+qreal RamProject::aspectRatio() const
+{
+    return _aspectRatio;
+}
+
+void RamProject::updateAspectRatio(const qreal &pixelAspect)
+{
+    _aspectRatio = qreal(_width) / qreal(_height) * pixelAspect;
+    emit changed(this);
+}
+
+void RamProject::setAspectRatio(const qreal &aspectRatio)
+{
+    _aspectRatio = aspectRatio;
+    emit changed(this);
+}
+
 void RamProject::update()
 {
     QString path = _folderPath;

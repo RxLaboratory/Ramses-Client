@@ -95,6 +95,8 @@ SOURCES += \
     sequenceeditwidget.cpp \
     sequencesmanagerwidget.cpp \
     serversettingswidget.cpp \
+    shoteditwidget.cpp \
+    shotsmanagerwidget.cpp \
     stateeditwidget.cpp \
     statesmanagerwidget.cpp \
     stepeditwidget.cpp \
@@ -182,6 +184,8 @@ HEADERS += \
     sequenceeditwidget.h \
     sequencesmanagerwidget.h \
     serversettingswidget.h \
+    shoteditwidget.h \
+    shotsmanagerwidget.h \
     stateeditwidget.h \
     statesmanagerwidget.h \
     stepeditwidget.h \

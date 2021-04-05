@@ -52,5 +52,6 @@
         <file alias="files">resources/icons/files_sd.svg</file>
         <file alias="application">resources/icons/application_sl.svg</file>
         <file alias="applications">resources/icons/applications_sl.svg</file>
+        <file alias="shots">resources/icons/shot-settings.svg</file>
     </qresource>
 </RCC>

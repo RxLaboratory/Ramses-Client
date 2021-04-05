@@ -18,6 +18,19 @@ public:
     QString folderPath() const;
     void setFolderPath(const QString &folderPath);
 
+    qreal framerate() const;
+    void setFramerate(const qreal &framerate);
+
+    int width() const;
+    void setWidth(const int width, const qreal &pixelAspect = 1);
+
+    int height() const;
+    void setHeight(const int height, const qreal &pixelAspect = 1);
+
+    qreal aspectRatio() const;
+    void updateAspectRatio(const qreal &pixelAspect = 1);
+    void setAspectRatio(const qreal &aspectRatio);
+
     // Steps
     QList<RamStep *> steps() const;
     RamStep *step(QString uuid) const;
@@ -83,6 +96,10 @@ private slots:
 
 private:
     QString _folderPath;
+    qreal _framerate = 24;
+    int _width = 1920;
+    int _height = 1080;
+    qreal _aspectRatio = 1.78;
     QList<RamStep *> _steps;
     QList<RamAssetGroup *> _assetGroups;
     QList<RamSequence *> _sequences;

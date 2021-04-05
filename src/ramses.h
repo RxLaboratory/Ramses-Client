@@ -98,6 +98,8 @@ public:
     RamAssetGroup *templateAssetGroup(QString uuid);
     // Asset groups
     RamAssetGroup *assetGroup(QString uuid) const;
+    // Sequences
+    RamSequence *sequence(QString uuid) const;
     // States
     QList<RamState *> states() const;
     RamState *createState();

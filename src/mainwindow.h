@@ -21,6 +21,7 @@
 #include "stepsmanagerwidget.h"
 #include "assetgroupsmanagerwidget.h"
 #include "assetsmanagerwidget.h"
+#include "shotsmanagerwidget.h"
 #include "sequencesmanagerwidget.h"
 #include "statesmanagerwidget.h"
 #include "filetypesmanagerwidget.h"
