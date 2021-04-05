@@ -363,7 +363,7 @@ void DBInterface::createShot(QString shortName, QString name, QString sequenceUu
     q << "name=" + name;
     q << "sequenceUuid=" + sequenceUuid;
     q << "duration=" + QString::number(duration);
-    q << "order=" + QString::number(order);
+    if (order != -1) q << "order=" + QString::number(order);
 
     request(q);
 }

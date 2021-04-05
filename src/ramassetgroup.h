@@ -19,7 +19,7 @@ public:
 
     // Assets
     QList<RamAsset *> assets() const;
-    RamAsset *asset(QString uuid);
+    RamAsset *asset(QString uuid) const;
     void addAsset(RamAsset *asset);
     void createAsset(QString shortName = "NEW", QString name = "Asset");
     void removeAsset(QString uuid);

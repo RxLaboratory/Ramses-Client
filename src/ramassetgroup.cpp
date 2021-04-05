@@ -49,7 +49,7 @@ QList<RamAsset *> RamAssetGroup::assets() const
     return _assets;
 }
 
-RamAsset *RamAssetGroup::asset(QString uuid)
+RamAsset *RamAssetGroup::asset(QString uuid) const
 {
     foreach (RamAsset *a, _assets)
     {
