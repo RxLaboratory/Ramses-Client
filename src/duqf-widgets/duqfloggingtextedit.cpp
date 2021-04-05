@@ -37,7 +37,7 @@ void DuQFLoggingTextEdit::log(DuQFLog m)
     else this->setTextColor(QColor(227,227, 227));
     this->setFontWeight(800);
     this->setFontItalic(true);
-    this->insertPlainText("The " + m.typeString() + " says: ");
+    this->insertPlainText(m.typeString() + " says: ");
 
     // Content
     this->setFontWeight(400);
