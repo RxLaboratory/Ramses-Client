@@ -12,6 +12,8 @@
 #include "duqf-utils/utils.h"
 #include "duqf-utils/duqflogger.h"
 
+#include "ramses.h"
+
 class Daemon : public DuQFLoggerObject
 {
     Q_OBJECT
@@ -31,12 +33,15 @@ private slots:
     void newConnection();
     void reply();
     void ping(QTcpSocket *client);
+    void setCurrentProject(QString shortName, QString name, QTcpSocket *client);
 
 private:
     //The daemon is a singleton
     explicit Daemon(QObject *parent = nullptr);
     QTcpServer *_tcpServer;
     QSettings _settings;
+
+    void post(QTcpSocket *client, QJsonObject content, QString query, QString message="", bool success = true, bool accepted = true);
 };
 
 #endif // DAEMON_H

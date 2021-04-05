@@ -81,11 +81,13 @@ public:
     // Projects
     QList<RamProject *> projects() const;
     RamProject *project(QString uuid) const;
+    RamProject *project(QString shortName, QString name) const;
     RamProject *createProject();
     void removeProject(QString uuid);
     RamProject *currentProject() const;
     void setCurrentProject(RamProject *currentProject);
     void setCurrentProject(QString uuid);
+    void setCurrentProject(QString shortName, QString name);
     // Template Steps
     QList<RamStep *> templateSteps() const;
     RamStep *createTemplateStep();
