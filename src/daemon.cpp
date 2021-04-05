@@ -69,7 +69,7 @@ void Daemon::reply()
     else if (args.contains("raise"))
         emit raise();
     else if (args.contains("setCurrentProject"))
-        setCurrentProject(args.value("shortName"), args.value("name"), client);
+        setCurrentProject(args.value("shortName"), client);
     else
         post(client, QJsonObject(), "", "Unknown query.", false, false);
 
@@ -82,14 +82,27 @@ void Daemon::ping(QTcpSocket *client)
     QJsonObject content;
     content.insert("version", STR_VERSION);
     content.insert("ramses", STR_INTERNALNAME);
+    RamUser *user = Ramses::instance()->currentUser();
+    if (user)
+    {
+        content.insert("userName", user->name());
+        content.insert("userShortName", user->name());
+        content.insert("logged-in", true);
+    }
+    else
+    {
+        content.insert("userName", "");
+        content.insert("userShortName", "");
+        content.insert("logged-in", false);
+    }
     post(client, content, "ping","Hi, this is the Ramses Daemon");
 }
 
-void Daemon::setCurrentProject(QString shortName, QString name, QTcpSocket *client)
+void Daemon::setCurrentProject(QString shortName, QTcpSocket *client)
 {
     log("I'm replying to this request: setCurrentProject: " + shortName, DuQFLog::Information);
 
-    Ramses::instance()->setCurrentProject(shortName, name);
+    Ramses::instance()->setCurrentProject(shortName);
 
     QJsonObject content;
     RamProject *p = Ramses::instance()->currentProject();

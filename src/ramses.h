@@ -80,14 +80,12 @@ public:
     QString currentUserSettingsFile();
     // Projects
     QList<RamProject *> projects() const;
-    RamProject *project(QString uuid) const;
-    RamProject *project(QString shortName, QString name) const;
+    RamProject *project(QString uuidOrShortName) const;
     RamProject *createProject();
     void removeProject(QString uuid);
     RamProject *currentProject() const;
     void setCurrentProject(RamProject *currentProject);
-    void setCurrentProject(QString uuid);
-    void setCurrentProject(QString shortName, QString name);
+    void setCurrentProject(QString uuidOrShortName);
     // Template Steps
     QList<RamStep *> templateSteps() const;
     RamStep *createTemplateStep();

@@ -1148,14 +1148,9 @@ void Ramses::setCurrentProject(RamProject *currentProject)
     emit projectChanged(_currentProject);
 }
 
-void Ramses::setCurrentProject(QString uuid)
+void Ramses::setCurrentProject(QString uuidOrShortName)
 {
-    setCurrentProject( project(uuid) );
-}
-
-void Ramses::setCurrentProject(QString shortName, QString name)
-{
-    setCurrentProject( project(shortName, name ));
+    setCurrentProject( project(uuidOrShortName) );
 }
 
 QList<RamStep *> Ramses::templateSteps() const
@@ -1359,19 +1354,16 @@ QList<RamProject *> Ramses::projects() const
     return _projects;
 }
 
-RamProject *Ramses::project(QString uuid) const
+RamProject *Ramses::project(QString uuidOrShortName) const
 {
     for(RamProject *p: _projects)
     {
-        if (p->uuid() == uuid) return p;
+        if (p->uuid() == uuidOrShortName) return p;
     }
-    return nullptr;
-}
-
-RamProject *Ramses::project(QString shortName, QString name) const
-{
     for (RamProject *p: _projects)
-        if (p->shortName() == shortName && p->name() == name) return p;
+    {
+        if (p->shortName() == uuidOrShortName) return p;
+    }
     return nullptr;
 }
 
