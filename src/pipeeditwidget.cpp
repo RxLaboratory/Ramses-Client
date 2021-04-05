@@ -121,14 +121,21 @@ void PipeEditWidget::updateFileTypes()
 
     RamFileType *currentFT = _pipe->fileType();
 
+    QStringList uuids;
+
     for ( RamFileType *outputFileType: _pipe->outputStep()->outputFileTypes() )
     {
+        QString uuid = outputFileType->uuid();
+        //already added
+        if (uuids.contains( uuid )) continue;
+
         for ( RamFileType *inputFileType: _pipe->inputStep()->inputFileTypes() )
         {
             if (outputFileType->uuid() == inputFileType->uuid())
             {
-                fileTypeBox->addItem( outputFileType->name() + " (" + outputFileType->shortName() + ")", outputFileType->uuid() );
-                if (currentFT) if (currentFT->uuid() == outputFileType->uuid())
+                uuids << uuid;
+                fileTypeBox->addItem( outputFileType->name() + " (" + outputFileType->shortName() + ")", uuid );
+                if (currentFT) if (currentFT->uuid() == uuid)
                     fileTypeBox->setCurrentIndex( fileTypeBox->count() -1 );
                 break;
             }
