@@ -167,6 +167,9 @@ private slots:
     // sequences
     void gotSequences(QJsonArray sequences, RamProject *project);
     QString gotSequence(QJsonObject newS, RamProject *project);
+    // shots
+    void gotShots(QJsonArray shots, RamSequence *sequence);
+    QString gotShot(QJsonObject newS, RamSequence *sequence);
     // pipes
     void gotPipes(QJsonArray pipes, RamProject *project);
     //TODO This should be modified when implementing offline version

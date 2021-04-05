@@ -787,10 +787,10 @@ QString Ramses::gotSequence(QJsonObject newS, RamProject *project)
             //Emit just one signal
             QSignalBlocker b(existingSequence);
             existingSequence->setName( newS.value("name").toString());
+            //add shots
+            gotShots( newS.value("shots").toArray(), existingSequence);
             b.unblock();
             existingSequence->setShortName( newS.value("shortName").toString());
-            //add shots
-            //gotShots( s.value("shots").toArray(), sequence);
             return uuid;
         }
     }
@@ -804,9 +804,74 @@ QString Ramses::gotSequence(QJsonObject newS, RamProject *project)
                 );
 
     //add shots
-    //gotShots( s.value("shots").toArray(), sequence);
+    gotShots( newS.value("shots").toArray(), sequence);
 
     project->addSequence(sequence);
+
+    return uuid;
+}
+
+void Ramses::gotShots(QJsonArray shots, RamSequence *sequence)
+{
+    DBISuspender s;
+    QStringList uuids;
+    // Update shots
+    for (int j = 0; j < shots.count(); j++)
+    {
+        uuids << gotShot( shots.at(j).toObject(), sequence );
+    }
+
+    // Remove deleted shots
+    QList<RamShot*> sequenceShots = sequence->shots();
+    for (int i = sequenceShots.count() - 1; i >= 0; i--)
+    {
+        RamShot *existingShot = sequenceShots.at(i);
+        if (!uuids.contains(existingShot->uuid()))
+        {
+            sequence->removeShot(existingShot->uuid());
+        }
+    }
+
+    // sort the sequences
+    sequence->sortShots();
+}
+
+QString Ramses::gotShot(QJsonObject newS, RamSequence *sequence)
+{
+    DBISuspender s;
+    QString uuid = newS.value("uuid").toString();
+
+    // loop through existing shots to update them
+    QList<RamShot*> sequenceShots = sequence->shots();
+    for (int i = sequenceShots.count() - 1; i >= 0; i--)
+    {
+        RamShot *existingShot = sequenceShots.at(i);
+
+        if (uuid == existingShot->uuid())
+        {
+            //Emit just one signal
+            QSignalBlocker b(existingShot);
+            existingShot->setName( newS.value("name").toString());
+            existingShot->setDuration( newS.value("duration").toDouble() );
+            existingShot->setOrder( newS.value("order").toInt() );
+            b.unblock();
+            existingShot->setShortName( newS.value("shortName").toString());
+            return uuid;
+        }
+    }
+
+    // not existing, let's create it
+    RamShot *shot = new RamShot(
+                newS.value("shortName").toString(),
+                newS.value("name").toString(),
+                newS.value("sequenceUuid").toString(),
+                newS.value("uuid").toString()
+                );
+
+    shot->setDuration( newS.value("duration").toDouble() );
+    shot->setOrder( newS.value("order").toInt() );
+
+    sequence->addShot(shot);
 
     return uuid;
 }
