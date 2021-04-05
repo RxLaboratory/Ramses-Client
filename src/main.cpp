@@ -35,11 +35,13 @@ int main(int argc, char *argv[])
 
         tcpSocket->write("ping");
         tcpSocket->waitForReadyRead(1000);
-        QJsonDocument reply = QJsonDocument::fromJson(tcpSocket->readAll());
+        QJsonDocument reply = QJsonDocument::fromJson( tcpSocket->readAll() );
         QJsonObject obj = reply.object();
-        if (obj.value("ramses").toString() == STR_INTERNALNAME && obj.value("version").toString() == STR_VERSION)
+        QJsonObject content = obj.value("content").toObject();
+        if (content.value("ramses").toString() == STR_INTERNALNAME && content.value("version").toString() == STR_VERSION)
         {
             tcpSocket->write("raise");
+            tcpSocket->waitForReadyRead(1000);
             qDebug("Ramses is already running.");
             return 0;
         }
