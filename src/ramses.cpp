@@ -203,7 +203,7 @@ QString Ramses::gotProject(QJsonObject newP)
                 );
     project->setFolderPath( newP.value("folderPath").toString());
 
-    // Add steps
+    // Add steps, assets, sequences, pipes...
     gotSteps( newP.value("steps").toArray(), project);
     gotAssetGroups( newP.value("assetGroups").toArray(), project);
     gotSequences( newP.value("sequences").toArray(), project);
@@ -749,60 +749,66 @@ void Ramses::gotAssets(QJsonArray assets, RamAssetGroup *assetGroup)
 void Ramses::gotSequences(QJsonArray sequences, RamProject *project)
 {
     DBISuspender s;
-
-    QList<RamSequence*> projectSequences = project->sequences();
-
-    // loop through existing asset groups to update them
-    for (int i = projectSequences.count() - 1; i >= 0; i--)
+    QStringList uuids;
+    // Update sequences
+    for (int j = 0; j < sequences.count(); j++)
     {
-        RamSequence *existingSequence = projectSequences[i];
-        // loop through new sequences to update
-        bool found = false;
-        for (int j = sequences.count() - 1; j >= 0; j--)
-        {
-            QJsonObject newS = sequences[j].toObject();
-            QString uuid = newS.value("uuid").toString();
-            // Found, update
-            if (uuid == existingSequence->uuid())
-            {
-                found = true;
-                //Emit just one signal
-                QSignalBlocker b(existingSequence);
-                existingSequence->setName( newS.value("name").toString());
-                //gotShots( newS.value("shots").toArray(), existingSequence);
-                b.unblock();
-                existingSequence->setShortName( newS.value("shortName").toString());
-                //remove from new asset groups
-                sequences.removeAt(j);
-                break;
-            }
-        }
-        // Not found, remove from existing
-        if (!found)
-        {
-            project->removeSequence(existingSequence);
-        }
+        uuids << gotSequence( sequences.at(j).toObject(), project );
     }
 
-    // loop through remaining new asset groups to add them
-    for (int i = 0; i < sequences.count(); i++)
+    // Remove deleted sequences
+    QList<RamSequence*> projectSequences = project->sequences();
+    for (int i = projectSequences.count() - 1; i >= 0; i--)
     {
-        QJsonObject s = sequences[i].toObject();
-        RamSequence *sequence = new RamSequence(
-                    s.value("shortName").toString(),
-                    s.value("name").toString(),
-                    s.value("uuid").toString()
-                    );
-        sequence->setProjectUuid( s.value("projectUuid").toString());
-
-        //add shots
-        //gotShots( s.value("shots").toArray(), sequence);
-
-        project->addSequence(sequence);
+        RamSequence *existingSequence = projectSequences.at(i);
+        if (!uuids.contains(existingSequence->uuid()))
+        {
+            project->removeSequence(existingSequence->uuid());
+        }
     }
 
     // sort the sequences
     project->sortSequences();
+}
+
+QString Ramses::gotSequence(QJsonObject newS, RamProject *project)
+{
+    DBISuspender s;
+    QString uuid = newS.value("uuid").toString();
+
+    // loop through existing sequences to update them
+    QList<RamSequence*> projectSequences = project->sequences();
+    for (int i = projectSequences.count() - 1; i >= 0; i--)
+    {
+        RamSequence *existingSequence = projectSequences.at(i);
+
+        if (uuid == existingSequence->uuid())
+        {
+            //Emit just one signal
+            QSignalBlocker b(existingSequence);
+            existingSequence->setName( newS.value("name").toString());
+            b.unblock();
+            existingSequence->setShortName( newS.value("shortName").toString());
+            //add shots
+            //gotShots( s.value("shots").toArray(), sequence);
+            return uuid;
+        }
+    }
+
+    // not existing, let's create it
+    RamSequence *sequence = new RamSequence(
+                newS.value("shortName").toString(),
+                newS.value("name").toString(),
+                newS.value("projectUuid").toString(),
+                newS.value("uuid").toString()
+                );
+
+    //add shots
+    //gotShots( s.value("shots").toArray(), sequence);
+
+    project->addSequence(sequence);
+
+    return uuid;
 }
 
 void Ramses::gotPipes(QJsonArray pipes, RamProject *project)

@@ -47,7 +47,7 @@ void RamObject::setUuid(const QString &uuid)
 
 void RamObject::remove()
 {
-    qDebug() << "Removing RamObject";
+    qDebug() << "Removing RamObject: " + _name;
     if (_removing) return;
     qDebug() << "> Accepted";
 
