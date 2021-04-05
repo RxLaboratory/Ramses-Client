@@ -355,6 +355,48 @@ void DBInterface::removeSequence(QString uuid)
     request(q);
 }
 
+void DBInterface::createShot(QString shortName, QString name, QString sequenceUuid, QString uuid, qreal duration, int order)
+{
+    QStringList q("createShot");
+    q << "uuid=" + uuid;
+    q << "shortName=" + shortName;
+    q << "name=" + name;
+    q << "sequenceUuid=" + sequenceUuid;
+    q << "duration=" + QString::number(duration);
+    q << "order=" + QString::number(order);
+
+    request(q);
+}
+
+void DBInterface::updateShot(QString uuid, QString shortName, QString name, QString sequenceUuid, qreal duration)
+{
+    QStringList q("updateShot");
+    q << "uuid=" + uuid;
+    q << "shortName=" + shortName;
+    q << "name=" + name;
+    q << "sequenceUuid=" + sequenceUuid;
+    if (duration != -1) q << "duration=" + QString::number(duration);
+
+    request(q);
+}
+
+void DBInterface::moveShot(QString uuid, int order)
+{
+    QStringList q("moveShot");
+    q << "uuid=" + uuid;
+    q << "order=" + QString::number(order);
+
+    request(q);
+}
+
+void DBInterface::removeShot(QString uuid)
+{
+    QStringList q("removeShot");
+    q << "uuid=" + uuid;
+
+    request(q);
+}
+
 void DBInterface::createState(QString shortName, QString name, QString uuid)
 {
     QStringList q("createState");

@@ -71,6 +71,11 @@ public:
     void createSequence(QString shortName, QString name, QString projectUuid, QString uuid);
     void updateSequence(QString uuid, QString shortName, QString name);
     void removeSequence(QString uuid);
+    //shots
+    void createShot(QString shortName, QString name, QString sequenceUuid, QString uuid, qreal duration = 0.0, int order = 0);
+    void updateShot(QString uuid, QString shortName, QString name, QString sequenceUuid = "", qreal duration = -1.0);
+    void moveShot(QString uuid, int order);
+    void removeShot(QString uuid);
     //states
     void createState(QString shortName, QString name, QString uuid);
     void getStates();
