@@ -180,6 +180,24 @@ void RamProject::sortSequences()
     std::sort(_sequences.begin(), _sequences.end(), sequenceSorter);
 }
 
+RamShot *RamProject::shot(QString uuid)
+{
+    foreach(RamSequence *s, _sequences)
+    {
+        foreach(RamShot *shot, s->shots())
+        {
+            if (shot->uuid() == uuid) return shot;
+        }
+    }
+
+    return nullptr;
+}
+
+void RamProject::removeShot(QString uuid)
+{
+    foreach(RamSequence *s, _sequences) s->removeShot(uuid);
+}
+
 QList<RamPipe *> RamProject::pipeline()
 {
     return _pipeline;

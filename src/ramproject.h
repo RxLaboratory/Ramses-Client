@@ -51,6 +51,10 @@ public:
     void removeSequence(RamObject *seq);
     void sortSequences();
 
+    // Shots
+    RamShot *shot(QString uuid);
+    void removeShot(QString uuid);
+
     // Pipeline
     QList<RamPipe *> pipeline();
     RamPipe *pipe(QString uuid);
