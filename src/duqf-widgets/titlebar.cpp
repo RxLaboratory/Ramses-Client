@@ -73,5 +73,4 @@ void TitleBar::setupUi(bool mini)
         reinitAction = rightAction;
         this->addWidget(closeButton);
     }
-    qDebug() << "titlebar";
 }
