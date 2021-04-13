@@ -44,7 +44,9 @@ void ShotsManagerWidget::createItem()
     RamProject *project = Ramses::instance()->currentProject();
     if (!project) return;
     if (project->sequences().count() == 0 ) return;
-    project->sequences().at(0)->createShot();
+    RamSequence *seq = project->sequence(currentFilter());
+    if (!seq) seq = project->sequences().at(0);
+    seq->createShot();
 }
 
 void ShotsManagerWidget::removeItem(QVariant data)

@@ -30,7 +30,9 @@ void AssetsManagerWidget::createItem()
     RamProject *project = Ramses::instance()->currentProject();
     if (!project) return;
     if (project->assetGroups().count() == 0 ) return;
-    project->assetGroups().at(0)->createAsset();
+    RamAssetGroup *ag = project->assetGroup(currentFilter());
+    if (!ag) ag = project->assetGroups().at(0);
+    ag->createAsset();
 }
 
 void AssetsManagerWidget::removeItem(QVariant data)
