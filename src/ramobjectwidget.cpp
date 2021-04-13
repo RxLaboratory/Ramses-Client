@@ -80,6 +80,13 @@ void RamObjectWidget::edit()
 
 void RamObjectWidget::setupUi()
 {
+    QVBoxLayout *vlayout = new QVBoxLayout(this);
+    vlayout->setContentsMargins(0,3,0,3);
+    vlayout->setSpacing(0);
+
+    // include in a frame for the BG
+    QFrame *mainFrame = new QFrame(this);
+
     QHBoxLayout *layout = new QHBoxLayout(this);
     layout->setSpacing(3);
     layout->setContentsMargins(3,3,3,3);
@@ -98,7 +105,9 @@ void RamObjectWidget::setupUi()
     editButton->setToolButtonStyle(Qt::ToolButtonIconOnly);
     layout->addWidget(editButton);
 
-    this->setLayout(layout);
+    mainFrame->setLayout(layout);
+    vlayout->addWidget(mainFrame);
+    this->setLayout(vlayout);
 
     this->setMinimumHeight(30);
 }

@@ -348,7 +348,7 @@ QScrollBar::handle:disabled {
 /* VERTICAL */
 
 QScrollBar:vertical {
-        width: @small-button-size;
+        width: @very-small-button-size;
 }
 
 QScrollBar::handle:vertical {
@@ -358,7 +358,7 @@ QScrollBar::handle:vertical {
 /* HORIZONTAL */
 
 QScrollBar:horizontal {
-        height: @small-button-size;
+        height: @very-small-button-size;
 }
 
 QScrollBar::handle:horizontal {

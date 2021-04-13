@@ -99,6 +99,7 @@ SOURCES += \
     serversettingswidget.cpp \
     shoteditwidget.cpp \
     shotsmanagerwidget.cpp \
+    simpleobjectlist.cpp \
     stateeditwidget.cpp \
     statesmanagerwidget.cpp \
     stepeditwidget.cpp \
@@ -190,6 +191,7 @@ HEADERS += \
     serversettingswidget.h \
     shoteditwidget.h \
     shotsmanagerwidget.h \
+    simpleobjectlist.h \
     stateeditwidget.h \
     statesmanagerwidget.h \
     stepeditwidget.h \

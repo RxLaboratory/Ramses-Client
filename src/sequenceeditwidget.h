@@ -3,6 +3,8 @@
 
 #include "ui_sequenceeditwidget.h"
 #include "ramses.h"
+#include "simpleobjectlist.h"
+#include "ramshotwidget.h"
 
 class SequenceEditWidget : public QWidget, private Ui::SequenceEditWidget
 {

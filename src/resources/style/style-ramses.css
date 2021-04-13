@@ -1,0 +1,20 @@
+SimpleObjectList QWidget {
+    background-color: @color-very-dark-grey;
+}
+
+RamObjectWidget QFrame{
+    border-radius: @padding-small;
+    background-color: @color-dark-grey;
+}
+
+RamObjectWidget QFrame:hover {
+    background-color: @color-less-dark-grey;
+}
+
+RamObjectWidget QToolButton {
+    background-color: rgba(0,0,0,0);
+}
+
+RamObjectWidget QLabel {
+    background-color: rgba(0,0,0,0);
+}

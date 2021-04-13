@@ -54,4 +54,7 @@
         <file alias="applications">resources/icons/applications_sl.svg</file>
         <file alias="shots">resources/icons/shot-settings.svg</file>
     </qresource>
+    <qresource prefix="/styles">
+        <file alias="default-ramses">resources/style/style-ramses.css</file>
+    </qresource>
 </RCC>

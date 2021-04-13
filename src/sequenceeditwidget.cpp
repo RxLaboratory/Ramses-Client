@@ -1,9 +1,22 @@
 #include "sequenceeditwidget.h"
 
+#include "dbisuspender.h"
+
 SequenceEditWidget::SequenceEditWidget(QWidget *parent) :
     QWidget(parent)
 {
     setupUi(this);
+
+    SimpleObjectList *shotsList = new SimpleObjectList(this);
+    shotsListLayout->addWidget(shotsList);
+
+    //fake shots
+    DBISuspender s;
+    for (int i = 0; i < 20; i++)
+    {
+        RamShotWidget *w = new RamShotWidget(new RamShot("test", "test"));
+        shotsList->addWidget(w);
+    }
 
     _sequence = nullptr;
 
