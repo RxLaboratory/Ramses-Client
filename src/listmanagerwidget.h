@@ -16,6 +16,7 @@ public:
     void setWidget(QWidget *w);
     void addFilter(QString name, QString data);
     void updateFilterName(QString name, QString data);
+    QString currentFilter();
     void clearFilters();
     void removeFilter(QString data);
 

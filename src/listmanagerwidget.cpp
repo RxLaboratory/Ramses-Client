@@ -25,7 +25,13 @@ ListManagerWidget::ListManagerWidget(QWidget *parent) :
 
 void ListManagerWidget::setWidget(QWidget *w)
 {
+    mainLayout->addStretch(0);
     mainLayout->addWidget(w);
+    mainLayout->addStretch(0);
+    mainLayout->setStretch(0, 0);
+    mainLayout->setStretch(1, 20);
+    mainLayout->setStretch(2, 80);
+    mainLayout->setStretch(3, 20);
 }
 
 void ListManagerWidget::addFilter(QString name, QString data)
@@ -40,6 +46,11 @@ void ListManagerWidget::updateFilterName(QString name, QString data)
     {
         if (filterBox->itemData(i).toString() == data) filterBox->setItemText(i, name);
     }
+}
+
+QString ListManagerWidget::currentFilter()
+{
+    return filterBox->currentData().toString();
 }
 
 void ListManagerWidget::clearFilters()
