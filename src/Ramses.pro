@@ -89,6 +89,7 @@ SOURCES += \
     ramsequence.cpp \
     ramses.cpp \
     ramshot.cpp \
+    ramshotwidget.cpp \
     ramstate.cpp \
     ramstep.cpp \
     ramuser.cpp \
@@ -179,6 +180,7 @@ HEADERS += \
     ramsequence.h \
     ramses.h \
     ramshot.h \
+    ramshotwidget.h \
     ramstate.h \
     ramstep.h \
     ramuser.h \

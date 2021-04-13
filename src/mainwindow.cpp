@@ -153,6 +153,18 @@ void MainWindow::addAssetEditDockWidget(QDockWidget *w)
     _assetEditDock << w;
 }
 
+void MainWindow::addShotEditDockWidget(QDockWidget *w)
+{
+    this->addDockWidget(Qt::RightDockWidgetArea, w);
+
+    /*if (!_shotEditDock.isEmpty())
+    {
+        this->tabifyDockWidget(_shotEditDock.last(), w);
+    }*/
+
+    _shotEditDock << w;
+}
+
 void MainWindow::duqf_initUi()
 {
     // ===== SYSTRAY ======

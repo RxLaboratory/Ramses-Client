@@ -3,11 +3,9 @@
 
 #include <QDockWidget>
 
-#include "objectdockwidget.h"
 #include "ramobjectwidget.h"
 #include "ramses.h"
 #include "asseteditwidget.h"
-#include "duqf-utils/guiutils.h"
 
 class RamAssetWidget : public RamObjectWidget
 {
