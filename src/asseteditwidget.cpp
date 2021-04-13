@@ -23,6 +23,7 @@ void AssetEditWidget::setAsset(RamAsset *asset)
 
     QSignalBlocker b1(tagsEdit);
     QSignalBlocker b2(folderWidget);
+    QSignalBlocker b3(assetGroupBox);
 
     //Reset values
     tagsEdit->setText("");
