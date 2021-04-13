@@ -6,7 +6,7 @@
 #include "duqf-nodeview/duqfnode.h"
 #include "duqf-utils/guiutils.h"
 
-#include "ramstep.h"
+#include "ramobject.h"
 #include "objecteditwidget.h"
 #include "objectdockwidget.h"
 

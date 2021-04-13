@@ -13,8 +13,8 @@ ObjectNode::ObjectNode(RamObject *obj)
     this->setTitleToolTip(_object->name());
 
     connect(this, &DuQFNode::removed, this, &ObjectNode::removeObject);
-    connect(obj, &RamStep::changed, this, &ObjectNode::objectChanged);
-    connect(obj, &RamStep::removed, this, &ObjectNode::objectRemoved);
+    connect(obj, &RamObject::changed, this, &ObjectNode::objectChanged);
+    connect(obj, &RamObject::removed, this, &ObjectNode::objectRemoved);
 }
 
 ObjectNode::~ObjectNode()

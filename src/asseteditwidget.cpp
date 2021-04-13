@@ -1,23 +1,12 @@
 #include "asseteditwidget.h"
 
-AssetEditWidget::AssetEditWidget(QWidget *parent) :
-    QWidget(parent)
+AssetEditWidget::AssetEditWidget(RamAsset *asset, QWidget *parent) :
+    ObjectEditWidget(asset, parent)
 {
-    setupUi(this);
+    setupUi();
+    connectEvents();
 
-    folderWidget = new DuQFFolderDisplayWidget(this);
-    folderLayout->addWidget(folderWidget);
-
-    _asset = nullptr;
-    _project = nullptr;
-
-    connect(updateButton, SIGNAL(clicked()), this, SLOT(update()));
-    connect(revertButton, SIGNAL(clicked()), this, SLOT(revert()));
-    connect(shortNameEdit, &QLineEdit::textChanged, this, &AssetEditWidget::checkInput);
-    connect(assetGroupBox, SIGNAL(currentIndexChanged(int)), this, SLOT(checkInput()));
-    connect(DBInterface::instance(),&DBInterface::newLog, this, &AssetEditWidget::dbiLog);
-
-    this->setEnabled(false);
+    setAsset(asset);
 }
 
 RamAsset *AssetEditWidget::asset() const
@@ -27,127 +16,75 @@ RamAsset *AssetEditWidget::asset() const
 
 void AssetEditWidget::setAsset(RamAsset *asset)
 {
-    while (_assetConnections.count() > 0) disconnect( _assetConnections.takeLast() );
+    this->setEnabled(false);
 
+    setObject(asset);
     _asset = asset;
 
-    nameEdit->setText("");
-    shortNameEdit->setText("");
+    QSignalBlocker b1(tagsEdit);
+    QSignalBlocker b2(folderWidget);
+
+    //Reset values
     tagsEdit->setText("");
     folderWidget->setPath("");
-    setProject(nullptr);
-
-    this->setEnabled(false);
+    assetGroupBox->clear();
 
     if (!asset) return;
 
-    nameEdit->setText(asset->name());
-    shortNameEdit->setText(asset->shortName());
     tagsEdit->setText(asset->tags().join(", "));
     folderWidget->setPath(Ramses::instance()->path(asset));
 
-    _assetConnections << connect(asset, &RamAsset::removed, this, &AssetEditWidget::assetRemoved);
+    // Load asset groups
+    RamProject *proj = project();
+    if (!proj) return;
 
-    // set project and group
-    assetGroupBox->setCurrentIndex(-1);
-    RamAssetGroup *assetGroup = Ramses::instance()->assetGroup( asset->assetGroupUuid() );
-    if (!assetGroup) return;
-
-    // set project
-    setProject( Ramses::instance()->project( assetGroup->projectUuid() ));
-    if (!_project) return;
-
-    // set group
-    for (int i = 0; i < assetGroupBox->count(); i++)
+    for( RamAssetGroup *ag: proj->assetGroups() )
     {
-        if (assetGroupBox->itemData(i).toString() == asset->assetGroupUuid())
-        {
-            assetGroupBox->setCurrentIndex(i);
-            break;
-        }
+        newAssetGroup(ag);
+        if (_asset->assetGroupUuid() == ag->uuid())
+            assetGroupBox->setCurrentIndex( assetGroupBox->count() -1 );
     }
 
+    _objectConnections << connect(asset, &RamAsset::changed, this, &AssetEditWidget::assetChanged);
+    _objectConnections << connect(proj,SIGNAL(assetGroupRemoved(QString)), this, SLOT(assetGroupRemoved(QString)));
+    _objectConnections << connect(proj, &RamProject::newAssetGroup, this, &AssetEditWidget::newAssetGroup);
+
     this->setEnabled(Ramses::instance()->isLead());
-}
-
-void AssetEditWidget::setProject(RamProject *project)
-{
-    while(_projectConnections.count() > 0) disconnect( _projectConnections.takeLast() );
-
-    _project = project;
-
-    this->setEnabled(false);
-    assetGroupBox->clear();
-
-    if (!project) return;
-
-    foreach(RamAssetGroup *ag, project->assetGroups()) newAssetGroup(ag);
-
-    connect(project,SIGNAL(assetGroupRemoved(QString)), this, SLOT(assetGroupRemoved(QString)));
-    connect(project, &RamProject::newAssetGroup, this, &AssetEditWidget::newAssetGroup);
-
-    this->setEnabled(true);
 }
 
 void AssetEditWidget::update()
 {
     if (!_asset) return;
-    if (!_project) return;
 
-    this->setEnabled(false);
+    if (!checkInput()) return;
 
-    //check if everything is alright
-    if (!checkInput())
-    {
-        this->setEnabled(true);
-        return;
-    }
+    updating = true;
 
     _asset->setName(nameEdit->text());
     _asset->setShortName(shortNameEdit->text());
     _asset->setTags(tagsEdit->text());
-    _asset->setAssetGroupUuid(assetGroupBox->currentData().toString());
+    if (assetGroupBox->currentIndex() >= 0)
+        _asset->setAssetGroupUuid(assetGroupBox->currentData().toString());
 
     _asset->update();
 
-    this->setEnabled(true);
-
-    emit accepted();
-}
-
-void AssetEditWidget::revert()
-{
-    setAsset(_asset);
-
-    emit rejected();
+    updating = false;
 }
 
 bool AssetEditWidget::checkInput()
 {
-    if (!_asset) return false;
+    if (! ObjectEditWidget::checkInput() ) return false;
 
-    if (shortNameEdit->text() == "")
-    {
-        statusLabel->setText("Short name cannot be empty!");
-        updateButton->setEnabled(false);
-        return false;
-    }
+    if (assetGroupBox->currentIndex() < 0) return false;
 
-    if (assetGroupBox->currentIndex() < 0)
-    {
-        statusLabel->setText("Assets must be assigned to an Asset group.");
-        updateButton->setEnabled(false);
-        return false;
-    }
-
-    statusLabel->setText("");
-    updateButton->setEnabled(true);
     return true;
 }
 
-void AssetEditWidget::assetRemoved(RamObject */*o*/)
+void AssetEditWidget::assetChanged(RamObject *o)
 {
-    setAsset(nullptr);
+    if (updating) return;
+    Q_UNUSED(o);
+    setAsset(_asset);
 }
 
 void AssetEditWidget::newAssetGroup(RamAssetGroup *ag)
@@ -156,13 +93,11 @@ void AssetEditWidget::newAssetGroup(RamAssetGroup *ag)
     connect(ag, &RamAssetGroup::changed, this, &AssetEditWidget::assetGroupChanged);
 }
 
-void AssetEditWidget::assetGroupChanged()
+void AssetEditWidget::assetGroupChanged(RamObject *o)
 {
-    RamAssetGroup *ag = (RamAssetGroup*)sender();
-
     for(int i = 0; i < assetGroupBox->count(); i++)
     {
-        if (assetGroupBox->itemData(i).toString() == ag->uuid()) assetGroupBox->setItemText(i, ag->name());
+        if (assetGroupBox->itemData(i).toString() == o->uuid()) assetGroupBox->setItemText(i, o->name());
     }
 }
 
@@ -174,8 +109,45 @@ void AssetEditWidget::assetGroupRemoved(QString uuid)
     }
 }
 
-void AssetEditWidget::dbiLog(DuQFLog m)
+void AssetEditWidget::setupUi()
 {
-    if (m.type() != DuQFLog::Debug) statusLabel->setText(m.message());
+    // Tags
+    QLabel *tagsLabel = new QLabel("Tags", this);
+    mainFormLayout->addWidget(tagsLabel, 2, 0);
+
+    tagsEdit = new QLineEdit(this);
+    tagsEdit->setPlaceholderText("tag1, tag2, ...");
+    mainFormLayout->addWidget(tagsEdit, 2, 1);
+
+    QLabel *assetGroupLabel = new QLabel("Asset group", this);
+    mainFormLayout->addWidget(assetGroupLabel, 3, 0);
+
+    assetGroupBox = new QComboBox(this);
+    mainFormLayout->addWidget(assetGroupBox, 3, 1);
+
+    QLabel *folderLabel = new QLabel(this);
+    mainFormLayout->addWidget(folderLabel, 4, 0);
+
+    folderWidget = new DuQFFolderDisplayWidget(this);
+    mainFormLayout->addWidget(folderWidget, 4, 1);
 }
 
+void AssetEditWidget::connectEvents()
+{
+    connect(tagsEdit, SIGNAL(editingFinished()), this, SLOT(update()));
+    connect(assetGroupBox, SIGNAL(currentIndexChanged(int)), this, SLOT(update()));
+}
+
+RamAssetGroup *AssetEditWidget::assetGroup()
+{
+    if (!_asset) return nullptr;
+    return Ramses::instance()->assetGroup( _asset->assetGroupUuid() );
+}
+
+RamProject *AssetEditWidget::project()
+{
+    if (!_asset) return nullptr;
+    RamAssetGroup *ag = assetGroup();
+    if (!ag) return nullptr;
+    return Ramses::instance()->project( ag->projectUuid() );
+}

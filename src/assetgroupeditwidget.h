@@ -2,7 +2,6 @@
 #define ASSETGROUPEDITWIDGET_H
 
 #include "ui_assetgroupeditwidget.h"
-#include "ramses.h"
 #include "ramassetwidget.h"
 #include "duqf-widgets/duqffolderdisplaywidget.h"
 

@@ -83,6 +83,7 @@ SOURCES += \
     ramassetwidget.cpp \
     ramfiletype.cpp \
     ramobject.cpp \
+    ramobjectwidget.cpp \
     rampipe.cpp \
     ramproject.cpp \
     ramsequence.cpp \
@@ -172,6 +173,7 @@ HEADERS += \
     ramassetwidget.h \
     ramfiletype.h \
     ramobject.h \
+    ramobjectwidget.h \
     rampipe.h \
     ramproject.h \
     ramsequence.h \
@@ -215,7 +217,6 @@ FORMS += \
     objecteditwidget.ui \
     pipeline-editor/pipelinewidget.ui \
     projecteditwidget.ui \
-    ramassetwidget.ui \
     sequenceeditwidget.ui \
     serversettingswidget.ui \
     stateeditwidget.ui \

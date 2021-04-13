@@ -15,11 +15,16 @@ public:
     ShotEditWidget(RamShot *shot = nullptr, QWidget *parent = nullptr);
     void setShot(RamShot *shot);
 
-private slots:
+protected slots:
     void update() Q_DECL_OVERRIDE;
+
+private slots:
     void shotChanged(RamObject *o);
     void framesChanged();
     void secondsChanged();
+    void newSequence(RamSequence *seq);
+    void sequenceChanged(RamObject *o);
+    void sequenceRemoved(RamSequence *seq);
 
 private:
     RamShot *_shot = nullptr;

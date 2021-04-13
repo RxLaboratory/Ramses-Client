@@ -123,7 +123,6 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
 
 void MainWindow::addStepDockWidget(QDockWidget *w)
 {
-    w->setParent(this);
     this->addDockWidget(Qt::RightDockWidgetArea, w);
     if (_stepDock.count() > 0)
     {
@@ -134,13 +133,24 @@ void MainWindow::addStepDockWidget(QDockWidget *w)
 
 void MainWindow::addPipeDockWidget(QDockWidget *w)
 {
-    w->setParent(this);
     this->addDockWidget(Qt::RightDockWidgetArea, w);
     if (_pipeDock.count() > 0)
     {
         this->tabifyDockWidget(_pipeDock.last(), w);
     }
     _pipeDock << w;
+}
+
+void MainWindow::addAssetEditDockWidget(QDockWidget *w)
+{
+    this->addDockWidget(Qt::RightDockWidgetArea, w);
+
+    /*if (!_assetEditDock.isEmpty())
+    {
+        this->tabifyDockWidget(_assetEditDock.last(), w);
+    }*/
+
+    _assetEditDock << w;
 }
 
 void MainWindow::duqf_initUi()

@@ -118,10 +118,11 @@ void AssetGroupEditWidget::newAsset(RamAsset *a)
 {
     RamAssetWidget *aw = new RamAssetWidget(a, this);
     QListWidgetItem *i = new QListWidgetItem();
+    i->setSizeHint(QSize(100,30));
     assetsList->addItem(i);
     assetsList->setItemWidget(i, aw);
 
-    if (aw->asset()->shortName() == "NEW") aw->edit();
+    if (a->shortName() == "NEW") aw->edit();
 }
 
 void AssetGroupEditWidget::assetRemoved(QString uuid)

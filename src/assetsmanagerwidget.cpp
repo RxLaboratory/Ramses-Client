@@ -2,7 +2,7 @@
 
 AssetsManagerWidget::AssetsManagerWidget(QWidget *parent): ListManagerWidget(parent)
 {
-    assetWidget = new AssetEditWidget(this);
+    assetWidget = new AssetEditWidget(nullptr, this);
     this->setWidget(assetWidget);
 
     this->setRole(RamUser::Lead);

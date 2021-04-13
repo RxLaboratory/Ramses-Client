@@ -38,7 +38,7 @@ void ObjectDockWidget::pin(bool p)
 void ObjectDockWidget::objectChanged(RamObject *o)
 {
     this->setToolTip(o->name());
-    _titleWidget->setTitle(o->shortName());
+    _titleWidget->setTitle(o->name());
 }
 
 void ObjectDockWidget::objectRemoved(RamObject *o)
