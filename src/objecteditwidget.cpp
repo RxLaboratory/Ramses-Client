@@ -36,7 +36,7 @@ void ObjectEditWidget::setObject(RamObject *object)
     shortNameEdit->setText(object->shortName());
 
     _objectConnections << connect( object, &RamObject::removed, this, &ObjectEditWidget::objectRemoved);
-    _objectConnections << connect( object, &RamObject::changed, this, &ObjectEditWidget::setObject);
+    _objectConnections << connect( object, &RamObject::changed, this, &ObjectEditWidget::objectChanged);
 }
 
 void ObjectEditWidget::update()
@@ -45,10 +45,14 @@ void ObjectEditWidget::update()
 
     if (!checkInput()) return;
 
+    updating = true;
+
     _object->setName(nameEdit->text());
     _object->setShortName(shortNameEdit->text());
 
     _object->update();
+
+    updating = false;
 }
 
 bool ObjectEditWidget::checkInput()
@@ -69,6 +73,13 @@ void ObjectEditWidget::objectRemoved(RamObject *o)
 {
     Q_UNUSED(o);
     setObject(nullptr);
+}
+
+void ObjectEditWidget::objectChanged(RamObject *o)
+{
+    if (updating) return;
+    Q_UNUSED(o);
+    setObject(_object);
 }
 
 void ObjectEditWidget::connectEvents()

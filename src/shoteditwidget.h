@@ -24,8 +24,6 @@ private slots:
 private:
     RamShot *_shot = nullptr;
 
-    bool updating = false;
-
     void setupUi();
     void connectEvents();
 

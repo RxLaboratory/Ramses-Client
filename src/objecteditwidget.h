@@ -24,9 +24,11 @@ protected slots:
 
 protected:
     QList<QMetaObject::Connection> _objectConnections;
+    bool updating = false;
 
 private slots:
     void objectRemoved(RamObject *o);
+    void objectChanged(RamObject *o);
 
 private:
     RamObject *_object;
