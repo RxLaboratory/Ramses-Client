@@ -81,7 +81,7 @@ void ShotsManagerWidget::changeProject(RamProject *project)
 
     filterBox->blockSignals(false);
 
-    _projectConnections << connect(project, SIGNAL(sequenceRemoved(QString)), this, SLOT(sequenceRemoved(QString)));
+    _projectConnections << connect(project, SIGNAL(sequenceRemoved(RamSequence*)), this, SLOT(sequenceRemoved(RamSequence*)));
     _projectConnections << connect(project, &RamProject::newSequence, this, &ShotsManagerWidget::newSequence);
 
     this->setEnabled(true);
@@ -143,9 +143,9 @@ void ShotsManagerWidget::sequenceChanged()
     this->updateFilterName(sequence->name(), sequence->uuid());
 }
 
-void ShotsManagerWidget::sequenceRemoved(QString uuid)
+void ShotsManagerWidget::sequenceRemoved(RamSequence *seq)
 {
-    this->removeFilter(uuid);
+    this->removeFilter(seq->uuid());
 }
 
 void ShotsManagerWidget::newSequence(RamSequence *sequence)

@@ -20,6 +20,7 @@ QString RamShot::sequenceUuid() const
 void RamShot::setSequenceUuid(const QString &sequenceUuid)
 {
     _sequenceUuid = sequenceUuid;
+    emit changed(this);
 }
 
 qreal RamShot::duration() const

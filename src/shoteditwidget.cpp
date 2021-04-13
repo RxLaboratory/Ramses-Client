@@ -58,6 +58,8 @@ void ShotEditWidget::update()
     _shot->setName(nameEdit->text());
     _shot->setShortName(shortNameEdit->text());
     _shot->setDuration(secondsBox->value());
+    if (sequencesBox->currentIndex() >= 0)
+        _shot->setSequenceUuid( sequencesBox->currentData().toString());
 
     _shot->update();
 

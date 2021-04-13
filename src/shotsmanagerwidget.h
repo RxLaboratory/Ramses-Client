@@ -23,7 +23,7 @@ private slots:
     void filter(QString sequenceUuid);
     void addShots(RamSequence *sequence);
     void sequenceChanged();
-    void sequenceRemoved(QString uuid);
+    void sequenceRemoved(RamSequence *seq);
     void newSequence(RamSequence *sequence);
     void moveShotUp();
     void moveShotDown();
