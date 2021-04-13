@@ -813,7 +813,14 @@ void DBInterface::request(QString req, bool waitPing)
 
     //Get server address
     QString protocol = "http://";
-    if (settings.value("server/ssl", true).toBool()) protocol = "https://";
+    if (settings.value("server/ssl", true).toBool())
+    {
+        protocol = "https://";
+        if (!QSslSocket::supportsSsl()) {
+            log("SSL is not available on this system. Please install OpenSSL to securely connect to the specified server.", DuQFLog::Critical);
+            return;
+        }
+    }
     QString serverAddress = settings.value("server/address", "localhost/ramses/").toString();
     //if (!serverAddress.endsWith("/")) serverAddress += "/";
 
