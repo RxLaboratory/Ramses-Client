@@ -68,6 +68,8 @@ public:
 
     // Shots
     RamShot *shot(QString uuid);
+    void moveShotToSequence(RamShot *shot, QString sequenceUuid);
+    void moveShotToSequence(RamShot *shot, RamSequence *sequence);
     void removeShot(QString uuid);
 
     // Pipeline

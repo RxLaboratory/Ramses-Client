@@ -258,6 +258,21 @@ RamShot *RamProject::shot(QString uuid)
     return nullptr;
 }
 
+void RamProject::moveShotToSequence(RamShot *shot, QString sequenceUuid)
+{
+    for(int i = 0; i < _sequences.count(); i++)
+    {
+        RamSequence *sequence = _sequences.at(i);
+        if (sequence->uuid() == sequenceUuid) sequence->addShot(shot);
+        else sequence->removeShot(shot);
+    }
+}
+
+void RamProject::moveShotToSequence(RamShot *shot, RamSequence *sequence)
+{
+    moveShotToSequence(shot, sequence->uuid());
+}
+
 void RamProject::removeShot(QString uuid)
 {
     foreach(RamSequence *s, _sequences) s->removeShot(uuid);

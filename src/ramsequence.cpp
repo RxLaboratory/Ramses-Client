@@ -39,6 +39,8 @@ RamShot *RamSequence::shot(QString uuid) const
 void RamSequence::addShot(RamShot *shot)
 {
     _shots << shot;
+    shot->setSequenceUuid( _uuid );
+    shot->update();
     connect(shot, SIGNAL(removed(RamObject*)), this, SLOT(shotRemoved(RamObject*)));
     emit newShot(shot);
 }
@@ -57,7 +59,6 @@ void RamSequence::removeShot(QString uuid)
         if (s->uuid() == uuid)
         {
             _shots.removeAt(i);
-            s->remove();
             emit shotRemoved(uuid);
         }
     }

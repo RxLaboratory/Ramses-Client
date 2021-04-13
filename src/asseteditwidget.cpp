@@ -81,8 +81,11 @@ bool AssetEditWidget::checkInput()
 
 void AssetEditWidget::moveAsset()
 {
+    if (!_asset) return;
+    RamProject *proj = project();
+    if (!proj) return;
     if (assetGroupBox->currentIndex() >= 0)
-        project()->moveAssetToGroup(_asset, assetGroupBox->currentData().toString());
+        proj->moveAssetToGroup(_asset, assetGroupBox->currentData().toString());
 }
 
 void AssetEditWidget::assetChanged(RamObject *o)

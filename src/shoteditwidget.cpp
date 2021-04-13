@@ -60,12 +60,19 @@ void ShotEditWidget::update()
     _shot->setName(nameEdit->text());
     _shot->setShortName(shortNameEdit->text());
     _shot->setDuration(secondsBox->value());
-    if (sequencesBox->currentIndex() >= 0)
-        _shot->setSequenceUuid( sequencesBox->currentData().toString());
 
     _shot->update();
 
     updating = false;
+}
+
+void ShotEditWidget::moveShot()
+{
+    if (!_shot) return;
+    RamProject *proj = project();
+    if (!proj) return;
+    if (sequencesBox->currentIndex() >= 0)
+        proj->moveShotToSequence(_shot, sequencesBox->currentData().toString());
 }
 
 void ShotEditWidget::shotChanged(RamObject *o)
@@ -148,7 +155,7 @@ void ShotEditWidget::connectEvents()
 {
     connect(secondsBox, SIGNAL(editingFinished()), this, SLOT(secondsChanged()));
     connect(framesBox, SIGNAL(editingFinished()), this, SLOT(framesChanged()));
-    connect(sequencesBox, SIGNAL(currentIndexChanged(int)), this, SLOT(update()));
+    connect(sequencesBox, SIGNAL(currentIndexChanged(int)), this, SLOT(moveShot()));
 }
 
 RamSequence *ShotEditWidget::sequence()

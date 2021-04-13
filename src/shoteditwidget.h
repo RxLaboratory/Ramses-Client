@@ -19,6 +19,7 @@ protected slots:
     void update() Q_DECL_OVERRIDE;
 
 private slots:
+    void moveShot();
     void shotChanged(RamObject *o);
     void framesChanged();
     void secondsChanged();
