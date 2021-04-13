@@ -156,7 +156,7 @@ void RamProject::sortAssetGroups()
     std::sort(_assetGroups.begin(), _assetGroups.end(), assetGroupSorter);
 }
 
-RamAsset *RamProject::asset(QString uuid)
+RamAsset *RamProject::asset(QString uuid) const
 {
     foreach(RamAssetGroup *ag, _assetGroups)
     {
@@ -167,6 +167,21 @@ RamAsset *RamProject::asset(QString uuid)
     }
 
     return nullptr;
+}
+
+void RamProject::moveAssetToGroup(RamAsset *asset, QString groupUuid)
+{
+    for(int i = 0; i < _assetGroups.count(); i++)
+    {
+        RamAssetGroup *assetGroup = _assetGroups.at(i);
+        if (assetGroup->uuid() == groupUuid) assetGroup->addAsset(asset);
+        else assetGroup->removeAsset(asset);
+    }
+}
+
+void RamProject::moveAssetToGroup(RamAsset *asset, RamAssetGroup *group)
+{
+    moveAssetToGroup(asset, group->uuid());
 }
 
 void RamProject::removeAsset(QString uuid)

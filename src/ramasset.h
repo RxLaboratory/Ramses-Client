@@ -20,7 +20,6 @@ public:
     bool hasTag(QString tag);
 
     void update();
-
 private:
     QStringList _tags;
     QString _assetGroupUuid;

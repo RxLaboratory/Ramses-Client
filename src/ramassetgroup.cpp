@@ -60,7 +60,10 @@ RamAsset *RamAssetGroup::asset(QString uuid) const
 
 void RamAssetGroup::addAsset(RamAsset *asset)
 {
+    if (_assets.contains(asset)) return;
     _assets << asset;
+    asset->setAssetGroupUuid( _uuid );
+    asset->update();
     connect(asset, SIGNAL(removed(RamObject*)), this, SLOT(assetRemoved(RamObject*)));
     emit newAsset(asset);
 }
@@ -79,7 +82,6 @@ void RamAssetGroup::removeAsset(QString uuid)
         if (a->uuid() == uuid)
         {
             _assets.removeAt(i);
-            a->remove();
             emit assetRemoved(uuid);
         }
     }
@@ -110,3 +112,4 @@ void RamAssetGroup::assetRemoved(RamObject *o)
 {
     removeAsset(o);
 }
+

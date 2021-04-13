@@ -64,8 +64,6 @@ void AssetEditWidget::update()
     _asset->setName(nameEdit->text());
     _asset->setShortName(shortNameEdit->text());
     _asset->setTags(tagsEdit->text());
-    if (assetGroupBox->currentIndex() >= 0)
-        _asset->setAssetGroupUuid(assetGroupBox->currentData().toString());
 
     _asset->update();
 
@@ -79,6 +77,12 @@ bool AssetEditWidget::checkInput()
     if (assetGroupBox->currentIndex() < 0) return false;
 
     return true;
+}
+
+void AssetEditWidget::moveAsset()
+{
+    if (assetGroupBox->currentIndex() >= 0)
+        project()->moveAssetToGroup(_asset, assetGroupBox->currentData().toString());
 }
 
 void AssetEditWidget::assetChanged(RamObject *o)
@@ -136,7 +140,7 @@ void AssetEditWidget::setupUi()
 void AssetEditWidget::connectEvents()
 {
     connect(tagsEdit, SIGNAL(editingFinished()), this, SLOT(update()));
-    connect(assetGroupBox, SIGNAL(currentIndexChanged(int)), this, SLOT(update()));
+    connect(assetGroupBox, SIGNAL(currentIndexChanged(int)), this, SLOT(moveAsset()));
 }
 
 RamAssetGroup *AssetEditWidget::assetGroup()

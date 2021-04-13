@@ -22,6 +22,7 @@ protected slots:
     bool checkInput() Q_DECL_OVERRIDE;
 
 private slots:
+    void moveAsset();
     void assetChanged(RamObject *o);
     void newAssetGroup(RamAssetGroup *ag);
     void assetGroupChanged(RamObject *o);

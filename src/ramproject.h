@@ -52,7 +52,9 @@ public:
     void sortAssetGroups();
 
     // Assets
-    RamAsset *asset(QString uuid);
+    RamAsset *asset(QString uuid) const;
+    void moveAssetToGroup(RamAsset *asset, QString groupUuid);
+    void moveAssetToGroup(RamAsset *asset, RamAssetGroup *group);
     void removeAsset(QString uuid);
 
     // Sequences
