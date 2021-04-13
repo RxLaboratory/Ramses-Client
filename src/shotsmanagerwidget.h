@@ -25,9 +25,14 @@ private slots:
     void sequenceChanged();
     void sequenceRemoved(QString uuid);
     void newSequence(RamSequence *sequence);
+    void moveShotUp();
+    void moveShotDown();
+    void updateShotsOrder();
 
 private:
     ShotEditWidget *shotWidget;
+    QToolButton *downButton;
+    QToolButton *upButton;
     QList<QMetaObject::Connection> _projectConnections;
     QList<QMetaObject::Connection> _sequencesConnections;
 };

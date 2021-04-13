@@ -3,4 +3,4 @@
 
 ## Dependencies
 
-OpenSSL >= 1.1.0
+- OpenSSL >= 1.1.0

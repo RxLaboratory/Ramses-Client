@@ -8,10 +8,23 @@ ShotsManagerWidget::ShotsManagerWidget(QWidget *parent):
 
     this->setRole(RamUser::Lead);
 
+    list->setDragEnabled(true);
+
+    // Add order buttons
+    upButton = new QToolButton(this);
+    upButton->setIcon(QIcon(":/icons/move-up"));
+    downButton = new QToolButton(this);
+    downButton->setIcon(QIcon(":/icons/move-down"));
+    buttonsLayout->insertWidget(2, downButton);
+    buttonsLayout->insertWidget(2, upButton);
+
     changeProject(Ramses::instance()->currentProject());
 
     connect(Ramses::instance(), &Ramses::projectChanged, this, &ShotsManagerWidget::changeProject);
     connect(this, &ListManagerWidget::filterChanged, this, &ShotsManagerWidget::filter);
+    connect(upButton, &QToolButton::clicked, this, &ShotsManagerWidget::moveShotUp);
+    connect(downButton, &QToolButton::clicked, this, &ShotsManagerWidget::moveShotDown);
+    connect(list, &DuQFListWidget::itemDropped, this, &ShotsManagerWidget::updateShotsOrder);
 }
 
 void ShotsManagerWidget::currentDataChanged(QVariant data)
@@ -139,4 +152,58 @@ void ShotsManagerWidget::newSequence(RamSequence *sequence)
 {
     _projectConnections << connect(sequence, &RamSequence::changed, this, &ShotsManagerWidget::sequenceChanged);
     this->addFilter(sequence->name(), sequence->uuid());
+}
+
+void ShotsManagerWidget::moveShotUp()
+{
+    int currentRow = list->currentRow();
+    if (currentRow == 0) return;
+    QListWidgetItem *shotItem = list->takeItem( currentRow );
+    if (!shotItem) return;
+
+    list->insertItem( currentRow - 1, shotItem);
+    list->setCurrentRow( currentRow - 1);
+
+    RamProject *project = Ramses::instance()->currentProject();
+    if (!project) return;
+
+    RamShot *shot = project->shot(shotItem->data(Qt::UserRole).toString());
+    if (!shot) return;
+
+    shot->setOrder(currentRow -1);
+    shot->update();
+}
+
+void ShotsManagerWidget::moveShotDown()
+{
+    int currentRow = list->currentRow();
+    if (currentRow == list->count() - 1) return;
+    QListWidgetItem *shotItem = list->takeItem( currentRow );
+    if (!shotItem) return;
+
+    list->insertItem( currentRow + 1, shotItem);
+    list->setCurrentRow( currentRow + 1);
+
+    RamProject *project = Ramses::instance()->currentProject();
+    if (!project) return;
+
+    RamShot *shot = project->shot(shotItem->data(Qt::UserRole).toString());
+    if (!shot) return;
+
+    shot->setOrder(currentRow + 1);
+    shot->update();
+}
+
+void ShotsManagerWidget::updateShotsOrder()
+{
+    RamProject *project = Ramses::instance()->currentProject();
+    if (!project) return;
+
+    for (int i = 0; i < list->count(); i++)
+    {
+        RamShot *shot = project->shot( list->item(i)->data(Qt::UserRole).toString() );
+        if (!shot) continue;
+        shot->setOrder(i);
+        shot->update();
+    }
 }
