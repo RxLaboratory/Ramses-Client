@@ -4,7 +4,6 @@
 #include "objecteditwidget.h"
 #include "ramses.h"
 #include "simpleobjectlist.h"
-#include "duqf-widgets/duqffolderdisplaywidget.h"
 
 class SequenceEditWidget : public ObjectEditWidget
 {
@@ -33,7 +32,6 @@ private:
     void setupUi();
     void connectEvents();
 
-    DuQFFolderDisplayWidget *folderWidget;
     SimpleObjectList *shotsList;
 
     bool _creatingShot = false;

@@ -94,18 +94,12 @@ void SequenceEditWidget::removeShot(RamObject *o)
 
 void SequenceEditWidget::setupUi()
 {
-    QLabel *folderLabel = new QLabel(this);
-    mainFormLayout->addWidget(folderLabel, 2, 0);
-
-    folderWidget = new DuQFFolderDisplayWidget(this);
-    mainFormLayout->addWidget(folderWidget, 2, 1);
-
     QLabel *shotsLabel = new QLabel("Shots", this);
     shotsLabel->setAlignment(Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop);
-    mainFormLayout->addWidget(shotsLabel, 3, 0);
+    mainFormLayout->addWidget(shotsLabel, 2, 0);
 
     shotsList = new SimpleObjectList(true, this);
-    mainFormLayout->addWidget(shotsList);
+    mainFormLayout->addWidget(shotsList, 2, 1);
 }
 
 void SequenceEditWidget::connectEvents()
