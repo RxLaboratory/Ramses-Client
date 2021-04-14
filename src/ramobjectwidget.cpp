@@ -66,8 +66,12 @@ void RamObjectWidget::setEditWidget(ObjectEditWidget *w)
         userChanged();
         return;
     }
-    w->setParent(_dockEditWidget);
-    _dockEditWidget->setWidget(w);
+    QFrame *f = new QFrame(_dockEditWidget);
+    QVBoxLayout *l = new QVBoxLayout();
+    l->setContentsMargins(3,3,3,3);
+    l->addWidget(w);
+    f->setLayout(l);
+    _dockEditWidget->setWidget(f);
     _hasEditWidget = true;
     userChanged();
 }

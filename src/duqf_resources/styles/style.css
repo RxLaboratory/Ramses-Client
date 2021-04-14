@@ -520,7 +520,9 @@ QTreeWidget, QTableWidget {
     selection-color: @color-light-grey;
     selection-background-color: @color-less-dark-grey;
 }
-
+QDockWidget QFrame {
+    background-color: @color-darker-grey;
+}
 QTreeWidget::item:hover, QTableWidget::item:hover {
     background-color: @color-dark-grey;
 }
@@ -713,18 +715,42 @@ QGraphicsView {
 
 /* DOCKS */
 
+QDockWidget QWidget {
+    background-color: @color-darker-grey;
+}
+
+QDockWidget QTextEdit,
+QDockWidget QLineEdit,
+QDockWidget QPlainTextEdit,
+QDockWidget QListWidget,
+QDockWidget QSpinBox,
+QDockWidget QDoubleSpinBox
+{
+    background-color: @color-very-dark-grey;
+}
+
+QDockWidget QComboBox,
+QDockWidget QComboBox::item,
+QComboBox QAbstractItemView
+{
+    background-color: @color-less-dark-grey;
+}
+
 DuQFDockTitle QFrame {
     background-color: @color-less-dark-grey;
 }
 
+DuQFDockTitle QToolButton {
+    background-color: @color-less-dark-grey;
+}
+
 DuQFDockTitle QToolButton:checked {
-    background-color: @color-darker-grey;
+    background-color: @very-dark-grey;
 }
 
 DuQFDockTitle #windowButton {
     max-width: @padding-large;
 }
-
 
 /* DUQF CUSTOM WIDGETS */
 
