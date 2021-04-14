@@ -158,6 +158,7 @@ void SimpleObjectList::setupUi()
     filterLayout->addWidget(m_filterLabel);
 
     m_filterBox = new QComboBox(this);
+    m_filterBox->addItem("All", "");
     filterLayout->addWidget(m_filterBox);
 
     mainLayout->addLayout(filterLayout);
