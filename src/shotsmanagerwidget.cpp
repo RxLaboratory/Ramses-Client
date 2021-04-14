@@ -135,7 +135,7 @@ void ShotsManagerWidget::addShots(RamSequence *sequence)
         newShot(shot);
     }
     _sequencesConnections << connect(sequence, &RamSequence::newShot, this, &ShotsManagerWidget::newShot);
-    _sequencesConnections << connect(sequence, SIGNAL(shotRemoved(RamShot*)), this, SLOT(shotRemoved(RamShot*)));
+    _sequencesConnections << connect(sequence, SIGNAL(shotRemovedFromSequence(RamShot*)), this, SLOT(shotRemoved(RamShot*)));
 
 }
 
