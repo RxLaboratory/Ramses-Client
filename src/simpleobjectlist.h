@@ -19,7 +19,7 @@ class SimpleObjectList : public QWidget
 public:
     explicit SimpleObjectList(bool editableObjects = false, QWidget *parent = nullptr);
     void setSortable(bool sortable = true);
-    void addObject(RamObject *obj);
+    void addObject(RamObject *obj, bool edit = false);
     void removeObject(RamObject *obj);
 public slots:
     void removeSelectedObjects();

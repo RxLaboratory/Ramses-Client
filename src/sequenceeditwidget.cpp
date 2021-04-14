@@ -70,7 +70,8 @@ void SequenceEditWidget::sequenceChanged(RamObject *o)
 
 void SequenceEditWidget::newShot(RamShot *shot)
 {
-    shotsList->addObject(shot);
+    shotsList->addObject(shot, _creatingShot);
+    _creatingShot = false;
 }
 
 void SequenceEditWidget::shotRemoved(RamShot *shot)
@@ -81,6 +82,7 @@ void SequenceEditWidget::shotRemoved(RamShot *shot)
 void SequenceEditWidget::addShot()
 {
     if (!_sequence) return;
+    _creatingShot = true;
     _sequence->createShot();
 }
 

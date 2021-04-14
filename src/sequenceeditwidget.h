@@ -35,6 +35,8 @@ private:
 
     DuQFFolderDisplayWidget *folderWidget;
     SimpleObjectList *shotsList;
+
+    bool _creatingShot = false;
 };
 
 #endif // SEQUENCEEDITWIDGET_H

@@ -21,7 +21,7 @@ void SimpleObjectList::setSortable(bool sortable)
     m_list->setDragable(sortable);
 }
 
-void SimpleObjectList::addObject(RamObject *obj)
+void SimpleObjectList::addObject(RamObject *obj, bool edit)
 {
     // Check type to create widget
     RamObject::ObjectType type = obj->objectType();
@@ -52,6 +52,8 @@ void SimpleObjectList::addObject(RamObject *obj)
     QListWidgetItem *i = new QListWidgetItem();
     m_list->addItem(i);
     m_list->setItemWidget(i, ow);
+
+    if (m_editableObjects && edit) ow->edit();
 
     connect(obj, &RamObject::removed, this, &SimpleObjectList::removeObject);
 }
