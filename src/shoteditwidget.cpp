@@ -19,16 +19,19 @@ void ShotEditWidget::setShot(RamShot *shot)
     QSignalBlocker b1(framesBox);
     QSignalBlocker b2(secondsBox);
     QSignalBlocker b3(sequencesBox);
+    QSignalBlocker b4(folderWidget);
 
     //Reset values
     framesBox->setValue(0);
     secondsBox->setValue(0);
+    folderWidget->setPath("");
     sequencesBox->clear();
 
     if (!shot) return;
 
     secondsBox->setValue(_shot->duration());
     secondsChanged();
+    folderWidget->setPath(Ramses::instance()->path(shot));
 
     // Load sequences
     RamProject *proj = project();
@@ -149,6 +152,11 @@ void ShotEditWidget::setupUi()
 
     sequencesBox = new QComboBox(this);
     mainFormLayout->addWidget(sequencesBox, 4, 1);
+
+    folderWidget = new DuQFFolderDisplayWidget(this);
+    mainLayout->insertWidget(1, folderWidget);
+
+    mainLayout->addStretch();
 }
 
 void ShotEditWidget::connectEvents()

@@ -1196,6 +1196,20 @@ QDir Ramses::dir(RamAsset *a) const
     return createPath(path(a));
 }
 
+QString Ramses::path(RamShot *s) const
+{
+    RamSequence *seq = sequence(s->sequenceUuid());
+    if (!seq) return "";
+    RamProject *p = project( seq->projectUuid() );
+    if (!p) return "";
+    return shotsPath(p) + "/" + p->shortName() + "_S_" + s->name();
+}
+
+QDir Ramses::dir(RamShot *s) const
+{
+    return createPath(path(s));
+}
+
 QString Ramses::defaultProjectPath(RamProject *p) const
 {
     return projectsPath() + "/" + p->shortName();

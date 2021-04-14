@@ -68,6 +68,9 @@ public:
     QDir dir(RamAssetGroup *ag) const;
     QString path(RamAsset *a) const;
     QDir dir(RamAsset *a) const;
+    // Tree shots
+    QString path(RamShot *s) const;
+    QDir dir(RamShot *s) const;
     // Users
     QList<RamUser *> users() const;
     RamUser *currentUser() const;
