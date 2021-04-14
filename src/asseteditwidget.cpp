@@ -132,7 +132,7 @@ void AssetEditWidget::setupUi()
     mainFormLayout->addWidget(folderLabel, 4, 0);
 
     folderWidget = new DuQFFolderDisplayWidget(this);
-    mainFormLayout->addWidget(folderWidget, 4, 1);
+    mainLayout->insertWidget(1, folderWidget);
 
     mainLayout->addStretch();
 }
