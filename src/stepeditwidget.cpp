@@ -99,7 +99,7 @@ void StepEditWidget::setupUi()
     mainFormLayout->addWidget(typeBox, 2, 1);
 
     folderWidget = new DuQFFolderDisplayWidget(this);
-    mainFormLayout->addWidget(folderWidget, 3, 1);
+    mainLayout->insertWidget(1, folderWidget);
 
     QSplitter *splitter = new QSplitter(this);
     splitter->setOrientation(Qt::Vertical);

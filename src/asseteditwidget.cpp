@@ -128,9 +128,6 @@ void AssetEditWidget::setupUi()
     assetGroupBox = new QComboBox(this);
     mainFormLayout->addWidget(assetGroupBox, 3, 1);
 
-    QLabel *folderLabel = new QLabel(this);
-    mainFormLayout->addWidget(folderLabel, 4, 0);
-
     folderWidget = new DuQFFolderDisplayWidget(this);
     mainLayout->insertWidget(1, folderWidget);
 

@@ -96,11 +96,8 @@ void AssetGroupEditWidget::removeAsset(RamObject *o)
 
 void AssetGroupEditWidget::setupUi()
 {
-    QLabel *folderLabel = new QLabel("Folder", this);
-    mainFormLayout->addWidget(folderLabel, 2, 0);
-
     folderWidget = new DuQFFolderDisplayWidget(this);
-    mainFormLayout->addWidget(folderWidget, 2, 1);
+    mainLayout->insertWidget(1, folderWidget);
 
     assetsList = new SimpleObjectList(true, this);
     assetsList->setTitle("Assets");
