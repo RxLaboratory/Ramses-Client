@@ -66,3 +66,16 @@ void RamObject::setObjectType(RamObject::ObjectType type)
 {
     _objectType = type;
 }
+
+int RamObject::order() const
+{
+    return _order;
+}
+
+void RamObject::setOrder(int order)
+{
+    int previous = _order;
+    _order = order;
+    if (!_dbi->isSuspended()) _orderChanged = true;
+    emit orderChanged(this, previous, order);
+}

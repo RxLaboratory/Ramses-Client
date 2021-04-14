@@ -1,7 +1,5 @@
 #include "sequenceeditwidget.h"
 
-#include "dbisuspender.h"
-
 SequenceEditWidget::SequenceEditWidget(QWidget *parent) :
     ObjectEditWidget(parent)
 {
@@ -99,6 +97,7 @@ void SequenceEditWidget::setupUi()
     mainFormLayout->addWidget(shotsLabel, 2, 0);
 
     shotsList = new SimpleObjectList(true, this);
+    shotsList->setSortable(true);
     mainFormLayout->addWidget(shotsList, 2, 1);
 }
 

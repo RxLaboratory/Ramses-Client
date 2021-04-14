@@ -7,6 +7,7 @@
 #include "ramsequence.h"
 #include "rampipe.h"
 #include "dbisuspender.h"
+#include "ramobjectsorter.h"
 
 class RamProject : public RamObject
 {

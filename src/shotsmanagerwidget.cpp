@@ -107,9 +107,9 @@ void ShotsManagerWidget::shotChanged()
     updateItem(s->uuid(), s->name());
 }
 
-void ShotsManagerWidget::shotRemoved(QString uuid)
+void ShotsManagerWidget::shotRemoved(RamShot *s)
 {
-    removeData(uuid);
+    removeData(s->uuid());
 }
 
 void ShotsManagerWidget::filter(QString sequenceUuid)
@@ -135,7 +135,7 @@ void ShotsManagerWidget::addShots(RamSequence *sequence)
         newShot(shot);
     }
     _sequencesConnections << connect(sequence, &RamSequence::newShot, this, &ShotsManagerWidget::newShot);
-    _sequencesConnections << connect(sequence, SIGNAL(shotRemoved(QString)), this, SLOT(shotRemoved(QString)));
+    _sequencesConnections << connect(sequence, SIGNAL(shotRemoved(RamShot*)), this, SLOT(shotRemoved(RamShot*)));
 
 }
 

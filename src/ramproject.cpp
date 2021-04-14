@@ -383,12 +383,7 @@ void RamProject::removeStep(RamObject *step)
     removeStep(step->uuid());
 }
 
-bool stepsSorter( RamStep *a, RamStep *b)
-{
-    return a->order() < b->order();
-}
-
 void RamProject::sortSteps()
 {
-    std::sort(_steps.begin(), _steps.end(), stepsSorter);
+    std::sort(_steps.begin(), _steps.end(), objectSorter);
 }

@@ -83,6 +83,8 @@ SOURCES += \
     ramassetwidget.cpp \
     ramfiletype.cpp \
     ramobject.cpp \
+    ramobjectsorter.cpp \
+    ramobjectsorter.h \
     ramobjectwidget.cpp \
     rampipe.cpp \
     ramproject.cpp \

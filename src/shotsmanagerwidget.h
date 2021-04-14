@@ -19,7 +19,7 @@ private slots:
     void changeProject(RamProject *project);
     void newShot(RamShot *shot);
     void shotChanged();
-    void shotRemoved(QString uuid);
+    void shotRemoved(RamShot *s);
     void filter(QString sequenceUuid);
     void addShots(RamSequence *sequence);
     void sequenceChanged();

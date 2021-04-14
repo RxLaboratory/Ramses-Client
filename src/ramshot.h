@@ -16,16 +16,12 @@ public:
     qreal duration() const;
     void setDuration(const qreal &duration);
 
-    int order() const;
-    void setOrder(int order);
-
+public slots:
     void update();
 
 private:
     QString _sequenceUuid;
     qreal _duration = 0.0;
-    int _order = -1;
-    bool _orderChanged = false;
 };
 
 #endif // RAMSHOT_H

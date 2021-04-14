@@ -35,18 +35,6 @@ void RamShot::setDuration(const qreal &duration)
     emit changed(this);
 }
 
-int RamShot::order() const
-{
-    return _order;
-}
-
-void RamShot::setOrder(int order)
-{
-    _order = order;
-    if (!_dbi->isSuspended()) _orderChanged = true;
-    emit changed(this);
-}
-
 void RamShot::update()
 {
     _dbi->updateShot(_uuid, _shortName, _name, _sequenceUuid, _duration);

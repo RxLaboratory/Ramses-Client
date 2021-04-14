@@ -42,6 +42,7 @@ void RamSequence::addShot(RamShot *shot)
     shot->setSequenceUuid( _uuid );
     shot->update();
     connect(shot, SIGNAL(removed(RamObject*)), this, SLOT(shotRemoved(RamObject*)));
+    connect(shot, &RamObject::orderChanged, this, &RamSequence::sortShots);
     emit newShot(shot);
 }
 
@@ -69,14 +70,9 @@ void RamSequence::removeShot(RamObject *shot)
     removeShot(shot->uuid());
 }
 
-bool shotSorter(RamShot *a, RamShot *b)
-{
-    return a->order() > b->order();
-}
-
 void RamSequence::sortShots()
 {
-    std::sort(_shots.begin(), _shots.end(), shotSorter);
+    std::sort(_shots.begin(), _shots.end(), objectSorter);
 }
 
 void RamSequence::update()

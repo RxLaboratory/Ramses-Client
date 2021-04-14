@@ -38,12 +38,16 @@ public:
     RamObject::ObjectType objectType() const;
     void setObjectType(ObjectType type);
 
+    int order() const;
+    void setOrder(int order);
+
 public slots:
     virtual void update() = 0;
     void remove();
 
 signals:
     void changed(RamObject *);
+    void orderChanged(RamObject *, int p, int n);
     void removed(RamObject *);
 
 protected:
@@ -51,6 +55,8 @@ protected:
     QString _shortName;
     QString _name;
     QString _uuid;
+    int _order = -1;
+    bool _orderChanged = false;
     bool _removing;
 
 private:

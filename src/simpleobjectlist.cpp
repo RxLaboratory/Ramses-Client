@@ -16,8 +16,6 @@ SimpleObjectList::SimpleObjectList(bool editableObjects, QWidget *parent) : QWid
 
 void SimpleObjectList::setSortable(bool sortable)
 {
-    m_upButton->setVisible(sortable);
-    m_downButton->setVisible(sortable);
     m_list->setDragable(sortable);
 }
 
@@ -49,7 +47,7 @@ void SimpleObjectList::addObject(RamObject *obj, bool edit)
 
     if (!m_editableObjects) ow->disableEdit();
 
-    QListWidgetItem *i = new QListWidgetItem();
+    QListWidgetItem *i = new QListWidgetItem(obj->name());
     m_list->addItem(i);
     m_list->setItemWidget(i, ow);
 
@@ -69,6 +67,18 @@ void SimpleObjectList::removeObject(RamObject *obj)
             delete m_list->takeItem(row);
         }
     }
+}
+
+QList<RamObject *> SimpleObjectList::ramObjects() const
+{
+    QList<RamObject *> objs;
+    for( int row = 0; row < m_list->count(); row++)
+    {
+        // Get the object from the widget
+        RamObjectWidget *ow = (RamObjectWidget*)m_list->itemWidget( m_list->item(row) );
+        if (ow) objs << ow->ramObject();
+    }
+    return objs;
 }
 
 void SimpleObjectList::removeSelectedObjects()
@@ -113,6 +123,25 @@ void SimpleObjectList::selectionChanged()
     }
 }
 
+void SimpleObjectList::updateOrder()
+{
+    for(int row = 0; row < m_list->count(); row++)
+    {
+        QListWidgetItem *i = m_list->item(row);
+        RamObjectWidget *ow = (RamObjectWidget*)m_list->itemWidget( i );
+        if (ow)
+        {
+            RamObject *o = ow->ramObject();
+            if (o)
+            {
+                o->setOrder(row);
+                o->update();
+            }
+        }
+    }
+    emit orderChanged();
+}
+
 void SimpleObjectList::setupUi()
 {
     QVBoxLayout *mainLayout = new QVBoxLayout();
@@ -124,16 +153,6 @@ void SimpleObjectList::setupUi()
     buttonsLayout->setContentsMargins(0,0,0,0);
 
     buttonsLayout->addStretch();
-
-    m_downButton = new QToolButton(this);
-    m_downButton->setIcon(QIcon(":/icons/move-down"));
-    m_downButton->setIconSize(QSize(12,12));
-    buttonsLayout->addWidget(m_downButton);
-
-    m_upButton = new QToolButton(this);
-    m_upButton->setIcon(QIcon(":/icons/move-up"));
-    m_upButton->setIconSize(QSize(12,12));
-    buttonsLayout->addWidget(m_upButton);
 
     m_removeButton = new QToolButton(this);
     m_removeButton->setIcon(QIcon(":/icons/remove"));
@@ -177,6 +196,7 @@ void SimpleObjectList::connectEvents()
 {
     connect(m_addButton, &QToolButton::clicked, this, &SimpleObjectList::add);
     connect(m_removeButton, &QToolButton::clicked, this, &SimpleObjectList::removeSelectedObjects);
+    connect(m_list, &DuQFListWidget::itemDropped, this, &SimpleObjectList::updateOrder);
     connect(m_list, &QListWidget::currentItemChanged, this, &SimpleObjectList::currentItemChanged);
     connect(m_list, &QListWidget::itemSelectionChanged, this, &SimpleObjectList::selectionChanged);
 }

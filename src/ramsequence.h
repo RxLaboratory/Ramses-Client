@@ -2,6 +2,7 @@
 #define RAMSEQUENCE_H
 
 #include "ramshot.h"
+#include "ramobjectsorter.h"
 
 class RamSequence : public RamObject
 {
@@ -20,12 +21,12 @@ public:
     void createShot(QString shortName = "NEW", QString name = "Shot");
     void removeShot(QString uuid);
     void removeShot(RamObject *shot);
-    void sortShots();
 
     void update();
 
 public slots:
     void shotRemoved(RamObject *o);
+    void sortShots();
 
 signals:
     void newShot(RamShot *);
