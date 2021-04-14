@@ -29,7 +29,7 @@ public slots:
 
 signals:
     void newShot(RamShot *);
-    void shotRemoved(QString uuid);
+    void shotRemovedFromSequence(RamShot *);
 
 private:
     QString _projectUuid;

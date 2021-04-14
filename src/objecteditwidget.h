@@ -11,7 +11,8 @@ class ObjectEditWidget : public QScrollArea, protected Ui::ObjectEditWidget
     Q_OBJECT
 
 public:
-    explicit ObjectEditWidget(RamObject *o = nullptr, QWidget *parent = nullptr);
+    explicit ObjectEditWidget(QWidget *parent = nullptr);
+    explicit ObjectEditWidget(RamObject *o, QWidget *parent = nullptr);
 
     RamObject *object() const;
 

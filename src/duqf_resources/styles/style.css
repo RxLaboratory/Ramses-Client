@@ -486,12 +486,15 @@ QTabBar::close-button:hover {
 
 QListWidget {
     background-color: @color-very-dark-grey;
+    padding-top: @padding-large;
     border: none;
 }
 
 QListWidget::item {
     color: @color-less-light-grey;
-    padding: @padding-large;
+    padding-left: @padding-extra-large;
+    padding-right: @padding-extra-large;
+    min-height: 40px;
     border-left: @padding-large;
 }
 

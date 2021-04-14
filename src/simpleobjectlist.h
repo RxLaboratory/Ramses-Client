@@ -1,28 +1,49 @@
 #ifndef SIMPLEOBJECTLIST_H
 #define SIMPLEOBJECTLIST_H
 
-#include <QScrollArea>
+#include <QWidget>
 #include <QVBoxLayout>
-#include <QMouseEvent>
-#include <QtDebug>
+#include <QHBoxLayout>
+#include <QLabel>
+#include <QComboBox>
+#include <QToolButton>
 
-class SimpleObjectList : public QScrollArea
+#include "ramobjectwidget.h"
+#include "ramassetwidget.h"
+#include "ramshotwidget.h"
+#include "duqf-widgets/duqflistwidget.h"
+
+class SimpleObjectList : public QWidget
 {
     Q_OBJECT
 public:
-    explicit SimpleObjectList(QWidget *parent = nullptr);
-
-    void addWidget(QWidget *w);
-
+    explicit SimpleObjectList(bool editableObjects = false, QWidget *parent = nullptr);
+    void setSortable(bool sortable = true);
+    void addObject(RamObject *obj);
+    void removeObject(RamObject *obj);
+public slots:
+    void removeSelectedObjects();
+    void clear();
 signals:
-    void currentIndexChanged(int);
-
-protected:
-    void mousePressEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
-
+    void add();
+    void objectRemoved(RamObject*);
+    void objectSelected(RamObject*);
+private slots:
+    void currentItemChanged(QListWidgetItem *previous, QListWidgetItem *current);
+    void selectionChanged();
 private:
     void setupUi();
-    QVBoxLayout *mainLayout;
+    void connectEvents();
+    QToolButton *m_addButton;
+    QToolButton *m_removeButton;
+    QToolButton *m_upButton;
+    QToolButton *m_downButton;
+    QLabel *m_filterLabel;
+    QComboBox *m_filterBox;
+    DuQFListWidget *m_list;
+
+    bool m_editableObjects;
+
 };
 
-#endif // SIMPLELISTWIDGET_H
+#endif // SIMPLEOBJECTLIST_H

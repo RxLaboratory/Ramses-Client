@@ -1,5 +1,19 @@
 #include "objecteditwidget.h"
 
+ObjectEditWidget::ObjectEditWidget(QWidget *parent) :
+    QScrollArea(parent)
+{
+    QWidget *dummy = new QWidget(this);
+    setupUi(dummy);
+    this->setWidget(dummy);
+    this->setWidgetResizable(true);
+    this->setFrameStyle(QFrame::NoFrame);
+
+    setObject(nullptr);
+
+    connectEvents();
+}
+
 ObjectEditWidget::ObjectEditWidget(RamObject *o, QWidget *parent) :
     QScrollArea(parent)
 {

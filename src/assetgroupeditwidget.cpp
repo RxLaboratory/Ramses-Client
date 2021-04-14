@@ -118,7 +118,6 @@ void AssetGroupEditWidget::newAsset(RamAsset *a)
 {
     RamAssetWidget *aw = new RamAssetWidget(a, this);
     QListWidgetItem *i = new QListWidgetItem();
-    i->setSizeHint(QSize(100,30));
     assetsList->addItem(i);
     assetsList->setItemWidget(i, aw);
 

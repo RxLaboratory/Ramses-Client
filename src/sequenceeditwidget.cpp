@@ -3,29 +3,19 @@
 #include "dbisuspender.h"
 
 SequenceEditWidget::SequenceEditWidget(QWidget *parent) :
-    QWidget(parent)
+    ObjectEditWidget(parent)
 {
-    setupUi(this);
+    setupUi();
+    connectEvents();
+    setSequence(nullptr);
+}
 
-    SimpleObjectList *shotsList = new SimpleObjectList(this);
-    shotsListLayout->addWidget(shotsList);
-
-    //fake shots
-    DBISuspender s;
-    for (int i = 0; i < 20; i++)
-    {
-        RamShotWidget *w = new RamShotWidget(new RamShot("test", "test"));
-        shotsList->addWidget(w);
-    }
-
-    _sequence = nullptr;
-
-    connect(updateButton, SIGNAL(clicked()), this, SLOT(update()));
-    connect(revertButton, SIGNAL(clicked()), this, SLOT(revert()));
-    connect(shortNameEdit, &QLineEdit::textChanged, this, &SequenceEditWidget::checkInput);
-    connect(DBInterface::instance(),&DBInterface::newLog, this, &SequenceEditWidget::dbiLog);
-
-    this->setEnabled(false);
+SequenceEditWidget::SequenceEditWidget(RamSequence *sequence, QWidget *parent) :
+    ObjectEditWidget(sequence, parent)
+{
+    setupUi();
+    connectEvents();
+    setSequence(sequence);
 }
 
 RamSequence *SequenceEditWidget::sequence() const
@@ -35,20 +25,24 @@ RamSequence *SequenceEditWidget::sequence() const
 
 void SequenceEditWidget::setSequence(RamSequence *sequence)
 {
-    while (_sequenceConnections.count() > 0) disconnect( _sequenceConnections.takeLast() );
+    this->setEnabled(false);
 
+    setObject(sequence);
     _sequence = sequence;
 
-    nameEdit->setText("");
-    shortNameEdit->setText("");
-    this->setEnabled(false);
+    QSignalBlocker b1(shotsList);
+
+    //Reset values
+    shotsList->clear();
 
     if (!sequence) return;
 
-    nameEdit->setText(sequence->name());
-    shortNameEdit->setText(sequence->shortName());
+    // Load shots
+    foreach( RamShot *shot, sequence->shots()) newShot(shot);
 
-    _sequenceConnections << connect(sequence, &RamSequence::removed, this, &SequenceEditWidget::sequenceRemoved);
+    _objectConnections << connect(sequence, &RamSequence::changed, this, &SequenceEditWidget::sequenceChanged);
+    _objectConnections << connect(sequence, &RamSequence::newShot, this, &SequenceEditWidget::newShot);
+    _objectConnections << connect(sequence, &RamSequence::shotRemovedFromSequence, this, &SequenceEditWidget::shotRemoved);
 
     this->setEnabled(Ramses::instance()->isProjectAdmin());
 }
@@ -57,50 +51,63 @@ void SequenceEditWidget::update()
 {
     if (!_sequence) return;
 
-    this->setEnabled(false);
-
-    //check if everything is alright
-    if (!checkInput())
-    {
-        this->setEnabled(true);
-        return;
-    }
+    updating = true;
 
     _sequence->setName(nameEdit->text());
     _sequence->setShortName(shortNameEdit->text());
 
     _sequence->update();
 
-    this->setEnabled(true);
+    updating = false;
 }
 
-void SequenceEditWidget::revert()
+void SequenceEditWidget::sequenceChanged(RamObject *o)
 {
-    setSequence(nullptr);
+    if (updating) return;
+    Q_UNUSED(o);
+    setSequence(_sequence);
 }
 
-bool SequenceEditWidget::checkInput()
+void SequenceEditWidget::newShot(RamShot *shot)
 {
-    if (!_sequence) return false;
-
-    if (shortNameEdit->text() == "")
-    {
-        statusLabel->setText("Short name cannot be empty!");
-        updateButton->setEnabled(false);
-        return false;
-    }
-
-    statusLabel->setText("");
-    updateButton->setEnabled(true);
-    return true;
+    shotsList->addObject(shot);
 }
 
-void SequenceEditWidget::sequenceRemoved(RamObject */*o*/)
+void SequenceEditWidget::shotRemoved(RamShot *shot)
 {
-    setSequence(nullptr);
+    shotsList->removeObject(shot);
 }
 
-void SequenceEditWidget::dbiLog(DuQFLog m)
+void SequenceEditWidget::addShot()
 {
-    if (m.type() != DuQFLog::Debug) statusLabel->setText(m.message());
+    if (!_sequence) return;
+    _sequence->createShot();
+}
+
+void SequenceEditWidget::removeShot(RamObject *o)
+{
+    if (!_sequence) return;
+    o->remove();
+}
+
+void SequenceEditWidget::setupUi()
+{
+    QLabel *folderLabel = new QLabel(this);
+    mainFormLayout->addWidget(folderLabel, 2, 0);
+
+    folderWidget = new DuQFFolderDisplayWidget(this);
+    mainFormLayout->addWidget(folderWidget, 2, 1);
+
+    QLabel *shotsLabel = new QLabel("Shots", this);
+    shotsLabel->setAlignment(Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop);
+    mainFormLayout->addWidget(shotsLabel, 3, 0);
+
+    shotsList = new SimpleObjectList(true, this);
+    mainFormLayout->addWidget(shotsList);
+}
+
+void SequenceEditWidget::connectEvents()
+{
+    connect(shotsList, &SimpleObjectList::add, this, &SequenceEditWidget::addShot);
+    connect(shotsList, &SimpleObjectList::objectRemoved, this, &SequenceEditWidget::removeShot);
 }

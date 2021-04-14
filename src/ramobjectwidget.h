@@ -20,11 +20,17 @@ public:
     RamObject *ramObject() const;
     void setObject(RamObject *o);
 
+    void disableEdit();
+
     void setUserEditRole(RamUser::UserRole role);
 
     void setTitle(QString t);
 
     ObjectDockWidget *dockEditWidget() const;
+
+    bool selected() const;
+    void setSelected(bool selected);
+    void select();
 
 public slots:
     void edit();
@@ -42,6 +48,8 @@ private:
     QToolButton *editButton;
     QLabel *title;
     QLabel *icon;
+
+    bool _selected = false;
 
     bool _hasEditWidget = false;
     RamObject *_object;

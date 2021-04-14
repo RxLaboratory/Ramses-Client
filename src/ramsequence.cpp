@@ -58,8 +58,8 @@ void RamSequence::removeShot(QString uuid)
         RamShot *s = _shots[i];
         if (s->uuid() == uuid)
         {
-            _shots.removeAt(i);
-            emit shotRemoved(uuid);
+            RamShot *shot = _shots.takeAt(i);
+            emit shotRemovedFromSequence(shot);
         }
     }
 }

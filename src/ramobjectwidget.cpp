@@ -38,6 +38,11 @@ void RamObjectWidget::setObject(RamObject *o)
     }
 }
 
+void RamObjectWidget::disableEdit()
+{
+    setEditWidget(nullptr);
+}
+
 void RamObjectWidget::setUserEditRole(RamUser::UserRole role)
 {
     _editRole = role;
@@ -55,9 +60,16 @@ ObjectDockWidget *RamObjectWidget::dockEditWidget() const
 
 void RamObjectWidget::setEditWidget(ObjectEditWidget *w)
 {
+    if (!w)
+    {
+        _hasEditWidget = false;
+        userChanged();
+        return;
+    }
     w->setParent(_dockEditWidget);
     _dockEditWidget->setWidget(w);
     _hasEditWidget = true;
+    userChanged();
 }
 
 void RamObjectWidget::objectRemoved()
@@ -70,7 +82,7 @@ void RamObjectWidget::userChanged()
     editButton->hide();
     RamUser *u = Ramses::instance()->currentUser();
     if (!u) return;
-    editButton->setVisible( u->role() >= _editRole);
+    editButton->setVisible( u->role() >= _editRole && _hasEditWidget);
 }
 
 void RamObjectWidget::edit()
@@ -80,14 +92,14 @@ void RamObjectWidget::edit()
 
 void RamObjectWidget::setupUi()
 {
-    QVBoxLayout *vlayout = new QVBoxLayout(this);
+    QVBoxLayout *vlayout = new QVBoxLayout();
     vlayout->setContentsMargins(0,3,0,3);
     vlayout->setSpacing(0);
 
     // include in a frame for the BG
     QFrame *mainFrame = new QFrame(this);
 
-    QHBoxLayout *layout = new QHBoxLayout(this);
+    QHBoxLayout *layout = new QHBoxLayout();
     layout->setSpacing(3);
     layout->setContentsMargins(3,3,3,3);
 
@@ -110,4 +122,34 @@ void RamObjectWidget::setupUi()
     this->setLayout(vlayout);
 
     this->setMinimumHeight(30);
+}
+
+bool RamObjectWidget::selected() const
+{
+    return _selected;
+}
+
+void RamObjectWidget::setSelected(bool selected)
+{
+    _selected = selected;
+
+    if (selected)
+    {
+         QString bgcol = DuUI::getColor("abyss-grey").name();
+         QString col = DuUI::getColor("light-grey").name();
+         QString css = "QFrame {";
+         css += "background-color: " + bgcol + ";";
+         css += "color: " + col + ";";
+         css += "}";
+         this->setStyleSheet(css);
+    }
+    else
+    {
+        this->setStyleSheet("");
+    }
+}
+
+void RamObjectWidget::select()
+{
+    setSelected(true);
 }

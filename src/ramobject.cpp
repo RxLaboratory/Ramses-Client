@@ -56,3 +56,13 @@ void RamObject::remove()
     emit removed(this);
     this->deleteLater();
 }
+
+RamObject::ObjectType RamObject::objectType() const
+{
+    return _objectType;
+}
+
+void RamObject::setObjectType(RamObject::ObjectType type)
+{
+    _objectType = type;
+}

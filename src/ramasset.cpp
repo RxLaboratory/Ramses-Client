@@ -3,6 +3,7 @@
 RamAsset::RamAsset(QString shortName, QString name, QString assetGroupUuid, QString uuid, QObject *parent) :
     RamObject(shortName, name, uuid, parent)
 {
+    setObjectType(Asset);
     _assetGroupUuid = assetGroupUuid;
     _dbi->createAsset(_shortName, _name, _assetGroupUuid, "", _uuid);
 }

@@ -9,6 +9,7 @@ class DuQFListWidget : public QListWidget
     Q_OBJECT
 public:
     DuQFListWidget(QWidget *parent = nullptr);
+    void setDragable(bool dragable=true);
 signals:
     void itemDropped();
 protected:

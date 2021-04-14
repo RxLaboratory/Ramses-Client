@@ -3,6 +3,7 @@
 RamShot::RamShot(QString shortName, QString name, QString sequenceUuid, QString uuid, QObject *parent):
     RamObject(shortName, name, uuid, parent)
 {
+    setObjectType(Shot);
     _sequenceUuid = sequenceUuid;
     _dbi->createShot(_shortName, _name, _sequenceUuid, _uuid);
 }

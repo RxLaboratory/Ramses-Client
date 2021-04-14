@@ -1,7 +1,3 @@
-SimpleObjectList QWidget {
-    background-color: @color-very-dark-grey;
-}
-
 RamObjectWidget QFrame{
     border-radius: @padding-small;
     background-color: @color-dark-grey;

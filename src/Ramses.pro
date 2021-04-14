@@ -221,7 +221,6 @@ FORMS += \
     objecteditwidget.ui \
     pipeline-editor/pipelinewidget.ui \
     projecteditwidget.ui \
-    sequenceeditwidget.ui \
     serversettingswidget.ui \
     stateeditwidget.ui \
     stepeditwidget.ui \
