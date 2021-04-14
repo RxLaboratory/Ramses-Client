@@ -115,7 +115,7 @@ void RamStep::assignApplication(RamApplication *app)
     emit applicationAssigned(app);
 }
 
-void RamStep::unassignApplication(RamApplication *app)
+void RamStep::unassignApplication(RamObject *app)
 {
     unassignApplication( app->uuid() );
 }

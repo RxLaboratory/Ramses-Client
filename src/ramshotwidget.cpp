@@ -11,8 +11,10 @@ RamShotWidget::RamShotWidget(RamShot *shot, QWidget *parent) :
     ShotEditWidget *sw = new ShotEditWidget(shot, this);
     setEditWidget(sw);
     MainWindow *mw = (MainWindow*)GuiUtils::appMainWindow();
+    this->dockEditWidget()->setIcon(":/icons/shot");
     mw->addShotEditDockWidget(this->dockEditWidget());
 
+    setIcon(":/icons/shot");
 }
 
 RamShot *RamShotWidget::shot() const

@@ -11,31 +11,37 @@
 
 #include "objecteditwidget.h"
 #include "ramses.h"
+#include "simpleobjectlist.h"
 #include "duqf-widgets/duqffolderdisplaywidget.h"
 
 class StepEditWidget : public ObjectEditWidget
 {
     Q_OBJECT
 public:
-    StepEditWidget(RamStep *s = nullptr, QWidget *parent = nullptr);
+    StepEditWidget(QWidget *parent = nullptr);
+    StepEditWidget(RamStep *s, QWidget *parent = nullptr);
 
+    RamStep *step() const;
     void setStep(RamStep *s);
 
-private slots:
+protected slots:
     void update() Q_DECL_OVERRIDE;
+
+private slots:
     void stepChanged(RamObject *o);
     // Users
     void newUser(RamUser *user);
     void assignUser();
-    void unassignUser();
+    void unassignUser(RamObject *o);
     void userAssigned(RamUser *user);
     void userUnassigned(QString uuid);
     void userChanged();
-    void userRemoved(RamObject *o);
+    void userRemoved(RamObject *user);
+
     // Applications
     void newApplication(RamApplication *app);
     void assignApplication();
-    void unassignApplication();
+    void unassignApplication(RamObject *o);
     void applicationAssigned(RamApplication *app);
     void applicationUnassigned(QString uuid);
     void applicationChanged();
@@ -50,12 +56,8 @@ private:
 
     QComboBox *typeBox;
     DuQFFolderDisplayWidget *folderWidget;
-    QToolButton *assignUserButton;
-    QToolButton *removeUserButton;
-    QListWidget *usersList;
-    QToolButton *assignApplicationButton;
-    QToolButton *removeApplicationButton;
-    QListWidget *applicationList;
+    SimpleObjectList *usersList;
+    SimpleObjectList *applicationList;
     QMenu *assignUserMenu;
     QMenu *assignAppMenu;
 };

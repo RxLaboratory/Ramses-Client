@@ -19,10 +19,13 @@ class SimpleObjectList : public QWidget
 public:
     explicit SimpleObjectList(bool editableObjects = false, QWidget *parent = nullptr);
     void setSortable(bool sortable = true);
+    void setTitle(QString title);
     void addObject(RamObject *obj, bool edit = false);
-    void removeObject(RamObject *obj);
     QList<RamObject*> ramObjects() const;
+    QToolButton *addButton() const;
 public slots:
+    void removeObject(RamObject *obj);
+    void removeObject(QString uuid);
     void removeSelectedObjects();
     void clear();
 signals:
@@ -40,6 +43,7 @@ private:
     QToolButton *m_addButton;
     QToolButton *m_removeButton;
     QLabel *m_filterLabel;
+    QLabel *m_title;
     QComboBox *m_filterBox;
     DuQFListWidget *m_list;
 

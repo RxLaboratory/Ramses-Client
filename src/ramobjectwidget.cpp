@@ -53,6 +53,11 @@ void RamObjectWidget::setTitle(QString t)
     title->setText(t);
 }
 
+void RamObjectWidget::setIcon(QString i)
+{
+    icon->setPixmap(i);
+}
+
 ObjectDockWidget *RamObjectWidget::dockEditWidget() const
 {
     return _dockEditWidget;
@@ -105,9 +110,11 @@ void RamObjectWidget::setupUi()
 
     QHBoxLayout *layout = new QHBoxLayout();
     layout->setSpacing(3);
-    layout->setContentsMargins(3,3,3,3);
+    layout->setContentsMargins(15,3,3,3);
 
     icon = new QLabel(this);
+    icon->setScaledContents(true);
+    icon->setMaximumSize(12,12);
     layout->addWidget(icon);
 
     title = new QLabel(this);

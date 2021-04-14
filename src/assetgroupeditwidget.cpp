@@ -107,7 +107,6 @@ void AssetGroupEditWidget::setupUi()
     mainFormLayout->addWidget(assetsLabel, 3, 0);
 
     assetsList = new SimpleObjectList(true, this);
-    assetsList->setSortable(false);
     mainFormLayout->addWidget(assetsList, 3, 1);
 }
 

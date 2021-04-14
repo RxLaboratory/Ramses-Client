@@ -38,7 +38,7 @@ public:
     QList<RamApplication *> applications() const;
     void clearApplications();
     void assignApplication(RamApplication *app);
-    void unassignApplication(RamApplication *app);
+    void unassignApplication(RamObject *app);
     void unassignApplication(QString uuid);
 
     QList<RamFileType *> inputFileTypes();

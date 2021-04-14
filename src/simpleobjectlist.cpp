@@ -19,6 +19,11 @@ void SimpleObjectList::setSortable(bool sortable)
     m_list->setDragable(sortable);
 }
 
+void SimpleObjectList::setTitle(QString title)
+{
+    m_title->setText(title);
+}
+
 void SimpleObjectList::addObject(RamObject *obj, bool edit)
 {
     // Check type to create widget
@@ -53,16 +58,21 @@ void SimpleObjectList::addObject(RamObject *obj, bool edit)
 
     if (m_editableObjects && edit) ow->edit();
 
-    connect(obj, &RamObject::removed, this, &SimpleObjectList::removeObject);
+    connect(obj, SIGNAL(removed(RamObject*)), this, SLOT(removeObject(RamObject*)));
 }
 
 void SimpleObjectList::removeObject(RamObject *obj)
+{
+    removeObject(obj->uuid());
+}
+
+void SimpleObjectList::removeObject(QString uuid)
 {
     for( int row = 0; row < m_list->count(); row++)
     {
         // Get the object from the widget
         RamObjectWidget *ow = (RamObjectWidget*)m_list->itemWidget( m_list->item(row) );
-        if (ow->ramObject()->uuid() == obj->uuid())
+        if (ow->ramObject()->uuid() == uuid)
         {
             delete m_list->takeItem(row);
         }
@@ -79,6 +89,11 @@ QList<RamObject *> SimpleObjectList::ramObjects() const
         if (ow) objs << ow->ramObject();
     }
     return objs;
+}
+
+QToolButton *SimpleObjectList::addButton() const
+{
+    return m_addButton;
 }
 
 void SimpleObjectList::removeSelectedObjects()
@@ -151,6 +166,9 @@ void SimpleObjectList::setupUi()
     QHBoxLayout *buttonsLayout = new QHBoxLayout();
     buttonsLayout->setSpacing(3);
     buttonsLayout->setContentsMargins(0,0,0,0);
+
+    m_title = new QLabel(this);
+    buttonsLayout->addWidget(m_title);
 
     buttonsLayout->addStretch();
 

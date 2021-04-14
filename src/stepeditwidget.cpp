@@ -9,6 +9,11 @@ StepEditWidget::StepEditWidget(RamStep *s, QWidget *parent) : ObjectEditWidget(s
     setStep(s);
 }
 
+RamStep *StepEditWidget::step() const
+{
+    return _step;
+}
+
 void StepEditWidget::setStep(RamStep *step)
 {
     this->setEnabled(false);
@@ -83,82 +88,25 @@ void StepEditWidget::setupUi()
     QSplitter *splitter = new QSplitter(this);
     splitter->setOrientation(Qt::Vertical);
 
-    QWidget *usersWidget = new QWidget(splitter);
-    QHBoxLayout *usersLayout = new QHBoxLayout(usersWidget);
-    usersLayout->setSpacing(3);
-    usersLayout->setContentsMargins(0, 0, 0, 0);
-    QLabel *usersLabel = new QLabel("Users", usersWidget);
-    usersLabel->setMinimumWidth(50);
-    usersLabel->setMaximumWidth(50);
-    usersLabel->setAlignment(Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop);
-    usersLayout->addWidget(usersLabel);
+    usersList = new SimpleObjectList(true, splitter);
+    usersList->setTitle("Users");
+    splitter->addWidget(usersList);
 
-    QVBoxLayout *usersButtonsLayout = new QVBoxLayout();
-    usersButtonsLayout->setSpacing(3);
-    usersButtonsLayout->setContentsMargins(3, 0, 0, 0);
+    applicationList = new SimpleObjectList(true, splitter);
+    applicationList->setTitle("Applications");
+    splitter->addWidget(applicationList);
 
-    assignUserButton = new QToolButton(usersWidget);
-    assignUserButton->setIcon(QIcon(":/icons/add"));
-    assignUserButton->setPopupMode(QToolButton::InstantPopup);
-    usersButtonsLayout->addWidget(assignUserButton);
-
-    removeUserButton = new QToolButton(usersWidget);
-    removeUserButton->setIcon(QIcon(":/icons/remove"));
-    removeUserButton->setPopupMode(QToolButton::InstantPopup);
-    usersButtonsLayout->addWidget(removeUserButton);
-
-    usersButtonsLayout->addStretch();
-
-    usersLayout->addLayout(usersButtonsLayout);
-
-    usersList = new QListWidget(usersWidget);
-    usersList->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    usersLayout->addWidget(usersList);
-
-    splitter->addWidget(usersWidget);
-
-    QWidget *applicationsWidget = new QWidget(splitter);
-    QHBoxLayout *applicationsLayout = new QHBoxLayout(applicationsWidget);
-    applicationsLayout->setSpacing(3);
-    applicationsLayout->setContentsMargins(0, 0, 0, 0);
-    QLabel *applicationsLabel = new QLabel("Apps", applicationsWidget);
-    applicationsLabel->setMinimumWidth(50);
-    applicationsLabel->setMaximumWidth(50);
-    applicationsLabel->setAlignment(Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop);
-    applicationsLayout->addWidget(applicationsLabel);
-
-    QVBoxLayout *applicationsButtonsLayout = new QVBoxLayout();
-    applicationsButtonsLayout->setSpacing(3);
-    applicationsButtonsLayout->setContentsMargins(3, 0, 0, 0);
-
-    assignApplicationButton = new QToolButton(applicationsWidget);
-    assignApplicationButton->setIcon(QIcon(":/icons/add"));
-    assignApplicationButton->setPopupMode(QToolButton::InstantPopup);
-    applicationsButtonsLayout->addWidget(assignApplicationButton);
-
-    removeApplicationButton = new QToolButton(applicationsWidget);
-    removeApplicationButton->setIcon(QIcon(":/icons/remove"));
-    removeApplicationButton->setPopupMode(QToolButton::InstantPopup);
-    applicationsButtonsLayout->addWidget(removeApplicationButton);
-
-    applicationsButtonsLayout->addStretch();
-
-    applicationsLayout->addLayout(applicationsButtonsLayout);
-
-    applicationList = new QListWidget(applicationsWidget);
-    applicationList->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    applicationsLayout->addWidget(applicationList);
-
-    splitter->addWidget(applicationsWidget);
-
-    mainLayout->insertWidget(2, splitter);
+    mainLayout->addWidget(splitter);
 
     // Add menu
     assignUserMenu = new QMenu(this);
-    assignUserButton->setMenu(assignUserMenu);
+    QToolButton *addUserButton = usersList->addButton();
+    addUserButton->setPopupMode(QToolButton::InstantPopup);
+    addUserButton->setMenu(assignUserMenu);
 
     assignAppMenu = new QMenu(this);
-    assignApplicationButton->setMenu(assignAppMenu);
+    addUserButton->setPopupMode(QToolButton::InstantPopup);
+    applicationList->addButton()->setMenu(assignAppMenu);
 }
 
 void StepEditWidget::populateMenus()
@@ -172,8 +120,8 @@ void StepEditWidget::connectEvents()
     connect(Ramses::instance(), &Ramses::newUser, this, &StepEditWidget::newUser);
     connect(Ramses::instance(), &Ramses::newApplication, this, &StepEditWidget::newApplication);
     connect(typeBox, SIGNAL(currentIndexChanged(int)), this, SLOT(update()));
-    connect(removeUserButton, &QToolButton::clicked, this, &StepEditWidget::unassignUser);
-    connect(removeApplicationButton, &QToolButton::clicked, this, &StepEditWidget::unassignApplication);
+    connect(usersList, &SimpleObjectList::objectRemoved, this, &StepEditWidget::unassignUser);
+    connect(applicationList, &SimpleObjectList::objectRemoved, this, &StepEditWidget::unassignApplication);
 }
 
 void StepEditWidget::newUser(RamUser *user)
@@ -197,10 +145,10 @@ void StepEditWidget::assignUser()
     _step->assignUser(user);
 }
 
-void StepEditWidget::unassignUser()
+void StepEditWidget::unassignUser(RamObject *o)
 {
     if (!_step) return;
-    _step->unassignUser( usersList->currentItem()->data(Qt::UserRole).toString() );
+    _step->unassignUser( o );
 }
 
 void StepEditWidget::userAssigned(RamUser *user)
@@ -208,11 +156,7 @@ void StepEditWidget::userAssigned(RamUser *user)
     if (!user) return;
     if (user->uuid() == "") return;
 
-    QListWidgetItem *userItem = new QListWidgetItem(user->name());
-    userItem->setData(Qt::UserRole, user->uuid());
-    usersList->addItem(userItem);
-    connect(user, &RamUser::removed, this, &StepEditWidget::userRemoved);
-    connect(user, &RamUser::changed, this, &StepEditWidget::userChanged);
+    usersList->addObject(user);
 
     //hide from assign list
     QList<QAction *> actions = assignUserMenu->actions();
@@ -224,9 +168,7 @@ void StepEditWidget::userAssigned(RamUser *user)
 
 void StepEditWidget::userUnassigned(QString uuid)
 {
-    for (int i = usersList->count() - 1; i >= 0; i--)
-        if (usersList->item(i)->data(Qt::UserRole).toString() == uuid)
-            delete usersList->takeItem(i);
+    usersList->removeObject(uuid);
 
     //show in assign list
     foreach (QAction * a, assignUserMenu->actions() )
@@ -239,21 +181,13 @@ void StepEditWidget::userChanged()
 
     foreach (QAction *a, assignUserMenu->actions())
         if (a->data().toString() == user->uuid()) a->setText(user->name());
-
-    for (int i = usersList->count() -1; i >= 0; i--)
-        if (usersList->item(i)->data(Qt::UserRole).toString() == user->uuid())
-            usersList->item(i)->setText(user->name());
 }
 
-void StepEditWidget::userRemoved(RamObject *o)
+void StepEditWidget::userRemoved(RamObject *user)
 {
     foreach (QAction *a, assignUserMenu->actions())
-        if (a->data().toString() == o->uuid())
+        if (a->data().toString() == user->uuid())
             a->deleteLater();
-
-    for (int i = usersList->count() -1; i >= 0; i--)
-        if (usersList->item(i)->data(Qt::UserRole).toString() == o->uuid())
-            delete usersList->takeItem(i);
 }
 
 void StepEditWidget::newApplication(RamApplication *app)
@@ -277,10 +211,10 @@ void StepEditWidget::assignApplication()
     _step->assignApplication(app);
 }
 
-void StepEditWidget::unassignApplication()
+void StepEditWidget::unassignApplication(RamObject *o)
 {
     if (!_step) return;
-    _step->unassignApplication( applicationList->currentItem()->data(Qt::UserRole).toString() );
+    _step->unassignApplication( o );
 }
 
 void StepEditWidget::applicationAssigned(RamApplication *app)
@@ -288,11 +222,7 @@ void StepEditWidget::applicationAssigned(RamApplication *app)
     if (!app) return;
     if (app->uuid() == "") return;
 
-    QListWidgetItem *appItem = new QListWidgetItem(app->name());
-    appItem->setData(Qt::UserRole, app->uuid());
-    applicationList->addItem(appItem);
-    connect(app, &RamApplication::removed, this, &StepEditWidget::applicationRemoved);
-    connect(app, &RamApplication::changed, this, &StepEditWidget::applicationChanged);
+    applicationList->addObject(app);
 
     //hide from assign list
     foreach (QAction *a, assignAppMenu->actions())
@@ -301,9 +231,7 @@ void StepEditWidget::applicationAssigned(RamApplication *app)
 
 void StepEditWidget::applicationUnassigned(QString uuid)
 {
-    for (int i = applicationList->count() - 1; i >= 0; i--)
-        if (applicationList->item(i)->data(Qt::UserRole).toString() == uuid)
-            delete applicationList->takeItem(i);
+    applicationList->removeObject(uuid);
 
     //show in assign list
     foreach (QAction * a, assignAppMenu->actions() )
@@ -316,10 +244,6 @@ void StepEditWidget::applicationChanged()
 
     foreach (QAction *a, assignAppMenu->actions())
         if (a->data().toString() == app->uuid()) a->setText(app->name());
-
-    for (int i = applicationList->count() -1; i >= 0; i--)
-        if (applicationList->item(i)->data(Qt::UserRole).toString() == app->uuid())
-            applicationList->item(i)->setText(app->name());
 }
 
 void StepEditWidget::applicationRemoved(RamObject *o)
@@ -327,8 +251,4 @@ void StepEditWidget::applicationRemoved(RamObject *o)
     foreach (QAction *a, assignAppMenu->actions())
         if (a->data().toString() == o->uuid())
             a->deleteLater();
-
-    for (int i = applicationList->count() -1; i >= 0; i--)
-        if (applicationList->item(i)->data(Qt::UserRole).toString() == o->uuid())
-            delete applicationList->takeItem(i);
 }

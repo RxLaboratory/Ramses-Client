@@ -26,6 +26,8 @@ public:
 
     void setTitle(QString t);
 
+    void setIcon(QString i);
+
     ObjectDockWidget *dockEditWidget() const;
 
     bool selected() const;
