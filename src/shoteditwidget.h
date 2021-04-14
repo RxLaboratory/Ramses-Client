@@ -7,6 +7,7 @@
 
 #include "objecteditwidget.h"
 #include "ramses.h"
+#include "duqf-widgets/duqffolderdisplaywidget.h"
 
 class ShotEditWidget : public ObjectEditWidget
 {
@@ -33,6 +34,7 @@ private:
     void setupUi();
     void connectEvents();
 
+    DuQFFolderDisplayWidget *folderWidget;
     QDoubleSpinBox *secondsBox;
     QSpinBox *framesBox;
     QComboBox *sequencesBox;

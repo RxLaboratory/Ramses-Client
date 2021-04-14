@@ -94,13 +94,10 @@ void SequenceEditWidget::removeShot(RamObject *o)
 
 void SequenceEditWidget::setupUi()
 {
-    QLabel *shotsLabel = new QLabel("Shots", this);
-    shotsLabel->setAlignment(Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop);
-    mainFormLayout->addWidget(shotsLabel, 2, 0);
-
     shotsList = new SimpleObjectList(true, this);
     shotsList->setSortable(true);
-    mainFormLayout->addWidget(shotsList, 2, 1);
+    shotsList->setTitle("Shots");
+    mainLayout->addWidget(shotsList);
 }
 
 void SequenceEditWidget::connectEvents()

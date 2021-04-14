@@ -102,12 +102,9 @@ void AssetGroupEditWidget::setupUi()
     folderWidget = new DuQFFolderDisplayWidget(this);
     mainFormLayout->addWidget(folderWidget, 2, 1);
 
-    QLabel *assetsLabel = new QLabel("Assets", this);
-    assetsLabel->setAlignment(Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop);
-    mainFormLayout->addWidget(assetsLabel, 3, 0);
-
     assetsList = new SimpleObjectList(true, this);
-    mainFormLayout->addWidget(assetsList, 3, 1);
+    assetsList->setTitle("Assets");
+    mainLayout->addWidget(assetsList);
 }
 
 void AssetGroupEditWidget::connectEvents()
