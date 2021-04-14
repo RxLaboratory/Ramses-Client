@@ -81,8 +81,8 @@ void RamAssetGroup::removeAsset(QString uuid)
         RamAsset *a = _assets[i];
         if (a->uuid() == uuid)
         {
-            _assets.removeAt(i);
-            emit assetRemoved(uuid);
+            RamAsset *a = _assets.takeAt(i);
+            emit assetRemovedFromGroup(a);
         }
     }
 }

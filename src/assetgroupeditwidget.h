@@ -1,35 +1,42 @@
 #ifndef ASSETGROUPEDITWIDGET_H
 #define ASSETGROUPEDITWIDGET_H
 
-#include "ui_assetgroupeditwidget.h"
+#include "objecteditwidget.h"
 #include "ramassetwidget.h"
+#include "simpleobjectlist.h"
 #include "duqf-widgets/duqffolderdisplaywidget.h"
 
-class AssetGroupEditWidget : public QWidget, private Ui::AssetGroupEditWidget
+class AssetGroupEditWidget : public ObjectEditWidget
 {
     Q_OBJECT
 
 public:
     explicit AssetGroupEditWidget(QWidget *parent = nullptr);
+    explicit AssetGroupEditWidget(RamAssetGroup *ag, QWidget *parent = nullptr);
 
     RamAssetGroup *assetGroup() const;
     void setAssetGroup(RamAssetGroup *assetGroup);
 
+protected slots:
+    void update() Q_DECL_OVERRIDE;
+
 private slots:
-    void update();
-    void revert();
-    bool checkInput();
-    void assetGroupRemoved(RamObject *o);
+    void assetGroupChanged(RamObject *o);
+    void newAsset(RamAsset *asset);
+    void assetRemoved(RamAsset *asset);
     void addAsset();
-    void removeAsset();
-    void newAsset(RamAsset *a);
-    void assetRemoved(QString uuid);
-    void dbiLog(DuQFLog m);
+    void removeAsset(RamObject *o);
 
 private:
-    DuQFFolderDisplayWidget *folderWidget;
     RamAssetGroup *_assetGroup;
-    QList<QMetaObject::Connection> _assetGroupConnections;
+
+    void setupUi();
+    void connectEvents();
+
+    DuQFFolderDisplayWidget *folderWidget;
+    SimpleObjectList *assetsList;
+
+    bool _creatingAsset = false;
 };
 
 #endif // ASSETGROUPEDITWIDGET_H

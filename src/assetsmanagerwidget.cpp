@@ -93,9 +93,9 @@ void AssetsManagerWidget::assetChanged()
     updateItem(a->uuid(), a->name());
 }
 
-void AssetsManagerWidget::assetRemoved(QString uuid)
+void AssetsManagerWidget::assetRemoved(RamAsset *a)
 {
-    removeData(uuid);
+    removeData(a->uuid());
 }
 
 void AssetsManagerWidget::filter(QString assetGroupUuid)
@@ -120,7 +120,7 @@ void AssetsManagerWidget::addAssets(RamAssetGroup *assetGroup)
         newAsset(asset);
     }
     _assetGroupsConnections << connect(assetGroup, &RamAssetGroup::newAsset, this, &AssetsManagerWidget::newAsset);
-    _assetGroupsConnections << connect(assetGroup, SIGNAL(assetRemoved(QString)), this, SLOT(assetRemoved(QString)));
+    _assetGroupsConnections << connect(assetGroup, SIGNAL(assetRemovedFromGroup(RamAsset*)), this, SLOT(assetRemoved(RamAsset*)));
 }
 
 void AssetsManagerWidget::assetGroupChanged()

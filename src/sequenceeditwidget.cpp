@@ -51,6 +51,8 @@ void SequenceEditWidget::update()
 
     updating = true;
 
+    if (!checkInput()) return;
+
     _sequence->setName(nameEdit->text());
     _sequence->setShortName(shortNameEdit->text());
 

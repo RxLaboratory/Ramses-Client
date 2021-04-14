@@ -19,7 +19,7 @@ private slots:
     void changeProject(RamProject *project);
     void newAsset(RamAsset *asset);
     void assetChanged();
-    void assetRemoved(QString uuid);
+    void assetRemoved(RamAsset *a);
     void filter(QString assetGroupUuid);
     void addAssets(RamAssetGroup *assetGroup);
     void assetGroupChanged();

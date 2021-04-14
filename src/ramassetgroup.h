@@ -33,7 +33,7 @@ public slots:
 
 signals:
     void newAsset(RamAsset *);
-    void assetRemoved(QString uuid);
+    void assetRemovedFromGroup(RamAsset*);
 
 private:
     bool _template;
