@@ -2,7 +2,6 @@
 #define ASSETGROUPEDITWIDGET_H
 
 #include "objecteditwidget.h"
-#include "ramassetwidget.h"
 #include "simpleobjectlist.h"
 #include "duqf-widgets/duqffolderdisplaywidget.h"
 

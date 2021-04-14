@@ -103,7 +103,7 @@ void RamApplication::assignNativeFileType(RamFileType * const ft)
     emit nativeFileTypeAssigned(ft);
 }
 
-void RamApplication::unassignNativeFileType(RamFileType *ft)
+void RamApplication::unassignNativeFileType(RamObject *ft)
 {
     unassignNativeFileType(ft->uuid());
 }
@@ -142,7 +142,7 @@ void RamApplication::assignImportFileType(RamFileType * const ft)
     emit importFileTypeAssigned(ft);
 }
 
-void RamApplication::unassignImportFileType(RamFileType *ft)
+void RamApplication::unassignImportFileType(RamObject *ft)
 {
     unassignImportFileType(ft->uuid());
 }
@@ -181,7 +181,7 @@ void RamApplication::assignExportFileType(RamFileType * const ft)
     emit exportFileTypeAssigned(ft);
 }
 
-void RamApplication::unassignExportFileType(RamFileType *ft)
+void RamApplication::unassignExportFileType(RamObject *ft)
 {
     unassignExportFileType(ft->uuid());
 }

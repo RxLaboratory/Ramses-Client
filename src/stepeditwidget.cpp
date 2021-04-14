@@ -1,5 +1,14 @@
 #include "stepeditwidget.h"
 
+StepEditWidget::StepEditWidget(QWidget *parent) : ObjectEditWidget(parent)
+{
+    setupUi();
+    populateMenus();
+    connectEvents();
+
+    setStep(nullptr);
+}
+
 StepEditWidget::StepEditWidget(RamStep *s, QWidget *parent) : ObjectEditWidget(s, parent)
 {
     setupUi();
@@ -22,6 +31,9 @@ void StepEditWidget::setStep(RamStep *step)
     _step = step;
 
     QSignalBlocker b(typeBox);
+    QSignalBlocker b1(folderWidget);
+    QSignalBlocker b2(usersList);
+    QSignalBlocker b3(applicationList);
 
     typeBox->setCurrentIndex(1);
     folderWidget->setPath("");
@@ -59,13 +71,17 @@ void StepEditWidget::update()
 {
     if(!_step) return;
 
-    _step->setType(typeBox->currentData().toString());
+    updating = true;
 
+    _step->setType(typeBox->currentData().toString());
     ObjectEditWidget::update();
+
+    updating = false;
 }
 
 void StepEditWidget::stepChanged(RamObject *o)
 {
+    if (updating) return;
     Q_UNUSED(o);
     setStep(_step);
 }
@@ -105,8 +121,9 @@ void StepEditWidget::setupUi()
     addUserButton->setMenu(assignUserMenu);
 
     assignAppMenu = new QMenu(this);
-    addUserButton->setPopupMode(QToolButton::InstantPopup);
-    applicationList->addButton()->setMenu(assignAppMenu);
+    QToolButton *addAppButton = applicationList->addButton();
+    addAppButton->setPopupMode(QToolButton::InstantPopup);
+    addAppButton->setMenu(assignAppMenu);
 }
 
 void StepEditWidget::populateMenus()

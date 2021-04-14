@@ -26,19 +26,19 @@ public:
     QList<RamFileType *> nativeFileTypes() const;
     void clearNativeFileTypes();
     void assignNativeFileType(RamFileType *const ft);
-    void unassignNativeFileType(RamFileType *ft);
+    void unassignNativeFileType(RamObject *ft);
     void unassignNativeFileType(QString uuid);
 
     QList<RamFileType *> importFileTypes() const;
     void clearImportFileTypes();
     void assignImportFileType(RamFileType * const ft);
-    void unassignImportFileType(RamFileType *ft);
+    void unassignImportFileType(RamObject *ft);
     void unassignImportFileType(QString uuid);
 
     QList<RamFileType *> exportFileTypes() const;
     void clearExportFileTypes();
     void assignExportFileType(RamFileType * const ft);
-    void unassignExportFileType(RamFileType *ft);
+    void unassignExportFileType(RamObject *ft);
     void unassignExportFileType(QString uuid);
 
 public slots:

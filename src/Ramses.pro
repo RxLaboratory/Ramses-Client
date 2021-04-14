@@ -27,7 +27,6 @@ SOURCES += \
     assetgroupeditwidget.cpp \
     assetgroupsmanagerwidget.cpp \
     assetsmanagerwidget.cpp \
-    bigstepeditwidget.cpp \
     daemon.cpp \
     daemonsettingswidget.cpp \
     dbinterface.cpp \
@@ -121,7 +120,6 @@ HEADERS += \
     assetgroupeditwidget.h \
     assetgroupsmanagerwidget.h \
     assetsmanagerwidget.h \
-    bigstepeditwidget.h \
     daemon.h \
     daemonsettingswidget.h \
     dbinterface.h \

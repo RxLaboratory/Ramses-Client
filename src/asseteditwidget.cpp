@@ -57,15 +57,10 @@ void AssetEditWidget::update()
 {
     if (!_asset) return;
 
-    if (!checkInput()) return;
-
     updating = true;
 
-    _asset->setName(nameEdit->text());
-    _asset->setShortName(shortNameEdit->text());
     _asset->setTags(tagsEdit->text());
-
-    _asset->update();
+    ObjectEditWidget::update();
 
     updating = false;
 }
