@@ -188,6 +188,9 @@ void Daemon::getCurrentProject(QTcpSocket *client)
 
     content.insert("shortName", proj->shortName());
     content.insert("name", proj->name());
+    content.insert("width", proj->width());
+    content.insert("height", proj->height());
+    content.insert("framerate", proj->framerate());
     content.insert("folder", Ramses::instance()->path(proj));
 
     post(client, content, "getCurrentProject", "Current project is: " + proj->name());
@@ -204,6 +207,9 @@ void Daemon::getProjects(QTcpSocket *client)
         QJsonObject project;
         project.insert("shortName", p->shortName());
         project.insert("name", p->name());
+        project.insert("width", p->width());
+        project.insert("height", p->height());
+        project.insert("framerate", p->framerate());
         project.insert("folder", Ramses::instance()->path(p));
         projects.append(project);
     }
