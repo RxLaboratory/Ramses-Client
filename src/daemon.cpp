@@ -72,6 +72,8 @@ void Daemon::reply()
         setCurrentProject(args.value("shortName"), client);
     else if (args.contains("getAssets"))
         getAssets(client);
+    else if (args.contains("getCurrentProject"))
+        getCurrentProject(client);
     else if (args.contains("getProjects"))
         getProjects(client);
     else if (args.contains("getShots"))
@@ -168,6 +170,27 @@ void Daemon::getAssets(QTcpSocket *client)
     }
     content.insert("assets", assets);
     post(client, content, "getASsets", "Asset list retrieved.");
+}
+
+void Daemon::getCurrentProject(QTcpSocket *client)
+{
+    log("I'm replying to this request: getCurrentProject", DuQFLog::Information);
+
+    RamProject *proj = Ramses::instance()->currentProject();
+
+    QJsonObject content;
+
+    if (!proj)
+    {
+        post(client, content, "getAssets", "Sorry, there's no current project. Select a project first!", false);
+        return;
+    }
+
+    content.insert("shortName", proj->shortName());
+    content.insert("name", proj->name());
+    content.insert("folder", Ramses::instance()->path(proj));
+
+    post(client, content, "getCurrentProject", "Current project is: " + proj->name());
 }
 
 void Daemon::getProjects(QTcpSocket *client)
