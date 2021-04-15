@@ -72,6 +72,8 @@ void Daemon::reply()
         setCurrentProject(args.value("shortName"), client);
     else if (args.contains("getAssets"))
         getAssets(client);
+    else if (args.contains("getProjects"))
+        getProjects(client);
     else
         post(client, QJsonObject(), "", "Unknown query.", false, false);
 
@@ -160,6 +162,25 @@ void Daemon::getAssets(QTcpSocket *client)
     }
     content.insert("assets", assets);
     post(client, content, "getASsets", "Asset list retrieved.");
+}
+
+void Daemon::getProjects(QTcpSocket *client)
+{
+    log("I'm replying to this request: getProjects", DuQFLog::Information);
+
+    QJsonObject content;
+    QJsonArray projects;
+    foreach(RamProject *p, Ramses::instance()->projects())
+    {
+        QJsonObject project;
+        project.insert("shortName", p->shortName());
+        project.insert("name", p->name());
+        project.insert("folder", Ramses::instance()->path(p));
+        projects.append(project);
+    }
+    content.insert("projects", projects);
+
+    post(client, content, "getProjects", "Project list retrived");
 }
 
 Daemon::Daemon(QObject *parent) : DuQFLoggerObject("Daemon", parent)

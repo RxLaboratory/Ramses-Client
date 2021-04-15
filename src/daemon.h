@@ -35,6 +35,7 @@ private slots:
     void ping(QTcpSocket *client);
     void setCurrentProject(QString shortName, QTcpSocket *client);
     void getAssets(QTcpSocket *client);
+    void getProjects(QTcpSocket *client);
 
 private:
     //The daemon is a singleton
