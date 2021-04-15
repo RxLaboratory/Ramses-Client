@@ -255,6 +255,16 @@ void RamProject::sortSequences()
     std::sort(_sequences.begin(), _sequences.end(), sequenceSorter);
 }
 
+QList<RamShot *> RamProject::shots()
+{
+    QList<RamShot*> ss;
+    foreach(RamSequence *seq, _sequences)
+    {
+        ss.append(seq->shots());
+    }
+    return ss;
+}
+
 RamShot *RamProject::shot(QString uuid)
 {
     foreach(RamSequence *s, _sequences)

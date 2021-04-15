@@ -69,6 +69,7 @@ public:
     void sortSequences();
 
     // Shots
+    QList<RamShot*> shots();
     RamShot *shot(QString uuid);
     void moveShotToSequence(RamShot *shot, QString sequenceUuid);
     void moveShotToSequence(RamShot *shot, RamSequence *sequence);
