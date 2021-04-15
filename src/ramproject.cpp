@@ -156,6 +156,16 @@ void RamProject::sortAssetGroups()
     std::sort(_assetGroups.begin(), _assetGroups.end(), assetGroupSorter);
 }
 
+QList<RamAsset *> RamProject::assets()
+{
+    QList<RamAsset*> as;
+    foreach(RamAssetGroup *ag, _assetGroups)
+    {
+        as.append(ag->assets());
+    }
+    return as;
+}
+
 RamAsset *RamProject::asset(QString uuid) const
 {
     foreach(RamAssetGroup *ag, _assetGroups)

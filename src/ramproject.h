@@ -53,6 +53,7 @@ public:
     void sortAssetGroups();
 
     // Assets
+    QList<RamAsset*> assets();
     RamAsset *asset(QString uuid) const;
     void moveAssetToGroup(RamAsset *asset, QString groupUuid);
     void moveAssetToGroup(RamAsset *asset, RamAssetGroup *group);
