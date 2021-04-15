@@ -76,7 +76,7 @@ void RamProject::update()
 {
     QString path = _folderPath;
     if (path == "") path = "auto";
-    _dbi->updateProject(_uuid, _shortName, _name, path);
+    _dbi->updateProject(_uuid, _shortName, _name, _width, _height, _framerate, path);
 }
 
 void RamProject::stepRemoved(RamObject *o)

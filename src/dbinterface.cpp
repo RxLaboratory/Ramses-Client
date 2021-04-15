@@ -101,13 +101,16 @@ void DBInterface::getProject(QString uuid)
     request(q);
 }
 
-void DBInterface::updateProject(QString uuid, QString shortName, QString name, QString folderPath)
+void DBInterface::updateProject(QString uuid, QString shortName, QString name, int width, int height, double framerate, QString folderPath)
 {
     QStringList q("updateProject");
     q << "uuid=" + uuid;
     q << "shortName=" + shortName;
     q << "name=" + name;
     q << "folderPath=" + folderPath;
+    if (width > 0) q << "width=" + QString::number(width);
+    if (height > 0) q << "height=" + QString::number(height);
+    if (framerate > 0) q << "framerate=" + QString::number(framerate);
 
     request(q);
 }

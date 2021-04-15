@@ -184,6 +184,9 @@ QString Ramses::gotProject(QJsonObject newP)
             QSignalBlocker b(existingProject);
             existingProject->setName( newP.value("name").toString());
             existingProject->setShortName( newP.value("shortName").toString());
+            existingProject->setWidth( newP.value("width").toInt());
+            existingProject->setHeight( newP.value("height").toInt());
+            existingProject->setFramerate( newP.value("framerate").toDouble());
             gotSteps( newP.value("steps").toArray(), existingProject);
             gotAssetGroups( newP.value("assetGroups").toArray(), existingProject);
             gotSequences( newP.value("sequences").toArray(), existingProject);
@@ -201,6 +204,9 @@ QString Ramses::gotProject(QJsonObject newP)
                 newP.value("name").toString(),
                 newP.value("uuid").toString()
                 );
+    project->setWidth( newP.value("width").toInt());
+    project->setHeight( newP.value("height").toInt());
+    project->setFramerate( newP.value("framerate").toDouble());
     project->setFolderPath( newP.value("folderPath").toString());
 
     // Add steps, assets, sequences, pipes...

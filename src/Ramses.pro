@@ -47,6 +47,9 @@ SOURCES += \
     duqf-utils/utils.cpp \
     duqf-widgets/aboutdialog.cpp \
     duqf-widgets/appearancesettingswidget.cpp \
+    duqf-widgets/autoselectdoublespinbox.cpp \
+    duqf-widgets/autoselectlineedit.cpp \
+    duqf-widgets/autoselectspinbox.cpp \
     duqf-widgets/duqfdocktitle.cpp \
     duqf-widgets/duqfdoubleslider.cpp \
     duqf-widgets/duqfdoublespinbox.cpp \
@@ -62,6 +65,7 @@ SOURCES += \
     duqf-widgets/toolbarspacer.cpp \
     filetypeeditwidget.cpp \
     filetypesmanagerwidget.cpp \
+    frameratewidget.cpp \
     listmanagerwidget.cpp \
     localsettingswidget.cpp \
     loginpage.cpp \
@@ -95,6 +99,7 @@ SOURCES += \
     ramstep.cpp \
     ramuser.cpp \
     ramuuid.cpp \
+    resolutionwidget.cpp \
     sequenceeditwidget.cpp \
     sequencesmanagerwidget.cpp \
     serversettingswidget.cpp \
@@ -141,6 +146,9 @@ HEADERS += \
     duqf-utils/utils.h \
     duqf-widgets/aboutdialog.h \
     duqf-widgets/appearancesettingswidget.h \
+    duqf-widgets/autoselectdoublespinbox.h \
+    duqf-widgets/autoselectlineedit.h \
+    duqf-widgets/autoselectspinbox.h \
     duqf-widgets/duqfdocktitle.h \
     duqf-widgets/duqfdoubleslider.h \
     duqf-widgets/duqfdoublespinbox.h \
@@ -156,6 +164,7 @@ HEADERS += \
     duqf-widgets/toolbarspacer.h \
     filetypeeditwidget.h \
     filetypesmanagerwidget.h \
+    frameratewidget.h \
     listmanagerwidget.h \
     localsettingswidget.h \
     loginpage.h \
@@ -186,6 +195,7 @@ HEADERS += \
     ramstep.h \
     ramuser.h \
     ramuuid.h \
+    resolutionwidget.h \
     sequenceeditwidget.h \
     sequencesmanagerwidget.h \
     serversettingswidget.h \

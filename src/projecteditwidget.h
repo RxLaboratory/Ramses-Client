@@ -1,32 +1,43 @@
 #ifndef PROJECTEDITWIDGET_H
 #define PROJECTEDITWIDGET_H
 
-#include "ui_projecteditwidget.h"
+#include <QSpinBox>
+#include <QDoubleSpinBox>
+
+#include "objecteditwidget.h"
 #include "ramses.h"
+#include "resolutionwidget.h"
+#include "frameratewidget.h"
 #include "duqf-widgets/duqffolderselectorwidget.h"
 
-class ProjectEditWidget : public QWidget, private Ui::ProjectEditWidget
+class ProjectEditWidget : public ObjectEditWidget
 {
     Q_OBJECT
 
 public:
     explicit ProjectEditWidget(QWidget *parent = nullptr);
+    explicit ProjectEditWidget(RamProject *project, QWidget *parent = nullptr);
 
     RamProject *project() const;
     void setProject(RamProject *project);
 
+protected slots:
+    void update() Q_DECL_OVERRIDE;
+
 private slots:
-    void update();
-    void revert();
-    bool checkInput();
     void updateFolderLabel(QString path);
-    void projectRemoved(RamObject *o);
-    void dbiLog(DuQFLog m);
+    void projectChanged(RamObject *o);
 
 private:
-    DuQFFolderSelectorWidget *folderSelector;
     RamProject *_project;
-    QMetaObject::Connection _currentProjectConnection;
+
+    void setupUi();
+    void connectEvents();
+
+    DuQFFolderSelectorWidget *folderSelector;
+    QLabel *folderLabel;
+    ResolutionWidget *resolutionWidget;
+    FramerateWidget *framerateWidget;
 };
 
 #endif // PROJECTEDITWIDGET_H
