@@ -78,6 +78,8 @@ void Daemon::reply()
         getShots(client);
     else if (args.contains("getStates"))
         getStates(client);
+    else if (args.contains("getSteps"))
+        getSteps(client);
     else
         post(client, QJsonObject(), "", "Unknown query.", false, false);
 
@@ -212,7 +214,7 @@ void Daemon::getShots(QTcpSocket *client)
         shots.append(shot);
     }
     content.insert("shots", shots);
-    post(client, content, "getShots", "Shots list retrieved.");
+    post(client, content, "getShots", "Shot list retrieved.");
 }
 
 void Daemon::getStates(QTcpSocket *client)
@@ -238,6 +240,52 @@ void Daemon::getStates(QTcpSocket *client)
     content.insert("states", states);
 
     post(client, content, "getStates", "State list retrived");
+}
+
+void Daemon::getSteps(QTcpSocket *client)
+{
+    log("I'm replying to this request: getSteps", DuQFLog::Information);
+
+    RamProject *proj = Ramses::instance()->currentProject();
+
+    QJsonObject content;
+
+    if (!proj)
+    {
+        post(client, content, "getSteps", "Sorry, there's no current project. Select a project first!", false);
+        return;
+    }
+
+    QJsonArray steps;
+    foreach(RamStep *s, proj->steps())
+    {
+        QJsonObject step;
+        step.insert("shortName", s->shortName());
+        step.insert("name", s->name());
+        step.insert("folder", Ramses::instance()->path(s));
+        QString type;
+        switch (s->type())
+        {
+        case RamStep::PreProduction:
+            type = "PRE_PRODUCTION";
+            break;
+        case RamStep::AssetProduction:
+            type = "ASSET_PRODUCTION";
+            break;
+        case RamStep::ShotProduction:
+            type = "SHOT_PRODUCTION";
+            break;
+        case RamStep::PostProduction:
+            type ="POST_PRODUCTION";
+            break;
+        default:
+            type = "SHOT_PRODUCTION";
+        }
+        step.insert("type", type);
+        steps.append(step);
+    }
+    content.insert("steps", steps);
+    post(client, content, "getSteps", "Step list retrieved.");
 }
 
 Daemon::Daemon(QObject *parent) : DuQFLoggerObject("Daemon", parent)
