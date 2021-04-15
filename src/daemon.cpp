@@ -76,6 +76,8 @@ void Daemon::reply()
         getProjects(client);
     else if (args.contains("getShots"))
         getShots(client);
+    else if (args.contains("getStates"))
+        getStates(client);
     else
         post(client, QJsonObject(), "", "Unknown query.", false, false);
 
@@ -211,6 +213,31 @@ void Daemon::getShots(QTcpSocket *client)
     }
     content.insert("shots", shots);
     post(client, content, "getShots", "Shots list retrieved.");
+}
+
+void Daemon::getStates(QTcpSocket *client)
+{
+    log("I'm replying to this request: getStates", DuQFLog::Information);
+
+    QJsonObject content;
+    QJsonArray states;
+    foreach(RamState *s, Ramses::instance()->states())
+    {
+        QJsonObject state;
+        state.insert("shortName", s->shortName());
+        state.insert("name", s->name());
+        state.insert("completionRatio", s->completionRatio());
+        QColor col = s->color();
+        QJsonArray cols;
+        cols.append( col.red() );
+        cols.append( col.green() );
+        cols.append( col.blue() );
+        state.insert("color", cols);
+        states.append(state);
+    }
+    content.insert("states", states);
+
+    post(client, content, "getStates", "State list retrived");
 }
 
 Daemon::Daemon(QObject *parent) : DuQFLoggerObject("Daemon", parent)

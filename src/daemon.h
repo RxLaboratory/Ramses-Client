@@ -37,6 +37,7 @@ private slots:
     void getAssets(QTcpSocket *client);
     void getProjects(QTcpSocket *client);
     void getShots(QTcpSocket *client);
+    void getStates(QTcpSocket *client);
 
 private:
     //The daemon is a singleton
