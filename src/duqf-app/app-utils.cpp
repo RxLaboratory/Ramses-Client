@@ -54,7 +54,7 @@ bool DuApplication::processArgs(QStringList examples, QStringList helpStrings)
 
     // No console without args on windows
 #ifdef Q_OS_WIN
-    bool hideConsole = argc == 1;
+    bool hideConsole = _argc == 1;
 #endif
 
     for (int i = 1; i < _argc; i++)

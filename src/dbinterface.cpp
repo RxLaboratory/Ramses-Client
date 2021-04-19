@@ -842,7 +842,7 @@ void DBInterface::request(QString req, bool waitPing)
 #ifdef QT_DEBUG
         log("New request: " + url.toString(QUrl::None), DuQFLog::Debug);
 #else
-        log("New request: " + protocol + serverAddress + "[Hidden login info]", DuQFLog::Remote);
+        log("New request: " + protocol + serverAddress + "[Hidden login info]", DuQFLog::Information);
 #endif
     }
     else

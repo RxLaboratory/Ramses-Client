@@ -339,5 +339,5 @@ void Daemon::post(QTcpSocket *client, QJsonObject content, QString query, QStrin
     QString jsonReply = json.toJson();
     client->write( jsonReply.toUtf8() );
 
-    log("Posting:\n" + jsonReply, DuQFLog::Debug);
+    log("Posting:\n" + jsonReply, DuQFLog::Information);
 }
