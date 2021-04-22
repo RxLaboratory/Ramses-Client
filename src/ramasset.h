@@ -1,9 +1,9 @@
 #ifndef RAMASSET_H
 #define RAMASSET_H
 
-#include "ramobject.h"
+#include "ramitem.h"
 
-class RamAsset : public RamObject
+class RamAsset : public RamItem
 {
     Q_OBJECT
 public:
@@ -20,6 +20,7 @@ public:
     bool hasTag(QString tag);
 
     void update();
+
 private:
     QStringList _tags;
     QString _assetGroupUuid;

@@ -659,7 +659,7 @@ void Ramses::gotAssetGroups(QJsonArray assetGroups, RamProject *project)
                 //Emit just one signal
                 QSignalBlocker b(existingAssetGroup);
                 existingAssetGroup->setName( newAG.value("name").toString());
-                gotAssets( newAG.value("assets").toArray(), existingAssetGroup);
+                gotAssets( newAG.value("assets").toArray(), existingAssetGroup, project);
                 b.unblock();
                 existingAssetGroup->setShortName( newAG.value("shortName").toString());
                 //remove from new asset groups
@@ -687,7 +687,7 @@ void Ramses::gotAssetGroups(QJsonArray assetGroups, RamProject *project)
         assetGroup->setProjectUuid( ag.value("projectUuid").toString());
 
         //add assets
-        gotAssets( ag.value("assets").toArray(), assetGroup);
+        gotAssets( ag.value("assets").toArray(), assetGroup, project);
 
         project->addAssetGroup(assetGroup);
     }
@@ -696,7 +696,7 @@ void Ramses::gotAssetGroups(QJsonArray assetGroups, RamProject *project)
     project->sortAssetGroups();
 }
 
-void Ramses::gotAssets(QJsonArray assets, RamAssetGroup *assetGroup)
+void Ramses::gotAssets(QJsonArray assets, RamAssetGroup *assetGroup, RamProject *project)
 {
     DBISuspender s;
 
@@ -720,6 +720,7 @@ void Ramses::gotAssets(QJsonArray assets, RamAssetGroup *assetGroup)
                 QSignalBlocker b(existingAsset);
                 existingAsset->setName( newA.value("name").toString());
                 existingAsset->setTags(newA.value("tags").toString());
+                gotStatusHistory( newA.value("statusHistory").toArray(), existingAsset, project);
                 b.unblock();
                 existingAsset->setShortName( newA.value("shortName").toString());
                 //remove from new asset groups
@@ -745,6 +746,7 @@ void Ramses::gotAssets(QJsonArray assets, RamAssetGroup *assetGroup)
                     a.value("uuid").toString()
                     );
         asset->setTags( a.value("tags").toString());
+        gotStatusHistory( a.value("statusHistory").toArray(), asset, project);
 
         assetGroup->addAsset(asset);
     }
@@ -795,7 +797,7 @@ QString Ramses::gotSequence(QJsonObject newS, RamProject *project)
             QSignalBlocker b(existingSequence);
             existingSequence->setName( newS.value("name").toString());
             //add shots
-            gotShots( newS.value("shots").toArray(), existingSequence);
+            gotShots( newS.value("shots").toArray(), existingSequence, project);
             b.unblock();
             existingSequence->setShortName( newS.value("shortName").toString());
             return uuid;
@@ -811,21 +813,21 @@ QString Ramses::gotSequence(QJsonObject newS, RamProject *project)
                 );
 
     //add shots
-    gotShots( newS.value("shots").toArray(), sequence);
+    gotShots( newS.value("shots").toArray(), sequence, project);
 
     project->addSequence(sequence);
 
     return uuid;
 }
 
-void Ramses::gotShots(QJsonArray shots, RamSequence *sequence)
+void Ramses::gotShots(QJsonArray shots, RamSequence *sequence, RamProject *project)
 {
     DBISuspender s;
     QStringList uuids;
     // Update shots
     for (int j = 0; j < shots.count(); j++)
     {
-        uuids << gotShot( shots.at(j).toObject(), sequence );
+        uuids << gotShot( shots.at(j).toObject(), sequence, project );
     }
 
     // Remove deleted shots
@@ -843,7 +845,7 @@ void Ramses::gotShots(QJsonArray shots, RamSequence *sequence)
     sequence->sortShots();
 }
 
-QString Ramses::gotShot(QJsonObject newS, RamSequence *sequence)
+QString Ramses::gotShot(QJsonObject newS, RamSequence *sequence, RamProject *project)
 {
     DBISuspender s;
     QString uuid = newS.value("uuid").toString();
@@ -861,6 +863,7 @@ QString Ramses::gotShot(QJsonObject newS, RamSequence *sequence)
             existingShot->setName( newS.value("name").toString());
             existingShot->setDuration( newS.value("duration").toDouble() );
             existingShot->setOrder( newS.value("order").toInt() );
+            gotStatusHistory( newS.value("statusHistory").toArray(), existingShot, project);
             b.unblock();
             existingShot->setShortName( newS.value("shortName").toString());
             return uuid;
@@ -877,10 +880,82 @@ QString Ramses::gotShot(QJsonObject newS, RamSequence *sequence)
 
     shot->setDuration( newS.value("duration").toDouble() );
     shot->setOrder( newS.value("order").toInt() );
+    gotStatusHistory( newS.value("statusHistory").toArray(), shot, project);
 
     sequence->addShot(shot);
 
     return uuid;
+}
+
+void Ramses::gotStatusHistory(QJsonArray statusHistory, RamItem *item, RamProject *project)
+{
+    DBISuspender s;
+
+    QList<RamStatus*> history = item->statusHistory();
+
+    // loop through existing status to update them
+    for (int i = history.count() - 1; i >= 0; i--)
+    {
+        RamStatus *existingStatus = history[i];
+        // loop through new steps to update
+        bool found = false;
+        for (int j = statusHistory.count() - 1; j >= 0; j--)
+        {
+            QJsonObject newS = statusHistory[j].toObject();
+            QString uuid = newS.value("uuid").toString();
+            // Found, update
+            if (uuid == existingStatus->uuid())
+            {
+                found = true;
+                //Emit just one signal
+                QSignalBlocker b(existingStatus);
+                existingStatus->setCompletionRatio( newS.value("completionRatio").toInt( ));
+                RamUser *u = Ramses::instance()->user( newS.value("userUuid").toString( ) );
+                if (u) existingStatus->setUser( u );
+                RamState *state = Ramses::instance()->state( newS.value("stateUuid").toString( ) );
+                if (state) existingStatus->setState( state );
+                existingStatus->setComment( newS.value("comment").toString() );
+                RamStep *step = project->step( newS.value("stepUuid").toString( ) );
+                if (step) existingStatus->setStep( step );
+                b.unblock();
+                existingStatus->setVersion( newS.value("version").toInt() );
+
+                //remove from new status groups
+                statusHistory.removeAt(j);
+                break;
+            }
+        }
+        // Not found, remove from existing
+        if (!found)
+        {
+            item->removeStatus(existingStatus);
+        }
+    }
+
+    // loop through remaining new assets to add them
+    for (int i = 0; i < statusHistory.count(); i++)
+    {
+        QJsonObject s = statusHistory[i].toObject();
+        RamUser *user = Ramses::instance()->user( s.value("userUuid").toString( ) );
+        if (!user) continue;
+        RamState *state = Ramses::instance()->state( s.value("stateUuid").toString( ) );
+        if (!state) continue;
+        RamStep *step = project->step( s.value("stepUuid").toString( ) );
+        if (!step) continue;
+        RamStatus *status = new RamStatus(
+                    user,
+                    state,
+                    step,
+                    item
+                    );
+        status->setCompletionRatio( s.value("completionRatio").toInt( ) );
+        status->setComment( s.value("comment").toString( ) );
+        status->setVersion( s.value("version").toInt( ) );
+
+        item->addStatus(status);
+    }
+
+    item->sortStatusHistory();
 }
 
 void Ramses::gotPipes(QJsonArray pipes, RamProject *project)
@@ -1352,6 +1427,15 @@ RamSequence *Ramses::sequence(QString uuid) const
 QList<RamState *> Ramses::states() const
 {
     return _states;
+}
+
+RamState *Ramses::state(QString uuid) const
+{
+    foreach(RamState *st, _states)
+    {
+        if (st->uuid() == uuid) return st;
+    }
+    return nullptr;
 }
 
 RamState *Ramses::createState()

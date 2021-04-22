@@ -85,6 +85,7 @@ SOURCES += \
     ramassetgroup.cpp \
     ramassetwidget.cpp \
     ramfiletype.cpp \
+    ramitem.cpp \
     ramobject.cpp \
     ramobjectsorter.cpp \
     ramobjectsorter.h \
@@ -96,6 +97,7 @@ SOURCES += \
     ramshot.cpp \
     ramshotwidget.cpp \
     ramstate.cpp \
+    ramstatus.cpp \
     ramstep.cpp \
     ramuser.cpp \
     ramuuid.cpp \
@@ -183,6 +185,7 @@ HEADERS += \
     ramassetgroup.h \
     ramassetwidget.h \
     ramfiletype.h \
+    ramitem.h \
     ramobject.h \
     ramobjectwidget.h \
     rampipe.h \
@@ -192,6 +195,7 @@ HEADERS += \
     ramshot.h \
     ramshotwidget.h \
     ramstate.h \
+    ramstatus.h \
     ramstep.h \
     ramuser.h \
     ramuuid.h \

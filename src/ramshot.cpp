@@ -1,7 +1,7 @@
 #include "ramshot.h"
 
 RamShot::RamShot(QString shortName, QString name, QString sequenceUuid, QString uuid, QObject *parent):
-    RamObject(shortName, name, uuid, parent)
+    RamItem(shortName, name, uuid, parent)
 {
     setObjectType(Shot);
     _sequenceUuid = sequenceUuid;

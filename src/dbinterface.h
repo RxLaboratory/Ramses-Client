@@ -67,6 +67,7 @@ public:
     void createAsset(QString shortName, QString name, QString assetGroupUuid, QString tags, QString uuid);
     void updateAsset(QString uuid, QString shortName, QString name, QString assetGroupUuid, QString tags);
     void removeAsset(QString uuid);
+    void setAssetStatus(QString assetUuid, QString stateUuid, QString stepUuid, QString userUuid = "", int completionRatio = -1, QString comment = "", int version = 1, QString uuid = "");
     //sequences
     void createSequence(QString shortName, QString name, QString projectUuid, QString uuid);
     void updateSequence(QString uuid, QString shortName, QString name);
@@ -76,6 +77,7 @@ public:
     void updateShot(QString uuid, QString shortName, QString name, QString sequenceUuid = "", qreal duration = -1.0);
     void moveShot(QString uuid, int order);
     void removeShot(QString uuid);
+    void setShotStatus(QString shotUuid, QString stateUuid, QString stepUuid, QString userUuid = "", int completionRatio = -1, QString comment = "", int version = 1, QString uuid = "");
     //states
     void createState(QString shortName, QString name, QString uuid);
     void getStates();

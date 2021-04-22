@@ -22,7 +22,7 @@ public:
 
 private:
     QColor _color;
-    int _completionRatio;
+    int _completionRatio = 50;
 };
 
 #endif // RAMSTATE_H

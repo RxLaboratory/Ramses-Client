@@ -1,9 +1,9 @@
 #ifndef RAMSHOT_H
 #define RAMSHOT_H
 
-#include "ramobject.h"
+#include "ramitem.h"
 
-class RamShot : public RamObject
+class RamShot : public RamItem
 {
     Q_OBJECT
 public:

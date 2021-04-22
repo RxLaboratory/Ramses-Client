@@ -329,6 +329,21 @@ void DBInterface::removeAsset(QString uuid)
     request(q);
 }
 
+void DBInterface::setAssetStatus(QString assetUuid, QString stateUuid, QString stepUuid, QString userUuid, int completionRatio, QString comment, int version, QString uuid)
+{
+    QStringList q("setAssetStatus");
+    q << "assetUuid=" + assetUuid;
+    q << "stateUuid=" + stateUuid;
+    q << "stepUuid=" + stepUuid;
+    q << "userUuid=" + userUuid;
+    q << "completionRatio=" + QString::number(completionRatio);
+    q << "comment=" + comment;
+    q << "version=" + QString::number(version);
+    q << "uuid=" + uuid;
+
+    request(q);
+}
+
 void DBInterface::createSequence(QString shortName, QString name, QString projectUuid, QString uuid)
 {
     QStringList q("createSequence");
@@ -395,6 +410,21 @@ void DBInterface::moveShot(QString uuid, int order)
 void DBInterface::removeShot(QString uuid)
 {
     QStringList q("removeShot");
+    q << "uuid=" + uuid;
+
+    request(q);
+}
+
+void DBInterface::setShotStatus(QString shotUuid, QString stateUuid, QString stepUuid, QString userUuid, int completionRatio, QString comment, int version, QString uuid)
+{
+    QStringList q("setAssetStatus");
+    q << "shotUuid=" + shotUuid;
+    q << "stateUuid=" + stateUuid;
+    q << "stepUuid=" + stepUuid;
+    q << "userUuid=" + userUuid;
+    q << "completionRatio=" + QString::number(completionRatio);
+    q << "comment=" + comment;
+    q << "version=" + QString::number(version);
     q << "uuid=" + uuid;
 
     request(q);

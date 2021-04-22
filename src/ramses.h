@@ -105,6 +105,7 @@ public:
     RamSequence *sequence(QString uuid) const;
     // States
     QList<RamState *> states() const;
+    RamState *state(QString uuid) const;
     RamState *createState();
     void removeState(RamObject *s);
     void removeState(QString uuid);
@@ -168,13 +169,15 @@ private slots:
     // asset groups
     void gotAssetGroups(QJsonArray assetGroups, RamProject *project);
     // assets
-    void gotAssets(QJsonArray assets, RamAssetGroup *assetGroup);
+    void gotAssets(QJsonArray assets, RamAssetGroup *assetGroup, RamProject *project);
     // sequences
     void gotSequences(QJsonArray sequences, RamProject *project);
     QString gotSequence(QJsonObject newS, RamProject *project);
     // shots
-    void gotShots(QJsonArray shots, RamSequence *sequence);
-    QString gotShot(QJsonObject newS, RamSequence *sequence);
+    void gotShots(QJsonArray shots, RamSequence *sequence, RamProject *project);
+    QString gotShot(QJsonObject newS, RamSequence *sequence, RamProject *project);
+    // status
+    void gotStatusHistory(QJsonArray statusHistory, RamItem *item, RamProject *project);
     // pipes
     void gotPipes(QJsonArray pipes, RamProject *project);
     QString gotPipe(QJsonObject newP, RamProject *project);
