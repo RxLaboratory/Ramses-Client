@@ -36,6 +36,7 @@ private slots:
     void setCurrentProject(QString shortName, QTcpSocket *client);
     void getAssets(QTcpSocket *client);
     void getCurrentProject(QTcpSocket *client);
+    void getPipes(QTcpSocket *client);
     void getProjects(QTcpSocket *client);
     void getShots(QTcpSocket *client);
     void getStates(QTcpSocket *client);

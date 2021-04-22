@@ -74,6 +74,8 @@ void Daemon::reply()
         getAssets(client);
     else if (args.contains("getCurrentProject"))
         getCurrentProject(client);
+    else if (args.contains("getPipes"))
+        getPipes(client);
     else if (args.contains("getProjects"))
         getProjects(client);
     else if (args.contains("getShots"))
@@ -182,7 +184,7 @@ void Daemon::getCurrentProject(QTcpSocket *client)
 
     if (!proj)
     {
-        post(client, content, "getAssets", "Sorry, there's no current project. Select a project first!", false);
+        post(client, content, "getCurrentProject", "Sorry, there's no current project. Select a project first!", false);
         return;
     }
 
@@ -194,6 +196,41 @@ void Daemon::getCurrentProject(QTcpSocket *client)
     content.insert("folder", Ramses::instance()->path(proj));
 
     post(client, content, "getCurrentProject", "Current project is: " + proj->name());
+}
+
+void Daemon::getPipes(QTcpSocket *client)
+{
+    log("I'm replying to this request: getPipes", DuQFLog::Information);
+
+    RamProject *proj = Ramses::instance()->currentProject();
+
+    QJsonObject content;
+
+    if (!proj)
+    {
+        post(client, content, "getPipes", "Sorry, there's no current project. Select a project first!", false);
+        return;
+    }
+
+    QJsonArray pipes;
+    foreach(RamPipe *p, proj->pipeline())
+    {
+        QJsonObject pipe;
+        if (!p->inputStep()) continue;
+        if (!p->outputStep()) continue;
+        if (!p->fileType()) continue;
+        pipe.insert("inputStepShortName", p->inputStep()->shortName());
+        pipe.insert("outputStepShortName", p->outputStep()->shortName());
+        QJsonObject fileType;
+        fileType.insert("name", p->fileType()->name());
+        fileType.insert("shortName", p->fileType()->shortName());
+        QJsonArray extensions = QJsonArray::fromStringList( p->fileType()->extensions() );
+        fileType.insert("extensions", extensions);
+        pipe.insert("fileType", fileType);
+        pipes.append(pipe);
+    }
+    content.insert("pipes", pipes);
+    post(client, content, "getPipes", "Pipeline retrieved.");
 }
 
 void Daemon::getProjects(QTcpSocket *client)
