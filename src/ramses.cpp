@@ -917,6 +917,7 @@ void Ramses::gotStatusHistory(QJsonArray statusHistory, RamItem *item, RamProjec
                 existingStatus->setComment( newS.value("comment").toString() );
                 RamStep *step = project->step( newS.value("stepUuid").toString( ) );
                 if (step) existingStatus->setStep( step );
+                existingStatus->setDate( QDateTime::fromString( newS.value("latestUpdate").toString(), "yyyy-MM-dd hh:mm:ss"));
                 b.unblock();
                 existingStatus->setVersion( newS.value("version").toInt() );
 
@@ -951,6 +952,7 @@ void Ramses::gotStatusHistory(QJsonArray statusHistory, RamItem *item, RamProjec
         status->setCompletionRatio( s.value("completionRatio").toInt( ) );
         status->setComment( s.value("comment").toString( ) );
         status->setVersion( s.value("version").toInt( ) );
+        status->setDate( QDateTime::fromString( s.value("latestUpdate").toString(), "yyyy-MM-dd hh:mm:ss"));
 
         item->addStatus(status);
     }
