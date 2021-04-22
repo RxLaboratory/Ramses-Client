@@ -171,6 +171,7 @@ void Ramses::gotProjects(QJsonArray projects)
 QString Ramses::gotProject(QJsonObject newP)
 {
     DBISuspender s;
+
     QString uuid = newP.value("uuid").toString();
 
     // loop through existing projects to update them
@@ -886,63 +887,69 @@ void Ramses::gotPipes(QJsonArray pipes, RamProject *project)
 {
     DBISuspender s;
 
-    QList<RamPipe*> projectPipeline = project->pipeline();
+    QStringList uuids;
+    // Update shots
+    for (int j = 0; j < pipes.count(); j++)
+    {
+        uuids << gotPipe( pipes.at(j).toObject(), project );
+    }
 
-    // loop through existing pipeline to update pipes
+    // Remove deleted pipes
+    QList<RamPipe*> projectPipeline = project->pipeline();
     for (int i = projectPipeline.count() - 1; i >= 0; i--)
     {
-        RamPipe *existingPipe = projectPipeline[i];
-        // loop through new pipes to update
-        bool found = false;
-        for (int j = pipes.count() - 1; j >= 0; j--)
+        RamPipe *existingPipe = projectPipeline.at(i);
+        if (!uuids.contains(existingPipe->uuid()))
         {
-            QJsonObject newP = pipes[j].toObject();
-            QString uuid = newP.value("uuid").toString();
-            // Found, update
-            if (uuid == existingPipe->uuid())
-            {
-                found = true;
-                //Emit just one signal
-                QSignalBlocker b(existingPipe);
-                RamStep *inputStep =  project->step(newP.value("inputStepUuid").toString());
-                if (inputStep) existingPipe->setInputStep( inputStep );
-                RamStep *outputStep =  project->step(newP.value("outputStepUuid").toString());
-                if (outputStep) existingPipe->setOutputStep( outputStep );
-                b.unblock();
-                RamFileType *ft = fileType( newP.value("filetypeUuid").toString()) ;
-                existingPipe->setFileType( ft );
-                //remove from new pipes
-                pipes.removeAt(j);
-                break;
-            }
-        }
-        // Not found, remove from existing
-        if (!found)
-        {
-            project->removePipe(existingPipe);
+            project->removePipe(existingPipe->uuid());
         }
     }
+}
 
-    // loop through remaining new asset groups to add them
-    for (int i = 0; i < pipes.count(); i++)
+QString Ramses::gotPipe(QJsonObject newP, RamProject *project)
+{
+    DBISuspender s;
+    QString uuid = newP.value("uuid").toString();
+
+    // loop through existing pipes to update them
+    QList<RamPipe*> projectPipeline = project->pipeline();
+    for (int i = projectPipeline.count() - 1; i >= 0; i--)
     {
-        QJsonObject p = pipes[i].toObject();
-        RamStep *inputStep =  project->step(p.value("inputStepUuid").toString());
-        RamStep *outputStep =  project->step(p.value("outputStepUuid").toString());
-        if (inputStep && outputStep)
+        RamPipe *existingPipe = projectPipeline.at(i);
+
+        if (uuid == existingPipe->uuid())
         {
-            RamPipe *pipe = new RamPipe(
-                        outputStep,
-                        inputStep,
-                        p.value("uuid").toString()
-                        );
-
-            RamFileType *ft = fileType( p.value("filetypeUuid").toString()) ;
-            if (ft) pipe->setFileType( ft );
-
-            project->addPipe(pipe);
+            //Emit just one signal
+            QSignalBlocker b(existingPipe);
+            RamStep *inputStep =  project->step(newP.value("inputStepUuid").toString());
+            if (inputStep) existingPipe->setInputStep( inputStep );
+            RamStep *outputStep =  project->step(newP.value("outputStepUuid").toString());
+            if (outputStep) existingPipe->setOutputStep( outputStep );
+            b.unblock();
+            RamFileType *ft = fileType( newP.value("filetypeUuid").toString()) ;
+            existingPipe->setFileType( ft );
+            return uuid;
         }
     }
+
+    // not existing, let's create it
+    RamStep *inputStep =  project->step(newP.value("inputStepUuid").toString());
+    RamStep *outputStep =  project->step(newP.value("outputStepUuid").toString());
+    if (inputStep && outputStep)
+    {
+        RamPipe *pipe = new RamPipe(
+                    outputStep,
+                    inputStep,
+                    newP.value("uuid").toString()
+                    );
+
+        RamFileType *ft = fileType( newP.value("filetypeUuid").toString()) ;
+        if (ft) pipe->setFileType( ft );
+
+        project->addPipe(pipe);
+    }
+
+    return uuid;
 }
 
 void Ramses::dbiConnectionStatusChanged(NetworkUtils::NetworkStatus s)
@@ -1228,7 +1235,11 @@ RamProject *Ramses::currentProject() const
 
 void Ramses::setCurrentProject(RamProject *currentProject)
 {
+    if (_currentProject && currentProject)
+        if (_currentProject->uuid() == currentProject->uuid()) return;
+
     _currentProject = currentProject;
+
     if (_currentProject)
     {
         _userSettings->setValue("currentProject", _currentProject->uuid() );

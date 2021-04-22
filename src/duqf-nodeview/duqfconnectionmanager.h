@@ -24,7 +24,7 @@ public:
      * @param connection The connector used for this connection
      * @return True if the connection was accepted
      */
-    DuQFConnection * addConnection(DuQFSlot *output, DuQFSlot *input, DuQFConnector *connector);
+    DuQFConnection * addConnection(DuQFSlot *output, DuQFSlot *input);
     QList<DuQFConnection *> connections() const;
 
 public slots:

@@ -263,10 +263,10 @@ void DuQFNodeScene::selectParentNodes()
 
 DuQFConnection * DuQFNodeScene::connectNodes(DuQFNode *o, DuQFNode *i)
 {
-    DuQFConnector *c = new DuQFConnector();
-    this->addItem(c);
-
-    return m_connectionManager->addConnection(o->defaultOutputSlot(), i->defaultInputSlot(), c);
+    DuQFConnection *co = m_connectionManager->addConnection(o->defaultOutputSlot(), i->defaultInputSlot());
+    //add the graphic item connector
+    if (co) this->addItem( co->connector() );
+    return co;
 }
 
 void DuQFNodeScene::moveConnection(QPointF to)
@@ -310,7 +310,8 @@ void DuQFNodeScene::finishConnection(QPointF to, QPointF from)
     }
 
     // Connect
-    m_connectionManager->addConnection(output, input, m_connectingItem);
+    m_connectionManager->addConnection(output, input);
+    m_connectingItem->remove();
 }
 
 void DuQFNodeScene::layoutNodesInColumn(QList<DuQFNode *> nodes, QPointF center)

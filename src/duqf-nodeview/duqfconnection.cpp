@@ -1,26 +1,13 @@
 #include "duqfconnection.h"
 
+DuQFConnection::DuQFConnection(DuQFSlot *output, DuQFSlot *input, QObject *parent) : QObject(parent)
+{
+    init(output, input, new DuQFConnector());
+}
+
 DuQFConnection::DuQFConnection(DuQFSlot *output, DuQFSlot *input, DuQFConnector *connector, QObject *parent) : QObject(parent)
 {
-    if (output->slotType() == DuQFSlot::Output)
-    {
-        m_output = output;
-        m_input = input;
-    }
-    else
-    {
-        m_input = output;
-        m_output = input;
-    }
-    m_connector = connector;
-
-    m_input = input;
-    m_output = output;
-
-    setInput(m_input);
-    setOutput(m_output);
-
-    connect(connector, &DuQFConnector::removed, this, &DuQFConnection::remove);
+    init(output, input, connector);
 }
 
 DuQFSlot *DuQFConnection::input() const
@@ -105,6 +92,29 @@ void DuQFConnection::outputMoved()
 void DuQFConnection::inputMoved()
 {
     m_connector->setTo( m_input->scenePos() );
+}
+
+void DuQFConnection::init(DuQFSlot *output, DuQFSlot *input, DuQFConnector *connector)
+{
+    if (output->slotType() == DuQFSlot::Output)
+    {
+        m_output = output;
+        m_input = input;
+    }
+    else
+    {
+        m_input = output;
+        m_output = input;
+    }
+    m_connector = connector;
+
+    m_input = input;
+    m_output = output;
+
+    setInput(m_input);
+    setOutput(m_output);
+
+    connect(connector, &DuQFConnector::removed, this, &DuQFConnection::remove);
 }
 
 DuQFConnector *DuQFConnection::connector() const

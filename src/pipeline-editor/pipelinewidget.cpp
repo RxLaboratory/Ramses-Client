@@ -200,6 +200,12 @@ PipelineWidget::PipelineWidget(QWidget *parent) :
 
 void PipelineWidget::changeProject(RamProject *project)
 {
+    DBISuspender b;
+
+    QSignalBlocker b1(_nodeScene);
+    QSignalBlocker b2(_nodeView);
+    QSignalBlocker b3(_nodeScene->connectionManager());
+
     this->setEnabled(false);
 
     while (_projectConnections.count() > 0) disconnect( _projectConnections.takeLast() );
@@ -353,6 +359,9 @@ void PipelineWidget::newPipe(RamPipe *pipe)
 
         if (inputNode && outputNode) break;
     }
+
+    if (!outputNode) return;
+    if (!inputNode) return;
 
     // Get or create the node connections
     DuQFConnection *co = _nodeScene->connectNodes(outputNode, inputNode);

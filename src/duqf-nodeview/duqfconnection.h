@@ -13,6 +13,7 @@ class DuQFConnection : public QObject
 {
     Q_OBJECT
 public:
+    explicit DuQFConnection(DuQFSlot *output, DuQFSlot *input, QObject *parent = nullptr);
     explicit DuQFConnection(DuQFSlot *output, DuQFSlot *input, DuQFConnector *connector, QObject *parent = nullptr);
 
     DuQFSlot *input() const;
@@ -37,6 +38,7 @@ private slots:
     void inputMoved();
 
 private:
+    void init(DuQFSlot *output, DuQFSlot *input, DuQFConnector *connector);
     bool m_removing = false;
     DuQFSlot *m_input;
     DuQFSlot *m_output;

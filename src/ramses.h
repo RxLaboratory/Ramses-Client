@@ -177,6 +177,7 @@ private slots:
     QString gotShot(QJsonObject newS, RamSequence *sequence);
     // pipes
     void gotPipes(QJsonArray pipes, RamProject *project);
+    QString gotPipe(QJsonObject newP, RamProject *project);
     //TODO This should be modified when implementing offline version
     void dbiConnectionStatusChanged(NetworkUtils::NetworkStatus s);
 
