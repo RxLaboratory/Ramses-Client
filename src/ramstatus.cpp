@@ -8,6 +8,8 @@ RamStatus::RamStatus(RamUser *user, RamState *state, RamStep *step, QObject *par
     _step = step;
     _completionRatio = _state->completionRatio();
     _date = QDateTime::currentDateTimeUtc();
+
+    setObjectType(Status);
 }
 
 int RamStatus::completionRatio() const

@@ -73,7 +73,7 @@ void StepsManagerWidget::changeProject(RamProject *project)
     //add steps
     foreach(RamStep *step, project->steps()) newStep(step);
     _projectConnections << connect(project, &RamProject::newStep, this, &StepsManagerWidget::newStep);
-    _projectConnections << connect(project, SIGNAL(stepRemoved(QString)), this, SLOT(stepRemoved(QString)));
+    _projectConnections << connect(project, SIGNAL(stepRemoved(RamStep*)), this, SLOT(stepRemoved(RamStep*)));
 
     this->setEnabled(true);
 }
@@ -116,6 +116,11 @@ void StepsManagerWidget::stepRemoved(QString uuid)
 }
 
 void StepsManagerWidget::stepRemoved(RamObject *step)
+{
+    removeData(step->uuid());
+}
+
+void StepsManagerWidget::stepRemoved(RamStep *step)
 {
     removeData(step->uuid());
 }

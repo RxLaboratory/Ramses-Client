@@ -88,7 +88,7 @@ public:
 
 signals:
     void newStep(RamStep *);
-    void stepRemoved(QString uuid);
+    void stepRemoved(RamStep *);
     void newAssetGroup(RamAssetGroup *);
     void assetGroupRemoved(QString uuid);
     void newSequence(RamSequence *);

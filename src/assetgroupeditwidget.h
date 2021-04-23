@@ -5,6 +5,9 @@
 #include "simpleobjectlist.h"
 #include "duqf-widgets/duqffolderdisplaywidget.h"
 
+/**
+ * @brief The AssetGroupEditWidget class is used to edit AssetGroups and can be shown either in the main UI or in the Dock
+ */
 class AssetGroupEditWidget : public ObjectEditWidget
 {
     Q_OBJECT

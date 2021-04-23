@@ -20,6 +20,7 @@ public:
                     Sequence,
                     Shot,
                     State,
+                    Status,
                     Step,
                     User};
     Q_ENUM( ObjectType )

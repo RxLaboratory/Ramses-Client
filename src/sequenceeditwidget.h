@@ -5,6 +5,9 @@
 #include "ramses.h"
 #include "simpleobjectlist.h"
 
+/**
+ * @brief The SequenceEditWidget class is used to edit Sequences and can be shown either in the main UI or in the Dock
+ */
 class SequenceEditWidget : public ObjectEditWidget
 {
     Q_OBJECT

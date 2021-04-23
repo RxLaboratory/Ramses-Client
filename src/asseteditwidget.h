@@ -5,8 +5,12 @@
 
 #include "objecteditwidget.h"
 #include "ramses.h"
+#include "statushistorywidget.h"
 #include "duqf-widgets/duqffolderdisplaywidget.h"
 
+/**
+ * @brief The AssetEditWidget class is the Widget used to edit an Asset, including its Status History
+ */
 class AssetEditWidget : public ObjectEditWidget
 {
     Q_OBJECT
@@ -37,6 +41,7 @@ private:
     DuQFFolderDisplayWidget *folderWidget;
     QLineEdit *tagsEdit;
     QComboBox *assetGroupBox;
+    StatusHistoryWidget *statusHistoryWidget;
 
     RamAssetGroup *assetGroup();
     RamProject *project();

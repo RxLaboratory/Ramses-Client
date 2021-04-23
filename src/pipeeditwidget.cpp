@@ -82,10 +82,7 @@ void PipeEditWidget::appChanged()
 
 void PipeEditWidget::setupUi()
 {
-    nameLabel->hide();
-    nameEdit->hide();
-    shortNameLabel->hide();
-    shortNameEdit->hide();
+    this->hideName();
 
     QLabel *fromLabel = new QLabel("From", this);
     mainFormLayout->addWidget(fromLabel, 2, 0);

@@ -37,6 +37,7 @@ void DuQFSpinBox::setupUi()
     sliderLayout->setContentsMargins(0, 0, 0, 0);
 
     _slider = new DuQFSlider();
+    _slider->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     sliderLayout->addWidget(_slider);
 
     this->addWidget(sliderPage);

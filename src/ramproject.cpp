@@ -392,8 +392,7 @@ void RamProject::removeStep(QString uuid)
         if (s->uuid() == uuid)
         {
             _steps.removeAt(i);
-            s->remove();
-            emit stepRemoved(uuid);
+            emit stepRemoved(s);
         }
     }
 }

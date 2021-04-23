@@ -33,6 +33,19 @@ RamObject *ObjectEditWidget::object() const
     return _object;
 }
 
+void ObjectEditWidget::hideName(bool hide)
+{
+    nameLabel->setVisible(!hide);
+    nameEdit->setVisible(!hide);
+    shortNameLabel->setVisible(!hide);
+    shortNameEdit->setVisible(!hide);
+}
+
+void ObjectEditWidget::hideStatus(bool hide)
+{
+    statusLabel->setVisible(!hide);
+}
+
 void ObjectEditWidget::setObject(RamObject *object)
 {
     // disconnect all

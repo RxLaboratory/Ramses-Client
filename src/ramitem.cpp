@@ -22,6 +22,7 @@ void RamItem::setStatus(RamUser *user, RamState *state, RamStep *step, int compl
 QList<RamStatus *> RamItem::statusHistory()
 {
     return _statusHistory;
+    return QList<RamStatus *>();
 }
 
 QList<RamStatus *> RamItem::statusHistory(RamStep *step)
@@ -38,6 +39,7 @@ void RamItem::addStatus(RamStatus *status)
 {
     connect(this, &RamObject::removed, status, &RamObject::remove);
     _statusHistory << status;
+    sortStatusHistory();
     emit newStatus(status);
 }
 
@@ -67,4 +69,15 @@ bool statusSorter(RamStatus *s1, RamStatus *s2)
 void RamItem::sortStatusHistory()
 {
     std::sort( _statusHistory.begin(), _statusHistory.end(), statusSorter);
+}
+
+RamStatus *RamItem::status(QString stepUuid)
+{
+    for (int i = _statusHistory.count() - 1; i >= 0; i-- )
+    {
+        RamStatus *status = _statusHistory.at(i);
+        if (status->step())
+            if (status->step()->uuid() == stepUuid) return status;
+    }
+    return nullptr;
 }

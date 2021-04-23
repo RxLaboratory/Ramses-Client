@@ -29,6 +29,7 @@ void AssetEditWidget::setAsset(RamAsset *asset)
     tagsEdit->setText("");
     folderWidget->setPath("");
     assetGroupBox->clear();
+    statusHistoryWidget->setItem(asset);
 
     if (!asset) return;
 
@@ -131,7 +132,8 @@ void AssetEditWidget::setupUi()
     folderWidget = new DuQFFolderDisplayWidget(this);
     mainLayout->insertWidget(1, folderWidget);
 
-    mainLayout->addStretch();
+    statusHistoryWidget = new StatusHistoryWidget( this );
+    mainLayout->addWidget(statusHistoryWidget);
 }
 
 void AssetEditWidget::connectEvents()

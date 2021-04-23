@@ -215,7 +215,7 @@ QComboBox QAbstractItemView {
     background-color: @color-less-dark-grey;
     selection-color: @color-light-grey;
     selection-background-color: @color-very-dark-grey;
-    padding-left: @padding-large;
+    padding-left: @padding-small;
     border:none;
 }
 
@@ -423,7 +423,6 @@ QProgressBar::chunk:disabled {
 DuQFSlider, DuQFDoubleSlider {
     color: @color-light-grey;
     border-radius: @padding-small;
-    height: @big-button-size;
 }
 
 DuQFSlider::chunk, DuQFDoubleSlider::chunk {

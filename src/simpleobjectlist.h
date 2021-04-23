@@ -7,10 +7,12 @@
 #include <QLabel>
 #include <QComboBox>
 #include <QToolButton>
+#include <QMessageBox>
 
 #include "ramobjectwidget.h"
 #include "ramassetwidget.h"
 #include "ramshotwidget.h"
+#include "ramstatuswidget.h"
 #include "duqf-widgets/duqflistwidget.h"
 
 class SimpleObjectList : public QWidget
@@ -18,6 +20,7 @@ class SimpleObjectList : public QWidget
     Q_OBJECT
 public:
     explicit SimpleObjectList(bool editableObjects = false, QWidget *parent = nullptr);
+    void setEditable(bool editable = true);
     void setSortable(bool sortable = true);
     void setTitle(QString title);
     void addObject(RamObject *obj, bool edit = false);

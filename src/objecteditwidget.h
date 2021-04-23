@@ -6,6 +6,10 @@
 #include "ui_objecteditwidget.h"
 #include "ramobject.h"
 
+/**
+ * @brief The ObjectEditWidget class is the base class of all editors for RamObjects (Shots, steps, etc)
+ * It can be used either in the UI, or in a DockWidget
+ */
 class ObjectEditWidget : public QScrollArea, protected Ui::ObjectEditWidget
 {
     Q_OBJECT
@@ -15,6 +19,9 @@ public:
     explicit ObjectEditWidget(RamObject *o, QWidget *parent = nullptr);
 
     RamObject *object() const;
+
+    void hideName(bool hide = true);
+    void hideStatus(bool hide = true);
 
 public slots:
     void setObject(RamObject *object);

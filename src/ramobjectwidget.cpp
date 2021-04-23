@@ -102,31 +102,37 @@ void RamObjectWidget::edit()
 void RamObjectWidget::setupUi()
 {
     QVBoxLayout *vlayout = new QVBoxLayout();
-    vlayout->setContentsMargins(0,3,0,3);
+    vlayout->setContentsMargins(0,0,0,3);
     vlayout->setSpacing(0);
 
     // include in a frame for the BG
     QFrame *mainFrame = new QFrame(this);
 
-    QHBoxLayout *layout = new QHBoxLayout();
+    layout = new QVBoxLayout();
     layout->setSpacing(3);
-    layout->setContentsMargins(15,3,3,3);
+    layout->setContentsMargins(3,3,3,3);
+
+    QHBoxLayout *titleLayout = new QHBoxLayout();
+    titleLayout->setSpacing(3);
+    titleLayout->setContentsMargins(12,0,0,0);
 
     icon = new QLabel(this);
     icon->setScaledContents(true);
     icon->setMaximumSize(12,12);
-    layout->addWidget(icon);
+    titleLayout->addWidget(icon);
 
     title = new QLabel(this);
-    layout->addWidget(title);
+    titleLayout->addWidget(title);
 
-    layout->addStretch();
+    titleLayout->addStretch();
 
     editButton = new QToolButton(this);
     editButton->setIcon( QIcon(":/icons/edit") );
     editButton->setIconSize(QSize(12,12));
     editButton->setToolButtonStyle(Qt::ToolButtonIconOnly);
-    layout->addWidget(editButton);
+    titleLayout->addWidget(editButton);
+
+    layout->addLayout(titleLayout);
 
     mainFrame->setLayout(layout);
     vlayout->addWidget(mainFrame);

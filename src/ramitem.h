@@ -3,6 +3,10 @@
 
 #include "ramstatus.h"
 
+/**
+ * @brief The RamItem class is the base class for RamShot and RamAsset
+ * It handles the status history of the Shot or the Item
+ */
 class RamItem : public RamObject
 {
     Q_OBJECT
@@ -16,6 +20,8 @@ public:
     void removeStatus(RamStatus *status);
     void removeStatus(QString uuid);
     void sortStatusHistory();
+
+    RamStatus *status(QString stepUuid);
 
 signals:
     void newStatus(RamStatus *);

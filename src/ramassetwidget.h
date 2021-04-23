@@ -7,6 +7,9 @@
 #include "ramses.h"
 #include "asseteditwidget.h"
 
+/**
+ * @brief The RamAssetWidget class is a small widget used to show an Asset anywher in the UI
+ */
 class RamAssetWidget : public RamObjectWidget
 {
     Q_OBJECT

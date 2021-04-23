@@ -14,6 +14,12 @@ SimpleObjectList::SimpleObjectList(bool editableObjects, QWidget *parent) : QWid
     connectEvents();
 }
 
+void SimpleObjectList::setEditable(bool editable)
+{
+    m_removeButton->setVisible(editable);
+    m_addButton->setVisible(editable);
+}
+
 void SimpleObjectList::setSortable(bool sortable)
 {
     m_list->setDragable(sortable);
@@ -21,6 +27,7 @@ void SimpleObjectList::setSortable(bool sortable)
 
 void SimpleObjectList::setTitle(QString title)
 {
+    m_title->setVisible(title != "");
     m_title->setText(title);
 }
 
@@ -43,6 +50,13 @@ void SimpleObjectList::addObject(RamObject *obj, bool edit)
         RamShot *s = dynamic_cast<RamShot*>(obj);
         if (s) ow = new RamShotWidget(s, this);
         else ow = new RamObjectWidget(obj,this);
+        break;
+    }
+    case RamObject::Status:
+    {
+        RamStatus *s = dynamic_cast<RamStatus*>(obj);
+        if (s) ow = new RamStatusWidget(s, this);
+        else ow = new RamObjectWidget(obj, this);
         break;
     }
     default:
@@ -159,6 +173,8 @@ void SimpleObjectList::updateOrder()
 
 void SimpleObjectList::setupUi()
 {
+    this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+
     QVBoxLayout *mainLayout = new QVBoxLayout();
     mainLayout->setSpacing(3);
     mainLayout->setContentsMargins(0,0,0,0);
@@ -168,6 +184,7 @@ void SimpleObjectList::setupUi()
     buttonsLayout->setContentsMargins(0,0,0,0);
 
     m_title = new QLabel(this);
+    m_title->setVisible(false);
     buttonsLayout->addWidget(m_title);
 
     buttonsLayout->addStretch();

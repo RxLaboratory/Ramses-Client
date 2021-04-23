@@ -5,6 +5,9 @@
 #include "ramses.h"
 #include "shoteditwidget.h"
 
+/**
+ * @brief The RamShotWidget class is a small widget used to show a shot anywhere in the UI
+ */
 class RamShotWidget : public RamObjectWidget
 {
     Q_OBJECT

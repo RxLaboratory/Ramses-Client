@@ -11,6 +11,10 @@
 #include "objecteditwidget.h"
 #include "objectdockwidget.h"
 
+/**
+ * @brief The RamObjectWidget class is the base class for all small widgets used to show objects anywhere in the UI.
+ * It can display a small "edit" button whcih will show an editwidget in the MainWindow Dock
+ */
 class RamObjectWidget : public QWidget
 {
     Q_OBJECT
@@ -39,11 +43,11 @@ public slots:
 
 protected:
     void setEditWidget(ObjectEditWidget *w);
+    QVBoxLayout *layout;
 
 private slots:
     void objectRemoved();
     void userChanged();
-
 
 private:
     void setupUi();

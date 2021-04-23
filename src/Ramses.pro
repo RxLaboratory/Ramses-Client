@@ -98,6 +98,7 @@ SOURCES += \
     ramshotwidget.cpp \
     ramstate.cpp \
     ramstatus.cpp \
+    ramstatuswidget.cpp \
     ramstep.cpp \
     ramuser.cpp \
     ramuuid.cpp \
@@ -108,8 +109,11 @@ SOURCES += \
     shoteditwidget.cpp \
     shotsmanagerwidget.cpp \
     simpleobjectlist.cpp \
+    statebox.cpp \
     stateeditwidget.cpp \
     statesmanagerwidget.cpp \
+    statuseditwidget.cpp \
+    statushistorywidget.cpp \
     stepeditwidget.cpp \
     stepsmanagerwidget.cpp \
     templateassetgroupeditwidget.cpp \
@@ -196,6 +200,7 @@ HEADERS += \
     ramshotwidget.h \
     ramstate.h \
     ramstatus.h \
+    ramstatuswidget.h \
     ramstep.h \
     ramuser.h \
     ramuuid.h \
@@ -206,8 +211,11 @@ HEADERS += \
     shoteditwidget.h \
     shotsmanagerwidget.h \
     simpleobjectlist.h \
+    statebox.h \
     stateeditwidget.h \
     statesmanagerwidget.h \
+    statuseditwidget.h \
+    statushistorywidget.h \
     stepeditwidget.h \
     stepsmanagerwidget.h \
     templateassetgroupeditwidget.h \

@@ -31,7 +31,7 @@
 @font-size-medium = 12px
 @font-weight-medium = 500;
 
-@big-button-size = 30px
+@big-button-size = 27px
 @small-button-size = 12px
 @very-small-button-size = 8px
 
