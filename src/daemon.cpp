@@ -74,6 +74,8 @@ void Daemon::reply()
         getAssets(client);
     else if (args.contains("getCurrentProject"))
         getCurrentProject(client);
+    else if (args.contains("getCurrentUser"))
+        getCurrentUser(client);
     else if (args.contains("getPipes"))
         getPipes(client);
     else if (args.contains("getProjects"))
@@ -196,6 +198,32 @@ void Daemon::getCurrentProject(QTcpSocket *client)
     content.insert("folder", Ramses::instance()->path(proj));
 
     post(client, content, "getCurrentProject", "Current project is: " + proj->name());
+}
+
+void Daemon::getCurrentUser(QTcpSocket *client)
+{
+    log("I'm replying to this request: getCurrentUser", DuQFLog::Information);
+
+    RamUser *user = Ramses::instance()->currentUser();
+
+    QJsonObject content;
+
+    if (!user)
+    {
+        post(client, content, "getCurrentUser", "Sorry, there's no current user. You need to log in first!", false);
+        return;
+    }
+
+    content.insert("shortName", user->shortName());
+    content.insert("name", user->name());
+    content.insert("folderPath", Ramses::instance()->path(user));
+    RamUser::UserRole role = user->role();
+    if (role == RamUser::Admin) content.insert("role", "ADMIN");
+    else if (role == RamUser::ProjectAdmin) content.insert("role","PROJECT_ADMIN");
+    else if (role == RamUser::Lead) content.insert("role", "LEAD");
+    else content.insert("role", "STANDARD");
+
+    post( client, content, "getCurrentUser", "Current user is: " + user->name());
 }
 
 void Daemon::getPipes(QTcpSocket *client)
