@@ -2,15 +2,21 @@
 #define OBJECTEDITWIDGET_H
 
 #include <QScrollArea>
+#include <QGridLayout>
+#include <QHBoxLayout>
+#include <QLabel>
+#include <QLineEdit>
+#include <QVBoxLayout>
+#include <QWidget>
 
-#include "ui_objecteditwidget.h"
+
 #include "ramobject.h"
 
 /**
  * @brief The ObjectEditWidget class is the base class of all editors for RamObjects (Shots, steps, etc)
  * It can be used either in the UI, or in a DockWidget
  */
-class ObjectEditWidget : public QScrollArea, protected Ui::ObjectEditWidget
+class ObjectEditWidget : public QScrollArea
 {
     Q_OBJECT
 
@@ -34,11 +40,23 @@ protected:
     QList<QMetaObject::Connection> _objectConnections;
     bool updating = false;
 
+    QVBoxLayout *mainLayout;
+    QGridLayout *mainFormLayout;
+    QLineEdit *shortNameEdit;
+    QLineEdit *nameEdit;
+    QLabel *nameLabel;
+    QLabel *shortNameLabel;
+    QLabel *statusLabel;
+
+
 private slots:
     void objectRemoved(RamObject *o);
     void objectChanged(RamObject *o);
 
 private:
+    void setupUi();
+
+
     RamObject *_object;
     void connectEvents();
 };

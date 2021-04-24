@@ -1,10 +1,11 @@
 #ifndef RAMSTATUSWIDGET_H
 #define RAMSTATUSWIDGET_H
 
-#include "duqf-widgets/duqfspinbox.h"
+#include <QPlainTextEdit>
+
+#include "duqf-widgets/duqfslider.h"
 
 #include "ramobjectwidget.h"
-
 #include "ramses.h"
 
 /**
@@ -17,8 +18,6 @@ public:
     RamStatusWidget(RamStatus *status, QWidget *parent = nullptr);
     RamStatus *status() const;
 
-    void setEdibable(bool editable=true);
-
 private slots:
     void remove();
     void statusChanged(RamObject *o);
@@ -27,7 +26,8 @@ private:
     RamStatus *_status;
 
     void completeUi();
-    DuQFSpinBox *completionBox;
+    DuQFSlider *completionBox;
+    QPlainTextEdit *commentEdit;
 
     bool _removing = false;
 };

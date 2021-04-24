@@ -3,11 +3,7 @@
 ObjectEditWidget::ObjectEditWidget(QWidget *parent) :
     QScrollArea(parent)
 {
-    QWidget *dummy = new QWidget(this);
-    setupUi(dummy);
-    this->setWidget(dummy);
-    this->setWidgetResizable(true);
-    this->setFrameStyle(QFrame::NoFrame);
+    setupUi();
 
     setObject(nullptr);
 
@@ -17,11 +13,7 @@ ObjectEditWidget::ObjectEditWidget(QWidget *parent) :
 ObjectEditWidget::ObjectEditWidget(RamObject *o, QWidget *parent) :
     QScrollArea(parent)
 {
-    QWidget *dummy = new QWidget(this);
-    setupUi(dummy);
-    this->setWidget(dummy);
-    this->setWidgetResizable(true);
-    this->setFrameStyle(QFrame::NoFrame);
+    setupUi();
 
     setObject(o);
 
@@ -107,6 +99,40 @@ void ObjectEditWidget::objectChanged(RamObject *o)
     if (updating) return;
     Q_UNUSED(o);
     setObject(_object);
+}
+
+void ObjectEditWidget::setupUi()
+{
+    QWidget *dummy = new QWidget(this);
+    dummy->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
+
+    mainLayout = new QVBoxLayout(dummy);
+    mainLayout->setSpacing(3);
+    mainLayout->setContentsMargins(3, 3, 3, 3);
+
+    mainFormLayout = new QGridLayout();
+    mainFormLayout->setSpacing(3);
+
+    nameLabel = new QLabel(dummy);
+    mainFormLayout->addWidget(nameLabel, 0, 0);
+
+    nameEdit = new QLineEdit(dummy);
+    mainFormLayout->addWidget(nameEdit, 0, 1);
+
+    shortNameLabel = new QLabel(dummy);
+    mainFormLayout->addWidget(shortNameLabel, 1, 0);
+
+    shortNameEdit = new QLineEdit(dummy);
+    mainFormLayout->addWidget(shortNameEdit, 1, 1);
+
+    mainLayout->addLayout(mainFormLayout);
+
+    statusLabel = new QLabel(dummy);
+    mainLayout->addWidget(statusLabel);
+
+    this->setWidget(dummy);
+    this->setWidgetResizable(true);
+    this->setFrameStyle(QFrame::NoFrame);
 }
 
 void ObjectEditWidget::connectEvents()

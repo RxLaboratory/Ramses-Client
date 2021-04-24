@@ -47,8 +47,20 @@ void DuQFSlider::showValue(bool showValue)
     _showValue = showValue;
 }
 
+void DuQFSlider::setEditable(bool editable)
+{
+    _editable = editable;
+}
+
 void DuQFSlider::mouseMoveEvent(QMouseEvent *event)
 {
+    if (!_editable)
+    {
+        event->ignore();
+        QProgressBar::mouseMoveEvent(event);
+        return;
+    }
+
     double newVal;
     if (orientation() == Qt::Vertical)
         newVal = minimum() + ((maximum()-minimum()) * (height()-event->y())) / height();

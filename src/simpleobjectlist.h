@@ -8,12 +8,14 @@
 #include <QComboBox>
 #include <QToolButton>
 #include <QMessageBox>
+#include <QScrollBar>
 
 #include "ramobjectwidget.h"
 #include "ramassetwidget.h"
 #include "ramshotwidget.h"
 #include "ramstatuswidget.h"
 #include "duqf-widgets/duqflistwidget.h"
+#include "objectlistwidget.h"
 
 class SimpleObjectList : public QWidget
 {
@@ -29,17 +31,13 @@ public:
 public slots:
     void removeObject(RamObject *obj);
     void removeObject(QString uuid);
-    void removeSelectedObjects();
     void clear();
+    void scrollToBottom();
 signals:
     void add();
     void objectRemoved(RamObject*);
     void objectSelected(RamObject*);
     void orderChanged();
-private slots:
-    void currentItemChanged(QListWidgetItem *previous, QListWidgetItem *current);
-    void selectionChanged();
-    void updateOrder();
 private:
     void setupUi();
     void connectEvents();
@@ -48,7 +46,7 @@ private:
     QLabel *m_filterLabel;
     QLabel *m_title;
     QComboBox *m_filterBox;
-    DuQFListWidget *m_list;
+    ObjectListWidget *m_list;
 
     bool m_editableObjects;
 

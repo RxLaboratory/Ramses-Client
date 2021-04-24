@@ -33,76 +33,22 @@ void SimpleObjectList::setTitle(QString title)
 
 void SimpleObjectList::addObject(RamObject *obj, bool edit)
 {
-    // Check type to create widget
-    RamObject::ObjectType type = obj->objectType();
-    RamObjectWidget *ow;
-    switch (type)
-    {
-    case RamObject::Asset:
-    {
-        RamAsset *a = dynamic_cast<RamAsset*>(obj);
-        if (a) ow = new RamAssetWidget(a, this);
-        else ow = new RamObjectWidget(obj,this);
-        break;
-    }
-    case RamObject::Shot:
-    {
-        RamShot *s = dynamic_cast<RamShot*>(obj);
-        if (s) ow = new RamShotWidget(s, this);
-        else ow = new RamObjectWidget(obj,this);
-        break;
-    }
-    case RamObject::Status:
-    {
-        RamStatus *s = dynamic_cast<RamStatus*>(obj);
-        if (s) ow = new RamStatusWidget(s, this);
-        else ow = new RamObjectWidget(obj, this);
-        break;
-    }
-    default:
-        ow = new RamObjectWidget(obj,this);
-        break;
-    }
-
-    if (!m_editableObjects) ow->disableEdit();
-
-    QListWidgetItem *i = new QListWidgetItem(obj->name());
-    m_list->addItem(i);
-    m_list->setItemWidget(i, ow);
-
-    if (m_editableObjects && edit) ow->edit();
-
-    connect(obj, SIGNAL(removed(RamObject*)), this, SLOT(removeObject(RamObject*)));
+    m_list->addObject(obj, edit);
 }
 
 void SimpleObjectList::removeObject(RamObject *obj)
 {
-    removeObject(obj->uuid());
+    m_list->removeObject(obj->uuid());
 }
 
 void SimpleObjectList::removeObject(QString uuid)
 {
-    for( int row = 0; row < m_list->count(); row++)
-    {
-        // Get the object from the widget
-        RamObjectWidget *ow = (RamObjectWidget*)m_list->itemWidget( m_list->item(row) );
-        if (ow->ramObject()->uuid() == uuid)
-        {
-            delete m_list->takeItem(row);
-        }
-    }
+    m_list->removeObject(uuid);
 }
 
 QList<RamObject *> SimpleObjectList::ramObjects() const
 {
-    QList<RamObject *> objs;
-    for( int row = 0; row < m_list->count(); row++)
-    {
-        // Get the object from the widget
-        RamObjectWidget *ow = (RamObjectWidget*)m_list->itemWidget( m_list->item(row) );
-        if (ow) objs << ow->ramObject();
-    }
-    return objs;
+    return m_list->objects();
 }
 
 QToolButton *SimpleObjectList::addButton() const
@@ -110,65 +56,16 @@ QToolButton *SimpleObjectList::addButton() const
     return m_addButton;
 }
 
-void SimpleObjectList::removeSelectedObjects()
-{
-    if (m_list->selectedItems().count() == 0 ) return;
-    QMessageBox::StandardButton confirm = QMessageBox::question(this,
-                                                                "Confirm deletion",
-                                                                "Are you sure you want to premanently remove the selected items?" );
-    if (confirm != QMessageBox::Yes) return;
-
-    for(int row =  m_list->count() -1 ; row >= 0; row--)
-    {
-        QListWidgetItem *i = m_list->item(row);
-        if (!i->isSelected()) continue;
-        RamObjectWidget *ow = (RamObjectWidget*)m_list->itemWidget( i );
-        if (ow) emit objectRemoved(ow->ramObject());
-        delete m_list->takeItem(row);
-    }
-}
-
 void SimpleObjectList::clear()
 {
     m_list->clear();
+    m_list->setRowCount(0);
 }
 
-void SimpleObjectList::currentItemChanged(QListWidgetItem *previous, QListWidgetItem *current)
+void SimpleObjectList::scrollToBottom()
 {
-    Q_UNUSED(previous);
-    if (!current) return;
-    RamObjectWidget *ow = (RamObjectWidget*)m_list->itemWidget( current );
-    if (!ow) return;
-    emit objectSelected(ow->ramObject());
-}
-
-void SimpleObjectList::selectionChanged()
-{
-    for(int row = 0; row < m_list->count(); row++)
-    {
-        QListWidgetItem *i = m_list->item(row);
-        RamObjectWidget *ow = (RamObjectWidget*)m_list->itemWidget( i );
-        if (ow) ow->setSelected( i->isSelected() );
-    }
-}
-
-void SimpleObjectList::updateOrder()
-{
-    for(int row = 0; row < m_list->count(); row++)
-    {
-        QListWidgetItem *i = m_list->item(row);
-        RamObjectWidget *ow = (RamObjectWidget*)m_list->itemWidget( i );
-        if (ow)
-        {
-            RamObject *o = ow->ramObject();
-            if (o)
-            {
-                o->setOrder(row);
-                o->update();
-            }
-        }
-    }
-    emit orderChanged();
+    QScrollBar *vbar = m_list->verticalScrollBar();
+    vbar->setSliderPosition( vbar->maximum() );
 }
 
 void SimpleObjectList::setupUi()
@@ -217,7 +114,7 @@ void SimpleObjectList::setupUi()
 
     mainLayout->addLayout(filterLayout);
 
-    m_list = new DuQFListWidget(this);
+    m_list = new ObjectListWidget(this);
     mainLayout->addWidget(m_list);
 
     mainLayout->setStretch(0, 0);
@@ -230,8 +127,9 @@ void SimpleObjectList::setupUi()
 void SimpleObjectList::connectEvents()
 {
     connect(m_addButton, &QToolButton::clicked, this, &SimpleObjectList::add);
-    connect(m_removeButton, &QToolButton::clicked, this, &SimpleObjectList::removeSelectedObjects);
-    connect(m_list, &DuQFListWidget::itemDropped, this, &SimpleObjectList::updateOrder);
-    connect(m_list, &QListWidget::currentItemChanged, this, &SimpleObjectList::currentItemChanged);
-    connect(m_list, &QListWidget::itemSelectionChanged, this, &SimpleObjectList::selectionChanged);
+    connect(m_removeButton, &QToolButton::clicked, m_list, &ObjectListWidget::removeSelectedObjects);
+    // Relay list signals
+    connect(m_list, &ObjectListWidget::objectSelected, this, &SimpleObjectList::objectSelected);
+    connect(m_list, &ObjectListWidget::objectRemoved, this, &SimpleObjectList::objectRemoved);
+    connect(m_list, &ObjectListWidget::orderChanged, this, &SimpleObjectList::orderChanged);
 }

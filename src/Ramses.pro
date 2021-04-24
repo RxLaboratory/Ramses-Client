@@ -73,6 +73,7 @@ SOURCES += \
     mainwindow.cpp \
     objectdockwidget.cpp \
     objecteditwidget.cpp \
+    objectlistwidget.cpp \
     pipeeditwidget.cpp \
     pipeline-editor/objectnode.cpp \
     pipeline-editor/pipelinewidget.cpp \
@@ -177,6 +178,7 @@ HEADERS += \
     mainwindow.h \
     objectdockwidget.h \
     objecteditwidget.h \
+    objectlistwidget.h \
     pipeeditwidget.h \
     pipeline-editor/objectnode.h \
     pipeline-editor/pipelinewidget.h \
@@ -240,7 +242,6 @@ FORMS += \
     localsettingswidget.ui \
     loginpage.ui \
     mainwindow.ui \
-    objecteditwidget.ui \
     pipeline-editor/pipelinewidget.ui \
     projecteditwidget.ui \
     serversettingswidget.ui \

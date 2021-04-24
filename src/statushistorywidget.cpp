@@ -48,25 +48,12 @@ void StatusHistoryWidget::newStatus(RamStatus *status)
     if (!status->step()) return;
     if (status->step()->uuid() != stepBox->currentData().toString()) return;
     statusList->addObject(status);
-    /*RamStatusWidget *ow = new RamStatusWidget(status, this);
-
-    QListWidgetItem *i = new QListWidgetItem(status->name());
-    statusList->addItem(i);
-    statusList->setItemWidget(i, ow);*/
+    statusList->scrollToBottom();
 }
 
 void StatusHistoryWidget::statusRemoved(RamStatus *status)
 {
     statusList->removeObject(status);
-    /*for( int row = 0; row < statusList->count(); row++)
-    {
-        // Get the object from the widget
-        RamStatusWidget *ow = (RamStatusWidget*)statusList->itemWidget( statusList->item(row) );
-        if (ow->ramObject()->uuid() == status->uuid())
-        {
-            delete statusList->takeItem(row);
-        }
-    }*/
 }
 
 void StatusHistoryWidget::newStep(RamStep *step)

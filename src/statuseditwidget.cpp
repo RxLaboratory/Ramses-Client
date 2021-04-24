@@ -99,6 +99,7 @@ void StatusEditWidget::setupUi()
     commentEdit = new QPlainTextEdit(this);
     commentEdit->setPlaceholderText("Comment...");
     commentEdit->setMinimumHeight(30);
+    commentEdit->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     mainLayout->insertWidget(1, commentEdit);
 
     QHBoxLayout *buttonsLayout = new QHBoxLayout();

@@ -21,12 +21,15 @@ public:
     bool valueVisible() const;
     void showValue(bool showValue);
 
+    void setEditable(bool editable);
+
 signals:
     void valueChanged(int);
 private:
     QString _prefix;
     QString _suffix;
     bool _showValue;
+    bool _editable = true;
 protected:
     void mouseMoveEvent ( QMouseEvent * event ) Q_DECL_OVERRIDE;
 };
