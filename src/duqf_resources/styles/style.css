@@ -519,11 +519,14 @@ QTreeWidget, QTableWidget {
     selection-color: @color-light-grey;
     selection-background-color: @color-less-dark-grey;
 }
-QDockWidget QFrame {
-    background-color: @color-darker-grey;
-}
+
 QTreeWidget::item:hover, QTableWidget::item:hover {
     background-color: @color-dark-grey;
+}
+
+QTreeWidget::item:selected, QTableWidget::item:selected {
+    background-color: none;
+    border: none;
 }
 
 QHeaderView {
@@ -723,14 +726,15 @@ QDockWidget QLineEdit,
 QDockWidget QPlainTextEdit,
 QDockWidget QListWidget,
 QDockWidget QSpinBox,
-QDockWidget QDoubleSpinBox
+QDockWidget QDoubleSpinBox,
+QDockWidget QAbstractItemView
 {
     background-color: @color-very-dark-grey;
 }
 
 QDockWidget QComboBox,
 QDockWidget QComboBox::item,
-QComboBox QAbstractItemView
+QDockWidget QComboBox QAbstractItemView
 {
     background-color: @color-less-dark-grey;
 }

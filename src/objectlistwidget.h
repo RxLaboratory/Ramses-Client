@@ -15,7 +15,8 @@ class ObjectListWidget : public QTableWidget
 public:
     ObjectListWidget(QWidget *parent = nullptr);
     ObjectListWidget(bool editableObjects, QWidget *parent = nullptr);
-    void setDragable(bool dragable=true);
+    void setSortable(bool sortable=true);
+    void setSelectable(bool selectable=true);
 
     void addObject(RamObject *obj, bool edit=false);
 
@@ -31,12 +32,12 @@ signals:
     void objectRemoved(RamObject*);
     void orderChanged();
 protected:
-    void dropEvent(QDropEvent *event) Q_DECL_OVERRIDE;
     void resizeEvent(QResizeEvent *event) Q_DECL_OVERRIDE;
 private slots:
     void itemSelected(QTableWidgetItem *previous, QTableWidgetItem *current);
     void changeSelection();
     void updateOrder();
+    void objectChanged(RamObject *obj);
 private:
     void setupUi();
     void connectEvents();

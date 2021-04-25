@@ -24,6 +24,7 @@ public:
     explicit SimpleObjectList(bool editableObjects = false, QWidget *parent = nullptr);
     void setEditable(bool editable = true);
     void setSortable(bool sortable = true);
+    void setSelectable(bool selectable = true);
     void setTitle(QString title);
     void addObject(RamObject *obj, bool edit = false);
     QList<RamObject*> ramObjects() const;
@@ -39,7 +40,7 @@ signals:
     void objectSelected(RamObject*);
     void orderChanged();
 private:
-    void setupUi();
+    void setupUi(bool editableObjects = false);
     void connectEvents();
     QToolButton *m_addButton;
     QToolButton *m_removeButton;

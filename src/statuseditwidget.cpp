@@ -16,6 +16,8 @@ StatusEditWidget::StatusEditWidget(RamStatus *status, QWidget *parent) : ObjectE
 
 void StatusEditWidget::setStatus(RamStatus *status)
 {
+    _status = status;
+
     stateBox->setCurrentText("STB");
     completionBox->setValue(0);
     versionBox->setValue(1);
@@ -65,6 +67,21 @@ void StatusEditWidget::updateStatus()
     emit statusUpdated(stateBox->currentState(), completionBox->value(), versionBox->value(), commentEdit->toPlainText() );
 }
 
+void StatusEditWidget::adjustCommentEditSize()
+{
+    // Get text height (returns the number of lines and not the actual height in pixels
+    int docHeight = commentEdit->document()->size().toSize().height();
+    // Compute needed height in pixels
+    int h = docHeight * ( commentEdit->fontMetrics().height() ) + commentEdit->fontMetrics().height() * 2;
+    //commentEdit->resize(commentEdit->width(), h);
+    commentEdit->setMaximumHeight(h);
+}
+
+void StatusEditWidget::revert()
+{
+    setStatus(_status);
+}
+
 void StatusEditWidget::setupUi()
 {
     this->hideName();
@@ -81,7 +98,7 @@ void StatusEditWidget::setupUi()
     completionBox->setMinimum(0);
     completionBox->setSuffix("%");
     completionBox->setValue(50);
-    completionBox->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    completionBox->setFixedHeight(stateBox->height());
     cLayout->addWidget(completionBox);
 
     versionBox = new AutoSelectSpinBox(this);
@@ -108,8 +125,13 @@ void StatusEditWidget::setupUi()
 
     buttonsLayout->addStretch();
 
+    revertButton = new QToolButton(this);
+    revertButton->setText("Revert");
+    revertButton->setIcon(QIcon(":/icons/undo"));
+    buttonsLayout->addWidget(revertButton);
+
     setButton = new QToolButton(this);
-    setButton->setText("Update status");
+    setButton->setText("Update");
     setButton->setIcon(QIcon(":/icons/apply"));
     buttonsLayout->addWidget(setButton);
 
@@ -118,10 +140,14 @@ void StatusEditWidget::setupUi()
     mainLayout->setStretch(0,0);
     mainLayout->setStretch(1,1);
     mainLayout->setStretch(2,0);
+
+    mainLayout->addStretch();
 }
 
 void StatusEditWidget::connectEvents()
 {
+    connect(commentEdit, &QPlainTextEdit::textChanged, this, &StatusEditWidget::adjustCommentEditSize);
     connect(stateBox, SIGNAL(currentStateChanged(RamState*)), this, SLOT(currentStateChanged(RamState*)));
     connect(setButton, &QToolButton::clicked, this, &StatusEditWidget::updateStatus);
+    connect(revertButton, &QToolButton::clicked, this, &StatusEditWidget::revert);
 }

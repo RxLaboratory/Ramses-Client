@@ -18,16 +18,23 @@ public:
     RamStatusWidget(RamStatus *status, QWidget *parent = nullptr);
     RamStatus *status() const;
 
+protected:
+    void resizeEvent(QResizeEvent *event) Q_DECL_OVERRIDE;
+    void showEvent(QShowEvent *event) Q_DECL_OVERRIDE;
+
 private slots:
     void remove();
     void statusChanged(RamObject *o);
+    void adjustCommentEditSize();
 
 private:
     RamStatus *_status;
 
     void completeUi();
+    void connectEvents();
     DuQFSlider *completionBox;
     QPlainTextEdit *commentEdit;
+    QLabel *userLabel;
 
     bool _removing = false;
 };

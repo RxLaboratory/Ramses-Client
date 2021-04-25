@@ -2,10 +2,10 @@
 
 SimpleObjectList::SimpleObjectList(bool editableObjects, QWidget *parent) : QWidget(parent)
 {
-    setupUi();
+    setupUi(editableObjects);
 
     setSortable(false);
-    m_editableObjects = editableObjects;
+    setEditable(true);
 
     // Hide filters until at least one is added
     m_filterLabel->hide();
@@ -18,11 +18,17 @@ void SimpleObjectList::setEditable(bool editable)
 {
     m_removeButton->setVisible(editable);
     m_addButton->setVisible(editable);
+    setSelectable(editable);
 }
 
 void SimpleObjectList::setSortable(bool sortable)
 {
-    m_list->setDragable(sortable);
+    m_list->setSortable(sortable);
+}
+
+void SimpleObjectList::setSelectable(bool selectable)
+{
+    m_list->setSelectable(selectable);
 }
 
 void SimpleObjectList::setTitle(QString title)
@@ -68,7 +74,7 @@ void SimpleObjectList::scrollToBottom()
     vbar->setSliderPosition( vbar->maximum() );
 }
 
-void SimpleObjectList::setupUi()
+void SimpleObjectList::setupUi(bool editableObjects)
 {
     this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
@@ -114,7 +120,7 @@ void SimpleObjectList::setupUi()
 
     mainLayout->addLayout(filterLayout);
 
-    m_list = new ObjectListWidget(this);
+    m_list = new ObjectListWidget(editableObjects, this);
     mainLayout->addWidget(m_list);
 
     mainLayout->setStretch(0, 0);

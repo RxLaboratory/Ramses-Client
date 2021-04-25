@@ -29,6 +29,7 @@ void StatusHistoryWidget::setItem(RamItem *item)
     QSignalBlocker b(statusList);
 
     statusList->clear();
+    currentProjectChanged(Ramses::instance()->currentProject());
 
     if (!_item) return;
 
@@ -58,6 +59,10 @@ void StatusHistoryWidget::statusRemoved(RamStatus *status)
 
 void StatusHistoryWidget::newStep(RamStep *step)
 {
+    if(!_item) return;
+    if (_item->objectType() == RamObject::Shot && step->type() != RamStep::ShotProduction) return;
+    if (_item->objectType() == RamObject::Asset && step->type() != RamStep::AssetProduction) return;
+
     stepBox->addItem(step->name(), step->uuid());
 
     connect(step, SIGNAL(removed(RamObject*)), this, SLOT(stepRemoved(RamObject*)));
@@ -97,11 +102,19 @@ void StatusHistoryWidget::currentProjectChanged(RamProject *project)
 
     QSignalBlocker b(stepBox);
 
+    QString previousSelection = stepBox->currentData().toString();
     stepBox->clear();
 
     if (!project) return;
 
     foreach (RamStep *step, project->steps()) newStep(step);
+
+    for(int i = 0; i < stepBox->count(); i++)
+        if (previousSelection == stepBox->itemData(i).toString())
+        {
+            stepBox->setCurrentIndex(i);
+            break;
+        }
 
     _projectConnections << connect(project, &RamProject::newStep, this, &StatusHistoryWidget::newStep );
     _projectConnections << connect(project, SIGNAL(stepRemoved(RamStep*)), this, SLOT(stepRemoved(RamStep*)) );
@@ -146,7 +159,7 @@ void StatusHistoryWidget::setupUi()
     sLayout->setSpacing(3);
     sLayout->setContentsMargins(0,0,0,0);
 
-    QLabel *statusLabel = new QLabel("Status history", this);
+    QLabel *statusLabel = new QLabel("Status", this);
     sLayout->addWidget(statusLabel);
 
     stepBox = new QComboBox(this);
@@ -169,6 +182,8 @@ void StatusHistoryWidget::setupUi()
     splitter->addWidget(statusWidget);
 
     layout->addWidget(splitter);
+
+    splitter->setSizes(QList<int>() << 75 << 25);
 
     this->setLayout(layout);
 }

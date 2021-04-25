@@ -40,6 +40,8 @@ signals:
 private slots:
     void currentStateChanged(RamState *state);
     void updateStatus();
+    void adjustCommentEditSize();
+    void revert();
 
 private:
     void setupUi();
@@ -49,6 +51,9 @@ private:
     AutoSelectSpinBox *versionBox;
     QPlainTextEdit *commentEdit;
     QToolButton *setButton;
+    QToolButton *revertButton;
+
+    RamStatus *_status;
 };
 
 #endif // STATUSEDITWIDGET_H

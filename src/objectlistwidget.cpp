@@ -3,28 +3,25 @@
 ObjectListWidget::ObjectListWidget(QWidget *parent): QTableWidget(parent)
 {
     setupUi();
+    connectEvents();
 }
 
 ObjectListWidget::ObjectListWidget(bool editableObjects, QWidget *parent): QTableWidget(parent)
 {
     setupUi();
+    connectEvents();
     m_editableObjects = editableObjects;
 }
 
-void ObjectListWidget::setDragable(bool dragable)
+void ObjectListWidget::setSortable(bool sortable)
 {
-    if (dragable)
-    {
-        this->setDragDropMode(InternalMove);
-        this->setDragEnabled(true);
-        this->setDefaultDropAction(Qt::MoveAction);
-    }
-    else
-    {
-        this->setDragDropMode(NoDragDrop);
-        this->setDragEnabled(false);
-        this->setDefaultDropAction(Qt::IgnoreAction);
-    }
+    this->verticalHeader()->setVisible(sortable);
+}
+
+void ObjectListWidget::setSelectable(bool selectable)
+{
+    if(selectable) this->setSelectionMode(ExtendedSelection);
+    else this->setSelectionMode(NoSelection);
 }
 
 void ObjectListWidget::addObject(RamObject *obj, bool edit)
@@ -64,12 +61,14 @@ void ObjectListWidget::addObject(RamObject *obj, bool edit)
 
     int row = this->rowCount();
     this->setRowCount( row + 1 );
+    this->setItem(row, 0, new QTableWidgetItem("   " + obj->name()));
     this->setCellWidget(row, 0, ow);
-    this->setRowHeight(row, ow->size().height());
+    this->resizeRowToContents(row);
 
     if (m_editableObjects && edit) ow->edit();
 
     connect(obj, SIGNAL(removed(RamObject*)), this, SLOT(removeObject(RamObject*)));
+    connect(obj, &RamObject::changed, this, &ObjectListWidget::objectChanged);
 }
 
 QList<RamObject *> ObjectListWidget::objects() const
@@ -126,16 +125,11 @@ void ObjectListWidget::removeSelectedObjects()
     }
 }
 
-void ObjectListWidget::dropEvent(QDropEvent *event)
-{
-    QTableWidget::dropEvent(event);
-    emit itemDropped();
-}
-
 void ObjectListWidget::resizeEvent(QResizeEvent *event)
 {
     this->setColumnWidth( 0, event->size().width() );
-    event->ignore();
+    this->setRowHeight(0, 10);
+    this->resizeRowsToContents();
 }
 
 void ObjectListWidget::itemSelected(QTableWidgetItem *previous, QTableWidgetItem *current)
@@ -144,6 +138,7 @@ void ObjectListWidget::itemSelected(QTableWidgetItem *previous, QTableWidgetItem
     if (!current) return;
     RamObjectWidget *ow = (RamObjectWidget*)this->cellWidget( current->row(), 0 );
     if (!ow) return;
+    ow->setSelected(current->isSelected());
     emit objectSelected(ow->ramObject());
 }
 
@@ -167,7 +162,7 @@ void ObjectListWidget::updateOrder()
             RamObject *o = ow->ramObject();
             if (o)
             {
-                o->setOrder(row);
+                o->setOrder(this->verticalHeader()->visualIndex(row));
                 o->update();
             }
         }
@@ -175,11 +170,28 @@ void ObjectListWidget::updateOrder()
     emit orderChanged();
 }
 
+void ObjectListWidget::objectChanged(RamObject *obj)
+{
+    for( int row = 0; row < this->rowCount(); row++)
+    {
+        // Get the object from the widget
+        RamObjectWidget *ow = (RamObjectWidget*)this->cellWidget(row, 0 );
+        if (ow->ramObject()->uuid() == obj->uuid())
+        {
+            this->item(row, 0)->setText("   " + obj->name());
+        }
+    }
+}
+
 void ObjectListWidget::setupUi()
 {
-    setDragable(true);
-    this->setSelectionMode(ExtendedSelection);
+    setSortable(true);
+    this->setSelectionMode(NoSelection);
     this->setFrameShape(QFrame::NoFrame);
+    this->setDragDropMode(NoDragDrop);
+    this->setDragEnabled(false);
+    this->setDefaultDropAction(Qt::IgnoreAction);
+    this->verticalHeader()->setSectionsMovable(true);
 
     this->setColumnCount(1);
     this->setRowCount(0);
@@ -190,11 +202,19 @@ void ObjectListWidget::setupUi()
     this->setColumnWidth( 0, this->size().width() );
 
     this->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
+
+    int p = DuUI::getSize("padding", "large");
+    QString padding = QString::number(p) + "px";
+    QString style = "QTableWidget { gridline-color: rgba(0,0,0,0); padding-top:" + padding +  "; padding-bottom:" + padding +  "; selection-background-color: rgba(0,0,0,0); } ";
+    style += "QTableWidget::item { padding-left: " + padding + "; padding-right: " + padding + "; } ";
+    style += "QTableWidget::item:hover { background-color: none; } ";
+
+    this->setStyleSheet(style);
 }
 
 void ObjectListWidget::connectEvents()
 {
-    connect(this, &ObjectListWidget::itemDropped, this, &ObjectListWidget::updateOrder);
+    connect(this->verticalHeader(), &QHeaderView::sectionMoved, this, &ObjectListWidget::updateOrder);
     connect(this, &QTableWidget::currentItemChanged, this, &ObjectListWidget::itemSelected);
     connect(this, &QTableWidget::itemSelectionChanged, this, &ObjectListWidget::changeSelection);
 }
