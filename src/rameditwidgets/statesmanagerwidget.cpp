@@ -20,7 +20,7 @@ void StatesManagerWidget::currentDataChanged(QVariant data)
     {
         if (state->uuid() == data.toString())
         {
-            stateWidget->setState(state);
+            stateWidget->setObject(state);
             stateWidget->setEnabled(true);
             return;
         }

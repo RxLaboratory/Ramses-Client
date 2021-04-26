@@ -3,32 +3,40 @@
 
 #include <QColorDialog>
 
-#include "ui_stateeditwidget.h"
 #include "ramses.h"
+#include "objecteditwidget.h"
 #include "duqf-widgets/duqfspinbox.h"
 
-class StateEditWidget : public QWidget, private Ui::StateEditWidget
+class StateEditWidget : public ObjectEditWidget
 {
     Q_OBJECT
 
 public:
+    explicit StateEditWidget(RamState *state, QWidget *parent = nullptr);
     explicit StateEditWidget(QWidget *parent = nullptr);
 
     RamState *state() const;
-    void setState(RamState *state);
+
+public slots:
+    void setObject(RamObject *obj) Q_DECL_OVERRIDE;
+
+protected slots:
+    void update() Q_DECL_OVERRIDE;
 
 private slots:
-    void update();
-    void revert();
-    bool checkInput();
-    void stateRemoved(RamObject *o);
-    void dbiLog(DuQFLog m);
+    void stateChanged(RamObject *o);
     void updateColorEditStyle();
     void selectColor();
 
 private:
-    DuQFSpinBox *completionSpinBox;
     RamState *_state;
+
+    void setupUi();
+    void connectEvents();
+
+    DuQFSpinBox *completionSpinBox;
+    QLineEdit *colorEdit;
+    QToolButton *colorButton;
     QMetaObject::Connection _currentStateConnection;
 
 };

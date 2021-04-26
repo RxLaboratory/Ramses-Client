@@ -1,20 +1,21 @@
 #include "stateeditwidget.h"
 
-StateEditWidget::StateEditWidget(QWidget *parent) :
-    QWidget(parent)
+StateEditWidget::StateEditWidget(RamState *state, QWidget *parent) :
+    ObjectEditWidget(state, parent)
 {
-    setupUi(this);
+    setupUi();
+    connectEvents();
 
-    completionSpinBox = new DuQFSpinBox(this);
-    completionSpinBox->setSuffix("%");
-    completionLayout->addWidget(completionSpinBox);
+    setObject(state);
+}
 
-    connect(updateButton, SIGNAL(clicked()), this, SLOT(update()));
-    connect(revertButton, SIGNAL(clicked()), this, SLOT(revert()));
-    connect(colorEdit, SIGNAL(editingFinished()), this, SLOT(updateColorEditStyle()));
-    connect(colorButton, SIGNAL(clicked()), this, SLOT(selectColor()));
-    connect(shortNameEdit, &QLineEdit::textChanged, this, &StateEditWidget::checkInput);
-    connect(DBInterface::instance(),&DBInterface::newLog, this, &StateEditWidget::dbiLog);
+StateEditWidget::StateEditWidget(QWidget *parent) :
+    ObjectEditWidget(parent)
+{
+    setupUi();
+    connectEvents();
+
+    setObject(nullptr);
 
     this->setEnabled(false);
 }
@@ -24,82 +25,51 @@ RamState *StateEditWidget::state() const
     return _state;
 }
 
-void StateEditWidget::setState(RamState *state)
+void StateEditWidget::setObject(RamObject *obj)
 {
-    disconnect(_currentStateConnection);
+    RamState *state = (RamState*)obj;
 
+    this->setEnabled(false);
+
+    ObjectEditWidget::setObject(state);
     _state = state;
-    nameEdit->setText("");
-    shortNameEdit->setText("");
+
+    QSignalBlocker b1(colorEdit);
+
     colorEdit->setText("");
     colorEdit->setStyleSheet("");
     completionSpinBox->setValue(50);
 
     if (!state) return;
 
-    nameEdit->setText(state->name());
-    shortNameEdit->setText(state->shortName());
     colorEdit->setText(state->color().name());
     updateColorEditStyle();
     completionSpinBox->setValue(state->completionRatio());
 
     this->setEnabled(Ramses::instance()->isAdmin());
 
-    _currentStateConnection = connect(state, &RamState::removed, this, &StateEditWidget::stateRemoved);
+    _objectConnections << connect(state, &RamState::changed, this, &StateEditWidget::stateChanged);
 }
 
 void StateEditWidget::update()
 {
     if (!_state) return;
 
-    this->setEnabled(false);
+    updating = true;
 
-    if (!checkInput())
-    {
-        this->setEnabled(true);
-        return;
-    }
-
-    _state->setName(nameEdit->text());
-    _state->setShortName(shortNameEdit->text());
     _state->setColor(QColor(colorEdit->text()));
     _state->setCompletionRatio(completionSpinBox->value());
 
-    _state->update();
+    ObjectEditWidget::update();
 
-    this->setEnabled(true);
+    updating = false;
 }
 
-void StateEditWidget::revert()
+void StateEditWidget::stateChanged(RamObject *o)
 {
-    setState(_state);
-}
-
-bool StateEditWidget::checkInput()
-{
-    if (!_state) return false;
-
-    if (shortNameEdit->text() == "")
-    {
-        statusLabel->setText("Short name cannot be empty!");
-        updateButton->setEnabled(false);
-        return false;
-    }
-
-    statusLabel->setText("");
-    updateButton->setEnabled(true);
-    return true;
-}
-
-void StateEditWidget::stateRemoved(RamObject *o)
-{
+    if (updating) return;
     Q_UNUSED(o);
-    setState(nullptr);
-}
-
-void StateEditWidget::dbiLog(DuQFLog m)
-{
-    if (m.type() != DuQFLog::Debug) statusLabel->setText(m.message());
+    setObject(_state);
 }
 
 void StateEditWidget::updateColorEditStyle()
@@ -111,6 +81,7 @@ void StateEditWidget::updateColorEditStyle()
         if (c.lightness() > 80) style += "color: #232323;";
         colorEdit->setStyleSheet(style);
     }
+    update();
 }
 
 void StateEditWidget::selectColor()
@@ -127,4 +98,40 @@ void StateEditWidget::selectColor()
         updateColorEditStyle();
     }
     this->setEnabled(true);
+}
+
+void StateEditWidget::setupUi()
+{
+    QLabel *colorLabel = new QLabel("Color", this);
+    mainFormLayout->addWidget(colorLabel, 2, 0);
+
+    QHBoxLayout *colorLayout = new QHBoxLayout();
+    colorLayout->setSpacing(3);
+    colorLayout->setContentsMargins(0,0,0,0);
+
+    colorEdit = new QLineEdit(this);
+    colorLayout->addWidget(colorEdit);
+
+    colorButton = new QToolButton(this);
+    colorButton->setIcon(QIcon(":/icons/color-dialog"));
+    colorLayout->addWidget(colorButton);
+
+    mainFormLayout->addLayout(colorLayout, 2, 1);
+
+    QLabel *completionLabel = new QLabel("Completion ratio", this);
+    mainFormLayout->addWidget(completionLabel, 3, 0);
+
+    completionSpinBox = new DuQFSpinBox(this);
+    completionSpinBox->setSuffix("%");
+    completionSpinBox->setMaximumHeight(completionLabel->height());
+    mainFormLayout->addWidget(completionSpinBox, 3, 1);
+
+    mainLayout->addStretch();
+}
+
+void StateEditWidget::connectEvents()
+{
+    connect(colorEdit, SIGNAL(editingFinished()), this, SLOT(updateColorEditStyle()));
+    connect(colorButton, SIGNAL(clicked()), this, SLOT(selectColor()));
+    connect(completionSpinBox, &DuQFSpinBox::valueChanged, this, &StateEditWidget::update);
 }

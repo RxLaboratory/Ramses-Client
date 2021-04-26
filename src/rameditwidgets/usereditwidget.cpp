@@ -48,7 +48,6 @@ void UserEditWidget::setObject(RamObject *obj)
     folderSelector->setPath("");
     folderSelector->setPlaceHolderText("Default (Ramses/Users/User_ShortName)");
     updateFolderLabel("");
-    this->setEnabled(false);
 
     RamUser *current = Ramses::instance()->currentUser();
     if (!user || !current) return;

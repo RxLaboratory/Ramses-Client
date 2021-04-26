@@ -27,6 +27,7 @@ INCLUDEPATH += rameditwidgets \
     ramobjects
 
 SOURCES += \
+    ramdisplaywidgets/ramstatewidget.cpp \
     ramdisplaywidgets/ramuserwidget.cpp \
     rameditwidgets/applicationeditwidget.cpp \
     rameditwidgets/applicationsmanagerwidget.cpp \
@@ -135,6 +136,7 @@ SOURCES += \
     userprofilepage.cpp
 
 HEADERS += \
+    ramdisplaywidgets/ramstatewidget.h \
     ramdisplaywidgets/ramuserwidget.h \
     rameditwidgets/applicationeditwidget.h \
     rameditwidgets/applicationsmanagerwidget.h \
@@ -259,7 +261,6 @@ FORMS += \
     pipeline-editor/pipelinewidget.ui \
     rameditwidgets/projecteditwidget.ui \
     settingswidgets/serversettingswidget.ui \
-    rameditwidgets/stateeditwidget.ui \
     rameditwidgets/stepeditwidget.ui \
     rameditwidgets/templateassetgroupeditwidget.ui \
     rameditwidgets/templatestepeditwidget.ui \
