@@ -6,6 +6,7 @@
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QToolButton>
+#include <QMessageBox>
 
 #include "ramses.h"
 #include "objecteditwidget.h"
@@ -48,10 +49,13 @@ protected:
 private slots:
     void objectRemoved();
     void userChanged();
+    void remove();
 
 private:
     void setupUi();
+    void connectEvents();
     QToolButton *editButton;
+    QToolButton *removeButton;
     QLabel *title;
     QLabel *icon;
 

@@ -11,10 +11,7 @@ RamObjectWidget::RamObjectWidget(RamObject *obj, QWidget *parent) : QWidget(pare
     _dockEditWidget = new ObjectDockWidget(obj);
     _dockEditWidget->hide();
 
-    connect(obj, &RamObject::changed, this, &RamObjectWidget::setObject);
-    connect(obj, &RamObject::removed, this, &RamObjectWidget::objectRemoved);
-    connect(Ramses::instance(), &Ramses::loggedIn, this, &RamObjectWidget::userChanged);
-    connect(editButton, SIGNAL(clicked()), this, SLOT(edit()));
+    connectEvents();
 }
 
 RamObjectWidget::~RamObjectWidget()
@@ -91,7 +88,18 @@ void RamObjectWidget::userChanged()
     editButton->hide();
     RamUser *u = Ramses::instance()->currentUser();
     if (!u) return;
-    editButton->setVisible( u->role() >= _editRole && _hasEditWidget);
+    bool ok = u->role() >= _editRole && _hasEditWidget ;
+    editButton->setVisible( ok );
+    removeButton->setVisible( ok );
+}
+
+void RamObjectWidget::remove()
+{
+    QMessageBox::StandardButton confirm = QMessageBox::question(this,
+                                                                "Confirm deletion",
+                                                                "Are you sure you want to premanently remove " + _object->shortName() + " - " + _object->name() + "?" );
+    if (confirm != QMessageBox::Yes) return;
+    _object->remove();
 }
 
 void RamObjectWidget::edit()
@@ -128,9 +136,15 @@ void RamObjectWidget::setupUi()
 
     editButton = new QToolButton(this);
     editButton->setIcon( QIcon(":/icons/edit") );
-    editButton->setIconSize(QSize(12,12));
+    editButton->setIconSize(QSize(10,10));
     editButton->setToolButtonStyle(Qt::ToolButtonIconOnly);
     titleLayout->addWidget(editButton);
+
+    removeButton = new QToolButton(this);
+    removeButton->setIcon( QIcon(":/icons/remove") );
+    removeButton->setIconSize(QSize(10,10));
+    removeButton->setToolButtonStyle(Qt::ToolButtonIconOnly);
+    titleLayout->addWidget(removeButton);
 
     layout->addLayout(titleLayout);
 
@@ -139,6 +153,16 @@ void RamObjectWidget::setupUi()
     this->setLayout(vlayout);
 
     this->setMinimumHeight(30);
+}
+
+void RamObjectWidget::connectEvents()
+{
+
+    connect(_object, &RamObject::changed, this, &RamObjectWidget::setObject);
+    connect(_object, &RamObject::removed, this, &RamObjectWidget::objectRemoved);
+    connect(Ramses::instance(), &Ramses::loggedIn, this, &RamObjectWidget::userChanged);
+    connect(editButton, SIGNAL(clicked()), this, SLOT(edit()));
+    connect(removeButton, SIGNAL(clicked()), this, SLOT(remove()));
 }
 
 bool RamObjectWidget::selected() const

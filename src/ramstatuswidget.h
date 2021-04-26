@@ -2,6 +2,7 @@
 #define RAMSTATUSWIDGET_H
 
 #include <QPlainTextEdit>
+#include <QSettings>
 
 #include "duqf-widgets/duqfslider.h"
 

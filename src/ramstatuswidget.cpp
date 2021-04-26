@@ -54,9 +54,11 @@ void RamStatusWidget::statusChanged(RamObject *o)
 
     bool hasComment = _status->comment() != "";
 
+    QString userText = _status->date().toString( QSettings().value("dateFormat", "yyyy-MM-dd hh:mm:ss").toString() );
+
     if (_status->user())
     {
-        QString userText = _status->user()->name();
+        userText += " | " + _status->user()->name();
         userLabel->setText(userText);
     }
 

@@ -12,6 +12,18 @@ RamStatus::RamStatus(RamUser *user, RamState *state, RamStep *step, QObject *par
     setObjectType(Status);
 }
 
+RamStatus::RamStatus(RamUser *user, RamState *state, RamStep *step, QString uuid, QObject *parent):
+    RamObject("", "", uuid, parent)
+{
+    _user = user;
+    _state = state;
+    _step = step;
+    _completionRatio = _state->completionRatio();
+    _date = QDateTime::currentDateTimeUtc();
+
+    setObjectType(Status);
+}
+
 int RamStatus::completionRatio() const
 {
     return _completionRatio;

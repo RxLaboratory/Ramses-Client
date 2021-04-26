@@ -87,8 +87,8 @@ public:
     RamProject *createProject();
     void removeProject(QString uuid);
     RamProject *currentProject() const;
-    void setCurrentProject(RamProject *currentProject);
-    void setCurrentProject(QString uuidOrShortName);
+    void setCurrentProject(RamProject *currentProject, bool updateData=true);
+    void setCurrentProject(QString uuidOrShortName, bool updateData=true);
     // Template Steps
     QList<RamStep *> templateSteps() const;
     RamStep *createTemplateStep();
@@ -178,6 +178,7 @@ private slots:
     QString gotShot(QJsonObject newS, RamSequence *sequence, RamProject *project);
     // status
     void gotStatusHistory(QJsonArray statusHistory, RamItem *item, RamProject *project);
+    QString gotStatus(QJsonObject newS, RamItem *item, RamProject *project);
     // pipes
     void gotPipes(QJsonArray pipes, RamProject *project);
     QString gotPipe(QJsonObject newP, RamProject *project);

@@ -165,7 +165,7 @@ void Ramses::gotProjects(QJsonArray projects)
     _userSettings = new QSettings(Ramses::instance()->currentUserSettingsFile(), QSettings::IniFormat, this);
     _userSettings->beginGroup("ramses");
 
-    setCurrentProject(_userSettings->value("currentProject", "").toString());
+    setCurrentProject(_userSettings->value("currentProject", "").toString(), false);
 }
 
 QString Ramses::gotProject(QJsonObject newP)
@@ -890,74 +890,86 @@ QString Ramses::gotShot(QJsonObject newS, RamSequence *sequence, RamProject *pro
 void Ramses::gotStatusHistory(QJsonArray statusHistory, RamItem *item, RamProject *project)
 {
     DBISuspender s;
+    QStringList uuids;
+    // Update status
+    for (int j = 0; j < statusHistory.count(); j++)
+    {
+        uuids << gotStatus( statusHistory.at(j).toObject(), item, project );
+    }
 
+    qDebug() << item->name();
+    qDebug() << uuids;
+
+    // Remove deleted status
     QList<RamStatus*> history = item->statusHistory();
-
-    // loop through existing status to update them
     for (int i = history.count() - 1; i >= 0; i--)
     {
-        RamStatus *existingStatus = history[i];
-        // loop through new steps to update
-        bool found = false;
-        for (int j = statusHistory.count() - 1; j >= 0; j--)
+        RamStatus *existingStatus = history.at(i);
+        qDebug() << existingStatus->uuid();
+        if (!uuids.contains(existingStatus->uuid()))
         {
-            QJsonObject newS = statusHistory[j].toObject();
-            QString uuid = newS.value("uuid").toString();
-            // Found, update
-            if (uuid == existingStatus->uuid())
-            {
-                found = true;
-                //Emit just one signal
-                QSignalBlocker b(existingStatus);
-                existingStatus->setCompletionRatio( newS.value("completionRatio").toInt( ));
-                RamUser *u = Ramses::instance()->user( newS.value("userUuid").toString( ) );
-                if (u) existingStatus->setUser( u );
-                RamState *state = Ramses::instance()->state( newS.value("stateUuid").toString( ) );
-                if (state) existingStatus->setState( state );
-                existingStatus->setComment( newS.value("comment").toString() );
-                RamStep *step = project->step( newS.value("stepUuid").toString( ) );
-                if (step) existingStatus->setStep( step );
-                existingStatus->setDate( QDateTime::fromString( newS.value("latestUpdate").toString(), "yyyy-MM-dd hh:mm:ss"));
-                b.unblock();
-                existingStatus->setVersion( newS.value("version").toInt() );
-
-                //remove from new status groups
-                statusHistory.removeAt(j);
-                break;
-            }
-        }
-        // Not found, remove from existing
-        if (!found)
-        {
-            item->removeStatus(existingStatus);
+            item->removeStatus(existingStatus->uuid());
         }
     }
 
-    // loop through remaining new assets to add them
-    for (int i = 0; i < statusHistory.count(); i++)
-    {
-        QJsonObject s = statusHistory[i].toObject();
-        RamUser *user = Ramses::instance()->user( s.value("userUuid").toString( ) );
-        if (!user) continue;
-        RamState *state = Ramses::instance()->state( s.value("stateUuid").toString( ) );
-        if (!state) continue;
-        RamStep *step = project->step( s.value("stepUuid").toString( ) );
-        if (!step) continue;
-        RamStatus *status = new RamStatus(
-                    user,
-                    state,
-                    step,
-                    item
-                    );
-        status->setCompletionRatio( s.value("completionRatio").toInt( ) );
-        status->setComment( s.value("comment").toString( ) );
-        status->setVersion( s.value("version").toInt( ) );
-        status->setDate( QDateTime::fromString( s.value("latestUpdate").toString(), "yyyy-MM-dd hh:mm:ss"));
-
-        item->addStatus(status);
-    }
-
+    // sort the status
     item->sortStatusHistory();
+}
+
+QString Ramses::gotStatus(QJsonObject newS, RamItem *item, RamProject *project)
+{
+    DBISuspender s;
+    QString uuid = newS.value("uuid").toString();
+
+    // loop through existing shots to update them
+    QList<RamStatus*> history = item->statusHistory();
+    for (int i = history.count() - 1; i >= 0; i--)
+    {
+        RamStatus *existingStatus = history.at(i);
+
+        if (uuid == existingStatus->uuid())
+        {
+            //Emit just one signal
+            QSignalBlocker b(existingStatus);
+            existingStatus->setCompletionRatio( newS.value("completionRatio").toInt( ));
+            RamUser *u = Ramses::instance()->user( newS.value("userUuid").toString( ) );
+            if (u) existingStatus->setUser( u );
+            RamState *state = Ramses::instance()->state( newS.value("stateUuid").toString( ) );
+            if (state) existingStatus->setState( state );
+            existingStatus->setComment( newS.value("comment").toString() );
+            RamStep *step = project->step( newS.value("stepUuid").toString( ) );
+            if (step) existingStatus->setStep( step );
+            existingStatus->setDate( QDateTime::fromString( newS.value("date").toString(), "yyyy-MM-dd hh:mm:ss"));
+            b.unblock();
+            existingStatus->setVersion( newS.value("version").toInt() );
+            return uuid;
+        }
+    }
+
+    // not existing, let's create it
+
+    RamUser *user = Ramses::instance()->user( newS.value("userUuid").toString( ) );
+    if (!user) return uuid;
+    RamState *state = Ramses::instance()->state( newS.value("stateUuid").toString( ) );
+    if (!state) return uuid;
+    RamStep *step = project->step( newS.value("stepUuid").toString( ) );
+    if (!step) return uuid;
+    RamStatus *status = new RamStatus(
+                user,
+                state,
+                step,
+                newS.value("uuid").toString(),
+                item
+                );
+
+    status->setCompletionRatio( newS.value("completionRatio").toInt( ) );
+    status->setComment( newS.value("comment").toString( ) );
+    status->setVersion( newS.value("version").toInt( ) );
+    status->setDate( QDateTime::fromString( newS.value("date").toString(), "yyyy-MM-dd hh:mm:ss"));
+
+    item->addStatus(status);
+
+    return uuid;
 }
 
 void Ramses::gotPipes(QJsonArray pipes, RamProject *project)
@@ -1310,7 +1322,7 @@ RamProject *Ramses::currentProject() const
     return _currentProject;
 }
 
-void Ramses::setCurrentProject(RamProject *currentProject)
+void Ramses::setCurrentProject(RamProject *currentProject, bool updateData)
 {
     if (_currentProject && currentProject)
         if (_currentProject->uuid() == currentProject->uuid()) return;
@@ -1321,15 +1333,15 @@ void Ramses::setCurrentProject(RamProject *currentProject)
     {
         _userSettings->setValue("currentProject", _currentProject->uuid() );
         //Update
-        refresh();
+        if (updateData) refresh();
     }
 
     emit projectChanged(_currentProject);
 }
 
-void Ramses::setCurrentProject(QString uuidOrShortName)
+void Ramses::setCurrentProject(QString uuidOrShortName, bool updateData)
 {
-    setCurrentProject( project(uuidOrShortName) );
+    setCurrentProject( project(uuidOrShortName), updateData );
 }
 
 QList<RamStep *> Ramses::templateSteps() const

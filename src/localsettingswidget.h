@@ -3,6 +3,8 @@
 
 #include "ui_localsettingswidget.h"
 
+#include <QDateTime>
+
 #include "duqf-widgets/duqffolderselectorwidget.h"
 #include "ramses.h"
 
@@ -14,6 +16,7 @@ public:
     explicit LocalSettingsWidget(QWidget *parent = nullptr);
 private slots:
     void setRamsesPath(QString p);
+    void setDateFormat();
 private:
     DuQFFolderSelectorWidget *folderSelector;
     QSettings _settings;

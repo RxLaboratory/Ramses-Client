@@ -10,11 +10,33 @@ LocalSettingsWidget::LocalSettingsWidget(QWidget *parent) :
 
     folderSelector->setPath(_settings.value("ramsesPath", QDir::homePath() + "/Ramses").toString());
 
+    QDateTime d = QDateTime::fromString("2021-04-26 10:53:31", "yyyy-MM-dd hh:mm:ss");
+    QString f = "yyyy-MM-dd hh:mm:ss";
+    dateFormatBox->addItem(d.toString(f), f);
+    f = "MM.dd.yyyy - h:mm:ss ap";
+    dateFormatBox->addItem(d.toString(f), f);
+    f = "dd/MM/yyyy - hh:mm:ss";
+    dateFormatBox->addItem(d.toString(f), f);
+    f = "ddd MMMM d yyyy 'at' h:mm:ss ap";
+    dateFormatBox->addItem(d.toString(f), f);
+    f = "ddd d MMMM yyyy 'at' hh:mm:ss";
+    dateFormatBox->addItem(d.toString(f), f);
+
+    QString currentF = _settings.value("dateFormat", "yyyy-MM-dd hh:mm:ss").toString();
+    for (int i =0; i < dateFormatBox->count(); i++)
+        if (dateFormatBox->itemData(i).toString() == currentF ) dateFormatBox->setCurrentIndex(i);
+
     connect(folderSelector, &DuQFFolderSelectorWidget::pathChanged, this, &LocalSettingsWidget::setRamsesPath);
+    connect(dateFormatBox, SIGNAL(currentIndexChanged(int)), this, SLOT(setDateFormat()));
 }
 
 void LocalSettingsWidget::setRamsesPath(QString p)
 {
     _settings.setValue("ramsesPath", p);
     Ramses::instance()->setRamsesPath(p);
+}
+
+void LocalSettingsWidget::setDateFormat()
+{
+    _settings.setValue("dateFormat", dateFormatBox->currentData().toString());
 }

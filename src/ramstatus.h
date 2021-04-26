@@ -12,6 +12,7 @@ class RamStatus : public RamObject
     Q_OBJECT
 public:
     RamStatus(RamUser *user, RamState *state, RamStep *step, QObject *parent = nullptr);
+    RamStatus(RamUser *user, RamState *state, RamStep *step, QString uuid, QObject *parent = nullptr);
 
     int completionRatio() const;
     void setCompletionRatio(int completionRatio);
