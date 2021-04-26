@@ -108,6 +108,8 @@
    <addaction name="actionAdmin"/>
    <addaction name="actionProjectSettings"/>
    <addaction name="actionPipeline"/>
+   <addaction name="actionAssets"/>
+   <addaction name="actionShots"/>
   </widget>
   <action name="actionLogIn">
    <property name="icon">
@@ -157,7 +159,7 @@
      <normaloff>:/icons/project-settings</normaloff>:/icons/project-settings</iconset>
    </property>
    <property name="text">
-    <string>Project Settings</string>
+    <string>Project</string>
    </property>
    <property name="toolTip">
     <string>Project Admin</string>
@@ -182,6 +184,33 @@
    </property>
    <property name="text">
     <string>Pipeline</string>
+   </property>
+  </action>
+  <action name="actionAssets">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/assets-table</normaloff>:/icons/assets-table</iconset>
+   </property>
+   <property name="text">
+    <string>Assets</string>
+   </property>
+  </action>
+  <action name="actionShots">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/shots-table</normaloff>:/icons/shots-table</iconset>
+   </property>
+   <property name="text">
+    <string>Shots</string>
+   </property>
+   <property name="toolTip">
+    <string>Shots</string>
    </property>
   </action>
  </widget>

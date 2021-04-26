@@ -587,6 +587,10 @@ void MainWindow::currentUserChanged()
     actionUserFolder->setVisible(false);
     actionPipeline->setVisible(false);
     actionPipeline->setChecked(false);
+    actionShots->setVisible(false);
+    actionShots->setChecked(false);
+    actionAssets->setVisible(false);
+    actionAssets->setChecked(false);
 
     RamUser *user = Ramses::instance()->currentUser();
     if (!user) return;
@@ -596,6 +600,9 @@ void MainWindow::currentUserChanged()
     userButton->setText(user->shortName());
     actionUserProfile->setVisible(true);
     actionUserFolder->setVisible(true);
+
+    actionShots->setVisible(true);
+    actionAssets->setVisible(true);
 
     if (user->role() == RamUser::Admin)
     {
