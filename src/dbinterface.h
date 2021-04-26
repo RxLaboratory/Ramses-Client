@@ -99,6 +99,9 @@ public:
     void createPipe(QString outputUuid, QString inputUuid, QString uuid);
     void updatePipe(QString uuid, QString inputUuid, QString outputUuid, QString colorSpaceUuid = "", QString filetypeUuid = "");
     void removePipe(QString uuid);
+    //Status
+    void updateStatus(QString uuid, QString stateUuid, QString comment = "", int version = 0, int completionRatio = -1);
+    void removeStatus(QString uuid);
 
 public slots:
     void suspend(bool suspended = true);

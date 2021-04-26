@@ -20,15 +20,21 @@ CONFIG += c++11
 # In order to do so, uncomment the following line.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
+INCLUDEPATH += rameditwidgets \
+    settingswidgets \
+    ramdisplaywidgets \
+    smallwidgets \
+    ramobjects
+
 SOURCES += \
-    applicationeditwidget.cpp \
-    applicationsmanagerwidget.cpp \
-    asseteditwidget.cpp \
-    assetgroupeditwidget.cpp \
-    assetgroupsmanagerwidget.cpp \
-    assetsmanagerwidget.cpp \
+    rameditwidgets/applicationeditwidget.cpp \
+    rameditwidgets/applicationsmanagerwidget.cpp \
+    rameditwidgets/asseteditwidget.cpp \
+    rameditwidgets/assetgroupeditwidget.cpp \
+    rameditwidgets/assetgroupsmanagerwidget.cpp \
+    rameditwidgets/assetsmanagerwidget.cpp \
     daemon.cpp \
-    daemonsettingswidget.cpp \
+    settingswidgets/daemonsettingswidget.cpp \
     dbinterface.cpp \
     dbisuspender.cpp \
     duqf-app/app-style.cpp \
@@ -63,77 +69,78 @@ SOURCES += \
     duqf-widgets/settingswidget.cpp \
     duqf-widgets/titlebar.cpp \
     duqf-widgets/toolbarspacer.cpp \
-    filetypeeditwidget.cpp \
-    filetypesmanagerwidget.cpp \
-    frameratewidget.cpp \
-    listmanagerwidget.cpp \
-    localsettingswidget.cpp \
+    rameditwidgets/filetypeeditwidget.cpp \
+    rameditwidgets/filetypesmanagerwidget.cpp \
+    smallwidgets/frameratewidget.cpp \
+    rameditwidgets/listmanagerwidget.cpp \
+    settingswidgets/localsettingswidget.cpp \
     loginpage.cpp \
     main.cpp \
     mainwindow.cpp \
-    objectdockwidget.cpp \
-    objecteditwidget.cpp \
-    objectlistwidget.cpp \
-    pipeeditwidget.cpp \
+    rameditwidgets/objectdockwidget.cpp \
+    rameditwidgets/objecteditwidget.cpp \
+    rameditwidgets/objectlistwidget.cpp \
+    rameditwidgets/pipeeditwidget.cpp \
     pipeline-editor/objectnode.cpp \
     pipeline-editor/pipelinewidget.cpp \
     pipeline-editor/stepnode.cpp \
-    projecteditwidget.cpp \
-    projectselectorwidget.cpp \
-    projectsmanagerwidget.cpp \
-    ramapplication.cpp \
-    ramasset.cpp \
-    ramassetgroup.cpp \
-    ramassetwidget.cpp \
-    ramfiletype.cpp \
-    ramitem.cpp \
-    ramobject.cpp \
-    ramobjectsorter.cpp \
-    ramobjectsorter.h \
-    ramobjectwidget.cpp \
-    rampipe.cpp \
-    ramproject.cpp \
-    ramsequence.cpp \
-    ramses.cpp \
-    ramshot.cpp \
-    ramshotwidget.cpp \
-    ramstate.cpp \
-    ramstatus.cpp \
-    ramstatuswidget.cpp \
-    ramstep.cpp \
-    ramuser.cpp \
-    ramuuid.cpp \
-    resolutionwidget.cpp \
-    sequenceeditwidget.cpp \
-    sequencesmanagerwidget.cpp \
-    serversettingswidget.cpp \
-    shoteditwidget.cpp \
-    shotsmanagerwidget.cpp \
-    simpleobjectlist.cpp \
-    statebox.cpp \
-    stateeditwidget.cpp \
-    statesmanagerwidget.cpp \
-    statuseditwidget.cpp \
-    statushistorywidget.cpp \
-    stepeditwidget.cpp \
-    stepsmanagerwidget.cpp \
-    templateassetgroupeditwidget.cpp \
-    templateassetgroupsmanagerwidget.cpp \
-    templatestepeditwidget.cpp \
-    templatestepsmanagerwidget.cpp \
-    usereditwidget.cpp \
+    rameditwidgets/projecteditwidget.cpp \
+    smallwidgets/projectselectorwidget.cpp \
+    rameditwidgets/projectsmanagerwidget.cpp \
+    ramobjects/ramapplication.cpp \
+    ramobjects/ramasset.cpp \
+    ramobjects/ramassetgroup.cpp \
+    ramdisplaywidgets/ramassetwidget.cpp \
+    ramobjects/ramfiletype.cpp \
+    ramobjects/ramitem.cpp \
+    ramobjects/ramobject.cpp \
+    ramobjects/ramobjectlist.cpp \
+    ramdisplaywidgets/ramobjectlistwidget.cpp \
+    ramdisplaywidgets/ramobjectwidget.cpp \
+    ramobjects/rampipe.cpp \
+    ramobjects/ramproject.cpp \
+    ramobjects/ramsequence.cpp \
+    ramobjects/ramses.cpp \
+    ramobjects/ramshot.cpp \
+    ramdisplaywidgets/ramshotwidget.cpp \
+    ramobjects/ramstate.cpp \
+    ramobjects/ramstatus.cpp \
+    ramobjects/ramstatushistory.cpp \
+    ramdisplaywidgets/ramstatuswidget.cpp \
+    ramobjects/ramstep.cpp \
+    ramobjects/ramuser.cpp \
+    ramobjects/ramuuid.cpp \
+    smallwidgets/resolutionwidget.cpp \
+    rameditwidgets/sequenceeditwidget.cpp \
+    rameditwidgets/sequencesmanagerwidget.cpp \
+    settingswidgets/serversettingswidget.cpp \
+    rameditwidgets/shoteditwidget.cpp \
+    rameditwidgets/shotsmanagerwidget.cpp \
+    ramdisplaywidgets/simpleobjectlist.cpp \
+    smallwidgets/statebox.cpp \
+    rameditwidgets/stateeditwidget.cpp \
+    rameditwidgets/statesmanagerwidget.cpp \
+    rameditwidgets/statuseditwidget.cpp \
+    rameditwidgets/statushistorywidget.cpp \
+    rameditwidgets/stepeditwidget.cpp \
+    rameditwidgets/stepsmanagerwidget.cpp \
+    rameditwidgets/templateassetgroupeditwidget.cpp \
+    rameditwidgets/templateassetgroupsmanagerwidget.cpp \
+    rameditwidgets/templatestepeditwidget.cpp \
+    rameditwidgets/templatestepsmanagerwidget.cpp \
+    rameditwidgets/usereditwidget.cpp \
     userprofilepage.cpp \
-    usersmanagerwidget.cpp
+    rameditwidgets/usersmanagerwidget.cpp
 
 HEADERS += \
-    applicationeditwidget.h \
-    applicationsmanagerwidget.h \
-    asseteditwidget.h \
-    assetgroupeditwidget.h \
-    assetgroupsmanagerwidget.h \
-    assetsmanagerwidget.h \
+    rameditwidgets/applicationeditwidget.h \
+    rameditwidgets/applicationsmanagerwidget.h \
+    rameditwidgets/asseteditwidget.h \
+    rameditwidgets/assetgroupeditwidget.h \
+    rameditwidgets/assetgroupsmanagerwidget.h \
+    rameditwidgets/assetsmanagerwidget.h \
     daemon.h \
-    daemonsettingswidget.h \
+    settingswidgets/daemonsettingswidget.h \
     dbinterface.h \
     dbisuspender.h \
     duqf-app/app-style.h \
@@ -169,87 +176,90 @@ HEADERS += \
     duqf-widgets/settingswidget.h \
     duqf-widgets/titlebar.h \
     duqf-widgets/toolbarspacer.h \
-    filetypeeditwidget.h \
-    filetypesmanagerwidget.h \
-    frameratewidget.h \
-    listmanagerwidget.h \
-    localsettingswidget.h \
+    rameditwidgets/filetypeeditwidget.h \
+    rameditwidgets/filetypesmanagerwidget.h \
+    smallwidgets/frameratewidget.h \
+    rameditwidgets/listmanagerwidget.h \
+    settingswidgets/localsettingswidget.h \
     loginpage.h \
     mainwindow.h \
-    objectdockwidget.h \
-    objecteditwidget.h \
-    objectlistwidget.h \
-    pipeeditwidget.h \
+    rameditwidgets/objectdockwidget.h \
+    rameditwidgets/objecteditwidget.h \
+    rameditwidgets/objectlistwidget.h \
+    rameditwidgets/pipeeditwidget.h \
     pipeline-editor/objectnode.h \
     pipeline-editor/pipelinewidget.h \
     pipeline-editor/stepnode.h \
-    projecteditwidget.h \
-    projectselectorwidget.h \
-    projectsmanagerwidget.h \
-    ramapplication.h \
-    ramasset.h \
-    ramassetgroup.h \
-    ramassetwidget.h \
-    ramfiletype.h \
-    ramitem.h \
-    ramobject.h \
-    ramobjectwidget.h \
-    rampipe.h \
-    ramproject.h \
-    ramsequence.h \
-    ramses.h \
-    ramshot.h \
-    ramshotwidget.h \
-    ramstate.h \
-    ramstatus.h \
-    ramstatuswidget.h \
-    ramstep.h \
-    ramuser.h \
-    ramuuid.h \
-    resolutionwidget.h \
-    sequenceeditwidget.h \
-    sequencesmanagerwidget.h \
-    serversettingswidget.h \
-    shoteditwidget.h \
-    shotsmanagerwidget.h \
-    simpleobjectlist.h \
-    statebox.h \
-    stateeditwidget.h \
-    statesmanagerwidget.h \
-    statuseditwidget.h \
-    statushistorywidget.h \
-    stepeditwidget.h \
-    stepsmanagerwidget.h \
-    templateassetgroupeditwidget.h \
-    templateassetgroupsmanagerwidget.h \
-    templatestepeditwidget.h \
-    templatestepsmanagerwidget.h \
-    usereditwidget.h \
+    rameditwidgets/projecteditwidget.h \
+    smallwidgets/projectselectorwidget.h \
+    rameditwidgets/projectsmanagerwidget.h \
+    ramobjects/ramapplication.h \
+    ramobjects/ramasset.h \
+    ramobjects/ramassetgroup.h \
+    ramdisplaywidgets/ramassetwidget.h \
+    ramobjects/ramfiletype.h \
+    ramobjects/ramitem.h \
+    ramobjects/ramobject.h \
+    ramobjects/ramobjectlist.h \
+    ramdisplaywidgets/ramobjectlistwidget.h \
+    ramdisplaywidgets/ramobjectwidget.h \
+    ramobjects/rampipe.h \
+    ramobjects/ramproject.h \
+    ramobjects/ramsequence.h \
+    ramobjects/ramses.h \
+    ramobjects/ramshot.h \
+    ramdisplaywidgets/ramshotwidget.h \
+    ramobjects/ramstate.h \
+    ramobjects/ramstatus.h \
+    ramobjects/ramstatushistory.h \
+    ramdisplaywidgets/ramstatuswidget.h \
+    ramobjects/ramstep.h \
+    ramobjects/ramuser.h \
+    ramobjects/ramuuid.h \
+    smallwidgets/resolutionwidget.h \
+    rameditwidgets/sequenceeditwidget.h \
+    rameditwidgets/sequencesmanagerwidget.h \
+    settingswidgets/serversettingswidget.h \
+    rameditwidgets/shoteditwidget.h \
+    rameditwidgets/shotsmanagerwidget.h \
+    ramdisplaywidgets/simpleobjectlist.h \
+    smallwidgets/statebox.h \
+    rameditwidgets/stateeditwidget.h \
+    rameditwidgets/statesmanagerwidget.h \
+    rameditwidgets/statuseditwidget.h \
+    rameditwidgets/statushistorywidget.h \
+    rameditwidgets/stepeditwidget.h \
+    rameditwidgets/stepsmanagerwidget.h \
+    rameditwidgets/templateassetgroupeditwidget.h \
+    rameditwidgets/templateassetgroupsmanagerwidget.h \
+    rameditwidgets/templatestepeditwidget.h \
+    rameditwidgets/templatestepsmanagerwidget.h \
+    rameditwidgets/usereditwidget.h \
     userprofilepage.h \
-    usersmanagerwidget.h
+    rameditwidgets/usersmanagerwidget.h
 
 FORMS += \
-    applicationeditwidget.ui \
-    asseteditwidget.ui \
-    assetgroupeditwidget.ui \
-    daemonsettingswidget.ui \
+    rameditwidgets/applicationeditwidget.ui \
+    rameditwidgets/asseteditwidget.ui \
+    rameditwidgets/assetgroupeditwidget.ui \
+    settingswidgets/daemonsettingswidget.ui \
     duqf-widgets/aboutdialog.ui \
     duqf-widgets/appearancesettingswidget.ui \
     duqf-widgets/duqffolderselectorwidget.ui \
     duqf-widgets/toolbarspacer.ui \
-    filetypeeditwidget.ui \
-    listmanagerwidget.ui \
-    localsettingswidget.ui \
+    rameditwidgets/filetypeeditwidget.ui \
+    rameditwidgets/listmanagerwidget.ui \
+    settingswidgets/localsettingswidget.ui \
     loginpage.ui \
     mainwindow.ui \
     pipeline-editor/pipelinewidget.ui \
-    projecteditwidget.ui \
-    serversettingswidget.ui \
-    stateeditwidget.ui \
-    stepeditwidget.ui \
-    templateassetgroupeditwidget.ui \
-    templatestepeditwidget.ui \
-    usereditwidget.ui \
+    rameditwidgets/projecteditwidget.ui \
+    settingswidgets/serversettingswidget.ui \
+    rameditwidgets/stateeditwidget.ui \
+    rameditwidgets/stepeditwidget.ui \
+    rameditwidgets/templateassetgroupeditwidget.ui \
+    rameditwidgets/templatestepeditwidget.ui \
+    rameditwidgets/usereditwidget.ui \
     userprofilepage.ui \
 
 # Default rules for deployment.

@@ -590,6 +590,26 @@ void DBInterface::removePipe(QString uuid)
     request(q);
 }
 
+void DBInterface::updateStatus(QString uuid, QString stateUuid, QString comment, int version, int completionRatio)
+{
+    QStringList q("updateStatus");
+    q << "uuid=" + uuid;
+    q << "stateUuid=" + stateUuid;
+    if (comment != "") q << "comment=" + comment;
+    if (version > 0) q << "version=" + QString::number(version);
+    if (completionRatio >= 0) q << "completionRatio=" + QString::number(completionRatio);
+
+    request(q);
+}
+
+void DBInterface::removeStatus(QString uuid)
+{
+    QStringList q("removeStatus");
+    q << "uuid=" + uuid;
+
+    request(q);
+}
+
 DBInterface::DBInterface(QObject *parent) : DuQFLoggerObject("Database Interface", parent)
 {
     // LOCAL
