@@ -30,7 +30,7 @@ public:
     void hideStatus(bool hide = true);
 
 public slots:
-    void setObject(RamObject *object);
+    virtual void setObject(RamObject *object);
 
 protected slots:
     virtual void update();

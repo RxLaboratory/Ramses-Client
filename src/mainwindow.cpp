@@ -72,7 +72,7 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     adminPage->showReinitButton(false);
     mainStack->addWidget(adminPage);
     // Admin tabs
-    adminPage->addPage(new UsersManagerWidget(this),"Users", QIcon(":/icons/users"));
+    adminPage->addPage(new UserListManagerWidget(this),"Users", QIcon(":/icons/users"));
     adminPage->addPage(new ProjectsManagerWidget(this), "Projects", QIcon(":/icons/projects"));
     adminPage->addPage(new TemplateStepsManagerWidget(this), "Template Steps", QIcon(":/icons/steps"));
     adminPage->addPage(new TemplateAssetGroupsManagerWidget(this), "Template Asset Groups", QIcon(":/icons/asset-groups"));

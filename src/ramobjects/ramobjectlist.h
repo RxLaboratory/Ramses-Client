@@ -27,6 +27,7 @@ public:
     void removeAt(int i);
     void removeFirst();
     void removeLast();
+    RamObject *takeAt(int i);
     // QList Operators
     RamObject *operator[](int i) const;
 

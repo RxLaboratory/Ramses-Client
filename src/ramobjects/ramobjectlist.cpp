@@ -77,6 +77,13 @@ void RamObjectList::removeLast()
     if (m_objects.count() > 0) removeAt(m_objects.count() - 1);
 }
 
+RamObject *RamObjectList::takeAt(int i)
+{
+    RamObject *o = m_objects.takeAt(i);
+    emit objectRemoved(o);
+    return o;
+}
+
 void RamObjectList::removeAll(RamObject *obj)
 {
     for (int i = m_objects.count() -1; i >= 0; i--)

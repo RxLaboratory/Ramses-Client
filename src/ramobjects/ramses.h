@@ -72,11 +72,8 @@ public:
     QString path(RamShot *s) const;
     QDir dir(RamShot *s) const;
     // Users
-    QList<RamUser *> users() const;
+    RamObjectList *users() const;
     RamUser *currentUser() const;
-    RamUser *createUser();
-    RamUser *user(QString uuid);
-    void removeUser(QString uuid);
     bool isAdmin();
     bool isProjectAdmin();
     bool isLead();
@@ -124,12 +121,13 @@ public slots:
     void refresh();
     void removeApplication(RamObject *a);
     void removeFileType(RamObject *ft);
+    // Users
+    RamUser *createUser();
 
 signals:
     void loggedIn(RamUser*);
     void loggedOut();
     void projectChanged(RamProject*);
-    void newUser(RamUser *user);
     void newProject(RamProject *project);
     void newTemplateStep(RamStep *step);
     void newTemplateAssetGroup(RamAssetGroup *assetGroup);
@@ -146,7 +144,6 @@ private slots:
     void newData(QJsonObject data);
     //users
     void gotUsers(QJsonArray users);
-    void userRemoved(RamObject *o);
     //projects
     void gotProjects(QJsonArray projects);
     QString gotProject(QJsonObject newP);
@@ -207,7 +204,7 @@ private:
     QDir createPath(QString p) const;
 
     // Users
-    QList<RamUser *> _users;
+    RamObjectList *_users;
     RamUser *_currentUser;
     QString _currentUserShortName;
 

@@ -45,9 +45,9 @@ RamUser *RamStatus::user() const
     return _user;
 }
 
-void RamStatus::setUser(RamUser *user)
+void RamStatus::setUser(RamObject *obj)
 {
-    _user = user;
+    _user = (RamUser*)obj;
     emit changed(this);
 }
 

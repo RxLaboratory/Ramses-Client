@@ -6,7 +6,7 @@ UserEditWidget::UserEditWidget(RamUser *user, QWidget *parent) :
     setupUi();
     connectEvents();
 
-    setUser(user);
+    setObject(user);
 }
 
 UserEditWidget::UserEditWidget(QWidget *parent) :
@@ -15,7 +15,7 @@ UserEditWidget::UserEditWidget(QWidget *parent) :
     setupUi();
     connectEvents();
 
-    setUser(nullptr);
+    setObject(nullptr);
 }
 
 RamUser *UserEditWidget::user() const
@@ -23,11 +23,13 @@ RamUser *UserEditWidget::user() const
     return _user;
 }
 
-void UserEditWidget::setUser(RamUser *user)
+void UserEditWidget::setObject(RamObject *obj)
 {
+    RamUser *user = (RamUser*)obj;
+
     this->setEnabled(false);
 
-    setObject(user);
+    ObjectEditWidget::setObject(user);
     _user = user;
 
     QSignalBlocker b1(cpasswordEdit);
@@ -76,7 +78,7 @@ void UserEditWidget::userChanged(RamObject *o)
 {
     if (updating) return;
     Q_UNUSED(o);
-    setUser(_user);
+    setObject(_user);
 }
 
 void UserEditWidget::changePassword()
@@ -118,6 +120,8 @@ bool UserEditWidget::checkInput()
 {
     if (!_user) return false;
 
+    return ObjectEditWidget::checkInput();
+
     if (npassword1Edit->text() != "")
     {
         if (cpasswordEdit->text() == "" && _user->uuid() == Ramses::instance()->currentUser()->uuid())
@@ -133,6 +137,7 @@ bool UserEditWidget::checkInput()
     }
 
     statusLabel->setText("");
+
     return true;
 }
 

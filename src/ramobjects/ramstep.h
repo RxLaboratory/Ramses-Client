@@ -31,7 +31,7 @@ public:
 
     QList<RamUser *> users() const;
     void clearUsers();
-    void assignUser(RamUser *user);
+    void assignUser(RamObject *obj);
     void unassignUser(RamObject *user);
     void unassignUser(QString uuid);
 

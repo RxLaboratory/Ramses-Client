@@ -28,6 +28,8 @@ Ramses::Ramses(QObject *parent) : QObject(parent)
     _userSettings = new QSettings(QSettings::IniFormat, QSettings::UserScope, STR_COMPANYNAME, STR_INTERNALNAME);
     _userSettings->beginGroup("ramses");
 
+    _users = new RamObjectList(this);
+
     connect( _dbi, &DBInterface::data, this, &Ramses::newData );
     connect( _dbi, &DBInterface::connectionStatusChanged, this, &Ramses::dbiConnectionStatusChanged);
     connect( (DuApplication *)qApp, &DuApplication::idle, this, &Ramses::refresh);
@@ -59,9 +61,9 @@ void Ramses::gotUsers(QJsonArray users)
     DBISuspender s;
 
     // loop through existing users to update them
-    for (int i = _users.count() - 1; i >= 0; i--)
+    for (int i = _users->count() - 1; i >= 0; i--)
     {
-        RamUser *existingUser = _users[i];
+        RamUser *existingUser = (RamUser*)_users->at(i);
         // loop through new users to update
         bool found = false;
         for (int j = users.count() - 1; j >= 0; j--)
@@ -88,7 +90,7 @@ void Ramses::gotUsers(QJsonArray users)
         // Not found, remove from existing
         if (!found)
         {
-            RamUser *u = _users.takeAt(i);
+            RamObject *u = _users->takeAt(i);
             u->remove();
         }
     }
@@ -105,18 +107,15 @@ void Ramses::gotUsers(QJsonArray users)
         user->setFolderPath(u.value("folderPath").toString());
         user->setRole( u.value("role").toString("standard") );
 
-        _users << user;
-
-        connect(user,&RamUser::removed, this, &Ramses::userRemoved);
-        emit newUser(user);
+        _users->append( user );
     }
 
     // Set the current user
-    foreach(RamUser *user, _users)
+    for (int i = 0; i < _users->count(); i++)
     {
-        if (user->shortName() == _currentUserShortName)
+        if (_users->at(i)->shortName() == _currentUserShortName)
         {
-            _currentUser = user;
+            _currentUser = (RamUser*)_users->at(i);
             _connected = true;
 
             emit loggedIn(_currentUser);
@@ -130,11 +129,6 @@ void Ramses::gotUsers(QJsonArray users)
     _connected = false;
     setCurrentProject(nullptr);
     emit loggedOut();
-}
-
-void Ramses::userRemoved(RamObject *o)
-{
-    removeUser(o->uuid());
 }
 
 void Ramses::gotProjects(QJsonArray projects)
@@ -586,7 +580,7 @@ void Ramses::gotSteps(QJsonArray steps, RamProject *project)
                 existingStep->clearUsers();
 
                 foreach( QJsonValue u, newStep.value("users").toArray())
-                    existingStep->assignUser( user(u.toString()) );
+                    existingStep->assignUser( _users->fromUuid( u.toString() ) );
 
                 foreach(QJsonValue a, newStep.value("applications").toArray())
                     existingStep->assignApplication( application(a.toString()));
@@ -622,7 +616,7 @@ void Ramses::gotSteps(QJsonArray steps, RamProject *project)
         step->setProjectUuid( s.value("projectUuid").toString());
 
         foreach( QJsonValue u, s.value("users").toArray())
-            step->assignUser( user(u.toString()) );
+            step->assignUser( _users->fromUuid(u.toString()) );
 
         foreach(QJsonValue a, s.value("applications").toArray())
             step->assignApplication( application(a.toString()));
@@ -926,7 +920,7 @@ QString Ramses::gotStatus(QJsonObject newS, RamItem *item, RamProject *project)
             //Emit just one signal
             QSignalBlocker b(existingStatus);
             existingStatus->setCompletionRatio( newS.value("completionRatio").toInt( ));
-            RamUser *u = Ramses::instance()->user( newS.value("userUuid").toString( ) );
+            RamObject *u = _users->fromUuid(  newS.value("userUuid").toString( ) );
             if (u) existingStatus->setUser( u );
             RamState *state = Ramses::instance()->state( newS.value("stateUuid").toString( ) );
             if (state) existingStatus->setState( state );
@@ -942,14 +936,14 @@ QString Ramses::gotStatus(QJsonObject newS, RamItem *item, RamProject *project)
 
     // not existing, let's create it
 
-    RamUser *user = Ramses::instance()->user( newS.value("userUuid").toString( ) );
+    RamObject *user = _users->fromUuid(  newS.value("userUuid").toString( ) );
     if (!user) return uuid;
     RamState *state = Ramses::instance()->state( newS.value("stateUuid").toString( ) );
     if (!state) return uuid;
     RamStep *step = project->step( newS.value("stepUuid").toString( ) );
     if (!step) return uuid;
     RamStatus *status = new RamStatus(
-                user,
+                (RamUser*)user,
                 state,
                 step,
                 newS.value("uuid").toString(),
@@ -1596,32 +1590,10 @@ void Ramses::removeProject(QString uuid)
 
 RamUser *Ramses::createUser()
 {
-    RamUser *user = new RamUser("New","J. Doe");
+    RamUser *user = new RamUser("NEW","J. Doe");
     user->setParent(this);
-    _users << user;
-    emit newUser(user);
+    _users->append(user);
     return user;
-}
-
-RamUser *Ramses::user(QString uuid)
-{
-    foreach(RamUser *user, _users)
-    {
-        if (user->uuid() == uuid) return user;
-    }
-    return nullptr;
-}
-
-void Ramses::removeUser(QString uuid)
-{
-    for (int i = _users.count() -1; i >= 0; i--)
-    {
-        if (_users[i]->uuid() == uuid)
-        {
-            RamUser *u = _users.takeAt(i);
-            u->remove();
-        }
-    }
 }
 
 bool Ramses::isAdmin()
@@ -1685,7 +1657,7 @@ RamUser *Ramses::currentUser() const
     return _currentUser;
 }
 
-QList<RamUser *> Ramses::users() const
+RamObjectList *Ramses::users() const
 {
     return _users;
 }

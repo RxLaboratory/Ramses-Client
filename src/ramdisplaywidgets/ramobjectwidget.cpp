@@ -16,7 +16,7 @@ RamObjectWidget::RamObjectWidget(RamObject *obj, QWidget *parent) : QWidget(pare
 
 RamObjectWidget::~RamObjectWidget()
 {
-    _dockEditWidget->deleteLater();
+    delete dockEditWidget();
 }
 
 RamObject *RamObjectWidget::ramObject() const
@@ -35,13 +35,10 @@ void RamObjectWidget::setObject(RamObject *o)
     }
 }
 
-void RamObjectWidget::disableEdit()
-{
-    _editable = false;
-}
-
 void RamObjectWidget::setEditable(bool editable)
 {
+    if (!_hasEditWidget) editable = false;
+    if (!_hasEditRights) editable = false;
     _editable = editable;
     editButton->setVisible( editable );
     removeButton->setVisible( editable );
@@ -64,7 +61,8 @@ void RamObjectWidget::setTitle(QString t)
 
 void RamObjectWidget::setIcon(QString i)
 {
-    icon->setPixmap(i);
+    icon->setPixmap(QPixmap(i));
+    _dockEditWidget->setIcon(i);
 }
 
 ObjectDockWidget *RamObjectWidget::dockEditWidget() const
@@ -97,11 +95,11 @@ void RamObjectWidget::objectRemoved()
 
 void RamObjectWidget::userChanged()
 {
+    _hasEditRights = false;
     RamUser *u = Ramses::instance()->currentUser();
     if (!u) return;
-    bool ok = u->role() >= _editRole && _hasEditWidget ;
-    if ( _editUsers.contains(u) ) ok = true;
-    setEditable(ok);
+    _hasEditRights = u->role() >= _editRole && _hasEditWidget ;
+    if ( _editUsers.contains(u) ) _hasEditRights = true;
 }
 
 void RamObjectWidget::remove()
@@ -115,7 +113,7 @@ void RamObjectWidget::remove()
 
 void RamObjectWidget::edit()
 {
-    if (_hasEditWidget && _editable) _dockEditWidget->show();
+    if (_hasEditWidget && _editable && _hasEditRights) _dockEditWidget->show();
 }
 
 void RamObjectWidget::setupUi()
@@ -137,7 +135,7 @@ void RamObjectWidget::setupUi()
 
     icon = new QLabel(this);
     icon->setScaledContents(true);
-    icon->setMaximumSize(12,12);
+    icon->setFixedSize(12,12);
     titleLayout->addWidget(icon);
 
     title = new QLabel(this);

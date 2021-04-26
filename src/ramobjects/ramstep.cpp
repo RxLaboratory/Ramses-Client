@@ -70,8 +70,9 @@ void RamStep::clearUsers()
     _users.clear();
 }
 
-void RamStep::assignUser(RamUser *user)
+void RamStep::assignUser(RamObject *obj)
 {
+    RamUser *user = (RamUser*)obj;
     _users << user;
     _dbi->assignUser(_uuid, user->uuid());
     connect(user, &RamUser::removed, this, &RamStep::userRemoved);

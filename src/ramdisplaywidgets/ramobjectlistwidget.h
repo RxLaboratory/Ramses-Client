@@ -9,6 +9,7 @@
 #include "ramassetwidget.h"
 #include "ramshotwidget.h"
 #include "ramstatuswidget.h"
+#include "ramuserwidget.h"
 
 class RamObjectListWidget : public QTableWidget
 {
@@ -21,23 +22,28 @@ public:
 
     RamObjectList *objects() const;
 
+    void select(RamObject *obj);
+
 public slots:
-    void removeSelectedObjects(bool removeFromListOnly = false);
+    void removeSelectedObjects();
+    void unassignSelectedObjects();
 
 signals:
     void itemDropped();
     void objectSelected(RamObject*);
-    void objectRemoved(RamObject*);
     void orderChanged();
 
+protected:
+    void resizeEvent(QResizeEvent *event) Q_DECL_OVERRIDE;
+
 private slots:
-    void itemSelected(QTableWidgetItem *previous, QTableWidgetItem *current);
+    void itemSelected(QTableWidgetItem *current, QTableWidgetItem *previous);
     void changeSelection();
     void updateOrder();
-    void objectChanged(RamObject *obj);
 
-    void removeObject(RamObject *obj);
-    void addObject(RamObject *obj);
+    void objectChanged(RamObject *obj);
+    void objectUnassigned(RamObject *obj);
+    void objectAssigned(RamObject *obj);
 private:
     RamObjectList *m_list;
 

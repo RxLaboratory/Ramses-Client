@@ -30,7 +30,7 @@ protected slots:
 private slots:
     void stepChanged(RamObject *o);
     // Users
-    void newUser(RamUser *user);
+    void newUser(RamObject *user);
     void assignUser();
     void unassignUser(RamObject *o);
     void userAssigned(RamUser *user);

@@ -26,7 +26,6 @@ public:
     RamObject *ramObject() const;
     void setObject(RamObject *o);
 
-    void disableEdit();
     void setEditable(bool editable = true);
 
     void setUserEditRole(RamUser::UserRole role);
@@ -71,6 +70,7 @@ private:
     RamObject *_object;
     ObjectDockWidget *_dockEditWidget;
     RamUser::UserRole _editRole = RamUser::Admin;
+    bool _hasEditRights = false;
 };
 
 #endif // RAMOBJECTWIDGET_H

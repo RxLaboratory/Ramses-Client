@@ -35,6 +35,8 @@ SOURCES += \
     rameditwidgets/assetgroupsmanagerwidget.cpp \
     rameditwidgets/assetsmanagerwidget.cpp \
     daemon.cpp \
+    rameditwidgets/objectlisteditwidget.cpp \
+    rameditwidgets/userlistmanagerwidget.cpp \
     settingswidgets/daemonsettingswidget.cpp \
     dbinterface.cpp \
     dbisuspender.cpp \
@@ -117,7 +119,7 @@ SOURCES += \
     settingswidgets/serversettingswidget.cpp \
     rameditwidgets/shoteditwidget.cpp \
     rameditwidgets/shotsmanagerwidget.cpp \
-    ramdisplaywidgets/simpleobjectlist.cpp \
+    rameditwidgets/simpleobjectlist.cpp \
     smallwidgets/statebox.cpp \
     rameditwidgets/stateeditwidget.cpp \
     rameditwidgets/statesmanagerwidget.cpp \
@@ -130,8 +132,7 @@ SOURCES += \
     rameditwidgets/templatestepeditwidget.cpp \
     rameditwidgets/templatestepsmanagerwidget.cpp \
     rameditwidgets/usereditwidget.cpp \
-    userprofilepage.cpp \
-    rameditwidgets/usersmanagerwidget.cpp
+    userprofilepage.cpp
 
 HEADERS += \
     ramdisplaywidgets/ramuserwidget.h \
@@ -142,6 +143,8 @@ HEADERS += \
     rameditwidgets/assetgroupsmanagerwidget.h \
     rameditwidgets/assetsmanagerwidget.h \
     daemon.h \
+    rameditwidgets/objectlisteditwidget.h \
+    rameditwidgets/userlistmanagerwidget.h \
     settingswidgets/daemonsettingswidget.h \
     dbinterface.h \
     dbisuspender.h \
@@ -224,7 +227,7 @@ HEADERS += \
     settingswidgets/serversettingswidget.h \
     rameditwidgets/shoteditwidget.h \
     rameditwidgets/shotsmanagerwidget.h \
-    ramdisplaywidgets/simpleobjectlist.h \
+    rameditwidgets/simpleobjectlist.h \
     smallwidgets/statebox.h \
     rameditwidgets/stateeditwidget.h \
     rameditwidgets/statesmanagerwidget.h \
@@ -237,8 +240,7 @@ HEADERS += \
     rameditwidgets/templatestepeditwidget.h \
     rameditwidgets/templatestepsmanagerwidget.h \
     rameditwidgets/usereditwidget.h \
-    userprofilepage.h \
-    rameditwidgets/usersmanagerwidget.h
+    userprofilepage.h
 
 FORMS += \
     rameditwidgets/applicationeditwidget.ui \

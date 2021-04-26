@@ -11,13 +11,13 @@ UserProfilePage::UserProfilePage(QWidget *parent) :
 
 void UserProfilePage::loggedIn(RamUser *user)
 {
-    profileWidget->setUser(user);
+    profileWidget->setObject(user);
     profileWidget->setEnabled(true);
 }
 
 void UserProfilePage::loggedOut()
 {
-    profileWidget->setUser(nullptr);
+    profileWidget->setObject(nullptr);
     profileWidget->setEnabled(false);
 }
 

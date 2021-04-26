@@ -128,20 +128,20 @@ void StepEditWidget::setupUi()
 
 void StepEditWidget::populateMenus()
 {
-    foreach(RamUser *u, Ramses::instance()->users()) newUser(u);
+    for (int i = 0; i < Ramses::instance()->users()->count(); i++) newUser( Ramses::instance()->users()->at(i) );
     foreach(RamApplication *a, Ramses::instance()->applications()) newApplication(a);
 }
 
 void StepEditWidget::connectEvents()
 {
-    connect(Ramses::instance(), &Ramses::newUser, this, &StepEditWidget::newUser);
+    connect(Ramses::instance()->users(), &RamObjectList::objectAdded, this, &StepEditWidget::newUser);
     connect(Ramses::instance(), &Ramses::newApplication, this, &StepEditWidget::newApplication);
     connect(typeBox, SIGNAL(currentIndexChanged(int)), this, SLOT(update()));
     connect(usersList, &SimpleObjectList::objectRemoved, this, &StepEditWidget::unassignUser);
     connect(applicationList, &SimpleObjectList::objectRemoved, this, &StepEditWidget::unassignApplication);
 }
 
-void StepEditWidget::newUser(RamUser *user)
+void StepEditWidget::newUser(RamObject *user)
 {
     if (!user) return;
     if (user->uuid() == "") return;
@@ -157,7 +157,7 @@ void StepEditWidget::assignUser()
 {
     if(!_step) return;
     QAction *userAction = (QAction*)sender();
-    RamUser *user = Ramses::instance()->user( userAction->data().toString());
+    RamObject *user = Ramses::instance()->users()->fromUuid(  userAction->data().toString() );
     if (!user) return;
     _step->assignUser(user);
 }

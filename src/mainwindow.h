@@ -13,7 +13,7 @@
 #include "daemonsettingswidget.h"
 #include "loginpage.h"
 #include "userprofilepage.h"
-#include "usersmanagerwidget.h"
+#include "userlistmanagerwidget.h"
 #include "projectsmanagerwidget.h"
 #include "pipeline-editor/pipelinewidget.h"
 #include "templatestepsmanagerwidget.h"

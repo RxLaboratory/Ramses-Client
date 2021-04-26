@@ -52,12 +52,19 @@ void ObjectListWidget::addObject(RamObject *obj, bool edit)
         else ow = new RamObjectWidget(obj, this);
         break;
     }
+    case RamObject::User:
+    {
+        RamUser *u = dynamic_cast<RamUser*>(obj);
+        if (u) ow = new RamUserWidget(u, this);
+        else ow = new RamObjectWidget(obj, this);
+        break;
+    }
     default:
         ow = new RamObjectWidget(obj,this);
         break;
     }
 
-    if (!m_editableObjects) ow->disableEdit();
+    ow->setEditable(m_editableObjects);
 
     int row = this->rowCount();
     this->setRowCount( row + 1 );
@@ -119,7 +126,7 @@ void ObjectListWidget::removeSelectedObjects()
         {
             emit objectRemoved(ow->ramObject());
             ow->ramObject()->remove();
-            ow->deleteLater();
+            delete ow;
         }
         this->removeRow(row);
     }

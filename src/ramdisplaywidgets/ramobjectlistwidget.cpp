@@ -33,7 +33,20 @@ RamObjectList *RamObjectListWidget::objects() const
     return m_list;
 }
 
-void RamObjectListWidget::removeSelectedObjects(bool removeFromListOnly)
+void RamObjectListWidget::select(RamObject *obj)
+{
+    for (int row =0; row < this->rowCount(); row++)
+    {
+        // Get the object from the widget
+        RamObjectWidget *ow = (RamObjectWidget*)this->cellWidget(row, 0 );
+        if (ow->ramObject()->is(obj))
+        {
+            this->item(row, 0)->setSelected(true);
+        }
+    }
+}
+
+void RamObjectListWidget::removeSelectedObjects()
 {
     if (this->selectedItems().count() == 0 ) return;
     QMessageBox::StandardButton confirm = QMessageBox::question(this,
@@ -48,15 +61,33 @@ void RamObjectListWidget::removeSelectedObjects(bool removeFromListOnly)
         RamObjectWidget *ow = (RamObjectWidget*) this->cellWidget(row, 0);
         if (ow)
         {
-            if (removeFromListOnly) m_list->removeAll( ow->ramObject() );
-            else ow->ramObject()->remove();
-            delete ow;
+            ow->ramObject()->remove();
         }
-        this->removeRow(row);
     }
 }
 
-void RamObjectListWidget::itemSelected(QTableWidgetItem *previous, QTableWidgetItem *current)
+void RamObjectListWidget::unassignSelectedObjects()
+{
+    for(int row =  this->rowCount() -1 ; row >= 0; row--)
+    {
+        QTableWidgetItem *i = this->item(row, 0);
+        if (!i->isSelected()) continue;
+        RamObjectWidget *ow = (RamObjectWidget*) this->cellWidget(row, 0);
+        if (ow)
+        {
+            m_list->removeAll(ow->ramObject());
+        }
+    }
+}
+
+void RamObjectListWidget::resizeEvent(QResizeEvent *event)
+{
+    this->setColumnWidth( 0, event->size().width() );
+    this->setRowHeight(0, 10);
+    this->resizeRowsToContents();
+}
+
+void RamObjectListWidget::itemSelected(QTableWidgetItem *current, QTableWidgetItem *previous)
 {
     Q_UNUSED(previous);
     if (!current) return;
@@ -100,14 +131,14 @@ void RamObjectListWidget::objectChanged(RamObject *obj)
     {
         // Get the object from the widget
         RamObjectWidget *ow = (RamObjectWidget*)this->cellWidget(row, 0 );
-        if (ow->ramObject()->uuid() == obj->uuid())
+        if (ow->ramObject()->is(obj))
         {
             this->item(row, 0)->setText("   " + obj->name());
         }
     }
 }
 
-void RamObjectListWidget::removeObject(RamObject *obj)
+void RamObjectListWidget::objectUnassigned(RamObject *obj)
 {
     if (m_objectConnections.contains(obj->uuid()))
     {
@@ -126,7 +157,7 @@ void RamObjectListWidget::removeObject(RamObject *obj)
     }
 }
 
-void RamObjectListWidget::addObject(RamObject *obj)
+void RamObjectListWidget::objectAssigned(RamObject *obj)
 {
     // Check type to create widget
     RamObject::ObjectType type = obj->objectType();
@@ -154,12 +185,19 @@ void RamObjectListWidget::addObject(RamObject *obj)
         else ow = new RamObjectWidget(obj, this);
         break;
     }
+    case RamObject::User:
+    {
+        RamUser *u = dynamic_cast<RamUser*>(obj);
+        if (u) ow = new RamUserWidget(u, this);
+        else ow = new RamObjectWidget(obj, this);
+        break;
+    }
     default:
         ow = new RamObjectWidget(obj,this);
         break;
     }
 
-    if (!m_editableObjects) ow->disableEdit();
+    ow->setEditable(m_editableObjects);
 
     int row = this->rowCount();
     this->setRowCount( row + 1 );
@@ -203,8 +241,8 @@ void RamObjectListWidget::setupUi()
 
 void RamObjectListWidget::connectEvents()
 {
-    connect(m_list, &RamObjectList::objectRemoved, this, &RamObjectListWidget::removeObject);
-    connect(m_list, &RamObjectList::objectAdded, this, &RamObjectListWidget::addObject);
+    connect(m_list, &RamObjectList::objectRemoved, this, &RamObjectListWidget::objectUnassigned);
+    connect(m_list, &RamObjectList::objectAdded, this, &RamObjectListWidget::objectAssigned);
 
     connect(this->verticalHeader(), &QHeaderView::sectionMoved, this, &RamObjectListWidget::updateOrder);
     connect(this, &QTableWidget::currentItemChanged, this, &RamObjectListWidget::itemSelected);

@@ -19,7 +19,7 @@ public:
     void setCompletionRatio(int completionRatio);
 
     RamUser *user() const;
-    void setUser(RamUser *user);
+    void setUser(RamObject *obj);
 
     RamState *state() const;
     void setState(RamState *state);

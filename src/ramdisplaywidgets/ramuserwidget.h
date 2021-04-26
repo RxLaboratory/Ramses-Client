@@ -14,6 +14,9 @@ public:
     RamUserWidget(RamUser *user, QWidget *parent = nullptr);
     RamUser *user() const;
 
+private slots:
+    void userChanged();
+
 private:
     RamUser *_user;
 };

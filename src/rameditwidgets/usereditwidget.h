@@ -18,15 +18,17 @@ public:
     explicit UserEditWidget(QWidget *parent = nullptr);
 
     RamUser *user() const;
-    void setUser(RamUser *user);
+
+public slots:
+    void setObject(RamObject *obj) Q_DECL_OVERRIDE;
 
 protected slots:
-    void update();
+    void update() Q_DECL_OVERRIDE;
 
 private slots:
     void userChanged(RamObject *o);
     void changePassword();
-    bool checkInput();
+    bool checkInput() Q_DECL_OVERRIDE;
     void updateFolderLabel(QString path);
 
 private:
