@@ -113,13 +113,13 @@ void ObjectEditWidget::setupUi()
     mainFormLayout = new QGridLayout();
     mainFormLayout->setSpacing(3);
 
-    nameLabel = new QLabel(dummy);
+    nameLabel = new QLabel("Name", dummy);
     mainFormLayout->addWidget(nameLabel, 0, 0);
 
     nameEdit = new QLineEdit(dummy);
     mainFormLayout->addWidget(nameEdit, 0, 1);
 
-    shortNameLabel = new QLabel(dummy);
+    shortNameLabel = new QLabel("Short Name", dummy);
     mainFormLayout->addWidget(shortNameLabel, 1, 0);
 
     shortNameEdit = new QLineEdit(dummy);
