@@ -36,11 +36,13 @@ public slots:
     void setMinimum(int min);
 
 signals:
+    void valueChanging(int value);
     void valueChanged(int value);
 
 private slots:
     void spinBox_editingFinished();
     void spinBox_valueChanged(int arg1);
+    void slider_valueChanging(int arg1);
     void slider_valueChanged(int arg1);
 private:
     void setupUi();

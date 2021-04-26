@@ -47,7 +47,8 @@ void DuQFSpinBox::setupUi()
 
 void DuQFSpinBox::connectEvents()
 {
-    connect(_slider,SIGNAL(valueChanged(int)), this, SLOT(slider_valueChanged(int)));
+    connect(_slider,SIGNAL(valueChanging(int)), this, SLOT(slider_valueChanging(int)));
+    connect(_slider,SIGNAL(editingFinished(int)), this, SLOT(slider_valueChanged(int)));
     connect(_spinBox,SIGNAL(editingFinished()), this, SLOT(spinBox_editingFinished()));
     connect(_spinBox,SIGNAL(valueChanged(int)), this, SLOT(spinBox_valueChanged(int)));
 }
@@ -73,9 +74,15 @@ void DuQFSpinBox::spinBox_valueChanged(int arg1)
     emit valueChanged(arg1);
 }
 
+void DuQFSpinBox::slider_valueChanging(int arg1)
+{
+    emit valueChanging(arg1);
+}
+
 void DuQFSpinBox::slider_valueChanged(int arg1)
 {
     _spinBox->setValue(arg1);
+    emit valueChanged(arg1);
 }
 
 bool DuQFSpinBox::valueVisible() const

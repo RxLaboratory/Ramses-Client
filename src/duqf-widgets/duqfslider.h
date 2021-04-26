@@ -24,7 +24,8 @@ public:
     void setEditable(bool editable);
 
 signals:
-    void valueChanged(int);
+    void valueChanging(int);
+    void editingFinished(int);
 private:
     QString _prefix;
     QString _suffix;
@@ -32,5 +33,6 @@ private:
     bool _editable = true;
 protected:
     void mouseMoveEvent ( QMouseEvent * event ) Q_DECL_OVERRIDE;
+    void mouseReleaseEvent( QMouseEvent * event ) Q_DECL_OVERRIDE;
 };
 #endif // DUQFSLIDER_H

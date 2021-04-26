@@ -71,7 +71,13 @@ void DuQFSlider::mouseMoveEvent(QMouseEvent *event)
         newVal = maximum() - newVal;
 
     setValue(newVal);
-    emit valueChanged(newVal);
+    emit valueChanging(newVal);
     repaint();
     event->accept();
+}
+
+void DuQFSlider::mouseReleaseEvent(QMouseEvent *event)
+{
+    emit editingFinished(this->value());
+    event->ignore();
 }
