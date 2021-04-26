@@ -57,6 +57,7 @@ public:
     void addAssetEditDockWidget(QDockWidget *w);
     void addShotEditDockWidget(QDockWidget *w);
     void addStatusEditDockWidget(QDockWidget *w);
+    void addUserEditDockWidget(QDockWidget *w);
 
 private:
     // ========= RxOT UI ==============
@@ -96,6 +97,7 @@ private:
     QList<QDockWidget *> _assetEditDock;
     QList<QDockWidget *> _shotEditDock;
     QList<QDockWidget *> _statusEditDock;
+    QList<QDockWidget *> _userEditDock;
 
     QMetaObject::Connection _currentUserConnection;
 

@@ -8,7 +8,7 @@
 #include "asseteditwidget.h"
 
 /**
- * @brief The RamAssetWidget class is a small widget used to show an Asset anywher in the UI
+ * @brief The RamAssetWidget class is a small widget used to show an Asset anywhere in the UI
  */
 class RamAssetWidget : public RamObjectWidget
 {

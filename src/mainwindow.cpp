@@ -180,6 +180,18 @@ void MainWindow::addStatusEditDockWidget(QDockWidget *w)
     _statusEditDock << w;
 }
 
+void MainWindow::addUserEditDockWidget(QDockWidget *w)
+{
+    this->addDockWidget(Qt::RightDockWidgetArea, w);
+
+    /*if (!_shotEditDock.isEmpty())
+    {
+        this->tabifyDockWidget(_shotEditDock.last(), w);
+    }*/
+
+    _userEditDock << w;
+}
+
 void MainWindow::duqf_initUi()
 {
     // ===== SYSTRAY ======

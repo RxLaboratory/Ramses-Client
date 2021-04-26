@@ -27,6 +27,7 @@ INCLUDEPATH += rameditwidgets \
     ramobjects
 
 SOURCES += \
+    ramdisplaywidgets/ramuserwidget.cpp \
     rameditwidgets/applicationeditwidget.cpp \
     rameditwidgets/applicationsmanagerwidget.cpp \
     rameditwidgets/asseteditwidget.cpp \
@@ -133,6 +134,7 @@ SOURCES += \
     rameditwidgets/usersmanagerwidget.cpp
 
 HEADERS += \
+    ramdisplaywidgets/ramuserwidget.h \
     rameditwidgets/applicationeditwidget.h \
     rameditwidgets/applicationsmanagerwidget.h \
     rameditwidgets/asseteditwidget.h \
@@ -259,8 +261,6 @@ FORMS += \
     rameditwidgets/stepeditwidget.ui \
     rameditwidgets/templateassetgroupeditwidget.ui \
     rameditwidgets/templatestepeditwidget.ui \
-    rameditwidgets/usereditwidget.ui \
-    userprofilepage.ui \
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

@@ -20,6 +20,7 @@ private slots:
     void loggedIn(RamUser *user);
     void loggedOut();
 private:
+    void setupUi();
     UserEditWidget *profileWidget;
 
 };
