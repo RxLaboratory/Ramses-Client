@@ -56,6 +56,7 @@
         <file alias="list">resources/icons/history.svg</file>
         <file alias="assets-table">resources/icons/assets-property-table_bl.svg</file>
         <file alias="shots-table">resources/icons/shots-frames-table_bl.svg</file>
+        <file alias="search">resources/icons/search_sl.svg</file>
     </qresource>
     <qresource prefix="/styles">
         <file alias="default-ramses">resources/style/style-ramses.css</file>

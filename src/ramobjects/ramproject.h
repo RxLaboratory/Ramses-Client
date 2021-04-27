@@ -8,6 +8,7 @@
 #include "rampipe.h"
 #include "dbisuspender.h"
 #include "ramobjectlist.h"
+#include "ramobjectuberlist.h"
 
 class RamProject : public RamObject
 {
@@ -69,8 +70,7 @@ public:
     void sortSequences();
 
     // Shots
-    QList<RamShot*> shots();
-    RamShot *shot(QString uuid);
+    RamObjectUberList *shots();
     void moveShotToSequence(RamShot *shot, QString sequenceUuid);
     void moveShotToSequence(RamShot *shot, RamSequence *sequence);
     void removeShot(QString uuid);
@@ -110,6 +110,7 @@ private:
     QList<RamStep *> _steps;
     QList<RamAssetGroup *> _assetGroups;
     QList<RamSequence *> _sequences;
+    RamObjectUberList *_shots;
     QList<RamPipe *> _pipeline;
 };
 

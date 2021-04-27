@@ -56,15 +56,7 @@ RamObject *RamObjectList::at(int i) const
 
 void RamObjectList::removeAt(int i)
 {
-    RamObject *obj = m_objects.takeAt(i);
-
-    if (m_connections.contains(obj->uuid()))
-    {
-        QList<QMetaObject::Connection> c = m_connections.take(obj->uuid());
-        while (!c.isEmpty()) disconnect( c.takeLast() );
-    }
-
-    emit objectRemoved(obj);
+    takeAt(i);
 }
 
 void RamObjectList::removeFirst()
@@ -79,9 +71,17 @@ void RamObjectList::removeLast()
 
 RamObject *RamObjectList::takeAt(int i)
 {
-    RamObject *o = m_objects.takeAt(i);
-    emit objectRemoved(o);
-    return o;
+    RamObject *obj = m_objects.takeAt(i);
+
+    if (m_connections.contains(obj->uuid()))
+    {
+        QList<QMetaObject::Connection> c = m_connections.take(obj->uuid());
+        while (!c.isEmpty()) disconnect( c.takeLast() );
+    }
+
+    emit objectRemoved(obj);
+
+    return obj;
 }
 
 void RamObjectList::removeAll(RamObject *obj)

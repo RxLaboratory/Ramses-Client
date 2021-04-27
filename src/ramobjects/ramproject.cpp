@@ -3,6 +3,7 @@
 RamProject::RamProject(QString shortName, QString name, QString uuid, QObject *parent):
     RamObject(shortName, name, uuid, parent)
 {
+    _shots = new RamObjectUberList(this);
     _dbi->createProject(_shortName, _name, _uuid);
 }
 
@@ -217,6 +218,7 @@ void RamProject::addSequence(RamSequence *seq)
 {
     _sequences << seq;
     connect(seq, SIGNAL(removed(RamObject*)), this, SLOT(sequenceRemoved(RamObject*)));
+    _shots->append(seq);
     emit newSequence(seq);
 }
 
@@ -233,7 +235,7 @@ void RamProject::removeSequence(QString uuid)
         RamSequence *s = _sequences[i];
         if (s->uuid() == uuid)
         {
-            _sequences.removeAt(i);
+            _shots->removeAll(s);
             emit sequenceRemoved(s);
             s->remove();
         }
@@ -255,28 +257,9 @@ void RamProject::sortSequences()
     std::sort(_sequences.begin(), _sequences.end(), sequenceSorter);
 }
 
-QList<RamShot *> RamProject::shots()
+RamObjectUberList *RamProject::shots()
 {
-    QList<RamShot*> ss;
-    foreach(RamSequence *seq, _sequences)
-    {
-        for (int i = 0; i < seq->count(); i++)
-        {
-            ss << (RamShot*)seq->at(i);
-        }
-    }
-    return ss;
-}
-
-RamShot *RamProject::shot(QString uuid)
-{
-    foreach(RamSequence *s, _sequences)
-    {
-        RamObject *shot = s->fromUuid(uuid);
-        if (shot) return (RamShot*)shot;
-    }
-
-    return nullptr;
+    return _shots;
 }
 
 void RamProject::moveShotToSequence(RamShot *shot, QString sequenceUuid)
@@ -296,7 +279,7 @@ void RamProject::moveShotToSequence(RamShot *shot, RamSequence *sequence)
 
 void RamProject::removeShot(QString uuid)
 {
-    foreach(RamSequence *s, _sequences) s->removeAll(uuid);
+    _shots->removeObject(uuid);
 }
 
 QList<RamPipe *> RamProject::pipeline()

@@ -1,0 +1,149 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<heimer-mind-map version="2.2.0">
+ <color r="186" b="182" g="189"/>
+ <edge-color r="0" b="0" g="0"/>
+ <grid-color r="160" b="164" g="160"/>
+ <edge-width>2000</edge-width>
+ <text-size>11000</text-size>
+ <corner-radius>5000</corner-radius>
+ <graph>
+  <node index="57" h="75000" x="-1275000" y="-391000" w="200000">
+   <text>SimpleObjectList</text>
+   <color r="85" b="83" g="87"/>
+   <text-color r="0" b="0" g="0"/>
+  </node>
+  <node index="56" h="75000" x="-787000" y="5000" w="200000">
+   <text>ShotListManagerWidget</text>
+   <color r="255" b="255" g="255"/>
+   <text-color r="0" b="0" g="0"/>
+  </node>
+  <node index="55" h="75000" x="-782000" y="-242000" w="207000">
+   <text>ObjectListManagerWidget</text>
+   <color r="173" b="168" g="127"/>
+   <text-color r="0" b="0" g="0"/>
+  </node>
+  <node index="54" h="75000" x="15000" y="-241000" w="200000">
+   <text>ObjectListWidget</text>
+   <color r="85" b="83" g="87"/>
+   <text-color r="0" b="0" g="0"/>
+  </node>
+  <node index="53" h="75000" x="-1003000" y="-244000" w="200000">
+   <text>ObjectListEditWidget</text>
+   <color r="173" b="168" g="127"/>
+   <text-color r="0" b="0" g="0"/>
+  </node>
+  <node index="52" h="75000" x="-525000" y="-243000" w="200000">
+   <text>ObjectEditWidget</text>
+   <color r="173" b="168" g="127"/>
+   <text-color r="0" b="0" g="0"/>
+  </node>
+  <node index="51" h="75000" x="-526000" y="-365000" w="200000">
+   <text>QScrollArea</text>
+   <color r="114" b="207" g="159"/>
+   <text-color r="0" b="0" g="0"/>
+  </node>
+  <node index="50" h="75000" x="-1423000" y="84000" w="200000">
+   <text>RamUserWidget</text>
+   <color r="211" b="207" g="215"/>
+   <text-color r="0" b="0" g="0"/>
+  </node>
+  <node index="48" h="75000" x="-1655000" y="-11000" w="200000">
+   <text>RamStateWidget</text>
+   <color r="211" b="207" g="215"/>
+   <text-color r="0" b="0" g="0"/>
+  </node>
+  <node index="47" h="75000" x="-1644000" y="-105000" w="200000">
+   <text>RamShotWidget</text>
+   <color r="211" b="207" g="215"/>
+   <text-color r="0" b="0" g="0"/>
+  </node>
+  <node index="46" h="75000" x="-228000" y="-239000" w="200000">
+   <text>RamObjectListWidget</text>
+   <color r="173" b="168" g="127"/>
+   <text-color r="0" b="0" g="0"/>
+  </node>
+  <node index="45" h="75000" x="-226000" y="-369000" w="200000">
+   <text>QTableWidget</text>
+   <color r="114" b="207" g="159"/>
+   <text-color r="0" b="0" g="0"/>
+  </node>
+  <node index="44" h="75000" x="-1644000" y="-199000" w="200000">
+   <text>RamAssetWidget</text>
+   <color r="211" b="207" g="215"/>
+   <text-color r="0" b="0" g="0"/>
+  </node>
+  <node index="43" h="75000" x="-1221000" y="-245000" w="200000">
+   <text>RamObjectWidget</text>
+   <color r="173" b="168" g="127"/>
+   <text-color r="0" b="0" g="0"/>
+  </node>
+  <node index="42" h="75000" x="-1008000" y="-393000" w="200000">
+   <text>QWidget</text>
+   <color r="114" b="207" g="159"/>
+   <text-color r="0" b="0" g="0"/>
+  </node>
+  <node index="39" h="75000" x="-453000" y="-545000" w="200000">
+   <text>RamEdit</text>
+   <color r="255" b="255" g="255"/>
+   <text-color r="0" b="0" g="0"/>
+  </node>
+  <node index="38" h="75000" x="-1487000" y="-544000" w="200000">
+   <text>Del</text>
+   <color r="85" b="83" g="87"/>
+   <text-color r="0" b="0" g="0"/>
+  </node>
+  <node index="4" h="75000" x="-750000" y="-545000" w="200000">
+   <text>RamDisplay</text>
+   <color r="211" b="207" g="215"/>
+   <text-color r="0" b="0" g="0"/>
+  </node>
+  <node index="58" h="75000" x="-525000" y="7000" w="200000">
+   <text>StateEditWidget</text>
+   <color r="255" b="255" g="255"/>
+   <text-color r="0" b="0" g="0"/>
+  </node>
+  <node index="0" h="75000" x="-1017000" y="-548000" w="200000">
+   <text>TODO</text>
+   <color r="247" b="118" g="228"/>
+   <text-color r="0" b="0" g="0"/>
+  </node>
+  <node index="5" h="75000" x="-652000" y="-772000" w="200000">
+   <text>Qt</text>
+   <color r="114" b="207" g="159"/>
+   <text-color r="0" b="0" g="0"/>
+  </node>
+  <node index="49" h="75000" x="-1664000" y="80000" w="200000">
+   <text>RamStatusWidget</text>
+   <color r="211" b="207" g="215"/>
+   <text-color r="0" b="0" g="0"/>
+  </node>
+  <node index="20" h="75000" x="-652000" y="-656000" w="200000">
+   <text>RamBaseClass</text>
+   <color r="173" b="168" g="127"/>
+   <text-color r="0" b="0" g="0"/>
+  </node>
+  <node index="37" h="75000" x="-1242000" y="-545000" w="200000">
+   <text>WIP</text>
+   <color r="252" b="62" g="175"/>
+   <text-color r="0" b="0" g="0"/>
+  </node>
+  <edge index1="56" index0="55" arrow-mode="0" reversed="0"/>
+  <edge index1="58" index0="52" arrow-mode="0" reversed="0"/>
+  <edge index1="52" index0="51" arrow-mode="0" reversed="0"/>
+  <edge index1="54" index0="45" arrow-mode="0" reversed="0"/>
+  <edge index1="46" index0="45" arrow-mode="0" reversed="0"/>
+  <edge index1="47" index0="43" arrow-mode="0" reversed="0"/>
+  <edge index1="49" index0="43" arrow-mode="0" reversed="0"/>
+  <edge index1="44" index0="43" arrow-mode="0" reversed="0"/>
+  <edge index1="50" index0="43" arrow-mode="0" reversed="0"/>
+  <edge index1="48" index0="43" arrow-mode="0" reversed="0"/>
+  <edge index1="57" index0="42" arrow-mode="0" reversed="0"/>
+  <edge index1="55" index0="42" arrow-mode="0" reversed="0"/>
+  <edge index1="53" index0="42" arrow-mode="0" reversed="0"/>
+  <edge index1="43" index0="42" arrow-mode="0" reversed="0"/>
+  <edge index1="20" index0="4" arrow-mode="0" reversed="1"/>
+  <edge index1="20" index0="5" arrow-mode="0" reversed="0"/>
+  <edge index1="39" index0="20" arrow-mode="0" reversed="0"/>
+ </graph>
+ <layout-optimizer min-edge-length="100000" aspect-ratio="1000"/>
+</heimer-mind-map>

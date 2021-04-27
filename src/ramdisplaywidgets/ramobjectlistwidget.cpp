@@ -1,20 +1,78 @@
 #include "ramobjectlistwidget.h"
 
+RamObjectListWidget::RamObjectListWidget(QWidget *parent):
+        QTableWidget(parent)
+{
+    setupUi();
+    connectEvents();
+    clear();
+}
+
 RamObjectListWidget::RamObjectListWidget(RamObjectList *list, QWidget *parent):
     QTableWidget(parent)
 {
-    m_list = list;
     setupUi();
     connectEvents();
+    setList(list);
+}
+
+RamObjectListWidget::RamObjectListWidget(RamObjectUberList *list, QWidget *parent):
+    QTableWidget(parent)
+{
+    setupUi();
+    connectEvents();
+    setList(list);
 }
 
 RamObjectListWidget::RamObjectListWidget(RamObjectList *list, bool editableObjects, QWidget *parent):
     QTableWidget(parent)
 {
-    m_list = list;
     m_editableObjects = editableObjects;
     setupUi();
     connectEvents();
+    setList(list);
+}
+
+RamObjectListWidget::RamObjectListWidget(RamObjectUberList *list, bool editableObjects, QWidget *parent):
+    QTableWidget(parent)
+{
+    m_editableObjects = editableObjects;
+    setupUi();
+    connectEvents();
+    setList(list);
+}
+
+void RamObjectListWidget::setList(RamObjectList *list)
+{
+    clear();
+
+    QSignalBlocker b(this);
+
+    if (!list) return;
+    m_list = list;
+
+    for (int i = 0; i < m_list->count(); i++) objectAssigned(m_list->at(i));
+
+    m_listConnections << connect(m_list, &RamObjectList::objectRemoved, this, &RamObjectListWidget::objectUnassigned);
+    m_listConnections << connect(m_list, &RamObjectList::objectAdded, this, &RamObjectListWidget::objectAssigned);
+
+    this->setEnabled(true);
+}
+
+void RamObjectListWidget::setList(RamObjectUberList *list)
+{
+    setList( (RamObjectList*)list );
+}
+
+void RamObjectListWidget::clear()
+{
+    this->setEnabled(false);
+
+    QSignalBlocker b(this);
+
+    while ( !m_listConnections.isEmpty() ) disconnect( m_listConnections.takeLast() );
+    m_list = nullptr;
+    this->setRowCount(0);
 }
 
 void RamObjectListWidget::setSortable(bool sortable)
@@ -77,6 +135,36 @@ void RamObjectListWidget::unassignSelectedObjects()
         {
             m_list->removeAll(ow->ramObject());
         }
+    }
+}
+
+void RamObjectListWidget::search(QString nameOrShortName)
+{
+    QHeaderView *header = this->verticalHeader();
+    for( int row = 0; row < this->rowCount(); row++)
+    {
+        if (nameOrShortName == "")
+        {
+            header->setSectionHidden(row, false);
+            continue;
+        }
+
+        RamObjectWidget *ow = (RamObjectWidget*) this->cellWidget(row, 0);
+
+        if (ow)
+        {
+            RamObject *o = ow->ramObject();
+            if (o)
+            {
+                header->setSectionHidden( row,
+                                          !o->shortName().contains(nameOrShortName, Qt::CaseInsensitive)
+                                          && !o->name().contains(nameOrShortName, Qt::CaseInsensitive)
+                                          );
+                continue;
+            }
+        }
+
+        header->setSectionHidden( row, this->item(row, 0)->text().contains(nameOrShortName) );
     }
 }
 
@@ -248,9 +336,6 @@ void RamObjectListWidget::setupUi()
 
 void RamObjectListWidget::connectEvents()
 {
-    connect(m_list, &RamObjectList::objectRemoved, this, &RamObjectListWidget::objectUnassigned);
-    connect(m_list, &RamObjectList::objectAdded, this, &RamObjectListWidget::objectAssigned);
-
     connect(this->verticalHeader(), &QHeaderView::sectionMoved, this, &RamObjectListWidget::updateOrder);
     connect(this, &QTableWidget::currentItemChanged, this, &RamObjectListWidget::itemSelected);
     connect(this, &QTableWidget::itemSelectionChanged, this, &RamObjectListWidget::changeSelection);

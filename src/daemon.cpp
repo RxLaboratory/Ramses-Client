@@ -298,8 +298,9 @@ void Daemon::getShots(QTcpSocket *client)
     }
 
     QJsonArray shots;
-    foreach(RamShot *s, proj->shots())
+    for (int i = 0; i < proj->shots()->objectCount(); i++)
     {
+        RamShot *s = (RamShot*)proj->shots()->objectAt(i);
         QJsonObject shot;
         shot.insert("shortName", s->shortName());
         shot.insert("name", s->name());
@@ -320,7 +321,7 @@ void Daemon::getStates(QTcpSocket *client)
     RamStateList *ramStates = Ramses::instance()->states();
     for (int i = 0; i < ramStates->count(); i++)
     {
-        RamState *s = ramStates->at(i);
+        RamState *s = (RamState*)ramStates->at(i);
         QJsonObject state;
         state.insert("shortName", s->shortName());
         state.insert("name", s->name());

@@ -31,16 +31,13 @@ void SequenceEditWidget::setSequence(RamSequence *sequence)
     QSignalBlocker b1(shotsList);
 
     //Reset values
-    shotsList->clear();
+    shotsList->setList(sequence);
 
     if (!sequence) return;
 
     // Load shots
-    for( int i = 0; i < sequence->count(); i++) newShot(sequence->at(i));
 
     _objectConnections << connect(sequence, &RamSequence::changed, this, &SequenceEditWidget::sequenceChanged);
-    _objectConnections << connect(sequence, &RamSequence::objectAdded, this, &SequenceEditWidget::newShot);
-    _objectConnections << connect(sequence, &RamSequence::objectRemoved, this, &SequenceEditWidget::shotRemoved);
 
     this->setEnabled(Ramses::instance()->isProjectAdmin());
 }
@@ -68,33 +65,15 @@ void SequenceEditWidget::sequenceChanged(RamObject *o)
     setSequence(_sequence);
 }
 
-void SequenceEditWidget::newShot(RamObject *obj)
-{
-    shotsList->addObject(obj, _creatingShot);
-    _creatingShot = false;
-}
-
-void SequenceEditWidget::shotRemoved(RamObject *shot)
-{
-    shotsList->removeObject(shot);
-}
-
-void SequenceEditWidget::addShot()
-{
+void SequenceEditWidget::createShot()
+{qDebug() << _sequence;
     if (!_sequence) return;
-    _creatingShot = true;
-    _sequence->createShot();
-}
-
-void SequenceEditWidget::removeShot(RamObject *o)
-{
-    if (!_sequence) return;
-    o->remove();
+    sequence()->createShot();
 }
 
 void SequenceEditWidget::setupUi()
 {
-    shotsList = new SimpleObjectList(true, this);
+    shotsList = new ObjectListEditWidget(true, this);
     shotsList->setSortable(true);
     shotsList->setTitle("Shots");
     mainLayout->addWidget(shotsList);
@@ -102,6 +81,6 @@ void SequenceEditWidget::setupUi()
 
 void SequenceEditWidget::connectEvents()
 {
-    connect(shotsList, &SimpleObjectList::add, this, &SequenceEditWidget::addShot);
-    connect(shotsList, &SimpleObjectList::objectRemoved, this, &SequenceEditWidget::removeShot);
+    connect(shotsList, &ObjectListEditWidget::add, this, &SequenceEditWidget::createShot);
 }
+

@@ -9,7 +9,7 @@ class RamState : public RamObject
 {
     Q_OBJECT
 public:
-    RamState(QString shortName, QString name = "", QString uuid = "", QObject *parent = nullptr);
+    explicit RamState(QString shortName, QString name = "", QString uuid = "", QObject *parent = nullptr);
     ~RamState();
 
     QColor color() const;

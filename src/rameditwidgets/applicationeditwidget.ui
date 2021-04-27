@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QHBoxLayout" name="horizontalLayout_5" stretch="10,80,10">
+  <layout class="QHBoxLayout" name="horizontalLayout_5" stretch="10,80,0,10">
    <property name="spacing">
     <number>3</number>
    </property>
@@ -100,7 +100,7 @@
             <string>Revert</string>
            </property>
            <property name="icon">
-            <iconset resource="resources.qrc">
+            <iconset resource="../resources.qrc">
              <normaloff>:/icons/undo</normaloff>:/icons/undo</iconset>
            </property>
           </widget>
@@ -111,7 +111,7 @@
             <string>Apply</string>
            </property>
            <property name="icon">
-            <iconset resource="resources.qrc">
+            <iconset resource="../resources.qrc">
              <normaloff>:/icons/apply</normaloff>:/icons/apply</iconset>
            </property>
           </widget>
@@ -196,7 +196,7 @@ file types</string>
               <string/>
              </property>
              <property name="icon">
-              <iconset resource="resources.qrc">
+              <iconset resource="../resources.qrc">
                <normaloff>:/icons/add</normaloff>:/icons/add</iconset>
              </property>
              <property name="popupMode">
@@ -210,7 +210,7 @@ file types</string>
               <string/>
              </property>
              <property name="icon">
-              <iconset resource="resources.qrc">
+              <iconset resource="../duqf_resources.qrc">
                <normaloff>:/icons/remove</normaloff>:/icons/remove</iconset>
              </property>
             </widget>
@@ -289,7 +289,7 @@ file types</string>
                <string/>
               </property>
               <property name="icon">
-               <iconset resource="resources.qrc">
+               <iconset resource="../resources.qrc">
                 <normaloff>:/icons/add</normaloff>:/icons/add</iconset>
               </property>
               <property name="popupMode">
@@ -303,7 +303,7 @@ file types</string>
                <string/>
               </property>
               <property name="icon">
-               <iconset resource="resources.qrc">
+               <iconset resource="../duqf_resources.qrc">
                 <normaloff>:/icons/remove</normaloff>:/icons/remove</iconset>
               </property>
              </widget>
@@ -375,7 +375,7 @@ file types</string>
                <string/>
               </property>
               <property name="icon">
-               <iconset resource="resources.qrc">
+               <iconset resource="../resources.qrc">
                 <normaloff>:/icons/add</normaloff>:/icons/add</iconset>
               </property>
               <property name="popupMode">
@@ -389,7 +389,7 @@ file types</string>
                <string/>
               </property>
               <property name="icon">
-               <iconset resource="resources.qrc">
+               <iconset resource="../duqf_resources.qrc">
                 <normaloff>:/icons/remove</normaloff>:/icons/remove</iconset>
               </property>
              </widget>
@@ -420,6 +420,13 @@ file types</string>
     </layout>
    </item>
    <item>
+    <widget class="QLineEdit" name="lineEdit">
+     <property name="clearButtonEnabled">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item>
     <spacer name="horizontalSpacer_2">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
@@ -435,7 +442,8 @@ file types</string>
   </layout>
  </widget>
  <resources>
-  <include location="resources.qrc"/>
+  <include location="../duqf_resources.qrc"/>
+  <include location="../resources.qrc"/>
  </resources>
  <connections/>
 </ui>

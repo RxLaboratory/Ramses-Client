@@ -19,7 +19,7 @@ public:
     void append(RamShot *shot);
     void createShot(QString shortName = "NEW", QString name = "Shot");
 
-    void update();
+    void update() Q_DECL_OVERRIDE;
 
 private:
     QString _projectUuid;

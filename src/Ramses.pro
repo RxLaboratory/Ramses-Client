@@ -27,6 +27,7 @@ INCLUDEPATH += rameditwidgets \
     ramobjects
 
 SOURCES += \
+    duqf-widgets/duqfsearchedit.cpp \
     ramdisplaywidgets/ramstatewidget.cpp \
     ramdisplaywidgets/ramuserwidget.cpp \
     rameditwidgets/applicationeditwidget.cpp \
@@ -38,8 +39,10 @@ SOURCES += \
     daemon.cpp \
     rameditwidgets/objectlisteditwidget.cpp \
     rameditwidgets/objectlistmanagerwidget.cpp \
+    rameditwidgets/shotlistmanagerwidget.cpp \
     rameditwidgets/statelistmanagerwidget.cpp \
     rameditwidgets/userlistmanagerwidget.cpp \
+    ramobjects/ramobjectuberlist.cpp \
     ramobjects/ramstatelist.cpp \
     settingswidgets/daemonsettingswidget.cpp \
     dbinterface.cpp \
@@ -122,7 +125,6 @@ SOURCES += \
     rameditwidgets/sequencesmanagerwidget.cpp \
     settingswidgets/serversettingswidget.cpp \
     rameditwidgets/shoteditwidget.cpp \
-    rameditwidgets/shotsmanagerwidget.cpp \
     rameditwidgets/simpleobjectlist.cpp \
     smallwidgets/statebox.cpp \
     rameditwidgets/stateeditwidget.cpp \
@@ -138,6 +140,7 @@ SOURCES += \
     userprofilepage.cpp
 
 HEADERS += \
+    duqf-widgets/duqfsearchedit.h \
     ramdisplaywidgets/ramstatewidget.h \
     ramdisplaywidgets/ramuserwidget.h \
     rameditwidgets/applicationeditwidget.h \
@@ -149,8 +152,10 @@ HEADERS += \
     daemon.h \
     rameditwidgets/objectlisteditwidget.h \
     rameditwidgets/objectlistmanagerwidget.h \
+    rameditwidgets/shotlistmanagerwidget.h \
     rameditwidgets/statelistmanagerwidget.h \
     rameditwidgets/userlistmanagerwidget.h \
+    ramobjects/ramobjectuberlist.h \
     ramobjects/ramstatelist.h \
     settingswidgets/daemonsettingswidget.h \
     dbinterface.h \
@@ -233,7 +238,6 @@ HEADERS += \
     rameditwidgets/sequencesmanagerwidget.h \
     settingswidgets/serversettingswidget.h \
     rameditwidgets/shoteditwidget.h \
-    rameditwidgets/shotsmanagerwidget.h \
     rameditwidgets/simpleobjectlist.h \
     smallwidgets/statebox.h \
     rameditwidgets/stateeditwidget.h \

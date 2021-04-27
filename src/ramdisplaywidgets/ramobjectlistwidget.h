@@ -16,8 +16,14 @@ class RamObjectListWidget : public QTableWidget
 {
     Q_OBJECT
 public:
+    explicit RamObjectListWidget(QWidget *parent = nullptr);
     explicit RamObjectListWidget(RamObjectList *list, QWidget *parent = nullptr);
+    explicit RamObjectListWidget(RamObjectUberList *list, QWidget *parent = nullptr);
     explicit RamObjectListWidget(RamObjectList *list, bool editableObjects, QWidget *parent = nullptr);
+    explicit RamObjectListWidget(RamObjectUberList *list, bool editableObjects, QWidget *parent = nullptr);
+    void setList(RamObjectList *list);
+    void setList(RamObjectUberList *list);
+    void clear();
     void setSortable(bool sortable=true);
     void setSelectable(bool selectable=true);
 
@@ -28,6 +34,7 @@ public:
 public slots:
     void removeSelectedObjects();
     void unassignSelectedObjects();
+    void search(QString nameOrShortName);
 
 signals:
     void itemDropped();
@@ -52,6 +59,7 @@ private:
     void connectEvents();
 
     bool m_editableObjects = false;
+    QList<QMetaObject::Connection> m_listConnections;
     QMap<QString, QMetaObject::Connection> m_objectConnections;
 };
 

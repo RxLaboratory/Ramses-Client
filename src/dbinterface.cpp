@@ -668,7 +668,7 @@ void DBInterface::dataReceived(QNetworkReply * rep)
     QString repMessage = repObj.value("message").toString();
     bool repSuccess = repObj.value("success").toBool();
 
-    log(repQuery + "\n" + repMessage + "\nContent:\n" + repAll, DuQFLog::Debug);
+    log(repQuery + "\n" + repMessage + "\nContent:\n" + repAll, DuQFLog::Data);
 
     if (!repSuccess)
     {

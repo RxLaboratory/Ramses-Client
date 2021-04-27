@@ -6,26 +6,6 @@ RamStateList::RamStateList(QObject *parent):
 
 }
 
-RamState *RamStateList::fromUuid(QString uuid) const
-{
-    return (RamState*)RamObjectList::fromUuid(uuid);
-}
-
-RamState *RamStateList::at(int i) const
-{
-    return (RamState*)RamObjectList::at(i);
-}
-
-RamState *RamStateList::takeAt(int i)
-{
-    return (RamState*)RamObjectList::takeAt(i);
-}
-
-RamState *RamStateList::operator[](int i) const
-{
-    return (RamState*)RamObjectList::operator[](i);
-}
-
 bool stateSorter(RamObject *a, RamObject *b)
 {
     RamState *as = (RamState*)a;

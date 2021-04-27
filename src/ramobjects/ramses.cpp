@@ -357,7 +357,7 @@ void Ramses::gotStates(QJsonArray states)
     // loop through existing steps to update them
     for (int i = _states->count() - 1; i >= 0; i--)
     {
-        RamState *existingState = _states->at(i);
+        RamState *existingState = (RamState*)_states->at(i);
         // loop through new steps to update
         bool found = false;
         for (int j = states.count() - 1; j >= 0; j--)
@@ -384,7 +384,7 @@ void Ramses::gotStates(QJsonArray states)
         // Not found, remove from existing
         if (!found)
         {
-            RamState *s = _states->takeAt(i);
+            RamState *s = (RamState*)_states->takeAt(i);
             s->remove();
         }
     }
@@ -916,7 +916,7 @@ QString Ramses::gotStatus(QJsonObject newS, RamItem *item, RamProject *project)
             existingStatus->setCompletionRatio( newS.value("completionRatio").toInt( ));
             RamObject *u = _users->fromUuid(  newS.value("userUuid").toString( ) );
             if (u) existingStatus->setUser( u );
-            RamState *state = _states->fromUuid(  newS.value("stateUuid").toString( ) );
+            RamState *state = (RamState*)_states->fromUuid(  newS.value("stateUuid").toString( ) );
             if (state) existingStatus->setState( state );
             existingStatus->setComment( newS.value("comment").toString() );
             RamStep *step = project->step( newS.value("stepUuid").toString( ) );
@@ -932,7 +932,7 @@ QString Ramses::gotStatus(QJsonObject newS, RamItem *item, RamProject *project)
 
     RamObject *user = _users->fromUuid(  newS.value("userUuid").toString( ) );
     if (!user) return uuid;
-    RamState *state = _states->fromUuid( newS.value("stateUuid").toString( ) );
+    RamState *state = (RamState*)_states->fromUuid( newS.value("stateUuid").toString( ) );
     if (!state) return uuid;
     RamStep *step = project->step( newS.value("stepUuid").toString( ) );
     if (!step) return uuid;

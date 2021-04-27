@@ -3,7 +3,7 @@
 
 #include "objecteditwidget.h"
 #include "ramses.h"
-#include "simpleobjectlist.h"
+#include "objectlisteditwidget.h"
 
 /**
  * @brief The SequenceEditWidget class is used to edit Sequences and can be shown either in the main UI or in the Dock
@@ -24,10 +24,7 @@ protected slots:
 
 private slots:
     void sequenceChanged(RamObject *o);
-    void newShot(RamObject *obj);
-    void shotRemoved(RamObject *shot);
-    void addShot();
-    void removeShot(RamObject *o);
+    void createShot();
 
 private:
     RamSequence *_sequence;
@@ -35,7 +32,7 @@ private:
     void setupUi();
     void connectEvents();
 
-    SimpleObjectList *shotsList;
+    ObjectListEditWidget *shotsList;
 
     bool _creatingShot = false;
 };

@@ -6,13 +6,16 @@
 #include <QColor>
 #include "utils.h"
 
+#define SHOWDATA false
+
 class DuQFLog
 {
 public:
     /**
      * @brief The LogType enum Log level for printing the debug log
      */
-    enum LogType { Debug = 0,
+    enum LogType { Data = -1,
+                   Debug = 0,
                    Information = 1,
                    Warning = 2,
                    Critical = 3,

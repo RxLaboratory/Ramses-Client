@@ -105,7 +105,7 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     qDebug() << "  > asset groups ok";
     projectSettingsPage->addPage(new SequencesManagerWidget(this), "Sequences", QIcon(":/icons/sequences"));
     qDebug() << "  > sequences ok";
-    projectSettingsPage->addPage(new ShotsManagerWidget(this), "Shots", QIcon(":/icons/shots"));
+    projectSettingsPage->addPage(new ShotLIstManagerWidget(this), "Shots", QIcon(":/icons/shots"));
     qDebug() << "  > shots ok";
     // Pipeline editor
     PipelineWidget *pipelineEditor = new PipelineWidget(this);

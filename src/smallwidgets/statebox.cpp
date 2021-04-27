@@ -23,7 +23,7 @@ void StateBox::setCurrentState(QString shortName)
 
 RamState *StateBox::currentState() const
 {
-    return Ramses::instance()->states()->fromUuid( this->currentData().toString() );
+    return (RamState*)Ramses::instance()->states()->fromUuid( this->currentData().toString() );
 }
 
 void StateBox::newState(RamObject *state)
@@ -54,7 +54,7 @@ void StateBox::stateChanged(RamObject *o)
 
 void StateBox::currentStateChanged(int i)
 {
-    RamState *state = Ramses::instance()->states()->fromUuid( this->itemData(i).toString() );
+    RamState *state = (RamState*)Ramses::instance()->states()->fromUuid( this->itemData(i).toString() );
     emit currentStateChanged(state);
     if (!state) return;
 

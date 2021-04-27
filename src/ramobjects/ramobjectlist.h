@@ -5,6 +5,11 @@
 
 #include "ramobject.h"
 
+/**
+ * @brief The RamObjectList class represents a list of objects (sequences, shots, etc)
+ * It works similarly to a QList
+ * And handles assignment/removal, also emitting proper signals
+ */
 class RamObjectList : public RamObject
 {
     Q_OBJECT
@@ -43,11 +48,10 @@ signals:
 
 protected:
     QList<RamObject*> m_objects;
+    virtual void addObject(RamObject *obj, int index);
 
 private:
     QMap<QString, QList<QMetaObject::Connection>> m_connections;
-
-    void addObject(RamObject *obj, int index);
 };
 
 bool objectSorter(RamObject *a, RamObject *b);

@@ -11,6 +11,7 @@
 #include <QScrollBar>
 
 #include "ramobjectlistwidget.h"
+#include "duqf-widgets/duqfsearchedit.h"
 
 /**
  * @brief The ObjectListEditWidget class displays and edits a RamObjectList
@@ -22,14 +23,17 @@ class ObjectListEditWidget : public QWidget
 {
     Q_OBJECT
 public:
+    explicit ObjectListEditWidget(bool editableObjects = false, QWidget *parent = nullptr);
     explicit ObjectListEditWidget(RamObjectList *objectList, bool editableObjects = false, QWidget *parent = nullptr);
     RamObjectList *list() const;
+    void setList(RamObjectList *objectList);
     void setEditable(bool editable = true);
     void setSortable(bool sortable = true);
     void setSelectable(bool selectable = true);
     void setTitle(QString title);
     QToolButton *addButton() const;
     void select(RamObject* obj);
+    QString currentFilter() const;
 
 public slots:
     void scrollToBottom();
@@ -40,13 +44,14 @@ signals:
     void add();
 
 private:
-    void setupUi(RamObjectList *objectList, bool editableObjects = false);
+    void setupUi(bool editableObjects = false);
     void connectEvents();
     QToolButton *m_addButton;
     QToolButton *m_removeButton;
     QLabel *m_filterLabel;
     QLabel *m_title;
     QComboBox *m_filterBox;
+    DuQFSearchEdit *m_searchEdit;
     RamObjectList *m_objectList;
     RamObjectListWidget *m_list;
 
