@@ -17,9 +17,11 @@ signals:
     void currentStateChanged(RamState *);
 private slots:
     void currentStateChanged(int i);
-    void newState(RamState *state);
+    void newState(RamObject *state);
     void stateRemoved(RamObject *o);
     void stateChanged(RamObject *o);
+private:
+    QMap<QString, QMetaObject::Connection> _stateConnections;
 };
 
 #endif // STATEBOX_H

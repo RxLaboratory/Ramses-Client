@@ -11,6 +11,9 @@ public:
     RamStateWidget(RamState *state, QWidget *parent = nullptr);
     RamState *state() const;
 
+private slots:
+    void stateChanged();
+
 private:
     RamState *_state;
 };

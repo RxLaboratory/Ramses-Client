@@ -6,26 +6,17 @@
 #include <QSplitter>
 
 #include "ramses.h"
-#include "objectlisteditwidget.h"
+#include "objectlistmanagerwidget.h"
 #include "usereditwidget.h"
 
-class UserListManagerWidget : public QWidget
+class UserListManagerWidget : public ObjectListManagerWidget
 {
     Q_OBJECT
 public:
     explicit UserListManagerWidget(QWidget *parent = nullptr);
 
-signals:
-
-private slots:
-    void editNewUser(RamObject *u);
-
-private:
-    void setupUi();
-    void connectEvents();
-
-    ObjectListEditWidget *m_listEditWidget;
-    UserEditWidget *m_editWidget;
+protected slots:
+    void createObject() Q_DECL_OVERRIDE;
 };
 
 #endif // USERLISTMANAGERWIDGET_H

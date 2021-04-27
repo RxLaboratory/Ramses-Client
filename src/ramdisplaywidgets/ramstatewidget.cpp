@@ -13,9 +13,17 @@ RamStateWidget::RamStateWidget(RamState *state, QWidget *parent):
     mw->addStateEditDockWidget(this->dockEditWidget());
 
     setUserEditRole(RamUser::Admin);
+
+    stateChanged();
+    connect(state, &RamObject::changed, this, &RamStateWidget::stateChanged);
 }
 
 RamState *RamStateWidget::state() const
 {
     return _state;
+}
+
+void RamStateWidget::stateChanged()
+{
+    setColor(_state->color());
 }

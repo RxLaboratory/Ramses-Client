@@ -49,7 +49,7 @@ RamObject *RamObjectList::fromUuid(QString uuid) const
     return nullptr;
 }
 
-RamObject *RamObjectList::at(int i)
+RamObject *RamObjectList::at(int i) const
 {
     return m_objects.at(i);
 }

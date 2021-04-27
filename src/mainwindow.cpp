@@ -6,6 +6,8 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     // Build the form
     setupUi(this);
 
+    qDebug() << "> Setting up menus";
+
     // Populate Toolbar
     actionAdmin->setVisible(false);
     actionProjectSettings->setVisible(false);
@@ -32,7 +34,6 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     networkButton->setMinimumWidth(50);
     mainStatusBar->addPermanentWidget(networkButton);
 
-
     userMenu = new QMenu();
     userMenu->addAction(actionLogIn);
     userMenu->addAction(actionUserFolder);
@@ -52,6 +53,8 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     // Add default stuff
     duqf_initUi();
 
+    qDebug() << "> Loading settings";
+
     // Add settings
     LocalSettingsWidget *lsw = new LocalSettingsWidget(this);
     settingsWidget->addPage(lsw, "Ramses data", QIcon(":/icons/storage"));
@@ -59,6 +62,8 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     settingsWidget->addPage(csw, "Server", QIcon(":/icons/server-settings"));
     DaemonSettingsWidget *dsw = new DaemonSettingsWidget(this);
     settingsWidget->addPage(dsw, "Daemon", QIcon(":/icons/daemon"));
+
+    qDebug() << "> Loading pages";
 
     // Add pages
     // login
@@ -72,28 +77,45 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     adminPage->showReinitButton(false);
     mainStack->addWidget(adminPage);
     // Admin tabs
+    qDebug() << "> Admin";
     adminPage->addPage(new UserListManagerWidget(this),"Users", QIcon(":/icons/users"));
+    qDebug() << "  > users ok";
     adminPage->addPage(new ProjectsManagerWidget(this), "Projects", QIcon(":/icons/projects"));
+    qDebug() << "  > projects ok";
     adminPage->addPage(new TemplateStepsManagerWidget(this), "Template Steps", QIcon(":/icons/steps"));
+    qDebug() << "  > template steps ok";
     adminPage->addPage(new TemplateAssetGroupsManagerWidget(this), "Template Asset Groups", QIcon(":/icons/asset-groups"));
-    adminPage->addPage(new StatesManagerWidget(this), "States", QIcon(":/icons/state"));
+    qDebug() << "  > template assets ok";
+    adminPage->addPage(new StateListManagerWidget(this), "States", QIcon(":/icons/state"));
+    qDebug() << "  > states ok";
     adminPage->addPage(new FileTypesManagerWidget(this), "File Types", QIcon(":/icons/files"));
+    qDebug() << "  > file types ok";
     adminPage->addPage(new ApplicationsManagerWidget(this), "Applications", QIcon(":/icons/applications"));
+    qDebug() << "  > applications ok";
     // Project settings
     SettingsWidget *projectSettingsPage = new SettingsWidget("Project Administration", this);
     projectSettingsPage->showReinitButton(false);
     mainStack->addWidget(projectSettingsPage);
+    qDebug() << "> Project";
     projectSettingsPage->addPage(new StepsManagerWidget(this), "Steps", QIcon(":/icons/steps"));
+    qDebug() << "  > steps ok";
     projectSettingsPage->addPage(new AssetGroupsManagerWidget(this), "Asset Groups", QIcon(":/icons/asset-groups"));
+    qDebug() << "  > steps ok";
     projectSettingsPage->addPage(new AssetsManagerWidget(this), "Assets", QIcon(":/icons/assets"));
+    qDebug() << "  > asset groups ok";
     projectSettingsPage->addPage(new SequencesManagerWidget(this), "Sequences", QIcon(":/icons/sequences"));
+    qDebug() << "  > sequences ok";
     projectSettingsPage->addPage(new ShotsManagerWidget(this), "Shots", QIcon(":/icons/shots"));
+    qDebug() << "  > shots ok";
     // Pipeline editor
     PipelineWidget *pipelineEditor = new PipelineWidget(this);
     mainStack->addWidget(pipelineEditor);
+    qDebug() << "> Pipeline ready";
 
     // Set UI
     mainStack->setCurrentIndex(0);
+
+    qDebug() << "> Connecting events";
 
     // Connect events
     connect(actionLogIn,SIGNAL(triggered()), this, SLOT(loginAction()));
@@ -118,6 +140,9 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     connect(DBInterface::instance(),&DBInterface::connectionStatusChanged, this, &MainWindow::dbiConnectionStatusChanged);
 
     // Set style
+
+    qDebug() << "Setting CSS";
+
     duqf_setStyle();
 }
 
@@ -491,7 +516,7 @@ void MainWindow::duqf_askBeforeClose()
 
 void MainWindow::log(DuQFLog m)
 {
-    QString message  =m.message();
+    QString message = m.message();
     if (message == "") return;
 
     DuQFLog::LogType type = m.type();

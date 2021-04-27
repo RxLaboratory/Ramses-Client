@@ -23,7 +23,7 @@
 #include "assetsmanagerwidget.h"
 #include "shotsmanagerwidget.h"
 #include "sequencesmanagerwidget.h"
-#include "statesmanagerwidget.h"
+#include "statelistmanagerwidget.h"
 #include "filetypesmanagerwidget.h"
 #include "applicationsmanagerwidget.h"
 #include "dbinterface.h"

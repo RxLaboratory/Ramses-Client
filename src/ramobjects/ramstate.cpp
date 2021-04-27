@@ -3,6 +3,7 @@
 RamState::RamState(QString shortName, QString name, QString uuid, QObject *parent) :
     RamObject(shortName, name, uuid, parent)
 {
+    this->setObjectType(State);
     _dbi->createState(_shortName, _name, _uuid);
 }
 

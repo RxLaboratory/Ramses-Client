@@ -6,6 +6,27 @@ RamStatusHistory::RamStatusHistory(QObject *parent):
 
 }
 
+RamStatus *RamStatusHistory::fromUuid(QString uuid) const
+{
+    return (RamStatus*)RamObjectList::fromUuid(uuid);
+}
+
+RamStatus *RamStatusHistory::at(int i) const
+{
+    return (RamStatus*)RamObjectList::at(i);
+}
+
+RamStatus *RamStatusHistory::takeAt(int i)
+{
+    return (RamStatus*)RamObjectList::takeAt(i);
+}
+
+RamStatus *RamStatusHistory::operator[](int i) const
+{
+    return (RamStatus*)RamObjectList::operator[](i);
+}
+
+
 bool statusSorter(RamObject *a, RamObject *b)
 {
     RamStatus *as = (RamStatus*)a;

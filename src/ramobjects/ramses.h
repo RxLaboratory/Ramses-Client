@@ -10,6 +10,7 @@
 #include "ramassetgroup.h"
 #include "ramfiletype.h"
 #include "ramapplication.h"
+#include "ramstatelist.h"
 #include "dbisuspender.h"
 
 #include <QObject>
@@ -101,11 +102,7 @@ public:
     // Sequences
     RamSequence *sequence(QString uuid) const;
     // States
-    QList<RamState *> states() const;
-    RamState *state(QString uuid) const;
-    RamState *createState();
-    void removeState(RamObject *s);
-    void removeState(QString uuid);
+    RamStateList *states() const;
     // File Types
     QList<RamFileType*> fileTypes() const;
     RamFileType *fileType(const QString uuid) const;
@@ -123,6 +120,8 @@ public slots:
     void removeFileType(RamObject *ft);
     // Users
     RamUser *createUser();
+    // States
+    RamState *createState();
 
 signals:
     void loggedIn(RamUser*);
@@ -131,7 +130,6 @@ signals:
     void newProject(RamProject *project);
     void newTemplateStep(RamStep *step);
     void newTemplateAssetGroup(RamAssetGroup *assetGroup);
-    void newState(RamState *state);
     void newStep(RamStep *);
     void newAssetGroup(RamAssetGroup *);
     void newFileType(RamFileType *);
@@ -156,7 +154,6 @@ private slots:
     void templateAssetGroupRemoved(RamObject *o);
     //states
     void gotStates(QJsonArray states);
-    void stateRemoved(RamObject *o);
     //file types
     void gotFileTypes(QJsonArray fileTypes);
     //applications
@@ -219,7 +216,7 @@ private:
     QList<RamAssetGroup *> _templateAssetGroups;
 
     // States
-    QList<RamState *> _states;
+    RamStateList *_states;
 
     // File types
     QList<RamFileType*> _fileTypes;

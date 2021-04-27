@@ -15,7 +15,10 @@ Ramses::~Ramses()
 
 Ramses::Ramses(QObject *parent) : QObject(parent)
 {
+    qDebug() << "Initialising Ramses";
     _dbi = DBInterface::instance();
+    _users = new RamObjectList(this);
+    _states = new RamStateList(this);
 
     DBISuspender s;
 
@@ -28,11 +31,10 @@ Ramses::Ramses(QObject *parent) : QObject(parent)
     _userSettings = new QSettings(QSettings::IniFormat, QSettings::UserScope, STR_COMPANYNAME, STR_INTERNALNAME);
     _userSettings->beginGroup("ramses");
 
-    _users = new RamObjectList(this);
-
     connect( _dbi, &DBInterface::data, this, &Ramses::newData );
     connect( _dbi, &DBInterface::connectionStatusChanged, this, &Ramses::dbiConnectionStatusChanged);
     connect( (DuApplication *)qApp, &DuApplication::idle, this, &Ramses::refresh);
+    qDebug() << "Ramses Ready!";
 }
 
 void Ramses::login(QString username, QString password)
@@ -353,9 +355,9 @@ void Ramses::gotStates(QJsonArray states)
     DBISuspender s;
 
     // loop through existing steps to update them
-    for (int i = _states.count() - 1; i >= 0; i--)
+    for (int i = _states->count() - 1; i >= 0; i--)
     {
-        RamState *existingState = _states[i];
+        RamState *existingState = _states->at(i);
         // loop through new steps to update
         bool found = false;
         for (int j = states.count() - 1; j >= 0; j--)
@@ -382,12 +384,12 @@ void Ramses::gotStates(QJsonArray states)
         // Not found, remove from existing
         if (!found)
         {
-            RamState *s = _states.takeAt(i);
+            RamState *s = _states->takeAt(i);
             s->remove();
         }
     }
 
-    // loop through remaining new projects to add them
+    // loop through remaining new states to add them
     for (int i = 0; i < states.count(); i++)
     {
         QJsonObject s = states[i].toObject();
@@ -399,17 +401,9 @@ void Ramses::gotStates(QJsonArray states)
         state->setColor( QColor( s.value("color").toString()) );
         state->setCompletionRatio( s.value("completionRatio").toInt() );
 
-        _states << state;
-
-        connect(state,&RamState::removed, this, &Ramses::stateRemoved);
-
-        emit newState(state);
+        _states->append(state);
     }
-}
-
-void Ramses::stateRemoved(RamObject *o)
-{
-    removeState(o->uuid());
+    _states->sort();
 }
 
 void Ramses::gotFileTypes(QJsonArray fileTypes)
@@ -922,7 +916,7 @@ QString Ramses::gotStatus(QJsonObject newS, RamItem *item, RamProject *project)
             existingStatus->setCompletionRatio( newS.value("completionRatio").toInt( ));
             RamObject *u = _users->fromUuid(  newS.value("userUuid").toString( ) );
             if (u) existingStatus->setUser( u );
-            RamState *state = Ramses::instance()->state( newS.value("stateUuid").toString( ) );
+            RamState *state = _states->fromUuid(  newS.value("stateUuid").toString( ) );
             if (state) existingStatus->setState( state );
             existingStatus->setComment( newS.value("comment").toString() );
             RamStep *step = project->step( newS.value("stepUuid").toString( ) );
@@ -938,7 +932,7 @@ QString Ramses::gotStatus(QJsonObject newS, RamItem *item, RamProject *project)
 
     RamObject *user = _users->fromUuid(  newS.value("userUuid").toString( ) );
     if (!user) return uuid;
-    RamState *state = Ramses::instance()->state( newS.value("stateUuid").toString( ) );
+    RamState *state = _states->fromUuid( newS.value("stateUuid").toString( ) );
     if (!state) return uuid;
     RamStep *step = project->step( newS.value("stepUuid").toString( ) );
     if (!step) return uuid;
@@ -1426,45 +1420,17 @@ RamSequence *Ramses::sequence(QString uuid) const
     return nullptr;
 }
 
-QList<RamState *> Ramses::states() const
+RamStateList *Ramses::states() const
 {
     return _states;
 }
 
-RamState *Ramses::state(QString uuid) const
-{
-    foreach(RamState *st, _states)
-    {
-        if (st->uuid() == uuid) return st;
-    }
-    return nullptr;
-}
-
 RamState *Ramses::createState()
 {
-    RamState *state = new RamState("New", "State");
+    RamState *state = new RamState("NEW", "State");
     state->setParent(this);
-    _states << state;
-    connect(state, SIGNAL(removed(RamObject*)), this, SLOT(removeState(RamObject*)));
-    emit newState(state);
+    _states->append(state);
     return state;
-}
-
-void Ramses::removeState(RamObject *s)
-{
-    if (s) removeState(s->uuid());
-}
-
-void Ramses::removeState(QString uuid)
-{
-    for (int i = _states.count() -1; i >= 0; i--)
-    {
-        if (_states[i]->uuid() == uuid)
-        {
-            RamState *s = _states.takeAt(i);
-            s->remove();
-        }
-    }
 }
 
 QList<RamFileType *> Ramses::fileTypes() const

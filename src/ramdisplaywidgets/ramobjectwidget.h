@@ -32,8 +32,8 @@ public:
     RamObjectList editUsers() const;
 
     void setTitle(QString t);
-
     void setIcon(QString i);
+    void setColor(QColor color);
 
     ObjectDockWidget *dockEditWidget() const;
 
@@ -71,6 +71,7 @@ private:
     ObjectDockWidget *_dockEditWidget;
     RamUser::UserRole _editRole = RamUser::Admin;
     bool _hasEditRights = false;
+    QColor _color;
 };
 
 #endif // RAMOBJECTWIDGET_H

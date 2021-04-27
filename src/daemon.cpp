@@ -317,8 +317,10 @@ void Daemon::getStates(QTcpSocket *client)
 
     QJsonObject content;
     QJsonArray states;
-    foreach(RamState *s, Ramses::instance()->states())
+    RamStateList *ramStates = Ramses::instance()->states();
+    for (int i = 0; i < ramStates->count(); i++)
     {
+        RamState *s = ramStates->at(i);
         QJsonObject state;
         state.insert("shortName", s->shortName());
         state.insert("name", s->name());

@@ -2,9 +2,11 @@
 
 StateBox::StateBox(QWidget *parent): QComboBox(parent)
 {
-    foreach(RamState *state, Ramses::instance()->states()) newState(state);
+    for (int i = 0; i < Ramses::instance()->states()->count(); i++)
+        newState(Ramses::instance()->states()->at(i));
 
-    connect(Ramses::instance(), &Ramses::newState, this, &StateBox::newState);
+    connect(Ramses::instance()->states(), &RamObjectList::objectAdded, this, &StateBox::newState);
+    connect(Ramses::instance()->states(), &RamObjectList::objectRemoved, this, &StateBox::stateRemoved);
     connect(this, SIGNAL(currentIndexChanged(int)), this, SLOT(currentStateChanged(int)));
 }
 
@@ -21,23 +23,24 @@ void StateBox::setCurrentState(QString shortName)
 
 RamState *StateBox::currentState() const
 {
-    return Ramses::instance()->state( this->currentData().toString() );
+    return Ramses::instance()->states()->fromUuid( this->currentData().toString() );
 }
 
-void StateBox::newState(RamState *state)
+void StateBox::newState(RamObject *state)
 {
     this->addItem(state->shortName(), state->uuid());
-
-    connect(state, &RamObject::removed, this, &StateBox::stateRemoved);
-    connect(state, &RamState::changed, this, &StateBox::stateChanged);
+    _stateConnections[state->uuid()] = connect(state, &RamState::changed, this, &StateBox::stateChanged);
 }
-
 
 void StateBox::stateRemoved(RamObject *o)
 {
     for (int i = this->count() -1; i >=0; i--)
     {
-        if (this->itemData(i).toString() == o->uuid()) this->removeItem(i);
+        if (this->itemData(i).toString() == o->uuid())
+        {
+            if (_stateConnections.contains(o->uuid())) disconnect( _stateConnections.take(o->uuid()) );
+            this->removeItem(i);
+        }
     }
 }
 
@@ -51,7 +54,7 @@ void StateBox::stateChanged(RamObject *o)
 
 void StateBox::currentStateChanged(int i)
 {
-    RamState *state = Ramses::instance()->state( this->itemData(i).toString() );
+    RamState *state = Ramses::instance()->states()->fromUuid( this->itemData(i).toString() );
     emit currentStateChanged(state);
     if (!state) return;
 

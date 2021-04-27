@@ -37,7 +37,10 @@ SOURCES += \
     rameditwidgets/assetsmanagerwidget.cpp \
     daemon.cpp \
     rameditwidgets/objectlisteditwidget.cpp \
+    rameditwidgets/objectlistmanagerwidget.cpp \
+    rameditwidgets/statelistmanagerwidget.cpp \
     rameditwidgets/userlistmanagerwidget.cpp \
+    ramobjects/ramstatelist.cpp \
     settingswidgets/daemonsettingswidget.cpp \
     dbinterface.cpp \
     dbisuspender.cpp \
@@ -123,7 +126,6 @@ SOURCES += \
     rameditwidgets/simpleobjectlist.cpp \
     smallwidgets/statebox.cpp \
     rameditwidgets/stateeditwidget.cpp \
-    rameditwidgets/statesmanagerwidget.cpp \
     rameditwidgets/statuseditwidget.cpp \
     rameditwidgets/statushistorywidget.cpp \
     rameditwidgets/stepeditwidget.cpp \
@@ -146,7 +148,10 @@ HEADERS += \
     rameditwidgets/assetsmanagerwidget.h \
     daemon.h \
     rameditwidgets/objectlisteditwidget.h \
+    rameditwidgets/objectlistmanagerwidget.h \
+    rameditwidgets/statelistmanagerwidget.h \
     rameditwidgets/userlistmanagerwidget.h \
+    ramobjects/ramstatelist.h \
     settingswidgets/daemonsettingswidget.h \
     dbinterface.h \
     dbisuspender.h \
@@ -232,7 +237,6 @@ HEADERS += \
     rameditwidgets/simpleobjectlist.h \
     smallwidgets/statebox.h \
     rameditwidgets/stateeditwidget.h \
-    rameditwidgets/statesmanagerwidget.h \
     rameditwidgets/statuseditwidget.h \
     rameditwidgets/statushistorywidget.h \
     rameditwidgets/stepeditwidget.h \

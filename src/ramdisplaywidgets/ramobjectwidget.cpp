@@ -65,6 +65,13 @@ void RamObjectWidget::setIcon(QString i)
     _dockEditWidget->setIcon(i);
 }
 
+void RamObjectWidget::setColor(QColor color)
+{
+    if (color.lightness() < 80) _color = color.lighter(400);
+    else _color = color;
+    setSelected(_selected);
+}
+
 ObjectDockWidget *RamObjectWidget::dockEditWidget() const
 {
     return _dockEditWidget;
@@ -195,7 +202,18 @@ void RamObjectWidget::setSelected(bool selected)
     }
     else
     {
-        this->setStyleSheet("");
+        if (!_color.isValid())
+        {
+            this->setStyleSheet("");
+        }
+        else
+        {
+            QString col = _color.name();
+            QString css = "QFrame {";
+            css += "color: " + col + ";";
+            css += "}";
+            this->setStyleSheet(css);
+        }
     }
 }
 
