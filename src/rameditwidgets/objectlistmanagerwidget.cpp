@@ -1,11 +1,12 @@
 #include "objectlistmanagerwidget.h"
 
-ObjectListManagerWidget::ObjectListManagerWidget(RamObjectList *objectList, ObjectEditWidget *editWidget, QWidget *parent) : QWidget(parent)
+ObjectListManagerWidget::ObjectListManagerWidget(RamObjectList *objectList, ObjectEditWidget *editWidget, QString title, QWidget *parent) : QWidget(parent)
 {
     m_editWidget = editWidget;
     m_objectList = objectList;
     setupUi();
     connectEvents();
+    m_listEditWidget->setTitle(title);
 }
 
 void ObjectListManagerWidget::editNewObject(RamObject *o)
@@ -16,7 +17,6 @@ void ObjectListManagerWidget::editNewObject(RamObject *o)
         m_editWidget->setObject(o);
     }
 }
-
 
 void ObjectListManagerWidget::setupUi()
 {

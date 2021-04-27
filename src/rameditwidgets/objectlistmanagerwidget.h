@@ -9,7 +9,7 @@ class ObjectListManagerWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit ObjectListManagerWidget(RamObjectList *objectList, ObjectEditWidget *editWidget, QWidget *parent = nullptr);
+    explicit ObjectListManagerWidget(RamObjectList *objectList, ObjectEditWidget *editWidget, QString title, QWidget *parent = nullptr);
 
     RamObjectList *objectList() const;
 

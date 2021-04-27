@@ -4,6 +4,7 @@ UserListManagerWidget::UserListManagerWidget(QWidget *parent) :
     ObjectListManagerWidget(
         Ramses::instance()->users(),
         new UserEditWidget(),
+        "Users",
         parent )
 {
 

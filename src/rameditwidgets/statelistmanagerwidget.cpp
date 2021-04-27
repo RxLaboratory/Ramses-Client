@@ -4,6 +4,7 @@ StateListManagerWidget::StateListManagerWidget(QWidget *parent) :
     ObjectListManagerWidget(
         Ramses::instance()->states(),
         new StateEditWidget(),
+        "States",
         parent)
 {
 
