@@ -41,8 +41,8 @@ public:
     void unassignApplication(RamObject *app);
     void unassignApplication(QString uuid);
 
-    QList<RamFileType *> inputFileTypes();
-    QList<RamFileType *> outputFileTypes();
+    QList<RamObject *> inputFileTypes();
+    QList<RamObject *> outputFileTypes();
 
     void update();
 

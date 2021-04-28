@@ -120,13 +120,14 @@ void PipeEditWidget::updateFileTypes()
 
     QStringList uuids;
 
-    for ( RamFileType *outputFileType: _pipe->outputStep()->outputFileTypes() )
+    for ( RamObject *outputFileType: _pipe->outputStep()->outputFileTypes() )
     {
+
         QString uuid = outputFileType->uuid();
         //already added
         if (uuids.contains( uuid )) continue;
 
-        for ( RamFileType *inputFileType: _pipe->inputStep()->inputFileTypes() )
+        for ( RamObject *inputFileType: _pipe->inputStep()->inputFileTypes() )
         {
             if (outputFileType->uuid() == inputFileType->uuid())
             {

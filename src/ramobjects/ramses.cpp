@@ -461,18 +461,18 @@ void Ramses::gotApplications(QJsonArray applications)
                 QSignalBlocker b(existingApplication);
                 existingApplication->setName( newApplication.value("name").toString());
                 existingApplication->setShortName( newApplication.value("shortName").toString());
-                existingApplication->clearExportFileTypes();
-                existingApplication->clearImportFileTypes();
-                existingApplication->clearNativeFileTypes();
+                existingApplication->exportFileTypes()->clear();
+                existingApplication->importFileTypes()->clear();
+                existingApplication->nativeFileTypes()->clear();
                 foreach( QJsonValue ft, newApplication.value("fileTypes").toArray())
                 {
                     QJsonObject fileT = ft.toObject();
                     if (fileT.value("type").toString() == "import" )
-                        existingApplication->assignImportFileType( fileType( fileT.value("uuid").toString() ) );
+                        existingApplication->importFileTypes()->append( fileType( fileT.value("uuid").toString() ) );
                     else if (fileT.value("type").toString() == "export" )
-                        existingApplication->assignExportFileType( fileType( fileT.value("uuid").toString() ) );
+                        existingApplication->exportFileTypes()->append( fileType( fileT.value("uuid").toString() ) );
                     else
-                        existingApplication->assignNativeFileType( fileType( fileT.value("uuid").toString() ) );
+                        existingApplication->nativeFileTypes()->append( fileType( fileT.value("uuid").toString() ) );
                 }
                 //send the signal
                 b.unblock();
@@ -505,11 +505,11 @@ void Ramses::gotApplications(QJsonArray applications)
         {
             QJsonObject fileT = ft.toObject();
             if (fileT.value("type").toString() == "import" )
-                app->assignImportFileType( fileType( fileT.value("uuid").toString() ) );
+                app->importFileTypes()->append( fileType( fileT.value("uuid").toString() ) );
             else if (fileT.value("type").toString() == "export" )
-                app->assignExportFileType( fileType( fileT.value("uuid").toString() ) );
+                app->exportFileTypes()->append( fileType( fileT.value("uuid").toString() ) );
             else
-                app->assignNativeFileType( fileType( fileT.value("uuid").toString() ) );
+                app->nativeFileTypes()->append( fileType( fileT.value("uuid").toString() ) );
         }
 
         _applications->append(app);

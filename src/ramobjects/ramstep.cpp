@@ -137,27 +137,27 @@ void RamStep::unassignApplication(QString uuid)
     }
 }
 
-QList<RamFileType *> RamStep::inputFileTypes()
+QList<RamObject *> RamStep::inputFileTypes()
 {
-    QList<RamFileType *> fts;
+    QList<RamObject *> fts;
 
     for (RamApplication *app: qAsConst(_applications))
     {
-        fts.append( app->importFileTypes() );
-        fts.append( app->nativeFileTypes() );
+        fts.append( app->importFileTypes()->toList() );
+        fts.append( app->nativeFileTypes()->toList() );
     }
 
     return fts;
 }
 
-QList<RamFileType *> RamStep::outputFileTypes()
+QList<RamObject *> RamStep::outputFileTypes()
 {
-    QList<RamFileType *> fts;
+    QList<RamObject *> fts;
 
     for (RamApplication *app: qAsConst(_applications))
     {
-        fts.append( app->exportFileTypes() );
-        fts.append( app->nativeFileTypes() );
+        fts.append( app->exportFileTypes()->toList() );
+        fts.append( app->nativeFileTypes()->toList() );
     }
 
     return fts;

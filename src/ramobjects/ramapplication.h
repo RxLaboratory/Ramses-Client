@@ -3,6 +3,7 @@
 
 #include "ramobject.h"
 #include "ramfiletype.h"
+#include "ramobjectlist.h"
 
 class RamApplication : public RamObject
 {
@@ -16,49 +17,33 @@ public:
 
     void update();
 
-    void unassignFileType(QString uuid);
-
     bool canExportFileType(RamFileType *ft) const;
     bool canExportFileType(QString extension) const;
     bool canImportFileType(RamFileType *ft) const;
     bool canImportFileType(QString extension) const;
 
-    QList<RamFileType *> nativeFileTypes() const;
-    void clearNativeFileTypes();
-    void assignNativeFileType(RamFileType *const ft);
-    void unassignNativeFileType(RamObject *ft);
-    void unassignNativeFileType(QString uuid);
+    RamObjectList *nativeFileTypes() const;
 
-    QList<RamFileType *> importFileTypes() const;
-    void clearImportFileTypes();
-    void assignImportFileType(RamFileType * const ft);
-    void unassignImportFileType(RamObject *ft);
-    void unassignImportFileType(QString uuid);
+    RamObjectList *importFileTypes() const;
 
-    QList<RamFileType *> exportFileTypes() const;
-    void clearExportFileTypes();
-    void assignExportFileType(RamFileType * const ft);
-    void unassignExportFileType(RamObject *ft);
-    void unassignExportFileType(QString uuid);
+    RamObjectList *exportFileTypes() const;
 
 public slots:
     void unassignFileType(RamObject *o);
 
-signals:
-    void fileTypeAssigned(RamFileType*);
-    void nativeFileTypeAssigned(RamFileType*);
-    void importFileTypeAssigned(RamFileType*);
-    void exportFileTypeAssigned(RamFileType*);
-    void fileTypeUnassigned(QString);
-    void nativeFileTypeUnassigned(QString);
-    void importFileTypeUnassigned(QString);
-    void exportFileTypeUnassigned(QString);
+private slots:
+    void nativeFileTypeUnassigned(RamObject *ft);
+    void nativeFileTypeAssigned(RamObject *const ft);
+    void importFileTypeUnassigned(RamObject *ft);
+    void importFileTypeAssigned(RamObject *const ft);
+    void exportFileTypeUnassigned(RamObject *ft);
+    void exportFileTypeAssigned(RamObject *const ft);
 
 private:
     QString _executableFilePath;
-    QList<RamFileType*> _nativeFileTypes;
-    QList<RamFileType*> _importFileTypes;
-    QList<RamFileType*> _exportFileTypes;
+    RamObjectList *_nativeFileTypes;
+    RamObjectList *_importFileTypes;
+    RamObjectList *_exportFileTypes;
 };
 
 #endif // RAMAPPLICATION_H
