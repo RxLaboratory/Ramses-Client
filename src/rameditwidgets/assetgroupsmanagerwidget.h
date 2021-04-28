@@ -24,7 +24,7 @@ private slots:
     void assetGroupRemoved(QString uuid);
     void assetGroupRemoved(RamObject *o);
     void assetGroupChanged();
-    void newTemplateAssetGroup(RamAssetGroup *assetGroup);
+    void newTemplateAssetGroup(RamObject *assetGroup);
     void templateAssetGroupRemoved(RamObject *o);
     void templateAssetGroupChanged();
 

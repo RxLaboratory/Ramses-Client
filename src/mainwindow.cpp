@@ -84,11 +84,11 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     qDebug() << "  > projects ok";
     adminPage->addPage(new TemplateStepListManagerWidget(this), "Template Steps", QIcon(":/icons/steps"));
     qDebug() << "  > template steps ok";
-    adminPage->addPage(new TemplateAssetGroupsManagerWidget(this), "Template Asset Groups", QIcon(":/icons/asset-groups"));
+    adminPage->addPage(new TemplateAssetGroupListManagerWidget(this), "Template Asset Groups", QIcon(":/icons/asset-groups"));
     qDebug() << "  > template assets ok";
     adminPage->addPage(new StateListManagerWidget(this), "States", QIcon(":/icons/state"));
     qDebug() << "  > states ok";
-    adminPage->addPage(new FileTypesManagerWidget(this), "File Types", QIcon(":/icons/files"));
+    adminPage->addPage(new FileTypeListManagerWidget(this), "File Types", QIcon(":/icons/files"));
     qDebug() << "  > file types ok";
     adminPage->addPage(new ApplicationsManagerWidget(this), "Applications", QIcon(":/icons/applications"));
     qDebug() << "  > applications ok";
@@ -263,6 +263,18 @@ void MainWindow::addAssetGroupEditDockWidget(QDockWidget *w)
     }*/
 
     _assetGroupEditDock << w;
+}
+
+void MainWindow::addFileTypeEditDockWidget(QDockWidget *w)
+{
+    this->addDockWidget(Qt::RightDockWidgetArea, w);
+
+    /*if (!_shotEditDock.isEmpty())
+    {
+        this->tabifyDockWidget(_shotEditDock.last(), w);
+    }*/
+
+    _fileTypeEditDock << w;
 }
 
 void MainWindow::duqf_initUi()

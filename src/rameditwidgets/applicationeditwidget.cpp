@@ -83,7 +83,7 @@ void ApplicationEditWidget::applicationChanged(RamObject *o)
     setApplication(_application);
 }
 
-void ApplicationEditWidget::newFileType(RamFileType * const ft)
+void ApplicationEditWidget::newFileType(RamObject * const ft)
 {
     if (!ft) return;
     if (ft->uuid() == "") return;
@@ -277,13 +277,13 @@ void ApplicationEditWidget::setupUi()
 
 void ApplicationEditWidget::populateMenus()
 {
-    foreach(RamFileType *ft, Ramses::instance()->fileTypes())
-        newFileType(ft);
+    for (int i = 0; i < Ramses::instance()->fileTypes()->count(); i++) newFileType( Ramses::instance()->fileTypes()->at(i) );
 }
 
 void ApplicationEditWidget::connectEvents()
 {
-    connect(Ramses::instance(), &Ramses::newFileType, this, &ApplicationEditWidget::newFileType);
+    connect(Ramses::instance()->fileTypes(), &RamObjectList::objectAdded, this, &ApplicationEditWidget::newFileType);
+    connect(Ramses::instance()->fileTypes(), &RamObjectList::objectRemoved, this, &ApplicationEditWidget::fileTypeRemoved);
     connect(nativeList, &SimpleObjectList::objectRemoved, this, &ApplicationEditWidget::unassignNativeFileType);
     connect(importList, &SimpleObjectList::objectRemoved, this, &ApplicationEditWidget::unassignImportFileType);
     connect(exportList, &SimpleObjectList::objectRemoved, this, &ApplicationEditWidget::unassignExportFileType);

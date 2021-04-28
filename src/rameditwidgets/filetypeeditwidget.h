@@ -1,29 +1,38 @@
 #ifndef FILETYPEEDITWIDGET_H
 #define FILETYPEEDITWIDGET_H
 
-#include "ui_filetypeeditwidget.h"
-#include "ramses.h"
+#include <QCheckBox>
 
-class FileTypeEditWidget : public QWidget, private Ui::FileTypeEditWidget
+#include "ramses.h"
+#include "objecteditwidget.h"
+
+class FileTypeEditWidget : public ObjectEditWidget
 {
     Q_OBJECT
 
 public:
     explicit FileTypeEditWidget(QWidget *parent = nullptr);
+    explicit FileTypeEditWidget(RamFileType *fileType, QWidget *parent = nullptr);
 
     RamFileType *fileType() const;
-    void setFileType(RamFileType *fileType);
+
+public slots:
+    void setObject(RamObject *obj) Q_DECL_OVERRIDE;
+
+protected slots:
+    void update() Q_DECL_OVERRIDE;
 
 private slots:
-    void update();
-    void revert();
-    bool checkInput();
-    void fileTypeRemoved(RamObject *o);
-    void dbiLog(DuQFLog m);
+    void fileTypeChanged(RamObject *o);
 
 private:
     RamFileType *_fileType;
-    QMetaObject::Connection _currentFileTypeConnection;
+
+    void setupUi();
+    void connectEvents();
+
+    QLineEdit *ui_extensionsEdit;
+    QCheckBox *ui_previewableBox;
 };
 
 #endif // FILETYPEEDITWIDGET_H

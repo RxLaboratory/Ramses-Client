@@ -3,6 +3,7 @@
 RamFileType::RamFileType(QString shortName, QString name, QStringList extensions, QString uuid, QObject *parent):
     RamObject(shortName, name, uuid, parent)
 {
+    setObjectType(FileType);
     _extensions = extensions;
     _dbi->createFileType(_shortName, _name, _extensions, _uuid);
 }
@@ -10,6 +11,7 @@ RamFileType::RamFileType(QString shortName, QString name, QStringList extensions
 RamFileType::RamFileType(QString shortName, QString name, QString extensions, QString uuid, QObject *parent):
     RamObject(shortName, name, uuid, parent)
 {
+    setObjectType(FileType);
     setExtensions(extensions);
     _dbi->createFileType(_shortName, _name, _extensions, _uuid);
 }

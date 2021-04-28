@@ -1,16 +1,21 @@
 #include "filetypeeditwidget.h"
 
 FileTypeEditWidget::FileTypeEditWidget(QWidget *parent) :
-    QWidget(parent)
+    ObjectEditWidget(parent)
 {
-    setupUi(this);
+    setupUi();
+    connectEvents();
 
-    connect(updateButton, SIGNAL(clicked()), this, SLOT(update()));
-    connect(revertButton, SIGNAL(clicked()), this, SLOT(revert()));
-    connect(shortNameEdit, &QLineEdit::textChanged, this, &FileTypeEditWidget::checkInput);
-    connect(DBInterface::instance(),&DBInterface::newLog, this, &FileTypeEditWidget::dbiLog);
+    setObject(nullptr);
+}
 
-    this->setEnabled(false);
+FileTypeEditWidget::FileTypeEditWidget(RamFileType *fileType, QWidget *parent) :
+    ObjectEditWidget(fileType, parent)
+{
+    setupUi();
+    connectEvents();
+
+    setObject(fileType);
 }
 
 RamFileType *FileTypeEditWidget::fileType() const
@@ -18,79 +23,70 @@ RamFileType *FileTypeEditWidget::fileType() const
     return _fileType;
 }
 
-void FileTypeEditWidget::setFileType(RamFileType *fileType)
+void FileTypeEditWidget::setObject(RamObject *obj)
 {
-    disconnect(_currentFileTypeConnection);
+    RamFileType *fileType = (RamFileType*)obj;
 
+    this->setEnabled(false);
+
+    ObjectEditWidget::setObject(fileType);
     _fileType = fileType;
 
-    nameEdit->setText("");
-    shortNameEdit->setText("");
-    extensionsEdit->setText("");
-    previewableBox->setChecked(false);
+    QSignalBlocker b1(ui_extensionsEdit);
+    QSignalBlocker b2(ui_previewableBox);
 
-    if (!fileType) return;
+    ui_extensionsEdit->setText("");
+    ui_previewableBox->setChecked(false);
 
-    nameEdit->setText(fileType->name());
-    shortNameEdit->setText(fileType->shortName());
-    extensionsEdit->setText(fileType->extensions().join(", "));
-    previewableBox->setChecked(fileType->isPreviewable());
+    if (!_fileType) return;
+
+    ui_extensionsEdit->setText(_fileType->extensions().join(", "));
+    ui_previewableBox->setChecked(_fileType->isPreviewable());
 
     this->setEnabled(Ramses::instance()->isProjectAdmin());
 
-    _currentFileTypeConnection = connect(fileType, &RamObject::removed, this, &FileTypeEditWidget::fileTypeRemoved);
+    _objectConnections << connect(obj, &RamFileType::changed, this, &FileTypeEditWidget::fileTypeChanged);
 }
 
 void FileTypeEditWidget::update()
 {
     if (!_fileType) return;
 
-    this->setEnabled(false);
+    updating = true;
 
-    if (!checkInput())
-    {
-        this->setEnabled(true);
-        return;
-    }
+    _fileType->setExtensions(ui_extensionsEdit->text());
+    _fileType->setPreviewable(ui_previewableBox->isChecked());
 
-    _fileType->setName(nameEdit->text());
-    _fileType->setShortName(shortNameEdit->text());
-    _fileType->setExtensions(extensionsEdit->text());
-    _fileType->setPreviewable(previewableBox->isChecked());
+    ObjectEditWidget::update();
 
-    _fileType->update();
-
-    this->setEnabled(true);
+    updating = false;
 }
 
-void FileTypeEditWidget::revert()
+void FileTypeEditWidget::fileTypeChanged(RamObject *o)
 {
-    setFileType(_fileType);
-}
-
-bool FileTypeEditWidget::checkInput()
-{
-    if (!_fileType) return false;
-
-    if (shortNameEdit->text() == "")
-    {
-        statusLabel->setText("Short name cannot be empty!");
-        updateButton->setEnabled(false);
-        return false;
-    }
-
-    statusLabel->setText("");
-    updateButton->setEnabled(true);
-    return true;
-}
-
-void FileTypeEditWidget::fileTypeRemoved(RamObject *o)
-{
+    if (updating) return;
     Q_UNUSED(o);
-    setFileType(nullptr);
+    setObject(_fileType);
 }
 
-void FileTypeEditWidget::dbiLog(DuQFLog m)
+void FileTypeEditWidget::setupUi()
 {
-    if (m.type() != DuQFLog::Debug) statusLabel->setText(m.message());
+    QLabel *extLabel = new QLabel("Extensions", this);
+    mainFormLayout->addWidget(extLabel, 2, 0);
+
+    ui_extensionsEdit = new QLineEdit(this);
+    ui_extensionsEdit->setPlaceholderText(".ext1, .ext2, .ext3...");
+    mainFormLayout->addWidget(ui_extensionsEdit);
+
+    QLabel *previewableLabel = new QLabel("Previewable", this);
+    mainFormLayout->addWidget(previewableLabel, 3, 0);
+
+    ui_previewableBox = new QCheckBox("This file can be used for previews\n(image, video...).", this);
+    mainFormLayout->addWidget(ui_previewableBox, 3, 1);
+}
+
+void FileTypeEditWidget::connectEvents()
+{
+    connect(ui_extensionsEdit, &QLineEdit::editingFinished, this, &FileTypeEditWidget::update);
+    connect(ui_previewableBox, &QCheckBox::clicked, this, &FileTypeEditWidget::update);
 }

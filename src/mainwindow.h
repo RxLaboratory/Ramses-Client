@@ -17,14 +17,14 @@
 #include "projectlistmanagerwidget.h"
 #include "pipeline-editor/pipelinewidget.h"
 #include "templatesteplistmanagerwidget.h"
-#include "templateassetgroupsmanagerwidget.h"
+#include "templateassetgrouplistmanagerwidget.h"
 #include "stepsmanagerwidget.h"
 #include "assetgroupsmanagerwidget.h"
 #include "assetsmanagerwidget.h"
 #include "shotlistmanagerwidget.h"
 #include "sequencesmanagerwidget.h"
 #include "statelistmanagerwidget.h"
-#include "filetypesmanagerwidget.h"
+#include "filetypelistmanagerwidget.h"
 #include "applicationsmanagerwidget.h"
 #include "dbinterface.h"
 #include "daemon.h"
@@ -62,6 +62,7 @@ public:
     void addProjectEditDockWidget(QDockWidget *w);
     void addStepEditDockWidget(QDockWidget *w);
     void addAssetGroupEditDockWidget(QDockWidget *w);
+    void addFileTypeEditDockWidget(QDockWidget *w);
 
 private:
     // ========= RxOT UI ==============
@@ -106,6 +107,7 @@ private:
     QList<QDockWidget *> _projectEditDock;
     QList<QDockWidget *> _stepEditDock;
     QList<QDockWidget *> _assetGroupEditDock;
+    QList<QDockWidget *> _fileTypeEditDock;
 
     QMetaObject::Connection _currentUserConnection;
 

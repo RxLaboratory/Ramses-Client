@@ -21,6 +21,8 @@ Ramses::Ramses(QObject *parent) : QObject(parent)
     _states = new RamStateList(this);
     _projects = new RamObjectList(this);
     _templateSteps = new RamObjectList(this);
+    _templateAssetGroups = new RamObjectList(this);
+    _fileTypes = new RamObjectList (this);
 
     DBISuspender s;
 
@@ -278,9 +280,9 @@ void Ramses::gotTemplateAssetGroups(QJsonArray assetGroups)
     DBISuspender s;
 
     // loop through existing asset groups to update them
-    for (int i = _templateAssetGroups.count() - 1; i >= 0; i--)
+    for (int i = _templateAssetGroups->count() - 1; i >= 0; i--)
     {
-        RamAssetGroup *existingAssetGroup = _templateAssetGroups[i];
+        RamAssetGroup *existingAssetGroup = (RamAssetGroup*)_templateAssetGroups->at(i);
         // loop through new steps to update
         bool found = false;
         for (int j = assetGroups.count() - 1; j >= 0; j--)
@@ -305,7 +307,7 @@ void Ramses::gotTemplateAssetGroups(QJsonArray assetGroups)
         // Not found, remove from existing
         if (!found)
         {
-            RamAssetGroup *ag = _templateAssetGroups.takeAt(i);
+            RamObject *ag = _templateAssetGroups->takeAt(i);
             ag->remove();
         }
     }
@@ -321,17 +323,8 @@ void Ramses::gotTemplateAssetGroups(QJsonArray assetGroups)
                     ag.value("uuid").toString()
                     );
 
-        _templateAssetGroups << assetGroup;
-
-        connect(assetGroup,&RamAssetGroup::removed, this, &Ramses::templateAssetGroupRemoved);
-
-        emit newTemplateAssetGroup(assetGroup);
+        _templateAssetGroups->append(assetGroup);
     }
-}
-
-void Ramses::templateAssetGroupRemoved(RamObject *o)
-{
-    removeTemplateAssetGroup(o->uuid());
 }
 
 void Ramses::gotStates(QJsonArray states)
@@ -395,9 +388,9 @@ void Ramses::gotFileTypes(QJsonArray fileTypes)
     DBISuspender s;
 
     // loop through existing file types to update them
-    for (int i = _fileTypes.count() - 1; i >= 0; i--)
+    for (int i = _fileTypes->count() - 1; i >= 0; i--)
     {
-        RamFileType *existingFileType = _fileTypes[i];
+        RamFileType *existingFileType = (RamFileType*)_fileTypes->at(i);
         // loop through new file types to update
         bool found = false;
         for (int j = fileTypes.count() - 1; j >= 0; j--)
@@ -424,7 +417,7 @@ void Ramses::gotFileTypes(QJsonArray fileTypes)
         // Not found, remove from existing
         if (!found)
         {
-            RamFileType *ft = _fileTypes.takeAt(i);
+            RamObject *ft = _fileTypes->takeAt(i);
             ft->remove();
         }
     }
@@ -441,11 +434,7 @@ void Ramses::gotFileTypes(QJsonArray fileTypes)
                     );
         fileType->setPreviewable( ft.value("previewable").toInt() != 0 );
 
-        _fileTypes << fileType;
-
-        connect(fileType,SIGNAL(removed(RamObject*)), this, SLOT(removeFileType(RamObject*)));
-
-        emit newFileType(fileType);
+        _fileTypes->append(fileType);
     }
 }
 
@@ -1328,7 +1317,7 @@ RamStep *Ramses::templateStep(QString uuid)
     return (RamStep*)_templateSteps->fromUuid( uuid );
 }
 
-QList<RamAssetGroup *> Ramses::templateAssetGroups() const
+RamObjectList *Ramses::templateAssetGroups() const
 {
     return _templateAssetGroups;
 }
@@ -1337,30 +1326,13 @@ RamAssetGroup *Ramses::createTemplateAssetGroup()
 {
     RamAssetGroup *ag = new RamAssetGroup("NEW", "Asset Group", true);
     ag->setParent(this);
-    _templateAssetGroups << ag;
-    emit newTemplateAssetGroup(ag);
+    _templateAssetGroups->append(ag);
     return ag;
-}
-
-void Ramses::removeTemplateAssetGroup(QString uuid)
-{
-    for (int i = _templateAssetGroups.count() -1; i >= 0; i--)
-    {
-        if (_templateAssetGroups[i]->uuid() == uuid)
-        {
-            RamAssetGroup *ag = _templateAssetGroups.takeAt(i);
-            ag->remove();
-        }
-    }
 }
 
 RamAssetGroup *Ramses::templateAssetGroup(QString uuid)
 {
-    foreach(RamAssetGroup *ag, _templateAssetGroups)
-    {
-        if (ag->uuid() == uuid) return ag;
-    }
-    return nullptr;
+    return (RamAssetGroup*)_templateAssetGroups->fromUuid(uuid);
 }
 
 RamAssetGroup *Ramses::assetGroup(QString uuid) const
@@ -1402,45 +1374,22 @@ RamState *Ramses::createState()
     return state;
 }
 
-QList<RamFileType *> Ramses::fileTypes() const
+RamObjectList *Ramses::fileTypes() const
 {
     return _fileTypes;
 }
 
 RamFileType *Ramses::fileType(const QString uuid) const
 {
-    foreach(RamFileType *ft, _fileTypes)
-    {
-        if (ft->uuid() == uuid) return ft;
-    }
-    return nullptr;
+    return (RamFileType*)_fileTypes->fromUuid(uuid);
 }
 
 RamFileType *Ramses::createFileType()
 {
-    RamFileType *ft = new RamFileType(".new", "New File Type", QStringList("new"));
+    RamFileType *ft = new RamFileType("NEW", "New File Type", QStringList("new"));
     ft->setParent(this);
-    _fileTypes << ft;
-    connect(ft, SIGNAL(removed(RamObject*)), this, SLOT(removeFileType(RamObject*)));
-    emit newFileType(ft);
+    _fileTypes->append(ft);
     return ft;
-}
-
-void Ramses::removeFileType(QString uuid)
-{
-    for (int i = _fileTypes.count() -1; i >= 0; i--)
-    {
-        if (_fileTypes[i]->uuid() == uuid)
-        {
-            RamFileType *ft = _fileTypes.takeAt(i);
-            ft->remove();
-        }
-    }
-}
-
-void Ramses::removeFileType(RamObject *ft)
-{
-    if (ft) removeFileType(ft->uuid());
 }
 
 QList<RamApplication *> Ramses::applications() const

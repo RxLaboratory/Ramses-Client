@@ -7,7 +7,7 @@ TemplateStepListManagerWidget::TemplateStepListManagerWidget(QWidget *parent) :
         "Template steps",
         parent )
 {
-    qDebug() << "test";
+
 }
 
 void TemplateStepListManagerWidget::createObject()

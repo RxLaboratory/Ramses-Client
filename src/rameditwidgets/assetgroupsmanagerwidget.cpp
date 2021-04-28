@@ -15,11 +15,12 @@ AssetGroupsManagerWidget::AssetGroupsManagerWidget(QWidget *parent): ListManager
     assignMenu->addSeparator();
     addButton->setMenu(assignMenu);
 
-    foreach(RamAssetGroup *assetGroup, Ramses::instance()->templateAssetGroups()) newTemplateAssetGroup(assetGroup);
+    for (int i = 0; i < Ramses::instance()->templateAssetGroups()->count(); i++) newTemplateAssetGroup( Ramses::instance()->templateAssetGroups()->at(i) );
 
     connect(actionCreateAssetGroup, &QAction::triggered, this, &AssetGroupsManagerWidget::createAssetGroup);
     connect(Ramses::instance(), &Ramses::currentProjectChanged, this, &AssetGroupsManagerWidget::changeProject);
-    connect(Ramses::instance(), &Ramses::newTemplateAssetGroup, this, &AssetGroupsManagerWidget::newTemplateAssetGroup);
+    connect(Ramses::instance()->templateAssetGroups(), &RamObjectList::objectAdded, this, &AssetGroupsManagerWidget::newTemplateAssetGroup);
+    connect(Ramses::instance()->templateAssetGroups(), &RamObjectList::objectRemoved, this, &AssetGroupsManagerWidget::templateAssetGroupRemoved);
 }
 
 void AssetGroupsManagerWidget::currentDataChanged(QVariant data)
@@ -113,7 +114,7 @@ void AssetGroupsManagerWidget::assetGroupChanged()
     updateItem(ag->uuid(), ag->name());
 }
 
-void AssetGroupsManagerWidget::newTemplateAssetGroup(RamAssetGroup *assetGroup)
+void AssetGroupsManagerWidget::newTemplateAssetGroup(RamObject *assetGroup)
 {
     if (!assetGroup) return;
     if (assetGroup->uuid() == "") return;
@@ -121,7 +122,6 @@ void AssetGroupsManagerWidget::newTemplateAssetGroup(RamAssetGroup *assetGroup)
     agAction->setData(assetGroup->uuid());
     assignMenu->addAction(agAction);
     connect(agAction, &QAction::triggered, this, &AssetGroupsManagerWidget::assignAssetGroup);
-    connect(assetGroup, &RamAssetGroup::removed, this, &AssetGroupsManagerWidget::templateAssetGroupRemoved);
     connect(assetGroup, &RamAssetGroup::changed, this, &AssetGroupsManagerWidget::templateAssetGroupChanged);
 }
 

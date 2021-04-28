@@ -91,9 +91,8 @@ public:
     RamStep *createTemplateStep();
     RamStep *templateStep(QString uuid);
     // Template Asset Groups
-    QList<RamAssetGroup *> templateAssetGroups() const;
+    RamObjectList *templateAssetGroups() const;
     RamAssetGroup *createTemplateAssetGroup();
-    void removeTemplateAssetGroup(QString uuid);
     RamAssetGroup *templateAssetGroup(QString uuid);
     // Asset groups
     RamAssetGroup *assetGroup(QString uuid) const;
@@ -102,10 +101,9 @@ public:
     // States
     RamStateList *states() const;
     // File Types
-    QList<RamFileType*> fileTypes() const;
+    RamObjectList *fileTypes() const;
     RamFileType *fileType(const QString uuid) const;
     RamFileType *createFileType();
-    void removeFileType(QString uuid); 
     // Applications
     QList<RamApplication *> applications() const;
     RamApplication *application(QString uuid);
@@ -115,7 +113,6 @@ public:
 public slots:
     void refresh();
     void removeApplication(RamObject *a);
-    void removeFileType(RamObject *ft);
     // Users
     RamUser *createUser();
     // States
@@ -125,10 +122,8 @@ signals:
     void loggedIn(RamUser*);
     void loggedOut();
     void currentProjectChanged(RamProject*);
-    void newTemplateAssetGroup(RamAssetGroup *assetGroup);
     void newStep(RamStep *);
     void newAssetGroup(RamAssetGroup *);
-    void newFileType(RamFileType *);
     void newApplication(RamApplication *);
 
 protected:
@@ -145,7 +140,6 @@ private slots:
     void gotTemplateSteps(QJsonArray steps);
     //template asset groups
     void gotTemplateAssetGroups(QJsonArray assetGroups);
-    void templateAssetGroupRemoved(RamObject *o);
     //states
     void gotStates(QJsonArray states);
     //file types
@@ -207,13 +201,13 @@ private:
     RamObjectList *_templateSteps;
 
     // Template asset groups
-    QList<RamAssetGroup *> _templateAssetGroups;
+    RamObjectList *_templateAssetGroups;
 
     // States
     RamStateList *_states;
 
     // File types
-    QList<RamFileType*> _fileTypes;
+    RamObjectList *_fileTypes;
 
     // Applications
     QList<RamApplication*> _applications;

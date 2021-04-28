@@ -29,6 +29,7 @@ INCLUDEPATH += rameditwidgets \
 SOURCES += \
     duqf-widgets/duqfsearchedit.cpp \
     ramdisplaywidgets/ramassetgroupwidget.cpp \
+    ramdisplaywidgets/ramfiletypewidget.cpp \
     ramdisplaywidgets/ramprojectwidget.cpp \
     ramdisplaywidgets/ramstatewidget.cpp \
     ramdisplaywidgets/ramstepwidget.cpp \
@@ -40,11 +41,13 @@ SOURCES += \
     rameditwidgets/assetgroupsmanagerwidget.cpp \
     rameditwidgets/assetsmanagerwidget.cpp \
     daemon.cpp \
+    rameditwidgets/filetypelistmanagerwidget.cpp \
     rameditwidgets/objectlisteditwidget.cpp \
     rameditwidgets/objectlistmanagerwidget.cpp \
     rameditwidgets/projectlistmanagerwidget.cpp \
     rameditwidgets/shotlistmanagerwidget.cpp \
     rameditwidgets/statelistmanagerwidget.cpp \
+    rameditwidgets/templateassetgrouplistmanagerwidget.cpp \
     rameditwidgets/templatesteplistmanagerwidget.cpp \
     rameditwidgets/userlistmanagerwidget.cpp \
     ramobjects/ramobjectuberlist.cpp \
@@ -85,7 +88,6 @@ SOURCES += \
     duqf-widgets/titlebar.cpp \
     duqf-widgets/toolbarspacer.cpp \
     rameditwidgets/filetypeeditwidget.cpp \
-    rameditwidgets/filetypesmanagerwidget.cpp \
     smallwidgets/frameratewidget.cpp \
     rameditwidgets/listmanagerwidget.cpp \
     settingswidgets/localsettingswidget.cpp \
@@ -137,7 +139,6 @@ SOURCES += \
     rameditwidgets/stepeditwidget.cpp \
     rameditwidgets/stepsmanagerwidget.cpp \
     rameditwidgets/templateassetgroupeditwidget.cpp \
-    rameditwidgets/templateassetgroupsmanagerwidget.cpp \
     rameditwidgets/templatestepeditwidget.cpp \
     rameditwidgets/usereditwidget.cpp \
     userprofilepage.cpp
@@ -145,6 +146,7 @@ SOURCES += \
 HEADERS += \
     duqf-widgets/duqfsearchedit.h \
     ramdisplaywidgets/ramassetgroupwidget.h \
+    ramdisplaywidgets/ramfiletypewidget.h \
     ramdisplaywidgets/ramprojectwidget.h \
     ramdisplaywidgets/ramstatewidget.h \
     ramdisplaywidgets/ramstepwidget.h \
@@ -156,11 +158,13 @@ HEADERS += \
     rameditwidgets/assetgroupsmanagerwidget.h \
     rameditwidgets/assetsmanagerwidget.h \
     daemon.h \
+    rameditwidgets/filetypelistmanagerwidget.h \
     rameditwidgets/objectlisteditwidget.h \
     rameditwidgets/objectlistmanagerwidget.h \
     rameditwidgets/projectlistmanagerwidget.h \
     rameditwidgets/shotlistmanagerwidget.h \
     rameditwidgets/statelistmanagerwidget.h \
+    rameditwidgets/templateassetgrouplistmanagerwidget.h \
     rameditwidgets/templatesteplistmanagerwidget.h \
     rameditwidgets/userlistmanagerwidget.h \
     ramobjects/ramobjectuberlist.h \
@@ -202,7 +206,6 @@ HEADERS += \
     duqf-widgets/titlebar.h \
     duqf-widgets/toolbarspacer.h \
     rameditwidgets/filetypeeditwidget.h \
-    rameditwidgets/filetypesmanagerwidget.h \
     smallwidgets/frameratewidget.h \
     rameditwidgets/listmanagerwidget.h \
     settingswidgets/localsettingswidget.h \
@@ -253,7 +256,6 @@ HEADERS += \
     rameditwidgets/stepeditwidget.h \
     rameditwidgets/stepsmanagerwidget.h \
     rameditwidgets/templateassetgroupeditwidget.h \
-    rameditwidgets/templateassetgroupsmanagerwidget.h \
     rameditwidgets/templatestepeditwidget.h \
     rameditwidgets/usereditwidget.h \
     userprofilepage.h
@@ -267,7 +269,6 @@ FORMS += \
     duqf-widgets/appearancesettingswidget.ui \
     duqf-widgets/duqffolderselectorwidget.ui \
     duqf-widgets/toolbarspacer.ui \
-    rameditwidgets/filetypeeditwidget.ui \
     rameditwidgets/listmanagerwidget.ui \
     settingswidgets/localsettingswidget.ui \
     loginpage.ui \

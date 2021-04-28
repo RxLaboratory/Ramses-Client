@@ -308,6 +308,13 @@ void RamObjectListWidget::objectAssigned(RamObject *obj)
         else ow = new RamObjectWidget(obj, this);
         break;
     }
+    case RamObject::FileType:
+    {
+        RamFileType *ft = dynamic_cast<RamFileType*>(obj);
+        if (ft) ow = new RamFileTypeWidget(ft, this);
+        else ow = new RamObjectWidget(obj, this);
+        break;
+    }
     default:
         ow = new RamObjectWidget(obj,this);
         break;

@@ -24,7 +24,7 @@ protected slots:
 
 private slots:
     void applicationChanged(RamObject *o);
-    void newFileType(RamFileType * const ft);
+    void newFileType(RamObject * const ft);
     void fileTypeChanged(RamObject *o);
     void fileTypeRemoved(RamObject *o);
     void assignNativeFileType();

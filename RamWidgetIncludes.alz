@@ -105,7 +105,7 @@ ObjectListManagerWidget</text>
   </node>
   <node w="200000" x="-1454937" y="366548" h="75000" index="190">
    <text>FileTypeEditWidget</text>
-   <color g="233" r="252" b="79"/>
+   <color g="255" r="255" b="255"/>
    <text-color g="0" r="0" b="0"/>
   </node>
   <node w="200000" x="-203307" y="-695937" h="75000" index="4">
@@ -463,7 +463,7 @@ ObjectListManagerWidget</text>
   </node>
   <node w="248000" x="-1397981" y="1935181" h="75000" index="252">
    <text>TemplateAssetGroupEditWidget</text>
-   <color g="233" r="252" b="79"/>
+   <color g="255" r="255" b="255"/>
    <text-color g="0" r="0" b="0"/>
   </node>
   <node w="200000" x="-1432330" y="1638488" h="75000" index="251">
@@ -496,7 +496,7 @@ ObjectListManagerWidget</text>
    <color g="255" r="255" b="255"/>
    <text-color g="0" r="0" b="0"/>
   </node>
-  <node w="200000" x="-656971" y="524540" h="75000" index="211">
+  <node w="200000" x="-656971" y="530064" h="75000" index="211">
    <text>RamStateWidget</text>
    <color g="215" r="211" b="207"/>
    <text-color g="0" r="0" b="0"/>
@@ -533,7 +533,7 @@ ObjectListManagerWidget</text>
   </node>
   <node w="219000" x="-1700045" y="269279" h="75000" index="78">
    <text>FileTypeListManagerWidget</text>
-   <color g="233" r="252" b="79"/>
+   <color g="255" r="255" b="255"/>
    <text-color g="0" r="0" b="0"/>
   </node>
   <node w="200000" x="581775" y="1394046" h="75000" index="205">
@@ -569,7 +569,7 @@ ObjectListManagerWidget</text>
   </node>
   <node w="305000" x="-1703802" y="1786889" h="75000" index="102">
    <text>TemplateAssetGroupListManagerWidget</text>
-   <color g="233" r="252" b="79"/>
+   <color g="255" r="255" b="255"/>
    <text-color g="0" r="0" b="0"/>
   </node>
   <node w="200000" x="1557276" y="1812357" h="75000" index="229">
@@ -762,7 +762,7 @@ ObjectListManagerWidget</text>
   </node>
   <node w="200000" x="-627146" y="237846" h="75000" index="188">
    <text>RamFileTypeWidget</text>
-   <color g="233" r="252" b="79"/>
+   <color g="255" r="255" b="255"/>
    <text-color g="0" r="0" b="0"/>
   </node>
   <edge index0="169" index1="144" reversed="0" arrow-mode="0"/>
