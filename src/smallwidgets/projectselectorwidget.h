@@ -11,7 +11,7 @@ class ProjectSelectorWidget : public QComboBox
 public:
     ProjectSelectorWidget(QWidget *parent = nullptr);
 private slots:
-    void newProject(RamProject *project);
+    void newProject(RamObject *obj);
     void projectRemoved(RamObject *o);
     void projectChanged(RamObject *o);
     void setCurrentProject(int index);

@@ -18,7 +18,7 @@ AssetGroupsManagerWidget::AssetGroupsManagerWidget(QWidget *parent): ListManager
     foreach(RamAssetGroup *assetGroup, Ramses::instance()->templateAssetGroups()) newTemplateAssetGroup(assetGroup);
 
     connect(actionCreateAssetGroup, &QAction::triggered, this, &AssetGroupsManagerWidget::createAssetGroup);
-    connect(Ramses::instance(), &Ramses::projectChanged, this, &AssetGroupsManagerWidget::changeProject);
+    connect(Ramses::instance(), &Ramses::currentProjectChanged, this, &AssetGroupsManagerWidget::changeProject);
     connect(Ramses::instance(), &Ramses::newTemplateAssetGroup, this, &AssetGroupsManagerWidget::newTemplateAssetGroup);
 }
 

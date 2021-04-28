@@ -28,7 +28,7 @@ StepsManagerWidget::StepsManagerWidget(QWidget *parent): ListManagerWidget(paren
     foreach(RamStep *step, Ramses::instance()->templateSteps()) newTemplateStep(step);
 
     connect(actionCreateStep, &QAction::triggered, this, &StepsManagerWidget::createStep);
-    connect(Ramses::instance(), &Ramses::projectChanged, this, &StepsManagerWidget::changeProject);
+    connect(Ramses::instance(), &Ramses::currentProjectChanged, this, &StepsManagerWidget::changeProject);
     connect(Ramses::instance(), &Ramses::newTemplateStep, this, &StepsManagerWidget::newTemplateStep);
     connect(upButton, &QToolButton::clicked, this, &StepsManagerWidget::moveStepUp);
     connect(downButton, &QToolButton::clicked, this, &StepsManagerWidget::moveStepDown);

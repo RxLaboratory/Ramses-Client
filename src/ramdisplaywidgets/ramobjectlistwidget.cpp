@@ -287,6 +287,13 @@ void RamObjectListWidget::objectAssigned(RamObject *obj)
         else ow = new RamObjectWidget(obj, this);
         break;
     }
+    case RamObject::Project:
+    {
+        RamProject *p = dynamic_cast<RamProject*>(obj);
+        if (p) ow = new RamProjectWidget(p, this);
+        else ow = new RamObjectWidget(obj, this);
+        break;
+    }
     default:
         ow = new RamObjectWidget(obj,this);
         break;

@@ -9,7 +9,7 @@ AssetsManagerWidget::AssetsManagerWidget(QWidget *parent): ListManagerWidget(par
 
     changeProject(Ramses::instance()->currentProject());
 
-    connect(Ramses::instance(), &Ramses::projectChanged, this, &AssetsManagerWidget::changeProject);
+    connect(Ramses::instance(), &Ramses::currentProjectChanged, this, &AssetsManagerWidget::changeProject);
     connect(this, &ListManagerWidget::filterChanged, this, &AssetsManagerWidget::filter);
 }
 

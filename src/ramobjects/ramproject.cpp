@@ -3,6 +3,7 @@
 RamProject::RamProject(QString shortName, QString name, QString uuid, QObject *parent):
     RamObject(shortName, name, uuid, parent)
 {
+    setObjectType(Project);
     _shots = new RamObjectUberList(this);
     _dbi->createProject(_shortName, _name, _uuid);
 }

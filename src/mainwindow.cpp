@@ -80,7 +80,7 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     qDebug() << "> Admin";
     adminPage->addPage(new UserListManagerWidget(this),"Users", QIcon(":/icons/users"));
     qDebug() << "  > users ok";
-    adminPage->addPage(new ProjectsManagerWidget(this), "Projects", QIcon(":/icons/projects"));
+    adminPage->addPage(new ProjectListManagerWidget(this), "Projects", QIcon(":/icons/projects"));
     qDebug() << "  > projects ok";
     adminPage->addPage(new TemplateStepsManagerWidget(this), "Template Steps", QIcon(":/icons/steps"));
     qDebug() << "  > template steps ok";
@@ -227,6 +227,18 @@ void MainWindow::addStateEditDockWidget(QDockWidget *w)
     }*/
 
     _stateEditDock << w;
+}
+
+void MainWindow::addProjectEditDockWidget(QDockWidget *w)
+{
+    this->addDockWidget(Qt::RightDockWidgetArea, w);
+
+    /*if (!_shotEditDock.isEmpty())
+    {
+        this->tabifyDockWidget(_shotEditDock.last(), w);
+    }*/
+
+    _projectEditDock << w;
 }
 
 void MainWindow::duqf_initUi()

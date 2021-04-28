@@ -1,10 +1,6 @@
 #ifndef USERLISTMANAGERWIDGET_H
 #define USERLISTMANAGERWIDGET_H
 
-#include <QWidget>
-#include <QHBoxLayout>
-#include <QSplitter>
-
 #include "ramses.h"
 #include "objectlistmanagerwidget.h"
 #include "usereditwidget.h"

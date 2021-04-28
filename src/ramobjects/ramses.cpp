@@ -19,6 +19,7 @@ Ramses::Ramses(QObject *parent) : QObject(parent)
     _dbi = DBInterface::instance();
     _users = new RamObjectList(this);
     _states = new RamStateList(this);
+    _projects = new RamObjectList(this);
 
     DBISuspender s;
 
@@ -141,16 +142,16 @@ void Ramses::gotProjects(QJsonArray projects)
     // Update projects
     for (int j = 0; j < projects.count(); j++)
     {
-        uuids << gotProject( projects[j].toObject() );
+        uuids << gotProject( projects.at(j).toObject() );
     }
 
     // Remove deleted projects
-    for (int i = _projects.count() - 1; i >= 0; i--)
+    for (int i = _projects->count() - 1; i >= 0; i--)
     {
-        RamProject *existingProject = _projects[i];
+        RamObject *existingProject = _projects->at(i);
         if (!uuids.contains(existingProject->uuid()))
         {
-            RamProject *p = _projects.takeAt(i);
+            RamObject *p = _projects->takeAt(i);
             p->remove();
         }
     }
@@ -171,9 +172,9 @@ QString Ramses::gotProject(QJsonObject newP)
     QString uuid = newP.value("uuid").toString();
 
     // loop through existing projects to update them
-    for (int i = _projects.count() - 1; i >= 0; i--)
+    for (int i = _projects->count() - 1; i >= 0; i--)
     {
-        RamProject *existingProject = _projects[i];
+        RamProject *existingProject = (RamProject*)_projects->at(i);
 
         if (uuid == existingProject->uuid())
         {
@@ -212,18 +213,9 @@ QString Ramses::gotProject(QJsonObject newP)
     gotSequences( newP.value("sequences").toArray(), project);
     gotPipes( newP.value("pipes").toArray(), project);
 
-    _projects << project;
-
-    connect(project,&RamProject::removed, this, &Ramses::projectRemoved);
-
-    emit newProject(project);
+    _projects->append(project);
 
     return uuid;
-}
-
-void Ramses::projectRemoved(RamObject *o)
-{
-    removeProject(o->uuid());
 }
 
 void Ramses::gotTemplateSteps(QJsonArray steps)
@@ -1318,7 +1310,7 @@ void Ramses::setCurrentProject(RamProject *currentProject, bool updateData)
         if (updateData) refresh();
     }
 
-    emit projectChanged(_currentProject);
+    emit currentProjectChanged(_currentProject);
 }
 
 void Ramses::setCurrentProject(QString uuidOrShortName, bool updateData)
@@ -1398,8 +1390,9 @@ RamAssetGroup *Ramses::templateAssetGroup(QString uuid)
 
 RamAssetGroup *Ramses::assetGroup(QString uuid) const
 {
-    foreach(RamProject *p, _projects)
+    for (int i =0; i < _projects->count(); i++)
     {
+        RamProject *p = (RamProject*)_projects->at(i);
         foreach(RamAssetGroup *ag, p->assetGroups())
         {
             if (ag->uuid() == uuid) return ag;
@@ -1410,8 +1403,9 @@ RamAssetGroup *Ramses::assetGroup(QString uuid) const
 
 RamSequence *Ramses::sequence(QString uuid) const
 {
-    foreach(RamProject *p, _projects)
+    for (int i =0; i < _projects->count(); i++)
     {
+        RamProject *p = (RamProject*)_projects->at(i);
         foreach(RamSequence *s, p->sequences())
         {
             if (s->uuid() == uuid) return s;
@@ -1515,43 +1509,22 @@ void Ramses::removeApplication(RamObject *a)
     if (a) removeApplication(a->uuid());
 }
 
-QList<RamProject *> Ramses::projects() const
+RamObjectList *Ramses::projects() const
 {
     return _projects;
 }
 
-RamProject *Ramses::project(QString uuidOrShortName) const
+RamProject *Ramses::project(QString uuid) const
 {
-    for(RamProject *p: _projects)
-    {
-        if (p->uuid() == uuidOrShortName) return p;
-    }
-    for (RamProject *p: _projects)
-    {
-        if (p->shortName() == uuidOrShortName) return p;
-    }
-    return nullptr;
+    return (RamProject*)projects()->fromUuid( uuid );
 }
 
 RamProject *Ramses::createProject()
 {
-    RamProject *project = new RamProject("New","Project");
+    RamProject *project = new RamProject("NEW","Project");
     project->setParent(this);
-    _projects << project;
-    emit newProject(project);
+    _projects->append( project );
     return project;
-}
-
-void Ramses::removeProject(QString uuid)
-{
-    for (int i = _projects.count() -1; i >= 0; i--)
-    {
-        if (_projects[i]->uuid() == uuid)
-        {
-            RamProject *p = _projects.takeAt(i);
-            p->remove();
-        }
-    }
 }
 
 RamUser *Ramses::createUser()

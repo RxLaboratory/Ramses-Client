@@ -191,7 +191,7 @@ void StatusHistoryWidget::setupUi()
 
 void StatusHistoryWidget::connectEvents()
 {
-    connect(Ramses::instance(), &Ramses::projectChanged, this, &StatusHistoryWidget::currentProjectChanged);
+    connect(Ramses::instance(), &Ramses::currentProjectChanged, this, &StatusHistoryWidget::currentProjectChanged);
     connect(stepBox, SIGNAL(currentIndexChanged(int)), this, SLOT(stepFilterChanged(int)));
     connect(statusWidget, &StatusEditWidget::statusUpdated, this, &StatusHistoryWidget::setStatus);
 }

@@ -28,6 +28,7 @@ INCLUDEPATH += rameditwidgets \
 
 SOURCES += \
     duqf-widgets/duqfsearchedit.cpp \
+    ramdisplaywidgets/ramprojectwidget.cpp \
     ramdisplaywidgets/ramstatewidget.cpp \
     ramdisplaywidgets/ramuserwidget.cpp \
     rameditwidgets/applicationeditwidget.cpp \
@@ -39,6 +40,7 @@ SOURCES += \
     daemon.cpp \
     rameditwidgets/objectlisteditwidget.cpp \
     rameditwidgets/objectlistmanagerwidget.cpp \
+    rameditwidgets/projectlistmanagerwidget.cpp \
     rameditwidgets/shotlistmanagerwidget.cpp \
     rameditwidgets/statelistmanagerwidget.cpp \
     rameditwidgets/userlistmanagerwidget.cpp \
@@ -96,7 +98,6 @@ SOURCES += \
     pipeline-editor/stepnode.cpp \
     rameditwidgets/projecteditwidget.cpp \
     smallwidgets/projectselectorwidget.cpp \
-    rameditwidgets/projectsmanagerwidget.cpp \
     ramobjects/ramapplication.cpp \
     ramobjects/ramasset.cpp \
     ramobjects/ramassetgroup.cpp \
@@ -141,6 +142,7 @@ SOURCES += \
 
 HEADERS += \
     duqf-widgets/duqfsearchedit.h \
+    ramdisplaywidgets/ramprojectwidget.h \
     ramdisplaywidgets/ramstatewidget.h \
     ramdisplaywidgets/ramuserwidget.h \
     rameditwidgets/applicationeditwidget.h \
@@ -152,6 +154,7 @@ HEADERS += \
     daemon.h \
     rameditwidgets/objectlisteditwidget.h \
     rameditwidgets/objectlistmanagerwidget.h \
+    rameditwidgets/projectlistmanagerwidget.h \
     rameditwidgets/shotlistmanagerwidget.h \
     rameditwidgets/statelistmanagerwidget.h \
     rameditwidgets/userlistmanagerwidget.h \
@@ -209,7 +212,6 @@ HEADERS += \
     pipeline-editor/stepnode.h \
     rameditwidgets/projecteditwidget.h \
     smallwidgets/projectselectorwidget.h \
-    rameditwidgets/projectsmanagerwidget.h \
     ramobjects/ramapplication.h \
     ramobjects/ramasset.h \
     ramobjects/ramassetgroup.h \

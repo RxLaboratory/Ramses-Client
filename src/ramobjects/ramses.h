@@ -80,10 +80,9 @@ public:
     bool isLead();
     QString currentUserSettingsFile();
     // Projects
-    QList<RamProject *> projects() const;
-    RamProject *project(QString uuidOrShortName) const;
+    RamObjectList *projects() const;
+    RamProject *project(QString uuid) const;
     RamProject *createProject();
-    void removeProject(QString uuid);
     RamProject *currentProject() const;
     void setCurrentProject(RamProject *currentProject, bool updateData=true);
     void setCurrentProject(QString uuidOrShortName, bool updateData=true);
@@ -126,8 +125,7 @@ public slots:
 signals:
     void loggedIn(RamUser*);
     void loggedOut();
-    void projectChanged(RamProject*);
-    void newProject(RamProject *project);
+    void currentProjectChanged(RamProject*);
     void newTemplateStep(RamStep *step);
     void newTemplateAssetGroup(RamAssetGroup *assetGroup);
     void newStep(RamStep *);
@@ -145,7 +143,6 @@ private slots:
     //projects
     void gotProjects(QJsonArray projects);
     QString gotProject(QJsonObject newP);
-    void projectRemoved(RamObject *o);
     //template steps
     void gotTemplateSteps(QJsonArray steps);
     void templateStepRemoved(RamObject *o);
@@ -206,7 +203,7 @@ private:
     QString _currentUserShortName;
 
     // Projects
-    QList<RamProject *> _projects;
+    RamObjectList *_projects;
     RamProject *_currentProject;
 
     // Template steps

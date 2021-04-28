@@ -19,7 +19,9 @@ public:
     explicit ProjectEditWidget(RamProject *project, QWidget *parent = nullptr);
 
     RamProject *project() const;
-    void setProject(RamProject *project);
+
+public slots:
+    void setObject(RamObject *obj) Q_DECL_OVERRIDE;
 
 protected slots:
     void update() Q_DECL_OVERRIDE;

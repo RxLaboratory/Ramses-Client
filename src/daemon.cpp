@@ -267,8 +267,9 @@ void Daemon::getProjects(QTcpSocket *client)
 
     QJsonObject content;
     QJsonArray projects;
-    foreach(RamProject *p, Ramses::instance()->projects())
+    for (int i = 0; i < Ramses::instance()->projects()->count(); i++)
     {
+        RamProject *p = (RamProject*)Ramses::instance()->projects()->at(i);
         QJsonObject project;
         project.insert("shortName", p->shortName());
         project.insert("name", p->name());

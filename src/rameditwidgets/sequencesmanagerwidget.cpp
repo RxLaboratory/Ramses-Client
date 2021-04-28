@@ -8,7 +8,7 @@ SequencesManagerWidget::SequencesManagerWidget(QWidget *parent): ListManagerWidg
 
     this->setRole(RamUser::ProjectAdmin);
 
-    connect(Ramses::instance(), &Ramses::projectChanged, this, &SequencesManagerWidget::changeProject);
+    connect(Ramses::instance(), &Ramses::currentProjectChanged, this, &SequencesManagerWidget::changeProject);
 }
 
 void SequencesManagerWidget::currentDataChanged(QVariant data)

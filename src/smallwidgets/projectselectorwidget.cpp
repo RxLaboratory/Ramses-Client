@@ -3,24 +3,24 @@
 ProjectSelectorWidget::ProjectSelectorWidget(QWidget *parent): QComboBox(parent)
 {
     //Populate
-    foreach(RamProject *p, Ramses::instance()->projects()) newProject(p);
+    for (int i = 0; i < Ramses::instance()->projects()->count(); i++) newProject( Ramses::instance()->projects()->at(i) );
 
     this->setMinimumWidth(200);
 
     connect(this, SIGNAL(currentIndexChanged(int)), this, SLOT(setCurrentProject(int)));
-    connect(Ramses::instance(), &Ramses::newProject, this, &ProjectSelectorWidget::newProject);
-    connect(Ramses::instance(), &Ramses::projectChanged, this, &ProjectSelectorWidget::currentProjectChanged);
+    connect(Ramses::instance()->projects(), &RamObjectList::objectAdded, this, &ProjectSelectorWidget::newProject);
+    connect(Ramses::instance()->projects(), &RamObjectList::objectRemoved, this, &ProjectSelectorWidget::projectRemoved);
+    connect(Ramses::instance(), &Ramses::currentProjectChanged, this, &ProjectSelectorWidget::currentProjectChanged);
 }
 
-void ProjectSelectorWidget::newProject(RamProject *project)
+void ProjectSelectorWidget::newProject(RamObject *obj)
 {
     QSignalBlocker b(this);
     int i = currentIndex();
-    if (project->uuid() != "")
+    if (obj->uuid() != "")
     {
-        this->addItem(project->name(), project->uuid());
-        connect(project, &RamProject::removed, this, &ProjectSelectorWidget::projectRemoved);
-        connect(project, &RamProject::changed, this, &ProjectSelectorWidget::projectChanged);
+        this->addItem(obj->name(), obj->uuid());
+        connect(obj, &RamObject::changed, this, &ProjectSelectorWidget::projectChanged);
     }
     setCurrentIndex(i);
 }

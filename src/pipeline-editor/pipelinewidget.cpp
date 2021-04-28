@@ -194,7 +194,7 @@ PipelineWidget::PipelineWidget(QWidget *parent) :
     connect(_nodeScene->connectionManager(), SIGNAL(connectionRemoved(DuQFConnection*)), this, SLOT(connectionRemoved(DuQFConnection*)));
     // Ramses connections
     connect(Ramses::instance(), &Ramses::newTemplateStep, this, &PipelineWidget::newTemplateStep);
-    connect(Ramses::instance(), &Ramses::projectChanged, this, &PipelineWidget::changeProject);
+    connect(Ramses::instance(), &Ramses::currentProjectChanged, this, &PipelineWidget::changeProject);
     connect(Ramses::instance(), &Ramses::loggedIn, this, &PipelineWidget::userChanged);
 }
 

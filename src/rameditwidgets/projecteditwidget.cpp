@@ -6,7 +6,7 @@ ProjectEditWidget::ProjectEditWidget(QWidget *parent) :
     setupUi();
     connectEvents();
 
-    setProject(nullptr);
+    setObject(nullptr);
 
     this->setEnabled(false);
 }
@@ -17,7 +17,7 @@ ProjectEditWidget::ProjectEditWidget(RamProject *project, QWidget *parent) :
     setupUi();
     connectEvents();
 
-    setProject(project);
+    setObject(project);
 }
 
 RamProject *ProjectEditWidget::project() const
@@ -25,11 +25,13 @@ RamProject *ProjectEditWidget::project() const
     return _project;
 }
 
-void ProjectEditWidget::setProject(RamProject *project)
+void ProjectEditWidget::setObject(RamObject *obj)
 {
+    RamProject *project = (RamProject*)obj;
+
     this->setEnabled(false);
 
-    setObject(project);
+    ObjectEditWidget::setObject(project);
     _project = project;
 
     QSignalBlocker b1(folderSelector);
@@ -84,7 +86,7 @@ void ProjectEditWidget::projectChanged(RamObject *o)
 {
     if (updating) return;
     Q_UNUSED(o);
-    setProject(_project);
+    setObject(_project);
 }
 
 void ProjectEditWidget::setupUi()
