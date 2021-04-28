@@ -15,6 +15,7 @@
 #include "ramstepwidget.h"
 #include "ramassetgroupwidget.h"
 #include "ramfiletypewidget.h"
+#include "ramapplicationwidget.h"
 
 class RamObjectListWidget : public QTableWidget
 {

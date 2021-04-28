@@ -3,6 +3,7 @@
 RamApplication::RamApplication(QString shortName, QString name, QString executableFilePath, QString uuid, QObject *parent):
     RamObject(shortName, name, uuid, parent)
 {
+    setObjectType(Application);
     _executableFilePath = executableFilePath;
     _dbi->createApplication(_shortName, _name, _executableFilePath, _uuid);
 }

@@ -80,7 +80,7 @@
   <node w="200000" x="-1520604" y="-240647" h="75000" index="75">
    <text>FileTypes</text>
    <color g="127" r="173" b="168"/>
-   <text-color g="0" r="164" b="0"/>
+   <text-color g="0" r="0" b="0"/>
   </node>
   <node w="200000" x="113832" y="-807099" h="75000" index="39">
    <text>RamObjectUberList</text>
@@ -110,7 +110,7 @@
   <node w="200000" x="-1012604" y="-362647" h="75000" index="47">
    <text>FileTypes</text>
    <color g="127" r="173" b="168"/>
-   <text-color g="0" r="164" b="0"/>
+   <text-color g="0" r="0" b="0"/>
   </node>
   <node w="200000" x="-241782" y="-483820" h="75000" index="50">
    <text>TemplateSteps</text>
@@ -195,7 +195,7 @@
   <node w="200000" x="-235782" y="-371820" h="75000" index="53">
    <text>TemplateAssetGroups</text>
    <color g="127" r="173" b="168"/>
-   <text-color g="0" r="164" b="0"/>
+   <text-color g="0" r="0" b="0"/>
   </node>
   <node w="200000" x="-901498" y="956698" h="75000" index="26">
    <text>RamStatus</text>

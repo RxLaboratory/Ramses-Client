@@ -28,6 +28,7 @@ INCLUDEPATH += rameditwidgets \
 
 SOURCES += \
     duqf-widgets/duqfsearchedit.cpp \
+    ramdisplaywidgets/ramapplicationwidget.cpp \
     ramdisplaywidgets/ramassetgroupwidget.cpp \
     ramdisplaywidgets/ramfiletypewidget.cpp \
     ramdisplaywidgets/ramprojectwidget.cpp \
@@ -145,6 +146,7 @@ SOURCES += \
 
 HEADERS += \
     duqf-widgets/duqfsearchedit.h \
+    ramdisplaywidgets/ramapplicationwidget.h \
     ramdisplaywidgets/ramassetgroupwidget.h \
     ramdisplaywidgets/ramfiletypewidget.h \
     ramdisplaywidgets/ramprojectwidget.h \

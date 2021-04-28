@@ -277,6 +277,18 @@ void MainWindow::addFileTypeEditDockWidget(QDockWidget *w)
     _fileTypeEditDock << w;
 }
 
+void MainWindow::addApplicationEditDockWidget(QDockWidget *w)
+{
+    this->addDockWidget(Qt::RightDockWidgetArea, w);
+
+    /*if (!_shotEditDock.isEmpty())
+    {
+        this->tabifyDockWidget(_shotEditDock.last(), w);
+    }*/
+
+    _applicationEditDock << w;
+}
+
 void MainWindow::duqf_initUi()
 {
     // ===== SYSTRAY ======
