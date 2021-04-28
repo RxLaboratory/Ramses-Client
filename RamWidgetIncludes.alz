@@ -39,7 +39,7 @@
   </node>
   <node w="200000" x="-599185" y="1800252" h="75000" index="257">
    <text>RamAssetGroupWidget</text>
-   <color g="233" r="252" b="79"/>
+   <color g="215" r="211" b="207"/>
    <text-color g="0" r="0" b="0"/>
   </node>
   <node w="200000" x="-1176198" y="237977" h="75000" index="186">
@@ -436,7 +436,7 @@ ObjectListManagerWidget</text>
    <color g="215" r="211" b="207"/>
    <text-color g="0" r="0" b="0"/>
   </node>
-  <node w="200000" x="-363352" y="1801396" h="75000" index="258">
+  <node w="200000" x="-361970" y="1801396" h="75000" index="258">
    <text>RamAssetGroup</text>
    <color g="154" r="78" b="6"/>
    <text-color g="0" r="0" b="0"/>

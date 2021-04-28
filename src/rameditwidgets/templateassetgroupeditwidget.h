@@ -1,29 +1,27 @@
 #ifndef TEMPLATEASSETGROUPEDITWIDGET_H
 #define TEMPLATEASSETGROUPEDITWIDGET_H
 
-#include "ui_templateassetgroupeditwidget.h"
+#include "objecteditwidget.h"
 #include "ramses.h"
 
-class TemplateAssetGroupEditWidget : public QWidget, private Ui::TemplateAssetGroupEditWidget
+class TemplateAssetGroupEditWidget : public ObjectEditWidget
 {
     Q_OBJECT
 
 public:
     explicit TemplateAssetGroupEditWidget(QWidget *parent = nullptr);
+    explicit TemplateAssetGroupEditWidget(RamAssetGroup *templateAssetGroup, QWidget *parent = nullptr);
 
     RamAssetGroup *assetGroup() const;
-    void setAssetGroup(RamAssetGroup *assetGroup);
+
+public slots:
+    void setObject(RamObject *obj) Q_DECL_OVERRIDE;
 
 private slots:
-    void update();
-    void revert();
-    bool checkInput();
-    void assetGroupRemoved(RamObject *o);
-    void dbiLog(DuQFLog m);
+    void assetGroupChanged(RamObject *o);
 
 private:
     RamAssetGroup *_assetGroup;
-    QMetaObject::Connection _currentAssetGroupConnection;
 };
 
 #endif // TEMPLATEASSETGROUPEDITWIDGET_H

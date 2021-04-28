@@ -19,7 +19,7 @@ void TemplateAssetGroupsManagerWidget::currentDataChanged(QVariant data)
     {
         if (ag->uuid() == data.toString())
         {
-            assetGroupWidget->setAssetGroup(ag);
+            assetGroupWidget->setObject(ag);
             assetGroupWidget->setEnabled(true);
             return;
         }
