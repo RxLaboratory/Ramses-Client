@@ -62,11 +62,6 @@
    <color g="255" r="255" b="255"/>
    <text-color g="0" r="0" b="0"/>
   </node>
-  <node w="248000" x="-2746051" y="-738615" h="75000" index="98">
-   <text>TemplateAssetGroupEditWidget</text>
-   <color g="87" r="85" b="83"/>
-   <text-color g="0" r="0" b="0"/>
-  </node>
   <node w="210000" x="-807718" y="-4526" h="75000" index="84">
    <text>ProjectListManagerWidget</text>
    <color g="255" r="255" b="255"/>
@@ -97,7 +92,7 @@
    <color g="127" r="173" b="168"/>
    <text-color g="0" r="0" b="0"/>
   </node>
-  <node w="200000" x="-2750827" y="-869038" h="75000" index="57">
+  <node w="200000" x="-1839039" y="-751158" h="75000" index="57">
    <text>SimpleObjectList</text>
    <color g="87" r="85" b="83"/>
    <text-color g="0" r="0" b="0"/>
@@ -182,11 +177,6 @@
    <color g="215" r="211" b="207"/>
    <text-color g="0" r="0" b="0"/>
   </node>
-  <node w="200000" x="-2770983" y="-619203" h="75000" index="103">
-   <text>TemplateStepEditWidget</text>
-   <color g="87" r="85" b="83"/>
-   <text-color g="0" r="0" b="0"/>
-  </node>
   <node w="200000" x="1107875" y="-1094335" h="75000" index="45">
    <text>QTableWidget</text>
    <color g="159" r="114" b="207"/>
@@ -215,11 +205,6 @@
   <node w="200000" x="1167870" y="231503" h="75000" index="76">
    <text>FileTypeEditWidget</text>
    <color g="255" r="255" b="255"/>
-   <text-color g="0" r="0" b="0"/>
-  </node>
-  <node w="200000" x="-2731616" y="-973501" h="75000" index="75">
-   <text>FileTypeEditWidget</text>
-   <color g="87" r="85" b="83"/>
    <text-color g="0" r="0" b="0"/>
   </node>
   <node w="200000" x="-826642" y="-206442" h="75000" index="74">
@@ -398,9 +383,6 @@
   <edge index0="42" index1="57" reversed="0" arrow-mode="0"/>
   <edge index0="42" index1="55" reversed="0" arrow-mode="0"/>
   <edge index0="42" index1="94" reversed="0" arrow-mode="0"/>
-  <edge index0="42" index1="98" reversed="0" arrow-mode="0"/>
-  <edge index0="42" index1="75" reversed="0" arrow-mode="0"/>
-  <edge index0="42" index1="103" reversed="0" arrow-mode="0"/>
   <edge index0="43" index1="44" reversed="0" arrow-mode="0"/>
   <edge index0="43" index1="61" reversed="0" arrow-mode="0"/>
   <edge index0="43" index1="62" reversed="0" arrow-mode="0"/>

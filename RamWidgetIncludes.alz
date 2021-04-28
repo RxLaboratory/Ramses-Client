@@ -22,7 +22,7 @@
    <color g="175" r="252" b="62"/>
    <text-color g="0" r="0" b="0"/>
   </node>
-  <node w="200000" x="-1444340" y="-15093" h="75000" index="165">
+  <node w="200000" x="-1445859" y="-5978" h="75000" index="165">
    <text>ApplicationEditWidget</text>
    <color g="255" r="255" b="255"/>
    <text-color g="0" r="0" b="0"/>
@@ -136,7 +136,7 @@ ObjectListManagerWidget</text>
   </node>
   <node w="200000" x="318859" y="1725471" h="75000" index="218">
    <text>StepEditWidget</text>
-   <color g="255" r="255" b="255"/>
+   <color g="233" r="252" b="79"/>
    <text-color g="0" r="0" b="0"/>
   </node>
   <node w="200000" x="-1689533" y="534992" h="75000" index="91">
@@ -186,7 +186,7 @@ ObjectListManagerWidget</text>
   </node>
   <node w="200000" x="602975" y="823935" h="75000" index="179">
    <text>ObjectListEditWidget</text>
-   <color g="255" r="255" b="255"/>
+   <color g="233" r="252" b="79"/>
    <text-color g="0" r="0" b="0"/>
   </node>
   <node w="200000" x="-1472001" y="959514" h="75000" index="237">
@@ -323,7 +323,7 @@ ObjectListManagerWidget</text>
   </node>
   <node w="200000" x="363234" y="825442" h="75000" index="177">
    <text>AssetGroupEditWidget</text>
-   <color g="255" r="255" b="255"/>
+   <color g="233" r="252" b="79"/>
    <text-color g="0" r="0" b="0"/>
   </node>
   <node w="200000" x="-599185" y="1800252" h="75000" index="257">
@@ -459,7 +459,7 @@ ObjectListManagerWidget</text>
   </node>
   <node w="200000" x="380446" y="354270" h="75000" index="153">
    <text>AssetEditWidget</text>
-   <color g="255" r="255" b="255"/>
+   <color g="233" r="252" b="79"/>
    <text-color g="0" r="0" b="0"/>
   </node>
   <node w="200000" x="1205807" y="-54788" h="75000" index="271">
@@ -625,7 +625,7 @@ ObjectListManagerWidget</text>
   </node>
   <node w="200000" x="370301" y="-97668" h="75000" index="151">
    <text>ShotEditWidget</text>
-   <color g="255" r="255" b="255"/>
+   <color g="233" r="252" b="79"/>
    <text-color g="0" r="0" b="0"/>
   </node>
   <node w="200000" x="-2088138" y="-98207" h="75000" index="138">
@@ -701,7 +701,7 @@ ObjectListManagerWidget</text>
   </node>
   <node w="200000" x="573584" y="1687179" h="75000" index="220">
    <text>ObjectListEditWidget</text>
-   <color g="255" r="255" b="255"/>
+   <color g="233" r="252" b="79"/>
    <text-color g="0" r="0" b="0"/>
   </node>
   <node w="217000" x="866840" y="670139" h="75000" index="162">
@@ -731,7 +731,7 @@ ObjectListManagerWidget</text>
   </node>
   <node w="200000" x="575249" y="1799557" h="75000" index="222">
    <text>ObjectListEditWidget</text>
-   <color g="255" r="255" b="255"/>
+   <color g="233" r="252" b="79"/>
    <text-color g="0" r="0" b="0"/>
   </node>
   <node w="200000" x="819984" y="1796227" h="75000" index="223">
