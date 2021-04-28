@@ -176,7 +176,7 @@ ObjectListManagerWidget</text>
   </node>
   <node w="256000" x="-1712569" y="1466091" h="75000" index="106">
    <text>TemplateStepListManagerWidget</text>
-   <color g="233" r="252" b="79"/>
+   <color g="255" r="255" b="255"/>
    <text-color g="0" r="0" b="0"/>
   </node>
   <node w="200000" x="-213982" y="-68835" h="75000" index="175">

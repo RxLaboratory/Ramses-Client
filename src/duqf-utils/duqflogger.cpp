@@ -59,7 +59,10 @@ DuQFLog::DuQFLog(QString message, DuQFLog::LogType type, QString component)
     QString m = typeString() + " " + message;
     switch(type) {
     case Data:
-        if (SHOWDATA) qDebug().noquote() << m;
+#ifdef SHOWDATA
+        qDebug().noquote() << m;
+#endif
+        break;
     case Debug:
 #ifdef QT_DEBUG
         qDebug().noquote() << m;

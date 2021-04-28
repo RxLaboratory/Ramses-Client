@@ -253,6 +253,18 @@ void MainWindow::addStepEditDockWidget(QDockWidget *w)
     _stepEditDock << w;
 }
 
+void MainWindow::addAssetGroupEditDockWidget(QDockWidget *w)
+{
+    this->addDockWidget(Qt::RightDockWidgetArea, w);
+
+    /*if (!_shotEditDock.isEmpty())
+    {
+        this->tabifyDockWidget(_shotEditDock.last(), w);
+    }*/
+
+    _assetGroupEditDock << w;
+}
+
 void MainWindow::duqf_initUi()
 {
     // ===== SYSTRAY ======

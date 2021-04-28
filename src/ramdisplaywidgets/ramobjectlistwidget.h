@@ -13,6 +13,7 @@
 #include "ramuserwidget.h"
 #include "ramprojectwidget.h"
 #include "ramstepwidget.h"
+#include "ramassetgroupwidget.h"
 
 class RamObjectListWidget : public QTableWidget
 {

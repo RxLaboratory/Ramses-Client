@@ -301,6 +301,13 @@ void RamObjectListWidget::objectAssigned(RamObject *obj)
         else ow = new RamObjectWidget(obj, this);
         break;
     }
+    case RamObject::AssetGroup:
+    {
+        RamAssetGroup *ag = dynamic_cast<RamAssetGroup*>(obj);
+        if (ag) ow = new RamAssetGroupWidget(ag, this);
+        else ow = new RamObjectWidget(obj, this);
+        break;
+    }
     default:
         ow = new RamObjectWidget(obj,this);
         break;
