@@ -87,9 +87,8 @@ public:
     void setCurrentProject(RamProject *currentProject, bool updateData=true);
     void setCurrentProject(QString uuidOrShortName, bool updateData=true);
     // Template Steps
-    QList<RamStep *> templateSteps() const;
+    RamObjectList *templateSteps() const;
     RamStep *createTemplateStep();
-    void removeTemplateStep(QString uuid);
     RamStep *templateStep(QString uuid);
     // Template Asset Groups
     QList<RamAssetGroup *> templateAssetGroups() const;
@@ -126,7 +125,6 @@ signals:
     void loggedIn(RamUser*);
     void loggedOut();
     void currentProjectChanged(RamProject*);
-    void newTemplateStep(RamStep *step);
     void newTemplateAssetGroup(RamAssetGroup *assetGroup);
     void newStep(RamStep *);
     void newAssetGroup(RamAssetGroup *);
@@ -145,7 +143,6 @@ private slots:
     QString gotProject(QJsonObject newP);
     //template steps
     void gotTemplateSteps(QJsonArray steps);
-    void templateStepRemoved(RamObject *o);
     //template asset groups
     void gotTemplateAssetGroups(QJsonArray assetGroups);
     void templateAssetGroupRemoved(RamObject *o);
@@ -207,7 +204,7 @@ private:
     RamProject *_currentProject;
 
     // Template steps
-    QList<RamStep *> _templateSteps;
+    RamObjectList *_templateSteps;
 
     // Template asset groups
     QList<RamAssetGroup *> _templateAssetGroups;

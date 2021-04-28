@@ -82,7 +82,7 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     qDebug() << "  > users ok";
     adminPage->addPage(new ProjectListManagerWidget(this), "Projects", QIcon(":/icons/projects"));
     qDebug() << "  > projects ok";
-    adminPage->addPage(new TemplateStepsManagerWidget(this), "Template Steps", QIcon(":/icons/steps"));
+    adminPage->addPage(new TemplateStepListManagerWidget(this), "Template Steps", QIcon(":/icons/steps"));
     qDebug() << "  > template steps ok";
     adminPage->addPage(new TemplateAssetGroupsManagerWidget(this), "Template Asset Groups", QIcon(":/icons/asset-groups"));
     qDebug() << "  > template assets ok";
@@ -239,6 +239,18 @@ void MainWindow::addProjectEditDockWidget(QDockWidget *w)
     }*/
 
     _projectEditDock << w;
+}
+
+void MainWindow::addStepEditDockWidget(QDockWidget *w)
+{
+    this->addDockWidget(Qt::RightDockWidgetArea, w);
+
+    /*if (!_shotEditDock.isEmpty())
+    {
+        this->tabifyDockWidget(_shotEditDock.last(), w);
+    }*/
+
+    _stepEditDock << w;
 }
 
 void MainWindow::duqf_initUi()

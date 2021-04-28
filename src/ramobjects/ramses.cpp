@@ -20,6 +20,7 @@ Ramses::Ramses(QObject *parent) : QObject(parent)
     _users = new RamObjectList(this);
     _states = new RamStateList(this);
     _projects = new RamObjectList(this);
+    _templateSteps = new RamObjectList(this);
 
     DBISuspender s;
 
@@ -223,9 +224,9 @@ void Ramses::gotTemplateSteps(QJsonArray steps)
     DBISuspender s;
 
     // loop through existing steps to update them
-    for (int i = _templateSteps.count() - 1; i >= 0; i--)
+    for (int i = _templateSteps->count() - 1; i >= 0; i--)
     {
-        RamStep *existingStep = _templateSteps[i];
+        RamStep *existingStep = (RamStep*)_templateSteps->at(i);
         // loop through new steps to update
         bool found = false;
         for (int j = steps.count() - 1; j >= 0; j--)
@@ -251,7 +252,7 @@ void Ramses::gotTemplateSteps(QJsonArray steps)
         // Not found, remove from existing
         if (!found)
         {
-            RamStep *s = _templateSteps.takeAt(i);
+            RamObject *s = _templateSteps->takeAt(i);
             s->remove();
         }
     }
@@ -268,17 +269,8 @@ void Ramses::gotTemplateSteps(QJsonArray steps)
                     );
         step->setType( s.value("type").toString());
 
-        _templateSteps << step;
-
-        connect(step,&RamStep::removed, this, &Ramses::templateStepRemoved);
-
-        emit newTemplateStep(step);
+        _templateSteps->append(step);
     }
-}
-
-void Ramses::templateStepRemoved(RamObject *o)
-{
-    removeTemplateStep(o->uuid());
 }
 
 void Ramses::gotTemplateAssetGroups(QJsonArray assetGroups)
@@ -1318,39 +1310,22 @@ void Ramses::setCurrentProject(QString uuidOrShortName, bool updateData)
     setCurrentProject( project(uuidOrShortName), updateData );
 }
 
-QList<RamStep *> Ramses::templateSteps() const
+RamObjectList *Ramses::templateSteps() const
 {
     return _templateSteps;
 }
 
 RamStep *Ramses::createTemplateStep()
 {
-    RamStep *step = new RamStep("New", "Step", true);
+    RamStep *step = new RamStep("NEW", "Step", true);
     step->setParent(this);
-    _templateSteps << step;
-    emit newTemplateStep(step);
+    _templateSteps->append(step);
     return step;
-}
-
-void Ramses::removeTemplateStep(QString uuid)
-{
-    for (int i = _templateSteps.count() -1; i >= 0; i--)
-    {
-        if (_templateSteps[i]->uuid() == uuid)
-        {
-            RamStep *s = _templateSteps.takeAt(i);
-            s->remove();
-        }
-    }
 }
 
 RamStep *Ramses::templateStep(QString uuid)
 {
-    foreach(RamStep *step, _templateSteps)
-    {
-        if (step->uuid() == uuid) return step;
-    }
-    return nullptr;
+    return (RamStep*)_templateSteps->fromUuid( uuid );
 }
 
 QList<RamAssetGroup *> Ramses::templateAssetGroups() const
@@ -1516,7 +1491,7 @@ RamObjectList *Ramses::projects() const
 
 RamProject *Ramses::project(QString uuid) const
 {
-    return (RamProject*)projects()->fromUuid( uuid );
+    return (RamProject*)_projects->fromUuid( uuid );
 }
 
 RamProject *Ramses::createProject()

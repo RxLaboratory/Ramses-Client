@@ -34,7 +34,7 @@ private slots:
     void setGridSize(int size);
     void userChanged(RamUser *u);
     void createStep();
-    void newTemplateStep(RamStep *step);
+    void newTemplateStep(RamObject *obj);
     void templateStepRemoved(RamObject *o);
     void templateStepChanged();
     void assignStep();

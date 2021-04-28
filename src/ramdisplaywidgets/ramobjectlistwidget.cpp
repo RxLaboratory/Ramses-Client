@@ -294,6 +294,13 @@ void RamObjectListWidget::objectAssigned(RamObject *obj)
         else ow = new RamObjectWidget(obj, this);
         break;
     }
+    case RamObject::Step:
+    {
+        RamStep *s = dynamic_cast<RamStep*>(obj);
+        if (s) ow = new RamStepWidget(s, this);
+        else ow = new RamObjectWidget(obj, this);
+        break;
+    }
     default:
         ow = new RamObjectWidget(obj,this);
         break;

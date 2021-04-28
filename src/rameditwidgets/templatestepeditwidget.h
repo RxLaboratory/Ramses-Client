@@ -1,29 +1,37 @@
 #ifndef TEMPLATESTEPEDITWIDGET_H
 #define TEMPLATESTEPEDITWIDGET_H
 
-#include "ui_templatestepeditwidget.h"
+#include <QComboBox>
+
+#include "objecteditwidget.h"
 #include "ramses.h"
 
-class TemplateStepEditWidget : public QWidget, private Ui::TemplateStepEditWidget
+class TemplateStepEditWidget : public ObjectEditWidget
 {
     Q_OBJECT
 
 public:
     explicit TemplateStepEditWidget(QWidget *parent = nullptr);
+    explicit TemplateStepEditWidget(RamStep *templateStep, QWidget *parent = nullptr);
 
     RamStep *step() const;
-    void setStep(RamStep *step);
+
+public slots:
+    void setObject(RamObject *obj) Q_DECL_OVERRIDE;
+
+protected slots:
+    void update() Q_DECL_OVERRIDE;
 
 private slots:
-    void update();
-    void revert();
-    bool checkInput();
-    void stepRemoved(RamObject *o);
-    void dbiLog(DuQFLog m);
+    void stepChanged(RamObject *o);
 
 private:
     RamStep *_step;
-    QMetaObject::Connection _currentStepConnection;
+
+    void setupUi();
+    void connectEvents();
+
+    QComboBox *ui_typeBox;
 };
 
 #endif // TEMPLATESTEPEDITWIDGET_H

@@ -3,6 +3,7 @@
 RamStep::RamStep(QString shortName, QString name, bool tplt, QString uuid, QObject *parent) :
     RamObject(shortName, name, uuid, parent)
 {
+    setObjectType(Step);
     _projectUuid = "";
     _template = tplt;
     _type = AssetProduction;
@@ -13,6 +14,7 @@ RamStep::RamStep(QString shortName, QString name, bool tplt, QString uuid, QObje
 RamStep::RamStep(QString shortName, QString name, QString projectUuid, QString uuid, QObject *parent):
     RamObject(shortName, name, uuid, parent)
 {
+    setObjectType(Step);
     _projectUuid = projectUuid;
     _template = false;
     _type = AssetProduction;

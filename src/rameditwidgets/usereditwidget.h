@@ -2,7 +2,6 @@
 #define USEREDITWIDGET_H
 
 #include <QComboBox>
-#include <QLineEdit>
 #include <QToolButton>
 
 #include "objecteditwidget.h"
@@ -37,15 +36,13 @@ private:
     void setupUi();
     void connectEvents();
 
-    DuQFFolderSelectorWidget *folderSelector;
-    QComboBox *roleBox;
-    QLineEdit *cpasswordEdit;
-    QLineEdit *npassword1Edit;
-    QLineEdit *npassword2Edit;
-    QLabel *folderLabel;
-    QToolButton *passwordButton;
-
-    QMetaObject::Connection _currentUserConnection;
+    DuQFFolderSelectorWidget *ui_folderSelector;
+    QComboBox *ui_roleBox;
+    QLineEdit *ui_cpasswordEdit;
+    QLineEdit *ui_npassword1Edit;
+    QLineEdit *ui_npassword2Edit;
+    QLabel *ui_folderLabel;
+    QToolButton *ui_passwordButton;
 };
 
 #endif // USEREDITWIDGET_H

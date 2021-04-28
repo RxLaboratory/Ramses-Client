@@ -30,6 +30,7 @@ SOURCES += \
     duqf-widgets/duqfsearchedit.cpp \
     ramdisplaywidgets/ramprojectwidget.cpp \
     ramdisplaywidgets/ramstatewidget.cpp \
+    ramdisplaywidgets/ramstepwidget.cpp \
     ramdisplaywidgets/ramuserwidget.cpp \
     rameditwidgets/applicationeditwidget.cpp \
     rameditwidgets/applicationsmanagerwidget.cpp \
@@ -43,6 +44,7 @@ SOURCES += \
     rameditwidgets/projectlistmanagerwidget.cpp \
     rameditwidgets/shotlistmanagerwidget.cpp \
     rameditwidgets/statelistmanagerwidget.cpp \
+    rameditwidgets/templatesteplistmanagerwidget.cpp \
     rameditwidgets/userlistmanagerwidget.cpp \
     ramobjects/ramobjectuberlist.cpp \
     ramobjects/ramstatelist.cpp \
@@ -136,7 +138,6 @@ SOURCES += \
     rameditwidgets/templateassetgroupeditwidget.cpp \
     rameditwidgets/templateassetgroupsmanagerwidget.cpp \
     rameditwidgets/templatestepeditwidget.cpp \
-    rameditwidgets/templatestepsmanagerwidget.cpp \
     rameditwidgets/usereditwidget.cpp \
     userprofilepage.cpp
 
@@ -144,6 +145,7 @@ HEADERS += \
     duqf-widgets/duqfsearchedit.h \
     ramdisplaywidgets/ramprojectwidget.h \
     ramdisplaywidgets/ramstatewidget.h \
+    ramdisplaywidgets/ramstepwidget.h \
     ramdisplaywidgets/ramuserwidget.h \
     rameditwidgets/applicationeditwidget.h \
     rameditwidgets/applicationsmanagerwidget.h \
@@ -157,6 +159,7 @@ HEADERS += \
     rameditwidgets/projectlistmanagerwidget.h \
     rameditwidgets/shotlistmanagerwidget.h \
     rameditwidgets/statelistmanagerwidget.h \
+    rameditwidgets/templatesteplistmanagerwidget.h \
     rameditwidgets/userlistmanagerwidget.h \
     ramobjects/ramobjectuberlist.h \
     ramobjects/ramstatelist.h \
@@ -250,7 +253,6 @@ HEADERS += \
     rameditwidgets/templateassetgroupeditwidget.h \
     rameditwidgets/templateassetgroupsmanagerwidget.h \
     rameditwidgets/templatestepeditwidget.h \
-    rameditwidgets/templatestepsmanagerwidget.h \
     rameditwidgets/usereditwidget.h \
     userprofilepage.h
 
@@ -273,7 +275,6 @@ FORMS += \
     settingswidgets/serversettingswidget.ui \
     rameditwidgets/stepeditwidget.ui \
     rameditwidgets/templateassetgroupeditwidget.ui \
-    rameditwidgets/templatestepeditwidget.ui \
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

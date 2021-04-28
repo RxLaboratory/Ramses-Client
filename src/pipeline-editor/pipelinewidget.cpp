@@ -111,7 +111,7 @@ PipelineWidget::PipelineWidget(QWidget *parent) :
     stepButton->setPopupMode(QToolButton::InstantPopup);
     stepButton->setMenu(stepMenu);
 
-    foreach(RamStep *step, Ramses::instance()->templateSteps()) newTemplateStep(step);
+    for (int i = 0; i < Ramses::instance()->templateSteps()->count(); i++) newTemplateStep( Ramses::instance()->templateSteps()->at(i) );
 
     titleBar->insertLeft(stepButton);
 
@@ -193,7 +193,8 @@ PipelineWidget::PipelineWidget(QWidget *parent) :
     connect(_nodeScene->connectionManager(), SIGNAL(newConnection(DuQFConnection*)), this, SLOT(stepsConnected(DuQFConnection*)));
     connect(_nodeScene->connectionManager(), SIGNAL(connectionRemoved(DuQFConnection*)), this, SLOT(connectionRemoved(DuQFConnection*)));
     // Ramses connections
-    connect(Ramses::instance(), &Ramses::newTemplateStep, this, &PipelineWidget::newTemplateStep);
+    connect(Ramses::instance()->templateSteps(), &RamObjectList::objectAdded, this, &PipelineWidget::newTemplateStep);
+    connect(Ramses::instance()->templateSteps(), &RamObjectList::objectRemoved, this, &PipelineWidget::templateStepRemoved);
     connect(Ramses::instance(), &Ramses::currentProjectChanged, this, &PipelineWidget::changeProject);
     connect(Ramses::instance(), &Ramses::loggedIn, this, &PipelineWidget::userChanged);
 }
@@ -298,16 +299,15 @@ void PipelineWidget::createStep()
     project->createStep();
 }
 
-void PipelineWidget::newTemplateStep(RamStep *step)
+void PipelineWidget::newTemplateStep(RamObject *obj)
 {
-    if (!step) return;
-    if (step->uuid() == "") return;
-    QAction *stepAction = new QAction(step->name());
-    stepAction->setData(step->uuid());
+    if (!obj) return;
+    if (obj->uuid() == "") return;
+    QAction *stepAction = new QAction(obj->name());
+    stepAction->setData(obj->uuid());
     stepMenu->insertAction(stepMenuSeparator, stepAction);
     connect(stepAction, &QAction::triggered, this, &PipelineWidget::assignStep);
-    connect(step, &RamStep::removed, this, &PipelineWidget::templateStepRemoved);
-    connect(step, &RamStep::changed, this, &PipelineWidget::templateStepChanged);
+    connect(obj, &RamObject::changed, this, &PipelineWidget::templateStepChanged);
 
 }
 

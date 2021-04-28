@@ -18,7 +18,7 @@ private slots:
     void userChanged();
 
 private:
-    RamUser *_user;
+    RamUser *m_user;
 };
 
 #endif // RAMUSERWIDGET_H

@@ -25,7 +25,7 @@ private slots:
     void stepRemoved(RamObject *step);
     void stepRemoved(RamStep *step);
     void stepChanged();
-    void newTemplateStep(RamStep *step);
+    void newTemplateStep(RamObject *step);
     void templateStepRemoved(RamObject *o);
     void templateStepChanged();
     void moveStepUp();

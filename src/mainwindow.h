@@ -16,7 +16,7 @@
 #include "userlistmanagerwidget.h"
 #include "projectlistmanagerwidget.h"
 #include "pipeline-editor/pipelinewidget.h"
-#include "templatestepsmanagerwidget.h"
+#include "templatesteplistmanagerwidget.h"
 #include "templateassetgroupsmanagerwidget.h"
 #include "stepsmanagerwidget.h"
 #include "assetgroupsmanagerwidget.h"
@@ -60,6 +60,7 @@ public:
     void addUserEditDockWidget(QDockWidget *w);
     void addStateEditDockWidget(QDockWidget *w);
     void addProjectEditDockWidget(QDockWidget *w);
+    void addStepEditDockWidget(QDockWidget *w);
 
 private:
     // ========= RxOT UI ==============
@@ -102,6 +103,7 @@ private:
     QList<QDockWidget *> _userEditDock;
     QList<QDockWidget *> _stateEditDock;
     QList<QDockWidget *> _projectEditDock;
+    QList<QDockWidget *> _stepEditDock;
 
     QMetaObject::Connection _currentUserConnection;
 

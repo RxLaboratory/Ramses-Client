@@ -25,11 +25,12 @@ StepsManagerWidget::StepsManagerWidget(QWidget *parent): ListManagerWidget(paren
     buttonsLayout->insertWidget(2, downButton);
     buttonsLayout->insertWidget(2, upButton);
 
-    foreach(RamStep *step, Ramses::instance()->templateSteps()) newTemplateStep(step);
+    for (int i = 0; i < Ramses::instance()->templateSteps()->count(); i++) newTemplateStep(Ramses::instance()->templateSteps()->at(i));
 
     connect(actionCreateStep, &QAction::triggered, this, &StepsManagerWidget::createStep);
     connect(Ramses::instance(), &Ramses::currentProjectChanged, this, &StepsManagerWidget::changeProject);
-    connect(Ramses::instance(), &Ramses::newTemplateStep, this, &StepsManagerWidget::newTemplateStep);
+    connect(Ramses::instance()->templateSteps(), &RamObjectList::objectAdded, this, &StepsManagerWidget::newTemplateStep);
+    connect(Ramses::instance()->templateSteps(), &RamObjectList::objectRemoved, this, &StepsManagerWidget::templateStepRemoved);
     connect(upButton, &QToolButton::clicked, this, &StepsManagerWidget::moveStepUp);
     connect(downButton, &QToolButton::clicked, this, &StepsManagerWidget::moveStepDown);
     connect(list, &DuQFListWidget::itemDropped, this, &StepsManagerWidget::updateStepsOrder);
@@ -131,7 +132,7 @@ void StepsManagerWidget::stepChanged()
     updateItem(step->uuid(), step->name());
 }
 
-void StepsManagerWidget::newTemplateStep(RamStep *step)
+void StepsManagerWidget::newTemplateStep(RamObject *step)
 {
     if (!step) return;
     if (step->uuid() == "") return;
@@ -139,7 +140,6 @@ void StepsManagerWidget::newTemplateStep(RamStep *step)
     stepAction->setData(step->uuid());
     assignMenu->addAction(stepAction);
     connect(stepAction, &QAction::triggered, this, &StepsManagerWidget::assignStep);
-    connect(step, &RamStep::removed, this, &StepsManagerWidget::templateStepRemoved);
     connect(step, &RamStep::changed, this, &StepsManagerWidget::templateStepChanged);
 }
 

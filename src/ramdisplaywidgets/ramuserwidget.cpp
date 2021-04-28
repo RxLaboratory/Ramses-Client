@@ -5,7 +5,7 @@
 RamUserWidget::RamUserWidget(RamUser *user, QWidget *parent):
     RamObjectWidget(user, parent)
 {
-    _user = user;
+    m_user = user;
 
     UserEditWidget *uw = new UserEditWidget(user, this);
     setEditWidget(uw);
@@ -21,13 +21,13 @@ RamUserWidget::RamUserWidget(RamUser *user, QWidget *parent):
 
 RamUser *RamUserWidget::user() const
 {
-    return _user;
+    return m_user;
 }
 
 void RamUserWidget::userChanged()
 {
-    if (_user->role() == RamUser::Lead) setIcon(":/icons/lead");
-    else if (_user->role() == RamUser::ProjectAdmin) setIcon(":/icons/project-admin");
-    else if (_user->role() == RamUser::Admin) setIcon(":/icons/admin");
+    if (m_user->role() == RamUser::Lead) setIcon(":/icons/lead");
+    else if (m_user->role() == RamUser::ProjectAdmin) setIcon(":/icons/project-admin");
+    else if (m_user->role() == RamUser::Admin) setIcon(":/icons/admin");
     else setIcon(":/icons/user");
 }

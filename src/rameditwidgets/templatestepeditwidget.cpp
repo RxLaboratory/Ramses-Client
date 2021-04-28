@@ -1,21 +1,21 @@
 #include "templatestepeditwidget.h"
 
 TemplateStepEditWidget::TemplateStepEditWidget(QWidget *parent) :
-    QWidget(parent)
+    ObjectEditWidget(parent)
 {
-    setupUi(this);
+    setupUi();
+    connectEvents();
 
-    typeBox->setItemData(0, "pre");
-    typeBox->setItemData(1, "asset");
-    typeBox->setItemData(2, "shot");
-    typeBox->setItemData(3, "post");
+    setObject(nullptr);
+}
 
-    connect(updateButton, SIGNAL(clicked()), this, SLOT(update()));
-    connect(revertButton, SIGNAL(clicked()), this, SLOT(revert()));
-    connect(shortNameEdit, &QLineEdit::textChanged, this, &TemplateStepEditWidget::checkInput);
-    connect(DBInterface::instance(),&DBInterface::newLog, this, &TemplateStepEditWidget::dbiLog);
+TemplateStepEditWidget::TemplateStepEditWidget(RamStep *templateStep, QWidget *parent) :
+    ObjectEditWidget(templateStep, parent)
+{
+    setupUi();
+    connectEvents();
 
-    this->setEnabled(false);
+    setObject(templateStep);
 }
 
 RamStep *TemplateStepEditWidget::step() const
@@ -23,82 +23,67 @@ RamStep *TemplateStepEditWidget::step() const
     return _step;
 }
 
-void TemplateStepEditWidget::setStep(RamStep *step)
+void TemplateStepEditWidget::setObject(RamObject *obj)
 {
-    disconnect(_currentStepConnection);
+    RamStep *step = (RamStep*)obj;
 
-    _step = step;
-    nameEdit->setText("");
-    shortNameEdit->setText("");
-    typeBox->setCurrentIndex(1);
     this->setEnabled(false);
+
+    ObjectEditWidget::setObject(step);
+    _step = step;
+
+    QSignalBlocker b1(ui_typeBox);
+
+    ui_typeBox->setCurrentIndex(1);
 
     if (!step) return;
 
-    nameEdit->setText(step->name());
-    shortNameEdit->setText(step->shortName());
-
-    if (step->type() == RamStep::PreProduction) typeBox->setCurrentIndex(0);
-    else if (step->type() == RamStep::AssetProduction) typeBox->setCurrentIndex(1);
-    else if (step->type() == RamStep::ShotProduction) typeBox->setCurrentIndex(2);
-    else if (step->type() == RamStep::PostProduction) typeBox->setCurrentIndex(3);
+    if (step->type() == RamStep::PreProduction) ui_typeBox->setCurrentIndex(0);
+    else if (step->type() == RamStep::AssetProduction) ui_typeBox->setCurrentIndex(1);
+    else if (step->type() == RamStep::ShotProduction) ui_typeBox->setCurrentIndex(2);
+    else if (step->type() == RamStep::PostProduction) ui_typeBox->setCurrentIndex(3);
 
     this->setEnabled(Ramses::instance()->isAdmin());
 
-    _currentStepConnection = connect(step, &RamStep::removed, this, &TemplateStepEditWidget::stepRemoved);
+    _objectConnections << connect(step, &RamStep::changed, this, &TemplateStepEditWidget::stepChanged);
 }
 
 void TemplateStepEditWidget::update()
 {
     if (!_step) return;
 
-    this->setEnabled(false);
+    updating = true;
 
-    //check if everything is alright
-    if (!checkInput())
-    {
-        this->setEnabled(true);
-        return;
-    }
+    _step->setType(ui_typeBox->currentData().toString());
 
-    _step->setName(nameEdit->text());
-    _step->setShortName(shortNameEdit->text());
-    _step->setType(typeBox->currentData().toString());
+    ObjectEditWidget::update();
 
-    _step->update();
-
-    this->setEnabled(true);
-
+    updating = false;
 }
 
-void TemplateStepEditWidget::revert()
+void TemplateStepEditWidget::stepChanged(RamObject *o)
 {
-    setStep(_step);
-}
-
-bool TemplateStepEditWidget::checkInput()
-{
-    if (!_step) return false;
-
-    if (shortNameEdit->text() == "")
-    {
-        statusLabel->setText("Short name cannot be empty!");
-        updateButton->setEnabled(false);
-        return false;
-    }
-
-    statusLabel->setText("");
-    updateButton->setEnabled(true);
-    return true;
-}
-
-void TemplateStepEditWidget::stepRemoved(RamObject *o)
-{
+    if (updating) return;
     Q_UNUSED(o);
-    setStep(nullptr);
+    setObject(_step);
 }
 
-void TemplateStepEditWidget::dbiLog(DuQFLog m)
+void TemplateStepEditWidget::setupUi()
 {
-    if (m.type() != DuQFLog::Debug) statusLabel->setText(m.message());
+    QLabel *typeLabel = new QLabel("Type", this);
+    mainFormLayout->addWidget(typeLabel, 2, 0);
+
+    ui_typeBox  = new QComboBox(this);
+    ui_typeBox->addItem(QIcon(":/icons/project"), "       Pre-Production", "pre");
+    ui_typeBox->addItem(QIcon(":/icons/asset"), "       Asset Production", "asset");
+    ui_typeBox->addItem(QIcon(":/icons/shot"), "       Shot Production", "shot");
+    ui_typeBox->addItem(QIcon(":/icons/film"), "       Post-Production", "post");
+    mainFormLayout->addWidget(ui_typeBox, 2, 1);
+
+    mainLayout->addStretch();
+}
+
+void TemplateStepEditWidget::connectEvents()
+{
+    connect(ui_typeBox, SIGNAL(currentIndexChanged(int)), this, SLOT(update()));
 }

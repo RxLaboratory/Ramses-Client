@@ -49,9 +49,10 @@ RamObject *RamObjectUberList::objectAt(int index) const
     for (int i = 0 ; i < m_objects.count(); i++)
     {
         RamObjectList *list = (RamObjectList*)m_objects.at(i);
+        int previousCount = c;
         c += list->count();
-        if (index > c) continue;
-        return list->at(index);
+        if (index >= c) continue;
+        return list->at(index-previousCount);
     }
     return nullptr;
 }

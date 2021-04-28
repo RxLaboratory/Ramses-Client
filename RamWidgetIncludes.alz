@@ -170,7 +170,7 @@ ObjectListManagerWidget</text>
    <text-color g="0" r="0" b="0"/>
   </node>
   <node w="200000" x="-936931" y="816200" h="75000" index="233">
-   <text>RamObjectList filetypes</text>
+   <text>RamObjectList projects</text>
    <color g="154" r="78" b="6"/>
    <text-color g="0" r="0" b="0"/>
   </node>
@@ -224,7 +224,7 @@ ObjectListManagerWidget</text>
    <color g="255" r="255" b="255"/>
    <text-color g="0" r="0" b="0"/>
   </node>
-  <node w="200000" x="-1215385" y="969259" h="75000" index="238">
+  <node w="200000" x="-1215385" y="957959" h="75000" index="238">
    <text>RamProject</text>
    <color g="154" r="78" b="6"/>
    <text-color g="0" r="0" b="0"/>
@@ -466,9 +466,9 @@ ObjectListManagerWidget</text>
    <color g="233" r="252" b="79"/>
    <text-color g="0" r="0" b="0"/>
   </node>
-  <node w="200000" x="-1432330" y="1637233" h="75000" index="251">
+  <node w="200000" x="-1432330" y="1638488" h="75000" index="251">
    <text>TemplateStepEditWidget</text>
-   <color g="233" r="252" b="79"/>
+   <color g="255" r="255" b="255"/>
    <text-color g="0" r="0" b="0"/>
   </node>
   <node w="200000" x="-414665" y="1473318" h="75000" index="250">
@@ -478,7 +478,7 @@ ObjectListManagerWidget</text>
   </node>
   <node w="200000" x="-664811" y="1472174" h="75000" index="249">
    <text>RamStepWidget</text>
-   <color g="233" r="252" b="79"/>
+   <color g="215" r="211" b="207"/>
    <text-color g="0" r="0" b="0"/>
   </node>
   <node w="200000" x="-940734" y="-75405" h="75000" index="173">
@@ -491,7 +491,7 @@ ObjectListManagerWidget</text>
    <color g="154" r="78" b="6"/>
    <text-color g="0" r="0" b="0"/>
   </node>
-  <node w="210000" x="-1716870" y="821799" h="75000" index="84">
+  <node w="210000" x="-1718125" y="818032" h="75000" index="84">
    <text>ProjectListManagerWidget</text>
    <color g="255" r="255" b="255"/>
    <text-color g="0" r="0" b="0"/>
