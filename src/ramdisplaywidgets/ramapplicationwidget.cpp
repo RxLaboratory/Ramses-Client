@@ -14,6 +14,7 @@ RamApplicationWidget::RamApplicationWidget(RamApplication *application, QWidget 
 
     setUserEditRole(RamUser::ProjectAdmin);
 
+    setIcon(":/icons/application");
 }
 
 RamApplication *RamApplicationWidget::application() const

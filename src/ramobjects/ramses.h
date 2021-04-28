@@ -105,14 +105,12 @@ public:
     RamFileType *fileType(const QString uuid) const;
     RamFileType *createFileType();
     // Applications
-    QList<RamApplication *> applications() const;
+    RamObjectList *applications() const;
     RamApplication *application(QString uuid);
     RamApplication *createApplication();
-    void removeApplication(QString uuid);
 
 public slots:
     void refresh();
-    void removeApplication(RamObject *a);
     // Users
     RamUser *createUser();
     // States
@@ -124,7 +122,6 @@ signals:
     void currentProjectChanged(RamProject*);
     void newStep(RamStep *);
     void newAssetGroup(RamAssetGroup *);
-    void newApplication(RamApplication *);
 
 protected:
     static Ramses *_instance;
@@ -210,7 +207,7 @@ private:
     RamObjectList *_fileTypes;
 
     // Applications
-    QList<RamApplication*> _applications;
+    RamObjectList *_applications;
 
 };
 

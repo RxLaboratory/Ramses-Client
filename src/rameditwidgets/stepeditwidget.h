@@ -39,7 +39,7 @@ private slots:
     void userRemoved(RamObject *user);
 
     // Applications
-    void newApplication(RamApplication *app);
+    void newApplication(RamObject *app);
     void assignApplication();
     void unassignApplication(RamObject *o);
     void applicationAssigned(RamApplication *app);

@@ -25,7 +25,7 @@
 #include "sequencesmanagerwidget.h"
 #include "statelistmanagerwidget.h"
 #include "filetypelistmanagerwidget.h"
-#include "applicationsmanagerwidget.h"
+#include "applicationlistmanagerwidget.h"
 #include "dbinterface.h"
 #include "daemon.h"
 #include "projectselectorwidget.h"

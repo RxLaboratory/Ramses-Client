@@ -17,7 +17,9 @@ public:
     explicit ApplicationEditWidget(RamApplication *app, QWidget *parent = nullptr);
 
     RamApplication *application() const;
-    void setApplication(RamApplication *application);
+
+public slots:
+    void setObject(RamObject *obj) Q_DECL_OVERRIDE;
 
 protected slots:
     void update() Q_DECL_OVERRIDE;

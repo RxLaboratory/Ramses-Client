@@ -36,7 +36,7 @@ SOURCES += \
     ramdisplaywidgets/ramstepwidget.cpp \
     ramdisplaywidgets/ramuserwidget.cpp \
     rameditwidgets/applicationeditwidget.cpp \
-    rameditwidgets/applicationsmanagerwidget.cpp \
+    rameditwidgets/applicationlistmanagerwidget.cpp \
     rameditwidgets/asseteditwidget.cpp \
     rameditwidgets/assetgroupeditwidget.cpp \
     rameditwidgets/assetgroupsmanagerwidget.cpp \
@@ -154,7 +154,7 @@ HEADERS += \
     ramdisplaywidgets/ramstepwidget.h \
     ramdisplaywidgets/ramuserwidget.h \
     rameditwidgets/applicationeditwidget.h \
-    rameditwidgets/applicationsmanagerwidget.h \
+    rameditwidgets/applicationlistmanagerwidget.h \
     rameditwidgets/asseteditwidget.h \
     rameditwidgets/assetgroupeditwidget.h \
     rameditwidgets/assetgroupsmanagerwidget.h \

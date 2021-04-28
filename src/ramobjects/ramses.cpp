@@ -23,6 +23,7 @@ Ramses::Ramses(QObject *parent) : QObject(parent)
     _templateSteps = new RamObjectList(this);
     _templateAssetGroups = new RamObjectList(this);
     _fileTypes = new RamObjectList (this);
+    _applications = new RamObjectList(this);
 
     DBISuspender s;
 
@@ -443,9 +444,9 @@ void Ramses::gotApplications(QJsonArray applications)
     DBISuspender s;
 
     // loop through existing steps to update them
-    for (int i = _applications.count() - 1; i >= 0; i--)
+    for (int i = _applications->count() - 1; i >= 0; i--)
     {
-        RamApplication *existingApplication = _applications[i];
+        RamApplication *existingApplication = (RamApplication*)_applications->at(i);
         // loop through new steps to update
         bool found = false;
         for (int j = applications.count() - 1; j >= 0; j--)
@@ -484,7 +485,7 @@ void Ramses::gotApplications(QJsonArray applications)
         // Not found, remove from existing
         if (!found)
         {
-            RamApplication *a = _applications.takeAt(i);
+            RamObject *a = _applications->takeAt(i);
             a->remove();
         }
     }
@@ -511,11 +512,7 @@ void Ramses::gotApplications(QJsonArray applications)
                 app->assignNativeFileType( fileType( fileT.value("uuid").toString() ) );
         }
 
-        _applications << app;
-
-        connect(app,SIGNAL(removed(RamObject*)), this, SLOT(removeApplication(RamObject*)));
-
-        emit newApplication(app);
+        _applications->append(app);
     }
 }
 
@@ -1392,45 +1389,22 @@ RamFileType *Ramses::createFileType()
     return ft;
 }
 
-QList<RamApplication *> Ramses::applications() const
+RamObjectList *Ramses::applications() const
 {
     return _applications;
 }
 
 RamApplication *Ramses::application(QString uuid)
 {
-    foreach(RamApplication *app, _applications)
-    {
-        if (app->uuid() == uuid) return app;
-    }
-    return nullptr;
+    return (RamApplication*)_applications->fromUuid(uuid);
 }
 
 RamApplication *Ramses::createApplication()
 {
     RamApplication *a = new RamApplication("New", "New Application");
     a->setParent(this);
-    _applications << a;
-    connect(a, SIGNAL(removed(RamObject*)), this, SLOT(removeApplication(RamObject*)));
-    emit newApplication(a);
+    _applications->append(a);
     return a;
-}
-
-void Ramses::removeApplication(QString uuid)
-{
-    for (int i = _applications.count() -1; i >= 0; i--)
-    {
-        if (_applications[i]->uuid() == uuid)
-        {
-            RamApplication *a = _applications.takeAt(i);
-            a->remove();
-        }
-    }
-}
-
-void Ramses::removeApplication(RamObject *a)
-{
-    if (a) removeApplication(a->uuid());
 }
 
 RamObjectList *Ramses::projects() const

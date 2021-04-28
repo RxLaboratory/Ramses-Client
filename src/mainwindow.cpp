@@ -90,7 +90,7 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     qDebug() << "  > states ok";
     adminPage->addPage(new FileTypeListManagerWidget(this), "File Types", QIcon(":/icons/files"));
     qDebug() << "  > file types ok";
-    adminPage->addPage(new ApplicationsManagerWidget(this), "Applications", QIcon(":/icons/applications"));
+    adminPage->addPage(new ApplicationListManagerWidget(this), "Applications", QIcon(":/icons/applications"));
     qDebug() << "  > applications ok";
     // Project settings
     SettingsWidget *projectSettingsPage = new SettingsWidget("Project Administration", this);

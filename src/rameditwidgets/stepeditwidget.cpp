@@ -129,13 +129,15 @@ void StepEditWidget::setupUi()
 void StepEditWidget::populateMenus()
 {
     for (int i = 0; i < Ramses::instance()->users()->count(); i++) newUser( Ramses::instance()->users()->at(i) );
-    foreach(RamApplication *a, Ramses::instance()->applications()) newApplication(a);
+    for(int i = 0; i < Ramses::instance()->applications()->count(); i++) newApplication( Ramses::instance()->applications()->at(i) );
 }
 
 void StepEditWidget::connectEvents()
 {
     connect(Ramses::instance()->users(), &RamObjectList::objectAdded, this, &StepEditWidget::newUser);
-    connect(Ramses::instance(), &Ramses::newApplication, this, &StepEditWidget::newApplication);
+    connect(Ramses::instance()->users(), &RamObjectList::objectRemoved, this, &StepEditWidget::userRemoved);
+    connect(Ramses::instance()->applications(), &RamObjectList::objectAdded, this, &StepEditWidget::newApplication);
+    connect(Ramses::instance()->applications(), &RamObjectList::objectRemoved, this, &StepEditWidget::applicationRemoved);
     connect(typeBox, SIGNAL(currentIndexChanged(int)), this, SLOT(update()));
     connect(usersList, &SimpleObjectList::objectRemoved, this, &StepEditWidget::unassignUser);
     connect(applicationList, &SimpleObjectList::objectRemoved, this, &StepEditWidget::unassignApplication);
@@ -149,7 +151,6 @@ void StepEditWidget::newUser(RamObject *user)
     userAction->setData(user->uuid());
     assignUserMenu->addAction(userAction);
     connect(user, &RamUser::changed, this, &StepEditWidget::userChanged);
-    connect(user, &RamUser::removed, this, &StepEditWidget::userRemoved);
     connect(userAction, &QAction::triggered, this, &StepEditWidget::assignUser);
 }
 
@@ -207,7 +208,7 @@ void StepEditWidget::userRemoved(RamObject *user)
             a->deleteLater();
 }
 
-void StepEditWidget::newApplication(RamApplication *app)
+void StepEditWidget::newApplication(RamObject *app)
 {
     if (!app) return;
     if (app->uuid() == "") return;
@@ -215,7 +216,6 @@ void StepEditWidget::newApplication(RamApplication *app)
     appAction->setData(app->uuid());
     assignAppMenu->addAction(appAction);
     connect(app, &RamApplication::changed, this, &StepEditWidget::applicationChanged);
-    connect(app, &RamApplication::removed, this, &StepEditWidget::applicationRemoved);
     connect(appAction, &QAction::triggered, this, &StepEditWidget::assignApplication);
 }
 

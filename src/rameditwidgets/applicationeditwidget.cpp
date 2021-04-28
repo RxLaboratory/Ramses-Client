@@ -6,7 +6,7 @@ ApplicationEditWidget::ApplicationEditWidget(QWidget *parent) : ObjectEditWidget
     populateMenus();
     connectEvents();
 
-    setApplication(nullptr);
+    setObject(nullptr);
 }
 
 ApplicationEditWidget::ApplicationEditWidget(RamApplication *app, QWidget *parent) : ObjectEditWidget(app, parent)
@@ -15,7 +15,7 @@ ApplicationEditWidget::ApplicationEditWidget(RamApplication *app, QWidget *paren
     populateMenus();
     connectEvents();
 
-    setApplication(app);
+    setObject(app);
 }
 
 RamApplication *ApplicationEditWidget::application() const
@@ -23,11 +23,12 @@ RamApplication *ApplicationEditWidget::application() const
     return _application;
 }
 
-void ApplicationEditWidget::setApplication(RamApplication *application)
+void ApplicationEditWidget::setObject(RamObject *obj)
 {
+    RamApplication *application = (RamApplication*)obj;
     this->setEnabled(false);
 
-    setObject(application);
+    ObjectEditWidget::setObject(application);
     _application = application;
 
     QSignalBlocker b(folderSelector);
@@ -80,7 +81,7 @@ void ApplicationEditWidget::applicationChanged(RamObject *o)
 {
     if (updating) return;
     Q_UNUSED(o);
-    setApplication(_application);
+    setObject(_application);
 }
 
 void ApplicationEditWidget::newFileType(RamObject * const ft)
