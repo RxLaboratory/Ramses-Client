@@ -36,6 +36,7 @@ private slots:
     void ping(QTcpSocket *client);
     void setCurrentProject(QString shortName, QTcpSocket *client);
     void getAssets(QTcpSocket *client);
+    void getAssetGroups(QTcpSocket *client);
     void getCurrentProject(QTcpSocket *client);
     void getCurrentUser(QTcpSocket *client);
     void getPipes(QTcpSocket *client);

@@ -72,6 +72,8 @@ void Daemon::reply()
         setCurrentProject(args.value("shortName"), client);
     else if (args.contains("getAssets"))
         getAssets(client);
+    else if (args.contains("getAssetGroups"))
+        getAssetGroups(client);
     else if (args.contains("getCurrentProject"))
         getCurrentProject(client);
     else if (args.contains("getCurrentUser"))
@@ -174,6 +176,35 @@ void Daemon::getAssets(QTcpSocket *client)
     }
     content.insert("assets", assets);
     post(client, content, "getASsets", "Asset list retrieved.");
+}
+
+void Daemon::getAssetGroups(QTcpSocket *client)
+{
+    log("I'm replying to this request: getAssetGroups", DuQFLog::Information);
+
+    RamProject *proj = Ramses::instance()->currentProject();
+
+    QJsonObject content;
+
+    if (!proj)
+    {
+        post(client, content, "getAssets", "Sorry, there's no current project. Select a project first!", false);
+        return;
+    }
+
+    QJsonArray assetGroups;
+    for( int i = 0; i < proj->assetGroups().count(); i++)
+    {
+        RamAssetGroup *ag = proj->assetGroups().at(i);
+        QJsonObject assetGroup;
+        assetGroup.insert("shortName", ag->shortName());
+        assetGroup.insert("name", ag->name());
+        assetGroup.insert("folder", Ramses::instance()->path(ag));
+
+        assetGroups.append(assetGroup);
+    }
+    content.insert("assetGroups", assetGroups);
+    post(client, content, "getAssetGroups", "Asset group list retrieved.");
 }
 
 void Daemon::getCurrentProject(QTcpSocket *client)
