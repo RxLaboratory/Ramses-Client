@@ -81,7 +81,7 @@ void Daemon::reply()
     else if (args.contains("getProjects"))
         getProjects(client);
     else if (args.contains("getShots"))
-        getShots(client);
+        getShots(args.value("filter", ""), client);
     else if (args.contains("getStates"))
         getStates(client);
     else if (args.contains("getSteps"))
@@ -284,7 +284,7 @@ void Daemon::getProjects(QTcpSocket *client)
     post(client, content, "getProjects", "Project list retrived");
 }
 
-void Daemon::getShots(QTcpSocket *client)
+void Daemon::getShots(QString filter, QTcpSocket *client)
 {
     log("I'm replying to this request: getShots", DuQFLog::Information);
 
@@ -298,10 +298,25 @@ void Daemon::getShots(QTcpSocket *client)
         return;
     }
 
+    if (filter == "") filter = "*";
+    filter = QRegularExpression::escape(filter);
+    filter = filter.replace("\\*", "([a-z0-9+-]*\\s*)*");
+    log("Using the regexp:" + filter, DuQFLog::Debug);
+    QRegularExpression re(filter,QRegularExpression::CaseInsensitiveOption);
+
     QJsonArray shots;
     for (int i = 0; i < proj->shots()->objectCount(); i++)
     {
         RamShot *s = (RamShot*)proj->shots()->objectAt(i);
+
+        bool ok = filter == "([a-z0-9+-]*\\s*)*";
+        if (!ok)
+        {
+            ok = re.match( s->shortName() ).hasMatch();
+            if (!ok) ok = re.match( s->name() ).hasMatch();
+        }
+        if (!ok) continue;
+
         QJsonObject shot;
         shot.insert("shortName", s->shortName());
         shot.insert("name", s->name());

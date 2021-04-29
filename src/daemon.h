@@ -7,6 +7,7 @@
 #include <QTcpSocket>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QRegularExpression>
 
 #include "duqf-app/app-version.h"
 #include "duqf-utils/utils.h"
@@ -39,7 +40,7 @@ private slots:
     void getCurrentUser(QTcpSocket *client);
     void getPipes(QTcpSocket *client);
     void getProjects(QTcpSocket *client);
-    void getShots(QTcpSocket *client);
+    void getShots(QString filter, QTcpSocket *client);
     void getStates(QTcpSocket *client);
     void getSteps(QTcpSocket *client);
 
