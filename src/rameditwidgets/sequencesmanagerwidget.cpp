@@ -21,7 +21,7 @@ void SequencesManagerWidget::currentDataChanged(QVariant data)
     RamSequence *sequence = project->sequence( data.toString() );
     if (!sequence) return;
 
-    sequenceWidget->setSequence(sequence);
+    sequenceWidget->setObject(sequence);
     sequenceWidget->setEnabled(true);
 }
 
@@ -49,7 +49,7 @@ void SequencesManagerWidget::changeProject(RamProject *project)
     // empty list
     list->blockSignals(true);
     list->clear();
-    sequenceWidget->setSequence(nullptr);
+    sequenceWidget->setObject(nullptr);
     list->blockSignals(false);
 
     if (!project) return;

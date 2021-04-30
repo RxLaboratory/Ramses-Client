@@ -25,7 +25,7 @@ RamUser *UserEditWidget::user() const
 
 void UserEditWidget::setObject(RamObject *obj)
 {
-    RamUser *user = (RamUser*)obj;
+    RamUser *user = qobject_cast<RamUser*>(obj);
 
     this->setEnabled(false);
 
