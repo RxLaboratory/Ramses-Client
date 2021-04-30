@@ -146,147 +146,11 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     duqf_setStyle();
 }
 
-void MainWindow::addStepDockWidget(QDockWidget *w)
+void MainWindow::addObjectDockWidget(ObjectDockWidget *w)
 {
     this->addDockWidget(Qt::RightDockWidgetArea, w);
-    if (_stepDock.count() > 0)
-    {
-        this->tabifyDockWidget(_stepDock.last(), w);
-    }
-    _stepDock << w;
-}
-
-void MainWindow::addPipeDockWidget(QDockWidget *w)
-{
-    this->addDockWidget(Qt::RightDockWidgetArea, w);
-    if (_pipeDock.count() > 0)
-    {
-        this->tabifyDockWidget(_pipeDock.last(), w);
-    }
-    _pipeDock << w;
-}
-
-void MainWindow::addAssetEditDockWidget(QDockWidget *w)
-{
-    this->addDockWidget(Qt::RightDockWidgetArea, w);
-
-    /*if (!_assetEditDock.isEmpty())
-    {
-        this->tabifyDockWidget(_assetEditDock.last(), w);
-    }*/
-
-    _assetEditDock << w;
-}
-
-void MainWindow::addShotEditDockWidget(QDockWidget *w)
-{
-    this->addDockWidget(Qt::RightDockWidgetArea, w);
-
-    /*if (!_shotEditDock.isEmpty())
-    {
-        this->tabifyDockWidget(_shotEditDock.last(), w);
-    }*/
-
-    _shotEditDock << w;
-}
-
-void MainWindow::addStatusEditDockWidget(QDockWidget *w)
-{
-    this->addDockWidget(Qt::RightDockWidgetArea, w);
-    w->show();
-
-    if (!_shotEditDock.isEmpty())
-    {
-        this->tabifyDockWidget(_shotEditDock.last(), w);
-    }
-
-    w->hide();
-
-    _statusEditDock << w;
-}
-
-void MainWindow::addUserEditDockWidget(QDockWidget *w)
-{
-    this->addDockWidget(Qt::RightDockWidgetArea, w);
-
-    /*if (!_shotEditDock.isEmpty())
-    {
-        this->tabifyDockWidget(_shotEditDock.last(), w);
-    }*/
-
-    _userEditDock << w;
-}
-
-void MainWindow::addStateEditDockWidget(QDockWidget *w)
-{
-    this->addDockWidget(Qt::RightDockWidgetArea, w);
-
-    /*if (!_shotEditDock.isEmpty())
-    {
-        this->tabifyDockWidget(_shotEditDock.last(), w);
-    }*/
-
-    _stateEditDock << w;
-}
-
-void MainWindow::addProjectEditDockWidget(QDockWidget *w)
-{
-    this->addDockWidget(Qt::RightDockWidgetArea, w);
-
-    /*if (!_shotEditDock.isEmpty())
-    {
-        this->tabifyDockWidget(_shotEditDock.last(), w);
-    }*/
-
-    _projectEditDock << w;
-}
-
-void MainWindow::addStepEditDockWidget(QDockWidget *w)
-{
-    this->addDockWidget(Qt::RightDockWidgetArea, w);
-
-    /*if (!_shotEditDock.isEmpty())
-    {
-        this->tabifyDockWidget(_shotEditDock.last(), w);
-    }*/
-
-    _stepEditDock << w;
-}
-
-void MainWindow::addAssetGroupEditDockWidget(QDockWidget *w)
-{
-    this->addDockWidget(Qt::RightDockWidgetArea, w);
-
-    /*if (!_shotEditDock.isEmpty())
-    {
-        this->tabifyDockWidget(_shotEditDock.last(), w);
-    }*/
-
-    _assetGroupEditDock << w;
-}
-
-void MainWindow::addFileTypeEditDockWidget(QDockWidget *w)
-{
-    this->addDockWidget(Qt::RightDockWidgetArea, w);
-
-    /*if (!_shotEditDock.isEmpty())
-    {
-        this->tabifyDockWidget(_shotEditDock.last(), w);
-    }*/
-
-    _fileTypeEditDock << w;
-}
-
-void MainWindow::addApplicationEditDockWidget(QDockWidget *w)
-{
-    this->addDockWidget(Qt::RightDockWidgetArea, w);
-
-    /*if (!_shotEditDock.isEmpty())
-    {
-        this->tabifyDockWidget(_shotEditDock.last(), w);
-    }*/
-
-    _applicationEditDock << w;
+    w->installEventFilter(this);
+    _dockedObjects << w;
 }
 
 void MainWindow::duqf_initUi()
@@ -753,46 +617,70 @@ void MainWindow::dbiConnectionStatusChanged(NetworkUtils::NetworkStatus s)
 
 bool MainWindow::eventFilter(QObject *obj, QEvent *event)
 {
-  if (event->type() == QEvent::MouseButtonPress)
-  {
-      QMouseEvent *mouseEvent = (QMouseEvent*)event;
-      if (mouseEvent->button() == Qt::LeftButton)
-      {
-        duqf_toolBarClicked = true;
-        duqf_dragPosition = mouseEvent->globalPos() - this->frameGeometry().topLeft();
-        event->accept();
-      }
-      return true;
-  }
-  else if (event->type() == QEvent::MouseMove)
-  {
-      if (this->isMaximized()) return false;
-    QMouseEvent *mouseEvent = (QMouseEvent*)event;
-    if (mouseEvent->buttons() & Qt::LeftButton && duqf_toolBarClicked)
+    if (obj == mainToolBar)
     {
-        this->move(mouseEvent->globalPos() - duqf_dragPosition);
-        event->accept();
-    }
-    return true;
-  }
-  else if (event->type() == QEvent::MouseButtonRelease)
-  {
-      duqf_toolBarClicked = false;
-      return true;
-  }
+        if (event->type() == QEvent::MouseButtonPress)
+        {
+            QMouseEvent *mouseEvent = (QMouseEvent*)event;
+            if (mouseEvent->button() == Qt::LeftButton)
+            {
+                duqf_toolBarClicked = true;
+                duqf_dragPosition = mouseEvent->globalPos() - this->frameGeometry().topLeft();
+                event->accept();
+                return true;
+            }
+            return false;
+        }
+
+        if (event->type() == QEvent::MouseMove)
+        {
+            if (this->isMaximized()) return false;
+            QMouseEvent *mouseEvent = (QMouseEvent*)event;
+            if (mouseEvent->buttons() & Qt::LeftButton && duqf_toolBarClicked)
+            {
+                this->move(mouseEvent->globalPos() - duqf_dragPosition);
+                event->accept();
+                return true;
+            }
+            return false;
+        }
+
+        if (event->type() == QEvent::MouseButtonRelease)
+        {
+            duqf_toolBarClicked = false;
+            return true;
+        }
+
 #ifndef Q_OS_MAC
-  else if (event->type() == QEvent::MouseButtonDblClick)
-  {
-      duqf_maximize();
-      event->accept();
-      return true;
-  }
+        if (event->type() == QEvent::MouseButtonDblClick)
+        {
+            duqf_maximize();
+            event->accept();
+            return true;
+        }
 #endif
-  else
-  {
-      // standard event processing
-      return QObject::eventFilter(obj, event);
-  }
+    }
+
+    ObjectDockWidget *o = qobject_cast<ObjectDockWidget*>(obj);
+    if (o)
+    {
+        if (event->type() == QEvent::Show)
+        {
+            for (int i = 0; i < _dockedObjects.count(); i++)
+            {
+                ObjectDockWidget *other = _dockedObjects.at(i);
+                if (other->objectType() == o->objectType() && other->isVisible())
+                {
+                    this->tabifyDockWidget( other, o);
+                    event->accept();
+                    return true;
+                }
+            }
+        }
+    }
+
+    return QMainWindow::eventFilter(obj, event);
+
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
