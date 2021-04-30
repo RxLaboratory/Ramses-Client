@@ -312,6 +312,8 @@ QString DuUI::loadCSS(QStringList cssFileNames, QString styleValues)
 
 void DuUI::setFont(QString family, int size, int weight)
 {
+    Q_UNUSED(size);
+    Q_UNUSED(weight);
     if (family == "Ubuntu")
     {
         //add fonts

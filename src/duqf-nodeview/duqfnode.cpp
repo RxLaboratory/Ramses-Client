@@ -1,6 +1,7 @@
 #include "duqfnode.h"
 
-DuQFNode::DuQFNode(QString title)
+DuQFNode::DuQFNode(QString title, QGraphicsItem *parent):
+    QGraphicsObject(parent)
 {
     setAcceptHoverEvents(true);
     m_grid = nullptr;
@@ -48,7 +49,8 @@ DuQFNode::DuQFNode(QString title)
     connect(m_defaultOutputSlot, &DuQFSlot::connectionFinished, this, &DuQFNode::connectionFinished);
 }
 
-DuQFNode::DuQFNode(const DuQFNode &other)
+DuQFNode::DuQFNode(const DuQFNode &other):
+    QGraphicsObject(other.parentItem())
 {
     setTitle(other.title());
     setGrid(other.grid());
