@@ -91,12 +91,12 @@ void ListManagerWidget::list_currentRowChanged(int currentRow)
 
 void ListManagerWidget::currentRowChanged(int currentRow)
 {
-
+    Q_UNUSED(currentRow);
 }
 
 void ListManagerWidget::currentDataChanged(QVariant data)
 {
-
+    Q_UNUSED(data);
 }
 
 void ListManagerWidget::createItem()
@@ -106,7 +106,7 @@ void ListManagerWidget::createItem()
 
 void ListManagerWidget::removeItem(QVariant data)
 {
-
+    Q_UNUSED(data);
 }
 
 void ListManagerWidget::removeRow(int i)

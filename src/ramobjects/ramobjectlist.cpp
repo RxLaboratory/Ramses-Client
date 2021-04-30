@@ -12,7 +12,8 @@ RamObjectList::RamObjectList(QString shortName, QString name, QString uuid, QObj
 
 }
 
-RamObjectList::RamObjectList(const RamObjectList &other)
+RamObjectList::RamObjectList(const RamObjectList &other) :
+    RamObject(other.parent())
 {
     m_objects = other.toList();
 }

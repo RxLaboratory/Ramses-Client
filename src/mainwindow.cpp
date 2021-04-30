@@ -150,7 +150,6 @@ void MainWindow::addObjectDockWidget(ObjectDockWidget *w)
 {
     this->addDockWidget(Qt::RightDockWidgetArea, w);
     w->installEventFilter(this);
-    _dockedObjects << w;
 }
 
 void MainWindow::duqf_initUi()
@@ -617,7 +616,7 @@ void MainWindow::dbiConnectionStatusChanged(NetworkUtils::NetworkStatus s)
 
 bool MainWindow::eventFilter(QObject *obj, QEvent *event)
 {
-    if (obj == mainToolBar)
+    if (obj->objectName() == "mainToolBar")
     {
         if (event->type() == QEvent::MouseButtonPress)
         {
@@ -627,19 +626,21 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
                 duqf_toolBarClicked = true;
                 duqf_dragPosition = mouseEvent->globalPos() - this->frameGeometry().topLeft();
                 event->accept();
-                return true;
             }
-            return false;
+            return true;
         }
 
         if (event->type() == QEvent::MouseMove)
         {
-            if (this->isMaximized()) return false;
             QMouseEvent *mouseEvent = (QMouseEvent*)event;
-            if (mouseEvent->buttons() & Qt::LeftButton && duqf_toolBarClicked)
+            if (mouseEvent->buttons() & Qt::LeftButton)
             {
-                this->move(mouseEvent->globalPos() - duqf_dragPosition);
-                event->accept();
+                if (duqf_toolBarClicked)
+                {
+                    if (this->isMaximized()) return false;
+                    this->move(mouseEvent->globalPos() - duqf_dragPosition);
+                    event->accept();
+                }
                 return true;
             }
             return false;
@@ -648,7 +649,7 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
         if (event->type() == QEvent::MouseButtonRelease)
         {
             duqf_toolBarClicked = false;
-            return true;
+            return false;
         }
 
 #ifndef Q_OS_MAC
@@ -669,13 +670,19 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
             for (int i = 0; i < _dockedObjects.count(); i++)
             {
                 ObjectDockWidget *other = _dockedObjects.at(i);
+                if (!other) continue;
                 if (other->objectType() == o->objectType() && other->isVisible())
                 {
                     this->tabifyDockWidget( other, o);
-                    event->accept();
-                    return true;
                 }
             }
+            _dockedObjects << o;
+            return false;
+        }
+        if (event->type() == QEvent::Hide)
+        {
+            _dockedObjects.removeAll(o);
+            return false;
         }
     }
 

@@ -17,6 +17,7 @@ void DuQFLogToolButton::log(DuQFLog m)
     {
         switch(t)
         {
+        case DuQFLog::Data: break;
         case DuQFLog::Debug: break;
         case DuQFLog::Information: break;
         case DuQFLog::Warning:
