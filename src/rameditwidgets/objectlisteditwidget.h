@@ -11,6 +11,7 @@
 #include <QScrollBar>
 
 #include "ramobjectlistwidget.h"
+#include "ramobjectuberlist.h"
 #include "duqf-widgets/duqfsearchedit.h"
 
 /**
@@ -18,6 +19,8 @@
  * It does not handle object creation:
  * Connect to the "add" signal to create a new object in the list
  * The add QToolButton is available with addButton() to be able to add a submenu to it for example.
+ * It includes some filters used if the list is an uberlist, (if showSubObjects is true)
+ * And a searh field
  */
 class ObjectListEditWidget : public QWidget
 {
@@ -25,8 +28,11 @@ class ObjectListEditWidget : public QWidget
 public:
     explicit ObjectListEditWidget(bool editableObjects = false, QWidget *parent = nullptr);
     explicit ObjectListEditWidget(RamObjectList *objectList, bool editableObjects = false, QWidget *parent = nullptr);
+    explicit ObjectListEditWidget(RamObjectUberList *objectList, bool editableObjects = false, bool showSubObjects = false, QWidget *parent = nullptr);
     RamObjectList *list() const;
-    void setList(RamObjectList *objectList);
+    void clear();
+    void clear(RamObjectList *objectList);
+    void clear(RamObjectUberList *objectList, bool showSubOjects = false);
     void setEditable(bool editable = true);
     void setSortable(bool sortable = true);
     void setSelectable(bool selectable = true);
@@ -53,6 +59,7 @@ private:
     QComboBox *m_filterBox;
     DuQFSearchEdit *m_searchEdit;
     RamObjectList *m_objectList;
+    RamObjectUberList *m_objectUberList;
     RamObjectListWidget *m_list;
 
 };

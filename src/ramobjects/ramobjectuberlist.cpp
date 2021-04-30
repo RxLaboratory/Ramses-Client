@@ -70,9 +70,20 @@ void RamObjectUberList::removeObject(RamObject *obj)
 {
     for (int i = 0; i < m_objects.count(); i++)
     {
-        RamObjectList *list = (RamObjectList*)m_objects.at(i);
+        RamObjectList *list = qobject_cast<RamObjectList*>( m_objects.at(i) );
         list->removeAll(obj);
     }
+}
+
+RamObject *RamObjectUberList::takeObject(QString uuid)
+{
+    for (int i = 0; i < m_objects.count(); i++)
+    {
+        RamObjectList *list = qobject_cast<RamObjectList*>( m_objects.at(i) );
+        RamObject *obj = list->takeFromUuid(uuid);
+        if (obj) return obj;
+    }
+    return nullptr;
 }
 
 RamObject *RamObjectUberList::takeAt(int i)

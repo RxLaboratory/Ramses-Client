@@ -724,18 +724,18 @@ void Ramses::gotSequences(QJsonArray sequences, RamProject *project)
     }
 
     // Remove deleted sequences
-    QList<RamSequence*> projectSequences = project->sequences();
-    for (int i = projectSequences.count() - 1; i >= 0; i--)
+    RamObjectUberList *projectSequences = project->sequences();
+    for (int i = projectSequences->count() - 1; i >= 0; i--)
     {
-        RamSequence *existingSequence = projectSequences.at(i);
+        RamSequence *existingSequence = qobject_cast<RamSequence*>( projectSequences->at(i) );
         if (!uuids.contains(existingSequence->uuid()))
         {
-            project->removeSequence(existingSequence->uuid());
+            existingSequence->remove();
         }
     }
 
     // sort the sequences
-    project->sortSequences();
+    projectSequences->sort();
 }
 
 QString Ramses::gotSequence(QJsonObject newS, RamProject *project)
@@ -744,10 +744,10 @@ QString Ramses::gotSequence(QJsonObject newS, RamProject *project)
     QString uuid = newS.value("uuid").toString();
 
     // loop through existing sequences to update them
-    QList<RamSequence*> projectSequences = project->sequences();
-    for (int i = projectSequences.count() - 1; i >= 0; i--)
+    RamObjectUberList *projectSequences = project->sequences();
+    for (int i = projectSequences->count() - 1; i >= 0; i--)
     {
-        RamSequence *existingSequence = projectSequences.at(i);
+        RamSequence *existingSequence = qobject_cast<RamSequence*>( projectSequences->at(i) );
 
         if (uuid == existingSequence->uuid())
         {
@@ -773,7 +773,7 @@ QString Ramses::gotSequence(QJsonObject newS, RamProject *project)
     //add shots
     gotShots( newS.value("shots").toArray(), sequence, project);
 
-    project->addSequence(sequence);
+    projectSequences->append(sequence);
 
     return uuid;
 }
@@ -1350,10 +1350,8 @@ RamSequence *Ramses::sequence(QString uuid) const
     for (int i =0; i < _projects->count(); i++)
     {
         RamProject *p = (RamProject*)_projects->at(i);
-        foreach(RamSequence *s, p->sequences())
-        {
-            if (s->uuid() == uuid) return s;
-        }
+        RamSequence *s = qobject_cast<RamSequence*>( p->sequences()->fromUuid(uuid) );
+        if (s) return s;
     }
     return nullptr;
 }

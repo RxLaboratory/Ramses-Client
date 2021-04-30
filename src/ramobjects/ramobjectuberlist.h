@@ -22,6 +22,7 @@ public:
     RamObject *objectAt(int index) const;
     void removeObject(QString uuid);
     void removeObject(RamObject *obj);
+    RamObject *takeObject(QString uuid);
     // reimplemented to disconnect list
     RamObject *takeAt(int i) Q_DECL_OVERRIDE;
 

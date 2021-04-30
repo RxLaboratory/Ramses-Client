@@ -85,6 +85,15 @@ RamObject *RamObjectList::takeAt(int i)
     return obj;
 }
 
+RamObject *RamObjectList::takeFromUuid(QString uuid)
+{
+    for (int i =0; i < m_objects.count(); i++)
+    {
+        if (m_objects.at(i)->uuid() == uuid) return m_objects.takeAt(i);
+    }
+    return nullptr;
+}
+
 void RamObjectList::removeAll(RamObject *obj)
 {
     for (int i = m_objects.count() -1; i >= 0; i--)

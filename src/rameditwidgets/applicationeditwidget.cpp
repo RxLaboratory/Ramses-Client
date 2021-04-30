@@ -39,9 +39,9 @@ void ApplicationEditWidget::setObject(RamObject *obj)
     QSignalBlocker b3(exportList);
 
     folderSelector->setPath("");
-    nativeList->setList(nullptr);
-    importList->setList(nullptr);
-    exportList->setList(nullptr);
+    nativeList->clear();
+    importList->clear();
+    exportList->clear();
 
     if (!application) return;
 
@@ -56,9 +56,9 @@ void ApplicationEditWidget::setObject(RamObject *obj)
     for( int i = 0; i < application->importFileTypes()->count(); i++)  importFileTypeAssigned( application->importFileTypes()->at(i) );
     for( int i = 0; i < application->exportFileTypes()->count(); i++)  exportFileTypeAssigned( application->exportFileTypes()->at(i) );
 
-    nativeList->setList(application->nativeFileTypes());
-    importList->setList(application->importFileTypes());
-    exportList->setList(application->exportFileTypes());
+    nativeList->clear(application->nativeFileTypes());
+    importList->clear(application->importFileTypes());
+    exportList->clear(application->exportFileTypes());
 
     _objectConnections << connect(application->nativeFileTypes(), &RamObjectList::objectAdded, this, &ApplicationEditWidget::nativeFileTypeAssigned);
     _objectConnections << connect(application->nativeFileTypes(), &RamObjectList::objectRemoved, this, &ApplicationEditWidget::nativeFileTypeUnassigned);

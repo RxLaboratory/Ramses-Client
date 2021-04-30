@@ -305,9 +305,9 @@ void Daemon::getShots(QString filter, QTcpSocket *client)
     QRegularExpression re(filter,QRegularExpression::CaseInsensitiveOption);
 
     QJsonArray shots;
-    for (int i = 0; i < proj->shots()->objectCount(); i++)
+    for (int i = 0; i < proj->sequences()->objectCount(); i++)
     {
-        RamShot *s = (RamShot*)proj->shots()->objectAt(i);
+        RamShot *s = (RamShot*)proj->sequences()->objectAt(i);
 
         bool ok = filter == "([a-z0-9+-]*\\s*)*";
         if (!ok)

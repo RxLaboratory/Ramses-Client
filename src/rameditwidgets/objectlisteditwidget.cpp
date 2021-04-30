@@ -4,6 +4,7 @@ ObjectListEditWidget::ObjectListEditWidget(bool editableObjects, QWidget *parent
     QWidget(parent)
 {
     m_objectList = nullptr;
+    m_objectUberList = nullptr;
     setupUi(editableObjects);
     connectEvents();
 }
@@ -11,20 +12,52 @@ ObjectListEditWidget::ObjectListEditWidget(bool editableObjects, QWidget *parent
 ObjectListEditWidget::ObjectListEditWidget(RamObjectList *objectList, bool editableObjects, QWidget *parent) :
     QWidget(parent)
 {
-    m_objectList = objectList;
     setupUi(editableObjects);
     connectEvents();
+    clear(objectList);
+}
+
+ObjectListEditWidget::ObjectListEditWidget(RamObjectUberList *objectList, bool editableObjects, bool showSubObjects, QWidget *parent) :
+    QWidget(parent)
+{
+    setupUi(editableObjects);
+    connectEvents();
+    clear(objectList, showSubObjects);
 }
 
 RamObjectList *ObjectListEditWidget::list() const
 {
+    if (m_objectUberList) return m_objectUberList;
     return m_objectList;
 }
 
-void ObjectListEditWidget::setList(RamObjectList *objectList)
+void ObjectListEditWidget::clear()
+{
+    m_objectList = nullptr;
+    m_objectUberList = nullptr;
+    m_list->clear();
+}
+
+void ObjectListEditWidget::clear(RamObjectList *objectList)
 {
     m_objectList = objectList;
     m_list->setList(m_objectList);
+}
+
+void ObjectListEditWidget::clear(RamObjectUberList *objectList, bool showSubOjects)
+{
+    if(! showSubOjects)
+    {
+        m_objectList = qobject_cast<RamObjectList*>(objectList);
+        m_objectUberList = nullptr;
+        clear(m_objectList);
+    }
+    else
+    {
+        m_objectList = nullptr;
+        m_objectUberList = objectList;
+        m_list->setList(objectList);
+    }
 }
 
 void ObjectListEditWidget::setEditable(bool editable)

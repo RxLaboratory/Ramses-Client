@@ -61,19 +61,13 @@ public:
     void removeAsset(QString uuid);
 
     // Sequences
-    QList<RamSequence *> sequences() const;
+    RamObjectUberList *sequences() const;
     RamSequence *sequence(QString uuid);
-    void addSequence(RamSequence *seq);
     void createSequence(QString shortName = "NEW", QString name = "Sequence");
-    void removeSequence(QString uuid);
-    void removeSequence(RamObject *seq);
-    void sortSequences();
 
     // Shots
-    RamObjectUberList *shots();
     void moveShotToSequence(RamShot *shot, QString sequenceUuid);
     void moveShotToSequence(RamShot *shot, RamSequence *sequence);
-    void removeShot(QString uuid);
 
     // Pipeline
     QList<RamPipe *> pipeline();
@@ -91,15 +85,12 @@ signals:
     void stepRemoved(RamStep *);
     void newAssetGroup(RamAssetGroup *);
     void assetGroupRemoved(QString uuid);
-    void newSequence(RamSequence *);
-    void sequenceRemoved(RamSequence *);
     void newPipe(RamPipe *);
     void pipeRemoved(RamPipe *p);
 
 private slots:
     void stepRemoved(RamObject *o);
     void assetGroupRemoved(RamObject *o);
-    void sequenceRemoved(RamObject *o);
 
 private:
     QString _folderPath;
@@ -109,8 +100,7 @@ private:
     qreal _aspectRatio = 1.78;
     QList<RamStep *> _steps;
     QList<RamAssetGroup *> _assetGroups;
-    QList<RamSequence *> _sequences;
-    RamObjectUberList *_shots;
+    RamObjectUberList *_sequences;
     QList<RamPipe *> _pipeline;
 };
 

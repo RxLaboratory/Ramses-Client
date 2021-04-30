@@ -10,6 +10,9 @@
 #include "ramstatuswidget.h"
 #include "ramuserwidget.h"
 
+/**
+ * @brief The ObjectListWidget class Just shows a list of Objects using their Widgets
+ */
 class ObjectListWidget : public QTableWidget
 {
     Q_OBJECT
