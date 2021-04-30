@@ -1,7 +1,5 @@
 #include "ramstepwidget.h"
 
-#include "mainwindow.h"
-
 RamStepWidget::RamStepWidget(RamStep *step, QWidget *parent):
     RamObjectWidget(step, parent)
 {
@@ -9,8 +7,6 @@ RamStepWidget::RamStepWidget(RamStep *step, QWidget *parent):
 
     StepEditWidget *sw = new StepEditWidget(step, this);
     setEditWidget(sw);
-    MainWindow *mw = (MainWindow*)GuiUtils::appMainWindow();
-    mw->addStepEditDockWidget(this->dockEditWidget());
 
     setUserEditRole(RamUser::ProjectAdmin);
 

@@ -1,7 +1,5 @@
 #include "ramsequencewidget.h"
 
-#include "mainwindow.h"
-
 RamSequenceWidget::RamSequenceWidget(RamSequence *sequence, QWidget *parent):
     RamObjectWidget(sequence, parent)
 {
@@ -9,8 +7,6 @@ RamSequenceWidget::RamSequenceWidget(RamSequence *sequence, QWidget *parent):
 
     SequenceEditWidget *sw = new SequenceEditWidget(sequence, this);
     setEditWidget(sw);
-    MainWindow *mw = (MainWindow*)GuiUtils::appMainWindow();
-    mw->addSequenceEditDockWidget(this->dockEditWidget());
 
     setUserEditRole(RamUser::ProjectAdmin);
 

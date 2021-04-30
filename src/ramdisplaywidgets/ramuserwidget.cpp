@@ -1,7 +1,5 @@
 #include "ramuserwidget.h"
 
-#include "mainwindow.h"
-
 RamUserWidget::RamUserWidget(RamUser *user, QWidget *parent):
     RamObjectWidget(user, parent)
 {
@@ -9,8 +7,6 @@ RamUserWidget::RamUserWidget(RamUser *user, QWidget *parent):
 
     UserEditWidget *uw = new UserEditWidget(user, this);
     setEditWidget(uw);
-    MainWindow *mw = (MainWindow*)GuiUtils::appMainWindow();
-    mw->addUserEditDockWidget(this->dockEditWidget());
 
     setUserEditRole(RamUser::Lead);
 

@@ -1,7 +1,5 @@
 #include "ramstatuswidget.h"
 
-#include "mainwindow.h"
-
 RamStatusWidget::RamStatusWidget(RamStatus *status, QWidget *parent) :
     RamObjectWidget(status, parent)
 {
@@ -9,9 +7,7 @@ RamStatusWidget::RamStatusWidget(RamStatus *status, QWidget *parent) :
 
     statusEditWidget = new StatusEditWidget(_status, this);
     setEditWidget(statusEditWidget);
-    MainWindow *mw = (MainWindow*)GuiUtils::appMainWindow();
     this->dockEditWidget()->setIcon(":/icons/state");
-    mw->addStatusEditDockWidget(this->dockEditWidget());
 
     completeUi();
     statusChanged(_status);

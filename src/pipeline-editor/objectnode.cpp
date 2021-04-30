@@ -1,5 +1,7 @@
 #include "objectnode.h"
 
+#include "mainwindow.h"
+
 ObjectNode::ObjectNode(RamObject *obj)
 {
     _object = obj;
@@ -40,6 +42,8 @@ void ObjectNode::setEditWidget(ObjectEditWidget *w)
     w->setParent(_dockWidget);
     _dockWidget->setWidget(w);
     _hasEditWidget = true;
+    MainWindow *mw = (MainWindow*)GuiUtils::appMainWindow();
+    mw->addObjectDockWidget(_dockWidget);
 }
 
 void ObjectNode::removeObject()
