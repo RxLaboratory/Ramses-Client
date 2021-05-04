@@ -11,10 +11,19 @@ RamObject *RamObjectUberList::objectFromUuid(QString uuid)
     for (int i = 0 ; i < m_objects.count(); i++)
     {
         RamObjectList *list = (RamObjectList*)m_objects.at(i);
-        for (int j = 0; j < list->count(); j++)
-        {
-            if ( list->at(i)->uuid() == uuid ) return list->at(i);
-        }
+        RamObject *o = list->fromUuid(uuid);
+        if (o) return o;
+    }
+    return nullptr;
+}
+
+RamObject *RamObjectUberList::objectFromName(QString shortName, QString name)
+{
+    for (int i = 0 ; i < m_objects.count(); i++)
+    {
+        RamObjectList *list = (RamObjectList*)m_objects.at(i);
+        RamObject *o = list->fromName(shortName, name);
+        if (o) return o;
     }
     return nullptr;
 }

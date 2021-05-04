@@ -50,6 +50,20 @@ RamObject *RamObjectList::fromUuid(QString uuid) const
     return nullptr;
 }
 
+RamObject *RamObjectList::fromName(QString shortName, QString name) const
+{
+    for (int i =0; i < m_objects.count(); i++)
+    {
+        RamObject *o = m_objects.at(i);
+        if (o->shortName() == shortName)
+        {
+            if (name == "") return o;
+            if (o->name() == name) return o;
+        }
+    }
+    return nullptr;
+}
+
 RamObject *RamObjectList::at(int i) const
 {
     return m_objects.at(i);

@@ -17,6 +17,7 @@ public:
 
     // Single object access inside child lists
     RamObject *objectFromUuid(QString uuid);
+    RamObject *objectFromName(QString shortName, QString name = "");
     int objectCount();
     bool containsObject(RamObject *obj) const;
     RamObject *objectAt(int index) const;

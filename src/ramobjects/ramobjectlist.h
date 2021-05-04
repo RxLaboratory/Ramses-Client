@@ -20,6 +20,7 @@ public:
     ~RamObjectList();
 
     virtual RamObject *fromUuid(QString uuid) const;
+    virtual RamObject *fromName(QString shortName, QString name = "") const;
     QList<RamObject*> toList() const;
 
     // QList Methods
