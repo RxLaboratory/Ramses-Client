@@ -53,13 +53,15 @@ void Daemon::reply()
     for(const QString &arg: qAsConst(requestArgs))
     {
         QStringList aList = arg.split("=");
+        QString key = aList.at(0);
+        if (key == "") continue;
         if (aList.count() > 1)
         {
-            args[aList.at(0)] = aList.at(1);
+            args[key] = aList.at(1);
         }
         else
         {
-            args[aList.at(0)] = "";
+            args[key] = "";
         }
     }
 
@@ -76,6 +78,8 @@ void Daemon::reply()
         getAssetGroups(client);
     else if (args.contains("getCurrentProject"))
         getCurrentProject(client);
+    else if (args.contains("getCurrentStatus"))
+        getCurrentStatus(args.value("shortName"), args.value("name"), args.value("type"), client);
     else if (args.contains("getCurrentUser"))
         getCurrentUser(client);
     else if (args.contains("getPipes"))
@@ -140,6 +144,70 @@ void Daemon::setCurrentProject(QString shortName, QTcpSocket *client)
         content.insert("uuid", "");
         post(client, content, "setCurrentProject", "Project " + shortName + " not found, sorry!", false);
     }
+}
+
+void Daemon::getCurrentStatus(QString shortName, QString name, QString type, QTcpSocket *client)
+{
+    log("I'm replying to this request: getCurrentStatus", DuQFLog::Information);
+
+    RamProject *proj = Ramses::instance()->currentProject();
+
+    QJsonObject content;
+
+    if (!proj)
+    {
+        post(client, content, "getCurrentStatus", "Sorry, there's no current project. Select a project first!", false);
+        return;
+    }
+
+    QJsonArray statuses;
+
+    RamItem *item = nullptr;
+    if (type == "ASSET")
+    {
+        for (int i = 0; i < proj->assets().count(); i++)
+        {
+            RamItem *asset = proj->assets().at(i);
+            if (asset->shortName() == shortName && asset->name() == name)
+            {
+                item = asset;
+                break;
+            }
+        }
+    }
+    else item = (RamItem*)proj->shots()->objectFromName(shortName, name);
+
+    if (!item)
+    {
+        post(client, content, "getCurrentStatus", "Sorry, item not found. Check it's name, short name and type", false);
+        return;
+    }
+
+    RamStatusHistory *history = item->statusHistory();
+    history->sort();
+    QList<QString> steps;
+    for (int i = history->count() - 1; i >= 0; i-- )
+    {
+        RamStatus *s = (RamStatus*)history->at(i);
+        if (! s->step() ) continue;
+
+        if (steps.contains( s->step()->uuid() ) ) continue;
+
+        steps << s->step()->uuid();
+
+        QJsonObject status;
+        status.insert("step", s->step()->shortName() );
+        status.insert("comment", s->comment() );
+        status.insert("completionRatio", s->completionRatio() );
+        status.insert("date", s->date().toString("yyyy-MM-dd hh:mm:ss"));
+        if (s->state()) status.insert("state", s->state()->shortName() );
+        if (s->user()) status.insert("user", s->user()->shortName() );
+        status.insert("version", s->version() );
+
+        statuses.append(status);
+    }
+    content.insert("status", statuses);
+    post(client, content, "getCurrentStatus", "Current status for " + item->name() + " retrieved.");
 }
 
 void Daemon::getAssets(QTcpSocket *client)
