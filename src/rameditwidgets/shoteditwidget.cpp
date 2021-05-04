@@ -37,8 +37,9 @@ void ShotEditWidget::setShot(RamShot *shot)
     RamProject *proj = project();
     if (!proj) return;
 
-    for (RamSequence *seq: proj->sequences() )
+    for (int i = 0; i < proj->sequences()->count(); i++ )
     {
+        RamSequence *seq = qobject_cast<RamSequence*>( proj->sequences()->at(i) );
         newSequence( seq );
 
         if (_shot->sequenceUuid() == seq->uuid())
@@ -46,8 +47,8 @@ void ShotEditWidget::setShot(RamShot *shot)
     }
 
     _objectConnections << connect( shot, &RamShot::changed, this, &ShotEditWidget::shotChanged);
-    _objectConnections << connect(proj,SIGNAL(sequenceRemoved(RamSequence*)), this, SLOT(sequenceRemoved(RamSequence*)));
-    _objectConnections << connect(proj, &RamProject::newSequence, this, &ShotEditWidget::newSequence);
+    _objectConnections << connect( proj->sequences(), &RamObjectList::objectRemoved, this, &ShotEditWidget::sequenceRemoved);
+    _objectConnections << connect( proj->sequences(), &RamObjectList::objectAdded, this, &ShotEditWidget::newSequence);
 
     this->setEnabled(Ramses::instance()->isLead());
 }
@@ -105,7 +106,7 @@ void ShotEditWidget::secondsChanged()
     update();
 }
 
-void ShotEditWidget::newSequence(RamSequence *seq)
+void ShotEditWidget::newSequence(RamObject *seq)
 {
     sequencesBox->addItem( seq->name(), seq->uuid());
     connect(seq, &RamSequence::changed, this, &ShotEditWidget::sequenceChanged);
@@ -119,7 +120,7 @@ void ShotEditWidget::sequenceChanged(RamObject *o)
     }
 }
 
-void ShotEditWidget::sequenceRemoved(RamSequence *seq)
+void ShotEditWidget::sequenceRemoved(RamObject *seq)
 {
     for(int i = sequencesBox->count()-1; i >=0; i--)
     {

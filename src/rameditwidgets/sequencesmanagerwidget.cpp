@@ -21,7 +21,7 @@ void SequencesManagerWidget::currentDataChanged(QVariant data)
     RamSequence *sequence = project->sequence( data.toString() );
     if (!sequence) return;
 
-    sequenceWidget->setSequence(sequence);
+    sequenceWidget->setObject(sequence);
     sequenceWidget->setEnabled(true);
 }
 
@@ -37,7 +37,7 @@ void SequencesManagerWidget::removeItem(QVariant data)
 {
     RamProject *project = Ramses::instance()->currentProject();
     if (!project) return;
-    project->removeSequence(data.toString());
+    project->sequences()->removeAll(data.toString());
 }
 
 void SequencesManagerWidget::changeProject(RamProject *project)
@@ -49,20 +49,20 @@ void SequencesManagerWidget::changeProject(RamProject *project)
     // empty list
     list->blockSignals(true);
     list->clear();
-    sequenceWidget->setSequence(nullptr);
+    sequenceWidget->setObject(nullptr);
     list->blockSignals(false);
 
     if (!project) return;
 
     //add steps
-    foreach(RamSequence *seq, project->sequences()) newSequence(seq);
-    _projectConnections << connect(project, &RamProject::newSequence, this, &SequencesManagerWidget::newSequence);
+    for (int i = 0; i < project->sequences()->count(); i ++) newSequence( project->sequences()->at(i) );
+    _projectConnections << connect(project->sequences(), &RamObjectList::objectAdded, this, &SequencesManagerWidget::newSequence);
     _projectConnections << connect(project, SIGNAL(sequenceRemoved(RamSequence*)), this, SLOT(removeSequence(RamSequence*)));
 
     this->setEnabled(true);
 }
 
-void SequencesManagerWidget::newSequence(RamSequence *seq)
+void SequencesManagerWidget::newSequence(RamObject *seq)
 {
     if (!seq) return;
 

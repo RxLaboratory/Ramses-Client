@@ -1,5 +1,7 @@
 #include "ramobjectwidget.h"
 
+#include "mainwindow.h"
+
 RamObjectWidget::RamObjectWidget(RamObject *obj, QWidget *parent) : QWidget(parent)
 {
     setupUi();
@@ -92,6 +94,10 @@ void RamObjectWidget::setEditWidget(ObjectEditWidget *w)
     f->setLayout(l);
     _dockEditWidget->setWidget(f);
     _hasEditWidget = true;
+
+    MainWindow *mw = (MainWindow*)GuiUtils::appMainWindow();
+    mw->addObjectDockWidget(_dockEditWidget);
+
     userChanged();
 }
 
@@ -120,6 +126,7 @@ void RamObjectWidget::remove()
 
 void RamObjectWidget::edit()
 {
+    qDebug() << "EDIIIIT";
     if (_hasEditWidget && _editable && _hasEditRights) _dockEditWidget->show();
 }
 

@@ -4,7 +4,6 @@
 #include "objectnode.h"
 
 #include "ramstep.h"
-#include "mainwindow.h"
 #include "stepeditwidget.h"
 
 class StepNode : public ObjectNode

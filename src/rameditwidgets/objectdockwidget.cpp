@@ -12,11 +12,17 @@ ObjectDockWidget::ObjectDockWidget(RamObject *obj, QWidget *parent):
 
     this->setToolTip(obj->name());
     this->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    this->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable );
+    this->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable );
 
     connect(_object, &RamObject::removed, this, &ObjectDockWidget::objectRemoved);
     connect(_object, &RamObject::changed, this, &ObjectDockWidget::objectChanged);
     connect(_titleWidget, &DuQFDockTitle::pinDockWidget, this, &ObjectDockWidget::pin);
+}
+
+RamObject::ObjectType ObjectDockWidget::objectType() const
+{
+    if (!_object) return RamObject::Generic;
+    else return _object->objectType();
 }
 
 void ObjectDockWidget::setTitle(QString title)

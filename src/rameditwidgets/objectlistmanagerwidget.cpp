@@ -24,7 +24,7 @@ void ObjectListManagerWidget::setList(RamObjectList *objectList)
 {
     disconnect( m_listConnection );
     m_objectList = objectList;
-    m_listEditWidget->setList( m_objectList );
+    m_listEditWidget->clear( m_objectList );
     m_listConnection = connect(m_objectList, &RamObjectList::objectAdded, this, &ObjectListManagerWidget::editNewObject);
 }
 

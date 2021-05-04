@@ -5,7 +5,7 @@ SequenceEditWidget::SequenceEditWidget(QWidget *parent) :
 {
     setupUi();
     connectEvents();
-    setSequence(nullptr);
+    setObject(nullptr);
 }
 
 SequenceEditWidget::SequenceEditWidget(RamSequence *sequence, QWidget *parent) :
@@ -13,7 +13,7 @@ SequenceEditWidget::SequenceEditWidget(RamSequence *sequence, QWidget *parent) :
 {
     setupUi();
     connectEvents();
-    setSequence(sequence);
+    setObject(sequence);
 }
 
 RamSequence *SequenceEditWidget::sequence() const
@@ -21,17 +21,19 @@ RamSequence *SequenceEditWidget::sequence() const
     return _sequence;
 }
 
-void SequenceEditWidget::setSequence(RamSequence *sequence)
+void SequenceEditWidget::setObject(RamObject *obj)
 {
+    RamSequence *sequence = qobject_cast<RamSequence*>(obj);
+
     this->setEnabled(false);
 
-    setObject(sequence);
+    ObjectEditWidget::setObject(sequence);
     _sequence = sequence;
 
     QSignalBlocker b1(shotsList);
 
     //Reset values
-    shotsList->setList(sequence);
+    shotsList->clear(sequence);
 
     if (!sequence) return;
 
@@ -62,7 +64,7 @@ void SequenceEditWidget::sequenceChanged(RamObject *o)
 {
     if (updating) return;
     Q_UNUSED(o);
-    setSequence(_sequence);
+    setObject(_sequence);
 }
 
 void SequenceEditWidget::createShot()

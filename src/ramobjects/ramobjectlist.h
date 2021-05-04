@@ -33,6 +33,7 @@ public:
     void removeFirst();
     void removeLast();
     virtual RamObject *takeAt(int i);
+    RamObject *takeFromUuid(QString uuid);
     // QList Operators
     virtual RamObject *operator[](int i) const;
 

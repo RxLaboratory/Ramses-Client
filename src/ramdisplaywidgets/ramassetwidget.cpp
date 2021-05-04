@@ -1,7 +1,5 @@
 #include "ramassetwidget.h"
 
-#include "mainwindow.h"
-
 RamAssetWidget::RamAssetWidget(RamAsset *asset, QWidget *parent) :
     RamObjectWidget(asset, parent)
 {
@@ -9,9 +7,6 @@ RamAssetWidget::RamAssetWidget(RamAsset *asset, QWidget *parent) :
 
     AssetEditWidget *aw = new AssetEditWidget(asset, this);
     setEditWidget(aw);
-    MainWindow *mw = (MainWindow*)GuiUtils::appMainWindow();
-    this->dockEditWidget()->setIcon(":/icons/asset");
-    mw->addAssetEditDockWidget(this->dockEditWidget());
 
     setUserEditRole(RamUser::Lead);
 

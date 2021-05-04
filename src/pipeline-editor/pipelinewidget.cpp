@@ -1,5 +1,7 @@
 #include "pipelinewidget.h"
 
+#include "mainwindow.h"
+
 PipelineWidget::PipelineWidget(QWidget *parent) :
     QWidget(parent)
 {
@@ -377,7 +379,7 @@ void PipelineWidget::newPipe(RamPipe *pipe)
     PipeEditWidget *editWidget = new PipeEditWidget(pipe, dockWidget);
     dockWidget->setWidget(editWidget);
     MainWindow *mw = (MainWindow*)GuiUtils::appMainWindow();
-    mw->addPipeDockWidget(dockWidget);
+    mw->addObjectDockWidget(dockWidget);
     dockWidget->hide();
 
     connect(pipe, SIGNAL(removed(RamObject*)), this, SLOT(pipeRemoved(RamObject*)));

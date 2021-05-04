@@ -14,6 +14,8 @@ class ObjectDockWidget : public QDockWidget
 public:
     ObjectDockWidget(RamObject *obj, QWidget *parent = nullptr);
 
+    RamObject::ObjectType objectType() const;
+
     void setTitle(QString title);
     void setIcon(QString icon);
 

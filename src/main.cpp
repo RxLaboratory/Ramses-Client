@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
     s->newMessage("Building UI");
     MainWindow *w = new MainWindow( a.arguments() );
 #ifndef Q_OS_LINUX
-    FrameLessWindow f(w);
+    //FrameLessWindow f(w);
 #endif
     w->show();
 

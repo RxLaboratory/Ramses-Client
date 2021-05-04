@@ -1,7 +1,5 @@
 #include "ramfiletypewidget.h"
 
-#include "mainwindow.h"
-
 RamFileTypeWidget::RamFileTypeWidget(RamFileType *fileType, QWidget *parent):
     RamObjectWidget(fileType, parent)
 {
@@ -9,8 +7,6 @@ RamFileTypeWidget::RamFileTypeWidget(RamFileType *fileType, QWidget *parent):
 
     FileTypeEditWidget *ftw = new FileTypeEditWidget(fileType, this);
     setEditWidget(ftw);
-    MainWindow *mw = (MainWindow*)GuiUtils::appMainWindow();
-    mw->addFileTypeEditDockWidget(this->dockEditWidget());
 
     setUserEditRole(RamUser::Admin);
 

@@ -13,9 +13,9 @@ void ShotLIstManagerWidget::createObject()
 {
     RamProject *project = Ramses::instance()->currentProject();
     if (!project) return;
-    if (project->sequences().count() == 0 ) return;
+    if (project->sequences()->count() == 0 ) return;
     RamSequence *seq = project->sequence(currentFilter());
-    if (!seq) seq = project->sequences().at(0);
+    if (!seq) seq = qobject_cast<RamSequence*>( project->sequences()->at(0) );
     seq->createShot();
 }
 

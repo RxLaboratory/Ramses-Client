@@ -52,18 +52,7 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
 public:
     explicit MainWindow(QStringList args, QWidget *parent = nullptr);
 
-    void addStepDockWidget(QDockWidget *w);
-    void addPipeDockWidget(QDockWidget *w);
-    void addAssetEditDockWidget(QDockWidget *w);
-    void addShotEditDockWidget(QDockWidget *w);
-    void addStatusEditDockWidget(QDockWidget *w);
-    void addUserEditDockWidget(QDockWidget *w);
-    void addStateEditDockWidget(QDockWidget *w);
-    void addProjectEditDockWidget(QDockWidget *w);
-    void addStepEditDockWidget(QDockWidget *w);
-    void addAssetGroupEditDockWidget(QDockWidget *w);
-    void addFileTypeEditDockWidget(QDockWidget *w);
-    void addApplicationEditDockWidget(QDockWidget *w);
+    void addObjectDockWidget(ObjectDockWidget *w);
 
 private:
     // ========= RxOT UI ==============
@@ -98,18 +87,7 @@ private:
     QToolButton *networkButton;
     QToolButton *refreshButton;
 
-    QList<QDockWidget *> _stepDock;
-    QList<QDockWidget *> _pipeDock;
-    QList<QDockWidget *> _assetEditDock;
-    QList<QDockWidget *> _shotEditDock;
-    QList<QDockWidget *> _statusEditDock;
-    QList<QDockWidget *> _userEditDock;
-    QList<QDockWidget *> _stateEditDock;
-    QList<QDockWidget *> _projectEditDock;
-    QList<QDockWidget *> _stepEditDock;
-    QList<QDockWidget *> _assetGroupEditDock;
-    QList<QDockWidget *> _fileTypeEditDock;
-    QList<QDockWidget *> _applicationEditDock;
+    QList<ObjectDockWidget *> _dockedObjects;
 
     QMetaObject::Connection _currentUserConnection;
 

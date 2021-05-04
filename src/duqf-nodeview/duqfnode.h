@@ -19,7 +19,7 @@ class DuQFNode : public QGraphicsObject
     Q_OBJECT
     Q_INTERFACES(QGraphicsItem)
 public:
-    DuQFNode(QString title = "Node");
+    DuQFNode(QString title = "Node", QGraphicsItem *parent = nullptr);
     //! Copy constructor.
     DuQFNode(const DuQFNode & other);
     ~DuQFNode() Q_DECL_OVERRIDE;

@@ -24,9 +24,9 @@ private slots:
     void shotChanged(RamObject *o);
     void framesChanged();
     void secondsChanged();
-    void newSequence(RamSequence *seq);
+    void newSequence(RamObject *seq);
     void sequenceChanged(RamObject *o);
-    void sequenceRemoved(RamSequence *seq);
+    void sequenceRemoved(RamObject *seq);
 
 private:
     RamShot *_shot = nullptr;

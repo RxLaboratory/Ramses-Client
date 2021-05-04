@@ -1,7 +1,5 @@
 #include "ramassetgroupwidget.h"
 
-#include "mainwindow.h"
-
 RamAssetGroupWidget::RamAssetGroupWidget(RamAssetGroup *assetGroup, QWidget *parent):
     RamObjectWidget(assetGroup, parent)
 {
@@ -9,8 +7,6 @@ RamAssetGroupWidget::RamAssetGroupWidget(RamAssetGroup *assetGroup, QWidget *par
 
     AssetGroupEditWidget *agw = new AssetGroupEditWidget(assetGroup, this);
     setEditWidget(agw);
-    MainWindow *mw = (MainWindow*)GuiUtils::appMainWindow();
-    mw->addAssetGroupEditDockWidget(this->dockEditWidget());
 
     setUserEditRole(RamUser::ProjectAdmin);
 

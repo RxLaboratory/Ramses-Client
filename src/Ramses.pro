@@ -32,6 +32,7 @@ SOURCES += \
     ramdisplaywidgets/ramassetgroupwidget.cpp \
     ramdisplaywidgets/ramfiletypewidget.cpp \
     ramdisplaywidgets/ramprojectwidget.cpp \
+    ramdisplaywidgets/ramsequencewidget.cpp \
     ramdisplaywidgets/ramstatewidget.cpp \
     ramdisplaywidgets/ramstepwidget.cpp \
     ramdisplaywidgets/ramuserwidget.cpp \
@@ -150,6 +151,7 @@ HEADERS += \
     ramdisplaywidgets/ramassetgroupwidget.h \
     ramdisplaywidgets/ramfiletypewidget.h \
     ramdisplaywidgets/ramprojectwidget.h \
+    ramdisplaywidgets/ramsequencewidget.h \
     ramdisplaywidgets/ramstatewidget.h \
     ramdisplaywidgets/ramstepwidget.h \
     ramdisplaywidgets/ramuserwidget.h \

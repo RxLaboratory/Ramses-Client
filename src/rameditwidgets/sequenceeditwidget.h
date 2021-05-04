@@ -17,7 +17,9 @@ public:
     explicit SequenceEditWidget(RamSequence *s = nullptr, QWidget *parent = nullptr);
 
     RamSequence *sequence() const;
-    void setSequence(RamSequence *sequence);
+
+public slots:
+    void setObject(RamObject *obj) Q_DECL_OVERRIDE;
 
 protected slots:
     void update() Q_DECL_OVERRIDE;
