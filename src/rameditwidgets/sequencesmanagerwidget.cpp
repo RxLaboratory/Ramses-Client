@@ -57,7 +57,7 @@ void SequencesManagerWidget::changeProject(RamProject *project)
     //add steps
     for (int i = 0; i < project->sequences()->count(); i ++) newSequence( project->sequences()->at(i) );
     _projectConnections << connect(project->sequences(), &RamObjectList::objectAdded, this, &SequencesManagerWidget::newSequence);
-    _projectConnections << connect(project, SIGNAL(sequenceRemoved(RamSequence*)), this, SLOT(removeSequence(RamSequence*)));
+    _projectConnections << connect(project->sequences(), &RamObjectList::objectRemoved, this, &SequencesManagerWidget::removeSequence);
 
     this->setEnabled(true);
 }
@@ -77,11 +77,6 @@ void SequencesManagerWidget::newSequence(RamObject *seq)
 }
 
 void SequencesManagerWidget::removeSequence(RamObject *seq)
-{
-    removeData(seq->uuid());
-}
-
-void SequencesManagerWidget::removeSequence(RamSequence *seq)
 {
     removeData(seq->uuid());
 }

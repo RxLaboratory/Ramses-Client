@@ -35,16 +35,20 @@ private slots:
     void reply();
     void ping(QTcpSocket *client);
     void setCurrentProject(QString shortName, QTcpSocket *client);
-    void getCurrentStatus(QString shortName, QString name, QString type, QTcpSocket *client);
+    void getCurrentStatus(QString shortName, QString name, QString type, QString step, QTcpSocket *client);
     void getAssets(QTcpSocket *client);
+    void getAsset(QString shortName, QString name, QTcpSocket *client);
     void getAssetGroups(QTcpSocket *client);
-    void getCurrentProject(QTcpSocket *client);
+    void getProject(QString shortName, QString name, QTcpSocket *client);
     void getCurrentUser(QTcpSocket *client);
     void getPipes(QTcpSocket *client);
     void getProjects(QTcpSocket *client);
     void getShots(QString filter, QTcpSocket *client);
+    void getShot(QString shortName, QString name, QTcpSocket *client);
     void getStates(QTcpSocket *client);
+    void getState(QString shortName, QString name, QTcpSocket *client);
     void getSteps(QTcpSocket *client);
+    void getStep(QString shortName, QString name, QTcpSocket *client);
 
 private:
     //The daemon is a singleton
@@ -53,6 +57,11 @@ private:
     QSettings _settings;
 
     void post(QTcpSocket *client, QJsonObject content, QString query, QString message="", bool success = true, bool accepted = true);
+
+    QJsonObject assetToJson(RamAsset *a);
+    QJsonObject shotToJson(RamShot *s);
+    QJsonObject stateToJson(RamState *s);
+    QJsonObject stepToJson(RamStep *s);
 };
 
 #endif // DAEMON_H

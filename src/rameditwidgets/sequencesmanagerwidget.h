@@ -19,7 +19,6 @@ private slots:
     void changeProject(RamProject *project);
     void newSequence(RamObject *seq);
     void removeSequence(RamObject *seq);
-    void removeSequence(RamSequence *seq);
     void sequenceChanged(RamObject *seq);
 
 private:

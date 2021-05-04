@@ -74,12 +74,18 @@ void Daemon::reply()
         setCurrentProject(args.value("shortName"), client);
     else if (args.contains("getAssets"))
         getAssets(client);
+    else if (args.contains("getAsset"))
+        getAsset(args.value("shortName"), args.value("name", ""), client);
     else if (args.contains("getAssetGroups"))
         getAssetGroups(client);
     else if (args.contains("getCurrentProject"))
-        getCurrentProject(client);
+        getProject("","",client);
+    else if (args.contains("getProject"))
+        getProject(args.value("shortName"), args.value("name", ""),client);
+    else if (args.contains("getCurrentStatuses"))
+        getCurrentStatus(args.value("shortName"), args.value("name", ""), args.value("type"),"", client);
     else if (args.contains("getCurrentStatus"))
-        getCurrentStatus(args.value("shortName"), args.value("name"), args.value("type"), client);
+        getCurrentStatus(args.value("shortName"), args.value("name", ""), args.value("type"), args.value("step"), client);
     else if (args.contains("getCurrentUser"))
         getCurrentUser(client);
     else if (args.contains("getPipes"))
@@ -88,12 +94,18 @@ void Daemon::reply()
         getProjects(client);
     else if (args.contains("getShots"))
         getShots(args.value("filter", ""), client);
+    else if (args.contains("getShot"))
+        getShot(args.value("shortName"), args.value("name", ""), client);
     else if (args.contains("getStates"))
         getStates(client);
+    else if (args.contains("getState"))
+        getState(args.value("shortName"), args.value("name", ""), client);
     else if (args.contains("getSteps"))
         getSteps(client);
+    else if (args.contains("getStep"))
+        getStep(args.value("shortName"), args.value("name", ""), client);
     else
-        post(client, QJsonObject(), "", "Unknown query.", false, false);
+        post(client, QJsonObject(), "", "Unknown query: " + request, false, false);
 
 }
 
@@ -146,7 +158,7 @@ void Daemon::setCurrentProject(QString shortName, QTcpSocket *client)
     }
 }
 
-void Daemon::getCurrentStatus(QString shortName, QString name, QString type, QTcpSocket *client)
+void Daemon::getCurrentStatus(QString shortName, QString name, QString type, QString step, QTcpSocket *client)
 {
     log("I'm replying to this request: getCurrentStatus", DuQFLog::Information);
 
@@ -163,23 +175,26 @@ void Daemon::getCurrentStatus(QString shortName, QString name, QString type, QTc
     QJsonArray statuses;
 
     RamItem *item = nullptr;
-    if (type == "ASSET")
+    if (type == "A")
     {
         for (int i = 0; i < proj->assets().count(); i++)
         {
             RamItem *asset = proj->assets().at(i);
-            if (asset->shortName() == shortName && asset->name() == name)
+            if (asset->shortName() == shortName)
             {
-                item = asset;
-                break;
+                if (name == "" || asset->name() == name)
+                {
+                    item = asset;
+                    break;
+                }
             }
         }
     }
-    else item = (RamItem*)proj->shots()->objectFromName(shortName, name);
+    else item = qobject_cast<RamItem*>( proj->sequences()->objectFromName(shortName, name) );
 
     if (!item)
     {
-        post(client, content, "getCurrentStatus", "Sorry, item not found. Check it's name, short name and type", false);
+        post(client, content, "getCurrentStatus", "Sorry, item not found. Check its name, short name and type", false);
         return;
     }
 
@@ -195,18 +210,30 @@ void Daemon::getCurrentStatus(QString shortName, QString name, QString type, QTc
 
         steps << s->step()->uuid();
 
-        QJsonObject status;
-        status.insert("step", s->step()->shortName() );
-        status.insert("comment", s->comment() );
-        status.insert("completionRatio", s->completionRatio() );
-        status.insert("date", s->date().toString("yyyy-MM-dd hh:mm:ss"));
-        if (s->state()) status.insert("state", s->state()->shortName() );
-        if (s->user()) status.insert("user", s->user()->shortName() );
-        status.insert("version", s->version() );
+        if (step == "" || step == s->step()->shortName())
+        {
+            QJsonObject status;
+            status.insert("step", s->step()->shortName() );
+            status.insert("comment", s->comment() );
+            status.insert("completionRatio", s->completionRatio() );
+            status.insert("date", s->date().toString("yyyy-MM-dd hh:mm:ss"));
+            if (s->state()) status.insert("state", s->state()->shortName() );
+            if (s->user()) status.insert("user", s->user()->shortName() );
+            status.insert("version", s->version() );
 
-        statuses.append(status);
+            if (step != "")
+            {
+                content = status;
+                qDebug() << content.value("step");
+                break;
+            }
+            else
+            {
+                statuses.append(status);
+            }
+        }
     }
-    content.insert("status", statuses);
+    if (step == "") content.insert("status", statuses);
     post(client, content, "getCurrentStatus", "Current status for " + item->name() + " retrieved.");
 }
 
@@ -227,23 +254,47 @@ void Daemon::getAssets(QTcpSocket *client)
     QJsonArray assets;
     foreach(RamAsset *a, proj->assets())
     {
-        QJsonObject asset;
-        asset.insert("shortName", a->shortName());
-        asset.insert("name", a->name());
-        asset.insert("folder", Ramses::instance()->path(a));
-        QJsonArray tags;
-        foreach(QString t, a->tags())
-        {
-            tags.append(t);
-        }
-        asset.insert("tags", tags);
-        RamAssetGroup *ag = proj->assetGroup( a->assetGroupUuid() );
-        if (ag) asset.insert("group", ag->name());
-        else asset.insert("group", "");
+        QJsonObject asset = assetToJson(a);
         assets.append(asset);
     }
     content.insert("assets", assets);
     post(client, content, "getASsets", "Asset list retrieved.");
+}
+
+void Daemon::getAsset(QString shortName, QString name, QTcpSocket *client)
+{
+    log("I'm replying to this request: gatAsset", DuQFLog::Information);
+
+    RamProject *proj = Ramses::instance()->currentProject();
+
+    if (!proj)
+    {
+        post(client, QJsonObject(), "getCurrentStatus", "Sorry, there's no current project. Select a project first!", false);
+        return;
+    }
+
+    RamAsset *asset = nullptr;
+    for (int i = 0; i < proj->assets().count(); i++)
+    {
+        RamAsset *a = proj->assets().at(i);
+        if (a->shortName() == shortName)
+        {
+            if (name == "" || a->name() == name)
+            {
+                asset = a;
+                break;
+            }
+        }
+    }
+
+    if (!asset)
+    {
+        post(client, QJsonObject(), "getAsset", "Sorry, asset not found. Check its short name and name", false);
+        return;
+    }
+
+    QJsonObject content = assetToJson(asset);
+    post(client, content, "getASset", "Asset retrieved.");
 }
 
 void Daemon::getAssetGroups(QTcpSocket *client)
@@ -275,13 +326,22 @@ void Daemon::getAssetGroups(QTcpSocket *client)
     post(client, content, "getAssetGroups", "Asset group list retrieved.");
 }
 
-void Daemon::getCurrentProject(QTcpSocket *client)
+void Daemon::getProject(QString shortName, QString name, QTcpSocket *client)
 {
     log("I'm replying to this request: getCurrentProject", DuQFLog::Information);
 
-    RamProject *proj = Ramses::instance()->currentProject();
-
     QJsonObject content;
+
+    RamProject *proj = nullptr;
+
+    if (shortName == "" && name == "")
+    {
+        proj = Ramses::instance()->currentProject();
+    }
+    else
+    {
+        proj = qobject_cast<RamProject*>( Ramses::instance()->projects()->fromName(shortName, name) );
+    }
 
     if (!proj)
     {
@@ -296,7 +356,7 @@ void Daemon::getCurrentProject(QTcpSocket *client)
     content.insert("framerate", proj->framerate());
     content.insert("folder", Ramses::instance()->path(proj));
 
-    post(client, content, "getCurrentProject", "Current project is: " + proj->name());
+    post(client, content, "getCurrentProject", "Retrieved project: " + proj->name());
 }
 
 void Daemon::getCurrentUser(QTcpSocket *client)
@@ -416,15 +476,36 @@ void Daemon::getShots(QString filter, QTcpSocket *client)
         }
         if (!ok) continue;
 
-        QJsonObject shot;
-        shot.insert("shortName", s->shortName());
-        shot.insert("name", s->name());
-        shot.insert("folder", Ramses::instance()->path(s));
-        shot.insert("duration", s->duration());
+        QJsonObject shot = shotToJson(s);
         shots.append(shot);
     }
     content.insert("shots", shots);
     post(client, content, "getShots", "Shot list retrieved.");
+}
+
+void Daemon::getShot(QString shortName, QString name, QTcpSocket *client)
+{
+    log("I'm replying to this request: getShot", DuQFLog::Information);
+
+    RamProject *proj = Ramses::instance()->currentProject();
+
+    QJsonObject content;
+
+    if (!proj)
+    {
+        post(client, content, "getShot", "Sorry, there's no current project. Select a project first!", false);
+        return;
+    }
+
+    RamShot *shot = qobject_cast<RamShot*>( proj->sequences()->objectFromName(shortName, name) );
+    if (!shot)
+    {
+        post(client, QJsonObject(), "getShot", "Sorry, shot not found. Check its short name and name", false);
+        return;
+    }
+
+    content = shotToJson(shot);
+    post(client, content, "getShot", "Shot retrieved.");
 }
 
 void Daemon::getStates(QTcpSocket *client)
@@ -437,21 +518,29 @@ void Daemon::getStates(QTcpSocket *client)
     for (int i = 0; i < ramStates->count(); i++)
     {
         RamState *s = (RamState*)ramStates->at(i);
-        QJsonObject state;
-        state.insert("shortName", s->shortName());
-        state.insert("name", s->name());
-        state.insert("completionRatio", s->completionRatio());
-        QColor col = s->color();
-        QJsonArray cols;
-        cols.append( col.red() );
-        cols.append( col.green() );
-        cols.append( col.blue() );
-        state.insert("color", cols);
+        QJsonObject state = stateToJson(s);
         states.append(state);
     }
     content.insert("states", states);
 
     post(client, content, "getStates", "State list retrived");
+}
+
+void Daemon::getState(QString shortName, QString name, QTcpSocket *client)
+{
+    log("I'm replying to this request: getState", DuQFLog::Information);
+
+    QJsonObject content;
+
+    RamState *state = qobject_cast<RamState*>( Ramses::instance()->states()->fromName( shortName, name ) );
+    if (!state)
+    {
+        post(client, QJsonObject(), "getState", "Sorry, state not found. Check its short name and name", false);
+        return;
+    }
+
+    content = stateToJson(state);
+    post(client, content, "getState", "State retrieved.");
 }
 
 void Daemon::getSteps(QTcpSocket *client)
@@ -471,33 +560,49 @@ void Daemon::getSteps(QTcpSocket *client)
     QJsonArray steps;
     foreach(RamStep *s, proj->steps())
     {
-        QJsonObject step;
-        step.insert("shortName", s->shortName());
-        step.insert("name", s->name());
-        step.insert("folder", Ramses::instance()->path(s));
-        QString type;
-        switch (s->type())
-        {
-        case RamStep::PreProduction:
-            type = "PRE_PRODUCTION";
-            break;
-        case RamStep::AssetProduction:
-            type = "ASSET_PRODUCTION";
-            break;
-        case RamStep::ShotProduction:
-            type = "SHOT_PRODUCTION";
-            break;
-        case RamStep::PostProduction:
-            type ="POST_PRODUCTION";
-            break;
-        default:
-            type = "SHOT_PRODUCTION";
-        }
-        step.insert("type", type);
+        QJsonObject step = stepToJson(s);
         steps.append(step);
     }
     content.insert("steps", steps);
     post(client, content, "getSteps", "Step list retrieved.");
+}
+
+void Daemon::getStep(QString shortName, QString name, QTcpSocket *client)
+{
+    log("I'm replying to this request: getStep", DuQFLog::Information);
+
+    RamProject *proj = Ramses::instance()->currentProject();
+
+    QJsonObject content;
+
+    if (!proj)
+    {
+        post(client, content, "getStep", "Sorry, there's no current project. Select a project first!", false);
+        return;
+    }
+
+    RamStep *step = nullptr;
+    QList<RamStep*> steps = proj->steps();
+    for (int i = 0; i < steps.count(); i++)
+    {
+        RamStep *s = steps.at(i);
+        if (s->shortName() == shortName)
+        {
+            if (name == "" || s->name() == name)
+            {
+                step = s;
+                break;
+            }
+        }
+    }
+    if (!step)
+    {
+        post(client, QJsonObject(), "getStep", "Sorry, step not found. Check its short name and name", false);
+        return;
+    }
+
+    content = stepToJson(step);
+    post(client, content, "getStep", "Step retrieved.");
 }
 
 Daemon::Daemon(QObject *parent) : DuQFLoggerObject("Daemon", parent)
@@ -523,4 +628,82 @@ void Daemon::post(QTcpSocket *client, QJsonObject content, QString query, QStrin
     client->write( jsonReply.toUtf8() );
 
     log("Posting:\n" + jsonReply, DuQFLog::Information);
+}
+
+QJsonObject Daemon::assetToJson(RamAsset *asset)
+{
+    QJsonObject a;
+    a.insert("shortName", asset->shortName());
+    a.insert("name", asset->name());
+    a.insert("folder", Ramses::instance()->path(asset));
+    QJsonArray tags;
+    foreach(QString t, asset->tags())
+    {
+        tags.append(t);
+    }
+    a.insert("tags", tags);
+
+    RamProject *proj = Ramses::instance()->currentProject();
+    if (proj)
+    {
+        RamAssetGroup *ag = proj->assetGroup( asset->assetGroupUuid() );
+        if (ag) a.insert("group", ag->name());
+        else a.insert("group", "");
+    }
+    else a.insert("group", "");
+
+    return a;
+}
+
+QJsonObject Daemon::shotToJson(RamShot *s)
+{
+    QJsonObject shot;
+    shot.insert("shortName", s->shortName());
+    shot.insert("name", s->name());
+    shot.insert("folder", Ramses::instance()->path(s));
+    shot.insert("duration", s->duration());
+    return shot;
+}
+
+QJsonObject Daemon::stateToJson(RamState *s)
+{
+    QJsonObject state;
+    state.insert("shortName", s->shortName());
+    state.insert("name", s->name());
+    state.insert("completionRatio", s->completionRatio());
+    QColor col = s->color();
+    QJsonArray cols;
+    cols.append( col.red() );
+    cols.append( col.green() );
+    cols.append( col.blue() );
+    state.insert("color", cols);
+    return state;
+}
+
+QJsonObject Daemon::stepToJson(RamStep *s)
+{
+    QJsonObject step;
+    step.insert("shortName", s->shortName());
+    step.insert("name", s->name());
+    step.insert("folder", Ramses::instance()->path(s));
+    QString type;
+    switch (s->type())
+    {
+    case RamStep::PreProduction:
+        type = "PRE_PRODUCTION";
+        break;
+    case RamStep::AssetProduction:
+        type = "ASSET_PRODUCTION";
+        break;
+    case RamStep::ShotProduction:
+        type = "SHOT_PRODUCTION";
+        break;
+    case RamStep::PostProduction:
+        type ="POST_PRODUCTION";
+        break;
+    default:
+        type = "SHOT_PRODUCTION";
+    }
+    step.insert("type", type);
+    return step;
 }
