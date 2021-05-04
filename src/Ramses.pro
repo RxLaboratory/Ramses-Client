@@ -265,7 +265,6 @@ HEADERS += \
     userprofilepage.h
 
 FORMS += \
-    rameditwidgets/applicationeditwidget.ui \
     rameditwidgets/asseteditwidget.ui \
     rameditwidgets/assetgroupeditwidget.ui \
     settingswidgets/daemonsettingswidget.ui \
