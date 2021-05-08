@@ -24,7 +24,6 @@ protected slots:
     void update() Q_DECL_OVERRIDE;
 
 private slots:
-    void stateChanged(RamObject *o);
     void updateColorEditStyle();
     void selectColor();
 

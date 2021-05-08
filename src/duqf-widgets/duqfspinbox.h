@@ -4,6 +4,7 @@
 #include <QStackedWidget>
 #include <QHBoxLayout>
 #include <QSpinBox>
+#include <QtDebug>
 
 #include "duqf-widgets/duqfslider.h"
 

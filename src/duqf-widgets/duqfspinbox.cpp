@@ -66,12 +66,13 @@ DuQFSlider *DuQFSpinBox::slider() const
 void DuQFSpinBox::spinBox_editingFinished()
 {
     this->setCurrentIndex(1);
+    _slider->setValue(_spinBox->value());
+    emit valueChanged(_spinBox->value());
 }
 
 void DuQFSpinBox::spinBox_valueChanged(int arg1)
 {
-    _slider->setValue(arg1);
-    emit valueChanged(arg1);
+    emit valueChanging(arg1);
 }
 
 void DuQFSpinBox::slider_valueChanging(int arg1)

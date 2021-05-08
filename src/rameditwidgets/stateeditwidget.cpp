@@ -31,10 +31,11 @@ void StateEditWidget::setObject(RamObject *obj)
 
     this->setEnabled(false);
 
+    QSignalBlocker b1(colorEdit);
+    QSignalBlocker b2(completionSpinBox);
+
     ObjectEditWidget::setObject(state);
     _state = state;
-
-    QSignalBlocker b1(colorEdit);
 
     colorEdit->setText("");
     colorEdit->setStyleSheet("");
@@ -47,8 +48,6 @@ void StateEditWidget::setObject(RamObject *obj)
     completionSpinBox->setValue(state->completionRatio());
 
     this->setEnabled(Ramses::instance()->isAdmin());
-
-    _objectConnections << connect(state, &RamState::changed, this, &StateEditWidget::stateChanged);
 }
 
 void StateEditWidget::update()
@@ -65,13 +64,6 @@ void StateEditWidget::update()
     updating = false;
 }
 
-void StateEditWidget::stateChanged(RamObject *o)
-{
-    if (updating) return;
-    Q_UNUSED(o);
-    setObject(_state);
-}
-
 void StateEditWidget::updateColorEditStyle()
 {
     if (colorEdit->text().count() == 7)
@@ -81,7 +73,6 @@ void StateEditWidget::updateColorEditStyle()
         if (c.lightness() > 80) style += "color: #232323;";
         colorEdit->setStyleSheet(style);
     }
-    update();
 }
 
 void StateEditWidget::selectColor()
@@ -96,6 +87,7 @@ void StateEditWidget::selectColor()
         QColor color = cd.selectedColor();
         colorEdit->setText(color.name());
         updateColorEditStyle();
+        update();
     }
     this->setEnabled(true);
 }
@@ -132,6 +124,7 @@ void StateEditWidget::setupUi()
 void StateEditWidget::connectEvents()
 {
     connect(colorEdit, SIGNAL(editingFinished()), this, SLOT(updateColorEditStyle()));
+    connect(colorEdit, SIGNAL(editingFinished()), this, SLOT(update()));
     connect(colorButton, SIGNAL(clicked()), this, SLOT(selectColor()));
     connect(completionSpinBox, &DuQFSpinBox::valueChanged, this, &StateEditWidget::update);
 }

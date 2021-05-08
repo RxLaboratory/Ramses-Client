@@ -177,8 +177,8 @@ void RamObjectListWidget::resizeEvent(QResizeEvent *event)
 
 void RamObjectListWidget::itemSelected(QTableWidgetItem *current, QTableWidgetItem *previous)
 {
-    Q_UNUSED(previous);
     if (!current) return;
+    if (current == previous) return;
     RamObjectWidget *ow = (RamObjectWidget*)this->cellWidget( current->row(), 0 );
     if (!ow) return;
     ow->setSelected(current->isSelected());

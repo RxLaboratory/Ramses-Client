@@ -41,9 +41,15 @@ void ObjectEditWidget::hideStatus(bool hide)
 void ObjectEditWidget::setObject(RamObject *object)
 {
     // disconnect all
-    while(_objectConnections.count() > 0) disconnect( _objectConnections.takeLast() );
+    while(_objectConnections.count() > 0)
+    {
+        disconnect( _objectConnections.takeLast() );
+    }
 
     _object = object;
+
+    QSignalBlocker b1(nameEdit);
+    QSignalBlocker b2(shortNameEdit);
 
     nameEdit->setText("");
     shortNameEdit->setText("");
