@@ -2,6 +2,8 @@
 #define OBJECTLISTMANAGERWIDGET_H
 
 #include <QWidget>
+#include <QSplitter>
+
 #include "objecteditwidget.h"
 #include "objectlisteditwidget.h"
 

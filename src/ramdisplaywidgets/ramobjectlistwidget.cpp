@@ -1,5 +1,17 @@
 #include "ramobjectlistwidget.h"
 
+#include "ramassetwidget.h"
+#include "ramshotwidget.h"
+#include "ramstatuswidget.h"
+#include "ramstatewidget.h"
+#include "ramuserwidget.h"
+#include "ramprojectwidget.h"
+#include "ramstepwidget.h"
+#include "ramassetgroupwidget.h"
+#include "ramfiletypewidget.h"
+#include "ramapplicationwidget.h"
+#include "ramsequencewidget.h"
+
 RamObjectListWidget::RamObjectListWidget(QWidget *parent):
         QTableWidget(parent)
 {
@@ -285,6 +297,13 @@ void RamObjectListWidget::objectAssigned(RamObject *obj)
     {
         RamShot *s = dynamic_cast<RamShot*>(obj);
         if (s) ow = new RamShotWidget(s, this);
+        else ow = new RamObjectWidget(obj,this);
+        break;
+    }
+    case RamObject::Sequence:
+    {
+        RamSequence *s = dynamic_cast<RamSequence*>(obj);
+        if (s) ow = new RamSequenceWidget(s, this);
         else ow = new RamObjectWidget(obj,this);
         break;
     }

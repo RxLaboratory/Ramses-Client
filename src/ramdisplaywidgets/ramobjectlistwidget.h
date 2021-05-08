@@ -6,16 +6,6 @@
 
 #include "ramobjectlist.h"
 #include "ramobjectwidget.h"
-#include "ramassetwidget.h"
-#include "ramshotwidget.h"
-#include "ramstatuswidget.h"
-#include "ramstatewidget.h"
-#include "ramuserwidget.h"
-#include "ramprojectwidget.h"
-#include "ramstepwidget.h"
-#include "ramassetgroupwidget.h"
-#include "ramfiletypewidget.h"
-#include "ramapplicationwidget.h"
 
 class RamObjectListWidget : public QTableWidget
 {

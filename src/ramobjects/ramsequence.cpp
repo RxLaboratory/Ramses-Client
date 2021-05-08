@@ -3,6 +3,7 @@
 RamSequence::RamSequence(QString shortName, QString name, QString projectUuid, QString uuid, QObject *parent):
     RamObjectList(shortName, name, uuid, parent)
 {
+    this->setObjectType(Sequence);
     _projectUuid = projectUuid;
     _dbi->createSequence(_shortName, _name, projectUuid, _uuid);
 }
