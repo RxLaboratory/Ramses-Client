@@ -47,6 +47,7 @@ SOURCES += \
     rameditwidgets/objectlisteditwidget.cpp \
     rameditwidgets/objectlistmanagerwidget.cpp \
     rameditwidgets/projectlistmanagerwidget.cpp \
+    rameditwidgets/sequencelistmanagerwidget.cpp \
     rameditwidgets/shotlistmanagerwidget.cpp \
     rameditwidgets/statelistmanagerwidget.cpp \
     rameditwidgets/templateassetgrouplistmanagerwidget.cpp \
@@ -130,7 +131,6 @@ SOURCES += \
     ramobjects/ramuuid.cpp \
     smallwidgets/resolutionwidget.cpp \
     rameditwidgets/sequenceeditwidget.cpp \
-    rameditwidgets/sequencesmanagerwidget.cpp \
     settingswidgets/serversettingswidget.cpp \
     rameditwidgets/shoteditwidget.cpp \
     rameditwidgets/simpleobjectlist.cpp \
@@ -166,6 +166,7 @@ HEADERS += \
     rameditwidgets/objectlisteditwidget.h \
     rameditwidgets/objectlistmanagerwidget.h \
     rameditwidgets/projectlistmanagerwidget.h \
+    rameditwidgets/sequencelistmanagerwidget.h \
     rameditwidgets/shotlistmanagerwidget.h \
     rameditwidgets/statelistmanagerwidget.h \
     rameditwidgets/templateassetgrouplistmanagerwidget.h \
@@ -249,7 +250,6 @@ HEADERS += \
     ramobjects/ramuuid.h \
     smallwidgets/resolutionwidget.h \
     rameditwidgets/sequenceeditwidget.h \
-    rameditwidgets/sequencesmanagerwidget.h \
     settingswidgets/serversettingswidget.h \
     rameditwidgets/shoteditwidget.h \
     rameditwidgets/simpleobjectlist.h \

@@ -22,7 +22,7 @@
 #include "assetgroupsmanagerwidget.h"
 #include "assetsmanagerwidget.h"
 #include "shotlistmanagerwidget.h"
-#include "sequencesmanagerwidget.h"
+#include "sequencelistmanagerwidget.h"
 #include "statelistmanagerwidget.h"
 #include "filetypelistmanagerwidget.h"
 #include "applicationlistmanagerwidget.h"
