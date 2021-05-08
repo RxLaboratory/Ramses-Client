@@ -6,14 +6,15 @@ ShotEditWidget::ShotEditWidget(RamShot *shot, QWidget *parent) :
     setupUi();
     connectEvents();
 
-    setShot(shot);
+    setObject(shot);
 }
 
-void ShotEditWidget::setShot(RamShot *shot)
+void ShotEditWidget::setObject(RamObject *obj)
 {
+    RamShot *shot = qobject_cast<RamShot*>(obj);
     this->setEnabled(false);
 
-    setObject(shot);
+    ObjectEditWidget::setObject(shot);
     _shot = shot;
 
     QSignalBlocker b1(framesBox);
@@ -46,7 +47,6 @@ void ShotEditWidget::setShot(RamShot *shot)
             sequencesBox->setCurrentIndex( sequencesBox->count() -1 );
     }
 
-    _objectConnections << connect( shot, &RamShot::changed, this, &ShotEditWidget::shotChanged);
     _objectConnections << connect( proj->sequences(), &RamObjectList::objectRemoved, this, &ShotEditWidget::sequenceRemoved);
     _objectConnections << connect( proj->sequences(), &RamObjectList::objectAdded, this, &ShotEditWidget::newSequence);
 
@@ -61,11 +61,9 @@ void ShotEditWidget::update()
 
     updating = true;
 
-    _shot->setName(nameEdit->text());
-    _shot->setShortName(shortNameEdit->text());
     _shot->setDuration(secondsBox->value());
 
-    _shot->update();
+    ObjectEditWidget::update();
 
     updating = false;
 }
@@ -79,21 +77,12 @@ void ShotEditWidget::moveShot()
         proj->moveShotToSequence(_shot, sequencesBox->currentData().toString());
 }
 
-void ShotEditWidget::shotChanged(RamObject *o)
-{
-    if (updating) return;
-    Q_UNUSED(o);
-    setShot(_shot);
-}
-
 void ShotEditWidget::framesChanged()
 {
     RamProject *proj = project();
     if (!proj) return;
 
     secondsBox->setValue( framesBox->value() / proj->framerate() );
-
-    update();
 }
 
 void ShotEditWidget::secondsChanged()
@@ -102,8 +91,6 @@ void ShotEditWidget::secondsChanged()
     if (!proj) return;
 
     framesBox->setValue( secondsBox->value() * proj->framerate() );
-
-    update();
 }
 
 void ShotEditWidget::newSequence(RamObject *seq)
@@ -163,7 +150,9 @@ void ShotEditWidget::setupUi()
 void ShotEditWidget::connectEvents()
 {
     connect(secondsBox, SIGNAL(editingFinished()), this, SLOT(secondsChanged()));
+    connect(secondsBox, SIGNAL(editingFinished()), this, SLOT(update()));
     connect(framesBox, SIGNAL(editingFinished()), this, SLOT(framesChanged()));
+    connect(secondsBox, SIGNAL(editingFinished()), this, SLOT(update()));
     connect(sequencesBox, SIGNAL(currentIndexChanged(int)), this, SLOT(moveShot()));
 }
 

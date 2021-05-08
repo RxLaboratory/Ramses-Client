@@ -28,11 +28,12 @@ class ObjectListEditWidget : public QWidget
 public:
     explicit ObjectListEditWidget(bool editableObjects = false, QWidget *parent = nullptr);
     explicit ObjectListEditWidget(RamObjectList *objectList, bool editableObjects = false, QWidget *parent = nullptr);
-    explicit ObjectListEditWidget(RamObjectUberList *objectList, bool editableObjects = false, bool showSubObjects = false, QWidget *parent = nullptr);
+    explicit ObjectListEditWidget(RamObjectUberList *objectList, bool editableObjects = false, QWidget *parent = nullptr);
+    void setEditMode(const RamObjectListWidget::EditMode &editMode);
     RamObjectList *list() const;
     void clear();
-    void clear(RamObjectList *objectList);
-    void clear(RamObjectUberList *objectList, bool showSubOjects = false);
+    void setList(RamObjectList *objectList);
+    void setList(RamObjectUberList *objectList);
     void setEditable(bool editable = true);
     void setSortable(bool sortable = true);
     void setSelectable(bool selectable = true);
@@ -61,7 +62,6 @@ private:
     RamObjectList *m_objectList;
     RamObjectUberList *m_objectUberList;
     RamObjectListWidget *m_list;
-
 };
 
 #endif // OBJECTLISTEDITWIDGET_H

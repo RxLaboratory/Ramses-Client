@@ -11,8 +11,10 @@ class ObjectListManagerWidget : public QWidget
 public:
     explicit ObjectListManagerWidget(ObjectEditWidget *editWidget, QString title, QWidget *parent = nullptr);
     explicit ObjectListManagerWidget(RamObjectList *objectList, ObjectEditWidget *editWidget, QString title, QWidget *parent = nullptr);
+    explicit ObjectListManagerWidget(RamObjectUberList *objectList, ObjectEditWidget *editWidget, QString title, QWidget *parent = nullptr);
     void setList(RamObjectList *objectList);
-    RamObjectList *objectList() const;
+    void setList(RamObjectUberList *objectList);
+    void clear();
     QString currentFilter() const;
 
 protected slots:
@@ -27,8 +29,7 @@ private:
 
     ObjectListEditWidget *m_listEditWidget;
     ObjectEditWidget *m_editWidget;
-    RamObjectList *m_objectList;
-    QMetaObject::Connection m_listConnection;
+    QList<QMetaObject::Connection> m_listConnection;
 };
 
 #endif // OBJECTLISTMANAGERWIDGET_H

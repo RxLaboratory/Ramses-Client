@@ -46,22 +46,39 @@ void RamObjectListWidget::setList(RamObjectList *list)
 {
     clear();
 
-    QSignalBlocker b(this);
-
     if (!list) return;
-    m_list = list;
 
-    for (int i = 0; i < m_list->count(); i++) objectAssigned(m_list->at(i));
-
-    m_listConnections << connect(m_list, &RamObjectList::objectRemoved, this, &RamObjectListWidget::objectUnassigned);
-    m_listConnections << connect(m_list, &RamObjectList::objectAdded, this, &RamObjectListWidget::objectAssigned);
+    addList(list);
 
     this->setEnabled(true);
 }
 
+void RamObjectListWidget::addList(RamObjectList *list)
+{
+    QSignalBlocker b(this);
+
+    if (!list) return;
+    m_lists << list;
+
+    for (int i = 0; i < list->count(); i++) objectAssigned(list->at(i));
+
+    m_listConnections << connect(list, &RamObjectList::objectRemoved, this, &RamObjectListWidget::objectUnassigned);
+    m_listConnections << connect(list, &RamObjectList::objectAdded, this, &RamObjectListWidget::objectAssigned);
+}
+
 void RamObjectListWidget::setList(RamObjectUberList *list)
 {
-    setList( (RamObjectList*)list );
+    clear();
+
+    if (!list) return;
+
+    for (int i = 0; i < list->count(); i++)
+    {
+        RamObjectList *sublist = qobject_cast<RamObjectList*>( list->at(i) );
+        addList(sublist);
+    }
+
+    this->setEnabled(true);
 }
 
 void RamObjectListWidget::clear()
@@ -71,7 +88,7 @@ void RamObjectListWidget::clear()
     QSignalBlocker b(this);
 
     while ( !m_listConnections.isEmpty() ) disconnect( m_listConnections.takeLast() );
-    m_list = nullptr;
+    m_lists.clear();
     this->setRowCount(0);
 }
 
@@ -84,11 +101,6 @@ void RamObjectListWidget::setSelectable(bool selectable)
 {
     if(selectable) this->setSelectionMode(ExtendedSelection);
     else this->setSelectionMode(NoSelection);
-}
-
-RamObjectList *RamObjectListWidget::objects() const
-{
-    return m_list;
 }
 
 void RamObjectListWidget::select(RamObject *obj)
@@ -107,35 +119,45 @@ void RamObjectListWidget::select(RamObject *obj)
 void RamObjectListWidget::removeSelectedObjects()
 {
     if (this->selectedItems().count() == 0 ) return;
-    QMessageBox::StandardButton confirm = QMessageBox::question(this,
-                                                                "Confirm deletion",
-                                                                "Are you sure you want to premanently remove the selected items?" );
-    if (confirm != QMessageBox::Yes) return;
 
-    for(int row =  this->rowCount() -1 ; row >= 0; row--)
+
+    if (m_editMode == RemoveObjects)
     {
-        QTableWidgetItem *i = this->item(row, 0);
-        if (!i->isSelected()) continue;
-        RamObjectWidget *ow = (RamObjectWidget*) this->cellWidget(row, 0);
-        if (ow)
+        QMessageBox::StandardButton confirm = QMessageBox::question(this,
+                                                                    "Confirm deletion",
+                                                                    "Are you sure you want to premanently remove the selected items?" );
+
+        if ( confirm != QMessageBox::Yes) return;
+
+        for(int row =  this->rowCount() -1 ; row >= 0; row--)
         {
-            ow->ramObject()->remove();
+            QTableWidgetItem *i = this->item(row, 0);
+            if (!i->isSelected()) continue;
+            RamObjectWidget *ow = (RamObjectWidget*) this->cellWidget(row, 0);
+            if (ow)
+            {
+                ow->ramObject()->remove();
+            }
         }
     }
-}
-
-void RamObjectListWidget::unassignSelectedObjects()
-{
-    for(int row =  this->rowCount() -1 ; row >= 0; row--)
+    else
     {
-        QTableWidgetItem *i = this->item(row, 0);
-        if (!i->isSelected()) continue;
-        RamObjectWidget *ow = (RamObjectWidget*) this->cellWidget(row, 0);
-        if (ow)
+        for(int row =  this->rowCount() -1 ; row >= 0; row--)
         {
-            m_list->removeAll(ow->ramObject());
+            QTableWidgetItem *i = this->item(row, 0);
+            if (!i->isSelected()) continue;
+            RamObjectWidget *ow = (RamObjectWidget*) this->cellWidget(row, 0);
+            if (ow)
+            {
+                RamObject *o = ow->ramObject();
+                for (int j = 0; j < m_lists.count(); j++)
+                {
+                    m_lists.at(j)->removeAll(o);
+                }
+            }
         }
     }
+
 }
 
 void RamObjectListWidget::search(QString nameOrShortName)
@@ -338,6 +360,11 @@ void RamObjectListWidget::objectAssigned(RamObject *obj)
     if (m_editableObjects && this->isVisible() && obj->shortName() == "NEW") ow->edit();
 
     m_objectConnections[obj->uuid()] = connect(obj, &RamObject::changed, this, &RamObjectListWidget::objectChanged);
+}
+
+void RamObjectListWidget::setEditMode(const EditMode &editMode)
+{
+    m_editMode = editMode;
 }
 
 void RamObjectListWidget::setupUi()

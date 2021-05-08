@@ -7,7 +7,7 @@ ObjectListManagerWidget::ObjectListManagerWidget(ObjectEditWidget *editWidget, Q
     setupUi();
     connectEvents();
     m_listEditWidget->setTitle(title);
-    setList(nullptr);
+    clear();
 }
 
 ObjectListManagerWidget::ObjectListManagerWidget(RamObjectList *objectList, ObjectEditWidget *editWidget, QString title, QWidget *parent) :
@@ -20,12 +20,39 @@ ObjectListManagerWidget::ObjectListManagerWidget(RamObjectList *objectList, Obje
     setList(objectList);
 }
 
+ObjectListManagerWidget::ObjectListManagerWidget(RamObjectUberList *objectList, ObjectEditWidget *editWidget, QString title, QWidget *parent) :
+    QWidget(parent)
+{
+    m_editWidget = editWidget;
+    setupUi();
+    connectEvents();
+    m_listEditWidget->setTitle(title);
+    setList(objectList);
+}
+
 void ObjectListManagerWidget::setList(RamObjectList *objectList)
 {
-    disconnect( m_listConnection );
-    m_objectList = objectList;
-    m_listEditWidget->clear( m_objectList );
-    m_listConnection = connect(m_objectList, &RamObjectList::objectAdded, this, &ObjectListManagerWidget::editNewObject);
+    while  (m_listConnection.count() > 0 ) disconnect( m_listConnection.takeLast() );
+    m_listEditWidget->setList( objectList );
+    if (!objectList) return;
+    m_listConnection << connect(objectList, &RamObjectList::objectAdded, this, &ObjectListManagerWidget::editNewObject);
+    this->setEnabled(true);
+}
+
+void ObjectListManagerWidget::setList(RamObjectUberList *objectList)
+{
+    while  (m_listConnection.count() > 0 ) disconnect( m_listConnection.takeLast() );
+    m_listEditWidget->setList( objectList );
+    if (!objectList) return;
+    m_listConnection << connect(objectList, &RamObjectList::objectAdded, this, &ObjectListManagerWidget::editNewObject);
+    this->setEnabled(true);
+}
+
+void ObjectListManagerWidget::clear()
+{
+    this->setEnabled(false);
+    while  (m_listConnection.count() > 0 ) disconnect( m_listConnection.takeLast() );
+    m_listEditWidget->clear();
 }
 
 void ObjectListManagerWidget::editNewObject(RamObject *o)
@@ -73,11 +100,6 @@ void ObjectListManagerWidget::connectEvents()
 {
     connect( m_listEditWidget, &ObjectListEditWidget::objectSelected, m_editWidget, &ObjectEditWidget::setObject );
     connect( m_listEditWidget, &ObjectListEditWidget::add, this, &ObjectListManagerWidget::createObject );
-}
-
-RamObjectList *ObjectListManagerWidget::objectList() const
-{
-    return m_objectList;
 }
 
 QString ObjectListManagerWidget::currentFilter() const

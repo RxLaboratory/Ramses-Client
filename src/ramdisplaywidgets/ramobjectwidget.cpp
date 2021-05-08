@@ -126,7 +126,6 @@ void RamObjectWidget::remove()
 
 void RamObjectWidget::edit()
 {
-    qDebug() << "EDIIIIT";
     if (_hasEditWidget && _editable && _hasEditRights) _dockEditWidget->show();
 }
 

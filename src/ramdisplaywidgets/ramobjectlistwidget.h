@@ -21,24 +21,26 @@ class RamObjectListWidget : public QTableWidget
 {
     Q_OBJECT
 public:
+    enum EditMode { UnassignObjects, RemoveObjects };
+    Q_ENUM( EditMode )
+
     explicit RamObjectListWidget(QWidget *parent = nullptr);
     explicit RamObjectListWidget(RamObjectList *list, QWidget *parent = nullptr);
     explicit RamObjectListWidget(RamObjectUberList *list, QWidget *parent = nullptr);
     explicit RamObjectListWidget(RamObjectList *list, bool editableObjects, QWidget *parent = nullptr);
     explicit RamObjectListWidget(RamObjectUberList *list, bool editableObjects, QWidget *parent = nullptr);
+    void setEditMode(const EditMode &editMode);
     void setList(RamObjectList *list);
+    void addList(RamObjectList *list);
     void setList(RamObjectUberList *list);
     void clear();
     void setSortable(bool sortable=true);
     void setSelectable(bool selectable=true);
 
-    RamObjectList *objects() const;
-
     void select(RamObject *obj);
 
 public slots:
     void removeSelectedObjects();
-    void unassignSelectedObjects();
     void search(QString nameOrShortName);
 
 signals:
@@ -58,7 +60,8 @@ private slots:
     void objectUnassigned(RamObject *obj);
     void objectAssigned(RamObject *obj);
 private:
-    RamObjectList *m_list;
+    QList<RamObjectList *> m_lists;
+    EditMode m_editMode = RemoveObjects;
 
     void setupUi();
     void connectEvents();

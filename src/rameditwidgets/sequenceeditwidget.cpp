@@ -33,7 +33,7 @@ void SequenceEditWidget::setObject(RamObject *obj)
     QSignalBlocker b1(shotsList);
 
     //Reset values
-    shotsList->clear(sequence);
+    shotsList->setList(sequence);
 
     if (!sequence) return;
 

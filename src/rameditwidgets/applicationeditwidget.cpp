@@ -56,9 +56,9 @@ void ApplicationEditWidget::setObject(RamObject *obj)
     for( int i = 0; i < application->importFileTypes()->count(); i++)  importFileTypeAssigned( application->importFileTypes()->at(i) );
     for( int i = 0; i < application->exportFileTypes()->count(); i++)  exportFileTypeAssigned( application->exportFileTypes()->at(i) );
 
-    nativeList->clear(application->nativeFileTypes());
-    importList->clear(application->importFileTypes());
-    exportList->clear(application->exportFileTypes());
+    nativeList->setList(application->nativeFileTypes());
+    importList->setList(application->importFileTypes());
+    exportList->setList(application->exportFileTypes());
 
     _objectConnections << connect(application->nativeFileTypes(), &RamObjectList::objectAdded, this, &ApplicationEditWidget::nativeFileTypeAssigned);
     _objectConnections << connect(application->nativeFileTypes(), &RamObjectList::objectRemoved, this, &ApplicationEditWidget::nativeFileTypeUnassigned);
@@ -222,14 +222,17 @@ void ApplicationEditWidget::setupUi()
     splitter->setOrientation(Qt::Vertical);
 
     nativeList = new ObjectListEditWidget(true, splitter);
+    nativeList->setEditMode(RamObjectListWidget::UnassignObjects);
     nativeList->setTitle("Native file types");
     splitter->addWidget(nativeList);
 
     importList = new ObjectListEditWidget(true, splitter);
+    importList->setEditMode(RamObjectListWidget::UnassignObjects);
     importList->setTitle("Imports");
     splitter->addWidget(importList);
 
     exportList = new ObjectListEditWidget(true, splitter);
+    exportList->setEditMode(RamObjectListWidget::UnassignObjects);
     exportList->setTitle("Exports");
     splitter->addWidget(exportList);
 

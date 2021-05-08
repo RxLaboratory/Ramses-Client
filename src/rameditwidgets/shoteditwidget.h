@@ -14,14 +14,15 @@ class ShotEditWidget : public ObjectEditWidget
     Q_OBJECT
 public:
     ShotEditWidget(RamShot *shot = nullptr, QWidget *parent = nullptr);
-    void setShot(RamShot *shot);
+
+public slots:
+    void setObject(RamObject *obj) Q_DECL_OVERRIDE;
 
 protected slots:
     void update() Q_DECL_OVERRIDE;
 
 private slots:
     void moveShot();
-    void shotChanged(RamObject *o);
     void framesChanged();
     void secondsChanged();
     void newSequence(RamObject *seq);
