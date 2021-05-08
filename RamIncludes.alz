@@ -1,289 +1,275 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <heimer-mind-map version="2.2.0">
- <color g="189" r="186" b="182"/>
- <edge-color g="0" r="0" b="0"/>
- <grid-color g="160" r="160" b="164"/>
+ <color r="186" b="182" g="189"/>
+ <edge-color r="0" b="0" g="0"/>
+ <grid-color r="160" b="164" g="160"/>
  <edge-width>2000</edge-width>
  <text-size>11000</text-size>
  <corner-radius>5000</corner-radius>
  <graph>
-  <node w="200000" x="-346000" y="557000" h="75000" index="69">
-   <text>Shots</text>
-   <color g="53" r="92" b="102"/>
-   <text-color g="41" r="239" b="41"/>
+  <node index="71" h="75000" x="-108301" y="828505" w="408000">
+   <text>RamStatusHistory: QMap&lt;QString step, RamObjectList></text>
+   <color r="173" b="168" g="127"/>
+   <text-color r="0" b="0" g="0"/>
   </node>
-  <node w="200000" x="-902000" y="684000" h="75000" index="14">
-   <text>RamAsset</text>
-   <color g="255" r="255" b="255"/>
-   <text-color g="0" r="0" b="0"/>
+  <node index="42" h="75000" x="-553200" y="203401" w="200000">
+   <text>RamProject</text>
+   <color r="255" b="255" g="255"/>
+   <text-color r="0" b="0" g="0"/>
   </node>
-  <node w="200000" x="-1936000" y="365000" h="75000" index="73">
-   <text>FileTypes</text>
-   <color g="127" r="173" b="168"/>
-   <text-color g="0" r="0" b="0"/>
+  <node index="61" h="75000" x="-1671000" y="252000" w="200000">
+   <text>RamUser</text>
+   <color r="255" b="255" g="255"/>
+   <text-color r="0" b="0" g="0"/>
   </node>
-  <node w="200000" x="-1014604" y="-592647" h="75000" index="43">
-   <text>States</text>
-   <color g="127" r="173" b="168"/>
-   <text-color g="0" r="0" b="0"/>
+  <node index="39" h="75000" x="113832" y="-807099" w="200000">
+   <text>RamObjectUberList</text>
+   <color r="117" b="123" g="80"/>
+   <text-color r="238" b="236" g="238"/>
   </node>
-  <node w="200000" x="-105899" y="959404" h="75000" index="72">
-   <text>RamStatus</text>
-   <color g="255" r="255" b="255"/>
-   <text-color g="0" r="0" b="0"/>
+  <node index="44" h="75000" x="-1273604" y="-591647" w="200000">
+   <text>RamState</text>
+   <color r="255" b="255" g="255"/>
+   <text-color r="0" b="0" g="0"/>
   </node>
-  <node w="200000" x="-551000" y="-409000" h="75000" index="6">
-   <text>Ramses</text>
-   <color g="255" r="255" b="255"/>
-   <text-color g="0" r="0" b="0"/>
+  <node index="27" h="75000" x="-900598" y="826899" w="408000">
+   <text>RamStatusHistory: QMap&lt;QString step, RamObjectList></text>
+   <color r="173" b="168" g="127"/>
+   <text-color r="0" b="0" g="0"/>
   </node>
-  <node w="200000" x="-898000" y="442000" h="75000" index="64">
-   <text>Asset Groups:
-RamObjectUberList</text>
-   <color g="127" r="173" b="168"/>
-   <text-color g="0" r="164" b="0"/>
+  <node index="41" h="75000" x="-551000" y="40000" w="200000">
+   <text>Projects</text>
+   <color r="173" b="168" g="127"/>
+   <text-color r="0" b="0" g="0"/>
   </node>
-  <node w="200000" x="-241782" y="-483820" h="75000" index="50">
-   <text>TemplateSteps</text>
-   <color g="127" r="173" b="168"/>
-   <text-color g="0" r="0" b="0"/>
+  <node index="62" h="75000" x="-1399000" y="131000" w="200000">
+   <text>Users</text>
+   <color r="92" b="102" g="53"/>
+   <text-color r="239" b="41" g="41"/>
   </node>
-  <node w="200000" x="-1012604" y="-362647" h="75000" index="47">
-   <text>FileTypes</text>
-   <color g="127" r="173" b="168"/>
-   <text-color g="0" r="0" b="0"/>
+  <node index="37" h="75000" x="-699167" y="-817099" w="200000">
+   <text>WIP</text>
+   <color r="255" b="255" g="255"/>
+   <text-color r="78" b="6" g="154"/>
   </node>
-  <node w="200000" x="-1778604" y="-241647" h="75000" index="76">
-   <text>RamFileType</text>
-   <color g="255" r="255" b="255"/>
-   <text-color g="0" r="0" b="0"/>
+  <node index="59" h="75000" x="-1677000" y="363000" w="200000">
+   <text>RamApplication</text>
+   <color r="255" b="255" g="255"/>
+   <text-color r="0" b="0" g="0"/>
   </node>
-  <node w="200000" x="10217" y="-371820" h="75000" index="54">
-   <text>RamAssetGroup</text>
-   <color g="255" r="255" b="255"/>
-   <text-color g="0" r="0" b="0"/>
+  <node index="0" h="75000" x="-925167" y="-815099" w="200000">
+   <text>TODO</text>
+   <color r="255" b="255" g="255"/>
+   <text-color r="239" b="41" g="41"/>
   </node>
-  <node w="200000" x="-110000" y="436000" h="75000" index="67">
+  <node index="70" h="75000" x="-113000" y="240000" w="200000">
+   <text>Pipes</text>
+   <color r="173" b="168" g="127"/>
+   <text-color r="164" b="0" g="0"/>
+  </node>
+  <node index="28" h="75000" x="-1112000" y="247000" w="200000">
+   <text>RamStep</text>
+   <color r="255" b="255" g="255"/>
+   <text-color r="0" b="0" g="0"/>
+  </node>
+  <node index="45" h="75000" x="-1014604" y="-486647" w="200000">
+   <text>Users</text>
+   <color r="173" b="168" g="127"/>
+   <text-color r="0" b="0" g="0"/>
+  </node>
+  <node index="19" h="75000" x="195000" y="240000" w="200000">
+   <text>RamPipe</text>
+   <color r="255" b="255" g="255"/>
+   <text-color r="0" b="0" g="0"/>
+  </node>
+  <node index="67" h="75000" x="-110000" y="436000" w="200000">
    <text>Sequences:
 RamObjectUberList</text>
-   <color g="127" r="173" b="168"/>
-   <text-color g="0" r="0" b="0"/>
+   <color r="92" b="102" g="53"/>
+   <text-color r="0" b="0" g="0"/>
   </node>
-  <node w="200000" x="-109000" y="685000" h="75000" index="30">
-   <text>RamShot</text>
-   <color g="255" r="255" b="255"/>
-   <text-color g="0" r="0" b="0"/>
-  </node>
-  <node w="200000" x="13217" y="-482820" h="75000" index="52">
-   <text>RamStep</text>
-   <color g="255" r="255" b="255"/>
-   <text-color g="0" r="0" b="0"/>
-  </node>
-  <node w="200000" x="-901000" y="554000" h="75000" index="15">
-   <text>RamAssetGroup</text>
-   <color g="127" r="173" b="168"/>
-   <text-color g="0" r="164" b="0"/>
-  </node>
-  <node w="200000" x="-1277604" y="-239647" h="75000" index="9">
+  <node index="9" h="75000" x="-1277604" y="-239647" w="200000">
    <text>RamApplication</text>
-   <color g="255" r="255" b="255"/>
-   <text-color g="0" r="0" b="0"/>
+   <color r="255" b="255" g="255"/>
+   <text-color r="0" b="0" g="0"/>
   </node>
-  <node w="200000" x="-901498" y="956698" h="75000" index="26">
-   <text>RamStatus</text>
-   <color g="255" r="255" b="255"/>
-   <text-color g="0" r="0" b="0"/>
-  </node>
-  <node w="200000" x="-1403000" y="473000" h="75000" index="63">
-   <text>Applications</text>
-   <color g="53" r="92" b="102"/>
-   <text-color g="41" r="239" b="41"/>
-  </node>
-  <node w="200000" x="-109167" y="-810099" h="75000" index="38">
+  <node index="38" h="75000" x="-109167" y="-810099" w="200000">
    <text>RamObjectList</text>
-   <color g="127" r="173" b="168"/>
-   <text-color g="0" r="0" b="0"/>
+   <color r="173" b="168" g="127"/>
+   <text-color r="0" b="0" g="0"/>
   </node>
-  <node w="200000" x="-1520604" y="-240647" h="75000" index="75">
+  <node index="54" h="75000" x="10217" y="-371820" w="200000">
+   <text>RamAssetGroup</text>
+   <color r="255" b="255" g="255"/>
+   <text-color r="0" b="0" g="0"/>
+  </node>
+  <node index="76" h="75000" x="-1778604" y="-241647" w="200000">
+   <text>RamFileType</text>
+   <color r="255" b="255" g="255"/>
+   <text-color r="0" b="0" g="0"/>
+  </node>
+  <node index="47" h="75000" x="-1012604" y="-362647" w="200000">
    <text>FileTypes</text>
-   <color g="127" r="173" b="168"/>
-   <text-color g="0" r="0" b="0"/>
+   <color r="173" b="168" g="127"/>
+   <text-color r="0" b="0" g="0"/>
   </node>
-  <node w="200000" x="-855000" y="246000" h="75000" index="55">
-   <text>Steps</text>
-   <color g="127" r="173" b="168"/>
-   <text-color g="0" r="164" b="0"/>
+  <node index="50" h="75000" x="-241782" y="-483820" w="200000">
+   <text>TemplateSteps</text>
+   <color r="173" b="168" g="127"/>
+   <text-color r="0" b="0" g="0"/>
   </node>
-  <node w="200000" x="-1398000" y="361000" h="75000" index="58">
-   <text>Applications</text>
-   <color g="127" r="173" b="168"/>
-   <text-color g="0" r="164" b="0"/>
+  <node index="64" h="75000" x="-898000" y="442000" w="200000">
+   <text>Asset Groups:
+RamObjectUberList</text>
+   <color r="92" b="102" g="53"/>
+   <text-color r="164" b="0" g="0"/>
   </node>
-  <node w="200000" x="-1277604" y="-484647" h="75000" index="29">
-   <text>RamUser</text>
-   <color g="255" r="255" b="255"/>
-   <text-color g="0" r="0" b="0"/>
+  <node index="6" h="75000" x="-551000" y="-409000" w="200000">
+   <text>Ramses</text>
+   <color r="255" b="255" g="255"/>
+   <text-color r="0" b="0" g="0"/>
   </node>
-  <node w="200000" x="-663000" y="556000" h="75000" index="66">
-   <text>Assets</text>
-   <color g="53" r="92" b="102"/>
-   <text-color g="41" r="239" b="41"/>
+  <node index="72" h="75000" x="-105899" y="959404" w="200000">
+   <text>RamStatus</text>
+   <color r="255" b="255" g="255"/>
+   <text-color r="0" b="0" g="0"/>
   </node>
-  <node w="200000" x="-110000" y="555000" h="75000" index="23">
-   <text>RamSequence</text>
-   <color g="127" r="173" b="168"/>
-   <text-color g="0" r="0" b="0"/>
+  <node index="43" h="75000" x="-1014604" y="-592647" w="200000">
+   <text>States</text>
+   <color r="173" b="168" g="127"/>
+   <text-color r="0" b="0" g="0"/>
   </node>
-  <node w="200000" x="-1402000" y="249000" h="75000" index="57">
-   <text>Users</text>
-   <color g="127" r="173" b="168"/>
-   <text-color g="41" r="239" b="41"/>
+  <node index="14" h="75000" x="-902000" y="684000" w="200000">
+   <text>RamAsset</text>
+   <color r="255" b="255" g="255"/>
+   <text-color r="0" b="0" g="0"/>
   </node>
-  <node w="200000" x="-1009604" y="-238647" h="75000" index="48">
-   <text>Applications</text>
-   <color g="127" r="173" b="168"/>
-   <text-color g="0" r="0" b="0"/>
+  <node index="73" h="75000" x="-1936000" y="365000" w="200000">
+   <text>FileTypes</text>
+   <color r="173" b="168" g="127"/>
+   <text-color r="0" b="0" g="0"/>
   </node>
-  <node w="200000" x="-235782" y="-371820" h="75000" index="53">
-   <text>TemplateAssetGroups</text>
-   <color g="127" r="173" b="168"/>
-   <text-color g="0" r="0" b="0"/>
-  </node>
-  <node w="200000" x="-1269604" y="-362647" h="75000" index="16">
+  <node index="74" h="75000" x="-2194000" y="364000" w="200000">
    <text>RamFileType</text>
-   <color g="255" r="255" b="255"/>
-   <text-color g="0" r="0" b="0"/>
+   <color r="255" b="255" g="255"/>
+   <text-color r="0" b="0" g="0"/>
   </node>
-  <node w="200000" x="195000" y="240000" h="75000" index="19">
-   <text>RamPipe</text>
-   <color g="255" r="255" b="255"/>
-   <text-color g="0" r="0" b="0"/>
+  <node index="15" h="75000" x="-901000" y="554000" w="200000">
+   <text>RamAssetGroup</text>
+   <color r="173" b="168" g="127"/>
+   <text-color r="164" b="0" g="0"/>
   </node>
-  <node w="200000" x="-1014604" y="-486647" h="75000" index="45">
-   <text>Users</text>
-   <color g="127" r="173" b="168"/>
-   <text-color g="0" r="0" b="0"/>
+  <node index="30" h="75000" x="-109000" y="685000" w="200000">
+   <text>RamShot</text>
+   <color r="255" b="255" g="255"/>
+   <text-color r="0" b="0" g="0"/>
   </node>
-  <node w="200000" x="-1112000" y="247000" h="75000" index="28">
+  <node index="52" h="75000" x="13217" y="-482820" w="200000">
    <text>RamStep</text>
-   <color g="255" r="255" b="255"/>
-   <text-color g="0" r="0" b="0"/>
+   <color r="255" b="255" g="255"/>
+   <text-color r="0" b="0" g="0"/>
   </node>
-  <node w="200000" x="-113000" y="240000" h="75000" index="70">
-   <text>Pipes</text>
-   <color g="127" r="173" b="168"/>
-   <text-color g="0" r="164" b="0"/>
+  <node index="23" h="75000" x="-110000" y="555000" w="200000">
+   <text>RamSequence</text>
+   <color r="173" b="168" g="127"/>
+   <text-color r="0" b="0" g="0"/>
   </node>
-  <node w="200000" x="-925167" y="-815099" h="75000" index="0">
-   <text>TODO</text>
-   <color g="255" r="255" b="255"/>
-   <text-color g="41" r="239" b="41"/>
+  <node index="26" h="75000" x="-901498" y="956698" w="200000">
+   <text>RamStatus</text>
+   <color r="255" b="255" g="255"/>
+   <text-color r="0" b="0" g="0"/>
   </node>
-  <node w="200000" x="-699167" y="-817099" h="75000" index="37">
-   <text>WIP</text>
-   <color g="255" r="255" b="255"/>
-   <text-color g="154" r="78" b="6"/>
+  <node index="55" h="75000" x="-855000" y="246000" w="200000">
+   <text>Steps</text>
+   <color r="173" b="168" g="127"/>
+   <text-color r="164" b="0" g="0"/>
   </node>
-  <node w="200000" x="-2194000" y="364000" h="75000" index="74">
-   <text>RamFileType</text>
-   <color g="255" r="255" b="255"/>
-   <text-color g="0" r="0" b="0"/>
-  </node>
-  <node w="200000" x="-1677000" y="363000" h="75000" index="59">
-   <text>RamApplication</text>
-   <color g="255" r="255" b="255"/>
-   <text-color g="0" r="0" b="0"/>
-  </node>
-  <node w="200000" x="-1399000" y="131000" h="75000" index="62">
-   <text>Users</text>
-   <color g="53" r="92" b="102"/>
-   <text-color g="41" r="239" b="41"/>
-  </node>
-  <node w="200000" x="-347167" y="-811099" h="75000" index="4">
+  <node index="4" h="75000" x="-347167" y="-811099" w="200000">
    <text>RamObject</text>
-   <color g="255" r="255" b="255"/>
-   <text-color g="0" r="0" b="0"/>
+   <color r="255" b="255" g="255"/>
+   <text-color r="0" b="0" g="0"/>
   </node>
-  <node w="200000" x="-551000" y="40000" h="75000" index="41">
-   <text>Projects</text>
-   <color g="127" r="173" b="168"/>
-   <text-color g="0" r="0" b="0"/>
+  <node index="63" h="75000" x="-1403000" y="473000" w="200000">
+   <text>Applications</text>
+   <color r="92" b="102" g="53"/>
+   <text-color r="239" b="41" g="41"/>
   </node>
-  <node w="399000" x="-900598" y="826899" h="75000" index="27">
-   <text>RamStatusHistory: QMap&lt;QString step, RamObjectList></text>
-   <color g="127" r="173" b="168"/>
-   <text-color g="0" r="0" b="0"/>
+  <node index="58" h="75000" x="-1398000" y="361000" w="200000">
+   <text>Applications</text>
+   <color r="173" b="168" g="127"/>
+   <text-color r="164" b="0" g="0"/>
   </node>
-  <node w="200000" x="-1273604" y="-591647" h="75000" index="44">
-   <text>RamState</text>
-   <color g="255" r="255" b="255"/>
-   <text-color g="0" r="0" b="0"/>
-  </node>
-  <node w="200000" x="113832" y="-807099" h="75000" index="39">
-   <text>RamObjectUberList</text>
-   <color g="80" r="117" b="123"/>
-   <text-color g="238" r="238" b="236"/>
-  </node>
-  <node w="200000" x="-1671000" y="252000" h="75000" index="61">
+  <node index="29" h="75000" x="-1277604" y="-484647" w="200000">
    <text>RamUser</text>
-   <color g="255" r="255" b="255"/>
-   <text-color g="0" r="0" b="0"/>
+   <color r="255" b="255" g="255"/>
+   <text-color r="0" b="0" g="0"/>
   </node>
-  <node w="200000" x="-553200" y="203401" h="75000" index="42">
-   <text>RamProject</text>
-   <color g="255" r="255" b="255"/>
-   <text-color g="0" r="0" b="0"/>
+  <node index="57" h="75000" x="-1402000" y="249000" w="200000">
+   <text>Users</text>
+   <color r="173" b="168" g="127"/>
+   <text-color r="239" b="41" g="41"/>
   </node>
-  <node w="399000" x="-108301" y="828505" h="75000" index="71">
-   <text>RamStatusHistory: QMap&lt;QString step, RamObjectList></text>
-   <color g="127" r="173" b="168"/>
-   <text-color g="0" r="0" b="0"/>
+  <node index="48" h="75000" x="-1009604" y="-238647" w="200000">
+   <text>Applications</text>
+   <color r="173" b="168" g="127"/>
+   <text-color r="0" b="0" g="0"/>
   </node>
-  <edge index0="69" index1="30" reversed="0" arrow-mode="0"/>
-  <edge index0="14" index1="27" reversed="0" arrow-mode="0"/>
-  <edge index0="73" index1="74" reversed="0" arrow-mode="0"/>
-  <edge index0="43" index1="44" reversed="0" arrow-mode="0"/>
-  <edge index0="6" index1="48" reversed="0" arrow-mode="0"/>
-  <edge index0="6" index1="43" reversed="0" arrow-mode="0"/>
-  <edge index0="6" index1="53" reversed="0" arrow-mode="0"/>
-  <edge index0="6" index1="41" reversed="0" arrow-mode="0"/>
-  <edge index0="6" index1="45" reversed="0" arrow-mode="0"/>
-  <edge index0="6" index1="47" reversed="0" arrow-mode="0"/>
-  <edge index0="6" index1="50" reversed="0" arrow-mode="0"/>
-  <edge index0="64" index1="15" reversed="0" arrow-mode="0"/>
-  <edge index0="50" index1="52" reversed="0" arrow-mode="0"/>
-  <edge index0="47" index1="16" reversed="0" arrow-mode="0"/>
-  <edge index0="67" index1="23" reversed="0" arrow-mode="0"/>
-  <edge index0="30" index1="71" reversed="0" arrow-mode="0"/>
-  <edge index0="15" index1="15" reversed="0" arrow-mode="0"/>
-  <edge index0="15" index1="14" reversed="0" arrow-mode="0"/>
-  <edge index0="9" index1="75" reversed="0" arrow-mode="0"/>
-  <edge index0="75" index1="76" reversed="0" arrow-mode="0"/>
-  <edge index0="55" index1="28" reversed="0" arrow-mode="0"/>
-  <edge index0="58" index1="59" reversed="0" arrow-mode="0"/>
-  <edge index0="66" index1="14" reversed="0" arrow-mode="0"/>
-  <edge index0="23" index1="30" reversed="0" arrow-mode="0"/>
-  <edge index0="57" index1="61" reversed="0" arrow-mode="0"/>
-  <edge index0="48" index1="9" reversed="0" arrow-mode="0"/>
-  <edge index0="53" index1="54" reversed="0" arrow-mode="0"/>
-  <edge index0="19" index1="70" reversed="1" arrow-mode="0"/>
-  <edge index0="45" index1="29" reversed="0" arrow-mode="0"/>
-  <edge index0="28" index1="57" reversed="0" arrow-mode="0"/>
-  <edge index0="28" index1="58" reversed="0" arrow-mode="0"/>
-  <edge index0="59" index1="63" reversed="1" arrow-mode="0"/>
-  <edge index0="59" index1="73" reversed="0" arrow-mode="0"/>
-  <edge index0="62" index1="61" reversed="0" arrow-mode="0"/>
-  <edge index0="41" index1="42" reversed="0" arrow-mode="0"/>
-  <edge index0="27" index1="26" reversed="0" arrow-mode="0"/>
-  <edge index0="42" index1="55" reversed="0" arrow-mode="0"/>
-  <edge index0="42" index1="70" reversed="0" arrow-mode="0"/>
-  <edge index0="42" index1="66" reversed="0" arrow-mode="0"/>
-  <edge index0="42" index1="69" reversed="0" arrow-mode="0"/>
-  <edge index0="42" index1="62" reversed="0" arrow-mode="0"/>
-  <edge index0="42" index1="64" reversed="0" arrow-mode="0"/>
-  <edge index0="42" index1="67" reversed="0" arrow-mode="0"/>
-  <edge index0="42" index1="63" reversed="0" arrow-mode="0"/>
-  <edge index0="71" index1="72" reversed="0" arrow-mode="0"/>
+  <node index="53" h="75000" x="-235782" y="-371820" w="200000">
+   <text>TemplateAssetGroups</text>
+   <color r="173" b="168" g="127"/>
+   <text-color r="0" b="0" g="0"/>
+  </node>
+  <node index="75" h="75000" x="-1520604" y="-240647" w="200000">
+   <text>FileTypes</text>
+   <color r="173" b="168" g="127"/>
+   <text-color r="0" b="0" g="0"/>
+  </node>
+  <node index="16" h="75000" x="-1269604" y="-362647" w="200000">
+   <text>RamFileType</text>
+   <color r="255" b="255" g="255"/>
+   <text-color r="0" b="0" g="0"/>
+  </node>
+  <edge index1="72" index0="71" arrow-mode="0" reversed="0"/>
+  <edge index1="63" index0="42" arrow-mode="0" reversed="0"/>
+  <edge index1="67" index0="42" arrow-mode="0" reversed="0"/>
+  <edge index1="70" index0="42" arrow-mode="0" reversed="0"/>
+  <edge index1="55" index0="42" arrow-mode="0" reversed="0"/>
+  <edge index1="62" index0="42" arrow-mode="0" reversed="0"/>
+  <edge index1="64" index0="42" arrow-mode="0" reversed="0"/>
+  <edge index1="26" index0="27" arrow-mode="0" reversed="0"/>
+  <edge index1="42" index0="41" arrow-mode="0" reversed="0"/>
+  <edge index1="61" index0="62" arrow-mode="0" reversed="0"/>
+  <edge index1="73" index0="59" arrow-mode="0" reversed="0"/>
+  <edge index1="63" index0="59" arrow-mode="0" reversed="1"/>
+  <edge index1="58" index0="28" arrow-mode="0" reversed="0"/>
+  <edge index1="57" index0="28" arrow-mode="0" reversed="0"/>
+  <edge index1="29" index0="45" arrow-mode="0" reversed="0"/>
+  <edge index1="70" index0="19" arrow-mode="0" reversed="1"/>
+  <edge index1="23" index0="67" arrow-mode="0" reversed="0"/>
+  <edge index1="75" index0="9" arrow-mode="0" reversed="0"/>
+  <edge index1="16" index0="47" arrow-mode="0" reversed="0"/>
+  <edge index1="52" index0="50" arrow-mode="0" reversed="0"/>
+  <edge index1="15" index0="64" arrow-mode="0" reversed="0"/>
+  <edge index1="50" index0="6" arrow-mode="0" reversed="0"/>
+  <edge index1="45" index0="6" arrow-mode="0" reversed="0"/>
+  <edge index1="41" index0="6" arrow-mode="0" reversed="0"/>
+  <edge index1="48" index0="6" arrow-mode="0" reversed="0"/>
+  <edge index1="43" index0="6" arrow-mode="0" reversed="0"/>
+  <edge index1="53" index0="6" arrow-mode="0" reversed="0"/>
+  <edge index1="47" index0="6" arrow-mode="0" reversed="0"/>
+  <edge index1="44" index0="43" arrow-mode="0" reversed="0"/>
+  <edge index1="27" index0="14" arrow-mode="0" reversed="0"/>
+  <edge index1="74" index0="73" arrow-mode="0" reversed="0"/>
+  <edge index1="15" index0="15" arrow-mode="0" reversed="0"/>
+  <edge index1="14" index0="15" arrow-mode="0" reversed="0"/>
+  <edge index1="71" index0="30" arrow-mode="0" reversed="0"/>
+  <edge index1="30" index0="23" arrow-mode="0" reversed="0"/>
+  <edge index1="28" index0="55" arrow-mode="0" reversed="0"/>
+  <edge index1="59" index0="58" arrow-mode="0" reversed="0"/>
+  <edge index1="61" index0="57" arrow-mode="0" reversed="0"/>
+  <edge index1="9" index0="48" arrow-mode="0" reversed="0"/>
+  <edge index1="54" index0="53" arrow-mode="0" reversed="0"/>
+  <edge index1="76" index0="75" arrow-mode="0" reversed="0"/>
  </graph>
  <layout-optimizer min-edge-length="100000" aspect-ratio="1000"/>
 </heimer-mind-map>
