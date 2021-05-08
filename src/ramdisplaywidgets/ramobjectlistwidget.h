@@ -32,6 +32,7 @@ public:
 public slots:
     void removeSelectedObjects();
     void search(QString nameOrShortName);
+    void filter(QString uuid);
 
 signals:
     void itemDropped();
@@ -59,6 +60,7 @@ private:
     bool m_editableObjects = false;
     QList<QMetaObject::Connection> m_listConnections;
     QMap<QString, QMetaObject::Connection> m_objectConnections;
+    RamObjectUberList *m_uberList = nullptr;
 };
 
 #endif // RAMOBJECTLISTWIDGET_H

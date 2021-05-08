@@ -41,6 +41,7 @@ public:
     QToolButton *addButton() const;
     void select(RamObject* obj);
     QString currentFilter() const;
+    void clearFilters();
 
 public slots:
     void scrollToBottom();
@@ -49,6 +50,12 @@ signals:
     void objectSelected(RamObject*);
     void orderChanged();
     void add();
+
+private slots:
+    void newFilter(RamObject *filter);
+    void filterRemoved(RamObject *filter);
+    void filterChanged(RamObject *filter);
+    void currentFilterChanged(int i);
 
 private:
     void setupUi(bool editableObjects = false);
@@ -62,6 +69,8 @@ private:
     RamObjectList *m_objectList;
     RamObjectUberList *m_objectUberList;
     RamObjectListWidget *m_list;
+    QMap<QString, QList<QMetaObject::Connection>> m_filterConnections;
+    QList<QMetaObject::Connection> m_uberListConnections;
 };
 
 #endif // OBJECTLISTEDITWIDGET_H

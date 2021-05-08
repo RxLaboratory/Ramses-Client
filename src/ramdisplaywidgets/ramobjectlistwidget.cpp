@@ -90,12 +90,16 @@ void RamObjectListWidget::setList(RamObjectUberList *list)
         addList(sublist);
     }
 
+    m_uberList = list;
+
     this->setEnabled(true);
 }
 
 void RamObjectListWidget::clear()
 {
     this->setEnabled(false);
+
+    m_uberList = nullptr;
 
     QSignalBlocker b(this);
 
@@ -199,6 +203,34 @@ void RamObjectListWidget::search(QString nameOrShortName)
         }
 
         header->setSectionHidden( row, this->item(row, 0)->text().contains(nameOrShortName) );
+    }
+}
+
+void RamObjectListWidget::filter(QString uuid)
+{
+    QHeaderView *header = this->verticalHeader();
+    for( int row = 0; row < this->rowCount(); row++)
+    {
+        if (uuid == "" || !m_uberList)
+        {
+            header->setSectionHidden(row, false);
+            continue;
+        }
+
+        header->setSectionHidden( row, true );
+
+        RamObjectWidget *ow = qobject_cast<RamObjectWidget*>( this->cellWidget(row, 0) );
+
+        if (ow)
+        {
+            RamObject *o = ow->ramObject();
+            if (o)
+            {
+                RamObjectList* sublist = qobject_cast<RamObjectList*>( m_uberList->fromUuid(uuid) );
+                if (sublist)
+                    header->setSectionHidden( row, !sublist->contains(o) );
+            }
+        }
     }
 }
 
