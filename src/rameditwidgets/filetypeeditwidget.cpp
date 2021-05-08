@@ -44,8 +44,6 @@ void FileTypeEditWidget::setObject(RamObject *obj)
     ui_previewableBox->setChecked(_fileType->isPreviewable());
 
     this->setEnabled(Ramses::instance()->isProjectAdmin());
-
-    _objectConnections << connect(obj, &RamFileType::changed, this, &FileTypeEditWidget::fileTypeChanged);
 }
 
 void FileTypeEditWidget::update()
@@ -60,13 +58,6 @@ void FileTypeEditWidget::update()
     ObjectEditWidget::update();
 
     updating = false;
-}
-
-void FileTypeEditWidget::fileTypeChanged(RamObject *o)
-{
-    if (updating) return;
-    Q_UNUSED(o);
-    setObject(_fileType);
 }
 
 void FileTypeEditWidget::setupUi()

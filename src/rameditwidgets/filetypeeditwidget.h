@@ -23,7 +23,6 @@ protected slots:
     void update() Q_DECL_OVERRIDE;
 
 private slots:
-    void fileTypeChanged(RamObject *o);
 
 private:
     RamFileType *_fileType;

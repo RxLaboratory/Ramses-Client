@@ -44,8 +44,6 @@ void TemplateStepEditWidget::setObject(RamObject *obj)
     else if (step->type() == RamStep::PostProduction) ui_typeBox->setCurrentIndex(3);
 
     this->setEnabled(Ramses::instance()->isAdmin());
-
-    _objectConnections << connect(step, &RamStep::changed, this, &TemplateStepEditWidget::stepChanged);
 }
 
 void TemplateStepEditWidget::update()
@@ -59,13 +57,6 @@ void TemplateStepEditWidget::update()
     ObjectEditWidget::update();
 
     updating = false;
-}
-
-void TemplateStepEditWidget::stepChanged(RamObject *o)
-{
-    if (updating) return;
-    Q_UNUSED(o);
-    setObject(_step);
 }
 
 void TemplateStepEditWidget::setupUi()

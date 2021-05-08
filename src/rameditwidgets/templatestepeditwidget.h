@@ -23,7 +23,6 @@ protected slots:
     void update() Q_DECL_OVERRIDE;
 
 private slots:
-    void stepChanged(RamObject *o);
 
 private:
     RamStep *_step;

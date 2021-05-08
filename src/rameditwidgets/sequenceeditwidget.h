@@ -25,7 +25,6 @@ protected slots:
     void update() Q_DECL_OVERRIDE;
 
 private slots:
-    void sequenceChanged(RamObject *o);
     void createShot();
 
 private:

@@ -39,8 +39,6 @@ void SequenceEditWidget::setObject(RamObject *obj)
 
     // Load shots
 
-    _objectConnections << connect(sequence, &RamSequence::changed, this, &SequenceEditWidget::sequenceChanged);
-
     this->setEnabled(Ramses::instance()->isProjectAdmin());
 }
 
@@ -58,13 +56,6 @@ void SequenceEditWidget::update()
     _sequence->update();
 
     updating = false;
-}
-
-void SequenceEditWidget::sequenceChanged(RamObject *o)
-{
-    if (updating) return;
-    Q_UNUSED(o);
-    setObject(_sequence);
 }
 
 void SequenceEditWidget::createShot()

@@ -55,7 +55,6 @@ void ProjectEditWidget::setObject(RamObject *obj)
     folderSelector->setPlaceHolderText( Ramses::instance()->defaultProjectPath(project) );
     folderLabel->setText( Ramses::instance()->path(project) );
 
-    _objectConnections << connect(project,&RamProject::changed, this, &ProjectEditWidget::projectChanged);
 
     this->setEnabled( Ramses::instance()->isAdmin() ); 
 }
@@ -80,13 +79,6 @@ void ProjectEditWidget::updateFolderLabel(QString path)
 {
     if (path != "") folderLabel->setText( Ramses::instance()->pathFromRamses(path));
     else if (_project) folderLabel->setText( Ramses::instance()->path(_project) );
-}
-
-void ProjectEditWidget::projectChanged(RamObject *o)
-{
-    if (updating) return;
-    Q_UNUSED(o);
-    setObject(_project);
 }
 
 void ProjectEditWidget::setupUi()

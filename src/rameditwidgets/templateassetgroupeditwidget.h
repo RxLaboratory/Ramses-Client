@@ -18,7 +18,6 @@ public slots:
     void setObject(RamObject *obj) Q_DECL_OVERRIDE;
 
 private slots:
-    void assetGroupChanged(RamObject *o);
 
 private:
     RamAssetGroup *_assetGroup;

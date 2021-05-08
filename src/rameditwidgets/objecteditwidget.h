@@ -35,6 +35,7 @@ public slots:
 protected slots:
     virtual void update();
     virtual bool checkInput();
+    void objectChanged(RamObject *o);
 
 protected:
     QList<QMetaObject::Connection> _objectConnections;
@@ -48,10 +49,8 @@ protected:
     QLabel *shortNameLabel;
     QLabel *statusLabel;
 
-
 private slots:
     void objectRemoved(RamObject *o);
-    void objectChanged(RamObject *o);
 
 private:
     void setupUi();

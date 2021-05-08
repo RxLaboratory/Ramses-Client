@@ -28,7 +28,6 @@ protected slots:
 
 private slots:
     void updateFolderLabel(QString path);
-    void projectChanged(RamObject *o);
 
 private:
     RamProject *_project;

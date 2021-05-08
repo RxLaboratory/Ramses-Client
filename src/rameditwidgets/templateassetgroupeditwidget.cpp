@@ -30,12 +30,4 @@ void TemplateAssetGroupEditWidget::setObject(RamObject *obj)
 
     this->setEnabled(Ramses::instance()->isAdmin());
 
-    _objectConnections << connect(assetGroup, &RamAssetGroup::changed, this, &TemplateAssetGroupEditWidget::assetGroupChanged);
-}
-
-void TemplateAssetGroupEditWidget::assetGroupChanged(RamObject *o)
-{
-    if (updating) return;
-    Q_UNUSED(o);
-    setObject(_assetGroup);
 }

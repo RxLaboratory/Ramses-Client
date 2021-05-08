@@ -66,7 +66,6 @@ void ApplicationEditWidget::setObject(RamObject *obj)
     _objectConnections << connect(application->importFileTypes(), &RamObjectList::objectRemoved, this, &ApplicationEditWidget::nativeFileTypeUnassigned);
     _objectConnections << connect(application->exportFileTypes(), &RamObjectList::objectAdded, this, &ApplicationEditWidget::nativeFileTypeAssigned);
     _objectConnections << connect(application->exportFileTypes(), &RamObjectList::objectRemoved, this, &ApplicationEditWidget::nativeFileTypeUnassigned);
-    _objectConnections << connect(application, &RamApplication::changed, this, &ApplicationEditWidget::applicationChanged);
 
     this->setEnabled(Ramses::instance()->isProjectAdmin());
 }
@@ -81,13 +80,6 @@ void ApplicationEditWidget::update()
     ObjectEditWidget::update();
 
     updating = false;
-}
-
-void ApplicationEditWidget::applicationChanged(RamObject *o)
-{
-    if (updating) return;
-    Q_UNUSED(o);
-    setObject(_application);
 }
 
 void ApplicationEditWidget::newFileType(RamObject * const ft)

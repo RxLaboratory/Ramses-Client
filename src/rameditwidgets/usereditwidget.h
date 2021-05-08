@@ -25,7 +25,6 @@ protected slots:
     void update() Q_DECL_OVERRIDE;
 
 private slots:
-    void userChanged(RamObject *o);
     void changePassword();
     bool checkInput() Q_DECL_OVERRIDE;
     void updateFolderLabel(QString path);

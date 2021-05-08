@@ -69,15 +69,6 @@ void UserEditWidget::setObject(RamObject *obj)
     {
         this->setEnabled(Ramses::instance()->isAdmin());
     }
-
-    _objectConnections << connect(user, &RamUser::changed, this, &UserEditWidget::userChanged);
-}
-
-void UserEditWidget::userChanged(RamObject *o)
-{
-    if (updating) return;
-    Q_UNUSED(o);
-    setObject(_user);
 }
 
 void UserEditWidget::changePassword()
@@ -204,5 +195,5 @@ void UserEditWidget::connectEvents()
     connect(ui_passwordButton, SIGNAL(clicked()), this, SLOT(changePassword()));
     connect(ui_folderSelector, &DuQFFolderSelectorWidget::pathChanging, this, &UserEditWidget::updateFolderLabel);
     connect(ui_folderSelector, &DuQFFolderSelectorWidget::pathChanged, this, &UserEditWidget::update);
-    connect(Ramses::instance(), &Ramses::loggedIn, this, &UserEditWidget::userChanged);
+    connect(Ramses::instance(), &Ramses::loggedIn, this, &UserEditWidget::objectChanged);
 }

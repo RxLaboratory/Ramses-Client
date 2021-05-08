@@ -27,7 +27,6 @@ protected slots:
     void update() Q_DECL_OVERRIDE;
 
 private slots:
-    void applicationChanged(RamObject *o);
     void newFileType(RamObject * const ft);
     void fileTypeChanged(RamObject *o);
     void fileTypeRemoved(RamObject *o);
