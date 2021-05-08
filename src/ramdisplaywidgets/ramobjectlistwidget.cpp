@@ -395,6 +395,7 @@ void RamObjectListWidget::setupUi()
     this->setDragEnabled(false);
     this->setDefaultDropAction(Qt::IgnoreAction);
     this->verticalHeader()->setSectionsMovable(true);
+    this->setShowGrid(false);
 
     this->setColumnCount(1);
     this->setRowCount(0);
