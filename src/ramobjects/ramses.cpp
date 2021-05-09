@@ -17,6 +17,8 @@ Ramses::Ramses(QObject *parent) : QObject(parent)
 {
     qDebug() << "Initialising Ramses";
     _dbi = DBInterface::instance();
+    m_pm = ProcessManager::instance();
+
     _users = new RamObjectList(this);
     _states = new RamStateList(this);
     _projects = new RamObjectList(this);
@@ -51,11 +53,15 @@ void Ramses::newData(QJsonObject data)
 {
     if (!data.value("success").toBool()) return;
 
+    m_pm->freeze(true);
+    m_pm->setTitle("Loading new data.");
+
     QString query = data.value("query").toString();
     if (query == "login") login( data.value("content").toObject() );
     else if (query == "getUsers") gotUsers( data.value("content").toArray());
     else if (query == "getProjects") gotProjects( data.value("content").toArray());
     else if (query == "getProject") {
+        m_pm->setTitle("Loading project.");
         gotProject( data.value("content").toObject());
         emit currentProjectChanged(_currentProject);
     }
@@ -66,6 +72,7 @@ void Ramses::newData(QJsonObject data)
     else if (query == "getApplications") gotApplications( data.value("content").toArray());
     else if (query == "init")
     {
+        m_pm->setTitle("Getting Ramses data.");
         QJsonObject content = data.value("content").toObject();
         gotUsers( content.value("users").toArray());
         gotTemplateSteps( content.value("templateSteps").toArray());
@@ -76,15 +83,22 @@ void Ramses::newData(QJsonObject data)
         gotProjects( content.value("projects").toArray());
         setCurrentProject(_userSettings->value("currentProject", "").toString(), true);
     }
+
+    m_pm->freeze(false);
 }
 
 void Ramses::gotUsers(QJsonArray users)
 {
     DBISuspender s;
 
+    m_pm->addToMaximum( users.count() );
+    m_pm->setText("Loading users...");
+
     // loop through existing users to update them
     for (int i = _users->count() - 1; i >= 0; i--)
     {
+        m_pm->increment();
+
         RamUser *existingUser = (RamUser*)_users->at(i);
         // loop through new users to update
         bool found = false;
@@ -120,6 +134,8 @@ void Ramses::gotUsers(QJsonArray users)
     // loop through remaining new users to add them
     for (int i = 0; i < users.count(); i++)
     {
+        m_pm->increment();
+
         QJsonObject u = users[i].toObject();
         RamUser *user = new RamUser(
                     u.value("shortName").toString(),
@@ -157,10 +173,14 @@ void Ramses::gotProjects(QJsonArray projects)
 {
     DBISuspender s;
 
+    m_pm->addToMaximum(projects.count());
+    m_pm->setText("Loading projects...");
+
     QStringList uuids;
     // Update projects
     for (int j = 0; j < projects.count(); j++)
     {
+        m_pm->increment();
         uuids << gotProject( projects.at(j).toObject() );
     }
 
@@ -239,9 +259,14 @@ void Ramses::gotTemplateSteps(QJsonArray steps)
 {
     DBISuspender s;
 
+    m_pm->addToMaximum(steps.count());
+    m_pm->setText("Loading template steps...");
+
     // loop through existing steps to update them
     for (int i = _templateSteps->count() - 1; i >= 0; i--)
     {
+        m_pm->increment();
+
         RamStep *existingStep = (RamStep*)_templateSteps->at(i);
         // loop through new steps to update
         bool found = false;
@@ -276,6 +301,8 @@ void Ramses::gotTemplateSteps(QJsonArray steps)
     // loop through remaining new projects to add them
     for (int i = 0; i < steps.count(); i++)
     {
+        m_pm->increment();
+
         QJsonObject s = steps[i].toObject();
         RamStep *step = new RamStep(
                     s.value("shortName").toString(),
@@ -293,9 +320,13 @@ void Ramses::gotTemplateAssetGroups(QJsonArray assetGroups)
 {
     DBISuspender s;
 
+    m_pm->addToMaximum(assetGroups.count());
+    m_pm->setText("Loading template asset groups...");
+
     // loop through existing asset groups to update them
     for (int i = _templateAssetGroups->count() - 1; i >= 0; i--)
     {
+        m_pm->increment();
         RamAssetGroup *existingAssetGroup = (RamAssetGroup*)_templateAssetGroups->at(i);
         // loop through new steps to update
         bool found = false;
@@ -329,6 +360,7 @@ void Ramses::gotTemplateAssetGroups(QJsonArray assetGroups)
     // loop through remaining new projects to add them
     for (int i = 0; i < assetGroups.count(); i++)
     {
+        m_pm->increment();
         QJsonObject ag = assetGroups[i].toObject();
         RamAssetGroup *assetGroup = new RamAssetGroup(
                     ag.value("shortName").toString(),
@@ -345,9 +377,13 @@ void Ramses::gotStates(QJsonArray states)
 {
     DBISuspender s;
 
+    m_pm->addToMaximum(states.count());
+    m_pm->setText("Loading states...");
+
     // loop through existing steps to update them
     for (int i = _states->count() - 1; i >= 0; i--)
     {
+        m_pm->increment();
         RamState *existingState = (RamState*)_states->at(i);
         // loop through new steps to update
         bool found = false;
@@ -383,6 +419,7 @@ void Ramses::gotStates(QJsonArray states)
     // loop through remaining new states to add them
     for (int i = 0; i < states.count(); i++)
     {
+        m_pm->increment();
         QJsonObject s = states[i].toObject();
         RamState *state = new RamState(
                     s.value("shortName").toString(),
@@ -401,9 +438,13 @@ void Ramses::gotFileTypes(QJsonArray fileTypes)
 {
     DBISuspender s;
 
+    m_pm->addToMaximum(fileTypes.count());
+    m_pm->setText("Loading file types...");
+
     // loop through existing file types to update them
     for (int i = _fileTypes->count() - 1; i >= 0; i--)
     {
+        m_pm->increment();
         RamFileType *existingFileType = (RamFileType*)_fileTypes->at(i);
         // loop through new file types to update
         bool found = false;
@@ -439,6 +480,7 @@ void Ramses::gotFileTypes(QJsonArray fileTypes)
     // loop through remaining new file types to add them
     for (int i = 0; i < fileTypes.count(); i++)
     {
+        m_pm->increment();
         QJsonObject ft = fileTypes[i].toObject();
         RamFileType *fileType = new RamFileType(
                     ft.value("shortName").toString(),
@@ -456,9 +498,13 @@ void Ramses::gotApplications(QJsonArray applications)
 {
     DBISuspender s;
 
+    m_pm->addToMaximum(applications.count());
+    m_pm->setText("Loading applications...");
+
     // loop through existing steps to update them
     for (int i = _applications->count() - 1; i >= 0; i--)
     {
+        m_pm->increment();
         RamApplication *existingApplication = (RamApplication*)_applications->at(i);
         // loop through new steps to update
         bool found = false;
@@ -506,6 +552,7 @@ void Ramses::gotApplications(QJsonArray applications)
     // loop through remaining new projects to add them
     for (int i = 0; i < applications.count(); i++)
     {
+        m_pm->increment();
         QJsonObject a = applications[i].toObject();
         RamApplication *app = new RamApplication(
                     a.value("shortName").toString(),
@@ -533,11 +580,15 @@ void Ramses::gotSteps(QJsonArray steps, RamProject *project)
 {
     DBISuspender s;
 
+    m_pm->addToMaximum(steps.count());
+    m_pm->setText("Loading steps...");
+
     QList<RamStep*> projectSteps = project->steps();
 
     // loop through existing steps to update them
     for (int i = projectSteps.count() - 1; i >= 0; i--)
     {
+        m_pm->increment();
         RamStep *existingStep = projectSteps[i];
         // loop through new steps to update
         bool found = false;
@@ -581,6 +632,7 @@ void Ramses::gotSteps(QJsonArray steps, RamProject *project)
     // loop through remaining new steps to add them
     for (int i = 0; i < steps.count(); i++)
     {
+        m_pm->increment();
         QJsonObject s = steps[i].toObject();
         RamStep *step = new RamStep(
                     s.value("shortName").toString(),
@@ -611,11 +663,15 @@ void Ramses::gotAssetGroups(QJsonArray assetGroups, RamProject *project)
 {
     DBISuspender s;
 
+    m_pm->addToMaximum(assetGroups.count());
+    m_pm->setText("Loading asset groups...");
+
     QList<RamAssetGroup*> projectAssetGroups = project->assetGroups();
 
     // loop through existing asset groups to update them
     for (int i = projectAssetGroups.count() - 1; i >= 0; i--)
     {
+        m_pm->increment();
         RamAssetGroup *existingAssetGroup = projectAssetGroups[i];
         // loop through new steps to update
         bool found = false;
@@ -648,6 +704,7 @@ void Ramses::gotAssetGroups(QJsonArray assetGroups, RamProject *project)
     // loop through remaining new asset groups to add them
     for (int i = 0; i < assetGroups.count(); i++)
     {
+        m_pm->increment();
         QJsonObject ag = assetGroups[i].toObject();
         RamAssetGroup *assetGroup = new RamAssetGroup(
                     ag.value("shortName").toString(),
@@ -670,11 +727,15 @@ void Ramses::gotAssets(QJsonArray assets, RamAssetGroup *assetGroup, RamProject 
 {
     DBISuspender s;
 
+    m_pm->addToMaximum(assets.count());
+    m_pm->setText("Loading assets");
+
     QList<RamAsset*> groupAssets = assetGroup->assets();
 
     // loop through existing assets to update them
     for (int i = groupAssets.count() - 1; i >= 0; i--)
     {
+        m_pm->increment();
         RamAsset *existingAsset = groupAssets[i];
         // loop through new steps to update
         bool found = false;
@@ -708,6 +769,7 @@ void Ramses::gotAssets(QJsonArray assets, RamAssetGroup *assetGroup, RamProject 
     // loop through remaining new assets to add them
     for (int i = 0; i < assets.count(); i++)
     {
+        m_pm->increment();
         QJsonObject a = assets[i].toObject();
         RamAsset *asset = new RamAsset(
                     a.value("shortName").toString(),
@@ -728,10 +790,15 @@ void Ramses::gotAssets(QJsonArray assets, RamAssetGroup *assetGroup, RamProject 
 void Ramses::gotSequences(QJsonArray sequences, RamProject *project)
 {
     DBISuspender s;
+
+    m_pm->addToMaximum(sequences.count());
+    m_pm->setText("Loading sequences");
+
     QStringList uuids;
     // Update sequences
     for (int j = 0; j < sequences.count(); j++)
     {
+        m_pm->increment();
         uuids << gotSequence( sequences.at(j).toObject(), project );
     }
 
@@ -793,10 +860,15 @@ QString Ramses::gotSequence(QJsonObject newS, RamProject *project)
 void Ramses::gotShots(QJsonArray shots, RamSequence *sequence, RamProject *project)
 {
     DBISuspender s;
+
+    m_pm->addToMaximum(shots.count());
+    m_pm->setText("Loading shots...");
+
     QStringList uuids;
     // Update shots
     for (int j = 0; j < shots.count(); j++)
     {
+        m_pm->increment();
         uuids << gotShot( shots.at(j).toObject(), sequence, project );
     }
 
@@ -858,6 +930,7 @@ QString Ramses::gotShot(QJsonObject newS, RamSequence *sequence, RamProject *pro
 void Ramses::gotStatusHistory(QJsonArray statusHistory, RamItem *item, RamProject *project)
 {
     DBISuspender s;
+
     QStringList uuids;
     // Update status
     for (int j = 0; j < statusHistory.count(); j++)
@@ -940,10 +1013,14 @@ void Ramses::gotPipes(QJsonArray pipes, RamProject *project)
 {
     DBISuspender s;
 
+    m_pm->addToMaximum(pipes.count());
+    m_pm->setText("Loading pipes...");
+
     QStringList uuids;
-    // Update shots
+    // Update pipes
     for (int j = 0; j < pipes.count(); j++)
     {
+        m_pm->increment();
         uuids << gotPipe( pipes.at(j).toObject(), project );
     }
 

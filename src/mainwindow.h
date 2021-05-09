@@ -30,6 +30,8 @@
 #include "daemon.h"
 #include "projectselectorwidget.h"
 #include "localsettingswidget.h"
+#include "progresspage.h"
+#include "processmanager.h"
 #include "duqf-utils/utils.h"
 #include "duqf-widgets/toolbarspacer.h"
 #include "duqf-widgets/duqflogtoolbutton.h"
@@ -81,11 +83,13 @@ private:
     SettingsWidget *settingsWidget;
     QLabel *title;
     QMenu *helpMenu;
+    ProgressPage *progressPage;
 
     QMenu *userMenu;
     QToolButton *userButton;
     QToolButton *networkButton;
     QToolButton *refreshButton;
+    int m_currentPageIndex = 0;
 
     QList<ObjectDockWidget *> _dockedObjects;
 
@@ -125,6 +129,7 @@ private slots:
     void loggedIn();
     void loggedOut();
     void currentUserChanged();
+    void freezeUI(bool f = true);
     void dbiConnectionStatusChanged(NetworkUtils::NetworkStatus s);
 
 protected:

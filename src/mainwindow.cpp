@@ -69,9 +69,11 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     // login
     LoginPage *lp = new LoginPage(this);
     mainLayout->addWidget(lp);
+
     // user profile
     UserProfilePage *up = new UserProfilePage(this);
     mainStack->addWidget(up);
+
     // admin
     SettingsWidget *adminPage = new SettingsWidget("Administration", this);
     adminPage->showReinitButton(false);
@@ -92,6 +94,7 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     qDebug() << "  > file types ok";
     adminPage->addPage(new ApplicationListManagerWidget(this), "Applications", QIcon(":/icons/applications"));
     qDebug() << "  > applications ok";
+
     // Project settings
     SettingsWidget *projectSettingsPage = new SettingsWidget("Project Administration", this);
     projectSettingsPage->showReinitButton(false);
@@ -107,10 +110,15 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     qDebug() << "  > sequences ok";
     projectSettingsPage->addPage(new ShotListManagerWidget(this), "Shots", QIcon(":/icons/shots"));
     qDebug() << "  > shots ok";
+
     // Pipeline editor
     PipelineWidget *pipelineEditor = new PipelineWidget(this);
     mainStack->addWidget(pipelineEditor);
     qDebug() << "> Pipeline ready";
+
+    // Progress page
+    progressPage = new ProgressPage(this);
+    mainStack->addWidget(progressPage);
 
     // Set UI
     mainStack->setCurrentIndex(0);
@@ -118,6 +126,7 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     qDebug() << "> Connecting events";
 
     // Connect events
+    connect(ProcessManager::instance(), &ProcessManager::freezeUI, this, &MainWindow::freezeUI);
     connect(actionLogIn,SIGNAL(triggered()), this, SLOT(loginAction()));
     connect(actionLogOut,SIGNAL(triggered()), this, SLOT(logoutAction()));
     connect(actionUserProfile,SIGNAL(triggered()), this, SLOT(userProfile()));
@@ -597,6 +606,20 @@ void MainWindow::currentUserChanged()
     {
         userButton->setIcon(QIcon(":/icons/user"));
     }
+}
+
+void MainWindow::freezeUI(bool f)
+{
+    if (f)
+    {
+        m_currentPageIndex = mainStack->currentIndex();
+        mainStack->setCurrentIndex(6);
+    }
+    else
+    {
+        mainStack->setCurrentIndex(m_currentPageIndex);
+    }
+    this->repaint();
 }
 
 void MainWindow::dbiConnectionStatusChanged(NetworkUtils::NetworkStatus s)

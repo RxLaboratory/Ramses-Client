@@ -11,6 +11,7 @@
 #include "ramfiletype.h"
 #include "ramapplication.h"
 #include "ramstatelist.h"
+#include "processmanager.h"
 #include "dbisuspender.h"
 
 #include <QObject>
@@ -175,6 +176,7 @@ private:
     QSettings *_userSettings;
 
     DBInterface *_dbi;
+    ProcessManager *m_pm;
     void login(QJsonObject user);
     /**
      * @brief True when loogged in, false otherwise.
