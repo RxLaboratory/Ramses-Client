@@ -32,6 +32,7 @@
 #include "localsettingswidget.h"
 #include "progresspage.h"
 #include "processmanager.h"
+#include "progressbar.h"
 #include "duqf-utils/utils.h"
 #include "duqf-widgets/toolbarspacer.h"
 #include "duqf-widgets/duqflogtoolbutton.h"

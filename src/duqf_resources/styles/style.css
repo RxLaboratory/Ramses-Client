@@ -669,6 +669,10 @@ QStatusBar QWidget {
     color: @color-less-light-grey;
 }
 
+QStatusBar QProgressBar {
+    background-color: @color-abyss-grey;
+}
+
 QStatusBar QLabel {
     color: @color-less-light-grey;
 }

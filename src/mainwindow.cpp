@@ -19,6 +19,8 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
 
     //Populate status bar
 
+    mainStatusBar->addPermanentWidget(new ProgressBar(this));
+
     refreshButton = new QToolButton(this);
     refreshButton->setToolButtonStyle(Qt::ToolButtonIconOnly);
     refreshButton->setText("");

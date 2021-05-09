@@ -7,6 +7,7 @@
 #include <QLabel>
 
 #include "processmanager.h"
+#include "progressbar.h"
 
 class ProgressPage : public QWidget
 {
@@ -27,7 +28,7 @@ private slots:
 private:
     void setupUi();
 
-    QProgressBar *m_progressBar;
+    ProgressBar *m_progressBar;
     QLabel *m_titleLabel;
 
 };

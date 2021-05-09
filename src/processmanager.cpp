@@ -37,10 +37,9 @@ void ProcessManager::setMaximum(const int &m)
 
 void ProcessManager::freeze(const bool &f)
 {
-    setText("");
-    setTitle("");
-    setProgress(0);
-    setMaximum(0);
+    reInit();
+    if (f) emit started();
+    else emit finished();
     emit freezeUI(f);
 }
 
@@ -52,4 +51,23 @@ void ProcessManager::increment()
 void ProcessManager::addToMaximum(const int &m)
 {
     setMaximum(m_maximum + m);
+}
+
+void ProcessManager::reInit()
+{
+    setText("");
+    setTitle("");
+    setProgress(0);
+    setMaximum(0);
+}
+
+void ProcessManager::finish()
+{
+    emit finished();
+}
+
+void ProcessManager::start()
+{
+    reInit();
+    emit started();
 }

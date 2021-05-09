@@ -5,10 +5,7 @@ ProgressPage::ProgressPage(QWidget *parent) : QWidget(parent)
     setupUi();
 
     ProcessManager *pm = ProcessManager::instance();
-    connect(pm, &ProcessManager::text, this, &ProgressPage::setText);
     connect(pm, &ProcessManager::title, this, &ProgressPage::setTitle);
-    connect(pm, &ProcessManager::progress, this, &ProgressPage::setValue);
-    connect(pm, &ProcessManager::maximum, this, &ProgressPage::setMaximum);
 }
 
 void ProgressPage::setText(const QString &text)
@@ -41,7 +38,7 @@ void ProgressPage::setupUi()
     m_titleLabel = new QLabel("", this);
     l->addWidget(m_titleLabel);
 
-    m_progressBar = new QProgressBar(this);
+    m_progressBar = new ProgressBar(this);
     l->addWidget(m_progressBar);
 
     l->addStretch();

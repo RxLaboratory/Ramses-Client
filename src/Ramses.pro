@@ -29,6 +29,7 @@ INCLUDEPATH += rameditwidgets \
 SOURCES += \
     duqf-widgets/duqfsearchedit.cpp \
     processmanager.cpp \
+    progressbar.cpp \
     progresspage.cpp \
     ramdisplaywidgets/ramapplicationwidget.cpp \
     ramdisplaywidgets/ramassetgroupwidget.cpp \
@@ -150,6 +151,7 @@ SOURCES += \
 HEADERS += \
     duqf-widgets/duqfsearchedit.h \
     processmanager.h \
+    progressbar.h \
     progresspage.h \
     ramdisplaywidgets/ramapplicationwidget.h \
     ramdisplaywidgets/ramassetgroupwidget.h \
