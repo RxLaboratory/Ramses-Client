@@ -27,6 +27,7 @@ public:
     void setOffline();
     void setOnline();
     bool isSuspended() const;
+    void init();
     //users
     void login(QString username, QString password);
     void getUsers();

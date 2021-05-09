@@ -55,12 +55,27 @@ void Ramses::newData(QJsonObject data)
     if (query == "login") login( data.value("content").toObject() );
     else if (query == "getUsers") gotUsers( data.value("content").toArray());
     else if (query == "getProjects") gotProjects( data.value("content").toArray());
-    else if (query == "getProject") gotProject( data.value("content").toObject());
+    else if (query == "getProject") {
+        gotProject( data.value("content").toObject());
+        emit currentProjectChanged(_currentProject);
+    }
     else if (query == "getTemplateSteps") gotTemplateSteps( data.value("content").toArray());
     else if (query == "getTemplateAssetGroups") gotTemplateAssetGroups( data.value("content").toArray());
     else if (query == "getStates") gotStates( data.value("content").toArray());
     else if (query == "getFileTypes") gotFileTypes( data.value("content").toArray());
     else if (query == "getApplications") gotApplications( data.value("content").toArray());
+    else if (query == "init")
+    {
+        QJsonObject content = data.value("content").toObject();
+        gotUsers( content.value("users").toArray());
+        gotTemplateSteps( content.value("templateSteps").toArray());
+        gotTemplateAssetGroups( content.value("templateAssetGroups").toArray());
+        gotStates( content.value("states").toArray());
+        gotFileTypes( content.value("fileTypes").toArray());
+        gotApplications( content.value("applications").toArray());
+        gotProjects( content.value("projects").toArray());
+        setCurrentProject(_userSettings->value("currentProject", "").toString(), true);
+    }
 }
 
 void Ramses::gotUsers(QJsonArray users)
@@ -165,8 +180,6 @@ void Ramses::gotProjects(QJsonArray projects)
     delete _userSettings;
     _userSettings = new QSettings(Ramses::instance()->currentUserSettingsFile(), QSettings::IniFormat, this);
     _userSettings->beginGroup("ramses");
-
-    setCurrentProject(_userSettings->value("currentProject", "").toString(), false);
 }
 
 QString Ramses::gotProject(QJsonObject newP)
@@ -646,7 +659,6 @@ void Ramses::gotAssetGroups(QJsonArray assetGroups, RamProject *project)
 
         //add assets
         gotAssets( ag.value("assets").toArray(), assetGroup, project);
-
         project->addAssetGroup(assetGroup);
     }
 
@@ -1277,7 +1289,7 @@ RamProject *Ramses::currentProject() const
 void Ramses::setCurrentProject(RamProject *currentProject, bool updateData)
 {
     if (_currentProject && currentProject)
-        if (_currentProject->uuid() == currentProject->uuid()) return;
+        if (_currentProject->is( currentProject )) return;
 
     _currentProject = currentProject;
 
@@ -1285,10 +1297,9 @@ void Ramses::setCurrentProject(RamProject *currentProject, bool updateData)
     {
         _userSettings->setValue("currentProject", _currentProject->uuid() );
         //Update
-        if (updateData) refresh();
+        if (updateData) _dbi->getProject(currentProject->uuid());
     }
 
-    emit currentProjectChanged(_currentProject);
 }
 
 void Ramses::setCurrentProject(QString uuidOrShortName, bool updateData)
@@ -1465,6 +1476,7 @@ void Ramses::logout()
 
 void Ramses::refresh()
 {
+    /*
     // Get Users
     _dbi->getUsers();
     // Get Template Steps
@@ -1476,10 +1488,10 @@ void Ramses::refresh()
     // Get file types
     _dbi->getFileTypes();
     // Get applications
-    _dbi->getApplications();
+    _dbi->getApplications();*/
     // Get current project
+    _dbi->init();
     if (_currentProject) _dbi->getProject(_currentProject->uuid());
-    else _dbi->getProjects();
 }
 
 bool Ramses::isConnected() const

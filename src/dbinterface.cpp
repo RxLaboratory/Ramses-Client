@@ -639,6 +639,12 @@ bool DBInterface::isSuspended() const
     return _suspended;
 }
 
+void DBInterface::init()
+{
+    QString q = "?init";
+    request(q);
+}
+
 void DBInterface::suspend(bool suspended)
 {
     _suspended = suspended;
