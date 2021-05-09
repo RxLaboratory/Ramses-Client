@@ -6,6 +6,19 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     // Build the form
     setupUi(this);
 
+    qDebug() << "> Initiating threads and workers";
+
+    // We instantiate all these objects to be sure it's done in the right order.
+
+    // The database interface
+    DBInterface::instance();
+    // The Process manager
+    ProcessManager::instance();
+    // Ramses
+    Ramses::instance();
+    // The ramses loader
+    RamLoader::instance();
+
     qDebug() << "> Setting up menus";
 
     // Populate Toolbar
@@ -148,6 +161,7 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     connect(Daemon::instance(), &Daemon::raise, this, &MainWindow::show);
     connect(Ramses::instance(),&Ramses::loggedIn, this, &MainWindow::loggedIn);
     connect(Ramses::instance(),&Ramses::loggedOut, this, &MainWindow::loggedOut);
+    connect(DBInterface::instance(),&DBInterface::data, RamLoader::instance(), &RamLoader::newData );
     connect(DBInterface::instance(),&DBInterface::connectionStatusChanged, this, &MainWindow::dbiConnectionStatusChanged);
 
     // Set style

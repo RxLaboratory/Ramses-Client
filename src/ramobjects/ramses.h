@@ -1,8 +1,6 @@
 #ifndef RAMSES_H
 #define RAMSES_H
 
-#include "duqf-app/app-utils.h"
-#include "dbinterface.h"
 #include "ramuser.h"
 #include "ramproject.h"
 #include "ramstep.h"
@@ -11,8 +9,8 @@
 #include "ramfiletype.h"
 #include "ramapplication.h"
 #include "ramstatelist.h"
-#include "processmanager.h"
 #include "dbisuspender.h"
+#include "duqf-app/app-utils.h"
 
 #include <QObject>
 
@@ -74,6 +72,7 @@ public:
     QString path(RamShot *s) const;
     QDir dir(RamShot *s) const;
     // Users
+    void setCurrentUser(RamUser *u);
     RamObjectList *users() const;
     RamUser *currentUser() const;
     bool isAdmin();
@@ -85,8 +84,8 @@ public:
     RamProject *project(QString uuid) const;
     RamProject *createProject();
     RamProject *currentProject() const;
-    void setCurrentProject(RamProject *currentProject, bool updateData=true);
-    void setCurrentProject(QString uuidOrShortName, bool updateData=true);
+    void setCurrentProject(RamProject *currentProject);
+    void setCurrentProject(QString uuidOrShortName);
     // Template Steps
     RamObjectList *templateSteps() const;
     RamStep *createTemplateStep();
@@ -111,11 +110,13 @@ public:
     RamApplication *createApplication();
 
 public slots:
+    void init();
     void refresh();
     // Users
     RamUser *createUser();
     // States
     RamState *createState();
+
 
 signals:
     void loggedIn(RamUser*);
@@ -128,40 +129,6 @@ protected:
     static Ramses *_instance;
 
 private slots:
-    void newData(QJsonObject data);
-    //users
-    void gotUsers(QJsonArray users);
-    //projects
-    void gotProjects(QJsonArray projects);
-    QString gotProject(QJsonObject newP);
-    //template steps
-    void gotTemplateSteps(QJsonArray steps);
-    //template asset groups
-    void gotTemplateAssetGroups(QJsonArray assetGroups);
-    //states
-    void gotStates(QJsonArray states);
-    //file types
-    void gotFileTypes(QJsonArray fileTypes);
-    //applications
-    void gotApplications(QJsonArray applications);
-    // steps
-    void gotSteps(QJsonArray steps, RamProject *project);
-    // asset groups
-    void gotAssetGroups(QJsonArray assetGroups, RamProject *project);
-    // assets
-    void gotAssets(QJsonArray assets, RamAssetGroup *assetGroup, RamProject *project);
-    // sequences
-    void gotSequences(QJsonArray sequences, RamProject *project);
-    QString gotSequence(QJsonObject newS, RamProject *project);
-    // shots
-    void gotShots(QJsonArray shots, RamSequence *sequence, RamProject *project);
-    QString gotShot(QJsonObject newS, RamSequence *sequence, RamProject *project);
-    // status
-    void gotStatusHistory(QJsonArray statusHistory, RamItem *item, RamProject *project);
-    QString gotStatus(QJsonObject newS, RamItem *item, RamProject *project);
-    // pipes
-    void gotPipes(QJsonArray pipes, RamProject *project);
-    QString gotPipe(QJsonObject newP, RamProject *project);
     //TODO This should be modified when implementing offline version
     void dbiConnectionStatusChanged(NetworkUtils::NetworkStatus s);
 
@@ -176,8 +143,7 @@ private:
     QSettings *_userSettings;
 
     DBInterface *_dbi;
-    ProcessManager *m_pm;
-    void login(QJsonObject user);
+
     /**
      * @brief True when loogged in, false otherwise.
      */

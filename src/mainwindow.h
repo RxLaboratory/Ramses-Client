@@ -28,6 +28,7 @@
 #include "applicationlistmanagerwidget.h"
 #include "dbinterface.h"
 #include "daemon.h"
+#include "ramloader.h"
 #include "projectselectorwidget.h"
 #include "localsettingswidget.h"
 #include "progresspage.h"

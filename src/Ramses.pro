@@ -56,6 +56,7 @@ SOURCES += \
     rameditwidgets/templateassetgrouplistmanagerwidget.cpp \
     rameditwidgets/templatesteplistmanagerwidget.cpp \
     rameditwidgets/userlistmanagerwidget.cpp \
+    ramloader.cpp \
     ramobjects/ramobjectuberlist.cpp \
     ramobjects/ramstatelist.cpp \
     settingswidgets/daemonsettingswidget.cpp \
@@ -178,6 +179,7 @@ HEADERS += \
     rameditwidgets/templateassetgrouplistmanagerwidget.h \
     rameditwidgets/templatesteplistmanagerwidget.h \
     rameditwidgets/userlistmanagerwidget.h \
+    ramloader.h \
     ramobjects/ramobjectuberlist.h \
     ramobjects/ramstatelist.h \
     settingswidgets/daemonsettingswidget.h \
