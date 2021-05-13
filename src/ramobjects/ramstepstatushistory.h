@@ -4,11 +4,12 @@
 #include "ramobjectlist.h"
 #include "ramstatus.h"
 
-class RamStatusHistory : public RamObjectList
+class RamStepStatusHistory : public RamObjectList
 {
     Q_OBJECT
 public:
-    explicit RamStatusHistory(QObject *parent = nullptr);
+    explicit RamStepStatusHistory(QObject *parent = nullptr);
+    explicit RamStepStatusHistory(RamStep *step, QObject *parent = nullptr);
 
 public slots:
     void sort() Q_DECL_OVERRIDE;

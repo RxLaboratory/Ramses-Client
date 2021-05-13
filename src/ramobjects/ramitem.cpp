@@ -3,7 +3,7 @@
 RamItem::RamItem(QString shortName, QString name, QString uuid, QObject *parent) :
     RamObject(shortName, name, uuid, parent)
 {
-    _statusHistory = new RamStatusHistory(this);
+    _statusHistory = new RamObjectUberList(this);
 }
 
 void RamItem::setStatus(RamUser *user, RamState *state, RamStep *step, int completionRatio, QString comment, int version)
@@ -16,36 +16,51 @@ void RamItem::setStatus(RamUser *user, RamState *state, RamStep *step, int compl
     if (this->objectType() == Asset) _dbi->setAssetStatus(_uuid, state->uuid(), step->uuid(), user->uuid(), completionRatio, comment, version, status->uuid());
     else if (this->objectType() == Shot) _dbi->setShotStatus(_uuid, state->uuid(), step->uuid(), user->uuid(), completionRatio, comment, version, status->uuid());
 
-    _statusHistory->append(status);
+    addStatus(status);
 }
 
-RamStatusHistory *RamItem::statusHistory()
+void RamItem::addStatus(RamStatus *status)
+{
+    RamStep *step = status->step();
+    if (!step) return;
+    RamObject *o = _statusHistory->fromUuid(step->uuid());
+    if (o)
+    {
+        RamStepStatusHistory *history = qobject_cast<RamStepStatusHistory*>( o );
+        history->append( status );
+    }
+    else
+    {
+        RamStepStatusHistory *history = new RamStepStatusHistory(step, this);
+        history->append( status );
+        _statusHistory->append( history );
+    }
+}
+
+RamObjectUberList *RamItem::statusHistory() const
 {
     return _statusHistory;
 }
 
-QList<RamStatus *> RamItem::statusHistory(RamStep *step)
+RamStepStatusHistory *RamItem::statusHistory(RamStep *step) const
 {
-    QList<RamStatus *> history;
-    for (int i = 0; i < _statusHistory->count(); i++)
-    {
-        RamStatus *status = (RamStatus*)_statusHistory->at(i);
-        RamStep *s = status->step();
-        if (!s) continue;
-        if (step->uuid() == s->uuid())
-            history << status;
-    }
+    return statusHistory( step->uuid() );
+}
+
+RamStepStatusHistory *RamItem::statusHistory(QString stepUuid) const
+{
+    RamStepStatusHistory *history = qobject_cast<RamStepStatusHistory*>( _statusHistory->fromUuid( stepUuid ) );
 
     return history;
 }
 
-RamStatus *RamItem::status(QString stepUuid)
+RamStatus *RamItem::status(QString stepUuid) const
 {
-    for (int i = _statusHistory->count() - 1; i >= 0; i-- )
+    RamStepStatusHistory *history = qobject_cast<RamStepStatusHistory*>( _statusHistory->fromUuid( stepUuid ) );
+    if (history)
     {
-        RamStatus *status = (RamStatus*)_statusHistory->at(i);
-        if (status->step())
-            if (status->step()->uuid() == stepUuid) return status;
+        history->sort();
+        return qobject_cast<RamStatus*> ( history->last() );
     }
     return nullptr;
 }

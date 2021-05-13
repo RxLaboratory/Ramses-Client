@@ -1,10 +1,17 @@
-#include "ramstatushistory.h"
+#include "ramstepstatushistory.h"
 
-RamStatusHistory::RamStatusHistory(QObject *parent):
+RamStepStatusHistory::RamStepStatusHistory(QObject *parent):
     RamObjectList(parent)
 {
 
 }
+
+RamStepStatusHistory::RamStepStatusHistory(RamStep *step, QObject *parent):
+    RamObjectList(step->shortName(), step->name(), step->uuid(), parent)
+{
+
+}
+
 
 bool statusSorter(RamObject *a, RamObject *b)
 {
@@ -15,7 +22,7 @@ bool statusSorter(RamObject *a, RamObject *b)
     else return a->shortName() < b->shortName();
 }
 
-void RamStatusHistory::sort()
+void RamStepStatusHistory::sort()
 {
     std::sort(m_objects.begin(), m_objects.end(), statusSorter);
 }

@@ -62,6 +62,7 @@ private:
     QJsonObject shotToJson(RamShot *s);
     QJsonObject stateToJson(RamState *s);
     QJsonObject stepToJson(RamStep *s);
+    QJsonObject statusToJson(RamStatus *s);
 };
 
 #endif // DAEMON_H

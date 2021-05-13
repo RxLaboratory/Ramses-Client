@@ -927,13 +927,13 @@ void RamLoader::gotStatusHistory(QJsonArray statusHistory, RamItem *item, RamPro
     }
 
     // Remove deleted status
-    RamStatusHistory *history = item->statusHistory();
-    for (int i = history->count() - 1; i >= 0; i--)
+    RamObjectUberList *history = item->statusHistory();
+    for (int i = history->objectCount() - 1; i >= 0; i--)
     {
-        RamStatus *existingStatus = (RamStatus*)history->at(i);
+        RamStatus *existingStatus = qobject_cast<RamStatus*>( history->objectAt(i) );
         if (!uuids.contains(existingStatus->uuid()))
         {
-            history->removeAll(existingStatus);
+            history->removeObject(existingStatus);
         }
     }
 
@@ -946,29 +946,26 @@ QString RamLoader::gotStatus(QJsonObject newS, RamItem *item, RamProject *projec
     DBISuspender s;
     QString uuid = newS.value("uuid").toString();
 
-    // loop through existing shots to update them
-    RamStatusHistory *history = item->statusHistory();
-    for (int i = history->count() - 1; i >= 0; i--)
+    // update existing if any
+    RamObjectUberList *history = item->statusHistory();
+    RamObject *o = history->objectFromUuid( uuid );
+    if (o)
     {
-        RamStatus *existingStatus = (RamStatus*)history->at(i);
-
-        if (uuid == existingStatus->uuid())
-        {
-            //Emit just one signal
-            QSignalBlocker b(existingStatus);
-            existingStatus->setCompletionRatio( newS.value("completionRatio").toInt( ));
-            RamObject *u = m_ram->users()->fromUuid(  newS.value("userUuid").toString( ) );
-            if (u) existingStatus->setUser( u );
-            RamState *state = (RamState*)m_ram->states()->fromUuid(  newS.value("stateUuid").toString( ) );
-            if (state) existingStatus->setState( state );
-            existingStatus->setComment( newS.value("comment").toString() );
-            RamStep *step = project->step( newS.value("stepUuid").toString( ) );
-            if (step) existingStatus->setStep( step );
-            existingStatus->setDate( QDateTime::fromString( newS.value("date").toString(), "yyyy-MM-dd hh:mm:ss"));
-            b.unblock();
-            existingStatus->setVersion( newS.value("version").toInt() );
-            return uuid;
-        }
+        RamStatus *existingStatus = qobject_cast<RamStatus*>(o);
+        //Emit just one signal
+        QSignalBlocker b(existingStatus);
+        existingStatus->setCompletionRatio( newS.value("completionRatio").toInt( ));
+        RamObject *u = m_ram->users()->fromUuid(  newS.value("userUuid").toString( ) );
+        if (u) existingStatus->setUser( u );
+        RamState *state = (RamState*)m_ram->states()->fromUuid(  newS.value("stateUuid").toString( ) );
+        if (state) existingStatus->setState( state );
+        existingStatus->setComment( newS.value("comment").toString() );
+        RamStep *step = project->step( newS.value("stepUuid").toString( ) );
+        if (step) existingStatus->setStep( step );
+        existingStatus->setDate( QDateTime::fromString( newS.value("date").toString(), "yyyy-MM-dd hh:mm:ss"));
+        b.unblock();
+        existingStatus->setVersion( newS.value("version").toInt() );
+        return uuid;
     }
 
     // not existing, let's create it
@@ -992,7 +989,7 @@ QString RamLoader::gotStatus(QJsonObject newS, RamItem *item, RamProject *projec
     status->setVersion( newS.value("version").toInt( ) );
     status->setDate( QDateTime::fromString( newS.value("date").toString(), "yyyy-MM-dd hh:mm:ss"));
 
-    item->statusHistory()->append(status);
+    item->addStatus(status);
 
     return uuid;
 }

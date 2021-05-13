@@ -7,6 +7,7 @@
 #include "ramitem.h"
 #include "ramstatuswidget.h"
 #include "statuseditwidget.h"
+#include "objectlisteditwidget.h"
 
 class SimpleObjectList;
 
@@ -28,20 +29,14 @@ public:
 signals:
 
 private slots:
-    void newStatus(RamObject *obj);
-    void statusRemoved(RamObject *obj);
-
     void newStep(RamStep *step);
-    void stepChanged(RamObject *step);
-    void stepRemoved(RamObject *step);
     void stepRemoved(RamStep *step);
-    void stepRemoved(QString uuid);
 
     void currentProjectChanged(RamProject *project);
 
-    void stepFilterChanged(int i);
-
     void setStatus(RamState *state, int completionRatio, int version, QString comment);
+
+    void currentFilterChanged(QString f);
 
 private:
     RamItem *_item;
@@ -51,8 +46,7 @@ private:
 
     void setupUi();
     void connectEvents();
-    QComboBox *stepBox;
-    SimpleObjectList *statusList;
+    ObjectListEditWidget *statusList;
     StatusEditWidget *statusWidget;
 };
 

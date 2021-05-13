@@ -33,10 +33,11 @@ public:
     RamObjectList *list() const;
     void clear();
     void setList(RamObjectList *objectList);
-    void setList(RamObjectUberList *objectList);
+    void setList(RamObjectUberList *objectList, bool useFilters = true);
     void setEditable(bool editable = true);
     void setSortable(bool sortable = true);
     void setSelectable(bool selectable = true);
+    void setSearchable(bool searchable = true);
     void setTitle(QString title);
     QToolButton *addButton() const;
     void select(RamObject* obj);
@@ -45,15 +46,16 @@ public:
 
 public slots:
     void scrollToBottom();
+    void addFilter(RamObject *filter);
+    void removeFilter(RamObject *filter);
 
 signals:
     void objectSelected(RamObject*);
     void orderChanged();
     void add();
+    void currentFilterChanged(QString);
 
 private slots:
-    void newFilter(RamObject *filter);
-    void filterRemoved(RamObject *filter);
     void filterChanged(RamObject *filter);
     void currentFilterChanged(int i);
 
@@ -62,7 +64,6 @@ private:
     void connectEvents();
     QToolButton *m_addButton;
     QToolButton *m_removeButton;
-    QLabel *m_filterLabel;
     QLabel *m_title;
     QComboBox *m_filterBox;
     DuQFSearchEdit *m_searchEdit;

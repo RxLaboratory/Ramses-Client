@@ -30,6 +30,7 @@ public:
     int count() const;
     bool contains(RamObject *obj) const;
     virtual RamObject *at(int i) const;
+    RamObject *last() const;
     void removeAt(int i);
     void removeFirst();
     void removeLast();

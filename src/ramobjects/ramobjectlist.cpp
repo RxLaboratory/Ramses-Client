@@ -69,6 +69,11 @@ RamObject *RamObjectList::at(int i) const
     return m_objects.at(i);
 }
 
+RamObject *RamObjectList::last() const
+{
+    return m_objects.last();
+}
+
 void RamObjectList::removeAt(int i)
 {
     takeAt(i);

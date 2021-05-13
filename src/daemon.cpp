@@ -198,42 +198,45 @@ void Daemon::getCurrentStatus(QString shortName, QString name, QString type, QSt
         return;
     }
 
-    RamStatusHistory *history = item->statusHistory();
-    history->sort();
-    QList<QString> steps;
+    // Get step from name
+    if ( step != "" )
+    {
+        RamObject *o = item->statusHistory()->fromName( step );
+        if (!o)
+        {
+            post(client, content, "getCurrentStatus", "Sorry, step " + step + " not found.", false);
+            return;
+        }
+
+        RamStepStatusHistory *st = qobject_cast<RamStepStatusHistory*>( o );
+
+        RamStatus *s = item->status( st->uuid() );
+        if (s)
+        {
+            content = statusToJson(s);
+            post(client, content, "getCurrentStatus", "Current status for " + item->name() + " retrieved.");
+            return;
+        }
+
+        post(client, content, "getCurrentStatus", "Current status for " + item->name() + " not found, sorry.", false);
+    }
+
+
+
+    RamObjectUberList *history = item->statusHistory( );
     for (int i = history->count() - 1; i >= 0; i-- )
     {
-        RamStatus *s = (RamStatus*)history->at(i);
-        if (! s->step() ) continue;
+        RamObjectList *h = qobject_cast<RamObjectList*>( history->at(i) );
 
-        if (steps.contains( s->step()->uuid() ) ) continue;
-
-        steps << s->step()->uuid();
-
-        if (step == "" || step == s->step()->shortName())
+        h->sort();
+        RamStatus *s = qobject_cast<RamStatus*>( h->last() );
+        if (s)
         {
-            QJsonObject status;
-            status.insert("step", s->step()->shortName() );
-            status.insert("comment", s->comment() );
-            status.insert("completionRatio", s->completionRatio() );
-            status.insert("date", s->date().toString("yyyy-MM-dd hh:mm:ss"));
-            if (s->state()) status.insert("state", s->state()->shortName() );
-            if (s->user()) status.insert("user", s->user()->shortName() );
-            status.insert("version", s->version() );
-
-            if (step != "")
-            {
-                content = status;
-                qDebug() << content.value("step");
-                break;
-            }
-            else
-            {
-                statuses.append(status);
-            }
+            statuses.append( statusToJson(s) );
         }
     }
-    if (step == "") content.insert("status", statuses);
+
+    content.insert("status", statuses);
     post(client, content, "getCurrentStatus", "Current status for " + item->name() + " retrieved.");
 }
 
@@ -706,4 +709,17 @@ QJsonObject Daemon::stepToJson(RamStep *s)
     }
     step.insert("type", type);
     return step;
+}
+
+QJsonObject Daemon::statusToJson(RamStatus *s)
+{
+    QJsonObject status;
+    status.insert("step", s->step()->shortName() );
+    status.insert("comment", s->comment() );
+    status.insert("completionRatio", s->completionRatio() );
+    status.insert("date", s->date().toString("yyyy-MM-dd hh:mm:ss"));
+    if (s->state()) status.insert("state", s->state()->shortName() );
+    if (s->user()) status.insert("user", s->user()->shortName() );
+    status.insert("version", s->version() );
+    return status;
 }

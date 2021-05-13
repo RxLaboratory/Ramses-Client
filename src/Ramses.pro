@@ -59,6 +59,7 @@ SOURCES += \
     ramloader.cpp \
     ramobjects/ramobjectuberlist.cpp \
     ramobjects/ramstatelist.cpp \
+    ramobjects/ramstepstatushistory.cpp \
     settingswidgets/daemonsettingswidget.cpp \
     dbinterface.cpp \
     dbisuspender.cpp \
@@ -128,7 +129,6 @@ SOURCES += \
     ramdisplaywidgets/ramshotwidget.cpp \
     ramobjects/ramstate.cpp \
     ramobjects/ramstatus.cpp \
-    ramobjects/ramstatushistory.cpp \
     ramdisplaywidgets/ramstatuswidget.cpp \
     ramobjects/ramstep.cpp \
     ramobjects/ramuser.cpp \
@@ -182,6 +182,7 @@ HEADERS += \
     ramloader.h \
     ramobjects/ramobjectuberlist.h \
     ramobjects/ramstatelist.h \
+    ramobjects/ramstepstatushistory.h \
     settingswidgets/daemonsettingswidget.h \
     dbinterface.h \
     dbisuspender.h \
@@ -251,7 +252,6 @@ HEADERS += \
     ramdisplaywidgets/ramshotwidget.h \
     ramobjects/ramstate.h \
     ramobjects/ramstatus.h \
-    ramobjects/ramstatushistory.h \
     ramdisplaywidgets/ramstatuswidget.h \
     ramobjects/ramstep.h \
     ramobjects/ramuser.h \

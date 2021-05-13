@@ -40,16 +40,19 @@ void ObjectListEditWidget::clear()
 {
     m_objectList = nullptr;
     m_objectUberList = nullptr;
+    m_filterBox->hide();
+    m_title->show();
     m_list->clear();
 }
 
 void ObjectListEditWidget::setList(RamObjectList *objectList)
 {
+    clearFilters();
     m_objectList = objectList;
     m_list->setList(m_objectList);
 }
 
-void ObjectListEditWidget::setList(RamObjectUberList *objectList)
+void ObjectListEditWidget::setList(RamObjectUberList *objectList, bool useFilters)
 {
     while (!m_uberListConnections.isEmpty()) disconnect( m_uberListConnections.takeLast() );
 
@@ -58,17 +61,13 @@ void ObjectListEditWidget::setList(RamObjectUberList *objectList)
     m_list->setList(objectList);
 
     clearFilters();
-    m_filterBox->addItem("All", "");
-    for (int i = 0; i < objectList->count(); i++) newFilter( objectList->at(i) );
-
-    if (objectList->count() > 1)
+    m_filterBox->addItem("All " + m_title->text(), "");
+    if (useFilters)
     {
-        m_filterBox->show();
-        //m_filterLabel->show();
+        for (int i = 0; i < objectList->count(); i++) addFilter( objectList->at(i) );
+        m_uberListConnections << connect( objectList, &RamObjectList::objectAdded, this, &ObjectListEditWidget::addFilter);
+        m_uberListConnections << connect( objectList, &RamObjectList::objectRemoved, this, &ObjectListEditWidget::removeFilter);
     }
-
-    m_uberListConnections << connect( objectList, &RamObjectList::objectAdded, this, &ObjectListEditWidget::newFilter);
-    m_uberListConnections << connect( objectList, &RamObjectList::objectRemoved, this, &ObjectListEditWidget::filterRemoved);
 }
 
 void ObjectListEditWidget::setEditable(bool editable)
@@ -86,6 +85,11 @@ void ObjectListEditWidget::setSortable(bool sortable)
 void ObjectListEditWidget::setSelectable(bool selectable)
 {
     m_list->setSelectable(selectable);
+}
+
+void ObjectListEditWidget::setSearchable(bool searchable)
+{
+    m_searchEdit->setVisible(searchable);
 }
 
 void ObjectListEditWidget::setTitle(QString title)
@@ -113,7 +117,7 @@ void ObjectListEditWidget::clearFilters()
 {
     m_filterBox->clear();
     m_filterBox->hide();
-    m_filterLabel->hide();
+    m_title->show();
 }
 
 void ObjectListEditWidget::scrollToBottom()
@@ -122,17 +126,20 @@ void ObjectListEditWidget::scrollToBottom()
     vbar->setSliderPosition( vbar->maximum() );
 }
 
-void ObjectListEditWidget::newFilter(RamObject *filter)
+void ObjectListEditWidget::addFilter(RamObject *filter)
 {
     m_filterBox->addItem( filter->name(), filter->uuid() );
 
     QList<QMetaObject::Connection> c;
-    c << connect(filter, &RamObject::removed, this, &ObjectListEditWidget::filterRemoved);
+    c << connect(filter, &RamObject::removed, this, &ObjectListEditWidget::removeFilter);
     c << connect(filter, &RamObject::changed, this, &ObjectListEditWidget::filterChanged);
     m_filterConnections[filter->uuid()] = c;
+
+    m_filterBox->show();
+    m_title->hide();
 }
 
-void ObjectListEditWidget::filterRemoved(RamObject *filter)
+void ObjectListEditWidget::removeFilter(RamObject *filter)
 {
     if (m_filterConnections.contains(filter->uuid()))
     {
@@ -162,8 +169,15 @@ void ObjectListEditWidget::filterChanged(RamObject *filter)
 
 void ObjectListEditWidget::currentFilterChanged(int i)
 {
-    if (i <= 0) m_list->filter("");
-    else m_list->filter( m_filterBox->currentData().toString() );
+    QString filter = "";
+    if (i <= 0) m_list->filter( filter );
+    else
+    {
+        filter = m_filterBox->currentData().toString();
+        m_list->filter( filter );
+
+    }
+    emit currentFilterChanged( filter );
 }
 
 void ObjectListEditWidget::setupUi(bool editableObjects)
@@ -176,11 +190,15 @@ void ObjectListEditWidget::setupUi(bool editableObjects)
 
     QHBoxLayout *buttonsLayout = new QHBoxLayout();
     buttonsLayout->setSpacing(3);
-    buttonsLayout->setContentsMargins(0,0,0,0);
+    buttonsLayout->setContentsMargins(0,3,0,0);
 
     m_title = new QLabel(this);
     m_title->setVisible(false);
     buttonsLayout->addWidget(m_title);
+
+    m_filterBox = new QComboBox(this);
+    m_filterBox->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+    buttonsLayout->addWidget(m_filterBox);
 
     buttonsLayout->addStretch();
 
@@ -195,21 +213,6 @@ void ObjectListEditWidget::setupUi(bool editableObjects)
     buttonsLayout->addWidget(m_addButton);
 
     mainLayout->addLayout(buttonsLayout);
-
-    QHBoxLayout *filterLayout = new QHBoxLayout();
-    filterLayout->setSpacing(3);
-    filterLayout->setContentsMargins(0,0,0,0);
-
-    m_filterLabel = new QLabel(this);
-    m_filterLabel->setMaximumSize(QSize(12,12));
-    m_filterLabel->setScaledContents(true);
-    m_filterLabel->setPixmap(QPixmap(":/icons/filter"));
-    filterLayout->addWidget(m_filterLabel);
-
-    m_filterBox = new QComboBox(this);
-    filterLayout->addWidget(m_filterBox);
-
-    mainLayout->addLayout(filterLayout);
 
     m_searchEdit = new DuQFSearchEdit(this);
     mainLayout->addWidget(m_searchEdit);
