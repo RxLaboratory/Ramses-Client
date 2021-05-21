@@ -117,7 +117,6 @@ public slots:
     // States
     RamState *createState();
 
-
 signals:
     void loggedIn(RamUser*);
     void loggedOut();
@@ -176,7 +175,6 @@ private:
 
     // Applications
     RamObjectList *_applications;
-
 };
 
 #endif // RAMSES_H

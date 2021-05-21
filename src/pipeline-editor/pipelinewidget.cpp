@@ -223,10 +223,11 @@ void PipelineWidget::changeProject(RamProject *project)
     foreach(RamStep *step, project->steps()) newStep(step);
 
     // add pipes
-    foreach(RamPipe *pipe, project->pipeline()) newPipe(pipe);
+    for ( int i = 0; i < project->pipeline()->count(); i++ ) newPipe( project->pipeline()->at(i) );
 
     _projectConnections << connect(project, &RamProject::newStep, this, &PipelineWidget::newStep);
-    _projectConnections << connect(project, &RamProject::newPipe, this, &PipelineWidget::newPipe);
+    _projectConnections << connect(project->pipeline(), &RamObjectList::objectAdded, this, &PipelineWidget::newPipe);
+    _projectConnections << connect(project->pipeline(), &RamObjectList::objectRemoved, this, &PipelineWidget::pipeRemoved);
 
     // Layout
     _nodeScene->clearSelection();
@@ -346,8 +347,11 @@ void PipelineWidget::assignStep()
     project->assignStep(templateStep);
 }
 
-void PipelineWidget::newPipe(RamPipe *pipe)
+void PipelineWidget::newPipe(RamObject *p)
 {
+    RamPipe *pipe = qobject_cast<RamPipe*>(p);
+    if (!pipe) return;
+
     // Get nodes
     DuQFNode *inputNode = nullptr;
     DuQFNode *outputNode = nullptr;
@@ -364,6 +368,8 @@ void PipelineWidget::newPipe(RamPipe *pipe)
 
     if (!outputNode) return;
     if (!inputNode) return;
+
+    QSignalBlocker b(_nodeScene->connectionManager());
 
     // Get or create the node connections
     DuQFConnection *co = _nodeScene->connectNodes(outputNode, inputNode);
@@ -382,7 +388,6 @@ void PipelineWidget::newPipe(RamPipe *pipe)
     mw->addObjectDockWidget(dockWidget);
     dockWidget->hide();
 
-    connect(pipe, SIGNAL(removed(RamObject*)), this, SLOT(pipeRemoved(RamObject*)));
     connect(pipe, SIGNAL(changed(RamObject*)), this, SLOT(pipeChanged(RamObject*)));
     connect(co->connector(), SIGNAL(selected(bool)), dockWidget, SLOT(setVisible(bool)));
 

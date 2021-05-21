@@ -403,8 +403,9 @@ void Daemon::getPipes(QTcpSocket *client)
     }
 
     QJsonArray pipes;
-    foreach(RamPipe *p, proj->pipeline())
+    for (int i = 0; i < proj->pipeline()->count(); i++)
     {
+        RamPipe *p = qobject_cast<RamPipe*>( proj->pipeline()->at(i));
         QJsonObject pipe;
         if (!p->inputStep()) continue;
         if (!p->outputStep()) continue;

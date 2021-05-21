@@ -73,6 +73,7 @@ void StepsManagerWidget::changeProject(RamProject *project)
 
     //add steps
     foreach(RamStep *step, project->steps()) newStep(step);
+
     _projectConnections << connect(project, &RamProject::newStep, this, &StepsManagerWidget::newStep);
     _projectConnections << connect(project, SIGNAL(stepRemoved(RamStep*)), this, SLOT(stepRemoved(RamStep*)));
 

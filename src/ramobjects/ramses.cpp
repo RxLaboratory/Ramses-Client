@@ -350,17 +350,15 @@ void Ramses::init()
 
 void Ramses::setCurrentProject(RamProject *currentProject)
 {
+    if ( currentProject ) _dbi->getProject(currentProject->uuid());
+
     if (_currentProject && currentProject)
         if (_currentProject->is( currentProject )) return;
 
     _currentProject = currentProject;
 
     if (_currentProject)
-    {
         _userSettings->setValue("currentProject", _currentProject->uuid() );
-        //Update
-        _dbi->getProject(currentProject->uuid());
-    }
 
     emit currentProjectChanged(_currentProject);
 
@@ -555,7 +553,6 @@ void Ramses::refresh()
     _dbi->getApplications();*/
     // Get current project
     _dbi->init();
-    if (_currentProject) _dbi->getProject(_currentProject->uuid());
 }
 
 bool Ramses::isConnected() const

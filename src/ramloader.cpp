@@ -200,13 +200,13 @@ QString RamLoader::gotProject(QJsonObject newP)
             existingProject->setWidth( newP.value("width").toInt());
             existingProject->setHeight( newP.value("height").toInt());
             existingProject->setFramerate( newP.value("framerate").toDouble());
+            //send the signals
+            existingProject->setFolderPath( newP.value("folderPath").toString());
+            b.unblock();
             gotSteps( newP.value("steps").toArray(), existingProject);
             gotAssetGroups( newP.value("assetGroups").toArray(), existingProject);
             gotSequences( newP.value("sequences").toArray(), existingProject);
             gotPipes( newP.value("pipes").toArray(), existingProject);
-            //send the signal
-            b.unblock();
-            existingProject->setFolderPath( newP.value("folderPath").toString());
             return uuid;
         }
     }
@@ -637,10 +637,7 @@ void RamLoader::gotSteps(QJsonArray steps, RamProject *project)
 
         foreach(QJsonValue a, s.value("applications").toArray())
             step->assignApplication( m_ram->application(a.toString()));
-
         project->addStep(step);
-
-        //emit newStep(step);
     }
 
     // sort the steps
@@ -794,7 +791,7 @@ void RamLoader::gotSequences(QJsonArray sequences, RamProject *project)
     RamObjectUberList *projectSequences = project->sequences();
     for (int i = projectSequences->count() - 1; i >= 0; i--)
     {
-        RamSequence *existingSequence = qobject_cast<RamSequence*>( projectSequences->at(i) );
+        RamObject *existingSequence = projectSequences->at(i);
         if (!uuids.contains(existingSequence->uuid()))
         {
             existingSequence->remove();
@@ -866,7 +863,7 @@ void RamLoader::gotShots(QJsonArray shots, RamSequence *sequence, RamProject *pr
         RamObject *existingShot = sequence->at(i);
         if (!uuids.contains(existingShot->uuid()))
         {
-            sequence->removeAll(existingShot->uuid());
+            existingShot->remove();
         }
     }
 
@@ -933,7 +930,7 @@ void RamLoader::gotStatusHistory(QJsonArray statusHistory, RamItem *item, RamPro
         RamStatus *existingStatus = qobject_cast<RamStatus*>( history->objectAt(i) );
         if (!uuids.contains(existingStatus->uuid()))
         {
-            history->removeObject(existingStatus);
+            existingStatus->remove();
         }
     }
 
@@ -1010,13 +1007,13 @@ void RamLoader::gotPipes(QJsonArray pipes, RamProject *project)
     }
 
     // Remove deleted pipes
-    QList<RamPipe*> projectPipeline = project->pipeline();
-    for (int i = projectPipeline.count() - 1; i >= 0; i--)
+    RamObjectList *projectPipeline = project->pipeline();
+    for (int i = projectPipeline->count() - 1; i >= 0; i--)
     {
-        RamPipe *existingPipe = projectPipeline.at(i);
+        RamObject *existingPipe = projectPipeline->at(i);
         if (!uuids.contains(existingPipe->uuid()))
         {
-            project->removePipe(existingPipe->uuid());
+            existingPipe->remove();
         }
     }
 }
@@ -1027,10 +1024,10 @@ QString RamLoader::gotPipe(QJsonObject newP, RamProject *project)
     QString uuid = newP.value("uuid").toString();
 
     // loop through existing pipes to update them
-    QList<RamPipe*> projectPipeline = project->pipeline();
-    for (int i = projectPipeline.count() - 1; i >= 0; i--)
+    RamObjectList *projectPipeline = project->pipeline();
+    for (int i = projectPipeline->count() - 1; i >= 0; i--)
     {
-        RamPipe *existingPipe = projectPipeline.at(i);
+        RamPipe *existingPipe = qobject_cast<RamPipe*>( projectPipeline->at(i) );
 
         if (uuid == existingPipe->uuid())
         {
@@ -1061,7 +1058,7 @@ QString RamLoader::gotPipe(QJsonObject newP, RamProject *project)
         RamFileType *ft = m_ram->fileType( newP.value("filetypeUuid").toString()) ;
         if (ft) pipe->setFileType( ft );
 
-        project->addPipe(pipe);
+        projectPipeline->append( pipe );
     }
 
     return uuid;

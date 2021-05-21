@@ -5,6 +5,7 @@ RamProject::RamProject(QString shortName, QString name, QString uuid, QObject *p
 {
     setObjectType(Project);
     _sequences = new RamObjectUberList(this);
+    _pipeline = new RamObjectList(this);
     _dbi->createProject(_shortName, _name, _uuid);
 }
 
@@ -227,57 +228,27 @@ void RamProject::moveShotToSequence(RamShot *shot, RamSequence *sequence)
     moveShotToSequence(shot, sequence->uuid());
 }
 
-QList<RamPipe *> RamProject::pipeline()
+RamObjectList *RamProject::pipeline()
 {
     return _pipeline;
 }
 
-RamPipe *RamProject::pipe(QString uuid)
+RamPipe *RamProject::pipe(RamStep *outputStep, RamStep *inputStep)
 {
-    foreach(RamPipe *pipe, _pipeline)
-        if (pipe->uuid() == uuid) return pipe;
+    for (int i = 0; i < _pipeline->count(); i++)
+    {
+        RamPipe *p = qobject_cast<RamPipe*>(_pipeline->at(i));
+        if ( p->outputStep()->is(outputStep) && p->inputStep()->is(inputStep) ) return p;
+    }
 
-    return nullptr;
-}
-
-RamPipe *RamProject::pipe(RamStep *o, RamStep *i)
-{
-    foreach(RamPipe *p, _pipeline)
-        if (p->outputStep()->uuid() == o->uuid() && p->inputStep()->uuid() == i->uuid()) return p;
     return nullptr;
 }
 
 RamPipe *RamProject::createPipe(RamStep *output, RamStep *input)
 {
     RamPipe *p = new RamPipe(output, input);
-    addPipe(p);
+    _pipeline->append(p);
     return p;
-}
-
-void RamProject::addPipe(RamPipe *pipe)
-{
-    pipe->setProjectUuid( _uuid );
-    _pipeline << pipe;
-    emit newPipe(pipe);
-}
-
-void RamProject::removePipe(QString uuid)
-{
-    for(int i = _pipeline.count() -1; i >= 0; i--)
-    {
-        RamPipe *p = _pipeline.at(i);
-        if (p->uuid() == uuid)
-        {
-            _pipeline.removeAt(i);
-            emit pipeRemoved(p);
-            p->remove();
-        }
-    }
-}
-
-void RamProject::removePipe(RamPipe *pipe)
-{
-    removePipe(pipe->uuid());
 }
 
 QList<RamStep *> RamProject::steps() const

@@ -38,7 +38,7 @@ private slots:
     void templateStepRemoved(RamObject *o);
     void templateStepChanged();
     void assignStep();
-    void newPipe(RamPipe *pipe);
+    void newPipe(RamObject *p);
     void stepsConnected(DuQFConnection *co);
     void connectionRemoved(DuQFConnection *co);
     void pipeChanged(RamObject *p);

@@ -70,13 +70,9 @@ public:
     void moveShotToSequence(RamShot *shot, RamSequence *sequence);
 
     // Pipeline
-    QList<RamPipe *> pipeline();
-    RamPipe *pipe(QString uuid);
-    RamPipe *pipe(RamStep *o, RamStep *i);
-    RamPipe* createPipe(RamStep *output, RamStep *input);
-    void addPipe(RamPipe *pipe);
-    void removePipe(QString uuid);
-    void removePipe(RamPipe *pipe);
+    RamObjectList *pipeline();
+    RamPipe *pipe(RamStep *outputStep, RamStep *inputStep);
+    RamPipe *createPipe(RamStep *output, RamStep *input);
 
     void update();
 
@@ -101,7 +97,7 @@ private:
     QList<RamStep *> _steps;
     QList<RamAssetGroup *> _assetGroups;
     RamObjectUberList *_sequences;
-    QList<RamPipe *> _pipeline;
+    RamObjectList *_pipeline;
 };
 
 #endif // RAMPROJECT_H
