@@ -7,6 +7,7 @@
 
 #include "objecteditwidget.h"
 #include "ramses.h"
+#include "statushistorywidget.h"
 #include "duqf-widgets/duqffolderdisplaywidget.h"
 
 class ShotEditWidget : public ObjectEditWidget
@@ -39,6 +40,7 @@ private:
     QDoubleSpinBox *secondsBox;
     QSpinBox *framesBox;
     QComboBox *sequencesBox;
+    StatusHistoryWidget *statusHistoryWidget;
 
     RamSequence *sequence();
     RamProject *project();

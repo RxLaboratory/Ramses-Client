@@ -27,6 +27,7 @@ void ShotEditWidget::setObject(RamObject *obj)
     secondsBox->setValue(0);
     folderWidget->setPath("");
     sequencesBox->clear();
+    statusHistoryWidget->setItem(shot);
 
     if (!shot) return;
 
@@ -144,7 +145,8 @@ void ShotEditWidget::setupUi()
     folderWidget = new DuQFFolderDisplayWidget(this);
     mainLayout->insertWidget(1, folderWidget);
 
-    mainLayout->addStretch();
+    statusHistoryWidget = new StatusHistoryWidget( this );
+    mainLayout->addWidget(statusHistoryWidget);
 }
 
 void ShotEditWidget::connectEvents()
