@@ -175,21 +175,7 @@ void Daemon::getCurrentStatus(QString shortName, QString name, QString type, QSt
     QJsonArray statuses;
 
     RamItem *item = nullptr;
-    if (type == "A")
-    {
-        for (int i = 0; i < proj->assets().count(); i++)
-        {
-            RamItem *asset = proj->assets().at(i);
-            if (asset->shortName() == shortName)
-            {
-                if (name == "" || asset->name() == name)
-                {
-                    item = asset;
-                    break;
-                }
-            }
-        }
-    }
+    if (type == "A") item = qobject_cast<RamItem*>( proj->assetGroups()->objectFromName(shortName, name) );
     else item = qobject_cast<RamItem*>( proj->sequences()->objectFromName(shortName, name) );
 
     if (!item)
@@ -255,8 +241,9 @@ void Daemon::getAssets(QTcpSocket *client)
     }
 
     QJsonArray assets;
-    foreach(RamAsset *a, proj->assets())
+    for (int i = 0; i < proj->assetGroups()->objectCount(); i++)
     {
+        RamAsset *a = qobject_cast<RamAsset*>( proj->assetGroups()->objectAt(i) );
         QJsonObject asset = assetToJson(a);
         assets.append(asset);
     }
@@ -276,20 +263,7 @@ void Daemon::getAsset(QString shortName, QString name, QTcpSocket *client)
         return;
     }
 
-    RamAsset *asset = nullptr;
-    for (int i = 0; i < proj->assets().count(); i++)
-    {
-        RamAsset *a = proj->assets().at(i);
-        if (a->shortName() == shortName)
-        {
-            if (name == "" || a->name() == name)
-            {
-                asset = a;
-                break;
-            }
-        }
-    }
-
+    RamAsset *asset = qobject_cast<RamAsset*>( proj->assetGroups()->objectFromName(shortName, name) );
     if (!asset)
     {
         post(client, QJsonObject(), "getAsset", "Sorry, asset not found. Check its short name and name", false);
@@ -315,9 +289,9 @@ void Daemon::getAssetGroups(QTcpSocket *client)
     }
 
     QJsonArray assetGroups;
-    for( int i = 0; i < proj->assetGroups().count(); i++)
+    for( int i = 0; i < proj->assetGroups()->count(); i++)
     {
-        RamAssetGroup *ag = proj->assetGroups().at(i);
+        RamAssetGroup *ag = qobject_cast<RamAssetGroup*>( proj->assetGroups()->at(i) );
         QJsonObject assetGroup;
         assetGroup.insert("shortName", ag->shortName());
         assetGroup.insert("name", ag->name());
@@ -470,7 +444,7 @@ void Daemon::getShots(QString filter, QTcpSocket *client)
     QJsonArray shots;
     for (int i = 0; i < proj->sequences()->objectCount(); i++)
     {
-        RamShot *s = (RamShot*)proj->sequences()->objectAt(i);
+        RamShot *s = qobject_cast<RamShot*>( proj->sequences()->objectAt(i) );
 
         bool ok = filter == "([a-z0-9+-]*\\s*)*";
         if (!ok)

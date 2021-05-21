@@ -16,6 +16,7 @@ RamLoader::RamLoader(QObject *parent):
 
     connect(this, &RamLoader::refresh, m_ram, &Ramses::refresh);
     connect(this, &RamLoader::ready, m_ram, &Ramses::init);
+    connect(this, &RamLoader::projectReady, m_ram, &Ramses::projectReady);
 }
 
 void RamLoader::run()
@@ -30,8 +31,8 @@ void RamLoader::run()
     else if (query == "getProjects") gotProjects( m_data.value("content").toArray());
     else if (query == "getProject") {
         m_pm->setTitle("Loading project.");
-        gotProject( m_data.value("content").toObject());
-        //TODO emit currentProjectChanged(_currentProject);
+        QString uuid = gotProject( m_data.value("content").toObject());
+        emit projectReady(uuid);
     }
     else if (query == "getTemplateSteps") gotTemplateSteps( m_data.value("content").toArray());
     else if (query == "getTemplateAssetGroups") gotTemplateAssetGroups( m_data.value("content").toArray());
@@ -201,8 +202,8 @@ QString RamLoader::gotProject(QJsonObject newP)
             existingProject->setHeight( newP.value("height").toInt());
             existingProject->setFramerate( newP.value("framerate").toDouble());
             //send the signals
-            existingProject->setFolderPath( newP.value("folderPath").toString());
             b.unblock();
+            existingProject->setFolderPath( newP.value("folderPath").toString());
             gotSteps( newP.value("steps").toArray(), existingProject);
             gotAssetGroups( newP.value("assetGroups").toArray(), existingProject);
             gotSequences( newP.value("sequences").toArray(), existingProject);
@@ -641,7 +642,7 @@ void RamLoader::gotSteps(QJsonArray steps, RamProject *project)
     }
 
     // sort the steps
-    project->sortSteps();
+    project->sortSteps(); 
 }
 
 void RamLoader::gotAssetGroups(QJsonArray assetGroups, RamProject *project)
@@ -651,61 +652,67 @@ void RamLoader::gotAssetGroups(QJsonArray assetGroups, RamProject *project)
     m_pm->addToMaximum(assetGroups.count());
     m_pm->setText("Loading asset groups...");
 
-    QList<RamAssetGroup*> projectAssetGroups = project->assetGroups();
+    QStringList uuids;
+    // Update asset groups
+    for (int j = 0; j < assetGroups.count(); j++)
+    {
+        m_pm->increment();
+        uuids << gotAssetGroup( assetGroups.at(j).toObject(), project );
+    }
+
+    // Remove deleted asset groups
+    RamObjectUberList *projectAssetGroups = project->assetGroups();
+    for (int i = projectAssetGroups->count() - 1; i >= 0; i--)
+    {
+        RamObject *existingAssetGroup = projectAssetGroups->at(i);
+        if (!uuids.contains(existingAssetGroup->uuid()))
+        {
+            existingAssetGroup->remove();
+        }
+    }
+
+    // sort the sequences
+    projectAssetGroups->sort();
+}
+
+QString RamLoader::gotAssetGroup(QJsonObject newAG, RamProject *project)
+{
+    DBISuspender s;
+    QString uuid = newAG.value("uuid").toString();
 
     // loop through existing asset groups to update them
-    for (int i = projectAssetGroups.count() - 1; i >= 0; i--)
+    RamObjectUberList *projectAssetGroups = project->assetGroups();
+    for (int i = projectAssetGroups->count() - 1; i >= 0; i--)
     {
-        m_pm->increment();
-        RamAssetGroup *existingAssetGroup = projectAssetGroups[i];
-        // loop through new steps to update
-        bool found = false;
-        for (int j = assetGroups.count() - 1; j >= 0; j--)
+        RamAssetGroup *existingAssetGroup = qobject_cast<RamAssetGroup*>( projectAssetGroups->at(i) );
+
+        if (uuid == existingAssetGroup->uuid())
         {
-            QJsonObject newAG = assetGroups[j].toObject();
-            QString uuid = newAG.value("uuid").toString();
-            // Found, update
-            if (uuid == existingAssetGroup->uuid())
-            {
-                found = true;
-                //Emit just one signal
-                QSignalBlocker b(existingAssetGroup);
-                existingAssetGroup->setName( newAG.value("name").toString());
-                gotAssets( newAG.value("assets").toArray(), existingAssetGroup, project);
-                b.unblock();
-                existingAssetGroup->setShortName( newAG.value("shortName").toString());
-                //remove from new asset groups
-                assetGroups.removeAt(j);
-                break;
-            }
-        }
-        // Not found, remove from existing
-        if (!found)
-        {
-            project->removeAssetGroup(existingAssetGroup);
+            //Emit just one signal
+            QSignalBlocker b(existingAssetGroup);
+            existingAssetGroup->setName( newAG.value("name").toString() );
+            //add assets
+            b.unblock();
+            gotAssets( newAG.value("assets").toArray(), existingAssetGroup, project);
+            existingAssetGroup->setShortName( newAG.value("shortName").toString());
+            return uuid;
         }
     }
 
-    // loop through remaining new asset groups to add them
-    for (int i = 0; i < assetGroups.count(); i++)
-    {
-        m_pm->increment();
-        QJsonObject ag = assetGroups[i].toObject();
-        RamAssetGroup *assetGroup = new RamAssetGroup(
-                    ag.value("shortName").toString(),
-                    ag.value("name").toString(),
-                    false,
-                    ag.value("uuid").toString()
-                    );
-        assetGroup->setProjectUuid( ag.value("projectUuid").toString());
+    // not existing, let's create it
+    RamAssetGroup *assetGroup = new RamAssetGroup(
+                newAG.value("shortName").toString(),
+                newAG.value("name").toString(),
+                newAG.value("projectUuid").toString(),
+                newAG.value("uuid").toString()
+                );
 
-        //add assets
-        gotAssets( ag.value("assets").toArray(), assetGroup, project);
-        project->addAssetGroup(assetGroup);
-    }
+    //add assets
+    gotAssets( newAG.value("assets").toArray(), assetGroup, project);
 
-    // sort the asset groups
-    project->sortAssetGroups();
+    projectAssetGroups->append(assetGroup);
+
+    return uuid;
 }
 
 void RamLoader::gotAssets(QJsonArray assets, RamAssetGroup *assetGroup, RamProject *project)
@@ -715,61 +722,65 @@ void RamLoader::gotAssets(QJsonArray assets, RamAssetGroup *assetGroup, RamProje
     m_pm->addToMaximum(assets.count());
     m_pm->setText("Loading assets");
 
-    QList<RamAsset*> groupAssets = assetGroup->assets();
+    QStringList uuids;
 
-    // loop through existing assets to update them
-    for (int i = groupAssets.count() - 1; i >= 0; i--)
+    // Update assets
+    for (int j = 0; j < assets.count(); j++)
     {
         m_pm->increment();
-        RamAsset *existingAsset = groupAssets[i];
-        // loop through new steps to update
-        bool found = false;
-        for (int j = assets.count() - 1; j >= 0; j--)
+        uuids << gotAsset( assets.at(j).toObject(), assetGroup, project );
+    }
+
+    // Remove deleted assets
+    for (int i = assetGroup->count() - 1; i >= 0; i--)
+    {
+        RamObject *existingAsset = assetGroup->at(i);
+        if (!uuids.contains(existingAsset->uuid()))
         {
-            QJsonObject newA = assets[j].toObject();
-            QString uuid = newA.value("uuid").toString();
-            // Found, update
-            if (uuid == existingAsset->uuid())
-            {
-                found = true;
-                //Emit just one signal
-                QSignalBlocker b(existingAsset);
-                existingAsset->setName( newA.value("name").toString());
-                existingAsset->setTags(newA.value("tags").toString());
-                gotStatusHistory( newA.value("statusHistory").toArray(), existingAsset, project);
-                b.unblock();
-                existingAsset->setShortName( newA.value("shortName").toString());
-                //remove from new asset groups
-                assets.removeAt(j);
-                break;
-            }
-        }
-        // Not found, remove from existing
-        if (!found)
-        {
-            assetGroup->removeAsset(existingAsset);
+            existingAsset->remove();
         }
     }
 
-    // loop through remaining new assets to add them
-    for (int i = 0; i < assets.count(); i++)
-    {
-        m_pm->increment();
-        QJsonObject a = assets[i].toObject();
-        RamAsset *asset = new RamAsset(
-                    a.value("shortName").toString(),
-                    a.value("name").toString(),
-                    a.value("assetGroupUuid").toString(),
-                    a.value("uuid").toString()
-                    );
-        asset->setTags( a.value("tags").toString());
-        gotStatusHistory( a.value("statusHistory").toArray(), asset, project);
+    // sort the asset group
+    assetGroup->sort();
+}
 
-        assetGroup->addAsset(asset);
+QString RamLoader::gotAsset(QJsonObject newA, RamAssetGroup *assetGroup, RamProject *project)
+{
+    DBISuspender s;
+    QString uuid = newA.value("uuid").toString();
+
+    // loop through existing shots to update them
+    for (int i = assetGroup->count() - 1; i >= 0; i--)
+    {
+        RamAsset *existingAsset = qobject_cast<RamAsset*>( assetGroup->at(i) );
+
+        if (uuid == existingAsset->uuid())
+        {
+            //Emit just one signal
+            QSignalBlocker b(existingAsset);
+            existingAsset->setName( newA.value("name").toString());
+            existingAsset->setTags(newA.value("tags").toString());
+            b.unblock();
+            gotStatusHistory( newA.value("statusHistory").toArray(), existingAsset, project);
+            existingAsset->setShortName( newA.value("shortName").toString());
+            return uuid;
+        }
     }
 
-    // sort the asset groups
-    assetGroup->sortAssets();
+    // not existing, let's create it
+    RamAsset *asset = new RamAsset(
+                newA.value("shortName").toString(),
+                newA.value("name").toString(),
+                newA.value("assetGroupUuid").toString(),
+                newA.value("uuid").toString()
+                );
+    asset->setTags( newA.value("tags").toString());
+    gotStatusHistory( newA.value("statusHistory").toArray(), asset, project);
+
+    assetGroup->append(asset);
+
+    return uuid;
 }
 
 void RamLoader::gotSequences(QJsonArray sequences, RamProject *project)
@@ -818,9 +829,9 @@ QString RamLoader::gotSequence(QJsonObject newS, RamProject *project)
             //Emit just one signal
             QSignalBlocker b(existingSequence);
             existingSequence->setName( newS.value("name").toString());
+            b.unblock();
             //add shots
             gotShots( newS.value("shots").toArray(), existingSequence, project);
-            b.unblock();
             existingSequence->setShortName( newS.value("shortName").toString());
             return uuid;
         }
@@ -879,7 +890,7 @@ QString RamLoader::gotShot(QJsonObject newS, RamSequence *sequence, RamProject *
     // loop through existing shots to update them
     for (int i = sequence->count() - 1; i >= 0; i--)
     {
-        RamShot *existingShot = (RamShot*)sequence->at(i);
+        RamShot *existingShot = qobject_cast<RamShot*>( sequence->at(i) );
 
         if (uuid == existingShot->uuid())
         {
@@ -888,8 +899,8 @@ QString RamLoader::gotShot(QJsonObject newS, RamSequence *sequence, RamProject *
             existingShot->setName( newS.value("name").toString());
             existingShot->setDuration( newS.value("duration").toDouble() );
             existingShot->setOrder( newS.value("order").toInt() );
-            gotStatusHistory( newS.value("statusHistory").toArray(), existingShot, project);
             b.unblock();
+            gotStatusHistory( newS.value("statusHistory").toArray(), existingShot, project);
             existingShot->setShortName( newS.value("shortName").toString());
             return uuid;
         }

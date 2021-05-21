@@ -5,7 +5,7 @@ AssetGroupEditWidget::AssetGroupEditWidget(QWidget *parent) :
 {
     setupUi();
     connectEvents();
-    setAssetGroup(nullptr);
+    setObject(nullptr);
 }
 
 AssetGroupEditWidget::AssetGroupEditWidget(RamAssetGroup *ag, QWidget *parent) :
@@ -13,36 +13,32 @@ AssetGroupEditWidget::AssetGroupEditWidget(RamAssetGroup *ag, QWidget *parent) :
 {
     setupUi();
     connectEvents();
-    setAssetGroup(ag);}
+    setObject(ag);
+}
 
 RamAssetGroup *AssetGroupEditWidget::assetGroup() const
 {
     return _assetGroup;
 }
 
-void AssetGroupEditWidget::setAssetGroup(RamAssetGroup *assetGroup)
+void AssetGroupEditWidget::setObject(RamObject *obj)
 {
+    RamAssetGroup *assetGroup = qobject_cast<RamAssetGroup*>(obj);
+
     this->setEnabled(false);
 
-    setObject(assetGroup);
+    ObjectEditWidget::setObject(assetGroup);
     _assetGroup = assetGroup;
 
     QSignalBlocker b1(assetsList);
 
     //Reset values
     folderWidget->setPath("");
-    assetsList->clear();
+    assetsList->setList(assetGroup);
 
     if (!assetGroup) return;
 
     folderWidget->setPath(Ramses::instance()->path(assetGroup));
-
-    // Load assets
-    foreach(RamAsset *a, assetGroup->assets()) newAsset(a);
-
-    _objectConnections << connect(assetGroup, &RamAssetGroup::changed, this, &AssetGroupEditWidget::assetGroupChanged);
-    _objectConnections << connect(assetGroup, &RamAssetGroup::newAsset, this, &AssetGroupEditWidget::newAsset);
-    _objectConnections << connect(assetGroup, &RamAssetGroup::assetRemovedFromGroup, this, &AssetGroupEditWidget::assetRemoved);
 
     this->setEnabled(Ramses::instance()->isProjectAdmin());
 }
@@ -63,35 +59,10 @@ void AssetGroupEditWidget::update()
     updating = false;
 }
 
-void AssetGroupEditWidget::assetGroupChanged(RamObject *o)
-{
-    if (updating) return;
-    Q_UNUSED(o);
-    setAssetGroup(_assetGroup);
-}
-
-void AssetGroupEditWidget::newAsset(RamAsset *a)
-{
-    assetsList->addObject(a, _creatingAsset);
-    _creatingAsset = false;
-}
-
-void AssetGroupEditWidget::assetRemoved(RamAsset *asset)
-{
-    assetsList->removeObject(asset);
-}
-
-void AssetGroupEditWidget::addAsset()
+void AssetGroupEditWidget::createAsset()
 {
     if (!_assetGroup) return;
-    _creatingAsset = true;
     _assetGroup->createAsset();
-}
-
-void AssetGroupEditWidget::removeAsset(RamObject *o)
-{
-    if (!_assetGroup) return;
-    o->remove();
 }
 
 void AssetGroupEditWidget::setupUi()
@@ -99,13 +70,12 @@ void AssetGroupEditWidget::setupUi()
     folderWidget = new DuQFFolderDisplayWidget(this);
     mainLayout->insertWidget(1, folderWidget);
 
-    assetsList = new SimpleObjectList(true, this);
+    assetsList = new ObjectListEditWidget(true, this);
     assetsList->setTitle("Assets");
     mainLayout->addWidget(assetsList);
 }
 
 void AssetGroupEditWidget::connectEvents()
 {
-    connect(assetsList, &SimpleObjectList::add, this, &AssetGroupEditWidget::addAsset);
-    connect(assetsList, &SimpleObjectList::objectRemoved, this, &AssetGroupEditWidget::removeAsset);
+    connect(assetsList, &ObjectListEditWidget::add, this, &AssetGroupEditWidget::createAsset);
 }

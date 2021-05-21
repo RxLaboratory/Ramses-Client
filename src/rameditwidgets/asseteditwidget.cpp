@@ -6,7 +6,7 @@ AssetEditWidget::AssetEditWidget(RamAsset *asset, QWidget *parent) :
     setupUi();
     connectEvents();
 
-    setAsset(asset);
+    setObject(asset);
 }
 
 RamAsset *AssetEditWidget::asset() const
@@ -14,11 +14,12 @@ RamAsset *AssetEditWidget::asset() const
     return _asset;
 }
 
-void AssetEditWidget::setAsset(RamAsset *asset)
+void AssetEditWidget::setObject(RamObject *obj)
 {
+    RamAsset *asset = qobject_cast<RamAsset*>(obj);
     this->setEnabled(false);
 
-    setObject(asset);
+    ObjectEditWidget::setObject(asset);
     _asset = asset;
 
     QSignalBlocker b1(tagsEdit);
@@ -40,16 +41,17 @@ void AssetEditWidget::setAsset(RamAsset *asset)
     RamProject *proj = project();
     if (!proj) return;
 
-    for( RamAssetGroup *ag: proj->assetGroups() )
+    for (int i = 0; i < proj->assetGroups()->count(); i++ )
     {
-        newAssetGroup(ag);
+        RamAssetGroup *ag = qobject_cast<RamAssetGroup*>( proj->assetGroups()->at(i) );
+        newAssetGroup( ag );
+
         if (_asset->assetGroupUuid() == ag->uuid())
             assetGroupBox->setCurrentIndex( assetGroupBox->count() -1 );
     }
 
-    _objectConnections << connect(asset, &RamAsset::changed, this, &AssetEditWidget::assetChanged);
-    _objectConnections << connect(proj,SIGNAL(assetGroupRemoved(QString)), this, SLOT(assetGroupRemoved(QString)));
-    _objectConnections << connect(proj, &RamProject::newAssetGroup, this, &AssetEditWidget::newAssetGroup);
+    _objectConnections << connect( proj->assetGroups(), &RamObjectList::objectRemoved, this, &AssetEditWidget::assetGroupRemoved);
+    _objectConnections << connect( proj->assetGroups(), &RamObjectList::objectAdded, this, &AssetEditWidget::newAssetGroup);
 
     this->setEnabled(Ramses::instance()->isLead());
 }
@@ -58,21 +60,14 @@ void AssetEditWidget::update()
 {
     if (!_asset) return;
 
+    if (!checkInput()) return;
+
     updating = true;
 
     _asset->setTags(tagsEdit->text());
     ObjectEditWidget::update();
 
     updating = false;
-}
-
-bool AssetEditWidget::checkInput()
-{
-    if (! ObjectEditWidget::checkInput() ) return false;
-
-    if (assetGroupBox->currentIndex() < 0) return false;
-
-    return true;
 }
 
 void AssetEditWidget::moveAsset()
@@ -84,14 +79,7 @@ void AssetEditWidget::moveAsset()
         proj->moveAssetToGroup(_asset, assetGroupBox->currentData().toString());
 }
 
-void AssetEditWidget::assetChanged(RamObject *o)
-{
-    if (updating) return;
-    Q_UNUSED(o);
-    setAsset(_asset);
-}
-
-void AssetEditWidget::newAssetGroup(RamAssetGroup *ag)
+void AssetEditWidget::newAssetGroup(RamObject *ag)
 {
     assetGroupBox->addItem(ag->name(), ag->uuid());
     connect(ag, &RamAssetGroup::changed, this, &AssetEditWidget::assetGroupChanged);
@@ -105,11 +93,11 @@ void AssetEditWidget::assetGroupChanged(RamObject *o)
     }
 }
 
-void AssetEditWidget::assetGroupRemoved(QString uuid)
+void AssetEditWidget::assetGroupRemoved(RamObject *o)
 {
     for(int i = assetGroupBox->count()-1; i >=0; i--)
     {
-        if (assetGroupBox->itemData(i).toString() == uuid) assetGroupBox->removeItem(i);
+        if (assetGroupBox->itemData(i).toString() == o->uuid()) assetGroupBox->removeItem(i);
     }
 }
 

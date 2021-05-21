@@ -20,6 +20,7 @@ public slots:
 signals:
     void refresh();
     void ready();
+    void projectReady(QString);
 
 protected:
     static RamLoader *_instance;
@@ -47,8 +48,10 @@ private:
     void gotSteps(QJsonArray steps, RamProject *project);
     // asset groups
     void gotAssetGroups(QJsonArray assetGroups, RamProject *project);
+    QString gotAssetGroup(QJsonObject newAG, RamProject *project);
     // assets
     void gotAssets(QJsonArray assets, RamAssetGroup *assetGroup, RamProject *project);
+    QString gotAsset(QJsonObject newA, RamAssetGroup *assetGroup, RamProject *project);
     // sequences
     void gotSequences(QJsonArray sequences, RamProject *project);
     QString gotSequence(QJsonObject newS, RamProject *project);

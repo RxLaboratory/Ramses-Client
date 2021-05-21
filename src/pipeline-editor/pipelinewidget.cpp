@@ -216,6 +216,7 @@ void PipelineWidget::changeProject(RamProject *project)
     // Clear scene
     _nodeScene->clear();
     _nodeView->reinitTransform();
+    _pipeConnections.clear();
 
     if (!project) return;
 
@@ -431,14 +432,19 @@ void PipelineWidget::connectionRemoved(DuQFConnection *co)
 
 void PipelineWidget::pipeChanged(RamObject *p)
 {
-    RamPipe *pipe = (RamPipe*)p;
+
+    RamPipe *pipe = qobject_cast<RamPipe*>( p );
+
+    if (!pipe) return;
 
     if (_pipeConnections.contains(pipe->uuid()))
     {
         DuQFConnection *co = _pipeConnections.value(pipe->uuid());
+
         //update stepnodes
         bool outputOk = false;
         bool inputOk = false;
+
         foreach(DuQFNode *n, _nodeScene->nodes())
         {
             StepNode *outputNode = (StepNode*)n;
@@ -462,7 +468,6 @@ void PipelineWidget::pipeChanged(RamObject *p)
         if (ft) co->connector()->setTitle(ft->shortName());
         else co->connector()->setTitle("");
     }
-
 }
 
 void PipelineWidget::pipeRemoved(RamObject *p)

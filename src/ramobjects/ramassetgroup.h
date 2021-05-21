@@ -2,8 +2,9 @@
 #define RAMASSETGROUP_H
 
 #include "ramasset.h"
+#include "ramobjectlist.h"
 
-class RamAssetGroup : public RamObject
+class RamAssetGroup : public RamObjectList
 {
     Q_OBJECT
 public:
@@ -18,27 +19,15 @@ public:
     void setProjectUuid(const QString &projectUuid);
 
     // Assets
-    QList<RamAsset *> assets() const;
     RamAsset *asset(QString uuid) const;
-    void addAsset(RamAsset *asset);
+    void append(RamAsset *asset);
     void createAsset(QString shortName = "NEW", QString name = "Asset");
-    void removeAsset(QString uuid);
-    void removeAsset(RamObject *asset);
-    void sortAssets();
 
-    void update();
-
-public slots:
-    void assetRemoved(RamObject *o);
-
-signals:
-    void newAsset(RamAsset *);
-    void assetRemovedFromGroup(RamAsset*);
+    void update() Q_DECL_OVERRIDE;
 
 private:
     bool _template;
     QString _projectUuid;
-    QList<RamAsset*> _assets;
 };
 
 #endif // RAMASSETGROUP_H

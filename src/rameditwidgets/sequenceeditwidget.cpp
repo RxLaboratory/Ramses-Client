@@ -37,8 +37,6 @@ void SequenceEditWidget::setObject(RamObject *obj)
 
     if (!sequence) return;
 
-    // Load shots
-
     this->setEnabled(Ramses::instance()->isProjectAdmin());
 }
 
@@ -59,9 +57,9 @@ void SequenceEditWidget::update()
 }
 
 void SequenceEditWidget::createShot()
-{qDebug() << _sequence;
+{
     if (!_sequence) return;
-    sequence()->createShot();
+    _sequence->createShot();
 }
 
 void SequenceEditWidget::setupUi()

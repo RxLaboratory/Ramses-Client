@@ -5,6 +5,7 @@ RamProject::RamProject(QString shortName, QString name, QString uuid, QObject *p
 {
     setObjectType(Project);
     _sequences = new RamObjectUberList(this);
+    _assetGroups = new RamObjectUberList(this);
     _pipeline = new RamObjectList(this);
     _dbi->createProject(_shortName, _name, _uuid);
 }
@@ -87,114 +88,35 @@ void RamProject::stepRemoved(RamObject *o)
     removeStep(o);
 }
 
-void RamProject::assetGroupRemoved(RamObject *o)
-{
-    removeAssetGroup(o);
-}
-
-QList<RamAssetGroup *> RamProject::assetGroups() const
+RamObjectUberList *RamProject::assetGroups() const
 {
     return _assetGroups;
 }
 
 RamAssetGroup *RamProject::assetGroup(QString uuid)
 {
-    foreach (RamAssetGroup *ag, _assetGroups)
-    {
-        if (ag->uuid() == uuid) return ag;
-    }
-    return nullptr;
-}
-
-void RamProject::addAssetGroup(RamAssetGroup *assetGroup)
-{
-    _assetGroups << assetGroup;
-    connect(assetGroup, SIGNAL(removed(RamObject*)), this, SLOT(assetGroupRemoved(RamObject*)));
-    emit newAssetGroup(assetGroup);
-}
-
-void RamProject::assignAssetGroup(RamAssetGroup *templateAssetGroup)
-{
-    RamAssetGroup *assetGroup = templateAssetGroup->createFromTemplate(_uuid);
-    addAssetGroup(assetGroup);
+    return qobject_cast<RamAssetGroup*>(_assetGroups->fromUuid(uuid));
 }
 
 void RamProject::createAssetGroup(QString shortName, QString name)
 {
     RamAssetGroup *assetGroup = new RamAssetGroup(shortName, name, _uuid);
-    addAssetGroup(assetGroup);
-}
-
-void RamProject::removeAssetGroup(QString uuid)
-{
-    for (int i = _assetGroups.count() -1; i >= 0; i--)
-    {
-        RamAssetGroup *ag = _assetGroups[i];
-        if (ag->uuid() == uuid)
-        {
-            _assetGroups.removeAt(i);
-            ag->remove();
-            emit assetGroupRemoved(uuid);
-        }
-    }
-}
-
-void RamProject::removeAssetGroup(RamObject *assetGroup)
-{
-    removeAssetGroup(assetGroup->uuid());
-}
-
-bool assetGroupSorter(RamAssetGroup *a, RamAssetGroup *b)
-{
-    return a->shortName() < b->shortName();
-}
-
-void RamProject::sortAssetGroups()
-{
-    std::sort(_assetGroups.begin(), _assetGroups.end(), assetGroupSorter);
-}
-
-QList<RamAsset *> RamProject::assets()
-{
-    QList<RamAsset*> as;
-    foreach(RamAssetGroup *ag, _assetGroups)
-    {
-        as.append(ag->assets());
-    }
-    return as;
-}
-
-RamAsset *RamProject::asset(QString uuid) const
-{
-    foreach(RamAssetGroup *ag, _assetGroups)
-    {
-        foreach(RamAsset *a, ag->assets())
-        {
-            if (a->uuid() == uuid) return a;
-        }
-    }
-
-    return nullptr;
+    _assetGroups->append( assetGroup );
 }
 
 void RamProject::moveAssetToGroup(RamAsset *asset, QString groupUuid)
 {
-    for(int i = 0; i < _assetGroups.count(); i++)
+    for(int i = 0; i < _assetGroups->count(); i++)
     {
-        RamAssetGroup *assetGroup = _assetGroups.at(i);
-        if (assetGroup->uuid() == groupUuid) assetGroup->addAsset(asset);
-        else assetGroup->removeAsset(asset);
+        RamAssetGroup *assetGroup = qobject_cast<RamAssetGroup*>( _assetGroups->at(i) );
+        if (assetGroup->uuid() == groupUuid) assetGroup->append(asset);
+        else assetGroup->removeAll(asset);
     }
 }
 
 void RamProject::moveAssetToGroup(RamAsset *asset, RamAssetGroup *group)
 {
     moveAssetToGroup(asset, group->uuid());
-}
-
-void RamProject::removeAsset(QString uuid)
-{
-    foreach(RamAssetGroup *ag, _assetGroups) ag->removeAsset(uuid);
 }
 
 RamObjectUberList *RamProject::sequences() const

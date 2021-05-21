@@ -316,6 +316,7 @@ void RamObjectListWidget::objectAssigned(RamObject *obj)
     // Check type to create widget
     RamObject::ObjectType type = obj->objectType();
     RamObjectWidget *ow;
+
     switch (type)
     {
     case RamObject::Asset:

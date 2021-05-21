@@ -2,7 +2,7 @@
 #define ASSETGROUPEDITWIDGET_H
 
 #include "objecteditwidget.h"
-#include "simpleobjectlist.h"
+#include "objectlisteditwidget.h"
 #include "duqf-widgets/duqffolderdisplaywidget.h"
 
 /**
@@ -17,17 +17,15 @@ public:
     explicit AssetGroupEditWidget(RamAssetGroup *ag, QWidget *parent = nullptr);
 
     RamAssetGroup *assetGroup() const;
-    void setAssetGroup(RamAssetGroup *assetGroup);
+
+public slots:
+    void setObject(RamObject *obj) Q_DECL_OVERRIDE;
 
 protected slots:
     void update() Q_DECL_OVERRIDE;
 
 private slots:
-    void assetGroupChanged(RamObject *o);
-    void newAsset(RamAsset *asset);
-    void assetRemoved(RamAsset *asset);
-    void addAsset();
-    void removeAsset(RamObject *o);
+    void createAsset();
 
 private:
     RamAssetGroup *_assetGroup;
@@ -36,7 +34,7 @@ private:
     void connectEvents();
 
     DuQFFolderDisplayWidget *folderWidget;
-    SimpleObjectList *assetsList;
+    ObjectListEditWidget *assetsList;
 
     bool _creatingAsset = false;
 };

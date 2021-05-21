@@ -19,18 +19,18 @@ public:
     explicit AssetEditWidget(RamAsset *asset = nullptr, QWidget *parent = nullptr);
 
     RamAsset *asset() const;
-    void setAsset(RamAsset *asset);
+
+public slots:
+    void setObject(RamObject *obj) Q_DECL_OVERRIDE;
 
 protected slots:
     void update() Q_DECL_OVERRIDE;
-    bool checkInput() Q_DECL_OVERRIDE;
 
 private slots:
     void moveAsset();
-    void assetChanged(RamObject *o);
-    void newAssetGroup(RamAssetGroup *ag);
+    void newAssetGroup(RamObject *ag);
     void assetGroupChanged(RamObject *o);
-    void assetGroupRemoved(QString uuid);
+    void assetGroupRemoved(RamObject *o);
 
 private:
     RamAsset *_asset;

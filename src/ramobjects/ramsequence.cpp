@@ -25,7 +25,7 @@ void RamSequence::setProjectUuid(const QString puuid)
 
 RamShot *RamSequence::shot(QString uuid) const
 {
-    return (RamShot*)this->fromUuid(uuid);
+    return qobject_cast<RamShot*>( this->fromUuid(uuid) );
 }
 
 void RamSequence::append(RamShot *shot)

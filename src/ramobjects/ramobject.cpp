@@ -91,5 +91,6 @@ void RamObject::setOrder(int order)
 
 bool RamObject::is(RamObject *other)
 {
+    if (!other) return false;
     return other->uuid() == _uuid;
 }

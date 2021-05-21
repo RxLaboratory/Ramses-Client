@@ -43,9 +43,9 @@ SOURCES += \
     rameditwidgets/applicationlistmanagerwidget.cpp \
     rameditwidgets/asseteditwidget.cpp \
     rameditwidgets/assetgroupeditwidget.cpp \
-    rameditwidgets/assetgroupsmanagerwidget.cpp \
-    rameditwidgets/assetsmanagerwidget.cpp \
     daemon.cpp \
+    rameditwidgets/assetgrouplistmanagerwidget.cpp \
+    rameditwidgets/assetlistmanagerwidget.cpp \
     rameditwidgets/filetypelistmanagerwidget.cpp \
     rameditwidgets/objectlisteditwidget.cpp \
     rameditwidgets/objectlistmanagerwidget.cpp \
@@ -166,9 +166,9 @@ HEADERS += \
     rameditwidgets/applicationlistmanagerwidget.h \
     rameditwidgets/asseteditwidget.h \
     rameditwidgets/assetgroupeditwidget.h \
-    rameditwidgets/assetgroupsmanagerwidget.h \
-    rameditwidgets/assetsmanagerwidget.h \
     daemon.h \
+    rameditwidgets/assetgrouplistmanagerwidget.h \
+    rameditwidgets/assetlistmanagerwidget.h \
     rameditwidgets/filetypelistmanagerwidget.h \
     rameditwidgets/objectlisteditwidget.h \
     rameditwidgets/objectlistmanagerwidget.h \

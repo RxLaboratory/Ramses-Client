@@ -351,17 +351,19 @@ void Ramses::init()
 void Ramses::setCurrentProject(RamProject *currentProject)
 {
     if ( currentProject ) _dbi->getProject(currentProject->uuid());
+}
 
-    if (_currentProject && currentProject)
-        if (_currentProject->is( currentProject )) return;
+void Ramses::projectReady(QString uuid)
+{
+    RamProject *currentProject = project(uuid);
+    if ( !currentProject ) return;
+
+    if (currentProject->is( _currentProject )) return;
 
     _currentProject = currentProject;
-
-    if (_currentProject)
-        _userSettings->setValue("currentProject", _currentProject->uuid() );
+    _userSettings->setValue("currentProject", _currentProject->uuid() );
 
     emit currentProjectChanged(_currentProject);
-
 }
 
 void Ramses::setCurrentProject(QString uuidOrShortName)
@@ -402,18 +404,16 @@ RamAssetGroup *Ramses::createTemplateAssetGroup()
 
 RamAssetGroup *Ramses::templateAssetGroup(QString uuid)
 {
-    return (RamAssetGroup*)_templateAssetGroups->fromUuid(uuid);
+    return qobject_cast<RamAssetGroup*>( _templateAssetGroups->fromUuid(uuid) );
 }
 
 RamAssetGroup *Ramses::assetGroup(QString uuid) const
 {
     for (int i =0; i < _projects->count(); i++)
     {
-        RamProject *p = (RamProject*)_projects->at(i);
-        foreach(RamAssetGroup *ag, p->assetGroups())
-        {
-            if (ag->uuid() == uuid) return ag;
-        }
+        RamProject *p = qobject_cast<RamProject*>( _projects->at(i) );
+        RamAssetGroup *ag  = qobject_cast<RamAssetGroup*>( p->assetGroups()->fromUuid(uuid) );
+        if (ag) return ag;
     }
     return nullptr;
 }
