@@ -27,7 +27,7 @@ public:
 
 public slots:
     void addNode();
-    void addNode(DuQFNode *node);
+    void addNode(DuQFNode *node, bool select = true);
     void removeSelectedConnections();
     void removeSelectedNodes();
     void removeSelection();

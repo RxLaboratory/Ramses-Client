@@ -239,7 +239,7 @@ void PipelineWidget::changeProject(RamProject *project)
 void PipelineWidget::newStep(RamStep *step)
 {
     StepNode *stepNode = new StepNode(step);
-    _nodeScene->addNode( stepNode );
+    _nodeScene->addNode( stepNode, false );
 
     // Reset position
     userSettings->beginGroup("nodeLocations");

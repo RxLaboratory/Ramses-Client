@@ -55,7 +55,7 @@ void DuQFNodeScene::addNode()
     addNode(new DuQFNode());
 }
 
-void DuQFNodeScene::addNode(DuQFNode *node)
+void DuQFNodeScene::addNode(DuQFNode *node, bool select)
 {
     // remove selection
     foreach(QGraphicsItem *i, items()) i->setSelected(false);
@@ -94,7 +94,7 @@ void DuQFNodeScene::addNode(DuQFNode *node)
     }
 
     node->setPos(x, y);
-    node->setSelected(true);
+    node->setSelected(select);
 
     connect(node, &DuQFNode::connectionInitiated, this, &DuQFNodeScene::initiateConnection);
     connect(node, &DuQFNode::connectionMoved, this, &DuQFNodeScene::moveConnection);
