@@ -191,7 +191,7 @@ void MainWindow::duqf_initUi()
 #else
         QString trayIconType = settings.value("appearance/trayIconType", "color").toString();
 #endif
-        QSystemTrayIcon *trayIcon = new QSystemTrayIcon(QIcon(":/icons/tray-" + trayIconType),this);
+        trayIcon = new QSystemTrayIcon(QIcon(":/icons/tray-" + trayIconType),this);
         trayMenu->addAction(duqf_actionShowHide);
         QAction *actionQuit = new QAction("Quit");
         actionQuit->setIcon(QIcon(":/icons/close-dark"));
@@ -733,5 +733,6 @@ void MainWindow::closeEvent(QCloseEvent *event)
 {
     DBInterface::instance()->suspend(true);
     QFontDatabase::removeAllApplicationFonts();
+    trayIcon->hide();
     event->accept();
 }

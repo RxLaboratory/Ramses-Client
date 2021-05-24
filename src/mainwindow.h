@@ -81,6 +81,7 @@ private:
     QToolButton *duqf_settingsButton;
     AboutDialog *duqf_aboutDialog;
     QAction *duqf_actionShowHide;
+    QSystemTrayIcon *trayIcon;
     QSettings settings;
     SettingsWidget *settingsWidget;
     QLabel *title;
