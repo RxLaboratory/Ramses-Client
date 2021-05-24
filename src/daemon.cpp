@@ -104,6 +104,8 @@ void Daemon::reply()
         getSteps(client);
     else if (args.contains("getStep"))
         getStep(args.value("shortName"), args.value("name", ""), client);
+    else if (args.contains("getRamsesFolderPath"))
+        getRamsesFolder(client);
     else
         post(client, QJsonObject(), "", "Unknown query: " + request, false, false);
 
@@ -581,6 +583,15 @@ void Daemon::getStep(QString shortName, QString name, QTcpSocket *client)
 
     content = stepToJson(step);
     post(client, content, "getStep", "Step retrieved.");
+}
+
+void Daemon::getRamsesFolder(QTcpSocket *client)
+{
+    log("I'm replying to this request: getRamsesFolder", DuQFLog::Information);
+
+    QJsonObject content;
+    content.insert("folder", Ramses::instance()->ramsesPath());
+    post(client, content, "getRamsesFolder", "Ramses folder retrieved.");
 }
 
 Daemon::Daemon(QObject *parent) : DuQFLoggerObject("Daemon", parent)
