@@ -69,12 +69,12 @@ void ObjectListManagerWidget::setupUi()
     QHBoxLayout *lay = new QHBoxLayout(this);
     lay->setContentsMargins(3,0,0,0);
 
-    QSplitter *splitter = new QSplitter(this);
-    splitter->setOrientation(Qt::Horizontal);
-    splitter->setHandleWidth(9);
+    m_splitter = new QSplitter(this);
+    m_splitter->setOrientation(Qt::Horizontal);
+    m_splitter->setHandleWidth(9);
 
     m_listEditWidget = new ObjectListEditWidget( false, this);
-    splitter->addWidget(m_listEditWidget);
+    m_splitter->addWidget(m_listEditWidget);
 
     QWidget *eWidget = new QWidget(this);
     QHBoxLayout *editLayout = new QHBoxLayout(eWidget);
@@ -89,11 +89,9 @@ void ObjectListManagerWidget::setupUi()
     editLayout->setStretch(1,80);
     editLayout->setStretch(2,20);
 
-    splitter->addWidget(eWidget);
+    m_splitter->addWidget(eWidget);
 
-    lay->addWidget(splitter);
-
-    splitter->setSizes(QList<int>() << 20 << 80);
+    lay->addWidget(m_splitter);
 }
 
 void ObjectListManagerWidget::connectEvents()
@@ -105,5 +103,11 @@ void ObjectListManagerWidget::connectEvents()
 QString ObjectListManagerWidget::currentFilter() const
 {
     return m_listEditWidget->currentFilter();
+}
+
+void ObjectListManagerWidget::showEvent(QShowEvent *event)
+{
+    m_splitter->setSizes(QList<int>() << 300 << 1000);
+    QWidget::showEvent(event);
 }
 

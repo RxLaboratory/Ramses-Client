@@ -19,6 +19,9 @@ public:
     void clear();
     QString currentFilter() const;
 
+protected:
+    void showEvent(QShowEvent *event) Q_DECL_OVERRIDE;
+
 protected slots:
     virtual void createObject() = 0;
 
@@ -29,6 +32,7 @@ private:
     void setupUi();
     void connectEvents();
 
+    QSplitter *m_splitter;
     ObjectListEditWidget *m_listEditWidget;
     ObjectEditWidget *m_editWidget;
     QList<QMetaObject::Connection> m_listConnection;

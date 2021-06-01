@@ -32,9 +32,10 @@ private slots:
     void mainList_currentRowChanged(int currentRow);
 private:
     void setupUi(QString title);
-    QListWidget *mainList;
-    QStackedWidget *mainStackWidget;
-    TitleBar *titleBar;
+    QSplitter *m_splitter;
+    QListWidget *m_mainList;
+    QStackedWidget *m_mainStackWidget;
+    TitleBar *m_titleBar;
 };
 
 #endif // SETTINGSWIDGET_H

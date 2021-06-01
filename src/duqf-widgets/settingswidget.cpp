@@ -5,9 +5,9 @@ SettingsWidget::SettingsWidget(QString title, QWidget *parent) :
 {
     setupUi(title);
 
-    connect(titleBar, &TitleBar::reinitRequested, this, &SettingsWidget::reinitRequested);
-    connect(titleBar, &TitleBar::closeRequested, this, &SettingsWidget::closeRequested);
-    connect(mainList, SIGNAL(currentRowChanged(int)), this, SLOT(mainList_currentRowChanged(int)));
+    connect(m_titleBar, &TitleBar::reinitRequested, this, &SettingsWidget::reinitRequested);
+    connect(m_titleBar, &TitleBar::closeRequested, this, &SettingsWidget::closeRequested);
+    connect(m_mainList, SIGNAL(currentRowChanged(int)), this, SLOT(mainList_currentRowChanged(int)));
 }
 
 void SettingsWidget::setupUi(QString title)
@@ -21,11 +21,11 @@ void SettingsWidget::setupUi(QString title)
     QMainWindow *mw = GuiUtils::appMainWindow();
     //mw->addToolBarBreak(Qt::TopToolBarArea);
 
-    titleBar = new TitleBar(title, true, mw);
+    m_titleBar = new TitleBar(title, true, mw);
     //mw->addToolBar(Qt::TopToolBarArea,titleBar);
-    mw->insertToolBar(mw->findChild<QToolBar*>("mainToolBar"), titleBar);
-    titleBar->setFloatable(false);
-    titleBar->hide();
+    mw->insertToolBar(mw->findChild<QToolBar*>("mainToolBar"), m_titleBar);
+    m_titleBar->setFloatable(false);
+    m_titleBar->hide();
 
     QWidget *mainWidget = new QWidget(this);
     verticalLayout->addWidget(mainWidget);
@@ -34,59 +34,60 @@ void SettingsWidget::setupUi(QString title)
     horizontalLayout->setSpacing(0);
     horizontalLayout->setContentsMargins(0, 0, 0, 0);
 
-    QSplitter *splitter = new QSplitter(this);
-    splitter->setHandleWidth(9);
+    m_splitter = new QSplitter(this);
+    m_splitter->setHandleWidth(9);
 
-    mainList = new QListWidget(this);
-    mainList->setFrameShape(QFrame::NoFrame);
-    mainList->setLineWidth(0);
-    mainList->setResizeMode(QListView::Adjust);
-    mainList->setLayoutMode(QListView::SinglePass);
+    m_mainList = new QListWidget(this);
+    m_mainList->setFrameShape(QFrame::NoFrame);
+    m_mainList->setLineWidth(0);
+    m_mainList->setResizeMode(QListView::Adjust);
+    m_mainList->setLayoutMode(QListView::SinglePass);
 
-    splitter->addWidget(mainList);
+    m_splitter->addWidget(m_mainList);
 
-    mainStackWidget = new QStackedWidget(this);
-    mainStackWidget->setObjectName(QStringLiteral("mainStackWidget"));
+    m_mainStackWidget = new QStackedWidget(this);
+    m_mainStackWidget->setObjectName(QStringLiteral("mainStackWidget"));
     QSizePolicy sizePolicy1(QSizePolicy::Expanding, QSizePolicy::Preferred);
-    mainStackWidget->setSizePolicy(sizePolicy1);
+    m_mainStackWidget->setSizePolicy(sizePolicy1);
 
-    splitter->addWidget(mainStackWidget);
+    m_splitter->addWidget(m_mainStackWidget);
 
-    horizontalLayout->addWidget(splitter);
+    horizontalLayout->addWidget(m_splitter);
 
-    mainStackWidget->setCurrentIndex(-1);
+    m_mainStackWidget->setCurrentIndex(-1);
 }
 
 void SettingsWidget::addPage(QWidget *ui, QString title, QIcon icon)
 {
-    mainStackWidget->addWidget(ui);
+    m_mainStackWidget->addWidget(ui);
     QListWidgetItem *tab = new QListWidgetItem(icon,title);
-    mainList->addItem(tab);
+    m_mainList->addItem(tab);
 }
 
 void SettingsWidget::setCurrentIndex(int index)
 {
-    mainStackWidget->setCurrentIndex(index);
+    m_mainStackWidget->setCurrentIndex(index);
 }
 
 void SettingsWidget::showEvent(QShowEvent *event)
 {
-    if (!event->spontaneous()) titleBar->show();
+    if (!event->spontaneous()) m_titleBar->show();
+    m_splitter->setSizes(QList<int>() << 200 << 1000);
     QWidget::showEvent(event);
 }
 
 void SettingsWidget::hideEvent(QHideEvent *event)
 {
-    if (!event->spontaneous()) titleBar->hide();
+    if (!event->spontaneous()) m_titleBar->hide();
     QWidget::hideEvent(event);
 }
 
 void SettingsWidget::showReinitButton(bool show)
 {
-    titleBar->showReinitButton(show);
+    m_titleBar->showReinitButton(show);
 }
 
 void SettingsWidget::mainList_currentRowChanged(int currentRow)
 {
-    mainStackWidget->setCurrentIndex(currentRow);
+    m_mainStackWidget->setCurrentIndex(currentRow);
 }
