@@ -56,16 +56,22 @@ void Ramses::dbiConnectionStatusChanged(NetworkUtils::NetworkStatus s)
     }
 }
 
-QDir Ramses::createPath(QString p) const
+QDir Ramses::createDir(QString p) const
 {
     QDir d(p);
     if (p != "") d.mkpath(".");
     return d;
 }
 
+QString Ramses::createPath(QString p) const
+{
+    QDir d = createDir(p);
+    return d.absolutePath();
+}
+
 QString Ramses::ramsesPath() const
 {
-    return _ramsesPath;
+    return createPath( _ramsesPath );
 }
 
 void Ramses::setRamsesPath(const QString &ramsesPath)
@@ -75,19 +81,21 @@ void Ramses::setRamsesPath(const QString &ramsesPath)
 
 QString Ramses::pathFromRamses(QString p) const
 {
+    QString path;
     if (QFileInfo( p ).isRelative())
     {
-        return ramsesPath() + "/" +p;
+        path = ramsesPath() + "/" +p;
     }
     else
     {
-        return p;
+        path = p;
     }
+    return createPath( p );
 }
 
 QString Ramses::usersPath() const
 {
-    return ramsesPath() + "/Users";
+    return createPath( ramsesPath() + "/Users" );
 }
 
 QString Ramses::path(RamUser *u) const
@@ -101,7 +109,7 @@ QString Ramses::path(RamUser *u) const
 
 QDir Ramses::dir(RamUser *u) const
 {
-    return createPath(path(u));
+    return QDir( path(u) );
 }
 
 QString Ramses::currentUserPath() const
@@ -113,17 +121,17 @@ QString Ramses::currentUserPath() const
 
 QDir Ramses::currentUserDir() const
 {
-    return createPath(currentUserPath());
+    return QDir(currentUserPath());
 }
 
 QString Ramses::configPath(RamUser *u) const
 {
-    return path(u) + "/Config";
+    return configDir(u).absolutePath();
 }
 
 QDir Ramses::configDir(RamUser *u) const
 {
-    return createPath(configPath(u));
+    return createDir( path(u) + "/Config" );
 }
 
 QString Ramses::currentUserConfigPath() const
@@ -135,7 +143,7 @@ QString Ramses::currentUserConfigPath() const
 
 QDir Ramses::currentUserCondigDir() const
 {
-    return createPath(currentUserConfigPath());
+    return QDir(currentUserConfigPath());
 }
 
 QString Ramses::defaultUserPath(RamUser *u) const
@@ -145,12 +153,12 @@ QString Ramses::defaultUserPath(RamUser *u) const
 
 QString Ramses::projectsPath() const
 {
-    return ramsesPath() + "/Projects";
+    return createPath( ramsesPath() + "/Projects" );
 }
 
 QString Ramses::configPath() const
 {
-    return ramsesPath() + "/Config";
+    return createPath( ramsesPath() + "/Config" );
 }
 
 QString Ramses::path(RamProject *p) const
@@ -164,109 +172,112 @@ QString Ramses::path(RamProject *p) const
 
 QDir Ramses::dir(RamProject *p) const
 {
-    return createPath(path(p));
+    return QDir(path(p));
 }
 
 QString Ramses::configPath(RamProject *p) const
 {
-    return path(p) + "/Config";
+    return createPath( path(p) + "/Config" );
 }
 
 QDir Ramses::configDir(RamProject *p) const
 {
-    return createPath(configPath(p));
+    return QDir(configPath(p));
 }
 
 QString Ramses::adminPath(RamProject *p) const
 {
-    return path(p) + "/" + "00-ADMIN";
+    return createPath( path(p) + "/" + "00-ADMIN" );
 }
 
 QDir Ramses::adminDir(RamProject *p) const
 {
-    return createPath(adminPath(p));
+    return QDir(adminPath(p));
 }
 
 QString Ramses::preProdPath(RamProject *p) const
 {
-    return path(p) + "/" + "01-PRE-PROD";
+    return createPath( path(p) + "/" + "01-PRE-PROD" );
 }
 
 QDir Ramses::preProdDir(RamProject *p) const
 {
-    return createPath(preProdPath(p));
+    return QDir(preProdPath(p));
 }
 
 QString Ramses::prodPath(RamProject *p) const
 {
-    return path(p) + "/" + "02-PROD";
+    return createPath( path(p) + "/" + "02-PROD" );
 }
 
 QDir Ramses::prodDir(RamProject *p) const
 {
-    return createPath(prodPath(p));
+    return QDir(prodPath(p));
 }
 
 QString Ramses::postProdPath(RamProject *p) const
 {
-    return path(p) + "/" + "03-POST-PROD";
+    return createPath( path(p) + "/" + "03-POST-PROD" );
 }
 
 QDir Ramses::postProdDir(RamProject *p) const
 {
-    return createPath(postProdPath(p));
+    return QDir(postProdPath(p));
 }
 
 QString Ramses::assetsPath(RamProject *p) const
 {
-    return path(p) + "/" + "04-ASSETS";
+    return createPath( path(p) + "/" + "04-ASSETS" );
 }
 
 QDir Ramses::assetsDir(RamProject *p) const
 {
-    return createPath(assetsPath(p));
+    return QDir(assetsPath(p));
 }
 
 QString Ramses::shotsPath(RamProject *p) const
 {
-    return path(p) + "/" + "05-SHOTS";
+    return createPath( path(p) + "/" + "05-SHOTS" );
 }
 
 QDir Ramses::shotsDir(RamProject *p) const
 {
-    return createPath(shotsPath(p));
+    return QDir(shotsPath(p));
 }
 
 QString Ramses::exportPath(RamProject *p) const
 {
-    return path(p) + "/" + "06-EXPORT";
+    return createPath( path(p) + "/" + "06-EXPORT" );
 }
 
 QDir Ramses::exportDir(RamProject *p) const
 {
-    return createPath(exportPath(p));
+    return QDir(exportPath(p));
 }
 
 QString Ramses::path(RamStep *s) const
 {
     RamProject *p = project( s->projectUuid() );
+    QString path;
     if (!p) return "";
     if (s->type() == RamStep::PreProduction)
     {
-        return preProdPath(p) + "/" + p->shortName() + "_" + s->shortName();
+        path = preProdPath(p) + "/" + p->shortName() + "_G_" + s->shortName();
     }
 
     if (s->type() == RamStep::PostProduction)
     {
-        return postProdPath(p) + "/" + p->shortName() + "_" + s->shortName();
+        path = postProdPath(p) + "/" + p->shortName() + "_G_" + s->shortName();
     }
 
-    return prodPath(p) + "/" + p->shortName() + "_" + s->shortName();
+    path = prodPath(p) + "/" + p->shortName() + "_G_" + s->shortName();
+
+    return createPath(path);
 }
 
 QDir Ramses::dir(RamStep *s) const
 {
-    return createPath(path(s));
+    return QDir(path(s));
 }
 
 QString Ramses::path(RamAssetGroup *ag) const
@@ -274,12 +285,12 @@ QString Ramses::path(RamAssetGroup *ag) const
     if(ag->isTemplate()) return "";
     RamProject *p = project( ag->projectUuid() );
     if (!p) return "";
-    return assetsPath(p) + "/" + ag->name();
+    return createPath( assetsPath(p) + "/" + ag->name() );
 }
 
 QDir Ramses::dir(RamAssetGroup *ag) const
 {
-    return createPath(path(ag));
+    return QDir(path(ag));
 }
 
 QString Ramses::path(RamAsset *a) const
@@ -288,12 +299,12 @@ QString Ramses::path(RamAsset *a) const
     if (!ag) return "";
     RamProject *p = project( ag->projectUuid() );
     if (!p) return "";
-    return path(ag) + "/" + p->shortName() + "_A_" + a->shortName();
+    return createPath( path(ag) + "/" + p->shortName() + "_A_" + a->shortName() );
 }
 
 QDir Ramses::dir(RamAsset *a) const
 {
-    return createPath(path(a));
+    return QDir(path(a));
 }
 
 QString Ramses::path(RamShot *s) const
@@ -302,12 +313,12 @@ QString Ramses::path(RamShot *s) const
     if (!seq) return "";
     RamProject *p = project( seq->projectUuid() );
     if (!p) return "";
-    return shotsPath(p) + "/" + p->shortName() + "_S_" + s->name();
+    return createPath( shotsPath(p) + "/" + p->shortName() + "_S_" + s->name() );
 }
 
 QDir Ramses::dir(RamShot *s) const
 {
-    return createPath(path(s));
+    return QDir(path(s));
 }
 
 void Ramses::setCurrentUser(RamUser *u)

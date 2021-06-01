@@ -152,7 +152,8 @@ private:
 
     // Tree
     QString _ramsesPath;
-    QDir createPath(QString p) const;
+    QDir createDir(QString p) const;
+    QString createPath(QString p) const;
 
     // Users
     RamObjectList *_users;
