@@ -13,6 +13,7 @@
 #include "duqf-app/app-utils.h"
 
 #include <QObject>
+#include <QtDebug>
 
 class Ramses : public QObject
 {

@@ -265,12 +265,15 @@ QString Ramses::path(RamStep *s) const
         path = preProdPath(p) + "/" + p->shortName() + "_G_" + s->shortName();
     }
 
-    if (s->type() == RamStep::PostProduction)
+    else if (s->type() == RamStep::PostProduction)
     {
         path = postProdPath(p) + "/" + p->shortName() + "_G_" + s->shortName();
     }
 
-    path = prodPath(p) + "/" + p->shortName() + "_G_" + s->shortName();
+    else
+    {
+        path = prodPath(p) + "/" + p->shortName() + "_G_" + s->shortName();
+    }
 
     return createPath(path);
 }
