@@ -34,14 +34,9 @@ public:
     void setAspectRatio(const qreal &aspectRatio);
 
     // Steps
-    QList<RamStep *> steps() const;
-    RamStep *step(QString uuid) const;
-    void addStep(RamStep *step);
+    RamObjectList *steps() const;
     void assignStep(RamStep *templateStep);
     void createStep(QString shortName = "NEW", QString name = "Step");
-    void removeStep(QString uuid);
-    void removeStep(RamObject *step);
-    void sortSteps();
 
     // Asset Groups
     RamObjectUberList *assetGroups() const;
@@ -68,20 +63,13 @@ public:
 
     void update();
 
-signals:
-    void newStep(RamStep *);
-    void stepRemoved(RamStep *);
-
-private slots:
-    void stepRemoved(RamObject *o);
-
 private:
     QString _folderPath;
     qreal _framerate = 24;
     int _width = 1920;
     int _height = 1080;
     qreal _aspectRatio = 1.78;
-    QList<RamStep *> _steps;
+    RamObjectList *_steps;
     RamObjectUberList *_sequences;
     RamObjectUberList *_assetGroups;
     RamObjectList *_pipeline;

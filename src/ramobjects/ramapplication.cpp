@@ -11,7 +11,12 @@ RamApplication::RamApplication(QString shortName, QString name, QString executab
     _executableFilePath = executableFilePath;
     _dbi->createApplication(_shortName, _name, _executableFilePath, _uuid);
 
-   connect(_nativeFileTypes, &RamObjectList::objectRemoved, this, &RamApplication::nativeFileTypeUnassigned);
+    connect(_nativeFileTypes, &RamObjectList::objectRemoved, this, &RamApplication::nativeFileTypeUnassigned);
+    connect(_importFileTypes, &RamObjectList::objectRemoved, this, &RamApplication::importFileTypeUnassigned);
+    connect(_exportFileTypes, &RamObjectList::objectRemoved, this, &RamApplication::exportFileTypeUnassigned);
+    connect(_nativeFileTypes, &RamObjectList::objectAdded, this, &RamApplication::nativeFileTypeAssigned);
+    connect(_importFileTypes, &RamObjectList::objectAdded, this, &RamApplication::importFileTypeAssigned);
+    connect(_exportFileTypes, &RamObjectList::objectAdded, this, &RamApplication::exportFileTypeAssigned);
 }
 
 RamApplication::~RamApplication()

@@ -572,77 +572,85 @@ void RamLoader::gotSteps(QJsonArray steps, RamProject *project)
     m_pm->addToMaximum(steps.count());
     m_pm->setText("Loading steps...");
 
-    QList<RamStep*> projectSteps = project->steps();
+    RamObjectList *projectSteps = project->steps();
 
-    // loop through existing steps to update them
-    for (int i = projectSteps.count() - 1; i >= 0; i--)
+    QStringList uuids;
+    // Update steps
+    for (int j = 0; j < steps.count(); j++)
     {
         m_pm->increment();
-        RamStep *existingStep = projectSteps[i];
-        // loop through new steps to update
-        bool found = false;
-        for (int j = steps.count() - 1; j >= 0; j--)
-        {
-            QJsonObject newStep = steps[j].toObject();
-            QString uuid = newStep.value("uuid").toString();
-            // Found, update
-            if (uuid == existingStep->uuid())
-            {
-                found = true;
-                //Emit just one signal
-                QSignalBlocker b(existingStep);
-                existingStep->setName( newStep.value("name").toString());
-                existingStep->setShortName( newStep.value("shortName").toString());
-                existingStep->setOrder( newStep.value("order").toInt());
-                existingStep->clearUsers();
-
-                foreach( QJsonValue u, newStep.value("users").toArray())
-                    existingStep->assignUser( m_ram->users()->fromUuid( u.toString() ) );
-
-                foreach(QJsonValue a, newStep.value("applications").toArray())
-                    existingStep->assignApplication( m_ram->application(a.toString()));
-
-                //send the signal
-                b.unblock();
-                existingStep->setType(newStep.value("type").toString());
-
-                //remove from new steps
-                steps.removeAt(j);
-                break;
-            }
-        }
-        // Not found, remove from existing
-        if (!found)
-        {
-            project->removeStep(existingStep);
-        }
+        uuids << gotStep( steps.at(j).toObject(), project );
     }
 
-    // loop through remaining new steps to add them
-    for (int i = 0; i < steps.count(); i++)
+    // Remove deleted shots
+    for (int i = projectSteps->count() - 1; i >= 0; i--)
     {
-        m_pm->increment();
-        QJsonObject s = steps[i].toObject();
-        RamStep *step = new RamStep(
-                    s.value("shortName").toString(),
-                    s.value("name").toString(),
-                    false,
-                    s.value("uuid").toString()
-                    );
-        step->setType( s.value("type").toString());
-        step->setOrder( s.value("order").toInt() );
-        step->setProjectUuid( s.value("projectUuid").toString());
-
-        foreach( QJsonValue u, s.value("users").toArray())
-            step->assignUser( m_ram->users()->fromUuid(u.toString()) );
-
-        foreach(QJsonValue a, s.value("applications").toArray())
-            step->assignApplication( m_ram->application(a.toString()));
-        project->addStep(step);
+        RamObject *existingStep = projectSteps->at(i);
+        if (!uuids.contains(existingStep->uuid()))
+        {
+            existingStep->remove();
+        }
     }
 
     // sort the steps
-    project->sortSteps(); 
+    projectSteps->sort();
+}
+
+QString RamLoader::gotStep(QJsonObject newS, RamProject *project)
+{
+    DBISuspender s;
+    QString uuid = newS.value("uuid").toString();
+
+    RamObjectList *projectSteps = project->steps();
+
+    // loop through existing steps to update them
+    for (int i = projectSteps->count() - 1; i >= 0; i--)
+    {
+        RamStep *existingStep = qobject_cast<RamStep*>( projectSteps->at(i) );
+
+        if (uuid == existingStep->uuid())
+        {
+            //Emit just one signal
+            QSignalBlocker b(existingStep);
+            existingStep->setName( newS.value("name").toString());
+            existingStep->setShortName( newS.value("shortName").toString());
+            existingStep->setOrder( newS.value("order").toInt());
+            existingStep->users()->clear();
+
+            //send signals
+            b.unblock();
+
+            existingStep->setType(newS.value("type").toString());
+
+            foreach( QJsonValue u, newS.value("users").toArray())
+                existingStep->users()->append( m_ram->users()->fromUuid( u.toString() ) );
+
+            foreach(QJsonValue a, newS.value("applications").toArray())
+                existingStep->applications()->append( m_ram->applications()->fromUuid(a.toString()));
+
+            return uuid;
+        }
+    }
+
+    RamStep *step = new RamStep(
+                newS.value("shortName").toString(),
+                newS.value("name").toString(),
+                false,
+                newS.value("uuid").toString()
+                );
+    step->setType( newS.value("type").toString());
+    step->setOrder( newS.value("order").toInt() );
+    step->setProjectUuid( newS.value("projectUuid").toString());
+
+    foreach( QJsonValue u, newS.value("users").toArray())
+        step->users()->append( m_ram->users()->fromUuid(u.toString()) );
+
+    foreach(QJsonValue a, newS.value("applications").toArray())
+        step->applications()->append( m_ram->applications()->fromUuid(a.toString()));
+
+    projectSteps->append(step);
+
+    return uuid;
 }
 
 void RamLoader::gotAssetGroups(QJsonArray assetGroups, RamProject *project)
@@ -965,10 +973,14 @@ QString RamLoader::gotStatus(QJsonObject newS, RamItem *item, RamProject *projec
         existingStatus->setCompletionRatio( newS.value("completionRatio").toInt( ));
         RamObject *u = m_ram->users()->fromUuid(  newS.value("userUuid").toString( ) );
         if (u) existingStatus->setUser( u );
-        RamState *state = (RamState*)m_ram->states()->fromUuid(  newS.value("stateUuid").toString( ) );
+        // Get State
+        RamObject *stateObj = m_ram->states()->fromUuid(  newS.value("stateUuid").toString( ) );
+        RamState *state = qobject_cast<RamState*>( stateObj );
         if (state) existingStatus->setState( state );
         existingStatus->setComment( newS.value("comment").toString() );
-        RamStep *step = project->step( newS.value("stepUuid").toString( ) );
+        // Get Step
+        RamObject *stepObj = project->steps()->fromUuid( newS.value("stepUuid").toString( ) );
+        RamStep *step = qobject_cast<RamStep*>( stepObj );
         if (step) existingStatus->setStep( step );
         existingStatus->setDate( QDateTime::fromString( newS.value("date").toString(), "yyyy-MM-dd hh:mm:ss"));
         b.unblock();
@@ -980,9 +992,11 @@ QString RamLoader::gotStatus(QJsonObject newS, RamItem *item, RamProject *projec
 
     RamObject *user = m_ram->users()->fromUuid(  newS.value("userUuid").toString( ) );
     if (!user) return uuid;
-    RamState *state = (RamState*)m_ram->states()->fromUuid( newS.value("stateUuid").toString( ) );
+    RamObject *stateObj = m_ram->states()->fromUuid(  newS.value("stateUuid").toString( ) );
+    RamState *state = qobject_cast<RamState*>( stateObj );
     if (!state) return uuid;
-    RamStep *step = project->step( newS.value("stepUuid").toString( ) );
+    RamObject *stepObj = project->steps()->fromUuid( newS.value("stepUuid").toString( ) );
+    RamStep *step = qobject_cast<RamStep*>( stepObj );
     if (!step) return uuid;
     RamStatus *status = new RamStatus(
                 (RamUser*)user,
@@ -1044,9 +1058,11 @@ QString RamLoader::gotPipe(QJsonObject newP, RamProject *project)
         {
             //Emit just one signal
             QSignalBlocker b(existingPipe);
-            RamStep *inputStep =  project->step(newP.value("inputStepUuid").toString());
+            RamObject *inputStepObj = project->steps()->fromUuid( newP.value("inputStepUuid").toString( ) );
+            RamStep *inputStep = qobject_cast<RamStep*>( inputStepObj );
             if (inputStep) existingPipe->setInputStep( inputStep );
-            RamStep *outputStep =  project->step(newP.value("outputStepUuid").toString());
+            RamObject *outputStepObj = project->steps()->fromUuid( newP.value("outputStepUuid").toString( ) );
+            RamStep *outputStep = qobject_cast<RamStep*>( outputStepObj );
             if (outputStep) existingPipe->setOutputStep( outputStep );
             b.unblock();
             RamFileType *ft = m_ram->fileType( newP.value("filetypeUuid").toString()) ;
@@ -1056,8 +1072,10 @@ QString RamLoader::gotPipe(QJsonObject newP, RamProject *project)
     }
 
     // not existing, let's create it
-    RamStep *inputStep =  project->step(newP.value("inputStepUuid").toString());
-    RamStep *outputStep =  project->step(newP.value("outputStepUuid").toString());
+    RamObject *inputStepObj = project->steps()->fromUuid( newP.value("inputStepUuid").toString( ) );
+    RamStep *inputStep = qobject_cast<RamStep*>( inputStepObj );
+    RamObject *outputStepObj = project->steps()->fromUuid( newP.value("outputStepUuid").toString( ) );
+    RamStep *outputStep = qobject_cast<RamStep*>( outputStepObj );
     if (inputStep && outputStep)
     {
         RamPipe *pipe = new RamPipe(

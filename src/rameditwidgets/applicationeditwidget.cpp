@@ -27,7 +27,7 @@ RamApplication *ApplicationEditWidget::application() const
 
 void ApplicationEditWidget::setObject(RamObject *obj)
 {
-    RamApplication *application = (RamApplication*)obj;
+    RamApplication *application = qobject_cast<RamApplication*>( obj );
     this->setEnabled(false);
 
     ObjectEditWidget::setObject(application);

@@ -40,16 +40,17 @@ void StatusHistoryWidget::setItem(RamItem *item)
     this->setEnabled(true);
 }
 
-void StatusHistoryWidget::newStep(RamStep *step)
+void StatusHistoryWidget::newStep(RamObject *obj)
 {
     if(!_item) return;
+    RamStep *step = qobject_cast<RamStep*>( obj );
     if (_item->objectType() == RamObject::Shot && step->type() != RamStep::ShotProduction) return;
     if (_item->objectType() == RamObject::Asset && step->type() != RamStep::AssetProduction) return;
 
     statusList->addFilter( step );
 }
 
-void StatusHistoryWidget::stepRemoved(RamStep *step)
+void StatusHistoryWidget::stepRemoved(RamObject *step)
 {
     statusList->removeFilter( step );
 }
@@ -61,10 +62,10 @@ void StatusHistoryWidget::currentProjectChanged(RamProject *project)
 
     if (!project) return;
 
-    foreach (RamStep *step, project->steps()) newStep(step);
+    for (int i = 0; i < project->steps()->count(); i++) newStep( project->steps()->at(i) );
 
-    _projectConnections << connect(project, &RamProject::newStep, this, &StatusHistoryWidget::newStep );
-    _projectConnections << connect(project, SIGNAL(stepRemoved(RamStep*)), this, SLOT(stepRemoved(RamStep*)) );
+    _projectConnections << connect(project->steps(), &RamObjectList::objectAdded, this, &StatusHistoryWidget::newStep );
+    _projectConnections << connect(project->steps(), &RamObjectList::objectRemoved, this, &StatusHistoryWidget::stepRemoved );
 
     this->setEnabled(true);
 }
@@ -79,7 +80,7 @@ void StatusHistoryWidget::setStatus(RamState *state, int completionRatio, int ve
     RamProject *project = Ramses::instance()->currentProject();
     if (!project) return;
 
-    RamStep *step = project->step( statusList->currentFilter() );
+    RamStep *step = qobject_cast<RamStep*>( project->steps()->fromUuid( statusList->currentFilter() ) );
     if (!step) return;
 
     if (!state) return;

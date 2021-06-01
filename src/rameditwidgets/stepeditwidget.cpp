@@ -6,7 +6,7 @@ StepEditWidget::StepEditWidget(QWidget *parent) : ObjectEditWidget(parent)
     populateMenus();
     connectEvents();
 
-    setStep(nullptr);
+    setObject(nullptr);
 }
 
 StepEditWidget::StepEditWidget(RamStep *s, QWidget *parent) : ObjectEditWidget(s, parent)
@@ -15,7 +15,7 @@ StepEditWidget::StepEditWidget(RamStep *s, QWidget *parent) : ObjectEditWidget(s
     populateMenus();
     connectEvents();
 
-    setStep(s);
+    setObject(s);
 }
 
 RamStep *StepEditWidget::step() const
@@ -23,11 +23,12 @@ RamStep *StepEditWidget::step() const
     return _step;
 }
 
-void StepEditWidget::setStep(RamStep *step)
+void StepEditWidget::setObject(RamObject *obj)
 {
+    RamStep *step = qobject_cast<RamStep*>( obj );
     this->setEnabled(false);
 
-    setObject(step);
+    ObjectEditWidget::setObject(step);
     _step = step;
 
     QSignalBlocker b(typeBox);
@@ -51,18 +52,20 @@ void StepEditWidget::setStep(RamStep *step)
     // Load Users
     foreach (QAction *a , assignUserMenu->actions())
         a->setVisible(true);
-    foreach( RamUser *user, step->users()) userAssigned(user);
+    for( int i = 0; i < step->users()->count(); i++ ) userAssigned( step->users()->at(i) );
 
     // Load applications
     foreach (QAction *a , assignAppMenu->actions())
         a->setVisible(true);
-    foreach( RamApplication *app, step->applications()) applicationAssigned(app);
+    for( int i = 0; i < step->applications()->count(); i++ ) applicationAssigned( step->applications()->at(i) );
 
-    _objectConnections << connect(step, &RamStep::userAssigned, this, &StepEditWidget::userAssigned);
-    _objectConnections << connect(step, &RamStep::userUnassigned, this, &StepEditWidget::userUnassigned);
-    _objectConnections << connect(step, &RamStep::applicationAssigned, this, &StepEditWidget::applicationAssigned);
-    _objectConnections << connect(step, &RamStep::applicationUnassigned, this, &StepEditWidget::applicationUnassigned);
-    _objectConnections << connect(step, &RamStep::changed, this, &StepEditWidget::stepChanged);
+    usersList->setList(step->users());
+    applicationList->setList(step->applications());
+
+    _objectConnections << connect(step->users(), &RamObjectList::objectAdded, this, &StepEditWidget::userAssigned);
+    _objectConnections << connect(step->users(), &RamObjectList::objectRemoved, this, &StepEditWidget::userUnassigned);
+    _objectConnections << connect(step->applications(), &RamObjectList::objectAdded, this, &StepEditWidget::applicationAssigned);
+    _objectConnections << connect(step->applications(), &RamObjectList::objectRemoved, this, &StepEditWidget::applicationUnassigned);
 
     this->setEnabled(Ramses::instance()->isProjectAdmin());
 }
@@ -77,13 +80,6 @@ void StepEditWidget::update()
     ObjectEditWidget::update();
 
     updating = false;
-}
-
-void StepEditWidget::stepChanged(RamObject *o)
-{
-    if (updating) return;
-    Q_UNUSED(o);
-    setStep(_step);
 }
 
 void StepEditWidget::setupUi()
@@ -104,11 +100,13 @@ void StepEditWidget::setupUi()
     QSplitter *splitter = new QSplitter(this);
     splitter->setOrientation(Qt::Vertical);
 
-    usersList = new SimpleObjectList(true, splitter);
+    usersList = new ObjectListEditWidget(true, splitter);
+    usersList->setEditMode(RamObjectListWidget::UnassignObjects);
     usersList->setTitle("Users");
     splitter->addWidget(usersList);
 
-    applicationList = new SimpleObjectList(true, splitter);
+    applicationList = new ObjectListEditWidget(true, splitter);
+    applicationList->setEditMode(RamObjectListWidget::UnassignObjects);
     applicationList->setTitle("Applications");
     splitter->addWidget(applicationList);
 
@@ -139,8 +137,6 @@ void StepEditWidget::connectEvents()
     connect(Ramses::instance()->applications(), &RamObjectList::objectAdded, this, &StepEditWidget::newApplication);
     connect(Ramses::instance()->applications(), &RamObjectList::objectRemoved, this, &StepEditWidget::applicationRemoved);
     connect(typeBox, SIGNAL(currentIndexChanged(int)), this, SLOT(update()));
-    connect(usersList, &SimpleObjectList::objectRemoved, this, &StepEditWidget::unassignUser);
-    connect(applicationList, &SimpleObjectList::objectRemoved, this, &StepEditWidget::unassignApplication);
 }
 
 void StepEditWidget::newUser(RamObject *user)
@@ -150,7 +146,10 @@ void StepEditWidget::newUser(RamObject *user)
     QAction *userAction = new QAction(user->name());
     userAction->setData(user->uuid());
     assignUserMenu->addAction(userAction);
-    connect(user, &RamUser::changed, this, &StepEditWidget::userChanged);
+    QList<QMetaObject::Connection> c;
+    c << connect(user, &RamObject::changed, this, &StepEditWidget::userChanged);
+    c << connect(user, &RamObject::removed, this, &StepEditWidget::userRemoved);
+    m_userConnections[user->uuid()] = c;
     connect(userAction, &QAction::triggered, this, &StepEditWidget::assignUser);
 }
 
@@ -160,21 +159,13 @@ void StepEditWidget::assignUser()
     QAction *userAction = (QAction*)sender();
     RamObject *user = Ramses::instance()->users()->fromUuid(  userAction->data().toString() );
     if (!user) return;
-    _step->assignUser(user);
+    _step->users()->append(user);
 }
 
-void StepEditWidget::unassignUser(RamObject *o)
-{
-    if (!_step) return;
-    _step->unassignUser( o );
-}
-
-void StepEditWidget::userAssigned(RamUser *user)
+void StepEditWidget::userAssigned(RamObject *user)
 {
     if (!user) return;
     if (user->uuid() == "") return;
-
-    usersList->addObject(user);
 
     //hide from assign list
     QList<QAction *> actions = assignUserMenu->actions();
@@ -184,28 +175,32 @@ void StepEditWidget::userAssigned(RamUser *user)
     }
 }
 
-void StepEditWidget::userUnassigned(QString uuid)
+void StepEditWidget::userUnassigned(RamObject *o)
 {
-    usersList->removeObject(uuid);
-
     //show in assign list
     foreach (QAction * a, assignUserMenu->actions() )
-        if (a->data().toString() == uuid) a->setVisible(true);
+        if (a->data().toString() == o->uuid()) a->setVisible(true);
 }
 
-void StepEditWidget::userChanged()
+void StepEditWidget::userChanged(RamObject *user)
 {
-    RamUser *user = (RamUser*)sender();
-
     foreach (QAction *a, assignUserMenu->actions())
         if (a->data().toString() == user->uuid()) a->setText(user->name());
 }
 
 void StepEditWidget::userRemoved(RamObject *user)
 {
-    foreach (QAction *a, assignUserMenu->actions())
-        if (a->data().toString() == user->uuid())
-            a->deleteLater();
+    if (m_userConnections.contains(user->uuid()))
+    {
+        QList<QMetaObject::Connection> c = m_userConnections.value( user->uuid() );
+        while (!c.isEmpty()) disconnect( c.takeLast() );
+    }
+
+    QList<QAction *> actions = assignUserMenu->actions();
+    for( int i = actions.count() -1 ; i >= 0 ; i--)
+    {
+        if (actions.at(i)->data().toString() == user->uuid()) actions.at(i)->deleteLater();
+    }
 }
 
 void StepEditWidget::newApplication(RamObject *app)
@@ -215,7 +210,10 @@ void StepEditWidget::newApplication(RamObject *app)
     QAction *appAction = new QAction(app->name());
     appAction->setData(app->uuid());
     assignAppMenu->addAction(appAction);
-    connect(app, &RamApplication::changed, this, &StepEditWidget::applicationChanged);
+    QList<QMetaObject::Connection> c;
+    c << connect(app, &RamApplication::changed, this, &StepEditWidget::applicationChanged);
+    c << connect(app, &RamApplication::removed, this, &StepEditWidget::applicationRemoved);
+    m_applicationConnections[app->uuid()] = c;
     connect(appAction, &QAction::triggered, this, &StepEditWidget::assignApplication);
 }
 
@@ -223,49 +221,48 @@ void StepEditWidget::assignApplication()
 {
     if(!_step) return;
     QAction *appAction = (QAction*)sender();
-    RamApplication *app = Ramses::instance()->application( appAction->data().toString());
+    RamObject *app = Ramses::instance()->applications()->fromUuid( appAction->data().toString());
     if (!app) return;
-    _step->assignApplication(app);
+    _step->applications()->append(app);
 }
 
-void StepEditWidget::unassignApplication(RamObject *o)
-{
-    if (!_step) return;
-    _step->unassignApplication( o );
-}
-
-void StepEditWidget::applicationAssigned(RamApplication *app)
+void StepEditWidget::applicationAssigned(RamObject *app)
 {
     if (!app) return;
     if (app->uuid() == "") return;
 
-    applicationList->addObject(app);
-
     //hide from assign list
-    foreach (QAction *a, assignAppMenu->actions())
-        if (a->data().toString() == app->uuid()) a->setVisible(false);
+    QList<QAction *> actions = assignAppMenu->actions();
+    for (int i = 0; i < actions.count(); i++)
+    {
+        if (actions[i]->data().toString() == app->uuid()) actions[i]->setVisible(false);
+    }
 }
 
-void StepEditWidget::applicationUnassigned(QString uuid)
+void StepEditWidget::applicationUnassigned(RamObject *app)
 {
-    applicationList->removeObject(uuid);
-
     //show in assign list
     foreach (QAction * a, assignAppMenu->actions() )
-        if (a->data().toString() == uuid) a->setVisible(true);
+        if (a->data().toString() == app->uuid()) a->setVisible(true);
 }
 
-void StepEditWidget::applicationChanged()
+void StepEditWidget::applicationChanged(RamObject *app)
 {
-    RamApplication *app = (RamApplication*)sender();
-
     foreach (QAction *a, assignAppMenu->actions())
         if (a->data().toString() == app->uuid()) a->setText(app->name());
 }
 
 void StepEditWidget::applicationRemoved(RamObject *o)
 {
-    foreach (QAction *a, assignAppMenu->actions())
-        if (a->data().toString() == o->uuid())
-            a->deleteLater();
+    if (m_applicationConnections.contains(o->uuid()))
+    {
+        QList<QMetaObject::Connection> c = m_applicationConnections.value( o->uuid() );
+        while (!c.isEmpty()) disconnect( c.takeLast() );
+    }
+
+    QList<QAction *> actions = assignAppMenu->actions();
+    for( int i = actions.count() -1 ; i >= 0 ; i--)
+    {
+        if (actions.at(i)->data().toString() == o->uuid()) actions.at(i)->deleteLater();
+    }
 }

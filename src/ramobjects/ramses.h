@@ -107,7 +107,6 @@ public:
     RamFileType *createFileType();
     // Applications
     RamObjectList *applications() const;
-    RamApplication *application(QString uuid);
     RamApplication *createApplication();
 
 public slots:

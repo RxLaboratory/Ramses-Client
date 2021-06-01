@@ -31,8 +31,10 @@ void PipeEditWidget::setPipe(RamPipe *pipe)
     RamProject *project = Ramses::instance()->project( pipe->outputStep()->projectUuid() );
     if (!project) return;
 
-    for( RamStep *step: project->steps() )
+    // find output and input steps
+    for( int i = 0; i < project->steps()->count(); i++ )
     {
+        RamStep *step = qobject_cast<RamStep*>( project->steps()->at(i) );
         const QString displayName = step->name();
         const QString uuid = step->uuid();
         fromBox->addItem(displayName, uuid );
@@ -46,10 +48,10 @@ void PipeEditWidget::setPipe(RamPipe *pipe)
     updateFileTypes();
 
     _objectConnections << connect(pipe, &RamPipe::changed, this, &PipeEditWidget::pipeChanged);
-    _objectConnections << connect(pipe->outputStep(), &RamStep::applicationAssigned, this, &PipeEditWidget::appChanged);
-    _objectConnections << connect(pipe->outputStep(), &RamStep::applicationUnassigned, this, &PipeEditWidget::appChanged);
-    _objectConnections << connect(pipe->inputStep(), &RamStep::applicationAssigned, this, &PipeEditWidget::appChanged);
-    _objectConnections << connect(pipe->inputStep(), &RamStep::applicationUnassigned, this, &PipeEditWidget::appChanged);
+    _objectConnections << connect(pipe->outputStep()->applications(), &RamObjectList::objectAdded, this, &PipeEditWidget::appChanged);
+    _objectConnections << connect(pipe->outputStep()->applications(), &RamObjectList::objectRemoved, this, &PipeEditWidget::appChanged);
+    _objectConnections << connect(pipe->inputStep()->applications(), &RamObjectList::objectAdded, this, &PipeEditWidget::appChanged);
+    _objectConnections << connect(pipe->inputStep()->applications(), &RamObjectList::objectRemoved, this, &PipeEditWidget::appChanged);
 
     this->setEnabled(Ramses::instance()->isProjectAdmin());
 }
@@ -62,8 +64,10 @@ void PipeEditWidget::update()
     if (!project) return;
 
     _pipe->setFileType( Ramses::instance()->fileType( fileTypeBox->currentData().toString() ) );
-    _pipe->setInputStep( project->step(toBox->currentData().toString() ) );
-    _pipe->setOutputStep( project->step(fromBox->currentData().toString() ) );
+    RamObject *inputStep = project->steps()->fromUuid( toBox->currentData().toString() );
+    _pipe->setInputStep( qobject_cast<RamStep*>( inputStep ) );
+    RamObject *outputStep = project->steps()->fromUuid( fromBox->currentData().toString() );
+    _pipe->setOutputStep( qobject_cast<RamStep*>( outputStep ) );
 
     _pipe->update();
 }

@@ -7,50 +7,119 @@
  <text-size>11000</text-size>
  <corner-radius>5000</corner-radius>
  <graph>
-  <node w="207000" x="131431" y="-144077" h="75000" index="56">
-   <text>ShotListManagerWidget:
-ObjectListManagerWidget</text>
-   <color g="255" r="255" b="255"/>
+  <node w="200000" x="-2220313" y="-204062" h="75000" index="114">
+   <text>AssetTableEditWidget</text>
+   <color g="233" r="252" b="79"/>
    <text-color g="0" r="0" b="0"/>
   </node>
-  <node w="200000" x="1609148" y="833276" h="75000" index="183">
-   <text>RamAsset</text>
-   <color g="154" r="78" b="6"/>
-   <text-color g="0" r="0" b="0"/>
-  </node>
-  <node w="200000" x="1357659" y="1552897" h="75000" index="217">
-   <text>RamStep</text>
-   <color g="154" r="78" b="6"/>
-   <text-color g="0" r="0" b="0"/>
-  </node>
-  <node w="200000" x="-1189730" y="-372929" h="75000" index="230">
-   <text>Admin Page</text>
-   <color g="127" r="173" b="168"/>
-   <text-color g="0" r="0" b="0"/>
-  </node>
-  <node w="200000" x="-627146" y="237846" h="75000" index="188">
-   <text>RamFileTypeWidget</text>
-   <color g="255" r="255" b="255"/>
-   <text-color g="0" r="0" b="0"/>
-  </node>
-  <node w="200000" x="1255029" y="551606" h="75000" index="267">
-   <text>RamStatus</text>
-   <color g="154" r="78" b="6"/>
-   <text-color g="0" r="0" b="0"/>
-  </node>
-  <node w="200000" x="1071379" y="1795395" h="75000" index="227">
+  <node w="200000" x="-935848" y="1156188" h="75000" index="241">
    <text>RamObjectList users</text>
    <color g="154" r="78" b="6"/>
    <text-color g="0" r="0" b="0"/>
   </node>
-  <node w="200000" x="-1689533" y="534992" h="75000" index="91">
-   <text>StateListManagerWidget</text>
+  <node w="200000" x="1348102" y="828503" h="75000" index="182">
+   <text>RamAssetWidget</text>
+   <color g="215" r="211" b="207"/>
+   <text-color g="0" r="0" b="0"/>
+  </node>
+  <node w="200000" x="-1183490" y="-76913" h="75000" index="171">
+   <text>ObjectListEditWidget</text>
    <color g="255" r="255" b="255"/>
    <text-color g="0" r="0" b="0"/>
   </node>
-  <node w="200000" x="318859" y="1725471" h="75000" index="218">
-   <text>StepEditWidget</text>
-   <color g="233" r="252" b="79"/>
+  <node w="200000" x="652101" y="234554" h="75000" index="168">
+   <text>RamObjectListWidget</text>
+   <color g="215" r="211" b="207"/>
+   <text-color g="0" r="0" b="0"/>
+  </node>
+  <node w="200000" x="-1432330" y="1638488" h="75000" index="251">
+   <text>TemplateStepEditWidget</text>
+   <color g="255" r="255" b="255"/>
+   <text-color g="0" r="0" b="0"/>
+  </node>
+  <node w="200000" x="-1454937" y="366548" h="75000" index="190">
+   <text>FileTypeEditWidget</text>
+   <color g="255" r="255" b="255"/>
+   <text-color g="0" r="0" b="0"/>
+  </node>
+  <node w="200000" x="573584" y="1687179" h="75000" index="220">
+   <text>ObjectListEditWidget</text>
+   <color g="238" r="238" b="236"/>
+   <text-color g="0" r="0" b="0"/>
+  </node>
+  <node w="200000" x="-1195595" y="371072" h="75000" index="191">
+   <text>RamFileType</text>
+   <color g="154" r="78" b="6"/>
+   <text-color g="0" r="0" b="0"/>
+  </node>
+  <node w="200000" x="-414665" y="1473318" h="75000" index="250">
+   <text>RamStep</text>
+   <color g="154" r="78" b="6"/>
+   <text-color g="0" r="0" b="0"/>
+  </node>
+  <node w="200000" x="1488000" y="404000" h="75000" index="268">
+   <text>RamStatus</text>
+   <color g="154" r="78" b="6"/>
+   <text-color g="0" r="0" b="0"/>
+  </node>
+  <node w="200000" x="-1189040" y="1158592" h="75000" index="239">
+   <text>RamObjectListWidget</text>
+   <color g="215" r="211" b="207"/>
+   <text-color g="0" r="0" b="0"/>
+  </node>
+  <node w="200000" x="391460" y="230789" h="75000" index="53">
+   <text>ObjectListEditWidget</text>
+   <color g="255" r="255" b="255"/>
+   <text-color g="0" r="0" b="0"/>
+  </node>
+  <node w="200000" x="857793" y="825442" h="75000" index="180">
+   <text>RamObjectListWidget</text>
+   <color g="215" r="211" b="207"/>
+   <text-color g="0" r="0" b="0"/>
+  </node>
+  <node w="215000" x="1098611" y="828590" h="75000" index="181">
+   <text>RamObjectUbeerList assets</text>
+   <color g="154" r="78" b="6"/>
+   <text-color g="0" r="0" b="0"/>
+  </node>
+  <node w="200000" x="-361970" y="1801396" h="75000" index="258">
+   <text>RamAssetGroup</text>
+   <color g="154" r="78" b="6"/>
+   <text-color g="0" r="0" b="0"/>
+  </node>
+  <node w="200000" x="-203307" y="-695937" h="75000" index="4">
+   <text>RamDisplay</text>
+   <color g="215" r="211" b="207"/>
+   <text-color g="0" r="0" b="0"/>
+  </node>
+  <node w="200000" x="380446" y="354270" h="75000" index="153">
+   <text>AssetEditWidget</text>
+   <color g="238" r="238" b="236"/>
+   <text-color g="0" r="0" b="0"/>
+  </node>
+  <node w="201000" x="932132" y="-209401" h="75000" index="144">
+   <text>RamObjectUberList shots</text>
+   <color g="154" r="78" b="6"/>
+   <text-color g="0" r="0" b="0"/>
+  </node>
+  <node w="200000" x="1205807" y="-54788" h="75000" index="271">
+   <text>StatusEditWidget</text>
+   <color g="255" r="255" b="255"/>
+   <text-color g="0" r="0" b="0"/>
+  </node>
+  <node w="283000" x="-893079" y="1795562" h="75000" index="255">
+   <text>RamObjectList template asset groups</text>
+   <color g="154" r="78" b="6"/>
+   <text-color g="0" r="0" b="0"/>
+  </node>
+  <node w="200000" x="575249" y="1799557" h="75000" index="222">
+   <text>ObjectListEditWidget</text>
+   <color g="238" r="238" b="236"/>
+   <text-color g="0" r="0" b="0"/>
+  </node>
+  <node w="200000" x="1130397" y="668059" h="75000" index="163">
+   <text>RamAssetGroupWidget</text>
+   <color g="215" r="211" b="207"/>
    <text-color g="0" r="0" b="0"/>
   </node>
   <node w="200000" x="-2082172" y="6769" h="75000" index="139">
@@ -63,93 +132,38 @@ ObjectListManagerWidget</text>
    <color g="255" r="255" b="255"/>
    <text-color g="0" r="0" b="0"/>
   </node>
-  <node w="200000" x="350179" y="1113448" h="75000" index="194">
-   <text>ObjectListEditWidget</text>
+  <node w="200000" x="-1444286" y="652344" h="75000" index="276">
+   <text>StateEditWidget</text>
    <color g="255" r="255" b="255"/>
    <text-color g="0" r="0" b="0"/>
   </node>
-  <node w="200000" x="-660989" y="1147521" h="75000" index="242">
-   <text>RamUserWidget</text>
+  <node w="200000" x="1197705" y="238211" h="75000" index="149">
+   <text>RamAssetWidget</text>
    <color g="215" r="211" b="207"/>
    <text-color g="0" r="0" b="0"/>
   </node>
-  <node w="200000" x="57594" y="-535058" h="75000" index="115">
-   <text>RamObject</text>
+  <node w="200000" x="1255029" y="551606" h="75000" index="267">
+   <text>RamStatus</text>
    <color g="154" r="78" b="6"/>
    <text-color g="0" r="0" b="0"/>
   </node>
-  <node w="200000" x="-1438435" y="1470039" h="75000" index="248">
-   <text>ObjectListEditWidget</text>
+  <node w="200000" x="-1689533" y="534992" h="75000" index="91">
+   <text>StateListManagerWidget</text>
    <color g="255" r="255" b="255"/>
    <text-color g="0" r="0" b="0"/>
   </node>
-  <node w="200000" x="-201269" y="-533191" h="75000" index="121">
-   <text>RamObject</text>
-   <color g="154" r="78" b="6"/>
-   <text-color g="0" r="0" b="0"/>
-  </node>
-  <node w="200000" x="-372343" y="235908" h="75000" index="189">
-   <text>RamFileType</text>
-   <color g="154" r="78" b="6"/>
-   <text-color g="0" r="0" b="0"/>
-  </node>
-  <node w="200000" x="-446175" y="-199045" h="75000" index="160">
-   <text>RamApplication</text>
-   <color g="154" r="78" b="6"/>
-   <text-color g="0" r="0" b="0"/>
-  </node>
-  <node w="200000" x="-892147" y="237198" h="75000" index="187">
-   <text>RamObjectList filetypes</text>
-   <color g="154" r="78" b="6"/>
-   <text-color g="0" r="0" b="0"/>
-  </node>
-  <node w="200000" x="-1178967" y="82913" h="75000" index="172">
-   <text>RamApplication</text>
-   <color g="154" r="78" b="6"/>
-   <text-color g="0" r="0" b="0"/>
-  </node>
-  <node w="200000" x="479949" y="-399511" h="75000" index="231">
-   <text>Project Page</text>
-   <color g="127" r="173" b="168"/>
-   <text-color g="0" r="0" b="0"/>
-  </node>
-  <node w="200000" x="663000" y="473000" h="75000" index="270">
-   <text>StatusHistoryWidget</text>
+  <node w="200000" x="318859" y="1725471" h="75000" index="218">
+   <text>StepEditWidget</text>
    <color g="238" r="238" b="236"/>
    <text-color g="0" r="0" b="0"/>
   </node>
-  <node w="200000" x="632130" y="-100409" h="75000" index="152">
-   <text>RamShot</text>
+  <node w="200000" x="1455422" y="237990" h="75000" index="150">
+   <text>RamAsset</text>
    <color g="154" r="78" b="6"/>
    <text-color g="0" r="0" b="0"/>
   </node>
-  <node w="200000" x="-1463880" y="818213" h="75000" index="234">
-   <text>ObjectListEditWidget</text>
-   <color g="255" r="255" b="255"/>
-   <text-color g="0" r="0" b="0"/>
-  </node>
-  <node w="200000" x="-192639" y="-81389" h="75000" index="175">
-   <text>RamFileType</text>
-   <color g="154" r="78" b="6"/>
-   <text-color g="0" r="0" b="0"/>
-  </node>
-  <node w="200000" x="1353501" y="1275780" h="75000" index="203">
-   <text>RamShotWidget</text>
-   <color g="215" r="211" b="207"/>
-   <text-color g="0" r="0" b="0"/>
-  </node>
-  <node w="200000" x="363234" y="825442" h="75000" index="177">
-   <text>AssetGroupEditWidget</text>
-   <color g="238" r="238" b="236"/>
-   <text-color g="0" r="0" b="0"/>
-  </node>
-  <node w="200000" x="-412508" y="811692" h="75000" index="236">
-   <text>RamProject</text>
-   <color g="154" r="78" b="6"/>
-   <text-color g="0" r="0" b="0"/>
-  </node>
-  <node w="200000" x="-936931" y="816200" h="75000" index="233">
-   <text>RamObjectList projects</text>
+  <node w="200000" x="-1201334" y="652344" h="75000" index="277">
+   <text>RamState</text>
    <color g="154" r="78" b="6"/>
    <text-color g="0" r="0" b="0"/>
   </node>
@@ -158,14 +172,14 @@ ObjectListManagerWidget</text>
    <color g="255" r="255" b="255"/>
    <text-color g="0" r="0" b="0"/>
   </node>
-  <node w="200000" x="-1182002" y="1797966" h="75000" index="254">
-   <text>RamObjectListWidget</text>
-   <color g="215" r="211" b="207"/>
+  <node w="200000" x="-936931" y="816200" h="75000" index="233">
+   <text>RamObjectList projects</text>
+   <color g="154" r="78" b="6"/>
    <text-color g="0" r="0" b="0"/>
   </node>
-  <node w="200000" x="-2351177" y="-103498" h="75000" index="134">
-   <text>RamAssetWidget</text>
-   <color g="215" r="211" b="207"/>
+  <node w="200000" x="-1445859" y="-5978" h="75000" index="165">
+   <text>ApplicationEditWidget</text>
+   <color g="255" r="255" b="255"/>
    <text-color g="0" r="0" b="0"/>
   </node>
   <node w="200000" x="-656971" y="530064" h="75000" index="211">
@@ -203,26 +217,6 @@ ObjectListManagerWidget</text>
    <color g="255" r="255" b="255"/>
    <text-color g="0" r="0" b="0"/>
   </node>
-  <node w="233000" x="-934224" y="1471274" h="75000" index="247">
-   <text>RamObjectList template steps</text>
-   <color g="154" r="78" b="6"/>
-   <text-color g="0" r="0" b="0"/>
-  </node>
-  <node w="200000" x="1197705" y="238211" h="75000" index="149">
-   <text>RamAssetWidget</text>
-   <color g="215" r="211" b="207"/>
-   <text-color g="0" r="0" b="0"/>
-  </node>
-  <node w="200000" x="-1444286" y="652344" h="75000" index="276">
-   <text>StateEditWidget</text>
-   <color g="255" r="255" b="255"/>
-   <text-color g="0" r="0" b="0"/>
-  </node>
-  <node w="200000" x="-1187416" y="1473677" h="75000" index="246">
-   <text>RamObjectListWidget</text>
-   <color g="215" r="211" b="207"/>
-   <text-color g="0" r="0" b="0"/>
-  </node>
   <node w="200000" x="-407118" y="1143438" h="75000" index="243">
    <text>RamUser</text>
    <color g="154" r="78" b="6"/>
@@ -238,23 +232,74 @@ ObjectListManagerWidget</text>
    <color g="154" r="78" b="6"/>
    <text-color g="0" r="0" b="0"/>
   </node>
-  <node w="200000" x="-2351177" y="-907" h="75000" index="135">
-   <text>RamAsset</text>
-   <color g="154" r="78" b="6"/>
-   <text-color g="0" r="0" b="0"/>
-  </node>
   <node w="200000" x="602975" y="823935" h="75000" index="179">
    <text>ObjectListEditWidget</text>
    <color g="238" r="238" b="236"/>
    <text-color g="0" r="0" b="0"/>
   </node>
-  <node w="200000" x="1455422" y="237990" h="75000" index="150">
-   <text>RamAsset</text>
+  <node w="200000" x="-1437838" y="-203097" h="75000" index="156">
+   <text>ObjectListEditWidget</text>
+   <color g="255" r="255" b="255"/>
+   <text-color g="0" r="0" b="0"/>
+  </node>
+  <node w="200000" x="961650" y="22081" h="75000" index="274">
+   <text>RamObjectListWidget</text>
+   <color g="215" r="211" b="207"/>
+   <text-color g="0" r="0" b="0"/>
+  </node>
+  <node w="200000" x="344063" y="1262063" h="75000" index="199">
+   <text>SequenceEditWidget</text>
+   <color g="255" r="255" b="255"/>
+   <text-color g="0" r="0" b="0"/>
+  </node>
+  <node w="245000" x="88886" y="748895" h="75000" index="72">
+   <text>AssetGroupListManagerWidget:
+ObjectListManagerWidget</text>
+   <color g="238" r="238" b="236"/>
+   <text-color g="0" r="0" b="0"/>
+  </node>
+  <node w="200000" x="1344479" y="1684854" h="75000" index="225">
+   <text>RamApplicationWidget</text>
+   <color g="215" r="211" b="207"/>
+   <text-color g="0" r="0" b="0"/>
+  </node>
+  <node w="200000" x="-446175" y="-199045" h="75000" index="160">
+   <text>RamApplication</text>
    <color g="154" r="78" b="6"/>
    <text-color g="0" r="0" b="0"/>
   </node>
-  <node w="200000" x="-1201334" y="652344" h="75000" index="277">
-   <text>RamState</text>
+  <node w="200000" x="588567" y="1931914" h="75000" index="219">
+   <text>RamStep</text>
+   <color g="154" r="78" b="6"/>
+   <text-color g="0" r="0" b="0"/>
+  </node>
+  <node w="200000" x="364742" y="668631" h="75000" index="161">
+   <text>ObjectListEditWidget</text>
+   <color g="255" r="255" b="255"/>
+   <text-color g="0" r="0" b="0"/>
+  </node>
+  <node w="200000" x="1573665" y="1683346" h="75000" index="226">
+   <text>RamApplication</text>
+   <color g="154" r="78" b="6"/>
+   <text-color g="0" r="0" b="0"/>
+  </node>
+  <node w="200000" x="602975" y="668631" h="75000" index="176">
+   <text>RamObjectListWidget</text>
+   <color g="215" r="211" b="207"/>
+   <text-color g="0" r="0" b="0"/>
+  </node>
+  <node w="200000" x="-2088138" y="-98207" h="75000" index="138">
+   <text>RamStatusWidget</text>
+   <color g="215" r="211" b="207"/>
+   <text-color g="0" r="0" b="0"/>
+  </node>
+  <node w="200000" x="-1416779" y="1787831" h="75000" index="256">
+   <text>ObjectListEditWidget</text>
+   <color g="255" r="255" b="255"/>
+   <text-color g="0" r="0" b="0"/>
+  </node>
+  <node w="200000" x="1455470" y="-62991" h="75000" index="273">
+   <text>RamStatus</text>
    <color g="154" r="78" b="6"/>
    <text-color g="0" r="0" b="0"/>
   </node>
@@ -263,8 +308,8 @@ ObjectListManagerWidget</text>
    <color g="215" r="211" b="207"/>
    <text-color g="0" r="0" b="0"/>
   </node>
-  <node w="200000" x="1455470" y="-62991" h="75000" index="273">
-   <text>RamStatus</text>
+  <node w="206000" x="832234" y="1550000" h="75000" index="214">
+   <text>RamObjectList asset steps</text>
    <color g="154" r="78" b="6"/>
    <text-color g="0" r="0" b="0"/>
   </node>
@@ -274,19 +319,9 @@ ObjectListManagerWidget</text>
    <color g="255" r="255" b="255"/>
    <text-color g="0" r="0" b="0"/>
   </node>
-  <node w="206000" x="832234" y="1550000" h="75000" index="214">
-   <text>RamObjectList asset steps</text>
-   <color g="154" r="78" b="6"/>
-   <text-color g="0" r="0" b="0"/>
-  </node>
-  <node w="200000" x="-1190123" y="818603" h="75000" index="232">
-   <text>RamObjectListWidget</text>
-   <color g="215" r="211" b="207"/>
-   <text-color g="0" r="0" b="0"/>
-  </node>
-  <node w="200000" x="-1445859" y="-5978" h="75000" index="165">
-   <text>ApplicationEditWidget</text>
-   <color g="255" r="255" b="255"/>
+  <node w="200000" x="-764496" y="-522962" h="75000" index="37">
+   <text>WIP</text>
+   <color g="175" r="252" b="62"/>
    <text-color g="0" r="0" b="0"/>
   </node>
   <node w="200000" x="1382816" y="667695" h="75000" index="164">
@@ -294,14 +329,210 @@ ObjectListManagerWidget</text>
    <color g="154" r="78" b="6"/>
    <text-color g="0" r="0" b="0"/>
   </node>
-  <node w="200000" x="-764496" y="-522962" h="75000" index="37">
-   <text>WIP</text>
-   <color g="175" r="252" b="62"/>
+  <node w="200000" x="971000" y="475000" h="75000" index="269">
+   <text>RamObjectListWidget</text>
+   <color g="215" r="211" b="207"/>
+   <text-color g="0" r="0" b="0"/>
+  </node>
+  <node w="200000" x="370301" y="-97668" h="75000" index="151">
+   <text>ShotEditWidget</text>
+   <color g="255" r="255" b="255"/>
+   <text-color g="0" r="0" b="0"/>
+  </node>
+  <node w="200000" x="-664811" y="1472174" h="75000" index="249">
+   <text>RamStepWidget</text>
+   <color g="215" r="211" b="207"/>
+   <text-color g="0" r="0" b="0"/>
+  </node>
+  <node w="217000" x="866840" y="670139" h="75000" index="162">
+   <text>RamObjectList asset groups</text>
+   <color g="154" r="78" b="6"/>
+   <text-color g="0" r="0" b="0"/>
+  </node>
+  <node w="200000" x="821649" y="1682184" h="75000" index="221">
+   <text>RamObjectListWidget</text>
+   <color g="215" r="211" b="207"/>
+   <text-color g="0" r="0" b="0"/>
+  </node>
+  <node w="200000" x="-1182002" y="1797966" h="75000" index="254">
+   <text>RamObjectListWidget</text>
+   <color g="215" r="211" b="207"/>
+   <text-color g="0" r="0" b="0"/>
+  </node>
+  <node w="200000" x="-2097635" y="342380" h="75000" index="136">
+   <text>RamStatusWidget</text>
+   <color g="215" r="211" b="207"/>
+   <text-color g="0" r="0" b="0"/>
+  </node>
+  <node w="200000" x="350179" y="1113448" h="75000" index="194">
+   <text>ObjectListEditWidget</text>
+   <color g="255" r="255" b="255"/>
+   <text-color g="0" r="0" b="0"/>
+  </node>
+  <node w="200000" x="-2351177" y="-907" h="75000" index="135">
+   <text>RamAsset</text>
+   <color g="154" r="78" b="6"/>
+   <text-color g="0" r="0" b="0"/>
+  </node>
+  <node w="200000" x="-1189398" y="1638409" h="75000" index="253">
+   <text>RamStep</text>
+   <color g="154" r="78" b="6"/>
+   <text-color g="0" r="0" b="0"/>
+  </node>
+  <node w="200000" x="-2094056" y="435428" h="75000" index="137">
+   <text>RamStatus</text>
+   <color g="154" r="78" b="6"/>
+   <text-color g="0" r="0" b="0"/>
+  </node>
+  <node w="200000" x="-437133" y="-78454" h="75000" index="174">
+   <text>RamFileTypeWidget</text>
+   <color g="255" r="255" b="255"/>
+   <text-color g="0" r="0" b="0"/>
+  </node>
+  <node w="200000" x="-1190123" y="818603" h="75000" index="232">
+   <text>RamObjectListWidget</text>
+   <color g="215" r="211" b="207"/>
+   <text-color g="0" r="0" b="0"/>
+  </node>
+  <node w="200000" x="-940734" y="-75405" h="75000" index="173">
+   <text>RamObjectListWidget</text>
+   <color g="215" r="211" b="207"/>
+   <text-color g="0" r="0" b="0"/>
+  </node>
+  <node w="200000" x="-2351177" y="-103498" h="75000" index="134">
+   <text>RamAssetWidget</text>
+   <color g="215" r="211" b="207"/>
+   <text-color g="0" r="0" b="0"/>
+  </node>
+  <node w="248000" x="-1397981" y="1935181" h="75000" index="252">
+   <text>TemplateAssetGroupEditWidget</text>
+   <color g="255" r="255" b="255"/>
+   <text-color g="0" r="0" b="0"/>
+  </node>
+  <node w="217000" x="852276" y="1114956" h="75000" index="193">
+   <text>RamObjectList asset groups</text>
+   <color g="154" r="78" b="6"/>
    <text-color g="0" r="0" b="0"/>
   </node>
   <node w="200000" x="819984" y="1796227" h="75000" index="223">
    <text>RamObjectListWidget</text>
    <color g="215" r="211" b="207"/>
+   <text-color g="0" r="0" b="0"/>
+  </node>
+  <node w="200000" x="-201269" y="-533191" h="75000" index="121">
+   <text>RamObject</text>
+   <color g="154" r="78" b="6"/>
+   <text-color g="0" r="0" b="0"/>
+  </node>
+  <node w="200000" x="-1438435" y="1470039" h="75000" index="248">
+   <text>ObjectListEditWidget</text>
+   <color g="255" r="255" b="255"/>
+   <text-color g="0" r="0" b="0"/>
+  </node>
+  <node w="200000" x="1071379" y="1795395" h="75000" index="227">
+   <text>RamObjectList users</text>
+   <color g="154" r="78" b="6"/>
+   <text-color g="0" r="0" b="0"/>
+  </node>
+  <node w="233000" x="-934224" y="1471274" h="75000" index="247">
+   <text>RamObjectList template steps</text>
+   <color g="154" r="78" b="6"/>
+   <text-color g="0" r="0" b="0"/>
+  </node>
+  <node w="200000" x="-627146" y="237846" h="75000" index="188">
+   <text>RamFileTypeWidget</text>
+   <color g="255" r="255" b="255"/>
+   <text-color g="0" r="0" b="0"/>
+  </node>
+  <node w="200000" x="1357659" y="1552897" h="75000" index="217">
+   <text>RamStep</text>
+   <color g="154" r="78" b="6"/>
+   <text-color g="0" r="0" b="0"/>
+  </node>
+  <node w="200000" x="-1189730" y="-372929" h="75000" index="230">
+   <text>Admin Page</text>
+   <color g="127" r="173" b="168"/>
+   <text-color g="0" r="0" b="0"/>
+  </node>
+  <node w="200000" x="-660989" y="1147521" h="75000" index="242">
+   <text>RamUserWidget</text>
+   <color g="215" r="211" b="207"/>
+   <text-color g="0" r="0" b="0"/>
+  </node>
+  <node w="200000" x="57594" y="-535058" h="75000" index="115">
+   <text>RamObject</text>
+   <color g="154" r="78" b="6"/>
+   <text-color g="0" r="0" b="0"/>
+  </node>
+  <node w="200000" x="1609148" y="833276" h="75000" index="183">
+   <text>RamAsset</text>
+   <color g="154" r="78" b="6"/>
+   <text-color g="0" r="0" b="0"/>
+  </node>
+  <node w="207000" x="131431" y="-144077" h="75000" index="56">
+   <text>ShotListManagerWidget:
+ObjectListManagerWidget</text>
+   <color g="255" r="255" b="255"/>
+   <text-color g="0" r="0" b="0"/>
+  </node>
+  <node w="200000" x="-1178967" y="82913" h="75000" index="172">
+   <text>RamApplication</text>
+   <color g="154" r="78" b="6"/>
+   <text-color g="0" r="0" b="0"/>
+  </node>
+  <node w="200000" x="479949" y="-399511" h="75000" index="231">
+   <text>Project Page</text>
+   <color g="127" r="173" b="168"/>
+   <text-color g="0" r="0" b="0"/>
+  </node>
+  <node w="200000" x="-372343" y="235908" h="75000" index="189">
+   <text>RamFileType</text>
+   <color g="154" r="78" b="6"/>
+   <text-color g="0" r="0" b="0"/>
+  </node>
+  <node w="200000" x="-1187416" y="1473677" h="75000" index="246">
+   <text>RamObjectListWidget</text>
+   <color g="215" r="211" b="207"/>
+   <text-color g="0" r="0" b="0"/>
+  </node>
+  <node w="200000" x="-892147" y="237198" h="75000" index="187">
+   <text>RamObjectList filetypes</text>
+   <color g="154" r="78" b="6"/>
+   <text-color g="0" r="0" b="0"/>
+  </node>
+  <node w="200000" x="663000" y="473000" h="75000" index="270">
+   <text>StatusHistoryWidget</text>
+   <color g="238" r="238" b="236"/>
+   <text-color g="0" r="0" b="0"/>
+  </node>
+  <node w="200000" x="632130" y="-100409" h="75000" index="152">
+   <text>RamShot</text>
+   <color g="154" r="78" b="6"/>
+   <text-color g="0" r="0" b="0"/>
+  </node>
+  <node w="200000" x="-1463880" y="818213" h="75000" index="234">
+   <text>ObjectListEditWidget</text>
+   <color g="255" r="255" b="255"/>
+   <text-color g="0" r="0" b="0"/>
+  </node>
+  <node w="200000" x="-192639" y="-81389" h="75000" index="175">
+   <text>RamFileType</text>
+   <color g="154" r="78" b="6"/>
+   <text-color g="0" r="0" b="0"/>
+  </node>
+  <node w="200000" x="1353501" y="1275780" h="75000" index="203">
+   <text>RamShotWidget</text>
+   <color g="215" r="211" b="207"/>
+   <text-color g="0" r="0" b="0"/>
+  </node>
+  <node w="200000" x="-412508" y="811692" h="75000" index="236">
+   <text>RamProject</text>
+   <color g="154" r="78" b="6"/>
+   <text-color g="0" r="0" b="0"/>
+  </node>
+  <node w="200000" x="363234" y="825442" h="75000" index="177">
+   <text>AssetGroupEditWidget</text>
+   <color g="238" r="238" b="236"/>
    <text-color g="0" r="0" b="0"/>
   </node>
   <node w="200000" x="1613764" y="1275880" h="75000" index="204">
@@ -439,7 +670,7 @@ ObjectListManagerWidget</text>
   <node w="207000" x="64566" y="1620113" h="75000" index="97">
    <text>StepListManagerWidget:
 ObjectListManagerWidget</text>
-   <color g="233" r="252" b="79"/>
+   <color g="238" r="238" b="236"/>
    <text-color g="0" r="0" b="0"/>
   </node>
   <node w="213000" x="1081808" y="1683346" h="75000" index="224">
@@ -533,261 +764,42 @@ ObjectListManagerWidget</text>
    <color g="154" r="78" b="6"/>
    <text-color g="0" r="0" b="0"/>
   </node>
-  <node w="200000" x="1130397" y="668059" h="75000" index="163">
-   <text>RamAssetGroupWidget</text>
-   <color g="215" r="211" b="207"/>
-   <text-color g="0" r="0" b="0"/>
-  </node>
-  <node w="200000" x="575249" y="1799557" h="75000" index="222">
-   <text>ObjectListEditWidget</text>
-   <color g="233" r="252" b="79"/>
-   <text-color g="0" r="0" b="0"/>
-  </node>
-  <node w="283000" x="-893079" y="1795562" h="75000" index="255">
-   <text>RamObjectList template asset groups</text>
-   <color g="154" r="78" b="6"/>
-   <text-color g="0" r="0" b="0"/>
-  </node>
-  <node w="200000" x="1205807" y="-54788" h="75000" index="271">
-   <text>StatusEditWidget</text>
-   <color g="255" r="255" b="255"/>
-   <text-color g="0" r="0" b="0"/>
-  </node>
-  <node w="201000" x="932132" y="-209401" h="75000" index="144">
-   <text>RamObjectUberList shots</text>
-   <color g="154" r="78" b="6"/>
-   <text-color g="0" r="0" b="0"/>
-  </node>
-  <node w="200000" x="380446" y="354270" h="75000" index="153">
-   <text>AssetEditWidget</text>
-   <color g="238" r="238" b="236"/>
-   <text-color g="0" r="0" b="0"/>
-  </node>
-  <node w="200000" x="-203307" y="-695937" h="75000" index="4">
-   <text>RamDisplay</text>
-   <color g="215" r="211" b="207"/>
-   <text-color g="0" r="0" b="0"/>
-  </node>
-  <node w="200000" x="-361970" y="1801396" h="75000" index="258">
-   <text>RamAssetGroup</text>
-   <color g="154" r="78" b="6"/>
-   <text-color g="0" r="0" b="0"/>
-  </node>
-  <node w="215000" x="1098611" y="828590" h="75000" index="181">
-   <text>RamObjectUbeerList assets</text>
-   <color g="154" r="78" b="6"/>
-   <text-color g="0" r="0" b="0"/>
-  </node>
-  <node w="200000" x="857793" y="825442" h="75000" index="180">
-   <text>RamObjectListWidget</text>
-   <color g="215" r="211" b="207"/>
-   <text-color g="0" r="0" b="0"/>
-  </node>
-  <node w="200000" x="391460" y="230789" h="75000" index="53">
-   <text>ObjectListEditWidget</text>
-   <color g="255" r="255" b="255"/>
-   <text-color g="0" r="0" b="0"/>
-  </node>
-  <node w="200000" x="-1189040" y="1158592" h="75000" index="239">
-   <text>RamObjectListWidget</text>
-   <color g="215" r="211" b="207"/>
-   <text-color g="0" r="0" b="0"/>
-  </node>
-  <node w="200000" x="1488000" y="404000" h="75000" index="268">
-   <text>RamStatus</text>
-   <color g="154" r="78" b="6"/>
-   <text-color g="0" r="0" b="0"/>
-  </node>
-  <node w="200000" x="-414665" y="1473318" h="75000" index="250">
-   <text>RamStep</text>
-   <color g="154" r="78" b="6"/>
-   <text-color g="0" r="0" b="0"/>
-  </node>
-  <node w="200000" x="-1195595" y="371072" h="75000" index="191">
-   <text>RamFileType</text>
-   <color g="154" r="78" b="6"/>
-   <text-color g="0" r="0" b="0"/>
-  </node>
-  <node w="200000" x="573584" y="1687179" h="75000" index="220">
-   <text>ObjectListEditWidget</text>
-   <color g="233" r="252" b="79"/>
-   <text-color g="0" r="0" b="0"/>
-  </node>
-  <node w="200000" x="-1454937" y="366548" h="75000" index="190">
-   <text>FileTypeEditWidget</text>
-   <color g="255" r="255" b="255"/>
-   <text-color g="0" r="0" b="0"/>
-  </node>
-  <node w="200000" x="-1432330" y="1638488" h="75000" index="251">
-   <text>TemplateStepEditWidget</text>
-   <color g="255" r="255" b="255"/>
-   <text-color g="0" r="0" b="0"/>
-  </node>
-  <node w="200000" x="652101" y="234554" h="75000" index="168">
-   <text>RamObjectListWidget</text>
-   <color g="215" r="211" b="207"/>
-   <text-color g="0" r="0" b="0"/>
-  </node>
-  <node w="200000" x="-1183490" y="-76913" h="75000" index="171">
-   <text>ObjectListEditWidget</text>
-   <color g="255" r="255" b="255"/>
-   <text-color g="0" r="0" b="0"/>
-  </node>
-  <node w="200000" x="1348102" y="828503" h="75000" index="182">
-   <text>RamAssetWidget</text>
-   <color g="215" r="211" b="207"/>
-   <text-color g="0" r="0" b="0"/>
-  </node>
-  <node w="200000" x="-935848" y="1156188" h="75000" index="241">
-   <text>RamObjectList users</text>
-   <color g="154" r="78" b="6"/>
-   <text-color g="0" r="0" b="0"/>
-  </node>
-  <node w="200000" x="-2220313" y="-204062" h="75000" index="114">
-   <text>AssetTableEditWidget</text>
-   <color g="233" r="252" b="79"/>
-   <text-color g="0" r="0" b="0"/>
-  </node>
-  <node w="217000" x="852276" y="1114956" h="75000" index="193">
-   <text>RamObjectList asset groups</text>
-   <color g="154" r="78" b="6"/>
-   <text-color g="0" r="0" b="0"/>
-  </node>
-  <node w="200000" x="-940734" y="-75405" h="75000" index="173">
-   <text>RamObjectListWidget</text>
-   <color g="215" r="211" b="207"/>
-   <text-color g="0" r="0" b="0"/>
-  </node>
-  <node w="200000" x="-437133" y="-78454" h="75000" index="174">
-   <text>RamFileTypeWidget</text>
-   <color g="255" r="255" b="255"/>
-   <text-color g="0" r="0" b="0"/>
-  </node>
-  <node w="200000" x="-2094056" y="435428" h="75000" index="137">
-   <text>RamStatus</text>
-   <color g="154" r="78" b="6"/>
-   <text-color g="0" r="0" b="0"/>
-  </node>
-  <node w="200000" x="-1189398" y="1638409" h="75000" index="253">
-   <text>RamStep</text>
-   <color g="154" r="78" b="6"/>
-   <text-color g="0" r="0" b="0"/>
-  </node>
-  <node w="200000" x="-2097635" y="342380" h="75000" index="136">
-   <text>RamStatusWidget</text>
-   <color g="215" r="211" b="207"/>
-   <text-color g="0" r="0" b="0"/>
-  </node>
-  <node w="248000" x="-1397981" y="1935181" h="75000" index="252">
-   <text>TemplateAssetGroupEditWidget</text>
-   <color g="255" r="255" b="255"/>
-   <text-color g="0" r="0" b="0"/>
-  </node>
-  <node w="200000" x="821649" y="1682184" h="75000" index="221">
-   <text>RamObjectListWidget</text>
-   <color g="215" r="211" b="207"/>
-   <text-color g="0" r="0" b="0"/>
-  </node>
-  <node w="217000" x="866840" y="670139" h="75000" index="162">
-   <text>RamObjectList asset groups</text>
-   <color g="154" r="78" b="6"/>
-   <text-color g="0" r="0" b="0"/>
-  </node>
-  <node w="245000" x="88886" y="748895" h="75000" index="72">
-   <text>AssetGroupListManagerWidget:
-ObjectListManagerWidget</text>
-   <color g="238" r="238" b="236"/>
-   <text-color g="0" r="0" b="0"/>
-  </node>
-  <node w="200000" x="344063" y="1262063" h="75000" index="199">
-   <text>SequenceEditWidget</text>
-   <color g="255" r="255" b="255"/>
-   <text-color g="0" r="0" b="0"/>
-  </node>
-  <node w="200000" x="-664811" y="1472174" h="75000" index="249">
-   <text>RamStepWidget</text>
-   <color g="215" r="211" b="207"/>
-   <text-color g="0" r="0" b="0"/>
-  </node>
-  <node w="200000" x="-1437838" y="-203097" h="75000" index="156">
-   <text>ObjectListEditWidget</text>
-   <color g="255" r="255" b="255"/>
-   <text-color g="0" r="0" b="0"/>
-  </node>
-  <node w="200000" x="961650" y="22081" h="75000" index="274">
-   <text>RamObjectListWidget</text>
-   <color g="215" r="211" b="207"/>
-   <text-color g="0" r="0" b="0"/>
-  </node>
-  <node w="200000" x="1344479" y="1684854" h="75000" index="225">
-   <text>RamApplicationWidget</text>
-   <color g="215" r="211" b="207"/>
-   <text-color g="0" r="0" b="0"/>
-  </node>
-  <node w="200000" x="-1416779" y="1787831" h="75000" index="256">
-   <text>ObjectListEditWidget</text>
-   <color g="255" r="255" b="255"/>
-   <text-color g="0" r="0" b="0"/>
-  </node>
-  <node w="200000" x="-2088138" y="-98207" h="75000" index="138">
-   <text>RamStatusWidget</text>
-   <color g="215" r="211" b="207"/>
-   <text-color g="0" r="0" b="0"/>
-  </node>
-  <node w="200000" x="364742" y="668631" h="75000" index="161">
-   <text>ObjectListEditWidget</text>
-   <color g="255" r="255" b="255"/>
-   <text-color g="0" r="0" b="0"/>
-  </node>
-  <node w="200000" x="588567" y="1931914" h="75000" index="219">
-   <text>RamStep</text>
-   <color g="154" r="78" b="6"/>
-   <text-color g="0" r="0" b="0"/>
-  </node>
-  <node w="200000" x="1573665" y="1683346" h="75000" index="226">
-   <text>RamApplication</text>
-   <color g="154" r="78" b="6"/>
-   <text-color g="0" r="0" b="0"/>
-  </node>
-  <node w="200000" x="602975" y="668631" h="75000" index="176">
-   <text>RamObjectListWidget</text>
-   <color g="215" r="211" b="207"/>
-   <text-color g="0" r="0" b="0"/>
-  </node>
-  <node w="200000" x="971000" y="475000" h="75000" index="269">
-   <text>RamObjectListWidget</text>
-   <color g="215" r="211" b="207"/>
-   <text-color g="0" r="0" b="0"/>
-  </node>
-  <node w="200000" x="370301" y="-97668" h="75000" index="151">
-   <text>ShotEditWidget</text>
-   <color g="255" r="255" b="255"/>
-   <text-color g="0" r="0" b="0"/>
-  </node>
-  <edge index0="56" index1="151" reversed="0" arrow-mode="0"/>
-  <edge index0="56" index1="155" reversed="0" arrow-mode="0"/>
-  <edge index0="188" index1="189" reversed="0" arrow-mode="0"/>
-  <edge index0="227" index1="228" reversed="0" arrow-mode="0"/>
-  <edge index0="91" index1="207" reversed="0" arrow-mode="0"/>
+  <edge index0="114" index1="134" reversed="0" arrow-mode="0"/>
+  <edge index0="114" index1="138" reversed="0" arrow-mode="0"/>
+  <edge index0="241" index1="242" reversed="0" arrow-mode="0"/>
+  <edge index0="182" index1="183" reversed="0" arrow-mode="0"/>
+  <edge index0="171" index1="173" reversed="0" arrow-mode="0"/>
+  <edge index0="168" index1="148" reversed="0" arrow-mode="0"/>
+  <edge index0="251" index1="253" reversed="0" arrow-mode="0"/>
+  <edge index0="190" index1="191" reversed="0" arrow-mode="0"/>
+  <edge index0="220" index1="221" reversed="0" arrow-mode="0"/>
+  <edge index0="239" index1="241" reversed="0" arrow-mode="0"/>
+  <edge index0="53" index1="168" reversed="0" arrow-mode="0"/>
+  <edge index0="180" index1="181" reversed="0" arrow-mode="0"/>
+  <edge index0="181" index1="182" reversed="0" arrow-mode="0"/>
+  <edge index0="4" index1="121" reversed="0" arrow-mode="0">
+   <text>includes</text>
+  </edge>
+  <edge index0="153" index1="270" reversed="0" arrow-mode="0"/>
+  <edge index0="153" index1="154" reversed="0" arrow-mode="0"/>
+  <edge index0="144" index1="146" reversed="0" arrow-mode="0"/>
+  <edge index0="271" index1="273" reversed="0" arrow-mode="0"/>
+  <edge index0="255" index1="257" reversed="0" arrow-mode="0"/>
+  <edge index0="222" index1="223" reversed="0" arrow-mode="0"/>
+  <edge index0="163" index1="164" reversed="0" arrow-mode="0"/>
+  <edge index0="266" index1="268" reversed="0" arrow-mode="0"/>
+  <edge index0="276" index1="277" reversed="0" arrow-mode="0"/>
+  <edge index0="149" index1="150" reversed="0" arrow-mode="0"/>
   <edge index0="91" index1="276" reversed="0" arrow-mode="0"/>
+  <edge index0="91" index1="207" reversed="0" arrow-mode="0"/>
   <edge index0="218" index1="222" reversed="0" arrow-mode="0"/>
   <edge index0="218" index1="219" reversed="0" arrow-mode="0"/>
   <edge index0="218" index1="220" reversed="0" arrow-mode="0"/>
-  <edge index0="266" index1="268" reversed="0" arrow-mode="0"/>
-  <edge index0="194" index1="192" reversed="0" arrow-mode="0"/>
-  <edge index0="242" index1="243" reversed="0" arrow-mode="0"/>
-  <edge index0="248" index1="246" reversed="0" arrow-mode="0"/>
-  <edge index0="187" index1="188" reversed="0" arrow-mode="0"/>
-  <edge index0="270" index1="269" reversed="0" arrow-mode="0"/>
-  <edge index0="234" index1="232" reversed="0" arrow-mode="0"/>
-  <edge index0="203" index1="204" reversed="0" arrow-mode="0"/>
-  <edge index0="177" index1="179" reversed="0" arrow-mode="0"/>
-  <edge index0="177" index1="178" reversed="0" arrow-mode="0"/>
-  <edge index0="233" index1="235" reversed="0" arrow-mode="0"/>
-  <edge index0="106" index1="251" reversed="0" arrow-mode="0"/>
   <edge index0="106" index1="248" reversed="0" arrow-mode="0"/>
-  <edge index0="254" index1="255" reversed="0" arrow-mode="0"/>
-  <edge index0="134" index1="135" reversed="0" arrow-mode="0"/>
+  <edge index0="106" index1="251" reversed="0" arrow-mode="0"/>
+  <edge index0="233" index1="235" reversed="0" arrow-mode="0"/>
+  <edge index0="165" index1="171" reversed="0" arrow-mode="0"/>
+  <edge index0="165" index1="172" reversed="0" arrow-mode="0"/>
   <edge index0="211" index1="212" reversed="0" arrow-mode="0"/>
   <edge index0="84" index1="237" reversed="0" arrow-mode="0"/>
   <edge index0="84" index1="234" reversed="0" arrow-mode="0"/>
@@ -795,22 +807,57 @@ ObjectListManagerWidget</text>
   <edge index0="132" index1="133" reversed="0" arrow-mode="0"/>
   <edge index0="102" index1="256" reversed="0" arrow-mode="0"/>
   <edge index0="102" index1="252" reversed="0" arrow-mode="0"/>
-  <edge index0="247" index1="249" reversed="0" arrow-mode="0"/>
-  <edge index0="149" index1="150" reversed="0" arrow-mode="0"/>
-  <edge index0="276" index1="277" reversed="0" arrow-mode="0"/>
-  <edge index0="246" index1="247" reversed="0" arrow-mode="0"/>
   <edge index0="179" index1="180" reversed="0" arrow-mode="0"/>
+  <edge index0="156" index1="167" reversed="0" arrow-mode="0"/>
+  <edge index0="274" index1="271" reversed="0" arrow-mode="0"/>
+  <edge index0="274" index1="272" reversed="0" arrow-mode="0"/>
+  <edge index0="199" index1="201" reversed="0" arrow-mode="0"/>
+  <edge index0="199" index1="205" reversed="0" arrow-mode="0"/>
+  <edge index0="72" index1="161" reversed="0" arrow-mode="0"/>
+  <edge index0="72" index1="177" reversed="0" arrow-mode="0"/>
+  <edge index0="225" index1="226" reversed="0" arrow-mode="0"/>
+  <edge index0="161" index1="176" reversed="0" arrow-mode="0"/>
+  <edge index0="176" index1="162" reversed="0" arrow-mode="0"/>
+  <edge index0="138" index1="139" reversed="0" arrow-mode="0"/>
+  <edge index0="256" index1="254" reversed="0" arrow-mode="0"/>
   <edge index0="146" index1="145" reversed="0" arrow-mode="0"/>
+  <edge index0="214" index1="216" reversed="0" arrow-mode="0"/>
   <edge index0="87" index1="199" reversed="0" arrow-mode="0"/>
   <edge index0="87" index1="194" reversed="0" arrow-mode="0"/>
-  <edge index0="214" index1="216" reversed="0" arrow-mode="0"/>
+  <edge index0="269" index1="267" reversed="0" arrow-mode="0"/>
+  <edge index0="269" index1="266" reversed="0" arrow-mode="0"/>
+  <edge index0="151" index1="152" reversed="0" arrow-mode="0"/>
+  <edge index0="151" index1="275" reversed="0" arrow-mode="0"/>
+  <edge index0="249" index1="250" reversed="0" arrow-mode="0"/>
+  <edge index0="162" index1="163" reversed="0" arrow-mode="0"/>
+  <edge index0="221" index1="224" reversed="0" arrow-mode="0"/>
+  <edge index0="254" index1="255" reversed="0" arrow-mode="0"/>
+  <edge index0="136" index1="137" reversed="0" arrow-mode="0"/>
+  <edge index0="194" index1="192" reversed="0" arrow-mode="0"/>
+  <edge index0="174" index1="175" reversed="0" arrow-mode="0"/>
   <edge index0="232" index1="233" reversed="0" arrow-mode="0"/>
-  <edge index0="165" index1="171" reversed="0" arrow-mode="0"/>
-  <edge index0="165" index1="172" reversed="0" arrow-mode="0"/>
+  <edge index0="173" index1="166" reversed="0" arrow-mode="0"/>
+  <edge index0="134" index1="135" reversed="0" arrow-mode="0"/>
+  <edge index0="252" index1="259" reversed="0" arrow-mode="0"/>
+  <edge index0="193" index1="197" reversed="0" arrow-mode="0"/>
   <edge index0="223" index1="227" reversed="0" arrow-mode="0"/>
+  <edge index0="248" index1="246" reversed="0" arrow-mode="0"/>
+  <edge index0="227" index1="228" reversed="0" arrow-mode="0"/>
+  <edge index0="247" index1="249" reversed="0" arrow-mode="0"/>
+  <edge index0="188" index1="189" reversed="0" arrow-mode="0"/>
+  <edge index0="242" index1="243" reversed="0" arrow-mode="0"/>
+  <edge index0="56" index1="155" reversed="0" arrow-mode="0"/>
+  <edge index0="56" index1="151" reversed="0" arrow-mode="0"/>
+  <edge index0="246" index1="247" reversed="0" arrow-mode="0"/>
+  <edge index0="187" index1="188" reversed="0" arrow-mode="0"/>
+  <edge index0="270" index1="269" reversed="0" arrow-mode="0"/>
+  <edge index0="234" index1="232" reversed="0" arrow-mode="0"/>
+  <edge index0="203" index1="204" reversed="0" arrow-mode="0"/>
+  <edge index0="177" index1="178" reversed="0" arrow-mode="0"/>
+  <edge index0="177" index1="179" reversed="0" arrow-mode="0"/>
   <edge index0="240" index1="239" reversed="0" arrow-mode="0"/>
-  <edge index0="113" index1="132" reversed="0" arrow-mode="0"/>
   <edge index0="113" index1="136" reversed="0" arrow-mode="0"/>
+  <edge index0="113" index1="132" reversed="0" arrow-mode="0"/>
   <edge index0="148" index1="149" reversed="0" arrow-mode="0"/>
   <edge index0="275" index1="274" reversed="0" arrow-mode="0"/>
   <edge index0="207" index1="206" reversed="0" arrow-mode="0"/>
@@ -829,8 +876,8 @@ ObjectListManagerWidget</text>
   <edge index0="206" index1="208" reversed="0" arrow-mode="0"/>
   <edge index0="159" index1="160" reversed="0" arrow-mode="0"/>
   <edge index0="192" index1="193" reversed="0" arrow-mode="0"/>
-  <edge index0="68" index1="156" reversed="0" arrow-mode="0"/>
   <edge index0="68" index1="165" reversed="0" arrow-mode="0"/>
+  <edge index0="68" index1="156" reversed="0" arrow-mode="0"/>
   <edge index0="186" index1="187" reversed="0" arrow-mode="0"/>
   <edge index0="228" index1="229" reversed="0" arrow-mode="0"/>
   <edge index0="169" index1="144" reversed="0" arrow-mode="0"/>
@@ -850,53 +897,6 @@ ObjectListManagerWidget</text>
   <edge index0="201" index1="200" reversed="0" arrow-mode="0"/>
   <edge index0="74" index1="153" reversed="0" arrow-mode="0"/>
   <edge index0="74" index1="53" reversed="0" arrow-mode="0"/>
-  <edge index0="163" index1="164" reversed="0" arrow-mode="0"/>
-  <edge index0="222" index1="223" reversed="0" arrow-mode="0"/>
-  <edge index0="255" index1="257" reversed="0" arrow-mode="0"/>
-  <edge index0="271" index1="273" reversed="0" arrow-mode="0"/>
-  <edge index0="144" index1="146" reversed="0" arrow-mode="0"/>
-  <edge index0="153" index1="154" reversed="0" arrow-mode="0"/>
-  <edge index0="153" index1="270" reversed="0" arrow-mode="0"/>
-  <edge index0="4" index1="121" reversed="0" arrow-mode="0">
-   <text>includes</text>
-  </edge>
-  <edge index0="181" index1="182" reversed="0" arrow-mode="0"/>
-  <edge index0="180" index1="181" reversed="0" arrow-mode="0"/>
-  <edge index0="53" index1="168" reversed="0" arrow-mode="0"/>
-  <edge index0="239" index1="241" reversed="0" arrow-mode="0"/>
-  <edge index0="220" index1="221" reversed="0" arrow-mode="0"/>
-  <edge index0="190" index1="191" reversed="0" arrow-mode="0"/>
-  <edge index0="251" index1="253" reversed="0" arrow-mode="0"/>
-  <edge index0="168" index1="148" reversed="0" arrow-mode="0"/>
-  <edge index0="171" index1="173" reversed="0" arrow-mode="0"/>
-  <edge index0="182" index1="183" reversed="0" arrow-mode="0"/>
-  <edge index0="241" index1="242" reversed="0" arrow-mode="0"/>
-  <edge index0="114" index1="138" reversed="0" arrow-mode="0"/>
-  <edge index0="114" index1="134" reversed="0" arrow-mode="0"/>
-  <edge index0="193" index1="197" reversed="0" arrow-mode="0"/>
-  <edge index0="173" index1="166" reversed="0" arrow-mode="0"/>
-  <edge index0="174" index1="175" reversed="0" arrow-mode="0"/>
-  <edge index0="136" index1="137" reversed="0" arrow-mode="0"/>
-  <edge index0="252" index1="259" reversed="0" arrow-mode="0"/>
-  <edge index0="221" index1="224" reversed="0" arrow-mode="0"/>
-  <edge index0="162" index1="163" reversed="0" arrow-mode="0"/>
-  <edge index0="72" index1="177" reversed="0" arrow-mode="0"/>
-  <edge index0="72" index1="161" reversed="0" arrow-mode="0"/>
-  <edge index0="199" index1="201" reversed="0" arrow-mode="0"/>
-  <edge index0="199" index1="205" reversed="0" arrow-mode="0"/>
-  <edge index0="249" index1="250" reversed="0" arrow-mode="0"/>
-  <edge index0="156" index1="167" reversed="0" arrow-mode="0"/>
-  <edge index0="274" index1="272" reversed="0" arrow-mode="0"/>
-  <edge index0="274" index1="271" reversed="0" arrow-mode="0"/>
-  <edge index0="225" index1="226" reversed="0" arrow-mode="0"/>
-  <edge index0="256" index1="254" reversed="0" arrow-mode="0"/>
-  <edge index0="138" index1="139" reversed="0" arrow-mode="0"/>
-  <edge index0="161" index1="176" reversed="0" arrow-mode="0"/>
-  <edge index0="176" index1="162" reversed="0" arrow-mode="0"/>
-  <edge index0="269" index1="267" reversed="0" arrow-mode="0"/>
-  <edge index0="269" index1="266" reversed="0" arrow-mode="0"/>
-  <edge index0="151" index1="152" reversed="0" arrow-mode="0"/>
-  <edge index0="151" index1="275" reversed="0" arrow-mode="0"/>
  </graph>
  <layout-optimizer min-edge-length="100000" aspect-ratio="1000"/>
 </heimer-mind-map>

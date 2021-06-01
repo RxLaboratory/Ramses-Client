@@ -6,9 +6,8 @@ RamStep::RamStep(QString shortName, QString name, bool tplt, QString uuid, QObje
     setObjectType(Step);
     _projectUuid = "";
     _template = tplt;
-    _type = AssetProduction;
-    _order = 0;
     if (_template) _dbi->createTemplateStep(_shortName, _name, _uuid);
+    init();
 }
 
 RamStep::RamStep(QString shortName, QString name, QString projectUuid, QString uuid, QObject *parent):
@@ -17,15 +16,26 @@ RamStep::RamStep(QString shortName, QString name, QString projectUuid, QString u
     setObjectType(Step);
     _projectUuid = projectUuid;
     _template = false;
-    _type = AssetProduction;
-    _order = 0;
     _dbi->createStep(_shortName, _name, projectUuid, _uuid);
+    init();
 }
 
 RamStep::~RamStep()
 {
     if (_template) _dbi->removeTemplateStep(_uuid);
     else _dbi->removeStep(_uuid);
+}
+
+void RamStep::init()
+{
+    _type = AssetProduction;
+    _order = 0;
+    _users = new RamObjectList();
+    _applications = new RamObjectList();
+    connect(_users, &RamObjectList::objectRemoved, this, &RamStep::userAssigned);
+    connect(_users, &RamObjectList::objectRemoved, this, &RamStep::userUnassigned);
+    connect(_applications, &RamObjectList::objectRemoved, this, &RamStep::applicationAssigned);
+    connect(_applications, &RamObjectList::objectRemoved, this, &RamStep::applicationUnassigned);
 }
 
 bool RamStep::isTemplate() const
@@ -62,87 +72,43 @@ void RamStep::setType(QString type)
     else if (type == "post") setType(PostProduction);
 }
 
-QList<RamUser *> RamStep::users() const
+RamObjectList *RamStep::users() const
 {
     return _users;
 }
 
-void RamStep::clearUsers()
+void RamStep::userAssigned(RamObject *u)
 {
-    _users.clear();
+    _dbi->assignUser(_uuid, u->uuid());
 }
 
-void RamStep::assignUser(RamObject *obj)
+void RamStep::userUnassigned(RamObject *u)
 {
-    RamUser *user = (RamUser*)obj;
-    _users << user;
-    _dbi->assignUser(_uuid, user->uuid());
-    connect(user, &RamUser::removed, this, &RamStep::userRemoved);
-    emit userAssigned(user);
+    _dbi->unassignUser(_uuid, u->uuid());
 }
 
-void RamStep::unassignUser(RamObject *user)
-{
-    unassignUser( user->uuid() );
-}
-
-void RamStep::unassignUser(QString uuid)
-{
-    _dbi->unassignUser(_uuid, uuid);
-    for (int i = _users.count() -1; i >= 0; i--)
-    {
-        RamUser *u = _users[i];
-        if (u->uuid() == uuid)
-        {
-            _users.removeAt(i);
-            emit userUnassigned(uuid);
-        }
-    }
-}
-
-QList<RamApplication *> RamStep::applications() const
+RamObjectList *RamStep::applications() const
 {
     return _applications;
 }
 
-void RamStep::clearApplications()
+void RamStep::applicationAssigned(RamObject *a)
 {
-    _applications.clear();
+    _dbi->assignApplication(_uuid, a->uuid());
 }
 
-void RamStep::assignApplication(RamApplication *app)
+void RamStep::applicationUnassigned(RamObject *a)
 {
-    _applications << app;
-    _dbi->assignApplication(_uuid, app->uuid());
-    connect(app, &RamApplication::removed, this, &RamStep::applicationRemoved);
-    emit applicationAssigned(app);
-}
-
-void RamStep::unassignApplication(RamObject *app)
-{
-    unassignApplication( app->uuid() );
-}
-
-void RamStep::unassignApplication(QString uuid)
-{
-    _dbi->unassignApplication(_uuid, uuid);
-    for (int i = _applications.count() -1; i >= 0; i--)
-    {
-        RamApplication *a = _applications[i];
-        if (a->uuid() == uuid)
-        {
-            _applications.removeAt(i);
-            emit applicationUnassigned(uuid);
-        }
-    }
+    _dbi->unassignApplication(_uuid, a->uuid());
 }
 
 QList<RamObject *> RamStep::inputFileTypes()
 {
     QList<RamObject *> fts;
 
-    for (RamApplication *app: qAsConst(_applications))
+    for ( int i = 0; i < _applications->count(); i++)
     {
+        RamApplication *app = qobject_cast<RamApplication*>( _applications->at(i) );
         fts.append( app->importFileTypes()->toList() );
         fts.append( app->nativeFileTypes()->toList() );
     }
@@ -154,8 +120,9 @@ QList<RamObject *> RamStep::outputFileTypes()
 {
     QList<RamObject *> fts;
 
-    for (RamApplication *app: qAsConst(_applications))
+    for ( int i = 0; i < _applications->count(); i++)
     {
+        RamApplication *app = qobject_cast<RamApplication*>( _applications->at(i) );
         fts.append( app->exportFileTypes()->toList() );
         fts.append( app->nativeFileTypes()->toList() );
     }
@@ -171,27 +138,6 @@ void RamStep::update()
     else if (_type == ShotProduction) type = "shot";
     if (_template) _dbi->updateTemplateStep(_uuid, _shortName, _name, type);
     else _dbi->updateStep(_uuid, _shortName, _name, type, _order);
-}
-
-void RamStep::userRemoved(RamObject *o)
-{
-    unassignUser(o);
-}
-
-void RamStep::applicationRemoved(RamObject *o)
-{
-    unassignApplication(o->uuid());
-}
-
-int RamStep::order() const
-{
-    return _order;
-}
-
-void RamStep::setOrder(int order)
-{
-    _order = order;
-    emit changed(this);
 }
 
 QString RamStep::projectUuid() const

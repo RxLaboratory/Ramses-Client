@@ -115,7 +115,7 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     projectSettingsPage->showReinitButton(false);
     mainStack->addWidget(projectSettingsPage);
     qDebug() << "> Project";
-    projectSettingsPage->addPage(new StepsManagerWidget(this), "Steps", QIcon(":/icons/steps"));
+    projectSettingsPage->addPage(new StepListManagerWidget(this), "Steps", QIcon(":/icons/steps"));
     qDebug() << "  > steps ok";
     projectSettingsPage->addPage(new AssetGroupListManagerWidget(this), "Asset Groups", QIcon(":/icons/asset-groups"));
     qDebug() << "  > steps ok";

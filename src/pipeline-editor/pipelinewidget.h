@@ -28,7 +28,7 @@ signals:
     void closeRequested();
 private slots:
     void changeProject(RamProject *project);
-    void newStep(RamStep *step);
+    void newStep(RamObject *obj);
     void nodeMoved(QPointF pos);
     void setSnapEnabled(bool enabled);
     void setGridSize(int size);

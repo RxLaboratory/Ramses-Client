@@ -15,6 +15,7 @@ public:
     explicit RamStep(QString shortName, QString name = "", bool tplt = true,  QString uuid = "", QObject *parent = nullptr);
     explicit RamStep(QString shortName, QString name, QString projectUuid,  QString uuid = "", QObject *parent = nullptr);
     ~RamStep();
+    void init();
 
     bool isTemplate() const;
     RamStep *createFromTemplate(QString projectUuid);
@@ -26,43 +27,26 @@ public:
     QString projectUuid() const;
     void setProjectUuid(const QString &projectUuid);
 
-    int order() const;
-    void setOrder(int order);
-
-    QList<RamUser *> users() const;
-    void clearUsers();
-    void assignUser(RamObject *obj);
-    void unassignUser(RamObject *user);
-    void unassignUser(QString uuid);
-
-    QList<RamApplication *> applications() const;
-    void clearApplications();
-    void assignApplication(RamApplication *app);
-    void unassignApplication(RamObject *app);
-    void unassignApplication(QString uuid);
+    RamObjectList *users() const;
+    RamObjectList *applications() const;
 
     QList<RamObject *> inputFileTypes();
     QList<RamObject *> outputFileTypes();
 
     void update();
 
-signals:
-    void userAssigned(RamUser *);
-    void userUnassigned(QString);
-    void applicationAssigned(RamApplication *);
-    void applicationUnassigned(QString);
-
 private slots:
-    void userRemoved(RamObject *o);
-    void applicationRemoved(RamObject *o);
+    void userAssigned(RamObject *u);
+    void userUnassigned(RamObject *u);
+    void applicationAssigned(RamObject *a);
+    void applicationUnassigned(RamObject *a);
 
 private:
     bool _template;
     Type _type;
     QString _projectUuid;
-    int _order;
-    QList<RamUser*> _users;
-    QList<RamApplication*> _applications;
+    RamObjectList *_users;
+    RamObjectList *_applications;
 };
 
 #endif // RAMSTEP_H

@@ -221,12 +221,12 @@ void PipelineWidget::changeProject(RamProject *project)
     if (!project) return;
 
     // add steps
-    foreach(RamStep *step, project->steps()) newStep(step);
+    for(int i = 0; i < project->steps()->count(); i++) newStep( project->steps()->at(i) );
 
     // add pipes
     for ( int i = 0; i < project->pipeline()->count(); i++ ) newPipe( project->pipeline()->at(i) );
 
-    _projectConnections << connect(project, &RamProject::newStep, this, &PipelineWidget::newStep);
+    _projectConnections << connect(project->steps(), &RamObjectList::objectAdded, this, &PipelineWidget::newStep);
     _projectConnections << connect(project->pipeline(), &RamObjectList::objectAdded, this, &PipelineWidget::newPipe);
     _projectConnections << connect(project->pipeline(), &RamObjectList::objectRemoved, this, &PipelineWidget::pipeRemoved);
 
@@ -237,8 +237,9 @@ void PipelineWidget::changeProject(RamProject *project)
     this->setEnabled(true);
 }
 
-void PipelineWidget::newStep(RamStep *step)
+void PipelineWidget::newStep(RamObject *obj)
 {
+    RamStep *step = qobject_cast<RamStep*>( obj );
     StepNode *stepNode = new StepNode(step);
     _nodeScene->addNode( stepNode, false );
 

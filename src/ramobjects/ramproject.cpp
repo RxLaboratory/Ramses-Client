@@ -7,6 +7,7 @@ RamProject::RamProject(QString shortName, QString name, QString uuid, QObject *p
     _sequences = new RamObjectUberList(this);
     _assetGroups = new RamObjectUberList(this);
     _pipeline = new RamObjectList(this);
+    _steps = new RamObjectList(this);
     _dbi->createProject(_shortName, _name, _uuid);
 }
 
@@ -81,11 +82,6 @@ void RamProject::update()
     QString path = _folderPath;
     if (path == "") path = "auto";
     _dbi->updateProject(_uuid, _shortName, _name, _width, _height, _framerate, path);
-}
-
-void RamProject::stepRemoved(RamObject *o)
-{
-    removeStep(o);
 }
 
 RamObjectUberList *RamProject::assetGroups() const
@@ -173,58 +169,20 @@ RamPipe *RamProject::createPipe(RamStep *output, RamStep *input)
     return p;
 }
 
-QList<RamStep *> RamProject::steps() const
+RamObjectList *RamProject::steps() const
 {
     return _steps;
-}
-
-RamStep *RamProject::step(QString uuid) const
-{
-    foreach (RamStep *s, _steps)
-    {
-        if (s->uuid() == uuid) return s;
-    }
-    return nullptr;
-}
-
-void RamProject::addStep(RamStep *step)
-{
-    _steps << step;
-    connect(step,SIGNAL(removed(RamObject*)), this,SLOT(stepRemoved(RamObject*)));
-    emit newStep(step);
 }
 
 void RamProject::assignStep(RamStep *templateStep)
 {
     RamStep *step = templateStep->createFromTemplate(_uuid);
-    addStep(step);
+    _steps->append(step);
 }
 
 void RamProject::createStep(QString shortName, QString name)
 {
     RamStep *step = new RamStep(shortName, name, _uuid);
-    addStep(step);
+    _steps->append(step);
 }
 
-void RamProject::removeStep(QString uuid)
-{
-    for (int i = _steps.count() -1; i >= 0; i--)
-    {
-        RamStep *s = _steps[i];
-        if (s->uuid() == uuid)
-        {
-            _steps.removeAt(i);
-            emit stepRemoved(s);
-        }
-    }
-}
-
-void RamProject::removeStep(RamObject *step)
-{
-    removeStep(step->uuid());
-}
-
-void RamProject::sortSteps()
-{
-    std::sort(_steps.begin(), _steps.end(), objectSorter);
-}

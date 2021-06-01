@@ -11,7 +11,7 @@
 
 #include "objecteditwidget.h"
 #include "ramses.h"
-#include "simpleobjectlist.h"
+#include "objectlisteditwidget.h"
 #include "duqf-widgets/duqffolderdisplaywidget.h"
 
 class StepEditWidget : public ObjectEditWidget
@@ -22,29 +22,28 @@ public:
     StepEditWidget(RamStep *s, QWidget *parent = nullptr);
 
     RamStep *step() const;
-    void setStep(RamStep *s);
+
+public slots:
+    void setObject(RamObject *obj) Q_DECL_OVERRIDE;
 
 protected slots:
     void update() Q_DECL_OVERRIDE;
 
 private slots:
-    void stepChanged(RamObject *o);
     // Users
     void newUser(RamObject *user);
     void assignUser();
-    void unassignUser(RamObject *o);
-    void userAssigned(RamUser *user);
-    void userUnassigned(QString uuid);
-    void userChanged();
+    void userAssigned(RamObject *user);
+    void userUnassigned(RamObject *o);
+    void userChanged(RamObject *o);
     void userRemoved(RamObject *user);
 
     // Applications
     void newApplication(RamObject *app);
     void assignApplication();
-    void unassignApplication(RamObject *o);
-    void applicationAssigned(RamApplication *app);
-    void applicationUnassigned(QString uuid);
-    void applicationChanged();
+    void applicationAssigned(RamObject *o);
+    void applicationUnassigned(RamObject *app);
+    void applicationChanged(RamObject *o);
     void applicationRemoved(RamObject *o);
 
 private:
@@ -56,10 +55,13 @@ private:
 
     QComboBox *typeBox;
     DuQFFolderDisplayWidget *folderWidget;
-    SimpleObjectList *usersList;
-    SimpleObjectList *applicationList;
+    ObjectListEditWidget *usersList;
+    ObjectListEditWidget *applicationList;
     QMenu *assignUserMenu;
     QMenu *assignAppMenu;
+
+    QMap<QString, QList<QMetaObject::Connection>> m_userConnections;
+    QMap<QString, QList<QMetaObject::Connection>> m_applicationConnections;
 };
 
 #endif // STEPEDITWIDGET_H

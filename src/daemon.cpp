@@ -497,7 +497,7 @@ void Daemon::getStates(QTcpSocket *client)
     RamStateList *ramStates = Ramses::instance()->states();
     for (int i = 0; i < ramStates->count(); i++)
     {
-        RamState *s = (RamState*)ramStates->at(i);
+        RamState *s = qobject_cast<RamState*>( ramStates->at(i) );
         QJsonObject state = stateToJson(s);
         states.append(state);
     }
@@ -538,8 +538,10 @@ void Daemon::getSteps(QTcpSocket *client)
     }
 
     QJsonArray steps;
-    foreach(RamStep *s, proj->steps())
+    RamObjectList *projectSteps = proj->steps();
+    for (int i = 0; i < projectSteps->count(); i++)
     {
+        RamStep *s = qobject_cast<RamStep*>( projectSteps->at(i) );
         QJsonObject step = stepToJson(s);
         steps.append(step);
     }
@@ -562,10 +564,10 @@ void Daemon::getStep(QString shortName, QString name, QTcpSocket *client)
     }
 
     RamStep *step = nullptr;
-    QList<RamStep*> steps = proj->steps();
-    for (int i = 0; i < steps.count(); i++)
+    RamObjectList *steps = proj->steps();
+    for (int i = 0; i < steps->count(); i++)
     {
-        RamStep *s = steps.at(i);
+        RamStep *s = qobject_cast<RamStep*>( steps->at(i) );
         if (s->shortName() == shortName)
         {
             if (name == "" || s->name() == name)

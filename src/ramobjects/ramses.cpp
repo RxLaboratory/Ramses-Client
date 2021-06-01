@@ -479,11 +479,6 @@ RamObjectList *Ramses::applications() const
     return _applications;
 }
 
-RamApplication *Ramses::application(QString uuid)
-{
-    return (RamApplication*)_applications->fromUuid(uuid);
-}
-
 RamApplication *Ramses::createApplication()
 {
     RamApplication *a = new RamApplication("New", "New Application");

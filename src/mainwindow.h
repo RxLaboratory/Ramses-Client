@@ -18,7 +18,7 @@
 #include "pipeline-editor/pipelinewidget.h"
 #include "templatesteplistmanagerwidget.h"
 #include "templateassetgrouplistmanagerwidget.h"
-#include "stepsmanagerwidget.h"
+#include "steplistmanagerwidget.h"
 #include "assetgrouplistmanagerwidget.h"
 #include "assetlistmanagerwidget.h"
 #include "shotlistmanagerwidget.h"

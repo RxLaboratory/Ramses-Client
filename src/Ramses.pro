@@ -53,6 +53,7 @@ SOURCES += \
     rameditwidgets/sequencelistmanagerwidget.cpp \
     rameditwidgets/shotlistmanagerwidget.cpp \
     rameditwidgets/statelistmanagerwidget.cpp \
+    rameditwidgets/steplistmanagerwidget.cpp \
     rameditwidgets/templateassetgrouplistmanagerwidget.cpp \
     rameditwidgets/templatesteplistmanagerwidget.cpp \
     rameditwidgets/userlistmanagerwidget.cpp \
@@ -143,7 +144,6 @@ SOURCES += \
     rameditwidgets/statuseditwidget.cpp \
     rameditwidgets/statushistorywidget.cpp \
     rameditwidgets/stepeditwidget.cpp \
-    rameditwidgets/stepsmanagerwidget.cpp \
     rameditwidgets/templateassetgroupeditwidget.cpp \
     rameditwidgets/templatestepeditwidget.cpp \
     rameditwidgets/usereditwidget.cpp \
@@ -176,6 +176,7 @@ HEADERS += \
     rameditwidgets/sequencelistmanagerwidget.h \
     rameditwidgets/shotlistmanagerwidget.h \
     rameditwidgets/statelistmanagerwidget.h \
+    rameditwidgets/steplistmanagerwidget.h \
     rameditwidgets/templateassetgrouplistmanagerwidget.h \
     rameditwidgets/templatesteplistmanagerwidget.h \
     rameditwidgets/userlistmanagerwidget.h \
@@ -266,7 +267,6 @@ HEADERS += \
     rameditwidgets/statuseditwidget.h \
     rameditwidgets/statushistorywidget.h \
     rameditwidgets/stepeditwidget.h \
-    rameditwidgets/stepsmanagerwidget.h \
     rameditwidgets/templateassetgroupeditwidget.h \
     rameditwidgets/templatestepeditwidget.h \
     rameditwidgets/usereditwidget.h \

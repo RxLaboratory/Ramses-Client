@@ -23,9 +23,7 @@ public:
     bool canImportFileType(QString extension) const;
 
     RamObjectList *nativeFileTypes() const;
-
     RamObjectList *importFileTypes() const;
-
     RamObjectList *exportFileTypes() const;
 
 public slots:

@@ -29,8 +29,8 @@ public:
 signals:
 
 private slots:
-    void newStep(RamStep *step);
-    void stepRemoved(RamStep *step);
+    void newStep(RamObject *obj);
+    void stepRemoved(RamObject *step);
 
     void currentProjectChanged(RamProject *project);
 

@@ -34,8 +34,6 @@ private:
     void connectEvents();
 
     ObjectListEditWidget *shotsList;
-
-    bool _creatingShot = false;
 };
 
 #endif // SEQUENCEEDITWIDGET_H
