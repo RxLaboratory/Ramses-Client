@@ -490,7 +490,7 @@ void RamLoader::gotApplications(QJsonArray applications)
 
     RamObjectList *_applications = m_ram->applications();
 
-    // loop through existing steps to update them
+    // loop through existing applications to update them
     for (int i = _applications->count() - 1; i >= 0; i--)
     {
         m_pm->increment();
@@ -509,19 +509,52 @@ void RamLoader::gotApplications(QJsonArray applications)
                 QSignalBlocker b(existingApplication);
                 existingApplication->setName( newApplication.value("name").toString());
                 existingApplication->setShortName( newApplication.value("shortName").toString());
-                existingApplication->exportFileTypes()->clear();
-                existingApplication->importFileTypes()->clear();
-                existingApplication->nativeFileTypes()->clear();
+                RamObjectList *importFt = existingApplication->importFileTypes();
+                RamObjectList *exportFt = existingApplication->exportFileTypes();
+                RamObjectList *nativeFt = existingApplication->nativeFileTypes();
+                QStringList importuuids;
+                QStringList exportuuids;
+                QStringList nativeuuids;
                 foreach( QJsonValue ft, newApplication.value("fileTypes").toArray())
                 {
                     QJsonObject fileT = ft.toObject();
-                    if (fileT.value("type").toString() == "import" )
-                        existingApplication->importFileTypes()->append( m_ram->fileType( fileT.value("uuid").toString() ) );
-                    else if (fileT.value("type").toString() == "export" )
-                        existingApplication->exportFileTypes()->append( m_ram->fileType( fileT.value("uuid").toString() ) );
-                    else
-                        existingApplication->nativeFileTypes()->append( m_ram->fileType( fileT.value("uuid").toString() ) );
+                    QString uuid = fileT.value("uuid").toString();
+                    RamObject *fileTypeObj = m_ram->fileTypes()->fromUuid( uuid );
+                    // Add if new
+                    if (fileTypeObj)
+                    {
+                        QString t = fileT.value("type").toString();
+                        if (t == "import")
+                        {
+                           importFt->append( fileTypeObj );
+                           importuuids << uuid;
+                        }
+                        if (t == "export")
+                        {
+                            exportFt->append( fileTypeObj );
+                            exportuuids << uuid;
+                        }
+                        if (t == "native")
+                        {
+                            nativeFt->append( fileTypeObj );
+                            nativeuuids << uuid;
+                        }
+                    }
                 }
+                // Remove other
+                for (int i = importFt->count() - 1; i >= 0 ; i--)
+                {
+                    if (!importuuids.contains( importFt->at(i)->uuid() )) importFt->removeAt(i);
+                }
+                for (int i = exportFt->count() - 1; i >= 0 ; i--)
+                {
+                    if (!importuuids.contains( exportFt->at(i)->uuid() )) exportFt->removeAt(i);
+                }
+                for (int i = nativeFt->count() - 1; i >= 0 ; i--)
+                {
+                    if (!importuuids.contains( nativeFt->at(i)->uuid() )) nativeFt->removeAt(i);
+                }
+
                 //send the signal
                 b.unblock();
                 existingApplication->setExecutableFilePath(newApplication.value("executableFilePath").toString());
@@ -538,7 +571,7 @@ void RamLoader::gotApplications(QJsonArray applications)
         }
     }
 
-    // loop through remaining new projects to add them
+    // loop through remaining new applications to add them
     for (int i = 0; i < applications.count(); i++)
     {
         m_pm->increment();
@@ -553,12 +586,12 @@ void RamLoader::gotApplications(QJsonArray applications)
         foreach( QJsonValue ft, a.value("fileTypes").toArray())
         {
             QJsonObject fileT = ft.toObject();
-            if (fileT.value("type").toString() == "import" )
-                app->importFileTypes()->append( m_ram->fileType( fileT.value("uuid").toString() ) );
+            if ( fileT.value("type").toString() == "import" )
+                app->importFileTypes()->append( m_ram->fileTypes()->fromUuid( fileT.value("uuid").toString() ) );
             else if (fileT.value("type").toString() == "export" )
-                app->exportFileTypes()->append( m_ram->fileType( fileT.value("uuid").toString() ) );
+                app->exportFileTypes()->append( m_ram->fileTypes()->fromUuid( fileT.value("uuid").toString() ) );
             else
-                app->nativeFileTypes()->append( m_ram->fileType( fileT.value("uuid").toString() ) );
+                app->nativeFileTypes()->append( m_ram->fileTypes()->fromUuid( fileT.value("uuid").toString() ) );
         }
 
         _applications->append(app);
@@ -1048,6 +1081,8 @@ QString RamLoader::gotPipe(QJsonObject newP, RamProject *project)
     DBISuspender s;
     QString uuid = newP.value("uuid").toString();
 
+    qDebug() << "PIPES";
+
     // loop through existing pipes to update them
     RamObjectList *projectPipeline = project->pipeline();
     for (int i = projectPipeline->count() - 1; i >= 0; i--)
@@ -1056,6 +1091,7 @@ QString RamLoader::gotPipe(QJsonObject newP, RamProject *project)
 
         if (uuid == existingPipe->uuid())
         {
+            qDebug() << "existing: " + existingPipe->uuid();
             //Emit just one signal
             QSignalBlocker b(existingPipe);
             RamObject *inputStepObj = project->steps()->fromUuid( newP.value("inputStepUuid").toString( ) );
@@ -1065,8 +1101,8 @@ QString RamLoader::gotPipe(QJsonObject newP, RamProject *project)
             RamStep *outputStep = qobject_cast<RamStep*>( outputStepObj );
             if (outputStep) existingPipe->setOutputStep( outputStep );
             b.unblock();
-            RamFileType *ft = m_ram->fileType( newP.value("filetypeUuid").toString()) ;
-            existingPipe->setFileType( ft );
+            RamObject *ft = m_ram->fileTypes()->fromUuid( newP.value("filetypeUuid").toString()) ;
+            existingPipe->setFileType( qobject_cast<RamFileType*>( ft ) );
             return uuid;
         }
     }
@@ -1078,14 +1114,15 @@ QString RamLoader::gotPipe(QJsonObject newP, RamProject *project)
     RamStep *outputStep = qobject_cast<RamStep*>( outputStepObj );
     if (inputStep && outputStep)
     {
+        qDebug() << "new: " + newP.value("uuid").toString();
         RamPipe *pipe = new RamPipe(
                     outputStep,
                     inputStep,
                     newP.value("uuid").toString()
                     );
 
-        RamFileType *ft = m_ram->fileType( newP.value("filetypeUuid").toString()) ;
-        if (ft) pipe->setFileType( ft );
+        RamObject *ft = m_ram->fileTypes()->fromUuid( newP.value("filetypeUuid").toString()) ;
+        if (ft) pipe->setFileType( qobject_cast<RamFileType*>( ft ) );
 
         projectPipeline->append( pipe );
     }

@@ -15,7 +15,8 @@ RamObjectList::RamObjectList(QString shortName, QString name, QString uuid, QObj
 RamObjectList::RamObjectList(const RamObjectList &other) :
     RamObject(other.parent())
 {
-    m_objects = other.toList();
+    m_objectsList = other.toList();
+    m_objects = other.toMap();
 }
 
 RamObjectList::~RamObjectList()
@@ -25,36 +26,38 @@ RamObjectList::~RamObjectList()
 
 void RamObjectList::append(RamObject *obj)
 {
-    m_objects << obj;
+    if (contains(obj)) return;
+    m_objects[obj->uuid()] = obj;
+    m_objectsList << obj;
     addObject(obj, m_objects.count() -1);
 }
 
 void RamObjectList::insert(int i, RamObject *obj)
 {
-    m_objects.insert(i , obj);
+    if (contains(obj)) return;
+    m_objectsList.insert(i , obj);
+    m_objects[obj->uuid()] = obj;
     addObject(obj, i);
 }
 
 void RamObjectList::clear()
 {
     m_objects.clear();
+    m_objectsList.clear();
     emit cleared();
 }
 
 RamObject *RamObjectList::fromUuid(QString uuid) const
 {
-    for (int i =0; i < m_objects.count(); i++)
-    {
-        if (m_objects.at(i)->uuid() == uuid) return m_objects.at(i);
-    }
-    return nullptr;
+    return m_objects.value(uuid, nullptr);
 }
 
 RamObject *RamObjectList::fromName(QString shortName, QString name) const
 {
-    for (int i =0; i < m_objects.count(); i++)
-    {
-        RamObject *o = m_objects.at(i);
+    QMapIterator<QString, RamObject*> i(m_objects);
+    while (i.hasNext()) {
+        i.next();
+        RamObject *o = i.value();
         if (o->shortName() == shortName)
         {
             if (name == "") return o;
@@ -66,12 +69,12 @@ RamObject *RamObjectList::fromName(QString shortName, QString name) const
 
 RamObject *RamObjectList::at(int i) const
 {
-    return m_objects.at(i);
+    return m_objectsList.at(i);
 }
 
 RamObject *RamObjectList::last() const
 {
-    return m_objects.last();
+    return m_objectsList.last();
 }
 
 void RamObjectList::removeAt(int i)
@@ -91,8 +94,13 @@ void RamObjectList::removeLast()
 
 RamObject *RamObjectList::takeAt(int i)
 {
-    RamObject *obj = m_objects.takeAt(i);
+    // take from list
+    RamObject *obj = m_objectsList.takeAt(i);
 
+    // remove from map
+    m_objects.remove(obj->uuid());
+
+    // disconnect
     if (m_connections.contains(obj->uuid()))
     {
         QList<QMetaObject::Connection> c = m_connections.take(obj->uuid());
@@ -106,36 +114,47 @@ RamObject *RamObjectList::takeAt(int i)
 
 RamObject *RamObjectList::takeFromUuid(QString uuid)
 {
-    for (int i =0; i < m_objects.count(); i++)
+    // get from map
+    RamObject *obj = m_objects.value(uuid, nullptr);
+    if (!obj) return nullptr;
+
+    // get index from list to remove
+    for (int i = m_objectsList.count() - 1; i >= 0; i--)
     {
-        if (m_objects.at(i)->uuid() == uuid) return m_objects.takeAt(i);
+        if ( m_objectsList.at(i)->is(obj) ) return takeAt(i);
     }
+
     return nullptr;
 }
 
 void RamObjectList::removeAll(RamObject *obj)
 {
-    for (int i = m_objects.count() -1; i >= 0; i--)
+    // get index from list to remove
+    for (int i = m_objectsList.count() - 1; i >= 0; i--)
     {
-        if ( m_objects.at(i)->is(obj) )
-        {
-            removeAt(i);
-        }
+        if ( m_objectsList.at(i)->is(obj) ) takeAt(i);
     }
 }
 
 void RamObjectList::removeAll(QString uuid)
 {
-    for (int i = m_objects.count() -1; i >= 0; i--)
+    // get from map
+    RamObject *obj = m_objects.value(uuid, nullptr);
+    if (!obj) return;
+
+    // get index from list to remove
+    for (int i = m_objectsList.count() - 1; i >= 0; i--)
     {
-        if ( m_objects.at(i)->uuid() == uuid )
-        {
-            removeAt(i);
-        }
+        if ( m_objectsList.at(i)->is(obj) ) takeAt(i);
     }
 }
 
 QList<RamObject *> RamObjectList::toList() const
+{
+    return m_objectsList;
+}
+
+QMap<QString, RamObject *> RamObjectList::toMap() const
 {
     return m_objects;
 }
@@ -147,16 +166,12 @@ int RamObjectList::count() const
 
 bool RamObjectList::contains(RamObject *obj) const
 {
-    for (int i =0; i < m_objects.count(); i++)
-    {
-        if (m_objects.at(i)->is(obj)) return true;
-    }
-    return false;
+    return m_objects.contains(obj->uuid());
 }
 
 RamObject *RamObjectList::operator[](int i) const
 {
-    return m_objects[i];
+    return m_objectsList[i];
 }
 
 bool objectSorter(RamObject *a, RamObject *b)
@@ -167,7 +182,7 @@ bool objectSorter(RamObject *a, RamObject *b)
 
 void RamObjectList::sort()
 {
-    std::sort(m_objects.begin(), m_objects.end(), objectSorter);
+    std::sort(m_objectsList.begin(), m_objectsList.end(), objectSorter);
 }
 
 void RamObjectList::addObject(RamObject *obj, int index)

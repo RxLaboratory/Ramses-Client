@@ -461,11 +461,6 @@ RamObjectList *Ramses::fileTypes() const
     return _fileTypes;
 }
 
-RamFileType *Ramses::fileType(const QString uuid) const
-{
-    return (RamFileType*)_fileTypes->fromUuid(uuid);
-}
-
 RamFileType *Ramses::createFileType()
 {
     RamFileType *ft = new RamFileType("NEW", "New File Type", QStringList("new"));

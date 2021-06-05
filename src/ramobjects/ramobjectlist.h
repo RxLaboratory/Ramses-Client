@@ -2,6 +2,7 @@
 #define RAMOBJECTLIST_H
 
 #include <QObject>
+#include <QMapIterator>
 
 #include "ramobject.h"
 
@@ -22,6 +23,7 @@ public:
     virtual RamObject *fromUuid(QString uuid) const;
     virtual RamObject *fromName(QString shortName, QString name = "") const;
     QList<RamObject*> toList() const;
+    QMap<QString, RamObject*> toMap() const;
 
     // QList Methods
     void append(RamObject *obj);
@@ -50,7 +52,10 @@ signals:
     void cleared();
 
 protected:
-    QList<RamObject*> m_objects;
+    // For performance reasons, store both a list and a map
+    QMap<QString, RamObject*> m_objects;
+    QList<RamObject*> m_objectsList;
+
     virtual void addObject(RamObject *obj, int index);
 
 private:

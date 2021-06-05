@@ -63,7 +63,8 @@ void PipeEditWidget::update()
     RamProject *project = Ramses::instance()->project( _pipe->outputStep()->projectUuid() );
     if (!project) return;
 
-    _pipe->setFileType( Ramses::instance()->fileType( fileTypeBox->currentData().toString() ) );
+    RamObject *fileType = Ramses::instance()->fileTypes()->fromUuid( fileTypeBox->currentData().toString() );
+    _pipe->setFileType( qobject_cast<RamFileType*>( fileType ) );
     RamObject *inputStep = project->steps()->fromUuid( toBox->currentData().toString() );
     _pipe->setInputStep( qobject_cast<RamStep*>( inputStep ) );
     RamObject *outputStep = project->steps()->fromUuid( fromBox->currentData().toString() );

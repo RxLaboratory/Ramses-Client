@@ -17,5 +17,5 @@ bool stateSorter(RamObject *a, RamObject *b)
 
 void RamStateList::sort()
 {
-    std::sort(m_objects.begin(), m_objects.end(), stateSorter);
+    std::sort(m_objectsList.begin(), m_objectsList.end(), stateSorter);
 }

@@ -103,7 +103,6 @@ public:
     RamStateList *states() const;
     // File Types
     RamObjectList *fileTypes() const;
-    RamFileType *fileType(const QString uuid) const;
     RamFileType *createFileType();
     // Applications
     RamObjectList *applications() const;

@@ -10,7 +10,7 @@ RamObject *RamObjectUberList::objectFromUuid(QString uuid)
 {
     for (int i = 0 ; i < m_objects.count(); i++)
     {
-        RamObjectList *list = (RamObjectList*)m_objects.at(i);
+        RamObjectList *list = qobject_cast<RamObjectList*>( m_objectsList.at(i) );
         RamObject *o = list->fromUuid(uuid);
         if (o) return o;
     }
@@ -21,7 +21,7 @@ RamObject *RamObjectUberList::objectFromName(QString shortName, QString name)
 {
     for (int i = 0 ; i < m_objects.count(); i++)
     {
-        RamObjectList *list = (RamObjectList*)m_objects.at(i);
+        RamObjectList *list = qobject_cast<RamObjectList*>( m_objectsList.at(i) );
         RamObject *o = list->fromName(shortName, name);
         if (o) return o;
     }
@@ -33,7 +33,7 @@ int RamObjectUberList::objectCount()
     int c = 0;
     for (int i = 0 ; i < m_objects.count(); i++)
     {
-        RamObjectList *list = (RamObjectList*)m_objects.at(i);
+        RamObjectList *list = qobject_cast<RamObjectList*>( m_objectsList.at(i) );
         c += list->count();
     }
     return c;
@@ -43,7 +43,7 @@ bool RamObjectUberList::containsObject(RamObject *obj) const
 {
     for (int i = 0 ; i < m_objects.count(); i++)
     {
-        RamObjectList *list = (RamObjectList*)m_objects.at(i);
+        RamObjectList *list = qobject_cast<RamObjectList*>( m_objectsList.at(i) );
         for (int j = 0; j < list->count(); j++)
         {
             if ( list->at(i)->is(obj) ) return true;
@@ -57,7 +57,7 @@ RamObject *RamObjectUberList::objectAt(int index) const
     int c = 0;
     for (int i = 0 ; i < m_objects.count(); i++)
     {
-        RamObjectList *list = (RamObjectList*)m_objects.at(i);
+        RamObjectList *list = qobject_cast<RamObjectList*>( m_objectsList.at(i) );
         int previousCount = c;
         c += list->count();
         if (index >= c) continue;
@@ -70,7 +70,7 @@ void RamObjectUberList::removeObject(QString uuid)
 {
     for (int i = 0; i < m_objects.count(); i++)
     {
-        RamObjectList *list = (RamObjectList*)m_objects.at(i);
+        RamObjectList *list = qobject_cast<RamObjectList*>( m_objectsList.at(i) );
         list->removeAll(uuid);
     }
 }
@@ -79,7 +79,7 @@ void RamObjectUberList::removeObject(RamObject *obj)
 {
     for (int i = 0; i < m_objects.count(); i++)
     {
-        RamObjectList *list = qobject_cast<RamObjectList*>( m_objects.at(i) );
+        RamObjectList *list = qobject_cast<RamObjectList*>( m_objectsList.at(i) );
         list->removeAll(obj);
     }
 }
@@ -88,7 +88,7 @@ RamObject *RamObjectUberList::takeObject(QString uuid)
 {
     for (int i = 0; i < m_objects.count(); i++)
     {
-        RamObjectList *list = qobject_cast<RamObjectList*>( m_objects.at(i) );
+        RamObjectList *list = qobject_cast<RamObjectList*>( m_objectsList.at(i) );
         RamObject *obj = list->takeFromUuid(uuid);
         if (obj) return obj;
     }
@@ -98,7 +98,7 @@ RamObject *RamObjectUberList::takeObject(QString uuid)
 RamObject *RamObjectUberList::takeAt(int i)
 {
     QSignalBlocker b(this);
-    RamObject *obj = m_objects.at(i);
+    RamObject *obj = m_objectsList.at(i);
     if (m_connections.contains(obj->uuid()))
     {
         QList<QMetaObject::Connection> c = m_connections.take(obj->uuid());
@@ -112,7 +112,7 @@ void RamObjectUberList::addObject(RamObject *obj, int index)
     QSignalBlocker b(this);
     RamObjectList::addObject(obj, index);
     QList<QMetaObject::Connection> c;
-    RamObjectList *list = (RamObjectList*)obj;
+    RamObjectList *list = qobject_cast<RamObjectList*>( obj );
     if (!list) return;
     c << connect(list, &RamObjectList::objectAdded, this, &RamObjectUberList::relayObjectAdded);
     c << connect(list, &RamObjectList::objectRemoved, this, &RamObjectUberList::relayObjectRemoved);

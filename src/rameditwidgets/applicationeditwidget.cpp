@@ -139,7 +139,7 @@ void ApplicationEditWidget::assignNativeFileType()
 {
     if (!_application) return;
     QAction *fileTypeAction = (QAction*)sender();
-    RamFileType *ft = Ramses::instance()->fileType( fileTypeAction->data().toString() );
+    RamObject *ft = Ramses::instance()->fileTypes()->fromUuid( fileTypeAction->data().toString() );
     if (!ft) return;
     _application->nativeFileTypes()->append(ft);
 }
@@ -148,7 +148,7 @@ void ApplicationEditWidget::assignImportFileType()
 {
     if (!_application) return;
     QAction *fileTypeAction = (QAction*)sender();
-    RamFileType *ft = Ramses::instance()->fileType( fileTypeAction->data().toString() );
+    RamObject *ft = Ramses::instance()->fileTypes()->fromUuid( fileTypeAction->data().toString() );
     if (!ft) return;
     _application->importFileTypes()->append(ft);
 }
@@ -157,7 +157,7 @@ void ApplicationEditWidget::assignExportFileType()
 {
     if (!_application) return;
     QAction *fileTypeAction = (QAction*)sender();
-    RamFileType *ft = Ramses::instance()->fileType( fileTypeAction->data().toString() );
+    RamObject *ft = Ramses::instance()->fileTypes()->fromUuid( fileTypeAction->data().toString() );
     if (!ft) return;
     _application->exportFileTypes()->append(ft);
 }
