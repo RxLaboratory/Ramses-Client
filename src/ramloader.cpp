@@ -28,10 +28,11 @@ void RamLoader::run()
 
     if (query == "login") login( m_data.value("content").toObject() );
     else if (query == "getUsers") gotUsers( m_data.value("content").toArray());
-    else if (query == "getProjects") gotProjects( m_data.value("content").toArray());
+    else if (query == "getProjects") gotProjects( m_data.value("content").toArray(), false);
     else if (query == "getProject") {
+        qDebug() << "--- Loading Project Data ---";
         m_pm->setTitle("Loading project.");
-        QString uuid = gotProject( m_data.value("content").toObject());
+        QString uuid = gotProject( m_data.value("content").toObject(), false);
         emit projectReady(uuid);
     }
     else if (query == "getTemplateSteps") gotTemplateSteps( m_data.value("content").toArray());
@@ -41,6 +42,7 @@ void RamLoader::run()
     else if (query == "getApplications") gotApplications( m_data.value("content").toArray());
     else if (query == "init")
     {
+        qDebug() << "--- Loading Initial Data ---";
         m_pm->setTitle("Getting Ramses data.");
         QJsonObject content = m_data.value("content").toObject();
         gotUsers( content.value("users").toArray());
@@ -49,7 +51,7 @@ void RamLoader::run()
         gotStates( content.value("states").toArray());
         gotFileTypes( content.value("fileTypes").toArray());
         gotApplications( content.value("applications").toArray());
-        gotProjects( content.value("projects").toArray());
+        gotProjects( content.value("projects").toArray(), true);
         emit ready();
     }
 
@@ -150,7 +152,7 @@ void RamLoader::gotUsers(QJsonArray users)
     m_ram->setCurrentUser(nullptr);
 }
 
-void RamLoader::gotProjects(QJsonArray projects)
+void RamLoader::gotProjects(QJsonArray projects, bool init)
 {
     DBISuspender s;
 
@@ -162,7 +164,7 @@ void RamLoader::gotProjects(QJsonArray projects)
     for (int j = 0; j < projects.count(); j++)
     {
         m_pm->increment();
-        uuids << gotProject( projects.at(j).toObject() );
+        uuids << gotProject( projects.at(j).toObject(), init );
     }
 
     RamObjectList *_projects = m_ram->projects();
@@ -179,7 +181,7 @@ void RamLoader::gotProjects(QJsonArray projects)
     }
 }
 
-QString RamLoader::gotProject(QJsonObject newP)
+QString RamLoader::gotProject(QJsonObject newP, bool init)
 {
     DBISuspender s;
 
@@ -194,6 +196,7 @@ QString RamLoader::gotProject(QJsonObject newP)
 
         if (uuid == existingProject->uuid())
         {
+            qDebug() << "UPDATING PROJECT: " + existingProject->shortName();
             //Emit just one signal
             QSignalBlocker b(existingProject);
             existingProject->setName( newP.value("name").toString());
@@ -204,15 +207,21 @@ QString RamLoader::gotProject(QJsonObject newP)
             //send the signals
             b.unblock();
             existingProject->setFolderPath( newP.value("folderPath").toString());
-            gotSteps( newP.value("steps").toArray(), existingProject);
-            gotAssetGroups( newP.value("assetGroups").toArray(), existingProject);
-            gotSequences( newP.value("sequences").toArray(), existingProject);
-            gotPipes( newP.value("pipes").toArray(), existingProject);
+            if (!init)
+            {
+                gotSteps( newP.value("steps").toArray(), existingProject);
+                gotAssetGroups( newP.value("assetGroups").toArray(), existingProject);
+                gotSequences( newP.value("sequences").toArray(), existingProject);
+                gotPipes( newP.value("pipes").toArray(), existingProject);
+            }
+
+            qDebug() << "> Project updated";
             return uuid;
         }
     }
 
     // not existing, let's create it
+    qDebug() << "CREATING PROJECT: " +newP.value("shortName").toString();
     RamProject *project = new RamProject(
                 newP.value("shortName").toString(),
                 newP.value("name").toString(),
@@ -224,12 +233,17 @@ QString RamLoader::gotProject(QJsonObject newP)
     project->setFolderPath( newP.value("folderPath").toString());
 
     // Add steps, assets, sequences, pipes...
-    gotSteps( newP.value("steps").toArray(), project);
-    gotAssetGroups( newP.value("assetGroups").toArray(), project);
-    gotSequences( newP.value("sequences").toArray(), project);
-    gotPipes( newP.value("pipes").toArray(), project);
+    if (!init)
+    {
+        gotSteps( newP.value("steps").toArray(), project);
+        gotAssetGroups( newP.value("assetGroups").toArray(), project);
+        gotSequences( newP.value("sequences").toArray(), project);
+        gotPipes( newP.value("pipes").toArray(), project);
+    }
 
     _projects->append(project);
+
+    qDebug() << "> Project created";
 
     return uuid;
 }
@@ -604,8 +618,11 @@ void RamLoader::gotSteps(QJsonArray steps, RamProject *project)
 
     m_pm->addToMaximum(steps.count());
     m_pm->setText("Loading steps...");
+    qDebug() << "Loading Steps";
 
     RamObjectList *projectSteps = project->steps();
+
+
 
     QStringList uuids;
     // Update steps
@@ -692,6 +709,7 @@ void RamLoader::gotAssetGroups(QJsonArray assetGroups, RamProject *project)
 
     m_pm->addToMaximum(assetGroups.count());
     m_pm->setText("Loading asset groups...");
+    qDebug() << "Loading Asset groups";
 
     QStringList uuids;
     // Update asset groups
@@ -830,6 +848,7 @@ void RamLoader::gotSequences(QJsonArray sequences, RamProject *project)
 
     m_pm->addToMaximum(sequences.count());
     m_pm->setText("Loading sequences");
+    qDebug() << "Loading sequences";
 
     QStringList uuids;
     // Update sequences
@@ -1055,6 +1074,7 @@ void RamLoader::gotPipes(QJsonArray pipes, RamProject *project)
 
     m_pm->addToMaximum(pipes.count());
     m_pm->setText("Loading pipes...");
+    qDebug() << "Loading pipes";
 
     QStringList uuids;
     // Update pipes

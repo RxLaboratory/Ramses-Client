@@ -32,8 +32,8 @@ private:
     //users
     void gotUsers(QJsonArray users);
     //projects
-    void gotProjects(QJsonArray projects);
-    QString gotProject(QJsonObject newP);
+    void gotProjects(QJsonArray projects, bool init);
+    QString gotProject(QJsonObject newP, bool init);
     //template steps
     void gotTemplateSteps(QJsonArray steps);
     //template asset groups
