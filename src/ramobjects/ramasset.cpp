@@ -20,6 +20,8 @@ QString RamAsset::assetGroupUuid() const
 
 void RamAsset::setAssetGroupUuid(const QString &assetGroupUuid)
 {
+    if (assetGroupUuid == _assetGroupUuid) return;
+    _dirty = true;
     _assetGroupUuid = assetGroupUuid;
 }
 
@@ -30,6 +32,7 @@ QStringList RamAsset::tags() const
 
 void RamAsset::setTags(QString tags)
 {
+    _dirty = true;
     QStringList ts = tags.toLower().split(",");
     _tags.clear();
     foreach(QString t, ts)
@@ -40,12 +43,16 @@ void RamAsset::setTags(QString tags)
 
 void RamAsset::addTag(QString tag)
 {
+    if (_tags.contains(tag) ) return;
+    _dirty = true;
     _tags << tag.trimmed().toLower();
 }
 
 void RamAsset::removeTag(QString tag)
 {
+    if (!_tags.contains(tag)) return;
     _tags.removeAll(tag.toLower());
+    _dirty = true;
 }
 
 bool RamAsset::hasTag(QString tag)
@@ -55,6 +62,8 @@ bool RamAsset::hasTag(QString tag)
 
 void RamAsset::update()
 {
+    if (!_dirty) return;
+    RamObject::update();
     _dbi->updateAsset(_uuid, _shortName, _name, _assetGroupUuid, _tags.join(','));
 }
 

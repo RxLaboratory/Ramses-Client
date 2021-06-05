@@ -28,6 +28,8 @@ QString RamObject::shortName() const
 
 void RamObject::setShortName(const QString &shortName)
 {
+    if (shortName == _shortName) return;
+    _dirty  = true;
     _shortName = shortName;
     emit changed(this);
 }
@@ -39,6 +41,8 @@ QString RamObject::name() const
 
 void RamObject::setName(const QString &name)
 {
+    if (name == _name) return;
+    _dirty = true;
     _name = name;
     emit changed(this);
 }
@@ -50,6 +54,7 @@ QString RamObject::uuid() const
 
 void RamObject::setUuid(const QString &uuid)
 {
+    if (uuid == _uuid) return;
     _uuid = uuid;
     emit changed(this);
 }
@@ -83,6 +88,8 @@ int RamObject::order() const
 
 void RamObject::setOrder(int order)
 {
+    if (order == _order) return;
+    _dirty = true;
     int previous = _order;
     _order = order;
     if (!_dbi->isSuspended()) _orderChanged = true;
@@ -93,4 +100,9 @@ bool RamObject::is(RamObject *other)
 {
     if (!other) return false;
     return other->uuid() == _uuid;
+}
+
+void RamObject::update()
+{
+    _dirty = false;
 }

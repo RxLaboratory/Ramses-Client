@@ -36,6 +36,8 @@ int RamStatus::completionRatio() const
 
 void RamStatus::setCompletionRatio(int completionRatio)
 {
+    if (completionRatio == _completionRatio) return;
+    _dirty = true;
     _completionRatio = completionRatio;
     emit changed(this);
 }
@@ -47,6 +49,9 @@ RamUser *RamStatus::user() const
 
 void RamStatus::setUser(RamObject *obj)
 {
+    if (!obj && !_user) return;
+    if (obj && obj->is(_user)) return;
+    _dirty = true;
     _user = (RamUser*)obj;
     emit changed(this);
 }
@@ -58,6 +63,9 @@ RamState *RamStatus::state() const
 
 void RamStatus::setState(RamState *state)
 {
+    if (!state && !_state) return;
+    if (state && state->is(_state)) return;
+    _dirty = true;
     _state = state;
     emit changed(this);
 }
@@ -69,6 +77,8 @@ QString RamStatus::comment() const
 
 void RamStatus::setComment(QString comment)
 {
+    if (comment == _comment) return;
+    _dirty = true;
     _comment = comment;
     emit changed(this);
 }
@@ -80,6 +90,8 @@ int RamStatus::version() const
 
 void RamStatus::setVersion(int version)
 {
+    if (_version == version) return;
+    _dirty = true;
     _version = version;
     emit changed(this);
 }
@@ -91,12 +103,17 @@ RamStep *RamStatus::step() const
 
 void RamStatus::setStep(RamStep *step)
 {
+    if (!step && !_step) return;
+    if (step && step->is(_step)) return;
+    _dirty = true;
     _step = step;
     emit changed(this);
 }
 
 void RamStatus::update()
 {
+    if(!_dirty) return;
+    RamObject::update();
     if (!_state) return;
     _dbi->updateStatus(_uuid, _state->uuid(), _comment, _version, _completionRatio);
 }
@@ -108,6 +125,8 @@ QDateTime RamStatus::date() const
 
 void RamStatus::setDate(const QDateTime &date)
 {
+    if (_date == date) return;
+    _dirty = true;
     _date = date;
     emit changed(this);
 }

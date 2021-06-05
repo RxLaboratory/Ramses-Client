@@ -19,6 +19,8 @@ RamPipe::~RamPipe()
 
 void RamPipe::update()
 {
+    if (!_dirty) return;
+    RamObject::update();
     QString fileTypeUuid = "";
     if (_fileType) fileTypeUuid = _fileType->uuid();
     _dbi->updatePipe(_uuid, _inputStep->uuid(), _outputStep->uuid(), "", fileTypeUuid);
@@ -31,6 +33,9 @@ RamStep *RamPipe::outputStep() const
 
 void RamPipe::setOutputStep(RamStep *outputStep)
 {
+    if (!outputStep && !_outputStep) return;
+    if (outputStep && outputStep->is(_outputStep)) return;
+    _dirty = true;
     disconnect( _outputConnection );
     _outputStep = outputStep;
     _outputConnection = connect( _outputStep, &RamStep::removed, this, &RamObject::remove);
@@ -44,6 +49,9 @@ RamStep *RamPipe::inputStep() const
 
 void RamPipe::setInputStep(RamStep *inputStep)
 {
+    if (!inputStep && !_inputStep) return;
+    if (inputStep && inputStep->is(_inputStep)) return;
+    _dirty = true;
     disconnect( _inputConnection );
     _inputStep = inputStep;
     _inputConnection = connect( _inputStep, &RamStep::removed, this, &RamObject::remove);
@@ -57,6 +65,7 @@ QString RamPipe::projectUuid() const
 
 void RamPipe::setProjectUuid(const QString &projectUuid)
 {
+    if (projectUuid == _projectUuid) return;
     _projectUuid = projectUuid;
 }
 
@@ -67,6 +76,9 @@ RamFileType *RamPipe::fileType() const
 
 void RamPipe::setFileType(RamFileType *fileType)
 {
+    if (!fileType && !_fileType) return;
+    if (fileType && fileType->is(_fileType) ) return;
+    _dirty = true;
     disconnect(_fileTypeConnection);
     _fileType = fileType;
     if (fileType) _fileTypeConnection = connect(_fileType, &RamFileType::removed, this, &RamPipe::removeFileType);

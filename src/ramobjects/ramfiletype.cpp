@@ -23,6 +23,7 @@ RamFileType::~RamFileType()
 
 void RamFileType::setExtensions(QString extensions)
 {
+    _dirty = true;
     QStringList exts = extensions.split(",");
     _extensions.clear();
     foreach(QString ext, exts) _extensions << ext.trimmed();
@@ -37,6 +38,8 @@ QStringList RamFileType::extensions() const
 
 void RamFileType::update()
 {
+    if (!_dirty) return;
+    RamObject::update();
     _dbi->updateFileType(_uuid, _shortName, _name, _extensions, _previewable);
 }
 
@@ -47,6 +50,8 @@ bool RamFileType::isPreviewable() const
 
 void RamFileType::setPreviewable(bool previewable)
 {
+    if (previewable == _previewable) return;
+    _dirty = true;
     _previewable = previewable;
     emit changed(this);
 }

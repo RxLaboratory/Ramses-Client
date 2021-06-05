@@ -46,7 +46,7 @@ public:
     bool is(RamObject *other);
 
 public slots:
-    virtual void update() {};
+    virtual void update();
     void remove();
 
 signals:
@@ -58,6 +58,9 @@ protected:
     DBInterface *_dbi;
     QString _shortName;
     QString _name;
+    // Check if changed to limit number of signals
+    bool _dirty;
+
     QString _uuid;
     int _order = -1;
     bool _orderChanged = false;

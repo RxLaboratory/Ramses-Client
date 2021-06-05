@@ -60,6 +60,8 @@ RamStep::Type RamStep::type() const
 
 void RamStep::setType(const Type &type)
 {
+    if (type == _type) return;
+    _dirty = true;
     _type = type;
     emit changed(this);
 }
@@ -132,6 +134,8 @@ QList<RamObject *> RamStep::outputFileTypes()
 
 void RamStep::update()
 {
+    if(!_dirty) return;
+    RamObject::update();
     QString type = "asset";
     if (_type == PostProduction) type = "post";
     else if (_type == PreProduction) type = "pre";

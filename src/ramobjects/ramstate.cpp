@@ -19,6 +19,8 @@ QColor RamState::color() const
 
 void RamState::setColor(const QColor &color)
 {
+    if (_color == color) return;
+    _dirty = true;
     _color = color;
     emit changed(this);
 }
@@ -30,11 +32,15 @@ int RamState::completionRatio() const
 
 void RamState::setCompletionRatio(int completionRatio)
 {
+    if (_completionRatio == completionRatio) return;
+    _dirty = true;
     _completionRatio = completionRatio;
     emit changed(this);
 }
 
 void RamState::update()
 {
+    if(!_dirty) return;
+    RamObject::update();
     _dbi->updateState(_uuid, _shortName, _name, _color.name(), QString::number(_completionRatio));
 }

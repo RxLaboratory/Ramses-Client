@@ -43,6 +43,7 @@ QString RamAssetGroup::projectUuid() const
 
 void RamAssetGroup::setProjectUuid(const QString &projectUuid)
 {
+    if (projectUuid == _projectUuid) return;
     _projectUuid = projectUuid;
 }
 
@@ -66,6 +67,8 @@ void RamAssetGroup::createAsset(QString shortName, QString name)
 
 void RamAssetGroup::update()
 {
+    if (!_dirty) return;
+    RamObject::update();
     if (_template) _dbi->updateTemplateAssetGroup(_uuid, _shortName, _name);
     else _dbi->updateAssetGroup(_uuid, _shortName, _name);
 }

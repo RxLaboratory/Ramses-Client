@@ -20,6 +20,8 @@ QString RamShot::sequenceUuid() const
 
 void RamShot::setSequenceUuid(const QString &sequenceUuid)
 {
+    if (sequenceUuid == _sequenceUuid) return;
+    _dirty = true;
     _sequenceUuid = sequenceUuid;
     emit changed(this);
 }
@@ -31,12 +33,16 @@ qreal RamShot::duration() const
 
 void RamShot::setDuration(const qreal &duration)
 {
+    if (_duration == duration) return;
+    _dirty = true;
     _duration = duration;
     emit changed(this);
 }
 
 void RamShot::update()
 {
+    if(!_dirty) return;
+    RamObject::update();
     _dbi->updateShot(_uuid, _shortName, _name, _sequenceUuid, _duration);
     if (_orderChanged)
     {

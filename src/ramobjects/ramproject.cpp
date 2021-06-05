@@ -23,6 +23,8 @@ QString RamProject::folderPath() const
 
 void RamProject::setFolderPath(const QString &folderPath)
 {
+    if (folderPath == _folderPath) return;
+    _dirty = true;
     _folderPath = folderPath;
     emit changed(this);
 }
@@ -34,6 +36,8 @@ qreal RamProject::framerate() const
 
 void RamProject::setFramerate(const qreal &framerate)
 {
+    if (framerate == _framerate) return;
+    _dirty = true;
     _framerate = framerate;
     emit changed(this);
 }
@@ -45,6 +49,8 @@ int RamProject::width() const
 
 void RamProject::setWidth(const int width, const qreal &pixelAspect)
 {
+    if (width == _width) return;
+    _dirty = true;
     _width = width;
     updateAspectRatio(pixelAspect);
 }
@@ -56,6 +62,8 @@ int RamProject::height() const
 
 void RamProject::setHeight(const int height, const qreal &pixelAspect)
 {
+    if (height == _height) return;
+    _dirty = true;
     _height = height;
     updateAspectRatio(pixelAspect);
 }
@@ -73,12 +81,16 @@ void RamProject::updateAspectRatio(const qreal &pixelAspect)
 
 void RamProject::setAspectRatio(const qreal &aspectRatio)
 {
+    if (aspectRatio == _aspectRatio) return;
+    _dirty = true;
     _aspectRatio = aspectRatio;
     emit changed(this);
 }
 
 void RamProject::update()
 {
+    if (!_dirty) return;
+    RamObject::update();
     QString path = _folderPath;
     if (path == "") path = "auto";
     _dbi->updateProject(_uuid, _shortName, _name, _width, _height, _framerate, path);

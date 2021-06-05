@@ -43,5 +43,7 @@ void RamSequence::createShot(QString shortName, QString name)
 
 void RamSequence::update()
 {
+    if(!_dirty) return;
+    RamObject::update();
     _dbi->updateSequence(_uuid, _shortName, _name);
 }

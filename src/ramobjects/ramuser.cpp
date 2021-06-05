@@ -20,6 +20,8 @@ RamUser::UserRole RamUser::role() const
 
 void RamUser::setRole(const UserRole &role)
 {
+    if (role == _role) return;
+    _dirty = true;
     _role = role;
     emit changed(this);
 }
@@ -39,12 +41,16 @@ QString RamUser::folderPath() const
 
 void RamUser::setFolderPath(const QString &folderPath)
 {
+    if (folderPath == _folderPath) return;
+    _dirty = true;
     _folderPath = folderPath;
     emit changed(this);
 }
 
 void RamUser::update()
 {
+    if(!_dirty) return;
+    RamObject::update();
     QString role = "standard";
     if (_role == Admin) role = "admin";
     else if (_role == ProjectAdmin) role = "project";

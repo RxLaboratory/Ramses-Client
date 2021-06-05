@@ -31,6 +31,8 @@ QString RamApplication::executableFilePath() const
 
 void RamApplication::setExecutableFilePath(const QString &executableFilePath)
 {
+    if (executableFilePath == _executableFilePath) return;
+    _dirty = true;
     _executableFilePath = executableFilePath;
 
     emit changed(this);
@@ -38,6 +40,8 @@ void RamApplication::setExecutableFilePath(const QString &executableFilePath)
 
 void RamApplication::update()
 {
+    if (!_dirty) return;
+    RamObject::update();
     _dbi->updateApplication(_uuid, _shortName, _name, _executableFilePath);
 }
 
