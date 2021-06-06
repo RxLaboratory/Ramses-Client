@@ -24,10 +24,15 @@ INCLUDEPATH += rameditwidgets \
     settingswidgets \
     ramdisplaywidgets \
     smallwidgets \
-    ramobjects
+    ramobjects \
+    item-tables
 
 SOURCES += \
     duqf-widgets/duqfsearchedit.cpp \
+    item-tables/assettable.cpp \
+    item-tables/itemtable.cpp \
+    item-tables/itemtablewidget.cpp \
+    item-tables/shottable.cpp \
     processmanager.cpp \
     progressbar.cpp \
     progresspage.cpp \
@@ -151,6 +156,10 @@ SOURCES += \
 
 HEADERS += \
     duqf-widgets/duqfsearchedit.h \
+    item-tables/assettable.h \
+    item-tables/itemtable.h \
+    item-tables/itemtablewidget.h \
+    item-tables/shottable.h \
     processmanager.h \
     progressbar.h \
     progresspage.h \

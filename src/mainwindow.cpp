@@ -25,6 +25,8 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     actionAdmin->setVisible(false);
     actionProjectSettings->setVisible(false);
     actionPipeline->setVisible(false);
+    actionShots->setVisible(false);
+    actionAssets->setVisible(false);
 
     mainToolBar->addWidget(new ToolBarSpacer(this));
 
@@ -131,6 +133,14 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     mainStack->addWidget(pipelineEditor);
     qDebug() << "> Pipeline ready";
 
+    AssetTable *assetsTable = new AssetTable("Assets Table", this);
+    mainStack->addWidget(assetsTable);
+    qDebug() << "> Assets table ready";
+
+    ShotTable *shotsTable = new ShotTable("Shots Table", this);
+    mainStack->addWidget(shotsTable);
+    qDebug() << "> Shots table ready";
+
     // Progress page
     progressPage = new ProgressPage(this);
     mainStack->addWidget(progressPage);
@@ -149,7 +159,10 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     connect(actionAdmin,SIGNAL(triggered(bool)), this, SLOT(admin(bool)));
     connect(actionProjectSettings,SIGNAL(triggered(bool)), this, SLOT(projectSettings(bool)));
     connect(actionPipeline, SIGNAL(triggered(bool)), this, SLOT(pipeline(bool)));
+    connect(actionShots,SIGNAL(triggered(bool)), this, SLOT(shots(bool)));
+    connect(actionAssets,SIGNAL(triggered(bool)), this, SLOT(assets(bool)));
     connect(pipelineEditor, SIGNAL(closeRequested()), this, SLOT(closePipeline()));
+    connect(assetsTable, SIGNAL(closeRequested()), this, SLOT(closeAssets()));
     connect(adminPage, SIGNAL(closeRequested()), this, SLOT(closeAdmin()));
     connect(projectSettingsPage, SIGNAL(closeRequested()), this, SLOT(closeProjectSettings()));
     connect(networkButton,SIGNAL(clicked()),this, SLOT(networkButton_clicked()));
@@ -480,6 +493,8 @@ void MainWindow::pageChanged(int i)
     actionAdmin->setChecked(i == 3);
     actionProjectSettings->setChecked(i == 4);
     actionPipeline->setChecked(i == 5);
+    actionAssets->setChecked(i == 6);
+    actionShots->setChecked(i == 7);
 }
 
 void MainWindow::serverSettings()
@@ -545,6 +560,28 @@ void MainWindow::pipeline(bool show)
 void MainWindow::closePipeline()
 {
     pipeline(false);
+}
+
+void MainWindow::shots(bool show)
+{
+    if (show) mainStack->setCurrentIndex(7);
+    else home();
+}
+
+void MainWindow::closeShots()
+{
+    shots(false);
+}
+
+void MainWindow::assets(bool show)
+{
+    if (show) mainStack->setCurrentIndex(6);
+    else home();
+}
+
+void MainWindow::closeAssets()
+{
+    assets(false);
 }
 
 void MainWindow::networkButton_clicked()
@@ -629,7 +666,7 @@ void MainWindow::freezeUI(bool f)
     if (f)
     {
         m_currentPageIndex = mainStack->currentIndex();
-        mainStack->setCurrentIndex(6);
+        mainStack->setCurrentIndex(8);
     }
     else
     {

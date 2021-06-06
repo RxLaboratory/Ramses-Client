@@ -19,11 +19,11 @@ void SettingsWidget::setupUi(QString title)
 
     // Get the mainwindow to add the titlebar
     QMainWindow *mw = GuiUtils::appMainWindow();
-    //mw->addToolBarBreak(Qt::TopToolBarArea);
+    mw->addToolBarBreak(Qt::TopToolBarArea);
 
-    m_titleBar = new TitleBar(title, true, mw);
-    //mw->addToolBar(Qt::TopToolBarArea,titleBar);
-    mw->insertToolBar(mw->findChild<QToolBar*>("mainToolBar"), m_titleBar);
+    m_titleBar = new TitleBar(title, false, mw);
+    mw->addToolBar(Qt::TopToolBarArea,m_titleBar);
+    //mw->insertToolBar(mw->findChild<QToolBar*>("mainToolBar"), m_titleBar);
     m_titleBar->setFloatable(false);
     m_titleBar->hide();
 

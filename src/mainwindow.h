@@ -37,6 +37,8 @@
 #include "duqf-utils/utils.h"
 #include "duqf-widgets/toolbarspacer.h"
 #include "duqf-widgets/duqflogtoolbutton.h"
+#include "item-tables/assettable.h"
+#include "item-tables/shottable.h"
 
 #include <QMouseEvent>
 #include <QLabel>
@@ -128,6 +130,10 @@ private slots:
     void closeProjectSettings();
     void pipeline(bool show = true);
     void closePipeline();
+    void shots(bool show = true);
+    void closeShots();
+    void assets(bool show = true);
+    void closeAssets();
     void networkButton_clicked();
     void loggedIn();
     void loggedOut();

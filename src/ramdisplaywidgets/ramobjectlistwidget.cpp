@@ -284,7 +284,7 @@ void RamObjectListWidget::objectChanged(RamObject *obj)
     for( int row = 0; row < this->rowCount(); row++)
     {
         // Get the object from the widget
-        RamObjectWidget *ow = (RamObjectWidget*)this->cellWidget(row, 0 );
+        RamObjectWidget *ow = qobject_cast<RamObjectWidget*>( this->cellWidget(row, 0 ) );
         if (ow->ramObject()->is(obj))
         {
             this->item(row, 0)->setText("   " + obj->name());
@@ -302,7 +302,7 @@ void RamObjectListWidget::objectUnassigned(RamObject *obj)
     for( int row = 0; row < this->rowCount(); row++)
     {
         // Get the object from the widget
-        RamObjectWidget *ow = (RamObjectWidget*)this->cellWidget(row, 0 );
+        RamObjectWidget *ow = qobject_cast<RamObjectWidget*>( this->cellWidget(row, 0 ) );
         if (ow->ramObject()->is(obj))
         {
             delete ow;
@@ -421,7 +421,6 @@ void RamObjectListWidget::setEditMode(const EditMode &editMode)
 
 void RamObjectListWidget::setupUi()
 {
-    setSortable(true);
     this->setSelectionMode(NoSelection);
     this->setFrameShape(QFrame::NoFrame);
     this->setDragDropMode(NoDragDrop);
