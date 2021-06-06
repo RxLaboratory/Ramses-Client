@@ -80,6 +80,8 @@ void ItemTableWidget::addList(RamObjectList *list)
 
     for (int i = 0; i < list->count(); i++) objectAssigned(list->at(i));
 
+    this->resizeColumnToContents(0);
+
     m_listConnections << connect(list, &RamObjectList::objectRemoved, this, &ItemTableWidget::objectUnassigned);
     m_listConnections << connect(list, &RamObjectList::objectAdded, this, &ItemTableWidget::objectAssigned);
 }
@@ -216,10 +218,14 @@ void ItemTableWidget::setupUi()
 
     this->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
 
+    this->setAlternatingRowColors(true);
+
     int p = DuUI::getSize("padding", "large");
+    int sp = DuUI::getSize("margin");
     QString padding = QString::number(p) + "px";
-    QString style = "QTableWidget { gridline-color: rgba(0,0,0,0); padding-top:" + padding +  "; padding-bottom:" + padding +  "; selection-background-color: rgba(0,0,0,0); } ";
-    style += "QTableWidget::item { padding-left: " + padding + "; padding-right: " + padding + "; } ";
+    QString smallPadding = QString::number(sp) + "px";
+    QString style = "QTableWidget { gridline-color: rgba(0,0,0,0); selection-background-color: rgba(0,0,0,0); } ";
+    style += "QTableWidget::item { padding-left: " + padding + "; padding-right: " + padding + "; padding-top: " + smallPadding + "; } ";
     style += "QTableWidget::item:hover { background-color: none; } ";
 
     this->setStyleSheet(style);
