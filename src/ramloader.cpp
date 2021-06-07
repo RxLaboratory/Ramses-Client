@@ -136,7 +136,7 @@ void RamLoader::gotUsers(QJsonArray users)
         _users->append( user );
     }
 
-    // Set the current user
+    // Set the current and ramses user
     for (int i = 0; i < _users->count(); i++)
     {
         if (_users->at(i)->shortName() == m_currentUserShortName)

@@ -76,10 +76,16 @@ public:
     void setCurrentUser(RamUser *u);
     RamObjectList *users() const;
     RamUser *currentUser() const;
+    RamUser *ramUser();
+    void setRamUser(RamUser *user);
     bool isAdmin();
     bool isProjectAdmin();
     bool isLead();
     QString currentUserSettingsFile();
+    // States
+    RamState *noState();
+    RamState *todoState();
+    RamState *okState();
     // Projects
     RamObjectList *projects() const;
     RamProject *project(QString uuid) const;
@@ -158,6 +164,7 @@ private:
     RamObjectList *_users;
     RamUser *_currentUser;
     QString _currentUserShortName;
+    RamUser *_ramUser;
 
     // Projects
     RamObjectList *_projects;
@@ -171,6 +178,9 @@ private:
 
     // States
     RamStateList *_states;
+    RamState *_noState;
+    RamState *_okState;
+    RamState *_todoState;
 
     // File types
     RamObjectList *_fileTypes;

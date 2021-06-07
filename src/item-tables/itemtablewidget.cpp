@@ -26,6 +26,10 @@ void ItemTableWidget::setList(RamObjectUberList *list, RamObjectList *steps, Ram
 
     if (!list) return;
 
+    for (int i = 0; i < steps->count(); i++) addStep( steps->at(i) );
+    m_listConnections << connect(steps, &RamObjectList::objectRemoved, this, &ItemTableWidget::addStep);
+    m_listConnections << connect(steps, &RamObjectList::objectAdded, this, &ItemTableWidget::removeStep);
+
     for (int i = 0; i < list->count(); i++)
     {
         RamObjectList *sublist = qobject_cast<RamObjectList*>( list->at(i) );
@@ -34,11 +38,10 @@ void ItemTableWidget::setList(RamObjectUberList *list, RamObjectList *steps, Ram
 
     m_stepType = stepType;
 
-    for (int i = 0; i < steps->count(); i++) addStep( steps->at(i) );
-    m_listConnections << connect(steps, &RamObjectList::objectRemoved, this, &ItemTableWidget::addStep);
-    m_listConnections << connect(steps, &RamObjectList::objectAdded, this, &ItemTableWidget::removeStep);
-
     m_uberList = list;
+
+    if( stepType == RamStep::AssetProduction ) this->horizontalHeaderItem(0)->setText("Assets");
+    else this->horizontalHeaderItem(0)->setText("Shots");
 
     this->setEnabled(true);
 }
@@ -86,6 +89,44 @@ void ItemTableWidget::addList(RamObjectList *list)
     m_listConnections << connect(list, &RamObjectList::objectAdded, this, &ItemTableWidget::objectAssigned);
 }
 
+void ItemTableWidget::mouseMoveEvent(QMouseEvent *event)
+{
+    if (_dragging)
+    {
+        QPoint newPos = event->globalPos();
+        QPoint _delta = newPos - _initialDragPos;
+        this->horizontalScrollBar()->setValue( this->horizontalScrollBar()->value() - _delta.x() );
+        this->verticalScrollBar()->setValue( this->verticalScrollBar()->value() - _delta.y() );
+        _initialDragPos = newPos;
+        event->accept();
+        return;
+    }
+    QTableWidget::mouseMoveEvent(event);
+}
+
+void ItemTableWidget::mousePressEvent(QMouseEvent *event)
+{
+    if (event->button() == Qt::MiddleButton)
+    {
+        _initialDragPos = event->globalPos();
+        _dragging = true;
+        event->accept();
+        return;
+    }
+    QTableWidget::mousePressEvent(event);
+}
+
+void ItemTableWidget::mouseReleaseEvent(QMouseEvent *event)
+{
+    if (event->button() == Qt::MiddleButton)
+    {
+        _dragging = false;
+        event->accept();
+        return;
+    }
+    QTableWidget::mouseReleaseEvent(event);
+}
+
 void ItemTableWidget::addStep(RamObject *stepObj)
 {
     RamStep *step = qobject_cast<RamStep*>( stepObj );
@@ -129,6 +170,17 @@ void ItemTableWidget::stepChanged(RamObject *stepObj)
             return;
         }
     }
+}
+
+void ItemTableWidget::statusAdded(RamObject *statusObj, int index)
+{
+    // TODO needs a bit of refactor: we need to know the item this status belongs to (it already contains the step)
+    // May be stored in the status itself? -> in the constructor.
+}
+
+void ItemTableWidget::statusRemoved(RamObject *statusObj)
+{
+    // TODO needs a bit of refactor: we need to know the item this status belongs to (it already contains the step)
 }
 
 void ItemTableWidget::objectChanged(RamObject *obj)
@@ -192,16 +244,53 @@ void ItemTableWidget::objectAssigned(RamObject *obj)
     this->setRowCount( row + 1 );
     this->setItem(row, 0, new QTableWidgetItem("   " + obj->name()));
     this->setCellWidget(row, 0, ow);
+    QTableWidgetItem *headerItem = new QTableWidgetItem(obj->name());
+    headerItem->setData(Qt::UserRole, obj->uuid());
+    this->setVerticalHeaderItem(row, headerItem);
+
+    RamItem *item = qobject_cast<RamItem*>( obj );
+    for (int col = 1; col < this->columnCount(); col++)
+    {
+        QString stepUuid = this->horizontalHeaderItem(col)->data(Qt::UserRole).toString();
+        RamStepStatusHistory *statusHistory = item->statusHistory(stepUuid);
+        RamStatus *status = nullptr;
+        if (statusHistory)
+        {
+            statusHistory->sort();
+            status = qobject_cast<RamStatus*>( statusHistory->last() );
+        }
+        else
+        {
+            RamUser *u = Ramses::instance()->ramUser();
+            if (!u) u = Ramses::instance()->currentUser();
+            RamState *s = Ramses::instance()->noState();
+            RamProject *p = Ramses::instance()->currentProject();
+            RamStep *st = nullptr;
+            if (p) st = qobject_cast<RamStep*>( p->steps()->fromUuid(stepUuid) );
+            if (u && s && st) status = new RamStatus( u, s, st, this);
+        }
+        if (status)
+        {
+            RamStatusWidget *sw = new RamStatusWidget(status, this);
+            sw->setEditable(false);
+
+            this->setCellWidget(row, col, sw);
+        }
+    }
+
     this->resizeRowToContents(row);
 
-    // TODO Populate columns with (latest) status
-
-    m_objectConnections[obj->uuid()] = connect(obj, &RamObject::changed, this, &ItemTableWidget::objectChanged);
+    // Connect status history (added, removed)
+    QList<QMetaObject::Connection> c;
+    c << connect(item->statusHistory(), &RamObjectUberList::objectAdded, this, &ItemTableWidget::statusAdded);
+    c << connect(item->statusHistory(), &RamObjectUberList::objectRemoved, this, &ItemTableWidget::statusRemoved);
+    c << connect(obj, &RamObject::changed, this, &ItemTableWidget::objectChanged);
+    m_objectConnections[obj->uuid()] = c;
 }
 
 void ItemTableWidget::setSortable(bool sortable)
 {
-    this->verticalHeader()->setVisible(sortable);
+    this->verticalHeader()->setSectionsMovable(sortable);
 }
 
 void ItemTableWidget::setupUi()
@@ -209,14 +298,18 @@ void ItemTableWidget::setupUi()
     this->setFrameShape(QFrame::NoFrame);
     this->setDragDropMode(NoDragDrop);
     this->setDragEnabled(false);
-    this->setDefaultDropAction(Qt::IgnoreAction);
-    this->verticalHeader()->setSectionsMovable(true);
+    this->setDefaultDropAction(Qt::IgnoreAction);  
     this->setShowGrid(false);
 
     this->setRowCount(0);
     this->setColumnCount(1);
 
+    this->setHorizontalHeaderItem(0, new QTableWidgetItem("Item"));
+
     this->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
+    this->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
+
+    this->horizontalHeader()->setSectionsMovable(true);
 
     this->setAlternatingRowColors(true);
 
@@ -240,7 +333,8 @@ void ItemTableWidget::disconnectObject(RamObject *obj)
 {
     if (m_objectConnections.contains(obj->uuid()))
     {
-        disconnect( m_objectConnections.take(obj->uuid()) );
+        QList<QMetaObject::Connection> c = m_objectConnections.take(obj->uuid());
+        while (!c.isEmpty()) disconnect( c.takeLast() );
     }
 }
 

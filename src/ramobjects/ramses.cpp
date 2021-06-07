@@ -25,6 +25,7 @@ Ramses::Ramses(QObject *parent) : QObject(parent)
     _templateAssetGroups = new RamObjectList(this);
     _fileTypes = new RamObjectList (this);
     _applications = new RamObjectList(this);
+    _ramUser = nullptr;
 
     DBISuspender s;
 
@@ -533,6 +534,27 @@ QString Ramses::currentUserSettingsFile()
     return settingsPath + "/" + "ramses.ini";
 }
 
+RamState *Ramses::noState()
+{
+    if(_noState) return _noState;
+    _noState =  qobject_cast<RamState*>( _states->fromName("NO") );
+    return _noState;
+}
+
+RamState *Ramses::todoState()
+{
+    if(_todoState) return _todoState;
+    _todoState =  qobject_cast<RamState*>( _states->fromName("TODO") );
+    return _todoState;
+}
+
+RamState *Ramses::okState()
+{
+    if(_okState) return _okState;
+    _okState =  qobject_cast<RamState*>( _states->fromName("OK") );
+    return _okState;
+}
+
 void Ramses::logout()
 {
     _connected = false;
@@ -567,6 +589,18 @@ bool Ramses::isConnected() const
 RamUser *Ramses::currentUser() const
 {
     return _currentUser;
+}
+
+RamUser *Ramses::ramUser()
+{
+    if (_ramUser) return _ramUser;
+    _ramUser = qobject_cast<RamUser*>( _users->fromName("Ramses") );
+    return _ramUser;
+}
+
+void Ramses::setRamUser(RamUser *user)
+{
+    _ramUser = user;
 }
 
 RamObjectList *Ramses::users() const

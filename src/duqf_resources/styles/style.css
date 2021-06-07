@@ -547,6 +547,11 @@ QHeaderView::section:vertical {
         border-bottom: @margin solid @color-very-dark-grey;
 }
 
+QTableView QTableCornerButton::section {
+    background-color: @color-very-dark-grey;
+    border: none;
+}
+
 /* MENUS */
 
 QMenu {
