@@ -32,6 +32,7 @@ private slots:
     void stepChanged(RamObject *stepObj);
     void statusAdded(RamObject *statusObj, int index);
     void statusRemoved(RamObject *statusObj);
+    void stepHistoryAdded(RamObject *statusHistoryObj);
 
 private:
     void setupUi();
@@ -39,6 +40,9 @@ private:
 
     void disconnectObject(RamObject *obj);
     void disconnectStep(QString stepUuid);
+
+    void setStatusWidget(RamItem *item, RamStep *step, RamStatus *status);
+    RamStatus *generateDefaultStatus(RamItem *item, RamStep *step);
 
     QList<QMetaObject::Connection> m_listConnections;
     QMap<QString, QList<QMetaObject::Connection>> m_objectConnections;

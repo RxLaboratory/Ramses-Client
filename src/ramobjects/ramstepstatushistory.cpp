@@ -1,15 +1,22 @@
 #include "ramstepstatushistory.h"
 
-RamStepStatusHistory::RamStepStatusHistory(QObject *parent):
-    RamObjectList(parent)
-{
+#include "ramitem.h"
 
+RamStepStatusHistory::RamStepStatusHistory(RamStep *step, RamItem *item):
+    RamObjectList(step->shortName(), step->name(), step->uuid(), item)
+{
+    _item = item;
+    _step = step;
 }
 
-RamStepStatusHistory::RamStepStatusHistory(RamStep *step, QObject *parent):
-    RamObjectList(step->shortName(), step->name(), step->uuid(), parent)
+RamItem *RamStepStatusHistory::item() const
 {
+    return _item;
+}
 
+RamStep *RamStepStatusHistory::step() const
+{
+    return _step;
 }
 
 

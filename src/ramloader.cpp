@@ -992,17 +992,14 @@ QString RamLoader::gotStatus(QJsonObject newS, RamItem *item, RamProject *projec
         RamStatus *existingStatus = qobject_cast<RamStatus*>(o);
         existingStatus->setCompletionRatio( newS.value("completionRatio").toInt( ));
 
-        RamObject *u = m_ram->users()->fromUuid(  newS.value("userUuid").toString( ) );
-        if (u) existingStatus->setUser( u );
+        // Don't set user: it can't (should not) change
+        // Don't set step: it can't (should not) change
+
         // Get State
         RamObject *stateObj = m_ram->states()->fromUuid(  newS.value("stateUuid").toString( ) );
         RamState *state = qobject_cast<RamState*>( stateObj );
         if (state) existingStatus->setState( state );
         existingStatus->setComment( newS.value("comment").toString() );
-        // Get Step
-        RamObject *stepObj = project->steps()->fromUuid( newS.value("stepUuid").toString( ) );
-        RamStep *step = qobject_cast<RamStep*>( stepObj );
-        if (step) existingStatus->setStep( step );
 
         existingStatus->setDate( QDateTime::fromString( newS.value("date").toString(), "yyyy-MM-dd hh:mm:ss"));
         existingStatus->setVersion( newS.value("version").toInt() );
@@ -1024,8 +1021,8 @@ QString RamLoader::gotStatus(QJsonObject newS, RamItem *item, RamProject *projec
                 (RamUser*)user,
                 state,
                 step,
-                newS.value("uuid").toString(),
-                item
+                item,
+                newS.value("uuid").toString()
                 );
 
     status->setCompletionRatio( newS.value("completionRatio").toInt( ) );

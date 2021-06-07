@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QShowEvent>
 #include <QHideEvent>
+#include <QMenu>
 
 #include "duqf-widgets/titlebar.h"
 #include "duqf-utils/guiutils.h"
@@ -24,15 +25,16 @@ protected:
     void hideEvent(QHideEvent *event) Q_DECL_OVERRIDE;
 
     ItemTableWidget *m_table;
+    TitleBar *m_titleBar;
 
 protected slots:
     virtual void projectChanged(RamProject *project) = 0;
 
 private:
-    TitleBar *m_titleBar;
-
     void setupUi(QString title);
     void connectEvents();
+
+    QMenu *m_stepMenu;
 };
 
 #endif // ITEMTABLE_H

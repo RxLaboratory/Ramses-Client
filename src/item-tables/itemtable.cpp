@@ -33,6 +33,36 @@ void ItemTable::setupUi(QString title)
     m_titleBar->setFloatable(false);
     m_titleBar->hide();
 
+    // Menus
+    m_stepMenu = new QMenu(this);
+
+    QAction *actionSelectAllSteps = new QAction("Select All", this);
+    actionSelectAllSteps->setCheckable(true);
+    m_stepMenu->addAction(actionSelectAllSteps);
+
+    QAction *actionSelectNoSteps = new QAction("Select None", this);
+    actionSelectNoSteps->setCheckable(true);
+    m_stepMenu->addAction(actionSelectNoSteps);
+
+    QAction *actionSelectMySteps = new QAction("Select my steps", this);
+    actionSelectMySteps->setCheckable(true);
+    m_stepMenu->addAction(actionSelectMySteps);
+
+    m_stepMenu->addSeparator();
+
+    QToolButton *stepButton = new QToolButton(this);
+    stepButton->setText("Step");
+    stepButton->setIcon(QIcon(":/icons/step"));
+    stepButton->setIconSize(QSize(16,16));
+    stepButton->setObjectName("menuButton");
+    stepButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    stepButton->setPopupMode(QToolButton::InstantPopup);
+    stepButton->setMenu(m_stepMenu);
+
+    m_titleBar->insertLeft(stepButton);
+
+
+
     QVBoxLayout *mainLayout = new QVBoxLayout();
     mainLayout->setSpacing(3);
     mainLayout->setContentsMargins(0,0,0,0);

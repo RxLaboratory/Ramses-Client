@@ -7,19 +7,20 @@
 #include "ramstate.h"
 #include "ramstep.h"
 
+class RamItem;
+
 class RamStatus : public RamObject
 {
     Q_OBJECT
 public:
-    explicit RamStatus(RamUser *user, RamState *state, RamStep *step, QObject *parent = nullptr);
-    explicit RamStatus(RamUser *user, RamState *state, RamStep *step, QString uuid, QObject *parent = nullptr);
+    explicit RamStatus(RamUser *user, RamState *state, RamStep *step, RamItem *item);
+    explicit RamStatus(RamUser *user, RamState *state, RamStep *step, RamItem *item, QString uuid);
     ~RamStatus();
 
     int completionRatio() const;
     void setCompletionRatio(int completionRatio);
 
     RamUser *user() const;
-    void setUser(RamObject *obj);
 
     RamState *state() const;
     void setState(RamState *state);
@@ -31,7 +32,8 @@ public:
     void setVersion(int version);
 
     RamStep *step() const;
-    void setStep(RamStep *step);
+
+    RamItem *item() const;
 
     void update();
 
@@ -42,6 +44,7 @@ private:
     int _completionRatio = 50;
     RamUser *_user;
     RamState *_state;
+    RamItem *_item;
     QString _comment = "";
     int _version = 1;
     RamStep *_step;

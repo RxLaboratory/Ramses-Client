@@ -174,13 +174,47 @@ void ItemTableWidget::stepChanged(RamObject *stepObj)
 
 void ItemTableWidget::statusAdded(RamObject *statusObj, int index)
 {
-    // TODO needs a bit of refactor: we need to know the item this status belongs to (it already contains the step)
-    // May be stored in the status itself? -> in the constructor.
+    Q_UNUSED(index);
+    RamStatus *status = qobject_cast<RamStatus*>( statusObj );
+    if (!status) return;
+    RamItem *item = status->item();
+    RamStep *step = status->step();
+
+    //Sort history
+    RamStepStatusHistory *statusHistory = qobject_cast<RamStepStatusHistory*>( sender() );
+    statusHistory->sort();
+
+    setStatusWidget(item, step, status);
 }
 
 void ItemTableWidget::statusRemoved(RamObject *statusObj)
 {
-    // TODO needs a bit of refactor: we need to know the item this status belongs to (it already contains the step)
+    RamStatus *status = qobject_cast<RamStatus*>( statusObj );
+    if (!status) return;
+    RamItem *item = status->item();
+    RamStep *step = status->step();
+
+    setStatusWidget(item, step, nullptr);
+}
+
+void ItemTableWidget::stepHistoryAdded(RamObject *statusHistoryObj)
+{
+    // Get item and step
+    RamStepStatusHistory *statusHistory = qobject_cast<RamStepStatusHistory*>( statusHistoryObj );
+    if (!statusHistory) return;
+    RamItem *item = statusHistory->item();
+    RamStep *step = statusHistory->step();
+
+    statusHistory->sort();
+
+    RamStatus *status = qobject_cast<RamStatus*>( statusHistory->last() );
+
+    setStatusWidget(item, step, status);
+
+    QList<QMetaObject::Connection> c = m_objectConnections.value( item->uuid() );
+    c << connect(statusHistory, &RamObjectList::objectAdded, this, &ItemTableWidget::statusAdded);
+    c << connect(statusHistory, &RamObjectList::objectRemoved, this, &ItemTableWidget::statusRemoved);
+    m_objectConnections[item->uuid()] = c;
 }
 
 void ItemTableWidget::objectChanged(RamObject *obj)
@@ -249,7 +283,7 @@ void ItemTableWidget::objectAssigned(RamObject *obj)
     this->setVerticalHeaderItem(row, headerItem);
 
     RamItem *item = qobject_cast<RamItem*>( obj );
-    for (int col = 1; col < this->columnCount(); col++)
+    for (int col = 0; col < this->columnCount(); col++)
     {
         QString stepUuid = this->horizontalHeaderItem(col)->data(Qt::UserRole).toString();
         RamStepStatusHistory *statusHistory = item->statusHistory(stepUuid);
@@ -261,13 +295,10 @@ void ItemTableWidget::objectAssigned(RamObject *obj)
         }
         else
         {
-            RamUser *u = Ramses::instance()->ramUser();
-            if (!u) u = Ramses::instance()->currentUser();
-            RamState *s = Ramses::instance()->noState();
             RamProject *p = Ramses::instance()->currentProject();
             RamStep *st = nullptr;
             if (p) st = qobject_cast<RamStep*>( p->steps()->fromUuid(stepUuid) );
-            if (u && s && st) status = new RamStatus( u, s, st, this);
+            status = generateDefaultStatus(item, st);
         }
         if (status)
         {
@@ -282,6 +313,7 @@ void ItemTableWidget::objectAssigned(RamObject *obj)
 
     // Connect status history (added, removed)
     QList<QMetaObject::Connection> c;
+    c << connect(item->statusHistory(), &RamObjectList::objectAdded, this, &ItemTableWidget::stepHistoryAdded);
     c << connect(item->statusHistory(), &RamObjectUberList::objectAdded, this, &ItemTableWidget::statusAdded);
     c << connect(item->statusHistory(), &RamObjectUberList::objectRemoved, this, &ItemTableWidget::statusRemoved);
     c << connect(obj, &RamObject::changed, this, &ItemTableWidget::objectChanged);
@@ -344,4 +376,43 @@ void ItemTableWidget::disconnectStep(QString stepUuid)
     {
         disconnect( m_stepConnections.take( stepUuid ) );
     }
+}
+
+void ItemTableWidget::setStatusWidget(RamItem *item, RamStep *step, RamStatus *status)
+{
+
+    // Get row & col
+    for (int row = 0; row < this->rowCount(); row++)
+    {
+        if (this->verticalHeaderItem(row)->data(Qt::UserRole).toString() == item->uuid() )
+        {
+            for (int col = 0; col < this->colorCount(); col++)
+            {
+                if (this->horizontalHeaderItem(col)->data(Qt::UserRole).toString() == step->uuid() )
+                {
+                    // Remove current status widget
+                    QWidget *csw = this->cellWidget(row, col);
+                    if (csw) delete csw;
+                    // Add the new one
+                    if (!status) status =  generateDefaultStatus(item, step);
+                    if (status)
+                    {
+                        RamStatusWidget *sw = new RamStatusWidget(status, this);
+                        this->setCellWidget(row, col, sw);
+                    }
+                    return;
+                }
+            }
+        }
+    }
+}
+
+RamStatus *ItemTableWidget::generateDefaultStatus(RamItem *item, RamStep *step)
+{
+    RamStatus *status = nullptr;
+    RamUser *u = Ramses::instance()->ramUser();
+    if (!u) u = Ramses::instance()->currentUser();
+    RamState *s = Ramses::instance()->noState();
+    if (u && s && step) status = new RamStatus( u, s, step, item );
+    return status;
 }

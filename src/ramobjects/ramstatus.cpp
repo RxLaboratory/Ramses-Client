@@ -1,23 +1,27 @@
 #include "ramstatus.h"
 
-RamStatus::RamStatus(RamUser *user, RamState *state, RamStep *step, QObject *parent):
-    RamObject("", "", "", parent)
+#include "ramitem.h"
+
+RamStatus::RamStatus(RamUser *user, RamState *state, RamStep *step, RamItem *item):
+    RamObject("", "", "", item)
 {
     _user = user;
     _state = state;
     _step = step;
+    _item = item;
     _completionRatio = _state->completionRatio();
     _date = QDateTime::currentDateTimeUtc();
 
     setObjectType(Status);
 }
 
-RamStatus::RamStatus(RamUser *user, RamState *state, RamStep *step, QString uuid, QObject *parent):
-    RamObject("", "", uuid, parent)
+RamStatus::RamStatus(RamUser *user, RamState *state, RamStep *step, RamItem *item, QString uuid):
+    RamObject("", "", uuid, item)
 {
     _user = user;
     _state = state;
     _step = step;
+    _item = item;
     _completionRatio = _state->completionRatio();
     _date = QDateTime::currentDateTimeUtc();
 
@@ -45,15 +49,6 @@ void RamStatus::setCompletionRatio(int completionRatio)
 RamUser *RamStatus::user() const
 {
     return _user;
-}
-
-void RamStatus::setUser(RamObject *obj)
-{
-    if (!obj && !_user) return;
-    if (obj && obj->is(_user)) return;
-    _dirty = true;
-    _user = (RamUser*)obj;
-    emit changed(this);
 }
 
 RamState *RamStatus::state() const
@@ -101,13 +96,9 @@ RamStep *RamStatus::step() const
     return _step;
 }
 
-void RamStatus::setStep(RamStep *step)
+RamItem *RamStatus::item() const
 {
-    if (!step && !_step) return;
-    if (step && step->is(_step)) return;
-    _dirty = true;
-    _step = step;
-    emit changed(this);
+    return _item;
 }
 
 void RamStatus::update()
