@@ -31,7 +31,7 @@ private slots:
 private:
     bool _hasEditWidget = false;
     RamObject *_object;
-    ObjectDockWidget *_dockWidget;
+    ObjectDockWidget *_dockWidget = nullptr;
 };
 
 #endif // STEPNODE_H

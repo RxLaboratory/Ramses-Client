@@ -9,7 +9,6 @@ ObjectNode::ObjectNode(RamObject *obj):
 
     // Build a dock widget to edit details
     _dockWidget = new ObjectDockWidget(obj);
-
     _dockWidget->hide();
 
     this->setTitleToolTip(_object->name());
@@ -33,7 +32,11 @@ RamObject *ObjectNode::ramObject() const
 QVariant ObjectNode::itemChange(QGraphicsItem::GraphicsItemChange change, const QVariant &value)
 {
     if (change == ItemSelectedChange && scene() && _hasEditWidget)
+    {
+        qDebug() << "Showing dock edit widget.";
         _dockWidget->setVisible(value.toBool() || _dockWidget->pinned());
+        qDebug() << "> Ready";
+    }
 
     return DuQFNode::itemChange(change, value);
 }

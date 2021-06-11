@@ -62,7 +62,7 @@ int main(int argc, char *argv[])
 
     // hide splash when finished
     s->newMessage("Ready!");
-    s->finish(w);
+    s->finish(w);//*/
 
     return a.exec();
 }

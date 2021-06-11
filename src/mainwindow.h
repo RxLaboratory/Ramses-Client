@@ -117,6 +117,8 @@ private slots:
 
     void log(DuQFLog m);
 
+    void dockWidgetDestroyed(QObject *dockObj);
+
     void pageChanged(int i);
     void serverSettings();
     void loginAction();

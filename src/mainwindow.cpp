@@ -187,6 +187,7 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
 void MainWindow::addObjectDockWidget(ObjectDockWidget *w)
 {
     this->addDockWidget(Qt::RightDockWidgetArea, w);
+    connect(w, &QObject::destroyed, this, &MainWindow::dockWidgetDestroyed);
     w->installEventFilter(this);
 }
 
@@ -486,6 +487,15 @@ void MainWindow::log(DuQFLog m)
     else if (type == DuQFLog::Warning) mainStatusBar->showMessage(message,10000);
     else if (type == DuQFLog::Critical) mainStatusBar->showMessage(message);
     else if (type == DuQFLog::Fatal) mainStatusBar->showMessage(message);
+}
+
+void MainWindow::dockWidgetDestroyed(QObject *dockObj)
+{
+    ObjectDockWidget *dock = (ObjectDockWidget*)dockObj;
+    if (dock)
+    {
+        _dockedObjects.removeAll(dock);
+    }
 }
 
 void MainWindow::pageChanged(int i)

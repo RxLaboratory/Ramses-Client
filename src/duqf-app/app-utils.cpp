@@ -12,8 +12,15 @@ DuApplication::DuApplication(int &argc, char *argv[]) : QApplication(argc, argv)
     DuUI::updateCSS(":/styles/default");
 
     //create splash screen
-    QPixmap pixmap(SPLASH_IMAGE);
-    _splashScreen = new DuSplashScreen( pixmap );
+    if (QFile(SPLASH_IMAGE).exists())
+    {
+        QPixmap pixmap(SPLASH_IMAGE);
+        _splashScreen = new DuSplashScreen( pixmap );
+    }
+    else
+    {
+        _splashScreen = new DuSplashScreen( );
+    }
 
     //set app icon
     qApp->setWindowIcon(QIcon(APP_ICON));
