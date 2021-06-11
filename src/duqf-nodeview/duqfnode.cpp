@@ -47,18 +47,8 @@ DuQFNode::DuQFNode(QString title, QGraphicsItem *parent):
     connect(m_defaultOutputSlot, &DuQFSlot::connectionInitiated, this, &DuQFNode::connectionInitiated);
     connect(m_defaultOutputSlot, &DuQFSlot::connectionMoved, this, &DuQFNode::connectionMoved);
     connect(m_defaultOutputSlot, &DuQFSlot::connectionFinished, this, &DuQFNode::connectionFinished);
-}
 
-DuQFNode::DuQFNode(const DuQFNode &other):
-    QGraphicsObject(other.parentItem())
-{
-    setTitle(other.title());
-    setGrid(other.grid());
-}
-
-DuQFNode::~DuQFNode()
-{
-
+    this->setObjectName( "DuQFNode" );
 }
 
 QRectF DuQFNode::boundingRect() const
@@ -241,12 +231,18 @@ void DuQFNode::setIcon(QString icon)
 void DuQFNode::remove()
 {
     qDebug() << "Removing DuQFNode";
+    qDebug().noquote() << "- " + this->objectName();
     if (m_removing) return;
     qDebug() << "> Accepted";
-
     m_removing = true;
+    this->prepareGeometryChange();
+
     m_defaultInputSlot->remove();
     m_defaultOutputSlot->remove();
-    emit removed();
-    deleteLater();
+    emit removed(this);
+    qDebug() << "> DuQFNode removed";
+
+    // There seems to be an issue with deleting QGraphicsObject from itself
+    // The containing scene will handle that using the removed signal
+    //this->deleteLater();
 }

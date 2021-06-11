@@ -6,6 +6,8 @@ RamShot::RamShot(QString shortName, QString name, QString sequenceUuid, QString 
     setObjectType(Shot);
     _sequenceUuid = sequenceUuid;
     _dbi->createShot(_shortName, _name, _sequenceUuid, _uuid);
+
+    this->setObjectName( "RamShot" );
 }
 
 RamShot::~RamShot()

@@ -5,6 +5,8 @@ RamState::RamState(QString shortName, QString name, QString uuid, QObject *paren
 {
     this->setObjectType(State);
     _dbi->createState(_shortName, _name, _uuid);
+
+    this->setObjectName( "RamState" );
 }
 
 RamState::~RamState()

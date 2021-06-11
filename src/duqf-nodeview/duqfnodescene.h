@@ -16,7 +16,7 @@ class DuQFNodeScene : public QGraphicsScene
 {
     Q_OBJECT
 public:
-    DuQFNodeScene(DuQFGrid &grid);
+    DuQFNodeScene(DuQFGrid &grid, QObject *parent = nullptr);
     void adjustSceneRect();
     QRectF zoomToFit(bool isForExport = false) const;
     QList<DuQFNode*> nodes();
@@ -45,6 +45,7 @@ private slots:
     void initiateConnection(QPointF from);
     void moveConnection(QPointF to);
     void finishConnection(QPointF to, QPointF from);
+    void nodeRemoved(DuQFNode *node);
 
 private:
     DuQFGrid &m_grid;

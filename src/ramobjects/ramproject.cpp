@@ -9,6 +9,8 @@ RamProject::RamProject(QString shortName, QString name, QString uuid, QObject *p
     _pipeline = new RamObjectList(this);
     _steps = new RamObjectList(this);
     _dbi->createProject(_shortName, _name, _uuid);
+
+    this->setObjectName( "RamProject" );
 }
 
 RamProject::~RamProject()

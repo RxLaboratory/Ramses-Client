@@ -3,7 +3,7 @@
 RamObjectUberList::RamObjectUberList(QObject *parent):
     RamObjectList(parent)
 {
-
+    this->setObjectName( "RamObjectUberList" );
 }
 
 RamObject *RamObjectUberList::objectFromUuid(QString uuid)

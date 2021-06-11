@@ -11,7 +11,7 @@ class DuQFConnector : public QGraphicsObject
 {
     Q_OBJECT
 public:
-    DuQFConnector(QString title = "");
+    DuQFConnector(QString title = "", QGraphicsItem *parent = nullptr);
     DuQFConnector(QPointF from, QString title = "");
 
     enum { Type = UserType + 1 };

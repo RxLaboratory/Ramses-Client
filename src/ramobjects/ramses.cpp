@@ -40,6 +40,9 @@ Ramses::Ramses(QObject *parent) : QObject(parent)
 
     connect( (DuApplication *)qApp, &DuApplication::idle, this, &Ramses::refresh);
     connect( _dbi, &DBInterface::connectionStatusChanged, this, &Ramses::dbiConnectionStatusChanged);
+
+    this->setObjectName( "Ramses Class" );
+
     qDebug() << "Ramses Ready!";
 }
 

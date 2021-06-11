@@ -7,6 +7,8 @@ RamAssetGroup::RamAssetGroup(QString shortName, QString name, bool tplt, QString
     _projectUuid = "";
     _template = tplt;
     if (_template) _dbi->createTemplateAssetGroup(_shortName, _name, _uuid);
+
+    this->setObjectName( "RamAssetGroup" );
 }
 
 RamAssetGroup::RamAssetGroup(QString shortName, QString name, QString projectUuid, QString uuid, QObject *parent):
@@ -16,6 +18,8 @@ RamAssetGroup::RamAssetGroup(QString shortName, QString name, QString projectUui
     _projectUuid = projectUuid;
     _template = false;
     _dbi->createAssetGroup(_shortName, _name, projectUuid, _uuid);
+
+    this->setObjectName( "RamAssetGroup" );
 }
 
 RamAssetGroup::~RamAssetGroup()

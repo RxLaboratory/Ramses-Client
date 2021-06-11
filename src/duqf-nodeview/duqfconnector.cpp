@@ -1,6 +1,7 @@
 #include "duqfconnector.h"
 
-DuQFConnector::DuQFConnector(QString title)
+DuQFConnector::DuQFConnector(QString title, QGraphicsItem *parent):
+    QGraphicsObject( parent )
 {
     setupUi();
 

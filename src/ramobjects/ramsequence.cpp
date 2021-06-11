@@ -6,6 +6,8 @@ RamSequence::RamSequence(QString shortName, QString name, QString projectUuid, Q
     this->setObjectType(Sequence);
     _projectUuid = projectUuid;
     _dbi->createSequence(_shortName, _name, projectUuid, _uuid);
+
+    this->setObjectName( "RamSequence" );
 }
 
 RamSequence::~RamSequence()

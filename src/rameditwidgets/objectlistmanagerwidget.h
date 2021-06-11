@@ -23,7 +23,7 @@ protected:
     void showEvent(QShowEvent *event) Q_DECL_OVERRIDE;
 
 protected slots:
-    virtual void createObject() = 0;
+    virtual void createObject() {};
 
 private slots:
     void editNewObject(RamObject *o);

@@ -17,12 +17,8 @@
 class DuQFNode : public QGraphicsObject
 {
     Q_OBJECT
-    Q_INTERFACES(QGraphicsItem)
 public:
     DuQFNode(QString title = "Node", QGraphicsItem *parent = nullptr);
-    //! Copy constructor.
-    DuQFNode(const DuQFNode & other);
-    ~DuQFNode() Q_DECL_OVERRIDE;
 
     enum { Type = UserType + 3 };
     int type() const Q_DECL_OVERRIDE { return Type; }
@@ -60,7 +56,7 @@ signals:
     void connectionInitiated(QPointF);
     void connectionMoved(QPointF);
     void connectionFinished(QPointF, QPointF);
-    void removed();
+    void removed(DuQFNode*);
     void moved(QPointF);
 
 protected:

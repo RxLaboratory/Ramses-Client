@@ -6,6 +6,8 @@ RamAsset::RamAsset(QString shortName, QString name, QString assetGroupUuid, QStr
     setObjectType(Asset);
     _assetGroupUuid = assetGroupUuid;
     _dbi->createAsset(_shortName, _name, _assetGroupUuid, "", _uuid);
+
+    this->setObjectName( "RamAsset" );
 }
 
 RamAsset::~RamAsset()

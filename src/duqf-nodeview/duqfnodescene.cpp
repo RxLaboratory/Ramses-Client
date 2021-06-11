@@ -1,6 +1,7 @@
 #include "duqfnodescene.h"
 
-DuQFNodeScene::DuQFNodeScene(DuQFGrid &grid):
+DuQFNodeScene::DuQFNodeScene(DuQFGrid &grid, QObject *parent):
+    QGraphicsScene(parent),
     m_grid(grid)
 {
     m_connectionManager = new DuQFConnectionManager(this);
@@ -99,6 +100,7 @@ void DuQFNodeScene::addNode(DuQFNode *node, bool select)
     connect(node, &DuQFNode::connectionInitiated, this, &DuQFNodeScene::initiateConnection);
     connect(node, &DuQFNode::connectionMoved, this, &DuQFNodeScene::moveConnection);
     connect(node, &DuQFNode::connectionFinished, this, &DuQFNodeScene::finishConnection);
+    connect(node, &DuQFNode::removed, this, &DuQFNodeScene::nodeRemoved);
 }
 
 void DuQFNodeScene::removeSelectedConnections()
@@ -312,6 +314,12 @@ void DuQFNodeScene::finishConnection(QPointF to, QPointF from)
     // Connect
     m_connectionManager->addConnection(output, input);
     m_connectingItem->remove();
+}
+
+void DuQFNodeScene::nodeRemoved(DuQFNode *node)
+{
+    this->removeItem(node);
+    node->deleteLater();
 }
 
 void DuQFNodeScene::layoutNodesInColumn(QList<DuQFNode *> nodes, QPointF center)

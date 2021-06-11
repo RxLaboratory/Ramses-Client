@@ -3,13 +3,13 @@
 RamObjectList::RamObjectList(QObject *parent) :
     RamObject(parent)
 {
-
+    this->setObjectName( "RamObjectList" );
 }
 
 RamObjectList::RamObjectList(QString shortName, QString name, QString uuid, QObject *parent) :
     RamObject(shortName, name, uuid, parent)
 {
-
+    this->setObjectName( "RamObjectList" );
 }
 
 RamObjectList::RamObjectList(const RamObjectList &other) :

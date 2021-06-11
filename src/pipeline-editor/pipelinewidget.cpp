@@ -255,6 +255,7 @@ void PipelineWidget::newStep(RamObject *obj)
 void PipelineWidget::nodeMoved(QPointF pos)
 {
     ObjectNode *node = (ObjectNode*)sender();
+    if (!node) return;
     RamObject *step = node->ramObject();
 
     userSettings->beginGroup("nodeLocations");

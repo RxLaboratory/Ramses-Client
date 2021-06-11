@@ -2,7 +2,8 @@
 
 #include "mainwindow.h"
 
-ObjectNode::ObjectNode(RamObject *obj)
+ObjectNode::ObjectNode(RamObject *obj):
+    DuQFNode(obj->shortName())
 {
     _object = obj;
 
@@ -11,12 +12,12 @@ ObjectNode::ObjectNode(RamObject *obj)
 
     _dockWidget->hide();
 
-    this->setTitle(_object->shortName());
     this->setTitleToolTip(_object->name());
 
-    connect(this, &DuQFNode::removed, this, &ObjectNode::removeObject);
     connect(obj, &RamObject::changed, this, &ObjectNode::objectChanged);
     connect(obj, &RamObject::removed, this, &ObjectNode::objectRemoved);
+
+    this->setObjectName( "ObjectNode" );
 }
 
 ObjectNode::~ObjectNode()
@@ -44,11 +45,6 @@ void ObjectNode::setEditWidget(ObjectEditWidget *w)
     _hasEditWidget = true;
     MainWindow *mw = (MainWindow*)GuiUtils::appMainWindow();
     mw->addObjectDockWidget(_dockWidget);
-}
-
-void ObjectNode::removeObject()
-{
-    _object->remove();
 }
 
 void ObjectNode::objectChanged()

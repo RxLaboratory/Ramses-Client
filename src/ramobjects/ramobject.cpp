@@ -8,6 +8,7 @@ RamObject::RamObject(QObject *parent) : QObject(parent)
     _name = "";
     _uuid = RamUuid::generateUuidString(_shortName);
     _dbi = DBInterface::instance();
+    this->setObjectName( "RamObject" );
 }
 
 RamObject::RamObject(QString shortName, QString name, QString uuid, QObject *parent) : QObject(parent)
@@ -19,6 +20,8 @@ RamObject::RamObject(QString shortName, QString name, QString uuid, QObject *par
     if (uuid != "") _uuid = uuid;
     else _uuid = RamUuid::generateUuidString(_shortName);
     _dbi = DBInterface::instance();
+
+    this->setObjectName( "RamObject" );
 }
 
 QString RamObject::shortName() const
@@ -61,14 +64,19 @@ void RamObject::setUuid(const QString &uuid)
 
 void RamObject::remove()
 {
-    qDebug() << "Removing RamObject: " + _name + " (uuid: " + _uuid + ")";
+    qDebug().noquote() << "Removing: " + _name + " (uuid: " + _uuid + ")";
+    qDebug().noquote() << "- " + this->objectName();
     if (_removing) return;
-    qDebug() << "> Accepted";
+    qDebug().noquote() << "> Accepted";
 
     _removing = true;
-
+#ifdef QT_DEBUG
+    dumpObjectInfo();
+#endif
     emit removed(this);
-    delete this;
+    qDebug().noquote() << "> " + _name + " Removed";
+
+    this->deleteLater();
 }
 
 RamObject::ObjectType RamObject::objectType() const

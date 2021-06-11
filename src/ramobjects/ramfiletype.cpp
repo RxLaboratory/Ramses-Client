@@ -6,6 +6,8 @@ RamFileType::RamFileType(QString shortName, QString name, QStringList extensions
     setObjectType(FileType);
     _extensions = extensions;
     _dbi->createFileType(_shortName, _name, _extensions, _uuid);
+
+    this->setObjectName( "RamFileType" );
 }
 
 RamFileType::RamFileType(QString shortName, QString name, QString extensions, QString uuid, QObject *parent):
@@ -14,6 +16,8 @@ RamFileType::RamFileType(QString shortName, QString name, QString extensions, QS
     setObjectType(FileType);
     setExtensions(extensions);
     _dbi->createFileType(_shortName, _name, _extensions, _uuid);
+
+    this->setObjectName( "RamFileType" );
 }
 
 RamFileType::~RamFileType()

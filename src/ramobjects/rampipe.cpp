@@ -10,6 +10,8 @@ RamPipe::RamPipe(RamStep *output, RamStep *input, QString uuid, QObject *parent)
     _inputConnection = connect( _inputStep, &RamStep::removed, this, &RamObject::remove);
     _outputConnection = connect( _outputStep, &RamStep::removed, this, &RamObject::remove);
     _dbi->createPipe(output->uuid(), input->uuid(), _uuid);
+
+    this->setObjectName( "RamPipe" );
 }
 
 RamPipe::~RamPipe()

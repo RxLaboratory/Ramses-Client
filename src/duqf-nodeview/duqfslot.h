@@ -20,7 +20,7 @@ public:
     enum { Type = UserType + 2 };
     int type() const Q_DECL_OVERRIDE { return Type; }
 
-    DuQFSlot(SlotType type = All, bool singleConnection = false, QColor color = QColor());
+    DuQFSlot(SlotType type = All, bool singleConnection = false, QColor color = QColor(), QGraphicsItem *parent = nullptr);
 
     QRectF boundingRect() const Q_DECL_OVERRIDE;
     void paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = nullptr) Q_DECL_OVERRIDE;

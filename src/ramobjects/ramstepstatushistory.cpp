@@ -7,6 +7,8 @@ RamStepStatusHistory::RamStepStatusHistory(RamStep *step, RamItem *item):
 {
     _item = item;
     _step = step;
+
+    this->setObjectName( "RamStepStatusHistory" );
 }
 
 RamItem *RamStepStatusHistory::item() const

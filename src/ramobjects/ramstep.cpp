@@ -36,6 +36,8 @@ void RamStep::init()
     connect(_users, &RamObjectList::objectRemoved, this, &RamStep::userUnassigned);
     connect(_applications, &RamObjectList::objectRemoved, this, &RamStep::applicationAssigned);
     connect(_applications, &RamObjectList::objectRemoved, this, &RamStep::applicationUnassigned);
+
+    this->setObjectName( "RamStep" );
 }
 
 bool RamStep::isTemplate() const

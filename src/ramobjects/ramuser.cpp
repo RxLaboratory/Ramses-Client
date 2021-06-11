@@ -6,6 +6,8 @@ RamUser::RamUser(QString shortName, QString name, QString uuid, QObject *parent)
     setObjectType(User);
     _role = Standard;
     _dbi->createUser(_shortName, _name, _uuid);
+
+    this->setObjectName( "RamUser" );
 }
 
 RamUser::~RamUser()

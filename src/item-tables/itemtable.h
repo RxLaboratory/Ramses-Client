@@ -28,7 +28,7 @@ protected:
     TitleBar *m_titleBar;
 
 protected slots:
-    virtual void projectChanged(RamProject *project) = 0;
+    virtual void projectChanged(RamProject *project) {Q_UNUSED(project)};
 
 private:
     void setupUi(QString title);

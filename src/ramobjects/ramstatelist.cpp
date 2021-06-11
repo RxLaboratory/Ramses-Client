@@ -3,7 +3,7 @@
 RamStateList::RamStateList(QObject *parent):
     RamObjectList(parent)
 {
-
+    this->setObjectName( "RamStateList" );
 }
 
 bool stateSorter(RamObject *a, RamObject *b)

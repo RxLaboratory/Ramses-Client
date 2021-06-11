@@ -13,6 +13,8 @@ RamStatus::RamStatus(RamUser *user, RamState *state, RamStep *step, RamItem *ite
     _date = QDateTime::currentDateTimeUtc();
 
     setObjectType(Status);
+
+    this->setObjectName( "RamStatus" );
 }
 
 RamStatus::RamStatus(RamUser *user, RamState *state, RamStep *step, RamItem *item, QString uuid):
@@ -26,6 +28,8 @@ RamStatus::RamStatus(RamUser *user, RamState *state, RamStep *step, RamItem *ite
     _date = QDateTime::currentDateTimeUtc();
 
     setObjectType(Status);
+
+    this->setObjectName( "RamStatus" );
 }
 
 RamStatus::~RamStatus()

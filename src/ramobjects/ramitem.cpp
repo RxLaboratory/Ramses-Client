@@ -4,6 +4,8 @@ RamItem::RamItem(QString shortName, QString name, QString uuid, QObject *parent)
     RamObject(shortName, name, uuid, parent)
 {
     _statusHistory = new RamObjectUberList(this);
+
+    this->setObjectName( "RamItem" );
 }
 
 void RamItem::setStatus(RamUser *user, RamState *state, RamStep *step, int completionRatio, QString comment, int version)

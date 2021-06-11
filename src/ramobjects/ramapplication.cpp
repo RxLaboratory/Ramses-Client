@@ -17,6 +17,8 @@ RamApplication::RamApplication(QString shortName, QString name, QString executab
     connect(_nativeFileTypes, &RamObjectList::objectAdded, this, &RamApplication::nativeFileTypeAssigned);
     connect(_importFileTypes, &RamObjectList::objectAdded, this, &RamApplication::importFileTypeAssigned);
     connect(_exportFileTypes, &RamObjectList::objectAdded, this, &RamApplication::exportFileTypeAssigned);
+
+    this->setObjectName("RamApplication");
 }
 
 RamApplication::~RamApplication()

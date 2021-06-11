@@ -1,6 +1,7 @@
 #include "duqfslot.h"
 
-DuQFSlot::DuQFSlot(SlotType type, bool singleConnection, QColor color)
+DuQFSlot::DuQFSlot(SlotType type, bool singleConnection, QColor color, QGraphicsItem *parent):
+    QGraphicsObject(parent)
 {
     int s = DuUI::getSize("padding", "small") * 2;
     m_size = QSizeF(s,s);
