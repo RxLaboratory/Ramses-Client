@@ -319,7 +319,7 @@ void DuQFNodeScene::finishConnection(QPointF to, QPointF from)
 void DuQFNodeScene::nodeRemoved(DuQFNode *node)
 {
     this->removeItem(node);
-    node->deleteLater();
+    //node->deleteLater();
 }
 
 void DuQFNodeScene::layoutNodesInColumn(QList<DuQFNode *> nodes, QPointF center)

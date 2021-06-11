@@ -10,7 +10,8 @@ StepNode::StepNode(RamStep *step): ObjectNode(step)
 
     stepChanged();
 
-    connect(step, &RamStep::changed, this, &StepNode::stepChanged);
+    connect( step, &RamStep::changed, this, &StepNode::stepChanged);
+    connect( this, &StepNode::removed, step, &RamStep::remove);
 }
 
 RamStep *StepNode::step() const
