@@ -4,7 +4,7 @@ ApplicationListManagerWidget::ApplicationListManagerWidget(QWidget *parent) :
     ObjectListManagerWidget(
         Ramses::instance()->applications(),
         new ApplicationEditWidget(),
-        "Users",
+        "Applications",
         parent )
 {
 
