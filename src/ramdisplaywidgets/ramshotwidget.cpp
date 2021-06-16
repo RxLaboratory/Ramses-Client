@@ -6,7 +6,8 @@ RamShotWidget::RamShotWidget(RamShot *shot, QWidget *parent) :
     _shot = shot;
     setUserEditRole(RamUser::Lead);
 
-    ShotEditWidget *sw = new ShotEditWidget(shot, this);
+    ShotEditWidget *sw = new ShotEditWidget(this);
+    sw->setShot(shot);
     setEditWidget(sw);
     this->dockEditWidget()->setIcon(":/icons/shot");
 

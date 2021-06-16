@@ -3,7 +3,6 @@
 
 #include <QDoubleSpinBox>
 #include <QSpinBox>
-#include <QComboBox>
 
 #include "objecteditwidget.h"
 #include "ramses.h"
@@ -15,7 +14,9 @@ class ShotEditWidget : public ObjectEditWidget
 {
     Q_OBJECT
 public:
-    ShotEditWidget(RamShot *shot = nullptr, QWidget *parent = nullptr);
+    ShotEditWidget(QWidget *parent = nullptr);
+
+    void setShot(RamShot *shot);
 
 public slots:
     void setObject(RamObject *obj) Q_DECL_OVERRIDE;
@@ -24,12 +25,10 @@ protected slots:
     void update() Q_DECL_OVERRIDE;
 
 private slots:
+    void changeProject(RamProject *project);
     void moveShot();
     void framesChanged();
     void secondsChanged();
-    void newSequence(RamObject *seq);
-    void sequenceChanged(RamObject *o);
-    void sequenceRemoved(RamObject *seq);
 
 private:
     RamShot *_shot = nullptr;
@@ -40,7 +39,7 @@ private:
     DuQFFolderDisplayWidget *folderWidget;
     QDoubleSpinBox *secondsBox;
     QSpinBox *framesBox;
-    QComboBox *sequencesBox;
+    RamObjectListComboBox *sequencesBox;
     StatusHistoryWidget *statusHistoryWidget;
 
     RamSequence *sequence();

@@ -41,6 +41,11 @@ RamObject *RamObjectListComboBox::currentObject()
     return m_list->fromUuid(this->currentData().toString());
 }
 
+QString RamObjectListComboBox::currentUuid()
+{
+    return this->currentData().toString();
+}
+
 void RamObjectListComboBox::setObject(QString uuid)
 {
     for(int i = 0; i < this->count(); i++)

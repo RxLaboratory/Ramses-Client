@@ -15,6 +15,7 @@ public:
     void setList(RamObjectList *list);
 
     RamObject *currentObject();
+    QString currentUuid();
     void setObject(QString uuid);
     void setObject(RamObject *obj);
 
