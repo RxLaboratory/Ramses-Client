@@ -128,20 +128,20 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     projectSettingsPage->addPage(new SequenceListManagerWidget(this), "Sequences", QIcon(":/icons/sequences"));
     qDebug() << "  > sequences ok";
     projectSettingsPage->addPage(new ShotListManagerWidget(this), "Shots", QIcon(":/icons/shots"));
-    qDebug() << "  > shots ok";
+    qDebug() << "  > shots ok";//*/
 
     // Pipeline editor
     PipelineWidget *pipelineEditor = new PipelineWidget(this);
     mainStack->addWidget(pipelineEditor);
-    qDebug() << "> Pipeline ready";
+    qDebug() << "> Pipeline ready";//*/
 
-    AssetTable *assetsTable = new AssetTable("Assets Table", this);
+    /*AssetTable *assetsTable = new AssetTable("Assets Table", this);
     mainStack->addWidget(assetsTable);
-    qDebug() << "> Assets table ready";
+    qDebug() << "> Assets table ready";//*/
 
-    ShotTable *shotsTable = new ShotTable("Shots Table", this);
+    /*ShotTable *shotsTable = new ShotTable("Shots Table", this);
     mainStack->addWidget(shotsTable);
-    qDebug() << "> Shots table ready";
+    qDebug() << "> Shots table ready";//*/
 
     // Progress page
     progressPage = new ProgressPage(this);
@@ -163,8 +163,8 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     connect(actionPipeline, SIGNAL(triggered(bool)), this, SLOT(pipeline(bool)));
     connect(actionShots,SIGNAL(triggered(bool)), this, SLOT(shots(bool)));
     connect(actionAssets,SIGNAL(triggered(bool)), this, SLOT(assets(bool)));
-    connect(pipelineEditor, SIGNAL(closeRequested()), this, SLOT(closePipeline()));
-    connect(assetsTable, SIGNAL(closeRequested()), this, SLOT(closeAssets()));
+    //connect(pipelineEditor, SIGNAL(closeRequested()), this, SLOT(closePipeline()));
+    //connect(assetsTable, SIGNAL(closeRequested()), this, SLOT(closeAssets()));
     connect(adminPage, SIGNAL(closeRequested()), this, SLOT(closeAdmin()));
     connect(projectSettingsPage, SIGNAL(closeRequested()), this, SLOT(closeProjectSettings()));
     connect(networkButton,SIGNAL(clicked()),this, SLOT(networkButton_clicked()));
