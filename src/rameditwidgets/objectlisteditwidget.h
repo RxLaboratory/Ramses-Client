@@ -5,13 +5,13 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QLabel>
-#include <QComboBox>
 #include <QToolButton>
 #include <QMessageBox>
 #include <QScrollBar>
 
 #include "ramobjectlistwidget.h"
 #include "ramobjectuberlist.h"
+#include "ramobjectlistcombobox.h"
 #include "duqf-widgets/duqfsearchedit.h"
 
 /**
@@ -34,6 +34,7 @@ public:
     void clear();
     void setList(RamObjectList *objectList);
     void setList(RamObjectUberList *objectList, bool useFilters = true);
+    void setFilterList(RamObjectList *filterList);
     void setEditable(bool editable = true);
     void setSortable(bool sortable = true);
     void setSelectable(bool selectable = true);
@@ -41,13 +42,11 @@ public:
     void setTitle(QString title);
     QToolButton *addButton() const;
     void select(RamObject* obj);
-    QString currentFilter() const;
-    void clearFilters();
+    QString currentFilterUuid() const;
+    RamObject *currentFilter() const;
 
 public slots:
     void scrollToBottom();
-    void addFilter(RamObject *filter);
-    void removeFilter(RamObject *filter);
 
 signals:
     void objectSelected(RamObject*);
@@ -56,8 +55,7 @@ signals:
     void currentFilterChanged(QString);
 
 private slots:
-    void filterChanged(RamObject *filter);
-    void currentFilterChanged(int i);
+    void filterChanged(QString filter);
 
 private:
     void setupUi(bool editableObjects = false);
@@ -65,7 +63,7 @@ private:
     QToolButton *m_addButton;
     QToolButton *m_removeButton;
     QLabel *m_title;
-    QComboBox *m_filterBox;
+    RamObjectListComboBox *m_filterBox;
     DuQFSearchEdit *m_searchEdit;
     RamObjectList *m_objectList;
     RamObjectUberList *m_objectUberList;

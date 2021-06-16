@@ -1,13 +1,15 @@
 #include "ramasset.h"
+#include "ramassetgroup.h"
 
-RamAsset::RamAsset(QString shortName, QString name, QString assetGroupUuid, QString uuid, QObject *parent) :
-    RamItem(shortName, name, uuid, parent)
+RamAsset::RamAsset(QString shortName, RamProject *project, RamAssetGroup *assetGroup, QString name, QString uuid, QObject *parent) :
+    RamItem(shortName, project, name, uuid, parent)
 {
     setObjectType(Asset);
-    _assetGroupUuid = assetGroupUuid;
-    _dbi->createAsset(_shortName, _name, _assetGroupUuid, "", _uuid);
+    setProductionType(RamStep::AssetProduction);
+    m_assetGroup = assetGroup;
+    _dbi->createAsset(_shortName, _name, m_assetGroup->uuid(), "", _uuid);
 
-    this->setObjectName( "RamAsset" );
+    this->setObjectName( "RamAsset " + _shortName);
 }
 
 RamAsset::~RamAsset()
@@ -15,16 +17,16 @@ RamAsset::~RamAsset()
     _dbi->removeAsset(_uuid);
 }
 
-QString RamAsset::assetGroupUuid() const
+RamAssetGroup *RamAsset::assetGroup() const
 {
-    return _assetGroupUuid;
+    return m_assetGroup;
 }
 
-void RamAsset::setAssetGroupUuid(const QString &assetGroupUuid)
+void RamAsset::setAssetGroup(RamAssetGroup *assetGroup)
 {
-    if (assetGroupUuid == _assetGroupUuid) return;
+    if (m_assetGroup->is(assetGroup)) return;
     _dirty = true;
-    _assetGroupUuid = assetGroupUuid;
+    m_assetGroup = assetGroup;
 }
 
 QStringList RamAsset::tags() const
@@ -67,5 +69,10 @@ void RamAsset::update()
     if (!_dirty) return;
     RamObject::update();
     _dbi->updateAsset(_uuid, _shortName, _name, _assetGroupUuid, _tags.join(','));
+}
+
+RamAsset *RamAsset::asset( QString uuid )
+{
+    return qobject_cast<RamAsset*>( RamObject::obj(uuid) );
 }
 

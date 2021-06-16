@@ -150,7 +150,5 @@ RamSequence *ShotEditWidget::sequence()
 RamProject *ShotEditWidget::project()
 {
     if (!_shot) return nullptr;
-    RamSequence *seq = sequence();
-    if (!seq) return nullptr;
-    return Ramses::instance()->project(seq->projectUuid());
+    return _shot->project();
 }

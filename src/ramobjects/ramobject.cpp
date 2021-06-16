@@ -117,7 +117,7 @@ void RamObject::setOrder(int order)
     emit orderChanged(this, previous, order);
 }
 
-bool RamObject::is(RamObject *other)
+bool RamObject::is(const RamObject *other)
 {
     if (!other) return false;
     return other->uuid() == _uuid;

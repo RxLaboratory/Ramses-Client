@@ -40,14 +40,12 @@ void ObjectListEditWidget::clear()
 {
     m_objectList = nullptr;
     m_objectUberList = nullptr;
-    m_filterBox->hide();
-    m_title->show();
     m_list->clear();
 }
 
 void ObjectListEditWidget::setList(RamObjectList *objectList)
 {
-    clearFilters();
+    setFilterList(nullptr);
     m_objectList = objectList;
     m_list->setList(m_objectList);
 }
@@ -60,14 +58,25 @@ void ObjectListEditWidget::setList(RamObjectUberList *objectList, bool useFilter
     m_objectUberList = objectList;
     m_list->setList(objectList);
 
-    clearFilters();
-    m_filterBox->addItem("All " + m_title->text(), "");
     if (useFilters)
     {
-        for (int i = 0; i < objectList->count(); i++) addFilter( objectList->at(i) );
-        m_uberListConnections << connect( objectList, &RamObjectList::objectAdded, this, &ObjectListEditWidget::addFilter);
-        m_uberListConnections << connect( objectList, &RamObjectList::objectRemoved, this, &ObjectListEditWidget::removeFilter);
+        setFilterList( objectList );
     }
+}
+
+void ObjectListEditWidget::setFilterList(RamObjectList *filterList)
+{
+    m_filterBox->setList(filterList);
+    if (filterList)
+    {
+        m_title->hide();
+        m_filterBox->show();
+    }
+    else
+    {
+        m_title->show();
+        m_filterBox->hide();
+    }//*/
 }
 
 void ObjectListEditWidget::setEditable(bool editable)
@@ -108,16 +117,14 @@ void ObjectListEditWidget::select(RamObject *obj)
     m_list->select(obj);
 }
 
-QString ObjectListEditWidget::currentFilter() const
+QString ObjectListEditWidget::currentFilterUuid() const
 {
-    return m_filterBox->currentData().toString();
+    return m_filterBox->currentUuid();
 }
 
-void ObjectListEditWidget::clearFilters()
+RamObject *ObjectListEditWidget::currentFilter() const
 {
-    m_filterBox->clear();
-    m_filterBox->hide();
-    m_title->show();
+    return m_filterBox->currentObject();
 }
 
 void ObjectListEditWidget::scrollToBottom()
@@ -126,57 +133,10 @@ void ObjectListEditWidget::scrollToBottom()
     vbar->setSliderPosition( vbar->maximum() );
 }
 
-void ObjectListEditWidget::addFilter(RamObject *filter)
+void ObjectListEditWidget::filterChanged(QString filter)
 {
-    m_filterBox->addItem( filter->name(), filter->uuid() );
-
-    QList<QMetaObject::Connection> c;
-    c << connect(filter, &RamObject::removed, this, &ObjectListEditWidget::removeFilter);
-    c << connect(filter, &RamObject::changed, this, &ObjectListEditWidget::filterChanged);
-    m_filterConnections[filter->uuid()] = c;
-
-    m_filterBox->show();
-    m_title->hide();
-}
-
-void ObjectListEditWidget::removeFilter(RamObject *filter)
-{
-    if (m_filterConnections.contains(filter->uuid()))
-    {
-        QList<QMetaObject::Connection> c = m_filterConnections.value(filter->uuid());
-        while (!c.isEmpty()) disconnect( c.takeLast());
-    }
-
-    for (int i = m_filterBox->count() - 1; i >= 0 ; i--)
-    {
-        if (m_filterBox->itemData(i).toString() == filter->uuid())
-        {
-            m_filterBox->removeItem(i);
-        }
-    }
-}
-
-void ObjectListEditWidget::filterChanged(RamObject *filter)
-{
-    for (int i = m_filterBox->count() - 1; i >= 0 ; i--)
-    {
-        if (m_filterBox->itemData(i).toString() == filter->uuid())
-        {
-            m_filterBox->setItemText(i, filter->name());
-        }
-    }
-}
-
-void ObjectListEditWidget::currentFilterChanged(int i)
-{
-    QString filter = "";
-    if (i <= 0) m_list->filter( filter );
-    else
-    {
-        filter = m_filterBox->currentData().toString();
-        m_list->filter( filter );
-
-    }
+    m_list->filter( filter );
+    qDebug() << filter;
     emit currentFilterChanged( filter );
 }
 
@@ -193,10 +153,9 @@ void ObjectListEditWidget::setupUi(bool editableObjects)
     buttonsLayout->setContentsMargins(0,3,0,0);
 
     m_title = new QLabel(this);
-    m_title->setVisible(false);
     buttonsLayout->addWidget(m_title);
 
-    m_filterBox = new QComboBox(this);
+    m_filterBox = new RamObjectListComboBox(true, this);
     m_filterBox->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
     buttonsLayout->addWidget(m_filterBox);
 
@@ -230,7 +189,7 @@ void ObjectListEditWidget::setupUi(bool editableObjects)
     setSortable(false);
     setEditable(true);
     // Hide filters until at least one is added
-    clearFilters();
+    setFilterList(nullptr);
 }
 
 void ObjectListEditWidget::connectEvents()
@@ -239,7 +198,7 @@ void ObjectListEditWidget::connectEvents()
     connect(m_removeButton, &QToolButton::clicked, m_list, &RamObjectListWidget::removeSelectedObjects);
     connect(m_searchEdit, &DuQFSearchEdit::changing, m_list, &RamObjectListWidget::search);
     connect(m_searchEdit, &DuQFSearchEdit::changed, m_list, &RamObjectListWidget::search);
-    connect(m_filterBox,SIGNAL(currentIndexChanged(int)), this, SLOT(currentFilterChanged(int)));
+    connect(m_filterBox,SIGNAL(currentObjectChanged(QString)), this, SLOT(filterChanged(QString)));
     // Relay list signals
     connect(m_list, &RamObjectListWidget::objectSelected, this, &ObjectListEditWidget::objectSelected);
     connect(m_list, &RamObjectListWidget::orderChanged, this, &ObjectListEditWidget::orderChanged);

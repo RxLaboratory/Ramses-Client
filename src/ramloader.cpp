@@ -356,7 +356,6 @@ void RamLoader::gotTemplateAssetGroups(QJsonArray assetGroups)
         RamAssetGroup *assetGroup = new RamAssetGroup(
                     ag.value("shortName").toString(),
                     ag.value("name").toString(),
-                    true,
                     ag.value("uuid").toString()
                     );
 
@@ -737,8 +736,8 @@ QString RamLoader::gotAssetGroup(QJsonObject newAG, RamProject *project)
     // not existing, let's create it
     RamAssetGroup *assetGroup = new RamAssetGroup(
                 newAG.value("shortName").toString(),
+                project,
                 newAG.value("name").toString(),
-                newAG.value("projectUuid").toString(),
                 newAG.value("uuid").toString()
                 );
 
@@ -805,8 +804,9 @@ QString RamLoader::gotAsset(QJsonObject newA, RamAssetGroup *assetGroup, RamProj
     // not existing, let's create it
     RamAsset *asset = new RamAsset(
                 newA.value("shortName").toString(),
+                project,
+                assetGroup,
                 newA.value("name").toString(),
-                newA.value("assetGroupUuid").toString(),
                 newA.value("uuid").toString()
                 );
     asset->setTags( newA.value("tags").toString());
@@ -873,8 +873,8 @@ QString RamLoader::gotSequence(QJsonObject newS, RamProject *project)
     // not existing, let's create it
     RamSequence *sequence = new RamSequence(
                 newS.value("shortName").toString(),
+                project,
                 newS.value("name").toString(),
-                newS.value("projectUuid").toString(),
                 newS.value("uuid").toString()
                 );
 
@@ -941,6 +941,7 @@ QString RamLoader::gotShot(QJsonObject newS, RamSequence *sequence, RamProject *
     // not existing, let's create it
     RamShot *shot = new RamShot(
                 newS.value("shortName").toString(),
+                project,
                 newS.value("name").toString(),
                 newS.value("sequenceUuid").toString(),
                 newS.value("uuid").toString()

@@ -16,6 +16,7 @@ public:
                     AssetGroup,
                     FileType,
                     Generic,
+                    Item,
                     Pipe,
                     PipeFile,
                     Project,
@@ -46,7 +47,7 @@ public:
     int order() const;
     void setOrder(int order);
 
-    bool is(RamObject *other);
+    bool is(const RamObject *other);
 
     static RamObject *obj(QString uuid);
 

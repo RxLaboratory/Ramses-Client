@@ -3,11 +3,13 @@
 
 #include "ramitem.h"
 
+class RamProject;
+
 class RamShot : public RamItem
 {
     Q_OBJECT
 public:
-    explicit RamShot(QString shortName, QString name = "", QString sequenceUuid = "", QString uuid = "", QObject *parent = nullptr);
+    explicit RamShot(QString shortName, RamProject *project, QString name = "", QString sequenceUuid = "", QString uuid = "", QObject *parent = nullptr);
     ~RamShot();
 
     QString sequenceUuid() const;
@@ -15,6 +17,8 @@ public:
 
     qreal duration() const;
     void setDuration(const qreal &duration);
+
+    static RamShot *shot(QString uuid);
 
 public slots:
     void update();

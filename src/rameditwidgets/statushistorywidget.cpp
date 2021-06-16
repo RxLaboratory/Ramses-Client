@@ -1,4 +1,4 @@
-#include "statushistorywidget.h"
+﻿#include "statushistorywidget.h"
 
 #include "simpleobjectlist.h"
 
@@ -27,45 +27,13 @@ void StatusHistoryWidget::setItem(RamItem *item)
     QSignalBlocker b(statusList);
 
     statusList->clear();
-    currentProjectChanged(Ramses::instance()->currentProject());
 
     if (!_item) return;
 
-    statusList->setList( item->statusHistory(), false );
-    currentProjectChanged( Ramses::instance()->currentProject() );
+    statusList->setList( item->statusHistory() );
 
     // Set the current status as template for the status editor
-    statusWidget->setStatus( item->status( statusList->currentFilter() ));
-
-    this->setEnabled(true);
-}
-
-void StatusHistoryWidget::newStep(RamObject *obj)
-{
-    if(!_item) return;
-    RamStep *step = qobject_cast<RamStep*>( obj );
-    if (_item->objectType() == RamObject::Shot && step->type() != RamStep::ShotProduction) return;
-    if (_item->objectType() == RamObject::Asset && step->type() != RamStep::AssetProduction) return;
-
-    statusList->addFilter( step );
-}
-
-void StatusHistoryWidget::stepRemoved(RamObject *step)
-{
-    statusList->removeFilter( step );
-}
-
-void StatusHistoryWidget::currentProjectChanged(RamProject *project)
-{
-    this->setEnabled(false);
-    while( !_projectConnections.isEmpty() ) disconnect( _projectConnections.takeLast() );
-
-    if (!project) return;
-
-    for (int i = 0; i < project->steps()->count(); i++) newStep( project->steps()->at(i) );
-
-    _projectConnections << connect(project->steps(), &RamObjectList::objectAdded, this, &StatusHistoryWidget::newStep );
-    _projectConnections << connect(project->steps(), &RamObjectList::objectRemoved, this, &StatusHistoryWidget::stepRemoved );
+    statusWidget->setStatus( item->status( statusList->currentFilterUuid() ));
 
     this->setEnabled(true);
 }
@@ -80,7 +48,8 @@ void StatusHistoryWidget::setStatus(RamState *state, int completionRatio, int ve
     RamProject *project = Ramses::instance()->currentProject();
     if (!project) return;
 
-    RamStep *step = qobject_cast<RamStep*>( project->steps()->fromUuid( statusList->currentFilter() ) );
+    RamStepStatusHistory *history = qobject_cast<RamStepStatusHistory*>( statusList->currentFilter() );
+    RamStep *step = history->step();
     if (!step) return;
 
     if (!state) return;
@@ -125,7 +94,6 @@ void StatusHistoryWidget::setupUi()
 
 void StatusHistoryWidget::connectEvents()
 {
-    connect(Ramses::instance(), &Ramses::currentProjectChanged, this, &StatusHistoryWidget::currentProjectChanged);
     connect(statusWidget, &StatusEditWidget::statusUpdated, this, &StatusHistoryWidget::setStatus);
     connect(statusList, SIGNAL(currentFilterChanged(QString)), this, SLOT(currentFilterChanged(QString)));
 }

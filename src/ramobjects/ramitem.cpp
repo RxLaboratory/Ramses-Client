@@ -1,11 +1,16 @@
 #include "ramitem.h"
 
-RamItem::RamItem(QString shortName, QString name, QString uuid, QObject *parent) :
+#include "ramproject.h"
+
+RamItem::RamItem(QString shortName, RamProject *project, QString name, QString uuid, QObject *parent) :
     RamObject(shortName, name, uuid, parent)
 {
-    _statusHistory = new RamObjectUberList(this);
+    setObjectType(Item);
+    m_productionType = RamStep::AssetProduction;
+    _statusHistory = new RamObjectUberList("Status history", this);
+    m_project = project;
 
-    this->setObjectName( "RamItem" );
+    this->setObjectName( "RamItem " + shortName);
 }
 
 void RamItem::setStatus(RamUser *user, RamState *state, RamStep *step, int completionRatio, QString comment, int version)
@@ -25,17 +30,15 @@ void RamItem::addStatus(RamStatus *status)
 {
     RamStep *step = status->step();
     if (!step) return;
-    RamObject *o = _statusHistory->fromUuid(step->uuid());
-    if (o)
+
+    for (int i = 0; i < _statusHistory->count(); i++)
     {
-        RamStepStatusHistory *history = qobject_cast<RamStepStatusHistory*>( o );
-        history->append( status );
-    }
-    else
-    {
-        RamStepStatusHistory *history = new RamStepStatusHistory(step, this);
-        history->append( status );
-        _statusHistory->append( history );
+        RamStepStatusHistory *history = qobject_cast<RamStepStatusHistory*>( _statusHistory->at(i) );
+        if (history->step()->is(step))
+        {
+            history->append( status );
+            break;
+        }
     }
 }
 
@@ -65,4 +68,48 @@ RamStatus *RamItem::status(QString stepUuid) const
         return qobject_cast<RamStatus*> ( history->last() );
     }
     return nullptr;
+}
+
+void RamItem::newStep(RamObject *obj)
+{
+    RamStep *step = qobject_cast<RamStep*>( obj );
+
+    if (m_productionType != step->type() ) return;
+
+    RamStepStatusHistory *history = new RamStepStatusHistory(step, this);
+    _statusHistory->append(history);
+}
+
+void RamItem::stepRemoved(RamObject *step)
+{
+    for (int i = 0; i < _statusHistory->count(); i++)
+    {
+        RamStepStatusHistory *history = qobject_cast<RamStepStatusHistory*>( _statusHistory->at(i) );
+        if (history->step()->is(step))
+        {
+            history->remove();
+            break;
+        }
+    }
+}
+
+RamStep::Type RamItem::productionType() const
+{
+    return m_productionType;
+}
+
+void RamItem::setProductionType(RamStep::Type newProductionType)
+{
+    m_productionType = newProductionType;
+
+    for (int i = 0; i < m_project->steps()->count(); i++)
+        newStep( m_project->steps()->at(i));
+
+    connect(m_project->steps(), &RamObjectList::objectAdded, this, &RamItem::newStep);
+    connect(m_project->steps(), &RamObjectList::objectRemoved, this, &RamItem::stepRemoved);
+}
+
+RamProject *RamItem::project() const
+{
+    return m_project;
 }

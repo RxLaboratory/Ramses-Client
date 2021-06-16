@@ -3,15 +3,18 @@
 
 #include "ramitem.h"
 
+class RamProject;
+class RamAssetGroup;
+
 class RamAsset : public RamItem
 {
     Q_OBJECT
 public:
-    explicit RamAsset(QString shortName, QString name = "", QString assetGroupUuid = "",  QString uuid = "", QObject *parent = nullptr);
+    explicit RamAsset(QString shortName, RamProject *project, RamAssetGroup *assetGroup, QString name = "",  QString uuid = "", QObject *parent = nullptr);
     ~RamAsset();
 
-    QString assetGroupUuid() const;
-    void setAssetGroupUuid(const QString &assetGroupUuid);
+    RamAssetGroup *assetGroup() const;
+    void setAssetGroup(RamAssetGroup *assetGroup);
 
     QStringList tags() const;
     void setTags(QString tags);
@@ -21,9 +24,13 @@ public:
 
     void update();
 
+    static RamAsset *asset(QString uuid);
+
 private:
     QStringList _tags;
     QString _assetGroupUuid;
+    RamProject *m_project;
+    RamAssetGroup *m_assetGroup;
 };
 
 #endif // RAMASSET_H

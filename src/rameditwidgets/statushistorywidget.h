@@ -29,13 +29,7 @@ public:
 signals:
 
 private slots:
-    void newStep(RamObject *obj);
-    void stepRemoved(RamObject *step);
-
-    void currentProjectChanged(RamProject *project);
-
     void setStatus(RamState *state, int completionRatio, int version, QString comment);
-
     void currentFilterChanged(QString f);
 
 private:

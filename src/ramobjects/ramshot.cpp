@@ -1,13 +1,14 @@
 #include "ramshot.h"
 
-RamShot::RamShot(QString shortName, QString name, QString sequenceUuid, QString uuid, QObject *parent):
-    RamItem(shortName, name, uuid, parent)
+RamShot::RamShot(QString shortName, RamProject *project, QString name, QString sequenceUuid, QString uuid, QObject *parent):
+    RamItem(shortName, project, name, uuid, parent)
 {
     setObjectType(Shot);
+    setProductionType(RamStep::ShotProduction);
     _sequenceUuid = sequenceUuid;
     _dbi->createShot(_shortName, _name, _sequenceUuid, _uuid);
 
-    this->setObjectName( "RamShot" );
+    this->setObjectName( "RamShot " + _shortName );
 }
 
 RamShot::~RamShot()
@@ -39,6 +40,11 @@ void RamShot::setDuration(const qreal &duration)
     _dirty = true;
     _duration = duration;
     emit changed(this);
+}
+
+RamShot *RamShot::shot(QString uuid)
+{
+    return qobject_cast<RamShot*>( RamObject::obj(uuid) );
 }
 
 void RamShot::update()

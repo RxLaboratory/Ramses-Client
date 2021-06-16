@@ -3,7 +3,7 @@
 #include "ramitem.h"
 
 RamStepStatusHistory::RamStepStatusHistory(RamStep *step, RamItem *item):
-    RamObjectList(step->shortName(), step->name(), step->uuid(), item)
+    RamObjectList(step->shortName(), step->name(), "", item)
 {
     _item = item;
     _step = step;

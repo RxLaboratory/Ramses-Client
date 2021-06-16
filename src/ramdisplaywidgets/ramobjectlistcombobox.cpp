@@ -7,6 +7,14 @@ RamObjectListComboBox::RamObjectListComboBox(QWidget *parent) :
     connectEvents();
 }
 
+RamObjectListComboBox::RamObjectListComboBox(bool isFilterBox, QWidget *parent) :
+    QComboBox(parent)
+{
+    m_isFilterBox = isFilterBox;
+    setList(nullptr);
+    connectEvents();
+}
+
 RamObjectListComboBox::RamObjectListComboBox(RamObjectList *list, QWidget *parent) :
     QComboBox(parent)
 {
@@ -23,7 +31,17 @@ void RamObjectListComboBox::setList(RamObjectList *list)
     QSignalBlocker b(this);
 
     m_list = list;
-    if (!list) return;
+    this->clear();
+
+    if (!list)
+    {
+        if (m_isFilterBox) this->hide();
+        return;
+    }
+    this->show();
+
+    // Add "ALL"
+    if (m_isFilterBox) this->addItem("All " + list->name(), "");
 
     for( int i = 0; i < m_list->count(); i++) newObject(m_list->at(i));
 
@@ -31,7 +49,10 @@ void RamObjectListComboBox::setList(RamObjectList *list)
     m_listConnections << connect(m_list, &RamObjectList::objectRemoved, this, &RamObjectListComboBox::objectRemoved);
 
     this->setCurrentIndex(-1);
+    if (m_isFilterBox) this->setCurrentIndex(0);
+
     emit currentObjectChanged(nullptr);
+    emit currentObjectChanged("");
 
     this->setEnabled(true);
 }
@@ -106,6 +127,7 @@ void RamObjectListComboBox::currentObjectChanged(int i)
 {
     Q_UNUSED(i)
     emit currentObjectChanged( currentObject() );
+    emit currentObjectChanged( currentUuid() );
 }
 
 void RamObjectListComboBox::connectEvents()

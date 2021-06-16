@@ -1,25 +1,26 @@
 #include "ramassetgroup.h"
+#include "ramproject.h"
 
-RamAssetGroup::RamAssetGroup(QString shortName, QString name, bool tplt, QString uuid, QObject *parent) :
+RamAssetGroup::RamAssetGroup(QString shortName, QString name, QString uuid, QObject *parent) :
     RamObjectList(shortName, name, uuid, parent)
 {
     this->setObjectType(AssetGroup);
-    _projectUuid = "";
-    _template = tplt;
+    m_project = nullptr;
+    _template = true;
     if (_template) _dbi->createTemplateAssetGroup(_shortName, _name, _uuid);
 
-    this->setObjectName( "RamAssetGroup" );
+    this->setObjectName( "RamAssetGroup (template) " + _shortName );
 }
 
-RamAssetGroup::RamAssetGroup(QString shortName, QString name, QString projectUuid, QString uuid, QObject *parent):
+RamAssetGroup::RamAssetGroup(QString shortName, RamProject *project, QString name, QString uuid, QObject *parent):
     RamObjectList(shortName, name, uuid, parent)
 {
     this->setObjectType(AssetGroup);
-    _projectUuid = projectUuid;
+    m_project = project;
     _template = false;
-    _dbi->createAssetGroup(_shortName, _name, projectUuid, _uuid);
+    _dbi->createAssetGroup(_shortName, _name, m_project->uuid(), _uuid);
 
-    this->setObjectName( "RamAssetGroup" );
+    this->setObjectName( "RamAssetGroup " + _shortName);
 }
 
 RamAssetGroup::~RamAssetGroup()
@@ -40,32 +41,22 @@ RamAssetGroup *RamAssetGroup::createFromTemplate(QString projectUuid)
     return assetGroup;
 }
 
-QString RamAssetGroup::projectUuid() const
+RamProject *RamAssetGroup::project() const
 {
-    return _projectUuid;
-}
-
-void RamAssetGroup::setProjectUuid(const QString &projectUuid)
-{
-    if (projectUuid == _projectUuid) return;
-    _projectUuid = projectUuid;
-}
-
-RamAsset *RamAssetGroup::asset(QString uuid) const
-{
-    return qobject_cast<RamAsset*>( this->fromUuid(uuid) );
+    return m_project;
 }
 
 void RamAssetGroup::append(RamAsset *asset)
 {
-    asset->setAssetGroupUuid( _uuid );
+    asset->setAssetGroup( this );
     asset->update();
     RamObjectList::append(asset);
 }
 
 void RamAssetGroup::createAsset(QString shortName, QString name)
 {
-    RamAsset *asset = new RamAsset(shortName, name, _uuid);
+    if (_template) return;
+    RamAsset *asset = new RamAsset(shortName, m_project, this, name, "", this);
     append(asset);
 }
 

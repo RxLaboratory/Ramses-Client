@@ -38,7 +38,7 @@ void AssetEditWidget::setAsset(RamAsset *asset)
     folderWidget->setPath(Ramses::instance()->path(asset));
 
     //set asset group
-    assetGroupBox->setObject( _asset->assetGroupUuid() );
+    assetGroupBox->setObject( _asset->assetGroup() );
 
     this->setEnabled(Ramses::instance()->isLead());
 }
@@ -116,13 +116,11 @@ void AssetEditWidget::connectEvents()
 RamAssetGroup *AssetEditWidget::assetGroup()
 {
     if (!_asset) return nullptr;
-    return Ramses::instance()->assetGroup( _asset->assetGroupUuid() );
+    return _asset->assetGroup();
 }
 
 RamProject *AssetEditWidget::project()
 {
     if (!_asset) return nullptr;
-    RamAssetGroup *ag = assetGroup();
-    if (!ag) return nullptr;
-    return Ramses::instance()->project( ag->projectUuid() );
+    return _asset->project();
 }

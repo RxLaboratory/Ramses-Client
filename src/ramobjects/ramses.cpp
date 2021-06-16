@@ -290,7 +290,7 @@ QDir Ramses::dir(RamStep *s) const
 QString Ramses::path(RamAssetGroup *ag) const
 {
     if(ag->isTemplate()) return "";
-    RamProject *p = project( ag->projectUuid() );
+    RamProject *p = ag->project();
     if (!p) return "";
     return createPath( assetsPath(p) + "/" + ag->name() );
 }
@@ -302,9 +302,9 @@ QDir Ramses::dir(RamAssetGroup *ag) const
 
 QString Ramses::path(RamAsset *a) const
 {
-    RamAssetGroup *ag = assetGroup( a->assetGroupUuid() );
+    RamAssetGroup *ag = a->assetGroup();
     if (!ag) return "";
-    RamProject *p = project( ag->projectUuid() );
+    RamProject *p = ag->project();
     if (!p) return "";
     return createPath( path(ag) + "/" + p->shortName() + "_A_" + a->shortName() );
 }
@@ -318,7 +318,7 @@ QString Ramses::path(RamShot *s) const
 {
     RamSequence *seq = sequence(s->sequenceUuid());
     if (!seq) return "";
-    RamProject *p = project( seq->projectUuid() );
+    RamProject *p = seq->project();
     if (!p) return "";
     return createPath( shotsPath(p) + "/" + p->shortName() + "_S_" + s->name() );
 }
@@ -414,7 +414,7 @@ RamObjectList *Ramses::templateAssetGroups() const
 
 RamAssetGroup *Ramses::createTemplateAssetGroup()
 {
-    RamAssetGroup *ag = new RamAssetGroup("NEW", "Asset Group", true);
+    RamAssetGroup *ag = new RamAssetGroup("NEW", "Asset Group", "", this);
     ag->setParent(this);
     _templateAssetGroups->append(ag);
     return ag;

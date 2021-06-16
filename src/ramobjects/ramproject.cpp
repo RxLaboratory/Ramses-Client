@@ -4,8 +4,8 @@ RamProject::RamProject(QString shortName, QString name, QString uuid, QObject *p
     RamObject(shortName, name, uuid, parent)
 {
     setObjectType(Project);
-    _sequences = new RamObjectUberList(this);
-    _assetGroups = new RamObjectUberList(this);
+    _sequences = new RamObjectUberList("Sequences", this);
+    _assetGroups = new RamObjectUberList("Asset Groups", this);
     _pipeline = new RamObjectList(this);
     _steps = new RamObjectList(this);
     _pipeFiles = new RamObjectList(this);
@@ -142,7 +142,7 @@ RamSequence *RamProject::sequence(QString uuid)
 
 void RamProject::createSequence(QString shortName, QString name)
 {
-    RamSequence *seq = new RamSequence(shortName, name, _uuid, "", this);
+    RamSequence *seq = new RamSequence(shortName, this, name, "", this);
     _sequences->append(seq);
 }
 

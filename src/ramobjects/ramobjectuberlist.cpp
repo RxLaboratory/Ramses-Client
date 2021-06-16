@@ -1,5 +1,11 @@
 #include "ramobjectuberlist.h"
 
+RamObjectUberList::RamObjectUberList(QString name, QObject *parent):
+    RamObjectList("", name, "", parent)
+{
+    this->setObjectName( "RamObjectUberList " + name );
+}
+
 RamObjectUberList::RamObjectUberList(QObject *parent):
     RamObjectList(parent)
 {

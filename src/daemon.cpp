@@ -661,7 +661,7 @@ QJsonObject Daemon::assetToJson(RamAsset *asset)
     RamProject *proj = Ramses::instance()->currentProject();
     if (proj)
     {
-        RamAssetGroup *ag = proj->assetGroup( asset->assetGroupUuid() );
+        RamAssetGroup *ag = asset->assetGroup();
         if (ag) a.insert("group", ag->name());
         else a.insert("group", "");
     }

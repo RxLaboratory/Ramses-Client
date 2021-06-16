@@ -4,25 +4,25 @@
 #include "ramshot.h"
 #include "ramobjectlist.h"
 
+class RamProject;
+
 class RamSequence : public RamObjectList
 {
     Q_OBJECT
 public:
-    explicit RamSequence(QString shortName, QString name, QString projectUuid,  QString uuid = "", QObject *parent = nullptr);
+    explicit RamSequence(QString shortName, RamProject *project, QString name,  QString uuid = "", QObject *parent = nullptr);
     ~RamSequence();
 
-    QString projectUuid() const;
-    void setProjectUuid(const QString puuid);
+    RamProject *project() const;
 
     // Shots
-    RamShot *shot(QString uuid) const;
     void append(RamShot *shot);
     void createShot(QString shortName = "NEW", QString name = "Shot");
 
     void update() Q_DECL_OVERRIDE;
 
 private:
-    QString _projectUuid;
+    RamProject *m_project;
 };
 
 #endif // RAMSEQUENCE_H

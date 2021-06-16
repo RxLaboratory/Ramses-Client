@@ -102,7 +102,7 @@ void ObjectListManagerWidget::connectEvents()
 
 QString ObjectListManagerWidget::currentFilter() const
 {
-    return m_listEditWidget->currentFilter();
+    return m_listEditWidget->currentFilterUuid();
 }
 
 void ObjectListManagerWidget::showEvent(QShowEvent *event)

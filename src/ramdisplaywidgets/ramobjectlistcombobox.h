@@ -10,6 +10,7 @@ class RamObjectListComboBox : public QComboBox
     Q_OBJECT
 public:
     RamObjectListComboBox(QWidget *parent = nullptr);
+    RamObjectListComboBox(bool isFilterBox, QWidget *parent = nullptr);
     RamObjectListComboBox(RamObjectList *list, QWidget *parent = nullptr);
 
     void setList(RamObjectList *list);
@@ -21,6 +22,7 @@ public:
 
 signals:
     void currentObjectChanged(RamObject*);
+    void currentObjectChanged(QString);
 
 private slots:
     void newObject(RamObject *obj);
@@ -29,6 +31,7 @@ private slots:
     void currentObjectChanged(int i);
 private:
     RamObjectList *m_list;
+    bool m_isFilterBox = false;
 
     void connectEvents();
 

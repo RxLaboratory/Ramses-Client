@@ -13,6 +13,7 @@ class RamObjectUberList : public RamObjectList
 {
     Q_OBJECT
 public:
+    RamObjectUberList(QString name, QObject *parent = nullptr);
     RamObjectUberList(QObject *parent = nullptr);
 
     // Single object access inside child lists
