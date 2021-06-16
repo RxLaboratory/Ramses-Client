@@ -4,16 +4,14 @@
 #include <QComboBox>
 
 #include "ramses.h"
+#include "ramobjectlistcombobox.h"
 
-class ProjectSelectorWidget : public QComboBox
+class ProjectSelectorWidget : public RamObjectListComboBox
 {
     Q_OBJECT
 public:
     ProjectSelectorWidget(QWidget *parent = nullptr);
 private slots:
-    void newProject(RamObject *obj);
-    void projectRemoved(RamObject *o);
-    void projectChanged(RamObject *o);
     void setCurrentProject(int index);
     void currentProjectChanged(RamProject *p);
 };

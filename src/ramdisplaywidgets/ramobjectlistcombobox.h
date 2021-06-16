@@ -15,6 +15,8 @@ public:
     void setList(RamObjectList *list);
 
     RamObject *currentObject();
+    void setObject(QString uuid);
+    void setObject(RamObject *obj);
 
 signals:
     void currentObjectChanged(RamObject*);
