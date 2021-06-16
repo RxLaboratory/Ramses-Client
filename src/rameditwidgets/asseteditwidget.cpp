@@ -1,12 +1,13 @@
 #include "asseteditwidget.h"
 
-AssetEditWidget::AssetEditWidget(RamAsset *asset, QWidget *parent) :
-    ObjectEditWidget(asset, parent)
+AssetEditWidget::AssetEditWidget(QWidget *parent) :
+    ObjectEditWidget(parent)
 {
     setupUi();
-    connectEvents();
 
-    setObject(asset);
+    changeProject(Ramses::instance()->currentProject());
+
+    connectEvents();
 }
 
 RamAsset *AssetEditWidget::asset() const
@@ -14,9 +15,8 @@ RamAsset *AssetEditWidget::asset() const
     return _asset;
 }
 
-void AssetEditWidget::setObject(RamObject *obj)
+void AssetEditWidget::setAsset(RamAsset *asset)
 {
-    RamAsset *asset = qobject_cast<RamAsset*>(obj);
     this->setEnabled(false);
 
     ObjectEditWidget::setObject(asset);
@@ -29,7 +29,7 @@ void AssetEditWidget::setObject(RamObject *obj)
     //Reset values
     tagsEdit->setText("");
     folderWidget->setPath("");
-    assetGroupBox->clear();
+    assetGroupBox->setCurrentIndex(-1);
     statusHistoryWidget->setItem(asset);
 
     if (!asset) return;
@@ -37,23 +37,16 @@ void AssetEditWidget::setObject(RamObject *obj)
     tagsEdit->setText(asset->tags().join(", "));
     folderWidget->setPath(Ramses::instance()->path(asset));
 
-    // Load asset groups
-    RamProject *proj = project();
-    if (!proj) return;
-
-    for (int i = 0; i < proj->assetGroups()->count(); i++ )
-    {
-        RamAssetGroup *ag = qobject_cast<RamAssetGroup*>( proj->assetGroups()->at(i) );
-        newAssetGroup( ag );
-
-        if (_asset->assetGroupUuid() == ag->uuid())
-            assetGroupBox->setCurrentIndex( assetGroupBox->count() -1 );
-    }
-
-    _objectConnections << connect( proj->assetGroups(), &RamObjectList::objectRemoved, this, &AssetEditWidget::assetGroupRemoved);
-    _objectConnections << connect( proj->assetGroups(), &RamObjectList::objectAdded, this, &AssetEditWidget::newAssetGroup);
+    //set asset group
+    assetGroupBox->setObject( _asset->assetGroupUuid() );
 
     this->setEnabled(Ramses::instance()->isLead());
+}
+
+void AssetEditWidget::setObject(RamObject *obj)
+{
+    RamAsset *asset = qobject_cast<RamAsset*>(obj);
+    setAsset(asset);
 }
 
 void AssetEditWidget::update()
@@ -70,35 +63,24 @@ void AssetEditWidget::update()
     updating = false;
 }
 
+void AssetEditWidget::changeProject(RamProject *project)
+{
+    setAsset(nullptr);
+    if (!project)
+    {
+        assetGroupBox->setList(nullptr);
+        return;
+    }
+    assetGroupBox->setList(project->assetGroups());
+}
+
 void AssetEditWidget::moveAsset()
 {
     if (!_asset) return;
     RamProject *proj = project();
     if (!proj) return;
     if (assetGroupBox->currentIndex() >= 0)
-        proj->moveAssetToGroup(_asset, assetGroupBox->currentData().toString());
-}
-
-void AssetEditWidget::newAssetGroup(RamObject *ag)
-{
-    assetGroupBox->addItem(ag->name(), ag->uuid());
-    connect(ag, &RamAssetGroup::changed, this, &AssetEditWidget::assetGroupChanged);
-}
-
-void AssetEditWidget::assetGroupChanged(RamObject *o)
-{
-    for(int i = 0; i < assetGroupBox->count(); i++)
-    {
-        if (assetGroupBox->itemData(i).toString() == o->uuid()) assetGroupBox->setItemText(i, o->name());
-    }
-}
-
-void AssetEditWidget::assetGroupRemoved(RamObject *o)
-{
-    for(int i = assetGroupBox->count()-1; i >=0; i--)
-    {
-        if (assetGroupBox->itemData(i).toString() == o->uuid()) assetGroupBox->removeItem(i);
-    }
+        proj->moveAssetToGroup(_asset, assetGroupBox->currentUuid() );
 }
 
 void AssetEditWidget::setupUi()
@@ -114,7 +96,7 @@ void AssetEditWidget::setupUi()
     QLabel *assetGroupLabel = new QLabel("Asset group", this);
     mainFormLayout->addWidget(assetGroupLabel, 3, 0);
 
-    assetGroupBox = new QComboBox(this);
+    assetGroupBox = new RamObjectListComboBox(this);
     mainFormLayout->addWidget(assetGroupBox, 3, 1);
 
     folderWidget = new DuQFFolderDisplayWidget(this);
@@ -128,6 +110,7 @@ void AssetEditWidget::connectEvents()
 {
     connect(tagsEdit, SIGNAL(editingFinished()), this, SLOT(update()));
     connect(assetGroupBox, SIGNAL(currentIndexChanged(int)), this, SLOT(moveAsset()));
+    connect(Ramses::instance(), &Ramses::currentProjectChanged, this, &AssetEditWidget::changeProject);
 }
 
 RamAssetGroup *AssetEditWidget::assetGroup()
