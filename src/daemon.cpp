@@ -385,15 +385,39 @@ void Daemon::getPipes(QTcpSocket *client)
         QJsonObject pipe;
         if (!p->inputStep()) continue;
         if (!p->outputStep()) continue;
-        if (!p->fileType()) continue;
         pipe.insert("inputStepShortName", p->inputStep()->shortName());
         pipe.insert("outputStepShortName", p->outputStep()->shortName());
-        QJsonObject fileType;
-        fileType.insert("name", p->fileType()->name());
-        fileType.insert("shortName", p->fileType()->shortName());
-        QJsonArray extensions = QJsonArray::fromStringList( p->fileType()->extensions() );
-        fileType.insert("extensions", extensions);
-        pipe.insert("fileType", fileType);
+        QJsonArray pipeFiles;
+        for( int j =0; j < p->pipeFiles()->count();j++)
+        {
+            QJsonObject pipeFile;
+            RamPipeFile *pf = qobject_cast<RamPipeFile*>( p->pipeFiles()->at(j) );
+            pipeFile.insert("colorSpace", "");
+            pipeFile.insert("shortName", pf->shortName());
+            QJsonObject fileType;
+            RamFileType *ft = pf->fileType();
+            if (ft)
+            {
+                fileType.insert("shortName", ft->shortName());
+                fileType.insert("name", ft->name());
+                QJsonArray extensions;
+                for (int k = 0; k < ft->extensions().count(); k++)
+                {
+                    extensions.append( ft->extensions().at(k));
+                }
+                fileType.insert("extensions", extensions);
+            }
+            else
+            {
+                fileType.insert("shortName", "");
+                fileType.insert("name", "");
+                QJsonArray extensions;
+                fileType.insert("extensions", extensions);
+            }
+            pipeFile.insert("fileType", fileType);
+            pipeFiles.append(pipeFile);
+        }
+
         pipes.append(pipe);
     }
     content.insert("pipes", pipes);

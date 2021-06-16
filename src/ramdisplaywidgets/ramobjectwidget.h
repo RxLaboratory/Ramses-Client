@@ -27,6 +27,7 @@ public:
     void setObject(RamObject *o);
 
     void setEditable(bool editable = true);
+    void setRemovable(bool removable = true);
 
     void setUserEditRole(RamUser::UserRole role);
     RamObjectList editUsers() const;
@@ -51,6 +52,7 @@ protected:
 private slots:
     void objectRemoved();
     void userChanged();
+    void objectChanged();
     void remove();
 
 private:
@@ -67,11 +69,13 @@ private:
     RamObjectList _editUsers;
 
     bool _hasEditWidget = false;
-    RamObject *_object;
+    RamObject *m_object;
     ObjectDockWidget *_dockEditWidget;
     RamUser::UserRole _editRole = RamUser::Admin;
     bool _hasEditRights = false;
     QColor _color;
+
+    QList<QMetaObject::Connection> m_objectConnections;
 };
 
 #endif // RAMOBJECTWIDGET_H

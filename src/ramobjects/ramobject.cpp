@@ -1,5 +1,6 @@
 #include "ramobject.h"
 
+QMap<QString, RamObject*> RamObject::m_existingObjects = QMap<QString, RamObject*>();
 
 RamObject::RamObject(QObject *parent) : QObject(parent)
 {
@@ -9,6 +10,18 @@ RamObject::RamObject(QObject *parent) : QObject(parent)
     _uuid = RamUuid::generateUuidString(_shortName);
     _dbi = DBInterface::instance();
     this->setObjectName( "RamObject" );
+    m_existingObjects[_uuid] = this;
+}
+
+RamObject::RamObject(QString uuid, QObject *parent): QObject(parent)
+{
+    _removing = false;
+    _shortName = "";
+    _name = "";
+    _uuid = uuid;
+    _dbi = DBInterface::instance();
+    this->setObjectName( "RamObject" );
+    m_existingObjects[_uuid] = this;
 }
 
 RamObject::RamObject(QString shortName, QString name, QString uuid, QObject *parent) : QObject(parent)
@@ -20,8 +33,8 @@ RamObject::RamObject(QString shortName, QString name, QString uuid, QObject *par
     if (uuid != "") _uuid = uuid;
     else _uuid = RamUuid::generateUuidString(_shortName);
     _dbi = DBInterface::instance();
-
     this->setObjectName( "RamObject" );
+    m_existingObjects[_uuid] = this;
 }
 
 QString RamObject::shortName() const
@@ -108,6 +121,13 @@ bool RamObject::is(RamObject *other)
 {
     if (!other) return false;
     return other->uuid() == _uuid;
+}
+
+RamObject *RamObject::obj(QString uuid)
+{
+    RamObject *obj = m_existingObjects.value(uuid, nullptr );
+    if (!obj) obj = new RamObject(uuid);
+    return obj;
 }
 
 void RamObject::update()

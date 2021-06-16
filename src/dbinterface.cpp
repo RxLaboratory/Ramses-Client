@@ -570,14 +570,12 @@ void DBInterface::createPipe(QString outputUuid, QString inputUuid, QString uuid
     request(q);
 }
 
-void DBInterface::updatePipe(QString uuid, QString inputUuid, QString outputUuid, QString colorSpaceUuid, QString filetypeUuid)
+void DBInterface::updatePipe(QString uuid, QString inputUuid, QString outputUuid)
 {
     QStringList q("updatePipe");
     q << "uuid=" + uuid;
     q << "inputUuid=" + inputUuid;
     q << "outputUuid=" + outputUuid;
-    q << "colorSpaceUuid=" + colorSpaceUuid;
-    q << "filetypeUuid=" + filetypeUuid;
 
     request(q);
 }
@@ -585,6 +583,55 @@ void DBInterface::updatePipe(QString uuid, QString inputUuid, QString outputUuid
 void DBInterface::removePipe(QString uuid)
 {
     QStringList q("removePipe");
+    q << "uuid=" + uuid;
+
+    request(q);
+}
+
+void DBInterface::assignPipeFile(QString pipeUuid, QString pipeFileUuid)
+{
+    QStringList q("assignPipeFile");
+    q << "pipeUuid=" + pipeUuid;
+    q << "pipeFileUuid=" + pipeFileUuid;
+
+    request(q);
+}
+
+void DBInterface::unassignPipeFile(QString pipeUuid, QString pipeFileUuid)
+{
+    QStringList q("unassignPipeFile");
+    q << "pipeUuid=" + pipeUuid;
+    q << "pipeFileUuid=" + pipeFileUuid;
+
+    request(q);
+}
+
+void DBInterface::createPipeFile(QString shortName, QString projectUuid, QString fileTypeUuid, QString uuid, QString colorSpaceUuid)
+{
+    QStringList q("createPipeFile");
+    q << "shortName=" + shortName;
+    q << "projectUuid=" + projectUuid;
+    q << "fileTypeUuid=" + fileTypeUuid;
+    q << "uuid=" + uuid;
+    q << "colorSpaceUuid=" + colorSpaceUuid;
+
+    request(q);
+}
+
+void DBInterface::updatePipeFile(QString uuid, QString shortName, QString fileTypeUuid, QString colorSpaceUuid)
+{
+    QStringList q("updatePipeFile");
+    q << "shortName=" + shortName;
+    q << "uuid=" + uuid;
+    q << "fileTypeUuid=" + fileTypeUuid;
+    q << "colorSpaceUuid=" + colorSpaceUuid;
+
+    request(q);
+}
+
+void DBInterface::removePipeFile(QString uuid)
+{
+    QStringList q("removePipeFile");
     q << "uuid=" + uuid;
 
     request(q);

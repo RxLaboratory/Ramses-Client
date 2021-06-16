@@ -32,9 +32,9 @@ void RamStep::init()
     _order = 0;
     _users = new RamObjectList();
     _applications = new RamObjectList();
-    connect(_users, &RamObjectList::objectRemoved, this, &RamStep::userAssigned);
+    connect(_users, &RamObjectList::objectAdded, this, &RamStep::userAssigned);
     connect(_users, &RamObjectList::objectRemoved, this, &RamStep::userUnassigned);
-    connect(_applications, &RamObjectList::objectRemoved, this, &RamStep::applicationAssigned);
+    connect(_applications, &RamObjectList::objectAdded, this, &RamStep::applicationAssigned);
     connect(_applications, &RamObjectList::objectRemoved, this, &RamStep::applicationUnassigned);
 
     this->setObjectName( "RamStep" );

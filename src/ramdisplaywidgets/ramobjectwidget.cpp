@@ -23,18 +23,23 @@ RamObjectWidget::~RamObjectWidget()
 
 RamObject *RamObjectWidget::ramObject() const
 {
-    return _object;
+    return m_object;
 }
 
 void RamObjectWidget::setObject(RamObject *o)
 {
-    _object = o;
-    if (o) setTitle(o->name());
-    else
-    {
-        setTitle("");
-        setEnabled(false);
-    }
+    this->setEnabled(false);
+    while(!m_objectConnections.isEmpty()) disconnect(m_objectConnections.takeLast());
+    m_object = o;
+    setTitle("");
+    if (!o) return;
+
+    objectChanged();
+
+    m_objectConnections << connect(m_object, &RamObject::changed, this, &RamObjectWidget::setObject);
+    m_objectConnections << connect(m_object, &RamObject::removed, this, &RamObjectWidget::objectRemoved);
+
+    setEnabled(true);
 }
 
 void RamObjectWidget::setEditable(bool editable)
@@ -43,7 +48,11 @@ void RamObjectWidget::setEditable(bool editable)
     if (!_hasEditRights) editable = false;
     _editable = editable;
     editButton->setVisible( editable );
-    removeButton->setVisible( editable );
+}
+
+void RamObjectWidget::setRemovable(bool removable)
+{
+    removeButton->setVisible( removable );
 }
 
 void RamObjectWidget::setUserEditRole(RamUser::UserRole role)
@@ -115,13 +124,20 @@ void RamObjectWidget::userChanged()
     if ( _editUsers.contains(u) ) _hasEditRights = true;
 }
 
+void RamObjectWidget::objectChanged()
+{
+    QString t = m_object->name();
+    if ( t == "" ) t = m_object->shortName();
+    setTitle(t);
+}
+
 void RamObjectWidget::remove()
 {
     QMessageBox::StandardButton confirm = QMessageBox::question(this,
                                                                 "Confirm deletion",
-                                                                "Are you sure you want to premanently remove " + _object->shortName() + " - " + _object->name() + "?" );
+                                                                "Are you sure you want to premanently remove " + m_object->shortName() + " - " + m_object->name() + "?" );
     if (confirm != QMessageBox::Yes) return;
-    _object->remove();
+    m_object->remove();
 }
 
 void RamObjectWidget::edit()
@@ -166,6 +182,7 @@ void RamObjectWidget::setupUi()
     removeButton->setIcon( QIcon(":/icons/remove") );
     removeButton->setIconSize(QSize(10,10));
     removeButton->setToolButtonStyle(Qt::ToolButtonIconOnly);
+    removeButton->setVisible(false);
     titleLayout->addWidget(removeButton);
 
     layout->addLayout(titleLayout);
@@ -179,9 +196,6 @@ void RamObjectWidget::setupUi()
 
 void RamObjectWidget::connectEvents()
 {
-
-    connect(_object, &RamObject::changed, this, &RamObjectWidget::setObject);
-    connect(_object, &RamObject::removed, this, &RamObjectWidget::objectRemoved);
     connect(Ramses::instance(), &Ramses::loggedIn, this, &RamObjectWidget::userChanged);
     connect(editButton, SIGNAL(clicked()), this, SLOT(edit()));
     connect(removeButton, SIGNAL(clicked()), this, SLOT(remove()));

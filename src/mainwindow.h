@@ -26,6 +26,7 @@
 #include "statelistmanagerwidget.h"
 #include "filetypelistmanagerwidget.h"
 #include "applicationlistmanagerwidget.h"
+#include "pipefilelistmanagerwidget.h"
 #include "dbinterface.h"
 #include "daemon.h"
 #include "ramloader.h"

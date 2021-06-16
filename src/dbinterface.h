@@ -98,8 +98,14 @@ public:
     void unassignFileType(QString applicationUuid, QString fileTypeUuid, QString type = "");
     //Pipes
     void createPipe(QString outputUuid, QString inputUuid, QString uuid);
-    void updatePipe(QString uuid, QString inputUuid, QString outputUuid, QString colorSpaceUuid = "", QString filetypeUuid = "");
+    void updatePipe(QString uuid, QString inputUuid, QString outputUuid);
     void removePipe(QString uuid);
+    void assignPipeFile(QString pipeUuid, QString pipeFileUuid);
+    void unassignPipeFile(QString pipeUuid, QString pipeFileUuid);
+    //PipeFiles
+    void createPipeFile(QString shortName, QString projectUuid, QString fileTypeUuid, QString uuid, QString colorSpaceUuid = "");
+    void updatePipeFile(QString uuid, QString shortName, QString fileTypeUuid = "", QString colorSpaceUuid = "" );
+    void removePipeFile(QString uuid);
     //Status
     void updateStatus(QString uuid, QString stateUuid, QString comment = "", int version = 0, int completionRatio = -1);
     void removeStatus(QString uuid);

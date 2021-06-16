@@ -60,6 +60,7 @@
         <file alias="asset-group">resources/icons/assetgroup_sl.svg</file>
         <file alias="file">resources/icons/file_sl.svg</file>
         <file alias="sequence">resources/icons/sequence.svg</file>
+        <file alias="pipe-files">resources/icons/pipes_sl.svg</file>
     </qresource>
     <qresource prefix="/styles">
         <file alias="default-ramses">resources/style/style-ramses.css</file>

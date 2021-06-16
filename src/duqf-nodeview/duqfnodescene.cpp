@@ -157,7 +157,7 @@ void DuQFNodeScene::autoLayoutNodes(QList<DuQFNode *> nodes)
         }
     }
 
-    x = orphanGroup->boundingRect().width() + m_grid.gridSize();
+    x = orphanGroup->boundingRect().width()*2 + m_grid.gridSize()*3;
     y = 0.0;
     destroyItemGroup(orphanGroup);
 
@@ -203,7 +203,7 @@ void DuQFNodeScene::autoLayoutNodes(QList<DuQFNode *> nodes)
                 nextGeneration.append(childrenNodes);
 
                 // Layout'em
-                x = n->scenePos().x() + n->boundingRect().width() + m_grid.gridSize();
+                x = n->scenePos().x() + n->boundingRect().width()*2 + m_grid.gridSize()*3;
                 y = n->scenePos().y() + n->boundingRect().height();
                 layoutNodesInColumn( childrenNodes , x, y );
 
@@ -383,9 +383,9 @@ void DuQFNodeScene::initiateConnection(QPointF from)
 
 bool DuQFNodeScene::containsAll() const
 {
-    const double testMarginX = sceneRect().width() * m_margin;
-    const double testMarginY = sceneRect().height() * m_margin;
-    const QRectF testRect = sceneRect().adjusted(testMarginX, testMarginY, -testMarginX, -testMarginY);
+    //const double testMarginX = sceneRect().width() * m_margin;
+    //const double testMarginY = sceneRect().height() * m_margin;
+    //const QRectF testRect = sceneRect().adjusted(testMarginX, testMarginY, -testMarginX, -testMarginY);
     /*for (auto && item : items()) {
         if (dynamic_cast<Node *>(item)) {
             if (!testRect.contains(item->sceneBoundingRect())) {

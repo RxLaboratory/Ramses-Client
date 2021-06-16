@@ -2,6 +2,7 @@
 #define RAMPIPE_H
 
 #include "ramstep.h"
+#include "ramobjectlist.h"
 
 class RamPipe : public RamObject
 {
@@ -21,20 +22,21 @@ public:
     QString projectUuid() const;
     void setProjectUuid(const QString &projectUuid);
 
-    RamFileType *fileType() const;
-    void setFileType(RamFileType *fileType);
+    RamObjectList *pipeFiles() const;
 
 public slots:
-    void removeFileType();
+
+private slots:
+    void pipeFileUnassigned(RamObject *ft);
+    void pipeFileAssigned(RamObject *const ft);
 
 private:
     RamStep *_outputStep;
     RamStep *_inputStep;
     QString _projectUuid;
-    RamFileType *_fileType;
+    RamObjectList *m_pipeFiles;
     QMetaObject::Connection _inputConnection;
     QMetaObject::Connection _outputConnection;
-    QMetaObject::Connection _fileTypeConnection;
 };
 
 #endif // RAMPIPE_H

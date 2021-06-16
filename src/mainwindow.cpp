@@ -119,10 +119,12 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     qDebug() << "> Project";
     projectSettingsPage->addPage(new StepListManagerWidget(this), "Steps", QIcon(":/icons/steps"));
     qDebug() << "  > steps ok";
+    projectSettingsPage->addPage(new PipeFileListManagerWidget(this), "Pipe Types", QIcon(":/icons/pipe-files"));
+    qDebug() << "  > pipe types ok";
     projectSettingsPage->addPage(new AssetGroupListManagerWidget(this), "Asset Groups", QIcon(":/icons/asset-groups"));
-    qDebug() << "  > steps ok";
-    projectSettingsPage->addPage(new AssetListManagerWidget(this), "Assets", QIcon(":/icons/assets"));
     qDebug() << "  > asset groups ok";
+    projectSettingsPage->addPage(new AssetListManagerWidget(this), "Assets", QIcon(":/icons/assets"));
+    qDebug() << "  > assets ok";
     projectSettingsPage->addPage(new SequenceListManagerWidget(this), "Sequences", QIcon(":/icons/sequences"));
     qDebug() << "  > sequences ok";
     projectSettingsPage->addPage(new ShotListManagerWidget(this), "Shots", QIcon(":/icons/shots"));

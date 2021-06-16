@@ -65,6 +65,9 @@ private:
     // pipes
     void gotPipes(QJsonArray pipes, RamProject *project);
     QString gotPipe(QJsonObject newP, RamProject *project);
+    // pipefiles
+    void gotPipeFiles(QJsonArray pipeFiles, RamProject *project);
+    QString gotPipeFile(QJsonObject newPF, RamProject *project);
 
     QJsonObject m_data;
 

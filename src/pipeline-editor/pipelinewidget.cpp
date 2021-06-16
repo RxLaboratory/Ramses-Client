@@ -378,8 +378,14 @@ void PipelineWidget::newPipe(RamObject *p)
     DuQFConnection *co = _nodeScene->connectNodes(outputNode, inputNode);
     if (!co) return;
 
-    RamFileType *ft = pipe->fileType();
-    if (ft) co->connector()->setTitle( ft->shortName() );
+    // Title
+    QStringList titleList;
+    for (int i =0; i < pipe->pipeFiles()->count(); i++)
+    {
+        RamPipeFile *pipeFile = qobject_cast<RamPipeFile*>( pipe->pipeFiles()->at(i));
+        titleList << pipeFile->name();
+    }
+    co->connector()->setTitle( titleList.join("\n"));
 
     // Create an edit dockwidget
     ObjectDockWidget *dockWidget = new ObjectDockWidget(pipe);
@@ -391,8 +397,10 @@ void PipelineWidget::newPipe(RamObject *p)
     mw->addObjectDockWidget(dockWidget);
     dockWidget->hide();
 
-    connect(pipe, SIGNAL(changed(RamObject*)), this, SLOT(pipeChanged(RamObject*)));
-    connect(co->connector(), SIGNAL(selected(bool)), dockWidget, SLOT(setVisible(bool)));
+    QList<QMetaObject::Connection> c;
+    c << connect(pipe, SIGNAL(changed(RamObject*)), this, SLOT(pipeChanged(RamObject*)));
+    c << connect(co->connector(), SIGNAL(selected(bool)), dockWidget, SLOT(setVisible(bool)));
+    m_pipeObjectConnections[pipe->uuid()] = c;
 
     _pipeConnections[pipe->uuid()] = co;
 }
@@ -466,14 +474,23 @@ void PipelineWidget::pipeChanged(RamObject *p)
             if (inputOk && outputOk) break;
         }
 
-        RamFileType *ft = pipe->fileType();
-        if (ft) co->connector()->setTitle(ft->shortName());
-        else co->connector()->setTitle("");
+        QStringList titleList;
+        for (int i =0; i < pipe->pipeFiles()->count(); i++)
+        {
+            RamPipeFile *pipeFile = qobject_cast<RamPipeFile*>( pipe->pipeFiles()->at(i));
+            titleList << pipeFile->name();
+        }
+        co->connector()->setTitle( titleList.join("\n"));
     }
 }
 
 void PipelineWidget::pipeRemoved(RamObject *p)
 {
+    if (m_pipeObjectConnections.contains(p->uuid()))
+    {
+        QList<QMetaObject::Connection> c = m_pipeObjectConnections.take(p->uuid());
+        while(!c.isEmpty()) disconnect(c.takeLast());
+    }
     if (_pipeConnections.contains(p->uuid()))
     {
         //remove connection

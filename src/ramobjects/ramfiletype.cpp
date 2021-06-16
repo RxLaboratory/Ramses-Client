@@ -47,6 +47,11 @@ void RamFileType::update()
     _dbi->updateFileType(_uuid, _shortName, _name, _extensions, _previewable);
 }
 
+RamFileType *RamFileType::fileType(QString uuid)
+{
+    return qobject_cast<RamFileType*>( RamObject::obj(uuid) );
+}
+
 bool RamFileType::isPreviewable() const
 {
     return _previewable;

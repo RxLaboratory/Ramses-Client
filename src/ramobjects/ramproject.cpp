@@ -8,6 +8,7 @@ RamProject::RamProject(QString shortName, QString name, QString uuid, QObject *p
     _assetGroups = new RamObjectUberList(this);
     _pipeline = new RamObjectList(this);
     _steps = new RamObjectList(this);
+    _pipeFiles = new RamObjectList(this);
     _dbi->createProject(_shortName, _name, _uuid);
 
     this->setObjectName( "RamProject" );
@@ -141,7 +142,7 @@ RamSequence *RamProject::sequence(QString uuid)
 
 void RamProject::createSequence(QString shortName, QString name)
 {
-    RamSequence *seq = new RamSequence(shortName, name, _uuid);
+    RamSequence *seq = new RamSequence(shortName, name, _uuid, "", this);
     _sequences->append(seq);
 }
 
@@ -181,6 +182,18 @@ RamPipe *RamProject::createPipe(RamStep *output, RamStep *input)
     RamPipe *p = new RamPipe(output, input);
     _pipeline->append(p);
     return p;
+}
+
+RamObjectList *RamProject::pipeFiles()
+{
+    return _pipeFiles;
+}
+
+RamPipeFile *RamProject::createPipeFile(QString shortName)
+{
+    RamPipeFile *pf = new RamPipeFile(shortName, _uuid, this);
+    _pipeFiles->append(pf);
+    return pf;
 }
 
 RamObjectList *RamProject::steps() const

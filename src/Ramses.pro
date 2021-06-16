@@ -39,6 +39,8 @@ SOURCES += \
     ramdisplaywidgets/ramapplicationwidget.cpp \
     ramdisplaywidgets/ramassetgroupwidget.cpp \
     ramdisplaywidgets/ramfiletypewidget.cpp \
+    ramdisplaywidgets/ramobjectlistcombobox.cpp \
+    ramdisplaywidgets/rampipefilewidget.cpp \
     ramdisplaywidgets/ramprojectwidget.cpp \
     ramdisplaywidgets/ramsequencewidget.cpp \
     ramdisplaywidgets/ramstatewidget.cpp \
@@ -54,6 +56,8 @@ SOURCES += \
     rameditwidgets/filetypelistmanagerwidget.cpp \
     rameditwidgets/objectlisteditwidget.cpp \
     rameditwidgets/objectlistmanagerwidget.cpp \
+    rameditwidgets/pipefileeditwidget.cpp \
+    rameditwidgets/pipefilelistmanagerwidget.cpp \
     rameditwidgets/projectlistmanagerwidget.cpp \
     rameditwidgets/sequencelistmanagerwidget.cpp \
     rameditwidgets/shotlistmanagerwidget.cpp \
@@ -64,6 +68,7 @@ SOURCES += \
     rameditwidgets/userlistmanagerwidget.cpp \
     ramloader.cpp \
     ramobjects/ramobjectuberlist.cpp \
+    ramobjects/rampipefile.cpp \
     ramobjects/ramstatelist.cpp \
     ramobjects/ramstepstatushistory.cpp \
     settingswidgets/daemonsettingswidget.cpp \
@@ -103,7 +108,6 @@ SOURCES += \
     duqf-widgets/toolbarspacer.cpp \
     rameditwidgets/filetypeeditwidget.cpp \
     smallwidgets/frameratewidget.cpp \
-    rameditwidgets/listmanagerwidget.cpp \
     settingswidgets/localsettingswidget.cpp \
     loginpage.cpp \
     main.cpp \
@@ -166,6 +170,8 @@ HEADERS += \
     ramdisplaywidgets/ramapplicationwidget.h \
     ramdisplaywidgets/ramassetgroupwidget.h \
     ramdisplaywidgets/ramfiletypewidget.h \
+    ramdisplaywidgets/ramobjectlistcombobox.h \
+    ramdisplaywidgets/rampipefilewidget.h \
     ramdisplaywidgets/ramprojectwidget.h \
     ramdisplaywidgets/ramsequencewidget.h \
     ramdisplaywidgets/ramstatewidget.h \
@@ -181,6 +187,8 @@ HEADERS += \
     rameditwidgets/filetypelistmanagerwidget.h \
     rameditwidgets/objectlisteditwidget.h \
     rameditwidgets/objectlistmanagerwidget.h \
+    rameditwidgets/pipefileeditwidget.h \
+    rameditwidgets/pipefilelistmanagerwidget.h \
     rameditwidgets/projectlistmanagerwidget.h \
     rameditwidgets/sequencelistmanagerwidget.h \
     rameditwidgets/shotlistmanagerwidget.h \
@@ -191,6 +199,7 @@ HEADERS += \
     rameditwidgets/userlistmanagerwidget.h \
     ramloader.h \
     ramobjects/ramobjectuberlist.h \
+    ramobjects/rampipefile.h \
     ramobjects/ramstatelist.h \
     ramobjects/ramstepstatushistory.h \
     settingswidgets/daemonsettingswidget.h \
@@ -231,7 +240,6 @@ HEADERS += \
     duqf-widgets/toolbarspacer.h \
     rameditwidgets/filetypeeditwidget.h \
     smallwidgets/frameratewidget.h \
-    rameditwidgets/listmanagerwidget.h \
     settingswidgets/localsettingswidget.h \
     loginpage.h \
     mainwindow.h \
@@ -289,7 +297,6 @@ FORMS += \
     duqf-widgets/appearancesettingswidget.ui \
     duqf-widgets/duqffolderselectorwidget.ui \
     duqf-widgets/toolbarspacer.ui \
-    rameditwidgets/listmanagerwidget.ui \
     settingswidgets/localsettingswidget.ui \
     loginpage.ui \
     mainwindow.ui \

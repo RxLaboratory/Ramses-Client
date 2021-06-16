@@ -11,6 +11,7 @@
 #include "ramfiletypewidget.h"
 #include "ramapplicationwidget.h"
 #include "ramsequencewidget.h"
+#include "rampipefilewidget.h"
 
 RamObjectListWidget::RamObjectListWidget(QWidget *parent):
         QTableWidget(parent)
@@ -393,6 +394,13 @@ void RamObjectListWidget::objectAssigned(RamObject *obj)
     {
         RamApplication *a = dynamic_cast<RamApplication*>(obj);
         if (a) ow = new RamApplicationWidget(a, this);
+        else ow = new RamObjectWidget(obj, this);
+        break;
+    }
+    case RamObject::PipeFile:
+    {
+        RamPipeFile *pf = dynamic_cast<RamPipeFile*>(obj);
+        if (pf) ow = new RamPipeFileWidget(pf, this);
         else ow = new RamObjectWidget(obj, this);
         break;
     }

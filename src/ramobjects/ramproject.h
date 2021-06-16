@@ -9,6 +9,7 @@
 #include "dbisuspender.h"
 #include "ramobjectlist.h"
 #include "ramobjectuberlist.h"
+#include "rampipefile.h"
 
 class RamProject : public RamObject
 {
@@ -60,6 +61,8 @@ public:
     RamObjectList *pipeline();
     RamPipe *pipe(RamStep *outputStep, RamStep *inputStep);
     RamPipe *createPipe(RamStep *output, RamStep *input);
+    RamObjectList *pipeFiles();
+    RamPipeFile *createPipeFile(QString shortName = "NEW");
 
     void update();
 
@@ -73,6 +76,7 @@ private:
     RamObjectUberList *_sequences;
     RamObjectUberList *_assetGroups;
     RamObjectList *_pipeline;
+    RamObjectList *_pipeFiles;
 };
 
 #endif // RAMPROJECT_H

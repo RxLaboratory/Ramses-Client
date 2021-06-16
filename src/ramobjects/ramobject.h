@@ -1,10 +1,11 @@
 #ifndef RAMOBJECT_H
 #define RAMOBJECT_H
 
+#include <QObject>
+#include <QMap>
+
 #include "dbinterface.h"
 #include "ramuuid.h"
-
-#include <QObject>
 
 class RamObject : public QObject
 {
@@ -16,6 +17,7 @@ public:
                     FileType,
                     Generic,
                     Pipe,
+                    PipeFile,
                     Project,
                     Sequence,
                     Shot,
@@ -26,7 +28,8 @@ public:
     Q_ENUM( ObjectType )
 
     explicit RamObject(QObject *parent = nullptr);
-    explicit RamObject(QString shortName, QString name = "", QString uuid = "", QObject *parent = nullptr);
+    explicit RamObject(QString uuid, QObject *parent = nullptr);
+    explicit RamObject(QString shortName, QString name, QString uuid = "", QObject *parent = nullptr);
 
     QString shortName() const;
     void setShortName(const QString &shortName);
@@ -44,6 +47,8 @@ public:
     void setOrder(int order);
 
     bool is(RamObject *other);
+
+    static RamObject *obj(QString uuid);
 
 public slots:
     virtual void update();
@@ -66,8 +71,11 @@ protected:
     bool _orderChanged = false;
     bool _removing;
 
+    static QMap<QString, RamObject*> m_existingObjects;
+
 private:
     RamObject::ObjectType _objectType = Generic;
+
 };
 
 #endif // RAMOBJECT_H

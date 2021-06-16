@@ -5,11 +5,14 @@ RamPipe::RamPipe(RamStep *output, RamStep *input, QString uuid, QObject *parent)
 {
     _outputStep = output;
     _inputStep = input;
-    _fileType = nullptr;
+    m_pipeFiles = new RamObjectList();
 
     _inputConnection = connect( _inputStep, &RamStep::removed, this, &RamObject::remove);
     _outputConnection = connect( _outputStep, &RamStep::removed, this, &RamObject::remove);
     _dbi->createPipe(output->uuid(), input->uuid(), _uuid);
+
+    connect(m_pipeFiles, &RamObjectList::objectAdded, this, &RamPipe::pipeFileAssigned);
+    connect(m_pipeFiles, &RamObjectList::objectRemoved, this, &RamPipe::pipeFileUnassigned);
 
     this->setObjectName( "RamPipe" );
 }
@@ -23,9 +26,7 @@ void RamPipe::update()
 {
     if (!_dirty) return;
     RamObject::update();
-    QString fileTypeUuid = "";
-    if (_fileType) fileTypeUuid = _fileType->uuid();
-    _dbi->updatePipe(_uuid, _inputStep->uuid(), _outputStep->uuid(), "", fileTypeUuid);
+    _dbi->updatePipe(_uuid, _inputStep->uuid(), _outputStep->uuid());
 }
 
 RamStep *RamPipe::outputStep() const
@@ -71,26 +72,21 @@ void RamPipe::setProjectUuid(const QString &projectUuid)
     _projectUuid = projectUuid;
 }
 
-RamFileType *RamPipe::fileType() const
+RamObjectList *RamPipe::pipeFiles() const
 {
-    return _fileType;
+    return m_pipeFiles;
 }
 
-void RamPipe::setFileType(RamFileType *fileType)
+void RamPipe::pipeFileUnassigned(RamObject *ft)
 {
-    if (!fileType && !_fileType) return;
-    if (fileType && fileType->is(_fileType) ) return;
-    _dirty = true;
-    disconnect(_fileTypeConnection);
-    _fileType = fileType;
-    if (fileType) _fileTypeConnection = connect(_fileType, &RamFileType::removed, this, &RamPipe::removeFileType);
+    _dbi->unassignPipeFile( _uuid, ft->uuid());
     emit changed(this);
 }
 
-void RamPipe::removeFileType()
+void RamPipe::pipeFileAssigned(RamObject * const ft)
 {
-    disconnect(_fileTypeConnection);
-    _fileType = nullptr;
+    if (!ft) return;
+    _dbi->assignPipeFile(_uuid, ft->uuid());
     emit changed(this);
 }
 

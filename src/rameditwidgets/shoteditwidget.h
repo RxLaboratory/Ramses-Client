@@ -8,6 +8,7 @@
 #include "objecteditwidget.h"
 #include "ramses.h"
 #include "statushistorywidget.h"
+#include "ramobjectlistcombobox.h"
 #include "duqf-widgets/duqffolderdisplaywidget.h"
 
 class ShotEditWidget : public ObjectEditWidget

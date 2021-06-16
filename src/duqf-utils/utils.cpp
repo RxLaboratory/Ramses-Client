@@ -211,7 +211,7 @@ void FileUtils::openInExplorer(QString path)
 #ifdef Q_OS_LINUX
     QString p = fileInfo.canonicalFilePath();
     if (fileInfo.isFile()) p = fileInfo.dir().canonicalPath();
-    QProcess::execute("xdg-open \"" + p + "\"");
+    QProcess::execute("xdg-open", QStringList(p));
 #endif
 }
 

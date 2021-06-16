@@ -56,6 +56,7 @@ private:
     QMenu *stepMenu;
     QAction *stepMenuSeparator;
     QList<QMetaObject::Connection> _projectConnections;
+    QMap<QString, QList<QMetaObject::Connection>> m_pipeObjectConnections;
     QMap<QString,DuQFConnection*> _pipeConnections;
 };
 

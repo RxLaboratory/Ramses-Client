@@ -2,8 +2,10 @@
 #define PIPEEDITWIDGET_H
 
 #include <QComboBox>
+#include <QMenu>
 
 #include "objecteditwidget.h"
+#include "objectlisteditwidget.h"
 #include "ramses.h"
 
 /**
@@ -13,23 +15,40 @@ class PipeEditWidget : public ObjectEditWidget
 {
 public:
     PipeEditWidget(RamPipe *pipe = nullptr, QWidget *parent = nullptr);
-    void setPipe(RamPipe *pipe);
+
+public slots:
+    void setObject(RamObject *pipeObj) Q_DECL_OVERRIDE;
+
+protected slots:
+    void update() Q_DECL_OVERRIDE;
 
 private slots:
-    void update() Q_DECL_OVERRIDE;
-    void pipeChanged(RamObject *o);
     void appChanged();
+    // PipeFiles
+    void assignPipeFile();
+    void pipeFileAssigned(RamObject *pipeFileObj);
+    void pipeFileUnassigned(RamObject *pipeFileObj);
+    void newPipeFile(RamObject *pipeFileObj);
+    void pipeFileChanged(RamObject *pipeFileObj);
+    void pipeFileRemoved(RamObject *pipeFileObj);
+    void createPipeFile();
+
 
 private:
     RamPipe *_pipe = nullptr;
 
     void setupUi();
     void connectEvents();
-    void updateFileTypes();
+    void populateMenus(RamProject *project);
 
-    QComboBox *fromBox;
-    QComboBox *toBox;
-    QComboBox *fileTypeBox;
+    QComboBox *m_fromBox;
+    QComboBox *m_toBox;
+    ObjectListEditWidget *m_pipeFileList;
+    QMenu *m_assignPipeFileMenu;
+    QAction *m_newPipeFileAction;
+
+    QMap<QString, QList<QMetaObject::Connection>> m_pipeFileConnections;
+    QList<QMetaObject::Connection> m_projectConnections;
 };
 
 #endif // PIPEEDITWIDGET_H

@@ -19,6 +19,7 @@ public:
 
     void update();
 
+    static RamFileType *fileType(QString uuid);
 
 private:
     QStringList _extensions;

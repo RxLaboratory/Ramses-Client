@@ -209,6 +209,7 @@ QString RamLoader::gotProject(QJsonObject newP, bool init)
                 gotSteps( newP.value("steps").toArray(), existingProject);
                 gotAssetGroups( newP.value("assetGroups").toArray(), existingProject);
                 gotSequences( newP.value("sequences").toArray(), existingProject);
+                gotPipeFiles( newP.value("pipeFiles").toArray(), existingProject );
                 gotPipes( newP.value("pipes").toArray(), existingProject);
             }
 
@@ -235,6 +236,7 @@ QString RamLoader::gotProject(QJsonObject newP, bool init)
         gotSteps( newP.value("steps").toArray(), project);
         gotAssetGroups( newP.value("assetGroups").toArray(), project);
         gotSequences( newP.value("sequences").toArray(), project);
+        gotPipeFiles( newP.value("pipeFiles").toArray(), project );
         gotPipes( newP.value("pipes").toArray(), project);
     }
 
@@ -1082,8 +1084,12 @@ QString RamLoader::gotPipe(QJsonObject newP, RamProject *project)
             RamObject *outputStepObj = project->steps()->fromUuid( newP.value("outputStepUuid").toString( ) );
             RamStep *outputStep = qobject_cast<RamStep*>( outputStepObj );
             if (outputStep) existingPipe->setOutputStep( outputStep );
-            RamObject *ft = m_ram->fileTypes()->fromUuid( newP.value("filetypeUuid").toString()) ;
-            existingPipe->setFileType( qobject_cast<RamFileType*>( ft ) );
+            QJsonArray newPFs = newP.value("pipeFiles").toArray();
+            for (int j = 0; j < newPFs.count(); j++)
+            {
+                RamPipeFile *pf = RamPipeFile::pipeFile( newPFs.at(j).toString() );
+                if (pf) existingPipe->pipeFiles()->append(pf);
+            }
             return uuid;
         }
     }
@@ -1101,11 +1107,65 @@ QString RamLoader::gotPipe(QJsonObject newP, RamProject *project)
                     newP.value("uuid").toString()
                     );
 
-        RamObject *ft = m_ram->fileTypes()->fromUuid( newP.value("filetypeUuid").toString()) ;
-        if (ft) pipe->setFileType( qobject_cast<RamFileType*>( ft ) );
+        QJsonArray newPFs = newP.value("pipeFiles").toArray();
+        for (int j = 0; j < newPFs.count(); j++)
+        {
+            RamPipeFile *pf = RamPipeFile::pipeFile( newPFs.at(j).toString() );
+            if (pf) pipe->pipeFiles()->append(pf);
+        }
 
         projectPipeline->append( pipe );
     }
+
+    return uuid;
+}
+
+void RamLoader::gotPipeFiles(QJsonArray pipeFiles, RamProject *project)
+{
+    DBISuspender s;
+
+    m_pm->addToMaximum(pipeFiles.count());
+    m_pm->setText("Loading pipe files...");
+    qDebug() << "Loading pipe files";
+
+    QStringList uuids;
+    // Update pipes
+    for (int j = 0; j < pipeFiles.count(); j++)
+    {
+        m_pm->increment();
+        uuids << gotPipeFile( pipeFiles.at(j).toObject(), project );
+    }
+
+    // Remove deleted pipes
+    RamObjectList *projectPipeFiles = project->pipeFiles();
+    for (int i = projectPipeFiles->count() - 1; i >= 0; i--)
+    {
+        RamObject *existingPipeFile = projectPipeFiles->at(i);
+        if (!uuids.contains(existingPipeFile->uuid()))
+        {
+            existingPipeFile->remove();
+        }
+    }
+}
+
+QString RamLoader::gotPipeFile(QJsonObject newPF, RamProject* project)
+{
+    DBISuspender s;
+
+    QString uuid = newPF.value("uuid").toString();
+
+    // Get existing one if any, otherwise create it
+    RamPipeFile *pipeFile = RamPipeFile::pipeFile(uuid);
+    if (!pipeFile) pipeFile = new RamPipeFile(uuid, this);
+
+    pipeFile->setShortName( newPF.value("shortName").toString() );
+
+    pipeFile->setProjectUuid(newPF.value("projectUuid").toString());
+
+    RamFileType *ft = RamFileType::fileType( newPF.value("fileTypeUuid").toString() );
+    if (ft) pipeFile->setFileType(ft);
+
+    project->pipeFiles()->append( pipeFile );
 
     return uuid;
 }
