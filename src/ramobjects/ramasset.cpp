@@ -68,7 +68,7 @@ void RamAsset::update()
 {
     if (!_dirty) return;
     RamObject::update();
-    _dbi->updateAsset(_uuid, _shortName, _name, _assetGroupUuid, _tags.join(','));
+    _dbi->updateAsset(_uuid, _shortName, _name, m_assetGroup->uuid(), _tags.join(','));
 }
 
 RamAsset *RamAsset::asset( QString uuid )

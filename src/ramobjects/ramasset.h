@@ -28,8 +28,7 @@ public:
 
 private:
     QStringList _tags;
-    QString _assetGroupUuid;
-    RamProject *m_project;
+    // Containers
     RamAssetGroup *m_assetGroup;
 };
 
