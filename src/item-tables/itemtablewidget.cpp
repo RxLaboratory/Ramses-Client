@@ -420,10 +420,7 @@ void ItemTableWidget::setStatusWidget(RamItem *item, RamStep *step)
             int col = addStep(step);
             if (col < 0) return;
 
-            // Remove current status widget
-            QWidget *csw = this->cellWidget(row, col);
-            if (csw) delete csw;
-            // Add the new one
+            // Add the new status widget (the previous one is deleted)
             RamStatus *status = item->status(step);
             if (!status) status =  generateDefaultStatus(item, step);
             if (status)

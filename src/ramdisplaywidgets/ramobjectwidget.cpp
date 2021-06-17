@@ -321,8 +321,9 @@ void RamObjectWidget::select()
 void RamObjectWidget::resizeEvent(QResizeEvent *event)
 {
     if (!this->isVisible()) return;
+
     QWidget::resizeEvent(event);
-    /*// If size is too small, just hide content
+    // If size is too small, just hide content
     int h = event->size().height();
 
     secondaryContentWidget->hide();
