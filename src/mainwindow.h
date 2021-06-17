@@ -128,15 +128,10 @@ private slots:
     void userProfile();
     void revealUserFolder();
     void admin(bool show = true);
-    void closeAdmin();
     void projectSettings(bool show = true);
-    void closeProjectSettings();
     void pipeline(bool show = true);
-    void closePipeline();
     void shots(bool show = true);
-    void closeShots();
     void assets(bool show = true);
-    void closeAssets();
     void networkButton_clicked();
     void loggedIn();
     void loggedOut();

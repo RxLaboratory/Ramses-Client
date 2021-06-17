@@ -163,10 +163,11 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     connect(actionPipeline, SIGNAL(triggered(bool)), this, SLOT(pipeline(bool)));
     connect(actionShots,SIGNAL(triggered(bool)), this, SLOT(shots(bool)));
     connect(actionAssets,SIGNAL(triggered(bool)), this, SLOT(assets(bool)));
-    connect(pipelineEditor, SIGNAL(closeRequested()), this, SLOT(closePipeline()));
-    //connect(assetsTable, SIGNAL(closeRequested()), this, SLOT(closeAssets()));
-    connect(adminPage, SIGNAL(closeRequested()), this, SLOT(closeAdmin()));
-    connect(projectSettingsPage, SIGNAL(closeRequested()), this, SLOT(closeProjectSettings()));
+    connect(pipelineEditor, SIGNAL(closeRequested()), this, SLOT(home()));
+    //connect(assetsTable, SIGNAL(closeRequested()), this, SLOT(home()));
+    //connect(shotsTable, SIGNAL(closeRequested()), this, SLOT(home()));
+    connect(adminPage, SIGNAL(closeRequested()), this, SLOT(home()));
+    connect(projectSettingsPage, SIGNAL(closeRequested()), this, SLOT(home()));
     connect(networkButton,SIGNAL(clicked()),this, SLOT(networkButton_clicked()));
     connect(refreshButton, SIGNAL(clicked()), Ramses::instance(), SLOT(refresh()));
     connect(mainStack,SIGNAL(currentChanged(int)), this, SLOT(pageChanged(int)));
@@ -547,20 +548,10 @@ void MainWindow::admin(bool show)
     else home();
 }
 
-void MainWindow::closeAdmin()
-{
-    admin(false);
-}
-
 void MainWindow::projectSettings(bool show)
 {
     if (show) mainStack->setCurrentIndex(4);
     else home();
-}
-
-void MainWindow::closeProjectSettings()
-{
-    projectSettings(false);
 }
 
 void MainWindow::pipeline(bool show)
@@ -569,31 +560,16 @@ void MainWindow::pipeline(bool show)
     else home();
 }
 
-void MainWindow::closePipeline()
-{
-    pipeline(false);
-}
-
 void MainWindow::shots(bool show)
 {
     if (show) mainStack->setCurrentIndex(7);
     else home();
 }
 
-void MainWindow::closeShots()
-{
-    shots(false);
-}
-
 void MainWindow::assets(bool show)
 {
     if (show) mainStack->setCurrentIndex(6);
     else home();
-}
-
-void MainWindow::closeAssets()
-{
-    assets(false);
 }
 
 void MainWindow::networkButton_clicked()
