@@ -6,6 +6,7 @@ ObjectListManagerWidget(
     "Steps",
     parent )
 {
+    this->setContainingType(RamObject::Step);
     changeProject(Ramses::instance()->currentProject());
     connect(Ramses::instance(), &Ramses::currentProjectChanged, this, &StepListManagerWidget::changeProject);
 }

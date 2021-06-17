@@ -25,7 +25,9 @@ public:
                     State,
                     Status,
                     Step,
-                    User};
+                    User,
+                    ObjectList,
+                    ObjectUberList};
     Q_ENUM( ObjectType )
 
     explicit RamObject(QObject *parent = nullptr);
@@ -39,7 +41,6 @@ public:
     void setName(const QString &name);
 
     QString uuid() const;
-    void setUuid(const QString &uuid);
 
     RamObject::ObjectType objectType() const;
     void setObjectType(ObjectType type);

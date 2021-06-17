@@ -30,6 +30,11 @@ ObjectListManagerWidget::ObjectListManagerWidget(RamObjectUberList *objectList, 
     setList(objectList);
 }
 
+void ObjectListManagerWidget::setContainingType(RamObject::ObjectType type)
+{
+    m_listEditWidget->setContainingType(type);
+}
+
 void ObjectListManagerWidget::setList(RamObjectList *objectList)
 {
     while  (m_listConnection.count() > 0 ) disconnect( m_listConnection.takeLast() );

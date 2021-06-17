@@ -7,7 +7,7 @@ FileTypeListManagerWidget::FileTypeListManagerWidget(QWidget *parent) :
         "File types",
         parent )
 {
-
+    this->setContainingType(RamObject::FileType);
 }
 
 void FileTypeListManagerWidget::createObject()

@@ -6,6 +6,7 @@ PipeFileListManagerWidget::PipeFileListManagerWidget(QWidget *parent):
         "Pipe Types",
         parent)
 {
+    this->setContainingType(RamObject::PipeFile);
     changeProject(Ramses::instance()->currentProject());
     connect(Ramses::instance(), &Ramses::currentProjectChanged, this, &PipeFileListManagerWidget::changeProject);
 }

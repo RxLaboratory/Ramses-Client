@@ -1,8 +1,9 @@
 #include "ramassetgroup.h"
 #include "ramproject.h"
+#include "ramses.h"
 
-RamAssetGroup::RamAssetGroup(QString shortName, QString name, QString uuid, QObject *parent) :
-    RamObjectList(shortName, name, uuid, parent)
+RamAssetGroup::RamAssetGroup(QString shortName, QString name, QString uuid) :
+    RamObjectList(shortName, name, uuid, Ramses::instance())
 {
     this->setObjectType(AssetGroup);
     m_project = nullptr;
@@ -12,8 +13,8 @@ RamAssetGroup::RamAssetGroup(QString shortName, QString name, QString uuid, QObj
     this->setObjectName( "RamAssetGroup (template) " + _shortName );
 }
 
-RamAssetGroup::RamAssetGroup(QString shortName, RamProject *project, QString name, QString uuid, QObject *parent):
-    RamObjectList(shortName, name, uuid, parent)
+RamAssetGroup::RamAssetGroup(QString shortName, RamProject *project, QString name, QString uuid):
+    RamObjectList(shortName, name, uuid, project)
 {
     this->setObjectType(AssetGroup);
     m_project = project;
@@ -76,8 +77,7 @@ void RamAssetGroup::update()
 void RamAssetGroup::remove()
 {
     if (_removing) return;
-    _removing = true;
-    for(int i = m_objectsList.count(); i >= 0 ; i--)
+    for(int i = m_objectsList.count() -1; i >= 0 ; i--)
     {
         m_objectsList.at(i)->remove();
     }

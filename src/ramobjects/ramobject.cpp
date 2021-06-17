@@ -68,13 +68,6 @@ QString RamObject::uuid() const
     return _uuid;
 }
 
-void RamObject::setUuid(const QString &uuid)
-{
-    if (uuid == _uuid) return;
-    _uuid = uuid;
-    emit changed(this);
-}
-
 void RamObject::remove()
 {
     qDebug().noquote() << "Removing: " + _name + " (uuid: " + _uuid + ")";

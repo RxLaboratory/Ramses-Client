@@ -49,8 +49,7 @@ void RamSequence::update()
 void RamSequence::remove()
 {
     if (_removing) return;
-    _removing = true;
-    for(int i = m_objectsList.count(); i >= 0 ; i--)
+    for(int i = m_objectsList.count()-1; i >= 0 ; i--)
     {
         m_objectsList.at(i)->remove();
     }

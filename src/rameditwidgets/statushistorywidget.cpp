@@ -75,6 +75,7 @@ void StatusHistoryWidget::setupUi()
     splitter->setOrientation(Qt::Vertical);
 
     statusList = new ObjectListEditWidget(true, splitter);
+    statusList->setContainingType(RamObject::Status);
     statusList->setTitle("Status");
     statusList->setEditable(false);
     statusList->setSearchable(false);

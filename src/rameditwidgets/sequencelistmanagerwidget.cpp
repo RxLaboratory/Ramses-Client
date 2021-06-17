@@ -6,6 +6,7 @@ SequenceListManagerWidget::SequenceListManagerWidget(QWidget *parent):
         "Sequences",
         parent)
 {
+    this->setContainingType(RamObject::Sequence);
     changeProject(Ramses::instance()->currentProject());
     connect(Ramses::instance(), &Ramses::currentProjectChanged, this, &SequenceListManagerWidget::changeProject);
 }

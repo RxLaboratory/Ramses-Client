@@ -7,7 +7,7 @@ UserListManagerWidget::UserListManagerWidget(QWidget *parent) :
         "Users",
         parent )
 {
-
+    this->setContainingType(RamObject::User);
 }
 
 void UserListManagerWidget::createObject()

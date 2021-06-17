@@ -111,7 +111,7 @@ RamObjectUberList *RamProject::assetGroups() const
 
 void RamProject::createAssetGroup(QString shortName, QString name)
 {
-    RamAssetGroup *assetGroup = new RamAssetGroup(shortName, name, _uuid);
+    RamAssetGroup *assetGroup = new RamAssetGroup(shortName, this, name);
     _assetGroups->append( assetGroup );
 }
 
@@ -204,7 +204,7 @@ void RamProject::assignStep(RamStep *templateStep)
 
 void RamProject::createStep(QString shortName, QString name)
 {
-    RamStep *step = new RamStep(shortName, name, _uuid);
+    RamStep *step = new RamStep(shortName, name, this);
     _steps->append(step);
 }
 

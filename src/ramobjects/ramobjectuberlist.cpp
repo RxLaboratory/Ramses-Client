@@ -4,12 +4,14 @@ RamObjectUberList::RamObjectUberList(QString name, QObject *parent):
     RamObjectList("", name, "", parent)
 {
     this->setObjectName( "RamObjectUberList " + name );
+    this->setObjectType(ObjectUberList);
 }
 
 RamObjectUberList::RamObjectUberList(QObject *parent):
     RamObjectList(parent)
 {
     this->setObjectName( "RamObjectUberList" );
+    this->setObjectType(ObjectUberList);
 }
 
 RamObject *RamObjectUberList::objectFromUuid(QString uuid)
@@ -103,7 +105,6 @@ RamObject *RamObjectUberList::takeObject(QString uuid)
 
 RamObject *RamObjectUberList::takeAt(int i)
 {
-    QSignalBlocker b(this);
     RamObject *obj = m_objectsList.at(i);
     if (m_connections.contains(obj->uuid()))
     {
@@ -115,7 +116,6 @@ RamObject *RamObjectUberList::takeAt(int i)
 
 void RamObjectUberList::addObject(RamObject *obj, int index)
 {
-    QSignalBlocker b(this);
     RamObjectList::addObject(obj, index);
     QList<QMetaObject::Connection> c;
     RamObjectList *list = qobject_cast<RamObjectList*>( obj );

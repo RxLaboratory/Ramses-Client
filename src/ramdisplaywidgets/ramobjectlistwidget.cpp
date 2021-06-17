@@ -55,6 +55,11 @@ RamObjectListWidget::RamObjectListWidget(RamObjectUberList *list, bool editableO
     setList(list);
 }
 
+void RamObjectListWidget::setContainingType(RamObject::ObjectType type)
+{
+    m_containingType = type;
+}
+
 void RamObjectListWidget::setList(RamObjectList *list)
 {
     clear();
@@ -322,6 +327,9 @@ void RamObjectListWidget::objectAssigned(RamObject *obj)
     RamObject::ObjectType type = obj->objectType();
     RamObjectWidget *ow;
 
+    if (m_containingType != RamObject::Generic)
+        if (type != m_containingType) return;
+
     switch (type)
     {
     case RamObject::Asset:
@@ -469,6 +477,8 @@ void RamObjectListWidget::connectEvents()
 
 void RamObjectListWidget::addLists()
 {
+    if(m_listsToAdd.isEmpty()) return;
+
     QSignalBlocker b(this);
 
     ProcessManager *pm = ProcessManager::instance();
@@ -478,14 +488,18 @@ void RamObjectListWidget::addLists()
     while (!m_listsToAdd.isEmpty())
     {
         RamObjectList *list = m_listsToAdd.takeFirst();
+
         pm->increment();
         pm->addToMaximum(list->count());
         pm->setText("Loading " + list->name() + "...");
+        qDebug().noquote() << "RamObjectListWidget Loading list: " + list->name();
+
         m_lists << list;
 
         for (int i = 0; i < list->count(); i++)
         {
             pm->increment();
+            qDebug().noquote() << "> Adding " + list->at(i)->shortName();
             objectAssigned(list->at(i));
         }
 

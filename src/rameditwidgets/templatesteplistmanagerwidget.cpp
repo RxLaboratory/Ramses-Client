@@ -7,7 +7,7 @@ TemplateStepListManagerWidget::TemplateStepListManagerWidget(QWidget *parent) :
         "Template steps",
         parent )
 {
-
+    this->setContainingType(RamObject::Step);
 }
 
 void TemplateStepListManagerWidget::createObject()

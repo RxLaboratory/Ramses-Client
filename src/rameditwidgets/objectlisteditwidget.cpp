@@ -25,6 +25,11 @@ ObjectListEditWidget::ObjectListEditWidget(RamObjectUberList *objectList, bool e
     setList(objectList);
 }
 
+void ObjectListEditWidget::setContainingType(RamObject::ObjectType type)
+{
+    m_list->setContainingType(type);
+}
+
 void ObjectListEditWidget::setEditMode(const RamObjectListWidget::EditMode &editMode)
 {
     m_list->setEditMode(editMode);

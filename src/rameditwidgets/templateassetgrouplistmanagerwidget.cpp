@@ -7,7 +7,7 @@ TemplateAssetGroupListManagerWidget::TemplateAssetGroupListManagerWidget(QWidget
         "Template asset groups",
         parent )
 {
-
+    this->setContainingType(RamObject::AssetGroup);
 }
 
 void TemplateAssetGroupListManagerWidget::createObject()

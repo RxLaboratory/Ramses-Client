@@ -14,8 +14,10 @@ public:
     enum Type{ PreProduction, AssetProduction, ShotProduction, PostProduction };
     Q_ENUM(Type)
 
-    explicit RamStep(QString shortName, QString name = "", QString uuid = "", QObject *parent = nullptr);
-    explicit RamStep(QString shortName, QString name, RamProject *project,  QString uuid = "", QObject *parent = nullptr);
+    // Template (no project set)
+    explicit RamStep(QString shortName, QString name = "", QString uuid = "");
+    // Actual step
+    explicit RamStep(QString shortName, QString name, RamProject *project,  QString uuid = "");
     ~RamStep();
     void init();
 

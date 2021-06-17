@@ -10,8 +10,10 @@ class RamAssetGroup : public RamObjectList
 {
     Q_OBJECT
 public:
-    explicit RamAssetGroup(QString shortName, QString name = "",  QString uuid = "", QObject *parent = nullptr);
-    explicit RamAssetGroup(QString shortName, RamProject *project, QString name,  QString uuid = "", QObject *parent = nullptr);
+    // Template (no project set)
+    explicit RamAssetGroup(QString shortName, QString name = "",  QString uuid = "" );
+    // Actual group
+    explicit RamAssetGroup(QString shortName, RamProject *project, QString name,  QString uuid = "");
     ~RamAssetGroup();
 
     bool isTemplate() const;

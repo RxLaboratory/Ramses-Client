@@ -380,7 +380,7 @@ void Ramses::projectReady(QString uuid)
 
     _currentProject = currentProject;
     _userSettings->setValue("currentProject", _currentProject->uuid() );
-
+    qDebug() << "Setting current project to: " + _currentProject->shortName();
     emit currentProjectChanged(_currentProject);
 }
 
@@ -409,7 +409,7 @@ RamObjectList *Ramses::templateAssetGroups() const
 
 RamAssetGroup *Ramses::createTemplateAssetGroup()
 {
-    RamAssetGroup *ag = new RamAssetGroup("NEW", "Asset Group", "", this);
+    RamAssetGroup *ag = new RamAssetGroup("NEW", "Asset Group", "");
     ag->setParent(this);
     _templateAssetGroups->append(ag);
     return ag;

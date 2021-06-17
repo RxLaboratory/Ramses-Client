@@ -29,6 +29,7 @@ public:
     explicit ObjectListEditWidget(bool editableObjects = false, QWidget *parent = nullptr);
     explicit ObjectListEditWidget(RamObjectList *objectList, bool editableObjects = false, QWidget *parent = nullptr);
     explicit ObjectListEditWidget(RamObjectUberList *objectList, bool editableObjects = false, QWidget *parent = nullptr);
+    void setContainingType(RamObject::ObjectType type);
     void setEditMode(const RamObjectListWidget::EditMode &editMode);
     RamObjectList *list() const;
     void clear();

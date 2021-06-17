@@ -20,6 +20,7 @@ public:
     explicit RamObjectListWidget(RamObjectUberList *list, QWidget *parent = nullptr);
     explicit RamObjectListWidget(RamObjectList *list, bool editableObjects, QWidget *parent = nullptr);
     explicit RamObjectListWidget(RamObjectUberList *list, bool editableObjects, QWidget *parent = nullptr);
+    void setContainingType(RamObject::ObjectType type);
     void setEditMode(const EditMode &editMode);
     void setList(RamObjectList *list);
     void addList(RamObjectList *list);
@@ -63,6 +64,8 @@ private:
     QList<QMetaObject::Connection> m_listConnections;
     QMap<QString, QMetaObject::Connection> m_objectConnections;
     RamObjectUberList *m_uberList = nullptr;
+
+    RamObject::ObjectType m_containingType = RamObject::Generic;
 
     QList<RamObjectList *> m_listsToAdd;
     void addLists();

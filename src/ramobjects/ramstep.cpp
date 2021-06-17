@@ -1,8 +1,9 @@
 #include "ramstep.h"
 #include "ramproject.h"
+#include "ramses.h"
 
-RamStep::RamStep(QString shortName, QString name, QString uuid, QObject *parent) :
-    RamObject(shortName, name, uuid, parent)
+RamStep::RamStep(QString shortName, QString name, QString uuid) :
+    RamObject(shortName, name, uuid, Ramses::instance())
 {
     setObjectType(Step);
     m_project = nullptr;
@@ -11,8 +12,8 @@ RamStep::RamStep(QString shortName, QString name, QString uuid, QObject *parent)
     init();
 }
 
-RamStep::RamStep(QString shortName, QString name, RamProject *project, QString uuid, QObject *parent):
-    RamObject(shortName, name, uuid, parent)
+RamStep::RamStep(QString shortName, QString name, RamProject *project, QString uuid):
+    RamObject(shortName, name, uuid, project)
 {
     setObjectType(Step);
     m_project = project;
