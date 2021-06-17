@@ -158,13 +158,12 @@ void ObjectListEditWidget::setupUi(bool editableObjects)
     buttonsLayout->setContentsMargins(0,3,0,0);
 
     m_title = new QLabel(this);
+    m_title->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
     buttonsLayout->addWidget(m_title);
 
     m_filterBox = new RamObjectListComboBox(true, this);
     m_filterBox->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
     buttonsLayout->addWidget(m_filterBox);
-
-    buttonsLayout->addStretch();
 
     m_removeButton = new QToolButton(this);
     m_removeButton->setIcon(QIcon(":/icons/remove"));
