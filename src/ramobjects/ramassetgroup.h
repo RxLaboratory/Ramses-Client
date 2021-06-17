@@ -23,7 +23,9 @@ public:
     void append(RamAsset *asset);
     void createAsset(QString shortName = "NEW", QString name = "Asset");
 
+public slots:
     void update() Q_DECL_OVERRIDE;
+    void remove() Q_DECL_OVERRIDE;
 
 private:
     bool _template;

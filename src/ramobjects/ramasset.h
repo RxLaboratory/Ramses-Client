@@ -10,7 +10,7 @@ class RamAsset : public RamItem
 {
     Q_OBJECT
 public:
-    explicit RamAsset(QString shortName, RamProject *project, RamAssetGroup *assetGroup, QString name = "",  QString uuid = "", QObject *parent = nullptr);
+    explicit RamAsset(QString shortName, RamProject *project, RamAssetGroup *assetGroup, QString name = "",  QString uuid = "");
     ~RamAsset();
 
     RamAssetGroup *assetGroup() const;

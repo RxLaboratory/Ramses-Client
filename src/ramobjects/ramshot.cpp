@@ -1,12 +1,13 @@
 #include "ramshot.h"
+#include "ramsequence.h"
 
-RamShot::RamShot(QString shortName, RamProject *project, QString name, QString sequenceUuid, QString uuid, QObject *parent):
-    RamItem(shortName, project, name, uuid, parent)
+RamShot::RamShot(QString shortName, RamProject *project, RamSequence *sequence, QString name, QString uuid):
+    RamItem(shortName, project, name, uuid, sequence)
 {
     setObjectType(Shot);
     setProductionType(RamStep::ShotProduction);
-    _sequenceUuid = sequenceUuid;
-    _dbi->createShot(_shortName, _name, _sequenceUuid, _uuid);
+    m_sequence = sequence;
+    _dbi->createShot(_shortName, _name, m_sequence->uuid(), _uuid);
 
     this->setObjectName( "RamShot " + _shortName );
 }
@@ -16,29 +17,30 @@ RamShot::~RamShot()
     _dbi->removeShot(_uuid);
 }
 
-QString RamShot::sequenceUuid() const
+RamSequence *RamShot::sequence() const
 {
-    return _sequenceUuid;
+    return m_sequence;
 }
 
-void RamShot::setSequenceUuid(const QString &sequenceUuid)
+void RamShot::setSequence(RamSequence *sequence)
 {
-    if (sequenceUuid == _sequenceUuid) return;
+    if (m_sequence->is(sequence)) return;
     _dirty = true;
-    _sequenceUuid = sequenceUuid;
+    setParent(sequence);
+    m_sequence = sequence;
     emit changed(this);
 }
 
 qreal RamShot::duration() const
 {
-    return _duration;
+    return m_duration;
 }
 
 void RamShot::setDuration(const qreal &duration)
 {
-    if (_duration == duration) return;
+    if (m_duration == duration) return;
     _dirty = true;
-    _duration = duration;
+    m_duration = duration;
     emit changed(this);
 }
 
@@ -51,7 +53,7 @@ void RamShot::update()
 {
     if(!_dirty) return;
     RamObject::update();
-    _dbi->updateShot(_uuid, _shortName, _name, _sequenceUuid, _duration);
+    _dbi->updateShot(_uuid, _shortName, _name, m_sequence->uuid(), m_duration);
     if (_orderChanged)
     {
         _dbi->moveShot(_uuid, _order);

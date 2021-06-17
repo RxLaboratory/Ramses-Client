@@ -56,7 +56,7 @@ void RamAssetGroup::append(RamAsset *asset)
 void RamAssetGroup::createAsset(QString shortName, QString name)
 {
     if (_template) return;
-    RamAsset *asset = new RamAsset(shortName, m_project, this, name, "", this);
+    RamAsset *asset = new RamAsset(shortName, m_project, this, name, "");
     append(asset);
 }
 
@@ -66,4 +66,15 @@ void RamAssetGroup::update()
     RamObject::update();
     if (_template) _dbi->updateTemplateAssetGroup(_uuid, _shortName, _name);
     else _dbi->updateAssetGroup(_uuid, _shortName, _name);
+}
+
+void RamAssetGroup::remove()
+{
+    if (_removing) return;
+    _removing = true;
+    for(int i = m_objectsList.count(); i >= 0 ; i--)
+    {
+        m_objectsList.at(i)->remove();
+    }
+    RamObjectList::remove();
 }

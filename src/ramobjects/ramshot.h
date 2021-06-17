@@ -4,16 +4,17 @@
 #include "ramitem.h"
 
 class RamProject;
+class RamSequence;
 
 class RamShot : public RamItem
 {
     Q_OBJECT
 public:
-    explicit RamShot(QString shortName, RamProject *project, QString name = "", QString sequenceUuid = "", QString uuid = "", QObject *parent = nullptr);
+    explicit RamShot(QString shortName, RamProject *project, RamSequence *sequence, QString name = "", QString uuid = "");
     ~RamShot();
 
-    QString sequenceUuid() const;
-    void setSequenceUuid(const QString &sequenceUuid);
+    RamSequence *sequence() const;
+    void setSequence(RamSequence *sequence);
 
     qreal duration() const;
     void setDuration(const qreal &duration);
@@ -24,8 +25,8 @@ public slots:
     void update();
 
 private:
-    QString _sequenceUuid;
-    qreal _duration = 0.0;
+    RamSequence *m_sequence;
+    qreal m_duration = 0.0;
 };
 
 #endif // RAMSHOT_H

@@ -942,8 +942,8 @@ QString RamLoader::gotShot(QJsonObject newS, RamSequence *sequence, RamProject *
     RamShot *shot = new RamShot(
                 newS.value("shortName").toString(),
                 project,
+                sequence,
                 newS.value("name").toString(),
-                newS.value("sequenceUuid").toString(),
                 newS.value("uuid").toString()
                 );
 

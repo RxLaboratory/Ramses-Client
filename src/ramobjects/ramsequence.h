@@ -19,7 +19,9 @@ public:
     void append(RamShot *shot);
     void createShot(QString shortName = "NEW", QString name = "Shot");
 
+public slots:
     void update() Q_DECL_OVERRIDE;
+    void remove() Q_DECL_OVERRIDE;
 
 private:
     RamProject *m_project;

@@ -1,8 +1,8 @@
 #include "ramasset.h"
 #include "ramassetgroup.h"
 
-RamAsset::RamAsset(QString shortName, RamProject *project, RamAssetGroup *assetGroup, QString name, QString uuid, QObject *parent) :
-    RamItem(shortName, project, name, uuid, parent)
+RamAsset::RamAsset(QString shortName, RamProject *project, RamAssetGroup *assetGroup, QString name, QString uuid) :
+    RamItem(shortName, project, name, uuid, assetGroup)
 {
     setObjectType(Asset);
     setProductionType(RamStep::AssetProduction);
@@ -26,6 +26,7 @@ void RamAsset::setAssetGroup(RamAssetGroup *assetGroup)
 {
     if (m_assetGroup->is(assetGroup)) return;
     _dirty = true;
+    this->setParent(assetGroup);
     m_assetGroup = assetGroup;
 }
 

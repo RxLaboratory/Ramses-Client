@@ -23,14 +23,14 @@ RamProject *RamSequence::project() const
 
 void RamSequence::append(RamShot *shot)
 {
-    shot->setSequenceUuid( _uuid );
+    shot->setSequence( this );
     shot->update();
     RamObjectList::append(shot);
 }
 
 void RamSequence::createShot(QString shortName, QString name)
 {
-    RamShot *shot = new RamShot(shortName, m_project, name, _uuid);
+    RamShot *shot = new RamShot(shortName, m_project, this, name, "");
     append(shot);
 }
 
@@ -39,4 +39,15 @@ void RamSequence::update()
     if(!_dirty) return;
     RamObject::update();
     _dbi->updateSequence(_uuid, _shortName, _name);
+}
+
+void RamSequence::remove()
+{
+    if (_removing) return;
+    _removing = true;
+    for(int i = m_objectsList.count(); i >= 0 ; i--)
+    {
+        m_objectsList.at(i)->remove();
+    }
+    RamObjectList::remove();
 }

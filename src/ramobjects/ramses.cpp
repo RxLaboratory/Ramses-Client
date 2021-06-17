@@ -316,7 +316,7 @@ QDir Ramses::dir(RamAsset *a) const
 
 QString Ramses::path(RamShot *s) const
 {
-    RamSequence *seq = sequence(s->sequenceUuid());
+    RamSequence *seq = s->sequence();
     if (!seq) return "";
     RamProject *p = seq->project();
     if (!p) return "";

@@ -36,7 +36,7 @@ void ShotEditWidget::setShot(RamShot *shot)
     folderWidget->setPath(Ramses::instance()->path(shot));
 
     // Set sequence
-    sequencesBox->setObject( _shot->sequenceUuid() );
+    sequencesBox->setObject( _shot->sequence() );
 
     this->setEnabled(Ramses::instance()->isLead());
 }
@@ -144,7 +144,7 @@ void ShotEditWidget::connectEvents()
 RamSequence *ShotEditWidget::sequence()
 {
     if (!_shot) return nullptr;
-    return Ramses::instance()->sequence( _shot->sequenceUuid() );
+    return _shot->sequence();
 }
 
 RamProject *ShotEditWidget::project()

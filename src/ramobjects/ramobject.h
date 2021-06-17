@@ -53,7 +53,7 @@ public:
 
 public slots:
     virtual void update();
-    void remove();
+    virtual void remove();
 
 signals:
     void changed(RamObject *);
