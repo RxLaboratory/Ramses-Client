@@ -17,6 +17,11 @@ class ItemTable : public QWidget
 public:
     explicit ItemTable(QString title= "Items Table", QWidget *parent = nullptr);
 
+public slots:
+    void selectAllSteps();
+    void selectUserSteps();
+    void deselectSteps();
+
 signals:
     void closeRequested();
 
@@ -30,11 +35,20 @@ protected:
 protected slots:
     virtual void projectChanged(RamProject *project) {Q_UNUSED(project)};
 
+private slots:
+    void stepAdded(RamStep *step);
+    void stepRemoved(RamObject *stepObj);
+
+    void stepActionToggled(bool checked);
+
 private:
     void setupUi(QString title);
     void connectEvents();
 
     QMenu *m_stepMenu;
+    QAction *m_actionSelectAllSteps ;
+    QAction *m_actionSelectNoSteps ;
+    QAction *m_actionSelectMySteps ;
 };
 
 #endif // ITEMTABLE_H

@@ -49,8 +49,6 @@ void ItemTableWidget::clear()
 
     m_uberList = nullptr;
 
-    QSignalBlocker b(this);
-
     while ( !m_listConnections.isEmpty() ) disconnect( m_listConnections.takeLast() );
     m_lists.clear();
 
@@ -73,8 +71,6 @@ void ItemTableWidget::clear()
 
 void ItemTableWidget::addList(RamObjectList *list)
 {
-    QSignalBlocker b(this);
-
     if (!list) return;
     m_lists << list;
 
@@ -84,6 +80,17 @@ void ItemTableWidget::addList(RamObjectList *list)
 
     m_listConnections << connect(list, &RamObjectList::objectRemoved, this, &ItemTableWidget::objectUnassigned);
     m_listConnections << connect(list, &RamObjectList::objectAdded, this, &ItemTableWidget::objectAssigned);//*/
+}
+
+void ItemTableWidget::setStepVisible(QString stepUuid, bool visible)
+{
+    for (int i =1; i<this->columnCount();i++)
+    {
+        if ( this->horizontalHeaderItem(i)->data(Qt::UserRole).toString() == stepUuid)
+        {
+            this->setColumnHidden(i, !visible);
+        }
+    }
 }
 
 void ItemTableWidget::mouseMoveEvent(QMouseEvent *event)
@@ -148,6 +155,11 @@ int ItemTableWidget::addStep(RamStep *step)
     c << connect(step, &RamObject::changed, this, &ItemTableWidget::stepChanged);
     m_stepConnections[step->uuid()] = c;
 
+    qDebug() << "=========================";
+    qDebug() << step;
+    emit newStep(step);
+    qDebug() << "=========================";
+
     return col;
 }
 
@@ -163,6 +175,7 @@ void ItemTableWidget::removeStep(RamObject *stepObj)
         if (colUuid == stepObj->uuid())
         {
             this->removeColumn(i);
+            emit stepRemoved(stepObj);
             return;
         }
     }

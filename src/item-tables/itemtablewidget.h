@@ -17,6 +17,11 @@ public:
     void clear();
     void setSortable(bool sortable);
     void addList(RamObjectList *list);
+    void setStepVisible(QString stepUuid, bool visible);
+
+signals:
+    void newStep(RamStep *);
+    void stepRemoved(RamObject *);
 
 protected slots:
     virtual void mouseMoveEvent(QMouseEvent *event) Q_DECL_OVERRIDE;

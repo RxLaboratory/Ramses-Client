@@ -141,7 +141,6 @@ void ObjectListEditWidget::scrollToBottom()
 void ObjectListEditWidget::filterChanged(QString filter)
 {
     m_list->filter( filter );
-    qDebug() << filter;
     emit currentFilterChanged( filter );
 }
 
