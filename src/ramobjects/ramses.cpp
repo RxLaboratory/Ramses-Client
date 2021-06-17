@@ -561,6 +561,11 @@ RamUser *Ramses::ramUser()
 {
     if (_ramUser) return _ramUser;
     _ramUser = qobject_cast<RamUser*>( _users->fromName("Ramses") );
+    if (!_ramUser)
+    {
+        _ramUser = new RamUser("Ramses", "Ramses Daemon", "", this);
+        _ramUser->updatePassword("", RamUuid::generateUuidString("Ramses"));
+    }
     return _ramUser;
 }
 
