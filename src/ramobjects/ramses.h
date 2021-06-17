@@ -171,9 +171,9 @@ private:
 
     // States
     RamStateList *_states;
-    RamState *_noState;
-    RamState *_okState;
-    RamState *_todoState;
+    RamState *_noState = nullptr;
+    RamState *_okState = nullptr;
+    RamState *_todoState = nullptr;
 
     // File types
     RamObjectList *_fileTypes;

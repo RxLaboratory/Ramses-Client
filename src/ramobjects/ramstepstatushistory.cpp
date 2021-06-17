@@ -5,6 +5,7 @@
 RamStepStatusHistory::RamStepStatusHistory(RamStep *step, RamItem *item):
     RamObjectList(step->shortName(), step->name(), "", item)
 {
+    this->setObjectType(StepStatusHistory);
     _item = item;
     _step = step;
 

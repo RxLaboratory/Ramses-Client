@@ -17,7 +17,7 @@ void AssetTable::projectChanged( RamProject *project )
     }
     else
     {
-        m_table->setList( project->assetGroups(), project->steps() );
+        m_table->setList( project->assetGroups(), RamStep::AssetProduction );
     }
 
     this->setEnabled(true);

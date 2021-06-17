@@ -17,7 +17,7 @@ void ShotTable::projectChanged( RamProject *project )
     }
     else
     {
-        m_table->setList( project->sequences(), project->steps(), RamStep::ShotProduction );
+        m_table->setList( project->sequences(), RamStep::ShotProduction );
     }
 
     this->setEnabled(true);

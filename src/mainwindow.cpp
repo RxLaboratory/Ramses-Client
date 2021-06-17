@@ -135,11 +135,11 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     mainStack->addWidget(pipelineEditor);
     qDebug() << "> Pipeline ready";//*/
 
-    /*AssetTable *assetsTable = new AssetTable("Assets Table", this);
+    AssetTable *assetsTable = new AssetTable("Assets Table", this);
     mainStack->addWidget(assetsTable);
     qDebug() << "> Assets table ready";//*/
 
-    /*ShotTable *shotsTable = new ShotTable("Shots Table", this);
+    ShotTable *shotsTable = new ShotTable("Shots Table", this);
     mainStack->addWidget(shotsTable);
     qDebug() << "> Shots table ready";//*/
 
@@ -164,8 +164,8 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     connect(actionShots,SIGNAL(triggered(bool)), this, SLOT(shots(bool)));
     connect(actionAssets,SIGNAL(triggered(bool)), this, SLOT(assets(bool)));
     connect(pipelineEditor, SIGNAL(closeRequested()), this, SLOT(home()));
-    //connect(assetsTable, SIGNAL(closeRequested()), this, SLOT(home()));
-    //connect(shotsTable, SIGNAL(closeRequested()), this, SLOT(home()));
+    connect(assetsTable, SIGNAL(closeRequested()), this, SLOT(home()));
+    connect(shotsTable, SIGNAL(closeRequested()), this, SLOT(home()));
     connect(adminPage, SIGNAL(closeRequested()), this, SLOT(home()));
     connect(projectSettingsPage, SIGNAL(closeRequested()), this, SLOT(home()));
     connect(networkButton,SIGNAL(clicked()),this, SLOT(networkButton_clicked()));

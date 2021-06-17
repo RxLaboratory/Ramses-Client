@@ -198,7 +198,7 @@ void Daemon::getCurrentStatus(QString shortName, QString name, QString type, QSt
 
         RamStepStatusHistory *st = qobject_cast<RamStepStatusHistory*>( o );
 
-        RamStatus *s = item->status( st->uuid() );
+        RamStatus *s = item->status( st->step() );
         if (s)
         {
             content = statusToJson(s);

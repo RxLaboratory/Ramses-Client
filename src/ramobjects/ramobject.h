@@ -27,7 +27,8 @@ public:
                     Step,
                     User,
                     ObjectList,
-                    ObjectUberList};
+                    ObjectUberList,
+                    StepStatusHistory};
     Q_ENUM( ObjectType )
 
     explicit RamObject(QObject *parent = nullptr);

@@ -21,14 +21,15 @@ public:
     void addStatus(RamStatus *status);
     RamObjectUberList *statusHistory() const;
     RamStepStatusHistory *statusHistory(RamStep *step) const;
-    RamStepStatusHistory *statusHistory(QString stepUuid) const;
-    RamStatus *status(QString stepUuid) const;
+    RamStepStatusHistory *statusHistory(RamObject *stepObj) const;
+    RamStatus *status(RamStep* step) const;
 
     RamProject *project() const;
 
     RamStep::Type productionType() const;
 
     static RamItem *item(QString uuid);
+
 
 protected:
     void setProductionType(RamStep::Type newProductionType);

@@ -33,7 +33,11 @@ void StatusHistoryWidget::setItem(RamItem *item)
     statusList->setList( item->statusHistory() );
 
     // Set the current status as template for the status editor
-    statusWidget->setStatus( item->status( statusList->currentFilterUuid() ));
+    RamStep *step = RamStep::step(statusList->currentFilterUuid());
+    if (step)
+        statusWidget->setStatus( item->status( step ));
+    else
+        statusWidget->setStatus( nullptr );
 
     this->setEnabled(true);
 }

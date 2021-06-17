@@ -76,6 +76,7 @@ RamObject *RamObjectList::at(int i) const
 
 RamObject *RamObjectList::last() const
 {
+    if (m_objectsList.count() == 0) return nullptr;
     return m_objectsList.last();
 }
 

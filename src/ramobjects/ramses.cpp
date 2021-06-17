@@ -504,6 +504,11 @@ RamState *Ramses::noState()
 {
     if(_noState) return _noState;
     _noState =  qobject_cast<RamState*>( _states->fromName("NO") );
+    if (!_noState)
+    {
+        _noState = new RamState("NO", "Nothing to do", "", this);
+        _states->append(_noState);
+    }
     return _noState;
 }
 

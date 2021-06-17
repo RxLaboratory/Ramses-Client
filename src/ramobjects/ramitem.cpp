@@ -31,15 +31,8 @@ void RamItem::addStatus(RamStatus *status)
     RamStep *step = status->step();
     if (!step) return;
 
-    for (int i = 0; i < _statusHistory->count(); i++)
-    {
-        RamStepStatusHistory *history = qobject_cast<RamStepStatusHistory*>( _statusHistory->at(i) );
-        if (history->step()->is(step))
-        {
-            history->append( status );
-            break;
-        }
-    }
+    RamStepStatusHistory *history = statusHistory(step);
+    if (history) history->append( status );
 }
 
 RamObjectUberList *RamItem::statusHistory() const
@@ -49,19 +42,27 @@ RamObjectUberList *RamItem::statusHistory() const
 
 RamStepStatusHistory *RamItem::statusHistory(RamStep *step) const
 {
-    return statusHistory( step->uuid() );
+    for (int i = 0; i < _statusHistory->count(); i++)
+    {
+        RamStepStatusHistory *history = qobject_cast<RamStepStatusHistory*>( _statusHistory->at(i) );
+        if (history->step()->is(step))
+        {
+            return history;
+        }
+    }
+    return nullptr;
 }
 
-RamStepStatusHistory *RamItem::statusHistory(QString stepUuid) const
+RamStepStatusHistory *RamItem::statusHistory(RamObject *stepObj) const
 {
-    RamStepStatusHistory *history = qobject_cast<RamStepStatusHistory*>( _statusHistory->fromUuid( stepUuid ) );
-
-    return history;
+    RamStep *step = qobject_cast<RamStep*>(stepObj);
+    if (!step) return nullptr;
+    return statusHistory(step);
 }
 
-RamStatus *RamItem::status(QString stepUuid) const
+RamStatus *RamItem::status(RamStep *step) const
 {
-    RamStepStatusHistory *history = qobject_cast<RamStepStatusHistory*>( _statusHistory->fromUuid( stepUuid ) );
+    RamStepStatusHistory *history = statusHistory(step);
     if (history)
     {
         history->sort();
@@ -82,15 +83,8 @@ void RamItem::newStep(RamObject *obj)
 
 void RamItem::stepRemoved(RamObject *step)
 {
-    for (int i = 0; i < _statusHistory->count(); i++)
-    {
-        RamStepStatusHistory *history = qobject_cast<RamStepStatusHistory*>( _statusHistory->at(i) );
-        if (history->step()->is(step))
-        {
-            history->remove();
-            break;
-        }
-    }
+    RamStepStatusHistory *history = this->statusHistory(step);
+    if (history) history->remove();
 }
 
 RamStep::Type RamItem::productionType() const

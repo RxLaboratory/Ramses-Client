@@ -5,6 +5,10 @@
 RamStatus::RamStatus(RamUser *user, RamState *state, RamStep *step, RamItem *item):
     RamObject("", "", "", item)
 {
+    qDebug() << user;
+    qDebug() << state;
+    qDebug() << step;
+    qDebug() << item;
     _user = user;
     _state = state;
     _step = step;
