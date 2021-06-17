@@ -1,7 +1,7 @@
 #include "ramstatelist.h"
 
 RamStateList::RamStateList(QObject *parent):
-    RamObjectList(parent)
+    RamObjectList("STATES", "States", "", parent)
 {
     this->setObjectName( "RamStateList" );
 }

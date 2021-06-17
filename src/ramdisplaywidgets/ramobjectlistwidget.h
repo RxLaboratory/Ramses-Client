@@ -6,6 +6,7 @@
 
 #include "ramobjectlist.h"
 #include "ramobjectwidget.h"
+#include "processmanager.h"
 
 class RamObjectListWidget : public QTableWidget
 {
@@ -41,6 +42,7 @@ signals:
 
 protected:
     void resizeEvent(QResizeEvent *event) Q_DECL_OVERRIDE;
+    void showEvent(QShowEvent *event) Q_DECL_OVERRIDE;
 
 private slots:
     void itemSelected(QTableWidgetItem *current, QTableWidgetItem *previous);
@@ -61,6 +63,9 @@ private:
     QList<QMetaObject::Connection> m_listConnections;
     QMap<QString, QMetaObject::Connection> m_objectConnections;
     RamObjectUberList *m_uberList = nullptr;
+
+    QList<RamObjectList *> m_listsToAdd;
+    void addLists();
 };
 
 #endif // RAMOBJECTLISTWIDGET_H

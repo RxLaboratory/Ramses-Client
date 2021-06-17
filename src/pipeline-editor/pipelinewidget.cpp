@@ -11,11 +11,11 @@ PipelineWidget::PipelineWidget(QWidget *parent) :
     QMainWindow *mw = GuiUtils::appMainWindow();
     mw->addToolBarBreak(Qt::TopToolBarArea);
 
-    titleBar = new TitleBar("Pipeline Editor",false, mw);
-    titleBar->showReinitButton(false);
-    mw->addToolBar(Qt::TopToolBarArea,titleBar);
-    titleBar->setFloatable(false);
-    titleBar->hide();
+    ui_titleBar = new TitleBar("Pipeline Editor",false, mw);
+    ui_titleBar->showReinitButton(false);
+    mw->addToolBar(Qt::TopToolBarArea,ui_titleBar);
+    ui_titleBar->setFloatable(false);
+    ui_titleBar->hide();
 
     // View menu
     QMenu *viewMenu = new QMenu(this);
@@ -37,7 +37,7 @@ PipelineWidget::PipelineWidget(QWidget *parent) :
     viewButton->setPopupMode(QToolButton::InstantPopup);
     viewButton->setMenu(viewMenu);
 
-    titleBar->insertLeft(viewButton);
+    ui_titleBar->insertLeft(viewButton);
 
     // Select menu
     QMenu *selectMenu = new QMenu(this);
@@ -63,7 +63,7 @@ PipelineWidget::PipelineWidget(QWidget *parent) :
     selectButton->setPopupMode(QToolButton::InstantPopup);
     selectButton->setMenu(selectMenu);
 
-    titleBar->insertLeft(selectButton);
+    ui_titleBar->insertLeft(selectButton);
 
     // Layout menu
     QMenu *layMenu = new QMenu(this);
@@ -85,24 +85,24 @@ PipelineWidget::PipelineWidget(QWidget *parent) :
     layButton->setPopupMode(QToolButton::InstantPopup);
     layButton->setMenu(layMenu);
 
-    titleBar->insertLeft(layButton);
+    ui_titleBar->insertLeft(layButton);
 
     // Step menu
-    stepMenu = new QMenu(this);
+    ui_stepMenu = new QMenu(this);
 
     QAction *actionAddStep = new QAction("Create new step", this);
     actionAddStep->setShortcut(QKeySequence("Shift+A"));
-    stepMenu->addAction(actionAddStep);
-    stepMenu->addSeparator();
-    stepMenuSeparator = stepMenu->addSeparator();
+    ui_stepMenu->addAction(actionAddStep);
+    ui_stepMenu->addSeparator();
+    ui_stepMenuSeparator = ui_stepMenu->addSeparator();
 
     QAction *actionDeleteStep = new QAction("Remove selected steps", this);
     actionDeleteStep->setShortcut(QKeySequence("Shift+X"));
-    stepMenu->addAction(actionDeleteStep);
+    ui_stepMenu->addAction(actionDeleteStep);
 
     QAction *actionDeleteSelection = new QAction("Delete selection", this);
     actionDeleteSelection->setShortcut(QKeySequence("Delete"));
-    stepMenu->addAction(actionDeleteSelection);
+    ui_stepMenu->addAction(actionDeleteSelection);
 
     QToolButton *stepButton = new QToolButton(this);
     stepButton->setText("Step");
@@ -111,11 +111,11 @@ PipelineWidget::PipelineWidget(QWidget *parent) :
     stepButton->setObjectName("menuButton");
     stepButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     stepButton->setPopupMode(QToolButton::InstantPopup);
-    stepButton->setMenu(stepMenu);
+    stepButton->setMenu(ui_stepMenu);
 
     for (int i = 0; i < Ramses::instance()->templateSteps()->count(); i++) newTemplateStep( Ramses::instance()->templateSteps()->at(i) );
 
-    titleBar->insertLeft(stepButton);
+    ui_titleBar->insertLeft(stepButton);
 
     // Connections menu
     QMenu *coMenu = new QMenu(this);
@@ -133,16 +133,16 @@ PipelineWidget::PipelineWidget(QWidget *parent) :
     coButton->setPopupMode(QToolButton::InstantPopup);
     coButton->setMenu(coMenu);
 
-    titleBar->insertLeft(coButton);
+    ui_titleBar->insertLeft(coButton);
 
     // Right buttons
 
     QToolButton *viewAllButton = new QToolButton(this);
     viewAllButton->setIcon(QIcon(":/icons/view-all"));
-    titleBar->insertRight(viewAllButton);
+    ui_titleBar->insertRight(viewAllButton);
     QToolButton *viewSelectedButton = new QToolButton(this);
     viewSelectedButton->setIcon(QIcon(":/icons/view-selected"));
-    titleBar->insertRight(viewSelectedButton);
+    ui_titleBar->insertRight(viewSelectedButton);
 
     DuQFSpinBox *zoomBox = new DuQFSpinBox(this);
     zoomBox->setMinimum(25);
@@ -151,103 +151,82 @@ PipelineWidget::PipelineWidget(QWidget *parent) :
     zoomBox->setPrefix("Zoom: ");
     zoomBox->setMaximumWidth(100);
     zoomBox->setValue(100);
-    titleBar->insertRight(zoomBox);
+    ui_titleBar->insertRight(zoomBox);
 
-    gridSizeBox = new DuQFSpinBox(this);
-    gridSizeBox->setMinimum(10);
-    gridSizeBox->setMaximum(100);
-    gridSizeBox->setMaximumWidth(100);
-    gridSizeBox->setValue(20);
-    gridSizeBox->setPrefix("Grid size: ");
-    titleBar->insertRight(gridSizeBox);
+    ui_gridSizeBox = new DuQFSpinBox(this);
+    ui_gridSizeBox->setMinimum(10);
+    ui_gridSizeBox->setMaximum(100);
+    ui_gridSizeBox->setMaximumWidth(100);
+    ui_gridSizeBox->setValue(20);
+    ui_gridSizeBox->setPrefix("Grid size: ");
+    ui_titleBar->insertRight(ui_gridSizeBox);
 
-    snapButton = new QCheckBox("Snap to grid");
-    titleBar->insertRight(snapButton);
+    ui_snapButton = new QCheckBox("Snap to grid");
+    ui_titleBar->insertRight(ui_snapButton);
 
-    _nodeView = new DuQFNodeView(this);
-    _nodeScene = _nodeView->nodeScene();
-    mainLayout->addWidget(_nodeView);
+    ui_nodeView = new DuQFNodeView(this);
+    m_nodeScene = ui_nodeView->nodeScene();
+    mainLayout->addWidget(ui_nodeView);
 
-    userSettings = new QSettings(QSettings::IniFormat, QSettings::UserScope, STR_COMPANYNAME, STR_INTERNALNAME);
-    userSettings->beginGroup("nodeView");
+    m_userSettings = new QSettings(QSettings::IniFormat, QSettings::UserScope, STR_COMPANYNAME, STR_INTERNALNAME);
+    m_userSettings->beginGroup("nodeView");
 
     // Connections
-    connect(titleBar, &TitleBar::closeRequested, this, &PipelineWidget::closeRequested);
-    connect(viewAllButton, SIGNAL(clicked()), _nodeView, SLOT(reinitTransform()));
-    connect(actionReinitView, SIGNAL(triggered()), _nodeView, SLOT(reinitTransform()));
-    connect(viewSelectedButton, SIGNAL(clicked()), _nodeView, SLOT(frameSelected()));
-    connect(actionViewAll, SIGNAL(triggered()), _nodeView, SLOT(frameSelected()));
-    connect(zoomBox, SIGNAL(valueChanged(int)), _nodeView, SLOT(setZoom(int)));
-    connect(_nodeView, SIGNAL(zoomed(int)), zoomBox, SLOT(setValue(int)));
+    connect(ui_titleBar, &TitleBar::closeRequested, this, &PipelineWidget::closeRequested);
+    connect(viewAllButton, SIGNAL(clicked()), ui_nodeView, SLOT(reinitTransform()));
+    connect(actionReinitView, SIGNAL(triggered()), ui_nodeView, SLOT(reinitTransform()));
+    connect(viewSelectedButton, SIGNAL(clicked()), ui_nodeView, SLOT(frameSelected()));
+    connect(actionViewAll, SIGNAL(triggered()), ui_nodeView, SLOT(frameSelected()));
+    connect(zoomBox, SIGNAL(valueChanged(int)), ui_nodeView, SLOT(setZoom(int)));
+    connect(ui_nodeView, SIGNAL(zoomed(int)), zoomBox, SLOT(setValue(int)));
     connect(actionAddStep, SIGNAL(triggered()), this, SLOT(createStep()));
-    connect(actionAddStep, SIGNAL(triggered()), _nodeView, SLOT(reinitTransform()));
-    connect(actionDeleteStep, SIGNAL(triggered()), _nodeScene, SLOT(removeSelectedNodes()));
-    connect(actionDeleteConnections, SIGNAL(triggered()), _nodeScene, SLOT(removeSelectedConnections()));
-    connect(actionDeleteSelection, SIGNAL(triggered()), _nodeScene, SLOT(removeSelection()));
-    connect(snapButton, SIGNAL(clicked(bool)), this, SLOT(setSnapEnabled(bool)));
-    connect(gridSizeBox, SIGNAL(valueChanged(int)), this, SLOT(setGridSize(int)));
-    connect(actionLayoutAll, SIGNAL(triggered()), _nodeScene, SLOT(autoLayoutAll()));
-    connect(actionLayoutAll, SIGNAL(triggered()), _nodeView, SLOT(frameSelected()));
-    connect(actionLayoutSelected, SIGNAL(triggered()), _nodeScene, SLOT(autoLayoutSelectedNodes()));
-    connect(actionSelectAll, SIGNAL(triggered()), _nodeScene, SLOT(selectAllNodes()));
-    connect(actionSelectChildren, SIGNAL(triggered()), _nodeScene, SLOT(selectChildNodes()));
-    connect(actionSelectParents, SIGNAL(triggered()), _nodeScene, SLOT(selectParentNodes()));
-    connect(_nodeScene->connectionManager(), SIGNAL(newConnection(DuQFConnection*)), this, SLOT(stepsConnected(DuQFConnection*)));
-    connect(_nodeScene->connectionManager(), SIGNAL(connectionRemoved(DuQFConnection*)), this, SLOT(connectionRemoved(DuQFConnection*)));
+    connect(actionAddStep, SIGNAL(triggered()), ui_nodeView, SLOT(reinitTransform()));
+    connect(actionDeleteStep, SIGNAL(triggered()), m_nodeScene, SLOT(removeSelectedNodes()));
+    connect(actionDeleteConnections, SIGNAL(triggered()), m_nodeScene, SLOT(removeSelectedConnections()));
+    connect(actionDeleteSelection, SIGNAL(triggered()), m_nodeScene, SLOT(removeSelection()));
+    connect(ui_snapButton, SIGNAL(clicked(bool)), this, SLOT(setSnapEnabled(bool)));
+    connect(ui_gridSizeBox, SIGNAL(valueChanged(int)), this, SLOT(setGridSize(int)));
+    connect(actionLayoutAll, SIGNAL(triggered()), m_nodeScene, SLOT(autoLayoutAll()));
+    connect(actionLayoutAll, SIGNAL(triggered()), ui_nodeView, SLOT(frameSelected()));
+    connect(actionLayoutSelected, SIGNAL(triggered()), m_nodeScene, SLOT(autoLayoutSelectedNodes()));
+    connect(actionSelectAll, SIGNAL(triggered()), m_nodeScene, SLOT(selectAllNodes()));
+    connect(actionSelectChildren, SIGNAL(triggered()), m_nodeScene, SLOT(selectChildNodes()));
+    connect(actionSelectParents, SIGNAL(triggered()), m_nodeScene, SLOT(selectParentNodes()));
+    connect(m_nodeScene->connectionManager(), SIGNAL(newConnection(DuQFConnection*)), this, SLOT(stepsConnected(DuQFConnection*)));
+    connect(m_nodeScene->connectionManager(), SIGNAL(connectionRemoved(DuQFConnection*)), this, SLOT(connectionRemoved(DuQFConnection*)));
     // Ramses connections
     connect(Ramses::instance()->templateSteps(), &RamObjectList::objectAdded, this, &PipelineWidget::newTemplateStep);
     connect(Ramses::instance()->templateSteps(), &RamObjectList::objectRemoved, this, &PipelineWidget::templateStepRemoved);
-    connect(Ramses::instance(), &Ramses::currentProjectChanged, this, &PipelineWidget::changeProject);
+    connect(Ramses::instance(), &Ramses::currentProjectChanged, this, &PipelineWidget::setProject);
     connect(Ramses::instance(), &Ramses::loggedIn, this, &PipelineWidget::userChanged);
 }
 
-void PipelineWidget::changeProject(RamProject *project)
+void PipelineWidget::setProject(RamProject *project)
 {
-    DBISuspender b;
+    if (m_project && project)
+    {
+        if (m_project->is(project)) return;
+    }
+    else if (!m_project && !project) return;
 
-    QSignalBlocker b1(_nodeScene);
-    QSignalBlocker b2(_nodeView);
-    QSignalBlocker b3(_nodeScene->connectionManager());
-
-    this->setEnabled(false);
-
-    while (_projectConnections.count() > 0) disconnect( _projectConnections.takeLast() );
-
-    // Clear scene
-    _nodeScene->clear();
-    _nodeView->reinitTransform();
-    _pipeConnections.clear();
-
-    if (!project) return;
-
-    // add steps
-    for(int i = 0; i < project->steps()->count(); i++) newStep( project->steps()->at(i) );
-
-    // add pipes
-    for ( int i = 0; i < project->pipeline()->count(); i++ ) newPipe( project->pipeline()->at(i) );
-
-    _projectConnections << connect(project->steps(), &RamObjectList::objectAdded, this, &PipelineWidget::newStep);
-    _projectConnections << connect(project->pipeline(), &RamObjectList::objectAdded, this, &PipelineWidget::newPipe);
-    _projectConnections << connect(project->pipeline(), &RamObjectList::objectRemoved, this, &PipelineWidget::pipeRemoved);
-
-    // Layout
-    _nodeScene->clearSelection();
-    //_nodeView->frameSelected();
-
-    this->setEnabled(true);
+    m_projectChanged = true;
+    m_project = project;
+    // Reload in the show event if not yet visible
+    // to improve perf: do not refresh all the app when changing the project, only what's visible.
+    if ( this->isVisible() ) changeProject();
 }
 
 void PipelineWidget::newStep(RamObject *obj)
 {
     RamStep *step = qobject_cast<RamStep*>( obj );
     StepNode *stepNode = new StepNode(step);
-    _nodeScene->addNode( stepNode, false );
+    m_nodeScene->addNode( stepNode, false );
 
     // Reset position
-    userSettings->beginGroup("nodeLocations");
-    QPointF pos = userSettings->value(step->uuid(), QPointF(0.0,0.0)).toPointF();
+    m_userSettings->beginGroup("nodeLocations");
+    QPointF pos = m_userSettings->value(step->uuid(), QPointF(0.0,0.0)).toPointF();
     if (pos.x() != 0.0 && pos.y() != 0.0) stepNode->setPos( pos );
-    userSettings->endGroup();
+    m_userSettings->endGroup();
 
     connect(stepNode, &DuQFNode::moved, this, &PipelineWidget::nodeMoved);
 }
@@ -258,43 +237,43 @@ void PipelineWidget::nodeMoved(QPointF pos)
     if (!node) return;
     RamObject *step = node->ramObject();
 
-    userSettings->beginGroup("nodeLocations");
-    userSettings->setValue(step->uuid(), pos);
-    userSettings->endGroup();
+    m_userSettings->beginGroup("nodeLocations");
+    m_userSettings->setValue(step->uuid(), pos);
+    m_userSettings->endGroup();
 }
 
 void PipelineWidget::setSnapEnabled(bool enabled)
 {
-    QSignalBlocker b(snapButton);
+    QSignalBlocker b(ui_snapButton);
 
-    snapButton->setChecked(enabled);
+    ui_snapButton->setChecked(enabled);
 
-    userSettings->setValue("snapToGrid", enabled);
-    _nodeView->grid()->setSnapEnabled(enabled);
+    m_userSettings->setValue("snapToGrid", enabled);
+    ui_nodeView->grid()->setSnapEnabled(enabled);
 }
 
 void PipelineWidget::setGridSize(int size)
 {
-    QSignalBlocker b(gridSizeBox);
+    QSignalBlocker b(ui_gridSizeBox);
 
-    gridSizeBox->setValue(size);
+    ui_gridSizeBox->setValue(size);
 
-    userSettings->setValue("gridSize", size);
-    _nodeView->grid()->setSize(size);
-    _nodeView->update();
+    m_userSettings->setValue("gridSize", size);
+    ui_nodeView->grid()->setSize(size);
+    ui_nodeView->update();
 }
 
 void PipelineWidget::userChanged(RamUser *u)
 {
     Q_UNUSED(u);
 
-    userSettings->endGroup();
-    delete userSettings;
-    userSettings = new QSettings(Ramses::instance()->currentUserSettingsFile(), QSettings::IniFormat, this);
-    userSettings->beginGroup("nodeView");
+    m_userSettings->endGroup();
+    delete m_userSettings;
+    m_userSettings = new QSettings(Ramses::instance()->currentUserSettingsFile(), QSettings::IniFormat, this);
+    m_userSettings->beginGroup("nodeView");
 
-    setSnapEnabled(userSettings->value("snapToGrid", false).toBool());
-    setGridSize(userSettings->value("gridSize", 20).toInt());
+    setSnapEnabled(m_userSettings->value("snapToGrid", false).toBool());
+    setGridSize(m_userSettings->value("gridSize", 20).toInt());
 }
 
 void PipelineWidget::createStep()
@@ -311,7 +290,7 @@ void PipelineWidget::newTemplateStep(RamObject *obj)
     if (obj->uuid() == "") return;
     QAction *stepAction = new QAction(obj->name());
     stepAction->setData(obj->uuid());
-    stepMenu->insertAction(stepMenuSeparator, stepAction);
+    ui_stepMenu->insertAction(ui_stepMenuSeparator, stepAction);
     connect(stepAction, &QAction::triggered, this, &PipelineWidget::assignStep);
     connect(obj, &RamObject::changed, this, &PipelineWidget::templateStepChanged);
 
@@ -319,12 +298,12 @@ void PipelineWidget::newTemplateStep(RamObject *obj)
 
 void PipelineWidget::templateStepRemoved(RamObject *o)
 {
-    QList<QAction *> actions = stepMenu->actions();
+    QList<QAction *> actions = ui_stepMenu->actions();
     for (int i = actions.count() -1; i >= 0; i--)
     {
         if (actions[i]->data().toString() == o->uuid())
         {
-            stepMenu->removeAction(actions[i]);
+            ui_stepMenu->removeAction(actions[i]);
             actions[i]->deleteLater();
         }
     }
@@ -333,7 +312,7 @@ void PipelineWidget::templateStepRemoved(RamObject *o)
 void PipelineWidget::templateStepChanged()
 {
     RamStep *s = (RamStep*)sender();
-    QList<QAction *> actions = stepMenu->actions();
+    QList<QAction *> actions = ui_stepMenu->actions();
     for (int i = actions.count() -1; i >= 0; i--)
     {
         if (actions[i]->data().toString() == s->uuid()) actions[i]->setText(s->name());
@@ -358,7 +337,7 @@ void PipelineWidget::newPipe(RamObject *p)
     // Get nodes
     DuQFNode *inputNode = nullptr;
     DuQFNode *outputNode = nullptr;
-    foreach(DuQFNode *n, _nodeScene->nodes())
+    foreach(DuQFNode *n, m_nodeScene->nodes())
     {
         StepNode *is = (StepNode*)n;
         if (is) if (is->step()->uuid() == pipe->inputStep()->uuid()) inputNode = n;
@@ -372,10 +351,10 @@ void PipelineWidget::newPipe(RamObject *p)
     if (!outputNode) return;
     if (!inputNode) return;
 
-    QSignalBlocker b(_nodeScene->connectionManager());
+    QSignalBlocker b(m_nodeScene->connectionManager());
 
     // Get or create the node connections
-    DuQFConnection *co = _nodeScene->connectNodes(outputNode, inputNode);
+    DuQFConnection *co = m_nodeScene->connectNodes(outputNode, inputNode);
     if (!co) return;
 
     // Title
@@ -402,7 +381,7 @@ void PipelineWidget::newPipe(RamObject *p)
     c << connect(co->connector(), SIGNAL(selected(bool)), dockWidget, SLOT(setVisible(bool)));
     m_pipeObjectConnections[pipe->uuid()] = c;
 
-    _pipeConnections[pipe->uuid()] = co;
+    m_pipeConnections[pipe->uuid()] = co;
 }
 
 void PipelineWidget::stepsConnected(DuQFConnection *co)
@@ -447,15 +426,15 @@ void PipelineWidget::pipeChanged(RamObject *p)
 
     if (!pipe) return;
 
-    if (_pipeConnections.contains(pipe->uuid()))
+    if (m_pipeConnections.contains(pipe->uuid()))
     {
-        DuQFConnection *co = _pipeConnections.value(pipe->uuid());
+        DuQFConnection *co = m_pipeConnections.value(pipe->uuid());
 
         //update stepnodes
         bool outputOk = false;
         bool inputOk = false;
 
-        foreach(DuQFNode *n, _nodeScene->nodes())
+        foreach(DuQFNode *n, m_nodeScene->nodes())
         {
             StepNode *outputNode = (StepNode*)n;
             if (outputNode) if (outputNode->step()->uuid() == pipe->outputStep()->uuid())
@@ -491,18 +470,22 @@ void PipelineWidget::pipeRemoved(RamObject *p)
         QList<QMetaObject::Connection> c = m_pipeObjectConnections.take(p->uuid());
         while(!c.isEmpty()) disconnect(c.takeLast());
     }
-    if (_pipeConnections.contains(p->uuid()))
+    if (m_pipeConnections.contains(p->uuid()))
     {
         //remove connection
-        _pipeConnections.value(p->uuid())->remove();
+        m_pipeConnections.value(p->uuid())->remove();
         //and remove its pointer from the list
-        _pipeConnections.remove(p->uuid());
+        m_pipeConnections.remove(p->uuid());
     }
 }
 
 void PipelineWidget::showEvent(QShowEvent *event)
 {
-    if (!event->spontaneous()) titleBar->show();
+    if (!event->spontaneous())
+    {
+        ui_titleBar->show();
+        changeProject();
+    }
     QWidget::showEvent(event);
 }
 
@@ -510,10 +493,66 @@ void PipelineWidget::hideEvent(QHideEvent *event)
 {
     if (!event->spontaneous())
     {
-        _nodeScene->clearSelection();
-        _nodeScene->clearFocus();
-        titleBar->hide();
+        m_nodeScene->clearSelection();
+        m_nodeScene->clearFocus();
+        ui_titleBar->hide();
     }
     QWidget::hideEvent(event);
+}
+
+void PipelineWidget::changeProject()
+{
+    if (!m_projectChanged) return;
+    m_projectChanged = false;
+    DBISuspender b;
+
+    ProcessManager *pm = ProcessManager::instance();
+
+    QSignalBlocker b1(m_nodeScene);
+    QSignalBlocker b2(ui_nodeView);
+    QSignalBlocker b3(m_nodeScene->connectionManager());
+
+    this->setEnabled(false);
+
+    while (m_projectConnections.count() > 0) disconnect( m_projectConnections.takeLast() );
+
+    // Clear scene
+    m_nodeScene->clear();
+    ui_nodeView->reinitTransform();
+    m_pipeConnections.clear();
+
+    if (!m_project) return;
+
+    pm->start();
+    pm->setText("Loading project...");
+    pm->setMaximum( m_project->steps()->count() + m_project->pipeline()->count() );
+
+    // add steps
+    for(int i = 0; i < m_project->steps()->count(); i++)
+    {
+        pm->setText("Building step nodes...");
+        pm->increment();
+        newStep( m_project->steps()->at(i) );
+    }
+
+    // add pipes
+    for ( int i = 0; i < m_project->pipeline()->count(); i++ )
+    {
+        pm->setText("Building pipes...");
+        pm->increment();
+        newPipe( m_project->pipeline()->at(i) );
+    }
+
+    m_projectConnections << connect(m_project->steps(), &RamObjectList::objectAdded, this, &PipelineWidget::newStep);
+    m_projectConnections << connect(m_project->pipeline(), &RamObjectList::objectAdded, this, &PipelineWidget::newPipe);
+    m_projectConnections << connect(m_project->pipeline(), &RamObjectList::objectRemoved, this, &PipelineWidget::pipeRemoved);
+
+    // Layout
+    m_nodeScene->clearSelection();
+    //_nodeView->frameSelected();
+
+    this->setEnabled(true);
+
+    pm->finish();
 }
 

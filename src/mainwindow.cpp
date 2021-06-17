@@ -163,7 +163,7 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     connect(actionPipeline, SIGNAL(triggered(bool)), this, SLOT(pipeline(bool)));
     connect(actionShots,SIGNAL(triggered(bool)), this, SLOT(shots(bool)));
     connect(actionAssets,SIGNAL(triggered(bool)), this, SLOT(assets(bool)));
-    //connect(pipelineEditor, SIGNAL(closeRequested()), this, SLOT(closePipeline()));
+    connect(pipelineEditor, SIGNAL(closeRequested()), this, SLOT(closePipeline()));
     //connect(assetsTable, SIGNAL(closeRequested()), this, SLOT(closeAssets()));
     connect(adminPage, SIGNAL(closeRequested()), this, SLOT(closeAdmin()));
     connect(projectSettingsPage, SIGNAL(closeRequested()), this, SLOT(closeProjectSettings()));

@@ -33,7 +33,7 @@ void RamLoader::run()
         qDebug() << "--- Loading Project Data ---";
         m_pm->setTitle("Loading project...");
         QString uuid = gotProject( m_data.value("content").toObject(), false);
-        m_pm->setTitle("Project ready.");
+        m_pm->setTitle("Selecting current project...");
         emit projectReady(uuid);
     }
     else if (query == "getTemplateSteps") gotTemplateSteps( m_data.value("content").toArray());

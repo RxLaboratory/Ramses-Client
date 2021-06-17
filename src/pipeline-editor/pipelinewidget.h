@@ -13,6 +13,7 @@
 #include "duqf-app/app-version.h"
 #include "duqf-utils/guiutils.h"
 
+#include "processmanager.h"
 #include "stepnode.h"
 #include "ramses.h"
 #include "pipeeditwidget.h"
@@ -27,7 +28,7 @@ public:
 signals:
     void closeRequested();
 private slots:
-    void changeProject(RamProject *project);
+    void setProject(RamProject *project);
     void newStep(RamObject *obj);
     void nodeMoved(QPointF pos);
     void setSnapEnabled(bool enabled);
@@ -47,17 +48,21 @@ protected:
     void showEvent(QShowEvent *event) Q_DECL_OVERRIDE;
     void hideEvent(QHideEvent *event) Q_DECL_OVERRIDE;
 private:
-    QSettings *userSettings;
-    TitleBar *titleBar;
-    DuQFSpinBox *gridSizeBox;
-    QCheckBox *snapButton;
-    DuQFNodeScene *_nodeScene;
-    DuQFNodeView *_nodeView;
-    QMenu *stepMenu;
-    QAction *stepMenuSeparator;
-    QList<QMetaObject::Connection> _projectConnections;
+    void changeProject();
+
+    QSettings *m_userSettings;
+    TitleBar *ui_titleBar;
+    DuQFSpinBox *ui_gridSizeBox;
+    QCheckBox *ui_snapButton;
+    DuQFNodeScene *m_nodeScene;
+    DuQFNodeView *ui_nodeView;
+    QMenu *ui_stepMenu;
+    QAction *ui_stepMenuSeparator;
+    QList<QMetaObject::Connection> m_projectConnections;
     QMap<QString, QList<QMetaObject::Connection>> m_pipeObjectConnections;
-    QMap<QString,DuQFConnection*> _pipeConnections;
+    QMap<QString,DuQFConnection*> m_pipeConnections;
+    RamProject *m_project = nullptr;
+    bool m_projectChanged = false;
 };
 
 #endif // PIPELINEWIDGET_H

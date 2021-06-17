@@ -68,15 +68,10 @@ void RamObjectListWidget::setList(RamObjectList *list)
 
 void RamObjectListWidget::addList(RamObjectList *list)
 {
-    QSignalBlocker b(this);
-
     if (!list) return;
-    m_lists << list;
-
-    for (int i = 0; i < list->count(); i++) objectAssigned(list->at(i));
-
-    m_listConnections << connect(list, &RamObjectList::objectRemoved, this, &RamObjectListWidget::objectUnassigned);
-    m_listConnections << connect(list, &RamObjectList::objectAdded, this, &RamObjectListWidget::objectAssigned);
+    m_listsToAdd << list;
+    // Update only if visible or on show event to improve perf
+    if (this->isVisible()) addLists();
 }
 
 void RamObjectListWidget::setList(RamObjectUberList *list)
@@ -240,6 +235,15 @@ void RamObjectListWidget::resizeEvent(QResizeEvent *event)
     this->setColumnWidth( 0, event->size().width() );
     this->setRowHeight(0, 10);
     this->resizeRowsToContents();
+}
+
+void RamObjectListWidget::showEvent(QShowEvent *event)
+{
+    if (!event->spontaneous())
+    {
+        addLists();
+    }
+    QWidget::showEvent(event);
 }
 
 void RamObjectListWidget::itemSelected(QTableWidgetItem *current, QTableWidgetItem *previous)
@@ -461,4 +465,33 @@ void RamObjectListWidget::connectEvents()
     connect(this->verticalHeader(), &QHeaderView::sectionMoved, this, &RamObjectListWidget::updateOrder);
     connect(this, &QTableWidget::currentItemChanged, this, &RamObjectListWidget::itemSelected);
     connect(this, &QTableWidget::itemSelectionChanged, this, &RamObjectListWidget::changeSelection);
+}
+
+void RamObjectListWidget::addLists()
+{
+    QSignalBlocker b(this);
+
+    ProcessManager *pm = ProcessManager::instance();
+    pm->start();
+    pm->setMaximum( m_listsToAdd.count() );
+
+    while (!m_listsToAdd.isEmpty())
+    {
+        RamObjectList *list = m_listsToAdd.takeFirst();
+        pm->increment();
+        pm->addToMaximum(list->count());
+        pm->setText("Loading " + list->name() + "...");
+        m_lists << list;
+
+        for (int i = 0; i < list->count(); i++)
+        {
+            pm->increment();
+            objectAssigned(list->at(i));
+        }
+
+        m_listConnections << connect(list, &RamObjectList::objectRemoved, this, &RamObjectListWidget::objectUnassigned);
+        m_listConnections << connect(list, &RamObjectList::objectAdded, this, &RamObjectListWidget::objectAssigned);
+    }
+
+    pm->finish();
 }

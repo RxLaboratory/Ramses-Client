@@ -18,13 +18,13 @@ Ramses::Ramses(QObject *parent) : QObject(parent)
     qDebug() << "Initialising Ramses";
     _dbi = DBInterface::instance();
 
-    _users = new RamObjectList(this);
+    _users = new RamObjectList("USRS", "Users", "", this);
     _states = new RamStateList(this);
-    _projects = new RamObjectList(this);
-    _templateSteps = new RamObjectList(this);
-    _templateAssetGroups = new RamObjectList(this);
-    _fileTypes = new RamObjectList (this);
-    _applications = new RamObjectList(this);
+    _projects = new RamObjectList("PRJCTS", "Projects", "", this);
+    _templateSteps = new RamObjectList("TPLTSTPS", "Template steps", "", this);
+    _templateAssetGroups = new RamObjectList("TPLTAGS", "Template asset groups", "", this);
+    _fileTypes = new RamObjectList ("FLTPS", "File types", "", this);
+    _applications = new RamObjectList("APPS", "Applications", "", this);
     _ramUser = nullptr;
 
     DBISuspender s;

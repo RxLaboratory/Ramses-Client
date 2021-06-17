@@ -6,9 +6,9 @@ RamProject::RamProject(QString shortName, QString name, QString uuid, QObject *p
     setObjectType(Project);
     _sequences = new RamObjectUberList("Sequences", this);
     _assetGroups = new RamObjectUberList("Asset Groups", this);
-    _pipeline = new RamObjectList(this);
-    _steps = new RamObjectList(this);
-    _pipeFiles = new RamObjectList(this);
+    _pipeline = new RamObjectList("PPLN", "Pipeline", "", this);
+    _steps = new RamObjectList("STPS", "Steps", "", this);
+    _pipeFiles = new RamObjectList("PPFLS", "Pipe files", "", this);
     _dbi->createProject(_shortName, _name, _uuid);
 
     this->setObjectName( "RamProject" );
