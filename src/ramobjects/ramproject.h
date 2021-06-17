@@ -41,7 +41,6 @@ public:
 
     // Asset Groups
     RamObjectUberList *assetGroups() const;
-    RamAssetGroup *assetGroup(QString uuid);
     void createAssetGroup(QString shortName = "NEW", QString name = "Asset Group");
 
     // Assets
@@ -50,7 +49,6 @@ public:
 
     // Sequences
     RamObjectUberList *sequences() const;
-    RamSequence *sequence(QString uuid);
     void createSequence(QString shortName = "NEW", QString name = "Sequence");
 
     // Shots
@@ -65,6 +63,8 @@ public:
     RamPipeFile *createPipeFile(QString shortName = "NEW");
 
     void update();
+
+    static RamProject *project(QString uuid);
 
 private:
     QString _folderPath;

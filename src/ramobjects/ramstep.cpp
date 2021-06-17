@@ -146,6 +146,11 @@ void RamStep::update()
     else _dbi->updateStep(_uuid, _shortName, _name, type, _order);
 }
 
+RamStep *RamStep::step(QString uuid)
+{
+    return qobject_cast<RamStep*>( RamObject::obj(uuid) );
+}
+
 QString RamStep::projectUuid() const
 {
     return _projectUuid;

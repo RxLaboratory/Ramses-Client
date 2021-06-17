@@ -88,7 +88,6 @@ public:
     RamState *okState();
     // Projects
     RamObjectList *projects() const;
-    RamProject *project(QString uuid) const;
     RamProject *createProject();
     RamProject *currentProject() const;
     void setCurrentProject(RamProject *currentProject);
@@ -96,15 +95,9 @@ public:
     // Template Steps
     RamObjectList *templateSteps() const;
     RamStep *createTemplateStep();
-    RamStep *templateStep(QString uuid);
     // Template Asset Groups
     RamObjectList *templateAssetGroups() const;
     RamAssetGroup *createTemplateAssetGroup();
-    RamAssetGroup *templateAssetGroup(QString uuid);
-    // Asset groups
-    RamAssetGroup *assetGroup(QString uuid) const;
-    // Sequences
-    RamSequence *sequence(QString uuid) const;
     // States
     RamStateList *states() const;
     // File Types

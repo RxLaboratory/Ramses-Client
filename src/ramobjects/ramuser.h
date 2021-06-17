@@ -26,6 +26,8 @@ public:
     void update();
     void updatePassword(QString c, QString n);
 
+    static RamUser *user(QString uuid);
+
 signals:
 
 private:

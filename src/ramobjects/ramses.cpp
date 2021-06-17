@@ -402,11 +402,6 @@ RamStep *Ramses::createTemplateStep()
     return step;
 }
 
-RamStep *Ramses::templateStep(QString uuid)
-{
-    return (RamStep*)_templateSteps->fromUuid( uuid );
-}
-
 RamObjectList *Ramses::templateAssetGroups() const
 {
     return _templateAssetGroups;
@@ -418,33 +413,6 @@ RamAssetGroup *Ramses::createTemplateAssetGroup()
     ag->setParent(this);
     _templateAssetGroups->append(ag);
     return ag;
-}
-
-RamAssetGroup *Ramses::templateAssetGroup(QString uuid)
-{
-    return qobject_cast<RamAssetGroup*>( _templateAssetGroups->fromUuid(uuid) );
-}
-
-RamAssetGroup *Ramses::assetGroup(QString uuid) const
-{
-    for (int i =0; i < _projects->count(); i++)
-    {
-        RamProject *p = qobject_cast<RamProject*>( _projects->at(i) );
-        RamAssetGroup *ag  = qobject_cast<RamAssetGroup*>( p->assetGroups()->fromUuid(uuid) );
-        if (ag) return ag;
-    }
-    return nullptr;
-}
-
-RamSequence *Ramses::sequence(QString uuid) const
-{
-    for (int i =0; i < _projects->count(); i++)
-    {
-        RamProject *p = (RamProject*)_projects->at(i);
-        RamSequence *s = qobject_cast<RamSequence*>( p->sequences()->fromUuid(uuid) );
-        if (s) return s;
-    }
-    return nullptr;
 }
 
 RamStateList *Ramses::states() const
@@ -489,11 +457,6 @@ RamApplication *Ramses::createApplication()
 RamObjectList *Ramses::projects() const
 {
     return _projects;
-}
-
-RamProject *Ramses::project(QString uuid) const
-{
-    return (RamProject*)_projects->fromUuid( uuid );
 }
 
 RamProject *Ramses::createProject()

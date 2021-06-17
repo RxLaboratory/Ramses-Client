@@ -98,6 +98,11 @@ RamStep::Type RamItem::productionType() const
     return m_productionType;
 }
 
+RamItem *RamItem::item(QString uuid)
+{
+    return qobject_cast<RamItem*>( RamObject::obj(uuid) );
+}
+
 void RamItem::setProductionType(RamStep::Type newProductionType)
 {
     m_productionType = newProductionType;

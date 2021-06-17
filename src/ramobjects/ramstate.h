@@ -20,6 +20,7 @@ public:
 
     void update();
 
+    static RamState *state(QString uuid);
 private:
     QColor _color;
     int _completionRatio = 50;

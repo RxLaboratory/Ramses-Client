@@ -15,7 +15,7 @@ void AssetListManagerWidget::createObject()
     RamProject *project = Ramses::instance()->currentProject();
     if (!project) return;
     if (project->assetGroups()->count() == 0 ) return;
-    RamAssetGroup *ag = project->assetGroup( currentFilter() );
+    RamAssetGroup *ag = RamAssetGroup::assetGroup( currentFilter() );
     if (!ag) ag = qobject_cast<RamAssetGroup*>( project->assetGroups()->at(0) );
     ag->createAsset();
 }

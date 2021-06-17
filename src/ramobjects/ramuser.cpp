@@ -68,3 +68,8 @@ void RamUser::updatePassword(QString c, QString n)
 {
     _dbi->updateUserPassword(_uuid, c, n);
 }
+
+RamUser *RamUser::user(QString uuid)
+{
+    return qobject_cast<RamUser*>( RamObject::obj(uuid) );
+}

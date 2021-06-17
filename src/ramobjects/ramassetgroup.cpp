@@ -60,6 +60,11 @@ void RamAssetGroup::createAsset(QString shortName, QString name)
     append(asset);
 }
 
+RamAssetGroup *RamAssetGroup::assetGroup(QString uuid)
+{
+    return qobject_cast<RamAssetGroup*>( RamObject::obj(uuid));
+}
+
 void RamAssetGroup::update()
 {
     if (!_dirty) return;

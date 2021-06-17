@@ -99,14 +99,14 @@ void RamProject::update()
     _dbi->updateProject(_uuid, _shortName, _name, _width, _height, _framerate, path);
 }
 
+RamProject *RamProject::project(QString uuid)
+{
+    return qobject_cast<RamProject*>( RamObject::obj(uuid) );
+}
+
 RamObjectUberList *RamProject::assetGroups() const
 {
     return _assetGroups;
-}
-
-RamAssetGroup *RamProject::assetGroup(QString uuid)
-{
-    return qobject_cast<RamAssetGroup*>(_assetGroups->fromUuid(uuid));
 }
 
 void RamProject::createAssetGroup(QString shortName, QString name)
@@ -133,11 +133,6 @@ void RamProject::moveAssetToGroup(RamAsset *asset, RamAssetGroup *group)
 RamObjectUberList *RamProject::sequences() const
 {
     return _sequences;
-}
-
-RamSequence *RamProject::sequence(QString uuid)
-{
-    return qobject_cast<RamSequence*>(_sequences->fromUuid(uuid));
 }
 
 void RamProject::createSequence(QString shortName, QString name)

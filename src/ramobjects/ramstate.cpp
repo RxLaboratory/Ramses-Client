@@ -46,3 +46,8 @@ void RamState::update()
     RamObject::update();
     _dbi->updateState(_uuid, _shortName, _name, _color.name(), QString::number(_completionRatio));
 }
+
+RamState *RamState::state(QString uuid)
+{
+    return qobject_cast<RamState*>( RamSequence::obj(uuid) );
+}

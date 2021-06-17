@@ -26,6 +26,8 @@ public:
     RamObjectList *importFileTypes() const;
     RamObjectList *exportFileTypes() const;
 
+    static RamApplication *application(QString uuid);
+
 public slots:
     void unassignFileType(RamObject *o);
 

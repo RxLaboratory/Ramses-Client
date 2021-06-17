@@ -35,6 +35,8 @@ public:
 
     void update();
 
+    static RamStep *step(QString uuid);
+
 private slots:
     void userAssigned(RamObject *u);
     void userUnassigned(RamObject *u);

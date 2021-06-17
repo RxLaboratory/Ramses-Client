@@ -28,6 +28,8 @@ public:
 
     RamStep::Type productionType() const;
 
+    static RamItem *item(QString uuid);
+
 protected:
     void setProductionType(RamStep::Type newProductionType);
 

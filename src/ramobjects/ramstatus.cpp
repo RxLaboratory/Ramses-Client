@@ -125,3 +125,8 @@ void RamStatus::setDate(const QDateTime &date)
     _date = date;
     emit changed(this);
 }
+
+RamStatus *RamStatus::status(QString uuid)
+{
+    return qobject_cast<RamStatus*>( RamObject::obj(uuid) );
+}

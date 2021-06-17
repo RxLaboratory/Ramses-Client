@@ -125,6 +125,11 @@ RamObjectList *RamApplication::exportFileTypes() const
     return _exportFileTypes;
 }
 
+RamApplication *RamApplication::application(QString uuid)
+{
+    return qobject_cast<RamApplication*>( RamObject::obj(uuid));
+}
+
 void RamApplication::importFileTypeAssigned(RamObject * const ft)
 {
     if (!ft) return;

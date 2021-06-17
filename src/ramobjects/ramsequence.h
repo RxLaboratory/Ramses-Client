@@ -19,6 +19,8 @@ public:
     void append(RamShot *shot);
     void createShot(QString shortName = "NEW", QString name = "Shot");
 
+    static RamSequence *sequence(QString uuid);
+
 public slots:
     void update() Q_DECL_OVERRIDE;
     void remove() Q_DECL_OVERRIDE;

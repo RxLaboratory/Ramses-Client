@@ -24,6 +24,8 @@ public:
 
     RamObjectList *pipeFiles() const;
 
+    static RamPipe *pipe(QString uuid);
+
 public slots:
 
 private slots:

@@ -34,6 +34,11 @@ void RamSequence::createShot(QString shortName, QString name)
     append(shot);
 }
 
+RamSequence *RamSequence::sequence(QString uuid)
+{
+    return qobject_cast<RamSequence*>( RamObject::obj(uuid) );
+}
+
 void RamSequence::update()
 {
     if(!_dirty) return;

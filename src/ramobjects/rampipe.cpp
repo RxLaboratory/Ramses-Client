@@ -77,6 +77,11 @@ RamObjectList *RamPipe::pipeFiles() const
     return m_pipeFiles;
 }
 
+RamPipe *RamPipe::pipe(QString uuid)
+{
+    return qobject_cast<RamPipe*>( RamObject::obj(uuid) );
+}
+
 void RamPipe::pipeFileUnassigned(RamObject *ft)
 {
     _dbi->unassignPipeFile( _uuid, ft->uuid());

@@ -40,6 +40,8 @@ public:
     QDateTime date() const;
     void setDate(const QDateTime &date);
 
+    static RamStatus *status(QString uuid);
+
 private:
     int _completionRatio = 50;
     RamUser *_user;
