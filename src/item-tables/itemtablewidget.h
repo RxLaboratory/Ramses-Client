@@ -31,7 +31,10 @@ private slots:
     void removeStep(RamObject *stepObj);
     void stepChanged(RamObject *stepObj);
     void statusAdded(RamObject *statusObj, int index=0);
+    void stepStatusHistoryAdded(RamObject *sshObj);
+    void stepStatusHistoryRemoved(RamObject *sshObj);
     void statusRemoved(RamObject *statusObj);
+
 
 private:
     void setupUi();

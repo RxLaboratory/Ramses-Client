@@ -73,18 +73,41 @@ RamStatus *RamItem::status(RamStep *step) const
 
 void RamItem::newStep(RamObject *obj)
 {
-    RamStep *step = qobject_cast<RamStep*>( obj );
-
-    if (m_productionType != step->type() ) return;
-
-    RamStepStatusHistory *history = new RamStepStatusHistory(step, this);
-    _statusHistory->append(history);
+    m_stepConnections[obj->uuid()] = connect(obj, &RamObject::changed, this, &RamItem::stepChanged);
+    stepChanged(obj);
 }
 
 void RamItem::stepRemoved(RamObject *step)
 {
+    if (m_stepConnections.contains(step->uuid()))
+    {
+        disconnect( m_stepConnections.take(step->uuid()));
+    }
     RamStepStatusHistory *history = this->statusHistory(step);
     if (history) history->remove();
+}
+
+void RamItem::stepChanged(RamObject *stepObj)
+{
+    RamStep *step = qobject_cast<RamStep*>( stepObj );
+
+    if (m_productionType != step->type() )
+    {
+        RamStepStatusHistory *history = statusHistory(step);
+        // if it's listed, remove it
+        if ( history )
+        {
+            history->remove();
+        }
+        return;
+    }
+
+    // Check if the step is already listed
+    if ( statusHistory(step) ) return;
+
+    RamStepStatusHistory *history = new RamStepStatusHistory(step, this);
+    _statusHistory->append(history);
+
 }
 
 RamStep::Type RamItem::productionType() const

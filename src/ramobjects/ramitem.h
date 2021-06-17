@@ -37,11 +37,14 @@ protected:
 private slots:
     void newStep(RamObject *stepObj);
     void stepRemoved(RamObject *stepObj);
+    void stepChanged(RamObject *stepObj);
 
 private:
     RamObjectUberList *_statusHistory;
     RamProject *m_project;
     RamStep::Type m_productionType;
+
+    QMap<QString, QMetaObject::Connection> m_stepConnections;
 };
 
 #endif // RAMITEM_H

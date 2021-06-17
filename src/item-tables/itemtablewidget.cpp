@@ -146,7 +146,6 @@ int ItemTableWidget::addStep(RamStep *step)
 
     QList<QMetaObject::Connection> c;
     c << connect(step, &RamObject::changed, this, &ItemTableWidget::stepChanged);
-    c << connect(step, &RamObject::removed, this, &ItemTableWidget::removeStep);
     m_stepConnections[step->uuid()] = c;
 
     return col;
@@ -192,6 +191,27 @@ void ItemTableWidget::statusAdded(RamObject *statusObj, int index)
     RamStep *step = status->step();
 
     setStatusWidget(item, step);
+}
+
+void ItemTableWidget::stepStatusHistoryAdded(RamObject *sshObj)
+{
+    if (sshObj->objectType() != RamObject::StepStatusHistory) return;
+
+    RamStepStatusHistory *ssh = qobject_cast<RamStepStatusHistory*>( sshObj );
+    if (!ssh) return;
+    RamStep *step = ssh->step();
+    if (step) addStep(step);
+    return;
+}
+
+void ItemTableWidget::stepStatusHistoryRemoved(RamObject *sshObj)
+{
+    if (sshObj->objectType() != RamObject::StepStatusHistory) return;
+    RamStepStatusHistory *ssh = qobject_cast<RamStepStatusHistory*>( sshObj );
+    if (!ssh) return;
+    RamStep *step = ssh->step();
+    if (step) removeStep(step);
+    return;
 }
 
 void ItemTableWidget::statusRemoved(RamObject *statusObj)
@@ -286,6 +306,8 @@ void ItemTableWidget::objectAssigned(RamObject *obj)
 
     // Connect changes & status history
     QList<QMetaObject::Connection> c;
+    c << connect(statusHistory, &RamObjectList::objectAdded, this, &ItemTableWidget::stepStatusHistoryAdded);
+    c << connect(statusHistory, &RamObjectList::objectRemoved, this, &ItemTableWidget::stepStatusHistoryRemoved);
     c << connect(statusHistory, &RamObjectUberList::objectAdded, this, &ItemTableWidget::statusAdded);
     c << connect(statusHistory, &RamObjectUberList::objectRemoved, this, &ItemTableWidget::statusRemoved);
     c << connect(obj, &RamObject::changed, this, &ItemTableWidget::objectChanged);
