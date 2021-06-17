@@ -20,6 +20,9 @@ public:
     RamStatusWidget(RamStatus *status, QWidget *parent = nullptr);
     RamStatus *status() const;
 
+protected slots:
+    void exploreClicked() Q_DECL_OVERRIDE;
+
 private slots:
     void remove();
     void statusChanged(RamObject *o);

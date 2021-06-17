@@ -10,10 +10,17 @@ class RamStepWidget : public RamObjectWidget
 public:
     RamStepWidget(RamStep *step, QWidget *parent = nullptr);
     RamStep *step() const;
+
+
+protected slots:
+    void exploreClicked() Q_DECL_OVERRIDE;
+
 private slots:
     void stepChanged(RamObject *obj);
 private:
     RamStep *m_step;
+
+    void completeUi();
 };
 
 #endif // RAMSTEPWIDGET_H

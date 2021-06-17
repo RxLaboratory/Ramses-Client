@@ -14,12 +14,17 @@ RamStatusWidget::RamStatusWidget(RamStatus *status, QWidget *parent) :
 
     setUserEditRole(RamUser::Lead);
 
-    connectEvents();
+    connectEvents();//*/
 }
 
 RamStatus *RamStatusWidget::status() const
 {
     return _status;
+}
+
+void RamStatusWidget::exploreClicked()
+{
+    explore(Ramses::instance()->path(_status));
 }
 
 void RamStatusWidget::remove()
@@ -78,6 +83,7 @@ void RamStatusWidget::completeUi()
     setPrimaryContentHeight(40);
     primaryContentWidget->show();
     setAlwaysShowPrimaryContent(true);
+    showExploreButton(true);
 }
 
 void RamStatusWidget::connectEvents()

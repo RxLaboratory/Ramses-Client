@@ -131,6 +131,7 @@ void RamObjectWidget::objectChanged()
     setTitle(t);
 
     if (m_object->comment() == "") commentEdit->hide();
+    else commentEdit->show();
     commentEdit->setPlainText( m_object->comment() );
 }
 
@@ -319,8 +320,9 @@ void RamObjectWidget::select()
 
 void RamObjectWidget::resizeEvent(QResizeEvent *event)
 {
+    if (!this->isVisible()) return;
     QWidget::resizeEvent(event);
-    // If size is too small, just hide content
+    /*// If size is too small, just hide content
     int h = event->size().height();
 
     secondaryContentWidget->hide();
@@ -334,14 +336,8 @@ void RamObjectWidget::resizeEvent(QResizeEvent *event)
 
     if (h < 70 + m_primaryContentHeight || commentEdit->toPlainText() == "") return;
 
-    secondaryContentWidget->show();
+    secondaryContentWidget->show();//*/
 
-}
-
-void RamObjectWidget::showEvent(QShowEvent *event)
-{
-    QWidget::showEvent(event);
-    //adjustCommentEditSize();
 }
 
 void RamObjectWidget::explore(QString path)

@@ -10,6 +10,7 @@ class RamSequenceWidget : public RamObjectWidget
 public:
     RamSequenceWidget(RamSequence *sequence, QWidget *parent = nullptr);
     RamSequence *sequence() const;
+
 private:
     RamSequence *m_sequence;
 };

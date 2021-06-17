@@ -287,6 +287,36 @@ QDir Ramses::dir(RamStep *s) const
     return QDir(path(s));
 }
 
+QString Ramses::path(RamItem *i) const
+{
+    if (i->objectType() == RamObject::Asset)
+    {
+        RamAsset *a = qobject_cast<RamAsset*>( i );
+        return assetPath(a);
+    }
+    if (i->objectType() == RamObject::Shot)
+    {
+        RamShot *s = qobject_cast<RamShot*>( i );
+        return shotPath(s);
+    }
+    return "";
+}
+
+QDir Ramses::dir(RamItem *i) const
+{
+    if (i->objectType() == RamObject::Asset)
+    {
+        RamAsset *a = qobject_cast<RamAsset*>( i );
+        return assetDir(a);
+    }
+    if (i->objectType() == RamObject::Shot)
+    {
+        RamShot *s = qobject_cast<RamShot*>( i );
+        return shotDir(s);
+    }
+    return QDir();
+}
+
 QString Ramses::path(RamAssetGroup *ag) const
 {
     if(ag->isTemplate()) return "";
@@ -300,7 +330,7 @@ QDir Ramses::dir(RamAssetGroup *ag) const
     return QDir(path(ag));
 }
 
-QString Ramses::path(RamAsset *a) const
+QString Ramses::assetPath(RamAsset *a) const
 {
     RamAssetGroup *ag = a->assetGroup();
     if (!ag) return "";
@@ -309,23 +339,38 @@ QString Ramses::path(RamAsset *a) const
     return createPath( path(ag) + "/" + p->shortName() + "_A_" + a->shortName() );
 }
 
-QDir Ramses::dir(RamAsset *a) const
+QDir Ramses::assetDir(RamAsset *a) const
 {
-    return QDir(path(a));
+    return QDir(assetPath(a));
 }
 
-QString Ramses::path(RamShot *s) const
+QString Ramses::shotPath(RamShot *s) const
 {
     RamSequence *seq = s->sequence();
     if (!seq) return "";
     RamProject *p = seq->project();
     if (!p) return "";
-    return createPath( shotsPath(p) + "/" + p->shortName() + "_S_" + s->name() );
+    return createPath( shotsPath(p) + "/" + p->shortName() + "_S_" + s->shortName() );
 }
 
-QDir Ramses::dir(RamShot *s) const
+QDir Ramses::shotDir(RamShot *s) const
 {
-    return QDir(path(s));
+    return QDir(shotPath(s));
+}
+
+QString Ramses::path(RamStatus *s) const
+{
+    RamItem *item = s->item();
+    RamProject *project = item->project();
+    RamStep *step = s->step();
+    QString type = "_A_";
+    if (item->objectType() == RamObject::Shot) type = "_S_";
+    return createPath( path(item) + "/" + project->shortName() + type + item->shortName() + "_" + step->shortName());
+}
+
+QDir Ramses::dir(RamStatus *s) const
+{
+    return QDir( path(s) );
 }
 
 void Ramses::setCurrentUser(RamUser *u)

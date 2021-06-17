@@ -13,10 +13,22 @@ RamAssetGroupWidget::RamAssetGroupWidget(RamAssetGroup *assetGroup, QWidget *par
     if (assetGroup->isTemplate()) this->setTitle( assetGroup->name() + " [Template]");
 
     setIcon(":/icons/asset-group");
+
+    completeUi();
 }
 
 
 RamAssetGroup *RamAssetGroupWidget::assetGroup() const
 {
     return m_assetGroup;
+}
+
+void RamAssetGroupWidget::exploreClicked()
+{
+    explore(Ramses::instance()->path(m_assetGroup));
+}
+
+void RamAssetGroupWidget::completeUi()
+{
+    showExploreButton(true);
 }

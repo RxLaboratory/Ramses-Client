@@ -14,11 +14,16 @@ public:
     RamUserWidget(RamUser *user, QWidget *parent = nullptr);
     RamUser *user() const;
 
+protected slots:
+    void exploreClicked() Q_DECL_OVERRIDE;
+
 private slots:
     void userChanged();
+    void currentUserChanged(RamUser *user);
 
 private:
     RamUser *m_user;
+
 };
 
 #endif // RAMUSERWIDGET_H

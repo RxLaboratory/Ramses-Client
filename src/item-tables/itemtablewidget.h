@@ -43,7 +43,6 @@ private slots:
     void stepStatusHistoryRemoved(RamObject *sshObj);
     void statusRemoved(RamObject *statusObj);
 
-
 private:
     void setupUi();
     void connectEvents();

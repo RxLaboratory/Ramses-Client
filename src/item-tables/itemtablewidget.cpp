@@ -433,11 +433,9 @@ void ItemTableWidget::setStatusWidget(RamItem *item, RamStep *step)
                 this->setItem(row, col, item);
                 this->setCellWidget(row, col, sw);
             }//*/
-
             return;
         }
     }
-
 }
 
 RamStatus *ItemTableWidget::generateDefaultStatus(RamItem *item, RamStep *step)

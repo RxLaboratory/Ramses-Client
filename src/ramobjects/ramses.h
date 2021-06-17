@@ -64,14 +64,20 @@ public:
     // Tree steps
     QString path(RamStep *s) const;
     QDir dir(RamStep *s) const;
+    // Tree items
+    QString path(RamItem *i) const;
+    QDir dir(RamItem *i) const;
     // Tree assets
     QString path(RamAssetGroup *ag) const;
     QDir dir(RamAssetGroup *ag) const;
-    QString path(RamAsset *a) const;
-    QDir dir(RamAsset *a) const;
+    QString assetPath(RamAsset *a) const;
+    QDir assetDir(RamAsset *a) const;
     // Tree shots
-    QString path(RamShot *s) const;
-    QDir dir(RamShot *s) const;
+    QString shotPath(RamShot *s) const;
+    QDir shotDir(RamShot *s) const;
+    // Tree status
+    QString path(RamStatus *s) const;
+    QDir dir(RamStatus *s) const;
     // Users
     void setCurrentUser(RamUser *u);
     RamObjectList *users() const;

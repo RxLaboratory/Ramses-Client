@@ -52,7 +52,6 @@ public slots:
 
 protected:
     void resizeEvent(QResizeEvent *event) Q_DECL_OVERRIDE;
-    void showEvent(QShowEvent *event) Q_DECL_OVERRIDE;
     void explore(QString path);
 
     void setEditWidget(ObjectEditWidget *w);

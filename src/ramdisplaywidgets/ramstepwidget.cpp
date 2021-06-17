@@ -14,11 +14,18 @@ RamStepWidget::RamStepWidget(RamStep *step, QWidget *parent):
 
     stepChanged(step);
     connect(step, &RamObject::changed, this, &RamStepWidget::stepChanged);
+
+    completeUi();
 }
 
 RamStep *RamStepWidget::step() const
 {
     return m_step;
+}
+
+void RamStepWidget::exploreClicked()
+{
+    explore(Ramses::instance()->path(m_step));
 }
 
 void RamStepWidget::stepChanged(RamObject *obj)
@@ -41,4 +48,9 @@ void RamStepWidget::stepChanged(RamObject *obj)
     default:
         setIcon(":/icons/step");
     }
+}
+
+void RamStepWidget::completeUi()
+{
+    showExploreButton(true);
 }

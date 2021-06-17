@@ -11,8 +11,13 @@ class RamProjectWidget : public RamObjectWidget
 public:
     RamProjectWidget(RamProject *project, QWidget *parent = nullptr);
 
+protected slots:
+    void exploreClicked() Q_DECL_OVERRIDE;
+
 private:
-    RamProject *_project;
+    RamProject *m_project;
+
+    void completeUi();
 };
 
 #endif // RAMPROJECTWIDGET_H
