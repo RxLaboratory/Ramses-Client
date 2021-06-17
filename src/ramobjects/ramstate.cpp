@@ -49,5 +49,5 @@ void RamState::update()
 
 RamState *RamState::state(QString uuid)
 {
-    return qobject_cast<RamState*>( RamSequence::obj(uuid) );
+    return qobject_cast<RamState*>( RamObject::obj(uuid) );
 }

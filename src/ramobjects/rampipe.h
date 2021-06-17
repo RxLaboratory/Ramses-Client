@@ -4,6 +4,8 @@
 #include "ramstep.h"
 #include "ramobjectlist.h"
 
+class RamProject;
+
 class RamPipe : public RamObject
 {
     Q_OBJECT
@@ -19,8 +21,7 @@ public:
     RamStep *inputStep() const;
     void setInputStep(RamStep *inputStep);
 
-    QString projectUuid() const;
-    void setProjectUuid(const QString &projectUuid);
+    RamProject *project() const;
 
     RamObjectList *pipeFiles() const;
 
@@ -33,12 +34,11 @@ private slots:
     void pipeFileAssigned(RamObject *const ft);
 
 private:
-    RamStep *_outputStep;
-    RamStep *_inputStep;
-    QString _projectUuid;
+    RamStep *m_outputStep;
+    RamStep *m_inputStep;
     RamObjectList *m_pipeFiles;
-    QMetaObject::Connection _inputConnection;
-    QMetaObject::Connection _outputConnection;
+    QMetaObject::Connection m_inputConnection;
+    QMetaObject::Connection m_outputConnection;
 };
 
 #endif // RAMPIPE_H

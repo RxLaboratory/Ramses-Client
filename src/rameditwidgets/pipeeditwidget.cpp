@@ -30,7 +30,7 @@ void PipeEditWidget::setObject(RamObject *pipeObj)
     if (!pipe) return;
 
     // Load steps
-    RamProject *project = Ramses::instance()->project( pipe->outputStep()->projectUuid() );
+    RamProject *project = pipe->project();
     if (!project) return;
 
     // find output and input steps
@@ -72,7 +72,7 @@ void PipeEditWidget::update()
 
     updating = true;
 
-    RamProject *project = Ramses::instance()->project( _pipe->outputStep()->projectUuid() );
+    RamProject *project = _pipe->project();
     if (!project) return;
 
     RamObject *inputStep = project->steps()->fromUuid( m_toBox->currentData().toString() );

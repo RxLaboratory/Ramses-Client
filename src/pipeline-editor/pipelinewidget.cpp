@@ -345,7 +345,7 @@ void PipelineWidget::assignStep()
     RamProject *project = Ramses::instance()->currentProject();
     if (!project) return;
     QAction *stepAction = (QAction*)sender();
-    RamStep *templateStep = Ramses::instance()->templateStep(stepAction->data().toString());
+    RamStep *templateStep = RamStep::step( stepAction->data().toString() );
     if (!templateStep) return;
     project->assignStep(templateStep);
 }

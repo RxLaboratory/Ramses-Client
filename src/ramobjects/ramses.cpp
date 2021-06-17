@@ -261,7 +261,7 @@ QDir Ramses::exportDir(RamProject *p) const
 
 QString Ramses::path(RamStep *s) const
 {
-    RamProject *p = project( s->projectUuid() );
+    RamProject *p = s->project();
     QString path;
     if (!p) return "";
     if (s->type() == RamStep::PreProduction)
@@ -373,7 +373,7 @@ void Ramses::setCurrentProject(RamProject *currentProject)
 
 void Ramses::projectReady(QString uuid)
 {
-    RamProject *currentProject = project(uuid);
+    RamProject *currentProject = RamProject::project(uuid);
     if ( !currentProject ) return;
 
     if (currentProject->is( _currentProject )) return;
@@ -386,7 +386,7 @@ void Ramses::projectReady(QString uuid)
 
 void Ramses::setCurrentProject(QString uuidOrShortName)
 {
-    setCurrentProject( project(uuidOrShortName) );
+    setCurrentProject( RamProject::project(uuidOrShortName) );
 }
 
 RamObjectList *Ramses::templateSteps() const
@@ -396,7 +396,7 @@ RamObjectList *Ramses::templateSteps() const
 
 RamStep *Ramses::createTemplateStep()
 {
-    RamStep *step = new RamStep("NEW", "Step", true);
+    RamStep *step = new RamStep("NEW", "Step");
     step->setParent(this);
     _templateSteps->append(step);
     return step;

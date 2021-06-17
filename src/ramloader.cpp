@@ -298,7 +298,6 @@ void RamLoader::gotTemplateSteps(QJsonArray steps)
         RamStep *step = new RamStep(
                     s.value("shortName").toString(),
                     s.value("name").toString(),
-                    true,
                     s.value("uuid").toString()
                     );
         step->setType( s.value("type").toString());
@@ -662,12 +661,11 @@ QString RamLoader::gotStep(QJsonObject newS, RamProject *project)
     RamStep *step = new RamStep(
                 newS.value("shortName").toString(),
                 newS.value("name").toString(),
-                false,
+                project,
                 newS.value("uuid").toString()
                 );
     step->setType( newS.value("type").toString());
     step->setOrder( newS.value("order").toInt() );
-    step->setProjectUuid( newS.value("projectUuid").toString());
 
     foreach( QJsonValue u, newS.value("users").toArray())
         step->users()->append( m_ram->users()->fromUuid(u.toString()) );

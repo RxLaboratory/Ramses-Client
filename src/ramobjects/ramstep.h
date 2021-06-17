@@ -5,6 +5,8 @@
 #include "ramuser.h"
 #include "ramapplication.h"
 
+class RamProject;
+
 class RamStep : public RamObject
 {
     Q_OBJECT
@@ -12,8 +14,8 @@ public:
     enum Type{ PreProduction, AssetProduction, ShotProduction, PostProduction };
     Q_ENUM(Type)
 
-    explicit RamStep(QString shortName, QString name = "", bool tplt = true,  QString uuid = "", QObject *parent = nullptr);
-    explicit RamStep(QString shortName, QString name, QString projectUuid,  QString uuid = "", QObject *parent = nullptr);
+    explicit RamStep(QString shortName, QString name = "", QString uuid = "", QObject *parent = nullptr);
+    explicit RamStep(QString shortName, QString name, RamProject *project,  QString uuid = "", QObject *parent = nullptr);
     ~RamStep();
     void init();
 
@@ -24,8 +26,8 @@ public:
     void setType(const Type &type);
     void setType(QString type);
 
-    QString projectUuid() const;
-    void setProjectUuid(const QString &projectUuid);
+    RamProject *project() const;
+    void setProject( RamProject *project );
 
     RamObjectList *users() const;
     RamObjectList *applications() const;
@@ -44,11 +46,11 @@ private slots:
     void applicationUnassigned(RamObject *a);
 
 private:
-    bool _template;
-    Type _type;
-    QString _projectUuid;
-    RamObjectList *_users;
-    RamObjectList *_applications;
+    bool m_template;
+    Type m_type;
+    RamProject *m_project;
+    RamObjectList *m_users;
+    RamObjectList *m_applications;
 };
 
 #endif // RAMSTEP_H
