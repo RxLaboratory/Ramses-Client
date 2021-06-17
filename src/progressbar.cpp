@@ -9,6 +9,7 @@ ProgressBar::ProgressBar(QWidget *parent):
     connect(pm, &ProcessManager::maximum, this, &QProgressBar::setMaximum);
     connect(pm, &ProcessManager::started, this, &QProgressBar::show);
     connect(pm, &ProcessManager::finished, this, &QProgressBar::hide);
-
+    connect(pm, SIGNAL(text(QString)), this, SLOT(repaint()));
+    connect(pm, SIGNAL(progress(int)), this, SLOT(repaint()));
     this->hide();
 }

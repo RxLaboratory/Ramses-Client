@@ -31,8 +31,9 @@ void RamLoader::run()
     else if (query == "getProjects") gotProjects( m_data.value("content").toArray(), false);
     else if (query == "getProject") {
         qDebug() << "--- Loading Project Data ---";
-        m_pm->setTitle("Loading project.");
+        m_pm->setTitle("Loading project...");
         QString uuid = gotProject( m_data.value("content").toObject(), false);
+        m_pm->setTitle("Project ready.");
         emit projectReady(uuid);
     }
     else if (query == "getTemplateSteps") gotTemplateSteps( m_data.value("content").toArray());
@@ -44,6 +45,7 @@ void RamLoader::run()
     {
         qDebug() << "--- Loading Initial Data ---";
         m_pm->setTitle("Getting Ramses data.");
+        m_pm->setMaximum(7);
         QJsonObject content = m_data.value("content").toObject();
         gotUsers( content.value("users").toArray());
         gotTemplateSteps( content.value("templateSteps").toArray());
@@ -79,16 +81,15 @@ void RamLoader::gotUsers(QJsonArray users)
 {
     DBISuspender s;
 
-    m_pm->addToMaximum( users.count() );
+    m_pm->increment();
     m_pm->setText("Loading users...");
+    qDebug() << "Loading users";
 
     RamObjectList *_users = m_ram->users();
 
     // loop through existing users to update them
     for (int i = _users->count() - 1; i >= 0; i--)
     {
-        m_pm->increment();
-
         RamUser *existingUser = (RamUser*)_users->at(i);
         // loop through new users to update
         bool found = false;
@@ -122,8 +123,6 @@ void RamLoader::gotUsers(QJsonArray users)
     // loop through remaining new users to add them
     for (int i = 0; i < users.count(); i++)
     {
-        m_pm->increment();
-
         QJsonObject u = users[i].toObject();
         RamUser *user = new RamUser(
                     u.value("shortName").toString(),
@@ -137,6 +136,8 @@ void RamLoader::gotUsers(QJsonArray users)
     }
 
     // Set the current and ramses user
+    m_pm->setText("Selecting current user");
+    qDebug() << "Selecting current user";
     for (int i = 0; i < _users->count(); i++)
     {
         if (_users->at(i)->shortName() == m_currentUserShortName)
@@ -154,14 +155,14 @@ void RamLoader::gotProjects(QJsonArray projects, bool init)
 {
     DBISuspender s;
 
-    m_pm->addToMaximum(projects.count());
+    m_pm->increment();
     m_pm->setText("Loading projects...");
+    qDebug() << "Loading projects";
 
     QStringList uuids;
     // Update projects
     for (int j = 0; j < projects.count(); j++)
     {
-        m_pm->increment();
         uuids << gotProject( projects.at(j).toObject(), init );
     }
 
@@ -206,6 +207,7 @@ QString RamLoader::gotProject(QJsonObject newP, bool init)
 
             if (!init)
             {
+                m_pm->setMaximum(7);
                 gotSteps( newP.value("steps").toArray(), existingProject);
                 gotAssetGroups( newP.value("assetGroups").toArray(), existingProject);
                 gotSequences( newP.value("sequences").toArray(), existingProject);
@@ -233,6 +235,7 @@ QString RamLoader::gotProject(QJsonObject newP, bool init)
     // Add steps, assets, sequences, pipes...
     if (!init)
     {
+        m_pm->setMaximum(7);
         gotSteps( newP.value("steps").toArray(), project);
         gotAssetGroups( newP.value("assetGroups").toArray(), project);
         gotSequences( newP.value("sequences").toArray(), project);
@@ -251,16 +254,15 @@ void RamLoader::gotTemplateSteps(QJsonArray steps)
 {
     DBISuspender s;
 
-    m_pm->addToMaximum(steps.count());
+    m_pm->increment();
     m_pm->setText("Loading template steps...");
+    qDebug() << "Loading template steps";
 
     RamObjectList *_templateSteps = m_ram->templateSteps();
 
     // loop through existing steps to update them
     for (int i = _templateSteps->count() - 1; i >= 0; i--)
     {
-        m_pm->increment();
-
         RamStep *existingStep = (RamStep*)_templateSteps->at(i);
         // loop through new steps to update
         bool found = false;
@@ -292,8 +294,6 @@ void RamLoader::gotTemplateSteps(QJsonArray steps)
     // loop through remaining new projects to add them
     for (int i = 0; i < steps.count(); i++)
     {
-        m_pm->increment();
-
         QJsonObject s = steps[i].toObject();
         RamStep *step = new RamStep(
                     s.value("shortName").toString(),
@@ -310,15 +310,15 @@ void RamLoader::gotTemplateAssetGroups(QJsonArray assetGroups)
 {
     DBISuspender s;
 
-    m_pm->addToMaximum(assetGroups.count());
+    m_pm->increment();
     m_pm->setText("Loading template asset groups...");
+    qDebug() << "Loading template asset groups";
 
     RamObjectList *_templateAssetGroups = m_ram->templateAssetGroups();
 
     // loop through existing asset groups to update them
     for (int i = _templateAssetGroups->count() - 1; i >= 0; i--)
     {
-        m_pm->increment();
         RamAssetGroup *existingAssetGroup = (RamAssetGroup*)_templateAssetGroups->at(i);
         // loop through new steps to update
         bool found = false;
@@ -350,7 +350,6 @@ void RamLoader::gotTemplateAssetGroups(QJsonArray assetGroups)
     // loop through remaining new projects to add them
     for (int i = 0; i < assetGroups.count(); i++)
     {
-        m_pm->increment();
         QJsonObject ag = assetGroups[i].toObject();
         RamAssetGroup *assetGroup = new RamAssetGroup(
                     ag.value("shortName").toString(),
@@ -366,15 +365,15 @@ void RamLoader::gotStates(QJsonArray states)
 {
     DBISuspender s;
 
-    m_pm->addToMaximum(states.count());
+    m_pm->increment();
     m_pm->setText("Loading states...");
+    qDebug() << "Loading states";
 
     RamObjectList *_states = m_ram->states();
 
     // loop through existing steps to update them
     for (int i = _states->count() - 1; i >= 0; i--)
     {
-        m_pm->increment();
         RamState *existingState = (RamState*)_states->at(i);
         // loop through new steps to update
         bool found = false;
@@ -407,7 +406,6 @@ void RamLoader::gotStates(QJsonArray states)
     // loop through remaining new states to add them
     for (int i = 0; i < states.count(); i++)
     {
-        m_pm->increment();
         QJsonObject s = states[i].toObject();
         RamState *state = new RamState(
                     s.value("shortName").toString(),
@@ -426,15 +424,15 @@ void RamLoader::gotFileTypes(QJsonArray fileTypes)
 {
     DBISuspender s;
 
-    m_pm->addToMaximum(fileTypes.count());
+    m_pm->increment();
     m_pm->setText("Loading file types...");
+    qDebug() << "Loading file types";
 
     RamObjectList *_fileTypes = m_ram->fileTypes();
 
     // loop through existing file types to update them
     for (int i = _fileTypes->count() - 1; i >= 0; i--)
     {
-        m_pm->increment();
         RamFileType *existingFileType = (RamFileType*)_fileTypes->at(i);
         // loop through new file types to update
         bool found = false;
@@ -467,7 +465,6 @@ void RamLoader::gotFileTypes(QJsonArray fileTypes)
     // loop through remaining new file types to add them
     for (int i = 0; i < fileTypes.count(); i++)
     {
-        m_pm->increment();
         QJsonObject ft = fileTypes[i].toObject();
         RamFileType *fileType = new RamFileType(
                     ft.value("shortName").toString(),
@@ -485,15 +482,15 @@ void RamLoader::gotApplications(QJsonArray applications)
 {
     DBISuspender s;
 
-    m_pm->addToMaximum(applications.count());
     m_pm->setText("Loading applications...");
+    m_pm->increment();
+    qDebug() << "Loading applications";
 
     RamObjectList *_applications = m_ram->applications();
 
     // loop through existing applications to update them
     for (int i = _applications->count() - 1; i >= 0; i--)
     {
-        m_pm->increment();
         RamApplication *existingApplication = (RamApplication*)_applications->at(i);
         // loop through new steps to update
         bool found = false;
@@ -570,7 +567,6 @@ void RamLoader::gotApplications(QJsonArray applications)
     // loop through remaining new applications to add them
     for (int i = 0; i < applications.count(); i++)
     {
-        m_pm->increment();
         QJsonObject a = applications[i].toObject();
         RamApplication *app = new RamApplication(
                     a.value("shortName").toString(),
@@ -598,8 +594,8 @@ void RamLoader::gotSteps(QJsonArray steps, RamProject *project)
 {
     DBISuspender s;
 
-    m_pm->addToMaximum(steps.count());
     m_pm->setText("Loading steps...");
+    m_pm->increment();
     qDebug() << "Loading Steps";
 
     RamObjectList *projectSteps = project->steps();
@@ -610,11 +606,13 @@ void RamLoader::gotSteps(QJsonArray steps, RamProject *project)
     // Update steps
     for (int j = 0; j < steps.count(); j++)
     {
-        m_pm->increment();
         uuids << gotStep( steps.at(j).toObject(), project );
     }
 
     // Remove deleted shots
+    m_pm->setText("Cleaning steps...");
+    qDebug() << "Cleaning Steps";
+
     for (int i = projectSteps->count() - 1; i >= 0; i--)
     {
         RamObject *existingStep = projectSteps->at(i);
@@ -682,7 +680,7 @@ void RamLoader::gotAssetGroups(QJsonArray assetGroups, RamProject *project)
 {
     DBISuspender s;
 
-    m_pm->addToMaximum(assetGroups.count());
+    m_pm->increment();
     m_pm->setText("Loading asset groups...");
     qDebug() << "Loading Asset groups";
 
@@ -690,11 +688,12 @@ void RamLoader::gotAssetGroups(QJsonArray assetGroups, RamProject *project)
     // Update asset groups
     for (int j = 0; j < assetGroups.count(); j++)
     {
-        m_pm->increment();
         uuids << gotAssetGroup( assetGroups.at(j).toObject(), project );
     }
 
     // Remove deleted asset groups
+    m_pm->setText("Cleaning asset groups...");
+    qDebug() << "Cleaning Asset groups";
     RamObjectUberList *projectAssetGroups = project->assetGroups();
     for (int i = projectAssetGroups->count() - 1; i >= 0; i--)
     {
@@ -751,19 +750,21 @@ void RamLoader::gotAssets(QJsonArray assets, RamAssetGroup *assetGroup, RamProje
 {
     DBISuspender s;
 
-    m_pm->addToMaximum(assets.count());
-    m_pm->setText("Loading assets");
+    m_pm->increment();
+    m_pm->setText("Loading assets...");
+    qDebug() << "Loading assets";
 
     QStringList uuids;
 
     // Update assets
     for (int j = 0; j < assets.count(); j++)
     {
-        m_pm->increment();
         uuids << gotAsset( assets.at(j).toObject(), assetGroup, project );
     }
 
     // Remove deleted assets
+    m_pm->setText("Cleaning assets...");
+    qDebug() << "Cleaning assets";
     for (int i = assetGroup->count() - 1; i >= 0; i--)
     {
         RamObject *existingAsset = assetGroup->at(i);
@@ -819,19 +820,20 @@ void RamLoader::gotSequences(QJsonArray sequences, RamProject *project)
 {
     DBISuspender s;
 
-    m_pm->addToMaximum(sequences.count());
-    m_pm->setText("Loading sequences");
+    m_pm->increment();
+    m_pm->setText("Loading sequences...");
     qDebug() << "Loading sequences";
 
     QStringList uuids;
     // Update sequences
     for (int j = 0; j < sequences.count(); j++)
     {
-        m_pm->increment();
         uuids << gotSequence( sequences.at(j).toObject(), project );
     }
 
     // Remove deleted sequences
+    m_pm->setText("Cleaning sequences...");
+    qDebug() << "Cleaning sequences";
     RamObjectUberList *projectSequences = project->sequences();
     for (int i = projectSequences->count() - 1; i >= 0; i--)
     {
@@ -888,18 +890,20 @@ void RamLoader::gotShots(QJsonArray shots, RamSequence *sequence, RamProject *pr
 {
     DBISuspender s;
 
-    m_pm->addToMaximum(shots.count());
+    m_pm->increment();
     m_pm->setText("Loading shots...");
+    qDebug() << "Loading shots";
 
     QStringList uuids;
     // Update shots
     for (int j = 0; j < shots.count(); j++)
     {
-        m_pm->increment();
         uuids << gotShot( shots.at(j).toObject(), sequence, project );
     }
 
     // Remove deleted shots
+    m_pm->setText("Cleaning shots...");
+    qDebug() << "Cleaning shots";
     for (int i = sequence->count() - 1; i >= 0; i--)
     {
         RamObject *existingShot = sequence->at(i);
@@ -1040,7 +1044,7 @@ void RamLoader::gotPipes(QJsonArray pipes, RamProject *project)
 {
     DBISuspender s;
 
-    m_pm->addToMaximum(pipes.count());
+    m_pm->increment();
     m_pm->setText("Loading pipes...");
     qDebug() << "Loading pipes";
 
@@ -1048,11 +1052,12 @@ void RamLoader::gotPipes(QJsonArray pipes, RamProject *project)
     // Update pipes
     for (int j = 0; j < pipes.count(); j++)
     {
-        m_pm->increment();
         uuids << gotPipe( pipes.at(j).toObject(), project );
     }
 
     // Remove deleted pipes
+    m_pm->setText("Cleaning pipes...");
+    qDebug() << "Cleaning pipes";
     RamObjectList *projectPipeline = project->pipeline();
     for (int i = projectPipeline->count() - 1; i >= 0; i--)
     {
@@ -1123,7 +1128,7 @@ void RamLoader::gotPipeFiles(QJsonArray pipeFiles, RamProject *project)
 {
     DBISuspender s;
 
-    m_pm->addToMaximum(pipeFiles.count());
+    m_pm->increment();
     m_pm->setText("Loading pipe files...");
     qDebug() << "Loading pipe files";
 
@@ -1131,11 +1136,12 @@ void RamLoader::gotPipeFiles(QJsonArray pipeFiles, RamProject *project)
     // Update pipes
     for (int j = 0; j < pipeFiles.count(); j++)
     {
-        m_pm->increment();
         uuids << gotPipeFile( pipeFiles.at(j).toObject(), project );
     }
 
     // Remove deleted pipes
+    m_pm->setText("Cleaning pipe files...");
+    qDebug() << "Cleaning pipe files";
     RamObjectList *projectPipeFiles = project->pipeFiles();
     for (int i = projectPipeFiles->count() - 1; i >= 0; i--)
     {
