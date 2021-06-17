@@ -7,14 +7,14 @@ RamShot::RamShot(QString shortName, RamProject *project, RamSequence *sequence, 
     setObjectType(Shot);
     setProductionType(RamStep::ShotProduction);
     m_sequence = sequence;
-    _dbi->createShot(_shortName, _name, m_sequence->uuid(), _uuid);
+    m_dbi->createShot(m_shortName, m_name, m_sequence->uuid(), m_uuid);
 
-    this->setObjectName( "RamShot " + _shortName );
+    this->setObjectName( "RamShot " + m_shortName );
 }
 
 RamShot::~RamShot()
 {
-    _dbi->removeShot(_uuid);
+    m_dbi->removeShot(m_uuid);
 }
 
 RamSequence *RamShot::sequence() const
@@ -25,7 +25,7 @@ RamSequence *RamShot::sequence() const
 void RamShot::setSequence(RamSequence *sequence)
 {
     if (m_sequence->is(sequence)) return;
-    _dirty = true;
+    m_dirty = true;
     setParent(sequence);
     m_sequence = sequence;
     emit changed(this);
@@ -39,7 +39,7 @@ qreal RamShot::duration() const
 void RamShot::setDuration(const qreal &duration)
 {
     if (m_duration == duration) return;
-    _dirty = true;
+    m_dirty = true;
     m_duration = duration;
     emit changed(this);
 }
@@ -51,12 +51,12 @@ RamShot *RamShot::shot(QString uuid)
 
 void RamShot::update()
 {
-    if(!_dirty) return;
+    if(!m_dirty) return;
     RamObject::update();
-    _dbi->updateShot(_uuid, _shortName, _name, m_sequence->uuid(), m_duration);
-    if (_orderChanged)
+    m_dbi->updateShot(m_uuid, m_shortName, m_name, m_sequence->uuid(), m_duration);
+    if (m_orderChanged)
     {
-        _dbi->moveShot(_uuid, _order);
-        _orderChanged = false;
+        m_dbi->moveShot(m_uuid, m_order);
+        m_orderChanged = false;
     }
 }

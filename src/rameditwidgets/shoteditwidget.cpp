@@ -136,7 +136,7 @@ void ShotEditWidget::connectEvents()
     connect(secondsBox, SIGNAL(editingFinished()), this, SLOT(secondsChanged()));
     connect(secondsBox, SIGNAL(editingFinished()), this, SLOT(update()));
     connect(framesBox, SIGNAL(editingFinished()), this, SLOT(framesChanged()));
-    connect(secondsBox, SIGNAL(editingFinished()), this, SLOT(update()));
+    connect(framesBox, SIGNAL(editingFinished()), this, SLOT(update()));
     connect(sequencesBox, SIGNAL(currentIndexChanged(int)), this, SLOT(moveShot()));
     connect(Ramses::instance(), &Ramses::currentProjectChanged, this, &ShotEditWidget::changeProject);
 }

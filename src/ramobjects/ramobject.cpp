@@ -4,83 +4,96 @@ QMap<QString, RamObject*> RamObject::m_existingObjects = QMap<QString, RamObject
 
 RamObject::RamObject(QObject *parent) : QObject(parent)
 {
-    _removing = false;
-    _shortName = "";
-    _name = "";
-    _uuid = RamUuid::generateUuidString(_shortName);
-    _dbi = DBInterface::instance();
+    m_removing = false;
+    m_shortName = "";
+    m_name = "";
+    m_uuid = RamUuid::generateUuidString(m_shortName);
+    m_dbi = DBInterface::instance();
     this->setObjectName( "RamObject" );
-    m_existingObjects[_uuid] = this;
+    m_existingObjects[m_uuid] = this;
 }
 
 RamObject::RamObject(QString uuid, QObject *parent): QObject(parent)
 {
-    _removing = false;
-    _shortName = "";
-    _name = "";
-    _uuid = uuid;
-    _dbi = DBInterface::instance();
+    m_removing = false;
+    m_shortName = "";
+    m_name = "";
+    m_uuid = uuid;
+    m_dbi = DBInterface::instance();
     this->setObjectName( "RamObject" );
-    m_existingObjects[_uuid] = this;
+    m_existingObjects[m_uuid] = this;
 }
 
 RamObject::RamObject(QString shortName, QString name, QString uuid, QObject *parent) : QObject(parent)
 {
-    _removing = false;
-    _shortName = shortName;
-    _name = name;
-    if(_name == "" ) _name = shortName;
-    if (uuid != "") _uuid = uuid;
-    else _uuid = RamUuid::generateUuidString(_shortName);
-    _dbi = DBInterface::instance();
+    m_removing = false;
+    m_shortName = shortName;
+    m_name = name;
+    if(m_name == "" ) m_name = shortName;
+    if (uuid != "") m_uuid = uuid;
+    else m_uuid = RamUuid::generateUuidString(m_shortName);
+    m_dbi = DBInterface::instance();
     this->setObjectName( "RamObject" );
-    m_existingObjects[_uuid] = this;
+    m_existingObjects[m_uuid] = this;
 }
 
 QString RamObject::shortName() const
 {
-    return _shortName;
+    return m_shortName;
 }
 
 void RamObject::setShortName(const QString &shortName)
 {
-    if (shortName == _shortName) return;
-    _dirty  = true;
-    _shortName = shortName;
+    if (shortName == m_shortName) return;
+    m_dirty  = true;
+    m_shortName = shortName;
     emit changed(this);
 }
 
 QString RamObject::name() const
 {
-    return _name;
+    return m_name;
 }
 
 void RamObject::setName(const QString &name)
 {
-    if (name == _name) return;
-    _dirty = true;
-    _name = name;
+    if (name == m_name) return;
+    m_dirty = true;
+    m_name = name;
+    emit changed(this);
+}
+
+QString RamObject::comment() const
+{
+    return m_comment;
+}
+
+void RamObject::setComment(const QString comment)
+{
+    if (comment == m_comment) return;
+    m_dirty = true;
+    m_comment = comment;
     emit changed(this);
 }
 
 QString RamObject::uuid() const
 {
-    return _uuid;
+    return m_uuid;
 }
 
 void RamObject::remove()
 {
-    qDebug().noquote() << "Removing: " + _name + " (uuid: " + _uuid + ")";
+    qDebug().noquote() << "Removing: " + m_name + " (uuid: " + m_uuid + ")";
     qDebug().noquote() << "- " + this->objectName();
-    if (_removing) return;
+    if (m_removing) return;
     qDebug().noquote() << "> Accepted";
 
-    _removing = true;
+    m_removing = true;
 #ifdef QT_DEBUG
     dumpObjectInfo();
 #endif
     emit removed(this);
-    qDebug().noquote() << "> " + _name + " Removed";
+    qDebug().noquote() << "> " + m_name + " Removed";
 
     this->deleteLater();
 }
@@ -97,23 +110,23 @@ void RamObject::setObjectType(RamObject::ObjectType type)
 
 int RamObject::order() const
 {
-    return _order;
+    return m_order;
 }
 
 void RamObject::setOrder(int order)
 {
-    if (order == _order) return;
-    _dirty = true;
-    int previous = _order;
-    _order = order;
-    if (!_dbi->isSuspended()) _orderChanged = true;
+    if (order == m_order) return;
+    m_dirty = true;
+    int previous = m_order;
+    m_order = order;
+    if (!m_dbi->isSuspended()) m_orderChanged = true;
     emit orderChanged(this, previous, order);
 }
 
 bool RamObject::is(const RamObject *other)
 {
     if (!other) return false;
-    return other->uuid() == _uuid;
+    return other->uuid() == m_uuid;
 }
 
 RamObject *RamObject::obj(QString uuid)
@@ -125,5 +138,5 @@ RamObject *RamObject::obj(QString uuid)
 
 void RamObject::update()
 {
-    _dirty = false;
+    m_dirty = false;
 }

@@ -20,14 +20,9 @@ public:
     RamStatusWidget(RamStatus *status, QWidget *parent = nullptr);
     RamStatus *status() const;
 
-protected:
-    void resizeEvent(QResizeEvent *event) Q_DECL_OVERRIDE;
-    void showEvent(QShowEvent *event) Q_DECL_OVERRIDE;
-
 private slots:
     void remove();
     void statusChanged(RamObject *o);
-    void adjustCommentEditSize();
     void updateStatus(RamState*state, int completion, int version, QString comment);
 
 private:
@@ -36,7 +31,6 @@ private:
     void completeUi();
     void connectEvents();
     DuQFSlider *completionBox;
-    QPlainTextEdit *commentEdit;
     QLabel *userLabel;
     StatusEditWidget *statusEditWidget;
 

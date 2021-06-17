@@ -40,6 +40,15 @@ void ItemTableWidget::setList( RamObjectUberList *list, RamStep::Type stepType)
     if( stepType == RamStep::AssetProduction ) this->horizontalHeaderItem(0)->setText("Assets");
     else this->horizontalHeaderItem(0)->setText("Shots");
 
+    this->resizeColumnsToContents();
+    // Add margins
+    QHeaderView *h = this->horizontalHeader();
+    h->resizeSection( 0, h->sectionSize(0) + 100 );
+    for (int i = 1; i < h->count(); i++)
+    {
+        h->resizeSection( i, h->sectionSize(i) + 30 );
+    }
+
     this->setEnabled(true);//*/
 }
 
@@ -90,6 +99,23 @@ void ItemTableWidget::setStepVisible(QString stepUuid, bool visible)
         {
             this->setColumnHidden(i, !visible);
         }
+    }
+}
+
+void ItemTableWidget::search(QString s)
+{
+    s = s.toLower();
+    for (int i = 0; i< this->rowCount();i++)
+    {
+        if (s == "") this->setRowHidden(i, false);
+        QString itemUuid = this->verticalHeaderItem(i)->text().toLower();
+        if (itemUuid.contains(s))
+        {
+            this->setRowHidden(i, false);
+            continue;
+        }
+        QString itemName = this->item(i, 0)->text().toLower();
+        this->setRowHidden(i, !itemName.contains(s));
     }
 }
 
@@ -155,10 +181,7 @@ int ItemTableWidget::addStep(RamStep *step)
     c << connect(step, &RamObject::changed, this, &ItemTableWidget::stepChanged);
     m_stepConnections[step->uuid()] = c;
 
-    qDebug() << "=========================";
-    qDebug() << step;
     emit newStep(step);
-    qDebug() << "=========================";
 
     return col;
 }

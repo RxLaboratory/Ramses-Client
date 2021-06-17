@@ -590,6 +590,10 @@ QMenu::separator {
     background-color: rgba(0,0,0,0);
 }
 
+#titleBar QLineEdit {
+    background: @color-dark-grey;
+}
+
 /* TOOLBAR */
 
 QToolBar {

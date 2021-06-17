@@ -8,7 +8,7 @@ RamStep::RamStep(QString shortName, QString name, QString uuid) :
     setObjectType(Step);
     m_project = nullptr;
     m_template = true;
-    if (m_template) _dbi->createTemplateStep(_shortName, _name, _uuid);
+    if (m_template) m_dbi->createTemplateStep(m_shortName, m_name, m_uuid);
     init();
 }
 
@@ -18,20 +18,20 @@ RamStep::RamStep(QString shortName, QString name, RamProject *project, QString u
     setObjectType(Step);
     m_project = project;
     m_template = false;
-    _dbi->createStep(_shortName, _name, m_project->uuid(), _uuid);
+    m_dbi->createStep(m_shortName, m_name, m_project->uuid(), m_uuid);
     init();
 }
 
 RamStep::~RamStep()
 {
-    if (m_template) _dbi->removeTemplateStep(_uuid);
-    else _dbi->removeStep(_uuid);
+    if (m_template) m_dbi->removeTemplateStep(m_uuid);
+    else m_dbi->removeStep(m_uuid);
 }
 
 void RamStep::init()
 {
     m_type = AssetProduction;
-    _order = 0;
+    m_order = 0;
     m_users = new RamObjectList();
     m_applications = new RamObjectList();
     connect(m_users, &RamObjectList::objectAdded, this, &RamStep::userAssigned);
@@ -50,7 +50,7 @@ bool RamStep::isTemplate() const
 RamStep* RamStep::createFromTemplate(QString projectUuid)
 {
     // Create
-    RamStep *step = new RamStep(_shortName, _name, projectUuid);
+    RamStep *step = new RamStep(m_shortName, m_name, projectUuid);
     step->setType(m_type);
     // and update
     step->update();
@@ -65,7 +65,7 @@ RamStep::Type RamStep::type() const
 void RamStep::setType(const Type &type)
 {
     if (type == m_type) return;
-    _dirty = true;
+    m_dirty = true;
     m_type = type;
     emit changed(this);
 }
@@ -85,12 +85,12 @@ RamObjectList *RamStep::users() const
 
 void RamStep::userAssigned(RamObject *u)
 {
-    _dbi->assignUser(_uuid, u->uuid());
+    m_dbi->assignUser(m_uuid, u->uuid());
 }
 
 void RamStep::userUnassigned(RamObject *u)
 {
-    _dbi->unassignUser(_uuid, u->uuid());
+    m_dbi->unassignUser(m_uuid, u->uuid());
 }
 
 RamObjectList *RamStep::applications() const
@@ -100,12 +100,12 @@ RamObjectList *RamStep::applications() const
 
 void RamStep::applicationAssigned(RamObject *a)
 {
-    _dbi->assignApplication(_uuid, a->uuid());
+    m_dbi->assignApplication(m_uuid, a->uuid());
 }
 
 void RamStep::applicationUnassigned(RamObject *a)
 {
-    _dbi->unassignApplication(_uuid, a->uuid());
+    m_dbi->unassignApplication(m_uuid, a->uuid());
 }
 
 QList<RamObject *> RamStep::inputFileTypes()
@@ -138,14 +138,14 @@ QList<RamObject *> RamStep::outputFileTypes()
 
 void RamStep::update()
 {
-    if(!_dirty) return;
+    if(!m_dirty) return;
     RamObject::update();
     QString type = "asset";
     if (m_type == PostProduction) type = "post";
     else if (m_type == PreProduction) type = "pre";
     else if (m_type == ShotProduction) type = "shot";
-    if (m_template) _dbi->updateTemplateStep(_uuid, _shortName, _name, type);
-    else _dbi->updateStep(_uuid, _shortName, _name, type, _order);
+    if (m_template) m_dbi->updateTemplateStep(m_uuid, m_shortName, m_name, type);
+    else m_dbi->updateStep(m_uuid, m_shortName, m_name, type, m_order);
 }
 
 RamStep *RamStep::step(QString uuid)

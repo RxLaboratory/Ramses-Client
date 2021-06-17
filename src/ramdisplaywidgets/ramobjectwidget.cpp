@@ -129,6 +129,9 @@ void RamObjectWidget::objectChanged()
     QString t = m_object->name();
     if ( t == "" ) t = m_object->shortName();
     setTitle(t);
+
+    if (m_object->comment() == "") commentEdit->hide();
+    commentEdit->setPlainText( m_object->comment() );
 }
 
 void RamObjectWidget::remove()
@@ -147,16 +150,18 @@ void RamObjectWidget::edit()
 
 void RamObjectWidget::setupUi()
 {
-    QVBoxLayout *vlayout = new QVBoxLayout();
+    QVBoxLayout *vlayout = new QVBoxLayout(this);
     vlayout->setContentsMargins(0,0,0,3);
     vlayout->setSpacing(0);
 
     // include in a frame for the BG
     QFrame *mainFrame = new QFrame(this);
 
-    layout = new QVBoxLayout();
-    layout->setSpacing(3);
-    layout->setContentsMargins(3,3,3,3);
+    QVBoxLayout *mLayout = new QVBoxLayout(mainFrame);
+    mLayout->setSpacing(3);
+    mLayout->setContentsMargins(3,3,3,3);
+
+    // --- TITLE BAR & BUTTONS ---
 
     QHBoxLayout *titleLayout = new QHBoxLayout();
     titleLayout->setSpacing(3);
@@ -178,6 +183,19 @@ void RamObjectWidget::setupUi()
     editButton->setToolButtonStyle(Qt::ToolButtonIconOnly);
     titleLayout->addWidget(editButton);
 
+    buttonsLayout = new QHBoxLayout();
+    buttonsLayout->setContentsMargins(0,0,0,0);
+    buttonsLayout->setSpacing(3);
+
+    exploreButton = new QToolButton(this);
+    exploreButton->setObjectName(QStringLiteral("exploreButton"));
+    exploreButton->setIcon(QIcon(":/icons/reveal-folder-s"));
+    exploreButton->setIconSize(QSize(10,10));
+    exploreButton->hide();
+    buttonsLayout->addWidget(exploreButton);
+
+    titleLayout->addLayout(buttonsLayout);
+
     removeButton = new QToolButton(this);
     removeButton->setIcon( QIcon(":/icons/remove") );
     removeButton->setIconSize(QSize(10,10));
@@ -185,11 +203,42 @@ void RamObjectWidget::setupUi()
     removeButton->setVisible(false);
     titleLayout->addWidget(removeButton);
 
-    layout->addLayout(titleLayout);
+    mLayout->addLayout(titleLayout);
 
-    mainFrame->setLayout(layout);
+    // --- PRIMARY CONTENT ---
+
+    primaryContentWidget = new QWidget(this);
+    primaryContentWidget->setStyleSheet("background-color: rgba(0,0,0,0);");
+    primaryContentLayout = new QVBoxLayout(primaryContentWidget);
+    primaryContentLayout->setSpacing(3);
+    primaryContentLayout->setContentsMargins(0,0,0,0);
+    primaryContentWidget->hide();
+    mLayout->addWidget(primaryContentWidget);
+
+    // --- SECONDARY CONTENT ---
+
+    secondaryContentWidget = new QWidget(this);
+    secondaryContentWidget->hide();
+    secondaryContentWidget->setStyleSheet("background-color: rgba(0,0,0,0);");
+    secondaryContentLayout = new QVBoxLayout(secondaryContentWidget);
+    secondaryContentLayout->setSpacing(3);
+    secondaryContentLayout->setContentsMargins(0,0,0,0);
+
+    commentEdit = new QPlainTextEdit(this);
+    commentEdit->setReadOnly(true);
+    commentEdit->setMaximumHeight(100);
+    commentEdit->setTextInteractionFlags(Qt::NoTextInteraction);
+    QString style = "background-color: rgba(0,0,0,0);";
+    commentEdit->setStyleSheet(style);
+
+    secondaryContentLayout->addWidget(commentEdit);
+    secondaryContentLayout->addStretch();
+
+    mLayout->addWidget(secondaryContentWidget);
+
+    // --- FINISH ---
+
     vlayout->addWidget(mainFrame);
-    this->setLayout(vlayout);
 
     this->setMinimumHeight(30);
 }
@@ -199,6 +248,32 @@ void RamObjectWidget::connectEvents()
     connect(Ramses::instance(), &Ramses::loggedIn, this, &RamObjectWidget::userChanged);
     connect(editButton, SIGNAL(clicked()), this, SLOT(edit()));
     connect(removeButton, SIGNAL(clicked()), this, SLOT(remove()));
+    connect(exploreButton, SIGNAL(clicked()), this, SLOT(exploreClicked()));
+}
+
+bool RamObjectWidget::alwaysShowPrimaryContent() const
+{
+    return m_alwaysShowPrimaryContent;
+}
+
+void RamObjectWidget::setAlwaysShowPrimaryContent(bool newAlwaysShowPrimaryContent)
+{
+    m_alwaysShowPrimaryContent = newAlwaysShowPrimaryContent;
+}
+
+void RamObjectWidget::showExploreButton(bool s)
+{
+    exploreButton->setVisible(s);
+}
+
+int RamObjectWidget::primaryContentHeight() const
+{
+    return m_primaryContentHeight;
+}
+
+void RamObjectWidget::setPrimaryContentHeight(int newPrimaryContentHeight)
+{
+    m_primaryContentHeight = newPrimaryContentHeight;
 }
 
 bool RamObjectWidget::selected() const
@@ -240,4 +315,55 @@ void RamObjectWidget::setSelected(bool selected)
 void RamObjectWidget::select()
 {
     setSelected(true);
+}
+
+void RamObjectWidget::resizeEvent(QResizeEvent *event)
+{
+    QWidget::resizeEvent(event);
+    // If size is too small, just hide content
+    int h = event->size().height();
+
+    secondaryContentWidget->hide();
+
+    if (!m_alwaysShowPrimaryContent)
+    {
+        primaryContentWidget->hide();
+        if (h < 30 + m_primaryContentHeight) return;
+        if (m_primaryContentHeight > 0) primaryContentWidget->show();
+    }
+
+    if (h < 70 + m_primaryContentHeight || commentEdit->toPlainText() == "") return;
+
+    secondaryContentWidget->show();
+
+}
+
+void RamObjectWidget::showEvent(QShowEvent *event)
+{
+    QWidget::showEvent(event);
+    //adjustCommentEditSize();
+}
+
+void RamObjectWidget::explore(QString path)
+{
+    if (path == "") return;
+    if(!QFileInfo::exists(path))
+    {
+        QMessageBox::StandardButton rep = QMessageBox::question(this,
+                                                                "The folder does not exist",
+                                                                "This folder:\n\n" + path + "\n\ndoes not exist yet.\nDo you want to create it now?",
+                                                                QMessageBox::Yes | QMessageBox::No,
+                                                                QMessageBox::Yes);
+        if (rep == QMessageBox::Yes) QDir(path).mkpath(".");
+    }
+    FileUtils::openInExplorer( path );
+}
+
+void RamObjectWidget::adjustCommentEditSize()
+{
+    // Get text height (returns the number of lines and not the actual height in pixels
+    int docHeight = commentEdit->document()->size().toSize().height();
+    // Compute needed height in pixels
+    int h = docHeight * ( commentEdit->fontMetrics().height() ) + commentEdit->fontMetrics().height() * 2;
+    commentEdit->setMaximumHeight(h);
 }

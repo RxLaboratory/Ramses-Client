@@ -7,6 +7,7 @@
 #include <QLabel>
 #include <QToolButton>
 #include <QMessageBox>
+#include <QPlainTextEdit>
 
 #include "ramses.h"
 #include "objecteditwidget.h"
@@ -42,18 +43,36 @@ public:
     void setSelected(bool selected);
     void select();
 
+    bool alwaysShowPrimaryContent() const;
+    void setAlwaysShowPrimaryContent(bool newAlwaysShowPrimaryContent);
+    void showExploreButton(bool s = true);
+
 public slots:
     void edit();
 
 protected:
+    void resizeEvent(QResizeEvent *event) Q_DECL_OVERRIDE;
+    void showEvent(QShowEvent *event) Q_DECL_OVERRIDE;
+    void explore(QString path);
+
     void setEditWidget(ObjectEditWidget *w);
-    QVBoxLayout *layout;
+    int primaryContentHeight() const;
+    void setPrimaryContentHeight(int newPrimaryContentHeight);
+    QVBoxLayout *primaryContentLayout;
+    QVBoxLayout *secondaryContentLayout;
+    QHBoxLayout *buttonsLayout;
+    QWidget *primaryContentWidget;
+    QWidget *secondaryContentWidget;
+
+protected slots:
+    virtual void exploreClicked() {};
 
 private slots:
     void objectRemoved();
     void userChanged();
     void objectChanged();
     void remove();
+    void adjustCommentEditSize();
 
 private:
     void setupUi();
@@ -62,6 +81,10 @@ private:
     QToolButton *removeButton;
     QLabel *title;
     QLabel *icon;
+    QPlainTextEdit *commentEdit;
+    QToolButton *exploreButton;
+    int m_primaryContentHeight = 0;
+    bool m_alwaysShowPrimaryContent = false;
 
     bool _selected = false;
     bool _editable = true;

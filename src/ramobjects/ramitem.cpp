@@ -20,8 +20,8 @@ void RamItem::setStatus(RamUser *user, RamState *state, RamStep *step, int compl
     if (comment != "") status->setComment(comment);
     status->setVersion(version);
 
-    if (this->objectType() == Asset) _dbi->setAssetStatus(_uuid, state->uuid(), step->uuid(), user->uuid(), completionRatio, comment, version, status->uuid());
-    else if (this->objectType() == Shot) _dbi->setShotStatus(_uuid, state->uuid(), step->uuid(), user->uuid(), completionRatio, comment, version, status->uuid());
+    if (this->objectType() == Asset) m_dbi->setAssetStatus(m_uuid, state->uuid(), step->uuid(), user->uuid(), completionRatio, comment, version, status->uuid());
+    else if (this->objectType() == Shot) m_dbi->setShotStatus(m_uuid, state->uuid(), step->uuid(), user->uuid(), completionRatio, comment, version, status->uuid());
 
     addStatus(status);
 }

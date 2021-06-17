@@ -5,7 +5,7 @@ RamPipeFile::RamPipeFile(QString shortName, QString projectUuid, QObject *parent
 {
     this->setObjectType(PipeFile);
     m_projectUuid = projectUuid;
-    _dbi->createPipeFile(_shortName, projectUuid, "", _uuid, "");
+    m_dbi->createPipeFile(m_shortName, projectUuid, "", m_uuid, "");
 }
 
 RamPipeFile::RamPipeFile(QString uuid, QObject *parent):
@@ -16,12 +16,12 @@ RamPipeFile::RamPipeFile(QString uuid, QObject *parent):
 
 RamPipeFile::~RamPipeFile()
 {
-    _dbi->removePipeFile(_uuid);
+    m_dbi->removePipeFile(m_uuid);
 }
 
 QString RamPipeFile::name() const
 {
-    QString t = _shortName;
+    QString t = m_shortName;
     RamFileType *ft = m_fileType;
     if (ft) t = t + "." + ft->shortName();
     return t;
@@ -35,18 +35,18 @@ RamFileType *RamPipeFile::fileType() const
 void RamPipeFile::setFileType(RamFileType *newFileType)
 {
     if (newFileType->is(m_fileType)) return;
-    _dirty = true;
+    m_dirty = true;
     m_fileType = newFileType;
     emit changed(this);
 }
 
 void RamPipeFile::update()
 {
-    if(!_dirty) return;
+    if(!m_dirty) return;
     RamObject::update();
     QString ft = "";
     if (m_fileType) ft = m_fileType->uuid();
-    _dbi->updatePipeFile(_uuid, _shortName, ft, "" );
+    m_dbi->updatePipeFile(m_uuid, m_shortName, ft, "" );
 }
 
 const QString &RamPipeFile::projectUuid() const

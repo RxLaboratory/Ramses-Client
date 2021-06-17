@@ -8,9 +8,9 @@ RamAssetGroup::RamAssetGroup(QString shortName, QString name, QString uuid) :
     this->setObjectType(AssetGroup);
     m_project = nullptr;
     _template = true;
-    if (_template) _dbi->createTemplateAssetGroup(_shortName, _name, _uuid);
+    if (_template) m_dbi->createTemplateAssetGroup(m_shortName, m_name, m_uuid);
 
-    this->setObjectName( "RamAssetGroup (template) " + _shortName );
+    this->setObjectName( "RamAssetGroup (template) " + m_shortName );
 }
 
 RamAssetGroup::RamAssetGroup(QString shortName, RamProject *project, QString name, QString uuid):
@@ -19,15 +19,15 @@ RamAssetGroup::RamAssetGroup(QString shortName, RamProject *project, QString nam
     this->setObjectType(AssetGroup);
     m_project = project;
     _template = false;
-    _dbi->createAssetGroup(_shortName, _name, m_project->uuid(), _uuid);
+    m_dbi->createAssetGroup(m_shortName, m_name, m_project->uuid(), m_uuid);
 
-    this->setObjectName( "RamAssetGroup " + _shortName);
+    this->setObjectName( "RamAssetGroup " + m_shortName);
 }
 
 RamAssetGroup::~RamAssetGroup()
 {
-    if (_template) _dbi->removeTemplateAssetGroup(_uuid);
-    else _dbi->removeAssetGroup(_uuid);
+    if (_template) m_dbi->removeTemplateAssetGroup(m_uuid);
+    else m_dbi->removeAssetGroup(m_uuid);
 }
 
 bool RamAssetGroup::isTemplate() const
@@ -38,7 +38,7 @@ bool RamAssetGroup::isTemplate() const
 RamAssetGroup *RamAssetGroup::createFromTemplate(QString projectUuid)
 {
     // Create
-    RamAssetGroup *assetGroup = new RamAssetGroup(_shortName, _name, projectUuid);
+    RamAssetGroup *assetGroup = new RamAssetGroup(m_shortName, m_name, projectUuid);
     return assetGroup;
 }
 
@@ -68,15 +68,15 @@ RamAssetGroup *RamAssetGroup::assetGroup(QString uuid)
 
 void RamAssetGroup::update()
 {
-    if (!_dirty) return;
+    if (!m_dirty) return;
     RamObject::update();
-    if (_template) _dbi->updateTemplateAssetGroup(_uuid, _shortName, _name);
-    else _dbi->updateAssetGroup(_uuid, _shortName, _name);
+    if (_template) m_dbi->updateTemplateAssetGroup(m_uuid, m_shortName, m_name);
+    else m_dbi->updateAssetGroup(m_uuid, m_shortName, m_name);
 }
 
 void RamAssetGroup::remove()
 {
-    if (_removing) return;
+    if (m_removing) return;
     for(int i = m_objectsList.count() -1; i >= 0 ; i--)
     {
         m_objectsList.at(i)->remove();

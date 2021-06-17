@@ -9,7 +9,7 @@ RamApplication::RamApplication(QString shortName, QString name, QString executab
 
     setObjectType(Application);
     _executableFilePath = executableFilePath;
-    _dbi->createApplication(_shortName, _name, _executableFilePath, _uuid);
+    m_dbi->createApplication(m_shortName, m_name, _executableFilePath, m_uuid);
 
     connect(_nativeFileTypes, &RamObjectList::objectRemoved, this, &RamApplication::nativeFileTypeUnassigned);
     connect(_importFileTypes, &RamObjectList::objectRemoved, this, &RamApplication::importFileTypeUnassigned);
@@ -23,7 +23,7 @@ RamApplication::RamApplication(QString shortName, QString name, QString executab
 
 RamApplication::~RamApplication()
 {
-    _dbi->removeApplication(_uuid);
+    m_dbi->removeApplication(m_uuid);
 }
 
 QString RamApplication::executableFilePath() const
@@ -34,7 +34,7 @@ QString RamApplication::executableFilePath() const
 void RamApplication::setExecutableFilePath(const QString &executableFilePath)
 {
     if (executableFilePath == _executableFilePath) return;
-    _dirty = true;
+    m_dirty = true;
     _executableFilePath = executableFilePath;
 
     emit changed(this);
@@ -42,9 +42,9 @@ void RamApplication::setExecutableFilePath(const QString &executableFilePath)
 
 void RamApplication::update()
 {
-    if (!_dirty) return;
+    if (!m_dirty) return;
     RamObject::update();
-    _dbi->updateApplication(_uuid, _shortName, _name, _executableFilePath);
+    m_dbi->updateApplication(m_uuid, m_shortName, m_name, _executableFilePath);
 }
 
 void RamApplication::unassignFileType(RamObject *o)
@@ -107,12 +107,12 @@ RamObjectList *RamApplication::nativeFileTypes() const
 void RamApplication::nativeFileTypeAssigned(RamObject * const ft)
 {
     if (!ft) return;
-    _dbi->assignFileType(_uuid, ft->uuid(), "native");
+    m_dbi->assignFileType(m_uuid, ft->uuid(), "native");
 }
 
 void RamApplication::nativeFileTypeUnassigned(RamObject *ft)
 {
-    _dbi->unassignFileType(_uuid, ft->uuid(), "native");
+    m_dbi->unassignFileType(m_uuid, ft->uuid(), "native");
 }
 
 RamObjectList *RamApplication::importFileTypes() const
@@ -133,21 +133,21 @@ RamApplication *RamApplication::application(QString uuid)
 void RamApplication::importFileTypeAssigned(RamObject * const ft)
 {
     if (!ft) return;
-    _dbi->assignFileType(_uuid, ft->uuid(), "import");
+    m_dbi->assignFileType(m_uuid, ft->uuid(), "import");
 }
 
 void RamApplication::importFileTypeUnassigned(RamObject *ft)
 {
-    _dbi->unassignFileType(_uuid, ft->uuid(), "import");
+    m_dbi->unassignFileType(m_uuid, ft->uuid(), "import");
 }
 
 void RamApplication::exportFileTypeAssigned(RamObject * const ft)
 {
     if (!ft) return;
-    _dbi->assignFileType(_uuid, ft->uuid(), "export");
+    m_dbi->assignFileType(m_uuid, ft->uuid(), "export");
 }
 
 void RamApplication::exportFileTypeUnassigned(RamObject *ft)
 {
-    _dbi->unassignFileType(_uuid, ft->uuid(), "export");
+    m_dbi->unassignFileType(m_uuid, ft->uuid(), "export");
 }

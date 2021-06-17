@@ -6,14 +6,14 @@ RamSequence::RamSequence(QString shortName, RamProject *project, QString name, Q
 {
     this->setObjectType(Sequence);
     m_project = project;
-    _dbi->createSequence(_shortName, _name, m_project->uuid(), _uuid);
+    m_dbi->createSequence(m_shortName, m_name, m_project->uuid(), m_uuid);
 
     this->setObjectName( "RamSequence" );
 }
 
 RamSequence::~RamSequence()
 {
-    _dbi->removeSequence(_uuid);
+    m_dbi->removeSequence(m_uuid);
 }
 
 RamProject *RamSequence::project() const
@@ -41,14 +41,14 @@ RamSequence *RamSequence::sequence(QString uuid)
 
 void RamSequence::update()
 {
-    if(!_dirty) return;
+    if(!m_dirty) return;
     RamObject::update();
-    _dbi->updateSequence(_uuid, _shortName, _name);
+    m_dbi->updateSequence(m_uuid, m_shortName, m_name);
 }
 
 void RamSequence::remove()
 {
-    if (_removing) return;
+    if (m_removing) return;
     for(int i = m_objectsList.count()-1; i >= 0 ; i--)
     {
         m_objectsList.at(i)->remove();

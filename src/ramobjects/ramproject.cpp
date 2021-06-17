@@ -9,14 +9,14 @@ RamProject::RamProject(QString shortName, QString name, QString uuid, QObject *p
     _pipeline = new RamObjectList("PPLN", "Pipeline", "", this);
     _steps = new RamObjectList("STPS", "Steps", "", this);
     _pipeFiles = new RamObjectList("PPFLS", "Pipe files", "", this);
-    _dbi->createProject(_shortName, _name, _uuid);
+    m_dbi->createProject(m_shortName, m_name, m_uuid);
 
     this->setObjectName( "RamProject" );
 }
 
 RamProject::~RamProject()
 {
-    _dbi->removeProject(_uuid);
+    m_dbi->removeProject(m_uuid);
 }
 
 QString RamProject::folderPath() const
@@ -27,7 +27,7 @@ QString RamProject::folderPath() const
 void RamProject::setFolderPath(const QString &folderPath)
 {
     if (folderPath == _folderPath) return;
-    _dirty = true;
+    m_dirty = true;
     _folderPath = folderPath;
     emit changed(this);
 }
@@ -40,7 +40,7 @@ qreal RamProject::framerate() const
 void RamProject::setFramerate(const qreal &framerate)
 {
     if (framerate == _framerate) return;
-    _dirty = true;
+    m_dirty = true;
     _framerate = framerate;
     emit changed(this);
 }
@@ -53,7 +53,7 @@ int RamProject::width() const
 void RamProject::setWidth(const int width, const qreal &pixelAspect)
 {
     if (width == _width) return;
-    _dirty = true;
+    m_dirty = true;
     _width = width;
     updateAspectRatio(pixelAspect);
 }
@@ -66,7 +66,7 @@ int RamProject::height() const
 void RamProject::setHeight(const int height, const qreal &pixelAspect)
 {
     if (height == _height) return;
-    _dirty = true;
+    m_dirty = true;
     _height = height;
     updateAspectRatio(pixelAspect);
 }
@@ -85,18 +85,18 @@ void RamProject::updateAspectRatio(const qreal &pixelAspect)
 void RamProject::setAspectRatio(const qreal &aspectRatio)
 {
     if (aspectRatio == _aspectRatio) return;
-    _dirty = true;
+    m_dirty = true;
     _aspectRatio = aspectRatio;
     emit changed(this);
 }
 
 void RamProject::update()
 {
-    if (!_dirty) return;
+    if (!m_dirty) return;
     RamObject::update();
     QString path = _folderPath;
     if (path == "") path = "auto";
-    _dbi->updateProject(_uuid, _shortName, _name, _width, _height, _framerate, path);
+    m_dbi->updateProject(m_uuid, m_shortName, m_name, _width, _height, _framerate, path);
 }
 
 RamProject *RamProject::project(QString uuid)
@@ -186,7 +186,7 @@ RamObjectList *RamProject::pipeFiles()
 
 RamPipeFile *RamProject::createPipeFile(QString shortName)
 {
-    RamPipeFile *pf = new RamPipeFile(shortName, _uuid, this);
+    RamPipeFile *pf = new RamPipeFile(shortName, m_uuid, this);
     _pipeFiles->append(pf);
     return pf;
 }
@@ -198,7 +198,7 @@ RamObjectList *RamProject::steps() const
 
 void RamProject::assignStep(RamStep *templateStep)
 {
-    RamStep *step = templateStep->createFromTemplate(_uuid);
+    RamStep *step = templateStep->createFromTemplate(m_uuid);
     _steps->append(step);
 }
 

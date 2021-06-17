@@ -59,6 +59,7 @@ void ItemTable::stepAdded(RamStep *step)
     QAction *stepAction = new QAction(step->name(), this);
     stepAction->setCheckable(true);
     stepAction->setData(step->uuid());
+    stepAction->setChecked(true);
     m_stepMenu->addAction(stepAction);
     connect (stepAction, SIGNAL(toggled(bool)), this, SLOT(stepActionToggled(bool)));
 }
@@ -94,6 +95,11 @@ void ItemTable::setupUi(QString title)
     mw->addToolBar(Qt::TopToolBarArea,m_titleBar);
     m_titleBar->setFloatable(false);
     m_titleBar->hide();
+
+    // Search field
+    m_searchEdit = new DuQFSearchEdit(this);
+    m_searchEdit->setMaximumWidth(150);
+    m_titleBar->insertLeft(m_searchEdit);
 
     // Menus
     m_stepMenu = new QMenu(this);
@@ -135,6 +141,8 @@ void ItemTable::connectEvents()
     connect(m_actionSelectAllSteps, SIGNAL(triggered()), this, SLOT(selectAllSteps()));
     connect(m_actionSelectNoSteps, SIGNAL(triggered()), this, SLOT(deselectSteps()));
     connect(m_actionSelectMySteps, SIGNAL(triggered()), this, SLOT(selectUserSteps()));
+    connect(m_searchEdit, &DuQFSearchEdit::changing, m_table, &ItemTableWidget::search);
+    connect(m_searchEdit, &DuQFSearchEdit::changed, m_table, &ItemTableWidget::search);
     connect(m_table, &ItemTableWidget::newStep, this, &ItemTable::stepAdded);
     connect(m_table, &ItemTableWidget::stepRemoved, this, &ItemTable::stepRemoved);
     connect(m_titleBar, &TitleBar::closeRequested, this, &ItemTable::closeRequested);

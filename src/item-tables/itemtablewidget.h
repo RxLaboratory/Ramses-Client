@@ -19,6 +19,9 @@ public:
     void addList(RamObjectList *list);
     void setStepVisible(QString stepUuid, bool visible);
 
+public slots:
+    void search(QString s);
+
 signals:
     void newStep(RamStep *);
     void stepRemoved(RamObject *);

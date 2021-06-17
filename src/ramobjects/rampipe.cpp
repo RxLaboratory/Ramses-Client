@@ -9,7 +9,7 @@ RamPipe::RamPipe(RamStep *output, RamStep *input, QString uuid, QObject *parent)
 
     m_inputConnection = connect( m_inputStep, &RamStep::removed, this, &RamObject::remove);
     m_outputConnection = connect( m_outputStep, &RamStep::removed, this, &RamObject::remove);
-    _dbi->createPipe(output->uuid(), input->uuid(), _uuid);
+    m_dbi->createPipe(output->uuid(), input->uuid(), m_uuid);
 
     connect(m_pipeFiles, &RamObjectList::objectAdded, this, &RamPipe::pipeFileAssigned);
     connect(m_pipeFiles, &RamObjectList::objectRemoved, this, &RamPipe::pipeFileUnassigned);
@@ -19,14 +19,14 @@ RamPipe::RamPipe(RamStep *output, RamStep *input, QString uuid, QObject *parent)
 
 RamPipe::~RamPipe()
 {
-    _dbi->removePipe(_uuid);
+    m_dbi->removePipe(m_uuid);
 }
 
 void RamPipe::update()
 {
-    if (!_dirty) return;
+    if (!m_dirty) return;
     RamObject::update();
-    _dbi->updatePipe(_uuid, m_inputStep->uuid(), m_outputStep->uuid());
+    m_dbi->updatePipe(m_uuid, m_inputStep->uuid(), m_outputStep->uuid());
 }
 
 RamStep *RamPipe::outputStep() const
@@ -38,7 +38,7 @@ void RamPipe::setOutputStep(RamStep *outputStep)
 {
     if (!outputStep && !m_outputStep) return;
     if (outputStep && outputStep->is(m_outputStep)) return;
-    _dirty = true;
+    m_dirty = true;
     disconnect( m_outputConnection );
     m_outputStep = outputStep;
     m_outputConnection = connect( m_outputStep, &RamStep::removed, this, &RamObject::remove);
@@ -54,7 +54,7 @@ void RamPipe::setInputStep(RamStep *inputStep)
 {
     if (!inputStep && !m_inputStep) return;
     if (inputStep && inputStep->is(m_inputStep)) return;
-    _dirty = true;
+    m_dirty = true;
     disconnect( m_inputConnection );
     m_inputStep = inputStep;
     m_inputConnection = connect( m_inputStep, &RamStep::removed, this, &RamObject::remove);
@@ -78,14 +78,14 @@ RamPipe *RamPipe::pipe(QString uuid)
 
 void RamPipe::pipeFileUnassigned(RamObject *ft)
 {
-    _dbi->unassignPipeFile( _uuid, ft->uuid());
+    m_dbi->unassignPipeFile( m_uuid, ft->uuid());
     emit changed(this);
 }
 
 void RamPipe::pipeFileAssigned(RamObject * const ft)
 {
     if (!ft) return;
-    _dbi->assignPipeFile(_uuid, ft->uuid());
+    m_dbi->assignPipeFile(m_uuid, ft->uuid());
     emit changed(this);
 }
 

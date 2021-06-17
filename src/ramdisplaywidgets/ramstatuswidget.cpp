@@ -22,18 +22,6 @@ RamStatus *RamStatusWidget::status() const
     return _status;
 }
 
-void RamStatusWidget::resizeEvent(QResizeEvent *event)
-{
-    Q_UNUSED(event);
-    adjustCommentEditSize();
-}
-
-void RamStatusWidget::showEvent(QShowEvent *event)
-{
-    Q_UNUSED(event);
-    adjustCommentEditSize();
-}
-
 void RamStatusWidget::remove()
 {
     if (_removing) return;
@@ -59,8 +47,6 @@ void RamStatusWidget::statusChanged(RamObject *o)
 
     completionBox->setValue(_status->completionRatio());
 
-    bool hasComment = _status->comment() != "";
-
     QString userText = _status->date().toString( QSettings().value("dateFormat", "yyyy-MM-dd hh:mm:ss").toString() );
 
     if (_status->user())
@@ -68,9 +54,6 @@ void RamStatusWidget::statusChanged(RamObject *o)
         userText += " | " + _status->user()->name();
         userLabel->setText(userText);
     }
-
-    if (!hasComment) commentEdit->hide();
-    commentEdit->setPlainText( _status->comment() );
 }
 
 void RamStatusWidget::completeUi()
@@ -82,7 +65,7 @@ void RamStatusWidget::completeUi()
     completionBox->setEditable(false);
     completionBox->setMaximumHeight(10);
 
-    layout->addWidget(completionBox);
+    primaryContentLayout->addWidget(completionBox);
 
     userLabel = new QLabel(this);
     QString userStyle = "color: " + DuUI::getColor("medium-grey").name() + ";";
@@ -90,17 +73,11 @@ void RamStatusWidget::completeUi()
     userStyle += "padding-right:" + QString::number(DuUI::getSize("padding","medium")) + "px;";
     userLabel->setStyleSheet(userStyle);
     userLabel->setAlignment(Qt::AlignRight);
-    layout->addWidget(userLabel);
+    primaryContentLayout->addWidget(userLabel);
 
-    commentEdit = new QPlainTextEdit(this);
-    commentEdit->setReadOnly(true);
-    commentEdit->setMaximumHeight(100);
-    QString style = "background-color: rgba(0,0,0,0);";
-    commentEdit->setStyleSheet(style);
-
-    layout->addWidget(commentEdit);
-
-    layout->addStretch();
+    setPrimaryContentHeight(40);
+    primaryContentWidget->show();
+    setAlwaysShowPrimaryContent(true);
 }
 
 void RamStatusWidget::connectEvents()
@@ -108,15 +85,6 @@ void RamStatusWidget::connectEvents()
     connect(_status, &RamObject::changed, this, &RamStatusWidget::statusChanged);
     connect(_status, &RamObject::removed, this, &RamStatusWidget::remove);
     connect(statusEditWidget, &StatusEditWidget::statusUpdated, this, &RamStatusWidget::updateStatus);
-}
-
-void RamStatusWidget::adjustCommentEditSize()
-{
-    // Get text height (returns the number of lines and not the actual height in pixels
-    int docHeight = commentEdit->document()->size().toSize().height();
-    // Compute needed height in pixels
-    int h = docHeight * ( commentEdit->fontMetrics().height() ) + commentEdit->fontMetrics().height() * 2;
-    commentEdit->setMaximumHeight(h);
 }
 
 void RamStatusWidget::updateStatus(RamState *state, int completion, int version, QString comment)

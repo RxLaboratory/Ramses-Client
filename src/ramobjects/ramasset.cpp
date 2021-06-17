@@ -7,14 +7,14 @@ RamAsset::RamAsset(QString shortName, RamProject *project, RamAssetGroup *assetG
     setObjectType(Asset);
     setProductionType(RamStep::AssetProduction);
     m_assetGroup = assetGroup;
-    _dbi->createAsset(_shortName, _name, m_assetGroup->uuid(), "", _uuid);
+    m_dbi->createAsset(m_shortName, m_name, m_assetGroup->uuid(), "", m_uuid);
 
-    this->setObjectName( "RamAsset " + _shortName);
+    this->setObjectName( "RamAsset " + m_shortName);
 }
 
 RamAsset::~RamAsset()
 {
-    _dbi->removeAsset(_uuid);
+    m_dbi->removeAsset(m_uuid);
 }
 
 RamAssetGroup *RamAsset::assetGroup() const
@@ -25,9 +25,10 @@ RamAssetGroup *RamAsset::assetGroup() const
 void RamAsset::setAssetGroup(RamAssetGroup *assetGroup)
 {
     if (m_assetGroup->is(assetGroup)) return;
-    _dirty = true;
+    m_dirty = true;
     this->setParent(assetGroup);
     m_assetGroup = assetGroup;
+    emit changed(this);
 }
 
 QStringList RamAsset::tags() const
@@ -37,27 +38,30 @@ QStringList RamAsset::tags() const
 
 void RamAsset::setTags(QString tags)
 {
-    _dirty = true;
+    m_dirty = true;
     QStringList ts = tags.toLower().split(",");
     _tags.clear();
     foreach(QString t, ts)
     {
-        _tags << t.trimmed();
+        _tags << t.trimmed().toLower();
     }
+    emit changed(this);
 }
 
 void RamAsset::addTag(QString tag)
 {
     if (_tags.contains(tag) ) return;
-    _dirty = true;
+    m_dirty = true;
     _tags << tag.trimmed().toLower();
+    emit changed(this);
 }
 
 void RamAsset::removeTag(QString tag)
 {
     if (!_tags.contains(tag)) return;
     _tags.removeAll(tag.toLower());
-    _dirty = true;
+    m_dirty = true;
+    emit changed(this);
 }
 
 bool RamAsset::hasTag(QString tag)
@@ -67,9 +71,9 @@ bool RamAsset::hasTag(QString tag)
 
 void RamAsset::update()
 {
-    if (!_dirty) return;
+    if (!m_dirty) return;
     RamObject::update();
-    _dbi->updateAsset(_uuid, _shortName, _name, m_assetGroup->uuid(), _tags.join(','));
+    m_dbi->updateAsset(m_uuid, m_shortName, m_name, m_assetGroup->uuid(), _tags.join(','));
 }
 
 RamAsset *RamAsset::asset( QString uuid )

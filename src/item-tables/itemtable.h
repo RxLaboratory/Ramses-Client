@@ -8,6 +8,7 @@
 
 #include "duqf-widgets/titlebar.h"
 #include "duqf-utils/guiutils.h"
+#include "duqf-widgets/duqfsearchedit.h"
 #include "itemtablewidget.h"
 
 
@@ -45,6 +46,7 @@ private:
     void setupUi(QString title);
     void connectEvents();
 
+    DuQFSearchEdit *m_searchEdit;
     QMenu *m_stepMenu;
     QAction *m_actionSelectAllSteps ;
     QAction *m_actionSelectNoSteps ;

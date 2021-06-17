@@ -25,9 +25,6 @@ public:
     RamState *state() const;
     void setState(RamState *state);
 
-    QString comment() const;
-    void setComment(QString comment);
-
     int version() const;
     void setVersion(int version);
 
@@ -47,7 +44,6 @@ private:
     RamUser *_user;
     RamState *_state;
     RamItem *_item;
-    QString _comment = "";
     int _version = 1;
     RamStep *_step;
     QDateTime _date;

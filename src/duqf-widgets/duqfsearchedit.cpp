@@ -14,7 +14,7 @@ void DuQFSearchEdit::search()
 void DuQFSearchEdit::setupUi()
 {
     QHBoxLayout *searchLayout = new QHBoxLayout(this);
-    searchLayout->setSpacing(3);
+    searchLayout->setSpacing(0);
     searchLayout->setContentsMargins(0,0,0,0);
 
     m_searchEdit = new QLineEdit(this);

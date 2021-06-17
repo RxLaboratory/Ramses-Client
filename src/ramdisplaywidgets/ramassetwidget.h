@@ -18,8 +18,20 @@ public:
     explicit RamAssetWidget(RamAsset *asset, QWidget *parent = nullptr);
     RamAsset *asset() const;
 
+protected slots:
+    void exploreClicked() Q_DECL_OVERRIDE;
+
+private slots:
+    void assetChanged();
+
 private:
     RamAsset *_asset;
+
+    void completeUi();
+    void connectEvents();
+
+    QLabel *m_tagsLabel;
+    QLabel *m_groupLabel;
 };
 
 #endif // RAMASSETWIDGET_H

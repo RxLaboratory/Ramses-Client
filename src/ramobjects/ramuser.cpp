@@ -5,14 +5,14 @@ RamUser::RamUser(QString shortName, QString name, QString uuid, QObject *parent)
 {
     setObjectType(User);
     _role = Standard;
-    _dbi->createUser(_shortName, _name, _uuid);
+    m_dbi->createUser(m_shortName, m_name, m_uuid);
 
     this->setObjectName( "RamUser" );
 }
 
 RamUser::~RamUser()
 {
-    _dbi->removeUser(_uuid);
+    m_dbi->removeUser(m_uuid);
 }
 
 RamUser::UserRole RamUser::role() const
@@ -23,7 +23,7 @@ RamUser::UserRole RamUser::role() const
 void RamUser::setRole(const UserRole &role)
 {
     if (role == _role) return;
-    _dirty = true;
+    m_dirty = true;
     _role = role;
     emit changed(this);
 }
@@ -44,14 +44,14 @@ QString RamUser::folderPath() const
 void RamUser::setFolderPath(const QString &folderPath)
 {
     if (folderPath == _folderPath) return;
-    _dirty = true;
+    m_dirty = true;
     _folderPath = folderPath;
     emit changed(this);
 }
 
 void RamUser::update()
 {
-    if(!_dirty) return;
+    if(!m_dirty) return;
     RamObject::update();
     QString role = "standard";
     if (_role == Admin) role = "admin";
@@ -61,12 +61,12 @@ void RamUser::update()
     QString path = _folderPath;
     if (path == "") path = "auto";
 
-    _dbi->updateUser(_uuid, _shortName, _name, role, path);
+    m_dbi->updateUser(m_uuid, m_shortName, m_name, role, path);
 }
 
 void RamUser::updatePassword(QString c, QString n)
 {
-    _dbi->updateUserPassword(_uuid, c, n);
+    m_dbi->updateUserPassword(m_uuid, c, n);
 }
 
 RamUser *RamUser::user(QString uuid)

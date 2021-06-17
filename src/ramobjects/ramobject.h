@@ -41,6 +41,9 @@ public:
     QString name() const;
     void setName(const QString &name);
 
+    QString comment() const;
+    void setComment(const QString comment);
+
     QString uuid() const;
 
     RamObject::ObjectType objectType() const;
@@ -63,16 +66,17 @@ signals:
     void removed(RamObject *);
 
 protected:
-    DBInterface *_dbi;
-    QString _shortName;
-    QString _name;
+    DBInterface *m_dbi;
+    QString m_shortName;
+    QString m_name;
     // Check if changed to limit number of signals
-    bool _dirty;
+    bool m_dirty;
 
-    QString _uuid;
-    int _order = -1;
-    bool _orderChanged = false;
-    bool _removing;
+    QString m_uuid;
+    QString m_comment;
+    int m_order = -1;
+    bool m_orderChanged = false;
+    bool m_removing;
 
     static QMap<QString, RamObject*> m_existingObjects;
 
