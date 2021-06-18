@@ -20,18 +20,18 @@ public:
     explicit RamObjectListWidget(RamObjectUberList *list, QWidget *parent = nullptr);
     explicit RamObjectListWidget(RamObjectList *list, bool editableObjects, QWidget *parent = nullptr);
     explicit RamObjectListWidget(RamObjectUberList *list, bool editableObjects, QWidget *parent = nullptr);
+    // Settings
     void setContainingType(RamObject::ObjectType type);
     void setEditMode(const EditMode &editMode);
-    void setList(RamObjectList *list);
-    void addList(RamObjectList *list);
-    void setList(RamObjectUberList *list);
-    void clear();
     void setSortable(bool sortable=true);
     void setSelectable(bool selectable=true);
-
-    void select(RamObject *obj);
+    // Content
+    void setList(RamObjectList *list);
+    void setList(RamObjectUberList *list);
+    void clear();
 
 public slots:
+    void select(RamObject *obj);
     void removeSelectedObjects();
     void search(QString nameOrShortName);
     void filter(QString uuid);
@@ -54,25 +54,33 @@ private slots:
     void objectUnassigned(RamObject *obj);
     void objectAssigned(RamObject *obj);
 
-    void sublistAdded(RamObject *obj);
-    void sublistRemoved(RamObject *obj);
 private:
-    QList<RamObjectList *> m_lists;
-    EditMode m_editMode = RemoveObjects;
-
-    void setupUi();
-    void connectEvents();
-
-    bool m_editableObjects = false;
-    QList<QMetaObject::Connection> m_uberListConnections;
-    QMap<QString, QList<QMetaObject::Connection>> m_listConnections;
-    QMap<QString, QMetaObject::Connection> m_objectConnections;
+    // The (uber) list
+    RamObjectList *m_list = nullptr;
     RamObjectUberList *m_uberList = nullptr;
 
+    // The connections
+    QList<QMetaObject::Connection> m_listConnections;
+    QMap<QString, QMetaObject::Connection> m_objectConnections;
+
+    // Settings
+    EditMode m_editMode = RemoveObjects;
+    bool m_editableObjects = false;
     RamObject::ObjectType m_containingType = RamObject::Generic;
 
-    QList<RamObjectList *> m_listsToAdd;
+    // Build
+    void setupUi();
+    void connectEvents();
+    // Delayed build for perf
+    bool m_ready = false;
     void addLists();
+
+    // Utils
+    QString objUuid(int row);
+    QString objShortName(int row);
+    QString objName(int row);
+    RamObject *objAtRow(int row);
+    int objRow(RamObject *o);
 };
 
 #endif // RAMOBJECTLISTWIDGET_H
