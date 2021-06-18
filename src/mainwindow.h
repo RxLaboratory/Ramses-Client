@@ -101,6 +101,8 @@ private:
 
     QMetaObject::Connection _currentUserConnection;
 
+    bool m_shiftPressed = false;
+
 private slots:
     void duqf_maximize(bool max);
     void duqf_maximize();
@@ -140,8 +142,10 @@ private slots:
     void dbiConnectionStatusChanged(NetworkUtils::NetworkStatus s);
 
 protected:
-    void closeEvent(QCloseEvent *event);
-    bool eventFilter(QObject *obj, QEvent *event);
+    void closeEvent(QCloseEvent *event) Q_DECL_OVERRIDE;
+    void keyPressEvent(QKeyEvent *key) Q_DECL_OVERRIDE;
+    void keyReleaseEvent(QKeyEvent *key) Q_DECL_OVERRIDE;
+    bool eventFilter(QObject *obj, QEvent *event) Q_DECL_OVERRIDE;
 
 };
 #endif // MAINWINDOW_H

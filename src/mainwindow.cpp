@@ -742,9 +742,13 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
             {
                 ObjectDockWidget *other = _dockedObjects.at(i);
                 if (!other) continue;
+
                 if (other->objectType() == o->objectType() && other->isVisible())
                 {
-                    this->tabifyDockWidget( other, o);
+                    if (m_shiftPressed)
+                        this->tabifyDockWidget( other, o);
+                    else
+                        other->hide();
                 }
             }
             _dockedObjects << o;
@@ -767,4 +771,22 @@ void MainWindow::closeEvent(QCloseEvent *event)
     QFontDatabase::removeAllApplicationFonts();
     trayIcon->hide();
     event->accept();
+}
+
+void MainWindow::keyPressEvent(QKeyEvent *key)
+{
+    if(key->key() == Qt::Key_Shift)
+    {
+        m_shiftPressed = true;
+    }
+    QMainWindow::keyPressEvent(key);
+}
+
+void MainWindow::keyReleaseEvent(QKeyEvent *key)
+{
+    if(key->key() == Qt::Key_Shift)
+    {
+        m_shiftPressed = false;
+    }
+    QMainWindow::keyReleaseEvent(key);
 }
