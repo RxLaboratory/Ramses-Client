@@ -208,6 +208,44 @@ void RamObjectListWidget::filter(QString uuid)
     }
 }
 
+void RamObjectListWidget::mouseMoveEvent(QMouseEvent *event)
+{
+    if (_dragging)
+    {
+        QPoint newPos = event->globalPos();
+        QPoint _delta = newPos - _initialDragPos;
+        this->horizontalScrollBar()->setValue( this->horizontalScrollBar()->value() - _delta.x() );
+        this->verticalScrollBar()->setValue( this->verticalScrollBar()->value() - _delta.y() );
+        _initialDragPos = newPos;
+        event->accept();
+        return;
+    }
+    QTableWidget::mouseMoveEvent(event);
+}
+
+void RamObjectListWidget::mousePressEvent(QMouseEvent *event)
+{
+    if (event->button() == Qt::MiddleButton)
+    {
+        _initialDragPos = event->globalPos();
+        _dragging = true;
+        event->accept();
+        return;
+    }
+    QTableWidget::mousePressEvent(event);
+}
+
+void RamObjectListWidget::mouseReleaseEvent(QMouseEvent *event)
+{
+    if (event->button() == Qt::MiddleButton)
+    {
+        _dragging = false;
+        event->accept();
+        return;
+    }
+    QTableWidget::mouseReleaseEvent(event);
+}
+
 void RamObjectListWidget::resizeEvent(QResizeEvent *event)
 {
     this->setColumnWidth( 0, event->size().width() );

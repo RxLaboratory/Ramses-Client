@@ -42,8 +42,11 @@ signals:
     void orderChanged();
 
 protected:
-    void resizeEvent(QResizeEvent *event) Q_DECL_OVERRIDE;
-    void showEvent(QShowEvent *event) Q_DECL_OVERRIDE;
+    virtual void mouseMoveEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
+    virtual void mousePressEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
+    virtual void mouseReleaseEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
+    virtual void resizeEvent(QResizeEvent *event) Q_DECL_OVERRIDE;
+    virtual void showEvent(QShowEvent *event) Q_DECL_OVERRIDE;
 
 private slots:
     void itemSelected(QTableWidgetItem *current, QTableWidgetItem *previous);
@@ -81,6 +84,10 @@ private:
     QString objName(int row);
     RamObject *objAtRow(int row);
     int objRow(RamObject *o);
+
+    // UI Events
+    QPoint _initialDragPos;
+    bool _dragging = false;
 };
 
 #endif // RAMOBJECTLISTWIDGET_H
