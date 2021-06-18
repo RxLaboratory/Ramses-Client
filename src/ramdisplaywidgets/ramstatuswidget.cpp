@@ -11,31 +11,6 @@ RamStatusWidget::RamStatusWidget(RamStatus *status, QWidget *parent) :
     setEditWidget(statusEditWidget);
     this->dockEditWidget()->setIcon(":/icons/state");
 
-    // Get history
-    RamStep *step = _status->step();
-    RamItem *item = _status->item();
-    m_historyWidget = nullptr;
-    m_historyDockWidget = nullptr;
-    if (step && item)
-    {
-        RamStepStatusHistory *history = item->statusHistory(step);
-        m_historyWidget = new StepStatusHistoryWidget(history);
-
-        m_historyDockWidget = new ObjectDockWidget(history);
-        m_historyDockWidget->hide();
-
-        QFrame *f = new QFrame(m_historyDockWidget);
-        QVBoxLayout *l = new QVBoxLayout();
-        l->setContentsMargins(3,3,3,3);
-        l->addWidget( m_historyWidget );
-        f->setLayout(l);
-        m_historyDockWidget->setWidget(f);
-
-        MainWindow *mw = (MainWindow*)GuiUtils::appMainWindow();
-        mw->addObjectDockWidget(m_historyDockWidget);
-    }
-
-
     completeUi();
     objectChanged();
 
@@ -52,6 +27,13 @@ RamStatus *RamStatusWidget::status() const
 void RamStatusWidget::showHistoryButton()
 {
     m_historyButton->show();
+}
+
+void RamStatusWidget::setAdditiveMode()
+{
+    m_additiveMode = true;
+    setUserEditRole(RamUser::Standard);
+    setEditable(true);
 }
 
 void RamStatusWidget::exploreClicked()
@@ -127,14 +109,57 @@ void RamStatusWidget::connectEvents()
 
 void RamStatusWidget::updateStatus(RamState *state, int completion, int version, QString comment)
 {
-    _status->setState(state);
-    _status->setCompletionRatio(completion);
-    _status->setVersion(version);
-    _status->setComment(comment);
-    _status->update();
+    RamUser *user = _status->user();
+    RamUser *currentUser = Ramses::instance()->currentUser();
+    if (!user || !currentUser) return;
+    if (m_additiveMode && !user->is(currentUser)) // add new
+    {
+        RamStep *step = _status->step();
+        RamItem *item = _status->item();
+        if (!step || !item) return;
+        item->setStatus(currentUser, state, step, completion, comment, version);
+    }
+    else // edit current
+    {
+        _status->setState(state);
+        _status->setCompletionRatio(completion);
+        _status->setVersion(version);
+        _status->setComment(comment);
+        _status->update();
+    }
+
 }
 
 void RamStatusWidget::showHistory()
 {
-    if(m_historyDockWidget) m_historyDockWidget->show();
+    if (!m_historyBuilt)
+    {
+        // Get history
+        RamStep *step = _status->step();
+        RamItem *item = _status->item();
+        if (step && item)
+        {
+            RamStepStatusHistory *history = item->statusHistory(step);
+            m_historyWidget = new StepStatusHistoryWidget(history);
+
+            m_historyDockWidget = new ObjectDockWidget(history);
+            m_historyDockWidget->hide();
+
+            QFrame *f = new QFrame(m_historyDockWidget);
+            QVBoxLayout *l = new QVBoxLayout();
+            l->setContentsMargins(3,3,3,3);
+            l->addWidget( m_historyWidget );
+            f->setLayout(l);
+            m_historyDockWidget->setWidget(f);
+
+            MainWindow *mw = (MainWindow*)GuiUtils::appMainWindow();
+            mw->addObjectDockWidget(m_historyDockWidget);
+
+            m_historyBuilt = true;
+        }
+    }
+    if(!m_historyBuilt) return;
+
+    m_historyDockWidget->show();
 }
+

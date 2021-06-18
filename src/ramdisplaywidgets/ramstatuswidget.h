@@ -21,6 +21,8 @@ public:
     RamStatusWidget(RamStatus *status, QWidget *parent = nullptr);
     RamStatus *status() const;
     void showHistoryButton();
+    // Adds a new status instead of editing the current one
+    void setAdditiveMode();
 
 protected slots:
     void exploreClicked() Q_DECL_OVERRIDE;
@@ -39,9 +41,13 @@ private:
     DuQFSlider *completionBox;
     QLabel *userLabel;
     StatusEditWidget *statusEditWidget;
-    StepStatusHistoryWidget *m_historyWidget;
-    ObjectDockWidget *m_historyDockWidget;
+    StepStatusHistoryWidget *m_historyWidget = nullptr;
+    ObjectDockWidget *m_historyDockWidget = nullptr;
     QToolButton *m_historyButton;
+
+    bool m_additiveMode = false;
+
+    bool m_historyBuilt = false;
 };
 
 #endif // RAMSTATUSWIDGET_H
