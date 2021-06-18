@@ -144,9 +144,9 @@ void RamObjectWidget::remove()
     m_object->remove();
 }
 
-void RamObjectWidget::edit()
+void RamObjectWidget::edit(bool e)
 {
-    if (_hasEditWidget && _editable && _hasEditRights) _dockEditWidget->show();
+    if (_hasEditWidget && _editable && _hasEditRights) _dockEditWidget->setVisible(e);
 }
 
 void RamObjectWidget::setupUi()
@@ -339,6 +339,13 @@ void RamObjectWidget::resizeEvent(QResizeEvent *event)
 
     secondaryContentWidget->show();//*/
 
+}
+
+void RamObjectWidget::hideEvent(QHideEvent *event)
+{
+    if (!event->spontaneous())
+        edit(false);
+    QWidget::hideEvent(event);
 }
 
 void RamObjectWidget::explore(QString path)

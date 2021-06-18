@@ -127,7 +127,7 @@ void RamStatusWidget::updateStatus(RamState *state, int completion, int version,
         _status->setComment(comment);
         _status->update();
     }
-
+    this->edit(false);
 }
 
 void RamStatusWidget::showHistory()

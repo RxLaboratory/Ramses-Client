@@ -48,10 +48,11 @@ public:
     void showExploreButton(bool s = true);
 
 public slots:
-    void edit();
+    void edit(bool e = true);
 
 protected:
     void resizeEvent(QResizeEvent *event) Q_DECL_OVERRIDE;
+    void hideEvent(QHideEvent *event) Q_DECL_OVERRIDE;
     void explore(QString path);
 
     void setEditWidget(ObjectEditWidget *w);
