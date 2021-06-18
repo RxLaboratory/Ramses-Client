@@ -89,7 +89,7 @@ void RamObject::remove()
     qDebug().noquote() << "> Accepted";
 
     m_removing = true;
-#ifdef QT_DEBUG
+#ifdef DUMP_OBJECT_DEBUG
     dumpObjectInfo();
 #endif
     emit removed(this);

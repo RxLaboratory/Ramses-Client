@@ -6,6 +6,7 @@
 
 #include "dbinterface.h"
 #include "ramuuid.h"
+#include "config.h"
 
 class RamObject : public QObject
 {
