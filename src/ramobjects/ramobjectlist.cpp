@@ -46,6 +46,7 @@ void RamObjectList::clear()
 {
     m_objects.clear();
     m_objectsList.clear();
+    m_sorted = true;
     emit cleared();
 }
 
@@ -195,7 +196,9 @@ bool objectSorter(RamObject *a, RamObject *b)
 
 void RamObjectList::sort()
 {
+    if (m_sorted) return;
     std::sort(m_objectsList.begin(), m_objectsList.end(), objectSorter);
+    m_sorted = true;
 }
 
 void RamObjectList::addObject(RamObject *obj, int index)
@@ -204,5 +207,6 @@ void RamObjectList::addObject(RamObject *obj, int index)
     c << connect( obj, SIGNAL(removed(RamObject*)), this, SLOT(removeAll(RamObject*)));
     c << connect( obj, &RamObject::orderChanged, this, &RamObjectList::sort);
     m_connections[obj->uuid()] = c;
+    m_sorted = false;
     emit objectAdded(obj, index);
 }

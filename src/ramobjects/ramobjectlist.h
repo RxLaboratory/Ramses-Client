@@ -61,8 +61,13 @@ protected:
 
     virtual void addObject(RamObject *obj, int index);
 
+    // Used to sort only if needed
+    bool m_sorted = false;
+
 private:
     QMap<QString, QList<QMetaObject::Connection>> m_connections;
+
+
 };
 
 bool objectSorter(RamObject *a, RamObject *b);

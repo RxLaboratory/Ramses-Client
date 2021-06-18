@@ -34,5 +34,7 @@ bool statusSorter(RamObject *a, RamObject *b)
 
 void RamStepStatusHistory::sort()
 {
+    if (m_sorted) return;
     std::sort(m_objectsList.begin(), m_objectsList.end(), statusSorter);
+    m_sorted = false;
 }
