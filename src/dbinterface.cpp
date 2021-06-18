@@ -417,7 +417,7 @@ void DBInterface::removeShot(QString uuid)
 
 void DBInterface::setShotStatus(QString shotUuid, QString stateUuid, QString stepUuid, QString userUuid, int completionRatio, QString comment, int version, QString uuid)
 {
-    QStringList q("setAssetStatus");
+    QStringList q("setShotStatus");
     q << "shotUuid=" + shotUuid;
     q << "stateUuid=" + stateUuid;
     q << "stepUuid=" + stepUuid;
