@@ -101,7 +101,7 @@ RamObject *RamObjectList::takeAt(int i)
     RamObject *obj = m_objectsList.takeAt(i);
 
     // remove from map
-    m_objects.remove(obj->uuid());
+    if( m_objects.contains(obj->uuid()) )m_objects.remove(obj->uuid());
 
     // disconnect
     if (m_connections.contains(obj->uuid()))
@@ -169,12 +169,22 @@ int RamObjectList::count() const
 
 bool RamObjectList::contains(RamObject *obj) const
 {
-    return m_objects.contains(obj->uuid());
+    return contains(obj->uuid());
+}
+
+bool RamObjectList::contains(QString uuid) const
+{
+    return m_objects.contains( uuid );
 }
 
 RamObject *RamObjectList::operator[](int i) const
 {
     return m_objectsList[i];
+}
+
+RamObjectList *RamObjectList::objectList(QString uuid)
+{
+    return qobject_cast<RamObjectList*>( RamObject::obj(uuid) );
 }
 
 bool objectSorter(RamObject *a, RamObject *b)

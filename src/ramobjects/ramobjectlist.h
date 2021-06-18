@@ -31,6 +31,7 @@ public:
     void clear();
     int count() const;
     bool contains(RamObject *obj) const;
+    bool contains(QString uuid) const;
     virtual RamObject *at(int i) const;
     RamObject *last() const;
     void removeAt(int i);
@@ -40,6 +41,8 @@ public:
     RamObject *takeFromUuid(QString uuid);
     // QList Operators
     virtual RamObject *operator[](int i) const;
+
+    static RamObjectList *objectList( QString uuid );
 
 public slots:
     void removeAll(RamObject *obj);
