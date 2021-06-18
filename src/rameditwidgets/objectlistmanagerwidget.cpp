@@ -112,7 +112,7 @@ QString ObjectListManagerWidget::currentFilter() const
 
 void ObjectListManagerWidget::showEvent(QShowEvent *event)
 {
-    m_splitter->setSizes(QList<int>() << 300 << 1000);
+    m_splitter->setSizes(QList<int>() << 400 << 1000);
     QWidget::showEvent(event);
 }
 

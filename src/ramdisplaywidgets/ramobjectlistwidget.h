@@ -53,6 +53,9 @@ private slots:
     void objectChanged(RamObject *obj);
     void objectUnassigned(RamObject *obj);
     void objectAssigned(RamObject *obj);
+
+    void sublistAdded(RamObject *obj);
+    void sublistRemoved(RamObject *obj);
 private:
     QList<RamObjectList *> m_lists;
     EditMode m_editMode = RemoveObjects;
@@ -61,7 +64,8 @@ private:
     void connectEvents();
 
     bool m_editableObjects = false;
-    QList<QMetaObject::Connection> m_listConnections;
+    QList<QMetaObject::Connection> m_uberListConnections;
+    QMap<QString, QList<QMetaObject::Connection>> m_listConnections;
     QMap<QString, QMetaObject::Connection> m_objectConnections;
     RamObjectUberList *m_uberList = nullptr;
 
