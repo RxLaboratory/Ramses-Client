@@ -65,11 +65,11 @@ protected:
 
 protected slots:
     virtual void exploreClicked() {};
+    virtual void userChanged();
+    virtual void objectChanged();
 
 private slots:
     void objectRemoved();
-    void userChanged();
-    void objectChanged();
     void remove();
     void adjustCommentEditSize();
 

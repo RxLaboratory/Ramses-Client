@@ -22,10 +22,9 @@ public:
 
 protected slots:
     void exploreClicked() Q_DECL_OVERRIDE;
+    virtual void objectChanged() Q_DECL_OVERRIDE;
 
 private slots:
-    void remove();
-    void statusChanged(RamObject *o);
     void updateStatus(RamState*state, int completion, int version, QString comment);
 
 private:
@@ -33,11 +32,10 @@ private:
 
     void completeUi();
     void connectEvents();
+
     DuQFSlider *completionBox;
     QLabel *userLabel;
     StatusEditWidget *statusEditWidget;
-
-    bool _removing = false;
 };
 
 #endif // RAMSTATUSWIDGET_H

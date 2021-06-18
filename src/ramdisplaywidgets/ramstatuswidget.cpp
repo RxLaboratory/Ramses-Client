@@ -10,7 +10,7 @@ RamStatusWidget::RamStatusWidget(RamStatus *status, QWidget *parent) :
     this->dockEditWidget()->setIcon(":/icons/state");
 
     completeUi();
-    statusChanged(_status);
+    objectChanged();
 
     setUserEditRole(RamUser::Lead);
 
@@ -27,15 +27,9 @@ void RamStatusWidget::exploreClicked()
     explore(Ramses::instance()->path(_status));
 }
 
-void RamStatusWidget::remove()
+void RamStatusWidget::objectChanged()
 {
-    if (_removing) return;
-    this->deleteLater();
-}
-
-void RamStatusWidget::statusChanged(RamObject *o)
-{
-    Q_UNUSED(o);
+    RamObjectWidget::objectChanged();
 
     QString title = "";
     if (_status->step()) title += _status->step()->name();
@@ -88,8 +82,6 @@ void RamStatusWidget::completeUi()
 
 void RamStatusWidget::connectEvents()
 {
-    connect(_status, &RamObject::changed, this, &RamStatusWidget::statusChanged);
-    connect(_status, &RamObject::removed, this, &RamStatusWidget::remove);
     connect(statusEditWidget, &StatusEditWidget::statusUpdated, this, &RamStatusWidget::updateStatus);
 }
 

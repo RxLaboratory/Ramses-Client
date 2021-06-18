@@ -117,11 +117,11 @@ void RamObjectWidget::objectRemoved()
 
 void RamObjectWidget::userChanged()
 {
+    RamUser *user = Ramses::instance()->currentUser();
     _hasEditRights = false;
-    RamUser *u = Ramses::instance()->currentUser();
-    if (!u) return;
-    _hasEditRights = u->role() >= _editRole && _hasEditWidget ;
-    if ( _editUsers.contains(u) ) _hasEditRights = true;
+    if (!user) return;
+    _hasEditRights = user->role() >= _editRole && _hasEditWidget ;
+    if ( _editUsers.contains(user) ) _hasEditRights = true;
 }
 
 void RamObjectWidget::objectChanged()
@@ -246,7 +246,7 @@ void RamObjectWidget::setupUi()
 
 void RamObjectWidget::connectEvents()
 {
-    connect(Ramses::instance(), &Ramses::loggedIn, this, &RamObjectWidget::userChanged);
+    connect(Ramses::instance(), SIGNAL(loggedIn(RamUser*)), this, SLOT(userChanged()));
     connect(editButton, SIGNAL(clicked()), this, SLOT(edit()));
     connect(removeButton, SIGNAL(clicked()), this, SLOT(remove()));
     connect(exploreButton, SIGNAL(clicked()), this, SLOT(exploreClicked()));
