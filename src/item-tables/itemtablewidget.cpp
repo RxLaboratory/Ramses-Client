@@ -438,6 +438,7 @@ void ItemTableWidget::setStatusWidget(RamItem *item, RamStep *step)
 
     // Add the new status widget (the previous one is automatically deleted)
     RamStatusWidget *sw = new RamStatusWidget(status, this);
+    sw->showHistoryButton();
     QTableWidgetItem *cellItem = new QTableWidgetItem("    " + status->state()->name());
     cellItem->setData(Qt::UserRole, status->uuid());
     this->setItem(row, col, cellItem);

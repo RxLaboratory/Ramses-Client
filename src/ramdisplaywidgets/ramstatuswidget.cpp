@@ -1,5 +1,7 @@
 #include "ramstatuswidget.h"
 
+#include "mainwindow.h"
+
 RamStatusWidget::RamStatusWidget(RamStatus *status, QWidget *parent) :
     RamObjectWidget(status, parent)
 {
@@ -8,6 +10,31 @@ RamStatusWidget::RamStatusWidget(RamStatus *status, QWidget *parent) :
     statusEditWidget = new StatusEditWidget(_status, this);
     setEditWidget(statusEditWidget);
     this->dockEditWidget()->setIcon(":/icons/state");
+
+    // Get history
+    RamStep *step = _status->step();
+    RamItem *item = _status->item();
+    m_historyWidget = nullptr;
+    m_historyDockWidget = nullptr;
+    if (step && item)
+    {
+        RamStepStatusHistory *history = item->statusHistory(step);
+        m_historyWidget = new StepStatusHistoryWidget(history);
+
+        m_historyDockWidget = new ObjectDockWidget(history);
+        m_historyDockWidget->hide();
+
+        QFrame *f = new QFrame(m_historyDockWidget);
+        QVBoxLayout *l = new QVBoxLayout();
+        l->setContentsMargins(3,3,3,3);
+        l->addWidget( m_historyWidget );
+        f->setLayout(l);
+        m_historyDockWidget->setWidget(f);
+
+        MainWindow *mw = (MainWindow*)GuiUtils::appMainWindow();
+        mw->addObjectDockWidget(m_historyDockWidget);
+    }
+
 
     completeUi();
     objectChanged();
@@ -22,6 +49,11 @@ RamStatus *RamStatusWidget::status() const
     return _status;
 }
 
+void RamStatusWidget::showHistoryButton()
+{
+    m_historyButton->show();
+}
+
 void RamStatusWidget::exploreClicked()
 {
     explore(Ramses::instance()->path(_status));
@@ -32,7 +64,8 @@ void RamStatusWidget::objectChanged()
     RamObjectWidget::objectChanged();
 
     QString title = "";
-    if (_status->step()) title += _status->step()->name();
+    if (_status->item()) title += _status->item()->shortName();
+    if (_status->step()) title += " | " + _status->step()->shortName();
     if (_status->state()) title += " | " + _status->state()->shortName();
     this->dockEditWidget()->setTitle( title );
 
@@ -57,6 +90,12 @@ void RamStatusWidget::objectChanged()
 
 void RamStatusWidget::completeUi()
 {
+    m_historyButton = new QToolButton();
+    m_historyButton->setIcon(QIcon(":/icons/list"));
+    m_historyButton->setIconSize(QSize(10,10));
+    m_historyButton->hide();
+    buttonsLayout->insertWidget(0, m_historyButton);
+
     completionBox = new DuQFSlider(this);
     completionBox->setMaximum(100);
     completionBox->setMinimum(0);
@@ -83,6 +122,7 @@ void RamStatusWidget::completeUi()
 void RamStatusWidget::connectEvents()
 {
     connect(statusEditWidget, &StatusEditWidget::statusUpdated, this, &RamStatusWidget::updateStatus);
+    connect(m_historyButton, SIGNAL(clicked()), this, SLOT(showHistory()));
 }
 
 void RamStatusWidget::updateStatus(RamState *state, int completion, int version, QString comment)
@@ -92,4 +132,9 @@ void RamStatusWidget::updateStatus(RamState *state, int completion, int version,
     _status->setVersion(version);
     _status->setComment(comment);
     _status->update();
+}
+
+void RamStatusWidget::showHistory()
+{
+    if(m_historyDockWidget) m_historyDockWidget->show();
 }

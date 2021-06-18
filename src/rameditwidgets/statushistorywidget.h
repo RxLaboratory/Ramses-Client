@@ -9,8 +9,6 @@
 #include "statuseditwidget.h"
 #include "objectlisteditwidget.h"
 
-class SimpleObjectList;
-
 /**
  * @brief The StatusHistoryWidget class shows the status history of any RamItem
  * It has a RamStep selector to select the step shown,
