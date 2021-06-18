@@ -1,7 +1,5 @@
 ﻿#include "statushistorywidget.h"
 
-#include "simpleobjectlist.h"
-
 StatusHistoryWidget::StatusHistoryWidget(QWidget *parent) : QWidget(parent)
 {
     setupUi();
