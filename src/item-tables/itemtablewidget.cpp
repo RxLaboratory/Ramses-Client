@@ -18,27 +18,86 @@ ItemTableWidget::ItemTableWidget(QWidget *parent):
     setupUi();
     connectEvents();
     clear();
+    m_ready = true;
 }
 
 void ItemTableWidget::setList( RamObjectUberList *list, RamStep::Type stepType)
 {
+    if( stepType == RamStep::AssetProduction ) this->horizontalHeaderItem(0)->setText("Assets");
+    else this->horizontalHeaderItem(0)->setText("Shots");
+
+    m_uberList = list;
+    m_stepType = stepType;
+    m_ready = false;
+    if (this->isVisible()) addList();
+
     clear();
 
     if (!list) return;
+}
 
-    // Add all items
-    for (int i = 0; i < list->count(); i++)
+void ItemTableWidget::clear()
+{
+    this->setEnabled(false);
+
+    // Disconnect list
+    while ( !m_listConnections.isEmpty() ) disconnect( m_listConnections.takeLast() );
+
+    // Disconnect all objects
+    QMapIterator<QString, QList<QMetaObject::Connection>> io( m_objectConnections );
+    while(io.hasNext())
     {
-        RamObjectList *sublist = qobject_cast<RamObjectList*>( list->at(i) );
-        addList(sublist);
+        io.next();
+        QList<QMetaObject::Connection> c = io.value();
+        while (!c.isEmpty()) disconnect( c.takeLast() );
+    }
+    m_objectConnections.clear();
+
+    // Disconnect all steps
+    QMapIterator<QString, QList<QMetaObject::Connection>> is( m_stepConnections );
+    while(is.hasNext())
+    {
+        is.next();
+        QList<QMetaObject::Connection> c = is.value();
+        while (!c.isEmpty()) disconnect( c.takeLast() );
+    }
+    m_stepConnections.clear();
+
+    this->setRowCount(0);
+    this->setColumnCount(1);
+}
+
+void ItemTableWidget::addList()
+{
+    if (m_ready) return;
+    m_ready = true;
+
+    clear();
+
+    if (!m_uberList) return;
+
+    QSignalBlocker b(this);
+
+    ProcessManager *pm = ProcessManager::instance();
+    pm->start();
+    if (m_stepType == RamStep::AssetProduction)
+        pm->setText("Loading assets...");
+    else pm->setText("Loading shots...");
+
+    // Adding objects
+    int count = m_uberList->objectCount();
+    pm->setMaximum( count );
+
+    for (int i = 0; i < count; i++)
+    {
+        pm->increment();
+        objectAssigned( m_uberList->objectAt(i) );
     }
 
-    m_stepType = stepType;
+    // Connect
+    m_listConnections << connect(m_uberList, SIGNAL(objectAdded(RamObject*,int)), this, SLOT(objectAssigned(RamObject*)));
+    m_listConnections << connect(m_uberList, SIGNAL(objectRemoved(RamObject*)), this, SLOT(objectUnassigned(RamObject*)));
 
-    m_uberList = list;
-
-    if( stepType == RamStep::AssetProduction ) this->horizontalHeaderItem(0)->setText("Assets");
-    else this->horizontalHeaderItem(0)->setText("Shots");
 
     this->resizeColumnsToContents();
     // Add margins
@@ -49,73 +108,42 @@ void ItemTableWidget::setList( RamObjectUberList *list, RamStep::Type stepType)
         h->resizeSection( i, h->sectionSize(i) + 30 );
     }
 
-    this->setEnabled(true);//*/
-}
-
-void ItemTableWidget::clear()
-{
-    this->setEnabled(false);
-
-    m_uberList = nullptr;
-
-    while ( !m_listConnections.isEmpty() ) disconnect( m_listConnections.takeLast() );
-    m_lists.clear();
-
-    // Disconnect all objects and steps
-    for( int row = 0; row < this->rowCount(); row++)
-    {
-        RamObjectWidget *ow = qobject_cast<RamObjectWidget*>( this->cellWidget(row, 0 ) );
-        disconnectObject( ow->ramObject() );
-    }
-
-    for( int col = 1; col < this->columnCount(); col++)
-    {
-        QString stepUuid = this->horizontalHeaderItem(col)->data(Qt::UserRole).toString();
-        disconnectStep( stepUuid );
-    }
-
-    this->setRowCount(0);
-    this->setColumnCount(1);
-}
-
-void ItemTableWidget::addList(RamObjectList *list)
-{
-    if (!list) return;
-    m_lists << list;
-
-    for (int i = 0; i < list->count(); i++) objectAssigned(list->at(i));
-
-    this->resizeColumnToContents(0);
-
-    m_listConnections << connect(list, &RamObjectList::objectRemoved, this, &ItemTableWidget::objectUnassigned);
-    m_listConnections << connect(list, &RamObjectList::objectAdded, this, &ItemTableWidget::objectAssigned);//*/
+    this->setEnabled(true);
+    pm->finish();
 }
 
 void ItemTableWidget::setStepVisible(QString stepUuid, bool visible)
 {
-    for (int i =1; i<this->columnCount();i++)
-    {
-        if ( this->horizontalHeaderItem(i)->data(Qt::UserRole).toString() == stepUuid)
-        {
-            this->setColumnHidden(i, !visible);
-        }
-    }
+    int col = stepColumn(stepUuid);
+    if (col < 0) return;
+    this->setColumnHidden(col, !visible);
 }
 
 void ItemTableWidget::search(QString s)
 {
-    s = s.toLower();
-    for (int i = 0; i< this->rowCount();i++)
+    QHeaderView *header = this->verticalHeader();
+    for( int row = 0; row < this->rowCount(); row++)
     {
-        if (s == "") this->setRowHidden(i, false);
-        QString itemUuid = this->verticalHeaderItem(i)->text().toLower();
-        if (itemUuid.contains(s))
+        if (s == "")
         {
-            this->setRowHidden(i, false);
+            header->setSectionHidden(row, false);
             continue;
         }
-        QString itemName = this->item(i, 0)->text().toLower();
-        this->setRowHidden(i, !itemName.contains(s));
+
+        // short name
+        if (objShortName(row).contains(s, Qt::CaseInsensitive))
+        {
+            header->setSectionHidden(row, false);
+            continue;
+        }
+
+        if (objName(row).contains(s, Qt::CaseInsensitive))
+        {
+            header->setSectionHidden(row, false);
+            continue;
+        }
+
+        header->setSectionHidden(row, true);
     }
 }
 
@@ -157,6 +185,12 @@ void ItemTableWidget::mouseReleaseEvent(QMouseEvent *event)
     QTableWidget::mouseReleaseEvent(event);
 }
 
+void ItemTableWidget::showEvent(QShowEvent *event)
+{
+    addList();
+    QWidget::showEvent(event);
+}
+
 int ItemTableWidget::addStep(RamStep *step)
 {
     if (!step) return -1;
@@ -164,7 +198,7 @@ int ItemTableWidget::addStep(RamStep *step)
     // Make sure it doesn't already exists
     for (int col = 1; col < this->columnCount(); col++)
     {
-        if (this->horizontalHeaderItem(col)->data(Qt::UserRole).toString() == step->uuid())
+        if (stepUuid(col) == step->uuid())
             return col;
     }
 
@@ -194,7 +228,7 @@ void ItemTableWidget::removeStep(RamObject *stepObj)
 
     for (int i = this->columnCount() -1; i > 0; i--)
     {
-        QString colUuid = this->horizontalHeaderItem(i)->data(Qt::UserRole).toString();
+        QString colUuid = stepUuid(i);
         if (colUuid == stepObj->uuid())
         {
             this->removeColumn(i);
@@ -206,15 +240,8 @@ void ItemTableWidget::removeStep(RamObject *stepObj)
 
 void ItemTableWidget::stepChanged(RamObject *stepObj)
 {
-    for (int i = this->columnCount() -1; i > 0; i--)
-    {
-        QString colUuid = this->horizontalHeaderItem(i)->data(Qt::UserRole).toString();
-        if (colUuid == stepObj->uuid())
-        {
-            this->horizontalHeaderItem(i)->setText(stepObj->name());
-            return;
-        }
-    }
+    int col = stepColumn(stepObj);
+    this->horizontalHeaderItem(col)->setText(stepObj->name());
 }
 
 void ItemTableWidget::statusAdded(RamObject *statusObj, int index)
@@ -263,33 +290,18 @@ void ItemTableWidget::statusRemoved(RamObject *statusObj)
 
 void ItemTableWidget::objectChanged(RamObject *obj)
 {
-    for( int row = 0; row < this->rowCount(); row++)
-    {
-        // Get the object from the widget
-        RamObjectWidget *ow = qobject_cast<RamObjectWidget*>( this->cellWidget(row, 0 ) );
-        if (ow->ramObject()->is(obj))
-        {
-            this->item(row, 0)->setText("   " + obj->name());
-            QTableWidgetItem *headerItem = this->verticalHeaderItem(row);
-            headerItem->setText(obj->shortName());
-        }
-    }
+    int row = objRow(obj);
+    this->item(row, 0)->setText("   " + obj->name());
+    QTableWidgetItem *headerItem = this->verticalHeaderItem(row);
+    headerItem->setText(obj->shortName());
 }
 
 void ItemTableWidget::objectUnassigned(RamObject *obj)
 {
     disconnectObject(obj);
 
-    for( int row = 0; row < this->rowCount(); row++)
-    {
-        // Get the object from the widget
-        RamObjectWidget *ow = qobject_cast<RamObjectWidget*>( this->cellWidget(row, 0 ) );
-        if (ow->ramObject()->is(obj))
-        {
-            delete ow;
-            this->removeRow(row);
-        }
-    }
+    int row = objRow(obj);
+    this->removeRow(row);
 }
 
 void ItemTableWidget::objectAssigned(RamObject *obj)
@@ -322,11 +334,12 @@ void ItemTableWidget::objectAssigned(RamObject *obj)
 
     int row = this->rowCount();
     this->setRowCount( row + 1 );
-    this->setItem(row, 0, new QTableWidgetItem("   " + obj->name()));
+    QTableWidgetItem *cellItem = new QTableWidgetItem("    " + obj->name());
+    this->setItem(row, 0, cellItem);
     this->setCellWidget(row, 0, ow);
-    QTableWidgetItem *headerItem = new QTableWidgetItem(obj->shortName());
-    headerItem->setData(Qt::UserRole, obj->uuid());
-    this->setVerticalHeaderItem(row, headerItem);
+    QTableWidgetItem *header = new QTableWidgetItem(obj->shortName());
+    header->setData(Qt::UserRole, obj->uuid() );
+    this->setVerticalHeaderItem(row, header);
 
     RamItem *item = qobject_cast<RamItem*>( obj );
     // for each status history, add the status
@@ -413,26 +426,22 @@ void ItemTableWidget::disconnectStep(QString stepUuid)
 void ItemTableWidget::setStatusWidget(RamItem *item, RamStep *step)
 {
     // Get row & col to add step if needed
-    for (int row = 0; row < this->rowCount(); row++)
-    {
-        if (this->verticalHeaderItem(row)->data(Qt::UserRole).toString() == item->uuid() )
-        {
-            int col = addStep(step);
-            if (col < 0) return;
+    int row = objRow(item);
+    if (row < 0) return;
+    int col = addStep(step);
+    if (col < 0) return;
 
-            // Add the new status widget (the previous one is deleted)
-            RamStatus *status = item->status(step);
-            if (!status) status =  generateDefaultStatus(item, step);
-            if (status)
-            {
-                RamStatusWidget *sw = new RamStatusWidget(status, this);
-                QTableWidgetItem *item = new QTableWidgetItem("    " + status->state()->name());
-                this->setItem(row, col, item);
-                this->setCellWidget(row, col, sw);
-            }//*/
-            return;
-        }
-    }
+    // Get the latest status or create one
+    RamStatus *status = item->status(step);
+    if (!status) status =  generateDefaultStatus(item, step);
+    if (!status) return;
+
+    // Add the new status widget (the previous one is automatically deleted)
+    RamStatusWidget *sw = new RamStatusWidget(status, this);
+    QTableWidgetItem *cellItem = new QTableWidgetItem("    " + status->state()->name());
+    cellItem->setData(Qt::UserRole, status->uuid());
+    this->setItem(row, col, cellItem);
+    this->setCellWidget(row, col, sw);
 }
 
 RamStatus *ItemTableWidget::generateDefaultStatus(RamItem *item, RamStep *step)
@@ -443,4 +452,51 @@ RamStatus *ItemTableWidget::generateDefaultStatus(RamItem *item, RamStep *step)
     RamState *s = Ramses::instance()->noState();
     if (u && s && step) status = new RamStatus( u, s, step, item );//*/
     return status;
+}
+
+QString ItemTableWidget::objUuid(int row)
+{
+    return this->verticalHeaderItem(row)->data(Qt::UserRole).toString();
+}
+
+QString ItemTableWidget::objShortName(int row)
+{
+    return this->verticalHeaderItem(row)->text();
+}
+
+QString ItemTableWidget::objName(int row)
+{
+    return this->item(row, 0)->text().trimmed();
+}
+
+int ItemTableWidget::objRow(RamObject *o)
+{
+    for(int row = 0; row < this->rowCount(); row++)
+    {
+        if (objUuid(row) == o->uuid())
+        {
+            return row;
+        }
+    }
+    return -1;
+}
+
+QString ItemTableWidget::stepUuid(int col)
+{
+    return this->horizontalHeaderItem(col)->data(Qt::UserRole).toString();
+}
+
+int ItemTableWidget::stepColumn(QString stepUuid)
+{
+    for (int i =1; i<this->columnCount();i++)
+    {
+        if ( this->horizontalHeaderItem(i)->data(Qt::UserRole).toString() == stepUuid)
+            return i;
+    }
+    return -1;
+}
+
+int ItemTableWidget::stepColumn(RamObject *stepObj)
+{
+    return stepColumn(stepObj->uuid());
 }

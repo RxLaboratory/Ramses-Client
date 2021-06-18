@@ -486,6 +486,7 @@ void RamObjectListWidget::addLists()
     {
         int count = m_uberList->objectCount();
         pm->setMaximum( count );
+        pm->setText("Loading " + m_uberList->name() + "...");
 
         for (int i = 0; i < count; i++)
         {
@@ -501,6 +502,7 @@ void RamObjectListWidget::addLists()
     {
         int count = m_list->count();
         pm->setMaximum( count );
+        pm->setText("Loading " + m_list->name() + "...");
 
         for (int i = 0; i < count; i++)
         {
