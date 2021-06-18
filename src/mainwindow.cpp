@@ -1,4 +1,5 @@
 #include "mainwindow.h"
+#include "config.h"
 
 MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     QMainWindow(parent)
@@ -131,17 +132,26 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     qDebug() << "  > shots ok";//*/
 
     // Pipeline editor
+#ifndef DEACTIVATE_PIPELINE
     PipelineWidget *pipelineEditor = new PipelineWidget(this);
     mainStack->addWidget(pipelineEditor);
+    connect(pipelineEditor, SIGNAL(closeRequested()), this, SLOT(home()));
     qDebug() << "> Pipeline ready";//*/
+#endif
 
+#ifndef DEACTIVATE_ASSETSTABLE
     AssetTable *assetsTable = new AssetTable("Assets Table", this);
     mainStack->addWidget(assetsTable);
-    qDebug() << "> Assets table ready";//*/
+    connect(assetsTable, SIGNAL(closeRequested()), this, SLOT(home()));
+    qDebug() << "> Assets table ready";
+#endif
 
+#ifndef DEACTIVATE_SHOTSTABLE
     ShotTable *shotsTable = new ShotTable("Shots Table", this);
     mainStack->addWidget(shotsTable);
-    qDebug() << "> Shots table ready";//*/
+    connect(shotsTable, SIGNAL(closeRequested()), this, SLOT(home()));
+    qDebug() << "> Shots table ready";
+#endif
 
     // Progress page
     progressPage = new ProgressPage(this);
@@ -163,9 +173,6 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     connect(actionPipeline, SIGNAL(triggered(bool)), this, SLOT(pipeline(bool)));
     connect(actionShots,SIGNAL(triggered(bool)), this, SLOT(shots(bool)));
     connect(actionAssets,SIGNAL(triggered(bool)), this, SLOT(assets(bool)));
-    connect(pipelineEditor, SIGNAL(closeRequested()), this, SLOT(home()));
-    connect(assetsTable, SIGNAL(closeRequested()), this, SLOT(home()));
-    connect(shotsTable, SIGNAL(closeRequested()), this, SLOT(home()));
     connect(adminPage, SIGNAL(closeRequested()), this, SLOT(home()));
     connect(projectSettingsPage, SIGNAL(closeRequested()), this, SLOT(home()));
     connect(networkButton,SIGNAL(clicked()),this, SLOT(networkButton_clicked()));

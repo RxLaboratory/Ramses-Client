@@ -6,7 +6,7 @@
 #include <QColor>
 #include "utils.h"
 
-#define SHOWDATA
+#include "config.h"
 
 class DuQFLog
 {
