@@ -114,7 +114,6 @@ SOURCES += \
     mainwindow.cpp \
     rameditwidgets/objectdockwidget.cpp \
     rameditwidgets/objecteditwidget.cpp \
-    rameditwidgets/objectlistwidget.cpp \
     rameditwidgets/pipeeditwidget.cpp \
     pipeline-editor/objectnode.cpp \
     pipeline-editor/pipelinewidget.cpp \
@@ -147,7 +146,6 @@ SOURCES += \
     rameditwidgets/sequenceeditwidget.cpp \
     settingswidgets/serversettingswidget.cpp \
     rameditwidgets/shoteditwidget.cpp \
-    rameditwidgets/simpleobjectlist.cpp \
     smallwidgets/statebox.cpp \
     rameditwidgets/stateeditwidget.cpp \
     rameditwidgets/statuseditwidget.cpp \
@@ -159,6 +157,7 @@ SOURCES += \
     userprofilepage.cpp
 
 HEADERS += \
+    config.h \
     duqf-widgets/duqfsearchedit.h \
     item-tables/assettable.h \
     item-tables/itemtable.h \
@@ -245,7 +244,6 @@ HEADERS += \
     mainwindow.h \
     rameditwidgets/objectdockwidget.h \
     rameditwidgets/objecteditwidget.h \
-    rameditwidgets/objectlistwidget.h \
     rameditwidgets/pipeeditwidget.h \
     pipeline-editor/objectnode.h \
     pipeline-editor/pipelinewidget.h \
@@ -278,7 +276,6 @@ HEADERS += \
     rameditwidgets/sequenceeditwidget.h \
     settingswidgets/serversettingswidget.h \
     rameditwidgets/shoteditwidget.h \
-    rameditwidgets/simpleobjectlist.h \
     smallwidgets/statebox.h \
     rameditwidgets/stateeditwidget.h \
     rameditwidgets/statuseditwidget.h \
