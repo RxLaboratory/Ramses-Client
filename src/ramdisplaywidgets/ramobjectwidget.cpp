@@ -13,6 +13,8 @@ RamObjectWidget::RamObjectWidget(RamObject *obj, QWidget *parent) : QWidget(pare
     _dockEditWidget = new ObjectDockWidget(obj);
     _dockEditWidget->hide();
 
+    _editUsers = new RamObjectList();
+
     connectEvents();
 }
 
@@ -60,7 +62,7 @@ void RamObjectWidget::setUserEditRole(RamUser::UserRole role)
     _editRole = role;
 }
 
-RamObjectList RamObjectWidget::editUsers() const
+RamObjectList *RamObjectWidget::editUsers() const
 {
     return _editUsers;
 }
@@ -121,7 +123,7 @@ void RamObjectWidget::userChanged()
     _hasEditRights = false;
     if (!user) return;
     _hasEditRights = user->role() >= _editRole && _hasEditWidget ;
-    if ( _editUsers.contains(user) ) _hasEditRights = true;
+    if ( _editUsers->contains(user) ) _hasEditRights = true;
 }
 
 void RamObjectWidget::objectChanged()

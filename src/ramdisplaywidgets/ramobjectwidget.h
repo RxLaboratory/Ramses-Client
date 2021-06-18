@@ -31,7 +31,7 @@ public:
     void setRemovable(bool removable = true);
 
     void setUserEditRole(RamUser::UserRole role);
-    RamObjectList editUsers() const;
+    RamObjectList *editUsers() const;
 
     void setTitle(QString t);
     void setIcon(QString i);
@@ -89,7 +89,7 @@ private:
     bool _selected = false;
     bool _editable = true;
 
-    RamObjectList _editUsers;
+    RamObjectList *_editUsers;
 
     bool _hasEditWidget = false;
     RamObject *m_object;

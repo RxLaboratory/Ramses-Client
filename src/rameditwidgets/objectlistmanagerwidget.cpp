@@ -35,6 +35,11 @@ void ObjectListManagerWidget::setContainingType(RamObject::ObjectType type)
     m_listEditWidget->setContainingType(type);
 }
 
+void ObjectListManagerWidget::setSortable(bool sortable)
+{
+    m_listEditWidget->setSortable(sortable);
+}
+
 void ObjectListManagerWidget::setList(RamObjectList *objectList)
 {
     while  (m_listConnection.count() > 0 ) disconnect( m_listConnection.takeLast() );

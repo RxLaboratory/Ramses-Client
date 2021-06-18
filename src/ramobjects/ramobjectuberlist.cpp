@@ -114,6 +114,15 @@ RamObject *RamObjectUberList::takeAt(int i)
     return RamObjectList::takeAt(i);
 }
 
+void RamObjectUberList::sortLists()
+{
+    for (int i = 0; i < m_objectsList.count(); i++)
+    {
+        RamObjectList *list = qobject_cast<RamObjectList*>( m_objectsList.at(i) );
+        if (list) list->sort();
+    }
+}
+
 void RamObjectUberList::addObject(RamObject *obj, int index)
 {
     RamObjectList::addObject(obj, index);

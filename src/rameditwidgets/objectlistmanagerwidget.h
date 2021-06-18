@@ -15,6 +15,7 @@ public:
     explicit ObjectListManagerWidget(RamObjectList *objectList, ObjectEditWidget *editWidget, QString title, QWidget *parent = nullptr);
     explicit ObjectListManagerWidget(RamObjectUberList *objectList, ObjectEditWidget *editWidget, QString title, QWidget *parent = nullptr);
     void setContainingType(RamObject::ObjectType type);
+    void setSortable(bool sortable);
     void setList(RamObjectList *objectList);
     void setList(RamObjectUberList *objectList);
     void clear();

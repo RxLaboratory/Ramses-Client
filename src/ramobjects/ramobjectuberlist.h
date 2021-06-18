@@ -27,6 +27,8 @@ public:
     RamObject *takeObject(QString uuid);
     // reimplemented to disconnect list
     RamObject *takeAt(int i) Q_DECL_OVERRIDE;
+    // sort all sublists
+    void sortLists();
 
 signals:
     void objectAdded(RamObject *, int index);

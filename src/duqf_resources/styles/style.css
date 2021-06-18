@@ -483,13 +483,13 @@ QTabBar::close-button:hover {
 
 /* LISTS */
 
-QListWidget {
+QListView {
     background-color: @color-very-dark-grey;
     padding-top: @padding-large;
     border: none;
 }
 
-QListWidget::item {
+QListView::item {
     color: @color-less-light-grey;
     padding-left: @padding-extra-large;
     padding-right: @padding-extra-large;
@@ -497,16 +497,16 @@ QListWidget::item {
     border-left: @padding-large;
 }
 
-QListWidget::item:hover {
+QListView::item:hover {
     background-color: @color-darker-grey;
  }
 
-QListWidget::item:selected {
+QListView::item:selected {
     color: @color-light-grey;
     background-color: @color-darker-grey;
  }
 
-QListWidget::item QWidget:hover {
+QListView::item QWidget:hover {
     color: @color-light-grey;
  }
 

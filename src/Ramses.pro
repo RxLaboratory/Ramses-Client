@@ -39,7 +39,9 @@ SOURCES += \
     ramdisplaywidgets/ramapplicationwidget.cpp \
     ramdisplaywidgets/ramassetgroupwidget.cpp \
     ramdisplaywidgets/ramfiletypewidget.cpp \
+    ramdisplaywidgets/ramobjectitemdelegate.cpp \
     ramdisplaywidgets/ramobjectlistcombobox.cpp \
+    ramdisplaywidgets/ramobjectlistmodel.cpp \
     ramdisplaywidgets/rampipefilewidget.cpp \
     ramdisplaywidgets/ramprojectwidget.cpp \
     ramdisplaywidgets/ramsequencewidget.cpp \
@@ -170,7 +172,9 @@ HEADERS += \
     ramdisplaywidgets/ramapplicationwidget.h \
     ramdisplaywidgets/ramassetgroupwidget.h \
     ramdisplaywidgets/ramfiletypewidget.h \
+    ramdisplaywidgets/ramobjectitemdelegate.h \
     ramdisplaywidgets/ramobjectlistcombobox.h \
+    ramdisplaywidgets/ramobjectlistmodel.h \
     ramdisplaywidgets/rampipefilewidget.h \
     ramdisplaywidgets/ramprojectwidget.h \
     ramdisplaywidgets/ramsequencewidget.h \

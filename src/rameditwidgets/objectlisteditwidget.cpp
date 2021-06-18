@@ -134,8 +134,8 @@ RamObject *ObjectListEditWidget::currentFilter() const
 
 void ObjectListEditWidget::scrollToBottom()
 {
-    QScrollBar *vbar = m_list->verticalScrollBar();
-    vbar->setSliderPosition( vbar->maximum() );
+    //QScrollBar *vbar = m_list->verticalScrollBar();
+    //vbar->setSliderPosition( vbar->maximum() );
 }
 
 void ObjectListEditWidget::filterChanged(QString filter)
