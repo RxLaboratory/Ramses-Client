@@ -34,24 +34,12 @@ SOURCES += \
     data-models/ramstatelist.cpp \
     data-models/ramstepstatushistory.cpp \
     duqf-widgets/duqfsearchedit.cpp \
-    item-tables/assettable.cpp \
-    item-tables/itemtable.cpp \
-    item-tables/itemtablewidget.cpp \
-    item-tables/shottable.cpp \
     processmanager.cpp \
     progressbar.cpp \
     progresspage.cpp \
-    ramdisplaywidgets/ramapplicationwidget.cpp \
-    ramdisplaywidgets/ramassetgroupwidget.cpp \
-    ramdisplaywidgets/ramfiletypewidget.cpp \
     ramdisplaywidgets/ramobjectitemdelegate.cpp \
     ramdisplaywidgets/ramobjectlistcombobox.cpp \
-    ramdisplaywidgets/rampipefilewidget.cpp \
-    ramdisplaywidgets/ramprojectwidget.cpp \
-    ramdisplaywidgets/ramsequencewidget.cpp \
-    ramdisplaywidgets/ramstatewidget.cpp \
-    ramdisplaywidgets/ramstepwidget.cpp \
-    ramdisplaywidgets/ramuserwidget.cpp \
+    ramdisplaywidgets/ramobjectlistwidget.cpp \
     rameditwidgets/applicationeditwidget.cpp \
     rameditwidgets/applicationlistmanagerwidget.cpp \
     rameditwidgets/asseteditwidget.cpp \
@@ -121,27 +109,19 @@ SOURCES += \
     rameditwidgets/objectdockwidget.cpp \
     rameditwidgets/objecteditwidget.cpp \
     rameditwidgets/pipeeditwidget.cpp \
-    pipeline-editor/objectnode.cpp \
-    pipeline-editor/pipelinewidget.cpp \
-    pipeline-editor/stepnode.cpp \
     rameditwidgets/projecteditwidget.cpp \
     smallwidgets/projectselectorwidget.cpp \
     ramobjects/ramapplication.cpp \
     ramobjects/ramasset.cpp \
-    ramdisplaywidgets/ramassetwidget.cpp \
     ramobjects/ramfiletype.cpp \
     ramobjects/ramitem.cpp \
     ramobjects/ramobject.cpp \
-    ramdisplaywidgets/ramobjectlistwidget.cpp \
-    ramdisplaywidgets/ramobjectwidget.cpp \
     ramobjects/rampipe.cpp \
     ramobjects/ramproject.cpp \
     ramobjects/ramses.cpp \
     ramobjects/ramshot.cpp \
-    ramdisplaywidgets/ramshotwidget.cpp \
     ramobjects/ramstate.cpp \
     ramobjects/ramstatus.cpp \
-    ramdisplaywidgets/ramstatuswidget.cpp \
     ramobjects/ramstep.cpp \
     ramobjects/ramuser.cpp \
     ramobjects/ramuuid.cpp \
@@ -158,6 +138,13 @@ SOURCES += \
     rameditwidgets/templatestepeditwidget.cpp \
     rameditwidgets/usereditwidget.cpp \
     userprofilepage.cpp
+    #item-tables/assettable.cpp \
+    #item-tables/itemtable.cpp \
+    #item-tables/itemtablewidget.cpp \
+    #item-tables/shottable.cpp \
+    #pipeline-editor/objectnode.cpp \
+    #pipeline-editor/pipelinewidget.cpp \
+    #pipeline-editor/stepnode.cpp \
 
 HEADERS += \
     config.h \
@@ -166,24 +153,12 @@ HEADERS += \
     data-models/ramstatelist.h \
     data-models/ramstepstatushistory.h \
     duqf-widgets/duqfsearchedit.h \
-    item-tables/assettable.h \
-    item-tables/itemtable.h \
-    item-tables/itemtablewidget.h \
-    item-tables/shottable.h \
     processmanager.h \
     progressbar.h \
     progresspage.h \
-    ramdisplaywidgets/ramapplicationwidget.h \
-    ramdisplaywidgets/ramassetgroupwidget.h \
-    ramdisplaywidgets/ramfiletypewidget.h \
     ramdisplaywidgets/ramobjectitemdelegate.h \
     ramdisplaywidgets/ramobjectlistcombobox.h \
-    ramdisplaywidgets/rampipefilewidget.h \
-    ramdisplaywidgets/ramprojectwidget.h \
-    ramdisplaywidgets/ramsequencewidget.h \
-    ramdisplaywidgets/ramstatewidget.h \
-    ramdisplaywidgets/ramstepwidget.h \
-    ramdisplaywidgets/ramuserwidget.h \
+    ramdisplaywidgets/ramobjectlistwidget.h \
     rameditwidgets/applicationeditwidget.h \
     rameditwidgets/applicationlistmanagerwidget.h \
     rameditwidgets/asseteditwidget.h \
@@ -253,27 +228,19 @@ HEADERS += \
     rameditwidgets/objectdockwidget.h \
     rameditwidgets/objecteditwidget.h \
     rameditwidgets/pipeeditwidget.h \
-    pipeline-editor/objectnode.h \
-    pipeline-editor/pipelinewidget.h \
-    pipeline-editor/stepnode.h \
     rameditwidgets/projecteditwidget.h \
     smallwidgets/projectselectorwidget.h \
     ramobjects/ramapplication.h \
     ramobjects/ramasset.h \
-    ramdisplaywidgets/ramassetwidget.h \
     ramobjects/ramfiletype.h \
     ramobjects/ramitem.h \
     ramobjects/ramobject.h \
-    ramdisplaywidgets/ramobjectlistwidget.h \
-    ramdisplaywidgets/ramobjectwidget.h \
     ramobjects/rampipe.h \
     ramobjects/ramproject.h \
     ramobjects/ramses.h \
     ramobjects/ramshot.h \
-    ramdisplaywidgets/ramshotwidget.h \
     ramobjects/ramstate.h \
     ramobjects/ramstatus.h \
-    ramdisplaywidgets/ramstatuswidget.h \
     ramobjects/ramstep.h \
     ramobjects/ramuser.h \
     ramobjects/ramuuid.h \
@@ -290,6 +257,13 @@ HEADERS += \
     rameditwidgets/templatestepeditwidget.h \
     rameditwidgets/usereditwidget.h \
     userprofilepage.h
+    #item-tables/assettable.h \
+    #item-tables/itemtable.h \
+    #item-tables/itemtablewidget.h \
+    #item-tables/shottable.h \
+    #pipeline-editor/objectnode.h \
+    #pipeline-editor/pipelinewidget.h \
+    #pipeline-editor/stepnode.h \
 
 FORMS += \
     rameditwidgets/asseteditwidget.ui \
