@@ -1,18 +1,22 @@
 #include "rampipe.h"
 
-RamPipe::RamPipe(RamStep *output, RamStep *input, QString uuid, QObject *parent):
-    RamObject("","",uuid,parent)
+#include "ramproject.h"
+
+RamPipe::RamPipe(RamStep *output, RamStep *input, QString uuid):
+    RamObject("","",uuid)
 {
     m_outputStep = output;
     m_inputStep = input;
-    m_pipeFiles = new RamObjectList();
+    m_pipeFiles = new RamObjectList("PPFS", "Pipe files", this);
 
     m_inputConnection = connect( m_inputStep, &RamStep::removed, this, &RamObject::remove);
     m_outputConnection = connect( m_outputStep, &RamStep::removed, this, &RamObject::remove);
     m_dbi->createPipe(output->uuid(), input->uuid(), m_uuid);
 
-    connect(m_pipeFiles, &RamObjectList::objectAdded, this, &RamPipe::pipeFileAssigned);
-    connect(m_pipeFiles, &RamObjectList::objectRemoved, this, &RamPipe::pipeFileUnassigned);
+    connect(m_pipeFiles, SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(pipeFileAssigned(QModelIndex,int,int)));
+    connect(m_pipeFiles, SIGNAL(rowsAboutToBeRemoved(QModelIndex,int,int)), this, SLOT(pipeFileUnassigned(QModelIndex,int,int)));
+
+    this->setParent( this->project() );
 
     this->setObjectName( "RamPipe" );
 }
@@ -76,16 +80,25 @@ RamPipe *RamPipe::pipe(QString uuid)
     return qobject_cast<RamPipe*>( RamObject::obj(uuid) );
 }
 
-void RamPipe::pipeFileUnassigned(RamObject *ft)
+void RamPipe::pipeFileUnassigned(const QModelIndex &parent, int first, int last)
 {
-    m_dbi->unassignPipeFile( m_uuid, ft->uuid());
-    emit changed(this);
+    Q_UNUSED(parent)
+
+    for (int i = first; i <= last; i++)
+    {
+        RamObject *pfObj = m_pipeFiles->at(i);
+        m_dbi->unassignPipeFile(m_uuid, pfObj->uuid());
+    }
 }
 
-void RamPipe::pipeFileAssigned(RamObject * const ft)
+void RamPipe::pipeFileAssigned(const QModelIndex &parent, int first, int last)
 {
-    if (!ft) return;
-    m_dbi->assignPipeFile(m_uuid, ft->uuid());
-    emit changed(this);
+    Q_UNUSED(parent)
+
+    for (int i = first; i <= last; i++)
+    {
+        RamObject *pfObj = m_pipeFiles->at(i);
+        m_dbi->assignPipeFile(m_uuid, pfObj->uuid());
+    }
 }
 

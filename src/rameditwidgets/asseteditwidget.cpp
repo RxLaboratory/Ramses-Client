@@ -80,7 +80,10 @@ void AssetEditWidget::moveAsset()
     RamProject *proj = project();
     if (!proj) return;
     if (assetGroupBox->currentIndex() >= 0)
-        proj->moveAssetToGroup(_asset, assetGroupBox->currentUuid() );
+    {
+        RamAssetGroup *ag = RamAssetGroup::assetGroup( assetGroupBox->currentUuid() );
+        _asset->setAssetGroup( ag );
+    }
 }
 
 void AssetEditWidget::setupUi()

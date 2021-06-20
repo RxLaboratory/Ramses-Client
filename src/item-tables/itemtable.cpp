@@ -81,7 +81,7 @@ void ItemTable::stepRemoved(RamObject *stepObj)
 void ItemTable::stepActionToggled(bool checked)
 {
     QAction *action = (QAction*)sender();
-    m_table->setStepVisible( action->data().toString(), checked);
+    //m_table->setStepVisible( action->data().toString(), checked);
 }
 
 void ItemTable::setupUi(QString title)
@@ -141,10 +141,10 @@ void ItemTable::connectEvents()
     connect(m_actionSelectAllSteps, SIGNAL(triggered()), this, SLOT(selectAllSteps()));
     connect(m_actionSelectNoSteps, SIGNAL(triggered()), this, SLOT(deselectSteps()));
     connect(m_actionSelectMySteps, SIGNAL(triggered()), this, SLOT(selectUserSteps()));
-    connect(m_searchEdit, &DuQFSearchEdit::changing, m_table, &ItemTableWidget::search);
+    /*connect(m_searchEdit, &DuQFSearchEdit::changing, m_table, &ItemTableWidget::search);
     connect(m_searchEdit, &DuQFSearchEdit::changed, m_table, &ItemTableWidget::search);
     connect(m_table, &ItemTableWidget::newStep, this, &ItemTable::stepAdded);
-    connect(m_table, &ItemTableWidget::stepRemoved, this, &ItemTable::stepRemoved);
+    connect(m_table, &ItemTableWidget::stepRemoved, this, &ItemTable::stepRemoved);*/
     connect(m_titleBar, &TitleBar::closeRequested, this, &ItemTable::closeRequested);
     connect(Ramses::instance(), &Ramses::currentProjectChanged, this, &ItemTable::projectChanged);
 

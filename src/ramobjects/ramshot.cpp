@@ -1,8 +1,9 @@
 #include "ramshot.h"
 #include "ramsequence.h"
+#include "ramproject.h"
 
-RamShot::RamShot(QString shortName, RamProject *project, RamSequence *sequence, QString name, QString uuid):
-    RamItem(shortName, project, name, uuid, sequence)
+RamShot::RamShot(QString shortName, RamSequence *sequence, QString name, QString uuid):
+    RamItem(shortName, sequence->project(), name, uuid)
 {
     setObjectType(Shot);
     setProductionType(RamStep::ShotProduction);
@@ -26,8 +27,14 @@ void RamShot::setSequence(RamSequence *sequence)
 {
     if (m_sequence->is(sequence)) return;
     m_dirty = true;
+
+    disconnect(m_sequenceConnection);
+
     setParent(sequence);
     m_sequence = sequence;
+
+    m_sequenceConnection = connect(sequence, SIGNAL(removed(RamObject*)),this,SLOT(remove()));
+
     emit changed(this);
 }
 

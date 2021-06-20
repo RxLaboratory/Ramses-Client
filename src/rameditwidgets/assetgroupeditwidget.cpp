@@ -34,7 +34,7 @@ void AssetGroupEditWidget::setObject(RamObject *obj)
 
     //Reset values
     folderWidget->setPath("");
-    assetsList->setList(assetGroup);
+    //assetsList->setList(assetGroup);
 
     if (!assetGroup) return;
 
@@ -62,7 +62,11 @@ void AssetGroupEditWidget::update()
 void AssetGroupEditWidget::createAsset()
 {
     if (!_assetGroup) return;
-    _assetGroup->createAsset();
+    RamAsset *asset = new RamAsset(
+                "NEW",
+                _assetGroup,
+                "New Asset");
+    _assetGroup->project()->assets()->append(asset);
 }
 
 void AssetGroupEditWidget::setupUi()

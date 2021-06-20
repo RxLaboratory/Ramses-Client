@@ -6,20 +6,15 @@
 #include <QMouseEvent>
 
 #include "ramobjectwidget.h"
-#include "ramobjectwidget.h"
+#include "data-models/ramitemtable.h"
 
 class ItemTableWidget : public QTableWidget
 {
     Q_OBJECT
 public:
     ItemTableWidget(QWidget *parent = nullptr);
-    // Settings
-    void setSortable(bool sortable);
-    // Content
-    void setList(RamObjectUberList *list, RamStep::Type stepType = RamStep::AssetProduction);
-    void clear();
 
-public slots:
+/*public slots:
     void search(QString s);
     void setStepVisible(QString stepUuid, bool visible);
 
@@ -50,9 +45,6 @@ private slots:
     void statusRemoved(RamObject *statusObj);
 
 private:
-    // The List
-    RamObjectUberList *m_uberList = nullptr;
-
     // The Connections
     QList<QMetaObject::Connection> m_listConnections;
     QMap<QString, QList<QMetaObject::Connection>> m_objectConnections;
@@ -64,11 +56,10 @@ private:
     RamStep::Type m_stepType = RamStep::AssetProduction;
 
     // Build
-    void setupUi();
+
     void connectEvents();
     // Delayed build for perf
     bool m_ready = false;
-    void addList();
 
     // Utils
     void setStatusWidget(RamItem *item, RamStep *step);
@@ -83,7 +74,9 @@ private:
 
     // UI Events
     QPoint _initialDragPos;
-    bool _dragging = false;
+    bool _dragging = false;*/
+
+    void setupUi();
 };
 
 #endif // ITEMTABLEWIDGET_H

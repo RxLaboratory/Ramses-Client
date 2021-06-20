@@ -15,7 +15,13 @@ void StepListManagerWidget::createObject()
 {
     RamProject *project = Ramses::instance()->currentProject();
     if (!project) return;
-    project->createStep();
+
+    RamStep *step = new RamStep(
+                "NEW",
+                "New Step",
+                project
+                );
+    project->steps()->append(step);
 }
 
 void StepListManagerWidget::changeProject(RamProject *project)

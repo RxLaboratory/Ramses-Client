@@ -12,5 +12,10 @@ TemplateStepListManagerWidget::TemplateStepListManagerWidget(QWidget *parent) :
 
 void TemplateStepListManagerWidget::createObject()
 {
-    Ramses::instance()->createTemplateStep();
+    RamStep *ts = new RamStep(
+                "NEW",
+                "New Template Step"
+                );
+
+    Ramses::instance()->templateSteps()->append(ts);
 }

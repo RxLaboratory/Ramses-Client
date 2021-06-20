@@ -1,5 +1,7 @@
 #include "applicationlistmanagerwidget.h"
 
+#include "ramses.h"
+
 ApplicationListManagerWidget::ApplicationListManagerWidget(QWidget *parent) :
     ObjectListManagerWidget(
         Ramses::instance()->applications(),

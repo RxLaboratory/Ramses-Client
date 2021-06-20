@@ -7,15 +7,14 @@
 #include "ramsequence.h"
 #include "rampipe.h"
 #include "dbisuspender.h"
-#include "ramobjectlist.h"
-#include "ramobjectuberlist.h"
+#include "data-models/ramobjectlist.h"
 #include "rampipefile.h"
 
 class RamProject : public RamObject
 {
     Q_OBJECT
 public:
-    RamProject(QString shortName, QString name = "", QString uuid = "", QObject *parent = nullptr);
+    RamProject(QString shortName, QString name = "", QString uuid = "");
     ~RamProject();
 
     QString folderPath() const;
@@ -36,47 +35,36 @@ public:
 
     // Steps
     RamObjectList *steps() const;
-    void assignStep(RamStep *templateStep);
-    void createStep(QString shortName = "NEW", QString name = "Step");
-
     // Asset Groups
-    RamObjectUberList *assetGroups() const;
-    void createAssetGroup(QString shortName = "NEW", QString name = "Asset Group");
-
-    // Assets
-    void moveAssetToGroup(RamAsset *asset, QString groupUuid);
-    void moveAssetToGroup(RamAsset *asset, RamAssetGroup *group);
-
+    RamObjectList *assetGroups() const;
     // Sequences
-    RamObjectUberList *sequences() const;
-    void createSequence(QString shortName = "NEW", QString name = "Sequence");
-
+    RamObjectList *sequences() const;
     // Shots
-    void moveShotToSequence(RamShot *shot, QString sequenceUuid);
-    void moveShotToSequence(RamShot *shot, RamSequence *sequence);
-
+    RamObjectList *shots();
+    // Assets
+    RamObjectList *assets();
     // Pipeline
     RamObjectList *pipeline();
     RamPipe *pipe(RamStep *outputStep, RamStep *inputStep);
-    RamPipe *createPipe(RamStep *output, RamStep *input);
     RamObjectList *pipeFiles();
-    RamPipeFile *createPipeFile(QString shortName = "NEW");
 
     void update();
 
     static RamProject *project(QString uuid);
 
 private:
-    QString _folderPath;
-    qreal _framerate = 24;
-    int _width = 1920;
-    int _height = 1080;
-    qreal _aspectRatio = 1.78;
-    RamObjectList *_steps;
-    RamObjectUberList *_sequences;
-    RamObjectUberList *_assetGroups;
-    RamObjectList *_pipeline;
-    RamObjectList *_pipeFiles;
+    QString m_folderPath;
+    qreal m_framerate = 24;
+    int m_width = 1920;
+    int m_height = 1080;
+    qreal m_aspectRatio = 1.78;
+    RamObjectList *m_steps;
+    RamObjectList *m_sequences;
+    RamObjectList *m_assetGroups;
+    RamObjectList *m_assets;
+    RamObjectList *m_shots;
+    RamObjectList *m_pipeline;
+    RamObjectList *m_pipeFiles;
 };
 
 #endif // RAMPROJECT_H

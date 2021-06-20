@@ -1,11 +1,13 @@
 #include "rampipefile.h"
 
-RamPipeFile::RamPipeFile(QString shortName, QString projectUuid, QObject *parent) :
-    RamObject(shortName, "", "", parent)
+#include "ramproject.h"
+
+RamPipeFile::RamPipeFile(QString shortName, RamProject *project) :
+    RamObject(shortName, "", "", project)
 {
     this->setObjectType(PipeFile);
-    m_projectUuid = projectUuid;
-    m_dbi->createPipeFile(m_shortName, projectUuid, "", m_uuid, "");
+    m_project = project;
+    m_dbi->createPipeFile(m_shortName, m_project->uuid(), "", m_uuid, "");
 }
 
 RamPipeFile::RamPipeFile(QString uuid, QObject *parent):
@@ -49,14 +51,14 @@ void RamPipeFile::update()
     m_dbi->updatePipeFile(m_uuid, m_shortName, ft, "" );
 }
 
-const QString &RamPipeFile::projectUuid() const
+const RamProject *RamPipeFile::project() const
 {
-    return m_projectUuid;
+    return m_project;
 }
 
-void RamPipeFile::setProjectUuid(const QString &newProjectUuid)
+void RamPipeFile::setProject(RamProject *project)
 {
-    m_projectUuid = newProjectUuid;
+    m_project = project;
 }
 
 RamPipeFile *RamPipeFile::pipeFile(QString uuid)

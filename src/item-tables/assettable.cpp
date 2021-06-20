@@ -3,7 +3,7 @@
 AssetTable::AssetTable(QString title, QWidget *parent):
     ItemTable(title, parent)
 {
-    m_table->setSortable(false);
+
 }
 
 void AssetTable::projectChanged( RamProject *project )
@@ -17,7 +17,7 @@ void AssetTable::projectChanged( RamProject *project )
     }
     else
     {
-        m_table->setList( project->assetGroups(), RamStep::AssetProduction );
+        //m_table->setList( project->assetGroups(), RamStep::AssetProduction );
     }
 
     this->setEnabled(true);

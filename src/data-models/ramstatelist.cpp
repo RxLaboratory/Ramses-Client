@@ -1,7 +1,7 @@
 #include "ramstatelist.h"
 
 RamStateList::RamStateList(QObject *parent):
-    RamObjectList("STATES", "States", "", parent)
+    RamObjectList("STATES", "States", parent)
 {
     this->setObjectName( "RamStateList" );
 }
@@ -15,9 +15,9 @@ bool stateSorter(RamObject *a, RamObject *b)
     else return a->shortName() < b->shortName();
 }
 
-void RamStateList::sort()
+void RamStateList::sort(int column, Qt::SortOrder order)
 {
-    if (m_sorted) return;
+    /*if (m_sorted) return;
     std::sort(m_objectsList.begin(), m_objectsList.end(), stateSorter);
-    m_sorted = true;
+    m_sorted = true;*/
 }

@@ -2,21 +2,6 @@
 
 #include "ramitem.h"
 
-RamStatus::RamStatus(RamUser *user, RamState *state, RamStep *step, RamItem *item):
-    RamObject("", "", "", item)
-{
-    _user = user;
-    _state = state;
-    _step = step;
-    _item = item;
-    _completionRatio = _state->completionRatio();
-    _date = QDateTime::currentDateTimeUtc();
-
-    setObjectType(Status);
-
-    this->setObjectName( "RamStatus" );
-}
-
 RamStatus::RamStatus(RamUser *user, RamState *state, RamStep *step, RamItem *item, QString uuid):
     RamObject("", "", uuid, item)
 {

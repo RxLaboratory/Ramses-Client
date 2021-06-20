@@ -2,8 +2,9 @@
 #define RAMOBJECTLISTCOMBOBOX_H
 
 #include <QComboBox>
+#include <QSortFilterProxyModel>
 
-#include "ramobjectlist.h"
+#include "data-models/ramobjectlist.h"
 
 class RamObjectListComboBox : public QComboBox
 {
@@ -25,18 +26,12 @@ signals:
     void currentObjectChanged(QString);
 
 private slots:
-    void newObject(RamObject *obj);
-    void objectRemoved(RamObject *obj);
-    void objectChanged(RamObject *obj);
     void currentObjectChanged(int i);
+
 private:
-    RamObjectList *m_list;
     bool m_isFilterBox = false;
 
     void connectEvents();
-
-    QList<QMetaObject::Connection> m_listConnections;
-    QMap<QString, QMetaObject::Connection> m_objectConnections;
 };
 
 #endif // RAMOBJECTLISTCOMBOBOX_H

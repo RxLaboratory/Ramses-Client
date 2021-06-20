@@ -64,6 +64,7 @@ public slots:
 signals:
     void changed(RamObject *);
     void orderChanged(RamObject *, int p, int n);
+    void orderChanged();
     void removed(RamObject *);
 
 protected:

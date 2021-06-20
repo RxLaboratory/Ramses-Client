@@ -12,7 +12,7 @@
 #include "ramses.h"
 #include "objecteditwidget.h"
 #include "objectdockwidget.h"
-#include "ramobjectlist.h"
+#include "data-models/ramobjectlist.h"
 
 /**
  * @brief The RamObjectWidget class is the base class for all small widgets used to show objects anywhere in the UI.

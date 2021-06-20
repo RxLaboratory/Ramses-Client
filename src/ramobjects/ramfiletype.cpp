@@ -1,7 +1,9 @@
 #include "ramfiletype.h"
 
-RamFileType::RamFileType(QString shortName, QString name, QStringList extensions, QString uuid, QObject *parent):
-    RamObject(shortName, name, uuid, parent)
+#include "ramses.h"
+
+RamFileType::RamFileType(QString shortName, QString name, QStringList extensions, QString uuid):
+    RamObject(shortName, name, uuid, Ramses::instance())
 {
     setObjectType(FileType);
     _extensions = extensions;
@@ -10,8 +12,8 @@ RamFileType::RamFileType(QString shortName, QString name, QStringList extensions
     this->setObjectName( "RamFileType" );
 }
 
-RamFileType::RamFileType(QString shortName, QString name, QString extensions, QString uuid, QObject *parent):
-    RamObject(shortName, name, uuid, parent)
+RamFileType::RamFileType(QString shortName, QString name, QString extensions, QString uuid):
+    RamObject(shortName, name, uuid, Ramses::instance())
 {
     setObjectType(FileType);
     setExtensions(extensions);

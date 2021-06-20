@@ -17,7 +17,7 @@ RamObjectItemDelegate::RamObjectItemDelegate(QObject *parent)
 void RamObjectItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
     // Reinterpret the int to a pointer
-    quintptr iptr = index.data().toULongLong();
+    quintptr iptr = index.data(Qt::UserRole).toULongLong();
     RamObject *obj = reinterpret_cast<RamObject*>(iptr);
 
     const QRect rect = option.rect;

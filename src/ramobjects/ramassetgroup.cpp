@@ -3,7 +3,7 @@
 #include "ramses.h"
 
 RamAssetGroup::RamAssetGroup(QString shortName, QString name, QString uuid) :
-    RamObjectList(shortName, name, uuid, Ramses::instance())
+    RamObject(shortName, name, uuid, Ramses::instance())
 {
     this->setObjectType(AssetGroup);
     m_project = nullptr;
@@ -14,7 +14,7 @@ RamAssetGroup::RamAssetGroup(QString shortName, QString name, QString uuid) :
 }
 
 RamAssetGroup::RamAssetGroup(QString shortName, RamProject *project, QString name, QString uuid):
-    RamObjectList(shortName, name, uuid, project)
+    RamObject(shortName, name, uuid, project)
 {
     this->setObjectType(AssetGroup);
     m_project = project;
@@ -47,20 +47,6 @@ RamProject *RamAssetGroup::project() const
     return m_project;
 }
 
-void RamAssetGroup::append(RamAsset *asset)
-{
-    asset->setAssetGroup( this );
-    asset->update();
-    RamObjectList::append(asset);
-}
-
-void RamAssetGroup::createAsset(QString shortName, QString name)
-{
-    if (_template) return;
-    RamAsset *asset = new RamAsset(shortName, m_project, this, name, "");
-    append(asset);
-}
-
 RamAssetGroup *RamAssetGroup::assetGroup(QString uuid)
 {
     return qobject_cast<RamAssetGroup*>( RamObject::obj(uuid));
@@ -74,12 +60,3 @@ void RamAssetGroup::update()
     else m_dbi->updateAssetGroup(m_uuid, m_shortName, m_name);
 }
 
-void RamAssetGroup::remove()
-{
-    if (m_removing) return;
-    for(int i = m_objectsList.count() -1; i >= 0 ; i--)
-    {
-        m_objectsList.at(i)->remove();
-    }
-    RamObjectList::remove();
-}

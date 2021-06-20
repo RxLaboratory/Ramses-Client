@@ -16,102 +16,10 @@ ItemTableWidget::ItemTableWidget(QWidget *parent):
     QTableWidget(parent)
 {
     setupUi();
-    connectEvents();
-    clear();
-    m_ready = true;
+    //connectEvents();
+    //m_ready = true;
 }
-
-void ItemTableWidget::setList( RamObjectUberList *list, RamStep::Type stepType)
-{
-    if( stepType == RamStep::AssetProduction ) this->horizontalHeaderItem(0)->setText("Assets");
-    else this->horizontalHeaderItem(0)->setText("Shots");
-
-    m_uberList = list;
-    m_stepType = stepType;
-    m_ready = false;
-    if (this->isVisible()) addList();
-
-    clear();
-
-    if (!list) return;
-}
-
-void ItemTableWidget::clear()
-{
-    this->setEnabled(false);
-
-    // Disconnect list
-    while ( !m_listConnections.isEmpty() ) disconnect( m_listConnections.takeLast() );
-
-    // Disconnect all objects
-    QMapIterator<QString, QList<QMetaObject::Connection>> io( m_objectConnections );
-    while(io.hasNext())
-    {
-        io.next();
-        QList<QMetaObject::Connection> c = io.value();
-        while (!c.isEmpty()) disconnect( c.takeLast() );
-    }
-    m_objectConnections.clear();
-
-    // Disconnect all steps
-    QMapIterator<QString, QList<QMetaObject::Connection>> is( m_stepConnections );
-    while(is.hasNext())
-    {
-        is.next();
-        QList<QMetaObject::Connection> c = is.value();
-        while (!c.isEmpty()) disconnect( c.takeLast() );
-    }
-    m_stepConnections.clear();
-
-    this->setRowCount(0);
-    this->setColumnCount(1);
-}
-
-void ItemTableWidget::addList()
-{
-    if (m_ready) return;
-    m_ready = true;
-
-    clear();
-
-    if (!m_uberList) return;
-
-    QSignalBlocker b(this);
-
-    ProcessManager *pm = ProcessManager::instance();
-    pm->freeze(true);
-    if (m_stepType == RamStep::AssetProduction)
-        pm->setText("Loading assets...");
-    else pm->setText("Loading shots...");
-
-    // Adding objects
-    int count = m_uberList->objectCount();
-    pm->setMaximum( count );
-
-    for (int i = 0; i < count; i++)
-    {
-        pm->increment();
-        objectAssigned( m_uberList->objectAt(i) );
-    }
-
-    // Connect
-    m_listConnections << connect(m_uberList, SIGNAL(objectAdded(RamObject*,int)), this, SLOT(objectAssigned(RamObject*)));
-    m_listConnections << connect(m_uberList, SIGNAL(objectRemoved(RamObject*)), this, SLOT(objectUnassigned(RamObject*)));
-
-
-    this->resizeColumnsToContents();
-    // Add margins
-    QHeaderView *h = this->horizontalHeader();
-    h->resizeSection( 0, h->sectionSize(0) + 100 );
-    for (int i = 1; i < h->count(); i++)
-    {
-        h->resizeSection( i, h->sectionSize(i) + 30 );
-    }
-
-    this->setEnabled(true);
-    pm->freeze(false);
-}
-
+/*
 void ItemTableWidget::setStepVisible(QString stepUuid, bool visible)
 {
     int col = stepColumn(stepUuid);
@@ -187,7 +95,6 @@ void ItemTableWidget::mouseReleaseEvent(QMouseEvent *event)
 
 void ItemTableWidget::showEvent(QShowEvent *event)
 {
-    addList();
     QWidget::showEvent(event);
 }
 
@@ -342,14 +249,7 @@ void ItemTableWidget::objectAssigned(RamObject *obj)
     this->setVerticalHeaderItem(row, header);
 
     RamItem *item = qobject_cast<RamItem*>( obj );
-    // for each status history, add the status
-    RamObjectUberList *statusHistory = item->statusHistory();
-    for (int i = 0; i < statusHistory->count(); i++)
-    {
-        RamStepStatusHistory *ssh = qobject_cast<RamStepStatusHistory*>( statusHistory->at(i) );
-        RamStep *step = ssh->step();
-        setStatusWidget(item, step);
-    }
+
 
     this->resizeRowToContents(row);
 
@@ -360,44 +260,9 @@ void ItemTableWidget::objectAssigned(RamObject *obj)
     c << connect(statusHistory, &RamObjectUberList::objectAdded, this, &ItemTableWidget::statusAdded);
     c << connect(statusHistory, &RamObjectUberList::objectRemoved, this, &ItemTableWidget::statusRemoved);
     c << connect(obj, &RamObject::changed, this, &ItemTableWidget::objectChanged);
-    m_objectConnections[obj->uuid()] = c;//*/
+    m_objectConnections[obj->uuid()] = c;
 }
 
-void ItemTableWidget::setSortable(bool sortable)
-{
-    this->verticalHeader()->setSectionsMovable(sortable);
-}
-
-void ItemTableWidget::setupUi()
-{
-    this->setFrameShape(QFrame::NoFrame);
-    this->setDragDropMode(NoDragDrop);
-    this->setDragEnabled(false);
-    this->setDefaultDropAction(Qt::IgnoreAction);  
-    this->setShowGrid(false);
-
-    this->setRowCount(0);
-    this->setColumnCount(1);
-
-    this->setHorizontalHeaderItem(0, new QTableWidgetItem("Item"));
-
-    this->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
-    this->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
-
-    this->horizontalHeader()->setSectionsMovable(true);
-
-    this->setAlternatingRowColors(true);
-
-    int p = DuUI::getSize("padding", "large");
-    int sp = DuUI::getSize("margin");
-    QString padding = QString::number(p) + "px";
-    QString smallPadding = QString::number(sp) + "px";
-    QString style = "QTableWidget { gridline-color: rgba(0,0,0,0); selection-background-color: rgba(0,0,0,0); } ";
-    style += "QTableWidget::item { padding-left: " + padding + "; padding-right: " + padding + "; padding-top: " + smallPadding + "; } ";
-    style += "QTableWidget::item:hover { background-color: none; } ";
-
-    this->setStyleSheet(style);
-}
 
 void ItemTableWidget::connectEvents()
 {
@@ -452,7 +317,7 @@ RamStatus *ItemTableWidget::generateDefaultStatus(RamItem *item, RamStep *step)
     RamUser *u = Ramses::instance()->ramUser();
     if (!u) u = Ramses::instance()->currentUser();
     RamState *s = Ramses::instance()->noState();
-    if (u && s && step) status = new RamStatus( u, s, step, item );//*/
+    if (u && s && step) status = new RamStatus( u, s, step, item );
     return status;
 }
 
@@ -501,4 +366,37 @@ int ItemTableWidget::stepColumn(QString stepUuid)
 int ItemTableWidget::stepColumn(RamObject *stepObj)
 {
     return stepColumn(stepObj->uuid());
+}
+*/
+
+
+void ItemTableWidget::setupUi()
+{
+    this->setFrameShape(QFrame::NoFrame);
+    this->setDragDropMode(NoDragDrop);
+    this->setDragEnabled(false);
+    this->setDefaultDropAction(Qt::IgnoreAction);
+    this->setShowGrid(false);
+
+    this->setRowCount(0);
+    this->setColumnCount(1);
+
+    this->setHorizontalHeaderItem(0, new QTableWidgetItem("Item"));
+
+    this->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
+    this->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
+
+    this->horizontalHeader()->setSectionsMovable(true);
+
+    this->setAlternatingRowColors(true);
+
+    int p = DuUI::getSize("padding", "large");
+    int sp = DuUI::getSize("margin");
+    QString padding = QString::number(p) + "px";
+    QString smallPadding = QString::number(sp) + "px";
+    QString style = "QTableWidget { gridline-color: rgba(0,0,0,0); selection-background-color: rgba(0,0,0,0); } ";
+    style += "QTableWidget::item { padding-left: " + padding + "; padding-right: " + padding + "; padding-top: " + smallPadding + "; } ";
+    style += "QTableWidget::item:hover { background-color: none; } ";
+
+    this->setStyleSheet(style);
 }

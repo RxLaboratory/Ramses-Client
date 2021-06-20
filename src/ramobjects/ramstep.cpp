@@ -31,13 +31,12 @@ RamStep::~RamStep()
 void RamStep::init()
 {
     m_type = AssetProduction;
-    m_order = 0;
-    m_users = new RamObjectList();
-    m_applications = new RamObjectList();
-    connect(m_users, &RamObjectList::objectAdded, this, &RamStep::userAssigned);
-    connect(m_users, &RamObjectList::objectRemoved, this, &RamStep::userUnassigned);
-    connect(m_applications, &RamObjectList::objectAdded, this, &RamStep::applicationAssigned);
-    connect(m_applications, &RamObjectList::objectRemoved, this, &RamStep::applicationUnassigned);
+    m_users = new RamObjectList("", "Users", this);
+    m_applications = new RamObjectList("", "Applications", this);
+    connect(m_users, SIGNAL(rowsInserted(const QModelIndex&,int,int)), this, SLOT(userAssigned(const QModelIndex&,int,int)));
+    connect(m_users, SIGNAL(rowsAboutToBeRemoved(const QModelIndex&,int,int)), this, SLOT(userUnassigned(const QModelIndex&,int,int)));
+    connect(m_applications, SIGNAL(rowsInserted(const QModelIndex&,int,int)), this, SLOT(userAssigned(const QModelIndex&,int,int)));
+    connect(m_applications, SIGNAL(rowsAboutToBeRemoved(const QModelIndex&,int,int)), this, SLOT(userUnassigned(const QModelIndex&,int,int)));
 
     this->setObjectName( "RamStep" );
 }
@@ -47,10 +46,17 @@ bool RamStep::isTemplate() const
     return m_template;
 }
 
-RamStep* RamStep::createFromTemplate(QString projectUuid)
+RamStep *RamStep::createFromTemplate(QString projectUuid)
+{
+    RamProject *project = RamProject::project( projectUuid );
+    if ( !project ) return nullptr;
+    return createFromTemplate(project);
+}
+
+RamStep* RamStep::createFromTemplate(RamProject *project)
 {
     // Create
-    RamStep *step = new RamStep(m_shortName, m_name, projectUuid);
+    RamStep *step = new RamStep(m_shortName, m_name, project);
     step->setType(m_type);
     // and update
     step->update();
@@ -83,14 +89,26 @@ RamObjectList *RamStep::users() const
     return m_users;
 }
 
-void RamStep::userAssigned(RamObject *u)
+void RamStep::userAssigned(const QModelIndex &parent, int first, int last)
 {
-    m_dbi->assignUser(m_uuid, u->uuid());
+    Q_UNUSED(parent)
+
+    for (int i = first; i <= last; i++)
+    {
+        RamObject *userObj = m_users->at(i);
+        m_dbi->assignUser(m_uuid, userObj->uuid());
+    }
 }
 
-void RamStep::userUnassigned(RamObject *u)
+void RamStep::userUnassigned(const QModelIndex &parent, int first, int last)
 {
-    m_dbi->unassignUser(m_uuid, u->uuid());
+    Q_UNUSED(parent)
+
+    for (int i = first; i <= last; i++)
+    {
+        RamObject *userObj = m_users->at(i);
+        m_dbi->unassignUser(m_uuid, userObj->uuid());
+    }
 }
 
 RamObjectList *RamStep::applications() const
@@ -98,14 +116,26 @@ RamObjectList *RamStep::applications() const
     return m_applications;
 }
 
-void RamStep::applicationAssigned(RamObject *a)
+void RamStep::applicationAssigned(const QModelIndex &parent, int first, int last)
 {
-    m_dbi->assignApplication(m_uuid, a->uuid());
+    Q_UNUSED(parent)
+
+    for (int i = first; i <= last; i++)
+    {
+        RamObject *appObj = m_applications->at(i);
+        m_dbi->assignApplication(m_uuid, appObj->uuid());
+    }
 }
 
-void RamStep::applicationUnassigned(RamObject *a)
+void RamStep::applicationUnassigned(const QModelIndex &parent, int first, int last)
 {
-    m_dbi->unassignApplication(m_uuid, a->uuid());
+    Q_UNUSED(parent)
+
+    for (int i = first; i <= last; i++)
+    {
+        RamObject *appObj = m_applications->at(i);
+        m_dbi->unassignApplication(m_uuid, appObj->uuid());
+    }
 }
 
 QList<RamObject *> RamStep::inputFileTypes()

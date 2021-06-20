@@ -8,17 +8,16 @@ class RamStepStatusHistory : public RamObjectList
 {
     Q_OBJECT
 public:
-    explicit RamStepStatusHistory(RamStep *step, RamItem *item);
-
+    RamStepStatusHistory(RamStep *step, RamItem *item);
     RamItem *item() const;
     RamStep *step() const;
 
-public slots:
-    void sort() Q_DECL_OVERRIDE;
+    // MODEL REIMPLEMENTATION
+    virtual void sort(int column = 0, Qt::SortOrder order = Qt::AscendingOrder) Q_DECL_OVERRIDE;
 
 private:
-    RamStep *_step;
-    RamItem *_item;
+    RamStep *m_step;
+    RamItem *m_item;
 };
 
 bool statusSorter(RamObject *a, RamObject *b);

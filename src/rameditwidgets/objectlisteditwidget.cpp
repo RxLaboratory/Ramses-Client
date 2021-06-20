@@ -4,20 +4,11 @@ ObjectListEditWidget::ObjectListEditWidget(bool editableObjects, QWidget *parent
     QWidget(parent)
 {
     m_objectList = nullptr;
-    m_objectUberList = nullptr;
     setupUi(editableObjects);
     connectEvents();
 }
 
 ObjectListEditWidget::ObjectListEditWidget(RamObjectList *objectList, bool editableObjects, QWidget *parent) :
-    QWidget(parent)
-{
-    setupUi(editableObjects);
-    connectEvents();
-    setList(objectList);
-}
-
-ObjectListEditWidget::ObjectListEditWidget(RamObjectUberList *objectList, bool editableObjects, QWidget *parent) :
     QWidget(parent)
 {
     setupUi(editableObjects);
@@ -37,14 +28,12 @@ void ObjectListEditWidget::setEditMode(const RamObjectListWidget::EditMode &edit
 
 RamObjectList *ObjectListEditWidget::list() const
 {
-    if (m_objectUberList) return m_objectUberList;
     return m_objectList;
 }
 
 void ObjectListEditWidget::clear()
 {
     m_objectList = nullptr;
-    m_objectUberList = nullptr;
     m_list->clear();
 }
 
@@ -53,20 +42,6 @@ void ObjectListEditWidget::setList(RamObjectList *objectList)
     setFilterList(nullptr);
     m_objectList = objectList;
     m_list->setList(m_objectList);
-}
-
-void ObjectListEditWidget::setList(RamObjectUberList *objectList, bool useFilters)
-{
-    while (!m_uberListConnections.isEmpty()) disconnect( m_uberListConnections.takeLast() );
-
-    m_objectList = nullptr;
-    m_objectUberList = objectList;
-    m_list->setList(objectList);
-
-    if (useFilters)
-    {
-        setFilterList( objectList );
-    }
 }
 
 void ObjectListEditWidget::setFilterList(RamObjectList *filterList)

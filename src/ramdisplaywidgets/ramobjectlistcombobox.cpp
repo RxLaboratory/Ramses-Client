@@ -24,54 +24,30 @@ RamObjectListComboBox::RamObjectListComboBox(RamObjectList *list, QWidget *paren
 
 void RamObjectListComboBox::setList(RamObjectList *list)
 {
-    while(!m_listConnections.isEmpty()) disconnect(m_listConnections.takeLast());
-
-    this->setEnabled(false);
-
-    QSignalBlocker b(this);
-
-    m_list = list;
-    this->clear();
-
-    if (!list)
-    {
-        if (m_isFilterBox) this->hide();
-        return;
-    }
-    this->show();
-
-    // Add "ALL"
-    if (m_isFilterBox) this->addItem("All " + list->name(), "");
-
-    for( int i = 0; i < m_list->count(); i++) newObject(m_list->at(i));
-
-    m_listConnections << connect(m_list, &RamObjectList::objectAdded, this, &RamObjectListComboBox::newObject);
-    m_listConnections << connect(m_list, &RamObjectList::objectRemoved, this, &RamObjectListComboBox::objectRemoved);
-
-    this->setCurrentIndex(-1);
-    if (m_isFilterBox) this->setCurrentIndex(0);
-
-    emit currentObjectChanged(nullptr);
-    emit currentObjectChanged("");
-
-    this->setEnabled(true);
+    QSortFilterProxyModel *proxyModel = new QSortFilterProxyModel();
+    proxyModel->setSourceModel(list);
+    this->setModel(proxyModel);
 }
 
 RamObject *RamObjectListComboBox::currentObject()
 {
-    return m_list->fromUuid(this->currentData().toString());
+    quintptr iptr = this->currentData().toULongLong();
+    RamObject *obj = reinterpret_cast<RamObject*>(iptr);
+    return obj;
 }
 
 QString RamObjectListComboBox::currentUuid()
 {
-    return this->currentData().toString();
+    return this->currentObject()->uuid();
 }
 
 void RamObjectListComboBox::setObject(QString uuid)
 {
     for(int i = 0; i < this->count(); i++)
     {
-        if (this->itemData(i).toString() == uuid)
+        quintptr iptr = this->itemData(i).toULongLong();
+        RamObject *obj = reinterpret_cast<RamObject*>(iptr);
+        if (obj->uuid() == uuid)
         {
             this->setCurrentIndex(i);
             return;
@@ -83,44 +59,6 @@ void RamObjectListComboBox::setObject(QString uuid)
 void RamObjectListComboBox::setObject(RamObject *obj)
 {
     setObject(obj->uuid());
-}
-
-void RamObjectListComboBox::newObject(RamObject *obj)
-{
-    if (!obj) return;
-    QString t = obj->name();
-    if (t == "") t = obj->shortName();
-    this->addItem(t, obj->uuid());
-
-    m_objectConnections[obj->uuid()] = connect(obj, &RamObject::changed, this, &RamObjectListComboBox::objectChanged);
-}
-
-void RamObjectListComboBox::objectRemoved(RamObject *obj)
-{
-    if (m_objectConnections.contains(obj->uuid()))
-        disconnect( m_objectConnections.take(obj->uuid()));
-    for (int i = 0; i < this->count(); i++)
-    {
-        if (this->itemData(i).toString() == obj->uuid())
-        {
-            this->removeItem(i);
-            break;
-        }
-    }
-}
-
-void RamObjectListComboBox::objectChanged(RamObject *obj)
-{
-    for (int i = 0; i < this->count(); i++)
-    {
-        if (this->itemData(i).toString() == obj->uuid())
-        {
-            QString t = obj->name();
-            if (t == "") t = obj->shortName();
-            this->setItemText(i, t);
-            break;
-        }
-    }
 }
 
 void RamObjectListComboBox::currentObjectChanged(int i)

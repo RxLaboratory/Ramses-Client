@@ -13,7 +13,7 @@ public:
                     Standard = 0 };
     Q_ENUM( UserRole )
 
-    explicit RamUser(QString shortName, QString name = "", QString uuid = "", QObject *parent = nullptr);
+    explicit RamUser(QString shortName, QString name = "", QString uuid = "");
     ~RamUser();
 
     UserRole role() const;

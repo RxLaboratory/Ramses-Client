@@ -20,16 +20,6 @@ ObjectListManagerWidget::ObjectListManagerWidget(RamObjectList *objectList, Obje
     setList(objectList);
 }
 
-ObjectListManagerWidget::ObjectListManagerWidget(RamObjectUberList *objectList, ObjectEditWidget *editWidget, QString title, QWidget *parent) :
-    QWidget(parent)
-{
-    m_editWidget = editWidget;
-    setupUi();
-    connectEvents();
-    m_listEditWidget->setTitle(title);
-    setList(objectList);
-}
-
 void ObjectListManagerWidget::setContainingType(RamObject::ObjectType type)
 {
     m_listEditWidget->setContainingType(type);
@@ -45,16 +35,6 @@ void ObjectListManagerWidget::setList(RamObjectList *objectList)
     while  (m_listConnection.count() > 0 ) disconnect( m_listConnection.takeLast() );
     m_listEditWidget->setList( objectList );
     if (!objectList) return;
-    m_listConnection << connect(objectList, &RamObjectList::objectAdded, this, &ObjectListManagerWidget::editNewObject);
-    this->setEnabled(true);
-}
-
-void ObjectListManagerWidget::setList(RamObjectUberList *objectList)
-{
-    while  (m_listConnection.count() > 0 ) disconnect( m_listConnection.takeLast() );
-    m_listEditWidget->setList( objectList );
-    if (!objectList) return;
-    m_listConnection << connect(objectList, &RamObjectList::objectAdded, this, &ObjectListManagerWidget::editNewObject);
     this->setEnabled(true);
 }
 

@@ -1,7 +1,9 @@
 #include "ramuser.h"
 
-RamUser::RamUser(QString shortName, QString name, QString uuid, QObject *parent) :
-    RamObject(shortName, name, uuid, parent)
+#include "ramses.h"
+
+RamUser::RamUser(QString shortName, QString name, QString uuid) :
+    RamObject(shortName, name, uuid, Ramses::instance())
 {
     setObjectType(User);
     _role = Standard;

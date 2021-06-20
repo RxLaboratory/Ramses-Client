@@ -1,18 +1,15 @@
 #ifndef RAMOBJECTLISTWIDGET_H
 #define RAMOBJECTLISTWIDGET_H
 
-#include <QListView>
+#include <QTableView>
 #include <QHeaderView>
 #include <QSortFilterProxyModel>
 
-#include "ramobjectlist.h"
-#include "ramobjectwidget.h"
+#include "data-models/ramobjectlist.h"
 #include "processmanager.h"
 #include "ramobjectitemdelegate.h"
 
-#include "ramobjectlistmodel.h"
-
-class RamObjectListWidget : public QListView
+class RamObjectListWidget : public QTableView
 {
     Q_OBJECT
 public:
@@ -21,9 +18,7 @@ public:
 
     explicit RamObjectListWidget(QWidget *parent = nullptr);
     explicit RamObjectListWidget(RamObjectList *list, QWidget *parent = nullptr);
-    explicit RamObjectListWidget(RamObjectUberList *list, QWidget *parent = nullptr);
     explicit RamObjectListWidget(RamObjectList *list, bool editableObjects, QWidget *parent = nullptr);
-    explicit RamObjectListWidget(RamObjectUberList *list, bool editableObjects, QWidget *parent = nullptr);
 
     // Settings
     void setContainingType(RamObject::ObjectType type) {};
@@ -32,8 +27,7 @@ public:
     void setSelectable(bool selectable=true) {};
 
     // Content
-    void setList(RamObjectList *list) {};
-    void setList(RamObjectUberList *list) {};
+    void setList(RamObjectList *list);
     void clear() {};
 
 public slots:

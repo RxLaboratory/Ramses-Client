@@ -3,13 +3,13 @@
 
 #include "ramobject.h"
 #include "ramfiletype.h"
-#include "ramobjectlist.h"
+#include "data-models/ramobjectlist.h"
 
 class RamApplication : public RamObject
 {
     Q_OBJECT
 public:
-    RamApplication(QString shortName, QString name = "", QString executableFilePath = "", QString uuid = "", QObject *parent = nullptr);
+    RamApplication(QString shortName, QString name = "", QString executableFilePath = "", QString uuid = "");
     ~RamApplication();
 
     QString executableFilePath() const;
@@ -32,18 +32,18 @@ public slots:
     void unassignFileType(RamObject *o);
 
 private slots:
-    void nativeFileTypeUnassigned(RamObject *ft);
-    void nativeFileTypeAssigned(RamObject *const ft);
-    void importFileTypeUnassigned(RamObject *ft);
-    void importFileTypeAssigned(RamObject *const ft);
-    void exportFileTypeUnassigned(RamObject *ft);
-    void exportFileTypeAssigned(RamObject *const ft);
+    void nativeFileTypeUnassigned(const QModelIndex &parent, int first, int last);
+    void nativeFileTypeAssigned(const QModelIndex &parent, int first, int last);
+    void importFileTypeUnassigned(const QModelIndex &parent, int first, int last);
+    void importFileTypeAssigned(const QModelIndex &parent, int first, int last);
+    void exportFileTypeUnassigned(const QModelIndex &parent, int first, int last);
+    void exportFileTypeAssigned(const QModelIndex &parent, int first, int last);
 
 private:
     QString _executableFilePath;
-    RamObjectList *_nativeFileTypes;
-    RamObjectList *_importFileTypes;
-    RamObjectList *_exportFileTypes;
+    RamObjectList *m_nativeFileTypes;
+    RamObjectList *m_importFileTypes;
+    RamObjectList *m_exportFileTypes;
 };
 
 #endif // RAMAPPLICATION_H

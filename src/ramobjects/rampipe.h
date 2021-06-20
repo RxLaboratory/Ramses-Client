@@ -2,7 +2,7 @@
 #define RAMPIPE_H
 
 #include "ramstep.h"
-#include "ramobjectlist.h"
+#include "data-models/ramobjectlist.h"
 
 class RamProject;
 
@@ -10,7 +10,7 @@ class RamPipe : public RamObject
 {
     Q_OBJECT
 public:
-    RamPipe(RamStep *output, RamStep *input, QString uuid = "", QObject *parent = nullptr);
+    RamPipe(RamStep *output, RamStep *input, QString uuid = "");
     ~RamPipe();
 
     void update();
@@ -30,8 +30,8 @@ public:
 public slots:
 
 private slots:
-    void pipeFileUnassigned(RamObject *ft);
-    void pipeFileAssigned(RamObject *const ft);
+    void pipeFileUnassigned(const QModelIndex &parent, int first, int last);
+    void pipeFileAssigned(const QModelIndex &parent, int first, int last);
 
 private:
     RamStep *m_outputStep;

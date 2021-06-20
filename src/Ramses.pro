@@ -25,9 +25,14 @@ INCLUDEPATH += rameditwidgets \
     ramdisplaywidgets \
     smallwidgets \
     ramobjects \
-    item-tables
+    item-tables \
+    data-model
 
 SOURCES += \
+    data-models/ramitemtable.cpp \
+    data-models/ramobjectlist.cpp \
+    data-models/ramstatelist.cpp \
+    data-models/ramstepstatushistory.cpp \
     duqf-widgets/duqfsearchedit.cpp \
     item-tables/assettable.cpp \
     item-tables/itemtable.cpp \
@@ -41,7 +46,6 @@ SOURCES += \
     ramdisplaywidgets/ramfiletypewidget.cpp \
     ramdisplaywidgets/ramobjectitemdelegate.cpp \
     ramdisplaywidgets/ramobjectlistcombobox.cpp \
-    ramdisplaywidgets/ramobjectlistmodel.cpp \
     ramdisplaywidgets/rampipefilewidget.cpp \
     ramdisplaywidgets/ramprojectwidget.cpp \
     ramdisplaywidgets/ramsequencewidget.cpp \
@@ -70,10 +74,9 @@ SOURCES += \
     rameditwidgets/templatesteplistmanagerwidget.cpp \
     rameditwidgets/userlistmanagerwidget.cpp \
     ramloader.cpp \
-    ramobjects/ramobjectuberlist.cpp \
+    ramobjects/ramassetgroup.cpp \
     ramobjects/rampipefile.cpp \
-    ramobjects/ramstatelist.cpp \
-    ramobjects/ramstepstatushistory.cpp \
+    ramobjects/ramsequence.cpp \
     settingswidgets/daemonsettingswidget.cpp \
     dbinterface.cpp \
     dbisuspender.cpp \
@@ -125,17 +128,14 @@ SOURCES += \
     smallwidgets/projectselectorwidget.cpp \
     ramobjects/ramapplication.cpp \
     ramobjects/ramasset.cpp \
-    ramobjects/ramassetgroup.cpp \
     ramdisplaywidgets/ramassetwidget.cpp \
     ramobjects/ramfiletype.cpp \
     ramobjects/ramitem.cpp \
     ramobjects/ramobject.cpp \
-    ramobjects/ramobjectlist.cpp \
     ramdisplaywidgets/ramobjectlistwidget.cpp \
     ramdisplaywidgets/ramobjectwidget.cpp \
     ramobjects/rampipe.cpp \
     ramobjects/ramproject.cpp \
-    ramobjects/ramsequence.cpp \
     ramobjects/ramses.cpp \
     ramobjects/ramshot.cpp \
     ramdisplaywidgets/ramshotwidget.cpp \
@@ -161,6 +161,10 @@ SOURCES += \
 
 HEADERS += \
     config.h \
+    data-models/ramitemtable.h \
+    data-models/ramobjectlist.h \
+    data-models/ramstatelist.h \
+    data-models/ramstepstatushistory.h \
     duqf-widgets/duqfsearchedit.h \
     item-tables/assettable.h \
     item-tables/itemtable.h \
@@ -174,7 +178,6 @@ HEADERS += \
     ramdisplaywidgets/ramfiletypewidget.h \
     ramdisplaywidgets/ramobjectitemdelegate.h \
     ramdisplaywidgets/ramobjectlistcombobox.h \
-    ramdisplaywidgets/ramobjectlistmodel.h \
     ramdisplaywidgets/rampipefilewidget.h \
     ramdisplaywidgets/ramprojectwidget.h \
     ramdisplaywidgets/ramsequencewidget.h \
@@ -203,10 +206,9 @@ HEADERS += \
     rameditwidgets/templatesteplistmanagerwidget.h \
     rameditwidgets/userlistmanagerwidget.h \
     ramloader.h \
-    ramobjects/ramobjectuberlist.h \
+    ramobjects/ramassetgroup.h \
     ramobjects/rampipefile.h \
-    ramobjects/ramstatelist.h \
-    ramobjects/ramstepstatushistory.h \
+    ramobjects/ramsequence.h \
     settingswidgets/daemonsettingswidget.h \
     dbinterface.h \
     dbisuspender.h \
@@ -258,17 +260,14 @@ HEADERS += \
     smallwidgets/projectselectorwidget.h \
     ramobjects/ramapplication.h \
     ramobjects/ramasset.h \
-    ramobjects/ramassetgroup.h \
     ramdisplaywidgets/ramassetwidget.h \
     ramobjects/ramfiletype.h \
     ramobjects/ramitem.h \
     ramobjects/ramobject.h \
-    ramobjects/ramobjectlist.h \
     ramdisplaywidgets/ramobjectlistwidget.h \
     ramdisplaywidgets/ramobjectwidget.h \
     ramobjects/rampipe.h \
     ramobjects/ramproject.h \
-    ramobjects/ramsequence.h \
     ramobjects/ramses.h \
     ramobjects/ramshot.h \
     ramdisplaywidgets/ramshotwidget.h \

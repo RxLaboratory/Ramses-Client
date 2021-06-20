@@ -18,7 +18,15 @@ void AssetListManagerWidget::createObject()
     if (project->assetGroups()->count() == 0 ) return;
     RamAssetGroup *ag = RamAssetGroup::assetGroup( currentFilter() );
     if (!ag) ag = qobject_cast<RamAssetGroup*>( project->assetGroups()->at(0) );
-    ag->createAsset();
+    if(!ag) return;
+
+    RamAsset *asset = new RamAsset(
+                "NEW",
+                ag,
+                "New Asset"
+                );
+
+    project->assets()->append(asset);
 }
 
 void AssetListManagerWidget::changeProject(RamProject *project)

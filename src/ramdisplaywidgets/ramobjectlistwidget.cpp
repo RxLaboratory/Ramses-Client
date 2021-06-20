@@ -1,33 +1,29 @@
 #include "ramobjectlistwidget.h"
 
 RamObjectListWidget::RamObjectListWidget(QWidget *parent):
-        QListView(parent)
+        QTableView(parent)
 {
     setupUi();
 }
 
 RamObjectListWidget::RamObjectListWidget(RamObjectList *list, QWidget *parent):
-    QListView(parent)
+    QTableView(parent)
 {
     setupUi();
+    setList(list);
 }
 
-RamObjectListWidget::RamObjectListWidget(RamObjectUberList *list, QWidget *parent):
-    QListView(parent)
-{
-    setupUi();
-}
 
 RamObjectListWidget::RamObjectListWidget(RamObjectList *list, bool editableObjects, QWidget *parent):
-    QListView(parent)
+    QTableView(parent)
 {
     setupUi();
+    setList(list);
 }
 
-RamObjectListWidget::RamObjectListWidget(RamObjectUberList *list, bool editableObjects, QWidget *parent):
-    QListView(parent)
+void RamObjectListWidget::setList(RamObjectList *list)
 {
-    setupUi();
+    this->setModel(list);
 }
 
 
@@ -42,11 +38,5 @@ void RamObjectListWidget::setupUi()
 
     RamObjectItemDelegate *delegate = new RamObjectItemDelegate();
     this->setItemDelegate( delegate );
-
-    RamObjectListModel *objectListModel = new RamObjectListModel(Ramses::instance()->templateSteps());
-    QSortFilterProxyModel *proxyModel = new QSortFilterProxyModel(this);
-    proxyModel->setSourceModel(objectListModel);
-    this->setModel(proxyModel);
-
 }
 

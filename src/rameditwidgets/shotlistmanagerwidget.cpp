@@ -19,7 +19,15 @@ void ShotListManagerWidget::createObject()
     if (project->sequences()->count() == 0 ) return;
     RamSequence *seq = RamSequence::sequence( currentFilter() );
     if (!seq) seq = qobject_cast<RamSequence*>( project->sequences()->at(0) );
-    seq->createShot();
+    if(!seq) return;
+
+    RamShot *shot = new RamShot(
+                "NEW",
+                seq,
+                "New Shot"
+                );
+
+    project->shots()->append(shot);
 }
 
 void ShotListManagerWidget::changeProject(RamProject *project)

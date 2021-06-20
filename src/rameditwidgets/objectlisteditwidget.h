@@ -10,7 +10,6 @@
 #include <QScrollBar>
 
 #include "ramobjectlistwidget.h"
-#include "ramobjectuberlist.h"
 #include "ramobjectlistcombobox.h"
 #include "duqf-widgets/duqfsearchedit.h"
 
@@ -28,13 +27,11 @@ class ObjectListEditWidget : public QWidget
 public:
     explicit ObjectListEditWidget(bool editableObjects = false, QWidget *parent = nullptr);
     explicit ObjectListEditWidget(RamObjectList *objectList, bool editableObjects = false, QWidget *parent = nullptr);
-    explicit ObjectListEditWidget(RamObjectUberList *objectList, bool editableObjects = false, QWidget *parent = nullptr);
     void setContainingType(RamObject::ObjectType type);
     void setEditMode(const RamObjectListWidget::EditMode &editMode);
     RamObjectList *list() const;
     void clear();
     void setList(RamObjectList *objectList);
-    void setList(RamObjectUberList *objectList, bool useFilters = true);
     void setFilterList(RamObjectList *filterList);
     void setEditable(bool editable = true);
     void setSortable(bool sortable = true);
@@ -67,7 +64,6 @@ private:
     RamObjectListComboBox *m_filterBox;
     DuQFSearchEdit *m_searchEdit;
     RamObjectList *m_objectList;
-    RamObjectUberList *m_objectUberList;
     RamObjectListWidget *m_list;
     QMap<QString, QList<QMetaObject::Connection>> m_filterConnections;
     QList<QMetaObject::Connection> m_uberListConnections;

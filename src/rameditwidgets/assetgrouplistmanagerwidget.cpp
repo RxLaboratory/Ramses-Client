@@ -15,7 +15,11 @@ void AssetGroupListManagerWidget::createObject()
 {
     RamProject *project = Ramses::instance()->currentProject();
     if (!project) return;
-    project->createAssetGroup();
+    RamAssetGroup *assetGroup = new RamAssetGroup(
+                "NEW",
+                project,
+                "New Asset Group");
+    project->assetGroups()->append(assetGroup);
 }
 
 void AssetGroupListManagerWidget::changeProject(RamProject *project)

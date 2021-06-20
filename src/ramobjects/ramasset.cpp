@@ -1,8 +1,10 @@
 #include "ramasset.h"
 #include "ramassetgroup.h"
 
-RamAsset::RamAsset(QString shortName, RamProject *project, RamAssetGroup *assetGroup, QString name, QString uuid) :
-    RamItem(shortName, project, name, uuid, assetGroup)
+#include "ramproject.h"
+
+RamAsset::RamAsset(QString shortName, RamAssetGroup *assetGroup, QString name, QString uuid) :
+    RamItem(shortName, assetGroup->project(), name, uuid)
 {
     setObjectType(Asset);
     setProductionType(RamStep::AssetProduction);
@@ -24,10 +26,17 @@ RamAssetGroup *RamAsset::assetGroup() const
 
 void RamAsset::setAssetGroup(RamAssetGroup *assetGroup)
 {
+    if(!assetGroup) return;
     if (m_assetGroup->is(assetGroup)) return;
     m_dirty = true;
+
+    disconnect(m_assetGroupConnection);
+
     this->setParent(assetGroup);
     m_assetGroup = assetGroup;
+
+    m_assetGroupConnection = connect(assetGroup, SIGNAL(removed(RamObject*)), this, SLOT(remove()));
+
     emit changed(this);
 }
 

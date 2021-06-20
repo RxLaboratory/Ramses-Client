@@ -13,8 +13,7 @@ class RamStatus : public RamObject
 {
     Q_OBJECT
 public:
-    explicit RamStatus(RamUser *user, RamState *state, RamStep *step, RamItem *item);
-    explicit RamStatus(RamUser *user, RamState *state, RamStep *step, RamItem *item, QString uuid);
+    explicit RamStatus(RamUser *user, RamState *state, RamStep *step, RamItem *item, QString uuid = "");
     ~RamStatus();
 
     int completionRatio() const;

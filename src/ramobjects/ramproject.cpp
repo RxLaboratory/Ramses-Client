@@ -1,14 +1,19 @@
 #include "ramproject.h"
 
-RamProject::RamProject(QString shortName, QString name, QString uuid, QObject *parent):
-    RamObject(shortName, name, uuid, parent)
+#include "ramses.h"
+
+RamProject::RamProject(QString shortName, QString name, QString uuid):
+    RamObject(shortName, name, uuid, Ramses::instance())
 {
     setObjectType(Project);
-    _sequences = new RamObjectUberList("Sequences", this);
-    _assetGroups = new RamObjectUberList("Asset Groups", this);
-    _pipeline = new RamObjectList("PPLN", "Pipeline", "", this);
-    _steps = new RamObjectList("STPS", "Steps", "", this);
-    _pipeFiles = new RamObjectList("PPFLS", "Pipe files", "", this);
+    m_sequences = new RamObjectList("SEQS", "Sequences", this);
+    m_assetGroups = new RamObjectList("AGS", "Asset Groups", this);
+    m_pipeline = new RamObjectList("PPLN", "Pipeline", this);
+    m_steps = new RamObjectList("STPS", "Steps", this);
+    m_pipeFiles = new RamObjectList("PPFLS", "Pipe files", this);
+    m_shots = new RamObjectList("SHOTS", "Shots", this);
+    m_assets = new RamObjectList("ASSETS", "Assets", this);
+
     m_dbi->createProject(m_shortName, m_name, m_uuid);
 
     this->setObjectName( "RamProject" );
@@ -21,72 +26,72 @@ RamProject::~RamProject()
 
 QString RamProject::folderPath() const
 {
-    return _folderPath;
+    return m_folderPath;
 }
 
 void RamProject::setFolderPath(const QString &folderPath)
 {
-    if (folderPath == _folderPath) return;
+    if (folderPath == m_folderPath) return;
     m_dirty = true;
-    _folderPath = folderPath;
+    m_folderPath = folderPath;
     emit changed(this);
 }
 
 qreal RamProject::framerate() const
 {
-    return _framerate;
+    return m_framerate;
 }
 
 void RamProject::setFramerate(const qreal &framerate)
 {
-    if (framerate == _framerate) return;
+    if (framerate == m_framerate) return;
     m_dirty = true;
-    _framerate = framerate;
+    m_framerate = framerate;
     emit changed(this);
 }
 
 int RamProject::width() const
 {
-    return _width;
+    return m_width;
 }
 
 void RamProject::setWidth(const int width, const qreal &pixelAspect)
 {
-    if (width == _width) return;
+    if (width == m_width) return;
     m_dirty = true;
-    _width = width;
+    m_width = width;
     updateAspectRatio(pixelAspect);
 }
 
 int RamProject::height() const
 {
-    return _height;
+    return m_height;
 }
 
 void RamProject::setHeight(const int height, const qreal &pixelAspect)
 {
-    if (height == _height) return;
+    if (height == m_height) return;
     m_dirty = true;
-    _height = height;
+    m_height = height;
     updateAspectRatio(pixelAspect);
 }
 
 qreal RamProject::aspectRatio() const
 {
-    return _aspectRatio;
+    return m_aspectRatio;
 }
 
 void RamProject::updateAspectRatio(const qreal &pixelAspect)
 {
-    _aspectRatio = qreal(_width) / qreal(_height) * pixelAspect;
+    m_aspectRatio = qreal(m_width) / qreal(m_height) * pixelAspect;
     emit changed(this);
 }
 
 void RamProject::setAspectRatio(const qreal &aspectRatio)
 {
-    if (aspectRatio == _aspectRatio) return;
+    if (aspectRatio == m_aspectRatio) return;
     m_dirty = true;
-    _aspectRatio = aspectRatio;
+    m_aspectRatio = aspectRatio;
     emit changed(this);
 }
 
@@ -94,9 +99,9 @@ void RamProject::update()
 {
     if (!m_dirty) return;
     RamObject::update();
-    QString path = _folderPath;
+    QString path = m_folderPath;
     if (path == "") path = "auto";
-    m_dbi->updateProject(m_uuid, m_shortName, m_name, _width, _height, _framerate, path);
+    m_dbi->updateProject(m_uuid, m_shortName, m_name, m_width, m_height, m_framerate, path);
 }
 
 RamProject *RamProject::project(QString uuid)
@@ -104,107 +109,48 @@ RamProject *RamProject::project(QString uuid)
     return qobject_cast<RamProject*>( RamObject::obj(uuid) );
 }
 
-RamObjectUberList *RamProject::assetGroups() const
+RamObjectList *RamProject::assetGroups() const
 {
-    return _assetGroups;
+    return m_assetGroups;
 }
 
-void RamProject::createAssetGroup(QString shortName, QString name)
+RamObjectList *RamProject::sequences() const
 {
-    RamAssetGroup *assetGroup = new RamAssetGroup(shortName, this, name);
-    _assetGroups->append( assetGroup );
+    return m_sequences;
 }
 
-void RamProject::moveAssetToGroup(RamAsset *asset, QString groupUuid)
+RamObjectList *RamProject::shots()
 {
-    for(int i = 0; i < _assetGroups->count(); i++)
-    {
-        RamAssetGroup *assetGroup = qobject_cast<RamAssetGroup*>( _assetGroups->at(i) );
-        if (assetGroup->uuid() == groupUuid) assetGroup->append(asset);
-        else assetGroup->removeAll(asset);
-    }
+    return m_shots;
 }
 
-void RamProject::moveAssetToGroup(RamAsset *asset, RamAssetGroup *group)
+RamObjectList *RamProject::assets()
 {
-    moveAssetToGroup(asset, group->uuid());
-}
-
-RamObjectUberList *RamProject::sequences() const
-{
-    return _sequences;
-}
-
-void RamProject::createSequence(QString shortName, QString name)
-{
-    RamSequence *seq = new RamSequence(shortName, this, name, "", this);
-    _sequences->append(seq);
-}
-
-void RamProject::moveShotToSequence(RamShot *shot, QString sequenceUuid)
-{
-    for(int i = 0; i < _sequences->count(); i++)
-    {
-        RamSequence *sequence = qobject_cast<RamSequence*>( _sequences->at(i) );
-        if (sequence->uuid() == sequenceUuid) sequence->append(shot);
-        else sequence->removeAll(shot);
-    }
-}
-
-void RamProject::moveShotToSequence(RamShot *shot, RamSequence *sequence)
-{
-    moveShotToSequence(shot, sequence->uuid());
+    return m_assets;
 }
 
 RamObjectList *RamProject::pipeline()
 {
-    return _pipeline;
+    return m_pipeline;
 }
 
 RamPipe *RamProject::pipe(RamStep *outputStep, RamStep *inputStep)
 {
-    for (int i = 0; i < _pipeline->count(); i++)
+    for (int i = 0; i < m_pipeline->count(); i++)
     {
-        RamPipe *p = qobject_cast<RamPipe*>(_pipeline->at(i));
+        RamPipe *p = qobject_cast<RamPipe*>(m_pipeline->at(i));
         if ( p->outputStep()->is(outputStep) && p->inputStep()->is(inputStep) ) return p;
     }
 
     return nullptr;
 }
 
-RamPipe *RamProject::createPipe(RamStep *output, RamStep *input)
-{
-    RamPipe *p = new RamPipe(output, input);
-    _pipeline->append(p);
-    return p;
-}
-
 RamObjectList *RamProject::pipeFiles()
 {
-    return _pipeFiles;
-}
-
-RamPipeFile *RamProject::createPipeFile(QString shortName)
-{
-    RamPipeFile *pf = new RamPipeFile(shortName, m_uuid, this);
-    _pipeFiles->append(pf);
-    return pf;
+    return m_pipeFiles;
 }
 
 RamObjectList *RamProject::steps() const
 {
-    return _steps;
+    return m_steps;
 }
-
-void RamProject::assignStep(RamStep *templateStep)
-{
-    RamStep *step = templateStep->createFromTemplate(m_uuid);
-    _steps->append(step);
-}
-
-void RamProject::createStep(QString shortName, QString name)
-{
-    RamStep *step = new RamStep(shortName, name, this);
-    _steps->append(step);
-}
-

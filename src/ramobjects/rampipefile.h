@@ -5,19 +5,20 @@
 
 #include "ramfiletype.h"
 
+class RamProject;
 
 class RamPipeFile : public RamObject
 {
     Q_OBJECT
 public:
-    explicit RamPipeFile(QString shortName, QString projectUuid, QObject *parent = nullptr);
+    explicit RamPipeFile(QString shortName, RamProject *project);
     /**
-     * @brief RamPipeFile Creqtes qn eñpty pipefile instqnce. Note thqt this will NOT creqte it in the dqtqbqse
-     * Use RamPipeFile(QString shortName, QString projectUuid, QObject *parent = nullptr) to qdd it to the dqtqbqse
+     * @brief RamPipeFile Creqtes qn empty pipefile instqnce. Note that this will NOT creqte it in the database
+     * Use RamPipeFile(QString shortName, RamProject *project, QObject *parent = nullptr) to qdd it to the database
      * @param uuid The pipefile uuid
      * @param parent The parent QObject
      */
-    explicit RamPipeFile(QString uuid, QObject *parent=nullptr);
+    explicit RamPipeFile(QString uuid, QObject *parent = nullptr);
     ~RamPipeFile();
 
     QString name() const;
@@ -27,14 +28,14 @@ public:
 
     void update();
 
-    const QString &projectUuid() const;
-    void setProjectUuid(const QString &newProjectUuid);
+    const RamProject *project() const;
+    void setProject(RamProject *project);
 
     static RamPipeFile *pipeFile(QString uuid);
 
 private:
     RamFileType *m_fileType = nullptr;
-    QString m_projectUuid;
+    RamProject *m_project;
 };
 
 #endif // RAMPIPEFILE_H
