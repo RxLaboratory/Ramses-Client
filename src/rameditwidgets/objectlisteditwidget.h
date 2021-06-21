@@ -86,7 +86,6 @@ private:
     RamObjectList *m_objectList = nullptr;
     RamObjectList *m_assignList = nullptr;
 
-
     QList<QMetaObject::Connection> m_listConnections;
 };
 

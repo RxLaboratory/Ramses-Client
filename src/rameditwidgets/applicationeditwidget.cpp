@@ -6,12 +6,14 @@ ApplicationEditWidget::ApplicationEditWidget(QWidget *parent) : ObjectEditWidget
 {
     setupUi();
     setObject(nullptr);
+    connectEvents();
 }
 
 ApplicationEditWidget::ApplicationEditWidget(RamApplication *app, QWidget *parent) : ObjectEditWidget(app, parent)
 {
     setupUi();
     setObject(app);
+    connectEvents();
 }
 
 RamApplication *ApplicationEditWidget::application() const
@@ -60,6 +62,40 @@ void ApplicationEditWidget::update()
     updating = false;
 }
 
+void ApplicationEditWidget::createForNative()
+{
+    if (!m_application) return;
+    RamFileType *ft = new RamFileType(
+                "NEW",
+                "New file type");
+    Ramses::instance()->fileTypes()->append(ft);
+    m_application->nativeFileTypes()->append(ft);
+    ft->edit();
+}
+
+void ApplicationEditWidget::createForImport()
+{
+    qDebug() << "CREATE";
+    if (!m_application) return;
+    RamFileType *ft = new RamFileType(
+                "NEW",
+                "New file type");
+    Ramses::instance()->fileTypes()->append(ft);
+    m_application->importFileTypes()->append(ft);
+    ft->edit();
+}
+
+void ApplicationEditWidget::createForExport()
+{
+    if (!m_application) return;
+    RamFileType *ft = new RamFileType(
+                "NEW",
+                "New file type");
+    Ramses::instance()->fileTypes()->append(ft);
+    m_application->exportFileTypes()->append(ft);
+    ft->edit();
+}
+
 void ApplicationEditWidget::setupUi()
 {
     QLabel *fileLabel = new QLabel("Executable file", this);
@@ -90,5 +126,12 @@ void ApplicationEditWidget::setupUi()
     splitter->addWidget(m_exportList);
 
     mainLayout->addWidget(splitter);
+}
+
+void ApplicationEditWidget::connectEvents()
+{
+    connect(m_nativeList, SIGNAL(add()), this, SLOT(createForNative()));
+    connect(m_importList, SIGNAL(add()), this, SLOT(createForImport()));
+    connect(m_exportList, SIGNAL(add()), this, SLOT(createForExport()));
 }
 

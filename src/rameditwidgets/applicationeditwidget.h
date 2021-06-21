@@ -26,10 +26,16 @@ public slots:
 protected slots:
     void update() Q_DECL_OVERRIDE;
 
+private slots:
+    void createForNative();
+    void createForImport();
+    void createForExport();
+
 private:
     RamApplication *m_application;
 
     void setupUi();
+    void connectEvents();
 
     DuQFFolderSelectorWidget *m_folderSelector;
     ObjectListEditWidget *m_nativeList;
