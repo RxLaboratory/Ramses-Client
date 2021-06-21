@@ -488,14 +488,6 @@ RamObjectList *Ramses::projects() const
     return m_projects;
 }
 
-RamProject *Ramses::createProject()
-{
-    RamProject *project = new RamProject("NEW","Project");
-    project->setParent(this);
-    m_projects->append( project );
-    return project;
-}
-
 bool Ramses::isAdmin()
 {
     if (!m_currentUser) return false;

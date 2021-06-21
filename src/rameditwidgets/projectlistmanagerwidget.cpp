@@ -7,10 +7,16 @@ ProjectListManagerWidget::ProjectListManagerWidget(QWidget *parent) :
         "Projects",
         parent )
 {
+    m_listEditWidget->setEditMode(ObjectListEditWidget::RemoveObjects);
 }
 
 void ProjectListManagerWidget::createObject()
 {
-    Ramses::instance()->createProject();
+    RamProject *project = new RamProject(
+                "NEW",
+                "New Project"
+                );
+    Ramses::instance()->projects()->append(project);
+    editObject(project);
 }
 

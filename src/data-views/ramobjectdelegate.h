@@ -4,10 +4,12 @@
 #include <QStyledItemDelegate>
 #include <QPainter>
 #include <QPainterPath>
+#include <QStringBuilder>
 
 #include "duqf-app/app-style.h"
 #include "ramobject.h"
 #include "ramuser.h"
+#include "ramproject.h"
 
 class RamObjectDelegate : public QStyledItemDelegate
 {

@@ -106,6 +106,30 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
 
         break;
     }
+    case RamObject::Project:
+    {
+        RamProject *project = qobject_cast<RamProject*>( obj );
+        // icon
+        painter->drawPixmap( iconRect, QIcon(":/icons/project").pixmap(QSize(12,12)));
+        // details
+        if (bgRect.height() >= 46 )
+        {
+            QString details =
+                    QString::number(project->width()) %
+                    " x " %
+                    QString::number(project->height()) %
+                    " (" %
+                    QString::number(project->aspectRatio(),'f',2) %
+                    ":1)" %
+                    " @ " %
+                    QString::number(project->framerate(), 'f', 2) %
+                    "fps";
+            painter->setPen( detailsPen );
+            painter->setFont( m_detailsFont );
+            painter->drawText( detailsRect, details, m_detailsOption);
+        }
+        break;
+    }
     default:
         painter->drawPixmap( iconRect, QIcon(":/icons/asset").pixmap(QSize(12,12)));
     }

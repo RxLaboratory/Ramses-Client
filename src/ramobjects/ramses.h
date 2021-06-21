@@ -94,7 +94,6 @@ public:
     RamState *okState();
     // Projects
     RamObjectList *projects() const;
-    RamProject *createProject();
     RamProject *currentProject() const;
     void setCurrentProject(RamProject *currentProject);
     void setCurrentProject(QString uuidOrShortName);

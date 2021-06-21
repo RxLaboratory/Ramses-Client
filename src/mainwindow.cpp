@@ -100,9 +100,9 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     qDebug() << "> Admin";
     adminPage->addPage(new UserListManagerWidget(this),"Users", QIcon(":/icons/users"));
     qDebug() << "  > users ok";
-    /*adminPage->addPage(new ProjectListManagerWidget(this), "Projects", QIcon(":/icons/projects"));
+    adminPage->addPage(new ProjectListManagerWidget(this), "Projects", QIcon(":/icons/projects"));
     qDebug() << "  > projects ok";
-    adminPage->addPage(new TemplateStepListManagerWidget(this), "Template Steps", QIcon(":/icons/steps"));
+    /*adminPage->addPage(new TemplateStepListManagerWidget(this), "Template Steps", QIcon(":/icons/steps"));
     qDebug() << "  > template steps ok";
     adminPage->addPage(new TemplateAssetGroupListManagerWidget(this), "Template Asset Groups", QIcon(":/icons/asset-groups"));
     qDebug() << "  > template assets ok";
