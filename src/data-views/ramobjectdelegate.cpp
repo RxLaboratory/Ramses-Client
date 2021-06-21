@@ -306,10 +306,7 @@ bool RamObjectDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, co
                 // The object
                 quintptr iptr = index.data(Qt::UserRole).toULongLong();
                 RamObject *o = reinterpret_cast<RamObject*>( iptr );
-                qDebug() << "delegate EDIT";
-                qDebug() << o;
                 emit editObject(o);
-                qDebug() << "emited";
             }
             m_editButtonPressed = false;
             return true;

@@ -21,6 +21,7 @@ void StepListManagerWidget::createObject()
                 project
                 );
     project->steps()->append(step);
+    editObject(step);
 }
 
 void StepListManagerWidget::changeProject(RamProject *project)

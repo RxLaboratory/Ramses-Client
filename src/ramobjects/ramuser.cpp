@@ -1,6 +1,7 @@
 #include "ramuser.h"
 
 #include "ramses.h"
+#include "usereditwidget.h"
 
 RamUser::RamUser(QString shortName, QString name, QString uuid) :
     RamObject(shortName, name, uuid, Ramses::instance())
@@ -74,4 +75,15 @@ void RamUser::updatePassword(QString c, QString n)
 RamUser *RamUser::user(QString uuid)
 {
     return qobject_cast<RamUser*>( RamObject::obj(uuid) );
+}
+
+void RamUser::edit()
+{
+    if (!m_editReady)
+    {
+        UserEditWidget *w = new UserEditWidget(this);
+        setEditWidget(w);
+        m_editReady = true;
+    }
+    showEdit();
 }

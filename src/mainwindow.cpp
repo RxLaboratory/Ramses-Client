@@ -118,9 +118,9 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     projectSettingsPage->showReinitButton(false);
     mainStack->addWidget(projectSettingsPage);
     qDebug() << "> Project";
-    /*projectSettingsPage->addPage(new StepListManagerWidget(this), "Steps", QIcon(":/icons/steps"));
+    projectSettingsPage->addPage(new StepListManagerWidget(this), "Steps", QIcon(":/icons/steps"));
     qDebug() << "  > steps ok";
-    projectSettingsPage->addPage(new PipeFileListManagerWidget(this), "Pipe Types", QIcon(":/icons/pipe-files"));
+    /*projectSettingsPage->addPage(new PipeFileListManagerWidget(this), "Pipe Types", QIcon(":/icons/pipe-files"));
     qDebug() << "  > pipe types ok";
     projectSettingsPage->addPage(new AssetGroupListManagerWidget(this), "Asset Groups", QIcon(":/icons/asset-groups"));
     qDebug() << "  > asset groups ok";

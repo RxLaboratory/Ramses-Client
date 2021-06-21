@@ -26,39 +26,15 @@ public slots:
 protected slots:
     void update() Q_DECL_OVERRIDE;
 
-private slots:
-    void newFileType(const QModelIndex &parent,int first,int last);
-    void newFileType(RamObject *fileTypeObj);
-    void fileTypeChanged(const QModelIndex &first, const QModelIndex &last);
-    void fileTypeRemoved(const QModelIndex &parent,int first,int last);
-    void assignNativeFileType();
-    void assignImportFileType();
-    void assignExportFileType();
-
-    void nativeFileTypeAssigned(const QModelIndex &parent,int first,int last);
-    void importFileTypeAssigned(const QModelIndex &parent,int first,int last);
-    void exportFileTypeAssigned(const QModelIndex &parent,int first,int last);
-    void nativeFileTypeUnassigned(const QModelIndex &parent,int first,int last);
-    void importFileTypeUnassigned(const QModelIndex &parent,int first,int last);
-    void exportFileTypeUnassigned(const QModelIndex &parent,int first,int last);
-
 private:
     RamApplication *m_application;
 
     void setupUi();
-    void populateMenus();
-    void connectEvents();
 
-    DuQFFolderSelectorWidget *folderSelector;
-    ObjectListEditWidget *nativeList;
-    ObjectListEditWidget *importList;
-    ObjectListEditWidget *exportList;
-
-    QMenu *nativeMenu;
-    QMenu *importMenu;
-    QMenu *exportMenu;
-
-    QMap<QString, QList<QMetaObject::Connection>> m_fileTypeConnections;
+    DuQFFolderSelectorWidget *m_folderSelector;
+    ObjectListEditWidget *m_nativeList;
+    ObjectListEditWidget *m_importList;
+    ObjectListEditWidget *m_exportList;
 };
 
 #endif // APPLICATIONEDITWIDGET_H

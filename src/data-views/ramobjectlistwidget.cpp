@@ -132,7 +132,7 @@ void RamObjectListWidget::setupUi()
     this->setColumnWidth( 0, this->size().width() );
     this->setMouseTracking(true);
 
-    QString style = "QTableView { gridline-color: rgba(0,0,0,0); selection-background-color: rgba(0,0,0,0); } ";
+    QString style = "QTableView { padding-top: 3px; padding-bottom: 3px; gridline-color: rgba(0,0,0,0); selection-background-color: rgba(0,0,0,0); } ";
     style += "QTableView::item:hover { background-color: none; } ";
     this->setStyleSheet(style);
 

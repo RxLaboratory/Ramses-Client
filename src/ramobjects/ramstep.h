@@ -39,9 +39,12 @@ public:
     QList<RamObject *> inputFileTypes();
     QList<RamObject *> outputFileTypes();
 
-    void update();
+    void update() override;
 
     static RamStep *step(QString uuid);
+
+public slots:
+    virtual void edit() override;
 
 private slots:
     void userAssigned(const QModelIndex &parent, int first, int last);

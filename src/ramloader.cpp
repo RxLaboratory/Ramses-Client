@@ -32,9 +32,9 @@ void RamLoader::run()
     else if (query == "getProject") {
         qDebug() << "--- Loading Project Data ---";
         m_pm->setTitle("Loading project...");
-        //QString uuid = gotProject( m_data.value("content").toObject(), false);
+        QString uuid = gotProject( m_data.value("content").toObject(), false);
         m_pm->setTitle("Selecting current project...");
-        //emit projectReady(uuid);
+        emit projectReady(uuid);
     }
     else if (query == "getTemplateSteps") gotTemplateSteps( m_data.value("content").toArray());
     else if (query == "getTemplateAssetGroups") gotTemplateAssetGroups( m_data.value("content").toArray());
@@ -184,10 +184,10 @@ QString RamLoader::gotProject(QJsonObject newP, bool init)
     {
         m_pm->setMaximum(7);
         gotSteps( newP.value("steps").toArray(), project);
-        gotAssetGroups( newP.value("assetGroups").toArray(), project);
-        gotSequences( newP.value("sequences").toArray(), project);
-        gotPipeFiles( newP.value("pipeFiles").toArray(), project );
-        gotPipes( newP.value("pipes").toArray(), project);
+        //gotAssetGroups( newP.value("assetGroups").toArray(), project);
+        //gotSequences( newP.value("sequences").toArray(), project);
+        //gotPipeFiles( newP.value("pipeFiles").toArray(), project );
+        //gotPipes( newP.value("pipes").toArray(), project);
     }
 
     m_ram->projects()->append(project);
@@ -501,8 +501,11 @@ QString RamLoader::gotStep(QJsonObject newS, RamProject *project)
     foreach( QJsonValue u, newS.value("users").toArray())
         step->users()->append( RamUser::user( u.toString() ) );
 
+
     foreach(QJsonValue a, newS.value("applications").toArray())
-        step->applications()->append( RamApplication::application(a.toString()));
+    {
+        step->applications()->append( RamApplication::application(a.toString()) );
+    }
 
     project->steps()->append(step);
 

@@ -1,6 +1,7 @@
 #include "ramstep.h"
 #include "ramproject.h"
 #include "ramses.h"
+#include "stepeditwidget.h"
 
 RamStep::RamStep(QString shortName, QString name, QString uuid) :
     RamObject(shortName, name, uuid, Ramses::instance())
@@ -33,10 +34,10 @@ void RamStep::init()
     m_type = AssetProduction;
     m_users = new RamObjectList("", "Users", this);
     m_applications = new RamObjectList("", "Applications", this);
-    connect(m_users, SIGNAL(rowsInserted(const QModelIndex&,int,int)), this, SLOT(userAssigned(const QModelIndex&,int,int)));
-    connect(m_users, SIGNAL(rowsAboutToBeRemoved(const QModelIndex&,int,int)), this, SLOT(userUnassigned(const QModelIndex&,int,int)));
-    connect(m_applications, SIGNAL(rowsInserted(const QModelIndex&,int,int)), this, SLOT(userAssigned(const QModelIndex&,int,int)));
-    connect(m_applications, SIGNAL(rowsAboutToBeRemoved(const QModelIndex&,int,int)), this, SLOT(userUnassigned(const QModelIndex&,int,int)));
+    connect(m_users, SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(userAssigned(QModelIndex,int,int)));
+    connect(m_users, SIGNAL(rowsAboutToBeRemoved(QModelIndex,int,int)), this, SLOT(userUnassigned(QModelIndex,int,int)));
+    connect(m_applications, SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(applicationAssigned(QModelIndex,int,int)));
+    connect(m_applications, SIGNAL(rowsAboutToBeRemoved(QModelIndex,int,int)), this, SLOT(applicationUnassigned(QModelIndex,int,int)));
 
     this->setObjectName( "RamStep" );
 }
@@ -181,6 +182,17 @@ void RamStep::update()
 RamStep *RamStep::step(QString uuid)
 {
     return qobject_cast<RamStep*>( RamObject::obj(uuid) );
+}
+
+void RamStep::edit()
+{
+    if (!m_editReady)
+    {
+        StepEditWidget *w = new StepEditWidget(this);
+        setEditWidget(w);
+        m_editReady = true;
+    }
+    showEdit();
 }
 
 RamProject *RamStep::project() const

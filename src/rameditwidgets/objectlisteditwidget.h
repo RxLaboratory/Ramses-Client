@@ -8,6 +8,7 @@
 #include <QToolButton>
 #include <QMessageBox>
 #include <QScrollBar>
+#include <QMenu>
 
 #include "ramobjectlistwidget.h"
 #include "ramobjectlistcombobox.h"
@@ -33,6 +34,7 @@ public:
     explicit ObjectListEditWidget(RamObjectList *objectList, bool editableObjects = false, RamUser::UserRole editRole = RamUser::Admin, QWidget *parent = nullptr);
     void setList(RamObjectList *objectList);
     void setFilterList(RamObjectList *filterList);
+    void setAssignList(RamObjectList *assignList);
     void clear();
     void setEditMode(ObjectListEditWidget::EditMode editMode);
     void setEditable(bool editable = true);
@@ -53,6 +55,16 @@ private slots:
     void removeSelectedObjects();
     void edit(RamObject *obj);
 
+    void newAssignObj(RamObject *obj);
+    void newAssignObj(const QModelIndex &parent,int first,int last);
+    void assignObjRemoved(const QModelIndex &parent,int first,int last);
+    void assignObjChanged(RamObject *changedObj);
+
+    void assignAction();
+
+    void objectAssigned(const QModelIndex &parent,int first,int last);
+    void objectUnassigned(const QModelIndex &parent,int first,int last);
+
 private:
     void setupUi(bool editableObjects = false, RamUser::UserRole editRole = RamUser::Admin);
     void connectEvents();
@@ -64,14 +76,18 @@ private:
     RamObjectListComboBox *m_filterBox;
     DuQFSearchEdit *m_searchEdit;
     RamObjectListWidget *m_listWidget;
+    QMenu *m_assignMenu;
 
     // Settings
     EditMode m_editMode = UnassignObjects;
+    bool m_useAssignList = false;
 
     // Current List
     RamObjectList *m_objectList = nullptr;
+    RamObjectList *m_assignList = nullptr;
 
-    QMap<QString, QList<QMetaObject::Connection>> m_filterConnections;
+
+    QList<QMetaObject::Connection> m_listConnections;
 };
 
 #endif // OBJECTLISTEDITWIDGET_H

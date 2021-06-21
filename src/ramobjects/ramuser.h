@@ -23,12 +23,13 @@ public:
     QString folderPath() const;
     void setFolderPath(const QString &folderPath);
 
-    void update();
+    void update() override;
     void updatePassword(QString c, QString n);
 
     static RamUser *user(QString uuid);
 
-signals:
+public slots:
+    virtual void edit() override;
 
 private:
     UserRole _role;

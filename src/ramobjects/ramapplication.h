@@ -15,7 +15,7 @@ public:
     QString executableFilePath() const;
     void setExecutableFilePath(const QString &executableFilePath);
 
-    void update();
+    void update() override;
 
     bool canExportFileType(RamFileType *ft) const;
     bool canExportFileType(QString extension) const;
@@ -30,6 +30,7 @@ public:
 
 public slots:
     void unassignFileType(RamObject *o);
+    virtual void edit() override;
 
 private slots:
     void nativeFileTypeUnassigned(const QModelIndex &parent, int first, int last);

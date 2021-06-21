@@ -1,6 +1,7 @@
 #include "ramapplication.h"
 
 #include "ramses.h"
+#include "applicationeditwidget.h"
 
 RamApplication::RamApplication(QString shortName, QString name, QString executableFilePath, QString uuid):
     RamObject(shortName, name, uuid, Ramses::instance())
@@ -57,6 +58,17 @@ void RamApplication::unassignFileType(RamObject *o)
     m_nativeFileTypes->removeAll(o);
     m_importFileTypes->removeAll(o);
     m_exportFileTypes->removeAll(o);
+}
+
+void RamApplication::edit()
+{
+    if (!m_editReady)
+    {
+        ApplicationEditWidget *w = new ApplicationEditWidget(this);
+        setEditWidget(w);
+        m_editReady = true;
+    }
+    showEdit();
 }
 
 bool RamApplication::canExportFileType(RamFileType *ft) const
@@ -142,7 +154,7 @@ RamObjectList *RamApplication::exportFileTypes() const
 
 RamApplication *RamApplication::application(QString uuid)
 {
-    return qobject_cast<RamApplication*>( RamObject::obj(uuid));
+    return qobject_cast<RamApplication*>( RamObject::obj(uuid) );
 }
 
 void RamApplication::importFileTypeAssigned(const QModelIndex &parent, int first, int last)
