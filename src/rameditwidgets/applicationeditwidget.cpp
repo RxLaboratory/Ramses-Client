@@ -104,28 +104,27 @@ void ApplicationEditWidget::setupUi()
     m_folderSelector = new DuQFFolderSelectorWidget(DuQFFolderSelectorWidget::File, this);
     mainFormLayout->addWidget(m_folderSelector, 2, 1);
 
-    QSplitter *splitter = new QSplitter(this);
-    splitter->setOrientation(Qt::Vertical);
+    QTabWidget *tabWidget = new QTabWidget(this);
 
-    m_nativeList = new ObjectListEditWidget(true, RamUser::Admin, splitter);
+    m_nativeList = new ObjectListEditWidget(true, RamUser::Admin);
     m_nativeList->setEditMode(ObjectListEditWidget::UnassignObjects);
     m_nativeList->setTitle("Native file types");
     m_nativeList->setAssignList(Ramses::instance()->fileTypes());
-    splitter->addWidget(m_nativeList);
+    tabWidget->addTab(m_nativeList, QIcon(":/icons/files"), "Native");
 
-    m_importList = new ObjectListEditWidget(true, RamUser::Admin, splitter);
+    m_importList = new ObjectListEditWidget(true, RamUser::Admin);
     m_importList->setEditMode(ObjectListEditWidget::UnassignObjects);
     m_importList->setTitle("Imports");
     m_importList->setAssignList(Ramses::instance()->fileTypes());
-    splitter->addWidget(m_importList);
+    tabWidget->addTab(m_importList, QIcon(":/icons/files"), "Import");
 
-    m_exportList = new ObjectListEditWidget(true, RamUser::Admin, splitter);
+    m_exportList = new ObjectListEditWidget(true, RamUser::Admin);
     m_exportList->setEditMode(ObjectListEditWidget::UnassignObjects);
     m_exportList->setTitle("Exports");
     m_exportList->setAssignList(Ramses::instance()->fileTypes());
-    splitter->addWidget(m_exportList);
+    tabWidget->addTab(m_exportList, QIcon(":/icons/files"), "Export");
 
-    mainLayout->addWidget(splitter);
+    mainLayout->addWidget(tabWidget);
 }
 
 void ApplicationEditWidget::connectEvents()
