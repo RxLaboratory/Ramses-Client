@@ -7,6 +7,7 @@
 
 #include "duqf-app/app-style.h"
 #include "ramobject.h"
+#include "ramuser.h"
 
 class RamObjectDelegate : public QStyledItemDelegate
 {
@@ -21,14 +22,19 @@ public:
 
 private:
     // Style
-    QPen m_textPen;
-    QPen m_hoverTextPen;
-    QBrush m_bgBrush;
-    QBrush m_selectedBgBrush;
-    QBrush m_hoverBgBrush;
+    QColor m_abyss;
+    QColor m_dark;
+    QColor m_medium;
+    QColor m_lessLight;
+    QColor m_light;
     QFont m_textFont;
+    QFont m_detailsFont;
     QTextOption m_textOption;
+    QTextOption m_detailsOption;
     int m_padding;
+
+    // drawing specific items
+    void drawMore(QPainter *painter, QRect rect, QPen pen) const;
 };
 
 #endif // RAMOBJECTDELEGATE_H
