@@ -198,6 +198,22 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
         }
         break;
     }
+    case RamObject::FileType:
+    {
+        RamFileType *fileType = qobject_cast<RamFileType*>( obj );
+        title = title % " (." % fileType->shortName() + ")";
+        // icon
+        painter->drawPixmap( iconRect, QIcon(":/icons/file").pixmap(QSize(12,12)));
+        if (bgRect.height() >= 46 )
+        {
+            // details
+            QString details = "Extensions: " % fileType->extensions().join(", ");
+            painter->setPen( detailsPen );
+            painter->setFont( m_detailsFont );
+            painter->drawText( detailsRect, details, m_detailsOption);
+        }
+        break;
+    }
     default:
         painter->drawPixmap( iconRect, QIcon(":/icons/asset").pixmap(QSize(12,12)));
     }

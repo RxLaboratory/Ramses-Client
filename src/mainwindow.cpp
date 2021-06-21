@@ -108,9 +108,9 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     qDebug() << "  > template assets ok";
     adminPage->addPage(new StateListManagerWidget(this), "States", QIcon(":/icons/state"));
     qDebug() << "  > states ok";
-    /*adminPage->addPage(new FileTypeListManagerWidget(this), "File Types", QIcon(":/icons/files"));
+    adminPage->addPage(new FileTypeListManagerWidget(this), "File Types", QIcon(":/icons/files"));
     qDebug() << "  > file types ok";
-    adminPage->addPage(new ApplicationListManagerWidget(this), "Applications", QIcon(":/icons/applications"));
+    /*adminPage->addPage(new ApplicationListManagerWidget(this), "Applications", QIcon(":/icons/applications"));
     qDebug() << "  > applications ok";//*/
 
     // Project settings

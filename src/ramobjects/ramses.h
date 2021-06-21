@@ -105,7 +105,6 @@ public:
     RamStateList *states() const;
     // File Types
     RamObjectList *fileTypes() const;
-    RamFileType *createFileType();
     // Applications
     RamObjectList *applications() const;
     RamApplication *createApplication();

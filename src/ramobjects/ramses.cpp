@@ -454,14 +454,6 @@ RamObjectList *Ramses::fileTypes() const
     return m_fileTypes;
 }
 
-RamFileType *Ramses::createFileType()
-{
-    RamFileType *ft = new RamFileType("NEW", "New File Type", QStringList("new"));
-    ft->setParent(this);
-    m_fileTypes->append(ft);
-    return ft;
-}
-
 RamObjectList *Ramses::applications() const
 {
     return m_applications;
