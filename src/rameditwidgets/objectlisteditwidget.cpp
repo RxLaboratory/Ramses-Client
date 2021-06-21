@@ -112,6 +112,12 @@ void ObjectListEditWidget::select(RamObject *o)
     m_listWidget->select(o);
 }
 
+void ObjectListEditWidget::setFilter(RamObject *o)
+{
+    // TODO select in the combo box
+    m_listWidget->filter(o);
+}
+
 QToolButton *ObjectListEditWidget::addButton() const
 {
     return m_addButton;

@@ -8,6 +8,7 @@ AssetGroupListManagerWidget::AssetGroupListManagerWidget(QWidget *parent):
 {
     changeProject(Ramses::instance()->currentProject());
     connect(Ramses::instance(), &Ramses::currentProjectChanged, this, &AssetGroupListManagerWidget::changeProject);
+    m_listEditWidget->setEditMode(ObjectListEditWidget::RemoveObjects);
 }
 
 void AssetGroupListManagerWidget::createObject()
@@ -19,6 +20,7 @@ void AssetGroupListManagerWidget::createObject()
                 project,
                 "New Asset Group");
     project->assetGroups()->append(assetGroup);
+    editObject(assetGroup);
 }
 
 void AssetGroupListManagerWidget::changeProject(RamProject *project)
@@ -27,5 +29,5 @@ void AssetGroupListManagerWidget::changeProject(RamProject *project)
     this->clear();
     if (!project) return;
     qDebug() << "Project set to " + project->shortName();
-    this->setList( qobject_cast<RamObjectList*>( project->assetGroups() ) );
+    this->setList( project->assetGroups() );
 }

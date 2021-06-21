@@ -8,6 +8,7 @@ RamShot::RamShot(QString shortName, RamSequence *sequence, QString name, QString
     setObjectType(Shot);
     setProductionType(RamStep::ShotProduction);
     m_sequence = sequence;
+    m_filterUuid = sequence->uuid();
     m_dbi->createShot(m_shortName, m_name, m_sequence->uuid(), m_uuid);
 
     this->setObjectName( "RamShot " + m_shortName );
@@ -32,6 +33,7 @@ void RamShot::setSequence(RamSequence *sequence)
 
     setParent(sequence);
     m_sequence = sequence;
+    m_filterUuid = sequence->uuid();
 
     m_sequenceConnection = connect(sequence, SIGNAL(removed(RamObject*)),this,SLOT(remove()));
 

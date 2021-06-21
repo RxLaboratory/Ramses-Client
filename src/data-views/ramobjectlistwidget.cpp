@@ -6,6 +6,8 @@ RamObjectListWidget::RamObjectListWidget(QWidget *parent):
     m_delegate = new RamObjectDelegate();
     setupUi();
     connectEvents();
+    m_objectList = new RamObjectFilterModel();
+    this->setModel(m_objectList);
 }
 
 RamObjectListWidget::RamObjectListWidget(RamObjectList *list, QWidget *parent):
@@ -13,10 +15,11 @@ RamObjectListWidget::RamObjectListWidget(RamObjectList *list, QWidget *parent):
 {
     m_delegate = new RamObjectDelegate();
     setupUi();
-    setList(list);
     connectEvents();
+    m_objectList = new RamObjectFilterModel();
+    this->setModel(m_objectList);
+    setList(list);
 }
-
 
 RamObjectListWidget::RamObjectListWidget(RamObjectList *list, bool editableObjects, RamUser::UserRole editRole, QWidget *parent):
     QTableView(parent)
@@ -25,19 +28,20 @@ RamObjectListWidget::RamObjectListWidget(RamObjectList *list, bool editableObjec
     m_delegate->setEditable(editableObjects);
     m_delegate->setEditRole(editRole);
     setupUi();
-    setList(list);
     connectEvents();
+    m_objectList = new RamObjectFilterModel();
+    this->setModel(m_objectList);
+    setList(list);
 }
 
 void RamObjectListWidget::setList(RamObjectList *list)
 {
-    // We need to delete the previous selection model
-    QItemSelectionModel *s = this->selectionModel();
+    m_objectList->setList(list);
+}
 
-    m_objectList = list;
-    this->setModel(list);
-
-    s->deleteLater();
+void RamObjectListWidget::search(QString s)
+{
+    m_objectList->search(s);
 }
 
 void RamObjectListWidget::mouseMoveEvent(QMouseEvent *event)
@@ -94,28 +98,23 @@ void RamObjectListWidget::currentChanged(const QModelIndex &current, const QMode
     emit objectSelected(obj);
 }
 
-void RamObjectListWidget::search(QString s)
-{
-    if (!m_objectList) return;
-    for (int i = 0; i < m_objectList->rowCount(); i++)
-    {
-        RamObject *obj = m_objectList->at(i);
-        bool visible = s == "" || obj->name().contains(s, Qt::CaseInsensitive) || obj->shortName().contains(s, Qt::CaseInsensitive);
-        this->verticalHeader()->setSectionHidden(i, !visible);
-    }
-}
-
 void RamObjectListWidget::select(RamObject *o)
 {
     if (!m_objectList) return;
     for (int i = 0; i< m_objectList->rowCount(); i++)
     {
-        RamObject *obj = m_objectList->at(i);
+        quintptr iptr = m_objectList->data( m_objectList->index(i, 0), Qt::UserRole).toULongLong();
+        RamObject *obj = reinterpret_cast<RamObject*>( iptr );
         if (obj->is(o))
         {
             this->setCurrentIndex( m_objectList->index(i, 0));
         }
     }
+}
+
+void RamObjectListWidget::filter(RamObject *o)
+{
+    m_objectList->setFilterUuid(o->uuid());
 }
 
 void RamObjectListWidget::setupUi()

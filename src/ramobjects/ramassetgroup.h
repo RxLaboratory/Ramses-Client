@@ -24,7 +24,8 @@ public:
     static RamAssetGroup *assetGroup(QString uuid);
 
 public slots:
-    void update() Q_DECL_OVERRIDE;
+    void update() override;
+    virtual void edit() override;
 
 private:
     bool _template;

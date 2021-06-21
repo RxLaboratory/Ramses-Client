@@ -9,6 +9,7 @@
 #include "data-models/ramobjectlist.h"
 #include "processmanager.h"
 #include "ramobjectdelegate.h"
+#include "data-models/ramobjectfiltermodel.h"
 
 class RamObjectListWidget : public QTableView
 {
@@ -30,6 +31,7 @@ signals:
 public slots:
     void search(QString s);
     void select(RamObject *o);
+    void filter(RamObject *o);
 
 protected:
     virtual void mouseMoveEvent(QMouseEvent *event) override;
@@ -45,10 +47,13 @@ private:
     void setupUi();
     void connectEvents();
 
-    RamObjectList *m_objectList = nullptr;
+    RamObjectFilterModel *m_objectList = nullptr;
 
     // Delegate
     RamObjectDelegate *m_delegate;
+
+    // Filters
+    QString m_currentFilterUuid;
 
     // UI Events
     QPoint _initialDragPos;

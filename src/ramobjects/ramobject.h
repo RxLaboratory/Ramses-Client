@@ -55,6 +55,8 @@ public:
     int order() const;
     void setOrder(int order);
 
+    QString filterUuid() const;
+
     bool is(const RamObject *other);
 
     static RamObject *obj(QString uuid);
@@ -83,6 +85,7 @@ protected:
     bool m_orderChanged = false;
     bool m_removing = false;
     bool m_editReady = false;
+    QString m_filterUuid;
 
     static QMap<QString, RamObject*> m_existingObjects;
 
@@ -91,6 +94,8 @@ protected:
 
 private:
     RamObject::ObjectType _objectType = Generic;
+
+
 
     ObjectDockWidget *m_dockWidget = nullptr;
 

@@ -146,6 +146,11 @@ void RamObject::setOrder(int order)
     emit orderChanged();
 }
 
+QString RamObject::filterUuid() const
+{
+    return m_filterUuid;
+}
+
 bool RamObject::is(const RamObject *other)
 {
     if (!other) return false;

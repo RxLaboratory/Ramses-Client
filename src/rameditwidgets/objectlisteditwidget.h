@@ -41,6 +41,7 @@ public:
     void setSearchable(bool searchable = true);
     void setTitle(QString title);
     void select(RamObject *o);
+    void setFilter(RamObject *o);
     QToolButton *addButton() const;
     QString currentFilterUuid() const;
     RamObject *currentFilter() const;

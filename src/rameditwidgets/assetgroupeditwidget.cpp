@@ -34,9 +34,12 @@ void AssetGroupEditWidget::setObject(RamObject *obj)
 
     //Reset values
     folderWidget->setPath("");
-    //assetsList->setList(assetGroup);
+    assetsList->setList(nullptr);
 
     if (!assetGroup) return;
+
+    assetsList->setList(assetGroup->project()->assets());
+    assetsList->setFilter(assetGroup);
 
     folderWidget->setPath(Ramses::instance()->path(assetGroup));
 
@@ -67,6 +70,7 @@ void AssetGroupEditWidget::createAsset()
                 _assetGroup,
                 "New Asset");
     _assetGroup->project()->assets()->append(asset);
+    asset->edit();
 }
 
 void AssetGroupEditWidget::setupUi()
@@ -75,6 +79,7 @@ void AssetGroupEditWidget::setupUi()
     mainLayout->insertWidget(1, folderWidget);
 
     assetsList = new ObjectListEditWidget(true, RamUser::ProjectAdmin, this);
+    assetsList->setEditMode(ObjectListEditWidget::RemoveObjects);
     assetsList->setTitle("Assets");
     mainLayout->addWidget(assetsList);
 }

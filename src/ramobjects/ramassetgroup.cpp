@@ -2,6 +2,8 @@
 #include "ramproject.h"
 #include "ramses.h"
 
+#include "assetgroupeditwidget.h"
+
 RamAssetGroup::RamAssetGroup(QString shortName, QString name, QString uuid) :
     RamObject(shortName, name, uuid, Ramses::instance())
 {
@@ -58,5 +60,16 @@ void RamAssetGroup::update()
     RamObject::update();
     if (_template) m_dbi->updateTemplateAssetGroup(m_uuid, m_shortName, m_name);
     else m_dbi->updateAssetGroup(m_uuid, m_shortName, m_name);
+}
+
+void RamAssetGroup::edit()
+{
+    if (!m_editReady)
+    {
+        AssetGroupEditWidget *w = new AssetGroupEditWidget(this);
+        setEditWidget(w);
+        m_editReady = true;
+    }
+    showEdit();
 }
 

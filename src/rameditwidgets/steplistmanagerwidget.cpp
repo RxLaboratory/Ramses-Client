@@ -8,6 +8,7 @@ ObjectListManagerWidget(
 {
     changeProject(Ramses::instance()->currentProject());
     connect(Ramses::instance(), &Ramses::currentProjectChanged, this, &StepListManagerWidget::changeProject);
+    m_listEditWidget->setEditMode(ObjectListEditWidget::RemoveObjects);
 }
 
 void StepListManagerWidget::createObject()
