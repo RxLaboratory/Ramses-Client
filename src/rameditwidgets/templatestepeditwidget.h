@@ -2,7 +2,9 @@
 #define TEMPLATESTEPEDITWIDGET_H
 
 #include <QComboBox>
+#include <QFormLayout>
 
+#include "duqf-widgets/autoselectdoublespinbox.h"
 #include "objecteditwidget.h"
 #include "ramses.h"
 
@@ -23,6 +25,7 @@ protected slots:
     void update() Q_DECL_OVERRIDE;
 
 private slots:
+    void updateEstimationSuffix();
 
 private:
     RamStep *_step;
@@ -30,7 +33,17 @@ private:
     void setupUi();
     void connectEvents();
 
+    // UI Controls
     QComboBox *ui_typeBox;
+    QLabel *ui_estimationLabel;
+    QWidget *ui_estimationWidget;
+    QComboBox *ui_estimationTypeBox;
+    QLabel *ui_estimationTypeLabel;
+    AutoSelectDoubleSpinBox *ui_veryEasyEdit;
+    AutoSelectDoubleSpinBox *ui_easyEdit;
+    AutoSelectDoubleSpinBox *ui_mediumEdit;
+    AutoSelectDoubleSpinBox *ui_hardEdit;
+    AutoSelectDoubleSpinBox *ui_veryHardEdit;
 };
 
 #endif // TEMPLATESTEPEDITWIDGET_H
