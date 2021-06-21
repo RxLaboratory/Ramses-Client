@@ -25,7 +25,7 @@ void ObjectListEditWidget::setList(RamObjectList *objectList)
 
 void ObjectListEditWidget::setFilterList(RamObjectList *filterList)
 {
-    /*m_filterBox->setList(filterList);
+    m_filterBox->setList(filterList);
     if (filterList)
     {
         m_title->hide();
@@ -35,7 +35,7 @@ void ObjectListEditWidget::setFilterList(RamObjectList *filterList)
     {
         m_title->show();
         m_filterBox->hide();
-    }//*/
+    }
 }
 
 void ObjectListEditWidget::clear()

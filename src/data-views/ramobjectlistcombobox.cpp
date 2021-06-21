@@ -24,6 +24,12 @@ RamObjectListComboBox::RamObjectListComboBox(RamObjectList *list, QWidget *paren
 
 void RamObjectListComboBox::setList(RamObjectList *list)
 {
+    if (!list)
+    {
+        this->hide();
+        return;
+    }
+    this->show();
     QSortFilterProxyModel *proxyModel = new QSortFilterProxyModel();
     proxyModel->setSourceModel(list);
     this->setModel(proxyModel);
