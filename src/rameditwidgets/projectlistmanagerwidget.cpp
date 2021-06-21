@@ -7,7 +7,6 @@ ProjectListManagerWidget::ProjectListManagerWidget(QWidget *parent) :
         "Projects",
         parent )
 {
-    this->setContainingType(RamObject::Project);
 }
 
 void ProjectListManagerWidget::createObject()

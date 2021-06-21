@@ -7,10 +7,12 @@ TemplateAssetGroupListManagerWidget::TemplateAssetGroupListManagerWidget(QWidget
         "Template asset groups",
         parent )
 {
-    this->setContainingType(RamObject::AssetGroup);
 }
 
 void TemplateAssetGroupListManagerWidget::createObject()
 {
-    Ramses::instance()->createTemplateAssetGroup();
+    RamAssetGroup *ag = new RamAssetGroup(
+                "NEW",
+                "New Template group");
+    Ramses::instance()->templateAssetGroups()->append(ag);
 }

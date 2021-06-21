@@ -262,17 +262,17 @@ void ApplicationEditWidget::setupUi()
     splitter->setOrientation(Qt::Vertical);
 
     nativeList = new ObjectListEditWidget(true, splitter);
-    nativeList->setEditMode(RamObjectListWidget::UnassignObjects);
+    nativeList->setEditMode(ObjectListEditWidget::UnassignObjects);
     nativeList->setTitle("Native file types");
     splitter->addWidget(nativeList);
 
     importList = new ObjectListEditWidget(true, splitter);
-    importList->setEditMode(RamObjectListWidget::UnassignObjects);
+    importList->setEditMode(ObjectListEditWidget::UnassignObjects);
     importList->setTitle("Imports");
     splitter->addWidget(importList);
 
     exportList = new ObjectListEditWidget(true, splitter);
-    exportList->setEditMode(RamObjectListWidget::UnassignObjects);
+    exportList->setEditMode(ObjectListEditWidget::UnassignObjects);
     exportList->setTitle("Exports");
     splitter->addWidget(exportList);
 

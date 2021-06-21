@@ -18,13 +18,13 @@ Ramses::Ramses(QObject *parent) : QObject(parent)
     qDebug() << "Initialising Ramses";
     m_dbi = DBInterface::instance();
 
-    m_users = new RamObjectList("USRS", "Users", "", this);
+    m_users = new RamObjectList("USRS", "Users", this);
     m_states = new RamStateList(this);
-    m_projects = new RamObjectList("PRJCTS", "Projects", "", this);
-    m_templateSteps = new RamObjectList("TPLTSTPS", "Template steps", "", this);
-    m_templateAssetGroups = new RamObjectList("TPLTAGS", "Template asset groups", "", this);
-    m_fileTypes = new RamObjectList ("FLTPS", "File types", "", this);
-    m_applications = new RamObjectList("APPS", "Applications", "", this);
+    m_projects = new RamObjectList("PRJCTS", "Projects", this);
+    m_templateSteps = new RamObjectList("TPLTSTPS", "Template steps", this);
+    m_templateAssetGroups = new RamObjectList("TPLTAGS", "Template asset groups", this);
+    m_fileTypes = new RamObjectList ("FLTPS", "File types", this);
+    m_applications = new RamObjectList("APPS", "Applications", this);
     m_ramUser = nullptr;
 
     DBISuspender s;
@@ -496,14 +496,6 @@ RamProject *Ramses::createProject()
     return project;
 }
 
-RamUser *Ramses::createUser()
-{
-    RamUser *user = new RamUser("NEW","J. Doe");
-    user->setParent(this);
-    m_users->append(user);
-    return user;
-}
-
 bool Ramses::isAdmin()
 {
     if (!m_currentUser) return false;
@@ -532,10 +524,10 @@ QString Ramses::currentUserSettingsFile()
 RamState *Ramses::noState()
 {
     if(m_noState) return m_noState;
-    m_noState =  qobject_cast<RamState*>( m_states->fromName("NO") );
+    m_noState = qobject_cast<RamState*>( m_states->fromName("NO") );
     if (!m_noState)
     {
-        m_noState = new RamState("NO", "Nothing to do", "", this);
+        m_noState = new RamState("NO", "Nothing to do");
         m_states->append(m_noState);
     }
     return m_noState;
@@ -597,7 +589,7 @@ RamUser *Ramses::ramUser()
     m_ramUser = qobject_cast<RamUser*>( m_users->fromName("Ramses") );
     if (!m_ramUser)
     {
-        m_ramUser = new RamUser("Ramses", "Ramses Daemon", "", this);
+        m_ramUser = new RamUser("Ramses", "Ramses Daemon");
         m_ramUser->updatePassword("", RamUuid::generateUuidString("Ramses"));
     }
     return m_ramUser;

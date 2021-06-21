@@ -28,7 +28,7 @@ void StatusHistoryWidget::setItem(RamItem *item)
 
     if (!_item) return;
 
-    statusList->setList( item->statusHistory() );
+    //statusList->setList( item->statusHistory() );
 
     // Set the current status as template for the status editor
     RamStep *step = RamStep::step(statusList->currentFilterUuid());
@@ -77,7 +77,6 @@ void StatusHistoryWidget::setupUi()
     splitter->setOrientation(Qt::Vertical);
 
     statusList = new ObjectListEditWidget(true, splitter);
-    statusList->setContainingType(RamObject::Status);
     statusList->setTitle("Status");
     statusList->setEditable(false);
     statusList->setSearchable(false);

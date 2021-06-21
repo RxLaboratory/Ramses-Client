@@ -6,7 +6,6 @@ AssetListManagerWidget::AssetListManagerWidget(QWidget *parent):
         "Assets",
         parent)
 {
-    this->setContainingType(RamObject::Asset);
     changeProject(Ramses::instance()->currentProject());
     connect(Ramses::instance(), &Ramses::currentProjectChanged, this, &AssetListManagerWidget::changeProject);
 }

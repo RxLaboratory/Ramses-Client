@@ -79,7 +79,11 @@ void ShotEditWidget::moveShot()
     RamProject *proj = project();
     if (!proj) return;
     if (sequencesBox->currentIndex() >= 0)
-        proj->moveShotToSequence(_shot, sequencesBox->currentUuid() );
+    {
+        RamSequence *seq = qobject_cast<RamSequence*>( sequencesBox->currentObject() );
+        _shot->setSequence( seq );
+        _shot->update();
+    }
 }
 
 void ShotEditWidget::framesChanged()

@@ -56,12 +56,12 @@ void PipeEditWidget::setObject(RamObject *pipeObj)
 
     m_pipeFileList->setList( pipe->pipeFiles() );
 
-    _objectConnections << connect(pipe->pipeFiles(), &RamObjectList::objectAdded, this, &PipeEditWidget::pipeFileAssigned);
+    /*_objectConnections << connect(pipe->pipeFiles(), &RamObjectList::objectAdded, this, &PipeEditWidget::pipeFileAssigned);
     _objectConnections << connect(pipe->pipeFiles(), &RamObjectList::objectRemoved, this, &PipeEditWidget::pipeFileUnassigned);
     _objectConnections << connect(pipe->outputStep()->applications(), &RamObjectList::objectAdded, this, &PipeEditWidget::appChanged); //TODO Separate (un)assigned to connect app changed
     _objectConnections << connect(pipe->outputStep()->applications(), &RamObjectList::objectRemoved, this, &PipeEditWidget::appChanged);
     _objectConnections << connect(pipe->inputStep()->applications(), &RamObjectList::objectAdded, this, &PipeEditWidget::appChanged);
-    _objectConnections << connect(pipe->inputStep()->applications(), &RamObjectList::objectRemoved, this, &PipeEditWidget::appChanged);
+    _objectConnections << connect(pipe->inputStep()->applications(), &RamObjectList::objectRemoved, this, &PipeEditWidget::appChanged);*/
 
     this->setEnabled(Ramses::instance()->isProjectAdmin());
 }
@@ -163,7 +163,10 @@ void PipeEditWidget::createPipeFile()
     if(!_pipe) return;
     RamProject *project = Ramses::instance()->currentProject();
     if (!project) return;
-    RamPipeFile *pipeFile = project->createPipeFile();
+    RamPipeFile *pipeFile = new RamPipeFile(
+                "NEW",
+                project);
+    project->pipeFiles()->append(pipeFile);
     _pipe->pipeFiles()->append(pipeFile);
 }
 
@@ -184,7 +187,7 @@ void PipeEditWidget::setupUi()
     mainFormLayout->addWidget(m_toBox, 3, 1);
 
     m_pipeFileList = new ObjectListEditWidget(true, this);
-    m_pipeFileList->setEditMode(RamObjectListWidget::UnassignObjects);
+    m_pipeFileList->setEditMode(ObjectListEditWidget::UnassignObjects);
     m_pipeFileList->setTitle("Files");
     mainLayout->addWidget(m_pipeFileList);
 
@@ -230,7 +233,7 @@ void PipeEditWidget::populateMenus(RamProject *project)
     for (int i = 0; i < project->pipeFiles()->count(); i++)
         newPipeFile( project->pipeFiles()->at(i) );
 
-    connect( project->pipeFiles(), &RamObjectList::objectAdded, this, &PipeEditWidget::newPipeFile);
-    connect( project->pipeFiles(), &RamObjectList::objectRemoved, this, &PipeEditWidget::pipeFileRemoved);
+    /*connect( project->pipeFiles(), &RamObjectList::objectAdded, this, &PipeEditWidget::newPipeFile);
+    connect( project->pipeFiles(), &RamObjectList::objectRemoved, this, &PipeEditWidget::pipeFileRemoved);*/
 }
 

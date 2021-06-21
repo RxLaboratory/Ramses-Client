@@ -7,7 +7,6 @@ StateListManagerWidget::StateListManagerWidget(QWidget *parent) :
         "States",
         parent)
 {
-    this->setContainingType(RamObject::State);
 }
 
 void StateListManagerWidget::createObject()

@@ -512,7 +512,7 @@ QListView::item QWidget:hover {
 
 /* TABLES */
 
-QTreeWidget, QTableWidget {
+QTreeWidget, QTableView {
     background-color: @color-very-dark-grey;
     alternate-background-color: @color-darker-grey;
     color: @color-less-light-grey;
@@ -520,11 +520,11 @@ QTreeWidget, QTableWidget {
     selection-background-color: @color-less-dark-grey;
 }
 
-QTreeWidget::item:hover, QTableWidget::item:hover {
+QTreeWidget::item:hover, QTableView::item:hover {
     background-color: @color-dark-grey;
 }
 
-QTreeWidget::item:selected, QTableWidget::item:selected {
+QTreeWidget::item:selected, QTableView::item:selected {
     background-color: none;
     border: none;
 }

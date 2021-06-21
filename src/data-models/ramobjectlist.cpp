@@ -40,6 +40,18 @@ QVariant RamObjectList::data(const QModelIndex &index, int role) const
     return iptr;
 }
 
+QVariant RamObjectList::headerData(int section, Qt::Orientation orientation, int role) const
+{
+    if(orientation == Qt::Vertical)
+    {
+        if ( role == Qt::DisplayRole )
+            return m_objectsList.at( section )->shortName();
+        if ( role == Qt::UserRole )
+            return m_objectsList.at( section )->uuid();
+    }
+    return QAbstractTableModel::headerData(section, orientation, role);
+}
+
 void RamObjectList::sort(int column, Qt::SortOrder order)
 {
     /*if (m_sorted) return;
@@ -55,6 +67,7 @@ void RamObjectList::objectChanged(RamObject *obj)
 
     QModelIndex index = createIndex(row,0);
     emit dataChanged(index, index, {Qt::DisplayRole});
+    emit headerDataChanged(Qt::Vertical, row, row);
 }
 
 const QString &RamObjectList::name() const
@@ -165,6 +178,11 @@ RamObject *RamObjectList::last() const
     return m_objectsList.last();
 }
 
+QList<RamObject *> RamObjectList::toList() const
+{
+    return m_objectsList;
+}
+
 void RamObjectList::removeAt(int i)
 {
     takeObject(i);
@@ -199,6 +217,20 @@ RamObject *RamObjectList::takeObject(int i)
 
     endRemoveRows();
     return obj;
+}
+
+QList<RamObject*> RamObjectList::removeIndices(QModelIndexList indices)
+{
+    std::sort(indices.begin(), indices.end(), indexSorter);
+
+    QList<RamObject*> objs;
+
+    for( int i = indices.count() -1; i >= 0; i--)
+    {
+        QModelIndex index = indices.at(i);
+        objs << this->takeObject(index.row());
+    }
+    return objs;
 }
 
 RamObject *RamObjectList::takeFromUuid(QString uuid)
@@ -239,6 +271,11 @@ void RamObjectList::removeAll(RamObject *obj)
     takeObject(row);
 }
 
+void RamObjectList::sort()
+{
+    sort(0);
+}
+
 void RamObjectList::removeAll(QString uuid)
 {
     // get from map
@@ -257,3 +294,7 @@ bool objectSorter(RamObject *a, RamObject *b)
     else return a->shortName() < b->shortName();
 }
 
+bool indexSorter(QModelIndex a, QModelIndex b)
+{
+    return a.row() < b.row();
+}

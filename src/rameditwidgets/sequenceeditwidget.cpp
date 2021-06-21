@@ -33,7 +33,7 @@ void SequenceEditWidget::setObject(RamObject *obj)
     QSignalBlocker b1(shotsList);
 
     //Reset values
-    shotsList->setList(sequence);
+    shotsList->setList(_sequence->project()->shots());
 
     if (!sequence) return;
 
@@ -59,13 +59,16 @@ void SequenceEditWidget::update()
 void SequenceEditWidget::createShot()
 {
     if (!_sequence) return;
-    _sequence->createShot();
+    RamShot *shot = new RamShot(
+                "NEW",
+                _sequence,
+                "New Shot,");
+    _sequence->project()->shots()->append(shot);
 }
 
 void SequenceEditWidget::setupUi()
 {
     shotsList = new ObjectListEditWidget(true, this);
-    shotsList->setSortable(true);
     shotsList->setTitle("Shots");
     mainLayout->addWidget(shotsList);
 }

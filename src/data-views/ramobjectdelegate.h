@@ -1,5 +1,5 @@
-#ifndef RAMOBJECTITEMDELEGATE_H
-#define RAMOBJECTITEMDELEGATE_H
+#ifndef RAMOBJECTDELEGATE_H
+#define RAMOBJECTDELEGATE_H
 
 #include <QStyledItemDelegate>
 #include <QPainter>
@@ -8,11 +8,11 @@
 #include "duqf-app/app-style.h"
 #include "ramobject.h"
 
-class RamObjectItemDelegate : public QStyledItemDelegate
+class RamObjectDelegate : public QStyledItemDelegate
 {
     Q_OBJECT
 public:
-    RamObjectItemDelegate(QObject *parent = nullptr);
+    RamObjectDelegate(QObject *parent = nullptr);
 
     void paint(QPainter *painter, const QStyleOptionViewItem &option,
                const QModelIndex &index) const Q_DECL_OVERRIDE;
@@ -31,4 +31,4 @@ private:
     int m_padding;
 };
 
-#endif // RAMOBJECTITEMDELEGATE_H
+#endif // RAMOBJECTDELEGATE_H

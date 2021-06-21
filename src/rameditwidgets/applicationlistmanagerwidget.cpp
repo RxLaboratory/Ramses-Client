@@ -9,7 +9,7 @@ ApplicationListManagerWidget::ApplicationListManagerWidget(QWidget *parent) :
         "Applications",
         parent )
 {
-    this->setContainingType(RamObject::Application);
+
 }
 
 void ApplicationListManagerWidget::createObject()

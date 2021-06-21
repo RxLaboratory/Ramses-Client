@@ -3,6 +3,8 @@
 
 #include <QWidget>
 #include "objectlisteditwidget.h"
+#include "data-models/ramstepstatushistory.h"
+#include "ramitem.h"
 
 class StepStatusHistoryWidget : public QWidget
 {

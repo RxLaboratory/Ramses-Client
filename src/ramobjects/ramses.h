@@ -115,8 +115,6 @@ public slots:
     void init();
     void refresh();
     void projectReady(QString uuid);
-    // Users
-    RamUser *createUser();
     // States
     RamState *createState();
 

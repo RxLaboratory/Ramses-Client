@@ -25,48 +25,51 @@ class ObjectListEditWidget : public QWidget
 {
     Q_OBJECT
 public:
+    enum EditMode { UnassignObjects, RemoveObjects };
+    Q_ENUM( EditMode )
+
     explicit ObjectListEditWidget(bool editableObjects = false, QWidget *parent = nullptr);
     explicit ObjectListEditWidget(RamObjectList *objectList, bool editableObjects = false, QWidget *parent = nullptr);
-    void setContainingType(RamObject::ObjectType type);
-    void setEditMode(const RamObjectListWidget::EditMode &editMode);
-    RamObjectList *list() const;
-    void clear();
     void setList(RamObjectList *objectList);
     void setFilterList(RamObjectList *filterList);
+    void clear();
+    void setEditMode(ObjectListEditWidget::EditMode editMode);
     void setEditable(bool editable = true);
-    void setSortable(bool sortable = true);
-    void setSelectable(bool selectable = true);
     void setSearchable(bool searchable = true);
     void setTitle(QString title);
+    void select(RamObject *o);
     QToolButton *addButton() const;
-    void select(RamObject* obj);
     QString currentFilterUuid() const;
     RamObject *currentFilter() const;
 
-public slots:
-    void scrollToBottom();
-
 signals:
     void objectSelected(RamObject*);
-    void orderChanged();
     void add();
     void currentFilterChanged(QString);
 
 private slots:
     void filterChanged(QString filter);
+    void removeSelectedObjects();
 
 private:
     void setupUi(bool editableObjects = false);
     void connectEvents();
+
+    // UI Controls
     QToolButton *m_addButton;
     QToolButton *m_removeButton;
     QLabel *m_title;
     RamObjectListComboBox *m_filterBox;
     DuQFSearchEdit *m_searchEdit;
-    RamObjectList *m_objectList;
-    RamObjectListWidget *m_list;
+    RamObjectListWidget *m_listWidget;
+
+    // Settings
+    EditMode m_editMode = UnassignObjects;
+
+    // Current List
+    RamObjectList *m_objectList = nullptr;
+
     QMap<QString, QList<QMetaObject::Connection>> m_filterConnections;
-    QList<QMetaObject::Connection> m_uberListConnections;
 };
 
 #endif // OBJECTLISTEDITWIDGET_H

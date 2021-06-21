@@ -81,8 +81,9 @@ void AssetEditWidget::moveAsset()
     if (!proj) return;
     if (assetGroupBox->currentIndex() >= 0)
     {
-        RamAssetGroup *ag = RamAssetGroup::assetGroup( assetGroupBox->currentUuid() );
+        RamAssetGroup *ag = qobject_cast<RamAssetGroup*>( assetGroupBox->currentObject() );
         _asset->setAssetGroup( ag );
+        _asset->update();
     }
 }
 

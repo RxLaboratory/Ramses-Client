@@ -62,10 +62,10 @@ void StepEditWidget::setObject(RamObject *obj)
     usersList->setList(step->users());
     applicationList->setList(step->applications());
 
-    _objectConnections << connect(step->users(), &RamObjectList::objectAdded, this, &StepEditWidget::userAssigned);
+    /*_objectConnections << connect(step->users(), &RamObjectList::objectAdded, this, &StepEditWidget::userAssigned);
     _objectConnections << connect(step->users(), &RamObjectList::objectRemoved, this, &StepEditWidget::userUnassigned);
     _objectConnections << connect(step->applications(), &RamObjectList::objectAdded, this, &StepEditWidget::applicationAssigned);
-    _objectConnections << connect(step->applications(), &RamObjectList::objectRemoved, this, &StepEditWidget::applicationUnassigned);
+    _objectConnections << connect(step->applications(), &RamObjectList::objectRemoved, this, &StepEditWidget::applicationUnassigned);*/
 
     this->setEnabled(Ramses::instance()->isProjectAdmin());
 }
@@ -101,12 +101,12 @@ void StepEditWidget::setupUi()
     splitter->setOrientation(Qt::Vertical);
 
     usersList = new ObjectListEditWidget(true, splitter);
-    usersList->setEditMode(RamObjectListWidget::UnassignObjects);
+    usersList->setEditMode(ObjectListEditWidget::UnassignObjects);
     usersList->setTitle("Users");
     splitter->addWidget(usersList);
 
     applicationList = new ObjectListEditWidget(true, splitter);
-    applicationList->setEditMode(RamObjectListWidget::UnassignObjects);
+    applicationList->setEditMode(ObjectListEditWidget::UnassignObjects);
     applicationList->setTitle("Applications");
     splitter->addWidget(applicationList);
 
@@ -132,10 +132,10 @@ void StepEditWidget::populateMenus()
 
 void StepEditWidget::connectEvents()
 {
-    connect(Ramses::instance()->users(), &RamObjectList::objectAdded, this, &StepEditWidget::newUser);
+    /*connect(Ramses::instance()->users(), &RamObjectList::objectAdded, this, &StepEditWidget::newUser);
     connect(Ramses::instance()->users(), &RamObjectList::objectRemoved, this, &StepEditWidget::userRemoved);
     connect(Ramses::instance()->applications(), &RamObjectList::objectAdded, this, &StepEditWidget::newApplication);
-    connect(Ramses::instance()->applications(), &RamObjectList::objectRemoved, this, &StepEditWidget::applicationRemoved);
+    connect(Ramses::instance()->applications(), &RamObjectList::objectRemoved, this, &StepEditWidget::applicationRemoved);*/
     connect(typeBox, SIGNAL(currentIndexChanged(int)), this, SLOT(update()));
 }
 

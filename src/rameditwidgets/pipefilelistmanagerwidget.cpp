@@ -6,7 +6,6 @@ PipeFileListManagerWidget::PipeFileListManagerWidget(QWidget *parent):
         "Pipe Types",
         parent)
 {
-    this->setContainingType(RamObject::PipeFile);
     changeProject(Ramses::instance()->currentProject());
     connect(Ramses::instance(), &Ramses::currentProjectChanged, this, &PipeFileListManagerWidget::changeProject);
 }
@@ -15,7 +14,10 @@ void PipeFileListManagerWidget::createObject()
 {
     RamProject *project = Ramses::instance()->currentProject();
     if (!project) return;
-    project->createPipeFile();
+    RamPipeFile *pf = new RamPipeFile(
+                "NEW",
+                project);
+    project->pipeFiles()->append(pf);
 }
 
 void PipeFileListManagerWidget::changeProject(RamProject *project)

@@ -6,7 +6,6 @@ AssetGroupListManagerWidget::AssetGroupListManagerWidget(QWidget *parent):
         "Asset groups",
         parent)
 {
-    this->setContainingType(RamObject::AssetGroup);
     changeProject(Ramses::instance()->currentProject());
     connect(Ramses::instance(), &Ramses::currentProjectChanged, this, &AssetGroupListManagerWidget::changeProject);
 }

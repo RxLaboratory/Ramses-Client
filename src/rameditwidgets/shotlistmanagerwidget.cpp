@@ -6,8 +6,6 @@ ShotListManagerWidget::ShotListManagerWidget(QWidget *parent):
         "Shots",
         parent)
 {
-    this->setSortable(true);
-    this->setContainingType(RamObject::Shot);
     changeProject(Ramses::instance()->currentProject());
     connect(Ramses::instance(), &Ramses::currentProjectChanged, this, &ShotListManagerWidget::changeProject);
 }

@@ -100,7 +100,7 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     qDebug() << "> Admin";
     adminPage->addPage(new UserListManagerWidget(this),"Users", QIcon(":/icons/users"));
     qDebug() << "  > users ok";
-    adminPage->addPage(new ProjectListManagerWidget(this), "Projects", QIcon(":/icons/projects"));
+    /*adminPage->addPage(new ProjectListManagerWidget(this), "Projects", QIcon(":/icons/projects"));
     qDebug() << "  > projects ok";
     adminPage->addPage(new TemplateStepListManagerWidget(this), "Template Steps", QIcon(":/icons/steps"));
     qDebug() << "  > template steps ok";
@@ -111,14 +111,14 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     adminPage->addPage(new FileTypeListManagerWidget(this), "File Types", QIcon(":/icons/files"));
     qDebug() << "  > file types ok";
     adminPage->addPage(new ApplicationListManagerWidget(this), "Applications", QIcon(":/icons/applications"));
-    qDebug() << "  > applications ok";
+    qDebug() << "  > applications ok";//*/
 
     // Project settings
     SettingsWidget *projectSettingsPage = new SettingsWidget("Project Administration", this);
     projectSettingsPage->showReinitButton(false);
     mainStack->addWidget(projectSettingsPage);
     qDebug() << "> Project";
-    projectSettingsPage->addPage(new StepListManagerWidget(this), "Steps", QIcon(":/icons/steps"));
+    /*projectSettingsPage->addPage(new StepListManagerWidget(this), "Steps", QIcon(":/icons/steps"));
     qDebug() << "  > steps ok";
     projectSettingsPage->addPage(new PipeFileListManagerWidget(this), "Pipe Types", QIcon(":/icons/pipe-files"));
     qDebug() << "  > pipe types ok";

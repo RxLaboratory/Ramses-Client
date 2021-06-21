@@ -20,15 +20,6 @@ ObjectListManagerWidget::ObjectListManagerWidget(RamObjectList *objectList, Obje
     setList(objectList);
 }
 
-void ObjectListManagerWidget::setContainingType(RamObject::ObjectType type)
-{
-    m_listEditWidget->setContainingType(type);
-}
-
-void ObjectListManagerWidget::setSortable(bool sortable)
-{
-    m_listEditWidget->setSortable(sortable);
-}
 
 void ObjectListManagerWidget::setList(RamObjectList *objectList)
 {
@@ -43,15 +34,6 @@ void ObjectListManagerWidget::clear()
     this->setEnabled(false);
     while  (m_listConnection.count() > 0 ) disconnect( m_listConnection.takeLast() );
     m_listEditWidget->clear();
-}
-
-void ObjectListManagerWidget::editNewObject(RamObject *o)
-{
-    if (o->shortName() == "NEW")
-    {
-        m_listEditWidget->select(o);
-        m_editWidget->setObject(o);
-    }
 }
 
 void ObjectListManagerWidget::setupUi()
@@ -86,13 +68,19 @@ void ObjectListManagerWidget::setupUi()
 
 void ObjectListManagerWidget::connectEvents()
 {
-    connect( m_listEditWidget, &ObjectListEditWidget::objectSelected, m_editWidget, &ObjectEditWidget::setObject );
-    connect( m_listEditWidget, &ObjectListEditWidget::add, this, &ObjectListManagerWidget::createObject );
+    connect( m_listEditWidget, SIGNAL(objectSelected(RamObject*)), m_editWidget, SLOT(setObject(RamObject*)) );
+    connect( m_listEditWidget, SIGNAL(add()), this, SLOT(createObject()) );
 }
 
 QString ObjectListManagerWidget::currentFilter() const
 {
     return m_listEditWidget->currentFilterUuid();
+}
+
+void ObjectListManagerWidget::editObject(RamObject *o)
+{
+    m_listEditWidget->select(o);
+    m_editWidget->setObject(o);
 }
 
 void ObjectListManagerWidget::showEvent(QShowEvent *event)

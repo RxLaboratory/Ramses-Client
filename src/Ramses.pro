@@ -22,28 +22,28 @@ CONFIG += c++11
 
 INCLUDEPATH += rameditwidgets \
     settingswidgets \
-    ramdisplaywidgets \
     smallwidgets \
     ramobjects \
     item-tables \
+    data-views \
     data-model
 
 SOURCES += \
+    duqf-widgets/duqfsearchedit.cpp \
     data-models/ramitemtable.cpp \
     data-models/ramobjectlist.cpp \
     data-models/ramstatelist.cpp \
     data-models/ramstepstatushistory.cpp \
-    duqf-widgets/duqfsearchedit.cpp \
-    processmanager.cpp \
-    progressbar.cpp \
-    progresspage.cpp \
-    ramdisplaywidgets/ramobjectitemdelegate.cpp \
-    ramdisplaywidgets/ramobjectlistcombobox.cpp \
-    ramdisplaywidgets/ramobjectlistwidget.cpp \
+    data-views/ramobjectdelegate.cpp \
+    data-views/ramobjectlistcombobox.cpp \
+    data-views/ramobjectlistwidget.cpp \
     rameditwidgets/applicationeditwidget.cpp \
     rameditwidgets/applicationlistmanagerwidget.cpp \
     rameditwidgets/asseteditwidget.cpp \
     rameditwidgets/assetgroupeditwidget.cpp \
+    processmanager.cpp \
+    progressbar.cpp \
+    progresspage.cpp \
     daemon.cpp \
     rameditwidgets/assetgrouplistmanagerwidget.cpp \
     rameditwidgets/assetlistmanagerwidget.cpp \
@@ -152,13 +152,13 @@ HEADERS += \
     data-models/ramobjectlist.h \
     data-models/ramstatelist.h \
     data-models/ramstepstatushistory.h \
+    data-views/ramobjectdelegate.h \
     duqf-widgets/duqfsearchedit.h \
     processmanager.h \
     progressbar.h \
     progresspage.h \
-    ramdisplaywidgets/ramobjectitemdelegate.h \
-    ramdisplaywidgets/ramobjectlistcombobox.h \
-    ramdisplaywidgets/ramobjectlistwidget.h \
+    data-views/ramobjectlistcombobox.h \
+    data-views/ramobjectlistwidget.h \
     rameditwidgets/applicationeditwidget.h \
     rameditwidgets/applicationlistmanagerwidget.h \
     rameditwidgets/asseteditwidget.h \

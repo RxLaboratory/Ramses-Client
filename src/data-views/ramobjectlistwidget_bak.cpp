@@ -210,7 +210,7 @@ void RamObjectListWidget::filter(QString uuid)
 
 void RamObjectListWidget::mouseMoveEvent(QMouseEvent *event)
 {
-    if (_dragging)
+    if (m_dragging)
     {
         QPoint newPos = event->globalPos();
         QPoint _delta = newPos - _initialDragPos;
@@ -228,7 +228,7 @@ void RamObjectListWidget::mousePressEvent(QMouseEvent *event)
     if (event->button() == Qt::MiddleButton)
     {
         _initialDragPos = event->globalPos();
-        _dragging = true;
+        m_dragging = true;
         event->accept();
         return;
     }
@@ -239,7 +239,7 @@ void RamObjectListWidget::mouseReleaseEvent(QMouseEvent *event)
 {
     if (event->button() == Qt::MiddleButton)
     {
-        _dragging = false;
+        m_dragging = false;
         event->accept();
         return;
     }

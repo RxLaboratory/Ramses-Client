@@ -16,37 +16,16 @@ ObjectListEditWidget::ObjectListEditWidget(RamObjectList *objectList, bool edita
     setList(objectList);
 }
 
-void ObjectListEditWidget::setContainingType(RamObject::ObjectType type)
-{
-    m_list->setContainingType(type);
-}
-
-void ObjectListEditWidget::setEditMode(const RamObjectListWidget::EditMode &editMode)
-{
-    m_list->setEditMode(editMode);
-}
-
-RamObjectList *ObjectListEditWidget::list() const
-{
-    return m_objectList;
-}
-
-void ObjectListEditWidget::clear()
-{
-    m_objectList = nullptr;
-    m_list->clear();
-}
-
 void ObjectListEditWidget::setList(RamObjectList *objectList)
 {
     setFilterList(nullptr);
     m_objectList = objectList;
-    m_list->setList(m_objectList);
+    m_listWidget->setList(m_objectList);
 }
 
 void ObjectListEditWidget::setFilterList(RamObjectList *filterList)
 {
-    m_filterBox->setList(filterList);
+    /*m_filterBox->setList(filterList);
     if (filterList)
     {
         m_title->hide();
@@ -59,21 +38,20 @@ void ObjectListEditWidget::setFilterList(RamObjectList *filterList)
     }//*/
 }
 
+void ObjectListEditWidget::clear()
+{
+    m_listWidget->setList(nullptr);
+}
+
+void ObjectListEditWidget::setEditMode(EditMode editMode)
+{
+    m_editMode = editMode;
+}
+
 void ObjectListEditWidget::setEditable(bool editable)
 {
     m_removeButton->setVisible(editable);
     m_addButton->setVisible(editable);
-    setSelectable(editable);
-}
-
-void ObjectListEditWidget::setSortable(bool sortable)
-{
-    m_list->setSortable(sortable);
-}
-
-void ObjectListEditWidget::setSelectable(bool selectable)
-{
-    m_list->setSelectable(selectable);
 }
 
 void ObjectListEditWidget::setSearchable(bool searchable)
@@ -87,14 +65,14 @@ void ObjectListEditWidget::setTitle(QString title)
     m_title->setText(title);
 }
 
+void ObjectListEditWidget::select(RamObject *o)
+{
+    m_listWidget->select(o);
+}
+
 QToolButton *ObjectListEditWidget::addButton() const
 {
     return m_addButton;
-}
-
-void ObjectListEditWidget::select(RamObject *obj)
-{
-    m_list->select(obj);
 }
 
 QString ObjectListEditWidget::currentFilterUuid() const
@@ -107,16 +85,36 @@ RamObject *ObjectListEditWidget::currentFilter() const
     return m_filterBox->currentObject();
 }
 
-void ObjectListEditWidget::scrollToBottom()
-{
-    //QScrollBar *vbar = m_list->verticalScrollBar();
-    //vbar->setSliderPosition( vbar->maximum() );
-}
-
 void ObjectListEditWidget::filterChanged(QString filter)
 {
-    m_list->filter( filter );
+    //m_list->filter( filter );
     emit currentFilterChanged( filter );
+}
+
+void ObjectListEditWidget::removeSelectedObjects()
+{
+    QModelIndexList selection = m_listWidget->selectionModel()->selectedRows();
+    if (selection.count() == 0) return;
+
+
+    if (m_editMode == RemoveObjects)
+    {
+        QMessageBox::StandardButton confirm = QMessageBox::question( this,
+            "Confirm deletion",
+            "Are you sure you want to premanently remove the selected items?" );
+
+        if ( confirm != QMessageBox::Yes) return;
+    }
+
+    QList<RamObject*> objs = m_objectList->removeIndices(selection);
+
+    if (m_editMode == RemoveObjects)
+    {
+        for (int i = objs.count() -1 ; i >= 0; i--)
+        {
+            objs.at(i)->remove();
+        }
+    }
 }
 
 void ObjectListEditWidget::setupUi(bool editableObjects)
@@ -154,8 +152,8 @@ void ObjectListEditWidget::setupUi(bool editableObjects)
     m_searchEdit = new DuQFSearchEdit(this);
     mainLayout->addWidget(m_searchEdit);
 
-    m_list = new RamObjectListWidget(m_objectList, editableObjects, this);
-    mainLayout->addWidget(m_list);
+    m_listWidget = new RamObjectListWidget(m_objectList, editableObjects, this);
+    mainLayout->addWidget(m_listWidget);
 
     mainLayout->setStretch(0, 0);
     mainLayout->setStretch(1, 0);
@@ -164,7 +162,6 @@ void ObjectListEditWidget::setupUi(bool editableObjects)
 
     this->setLayout(mainLayout);
 
-    setSortable(false);
     setEditable(true);
     // Hide filters until at least one is added
     setFilterList(nullptr);
@@ -172,12 +169,14 @@ void ObjectListEditWidget::setupUi(bool editableObjects)
 
 void ObjectListEditWidget::connectEvents()
 {
+    // add & remove buttons
     connect(m_addButton, &QToolButton::clicked, this, &ObjectListEditWidget::add);
-    connect(m_removeButton, &QToolButton::clicked, m_list, &RamObjectListWidget::removeSelectedObjects);
-    connect(m_searchEdit, &DuQFSearchEdit::changing, m_list, &RamObjectListWidget::search);
-    connect(m_searchEdit, &DuQFSearchEdit::changed, m_list, &RamObjectListWidget::search);
+    connect(m_removeButton, SIGNAL(clicked()), this, SLOT(removeSelectedObjects()));
+    // search
+    connect(m_searchEdit, SIGNAL(changing(QString)), m_listWidget, SLOT(search(QString)));
+    connect(m_searchEdit, SIGNAL(changed(QString)), m_listWidget, SLOT(search(QString)));
+    // filters
     connect(m_filterBox,SIGNAL(currentObjectChanged(QString)), this, SLOT(filterChanged(QString)));
     // Relay list signals
-    connect(m_list, &RamObjectListWidget::objectSelected, this, &ObjectListEditWidget::objectSelected);
-    connect(m_list, &RamObjectListWidget::orderChanged, this, &ObjectListEditWidget::orderChanged);
+    connect(m_listWidget, &RamObjectListWidget::objectSelected, this, &ObjectListEditWidget::objectSelected);
 }

@@ -22,14 +22,14 @@ public:
     int rowCount(const QModelIndex &parent = QModelIndex()) const Q_DECL_OVERRIDE;
     int columnCount(const QModelIndex &parent = QModelIndex()) const Q_DECL_OVERRIDE;
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const Q_DECL_OVERRIDE;
-    virtual void sort(int column = 0, Qt::SortOrder order = Qt::AscendingOrder) Q_DECL_OVERRIDE;
+    QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const Q_DECL_OVERRIDE;
+    virtual void sort(int column, Qt::SortOrder order = Qt::AscendingOrder) Q_DECL_OVERRIDE;
 
     // MODEL EDITING
     void clear(); // Reset
-    // TODO header data on object insert and change
     virtual void insertObject(int i, RamObject *obj); // Insert Row
     virtual RamObject *takeObject(int i); // Remove Row
-    //virtual void sort(); // Sort
+    virtual QList<RamObject *> removeIndices( QModelIndexList indices ); // Used to remove selection. Returns the removed objects
 
     // CONVENIENCE METHODS
     // Info
@@ -41,15 +41,19 @@ public:
     RamObject *fromName(QString shortName, QString name = "") const;
     RamObject *at(int i) const;
     RamObject *last() const;
+    QList<RamObject*> toList() const;
     // Insertion
     void append(RamObject *obj);
     // Removal
     void removeAt(int i);
     void removeFirst();
     void removeLast();
-    void removeAll(RamObject *obj);
     void removeAll(QString uuid);
     RamObject *takeFromUuid(QString uuid);
+
+public slots:
+    void removeAll(RamObject *obj);
+    void sort();
 
 protected:
     // DATA
@@ -65,7 +69,7 @@ protected:
     int objRow(RamObject *obj);
 
 private slots:
-    // Emits dataChanged()
+    // Emits dataChanged() and headerChanged()
     void objectChanged(RamObject *obj);
 
 private:
@@ -74,5 +78,6 @@ private:
 };
 
 bool objectSorter(RamObject *a, RamObject *b);
+bool indexSorter(QModelIndex a, QModelIndex b);
 
 #endif // RAMOBJECTLIST_H

@@ -1,6 +1,6 @@
-#include "ramobjectitemdelegate.h"
+#include "ramobjectdelegate.h"
 
-RamObjectItemDelegate::RamObjectItemDelegate(QObject *parent)
+RamObjectDelegate::RamObjectDelegate(QObject *parent)
     : QStyledItemDelegate(parent)
 {
     m_bgBrush = QBrush( DuUI::getColor("dark-grey") );
@@ -14,7 +14,7 @@ RamObjectItemDelegate::RamObjectItemDelegate(QObject *parent)
     m_padding = 10;
 }
 
-void RamObjectItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
+void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
     // Reinterpret the int to a pointer
     quintptr iptr = index.data(Qt::UserRole).toULongLong();
@@ -47,7 +47,7 @@ void RamObjectItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem 
 
 }
 
-QSize RamObjectItemDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
+QSize RamObjectDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
     return QSize(32,30);
 }

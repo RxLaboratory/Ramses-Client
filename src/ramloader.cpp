@@ -32,9 +32,9 @@ void RamLoader::run()
     else if (query == "getProject") {
         qDebug() << "--- Loading Project Data ---";
         m_pm->setTitle("Loading project...");
-        QString uuid = gotProject( m_data.value("content").toObject(), false);
+        //QString uuid = gotProject( m_data.value("content").toObject(), false);
         m_pm->setTitle("Selecting current project...");
-        emit projectReady(uuid);
+        //emit projectReady(uuid);
     }
     else if (query == "getTemplateSteps") gotTemplateSteps( m_data.value("content").toArray());
     else if (query == "getTemplateAssetGroups") gotTemplateAssetGroups( m_data.value("content").toArray());
@@ -48,12 +48,12 @@ void RamLoader::run()
         m_pm->setMaximum(7);
         QJsonObject content = m_data.value("content").toObject();
         gotUsers( content.value("users").toArray());
-        gotTemplateSteps( content.value("templateSteps").toArray());
-        gotTemplateAssetGroups( content.value("templateAssetGroups").toArray());
-        gotStates( content.value("states").toArray());
-        gotFileTypes( content.value("fileTypes").toArray());
-        gotApplications( content.value("applications").toArray());
-        gotProjects( content.value("projects").toArray(), true);
+        //gotTemplateSteps( content.value("templateSteps").toArray());
+        //gotTemplateAssetGroups( content.value("templateAssetGroups").toArray());
+        //gotStates( content.value("states").toArray());
+        //gotFileTypes( content.value("fileTypes").toArray());
+        //gotApplications( content.value("applications").toArray());
+        //gotProjects( content.value("projects").toArray(), true);
         emit ready();
     }
 
