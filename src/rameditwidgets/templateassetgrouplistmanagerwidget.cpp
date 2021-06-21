@@ -7,6 +7,7 @@ TemplateAssetGroupListManagerWidget::TemplateAssetGroupListManagerWidget(QWidget
         "Template asset groups",
         parent )
 {
+    m_listEditWidget->setEditMode(ObjectListEditWidget::RemoveObjects);
 }
 
 void TemplateAssetGroupListManagerWidget::createObject()
@@ -15,4 +16,5 @@ void TemplateAssetGroupListManagerWidget::createObject()
                 "NEW",
                 "New Template group");
     Ramses::instance()->templateAssetGroups()->append(ag);
+    editObject(ag);
 }

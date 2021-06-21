@@ -161,6 +161,16 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
         }
         break;
     }
+    case RamObject::AssetGroup:
+    {
+        RamAssetGroup *ag = qobject_cast<RamAssetGroup*>( obj );
+        // Title
+        if (ag->isTemplate())
+            title = title % " [Template]";
+        // icon
+        painter->drawPixmap( iconRect, QIcon(":/icons/asset-group").pixmap(QSize(12,12)));
+        break;
+    }
     default:
         painter->drawPixmap( iconRect, QIcon(":/icons/asset").pixmap(QSize(12,12)));
     }

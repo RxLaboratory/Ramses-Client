@@ -104,9 +104,9 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     qDebug() << "  > projects ok";
     adminPage->addPage(new TemplateStepListManagerWidget(this), "Template Steps", QIcon(":/icons/steps"));
     qDebug() << "  > template steps ok";
-    /*adminPage->addPage(new TemplateAssetGroupListManagerWidget(this), "Template Asset Groups", QIcon(":/icons/asset-groups"));
+    adminPage->addPage(new TemplateAssetGroupListManagerWidget(this), "Template Asset Groups", QIcon(":/icons/asset-groups"));
     qDebug() << "  > template assets ok";
-    adminPage->addPage(new StateListManagerWidget(this), "States", QIcon(":/icons/state"));
+    /*adminPage->addPage(new StateListManagerWidget(this), "States", QIcon(":/icons/state"));
     qDebug() << "  > states ok";
     adminPage->addPage(new FileTypeListManagerWidget(this), "File Types", QIcon(":/icons/files"));
     qDebug() << "  > file types ok";
