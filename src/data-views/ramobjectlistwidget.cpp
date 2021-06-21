@@ -81,6 +81,8 @@ void RamObjectListWidget::mouseReleaseEvent(QMouseEvent *event)
 void RamObjectListWidget::resizeEvent(QResizeEvent *event)
 {
     this->setColumnWidth( 0, event->size().width() );
+    this->setRowHeight(0,10);
+    this->setRowHeight(0,30);
 }
 
 void RamObjectListWidget::currentChanged(const QModelIndex &current, const QModelIndex &previous)
