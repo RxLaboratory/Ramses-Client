@@ -1,6 +1,8 @@
 #include "ramfiletype.h"
 
 #include "ramses.h"
+#include "filetypeeditwidget.h"
+
 
 RamFileType::RamFileType(QString shortName, QString name, QStringList extensions, QString uuid):
     RamObject(shortName, name, uuid, Ramses::instance())
@@ -52,6 +54,17 @@ void RamFileType::update()
 RamFileType *RamFileType::fileType(QString uuid)
 {
     return qobject_cast<RamFileType*>( RamObject::obj(uuid) );
+}
+
+void RamFileType::edit()
+{
+    if (!m_editReady)
+    {
+        FileTypeEditWidget *ftw = new FileTypeEditWidget(this);
+        setEditWidget(ftw);
+        m_editReady = true;
+    }
+    showEdit();
 }
 
 bool RamFileType::isPreviewable() const

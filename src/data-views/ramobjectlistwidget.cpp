@@ -3,22 +3,30 @@
 RamObjectListWidget::RamObjectListWidget(QWidget *parent):
         QTableView(parent)
 {
+    m_delegate = new RamObjectDelegate();
     setupUi();
+    connectEvents();
 }
 
 RamObjectListWidget::RamObjectListWidget(RamObjectList *list, QWidget *parent):
     QTableView(parent)
 {
+    m_delegate = new RamObjectDelegate();
     setupUi();
     setList(list);
+    connectEvents();
 }
 
 
-RamObjectListWidget::RamObjectListWidget(RamObjectList *list, bool editableObjects, QWidget *parent):
+RamObjectListWidget::RamObjectListWidget(RamObjectList *list, bool editableObjects, RamUser::UserRole editRole, QWidget *parent):
     QTableView(parent)
 {
+    m_delegate = new RamObjectDelegate();
+    m_delegate->setEditable(editableObjects);
+    m_delegate->setEditRole(editRole);
     setupUi();
     setList(list);
+    connectEvents();
 }
 
 void RamObjectListWidget::setList(RamObjectList *list)
@@ -73,8 +81,6 @@ void RamObjectListWidget::mouseReleaseEvent(QMouseEvent *event)
 void RamObjectListWidget::resizeEvent(QResizeEvent *event)
 {
     this->setColumnWidth( 0, event->size().width() );
-    this->setRowHeight(0, 10);
-    this->resizeRowsToContents();
 }
 
 void RamObjectListWidget::currentChanged(const QModelIndex &current, const QModelIndex &previous)
@@ -122,17 +128,17 @@ void RamObjectListWidget::setupUi()
     this->setShowGrid(false);
     this->horizontalHeader()->hide();
     this->setColumnWidth( 0, this->size().width() );
+    this->setMouseTracking(true);
 
     QString style = "QTableView { gridline-color: rgba(0,0,0,0); selection-background-color: rgba(0,0,0,0); } ";
     style += "QTableView::item:hover { background-color: none; } ";
     this->setStyleSheet(style);
 
-    RamObjectDelegate *delegate = new RamObjectDelegate();
-    this->setItemDelegate( delegate );
+    this->setItemDelegate( m_delegate );
 }
 
 void RamObjectListWidget::connectEvents()
 {
-
+    connect(m_delegate, &RamObjectDelegate::editObject, this, &RamObjectListWidget::editObject);
 }
 

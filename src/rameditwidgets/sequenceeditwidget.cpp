@@ -68,7 +68,7 @@ void SequenceEditWidget::createShot()
 
 void SequenceEditWidget::setupUi()
 {
-    shotsList = new ObjectListEditWidget(true, this);
+    shotsList = new ObjectListEditWidget(true, RamUser::ProjectAdmin, this);
     shotsList->setTitle("Shots");
     mainLayout->addWidget(shotsList);
 }

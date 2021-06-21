@@ -37,6 +37,8 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
     const QRect titleRect( bgRect.left() + 27, bgRect.top(), bgRect.width() - 32, 26 );
     // Details
     const QRect detailsRect( iconRect.left() + 5, titleRect.bottom() + 3, iconRect.width() + titleRect.width() - 5, 60 );
+    // Edit button
+    const QRect editButtonRect( bgRect.right() - 20, bgRect.top() +7, 12, 12 );
 
     // Select the bg Color (which is different for ramstates)
     QColor bgColor = m_dark;
@@ -214,6 +216,13 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
         }
         break;
     }
+    case RamObject::Application:
+    {
+        //RamApplication *app = qobject_cast<RamApplication*>( obj );
+        // icon
+        painter->drawPixmap( iconRect, QIcon(":/icons/application").pixmap(QSize(12,12)));
+        break;
+    }
     default:
         painter->drawPixmap( iconRect, QIcon(":/icons/asset").pixmap(QSize(12,12)));
     }
@@ -223,11 +232,102 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
     painter->setFont(m_textFont);
     painter->drawText( titleRect, title, m_textOption);
 
+    // Draw editbutton
+    if (canEdit())
+    {
+        if (m_editButtonHover)
+        {
+            QPainterPath path;
+            path.addRoundedRect(editButtonRect.adjusted(-5, -5, 5, 5), 3, 3);
+            painter->fillPath(path, QBrush(m_dark));
+        }
+        painter->drawPixmap( editButtonRect, QIcon(":/icons/edit").pixmap(QSize(12,12)));
+    }
 }
 
 QSize RamObjectDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
     return QSize(32,30);
+}
+
+void RamObjectDelegate::setEditable(bool editable)
+{
+    m_editable = editable;
+}
+
+void RamObjectDelegate::setEditRole(RamUser::UserRole role)
+{
+    m_editRole = role;
+}
+
+bool RamObjectDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index)
+{
+    const QRect bgRect = option.rect.adjusted(m_padding,2,-m_padding,-2);
+
+
+    // Edit Button
+    const QRect editButtonRect( bgRect.right() - 22, bgRect.top() +7, 22, 22 );
+
+
+    switch ( event->type() )
+    {
+    case QEvent::MouseButtonPress:
+    {
+        QMouseEvent *e = static_cast< QMouseEvent * >( event );
+        if (canEdit() && editButtonRect.contains(e->pos()))
+        {
+            m_editButtonPressed = true;
+            return true;
+        }
+        break;
+    }
+    case QEvent::MouseMove:
+    {
+        QMouseEvent *e = static_cast< QMouseEvent * >( event );
+        if (canEdit() && editButtonRect.contains(e->pos()))
+        {
+            m_editButtonHover = true;
+            return true;
+        }
+        else if (m_editButtonHover)
+        {
+            m_editButtonHover = false;
+            return true;
+        }
+        break;
+    }
+    case QEvent::MouseButtonRelease:
+    {
+        QMouseEvent *e = static_cast< QMouseEvent * >( event );
+        if (canEdit() && m_editButtonPressed)
+        {
+            if (editButtonRect.contains(e->pos()))
+            {
+                // The object
+                quintptr iptr = index.data(Qt::UserRole).toULongLong();
+                RamObject *o = reinterpret_cast<RamObject*>( iptr );
+                qDebug() << "delegate EDIT";
+                qDebug() << o;
+                emit editObject(o);
+                qDebug() << "emited";
+            }
+            m_editButtonPressed = false;
+            return true;
+        }
+        break;
+    }
+    default:
+        return QStyledItemDelegate::editorEvent( event, model, option, index );
+    }
+
+    return QStyledItemDelegate::editorEvent( event, model, option, index );
+
+}
+
+bool RamObjectDelegate::canEdit() const
+{
+    RamUser *u = Ramses::instance()->currentUser();
+    return m_editable && u->role() >= m_editRole;
 }
 
 void RamObjectDelegate::drawMore(QPainter *painter, QRect rect, QPen pen) const

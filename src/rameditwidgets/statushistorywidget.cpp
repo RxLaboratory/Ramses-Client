@@ -76,7 +76,7 @@ void StatusHistoryWidget::setupUi()
     QSplitter *splitter = new QSplitter(this);
     splitter->setOrientation(Qt::Vertical);
 
-    statusList = new ObjectListEditWidget(true, splitter);
+    statusList = new ObjectListEditWidget(true, RamUser::ProjectAdmin, splitter);
     statusList->setTitle("Status");
     statusList->setEditable(false);
     statusList->setSearchable(false);

@@ -186,7 +186,7 @@ void PipeEditWidget::setupUi()
     m_toBox = new QComboBox(this);
     mainFormLayout->addWidget(m_toBox, 3, 1);
 
-    m_pipeFileList = new ObjectListEditWidget(true, this);
+    m_pipeFileList = new ObjectListEditWidget(true, RamUser::ProjectAdmin, this);
     m_pipeFileList->setEditMode(ObjectListEditWidget::UnassignObjects);
     m_pipeFileList->setTitle("Files");
     mainLayout->addWidget(m_pipeFileList);

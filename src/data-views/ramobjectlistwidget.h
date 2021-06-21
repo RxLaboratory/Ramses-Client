@@ -19,12 +19,13 @@ public:
 
     explicit RamObjectListWidget(QWidget *parent = nullptr);
     explicit RamObjectListWidget(RamObjectList *list, QWidget *parent = nullptr);
-    explicit RamObjectListWidget(RamObjectList *list, bool editableObjects, QWidget *parent = nullptr);
+    explicit RamObjectListWidget(RamObjectList *list, bool editableObjects, RamUser::UserRole editRole = RamUser::Admin, QWidget *parent = nullptr);
     // Content
     void setList(RamObjectList *list);
 
 signals:
-    void objectSelected(RamObject*) const;
+    void objectSelected(RamObject*);
+    void editObject(RamObject*);
 
 public slots:
     void search(QString s);
@@ -45,6 +46,9 @@ private:
     void connectEvents();
 
     RamObjectList *m_objectList = nullptr;
+
+    // Delegate
+    RamObjectDelegate *m_delegate;
 
     // UI Events
     QPoint _initialDragPos;

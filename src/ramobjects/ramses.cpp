@@ -459,14 +459,6 @@ RamObjectList *Ramses::applications() const
     return m_applications;
 }
 
-RamApplication *Ramses::createApplication()
-{
-    RamApplication *a = new RamApplication("New", "New Application");
-    a->setParent(this);
-    m_applications->append(a);
-    return a;
-}
-
 RamObjectList *Ramses::projects() const
 {
     return m_projects;

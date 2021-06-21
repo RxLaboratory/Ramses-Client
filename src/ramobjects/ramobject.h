@@ -8,6 +8,8 @@
 #include "ramuuid.h"
 #include "config.h"
 
+class ObjectDockWidget;
+
 class RamObject : public QObject
 {
     Q_OBJECT
@@ -60,6 +62,7 @@ public:
 public slots:
     virtual void update();
     virtual void remove();
+    virtual void edit() {};
 
 signals:
     void changed(RamObject *);
@@ -78,12 +81,18 @@ protected:
     QString m_comment;
     int m_order = -1;
     bool m_orderChanged = false;
-    bool m_removing;
+    bool m_removing = false;
+    bool m_editReady = false;
 
     static QMap<QString, RamObject*> m_existingObjects;
 
+    void setEditWidget( QWidget *w );
+    void showEdit();
+
 private:
     RamObject::ObjectType _objectType = Generic;
+
+    ObjectDockWidget *m_dockWidget = nullptr;
 
 };
 

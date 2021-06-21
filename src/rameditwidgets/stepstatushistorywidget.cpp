@@ -36,7 +36,7 @@ void StepStatusHistoryWidget::setupUi()
     layout->setContentsMargins(0,0,0,0);
     layout->setSpacing(3);
 
-    m_statusList = new ObjectListEditWidget(true, this);
+    m_statusList = new ObjectListEditWidget(true, RamUser::ProjectAdmin, this);
     m_statusList->setTitle("Status history");
     m_statusList->setEditable(false);
     m_statusList->setSearchable(false);

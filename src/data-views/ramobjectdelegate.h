@@ -7,9 +7,7 @@
 #include <QStringBuilder>
 
 #include "duqf-app/app-style.h"
-#include "ramobject.h"
-#include "ramuser.h"
-#include "ramproject.h"
+#include "ramses.h"
 
 class RamObjectDelegate : public QStyledItemDelegate
 {
@@ -18,9 +16,18 @@ public:
     RamObjectDelegate(QObject *parent = nullptr);
 
     void paint(QPainter *painter, const QStyleOptionViewItem &option,
-               const QModelIndex &index) const Q_DECL_OVERRIDE;
+               const QModelIndex &index) const override;
     QSize sizeHint(const QStyleOptionViewItem &option,
-                   const QModelIndex &index) const Q_DECL_OVERRIDE;
+                   const QModelIndex &index) const override;
+
+    void setEditable(bool editable);
+    void setEditRole(RamUser::UserRole role);
+
+signals:
+    void editObject(RamObject*);
+
+protected:
+    bool editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index) override;
 
 private:
     // Style
@@ -34,6 +41,17 @@ private:
     QTextOption m_textOption;
     QTextOption m_detailsOption;
     int m_padding;
+
+    // Settings
+    bool m_editable = false;
+    bool m_editRole = RamUser::Admin;
+
+    // Events
+    bool m_editButtonPressed = false;
+    bool m_editButtonHover = false;
+
+    // Utils
+    bool canEdit() const;
 
     // drawing specific items
     void drawMore(QPainter *painter, QRect rect, QPen pen) const;

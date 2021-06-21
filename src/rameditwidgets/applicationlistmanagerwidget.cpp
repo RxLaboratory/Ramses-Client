@@ -9,10 +9,14 @@ ApplicationListManagerWidget::ApplicationListManagerWidget(QWidget *parent) :
         "Applications",
         parent )
 {
-
+    m_listEditWidget->setEditMode(ObjectListEditWidget::RemoveObjects);
 }
 
 void ApplicationListManagerWidget::createObject()
 {
-    Ramses::instance()->createApplication();
+    RamApplication *a = new RamApplication(
+                "NEW",
+                "New Application");
+    Ramses::instance()->applications()->append(a);
+    editObject(a);
 }

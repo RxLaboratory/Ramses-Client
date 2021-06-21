@@ -12,6 +12,7 @@
 #include "ramobjectlistwidget.h"
 #include "ramobjectlistcombobox.h"
 #include "duqf-widgets/duqfsearchedit.h"
+#include "filetypeeditwidget.h"
 
 /**
  * @brief The ObjectListEditWidget class displays and edits a RamObjectList
@@ -28,8 +29,8 @@ public:
     enum EditMode { UnassignObjects, RemoveObjects };
     Q_ENUM( EditMode )
 
-    explicit ObjectListEditWidget(bool editableObjects = false, QWidget *parent = nullptr);
-    explicit ObjectListEditWidget(RamObjectList *objectList, bool editableObjects = false, QWidget *parent = nullptr);
+    explicit ObjectListEditWidget(bool editableObjects = false, RamUser::UserRole editRole = RamUser::Admin, QWidget *parent = nullptr);
+    explicit ObjectListEditWidget(RamObjectList *objectList, bool editableObjects = false, RamUser::UserRole editRole = RamUser::Admin, QWidget *parent = nullptr);
     void setList(RamObjectList *objectList);
     void setFilterList(RamObjectList *filterList);
     void clear();
@@ -50,9 +51,10 @@ signals:
 private slots:
     void filterChanged(QString filter);
     void removeSelectedObjects();
+    void edit(RamObject *obj);
 
 private:
-    void setupUi(bool editableObjects = false);
+    void setupUi(bool editableObjects = false, RamUser::UserRole editRole = RamUser::Admin);
     void connectEvents();
 
     // UI Controls

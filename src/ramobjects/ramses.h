@@ -107,7 +107,6 @@ public:
     RamObjectList *fileTypes() const;
     // Applications
     RamObjectList *applications() const;
-    RamApplication *createApplication();
 
 public slots:
     void init();

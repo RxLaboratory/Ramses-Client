@@ -100,12 +100,12 @@ void StepEditWidget::setupUi()
     QSplitter *splitter = new QSplitter(this);
     splitter->setOrientation(Qt::Vertical);
 
-    usersList = new ObjectListEditWidget(true, splitter);
+    usersList = new ObjectListEditWidget(true, RamUser::ProjectAdmin, splitter);
     usersList->setEditMode(ObjectListEditWidget::UnassignObjects);
     usersList->setTitle("Users");
     splitter->addWidget(usersList);
 
-    applicationList = new ObjectListEditWidget(true, splitter);
+    applicationList = new ObjectListEditWidget(true, RamUser::ProjectAdmin, splitter);
     applicationList->setEditMode(ObjectListEditWidget::UnassignObjects);
     applicationList->setTitle("Applications");
     splitter->addWidget(applicationList);

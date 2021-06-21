@@ -74,7 +74,7 @@ void AssetGroupEditWidget::setupUi()
     folderWidget = new DuQFFolderDisplayWidget(this);
     mainLayout->insertWidget(1, folderWidget);
 
-    assetsList = new ObjectListEditWidget(true, this);
+    assetsList = new ObjectListEditWidget(true, RamUser::ProjectAdmin, this);
     assetsList->setTitle("Assets");
     mainLayout->addWidget(assetsList);
 }

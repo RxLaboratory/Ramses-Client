@@ -1,16 +1,7 @@
 #include "filetypeeditwidget.h"
 
-FileTypeEditWidget::FileTypeEditWidget(QWidget *parent) :
-    ObjectEditWidget(parent)
-{
-    setupUi();
-    connectEvents();
-
-    setObject(nullptr);
-}
-
-FileTypeEditWidget::FileTypeEditWidget(RamFileType *fileType, QWidget *parent) :
-    ObjectEditWidget(fileType, parent)
+FileTypeEditWidget::FileTypeEditWidget(RamFileType *fileType) :
+    ObjectEditWidget(fileType)
 {
     setupUi();
     connectEvents();

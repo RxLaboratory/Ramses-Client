@@ -1,4 +1,6 @@
 #include "ramobject.h"
+#include "objectdockwidget.h"
+#include "mainwindow.h"
 
 QMap<QString, RamObject*> RamObject::m_existingObjects = QMap<QString, RamObject*>();
 
@@ -96,6 +98,26 @@ void RamObject::remove()
     qDebug().noquote() << "> " + m_name + " Removed";
 
     this->deleteLater();
+}
+
+void RamObject::setEditWidget(QWidget *w)
+{
+    m_dockWidget = new ObjectDockWidget(this);
+    QFrame *f = new QFrame(m_dockWidget);
+    QVBoxLayout *l = new QVBoxLayout();
+    l->setContentsMargins(3,3,3,3);
+    l->addWidget(w);
+    f->setLayout(l);
+    m_dockWidget->setWidget(f);
+
+    MainWindow *mw = (MainWindow*)GuiUtils::appMainWindow();
+    mw->addObjectDockWidget(m_dockWidget);
+}
+
+void RamObject::showEdit()
+{
+    if (m_dockWidget != nullptr )
+        m_dockWidget->show();
 }
 
 RamObject::ObjectType RamObject::objectType() const

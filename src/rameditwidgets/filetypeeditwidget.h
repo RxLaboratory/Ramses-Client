@@ -11,8 +11,7 @@ class FileTypeEditWidget : public ObjectEditWidget
     Q_OBJECT
 
 public:
-    explicit FileTypeEditWidget(QWidget *parent = nullptr);
-    explicit FileTypeEditWidget(RamFileType *fileType, QWidget *parent = nullptr);
+    explicit FileTypeEditWidget(RamFileType *fileType = nullptr);
 
     RamFileType *fileType() const;
 

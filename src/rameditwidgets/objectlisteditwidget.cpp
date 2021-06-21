@@ -1,17 +1,17 @@
 #include "objectlisteditwidget.h"
 
-ObjectListEditWidget::ObjectListEditWidget(bool editableObjects, QWidget *parent) :
+ObjectListEditWidget::ObjectListEditWidget(bool editableObjects, RamUser::UserRole editRole, QWidget *parent) :
     QWidget(parent)
 {
     m_objectList = nullptr;
-    setupUi(editableObjects);
+    setupUi(editableObjects, editRole);
     connectEvents();
 }
 
-ObjectListEditWidget::ObjectListEditWidget(RamObjectList *objectList, bool editableObjects, QWidget *parent) :
+ObjectListEditWidget::ObjectListEditWidget(RamObjectList *objectList, bool editableObjects, RamUser::UserRole editRole, QWidget *parent) :
     QWidget(parent)
 {
-    setupUi(editableObjects);
+    setupUi(editableObjects, editRole);
     connectEvents();
     setList(objectList);
 }
@@ -117,7 +117,13 @@ void ObjectListEditWidget::removeSelectedObjects()
     }
 }
 
-void ObjectListEditWidget::setupUi(bool editableObjects)
+void ObjectListEditWidget::edit(RamObject *obj)
+{
+    qDebug() << "List Edit Widget EDIT";
+    obj->edit();
+}
+
+void ObjectListEditWidget::setupUi(bool editableObjects, RamUser::UserRole editRole)
 {
     this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
@@ -152,7 +158,7 @@ void ObjectListEditWidget::setupUi(bool editableObjects)
     m_searchEdit = new DuQFSearchEdit(this);
     mainLayout->addWidget(m_searchEdit);
 
-    m_listWidget = new RamObjectListWidget(m_objectList, editableObjects, this);
+    m_listWidget = new RamObjectListWidget(m_objectList, editableObjects, editRole, this);
     mainLayout->addWidget(m_listWidget);
 
     mainLayout->setStretch(0, 0);
@@ -177,6 +183,8 @@ void ObjectListEditWidget::connectEvents()
     connect(m_searchEdit, SIGNAL(changed(QString)), m_listWidget, SLOT(search(QString)));
     // filters
     connect(m_filterBox,SIGNAL(currentObjectChanged(QString)), this, SLOT(filterChanged(QString)));
+    // edit objects
+    connect(m_listWidget, SIGNAL(editObject(RamObject*)), this, SLOT(edit(RamObject*)));
     // Relay list signals
     connect(m_listWidget, &RamObjectListWidget::objectSelected, this, &ObjectListEditWidget::objectSelected);
 }
