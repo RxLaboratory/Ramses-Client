@@ -48,7 +48,7 @@ void RamLoader::run()
         m_pm->setMaximum(7);
         QJsonObject content = m_data.value("content").toObject();
         gotUsers( content.value("users").toArray());
-        //gotTemplateSteps( content.value("templateSteps").toArray());
+        gotTemplateSteps( content.value("templateSteps").toArray());
         //gotTemplateAssetGroups( content.value("templateAssetGroups").toArray());
         //gotStates( content.value("states").toArray());
         //gotFileTypes( content.value("fileTypes").toArray());
@@ -239,6 +239,8 @@ QString RamLoader::gotTemplateStep(QJsonObject newS)
     step->setType( newS.value("type").toString());
 
     m_ram->templateSteps()->append(step);
+
+    return uuid;
 }
 
 void RamLoader::gotTemplateAssetGroups(QJsonArray assetGroups)

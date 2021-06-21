@@ -64,9 +64,7 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
     }
 
     // Title
-    painter->setPen( textPen );
-    painter->setFont(m_textFont);
-    painter->drawText( titleRect, obj->name(), m_textOption);
+    QString title = obj->name();
 
     // Type Specific Drawing
     RamObject::ObjectType ramType = obj->objectType();
@@ -130,11 +128,47 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
         }
         break;
     }
+    case RamObject::Step:
+    {
+        RamStep *step = qobject_cast<RamStep*>( obj );
+        // Title
+        if (step->isTemplate())
+            title = title % " [Template]";
+        // icon
+        QString icon = ":/icons/asset";
+        QString details = "Asset production";
+        if (step->type() == RamStep::PreProduction)
+        {
+            icon = ":/icons/project";
+            details = "Pre-production";
+        }
+        else if (step->type() == RamStep::ShotProduction)
+        {
+            icon = ":/icons/shot";
+            details = "Shot production";
+        }
+        else if (step->type() == RamStep::PostProduction)
+        {
+            icon = ":/icons/film";
+            details = "Post-production";
+        }
+        painter->drawPixmap( iconRect, QIcon(icon).pixmap(QSize(12,12)));
+        if (bgRect.height() >= 46 )
+        {
+            painter->setPen( detailsPen );
+            painter->setFont( m_detailsFont );
+            painter->drawText( detailsRect, details, m_detailsOption);
+        }
+        break;
+    }
     default:
         painter->drawPixmap( iconRect, QIcon(":/icons/asset").pixmap(QSize(12,12)));
     }
 
-
+    // Draw title
+    painter->setPen( textPen );
+    painter->setFont(m_textFont);
+    painter->drawText( titleRect, title, m_textOption);
 
 }
 
