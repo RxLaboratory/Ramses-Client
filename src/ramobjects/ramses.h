@@ -114,8 +114,6 @@ public slots:
     void init();
     void refresh();
     void projectReady(QString uuid);
-    // States
-    RamState *createState();
 
 
 signals:

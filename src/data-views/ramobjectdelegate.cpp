@@ -22,6 +22,7 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
     // Reinterpret the int to a pointer
     quintptr iptr = index.data(Qt::UserRole).toULongLong();
     RamObject *obj = reinterpret_cast<RamObject*>(iptr);
+    RamObject::ObjectType ramType = obj->objectType();
 
     // Base Settings
     const QRect rect = option.rect;
@@ -37,19 +38,31 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
     // Details
     const QRect detailsRect( iconRect.left() + 5, titleRect.bottom() + 3, iconRect.width() + titleRect.width() - 5, 60 );
 
+    // Select the bg Color (which is different for ramstates)
+    QColor bgColor = m_dark;
+    QColor textColor = m_lessLight;
+    QColor detailsColor = m_medium;
+    if (ramType == RamObject::State)
+    {
+        RamState *state = qobject_cast<RamState*>( obj );
+        bgColor = state->color();
+        if (bgColor.lightness() > 80) textColor = m_dark;
+    }
+
     // State
-    QBrush bgBrush(m_dark);
-    QPen textPen(m_lessLight);
-    QPen detailsPen(m_medium);
     if (option.state & QStyle::State_Selected)
     {
-        bgBrush.setColor(m_abyss);
+        bgColor = bgColor.darker();
     }
     else if (option.state & QStyle::State_MouseOver)
     {
-        bgBrush.setColor(m_medium);
-        detailsPen.setColor(m_dark);
+        bgColor = bgColor.lighter();
+        detailsColor = detailsColor.darker();
     }
+
+    QBrush bgBrush(bgColor);
+    QPen textPen(textColor);
+    QPen detailsPen(detailsColor);
 
     // Background
     QPainterPath path;
@@ -67,7 +80,6 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
     QString title = obj->name();
 
     // Type Specific Drawing
-    RamObject::ObjectType ramType = obj->objectType();
     switch(ramType)
     {
     case RamObject::User:
@@ -169,6 +181,21 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
             title = title % " [Template]";
         // icon
         painter->drawPixmap( iconRect, QIcon(":/icons/asset-group").pixmap(QSize(12,12)));
+        break;
+    }
+    case RamObject::State:
+    {
+        RamState *state = qobject_cast<RamState*>( obj );
+        // icon
+        painter->drawPixmap( iconRect, QIcon(":/icons/state").pixmap(QSize(12,12)));
+        if (bgRect.height() >= 46 )
+        {
+            // details
+            QString details = "Completion ratio: " % QString::number(state->completionRatio()) % "%";
+            painter->setPen( detailsPen );
+            painter->setFont( m_detailsFont );
+            painter->drawText( detailsRect, details, m_detailsOption);
+        }
         break;
     }
     default:

@@ -50,7 +50,7 @@ void RamLoader::run()
         gotUsers( content.value("users").toArray());
         gotTemplateSteps( content.value("templateSteps").toArray());
         gotTemplateAssetGroups( content.value("templateAssetGroups").toArray());
-        //gotStates( content.value("states").toArray());
+        gotStates( content.value("states").toArray());
         //gotFileTypes( content.value("fileTypes").toArray());
         //gotApplications( content.value("applications").toArray());
         gotProjects( content.value("projects").toArray(), true);

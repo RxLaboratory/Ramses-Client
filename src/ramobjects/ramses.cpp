@@ -449,14 +449,6 @@ RamStateList *Ramses::states() const
     return m_states;
 }
 
-RamState *Ramses::createState()
-{
-    RamState *state = new RamState("NEW", "State");
-    state->setParent(this);
-    m_states->append(state);
-    return state;
-}
-
 RamObjectList *Ramses::fileTypes() const
 {
     return m_fileTypes;

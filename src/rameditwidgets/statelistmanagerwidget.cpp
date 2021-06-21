@@ -7,10 +7,15 @@ StateListManagerWidget::StateListManagerWidget(QWidget *parent) :
         "States",
         parent)
 {
+    m_listEditWidget->setEditMode(ObjectListEditWidget::RemoveObjects);
 }
 
 void StateListManagerWidget::createObject()
 {
-    Ramses::instance()->createState();
+    RamState *state = new RamState(
+                "NEW",
+                "New state");
+    Ramses::instance()->states()->append(state);
+    editObject(state);
 }
 
