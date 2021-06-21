@@ -64,6 +64,7 @@ void RamObjectListComboBox::setObject(QString uuid)
 
 void RamObjectListComboBox::setObject(RamObject *obj)
 {
+    if (!obj) setCurrentIndex(-1);
     setObject(obj->uuid());
 }
 

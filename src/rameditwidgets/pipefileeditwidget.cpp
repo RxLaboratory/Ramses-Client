@@ -28,18 +28,7 @@ void PipeFileEditWidget::setObject(RamObject *obj)
     if (!pipeFile) return;
 
     // Select file type
-    RamFileType *ft = pipeFile->fileType();
-    if (ft)
-    {
-        for (int i = 0; i < m_fileTypeBox->count(); i++)
-        {
-            if(m_fileTypeBox->itemData(i).toString() == ft->uuid())
-            {
-                m_fileTypeBox->setCurrentIndex(i);
-                break;
-            }
-        }
-    }
+    m_fileTypeBox->setObject( pipeFile->fileType() );
 
     this->setEnabled(true);
 }

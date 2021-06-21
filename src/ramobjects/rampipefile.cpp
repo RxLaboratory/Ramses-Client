@@ -2,6 +2,8 @@
 
 #include "ramproject.h"
 
+#include "pipefileeditwidget.h"
+
 RamPipeFile::RamPipeFile(QString shortName, RamProject *project) :
     RamObject(shortName, "", "", project)
 {
@@ -64,4 +66,15 @@ void RamPipeFile::setProject(RamProject *project)
 RamPipeFile *RamPipeFile::pipeFile(QString uuid)
 {
     return qobject_cast<RamPipeFile*>( RamObject::obj(uuid) );
+}
+
+void RamPipeFile::edit()
+{
+    if (!m_editReady)
+    {
+        PipeFileEditWidget *w = new PipeFileEditWidget(this);
+        setEditWidget(w);
+        m_editReady = true;
+    }
+    showEdit();
 }

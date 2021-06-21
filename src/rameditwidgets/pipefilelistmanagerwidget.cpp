@@ -18,6 +18,7 @@ void PipeFileListManagerWidget::createObject()
                 "NEW",
                 project);
     project->pipeFiles()->append(pf);
+    editObject(pf);
 }
 
 void PipeFileListManagerWidget::changeProject(RamProject *project)

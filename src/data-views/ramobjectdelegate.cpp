@@ -223,6 +223,27 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
         painter->drawPixmap( iconRect, QIcon(":/icons/application").pixmap(QSize(12,12)));
         break;
     }
+    case RamObject::PipeFile:
+    {
+        RamPipeFile *pf = qobject_cast<RamPipeFile*>( obj );
+        RamFileType *ft = pf->fileType();
+        title = pf->shortName();
+        if (ft) title = title % "." % ft->shortName();
+        // icon
+        painter->drawPixmap( iconRect, QIcon(":/icons/connection").pixmap(QSize(12,12)));
+        if (bgRect.height() >= 46 )
+        {
+            if (ft)
+            {
+                // details
+                QString details = "File type: " % ft->name();
+                painter->setPen( detailsPen );
+                painter->setFont( m_detailsFont );
+                painter->drawText( detailsRect, details, m_detailsOption);
+            }
+        }
+        break;
+    }
     default:
         painter->drawPixmap( iconRect, QIcon(":/icons/asset").pixmap(QSize(12,12)));
     }

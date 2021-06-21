@@ -186,7 +186,7 @@ QString RamLoader::gotProject(QJsonObject newP, bool init)
         gotSteps( newP.value("steps").toArray(), project);
         //gotAssetGroups( newP.value("assetGroups").toArray(), project);
         //gotSequences( newP.value("sequences").toArray(), project);
-        //gotPipeFiles( newP.value("pipeFiles").toArray(), project );
+        gotPipeFiles( newP.value("pipeFiles").toArray(), project );
         //gotPipes( newP.value("pipes").toArray(), project);
     }
 
@@ -852,7 +852,7 @@ QString RamLoader::gotPipeFile(QJsonObject newPF, RamProject* project)
     RamFileType *ft = RamFileType::fileType( newPF.value("fileTypeUuid").toString() );
     if (ft) pipeFile->setFileType(ft);
 
-
+    project->pipeFiles()->append(pipeFile);
 
     return uuid;
 }
