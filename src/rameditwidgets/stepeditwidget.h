@@ -1,4 +1,4 @@
-#ifndef STEPEDITWIDGET_H
+﻿#ifndef STEPEDITWIDGET_H
 #define STEPEDITWIDGET_H
 
 #include <QComboBox>
@@ -30,38 +30,20 @@ protected slots:
     void update() Q_DECL_OVERRIDE;
 
 private slots:
-    // Users
-    void newUser(RamObject *user);
-    void assignUser();
-    void userAssigned(RamObject *user);
-    void userUnassigned(RamObject *o);
-    void userChanged(RamObject *o);
-    void userRemoved(RamObject *user);
-
-    // Applications
-    void newApplication(RamObject *app);
-    void assignApplication();
-    void applicationAssigned(RamObject *o);
-    void applicationUnassigned(RamObject *app);
-    void applicationChanged(RamObject *o);
-    void applicationRemoved(RamObject *o);
+    void createUser();
+    void createApplication();
 
 private:
     void setupUi();
-    void populateMenus();
     void connectEvents();
 
-    RamStep *_step;
+    RamStep *m_step;
 
-    QComboBox *typeBox;
-    DuQFFolderDisplayWidget *folderWidget;
-    ObjectListEditWidget *usersList;
-    ObjectListEditWidget *applicationList;
-    QMenu *assignUserMenu;
-    QMenu *assignAppMenu;
+    QComboBox *m_typeBox;
+    DuQFFolderDisplayWidget *m_folderWidget;
+    ObjectListEditWidget *m_userList;
+    ObjectListEditWidget *m_applicationList;
 
-    QMap<QString, QList<QMetaObject::Connection>> m_userConnections;
-    QMap<QString, QList<QMetaObject::Connection>> m_applicationConnections;
 };
 
 #endif // STEPEDITWIDGET_H
