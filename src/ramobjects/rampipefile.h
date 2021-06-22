@@ -21,12 +21,12 @@ public:
     explicit RamPipeFile(QString uuid, QObject *parent = nullptr);
     ~RamPipeFile();
 
-    QString name() const;
+    QString name() const override;
 
     RamFileType *fileType() const;
     void setFileType(RamFileType *newFileType);
 
-    void update();
+    void update() override;
 
     const RamProject *project() const;
     void setProject(RamProject *project);
@@ -37,7 +37,7 @@ public slots:
     virtual void edit() override;
 
 private:
-    RamFileType *m_fileType = nullptr;
+    RamFileType *m_fileType;
     RamProject *m_project;
 };
 

@@ -13,7 +13,9 @@ public:
     RamPipe(RamStep *output, RamStep *input, QString uuid = "");
     ~RamPipe();
 
-    void update();
+    QString name() const override;
+
+    void update() override;
 
     RamStep *outputStep() const;
     void setOutputStep(RamStep *outputStep);
@@ -32,6 +34,7 @@ public slots:
 private slots:
     void pipeFileUnassigned(const QModelIndex &parent, int first, int last);
     void pipeFileAssigned(const QModelIndex &parent, int first, int last);
+    void pipeFileUnassigned();
 
 private:
     RamStep *m_outputStep;

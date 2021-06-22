@@ -3,7 +3,7 @@
 #include "ramproject.h"
 
 RamPipe::RamPipe(RamStep *output, RamStep *input, QString uuid):
-    RamObject("","",uuid)
+    RamObject("PIPE","Pipe",uuid)
 {
     m_outputStep = output;
     m_inputStep = input;
@@ -15,6 +15,7 @@ RamPipe::RamPipe(RamStep *output, RamStep *input, QString uuid):
 
     connect(m_pipeFiles, SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(pipeFileAssigned(QModelIndex,int,int)));
     connect(m_pipeFiles, SIGNAL(rowsAboutToBeRemoved(QModelIndex,int,int)), this, SLOT(pipeFileUnassigned(QModelIndex,int,int)));
+    connect(m_pipeFiles, SIGNAL(rowsRemoved(QModelIndex,int,int)), this, SLOT(pipeFileUnassigned()));
 
     this->setParent( this->project() );
 
@@ -24,6 +25,16 @@ RamPipe::RamPipe(RamStep *output, RamStep *input, QString uuid):
 RamPipe::~RamPipe()
 {
     m_dbi->removePipe(m_uuid);
+}
+
+QString RamPipe::name() const
+{
+    QStringList n;
+    for (int i =0; i < m_pipeFiles->count(); i++)
+    {
+        n << m_pipeFiles->at(i)->name();
+    }
+    return n.join("\n");
 }
 
 void RamPipe::update()
@@ -97,8 +108,14 @@ void RamPipe::pipeFileAssigned(const QModelIndex &parent, int first, int last)
 
     for (int i = first; i <= last; i++)
     {
-        RamObject *pfObj = m_pipeFiles->at(i);
-        m_dbi->assignPipeFile(m_uuid, pfObj->uuid());
+        RamPipeFile *pf = qobject_cast<RamPipeFile*>( m_pipeFiles->at(i) );
+        m_dbi->assignPipeFile(m_uuid, pf->uuid());
     }
+    emit changed(this);
+}
+
+void RamPipe::pipeFileUnassigned()
+{
+    emit changed(this);
 }
 

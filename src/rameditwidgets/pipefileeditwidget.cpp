@@ -4,10 +4,8 @@ PipeFileEditWidget::PipeFileEditWidget(RamPipeFile *pipeFile, QWidget *parent):
     ObjectEditWidget(pipeFile, parent)
 {
     setupUi();
-
-    connectEvents();
-
     setObject(pipeFile);
+    connectEvents();
 }
 
 void PipeFileEditWidget::setObject(RamObject *obj)
@@ -28,7 +26,8 @@ void PipeFileEditWidget::setObject(RamObject *obj)
     if (!pipeFile) return;
 
     // Select file type
-    m_fileTypeBox->setObject( pipeFile->fileType() );
+    RamFileType *ft = pipeFile->fileType();
+    if(ft) m_fileTypeBox->setObject( ft );
 
     this->setEnabled(true);
 }
@@ -42,7 +41,7 @@ void PipeFileEditWidget::update()
     updating = true;
 
     RamFileType *ft = qobject_cast<RamFileType*>(m_fileTypeBox->currentObject());
-    m_pipeFile->setFileType( ft );
+    if(ft) m_pipeFile->setFileType( ft );
 
     ObjectEditWidget::update();
 

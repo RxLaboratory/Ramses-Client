@@ -6,6 +6,7 @@
 
 #include "objecteditwidget.h"
 #include "objectlisteditwidget.h"
+#include "ramobjectlistcombobox.h"
 #include "ramses.h"
 
 /**
@@ -24,15 +25,7 @@ protected slots:
 
 private slots:
     void appChanged();
-    // PipeFiles
-    void assignPipeFile();
-    void pipeFileAssigned(RamObject *pipeFileObj);
-    void pipeFileUnassigned(RamObject *pipeFileObj);
-    void newPipeFile(RamObject *pipeFileObj);
-    void pipeFileChanged(RamObject *pipeFileObj);
-    void pipeFileRemoved(RamObject *pipeFileObj);
     void createPipeFile();
-
 
 private:
     RamPipe *_pipe = nullptr;
@@ -41,14 +34,9 @@ private:
     void connectEvents();
     void populateMenus(RamProject *project);
 
-    QComboBox *m_fromBox;
-    QComboBox *m_toBox;
-    ObjectListEditWidget *m_pipeFileList;
-    QMenu *m_assignPipeFileMenu;
-    QAction *m_newPipeFileAction;
-
-    QMap<QString, QList<QMetaObject::Connection>> m_pipeFileConnections;
-    QList<QMetaObject::Connection> m_projectConnections;
+    RamObjectListComboBox *ui_fromBox;
+    RamObjectListComboBox *ui_toBox;
+    ObjectListEditWidget *ui_pipeFileList;
 };
 
 #endif // PIPEEDITWIDGET_H

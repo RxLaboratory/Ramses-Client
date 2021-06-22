@@ -41,7 +41,7 @@ public:
     QString shortName() const;
     void setShortName(const QString &shortName);
 
-    QString name() const;
+    virtual QString name() const;
     void setName(const QString &name);
 
     QString comment() const;

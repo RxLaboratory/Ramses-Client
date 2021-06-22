@@ -9,13 +9,18 @@ RamPipeFile::RamPipeFile(QString shortName, RamProject *project) :
 {
     this->setObjectType(PipeFile);
     m_project = project;
+    m_fileType = nullptr;
     m_dbi->createPipeFile(m_shortName, m_project->uuid(), "", m_uuid, "");
+    this->setObjectName("RamPipeFile " + shortName);
 }
 
 RamPipeFile::RamPipeFile(QString uuid, QObject *parent):
     RamObject(uuid, parent)
 {
     this->setObjectType(PipeFile);
+    m_fileType = nullptr;
+    m_project = nullptr;
+    this->setObjectName("RamPipeFile");
 }
 
 RamPipeFile::~RamPipeFile()
@@ -74,7 +79,7 @@ void RamPipeFile::edit()
     {
         PipeFileEditWidget *w = new PipeFileEditWidget(this);
         setEditWidget(w);
-        m_editReady = true;
+        m_editReady = true;//*/
     }
     showEdit();
 }

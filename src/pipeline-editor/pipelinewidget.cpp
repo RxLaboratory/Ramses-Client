@@ -243,7 +243,7 @@ void PipelineWidget::newStep(const QModelIndex &parent, int first, int last)
 
     for (int i = first; i <= last; i++)
     {
-        RamObject *o = Ramses::instance()->templateSteps()->at(i);
+        RamObject *o = m_project->steps()->at(i);
         newStep(o);
     }
 }
@@ -415,13 +415,7 @@ void PipelineWidget::newPipe(RamObject *p)
     if (!co) return;
 
     // Title
-    QStringList titleList;
-    for (int i =0; i < pipe->pipeFiles()->count(); i++)
-    {
-        RamPipeFile *pipeFile = qobject_cast<RamPipeFile*>( pipe->pipeFiles()->at(i));
-        titleList << pipeFile->name();
-    }
-    co->connector()->setTitle( titleList.join("\n"));
+    co->connector()->setTitle( p->name() );
 
     // Create an edit dockwidget
     ObjectDockWidget *dockWidget = new ObjectDockWidget(pipe);
@@ -523,13 +517,7 @@ void PipelineWidget::pipeChanged(RamObject *p)
             if (inputOk && outputOk) break;
         }
 
-        QStringList titleList;
-        for (int i =0; i < pipe->pipeFiles()->count(); i++)
-        {
-            RamPipeFile *pipeFile = qobject_cast<RamPipeFile*>( pipe->pipeFiles()->at(i));
-            titleList << pipeFile->name();
-        }
-        co->connector()->setTitle( titleList.join("\n"));
+        co->connector()->setTitle( p->name() );
     }
 }
 
@@ -622,7 +610,6 @@ void PipelineWidget::changeProject()
     connect(m_project->steps(), SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(newStep(QModelIndex,int,int)));
     connect(m_project->pipeline(), SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(newPipe(QModelIndex,int,int)));
     connect(m_project->pipeline(), SIGNAL(rowsAboutToBeRemoved(QModelIndex,int,int)), this, SLOT(pipeRemoved(QModelIndex,int,int)));
-    connect(m_project->pipeline(), SIGNAL(dataChanged(QModelIndex,QModelIndex,QVector<int>)), this, SLOT(pipeChanged(QModelIndex,QModelIndex,QVector<int>)));
 
     // Layout
     m_nodeScene->clearSelection();
