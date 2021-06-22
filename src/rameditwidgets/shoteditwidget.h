@@ -15,8 +15,7 @@ class ShotEditWidget : public ObjectEditWidget
     Q_OBJECT
 public:
     ShotEditWidget(QWidget *parent = nullptr);
-
-    void setShot(RamShot *shot);
+    ShotEditWidget(RamShot *shot, QWidget *parent = nullptr);
 
 public slots:
     void setObject(RamObject *obj) Q_DECL_OVERRIDE;
@@ -25,8 +24,6 @@ protected slots:
     void update() Q_DECL_OVERRIDE;
 
 private slots:
-    void changeProject(RamProject *project);
-    void moveShot();
     void framesChanged();
     void secondsChanged();
 
@@ -40,10 +37,6 @@ private:
     QDoubleSpinBox *secondsBox;
     QSpinBox *framesBox;
     RamObjectListComboBox *sequencesBox;
-    StatusHistoryWidget *statusHistoryWidget;
-
-    RamSequence *sequence();
-    RamProject *project();
 };
 
 #endif // SHOTEDITWIDGET_H

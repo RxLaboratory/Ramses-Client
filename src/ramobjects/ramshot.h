@@ -21,7 +21,10 @@ public:
     static RamShot *shot(QString uuid);
 
 public slots:
-    void update();
+    void update() override;
+
+public slots:
+    virtual void edit() override;
 
 private:
     RamSequence *m_sequence;

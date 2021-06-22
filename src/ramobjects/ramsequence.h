@@ -17,7 +17,8 @@ public:
     static RamSequence *sequence(QString uuid);
 
 public slots:
-    void update() Q_DECL_OVERRIDE;
+    void update() override;
+    virtual void edit() override;
 
 private:
     RamProject *m_project;

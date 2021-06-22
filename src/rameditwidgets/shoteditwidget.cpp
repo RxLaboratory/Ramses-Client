@@ -4,15 +4,21 @@ ShotEditWidget::ShotEditWidget(QWidget *parent) :
     ObjectEditWidget(parent)
 {
     setupUi();
-
-    changeProject(Ramses::instance()->currentProject());
-
     connectEvents();
 }
 
-void ShotEditWidget::setShot(RamShot *shot)
+ShotEditWidget::ShotEditWidget(RamShot *shot, QWidget *parent) :
+    ObjectEditWidget(parent)
+{
+    setupUi();
+    connectEvents();
+    setObject(shot);
+}
+
+void ShotEditWidget::setObject(RamObject *obj)
 {
     this->setEnabled(false);
+    RamShot *shot = qobject_cast<RamShot*>(obj);
 
     ObjectEditWidget::setObject(shot);
     _shot = shot;
@@ -27,7 +33,6 @@ void ShotEditWidget::setShot(RamShot *shot)
     secondsBox->setValue(0);
     folderWidget->setPath("");
     sequencesBox->setCurrentIndex(-1);
-    statusHistoryWidget->setItem(shot);
 
     if (!shot) return;
 
@@ -36,15 +41,11 @@ void ShotEditWidget::setShot(RamShot *shot)
     folderWidget->setPath(Ramses::instance()->path(shot));
 
     // Set sequence
+    RamProject *project = shot->project();
+    sequencesBox->setList(project->sequences());
     sequencesBox->setObject( _shot->sequence() );
 
     this->setEnabled(Ramses::instance()->isLead());
-}
-
-void ShotEditWidget::setObject(RamObject *obj)
-{
-    RamShot *shot = qobject_cast<RamShot*>(obj);
-    setShot(shot);
 }
 
 void ShotEditWidget::update()
@@ -56,39 +57,17 @@ void ShotEditWidget::update()
     updating = true;
 
     _shot->setDuration(secondsBox->value());
+    RamSequence *seq = qobject_cast<RamSequence*>( sequencesBox->currentObject() );
+    _shot->setSequence(seq);
 
     ObjectEditWidget::update();
 
     updating = false;
 }
 
-void ShotEditWidget::changeProject(RamProject *project)
-{
-    setShot(nullptr);
-    if (!project)
-    {
-        sequencesBox->setList(nullptr);
-        return;
-    }
-    sequencesBox->setList(project->sequences());
-}
-
-void ShotEditWidget::moveShot()
-{
-    if (!_shot) return;
-    RamProject *proj = project();
-    if (!proj) return;
-    if (sequencesBox->currentIndex() >= 0)
-    {
-        RamSequence *seq = qobject_cast<RamSequence*>( sequencesBox->currentObject() );
-        _shot->setSequence( seq );
-        _shot->update();
-    }
-}
-
 void ShotEditWidget::framesChanged()
 {
-    RamProject *proj = project();
+    RamProject *proj = _shot->project();
     if (!proj) return;
 
     secondsBox->setValue( framesBox->value() / proj->framerate() );
@@ -96,7 +75,7 @@ void ShotEditWidget::framesChanged()
 
 void ShotEditWidget::secondsChanged()
 {
-    RamProject *proj = project();
+    RamProject *proj = _shot->project();
     if (!proj) return;
 
     framesBox->setValue( secondsBox->value() * proj->framerate() );
@@ -130,9 +109,6 @@ void ShotEditWidget::setupUi()
 
     folderWidget = new DuQFFolderDisplayWidget(this);
     mainLayout->insertWidget(1, folderWidget);
-
-    statusHistoryWidget = new StatusHistoryWidget( this );
-    mainLayout->addWidget(statusHistoryWidget);
 }
 
 void ShotEditWidget::connectEvents()
@@ -141,18 +117,5 @@ void ShotEditWidget::connectEvents()
     connect(secondsBox, SIGNAL(editingFinished()), this, SLOT(update()));
     connect(framesBox, SIGNAL(editingFinished()), this, SLOT(framesChanged()));
     connect(framesBox, SIGNAL(editingFinished()), this, SLOT(update()));
-    connect(sequencesBox, SIGNAL(currentIndexChanged(int)), this, SLOT(moveShot()));
-    connect(Ramses::instance(), &Ramses::currentProjectChanged, this, &ShotEditWidget::changeProject);
-}
-
-RamSequence *ShotEditWidget::sequence()
-{
-    if (!_shot) return nullptr;
-    return _shot->sequence();
-}
-
-RamProject *ShotEditWidget::project()
-{
-    if (!_shot) return nullptr;
-    return _shot->project();
+    connect(sequencesBox, SIGNAL(currentIndexChanged(int)), this, SLOT(update()));
 }

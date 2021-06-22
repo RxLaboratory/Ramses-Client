@@ -1,5 +1,6 @@
 #include "ramsequence.h"
 #include "ramproject.h"
+#include "sequenceeditwidget.h"
 
 RamSequence::RamSequence(QString shortName, RamProject *project, QString name, QString uuid):
     RamObject(shortName, name, uuid, project)
@@ -31,4 +32,15 @@ void RamSequence::update()
     if(!m_dirty) return;
     RamObject::update();
     m_dbi->updateSequence(m_uuid, m_shortName, m_name);
+}
+
+void RamSequence::edit()
+{
+    if (!m_editReady)
+    {
+        SequenceEditWidget *w = new SequenceEditWidget(this);
+        setEditWidget(w);
+        m_editReady = true;
+    }
+    showEdit();
 }

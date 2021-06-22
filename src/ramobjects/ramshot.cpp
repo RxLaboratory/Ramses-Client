@@ -1,6 +1,7 @@
 #include "ramshot.h"
 #include "ramsequence.h"
 #include "ramproject.h"
+#include "shoteditwidget.h"
 
 RamShot::RamShot(QString shortName, RamSequence *sequence, QString name, QString uuid):
     RamItem(shortName, sequence->project(), name, uuid)
@@ -68,4 +69,15 @@ void RamShot::update()
         m_dbi->moveShot(m_uuid, m_order);
         m_orderChanged = false;
     }
+}
+
+void RamShot::edit()
+{
+    if (!m_editReady)
+    {
+        ShotEditWidget *w = new ShotEditWidget(this);
+        setEditWidget(w);
+        m_editReady = true;
+    }
+    showEdit();
 }

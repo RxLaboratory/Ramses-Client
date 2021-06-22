@@ -188,7 +188,7 @@ QString RamLoader::gotProject(QJsonObject newP, bool init)
         //gotPipes( newP.value("pipes").toArray(), project);
         gotAssetGroups( newP.value("assetGroups").toArray(), project);
         gotAssets( newP.value("assets").toArray(), project);
-        //gotSequences( newP.value("sequences").toArray(), project);
+        gotSequences( newP.value("sequences").toArray(), project);
         //gotShots( newP.value("shots").toArray(), project);
     }
 

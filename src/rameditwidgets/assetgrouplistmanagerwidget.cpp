@@ -28,6 +28,5 @@ void AssetGroupListManagerWidget::changeProject(RamProject *project)
     // empty list
     this->clear();
     if (!project) return;
-    qDebug() << "Project set to " + project->shortName();
     this->setList( project->assetGroups() );
 }

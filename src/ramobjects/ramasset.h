@@ -22,9 +22,12 @@ public:
     void removeTag(QString tag);
     bool hasTag(QString tag);
 
-    void update();
+    void update() override;
 
     static RamAsset *asset(QString uuid);
+
+public slots:
+    virtual void edit() override;
 
 private:
     QStringList _tags;

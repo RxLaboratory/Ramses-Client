@@ -41,18 +41,18 @@ public:
     void setSearchable(bool searchable = true);
     void setTitle(QString title);
     void select(RamObject *o);
-    void setFilter(RamObject *o);
     QToolButton *addButton() const;
     QString currentFilterUuid() const;
     RamObject *currentFilter() const;
 
+public slots:
+    void setFilter(RamObject *o);
+
 signals:
     void objectSelected(RamObject*);
     void add();
-    void currentFilterChanged(QString);
 
 private slots:
-    void filterChanged(QString filter);
     void removeSelectedObjects();
     void edit(RamObject *obj);
 
@@ -86,6 +86,7 @@ private:
     // Current List
     RamObjectList *m_objectList = nullptr;
     RamObjectList *m_assignList = nullptr;
+    RamObjectList *m_filterList = nullptr;
 
     QList<QMetaObject::Connection> m_listConnections;
 };

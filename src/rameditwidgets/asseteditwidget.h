@@ -15,7 +15,8 @@ class AssetEditWidget : public ObjectEditWidget
     Q_OBJECT
 
 public:
-    explicit AssetEditWidget(QWidget *parent = nullptr);
+    AssetEditWidget(QWidget *parent = nullptr);
+    AssetEditWidget(RamAsset *asset, QWidget *parent = nullptr);
     RamAsset *asset() const;
 
 public slots:

@@ -34,4 +34,5 @@ void AssetListManagerWidget::changeProject(RamProject *project)
 {
     if (!project) return;
     this->setList( project->assets() );
+    m_listEditWidget->setFilterList( project->assetGroups() );
 }

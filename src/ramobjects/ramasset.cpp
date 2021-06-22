@@ -1,5 +1,6 @@
 #include "ramasset.h"
 #include "ramassetgroup.h"
+#include "asseteditwidget.h"
 
 #include "ramproject.h"
 
@@ -90,5 +91,16 @@ void RamAsset::update()
 RamAsset *RamAsset::asset( QString uuid )
 {
     return qobject_cast<RamAsset*>( RamObject::obj(uuid) );
+}
+
+void RamAsset::edit()
+{
+    if (!m_editReady)
+    {
+        AssetEditWidget *w = new AssetEditWidget(this);
+        setEditWidget(w);
+        m_editReady = true;
+    }
+    showEdit();
 }
 

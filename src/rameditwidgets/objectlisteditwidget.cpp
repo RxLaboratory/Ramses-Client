@@ -36,6 +36,7 @@ void ObjectListEditWidget::setList(RamObjectList *objectList)
 void ObjectListEditWidget::setFilterList(RamObjectList *filterList)
 {
     m_filterBox->setList(filterList);
+    m_filterList = filterList;
     if (filterList)
     {
         m_title->hide();
@@ -114,7 +115,7 @@ void ObjectListEditWidget::select(RamObject *o)
 
 void ObjectListEditWidget::setFilter(RamObject *o)
 {
-    // TODO select in the combo box
+    m_filterBox->setObject(o);
     m_listWidget->filter(o);
 }
 
@@ -131,12 +132,6 @@ QString ObjectListEditWidget::currentFilterUuid() const
 RamObject *ObjectListEditWidget::currentFilter() const
 {
     return m_filterBox->currentObject();
-}
-
-void ObjectListEditWidget::filterChanged(QString filter)
-{
-    //m_list->filter( filter );
-    emit currentFilterChanged( filter );
 }
 
 void ObjectListEditWidget::removeSelectedObjects()
@@ -332,7 +327,7 @@ void ObjectListEditWidget::connectEvents()
     connect(m_searchEdit, SIGNAL(changing(QString)), m_listWidget, SLOT(search(QString)));
     connect(m_searchEdit, SIGNAL(changed(QString)), m_listWidget, SLOT(search(QString)));
     // filters
-    connect(m_filterBox,SIGNAL(currentObjectChanged(QString)), this, SLOT(filterChanged(QString)));
+    connect(m_filterBox,SIGNAL(currentObjectChanged(RamObject*)), this, SLOT(setFilter(RamObject*)));
     // edit objects
     connect(m_listWidget, SIGNAL(editObject(RamObject*)), this, SLOT(edit(RamObject*)));
     // Relay list signals
