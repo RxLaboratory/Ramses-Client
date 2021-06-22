@@ -8,6 +8,7 @@ ShotListManagerWidget::ShotListManagerWidget(QWidget *parent):
 {
     changeProject(Ramses::instance()->currentProject());
     connect(Ramses::instance(), &Ramses::currentProjectChanged, this, &ShotListManagerWidget::changeProject);
+    m_listEditWidget->setEditMode(ObjectListEditWidget::RemoveObjects);
 }
 
 void ShotListManagerWidget::createObject()
@@ -26,6 +27,7 @@ void ShotListManagerWidget::createObject()
                 );
 
     project->shots()->append(shot);
+    editObject(shot);
 }
 
 void ShotListManagerWidget::changeProject(RamProject *project)
@@ -33,5 +35,6 @@ void ShotListManagerWidget::changeProject(RamProject *project)
     // empty list
     this->clear();
     if (!project) return;
-    this->setList( project->sequences() );
+    this->setList( project->shots() );
+    m_listEditWidget->setFilterList( project->sequences() );
 }

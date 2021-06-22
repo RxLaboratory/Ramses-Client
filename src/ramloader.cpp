@@ -189,7 +189,7 @@ QString RamLoader::gotProject(QJsonObject newP, bool init)
         gotAssetGroups( newP.value("assetGroups").toArray(), project);
         gotAssets( newP.value("assets").toArray(), project);
         gotSequences( newP.value("sequences").toArray(), project);
-        //gotShots( newP.value("shots").toArray(), project);
+        gotShots( newP.value("shots").toArray(), project);
     }
 
     m_ram->projects()->append(project);

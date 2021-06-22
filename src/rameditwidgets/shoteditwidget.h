@@ -33,10 +33,10 @@ private:
     void setupUi();
     void connectEvents();
 
-    DuQFFolderDisplayWidget *folderWidget;
-    QDoubleSpinBox *secondsBox;
-    QSpinBox *framesBox;
-    RamObjectListComboBox *sequencesBox;
+    DuQFFolderDisplayWidget *ui_folderWidget;
+    QDoubleSpinBox *ui_secondsBox;
+    QSpinBox *ui_framesBox;
+    RamObjectListComboBox *ui_sequencesBox;
 };
 
 #endif // SHOTEDITWIDGET_H
