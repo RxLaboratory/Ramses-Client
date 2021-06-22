@@ -37,10 +37,10 @@ bool RamAssetGroup::isTemplate() const
     return _template;
 }
 
-RamAssetGroup *RamAssetGroup::createFromTemplate(QString projectUuid)
+RamAssetGroup *RamAssetGroup::createFromTemplate(RamProject *project)
 {
     // Create
-    RamAssetGroup *assetGroup = new RamAssetGroup(m_shortName, m_name, projectUuid);
+    RamAssetGroup *assetGroup = new RamAssetGroup(m_shortName, project, m_name);
     return assetGroup;
 }
 

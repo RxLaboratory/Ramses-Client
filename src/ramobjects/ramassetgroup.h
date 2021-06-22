@@ -17,7 +17,7 @@ public:
     ~RamAssetGroup();
 
     bool isTemplate() const;
-    RamAssetGroup *createFromTemplate(QString projectUuid);
+    RamAssetGroup *createFromTemplate(RamProject *project);
 
     RamProject *project() const;
 

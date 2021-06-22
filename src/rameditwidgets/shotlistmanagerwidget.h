@@ -16,8 +16,6 @@ protected slots:
 private slots:
     void changeProject(RamProject *project);
 
-private:
-
 };
 
 #endif // SHOTSMANAGERWIDGET_H
