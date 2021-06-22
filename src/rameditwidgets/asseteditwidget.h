@@ -3,7 +3,6 @@
 
 #include "objecteditwidget.h"
 #include "ramses.h"
-#include "statushistorywidget.h"
 #include "ramobjectlistcombobox.h"
 #include "duqf-widgets/duqffolderdisplaywidget.h"
 
@@ -20,10 +19,10 @@ public:
     RamAsset *asset() const;
 
 public slots:
-    void setObject(RamObject *obj) Q_DECL_OVERRIDE;
+    void setObject(RamObject *obj) override;
 
 protected slots:
-    void update() Q_DECL_OVERRIDE;
+    void update() override;
 
 private:
     RamAsset *_asset = nullptr;

@@ -15,11 +15,11 @@ public:
     const RamStep::Type &productionType() const;
 
     // MODEL REIMPLEMENTATION
-    int columnCount(const QModelIndex &parent = QModelIndex()) const Q_DECL_OVERRIDE;
-    QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const Q_DECL_OVERRIDE;
+    int columnCount(const QModelIndex &parent = QModelIndex()) const override;
+    QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
 
     // MODEL EDITING REIMPLEMENTATION
-    virtual void insertObject(int i, RamObject *obj) Q_DECL_OVERRIDE; // Insert Row
+    virtual void insertObject(int i, RamObject *obj) override; // Insert Row
 
 private slots:
     // TODO header data on step insert and change

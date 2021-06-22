@@ -90,6 +90,7 @@ private:
     QLabel *title;
     QMenu *helpMenu;
     ProgressPage *progressPage;
+    ProjectEditWidget *ui_currentProjectSettings;
 
     QMenu *userMenu;
     QToolButton *userButton;
@@ -138,14 +139,15 @@ private slots:
     void loggedIn();
     void loggedOut();
     void currentUserChanged();
+    void currentProjectChanged(RamProject *project);
     void freezeUI(bool f = true);
     void dbiConnectionStatusChanged(NetworkUtils::NetworkStatus s);
 
 protected:
-    void closeEvent(QCloseEvent *event) Q_DECL_OVERRIDE;
-    void keyPressEvent(QKeyEvent *key) Q_DECL_OVERRIDE;
-    void keyReleaseEvent(QKeyEvent *key) Q_DECL_OVERRIDE;
-    bool eventFilter(QObject *obj, QEvent *event) Q_DECL_OVERRIDE;
+    void closeEvent(QCloseEvent *event) override;
+    void keyPressEvent(QKeyEvent *key) override;
+    void keyReleaseEvent(QKeyEvent *key) override;
+    bool eventFilter(QObject *obj, QEvent *event) override;
 
 };
 #endif // MAINWINDOW_H

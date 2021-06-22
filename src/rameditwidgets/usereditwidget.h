@@ -19,14 +19,14 @@ public:
     RamUser *user() const;
 
 public slots:
-    void setObject(RamObject *obj) Q_DECL_OVERRIDE;
+    void setObject(RamObject *obj) override;
 
 protected slots:
-    void update() Q_DECL_OVERRIDE;
+    void update() override;
 
 private slots:
     void changePassword();
-    bool checkInput() Q_DECL_OVERRIDE;
+    bool checkInput() override;
     void updateFolderLabel(QString path);
 
 private:

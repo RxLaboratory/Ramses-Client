@@ -17,10 +17,10 @@ public:
     PipeEditWidget(RamPipe *pipe = nullptr, QWidget *parent = nullptr);
 
 public slots:
-    void setObject(RamObject *pipeObj) Q_DECL_OVERRIDE;
+    void setObject(RamObject *pipeObj) override;
 
 protected slots:
-    void update() Q_DECL_OVERRIDE;
+    void update() override;
 
 private slots:
     void appChanged();

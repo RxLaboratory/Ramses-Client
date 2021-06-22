@@ -133,8 +133,8 @@ SOURCES += \
     rameditwidgets/shoteditwidget.cpp \
     smallwidgets/statebox.cpp \
     rameditwidgets/stateeditwidget.cpp \
-    rameditwidgets/statuseditwidget.cpp \
-    rameditwidgets/statushistorywidget.cpp \
+    # rameditwidgets/statuseditwidget.cpp \
+    # rameditwidgets/statushistorywidget.cpp \
     rameditwidgets/stepeditwidget.cpp \
     rameditwidgets/templateassetgroupeditwidget.cpp \
     rameditwidgets/templatestepeditwidget.cpp \
@@ -253,8 +253,8 @@ HEADERS += \
     rameditwidgets/shoteditwidget.h \
     smallwidgets/statebox.h \
     rameditwidgets/stateeditwidget.h \
-    rameditwidgets/statuseditwidget.h \
-    rameditwidgets/statushistorywidget.h \
+    # rameditwidgets/statuseditwidget.h \
+    # rameditwidgets/statushistorywidget.h \
     rameditwidgets/stepeditwidget.h \
     rameditwidgets/templateassetgroupeditwidget.h \
     rameditwidgets/templatestepeditwidget.h \
@@ -269,8 +269,6 @@ HEADERS += \
     #pipeline-editor/stepnode.h \
 
 FORMS += \
-    rameditwidgets/asseteditwidget.ui \
-    rameditwidgets/assetgroupeditwidget.ui \
     settingswidgets/daemonsettingswidget.ui \
     duqf-widgets/aboutdialog.ui \
     duqf-widgets/appearancesettingswidget.ui \
@@ -280,10 +278,7 @@ FORMS += \
     loginpage.ui \
     mainwindow.ui \
     pipeline-editor/pipelinewidget.ui \
-    rameditwidgets/projecteditwidget.ui \
     settingswidgets/serversettingswidget.ui \
-    rameditwidgets/stepeditwidget.ui \
-    rameditwidgets/templateassetgroupeditwidget.ui \
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

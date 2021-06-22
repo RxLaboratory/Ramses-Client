@@ -5,7 +5,6 @@
 
 //#include "duqf-widgets/duqflistwidget.h"
 #include "ramitem.h"
-#include "ramstatuswidget.h"
 #include "statuseditwidget.h"
 #include "objectlisteditwidget.h"
 

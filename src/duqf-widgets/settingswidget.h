@@ -26,8 +26,8 @@ signals:
     void reinitRequested();
     void closeRequested();
 protected:
-    void showEvent(QShowEvent *event) Q_DECL_OVERRIDE;
-    void hideEvent(QHideEvent *event) Q_DECL_OVERRIDE;
+    void showEvent(QShowEvent *event) override;
+    void hideEvent(QHideEvent *event) override;
 private slots:
     void mainList_currentRowChanged(int currentRow);
 private:

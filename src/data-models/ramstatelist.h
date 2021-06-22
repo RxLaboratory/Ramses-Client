@@ -10,7 +10,7 @@ class RamStateList : public RamObjectList
 public:
     explicit RamStateList(QObject *parent = nullptr);
 
-    virtual void sort(int column = 0, Qt::SortOrder order = Qt::AscendingOrder) Q_DECL_OVERRIDE;
+    virtual void sort(int column = 0, Qt::SortOrder order = Qt::AscendingOrder) override;
 };
 
 bool stateSorter(RamObject *a, RamObject *b);

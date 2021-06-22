@@ -41,7 +41,7 @@ protected:
 
 protected slots:
     // Relay to the objectSelected signal
-    virtual void currentChanged(const QModelIndex &current, const QModelIndex &previous) Q_DECL_OVERRIDE;
+    virtual void currentChanged(const QModelIndex &current, const QModelIndex &previous) override;
 
 private:
     void setupUi();

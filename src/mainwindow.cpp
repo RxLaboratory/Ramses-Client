@@ -118,6 +118,19 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     projectSettingsPage->showReinitButton(false);
     mainStack->addWidget(projectSettingsPage);
     qDebug() << "> Project";
+    // A better layout for project settings
+    QWidget *pSettingsWidget = new QWidget(this);
+    QHBoxLayout *pSettingsLayout = new QHBoxLayout(pSettingsWidget);
+    pSettingsLayout->setContentsMargins(3,3,3,3);
+    pSettingsLayout->addStretch();
+    ui_currentProjectSettings = new ProjectEditWidget(this);
+    pSettingsLayout->addWidget(ui_currentProjectSettings);
+    pSettingsLayout->addStretch();
+    pSettingsLayout->setStretch(0, 20);
+    pSettingsLayout->setStretch(1, 80);
+    pSettingsLayout->setStretch(2, 20);
+    projectSettingsPage->addPage( pSettingsWidget, "Settings", QIcon(":/icons/projects"));
+    qDebug() << "  > project settings ok";
     projectSettingsPage->addPage(new StepListManagerWidget(this), "Steps", QIcon(":/icons/steps"));
     qDebug() << "  > steps ok";
     projectSettingsPage->addPage(new PipeFileListManagerWidget(this), "Pipe Types", QIcon(":/icons/pipe-files"));
@@ -184,6 +197,7 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     connect(Daemon::instance(), &Daemon::raise, this, &MainWindow::show);
     connect(Ramses::instance(),&Ramses::loggedIn, this, &MainWindow::loggedIn);
     connect(Ramses::instance(),&Ramses::loggedOut, this, &MainWindow::loggedOut);
+    connect(Ramses::instance(), SIGNAL(currentProjectChanged(RamProject*)), this, SLOT(currentProjectChanged(RamProject*)));
     connect(DBInterface::instance(),&DBInterface::data, RamLoader::instance(), &RamLoader::newData );
     connect(DBInterface::instance(),&DBInterface::connectionStatusChanged, this, &MainWindow::dbiConnectionStatusChanged);
 
@@ -654,6 +668,11 @@ void MainWindow::currentUserChanged()
     {
         userButton->setIcon(QIcon(":/icons/user"));
     }
+}
+
+void MainWindow::currentProjectChanged(RamProject *project)
+{
+    ui_currentProjectSettings->setObject(project);
 }
 
 void MainWindow::freezeUI(bool f)

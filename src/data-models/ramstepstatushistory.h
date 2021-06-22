@@ -13,7 +13,7 @@ public:
     RamStep *step() const;
 
     // MODEL REIMPLEMENTATION
-    virtual void sort(int column = 0, Qt::SortOrder order = Qt::AscendingOrder) Q_DECL_OVERRIDE;
+    virtual void sort(int column = 0, Qt::SortOrder order = Qt::AscendingOrder) override;
 
 private:
     RamStep *m_step;

@@ -11,7 +11,7 @@ public:
     PipeFileListManagerWidget(QWidget *parent = nullptr);
 
 protected slots:
-    void createObject() Q_DECL_OVERRIDE;
+    void createObject() override;
 
 private slots:
     void changeProject(RamProject *project);

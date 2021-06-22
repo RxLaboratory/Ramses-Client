@@ -19,7 +19,7 @@ public:
     void editObject(RamObject *o);
 
 protected:
-    void showEvent(QShowEvent *event) Q_DECL_OVERRIDE;
+    void showEvent(QShowEvent *event) override;
     ObjectListEditWidget *m_listEditWidget;
 
 protected slots:

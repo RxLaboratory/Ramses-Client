@@ -12,7 +12,7 @@ class RamLoader : public QThread
 public:
     static RamLoader *instance();
 
-    void run() Q_DECL_OVERRIDE;
+    void run() override;
 
 public slots:
     void newData(QJsonObject data);

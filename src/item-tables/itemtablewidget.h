@@ -5,7 +5,6 @@
 #include <QHeaderView>
 #include <QMouseEvent>
 
-#include "ramobjectwidget.h"
 #include "data-models/ramitemtable.h"
 
 class ItemTableWidget : public QTableWidget
