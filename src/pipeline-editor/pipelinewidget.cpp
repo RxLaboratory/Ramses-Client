@@ -237,6 +237,17 @@ void PipelineWidget::newStep(RamObject *obj)
     connect(stepNode, &DuQFNode::moved, this, &PipelineWidget::nodeMoved);
 }
 
+void PipelineWidget::newStep(const QModelIndex &parent, int first, int last)
+{
+    Q_UNUSED(parent)
+
+    for (int i = first; i <= last; i++)
+    {
+        RamObject *o = Ramses::instance()->templateSteps()->at(i);
+        newStep(o);
+    }
+}
+
 void PipelineWidget::nodeMoved(QPointF pos)
 {
     ObjectNode *node = (ObjectNode*)sender();
@@ -430,6 +441,17 @@ void PipelineWidget::newPipe(RamObject *p)
     m_pipeConnections[pipe->uuid()] = co;
 }
 
+void PipelineWidget::newPipe(const QModelIndex &parent, int first, int last)
+{
+    Q_UNUSED(parent)
+
+    for (int i = first; i <= last; i++)
+    {
+        RamObject *o = Ramses::instance()->templateSteps()->at(i);
+        newPipe(o);
+    }
+}
+
 void PipelineWidget::stepsConnected(DuQFConnection *co)
 {
     RamProject *project = Ramses::instance()->currentProject();
@@ -511,19 +533,25 @@ void PipelineWidget::pipeChanged(RamObject *p)
     }
 }
 
-void PipelineWidget::pipeRemoved(RamObject *p)
+void PipelineWidget::pipeRemoved(const QModelIndex &parent, int first, int last)
 {
-    if (m_pipeObjectConnections.contains(p->uuid()))
+    Q_UNUSED(parent)
+
+    for (int i = first; i <= last; i++)
     {
-        QList<QMetaObject::Connection> c = m_pipeObjectConnections.take(p->uuid());
-        while(!c.isEmpty()) disconnect(c.takeLast());
-    }
-    if (m_pipeConnections.contains(p->uuid()))
-    {
-        //remove connection
-        m_pipeConnections.value(p->uuid())->remove();
-        //and remove its pointer from the list
-        m_pipeConnections.remove(p->uuid());
+        RamObject *p = m_project->pipeline()->at(i);
+        if (m_pipeObjectConnections.contains(p->uuid()))
+        {
+            QList<QMetaObject::Connection> c = m_pipeObjectConnections.take(p->uuid());
+            while(!c.isEmpty()) disconnect(c.takeLast());
+        }
+        if (m_pipeConnections.contains(p->uuid()))
+        {
+            //remove connection
+            m_pipeConnections.value(p->uuid())->remove();
+            //and remove its pointer from the list
+            m_pipeConnections.remove(p->uuid());
+        }
     }
 }
 
@@ -591,7 +619,10 @@ void PipelineWidget::changeProject()
         newPipe( m_project->pipeline()->at(i) );
     }
 
-    // TODO Connect Steps & Pipeline
+    connect(m_project->steps(), SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(newStep(QModelIndex,int,int)));
+    connect(m_project->pipeline(), SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(newPipe(QModelIndex,int,int)));
+    connect(m_project->pipeline(), SIGNAL(rowsAboutToBeRemoved(QModelIndex,int,int)), this, SLOT(pipeRemoved(QModelIndex,int,int)));
+    connect(m_project->pipeline(), SIGNAL(dataChanged(QModelIndex,QModelIndex,QVector<int>)), this, SLOT(pipeChanged(QModelIndex,QModelIndex,QVector<int>)));
 
     // Layout
     m_nodeScene->clearSelection();

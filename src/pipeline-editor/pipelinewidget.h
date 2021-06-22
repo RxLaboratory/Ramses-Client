@@ -28,28 +28,35 @@ public:
 signals:
     void closeRequested();
 private slots:
-    void setProject(RamProject *project);
-    void newStep(RamObject *obj);
     void nodeMoved(QPointF pos);
     void setSnapEnabled(bool enabled);
     void setGridSize(int size);
+
     void userChanged(RamUser *u);
+    void setProject(RamProject *project);
+
     void createStep();
 
     void templateStepInserted(const QModelIndex &parent, int first, int last);
     void newTemplateStep(RamObject *obj);
     void templateStepRemoved(const QModelIndex &parent, int first, int last);
     void templateStepChanged();
-
     void assignStep();
+
+    void newStep(RamObject *obj);
+    void newStep(const QModelIndex &parent, int first, int last);
+
     void newPipe(RamObject *p);
+    void newPipe(const QModelIndex &parent, int first, int last);
+    void pipeRemoved(const QModelIndex &parent, int first, int last);
+    void pipeChanged(RamObject *p);
+
     void stepsConnected(DuQFConnection *co);
     void connectionRemoved(DuQFConnection *co);
-    void pipeChanged(RamObject *p);
-    void pipeRemoved(RamObject *p);
 protected:
     void showEvent(QShowEvent *event) override;
     void hideEvent(QHideEvent *event) override;
+
 private:
     void changeProject();
 
