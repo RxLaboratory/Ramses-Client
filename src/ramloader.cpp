@@ -183,11 +183,13 @@ QString RamLoader::gotProject(QJsonObject newP, bool init)
     if (!init)
     {
         m_pm->setMaximum(7);
-        gotSteps( newP.value("steps").toArray(), project);
-        gotAssetGroups( newP.value("assetGroups").toArray(), project);
-        //gotSequences( newP.value("sequences").toArray(), project);
+        gotSteps( newP.value("steps").toArray(), project);        
         gotPipeFiles( newP.value("pipeFiles").toArray(), project );
         //gotPipes( newP.value("pipes").toArray(), project);
+        gotAssetGroups( newP.value("assetGroups").toArray(), project);
+        gotAssets( newP.value("assets").toArray(), project);
+        //gotSequences( newP.value("sequences").toArray(), project);
+        //gotShots( newP.value("shots").toArray(), project);
     }
 
     m_ram->projects()->append(project);
@@ -553,14 +555,12 @@ QString RamLoader::gotAssetGroup(QJsonObject newAG, RamProject *project)
                 uuid
                 );
 
-    gotAssets( newAG.value("assets").toArray(), assetGroup, project);
-
     project->assetGroups()->append(assetGroup);
 
     return uuid;
 }
 
-void RamLoader::gotAssets(QJsonArray assets, RamAssetGroup *assetGroup, RamProject *project)
+void RamLoader::gotAssets(QJsonArray assets, RamProject *project)
 {
     DBISuspender s;
 
@@ -570,9 +570,11 @@ void RamLoader::gotAssets(QJsonArray assets, RamAssetGroup *assetGroup, RamProje
 
     QStringList uuids;
 
+    qDebug() << assets;
+
     // Update assets
     for (int j = 0; j < assets.count(); j++)
-        uuids << gotAsset( assets.at(j).toObject(), assetGroup, project );
+        uuids << gotAsset( assets.at(j).toObject(), project );
 
     // Remove deleted assets
     m_pm->setText("Cleaning assets...");
@@ -590,23 +592,36 @@ void RamLoader::gotAssets(QJsonArray assets, RamAssetGroup *assetGroup, RamProje
     project->assets()->sort();
 }
 
-QString RamLoader::gotAsset(QJsonObject newA, RamAssetGroup *assetGroup, RamProject *project)
+QString RamLoader::gotAsset(QJsonObject newA, RamProject *project)
 {
     DBISuspender s;
     QString uuid = newA.value("uuid").toString();
 
+    qDebug() << newA;
+
+    RamAssetGroup *ag = RamAssetGroup::assetGroup( newA.value("assetGroupUuid").toString() );
+    if (!ag) return "";
+
+    QString shortName = newA.value("shortName").toString();
+    QString name = newA.value("name").toString();
+
     RamAsset *asset = RamAsset::asset( uuid );
     if (!asset) asset = new RamAsset(
-                newA.value("shortName").toString(),
-                assetGroup,
-                newA.value("name").toString(),
+                shortName,
+                ag,
+                name,
                 uuid
                 );
 
+    asset->setShortName(shortName);
+    asset->setName(name);
+    asset->setAssetGroup(ag);
     asset->setTags( newA.value("tags").toString());
     gotStatusHistory( newA.value("statusHistory").toArray(), asset);
 
     project->assets()->append(asset);
+
+    qDebug() << ag->name() + " - " + asset->name();
 
     return uuid;
 }
@@ -654,15 +669,12 @@ QString RamLoader::gotSequence(QJsonObject newS, RamProject *project)
                 uuid
                 );
 
-    gotShots( newS.value("shots").toArray(), sequence, project);
-
-
     project->sequences()->append(sequence);
 
     return uuid;
 }
 
-void RamLoader::gotShots(QJsonArray shots, RamSequence *sequence, RamProject *project)
+void RamLoader::gotShots(QJsonArray shots, RamProject *project)
 {
     DBISuspender s;
 
@@ -673,7 +685,7 @@ void RamLoader::gotShots(QJsonArray shots, RamSequence *sequence, RamProject *pr
     QStringList uuids;
     // Update shots
     for (int j = 0; j < shots.count(); j++)
-        uuids << gotShot( shots.at(j).toObject(), sequence, project );
+        uuids << gotShot( shots.at(j).toObject(), project );
 
     // Remove deleted shots
     m_pm->setText("Cleaning shots...");
@@ -689,19 +701,27 @@ void RamLoader::gotShots(QJsonArray shots, RamSequence *sequence, RamProject *pr
     project->shots()->sort();
 }
 
-QString RamLoader::gotShot(QJsonObject newS, RamSequence *sequence, RamProject *project)
+QString RamLoader::gotShot(QJsonObject newS, RamProject *project)
 {
     DBISuspender s;
     QString uuid = newS.value("uuid").toString();
 
+    RamSequence *seq = RamSequence::sequence( newS.value("sequenceUuid").toString() );
+    if (!seq) return "";
+
+    QString shortName = newS.value("shortName").toString();
+    QString name = newS.value("name").toString();
+
     RamShot *shot = RamShot::shot( uuid );
     if (!shot) shot = new RamShot(
-                newS.value("shortName").toString(),
-                sequence,
-                newS.value("name").toString(),
+                shortName,
+                seq,
+                name,
                 uuid
                 );
-
+    shot->setShortName(shortName);
+    shot->setName(name);
+    shot->setSequence(seq);
     shot->setDuration( newS.value("duration").toDouble() );
     shot->setOrder( newS.value("order").toInt() );
     gotStatusHistory( newS.value("statusHistory").toArray(), shot);

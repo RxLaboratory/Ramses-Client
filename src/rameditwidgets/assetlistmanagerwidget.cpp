@@ -8,6 +8,7 @@ AssetListManagerWidget::AssetListManagerWidget(QWidget *parent):
 {
     changeProject(Ramses::instance()->currentProject());
     connect(Ramses::instance(), &Ramses::currentProjectChanged, this, &AssetListManagerWidget::changeProject);
+    m_listEditWidget->setEditMode(ObjectListEditWidget::RemoveObjects);
 }
 
 void AssetListManagerWidget::createObject()
@@ -26,12 +27,11 @@ void AssetListManagerWidget::createObject()
                 );
 
     project->assets()->append(asset);
+    editObject(asset);
 }
 
 void AssetListManagerWidget::changeProject(RamProject *project)
 {
-    // empty list
-    this->clear();
     if (!project) return;
-    this->setList( project->assetGroups() );
+    this->setList( project->assets() );
 }

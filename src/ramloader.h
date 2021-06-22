@@ -57,14 +57,14 @@ private:
     void gotAssetGroups(QJsonArray assetGroups, RamProject *project);
     QString gotAssetGroup(QJsonObject newAG, RamProject *project);
     // assets
-    void gotAssets(QJsonArray assets, RamAssetGroup *assetGroup, RamProject *project);
-    QString gotAsset(QJsonObject newA, RamAssetGroup *assetGroup, RamProject *project);
+    void gotAssets(QJsonArray assets, RamProject *project);
+    QString gotAsset(QJsonObject newA, RamProject *project);
     // sequences
     void gotSequences(QJsonArray sequences, RamProject *project);
     QString gotSequence(QJsonObject newS, RamProject *project);
     // shots
-    void gotShots(QJsonArray shots, RamSequence *sequence, RamProject *project);
-    QString gotShot(QJsonObject newS, RamSequence *sequence, RamProject *project);
+    void gotShots(QJsonArray shots, RamProject *project);
+    QString gotShot(QJsonObject newS, RamProject *project);
     // status
     void gotStatusHistory(QJsonArray statusHistory, RamItem *item);
     QString gotStatus(QJsonObject newS, RamItem *item);
