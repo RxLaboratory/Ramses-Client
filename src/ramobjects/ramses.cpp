@@ -35,9 +35,6 @@ Ramses::Ramses(QObject *parent) : QObject(parent)
 
     m_connected = false;
 
-    m_userSettings = new QSettings(QSettings::IniFormat, QSettings::UserScope, STR_COMPANYNAME, STR_INTERNALNAME);
-    m_userSettings->beginGroup("ramses");
-
     connect( (DuApplication *)qApp, &DuApplication::idle, this, &Ramses::refresh);
     connect( m_dbi, &DBInterface::connectionStatusChanged, this, &Ramses::dbiConnectionStatusChanged);
 
@@ -379,13 +376,6 @@ void Ramses::setCurrentUser(RamUser *u)
     if (u)
     {
         m_connected = true;
-
-        // Set settings
-        m_userSettings->endGroup();
-        delete m_userSettings;
-        m_userSettings = new QSettings(Ramses::instance()->currentUserSettingsFile(), QSettings::IniFormat, this);
-        m_userSettings->beginGroup("ramses");
-
         emit loggedIn(m_currentUser);
     }
     else
@@ -408,7 +398,9 @@ RamProject *Ramses::currentProject() const
 
 void Ramses::init()
 {
-    setCurrentProject(m_userSettings->value("currentProject", "").toString());
+    if(!m_currentUser) return;
+    QSettings *uSettings = m_currentUser->userSettings();
+    setCurrentProject(uSettings->value("ramses/currentProject", "").toString());
 }
 
 void Ramses::setCurrentProject(RamProject *currentProject)
@@ -424,7 +416,12 @@ void Ramses::projectReady(QString uuid)
     if (currentProject->is( m_currentProject )) return;
 
     m_currentProject = currentProject;
-    m_userSettings->setValue("currentProject", m_currentProject->uuid() );
+    if(m_currentUser)
+    {
+        QSettings *uSettings = m_currentUser->userSettings();
+        uSettings->setValue("ramses/currentProject", m_currentProject->uuid() );
+    }
+
     qDebug() << "Setting current project to: " + m_currentProject->shortName();
     emit currentProjectChanged(m_currentProject);
 }
@@ -480,13 +477,6 @@ bool Ramses::isLead()
 {
     if (!m_currentUser) return false;
     return m_currentUser->role() >= RamUser::Lead;
-}
-
-QString Ramses::currentUserSettingsFile()
-{
-    QString settingsPath = currentUserConfigPath();
-    if (settingsPath == "") return "";
-    return settingsPath + "/" + "ramses.ini";
 }
 
 RamState *Ramses::noState()

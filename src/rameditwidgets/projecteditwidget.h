@@ -3,6 +3,7 @@
 
 #include <QSpinBox>
 #include <QDoubleSpinBox>
+#include <QDateTimeEdit>
 
 #include "objecteditwidget.h"
 #include "ramses.h"
@@ -28,6 +29,7 @@ protected slots:
 
 private slots:
     void updateFolderLabel(QString path);
+    void currentUserChanged(RamUser *user);
 
 private:
     RamProject *_project;
@@ -35,10 +37,11 @@ private:
     void setupUi();
     void connectEvents();
 
-    DuQFFolderSelectorWidget *folderSelector;
-    QLabel *folderLabel;
-    ResolutionWidget *resolutionWidget;
-    FramerateWidget *framerateWidget;
+    DuQFFolderSelectorWidget *ui_folderSelector;
+    QLabel *ui_folderLabel;
+    ResolutionWidget *ui_resolutionWidget;
+    FramerateWidget *ui_framerateWidget;
+    QDateTimeEdit *ui_deadlineEdit;
 };
 
 #endif // PROJECTEDITWIDGET_H

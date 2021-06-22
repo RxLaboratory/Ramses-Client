@@ -1,6 +1,8 @@
 #ifndef RAMUSER_H
 #define RAMUSER_H
 
+#include <QStringBuilder>
+
 #include "ramobject.h"
 
 class RamUser : public RamObject
@@ -28,12 +30,15 @@ public:
 
     static RamUser *user(QString uuid);
 
+    QSettings *userSettings() const;
+
 public slots:
     virtual void edit() override;
 
 private:
-    UserRole _role;
-    QString _folderPath;
+    UserRole m_role;
+    QString m_folderPath;
+    QSettings *m_userSettings;
 };
 
 #endif // RAMUSER_H

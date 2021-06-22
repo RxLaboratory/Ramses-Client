@@ -87,7 +87,6 @@ public:
     bool isAdmin();
     bool isProjectAdmin();
     bool isLead();
-    QString currentUserSettingsFile();
     // States
     RamState *noState();
     RamState *todoState();
@@ -136,7 +135,6 @@ private:
     explicit Ramses(QObject *parent = nullptr);
 
     QSettings m_settings;
-    QSettings *m_userSettings;
 
     DBInterface *m_dbi;
 
