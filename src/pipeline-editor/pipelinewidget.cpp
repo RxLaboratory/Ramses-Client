@@ -195,7 +195,7 @@ PipelineWidget::PipelineWidget(QWidget *parent) :
     // Ramses connections
     connect(Ramses::instance()->templateSteps(), SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(templateStepInserted(QModelIndex,int,int)));
     connect(Ramses::instance()->templateSteps(), SIGNAL(rowsAboutToBeRemoved(QModelIndex,int,int)), this, SLOT(templateStepRemoved(QModelIndex,int,int)));
-    connect(Ramses::instance(), &Ramses::currentProjectChanged, this, &PipelineWidget::setProject);
+    connect(Ramses::instance(), SIGNAL(currentProjectChanged(RamProject*)), this, SLOT(setProject(RamProject*)));
     connect(Ramses::instance(), &Ramses::loggedIn, this, &PipelineWidget::userChanged);
 }
 

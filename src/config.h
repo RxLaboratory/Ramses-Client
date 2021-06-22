@@ -5,10 +5,10 @@
 //#define SHOWDATA
 
 // Debug object info / connections in several places (especially removal)
-//#define DUMP_OBJECT_DEBUG
+#define DUMP_OBJECT_DEBUG
 
 // Deactivate pipeline editor
-//#define DEACTIVATE_PIPELINE
+#define DEACTIVATE_PIPELINE
 
 // Deactivate Shots Table
 #define DEACTIVATE_SHOTSTABLE

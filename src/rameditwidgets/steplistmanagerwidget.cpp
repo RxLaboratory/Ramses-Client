@@ -7,7 +7,7 @@ ObjectListManagerWidget(
     parent )
 {
     changeProject(Ramses::instance()->currentProject());
-    connect(Ramses::instance(), &Ramses::currentProjectChanged, this, &StepListManagerWidget::changeProject);
+    connect(Ramses::instance(), SIGNAL(currentProjectChanged(RamProject*)), this, SLOT(changeProject(RamProject*)));
     m_listEditWidget->setEditMode(ObjectListEditWidget::RemoveObjects);
 
     // Create from template actions
@@ -46,7 +46,7 @@ void StepListManagerWidget::createObject()
 void StepListManagerWidget::changeProject(RamProject *project)
 {
     // empty list
-    this->clear();
+    this->setList(nullptr);
     if (!project) return;
     this->setList( project->steps() );
 }

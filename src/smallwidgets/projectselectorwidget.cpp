@@ -7,13 +7,14 @@ ProjectSelectorWidget::ProjectSelectorWidget(QWidget *parent):
 {
     this->setMinimumWidth(200);
 
-    connect(this, SIGNAL(currentIndexChanged(int)), this, SLOT(setCurrentProject(int)));
-    connect(Ramses::instance(), &Ramses::currentProjectChanged, this, &ProjectSelectorWidget::currentProjectChanged);
+    connect(this, SIGNAL(currentObjectChanged(RamObject*)), this, SLOT(setCurrentProject(RamObject*)));
+    connect(Ramses::instance(), SIGNAL(currentProjectChanged(RamProject*)), this, SLOT(currentProjectChanged(RamProject*)));
 }
 
-void ProjectSelectorWidget::setCurrentProject(int index)
+void ProjectSelectorWidget::setCurrentProject(RamObject *projObj)
 {
-    Ramses::instance()->setCurrentProject( this->itemData(index).toString() );
+    RamProject *proj = qobject_cast<RamProject*>( projObj );
+    Ramses::instance()->setCurrentProject( proj );
 }
 
 void ProjectSelectorWidget::currentProjectChanged(RamProject *p)
@@ -26,11 +27,5 @@ void ProjectSelectorWidget::currentProjectChanged(RamProject *p)
         return;
     }
 
-    for (int i = this->count() - 1; i >= 0; i--)
-    {
-        if (this->itemData(i).toString() == p->uuid())
-        {
-            this->setCurrentIndex(i);
-        }
-    }
+    setObject(p);
 }

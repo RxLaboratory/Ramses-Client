@@ -405,6 +405,7 @@ void Ramses::init()
 
 void Ramses::setCurrentProject(RamProject *currentProject)
 {
+    qDebug() << "Setting project: Database call";
     if ( currentProject ) m_dbi->getProject(currentProject->uuid());
 }
 
@@ -423,6 +424,9 @@ void Ramses::projectReady(QString uuid)
     }
 
     qDebug() << "Setting current project to: " + m_currentProject->shortName();
+#ifdef DUMP_OBJECT_DEBUG
+    dumpObjectInfo();
+#endif
     emit currentProjectChanged(m_currentProject);
 }
 

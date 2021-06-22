@@ -114,7 +114,8 @@ void RamObjectListWidget::select(RamObject *o)
 
 void RamObjectListWidget::filter(RamObject *o)
 {
-    m_objectList->setFilterUuid(o->uuid());
+    if (!o) m_objectList->setFilterUuid("");
+    else m_objectList->setFilterUuid(o->uuid());
 }
 
 void RamObjectListWidget::setupUi()

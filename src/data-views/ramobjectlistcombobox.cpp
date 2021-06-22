@@ -71,6 +71,16 @@ void RamObjectListComboBox::setObject(RamObject *obj)
 void RamObjectListComboBox::currentObjectChanged(int i)
 {
     Q_UNUSED(i)
+    if (i < 0)
+    {
+#ifdef DUMP_OBJECT_DEBUG
+        dumpObjectInfo();
+#endif
+        emit currentObjectChanged( nullptr );
+        emit currentObjectChanged( "" );
+        return;
+    }
+
     emit currentObjectChanged( currentObject() );
     emit currentObjectChanged( currentUuid() );
 }

@@ -7,7 +7,7 @@ PipeFileListManagerWidget::PipeFileListManagerWidget(QWidget *parent):
         parent)
 {
     changeProject(Ramses::instance()->currentProject());
-    connect(Ramses::instance(), &Ramses::currentProjectChanged, this, &PipeFileListManagerWidget::changeProject);
+    connect(Ramses::instance(), SIGNAL(currentProjectChanged(RamProject*)), this, SLOT(changeProject(RamProject*)));
 }
 
 void PipeFileListManagerWidget::createObject()

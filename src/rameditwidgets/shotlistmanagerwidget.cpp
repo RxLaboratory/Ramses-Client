@@ -7,7 +7,7 @@ ShotListManagerWidget::ShotListManagerWidget(QWidget *parent):
         parent)
 {
     changeProject(Ramses::instance()->currentProject());
-    connect(Ramses::instance(), &Ramses::currentProjectChanged, this, &ShotListManagerWidget::changeProject);
+    connect(Ramses::instance(), SIGNAL(currentProjectChanged(RamProject*)), this, SLOT(changeProject(RamProject*)));
     m_listEditWidget->setEditMode(ObjectListEditWidget::RemoveObjects);
 }
 

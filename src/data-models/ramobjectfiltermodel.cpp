@@ -8,6 +8,7 @@ RamObjectFilterModel::RamObjectFilterModel(QObject *parent) : QSortFilterProxyMo
 void RamObjectFilterModel::setList(RamObjectList *list)
 {
     m_objectList = list;
+    if(!list) return;
     this->setSourceModel(list);
 }
 

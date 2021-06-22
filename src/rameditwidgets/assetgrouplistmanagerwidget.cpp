@@ -7,7 +7,7 @@ AssetGroupListManagerWidget::AssetGroupListManagerWidget(QWidget *parent):
         parent)
 {
     changeProject(Ramses::instance()->currentProject());
-    connect(Ramses::instance(), &Ramses::currentProjectChanged, this, &AssetGroupListManagerWidget::changeProject);
+    connect(Ramses::instance(), SIGNAL(currentProjectChanged(RamProject*)), this, SLOT(changeProject(RamProject*)));
     m_listEditWidget->setEditMode(ObjectListEditWidget::RemoveObjects);
 
     // Create from template actions
