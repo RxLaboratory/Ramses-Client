@@ -2,8 +2,8 @@
 
 DuQFNodeView::DuQFNodeView(QWidget *parent): QGraphicsView(parent)
 {
-    setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    //setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    //setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     setMouseTracking(true);
@@ -15,6 +15,10 @@ DuQFNodeView::DuQFNodeView(QWidget *parent): QGraphicsView(parent)
     setDragMode(QGraphicsView::RubberBandDrag);
 
     setFocusPolicy(Qt::StrongFocus);
+
+    // Gestures (maybe later)
+    //grabGesture(Qt::PanGesture);
+    //grabGesture(Qt::PinchGesture);
 
     m_grid = new DuQFGrid(this);
     m_scene = new DuQFNodeScene(*m_grid);
@@ -207,6 +211,25 @@ void DuQFNodeView::mouseMoveEvent(QMouseEvent *event)
     QGraphicsView::mouseMoveEvent(event);
 
     event->ignore();
+}
+
+bool DuQFNodeView::event(QEvent *event)
+{
+    if (event->type() == QEvent::Gesture)
+            return gestureEvent(static_cast<QGestureEvent*>(event));
+
+    return QGraphicsView::event(event);
+}
+
+bool DuQFNodeView::gestureEvent(QGestureEvent *event)
+{
+    if (QGesture *pan = event->gesture(Qt::PanGesture))
+    {
+        QPanGesture *gesture = static_cast<QPanGesture*>( pan );
+        qDebug() << gesture->state();
+    }
+
+    return false;
 }
 
 void DuQFNodeView::drawBackground(QPainter *painter, const QRectF &rect)

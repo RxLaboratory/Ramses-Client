@@ -1,3 +1,4 @@
+
 #ifndef DUQFNODEVIEW_H
 #define DUQFNODEVIEW_H
 
@@ -5,6 +6,7 @@
 #include <cmath>
 #include <QGraphicsItemGroup>
 #include <QGraphicsSceneHoverEvent>
+#include <QGestureEvent>
 
 #include "duqf-app/app-style.h"
 #include "duqf-nodeview/duqfgrid.h"
@@ -40,6 +42,8 @@ protected:
     void mousePressEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
+    bool event(QEvent *event) override;
+    bool gestureEvent(QGestureEvent *event);
 
 private:
     void drawBackground(QPainter * painter, const QRectF & rect) override;

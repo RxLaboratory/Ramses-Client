@@ -185,7 +185,7 @@ QString RamLoader::gotProject(QJsonObject newP, bool init)
         m_pm->setMaximum(7);
         gotSteps( newP.value("steps").toArray(), project);        
         gotPipeFiles( newP.value("pipeFiles").toArray(), project );
-        //gotPipes( newP.value("pipes").toArray(), project);
+        gotPipes( newP.value("pipes").toArray(), project);
         gotAssetGroups( newP.value("assetGroups").toArray(), project);
         gotAssets( newP.value("assets").toArray(), project);
         gotSequences( newP.value("sequences").toArray(), project);

@@ -35,9 +35,12 @@ private slots:
     void setGridSize(int size);
     void userChanged(RamUser *u);
     void createStep();
+
+    void templateStepInserted(const QModelIndex &parent, int first, int last);
     void newTemplateStep(RamObject *obj);
-    void templateStepRemoved(RamObject *o);
+    void templateStepRemoved(const QModelIndex &parent, int first, int last);
     void templateStepChanged();
+
     void assignStep();
     void newPipe(RamObject *p);
     void stepsConnected(DuQFConnection *co);

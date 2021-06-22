@@ -113,6 +113,7 @@ PipelineWidget::PipelineWidget(QWidget *parent) :
     stepButton->setPopupMode(QToolButton::InstantPopup);
     stepButton->setMenu(ui_stepMenu);
 
+    // Load template steps
     for (int i = 0; i < Ramses::instance()->templateSteps()->count(); i++) newTemplateStep( Ramses::instance()->templateSteps()->at(i) );
 
     ui_titleBar->insertLeft(stepButton);
@@ -192,9 +193,8 @@ PipelineWidget::PipelineWidget(QWidget *parent) :
     connect(m_nodeScene->connectionManager(), SIGNAL(newConnection(DuQFConnection*)), this, SLOT(stepsConnected(DuQFConnection*)));
     connect(m_nodeScene->connectionManager(), SIGNAL(connectionRemoved(DuQFConnection*)), this, SLOT(connectionRemoved(DuQFConnection*)));
     // Ramses connections
-
-    // TODO Connect template steps list to template step actions
-
+    connect(Ramses::instance()->templateSteps(), SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(templateStepInserted(QModelIndex,int,int)));
+    connect(Ramses::instance()->templateSteps(), SIGNAL(rowsAboutToBeRemoved(QModelIndex,int,int)), this, SLOT(templateStepRemoved(QModelIndex,int,int)));
     connect(Ramses::instance(), &Ramses::currentProjectChanged, this, &PipelineWidget::setProject);
     connect(Ramses::instance(), &Ramses::loggedIn, this, &PipelineWidget::userChanged);
 }
@@ -305,38 +305,60 @@ void PipelineWidget::createStep()
     step->edit();
 }
 
+void PipelineWidget::templateStepInserted(const QModelIndex &parent, int first, int last)
+{
+    Q_UNUSED(parent)
+
+    for (int i = first; i <= last; i++)
+    {
+        RamObject *o = Ramses::instance()->templateSteps()->at(i);
+        newTemplateStep(o);
+    }
+}
+
 void PipelineWidget::newTemplateStep(RamObject *obj)
 {
     if (!obj) return;
     if (obj->uuid() == "") return;
     QAction *stepAction = new QAction(obj->name());
-    stepAction->setData(obj->uuid());
+    quintptr iptr = reinterpret_cast<quintptr>( obj );
+    stepAction->setData(iptr);
     ui_stepMenu->insertAction(ui_stepMenuSeparator, stepAction);
     connect(stepAction, &QAction::triggered, this, &PipelineWidget::assignStep);
     connect(obj, &RamObject::changed, this, &PipelineWidget::templateStepChanged);
 
 }
 
-void PipelineWidget::templateStepRemoved(RamObject *o)
+void PipelineWidget::templateStepRemoved(const QModelIndex &parent, int first, int last)
 {
+    Q_UNUSED(parent)
+
     QList<QAction *> actions = ui_stepMenu->actions();
-    for (int i = actions.count() -1; i >= 0; i--)
+
+    for (int i = first; i <= last; i++)
     {
-        if (actions[i]->data().toString() == o->uuid())
+        RamObject *removedObj = Ramses::instance()->templateSteps()->at(i);
+        for (int j = actions.count() -1; j >= 0; j--)
         {
-            ui_stepMenu->removeAction(actions[i]);
-            actions[i]->deleteLater();
+            quintptr iptr = actions.at(j)->data().toULongLong();
+            RamObject *obj = reinterpret_cast<RamObject*>( iptr );
+
+            if (removedObj->is(obj)) actions.at(j)->deleteLater();
+            break;
         }
     }
 }
 
 void PipelineWidget::templateStepChanged()
 {
-    RamStep *s = (RamStep*)sender();
+    RamObject *changedObj = qobject_cast<RamObject*>( sender() );
     QList<QAction *> actions = ui_stepMenu->actions();
     for (int i = actions.count() -1; i >= 0; i--)
     {
-        if (actions[i]->data().toString() == s->uuid()) actions[i]->setText(s->name());
+        quintptr iptr = actions.at(i)->data().toULongLong();
+        RamObject *obj = reinterpret_cast<RamObject*>( iptr );
+
+        if (changedObj->is(obj)) actions.at(i)->setText(changedObj->name());
     }
 }
 
@@ -345,7 +367,8 @@ void PipelineWidget::assignStep()
     RamProject *project = Ramses::instance()->currentProject();
     if (!project) return;
     QAction *stepAction = (QAction*)sender();
-    RamStep *templateStep = RamStep::step( stepAction->data().toString() );
+    quintptr iptr = stepAction->data().toULongLong();
+    RamStep *templateStep = reinterpret_cast<RamStep*>( iptr );
     if (!templateStep) return;
     RamStep *step = templateStep->createFromTemplate(project);
     project->steps()->append(step);
