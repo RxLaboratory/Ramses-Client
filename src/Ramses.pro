@@ -139,14 +139,14 @@ SOURCES += \
     rameditwidgets/templateassetgroupeditwidget.cpp \
     rameditwidgets/templatestepeditwidget.cpp \
     rameditwidgets/usereditwidget.cpp \
-    userprofilepage.cpp
+    userprofilepage.cpp \
     #item-tables/assettable.cpp \
     #item-tables/itemtable.cpp \
     #item-tables/itemtablewidget.cpp \
     #item-tables/shottable.cpp \
-    #pipeline-editor/objectnode.cpp \
-    #pipeline-editor/pipelinewidget.cpp \
-    #pipeline-editor/stepnode.cpp \
+    pipeline-editor/objectnode.cpp \
+    pipeline-editor/pipelinewidget.cpp \
+    pipeline-editor/stepnode.cpp
 
 HEADERS += \
     config.h \
@@ -259,14 +259,14 @@ HEADERS += \
     rameditwidgets/templateassetgroupeditwidget.h \
     rameditwidgets/templatestepeditwidget.h \
     rameditwidgets/usereditwidget.h \
-    userprofilepage.h
+    userprofilepage.h \
     #item-tables/assettable.h \
     #item-tables/itemtable.h \
     #item-tables/itemtablewidget.h \
     #item-tables/shottable.h \
-    #pipeline-editor/objectnode.h \
-    #pipeline-editor/pipelinewidget.h \
-    #pipeline-editor/stepnode.h \
+    pipeline-editor/objectnode.h \
+    pipeline-editor/pipelinewidget.h \
+    pipeline-editor/stepnode.h
 
 FORMS += \
     settingswidgets/daemonsettingswidget.ui \

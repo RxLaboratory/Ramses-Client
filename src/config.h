@@ -8,7 +8,7 @@
 //#define DUMP_OBJECT_DEBUG
 
 // Deactivate pipeline editor
-#define DEACTIVATE_PIPELINE
+//#define DEACTIVATE_PIPELINE
 
 // Deactivate Shots Table
 #define DEACTIVATE_SHOTSTABLE

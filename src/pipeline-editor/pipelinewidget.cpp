@@ -168,9 +168,6 @@ PipelineWidget::PipelineWidget(QWidget *parent) :
     m_nodeScene = ui_nodeView->nodeScene();
     mainLayout->addWidget(ui_nodeView);
 
-    m_userSettings = new QSettings(QSettings::IniFormat, QSettings::UserScope, STR_COMPANYNAME, STR_INTERNALNAME);
-    m_userSettings->beginGroup("nodeView");
-
     // Connections
     connect(ui_titleBar, &TitleBar::closeRequested, this, &PipelineWidget::closeRequested);
     connect(viewAllButton, SIGNAL(clicked()), ui_nodeView, SLOT(reinitTransform()));
@@ -195,8 +192,9 @@ PipelineWidget::PipelineWidget(QWidget *parent) :
     connect(m_nodeScene->connectionManager(), SIGNAL(newConnection(DuQFConnection*)), this, SLOT(stepsConnected(DuQFConnection*)));
     connect(m_nodeScene->connectionManager(), SIGNAL(connectionRemoved(DuQFConnection*)), this, SLOT(connectionRemoved(DuQFConnection*)));
     // Ramses connections
-    connect(Ramses::instance()->templateSteps(), &RamObjectList::objectAdded, this, &PipelineWidget::newTemplateStep);
-    connect(Ramses::instance()->templateSteps(), &RamObjectList::objectRemoved, this, &PipelineWidget::templateStepRemoved);
+
+    // TODO Connect template steps list to template step actions
+
     connect(Ramses::instance(), &Ramses::currentProjectChanged, this, &PipelineWidget::setProject);
     connect(Ramses::instance(), &Ramses::loggedIn, this, &PipelineWidget::userChanged);
 }
@@ -223,10 +221,18 @@ void PipelineWidget::newStep(RamObject *obj)
     m_nodeScene->addNode( stepNode, false );
 
     // Reset position
-    m_userSettings->beginGroup("nodeLocations");
-    QPointF pos = m_userSettings->value(step->uuid(), QPointF(0.0,0.0)).toPointF();
-    if (pos.x() != 0.0 && pos.y() != 0.0) stepNode->setPos( pos );
-    m_userSettings->endGroup();
+    RamUser *u = Ramses::instance()->currentUser();
+    if (u)
+    {
+        QSettings *uSettings = u->userSettings();
+        uSettings->beginGroup("nodeView");
+        uSettings->beginGroup("nodeLocations");
+        QPointF pos = uSettings->value(step->uuid(), QPointF(0.0,0.0)).toPointF();
+        if (pos.x() != 0.0 && pos.y() != 0.0) stepNode->setPos( pos );
+        uSettings->endGroup();
+        uSettings->endGroup();
+    }
+
 
     connect(stepNode, &DuQFNode::moved, this, &PipelineWidget::nodeMoved);
 }
@@ -237,9 +243,14 @@ void PipelineWidget::nodeMoved(QPointF pos)
     if (!node) return;
     RamObject *step = node->ramObject();
 
-    m_userSettings->beginGroup("nodeLocations");
-    m_userSettings->setValue(step->uuid(), pos);
-    m_userSettings->endGroup();
+    RamUser *u = Ramses::instance()->currentUser();
+    if (!u) return;
+    QSettings *uSettings = u->userSettings();
+    uSettings->beginGroup("nodeView");
+    uSettings->beginGroup("nodeLocations");
+    uSettings->setValue(step->uuid(), pos);
+    uSettings->endGroup();
+    uSettings->endGroup();
 }
 
 void PipelineWidget::setSnapEnabled(bool enabled)
@@ -248,8 +259,12 @@ void PipelineWidget::setSnapEnabled(bool enabled)
 
     ui_snapButton->setChecked(enabled);
 
-    m_userSettings->setValue("snapToGrid", enabled);
     ui_nodeView->grid()->setSnapEnabled(enabled);
+
+    RamUser *u = Ramses::instance()->currentUser();
+    if (!u) return;
+    QSettings *uSettings = u->userSettings();
+    uSettings->setValue("nodeView/snapToGrid", enabled);
 }
 
 void PipelineWidget::setGridSize(int size)
@@ -257,23 +272,24 @@ void PipelineWidget::setGridSize(int size)
     QSignalBlocker b(ui_gridSizeBox);
 
     ui_gridSizeBox->setValue(size);
-
-    m_userSettings->setValue("gridSize", size);
     ui_nodeView->grid()->setSize(size);
     ui_nodeView->update();
+
+    RamUser *u = Ramses::instance()->currentUser();
+    if (!u) return;
+    QSettings *uSettings = u->userSettings();
+    uSettings->setValue("nodeView/gridSize", size);
+
 }
 
 void PipelineWidget::userChanged(RamUser *u)
 {
-    Q_UNUSED(u);
+    if (!u) return;
 
-    m_userSettings->endGroup();
-    delete m_userSettings;
-    m_userSettings = new QSettings(Ramses::instance()->currentUserSettingsFile(), QSettings::IniFormat, this);
-    m_userSettings->beginGroup("nodeView");
+    QSettings *uSettings = u->userSettings();
 
-    setSnapEnabled(m_userSettings->value("snapToGrid", false).toBool());
-    setGridSize(m_userSettings->value("gridSize", 20).toInt());
+    setSnapEnabled(uSettings->value("nodeView/snapToGrid", false).toBool());
+    setGridSize(uSettings->value("nodeView/gridSize", 20).toInt());
 }
 
 void PipelineWidget::createStep()
@@ -281,7 +297,12 @@ void PipelineWidget::createStep()
     RamProject *project = Ramses::instance()->currentProject();
     if (!project) return;
 
-    project->createStep();
+    RamStep *step = new RamStep(
+                "NEW",
+                "New step",
+                project);
+    project->steps()->append(step);
+    step->edit();
 }
 
 void PipelineWidget::newTemplateStep(RamObject *obj)
@@ -326,7 +347,9 @@ void PipelineWidget::assignStep()
     QAction *stepAction = (QAction*)sender();
     RamStep *templateStep = RamStep::step( stepAction->data().toString() );
     if (!templateStep) return;
-    project->assignStep(templateStep);
+    RamStep *step = templateStep->createFromTemplate(project);
+    project->steps()->append(step);
+    step->edit();
 }
 
 void PipelineWidget::newPipe(RamObject *p)
@@ -398,7 +421,9 @@ void PipelineWidget::stepsConnected(DuQFConnection *co)
     if (!output) return;
     if (!input) return;
 
-    project->createPipe(output, input);
+    RamPipe *pipe = new RamPipe(output, input);
+    project->pipeline()->append(pipe);
+    pipe->edit();
 }
 
 void PipelineWidget::connectionRemoved(DuQFConnection *co)
@@ -543,9 +568,7 @@ void PipelineWidget::changeProject()
         newPipe( m_project->pipeline()->at(i) );
     }
 
-    m_projectConnections << connect(m_project->steps(), &RamObjectList::objectAdded, this, &PipelineWidget::newStep);
-    m_projectConnections << connect(m_project->pipeline(), &RamObjectList::objectAdded, this, &PipelineWidget::newPipe);
-    m_projectConnections << connect(m_project->pipeline(), &RamObjectList::objectRemoved, this, &PipelineWidget::pipeRemoved);
+    // TODO Connect Steps & Pipeline
 
     // Layout
     m_nodeScene->clearSelection();

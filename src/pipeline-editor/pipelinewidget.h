@@ -45,12 +45,11 @@ private slots:
     void pipeChanged(RamObject *p);
     void pipeRemoved(RamObject *p);
 protected:
-    void showEvent(QShowEvent *event) Q_DECL_OVERRIDE;
-    void hideEvent(QHideEvent *event) Q_DECL_OVERRIDE;
+    void showEvent(QShowEvent *event) override;
+    void hideEvent(QHideEvent *event) override;
 private:
     void changeProject();
 
-    QSettings *m_userSettings;
     TitleBar *ui_titleBar;
     DuQFSpinBox *ui_gridSizeBox;
     QCheckBox *ui_snapButton;
@@ -58,9 +57,11 @@ private:
     DuQFNodeView *ui_nodeView;
     QMenu *ui_stepMenu;
     QAction *ui_stepMenuSeparator;
+
     QList<QMetaObject::Connection> m_projectConnections;
     QMap<QString, QList<QMetaObject::Connection>> m_pipeObjectConnections;
     QMap<QString,DuQFConnection*> m_pipeConnections;
+
     RamProject *m_project = nullptr;
     bool m_projectChanged = false;
 };
