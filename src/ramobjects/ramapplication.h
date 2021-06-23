@@ -30,7 +30,7 @@ public:
 
 public slots:
     void unassignFileType(RamObject *o);
-    virtual void edit() override;
+    virtual void edit(bool show = true) override;
 
 private slots:
     void nativeFileTypeUnassigned(const QModelIndex &parent, int first, int last);

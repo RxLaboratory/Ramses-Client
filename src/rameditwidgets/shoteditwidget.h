@@ -9,6 +9,8 @@
 #include "statushistorywidget.h"
 #include "ramobjectlistcombobox.h"
 #include "duqf-widgets/duqffolderdisplaywidget.h"
+#include "duqf-widgets/autoselectdoublespinbox.h"
+#include "duqf-widgets/autoselectspinbox.h"
 
 class ShotEditWidget : public ObjectEditWidget
 {
@@ -34,8 +36,8 @@ private:
     void connectEvents();
 
     DuQFFolderDisplayWidget *ui_folderWidget;
-    QDoubleSpinBox *ui_secondsBox;
-    QSpinBox *ui_framesBox;
+    AutoSelectDoubleSpinBox *ui_secondsBox;
+    AutoSelectSpinBox *ui_framesBox;
     RamObjectListComboBox *ui_sequencesBox;
 };
 

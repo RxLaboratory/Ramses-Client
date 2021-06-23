@@ -6,14 +6,15 @@
 #include <QMouseEvent>
 
 #include "data-models/ramitemtable.h"
+#include "ramobjectlistwidget.h"
 
-class ItemTableWidget : public QTableWidget
+class ItemTableWidget : public RamObjectListWidget
 {
     Q_OBJECT
 public:
     ItemTableWidget(QWidget *parent = nullptr);
 
-/*public slots:
+public slots:
     void search(QString s);
     void setStepVisible(QString stepUuid, bool visible);
 
@@ -73,7 +74,7 @@ private:
 
     // UI Events
     QPoint _initialDragPos;
-    bool _dragging = false;*/
+    bool _dragging = false;
 
     void setupUi();
 };

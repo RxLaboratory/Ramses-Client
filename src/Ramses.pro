@@ -30,6 +30,7 @@ INCLUDEPATH += rameditwidgets \
     data-model
 
 SOURCES += \
+    data-models/ramitemtablelistproxy.cpp \
     data-models/ramobjectfiltermodel.cpp \
     duqf-widgets/duqfsearchedit.cpp \
     data-models/ramitemtable.cpp \
@@ -140,10 +141,9 @@ SOURCES += \
     rameditwidgets/templatestepeditwidget.cpp \
     rameditwidgets/usereditwidget.cpp \
     userprofilepage.cpp \
-    #item-tables/assettable.cpp \
-    #item-tables/itemtable.cpp \
-    #item-tables/itemtablewidget.cpp \
-    #item-tables/shottable.cpp \
+    rameditwidgets/assettablemanagerwidget.cpp \
+    rameditwidgets/itemtablemanagerwidget.cpp \
+    #rameditwidgets/shottablemanagerwidget.cpp \
     pipeline-editor/objectnode.cpp \
     pipeline-editor/pipelinewidget.cpp \
     pipeline-editor/stepnode.cpp
@@ -151,6 +151,7 @@ SOURCES += \
 HEADERS += \
     config.h \
     data-models/ramitemtable.h \
+    data-models/ramitemtablelistproxy.h \
     data-models/ramobjectfiltermodel.h \
     data-models/ramobjectlist.h \
     data-models/ramstatelist.h \
@@ -260,10 +261,9 @@ HEADERS += \
     rameditwidgets/templatestepeditwidget.h \
     rameditwidgets/usereditwidget.h \
     userprofilepage.h \
-    #item-tables/assettable.h \
-    #item-tables/itemtable.h \
-    #item-tables/itemtablewidget.h \
-    #item-tables/shottable.h \
+    rameditwidgets/assettablemanagerwidget.h \
+    rameditwidgets/itemtablemanagerwidget.h \
+    #rameditwidgets/shottablemanagerwidget.h \
     pipeline-editor/objectnode.h \
     pipeline-editor/pipelinewidget.h \
     pipeline-editor/stepnode.h

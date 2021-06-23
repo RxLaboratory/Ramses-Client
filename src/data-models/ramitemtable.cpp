@@ -28,10 +28,12 @@ QVariant RamItemTable::data(const QModelIndex &index, int role) const
     if (row == 0)
         return RamObjectList::data(index, role);
 
+    // TODO COLS
+    return 0;
+
     // Get the item
     RamObject *itemObj = m_objectsList.at(row);
     RamItem *item = qobject_cast<RamItem*>( itemObj );
-    if (!item) return 0;
 
     // Get the step
     RamObject *stepObj = m_steps->at( col - 1 );
@@ -40,9 +42,32 @@ QVariant RamItemTable::data(const QModelIndex &index, int role) const
     RamStatus *status = item->status(stepObj);
 
     // If there's no status yet, just return 0
-    if (!status)
-        return 0;
+    if (role == Qt::DisplayRole)
+    {
+        if (!status) return "";
+        return status->name();
+    }
 
+    if (role == Qt::StatusTipRole)
+    {
+        if (!status) return "";
+        return QString(status->shortName() % " | " % status->name());
+    }
+
+    if (role == Qt::ToolTipRole)
+    {
+        if (!status) return "";
+        return QString(
+                    status->shortName() %
+                    " | " %
+                    status->name() %
+                    "\nCompletion: " %
+                    QString::number( status->completionRatio() ) %
+                    "%\n" %
+                    status->comment() );
+    }
+
+    if (!status) return 0;
     quintptr iptr = reinterpret_cast<quintptr>(status);
     return iptr;
 }
@@ -113,8 +138,8 @@ const RamStep::Type &RamItemTable::productionType() const
 
 void RamItemTable::connectEvents()
 {
-    connect( m_steps, SIGNAL(columnsInserted(const QModelIndex&,int,int)), this, SLOT(insertStep(const QModelIndex&,int,int)));
-    connect( m_steps, SIGNAL(columnsAboutToBeRemoved(const QModelIndex&,int,int)), this, SLOT(removeStep(const QModelIndex&,int,int)));
+    connect( m_steps, SIGNAL(columnsInserted(QModelIndex,int,int)), this, SLOT(insertStep(QModelIndex,int,int)));
+    connect( m_steps, SIGNAL(columnsAboutToBeRemoved(QModelIndex,int,int)), this, SLOT(removeStep(QModelIndex,int,int)));
 }
 
 void RamItemTable::connectItem(RamItem *item)

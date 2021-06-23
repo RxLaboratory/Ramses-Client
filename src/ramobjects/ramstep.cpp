@@ -184,7 +184,7 @@ RamStep *RamStep::step(QString uuid)
     return qobject_cast<RamStep*>( RamObject::obj(uuid) );
 }
 
-void RamStep::edit()
+void RamStep::edit(bool show)
 {
     if (!m_editReady)
     {
@@ -192,7 +192,7 @@ void RamStep::edit()
         setEditWidget(w);
         m_editReady = true;
     }
-    showEdit();
+    showEdit(show);
 }
 
 RamProject *RamStep::project() const

@@ -93,7 +93,7 @@ RamAsset *RamAsset::asset( QString uuid )
     return qobject_cast<RamAsset*>( RamObject::obj(uuid) );
 }
 
-void RamAsset::edit()
+void RamAsset::edit(bool show)
 {
     if (!m_editReady)
     {
@@ -101,6 +101,6 @@ void RamAsset::edit()
         setEditWidget(w);
         m_editReady = true;
     }
-    showEdit();
+    showEdit(show);
 }
 

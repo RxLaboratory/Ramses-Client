@@ -34,7 +34,7 @@ public:
     static RamPipeFile *pipeFile(QString uuid);
 
 public slots:
-    virtual void edit() override;
+    virtual void edit(bool show = true) override;
 
 private:
     RamFileType *m_fileType;

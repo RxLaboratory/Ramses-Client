@@ -3,6 +3,7 @@
 
 #include "ramasset.h"
 #include "ramobject.h"
+#include "data-models/ramobjectfiltermodel.h"
 
 class RamProject;
 
@@ -19,18 +20,21 @@ public:
     bool isTemplate() const;
     RamAssetGroup *createFromTemplate(RamProject *project);
 
+    int assetCount() const;
+
     RamProject *project() const;
 
     static RamAssetGroup *assetGroup(QString uuid);
 
 public slots:
     void update() override;
-    virtual void edit() override;
+    virtual void edit(bool show = true) override;
 
 private:
     bool _template;
 
     RamProject *m_project = nullptr;
+    RamObjectFilterModel *m_assets;
 };
 
 #endif // RAMASSETGROUP_H

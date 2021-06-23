@@ -21,7 +21,15 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
 {
     // Reinterpret the int to a pointer
     quintptr iptr = index.data(Qt::UserRole).toULongLong();
-    RamObject *obj = reinterpret_cast<RamObject*>(iptr);
+
+    // TODO build a "No" status if no object
+    if (iptr == 0)
+    {
+        return;
+    }
+
+
+    RamObject *obj = reinterpret_cast<RamObject*>(iptr);    
     RamObject::ObjectType ramType = obj->objectType();
 
     // Base Settings
@@ -36,7 +44,7 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
     // title
     const QRect titleRect( bgRect.left() + 27, bgRect.top(), bgRect.width() - 32, 26 );
     // Details
-    const QRect detailsRect( iconRect.left() + 5, titleRect.bottom() + 3, iconRect.width() + titleRect.width() - 5, 60 );
+    const QRect detailsRect( iconRect.left() + 5, titleRect.bottom() + 3, iconRect.width() + titleRect.width() - 5, bgRect.height() - titleRect.height() - 3 );
     // Edit button
     const QRect editButtonRect( bgRect.right() - 20, bgRect.top() +7, 12, 12 );
 
@@ -183,6 +191,13 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
             title = title % " [Template]";
         // icon
         painter->drawPixmap( iconRect, QIcon(":/icons/asset-group").pixmap(QSize(12,12)));
+        if (bgRect.height() >= 46 )
+        {
+            QString details = "Contains "  % QString::number(ag->assetCount()) % " assets";
+            painter->setPen( detailsPen );
+            painter->setFont( m_detailsFont );
+            painter->drawText( detailsRect, details, m_detailsOption);
+        }
         break;
     }
     case RamObject::State:
@@ -241,6 +256,62 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
                 painter->setFont( m_detailsFont );
                 painter->drawText( detailsRect, details, m_detailsOption);
             }
+        }
+        break;
+    }
+    case RamObject::Sequence:
+    {
+        RamSequence *seq = qobject_cast<RamSequence*>( obj );
+        // icon
+        painter->drawPixmap( iconRect, QIcon(":/icons/sequence").pixmap(QSize(12,12)));
+        if (bgRect.height() >= 46 )
+        {
+            // details
+            QTime duration(0, 0, seq->duration());
+            QString details = "Contains: " %
+                    QString::number(seq->shotCount()) %
+                    " shots\n" %
+                    "Duration: " %
+                    duration.toString("mm 'mn' ss 's'");
+            painter->setPen( detailsPen );
+            painter->setFont( m_detailsFont );
+            painter->drawText( detailsRect, details, m_detailsOption);
+        }
+        break;
+    }
+    case RamObject::Shot:
+    {
+        RamShot *shot = qobject_cast<RamShot*>( obj );
+        // icon
+        painter->drawPixmap( iconRect, QIcon(":/icons/shot").pixmap(QSize(12,12)));
+        if (bgRect.height() >= 46 )
+        {
+            // details
+            QString details = "Duration: " %
+                    QString::number(shot->duration(), 'f', 2) %
+                    " s | " %
+                    QString::number(shot->duration() * shot->project()->framerate(), 'f', 2) %
+                    " f";
+            painter->setPen( detailsPen );
+            painter->setFont( m_detailsFont );
+            painter->drawText( detailsRect, details, m_detailsOption);
+        }
+        break;
+    }
+    case RamObject::Asset:
+    {
+        RamAsset *asset = qobject_cast<RamAsset*>( obj );
+        // icon
+        painter->drawPixmap( iconRect, QIcon(":/icons/asset").pixmap(QSize(12,12)));
+        if (bgRect.height() >= 46 )
+        {
+            // details
+            QString details = asset->assetGroup()->name() %
+                    "\n" %
+                    asset->tags().join(", ");
+            painter->setPen( detailsPen );
+            painter->setFont( m_detailsFont );
+            painter->drawText( detailsRect, details, m_detailsOption);
         }
         break;
     }

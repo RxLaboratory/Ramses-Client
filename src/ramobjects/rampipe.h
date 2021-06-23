@@ -29,7 +29,7 @@ public:
 
 public slots:
     void update() override;
-    virtual void edit() override;
+    virtual void edit(bool show = true) override;
 
 private slots:
     void pipeFileUnassigned(const QModelIndex &parent, int first, int last);

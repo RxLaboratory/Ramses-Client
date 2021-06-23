@@ -10,6 +10,7 @@
 #include "processmanager.h"
 #include "ramobjectdelegate.h"
 #include "data-models/ramobjectfiltermodel.h"
+#include "data-models/ramitemtablelistproxy.h"
 
 class RamObjectListWidget : public QTableView
 {

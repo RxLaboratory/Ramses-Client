@@ -119,10 +119,10 @@ void RamObject::setEditWidget(QWidget *w)
     mw->addObjectDockWidget(m_dockWidget);
 }
 
-void RamObject::showEdit()
+void RamObject::showEdit(bool show)
 {
     if (m_dockWidget != nullptr )
-        m_dockWidget->show();
+        m_dockWidget->setVisible(show);
 }
 
 RamObject::ObjectType RamObject::objectType() const

@@ -14,14 +14,10 @@ class ObjectNode : public DuQFNode
 {
 public:
     ObjectNode(RamObject *obj);
-    ~ObjectNode();
     RamObject *ramObject() const;
-
-    ObjectDockWidget *dockWidget() const;
 
 protected:
     QVariant itemChange(GraphicsItemChange change, const QVariant &value) Q_DECL_OVERRIDE;
-    void setEditWidget(ObjectEditWidget *w);
 
 private slots:
     void removeObject();
@@ -29,9 +25,7 @@ private slots:
     void objectRemoved();
 
 private:
-    bool _hasEditWidget = false;
-    RamObject *_object;
-    ObjectDockWidget *_dockWidget = nullptr;
+    RamObject *m_object;
 };
 
 #endif // STEPNODE_H

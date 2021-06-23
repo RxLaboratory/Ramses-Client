@@ -65,7 +65,7 @@ RamFileType *RamFileType::fileType(QString uuid)
     return qobject_cast<RamFileType*>( RamObject::obj(uuid) );
 }
 
-void RamFileType::edit()
+void RamFileType::edit(bool show)
 {
     if (!m_editReady)
     {
@@ -73,7 +73,7 @@ void RamFileType::edit()
         setEditWidget(ftw);
         m_editReady = true;
     }
-    showEdit();
+    showEdit(show);
 }
 
 bool RamFileType::isPreviewable() const

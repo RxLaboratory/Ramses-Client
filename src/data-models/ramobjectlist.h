@@ -5,6 +5,7 @@
 
 #include <QAbstractTableModel>
 #include <QIcon>
+#include <QStringBuilder>
 
 class RamObjectList : public QAbstractTableModel
 {

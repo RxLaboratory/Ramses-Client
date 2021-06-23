@@ -1,5 +1,5 @@
-#ifndef ITEMTABLE_H
-#define ITEMTABLE_H
+#ifndef ITEMTABLEMANAGERWIDGET_H
+#define ITEMTABLEMANAGERWIDGET_H
 
 #include <QWidget>
 #include <QShowEvent>
@@ -9,14 +9,15 @@
 #include "duqf-widgets/titlebar.h"
 #include "duqf-utils/guiutils.h"
 #include "duqf-widgets/duqfsearchedit.h"
-#include "itemtablewidget.h"
+#include "data-views/ramobjectlistwidget.h"
+#include "ramses.h"
 
 
-class ItemTable : public QWidget
+class ItemTableManagerWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit ItemTable(QString title= "Items Table", QWidget *parent = nullptr);
+    explicit ItemTableManagerWidget(QString title= "Items Table", QWidget *parent = nullptr);
 
 public slots:
     void selectAllSteps();
@@ -27,11 +28,11 @@ signals:
     void closeRequested();
 
 protected:
-    void showEvent(QShowEvent *event) Q_DECL_OVERRIDE;
-    void hideEvent(QHideEvent *event) Q_DECL_OVERRIDE;
+    void showEvent(QShowEvent *event) override;
+    void hideEvent(QHideEvent *event) override;
 
-    ItemTableWidget *m_table;
-    TitleBar *m_titleBar;
+    RamObjectListWidget *ui_table;
+    TitleBar *ui_titleBar;
 
 protected slots:
     virtual void projectChanged(RamProject *project) {Q_UNUSED(project)};
@@ -46,11 +47,11 @@ private:
     void setupUi(QString title);
     void connectEvents();
 
-    DuQFSearchEdit *m_searchEdit;
-    QMenu *m_stepMenu;
-    QAction *m_actionSelectAllSteps ;
-    QAction *m_actionSelectNoSteps ;
-    QAction *m_actionSelectMySteps ;
+    DuQFSearchEdit *ui_searchEdit;
+    QMenu *ui_stepMenu;
+    QAction *ui_actionSelectAllSteps ;
+    QAction *ui_actionSelectNoSteps ;
+    QAction *ui_actionSelectMySteps ;
 };
 
 #endif // ITEMTABLE_H

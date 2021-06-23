@@ -153,7 +153,7 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
 #endif
 
 #ifndef DEACTIVATE_ASSETSTABLE
-    AssetTable *assetsTable = new AssetTable("Assets Table", this);
+    AssetTableManagerWidget *assetsTable = new AssetTableManagerWidget("Assets Table", this);
     mainStack->addWidget(assetsTable);
     connect(assetsTable, SIGNAL(closeRequested()), this, SLOT(home()));
     qDebug() << "> Assets table ready";

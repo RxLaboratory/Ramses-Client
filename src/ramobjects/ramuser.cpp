@@ -81,7 +81,7 @@ RamUser *RamUser::user(QString uuid)
     return qobject_cast<RamUser*>( RamObject::obj(uuid) );
 }
 
-void RamUser::edit()
+void RamUser::edit(bool show)
 {
     if (!m_editReady)
     {
@@ -89,7 +89,7 @@ void RamUser::edit()
         setEditWidget(w);
         m_editReady = true;
     }
-    showEdit();
+    showEdit(show);
 }
 
 QSettings *RamUser::userSettings() const

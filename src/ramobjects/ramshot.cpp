@@ -43,6 +43,7 @@ void RamShot::setSequence(RamSequence *sequence)
 
 qreal RamShot::duration() const
 {
+    if (m_duration == 0) return 5;
     return m_duration;
 }
 
@@ -71,7 +72,7 @@ void RamShot::update()
     }
 }
 
-void RamShot::edit()
+void RamShot::edit(bool show)
 {
     if (!m_editReady)
     {
@@ -79,5 +80,5 @@ void RamShot::edit()
         setEditWidget(w);
         m_editReady = true;
     }
-    showEdit();
+    showEdit(show);
 }

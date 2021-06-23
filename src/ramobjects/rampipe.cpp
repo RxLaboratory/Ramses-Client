@@ -46,7 +46,7 @@ void RamPipe::update()
     m_dbi->updatePipe(m_uuid, m_inputStep->uuid(), m_outputStep->uuid());
 }
 
-void RamPipe::edit()
+void RamPipe::edit(bool show)
 {
     if (!m_editReady)
     {
@@ -54,7 +54,7 @@ void RamPipe::edit()
         setEditWidget(w);
         m_editReady = true;
     }
-    showEdit();
+    showEdit(show);
 }
 
 RamStep *RamPipe::outputStep() const

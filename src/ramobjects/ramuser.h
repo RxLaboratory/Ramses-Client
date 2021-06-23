@@ -33,7 +33,7 @@ public:
     QSettings *userSettings() const;
 
 public slots:
-    virtual void edit() override;
+    virtual void edit(bool show = true) override;
 
 private:
     UserRole m_role;

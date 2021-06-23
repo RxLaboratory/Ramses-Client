@@ -60,7 +60,7 @@ void RamApplication::unassignFileType(RamObject *o)
     m_exportFileTypes->removeAll(o);
 }
 
-void RamApplication::edit()
+void RamApplication::edit(bool show)
 {
     if (!m_editReady)
     {
@@ -68,7 +68,7 @@ void RamApplication::edit()
         setEditWidget(w);
         m_editReady = true;
     }
-    showEdit();
+    showEdit(show);
 }
 
 bool RamApplication::canExportFileType(RamFileType *ft) const

@@ -24,7 +24,7 @@ public slots:
     void update() override;
 
 public slots:
-    virtual void edit() override;
+    virtual void edit(bool show = true) override;
 
 private:
     RamSequence *m_sequence;

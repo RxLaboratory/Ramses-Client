@@ -27,7 +27,7 @@ public:
     static RamAsset *asset(QString uuid);
 
 public slots:
-    virtual void edit() override;
+    virtual void edit(bool show = true) override;
 
 private:
     QStringList _tags;

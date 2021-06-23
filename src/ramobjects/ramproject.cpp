@@ -11,8 +11,8 @@ RamProject::RamProject(QString shortName, QString name, QString uuid):
     m_pipeline = new RamObjectList("PPLN", "Pipeline", this);
     m_steps = new RamObjectList("STPS", "Steps", this);
     m_pipeFiles = new RamObjectList("PPFLS", "Pipe files", this);
-    m_shots = new RamObjectList("SHOTS", "Shots", this);
-    m_assets = new RamObjectList("ASSETS", "Assets", this);
+    m_shots = new RamItemTable(RamStep::ShotProduction, m_steps, "SHOTS", "Shots", this);
+    m_assets = new RamItemTable(RamStep::AssetProduction, m_steps, "ASSETS", "Assets", this);
 
     m_dbi->createProject(m_shortName, m_name, m_uuid);
 

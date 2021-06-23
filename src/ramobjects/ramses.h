@@ -8,6 +8,7 @@
 #include "ramassetgroup.h"
 #include "ramfiletype.h"
 #include "ramapplication.h"
+#include "ramshot.h"
 #include "data-models/ramstatelist.h"
 #include "dbisuspender.h"
 #include "duqf-app/app-utils.h"

@@ -7,7 +7,7 @@
 #include "ramsequence.h"
 #include "rampipe.h"
 #include "dbisuspender.h"
-#include "data-models/ramobjectlist.h"
+#include "data-models/ramitemtable.h"
 #include "rampipefile.h"
 
 class RamProject : public RamObject
@@ -61,8 +61,8 @@ private:
     RamObjectList *m_steps;
     RamObjectList *m_sequences;
     RamObjectList *m_assetGroups;
-    RamObjectList *m_assets;
-    RamObjectList *m_shots;
+    RamItemTable *m_assets;
+    RamItemTable *m_shots;
     RamObjectList *m_pipeline;
     RamObjectList *m_pipeFiles;
 };

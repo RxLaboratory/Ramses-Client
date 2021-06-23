@@ -38,9 +38,7 @@
 #include "duqf-utils/utils.h"
 #include "duqf-widgets/toolbarspacer.h"
 #include "duqf-widgets/duqflogtoolbutton.h"
-#include "item-tables/assettable.h"
-#include "item-tables/shottable.h"
-
+#include "rameditwidgets/assettablemanagerwidget.h"
 #include <QMouseEvent>
 #include <QLabel>
 #include <QToolButton>

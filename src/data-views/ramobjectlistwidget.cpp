@@ -7,7 +7,9 @@ RamObjectListWidget::RamObjectListWidget(QWidget *parent):
     setupUi();
     connectEvents();
     m_objectList = new RamObjectFilterModel();
-    this->setModel(m_objectList);
+    RamItemTableListProxy *tlp = new RamItemTableListProxy();
+    tlp->setSourceModel(m_objectList);
+    this->setModel(tlp);
 }
 
 RamObjectListWidget::RamObjectListWidget(RamObjectList *list, QWidget *parent):
@@ -17,7 +19,9 @@ RamObjectListWidget::RamObjectListWidget(RamObjectList *list, QWidget *parent):
     setupUi();
     connectEvents();
     m_objectList = new RamObjectFilterModel();
-    this->setModel(m_objectList);
+    RamItemTableListProxy *tlp = new RamItemTableListProxy();
+    tlp->setSourceModel(m_objectList);
+    this->setModel(tlp);
     setList(list);
 }
 
@@ -35,7 +39,7 @@ RamObjectListWidget::RamObjectListWidget(RamObjectList *list, bool editableObjec
 }
 
 void RamObjectListWidget::setList(RamObjectList *list)
-{
+{ 
     m_objectList->setList(list);
 }
 

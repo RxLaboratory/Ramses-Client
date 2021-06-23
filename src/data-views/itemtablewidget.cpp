@@ -1,17 +1,5 @@
 #include "itemtablewidget.h"
 
-#include "ramassetwidget.h"
-#include "ramshotwidget.h"
-#include "ramstatuswidget.h"
-#include "ramstatewidget.h"
-#include "ramuserwidget.h"
-#include "ramprojectwidget.h"
-#include "ramstepwidget.h"
-#include "ramassetgroupwidget.h"
-#include "ramfiletypewidget.h"
-#include "ramapplicationwidget.h"
-#include "ramsequencewidget.h"
-
 ItemTableWidget::ItemTableWidget(QWidget *parent):
     QTableWidget(parent)
 {
@@ -19,7 +7,7 @@ ItemTableWidget::ItemTableWidget(QWidget *parent):
     //connectEvents();
     //m_ready = true;
 }
-/*
+
 void ItemTableWidget::setStepVisible(QString stepUuid, bool visible)
 {
     int col = stepColumn(stepUuid);
@@ -367,7 +355,7 @@ int ItemTableWidget::stepColumn(RamObject *stepObj)
 {
     return stepColumn(stepObj->uuid());
 }
-*/
+
 
 
 void ItemTableWidget::setupUi()

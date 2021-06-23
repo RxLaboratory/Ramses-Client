@@ -64,7 +64,7 @@ public:
 public slots:
     virtual void update();
     virtual void remove();
-    virtual void edit() {};
+    virtual void edit(bool s = true) { Q_UNUSED(s) };
 
 signals:
     void changed(RamObject *);
@@ -90,7 +90,7 @@ protected:
     static QMap<QString, RamObject*> m_existingObjects;
 
     void setEditWidget( QWidget *w );
-    void showEdit();
+    void showEdit(bool show = true);
 
 private:
     RamObject::ObjectType _objectType = Generic;

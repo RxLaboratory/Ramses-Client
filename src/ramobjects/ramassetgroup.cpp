@@ -23,6 +23,10 @@ RamAssetGroup::RamAssetGroup(QString shortName, RamProject *project, QString nam
     _template = false;
     m_dbi->createAssetGroup(m_shortName, m_name, m_project->uuid(), m_uuid);
 
+    m_assets = new RamObjectFilterModel(this);
+    m_assets->setSourceModel(project->assets());
+    m_assets->setFilterUuid( m_uuid );
+
     this->setObjectName( "RamAssetGroup " + m_shortName);
 }
 
@@ -44,6 +48,11 @@ RamAssetGroup *RamAssetGroup::createFromTemplate(RamProject *project)
     return assetGroup;
 }
 
+int RamAssetGroup::assetCount() const
+{
+    return m_assets->rowCount();
+}
+
 RamProject *RamAssetGroup::project() const
 {
     return m_project;
@@ -62,7 +71,7 @@ void RamAssetGroup::update()
     else m_dbi->updateAssetGroup(m_uuid, m_shortName, m_name);
 }
 
-void RamAssetGroup::edit()
+void RamAssetGroup::edit(bool show)
 {
     if (!m_editReady)
     {
@@ -70,6 +79,6 @@ void RamAssetGroup::edit()
         setEditWidget(w);
         m_editReady = true;
     }
-    showEdit();
+    showEdit(show);
 }
 

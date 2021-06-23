@@ -36,6 +36,10 @@ QVariant RamObjectList::data(const QModelIndex &index, int role) const
 
     if (role == Qt::DisplayRole) return obj->name();
 
+    if (role == Qt::StatusTipRole)return QString(obj->shortName() % " | " % obj->name());
+
+    if (role == Qt::ToolTipRole) return QString(obj->shortName() % " | " % obj->name() % "\n" % obj->comment());
+
     quintptr iptr = reinterpret_cast<quintptr>(obj);
     return iptr;
 }

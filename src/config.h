@@ -14,6 +14,6 @@
 #define DEACTIVATE_SHOTSTABLE
 
 // Deactivate Assets Table
-#define DEACTIVATE_ASSETSTABLE
+//#define DEACTIVATE_ASSETSTABLE
 
 #endif // CONFIG_H

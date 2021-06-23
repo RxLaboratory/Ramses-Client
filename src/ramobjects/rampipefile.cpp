@@ -73,7 +73,7 @@ RamPipeFile *RamPipeFile::pipeFile(QString uuid)
     return qobject_cast<RamPipeFile*>( RamObject::obj(uuid) );
 }
 
-void RamPipeFile::edit()
+void RamPipeFile::edit(bool show)
 {
     if (!m_editReady)
     {
@@ -81,5 +81,5 @@ void RamPipeFile::edit()
         setEditWidget(w);
         m_editReady = true;//*/
     }
-    showEdit();
+    showEdit(show);
 }
