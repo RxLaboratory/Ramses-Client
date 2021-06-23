@@ -25,6 +25,7 @@ public:
 
 signals:
     void editObject(RamObject*);
+    void historyObject(RamObject*);
 
 protected:
     bool editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index) override;
@@ -38,8 +39,6 @@ private:
     QColor m_light;
     QFont m_textFont;
     QFont m_detailsFont;
-    QTextOption m_textOption;
-    QTextOption m_detailsOption;
     int m_padding;
 
     // Settings
@@ -49,6 +48,8 @@ private:
     // Events
     bool m_editButtonPressed = false;
     bool m_editButtonHover = false;
+    bool m_historyButtonPressed = false;
+    bool m_historyButtonHover = false;
 
     // Utils
     bool canEdit() const;

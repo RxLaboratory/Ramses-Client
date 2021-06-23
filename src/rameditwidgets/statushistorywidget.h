@@ -3,42 +3,25 @@
 
 #include <QSplitter>
 
-//#include "duqf-widgets/duqflistwidget.h"
 #include "ramitem.h"
 #include "statuseditwidget.h"
-#include "objectlisteditwidget.h"
+#include "ramobjectlistwidget.h"
 
-/**
- * @brief The StatusHistoryWidget class shows the status history of any RamItem
- * It has a RamStep selector to select the step shown,
- * A list of past status
- * And a status editor to add a new status for the selected step
- * TODO: change the combobox for the steps to a new StepSelectorWidget class, working like the ProjectSelectorWidget class
- */
 class StatusHistoryWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit StatusHistoryWidget(QWidget *parent = nullptr);
-    explicit StatusHistoryWidget(RamItem *item, QWidget *parent = nullptr);
-    void setItem(RamItem *item);
+    explicit StatusHistoryWidget(RamStepStatusHistory *history, QWidget *parent = nullptr);
 
 signals:
 
 private slots:
-    void setStatus(RamState *state, int completionRatio, int version, QString comment);
-    void currentFilterChanged(QString f);
+    void editObject(RamObject *obj) const;
 
 private:
-    RamItem *_item;
-
-    QList<QMetaObject::Connection> _itemConnections;
-    QList<QMetaObject::Connection> _projectConnections;
-
     void setupUi();
     void connectEvents();
-    ObjectListEditWidget *statusList;
-    StatusEditWidget *statusWidget;
+    RamObjectListWidget *ui_statusList;
 };
 
 #endif // STATUSHISTORYWIDGET_H

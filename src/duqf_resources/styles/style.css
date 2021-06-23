@@ -594,6 +594,10 @@ QMenu::separator {
     background: @color-dark-grey;
 }
 
+#titleBar QComboBox {
+    background-color: @color-dark-grey;
+}
+
 /* TOOLBAR */
 
 QToolBar {

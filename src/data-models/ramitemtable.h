@@ -4,6 +4,7 @@
 #include "ramobjectlist.h"
 #include "ramstepstatushistory.h"
 #include "ramitem.h"
+#include "data-models/ramstepfiltermodel.h"
 
 class RamItemTable : public RamObjectList
 {
@@ -12,14 +13,17 @@ public:
     explicit RamItemTable(RamStep::Type productionType, RamObjectList *steps, QObject *parent = nullptr);
     RamItemTable(RamStep::Type productionType, RamObjectList *steps, QString shortName, QString name = "", QObject *parent = nullptr);
 
-    const RamStep::Type &productionType() const;
-
     // MODEL REIMPLEMENTATION
     int columnCount(const QModelIndex &parent = QModelIndex()) const override;
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
+    QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
 
     // MODEL EDITING REIMPLEMENTATION
     virtual void insertObject(int i, RamObject *obj) override; // Insert Row
+
+    // Step Filters
+    void addStepFilter(RamObject *stepObj);
+    void removeStepFilter(RamObject *stepObj);
 
 private slots:
     // TODO header data on step insert and change
@@ -28,7 +32,7 @@ private slots:
     void statusChanged(RamItem *item, RamStep *step);
 
 private:
-    RamObjectList *m_steps;
+    RamStepFilterModel *m_steps;
     RamStep::Type m_productionType;
 
     // Connect submodels and relay events
@@ -36,7 +40,8 @@ private:
 
     // Utils
     void connectItem(RamItem *item);
-    int stepCol(RamStep *step);
+    RamStep *stepAt(int col) const;
+    int stepCol(RamStep *step) const;
 };
 
 #endif // RAMITEMTABLE_H

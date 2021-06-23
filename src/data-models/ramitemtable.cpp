@@ -1,22 +1,27 @@
 #include "ramitemtable.h"
+#include "ramses.h"
 
 RamItemTable::RamItemTable(RamStep::Type productionType, RamObjectList *steps, QObject *parent) : RamObjectList(parent)
 {
-    m_steps = steps;
     m_productionType = productionType;
+    m_steps = new RamStepFilterModel(productionType, this);
+    m_steps->setList(steps);
+    connectEvents();
 }
 
 RamItemTable::RamItemTable(RamStep::Type productionType, RamObjectList *steps, QString shortName, QString name, QObject *parent)
         : RamObjectList(shortName, name, parent)
 {
-    m_steps = steps;
     m_productionType = productionType;
+    m_steps = new RamStepFilterModel(productionType, this);
+    m_steps->setList(steps);
+    connectEvents();
 }
 
 int RamItemTable::columnCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent);
-    return m_steps->count() + 1;
+    return m_steps->rowCount() + 1;
 }
 
 QVariant RamItemTable::data(const QModelIndex &index, int role) const
@@ -25,51 +30,79 @@ QVariant RamItemTable::data(const QModelIndex &index, int role) const
     int col = index.column();
 
     // Return the item
-    if (row == 0)
+    if (col == 0)
         return RamObjectList::data(index, role);
-
-    // TODO COLS
-    return 0;
 
     // Get the item
     RamObject *itemObj = m_objectsList.at(row);
     RamItem *item = qobject_cast<RamItem*>( itemObj );
 
     // Get the step
-    RamObject *stepObj = m_steps->at( col - 1 );
+    RamStep *step = stepAt(col);
 
     // Get the status
-    RamStatus *status = item->status(stepObj);
+    RamStatus *status = item->status(step);
 
-    // If there's no status yet, just return 0
-    if (role == Qt::DisplayRole)
+    if (!status)
     {
-        if (!status) return "";
-        return status->name();
+        // If there's no status yet, return a no
+        if (role == Qt::DisplayRole)
+            return "Nothing to do";
+
+        if (role == Qt::StatusTipRole)
+            return "NO | Nothing to do";
+
+        if (role == Qt::ToolTipRole)
+            return "NO | Nothing to do";
+
+        status = new RamStatus(
+                        Ramses::instance()->ramUser(),
+                        Ramses::instance()->noState(),
+                        step,
+                        item);
+
+        quintptr iptr = reinterpret_cast<quintptr>(status);
+        return iptr;
     }
+
+    if (role == Qt::DisplayRole)
+        return status->name();
 
     if (role == Qt::StatusTipRole)
-    {
-        if (!status) return "";
-        return QString(status->shortName() % " | " % status->name());
-    }
+        return QString(status->state()->shortName() % " | " % status->state()->name());
 
     if (role == Qt::ToolTipRole)
-    {
-        if (!status) return "";
         return QString(
-                    status->shortName() %
+                    status->state()->shortName() %
                     " | " %
-                    status->name() %
+                    status->state()->name() %
                     "\nCompletion: " %
                     QString::number( status->completionRatio() ) %
                     "%\n" %
                     status->comment() );
-    }
 
-    if (!status) return 0;
     quintptr iptr = reinterpret_cast<quintptr>(status);
     return iptr;
+}
+
+QVariant RamItemTable::headerData(int section, Qt::Orientation orientation, int role) const
+{
+    if(orientation == Qt::Vertical) return RamObjectList::headerData(section, orientation, role);
+
+    if (section == 0)
+    {
+        if (m_productionType == RamStep::AssetProduction) return "Assets";
+        else if (m_productionType == RamStep::ShotProduction) return "Shots";
+        else return "Items";
+    }
+
+    if ( role == Qt::DisplayRole )
+        return stepAt(section)->name();
+
+    if ( role == Qt::UserRole)
+        return reinterpret_cast<quintptr>( stepAt(section) );
+
+    return QAbstractTableModel::headerData(section, orientation, role);
 }
 
 void RamItemTable::insertObject(int i, RamObject *obj)
@@ -91,15 +124,22 @@ void RamItemTable::insertObject(int i, RamObject *obj)
     endInsertRows();
 }
 
+void RamItemTable::addStepFilter(RamObject *stepObj)
+{
+    m_steps->ignoreUuid(stepObj->uuid());
+}
+
+void RamItemTable::removeStepFilter(RamObject *stepObj)
+{
+    m_steps->acceptUuid(stepObj->uuid());
+}
+
 void RamItemTable::insertStep(const QModelIndex &parent, int first, int last)
 {
     Q_UNUSED(parent);
 
     //We're inserting new columns
     beginInsertColumns(QModelIndex(), first+1, last+1);
-
-    // TODO Connect changed for headers
-
     // Finished!
     endInsertColumns();
 }
@@ -107,12 +147,8 @@ void RamItemTable::insertStep(const QModelIndex &parent, int first, int last)
 void RamItemTable::removeStep(const QModelIndex &parent, int first, int last)
 {
     Q_UNUSED(parent);
-
     // We're removing columns
     beginRemoveColumns(QModelIndex(), first+1, last+1);
-
-    // TODO Disconnect changed
-
     endRemoveColumns();
 }
 
@@ -131,15 +167,10 @@ void RamItemTable::statusChanged(RamItem *item, RamStep *step)
     emit dataChanged( index, index, {Qt::DisplayRole});
 }
 
-const RamStep::Type &RamItemTable::productionType() const
-{
-    return m_productionType;
-}
-
 void RamItemTable::connectEvents()
 {
-    connect( m_steps, SIGNAL(columnsInserted(QModelIndex,int,int)), this, SLOT(insertStep(QModelIndex,int,int)));
-    connect( m_steps, SIGNAL(columnsAboutToBeRemoved(QModelIndex,int,int)), this, SLOT(removeStep(QModelIndex,int,int)));
+    connect( m_steps, SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(insertStep(QModelIndex,int,int)));
+    connect( m_steps, SIGNAL(rowsAboutToBeRemoved(QModelIndex,int,int)), this, SLOT(removeStep(QModelIndex,int,int)));
 }
 
 void RamItemTable::connectItem(RamItem *item)
@@ -149,11 +180,19 @@ void RamItemTable::connectItem(RamItem *item)
     m_connections[ item->uuid() ] << c;
 }
 
-int RamItemTable::stepCol(RamStep *step)
+RamStep *RamItemTable::stepAt(int col) const
 {
-    for (int i = 0 ; i < m_steps->count(); i++)
+    quintptr stepIptr = m_steps->data(m_steps->index(col-1, 0), Qt::UserRole).toULongLong();
+    RamStep *step = reinterpret_cast<RamStep*>( stepIptr );
+    return step;
+}
+
+int RamItemTable::stepCol(RamStep *step) const
+{
+    for (int i = 0; i < m_steps->rowCount(); i++)
     {
-        if (step->is(m_steps->at(i))) return i+1;
+        RamObject *obj = reinterpret_cast<RamObject*>( m_steps->data( m_steps->index(i, 0), Qt::UserRole).toULongLong() );
+        if (obj->is(step)) return i+1;
     }
     return -1;
 }

@@ -11,7 +11,7 @@
 //#define DEACTIVATE_PIPELINE
 
 // Deactivate Shots Table
-#define DEACTIVATE_SHOTSTABLE
+//#define DEACTIVATE_SHOTSTABLE
 
 // Deactivate Assets Table
 //#define DEACTIVATE_ASSETSTABLE

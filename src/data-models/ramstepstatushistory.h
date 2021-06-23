@@ -15,9 +15,15 @@ public:
     // MODEL REIMPLEMENTATION
     virtual void sort(int column = 0, Qt::SortOrder order = Qt::AscendingOrder) override;
 
+public slots:
+    void edit(bool show = true);
+
 private:
     RamStep *m_step;
     RamItem *m_item;
+
+    bool m_editReady = false;
+    ObjectDockWidget *m_dockWidget;
 };
 
 bool statusSorter(RamObject *a, RamObject *b);

@@ -134,6 +134,7 @@ int RamObjectList::objRow(RamObject *obj)
 
 void RamObjectList::append(RamObject *obj)
 {
+
     if (!obj) return;
     if (contains(obj)) return;
 

@@ -5,11 +5,13 @@
 #include <QShowEvent>
 #include <QHideEvent>
 #include <QMenu>
+#include <QComboBox>
 
 #include "duqf-widgets/titlebar.h"
 #include "duqf-utils/guiutils.h"
 #include "duqf-widgets/duqfsearchedit.h"
 #include "data-views/ramobjectlistwidget.h"
+#include "data-views/ramobjectlistcombobox.h"
 #include "ramses.h"
 
 
@@ -17,7 +19,7 @@ class ItemTableManagerWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit ItemTableManagerWidget(QString title= "Items Table", QWidget *parent = nullptr);
+    explicit ItemTableManagerWidget(RamStep::Type productionType, QWidget *parent = nullptr);
 
 public slots:
     void selectAllSteps();
@@ -33,18 +35,23 @@ protected:
 
     RamObjectListWidget *ui_table;
     TitleBar *ui_titleBar;
+    RamObjectListComboBox *ui_groupBox;
 
 protected slots:
-    virtual void projectChanged(RamProject *project) {Q_UNUSED(project)};
+    virtual void projectChanged(RamProject *project);
 
 private slots:
-    void stepAdded(RamStep *step);
-    void stepRemoved(RamObject *stepObj);
+    void addStep(const QModelIndex &parent, int first, int last);
+    void removeStep(const QModelIndex &parent, int first, int last);
+    void stepChanged(const QModelIndex &first, const QModelIndex &last,QVector<int> roles = QVector<int>());
 
     void stepActionToggled(bool checked);
 
+    void editObject(RamObject *obj) const;
+    void historyObject(RamObject *obj) const;
+
 private:
-    void setupUi(QString title);
+    void setupUi();
     void connectEvents();
 
     DuQFSearchEdit *ui_searchEdit;
@@ -52,6 +59,10 @@ private:
     QAction *ui_actionSelectAllSteps ;
     QAction *ui_actionSelectNoSteps ;
     QAction *ui_actionSelectMySteps ;
+
+    RamStepFilterModel *m_stepFilter;
+    RamProject *m_project = nullptr;
+    RamStep::Type m_productionType;
 };
 
 #endif // ITEMTABLE_H

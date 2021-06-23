@@ -153,14 +153,14 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
 #endif
 
 #ifndef DEACTIVATE_ASSETSTABLE
-    AssetTableManagerWidget *assetsTable = new AssetTableManagerWidget("Assets Table", this);
+    ItemTableManagerWidget *assetsTable = new ItemTableManagerWidget(RamStep::AssetProduction, this);
     mainStack->addWidget(assetsTable);
     connect(assetsTable, SIGNAL(closeRequested()), this, SLOT(home()));
     qDebug() << "> Assets table ready";
 #endif
 
 #ifndef DEACTIVATE_SHOTSTABLE
-    ShotTable *shotsTable = new ShotTable("Shots Table", this);
+    ItemTableManagerWidget *shotsTable = new ItemTableManagerWidget(RamStep::ShotProduction, this);
     mainStack->addWidget(shotsTable);
     connect(shotsTable, SIGNAL(closeRequested()), this, SLOT(home()));
     qDebug() << "> Shots table ready";

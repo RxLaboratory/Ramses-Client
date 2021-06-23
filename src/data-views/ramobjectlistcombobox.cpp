@@ -26,7 +26,7 @@ void RamObjectListComboBox::setList(RamObjectList *list)
 {
     if (!list)
     {
-        this->hide();
+        if(m_isFilterBox) this->hide();
         return;
     }
     this->show();

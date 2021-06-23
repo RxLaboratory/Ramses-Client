@@ -303,7 +303,7 @@ void ObjectListEditWidget::setupUi(bool editableObjects, RamUser::UserRole editR
     m_searchEdit = new DuQFSearchEdit(this);
     mainLayout->addWidget(m_searchEdit);
 
-    m_listWidget = new RamObjectListWidget(m_objectList, editableObjects, editRole, this);
+    m_listWidget = new RamObjectListWidget(m_objectList, editableObjects, editRole, RamObjectListWidget::List, this);
     mainLayout->addWidget(m_listWidget);
 
     mainLayout->setStretch(0, 0);

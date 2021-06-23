@@ -745,8 +745,9 @@ void RamLoader::gotStatusHistory(QJsonArray statusHistory, RamItem *item)
     QMapIterator<QString, RamStepStatusHistory*> i(history);
     while(i.hasNext())
     {
+        i.next();
         RamStepStatusHistory *stepHistory = i.value();
-        for (int j = 0; j <= stepHistory->count(); j++)
+        for (int j = 0; j < stepHistory->count(); j++)
         {
             RamObject *obj = stepHistory->at(j);
             if (!uuids.contains( obj->uuid() ))

@@ -1,51 +1,87 @@
 #include "ramobjectlistwidget.h"
 
-RamObjectListWidget::RamObjectListWidget(QWidget *parent):
+RamObjectListWidget::RamObjectListWidget(DisplayMode mode, QWidget *parent):
         QTableView(parent)
 {
     m_delegate = new RamObjectDelegate();
+    m_displayMode = mode;
     setupUi();
     connectEvents();
-    m_objectList = new RamObjectFilterModel();
-    RamItemTableListProxy *tlp = new RamItemTableListProxy();
-    tlp->setSourceModel(m_objectList);
-    this->setModel(tlp);
+    m_objectList = new RamObjectFilterModel(this);
+    if (mode == List)
+    {
+        RamItemTableListProxy *tlp = new RamItemTableListProxy(this);
+        tlp->setSourceModel(m_objectList);
+        this->setModel(tlp);
+    }
+    else
+    {
+        this->setModel(m_objectList);
+    }
+
 }
 
-RamObjectListWidget::RamObjectListWidget(RamObjectList *list, QWidget *parent):
+RamObjectListWidget::RamObjectListWidget(RamObjectList *list, DisplayMode mode, QWidget *parent):
     QTableView(parent)
 {
     m_delegate = new RamObjectDelegate();
+    m_displayMode = mode;
     setupUi();
     connectEvents();
-    m_objectList = new RamObjectFilterModel();
-    RamItemTableListProxy *tlp = new RamItemTableListProxy();
-    tlp->setSourceModel(m_objectList);
-    this->setModel(tlp);
-    setList(list);
+    m_objectList = new RamObjectFilterModel(this);
+    if (mode == List)
+    {
+        RamItemTableListProxy *tlp = new RamItemTableListProxy(this);
+        tlp->setSourceModel(m_objectList);
+        this->setModel(tlp);
+    }
+    else
+    {
+        this->setModel(m_objectList);
+    }
+    this->setList(list);
 }
 
-RamObjectListWidget::RamObjectListWidget(RamObjectList *list, bool editableObjects, RamUser::UserRole editRole, QWidget *parent):
+RamObjectListWidget::RamObjectListWidget(RamObjectList *list, bool editableObjects, RamUser::UserRole editRole, DisplayMode mode, QWidget *parent):
     QTableView(parent)
 {
+    m_displayMode = mode;
     m_delegate = new RamObjectDelegate();
     m_delegate->setEditable(editableObjects);
     m_delegate->setEditRole(editRole);
     setupUi();
     connectEvents();
-    m_objectList = new RamObjectFilterModel();
-    this->setModel(m_objectList);
+    m_objectList = new RamObjectFilterModel(this);
+    if (mode == List)
+    {
+        RamItemTableListProxy *tlp = new RamItemTableListProxy(this);
+        tlp->setSourceModel(m_objectList);
+        this->setModel(tlp);
+    }
+    else
+    {
+        this->setModel(m_objectList);
+    }
     setList(list);
 }
 
 void RamObjectListWidget::setList(RamObjectList *list)
 { 
     m_objectList->setList(list);
+    this->resizeRowsToContents();
+    this->resizeColumnsToContents();
+}
+
+void RamObjectListWidget::setEditableObjects(bool editableObjects, RamUser::UserRole editRole)
+{
+    m_delegate->setEditable(editableObjects);
+    m_delegate->setEditRole(editRole);
 }
 
 void RamObjectListWidget::search(QString s)
 {
     m_objectList->search(s);
+    this->resizeRowsToContents();
 }
 
 void RamObjectListWidget::mouseMoveEvent(QMouseEvent *event)
@@ -88,9 +124,10 @@ void RamObjectListWidget::mouseReleaseEvent(QMouseEvent *event)
 
 void RamObjectListWidget::resizeEvent(QResizeEvent *event)
 {
-    this->setColumnWidth( 0, event->size().width() );
+    if (m_displayMode == List) this->setColumnWidth( 0, event->size().width() );
     this->setRowHeight(0,10);
-    this->setRowHeight(0,30);
+    if (m_displayMode == Table) this->setRowHeight(0,42);
+    else this->setRowHeight(0,30);
 }
 
 void RamObjectListWidget::currentChanged(const QModelIndex &current, const QModelIndex &previous)
@@ -120,6 +157,7 @@ void RamObjectListWidget::filter(RamObject *o)
 {
     if (!o) m_objectList->setFilterUuid("");
     else m_objectList->setFilterUuid(o->uuid());
+    this->resizeRowsToContents();
 }
 
 void RamObjectListWidget::setupUi()
@@ -130,9 +168,10 @@ void RamObjectListWidget::setupUi()
     this->setDragEnabled(false);
     this->setDefaultDropAction(Qt::IgnoreAction);
     this->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
+    this->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
     this->verticalHeader()->setSectionsMovable(false);
     this->setShowGrid(false);
-    this->horizontalHeader()->hide();
+    if (m_displayMode == List) this->horizontalHeader()->hide();
     this->setColumnWidth( 0, this->size().width() );
     this->setMouseTracking(true);
 
@@ -146,5 +185,6 @@ void RamObjectListWidget::setupUi()
 void RamObjectListWidget::connectEvents()
 {
     connect(m_delegate, &RamObjectDelegate::editObject, this, &RamObjectListWidget::editObject);
+    connect(m_delegate, &RamObjectDelegate::historyObject, this, &RamObjectListWidget::historyObject);
 }
 

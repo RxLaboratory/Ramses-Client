@@ -16,70 +16,70 @@ StatusEditWidget::StatusEditWidget(RamStatus *status, QWidget *parent) : ObjectE
 
 void StatusEditWidget::setStatus(RamStatus *status)
 {
-    _status = status;
+    m_status = status;
 
-    stateBox->setCurrentText("STB");
-    completionBox->setValue(0);
-    versionBox->setValue(1);
-    commentEdit->setPlainText("");
+    ui_stateBox->setCurrentText("STB");
+    ui_completionBox->setValue(0);
+    ui_versionBox->setValue(1);
+    ui_commentEdit->setPlainText("");
     if (!status) return;
 
-    stateBox->setCurrentState(status->state());
-    completionBox->setValue(status->completionRatio());
-    versionBox->setValue(status->version());
-    commentEdit->setPlainText(status->comment());
+    ui_stateBox->setCurrentState(status->state());
+    ui_completionBox->setValue(status->completionRatio());
+    ui_versionBox->setValue(status->version());
+    ui_commentEdit->setPlainText(status->comment());
 }
 
 RamState *StatusEditWidget::state() const
 {
-    return stateBox->currentState();
+    return ui_stateBox->currentState();
 }
 
 int StatusEditWidget::completionRatio() const
 {
-    return completionBox->value();
+    return ui_completionBox->value();
 }
 
 int StatusEditWidget::version() const
 {
-    return versionBox->value();
+    return ui_versionBox->value();
 }
 
 QString StatusEditWidget::comment() const
 {
-    return commentEdit->toPlainText();
+    return ui_commentEdit->toPlainText();
 }
 
 void StatusEditWidget::currentStateChanged(RamState *state)
 {
     if (state)
     {
-        completionBox->setValue(state->completionRatio());
+        ui_completionBox->setValue(state->completionRatio());
     }
     else
     {
-        completionBox->setValue(50);
+        ui_completionBox->setValue(50);
     }
 }
 
 void StatusEditWidget::updateStatus()
 {
-    emit statusUpdated(stateBox->currentState(), completionBox->value(), versionBox->value(), commentEdit->toPlainText() );
+    emit statusUpdated(ui_stateBox->currentState(), ui_completionBox->value(), ui_versionBox->value(), ui_commentEdit->toPlainText() );
 }
 
 void StatusEditWidget::adjustCommentEditSize()
 {
     // Get text height (returns the number of lines and not the actual height in pixels
-    int docHeight = commentEdit->document()->size().toSize().height();
+    int docHeight = ui_commentEdit->document()->size().toSize().height();
     // Compute needed height in pixels
-    int h = docHeight * ( commentEdit->fontMetrics().height() ) + commentEdit->fontMetrics().height() * 2;
+    int h = docHeight * ( ui_commentEdit->fontMetrics().height() ) + ui_commentEdit->fontMetrics().height() * 2;
     //commentEdit->resize(commentEdit->width(), h);
-    commentEdit->setMaximumHeight(h);
+    ui_commentEdit->setMaximumHeight(h);
 }
 
 void StatusEditWidget::revert()
 {
-    setStatus(_status);
+    setStatus(m_status);
 }
 
 void StatusEditWidget::setupUi()
@@ -90,34 +90,34 @@ void StatusEditWidget::setupUi()
     cLayout->setContentsMargins(0,0,0,0);
     cLayout->setSpacing(3);
 
-    stateBox = new StateBox(this);
-    cLayout->addWidget(stateBox);
+    ui_stateBox = new StateBox(this);
+    cLayout->addWidget(ui_stateBox);
 
-    completionBox = new DuQFSpinBox(this);
-    completionBox->setMaximum(100);
-    completionBox->setMinimum(0);
-    completionBox->setSuffix("%");
-    completionBox->setValue(50);
-    completionBox->setFixedHeight(stateBox->height());
-    cLayout->addWidget(completionBox);
+    ui_completionBox = new DuQFSpinBox(this);
+    ui_completionBox->setMaximum(100);
+    ui_completionBox->setMinimum(0);
+    ui_completionBox->setSuffix("%");
+    ui_completionBox->setValue(50);
+    ui_completionBox->setFixedHeight(ui_stateBox->height());
+    cLayout->addWidget(ui_completionBox);
 
-    versionBox = new AutoSelectSpinBox(this);
-    versionBox->setMaximum(1000);
-    versionBox->setValue(1);
-    versionBox->setPrefix("v");
-    cLayout->addWidget(versionBox);
+    ui_versionBox = new AutoSelectSpinBox(this);
+    ui_versionBox->setMaximum(1000);
+    ui_versionBox->setValue(1);
+    ui_versionBox->setPrefix("v");
+    cLayout->addWidget(ui_versionBox);
 
     cLayout->setStretch(0,0);
     cLayout->setStretch(1,100);
     cLayout->setStretch(2,0);
 
-    mainLayout->insertLayout(0, cLayout);
+    ui_mainLayout->insertLayout(0, cLayout);
 
-    commentEdit = new QPlainTextEdit(this);
-    commentEdit->setPlaceholderText("Comment...");
-    commentEdit->setMinimumHeight(30);
-    commentEdit->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    mainLayout->insertWidget(1, commentEdit);
+    ui_commentEdit = new QPlainTextEdit(this);
+    ui_commentEdit->setPlaceholderText("Comment...");
+    ui_commentEdit->setMinimumHeight(30);
+    ui_commentEdit->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    ui_mainLayout->insertWidget(1, ui_commentEdit);
 
     QHBoxLayout *buttonsLayout = new QHBoxLayout();
     buttonsLayout->setSpacing(3);
@@ -125,29 +125,29 @@ void StatusEditWidget::setupUi()
 
     buttonsLayout->addStretch();
 
-    revertButton = new QToolButton(this);
-    revertButton->setText("Revert");
-    revertButton->setIcon(QIcon(":/icons/undo"));
-    buttonsLayout->addWidget(revertButton);
+    ui_revertButton = new QToolButton(this);
+    ui_revertButton->setText("Revert");
+    ui_revertButton->setIcon(QIcon(":/icons/undo"));
+    buttonsLayout->addWidget(ui_revertButton);
 
-    setButton = new QToolButton(this);
-    setButton->setText("Update");
-    setButton->setIcon(QIcon(":/icons/apply"));
-    buttonsLayout->addWidget(setButton);
+    ui_setButton = new QToolButton(this);
+    ui_setButton->setText("Update");
+    ui_setButton->setIcon(QIcon(":/icons/apply"));
+    buttonsLayout->addWidget(ui_setButton);
 
-    mainLayout->insertLayout(2,buttonsLayout);
+    ui_mainLayout->insertLayout(2,buttonsLayout);
 
-    mainLayout->setStretch(0,0);
-    mainLayout->setStretch(1,1);
-    mainLayout->setStretch(2,0);
+    ui_mainLayout->setStretch(0,0);
+    ui_mainLayout->setStretch(1,1);
+    ui_mainLayout->setStretch(2,0);
 
-    mainLayout->addStretch();
+    ui_mainLayout->addStretch();
 }
 
 void StatusEditWidget::connectEvents()
 {
-    connect(commentEdit, &QPlainTextEdit::textChanged, this, &StatusEditWidget::adjustCommentEditSize);
-    connect(stateBox, SIGNAL(currentStateChanged(RamState*)), this, SLOT(currentStateChanged(RamState*)));
-    connect(setButton, &QToolButton::clicked, this, &StatusEditWidget::updateStatus);
-    connect(revertButton, &QToolButton::clicked, this, &StatusEditWidget::revert);
+    connect(ui_commentEdit, &QPlainTextEdit::textChanged, this, &StatusEditWidget::adjustCommentEditSize);
+    connect(ui_stateBox, SIGNAL(currentStateChanged(RamState*)), this, SLOT(currentStateChanged(RamState*)));
+    connect(ui_setButton, &QToolButton::clicked, this, &StatusEditWidget::updateStatus);
+    connect(ui_revertButton, &QToolButton::clicked, this, &StatusEditWidget::revert);
 }

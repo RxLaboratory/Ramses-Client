@@ -18,10 +18,6 @@ void RamItem::setStatus(RamUser *user, RamState *state, RamStep *step, int compl
     if (completionRatio >= 0) status->setCompletionRatio(completionRatio);
     if (comment != "") status->setComment(comment);
     status->setVersion(version);
-
-    if (this->objectType() == Asset) m_dbi->setAssetStatus(m_uuid, state->uuid(), step->uuid(), user->uuid(), completionRatio, comment, version, status->uuid());
-    else if (this->objectType() == Shot) m_dbi->setShotStatus(m_uuid, state->uuid(), step->uuid(), user->uuid(), completionRatio, comment, version, status->uuid());
-
     addStatus(status);
 }
 
@@ -31,11 +27,8 @@ void RamItem::addStatus(RamStatus *status)
     if (!step) return;
 
     RamStepStatusHistory *history = statusHistory(step);
-    if (history)
-    {
-        history->append( status );
-        history->sort();
-    }
+    history->append( status );
+    history->sort();
 }
 
 QMap<QString, RamStepStatusHistory*> RamItem::statusHistory() const
@@ -50,15 +43,15 @@ RamStepStatusHistory *RamItem::statusHistory(RamObject *stepObj)
     if (!stepHistory)
     {
         RamStep *step = qobject_cast<RamStep*>( stepObj );
-        if (!step) return nullptr;
         stepHistory = new RamStepStatusHistory(step, this);
         QList<QMetaObject::Connection> c;
-        c << connect(stepHistory, SIGNAL(rowsInserted(const QModelIndex&,int,int)), this, SLOT(insertStatus(const QModelIndex&,int,int)));
-        c << connect(stepHistory, SIGNAL(rowsRemoved(const QModelIndex&,int,int)), this, SLOT(removeStatus(const QModelIndex&,int,int)));
-        c << connect(stepHistory, SIGNAL(dataChanged(const QModelIndex&, const QModelIndex&, const QVector<int>&)), this, SLOT(statusChanged(const QModelIndex&,const QModelIndex&)));
-        c << connect(stepHistory, SIGNAL(rowsMoved(const QModelIndex&, int, int, const QModelIndex&, int)), this, SLOT(statusMoved(const QModelIndex&, int, int, const QModelIndex&, int)));
+        c << connect(stepHistory, SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(insertStatus(QModelIndex,int,int)));
+        c << connect(stepHistory, SIGNAL(rowsRemoved(QModelIndex,int,int)), this, SLOT(removeStatus(QModelIndex,int,int)));
+        c << connect(stepHistory, SIGNAL(dataChanged(QModelIndex,QModelIndex,QVector<int>)), this, SLOT(statusChanged(QModelIndex,QModelIndex)));
+        c << connect(stepHistory, SIGNAL(rowsMoved(QModelIndex,int,int,QModelIndex,int)), this, SLOT(statusMoved(QModelIndex,int,int,QModelIndex,int)));
         c << connect(stepHistory, SIGNAL(modelReset()), this, SLOT(statusCleared()));
         m_statusConnections[ stepObj->uuid() ] = c;
+        m_history[ step->uuid() ] = stepHistory;
     }
     return stepHistory;
 }
@@ -66,7 +59,8 @@ RamStepStatusHistory *RamItem::statusHistory(RamObject *stepObj)
 RamStatus *RamItem::status(RamObject *step)
 {
     // Get the new current status
-    RamStepStatusHistory *history = m_history.value( step->uuid() );
+    RamStepStatusHistory *history = statusHistory(step);
+
     if (history->count() == 0) return nullptr;
 
     history->sort();
@@ -110,11 +104,17 @@ void RamItem::insertStatus(const QModelIndex &parent, int first, int last)
     Q_UNUSED(first)
 
     RamStepStatusHistory *stepHistory = qobject_cast<RamStepStatusHistory*>( sender() );
+    for (int i = first; i <= last; i++)
+    {
+        RamStatus *status = qobject_cast<RamStatus*>( stepHistory->at(i) );
+
+        if (this->objectType() == Asset) m_dbi->setAssetStatus(m_uuid, status->state()->uuid(), status->step()->uuid(), status->user()->uuid(), status->completionRatio(), status->comment(), status->version(), status->uuid());
+        else if (this->objectType() == Shot) m_dbi->setShotStatus(m_uuid, status->state()->uuid(), status->step()->uuid(), status->user()->uuid(), status->completionRatio(), status->comment(), status->version(), status->uuid());
+    }
+
     if (last != stepHistory->count() - 1) return;
 
-    RamStep *step = stepHistory->step();
-    if (!step) return;
-    emit statusChanged( this, step );
+    emit statusChanged( this, stepHistory->step() );
 }
 
 void RamItem::statusChanged(const QModelIndex &first, const QModelIndex &last)

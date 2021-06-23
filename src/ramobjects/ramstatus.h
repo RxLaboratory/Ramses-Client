@@ -31,21 +31,26 @@ public:
 
     RamItem *item() const;
 
-    void update();
-
     QDateTime date() const;
     void setDate(const QDateTime &date);
 
     static RamStatus *status(QString uuid);
 
+public slots:
+    void update() override;
+    virtual void edit(bool show = true) override;
+
+private slots:
+    void statusUpdated(RamState *state, int completion, int version, QString comment);
+
 private:
-    int _completionRatio = 50;
-    RamUser *_user;
-    RamState *_state;
-    RamItem *_item;
-    int _version = 1;
-    RamStep *_step;
-    QDateTime _date;
+    int m_completionRatio = 50;
+    RamUser *m_user;
+    RamState *m_state;
+    RamItem *m_item;
+    int m_version = 1;
+    RamStep *m_step;
+    QDateTime m_date;
 };
 
 #endif // RAMSTATUS_H

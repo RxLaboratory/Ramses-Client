@@ -119,12 +119,12 @@ RamObjectList *RamProject::sequences() const
     return m_sequences;
 }
 
-RamObjectList *RamProject::shots()
+RamItemTable *RamProject::shots()
 {
     return m_shots;
 }
 
-RamObjectList *RamProject::assets()
+RamItemTable *RamProject::assets()
 {
     return m_assets;
 }

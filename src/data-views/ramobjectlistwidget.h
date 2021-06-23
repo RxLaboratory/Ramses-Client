@@ -18,16 +18,21 @@ class RamObjectListWidget : public QTableView
 public:
     enum EditMode { UnassignObjects, RemoveObjects };
     Q_ENUM( EditMode )
+    enum DisplayMode { List, Table };
+    Q_ENUM( DisplayMode )
 
-    explicit RamObjectListWidget(QWidget *parent = nullptr);
-    explicit RamObjectListWidget(RamObjectList *list, QWidget *parent = nullptr);
-    explicit RamObjectListWidget(RamObjectList *list, bool editableObjects, RamUser::UserRole editRole = RamUser::Admin, QWidget *parent = nullptr);
+    explicit RamObjectListWidget(DisplayMode mode = List, QWidget *parent = nullptr);
+    explicit RamObjectListWidget(RamObjectList *list, DisplayMode mode = List, QWidget *parent = nullptr);
+    explicit RamObjectListWidget(RamObjectList *list, bool editableObjects, RamUser::UserRole editRole = RamUser::Admin, DisplayMode mode = List, QWidget *parent = nullptr);
     // Content
     void setList(RamObjectList *list);
+    // Settings
+    void setEditableObjects(bool editableObjects, RamUser::UserRole editRole = RamUser::Admin);
 
 signals:
     void objectSelected(RamObject*);
     void editObject(RamObject*);
+    void historyObject(RamObject*);
 
 public slots:
     void search(QString s);
@@ -49,6 +54,7 @@ private:
     void connectEvents();
 
     RamObjectFilterModel *m_objectList = nullptr;
+    DisplayMode m_displayMode;
 
     // Delegate
     RamObjectDelegate *m_delegate;

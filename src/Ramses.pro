@@ -32,6 +32,7 @@ INCLUDEPATH += rameditwidgets \
 SOURCES += \
     data-models/ramitemtablelistproxy.cpp \
     data-models/ramobjectfiltermodel.cpp \
+    data-models/ramstepfiltermodel.cpp \
     duqf-widgets/duqfsearchedit.cpp \
     data-models/ramitemtable.cpp \
     data-models/ramobjectlist.cpp \
@@ -134,16 +135,14 @@ SOURCES += \
     rameditwidgets/shoteditwidget.cpp \
     smallwidgets/statebox.cpp \
     rameditwidgets/stateeditwidget.cpp \
-    # rameditwidgets/statuseditwidget.cpp \
-    # rameditwidgets/statushistorywidget.cpp \
+    rameditwidgets/statuseditwidget.cpp \
+    rameditwidgets/statushistorywidget.cpp \
     rameditwidgets/stepeditwidget.cpp \
     rameditwidgets/templateassetgroupeditwidget.cpp \
     rameditwidgets/templatestepeditwidget.cpp \
     rameditwidgets/usereditwidget.cpp \
     userprofilepage.cpp \
-    rameditwidgets/assettablemanagerwidget.cpp \
     rameditwidgets/itemtablemanagerwidget.cpp \
-    #rameditwidgets/shottablemanagerwidget.cpp \
     pipeline-editor/objectnode.cpp \
     pipeline-editor/pipelinewidget.cpp \
     pipeline-editor/stepnode.cpp
@@ -155,6 +154,7 @@ HEADERS += \
     data-models/ramobjectfiltermodel.h \
     data-models/ramobjectlist.h \
     data-models/ramstatelist.h \
+    data-models/ramstepfiltermodel.h \
     data-models/ramstepstatushistory.h \
     data-views/ramobjectdelegate.h \
     duqf-widgets/duqfsearchedit.h \
@@ -254,16 +254,14 @@ HEADERS += \
     rameditwidgets/shoteditwidget.h \
     smallwidgets/statebox.h \
     rameditwidgets/stateeditwidget.h \
-    # rameditwidgets/statuseditwidget.h \
-    # rameditwidgets/statushistorywidget.h \
+    rameditwidgets/statuseditwidget.h \
+    rameditwidgets/statushistorywidget.h \
     rameditwidgets/stepeditwidget.h \
     rameditwidgets/templateassetgroupeditwidget.h \
     rameditwidgets/templatestepeditwidget.h \
     rameditwidgets/usereditwidget.h \
     userprofilepage.h \
-    rameditwidgets/assettablemanagerwidget.h \
     rameditwidgets/itemtablemanagerwidget.h \
-    #rameditwidgets/shottablemanagerwidget.h \
     pipeline-editor/objectnode.h \
     pipeline-editor/pipelinewidget.h \
     pipeline-editor/stepnode.h
