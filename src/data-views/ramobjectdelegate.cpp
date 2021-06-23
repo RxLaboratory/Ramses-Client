@@ -268,6 +268,9 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
 
 QSize RamObjectDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
+    Q_UNUSED(option)
+    Q_UNUSED(index)
+
     return QSize(32,30);
 }
 

@@ -44,7 +44,7 @@ private:
 
     // Settings
     bool m_editable = false;
-    bool m_editRole = RamUser::Admin;
+    RamUser::UserRole m_editRole = RamUser::Admin;
 
     // Events
     bool m_editButtonPressed = false;

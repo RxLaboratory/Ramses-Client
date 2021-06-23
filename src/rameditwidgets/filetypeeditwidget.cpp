@@ -51,6 +51,20 @@ void FileTypeEditWidget::update()
     updating = false;
 }
 
+void FileTypeEditWidget::updateExtensions()
+{
+    QStringList extensions = ui_extensionsEdit->text().split(",");
+    QStringList fixedExtensions;
+    for (int i = 0; i < extensions.count(); i++)
+    {
+        QString ext = extensions.at(i).trimmed();
+        if (ext.startsWith(".")) ext = ext.remove(0,1);
+        fixedExtensions << ext;
+    }
+    ui_extensionsEdit->setText( fixedExtensions.join(", "));
+    update();
+}
+
 void FileTypeEditWidget::setupUi()
 {
     QLabel *extLabel = new QLabel("Extensions", this);
@@ -69,6 +83,7 @@ void FileTypeEditWidget::setupUi()
 
 void FileTypeEditWidget::connectEvents()
 {
+    connect(ui_extensionsEdit, SIGNAL(editingFinished()), this, SLOT(updateExtensions()));
     connect(ui_extensionsEdit, &QLineEdit::editingFinished, this, &FileTypeEditWidget::update);
     connect(ui_previewableBox, &QCheckBox::clicked, this, &FileTypeEditWidget::update);
 }

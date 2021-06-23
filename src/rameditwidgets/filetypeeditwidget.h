@@ -22,6 +22,7 @@ protected slots:
     void update() override;
 
 private slots:
+    void updateExtensions();
 
 private:
     RamFileType *_fileType;

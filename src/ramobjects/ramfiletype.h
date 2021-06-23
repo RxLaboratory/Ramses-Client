@@ -13,6 +13,7 @@ public:
     ~RamFileType();
 
     void setExtensions(QString extensions);
+    void setExtensions(QStringList extensions);
     QStringList extensions() const;
 
     bool isPreviewable() const;
@@ -26,8 +27,8 @@ public slots:
     virtual void edit() override;
 
 private:
-    QStringList _extensions;
-    bool _previewable = false; 
+    QStringList m_extensions;
+    bool m_previewable = false;
 };
 
 #endif // RAMFILETYPE_H
