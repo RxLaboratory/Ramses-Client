@@ -6,9 +6,9 @@ AssetListManagerWidget::AssetListManagerWidget(QWidget *parent):
         "Assets",
         parent)
 {
-    this->setContainingType(RamObject::Asset);
     changeProject(Ramses::instance()->currentProject());
-    connect(Ramses::instance(), &Ramses::currentProjectChanged, this, &AssetListManagerWidget::changeProject);
+    connect(Ramses::instance(), SIGNAL(currentProjectChanged(RamProject*)), this, SLOT(changeProject(RamProject*)));
+    m_listEditWidget->setEditMode(ObjectListEditWidget::RemoveObjects);
 }
 
 void AssetListManagerWidget::createObject()
@@ -18,13 +18,21 @@ void AssetListManagerWidget::createObject()
     if (project->assetGroups()->count() == 0 ) return;
     RamAssetGroup *ag = RamAssetGroup::assetGroup( currentFilter() );
     if (!ag) ag = qobject_cast<RamAssetGroup*>( project->assetGroups()->at(0) );
-    ag->createAsset();
+    if(!ag) return;
+
+    RamAsset *asset = new RamAsset(
+                "NEW",
+                ag,
+                "New Asset"
+                );
+
+    project->assets()->append(asset);
+    editObject(asset);
 }
 
 void AssetListManagerWidget::changeProject(RamProject *project)
 {
-    // empty list
-    this->clear();
     if (!project) return;
-    this->setList( project->assetGroups() );
+    this->setList( project->assets() );
+    m_listEditWidget->setFilterList( project->assetGroups() );
 }

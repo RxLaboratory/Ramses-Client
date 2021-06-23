@@ -1,16 +1,7 @@
 #include "filetypeeditwidget.h"
 
-FileTypeEditWidget::FileTypeEditWidget(QWidget *parent) :
-    ObjectEditWidget(parent)
-{
-    setupUi();
-    connectEvents();
-
-    setObject(nullptr);
-}
-
-FileTypeEditWidget::FileTypeEditWidget(RamFileType *fileType, QWidget *parent) :
-    ObjectEditWidget(fileType, parent)
+FileTypeEditWidget::FileTypeEditWidget(RamFileType *fileType) :
+    ObjectEditWidget(fileType)
 {
     setupUi();
     connectEvents();
@@ -60,24 +51,41 @@ void FileTypeEditWidget::update()
     updating = false;
 }
 
+void FileTypeEditWidget::updateExtensions()
+{
+    QStringList extensions = ui_extensionsEdit->text().split(",");
+    QStringList fixedExtensions;
+    for (int i = 0; i < extensions.count(); i++)
+    {
+        QString ext = extensions.at(i).trimmed();
+        if (ext.startsWith(".")) ext = ext.remove(0,1);
+        fixedExtensions << ext;
+    }
+    ui_extensionsEdit->setText( fixedExtensions.join(", "));
+    update();
+}
+
 void FileTypeEditWidget::setupUi()
 {
-    QLabel *extLabel = new QLabel("Extensions", this);
-    mainFormLayout->addWidget(extLabel, 2, 0);
+    ui_shortNameLabel->setText("Main extension");
+
+    QLabel *extLabel = new QLabel("All extensions", this);
+    ui_mainFormLayout->addWidget(extLabel, 2, 0);
 
     ui_extensionsEdit = new QLineEdit(this);
     ui_extensionsEdit->setPlaceholderText(".ext1, .ext2, .ext3...");
-    mainFormLayout->addWidget(ui_extensionsEdit);
+    ui_mainFormLayout->addWidget(ui_extensionsEdit);
 
     QLabel *previewableLabel = new QLabel("Previewable", this);
-    mainFormLayout->addWidget(previewableLabel, 3, 0);
+    ui_mainFormLayout->addWidget(previewableLabel, 3, 0);
 
     ui_previewableBox = new QCheckBox("This file can be used for previews\n(image, video...).", this);
-    mainFormLayout->addWidget(ui_previewableBox, 3, 1);
+    ui_mainFormLayout->addWidget(ui_previewableBox, 3, 1);
 }
 
 void FileTypeEditWidget::connectEvents()
 {
+    connect(ui_extensionsEdit, SIGNAL(editingFinished()), this, SLOT(updateExtensions()));
     connect(ui_extensionsEdit, &QLineEdit::editingFinished, this, &FileTypeEditWidget::update);
     connect(ui_previewableBox, &QCheckBox::clicked, this, &FileTypeEditWidget::update);
 }

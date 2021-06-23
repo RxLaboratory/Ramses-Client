@@ -6,6 +6,11 @@ DuQFSearchEdit::DuQFSearchEdit(QWidget *parent) : QWidget(parent)
     connectEvents();
 }
 
+void DuQFSearchEdit::hideSearchButton()
+{
+    m_searchButton->hide();
+}
+
 void DuQFSearchEdit::search()
 {
     emit changed(m_searchEdit->text());

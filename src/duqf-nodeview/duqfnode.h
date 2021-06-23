@@ -21,10 +21,10 @@ public:
     DuQFNode(QString title = "Node", QGraphicsItem *parent = nullptr);
 
     enum { Type = UserType + 3 };
-    int type() const Q_DECL_OVERRIDE { return Type; }
+    int type() const override { return Type; }
 
-    QRectF boundingRect() const Q_DECL_OVERRIDE;
-    void paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = nullptr) Q_DECL_OVERRIDE;
+    QRectF boundingRect() const override;
+    void paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = nullptr) override;
 
     QString title() const;
     void setTitle(const QString &title);
@@ -60,8 +60,8 @@ signals:
     void moved(QPointF);
 
 protected:
-    //void mousePressEvent(QGraphicsSceneMouseEvent * event) Q_DECL_OVERRIDE;
-    QVariant itemChange(GraphicsItemChange change, const QVariant &value) Q_DECL_OVERRIDE;
+    //void mousePressEvent(QGraphicsSceneMouseEvent * event) override;
+    QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
 
 private:
     DuQFGrid *m_grid;

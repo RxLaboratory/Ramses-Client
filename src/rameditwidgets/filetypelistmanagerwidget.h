@@ -11,7 +11,7 @@ public:
     FileTypeListManagerWidget(QWidget *parent = nullptr);
 
 protected slots:
-    void createObject() Q_DECL_OVERRIDE;
+    void createObject() override;
 };
 
 #endif // FILETYPELISTMANAGERWIDGET_H

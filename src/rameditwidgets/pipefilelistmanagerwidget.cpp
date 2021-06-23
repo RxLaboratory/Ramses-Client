@@ -6,16 +6,20 @@ PipeFileListManagerWidget::PipeFileListManagerWidget(QWidget *parent):
         "Pipe Types",
         parent)
 {
-    this->setContainingType(RamObject::PipeFile);
     changeProject(Ramses::instance()->currentProject());
-    connect(Ramses::instance(), &Ramses::currentProjectChanged, this, &PipeFileListManagerWidget::changeProject);
+    connect(Ramses::instance(), SIGNAL(currentProjectChanged(RamProject*)), this, SLOT(changeProject(RamProject*)));
+    m_listEditWidget->setEditMode(ObjectListEditWidget::RemoveObjects);
 }
 
 void PipeFileListManagerWidget::createObject()
 {
     RamProject *project = Ramses::instance()->currentProject();
     if (!project) return;
-    project->createPipeFile();
+    RamPipeFile *pf = new RamPipeFile(
+                "NEW",
+                project);
+    project->pipeFiles()->append(pf);
+    editObject(pf);
 }
 
 void PipeFileListManagerWidget::changeProject(RamProject *project)

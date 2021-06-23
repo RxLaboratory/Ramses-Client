@@ -1,12 +1,16 @@
 #include "ramasset.h"
 #include "ramassetgroup.h"
+#include "asseteditwidget.h"
 
-RamAsset::RamAsset(QString shortName, RamProject *project, RamAssetGroup *assetGroup, QString name, QString uuid) :
-    RamItem(shortName, project, name, uuid, assetGroup)
+#include "ramproject.h"
+
+RamAsset::RamAsset(QString shortName, RamAssetGroup *assetGroup, QString name, QString uuid) :
+    RamItem(shortName, assetGroup->project(), name, uuid)
 {
     setObjectType(Asset);
     setProductionType(RamStep::AssetProduction);
     m_assetGroup = assetGroup;
+    m_filterUuid = assetGroup->uuid();
     m_dbi->createAsset(m_shortName, m_name, m_assetGroup->uuid(), "", m_uuid);
 
     this->setObjectName( "RamAsset " + m_shortName);
@@ -24,10 +28,18 @@ RamAssetGroup *RamAsset::assetGroup() const
 
 void RamAsset::setAssetGroup(RamAssetGroup *assetGroup)
 {
+    if(!assetGroup) return;
     if (m_assetGroup->is(assetGroup)) return;
     m_dirty = true;
+
+    disconnect(m_assetGroupConnection);
+
     this->setParent(assetGroup);
     m_assetGroup = assetGroup;
+    m_filterUuid = assetGroup->uuid();
+
+    m_assetGroupConnection = connect(assetGroup, SIGNAL(removed(RamObject*)), this, SLOT(remove()));
+
     emit changed(this);
 }
 
@@ -79,5 +91,16 @@ void RamAsset::update()
 RamAsset *RamAsset::asset( QString uuid )
 {
     return qobject_cast<RamAsset*>( RamObject::obj(uuid) );
+}
+
+void RamAsset::edit(bool show)
+{
+    if (!m_editReady)
+    {
+        AssetEditWidget *w = new AssetEditWidget(this);
+        setEditWidget(w);
+        m_editReady = true;
+    }
+    showEdit(show);
 }
 

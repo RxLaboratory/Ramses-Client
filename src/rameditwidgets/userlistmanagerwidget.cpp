@@ -7,11 +7,15 @@ UserListManagerWidget::UserListManagerWidget(QWidget *parent) :
         "Users",
         parent )
 {
-    this->setContainingType(RamObject::User);
+    m_listEditWidget->setEditMode(ObjectListEditWidget::RemoveObjects);
 }
 
 void UserListManagerWidget::createObject()
 {
-    Ramses::instance()->createUser();
+    RamUser *user = new RamUser("NEW","J. Doe");
+
+    Ramses::instance()->users()->append(user);
+
+    editObject(user);
 }
 

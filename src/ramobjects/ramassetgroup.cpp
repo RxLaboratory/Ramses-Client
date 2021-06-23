@@ -2,8 +2,10 @@
 #include "ramproject.h"
 #include "ramses.h"
 
+#include "assetgroupeditwidget.h"
+
 RamAssetGroup::RamAssetGroup(QString shortName, QString name, QString uuid) :
-    RamObjectList(shortName, name, uuid, Ramses::instance())
+    RamObject(shortName, name, uuid, Ramses::instance())
 {
     this->setObjectType(AssetGroup);
     m_project = nullptr;
@@ -14,12 +16,16 @@ RamAssetGroup::RamAssetGroup(QString shortName, QString name, QString uuid) :
 }
 
 RamAssetGroup::RamAssetGroup(QString shortName, RamProject *project, QString name, QString uuid):
-    RamObjectList(shortName, name, uuid, project)
+    RamObject(shortName, name, uuid, project)
 {
     this->setObjectType(AssetGroup);
     m_project = project;
     _template = false;
     m_dbi->createAssetGroup(m_shortName, m_name, m_project->uuid(), m_uuid);
+
+    m_assets = new RamObjectFilterModel(this);
+    m_assets->setSourceModel(project->assets());
+    m_assets->setFilterUuid( m_uuid );
 
     this->setObjectName( "RamAssetGroup " + m_shortName);
 }
@@ -35,30 +41,21 @@ bool RamAssetGroup::isTemplate() const
     return _template;
 }
 
-RamAssetGroup *RamAssetGroup::createFromTemplate(QString projectUuid)
+RamAssetGroup *RamAssetGroup::createFromTemplate(RamProject *project)
 {
     // Create
-    RamAssetGroup *assetGroup = new RamAssetGroup(m_shortName, m_name, projectUuid);
+    RamAssetGroup *assetGroup = new RamAssetGroup(m_shortName, project, m_name);
     return assetGroup;
+}
+
+int RamAssetGroup::assetCount() const
+{
+    return m_assets->rowCount();
 }
 
 RamProject *RamAssetGroup::project() const
 {
     return m_project;
-}
-
-void RamAssetGroup::append(RamAsset *asset)
-{
-    asset->setAssetGroup( this );
-    asset->update();
-    RamObjectList::append(asset);
-}
-
-void RamAssetGroup::createAsset(QString shortName, QString name)
-{
-    if (_template) return;
-    RamAsset *asset = new RamAsset(shortName, m_project, this, name, "");
-    append(asset);
 }
 
 RamAssetGroup *RamAssetGroup::assetGroup(QString uuid)
@@ -74,12 +71,14 @@ void RamAssetGroup::update()
     else m_dbi->updateAssetGroup(m_uuid, m_shortName, m_name);
 }
 
-void RamAssetGroup::remove()
+void RamAssetGroup::edit(bool show)
 {
-    if (m_removing) return;
-    for(int i = m_objectsList.count() -1; i >= 0 ; i--)
+    if (!m_editReady)
     {
-        m_objectsList.at(i)->remove();
+        AssetGroupEditWidget *w = new AssetGroupEditWidget(this);
+        setEditWidget(w);
+        m_editReady = true;
     }
-    RamObjectList::remove();
+    showEdit(show);
 }
+

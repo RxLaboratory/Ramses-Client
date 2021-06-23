@@ -8,7 +8,8 @@
 #include "ramassetgroup.h"
 #include "ramfiletype.h"
 #include "ramapplication.h"
-#include "ramstatelist.h"
+#include "ramshot.h"
+#include "data-models/ramstatelist.h"
 #include "dbisuspender.h"
 #include "duqf-app/app-utils.h"
 
@@ -87,40 +88,30 @@ public:
     bool isAdmin();
     bool isProjectAdmin();
     bool isLead();
-    QString currentUserSettingsFile();
     // States
     RamState *noState();
     RamState *todoState();
     RamState *okState();
     // Projects
     RamObjectList *projects() const;
-    RamProject *createProject();
     RamProject *currentProject() const;
     void setCurrentProject(RamProject *currentProject);
     void setCurrentProject(QString uuidOrShortName);
     // Template Steps
     RamObjectList *templateSteps() const;
-    RamStep *createTemplateStep();
     // Template Asset Groups
     RamObjectList *templateAssetGroups() const;
-    RamAssetGroup *createTemplateAssetGroup();
     // States
     RamStateList *states() const;
     // File Types
     RamObjectList *fileTypes() const;
-    RamFileType *createFileType();
     // Applications
     RamObjectList *applications() const;
-    RamApplication *createApplication();
 
 public slots:
     void init();
     void refresh();
     void projectReady(QString uuid);
-    // Users
-    RamUser *createUser();
-    // States
-    RamState *createState();
 
 
 signals:
@@ -144,48 +135,46 @@ private:
      */
     explicit Ramses(QObject *parent = nullptr);
 
-    QSettings _settings;
-    QSettings *_userSettings;
+    QSettings m_settings;
 
-    DBInterface *_dbi;
+    DBInterface *m_dbi;
 
     /**
      * @brief True when loogged in, false otherwise.
      */
-    bool _connected;
+    bool m_connected;
 
     // Tree
-    QString _ramsesPath;
+    QString m_ramsesPath;
     QDir createDir(QString p) const;
     QString createPath(QString p) const;
 
     // Users
-    RamObjectList *_users;
-    RamUser *_currentUser;
-    QString _currentUserShortName;
-    RamUser *_ramUser;
+    RamObjectList *m_users;
+    RamUser *m_currentUser;
+    QString m_currentUserShortName;
+    RamUser *m_ramUser;
 
     // Projects
-    RamObjectList *_projects;
-    RamProject *_currentProject;
+    RamObjectList *m_projects;
+    RamProject *m_currentProject;
 
     // Template steps
-    RamObjectList *_templateSteps;
+    RamObjectList *m_templateSteps;
 
     // Template asset groups
-    RamObjectList *_templateAssetGroups;
+    RamObjectList *m_templateAssetGroups;
 
     // States
-    RamStateList *_states;
-    RamState *_noState = nullptr;
-    RamState *_okState = nullptr;
-    RamState *_todoState = nullptr;
+    RamStateList *m_states;
+    RamState *m_noState = nullptr;
+    RamState *m_okState = nullptr;
+    RamState *m_todoState = nullptr;
 
     // File types
-    RamObjectList *_fileTypes;
-
+    RamObjectList *m_fileTypes;
     // Applications
-    RamObjectList *_applications;
+    RamObjectList *m_applications;
 };
 
 #endif // RAMSES_H

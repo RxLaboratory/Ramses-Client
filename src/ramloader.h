@@ -12,7 +12,7 @@ class RamLoader : public QThread
 public:
     static RamLoader *instance();
 
-    void run() Q_DECL_OVERRIDE;
+    void run() override;
 
 public slots:
     void newData(QJsonObject data);
@@ -31,19 +31,25 @@ private:
     void login(QJsonObject user);
     //users
     void gotUsers(QJsonArray users);
+    QString gotUser(QJsonObject newU);
     //projects
     void gotProjects(QJsonArray projects, bool init);
     QString gotProject(QJsonObject newP, bool init);
     //template steps
     void gotTemplateSteps(QJsonArray steps);
+    QString gotTemplateStep(QJsonObject newS);
     //template asset groups
     void gotTemplateAssetGroups(QJsonArray assetGroups);
+    QString gotTemplateAssetGroup(QJsonObject newAG);
     //states
     void gotStates(QJsonArray states);
+    QString gotState(QJsonObject newS);
     //file types
     void gotFileTypes(QJsonArray fileTypes);
+    QString gotFileType(QJsonObject newFt);
     //applications
     void gotApplications(QJsonArray applications);
+    QString gotApplication(QJsonObject newA);
     // steps
     void gotSteps(QJsonArray steps, RamProject *project);
     QString gotStep(QJsonObject newS, RamProject *project);
@@ -51,17 +57,17 @@ private:
     void gotAssetGroups(QJsonArray assetGroups, RamProject *project);
     QString gotAssetGroup(QJsonObject newAG, RamProject *project);
     // assets
-    void gotAssets(QJsonArray assets, RamAssetGroup *assetGroup, RamProject *project);
-    QString gotAsset(QJsonObject newA, RamAssetGroup *assetGroup, RamProject *project);
+    void gotAssets(QJsonArray assets, RamProject *project);
+    QString gotAsset(QJsonObject newA, RamProject *project);
     // sequences
     void gotSequences(QJsonArray sequences, RamProject *project);
     QString gotSequence(QJsonObject newS, RamProject *project);
     // shots
-    void gotShots(QJsonArray shots, RamSequence *sequence, RamProject *project);
-    QString gotShot(QJsonObject newS, RamSequence *sequence, RamProject *project);
+    void gotShots(QJsonArray shots, RamProject *project);
+    QString gotShot(QJsonObject newS, RamProject *project);
     // status
-    void gotStatusHistory(QJsonArray statusHistory, RamItem *item, RamProject *project);
-    QString gotStatus(QJsonObject newS, RamItem *item, RamProject *project);
+    void gotStatusHistory(QJsonArray statusHistory, RamItem *item);
+    QString gotStatus(QJsonObject newS, RamItem *item);
     // pipes
     void gotPipes(QJsonArray pipes, RamProject *project);
     QString gotPipe(QJsonObject newP, RamProject *project);

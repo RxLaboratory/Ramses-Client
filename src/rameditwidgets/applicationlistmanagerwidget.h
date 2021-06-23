@@ -11,7 +11,7 @@ public:
     ApplicationListManagerWidget(QWidget *parent = nullptr);
 
 protected slots:
-    void createObject() Q_DECL_OVERRIDE;
+    void createObject() override;
 };
 
 #endif // APPLICATIONLISTMANAGERWIDGET_H

@@ -1,3 +1,4 @@
+
 #ifndef DUQFNODEVIEW_H
 #define DUQFNODEVIEW_H
 
@@ -5,6 +6,7 @@
 #include <cmath>
 #include <QGraphicsItemGroup>
 #include <QGraphicsSceneHoverEvent>
+#include <QGestureEvent>
 
 #include "duqf-app/app-style.h"
 #include "duqf-nodeview/duqfgrid.h"
@@ -34,15 +36,17 @@ signals:
     void zoomed(int zoomPercent);
 
 protected:
-    void wheelEvent(QWheelEvent *event) Q_DECL_OVERRIDE;
-    void keyPressEvent(QKeyEvent *event) Q_DECL_OVERRIDE;
-    void keyReleaseEvent(QKeyEvent *event) Q_DECL_OVERRIDE;
-    void mousePressEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
-    void mouseReleaseEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
-    void mouseMoveEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
+    void wheelEvent(QWheelEvent *event) override;
+    void keyPressEvent(QKeyEvent *event) override;
+    void keyReleaseEvent(QKeyEvent *event) override;
+    void mousePressEvent(QMouseEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *event) override;
+    void mouseMoveEvent(QMouseEvent *event) override;
+    bool event(QEvent *event) override;
+    bool gestureEvent(QGestureEvent *event);
 
 private:
-    void drawBackground(QPainter * painter, const QRectF & rect) Q_DECL_OVERRIDE;
+    void drawBackground(QPainter * painter, const QRectF & rect) override;
 
     // members
     DuQFGrid *m_grid;

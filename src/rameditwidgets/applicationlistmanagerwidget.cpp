@@ -1,5 +1,7 @@
 #include "applicationlistmanagerwidget.h"
 
+#include "ramses.h"
+
 ApplicationListManagerWidget::ApplicationListManagerWidget(QWidget *parent) :
     ObjectListManagerWidget(
         Ramses::instance()->applications(),
@@ -7,10 +9,14 @@ ApplicationListManagerWidget::ApplicationListManagerWidget(QWidget *parent) :
         "Applications",
         parent )
 {
-    this->setContainingType(RamObject::Application);
+    m_listEditWidget->setEditMode(ObjectListEditWidget::RemoveObjects);
 }
 
 void ApplicationListManagerWidget::createObject()
 {
-    Ramses::instance()->createApplication();
+    RamApplication *a = new RamApplication(
+                "NEW",
+                "New Application");
+    Ramses::instance()->applications()->append(a);
+    editObject(a);
 }

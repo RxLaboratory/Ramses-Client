@@ -1,6 +1,8 @@
 #ifndef RAMUSER_H
 #define RAMUSER_H
 
+#include <QStringBuilder>
+
 #include "ramobject.h"
 
 class RamUser : public RamObject
@@ -13,7 +15,7 @@ public:
                     Standard = 0 };
     Q_ENUM( UserRole )
 
-    explicit RamUser(QString shortName, QString name = "", QString uuid = "", QObject *parent = nullptr);
+    explicit RamUser(QString shortName, QString name = "", QString uuid = "");
     ~RamUser();
 
     UserRole role() const;
@@ -23,16 +25,20 @@ public:
     QString folderPath() const;
     void setFolderPath(const QString &folderPath);
 
-    void update();
+    void update() override;
     void updatePassword(QString c, QString n);
 
     static RamUser *user(QString uuid);
 
-signals:
+    QSettings *userSettings() const;
+
+public slots:
+    virtual void edit(bool show = true) override;
 
 private:
-    UserRole _role;
-    QString _folderPath;
+    UserRole m_role;
+    QString m_folderPath;
+    QSettings *m_userSettings;
 };
 
 #endif // RAMUSER_H

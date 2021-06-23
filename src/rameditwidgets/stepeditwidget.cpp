@@ -3,7 +3,6 @@
 StepEditWidget::StepEditWidget(QWidget *parent) : ObjectEditWidget(parent)
 {
     setupUi();
-    populateMenus();
     connectEvents();
 
     setObject(nullptr);
@@ -12,7 +11,6 @@ StepEditWidget::StepEditWidget(QWidget *parent) : ObjectEditWidget(parent)
 StepEditWidget::StepEditWidget(RamStep *s, QWidget *parent) : ObjectEditWidget(s, parent)
 {
     setupUi();
-    populateMenus();
     connectEvents();
 
     setObject(s);
@@ -20,7 +18,7 @@ StepEditWidget::StepEditWidget(RamStep *s, QWidget *parent) : ObjectEditWidget(s
 
 RamStep *StepEditWidget::step() const
 {
-    return _step;
+    return m_step;
 }
 
 void StepEditWidget::setObject(RamObject *obj)
@@ -29,240 +27,208 @@ void StepEditWidget::setObject(RamObject *obj)
     this->setEnabled(false);
 
     ObjectEditWidget::setObject(step);
-    _step = step;
+    m_step = step;
 
-    QSignalBlocker b(typeBox);
-    QSignalBlocker b1(folderWidget);
-    QSignalBlocker b2(usersList);
-    QSignalBlocker b3(applicationList);
+    QSignalBlocker b(ui_typeBox);
+    QSignalBlocker b1(m_folderWidget);
+    QSignalBlocker b2(m_userList);
+    QSignalBlocker b3(m_applicationList);
 
-    typeBox->setCurrentIndex(1);
-    folderWidget->setPath("");
-    usersList->clear();
-    applicationList->clear();
+    ui_typeBox->setCurrentIndex(1);
+    m_folderWidget->setPath("");
+    m_userList->clear();
+    m_applicationList->clear();
 
     if (!step) return;
 
-    folderWidget->setPath(Ramses::instance()->path(step));
-    if (step->type() == RamStep::PreProduction) typeBox->setCurrentIndex(0);
-    else if (step->type() == RamStep::AssetProduction) typeBox->setCurrentIndex(1);
-    else if (step->type() == RamStep::ShotProduction) typeBox->setCurrentIndex(2);
-    else if (step->type() == RamStep::PostProduction) typeBox->setCurrentIndex(3);
+    m_folderWidget->setPath(Ramses::instance()->path(step));
+    if (step->type() == RamStep::PreProduction) ui_typeBox->setCurrentIndex(0);
+    else if (step->type() == RamStep::AssetProduction) ui_typeBox->setCurrentIndex(1);
+    else if (step->type() == RamStep::ShotProduction) ui_typeBox->setCurrentIndex(2);
+    else if (step->type() == RamStep::PostProduction) ui_typeBox->setCurrentIndex(3);
 
-    // Load Users
-    foreach (QAction *a , assignUserMenu->actions())
-        a->setVisible(true);
-    for( int i = 0; i < step->users()->count(); i++ ) userAssigned( step->users()->at(i) );
+    m_userList->setList(step->users());
+    m_applicationList->setList(step->applications());
 
-    // Load applications
-    foreach (QAction *a , assignAppMenu->actions())
-        a->setVisible(true);
-    for( int i = 0; i < step->applications()->count(); i++ ) applicationAssigned( step->applications()->at(i) );
+    ui_estimationMultiplierBox->setList(step->project()->assetGroups());
 
-    usersList->setList(step->users());
-    applicationList->setList(step->applications());
+    updateEstimationSuffix();
 
-    _objectConnections << connect(step->users(), &RamObjectList::objectAdded, this, &StepEditWidget::userAssigned);
-    _objectConnections << connect(step->users(), &RamObjectList::objectRemoved, this, &StepEditWidget::userUnassigned);
-    _objectConnections << connect(step->applications(), &RamObjectList::objectAdded, this, &StepEditWidget::applicationAssigned);
-    _objectConnections << connect(step->applications(), &RamObjectList::objectRemoved, this, &StepEditWidget::applicationUnassigned);
-
-    this->setEnabled(Ramses::instance()->isProjectAdmin());
+    this->setEnabled(Ramses::instance()->isProjectAdmin());   
 }
 
 void StepEditWidget::update()
 {
-    if(!_step) return;
+    if(!m_step) return;
 
     updating = true;
 
-    _step->setType(typeBox->currentData().toString());
+    m_step->setType(ui_typeBox->currentData().toString());
     ObjectEditWidget::update();
 
     updating = false;
 }
 
+void StepEditWidget::createUser()
+{
+    if (!m_step) return;
+    RamUser *user = new RamUser(
+                "NEW",
+                "John Doe");
+    Ramses::instance()->users()->append(user);
+    m_step->users()->append(user);
+    user->edit();
+}
+
+void StepEditWidget::createApplication()
+{
+    if (!m_step) return;
+    RamApplication *app = new RamApplication(
+                "NEW",
+                "New Application");
+    Ramses::instance()->applications()->append(app);
+    m_step->applications()->append(app);
+    app->edit();
+}
+
+void StepEditWidget::updateEstimationSuffix()
+{
+    if (ui_typeBox->currentIndex() == 0 || ui_typeBox->currentIndex() == 3)
+    {
+        ui_estimationWidget->hide();
+        ui_estimationLabel->hide();
+        return;
+    }
+
+    ui_estimationWidget->show();
+    ui_estimationLabel->show();
+
+    QString suffix;
+
+    if (ui_typeBox->currentIndex() == 1)
+    {
+        ui_estimationTypeBox->hide();
+        ui_estimationTypeLabel->hide();
+        suffix = " days per asset.";
+    }
+    else if (ui_typeBox->currentIndex() == 2)
+    {
+        ui_estimationTypeBox->show();
+        ui_estimationTypeLabel->show();
+        if (ui_estimationTypeBox->currentIndex() == 0)
+        {
+            suffix = " days per shot.";
+        }
+        else
+        {
+            suffix = " days per second.";
+        }
+    }
+
+    ui_veryEasyEdit->setSuffix(suffix);
+    ui_easyEdit->setSuffix(suffix);
+    ui_mediumEdit->setSuffix(suffix);
+    ui_hardEdit->setSuffix(suffix);
+    ui_veryHardEdit->setSuffix(suffix);
+}
+
 void StepEditWidget::setupUi()
 {
     QLabel *typeLabel = new QLabel("Type", this);
-    mainFormLayout->addWidget(typeLabel, 2,0);
+    ui_mainFormLayout->addWidget(typeLabel, 2,0);
 
-    typeBox = new QComboBox(this);
-    typeBox->addItem(QIcon(":/icons/project"), "        Pre-Production", "pre");
-    typeBox->addItem(QIcon(":/icons/asset"), "        Asset Production", "asset");
-    typeBox->addItem(QIcon(":/icons/shot"), "        Shot Production", "shot");
-    typeBox->addItem(QIcon(":/icons/film"), "        Post-Production", "post");
-    mainFormLayout->addWidget(typeBox, 2, 1);
+    ui_typeBox = new QComboBox(this);
+    ui_typeBox->addItem(QIcon(":/icons/project"), "        Pre-Production", "pre");
+    ui_typeBox->addItem(QIcon(":/icons/asset"), "        Asset Production", "asset");
+    ui_typeBox->addItem(QIcon(":/icons/shot"), "        Shot Production", "shot");
+    ui_typeBox->addItem(QIcon(":/icons/film"), "        Post-Production", "post");
+    ui_mainFormLayout->addWidget(ui_typeBox, 2, 1);
 
-    folderWidget = new DuQFFolderDisplayWidget(this);
-    mainLayout->insertWidget(1, folderWidget);
+    ui_estimationLabel = new QLabel("Estimation", this);
+    ui_estimationLabel->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+    ui_mainFormLayout->addWidget(ui_estimationLabel, 3, 0);
 
-    QSplitter *splitter = new QSplitter(this);
-    splitter->setOrientation(Qt::Vertical);
+    ui_estimationWidget = new QWidget(this);
+    QFormLayout *estimationLayout = new QFormLayout(ui_estimationWidget);
+    estimationLayout->setContentsMargins(0,0,0,0);
+    estimationLayout->setSpacing(3);
 
-    usersList = new ObjectListEditWidget(true, splitter);
-    usersList->setEditMode(RamObjectListWidget::UnassignObjects);
-    usersList->setTitle("Users");
-    splitter->addWidget(usersList);
+    ui_estimationTypeLabel = new QLabel("Method", this);
 
-    applicationList = new ObjectListEditWidget(true, splitter);
-    applicationList->setEditMode(RamObjectListWidget::UnassignObjects);
-    applicationList->setTitle("Applications");
-    splitter->addWidget(applicationList);
+    ui_estimationTypeBox = new QComboBox(this);
+    ui_estimationTypeBox->addItem("Per shot");
+    ui_estimationTypeBox->addItem("Per second");
+    estimationLayout->addRow(ui_estimationTypeLabel, ui_estimationTypeBox);
 
-    mainLayout->addWidget(splitter);
+    ui_veryEasyEdit = new AutoSelectDoubleSpinBox(this);
+    ui_veryEasyEdit->setMinimum(0.1);
+    ui_veryEasyEdit->setMaximum(100);
+    ui_veryEasyEdit->setDecimals(1);
+    ui_veryEasyEdit->setValue(0.2);
+    estimationLayout->addRow("Very easy", ui_veryEasyEdit);
 
-    // Add menu
-    assignUserMenu = new QMenu(this);
-    QToolButton *addUserButton = usersList->addButton();
-    addUserButton->setPopupMode(QToolButton::InstantPopup);
-    addUserButton->setMenu(assignUserMenu);
+    ui_easyEdit = new AutoSelectDoubleSpinBox(this);
+    ui_easyEdit->setMinimum(0.1);
+    ui_easyEdit->setMaximum(100);
+    ui_easyEdit->setDecimals(1);
+    ui_easyEdit->setValue(0.5);
+    estimationLayout->addRow("Easy",ui_easyEdit);
 
-    assignAppMenu = new QMenu(this);
-    QToolButton *addAppButton = applicationList->addButton();
-    addAppButton->setPopupMode(QToolButton::InstantPopup);
-    addAppButton->setMenu(assignAppMenu);
-}
+    ui_mediumEdit = new AutoSelectDoubleSpinBox(this);
+    ui_mediumEdit->setMinimum(0.1);
+    ui_mediumEdit->setMaximum(100);
+    ui_mediumEdit->setDecimals(1);
+    ui_mediumEdit->setValue(1);
+    estimationLayout->addRow("Medium",ui_mediumEdit);
 
-void StepEditWidget::populateMenus()
-{
-    for (int i = 0; i < Ramses::instance()->users()->count(); i++) newUser( Ramses::instance()->users()->at(i) );
-    for(int i = 0; i < Ramses::instance()->applications()->count(); i++) newApplication( Ramses::instance()->applications()->at(i) );
+    ui_hardEdit = new AutoSelectDoubleSpinBox(this);
+    ui_hardEdit->setMinimum(0.1);
+    ui_hardEdit->setMaximum(100);
+    ui_hardEdit->setDecimals(1);
+    ui_hardEdit->setValue(2);
+    estimationLayout->addRow("Hard",ui_hardEdit);
+
+    ui_veryHardEdit = new AutoSelectDoubleSpinBox(this);
+    ui_veryHardEdit->setMinimum(0.1);
+    ui_veryHardEdit->setMaximum(100);
+    ui_veryHardEdit->setDecimals(1);
+    ui_veryHardEdit->setValue(3);
+    estimationLayout->addRow("Very hard",ui_veryHardEdit);
+
+    ui_estimationMultiplierCheckBox = new QCheckBox("Multiply by", this);
+    ui_estimationMultiplierCheckBox->setToolTip("Multiply estimation by the number of assets in the specific asset group.");
+    ui_estimationMultiplierBox = new RamObjectListComboBox(this);
+    ui_estimationMultiplierBox->setEnabled(false);
+    estimationLayout->addRow(ui_estimationMultiplierCheckBox, ui_estimationMultiplierBox);
+
+    ui_mainFormLayout->addWidget(ui_estimationWidget, 3, 1);
+
+    m_folderWidget = new DuQFFolderDisplayWidget(this);
+    ui_mainLayout->insertWidget(1, m_folderWidget);
+
+    QTabWidget *tabWidget = new QTabWidget(this);
+
+    m_userList = new ObjectListEditWidget(true, RamUser::ProjectAdmin, tabWidget);
+    m_userList->setEditMode(ObjectListEditWidget::UnassignObjects);
+    m_userList->setTitle("Users");
+    m_userList->setAssignList(Ramses::instance()->users());
+    tabWidget->addTab(m_userList, QIcon(":/icons/users"), "Users");
+
+    m_applicationList = new ObjectListEditWidget(true, RamUser::ProjectAdmin, tabWidget);
+    m_applicationList->setEditMode(ObjectListEditWidget::UnassignObjects);
+    m_applicationList->setTitle("Applications");
+    m_applicationList->setAssignList(Ramses::instance()->applications());
+    tabWidget->addTab(m_applicationList, QIcon(":/icons/applications"), "Applications");
+
+    ui_mainLayout->addWidget(tabWidget);
 }
 
 void StepEditWidget::connectEvents()
 {
-    connect(Ramses::instance()->users(), &RamObjectList::objectAdded, this, &StepEditWidget::newUser);
-    connect(Ramses::instance()->users(), &RamObjectList::objectRemoved, this, &StepEditWidget::userRemoved);
-    connect(Ramses::instance()->applications(), &RamObjectList::objectAdded, this, &StepEditWidget::newApplication);
-    connect(Ramses::instance()->applications(), &RamObjectList::objectRemoved, this, &StepEditWidget::applicationRemoved);
-    connect(typeBox, SIGNAL(currentIndexChanged(int)), this, SLOT(update()));
-}
-
-void StepEditWidget::newUser(RamObject *user)
-{
-    if (!user) return;
-    if (user->uuid() == "") return;
-    QAction *userAction = new QAction(user->name());
-    userAction->setData(user->uuid());
-    assignUserMenu->addAction(userAction);
-    QList<QMetaObject::Connection> c;
-    c << connect(user, &RamObject::changed, this, &StepEditWidget::userChanged);
-    c << connect(user, &RamObject::removed, this, &StepEditWidget::userRemoved);
-    m_userConnections[user->uuid()] = c;
-    connect(userAction, &QAction::triggered, this, &StepEditWidget::assignUser);
-}
-
-void StepEditWidget::assignUser()
-{
-    if(!_step) return;
-    QAction *userAction = (QAction*)sender();
-    RamObject *user = Ramses::instance()->users()->fromUuid(  userAction->data().toString() );
-    if (!user) return;
-    _step->users()->append(user);
-}
-
-void StepEditWidget::userAssigned(RamObject *user)
-{
-    if (!user) return;
-    if (user->uuid() == "") return;
-
-    //hide from assign list
-    QList<QAction *> actions = assignUserMenu->actions();
-    for (int i = 0; i < actions.count(); i++)
-    {
-        if (actions[i]->data().toString() == user->uuid()) actions[i]->setVisible(false);
-    }
-}
-
-void StepEditWidget::userUnassigned(RamObject *o)
-{
-    //show in assign list
-    foreach (QAction * a, assignUserMenu->actions() )
-        if (a->data().toString() == o->uuid()) a->setVisible(true);
-}
-
-void StepEditWidget::userChanged(RamObject *user)
-{
-    foreach (QAction *a, assignUserMenu->actions())
-        if (a->data().toString() == user->uuid()) a->setText(user->name());
-}
-
-void StepEditWidget::userRemoved(RamObject *user)
-{
-    if (m_userConnections.contains(user->uuid()))
-    {
-        QList<QMetaObject::Connection> c = m_userConnections.value( user->uuid() );
-        while (!c.isEmpty()) disconnect( c.takeLast() );
-    }
-
-    QList<QAction *> actions = assignUserMenu->actions();
-    for( int i = actions.count() -1 ; i >= 0 ; i--)
-    {
-        if (actions.at(i)->data().toString() == user->uuid()) actions.at(i)->deleteLater();
-    }
-}
-
-void StepEditWidget::newApplication(RamObject *app)
-{
-    if (!app) return;
-    if (app->uuid() == "") return;
-    QAction *appAction = new QAction(app->name());
-    appAction->setData(app->uuid());
-    assignAppMenu->addAction(appAction);
-    QList<QMetaObject::Connection> c;
-    c << connect(app, &RamApplication::changed, this, &StepEditWidget::applicationChanged);
-    c << connect(app, &RamApplication::removed, this, &StepEditWidget::applicationRemoved);
-    m_applicationConnections[app->uuid()] = c;
-    connect(appAction, &QAction::triggered, this, &StepEditWidget::assignApplication);
-}
-
-void StepEditWidget::assignApplication()
-{
-    if(!_step) return;
-    QAction *appAction = (QAction*)sender();
-    RamObject *app = Ramses::instance()->applications()->fromUuid( appAction->data().toString());
-    if (!app) return;
-    _step->applications()->append(app);
-}
-
-void StepEditWidget::applicationAssigned(RamObject *app)
-{
-    if (!app) return;
-    if (app->uuid() == "") return;
-
-    //hide from assign list
-    QList<QAction *> actions = assignAppMenu->actions();
-    for (int i = 0; i < actions.count(); i++)
-    {
-        if (actions[i]->data().toString() == app->uuid()) actions[i]->setVisible(false);
-    }
-}
-
-void StepEditWidget::applicationUnassigned(RamObject *app)
-{
-    //show in assign list
-    foreach (QAction * a, assignAppMenu->actions() )
-        if (a->data().toString() == app->uuid()) a->setVisible(true);
-}
-
-void StepEditWidget::applicationChanged(RamObject *app)
-{
-    foreach (QAction *a, assignAppMenu->actions())
-        if (a->data().toString() == app->uuid()) a->setText(app->name());
-}
-
-void StepEditWidget::applicationRemoved(RamObject *o)
-{
-    if (m_applicationConnections.contains(o->uuid()))
-    {
-        QList<QMetaObject::Connection> c = m_applicationConnections.value( o->uuid() );
-        while (!c.isEmpty()) disconnect( c.takeLast() );
-    }
-
-    QList<QAction *> actions = assignAppMenu->actions();
-    for( int i = actions.count() -1 ; i >= 0 ; i--)
-    {
-        if (actions.at(i)->data().toString() == o->uuid()) actions.at(i)->deleteLater();
-    }
+    connect(ui_estimationMultiplierCheckBox, SIGNAL(clicked(bool)), ui_estimationMultiplierBox, SLOT(setEnabled(bool)));
+    connect(ui_typeBox, SIGNAL(currentIndexChanged(int)), this, SLOT(updateEstimationSuffix()));
+    connect(ui_estimationTypeBox, SIGNAL(currentIndexChanged(int)), this, SLOT(updateEstimationSuffix()));
+    connect(ui_typeBox, SIGNAL(currentIndexChanged(int)), this, SLOT(update()));
+    connect(m_userList, SIGNAL(add()), this, SLOT(createUser()));
+    connect(m_applicationList, SIGNAL(add()), this, SLOT(createApplication()));
 }

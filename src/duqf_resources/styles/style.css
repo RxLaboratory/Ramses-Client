@@ -196,15 +196,15 @@ QComboBox::item:checked{
     color: @color-light-grey;
 }
 
-QComboBox::drop-down {
+QComboBox::drop-down, QDateTimeEdit::drop-down {
     border:none;
 }
 
-QComboBox::indicator {
+QComboBox::indicator, QDateTimeEdit::indicator {
     image:none;
 }
 
-QComboBox::down-arrow {
+QComboBox::down-arrow, QDateTimeEdit::down-arrow {
       image: url(:/icons/select);
       width: 10px;
       height: 10px;
@@ -224,7 +224,7 @@ QComboBox:disabled {
     color: @color-medium-grey;
 }
 
-QComboBox::down-arrow:disabled {
+QComboBox::down-arrow:disabled, QDateTimeEdit::down-arrow:disabled {
       image: none;
 }
 
@@ -251,7 +251,7 @@ QTextEdit:disabled, QLineEdit:disabled, QPlainTextEdit:disabled {
 
 /* SPIN Boxes */
 
-QSpinBox, QDoubleSpinBox {
+QSpinBox, QDoubleSpinBox, QDateTimeEdit {
     background-color: @color-very-dark-grey;
     color: @color-less-light-grey;
     border:none;
@@ -259,11 +259,11 @@ QSpinBox, QDoubleSpinBox {
     border-radius: @padding-small;
 }
 
-QSpinBox:hover, QDoubleSpinBox:hover {
+QSpinBox:hover, QDoubleSpinBox:hover, QDateTimeEdit:hover {
     color: @color-light-grey;
 }
 
-QSpinBox::up-button, QDoubleSpinBox::up-button {
+QSpinBox::up-button, QDoubleSpinBox::up-button, QDateTimeEdit:up-button {
     border:none;
     background-color:@color-very-dark-grey;
     border-radius: @margin;
@@ -275,7 +275,7 @@ QSpinBox::up-button, QDoubleSpinBox::up-button {
     margin-right: 1px;
 }
 
-QSpinBox::down-button, QDoubleSpinBox::down-button {
+QSpinBox::down-button, QDoubleSpinBox::down-button, QDateTimeEdit:down-button {
     border:none;
     background-color:@color-very-dark-grey;
     border-radius: @margin;
@@ -291,7 +291,7 @@ QSpinBox::up-button:hover, QDoubleSpinBox::up-button:hover, QSpinBox::down-butto
     background-color: @color-medium-grey;
 }
 
-QSpinBox:disabled, QDoubleSpinBox:disabled {
+QSpinBox:disabled, QDoubleSpinBox:disabled, QDateTimeEdit:disabled {
     background-color: @color-dark-grey;
     color: @color-medium-grey;
 }
@@ -512,7 +512,7 @@ QListView::item QWidget:hover {
 
 /* TABLES */
 
-QTreeWidget, QTableWidget {
+QTreeWidget, QTableView {
     background-color: @color-very-dark-grey;
     alternate-background-color: @color-darker-grey;
     color: @color-less-light-grey;
@@ -520,11 +520,11 @@ QTreeWidget, QTableWidget {
     selection-background-color: @color-less-dark-grey;
 }
 
-QTreeWidget::item:hover, QTableWidget::item:hover {
+QTreeWidget::item:hover, QTableView::item:hover {
     background-color: @color-dark-grey;
 }
 
-QTreeWidget::item:selected, QTableWidget::item:selected {
+QTreeWidget::item:selected, QTableView::item:selected {
     background-color: none;
     border: none;
 }
@@ -592,6 +592,10 @@ QMenu::separator {
 
 #titleBar QLineEdit {
     background: @color-dark-grey;
+}
+
+#titleBar QComboBox {
+    background-color: @color-dark-grey;
 }
 
 /* TOOLBAR */

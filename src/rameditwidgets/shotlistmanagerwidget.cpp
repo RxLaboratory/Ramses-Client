@@ -6,10 +6,9 @@ ShotListManagerWidget::ShotListManagerWidget(QWidget *parent):
         "Shots",
         parent)
 {
-    this->setSortable(true);
-    this->setContainingType(RamObject::Shot);
     changeProject(Ramses::instance()->currentProject());
-    connect(Ramses::instance(), &Ramses::currentProjectChanged, this, &ShotListManagerWidget::changeProject);
+    connect(Ramses::instance(), SIGNAL(currentProjectChanged(RamProject*)), this, SLOT(changeProject(RamProject*)));
+    m_listEditWidget->setEditMode(ObjectListEditWidget::RemoveObjects);
 }
 
 void ShotListManagerWidget::createObject()
@@ -19,7 +18,16 @@ void ShotListManagerWidget::createObject()
     if (project->sequences()->count() == 0 ) return;
     RamSequence *seq = RamSequence::sequence( currentFilter() );
     if (!seq) seq = qobject_cast<RamSequence*>( project->sequences()->at(0) );
-    seq->createShot();
+    if(!seq) return;
+
+    RamShot *shot = new RamShot(
+                "NEW",
+                seq,
+                "New Shot"
+                );
+
+    project->shots()->append(shot);
+    editObject(shot);
 }
 
 void ShotListManagerWidget::changeProject(RamProject *project)
@@ -27,5 +35,6 @@ void ShotListManagerWidget::changeProject(RamProject *project)
     // empty list
     this->clear();
     if (!project) return;
-    this->setList( project->sequences() );
+    this->setList( project->shots() );
+    m_listEditWidget->setFilterList( project->sequences() );
 }

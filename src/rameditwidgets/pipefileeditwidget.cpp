@@ -4,10 +4,8 @@ PipeFileEditWidget::PipeFileEditWidget(RamPipeFile *pipeFile, QWidget *parent):
     ObjectEditWidget(pipeFile, parent)
 {
     setupUi();
-
-    connectEvents();
-
     setObject(pipeFile);
+    connectEvents();
 }
 
 void PipeFileEditWidget::setObject(RamObject *obj)
@@ -29,17 +27,7 @@ void PipeFileEditWidget::setObject(RamObject *obj)
 
     // Select file type
     RamFileType *ft = pipeFile->fileType();
-    if (ft)
-    {
-        for (int i = 0; i < m_fileTypeBox->count(); i++)
-        {
-            if(m_fileTypeBox->itemData(i).toString() == ft->uuid())
-            {
-                m_fileTypeBox->setCurrentIndex(i);
-                break;
-            }
-        }
-    }
+    if(ft) m_fileTypeBox->setObject( ft );
 
     this->setEnabled(true);
 }
@@ -53,7 +41,7 @@ void PipeFileEditWidget::update()
     updating = true;
 
     RamFileType *ft = qobject_cast<RamFileType*>(m_fileTypeBox->currentObject());
-    m_pipeFile->setFileType( ft );
+    if(ft) m_pipeFile->setFileType( ft );
 
     ObjectEditWidget::update();
 
@@ -62,20 +50,20 @@ void PipeFileEditWidget::update()
 
 void PipeFileEditWidget::setupUi()
 {
-    nameLabel->hide();
-    nameEdit->hide();
+    ui_nameLabel->hide();
+    ui_nameEdit->hide();
 
     QLabel *fileTypeLabel = new QLabel("File type", this);
-    mainFormLayout->addWidget(fileTypeLabel, 2, 0);
+    ui_mainFormLayout->addWidget(fileTypeLabel, 2, 0);
 
     m_fileTypeBox = new RamObjectListComboBox(Ramses::instance()->fileTypes(), this);
-    mainFormLayout->addWidget(m_fileTypeBox, 2, 1);
+    ui_mainFormLayout->addWidget(m_fileTypeBox, 2, 1);
 
     QLabel *colorSpaceLabel = new QLabel("Color space", this);
-    mainFormLayout->addWidget(colorSpaceLabel, 3, 0);
+    ui_mainFormLayout->addWidget(colorSpaceLabel, 3, 0);
 
     m_colorSpaceBox = new RamObjectListComboBox(this);
-    mainFormLayout->addWidget(m_colorSpaceBox, 3, 1);
+    ui_mainFormLayout->addWidget(m_colorSpaceBox, 3, 1);
 }
 
 void PipeFileEditWidget::connectEvents()

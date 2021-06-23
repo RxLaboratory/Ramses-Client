@@ -1,31 +1,17 @@
 #include "ramstatus.h"
 
 #include "ramitem.h"
-
-RamStatus::RamStatus(RamUser *user, RamState *state, RamStep *step, RamItem *item):
-    RamObject("", "", "", item)
-{
-    _user = user;
-    _state = state;
-    _step = step;
-    _item = item;
-    _completionRatio = _state->completionRatio();
-    _date = QDateTime::currentDateTimeUtc();
-
-    setObjectType(Status);
-
-    this->setObjectName( "RamStatus" );
-}
+#include "statuseditwidget.h"
 
 RamStatus::RamStatus(RamUser *user, RamState *state, RamStep *step, RamItem *item, QString uuid):
     RamObject("", "", uuid, item)
 {
-    _user = user;
-    _state = state;
-    _step = step;
-    _item = item;
-    _completionRatio = _state->completionRatio();
-    _date = QDateTime::currentDateTimeUtc();
+    m_user = user;
+    m_state = state;
+    m_step = step;
+    m_item = item;
+    m_completionRatio = m_state->completionRatio();
+    m_date = QDateTime::currentDateTimeUtc();
 
     setObjectType(Status);
 
@@ -39,77 +25,100 @@ RamStatus::~RamStatus()
 
 int RamStatus::completionRatio() const
 {
-    return _completionRatio;
+    return m_completionRatio;
 }
 
 void RamStatus::setCompletionRatio(int completionRatio)
 {
-    if (completionRatio == _completionRatio) return;
+    if (completionRatio == m_completionRatio) return;
     m_dirty = true;
-    _completionRatio = completionRatio;
+    m_completionRatio = completionRatio;
     emit changed(this);
 }
 
 RamUser *RamStatus::user() const
 {
-    return _user;
+    return m_user;
 }
 
 RamState *RamStatus::state() const
 {
-    return _state;
+    return m_state;
 }
 
 void RamStatus::setState(RamState *state)
 {
-    if (!state && !_state) return;
-    if (state && state->is(_state)) return;
+    if (!state && !m_state) return;
+    if (state && state->is(m_state)) return;
     m_dirty = true;
-    _state = state;
+    m_state = state;
     emit changed(this);
 }
 
 int RamStatus::version() const
 {
-    return _version;
+    return m_version;
 }
 
 void RamStatus::setVersion(int version)
 {
-    if (_version == version) return;
+    if (m_version == version) return;
     m_dirty = true;
-    _version = version;
+    m_version = version;
     emit changed(this);
 }
 
 RamStep *RamStatus::step() const
 {
-    return _step;
+    return m_step;
 }
 
 RamItem *RamStatus::item() const
 {
-    return _item;
+    return m_item;
 }
 
 void RamStatus::update()
 {
     if(!m_dirty) return;
     RamObject::update();
-    if (!_state) return;
-    m_dbi->updateStatus(m_uuid, _state->uuid(), m_comment, _version, _completionRatio);
+    if (!m_state) return;
+    m_dbi->updateStatus(m_uuid, m_state->uuid(), m_comment, m_version, m_completionRatio);
+}
+
+void RamStatus::edit(bool show)
+{
+    if (!m_editReady)
+    {
+        StatusEditWidget *w = new StatusEditWidget(this);
+        setEditWidget(w);
+        m_editReady = true;
+        connect( w, SIGNAL(statusUpdated(RamState*,int,int,QString)),
+                 this, SLOT(statusUpdated(RamState*,int,int,QString))
+                 );
+    }
+    showEdit(show);
+}
+
+void RamStatus::statusUpdated(RamState *state, int completion, int version, QString comment)
+{
+    this->setState(state);
+    this->setCompletionRatio(completion);
+    this->setVersion(version);
+    this->setComment(comment);
+    update();
 }
 
 QDateTime RamStatus::date() const
 {
-    return _date;
+    return m_date;
 }
 
 void RamStatus::setDate(const QDateTime &date)
 {
-    if (_date == date) return;
+    if (m_date == date) return;
     m_dirty = true;
-    _date = date;
+    m_date = date;
     emit changed(this);
 }
 

@@ -14,6 +14,7 @@ TEMPLATE = app
 # deprecated API in order to know how to port your code away from it.
 DEFINES += QT_DEPRECATED_WARNINGS
 
+
 CONFIG += c++11
 
 # You can make your code fail to compile if it uses deprecated APIs.
@@ -22,36 +23,31 @@ CONFIG += c++11
 
 INCLUDEPATH += rameditwidgets \
     settingswidgets \
-    ramdisplaywidgets \
     smallwidgets \
     ramobjects \
-    item-tables
+    item-tables \
+    data-views \
+    data-model
 
 SOURCES += \
+    data-models/ramitemtablelistproxy.cpp \
+    data-models/ramobjectfiltermodel.cpp \
+    data-models/ramstepfiltermodel.cpp \
     duqf-widgets/duqfsearchedit.cpp \
-    item-tables/assettable.cpp \
-    item-tables/itemtable.cpp \
-    item-tables/itemtablewidget.cpp \
-    item-tables/shottable.cpp \
-    processmanager.cpp \
-    progressbar.cpp \
-    progresspage.cpp \
-    ramdisplaywidgets/ramapplicationwidget.cpp \
-    ramdisplaywidgets/ramassetgroupwidget.cpp \
-    ramdisplaywidgets/ramfiletypewidget.cpp \
-    ramdisplaywidgets/ramobjectitemdelegate.cpp \
-    ramdisplaywidgets/ramobjectlistcombobox.cpp \
-    ramdisplaywidgets/ramobjectlistmodel.cpp \
-    ramdisplaywidgets/rampipefilewidget.cpp \
-    ramdisplaywidgets/ramprojectwidget.cpp \
-    ramdisplaywidgets/ramsequencewidget.cpp \
-    ramdisplaywidgets/ramstatewidget.cpp \
-    ramdisplaywidgets/ramstepwidget.cpp \
-    ramdisplaywidgets/ramuserwidget.cpp \
+    data-models/ramitemtable.cpp \
+    data-models/ramobjectlist.cpp \
+    data-models/ramstatelist.cpp \
+    data-models/ramstepstatushistory.cpp \
+    data-views/ramobjectdelegate.cpp \
+    data-views/ramobjectlistcombobox.cpp \
+    data-views/ramobjectlistwidget.cpp \
     rameditwidgets/applicationeditwidget.cpp \
     rameditwidgets/applicationlistmanagerwidget.cpp \
     rameditwidgets/asseteditwidget.cpp \
     rameditwidgets/assetgroupeditwidget.cpp \
+    processmanager.cpp \
+    progressbar.cpp \
+    progresspage.cpp \
     daemon.cpp \
     rameditwidgets/assetgrouplistmanagerwidget.cpp \
     rameditwidgets/assetlistmanagerwidget.cpp \
@@ -70,10 +66,9 @@ SOURCES += \
     rameditwidgets/templatesteplistmanagerwidget.cpp \
     rameditwidgets/userlistmanagerwidget.cpp \
     ramloader.cpp \
-    ramobjects/ramobjectuberlist.cpp \
+    ramobjects/ramassetgroup.cpp \
     ramobjects/rampipefile.cpp \
-    ramobjects/ramstatelist.cpp \
-    ramobjects/ramstepstatushistory.cpp \
+    ramobjects/ramsequence.cpp \
     settingswidgets/daemonsettingswidget.cpp \
     dbinterface.cpp \
     dbisuspender.cpp \
@@ -118,30 +113,19 @@ SOURCES += \
     rameditwidgets/objectdockwidget.cpp \
     rameditwidgets/objecteditwidget.cpp \
     rameditwidgets/pipeeditwidget.cpp \
-    pipeline-editor/objectnode.cpp \
-    pipeline-editor/pipelinewidget.cpp \
-    pipeline-editor/stepnode.cpp \
     rameditwidgets/projecteditwidget.cpp \
     smallwidgets/projectselectorwidget.cpp \
     ramobjects/ramapplication.cpp \
     ramobjects/ramasset.cpp \
-    ramobjects/ramassetgroup.cpp \
-    ramdisplaywidgets/ramassetwidget.cpp \
     ramobjects/ramfiletype.cpp \
     ramobjects/ramitem.cpp \
     ramobjects/ramobject.cpp \
-    ramobjects/ramobjectlist.cpp \
-    ramdisplaywidgets/ramobjectlistwidget.cpp \
-    ramdisplaywidgets/ramobjectwidget.cpp \
     ramobjects/rampipe.cpp \
     ramobjects/ramproject.cpp \
-    ramobjects/ramsequence.cpp \
     ramobjects/ramses.cpp \
     ramobjects/ramshot.cpp \
-    ramdisplaywidgets/ramshotwidget.cpp \
     ramobjects/ramstate.cpp \
     ramobjects/ramstatus.cpp \
-    ramdisplaywidgets/ramstatuswidget.cpp \
     ramobjects/ramstep.cpp \
     ramobjects/ramuser.cpp \
     ramobjects/ramuuid.cpp \
@@ -157,30 +141,28 @@ SOURCES += \
     rameditwidgets/templateassetgroupeditwidget.cpp \
     rameditwidgets/templatestepeditwidget.cpp \
     rameditwidgets/usereditwidget.cpp \
-    userprofilepage.cpp
+    userprofilepage.cpp \
+    rameditwidgets/itemtablemanagerwidget.cpp \
+    pipeline-editor/objectnode.cpp \
+    pipeline-editor/pipelinewidget.cpp \
+    pipeline-editor/stepnode.cpp
 
 HEADERS += \
     config.h \
+    data-models/ramitemtable.h \
+    data-models/ramitemtablelistproxy.h \
+    data-models/ramobjectfiltermodel.h \
+    data-models/ramobjectlist.h \
+    data-models/ramstatelist.h \
+    data-models/ramstepfiltermodel.h \
+    data-models/ramstepstatushistory.h \
+    data-views/ramobjectdelegate.h \
     duqf-widgets/duqfsearchedit.h \
-    item-tables/assettable.h \
-    item-tables/itemtable.h \
-    item-tables/itemtablewidget.h \
-    item-tables/shottable.h \
     processmanager.h \
     progressbar.h \
     progresspage.h \
-    ramdisplaywidgets/ramapplicationwidget.h \
-    ramdisplaywidgets/ramassetgroupwidget.h \
-    ramdisplaywidgets/ramfiletypewidget.h \
-    ramdisplaywidgets/ramobjectitemdelegate.h \
-    ramdisplaywidgets/ramobjectlistcombobox.h \
-    ramdisplaywidgets/ramobjectlistmodel.h \
-    ramdisplaywidgets/rampipefilewidget.h \
-    ramdisplaywidgets/ramprojectwidget.h \
-    ramdisplaywidgets/ramsequencewidget.h \
-    ramdisplaywidgets/ramstatewidget.h \
-    ramdisplaywidgets/ramstepwidget.h \
-    ramdisplaywidgets/ramuserwidget.h \
+    data-views/ramobjectlistcombobox.h \
+    data-views/ramobjectlistwidget.h \
     rameditwidgets/applicationeditwidget.h \
     rameditwidgets/applicationlistmanagerwidget.h \
     rameditwidgets/asseteditwidget.h \
@@ -203,10 +185,9 @@ HEADERS += \
     rameditwidgets/templatesteplistmanagerwidget.h \
     rameditwidgets/userlistmanagerwidget.h \
     ramloader.h \
-    ramobjects/ramobjectuberlist.h \
+    ramobjects/ramassetgroup.h \
     ramobjects/rampipefile.h \
-    ramobjects/ramstatelist.h \
-    ramobjects/ramstepstatushistory.h \
+    ramobjects/ramsequence.h \
     settingswidgets/daemonsettingswidget.h \
     dbinterface.h \
     dbisuspender.h \
@@ -251,30 +232,19 @@ HEADERS += \
     rameditwidgets/objectdockwidget.h \
     rameditwidgets/objecteditwidget.h \
     rameditwidgets/pipeeditwidget.h \
-    pipeline-editor/objectnode.h \
-    pipeline-editor/pipelinewidget.h \
-    pipeline-editor/stepnode.h \
     rameditwidgets/projecteditwidget.h \
     smallwidgets/projectselectorwidget.h \
     ramobjects/ramapplication.h \
     ramobjects/ramasset.h \
-    ramobjects/ramassetgroup.h \
-    ramdisplaywidgets/ramassetwidget.h \
     ramobjects/ramfiletype.h \
     ramobjects/ramitem.h \
     ramobjects/ramobject.h \
-    ramobjects/ramobjectlist.h \
-    ramdisplaywidgets/ramobjectlistwidget.h \
-    ramdisplaywidgets/ramobjectwidget.h \
     ramobjects/rampipe.h \
     ramobjects/ramproject.h \
-    ramobjects/ramsequence.h \
     ramobjects/ramses.h \
     ramobjects/ramshot.h \
-    ramdisplaywidgets/ramshotwidget.h \
     ramobjects/ramstate.h \
     ramobjects/ramstatus.h \
-    ramdisplaywidgets/ramstatuswidget.h \
     ramobjects/ramstep.h \
     ramobjects/ramuser.h \
     ramobjects/ramuuid.h \
@@ -290,11 +260,13 @@ HEADERS += \
     rameditwidgets/templateassetgroupeditwidget.h \
     rameditwidgets/templatestepeditwidget.h \
     rameditwidgets/usereditwidget.h \
-    userprofilepage.h
+    userprofilepage.h \
+    rameditwidgets/itemtablemanagerwidget.h \
+    pipeline-editor/objectnode.h \
+    pipeline-editor/pipelinewidget.h \
+    pipeline-editor/stepnode.h
 
 FORMS += \
-    rameditwidgets/asseteditwidget.ui \
-    rameditwidgets/assetgroupeditwidget.ui \
     settingswidgets/daemonsettingswidget.ui \
     duqf-widgets/aboutdialog.ui \
     duqf-widgets/appearancesettingswidget.ui \
@@ -304,10 +276,7 @@ FORMS += \
     loginpage.ui \
     mainwindow.ui \
     pipeline-editor/pipelinewidget.ui \
-    rameditwidgets/projecteditwidget.ui \
     settingswidgets/serversettingswidget.ui \
-    rameditwidgets/stepeditwidget.ui \
-    rameditwidgets/templateassetgroupeditwidget.ui \
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

@@ -6,16 +6,21 @@ SequenceListManagerWidget::SequenceListManagerWidget(QWidget *parent):
         "Sequences",
         parent)
 {
-    this->setContainingType(RamObject::Sequence);
     changeProject(Ramses::instance()->currentProject());
-    connect(Ramses::instance(), &Ramses::currentProjectChanged, this, &SequenceListManagerWidget::changeProject);
+    connect(Ramses::instance(), SIGNAL(currentProjectChanged(RamProject*)), this, SLOT(changeProject(RamProject*)));
+    m_listEditWidget->setEditMode(ObjectListEditWidget::RemoveObjects);
 }
 
 void SequenceListManagerWidget::createObject()
 {
     RamProject *project = Ramses::instance()->currentProject();
     if (!project) return;
-    project->createSequence();
+    RamSequence *s = new RamSequence(
+                "NEW",
+                project,
+                "New Sequence");
+    project->sequences()->append(s);
+    editObject(s);
 }
 
 void SequenceListManagerWidget::changeProject(RamProject *project)
@@ -23,5 +28,5 @@ void SequenceListManagerWidget::changeProject(RamProject *project)
     // empty list
     this->clear();
     if (!project) return;
-    this->setList( qobject_cast<RamObjectList*>( project->sequences() ) );
+    this->setList( project->sequences() );
 }

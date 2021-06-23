@@ -11,6 +11,7 @@ class DuQFSearchEdit : public QWidget
     Q_OBJECT
 public:
     explicit DuQFSearchEdit(QWidget *parent = nullptr);
+    void hideSearchButton();
 
 signals:
     void changing(QString);

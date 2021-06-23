@@ -1,21 +1,25 @@
 #include "ramfiletype.h"
 
-RamFileType::RamFileType(QString shortName, QString name, QStringList extensions, QString uuid, QObject *parent):
-    RamObject(shortName, name, uuid, parent)
+#include "ramses.h"
+#include "filetypeeditwidget.h"
+
+
+RamFileType::RamFileType(QString shortName, QString name, QStringList extensions, QString uuid):
+    RamObject(shortName, name, uuid, Ramses::instance())
 {
     setObjectType(FileType);
-    _extensions = extensions;
-    m_dbi->createFileType(m_shortName, m_name, _extensions, m_uuid);
+    m_extensions = extensions;
+    m_dbi->createFileType(m_shortName, m_name, m_extensions, m_uuid);
 
     this->setObjectName( "RamFileType" );
 }
 
-RamFileType::RamFileType(QString shortName, QString name, QString extensions, QString uuid, QObject *parent):
-    RamObject(shortName, name, uuid, parent)
+RamFileType::RamFileType(QString shortName, QString name, QString extensions, QString uuid):
+    RamObject(shortName, name, uuid, Ramses::instance())
 {
     setObjectType(FileType);
     setExtensions(extensions);
-    m_dbi->createFileType(m_shortName, m_name, _extensions, m_uuid);
+    m_dbi->createFileType(m_shortName, m_name, m_extensions, m_uuid);
 
     this->setObjectName( "RamFileType" );
 }
@@ -29,22 +33,31 @@ void RamFileType::setExtensions(QString extensions)
 {
     m_dirty = true;
     QStringList exts = extensions.split(",");
-    _extensions.clear();
-    foreach(QString ext, exts) _extensions << ext.trimmed();
+    m_extensions.clear();
+    foreach(QString ext, exts)
+    {
+        if (ext.startsWith(".")) ext = ext.remove(0, 1);
+        m_extensions << ext.trimmed();
+    }
 
     emit changed(this);
 }
 
+void RamFileType::setExtensions(QStringList extensions)
+{
+    m_extensions << extensions;
+}
+
 QStringList RamFileType::extensions() const
 {
-    return _extensions;
+    return m_extensions;
 }
 
 void RamFileType::update()
 {
     if (!m_dirty) return;
     RamObject::update();
-    m_dbi->updateFileType(m_uuid, m_shortName, m_name, _extensions, _previewable);
+    m_dbi->updateFileType(m_uuid, m_shortName, m_name, m_extensions, m_previewable);
 }
 
 RamFileType *RamFileType::fileType(QString uuid)
@@ -52,15 +65,26 @@ RamFileType *RamFileType::fileType(QString uuid)
     return qobject_cast<RamFileType*>( RamObject::obj(uuid) );
 }
 
+void RamFileType::edit(bool show)
+{
+    if (!m_editReady)
+    {
+        FileTypeEditWidget *ftw = new FileTypeEditWidget(this);
+        setEditWidget(ftw);
+        m_editReady = true;
+    }
+    showEdit(show);
+}
+
 bool RamFileType::isPreviewable() const
 {
-    return _previewable;
+    return m_previewable;
 }
 
 void RamFileType::setPreviewable(bool previewable)
 {
-    if (previewable == _previewable) return;
+    if (previewable == m_previewable) return;
     m_dirty = true;
-    _previewable = previewable;
+    m_previewable = previewable;
     emit changed(this);
 }

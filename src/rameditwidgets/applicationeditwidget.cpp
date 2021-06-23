@@ -5,24 +5,20 @@
 ApplicationEditWidget::ApplicationEditWidget(QWidget *parent) : ObjectEditWidget(parent)
 {
     setupUi();
-    populateMenus();
-    connectEvents();
-
     setObject(nullptr);
+    connectEvents();
 }
 
 ApplicationEditWidget::ApplicationEditWidget(RamApplication *app, QWidget *parent) : ObjectEditWidget(app, parent)
 {
     setupUi();
-    populateMenus();
-    connectEvents();
-
     setObject(app);
+    connectEvents();
 }
 
 RamApplication *ApplicationEditWidget::application() const
 {
-    return _application;
+    return m_application;
 }
 
 void ApplicationEditWidget::setObject(RamObject *obj)
@@ -31,238 +27,110 @@ void ApplicationEditWidget::setObject(RamObject *obj)
     this->setEnabled(false);
 
     ObjectEditWidget::setObject(application);
-    _application = application;
+    m_application = application;
 
-    QSignalBlocker b(folderSelector);
-    QSignalBlocker b1(nativeList);
-    QSignalBlocker b2(importList);
-    QSignalBlocker b3(exportList);
+    QSignalBlocker b(m_folderSelector);
+    QSignalBlocker b1(m_nativeList);
+    QSignalBlocker b2(m_importList);
+    QSignalBlocker b3(m_exportList);
 
-    folderSelector->setPath("");
-    nativeList->clear();
-    importList->clear();
-    exportList->clear();
+    m_folderSelector->setPath("");
+    m_nativeList->clear();
+    m_importList->clear();
+    m_exportList->clear();
 
     if (!application) return;
 
-    folderSelector->setPath(application->executableFilePath());
+    m_folderSelector->setPath(application->executableFilePath());
 
-    // Load file types
-    QList<QAction *> actions = nativeMenu->actions();
-    actions << exportMenu->actions();
-    actions << importMenu->actions();
-    foreach (QAction *a, actions) a->setVisible(true);
-    for( int i = 0; i < application->nativeFileTypes()->count(); i++) nativeFileTypeAssigned( application->nativeFileTypes()->at(i) );
-    for( int i = 0; i < application->importFileTypes()->count(); i++)  importFileTypeAssigned( application->importFileTypes()->at(i) );
-    for( int i = 0; i < application->exportFileTypes()->count(); i++)  exportFileTypeAssigned( application->exportFileTypes()->at(i) );
-
-    nativeList->setList(application->nativeFileTypes());
-    importList->setList(application->importFileTypes());
-    exportList->setList(application->exportFileTypes());
-
-    _objectConnections << connect(application->nativeFileTypes(), &RamObjectList::objectAdded, this, &ApplicationEditWidget::nativeFileTypeAssigned);
-    _objectConnections << connect(application->nativeFileTypes(), &RamObjectList::objectRemoved, this, &ApplicationEditWidget::nativeFileTypeUnassigned);
-    _objectConnections << connect(application->importFileTypes(), &RamObjectList::objectAdded, this, &ApplicationEditWidget::nativeFileTypeAssigned);
-    _objectConnections << connect(application->importFileTypes(), &RamObjectList::objectRemoved, this, &ApplicationEditWidget::nativeFileTypeUnassigned);
-    _objectConnections << connect(application->exportFileTypes(), &RamObjectList::objectAdded, this, &ApplicationEditWidget::nativeFileTypeAssigned);
-    _objectConnections << connect(application->exportFileTypes(), &RamObjectList::objectRemoved, this, &ApplicationEditWidget::nativeFileTypeUnassigned);
+    m_nativeList->setList(application->nativeFileTypes());
+    m_importList->setList(application->importFileTypes());
+    m_exportList->setList(application->exportFileTypes());
 
     this->setEnabled(Ramses::instance()->isProjectAdmin());
 }
 
 void ApplicationEditWidget::update()
 {
-    if (!_application) return;
+    if (!m_application) return;
 
     updating = true;
 
-    _application->setExecutableFilePath(folderSelector->path());
+    m_application->setExecutableFilePath(m_folderSelector->path());
     ObjectEditWidget::update();
 
     updating = false;
 }
 
-void ApplicationEditWidget::newFileType(RamObject * const ft)
+void ApplicationEditWidget::createForNative()
 {
-    if (!ft) return;
-    if (ft->uuid() == "") return;
-    QAction *assignNative = new QAction(ft->name());
-    QAction *assignImport = new QAction(ft->name());
-    QAction *assignExport = new QAction(ft->name());
-    assignNative->setData(ft->uuid());
-    assignImport->setData(ft->uuid());
-    assignExport->setData(ft->uuid());
-    nativeMenu->addAction(assignNative);
-    importMenu->addAction(assignImport);
-    exportMenu->addAction(assignExport);
-
-    QList<QMetaObject::Connection> c;
-    c << connect(ft, &RamObject::changed, this, &ApplicationEditWidget::fileTypeChanged);
-    c << connect(ft, &RamObject::removed, this, &ApplicationEditWidget::fileTypeRemoved);
-    m_fileTypeConnections[ft->uuid()] = c;
-    connect(assignNative, &QAction::triggered, this, &ApplicationEditWidget::assignNativeFileType);
-    connect(assignImport, &QAction::triggered, this, &ApplicationEditWidget::assignImportFileType);
-    connect(assignExport, &QAction::triggered, this, &ApplicationEditWidget::assignExportFileType);
+    if (!m_application) return;
+    RamFileType *ft = new RamFileType(
+                "NEW",
+                "New file type");
+    Ramses::instance()->fileTypes()->append(ft);
+    m_application->nativeFileTypes()->append(ft);
+    ft->edit();
 }
 
-void ApplicationEditWidget::fileTypeChanged(RamObject *o)
+void ApplicationEditWidget::createForImport()
 {
-    QList<QAction *> actions = nativeMenu->actions();
-    actions << importMenu->actions();
-    actions << exportMenu->actions();
-
-    for(int i = actions.count() -1; i >= 0; i--)
-    {
-        if(actions.at(i)->data().toString() == o->uuid()) actions.at(i)->setText(o->name());
-    }
+    qDebug() << "CREATE";
+    if (!m_application) return;
+    RamFileType *ft = new RamFileType(
+                "NEW",
+                "New file type");
+    Ramses::instance()->fileTypes()->append(ft);
+    m_application->importFileTypes()->append(ft);
+    ft->edit();
 }
 
-void ApplicationEditWidget::fileTypeRemoved(RamObject *o)
+void ApplicationEditWidget::createForExport()
 {
-    if (m_fileTypeConnections.contains(o->uuid()))
-    {
-        QList<QMetaObject::Connection> c = m_fileTypeConnections.value( o->uuid() );
-        while (!c.isEmpty()) disconnect( c.takeLast() );
-    }
-
-    QList<QAction *> actions = nativeMenu->actions();
-    actions << importMenu->actions();
-    actions << exportMenu->actions();
-
-    for(int i = actions.count() -1; i >= 0; i--)
-    {
-        if(actions.at(i)->data().toString() == o->uuid()) actions.at(i)->deleteLater();
-    }
-}
-
-void ApplicationEditWidget::assignNativeFileType()
-{
-    if (!_application) return;
-    QAction *fileTypeAction = (QAction*)sender();
-    RamObject *ft = Ramses::instance()->fileTypes()->fromUuid( fileTypeAction->data().toString() );
-    if (!ft) return;
-    _application->nativeFileTypes()->append(ft);
-}
-
-void ApplicationEditWidget::assignImportFileType()
-{
-    if (!_application) return;
-    QAction *fileTypeAction = (QAction*)sender();
-    RamObject *ft = Ramses::instance()->fileTypes()->fromUuid( fileTypeAction->data().toString() );
-    if (!ft) return;
-    _application->importFileTypes()->append(ft);
-}
-
-void ApplicationEditWidget::assignExportFileType()
-{
-    if (!_application) return;
-    QAction *fileTypeAction = (QAction*)sender();
-    RamObject *ft = Ramses::instance()->fileTypes()->fromUuid( fileTypeAction->data().toString() );
-    if (!ft) return;
-    _application->exportFileTypes()->append(ft);
-}
-
-void ApplicationEditWidget::nativeFileTypeAssigned(RamObject * const ft)
-{
-    if (!ft) return;
-    if (ft->uuid() == "") return;
-
-    //hide from assign list
-    foreach (QAction *a, nativeMenu->actions()) if (a->data().toString() == ft->uuid()) a->setVisible(false);
-}
-
-void ApplicationEditWidget::importFileTypeAssigned(RamObject * const ft)
-{
-    if (!ft) return;
-    if (ft->uuid() == "") return;
-
-    //hide from assign list
-    foreach (QAction *a, importMenu->actions()) if (a->data().toString() == ft->uuid()) a->setVisible(false);
-}
-
-void ApplicationEditWidget::exportFileTypeAssigned(RamObject * const ft)
-{
-    if (!ft) return;
-    if (ft->uuid() == "") return;
-
-    //hide from assign list
-    foreach (QAction *a, exportMenu->actions()) if (a->data().toString() == ft->uuid()) a->setVisible(false);
-}
-
-void ApplicationEditWidget::nativeFileTypeUnassigned(RamObject * const ft)
-{
-    //show in assign list
-    foreach(QAction *a, nativeMenu->actions())
-        if (a->data().toString() == ft->uuid()) a->setVisible(true);
-}
-
-void ApplicationEditWidget::importFileTypeUnassigned(RamObject * const ft)
-{
-    //show in assign list
-    foreach(QAction *a, importMenu->actions())
-        if (a->data().toString() == ft->uuid()) a->setVisible(true);
-}
-
-void ApplicationEditWidget::exportFileTypeUnassigned(RamObject * const ft)
-{
-    //show in assign list
-    foreach(QAction *a, exportMenu->actions())
-        if (a->data().toString() == ft->uuid()) a->setVisible(true);
+    if (!m_application) return;
+    RamFileType *ft = new RamFileType(
+                "NEW",
+                "New file type");
+    Ramses::instance()->fileTypes()->append(ft);
+    m_application->exportFileTypes()->append(ft);
+    ft->edit();
 }
 
 void ApplicationEditWidget::setupUi()
 {
     QLabel *fileLabel = new QLabel("Executable file", this);
-    mainFormLayout->addWidget(fileLabel, 2, 0);
+    ui_mainFormLayout->addWidget(fileLabel, 2, 0);
 
-    folderSelector = new DuQFFolderSelectorWidget(DuQFFolderSelectorWidget::File, this);
-    mainFormLayout->addWidget(folderSelector, 2, 1);
+    m_folderSelector = new DuQFFolderSelectorWidget(DuQFFolderSelectorWidget::File, this);
+    ui_mainFormLayout->addWidget(m_folderSelector, 2, 1);
 
-    QSplitter *splitter = new QSplitter(this);
-    splitter->setOrientation(Qt::Vertical);
+    QTabWidget *tabWidget = new QTabWidget(this);
 
-    nativeList = new ObjectListEditWidget(true, splitter);
-    nativeList->setEditMode(RamObjectListWidget::UnassignObjects);
-    nativeList->setTitle("Native file types");
-    splitter->addWidget(nativeList);
+    m_nativeList = new ObjectListEditWidget(true, RamUser::Admin);
+    m_nativeList->setEditMode(ObjectListEditWidget::UnassignObjects);
+    m_nativeList->setTitle("Native file types");
+    m_nativeList->setAssignList(Ramses::instance()->fileTypes());
+    tabWidget->addTab(m_nativeList, QIcon(":/icons/files"), "Native");
 
-    importList = new ObjectListEditWidget(true, splitter);
-    importList->setEditMode(RamObjectListWidget::UnassignObjects);
-    importList->setTitle("Imports");
-    splitter->addWidget(importList);
+    m_importList = new ObjectListEditWidget(true, RamUser::Admin);
+    m_importList->setEditMode(ObjectListEditWidget::UnassignObjects);
+    m_importList->setTitle("Imports");
+    m_importList->setAssignList(Ramses::instance()->fileTypes());
+    tabWidget->addTab(m_importList, QIcon(":/icons/files"), "Import");
 
-    exportList = new ObjectListEditWidget(true, splitter);
-    exportList->setEditMode(RamObjectListWidget::UnassignObjects);
-    exportList->setTitle("Exports");
-    splitter->addWidget(exportList);
+    m_exportList = new ObjectListEditWidget(true, RamUser::Admin);
+    m_exportList->setEditMode(ObjectListEditWidget::UnassignObjects);
+    m_exportList->setTitle("Exports");
+    m_exportList->setAssignList(Ramses::instance()->fileTypes());
+    tabWidget->addTab(m_exportList, QIcon(":/icons/files"), "Export");
 
-    mainLayout->addWidget(splitter);
-
-    // Add menu
-    nativeMenu = new QMenu(this);
-    QToolButton *addNativeButton = nativeList->addButton();
-    addNativeButton->setPopupMode(QToolButton::InstantPopup);
-    addNativeButton->setMenu(nativeMenu);
-
-    importMenu = new QMenu(this);
-    QToolButton *addImportButton = importList->addButton();
-    addImportButton->setPopupMode(QToolButton::InstantPopup);
-    addImportButton->setMenu(importMenu);
-
-    exportMenu = new QMenu(this);
-    QToolButton *addExportButton = exportList->addButton();
-    addExportButton->setPopupMode(QToolButton::InstantPopup);
-    addExportButton->setMenu(exportMenu);
-}
-
-void ApplicationEditWidget::populateMenus()
-{
-    for (int i = 0; i < Ramses::instance()->fileTypes()->count(); i++) newFileType( Ramses::instance()->fileTypes()->at(i) );
+    ui_mainLayout->addWidget(tabWidget);
 }
 
 void ApplicationEditWidget::connectEvents()
 {
-    connect(Ramses::instance()->fileTypes(), &RamObjectList::objectAdded, this, &ApplicationEditWidget::newFileType);
-    connect(Ramses::instance()->fileTypes(), &RamObjectList::objectRemoved, this, &ApplicationEditWidget::fileTypeRemoved);
+    connect(m_nativeList, SIGNAL(add()), this, SLOT(createForNative()));
+    connect(m_importList, SIGNAL(add()), this, SLOT(createForImport()));
+    connect(m_exportList, SIGNAL(add()), this, SLOT(createForExport()));
 }
 

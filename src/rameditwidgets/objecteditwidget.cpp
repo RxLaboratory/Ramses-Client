@@ -22,20 +22,20 @@ ObjectEditWidget::ObjectEditWidget(RamObject *o, QWidget *parent) :
 
 RamObject *ObjectEditWidget::object() const
 {
-    return _object;
+    return m_object;
 }
 
 void ObjectEditWidget::hideName(bool hide)
 {
-    nameLabel->setVisible(!hide);
-    nameEdit->setVisible(!hide);
-    shortNameLabel->setVisible(!hide);
-    shortNameEdit->setVisible(!hide);
+    ui_nameLabel->setVisible(!hide);
+    ui_nameEdit->setVisible(!hide);
+    ui_shortNameLabel->setVisible(!hide);
+    ui_shortNameEdit->setVisible(!hide);
 }
 
 void ObjectEditWidget::hideStatus(bool hide)
 {
-    statusLabel->setVisible(!hide);
+    ui_statusLabel->setVisible(!hide);
 }
 
 void ObjectEditWidget::setObject(RamObject *object)
@@ -46,19 +46,19 @@ void ObjectEditWidget::setObject(RamObject *object)
         disconnect( _objectConnections.takeLast() );
     }
 
-    _object = object;
+    m_object = object;
 
-    QSignalBlocker b1(nameEdit);
-    QSignalBlocker b2(shortNameEdit);
+    QSignalBlocker b1(ui_nameEdit);
+    QSignalBlocker b2(ui_shortNameEdit);
 
-    nameEdit->setText("");
-    shortNameEdit->setText("");
-    statusLabel->setText("");
+    ui_nameEdit->setText("");
+    ui_shortNameEdit->setText("");
+    ui_statusLabel->setText("");
 
     if (!object) return;
 
-    nameEdit->setText(object->name());
-    shortNameEdit->setText(object->shortName());
+    ui_nameEdit->setText(object->name());
+    ui_shortNameEdit->setText(object->shortName());
 
     _objectConnections << connect( object, &RamObject::removed, this, &ObjectEditWidget::objectRemoved);
     _objectConnections << connect( object, &RamObject::changed, this, &ObjectEditWidget::objectChanged);
@@ -66,31 +66,31 @@ void ObjectEditWidget::setObject(RamObject *object)
 
 void ObjectEditWidget::update()
 {
-    if (!_object) return;
+    if (!m_object) return;
 
     if (!checkInput()) return;
 
     updating = true;
 
-    _object->setName(nameEdit->text());
-    _object->setShortName(shortNameEdit->text());
+    m_object->setName(ui_nameEdit->text());
+    m_object->setShortName(ui_shortNameEdit->text());
 
-    _object->update();
+    m_object->update();
 
     updating = false;
 }
 
 bool ObjectEditWidget::checkInput()
 {
-    if (!_object) return false;
+    if (!m_object) return false;
 
-    if (shortNameEdit->text() == "")
+    if (ui_shortNameEdit->text() == "")
     {
-        statusLabel->setText("Short name cannot be empty!");
+        ui_statusLabel->setText("Short name cannot be empty!");
         return false;
     }
 
-    statusLabel->setText("");
+    ui_statusLabel->setText("");
     return true;
 }
 
@@ -104,7 +104,7 @@ void ObjectEditWidget::objectChanged(RamObject *o)
 {
     if (updating) return;
     Q_UNUSED(o);
-    setObject(_object);
+    setObject(m_object);
 }
 
 void ObjectEditWidget::setupUi()
@@ -112,29 +112,29 @@ void ObjectEditWidget::setupUi()
     QWidget *dummy = new QWidget(this);
     dummy->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
 
-    mainLayout = new QVBoxLayout(dummy);
-    mainLayout->setSpacing(3);
-    mainLayout->setContentsMargins(3, 3, 3, 3);
+    ui_mainLayout = new QVBoxLayout(dummy);
+    ui_mainLayout->setSpacing(3);
+    ui_mainLayout->setContentsMargins(3, 3, 3, 3);
 
-    mainFormLayout = new QGridLayout();
-    mainFormLayout->setSpacing(3);
+    ui_mainFormLayout = new QGridLayout();
+    ui_mainFormLayout->setSpacing(3);
 
-    nameLabel = new QLabel("Name", dummy);
-    mainFormLayout->addWidget(nameLabel, 0, 0);
+    ui_nameLabel = new QLabel("Name", dummy);
+    ui_mainFormLayout->addWidget(ui_nameLabel, 0, 0);
 
-    nameEdit = new QLineEdit(dummy);
-    mainFormLayout->addWidget(nameEdit, 0, 1);
+    ui_nameEdit = new QLineEdit(dummy);
+    ui_mainFormLayout->addWidget(ui_nameEdit, 0, 1);
 
-    shortNameLabel = new QLabel("Short Name", dummy);
-    mainFormLayout->addWidget(shortNameLabel, 1, 0);
+    ui_shortNameLabel = new QLabel("ID", dummy);
+    ui_mainFormLayout->addWidget(ui_shortNameLabel, 1, 0);
 
-    shortNameEdit = new QLineEdit(dummy);
-    mainFormLayout->addWidget(shortNameEdit, 1, 1);
+    ui_shortNameEdit = new QLineEdit(dummy);
+    ui_mainFormLayout->addWidget(ui_shortNameEdit, 1, 1);
 
-    mainLayout->addLayout(mainFormLayout);
+    ui_mainLayout->addLayout(ui_mainFormLayout);
 
-    statusLabel = new QLabel(dummy);
-    mainLayout->addWidget(statusLabel);
+    ui_statusLabel = new QLabel(dummy);
+    ui_mainLayout->addWidget(ui_statusLabel);
 
     this->setWidget(dummy);
     this->setWidgetResizable(true);
@@ -143,7 +143,7 @@ void ObjectEditWidget::setupUi()
 
 void ObjectEditWidget::connectEvents()
 {
-    connect(shortNameEdit, &QLineEdit::textChanged, this, &ObjectEditWidget::checkInput);
-    connect(shortNameEdit, &QLineEdit::editingFinished, this, &ObjectEditWidget::update);
-    connect(nameEdit, &QLineEdit::editingFinished, this, &ObjectEditWidget::update);
+    connect(ui_shortNameEdit, &QLineEdit::textChanged, this, &ObjectEditWidget::checkInput);
+    connect(ui_shortNameEdit, &QLineEdit::editingFinished, this, &ObjectEditWidget::update);
+    connect(ui_nameEdit, &QLineEdit::editingFinished, this, &ObjectEditWidget::update);
 }

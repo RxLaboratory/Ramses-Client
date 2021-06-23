@@ -1,7 +1,9 @@
 #include "ramstate.h"
 
-RamState::RamState(QString shortName, QString name, QString uuid, QObject *parent) :
-    RamObject(shortName, name, uuid, parent)
+#include "ramses.h"
+
+RamState::RamState(QString shortName, QString name, QString uuid) :
+    RamObject(shortName, name, uuid, Ramses::instance())
 {
     this->setObjectType(State);
     m_dbi->createState(m_shortName, m_name, m_uuid);

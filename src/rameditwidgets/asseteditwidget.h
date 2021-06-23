@@ -3,7 +3,6 @@
 
 #include "objecteditwidget.h"
 #include "ramses.h"
-#include "statushistorywidget.h"
 #include "ramobjectlistcombobox.h"
 #include "duqf-widgets/duqffolderdisplaywidget.h"
 
@@ -15,21 +14,15 @@ class AssetEditWidget : public ObjectEditWidget
     Q_OBJECT
 
 public:
-    explicit AssetEditWidget(QWidget *parent = nullptr);
-
+    AssetEditWidget(QWidget *parent = nullptr);
+    AssetEditWidget(RamAsset *asset, QWidget *parent = nullptr);
     RamAsset *asset() const;
 
-    void setAsset(RamAsset* asset);
-
 public slots:
-    void setObject(RamObject *obj) Q_DECL_OVERRIDE;
+    void setObject(RamObject *obj) override;
 
 protected slots:
-    void update() Q_DECL_OVERRIDE;
-
-private slots:
-    void changeProject(RamProject *project);
-    void moveAsset();
+    void update() override;
 
 private:
     RamAsset *_asset = nullptr;
@@ -40,10 +33,6 @@ private:
     DuQFFolderDisplayWidget *folderWidget;
     QLineEdit *tagsEdit;
     RamObjectListComboBox *assetGroupBox;
-    StatusHistoryWidget *statusHistoryWidget;
-
-    RamAssetGroup *assetGroup();
-    RamProject *project();
 };
 
 #endif // ASSETEDITWIDGET_H

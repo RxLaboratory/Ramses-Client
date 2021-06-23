@@ -95,7 +95,7 @@ int DuQFDoubleSpinBox::maximum() const
     return _spinBox->maximum();
 }
 
-void DuQFDoubleSpinBox::setMaximum(int max)
+void DuQFDoubleSpinBox::setMaximum(double max)
 {
     _spinBox->setMaximum(max);
     _slider->setMaximum(max);
@@ -106,7 +106,7 @@ int DuQFDoubleSpinBox::minimum() const
     return _spinBox->minimum();
 }
 
-void DuQFDoubleSpinBox::setMinimum(int min)
+void DuQFDoubleSpinBox::setMinimum(double min)
 {
     _spinBox->setMinimum(min);
     _slider->setMinimum(min);

@@ -5,8 +5,8 @@ StateBox::StateBox(QWidget *parent): QComboBox(parent)
     for (int i = 0; i < Ramses::instance()->states()->count(); i++)
         newState(Ramses::instance()->states()->at(i));
 
-    connect(Ramses::instance()->states(), &RamObjectList::objectAdded, this, &StateBox::newState);
-    connect(Ramses::instance()->states(), &RamObjectList::objectRemoved, this, &StateBox::stateRemoved);
+    /*connect(Ramses::instance()->states(), &RamObjectList::objectAdded, this, &StateBox::newState);
+    connect(Ramses::instance()->states(), &RamObjectList::objectRemoved, this, &StateBox::stateRemoved);*/
     connect(this, SIGNAL(currentIndexChanged(int)), this, SLOT(currentStateChanged(int)));
 }
 

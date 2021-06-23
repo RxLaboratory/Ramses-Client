@@ -28,29 +28,38 @@ public:
 signals:
     void closeRequested();
 private slots:
-    void setProject(RamProject *project);
-    void newStep(RamObject *obj);
     void nodeMoved(QPointF pos);
     void setSnapEnabled(bool enabled);
     void setGridSize(int size);
+
     void userChanged(RamUser *u);
+    void setProject(RamProject *project);
+
     void createStep();
+
+    void templateStepInserted(const QModelIndex &parent, int first, int last);
     void newTemplateStep(RamObject *obj);
-    void templateStepRemoved(RamObject *o);
+    void templateStepRemoved(const QModelIndex &parent, int first, int last);
     void templateStepChanged();
     void assignStep();
+
+    void newStep(RamObject *obj);
+    void newStep(const QModelIndex &parent, int first, int last);
+
     void newPipe(RamObject *p);
+    void newPipe(const QModelIndex &parent, int first, int last);
+    void pipeRemoved(const QModelIndex &parent, int first, int last);
+    void pipeChanged(RamObject *p);
+
     void stepsConnected(DuQFConnection *co);
     void connectionRemoved(DuQFConnection *co);
-    void pipeChanged(RamObject *p);
-    void pipeRemoved(RamObject *p);
 protected:
-    void showEvent(QShowEvent *event) Q_DECL_OVERRIDE;
-    void hideEvent(QHideEvent *event) Q_DECL_OVERRIDE;
-private:
+    void showEvent(QShowEvent *event) override;
+    void hideEvent(QHideEvent *event) override;
+
+private:  
     void changeProject();
 
-    QSettings *m_userSettings;
     TitleBar *ui_titleBar;
     DuQFSpinBox *ui_gridSizeBox;
     QCheckBox *ui_snapButton;
@@ -58,9 +67,11 @@ private:
     DuQFNodeView *ui_nodeView;
     QMenu *ui_stepMenu;
     QAction *ui_stepMenuSeparator;
+
     QList<QMetaObject::Connection> m_projectConnections;
     QMap<QString, QList<QMetaObject::Connection>> m_pipeObjectConnections;
     QMap<QString,DuQFConnection*> m_pipeConnections;
+
     RamProject *m_project = nullptr;
     bool m_projectChanged = false;
 };

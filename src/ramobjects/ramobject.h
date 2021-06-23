@@ -8,6 +8,8 @@
 #include "ramuuid.h"
 #include "config.h"
 
+class ObjectDockWidget;
+
 class RamObject : public QObject
 {
     Q_OBJECT
@@ -39,7 +41,7 @@ public:
     QString shortName() const;
     void setShortName(const QString &shortName);
 
-    QString name() const;
+    virtual QString name() const;
     void setName(const QString &name);
 
     QString comment() const;
@@ -53,6 +55,8 @@ public:
     int order() const;
     void setOrder(int order);
 
+    QString filterUuid() const;
+
     bool is(const RamObject *other);
 
     static RamObject *obj(QString uuid);
@@ -60,10 +64,12 @@ public:
 public slots:
     virtual void update();
     virtual void remove();
+    virtual void edit(bool s = true) { Q_UNUSED(s) };
 
 signals:
     void changed(RamObject *);
     void orderChanged(RamObject *, int p, int n);
+    void orderChanged();
     void removed(RamObject *);
 
 protected:
@@ -77,12 +83,21 @@ protected:
     QString m_comment;
     int m_order = -1;
     bool m_orderChanged = false;
-    bool m_removing;
+    bool m_removing = false;
+    bool m_editReady = false;
+    QString m_filterUuid;
 
     static QMap<QString, RamObject*> m_existingObjects;
 
+    void setEditWidget( QWidget *w );
+    void showEdit(bool show = true);
+
 private:
     RamObject::ObjectType _objectType = Generic;
+
+
+
+    ObjectDockWidget *m_dockWidget = nullptr;
 
 };
 

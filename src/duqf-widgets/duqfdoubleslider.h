@@ -35,7 +35,7 @@ public:
     void showValue(bool show);
     bool valueVisible() const;
 
-    virtual QString text() const Q_DECL_OVERRIDE;
+    virtual QString text() const override;
 
 signals:
     void valueChanged(double);
@@ -49,7 +49,7 @@ private:
     QString _suffix;
     bool _showValue;
 protected:
-    void mouseMoveEvent ( QMouseEvent * event ) Q_DECL_OVERRIDE;
+    void mouseMoveEvent ( QMouseEvent * event ) override;
 };
 
 #endif // DUQFDOUBLESLIDER_H

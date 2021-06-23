@@ -160,7 +160,7 @@ void Daemon::setCurrentProject(QString shortName, QTcpSocket *client)
     }
 }
 
-void Daemon::getCurrentStatus(QString shortName, QString name, QString type, QString step, QTcpSocket *client)
+void Daemon::getCurrentStatus(QString shortName, QString name, QString type, QString stepName, QTcpSocket *client)
 {
     log("I'm replying to this request: getCurrentStatus", DuQFLog::Information);
 
@@ -177,8 +177,8 @@ void Daemon::getCurrentStatus(QString shortName, QString name, QString type, QSt
     QJsonArray statuses;
 
     RamItem *item = nullptr;
-    if (type == "A") item = qobject_cast<RamItem*>( proj->assetGroups()->objectFromName(shortName, name) );
-    else item = qobject_cast<RamItem*>( proj->sequences()->objectFromName(shortName, name) );
+    if (type == "A") item = qobject_cast<RamItem*>( proj->assets()->fromName(shortName, name) );
+    else item = qobject_cast<RamItem*>( proj->shots()->fromName(shortName, name) );
 
     if (!item)
     {
@@ -187,16 +187,15 @@ void Daemon::getCurrentStatus(QString shortName, QString name, QString type, QSt
     }
 
     // Get step from name
-    if ( step != "" )
+    if ( stepName != "" )
     {
-        RamObject *o = item->statusHistory()->fromName( step );
-        if (!o)
+        RamObject *stepObj = proj->steps()->fromName( stepName );
+        RamStepStatusHistory *st = item->statusHistory(stepObj);
+        if (!st)
         {
-            post(client, content, "getCurrentStatus", "Sorry, step " + step + " not found.", false);
+            post(client, content, "getCurrentStatus", "Sorry, step " + stepName + " not found.", false);
             return;
         }
-
-        RamStepStatusHistory *st = qobject_cast<RamStepStatusHistory*>( o );
 
         RamStatus *s = item->status( st->step() );
         if (s)
@@ -207,22 +206,12 @@ void Daemon::getCurrentStatus(QString shortName, QString name, QString type, QSt
         }
 
         post(client, content, "getCurrentStatus", "Current status for " + item->name() + " not found, sorry.", false);
+        return;
     }
 
-
-
-    RamObjectUberList *history = item->statusHistory( );
-    for (int i = history->count() - 1; i >= 0; i-- )
-    {
-        RamObjectList *h = qobject_cast<RamObjectList*>( history->at(i) );
-
-        h->sort();
-        RamStatus *s = qobject_cast<RamStatus*>( h->last() );
-        if (s)
-        {
-            statuses.append( statusToJson(s) );
-        }
-    }
+    QList<RamStatus*> stss = item->status();
+    for(int i = 0; i < statuses.count(); i++)
+        statuses.append( statusToJson( stss.at(i) ) );
 
     content.insert("status", statuses);
     post(client, content, "getCurrentStatus", "Current status for " + item->name() + " retrieved.");
@@ -243,9 +232,9 @@ void Daemon::getAssets(QTcpSocket *client)
     }
 
     QJsonArray assets;
-    for (int i = 0; i < proj->assetGroups()->objectCount(); i++)
+    for (int i = 0; i < proj->assets()->count(); i++)
     {
-        RamAsset *a = qobject_cast<RamAsset*>( proj->assetGroups()->objectAt(i) );
+        RamAsset *a = qobject_cast<RamAsset*>( proj->assets()->at(i) );
         QJsonObject asset = assetToJson(a);
         assets.append(asset);
     }
@@ -265,7 +254,7 @@ void Daemon::getAsset(QString shortName, QString name, QTcpSocket *client)
         return;
     }
 
-    RamAsset *asset = qobject_cast<RamAsset*>( proj->assetGroups()->objectFromName(shortName, name) );
+    RamAsset *asset = qobject_cast<RamAsset*>( proj->assets()->fromName(shortName, name) );
     if (!asset)
     {
         post(client, QJsonObject(), "getAsset", "Sorry, asset not found. Check its short name and name", false);
@@ -468,9 +457,9 @@ void Daemon::getShots(QString filter, QTcpSocket *client)
     QRegularExpression re(filter,QRegularExpression::CaseInsensitiveOption);
 
     QJsonArray shots;
-    for (int i = 0; i < proj->sequences()->objectCount(); i++)
+    for (int i = 0; i < proj->shots()->count(); i++)
     {
-        RamShot *s = qobject_cast<RamShot*>( proj->sequences()->objectAt(i) );
+        RamShot *s = qobject_cast<RamShot*>( proj->shots()->at(i) );
 
         bool ok = filter == "([a-z0-9+-]*\\s*)*";
         if (!ok)
@@ -501,7 +490,7 @@ void Daemon::getShot(QString shortName, QString name, QTcpSocket *client)
         return;
     }
 
-    RamShot *shot = qobject_cast<RamShot*>( proj->sequences()->objectFromName(shortName, name) );
+    RamShot *shot = qobject_cast<RamShot*>( proj->shots()->fromName(shortName, name) );
     if (!shot)
     {
         post(client, QJsonObject(), "getShot", "Sorry, shot not found. Check its short name and name", false);

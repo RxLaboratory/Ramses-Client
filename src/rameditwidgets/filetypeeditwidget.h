@@ -11,18 +11,18 @@ class FileTypeEditWidget : public ObjectEditWidget
     Q_OBJECT
 
 public:
-    explicit FileTypeEditWidget(QWidget *parent = nullptr);
-    explicit FileTypeEditWidget(RamFileType *fileType, QWidget *parent = nullptr);
+    explicit FileTypeEditWidget(RamFileType *fileType = nullptr);
 
     RamFileType *fileType() const;
 
 public slots:
-    void setObject(RamObject *obj) Q_DECL_OVERRIDE;
+    void setObject(RamObject *obj) override;
 
 protected slots:
-    void update() Q_DECL_OVERRIDE;
+    void update() override;
 
 private slots:
+    void updateExtensions();
 
 private:
     RamFileType *_fileType;

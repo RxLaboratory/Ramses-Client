@@ -19,21 +19,21 @@ public:
     RamSequence *sequence() const;
 
 public slots:
-    void setObject(RamObject *obj) Q_DECL_OVERRIDE;
+    void setObject(RamObject *obj) override;
 
 protected slots:
-    void update() Q_DECL_OVERRIDE;
+    void update() override;
 
 private slots:
     void createShot();
 
 private:
-    RamSequence *_sequence;
+    RamSequence *m_sequence;
 
     void setupUi();
     void connectEvents();
 
-    ObjectListEditWidget *shotsList;
+    ObjectListEditWidget *ui_shotsList;
 };
 
 #endif // SEQUENCEEDITWIDGET_H

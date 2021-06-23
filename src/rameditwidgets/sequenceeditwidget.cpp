@@ -18,7 +18,7 @@ SequenceEditWidget::SequenceEditWidget(RamSequence *sequence, QWidget *parent) :
 
 RamSequence *SequenceEditWidget::sequence() const
 {
-    return _sequence;
+    return m_sequence;
 }
 
 void SequenceEditWidget::setObject(RamObject *obj)
@@ -28,50 +28,58 @@ void SequenceEditWidget::setObject(RamObject *obj)
     this->setEnabled(false);
 
     ObjectEditWidget::setObject(sequence);
-    _sequence = sequence;
+    m_sequence = sequence;
 
-    QSignalBlocker b1(shotsList);
+    QSignalBlocker b1(ui_shotsList);
 
-    //Reset values
-    shotsList->setList(sequence);
+    ui_shotsList->setList(nullptr);
 
     if (!sequence) return;
+
+    //Reset values
+    ui_shotsList->setList(m_sequence->project()->shots());
+    ui_shotsList->setFilter(sequence);
 
     this->setEnabled(Ramses::instance()->isProjectAdmin());
 }
 
 void SequenceEditWidget::update()
 {
-    if (!_sequence) return;
+    if (!m_sequence) return;
 
     updating = true;
 
     if (!checkInput()) return;
 
-    _sequence->setName(nameEdit->text());
-    _sequence->setShortName(shortNameEdit->text());
+    m_sequence->setName(ui_nameEdit->text());
+    m_sequence->setShortName(ui_shortNameEdit->text());
 
-    _sequence->update();
+    m_sequence->update();
 
     updating = false;
 }
 
 void SequenceEditWidget::createShot()
 {
-    if (!_sequence) return;
-    _sequence->createShot();
+    if (!m_sequence) return;
+    RamShot *shot = new RamShot(
+                "NEW",
+                m_sequence,
+                "New Shot");
+    m_sequence->project()->shots()->append(shot);
+    shot->edit();
 }
 
 void SequenceEditWidget::setupUi()
 {
-    shotsList = new ObjectListEditWidget(true, this);
-    shotsList->setSortable(true);
-    shotsList->setTitle("Shots");
-    mainLayout->addWidget(shotsList);
+    ui_shotsList = new ObjectListEditWidget(true, RamUser::ProjectAdmin, this);
+    ui_shotsList->setEditMode(ObjectListEditWidget::UnassignObjects);
+    ui_shotsList->setTitle("Shots");
+    ui_mainLayout->addWidget(ui_shotsList);
 }
 
 void SequenceEditWidget::connectEvents()
 {
-    connect(shotsList, &ObjectListEditWidget::add, this, &SequenceEditWidget::createShot);
+    connect(ui_shotsList, SIGNAL(add()), this, SLOT(createShot()));
 }
 

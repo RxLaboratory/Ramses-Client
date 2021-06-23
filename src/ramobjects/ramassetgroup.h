@@ -2,11 +2,12 @@
 #define RAMASSETGROUP_H
 
 #include "ramasset.h"
-#include "ramobjectlist.h"
+#include "ramobject.h"
+#include "data-models/ramobjectfiltermodel.h"
 
 class RamProject;
 
-class RamAssetGroup : public RamObjectList
+class RamAssetGroup : public RamObject
 {
     Q_OBJECT
 public:
@@ -17,24 +18,23 @@ public:
     ~RamAssetGroup();
 
     bool isTemplate() const;
-    RamAssetGroup *createFromTemplate(QString projectUuid);
+    RamAssetGroup *createFromTemplate(RamProject *project);
+
+    int assetCount() const;
 
     RamProject *project() const;
-
-    // Assets
-    void append(RamAsset *asset);
-    void createAsset(QString shortName = "NEW", QString name = "Asset");
 
     static RamAssetGroup *assetGroup(QString uuid);
 
 public slots:
-    void update() Q_DECL_OVERRIDE;
-    void remove() Q_DECL_OVERRIDE;
+    void update() override;
+    virtual void edit(bool show = true) override;
 
 private:
     bool _template;
 
     RamProject *m_project = nullptr;
+    RamObjectFilterModel *m_assets;
 };
 
 #endif // RAMASSETGROUP_H

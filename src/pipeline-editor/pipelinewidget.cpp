@@ -113,6 +113,7 @@ PipelineWidget::PipelineWidget(QWidget *parent) :
     stepButton->setPopupMode(QToolButton::InstantPopup);
     stepButton->setMenu(ui_stepMenu);
 
+    // Load template steps
     for (int i = 0; i < Ramses::instance()->templateSteps()->count(); i++) newTemplateStep( Ramses::instance()->templateSteps()->at(i) );
 
     ui_titleBar->insertLeft(stepButton);
@@ -168,9 +169,6 @@ PipelineWidget::PipelineWidget(QWidget *parent) :
     m_nodeScene = ui_nodeView->nodeScene();
     mainLayout->addWidget(ui_nodeView);
 
-    m_userSettings = new QSettings(QSettings::IniFormat, QSettings::UserScope, STR_COMPANYNAME, STR_INTERNALNAME);
-    m_userSettings->beginGroup("nodeView");
-
     // Connections
     connect(ui_titleBar, &TitleBar::closeRequested, this, &PipelineWidget::closeRequested);
     connect(viewAllButton, SIGNAL(clicked()), ui_nodeView, SLOT(reinitTransform()));
@@ -195,9 +193,9 @@ PipelineWidget::PipelineWidget(QWidget *parent) :
     connect(m_nodeScene->connectionManager(), SIGNAL(newConnection(DuQFConnection*)), this, SLOT(stepsConnected(DuQFConnection*)));
     connect(m_nodeScene->connectionManager(), SIGNAL(connectionRemoved(DuQFConnection*)), this, SLOT(connectionRemoved(DuQFConnection*)));
     // Ramses connections
-    connect(Ramses::instance()->templateSteps(), &RamObjectList::objectAdded, this, &PipelineWidget::newTemplateStep);
-    connect(Ramses::instance()->templateSteps(), &RamObjectList::objectRemoved, this, &PipelineWidget::templateStepRemoved);
-    connect(Ramses::instance(), &Ramses::currentProjectChanged, this, &PipelineWidget::setProject);
+    connect(Ramses::instance()->templateSteps(), SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(templateStepInserted(QModelIndex,int,int)));
+    connect(Ramses::instance()->templateSteps(), SIGNAL(rowsAboutToBeRemoved(QModelIndex,int,int)), this, SLOT(templateStepRemoved(QModelIndex,int,int)));
+    connect(Ramses::instance(), SIGNAL(currentProjectChanged(RamProject*)), this, SLOT(setProject(RamProject*)));
     connect(Ramses::instance(), &Ramses::loggedIn, this, &PipelineWidget::userChanged);
 }
 
@@ -223,12 +221,31 @@ void PipelineWidget::newStep(RamObject *obj)
     m_nodeScene->addNode( stepNode, false );
 
     // Reset position
-    m_userSettings->beginGroup("nodeLocations");
-    QPointF pos = m_userSettings->value(step->uuid(), QPointF(0.0,0.0)).toPointF();
-    if (pos.x() != 0.0 && pos.y() != 0.0) stepNode->setPos( pos );
-    m_userSettings->endGroup();
+    RamUser *u = Ramses::instance()->currentUser();
+    if (u)
+    {
+        QSettings *uSettings = u->userSettings();
+        uSettings->beginGroup("nodeView");
+        uSettings->beginGroup("nodeLocations");
+        QPointF pos = uSettings->value(step->uuid(), QPointF(0.0,0.0)).toPointF();
+        if (pos.x() != 0.0 && pos.y() != 0.0) stepNode->setPos( pos );
+        uSettings->endGroup();
+        uSettings->endGroup();
+    }
+
 
     connect(stepNode, &DuQFNode::moved, this, &PipelineWidget::nodeMoved);
+}
+
+void PipelineWidget::newStep(const QModelIndex &parent, int first, int last)
+{
+    Q_UNUSED(parent)
+
+    for (int i = first; i <= last; i++)
+    {
+        RamObject *o = m_project->steps()->at(i);
+        newStep(o);
+    }
 }
 
 void PipelineWidget::nodeMoved(QPointF pos)
@@ -237,9 +254,14 @@ void PipelineWidget::nodeMoved(QPointF pos)
     if (!node) return;
     RamObject *step = node->ramObject();
 
-    m_userSettings->beginGroup("nodeLocations");
-    m_userSettings->setValue(step->uuid(), pos);
-    m_userSettings->endGroup();
+    RamUser *u = Ramses::instance()->currentUser();
+    if (!u) return;
+    QSettings *uSettings = u->userSettings();
+    uSettings->beginGroup("nodeView");
+    uSettings->beginGroup("nodeLocations");
+    uSettings->setValue(step->uuid(), pos);
+    uSettings->endGroup();
+    uSettings->endGroup();
 }
 
 void PipelineWidget::setSnapEnabled(bool enabled)
@@ -248,8 +270,12 @@ void PipelineWidget::setSnapEnabled(bool enabled)
 
     ui_snapButton->setChecked(enabled);
 
-    m_userSettings->setValue("snapToGrid", enabled);
     ui_nodeView->grid()->setSnapEnabled(enabled);
+
+    RamUser *u = Ramses::instance()->currentUser();
+    if (!u) return;
+    QSettings *uSettings = u->userSettings();
+    uSettings->setValue("nodeView/snapToGrid", enabled);
 }
 
 void PipelineWidget::setGridSize(int size)
@@ -257,23 +283,24 @@ void PipelineWidget::setGridSize(int size)
     QSignalBlocker b(ui_gridSizeBox);
 
     ui_gridSizeBox->setValue(size);
-
-    m_userSettings->setValue("gridSize", size);
     ui_nodeView->grid()->setSize(size);
     ui_nodeView->update();
+
+    RamUser *u = Ramses::instance()->currentUser();
+    if (!u) return;
+    QSettings *uSettings = u->userSettings();
+    uSettings->setValue("nodeView/gridSize", size);
+
 }
 
 void PipelineWidget::userChanged(RamUser *u)
 {
-    Q_UNUSED(u);
+    if (!u) return;
 
-    m_userSettings->endGroup();
-    delete m_userSettings;
-    m_userSettings = new QSettings(Ramses::instance()->currentUserSettingsFile(), QSettings::IniFormat, this);
-    m_userSettings->beginGroup("nodeView");
+    QSettings *uSettings = u->userSettings();
 
-    setSnapEnabled(m_userSettings->value("snapToGrid", false).toBool());
-    setGridSize(m_userSettings->value("gridSize", 20).toInt());
+    setSnapEnabled(uSettings->value("nodeView/snapToGrid", false).toBool());
+    setGridSize(uSettings->value("nodeView/gridSize", 20).toInt());
 }
 
 void PipelineWidget::createStep()
@@ -281,7 +308,23 @@ void PipelineWidget::createStep()
     RamProject *project = Ramses::instance()->currentProject();
     if (!project) return;
 
-    project->createStep();
+    RamStep *step = new RamStep(
+                "NEW",
+                "New step",
+                project);
+    project->steps()->append(step);
+    step->edit();
+}
+
+void PipelineWidget::templateStepInserted(const QModelIndex &parent, int first, int last)
+{
+    Q_UNUSED(parent)
+
+    for (int i = first; i <= last; i++)
+    {
+        RamObject *o = Ramses::instance()->templateSteps()->at(i);
+        newTemplateStep(o);
+    }
 }
 
 void PipelineWidget::newTemplateStep(RamObject *obj)
@@ -289,33 +332,47 @@ void PipelineWidget::newTemplateStep(RamObject *obj)
     if (!obj) return;
     if (obj->uuid() == "") return;
     QAction *stepAction = new QAction(obj->name());
-    stepAction->setData(obj->uuid());
+    quintptr iptr = reinterpret_cast<quintptr>( obj );
+    stepAction->setData(iptr);
     ui_stepMenu->insertAction(ui_stepMenuSeparator, stepAction);
     connect(stepAction, &QAction::triggered, this, &PipelineWidget::assignStep);
     connect(obj, &RamObject::changed, this, &PipelineWidget::templateStepChanged);
 
 }
 
-void PipelineWidget::templateStepRemoved(RamObject *o)
+void PipelineWidget::templateStepRemoved(const QModelIndex &parent, int first, int last)
 {
+    Q_UNUSED(parent)
+
     QList<QAction *> actions = ui_stepMenu->actions();
-    for (int i = actions.count() -1; i >= 0; i--)
+
+    for (int i = first; i <= last; i++)
     {
-        if (actions[i]->data().toString() == o->uuid())
+        RamObject *removedObj = Ramses::instance()->templateSteps()->at(i);
+        for (int j = actions.count() -1; j >= 0; j--)
         {
-            ui_stepMenu->removeAction(actions[i]);
-            actions[i]->deleteLater();
+            quintptr iptr = actions.at(j)->data().toULongLong();
+            RamObject *obj = reinterpret_cast<RamObject*>( iptr );
+
+            if (removedObj->is(obj))
+            {
+                actions.at(j)->deleteLater();
+                break;
+            }
         }
     }
 }
 
 void PipelineWidget::templateStepChanged()
 {
-    RamStep *s = (RamStep*)sender();
+    RamObject *changedObj = qobject_cast<RamObject*>( sender() );
     QList<QAction *> actions = ui_stepMenu->actions();
     for (int i = actions.count() -1; i >= 0; i--)
     {
-        if (actions[i]->data().toString() == s->uuid()) actions[i]->setText(s->name());
+        quintptr iptr = actions.at(i)->data().toULongLong();
+        RamObject *obj = reinterpret_cast<RamObject*>( iptr );
+
+        if (changedObj->is(obj)) actions.at(i)->setText(changedObj->name());
     }
 }
 
@@ -324,9 +381,12 @@ void PipelineWidget::assignStep()
     RamProject *project = Ramses::instance()->currentProject();
     if (!project) return;
     QAction *stepAction = (QAction*)sender();
-    RamStep *templateStep = RamStep::step( stepAction->data().toString() );
+    quintptr iptr = stepAction->data().toULongLong();
+    RamStep *templateStep = reinterpret_cast<RamStep*>( iptr );
     if (!templateStep) return;
-    project->assignStep(templateStep);
+    RamStep *step = templateStep->createFromTemplate(project);
+    project->steps()->append(step);
+    step->edit();
 }
 
 void PipelineWidget::newPipe(RamObject *p)
@@ -358,13 +418,7 @@ void PipelineWidget::newPipe(RamObject *p)
     if (!co) return;
 
     // Title
-    QStringList titleList;
-    for (int i =0; i < pipe->pipeFiles()->count(); i++)
-    {
-        RamPipeFile *pipeFile = qobject_cast<RamPipeFile*>( pipe->pipeFiles()->at(i));
-        titleList << pipeFile->name();
-    }
-    co->connector()->setTitle( titleList.join("\n"));
+    co->connector()->setTitle( p->name() );
 
     // Create an edit dockwidget
     ObjectDockWidget *dockWidget = new ObjectDockWidget(pipe);
@@ -384,6 +438,17 @@ void PipelineWidget::newPipe(RamObject *p)
     m_pipeConnections[pipe->uuid()] = co;
 }
 
+void PipelineWidget::newPipe(const QModelIndex &parent, int first, int last)
+{
+    Q_UNUSED(parent)
+
+    for (int i = first; i <= last; i++)
+    {
+        RamObject *o = m_project->pipeline()->at(i);
+        newPipe(o);
+    }
+}
+
 void PipelineWidget::stepsConnected(DuQFConnection *co)
 {
     RamProject *project = Ramses::instance()->currentProject();
@@ -398,7 +463,9 @@ void PipelineWidget::stepsConnected(DuQFConnection *co)
     if (!output) return;
     if (!input) return;
 
-    project->createPipe(output, input);
+    RamPipe *pipe = new RamPipe(output, input);
+    project->pipeline()->append(pipe);
+    pipe->edit();
 }
 
 void PipelineWidget::connectionRemoved(DuQFConnection *co)
@@ -453,29 +520,29 @@ void PipelineWidget::pipeChanged(RamObject *p)
             if (inputOk && outputOk) break;
         }
 
-        QStringList titleList;
-        for (int i =0; i < pipe->pipeFiles()->count(); i++)
-        {
-            RamPipeFile *pipeFile = qobject_cast<RamPipeFile*>( pipe->pipeFiles()->at(i));
-            titleList << pipeFile->name();
-        }
-        co->connector()->setTitle( titleList.join("\n"));
+        co->connector()->setTitle( p->name() );
     }
 }
 
-void PipelineWidget::pipeRemoved(RamObject *p)
+void PipelineWidget::pipeRemoved(const QModelIndex &parent, int first, int last)
 {
-    if (m_pipeObjectConnections.contains(p->uuid()))
+    Q_UNUSED(parent)
+
+    for (int i = first; i <= last; i++)
     {
-        QList<QMetaObject::Connection> c = m_pipeObjectConnections.take(p->uuid());
-        while(!c.isEmpty()) disconnect(c.takeLast());
-    }
-    if (m_pipeConnections.contains(p->uuid()))
-    {
-        //remove connection
-        m_pipeConnections.value(p->uuid())->remove();
-        //and remove its pointer from the list
-        m_pipeConnections.remove(p->uuid());
+        RamObject *p = m_project->pipeline()->at(i);
+        if (m_pipeObjectConnections.contains(p->uuid()))
+        {
+            QList<QMetaObject::Connection> c = m_pipeObjectConnections.take(p->uuid());
+            while(!c.isEmpty()) disconnect(c.takeLast());
+        }
+        if (m_pipeConnections.contains(p->uuid()))
+        {
+            //remove connection
+            m_pipeConnections.value(p->uuid())->remove();
+            //and remove its pointer from the list
+            m_pipeConnections.remove(p->uuid());
+        }
     }
 }
 
@@ -543,9 +610,9 @@ void PipelineWidget::changeProject()
         newPipe( m_project->pipeline()->at(i) );
     }
 
-    m_projectConnections << connect(m_project->steps(), &RamObjectList::objectAdded, this, &PipelineWidget::newStep);
-    m_projectConnections << connect(m_project->pipeline(), &RamObjectList::objectAdded, this, &PipelineWidget::newPipe);
-    m_projectConnections << connect(m_project->pipeline(), &RamObjectList::objectRemoved, this, &PipelineWidget::pipeRemoved);
+    m_projectConnections << connect(m_project->steps(), SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(newStep(QModelIndex,int,int)));
+    m_projectConnections << connect(m_project->pipeline(), SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(newPipe(QModelIndex,int,int)));
+    m_projectConnections << connect(m_project->pipeline(), SIGNAL(rowsAboutToBeRemoved(QModelIndex,int,int)), this, SLOT(pipeRemoved(QModelIndex,int,int)));
 
     // Layout
     m_nodeScene->clearSelection();

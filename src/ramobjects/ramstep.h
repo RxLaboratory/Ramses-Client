@@ -4,6 +4,7 @@
 #include "ramobject.h"
 #include "ramuser.h"
 #include "ramapplication.h"
+#include "data-models/ramobjectlist.h"
 
 class RamProject;
 
@@ -22,6 +23,7 @@ public:
     void init();
 
     bool isTemplate() const;
+    RamStep *createFromTemplate(RamProject *project);
     RamStep *createFromTemplate(QString projectUuid);
 
     Type type() const;
@@ -37,15 +39,17 @@ public:
     QList<RamObject *> inputFileTypes();
     QList<RamObject *> outputFileTypes();
 
-    void update();
-
     static RamStep *step(QString uuid);
 
+public slots:
+    void update() override;
+    virtual void edit(bool show = true) override;
+
 private slots:
-    void userAssigned(RamObject *u);
-    void userUnassigned(RamObject *u);
-    void applicationAssigned(RamObject *a);
-    void applicationUnassigned(RamObject *a);
+    void userAssigned(const QModelIndex &parent, int first, int last);
+    void userUnassigned(const QModelIndex &parent, int first, int last);
+    void applicationAssigned(const QModelIndex &parent, int first, int last);
+    void applicationUnassigned(const QModelIndex &parent, int first, int last);
 
 private:
     bool m_template;

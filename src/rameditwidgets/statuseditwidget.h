@@ -46,14 +46,14 @@ private slots:
 private:
     void setupUi();
     void connectEvents();
-    StateBox *stateBox;
-    DuQFSpinBox *completionBox;
-    AutoSelectSpinBox *versionBox;
-    QPlainTextEdit *commentEdit;
-    QToolButton *setButton;
-    QToolButton *revertButton;
+    StateBox *ui_stateBox;
+    DuQFSpinBox *ui_completionBox;
+    AutoSelectSpinBox *ui_versionBox;
+    QPlainTextEdit *ui_commentEdit;
+    QToolButton *ui_setButton;
+    QToolButton *ui_revertButton;
 
-    RamStatus *_status;
+    RamStatus *m_status;
 };
 
 #endif // STATUSEDITWIDGET_H

@@ -16,7 +16,7 @@ public:
     QString suffix() const;
     void setSuffix(const QString &suffix);
 
-    virtual QString text() const Q_DECL_OVERRIDE;
+    virtual QString text() const override;
 
     bool valueVisible() const;
     void showValue(bool showValue);
@@ -32,7 +32,7 @@ private:
     bool _showValue;
     bool _editable = true;
 protected:
-    void mouseMoveEvent ( QMouseEvent * event ) Q_DECL_OVERRIDE;
-    void mouseReleaseEvent( QMouseEvent * event ) Q_DECL_OVERRIDE;
+    void mouseMoveEvent ( QMouseEvent * event ) override;
+    void mouseReleaseEvent( QMouseEvent * event ) override;
 };
 #endif // DUQFSLIDER_H

@@ -10,7 +10,7 @@ class RamAsset : public RamItem
 {
     Q_OBJECT
 public:
-    explicit RamAsset(QString shortName, RamProject *project, RamAssetGroup *assetGroup, QString name = "",  QString uuid = "");
+    explicit RamAsset(QString shortName, RamAssetGroup *assetGroup, QString name = "",  QString uuid = "");
     ~RamAsset();
 
     RamAssetGroup *assetGroup() const;
@@ -22,14 +22,19 @@ public:
     void removeTag(QString tag);
     bool hasTag(QString tag);
 
-    void update();
+    void update() override;
 
     static RamAsset *asset(QString uuid);
+
+public slots:
+    virtual void edit(bool show = true) override;
 
 private:
     QStringList _tags;
     // Containers
     RamAssetGroup *m_assetGroup;
+
+    QMetaObject::Connection m_assetGroupConnection;
 };
 
 #endif // RAMASSET_H

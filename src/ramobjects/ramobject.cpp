@@ -1,4 +1,6 @@
 #include "ramobject.h"
+#include "objectdockwidget.h"
+#include "mainwindow.h"
 
 QMap<QString, RamObject*> RamObject::m_existingObjects = QMap<QString, RamObject*>();
 
@@ -44,7 +46,12 @@ QString RamObject::shortName() const
 
 void RamObject::setShortName(const QString &shortName)
 {
-    if (shortName == m_shortName) return;
+    // Sanitize
+    QString newShortName = shortName.trimmed();
+    if (newShortName.startsWith(".")) newShortName = newShortName.remove(0,1);
+
+    // Check and set
+    if (newShortName == m_shortName) return;
     m_dirty  = true;
     m_shortName = shortName;
     emit changed(this);
@@ -98,6 +105,26 @@ void RamObject::remove()
     this->deleteLater();
 }
 
+void RamObject::setEditWidget(QWidget *w)
+{
+    m_dockWidget = new ObjectDockWidget(this);
+    QFrame *f = new QFrame(m_dockWidget);
+    QVBoxLayout *l = new QVBoxLayout();
+    l->setContentsMargins(3,3,3,3);
+    l->addWidget(w);
+    f->setLayout(l);
+    m_dockWidget->setWidget(f);
+
+    MainWindow *mw = (MainWindow*)GuiUtils::appMainWindow();
+    mw->addObjectDockWidget(m_dockWidget);
+}
+
+void RamObject::showEdit(bool show)
+{
+    if (m_dockWidget != nullptr )
+        m_dockWidget->setVisible(show);
+}
+
 RamObject::ObjectType RamObject::objectType() const
 {
     return _objectType;
@@ -121,6 +148,12 @@ void RamObject::setOrder(int order)
     m_order = order;
     if (!m_dbi->isSuspended()) m_orderChanged = true;
     emit orderChanged(this, previous, order);
+    emit orderChanged();
+}
+
+QString RamObject::filterUuid() const
+{
+    return m_filterUuid;
 }
 
 bool RamObject::is(const RamObject *other)

@@ -1,18 +1,25 @@
 #include "rampipe.h"
+#include "pipeeditwidget.h"
 
-RamPipe::RamPipe(RamStep *output, RamStep *input, QString uuid, QObject *parent):
-    RamObject("","",uuid,parent)
+#include "ramproject.h"
+
+RamPipe::RamPipe(RamStep *output, RamStep *input, QString uuid):
+    RamObject("PIPE","Pipe",uuid)
 {
     m_outputStep = output;
     m_inputStep = input;
-    m_pipeFiles = new RamObjectList();
+    m_pipeFiles = new RamObjectList("PPFS", "Pipe files", this);
 
     m_inputConnection = connect( m_inputStep, &RamStep::removed, this, &RamObject::remove);
     m_outputConnection = connect( m_outputStep, &RamStep::removed, this, &RamObject::remove);
     m_dbi->createPipe(output->uuid(), input->uuid(), m_uuid);
 
-    connect(m_pipeFiles, &RamObjectList::objectAdded, this, &RamPipe::pipeFileAssigned);
-    connect(m_pipeFiles, &RamObjectList::objectRemoved, this, &RamPipe::pipeFileUnassigned);
+    connect(m_pipeFiles, SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(pipeFileAssigned(QModelIndex,int,int)));
+    connect(m_pipeFiles, SIGNAL(rowsAboutToBeRemoved(QModelIndex,int,int)), this, SLOT(pipeFileUnassigned(QModelIndex,int,int)));
+    connect(m_pipeFiles, SIGNAL(rowsRemoved(QModelIndex,int,int)), this, SLOT(pipeFileUnassigned()));
+    connect(m_pipeFiles, SIGNAL(dataChanged(QModelIndex,QModelIndex,QVector<int>)), this, SLOT(pipeFileChanged()));
+
+    this->setParent( this->project() );
 
     this->setObjectName( "RamPipe" );
 }
@@ -22,11 +29,32 @@ RamPipe::~RamPipe()
     m_dbi->removePipe(m_uuid);
 }
 
+QString RamPipe::name() const
+{
+    QStringList n;
+    for (int i =0; i < m_pipeFiles->count(); i++)
+    {
+        n << m_pipeFiles->at(i)->name();
+    }
+    return n.join("\n");
+}
+
 void RamPipe::update()
 {
     if (!m_dirty) return;
     RamObject::update();
     m_dbi->updatePipe(m_uuid, m_inputStep->uuid(), m_outputStep->uuid());
+}
+
+void RamPipe::edit(bool show)
+{
+    if (!m_editReady)
+    {
+        PipeEditWidget *w = new PipeEditWidget(this);
+        setEditWidget(w);
+        m_editReady = true;
+    }
+    showEdit(show);
 }
 
 RamStep *RamPipe::outputStep() const
@@ -76,16 +104,36 @@ RamPipe *RamPipe::pipe(QString uuid)
     return qobject_cast<RamPipe*>( RamObject::obj(uuid) );
 }
 
-void RamPipe::pipeFileUnassigned(RamObject *ft)
+void RamPipe::pipeFileUnassigned(const QModelIndex &parent, int first, int last)
 {
-    m_dbi->unassignPipeFile( m_uuid, ft->uuid());
+    Q_UNUSED(parent)
+
+    for (int i = first; i <= last; i++)
+    {
+        RamObject *pfObj = m_pipeFiles->at(i);
+        m_dbi->unassignPipeFile(m_uuid, pfObj->uuid());
+    }
+}
+
+void RamPipe::pipeFileAssigned(const QModelIndex &parent, int first, int last)
+{
+    Q_UNUSED(parent)
+
+    for (int i = first; i <= last; i++)
+    {
+        RamPipeFile *pf = qobject_cast<RamPipeFile*>( m_pipeFiles->at(i) );
+        m_dbi->assignPipeFile(m_uuid, pf->uuid());
+    }
     emit changed(this);
 }
 
-void RamPipe::pipeFileAssigned(RamObject * const ft)
+void RamPipe::pipeFileUnassigned()
 {
-    if (!ft) return;
-    m_dbi->assignPipeFile(m_uuid, ft->uuid());
+    emit changed(this);
+}
+
+void RamPipe::pipeFileChanged()
+{
     emit changed(this);
 }
 

@@ -18,7 +18,7 @@ AssetGroupEditWidget::AssetGroupEditWidget(RamAssetGroup *ag, QWidget *parent) :
 
 RamAssetGroup *AssetGroupEditWidget::assetGroup() const
 {
-    return _assetGroup;
+    return m_assetGroup;
 }
 
 void AssetGroupEditWidget::setObject(RamObject *obj)
@@ -28,54 +28,63 @@ void AssetGroupEditWidget::setObject(RamObject *obj)
     this->setEnabled(false);
 
     ObjectEditWidget::setObject(assetGroup);
-    _assetGroup = assetGroup;
+    m_assetGroup = assetGroup;
 
-    QSignalBlocker b1(assetsList);
+    QSignalBlocker b1(ui_assetsList);
 
     //Reset values
-    folderWidget->setPath("");
-    assetsList->setList(assetGroup);
+    ui_folderWidget->setPath("");
+    ui_assetsList->setList(nullptr);
 
     if (!assetGroup) return;
 
-    folderWidget->setPath(Ramses::instance()->path(assetGroup));
+    ui_assetsList->setList(assetGroup->project()->assets());
+    ui_assetsList->setFilter(assetGroup);
+
+    ui_folderWidget->setPath(Ramses::instance()->path(assetGroup));
 
     this->setEnabled(Ramses::instance()->isProjectAdmin());
 }
 
 void AssetGroupEditWidget::update()
 {
-    if (!_assetGroup) return;
+    if (!m_assetGroup) return;
 
     updating = true;
 
     if (!checkInput()) return;
 
-    _assetGroup->setName(nameEdit->text());
-    _assetGroup->setShortName(shortNameEdit->text());
+    m_assetGroup->setName(ui_nameEdit->text());
+    m_assetGroup->setShortName(ui_shortNameEdit->text());
 
-    _assetGroup->update();
+    m_assetGroup->update();
 
     updating = false;
 }
 
 void AssetGroupEditWidget::createAsset()
 {
-    if (!_assetGroup) return;
-    _assetGroup->createAsset();
+    if (!m_assetGroup) return;
+    RamAsset *asset = new RamAsset(
+                "NEW",
+                m_assetGroup,
+                "New Asset");
+    m_assetGroup->project()->assets()->append(asset);
+    asset->edit();
 }
 
 void AssetGroupEditWidget::setupUi()
 {
-    folderWidget = new DuQFFolderDisplayWidget(this);
-    mainLayout->insertWidget(1, folderWidget);
+    ui_folderWidget = new DuQFFolderDisplayWidget(this);
+    ui_mainLayout->insertWidget(1, ui_folderWidget);
 
-    assetsList = new ObjectListEditWidget(true, this);
-    assetsList->setTitle("Assets");
-    mainLayout->addWidget(assetsList);
+    ui_assetsList = new ObjectListEditWidget(true, RamUser::ProjectAdmin, this);
+    ui_assetsList->setEditMode(ObjectListEditWidget::RemoveObjects);
+    ui_assetsList->setTitle("Assets");
+    ui_mainLayout->addWidget(ui_assetsList);
 }
 
 void AssetGroupEditWidget::connectEvents()
 {
-    connect(assetsList, &ObjectListEditWidget::add, this, &AssetGroupEditWidget::createAsset);
+    connect(ui_assetsList, SIGNAL(add()), this, SLOT(createAsset()));
 }

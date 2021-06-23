@@ -6,7 +6,7 @@
 
 #include "objecteditwidget.h"
 #include "duqf-widgets/duqffolderselectorwidget.h"
-#include "ramapplication.h"
+#include "ramses.h"
 
 class ObjectListEditWidget;
 
@@ -21,43 +21,26 @@ public:
     RamApplication *application() const;
 
 public slots:
-    void setObject(RamObject *obj) Q_DECL_OVERRIDE;
+    void setObject(RamObject *obj) override;
 
 protected slots:
-    void update() Q_DECL_OVERRIDE;
+    void update() override;
 
 private slots:
-    void newFileType(RamObject * const ft);
-    void fileTypeChanged(RamObject *o);
-    void fileTypeRemoved(RamObject *o);
-    void assignNativeFileType();
-    void assignImportFileType();
-    void assignExportFileType();
-
-    void nativeFileTypeAssigned(RamObject * const ft);
-    void importFileTypeAssigned(RamObject * const ft);
-    void exportFileTypeAssigned(RamObject * const ft);
-    void nativeFileTypeUnassigned(RamObject * const ft);
-    void importFileTypeUnassigned(RamObject * const ft);
-    void exportFileTypeUnassigned(RamObject * const ft);
+    void createForNative();
+    void createForImport();
+    void createForExport();
 
 private:
-    RamApplication *_application;
+    RamApplication *m_application;
 
     void setupUi();
-    void populateMenus();
     void connectEvents();
 
-    DuQFFolderSelectorWidget *folderSelector;
-    ObjectListEditWidget *nativeList;
-    ObjectListEditWidget *importList;
-    ObjectListEditWidget *exportList;
-
-    QMenu *nativeMenu;
-    QMenu *importMenu;
-    QMenu *exportMenu;
-
-    QMap<QString, QList<QMetaObject::Connection>> m_fileTypeConnections;
+    DuQFFolderSelectorWidget *m_folderSelector;
+    ObjectListEditWidget *m_nativeList;
+    ObjectListEditWidget *m_importList;
+    ObjectListEditWidget *m_exportList;
 };
 
 #endif // APPLICATIONEDITWIDGET_H

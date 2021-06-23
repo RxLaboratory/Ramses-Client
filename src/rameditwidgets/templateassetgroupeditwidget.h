@@ -15,7 +15,7 @@ public:
     RamAssetGroup *assetGroup() const;
 
 public slots:
-    void setObject(RamObject *obj) Q_DECL_OVERRIDE;
+    void setObject(RamObject *obj) override;
 
 private slots:
 

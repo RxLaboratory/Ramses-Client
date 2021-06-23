@@ -23,10 +23,10 @@ public:
     void setDecimals(int d);
 
     int minimum() const;
-    void setMinimum(int min);
+    void setMinimum(double min);
 
     int maximum() const;
-    void setMaximum(int max);
+    void setMaximum(double max);
 
     double value() const;
     void setValue(double value);

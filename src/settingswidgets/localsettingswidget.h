@@ -19,7 +19,7 @@ private slots:
     void setDateFormat();
 private:
     DuQFFolderSelectorWidget *folderSelector;
-    QSettings _settings;
+    QSettings m_settings;
 };
 
 #endif // LOCALSETTINGSWIDGET_H

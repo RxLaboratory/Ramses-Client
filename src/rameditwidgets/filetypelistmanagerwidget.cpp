@@ -7,11 +7,15 @@ FileTypeListManagerWidget::FileTypeListManagerWidget(QWidget *parent) :
         "File types",
         parent )
 {
-    this->setContainingType(RamObject::FileType);
+    m_listEditWidget->setEditMode(ObjectListEditWidget::RemoveObjects);
 }
 
 void FileTypeListManagerWidget::createObject()
 {
-    Ramses::instance()->createFileType();
+    RamFileType *ft = new RamFileType(
+                "NEW",
+                "New file type");
+    Ramses::instance()->fileTypes()->append(ft);
+    editObject(ft);
 }
 

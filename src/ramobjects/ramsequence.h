@@ -1,32 +1,32 @@
 #ifndef RAMSEQUENCE_H
 #define RAMSEQUENCE_H
 
-#include "ramshot.h"
-#include "ramobjectlist.h"
+#include "ramobject.h"
+#include "data-models/ramobjectfiltermodel.h"
 
 class RamProject;
 
-class RamSequence : public RamObjectList
+class RamSequence : public RamObject
 {
     Q_OBJECT
 public:
-    explicit RamSequence(QString shortName, RamProject *project, QString name,  QString uuid = "", QObject *parent = nullptr);
+    explicit RamSequence(QString shortName, RamProject *project, QString name,  QString uuid = "");
     ~RamSequence();
 
-    RamProject *project() const;
+    int shotCount() const;
+    double duration() const;
 
-    // Shots
-    void append(RamShot *shot);
-    void createShot(QString shortName = "NEW", QString name = "Shot");
+    RamProject *project() const;
 
     static RamSequence *sequence(QString uuid);
 
 public slots:
-    void update() Q_DECL_OVERRIDE;
-    void remove() Q_DECL_OVERRIDE;
+    void update() override;
+    virtual void edit(bool show = true) override;
 
 private:
     RamProject *m_project;
+    RamObjectFilterModel *m_shots;
 };
 
 #endif // RAMSEQUENCE_H

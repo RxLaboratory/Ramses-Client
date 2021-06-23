@@ -13,29 +13,24 @@ class ObjectListManagerWidget : public QWidget
 public:
     explicit ObjectListManagerWidget(ObjectEditWidget *editWidget, QString title, QWidget *parent = nullptr);
     explicit ObjectListManagerWidget(RamObjectList *objectList, ObjectEditWidget *editWidget, QString title, QWidget *parent = nullptr);
-    explicit ObjectListManagerWidget(RamObjectUberList *objectList, ObjectEditWidget *editWidget, QString title, QWidget *parent = nullptr);
-    void setContainingType(RamObject::ObjectType type);
-    void setSortable(bool sortable);
     void setList(RamObjectList *objectList);
-    void setList(RamObjectUberList *objectList);
     void clear();
     QString currentFilter() const;
+    void editObject(RamObject *o);
 
 protected:
-    void showEvent(QShowEvent *event) Q_DECL_OVERRIDE;
+    void showEvent(QShowEvent *event) override;
+    ObjectListEditWidget *m_listEditWidget;
 
 protected slots:
     virtual void createObject() {};
-
-private slots:
-    void editNewObject(RamObject *o);
 
 private:
     void setupUi();
     void connectEvents();
 
     QSplitter *m_splitter;
-    ObjectListEditWidget *m_listEditWidget;
+
     ObjectEditWidget *m_editWidget;
     QList<QMetaObject::Connection> m_listConnection;
 };

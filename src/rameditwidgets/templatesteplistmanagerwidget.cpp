@@ -7,10 +7,17 @@ TemplateStepListManagerWidget::TemplateStepListManagerWidget(QWidget *parent) :
         "Template steps",
         parent )
 {
-    this->setContainingType(RamObject::Step);
+    m_listEditWidget->setEditMode(ObjectListEditWidget::RemoveObjects);
 }
 
 void TemplateStepListManagerWidget::createObject()
 {
-    Ramses::instance()->createTemplateStep();
+    RamStep *ts = new RamStep(
+                "NEW",
+                "New Template Step"
+                );
+
+    Ramses::instance()->templateSteps()->append(ts);
+
+    editObject(ts);
 }

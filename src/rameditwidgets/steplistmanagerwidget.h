@@ -11,9 +11,19 @@ public:
     StepListManagerWidget(QWidget *parent = nullptr);
 
 protected slots:
-    void createObject() Q_DECL_OVERRIDE;
+    void createObject() override;
 private slots:
     void changeProject(RamProject *project);
+
+    void templateStepInserted(const QModelIndex &parent, int first, int last);
+    void newTemplate(RamObject *obj);
+    void templateStepRemoved(const QModelIndex &parent, int first, int last);
+    void templateStepChanged();
+
+    void actionCreate();
+
+private:
+    QMenu *ui_createMenu;
 };
 
 #endif // STEPLISTMANAGERWIDGET_H

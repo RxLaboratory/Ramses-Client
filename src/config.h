@@ -8,12 +8,12 @@
 //#define DUMP_OBJECT_DEBUG
 
 // Deactivate pipeline editor
-#define DEACTIVATE_PIPELINE
+//#define DEACTIVATE_PIPELINE
 
 // Deactivate Shots Table
 //#define DEACTIVATE_SHOTSTABLE
 
 // Deactivate Assets Table
-#define DEACTIVATE_ASSETSTABLE
+//#define DEACTIVATE_ASSETSTABLE
 
 #endif // CONFIG_H

@@ -12,7 +12,7 @@ class ProjectSelectorWidget : public RamObjectListComboBox
 public:
     ProjectSelectorWidget(QWidget *parent = nullptr);
 private slots:
-    void setCurrentProject(int index);
+    void setCurrentProject(RamObject *projObj);
     void currentProjectChanged(RamProject *p);
 };
 
