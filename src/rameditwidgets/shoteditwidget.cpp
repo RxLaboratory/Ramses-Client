@@ -85,32 +85,32 @@ void ShotEditWidget::setupUi()
 {
     //Duration
     QLabel *durationLabel = new QLabel("Duration", this);
-    mainFormLayout->addWidget(durationLabel, 2, 0);
+    ui_mainFormLayout->addWidget(durationLabel, 2, 0);
 
     ui_secondsBox = new QDoubleSpinBox(this);
     ui_secondsBox->setMinimum(0.0);
     ui_secondsBox->setMaximum(14400.0);
     ui_secondsBox->setSingleStep(0.1);
     ui_secondsBox->setSuffix(" seconds");
-    mainFormLayout->addWidget(ui_secondsBox, 2, 1);
+    ui_mainFormLayout->addWidget(ui_secondsBox, 2, 1);
 
     ui_framesBox = new QSpinBox(this);
     ui_framesBox->setMinimum(0);
     ui_framesBox->setMaximum(1728000);
     ui_framesBox->setSingleStep(1);
     ui_framesBox->setSuffix(" frames");
-    mainFormLayout->addWidget(ui_framesBox, 3, 1);
+    ui_mainFormLayout->addWidget(ui_framesBox, 3, 1);
 
     QLabel *seqLabel = new QLabel("Sequence", this);
-    mainFormLayout->addWidget(seqLabel, 4,0);
+    ui_mainFormLayout->addWidget(seqLabel, 4,0);
 
     ui_sequencesBox = new RamObjectListComboBox(this);
-    mainFormLayout->addWidget(ui_sequencesBox, 4, 1);
+    ui_mainFormLayout->addWidget(ui_sequencesBox, 4, 1);
 
     ui_folderWidget = new DuQFFolderDisplayWidget(this);
-    mainLayout->insertWidget(1, ui_folderWidget);
+    ui_mainLayout->insertWidget(1, ui_folderWidget);
 
-    mainLayout->addStretch();
+    ui_mainLayout->addStretch();
 }
 
 void ShotEditWidget::connectEvents()

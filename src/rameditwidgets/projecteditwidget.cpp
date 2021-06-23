@@ -92,35 +92,35 @@ void ProjectEditWidget::setupUi()
 {
     QLabel *rLabel = new QLabel("Resolution", this);
     rLabel->setAlignment(Qt::AlignTop | Qt::AlignLeft);
-    mainFormLayout->addWidget(rLabel, 2, 0);
+    ui_mainFormLayout->addWidget(rLabel, 2, 0);
 
     ui_resolutionWidget = new ResolutionWidget(this);
-    mainFormLayout->addWidget(ui_resolutionWidget, 2, 1);
+    ui_mainFormLayout->addWidget(ui_resolutionWidget, 2, 1);
 
     QLabel *frLabel = new QLabel("Framerate", this);
     frLabel->setAlignment(Qt::AlignTop | Qt::AlignLeft);
-    mainFormLayout->addWidget(frLabel, 3, 0);
+    ui_mainFormLayout->addWidget(frLabel, 3, 0);
 
     ui_framerateWidget = new FramerateWidget(this);
-    mainFormLayout->addWidget(ui_framerateWidget, 3, 1);
+    ui_mainFormLayout->addWidget(ui_framerateWidget, 3, 1);
 
     ui_deadlineEdit = new QDateTimeEdit(this);
     ui_deadlineEdit->setCalendarPopup(true);
     ui_deadlineEdit->setDateTime( QDateTime::currentDateTime() );
-    mainFormLayout->addWidget(new QLabel("Deadline"), 4,0);
-    mainFormLayout->addWidget(ui_deadlineEdit, 4, 1);
+    ui_mainFormLayout->addWidget(new QLabel("Deadline"), 4,0);
+    ui_mainFormLayout->addWidget(ui_deadlineEdit, 4, 1);
 
     QLabel *fLabel = new QLabel("Folder", this);
-    mainFormLayout->addWidget(fLabel, 5, 0);
+    ui_mainFormLayout->addWidget(fLabel, 5, 0);
 
     ui_folderSelector = new DuQFFolderSelectorWidget(DuQFFolderSelectorWidget::Folder, this);
     ui_folderSelector->setPlaceHolderText("Default (Ramses/Users/User_ShortName)");
-    mainFormLayout->addWidget(ui_folderSelector, 5, 1);
+    ui_mainFormLayout->addWidget(ui_folderSelector, 5, 1);
 
     ui_folderLabel = new QLabel("", this);
-    mainFormLayout->addWidget(ui_folderLabel, 6, 1);
+    ui_mainFormLayout->addWidget(ui_folderLabel, 6, 1);
 
-    mainLayout->addStretch();
+    ui_mainLayout->addStretch();
 }
 
 void ProjectEditWidget::connectEvents()

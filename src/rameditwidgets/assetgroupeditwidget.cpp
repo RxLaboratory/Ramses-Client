@@ -54,8 +54,8 @@ void AssetGroupEditWidget::update()
 
     if (!checkInput()) return;
 
-    m_assetGroup->setName(nameEdit->text());
-    m_assetGroup->setShortName(shortNameEdit->text());
+    m_assetGroup->setName(ui_nameEdit->text());
+    m_assetGroup->setShortName(ui_shortNameEdit->text());
 
     m_assetGroup->update();
 
@@ -76,12 +76,12 @@ void AssetGroupEditWidget::createAsset()
 void AssetGroupEditWidget::setupUi()
 {
     ui_folderWidget = new DuQFFolderDisplayWidget(this);
-    mainLayout->insertWidget(1, ui_folderWidget);
+    ui_mainLayout->insertWidget(1, ui_folderWidget);
 
     ui_assetsList = new ObjectListEditWidget(true, RamUser::ProjectAdmin, this);
     ui_assetsList->setEditMode(ObjectListEditWidget::RemoveObjects);
     ui_assetsList->setTitle("Assets");
-    mainLayout->addWidget(ui_assetsList);
+    ui_mainLayout->addWidget(ui_assetsList);
 }
 
 void AssetGroupEditWidget::connectEvents()

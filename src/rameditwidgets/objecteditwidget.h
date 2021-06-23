@@ -41,13 +41,13 @@ protected:
     QList<QMetaObject::Connection> _objectConnections;
     bool updating = false;
 
-    QVBoxLayout *mainLayout;
-    QGridLayout *mainFormLayout;
-    QLineEdit *shortNameEdit;
-    QLineEdit *nameEdit;
-    QLabel *nameLabel;
-    QLabel *shortNameLabel;
-    QLabel *statusLabel;
+    QVBoxLayout *ui_mainLayout;
+    QGridLayout *ui_mainFormLayout;
+    QLineEdit *ui_shortNameEdit;
+    QLineEdit *ui_nameEdit;
+    QLabel *ui_nameLabel;
+    QLabel *ui_shortNameLabel;
+    QLabel *ui_statusLabel;
 
 private slots:
     void objectRemoved(RamObject *o);
@@ -56,7 +56,7 @@ private:
     void setupUi();
 
 
-    RamObject *_object;
+    RamObject *m_object;
     void connectEvents();
 };
 

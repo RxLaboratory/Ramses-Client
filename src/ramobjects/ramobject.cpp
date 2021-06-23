@@ -46,7 +46,12 @@ QString RamObject::shortName() const
 
 void RamObject::setShortName(const QString &shortName)
 {
-    if (shortName == m_shortName) return;
+    // Sanitize
+    QString newShortName = shortName.trimmed();
+    if (newShortName.startsWith(".")) newShortName = newShortName.remove(0,1);
+
+    // Check and set
+    if (newShortName == m_shortName) return;
     m_dirty  = true;
     m_shortName = shortName;
     emit changed(this);

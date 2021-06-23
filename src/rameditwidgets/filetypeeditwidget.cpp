@@ -67,18 +67,20 @@ void FileTypeEditWidget::updateExtensions()
 
 void FileTypeEditWidget::setupUi()
 {
+    ui_shortNameLabel->setText("Main extension");
+
     QLabel *extLabel = new QLabel("Extensions", this);
-    mainFormLayout->addWidget(extLabel, 2, 0);
+    ui_mainFormLayout->addWidget(extLabel, 2, 0);
 
     ui_extensionsEdit = new QLineEdit(this);
     ui_extensionsEdit->setPlaceholderText(".ext1, .ext2, .ext3...");
-    mainFormLayout->addWidget(ui_extensionsEdit);
+    ui_mainFormLayout->addWidget(ui_extensionsEdit);
 
     QLabel *previewableLabel = new QLabel("Previewable", this);
-    mainFormLayout->addWidget(previewableLabel, 3, 0);
+    ui_mainFormLayout->addWidget(previewableLabel, 3, 0);
 
     ui_previewableBox = new QCheckBox("This file can be used for previews\n(image, video...).", this);
-    mainFormLayout->addWidget(ui_previewableBox, 3, 1);
+    ui_mainFormLayout->addWidget(ui_previewableBox, 3, 1);
 }
 
 void FileTypeEditWidget::connectEvents()

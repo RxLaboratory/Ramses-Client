@@ -51,8 +51,8 @@ void SequenceEditWidget::update()
 
     if (!checkInput()) return;
 
-    m_sequence->setName(nameEdit->text());
-    m_sequence->setShortName(shortNameEdit->text());
+    m_sequence->setName(ui_nameEdit->text());
+    m_sequence->setShortName(ui_shortNameEdit->text());
 
     m_sequence->update();
 
@@ -75,7 +75,7 @@ void SequenceEditWidget::setupUi()
     ui_shotsList = new ObjectListEditWidget(true, RamUser::ProjectAdmin, this);
     ui_shotsList->setEditMode(ObjectListEditWidget::UnassignObjects);
     ui_shotsList->setTitle("Shots");
-    mainLayout->addWidget(ui_shotsList);
+    ui_mainLayout->addWidget(ui_shotsList);
 }
 
 void SequenceEditWidget::connectEvents()
