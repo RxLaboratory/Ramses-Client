@@ -69,7 +69,7 @@ void FileTypeEditWidget::setupUi()
 {
     ui_shortNameLabel->setText("Main extension");
 
-    QLabel *extLabel = new QLabel("Extensions", this);
+    QLabel *extLabel = new QLabel("All extensions", this);
     ui_mainFormLayout->addWidget(extLabel, 2, 0);
 
     ui_extensionsEdit = new QLineEdit(this);
