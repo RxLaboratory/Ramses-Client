@@ -57,7 +57,7 @@ protected:
     void showEvent(QShowEvent *event) override;
     void hideEvent(QHideEvent *event) override;
 
-private:
+private:  
     void changeProject();
 
     TitleBar *ui_titleBar;

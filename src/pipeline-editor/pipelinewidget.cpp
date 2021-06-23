@@ -354,8 +354,11 @@ void PipelineWidget::templateStepRemoved(const QModelIndex &parent, int first, i
             quintptr iptr = actions.at(j)->data().toULongLong();
             RamObject *obj = reinterpret_cast<RamObject*>( iptr );
 
-            if (removedObj->is(obj)) actions.at(j)->deleteLater();
-            break;
+            if (removedObj->is(obj))
+            {
+                actions.at(j)->deleteLater();
+                break;
+            }
         }
     }
 }
@@ -441,7 +444,7 @@ void PipelineWidget::newPipe(const QModelIndex &parent, int first, int last)
 
     for (int i = first; i <= last; i++)
     {
-        RamObject *o = Ramses::instance()->templateSteps()->at(i);
+        RamObject *o = m_project->pipeline()->at(i);
         newPipe(o);
     }
 }
@@ -607,9 +610,9 @@ void PipelineWidget::changeProject()
         newPipe( m_project->pipeline()->at(i) );
     }
 
-    connect(m_project->steps(), SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(newStep(QModelIndex,int,int)));
-    connect(m_project->pipeline(), SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(newPipe(QModelIndex,int,int)));
-    connect(m_project->pipeline(), SIGNAL(rowsAboutToBeRemoved(QModelIndex,int,int)), this, SLOT(pipeRemoved(QModelIndex,int,int)));
+    m_projectConnections << connect(m_project->steps(), SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(newStep(QModelIndex,int,int)));
+    m_projectConnections << connect(m_project->pipeline(), SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(newPipe(QModelIndex,int,int)));
+    m_projectConnections << connect(m_project->pipeline(), SIGNAL(rowsAboutToBeRemoved(QModelIndex,int,int)), this, SLOT(pipeRemoved(QModelIndex,int,int)));
 
     // Layout
     m_nodeScene->clearSelection();

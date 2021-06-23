@@ -15,8 +15,6 @@ public:
 
     QString name() const override;
 
-    void update() override;
-
     RamStep *outputStep() const;
     void setOutputStep(RamStep *outputStep);
 
@@ -30,11 +28,14 @@ public:
     static RamPipe *pipe(QString uuid);
 
 public slots:
+    void update() override;
+    virtual void edit() override;
 
 private slots:
     void pipeFileUnassigned(const QModelIndex &parent, int first, int last);
     void pipeFileAssigned(const QModelIndex &parent, int first, int last);
     void pipeFileUnassigned();
+    void pipeFileChanged();
 
 private:
     RamStep *m_outputStep;

@@ -1,4 +1,5 @@
 #include "rampipe.h"
+#include "pipeeditwidget.h"
 
 #include "ramproject.h"
 
@@ -16,6 +17,7 @@ RamPipe::RamPipe(RamStep *output, RamStep *input, QString uuid):
     connect(m_pipeFiles, SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(pipeFileAssigned(QModelIndex,int,int)));
     connect(m_pipeFiles, SIGNAL(rowsAboutToBeRemoved(QModelIndex,int,int)), this, SLOT(pipeFileUnassigned(QModelIndex,int,int)));
     connect(m_pipeFiles, SIGNAL(rowsRemoved(QModelIndex,int,int)), this, SLOT(pipeFileUnassigned()));
+    connect(m_pipeFiles, SIGNAL(dataChanged(QModelIndex,QModelIndex,QVector<int>)), this, SLOT(pipeFileChanged()));
 
     this->setParent( this->project() );
 
@@ -42,6 +44,17 @@ void RamPipe::update()
     if (!m_dirty) return;
     RamObject::update();
     m_dbi->updatePipe(m_uuid, m_inputStep->uuid(), m_outputStep->uuid());
+}
+
+void RamPipe::edit()
+{
+    if (!m_editReady)
+    {
+        PipeEditWidget *w = new PipeEditWidget(this);
+        setEditWidget(w);
+        m_editReady = true;
+    }
+    showEdit();
 }
 
 RamStep *RamPipe::outputStep() const
@@ -115,6 +128,11 @@ void RamPipe::pipeFileAssigned(const QModelIndex &parent, int first, int last)
 }
 
 void RamPipe::pipeFileUnassigned()
+{
+    emit changed(this);
+}
+
+void RamPipe::pipeFileChanged()
 {
     emit changed(this);
 }
