@@ -5,6 +5,7 @@ ItemTableManagerWidget::ItemTableManagerWidget(RamStep::Type productionType, QWi
     setupUi();
     m_stepFilter = new RamStepFilterModel(productionType, this);
     m_productionType = productionType;
+    if (m_productionType == RamStep::ShotProduction) ui_table->setSortable(true);
     connectEvents();
 }
 

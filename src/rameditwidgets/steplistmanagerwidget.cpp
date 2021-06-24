@@ -9,6 +9,7 @@ ObjectListManagerWidget(
     changeProject(Ramses::instance()->currentProject());
     connect(Ramses::instance(), SIGNAL(currentProjectChanged(RamProject*)), this, SLOT(changeProject(RamProject*)));
     m_listEditWidget->setEditMode(ObjectListEditWidget::RemoveObjects);
+    m_listEditWidget->setSortable(true);
 
     // Create from template actions
     ui_createMenu = new QMenu(this);

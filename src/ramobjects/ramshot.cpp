@@ -67,7 +67,7 @@ void RamShot::update()
     m_dbi->updateShot(m_uuid, m_shortName, m_name, m_sequence->uuid(), m_duration);
     if (m_orderChanged)
     {
-        m_dbi->moveShot(m_uuid, m_order);
+        m_dbi->setShotOrder(m_uuid, m_order);
         m_orderChanged = false;
     }
 }

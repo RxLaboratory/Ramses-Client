@@ -54,7 +54,9 @@ public:
     void removeTemplateAssetGroup(QString uuid);
     //steps
     void createStep(QString shortName, QString name, QString projectUuid, QString uuid);
-    void updateStep(QString uuid, QString shortName, QString name, QString type, int order);
+    void updateStep(QString uuid, QString shortName, QString name, QString type);
+    void moveStep(QString uuid, int order);
+    void setStepOrder(QString uuid, int order);
     void removeStep(QString uuid);
     void assignUser(QString stepUuid, QString userUuid);
     void unassignUser(QString stepUuid, QString userUuid);
@@ -77,6 +79,7 @@ public:
     void createShot(QString shortName, QString name, QString sequenceUuid, QString uuid, qreal duration = 0.0, int order = -1);
     void updateShot(QString uuid, QString shortName, QString name, QString sequenceUuid = "", qreal duration = -1.0);
     void moveShot(QString uuid, int order);
+    void setShotOrder(QString uuid, int order);
     void removeShot(QString uuid);
     void setShotStatus(QString shotUuid, QString stateUuid, QString stepUuid, QString userUuid = "", int completionRatio = -1, QString comment = "", int version = 1, QString uuid = "");
     //states

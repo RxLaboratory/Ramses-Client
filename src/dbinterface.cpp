@@ -212,13 +212,30 @@ void DBInterface::createStep(QString shortName, QString name, QString projectUui
     request(q);
 }
 
-void DBInterface::updateStep(QString uuid, QString shortName, QString name, QString type, int order)
+void DBInterface::updateStep(QString uuid, QString shortName, QString name, QString type)
 {
     QStringList q("updateStep");
     q << "uuid=" + uuid;
     q << "shortName=" + shortName;
     q << "name=" + name;
     q << "type=" + type;
+
+    request(q);
+}
+
+void DBInterface::moveStep(QString uuid, int order)
+{
+    QStringList q("moveStep");
+    q << "uuid=" + uuid;
+    q << "order=" + QString::number(order);
+
+    request(q);
+}
+
+void DBInterface::setStepOrder(QString uuid, int order)
+{
+    QStringList q("setStepOrder");
+    q << "uuid=" + uuid;
     q << "order=" + QString::number(order);
 
     request(q);
@@ -401,6 +418,15 @@ void DBInterface::updateShot(QString uuid, QString shortName, QString name, QStr
 void DBInterface::moveShot(QString uuid, int order)
 {
     QStringList q("moveShot");
+    q << "uuid=" + uuid;
+    q << "order=" + QString::number(order);
+
+    request(q);
+}
+
+void DBInterface::setShotOrder(QString uuid, int order)
+{
+    QStringList q("setShotOrder");
     q << "uuid=" + uuid;
     q << "order=" + QString::number(order);
 

@@ -63,6 +63,7 @@ void RamObjectList::sort(int column, Qt::SortOrder order)
 
     if (m_sorted) return;
     std::sort(m_objectsList.begin(), m_objectsList.end(), objectSorter);
+
     m_sorted = true;
 }
 
@@ -82,15 +83,18 @@ void RamObjectList::objectMoved(RamObject *obj, int from, int to)
     Q_UNUSED(obj)
     beginResetModel();
 
-    DBISuspender s;
     m_objectsList.move(from, to);
 
-    // update on objects
+    // Sync order on objects
     for (int i = 0; i < m_objectsList.count(); i++)
     {
+        qDebug() << i;
         QSignalBlocker b(m_objectsList.at(i));
         m_objectsList.at(i)->setOrder(i);
+        m_objectsList.at(i)->update();
     }
+
+    m_sorted = true;
 
     endResetModel();
 }
@@ -171,6 +175,13 @@ void RamObjectList::insertObject(int i, RamObject *obj)
     m_objectsList.insert(i , obj);
     m_objects[obj->uuid()] = obj;
     connectObject(obj);
+
+    if (obj->order() == -1)
+    {
+        QSignalBlocker b(obj);
+        obj->setOrder(i);
+        obj->update();
+    }
 
     m_sorted = false;
     endInsertRows();

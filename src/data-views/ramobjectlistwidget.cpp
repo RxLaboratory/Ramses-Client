@@ -182,6 +182,9 @@ void RamObjectListWidget::rowMoved(int logicalIndex, int oldVisualIndex, int new
 
     // move back to the logical index
     this->verticalHeader()->moveSection(newVisualIndex, oldVisualIndex);
+
+    // sort just to be sure everything is up-to-date
+    m_objectList->sourceModel()->sort(0);
 }
 
 void RamObjectListWidget::select(RamObject *o)
