@@ -99,10 +99,10 @@ void ApplicationEditWidget::createForExport()
 void ApplicationEditWidget::setupUi()
 {
     QLabel *fileLabel = new QLabel("Executable file", this);
-    ui_mainFormLayout->addWidget(fileLabel, 2, 0);
+    ui_mainFormLayout->addWidget(fileLabel, 3, 0);
 
     m_folderSelector = new DuQFFolderSelectorWidget(DuQFFolderSelectorWidget::File, this);
-    ui_mainFormLayout->addWidget(m_folderSelector, 2, 1);
+    ui_mainFormLayout->addWidget(m_folderSelector, 3, 1);
 
     QTabWidget *tabWidget = new QTabWidget(this);
 
@@ -125,6 +125,8 @@ void ApplicationEditWidget::setupUi()
     tabWidget->addTab(m_exportList, QIcon(":/icons/files"), "Export");
 
     ui_mainLayout->addWidget(tabWidget);
+
+    ui_mainLayout->setStretch(2, 100);
 }
 
 void ApplicationEditWidget::connectEvents()

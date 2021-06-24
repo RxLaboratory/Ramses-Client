@@ -71,17 +71,17 @@ void AssetEditWidget::setupUi()
 {
     // Tags
     QLabel *tagsLabel = new QLabel("Tags", this);
-    ui_mainFormLayout->addWidget(tagsLabel, 2, 0);
+    ui_mainFormLayout->addWidget(tagsLabel, 3, 0);
 
     tagsEdit = new QLineEdit(this);
     tagsEdit->setPlaceholderText("tag1, tag2, ...");
-    ui_mainFormLayout->addWidget(tagsEdit, 2, 1);
+    ui_mainFormLayout->addWidget(tagsEdit, 3, 1);
 
     QLabel *assetGroupLabel = new QLabel("Asset group", this);
-    ui_mainFormLayout->addWidget(assetGroupLabel, 3, 0);
+    ui_mainFormLayout->addWidget(assetGroupLabel, 4, 0);
 
     assetGroupBox = new RamObjectListComboBox(this);
-    ui_mainFormLayout->addWidget(assetGroupBox, 3, 1);
+    ui_mainFormLayout->addWidget(assetGroupBox, 4, 1);
 
     folderWidget = new DuQFFolderDisplayWidget(this);
     ui_mainLayout->insertWidget(1, folderWidget);

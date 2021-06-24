@@ -86,17 +86,20 @@ void PipeEditWidget::setupUi()
 {
     this->hideName();
 
+    ui_commentEdit->hide();
+    ui_commentLabel->hide();
+
     QLabel *fromLabel = new QLabel("From", this);
-    ui_mainFormLayout->addWidget(fromLabel, 2, 0);
+    ui_mainFormLayout->addWidget(fromLabel, 3, 0);
 
     ui_fromBox = new RamObjectListComboBox(this);
-    ui_mainFormLayout->addWidget(ui_fromBox, 2, 1);
+    ui_mainFormLayout->addWidget(ui_fromBox, 3, 1);
 
     QLabel *toLabel = new QLabel("To", this);
-    ui_mainFormLayout->addWidget(toLabel, 3, 0);
+    ui_mainFormLayout->addWidget(toLabel, 4, 0);
 
     ui_toBox = new RamObjectListComboBox(this);
-    ui_mainFormLayout->addWidget(ui_toBox, 3, 1);
+    ui_mainFormLayout->addWidget(ui_toBox, 4, 1);
 
     ui_pipeFileList = new ObjectListEditWidget(true, RamUser::ProjectAdmin, this);
     ui_pipeFileList->setEditMode(ObjectListEditWidget::UnassignObjects);

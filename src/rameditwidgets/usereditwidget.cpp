@@ -140,7 +140,7 @@ void UserEditWidget::updateFolderLabel(QString path)
 void UserEditWidget::setupUi()
 {
     QLabel *roleLabel = new QLabel("Current role", this);
-    ui_mainFormLayout->addWidget(roleLabel, 2, 0);
+    ui_mainFormLayout->addWidget(roleLabel, 3, 0);
 
     ui_roleBox = new QComboBox(this);
     ui_roleBox->addItem(QIcon(":/icons/user"), "Standard");
@@ -148,36 +148,36 @@ void UserEditWidget::setupUi()
     ui_roleBox->addItem(QIcon(":/icons/project-admin"), "Project Admin");
     ui_roleBox->addItem(QIcon(":/icons/admin"), "Administrator");
     ui_roleBox->setCurrentIndex(0);
-    ui_mainFormLayout->addWidget(ui_roleBox, 2, 1);
+    ui_mainFormLayout->addWidget(ui_roleBox, 3, 1);
 
     QLabel *currentPasswordLabel = new QLabel("Current password", this);
-    ui_mainFormLayout->addWidget(currentPasswordLabel, 3, 0);
+    ui_mainFormLayout->addWidget(currentPasswordLabel, 4, 0);
 
     ui_cpasswordEdit = new QLineEdit(this);
     ui_cpasswordEdit->setEchoMode(QLineEdit::Password);
-    ui_mainFormLayout->addWidget(ui_cpasswordEdit, 3, 1);
+    ui_mainFormLayout->addWidget(ui_cpasswordEdit, 4, 1);
 
     QLabel *newPasswordLabel = new QLabel("New password", this);
-    ui_mainFormLayout->addWidget(newPasswordLabel, 4, 0);
+    ui_mainFormLayout->addWidget(newPasswordLabel, 5, 0);
 
     ui_npassword1Edit = new QLineEdit(this);
     ui_npassword1Edit->setEchoMode(QLineEdit::Password);
-    ui_mainFormLayout->addWidget(ui_npassword1Edit, 4, 1);
+    ui_mainFormLayout->addWidget(ui_npassword1Edit, 5, 1);
 
     ui_npassword2Edit = new QLineEdit(this);
     ui_npassword2Edit->setEchoMode(QLineEdit::Password);
-    ui_mainFormLayout->addWidget(ui_npassword2Edit, 5, 1);
+    ui_mainFormLayout->addWidget(ui_npassword2Edit, 6, 1);
 
     ui_passwordButton = new QToolButton(this);
     ui_passwordButton->setText("Change password");
-    ui_mainFormLayout->addWidget(ui_passwordButton, 6, 1);
+    ui_mainFormLayout->addWidget(ui_passwordButton, 7, 1);
 
     QLabel *uFolderLabel = new QLabel("Personal folder", this);
-    ui_mainFormLayout->addWidget(uFolderLabel, 7, 0);
+    ui_mainFormLayout->addWidget(uFolderLabel, 8, 0);
 
     ui_folderSelector = new DuQFFolderSelectorWidget(DuQFFolderSelectorWidget::Folder, this);
     ui_folderSelector->setPlaceHolderText("Default (Ramses/Users/User_ShortName)");
-    ui_mainFormLayout->addWidget(ui_folderSelector, 7, 1);
+    ui_mainFormLayout->addWidget(ui_folderSelector, 8, 1);
 
     ui_folderLabel = new QLabel(this);
     ui_folderLabel->setEnabled(false);

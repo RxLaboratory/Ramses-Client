@@ -50,15 +50,18 @@ void ObjectEditWidget::setObject(RamObject *object)
 
     QSignalBlocker b1(ui_nameEdit);
     QSignalBlocker b2(ui_shortNameEdit);
+    QSignalBlocker b3(ui_commentEdit);
 
     ui_nameEdit->setText("");
     ui_shortNameEdit->setText("");
     ui_statusLabel->setText("");
+    ui_commentEdit->setText("");
 
     if (!object) return;
 
     ui_nameEdit->setText(object->name());
     ui_shortNameEdit->setText(object->shortName());
+    ui_commentEdit->setText(object->comment());
 
     _objectConnections << connect( object, &RamObject::removed, this, &ObjectEditWidget::objectRemoved);
     _objectConnections << connect( object, &RamObject::changed, this, &ObjectEditWidget::objectChanged);
@@ -74,6 +77,7 @@ void ObjectEditWidget::update()
 
     m_object->setName(ui_nameEdit->text());
     m_object->setShortName(ui_shortNameEdit->text());
+    m_object->setComment(ui_commentEdit->toPlainText());
 
     m_object->update();
 
@@ -107,6 +111,17 @@ void ObjectEditWidget::objectChanged(RamObject *o)
     setObject(m_object);
 }
 
+bool ObjectEditWidget::eventFilter(QObject *obj, QEvent *event)
+{
+    if (obj->objectName() == "commentEdit")
+        if (event->type() == QEvent::FocusOut)
+        {
+            update();
+            //return true;
+        }
+    return false;
+}
+
 void ObjectEditWidget::setupUi()
 {
     QWidget *dummy = new QWidget(this);
@@ -131,6 +146,14 @@ void ObjectEditWidget::setupUi()
     ui_shortNameEdit = new QLineEdit(dummy);
     ui_mainFormLayout->addWidget(ui_shortNameEdit, 1, 1);
 
+    ui_commentLabel = new QLabel("Comment", dummy);
+    ui_mainFormLayout->addWidget(ui_commentLabel, 2, 0);
+
+    ui_commentEdit = new QTextEdit(dummy);
+    ui_commentEdit->setMaximumHeight(50);
+    ui_commentEdit->setObjectName("commentEdit");
+    ui_mainFormLayout->addWidget(ui_commentEdit, 2, 1);
+
     ui_mainLayout->addLayout(ui_mainFormLayout);
 
     ui_statusLabel = new QLabel(dummy);
@@ -146,4 +169,5 @@ void ObjectEditWidget::connectEvents()
     connect(ui_shortNameEdit, &QLineEdit::textChanged, this, &ObjectEditWidget::checkInput);
     connect(ui_shortNameEdit, &QLineEdit::editingFinished, this, &ObjectEditWidget::update);
     connect(ui_nameEdit, &QLineEdit::editingFinished, this, &ObjectEditWidget::update);
+    ui_commentEdit->installEventFilter(this);
 }

@@ -46,7 +46,7 @@ void RamState::update()
 {
     if(!m_dirty) return;
     RamObject::update();
-    m_dbi->updateState(m_uuid, m_shortName, m_name, _color.name(), QString::number(_completionRatio));
+    m_dbi->updateState(m_uuid, m_shortName, m_name, _color.name(), QString::number(_completionRatio), m_comment);
 }
 
 RamState *RamState::state(QString uuid)

@@ -57,7 +57,7 @@ void RamFileType::update()
 {
     if (!m_dirty) return;
     RamObject::update();
-    m_dbi->updateFileType(m_uuid, m_shortName, m_name, m_extensions, m_previewable);
+    m_dbi->updateFileType(m_uuid, m_shortName, m_name, m_extensions, m_previewable, m_comment);
 }
 
 RamFileType *RamFileType::fileType(QString uuid)

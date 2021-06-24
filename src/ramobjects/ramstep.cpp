@@ -175,8 +175,8 @@ void RamStep::update()
     if (m_type == PostProduction) type = "post";
     else if (m_type == PreProduction) type = "pre";
     else if (m_type == ShotProduction) type = "shot";
-    if (m_template) m_dbi->updateTemplateStep(m_uuid, m_shortName, m_name, type);
-    else m_dbi->updateStep(m_uuid, m_shortName, m_name, type);
+    if (m_template) m_dbi->updateTemplateStep(m_uuid, m_shortName, m_name, type, m_comment);
+    else m_dbi->updateStep(m_uuid, m_shortName, m_name, type, m_comment);
 
     if (m_orderChanged)
     {

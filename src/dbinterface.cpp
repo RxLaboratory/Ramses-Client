@@ -36,7 +36,7 @@ void DBInterface::getUsers()
     request(q);
 }
 
-void DBInterface::updateUser(QString uuid, QString shortName, QString name, QString role, QString folderPath)
+void DBInterface::updateUser(QString uuid, QString shortName, QString name, QString role, QString folderPath, QString comment)
 {
     QStringList q("updateUser");
     q << "uuid=" + uuid;
@@ -44,6 +44,7 @@ void DBInterface::updateUser(QString uuid, QString shortName, QString name, QStr
     q << "name=" + name;
     q << "role=" + role;
     q << "folderPath=" + folderPath;
+    q << "comment=" + comment;
 
     request(q);
 }
@@ -101,13 +102,14 @@ void DBInterface::getProject(QString uuid)
     request(q);
 }
 
-void DBInterface::updateProject(QString uuid, QString shortName, QString name, int width, int height, double framerate, QString folderPath)
+void DBInterface::updateProject(QString uuid, QString shortName, QString name, int width, int height, double framerate, QString folderPath, QString comment)
 {
     QStringList q("updateProject");
     q << "uuid=" + uuid;
     q << "shortName=" + shortName;
     q << "name=" + name;
     q << "folderPath=" + folderPath;
+    q << "comment=" + comment;
     if (width > 0) q << "width=" + QString::number(width);
     if (height > 0) q << "height=" + QString::number(height);
     if (framerate > 0) q << "framerate=" + QString::number(framerate);
@@ -148,13 +150,14 @@ void DBInterface::getTemplateSteps()
     request(q);
 }
 
-void DBInterface::updateTemplateStep(QString uuid, QString shortName, QString name, QString type)
+void DBInterface::updateTemplateStep(QString uuid, QString shortName, QString name, QString type, QString comment)
 {
     QStringList q("updateTemplateStep");
     q << "uuid=" + uuid;
     q << "shortName=" + shortName;
     q << "name=" + name;
     q << "type=" + type;
+    q << "comment=" + comment;
 
     request(q);
 }
@@ -183,12 +186,13 @@ void DBInterface::getTemplateAssetGroups()
     request(q);
 }
 
-void DBInterface::updateTemplateAssetGroup(QString uuid, QString shortName, QString name)
+void DBInterface::updateTemplateAssetGroup(QString uuid, QString shortName, QString name, QString comment)
 {
     QStringList q("updateTemplateAssetGroup");
     q << "uuid=" + uuid;
     q << "shortName=" + shortName;
     q << "name=" + name;
+    q << "comment=" + comment;
 
     request(q);
 }
@@ -212,13 +216,14 @@ void DBInterface::createStep(QString shortName, QString name, QString projectUui
     request(q);
 }
 
-void DBInterface::updateStep(QString uuid, QString shortName, QString name, QString type)
+void DBInterface::updateStep(QString uuid, QString shortName, QString name, QString type, QString comment)
 {
     QStringList q("updateStep");
     q << "uuid=" + uuid;
     q << "shortName=" + shortName;
     q << "name=" + name;
     q << "type=" + type;
+    q << "comment=" + comment;
 
     request(q);
 }
@@ -296,12 +301,13 @@ void DBInterface::createAssetGroup(QString shortName, QString name, QString proj
     request(q);
 }
 
-void DBInterface::updateAssetGroup(QString uuid, QString shortName, QString name)
+void DBInterface::updateAssetGroup(QString uuid, QString shortName, QString name, QString comment)
 {
     QStringList q("updateAssetGroup");
     q << "uuid=" + uuid;
     q << "shortName=" + shortName;
     q << "name=" + name;
+    q << "comment=" + comment;
 
     request(q);
 }
@@ -326,7 +332,7 @@ void DBInterface::createAsset(QString shortName, QString name, QString assetGrou
     request(q);
 }
 
-void DBInterface::updateAsset(QString uuid, QString shortName, QString name, QString assetGroupUuid, QString tags)
+void DBInterface::updateAsset(QString uuid, QString shortName, QString name, QString assetGroupUuid, QString tags, QString comment)
 {
     QStringList q("updateAsset");
     q << "uuid=" + uuid;
@@ -334,6 +340,7 @@ void DBInterface::updateAsset(QString uuid, QString shortName, QString name, QSt
     q << "name=" + name;
     q << "assetGroupUuid=" + assetGroupUuid;
     q << "tags=" + tags;
+    q << "comment=" + comment;
 
     request(q);
 }
@@ -372,12 +379,13 @@ void DBInterface::createSequence(QString shortName, QString name, QString projec
     request(q);
 }
 
-void DBInterface::updateSequence(QString uuid, QString shortName, QString name)
+void DBInterface::updateSequence(QString uuid, QString shortName, QString name, QString comment)
 {
     QStringList q("updateSequence");
     q << "uuid=" + uuid;
     q << "shortName=" + shortName;
     q << "name=" + name;
+    q << "comment=" + comment;
 
     request(q);
 }
@@ -403,13 +411,14 @@ void DBInterface::createShot(QString shortName, QString name, QString sequenceUu
     request(q);
 }
 
-void DBInterface::updateShot(QString uuid, QString shortName, QString name, QString sequenceUuid, qreal duration)
+void DBInterface::updateShot(QString uuid, QString shortName, QString name, QString sequenceUuid, qreal duration, QString comment)
 {
     QStringList q("updateShot");
     q << "uuid=" + uuid;
     q << "shortName=" + shortName;
     q << "name=" + name;
     q << "sequenceUuid=" + sequenceUuid;
+    q << "comment=" + comment;
     if (duration != -1) q << "duration=" + QString::number(duration);
 
     request(q);
@@ -472,7 +481,7 @@ void DBInterface::getStates()
     request(q);
 }
 
-void DBInterface::updateState(QString uuid, QString shortName, QString name, QString color, QString completionRatio)
+void DBInterface::updateState(QString uuid, QString shortName, QString name, QString color, QString completionRatio, QString comment)
 {
     QStringList q("updateState");
     q << "uuid=" + uuid;
@@ -480,6 +489,7 @@ void DBInterface::updateState(QString uuid, QString shortName, QString name, QSt
     q << "name=" + name;
     q << "color=" + color.replace("#","%23");
     q << "completionRatio=" + completionRatio;
+    q << "comment=" + comment;
 
     request(q);
 }
@@ -509,13 +519,14 @@ void DBInterface::getFileTypes()
     request(q);
 }
 
-void DBInterface::updateFileType(QString uuid, QString shortName, QString name, QStringList extensions, bool previewable)
+void DBInterface::updateFileType(QString uuid, QString shortName, QString name, QStringList extensions, bool previewable, QString comment)
 {
     QStringList q("updateFileType");
     q << "uuid=" + uuid;
     q << "shortName=" + shortName;
     q << "name=" + name;
     q << "extensions=" + extensions.join(",");
+    q << "comment=" + comment;
     if (previewable) q << "previewable=1";
     else q << "previewable=0";
 
@@ -547,13 +558,14 @@ void DBInterface::getApplications()
     request(q);
 }
 
-void DBInterface::updateApplication(QString uuid, QString shortName, QString name, QString executableFilePath)
+void DBInterface::updateApplication(QString uuid, QString shortName, QString name, QString executableFilePath, QString comment)
 {
     QStringList q("updateApplication");
     q << "uuid=" + uuid;
     q << "shortName=" + shortName;
     q << "name=" + name;
     q << "executableFilePath=" + executableFilePath;
+    q << "comment=" + comment;
 
     request(q);
 }
@@ -644,13 +656,14 @@ void DBInterface::createPipeFile(QString shortName, QString projectUuid, QString
     request(q);
 }
 
-void DBInterface::updatePipeFile(QString uuid, QString shortName, QString fileTypeUuid, QString colorSpaceUuid)
+void DBInterface::updatePipeFile(QString uuid, QString shortName, QString fileTypeUuid, QString colorSpaceUuid, QString comment)
 {
     QStringList q("updatePipeFile");
     q << "shortName=" + shortName;
     q << "uuid=" + uuid;
     q << "fileTypeUuid=" + fileTypeUuid;
     q << "colorSpaceUuid=" + colorSpaceUuid;
+    q << "comment=" + comment;
 
     request(q);
 }

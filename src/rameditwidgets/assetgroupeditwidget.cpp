@@ -52,12 +52,7 @@ void AssetGroupEditWidget::update()
 
     updating = true;
 
-    if (!checkInput()) return;
-
-    m_assetGroup->setName(ui_nameEdit->text());
-    m_assetGroup->setShortName(ui_shortNameEdit->text());
-
-    m_assetGroup->update();
+    ObjectEditWidget::update();
 
     updating = false;
 }

@@ -21,13 +21,13 @@ void StatusEditWidget::setStatus(RamStatus *status)
     ui_stateBox->setCurrentText("STB");
     ui_completionBox->setValue(0);
     ui_versionBox->setValue(1);
-    ui_commentEdit->setPlainText("");
+    ui_statusCommentEdit->setPlainText("");
     if (!status) return;
 
     ui_stateBox->setObject(status->state());
     ui_completionBox->setValue(status->completionRatio());
     ui_versionBox->setValue(status->version());
-    ui_commentEdit->setPlainText(status->comment());
+    ui_statusCommentEdit->setPlainText(status->comment());
 }
 
 RamState *StatusEditWidget::state() const
@@ -47,7 +47,7 @@ int StatusEditWidget::version() const
 
 QString StatusEditWidget::comment() const
 {
-    return ui_commentEdit->toPlainText();
+    return ui_statusCommentEdit->toPlainText();
 }
 
 void StatusEditWidget::currentStateChanged(RamObject *stateObj)
@@ -65,17 +65,17 @@ void StatusEditWidget::currentStateChanged(RamObject *stateObj)
 
 void StatusEditWidget::updateStatus()
 {
-    emit statusUpdated(state(), ui_completionBox->value(), ui_versionBox->value(), ui_commentEdit->toPlainText() );
+    emit statusUpdated(state(), ui_completionBox->value(), ui_versionBox->value(), ui_statusCommentEdit->toPlainText() );
 }
 
 void StatusEditWidget::adjustCommentEditSize()
 {
     // Get text height (returns the number of lines and not the actual height in pixels
-    int docHeight = ui_commentEdit->document()->size().toSize().height();
+    int docHeight = ui_statusCommentEdit->document()->size().toSize().height();
     // Compute needed height in pixels
-    int h = docHeight * ( ui_commentEdit->fontMetrics().height() ) + ui_commentEdit->fontMetrics().height() * 2;
+    int h = docHeight * ( ui_statusCommentEdit->fontMetrics().height() ) + ui_statusCommentEdit->fontMetrics().height() * 2;
     //commentEdit->resize(commentEdit->width(), h);
-    ui_commentEdit->setMaximumHeight(h);
+    ui_statusCommentEdit->setMaximumHeight(h);
 }
 
 void StatusEditWidget::revert()
@@ -86,6 +86,8 @@ void StatusEditWidget::revert()
 void StatusEditWidget::setupUi()
 {
     this->hideName();
+    ui_commentEdit->hide();
+    ui_commentLabel->hide();
 
     QHBoxLayout *cLayout = new QHBoxLayout();
     cLayout->setContentsMargins(0,0,0,0);
@@ -114,11 +116,11 @@ void StatusEditWidget::setupUi()
 
     ui_mainLayout->insertLayout(0, cLayout);
 
-    ui_commentEdit = new QPlainTextEdit(this);
-    ui_commentEdit->setPlaceholderText("Comment...");
-    ui_commentEdit->setMinimumHeight(30);
-    ui_commentEdit->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    ui_mainLayout->insertWidget(1, ui_commentEdit);
+    ui_statusCommentEdit = new QPlainTextEdit(this);
+    ui_statusCommentEdit->setPlaceholderText("Comment...");
+    ui_statusCommentEdit->setMinimumHeight(30);
+    ui_statusCommentEdit->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    ui_mainLayout->insertWidget(1, ui_statusCommentEdit);
 
     QHBoxLayout *buttonsLayout = new QHBoxLayout();
     buttonsLayout->setSpacing(3);
@@ -147,7 +149,7 @@ void StatusEditWidget::setupUi()
 
 void StatusEditWidget::connectEvents()
 {
-    connect(ui_commentEdit, &QPlainTextEdit::textChanged, this, &StatusEditWidget::adjustCommentEditSize);
+    connect(ui_statusCommentEdit, &QPlainTextEdit::textChanged, this, &StatusEditWidget::adjustCommentEditSize);
     connect(ui_stateBox, SIGNAL(currentObjectChanged(RamObject*)), this, SLOT(currentStateChanged(RamObject*)));
     connect(ui_setButton, &QToolButton::clicked, this, &StatusEditWidget::updateStatus);
     connect(ui_revertButton, &QToolButton::clicked, this, &StatusEditWidget::revert);

@@ -101,7 +101,7 @@ void RamProject::update()
     RamObject::update();
     QString path = m_folderPath;
     if (path == "") path = "auto";
-    m_dbi->updateProject(m_uuid, m_shortName, m_name, m_width, m_height, m_framerate, path);
+    m_dbi->updateProject(m_uuid, m_shortName, m_name, m_width, m_height, m_framerate, path, m_comment);
 }
 
 RamProject *RamProject::project(QString uuid)

@@ -49,7 +49,7 @@ void RamApplication::update()
 {
     if (!m_dirty) return;
     RamObject::update();
-    m_dbi->updateApplication(m_uuid, m_shortName, m_name, _executableFilePath);
+    m_dbi->updateApplication(m_uuid, m_shortName, m_name, _executableFilePath, m_comment);
 }
 
 void RamApplication::unassignFileType(RamObject *o)

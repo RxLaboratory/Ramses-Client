@@ -64,7 +64,7 @@ void RamShot::update()
 {
     if(!m_dirty) return;
     RamObject::update();
-    m_dbi->updateShot(m_uuid, m_shortName, m_name, m_sequence->uuid(), m_duration);
+    m_dbi->updateShot(m_uuid, m_shortName, m_name, m_sequence->uuid(), m_duration, m_comment);
     if (m_orderChanged)
     {
         m_dbi->setShotOrder(m_uuid, m_order);

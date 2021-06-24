@@ -50,7 +50,7 @@ private:
     StateBox *ui_stateBox;
     DuQFSpinBox *ui_completionBox;
     AutoSelectSpinBox *ui_versionBox;
-    QPlainTextEdit *ui_commentEdit;
+    QPlainTextEdit *ui_statusCommentEdit;
     QToolButton *ui_setButton;
     QToolButton *ui_revertButton;
 

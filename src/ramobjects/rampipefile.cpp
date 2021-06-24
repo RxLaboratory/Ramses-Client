@@ -55,7 +55,7 @@ void RamPipeFile::update()
     RamObject::update();
     QString ft = "";
     if (m_fileType) ft = m_fileType->uuid();
-    m_dbi->updatePipeFile(m_uuid, m_shortName, ft, "" );
+    m_dbi->updatePipeFile(m_uuid, m_shortName, ft, "", m_comment );
 }
 
 const RamProject *RamPipeFile::project() const

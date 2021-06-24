@@ -8,6 +8,7 @@
 #include <QLineEdit>
 #include <QVBoxLayout>
 #include <QWidget>
+#include <QTextEdit>
 
 
 #include "ramobject.h"
@@ -48,6 +49,10 @@ protected:
     QLabel *ui_nameLabel;
     QLabel *ui_shortNameLabel;
     QLabel *ui_statusLabel;
+    QLabel *ui_commentLabel;
+    QTextEdit *ui_commentEdit;
+
+    bool eventFilter(QObject *obj, QEvent *event) override;
 
 private slots:
     void objectRemoved(RamObject *o);

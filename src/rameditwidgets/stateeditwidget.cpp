@@ -95,7 +95,7 @@ void StateEditWidget::selectColor()
 void StateEditWidget::setupUi()
 {
     QLabel *colorLabel = new QLabel("Color", this);
-    ui_mainFormLayout->addWidget(colorLabel, 2, 0);
+    ui_mainFormLayout->addWidget(colorLabel, 3, 0);
 
     QHBoxLayout *colorLayout = new QHBoxLayout();
     colorLayout->setSpacing(3);
@@ -108,15 +108,15 @@ void StateEditWidget::setupUi()
     colorButton->setIcon(QIcon(":/icons/color-dialog"));
     colorLayout->addWidget(colorButton);
 
-    ui_mainFormLayout->addLayout(colorLayout, 2, 1);
+    ui_mainFormLayout->addLayout(colorLayout, 3, 1);
 
     QLabel *completionLabel = new QLabel("Completion ratio", this);
-    ui_mainFormLayout->addWidget(completionLabel, 3, 0);
+    ui_mainFormLayout->addWidget(completionLabel, 4, 0);
 
     completionSpinBox = new DuQFSpinBox(this);
     completionSpinBox->setSuffix("%");
     completionSpinBox->setMaximumHeight(completionLabel->height());
-    ui_mainFormLayout->addWidget(completionSpinBox, 3, 1);
+    ui_mainFormLayout->addWidget(completionSpinBox, 4, 1);
 
     ui_mainLayout->addStretch();
 }

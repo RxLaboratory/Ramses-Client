@@ -67,8 +67,8 @@ void RamAssetGroup::update()
 {
     if (!m_dirty) return;
     RamObject::update();
-    if (_template) m_dbi->updateTemplateAssetGroup(m_uuid, m_shortName, m_name);
-    else m_dbi->updateAssetGroup(m_uuid, m_shortName, m_name);
+    if (_template) m_dbi->updateTemplateAssetGroup(m_uuid, m_shortName, m_name, m_comment);
+    else m_dbi->updateAssetGroup(m_uuid, m_shortName, m_name, m_comment);
 }
 
 void RamAssetGroup::edit(bool show)

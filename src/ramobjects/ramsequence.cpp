@@ -52,7 +52,7 @@ void RamSequence::update()
 {
     if(!m_dirty) return;
     RamObject::update();
-    m_dbi->updateSequence(m_uuid, m_shortName, m_name);
+    m_dbi->updateSequence(m_uuid, m_shortName, m_name, m_comment);
 }
 
 void RamSequence::edit(bool show)

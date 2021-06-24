@@ -133,6 +133,7 @@ QString RamLoader::gotUser(QJsonObject newU)
 
     user->setFolderPath( newU.value("folderPath").toString());
     user->setRole( newU.value("role").toString("standard") );
+    user->setComment( newU.value("comment").toString());
 
     m_ram->users()->append(user);
 
@@ -179,6 +180,7 @@ QString RamLoader::gotProject(QJsonObject newP, bool init)
     project->setHeight( newP.value("height").toInt());
     project->setFramerate( newP.value("framerate").toDouble());
     project->setFolderPath( newP.value("folderPath").toString());
+    project->setComment( newP.value("comment").toString());
 
     if (!init)
     {
@@ -239,6 +241,7 @@ QString RamLoader::gotTemplateStep(QJsonObject newS)
                 uuid
                 );
     step->setType( newS.value("type").toString());
+    step->setComment( newS.value("comment").toString());
 
     m_ram->templateSteps()->append(step);
 
@@ -286,8 +289,9 @@ QString RamLoader::gotTemplateAssetGroup(QJsonObject newAG)
                 newAG.value("name").toString(),
                 uuid
                 );
-
+    assetGroup->setComment( newAG.value("comment").toString());
     m_ram->templateAssetGroups()->append(assetGroup);
+
     return uuid;
 }
 
@@ -334,6 +338,7 @@ QString RamLoader::gotState(QJsonObject newS)
                 );
     state->setColor( QColor( newS.value("color").toString()) );
     state->setCompletionRatio( newS.value("completionRatio").toInt() );
+    state->setComment( newS.value("comment").toString());
 
     m_ram->states()->append(state);
 
@@ -384,6 +389,7 @@ QString RamLoader::gotFileType(QJsonObject newFt)
                 );
 
     fileType->setPreviewable( newFt.value("previewable").toInt() != 0 );
+    fileType->setComment( newFt.value("comment").toString());
 
     m_ram->fileTypes()->append(fileType);
 
@@ -432,6 +438,8 @@ QString RamLoader::gotApplication(QJsonObject newA)
                 newA.value("executableFilePath").toString(),
                 newA.value("uuid").toString()
                 );
+
+    application->setComment( newA.value("comment").toString());
 
     application->importFileTypes()->clear();
     application->exportFileTypes()->clear();
@@ -496,6 +504,7 @@ QString RamLoader::gotStep(QJsonObject newS, RamProject *project)
                 );
     step->setType( newS.value("type").toString());
     step->setOrder( newS.value("order").toInt() );
+    step->setComment( newS.value("comment").toString());
 
     step->users()->clear();
     step->applications()->clear();
@@ -554,6 +563,7 @@ QString RamLoader::gotAssetGroup(QJsonObject newAG, RamProject *project)
                 newAG.value("name").toString(),
                 uuid
                 );
+    assetGroup->setComment( newAG.value("comment").toString());
 
     project->assetGroups()->append(assetGroup);
 
@@ -615,6 +625,7 @@ QString RamLoader::gotAsset(QJsonObject newA, RamProject *project)
     asset->setName(name);
     asset->setAssetGroup(ag);
     asset->setTags( newA.value("tags").toString());
+    asset->setComment( newA.value("comment").toString());
     gotStatusHistory( newA.value("statusHistory").toArray(), asset);
 
     project->assets()->append(asset);
@@ -666,6 +677,8 @@ QString RamLoader::gotSequence(QJsonObject newS, RamProject *project)
                 newS.value("name").toString(),
                 uuid
                 );
+
+    sequence->setComment( newS.value("comment").toString());
 
     project->sequences()->append(sequence);
 
@@ -722,6 +735,7 @@ QString RamLoader::gotShot(QJsonObject newS, RamProject *project)
     shot->setSequence(seq);
     shot->setDuration( newS.value("duration").toDouble() );
     shot->setOrder( newS.value("order").toInt() );
+    shot->setComment( newS.value("comment").toString());
     gotStatusHistory( newS.value("statusHistory").toArray(), shot);
 
     project->shots()->append(shot);
@@ -867,6 +881,7 @@ QString RamLoader::gotPipeFile(QJsonObject newPF, RamProject* project)
 
     pipeFile->setShortName( newPF.value("shortName").toString() );
     pipeFile->setProject( project );
+    pipeFile->setComment( newPF.value("comment").toString());
 
     RamFileType *ft = RamFileType::fileType( newPF.value("fileTypeUuid").toString() );
     if (ft) pipeFile->setFileType(ft);

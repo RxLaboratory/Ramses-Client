@@ -31,7 +31,7 @@ public:
     //users
     void login(QString username, QString password);
     void getUsers();
-    void updateUser(QString uuid, QString shortName, QString name, QString role = "", QString folderPath = "");
+    void updateUser(QString uuid, QString shortName, QString name, QString role = "", QString folderPath = "", QString comment = "");
     void updateUserPassword(QString uuid, QString c, QString n);
     void createUser(QString shortName, QString name, QString uuid, QString password = "password");
     void removeUser(QString uuid);
@@ -39,22 +39,22 @@ public:
     void createProject(QString shortName, QString name, QString uuid);
     void getProjects();
     void getProject(QString uuid);
-    void updateProject(QString uuid, QString shortName, QString name, int width = 0, int height = 0, double framerate = 0.0, QString folderPath = "");
+    void updateProject(QString uuid, QString shortName, QString name, int width = 0, int height = 0, double framerate = 0.0, QString folderPath = "", QString comment = "");
     void removeProject(QString uuid);
     void assignStep(QString stepUuid, QString projectUuid);
     //template steps
     void createTemplateStep(QString shortName, QString name, QString uuid);
     void getTemplateSteps();
-    void updateTemplateStep(QString uuid, QString shortName, QString name, QString type = "");
+    void updateTemplateStep(QString uuid, QString shortName, QString name, QString type = "", QString comment = "");
     void removeTemplateStep(QString uuid);
     //template asset groups
     void createTemplateAssetGroup(QString shortName, QString name, QString uuid);
     void getTemplateAssetGroups();
-    void updateTemplateAssetGroup(QString uuid, QString shortName, QString name);
+    void updateTemplateAssetGroup(QString uuid, QString shortName, QString name, QString comment = "" );
     void removeTemplateAssetGroup(QString uuid);
     //steps
     void createStep(QString shortName, QString name, QString projectUuid, QString uuid);
-    void updateStep(QString uuid, QString shortName, QString name, QString type);
+    void updateStep(QString uuid, QString shortName, QString name, QString type, QString comment = "");
     void moveStep(QString uuid, int order);
     void setStepOrder(QString uuid, int order);
     void removeStep(QString uuid);
@@ -64,20 +64,20 @@ public:
     void unassignApplication(QString stepUuid, QString applicationUuid);
     //asset groups
     void createAssetGroup(QString shortName, QString name, QString projectUuid, QString uuid);
-    void updateAssetGroup(QString uuid, QString shortName, QString name);
+    void updateAssetGroup(QString uuid, QString shortName, QString name, QString comment = "");
     void removeAssetGroup(QString uuid);
     //assets
     void createAsset(QString shortName, QString name, QString assetGroupUuid, QString tags, QString uuid);
-    void updateAsset(QString uuid, QString shortName, QString name, QString assetGroupUuid, QString tags);
+    void updateAsset(QString uuid, QString shortName, QString name, QString assetGroupUuid, QString tags, QString comment = "");
     void removeAsset(QString uuid);
     void setAssetStatus(QString assetUuid, QString stateUuid, QString stepUuid, QString userUuid = "", int completionRatio = -1, QString comment = "", int version = 1, QString uuid = "");
     //sequences
     void createSequence(QString shortName, QString name, QString projectUuid, QString uuid);
-    void updateSequence(QString uuid, QString shortName, QString name);
+    void updateSequence(QString uuid, QString shortName, QString name, QString comment = "");
     void removeSequence(QString uuid);
     //shots
     void createShot(QString shortName, QString name, QString sequenceUuid, QString uuid, qreal duration = 0.0, int order = -1);
-    void updateShot(QString uuid, QString shortName, QString name, QString sequenceUuid = "", qreal duration = -1.0);
+    void updateShot(QString uuid, QString shortName, QString name, QString sequenceUuid = "", qreal duration = -1.0, QString comment = "");
     void moveShot(QString uuid, int order);
     void setShotOrder(QString uuid, int order);
     void removeShot(QString uuid);
@@ -85,17 +85,17 @@ public:
     //states
     void createState(QString shortName, QString name, QString uuid);
     void getStates();
-    void updateState(QString uuid, QString shortName, QString name, QString color = "", QString completionRatio = "");
+    void updateState(QString uuid, QString shortName, QString name, QString color = "", QString completionRatio = "",  QString comment = "");
     void removeState(QString uuid);
     //File types
     void createFileType(QString shortName, QString name, QStringList extensions, QString uuid);
     void getFileTypes();
-    void updateFileType(QString uuid, QString shortName, QString name, QStringList extensions, bool previewable = false);
+    void updateFileType(QString uuid, QString shortName, QString name, QStringList extensions, bool previewable = false, QString comment = "");
     void removeFileType(QString uuid);
     //Applications
     void createApplication(QString shortName, QString name, QString executableFilePath, QString uuid);
     void getApplications();
-    void updateApplication(QString uuid, QString shortName, QString name, QString executableFilePath);
+    void updateApplication(QString uuid, QString shortName, QString name, QString executableFilePath, QString comment = "");
     void removeApplication(QString uuid);
     void assignFileType(QString applicationUuid, QString fileTypeUuid, QString type = "");
     void unassignFileType(QString applicationUuid, QString fileTypeUuid, QString type = "");
@@ -107,7 +107,7 @@ public:
     void unassignPipeFile(QString pipeUuid, QString pipeFileUuid);
     //PipeFiles
     void createPipeFile(QString shortName, QString projectUuid, QString fileTypeUuid, QString uuid, QString colorSpaceUuid = "");
-    void updatePipeFile(QString uuid, QString shortName, QString fileTypeUuid = "", QString colorSpaceUuid = "" );
+    void updatePipeFile(QString uuid, QString shortName, QString fileTypeUuid = "", QString colorSpaceUuid = "", QString comment = "" );
     void removePipeFile(QString uuid);
     //Status
     void updateStatus(QString uuid, QString stateUuid, QString comment = "", int version = 0, int completionRatio = -1);

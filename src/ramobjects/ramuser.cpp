@@ -68,7 +68,7 @@ void RamUser::update()
     QString path = m_folderPath;
     if (path == "") path = "auto";
 
-    m_dbi->updateUser(m_uuid, m_shortName, m_name, role, path);
+    m_dbi->updateUser(m_uuid, m_shortName, m_name, role, path, m_comment);
 }
 
 void RamUser::updatePassword(QString c, QString n)

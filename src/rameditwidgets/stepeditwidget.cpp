@@ -135,18 +135,18 @@ void StepEditWidget::updateEstimationSuffix()
 void StepEditWidget::setupUi()
 {
     QLabel *typeLabel = new QLabel("Type", this);
-    ui_mainFormLayout->addWidget(typeLabel, 2,0);
+    ui_mainFormLayout->addWidget(typeLabel, 3,0);
 
     ui_typeBox = new QComboBox(this);
     ui_typeBox->addItem(QIcon(":/icons/project"), "        Pre-Production", "pre");
     ui_typeBox->addItem(QIcon(":/icons/asset"), "        Asset Production", "asset");
     ui_typeBox->addItem(QIcon(":/icons/shot"), "        Shot Production", "shot");
     ui_typeBox->addItem(QIcon(":/icons/film"), "        Post-Production", "post");
-    ui_mainFormLayout->addWidget(ui_typeBox, 2, 1);
+    ui_mainFormLayout->addWidget(ui_typeBox, 3, 1);
 
     ui_estimationLabel = new QLabel("Estimation", this);
     ui_estimationLabel->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-    ui_mainFormLayout->addWidget(ui_estimationLabel, 3, 0);
+    ui_mainFormLayout->addWidget(ui_estimationLabel, 4, 0);
 
     ui_estimationWidget = new QWidget(this);
     QFormLayout *estimationLayout = new QFormLayout(ui_estimationWidget);
@@ -201,7 +201,7 @@ void StepEditWidget::setupUi()
     ui_estimationMultiplierBox->setEnabled(false);
     estimationLayout->addRow(ui_estimationMultiplierCheckBox, ui_estimationMultiplierBox);
 
-    ui_mainFormLayout->addWidget(ui_estimationWidget, 3, 1);
+    ui_mainFormLayout->addWidget(ui_estimationWidget, 4, 1);
 
     m_folderWidget = new DuQFFolderDisplayWidget(this);
     ui_mainLayout->insertWidget(1, m_folderWidget);
