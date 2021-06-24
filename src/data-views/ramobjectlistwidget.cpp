@@ -78,6 +78,11 @@ void RamObjectListWidget::setEditableObjects(bool editableObjects, RamUser::User
     m_delegate->setEditRole(editRole);
 }
 
+void RamObjectListWidget::setSortable(bool sortable)
+{
+    this->verticalHeader()->setSectionsMovable(sortable);
+}
+
 void RamObjectListWidget::search(QString s)
 {
     m_objectList->search(s);
@@ -130,6 +135,16 @@ void RamObjectListWidget::resizeEvent(QResizeEvent *event)
     else this->setRowHeight(0,30);
 }
 
+void RamObjectListWidget::showEvent(QShowEvent *event)
+{
+    Q_UNUSED(event)
+
+    if(m_layout) return;
+    this->resizeRowsToContents();
+    this->resizeColumnsToContents();
+    m_layout = true;
+}
+
 void RamObjectListWidget::currentChanged(const QModelIndex &current, const QModelIndex &previous)
 {
     Q_UNUSED(previous)
@@ -137,6 +152,36 @@ void RamObjectListWidget::currentChanged(const QModelIndex &current, const QMode
     quintptr iptr = current.data(Qt::UserRole).toULongLong();
     RamObject *obj = reinterpret_cast<RamObject*>( iptr) ;
     emit objectSelected(obj);
+}
+
+void RamObjectListWidget::rowMoved(int logicalIndex, int oldVisualIndex, int newVisualIndex)
+{
+    QSignalBlocker b(this->verticalHeader());
+
+    quintptr ciptr = m_objectList->data( m_objectList->index(logicalIndex, 0), Qt::UserRole).toULongLong();
+    RamObject *movedObject = reinterpret_cast<RamObject*>( ciptr );
+
+    bool up = oldVisualIndex < newVisualIndex;
+
+    // if up, the new index is the one of the below neighbour
+    // else it's the one of the neighbour above
+    int nVisualIndex = 0;
+    if (up) nVisualIndex = newVisualIndex -1;
+    else nVisualIndex = newVisualIndex + 1;
+    //limit
+    if (nVisualIndex < 0) nVisualIndex = 0;
+    if (nVisualIndex > m_objectList->rowCount() -1) nVisualIndex = m_objectList->rowCount() -1;
+
+
+    int neighbour = this->verticalHeader()->logicalIndex(nVisualIndex);
+    quintptr iptr = m_objectList->data( m_objectList->index(neighbour, 0), Qt::UserRole).toULongLong();
+    RamObject *nObj = reinterpret_cast<RamObject*>( iptr );
+
+    movedObject->setOrder( nObj->order() );
+    movedObject->update();
+
+    // move back to the logical index
+    this->verticalHeader()->moveSection(newVisualIndex, oldVisualIndex);
 }
 
 void RamObjectListWidget::select(RamObject *o)
@@ -186,5 +231,7 @@ void RamObjectListWidget::connectEvents()
 {
     connect(m_delegate, &RamObjectDelegate::editObject, this, &RamObjectListWidget::editObject);
     connect(m_delegate, &RamObjectDelegate::historyObject, this, &RamObjectListWidget::historyObject);
+    // SORT
+    connect( this->verticalHeader(), SIGNAL(sectionMoved(int,int,int)), this, SLOT(rowMoved(int,int,int)));
 }
 

@@ -39,6 +39,7 @@ public:
     void setEditMode(ObjectListEditWidget::EditMode editMode);
     void setEditable(bool editable = true);
     void setSearchable(bool searchable = true);
+    void setSortable(bool sortable = true);
     void setTitle(QString title);
     void select(RamObject *o);
     QToolButton *addButton() const;

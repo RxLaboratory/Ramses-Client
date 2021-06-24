@@ -19,7 +19,6 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
 {
     // Reinterpret the int to a pointer
     quintptr iptr = index.data(Qt::UserRole).toULongLong();
-
     RamObject *obj = reinterpret_cast<RamObject*>(iptr);
     RamObject::ObjectType ramType = obj->objectType();
 
@@ -38,16 +37,10 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
     // History button
     const QRect historyButtonRect( editButtonRect.left() - 20, bgRect.top() +7, 12, 12);
 
-    // Select the bg Color (which is different for ramstates)
+    // Select the bg Color
     QColor bgColor = m_dark;
     QColor textColor = m_lessLight;
     QColor detailsColor = m_medium;
-    if (ramType == RamObject::State)
-    {
-        RamState *state = qobject_cast<RamState*>( obj );
-        bgColor = state->color();
-        if (bgColor.lightness() > 80) textColor = m_dark;
-    }
 
     // State
     if (option.state & QStyle::State_Selected)
@@ -241,14 +234,6 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
         else detailsRect.setHeight(0);
         break;
     }
-    case RamObject::State:
-    {
-        RamState *state = qobject_cast<RamState*>( obj );
-        // icon
-        painter->drawPixmap( iconRect, QIcon(":/icons/state").pixmap(QSize(12,12)));
-        details = "Completion ratio: " % QString::number(state->completionRatio()) % "%";
-        break;
-    }
     case RamObject::FileType:
     {
         RamFileType *fileType = qobject_cast<RamFileType*>( obj );        // icon
@@ -307,6 +292,34 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
         details = asset->assetGroup()->name() %
                             "\n" %
                             asset->tags().join(", ");
+        break;
+    }
+    case RamObject::State:
+    {
+        RamState *state = qobject_cast<RamState*>( obj );
+        // icon
+        painter->drawPixmap( iconRect, QIcon(":/icons/state").pixmap(QSize(12,12)));
+        // Draw a progress bar
+        QColor statusColor = state->color();
+        QBrush statusBrush(statusColor.darker());
+        QPainterPath path;
+        QRect statusRect( bgRect.left() + 5, titleRect.bottom() + 5, bgRect.width() - 10, 5 );
+        if (statusRect.bottom() + 5 < bgRect.bottom())
+        {
+            path.addRoundedRect(statusRect, 5, 5);
+            painter->fillPath(path, statusBrush);
+            statusBrush.setColor(statusColor);
+            statusRect.adjust(0,0, -statusRect.width() * (1-(state->completionRatio() / 100.0)), 0);
+            QPainterPath completionPath;
+            completionPath.addRoundedRect(statusRect, 5, 5);
+            painter->fillPath(completionPath, statusBrush);
+
+            //details
+            details = "Completion ratio: " % QString::number(state->completionRatio()) % "%";
+            detailsRect.moveTop(statusRect.bottom() + 5);
+            detailsRect.setHeight( bgRect.bottom() - statusRect.bottom() - 10);
+        }
+
         break;
     }
     case RamObject::Status:
@@ -373,8 +386,14 @@ QSize RamObjectDelegate::sizeHint(const QStyleOptionViewItem &option, const QMod
 {
     Q_UNUSED(option)
 
-    if (index.column() == 0) return QSize(150,30);
-    return QSize(300, 42);
+    // Reinterpret the int to a pointer
+    quintptr iptr = index.data(Qt::UserRole).toULongLong();
+    RamObject *obj = reinterpret_cast<RamObject*>(iptr);
+    RamObject::ObjectType ramType = obj->objectType();
+
+    if (ramType == RamObject::State || ramType == RamObject::Status) return QSize(300, 42);
+
+    return QSize(150,30);
 }
 
 void RamObjectDelegate::setEditable(bool editable)

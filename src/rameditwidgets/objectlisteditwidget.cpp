@@ -102,6 +102,11 @@ void ObjectListEditWidget::setSearchable(bool searchable)
     m_searchEdit->setVisible(searchable);
 }
 
+void ObjectListEditWidget::setSortable(bool sortable)
+{
+    m_listWidget->setSortable(sortable);
+}
+
 void ObjectListEditWidget::setTitle(QString title)
 {
     m_title->setVisible(title != "");

@@ -77,6 +77,24 @@ void RamObjectList::objectChanged(RamObject *obj)
     emit headerDataChanged(Qt::Vertical, row, row);
 }
 
+void RamObjectList::objectMoved(RamObject *obj, int from, int to)
+{
+    Q_UNUSED(obj)
+    beginResetModel();
+
+    DBISuspender s;
+    m_objectsList.move(from, to);
+
+    // update on objects
+    for (int i = 0; i < m_objectsList.count(); i++)
+    {
+        QSignalBlocker b(m_objectsList.at(i));
+        m_objectsList.at(i)->setOrder(i);
+    }
+
+    endResetModel();
+}
+
 const QString &RamObjectList::name() const
 {
     return m_name;
@@ -122,7 +140,7 @@ void RamObjectList::connectObject(RamObject *obj)
     QList<QMetaObject::Connection> c;
     c << connect( obj, SIGNAL(removed(RamObject*)), this, SLOT(removeAll(RamObject*)));
     c << connect( obj, SIGNAL(changed(RamObject*)), this, SLOT(objectChanged(RamObject*)));
-    c << connect( obj, SIGNAL(orderChanged()), this, SLOT(sort()));
+    c << connect( obj, SIGNAL(orderChanged(RamObject*,int,int)), this, SLOT(objectMoved(RamObject*,int,int)));
     m_connections[obj->uuid()] = c;
 }
 

@@ -28,6 +28,7 @@ public:
     void setList(RamObjectList *list);
     // Settings
     void setEditableObjects(bool editableObjects, RamUser::UserRole editRole = RamUser::Admin);
+    void setSortable(bool sortable = true);
 
 signals:
     void objectSelected(RamObject*);
@@ -44,10 +45,13 @@ protected:
     virtual void mousePressEvent(QMouseEvent *event) override;
     virtual void mouseReleaseEvent(QMouseEvent *event) override;
     virtual void resizeEvent(QResizeEvent *event) override;
+    virtual void showEvent(QShowEvent *event) override;
 
 protected slots:
     // Relay to the objectSelected signal
     virtual void currentChanged(const QModelIndex &current, const QModelIndex &previous) override;
+    // Moved
+    void rowMoved( int logicalIndex, int oldVisualIndex, int newVisualIndex);
 
 private:
     void setupUi();
@@ -65,6 +69,7 @@ private:
     // UI Events
     QPoint _initialDragPos;
     bool m_dragging = false;
+    bool m_layout = false;
 };
 
 #endif // RAMOBJECTLISTWIDGET_H

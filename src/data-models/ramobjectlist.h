@@ -7,6 +7,8 @@
 #include <QIcon>
 #include <QStringBuilder>
 
+#include "dbisuspender.h"
+
 class RamObjectList : public QAbstractTableModel
 {
     Q_OBJECT
@@ -75,10 +77,13 @@ protected:
 private slots:
     // Emits dataChanged() and headerChanged()
     void objectChanged(RamObject *obj);
+    void objectMoved(RamObject *obj, int from, int to);
 
 private:
     QString m_shortName;
     QString m_name;
+
+    bool m_updatingOrders = false;
 
 };
 

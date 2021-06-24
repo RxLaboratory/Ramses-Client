@@ -20,6 +20,8 @@ int RamObjectFilterList::rowCount(const QModelIndex &parent) const
 
 QVariant RamObjectFilterList::data(const QModelIndex &index, int role) const
 {
+    if (columnCount() == 0) return QVariant();
+
 
    if (!checkIndex(index, CheckIndexOption::IndexIsValid))
             return QVariant();

@@ -148,7 +148,6 @@ void RamObject::setOrder(int order)
     m_order = order;
     if (!m_dbi->isSuspended()) m_orderChanged = true;
     emit orderChanged(this, previous, order);
-    emit orderChanged();
 }
 
 QString RamObject::filterUuid() const
