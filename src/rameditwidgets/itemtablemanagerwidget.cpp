@@ -218,7 +218,7 @@ void ItemTableManagerWidget::setupUi()
     ui_titleBar->hide();
 
     // group box
-    ui_groupBox = new RamObjectListComboBox(this);
+    ui_groupBox = new RamObjectListComboBox(true,this);
     ui_titleBar->insertLeft(ui_groupBox);
 
     // Search field

@@ -5,6 +5,7 @@
 #include <QSortFilterProxyModel>
 
 #include "data-models/ramobjectlist.h"
+#include "data-models/ramobjectfilterlist.h"
 
 class RamObjectListComboBox : public QComboBox
 {

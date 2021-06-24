@@ -58,9 +58,12 @@ QVariant RamObjectList::headerData(int section, Qt::Orientation orientation, int
 
 void RamObjectList::sort(int column, Qt::SortOrder order)
 {
-    /*if (m_sorted) return;
+    Q_UNUSED(column)
+    Q_UNUSED(order)
+
+    if (m_sorted) return;
     std::sort(m_objectsList.begin(), m_objectsList.end(), objectSorter);
-    m_sorted = true;*/
+    m_sorted = true;
 }
 
 void RamObjectList::objectChanged(RamObject *obj)
@@ -151,6 +154,7 @@ void RamObjectList::insertObject(int i, RamObject *obj)
     m_objects[obj->uuid()] = obj;
     connectObject(obj);
 
+    m_sorted = false;
     endInsertRows();
 }
 
@@ -169,6 +173,7 @@ void RamObjectList::clear()
         while(!c.isEmpty()) disconnect(c.takeLast());
     }
 
+    m_sorted = true;
     endResetModel();
 }
 

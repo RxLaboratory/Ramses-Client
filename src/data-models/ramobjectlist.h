@@ -69,6 +69,9 @@ protected:
     virtual void connectObject(RamObject *obj);
     int objRow(RamObject *obj);
 
+    // Used for perf, sort only when needed
+    bool m_sorted = true;
+
 private slots:
     // Emits dataChanged() and headerChanged()
     void objectChanged(RamObject *obj);
@@ -76,6 +79,7 @@ private slots:
 private:
     QString m_shortName;
     QString m_name;
+
 };
 
 bool objectSorter(RamObject *a, RamObject *b);

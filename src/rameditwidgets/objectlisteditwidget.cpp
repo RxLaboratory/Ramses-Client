@@ -115,6 +115,7 @@ void ObjectListEditWidget::select(RamObject *o)
 
 void ObjectListEditWidget::setFilter(RamObject *o)
 {
+    QSignalBlocker b(m_filterBox);
     m_filterBox->setObject(o);
     m_listWidget->filter(o);
 }

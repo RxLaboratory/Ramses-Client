@@ -31,6 +31,7 @@ INCLUDEPATH += rameditwidgets \
 
 SOURCES += \
     data-models/ramitemtablelistproxy.cpp \
+    data-models/ramobjectfilterlist.cpp \
     data-models/ramobjectfiltermodel.cpp \
     data-models/ramstepfiltermodel.cpp \
     duqf-widgets/duqfsearchedit.cpp \
@@ -151,6 +152,7 @@ HEADERS += \
     config.h \
     data-models/ramitemtable.h \
     data-models/ramitemtablelistproxy.h \
+    data-models/ramobjectfilterlist.h \
     data-models/ramobjectfiltermodel.h \
     data-models/ramobjectlist.h \
     data-models/ramstatelist.h \
