@@ -6,6 +6,7 @@
 
 #include "duqf-widgets/duqfspinbox.h"
 #include "duqf-widgets/autoselectspinbox.h"
+#include "data-views/ramobjectlistcombobox.h"
 #include "objecteditwidget.h"
 #include "statebox.h"
 #include "ramses.h"
@@ -38,7 +39,7 @@ signals:
     void statusUpdated(RamState*, int completion, int version, QString comment);
 
 private slots:
-    void currentStateChanged(RamState *state);
+    void currentStateChanged(RamObject *stateObj);
     void updateStatus();
     void adjustCommentEditSize();
     void revert();

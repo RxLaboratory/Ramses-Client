@@ -570,8 +570,6 @@ void RamLoader::gotAssets(QJsonArray assets, RamProject *project)
 
     QStringList uuids;
 
-    qDebug() << assets;
-
     // Update assets
     for (int j = 0; j < assets.count(); j++)
         uuids << gotAsset( assets.at(j).toObject(), project );

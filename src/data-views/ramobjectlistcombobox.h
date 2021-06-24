@@ -6,6 +6,7 @@
 
 #include "data-models/ramobjectlist.h"
 #include "data-models/ramobjectfilterlist.h"
+#include "ramobjectdelegate.h"
 
 class RamObjectListComboBox : public QComboBox
 {
@@ -32,6 +33,7 @@ private slots:
 private:
     bool m_isFilterBox = false;
 
+    void setupUi();
     void connectEvents();
 };
 

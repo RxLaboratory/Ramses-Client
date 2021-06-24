@@ -3,6 +3,7 @@
 RamObjectListComboBox::RamObjectListComboBox(QWidget *parent) :
     QComboBox(parent)
 {
+    setupUi();
     setList(nullptr);
     connectEvents();
 }
@@ -10,6 +11,7 @@ RamObjectListComboBox::RamObjectListComboBox(QWidget *parent) :
 RamObjectListComboBox::RamObjectListComboBox(bool isFilterBox, QWidget *parent) :
     QComboBox(parent)
 {
+    setupUi();
     m_isFilterBox = isFilterBox;
     setList(nullptr);
     connectEvents();
@@ -18,6 +20,7 @@ RamObjectListComboBox::RamObjectListComboBox(bool isFilterBox, QWidget *parent) 
 RamObjectListComboBox::RamObjectListComboBox(RamObjectList *list, QWidget *parent) :
     QComboBox(parent)
 {
+    setupUi();
     setList(list);
     connectEvents();
 }
@@ -96,6 +99,13 @@ void RamObjectListComboBox::currentObjectChanged(int i)
 
     emit currentObjectChanged( currentObject() );
     emit currentObjectChanged( currentUuid() );
+}
+
+void RamObjectListComboBox::setupUi()
+{
+    RamObjectDelegate *delegate = new RamObjectDelegate(this);
+    delegate->setComboBoxMode(true);
+    this->setItemDelegate(delegate);
 }
 
 void RamObjectListComboBox::connectEvents()

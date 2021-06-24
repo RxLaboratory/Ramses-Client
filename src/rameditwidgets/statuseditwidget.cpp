@@ -24,7 +24,7 @@ void StatusEditWidget::setStatus(RamStatus *status)
     ui_commentEdit->setPlainText("");
     if (!status) return;
 
-    ui_stateBox->setCurrentState(status->state());
+    ui_stateBox->setObject(status->state());
     ui_completionBox->setValue(status->completionRatio());
     ui_versionBox->setValue(status->version());
     ui_commentEdit->setPlainText(status->comment());
@@ -32,7 +32,7 @@ void StatusEditWidget::setStatus(RamStatus *status)
 
 RamState *StatusEditWidget::state() const
 {
-    return ui_stateBox->currentState();
+    return qobject_cast<RamState*>( ui_stateBox->currentObject() );
 }
 
 int StatusEditWidget::completionRatio() const
@@ -50,8 +50,9 @@ QString StatusEditWidget::comment() const
     return ui_commentEdit->toPlainText();
 }
 
-void StatusEditWidget::currentStateChanged(RamState *state)
+void StatusEditWidget::currentStateChanged(RamObject *stateObj)
 {
+    RamState *state = qobject_cast<RamState*>(stateObj);
     if (state)
     {
         ui_completionBox->setValue(state->completionRatio());
@@ -64,7 +65,7 @@ void StatusEditWidget::currentStateChanged(RamState *state)
 
 void StatusEditWidget::updateStatus()
 {
-    emit statusUpdated(ui_stateBox->currentState(), ui_completionBox->value(), ui_versionBox->value(), ui_commentEdit->toPlainText() );
+    emit statusUpdated(state(), ui_completionBox->value(), ui_versionBox->value(), ui_commentEdit->toPlainText() );
 }
 
 void StatusEditWidget::adjustCommentEditSize()
@@ -147,7 +148,7 @@ void StatusEditWidget::setupUi()
 void StatusEditWidget::connectEvents()
 {
     connect(ui_commentEdit, &QPlainTextEdit::textChanged, this, &StatusEditWidget::adjustCommentEditSize);
-    connect(ui_stateBox, SIGNAL(currentStateChanged(RamState*)), this, SLOT(currentStateChanged(RamState*)));
+    connect(ui_stateBox, SIGNAL(currentObjectChanged(RamObject*)), this, SLOT(currentStateChanged(RamObject*)));
     connect(ui_setButton, &QToolButton::clicked, this, &StatusEditWidget::updateStatus);
     connect(ui_revertButton, &QToolButton::clicked, this, &StatusEditWidget::revert);
 }

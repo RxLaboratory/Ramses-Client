@@ -88,7 +88,6 @@ void RamObjectList::objectMoved(RamObject *obj, int from, int to)
     // Sync order on objects
     for (int i = 0; i < m_objectsList.count(); i++)
     {
-        qDebug() << i;
         QSignalBlocker b(m_objectsList.at(i));
         m_objectsList.at(i)->setOrder(i);
         m_objectsList.at(i)->update();

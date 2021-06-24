@@ -168,7 +168,6 @@ void ObjectListEditWidget::removeSelectedObjects()
 
 void ObjectListEditWidget::edit(RamObject *obj)
 {
-    qDebug() << "List Edit Widget EDIT";
     obj->edit();
 }
 

@@ -146,8 +146,6 @@ void RamObject::setOrder(int order)
     m_dirty = true;
     int previous = m_order;
     m_order = order;
-    qDebug() << m_order;
-    qDebug() << m_dbi->isSuspended();
     if (!m_dbi->isSuspended()) m_orderChanged = true;
     emit orderChanged(this, previous, order);
 }

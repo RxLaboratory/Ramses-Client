@@ -19,6 +19,9 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
 {
     // Reinterpret the int to a pointer
     quintptr iptr = index.data(Qt::UserRole).toULongLong();
+
+    if (iptr == 0) return QStyledItemDelegate::paint(painter, option, index);
+
     RamObject *obj = reinterpret_cast<RamObject*>(iptr);
     RamObject::ObjectType ramType = obj->objectType();
 
@@ -115,6 +118,12 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
                 QString::number(status->version()) %
                 ")";
         textPen.setColor(m_medium);
+        break;
+    }
+    case RamObject::State:
+    {
+        RamState *state = qobject_cast<RamState*>( obj );
+        if (m_comboBox) title = state->shortName();
         break;
     }
     default:
@@ -388,6 +397,9 @@ QSize RamObjectDelegate::sizeHint(const QStyleOptionViewItem &option, const QMod
 
     // Reinterpret the int to a pointer
     quintptr iptr = index.data(Qt::UserRole).toULongLong();
+
+    if (iptr == 0) return QSize(300, 42);
+
     RamObject *obj = reinterpret_cast<RamObject*>(iptr);
     RamObject::ObjectType ramType = obj->objectType();
 
@@ -492,6 +504,11 @@ bool RamObjectDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, co
 
     return QStyledItemDelegate::editorEvent( event, model, option, index );
 
+}
+
+void RamObjectDelegate::setComboBoxMode(bool comboBoxMode)
+{
+    m_comboBox = comboBoxMode;
 }
 
 bool RamObjectDelegate::canEdit() const

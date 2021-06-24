@@ -23,6 +23,8 @@ public:
     void setEditable(bool editable);
     void setEditRole(RamUser::UserRole role);
 
+    void setComboBoxMode(bool comboBoxMode);
+
 signals:
     void editObject(RamObject*);
     void historyObject(RamObject*);
@@ -43,6 +45,7 @@ private:
 
     // Settings
     bool m_editable = false;
+    bool m_comboBox = false;
     RamUser::UserRole m_editRole = RamUser::Admin;
 
     // Events
