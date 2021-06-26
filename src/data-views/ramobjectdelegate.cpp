@@ -139,35 +139,39 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
     painter->drawText( titleRect, Qt::AlignLeft | Qt::AlignTop | Qt::TextWordWrap, title, &titleRect);
 
     // Draw buttons
-    int xpos = bgRect.right() - 20;
-
-    // Draw editbutton
-    // Edit button
-    if (canEdit() || index.column() > 0)
+    if (!m_comboBox)
     {
-        const QRect editButtonRect( xpos, bgRect.top() +7, 12, 12 );
-        xpos -= 22;
-        drawButton(painter, editButtonRect, ":/icons/edit", m_editButtonHover);
+        int xpos = bgRect.right() - 20;
+
+        // Draw editbutton
+        // Edit button
+        if (canEdit() || index.column() > 0)
+        {
+            const QRect editButtonRect( xpos, bgRect.top() +7, 12, 12 );
+            xpos -= 22;
+            drawButton(painter, editButtonRect, ":/icons/edit", m_editButtonHover);
+        }
+
+        // Draw History button
+        // History button
+        if ( ramType == RamObject::Status )
+        {
+            QRect historyButtonRect( xpos, bgRect.top() +7, 12, 12);
+            xpos -= 22;
+            drawButton(painter, historyButtonRect, ":/icons/list", m_historyButtonHover);
+        }
+
+
+        // Draw Folder button
+        // Folder button
+
+        if ( obj->path() != "" )
+        {
+             const QRect folderButtonRect( xpos, bgRect.top() +7, 12, 12 );
+             drawButton(painter, folderButtonRect, ":/icons/reveal-folder-s", m_folderButtonHover);
+        }
     }
 
-    // Draw History button
-    // History button
-    if ( ramType == RamObject::Status )
-    {
-        QRect historyButtonRect( xpos, bgRect.top() +7, 12, 12);
-        xpos -= 22;
-        drawButton(painter, historyButtonRect, ":/icons/list", m_historyButtonHover);
-    }
-
-
-    // Draw Folder button
-    // Folder button
-
-    if ( obj->path() != "" )
-    {
-         const QRect folderButtonRect( xpos, bgRect.top() +7, 12, 12 );
-         drawButton(painter, folderButtonRect, ":/icons/reveal-folder-s", m_folderButtonHover);
-    }
 
     QString details;
     QRect detailsRect( iconRect.left() + 5, titleRect.bottom() + 3, bgRect.width() - iconRect.width() -5, bgRect.height() - titleRect.height() - 15 );
@@ -446,7 +450,6 @@ bool RamObjectDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, co
     if (!edit && !history && !folder)
         return QStyledItemDelegate::editorEvent( event, model, option, index );
 
-    // Button rects
     int xpos = bgRect.right() - 22;
 
     const QRect editButtonRect = QRect( xpos, bgRect.top()+7, 22, 22 );
