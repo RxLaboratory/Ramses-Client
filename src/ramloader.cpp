@@ -514,9 +514,7 @@ QString RamLoader::gotStep(QJsonObject newS, RamProject *project)
 
 
     foreach(QJsonValue a, newS.value("applications").toArray())
-    {
         step->applications()->append( RamApplication::application(a.toString()) );
-    }
 
     project->steps()->append(step);
 
@@ -604,8 +602,6 @@ QString RamLoader::gotAsset(QJsonObject newA, RamProject *project)
 {
     DBISuspender s;
     QString uuid = newA.value("uuid").toString();
-
-    qDebug() << newA;
 
     RamAssetGroup *ag = RamAssetGroup::assetGroup( newA.value("assetGroupUuid").toString() );
     if (!ag) return "";

@@ -81,6 +81,13 @@ void RamObjectList::objectChanged(RamObject *obj)
 void RamObjectList::objectMoved(RamObject *obj, int from, int to)
 {
     Q_UNUSED(obj)
+
+    if (from < 0) from = 0;
+    if (to < 0) to = 0;
+    if (from >= m_objectsList.count() ) from = m_objectsList.count();
+    if (to >=  m_objectsList.count() ) to = m_objectsList.count();
+    if (from == to) return;
+
     beginResetModel();
 
     m_objectsList.move(from, to);
