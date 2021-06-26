@@ -19,10 +19,14 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
 {
     // Reinterpret the int to a pointer
     quintptr iptr = index.data(Qt::UserRole).toULongLong();
-
-    if (iptr == 0) return QStyledItemDelegate::paint(painter, option, index);
-
     RamObject *obj = reinterpret_cast<RamObject*>(iptr);
+
+    if (iptr == 0)
+    {
+        obj = new RamObject("", index.data(Qt::DisplayRole).toString());
+    }
+
+
     RamObject::ObjectType ramType = obj->objectType();
 
     // Base Settings
@@ -398,7 +402,7 @@ QSize RamObjectDelegate::sizeHint(const QStyleOptionViewItem &option, const QMod
     // Reinterpret the int to a pointer
     quintptr iptr = index.data(Qt::UserRole).toULongLong();
 
-    if (iptr == 0) return QSize(300, 42);
+    if (iptr == 0) return QSize(300, 30);
 
     RamObject *obj = reinterpret_cast<RamObject*>(iptr);
     RamObject::ObjectType ramType = obj->objectType();
