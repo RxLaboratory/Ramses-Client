@@ -717,9 +717,11 @@ DBInterface::DBInterface(QObject *parent) : DuQFLoggerObject("Database Interface
 
     _suspended = false;
 
+    _forbiddenWords << "and" << "or" << "if" << "else" << "insert" << "update" << "select" << "drop" << "alter";
+
     // Connect events
     connect( &_network, &QNetworkAccessManager::finished, this, &DBInterface::dataReceived);
-    connect(&_network, SIGNAL(sslErrors(QNetworkReply *,QList<QSslError>)), this,SLOT(sslError(QNetworkReply *,QList<QSslError>)));
+    connect(&_network, SIGNAL(sslErrors(QNetworkReply*,QList<QSslError>)), this,SLOT(sslError(QNetworkReply*,QList<QSslError>)));
     connect(qApp,SIGNAL(aboutToQuit()), this, SLOT(suspend()));
 
     _status = NetworkUtils::Offline;
@@ -1008,8 +1010,14 @@ void DBInterface::request(QStringList args)
     {
         if (!first) q += "&";
         first = false;
+        // Replace forbidden words
+        foreach(QString word, _forbiddenWords)
+        {
+            arg = arg.replace(" " + word, "%" + word + "%");
+        }
         q += QUrl::toPercentEncoding(arg, "=");
     }
+    qDebug() << q;
     request(q);
 }
 

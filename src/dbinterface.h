@@ -163,6 +163,11 @@ private:
     QString _sessionToken;
 
     /**
+     * @brief _forbiddenWords A list of forbidden words in URLs
+     */
+    QStringList _forbiddenWords;
+
+    /**
      * @brief Requests data from the remote server
      * @param req The request to post
      * @param content
