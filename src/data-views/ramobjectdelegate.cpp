@@ -371,7 +371,6 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
         break;
     }
     default:
-        painter->drawPixmap( iconRect, QIcon(":/icons/asset").pixmap(QSize(12,12)));
         detailsRect.setHeight(0);
     }
 
