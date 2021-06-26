@@ -174,7 +174,7 @@ void ItemTableManagerWidget::stepActionToggled(bool checked)
 
 void ItemTableManagerWidget::editObject(RamObject *obj) const
 {
-    // Check if its a status
+    // Check if it's a status
     if (obj->objectType() == RamObject::Status)
     {
         RamStatus *status = qobject_cast<RamStatus*>( obj );
@@ -190,6 +190,7 @@ void ItemTableManagerWidget::editObject(RamObject *obj) const
                         status->item());
             status->item()->addStatus(status);
         }
+
         status->edit();
         return;
     }

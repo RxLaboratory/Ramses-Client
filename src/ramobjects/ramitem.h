@@ -25,6 +25,8 @@ public:
     RamStatus *status(RamObject *step);
     QList<RamStatus*> status();
 
+    RamUser *assignedUser(RamStep *step);
+
     RamProject *project() const;
     RamStep::Type productionType() const;
     static RamItem *item(QString uuid);

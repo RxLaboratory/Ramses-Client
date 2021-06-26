@@ -371,6 +371,16 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
             details = status->date().toString(dateFormat) %
                     " | " %
                     status->user()->name();
+
+            RamUser *assignedUser = status->assignedUser();
+            if (assignedUser) details = details %
+                    "\nAssigned to: " %
+                    assignedUser->name();
+            else details = details %
+                    "\nNot assigned";
+
+            if (status->isPublished()) details = details % "\n→ Published";
+
             detailsRect.moveTop(statusRect.bottom() + 5);
             detailsRect.setHeight( bgRect.bottom() - statusRect.bottom() - 10);
         }
@@ -387,6 +397,7 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
         painter->setPen( detailsPen );
         painter->setFont( m_detailsFont );
         painter->drawText( detailsRect, Qt::AlignLeft | Qt::AlignTop | Qt::TextWordWrap, details, &detailsRect);
+        if (detailsRect.bottom() - 5 > bgRect.bottom()) drawMore(painter, bgRect, commentPen);
     }
 
     // Draw Comment

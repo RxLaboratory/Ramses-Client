@@ -8,6 +8,7 @@
 #include "ramstep.h"
 
 class RamItem;
+class StatusEditWidget;
 
 class RamStatus : public RamObject
 {
@@ -36,6 +37,12 @@ public:
 
     static RamStatus *status(QString uuid);
 
+    bool isPublished() const;
+    void setPublished(bool published);
+
+    RamUser *assignedUser() const;
+    void assignUser(RamUser *assignedUser);
+
 public slots:
     void update() override;
     virtual void edit(bool show = true) override;
@@ -54,6 +61,9 @@ private:
     int m_version = 1;
     RamStep *m_step;
     QDateTime m_date;
+    bool m_published = false;
+    RamUser* m_assignedUser = nullptr;
+    StatusEditWidget *m_editWidget;
 };
 
 #endif // RAMSTATUS_H

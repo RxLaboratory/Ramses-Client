@@ -353,7 +353,7 @@ void DBInterface::removeAsset(QString uuid)
     request(q);
 }
 
-void DBInterface::setAssetStatus(QString assetUuid, QString stateUuid, QString stepUuid, QString userUuid, int completionRatio, QString comment, int version, QString uuid)
+void DBInterface::setAssetStatus(QString assetUuid, QString stateUuid, QString stepUuid, QString userUuid, int completionRatio, QString comment, int version, QString uuid, QString assignedUserUuid)
 {
     QStringList q("setAssetStatus");
     q << "assetUuid=" + assetUuid;
@@ -364,6 +364,7 @@ void DBInterface::setAssetStatus(QString assetUuid, QString stateUuid, QString s
     q << "comment=" + comment;
     q << "version=" + QString::number(version);
     q << "uuid=" + uuid;
+    q << "assignedUserUuid=" + assignedUserUuid;
 
     request(q);
 }
@@ -450,7 +451,7 @@ void DBInterface::removeShot(QString uuid)
     request(q);
 }
 
-void DBInterface::setShotStatus(QString shotUuid, QString stateUuid, QString stepUuid, QString userUuid, int completionRatio, QString comment, int version, QString uuid)
+void DBInterface::setShotStatus(QString shotUuid, QString stateUuid, QString stepUuid, QString userUuid, int completionRatio, QString comment, int version, QString uuid, QString assignedUserUuid)
 {
     QStringList q("setShotStatus");
     q << "shotUuid=" + shotUuid;
@@ -461,6 +462,7 @@ void DBInterface::setShotStatus(QString shotUuid, QString stateUuid, QString ste
     q << "comment=" + comment;
     q << "version=" + QString::number(version);
     q << "uuid=" + uuid;
+    q << "assignedUserUuid=" + assignedUserUuid;
 
     request(q);
 }
@@ -676,11 +678,14 @@ void DBInterface::removePipeFile(QString uuid)
     request(q);
 }
 
-void DBInterface::updateStatus(QString uuid, QString stateUuid, QString comment, int version, int completionRatio)
+void DBInterface::updateStatus(QString uuid, QString stateUuid, QString comment, int version, int completionRatio, bool published, QString assignedUserUuid)
 {
     QStringList q("updateStatus");
     q << "uuid=" + uuid;
     q << "stateUuid=" + stateUuid;
+    q << "assignedUserUuid=" + assignedUserUuid;
+    if (published) q << "published=1";
+    else q << "published=0";
     if (comment != "") q << "comment=" + comment;
     if (version > 0) q << "version=" + QString::number(version);
     if (completionRatio >= 0) q << "completionRatio=" + QString::number(completionRatio);

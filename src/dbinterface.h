@@ -70,7 +70,7 @@ public:
     void createAsset(QString shortName, QString name, QString assetGroupUuid, QString tags, QString uuid);
     void updateAsset(QString uuid, QString shortName, QString name, QString assetGroupUuid, QString tags, QString comment = "");
     void removeAsset(QString uuid);
-    void setAssetStatus(QString assetUuid, QString stateUuid, QString stepUuid, QString userUuid = "", int completionRatio = -1, QString comment = "", int version = 1, QString uuid = "");
+    void setAssetStatus(QString assetUuid, QString stateUuid, QString stepUuid, QString userUuid = "", int completionRatio = -1, QString comment = "", int version = 1, QString uuid = "", QString assignedUserUuid = "");
     //sequences
     void createSequence(QString shortName, QString name, QString projectUuid, QString uuid);
     void updateSequence(QString uuid, QString shortName, QString name, QString comment = "");
@@ -81,7 +81,7 @@ public:
     void moveShot(QString uuid, int order);
     void setShotOrder(QString uuid, int order);
     void removeShot(QString uuid);
-    void setShotStatus(QString shotUuid, QString stateUuid, QString stepUuid, QString userUuid = "", int completionRatio = -1, QString comment = "", int version = 1, QString uuid = "");
+    void setShotStatus(QString shotUuid, QString stateUuid, QString stepUuid, QString userUuid = "", int completionRatio = -1, QString comment = "", int version = 1, QString uuid = "", QString assignedUserUuid = "");
     //states
     void createState(QString shortName, QString name, QString uuid);
     void getStates();
@@ -110,7 +110,7 @@ public:
     void updatePipeFile(QString uuid, QString shortName, QString fileTypeUuid = "", QString colorSpaceUuid = "", QString comment = "" );
     void removePipeFile(QString uuid);
     //Status
-    void updateStatus(QString uuid, QString stateUuid, QString comment = "", int version = 0, int completionRatio = -1);
+    void updateStatus(QString uuid, QString stateUuid, QString comment = "", int version = 0, int completionRatio = -1, bool published = false, QString assignedUserUuid = "");
     void removeStatus(QString uuid);
 
 public slots:

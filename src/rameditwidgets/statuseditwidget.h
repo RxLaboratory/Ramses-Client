@@ -3,6 +3,8 @@
 
 #include <QPlainTextEdit>
 #include <QToolButton>
+#include <QFormLayout>
+#include <QCheckBox>
 
 #include "duqf-widgets/duqfspinbox.h"
 #include "duqf-widgets/autoselectspinbox.h"
@@ -34,6 +36,8 @@ public:
     int completionRatio() const;
     int version() const;
     QString comment() const;
+    RamUser *assignedUser() const;
+    bool isPublished() const;
 
 signals:
     void statusUpdated(RamState*, int completion, int version, QString comment);
@@ -53,6 +57,8 @@ private:
     QPlainTextEdit *ui_statusCommentEdit;
     QToolButton *ui_setButton;
     QToolButton *ui_revertButton;
+    QCheckBox *ui_publishedBox;
+    RamObjectListComboBox *ui_userBox;
 
     RamStatus *m_status;
 };

@@ -782,6 +782,8 @@ QString RamLoader::gotStatus(QJsonObject newS, RamItem *item)
     status->setComment( newS.value("comment").toString( ) );
     status->setVersion( newS.value("version").toInt( ) );
     status->setDate( QDateTime::fromString( newS.value("date").toString(), "yyyy-MM-dd hh:mm:ss"));
+    status->assignUser( RamUser::user( newS.value("assignedUserUuid").toString( )));
+    status->setPublished( newS.value("published").toBool());
 
     item->addStatus(status);
 

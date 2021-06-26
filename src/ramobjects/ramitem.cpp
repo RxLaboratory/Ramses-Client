@@ -14,17 +14,22 @@ RamItem::RamItem(QString shortName, RamProject *project, QString name, QString u
 
 void RamItem::setStatus(RamUser *user, RamState *state, RamStep *step, int completionRatio, QString comment, int version)
 {
-    RamStatus *status = new RamStatus(user, state, step, this);
-    if (completionRatio >= 0) status->setCompletionRatio(completionRatio);
-    if (comment != "") status->setComment(comment);
-    status->setVersion(version);
-    addStatus(status);
+    RamStatus *newStatus = new RamStatus(user, state, step, this);
+    if (completionRatio >= 0) newStatus->setCompletionRatio(completionRatio);
+    if (comment != "") newStatus->setComment(comment);
+    newStatus->setVersion(version);
+
+    addStatus(newStatus);
 }
 
 void RamItem::addStatus(RamStatus *status)
 {
     RamStep *step = status->step();
     if (!step) return;
+
+    // Check if there's a user assigned
+    if (!status->assignedUser())
+        status->assignUser( assignedUser(step) );
 
     RamStepStatusHistory *history = statusHistory(step);
     history->append( status );
@@ -83,6 +88,15 @@ QList<RamStatus *> RamItem::status()
     return statuses;
 }
 
+RamUser *RamItem::assignedUser(RamStep *step)
+{
+    RamStatus *previous = status(step);
+    if (previous)
+        return previous->assignedUser();
+
+    return nullptr;
+}
+
 RamStep::Type RamItem::productionType() const
 {
     return m_productionType;
@@ -108,8 +122,30 @@ void RamItem::insertStatus(const QModelIndex &parent, int first, int last)
     {
         RamStatus *status = qobject_cast<RamStatus*>( stepHistory->at(i) );
 
-        if (this->objectType() == Asset) m_dbi->setAssetStatus(m_uuid, status->state()->uuid(), status->step()->uuid(), status->user()->uuid(), status->completionRatio(), status->comment(), status->version(), status->uuid());
-        else if (this->objectType() == Shot) m_dbi->setShotStatus(m_uuid, status->state()->uuid(), status->step()->uuid(), status->user()->uuid(), status->completionRatio(), status->comment(), status->version(), status->uuid());
+        QString assigneduser;
+        if( status->assignedUser() ) assigneduser = status->assignedUser()->uuid();
+
+        if (this->objectType() == Asset) m_dbi->setAssetStatus(
+                    m_uuid, status->state()->uuid(),
+                    status->step()->uuid(),
+                    status->user()->uuid(),
+                    status->completionRatio(),
+                    status->comment(),
+                    status->version(),
+                    status->uuid(),
+                    assigneduser
+                    );
+        else if (this->objectType() == Shot) m_dbi->setShotStatus(
+                    m_uuid,
+                    status->state()->uuid(),
+                    status->step()->uuid(),
+                    status->user()->uuid(),
+                    status->completionRatio(),
+                    status->comment(),
+                    status->version(),
+                    status->uuid(),
+                    assigneduser
+                    );
     }
 
     if (last != stepHistory->count() - 1) return;

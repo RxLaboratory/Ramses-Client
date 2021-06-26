@@ -22,12 +22,15 @@ void StatusEditWidget::setStatus(RamStatus *status)
     ui_completionBox->setValue(0);
     ui_versionBox->setValue(1);
     ui_statusCommentEdit->setPlainText("");
+    ui_publishedBox->setChecked(false);
+    ui_userBox->setObject("");
     if (!status) return;
 
     ui_stateBox->setObject(status->state());
     ui_completionBox->setValue(status->completionRatio());
     ui_versionBox->setValue(status->version());
     ui_statusCommentEdit->setPlainText(status->comment());
+    ui_userBox->setObject(status->assignedUser());
 }
 
 RamState *StatusEditWidget::state() const
@@ -48,6 +51,16 @@ int StatusEditWidget::version() const
 QString StatusEditWidget::comment() const
 {
     return ui_statusCommentEdit->toPlainText();
+}
+
+RamUser *StatusEditWidget::assignedUser() const
+{
+    return qobject_cast<RamUser*>( ui_userBox->currentObject() );
+}
+
+bool StatusEditWidget::isPublished() const
+{
+    return ui_publishedBox->isChecked();
 }
 
 void StatusEditWidget::currentStateChanged(RamObject *stateObj)
@@ -104,11 +117,7 @@ void StatusEditWidget::setupUi()
     ui_completionBox->setFixedHeight(ui_stateBox->height());
     cLayout->addWidget(ui_completionBox);
 
-    ui_versionBox = new AutoSelectSpinBox(this);
-    ui_versionBox->setMaximum(1000);
-    ui_versionBox->setValue(1);
-    ui_versionBox->setPrefix("v");
-    cLayout->addWidget(ui_versionBox);
+
 
     cLayout->setStretch(0,0);
     cLayout->setStretch(1,100);
@@ -120,7 +129,24 @@ void StatusEditWidget::setupUi()
     ui_statusCommentEdit->setPlaceholderText("Comment...");
     ui_statusCommentEdit->setMinimumHeight(30);
     ui_statusCommentEdit->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    ui_mainLayout->insertWidget(1, ui_statusCommentEdit);
+    ui_mainLayout->addWidget( ui_statusCommentEdit);
+
+    QFormLayout *detailsLayout = new QFormLayout();
+
+    ui_versionBox = new AutoSelectSpinBox(this);
+    ui_versionBox->setMaximum(1000);
+    ui_versionBox->setValue(1);
+    ui_versionBox->setPrefix("v");
+    detailsLayout->addRow("Version", ui_versionBox);
+
+    ui_publishedBox = new QCheckBox("Published",this);
+    detailsLayout->addRow("Publication", ui_publishedBox);
+
+    ui_userBox = new RamObjectListComboBox(true, this);
+    ui_userBox->setList(Ramses::instance()->users());
+    detailsLayout->addRow("Assigned user", ui_userBox);
+
+    ui_mainLayout->addLayout( detailsLayout);
 
     QHBoxLayout *buttonsLayout = new QHBoxLayout();
     buttonsLayout->setSpacing(3);
@@ -138,7 +164,7 @@ void StatusEditWidget::setupUi()
     ui_setButton->setIcon(QIcon(":/icons/apply"));
     buttonsLayout->addWidget(ui_setButton);
 
-    ui_mainLayout->insertLayout(2,buttonsLayout);
+    ui_mainLayout->addLayout(buttonsLayout);
 
     ui_mainLayout->setStretch(0,0);
     ui_mainLayout->setStretch(1,1);

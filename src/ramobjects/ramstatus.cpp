@@ -83,17 +83,26 @@ void RamStatus::update()
     if(!m_dirty) return;
     RamObject::update();
     if (!m_state) return;
-    m_dbi->updateStatus(m_uuid, m_state->uuid(), m_comment, m_version, m_completionRatio);
+    QString assignedUser = "NULL";
+    if (m_assignedUser) assignedUser = m_assignedUser->uuid();
+    m_dbi->updateStatus(
+                m_uuid,
+                m_state->uuid(),
+                m_comment,
+                m_version,
+                m_completionRatio,
+                m_published,
+                assignedUser);
 }
 
 void RamStatus::edit(bool show)
 {
     if (!m_editReady)
     {
-        StatusEditWidget *w = new StatusEditWidget(this);
-        setEditWidget(w);
+        m_editWidget = new StatusEditWidget(this);
+        setEditWidget(m_editWidget);
         m_editReady = true;
-        connect( w, SIGNAL(statusUpdated(RamState*,int,int,QString)),
+        connect( m_editWidget, SIGNAL(statusUpdated(RamState*,int,int,QString)),
                  this, SLOT(statusUpdated(RamState*,int,int,QString))
                  );
     }
@@ -115,7 +124,38 @@ void RamStatus::statusUpdated(RamState *state, int completion, int version, QStr
     this->setCompletionRatio(completion);
     this->setVersion(version);
     this->setComment(comment);
+    this->assignUser(m_editWidget->assignedUser());
+    this->setPublished(m_editWidget->isPublished());
     update();
+    showEdit(false);
+}
+
+RamUser *RamStatus::assignedUser() const
+{
+    return m_assignedUser;
+}
+
+void RamStatus::assignUser(RamUser *assignedUser)
+{
+    if (!assignedUser && !m_assignedUser) return;
+    if (assignedUser)
+        if (assignedUser->is(m_assignedUser)) return;
+    m_dirty = true;
+    m_assignedUser = assignedUser;
+    emit changed(this);
+}
+
+bool RamStatus::isPublished() const
+{
+    return m_published;
+}
+
+void RamStatus::setPublished(bool published)
+{
+    if (published == m_published) return;
+    m_dirty = true;
+    m_published = published;
+    emit changed(this);
 }
 
 QDateTime RamStatus::date() const
