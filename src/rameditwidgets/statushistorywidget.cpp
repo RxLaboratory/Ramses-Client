@@ -21,7 +21,7 @@ void StatusHistoryWidget::setupUi()
     layout->setSpacing(3);
 
     ui_statusList = new RamObjectListWidget( RamObjectListWidget::List, this);
-    ui_statusList->setEditableObjects(true, RamUser::Admin);
+    ui_statusList->setEditableObjects(true, RamUser::AdminFolder);
     layout->addWidget( ui_statusList );
 }
 

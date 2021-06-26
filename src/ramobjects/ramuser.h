@@ -9,7 +9,7 @@ class RamUser : public RamObject
 {
     Q_OBJECT
 public:
-    enum UserRole { Admin = 3,
+    enum UserRole { AdminFolder = 3,
                     ProjectAdmin = 2,
                     Lead = 1,
                     Standard = 0 };
@@ -22,10 +22,10 @@ public:
     void setRole(const UserRole &role);
     void setRole(const QString role);
 
-    QString folderPath() const;
     void setFolderPath(const QString &folderPath);
+    QString defaultPath() const;
+    bool pathIsDefault() const;
 
-    void update() override;
     void updatePassword(QString c, QString n);
 
     static RamUser *user(QString uuid);
@@ -33,7 +33,11 @@ public:
     QSettings *userSettings() const;
 
 public slots:
+    void update() override;
     virtual void edit(bool show = true) override;
+
+protected:
+    virtual QString folderPath() const override;
 
 private:
     UserRole m_role;

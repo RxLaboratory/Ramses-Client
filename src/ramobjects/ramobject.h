@@ -34,6 +34,23 @@ public:
                     StepStatusHistory};
     Q_ENUM( ObjectType )
 
+    enum SubFolder { NoFolder,
+                   ConfigFolder,
+                   AdminFolder,
+                   PreProdFolder,
+                   ProdFolder,
+                   PostProdFolder,
+                   AssetsFolder,
+                   ShotsFolder,
+                   ExportFolder,
+                   TemplatesFolder,
+                   PublishFolder,
+                   VersionsFolder,
+                   PreviewFolder,
+                   UsersFolder,
+                   ProjectsFolder};
+    Q_ENUM( SubFolder )
+
     explicit RamObject(QObject *parent = nullptr);
     explicit RamObject(QString uuid, QObject *parent = nullptr);
     explicit RamObject(QString shortName, QString name, QString uuid = "", QObject *parent = nullptr);
@@ -54,6 +71,8 @@ public:
 
     int order() const;
     void setOrder(int order);
+
+    QString path(SubFolder subFolder = NoFolder, bool create = false) const;
 
     QString filterUuid() const;
 
@@ -91,6 +110,7 @@ protected:
 
     void setEditWidget( QWidget *w );
     void showEdit(bool show = true);
+    virtual QString folderPath() const { return QString(); };
 
 private:
     RamObject::ObjectType _objectType = Generic;

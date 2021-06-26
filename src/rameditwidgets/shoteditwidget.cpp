@@ -38,7 +38,7 @@ void ShotEditWidget::setObject(RamObject *obj)
 
     ui_secondsBox->setValue(_shot->duration());
     secondsChanged();
-    ui_folderWidget->setPath(Ramses::instance()->path(shot));
+    ui_folderWidget->setPath( shot->path() );
 
     // Set sequence
     RamProject *project = shot->project();

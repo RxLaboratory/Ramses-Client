@@ -560,7 +560,7 @@ void MainWindow::userProfile()
 void MainWindow::revealUserFolder()
 {
     RamUser *current = Ramses::instance()->currentUser();
-    if (current) FileUtils::openInExplorer( Ramses::instance()->path(current) );
+    if (current) FileUtils::openInExplorer( current->path() );
 }
 
 void MainWindow::admin(bool show)
@@ -647,7 +647,7 @@ void MainWindow::currentUserChanged()
     actionShots->setVisible(true);
     actionAssets->setVisible(true);
 
-    if (user->role() == RamUser::Admin)
+    if (user->role() == RamUser::AdminFolder)
     {
         actionAdmin->setVisible(true);
         actionProjectSettings->setVisible(true);

@@ -146,7 +146,7 @@ void Daemon::setCurrentProject(QString shortName, QTcpSocket *client)
     {
         content.insert("name", p->name());
         content.insert("shortName", p->shortName());
-        content.insert("path", p->folderPath());
+        content.insert("path", p->path(RamObject::NoFolder, true));
         content.insert("uuid", p->uuid());
         post(client, content, "setCurrentProject", "Current project set to: " + p->name());
     }
@@ -286,7 +286,7 @@ void Daemon::getAssetGroups(QTcpSocket *client)
         QJsonObject assetGroup;
         assetGroup.insert("shortName", ag->shortName());
         assetGroup.insert("name", ag->name());
-        assetGroup.insert("folder", Ramses::instance()->path(ag));
+        assetGroup.insert("folder", ag->path(RamObject::NoFolder, true));
 
         assetGroups.append(assetGroup);
     }
@@ -322,7 +322,7 @@ void Daemon::getProject(QString shortName, QString name, QTcpSocket *client)
     content.insert("width", proj->width());
     content.insert("height", proj->height());
     content.insert("framerate", proj->framerate());
-    content.insert("folder", Ramses::instance()->path(proj));
+    content.insert("folder", proj->path(RamObject::NoFolder, true));
 
     post(client, content, "getCurrentProject", "Retrieved project: " + proj->name());
 }
@@ -343,9 +343,9 @@ void Daemon::getCurrentUser(QTcpSocket *client)
 
     content.insert("shortName", user->shortName());
     content.insert("name", user->name());
-    content.insert("folderPath", Ramses::instance()->path(user));
+    content.insert("folderPath", user->path(RamObject::NoFolder, true));
     RamUser::UserRole role = user->role();
-    if (role == RamUser::Admin) content.insert("role", "ADMIN");
+    if (role == RamUser::AdminFolder) content.insert("role", "ADMIN");
     else if (role == RamUser::ProjectAdmin) content.insert("role","PROJECT_ADMIN");
     else if (role == RamUser::Lead) content.insert("role", "LEAD");
     else content.insert("role", "STANDARD");
@@ -428,7 +428,7 @@ void Daemon::getProjects(QTcpSocket *client)
         project.insert("width", p->width());
         project.insert("height", p->height());
         project.insert("framerate", p->framerate());
-        project.insert("folder", Ramses::instance()->path(p));
+        project.insert("folder", p->path(RamObject::NoFolder, true));
         projects.append(project);
     }
     content.insert("projects", projects);
@@ -605,7 +605,7 @@ void Daemon::getRamsesFolder(QTcpSocket *client)
     log("I'm replying to this request: getRamsesFolder", DuQFLog::Information);
 
     QJsonObject content;
-    content.insert("folder", Ramses::instance()->ramsesPath());
+    content.insert("folder", Ramses::instance()->path(RamObject::NoFolder, true));
     post(client, content, "getRamsesFolder", "Ramses folder retrieved.");
 }
 
@@ -639,7 +639,7 @@ QJsonObject Daemon::assetToJson(RamAsset *asset)
     QJsonObject a;
     a.insert("shortName", asset->shortName());
     a.insert("name", asset->name());
-    a.insert("folder", Ramses::instance()->path(asset));
+    a.insert("folder", asset->path(RamObject::NoFolder, true));
     QJsonArray tags;
     foreach(QString t, asset->tags())
     {
@@ -664,7 +664,7 @@ QJsonObject Daemon::shotToJson(RamShot *s)
     QJsonObject shot;
     shot.insert("shortName", s->shortName());
     shot.insert("name", s->name());
-    shot.insert("folder", Ramses::instance()->path(s));
+    shot.insert("folder", s->path(RamObject::NoFolder, true));
     shot.insert("duration", s->duration());
     return shot;
 }
@@ -689,7 +689,7 @@ QJsonObject Daemon::stepToJson(RamStep *s)
     QJsonObject step;
     step.insert("shortName", s->shortName());
     step.insert("name", s->name());
-    step.insert("folder", Ramses::instance()->path(s));
+    step.insert("folder", s->path(RamObject::NoFolder, true));
     QString type;
     switch (s->type())
     {

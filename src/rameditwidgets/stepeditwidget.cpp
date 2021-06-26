@@ -41,7 +41,7 @@ void StepEditWidget::setObject(RamObject *obj)
 
     if (!step) return;
 
-    m_folderWidget->setPath(Ramses::instance()->path(step));
+    m_folderWidget->setPath( step->path() );
     if (step->type() == RamStep::PreProduction) ui_typeBox->setCurrentIndex(0);
     else if (step->type() == RamStep::AssetProduction) ui_typeBox->setCurrentIndex(1);
     else if (step->type() == RamStep::ShotProduction) ui_typeBox->setCurrentIndex(2);

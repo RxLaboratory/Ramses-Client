@@ -51,9 +51,9 @@ void ProjectEditWidget::setObject(RamObject *obj)
     ui_resolutionWidget->setWidth(project->width());
     ui_framerateWidget->setFramerate(project->framerate());
 
-    if (project->folderPath() != "auto") ui_folderSelector->setPath( project->folderPath() );
-    ui_folderSelector->setPlaceHolderText( Ramses::instance()->defaultProjectPath(project) );
-    ui_folderLabel->setText( Ramses::instance()->path(project) );
+    if (!project->pathIsDefault()) ui_folderSelector->setPath( project->path() );
+    ui_folderSelector->setPlaceHolderText( project->defaultPath() );
+    ui_folderLabel->setText( project->path() );
 
 
     this->setEnabled( Ramses::instance()->isAdmin() ); 
@@ -78,7 +78,7 @@ void ProjectEditWidget::update()
 void ProjectEditWidget::updateFolderLabel(QString path)
 {
     if (path != "") ui_folderLabel->setText( Ramses::instance()->pathFromRamses(path));
-    else if (_project) ui_folderLabel->setText( Ramses::instance()->path(_project) );
+    else if (_project) ui_folderLabel->setText( _project->path() );
 }
 
 void ProjectEditWidget::currentUserChanged(RamUser *user)

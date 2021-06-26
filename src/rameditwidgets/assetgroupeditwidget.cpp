@@ -41,7 +41,7 @@ void AssetGroupEditWidget::setObject(RamObject *obj)
     ui_assetsList->setList(assetGroup->project()->assets());
     ui_assetsList->setFilter(assetGroup);
 
-    ui_folderWidget->setPath(Ramses::instance()->path(assetGroup));
+    ui_folderWidget->setPath(assetGroup->path());
 
     this->setEnabled(Ramses::instance()->isProjectAdmin());
 }

@@ -104,3 +104,9 @@ void RamAsset::edit(bool show)
     showEdit(show);
 }
 
+QString RamAsset::folderPath() const
+{
+    RamProject *p = m_assetGroup->project();
+    return  m_assetGroup->path() + "/" + p->shortName() + "_A_" + m_shortName;
+}
+

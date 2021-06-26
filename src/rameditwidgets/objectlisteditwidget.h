@@ -30,8 +30,8 @@ public:
     enum EditMode { UnassignObjects, RemoveObjects };
     Q_ENUM( EditMode )
 
-    explicit ObjectListEditWidget(bool editableObjects = false, RamUser::UserRole editRole = RamUser::Admin, QWidget *parent = nullptr);
-    explicit ObjectListEditWidget(RamObjectList *objectList, bool editableObjects = false, RamUser::UserRole editRole = RamUser::Admin, QWidget *parent = nullptr);
+    explicit ObjectListEditWidget(bool editableObjects = false, RamUser::UserRole editRole = RamUser::AdminFolder, QWidget *parent = nullptr);
+    explicit ObjectListEditWidget(RamObjectList *objectList, bool editableObjects = false, RamUser::UserRole editRole = RamUser::AdminFolder, QWidget *parent = nullptr);
     void setList(RamObjectList *objectList);
     void setFilterList(RamObjectList *filterList);
     void setAssignList(RamObjectList *assignList);
@@ -68,7 +68,7 @@ private slots:
     void objectUnassigned(const QModelIndex &parent,int first,int last);
 
 private:
-    void setupUi(bool editableObjects = false, RamUser::UserRole editRole = RamUser::Admin);
+    void setupUi(bool editableObjects = false, RamUser::UserRole editRole = RamUser::AdminFolder);
     void connectEvents();
 
     // UI Controls

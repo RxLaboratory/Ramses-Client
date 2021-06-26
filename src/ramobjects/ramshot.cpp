@@ -82,3 +82,9 @@ void RamShot::edit(bool show)
     }
     showEdit(show);
 }
+
+QString RamShot::folderPath() const
+{
+    RamProject *p = m_sequence->project();
+    return p->path(RamObject::ShotsFolder) + "/" + p->shortName() + "_S_" + m_shortName;
+}

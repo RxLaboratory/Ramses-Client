@@ -13,12 +13,15 @@
 class RamProject : public RamObject
 {
     Q_OBJECT
-public:
+public:   
+
+
     RamProject(QString shortName, QString name = "", QString uuid = "");
     ~RamProject();
 
-    QString folderPath() const;
     void setFolderPath(const QString &folderPath);
+    QString defaultPath() const;
+    bool pathIsDefault() const;
 
     qreal framerate() const;
     void setFramerate(const qreal &framerate);
@@ -32,6 +35,8 @@ public:
     qreal aspectRatio() const;
     void updateAspectRatio(const qreal &pixelAspect = 1);
     void setAspectRatio(const qreal &aspectRatio);
+
+
 
     // Steps
     RamObjectList *steps() const;
@@ -48,9 +53,14 @@ public:
     RamPipe *pipe(RamStep *outputStep, RamStep *inputStep);
     RamObjectList *pipeFiles();
 
-    void update();
-
     static RamProject *project(QString uuid);
+
+public slots:
+    void update() override;
+
+
+protected:
+    virtual QString folderPath() const override;
 
 private:
     QString m_folderPath;

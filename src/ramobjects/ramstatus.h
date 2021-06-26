@@ -40,6 +40,9 @@ public slots:
     void update() override;
     virtual void edit(bool show = true) override;
 
+protected:
+    virtual QString folderPath() const override;
+
 private slots:
     void statusUpdated(RamState *state, int completion, int version, QString comment);
 

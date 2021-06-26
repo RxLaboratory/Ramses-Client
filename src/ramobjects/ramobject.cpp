@@ -150,6 +150,88 @@ void RamObject::setOrder(int order)
     emit orderChanged(this, previous, order);
 }
 
+QString RamObject::path(RamObject::SubFolder subFolder, bool create) const
+{
+    QString p = this->folderPath();
+    switch(subFolder)
+    {
+    case AdminFolder:
+    {
+        p += "/00-ADMIN";
+        break;
+    }
+    case ConfigFolder:
+    {
+        p += "/Config";
+        break;
+    }
+    case PreProdFolder:
+    {
+        p += "/01-PRE-PROD";
+        break;
+    }
+    case ProdFolder:
+    {
+        p += "/02-PROD";
+        break;
+    }
+    case PostProdFolder:
+    {
+        p += "/03-POST-PROD";
+        break;
+    }
+    case AssetsFolder:
+    {
+        p += "/04-ASSETS";
+        break;
+    }
+    case ShotsFolder:
+    {
+        p += "/05-SHOTS";
+        break;
+    }
+    case ExportFolder:
+    {
+        p += "/06-EXPORT";
+        break;
+    }
+    case TemplatesFolder:
+    {
+        p += "/Templates";
+        break;
+    }
+    case PublishFolder:
+    {
+        p += "/_published";
+        break;
+    }
+    case VersionsFolder:
+    {
+        p += "/_versions";
+        break;
+    }
+    case PreviewFolder:
+    {
+        p += "/_preview";
+        break;
+    }
+    case UsersFolder:
+    {
+        p += "/Userss";
+        break;
+    }
+    case ProjectsFolder:
+    {
+        p += "/Projects";
+        break;
+    }
+    default:
+        break;
+    }
+
+    return Ramses::instance()->pathFromRamses( p, create );
+}
+
 QString RamObject::filterUuid() const
 {
     return m_filterUuid;

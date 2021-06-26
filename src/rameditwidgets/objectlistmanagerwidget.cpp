@@ -45,7 +45,7 @@ void ObjectListManagerWidget::setupUi()
     m_splitter->setOrientation(Qt::Horizontal);
     m_splitter->setHandleWidth(9);
 
-    m_listEditWidget = new ObjectListEditWidget( false, RamUser::Admin, this);
+    m_listEditWidget = new ObjectListEditWidget( false, RamUser::AdminFolder, this);
     m_splitter->addWidget(m_listEditWidget);
 
     QWidget *eWidget = new QWidget(this);

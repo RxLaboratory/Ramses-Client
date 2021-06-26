@@ -16,7 +16,7 @@
 #include <QObject>
 #include <QtDebug>
 
-class Ramses : public QObject
+class Ramses : public RamObject
 {
     Q_OBJECT
 public:
@@ -27,58 +27,7 @@ public:
     bool isConnected() const;
     // Tree base
     void setRamsesPath(const QString &ramsesPath);
-    QString pathFromRamses(QString p) const;
-    QString ramsesPath() const;
-    QString usersPath() const;
-    QString projectsPath() const;
-    QString configPath() const;
-    QString defaultUserPath(RamUser *u) const;
-    QString defaultProjectPath(RamProject *p) const;
-    // Tree Users
-    QString path(RamUser *u) const;
-    QDir dir(RamUser *u)const;
-    QString currentUserPath() const;
-    QDir currentUserDir() const;
-    QString configPath(RamUser *u)const;
-    QDir configDir(RamUser *u)const;
-    QString currentUserConfigPath() const;
-    QDir currentUserCondigDir() const;
-    // Tree Projects
-    QString path(RamProject *p) const;
-    QDir dir(RamProject *p)const;
-    QString configPath(RamProject *p) const;
-    QDir configDir(RamProject *p) const;
-    QString adminPath(RamProject *p) const;
-    QDir adminDir(RamProject *p) const;
-    QString preProdPath(RamProject *p) const;
-    QDir preProdDir(RamProject *p) const;
-    QString prodPath(RamProject *p) const;
-    QDir prodDir(RamProject *p) const;
-    QString postProdPath(RamProject *p) const;
-    QDir postProdDir(RamProject *p) const;
-    QString assetsPath(RamProject *p) const;
-    QDir assetsDir(RamProject *p) const;
-    QString shotsPath(RamProject *p) const;
-    QDir shotsDir(RamProject *p) const;
-    QString exportPath(RamProject *p) const;
-    QDir exportDir(RamProject *p) const;
-    // Tree steps
-    QString path(RamStep *s) const;
-    QDir dir(RamStep *s) const;
-    // Tree items
-    QString path(RamItem *i) const;
-    QDir dir(RamItem *i) const;
-    // Tree assets
-    QString path(RamAssetGroup *ag) const;
-    QDir dir(RamAssetGroup *ag) const;
-    QString assetPath(RamAsset *a) const;
-    QDir assetDir(RamAsset *a) const;
-    // Tree shots
-    QString shotPath(RamShot *s) const;
-    QDir shotDir(RamShot *s) const;
-    // Tree status
-    QString path(RamStatus *s) const;
-    QDir dir(RamStatus *s) const;
+    QString pathFromRamses(QString p, bool create = false) const;
     // Users
     void setCurrentUser(RamUser *u);
     RamObjectList *users() const;
@@ -123,6 +72,7 @@ signals:
 
 protected:
     static Ramses *_instance;
+    virtual QString folderPath() const override;
 
 private slots:
     //TODO This should be modified when implementing offline version

@@ -20,7 +20,6 @@ void ItemTableManagerWidget::selectAllSteps()
 
 void ItemTableManagerWidget::selectUserSteps()
 {
-    // TODO pointer as data instead of uuid
     QList<QAction*> actions = ui_stepMenu->actions();
     for (int i = 4; i < actions.count(); i++)
     {

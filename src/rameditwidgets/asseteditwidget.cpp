@@ -41,7 +41,7 @@ void AssetEditWidget::setObject(RamObject *obj)
     if (!asset) return;
 
     tagsEdit->setText(asset->tags().join(", "));
-    folderWidget->setPath(Ramses::instance()->path(asset));
+    folderWidget->setPath(asset->path());
 
     //set asset group
     RamProject *project = _asset->project();

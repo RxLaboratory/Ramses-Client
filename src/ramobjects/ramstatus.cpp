@@ -100,6 +100,15 @@ void RamStatus::edit(bool show)
     showEdit(show);
 }
 
+QString RamStatus::folderPath() const
+{
+    RamProject *project = m_item->project();
+    QString type = "_G_";
+    if (m_item->objectType() == RamObject::Shot) type = "_S_";
+    else if (m_item->objectType() == RamObject::Asset) type = "_A_";
+    return m_item->path() + "/" + project->shortName() + type + m_item->shortName() + "_" + m_step->shortName();
+}
+
 void RamStatus::statusUpdated(RamState *state, int completion, int version, QString comment)
 {
     this->setState(state);

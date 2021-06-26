@@ -201,6 +201,18 @@ void RamStep::edit(bool show)
     showEdit(show);
 }
 
+QString RamStep::folderPath() const
+{
+    if (m_type == RamStep::PreProduction)
+        return m_project->path(RamObject::PreProdFolder) + "/" + m_project->shortName() + "_G_" + m_shortName;
+
+    else if (m_type == RamStep::PostProduction)
+        return m_project->path(RamObject::PostProdFolder) + "/" + m_project->shortName() + "_G_" + m_shortName;
+
+    else
+        return m_project->path(RamObject::ProdFolder) + "/" + m_project->shortName() + "_G_" + m_shortName;
+}
+
 RamProject *RamStep::project() const
 {
     return m_project;

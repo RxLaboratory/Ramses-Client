@@ -54,9 +54,9 @@ void UserEditWidget::setObject(RamObject *obj)
 
     ui_roleBox->setCurrentIndex(user->role());
 
-    if (user->folderPath() != "auto") ui_folderSelector->setPath( user->folderPath() );
-    ui_folderSelector->setPlaceHolderText( Ramses::instance()->defaultUserPath(user) );
-    ui_folderLabel->setText( Ramses::instance()->path(user) );
+    if (!user->pathIsDefault()) ui_folderSelector->setPath( user->path() );
+    ui_folderSelector->setPlaceHolderText( user->defaultPath() );
+    ui_folderLabel->setText( user->path() );
 
     if (user->uuid() == current->uuid())
     {
@@ -96,7 +96,7 @@ void UserEditWidget::update()
     _user->setFolderPath( ui_folderSelector->path());
 
     int roleIndex = ui_roleBox->currentIndex();
-    if (roleIndex == 3) _user->setRole(RamUser::Admin);
+    if (roleIndex == 3) _user->setRole(RamUser::AdminFolder);
     else if (roleIndex == 2) _user->setRole(RamUser::ProjectAdmin);
     else if (roleIndex == 1) _user->setRole(RamUser::Lead);
     else _user->setRole(RamUser::Standard);
@@ -134,7 +134,7 @@ bool UserEditWidget::checkInput()
 void UserEditWidget::updateFolderLabel(QString path)
 {
     if (path != "") ui_folderLabel->setText( Ramses::instance()->pathFromRamses(path) );
-    else if (_user) ui_folderLabel->setText( Ramses::instance()->path(_user) );
+    else if (_user) ui_folderLabel->setText( _user->path() );
 }
 
 void UserEditWidget::setupUi()

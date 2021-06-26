@@ -22,9 +22,10 @@ public:
 
 public slots:
     void update() override;
-
-public slots:
     virtual void edit(bool show = true) override;
+
+protected:
+    virtual QString folderPath() const override;
 
 private:
     RamSequence *m_sequence;

@@ -26,6 +26,9 @@ RamProject::~RamProject()
 
 QString RamProject::folderPath() const
 {
+    if (pathIsDefault())
+        return defaultPath();
+
     return m_folderPath;
 }
 
@@ -35,6 +38,11 @@ void RamProject::setFolderPath(const QString &folderPath)
     m_dirty = true;
     m_folderPath = folderPath;
     emit changed(this);
+}
+
+QString RamProject::defaultPath() const
+{
+    return Ramses::instance()->path(RamObject::ProjectsFolder) + "/" + m_shortName;
 }
 
 qreal RamProject::framerate() const
@@ -93,6 +101,11 @@ void RamProject::setAspectRatio(const qreal &aspectRatio)
     m_dirty = true;
     m_aspectRatio = aspectRatio;
     emit changed(this);
+}
+
+bool RamProject::pathIsDefault() const
+{
+    return m_folderPath == "" || m_folderPath.toLower() == "auto";
 }
 
 void RamProject::update()

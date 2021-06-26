@@ -9,8 +9,8 @@ RamAssetGroup::RamAssetGroup(QString shortName, QString name, QString uuid) :
 {
     this->setObjectType(AssetGroup);
     m_project = nullptr;
-    _template = true;
-    if (_template) m_dbi->createTemplateAssetGroup(m_shortName, m_name, m_uuid);
+    m_template = true;
+    if (m_template) m_dbi->createTemplateAssetGroup(m_shortName, m_name, m_uuid);
 
     this->setObjectName( "RamAssetGroup (template) " + m_shortName );
 }
@@ -20,7 +20,7 @@ RamAssetGroup::RamAssetGroup(QString shortName, RamProject *project, QString nam
 {
     this->setObjectType(AssetGroup);
     m_project = project;
-    _template = false;
+    m_template = false;
     m_dbi->createAssetGroup(m_shortName, m_name, m_project->uuid(), m_uuid);
 
     m_assets = new RamObjectFilterModel(this);
@@ -32,13 +32,13 @@ RamAssetGroup::RamAssetGroup(QString shortName, RamProject *project, QString nam
 
 RamAssetGroup::~RamAssetGroup()
 {
-    if (_template) m_dbi->removeTemplateAssetGroup(m_uuid);
+    if (m_template) m_dbi->removeTemplateAssetGroup(m_uuid);
     else m_dbi->removeAssetGroup(m_uuid);
 }
 
 bool RamAssetGroup::isTemplate() const
 {
-    return _template;
+    return m_template;
 }
 
 RamAssetGroup *RamAssetGroup::createFromTemplate(RamProject *project)
@@ -67,7 +67,7 @@ void RamAssetGroup::update()
 {
     if (!m_dirty) return;
     RamObject::update();
-    if (_template) m_dbi->updateTemplateAssetGroup(m_uuid, m_shortName, m_name, m_comment);
+    if (m_template) m_dbi->updateTemplateAssetGroup(m_uuid, m_shortName, m_name, m_comment);
     else m_dbi->updateAssetGroup(m_uuid, m_shortName, m_name, m_comment);
 }
 
@@ -80,5 +80,11 @@ void RamAssetGroup::edit(bool show)
         m_editReady = true;
     }
     showEdit(show);
+}
+
+QString RamAssetGroup::folderPath() const
+{
+    if (m_template) return "";
+    return m_project->path(RamObject::AssetsFolder) + "/" + m_name;
 }
 
