@@ -185,17 +185,28 @@ qint64 FileUtils::getDirSize(QDir d)
     return size;
 }
 
-void FileUtils::openInExplorer(QString path)
+void FileUtils::openInExplorer(QString path, bool askForCreation)
 {
     const QFileInfo fileInfo(path);
+
+    if(!fileInfo.exists() && askForCreation)
+    {
+        QMessageBox::StandardButton rep = QMessageBox::question(nullptr,
+                                                                "The folder does not exist",
+                                                                "This folder:\n\n" + path + "\n\ndoes not exist yet.\nDo you want to create it now?",
+                                                                QMessageBox::Yes | QMessageBox::No,
+                                                                QMessageBox::Yes);
+        if (rep == QMessageBox::Yes) QDir(path).mkpath(".");
+        else return;
+    }
+    else if (!fileInfo.exists()) return;
 
 #ifdef Q_OS_WIN
     QString param("");
     if (!fileInfo.isDir())
         param = "/select,";
     param += QDir::toNativeSeparators(fileInfo.canonicalFilePath());
-    QString command = "explorer.exe " + param;
-    QProcess::startDetached(command);
+    QProcess::startDetached("explorer.exe", QStringList(param));
 #endif
 #ifdef Q_OS_MAC
     QStringList scriptArgs;

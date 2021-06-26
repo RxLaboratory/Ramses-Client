@@ -39,10 +39,6 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
     const QRect bgRect = rect.adjusted(m_padding,2,-m_padding,-2);
     // icon
     const QRect iconRect( bgRect.left() + 10, bgRect.top() +7 , 12, 12 );
-    // Edit button
-    const QRect editButtonRect( bgRect.right() - 20, bgRect.top() +7, 12, 12 );
-    // History button
-    const QRect historyButtonRect( editButtonRect.left() - 20, bgRect.top() +7, 12, 12);
 
     // Select the bg Color
     QColor bgColor = m_dark;
@@ -142,28 +138,35 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
     painter->setFont( m_textFont );
     painter->drawText( titleRect, Qt::AlignLeft | Qt::AlignTop | Qt::TextWordWrap, title, &titleRect);
 
+    // Draw buttons
+    int xpos = bgRect.right() - 20;
+
     // Draw editbutton
+    // Edit button
     if (canEdit() || index.column() > 0)
     {
-        if (m_editButtonHover)
-        {
-            QPainterPath path;
-            path.addRoundedRect(editButtonRect.adjusted(-5, -5, 5, 5), 3, 3);
-            painter->fillPath(path, QBrush(m_dark));
-        }
-        painter->drawPixmap( editButtonRect, QIcon(":/icons/edit").pixmap(QSize(12,12)));
+        const QRect editButtonRect( xpos, bgRect.top() +7, 12, 12 );
+        xpos -= 22;
+        drawButton(painter, editButtonRect, ":/icons/edit", m_editButtonHover);
     }
 
     // Draw History button
-    if ( index.column() > 0 )
+    // History button
+    if ( ramType == RamObject::Status )
     {
-        if (m_historyButtonHover)
-        {
-            QPainterPath path;
-            path.addRoundedRect(historyButtonRect.adjusted(-5, -5, 5, 5), 3, 3);
-            painter->fillPath(path, QBrush(m_dark));
-        }
-        painter->drawPixmap( historyButtonRect, QIcon(":/icons/list").pixmap(QSize(12,12)));
+        QRect historyButtonRect( xpos, bgRect.top() +7, 12, 12);
+        xpos -= 22;
+        drawButton(painter, historyButtonRect, ":/icons/list", m_historyButtonHover);
+    }
+
+
+    // Draw Folder button
+    // Folder button
+
+    if ( obj->path() != "" )
+    {
+         const QRect folderButtonRect( xpos, bgRect.top() +7, 12, 12 );
+         drawButton(painter, folderButtonRect, ":/icons/reveal-folder-s", m_folderButtonHover);
     }
 
     QString details;
@@ -401,14 +404,14 @@ QSize RamObjectDelegate::sizeHint(const QStyleOptionViewItem &option, const QMod
     // Reinterpret the int to a pointer
     quintptr iptr = index.data(Qt::UserRole).toULongLong();
 
-    if (iptr == 0) return QSize(300, 30);
+    if (iptr == 0) return QSize(200, 30);
 
     RamObject *obj = reinterpret_cast<RamObject*>(iptr);
     RamObject::ObjectType ramType = obj->objectType();
 
     if (ramType == RamObject::State || ramType == RamObject::Status) return QSize(300, 42);
 
-    return QSize(150,30);
+    return QSize(200,30);
 }
 
 void RamObjectDelegate::setEditable(bool editable)
@@ -423,12 +426,36 @@ void RamObjectDelegate::setEditRole(RamUser::UserRole role)
 
 bool RamObjectDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index)
 {
+    // Return asap if we don't manage the event
+    QEvent::Type type = event->type();
+    if (type != QEvent::QEvent::MouseButtonPress && type != QEvent::MouseButtonRelease && type != QEvent::MouseMove)
+        return QStyledItemDelegate::editorEvent( event, model, option, index );
+
+
     const QRect bgRect = option.rect.adjusted(m_padding,2,-m_padding,-2);
 
+    // The object
+    quintptr iptr = index.data(Qt::UserRole).toULongLong();
+    if (iptr == 0) return false;
+    RamObject *o = reinterpret_cast<RamObject*>( iptr );
 
-    // Edit Button
-    const QRect editButtonRect( bgRect.right() - 22, bgRect.top() +7, 22, 22 );
-    const QRect historyButtonRect( bgRect.right() - 44, bgRect.top() +7, 22, 22 );
+    bool edit = canEdit();
+    bool history = o->objectType() == RamObject::Status;
+    bool folder = o->path() != "";
+
+    if (!edit && !history && !folder)
+        return QStyledItemDelegate::editorEvent( event, model, option, index );
+
+    // Button rects
+    int xpos = bgRect.right() - 22;
+
+    const QRect editButtonRect = QRect( xpos, bgRect.top()+7, 22, 22 );
+    if (edit) xpos -= 22;
+
+    const QRect historyButtonRect( xpos, bgRect.top() +7, 22, 22 );
+    if (history) xpos -= 22;
+
+    const QRect folderButtonRect( xpos, bgRect.top() +7, 22, 22 );
 
 
     switch ( event->type() )
@@ -436,14 +463,21 @@ bool RamObjectDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, co
     case QEvent::MouseButtonPress:
     {
         QMouseEvent *e = static_cast< QMouseEvent * >( event );
-        if (canEdit() && editButtonRect.contains(e->pos()))
+        if (editButtonRect.contains(e->pos()) && edit)
         {
             m_editButtonPressed = true;
             return true;
         }
-        else if (historyButtonRect.contains(e->pos()) && index.column() > 0)
+
+        if ( historyButtonRect.contains(e->pos()) && history)
         {
             m_historyButtonPressed = true;
+            return true;
+        }
+
+        if (folderButtonRect.contains(e->pos()) && folder)
+        {
+            m_folderButtonPressed = true;
             return true;
         }
         break;
@@ -452,53 +486,57 @@ bool RamObjectDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, co
     {
         QMouseEvent *e = static_cast< QMouseEvent * >( event );
 
-        if (canEdit() && editButtonRect.contains(e->pos()))
-        {
+        if (editButtonRect.contains(e->pos()) && edit)
             m_editButtonHover = true;
-        }
         else if (m_editButtonHover)
-        {
             m_editButtonHover = false;
-        }
 
-        if (historyButtonRect.contains(e->pos()))
-        {
+        if (historyButtonRect.contains(e->pos()) && history)
             m_historyButtonHover = true;
-        }
         else if (m_historyButtonHover)
-        {
             m_historyButtonHover = false;
-        }
+
+        if (folderButtonRect.contains(e->pos()) && folder)
+            m_folderButtonHover = true;
+        else if (m_folderButtonHover)
+            m_folderButtonHover = false;
 
         return true;
     }
     case QEvent::MouseButtonRelease:
     {
         QMouseEvent *e = static_cast< QMouseEvent * >( event );
+
         if (m_editButtonPressed)
         {
             if (editButtonRect.contains(e->pos()))
             {
-                // The object
-                quintptr iptr = index.data(Qt::UserRole).toULongLong();
-                RamObject *o = reinterpret_cast<RamObject*>( iptr );
                 emit editObject(o);
             }
             m_editButtonPressed = false;
             return true;
         }
+
         if (m_historyButtonPressed)
         {
             if (historyButtonRect.contains(e->pos()))
             {
-                // The object
-                quintptr iptr = index.data(Qt::UserRole).toULongLong();
-                RamObject *o = reinterpret_cast<RamObject*>( iptr );
                 emit historyObject(o);
             }
             m_historyButtonPressed = false;
             return true;
         }
+
+        if (m_folderButtonPressed)
+        {
+            if (folderButtonRect.contains(e->pos()))
+            {
+                emit folderObject(o);
+            }
+            m_folderButtonPressed = false;
+            return true;
+        }
+
         break;
     }
     default:
@@ -530,4 +568,15 @@ void RamObjectDelegate::drawMore(QPainter *painter, QRect rect, QPen pen) const
                 "...",
                 QTextOption(Qt::AlignRight | Qt::AlignBottom));
     painter->restore();
+}
+
+void RamObjectDelegate::drawButton(QPainter *painter, QRect rect, QString iconPath, bool hover) const
+{
+    if (hover)
+    {
+        QPainterPath path;
+        path.addRoundedRect(rect.adjusted(-5, -5, 5, 5), 3, 3);
+        painter->fillPath(path, QBrush(m_dark));
+    }
+    painter->drawPixmap( rect, QIcon(iconPath).pixmap(QSize(12,12)));
 }

@@ -60,16 +60,7 @@ void DuQFFolderSelectorWidget::exploreButton_clicked()
 {
     QString path = folderEdit->text();
     if (path == "" ) path = folderEdit->placeholderText();
-    if(!QFileInfo::exists(path))
-    {
-        QMessageBox::StandardButton rep = QMessageBox::question(this,
-                                                                "The folder does not exist",
-                                                                "This folder:\n\n" + path + "\n\ndoes not exist yet.\nDo you want to create it now?",
-                                                                QMessageBox::Yes | QMessageBox::No,
-                                                                QMessageBox::Yes);
-        if (rep == QMessageBox::Yes) QDir(path).mkpath(".");
-    }
-    FileUtils::openInExplorer( path );
+    FileUtils::openInExplorer( path, true );
 }
 
 void DuQFFolderSelectorWidget::folderEdit_editingFinished()

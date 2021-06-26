@@ -153,6 +153,7 @@ void RamObject::setOrder(int order)
 QString RamObject::path(RamObject::SubFolder subFolder, bool create) const
 {
     QString p = this->folderPath();
+    if (p == "") return "";
     switch(subFolder)
     {
     case AdminFolder:
@@ -230,6 +231,13 @@ QString RamObject::path(RamObject::SubFolder subFolder, bool create) const
     }
 
     return Ramses::instance()->pathFromRamses( p, create );
+}
+
+void RamObject::revealFolder(RamObject::SubFolder subFolder)
+{
+    QString p = path(subFolder);
+    if (p == "") return;
+    FileUtils::openInExplorer( p, true );
 }
 
 QString RamObject::filterUuid() const

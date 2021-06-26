@@ -28,6 +28,7 @@ public:
 signals:
     void editObject(RamObject*);
     void historyObject(RamObject*);
+    void folderObject(RamObject*);
 
 protected:
     bool editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index) override;
@@ -53,12 +54,15 @@ private:
     bool m_editButtonHover = false;
     bool m_historyButtonPressed = false;
     bool m_historyButtonHover = false;
+    bool m_folderButtonHover = false;
+    bool m_folderButtonPressed = false;
 
     // Utils
     bool canEdit() const;
 
     // drawing specific items
     void drawMore(QPainter *painter, QRect rect, QPen pen) const;
+    void drawButton(QPainter *painter, QRect rect, QString iconPath, bool hover = false) const;
 };
 
 #endif // RAMOBJECTDELEGATE_H

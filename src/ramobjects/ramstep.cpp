@@ -203,6 +203,7 @@ void RamStep::edit(bool show)
 
 QString RamStep::folderPath() const
 {
+    if (m_template) return "";
     if (m_type == RamStep::PreProduction)
         return m_project->path(RamObject::PreProdFolder) + "/" + m_project->shortName() + "_G_" + m_shortName;
 

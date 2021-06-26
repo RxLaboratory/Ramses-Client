@@ -7,6 +7,7 @@
 #include "dbinterface.h"
 #include "ramuuid.h"
 #include "config.h"
+#include "duqf-utils/utils.h"
 
 class ObjectDockWidget;
 
@@ -73,6 +74,7 @@ public:
     void setOrder(int order);
 
     QString path(SubFolder subFolder = NoFolder, bool create = false) const;
+    void revealFolder(SubFolder subFolder = NoFolder);
 
     QString filterUuid() const;
 

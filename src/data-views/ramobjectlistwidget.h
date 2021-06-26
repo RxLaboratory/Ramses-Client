@@ -53,6 +53,9 @@ protected slots:
     // Moved
     void rowMoved( int logicalIndex, int oldVisualIndex, int newVisualIndex);
 
+private slots:
+    void revealFolder(RamObject *obj);
+
 private:
     void setupUi();
     void connectEvents();

@@ -1,6 +1,17 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <QMouseEvent>
+#include <QLabel>
+#include <QToolButton>
+#include <QMenu>
+#include <QDesktopServices>
+#include <QtDebug>
+#include <QSettings>
+#include <QProcess>
+#include <QMessageBox>
+#include <QSystemTrayIcon>
+
 #include "ui_mainwindow.h"
 #include "duqf-app/app-version.h"
 #include "duqf-app/app-style.h"
@@ -8,6 +19,9 @@
 #include "duqf-widgets/settingswidget.h"
 #include "duqf-widgets/appearancesettingswidget.h"
 #include "duqf-widgets/aboutdialog.h"
+#include "duqf-utils/utils.h"
+#include "duqf-widgets/toolbarspacer.h"
+#include "duqf-widgets/duqflogtoolbutton.h"
 
 #include "serversettingswidget.h"
 #include "daemonsettingswidget.h"
@@ -35,20 +49,9 @@
 #include "progresspage.h"
 #include "processmanager.h"
 #include "progressbar.h"
-#include "duqf-utils/utils.h"
-#include "duqf-widgets/toolbarspacer.h"
-#include "duqf-widgets/duqflogtoolbutton.h"
+
 #include "rameditwidgets/itemtablemanagerwidget.h"
-#include <QMouseEvent>
-#include <QLabel>
-#include <QToolButton>
-#include <QMenu>
-#include <QDesktopServices>
-#include <QtDebug>
-#include <QSettings>
-#include <QProcess>
-#include <QMessageBox>
-#include <QSystemTrayIcon>
+
 
 class MainWindow : public QMainWindow, private Ui::MainWindow
 {

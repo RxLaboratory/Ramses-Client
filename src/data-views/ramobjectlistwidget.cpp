@@ -187,6 +187,11 @@ void RamObjectListWidget::rowMoved(int logicalIndex, int oldVisualIndex, int new
     m_objectList->sourceModel()->sort(0);
 }
 
+void RamObjectListWidget::revealFolder(RamObject *obj)
+{
+    obj->revealFolder();
+}
+
 void RamObjectListWidget::select(RamObject *o)
 {
     if (!m_objectList) return;
@@ -234,6 +239,7 @@ void RamObjectListWidget::connectEvents()
 {
     connect(m_delegate, &RamObjectDelegate::editObject, this, &RamObjectListWidget::editObject);
     connect(m_delegate, &RamObjectDelegate::historyObject, this, &RamObjectListWidget::historyObject);
+    connect(m_delegate, &RamObjectDelegate::folderObject, this, &RamObjectListWidget::revealFolder);
     // SORT
     connect( this->verticalHeader(), SIGNAL(sectionMoved(int,int,int)), this, SLOT(rowMoved(int,int,int)));
 }
