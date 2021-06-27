@@ -172,8 +172,8 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
         }
     }
 
-
     QString details;
+    QString subDetails;
     QRect detailsRect( iconRect.left() + 5, titleRect.bottom() + 3, bgRect.width() - iconRect.width() -5, bgRect.height() - titleRect.height() - 15 );
 
     // Type Specific Drawing
@@ -360,7 +360,7 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
             completionPath.addRoundedRect(statusRect, 5, 5);
             painter->fillPath(completionPath, statusBrush);
 
-            //details
+            //subdetails
             QString dateFormat = "yyyy-MM-dd hh:mm:ss";
             RamUser *user = Ramses::instance()->currentUser();
             if (user)
@@ -368,18 +368,23 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
                 QSettings *uSettings = user->userSettings();
                 dateFormat = uSettings->value("ramses/dateFormat", dateFormat).toString();
             }
-            details = status->date().toString(dateFormat) %
-                    " | " %
+            subDetails = "Modified on: " %
+                    status->date().toString(dateFormat) %
+                    "\nBy: " %
                     status->user()->name();
 
+            // details
             RamUser *assignedUser = status->assignedUser();
-            if (assignedUser) details = details %
-                    "\nAssigned to: " %
+            if (assignedUser) details = "Assigned to: " %
                     assignedUser->name();
-            else details = details %
-                    "\nNot assigned";
+            else details = "Not assigned";
 
             if (status->isPublished()) details = details % "\n→ Published";
+
+            qint64 timeSpentSecs = status->timeSpent();
+            // Convert to hours
+            int timeSpent = timeSpentSecs / 3600;
+            if (timeSpent > 0) details = details % "\nTime spent: " % QString::number(timeSpent) % " hours";
 
             detailsRect.moveTop(statusRect.bottom() + 5);
             detailsRect.setHeight( bgRect.bottom() - statusRect.bottom() - 10);
@@ -397,17 +402,28 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
         painter->setPen( detailsPen );
         painter->setFont( m_detailsFont );
         painter->drawText( detailsRect, Qt::AlignLeft | Qt::AlignTop | Qt::TextWordWrap, details, &detailsRect);
-        if (detailsRect.bottom() - 5 > bgRect.bottom()) drawMore(painter, bgRect, commentPen);
+        if (detailsRect.bottom() + 5 > bgRect.bottom()) drawMore(painter, bgRect, commentPen);
     }
 
     // Draw Comment
+    QRect commentRect( iconRect.left() + 5, detailsRect.bottom() + 5, bgRect.width() - 30, bgRect.bottom() - detailsRect.bottom() - 5);
     if (detailsRect.bottom() + 20 < bgRect.bottom() && obj->comment() != "")
     {
-        QRect commentRect( iconRect.left() + 5, detailsRect.bottom() + 5, bgRect.width() - 30, bgRect.bottom() - detailsRect.bottom() - 5);
         painter->setPen( commentPen );
         painter->setFont(m_textFont);
         painter->drawText( commentRect, Qt::AlignLeft | Qt::AlignTop | Qt::TextWordWrap, obj->comment(), &commentRect);
-        if (commentRect.bottom() - 5 > bgRect.bottom()) drawMore(painter, bgRect, commentPen);
+        if (commentRect.bottom() + 5 > bgRect.bottom()) drawMore(painter, bgRect, commentPen);
+    }
+    else commentRect.setHeight(0);
+
+    // Draw subdetails
+    QRect subDetailsRect( iconRect.left() + 5, commentRect.bottom() + 5, bgRect.width() - 30, bgRect.bottom() - commentRect.bottom() - 5);
+    if (commentRect.bottom() + 20 < bgRect.bottom() && subDetails != "")
+    {
+        painter->setPen( detailsPen );
+        painter->setFont( m_detailsFont );
+        painter->drawText( subDetailsRect, Qt::AlignLeft | Qt::AlignTop | Qt::TextWordWrap, subDetails, &subDetailsRect);
+        if (subDetailsRect.bottom() + 5 > bgRect.bottom()) drawMore(painter, bgRect, commentPen);
     }
 
 }

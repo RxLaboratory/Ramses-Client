@@ -8,6 +8,7 @@
 
 #include "duqf-widgets/duqfspinbox.h"
 #include "duqf-widgets/autoselectspinbox.h"
+#include "duqf-widgets/autoselectspinbox.h"
 #include "data-views/ramobjectlistcombobox.h"
 #include "objecteditwidget.h"
 #include "statebox.h"
@@ -38,6 +39,7 @@ public:
     QString comment() const;
     RamUser *assignedUser() const;
     bool isPublished() const;
+    qint64 timeSpent() const;
 
 signals:
     void statusUpdated(RamState*, int completion, int version, QString comment);
@@ -59,6 +61,7 @@ private:
     QToolButton *ui_revertButton;
     QCheckBox *ui_publishedBox;
     RamObjectListComboBox *ui_userBox;
+    AutoSelectSpinBox *ui_timeSpent;
 
     RamStatus *m_status;
 };

@@ -6,6 +6,7 @@
 #include "ramuser.h"
 #include "ramstate.h"
 #include "ramstep.h"
+#include "ramfilemetadatamanager.h"
 
 class RamItem;
 class StatusEditWidget;
@@ -43,6 +44,10 @@ public:
     RamUser *assignedUser() const;
     void assignUser(RamUser *assignedUser);
 
+    qint64 timeSpent();
+    void setTimeSpent(const float &ts);
+    bool isTimeSpentManual() const;
+
 public slots:
     void update() override;
     virtual void edit(bool show = true) override;
@@ -61,6 +66,8 @@ private:
     int m_version = 1;
     RamStep *m_step;
     QDateTime m_date;
+    qint64 m_timeSpent = 0;
+    bool m_manualTimeSpent = false;
     bool m_published = false;
     RamUser* m_assignedUser = nullptr;
     StatusEditWidget *m_editWidget;

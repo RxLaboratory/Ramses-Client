@@ -24,6 +24,7 @@ void StatusEditWidget::setStatus(RamStatus *status)
     ui_statusCommentEdit->setPlainText("");
     ui_publishedBox->setChecked(false);
     ui_userBox->setObject("");
+    ui_timeSpent->setValue(0);
     if (!status) return;
 
     ui_stateBox->setObject(status->state());
@@ -31,6 +32,25 @@ void StatusEditWidget::setStatus(RamStatus *status)
     ui_versionBox->setValue(status->version());
     ui_statusCommentEdit->setPlainText(status->comment());
     ui_userBox->setObject(status->assignedUser());
+
+    // Try to auto compute time spent from previous status
+    qint64 timeSpent = status->timeSpent();
+    if (!status->isTimeSpentManual() || timeSpent == 0)
+    {
+        RamStepStatusHistory *history = status->item()->statusHistory( status->step() );
+        if (history->count() > 1)
+        {
+            RamStatus *previous = qobject_cast<RamStatus*>( history->at( history->count() -2) );
+            timeSpent = previous->timeSpent();
+            RamFileMetaDataManager mdm( status->path(RamObject::VersionsFolder ));
+            if (mdm.isValid())
+            {
+                timeSpent += mdm.getTimeRange( previous->date() );
+            }
+        }
+    }
+
+    ui_timeSpent->setValue( timeSpent / 3600 );
 }
 
 RamState *StatusEditWidget::state() const
@@ -61,6 +81,11 @@ RamUser *StatusEditWidget::assignedUser() const
 bool StatusEditWidget::isPublished() const
 {
     return ui_publishedBox->isChecked();
+}
+
+qint64 StatusEditWidget::timeSpent() const
+{
+    return ui_timeSpent->value() * 3600;
 }
 
 void StatusEditWidget::currentStateChanged(RamObject *stateObj)
@@ -117,8 +142,6 @@ void StatusEditWidget::setupUi()
     ui_completionBox->setFixedHeight(ui_stateBox->height());
     cLayout->addWidget(ui_completionBox);
 
-
-
     cLayout->setStretch(0,0);
     cLayout->setStretch(1,100);
     cLayout->setStretch(2,0);
@@ -138,6 +161,12 @@ void StatusEditWidget::setupUi()
     ui_versionBox->setValue(1);
     ui_versionBox->setPrefix("v");
     detailsLayout->addRow("Version", ui_versionBox);
+
+    ui_timeSpent = new AutoSelectSpinBox(this);
+    ui_timeSpent->setMinimum(0);
+    ui_timeSpent->setMaximum(9999);
+    ui_timeSpent->setSuffix(" hours");
+    detailsLayout->addRow("Time spent", ui_timeSpent);
 
     ui_publishedBox = new QCheckBox("Published",this);
     detailsLayout->addRow("Publication", ui_publishedBox);

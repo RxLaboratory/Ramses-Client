@@ -85,6 +85,8 @@ void RamStatus::update()
     if (!m_state) return;
     QString assignedUser = "NULL";
     if (m_assignedUser) assignedUser = m_assignedUser->uuid();
+    qint64 timeSpent = -1;
+    if (m_timeSpent > 0) timeSpent = m_timeSpent;
     m_dbi->updateStatus(
                 m_uuid,
                 m_state->uuid(),
@@ -92,7 +94,9 @@ void RamStatus::update()
                 m_version,
                 m_completionRatio,
                 m_published,
-                assignedUser);
+                assignedUser,
+                timeSpent,
+                m_date);
 }
 
 void RamStatus::edit(bool show)
@@ -106,6 +110,7 @@ void RamStatus::edit(bool show)
                  this, SLOT(statusUpdated(RamState*,int,int,QString))
                  );
     }
+
     showEdit(show);
 }
 
@@ -126,6 +131,8 @@ void RamStatus::statusUpdated(RamState *state, int completion, int version, QStr
     this->setComment(comment);
     this->assignUser(m_editWidget->assignedUser());
     this->setPublished(m_editWidget->isPublished());
+    this->setDate(QDateTime::currentDateTime());
+    this->setTimeSpent( m_editWidget->timeSpent() );
     update();
     showEdit(false);
 }
@@ -143,6 +150,32 @@ void RamStatus::assignUser(RamUser *assignedUser)
     m_dirty = true;
     m_assignedUser = assignedUser;
     emit changed(this);
+}
+
+qint64 RamStatus::timeSpent()
+{
+    if (m_timeSpent == 0)
+    {
+        // Let's detect!
+        RamFileMetaDataManager mdm( this->path(RamObject::VersionsFolder) );
+        if (!mdm.isValid()) return m_timeSpent;
+        m_timeSpent = mdm.getTimeRange();
+    }
+    return m_timeSpent;
+}
+
+void RamStatus::setTimeSpent(const float &ts)
+{
+    if (ts == m_timeSpent) return;
+    m_dirty = true;
+    m_manualTimeSpent = true;
+    m_timeSpent = ts;
+    emit changed(this);
+}
+
+bool RamStatus::isTimeSpentManual() const
+{
+    return m_manualTimeSpent;
 }
 
 bool RamStatus::isPublished() const

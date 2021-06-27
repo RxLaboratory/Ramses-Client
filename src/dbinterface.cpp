@@ -678,17 +678,20 @@ void DBInterface::removePipeFile(QString uuid)
     request(q);
 }
 
-void DBInterface::updateStatus(QString uuid, QString stateUuid, QString comment, int version, int completionRatio, bool published, QString assignedUserUuid)
+void DBInterface::updateStatus(QString uuid, QString stateUuid, QString comment, int version, int completionRatio, bool published, QString assignedUserUuid, qint64 timeSpent, QDateTime date)
 {
     QStringList q("updateStatus");
     q << "uuid=" + uuid;
     q << "stateUuid=" + stateUuid;
     q << "assignedUserUuid=" + assignedUserUuid;
+    if (timeSpent >= 0) q << "timeSpent=" + QString::number(timeSpent);
     if (published) q << "published=1";
     else q << "published=0";
     if (comment != "") q << "comment=" + comment;
     if (version > 0) q << "version=" + QString::number(version);
     if (completionRatio >= 0) q << "completionRatio=" + QString::number(completionRatio);
+    if (date.isValid()) q << "date=" + date.toString("yyyy-MM-dd hh:mm:ss");
+
 
     request(q);
 }
@@ -1017,7 +1020,6 @@ void DBInterface::request(QStringList args)
         }
         q += QUrl::toPercentEncoding(arg, "=");
     }
-    qDebug() << q;
     request(q);
 }
 

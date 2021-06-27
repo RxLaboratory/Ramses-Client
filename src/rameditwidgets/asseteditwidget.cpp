@@ -7,7 +7,8 @@ AssetEditWidget::AssetEditWidget(QWidget *parent) :
     connectEvents();
 }
 
-AssetEditWidget::AssetEditWidget(RamAsset *asset, QWidget *parent)
+AssetEditWidget::AssetEditWidget(RamAsset *asset, QWidget *parent) :
+    ObjectEditWidget(parent)
 {
     setupUi();
     connectEvents();

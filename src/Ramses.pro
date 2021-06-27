@@ -66,6 +66,7 @@ SOURCES += \
     rameditwidgets/templateassetgrouplistmanagerwidget.cpp \
     rameditwidgets/templatesteplistmanagerwidget.cpp \
     rameditwidgets/userlistmanagerwidget.cpp \
+    ramfilemetadatamanager.cpp \
     ramloader.cpp \
     ramobjects/ramassetgroup.cpp \
     ramobjects/rampipefile.cpp \
@@ -186,6 +187,7 @@ HEADERS += \
     rameditwidgets/templateassetgrouplistmanagerwidget.h \
     rameditwidgets/templatesteplistmanagerwidget.h \
     rameditwidgets/userlistmanagerwidget.h \
+    ramfilemetadatamanager.h \
     ramloader.h \
     ramobjects/ramassetgroup.h \
     ramobjects/rampipefile.h \
