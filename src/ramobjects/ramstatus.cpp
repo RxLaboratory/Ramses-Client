@@ -256,7 +256,7 @@ void RamStatus::assignUser(RamUser *assignedUser)
     m_dirty = true;
     m_assignedUser = assignedUser;
 
-    m_assignedUserConnection = connect(assignedUser, SIGNAL(removed(RamObject*)), this, SLOT(assignedUserRemoved()));
+    if (m_assignedUser) m_assignedUserConnection = connect(assignedUser, SIGNAL(removed(RamObject*)), this, SLOT(assignedUserRemoved()));
 
     emit changed(this);
 }
