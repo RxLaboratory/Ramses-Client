@@ -125,6 +125,12 @@ void StatusEditWidget::revert()
     setStatus(m_status);
 }
 
+void StatusEditWidget::checkPublished( int v )
+{
+    bool p = m_status->checkPublished( v );
+    ui_publishedBox->setChecked(p);
+}
+
 void StatusEditWidget::setupUi()
 {
     this->hideName();
@@ -212,4 +218,5 @@ void StatusEditWidget::connectEvents()
     connect(ui_stateBox, SIGNAL(currentObjectChanged(RamObject*)), this, SLOT(currentStateChanged(RamObject*)));
     connect(ui_setButton, &QToolButton::clicked, this, &StatusEditWidget::updateStatus);
     connect(ui_revertButton, &QToolButton::clicked, this, &StatusEditWidget::revert);
+    connect(ui_versionBox, SIGNAL(valueChanged(int)), this, SLOT(checkPublished(int)));
 }

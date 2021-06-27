@@ -28,10 +28,10 @@ public:
     void setState(RamState *state);
 
     int version() const;
-    QStringList versionFiles();
-    QStringList versionFiles(QString resource);
-    int latestVersion();
-    int latestVersion(QString resource);
+    QStringList versionFiles() const;
+    QStringList versionFiles(QString resource) const;
+    int latestVersion() const;
+    int latestVersion(QString resource) const;
     void setVersion(int version);
 
     RamStep *step() const;
@@ -44,6 +44,9 @@ public:
     static RamStatus *status(QString uuid);
 
     bool isPublished() const;
+    bool checkPublished(int version = -1) const;
+    QStringList publishedFiles() const;
+    QStringList publishedFiles(QString resource) const;
     void setPublished(bool published);
 
     RamUser *assignedUser() const;

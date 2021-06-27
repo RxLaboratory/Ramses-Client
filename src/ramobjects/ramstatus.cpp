@@ -60,7 +60,7 @@ int RamStatus::version() const
     return m_version;
 }
 
-QStringList RamStatus::versionFiles()
+QStringList RamStatus::versionFiles() const
 {
     QDir versionDir( path(VersionsFolder) );
     QStringList files = versionDir.entryList(QDir::Files);
@@ -68,7 +68,7 @@ QStringList RamStatus::versionFiles()
     return files;
 }
 
-QStringList RamStatus::versionFiles(QString resource)
+QStringList RamStatus::versionFiles(QString resource) const
 {
     QStringList files;
 
@@ -90,7 +90,7 @@ QStringList RamStatus::versionFiles(QString resource)
     return files;
 }
 
-int RamStatus::latestVersion()
+int RamStatus::latestVersion() const
 {
     QStringList files;
 
@@ -114,7 +114,7 @@ int RamStatus::latestVersion()
     return v;
 }
 
-int RamStatus::latestVersion(QString resource)
+int RamStatus::latestVersion(QString resource) const
 {
     QStringList files;
 
@@ -188,7 +188,7 @@ void RamStatus::edit(bool show)
                  this, SLOT(statusUpdated(RamState*,int,int,QString))
                  );
     }
-
+    if (show) m_editWidget->setStatus( this );
     showEdit(show);
 }
 
@@ -259,6 +259,52 @@ bool RamStatus::isTimeSpentManual() const
 bool RamStatus::isPublished() const
 {
     return m_published;
+}
+
+bool RamStatus::checkPublished( int version ) const
+{
+    // Check if there's a published file corresponding to the version
+    QStringList files = publishedFiles("");
+    qDebug() << files;
+    if (version == -1 ) return files.count() > 0;
+
+    RamFileMetaDataManager mdm( path( RamObject::PublishFolder ));
+
+    foreach(QString file, files)
+    {
+        if ( mdm.getVersion(file) == version) return true;
+    }
+    return false;
+}
+
+QStringList RamStatus::publishedFiles() const
+{
+    QDir versionDir( path(PublishFolder) );
+    QStringList files = versionDir.entryList(QDir::Files);
+    files.removeAll( RamFileMetaDataManager::metaDataFileName() );
+    return files;
+}
+
+QStringList RamStatus::publishedFiles(QString resource) const
+{
+    QStringList files;
+
+    RamNameManager nm;
+
+    RamProject *p = m_item->project();
+
+    // look for files with the same resource
+    foreach(QString file, publishedFiles())
+    {
+        if (nm.setFileName(file))
+        {
+            if (nm.project().toLower() != p->shortName().toLower()) continue;
+            if (nm.step().toLower() != m_step->shortName().toLower()) continue;
+            if (nm.shortName().toLower() != m_item->shortName().toLower()) continue;
+            if (nm.resource() == resource) files << file;
+        }
+    }
+    return files;
 }
 
 void RamStatus::setPublished(bool published)

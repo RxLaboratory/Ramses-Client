@@ -49,6 +49,7 @@ private slots:
     void updateStatus();
     void adjustCommentEditSize();
     void revert();
+    void checkPublished(int v);
 
 private:
     void setupUi();
