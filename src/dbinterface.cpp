@@ -696,6 +696,15 @@ void DBInterface::updateStatus(QString uuid, QString stateUuid, QString comment,
     request(q);
 }
 
+void DBInterface::setStatusUser(QString uuid, QString userUuid)
+{
+    QStringList q("setStatusUser");
+    q << "uuid=" + uuid;
+    q << "userUuid=" + userUuid;
+
+    request(q);
+}
+
 void DBInterface::removeStatus(QString uuid)
 {
     QStringList q("removeStatus");

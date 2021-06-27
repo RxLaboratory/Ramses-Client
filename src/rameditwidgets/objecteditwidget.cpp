@@ -63,6 +63,8 @@ void ObjectEditWidget::setObject(RamObject *object)
     ui_shortNameEdit->setText(object->shortName());
     ui_commentEdit->setText(object->comment());
 
+    ui_shortNameEdit->setEnabled( !m_dontRename.contains(object->shortName()) );
+
     _objectConnections << connect( object, &RamObject::removed, this, &ObjectEditWidget::objectRemoved);
     _objectConnections << connect( object, &RamObject::changed, this, &ObjectEditWidget::objectChanged);
 }

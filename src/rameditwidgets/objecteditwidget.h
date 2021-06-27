@@ -41,6 +41,7 @@ protected slots:
 protected:
     QList<QMetaObject::Connection> _objectConnections;
     bool updating = false;
+    QStringList m_dontRename;
 
     QVBoxLayout *ui_mainLayout;
     QGridLayout *ui_mainFormLayout;
@@ -63,6 +64,8 @@ private:
 
     RamObject *m_object;
     void connectEvents();
+
+
 };
 
 #endif // OBJECTEDITWIDGET_H

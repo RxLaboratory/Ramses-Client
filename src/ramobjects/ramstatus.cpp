@@ -15,6 +15,11 @@ RamStatus::RamStatus(RamUser *user, RamState *state, RamStep *step, RamItem *ite
 
     setObjectType(Status);
 
+    connect(user, SIGNAL( removed(RamObject*)), this, SLOT(userRemoved()));
+    connect(item, SIGNAL( removed(RamObject*)), this, SLOT(remove()));
+    connect(step, SIGNAL( removed(RamObject*)), this, SLOT(remove()));
+    m_stateConnection = connect(state, SIGNAL(removed(RamObject*)), this, SLOT(stateRemoved()));
+
     this->setObjectName( "RamStatus" );
 }
 
@@ -48,10 +53,15 @@ RamState *RamStatus::state() const
 
 void RamStatus::setState(RamState *state)
 {
+    disconnect(m_stateConnection);
+
     if (!state && !m_state) return;
     if (state && state->is(m_state)) return;
     m_dirty = true;
     m_state = state;
+
+    m_stateConnection = connect(state, SIGNAL(removed(RamObject*)), this, SLOT(stateRemoved()));
+
     emit changed(this);
 }
 
@@ -215,6 +225,22 @@ void RamStatus::statusUpdated(RamState *state, int completion, int version, QStr
     showEdit(false);
 }
 
+void RamStatus::stateRemoved()
+{
+    this->setState( Ramses::instance()->wipState() );
+}
+
+void RamStatus::userRemoved()
+{
+    m_user = Ramses::instance()->removedUser();
+    m_dbi->setStatusUser( m_uuid, m_user->uuid() );
+}
+
+void RamStatus::assignedUserRemoved()
+{
+    assignUser(nullptr);
+}
+
 RamUser *RamStatus::assignedUser() const
 {
     return m_assignedUser;
@@ -222,11 +248,16 @@ RamUser *RamStatus::assignedUser() const
 
 void RamStatus::assignUser(RamUser *assignedUser)
 {
+    disconnect(m_assignedUserConnection);
+
     if (!assignedUser && !m_assignedUser) return;
     if (assignedUser)
         if (assignedUser->is(m_assignedUser)) return;
     m_dirty = true;
     m_assignedUser = assignedUser;
+
+    m_assignedUserConnection = connect(assignedUser, SIGNAL(removed(RamObject*)), this, SLOT(assignedUserRemoved()));
+
     emit changed(this);
 }
 
@@ -265,7 +296,6 @@ bool RamStatus::checkPublished( int version ) const
 {
     // Check if there's a published file corresponding to the version
     QStringList files = publishedFiles("");
-    qDebug() << files;
     if (version == -1 ) return files.count() > 0;
 
     RamFileMetaDataManager mdm( path( RamObject::PublishFolder ));

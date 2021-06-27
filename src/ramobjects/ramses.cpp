@@ -212,6 +212,7 @@ RamState *Ramses::noState()
     if (!m_noState)
     {
         m_noState = new RamState("NO", "Nothing to do");
+        m_noState->setColor(QColor(36,36,36));
         m_states->append(m_noState);
     }
     return m_noState;
@@ -221,6 +222,12 @@ RamState *Ramses::todoState()
 {
     if(m_todoState) return m_todoState;
     m_todoState =  qobject_cast<RamState*>( m_states->fromName("TODO") );
+    if (!m_todoState)
+    {
+        m_todoState = new RamState("TODO", "To do");
+        m_todoState->setColor(QColor(85,170,255));
+        m_states->append(m_todoState);
+    }
     return m_todoState;
 }
 
@@ -228,7 +235,39 @@ RamState *Ramses::okState()
 {
     if(m_okState) return m_okState;
     m_okState =  qobject_cast<RamState*>( m_states->fromName("OK") );
+    if (!m_okState)
+    {
+        m_okState = new RamState("OK", "Finished");
+        m_okState->setColor(QColor(0,170,0));
+        m_states->append(m_okState);
+    }
     return m_okState;
+}
+
+RamState *Ramses::stbState()
+{
+    if(m_stbState) return m_stbState;
+    m_stbState = qobject_cast<RamState*>( m_states->fromName("STB") );
+    if (!m_stbState)
+    {
+        m_stbState = new RamState("STB", "Stand by");
+        m_stbState->setColor(QColor(168,168,168));
+        m_states->append(m_stbState);
+    }
+    return m_stbState;
+}
+
+RamState *Ramses::wipState()
+{
+    if (m_wipState) return m_wipState;
+    m_wipState = qobject_cast<RamState*>( m_states->fromName("WIP") );
+    if (!m_wipState)
+    {
+        m_wipState = new RamState("WIP", "Work in progress");
+        m_wipState->setColor(QColor(255,255,127));
+        m_states->append(m_wipState);
+    }
+    return m_wipState;
 }
 
 void Ramses::logout()
@@ -277,6 +316,18 @@ RamUser *Ramses::ramUser()
         m_ramUser->updatePassword("", RamUuid::generateUuidString("Ramses"));
     }
     return m_ramUser;
+}
+
+RamUser *Ramses::removedUser()
+{
+    if (m_removedUser) return m_removedUser;
+    m_removedUser = qobject_cast<RamUser*>( m_users->fromName("Removed") );
+    if (!m_removedUser)
+    {
+        m_removedUser = new RamUser("Removed", "Removed User");
+        m_removedUser->updatePassword("", RamUuid::generateUuidString("Removed"));
+    }
+    return m_removedUser;
 }
 
 void Ramses::setRamUser(RamUser *user)

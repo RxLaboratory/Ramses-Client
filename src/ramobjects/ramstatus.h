@@ -65,6 +65,9 @@ protected:
 
 private slots:
     void statusUpdated(RamState *state, int completion, int version, QString comment);
+    void stateRemoved();
+    void userRemoved();
+    void assignedUserRemoved();
 
 private:
     int m_completionRatio = 50;
@@ -79,6 +82,9 @@ private:
     bool m_published = false;
     RamUser* m_assignedUser = nullptr;
     StatusEditWidget *m_editWidget;
+
+    QMetaObject::Connection m_stateConnection;
+    QMetaObject::Connection m_assignedUserConnection;
 };
 
 #endif // RAMSTATUS_H

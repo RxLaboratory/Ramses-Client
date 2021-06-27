@@ -35,6 +35,7 @@ public:
     void setList(RamObjectList *objectList);
     void setFilterList(RamObjectList *filterList);
     void setAssignList(RamObjectList *assignList);
+    void setDontRemoveShortNameList(QStringList dontRemove);
     void clear();
     void setEditMode(ObjectListEditWidget::EditMode editMode);
     void setEditable(bool editable = true);
@@ -83,6 +84,7 @@ private:
     // Settings
     EditMode m_editMode = UnassignObjects;
     bool m_useAssignList = false;
+    QStringList m_dontRemove;
 
     // Current List
     RamObjectList *m_objectList = nullptr;

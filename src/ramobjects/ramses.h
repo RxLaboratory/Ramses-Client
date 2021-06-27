@@ -33,6 +33,7 @@ public:
     RamObjectList *users() const;
     RamUser *currentUser() const;
     RamUser *ramUser();
+    RamUser *removedUser();
     void setRamUser(RamUser *user);
     bool isAdmin();
     bool isProjectAdmin();
@@ -41,6 +42,8 @@ public:
     RamState *noState();
     RamState *todoState();
     RamState *okState();
+    RamState *stbState();
+    RamState *wipState();
     // Projects
     RamObjectList *projects() const;
     RamProject *currentProject() const;
@@ -104,6 +107,7 @@ private:
     RamUser *m_currentUser;
     QString m_currentUserShortName;
     RamUser *m_ramUser;
+    RamUser *m_removedUser;
 
     // Projects
     RamObjectList *m_projects;
@@ -120,6 +124,8 @@ private:
     RamState *m_noState = nullptr;
     RamState *m_okState = nullptr;
     RamState *m_todoState = nullptr;
+    RamState *m_stbState = nullptr;
+    RamState *m_wipState = nullptr;
 
     // File types
     RamObjectList *m_fileTypes;

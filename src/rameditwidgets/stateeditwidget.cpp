@@ -119,6 +119,8 @@ void StateEditWidget::setupUi()
     ui_mainFormLayout->addWidget(completionSpinBox, 4, 1);
 
     ui_mainLayout->addStretch();
+
+    m_dontRename << "TODO" << "STB" << "NO" << "WIP" << "OK";
 }
 
 void StateEditWidget::connectEvents()

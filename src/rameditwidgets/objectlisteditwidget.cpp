@@ -81,6 +81,11 @@ void ObjectListEditWidget::setAssignList(RamObjectList *assignList)
     connect(assignList, SIGNAL(rowsAboutToBeRemoved(QModelIndex,int,int)), this, SLOT(assignObjRemoved(QModelIndex,int,int)));
 }
 
+void ObjectListEditWidget::setDontRemoveShortNameList(QStringList dontRemove)
+{
+    m_dontRemove = dontRemove;
+}
+
 void ObjectListEditWidget::clear()
 {
     m_listWidget->setList(nullptr);
@@ -145,7 +150,6 @@ void ObjectListEditWidget::removeSelectedObjects()
     QModelIndexList selection = m_listWidget->selectionModel()->selectedRows();
     if (selection.count() == 0) return;
 
-
     if (m_editMode == RemoveObjects)
     {
         QMessageBox::StandardButton confirm = QMessageBox::question( this,
@@ -153,6 +157,22 @@ void ObjectListEditWidget::removeSelectedObjects()
             "Are you sure you want to premanently remove the selected items?" );
 
         if ( confirm != QMessageBox::Yes) return;
+    }
+
+    // Check if we can remove these objects
+    for (int i = 0; i < selection.count(); i++)
+    {
+        QModelIndex index = selection.at(i);
+        quintptr iptr = index.data(Qt::UserRole).toULongLong();
+        if(iptr == 0) continue;
+        RamObject *o = reinterpret_cast<RamObject*>( iptr );
+        if (m_dontRemove.contains(o->shortName()))
+        {
+            QMessageBox::information(this,
+                                     "Can't remove this",
+                                     "Sorry, " + o->shortName() + " | " + o->name() + " must not be removed.");
+            return;
+        }
     }
 
     QList<RamObject*> objs = m_objectList->removeIndices(selection);

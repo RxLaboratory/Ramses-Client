@@ -8,6 +8,9 @@ StateListManagerWidget::StateListManagerWidget(QWidget *parent) :
         parent)
 {
     m_listEditWidget->setEditMode(ObjectListEditWidget::RemoveObjects);
+    QStringList dontRemove;
+    dontRemove << "TODO" << "STB" << "NO" << "WIP" << "OK";
+    m_listEditWidget->setDontRemoveShortNameList(dontRemove);
 }
 
 void StateListManagerWidget::createObject()

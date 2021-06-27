@@ -184,6 +184,8 @@ void UserEditWidget::setupUi()
     ui_mainLayout->insertWidget(1, ui_folderLabel);
 
     ui_mainLayout->addStretch();
+
+    m_dontRename << "Ramses" << "Removed";
 }
 
 void UserEditWidget::connectEvents()

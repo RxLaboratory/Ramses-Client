@@ -8,6 +8,9 @@ UserListManagerWidget::UserListManagerWidget(QWidget *parent) :
         parent )
 {
     m_listEditWidget->setEditMode(ObjectListEditWidget::RemoveObjects);
+    QStringList dontRemove;
+    dontRemove << "Ramses" << "Removed";
+    m_listEditWidget->setDontRemoveShortNameList(dontRemove);
 }
 
 void UserListManagerWidget::createObject()
