@@ -50,6 +50,10 @@ void StatusEditWidget::setStatus(RamStatus *status)
         }
     }
 
+    // (try to) Auto-detect version
+    int v = status->latestVersion("");
+    if (v > status->version()) ui_versionBox->setValue(v);
+
     ui_timeSpent->setValue( timeSpent / 3600 );
 }
 

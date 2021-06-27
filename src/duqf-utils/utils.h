@@ -118,7 +118,7 @@ namespace NetworkUtils
 };
 
 namespace RegExUtils {
-    QRegularExpression getRegEx( QString name );
+    QRegularExpression getRegEx(QString name , QString replace = "", QString by = "");
 };
 
 namespace Interpolations {

@@ -46,8 +46,12 @@ public:
     qint64 getTimeRange(QString fileName, QDateTime after = QDate(1970,1,1).startOfDay()) const;
     int getTimeRange( QDateTime after = QDate(1970,1,1).startOfDay() ) const;
 
+    static QString metaDataFileName();
+
+protected:
+    static const QString m_metaDataFileName;
+
 private:
-    QString m_metaDataFileName = "_ramses_data.json";
     QDir m_folder;
     QFile *m_metaDataFile;
     QJsonDocument m_metaData;

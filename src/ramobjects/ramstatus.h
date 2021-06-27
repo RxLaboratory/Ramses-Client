@@ -7,6 +7,7 @@
 #include "ramstate.h"
 #include "ramstep.h"
 #include "ramfilemetadatamanager.h"
+#include "ramnamemanager.h"
 
 class RamItem;
 class StatusEditWidget;
@@ -27,6 +28,10 @@ public:
     void setState(RamState *state);
 
     int version() const;
+    QStringList versionFiles();
+    QStringList versionFiles(QString resource);
+    int latestVersion();
+    int latestVersion(QString resource);
     void setVersion(int version);
 
     RamStep *step() const;

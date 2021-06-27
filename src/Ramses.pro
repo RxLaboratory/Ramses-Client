@@ -68,6 +68,7 @@ SOURCES += \
     rameditwidgets/userlistmanagerwidget.cpp \
     ramfilemetadatamanager.cpp \
     ramloader.cpp \
+    ramnamemanager.cpp \
     ramobjects/ramassetgroup.cpp \
     ramobjects/rampipefile.cpp \
     ramobjects/ramsequence.cpp \
@@ -189,6 +190,7 @@ HEADERS += \
     rameditwidgets/userlistmanagerwidget.h \
     ramfilemetadatamanager.h \
     ramloader.h \
+    ramnamemanager.h \
     ramobjects/ramassetgroup.h \
     ramobjects/rampipefile.h \
     ramobjects/ramsequence.h \

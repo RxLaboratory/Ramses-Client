@@ -60,6 +60,84 @@ int RamStatus::version() const
     return m_version;
 }
 
+QStringList RamStatus::versionFiles()
+{
+    QDir versionDir( path(VersionsFolder) );
+    QStringList files = versionDir.entryList(QDir::Files);
+    files.removeAll( RamFileMetaDataManager::metaDataFileName() );
+    return files;
+}
+
+QStringList RamStatus::versionFiles(QString resource)
+{
+    QStringList files;
+
+    RamNameManager nm;
+
+    RamProject *p = m_item->project();
+
+    // look for files with the same resource
+    foreach(QString file, versionFiles())
+    {
+        if (nm.setFileName(file))
+        {
+            if (nm.project().toLower() != p->shortName().toLower()) continue;
+            if (nm.step().toLower() != m_step->shortName().toLower()) continue;
+            if (nm.shortName().toLower() != m_item->shortName().toLower()) continue;
+            if (nm.resource() == resource) files << file;
+        }
+    }
+    return files;
+}
+
+int RamStatus::latestVersion()
+{
+    QStringList files;
+
+    RamNameManager nm;
+
+    RamProject *p = m_item->project();
+
+    int v = 0;
+
+    // look for files with the same resource
+    foreach(QString file, versionFiles())
+    {
+        if (nm.setFileName(file))
+        {
+            if (nm.project().toLower() != p->shortName().toLower()) continue;
+            if (nm.step().toLower() != m_step->shortName().toLower()) continue;
+            if (nm.shortName().toLower() != m_item->shortName().toLower()) continue;
+            if (nm.version() > v) v = nm.version();
+        }
+    }
+    return v;
+}
+
+int RamStatus::latestVersion(QString resource)
+{
+    QStringList files;
+
+    RamNameManager nm;
+
+    int v = 0;
+
+    RamProject *p = m_item->project();
+
+    // look for files with the same resource
+    foreach(QString file, versionFiles())
+    {
+        if (nm.setFileName(file))
+        {
+            if (nm.project().toLower() != p->shortName().toLower()) continue;
+            if (nm.step().toLower() != m_step->shortName().toLower()) continue;
+            if (nm.shortName().toLower() != m_item->shortName().toLower()) continue;
+            if (nm.resource() == resource && nm.version() > v) v = nm.version();
+        }
+    }
+    return v;
+}
+
 void RamStatus::setVersion(int version)
 {
     if (m_version == version) return;

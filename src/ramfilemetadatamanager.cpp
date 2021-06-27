@@ -1,5 +1,7 @@
 #include "ramfilemetadatamanager.h"
 
+const QString RamFileMetaDataManager::m_metaDataFileName = "_ramses_data.json";
+
 RamFileMetaDataManager::RamFileMetaDataManager(QString folderPath, QObject *parent): QObject(parent)
 {
     m_folder = QDir(folderPath);
@@ -160,11 +162,15 @@ int RamFileMetaDataManager::getTimeRange(QDateTime after) const
     qint64 range = 0;
     foreach( QString file, files)
     {
-        qDebug() << file;
         if (file == m_metaDataFileName) continue;
         range += getTimeRange( file, after);
     }
     return range;
+}
+
+QString RamFileMetaDataManager::metaDataFileName()
+{
+    return m_metaDataFileName;
 }
 
 void RamFileMetaDataManager::writeMetaData()

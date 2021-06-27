@@ -143,12 +143,13 @@ qint64 MediaUtils::convertToBytes(qint64 value, MediaUtils::SizeUnit from)
     return value;
 }
 
-QRegularExpression RegExUtils::getRegEx(QString name)
+QRegularExpression RegExUtils::getRegEx(QString name, QString replace, QString by)
 {
-    QFile regExFile(":regex/" + name );
+    QFile regExFile(":/regex/" + name );
     if (regExFile.open(QFile::ReadOnly))
     {
         QString regExStr = regExFile.readAll();
+        if (replace != "") regExStr = regExStr.replace(replace, by);
         return QRegularExpression( regExStr.trimmed() );
     }
     return QRegularExpression();
