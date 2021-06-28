@@ -64,6 +64,7 @@ public:
     void tie(DuQFLoggerObject *o);
 
 public slots:
+    void log(QString message);
     void log(DuQFLog message);
 
 signals:

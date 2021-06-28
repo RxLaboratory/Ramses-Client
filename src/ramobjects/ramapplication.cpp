@@ -11,8 +11,8 @@ RamApplication::RamApplication(QString shortName, QString name, QString executab
     m_exportFileTypes = new RamObjectList(this);
 
     setObjectType(Application);
-    _executableFilePath = executableFilePath;
-    m_dbi->createApplication(m_shortName, m_name, _executableFilePath, m_uuid);
+    m_executableFilePath = executableFilePath;
+    m_dbi->createApplication(m_shortName, m_name, m_executableFilePath, m_uuid);
 
     connect(m_nativeFileTypes, SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(nativeFileTypeAssigned(QModelIndex,int,int)));
     connect(m_nativeFileTypes, SIGNAL(rowsAboutToBeRemoved(QModelIndex,int,int)), this, SLOT(nativeFileTypeUnassigned(QModelIndex,int,int)));
@@ -33,14 +33,14 @@ RamApplication::~RamApplication()
 
 QString RamApplication::executableFilePath() const
 {
-    return _executableFilePath;
+    return m_executableFilePath;
 }
 
 void RamApplication::setExecutableFilePath(const QString &executableFilePath)
 {
-    if (executableFilePath == _executableFilePath) return;
+    if (executableFilePath == m_executableFilePath) return;
     m_dirty = true;
-    _executableFilePath = executableFilePath;
+    m_executableFilePath = executableFilePath;
 
     emit changed(this);
 }
@@ -49,7 +49,7 @@ void RamApplication::update()
 {
     if (!m_dirty) return;
     RamObject::update();
-    m_dbi->updateApplication(m_uuid, m_shortName, m_name, _executableFilePath, m_comment);
+    m_dbi->updateApplication(m_uuid, m_shortName, m_name, m_executableFilePath, m_comment);
 }
 
 void RamApplication::unassignFileType(RamObject *o)
@@ -150,6 +150,25 @@ RamObjectList *RamApplication::importFileTypes() const
 RamObjectList *RamApplication::exportFileTypes() const
 {
     return m_exportFileTypes;
+}
+
+bool RamApplication::canOpen(QString filePath) const
+{
+    for(int i =0; i < m_nativeFileTypes->count(); i++)
+    {
+        RamFileType *ft = qobject_cast<RamFileType*>( m_nativeFileTypes->at(i) );
+        if (ft->check( filePath )) return true;
+    }
+    return false;
+}
+
+bool RamApplication::open(QString filePath) const
+{
+    if(!canOpen(filePath)) return false;
+
+    if (m_executableFilePath == "") return false;
+
+    return QProcess::startDetached(m_executableFilePath, QStringList(filePath));
 }
 
 RamApplication *RamApplication::application(QString uuid)

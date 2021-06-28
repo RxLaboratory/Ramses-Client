@@ -1,6 +1,8 @@
 #ifndef RAMSTEP_H
 #define RAMSTEP_H
 
+#include <QDesktopServices>
+
 #include "ramobject.h"
 #include "ramuser.h"
 #include "ramapplication.h"
@@ -35,6 +37,10 @@ public:
 
     RamObjectList *users() const;
     RamObjectList *applications() const;
+
+    void openFile(QString filePath) const;
+    QStringList publishedTemplates() const;
+    QString templateFile(QString templateFileName) const;
 
     QList<RamObject *> inputFileTypes();
     QList<RamObject *> outputFileTypes();

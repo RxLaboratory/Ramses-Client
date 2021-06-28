@@ -19,6 +19,8 @@ public:
     bool isPreviewable() const;
     void setPreviewable(bool previewable);
 
+    bool check(QString filePath) const;
+
     void update() override;
 
     static RamFileType *fileType(QString uuid);

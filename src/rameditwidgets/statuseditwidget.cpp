@@ -1,6 +1,7 @@
 #include "statuseditwidget.h"
 
-StatusEditWidget::StatusEditWidget(QWidget *parent) : ObjectEditWidget( parent)
+StatusEditWidget::StatusEditWidget(QWidget *parent) :
+    ObjectEditWidget( parent)
 {
     setupUi();
     connectEvents();
@@ -25,6 +26,17 @@ void StatusEditWidget::setStatus(RamStatus *status)
     ui_publishedBox->setChecked(false);
     ui_userBox->setObject("");
     ui_timeSpent->setValue(0);
+    ui_mainFileList->clear();
+    ui_publishedFileList->clear();
+    ui_previewFileList->clear();
+
+    // Remove template list
+    QList<QAction*> templateActions = ui_createFromTemplateMenu->actions();
+    for (int i = 2; i < templateActions.count(); i++)
+    {
+        templateActions.at(i)->deleteLater();
+    }
+
     if (!status) return;
 
     ui_stateBox->setObject(status->state());
@@ -53,6 +65,33 @@ void StatusEditWidget::setStatus(RamStatus *status)
     // (try to) Auto-detect version
     int v = status->latestVersion("");
     if (v > status->version()) ui_versionBox->setValue(v);
+
+    // List files
+    foreach(QString file, status->mainFiles())
+    {
+        QListWidgetItem *item = new QListWidgetItem(file, ui_mainFileList);
+        item->setIcon(QIcon(":/icons/file"));
+    }
+    foreach(QString file, status->publishedFiles())
+    {
+        QListWidgetItem *item = new QListWidgetItem(file, ui_publishedFileList);
+        item->setIcon(QIcon(":/icons/file"));
+    }
+    foreach(QString file, status->previewFiles())
+    {
+        QListWidgetItem *item = new QListWidgetItem(file, ui_previewFileList);
+        item->setIcon(QIcon(":/icons/file"));
+    }
+
+    // List templates
+    QStringList templateFiles =status->step()->publishedTemplates();
+    ui_createMainFileButton->setEnabled( templateFiles.count() > 0);
+    foreach(QString file, templateFiles)
+    {
+        QAction *action = new QAction(file);
+        ui_createFromTemplateMenu->addAction(action);
+        connect(action,SIGNAL(triggered()), this, SLOT(createFromTemplate()));
+    }
 
     ui_timeSpent->setValue( timeSpent / 3600 );
 }
@@ -131,6 +170,121 @@ void StatusEditWidget::checkPublished( int v )
     ui_publishedBox->setChecked(p);
 }
 
+void StatusEditWidget::mainFileSelected(int row)
+{
+    if (row < 0)
+    {
+        ui_versionFileBox->setEnabled(false);
+        ui_openMainFileButton->setEnabled(false);
+        return;
+    }
+
+    ui_versionFileBox->setEnabled(true);
+    ui_openMainFileButton->setEnabled(true);
+
+    // List versions
+    QString fileName = ui_mainFileList->item(row)->text();
+    RamNameManager nm;
+    nm.setFileName(fileName);
+    QString resource = nm.resource();
+
+    RamFileMetaDataManager mdm(m_status->path(RamObject::VersionsFolder));
+
+    ui_versionFileBox->clear();
+    ui_versionFileBox->addItem("Current version", "");
+
+    foreach(QString file, m_status->versionFiles(resource))
+    {
+        nm.setFileName(file);
+        QString title = "v" + QString::number(nm.version()) + " | " + nm.state();
+        // Retrieve comment if any
+        QString comment = mdm.getComment(file);
+        if (comment != "") title += " | " + comment;
+        ui_versionFileBox->addItem(title, file);
+    }
+}
+
+void StatusEditWidget::openMainFile()
+{
+    int row = ui_mainFileList->currentRow();
+    if (row < 0) return;
+
+    QString filePathToOpen;
+
+    // If current version, open the main file
+    int versionIndex = ui_versionFileBox->currentIndex();
+    if (versionIndex < 1)
+        filePathToOpen = QDir(
+                    m_status->path()
+                    ).filePath( ui_mainFileList->item(row)->text() );
+    // Else, copy/rename from the versions folder
+    else
+        filePathToOpen = m_status->restoreVersionFile(
+                    ui_versionFileBox->currentData(Qt::UserRole).toString()
+                    );
+
+    m_status->step()->openFile( filePathToOpen );
+
+    DuQFLogger::instance()->log("Opening " + filePathToOpen + "...");
+
+    revert();
+}
+
+void StatusEditWidget::removeSelectedMainFile()
+{
+    int row = ui_mainFileList->currentRow();
+    if (row < 0) return;
+
+    QString fileName = ui_mainFileList->item(row)->text();
+
+    QMessageBox::StandardButton confirm = QMessageBox::question( this,
+        "Confirm deletion",
+        "Are you sure you want to delete the selected file?\n► " + fileName );
+    if ( confirm != QMessageBox::Yes ) return;
+
+    m_status->deleteFile( fileName );
+
+    DuQFLogger::instance()->log("Deleting " + fileName + "...");
+
+    revert();
+}
+
+void StatusEditWidget::createFromTemplate()
+{
+    QAction *action = qobject_cast<QAction*>( sender() );
+    QString fileName = action->text();
+
+    DuQFLogger::instance()->log("Creating " + fileName + "...");
+
+    QString templateFile = m_status->createFileFromTemplate( fileName );
+
+    DuQFLogger::instance()->log("Opening " + templateFile + "...");
+
+    if (templateFile != "") m_status->step()->openFile(templateFile);
+
+    revert();
+}
+
+void StatusEditWidget::createFromDefaultTemplate()
+{
+
+    DuQFLogger::instance()->log("Creating from default template...");
+
+    QString templateFile = m_status->createFileFromTemplate( "" );
+
+    if (templateFile == "")
+    {
+        DuQFLogger::instance()->log("Default template file not found!");
+        return;
+    }
+
+    DuQFLogger::instance()->log("Opening " + templateFile + "...");
+
+    if (templateFile != "") m_status->step()->openFile(templateFile);
+
+    revert();
+}
+
 void StatusEditWidget::setupUi()
 {
     this->hideName();
@@ -154,7 +308,6 @@ void StatusEditWidget::setupUi()
 
     cLayout->setStretch(0,0);
     cLayout->setStretch(1,100);
-    cLayout->setStretch(2,0);
 
     ui_mainLayout->insertLayout(0, cLayout);
 
@@ -195,21 +348,78 @@ void StatusEditWidget::setupUi()
 
     ui_revertButton = new QToolButton(this);
     ui_revertButton->setText("Revert");
+    ui_revertButton->setToolTip("Cancel changes\nRevert to the current state.");
+    ui_revertButton->setStatusTip("Revert to the current state.");
     ui_revertButton->setIcon(QIcon(":/icons/undo"));
     buttonsLayout->addWidget(ui_revertButton);
 
     ui_setButton = new QToolButton(this);
     ui_setButton->setText("Update");
+    ui_setButton->setToolTip("Update / Save changes\nSave the changes for the current status.");
+    ui_setButton->setStatusTip("Save the changes for the current status.");
     ui_setButton->setIcon(QIcon(":/icons/apply"));
     buttonsLayout->addWidget(ui_setButton);
 
     ui_mainLayout->addLayout(buttonsLayout);
 
-    ui_mainLayout->setStretch(0,0);
-    ui_mainLayout->setStretch(1,1);
-    ui_mainLayout->setStretch(2,0);
+    QTabWidget *tabWidget = new QTabWidget(this);
 
-    ui_mainLayout->addStretch();
+    QWidget *mainFilesWidget = new QWidget(tabWidget);
+    QVBoxLayout *mainFileLayout = new QVBoxLayout(mainFilesWidget);
+    mainFileLayout->setContentsMargins(0,0,0,0);
+    mainFileLayout->setSpacing(3);
+
+    ui_mainFileList = new QListWidget(this);
+    mainFileLayout->addWidget(ui_mainFileList);
+
+    ui_deleteMainFileShortcut = new QShortcut(QKeySequence(QKeySequence::Delete),ui_mainFileList);
+
+    QHBoxLayout *mainFileButtonLayout = new QHBoxLayout();
+    mainFileButtonLayout->setContentsMargins(0,0,0,0);
+    mainFileButtonLayout->setSpacing(3);
+    mainFileLayout->addLayout(mainFileButtonLayout);
+
+    ui_versionFileBox = new QComboBox(this);
+    ui_versionFileBox->setEnabled(false);
+    mainFileButtonLayout->addWidget(ui_versionFileBox);
+
+    ui_createMainFileButton = new QToolButton(this);
+    ui_createMainFileButton->setText("Create");
+    ui_createMainFileButton->setToolTip("Create\nCreate a new file from the corresponding step template.");
+    ui_createMainFileButton->setStatusTip("Create a new file from template.");
+    ui_createMainFileButton->setIcon(QIcon(":/icons/create"));
+    ui_createMainFileButton->setEnabled(false);
+    mainFileButtonLayout->addWidget(ui_createMainFileButton);
+
+    ui_createFromTemplateMenu = new QMenu(this);
+    ui_createMainFileButton->setMenu(ui_createFromTemplateMenu);
+    ui_createMainFileButton->setPopupMode(QToolButton::InstantPopup);
+
+    ui_createFromTemplateAction = new QAction("Create from default template", this);
+    ui_createFromTemplateMenu->addAction( ui_createFromTemplateAction );
+    ui_createFromTemplateMenu->addSeparator();
+
+    ui_openMainFileButton = new QToolButton(this);
+    ui_openMainFileButton->setText("Open");
+    ui_openMainFileButton->setToolTip("Open\nOpen the file.");
+    ui_openMainFileButton->setStatusTip("Open the file.");
+    ui_openMainFileButton->setIcon(QIcon(":/icons/open"));
+    ui_openMainFileButton->setEnabled(false);
+    mainFileButtonLayout->addWidget(ui_openMainFileButton);
+
+    tabWidget->addTab(mainFilesWidget, QIcon(":/icons/files"), "Work");
+
+    ui_publishedFileList = new QListWidget(this);
+    tabWidget->addTab(ui_publishedFileList, QIcon(":/icons/files"), "Published");
+
+    ui_deletePublishedFileShortcut = new QShortcut(QKeySequence(QKeySequence::Delete),ui_publishedFileList);
+
+    ui_previewFileList = new QListWidget(this);
+    tabWidget->addTab(ui_previewFileList, QIcon(":/icons/files"), "Preview");
+
+     ui_deletePreviewFileShortcut = new QShortcut(QKeySequence(QKeySequence::Delete),ui_previewFileList);
+
+    ui_mainLayout->addWidget(tabWidget);
 }
 
 void StatusEditWidget::connectEvents()
@@ -219,4 +429,10 @@ void StatusEditWidget::connectEvents()
     connect(ui_setButton, &QToolButton::clicked, this, &StatusEditWidget::updateStatus);
     connect(ui_revertButton, &QToolButton::clicked, this, &StatusEditWidget::revert);
     connect(ui_versionBox, SIGNAL(valueChanged(int)), this, SLOT(checkPublished(int)));
+
+    connect(ui_mainFileList, SIGNAL(currentRowChanged(int)),this, SLOT(mainFileSelected(int)));
+    connect(ui_mainFileList,SIGNAL(itemDoubleClicked(QListWidgetItem*)),this,SLOT(openMainFile()));
+    connect(ui_openMainFileButton, SIGNAL(clicked()),this,SLOT(openMainFile()));
+    connect(ui_deleteMainFileShortcut,SIGNAL(activated()),this,SLOT(removeSelectedMainFile()));
+    connect(ui_createFromTemplateAction, SIGNAL(triggered()), this, SLOT(createFromDefaultTemplate()));
 }

@@ -65,6 +65,46 @@ void RamStatus::setState(RamState *state)
     emit changed(this);
 }
 
+QStringList RamStatus::mainFiles() const
+{
+    return listFiles();
+}
+
+QString RamStatus::createFileFromTemplate(QString templateFileName) const
+{
+
+    QString filePath = m_step->templateFile( templateFileName );
+
+    if (!QFileInfo::exists( filePath)) return "";
+
+    // Generate destination name
+    RamNameManager nm;
+    nm.setFileName(filePath);
+    nm.setProject( m_item->project()->shortName() );
+    nm.setStep( m_step->shortName() );
+    nm.setResource( nm.shortName() );
+    if (m_item->objectType() == Asset) nm.setType("A");
+    else if (m_item->objectType() == Shot) nm.setType("S");
+    else nm.setType("G");
+    nm.setShortName( m_item->shortName() );
+    if (nm.resource() == "Template") nm.setResource("");
+
+    QString destination = QDir(
+                path(NoFolder, true)
+                ).filePath( nm.fileName() );
+
+     if (QFileInfo::exists( destination ))
+     {
+         nm.setResource( nm.resource() + "+new+");
+         destination = QDir(
+                     path(NoFolder, true)
+                     ).filePath( nm.fileName() );
+     }
+
+     if (QFile::copy(filePath, destination)) return destination;
+     return "";
+}
+
 int RamStatus::version() const
 {
     return m_version;
@@ -72,10 +112,7 @@ int RamStatus::version() const
 
 QStringList RamStatus::versionFiles() const
 {
-    QDir versionDir( path(VersionsFolder) );
-    QStringList files = versionDir.entryList(QDir::Files);
-    files.removeAll( RamFileMetaDataManager::metaDataFileName() );
-    return files;
+    return listFiles(VersionsFolder);
 }
 
 QStringList RamStatus::versionFiles(QString resource) const
@@ -154,6 +191,29 @@ void RamStatus::setVersion(int version)
     m_dirty = true;
     m_version = version;
     emit changed(this);
+}
+
+QString RamStatus::restoreVersionFile(QString fileName) const
+{
+    QString restoredPath;
+    RamNameManager nm;
+    nm.setFileName( fileName );
+    QString resource = nm.resource();
+    QString v = QString::number( nm.version() );
+    while(v.count() < 3)
+        v = "0" + v;
+    resource += "+restored-v" + v + "+";
+    nm.setResource(resource);
+    nm.setVersion(-1);
+
+    QString versionPath = QDir( path(RamObject::VersionsFolder) ).filePath( fileName );
+    restoredPath = QDir( path()).filePath( nm.fileName() );
+
+    // Copy
+    QFile::copy(versionPath, restoredPath);
+
+    return restoredPath;
+
 }
 
 RamStep *RamStatus::step() const
@@ -309,10 +369,7 @@ bool RamStatus::checkPublished( int version ) const
 
 QStringList RamStatus::publishedFiles() const
 {
-    QDir versionDir( path(PublishFolder) );
-    QStringList files = versionDir.entryList(QDir::Files);
-    files.removeAll( RamFileMetaDataManager::metaDataFileName() );
-    return files;
+    return listFiles(PublishFolder);
 }
 
 QStringList RamStatus::publishedFiles(QString resource) const
@@ -371,6 +428,11 @@ QString RamStatus::previewImagePath() const
 
     // Not found, return the first one
     return previewDir.filePath( images.at(0) );
+}
+
+QStringList RamStatus::previewFiles() const
+{
+    return listFiles(PreviewFolder);
 }
 
 QDateTime RamStatus::date() const

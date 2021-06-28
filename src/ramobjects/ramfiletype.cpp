@@ -88,3 +88,14 @@ void RamFileType::setPreviewable(bool previewable)
     m_previewable = previewable;
     emit changed(this);
 }
+
+bool RamFileType::check(QString filePath) const
+{
+    QFileInfo info(filePath);
+    if (!info.isFile()) return false;
+    QString ext = info.completeSuffix();
+
+    if (m_shortName == ext) return true;
+
+    return extensions().contains(ext);
+}

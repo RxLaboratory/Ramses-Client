@@ -36,8 +36,6 @@ public:
     void updateAspectRatio(const qreal &pixelAspect = 1);
     void setAspectRatio(const qreal &aspectRatio);
 
-
-
     // Steps
     RamObjectList *steps() const;
     // Asset Groups

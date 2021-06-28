@@ -5,6 +5,9 @@
 #include <QToolButton>
 #include <QFormLayout>
 #include <QCheckBox>
+#include <QListWidget>
+#include <QShortcut>
+#include <QMenu>
 
 #include "duqf-widgets/duqfspinbox.h"
 #include "duqf-widgets/autoselectspinbox.h"
@@ -51,6 +54,13 @@ private slots:
     void revert();
     void checkPublished(int v);
 
+    void mainFileSelected(int row);
+    void openMainFile();
+    void removeSelectedMainFile();
+
+    void createFromTemplate();
+    void createFromDefaultTemplate();
+
 private:
     void setupUi();
     void connectEvents();
@@ -63,6 +73,17 @@ private:
     QCheckBox *ui_publishedBox;
     RamObjectListComboBox *ui_userBox;
     AutoSelectSpinBox *ui_timeSpent;
+    QListWidget *ui_mainFileList;
+    QListWidget *ui_previewFileList;
+    QListWidget *ui_publishedFileList;
+    QComboBox *ui_versionFileBox;
+    QToolButton *ui_openMainFileButton;
+    QToolButton *ui_createMainFileButton;
+    QShortcut *ui_deleteMainFileShortcut;
+    QShortcut *ui_deletePreviewFileShortcut;
+    QShortcut *ui_deletePublishedFileShortcut;
+    QMenu *ui_createFromTemplateMenu;
+    QAction *ui_createFromTemplateAction;
 
     RamStatus *m_status;
 };

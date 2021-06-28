@@ -117,6 +117,49 @@ RamObjectList *RamStep::applications() const
     return m_applications;
 }
 
+void RamStep::openFile(QString filePath) const
+{
+    // Get the application
+    for (int i = 0; i < m_applications->count(); i++)
+    {
+        RamApplication *app = qobject_cast<RamApplication*>( m_applications->at(i) );
+        if (app->open( filePath )) return;
+    }
+
+    // Try with the default app on the system
+    QDesktopServices::openUrl(QUrl("file:///" + filePath));
+}
+
+QStringList RamStep::publishedTemplates() const
+{
+    return listFiles(TemplatesFolder, subFolderName(PublishFolder));
+}
+
+QString RamStep::templateFile(QString templateFileName) const
+{
+    if (templateFileName == "")
+    {
+        //Get the default one
+        RamNameManager nm;
+        nm.setProject(project()->shortName() );
+        nm.setType( "G" );
+        nm.setShortName( "Template" );
+        nm.setStep( m_shortName );
+        QDir templatesDir = QDir(path(TemplatesFolder) + "/" + subFolderName(PublishFolder));
+        if(!templatesDir.exists()) return "";
+        QStringList files = templatesDir.entryList(QStringList( nm.fileName() + "*" ));
+        if (files.count() == 0) return "";
+        templateFileName = files.at(0);
+    }
+
+    QString filePath = QDir(
+                path( TemplatesFolder ) + "/" + subFolderName(PublishFolder)
+                ).filePath(templateFileName);
+
+    if (QFileInfo::exists(filePath)) return filePath;
+    return "";
+}
+
 void RamStep::applicationAssigned(const QModelIndex &parent, int first, int last)
 {
     Q_UNUSED(parent)

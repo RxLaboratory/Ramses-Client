@@ -32,7 +32,12 @@ void DuQFLogger::clear()
 
 void DuQFLogger::tie(DuQFLoggerObject *o)
 {
-    connect(o, &DuQFLoggerObject::newLog, this, &DuQFLogger::log);
+    connect(o, SIGNAL(newLog(DuQFLog)), this, SLOT(log(DuQFLog)));
+}
+
+void DuQFLogger::log(QString message)
+{
+    log(DuQFLog(message));
 }
 
 void DuQFLogger::log(DuQFLog message)

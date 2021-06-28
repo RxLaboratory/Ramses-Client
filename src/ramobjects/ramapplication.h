@@ -26,6 +26,9 @@ public:
     RamObjectList *importFileTypes() const;
     RamObjectList *exportFileTypes() const;
 
+    bool canOpen(QString filePath) const;
+    bool open(QString filePath) const;
+
     static RamApplication *application(QString uuid);
 
 public slots:
@@ -41,7 +44,7 @@ private slots:
     void exportFileTypeAssigned(const QModelIndex &parent, int first, int last);
 
 private:
-    QString _executableFilePath;
+    QString m_executableFilePath;
     RamObjectList *m_nativeFileTypes;
     RamObjectList *m_importFileTypes;
     RamObjectList *m_exportFileTypes;

@@ -27,12 +27,16 @@ public:
     RamState *state() const;
     void setState(RamState *state);
 
+    QStringList mainFiles() const;
+    QString createFileFromTemplate(QString templateFileName) const;
+
     int version() const;
     QStringList versionFiles() const;
     QStringList versionFiles(QString resource) const;
     int latestVersion() const;
     int latestVersion(QString resource) const;
     void setVersion(int version);
+    QString restoreVersionFile(QString fileName) const;
 
     RamStep *step() const;
 
@@ -50,6 +54,7 @@ public:
     void setPublished(bool published);
 
     QString previewImagePath() const;
+    QStringList previewFiles() const;
 
     RamUser *assignedUser() const;
     void assignUser(RamUser *assignedUser);
