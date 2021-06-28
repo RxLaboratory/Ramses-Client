@@ -31,6 +31,8 @@ public:
     RamStep::Type productionType() const;
     static RamItem *item(QString uuid);
 
+    QString previewImagePath() const;
+
 signals:
     void statusChanged(RamItem *, RamStep *);
 

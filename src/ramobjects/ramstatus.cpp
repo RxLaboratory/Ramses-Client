@@ -345,6 +345,34 @@ void RamStatus::setPublished(bool published)
     emit changed(this);
 }
 
+QString RamStatus::previewImagePath() const
+{
+    QDir previewDir = path(RamObject::PreviewFolder);
+    QStringList filters;
+    filters << "*.jpg" << "*.png" << "*.jpeg" << "*.gif";
+    QStringList images = previewDir.entryList(filters, QDir::Files );
+
+    if (images.count() == 0) return "";
+
+    RamNameManager nm;
+
+    RamProject *p = m_item->project();
+
+    foreach(QString file, images)
+    {
+        if (nm.setFileName(file))
+        {
+            if (nm.project().toLower() != p->shortName().toLower()) continue;
+            if (nm.step().toLower() != m_step->shortName().toLower()) continue;
+            if (nm.shortName().toLower() != m_item->shortName().toLower()) continue;
+            return previewDir.filePath( file );
+        }
+    }
+
+    // Not found, return the first one
+    return previewDir.filePath( images.at(0) );
+}
+
 QDateTime RamStatus::date() const
 {
     return m_date;

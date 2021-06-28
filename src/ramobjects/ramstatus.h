@@ -49,6 +49,8 @@ public:
     QStringList publishedFiles(QString resource) const;
     void setPublished(bool published);
 
+    QString previewImagePath() const;
+
     RamUser *assignedUser() const;
     void assignUser(RamUser *assignedUser);
 

@@ -206,3 +206,28 @@ RamProject *RamItem::project() const
 {
     return m_project;
 }
+
+QString RamItem::previewImagePath() const
+{
+    QDir previewDir = path(RamObject::PreviewFolder);
+    QStringList filters;
+    filters << "*.jpg" << "*.png" << "*.jpeg" << "*.gif";
+    QStringList images = previewDir.entryList(filters, QDir::Files );
+
+    if (images.count() == 0) return "";
+
+    RamNameManager nm;
+
+    foreach(QString file, images)
+    {
+        if (nm.setFileName(file))
+        {
+            if (nm.project().toLower() != m_project->shortName().toLower()) continue;
+            if (nm.shortName().toLower() != m_shortName.toLower()) continue;
+            return previewDir.filePath( file );
+        }
+    }
+
+    // Not found, return the first one
+    return previewDir.filePath( images.at(0) );
+}

@@ -174,6 +174,7 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
 
     QString details;
     QString subDetails;
+    QString previewImagePath;
     QRect detailsRect( iconRect.left() + 5, titleRect.bottom() + 3, bgRect.width() - iconRect.width() -5, bgRect.height() - titleRect.height() - 15 );
 
     // Type Specific Drawing
@@ -297,11 +298,15 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
         RamShot *shot = qobject_cast<RamShot*>( obj );
         // icon
         painter->drawPixmap( iconRect, QIcon(":/icons/shot").pixmap(QSize(12,12)));
-        details = "Duration: " %
+        if (titleRect.bottom() + 5 < bgRect.bottom())
+            details = "Duration: " %
                             QString::number(shot->duration(), 'f', 2) %
                             " s | " %
                             QString::number(shot->duration() * shot->project()->framerate(), 'f', 2) %
                             " f";
+        // Preview
+        if (titleRect.bottom() + 25 < bgRect.bottom())
+            previewImagePath = shot->previewImagePath();
         break;
     }
     case RamObject::Asset:
@@ -312,6 +317,10 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
         details = asset->assetGroup()->name() %
                             "\n" %
                             asset->tags().join(", ");
+
+        // Preview
+        if (titleRect.bottom() + 25 < bgRect.bottom())
+            previewImagePath = asset->previewImagePath();
         break;
     }
     case RamObject::State:
@@ -350,6 +359,7 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
         QBrush statusBrush(statusColor.darker());
         QPainterPath path;
         QRect statusRect( bgRect.left() + 5, titleRect.bottom() + 5, bgRect.width() - 10, 5 );
+        // details
         if (statusRect.bottom() + 5 < bgRect.bottom())
         {
             path.addRoundedRect(statusRect, 5, 5);
@@ -359,19 +369,6 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
             QPainterPath completionPath;
             completionPath.addRoundedRect(statusRect, 5, 5);
             painter->fillPath(completionPath, statusBrush);
-
-            //subdetails
-            QString dateFormat = "yyyy-MM-dd hh:mm:ss";
-            RamUser *user = Ramses::instance()->currentUser();
-            if (user)
-            {
-                QSettings *uSettings = user->userSettings();
-                dateFormat = uSettings->value("ramses/dateFormat", dateFormat).toString();
-            }
-            subDetails = "Modified on: " %
-                    status->date().toString(dateFormat) %
-                    "\nBy: " %
-                    status->user()->name();
 
             // details
             RamUser *assignedUser = status->assignedUser();
@@ -388,6 +385,24 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
 
             detailsRect.moveTop(statusRect.bottom() + 5);
             detailsRect.setHeight( bgRect.bottom() - statusRect.bottom() - 10);
+        }
+        // subdetails
+        if (statusRect.bottom() + 25 < bgRect.bottom())
+        {
+            //subdetails
+            QString dateFormat = "yyyy-MM-dd hh:mm:ss";
+            RamUser *user = Ramses::instance()->currentUser();
+            if (user)
+            {
+                QSettings *uSettings = user->userSettings();
+                dateFormat = uSettings->value("ramses/dateFormat", dateFormat).toString();
+            }
+            subDetails = "Modified on: " %
+                    status->date().toString(dateFormat) %
+                    "\nBy: " %
+                    status->user()->name();
+
+            previewImagePath = status->previewImagePath();
         }
 
         break;
@@ -416,8 +431,24 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
     }
     else commentRect.setHeight(0);
 
+    // Draw image preview
+    QRect imageRect( iconRect.left() + 5, commentRect.bottom() + 5, bgRect.width() - 30, bgRect.bottom() - commentRect.bottom() - 5);
+    if (detailsRect.bottom() + 20 < bgRect.bottom() && previewImagePath != "")
+    {
+        QPixmap pix(previewImagePath);
+        float pixRatio = pix.width() / pix.height();
+        // Adjust image rect height to fit ratio
+        float rectRatio = imageRect.width() / imageRect.height();
+        if (rectRatio < pixRatio)
+            imageRect.setHeight( imageRect.width() / pixRatio );
+        else
+            imageRect.setWidth( imageRect.height() * pixRatio );
+        painter->drawPixmap( imageRect, QPixmap(previewImagePath));
+    }
+    else imageRect.setHeight(0);
+
     // Draw subdetails
-    QRect subDetailsRect( iconRect.left() + 5, commentRect.bottom() + 5, bgRect.width() - 30, bgRect.bottom() - commentRect.bottom() - 5);
+    QRect subDetailsRect( iconRect.left() + 5, imageRect.bottom() + 5, bgRect.width() - 30, bgRect.bottom() - imageRect.bottom() - 5);
     if (commentRect.bottom() + 20 < bgRect.bottom() && subDetails != "")
     {
         painter->setPen( detailsPen );

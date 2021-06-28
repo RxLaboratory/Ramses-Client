@@ -82,6 +82,7 @@ public:
 
     static RamObject *obj(QString uuid);
 
+
 public slots:
     virtual void update();
     virtual void remove();
