@@ -21,7 +21,7 @@ void ShotEditWidget::setObject(RamObject *obj)
     RamShot *shot = qobject_cast<RamShot*>(obj);
 
     ObjectEditWidget::setObject(shot);
-    _shot = shot;
+    m_shot = shot;
 
     QSignalBlocker b1(ui_framesBox);
     QSignalBlocker b2(ui_secondsBox);
@@ -36,29 +36,33 @@ void ShotEditWidget::setObject(RamObject *obj)
 
     if (!shot) return;
 
-    ui_secondsBox->setValue(_shot->duration());
+    ui_secondsBox->setValue(m_shot->duration());
     secondsChanged();
     ui_folderWidget->setPath( shot->path() );
 
     // Set sequence
     RamProject *project = shot->project();
     ui_sequencesBox->setList(project->sequences());
-    ui_sequencesBox->setObject( _shot->sequence() );
+    ui_sequencesBox->setObject( m_shot->sequence() );
+
+    // Set assets
+    ui_assetList->setList( m_shot->assets() );
+    ui_assetList->setAssignList( project->assets() );
 
     this->setEnabled(Ramses::instance()->isLead());
 }
 
 void ShotEditWidget::update()
 {
-    if (!_shot) return;
+    if (!m_shot) return;
 
     if (!checkInput()) return;
 
     updating = true;
 
-    _shot->setDuration(ui_secondsBox->value());
+    m_shot->setDuration(ui_secondsBox->value());
     RamSequence *seq = qobject_cast<RamSequence*>( ui_sequencesBox->currentObject() );
-    _shot->setSequence(seq);
+    m_shot->setSequence(seq);
 
     ObjectEditWidget::update();
 
@@ -67,7 +71,7 @@ void ShotEditWidget::update()
 
 void ShotEditWidget::framesChanged()
 {
-    RamProject *proj = _shot->project();
+    RamProject *proj = m_shot->project();
     if (!proj) return;
 
     ui_secondsBox->setValue( ui_framesBox->value() / proj->framerate() );
@@ -75,7 +79,7 @@ void ShotEditWidget::framesChanged()
 
 void ShotEditWidget::secondsChanged()
 {
-    RamProject *proj = _shot->project();
+    RamProject *proj = m_shot->project();
     if (!proj) return;
 
     ui_framesBox->setValue( ui_secondsBox->value() * proj->framerate() );
@@ -108,9 +112,15 @@ void ShotEditWidget::setupUi()
     ui_mainFormLayout->addWidget(ui_sequencesBox, 5, 1);
 
     ui_folderWidget = new DuQFFolderDisplayWidget(this);
-    ui_mainLayout->insertWidget(1, ui_folderWidget);
+    ui_mainLayout->addWidget( ui_folderWidget);
 
-    ui_mainLayout->addStretch();
+    ui_assetList = new ObjectListEditWidget(true, RamUser::Lead, this);
+    ui_assetList->setEditMode(ObjectListEditWidget::UnassignObjects);
+    ui_assetList->setEditable(true);
+    ui_assetList->setSearchable(true);
+    ui_assetList->setTitle("Assets");
+
+    ui_mainLayout->addWidget(ui_assetList);
 }
 
 void ShotEditWidget::connectEvents()

@@ -37,7 +37,7 @@ void RamUser::setRole(const UserRole &role)
 
 void RamUser::setRole(const QString role)
 {
-    if (role == "admin")setRole(AdminFolder);
+    if (role == "admin")setRole(Admin);
     else if (role == "project") setRole(ProjectAdmin);
     else if (role == "lead") setRole(Lead);
     else setRole(Standard);
@@ -80,7 +80,7 @@ void RamUser::update()
     if(!m_dirty) return;
     RamObject::update();
     QString role = "standard";
-    if (m_role == AdminFolder) role = "admin";
+    if (m_role == Admin) role = "admin";
     else if (m_role == ProjectAdmin) role = "project";
     else if (m_role == Lead) role = "lead";
 

@@ -647,7 +647,7 @@ void MainWindow::currentUserChanged()
     actionShots->setVisible(true);
     actionAssets->setVisible(true);
 
-    if (user->role() == RamUser::AdminFolder)
+    if (user->role() == RamUser::Admin)
     {
         actionAdmin->setVisible(true);
         actionProjectSettings->setVisible(true);

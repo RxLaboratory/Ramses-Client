@@ -51,6 +51,8 @@ void ObjectListEditWidget::setFilterList(RamObjectList *filterList)
 
 void ObjectListEditWidget::setAssignList(RamObjectList *assignList)
 {
+    if (ui_assignMenu) ui_assignMenu->deleteLater();
+
     ui_assignMenu = new QMenu(this);
     ui_addButton->setPopupMode(QToolButton::InstantPopup);
     ui_addButton->setMenu(ui_assignMenu);

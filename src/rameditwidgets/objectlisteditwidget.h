@@ -31,8 +31,8 @@ public:
     enum EditMode { UnassignObjects, RemoveObjects };
     Q_ENUM( EditMode )
 
-    explicit ObjectListEditWidget(bool editableObjects = false, RamUser::UserRole editRole = RamUser::AdminFolder, QWidget *parent = nullptr);
-    explicit ObjectListEditWidget(RamObjectList *objectList, bool editableObjects = false, RamUser::UserRole editRole = RamUser::AdminFolder, QWidget *parent = nullptr);
+    explicit ObjectListEditWidget(bool editableObjects = false, RamUser::UserRole editRole = RamUser::Admin, QWidget *parent = nullptr);
+    explicit ObjectListEditWidget(RamObjectList *objectList, bool editableObjects = false, RamUser::UserRole editRole = RamUser::Admin, QWidget *parent = nullptr);
     void setList(RamObjectList *objectList);
     void setFilterList(RamObjectList *filterList);
     void setAssignList(RamObjectList *assignList);
@@ -72,7 +72,7 @@ private slots:
     void setSearchFocus();
 
 private:
-    void setupUi(bool editableObjects = false, RamUser::UserRole editRole = RamUser::AdminFolder);
+    void setupUi(bool editableObjects = false, RamUser::UserRole editRole = RamUser::Admin);
     void connectEvents();
 
     // UI Controls
@@ -82,7 +82,7 @@ private:
     RamObjectListComboBox *ui_filterBox;
     DuQFSearchEdit *ui_searchEdit;
     RamObjectListWidget *ui_listWidget;
-    QMenu *ui_assignMenu;
+    QMenu *ui_assignMenu = nullptr;
 
     // Settings
     EditMode m_editMode = UnassignObjects;

@@ -18,6 +18,8 @@ public:
     qreal duration() const;
     void setDuration(const qreal &duration);
 
+    RamObjectList *assets() const;
+
     static RamShot *shot(QString uuid);
 
 public slots:
@@ -27,9 +29,14 @@ public slots:
 protected:
     virtual QString folderPath() const override;
 
+private slots:
+    void assetAssigned(const QModelIndex &parent, int first, int last);
+    void assetUnassigned(const QModelIndex &parent, int first, int last);
+
 private:
     RamSequence *m_sequence;
     qreal m_duration = 0.0;
+    RamObjectList *m_assets;
 
     QMetaObject::Connection m_sequenceConnection;
 };

@@ -23,11 +23,11 @@ public:
 
     explicit RamObjectListWidget(DisplayMode mode = List, QWidget *parent = nullptr);
     explicit RamObjectListWidget(RamObjectList *list, DisplayMode mode = List, QWidget *parent = nullptr);
-    explicit RamObjectListWidget(RamObjectList *list, bool editableObjects, RamUser::UserRole editRole = RamUser::AdminFolder, DisplayMode mode = List, QWidget *parent = nullptr);
+    explicit RamObjectListWidget(RamObjectList *list, bool editableObjects, RamUser::UserRole editRole = RamUser::Admin, DisplayMode mode = List, QWidget *parent = nullptr);
     // Content
     void setList(RamObjectList *list);
     // Settings
-    void setEditableObjects(bool editableObjects, RamUser::UserRole editRole = RamUser::AdminFolder);
+    void setEditableObjects(bool editableObjects, RamUser::UserRole editRole = RamUser::Admin);
     void setSortable(bool sortable = true);
 
 signals:

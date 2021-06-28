@@ -47,7 +47,7 @@ private:
     // Settings
     bool m_editable = false;
     bool m_comboBox = false;
-    RamUser::UserRole m_editRole = RamUser::AdminFolder;
+    RamUser::UserRole m_editRole = RamUser::Admin;
 
     // Events
     bool m_editButtonPressed = false;

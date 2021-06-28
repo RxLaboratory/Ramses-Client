@@ -6,6 +6,7 @@
 RamShot::RamShot(QString shortName, RamSequence *sequence, QString name, QString uuid):
     RamItem(shortName, sequence->project(), name, uuid)
 {
+    m_assets = new RamObjectList("SHOTASSETS", "Assets", this);
     setObjectType(Shot);
     setProductionType(RamStep::ShotProduction);
     m_sequence = sequence;
@@ -13,6 +14,9 @@ RamShot::RamShot(QString shortName, RamSequence *sequence, QString name, QString
     m_dbi->createShot(m_shortName, m_name, m_sequence->uuid(), m_uuid);
 
     this->setObjectName( "RamShot " + m_shortName );
+
+    connect(m_assets, SIGNAL(rowsInserted(QModelIndex,int,int)),this,SLOT(assetAssigned(QModelIndex,int,int)));
+    connect(m_assets, SIGNAL(rowsAboutToBeRemoved(QModelIndex,int,int)),this,SLOT(assetUnassigned(QModelIndex,int,int)));
 }
 
 RamShot::~RamShot()
@@ -87,4 +91,31 @@ QString RamShot::folderPath() const
 {
     RamProject *p = m_sequence->project();
     return p->path(RamObject::ShotsFolder) + "/" + p->shortName() + "_S_" + m_shortName;
+}
+
+void RamShot::assetAssigned(const QModelIndex &parent, int first, int last)
+{
+    Q_UNUSED(parent)
+
+    for (int i  = first; i <= last; i++)
+    {
+        RamObject *assetObj = m_assets->at(i);
+        m_dbi->assignAsset(m_uuid, assetObj->uuid());
+    }
+}
+
+void RamShot::assetUnassigned(const QModelIndex &parent, int first, int last)
+{
+    Q_UNUSED(parent)
+
+    for (int i  = first; i <= last; i++)
+    {
+        RamObject *assetObj = m_assets->at(i);
+        m_dbi->unassignAsset(m_uuid, assetObj->uuid());
+    }
+}
+
+RamObjectList *RamShot::assets() const
+{
+    return m_assets;
 }

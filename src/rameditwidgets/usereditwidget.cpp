@@ -96,7 +96,7 @@ void UserEditWidget::update()
     _user->setFolderPath( ui_folderSelector->path());
 
     int roleIndex = ui_roleBox->currentIndex();
-    if (roleIndex == 3) _user->setRole(RamUser::AdminFolder);
+    if (roleIndex == 3) _user->setRole(RamUser::Admin);
     else if (roleIndex == 2) _user->setRole(RamUser::ProjectAdmin);
     else if (roleIndex == 1) _user->setRole(RamUser::Lead);
     else _user->setRole(RamUser::Standard);

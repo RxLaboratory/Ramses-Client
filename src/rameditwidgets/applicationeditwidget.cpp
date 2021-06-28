@@ -106,19 +106,19 @@ void ApplicationEditWidget::setupUi()
 
     QTabWidget *tabWidget = new QTabWidget(this);
 
-    m_nativeList = new ObjectListEditWidget(true, RamUser::AdminFolder);
+    m_nativeList = new ObjectListEditWidget(true, RamUser::Admin);
     m_nativeList->setEditMode(ObjectListEditWidget::UnassignObjects);
     m_nativeList->setTitle("Native file types");
     m_nativeList->setAssignList(Ramses::instance()->fileTypes());
     tabWidget->addTab(m_nativeList, QIcon(":/icons/files"), "Native");
 
-    m_importList = new ObjectListEditWidget(true, RamUser::AdminFolder);
+    m_importList = new ObjectListEditWidget(true, RamUser::Admin);
     m_importList->setEditMode(ObjectListEditWidget::UnassignObjects);
     m_importList->setTitle("Imports");
     m_importList->setAssignList(Ramses::instance()->fileTypes());
     tabWidget->addTab(m_importList, QIcon(":/icons/files"), "Import");
 
-    m_exportList = new ObjectListEditWidget(true, RamUser::AdminFolder);
+    m_exportList = new ObjectListEditWidget(true, RamUser::Admin);
     m_exportList->setEditMode(ObjectListEditWidget::UnassignObjects);
     m_exportList->setTitle("Exports");
     m_exportList->setAssignList(Ramses::instance()->fileTypes());

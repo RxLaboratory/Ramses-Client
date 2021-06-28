@@ -467,6 +467,24 @@ void DBInterface::setShotStatus(QString shotUuid, QString stateUuid, QString ste
     request(q);
 }
 
+void DBInterface::assignAsset(QString shotUuid, QString assetUuid)
+{
+    QStringList q("assignAsset");
+    q << "uuid=" + shotUuid;
+    q << "assetUuid=" + assetUuid;
+
+    request(q);
+}
+
+void DBInterface::unassignAsset(QString shotUuid, QString assetUuid)
+{
+    QStringList q("unassignAsset");
+    q << "uuid=" + shotUuid;
+    q << "assetUuid=" + assetUuid;
+
+    request(q);
+}
+
 void DBInterface::createState(QString shortName, QString name, QString uuid)
 {
     QStringList q("createState");

@@ -626,8 +626,6 @@ QString RamLoader::gotAsset(QJsonObject newA, RamProject *project)
 
     project->assets()->append(asset);
 
-    qDebug() << ag->name() + " - " + asset->name();
-
     return uuid;
 }
 
@@ -733,6 +731,17 @@ QString RamLoader::gotShot(QJsonObject newS, RamProject *project)
     shot->setOrder( newS.value("order").toInt() );
     shot->setComment( newS.value("comment").toString());
     gotStatusHistory( newS.value("statusHistory").toArray(), shot);
+
+    // Assign assets
+    qDebug() << newS;
+    QJsonArray assts = newS.value("assetUuids").toArray();
+    shot->assets()->clear();
+    for (int i = 0; i < assts.count(); i++)
+    {
+        RamObject *assetObj = RamAsset::asset( assts.at(i).toString() );
+        if (!assetObj) continue;
+        shot->assets()->append(assetObj);
+    }
 
     project->shots()->append(shot);
 

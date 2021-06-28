@@ -9,7 +9,7 @@ class RamUser : public RamObject
 {
     Q_OBJECT
 public:
-    enum UserRole { AdminFolder = 3,
+    enum UserRole { Admin = 3,
                     ProjectAdmin = 2,
                     Lead = 1,
                     Standard = 0 };

@@ -190,7 +190,7 @@ RamObjectList *Ramses::projects() const
 bool Ramses::isAdmin()
 {
     if (!m_currentUser) return false;
-    return m_currentUser->role() >= RamUser::AdminFolder;
+    return m_currentUser->role() >= RamUser::Admin;
 }
 
 bool Ramses::isProjectAdmin()

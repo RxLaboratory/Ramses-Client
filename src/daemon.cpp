@@ -424,7 +424,7 @@ void Daemon::getCurrentUser(QTcpSocket *client)
     content.insert("name", user->name());
     content.insert("folderPath", user->path(RamObject::NoFolder, true));
     RamUser::UserRole role = user->role();
-    if (role == RamUser::AdminFolder) content.insert("role", "ADMIN");
+    if (role == RamUser::Admin) content.insert("role", "ADMIN");
     else if (role == RamUser::ProjectAdmin) content.insert("role","PROJECT_ADMIN");
     else if (role == RamUser::Lead) content.insert("role", "LEAD");
     else content.insert("role", "STANDARD");

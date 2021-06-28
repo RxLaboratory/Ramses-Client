@@ -82,6 +82,8 @@ public:
     void setShotOrder(QString uuid, int order);
     void removeShot(QString uuid);
     void setShotStatus(QString shotUuid, QString stateUuid, QString stepUuid, QString userUuid = "", int completionRatio = -1, QString comment = "", int version = 1, QString uuid = "", QString assignedUserUuid = "");
+    void assignAsset(QString shotUuid, QString assetUuid);
+    void unassignAsset(QString shotUuid, QString assetUuid);
     //states
     void createState(QString shortName, QString name, QString uuid);
     void getStates();

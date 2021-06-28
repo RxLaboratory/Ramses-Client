@@ -187,7 +187,7 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
         // icon
         QString icon = ":/icons/user";
         details = "Standard user";
-        if (user->role() == RamUser::AdminFolder)
+        if (user->role() == RamUser::Admin)
         {
             icon = ":/icons/admin";
             details = "Administrator";
