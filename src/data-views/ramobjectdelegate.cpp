@@ -299,11 +299,34 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
         // icon
         painter->drawPixmap( iconRect, QIcon(":/icons/shot").pixmap(QSize(12,12)));
         if (titleRect.bottom() + 5 < bgRect.bottom())
+        {
             details = "Duration: " %
                             QString::number(shot->duration(), 'f', 2) %
                             " s | " %
                             QString::number(shot->duration() * shot->project()->framerate(), 'f', 2) %
                             " f";
+            // List assigned assets
+            if (shot->assets()->count() > 0)
+            {
+                QMap<QString,QStringList> assets;
+                for (int i = 0; i < shot->assets()->count(); i++)
+                {
+                    RamAsset *asset = qobject_cast<RamAsset*>( shot->assets()->at(i) );
+                    QString agName = asset->assetGroup()->name();
+                    QStringList ag = assets.value( agName );
+                    ag << asset->shortName();
+                    assets[ agName ] = ag;
+                }
+                QMapIterator<QString,QStringList> i(assets);
+                while(i.hasNext())
+                {
+                    i.next();
+                    details = details % "\n" % i.key() % " ► " % i.value().join(", ");
+                }
+            }
+
+
+        }
         // Preview
         if (titleRect.bottom() + 25 < bgRect.bottom())
             previewImagePath = shot->previewImagePath();
@@ -376,7 +399,7 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
                     assignedUser->name();
             else details = "Not assigned";
 
-            if (status->isPublished()) details = details % "\n→ Published";
+            if (status->isPublished()) details = details % "\n► Published";
 
             qint64 timeSpentSecs = status->timeSpent();
             // Convert to hours
