@@ -28,8 +28,16 @@ RamObjectListMenu::RamObjectListMenu(bool checkable, QWidget *parent):
 
 void RamObjectListMenu::setList(QAbstractItemModel *list)
 {
+    // Remove
+    removeObject(QModelIndex(),0,m_objects->sourceModel()->rowCount()-1);
+
     if (!list) m_objects->setList(m_emptyList);
-    else m_objects->setList(list);
+    else
+    {
+        m_objects->setList(list);
+        //Add
+        newObject(QModelIndex(),0,list->rowCount()-1);
+    }
 }
 
 void RamObjectListMenu::addCreateButton()
