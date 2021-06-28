@@ -3,6 +3,7 @@
 
 #include "objectlistmanagerwidget.h"
 #include "assetgroupeditwidget.h"
+#include "data-views/ramobjectlistmenu.h"
 
 class AssetGroupListManagerWidget : public ObjectListManagerWidget
 {
@@ -16,15 +17,10 @@ protected slots:
 private slots:
     void changeProject(RamProject *project);
 
-    void templateInserted(const QModelIndex &parent, int first, int last);
-    void newTemplate(RamObject *obj);
-    void templateRemoved(const QModelIndex &parent, int first, int last);
-    void templateChanged();
-
-    void actionCreate();
+    void createFromTemplate(RamObject *obj);
 
 private:
-    QMenu *ui_createMenu;
+    RamObjectListMenu *ui_createMenu;
 };
 
 #endif // ASSETGROUPLISTMANAGERWIDGET_H

@@ -20,7 +20,7 @@ protected:
 private:
     RamStep::Type m_stepType;
     QStringList m_ignoreUuids;
-    RamObjectList *m_objectList = nullptr;
+    RamObjectList *m_emptyList;
 };
 
 #endif // RAMSTEPTYPEFILTERMODEL_H

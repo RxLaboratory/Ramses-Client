@@ -11,7 +11,7 @@ class RamObjectFilterModel : public QSortFilterProxyModel
     Q_OBJECT
 public:
     explicit RamObjectFilterModel(QObject *parent = nullptr);
-    void setList(RamObjectList *list);
+    void setList(QAbstractItemModel *list);
     void setFilterUuid(const QString &filterUuid);
     void search(const QString &searchStr);
 
@@ -21,7 +21,7 @@ protected:
 private:
     QString m_currentFilterUuid;
     QString m_searchString;
-    RamObjectList *m_objectList = nullptr;
+    RamObjectList *m_emptyList;
 };
 
 #endif // RAMOBJECTFILTERMODEL_H

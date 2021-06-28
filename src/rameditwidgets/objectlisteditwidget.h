@@ -15,6 +15,7 @@
 #include "ramobjectlistcombobox.h"
 #include "duqf-widgets/duqfsearchedit.h"
 #include "filetypeeditwidget.h"
+#include "data-views/ramobjectlistmenu.h"
 
 /**
  * @brief The ObjectListEditWidget class displays and edits a RamObjectList
@@ -59,12 +60,7 @@ private slots:
     void removeSelectedObjects();
     void edit(RamObject *obj);
 
-    void newAssignObj(RamObject *obj);
-    void newAssignObj(const QModelIndex &parent,int first,int last);
-    void assignObjRemoved(const QModelIndex &parent,int first,int last);
-    void assignObjChanged(RamObject *changedObj);
-
-    void assignAction();
+    void assign(RamObject *obj);
 
     void objectAssigned(const QModelIndex &parent,int first,int last);
     void objectUnassigned(const QModelIndex &parent,int first,int last);
@@ -82,7 +78,7 @@ private:
     RamObjectListComboBox *ui_filterBox;
     DuQFSearchEdit *ui_searchEdit;
     RamObjectListWidget *ui_listWidget;
-    QMenu *ui_assignMenu = nullptr;
+    RamObjectListMenu *ui_assignMenu = nullptr;
 
     // Settings
     EditMode m_editMode = UnassignObjects;

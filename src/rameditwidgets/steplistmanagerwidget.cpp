@@ -12,22 +12,16 @@ ObjectListManagerWidget(
     m_listEditWidget->setSortable(true);
 
     // Create from template actions
-    ui_createMenu = new QMenu(this);
-    QAction *createAction = new QAction("Create new step");
-    ui_createMenu->addAction(createAction);
-    ui_createMenu->addSeparator();
+    ui_createMenu = new RamObjectListMenu(false, this);
+    ui_createMenu->addCreateButton();
     QToolButton *addButton = m_listEditWidget->addButton();
     addButton->setPopupMode(QToolButton::InstantPopup);
     addButton->setMenu(ui_createMenu);
 
-    // Add templates
-    RamObjectList *templateSteps = Ramses::instance()->templateSteps();
-    for (int i = 0; i < templateSteps->count(); i++) newTemplate( templateSteps->at(i) );
+    ui_createMenu->setList(Ramses::instance()->templateSteps());
 
-    connect(createAction, SIGNAL(triggered()), this, SLOT(createObject()));
-    connect(templateSteps, SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(templateStepInserted(QModelIndex,int,int)));
-    connect(templateSteps, SIGNAL(rowsAboutToBeRemoved(QModelIndex,int,int)), this, SLOT(templateStepRemoved(QModelIndex,int,int)));
-
+    connect(ui_createMenu, SIGNAL(create()), this, SLOT(createObject()));
+    connect(ui_createMenu, SIGNAL(assign(RamObject*)), this, SLOT(createFromTemplate(RamObject*)));
 }
 
 void StepListManagerWidget::createObject()
@@ -52,69 +46,11 @@ void StepListManagerWidget::changeProject(RamProject *project)
     this->setList( project->steps() );
 }
 
-void StepListManagerWidget::templateStepInserted(const QModelIndex &parent, int first, int last)
-{
-    Q_UNUSED(parent)
-
-    for (int i = first; i <= last; i++)
-    {
-        RamObject *o = Ramses::instance()->templateSteps()->at(i);
-        newTemplate(o);
-    }
-}
-
-void StepListManagerWidget::newTemplate(RamObject *obj)
-{
-    QAction *action = new QAction( obj->name() );
-    quintptr iptr = reinterpret_cast<quintptr>( obj );
-    action->setData( iptr );
-    ui_createMenu->addAction(action);
-
-    connect(action, SIGNAL(triggered()), this, SLOT(actionCreate()));
-    connect(obj, &RamObject::changed, this, &StepListManagerWidget::templateStepChanged);
-
-}
-
-void StepListManagerWidget::templateStepRemoved(const QModelIndex &parent, int first, int last)
-{
-    Q_UNUSED(parent)
-
-    QList<QAction *> actions = ui_createMenu->actions();
-
-    for (int i = first; i <= last; i++)
-    {
-        RamObject *removedObj = Ramses::instance()->templateSteps()->at(i);
-        for (int j = actions.count() -1; j >= 0; j--)
-        {
-            quintptr iptr = actions.at(j)->data().toULongLong();
-            RamObject *obj = reinterpret_cast<RamObject*>( iptr );
-
-            if (removedObj->is(obj)) actions.at(j)->deleteLater();
-            break;
-        }
-    }
-}
-
-void StepListManagerWidget::templateStepChanged()
-{
-    RamObject *changedObj = qobject_cast<RamObject*>( sender() );
-    QList<QAction *> actions = ui_createMenu->actions();
-    for (int i = actions.count() -1; i >= 0; i--)
-    {
-        quintptr iptr = actions.at(i)->data().toULongLong();
-        RamObject *obj = reinterpret_cast<RamObject*>( iptr );
-
-        if (changedObj->is(obj)) actions.at(i)->setText(changedObj->name());
-    }
-}
-
-void StepListManagerWidget::actionCreate()
+void StepListManagerWidget::createFromTemplate(RamObject *stepObj)
 {
     RamProject *project = Ramses::instance()->currentProject();
     if (!project) return;
-    QAction *stepAction = (QAction*)sender();
-    quintptr iptr = stepAction->data().toULongLong();
-    RamStep *templateStep = reinterpret_cast<RamStep*>( iptr );
+    RamStep *templateStep = qobject_cast<RamStep*>( stepObj );
     if (!templateStep) return;
     RamStep *step = templateStep->createFromTemplate(project);
     project->steps()->append(step);
