@@ -81,6 +81,7 @@ QList<RamStatus *> RamItem::status()
     QMapIterator<QString, RamStepStatusHistory*> i(m_history);
     while(i.hasNext())
     {
+        i.next();
         RamStepStatusHistory *h = i.value();
         h->sort();
         statuses << qobject_cast<RamStatus*>( h->last() );
