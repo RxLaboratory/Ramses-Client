@@ -12,14 +12,17 @@ RamItem::RamItem(QString shortName, RamProject *project, QString name, QString u
     this->setObjectName( "RamItem " + shortName);
 }
 
-void RamItem::setStatus(RamUser *user, RamState *state, RamStep *step, int completionRatio, QString comment, int version)
+RamStatus *RamItem::setStatus(RamUser *user, RamState *state, RamStep *step, int completionRatio, QString comment, int version)
 {
     RamStatus *newStatus = new RamStatus(user, state, step, this);
     if (completionRatio >= 0) newStatus->setCompletionRatio(completionRatio);
     if (comment != "") newStatus->setComment(comment);
     newStatus->setVersion(version);
 
+
     addStatus(newStatus);
+
+    return newStatus;
 }
 
 void RamItem::addStatus(RamStatus *status)

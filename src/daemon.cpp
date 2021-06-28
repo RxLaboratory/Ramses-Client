@@ -85,7 +85,27 @@ void Daemon::reply()
     else if (args.contains("getCurrentStatuses"))
         getCurrentStatus(args.value("shortName"), args.value("name", ""), args.value("type"),"", client);
     else if (args.contains("getCurrentStatus"))
-        getCurrentStatus(args.value("shortName"), args.value("name", ""), args.value("type"), args.value("step"), client);
+        getCurrentStatus(
+                    args.value("shortName"),
+                    args.value("name", ""),
+                    args.value("type"),
+                    args.value("step"),
+                    client
+                    );
+    else if (args.contains("setStatus"))
+        setStatus(
+                    args.value("shortName"),
+                    args.value("name", ""),
+                    args.value("step"),
+                    args.value("type"),
+                    args.value("state"),
+                    args.value("comment"),
+                    args.value("completionRatio").toInt(),
+                    args.value("version").toInt(),
+                    args.value("published") == "1",
+                    args.value("user"),
+                    client
+                    );
     else if (args.contains("getCurrentUser"))
         getCurrentUser(client);
     else if (args.contains("getPipes"))
@@ -162,7 +182,7 @@ void Daemon::setCurrentProject(QString shortName, QTcpSocket *client)
 
 void Daemon::getCurrentStatus(QString shortName, QString name, QString type, QString stepName, QTcpSocket *client)
 {
-    log("I'm replying to this request: getCurrentStatus", DuQFLog::Information);
+    log("I'm replying to this request: getCurrentStatus", DuQFLog::Debug);
 
     RamProject *proj = Ramses::instance()->currentProject();
 
@@ -217,9 +237,68 @@ void Daemon::getCurrentStatus(QString shortName, QString name, QString type, QSt
     post(client, content, "getCurrentStatus", "Current status for " + item->name() + " retrieved.");
 }
 
+void Daemon::setStatus(QString shortName, QString name, QString step, QString type, QString state, QString comment, int completionRatio, int version, bool published, QString user, QTcpSocket *client)
+{
+    log("I'm replying to this request: setStatus", DuQFLog::Debug);
+
+    RamProject *proj = Ramses::instance()->currentProject();
+
+    QJsonObject content;
+
+    if (!proj)
+    {
+        post(client, content, "setStatus", "Sorry, there's no current project. Select a project first!", false);
+        return;
+    }
+
+    RamItem *item = nullptr;
+    if (type == "A") item = qobject_cast<RamItem*>( proj->assets()->fromName(shortName, name) );
+    else item = qobject_cast<RamItem*>( proj->shots()->fromName(shortName, name) );
+
+    if (!item)
+    {
+        post(client, content, "setStatus", "Sorry, item not found. Check its name, short name and type", false);
+        return;
+    }
+
+    // Get step from name
+    RamObject *stepObj = proj->steps()->fromName( step );
+    if(!stepObj)
+    {
+        post(client, content, "setStatus", "Sorry, step " + step + " not found.", false);
+        return;
+    }
+    RamStep *stp = qobject_cast<RamStep*>( stepObj );
+
+    // Get user
+    RamObject *u = Ramses::instance()->users()->fromName(user);
+    RamUser *usr;
+    if (!u)
+    {
+        usr = Ramses::instance()->currentUser();
+        if (!usr)
+            usr = Ramses::instance()->ramUser();
+    }
+    else usr = qobject_cast<RamUser*>( u );
+
+    // Get state
+    RamObject *sttObj = Ramses::instance()->states()->fromName(state);
+    RamState *stt;
+    if (!sttObj)
+        stt = Ramses::instance()->wipState();
+    else stt = qobject_cast<RamState*>( sttObj );
+
+    RamStatus *newStatus = item->setStatus(usr, stt, stp, completionRatio, comment, version);
+    newStatus->setPublished(published);
+
+    post(client, content, "setStatus", "Status updated!");
+    return;
+
+}
+
 void Daemon::getAssets(QTcpSocket *client)
 {
-    log("I'm replying to this request: getAssets", DuQFLog::Information);
+    log("I'm replying to this request: getAssets", DuQFLog::Debug);
 
     RamProject *proj = Ramses::instance()->currentProject();
 
@@ -244,7 +323,7 @@ void Daemon::getAssets(QTcpSocket *client)
 
 void Daemon::getAsset(QString shortName, QString name, QTcpSocket *client)
 {
-    log("I'm replying to this request: gatAsset", DuQFLog::Information);
+    log("I'm replying to this request: gatAsset", DuQFLog::Debug);
 
     RamProject *proj = Ramses::instance()->currentProject();
 
@@ -267,7 +346,7 @@ void Daemon::getAsset(QString shortName, QString name, QTcpSocket *client)
 
 void Daemon::getAssetGroups(QTcpSocket *client)
 {
-    log("I'm replying to this request: getAssetGroups", DuQFLog::Information);
+    log("I'm replying to this request: getAssetGroups", DuQFLog::Debug);
 
     RamProject *proj = Ramses::instance()->currentProject();
 
@@ -296,7 +375,7 @@ void Daemon::getAssetGroups(QTcpSocket *client)
 
 void Daemon::getProject(QString shortName, QString name, QTcpSocket *client)
 {
-    log("I'm replying to this request: getCurrentProject", DuQFLog::Information);
+    log("I'm replying to this request: getCurrentProject", DuQFLog::Debug);
 
     QJsonObject content;
 
@@ -329,7 +408,7 @@ void Daemon::getProject(QString shortName, QString name, QTcpSocket *client)
 
 void Daemon::getCurrentUser(QTcpSocket *client)
 {
-    log("I'm replying to this request: getCurrentUser", DuQFLog::Information);
+    log("I'm replying to this request: getCurrentUser", DuQFLog::Debug);
 
     RamUser *user = Ramses::instance()->currentUser();
 
@@ -355,7 +434,7 @@ void Daemon::getCurrentUser(QTcpSocket *client)
 
 void Daemon::getPipes(QTcpSocket *client)
 {
-    log("I'm replying to this request: getPipes", DuQFLog::Information);
+    log("I'm replying to this request: getPipes", DuQFLog::Debug);
 
     RamProject *proj = Ramses::instance()->currentProject();
 
@@ -415,7 +494,7 @@ void Daemon::getPipes(QTcpSocket *client)
 
 void Daemon::getProjects(QTcpSocket *client)
 {
-    log("I'm replying to this request: getProjects", DuQFLog::Information);
+    log("I'm replying to this request: getProjects", DuQFLog::Debug);
 
     QJsonObject content;
     QJsonArray projects;
@@ -438,7 +517,7 @@ void Daemon::getProjects(QTcpSocket *client)
 
 void Daemon::getShots(QString filter, QTcpSocket *client)
 {
-    log("I'm replying to this request: getShots", DuQFLog::Information);
+    log("I'm replying to this request: getShots", DuQFLog::Debug);
 
     RamProject *proj = Ramses::instance()->currentProject();
 
@@ -478,7 +557,7 @@ void Daemon::getShots(QString filter, QTcpSocket *client)
 
 void Daemon::getShot(QString shortName, QString name, QTcpSocket *client)
 {
-    log("I'm replying to this request: getShot", DuQFLog::Information);
+    log("I'm replying to this request: getShot", DuQFLog::Debug);
 
     RamProject *proj = Ramses::instance()->currentProject();
 
@@ -503,7 +582,7 @@ void Daemon::getShot(QString shortName, QString name, QTcpSocket *client)
 
 void Daemon::getStates(QTcpSocket *client)
 {
-    log("I'm replying to this request: getStates", DuQFLog::Information);
+    log("I'm replying to this request: getStates", DuQFLog::Debug);
 
     QJsonObject content;
     QJsonArray states;
@@ -521,7 +600,7 @@ void Daemon::getStates(QTcpSocket *client)
 
 void Daemon::getState(QString shortName, QString name, QTcpSocket *client)
 {
-    log("I'm replying to this request: getState", DuQFLog::Information);
+    log("I'm replying to this request: getState", DuQFLog::Debug);
 
     QJsonObject content;
 
@@ -538,7 +617,7 @@ void Daemon::getState(QString shortName, QString name, QTcpSocket *client)
 
 void Daemon::getSteps(QTcpSocket *client)
 {
-    log("I'm replying to this request: getSteps", DuQFLog::Information);
+    log("I'm replying to this request: getSteps", DuQFLog::Debug);
 
     RamProject *proj = Ramses::instance()->currentProject();
 
@@ -564,7 +643,7 @@ void Daemon::getSteps(QTcpSocket *client)
 
 void Daemon::getStep(QString shortName, QString name, QTcpSocket *client)
 {
-    log("I'm replying to this request: getStep", DuQFLog::Information);
+    log("I'm replying to this request: getStep", DuQFLog::Debug);
 
     RamProject *proj = Ramses::instance()->currentProject();
 
@@ -602,7 +681,7 @@ void Daemon::getStep(QString shortName, QString name, QTcpSocket *client)
 
 void Daemon::getRamsesFolder(QTcpSocket *client)
 {
-    log("I'm replying to this request: getRamsesFolder", DuQFLog::Information);
+    log("I'm replying to this request: getRamsesFolder", DuQFLog::Debug);
 
     QJsonObject content;
     content.insert("folder", Ramses::instance()->path(RamObject::NoFolder, true));
