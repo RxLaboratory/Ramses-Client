@@ -9,6 +9,7 @@
 #include <QMessageBox>
 #include <QScrollBar>
 #include <QMenu>
+#include <QShortcut>
 
 #include "ramobjectlistwidget.h"
 #include "ramobjectlistcombobox.h"
@@ -68,18 +69,20 @@ private slots:
     void objectAssigned(const QModelIndex &parent,int first,int last);
     void objectUnassigned(const QModelIndex &parent,int first,int last);
 
+    void setSearchFocus();
+
 private:
     void setupUi(bool editableObjects = false, RamUser::UserRole editRole = RamUser::AdminFolder);
     void connectEvents();
 
     // UI Controls
-    QToolButton *m_addButton;
-    QToolButton *m_removeButton;
-    QLabel *m_title;
-    RamObjectListComboBox *m_filterBox;
-    DuQFSearchEdit *m_searchEdit;
-    RamObjectListWidget *m_listWidget;
-    QMenu *m_assignMenu;
+    QToolButton *ui_addButton;
+    QToolButton *ui_removeButton;
+    QLabel *ui_title;
+    RamObjectListComboBox *ui_filterBox;
+    DuQFSearchEdit *ui_searchEdit;
+    RamObjectListWidget *ui_listWidget;
+    QMenu *ui_assignMenu;
 
     // Settings
     EditMode m_editMode = UnassignObjects;

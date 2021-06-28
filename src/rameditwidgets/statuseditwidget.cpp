@@ -29,6 +29,7 @@ void StatusEditWidget::setStatus(RamStatus *status)
     ui_mainFileList->clear();
     ui_publishedFileList->clear();
     ui_previewFileList->clear();
+    ui_folderWidget->setPath("");
 
     // Remove template list
     QList<QAction*> templateActions = ui_createFromTemplateMenu->actions();
@@ -44,6 +45,7 @@ void StatusEditWidget::setStatus(RamStatus *status)
     ui_versionBox->setValue(status->version());
     ui_statusCommentEdit->setPlainText(status->comment());
     ui_userBox->setObject(status->assignedUser());
+    ui_folderWidget->setPath( status->path() );
 
     // Try to auto compute time spent from previous status
     qint64 timeSpent = status->timeSpent();
@@ -285,6 +287,87 @@ void StatusEditWidget::createFromDefaultTemplate()
     revert();
 }
 
+void StatusEditWidget::publishedFileSelected(int row)
+{
+    ui_openPublishedFileButton->setEnabled(row >= 0);
+}
+
+void StatusEditWidget::openPublishedFile()
+{
+    int row = ui_publishedFileList->currentRow();
+    if (row < 0) return;
+
+    QString filePathToOpen = QDir(
+                m_status->path( RamObject::PublishFolder )
+                ).filePath( ui_publishedFileList->item(row)->text() );
+
+    m_status->step()->openFile( filePathToOpen );
+
+    DuQFLogger::instance()->log("Opening " + filePathToOpen + "...");
+
+    revert();
+}
+
+void StatusEditWidget::removeSelectedPublishedFile()
+{
+    int row = ui_publishedFileList->currentRow();
+    if (row < 0) return;
+
+    QString fileName = ui_publishedFileList->item(row)->text();
+
+    QMessageBox::StandardButton confirm = QMessageBox::question( this,
+        "Confirm deletion",
+        "Are you sure you want to delete the selected file?\n► " + fileName );
+    if ( confirm != QMessageBox::Yes ) return;
+
+    m_status->deleteFile( fileName, RamObject::PublishFolder );
+
+    DuQFLogger::instance()->log("Deleting " + fileName + "...");
+
+    revert();
+}
+
+void StatusEditWidget::previewFileSelected(int row)
+{
+    ui_openPreviewFileButton->setEnabled(row >= 0);
+}
+
+void StatusEditWidget::openPreviewFile()
+{
+    int row = ui_previewFileList->currentRow();
+    if (row < 0) return;
+
+    QString filePathToOpen = QDir(
+                m_status->path( RamObject::PreviewFolder )
+                ).filePath( ui_previewFileList->item(row)->text() );
+
+    // Try with the default app on the system
+    QDesktopServices::openUrl(QUrl("file:///" + filePathToOpen));
+
+    DuQFLogger::instance()->log("Opening " + filePathToOpen + "...");
+
+    revert();
+}
+
+void StatusEditWidget::removeSelectedPreviewFile()
+{
+    int row = ui_previewFileList->currentRow();
+    if (row < 0) return;
+
+    QString fileName = ui_previewFileList->item(row)->text();
+
+    QMessageBox::StandardButton confirm = QMessageBox::question( this,
+        "Confirm deletion",
+        "Are you sure you want to delete the selected file?\n► " + fileName );
+    if ( confirm != QMessageBox::Yes ) return;
+
+    m_status->deleteFile( fileName, RamObject::PreviewFolder );
+
+    DuQFLogger::instance()->log("Deleting " + fileName + "...");
+
+    revert();
+}
+
 void StatusEditWidget::setupUi()
 {
     this->hideName();
@@ -372,8 +455,6 @@ void StatusEditWidget::setupUi()
     ui_mainFileList = new QListWidget(this);
     mainFileLayout->addWidget(ui_mainFileList);
 
-    ui_deleteMainFileShortcut = new QShortcut(QKeySequence(QKeySequence::Delete),ui_mainFileList);
-
     QHBoxLayout *mainFileButtonLayout = new QHBoxLayout();
     mainFileButtonLayout->setContentsMargins(0,0,0,0);
     mainFileButtonLayout->setSpacing(3);
@@ -409,17 +490,58 @@ void StatusEditWidget::setupUi()
 
     tabWidget->addTab(mainFilesWidget, QIcon(":/icons/files"), "Work");
 
-    ui_publishedFileList = new QListWidget(this);
-    tabWidget->addTab(ui_publishedFileList, QIcon(":/icons/files"), "Published");
+    QWidget *publishedFilesWidget = new QWidget(tabWidget);
+    QVBoxLayout *publishedFileLayout = new QVBoxLayout(publishedFilesWidget);
+    publishedFileLayout->setContentsMargins(0,0,0,0);
+    publishedFileLayout->setSpacing(3);
 
-    ui_deletePublishedFileShortcut = new QShortcut(QKeySequence(QKeySequence::Delete),ui_publishedFileList);
+    ui_publishedFileList = new QListWidget(this);
+    publishedFileLayout->addWidget(ui_publishedFileList);
+
+    QHBoxLayout *publishedFileButtonLayout = new QHBoxLayout();
+    publishedFileButtonLayout->setContentsMargins(0,0,0,0);
+    publishedFileButtonLayout->setSpacing(3);
+    publishedFileLayout->addLayout(publishedFileButtonLayout);
+    publishedFileButtonLayout->addStretch();
+
+    ui_openPublishedFileButton = new QToolButton(this);
+    ui_openPublishedFileButton->setText("Open");
+    ui_openPublishedFileButton->setToolTip("Open\nOpen the published file.");
+    ui_openPublishedFileButton->setStatusTip("Open the file.");
+    ui_openPublishedFileButton->setIcon(QIcon(":/icons/open"));
+    ui_openPublishedFileButton->setEnabled(false);
+    publishedFileButtonLayout->addWidget(ui_openPublishedFileButton);
+
+    tabWidget->addTab(publishedFilesWidget, QIcon(":/icons/files"), "Published");
+
+    QWidget *previewFilesWidget = new QWidget(tabWidget);
+    QVBoxLayout *previewFileLayout = new QVBoxLayout(previewFilesWidget);
+    previewFileLayout->setContentsMargins(0,0,0,0);
+    previewFileLayout->setSpacing(3);
 
     ui_previewFileList = new QListWidget(this);
-    tabWidget->addTab(ui_previewFileList, QIcon(":/icons/files"), "Preview");
+    previewFileLayout->addWidget(ui_previewFileList);
 
-     ui_deletePreviewFileShortcut = new QShortcut(QKeySequence(QKeySequence::Delete),ui_previewFileList);
+    QHBoxLayout *previewFileButtonLayout = new QHBoxLayout();
+    previewFileButtonLayout->setContentsMargins(0,0,0,0);
+    previewFileButtonLayout->setSpacing(3);
+    previewFileLayout->addLayout(previewFileButtonLayout);
+    previewFileButtonLayout->addStretch();
+
+    ui_openPreviewFileButton = new QToolButton(this);
+    ui_openPreviewFileButton->setText("Open");
+    ui_openPreviewFileButton->setToolTip("Open\nOpen the preview file.");
+    ui_openPreviewFileButton->setStatusTip("Open the file.");
+    ui_openPreviewFileButton->setIcon(QIcon(":/icons/open"));
+    ui_openPreviewFileButton->setEnabled(false);
+    previewFileButtonLayout->addWidget(ui_openPreviewFileButton);
+
+    tabWidget->addTab(previewFilesWidget, QIcon(":/icons/files"), "Preview");
 
     ui_mainLayout->addWidget(tabWidget);
+
+    ui_folderWidget = new DuQFFolderDisplayWidget(this);
+    ui_mainLayout->addWidget(ui_folderWidget);
 }
 
 void StatusEditWidget::connectEvents()
@@ -433,6 +555,21 @@ void StatusEditWidget::connectEvents()
     connect(ui_mainFileList, SIGNAL(currentRowChanged(int)),this, SLOT(mainFileSelected(int)));
     connect(ui_mainFileList,SIGNAL(itemDoubleClicked(QListWidgetItem*)),this,SLOT(openMainFile()));
     connect(ui_openMainFileButton, SIGNAL(clicked()),this,SLOT(openMainFile()));
-    connect(ui_deleteMainFileShortcut,SIGNAL(activated()),this,SLOT(removeSelectedMainFile()));
     connect(ui_createFromTemplateAction, SIGNAL(triggered()), this, SLOT(createFromDefaultTemplate()));
+
+    connect(ui_publishedFileList, SIGNAL(currentRowChanged(int)),this, SLOT(publishedFileSelected(int)));
+    connect(ui_previewFileList, SIGNAL(currentRowChanged(int)),this, SLOT(previewFileSelected(int)));
+    connect(ui_openPublishedFileButton, SIGNAL(clicked()),this,SLOT(openPublishedFile()));
+    connect(ui_openPreviewFileButton, SIGNAL(clicked()),this,SLOT(openPreviewFile()));
+    connect(ui_publishedFileList,SIGNAL(itemDoubleClicked(QListWidgetItem*)),this,SLOT(openPublishedFile()));
+    connect(ui_previewFileList,SIGNAL(itemDoubleClicked(QListWidgetItem*)),this,SLOT(openPreviewFile()));
+
+    // Shortcuts
+    QShortcut *s;
+    s = new QShortcut(QKeySequence(QKeySequence::Delete), ui_mainFileList, nullptr, nullptr, Qt::WidgetWithChildrenShortcut );
+    connect( s, SIGNAL(activated()), this, SLOT(removeSelectedMainFile()) );
+    s = new QShortcut(QKeySequence(QKeySequence::Delete), ui_publishedFileList, nullptr, nullptr, Qt::WidgetWithChildrenShortcut );
+    connect( s, SIGNAL(activated()), this, SLOT(removeSelectedPublishedFile()) );
+    s = new QShortcut(QKeySequence(QKeySequence::Delete), ui_previewFileList, nullptr, nullptr, Qt::WidgetWithChildrenShortcut );
+    connect( s, SIGNAL(activated()), this, SLOT(removeSelectedPreviewFile()) );
 }

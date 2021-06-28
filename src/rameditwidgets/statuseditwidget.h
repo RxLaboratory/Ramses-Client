@@ -13,6 +13,7 @@
 #include "duqf-widgets/autoselectspinbox.h"
 #include "duqf-widgets/autoselectspinbox.h"
 #include "data-views/ramobjectlistcombobox.h"
+#include "duqf-widgets/duqffolderdisplaywidget.h"
 #include "objecteditwidget.h"
 #include "statebox.h"
 #include "ramses.h"
@@ -61,6 +62,14 @@ private slots:
     void createFromTemplate();
     void createFromDefaultTemplate();
 
+    void publishedFileSelected(int row);
+    void openPublishedFile();
+    void removeSelectedPublishedFile();
+
+    void previewFileSelected(int row);
+    void openPreviewFile();
+    void removeSelectedPreviewFile();
+
 private:
     void setupUi();
     void connectEvents();
@@ -79,11 +88,11 @@ private:
     QComboBox *ui_versionFileBox;
     QToolButton *ui_openMainFileButton;
     QToolButton *ui_createMainFileButton;
-    QShortcut *ui_deleteMainFileShortcut;
-    QShortcut *ui_deletePreviewFileShortcut;
-    QShortcut *ui_deletePublishedFileShortcut;
     QMenu *ui_createFromTemplateMenu;
     QAction *ui_createFromTemplateAction;
+    QToolButton *ui_openPublishedFileButton;
+    QToolButton *ui_openPreviewFileButton;
+    DuQFFolderDisplayWidget *ui_folderWidget;
 
     RamStatus *m_status;
 };
