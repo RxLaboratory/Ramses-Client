@@ -1,4 +1,4 @@
-#include "stepeditwidget.h"
+﻿#include "stepeditwidget.h"
 
 StepEditWidget::StepEditWidget(QWidget *parent) : ObjectEditWidget(parent)
 {
@@ -99,12 +99,13 @@ void StepEditWidget::createApplication()
 
 void StepEditWidget::updateEstimationSuffix()
 {
+    ui_estimationWidget->hide();
+    ui_estimationLabel->hide();
+    ui_estimationMultiplierCheckBox->hide();
+    ui_estimationMultiplierBox->hide();
+
     if (ui_typeBox->currentIndex() == 0 || ui_typeBox->currentIndex() == 3)
-    {
-        ui_estimationWidget->hide();
-        ui_estimationLabel->hide();
         return;
-    }
 
     ui_estimationWidget->show();
     ui_estimationLabel->show();
@@ -121,6 +122,8 @@ void StepEditWidget::updateEstimationSuffix()
     {
         ui_estimationTypeBox->show();
         ui_estimationTypeLabel->show();
+        ui_estimationMultiplierCheckBox->show();
+        ui_estimationMultiplierBox->show();
         if (ui_estimationTypeBox->currentIndex() == 0)
         {
             suffix = " days per shot.";
