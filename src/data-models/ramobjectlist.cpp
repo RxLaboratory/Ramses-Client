@@ -64,6 +64,15 @@ void RamObjectList::sort(int column, Qt::SortOrder order)
     if (m_sorted) return;
     std::sort(m_objectsList.begin(), m_objectsList.end(), objectSorter);
 
+    // Sync object order with list indices
+    for (int i = 0; i < m_objectsList.count(); i++)
+    {
+        RamObject *o = m_objectsList.at(i);
+        QSignalBlocker b( o );
+        o->setOrder(i);
+        o->update();
+    }
+
     m_sorted = true;
 }
 
