@@ -47,6 +47,7 @@ public:
     void getTemplateSteps();
     void updateTemplateStep(QString uuid, QString shortName, QString name, QString type = "", QString comment = "",  QColor color = QColor());
     void removeTemplateStep(QString uuid);
+    void setTemplateStepEstimations(QString uuid, QString method, float veryEasy = 0.2, float easy = 0.5, float medium = 1.0, float hard = 2.0, float veryHard = 3.0);
     //template asset groups
     void createTemplateAssetGroup(QString shortName, QString name, QString uuid);
     void getTemplateAssetGroups();
@@ -57,6 +58,7 @@ public:
     void updateStep(QString uuid, QString shortName, QString name, QString type, QString comment = "", QColor color = QColor());
     void moveStep(QString uuid, int order);
     void setStepOrder(QString uuid, int order);
+    void setStepEstimations(QString uuid, QString method, float veryEasy = 0.2, float easy = 0.5, float medium = 1.0, float hard = 2.0, float veryHard = 3.0, QString multiplyGroupUuid = "");
     void removeStep(QString uuid);
     void assignUser(QString stepUuid, QString userUuid);
     void unassignUser(QString stepUuid, QString userUuid);

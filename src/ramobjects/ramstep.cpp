@@ -2,6 +2,7 @@
 #include "ramproject.h"
 #include "ramses.h"
 #include "stepeditwidget.h"
+#include "ramassetgroup.h"
 
 RamStep::RamStep(QString shortName, QString name, QString uuid) :
     RamObject(shortName, name, uuid, Ramses::instance())
@@ -60,6 +61,13 @@ RamStep* RamStep::createFromTemplate(RamProject *project)
     RamStep *step = new RamStep(m_shortName, m_name, project);
     step->setType(m_type);
     step->setColor(m_color);
+    // estimations
+    step->setEstimationMethod( m_estimationMethod );
+    step->setEstimationVeryEasy( m_estimationVeryEasy );
+    step->setEstimationEasy( m_estimationEasy );
+    step->setEstimationMedium( m_estimationMedium );
+    step->setEstimationHard( m_estimationHard );
+    step->setEstimationVeryHard( m_estimationVeryHard );
     // and update
     step->update();
     return step;
@@ -183,6 +191,107 @@ void RamStep::applicationUnassigned(const QModelIndex &parent, int first, int la
     }
 }
 
+RamAssetGroup *RamStep::estimationMultiplyGroup() const
+{
+    return m_estimationMultiplyGroup;
+}
+
+void RamStep::setEstimationMultiplyGroup(RamAssetGroup *newEstimationMultiplyGroup)
+{
+    if (!newEstimationMultiplyGroup && !m_estimationMultiplyGroup) return;
+    if (newEstimationMultiplyGroup)
+        if (newEstimationMultiplyGroup->is(m_estimationMultiplyGroup)) return;
+
+    m_dirty = true;
+    m_estimationChanged = true;
+    m_estimationMultiplyGroup = newEstimationMultiplyGroup;
+    emit estimationChanged(this);
+}
+
+float RamStep::estimationVeryHard() const
+{
+    return m_estimationVeryHard;
+}
+
+void RamStep::setEstimationVeryHard(float newEstimationVeryHard)
+{
+    if (m_estimationVeryHard == newEstimationVeryHard) return;
+    m_dirty = true;
+    m_estimationChanged = true;
+    m_estimationVeryHard = newEstimationVeryHard;
+    emit estimationChanged(this);
+}
+
+float RamStep::estimationHard() const
+{
+    return m_estimationHard;
+}
+
+void RamStep::setEstimationHard(float newEstimationHard)
+{
+    if (m_estimationHard == newEstimationHard) return;
+    m_dirty = true;
+    m_estimationChanged = true;
+    m_estimationHard = newEstimationHard;
+    emit estimationChanged(this);
+}
+
+float RamStep::estimationMedium() const
+{
+    return m_estimationMedium;
+}
+
+void RamStep::setEstimationMedium(float newEstimationMedium)
+{
+    if (m_estimationMedium == newEstimationMedium) return;
+    m_dirty = true;
+    m_estimationChanged = true;
+    m_estimationMedium = newEstimationMedium;
+    emit estimationChanged(this);
+}
+
+float RamStep::estimationEasy() const
+{
+    return m_estimationEasy;
+}
+
+void RamStep::setEstimationEasy(float newEstimationEasy)
+{
+    if (m_estimationEasy == newEstimationEasy) return;
+    m_dirty = true;
+    m_estimationChanged = true;
+    m_estimationEasy = newEstimationEasy;
+    emit estimationChanged(this);
+}
+
+float RamStep::estimationVeryEasy() const
+{
+    return m_estimationVeryEasy;
+}
+
+void RamStep::setEstimationVeryEasy(float newEstimationVeryEasy)
+{
+    if (m_estimationVeryEasy == newEstimationVeryEasy) return;
+    m_dirty = true;
+    m_estimationChanged = true;
+    m_estimationVeryEasy = newEstimationVeryEasy;
+    emit estimationChanged(this);
+}
+
+const RamStep::EstimationMethod &RamStep::estimationMethod() const
+{
+    return m_estimationMethod;
+}
+
+void RamStep::setEstimationMethod(const EstimationMethod &newEstimationMethod)
+{
+    if (m_estimationMethod == newEstimationMethod) return;
+    m_dirty = true;
+    m_estimationChanged = true;
+    m_estimationMethod = newEstimationMethod;
+    emit estimationChanged(this);
+}
+
 const QColor &RamStep::color() const
 {
     return m_color;
@@ -232,13 +341,30 @@ void RamStep::update()
     if (m_type == PostProduction) type = "post";
     else if (m_type == PreProduction) type = "pre";
     else if (m_type == ShotProduction) type = "shot";
-    if (m_template) m_dbi->updateTemplateStep(m_uuid, m_shortName, m_name, type, m_comment, m_color);
-    else m_dbi->updateStep(m_uuid, m_shortName, m_name, type, m_comment, m_color);
+
+    if (m_template)
+        m_dbi->updateTemplateStep(m_uuid, m_shortName, m_name, type, m_comment, m_color);
+    else
+        m_dbi->updateStep(m_uuid, m_shortName, m_name, type, m_comment, m_color);
 
     if (m_orderChanged)
     {
         m_dbi->setStepOrder(m_uuid, m_order);
         m_orderChanged = false;
+    }
+
+    if (m_estimationChanged)
+    {
+        QString method = "shot";
+        if (m_estimationMethod == RamStep::EstimatePerSecond) method = "second";
+        QString multiplyGroupUuid = "";
+        if (m_estimationMultiplyGroup) multiplyGroupUuid = m_estimationMultiplyGroup->uuid();
+
+        if (m_template)
+            m_dbi->setTemplateStepEstimations(m_uuid, method, m_estimationVeryEasy, m_estimationEasy, m_estimationMedium, m_estimationHard, m_estimationVeryHard);
+        else
+            m_dbi->setStepEstimations(m_uuid, method, m_estimationVeryEasy, m_estimationEasy, m_estimationMedium, m_estimationHard, m_estimationVeryHard, multiplyGroupUuid);
+        m_estimationChanged = false;
     }
 }
 

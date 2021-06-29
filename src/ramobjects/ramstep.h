@@ -8,6 +8,7 @@
 #include "ramapplication.h"
 #include "data-models/ramobjectlist.h"
 
+class RamAssetGroup;
 class RamProject;
 
 class RamStep : public RamObject
@@ -16,6 +17,10 @@ class RamStep : public RamObject
 public:
     enum Type{ PreProduction, AssetProduction, ShotProduction, PostProduction };
     Q_ENUM(Type)
+
+    enum EstimationMethod { EstimatePerShot = 0,
+                            EstimatePerSecond = 1 };
+    Q_ENUM(EstimationMethod)
 
     // Template (no project set)
     explicit RamStep(QString shortName, QString name = "", QString uuid = "");
@@ -50,6 +55,30 @@ public:
     const QColor &color() const;
     void setColor(const QColor &newColor);
 
+    const EstimationMethod &estimationMethod() const;
+    void setEstimationMethod(const EstimationMethod &newEstimationMethod);
+
+    float estimationVeryEasy() const;
+    void setEstimationVeryEasy(float newEstimationVeryEasy);
+
+    float estimationEasy() const;
+    void setEstimationEasy(float newEstimationEasy);
+
+    float estimationMedium() const;
+    void setEstimationMedium(float newEstimationMedium);
+
+    float estimationHard() const;
+    void setEstimationHard(float newEstimationHard);
+
+    float estimationVeryHard() const;
+    void setEstimationVeryHard(float newEstimationVeryHard);
+
+    RamAssetGroup *estimationMultiplyGroup() const;
+    void setEstimationMultiplyGroup(RamAssetGroup *newEstimationMultiplyGroup);
+
+signals:
+    void estimationChanged(RamStep*);
+
 public slots:
     void update() override;
     virtual void edit(bool show = true) override;
@@ -70,6 +99,16 @@ private:
     RamProject *m_project;
     RamObjectList *m_users;
     RamObjectList *m_applications;
+
+    EstimationMethod m_estimationMethod = EstimatePerShot;
+    float m_estimationVeryEasy = 0.2;
+    float m_estimationEasy = 0.5;
+    float m_estimationMedium = 1.0;
+    float m_estimationHard = 2.0;
+    float m_estimationVeryHard = 3.0;
+    RamAssetGroup *m_estimationMultiplyGroup = nullptr;
+    bool m_estimationChanged = false;
+
 };
 
 #endif // RAMSTEP_H

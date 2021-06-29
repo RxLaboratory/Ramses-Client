@@ -185,12 +185,14 @@ QString RamLoader::gotProject(QJsonObject newP, bool init)
     if (!init)
     {
         m_pm->setMaximum(7);
-        gotSteps( newP.value("steps").toArray(), project);        
+        gotAssetGroups( newP.value("assetGroups").toArray(), project);
+        gotSequences( newP.value("sequences").toArray(), project);
+
+        gotSteps( newP.value("steps").toArray(), project);
         gotPipeFiles( newP.value("pipeFiles").toArray(), project );
         gotPipes( newP.value("pipes").toArray(), project);
-        gotAssetGroups( newP.value("assetGroups").toArray(), project);
+
         gotAssets( newP.value("assets").toArray(), project);
-        gotSequences( newP.value("sequences").toArray(), project);
         gotShots( newP.value("shots").toArray(), project);
     }
 
@@ -243,6 +245,18 @@ QString RamLoader::gotTemplateStep(QJsonObject newS)
     step->setType( newS.value("type").toString());
     step->setComment( newS.value("comment").toString());
     step->setColor( QColor( newS.value("color").toString()) );
+
+    // Estimations
+    if (newS.value("estimationMethod").toString() == "shot" )
+        step->setEstimationMethod(RamStep::EstimatePerShot);
+    else
+        step->setEstimationMethod(RamStep::EstimatePerSecond);
+
+    step->setEstimationVeryEasy( newS.value("estimationVeryEasy").toDouble() );
+    step->setEstimationEasy( newS.value("estimationEasy").toDouble() );
+    step->setEstimationMedium( newS.value("estimationMedium").toDouble() );
+    step->setEstimationHard( newS.value("estimationHard").toDouble() );
+    step->setEstimationVeryHard( newS.value("estimationVeryHard").toDouble() );
 
     m_ram->templateSteps()->append(step);
 
@@ -507,6 +521,21 @@ QString RamLoader::gotStep(QJsonObject newS, RamProject *project)
     step->setOrder( newS.value("order").toInt() );
     step->setComment( newS.value("comment").toString());
     step->setColor( QColor( newS.value("color").toString()) );
+
+    // Estimations
+    if (newS.value("estimationMethod").toString() == "shot" )
+        step->setEstimationMethod(RamStep::EstimatePerShot);
+    else
+        step->setEstimationMethod(RamStep::EstimatePerSecond);
+
+    step->setEstimationVeryEasy( newS.value("estimationVeryEasy").toDouble() );
+    step->setEstimationEasy( newS.value("estimationEasy").toDouble() );
+    step->setEstimationMedium( newS.value("estimationMedium").toDouble() );
+    step->setEstimationHard( newS.value("estimationHard").toDouble() );
+    step->setEstimationVeryHard( newS.value("estimationVeryHard").toDouble() );
+
+    RamAssetGroup *multiplyGroup = RamAssetGroup::assetGroup( newS.value("multiplyGroupUuid").toString() );
+    step->setEstimationMultiplyGroup( multiplyGroup );
 
     step->users()->clear();
     step->applications()->clear();

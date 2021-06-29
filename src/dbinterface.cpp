@@ -171,6 +171,20 @@ void DBInterface::removeTemplateStep(QString uuid)
     request(q);
 }
 
+void DBInterface::setTemplateStepEstimations(QString uuid, QString method, float veryEasy, float easy, float medium, float hard, float veryHard)
+{
+    QStringList q("setTemplateStepEstimations");
+    q << "uuid=" + uuid;
+    q << "method=" + method;
+    q << "veryEasy=" + QString::number(veryEasy);
+    q << "easy=" + QString::number(easy);
+    q << "medium=" + QString::number(medium);
+    q << "hard=" + QString::number(hard);
+    q << "veryHard=" + QString::number(veryHard);
+
+    request(q);
+}
+
 void DBInterface::createTemplateAssetGroup(QString shortName, QString name, QString uuid)
 {
     QStringList q("createTemplateAssetGroup");
@@ -244,6 +258,21 @@ void DBInterface::setStepOrder(QString uuid, int order)
     QStringList q("setStepOrder");
     q << "uuid=" + uuid;
     q << "order=" + QString::number(order);
+
+    request(q);
+}
+
+void DBInterface::setStepEstimations(QString uuid, QString method, float veryEasy, float easy, float medium, float hard, float veryHard, QString multiplyGroupUuid)
+{
+    QStringList q("setStepEstimations");
+    q << "uuid=" + uuid;
+    q << "method=" + method;
+    q << "multiplyGroupUuid=" + multiplyGroupUuid;
+    q << "veryEasy=" + QString::number(veryEasy);
+    q << "easy=" + QString::number(easy);
+    q << "medium=" + QString::number(medium);
+    q << "hard=" + QString::number(hard);
+    q << "veryHard=" + QString::number(veryHard);
 
     request(q);
 }

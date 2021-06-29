@@ -35,8 +35,22 @@ void TemplateStepEditWidget::setObject(RamObject *obj)
     QSignalBlocker b1(ui_typeBox);
     QSignalBlocker b4(ui_colorSelector);
 
+    QSignalBlocker b5(ui_veryEasyEdit);
+    QSignalBlocker b6(ui_easyEdit);
+    QSignalBlocker b7(ui_mediumEdit);
+    QSignalBlocker b8(ui_hardEdit);
+    QSignalBlocker b9(ui_veryHardEdit);
+    QSignalBlocker b10(ui_estimationTypeBox);
+
     ui_typeBox->setCurrentIndex(1);
     ui_colorSelector->setColor(QColor(25,25,25));
+
+    ui_veryEasyEdit->setValue(0.2);
+    ui_easyEdit->setValue(0.5);
+    ui_mediumEdit->setValue(1.0);
+    ui_hardEdit->setValue(2.0);
+    ui_veryHardEdit->setValue(3.0);
+    ui_estimationTypeBox->setCurrentIndex(0);
 
     if (!step) return;
 
@@ -47,9 +61,16 @@ void TemplateStepEditWidget::setObject(RamObject *obj)
     else if (step->type() == RamStep::ShotProduction) ui_typeBox->setCurrentIndex(2);
     else if (step->type() == RamStep::PostProduction) ui_typeBox->setCurrentIndex(3);
 
-    this->setEnabled(Ramses::instance()->isAdmin());
+    ui_veryEasyEdit->setValue( step->estimationVeryEasy() );
+    ui_easyEdit->setValue( step->estimationEasy() );
+    ui_mediumEdit->setValue( step->estimationMedium()  );
+    ui_hardEdit->setValue( step->estimationHard()  );
+    ui_veryHardEdit->setValue( step->estimationVeryHard()  );
+    ui_estimationTypeBox->setCurrentIndex( step->estimationMethod() );
 
     updateEstimationSuffix();
+
+    this->setEnabled(Ramses::instance()->isAdmin());
 }
 
 void TemplateStepEditWidget::update()
@@ -60,6 +81,19 @@ void TemplateStepEditWidget::update()
 
     m_step->setColor(ui_colorSelector->color());
     m_step->setType(ui_typeBox->currentData().toString());
+
+
+    // estimations
+    m_step->setEstimationVeryEasy( ui_veryEasyEdit->value() );
+    m_step->setEstimationEasy( ui_easyEdit->value() );
+    m_step->setEstimationMedium( ui_mediumEdit->value() );
+    m_step->setEstimationHard( ui_hardEdit->value() );
+    m_step->setEstimationVeryHard( ui_veryHardEdit->value() );
+
+    if (ui_estimationTypeBox->currentIndex() == 0)
+        m_step->setEstimationMethod( RamStep::EstimatePerShot );
+    else
+        m_step->setEstimationMethod( RamStep::EstimatePerSecond );
 
     ObjectEditWidget::update();
 
@@ -188,4 +222,11 @@ void TemplateStepEditWidget::connectEvents()
     connect(ui_estimationTypeBox, SIGNAL(currentIndexChanged(int)), this, SLOT(updateEstimationSuffix()));
     connect(ui_typeBox, SIGNAL(currentIndexChanged(int)), this, SLOT(update()));
     connect(ui_colorSelector, SIGNAL(colorChanged(QColor)), this, SLOT(update()));
+
+    connect(ui_estimationTypeBox, SIGNAL(currentIndexChanged(int)), this, SLOT(update()));
+    connect(ui_veryEasyEdit, SIGNAL(valueChanged(double)), this, SLOT(update()));
+    connect(ui_easyEdit, SIGNAL(valueChanged(double)), this, SLOT(update()));
+    connect(ui_mediumEdit, SIGNAL(valueChanged(double)), this, SLOT(update()));
+    connect(ui_hardEdit, SIGNAL(valueChanged(double)), this, SLOT(update()));
+    connect(ui_veryHardEdit, SIGNAL(valueChanged(double)), this, SLOT(update()));
 }
