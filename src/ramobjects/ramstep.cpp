@@ -59,6 +59,7 @@ RamStep* RamStep::createFromTemplate(RamProject *project)
     // Create
     RamStep *step = new RamStep(m_shortName, m_name, project);
     step->setType(m_type);
+    step->setColor(m_color);
     // and update
     step->update();
     return step;

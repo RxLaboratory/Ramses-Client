@@ -90,6 +90,7 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
         RamStep *step = qobject_cast<RamStep*>( obj );
         if (step->isTemplate())
             title = title % " [Template]";
+        textPen.setColor(step->color());
         break;
     }
     case RamObject::FileType:

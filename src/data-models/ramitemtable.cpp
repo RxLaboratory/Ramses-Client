@@ -91,13 +91,20 @@ QVariant RamItemTable::headerData(int section, Qt::Orientation orientation, int 
 
     if (section == 0)
     {
-        if (m_productionType == RamStep::AssetProduction) return "Assets";
-        else if (m_productionType == RamStep::ShotProduction) return "Shots";
-        else return "Items";
+        if ( role == Qt::DisplayRole )
+        {
+            if (m_productionType == RamStep::AssetProduction) return "Assets";
+            else if (m_productionType == RamStep::ShotProduction) return "Shots";
+            else return "Items";
+        }
+        return QVariant();
     }
 
     if ( role == Qt::DisplayRole )
         return stepAt(section)->name();
+
+    if ( role == Qt::ForegroundRole )
+        return QBrush(stepAt(section)->color());
 
     if ( role == Qt::UserRole)
         return reinterpret_cast<quintptr>( stepAt(section) );
