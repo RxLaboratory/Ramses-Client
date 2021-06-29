@@ -53,6 +53,11 @@ void RamSequence::update()
     if(!m_dirty) return;
     RamObject::update();
     m_dbi->updateSequence(m_uuid, m_shortName, m_name, m_comment);
+    if (m_orderChanged)
+    {
+        m_dbi->setSequenceOrder(m_uuid, m_order);
+        m_orderChanged = false;
+    }
 }
 
 void RamSequence::edit(bool show)
