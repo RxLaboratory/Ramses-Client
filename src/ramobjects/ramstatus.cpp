@@ -357,9 +357,7 @@ float RamStatus::autoEstimation(int difficulty) const
     {
         RamShot *shot = qobject_cast<RamShot*>( m_item );
         if (m_step->estimationMethod() == RamStep::EstimatePerSecond)
-        {
             estimation *= shot->duration();
-        }
         RamAssetGroup *ag = m_step->estimationMultiplyGroup();
         if (ag)
         {
@@ -373,7 +371,6 @@ float RamStatus::autoEstimation(int difficulty) const
             if (numAssets > 0) estimation *= numAssets;
         }
     }
-
     return estimation;
 }
 

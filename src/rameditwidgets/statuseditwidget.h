@@ -74,7 +74,7 @@ private slots:
 
     void autoEstimate(bool estimate);
     void autoEstimate();
-    void estimateDays(double hours);
+    void estimateDays(int hours);
 
 private:
     void setupUi();

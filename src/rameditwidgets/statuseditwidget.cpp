@@ -402,7 +402,7 @@ void StatusEditWidget::autoEstimate(bool estimate)
     if (estimate)
     {
         float daysEstimation = m_status->autoEstimation( ui_difficultyBox->currentIndex() );
-        ui_estimationEdit->setValue( RamStatus::daysToHours( daysEstimation ) );
+        ui_estimationEdit->setValue( daysEstimation );
     }
 
     ui_estimationEdit->setEnabled(!estimate);
@@ -413,10 +413,10 @@ void StatusEditWidget::autoEstimate()
     autoEstimate( ui_autoEstimationBox->isChecked() );
 }
 
-void StatusEditWidget::estimateDays(double hours)
+void StatusEditWidget::estimateDays(int hours)
 {
     float days = RamStatus::hoursToDays(hours);
-    ui_estimationEdit->setSuffix(" hours (" + QString::number(days, 'f', 2) + " days)");
+    ui_timeSpent->setSuffix(" hours (" + QString::number(days, 'f', 2) + " days)");
 }
 
 void StatusEditWidget::setupUi()
@@ -645,7 +645,7 @@ void StatusEditWidget::connectEvents()
 
     connect(ui_autoEstimationBox, SIGNAL(toggled(bool)), this, SLOT(autoEstimate(bool)));
     connect(ui_difficultyBox, SIGNAL(currentIndexChanged(int)), this, SLOT(autoEstimate()));
-    connect(ui_estimationEdit, SIGNAL(valueChanged(double)),this, SLOT(estimateDays(double)));
+    connect(ui_timeSpent, SIGNAL(valueChanged(int)),this, SLOT(estimateDays(int)));
 
     // Shortcuts
     QShortcut *s;
