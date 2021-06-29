@@ -38,7 +38,7 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
     // bg
     const QRect bgRect = rect.adjusted(m_padding,2,-m_padding,-2);
     // icon
-    const QRect iconRect( bgRect.left() + 10, bgRect.top() +7 , 12, 12 );
+    const QRect iconRect( bgRect.left() + m_padding, bgRect.top() +7 , 12, 12 );
 
     // Select the bg Color
     QColor bgColor = m_dark;
@@ -381,7 +381,7 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
         // Draw a progress bar
         QColor statusColor = status->state()->color();
         QBrush statusBrush(statusColor.darker(300));
-        int statusWidth = bgRect.width() - 10;
+        int statusWidth = bgRect.width() - m_padding;
         QRect statusRect( bgRect.left() + 5, titleRect.bottom() + 5, statusWidth, 6 );
 
         // Values to be reused
@@ -448,6 +448,7 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
                 statusBrush.setColor( timeColor );
 
                 statusRect.setWidth( statusWidth * ratio );
+                if (statusRect.right() > bgRect.right() - 5) statusRect.setRight( bgRect.right() - 5);
                 QPainterPath timePath;
                 timePath.addRoundedRect(statusRect, 3, 3);
                 painter->fillPath(timePath, statusBrush);

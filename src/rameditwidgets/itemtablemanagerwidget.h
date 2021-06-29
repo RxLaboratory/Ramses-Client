@@ -12,6 +12,7 @@
 #include "duqf-widgets/duqfsearchedit.h"
 #include "data-views/ramobjectlistwidget.h"
 #include "data-views/ramobjectlistcombobox.h"
+#include "data-views/ramstepheaderview.h"
 #include "ramses.h"
 
 

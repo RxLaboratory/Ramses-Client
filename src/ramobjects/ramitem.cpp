@@ -167,6 +167,7 @@ void RamItem::statusChanged(const QModelIndex &first, const QModelIndex &last)
 
     RamStep *step = stepHistory->step();
     if (!step) return;
+
     emit statusChanged( this, step );
 }
 

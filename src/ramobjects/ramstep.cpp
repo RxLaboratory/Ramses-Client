@@ -208,6 +208,26 @@ void RamStep::setEstimationMultiplyGroup(RamAssetGroup *newEstimationMultiplyGro
     emit estimationChanged(this);
 }
 
+qint64 RamStep::timeSpent() const
+{
+    return m_timeSpent;
+}
+
+float RamStep::estimation() const
+{
+    return m_estimation;
+}
+
+float RamStep::completionRatio() const
+{
+    return m_completionRatio;
+}
+
+float RamStep::latenessRatio() const
+{
+    return m_latenessRatio;
+}
+
 float RamStep::estimationVeryHard() const
 {
     return m_estimationVeryHard;
@@ -382,6 +402,57 @@ void RamStep::edit(bool show)
         m_editReady = true;
     }
     showEdit(show);
+}
+
+void RamStep::computeEstimation()
+{
+    if (m_type == PreProduction) return;
+    if (m_type == PostProduction) return;
+
+    RamObjectList *items;
+    if (m_type == ShotProduction) items = m_project->shots();
+    else items = m_project->assets();
+
+    m_timeSpent = 0;
+    m_estimation = 0;
+    m_completionRatio = 0;
+    m_latenessRatio = 0;
+    int numItems = 0;
+
+    RamState *no = Ramses::instance()->noState();
+
+    for (int i =0; i < items->count(); i++)
+    {
+        RamItem *item = qobject_cast<RamItem*>( items->at(i) );
+        RamStatus *status = item->status(this);
+
+        if (!status) continue;
+
+        if (no->is(status->state())) continue;
+
+        m_timeSpent += status->timeSpent();
+
+        float estimation = status->estimation();
+        if ( estimation < 0 ) estimation = status->autoEstimation();
+        m_estimation += estimation;
+
+        m_completionRatio += status->completionRatio();
+        m_latenessRatio += status->latenessRatio();
+
+        numItems++;
+    }
+
+    if (numItems > 0)
+    {
+        m_completionRatio /= numItems;
+        m_latenessRatio /= numItems;
+    }
+    else
+    {
+        m_completionRatio  = 100;
+        m_latenessRatio = 1;
+    }
+
 }
 
 QString RamStep::folderPath() const

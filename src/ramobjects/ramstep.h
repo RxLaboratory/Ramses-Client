@@ -76,12 +76,18 @@ public:
     RamAssetGroup *estimationMultiplyGroup() const;
     void setEstimationMultiplyGroup(RamAssetGroup *newEstimationMultiplyGroup);
 
+    qint64 timeSpent() const; //seconds
+    float estimation() const; //days
+    float completionRatio() const;
+    float latenessRatio() const;
+
 signals:
     void estimationChanged(RamStep*);
 
 public slots:
     void update() override;
     virtual void edit(bool show = true) override;
+    void computeEstimation();
 
 protected:
     virtual QString folderPath() const override;
@@ -91,6 +97,7 @@ private slots:
     void userUnassigned(const QModelIndex &parent, int first, int last);
     void applicationAssigned(const QModelIndex &parent, int first, int last);
     void applicationUnassigned(const QModelIndex &parent, int first, int last);
+
 
 private:
     bool m_template;
@@ -108,6 +115,12 @@ private:
     float m_estimationVeryHard = 3.0;
     RamAssetGroup *m_estimationMultiplyGroup = nullptr;
     bool m_estimationChanged = false;
+
+
+    qint64 m_timeSpent = 0;
+    float m_estimation = 0;
+    float m_completionRatio = 0;
+    float m_latenessRatio = 0;
 
 };
 

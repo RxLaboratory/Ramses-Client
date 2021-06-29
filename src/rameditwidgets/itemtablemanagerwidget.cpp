@@ -259,6 +259,7 @@ void ItemTableManagerWidget::setupUi()
 
     ui_table = new RamObjectListWidget(RamObjectListWidget::Table, this);
     ui_table->setEditableObjects(true, RamUser::ProjectAdmin);
+    ui_table->setHorizontalHeader( new RamStepHeaderView(ui_table) );
     mainLayout->addWidget(ui_table);
 
     this->setLayout(mainLayout);

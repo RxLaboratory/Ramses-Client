@@ -35,6 +35,7 @@ SOURCES += \
     data-models/ramobjectfiltermodel.cpp \
     data-models/ramstepfiltermodel.cpp \
     data-views/ramobjectlistmenu.cpp \
+    data-views/ramstepheaderview.cpp \
     duqf-widgets/duqfcolorselector.cpp \
     duqf-widgets/duqfsearchedit.cpp \
     data-models/ramitemtable.cpp \
@@ -164,6 +165,7 @@ HEADERS += \
     data-models/ramstepstatushistory.h \
     data-views/ramobjectdelegate.h \
     data-views/ramobjectlistmenu.h \
+    data-views/ramstepheaderview.h \
     duqf-widgets/duqfcolorselector.h \
     duqf-widgets/duqfsearchedit.h \
     processmanager.h \
