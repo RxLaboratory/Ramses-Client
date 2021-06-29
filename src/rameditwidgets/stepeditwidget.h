@@ -16,6 +16,7 @@
 #include "objectlisteditwidget.h"
 #include "duqf-widgets/duqffolderdisplaywidget.h"
 #include "data-views/ramobjectlistcombobox.h"
+#include "duqf-widgets/duqfcolorselector.h"
 
 class StepEditWidget : public ObjectEditWidget
 {
@@ -56,6 +57,7 @@ private:
     DuQFFolderDisplayWidget *m_folderWidget;
     QCheckBox *ui_estimationMultiplierCheckBox;
     RamObjectListComboBox *ui_estimationMultiplierBox;
+    DuQFColorSelector *ui_colorSelector;
 
 
     ObjectListEditWidget *m_userList;

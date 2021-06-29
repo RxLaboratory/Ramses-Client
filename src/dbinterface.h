@@ -54,7 +54,7 @@ public:
     void removeTemplateAssetGroup(QString uuid);
     //steps
     void createStep(QString shortName, QString name, QString projectUuid, QString uuid);
-    void updateStep(QString uuid, QString shortName, QString name, QString type, QString comment = "");
+    void updateStep(QString uuid, QString shortName, QString name, QString type, QString comment = "", QColor color = QColor());
     void moveStep(QString uuid, int order);
     void setStepOrder(QString uuid, int order);
     void removeStep(QString uuid);
@@ -75,6 +75,7 @@ public:
     void createSequence(QString shortName, QString name, QString projectUuid, QString uuid);
     void updateSequence(QString uuid, QString shortName, QString name, QString comment = "");
     void removeSequence(QString uuid);
+    void setSequenceOrder(QString uuid, int order);
     //shots
     void createShot(QString shortName, QString name, QString sequenceUuid, QString uuid, qreal duration = 0.0, int order = -1);
     void updateShot(QString uuid, QString shortName, QString name, QString sequenceUuid = "", qreal duration = -1.0, QString comment = "");

@@ -33,15 +33,20 @@ void StepEditWidget::setObject(RamObject *obj)
     QSignalBlocker b1(m_folderWidget);
     QSignalBlocker b2(m_userList);
     QSignalBlocker b3(m_applicationList);
+    QSignalBlocker b4(ui_colorSelector);
 
     ui_typeBox->setCurrentIndex(1);
     m_folderWidget->setPath("");
     m_userList->clear();
     m_applicationList->clear();
+    ui_colorSelector->setColor(QColor(25,25,25));
 
     if (!step) return;
 
+    ui_colorSelector->setColor(step->color());
+
     m_folderWidget->setPath( step->path() );
+
     if (step->type() == RamStep::PreProduction) ui_typeBox->setCurrentIndex(0);
     else if (step->type() == RamStep::AssetProduction) ui_typeBox->setCurrentIndex(1);
     else if (step->type() == RamStep::ShotProduction) ui_typeBox->setCurrentIndex(2);
@@ -64,6 +69,7 @@ void StepEditWidget::update()
     updating = true;
 
     m_step->setType(ui_typeBox->currentData().toString());
+    m_step->setColor(ui_colorSelector->color());
     ObjectEditWidget::update();
 
     updating = false;
@@ -144,9 +150,15 @@ void StepEditWidget::setupUi()
     ui_typeBox->addItem(QIcon(":/icons/film"), "        Post-Production", "post");
     ui_mainFormLayout->addWidget(ui_typeBox, 3, 1);
 
+    QLabel *colorLabel = new QLabel("Color", this);
+    ui_mainFormLayout->addWidget(colorLabel, 4, 0);
+
+    ui_colorSelector = new DuQFColorSelector(this);
+    ui_mainFormLayout->addWidget(ui_colorSelector, 4, 1);
+
     ui_estimationLabel = new QLabel("Estimation", this);
     ui_estimationLabel->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-    ui_mainFormLayout->addWidget(ui_estimationLabel, 4, 0);
+    ui_mainFormLayout->addWidget(ui_estimationLabel, 5, 0);
 
     ui_estimationWidget = new QWidget(this);
     QFormLayout *estimationLayout = new QFormLayout(ui_estimationWidget);
@@ -201,7 +213,7 @@ void StepEditWidget::setupUi()
     ui_estimationMultiplierBox->setEnabled(false);
     estimationLayout->addRow(ui_estimationMultiplierCheckBox, ui_estimationMultiplierBox);
 
-    ui_mainFormLayout->addWidget(ui_estimationWidget, 4, 1);
+    ui_mainFormLayout->addWidget(ui_estimationWidget, 5, 1);
 
     m_folderWidget = new DuQFFolderDisplayWidget(this);
     ui_mainLayout->insertWidget(1, m_folderWidget);
@@ -221,6 +233,12 @@ void StepEditWidget::setupUi()
     tabWidget->addTab(m_applicationList, QIcon(":/icons/applications"), "Applications");
 
     ui_mainLayout->addWidget(tabWidget);
+
+
+    ui_mainLayout->setStretch(0,0);
+    ui_mainLayout->setStretch(1,0);
+    ui_mainLayout->setStretch(2,0);
+    ui_mainLayout->setStretch(3,100);
 }
 
 void StepEditWidget::connectEvents()
@@ -231,4 +249,5 @@ void StepEditWidget::connectEvents()
     connect(ui_typeBox, SIGNAL(currentIndexChanged(int)), this, SLOT(update()));
     connect(m_userList, SIGNAL(add()), this, SLOT(createUser()));
     connect(m_applicationList, SIGNAL(add()), this, SLOT(createApplication()));
+    connect(ui_colorSelector, SIGNAL(colorChanged(QColor)), this, SLOT(update()));
 }

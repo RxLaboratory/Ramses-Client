@@ -182,6 +182,19 @@ void RamStep::applicationUnassigned(const QModelIndex &parent, int first, int la
     }
 }
 
+const QColor &RamStep::color() const
+{
+    return m_color;
+}
+
+void RamStep::setColor(const QColor &newColor)
+{
+    if (m_color == newColor) return;
+    m_dirty = true;
+    m_color = newColor;
+    emit changed(this);
+}
+
 QList<RamObject *> RamStep::inputFileTypes()
 {
     QList<RamObject *> fts;
@@ -219,7 +232,7 @@ void RamStep::update()
     else if (m_type == PreProduction) type = "pre";
     else if (m_type == ShotProduction) type = "shot";
     if (m_template) m_dbi->updateTemplateStep(m_uuid, m_shortName, m_name, type, m_comment);
-    else m_dbi->updateStep(m_uuid, m_shortName, m_name, type, m_comment);
+    else m_dbi->updateStep(m_uuid, m_shortName, m_name, type, m_comment, m_color);
 
     if (m_orderChanged)
     {

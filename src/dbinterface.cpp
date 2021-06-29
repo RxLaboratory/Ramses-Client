@@ -216,7 +216,7 @@ void DBInterface::createStep(QString shortName, QString name, QString projectUui
     request(q);
 }
 
-void DBInterface::updateStep(QString uuid, QString shortName, QString name, QString type, QString comment)
+void DBInterface::updateStep(QString uuid, QString shortName, QString name, QString type, QString comment, QColor color)
 {
     QStringList q("updateStep");
     q << "uuid=" + uuid;
@@ -224,6 +224,7 @@ void DBInterface::updateStep(QString uuid, QString shortName, QString name, QStr
     q << "name=" + name;
     q << "type=" + type;
     q << "comment=" + comment;
+    if (color.isValid()) q << "color=" + color.name();
 
     request(q);
 }
@@ -395,6 +396,15 @@ void DBInterface::removeSequence(QString uuid)
 {
     QStringList q("removeSequence");
     q << "uuid=" + uuid;
+
+    request(q);
+}
+
+void DBInterface::setSequenceOrder(QString uuid, int order)
+{
+    QStringList q("setSequenceOrder");
+    q << "uuid=" + uuid;
+    q << "order=" + QString::number(order);
 
     request(q);
 }

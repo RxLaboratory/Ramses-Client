@@ -47,6 +47,9 @@ public:
 
     static RamStep *step(QString uuid);
 
+    const QColor &color() const;
+    void setColor(const QColor &newColor);
+
 public slots:
     void update() override;
     virtual void edit(bool show = true) override;
@@ -63,6 +66,7 @@ private slots:
 private:
     bool m_template;
     Type m_type;
+    QColor m_color;
     RamProject *m_project;
     RamObjectList *m_users;
     RamObjectList *m_applications;

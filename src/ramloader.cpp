@@ -505,6 +505,7 @@ QString RamLoader::gotStep(QJsonObject newS, RamProject *project)
     step->setType( newS.value("type").toString());
     step->setOrder( newS.value("order").toInt() );
     step->setComment( newS.value("comment").toString());
+    step->setColor( QColor( newS.value("color").toString()) );
 
     step->users()->clear();
     step->applications()->clear();
@@ -673,6 +674,7 @@ QString RamLoader::gotSequence(QJsonObject newS, RamProject *project)
                 );
 
     sequence->setComment( newS.value("comment").toString());
+    sequence->setOrder( newS.value("order").toInt());
 
     project->sequences()->append(sequence);
 
