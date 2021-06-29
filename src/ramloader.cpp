@@ -242,6 +242,7 @@ QString RamLoader::gotTemplateStep(QJsonObject newS)
                 );
     step->setType( newS.value("type").toString());
     step->setComment( newS.value("comment").toString());
+    step->setColor( QColor( newS.value("color").toString()) );
 
     m_ram->templateSteps()->append(step);
 

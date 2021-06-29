@@ -45,7 +45,7 @@ public:
     //template steps
     void createTemplateStep(QString shortName, QString name, QString uuid);
     void getTemplateSteps();
-    void updateTemplateStep(QString uuid, QString shortName, QString name, QString type = "", QString comment = "");
+    void updateTemplateStep(QString uuid, QString shortName, QString name, QString type = "", QString comment = "",  QColor color = QColor());
     void removeTemplateStep(QString uuid);
     //template asset groups
     void createTemplateAssetGroup(QString shortName, QString name, QString uuid);

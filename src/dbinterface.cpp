@@ -150,7 +150,7 @@ void DBInterface::getTemplateSteps()
     request(q);
 }
 
-void DBInterface::updateTemplateStep(QString uuid, QString shortName, QString name, QString type, QString comment)
+void DBInterface::updateTemplateStep(QString uuid, QString shortName, QString name, QString type, QString comment, QColor color)
 {
     QStringList q("updateTemplateStep");
     q << "uuid=" + uuid;
@@ -158,6 +158,7 @@ void DBInterface::updateTemplateStep(QString uuid, QString shortName, QString na
     q << "name=" + name;
     q << "type=" + type;
     q << "comment=" + comment;
+    if (color.isValid()) q << "color=" + color.name();
 
     request(q);
 }

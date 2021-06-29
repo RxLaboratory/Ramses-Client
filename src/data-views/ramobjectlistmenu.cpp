@@ -151,7 +151,6 @@ void RamObjectListMenu::clear()
 void RamObjectListMenu::reset()
 {
     //Add all
-    qDebug() << m_objects->rowCount();
     newObject(QModelIndex(),0,m_objects->rowCount()-1);
 }
 
