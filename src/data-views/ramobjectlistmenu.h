@@ -11,13 +11,13 @@ public:
     RamObjectListMenu(bool checkable = false, QWidget *parent = nullptr);
     void setList(QAbstractItemModel *list);
     void addCreateButton();
-    void setFilterUuid(const QString &uuid);
 
     void setObjectVisible(RamObject *obj, bool visible = true);
 
 public slots:
     void selectAll();
     void selectNone();
+    void filter(RamObject *o);
 
 signals:
     void create();
@@ -32,6 +32,9 @@ private slots:
     void actionAssign(bool checked);
     void actionAssign();
     void actionCreate();
+
+    void clear();
+    void reset();
 
 private:
     RamObjectFilterModel *m_objects;

@@ -22,22 +22,16 @@ RamObjectListMenu::RamObjectListMenu(bool checkable, QWidget *parent):
     }
 
     connect(m_objects, SIGNAL(rowsInserted(QModelIndex,int,int)),this,SLOT(newObject(QModelIndex,int,int)));
-    connect(m_objects, SIGNAL(rowsAboutToBeRemoved(QModelIndex,int,int)),this,SLOT(newObject(QModelIndex,int,int)));
+    connect(m_objects, SIGNAL(rowsAboutToBeRemoved(QModelIndex,int,int)),this,SLOT(removeObject(QModelIndex,int,int)));
     connect(m_objects, SIGNAL(dataChanged(QModelIndex,QModelIndex,QVector<int>)),this,SLOT(objectChanged(QModelIndex,QModelIndex,QVector<int>)));
+    connect(m_objects, SIGNAL(modelAboutToBeReset()),this,SLOT(clear()));
+    connect(m_objects, SIGNAL(modelReset()),this,SLOT(reset()));
 }
 
 void RamObjectListMenu::setList(QAbstractItemModel *list)
 {
-    // Remove
-    removeObject(QModelIndex(),0,m_objects->sourceModel()->rowCount()-1);
-
     if (!list) m_objects->setList(m_emptyList);
-    else
-    {
-        m_objects->setList(list);
-        //Add
-        newObject(QModelIndex(),0,list->rowCount()-1);
-    }
+    else m_objects->setList(list);
 }
 
 void RamObjectListMenu::addCreateButton()
@@ -55,11 +49,6 @@ void RamObjectListMenu::addCreateButton()
     }
 
     connect(createAction,SIGNAL(triggered()),this,SLOT(actionCreate()));
-}
-
-void RamObjectListMenu::setFilterUuid(const QString &uuid)
-{
-    m_objects->setFilterUuid(uuid);
 }
 
 void RamObjectListMenu::setObjectVisible(RamObject *obj, bool visible)
@@ -148,6 +137,24 @@ void RamObjectListMenu::actionCreate()
     emit create();
 }
 
+void RamObjectListMenu::clear()
+{
+    // Remove all
+    QList<QAction*> actions = this->actions();
+    for (int j = actions.count() -1; j >= 0; j--)
+    {
+        if (actions.at(j)->data().toULongLong() != 0)
+            actions.at(j)->deleteLater();
+    }
+}
+
+void RamObjectListMenu::reset()
+{
+    //Add all
+    qDebug() << m_objects->rowCount();
+    newObject(QModelIndex(),0,m_objects->rowCount()-1);
+}
+
 void RamObjectListMenu::selectAll()
 {
     QList<QAction*> actions = this->actions();
@@ -172,6 +179,14 @@ void RamObjectListMenu::selectNone()
             break;
         }
     }
+}
+
+void RamObjectListMenu::filter(RamObject *o)
+{
+    //clear();
+    if (o) m_objects->setFilterUuid( o->uuid() );
+    else m_objects->setFilterUuid( "" );
+    //reset();
 }
 
 

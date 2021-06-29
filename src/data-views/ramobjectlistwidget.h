@@ -26,6 +26,7 @@ public:
     explicit RamObjectListWidget(RamObjectList *list, bool editableObjects, RamUser::UserRole editRole = RamUser::Admin, DisplayMode mode = List, QWidget *parent = nullptr);
     // Content
     void setList(RamObjectList *list);
+    RamObjectFilterModel *filteredList();
     // Settings
     void setEditableObjects(bool editableObjects, RamUser::UserRole editRole = RamUser::Admin);
     void setSortable(bool sortable = true);

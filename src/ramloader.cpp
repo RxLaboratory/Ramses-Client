@@ -733,7 +733,6 @@ QString RamLoader::gotShot(QJsonObject newS, RamProject *project)
     gotStatusHistory( newS.value("statusHistory").toArray(), shot);
 
     // Assign assets
-    qDebug() << newS;
     QJsonArray assts = newS.value("assetUuids").toArray();
     shot->assets()->clear();
     for (int i = 0; i < assts.count(); i++)

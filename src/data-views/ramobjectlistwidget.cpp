@@ -72,6 +72,11 @@ void RamObjectListWidget::setList(RamObjectList *list)
     this->resizeColumnsToContents();
 }
 
+RamObjectFilterModel *RamObjectListWidget::filteredList()
+{
+    return m_objectList;
+}
+
 void RamObjectListWidget::setEditableObjects(bool editableObjects, RamUser::UserRole editRole)
 {
     m_delegate->setEditable(editableObjects);

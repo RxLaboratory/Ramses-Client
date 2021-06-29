@@ -47,6 +47,7 @@ void ShotEditWidget::setObject(RamObject *obj)
 
     // Set assets
     ui_assetList->setList( m_shot->assets() );
+    ui_assetList->setFilterList( project->assetGroups() );
     ui_assetList->setAssignList( project->assets() );
 
     this->setEnabled(Ramses::instance()->isLead());

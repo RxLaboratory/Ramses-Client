@@ -27,8 +27,8 @@ void ObjectListEditWidget::setList(RamObjectList *objectList)
     if (!objectList) return;
 
     // assignment
-    m_listConnections << connect(objectList, SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(objectAssigned(QModelIndex,int,int)));
-    m_listConnections << connect(objectList, SIGNAL(rowsAboutToBeRemoved(QModelIndex,int,int)), this, SLOT(objectUnassigned(QModelIndex,int,int)));
+    m_listConnections << connect(ui_listWidget->filteredList(), SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(objectAssigned(QModelIndex,int,int)));
+    m_listConnections << connect(ui_listWidget->filteredList(), SIGNAL(rowsAboutToBeRemoved(QModelIndex,int,int)), this, SLOT(objectUnassigned(QModelIndex,int,int)));
 
     objectAssigned(QModelIndex(), 0, m_objectList->count() - 1);
 }
@@ -111,6 +111,7 @@ void ObjectListEditWidget::setFilter(RamObject *o)
 {
     QSignalBlocker b(ui_filterBox);
     ui_filterBox->setObject(o);
+    ui_assignMenu->filter(o);
     ui_listWidget->filter(o);
 }
 
@@ -186,9 +187,11 @@ void ObjectListEditWidget::objectAssigned(const QModelIndex &parent, int first, 
 
     if (!m_useAssignList) return;
 
+    RamObjectFilterModel *filteredList = ui_listWidget->filteredList();
+
     for (int i = first ; i <= last; i++)
     {
-        RamObject *assignedObj = m_objectList->at(i);
+        RamObject *assignedObj = reinterpret_cast<RamObject*>( filteredList->data( filteredList->index(i,0), Qt::UserRole ).toULongLong() );
         ui_assignMenu->setObjectVisible(assignedObj, false);
     }
 }
@@ -199,9 +202,11 @@ void ObjectListEditWidget::objectUnassigned(const QModelIndex &parent, int first
 
     if (!m_useAssignList) return;
 
+    RamObjectFilterModel *filteredList = ui_listWidget->filteredList();
+
     for (int i = first ; i <= last; i++)
     {
-        RamObject *assignedObj = m_objectList->at(i);
+        RamObject *assignedObj = reinterpret_cast<RamObject*>( filteredList->data( filteredList->index(i,0), Qt::UserRole ).toULongLong() );
         ui_assignMenu->setObjectVisible(assignedObj, true);
     }
 }

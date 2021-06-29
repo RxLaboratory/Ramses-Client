@@ -273,7 +273,10 @@ QList<RamObject*> RamObjectList::removeIndices(QModelIndexList indices)
     for( int i = indices.count() -1; i >= 0; i--)
     {
         QModelIndex index = indices.at(i);
-        objs << this->takeObject(index.row());
+        quintptr iptr = index.data(Qt::UserRole).toULongLong();
+        RamObject *o = reinterpret_cast<RamObject*>( iptr );
+        objs << o;
+        removeAll(o);
     }
     return objs;
 }
