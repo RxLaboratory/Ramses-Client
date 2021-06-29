@@ -9,6 +9,9 @@
 
 #include "dbisuspender.h"
 
+/**
+ * @brief The RamObjectList class is the base class used for almost all of Ramses' lists (assets, steps, shots, applications...).
+ */
 class RamObjectList : public QAbstractTableModel
 {
     Q_OBJECT

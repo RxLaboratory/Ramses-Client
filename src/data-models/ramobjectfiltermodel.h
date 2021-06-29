@@ -6,6 +6,10 @@
 #include "ramobject.h"
 #include "ramobjectlist.h"
 
+/**
+ * @brief The RamObjectFilterModel class is a proxy used to filter and search items displayed in Ramses' lists.
+ * It filters RamObjects according to ther filterUuid property, or if their shortName/name corresponds to a search string.
+ */
 class RamObjectFilterModel : public QSortFilterProxyModel
 {
     Q_OBJECT

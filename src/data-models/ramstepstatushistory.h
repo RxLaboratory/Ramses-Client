@@ -4,6 +4,12 @@
 #include "ramobjectlist.h"
 #include "ramstatus.h"
 
+/**
+ * @brief The RamStepStatusHistory class is a list of RamStatus for a specific step and item
+ * It is just a simple heritance of RamObjectList used to sort the RamStatus according to their date,
+ * and it also keeps a pointer to the corresponding item and step.
+ * Furthermore, it implements and 'edit' method, similar to RamObject::edit() which shows a dock widget listing all the RamStatus
+ */
 class RamStepStatusHistory : public RamObjectList
 {
     Q_OBJECT

@@ -6,6 +6,11 @@
 #include "ramitem.h"
 #include "data-models/ramstepfiltermodel.h"
 
+
+/**
+ * @brief The RamItemTable class is the model used to associate shots/assets with their status.
+ * It keeps the latest status for each step associated to the corresponding shot/asset
+ */
 class RamItemTable : public RamObjectList
 {
     Q_OBJECT

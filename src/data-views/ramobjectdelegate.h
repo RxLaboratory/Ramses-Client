@@ -9,6 +9,9 @@
 #include "duqf-app/app-style.h"
 #include "ramses.h"
 
+/**
+ * @brief The RamObjectDelegate class is the main delegate used to paint RamObject in almost all the lists in Ramses.
+ */
 class RamObjectDelegate : public QStyledItemDelegate
 {
     Q_OBJECT

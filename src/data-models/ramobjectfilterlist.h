@@ -5,6 +5,10 @@
 
 #include "ramobjectlist.h"
 
+/**
+ * @brief The RamObjectFilterList class is used to add an "ALL" item in the top of a list,
+ * Used by QComboBox when displaying a list of filters.
+ */
 class RamObjectFilterList : public QSortFilterProxyModel
 {
     Q_OBJECT

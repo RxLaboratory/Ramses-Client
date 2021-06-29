@@ -12,6 +12,11 @@
 #include "data-models/ramobjectfiltermodel.h"
 #include "data-models/ramitemtablelistproxy.h"
 
+/**
+ * @brief The RamObjectListWidget class is the base class displaying for all lists in Ramses, displaying RamObject
+ * It displays a RamObjectList using RamObjectDelegate for the painging.
+ * It used mainly in ObjectListEditWidget (in order to manage the list)
+ */
 class RamObjectListWidget : public QTableView
 {
     Q_OBJECT

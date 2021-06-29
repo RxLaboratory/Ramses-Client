@@ -5,6 +5,13 @@
 
 #include "ramstep.h"
 
+/**
+ * @brief The RamStepFilterModel class is used to filter a RamObjectList of steps according to their type (asset, shot, pre, post production)
+ * It is also able to ignore specific steps (using their uuid); this is used to filter steps with a checkable list in Ramses' tables.
+ * It must NOT be used with anything else than a RamObjectList of RamStep!
+ * @todo The uuid filtering should be moved to RamObjectFilterModel, and RamStepFilterModel may inherit RamObjectFilterModel,
+ * which should avoid the need of multiple filter models chained one after the other.
+ */
 class RamStepFilterModel : public QSortFilterProxyModel
 {
     Q_OBJECT
