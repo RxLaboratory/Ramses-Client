@@ -11,7 +11,7 @@
 
 #include "duqf-widgets/duqfspinbox.h"
 #include "duqf-widgets/autoselectspinbox.h"
-#include "duqf-widgets/autoselectspinbox.h"
+#include "duqf-widgets/autoselectdoublespinbox.h"
 #include "data-views/ramobjectlistcombobox.h"
 #include "duqf-widgets/duqffolderdisplaywidget.h"
 #include "objecteditwidget.h"
@@ -44,6 +44,8 @@ public:
     RamUser *assignedUser() const;
     bool isPublished() const;
     qint64 timeSpent() const;
+    float estimation() const;
+    RamStatus::Difficulty difficulty() const;
 
 signals:
     void statusUpdated(RamState*, int completion, int version, QString comment);
@@ -70,6 +72,10 @@ private slots:
     void openPreviewFile();
     void removeSelectedPreviewFile();
 
+    void autoEstimate(bool estimate);
+    void autoEstimate();
+    void estimateDays(double hours);
+
 private:
     void setupUi();
     void connectEvents();
@@ -93,6 +99,9 @@ private:
     QToolButton *ui_openPublishedFileButton;
     QToolButton *ui_openPreviewFileButton;
     DuQFFolderDisplayWidget *ui_folderWidget;
+    QComboBox *ui_difficultyBox;
+    AutoSelectDoubleSpinBox *ui_estimationEdit;
+    QCheckBox *ui_autoEstimationBox;
 
     RamStatus *m_status;
 };

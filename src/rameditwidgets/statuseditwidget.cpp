@@ -30,6 +30,8 @@ void StatusEditWidget::setStatus(RamStatus *status)
     ui_publishedFileList->clear();
     ui_previewFileList->clear();
     ui_folderWidget->setPath("");
+    ui_difficultyBox->setCurrentIndex(2);
+    ui_autoEstimationBox->setChecked(true);
 
     // Remove template list
     QList<QAction*> templateActions = ui_createFromTemplateMenu->actions();
@@ -95,6 +97,14 @@ void StatusEditWidget::setStatus(RamStatus *status)
         connect(action,SIGNAL(triggered()), this, SLOT(createFromTemplate()));
     }
 
+    // Estimation
+    ui_difficultyBox->setCurrentIndex( status->difficulty() );
+    ui_autoEstimationBox->setChecked( status->estimation() <= 0 );
+    if (!ui_autoEstimationBox->isChecked())
+        ui_estimationEdit->setValue( status->estimation() );
+    else
+        autoEstimate(true);
+
     ui_timeSpent->setValue( timeSpent / 3600 );
 }
 
@@ -131,6 +141,25 @@ bool StatusEditWidget::isPublished() const
 qint64 StatusEditWidget::timeSpent() const
 {
     return ui_timeSpent->value() * 3600;
+}
+
+float StatusEditWidget::estimation() const
+{
+    if (ui_autoEstimationBox->isChecked()) return -1;
+    return ui_estimationEdit->value();
+}
+
+RamStatus::Difficulty StatusEditWidget::difficulty() const
+{
+    switch(ui_difficultyBox->currentIndex())
+    {
+        case 0: return RamStatus::VeryEasy;
+        case 1: return RamStatus::Easy;
+        case 2: return RamStatus::Medium;
+        case 3: return RamStatus::Hard;
+        case 4: return RamStatus::VeryHard;
+    }
+    return RamStatus::Medium;
 }
 
 void StatusEditWidget::currentStateChanged(RamObject *stateObj)
@@ -368,6 +397,28 @@ void StatusEditWidget::removeSelectedPreviewFile()
     revert();
 }
 
+void StatusEditWidget::autoEstimate(bool estimate)
+{
+    if (estimate)
+    {
+        float daysEstimation = m_status->autoEstimation( ui_difficultyBox->currentIndex() );
+        ui_estimationEdit->setValue( RamStatus::daysToHours( daysEstimation ) );
+    }
+
+    ui_estimationEdit->setEnabled(!estimate);
+}
+
+void StatusEditWidget::autoEstimate()
+{
+    autoEstimate( ui_autoEstimationBox->isChecked() );
+}
+
+void StatusEditWidget::estimateDays(double hours)
+{
+    float days = RamStatus::hoursToDays(hours);
+    ui_estimationEdit->setSuffix(" hours (" + QString::number(days, 'f', 2) + " days)");
+}
+
 void StatusEditWidget::setupUi()
 {
     this->hideName();
@@ -402,17 +453,45 @@ void StatusEditWidget::setupUi()
 
     QFormLayout *detailsLayout = new QFormLayout();
 
+    ui_difficultyBox = new QComboBox(this);
+    ui_difficultyBox->addItem("Very easy");
+    ui_difficultyBox->addItem("Easy");
+    ui_difficultyBox->addItem("Medium");
+    ui_difficultyBox->addItem("Hard");
+    ui_difficultyBox->addItem("Very hard");
+    detailsLayout->addRow("Difficulty", ui_difficultyBox);
+
+    QWidget *estimationWidget = new QWidget(this);
+    QHBoxLayout *estimationLayout = new QHBoxLayout(estimationWidget);
+    estimationLayout->setContentsMargins(0,0,0,0);
+    estimationLayout->setSpacing(3);
+
+    ui_estimationEdit = new AutoSelectDoubleSpinBox(this);
+    ui_estimationEdit->setMinimum(-1);
+    ui_estimationEdit->setMaximum(999);
+    ui_estimationEdit->setSuffix(" days");
+    ui_estimationEdit->setEnabled(false);
+    estimationLayout->addWidget( ui_estimationEdit );
+
+    ui_autoEstimationBox = new QCheckBox("Auto", this);
+    ui_autoEstimationBox->setChecked(true);
+    estimationLayout->addWidget( ui_autoEstimationBox );
+
+    estimationLayout->setStretch(0,1);
+    estimationLayout->setStretch(1,0);
+    detailsLayout->addRow("Estimation", estimationWidget);
+
+    ui_timeSpent = new AutoSelectSpinBox(this);
+    ui_timeSpent->setMinimum(0);
+    ui_timeSpent->setMaximum(9999);
+    ui_timeSpent->setSuffix(" hours (0 days)");
+    detailsLayout->addRow("Time spent", ui_timeSpent);
+
     ui_versionBox = new AutoSelectSpinBox(this);
     ui_versionBox->setMaximum(1000);
     ui_versionBox->setValue(1);
     ui_versionBox->setPrefix("v");
     detailsLayout->addRow("Version", ui_versionBox);
-
-    ui_timeSpent = new AutoSelectSpinBox(this);
-    ui_timeSpent->setMinimum(0);
-    ui_timeSpent->setMaximum(9999);
-    ui_timeSpent->setSuffix(" hours");
-    detailsLayout->addRow("Time spent", ui_timeSpent);
 
     ui_publishedBox = new QCheckBox("Published",this);
     detailsLayout->addRow("Publication", ui_publishedBox);
@@ -563,6 +642,10 @@ void StatusEditWidget::connectEvents()
     connect(ui_openPreviewFileButton, SIGNAL(clicked()),this,SLOT(openPreviewFile()));
     connect(ui_publishedFileList,SIGNAL(itemDoubleClicked(QListWidgetItem*)),this,SLOT(openPublishedFile()));
     connect(ui_previewFileList,SIGNAL(itemDoubleClicked(QListWidgetItem*)),this,SLOT(openPreviewFile()));
+
+    connect(ui_autoEstimationBox, SIGNAL(toggled(bool)), this, SLOT(autoEstimate(bool)));
+    connect(ui_difficultyBox, SIGNAL(currentIndexChanged(int)), this, SLOT(autoEstimate()));
+    connect(ui_estimationEdit, SIGNAL(valueChanged(double)),this, SLOT(estimateDays(double)));
 
     // Shortcuts
     QShortcut *s;

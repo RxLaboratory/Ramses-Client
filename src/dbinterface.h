@@ -115,7 +115,7 @@ public:
     void updatePipeFile(QString uuid, QString shortName, QString fileTypeUuid = "", QString colorSpaceUuid = "", QString comment = "" );
     void removePipeFile(QString uuid);
     //Status
-    void updateStatus(QString uuid, QString stateUuid, QString comment = "", int version = 0, int completionRatio = -1, bool published = false, QString assignedUserUuid = "", qint64 timeSpent = -1, QDateTime date = QDateTime());
+    void updateStatus(QString uuid, QString stateUuid, QString comment = "", int version = 0, int completionRatio = -1, bool published = false, QString assignedUserUuid = "", qint64 timeSpent = -1, QDateTime date = QDateTime(), QString difficulty = "medium", float estimation = -1);
     void setStatusUser(QString uuid, QString userUuid);
     void removeStatus(QString uuid);
 

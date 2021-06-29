@@ -16,6 +16,15 @@ class RamStatus : public RamObject
 {
     Q_OBJECT
 public:
+    enum Difficulty {
+        VeryEasy = 0,
+        Easy = 1,
+        Medium = 2,
+        Hard = 3,
+        VeryHard = 4
+    };
+    Q_ENUM(Difficulty)
+
     explicit RamStatus(RamUser *user, RamState *state, RamStep *step, RamItem *item, QString uuid = "");
     ~RamStatus();
 
@@ -45,8 +54,6 @@ public:
     QDateTime date() const;
     void setDate(const QDateTime &date);
 
-    static RamStatus *status(QString uuid);
-
     bool isPublished() const;
     bool checkPublished(int version = -1) const;
     QStringList publishedFiles() const;
@@ -59,9 +66,21 @@ public:
     RamUser *assignedUser() const;
     void assignUser(RamUser *assignedUser);
 
-    qint64 timeSpent();
+    qint64 timeSpent(); // hours
     void setTimeSpent(const float &ts);
     bool isTimeSpentManual() const;
+
+    Difficulty difficulty() const;
+    void setDifficulty(Difficulty newDifficulty);
+
+    float estimation() const; // days
+    float autoEstimation() const; // days
+    float autoEstimation(int difficulty) const; // days
+    void setEstimation(float newEstimation);
+
+    static RamStatus *status(QString uuid);
+    static float hoursToDays(int hours);
+    static int daysToHours(float days);
 
 public slots:
     void update() override;
@@ -88,10 +107,14 @@ private:
     bool m_manualTimeSpent = false;
     bool m_published = false;
     RamUser* m_assignedUser = nullptr;
-    StatusEditWidget *m_editWidget;
+    Difficulty m_difficulty = Medium;
+    float m_estimation = -1.0;
+
+    StatusEditWidget *ui_editWidget;
 
     QMetaObject::Connection m_stateConnection;
     QMetaObject::Connection m_assignedUserConnection;
+
 };
 
 #endif // RAMSTATUS_H

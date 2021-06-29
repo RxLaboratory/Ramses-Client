@@ -1,4 +1,4 @@
-#include "ramstatus.h"
+﻿#include "ramstatus.h"
 
 #include "ramitem.h"
 #include "statuseditwidget.h"
@@ -235,6 +235,11 @@ void RamStatus::update()
     if (m_assignedUser) assignedUser = m_assignedUser->uuid();
     qint64 timeSpent = -1;
     if (m_timeSpent > 0) timeSpent = m_timeSpent;
+    QString difficulty = "medium";
+    if (m_difficulty == VeryEasy) difficulty = "veryEasy";
+    else if (m_difficulty == Easy) difficulty = "easy";
+    else if (m_difficulty == Hard) difficulty = "hard";
+    else if (m_difficulty == VeryHard) difficulty = "veryHard";
     m_dbi->updateStatus(
                 m_uuid,
                 m_state->uuid(),
@@ -244,21 +249,23 @@ void RamStatus::update()
                 m_published,
                 assignedUser,
                 timeSpent,
-                m_date);
+                m_date,
+                difficulty,
+                m_estimation);
 }
 
 void RamStatus::edit(bool show)
 {
     if (!m_editReady)
     {
-        m_editWidget = new StatusEditWidget(this);
-        setEditWidget(m_editWidget);
+        ui_editWidget = new StatusEditWidget(this);
+        setEditWidget(ui_editWidget);
         m_editReady = true;
-        connect( m_editWidget, SIGNAL(statusUpdated(RamState*,int,int,QString)),
+        connect( ui_editWidget, SIGNAL(statusUpdated(RamState*,int,int,QString)),
                  this, SLOT(statusUpdated(RamState*,int,int,QString))
                  );
     }
-    if (show) m_editWidget->setStatus( this );
+    if (show) ui_editWidget->setStatus( this );
     showEdit(show);
 }
 
@@ -277,10 +284,12 @@ void RamStatus::statusUpdated(RamState *state, int completion, int version, QStr
     this->setCompletionRatio(completion);
     this->setVersion(version);
     this->setComment(comment);
-    this->assignUser(m_editWidget->assignedUser());
-    this->setPublished(m_editWidget->isPublished());
+    this->assignUser(ui_editWidget->assignedUser());
+    this->setPublished(ui_editWidget->isPublished());
     this->setDate(QDateTime::currentDateTime());
-    this->setTimeSpent( m_editWidget->timeSpent() );
+    this->setTimeSpent( ui_editWidget->timeSpent() );
+    this->setEstimation( ui_editWidget->estimation() );
+    this->setDifficulty( ui_editWidget->difficulty() );
     update();
     showEdit(false);
 }
@@ -299,6 +308,99 @@ void RamStatus::userRemoved()
 void RamStatus::assignedUserRemoved()
 {
     assignUser(nullptr);
+}
+
+float RamStatus::estimation() const
+{
+    return m_estimation;
+}
+
+float RamStatus::autoEstimation(int difficulty) const
+{
+    float estimation = 0.0;
+
+    switch (difficulty)
+    {
+    case VeryEasy:
+    {
+        estimation = m_step->estimationVeryEasy();
+        break;
+    }
+    case Easy:
+    {
+        estimation = m_step->estimationEasy();
+        break;
+    }
+    case Medium:
+    {
+        estimation = m_step->estimationMedium();
+        break;
+    }
+    case Hard:
+    {
+        estimation = m_step->estimationHard();
+        break;
+    }
+    case VeryHard:
+    {
+        estimation = m_step->estimationVeryHard();
+        break;
+    }
+    default:
+    {
+        estimation = m_step->estimationMedium();
+    }
+    }
+
+    // Multiply by duration and num assets if shot
+    if ( m_item->objectType() == RamObject::Shot)
+    {
+        RamShot *shot = qobject_cast<RamShot*>( m_item );
+        if (m_step->estimationMethod() == RamStep::EstimatePerSecond)
+        {
+            estimation *= shot->duration();
+        }
+        RamAssetGroup *ag = m_step->estimationMultiplyGroup();
+        if (ag)
+        {
+            // count assets
+            int numAssets = 0;
+            for (int i = 0; i < shot->assets()->count(); i++)
+            {
+                RamAsset *asset = qobject_cast<RamAsset*>( shot->assets()->at(i) );
+                if (asset->assetGroup()->is(ag)) numAssets++;
+            }
+            if (numAssets > 0) estimation *= numAssets;
+        }
+    }
+
+    return estimation;
+}
+
+float RamStatus::autoEstimation() const
+{
+    return autoEstimation(m_difficulty);
+}
+
+void RamStatus::setEstimation(float newEstimation)
+{
+    if (m_estimation == newEstimation) return;
+    m_dirty = true;
+    m_estimation = newEstimation;
+    emit changed(this);
+}
+
+RamStatus::Difficulty RamStatus::difficulty() const
+{
+    return m_difficulty;
+}
+
+void RamStatus::setDifficulty(Difficulty newDifficulty)
+{
+    if (m_difficulty == newDifficulty) return;
+    m_dirty = true;
+    m_difficulty = newDifficulty;
+    emit changed(this);
 }
 
 RamUser *RamStatus::assignedUser() const
@@ -451,4 +553,32 @@ void RamStatus::setDate(const QDateTime &date)
 RamStatus *RamStatus::status(QString uuid)
 {
     return qobject_cast<RamStatus*>( RamObject::obj(uuid) );
+}
+
+float RamStatus::hoursToDays(int hours)
+{
+    // 1 day ( more or less )
+    if (hours <= 0) return 0;
+    if (hours == 1) return 0.15;
+    if (hours == 2) return 0.25;
+    if (hours == 3) return 0.4;
+    if (hours == 4) return 0.5;
+    if (hours == 5) return 0.75;
+    if (hours <= 6) return 0.85;
+    if (hours <= 9) return 1;
+
+    // Approximately 2 days
+    if (hours < 11) return 1.25;
+    if (hours < 14) return 1.5;
+    if (hours < 18) return 2;
+
+    // More than that, 8h/day
+    int intDays = hours / 8;
+    return intDays;
+}
+
+int RamStatus::daysToHours(float days)
+{
+    // let's use an 8h-day
+    return days*8;
 }

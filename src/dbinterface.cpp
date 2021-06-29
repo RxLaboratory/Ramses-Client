@@ -736,12 +736,14 @@ void DBInterface::removePipeFile(QString uuid)
     request(q);
 }
 
-void DBInterface::updateStatus(QString uuid, QString stateUuid, QString comment, int version, int completionRatio, bool published, QString assignedUserUuid, qint64 timeSpent, QDateTime date)
+void DBInterface::updateStatus(QString uuid, QString stateUuid, QString comment, int version, int completionRatio, bool published, QString assignedUserUuid, qint64 timeSpent, QDateTime date, QString difficulty, float estimation)
 {
     QStringList q("updateStatus");
     q << "uuid=" + uuid;
     q << "stateUuid=" + stateUuid;
     q << "assignedUserUuid=" + assignedUserUuid;
+    q << "difficulty=" + difficulty;
+    q << "estimation=" + QString::number(estimation);
     if (timeSpent >= 0) q << "timeSpent=" + QString::number(timeSpent);
     if (published) q << "published=1";
     else q << "published=0";

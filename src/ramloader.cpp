@@ -825,6 +825,15 @@ QString RamLoader::gotStatus(QJsonObject newS, RamItem *item)
     status->assignUser( RamUser::user( newS.value("assignedUserUuid").toString( )));
     status->setPublished( newS.value("published").toInt() == 1);
     status->setTimeSpent( newS.value("timeSpent").toInt() );
+    status->setEstimation( newS.value("estimation").toDouble() );
+
+    QString difficulty = newS.value("difficulty").toString();
+    if (difficulty == "veryEasy") status->setDifficulty(RamStatus::VeryEasy);
+    else if (difficulty == "easy") status->setDifficulty(RamStatus::Easy);
+    else if (difficulty == "medium") status->setDifficulty(RamStatus::Medium);
+    else if (difficulty == "hard") status->setDifficulty(RamStatus::Hard);
+    else if (difficulty == "veryHard") status->setDifficulty(RamStatus::VeryHard);
+    else status->setDifficulty(RamStatus::Medium);
 
     item->addStatus(status);
 
