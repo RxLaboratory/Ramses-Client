@@ -377,6 +377,19 @@ float RamStatus::autoEstimation(int difficulty) const
     return estimation;
 }
 
+float RamStatus::latenessRatio() const
+{
+    float completionRatio = m_completionRatio / 100.0;
+
+    float estimation;
+    if (m_estimation <= 0) estimation = autoEstimation();
+    else estimation = m_estimation;
+
+    float timeRatio = hoursToDays(m_timeSpent/3600) / estimation;
+
+    return timeRatio / completionRatio;
+}
+
 float RamStatus::autoEstimation() const
 {
     return autoEstimation(m_difficulty);

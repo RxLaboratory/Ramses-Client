@@ -66,7 +66,7 @@ public:
     RamUser *assignedUser() const;
     void assignUser(RamUser *assignedUser);
 
-    qint64 timeSpent(); // hours
+    qint64 timeSpent(); // seconds
     void setTimeSpent(const float &ts);
     bool isTimeSpentManual() const;
 
@@ -76,6 +76,7 @@ public:
     float estimation() const; // days
     float autoEstimation() const; // days
     float autoEstimation(int difficulty) const; // days
+    float latenessRatio() const;
     void setEstimation(float newEstimation);
 
     static RamStatus *status(QString uuid);

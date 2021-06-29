@@ -380,20 +380,104 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
         RamStatus *status = qobject_cast<RamStatus*>( obj );
         // Draw a progress bar
         QColor statusColor = status->state()->color();
-        QBrush statusBrush(statusColor.darker());
-        QPainterPath path;
-        QRect statusRect( bgRect.left() + 5, titleRect.bottom() + 5, bgRect.width() - 10, 5 );
+        QBrush statusBrush(statusColor.darker(300));
+        int statusWidth = bgRect.width() - 10;
+        QRect statusRect( bgRect.left() + 5, titleRect.bottom() + 5, statusWidth, 6 );
+
+        // Values to be reused
+        float estimation = 0;
+        float timeSpentDays = 0;
+        int completionWidth = 0;
+
         // details
         if (statusRect.bottom() + 5 < bgRect.bottom())
         {
+            // Draw status
+
+            // Status BG
+            QPainterPath path;
             path.addRoundedRect(statusRect, 5, 5);
             painter->fillPath(path, statusBrush);
-            statusBrush.setColor(statusColor);
-            statusRect.adjust(0,0, -statusRect.width() * (1-(status->completionRatio() / 100.0)), 0);
+
+            // Adjust color according to lateness
+            float latenessRatio = status->latenessRatio();
+            // Ratio
+            estimation = status->estimation();
+            if (estimation <= 0) estimation = status->autoEstimation();
+            if (estimation <= 0) estimation = 1;
+            timeSpentDays = RamStatus::hoursToDays( status->timeSpent()/3600 );
+            float ratio = timeSpentDays / estimation;
+
+            QColor timeColor = statusColor;
+
+            //If we're late, draw the timebar first
+            if (latenessRatio > 1)
+            {
+                if ( latenessRatio < 1.2 )
+                {
+                    int red = std::min( timeColor.red() + 50, 255 );
+                    int green = std::min( timeColor.green() + 50, 255 );
+                    int blue = std::max( timeColor.blue() -50, 0);
+                    timeColor.setRed( red );
+                    timeColor.setGreen( green );
+                    timeColor.setBlue( blue );
+                    timeColor = timeColor.darker(200);
+                }
+                // Very late, orange
+                else if ( latenessRatio < 1.4 )
+                {
+                    int red = std::min( timeColor.red() + 150, 255 );
+                    int green = std::min( timeColor.green() + 25, 255 );
+                    int blue = std::max( timeColor.blue() - 100, 0);
+                    timeColor.setRed( red );
+                    timeColor.setGreen( green );
+                    timeColor.setBlue( blue );
+                    timeColor = timeColor.darker(200);
+                }
+                // Extreme, red
+                else
+                {
+                    int red = std::min( timeColor.red() + 200, 255 );
+                    int green = std::max( timeColor.green() - 150, 0 );
+                    int blue = std::max( timeColor.blue() - 150, 0);
+                    timeColor.setRed( red );
+                    timeColor.setGreen( green );
+                    timeColor.setBlue( blue );
+                    timeColor = timeColor.darker(200);
+                }
+                statusBrush.setColor( timeColor );
+
+                statusRect.setWidth( statusWidth * ratio );
+                QPainterPath timePath;
+                timePath.addRoundedRect(statusRect, 3, 3);
+                painter->fillPath(timePath, statusBrush);
+            }
+
+            // Now draw the completion bar
+            statusBrush.setColor( statusColor );
+
+            completionWidth = statusWidth * ( status->completionRatio() / 100.0 );
+            statusRect.setWidth(completionWidth);
             QPainterPath completionPath;
             completionPath.addRoundedRect(statusRect, 5, 5);
             painter->fillPath(completionPath, statusBrush);
 
+            // And draw the Time bar if we're early
+
+            if (latenessRatio <= 1)
+            {
+                // Adjust color according to lateness
+                statusBrush.setColor( timeColor.darker(130) );
+
+                statusRect.setWidth( statusWidth * ratio );
+                QPainterPath timePath;
+                timePath.addRoundedRect(statusRect, 3, 3);
+                painter->fillPath(timePath, statusBrush);
+            }
+
+        }
+        if (statusRect.bottom() + 5 < bgRect.bottom())
+        {
             // details
             RamUser *assignedUser = status->assignedUser();
             if (assignedUser) details = "Assigned to: " %
@@ -405,7 +489,14 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
             qint64 timeSpentSecs = status->timeSpent();
             // Convert to hours
             int timeSpent = timeSpentSecs / 3600;
-            if (timeSpent > 0) details = details % "\nTime spent: " % QString::number(timeSpent) % " hours";
+            if (timeSpent > 0) details = details %
+                    "\nTime spent: " %
+                    QString::number(timeSpent) %
+                    " hours (" %
+                    QString::number(timeSpentDays, 'f', 0) %
+                    " days) / " %
+                    QString::number(estimation, 'f', 0) %
+                    " days";
 
             detailsRect.moveTop(statusRect.bottom() + 5);
             detailsRect.setHeight( bgRect.bottom() - statusRect.bottom() - 10);
