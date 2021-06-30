@@ -37,5 +37,6 @@ bool RamStepFilterModel::filterAcceptsRow(int sourceRow, const QModelIndex &sour
     RamStep *step = reinterpret_cast<RamStep*>(iptr);
 
     if(m_ignoreUuids.contains(step->uuid())) return false;
+    if (m_stepType == RamStep::All) return true;
     return step->type() == m_stepType;
 }

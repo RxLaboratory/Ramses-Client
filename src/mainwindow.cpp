@@ -28,6 +28,7 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     actionPipeline->setVisible(false);
     actionShots->setVisible(false);
     actionAssets->setVisible(false);
+    actionSchedule->setVisible(false);
 
     mainToolBar->addWidget(new ToolBarSpacer(this));
 
@@ -166,6 +167,13 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     qDebug() << "> Shots table ready";
 #endif
 
+#ifndef DEACTIVATE_SCHEDULE
+    ScheduleManagerWidget *scheduleTable = new ScheduleManagerWidget(this);
+    mainStack->addWidget(scheduleTable);
+    connect(scheduleTable,SIGNAL(closeRequested()), this, SLOT(home()));
+    qDebug() << "> Schedule ready";
+#endif
+
     // Progress page
     progressPage = new ProgressPage(this);
     mainStack->addWidget(progressPage);
@@ -186,6 +194,7 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     connect(actionPipeline, SIGNAL(triggered(bool)), this, SLOT(pipeline(bool)));
     connect(actionShots,SIGNAL(triggered(bool)), this, SLOT(shots(bool)));
     connect(actionAssets,SIGNAL(triggered(bool)), this, SLOT(assets(bool)));
+    connect(actionSchedule,SIGNAL(triggered(bool)), this, SLOT(schedule(bool)));
     connect(adminPage, SIGNAL(closeRequested()), this, SLOT(home()));
     connect(projectSettingsPage, SIGNAL(closeRequested()), this, SLOT(home()));
     connect(networkButton,SIGNAL(clicked()),this, SLOT(networkButton_clicked()));
@@ -529,6 +538,7 @@ void MainWindow::pageChanged(int i)
     actionPipeline->setChecked(i == 5);
     actionAssets->setChecked(i == 6);
     actionShots->setChecked(i == 7);
+    actionSchedule->setChecked(i == 8);
 }
 
 void MainWindow::serverSettings()
@@ -593,6 +603,12 @@ void MainWindow::assets(bool show)
     else home();
 }
 
+void MainWindow::schedule(bool show)
+{
+    if (show) mainStack->setCurrentIndex(8);
+    else home();
+}
+
 void MainWindow::networkButton_clicked()
 {
     DBInterface *dbi = DBInterface::instance();
@@ -634,6 +650,7 @@ void MainWindow::currentUserChanged()
     actionShots->setChecked(false);
     actionAssets->setVisible(false);
     actionAssets->setChecked(false);
+    actionSchedule->setVisible(false);
 
     RamUser *user = Ramses::instance()->currentUser();
     if (!user) return;
@@ -646,6 +663,7 @@ void MainWindow::currentUserChanged()
 
     actionShots->setVisible(true);
     actionAssets->setVisible(true);
+    actionSchedule->setVisible(true);
 
     if (user->role() == RamUser::Admin)
     {

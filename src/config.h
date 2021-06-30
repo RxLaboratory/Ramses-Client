@@ -16,4 +16,7 @@
 // Deactivate Assets Table
 //#define DEACTIVATE_ASSETSTABLE
 
+// Deactivate Schedule Table
+//#define DEACTIVATE_SCHEDULE
+
 #endif // CONFIG_H

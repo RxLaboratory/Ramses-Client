@@ -109,10 +109,10 @@ void RamObjectListWidget::mouseMoveEvent(QMouseEvent *event)
     if (m_dragging)
     {
         QPoint newPos = event->globalPos();
-        QPoint _delta = newPos - _initialDragPos;
+        QPoint _delta = newPos - m_initialDragPos;
         this->horizontalScrollBar()->setValue( this->horizontalScrollBar()->value() - _delta.x() );
         this->verticalScrollBar()->setValue( this->verticalScrollBar()->value() - _delta.y() );
-        _initialDragPos = newPos;
+        m_initialDragPos = newPos;
         event->accept();
         return;
     }
@@ -123,7 +123,7 @@ void RamObjectListWidget::mousePressEvent(QMouseEvent *event)
 {
     if (event->button() == Qt::MiddleButton)
     {
-        _initialDragPos = event->globalPos();
+        m_initialDragPos = event->globalPos();
         m_dragging = true;
         event->accept();
         return;

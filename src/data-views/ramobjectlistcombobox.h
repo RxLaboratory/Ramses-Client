@@ -27,9 +27,14 @@ public:
     void setObject(QString uuid);
     void setObject(RamObject *obj);
 
+    void showPopup() override;
+    void hidePopup() override;
+
 signals:
     void currentObjectChanged(RamObject*);
     void currentObjectChanged(QString);
+    void popupShown();
+    void popupHidden();
 
 private slots:
     void currentObjectChanged(int i);

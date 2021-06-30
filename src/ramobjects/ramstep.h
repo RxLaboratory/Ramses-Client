@@ -15,7 +15,7 @@ class RamStep : public RamObject
 {
     Q_OBJECT
 public:
-    enum Type{ PreProduction, AssetProduction, ShotProduction, PostProduction };
+    enum Type{ PreProduction, AssetProduction, ShotProduction, PostProduction, All };
     Q_ENUM(Type)
 
     enum EstimationMethod { EstimatePerShot = 0,

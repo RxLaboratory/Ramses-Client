@@ -16,20 +16,20 @@ void PipeFileEditWidget::setObject(RamObject *obj)
     ObjectEditWidget::setObject(pipeFile);
     m_pipeFile = pipeFile;
 
-    QSignalBlocker b1(m_fileTypeBox);
-    QSignalBlocker b2(m_colorSpaceBox);
+    QSignalBlocker b1(ui_fileTypeBox);
+    QSignalBlocker b2(ui_colorSpaceBox);
 
     //Reset values
-    m_fileTypeBox->setCurrentIndex(-1);
-    m_colorSpaceBox->setCurrentIndex(-1);
+    ui_fileTypeBox->setCurrentIndex(-1);
+    ui_colorSpaceBox->setCurrentIndex(-1);
 
     if (!pipeFile) return;
 
     // Select file type
     RamFileType *ft = pipeFile->fileType();
-    if(ft) m_fileTypeBox->setObject( ft );
+    if(ft) ui_fileTypeBox->setObject( ft );
 
-    this->setEnabled(true);
+    this->setEnabled(Ramses::instance()->isProjectAdmin());
 }
 
 void PipeFileEditWidget::update()
@@ -40,7 +40,7 @@ void PipeFileEditWidget::update()
 
     updating = true;
 
-    RamFileType *ft = qobject_cast<RamFileType*>(m_fileTypeBox->currentObject());
+    RamFileType *ft = qobject_cast<RamFileType*>(ui_fileTypeBox->currentObject());
     if(ft) m_pipeFile->setFileType( ft );
 
     ObjectEditWidget::update();
@@ -56,18 +56,18 @@ void PipeFileEditWidget::setupUi()
     QLabel *fileTypeLabel = new QLabel("File type", this);
     ui_mainFormLayout->addWidget(fileTypeLabel, 3, 0);
 
-    m_fileTypeBox = new RamObjectListComboBox(Ramses::instance()->fileTypes(), this);
-    ui_mainFormLayout->addWidget(m_fileTypeBox, 3, 1);
+    ui_fileTypeBox = new RamObjectListComboBox(Ramses::instance()->fileTypes(), this);
+    ui_mainFormLayout->addWidget(ui_fileTypeBox, 3, 1);
 
     QLabel *colorSpaceLabel = new QLabel("Color space", this);
     ui_mainFormLayout->addWidget(colorSpaceLabel, 4, 0);
 
-    m_colorSpaceBox = new RamObjectListComboBox(this);
-    ui_mainFormLayout->addWidget(m_colorSpaceBox, 4, 1);
+    ui_colorSpaceBox = new RamObjectListComboBox(this);
+    ui_mainFormLayout->addWidget(ui_colorSpaceBox, 4, 1);
 }
 
 void PipeFileEditWidget::connectEvents()
 {
-    connect(m_fileTypeBox, SIGNAL(currentObjectChanged(RamObject*)), this, SLOT(update()));
-    connect(m_colorSpaceBox, SIGNAL(currentObjectChanged(RamObject*)), this, SLOT(update()));
+    connect(ui_fileTypeBox, SIGNAL(currentObjectChanged(RamObject*)), this, SLOT(update()));
+    connect(ui_colorSpaceBox, SIGNAL(currentObjectChanged(RamObject*)), this, SLOT(update()));
 }

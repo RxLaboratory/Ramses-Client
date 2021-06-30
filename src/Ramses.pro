@@ -33,8 +33,11 @@ SOURCES += \
     data-models/ramitemtablelistproxy.cpp \
     data-models/ramobjectfilterlist.cpp \
     data-models/ramobjectfiltermodel.cpp \
+    data-models/ramscheduletable.cpp \
     data-models/ramstepfiltermodel.cpp \
     data-views/ramobjectlistmenu.cpp \
+    data-views/ramscheduledelegate.cpp \
+    data-views/ramscheduletablewidget.cpp \
     data-views/ramstepheaderview.cpp \
     duqf-widgets/duqfcolorselector.cpp \
     duqf-widgets/duqfsearchedit.cpp \
@@ -61,6 +64,8 @@ SOURCES += \
     rameditwidgets/pipefileeditwidget.cpp \
     rameditwidgets/pipefilelistmanagerwidget.cpp \
     rameditwidgets/projectlistmanagerwidget.cpp \
+    rameditwidgets/scheduleentryeditwidget.cpp \
+    rameditwidgets/schedulemanagerwidget.cpp \
     rameditwidgets/sequencelistmanagerwidget.cpp \
     rameditwidgets/shotlistmanagerwidget.cpp \
     rameditwidgets/statelistmanagerwidget.cpp \
@@ -74,6 +79,7 @@ SOURCES += \
     ramnamemanager.cpp \
     ramobjects/ramassetgroup.cpp \
     ramobjects/rampipefile.cpp \
+    ramobjects/ramscheduleentry.cpp \
     ramobjects/ramsequence.cpp \
     settingswidgets/daemonsettingswidget.cpp \
     dbinterface.cpp \
@@ -160,11 +166,14 @@ HEADERS += \
     data-models/ramobjectfilterlist.h \
     data-models/ramobjectfiltermodel.h \
     data-models/ramobjectlist.h \
+    data-models/ramscheduletable.h \
     data-models/ramstatelist.h \
     data-models/ramstepfiltermodel.h \
     data-models/ramstepstatushistory.h \
     data-views/ramobjectdelegate.h \
     data-views/ramobjectlistmenu.h \
+    data-views/ramscheduledelegate.h \
+    data-views/ramscheduletablewidget.h \
     data-views/ramstepheaderview.h \
     duqf-widgets/duqfcolorselector.h \
     duqf-widgets/duqfsearchedit.h \
@@ -186,6 +195,8 @@ HEADERS += \
     rameditwidgets/pipefileeditwidget.h \
     rameditwidgets/pipefilelistmanagerwidget.h \
     rameditwidgets/projectlistmanagerwidget.h \
+    rameditwidgets/scheduleentryeditwidget.h \
+    rameditwidgets/schedulemanagerwidget.h \
     rameditwidgets/sequencelistmanagerwidget.h \
     rameditwidgets/shotlistmanagerwidget.h \
     rameditwidgets/statelistmanagerwidget.h \
@@ -199,6 +210,7 @@ HEADERS += \
     ramnamemanager.h \
     ramobjects/ramassetgroup.h \
     ramobjects/rampipefile.h \
+    ramobjects/ramscheduleentry.h \
     ramobjects/ramsequence.h \
     settingswidgets/daemonsettingswidget.h \
     dbinterface.h \

@@ -31,7 +31,6 @@ public:
     void removeStepFilter(RamObject *stepObj);
 
 private slots:
-    // TODO header data on step insert and change
     void insertStep(const QModelIndex &parent, int first, int last);
     void removeStep(const QModelIndex &parent, int first, int last);
     void statusChanged(RamItem *item, RamStep *step);

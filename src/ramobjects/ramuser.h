@@ -5,6 +5,8 @@
 
 #include "ramobject.h"
 
+class RamObjectList;
+
 class RamUser : public RamObject
 {
     Q_OBJECT
@@ -32,6 +34,8 @@ public:
 
     QSettings *userSettings() const;
 
+    RamObjectList *schedule() const;
+
 public slots:
     void update() override;
     virtual void edit(bool show = true) override;
@@ -43,6 +47,7 @@ private:
     UserRole m_role;
     QString m_folderPath;
     QSettings *m_userSettings;
+    RamObjectList *m_schedule;
 };
 
 #endif // RAMUSER_H

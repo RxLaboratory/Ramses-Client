@@ -102,7 +102,7 @@ void DBInterface::getProject(QString uuid)
     request(q);
 }
 
-void DBInterface::updateProject(QString uuid, QString shortName, QString name, int width, int height, double framerate, QString folderPath, QString comment)
+void DBInterface::updateProject(QString uuid, QString shortName, QString name, int width, int height, double framerate, QString folderPath, QString comment, QDate deadline)
 {
     QStringList q("updateProject");
     q << "uuid=" + uuid;
@@ -113,6 +113,7 @@ void DBInterface::updateProject(QString uuid, QString shortName, QString name, i
     if (width > 0) q << "width=" + QString::number(width);
     if (height > 0) q << "height=" + QString::number(height);
     if (framerate > 0) q << "framerate=" + QString::number(framerate);
+    if (deadline.isValid()) q << "deadline=" + deadline.toString("yyyy-MM-dd");
 
     request(q);
 }
@@ -768,6 +769,37 @@ void DBInterface::setStatusUser(QString uuid, QString userUuid)
 void DBInterface::removeStatus(QString uuid)
 {
     QStringList q("removeStatus");
+    q << "uuid=" + uuid;
+
+    request(q);
+}
+
+void DBInterface::createSchedule(QString userUuid, QString stepUuid, QDateTime date, QString uuid)
+{
+    QStringList q("createSchedule");
+    q << "uuid=" + uuid;
+    q << "userUuid=" + userUuid;
+    q << "stepUuid=" + stepUuid;
+    q << "date=" + date.toString("yyyy-MM-dd hh:mm:ss");
+
+    request(q);
+}
+
+void DBInterface::updateSchedule(QString uuid, QString userUuid, QString stepUuid, QDateTime date, QString comment)
+{
+    QStringList q("updateSchedule");
+    q << "uuid=" + uuid;
+    q << "userUuid=" + userUuid;
+    q << "stepUuid=" + stepUuid;
+    q << "comment=" + comment;
+    q << "date=" + date.toString("yyyy-MM-dd hh:mm:ss");
+
+    request(q);
+}
+
+void DBInterface::removeSchedule(QString uuid)
+{
+    QStringList q("removeSchedule");
     q << "uuid=" + uuid;
 
     request(q);

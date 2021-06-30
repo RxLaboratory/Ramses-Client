@@ -89,6 +89,18 @@ void RamObjectListComboBox::setObject(RamObject *obj)
     else setObject(obj->uuid());
 }
 
+void RamObjectListComboBox::showPopup()
+{
+    QComboBox::showPopup();
+    emit popupShown();
+}
+
+void RamObjectListComboBox::hidePopup()
+{
+    QComboBox::hidePopup();
+    emit popupHidden();
+}
+
 void RamObjectListComboBox::currentObjectChanged(int i)
 {
     Q_UNUSED(i)

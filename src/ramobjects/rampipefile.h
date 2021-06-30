@@ -24,9 +24,7 @@ public:
     QString name() const override;
 
     RamFileType *fileType() const;
-    void setFileType(RamFileType *newFileType);
-
-    void update() override;
+    void setFileType(RamFileType *newFileType);  
 
     const RamProject *project() const;
     void setProject(RamProject *project);
@@ -34,6 +32,7 @@ public:
     static RamPipeFile *pipeFile(QString uuid);
 
 public slots:
+    void update() override;
     virtual void edit(bool show = true) override;
 
 private:

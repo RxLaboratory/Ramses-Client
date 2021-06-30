@@ -32,7 +32,8 @@ public:
                     User,
                     ObjectList,
                     ObjectUberList,
-                    StepStatusHistory};
+                    StepStatusHistory,
+                    ScheduleEntry};
     Q_ENUM( ObjectType )
 
     enum SubFolder { NoFolder,
@@ -57,7 +58,7 @@ public:
     explicit RamObject(QString uuid, QObject *parent = nullptr);
     explicit RamObject(QString shortName, QString name, QString uuid = "", QObject *parent = nullptr);
 
-    QString shortName() const;
+    virtual QString shortName() const;
     void setShortName(const QString &shortName);
 
     virtual QString name() const;

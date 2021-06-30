@@ -602,11 +602,7 @@ QMenu::separator {
     background-color: rgba(0,0,0,0);
 }
 
-#titleBar QLineEdit {
-    background: @color-dark-grey;
-}
-
-#titleBar QComboBox {
+#titleBar QLineEdit, #titleBar QComboBox, #titleBar QAbstractSpinBox {
     background-color: @color-dark-grey;
 }
 

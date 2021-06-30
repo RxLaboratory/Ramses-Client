@@ -22,6 +22,7 @@ class TitleBar : public QToolBar
 
 public:
     explicit TitleBar(QString title, bool mini = false, QWidget *parent = nullptr);
+    void setTitle(QString title);
     void showReinitButton(bool show);
     void insertRight(QWidget *w);
     void insertRight(QAction *a);

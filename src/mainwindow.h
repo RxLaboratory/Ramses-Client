@@ -41,6 +41,7 @@
 #include "filetypelistmanagerwidget.h"
 #include "applicationlistmanagerwidget.h"
 #include "pipefilelistmanagerwidget.h"
+#include "schedulemanagerwidget.h"
 #include "dbinterface.h"
 #include "daemon.h"
 #include "ramloader.h"
@@ -136,6 +137,7 @@ private slots:
     void pipeline(bool show = true);
     void shots(bool show = true);
     void assets(bool show = true);
+    void schedule(bool show = true);
     void networkButton_clicked();
     void loggedIn();
     void loggedOut();

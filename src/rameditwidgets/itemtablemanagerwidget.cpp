@@ -5,7 +5,11 @@ ItemTableManagerWidget::ItemTableManagerWidget(RamStep::Type productionType, QWi
     setupUi();
     m_stepFilter = new RamStepFilterModel(productionType, this);
     m_productionType = productionType;
-    if (m_productionType == RamStep::ShotProduction) ui_table->setSortable(true);
+    if (m_productionType == RamStep::ShotProduction)
+    {
+        ui_table->setSortable(true);
+        ui_titleBar->setTitle("Shots");
+    }
     connectEvents();
 }
 
@@ -288,7 +292,7 @@ void ItemTableManagerWidget::setupUi()
     QMainWindow *mw = GuiUtils::appMainWindow();
     mw->addToolBarBreak(Qt::TopToolBarArea);
 
-    ui_titleBar = new TitleBar("",false, mw);
+    ui_titleBar = new TitleBar("Assets",false, mw);
     ui_titleBar->showReinitButton(false);
     mw->addToolBar(Qt::TopToolBarArea,ui_titleBar);
     ui_titleBar->setFloatable(false);

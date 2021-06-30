@@ -53,6 +53,9 @@ public:
 
     static RamProject *project(QString uuid);
 
+    const QDate &deadline() const;
+    void setDeadline(const QDate &newDeadline);
+
 public slots:
     void update() override;
 
@@ -73,6 +76,7 @@ private:
     RamItemTable *m_shots;
     RamObjectList *m_pipeline;
     RamObjectList *m_pipeFiles;
+    QDate m_deadline;
 };
 
 #endif // RAMPROJECT_H

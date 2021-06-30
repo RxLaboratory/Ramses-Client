@@ -41,7 +41,7 @@ private:
     QLabel *ui_folderLabel;
     ResolutionWidget *ui_resolutionWidget;
     FramerateWidget *ui_framerateWidget;
-    QDateTimeEdit *ui_deadlineEdit;
+    QDateEdit *ui_deadlineEdit;
 };
 
 #endif // PROJECTEDITWIDGET_H

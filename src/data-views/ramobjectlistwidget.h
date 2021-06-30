@@ -79,7 +79,7 @@ private:
     QString m_currentFilterUuid;
 
     // UI Events
-    QPoint _initialDragPos;
+    QPoint m_initialDragPos;
     bool m_dragging = false;
     bool m_layout = false;
 };

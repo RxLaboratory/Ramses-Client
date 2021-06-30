@@ -181,10 +181,11 @@ QString RamLoader::gotProject(QJsonObject newP, bool init)
     project->setFramerate( newP.value("framerate").toDouble());
     project->setFolderPath( newP.value("folderPath").toString());
     project->setComment( newP.value("comment").toString());
+    project->setDeadline( QDate::fromString( newP.value("deadline").toString(), "yyyy-MM-dd") );
 
     if (!init)
     {
-        m_pm->setMaximum(7);
+        m_pm->setMaximum(8);
         gotAssetGroups( newP.value("assetGroups").toArray(), project);
         gotSequences( newP.value("sequences").toArray(), project);
 
@@ -194,6 +195,8 @@ QString RamLoader::gotProject(QJsonObject newP, bool init)
 
         gotAssets( newP.value("assets").toArray(), project);
         gotShots( newP.value("shots").toArray(), project);
+
+        gotSechedule( newP.value("schedule").toArray() );
     }
 
     m_ram->projects()->append(project);
@@ -935,6 +938,62 @@ QString RamLoader::gotPipeFile(QJsonObject newPF, RamProject* project)
     if (ft) pipeFile->setFileType(ft);
 
     project->pipeFiles()->append(pipeFile);
+
+    return uuid;
+}
+
+void RamLoader::gotSechedule(QJsonArray schedule)
+{
+    DBISuspender s;
+
+    m_pm->increment();
+    m_pm->setText("Loading schedule...");
+    qDebug() << "Loading schedule";
+
+    QStringList uuids;
+    // Update schedule
+    for (int j = 0; j < schedule.count(); j++)
+        uuids << gotScheduleEntry( schedule.at(j).toObject() );
+
+    // Remove deleted entries
+    m_pm->setText("Cleaning schedule...");
+    qDebug() << "Cleaning schedule";
+    RamObjectList *users = Ramses::instance()->users();
+    for (int u = 0; u < users->count(); u++)
+    {
+        RamObjectList *userSchedule = qobject_cast<RamUser*>( users->at(u) )->schedule();
+        for (int i = userSchedule->count() - 1; i >= 0; i--)
+        {
+            RamObject *existingEntry = userSchedule->at(i);
+            if (!uuids.contains(existingEntry->uuid()))
+                existingEntry->remove();
+        }
+    }
+
+}
+
+QString RamLoader::gotScheduleEntry(QJsonObject newSE)
+{
+    DBISuspender s;
+
+    QString uuid = newSE.value("uuid").toString();
+
+    RamUser *user = RamUser::user( newSE.value("userUuid").toString() );
+    if (!user) return uuid;
+    RamStep *step = RamStep::step( newSE.value("stepUuid").toString() );
+    if (!step) return uuid;
+
+    // Get existing one if any, otherwise create it
+    RamScheduleEntry *entry = RamScheduleEntry::scheduleEntry(uuid);
+    if (!entry) entry = new RamScheduleEntry(
+                user,
+                step,
+                QDateTime::fromString( newSE.value("date").toString(), "yyyy-MM-dd hh:mm:ss"),
+                uuid
+                );
+    entry->setComment( newSE.value("comment").toString() );
+
+    user->schedule()->append(entry);
 
     return uuid;
 }

@@ -16,6 +16,8 @@ RamProject::RamProject(QString shortName, QString name, QString uuid):
 
     m_dbi->createProject(m_shortName, m_name, m_uuid);
 
+    m_deadline = QDate::currentDate().addDays(30);
+
     this->setObjectName( "RamProject" );
 }
 
@@ -30,6 +32,19 @@ QString RamProject::folderPath() const
         return defaultPath();
 
     return m_folderPath;
+}
+
+const QDate &RamProject::deadline() const
+{
+    return m_deadline;
+}
+
+void RamProject::setDeadline(const QDate &newDeadline)
+{
+    if (m_deadline == newDeadline) return;
+    m_dirty = true;
+    m_deadline = newDeadline;
+    emit changed(this);
 }
 
 void RamProject::setFolderPath(const QString &folderPath)
@@ -114,7 +129,7 @@ void RamProject::update()
     RamObject::update();
     QString path = m_folderPath;
     if (path == "") path = "auto";
-    m_dbi->updateProject(m_uuid, m_shortName, m_name, m_width, m_height, m_framerate, path, m_comment);
+    m_dbi->updateProject(m_uuid, m_shortName, m_name, m_width, m_height, m_framerate, path, m_comment, m_deadline);
 }
 
 RamProject *RamProject::project(QString uuid)

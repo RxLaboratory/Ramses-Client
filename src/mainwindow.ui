@@ -110,6 +110,7 @@
    <addaction name="actionPipeline"/>
    <addaction name="actionAssets"/>
    <addaction name="actionShots"/>
+   <addaction name="actionSchedule"/>
   </widget>
   <action name="actionLogIn">
    <property name="icon">
@@ -211,6 +212,17 @@
    </property>
    <property name="toolTip">
     <string>Shots</string>
+   </property>
+  </action>
+  <action name="actionSchedule">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Schedule</string>
+   </property>
+   <property name="toolTip">
+    <string>Schedule</string>
    </property>
   </action>
  </widget>

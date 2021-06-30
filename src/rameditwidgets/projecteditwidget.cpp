@@ -37,6 +37,7 @@ void ProjectEditWidget::setObject(RamObject *obj)
     QSignalBlocker b1(ui_folderSelector);
     QSignalBlocker b2(ui_resolutionWidget);
     QSignalBlocker b3(ui_framerateWidget);
+    QSignalBlocker b4(ui_deadlineEdit);
 
     //Reset values
     ui_resolutionWidget->setHeight(1080);
@@ -44,12 +45,14 @@ void ProjectEditWidget::setObject(RamObject *obj)
     ui_framerateWidget->setFramerate(24.0);
     ui_folderSelector->setPath("");
     ui_folderSelector->setPlaceHolderText("Default (Ramses/Projects/Project_ShortName)");
+    ui_deadlineEdit->setDate( QDate::currentDate().addDays(30) );
 
     if(!project) return;
 
     ui_resolutionWidget->setHeight(project->height());
     ui_resolutionWidget->setWidth(project->width());
     ui_framerateWidget->setFramerate(project->framerate());
+    ui_deadlineEdit->setDate( project->deadline() );
 
     if (!project->pathIsDefault()) ui_folderSelector->setPath( project->path() );
     ui_folderSelector->setPlaceHolderText( project->defaultPath() );
@@ -69,6 +72,7 @@ void ProjectEditWidget::update()
     _project->setWidth( ui_resolutionWidget->getWidth() );
     _project->setHeight( ui_resolutionWidget->getHeight() );
     _project->setFramerate( ui_framerateWidget->framerate() );
+    _project->setDeadline( ui_deadlineEdit->date() );
 
     ObjectEditWidget::update();
 
@@ -104,9 +108,9 @@ void ProjectEditWidget::setupUi()
     ui_framerateWidget = new FramerateWidget(this);
     ui_mainFormLayout->addWidget(ui_framerateWidget, 4, 1);
 
-    ui_deadlineEdit = new QDateTimeEdit(this);
+    ui_deadlineEdit = new QDateEdit(this);
     ui_deadlineEdit->setCalendarPopup(true);
-    ui_deadlineEdit->setDateTime( QDateTime::currentDateTime() );
+    ui_deadlineEdit->setDate( QDate::currentDate() );
     ui_mainFormLayout->addWidget(new QLabel("Deadline"), 5,0);
     ui_mainFormLayout->addWidget(ui_deadlineEdit, 5, 1);
 
@@ -130,4 +134,5 @@ void ProjectEditWidget::connectEvents()
     connect(ui_framerateWidget, &FramerateWidget::framerateChanged, this, &ProjectEditWidget::update);
     connect(ui_folderSelector, &DuQFFolderSelectorWidget::pathChanging, this, &ProjectEditWidget::updateFolderLabel);
     connect(ui_folderSelector, &DuQFFolderSelectorWidget::pathChanged, this, &ProjectEditWidget::update);
+    connect(ui_deadlineEdit, SIGNAL(dateChanged(QDate)), this, SLOT(update()));
 }

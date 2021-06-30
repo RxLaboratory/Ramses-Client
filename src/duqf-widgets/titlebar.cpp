@@ -20,6 +20,15 @@ TitleBar::TitleBar(QString title, bool mini, QWidget *parent) :
     this->setObjectName("titleBar");
 }
 
+void TitleBar::setTitle(QString title)
+{
+    titleLabel->setText(title);
+    reinitButton->setToolTip("Reinitialize " + title);
+    reinitButton->setStatusTip("Reinitialize " + title);
+    closeButton->setToolTip("Close " + title);
+    closeButton->setStatusTip("Close " + title);
+}
+
 void TitleBar::showReinitButton(bool show)
 {
     reinitAction->setVisible(show);

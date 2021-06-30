@@ -39,7 +39,7 @@ public:
     void createProject(QString shortName, QString name, QString uuid);
     void getProjects();
     void getProject(QString uuid);
-    void updateProject(QString uuid, QString shortName, QString name, int width = 0, int height = 0, double framerate = 0.0, QString folderPath = "", QString comment = "");
+    void updateProject(QString uuid, QString shortName, QString name, int width = 0, int height = 0, double framerate = 0.0, QString folderPath = "", QString comment = "", QDate deadline = QDate());
     void removeProject(QString uuid);
     void assignStep(QString stepUuid, QString projectUuid);
     //template steps
@@ -118,6 +118,10 @@ public:
     void updateStatus(QString uuid, QString stateUuid, QString comment = "", int version = 0, int completionRatio = -1, bool published = false, QString assignedUserUuid = "", qint64 timeSpent = -1, QDateTime date = QDateTime(), QString difficulty = "medium", float estimation = -1);
     void setStatusUser(QString uuid, QString userUuid);
     void removeStatus(QString uuid);
+    // Schedule
+    void createSchedule(QString userUuid, QString stepUuid, QDateTime date, QString uuid = "");
+    void updateSchedule(QString uuid, QString userUuid, QString stepUuid, QDateTime date, QString comment);
+    void removeSchedule(QString uuid);
 
 public slots:
     void suspend(bool suspended = true);

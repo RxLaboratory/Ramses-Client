@@ -2,12 +2,15 @@
 
 #include "ramses.h"
 #include "usereditwidget.h"
+#include "data-models/ramobjectlist.h"
 
 RamUser::RamUser(QString shortName, QString name, QString uuid) :
     RamObject(shortName, name, uuid, Ramses::instance())
 {
     setObjectType(User);
     m_role = Standard;
+    m_schedule = new RamObjectList("SCHDL", "Schedule", this);
+
     m_dbi->createUser(m_shortName, m_name, m_uuid);
 
     this->setObjectName( "RamUser" );
@@ -49,6 +52,11 @@ QString RamUser::folderPath() const
         return defaultPath();
 
     return m_folderPath;
+}
+
+RamObjectList *RamUser::schedule() const
+{
+    return m_schedule;
 }
 
 void RamUser::setFolderPath(const QString &folderPath)
