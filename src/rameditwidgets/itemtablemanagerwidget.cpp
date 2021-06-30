@@ -228,7 +228,30 @@ void ItemTableManagerWidget::setupUi()
     ui_searchEdit->hideSearchButton();
     ui_titleBar->insertLeft(ui_searchEdit);
 
-    // Menus
+    // View Menu
+    QMenu *viewMenu = new QMenu(this);
+
+    ui_actionTimeTracking = new QAction("Show time tracking", this);
+    ui_actionTimeTracking->setCheckable(true);
+    ui_actionTimeTracking->setChecked(true);
+    viewMenu->addAction(ui_actionTimeTracking);
+
+    ui_actionCompletionRatio = new QAction("Show completion", this);
+    ui_actionCompletionRatio->setCheckable(true);
+    ui_actionCompletionRatio->setChecked(true);
+    viewMenu->addAction(ui_actionCompletionRatio);
+
+    QToolButton *viewButton = new QToolButton(this);
+    viewButton->setText("View");
+    viewButton->setIcon(QIcon(":/icons/show"));
+    viewButton->setMenu(viewMenu);
+    viewButton->setIconSize(QSize(16,16));
+    viewButton->setObjectName("menuButton");
+    viewButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    viewButton->setPopupMode(QToolButton::InstantPopup);
+    ui_titleBar->insertLeft(viewButton);
+
+    // Step Menu
     ui_stepMenu = new QMenu(this);
 
     ui_actionSelectAllSteps = new QAction("Select All", this);
@@ -253,13 +276,16 @@ void ItemTableManagerWidget::setupUi()
 
     ui_titleBar->insertLeft(stepButton);
 
+
     QVBoxLayout *mainLayout = new QVBoxLayout();
     mainLayout->setSpacing(3);
     mainLayout->setContentsMargins(0,0,0,0);
 
     ui_table = new RamObjectListWidget(RamObjectListWidget::Table, this);
     ui_table->setEditableObjects(true, RamUser::ProjectAdmin);
-    ui_table->setHorizontalHeader( new RamStepHeaderView(ui_table) );
+    ui_header = new RamStepHeaderView(ui_table);
+    ui_table->setHorizontalHeader( ui_header );
+    ui_table->setSelectionMode(QAbstractItemView::ExtendedSelection);
     mainLayout->addWidget(ui_table);
 
     this->setLayout(mainLayout);
@@ -267,6 +293,11 @@ void ItemTableManagerWidget::setupUi()
 
 void ItemTableManagerWidget::connectEvents()
 {
+    // view actions
+    connect(ui_actionTimeTracking, SIGNAL(triggered(bool)), ui_table, SLOT(setTimeTracking(bool)));
+    connect(ui_actionCompletionRatio, SIGNAL(triggered(bool)), ui_table, SLOT(setCompletionRatio(bool)));
+    connect(ui_actionTimeTracking, SIGNAL(triggered(bool)), ui_header, SLOT(setTimeTracking(bool)));
+    connect(ui_actionCompletionRatio, SIGNAL(triggered(bool)), ui_header, SLOT(setCompletionRatio(bool)));
     // step actions
     connect(ui_actionSelectAllSteps, SIGNAL(triggered()), this, SLOT(selectAllSteps()));
     connect(ui_actionSelectNoSteps, SIGNAL(triggered()), this, SLOT(deselectSteps()));

@@ -64,6 +64,7 @@
         <file alias="reveal-folder-s">resources/icons/go-to-explore-reveal-folder_small.svg</file>
         <file alias="create">resources/icons/create-save-incremental_sl.svg</file>
         <file alias="open">resources/icons/load_sl.svg</file>
+        <file alias="show">resources/icons/show_sl.svg</file>
     </qresource>
     <qresource prefix="/styles">
         <file alias="default-ramses">resources/style/style-ramses.css</file>

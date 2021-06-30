@@ -30,7 +30,7 @@ void RamStepHeaderView::paintSection(QPainter *painter, const QRect &rect, int l
 
     // Draw title
     QRect titleRect( rect.left(), rect.top(), rect.width(), rect.height() - 16 );
-    QPen textPen( step->color() );
+    QPen textPen( m_lessLight );
     painter->setPen( textPen );
     painter->setFont( m_textFont );
     painter->drawText( titleRect, Qt::AlignCenter | Qt::AlignVCenter | Qt::TextWordWrap, step->name(), &titleRect);
@@ -45,49 +45,68 @@ void RamStepHeaderView::paintSection(QPainter *painter, const QRect &rect, int l
     path.addRoundedRect(statusRect, 5, 5);
     painter->fillPath(path, statusBrush);
 
-    // Set a color according to the completion
-    float completionRatio = step->completionRatio() / 100.0;
-    QColor completionColor;
-    if (completionRatio < 0.12) completionColor = QColor( 197, 0, 0);
-    else if (completionRatio < 0.25) completionColor = QColor( 197, 98, 17);
-    else if (completionRatio < 0.5) completionColor = QColor( 197, 179, 40);
-    else if (completionRatio < 0.75) completionColor = QColor( 128, 197, 37);
-    else if (completionRatio < 0.88) completionColor = QColor( 100, 172, 69);
-    else if (completionRatio < 0.98) completionColor = QColor( 55, 172, 23);
-    else completionColor = QColor( 6, 116, 24);
-
-    //If we're late, draw a timebar first
-    float latenessRatio = step->latenessRatio();
-    if (latenessRatio > 1)
+    if (m_timeTracking || m_completionRatio)
     {
-        QColor timeColor;
-        if ( latenessRatio < 1.1 ) timeColor = QColor(42,42,42);
-        else if ( latenessRatio < 1.2 ) timeColor = QColor(76,30,0);
-        else if ( latenessRatio < 1.3 ) timeColor = QColor(93,31,0);
-        else if ( latenessRatio < 1.4 ) timeColor = QColor(118,27,0);
-        else if ( latenessRatio < 1.5 ) timeColor = QColor(140,23,0);
-        else if ( latenessRatio < 1.6 ) timeColor = QColor(168,14,0);
-        else if ( latenessRatio < 1.7 ) timeColor = QColor(188,0,0);
-        else if ( latenessRatio < 1.8 ) timeColor = QColor(214,0,0);
-        else if ( latenessRatio < 1.9 ) timeColor = QColor(236,0,0);
-        else timeColor = QColor(255,0,0);
-        statusBrush.setColor( timeColor );
+        // Set a color according to the completion
+        float completionRatio = step->completionRatio() / 100.0;
+        QColor completionColor;
+        if (completionRatio < 0.12) completionColor = QColor( 197, 0, 0);
+        else if (completionRatio < 0.25) completionColor = QColor( 197, 98, 17);
+        else if (completionRatio < 0.5) completionColor = QColor( 197, 179, 40);
+        else if (completionRatio < 0.75) completionColor = QColor( 128, 197, 37);
+        else if (completionRatio < 0.88) completionColor = QColor( 100, 172, 69);
+        else if (completionRatio < 0.98) completionColor = QColor( 55, 172, 23);
+        else completionColor = QColor( 6, 116, 24);
 
-        float timeSpentDays = RamStatus::hoursToDays( step->timeSpent()/3600 );
-        float ratio = timeSpentDays / step->estimation();
+        // Draw a timebar first
+        float latenessRatio = step->latenessRatio();
+        if (m_timeTracking && latenessRatio > 0 && step->estimation() > 0)
+        {
+            QColor timeColor;
+            if ( latenessRatio < 1.1 ) timeColor = QColor(32,62,32);
+            else if ( latenessRatio < 1.2 ) timeColor = QColor(76,30,0);
+            else if ( latenessRatio < 1.3 ) timeColor = QColor(93,31,0);
+            else if ( latenessRatio < 1.4 ) timeColor = QColor(118,27,0);
+            else if ( latenessRatio < 1.5 ) timeColor = QColor(140,23,0);
+            else if ( latenessRatio < 1.6 ) timeColor = QColor(168,14,0);
+            else if ( latenessRatio < 1.7 ) timeColor = QColor(188,0,0);
+            else if ( latenessRatio < 1.8 ) timeColor = QColor(214,0,0);
+            else if ( latenessRatio < 1.9 ) timeColor = QColor(236,0,0);
+            else timeColor = QColor(255,0,0);
+            statusBrush.setColor( timeColor );
 
-        statusRect.setWidth( statusWidth * ratio );
-        if (statusRect.right() > rect.right() - 10) statusRect.setRight( rect.right() - 10);
-        QPainterPath timePath;
-        timePath.addRoundedRect(statusRect, 3, 3);
-        painter->fillPath(timePath, statusBrush);
+            float timeSpentDays = RamStatus::hoursToDays( step->timeSpent()/3600 );
+            float ratio = timeSpentDays / step->estimation();
+
+            statusRect.setWidth( statusWidth * ratio );
+            if (statusRect.right() > rect.right() - 10) statusRect.setRight( rect.right() - 10);
+            QPainterPath timePath;
+            timePath.addRoundedRect(statusRect, 3, 3);
+            painter->fillPath(timePath, statusBrush);
+        }
+
+        if (m_completionRatio)
+        {
+            // Draw completion ratio
+            statusBrush.setColor( completionColor );
+            statusRect.setWidth(statusWidth * completionRatio);
+            QPainterPath completionPath;
+            completionPath.addRoundedRect(statusRect, 5, 5);
+            painter->fillPath(completionPath, statusBrush);
+        }
+
     }
 
-    // Draw completion ratio
-    statusBrush.setColor( completionColor );
-    statusRect.setWidth(statusWidth * completionRatio);
-    QPainterPath completionPath;
-    completionPath.addRoundedRect(statusRect, 5, 5);
-    painter->fillPath(completionPath, statusBrush);
 
+
+}
+
+void RamStepHeaderView::setCompletionRatio(bool newCompletionRatio)
+{
+    m_completionRatio = newCompletionRatio;
+}
+
+void RamStepHeaderView::setTimeTracking(bool newTimeTracking)
+{
+    m_timeTracking = newTimeTracking;
 }

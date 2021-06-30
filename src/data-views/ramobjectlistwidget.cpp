@@ -88,6 +88,16 @@ void RamObjectListWidget::setSortable(bool sortable)
     this->verticalHeader()->setSectionsMovable(sortable);
 }
 
+void RamObjectListWidget::setTimeTracking(bool trackTime)
+{
+    m_delegate->setTimeTracking(trackTime);
+}
+
+void RamObjectListWidget::setCompletionRatio(bool showCompletion)
+{
+    m_delegate->setCompletionRatio(showCompletion);
+}
+
 void RamObjectListWidget::search(QString s)
 {
     m_objectList->search(s);

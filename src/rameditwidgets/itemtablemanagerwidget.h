@@ -60,6 +60,9 @@ private:
     QAction *ui_actionSelectAllSteps ;
     QAction *ui_actionSelectNoSteps ;
     QAction *ui_actionSelectMySteps ;
+    QAction *ui_actionTimeTracking ;
+    QAction *ui_actionCompletionRatio ;
+    RamStepHeaderView *ui_header;
 
     RamStepFilterModel *m_stepFilter;
     RamProject *m_project = nullptr;

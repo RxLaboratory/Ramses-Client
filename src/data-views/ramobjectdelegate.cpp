@@ -380,6 +380,7 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
         RamStatus *status = qobject_cast<RamStatus*>( obj );
         // Draw a progress bar
         QColor statusColor = status->state()->color();
+        if (!m_completionRatio) statusColor = QColor(150,150,150);
         QBrush statusBrush(statusColor.darker(300));
         int statusWidth = bgRect.width() - m_padding;
         QRect statusRect( bgRect.left() + 5, titleRect.bottom() + 5, statusWidth, 6 );
@@ -390,7 +391,7 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
         int completionWidth = 0;
 
         // details
-        if (statusRect.bottom() + 5 < bgRect.bottom())
+        if (statusRect.bottom() + 5 < bgRect.bottom() && (m_timeTracking || m_completionRatio))
         {
             // Draw status
 
@@ -411,7 +412,7 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
             QColor timeColor = statusColor;
 
             //If we're late, draw the timebar first
-            if (latenessRatio > 1)
+            if (latenessRatio > 1 && m_timeTracking)
             {
                 if ( latenessRatio < 1.2 )
                 {
@@ -454,18 +455,22 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
                 painter->fillPath(timePath, statusBrush);
             }
 
-            // Now draw the completion bar
-            statusBrush.setColor( statusColor );
+            if (m_completionRatio)
+            {
+                // Now draw the completion bar
+                statusBrush.setColor( statusColor );
 
-            completionWidth = statusWidth * ( status->completionRatio() / 100.0 );
-            statusRect.setWidth(completionWidth);
-            QPainterPath completionPath;
-            completionPath.addRoundedRect(statusRect, 5, 5);
-            painter->fillPath(completionPath, statusBrush);
+                completionWidth = statusWidth * ( status->completionRatio() / 100.0 );
+                statusRect.setWidth(completionWidth);
+                QPainterPath completionPath;
+                completionPath.addRoundedRect(statusRect, 5, 5);
+                painter->fillPath(completionPath, statusBrush);
+            }
+
 
             // And draw the Time bar if we're early
 
-            if (latenessRatio <= 1)
+            if (latenessRatio <= 1 && m_timeTracking)
             {
                 // Adjust color according to lateness
                 statusBrush.setColor( timeColor.darker(130) );
@@ -587,7 +592,7 @@ QSize RamObjectDelegate::sizeHint(const QStyleOptionViewItem &option, const QMod
     RamObject *obj = reinterpret_cast<RamObject*>(iptr);
     RamObject::ObjectType ramType = obj->objectType();
 
-    if (ramType == RamObject::State || ramType == RamObject::Status) return QSize(300, 42);
+    if ((ramType == RamObject::State || ramType == RamObject::Status) && (m_timeTracking || m_completionRatio)) return QSize(300, 42);
 
     return QSize(200,30);
 }
@@ -626,13 +631,13 @@ bool RamObjectDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, co
 
     int xpos = bgRect.right() - 22;
 
-    const QRect editButtonRect = QRect( xpos, bgRect.top()+7, 22, 22 );
+    const QRect editButtonRect = QRect( xpos, bgRect.top()+7, 20, 20 );
     if (edit) xpos -= 22;
 
-    const QRect historyButtonRect( xpos, bgRect.top() +7, 22, 22 );
+    const QRect historyButtonRect( xpos, bgRect.top() +7, 20, 20 );
     if (history) xpos -= 22;
 
-    const QRect folderButtonRect( xpos, bgRect.top() +7, 22, 22 );
+    const QRect folderButtonRect( xpos, bgRect.top() +7, 20, 20 );
 
 
     switch ( event->type() )
@@ -664,21 +669,21 @@ bool RamObjectDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, co
         QMouseEvent *e = static_cast< QMouseEvent * >( event );
 
         if (editButtonRect.contains(e->pos()) && edit)
-            m_editButtonHover = true;
+            return m_editButtonHover = true;
         else if (m_editButtonHover)
-            m_editButtonHover = false;
+            return  !(m_editButtonHover = false);
 
         if (historyButtonRect.contains(e->pos()) && history)
-            m_historyButtonHover = true;
+            return m_historyButtonHover = true;
         else if (m_historyButtonHover)
-            m_historyButtonHover = false;
+            return !(m_historyButtonHover = false);
 
         if (folderButtonRect.contains(e->pos()) && folder)
-            m_folderButtonHover = true;
+            return m_folderButtonHover = true;
         else if (m_folderButtonHover)
-            m_folderButtonHover = false;
+            return !(m_folderButtonHover = false);
 
-        return true;
+        return QStyledItemDelegate::editorEvent( event, model, option, index );
     }
     case QEvent::MouseButtonRelease:
     {
@@ -722,6 +727,16 @@ bool RamObjectDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, co
 
     return QStyledItemDelegate::editorEvent( event, model, option, index );
 
+}
+
+void RamObjectDelegate::setCompletionRatio(bool newCompletionRatio)
+{
+    m_completionRatio = newCompletionRatio;
+}
+
+void RamObjectDelegate::setTimeTracking(bool newTimeTracking)
+{
+    m_timeTracking = newTimeTracking;
 }
 
 void RamObjectDelegate::setComboBoxMode(bool comboBoxMode)

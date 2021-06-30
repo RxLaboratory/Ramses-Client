@@ -15,6 +15,10 @@ class RamStepHeaderView : public QHeaderView
 public:
     RamStepHeaderView(QWidget *parent = nullptr);
 
+public slots:
+    void setTimeTracking(bool newTimeTracking);
+    void setCompletionRatio(bool newCompletionRatio);
+
 protected:
     virtual void paintSection(QPainter *painter, const QRect &rect, int logicalIndex) const override;
 
@@ -28,6 +32,10 @@ private:
     QFont m_textFont;
     QFont m_detailsFont;
     int m_padding;
+
+    // Settings
+    bool m_timeTracking = true;
+    bool m_completionRatio = true;
 };
 
 #endif // RAMSTEPHEADERVIEW_H

@@ -1,5 +1,8 @@
 #include "ramobjectlist.h"
 
+#include "ramstatus.h"
+#include "ramstate.h"
+
 RamObjectList::RamObjectList(QObject *parent)
     : QAbstractTableModel(parent)
 {
@@ -36,7 +39,8 @@ QVariant RamObjectList::data(const QModelIndex &index, int role) const
 
     if (role == Qt::DisplayRole) return obj->name();
 
-    if (role == Qt::StatusTipRole)return QString(obj->shortName() % " | " % obj->name());
+    if (role == Qt::StatusTipRole)
+        return QString(obj->shortName() % " | " % obj->name());
 
     if (role == Qt::ToolTipRole) return QString(obj->shortName() % " | " % obj->name() % "\n" % obj->comment());
 

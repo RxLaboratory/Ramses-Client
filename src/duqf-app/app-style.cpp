@@ -333,7 +333,7 @@ void DuUI::setFont(QString family, int size, int weight)
         QFontDatabase::addApplicationFont(":/fonts/UbuntuMono-RI");
     }
 
-    qApp->setFont(QFont(family,10,500),"QWidget");
+    qApp->setFont(QFont(family),"QWidget");
 }
 
 void DuUI::setToolButtonStyle(int styleIndex)

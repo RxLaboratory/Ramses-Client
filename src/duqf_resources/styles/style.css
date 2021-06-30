@@ -14,6 +14,17 @@ QWidget {
     background-color: @color-dark-grey;
 }
 
+QToolTip {
+    border: none;
+    background-color: @light-grey;
+    color: @color-very-dark-grey;
+    /*border-radius: 3px; -> Does not work with tool tips (they're actually QLabel)*/
+    opacity: 210;
+    padding: @padding-small;
+    font-weight: @font-weight-light;
+    font-size: @font-size-medium;
+}
+
 /* LABELS */
 
 QLabel {
@@ -31,7 +42,7 @@ QPushButton {
     background-color: @color-less-dark-grey;
     border-radius: @padding-small;
     padding: @padding-small;
-    border:none;
+    border: none;
     color: @color-light-grey;
 }
 

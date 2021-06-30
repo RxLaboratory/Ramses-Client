@@ -28,6 +28,10 @@ public:
 
     void setComboBoxMode(bool comboBoxMode);
 
+public slots:
+    void setTimeTracking(bool newTimeTracking);
+    void setCompletionRatio(bool newCompletionRatio);
+
 signals:
     void editObject(RamObject*);
     void historyObject(RamObject*);
@@ -51,6 +55,8 @@ private:
     bool m_editable = false;
     bool m_comboBox = false;
     RamUser::UserRole m_editRole = RamUser::Admin;
+    bool m_timeTracking = true;
+    bool m_completionRatio = true;
 
     // Events
     bool m_editButtonPressed = false;

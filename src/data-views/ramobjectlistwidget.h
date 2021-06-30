@@ -45,6 +45,9 @@ public slots:
     void search(QString s);
     void select(RamObject *o);
     void filter(RamObject *o);
+    void setTimeTracking(bool trackTime);
+    void setCompletionRatio(bool showCompletion);
+
 
 protected:
     virtual void mouseMoveEvent(QMouseEvent *event) override;

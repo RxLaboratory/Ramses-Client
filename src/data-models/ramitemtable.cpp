@@ -69,17 +69,33 @@ QVariant RamItemTable::data(const QModelIndex &index, int role) const
         return status->name();
 
     if (role == Qt::StatusTipRole)
-        return QString(status->state()->shortName() % " | " % status->state()->name());
+    {
+        QString tip = status->state()->shortName() % " | " % status->state()->name();
+        int timeSpent = status->timeSpent()/3600;
+        tip = tip % " (" % QString::number(status->completionRatio()) % "%) | " %
+                QString::number(timeSpent) % " hours (" %
+                QString::number( RamStatus::hoursToDays(timeSpent), 'f', 2) % " days)";
+        return tip;
+    }
 
     if (role == Qt::ToolTipRole)
+    {
+        int timeSpent = status->timeSpent()/3600;
+        float estimation = status->estimation();
+        if (estimation < 0) estimation = status->autoEstimation();
         return QString(
                     status->state()->shortName() %
                     " | " %
                     status->state()->name() %
                     "\nCompletion: " %
                     QString::number( status->completionRatio() ) %
-                    "%\n" %
+                    "%\nTime spent: " %
+                    QString::number(timeSpent) % " hours (" %
+                    QString::number( RamStatus::hoursToDays(timeSpent), 'f', 2) % " days)" %
+                    " / " % QString::number( estimation, 'f', 2 ) % " days" %
+                    "\n" %
                     status->comment() );
+    }
 
     quintptr iptr = reinterpret_cast<quintptr>(status);
     return iptr;
