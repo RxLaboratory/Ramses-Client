@@ -565,6 +565,23 @@ RamStatus *RamStatus::status(QString uuid)
     return qobject_cast<RamStatus*>( RamObject::obj(uuid) );
 }
 
+RamStatus *RamStatus::copy(RamStatus *other, RamUser *user)
+{
+    RamStatus *status = new RamStatus(
+                user,
+                other->state(),
+                other->step(),
+                other->item());
+    status->setCompletionRatio( other->completionRatio() );
+    status->setVersion( other->version() );
+    status->setTimeSpent( other->timeSpent() );
+    status->assignUser( other->assignedUser() );
+    status->setDifficulty( other->difficulty() );
+    status->setEstimation( other->estimation() );
+    status->item()->addStatus(status);
+    return status;
+}
+
 float RamStatus::hoursToDays(int hours)
 {
     // 1 day ( more or less )

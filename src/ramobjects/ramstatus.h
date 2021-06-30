@@ -80,6 +80,7 @@ public:
     void setEstimation(float newEstimation);
 
     static RamStatus *status(QString uuid);
+    static RamStatus *copy(RamStatus *other, RamUser *user);
     static float hoursToDays(int hours);
     static int daysToHours(float days);
 

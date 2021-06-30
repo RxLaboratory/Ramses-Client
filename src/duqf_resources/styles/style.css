@@ -574,6 +574,7 @@ QMenu {
 QMenu::item {
     color: @color-light-grey;
     padding-left: 23px;
+    padding-right: 23px;
     padding-top: @padding-small;
     padding-bottom: @padding-small;
 }

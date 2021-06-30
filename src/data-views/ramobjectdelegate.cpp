@@ -487,10 +487,18 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
             // details
             RamUser *assignedUser = status->assignedUser();
             if (assignedUser) details = "Assigned to: " %
-                    assignedUser->name();
-            else details = "Not assigned";
+                    assignedUser->name() %
+                    "\nDifficulty: ";
+            else details = "Not assigned\nDifficulty: ";
 
-            if (status->isPublished()) details = details % "\n► Published";
+            switch( status->difficulty() )
+            {
+            case RamStatus::VeryEasy: { details += "Very easy"; break; }
+            case RamStatus::Easy: { details += "Easy"; break; }
+            case RamStatus::Medium: { details += "Medium"; break; }
+            case RamStatus::Hard: { details += "Hard"; break; }
+            case RamStatus::VeryHard: { details += "Very hard"; break; }
+            }
 
             qint64 timeSpentSecs = status->timeSpent();
             // Convert to hours
@@ -501,8 +509,14 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
                     " hours (" %
                     QString::number(timeSpentDays, 'f', 0) %
                     " days) / " %
-                    QString::number(estimation, 'f', 0) %
+                    QString::number(estimation, 'f', 1) %
                     " days";
+            else details = details %
+                    "\nEstimation: " %
+                    QString::number(estimation, 'f', 1) %
+                    " days";
+
+            if (status->isPublished()) details = details % "\n► Published";
 
             detailsRect.moveTop(statusRect.bottom() + 5);
             detailsRect.setHeight( bgRect.bottom() - statusRect.bottom() - 10);
@@ -554,7 +568,7 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
 
     // Draw image preview
     QRect imageRect( iconRect.left() + 5, commentRect.bottom() + 5, bgRect.width() - 30, bgRect.bottom() - commentRect.bottom() - 5);
-    if (detailsRect.bottom() + 20 < bgRect.bottom() && previewImagePath != "")
+    if (commentRect.bottom() + 20 < bgRect.bottom() && previewImagePath != "")
     {
         QPixmap pix(previewImagePath);
         float pixRatio = pix.width() / pix.height();
