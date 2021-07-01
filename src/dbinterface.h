@@ -12,6 +12,7 @@
 #include <QJsonArray>
 #include <QDeadlineTimer>
 #include <QApplication>
+#include <QStringBuilder>
 
 #include "duqf-utils/utils.h"
 #include "duqf-app/app-version.h"
@@ -182,8 +183,11 @@ private:
      * @param req The request to post
      * @param content
      */
-    void request(QString req, bool waitPing = true);
-    void request(QStringList args);
+    void request(QString query, QStringList args = QStringList(), bool wait = true);
+    QString buildFormEncodedString(QStringList args);
+    bool waitPing();
+    QString getServerAddress();
+    QString getProtocol();
 
     /**
      * @brief Generates a hash for a password
