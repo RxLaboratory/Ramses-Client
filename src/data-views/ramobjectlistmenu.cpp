@@ -74,6 +74,8 @@ void RamObjectListMenu::newObject(const QModelIndex &parent, int first, int last
         RamObject *o = reinterpret_cast<RamObject*>( iptr );
         QAction *a = new QAction( o->name() );
         a->setData( reinterpret_cast<quintptr>( o ) );
+        a->setCheckable(m_checkable);
+        if (m_checkable) a->setChecked(true);
         this->addAction(a);
         connect(a,SIGNAL(toggled(bool)),this,SLOT(actionAssign(bool)));
         connect(a,SIGNAL(triggered()),this,SLOT(actionAssign()));
@@ -160,10 +162,7 @@ void RamObjectListMenu::selectAll()
     for (int j = actions.count() -1; j >= 0; j--)
     {
         if (actions.at(j)->data().toULongLong() != 0)
-        {
             actions.at(j)->setChecked(true);
-            break;
-        }
     }
 }
 
@@ -173,10 +172,7 @@ void RamObjectListMenu::selectNone()
     for (int j = actions.count() -1; j >= 0; j--)
     {
         if (actions.at(j)->data().toULongLong() != 0)
-        {
             actions.at(j)->setChecked(false);
-            break;
-        }
     }
 }
 

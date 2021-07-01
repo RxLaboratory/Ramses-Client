@@ -22,7 +22,7 @@ void DuQFColorSelector::updateColorEditStyle()
 void DuQFColorSelector::selectColor()
 {
     this->setEnabled(false);
-    QColorDialog cd( m_color );
+    QColorDialog cd( m_color, this );
     cd.setOptions(QColorDialog::DontUseNativeDialog);
     //cd.setWindowFlags(Qt::FramelessWindowHint);
     //cd.move(this->parentWidget()->parentWidget()->geometry().center().x()-cd.geometry().width()/2,this->parentWidget()->parentWidget()->geometry().center().y()-cd.geometry().height()/2);

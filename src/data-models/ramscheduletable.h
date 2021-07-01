@@ -12,7 +12,8 @@ class RamScheduleTable : public QAbstractTableModel
 {
     Q_OBJECT
 public:
-    explicit RamScheduleTable(RamObjectList *users, QObject *parent = nullptr);
+    explicit RamScheduleTable(QObject *parent = nullptr);
+    void setList(RamObjectList *userList);
 
     // MODEL REIMPLEMENTATION
     int columnCount(const QModelIndex &parent = QModelIndex()) const override;
@@ -31,7 +32,7 @@ private slots:
 
 private:
      RamStepFilterModel *m_steps;
-     RamObjectList *m_users;
+     RamObjectList *m_users = nullptr;
 
      QDate m_startDate;
      QDate m_endDate;

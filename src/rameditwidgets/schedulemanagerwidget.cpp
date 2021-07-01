@@ -5,10 +5,14 @@ ScheduleManagerWidget::ScheduleManagerWidget(QWidget *parent) : QWidget(parent)
     m_dbi = DBInterface::instance();
 
     setupUi();
-    m_schedule = new RamScheduleTable( Ramses::instance()->users() );
+    m_schedule = new RamScheduleTable( );
+
+    m_scheduleFilter = new RamScheduleFilter();
+    m_scheduleFilter->setList( m_schedule );
+    ui_table->setModel( m_scheduleFilter );
+
     connectEvents();
 
-    ui_table->setModel( m_schedule );
 }
 
 void ScheduleManagerWidget::showEvent(QShowEvent *event)
@@ -25,6 +29,8 @@ void ScheduleManagerWidget::hideEvent(QHideEvent *event)
 
 void ScheduleManagerWidget::projectChanged(RamProject *project)
 {
+    m_schedule->setList( Ramses::instance()->users() );
+    ui_userMenu->setList(Ramses::instance()->users());
     ui_endDateEdit->setDate( project->deadline() );
     ui_stepMenu->setList( project->steps() );
 }
@@ -88,6 +94,28 @@ void ScheduleManagerWidget::assignStep(RamObject *stepObj)
     m_dbi->removeSchedules( removedEntries );
 }
 
+void ScheduleManagerWidget::filterUser(RamObject *userObj, bool filter)
+{
+    if (filter) m_scheduleFilter->acceptUserUuid( userObj->uuid() );
+    else m_scheduleFilter->ignoreUserUuid( userObj->uuid() );
+}
+
+void ScheduleManagerWidget::filterMe()
+{
+    QList<QAction*> actions = ui_userMenu->actions();
+
+    RamUser *current = Ramses::instance()->currentUser();
+    for (int i =0; i < actions.count(); i++)
+    {
+        QAction *a = actions.at(i);
+        quintptr iptr = a->data().toULongLong();
+        if (iptr == 0) continue;
+        RamUser *u = reinterpret_cast<RamUser*>( iptr );
+        if (!u) continue;
+        a->setChecked( u->is(current) );
+    }
+}
+
 void ScheduleManagerWidget::setupUi()
 {
     // Get the mainwindow to add the titlebar
@@ -110,6 +138,22 @@ void ScheduleManagerWidget::setupUi()
     this->setLayout(mainLayout);
 
     // Title bar
+
+    ui_userMenu = new RamObjectListMenu(true, this);
+
+    ui_meAction = new QAction("Me", this);
+    ui_userMenu->insertAction( ui_userMenu->actions().at(0), ui_meAction);
+
+    QToolButton *userButton = new QToolButton(this);
+    userButton->setText("Users");
+    userButton->setIcon(QIcon(":/icons/user"));
+    userButton->setIconSize(QSize(16,16));
+    userButton->setObjectName("menuButton");
+    userButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    userButton->setPopupMode(QToolButton::InstantPopup);
+    userButton->setMenu(ui_userMenu);
+
+    ui_titleBar->insertLeft( userButton );
 
     ui_stepMenu = new RamObjectListMenu(false, this);
     ui_stepMenu->addCreateButton();
@@ -145,8 +189,12 @@ void ScheduleManagerWidget::setupUi()
 
 void ScheduleManagerWidget::connectEvents()
 {
+    // dates
     connect(ui_startDateEdit, SIGNAL(dateChanged(QDate)), m_schedule, SLOT(setStartDate(QDate)));
     connect(ui_endDateEdit, SIGNAL(dateChanged(QDate)), m_schedule, SLOT(setEndDate(QDate)));
+    // users
+    connect(ui_userMenu,SIGNAL(assign(RamObject*,bool)), this, SLOT(filterUser(RamObject*,bool)));
+    connect(ui_meAction,SIGNAL(triggered()), this, SLOT(filterMe()));
     // batch steps
     connect(ui_stepMenu, SIGNAL(create()), this, SLOT(assignStep()));
     connect(ui_stepMenu, SIGNAL(assign(RamObject*)), this, SLOT(assignStep(RamObject*)));

@@ -60,6 +60,30 @@ void RamScheduleDelegate::paint(QPainter *painter, const QStyleOptionViewItem &o
         return;
     }
 
+    // Get the entry
+    quintptr iptr = index.data(Qt::UserRole).toULongLong();
+    if (iptr == 0) return;
+    RamScheduleEntry *entry = reinterpret_cast<RamScheduleEntry*>( iptr );
+    RamStep *step = entry->step();
+    if (!step) return;
+
+    // icon
+    QString icon = ":/icons/asset";
+    if (step->type() == RamStep::PreProduction) icon = ":/icons/project";
+    else if (step->type() == RamStep::ShotProduction) icon = ":/icons/shot";
+    else if (step->type() == RamStep::PostProduction) icon = ":/icons/film";
+
+    // icon color
+    QColor iconColor;
+    if (bgColor.lightness() > 80) iconColor = m_dark;
+    else iconColor = m_medium;
+    QImage iconImage(12,12, QImage::Format_ARGB32);
+    iconImage.fill( iconColor );
+    QPainter iconPainter(&iconImage);
+    iconPainter.setCompositionMode(QPainter::CompositionMode_DestinationIn);
+    iconPainter.drawPixmap( QRect(0,0,12,12), QIcon(icon).pixmap(QSize(12,12)) );
+    painter->drawImage(iconRect, iconImage);
+
     // Title
     if (index.data(Qt::UserRole) != 0)
     {

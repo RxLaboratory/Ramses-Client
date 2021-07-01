@@ -10,6 +10,7 @@
 #include "data-views/ramscheduletablewidget.h"
 #include "data-models/ramscheduletable.h"
 #include "data-views/ramobjectlistmenu.h"
+#include "data-models/ramschedulefilter.h"
 #include "ramses.h"
 
 class ScheduleManagerWidget : public QWidget
@@ -30,6 +31,9 @@ private slots:
 
     void assignStep(RamObject *stepObj = nullptr);
 
+    void filterUser(RamObject *userObj, bool filter);
+    void filterMe();
+
 private:
     void setupUi();
     void connectEvents();
@@ -39,8 +43,12 @@ private:
     QDateEdit *ui_startDateEdit;
     QDateEdit *ui_endDateEdit;
     RamObjectListMenu *ui_stepMenu;
+    RamObjectListMenu *ui_userMenu;
+    QAction *ui_meAction;
 
     RamScheduleTable *m_schedule;
+    RamScheduleFilter *m_scheduleFilter;
+
     DBInterface *m_dbi;
 };
 
