@@ -174,6 +174,21 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     qDebug() << "> Schedule ready";
 #endif
 
+#ifndef DEACTIVATE_STATS
+    RamStatisticsTableWidget *statsTable = new RamStatisticsTableWidget(this);
+    statsTable->setModel(new RamStatisticsTable(this));
+    ui_statsDockWidget = new QDockWidget("Statistics");
+    DuQFDockTitle *statsTitle = new DuQFDockTitle("Statistics", this);
+    statsTitle->setObjectName("dockTitle");
+    ui_statsDockWidget->setTitleBarWidget(statsTitle);
+    ui_statsDockWidget->setAllowedAreas(Qt::AllDockWidgetAreas);
+    ui_statsDockWidget->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable );
+    ui_statsDockWidget->setWidget( statsTable );
+    this->addDockWidget(Qt::LeftDockWidgetArea, ui_statsDockWidget);
+    ui_statsDockWidget->hide();
+    qDebug() << "> Statistics table ready";
+#endif
+
     // Progress page
     progressPage = new ProgressPage(this);
     mainStack->addWidget(progressPage);
@@ -195,6 +210,8 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     connect(actionShots,SIGNAL(triggered(bool)), this, SLOT(shots(bool)));
     connect(actionAssets,SIGNAL(triggered(bool)), this, SLOT(assets(bool)));
     connect(actionSchedule,SIGNAL(triggered(bool)), this, SLOT(schedule(bool)));
+    connect(actionStatistics,SIGNAL(triggered(bool)), ui_statsDockWidget, SLOT(setVisible(bool)));
+    connect(ui_statsDockWidget,SIGNAL(visibilityChanged(bool)), actionStatistics, SLOT(setChecked(bool)));
     connect(adminPage, SIGNAL(closeRequested()), this, SLOT(home()));
     connect(projectSettingsPage, SIGNAL(closeRequested()), this, SLOT(home()));
     connect(networkButton,SIGNAL(clicked()),this, SLOT(networkButton_clicked()));

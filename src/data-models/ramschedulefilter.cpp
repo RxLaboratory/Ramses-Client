@@ -22,6 +22,17 @@ bool RamScheduleFilter::filterAcceptsRow(int sourceRow, const QModelIndex &sourc
     return true;
 }
 
+bool RamScheduleFilter::filterAcceptsColumn(int sourceCol, const QModelIndex &sourceParent) const
+{
+    Q_UNUSED(sourceParent)
+
+    // check date
+    QDate date = sourceModel()->headerData( sourceCol, Qt::Horizontal, Qt::UserRole).value<QDate>();
+
+    if (m_hiddenDays.contains(date.dayOfWeek())) return false;
+    return true;
+}
+
 void RamScheduleFilter::ignoreUserUuid(QString uuid)
 {
     if (!m_filterUserUuids.contains(uuid))
@@ -34,5 +45,17 @@ void RamScheduleFilter::ignoreUserUuid(QString uuid)
 void RamScheduleFilter::acceptUserUuid(QString uuid)
 {
     m_filterUserUuids.removeAll(uuid);
+    invalidateFilter();
+}
+
+void RamScheduleFilter::hideDay(int d)
+{
+    m_hiddenDays << d;
+    invalidateFilter();
+}
+
+void RamScheduleFilter::showDay(int d)
+{
+    m_hiddenDays.removeAll(d);
     invalidateFilter();
 }

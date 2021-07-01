@@ -4,7 +4,7 @@
 
 RamScheduleTable::RamScheduleTable(QObject *parent) : QAbstractTableModel(parent)
 {
-    m_startDate = QDate::currentDate();
+    m_startDate = QDate::currentDate().addDays(-5);
     m_endDate = QDate::currentDate();
     connectEvents();
 }
@@ -22,7 +22,6 @@ void RamScheduleTable::setList(RamObjectList *userList)
     {
         connect( m_users, SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(insertUser(QModelIndex,int,int)));
         connect( m_users, SIGNAL(rowsAboutToBeRemoved(QModelIndex,int,int)), this, SLOT(removeUser(QModelIndex,int,int)));
-        connect( m_users, &RamObjectList::dataChanged, this, &RamScheduleTable::dataChanged);
     }
 
     endResetModel();
@@ -81,32 +80,25 @@ QVariant RamScheduleTable::headerData(int section, Qt::Orientation orientation, 
 
         if ( role == Qt::DisplayRole )
         {
-            QString day;
-            switch(date.dayOfWeek())
-            {
-            case 1: { day = "Monday"; break; }
-            case 2: { day = "Tuesday"; break; }
-            case 3: { day = "Wednesday"; break; }
-            case 4: { day = "Thursday"; break; }
-            case 5: { day = "Friday"; break; }
-            case 6: { day = "Saturday"; break; }
-            case 7: { day = "Sunday"; break; }
-            default: day = "";
-            }
-
-            return QString(day % "\n" % date.toString("yyyy-MM-dd"));
+            return QString(date.toString("MMMM\ndddd\nyyyy-MM-dd"));
         }
-
-        if (role == Qt::ForegroundRole && date == QDate::currentDate())
-            return QBrush(QColor(213,136,241));
 
         if (role == Qt::ForegroundRole)
         {
+            if (date == QDate::currentDate())
+                return QBrush(QColor(213,136,241));
+
             RamProject *proj = Ramses::instance()->currentProject();
             if (proj)
             {
                 if (date == proj->deadline()) return QBrush(QColor(249,105,105));
             }
+
+            if (date.weekNumber() % 2 == 1)
+                return QBrush(QColor(130,130,130));
+            else
+                return QBrush(QColor(170,170,170));
+
         }
 
         if (role == Qt::UserRole)
@@ -176,6 +168,14 @@ QVariant RamScheduleTable::data(const QModelIndex &index, int role) const
 
     if (role == Qt::EditRole)
         return 0;
+
+    if (role == Qt::BackgroundRole )
+    {
+        if (date.date().weekNumber() % 2 == 1)
+            return QBrush(QColor(51,51,51));
+        else
+            return QBrush(QColor(42,42,42));
+    }
 
     return QVariant();
 }

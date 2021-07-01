@@ -137,6 +137,41 @@ void RamProject::removeFromDB()
     m_dbi->removeProject(m_uuid);
 }
 
+void RamProject::computeEstimation()
+{
+    m_timeSpent = 0;
+    m_estimation = 0;
+    m_completionRatio = 0;
+    m_latenessRatio = 0;
+    int numItems = 0;
+
+    for (int i =0; i < m_steps->count(); i++)
+    {
+        RamStep *step = qobject_cast<RamStep*>( m_steps->at(i) );
+
+        step->computeEstimation();
+
+        m_timeSpent += step->timeSpent();
+        m_estimation += step->estimation();
+        m_completionRatio += step->completionRatio();
+        m_latenessRatio += step->latenessRatio();
+
+        numItems++;
+    }
+
+    if (numItems > 0)
+    {
+        m_completionRatio /= numItems;
+        m_latenessRatio /= numItems;
+    }
+    else
+    {
+        m_completionRatio  = 100;
+        m_latenessRatio = 1;
+    }
+
+}
+
 RamProject *RamProject::project(QString uuid)
 {
     return qobject_cast<RamProject*>( RamObject::obj(uuid) );
@@ -181,6 +216,26 @@ RamPipe *RamProject::pipe(RamStep *outputStep, RamStep *inputStep)
 RamObjectList *RamProject::pipeFiles()
 {
     return m_pipeFiles;
+}
+
+qint64 RamProject::timeSpent() const
+{
+    return m_timeSpent;
+}
+
+float RamProject::estimation() const
+{
+    return m_estimation;
+}
+
+float RamProject::completionRatio() const
+{
+    return m_completionRatio;
+}
+
+float RamProject::latenessRatio() const
+{
+    return m_latenessRatio;
 }
 
 RamObjectList *RamProject::steps() const

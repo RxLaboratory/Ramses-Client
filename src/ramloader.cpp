@@ -82,8 +82,8 @@ void RamLoader::gotUsers(QJsonArray users)
     DBISuspender s;
 
     m_pm->increment();
-    m_pm->setText("Loading projects...");
-    qDebug() << "Loading projects";
+    m_pm->setText("Loading users...");
+    qDebug() << "Loading users";
 
     QStringList uuids;
     // Update projects
@@ -92,10 +92,13 @@ void RamLoader::gotUsers(QJsonArray users)
 
     RamObjectList *us = m_ram->users();
 
-    // Remove deleted projects
+    // Remove deleted users
+    m_pm->setText("Cleaning users...");
+    qDebug() << "Cleaning users";
     for (int i = us->count() - 1; i >= 0; i--)
     {
         RamObject *u = us->at(i);
+        if (u->shortName() == "Ramses") continue;
         if (!uuids.contains(u->uuid()))
             u->remove();
     }

@@ -19,4 +19,7 @@
 // Deactivate Schedule Table
 //#define DEACTIVATE_SCHEDULE
 
+// Deactivate Stats Table
+//#define DEACTIVATE_STATS
+
 #endif // CONFIG_H

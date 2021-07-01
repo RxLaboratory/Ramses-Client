@@ -34,11 +34,14 @@ void RamScheduleDelegate::paint(QPainter *painter, const QStyleOptionViewItem &o
 
     // Select the bg Color
     QColor bgColor = index.data(Qt::BackgroundRole).value<QColor>();
-    if (index.data(Qt::UserRole).toULongLong() == 0) bgColor = m_dark;
 
     // State
     if (option.state & QStyle::State_Selected) bgColor = bgColor.darker();
     else if (option.state & QStyle::State_MouseOver) bgColor = bgColor.lighter();
+
+    // before today -> a bit darker
+    QDate date = index.data(Qt::UserRole + 1).value<QDate>();
+    if (date < QDate::currentDate()) bgColor = bgColor.darker(175);
 
     // Text color
     QColor textColor;
@@ -98,7 +101,7 @@ QSize RamScheduleDelegate::sizeHint(const QStyleOptionViewItem &option, const QM
     Q_UNUSED(option)
     Q_UNUSED(index)
 
-    return QSize(100, 30);
+    return QSize(75, 30);
 }
 
 bool RamScheduleDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index)

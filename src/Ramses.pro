@@ -35,10 +35,12 @@ SOURCES += \
     data-models/ramobjectfiltermodel.cpp \
     data-models/ramschedulefilter.cpp \
     data-models/ramscheduletable.cpp \
+    data-models/ramstatisticstable.cpp \
     data-models/ramstepfiltermodel.cpp \
     data-views/ramobjectlistmenu.cpp \
     data-views/ramscheduledelegate.cpp \
     data-views/ramscheduletablewidget.cpp \
+    data-views/ramstatisticstablewidget.cpp \
     data-views/ramstepheaderview.cpp \
     duqf-widgets/duqfcolorselector.cpp \
     duqf-widgets/duqfsearchedit.cpp \
@@ -170,12 +172,14 @@ HEADERS += \
     data-models/ramschedulefilter.h \
     data-models/ramscheduletable.h \
     data-models/ramstatelist.h \
+    data-models/ramstatisticstable.h \
     data-models/ramstepfiltermodel.h \
     data-models/ramstepstatushistory.h \
     data-views/ramobjectdelegate.h \
     data-views/ramobjectlistmenu.h \
     data-views/ramscheduledelegate.h \
     data-views/ramscheduletablewidget.h \
+    data-views/ramstatisticstablewidget.h \
     data-views/ramstepheaderview.h \
     dbistructures.h \
     duqf-widgets/duqfcolorselector.h \

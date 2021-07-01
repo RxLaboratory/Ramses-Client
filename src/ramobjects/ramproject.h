@@ -51,6 +51,12 @@ public:
     RamPipe *pipe(RamStep *outputStep, RamStep *inputStep);
     RamObjectList *pipeFiles();
 
+    // Production Tracking
+    qint64 timeSpent() const; //seconds
+    float estimation() const; //days
+    float completionRatio() const;
+    float latenessRatio() const;
+
     static RamProject *project(QString uuid);
 
     const QDate &deadline() const;
@@ -59,6 +65,8 @@ public:
 public slots:
     void update() override;
     virtual void removeFromDB() override;
+
+    void computeEstimation();
 
 
 protected:
@@ -78,6 +86,11 @@ private:
     RamObjectList *m_pipeline;
     RamObjectList *m_pipeFiles;
     QDate m_deadline;
+
+    qint64 m_timeSpent = 0;
+    float m_estimation = 0;
+    float m_completionRatio = 0;
+    float m_latenessRatio = 0;
 };
 
 #endif // RAMPROJECT_H

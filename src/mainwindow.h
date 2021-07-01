@@ -42,6 +42,8 @@
 #include "applicationlistmanagerwidget.h"
 #include "pipefilelistmanagerwidget.h"
 #include "schedulemanagerwidget.h"
+#include "ramstatisticstablewidget.h"
+#include "data-models/ramstatisticstable.h"
 #include "dbinterface.h"
 #include "daemon.h"
 #include "ramloader.h"
@@ -93,6 +95,7 @@ private:
     QMenu *helpMenu;
     ProgressPage *progressPage;
     ProjectEditWidget *ui_currentProjectSettings;
+    QDockWidget *ui_statsDockWidget;
 
     QMenu *userMenu;
     QToolButton *userButton;
