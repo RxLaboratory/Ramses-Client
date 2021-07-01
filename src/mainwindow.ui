@@ -218,6 +218,10 @@
    <property name="checkable">
     <bool>true</bool>
    </property>
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/calendar</normaloff>:/icons/calendar</iconset>
+   </property>
    <property name="text">
     <string>Schedule</string>
    </property>

@@ -66,6 +66,7 @@
         <file alias="open">resources/icons/load_sl.svg</file>
         <file alias="show">resources/icons/show_sl.svg</file>
         <file alias="state-l">resources/icons/state_l.svg</file>
+        <file alias="calendar">resources/icons/calendar_sl.svg</file>
     </qresource>
     <qresource prefix="/styles">
         <file alias="default-ramses">resources/style/style-ramses.css</file>
