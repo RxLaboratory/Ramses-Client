@@ -2,6 +2,8 @@
 
 ScheduleManagerWidget::ScheduleManagerWidget(QWidget *parent) : QWidget(parent)
 {
+    m_dbi = DBInterface::instance();
+
     setupUi();
     m_schedule = new RamScheduleTable( Ramses::instance()->users() );
     connectEvents();
@@ -30,9 +32,14 @@ void ScheduleManagerWidget::projectChanged(RamProject *project)
 void ScheduleManagerWidget::assignStep(RamObject *stepObj)
 {
     RamStep *step = qobject_cast<RamStep*>(stepObj);
-    QList<RamScheduleEntry *> entries;
 
     if (Ramses::instance()->currentProject()->steps()->count() == 0) step = nullptr;
+
+    m_dbi->suspend(true);
+
+    QList<ScheduleEntryStruct> modifiedEntries;
+    QList<ScheduleEntryStruct> newEntries;
+    QList<ScheduleEntryStruct> removedEntries;
 
     QModelIndexList selection = ui_table->selectionModel()->selectedIndexes();
     for (int i = 0; i < selection.count(); i++)
@@ -42,7 +49,11 @@ void ScheduleManagerWidget::assignStep(RamObject *stepObj)
 
         if (!step)
         {
-            if (entry) entry->remove();
+            if (entry)
+            {
+                removedEntries << entry->toStruct();
+                entry->remove(false);
+            }
             continue;
         }
 
@@ -58,12 +69,23 @@ void ScheduleManagerWidget::assignStep(RamObject *stepObj)
 
             entry = new RamScheduleEntry( user, step, date );
             user->schedule()->append(entry);
+
+            newEntries << entry->toStruct();
         }
         else
         {
             entry->setStep( step );
+            entry->update();
+            modifiedEntries << entry->toStruct();
         }
+
     }
+
+    m_dbi->suspend(false);
+
+    m_dbi->createSchedules( newEntries );
+    m_dbi->updateSchedules( modifiedEntries );
+    m_dbi->removeSchedules( removedEntries );
 }
 
 void ScheduleManagerWidget::setupUi()

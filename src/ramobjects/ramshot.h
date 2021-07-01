@@ -32,6 +32,7 @@ protected:
 private slots:
     void assetAssigned(const QModelIndex &parent, int first, int last);
     void assetUnassigned(const QModelIndex &parent, int first, int last);
+    virtual void removeFromDB() override;
 
 private:
     RamSequence *m_sequence;

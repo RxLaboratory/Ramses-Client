@@ -26,7 +26,7 @@ RamScheduleEntry::RamScheduleEntry(RamUser *user, RamStep *step, QDateTime date,
 
 RamScheduleEntry::~RamScheduleEntry()
 {
-    m_dbi->removeSchedule(m_uuid);
+
 }
 
 QString RamScheduleEntry::name() const
@@ -82,6 +82,17 @@ void RamScheduleEntry::setDate(const QDateTime &newDate)
     emit changed(this);
 }
 
+ScheduleEntryStruct RamScheduleEntry::toStruct() const
+{
+    ScheduleEntryStruct s;
+    s.uuid = m_uuid;
+    s.userUuid = m_user->uuid();
+    s.stepUuid = m_step->uuid();
+    s.comment = m_comment;
+    s.date = m_date;
+    return s;
+}
+
 RamScheduleEntry *RamScheduleEntry::scheduleEntry(QString uuid)
 {
     return qobject_cast<RamScheduleEntry*>( RamObject::obj(uuid) );
@@ -103,4 +114,9 @@ void RamScheduleEntry::edit(bool show)
         m_editReady = true;//*/
     }
     showEdit(show);
+}
+
+void RamScheduleEntry::removeFromDB()
+{
+    m_dbi->removeSchedule(m_uuid);
 }

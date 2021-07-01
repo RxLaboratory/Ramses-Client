@@ -23,7 +23,7 @@ RamProject::RamProject(QString shortName, QString name, QString uuid):
 
 RamProject::~RamProject()
 {
-    m_dbi->removeProject(m_uuid);
+
 }
 
 QString RamProject::folderPath() const
@@ -130,6 +130,11 @@ void RamProject::update()
     QString path = m_folderPath;
     if (path == "") path = "auto";
     m_dbi->updateProject(m_uuid, m_shortName, m_name, m_width, m_height, m_framerate, path, m_comment, m_deadline);
+}
+
+void RamProject::removeFromDB()
+{
+    m_dbi->removeProject(m_uuid);
 }
 
 RamProject *RamProject::project(QString uuid)

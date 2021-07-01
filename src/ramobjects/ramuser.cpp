@@ -22,7 +22,7 @@ RamUser::RamUser(QString shortName, QString name, QString uuid) :
 
 RamUser::~RamUser()
 {
-    m_dbi->removeUser(m_uuid);
+
 }
 
 RamUser::UserRole RamUser::role() const
@@ -117,6 +117,11 @@ void RamUser::edit(bool show)
         m_editReady = true;
     }
     showEdit(show);
+}
+
+void RamUser::removeFromDB()
+{
+    m_dbi->removeUser(m_uuid);
 }
 
 QSettings *RamUser::userSettings() const

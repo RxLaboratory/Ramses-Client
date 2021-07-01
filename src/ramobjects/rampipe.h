@@ -30,6 +30,7 @@ public:
 public slots:
     void update() override;
     virtual void edit(bool show = true) override;
+    virtual void removeFromDB() override;
 
 private slots:
     void pipeFileUnassigned(const QModelIndex &parent, int first, int last);

@@ -32,8 +32,7 @@ RamAssetGroup::RamAssetGroup(QString shortName, RamProject *project, QString nam
 
 RamAssetGroup::~RamAssetGroup()
 {
-    if (m_template) m_dbi->removeTemplateAssetGroup(m_uuid);
-    else m_dbi->removeAssetGroup(m_uuid);
+
 }
 
 bool RamAssetGroup::isTemplate() const
@@ -80,6 +79,12 @@ void RamAssetGroup::edit(bool show)
         m_editReady = true;
     }
     showEdit(show);
+}
+
+void RamAssetGroup::removeFromDB()
+{
+    if (m_template) m_dbi->removeTemplateAssetGroup(m_uuid);
+    else m_dbi->removeAssetGroup(m_uuid);
 }
 
 QString RamAssetGroup::folderPath() const

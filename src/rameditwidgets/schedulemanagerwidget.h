@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QDateEdit>
 
+#include "dbinterface.h"
 #include "duqf-utils/guiutils.h"
 #include "duqf-widgets/titlebar.h"
 #include "data-views/ramscheduletablewidget.h"
@@ -40,6 +41,7 @@ private:
     RamObjectListMenu *ui_stepMenu;
 
     RamScheduleTable *m_schedule;
+    DBInterface *m_dbi;
 };
 
 #endif // SCHEDULEMANAGERWIDGET_H

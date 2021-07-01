@@ -25,7 +25,7 @@ RamStatus::RamStatus(RamUser *user, RamState *state, RamStep *step, RamItem *ite
 
 RamStatus::~RamStatus()
 {
-    m_dbi->removeStatus(m_uuid);
+
 }
 
 int RamStatus::completionRatio() const
@@ -267,6 +267,11 @@ void RamStatus::edit(bool show)
     }
     if (show) ui_editWidget->setStatus( this );
     showEdit(show);
+}
+
+void RamStatus::removeFromDB()
+{
+    m_dbi->removeStatus(m_uuid);
 }
 
 QString RamStatus::folderPath() const

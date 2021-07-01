@@ -25,7 +25,7 @@ RamPipeFile::RamPipeFile(QString uuid, QObject *parent):
 
 RamPipeFile::~RamPipeFile()
 {
-    m_dbi->removePipeFile(m_uuid);
+
 }
 
 QString RamPipeFile::name() const
@@ -82,4 +82,9 @@ void RamPipeFile::edit(bool show)
         m_editReady = true;//*/
     }
     showEdit(show);
+}
+
+void RamPipeFile::removeFromDB()
+{
+    m_dbi->removePipeFile(m_uuid);
 }

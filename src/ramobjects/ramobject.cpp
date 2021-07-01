@@ -88,7 +88,7 @@ QString RamObject::uuid() const
     return m_uuid;
 }
 
-void RamObject::remove()
+void RamObject::remove( bool updateDB )
 {
     qDebug().noquote() << "Removing: " + m_name + " (uuid: " + m_uuid + ")";
     qDebug().noquote() << "- " + this->objectName();
@@ -101,6 +101,8 @@ void RamObject::remove()
 #endif
     emit removed(this);
     qDebug().noquote() << "> " + m_name + " Removed";
+
+    if (updateDB) removeFromDB();
 
     this->deleteLater();
 }

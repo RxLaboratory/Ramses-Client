@@ -92,7 +92,8 @@ public:
 
 public slots:
     virtual void update();
-    virtual void remove();
+    virtual void removeFromDB() {};
+    virtual void remove(bool updateDB = true);
     virtual void edit(bool s = true) { Q_UNUSED(s) };
 
 signals:

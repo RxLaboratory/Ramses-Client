@@ -26,8 +26,7 @@ RamStep::RamStep(QString shortName, QString name, RamProject *project, QString u
 
 RamStep::~RamStep()
 {
-    if (m_template) m_dbi->removeTemplateStep(m_uuid);
-    else m_dbi->removeStep(m_uuid);
+
 }
 
 void RamStep::init()
@@ -402,6 +401,12 @@ void RamStep::edit(bool show)
         m_editReady = true;
     }
     showEdit(show);
+}
+
+void RamStep::removeFromDB()
+{
+    if (m_template) m_dbi->removeTemplateStep(m_uuid);
+    else m_dbi->removeStep(m_uuid);
 }
 
 void RamStep::computeEstimation()

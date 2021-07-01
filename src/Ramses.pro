@@ -175,6 +175,7 @@ HEADERS += \
     data-views/ramscheduledelegate.h \
     data-views/ramscheduletablewidget.h \
     data-views/ramstepheaderview.h \
+    dbistructures.h \
     duqf-widgets/duqfcolorselector.h \
     duqf-widgets/duqfsearchedit.h \
     processmanager.h \

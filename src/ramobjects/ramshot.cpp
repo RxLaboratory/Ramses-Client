@@ -21,7 +21,7 @@ RamShot::RamShot(QString shortName, RamSequence *sequence, QString name, QString
 
 RamShot::~RamShot()
 {
-    m_dbi->removeShot(m_uuid);
+
 }
 
 RamSequence *RamShot::sequence() const
@@ -113,6 +113,11 @@ void RamShot::assetUnassigned(const QModelIndex &parent, int first, int last)
         RamObject *assetObj = m_assets->at(i);
         m_dbi->unassignAsset(m_uuid, assetObj->uuid());
     }
+}
+
+void RamShot::removeFromDB()
+{
+    m_dbi->removeShot(m_uuid);
 }
 
 RamObjectList *RamShot::assets() const

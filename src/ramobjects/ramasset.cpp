@@ -18,7 +18,7 @@ RamAsset::RamAsset(QString shortName, RamAssetGroup *assetGroup, QString name, Q
 
 RamAsset::~RamAsset()
 {
-    m_dbi->removeAsset(m_uuid);
+
 }
 
 RamAssetGroup *RamAsset::assetGroup() const
@@ -102,6 +102,11 @@ void RamAsset::edit(bool show)
         m_editReady = true;
     }
     showEdit(show);
+}
+
+void RamAsset::removeFromDB()
+{
+    m_dbi->removeAsset(m_uuid);
 }
 
 QString RamAsset::folderPath() const

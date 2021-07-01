@@ -17,6 +17,7 @@
 #include "duqf-utils/utils.h"
 #include "duqf-app/app-version.h"
 #include "duqf-utils/duqflogger.h"
+#include "dbistructures.h"
 
 class DBInterface : public DuQFLoggerObject
 {
@@ -121,8 +122,12 @@ public:
     void removeStatus(QString uuid);
     // Schedule
     void createSchedule(QString userUuid, QString stepUuid, QDateTime date, QString uuid = "");
+    void createSchedules(QList<ScheduleEntryStruct> entries);
     void updateSchedule(QString uuid, QString userUuid, QString stepUuid, QDateTime date, QString comment);
+    void updateSchedules(QList<ScheduleEntryStruct> entries);
     void removeSchedule(QString uuid);
+    void removeSchedules(QList<ScheduleEntryStruct> entries);
+
 
 public slots:
     void suspend(bool suspended = true);
@@ -184,6 +189,7 @@ private:
      * @param content
      */
     void request(QString query, QStringList args = QStringList(), bool wait = true);
+    void request(QString query, QJsonObject body, bool wait = true);
     QString buildFormEncodedString(QStringList args);
     bool waitPing();
     QString getServerAddress();

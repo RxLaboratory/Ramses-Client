@@ -18,9 +18,12 @@ public:
     int completionRatio() const;
     void setCompletionRatio(int completionRatio);
 
-    void update();
-
     static RamState *state(QString uuid);
+
+public slots:
+    void update() override;
+    virtual void removeFromDB() override;
+
 private:
     QColor _color;
     int _completionRatio = 50;

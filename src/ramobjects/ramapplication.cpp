@@ -28,7 +28,7 @@ RamApplication::RamApplication(QString shortName, QString name, QString executab
 
 RamApplication::~RamApplication()
 {
-    m_dbi->removeApplication(m_uuid);
+
 }
 
 QString RamApplication::executableFilePath() const
@@ -69,6 +69,11 @@ void RamApplication::edit(bool show)
         m_editReady = true;
     }
     showEdit(show);
+}
+
+void RamApplication::removeFromDB()
+{
+     m_dbi->removeApplication(m_uuid);
 }
 
 bool RamApplication::canExportFileType(RamFileType *ft) const

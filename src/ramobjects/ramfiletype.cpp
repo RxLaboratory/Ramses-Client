@@ -26,7 +26,7 @@ RamFileType::RamFileType(QString shortName, QString name, QString extensions, QS
 
 RamFileType::~RamFileType()
 {
-    m_dbi->removeFileType(m_uuid);
+
 }
 
 void RamFileType::setExtensions(QString extensions)
@@ -74,6 +74,11 @@ void RamFileType::edit(bool show)
         m_editReady = true;
     }
     showEdit(show);
+}
+
+void RamFileType::removeFromDB()
+{
+    m_dbi->removeFileType(m_uuid);
 }
 
 bool RamFileType::isPreviewable() const

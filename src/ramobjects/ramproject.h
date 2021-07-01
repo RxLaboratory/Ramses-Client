@@ -58,6 +58,7 @@ public:
 
 public slots:
     void update() override;
+    virtual void removeFromDB() override;
 
 
 protected:

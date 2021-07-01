@@ -25,11 +25,14 @@ public:
     const QDateTime &date() const;
     void setDate(const QDateTime &newDate);
 
+    struct ScheduleEntryStruct toStruct() const;
+
     static RamScheduleEntry *scheduleEntry(QString uuid);
 
 public slots:
     void update() override;
     virtual void edit(bool show = true) override;
+    virtual void removeFromDB() override;
 
 private:
     RamUser *m_user;

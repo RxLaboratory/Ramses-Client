@@ -21,12 +21,12 @@ public:
 
     bool check(QString filePath) const;
 
-    void update() override;
-
     static RamFileType *fileType(QString uuid);
 
 public slots:
+    void update() override;
     virtual void edit(bool show = true) override;
+    virtual void removeFromDB() override;
 
 private:
     QStringList m_extensions;

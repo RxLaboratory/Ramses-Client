@@ -34,6 +34,7 @@ public:
 public slots:
     void update() override;
     virtual void edit(bool show = true) override;
+    virtual void removeFromDB() override;
 
 private:
     RamFileType *m_fileType;

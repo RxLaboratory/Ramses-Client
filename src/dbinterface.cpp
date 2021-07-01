@@ -778,6 +778,26 @@ void DBInterface::createSchedule(QString userUuid, QString stepUuid, QDateTime d
     request("createSchedule", q);
 }
 
+void DBInterface::createSchedules(QList<ScheduleEntryStruct> entries)
+{
+    if (entries.count() == 0) return;
+    QJsonArray entriesArr;
+    for (int i = 0; i < entries.count(); i++)
+    {
+        ScheduleEntryStruct e = entries.at(i);
+        QJsonObject entry;
+        entry.insert("uuid", e.uuid);
+        entry.insert("stepUuid", e.stepUuid);
+        entry.insert("userUuid", e.userUuid);
+        entry.insert("date", e.date.toString("yyyy-MM-dd hh:mm:ss"));
+        entriesArr.append(entry);
+    }
+    QJsonObject requestObj;
+    requestObj.insert("entries", entriesArr);
+
+    request("createSchedules", requestObj);
+}
+
 void DBInterface::updateSchedule(QString uuid, QString userUuid, QString stepUuid, QDateTime date, QString comment)
 {
     QStringList q;
@@ -790,12 +810,50 @@ void DBInterface::updateSchedule(QString uuid, QString userUuid, QString stepUui
     request("updateSchedule", q);
 }
 
+void DBInterface::updateSchedules(QList<ScheduleEntryStruct> entries)
+{
+    if (entries.count() == 0) return;
+    QJsonArray entriesArr;
+    for (int i = 0; i < entries.count(); i++)
+    {
+        ScheduleEntryStruct e = entries.at(i);
+        QJsonObject entry;
+        entry.insert("uuid", e.uuid);
+        entry.insert("stepUuid", e.stepUuid);
+        entry.insert("userUuid", e.userUuid);
+        entry.insert("comment", e.comment);
+        entry.insert("date", e.date.toString("yyyy-MM-dd hh:mm:ss"));
+        entriesArr.append(entry);
+    }
+    QJsonObject requestObj;
+    requestObj.insert("entries", entriesArr);
+
+    request("updateSchedules", requestObj);
+}
+
 void DBInterface::removeSchedule(QString uuid)
 {
     QStringList q;
     q << "uuid=" + uuid;
 
     request("removeSchedule", q);
+}
+
+void DBInterface::removeSchedules(QList<ScheduleEntryStruct> entries)
+{
+    if (entries.count() == 0) return;
+    QJsonArray entriesArr;
+    for (int i = 0; i < entries.count(); i++)
+    {
+        ScheduleEntryStruct e = entries.at(i);
+        QJsonObject entry;
+        entry.insert("uuid", e.uuid);
+        entriesArr.append(entry);
+    }
+    QJsonObject requestObj;
+    requestObj.insert("entries", entriesArr);
+
+    request("removeSchedules", requestObj);
 }
 
 void DBInterface::init()
@@ -1111,6 +1169,45 @@ void DBInterface::request(QString query, QStringList args, bool wait)
         log("Request data: [Hidden login info]", DuQFLog::Data);
     else
         log("Request data: " + body, DuQFLog::Data);
+#endif
+
+    connect(_reply, SIGNAL(error(QNetworkReply::NetworkError)), this,SLOT(networkError(QNetworkReply::NetworkError)));
+}
+
+void DBInterface::request(QString query, QJsonObject body, bool wait)
+{
+    if (_suspended) return;
+
+    if (wait) if (!waitPing()) return;
+
+    QString serverAddress = getServerAddress();
+    QString protocol = getProtocol();
+    if (protocol == "") return;
+
+    QUrl url(protocol % serverAddress % "?" % query);
+    QNetworkRequest request;
+    request.setUrl(url);
+
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+    request.setHeader(QNetworkRequest::UserAgentHeader, QString(STR_INTERNALNAME) + " v" + QString(STR_VERSION));
+
+    // Post body
+
+    if (_sessionToken != "") body.insert("token", _sessionToken );
+    QJsonDocument bodyDoc;
+    bodyDoc.setObject(body);
+
+    // Send post
+    _reply = _network.post(request, bodyDoc.toJson(QJsonDocument::Compact));
+
+#ifdef QT_DEBUG
+    // Log URL / GET
+    log( "New request: " + url.toString(QUrl::RemovePassword), DuQFLog::Debug);
+    // Log POST body
+    if (query == "login")
+        log("Request data: [Hidden login info]", DuQFLog::Data);
+    else
+        log("Request data: " + bodyDoc.toJson(), DuQFLog::Data);
 #endif
 
     connect(_reply, SIGNAL(error(QNetworkReply::NetworkError)), this,SLOT(networkError(QNetworkReply::NetworkError)));
