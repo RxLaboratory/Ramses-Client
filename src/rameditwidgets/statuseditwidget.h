@@ -3,9 +3,17 @@
 
 #include <QPlainTextEdit>
 #include <QToolButton>
+#include <QFormLayout>
+#include <QCheckBox>
+#include <QListWidget>
+#include <QShortcut>
+#include <QMenu>
 
 #include "duqf-widgets/duqfspinbox.h"
 #include "duqf-widgets/autoselectspinbox.h"
+#include "duqf-widgets/autoselectdoublespinbox.h"
+#include "data-views/ramobjectlistcombobox.h"
+#include "duqf-widgets/duqffolderdisplaywidget.h"
 #include "objecteditwidget.h"
 #include "statebox.h"
 #include "ramses.h"
@@ -33,15 +41,40 @@ public:
     int completionRatio() const;
     int version() const;
     QString comment() const;
+    RamUser *assignedUser() const;
+    bool isPublished() const;
+    qint64 timeSpent() const;
+    float estimation() const;
+    RamStatus::Difficulty difficulty() const;
 
 signals:
     void statusUpdated(RamState*, int completion, int version, QString comment);
 
 private slots:
-    void currentStateChanged(RamState *state);
+    void currentStateChanged(RamObject *stateObj);
     void updateStatus();
     void adjustCommentEditSize();
     void revert();
+    void checkPublished(int v);
+
+    void mainFileSelected(int row);
+    void openMainFile();
+    void removeSelectedMainFile();
+
+    void createFromTemplate();
+    void createFromDefaultTemplate();
+
+    void publishedFileSelected(int row);
+    void openPublishedFile();
+    void removeSelectedPublishedFile();
+
+    void previewFileSelected(int row);
+    void openPreviewFile();
+    void removeSelectedPreviewFile();
+
+    void autoEstimate(bool estimate);
+    void autoEstimate();
+    void estimateDays(int hours);
 
 private:
     void setupUi();
@@ -49,9 +82,26 @@ private:
     StateBox *ui_stateBox;
     DuQFSpinBox *ui_completionBox;
     AutoSelectSpinBox *ui_versionBox;
-    QPlainTextEdit *ui_commentEdit;
+    QPlainTextEdit *ui_statusCommentEdit;
     QToolButton *ui_setButton;
     QToolButton *ui_revertButton;
+    QCheckBox *ui_publishedBox;
+    RamObjectListComboBox *ui_userBox;
+    AutoSelectSpinBox *ui_timeSpent;
+    QListWidget *ui_mainFileList;
+    QListWidget *ui_previewFileList;
+    QListWidget *ui_publishedFileList;
+    QComboBox *ui_versionFileBox;
+    QToolButton *ui_openMainFileButton;
+    QToolButton *ui_createMainFileButton;
+    QMenu *ui_createFromTemplateMenu;
+    QAction *ui_createFromTemplateAction;
+    QToolButton *ui_openPublishedFileButton;
+    QToolButton *ui_openPreviewFileButton;
+    DuQFFolderDisplayWidget *ui_folderWidget;
+    QComboBox *ui_difficultyBox;
+    AutoSelectDoubleSpinBox *ui_estimationEdit;
+    QCheckBox *ui_autoEstimationBox;
 
     RamStatus *m_status;
 };

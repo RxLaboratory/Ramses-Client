@@ -31,8 +31,19 @@ INCLUDEPATH += rameditwidgets \
 
 SOURCES += \
     data-models/ramitemtablelistproxy.cpp \
+    data-models/ramobjectfilterlist.cpp \
     data-models/ramobjectfiltermodel.cpp \
+    data-models/ramschedulefilter.cpp \
+    data-models/ramscheduletable.cpp \
+    data-models/ramstatisticstable.cpp \
     data-models/ramstepfiltermodel.cpp \
+    data-views/ramobjectlistmenu.cpp \
+    data-views/ramscheduledelegate.cpp \
+    data-views/ramscheduletablewidget.cpp \
+    data-views/ramstatisticsdelegate.cpp \
+    data-views/ramstatisticstablewidget.cpp \
+    data-views/ramstepheaderview.cpp \
+    duqf-widgets/duqfcolorselector.cpp \
     duqf-widgets/duqfsearchedit.cpp \
     data-models/ramitemtable.cpp \
     data-models/ramobjectlist.cpp \
@@ -57,17 +68,22 @@ SOURCES += \
     rameditwidgets/pipefileeditwidget.cpp \
     rameditwidgets/pipefilelistmanagerwidget.cpp \
     rameditwidgets/projectlistmanagerwidget.cpp \
+    rameditwidgets/schedulemanagerwidget.cpp \
     rameditwidgets/sequencelistmanagerwidget.cpp \
     rameditwidgets/shotlistmanagerwidget.cpp \
     rameditwidgets/statelistmanagerwidget.cpp \
+    rameditwidgets/statisticswidget.cpp \
     rameditwidgets/steplistmanagerwidget.cpp \
     rameditwidgets/stepstatushistorywidget.cpp \
     rameditwidgets/templateassetgrouplistmanagerwidget.cpp \
     rameditwidgets/templatesteplistmanagerwidget.cpp \
     rameditwidgets/userlistmanagerwidget.cpp \
+    ramfilemetadatamanager.cpp \
     ramloader.cpp \
+    ramnamemanager.cpp \
     ramobjects/ramassetgroup.cpp \
     ramobjects/rampipefile.cpp \
+    ramobjects/ramscheduleentry.cpp \
     ramobjects/ramsequence.cpp \
     settingswidgets/daemonsettingswidget.cpp \
     dbinterface.cpp \
@@ -114,6 +130,7 @@ SOURCES += \
     rameditwidgets/objecteditwidget.cpp \
     rameditwidgets/pipeeditwidget.cpp \
     rameditwidgets/projecteditwidget.cpp \
+    smallwidgets/progresswidget.cpp \
     smallwidgets/projectselectorwidget.cpp \
     ramobjects/ramapplication.cpp \
     ramobjects/ramasset.cpp \
@@ -151,12 +168,24 @@ HEADERS += \
     config.h \
     data-models/ramitemtable.h \
     data-models/ramitemtablelistproxy.h \
+    data-models/ramobjectfilterlist.h \
     data-models/ramobjectfiltermodel.h \
     data-models/ramobjectlist.h \
+    data-models/ramschedulefilter.h \
+    data-models/ramscheduletable.h \
     data-models/ramstatelist.h \
+    data-models/ramstatisticstable.h \
     data-models/ramstepfiltermodel.h \
     data-models/ramstepstatushistory.h \
     data-views/ramobjectdelegate.h \
+    data-views/ramobjectlistmenu.h \
+    data-views/ramscheduledelegate.h \
+    data-views/ramscheduletablewidget.h \
+    data-views/ramstatisticsdelegate.h \
+    data-views/ramstatisticstablewidget.h \
+    data-views/ramstepheaderview.h \
+    dbistructures.h \
+    duqf-widgets/duqfcolorselector.h \
     duqf-widgets/duqfsearchedit.h \
     processmanager.h \
     progressbar.h \
@@ -176,17 +205,22 @@ HEADERS += \
     rameditwidgets/pipefileeditwidget.h \
     rameditwidgets/pipefilelistmanagerwidget.h \
     rameditwidgets/projectlistmanagerwidget.h \
+    rameditwidgets/schedulemanagerwidget.h \
     rameditwidgets/sequencelistmanagerwidget.h \
     rameditwidgets/shotlistmanagerwidget.h \
     rameditwidgets/statelistmanagerwidget.h \
+    rameditwidgets/statisticswidget.h \
     rameditwidgets/steplistmanagerwidget.h \
     rameditwidgets/stepstatushistorywidget.h \
     rameditwidgets/templateassetgrouplistmanagerwidget.h \
     rameditwidgets/templatesteplistmanagerwidget.h \
     rameditwidgets/userlistmanagerwidget.h \
+    ramfilemetadatamanager.h \
     ramloader.h \
+    ramnamemanager.h \
     ramobjects/ramassetgroup.h \
     ramobjects/rampipefile.h \
+    ramobjects/ramscheduleentry.h \
     ramobjects/ramsequence.h \
     settingswidgets/daemonsettingswidget.h \
     dbinterface.h \
@@ -233,6 +267,7 @@ HEADERS += \
     rameditwidgets/objecteditwidget.h \
     rameditwidgets/pipeeditwidget.h \
     rameditwidgets/projecteditwidget.h \
+    smallwidgets/progresswidget.h \
     smallwidgets/projectselectorwidget.h \
     ramobjects/ramapplication.h \
     ramobjects/ramasset.h \

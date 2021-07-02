@@ -3,6 +3,7 @@
 
 #include "objectlistmanagerwidget.h"
 #include "stepeditwidget.h"
+#include "data-views/ramobjectlistmenu.h"
 
 class StepListManagerWidget : public ObjectListManagerWidget
 {
@@ -15,15 +16,10 @@ protected slots:
 private slots:
     void changeProject(RamProject *project);
 
-    void templateStepInserted(const QModelIndex &parent, int first, int last);
-    void newTemplate(RamObject *obj);
-    void templateStepRemoved(const QModelIndex &parent, int first, int last);
-    void templateStepChanged();
-
-    void actionCreate();
+    void createFromTemplate(RamObject *stepObj);
 
 private:
-    QMenu *ui_createMenu;
+    RamObjectListMenu *ui_createMenu;
 };
 
 #endif // STEPLISTMANAGERWIDGET_H

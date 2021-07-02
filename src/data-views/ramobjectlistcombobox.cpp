@@ -3,6 +3,7 @@
 RamObjectListComboBox::RamObjectListComboBox(QWidget *parent) :
     QComboBox(parent)
 {
+    setupUi();
     setList(nullptr);
     connectEvents();
 }
@@ -10,6 +11,7 @@ RamObjectListComboBox::RamObjectListComboBox(QWidget *parent) :
 RamObjectListComboBox::RamObjectListComboBox(bool isFilterBox, QWidget *parent) :
     QComboBox(parent)
 {
+    setupUi();
     m_isFilterBox = isFilterBox;
     setList(nullptr);
     connectEvents();
@@ -18,41 +20,60 @@ RamObjectListComboBox::RamObjectListComboBox(bool isFilterBox, QWidget *parent) 
 RamObjectListComboBox::RamObjectListComboBox(RamObjectList *list, QWidget *parent) :
     QComboBox(parent)
 {
+    setupUi();
     setList(list);
     connectEvents();
 }
 
 void RamObjectListComboBox::setList(RamObjectList *list)
 {
-    if (!list)
+    if (m_isFilterBox)
     {
-        if(m_isFilterBox) this->hide();
-        return;
+        RamObjectFilterList *proxyModel = new RamObjectFilterList(this);
+        proxyModel->setList(list);
+        this->setModel(proxyModel);
     }
-    this->show();
-    QSortFilterProxyModel *proxyModel = new QSortFilterProxyModel();
-    proxyModel->setSourceModel(list);
-    this->setModel(proxyModel);
+    else
+    {
+        QSortFilterProxyModel *proxyModel = new QSortFilterProxyModel(this);
+        proxyModel->setSourceModel(list);
+        this->setModel(proxyModel);
+    }
 }
 
 RamObject *RamObjectListComboBox::currentObject()
 {
     quintptr iptr = this->currentData().toULongLong();
+    if (iptr == 0) return nullptr;
     RamObject *obj = reinterpret_cast<RamObject*>(iptr);
     return obj;
 }
 
 QString RamObjectListComboBox::currentUuid()
 {
-    return this->currentObject()->uuid();
+    RamObject *obj = this->currentObject();
+    if (!obj) return "";
+    return obj->uuid();
 }
 
 void RamObjectListComboBox::setObject(QString uuid)
 {
+    if (uuid == "" && m_isFilterBox)
+    {
+        setCurrentIndex(0);
+        return;
+    }
+    if (uuid == "")
+    {
+        setCurrentIndex(-1);
+        return;
+    }
+
     for(int i = 0; i < this->count(); i++)
     {
         quintptr iptr = this->itemData(i).toULongLong();
         RamObject *obj = reinterpret_cast<RamObject*>(iptr);
+        if (!obj) continue;
         if (obj->uuid() == uuid)
         {
             this->setCurrentIndex(i);
@@ -64,25 +85,39 @@ void RamObjectListComboBox::setObject(QString uuid)
 
 void RamObjectListComboBox::setObject(RamObject *obj)
 {
-    if (!obj) setCurrentIndex(-1);
+    if (!obj) setObject("");
     else setObject(obj->uuid());
+}
+
+void RamObjectListComboBox::showPopup()
+{
+    QComboBox::showPopup();
+    emit popupShown();
+}
+
+void RamObjectListComboBox::hidePopup()
+{
+    QComboBox::hidePopup();
+    emit popupHidden();
 }
 
 void RamObjectListComboBox::currentObjectChanged(int i)
 {
     Q_UNUSED(i)
-    if (i < 0)
-    {
+
 #ifdef DUMP_OBJECT_DEBUG
-        dumpObjectInfo();
+    dumpObjectInfo();
 #endif
-        emit currentObjectChanged( nullptr );
-        emit currentObjectChanged( "" );
-        return;
-    }
 
     emit currentObjectChanged( currentObject() );
     emit currentObjectChanged( currentUuid() );
+}
+
+void RamObjectListComboBox::setupUi()
+{
+    RamObjectDelegate *delegate = new RamObjectDelegate(this);
+    delegate->setComboBoxMode(true);
+    this->setItemDelegate(delegate);
 }
 
 void RamObjectListComboBox::connectEvents()

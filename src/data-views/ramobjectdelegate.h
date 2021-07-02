@@ -9,6 +9,9 @@
 #include "duqf-app/app-style.h"
 #include "ramses.h"
 
+/**
+ * @brief The RamObjectDelegate class is the main delegate used to paint RamObject in almost all the lists in Ramses.
+ */
 class RamObjectDelegate : public QStyledItemDelegate
 {
     Q_OBJECT
@@ -23,9 +26,16 @@ public:
     void setEditable(bool editable);
     void setEditRole(RamUser::UserRole role);
 
+    void setComboBoxMode(bool comboBoxMode);
+
+public slots:
+    void setTimeTracking(bool newTimeTracking);
+    void setCompletionRatio(bool newCompletionRatio);
+
 signals:
     void editObject(RamObject*);
     void historyObject(RamObject*);
+    void folderObject(RamObject*);
 
 protected:
     bool editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index) override;
@@ -43,19 +53,25 @@ private:
 
     // Settings
     bool m_editable = false;
+    bool m_comboBox = false;
     RamUser::UserRole m_editRole = RamUser::Admin;
+    bool m_timeTracking = true;
+    bool m_completionRatio = true;
 
     // Events
     bool m_editButtonPressed = false;
     bool m_editButtonHover = false;
     bool m_historyButtonPressed = false;
     bool m_historyButtonHover = false;
+    bool m_folderButtonHover = false;
+    bool m_folderButtonPressed = false;
 
     // Utils
-    bool canEdit() const;
+    bool canEdit(const QModelIndex &index) const;
 
     // drawing specific items
     void drawMore(QPainter *painter, QRect rect, QPen pen) const;
+    void drawButton(QPainter *painter, QRect rect, QString iconPath, bool hover = false) const;
 };
 
 #endif // RAMOBJECTDELEGATE_H

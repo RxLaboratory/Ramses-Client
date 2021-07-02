@@ -41,7 +41,7 @@ void AssetGroupEditWidget::setObject(RamObject *obj)
     ui_assetsList->setList(assetGroup->project()->assets());
     ui_assetsList->setFilter(assetGroup);
 
-    ui_folderWidget->setPath(Ramses::instance()->path(assetGroup));
+    ui_folderWidget->setPath(assetGroup->path());
 
     this->setEnabled(Ramses::instance()->isProjectAdmin());
 }
@@ -52,12 +52,7 @@ void AssetGroupEditWidget::update()
 
     updating = true;
 
-    if (!checkInput()) return;
-
-    m_assetGroup->setName(ui_nameEdit->text());
-    m_assetGroup->setShortName(ui_shortNameEdit->text());
-
-    m_assetGroup->update();
+    ObjectEditWidget::update();
 
     updating = false;
 }

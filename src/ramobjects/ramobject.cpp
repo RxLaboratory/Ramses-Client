@@ -88,7 +88,7 @@ QString RamObject::uuid() const
     return m_uuid;
 }
 
-void RamObject::remove()
+void RamObject::remove( bool updateDB )
 {
     qDebug().noquote() << "Removing: " + m_name + " (uuid: " + m_uuid + ")";
     qDebug().noquote() << "- " + this->objectName();
@@ -101,6 +101,8 @@ void RamObject::remove()
 #endif
     emit removed(this);
     qDebug().noquote() << "> " + m_name + " Removed";
+
+    if (updateDB) removeFromDB();
 
     this->deleteLater();
 }
@@ -148,7 +150,78 @@ void RamObject::setOrder(int order)
     m_order = order;
     if (!m_dbi->isSuspended()) m_orderChanged = true;
     emit orderChanged(this, previous, order);
-    emit orderChanged();
+}
+
+QString RamObject::path(RamObject::SubFolder subFolder, bool create) const
+{
+    QString p = this->folderPath();
+    if (p == "") return "";
+
+    QString sub = subFolderName(subFolder);
+    if (sub != "") p += "/" + sub;
+
+    return Ramses::instance()->pathFromRamses( p, create );
+}
+
+QStringList RamObject::listFiles(RamObject::SubFolder subFolder) const
+{
+    QDir dir( path(subFolder));
+    QStringList files = dir.entryList( QDir::Files );
+    files.removeAll( RamFileMetaDataManager::metaDataFileName() );
+    return files;
+}
+
+QStringList RamObject::listFiles(RamObject::SubFolder subFolder, QString subPath) const
+{
+    QDir dir( path(subFolder) + "/" + subPath);
+    QStringList files = dir.entryList( QDir::Files );
+    files.removeAll( RamFileMetaDataManager::metaDataFileName() );
+    return files;
+}
+
+void RamObject::deleteFile(QString fileName, RamObject::SubFolder folder) const
+{
+    QFile file( QDir(path(folder)).filePath(fileName));
+
+    QString trashPath = path(TrashFolder, true);
+
+    QString destination = QDir( trashPath ).filePath(fileName);
+    if (QFileInfo::exists(destination))
+        if (!QFile::moveToTrash(destination))
+            QFile::remove(destination);
+
+    file.rename( destination );
+}
+
+void RamObject::revealFolder(RamObject::SubFolder subFolder)
+{
+    QString p = path(subFolder);
+    if (p == "") return;
+    FileUtils::openInExplorer( p, true );
+}
+
+QString RamObject::subFolderName(RamObject::SubFolder folder) const
+{
+    switch(folder)
+    {
+    case AdminFolder: return "00-ADMIN";
+    case ConfigFolder: return "Config";
+    case PreProdFolder: return "01-PRE-PROD";
+    case ProdFolder: return "02-PROD";
+    case PostProdFolder: return "03-POST-PROD";
+    case AssetsFolder: return "04-ASSETS";
+    case ShotsFolder: return "05-SHOTS";
+    case ExportFolder: return "06-EXPORT";
+    case TemplatesFolder: return "Templates";
+    case PublishFolder: return "_published";
+    case VersionsFolder: return "_versions";
+    case PreviewFolder: return "_preview";
+    case UsersFolder: return "Users";
+    case ProjectsFolder: return "Projects";
+    case TrashFolder: return "_trash";
+    case NoFolder: return "";
+    }
+    return "";
 }
 
 QString RamObject::filterUuid() const
@@ -156,7 +229,7 @@ QString RamObject::filterUuid() const
     return m_filterUuid;
 }
 
-bool RamObject::is(const RamObject *other)
+bool RamObject::is(const RamObject *other) const
 {
     if (!other) return false;
     return other->uuid() == m_uuid;

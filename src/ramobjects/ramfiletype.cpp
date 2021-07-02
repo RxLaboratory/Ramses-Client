@@ -26,7 +26,7 @@ RamFileType::RamFileType(QString shortName, QString name, QString extensions, QS
 
 RamFileType::~RamFileType()
 {
-    m_dbi->removeFileType(m_uuid);
+
 }
 
 void RamFileType::setExtensions(QString extensions)
@@ -57,7 +57,7 @@ void RamFileType::update()
 {
     if (!m_dirty) return;
     RamObject::update();
-    m_dbi->updateFileType(m_uuid, m_shortName, m_name, m_extensions, m_previewable);
+    m_dbi->updateFileType(m_uuid, m_shortName, m_name, m_extensions, m_previewable, m_comment);
 }
 
 RamFileType *RamFileType::fileType(QString uuid)
@@ -76,6 +76,11 @@ void RamFileType::edit(bool show)
     showEdit(show);
 }
 
+void RamFileType::removeFromDB()
+{
+    m_dbi->removeFileType(m_uuid);
+}
+
 bool RamFileType::isPreviewable() const
 {
     return m_previewable;
@@ -87,4 +92,15 @@ void RamFileType::setPreviewable(bool previewable)
     m_dirty = true;
     m_previewable = previewable;
     emit changed(this);
+}
+
+bool RamFileType::check(QString filePath) const
+{
+    QFileInfo info(filePath);
+    if (!info.isFile()) return false;
+    QString ext = info.completeSuffix();
+
+    if (m_shortName == ext) return true;
+
+    return extensions().contains(ext);
 }

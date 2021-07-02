@@ -12,19 +12,27 @@ RamItem::RamItem(QString shortName, RamProject *project, QString name, QString u
     this->setObjectName( "RamItem " + shortName);
 }
 
-void RamItem::setStatus(RamUser *user, RamState *state, RamStep *step, int completionRatio, QString comment, int version)
+RamStatus *RamItem::setStatus(RamUser *user, RamState *state, RamStep *step, int completionRatio, QString comment, int version)
 {
-    RamStatus *status = new RamStatus(user, state, step, this);
-    if (completionRatio >= 0) status->setCompletionRatio(completionRatio);
-    if (comment != "") status->setComment(comment);
-    status->setVersion(version);
-    addStatus(status);
+    RamStatus *newStatus = new RamStatus(user, state, step, this);
+    if (completionRatio >= 0) newStatus->setCompletionRatio(completionRatio);
+    if (comment != "") newStatus->setComment(comment);
+    newStatus->setVersion(version);
+
+
+    addStatus(newStatus);
+
+    return newStatus;
 }
 
 void RamItem::addStatus(RamStatus *status)
 {
     RamStep *step = status->step();
     if (!step) return;
+
+    // Check if there's a user assigned
+    if (!status->assignedUser())
+        status->assignUser( assignedUser(step) );
 
     RamStepStatusHistory *history = statusHistory(step);
     history->append( status );
@@ -76,11 +84,21 @@ QList<RamStatus *> RamItem::status()
     QMapIterator<QString, RamStepStatusHistory*> i(m_history);
     while(i.hasNext())
     {
+        i.next();
         RamStepStatusHistory *h = i.value();
         h->sort();
         statuses << qobject_cast<RamStatus*>( h->last() );
     }
     return statuses;
+}
+
+RamUser *RamItem::assignedUser(RamStep *step)
+{
+    RamStatus *previous = status(step);
+    if (previous)
+        return previous->assignedUser();
+
+    return nullptr;
 }
 
 RamStep::Type RamItem::productionType() const
@@ -108,11 +126,35 @@ void RamItem::insertStatus(const QModelIndex &parent, int first, int last)
     {
         RamStatus *status = qobject_cast<RamStatus*>( stepHistory->at(i) );
 
-        if (this->objectType() == Asset) m_dbi->setAssetStatus(m_uuid, status->state()->uuid(), status->step()->uuid(), status->user()->uuid(), status->completionRatio(), status->comment(), status->version(), status->uuid());
-        else if (this->objectType() == Shot) m_dbi->setShotStatus(m_uuid, status->state()->uuid(), status->step()->uuid(), status->user()->uuid(), status->completionRatio(), status->comment(), status->version(), status->uuid());
+        QString assigneduser;
+        if( status->assignedUser() ) assigneduser = status->assignedUser()->uuid();
+
+        if (this->objectType() == Asset) m_dbi->setAssetStatus(
+                    m_uuid, status->state()->uuid(),
+                    status->step()->uuid(),
+                    status->user()->uuid(),
+                    status->completionRatio(),
+                    status->comment(),
+                    status->version(),
+                    status->uuid(),
+                    assigneduser
+                    );
+        else if (this->objectType() == Shot) m_dbi->setShotStatus(
+                    m_uuid,
+                    status->state()->uuid(),
+                    status->step()->uuid(),
+                    status->user()->uuid(),
+                    status->completionRatio(),
+                    status->comment(),
+                    status->version(),
+                    status->uuid(),
+                    assigneduser
+                    );
     }
 
     if (last != stepHistory->count() - 1) return;
+
+    stepHistory->step()->computeEstimation();
 
     emit statusChanged( this, stepHistory->step() );
 }
@@ -127,6 +169,7 @@ void RamItem::statusChanged(const QModelIndex &first, const QModelIndex &last)
 
     RamStep *step = stepHistory->step();
     if (!step) return;
+
     emit statusChanged( this, step );
 }
 
@@ -140,6 +183,7 @@ void RamItem::removeStatus(const QModelIndex &parent,int first ,int last)
 
     RamStep *step = stepHistory->step();
     if (!step) return;
+    step->computeEstimation();
     emit statusChanged( this, step );
 }
 
@@ -169,4 +213,29 @@ void RamItem::statusCleared()
 RamProject *RamItem::project() const
 {
     return m_project;
+}
+
+QString RamItem::previewImagePath() const
+{
+    QDir previewDir = path(RamObject::PreviewFolder);
+    QStringList filters;
+    filters << "*.jpg" << "*.png" << "*.jpeg" << "*.gif";
+    QStringList images = previewDir.entryList(filters, QDir::Files );
+
+    if (images.count() == 0) return "";
+
+    RamNameManager nm;
+
+    foreach(QString file, images)
+    {
+        if (nm.setFileName(file))
+        {
+            if (nm.project().toLower() != m_project->shortName().toLower()) continue;
+            if (nm.shortName().toLower() != m_shortName.toLower()) continue;
+            return previewDir.filePath( file );
+        }
+    }
+
+    // Not found, return the first one
+    return previewDir.filePath( images.at(0) );
 }

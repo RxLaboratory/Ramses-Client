@@ -9,11 +9,13 @@
 #include <QMessageBox>
 #include <QScrollBar>
 #include <QMenu>
+#include <QShortcut>
 
 #include "ramobjectlistwidget.h"
 #include "ramobjectlistcombobox.h"
 #include "duqf-widgets/duqfsearchedit.h"
 #include "filetypeeditwidget.h"
+#include "data-views/ramobjectlistmenu.h"
 
 /**
  * @brief The ObjectListEditWidget class displays and edits a RamObjectList
@@ -35,10 +37,12 @@ public:
     void setList(RamObjectList *objectList);
     void setFilterList(RamObjectList *filterList);
     void setAssignList(RamObjectList *assignList);
+    void setDontRemoveShortNameList(QStringList dontRemove);
     void clear();
     void setEditMode(ObjectListEditWidget::EditMode editMode);
     void setEditable(bool editable = true);
     void setSearchable(bool searchable = true);
+    void setSortable(bool sortable = true);
     void setTitle(QString title);
     void select(RamObject *o);
     QToolButton *addButton() const;
@@ -56,32 +60,30 @@ private slots:
     void removeSelectedObjects();
     void edit(RamObject *obj);
 
-    void newAssignObj(RamObject *obj);
-    void newAssignObj(const QModelIndex &parent,int first,int last);
-    void assignObjRemoved(const QModelIndex &parent,int first,int last);
-    void assignObjChanged(RamObject *changedObj);
-
-    void assignAction();
+    void assign(RamObject *obj);
 
     void objectAssigned(const QModelIndex &parent,int first,int last);
     void objectUnassigned(const QModelIndex &parent,int first,int last);
+
+    void setSearchFocus();
 
 private:
     void setupUi(bool editableObjects = false, RamUser::UserRole editRole = RamUser::Admin);
     void connectEvents();
 
     // UI Controls
-    QToolButton *m_addButton;
-    QToolButton *m_removeButton;
-    QLabel *m_title;
-    RamObjectListComboBox *m_filterBox;
-    DuQFSearchEdit *m_searchEdit;
-    RamObjectListWidget *m_listWidget;
-    QMenu *m_assignMenu;
+    QToolButton *ui_addButton;
+    QToolButton *ui_removeButton;
+    QLabel *ui_title;
+    RamObjectListComboBox *ui_filterBox;
+    DuQFSearchEdit *ui_searchEdit;
+    RamObjectListWidget *ui_listWidget;
+    RamObjectListMenu *ui_assignMenu = nullptr;
 
     // Settings
     EditMode m_editMode = UnassignObjects;
     bool m_useAssignList = false;
+    QStringList m_dontRemove;
 
     // Current List
     RamObjectList *m_objectList = nullptr;

@@ -2,26 +2,23 @@
 #define STATEBOX_H
 
 #include <QComboBox>
+#include <QPaintEvent>
+#include <QStylePainter>
 
 #include "ramses.h"
+#include "data-views/ramobjectlistcombobox.h"
 
-class StateBox : public QComboBox
+class StateBox : public RamObjectListComboBox
 {
     Q_OBJECT
 public:
     StateBox(QWidget *parent = nullptr);
-    void setCurrentState(RamState *state);
-    void setCurrentState(QString shortName);
-    RamState *currentState() const;
-signals:
-    void currentStateChanged(RamState *);
+
+protected:
+
 private slots:
-    void currentStateChanged(int i);
-    void newState(RamObject *state);
-    void stateRemoved(RamObject *o);
-    void stateChanged(RamObject *o);
-private:
-    QMap<QString, QMetaObject::Connection> _stateConnections;
+    void currentStateChanged(RamObject *obj);
+
 };
 
 #endif // STATEBOX_H

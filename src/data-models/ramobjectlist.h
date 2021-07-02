@@ -7,6 +7,11 @@
 #include <QIcon>
 #include <QStringBuilder>
 
+#include "dbisuspender.h"
+
+/**
+ * @brief The RamObjectList class is the base class used for almost all of Ramses' lists (assets, steps, shots, applications...).
+ */
 class RamObjectList : public QAbstractTableModel
 {
     Q_OBJECT
@@ -56,6 +61,11 @@ public slots:
     void removeAll(RamObject *obj);
     void sort();
 
+signals:
+    void objectDataChanged(RamObject*);
+    void objectInserted(RamObject*);
+    void objectRemoved(RamObject*);
+
 protected:
     // DATA
     // For performance reasons, store both a list and a map
@@ -69,13 +79,22 @@ protected:
     virtual void connectObject(RamObject *obj);
     int objRow(RamObject *obj);
 
+    // Used for perf, sort only when needed
+    bool m_sorted = true;
+
 private slots:
     // Emits dataChanged() and headerChanged()
     void objectChanged(RamObject *obj);
+    void objectMoved(RamObject *obj, int from, int to);
+    void objectInserted(const QModelIndex &parent, int first, int last);
+    void objectRemoved(const QModelIndex &parent, int first, int last);
 
 private:
     QString m_shortName;
     QString m_name;
+
+    bool m_updatingOrders = false;
+
 };
 
 bool objectSorter(RamObject *a, RamObject *b);

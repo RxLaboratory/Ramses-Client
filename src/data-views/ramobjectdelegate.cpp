@@ -19,8 +19,14 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
 {
     // Reinterpret the int to a pointer
     quintptr iptr = index.data(Qt::UserRole).toULongLong();
-
     RamObject *obj = reinterpret_cast<RamObject*>(iptr);
+
+    if (iptr == 0)
+    {
+        obj = new RamObject("", index.data(Qt::DisplayRole).toString());
+    }
+
+
     RamObject::ObjectType ramType = obj->objectType();
 
     // Base Settings
@@ -32,22 +38,12 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
     // bg
     const QRect bgRect = rect.adjusted(m_padding,2,-m_padding,-2);
     // icon
-    const QRect iconRect( bgRect.left() + 10, bgRect.top() +7 , 12, 12 );
-    // Edit button
-    const QRect editButtonRect( bgRect.right() - 20, bgRect.top() +7, 12, 12 );
-    // History button
-    const QRect historyButtonRect( editButtonRect.left() - 20, bgRect.top() +7, 12, 12);
+    const QRect iconRect( bgRect.left() + m_padding, bgRect.top() +7 , 12, 12 );
 
-    // Select the bg Color (which is different for ramstates)
+    // Select the bg Color
     QColor bgColor = m_dark;
     QColor textColor = m_lessLight;
     QColor detailsColor = m_medium;
-    if (ramType == RamObject::State)
-    {
-        RamState *state = qobject_cast<RamState*>( obj );
-        bgColor = state->color();
-        if (bgColor.lightness() > 80) textColor = m_dark;
-    }
 
     // State
     if (option.state & QStyle::State_Selected)
@@ -94,6 +90,9 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
         RamStep *step = qobject_cast<RamStep*>( obj );
         if (step->isTemplate())
             title = title % " [Template]";
+        QColor stepColor = step->color();
+        if (stepColor.lightness() < 150) stepColor.setHsl( stepColor.hue(), stepColor.saturation(), 150);
+        textPen.setColor( stepColor );
         break;
     }
     case RamObject::FileType:
@@ -124,6 +123,12 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
         textPen.setColor(m_medium);
         break;
     }
+    case RamObject::State:
+    {
+        RamState *state = qobject_cast<RamState*>( obj );
+        if (m_comboBox) title = state->shortName();
+        break;
+    }
     default:
     {
         title = obj->name();
@@ -136,31 +141,43 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
     painter->setFont( m_textFont );
     painter->drawText( titleRect, Qt::AlignLeft | Qt::AlignTop | Qt::TextWordWrap, title, &titleRect);
 
-    // Draw editbutton
-    if (canEdit() || index.column() > 0)
+    // Draw buttons
+    if (!m_comboBox)
     {
-        if (m_editButtonHover)
-        {
-            QPainterPath path;
-            path.addRoundedRect(editButtonRect.adjusted(-5, -5, 5, 5), 3, 3);
-            painter->fillPath(path, QBrush(m_dark));
-        }
-        painter->drawPixmap( editButtonRect, QIcon(":/icons/edit").pixmap(QSize(12,12)));
-    }
+        int xpos = bgRect.right() - 20;
 
-    // Draw History button
-    if ( index.column() > 0 )
-    {
-        if (m_historyButtonHover)
+        // Draw editbutton
+        // Edit button
+        if (canEdit(index))
         {
-            QPainterPath path;
-            path.addRoundedRect(historyButtonRect.adjusted(-5, -5, 5, 5), 3, 3);
-            painter->fillPath(path, QBrush(m_dark));
+            const QRect editButtonRect( xpos, bgRect.top() +7, 12, 12 );
+            xpos -= 22;
+            drawButton(painter, editButtonRect, ":/icons/edit", m_editButtonHover);
         }
-        painter->drawPixmap( historyButtonRect, QIcon(":/icons/list").pixmap(QSize(12,12)));
+
+        // Draw History button
+        // History button
+        if ( ramType == RamObject::Status )
+        {
+            QRect historyButtonRect( xpos, bgRect.top() +7, 12, 12);
+            xpos -= 22;
+            drawButton(painter, historyButtonRect, ":/icons/list", m_historyButtonHover);
+        }
+
+
+        // Draw Folder button
+        // Folder button
+
+        if ( obj->path() != "" )
+        {
+             const QRect folderButtonRect( xpos, bgRect.top() +7, 12, 12 );
+             drawButton(painter, folderButtonRect, ":/icons/reveal-folder-s", m_folderButtonHover);
+        }
     }
 
     QString details;
+    QString subDetails;
+    QString previewImagePath;
     QRect detailsRect( iconRect.left() + 5, titleRect.bottom() + 3, bgRect.width() - iconRect.width() -5, bgRect.height() - titleRect.height() - 15 );
 
     // Type Specific Drawing
@@ -241,14 +258,6 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
         else detailsRect.setHeight(0);
         break;
     }
-    case RamObject::State:
-    {
-        RamState *state = qobject_cast<RamState*>( obj );
-        // icon
-        painter->drawPixmap( iconRect, QIcon(":/icons/state").pixmap(QSize(12,12)));
-        details = "Completion ratio: " % QString::number(state->completionRatio()) % "%";
-        break;
-    }
     case RamObject::FileType:
     {
         RamFileType *fileType = qobject_cast<RamFileType*>( obj );        // icon
@@ -292,11 +301,38 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
         RamShot *shot = qobject_cast<RamShot*>( obj );
         // icon
         painter->drawPixmap( iconRect, QIcon(":/icons/shot").pixmap(QSize(12,12)));
-        details = "Duration: " %
+        if (titleRect.bottom() + 5 < bgRect.bottom())
+        {
+            details = "Duration: " %
                             QString::number(shot->duration(), 'f', 2) %
                             " s | " %
                             QString::number(shot->duration() * shot->project()->framerate(), 'f', 2) %
                             " f";
+            // List assigned assets
+            if (shot->assets()->count() > 0)
+            {
+                QMap<QString,QStringList> assets;
+                for (int i = 0; i < shot->assets()->count(); i++)
+                {
+                    RamAsset *asset = qobject_cast<RamAsset*>( shot->assets()->at(i) );
+                    QString agName = asset->assetGroup()->name();
+                    QStringList ag = assets.value( agName );
+                    ag << asset->shortName();
+                    assets[ agName ] = ag;
+                }
+                QMapIterator<QString,QStringList> i(assets);
+                while(i.hasNext())
+                {
+                    i.next();
+                    details = details % "\n" % i.key() % " ► " % i.value().join(", ");
+                }
+            }
+
+
+        }
+        // Preview
+        if (titleRect.bottom() + 25 < bgRect.bottom())
+            previewImagePath = shot->previewImagePath();
         break;
     }
     case RamObject::Asset:
@@ -307,13 +343,19 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
         details = asset->assetGroup()->name() %
                             "\n" %
                             asset->tags().join(", ");
+
+        // Preview
+        if (titleRect.bottom() + 25 < bgRect.bottom())
+            previewImagePath = asset->previewImagePath();
         break;
     }
-    case RamObject::Status:
+    case RamObject::State:
     {
-        RamStatus *status = qobject_cast<RamStatus*>( obj );
+        RamState *state = qobject_cast<RamState*>( obj );
+        // icon
+        painter->drawPixmap( iconRect, QIcon(":/icons/state").pixmap(QSize(12,12)));
         // Draw a progress bar
-        QColor statusColor = status->state()->color();
+        QColor statusColor = state->color();
         QBrush statusBrush(statusColor.darker());
         QPainterPath path;
         QRect statusRect( bgRect.left() + 5, titleRect.bottom() + 5, bgRect.width() - 10, 5 );
@@ -322,12 +364,169 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
             path.addRoundedRect(statusRect, 5, 5);
             painter->fillPath(path, statusBrush);
             statusBrush.setColor(statusColor);
-            statusRect.adjust(0,0, -statusRect.width() * (1-(status->completionRatio() / 100.0)), 0);
+            statusRect.adjust(0,0, -statusRect.width() * (1-(state->completionRatio() / 100.0)), 0);
             QPainterPath completionPath;
             completionPath.addRoundedRect(statusRect, 5, 5);
             painter->fillPath(completionPath, statusBrush);
 
             //details
+            details = "Completion ratio: " % QString::number(state->completionRatio()) % "%";
+            detailsRect.moveTop(statusRect.bottom() + 5);
+            detailsRect.setHeight( bgRect.bottom() - statusRect.bottom() - 10);
+        }
+
+        break;
+    }
+    case RamObject::Status:
+    {
+        RamStatus *status = qobject_cast<RamStatus*>( obj );
+        // Draw a progress bar
+        QColor statusColor = status->state()->color();
+        if (!m_completionRatio) statusColor = QColor(150,150,150);
+        QBrush statusBrush(statusColor.darker(300));
+        int statusWidth = bgRect.width() - m_padding;
+        QRect statusRect( bgRect.left() + 5, titleRect.bottom() + 5, statusWidth, 6 );
+
+        // Values to be reused
+        float estimation = 0;
+        float timeSpentDays = 0;
+        int completionWidth = 0;
+
+        // details
+        if (statusRect.bottom() + 5 < bgRect.bottom() && (m_timeTracking || m_completionRatio))
+        {
+            // Draw status
+
+            // Status BG
+            QPainterPath path;
+            path.addRoundedRect(statusRect, 5, 5);
+            painter->fillPath(path, statusBrush);
+
+            // Adjust color according to lateness
+            float latenessRatio = status->latenessRatio();
+            // Ratio
+            estimation = status->estimation();
+            if (estimation <= 0) estimation = status->autoEstimation();
+            if (estimation <= 0) estimation = 1;
+            timeSpentDays = RamStatus::hoursToDays( status->timeSpent()/3600 );
+            float ratio = timeSpentDays / estimation;
+
+            QColor timeColor = statusColor;
+
+            //If we're late, draw the timebar first
+            if (latenessRatio > 1 && m_timeTracking)
+            {
+                if ( latenessRatio < 1.2 )
+                {
+                    int red = std::min( timeColor.red() + 50, 255 );
+                    int green = std::min( timeColor.green() + 50, 255 );
+                    int blue = std::max( timeColor.blue() -50, 0);
+                    timeColor.setRed( red );
+                    timeColor.setGreen( green );
+                    timeColor.setBlue( blue );
+                    timeColor = timeColor.darker(200);
+                }
+                // Very late, orange
+                else if ( latenessRatio < 1.4 )
+                {
+                    int red = std::min( timeColor.red() + 150, 255 );
+                    int green = std::min( timeColor.green() + 25, 255 );
+                    int blue = std::max( timeColor.blue() - 100, 0);
+                    timeColor.setRed( red );
+                    timeColor.setGreen( green );
+                    timeColor.setBlue( blue );
+                    timeColor = timeColor.darker(200);
+                }
+                // Extreme, red
+                else
+                {
+                    int red = std::min( timeColor.red() + 200, 255 );
+                    int green = std::max( timeColor.green() - 150, 0 );
+                    int blue = std::max( timeColor.blue() - 150, 0);
+                    timeColor.setRed( red );
+                    timeColor.setGreen( green );
+                    timeColor.setBlue( blue );
+                    timeColor = timeColor.darker(200);
+                }
+                statusBrush.setColor( timeColor );
+
+                statusRect.setWidth( statusWidth * ratio );
+                if (statusRect.right() > bgRect.right() - 5) statusRect.setRight( bgRect.right() - 5);
+                QPainterPath timePath;
+                timePath.addRoundedRect(statusRect, 3, 3);
+                painter->fillPath(timePath, statusBrush);
+            }
+
+            if (m_completionRatio)
+            {
+                // Now draw the completion bar
+                statusBrush.setColor( statusColor );
+
+                completionWidth = statusWidth * ( status->completionRatio() / 100.0 );
+                statusRect.setWidth(completionWidth);
+                QPainterPath completionPath;
+                completionPath.addRoundedRect(statusRect, 5, 5);
+                painter->fillPath(completionPath, statusBrush);
+            }
+
+
+            // And draw the Time bar if we're early
+
+            if (latenessRatio <= 1 && m_timeTracking)
+            {
+                // Adjust color according to lateness
+                statusBrush.setColor( timeColor.darker(130) );
+
+                statusRect.setWidth( statusWidth * ratio );
+                QPainterPath timePath;
+                timePath.addRoundedRect(statusRect, 3, 3);
+                painter->fillPath(timePath, statusBrush);
+            }
+
+        }
+        if (statusRect.bottom() + 5 < bgRect.bottom())
+        {
+            // details
+            RamUser *assignedUser = status->assignedUser();
+            if (assignedUser) details = "Assigned to: " %
+                    assignedUser->name() %
+                    "\nDifficulty: ";
+            else details = "Not assigned\nDifficulty: ";
+
+            switch( status->difficulty() )
+            {
+            case RamStatus::VeryEasy: { details += "Very easy"; break; }
+            case RamStatus::Easy: { details += "Easy"; break; }
+            case RamStatus::Medium: { details += "Medium"; break; }
+            case RamStatus::Hard: { details += "Hard"; break; }
+            case RamStatus::VeryHard: { details += "Very hard"; break; }
+            }
+
+            qint64 timeSpentSecs = status->timeSpent();
+            // Convert to hours
+            int timeSpent = timeSpentSecs / 3600;
+            if (timeSpent > 0) details = details %
+                    "\nTime spent: " %
+                    QString::number(timeSpent) %
+                    " hours (" %
+                    QString::number(timeSpentDays, 'f', 0) %
+                    " days) / " %
+                    QString::number(estimation, 'f', 1) %
+                    " days";
+            else details = details %
+                    "\nEstimation: " %
+                    QString::number(estimation, 'f', 1) %
+                    " days";
+
+            if (status->isPublished()) details = details % "\n► Published";
+
+            detailsRect.moveTop(statusRect.bottom() + 5);
+            detailsRect.setHeight( bgRect.bottom() - statusRect.bottom() - 10);
+        }
+        // subdetails
+        if (statusRect.bottom() + 25 < bgRect.bottom())
+        {
+            //subdetails
             QString dateFormat = "yyyy-MM-dd hh:mm:ss";
             RamUser *user = Ramses::instance()->currentUser();
             if (user)
@@ -335,17 +534,17 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
                 QSettings *uSettings = user->userSettings();
                 dateFormat = uSettings->value("ramses/dateFormat", dateFormat).toString();
             }
-            details = status->date().toString(dateFormat) %
-                    " | " %
+            subDetails = "Modified on: " %
+                    status->date().toString(dateFormat) %
+                    "\nBy: " %
                     status->user()->name();
-            detailsRect.moveTop(statusRect.bottom() + 5);
-            detailsRect.setHeight( bgRect.bottom() - statusRect.bottom() - 10);
+
+            previewImagePath = status->previewImagePath();
         }
 
         break;
     }
     default:
-        painter->drawPixmap( iconRect, QIcon(":/icons/asset").pixmap(QSize(12,12)));
         detailsRect.setHeight(0);
     }
 
@@ -355,16 +554,44 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
         painter->setPen( detailsPen );
         painter->setFont( m_detailsFont );
         painter->drawText( detailsRect, Qt::AlignLeft | Qt::AlignTop | Qt::TextWordWrap, details, &detailsRect);
+        if (detailsRect.bottom() + 5 > bgRect.bottom()) drawMore(painter, bgRect, commentPen);
     }
 
     // Draw Comment
+    QRect commentRect( iconRect.left() + 5, detailsRect.bottom() + 5, bgRect.width() - 30, bgRect.bottom() - detailsRect.bottom() - 5);
     if (detailsRect.bottom() + 20 < bgRect.bottom() && obj->comment() != "")
     {
-        QRect commentRect( iconRect.left() + 5, detailsRect.bottom() + 5, bgRect.width() - 30, bgRect.bottom() - detailsRect.bottom() - 5);
         painter->setPen( commentPen );
         painter->setFont(m_textFont);
         painter->drawText( commentRect, Qt::AlignLeft | Qt::AlignTop | Qt::TextWordWrap, obj->comment(), &commentRect);
-        if (commentRect.bottom() - 5 > bgRect.bottom()) drawMore(painter, bgRect, commentPen);
+        if (commentRect.bottom() + 5 > bgRect.bottom()) drawMore(painter, bgRect, commentPen);
+    }
+    else commentRect.setHeight(0);
+
+    // Draw image preview
+    QRect imageRect( iconRect.left() + 5, commentRect.bottom() + 5, bgRect.width() - 30, bgRect.bottom() - commentRect.bottom() - 5);
+    if (commentRect.bottom() + 20 < bgRect.bottom() && previewImagePath != "")
+    {
+        QPixmap pix(previewImagePath);
+        float pixRatio = pix.width() / pix.height();
+        // Adjust image rect height to fit ratio
+        float rectRatio = imageRect.width() / imageRect.height();
+        if (rectRatio < pixRatio)
+            imageRect.setHeight( imageRect.width() / pixRatio );
+        else
+            imageRect.setWidth( imageRect.height() * pixRatio );
+        painter->drawPixmap( imageRect, QPixmap(previewImagePath));
+    }
+    else imageRect.setHeight(0);
+
+    // Draw subdetails
+    QRect subDetailsRect( iconRect.left() + 5, imageRect.bottom() + 5, bgRect.width() - 30, bgRect.bottom() - imageRect.bottom() - 5);
+    if (commentRect.bottom() + 20 < bgRect.bottom() && subDetails != "")
+    {
+        painter->setPen( detailsPen );
+        painter->setFont( m_detailsFont );
+        painter->drawText( subDetailsRect, Qt::AlignLeft | Qt::AlignTop | Qt::TextWordWrap, subDetails, &subDetailsRect);
+        if (subDetailsRect.bottom() + 5 > bgRect.bottom()) drawMore(painter, bgRect, commentPen);
     }
 
 }
@@ -373,8 +600,17 @@ QSize RamObjectDelegate::sizeHint(const QStyleOptionViewItem &option, const QMod
 {
     Q_UNUSED(option)
 
-    if (index.column() == 0) return QSize(150,30);
-    return QSize(300, 42);
+    // Reinterpret the int to a pointer
+    quintptr iptr = index.data(Qt::UserRole).toULongLong();
+
+    if (iptr == 0) return QSize(200, 30);
+
+    RamObject *obj = reinterpret_cast<RamObject*>(iptr);
+    RamObject::ObjectType ramType = obj->objectType();
+
+    if ((ramType == RamObject::State || ramType == RamObject::Status) && (m_timeTracking || m_completionRatio)) return QSize(300, 42);
+
+    return QSize(200,30);
 }
 
 void RamObjectDelegate::setEditable(bool editable)
@@ -389,12 +625,35 @@ void RamObjectDelegate::setEditRole(RamUser::UserRole role)
 
 bool RamObjectDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index)
 {
+    // Return asap if we don't manage the event
+    QEvent::Type type = event->type();
+    if (type != QEvent::QEvent::MouseButtonPress && type != QEvent::MouseButtonRelease && type != QEvent::MouseMove)
+        return QStyledItemDelegate::editorEvent( event, model, option, index );
+
+
     const QRect bgRect = option.rect.adjusted(m_padding,2,-m_padding,-2);
 
+    // The object
+    quintptr iptr = index.data(Qt::UserRole).toULongLong();
+    if (iptr == 0) return false;
+    RamObject *o = reinterpret_cast<RamObject*>( iptr );
 
-    // Edit Button
-    const QRect editButtonRect( bgRect.right() - 22, bgRect.top() +7, 22, 22 );
-    const QRect historyButtonRect( bgRect.right() - 44, bgRect.top() +7, 22, 22 );
+    bool edit = canEdit(index);
+    bool history = o->objectType() == RamObject::Status;
+    bool folder = o->path() != "";
+
+    if (!edit && !history && !folder)
+        return QStyledItemDelegate::editorEvent( event, model, option, index );
+
+    int xpos = bgRect.right() - 22;
+
+    const QRect editButtonRect = QRect( xpos, bgRect.top()+7, 20, 20 );
+    if (edit) xpos -= 22;
+
+    const QRect historyButtonRect( xpos, bgRect.top() +7, 20, 20 );
+    if (history) xpos -= 22;
+
+    const QRect folderButtonRect( xpos, bgRect.top() +7, 20, 20 );
 
 
     switch ( event->type() )
@@ -402,14 +661,21 @@ bool RamObjectDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, co
     case QEvent::MouseButtonPress:
     {
         QMouseEvent *e = static_cast< QMouseEvent * >( event );
-        if (canEdit() && editButtonRect.contains(e->pos()))
+        if (editButtonRect.contains(e->pos()) && edit)
         {
             m_editButtonPressed = true;
             return true;
         }
-        else if (historyButtonRect.contains(e->pos()) && index.column() > 0)
+
+        if ( historyButtonRect.contains(e->pos()) && history)
         {
             m_historyButtonPressed = true;
+            return true;
+        }
+
+        if (folderButtonRect.contains(e->pos()) && folder)
+        {
+            m_folderButtonPressed = true;
             return true;
         }
         break;
@@ -418,53 +684,57 @@ bool RamObjectDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, co
     {
         QMouseEvent *e = static_cast< QMouseEvent * >( event );
 
-        if (canEdit() && editButtonRect.contains(e->pos()))
-        {
-            m_editButtonHover = true;
-        }
+        if (editButtonRect.contains(e->pos()) && edit)
+            return m_editButtonHover = true;
         else if (m_editButtonHover)
-        {
-            m_editButtonHover = false;
-        }
+            return  !(m_editButtonHover = false);
 
-        if (historyButtonRect.contains(e->pos()))
-        {
-            m_historyButtonHover = true;
-        }
+        if (historyButtonRect.contains(e->pos()) && history)
+            return m_historyButtonHover = true;
         else if (m_historyButtonHover)
-        {
-            m_historyButtonHover = false;
-        }
+            return !(m_historyButtonHover = false);
 
-        return true;
+        if (folderButtonRect.contains(e->pos()) && folder)
+            return m_folderButtonHover = true;
+        else if (m_folderButtonHover)
+            return !(m_folderButtonHover = false);
+
+        return QStyledItemDelegate::editorEvent( event, model, option, index );
     }
     case QEvent::MouseButtonRelease:
     {
         QMouseEvent *e = static_cast< QMouseEvent * >( event );
+
         if (m_editButtonPressed)
         {
             if (editButtonRect.contains(e->pos()))
             {
-                // The object
-                quintptr iptr = index.data(Qt::UserRole).toULongLong();
-                RamObject *o = reinterpret_cast<RamObject*>( iptr );
                 emit editObject(o);
             }
             m_editButtonPressed = false;
             return true;
         }
+
         if (m_historyButtonPressed)
         {
             if (historyButtonRect.contains(e->pos()))
             {
-                // The object
-                quintptr iptr = index.data(Qt::UserRole).toULongLong();
-                RamObject *o = reinterpret_cast<RamObject*>( iptr );
                 emit historyObject(o);
             }
             m_historyButtonPressed = false;
             return true;
         }
+
+        if (m_folderButtonPressed)
+        {
+            if (folderButtonRect.contains(e->pos()))
+            {
+                emit folderObject(o);
+            }
+            m_folderButtonPressed = false;
+            return true;
+        }
+
         break;
     }
     default:
@@ -475,9 +745,36 @@ bool RamObjectDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, co
 
 }
 
-bool RamObjectDelegate::canEdit() const
+void RamObjectDelegate::setCompletionRatio(bool newCompletionRatio)
+{
+    m_completionRatio = newCompletionRatio;
+}
+
+void RamObjectDelegate::setTimeTracking(bool newTimeTracking)
+{
+    m_timeTracking = newTimeTracking;
+}
+
+void RamObjectDelegate::setComboBoxMode(bool comboBoxMode)
+{
+    m_comboBox = comboBoxMode;
+}
+
+bool RamObjectDelegate::canEdit(const QModelIndex &index) const
 {
     RamUser *u = Ramses::instance()->currentUser();
+
+    quintptr iptr = index.data(Qt::UserRole).toULongLong();
+    if (iptr == 0) return false;
+    RamObject *o = reinterpret_cast<RamObject*>( iptr );
+    if (o->objectType() == RamObject::Status)
+    {
+        RamStatus *status = qobject_cast<RamStatus*>( o );
+        if (status->assignedUser()) if(status->assignedUser()->is(u)) return true;
+        if (u->role() > RamUser::Standard) return true;
+        return false;
+    }
+
     return m_editable && u->role() >= m_editRole;
 }
 
@@ -491,4 +788,15 @@ void RamObjectDelegate::drawMore(QPainter *painter, QRect rect, QPen pen) const
                 "...",
                 QTextOption(Qt::AlignRight | Qt::AlignBottom));
     painter->restore();
+}
+
+void RamObjectDelegate::drawButton(QPainter *painter, QRect rect, QString iconPath, bool hover) const
+{
+    if (hover)
+    {
+        QPainterPath path;
+        path.addRoundedRect(rect.adjusted(-5, -5, 5, 5), 3, 3);
+        painter->fillPath(path, QBrush(m_dark));
+    }
+    painter->drawPixmap( rect, QIcon(iconPath).pixmap(QSize(12,12)));
 }

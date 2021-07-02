@@ -7,6 +7,7 @@
 #include "duqf-widgets/autoselectdoublespinbox.h"
 #include "objecteditwidget.h"
 #include "ramses.h"
+#include "duqf-widgets/duqfcolorselector.h"
 
 class TemplateStepEditWidget : public ObjectEditWidget
 {
@@ -28,7 +29,7 @@ private slots:
     void updateEstimationSuffix();
 
 private:
-    RamStep *_step;
+    RamStep *m_step;
 
     void setupUi();
     void connectEvents();
@@ -44,6 +45,7 @@ private:
     AutoSelectDoubleSpinBox *ui_mediumEdit;
     AutoSelectDoubleSpinBox *ui_hardEdit;
     AutoSelectDoubleSpinBox *ui_veryHardEdit;
+    DuQFColorSelector *ui_colorSelector;
 };
 
 #endif // TEMPLATESTEPEDITWIDGET_H

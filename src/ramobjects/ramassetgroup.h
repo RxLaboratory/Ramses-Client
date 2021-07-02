@@ -29,9 +29,13 @@ public:
 public slots:
     void update() override;
     virtual void edit(bool show = true) override;
+    virtual void removeFromDB() override;
+
+protected:
+    virtual QString folderPath() const override;
 
 private:
-    bool _template;
+    bool m_template;
 
     RamProject *m_project = nullptr;
     RamObjectFilterModel *m_assets;

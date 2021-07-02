@@ -6,6 +6,7 @@
 RamShot::RamShot(QString shortName, RamSequence *sequence, QString name, QString uuid):
     RamItem(shortName, sequence->project(), name, uuid)
 {
+    m_assets = new RamObjectList("SHOTASSETS", "Assets", this);
     setObjectType(Shot);
     setProductionType(RamStep::ShotProduction);
     m_sequence = sequence;
@@ -13,11 +14,14 @@ RamShot::RamShot(QString shortName, RamSequence *sequence, QString name, QString
     m_dbi->createShot(m_shortName, m_name, m_sequence->uuid(), m_uuid);
 
     this->setObjectName( "RamShot " + m_shortName );
+
+    connect(m_assets, SIGNAL(rowsInserted(QModelIndex,int,int)),this,SLOT(assetAssigned(QModelIndex,int,int)));
+    connect(m_assets, SIGNAL(rowsAboutToBeRemoved(QModelIndex,int,int)),this,SLOT(assetUnassigned(QModelIndex,int,int)));
 }
 
 RamShot::~RamShot()
 {
-    m_dbi->removeShot(m_uuid);
+
 }
 
 RamSequence *RamShot::sequence() const
@@ -64,10 +68,10 @@ void RamShot::update()
 {
     if(!m_dirty) return;
     RamObject::update();
-    m_dbi->updateShot(m_uuid, m_shortName, m_name, m_sequence->uuid(), m_duration);
+    m_dbi->updateShot(m_uuid, m_shortName, m_name, m_sequence->uuid(), m_duration, m_comment);
     if (m_orderChanged)
     {
-        m_dbi->moveShot(m_uuid, m_order);
+        m_dbi->setShotOrder(m_uuid, m_order);
         m_orderChanged = false;
     }
 }
@@ -81,4 +85,42 @@ void RamShot::edit(bool show)
         m_editReady = true;
     }
     showEdit(show);
+}
+
+QString RamShot::folderPath() const
+{
+    RamProject *p = m_sequence->project();
+    return p->path(RamObject::ShotsFolder) + "/" + p->shortName() + "_S_" + m_shortName;
+}
+
+void RamShot::assetAssigned(const QModelIndex &parent, int first, int last)
+{
+    Q_UNUSED(parent)
+
+    for (int i  = first; i <= last; i++)
+    {
+        RamObject *assetObj = m_assets->at(i);
+        m_dbi->assignAsset(m_uuid, assetObj->uuid());
+    }
+}
+
+void RamShot::assetUnassigned(const QModelIndex &parent, int first, int last)
+{
+    Q_UNUSED(parent)
+
+    for (int i  = first; i <= last; i++)
+    {
+        RamObject *assetObj = m_assets->at(i);
+        m_dbi->unassignAsset(m_uuid, assetObj->uuid());
+    }
+}
+
+void RamShot::removeFromDB()
+{
+    m_dbi->removeShot(m_uuid);
+}
+
+RamObjectList *RamShot::assets() const
+{
+    return m_assets;
 }

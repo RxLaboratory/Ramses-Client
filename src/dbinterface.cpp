@@ -11,11 +11,11 @@ DBInterface *DBInterface::instance()
 void DBInterface::login(QString username, QString password)
 {
     //request url
-    QStringList q("login");
+    QStringList q;
     q << "username=" + username;
     q << "password=" + generatePassHash(password);
 
-    request(q);
+    request("login", q);
 }
 
 void DBInterface::setOffline()
@@ -27,311 +27,363 @@ void DBInterface::setOnline()
 {
     //ping
     _status = NetworkUtils::Connecting;
-    request("?ping", false);
+    request("ping", QStringList(), false);
 }
 
 void DBInterface::getUsers()
 {
-    QString q = "?getUsers";
-    request(q);
+    request("getUsers");
 }
 
-void DBInterface::updateUser(QString uuid, QString shortName, QString name, QString role, QString folderPath)
+void DBInterface::updateUser(QString uuid, QString shortName, QString name, QString role, QString folderPath, QString comment)
 {
-    QStringList q("updateUser");
+    QStringList q;
     q << "uuid=" + uuid;
     q << "shortName=" + shortName;
     q << "name=" + name;
     q << "role=" + role;
     q << "folderPath=" + folderPath;
+    q << "comment=" + comment;
 
-    request(q);
+    request("updateUser", q);
 }
 
 void DBInterface::updateUserPassword(QString uuid, QString c, QString n)
 {
-    QStringList q("updatePassword");
+    QStringList q;
     q << "uuid=" + uuid;
     q << "current=" + generatePassHash(c);
     q << "new=" + generatePassHash(n);
 
-    request(q);
+    request("updatePassword", q);
 }
 
 void DBInterface::createUser(QString shortName, QString name, QString uuid, QString password)
 {
-    QStringList q("createUser");
+    QStringList q;
     q << "uuid=" + uuid;
     q << "shortName=" + shortName;
     q << "name=" + name;
     q << "password=" + generatePassHash(password);
 
-    request(q);
+    request("createUser", q);
 }
 
 void DBInterface::removeUser(QString uuid)
 {
-    QStringList q("removeUser");
+    QStringList q;
     q << "uuid=" + uuid;
 
-    request(q);
+    request("removeUser", q);
 }
 
 void DBInterface::createProject(QString shortName, QString name, QString uuid)
 {
-    QStringList q("createProject");
+    QStringList q;
     q << "uuid=" + uuid;
     q << "shortName=" + shortName;
     q << "name=" + name;
 
-    request(q);
+    request("createProject", q);
 }
 
 void DBInterface::getProjects()
 {
-    QString q = "?getProjects";
-    request(q);
+    request("getProjects");
 }
 
 void DBInterface::getProject(QString uuid)
 {
-    QStringList q("getProject");
+    QStringList q;
     q << "uuid=" + uuid;
 
-    request(q);
+    request("getProject", q);
 }
 
-void DBInterface::updateProject(QString uuid, QString shortName, QString name, int width, int height, double framerate, QString folderPath)
+void DBInterface::updateProject(QString uuid, QString shortName, QString name, int width, int height, double framerate, QString folderPath, QString comment, QDate deadline)
 {
-    QStringList q("updateProject");
+    QStringList q;
     q << "uuid=" + uuid;
     q << "shortName=" + shortName;
     q << "name=" + name;
     q << "folderPath=" + folderPath;
+    q << "comment=" + comment;
     if (width > 0) q << "width=" + QString::number(width);
     if (height > 0) q << "height=" + QString::number(height);
     if (framerate > 0) q << "framerate=" + QString::number(framerate);
+    if (deadline.isValid()) q << "deadline=" + deadline.toString("yyyy-MM-dd");
 
-    request(q);
+    request("updateProject", q);
 }
 
 void DBInterface::removeProject(QString uuid)
 {
-    QStringList q("removeProject");
+    QStringList q;
     q << "uuid=" + uuid;
 
-    request(q);
+    request("removeProject", q);
 }
 
 void DBInterface::assignStep(QString stepUuid, QString projectUuid)
 {
-    QStringList q("assignStep");
+    QStringList q;
     q << "stepUuid=" + stepUuid;
     q << "projectUuid=" + projectUuid;
 
-    request(q);
+    request("assignStep", q);
 }
 
 void DBInterface::createTemplateStep(QString shortName, QString name, QString uuid)
 {
-    QStringList q("createTemplateStep");
+    QStringList q;
     q << "uuid=" + uuid;
     q << "shortName=" + shortName;
     q << "name=" + name;
 
-    request(q);
+    request("createTemplateStep", q);
 }
 
 void DBInterface::getTemplateSteps()
 {
-    QString q = "?getTemplateSteps";
-    request(q);
+    request("getTemplateSteps");
 }
 
-void DBInterface::updateTemplateStep(QString uuid, QString shortName, QString name, QString type)
+void DBInterface::updateTemplateStep(QString uuid, QString shortName, QString name, QString type, QString comment, QColor color)
 {
-    QStringList q("updateTemplateStep");
+    QStringList q;
     q << "uuid=" + uuid;
     q << "shortName=" + shortName;
     q << "name=" + name;
     q << "type=" + type;
+    q << "comment=" + comment;
+    if (color.isValid()) q << "color=" + color.name();
 
-    request(q);
+    request("updateTemplateStep", q);
 }
 
 void DBInterface::removeTemplateStep(QString uuid)
 {
-    QStringList q("removeTemplateStep");
+    QStringList q;
     q << "uuid=" + uuid;
 
-    request(q);
+    request("removeTemplateStep", q);
+}
+
+void DBInterface::setTemplateStepEstimations(QString uuid, QString method, float veryEasy, float easy, float medium, float hard, float veryHard)
+{
+    QStringList q;
+    q << "uuid=" + uuid;
+    q << "method=" + method;
+    q << "veryEasy=" + QString::number(veryEasy);
+    q << "easy=" + QString::number(easy);
+    q << "medium=" + QString::number(medium);
+    q << "hard=" + QString::number(hard);
+    q << "veryHard=" + QString::number(veryHard);
+
+    request("setTemplateStepEstimations", q);
 }
 
 void DBInterface::createTemplateAssetGroup(QString shortName, QString name, QString uuid)
 {
-    QStringList q("createTemplateAssetGroup");
+    QStringList q;
     q << "uuid=" + uuid;
     q << "shortName=" + shortName;
     q << "name=" + name;
 
-    request(q);
+    request("createTemplateAssetGroup", q);
 }
 
 void DBInterface::getTemplateAssetGroups()
 {
-    QString q = "?getTemplateAssetGroups";
-    request(q);
+    request("getTemplateAssetGroups");
 }
 
-void DBInterface::updateTemplateAssetGroup(QString uuid, QString shortName, QString name)
+void DBInterface::updateTemplateAssetGroup(QString uuid, QString shortName, QString name, QString comment)
 {
-    QStringList q("updateTemplateAssetGroup");
+    QStringList q;
     q << "uuid=" + uuid;
     q << "shortName=" + shortName;
     q << "name=" + name;
+    q << "comment=" + comment;
 
-    request(q);
+    request("updateTemplateAssetGroup", q);
 }
 
 void DBInterface::removeTemplateAssetGroup(QString uuid)
 {
-    QStringList q("removeTemplateAssetGroup");
+    QStringList q;
     q << "uuid=" + uuid;
 
-    request(q);
+    request("removeTemplateAssetGroup", q);
 }
 
 void DBInterface::createStep(QString shortName, QString name, QString projectUuid, QString uuid)
 {
-    QStringList q("createStep");
+    QStringList q;
     q << "uuid=" + uuid;
     q << "shortName=" + shortName;
     q << "name=" + name;
     q << "projectUuid=" + projectUuid;
 
-    request(q);
+    request("createStep", q);
 }
 
-void DBInterface::updateStep(QString uuid, QString shortName, QString name, QString type, int order)
+void DBInterface::updateStep(QString uuid, QString shortName, QString name, QString type, QString comment, QColor color)
 {
-    QStringList q("updateStep");
+    QStringList q;
     q << "uuid=" + uuid;
     q << "shortName=" + shortName;
     q << "name=" + name;
     q << "type=" + type;
+    q << "comment=" + comment;
+    if (color.isValid()) q << "color=" + color.name();
+
+    request("updateStep", q);
+}
+
+void DBInterface::moveStep(QString uuid, int order)
+{
+    QStringList q;
+    q << "uuid=" + uuid;
     q << "order=" + QString::number(order);
 
-    request(q);
+    request("moveStep", q);
+}
+
+void DBInterface::setStepOrder(QString uuid, int order)
+{
+    QStringList q;
+    q << "uuid=" + uuid;
+    q << "order=" + QString::number(order);
+
+    request("setStepOrder", q);
+}
+
+void DBInterface::setStepEstimations(QString uuid, QString method, float veryEasy, float easy, float medium, float hard, float veryHard, QString multiplyGroupUuid)
+{
+    QStringList q;
+    q << "uuid=" + uuid;
+    q << "method=" + method;
+    q << "multiplyGroupUuid=" + multiplyGroupUuid;
+    q << "veryEasy=" + QString::number(veryEasy);
+    q << "easy=" + QString::number(easy);
+    q << "medium=" + QString::number(medium);
+    q << "hard=" + QString::number(hard);
+    q << "veryHard=" + QString::number(veryHard);
+
+    request("setStepEstimations", q);
 }
 
 void DBInterface::removeStep(QString uuid)
 {
-    QStringList q("removeStep");
+    QStringList q;
     q << "uuid=" + uuid;
 
-    request(q);
+    request("removeStep" , q);
 }
 
-void DBInterface::assignUser(QString stepUuid, QString userUuid)
+void DBInterface::assignUser(QString projectUuid, QString userUuid)
 {
-    QStringList q("assignUser");
-    q << "stepUuid=" + stepUuid;
+    QStringList q;
+    q << "projectUuid=" + projectUuid;
     q << "userUuid=" + userUuid;
 
-    request(q);
+    request("assignUser", q);
 }
 
-void DBInterface::unassignUser(QString stepUuid, QString userUuid)
+void DBInterface::unassignUser(QString projectUuid, QString userUuid)
 {
-    QStringList q("unassignUser");
-    q << "stepUuid=" + stepUuid;
+    QStringList q;
+    q << "projectUuid=" + projectUuid;
     q << "userUuid=" + userUuid;
 
-    request(q);
+    request("unassignUser", q);
 }
 
 void DBInterface::assignApplication(QString stepUuid, QString applicationUuid)
 {
-    QStringList q("assignApplication");
+    QStringList q;
     q << "stepUuid=" + stepUuid;
     q << "applicationUuid=" + applicationUuid;
 
-    request(q);
+    request("assignApplication", q);
 }
 
 void DBInterface::unassignApplication(QString stepUuid, QString applicationUuid)
 {
-    QStringList q("unassignApplication");
+    QStringList q;
     q << "stepUuid=" + stepUuid;
     q << "applicationUuid=" + applicationUuid;
 
-    request(q);
+    request("unassignApplication", q);
 }
 
 void DBInterface::createAssetGroup(QString shortName, QString name, QString projectUuid, QString uuid)
 {
-    QStringList q("createAssetGroup");
+    QStringList q;
     q << "uuid=" + uuid;
     q << "shortName=" + shortName;
     q << "name=" + name;
     q << "projectUuid=" + projectUuid;
 
-    request(q);
+    request("createAssetGroup", q);
 }
 
-void DBInterface::updateAssetGroup(QString uuid, QString shortName, QString name)
+void DBInterface::updateAssetGroup(QString uuid, QString shortName, QString name, QString comment)
 {
-    QStringList q("updateAssetGroup");
+    QStringList q;
     q << "uuid=" + uuid;
     q << "shortName=" + shortName;
     q << "name=" + name;
+    q << "comment=" + comment;
 
-    request(q);
+    request("updateAssetGroup", q);
 }
 
 void DBInterface::removeAssetGroup(QString uuid)
 {
-    QStringList q("removeAssetGroup");
+    QStringList q;
     q << "uuid=" + uuid;
 
-    request(q);
+    request("removeAssetGroup", q);
 }
 
 void DBInterface::createAsset(QString shortName, QString name, QString assetGroupUuid, QString tags, QString uuid)
 {
-    QStringList q("createAsset");
+    QStringList q;
     q << "uuid=" + uuid;
     q << "shortName=" + shortName;
     q << "name=" + name;
     q << "assetGroupUuid=" + assetGroupUuid;
     q << "tags=" + tags;
 
-    request(q);
+    request("createAsset", q);
 }
 
-void DBInterface::updateAsset(QString uuid, QString shortName, QString name, QString assetGroupUuid, QString tags)
+void DBInterface::updateAsset(QString uuid, QString shortName, QString name, QString assetGroupUuid, QString tags, QString comment)
 {
-    QStringList q("updateAsset");
+    QStringList q;
     q << "uuid=" + uuid;
     q << "shortName=" + shortName;
     q << "name=" + name;
     q << "assetGroupUuid=" + assetGroupUuid;
     q << "tags=" + tags;
+    q << "comment=" + comment;
 
-    request(q);
+    request("updateAsset", q);
 }
 
 void DBInterface::removeAsset(QString uuid)
 {
-    QStringList q("removeAsset");
+    QStringList q;
     q << "uuid=" + uuid;
 
-    request(q);
+    request("removeAsset", q);
 }
 
-void DBInterface::setAssetStatus(QString assetUuid, QString stateUuid, QString stepUuid, QString userUuid, int completionRatio, QString comment, int version, QString uuid)
+void DBInterface::setAssetStatus(QString assetUuid, QString stateUuid, QString stepUuid, QString userUuid, int completionRatio, QString comment, int version, QString uuid, QString assignedUserUuid)
 {
-    QStringList q("setAssetStatus");
+    QStringList q;
     q << "assetUuid=" + assetUuid;
     q << "stateUuid=" + stateUuid;
     q << "stepUuid=" + stepUuid;
@@ -340,42 +392,53 @@ void DBInterface::setAssetStatus(QString assetUuid, QString stateUuid, QString s
     q << "comment=" + comment;
     q << "version=" + QString::number(version);
     q << "uuid=" + uuid;
+    q << "assignedUserUuid=" + assignedUserUuid;
 
-    request(q);
+    request("setAssetStatus", q);
 }
 
 void DBInterface::createSequence(QString shortName, QString name, QString projectUuid, QString uuid)
 {
-    QStringList q("createSequence");
+    QStringList q;
     q << "uuid=" + uuid;
     q << "shortName=" + shortName;
     q << "name=" + name;
     q << "projectUuid=" + projectUuid;
 
-    request(q);
+    request("createSequence", q);
 }
 
-void DBInterface::updateSequence(QString uuid, QString shortName, QString name)
+void DBInterface::updateSequence(QString uuid, QString shortName, QString name, QString comment)
 {
-    QStringList q("updateSequence");
+    QStringList q;
     q << "uuid=" + uuid;
     q << "shortName=" + shortName;
     q << "name=" + name;
+    q << "comment=" + comment;
 
-    request(q);
+    request("updateSequence", q);
 }
 
 void DBInterface::removeSequence(QString uuid)
 {
-    QStringList q("removeSequence");
+    QStringList q;
     q << "uuid=" + uuid;
 
-    request(q);
+    request("removeSequence", q);
+}
+
+void DBInterface::setSequenceOrder(QString uuid, int order)
+{
+    QStringList q;
+    q << "uuid=" + uuid;
+    q << "order=" + QString::number(order);
+
+    request("setSequenceOrder", q);
 }
 
 void DBInterface::createShot(QString shortName, QString name, QString sequenceUuid, QString uuid, qreal duration, int order)
 {
-    QStringList q("createShot");
+    QStringList q;
     q << "uuid=" + uuid;
     q << "shortName=" + shortName;
     q << "name=" + name;
@@ -383,41 +446,51 @@ void DBInterface::createShot(QString shortName, QString name, QString sequenceUu
     q << "duration=" + QString::number(duration);
     if (order != -1) q << "order=" + QString::number(order);
 
-    request(q);
+    request("createShot", q);
 }
 
-void DBInterface::updateShot(QString uuid, QString shortName, QString name, QString sequenceUuid, qreal duration)
+void DBInterface::updateShot(QString uuid, QString shortName, QString name, QString sequenceUuid, qreal duration, QString comment)
 {
-    QStringList q("updateShot");
+    QStringList q;
     q << "uuid=" + uuid;
     q << "shortName=" + shortName;
     q << "name=" + name;
     q << "sequenceUuid=" + sequenceUuid;
+    q << "comment=" + comment;
     if (duration != -1) q << "duration=" + QString::number(duration);
 
-    request(q);
+    request("updateShot", q);
 }
 
 void DBInterface::moveShot(QString uuid, int order)
 {
-    QStringList q("moveShot");
+    QStringList q;
     q << "uuid=" + uuid;
     q << "order=" + QString::number(order);
 
-    request(q);
+    request("moveShot", q);
+}
+
+void DBInterface::setShotOrder(QString uuid, int order)
+{
+    QStringList q;
+    q << "uuid=" + uuid;
+    q << "order=" + QString::number(order);
+
+    request("setShotOrder", q);
 }
 
 void DBInterface::removeShot(QString uuid)
 {
-    QStringList q("removeShot");
+    QStringList q;
     q << "uuid=" + uuid;
 
-    request(q);
+    request("removeShot", q);
 }
 
-void DBInterface::setShotStatus(QString shotUuid, QString stateUuid, QString stepUuid, QString userUuid, int completionRatio, QString comment, int version, QString uuid)
+void DBInterface::setShotStatus(QString shotUuid, QString stateUuid, QString stepUuid, QString userUuid, int completionRatio, QString comment, int version, QString uuid, QString assignedUserUuid)
 {
-    QStringList q("setShotStatus");
+    QStringList q;
     q << "shotUuid=" + shotUuid;
     q << "stateUuid=" + stateUuid;
     q << "stepUuid=" + stepUuid;
@@ -426,235 +499,366 @@ void DBInterface::setShotStatus(QString shotUuid, QString stateUuid, QString ste
     q << "comment=" + comment;
     q << "version=" + QString::number(version);
     q << "uuid=" + uuid;
+    q << "assignedUserUuid=" + assignedUserUuid;
 
-    request(q);
+    request("setShotStatus", q);
+}
+
+void DBInterface::assignAsset(QString shotUuid, QString assetUuid)
+{
+    QStringList q;
+    q << "uuid=" + shotUuid;
+    q << "assetUuid=" + assetUuid;
+
+    request("assignAsset", q);
+}
+
+void DBInterface::unassignAsset(QString shotUuid, QString assetUuid)
+{
+    QStringList q;
+    q << "uuid=" + shotUuid;
+    q << "assetUuid=" + assetUuid;
+
+    request("unassignAsset", q);
 }
 
 void DBInterface::createState(QString shortName, QString name, QString uuid)
 {
-    QStringList q("createState");
+    QStringList q;
     q << "uuid=" + uuid;
     q << "shortName=" + shortName;
     q << "name=" + name;
 
-    request(q);
+    request("createState", q);
 }
 
 void DBInterface::getStates()
 {
-    QString q = "?getStates";
-    request(q);
+    request("getStates");
 }
 
-void DBInterface::updateState(QString uuid, QString shortName, QString name, QString color, QString completionRatio)
+void DBInterface::updateState(QString uuid, QString shortName, QString name, QString color, QString completionRatio, QString comment)
 {
-    QStringList q("updateState");
+    QStringList q;
     q << "uuid=" + uuid;
     q << "shortName=" + shortName;
     q << "name=" + name;
     q << "color=" + color.replace("#","%23");
     q << "completionRatio=" + completionRatio;
+    q << "comment=" + comment;
 
-    request(q);
+    request("updateState", q);
 }
 
 void DBInterface::removeState(QString uuid)
 {
-    QStringList q("removeState");
+    QStringList q;
     q << "uuid=" + uuid;
 
-    request(q);
+    request("removeState", q);
 }
 
 void DBInterface::createFileType(QString shortName, QString name, QStringList extensions, QString uuid)
 {
-    QStringList q("createFileType");
+    QStringList q;
     q << "uuid=" + uuid;
     q << "shortName=" + shortName;
     q << "name=" + name;
     q << "extensions=" + extensions.join(",");
 
-    request(q);
+    request("createFileType", q);
 }
 
 void DBInterface::getFileTypes()
 {
-    QString q = "?getFileTypes";
-    request(q);
+    request("getFileTypes");
 }
 
-void DBInterface::updateFileType(QString uuid, QString shortName, QString name, QStringList extensions, bool previewable)
+void DBInterface::updateFileType(QString uuid, QString shortName, QString name, QStringList extensions, bool previewable, QString comment)
 {
-    QStringList q("updateFileType");
+    QStringList q;
     q << "uuid=" + uuid;
     q << "shortName=" + shortName;
     q << "name=" + name;
     q << "extensions=" + extensions.join(",");
+    q << "comment=" + comment;
     if (previewable) q << "previewable=1";
     else q << "previewable=0";
 
-    request(q);
+    request("updateFileType", q);
 }
 
 void DBInterface::removeFileType(QString uuid)
 {
-    QStringList q("removeFileType");
+    QStringList q;
     q << "uuid=" + uuid;
 
-    request(q);
+    request("removeFileType", q);
 }
 
 void DBInterface::createApplication(QString shortName, QString name, QString executableFilePath, QString uuid)
 {
-    QStringList q("createApplication");
+    QStringList q;
     q << "uuid=" + uuid;
     q << "shortName=" + shortName;
     q << "name=" + name;
     q << "executableFilePath=" + executableFilePath;
 
-    request(q);
+    request("createApplication", q);
 }
 
 void DBInterface::getApplications()
 {
-    QString q = "?getApplications";
-    request(q);
+    request("getApplications");
 }
 
-void DBInterface::updateApplication(QString uuid, QString shortName, QString name, QString executableFilePath)
+void DBInterface::updateApplication(QString uuid, QString shortName, QString name, QString executableFilePath, QString comment)
 {
-    QStringList q("updateApplication");
+    QStringList q;
     q << "uuid=" + uuid;
     q << "shortName=" + shortName;
     q << "name=" + name;
     q << "executableFilePath=" + executableFilePath;
+    q << "comment=" + comment;
 
-    request(q);
+    request("updateApplication", q);
 }
 
 void DBInterface::removeApplication(QString uuid)
 {
-    QStringList q("removeApplication");
+    QStringList q;
     q << "uuid=" + uuid;
 
-    request(q);
+    request("removeApplication", q);
 }
 
 void DBInterface::assignFileType(QString applicationUuid, QString fileTypeUuid, QString type)
 {
-    QStringList q("assignFileType");
+    QStringList q;
     q << "applicationUuid=" + applicationUuid;
     q << "fileTypeUuid=" + fileTypeUuid;
     q << "type=" + type;
 
-    request(q);
+    request("assignFileType", q);
 }
 
 void DBInterface::unassignFileType(QString applicationUuid, QString fileTypeUuid, QString type)
 {
-    QStringList q("unassignFileType");
+    QStringList q;
     q << "applicationUuid=" + applicationUuid;
     q << "fileTypeUuid=" + fileTypeUuid;
     q << "type=" + type;
 
-    request(q);
+    request("unassignFileType", q);
 }
 
 void DBInterface::createPipe(QString outputUuid, QString inputUuid, QString uuid)
 {
-    QStringList q("createPipe");
+    QStringList q;
     q << "uuid=" + uuid;
     q << "outputUuid=" + outputUuid;
     q << "inputUuid=" + inputUuid;
 
-    request(q);
+    request("createPipe", q);
 }
 
 void DBInterface::updatePipe(QString uuid, QString inputUuid, QString outputUuid)
 {
-    QStringList q("updatePipe");
+    QStringList q;
     q << "uuid=" + uuid;
     q << "inputUuid=" + inputUuid;
     q << "outputUuid=" + outputUuid;
 
-    request(q);
+    request("updatePipe", q);
 }
 
 void DBInterface::removePipe(QString uuid)
 {
-    QStringList q("removePipe");
+    QStringList q;
     q << "uuid=" + uuid;
 
-    request(q);
+    request("removePipe", q);
 }
 
 void DBInterface::assignPipeFile(QString pipeUuid, QString pipeFileUuid)
 {
-    QStringList q("assignPipeFile");
+    QStringList q;
     q << "pipeUuid=" + pipeUuid;
     q << "pipeFileUuid=" + pipeFileUuid;
 
-    request(q);
+    request("assignPipeFile", q);
 }
 
 void DBInterface::unassignPipeFile(QString pipeUuid, QString pipeFileUuid)
 {
-    QStringList q("unassignPipeFile");
+    QStringList q;
     q << "pipeUuid=" + pipeUuid;
     q << "pipeFileUuid=" + pipeFileUuid;
 
-    request(q);
+    request("unassignPipeFile", q);
 }
 
 void DBInterface::createPipeFile(QString shortName, QString projectUuid, QString fileTypeUuid, QString uuid, QString colorSpaceUuid)
 {
-    QStringList q("createPipeFile");
+    QStringList q;
     q << "shortName=" + shortName;
     q << "projectUuid=" + projectUuid;
     q << "fileTypeUuid=" + fileTypeUuid;
     q << "uuid=" + uuid;
     q << "colorSpaceUuid=" + colorSpaceUuid;
 
-    request(q);
+    request("createPipeFile", q);
 }
 
-void DBInterface::updatePipeFile(QString uuid, QString shortName, QString fileTypeUuid, QString colorSpaceUuid)
+void DBInterface::updatePipeFile(QString uuid, QString shortName, QString fileTypeUuid, QString colorSpaceUuid, QString comment)
 {
-    QStringList q("updatePipeFile");
+    QStringList q;
     q << "shortName=" + shortName;
     q << "uuid=" + uuid;
     q << "fileTypeUuid=" + fileTypeUuid;
     q << "colorSpaceUuid=" + colorSpaceUuid;
+    q << "comment=" + comment;
 
-    request(q);
+    request("updatePipeFile", q);
 }
 
 void DBInterface::removePipeFile(QString uuid)
 {
-    QStringList q("removePipeFile");
+    QStringList q;
     q << "uuid=" + uuid;
 
-    request(q);
+    request("removePipeFile", q);
 }
 
-void DBInterface::updateStatus(QString uuid, QString stateUuid, QString comment, int version, int completionRatio)
+void DBInterface::updateStatus(QString uuid, QString stateUuid, QString comment, int version, int completionRatio, bool published, QString assignedUserUuid, qint64 timeSpent, QDateTime date, QString difficulty, float estimation)
 {
-    QStringList q("updateStatus");
+    QStringList q;
     q << "uuid=" + uuid;
     q << "stateUuid=" + stateUuid;
+    q << "assignedUserUuid=" + assignedUserUuid;
+    q << "difficulty=" + difficulty;
+    q << "estimation=" + QString::number(estimation);
+    if (timeSpent >= 0) q << "timeSpent=" + QString::number(timeSpent);
+    if (published) q << "published=1";
+    else q << "published=0";
     if (comment != "") q << "comment=" + comment;
     if (version > 0) q << "version=" + QString::number(version);
     if (completionRatio >= 0) q << "completionRatio=" + QString::number(completionRatio);
+    if (date.isValid()) q << "date=" + date.toString("yyyy-MM-dd hh:mm:ss");
 
-    request(q);
+
+    request("updateStatus", q);
+}
+
+void DBInterface::setStatusUser(QString uuid, QString userUuid)
+{
+    QStringList q;
+    q << "uuid=" + uuid;
+    q << "userUuid=" + userUuid;
+
+    request("setStatusUser", q);
 }
 
 void DBInterface::removeStatus(QString uuid)
 {
-    QStringList q("removeStatus");
+    QStringList q;
     q << "uuid=" + uuid;
 
-    request(q);
+    request("removeStatus", q);
+}
+
+void DBInterface::createSchedule(QString userUuid, QString stepUuid, QDateTime date, QString uuid)
+{
+    QStringList q;
+    q << "uuid=" + uuid;
+    q << "userUuid=" + userUuid;
+    q << "stepUuid=" + stepUuid;
+    q << "date=" + date.toString("yyyy-MM-dd hh:mm:ss");
+
+    request("createSchedule", q);
+}
+
+void DBInterface::createSchedules(QList<ScheduleEntryStruct> entries)
+{
+    if (entries.count() == 0) return;
+    QJsonArray entriesArr;
+    for (int i = 0; i < entries.count(); i++)
+    {
+        ScheduleEntryStruct e = entries.at(i);
+        QJsonObject entry;
+        entry.insert("uuid", e.uuid);
+        entry.insert("stepUuid", e.stepUuid);
+        entry.insert("userUuid", e.userUuid);
+        entry.insert("date", e.date.toString("yyyy-MM-dd hh:mm:ss"));
+        entriesArr.append(entry);
+    }
+    QJsonObject requestObj;
+    requestObj.insert("entries", entriesArr);
+
+    request("createSchedules", requestObj);
+}
+
+void DBInterface::updateSchedule(QString uuid, QString userUuid, QString stepUuid, QDateTime date, QString comment)
+{
+    QStringList q;
+    q << "uuid=" + uuid;
+    q << "userUuid=" + userUuid;
+    q << "stepUuid=" + stepUuid;
+    q << "comment=" + comment;
+    q << "date=" + date.toString("yyyy-MM-dd hh:mm:ss");
+
+    request("updateSchedule", q);
+}
+
+void DBInterface::updateSchedules(QList<ScheduleEntryStruct> entries)
+{
+    if (entries.count() == 0) return;
+    QJsonArray entriesArr;
+    for (int i = 0; i < entries.count(); i++)
+    {
+        ScheduleEntryStruct e = entries.at(i);
+        QJsonObject entry;
+        entry.insert("uuid", e.uuid);
+        entry.insert("stepUuid", e.stepUuid);
+        entry.insert("userUuid", e.userUuid);
+        entry.insert("comment", e.comment);
+        entry.insert("date", e.date.toString("yyyy-MM-dd hh:mm:ss"));
+        entriesArr.append(entry);
+    }
+    QJsonObject requestObj;
+    requestObj.insert("entries", entriesArr);
+
+    request("updateSchedules", requestObj);
+}
+
+void DBInterface::removeSchedule(QString uuid)
+{
+    QStringList q;
+    q << "uuid=" + uuid;
+
+    request("removeSchedule", q);
+}
+
+void DBInterface::removeSchedules(QList<ScheduleEntryStruct> entries)
+{
+    if (entries.count() == 0) return;
+    QJsonArray entriesArr;
+    for (int i = 0; i < entries.count(); i++)
+    {
+        ScheduleEntryStruct e = entries.at(i);
+        QJsonObject entry;
+        entry.insert("uuid", e.uuid);
+        entriesArr.append(entry);
+    }
+    QJsonObject requestObj;
+    requestObj.insert("entries", entriesArr);
+
+    request("removeSchedules", requestObj);
+}
+
+void DBInterface::init()
+{
+    request("init");
 }
 
 DBInterface::DBInterface(QObject *parent) : DuQFLoggerObject("Database Interface", parent)
@@ -673,9 +877,11 @@ DBInterface::DBInterface(QObject *parent) : DuQFLoggerObject("Database Interface
 
     _suspended = false;
 
+    _forbiddenWords << "and" << "or" << "if" << "else" << "insert" << "update" << "select" << "drop" << "alter";
+
     // Connect events
     connect( &_network, &QNetworkAccessManager::finished, this, &DBInterface::dataReceived);
-    connect(&_network, SIGNAL(sslErrors(QNetworkReply *,QList<QSslError>)), this,SLOT(sslError(QNetworkReply *,QList<QSslError>)));
+    connect(&_network, SIGNAL(sslErrors(QNetworkReply*,QList<QSslError>)), this,SLOT(sslError(QNetworkReply*,QList<QSslError>)));
     connect(qApp,SIGNAL(aboutToQuit()), this, SLOT(suspend()));
 
     _status = NetworkUtils::Offline;
@@ -684,12 +890,6 @@ DBInterface::DBInterface(QObject *parent) : DuQFLoggerObject("Database Interface
 bool DBInterface::isSuspended() const
 {
     return _suspended;
-}
-
-void DBInterface::init()
-{
-    QString q = "?init";
-    request(q);
 }
 
 void DBInterface::suspend(bool suspended)
@@ -739,6 +939,12 @@ void DBInterface::dataReceived(QNetworkReply * rep)
     //if login, get the token
     if (repQuery == "login" && repSuccess) _sessionToken = repObj.value("content").toObject().value("token").toString();
     else if (repQuery == "login") _sessionToken = "";
+
+    if (repQuery == "loggedout")
+    {
+        _sessionToken = "";
+        setConnectionStatus(NetworkUtils::Offline);
+    }
 
     emit data(repObj);
 }
@@ -892,31 +1098,38 @@ void DBInterface::setConnectionStatus(NetworkUtils::NetworkStatus s)
     emit connectionStatusChanged(s);
 }
 
-void DBInterface::request(QString req, bool waitPing)
+bool DBInterface::waitPing()
 {
-    if (_suspended) return;
-
-    if (waitPing)
+    // If not online or connecting, we need to get online
+    if (_status == NetworkUtils::Offline) setOnline();
+    //wait three seconds when connecting or set offline
+    int timeout = QSettings().value("server/timeout", 3000).toInt();
+    QDeadlineTimer t(timeout);
+    while (_status != NetworkUtils::Online)
     {
-        // If not online or connecting, we need to get online
-        if (_status == NetworkUtils::Offline) setOnline();
-        //wait three seconds when connecting or set offline
-        int timeout = QSettings().value("server/timeout", 3000).toInt();
-        QDeadlineTimer t(timeout);
-        while (_status != NetworkUtils::Online)
+        qApp->processEvents();
+        if ( t.hasExpired() || _status == NetworkUtils::Offline )
         {
-            qApp->processEvents();
-            if ( t.hasExpired() || _status == NetworkUtils::Offline )
-            {
-                setOffline();
-                log("Cannot process request, server unavailable.", DuQFLog::Critical);
-                return;
-            }
+            setOffline();
+            log("Cannot process request, server unavailable.", DuQFLog::Critical);
+            return false;
         }
     }
+    return true;
+}
 
+QString DBInterface::getServerAddress()
+{
     QSettings settings;
+    //Get server address
+    QString serverAddress = settings.value("server/address", "localhost/ramses/").toString();
+    //if (!serverAddress.endsWith("/")) serverAddress += "/";
+    return serverAddress;
+}
 
+QString DBInterface::getProtocol()
+{
+    QSettings settings;
     //Get server address
     QString protocol = "http://";
     if (settings.value("server/ssl", true).toBool())
@@ -924,49 +1137,104 @@ void DBInterface::request(QString req, bool waitPing)
         protocol = "https://";
         if (!QSslSocket::supportsSsl()) {
             log("SSL is not available on this system. Please install OpenSSL to securely connect to the specified server.", DuQFLog::Critical);
-            return;
+            return "";
         }
     }
-    QString serverAddress = settings.value("server/address", "localhost/ramses/").toString();
-    //if (!serverAddress.endsWith("/")) serverAddress += "/";
+    return protocol;
+}
 
-    //add token to the request
-    if (_sessionToken != "") req += "&token=" + _sessionToken;
+void DBInterface::request(QString query, QStringList args, bool wait)
+{
+    if (_suspended) return;
 
-    //request
-    QUrl url(protocol + serverAddress + req);
+    if (wait) if (!waitPing()) return;
+
+    QString serverAddress = getServerAddress();
+    QString protocol = getProtocol();
+    if (protocol == "") return;
+
+    QUrl url(protocol % serverAddress % "?" % query);
     QNetworkRequest request;
     request.setUrl(url);
-    request.setHeader(QNetworkRequest::UserAgentHeader, QString(STR_INTERNALNAME) + " v" + QString(STR_VERSION));
-    _reply = _network.get(request);
 
-    if (req.indexOf("login") >= 0)
-    {
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
+    request.setHeader(QNetworkRequest::UserAgentHeader, QString(STR_INTERNALNAME) + " v" + QString(STR_VERSION));
+
+    // Post body
+    if (_sessionToken != "") args << "token=" + _sessionToken;
+    QString body = buildFormEncodedString(args);
+
+    // Send post
+    _reply = _network.post(request, body.toUtf8());
+
 #ifdef QT_DEBUG
-        log("New request: " + url.toString(QUrl::None), DuQFLog::Debug);
-#else
-        log("New request: " + protocol + serverAddress + "[Hidden login info]", DuQFLog::Information);
-#endif
-    }
+    // Log URL / GET
+    log( "New request: " + url.toString(QUrl::RemovePassword), DuQFLog::Debug);
+    // Log POST body
+    if (query == "login")
+        log("Request data: [Hidden login info]", DuQFLog::Data);
     else
-    {
-        log("New request: " + url.toString(QUrl::RemovePassword), DuQFLog::Debug);
-    }
+        log("Request data: " + body, DuQFLog::Data);
+#endif
 
     connect(_reply, SIGNAL(error(QNetworkReply::NetworkError)), this,SLOT(networkError(QNetworkReply::NetworkError)));
 }
 
-void DBInterface::request(QStringList args)
+void DBInterface::request(QString query, QJsonObject body, bool wait)
 {
-    QString q = "?";
+    if (_suspended) return;
+
+    if (wait) if (!waitPing()) return;
+
+    QString serverAddress = getServerAddress();
+    QString protocol = getProtocol();
+    if (protocol == "") return;
+
+    QUrl url(protocol % serverAddress % "?" % query);
+    QNetworkRequest request;
+    request.setUrl(url);
+
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+    request.setHeader(QNetworkRequest::UserAgentHeader, QString(STR_INTERNALNAME) + " v" + QString(STR_VERSION));
+
+    // Post body
+
+    if (_sessionToken != "") body.insert("token", _sessionToken );
+    QJsonDocument bodyDoc;
+    bodyDoc.setObject(body);
+
+    // Send post
+    _reply = _network.post(request, bodyDoc.toJson(QJsonDocument::Compact));
+
+#ifdef QT_DEBUG
+    // Log URL / GET
+    log( "New request: " + url.toString(QUrl::RemovePassword), DuQFLog::Debug);
+    // Log POST body
+    if (query == "login")
+        log("Request data: [Hidden login info]", DuQFLog::Data);
+    else
+        log("Request data: " + bodyDoc.toJson(), DuQFLog::Data);
+#endif
+
+    connect(_reply, SIGNAL(error(QNetworkReply::NetworkError)), this,SLOT(networkError(QNetworkReply::NetworkError)));
+}
+
+QString DBInterface::buildFormEncodedString(QStringList args)
+{
+    QString q;
     bool first = true;
     foreach(QString arg, args)
     {
         if (!first) q += "&";
         first = false;
+        // Replace forbidden words
+        foreach(QString word, _forbiddenWords)
+        {
+            arg = arg.replace(" " + word, "%" + word + "%");
+        }
         q += QUrl::toPercentEncoding(arg, "=");
     }
-    request(q);
+    return q;
 }
 
 QString DBInterface::generatePassHash(QString password, QString salt)

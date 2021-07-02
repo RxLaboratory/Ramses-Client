@@ -51,10 +51,7 @@ void SequenceEditWidget::update()
 
     if (!checkInput()) return;
 
-    m_sequence->setName(ui_nameEdit->text());
-    m_sequence->setShortName(ui_shortNameEdit->text());
-
-    m_sequence->update();
+    ObjectEditWidget::update();
 
     updating = false;
 }

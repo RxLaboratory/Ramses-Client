@@ -1,6 +1,17 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <QMouseEvent>
+#include <QLabel>
+#include <QToolButton>
+#include <QMenu>
+#include <QDesktopServices>
+#include <QtDebug>
+#include <QSettings>
+#include <QProcess>
+#include <QMessageBox>
+#include <QSystemTrayIcon>
+
 #include "ui_mainwindow.h"
 #include "duqf-app/app-version.h"
 #include "duqf-app/app-style.h"
@@ -8,6 +19,9 @@
 #include "duqf-widgets/settingswidget.h"
 #include "duqf-widgets/appearancesettingswidget.h"
 #include "duqf-widgets/aboutdialog.h"
+#include "duqf-utils/utils.h"
+#include "duqf-widgets/toolbarspacer.h"
+#include "duqf-widgets/duqflogtoolbutton.h"
 
 #include "serversettingswidget.h"
 #include "daemonsettingswidget.h"
@@ -27,6 +41,8 @@
 #include "filetypelistmanagerwidget.h"
 #include "applicationlistmanagerwidget.h"
 #include "pipefilelistmanagerwidget.h"
+#include "schedulemanagerwidget.h"
+#include "statisticswidget.h"
 #include "dbinterface.h"
 #include "daemon.h"
 #include "ramloader.h"
@@ -35,20 +51,9 @@
 #include "progresspage.h"
 #include "processmanager.h"
 #include "progressbar.h"
-#include "duqf-utils/utils.h"
-#include "duqf-widgets/toolbarspacer.h"
-#include "duqf-widgets/duqflogtoolbutton.h"
+
 #include "rameditwidgets/itemtablemanagerwidget.h"
-#include <QMouseEvent>
-#include <QLabel>
-#include <QToolButton>
-#include <QMenu>
-#include <QDesktopServices>
-#include <QtDebug>
-#include <QSettings>
-#include <QProcess>
-#include <QMessageBox>
-#include <QSystemTrayIcon>
+
 
 class MainWindow : public QMainWindow, private Ui::MainWindow
 {
@@ -89,11 +94,15 @@ private:
     QMenu *helpMenu;
     ProgressPage *progressPage;
     ProjectEditWidget *ui_currentProjectSettings;
+    QDockWidget *ui_statsDockWidget;
+    QDockWidget *ui_consoleDockWidget;
+    DuQFDockTitle *ui_statsTitle;
 
-    QMenu *userMenu;
-    QToolButton *userButton;
-    QToolButton *networkButton;
-    QToolButton *refreshButton;
+    QMenu *ui_userMenu;
+    QToolButton *ui_userButton;
+    QToolButton *ui_networkButton;
+    QToolButton *ui_refreshButton;
+    QToolButton *ui_consoleButton;
     int m_currentPageIndex = 0;
 
     QList<ObjectDockWidget *> _dockedObjects;
@@ -133,6 +142,7 @@ private slots:
     void pipeline(bool show = true);
     void shots(bool show = true);
     void assets(bool show = true);
+    void schedule(bool show = true);
     void networkButton_clicked();
     void loggedIn();
     void loggedOut();

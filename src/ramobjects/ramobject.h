@@ -7,6 +7,7 @@
 #include "dbinterface.h"
 #include "ramuuid.h"
 #include "config.h"
+#include "duqf-utils/utils.h"
 
 class ObjectDockWidget;
 
@@ -31,14 +32,33 @@ public:
                     User,
                     ObjectList,
                     ObjectUberList,
-                    StepStatusHistory};
+                    StepStatusHistory,
+                    ScheduleEntry};
     Q_ENUM( ObjectType )
+
+    enum SubFolder { NoFolder,
+                   ConfigFolder,
+                   AdminFolder,
+                   PreProdFolder,
+                   ProdFolder,
+                   PostProdFolder,
+                   AssetsFolder,
+                   ShotsFolder,
+                   ExportFolder,
+                   TemplatesFolder,
+                   PublishFolder,
+                   VersionsFolder,
+                   PreviewFolder,
+                   UsersFolder,
+                   ProjectsFolder,
+                   TrashFolder};
+    Q_ENUM( SubFolder )
 
     explicit RamObject(QObject *parent = nullptr);
     explicit RamObject(QString uuid, QObject *parent = nullptr);
     explicit RamObject(QString shortName, QString name, QString uuid = "", QObject *parent = nullptr);
 
-    QString shortName() const;
+    virtual QString shortName() const;
     void setShortName(const QString &shortName);
 
     virtual QString name() const;
@@ -55,15 +75,25 @@ public:
     int order() const;
     void setOrder(int order);
 
+    QString path(SubFolder subFolder = NoFolder, bool create = false) const;
+    QStringList listFiles(SubFolder subFolder = NoFolder) const;
+    QStringList listFiles(SubFolder subFolder, QString subPath) const;
+    void deleteFile(QString fileName, SubFolder folder=NoFolder) const;
+    void revealFolder(SubFolder subFolder = NoFolder);
+
+    QString subFolderName(SubFolder folder) const;
+
     QString filterUuid() const;
 
-    bool is(const RamObject *other);
+    bool is(const RamObject *other) const;
 
     static RamObject *obj(QString uuid);
 
+
 public slots:
     virtual void update();
-    virtual void remove();
+    virtual void removeFromDB() {};
+    virtual void remove(bool updateDB = true);
     virtual void edit(bool s = true) { Q_UNUSED(s) };
 
 signals:
@@ -91,6 +121,7 @@ protected:
 
     void setEditWidget( QWidget *w );
     void showEdit(bool show = true);
+    virtual QString folderPath() const { return QString(); };
 
 private:
     RamObject::ObjectType _objectType = Generic;

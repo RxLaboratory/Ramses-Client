@@ -13,9 +13,7 @@ public:
     ~RamApplication();
 
     QString executableFilePath() const;
-    void setExecutableFilePath(const QString &executableFilePath);
-
-    void update() override;
+    void setExecutableFilePath(const QString &executableFilePath);   
 
     bool canExportFileType(RamFileType *ft) const;
     bool canExportFileType(QString extension) const;
@@ -26,11 +24,16 @@ public:
     RamObjectList *importFileTypes() const;
     RamObjectList *exportFileTypes() const;
 
+    bool canOpen(QString filePath) const;
+    bool open(QString filePath) const;
+
     static RamApplication *application(QString uuid);
 
 public slots:
     void unassignFileType(RamObject *o);
+    void update() override;
     virtual void edit(bool show = true) override;
+    virtual void removeFromDB() override;
 
 private slots:
     void nativeFileTypeUnassigned(const QModelIndex &parent, int first, int last);
@@ -41,7 +44,7 @@ private slots:
     void exportFileTypeAssigned(const QModelIndex &parent, int first, int last);
 
 private:
-    QString _executableFilePath;
+    QString m_executableFilePath;
     RamObjectList *m_nativeFileTypes;
     RamObjectList *m_importFileTypes;
     RamObjectList *m_exportFileTypes;

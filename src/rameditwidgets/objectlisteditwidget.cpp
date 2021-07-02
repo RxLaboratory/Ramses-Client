@@ -20,53 +20,43 @@ void ObjectListEditWidget::setList(RamObjectList *objectList)
 {
     while(!m_listConnections.isEmpty()) disconnect(m_listConnections.takeLast());
 
+    // Show all
+    ui_assignMenu->showAll();
+
     setFilterList(nullptr);
     m_objectList = objectList;
-    m_listWidget->setList(m_objectList);
+    ui_listWidget->setList(m_objectList);
 
     if (!objectList) return;
 
     // assignment
-    m_listConnections << connect(objectList, SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(objectAssigned(QModelIndex,int,int)));
-    m_listConnections << connect(objectList, SIGNAL(rowsAboutToBeRemoved(QModelIndex,int,int)), this, SLOT(objectUnassigned(QModelIndex,int,int)));
+    m_listConnections << connect(ui_listWidget->filteredList(), SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(objectAssigned(QModelIndex,int,int)));
+    m_listConnections << connect(ui_listWidget->filteredList(), SIGNAL(rowsAboutToBeRemoved(QModelIndex,int,int)), this, SLOT(objectUnassigned(QModelIndex,int,int)));
 
     objectAssigned(QModelIndex(), 0, m_objectList->count() - 1);
 }
 
 void ObjectListEditWidget::setFilterList(RamObjectList *filterList)
 {
-    m_filterBox->setList(filterList);
+    ui_filterBox->setList(filterList);
     m_filterList = filterList;
     if (filterList)
     {
-        m_title->hide();
-        m_filterBox->show();
+        ui_title->hide();
+        ui_filterBox->show();
     }
     else
     {
-        m_title->show();
-        m_filterBox->hide();
+        ui_title->show();
+        ui_filterBox->hide();
     }
 }
 
 void ObjectListEditWidget::setAssignList(RamObjectList *assignList)
 {
-    m_assignMenu = new QMenu(this);
-    m_addButton->setPopupMode(QToolButton::InstantPopup);
-    m_addButton->setMenu(m_assignMenu);
-
-    m_assignList = assignList;
-
-    // Add Actions
-    QAction *addAction = new QAction("Create new");
-    m_assignMenu->addAction(addAction);
-    connect(addAction, &QAction::triggered, this, &ObjectListEditWidget::add);
-
-    m_assignMenu->addSeparator();
-
-    // add one action per obj
-    for (int i = 0; i < assignList->count(); i++)
-        newAssignObj( assignList->at(i) );
+    ui_assignMenu->setList(assignList);
+    ui_addButton->setPopupMode(QToolButton::InstantPopup);
+    ui_addButton->setMenu(ui_assignMenu);
 
     // hide already assigned
     if(m_objectList)
@@ -76,14 +66,16 @@ void ObjectListEditWidget::setAssignList(RamObjectList *assignList)
     }
 
     m_useAssignList = true;
+}
 
-    connect(assignList, SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(newAssignObj(QModelIndex,int,int)));
-    connect(assignList, SIGNAL(rowsAboutToBeRemoved(QModelIndex,int,int)), this, SLOT(assignObjRemoved(QModelIndex,int,int)));
+void ObjectListEditWidget::setDontRemoveShortNameList(QStringList dontRemove)
+{
+    m_dontRemove = dontRemove;
 }
 
 void ObjectListEditWidget::clear()
 {
-    m_listWidget->setList(nullptr);
+    ui_listWidget->setList(nullptr);
 }
 
 void ObjectListEditWidget::setEditMode(EditMode editMode)
@@ -93,52 +85,58 @@ void ObjectListEditWidget::setEditMode(EditMode editMode)
 
 void ObjectListEditWidget::setEditable(bool editable)
 {
-    m_removeButton->setVisible(editable);
-    m_addButton->setVisible(editable);
+    ui_removeButton->setVisible(editable);
+    ui_addButton->setVisible(editable);
 }
 
 void ObjectListEditWidget::setSearchable(bool searchable)
 {
-    m_searchEdit->setVisible(searchable);
+    ui_searchEdit->setVisible(searchable);
+}
+
+void ObjectListEditWidget::setSortable(bool sortable)
+{
+    ui_listWidget->setSortable(sortable);
 }
 
 void ObjectListEditWidget::setTitle(QString title)
 {
-    m_title->setVisible(title != "");
-    m_title->setText(title);
+    ui_title->setVisible(title != "");
+    ui_title->setText(title);
 }
 
 void ObjectListEditWidget::select(RamObject *o)
 {
-    m_listWidget->select(o);
+    ui_listWidget->select(o);
 }
 
 void ObjectListEditWidget::setFilter(RamObject *o)
 {
-    m_filterBox->setObject(o);
-    m_listWidget->filter(o);
+    QSignalBlocker b(ui_filterBox);
+    ui_filterBox->setObject(o);
+    ui_assignMenu->filter(o);
+    ui_listWidget->filter(o);
 }
 
 QToolButton *ObjectListEditWidget::addButton() const
 {
-    return m_addButton;
+    return ui_addButton;
 }
 
 QString ObjectListEditWidget::currentFilterUuid() const
 {
-    return m_filterBox->currentUuid();
+    return ui_filterBox->currentUuid();
 }
 
 RamObject *ObjectListEditWidget::currentFilter() const
 {
-    return m_filterBox->currentObject();
+    return ui_filterBox->currentObject();
 }
 
 void ObjectListEditWidget::removeSelectedObjects()
 {
-    QModelIndexList selection = m_listWidget->selectionModel()->selectedRows();
+    QModelIndexList selection = ui_listWidget->selectionModel()->selectedRows();
     if (selection.count() == 0) return;
-
 
     if (m_editMode == RemoveObjects)
     {
@@ -147,6 +145,22 @@ void ObjectListEditWidget::removeSelectedObjects()
             "Are you sure you want to premanently remove the selected items?" );
 
         if ( confirm != QMessageBox::Yes) return;
+    }
+
+    // Check if we can remove these objects
+    for (int i = 0; i < selection.count(); i++)
+    {
+        QModelIndex index = selection.at(i);
+        quintptr iptr = index.data(Qt::UserRole).toULongLong();
+        if(iptr == 0) continue;
+        RamObject *o = reinterpret_cast<RamObject*>( iptr );
+        if (m_dontRemove.contains(o->shortName()))
+        {
+            QMessageBox::information(this,
+                                     "Can't remove this",
+                                     "Sorry, " + o->shortName() + " | " + o->name() + " must not be removed.");
+            return;
+        }
     }
 
     QList<RamObject*> objs = m_objectList->removeIndices(selection);
@@ -162,69 +176,11 @@ void ObjectListEditWidget::removeSelectedObjects()
 
 void ObjectListEditWidget::edit(RamObject *obj)
 {
-    qDebug() << "List Edit Widget EDIT";
     obj->edit();
 }
 
-void ObjectListEditWidget::newAssignObj(RamObject *obj)
+void ObjectListEditWidget::assign(RamObject *obj)
 {
-    QAction *objAction = new QAction( obj->name() );
-    quintptr iptr = reinterpret_cast<quintptr>( obj );
-    objAction->setData(iptr);
-    m_assignMenu->addAction(objAction);
-    connect(objAction, SIGNAL(triggered()), this, SLOT(assignAction()));
-    connect(obj, SIGNAL(changed(RamObject*)), this, SLOT(assignObjChanged(RamObject*)));
-}
-
-void ObjectListEditWidget::newAssignObj(const QModelIndex &parent, int first, int last)
-{
-    Q_UNUSED(parent)
-
-    for (int i = first; i <= last; i++)
-    {
-        RamObject *o = m_assignList->at(i);
-        newAssignObj(o);
-    }
-}
-
-void ObjectListEditWidget::assignObjRemoved(const QModelIndex &parent, int first, int last)
-{
-    Q_UNUSED(parent)
-
-    QList<QAction *> actions = m_assignMenu->actions();
-
-    for (int i = first; i <= last; i++)
-    {
-        RamObject *removedObj = m_assignList->at(i);
-        for (int j = actions.count() -1 ; j >= 2 ; j++)
-        {
-            quintptr iptr = actions.at(j)->data().toULongLong();
-            RamObject *obj = reinterpret_cast<RamObject*>( iptr );
-
-            if (removedObj->is(obj)) actions.at(j)->deleteLater();
-            break;
-        }
-    }
-}
-
-void ObjectListEditWidget::assignObjChanged(RamObject *changedObj)
-{
-    QList<QAction *> actions = m_assignMenu->actions();
-
-    for(int i= actions.count() -1; i >= 2; i--)
-    {
-        quintptr iptr = actions.at(i)->data().toULongLong();
-        RamObject *obj = reinterpret_cast<RamObject*>( iptr );
-
-        if (changedObj->is(obj)) actions.at(i)->setText(changedObj->name());
-    }
-}
-
-void ObjectListEditWidget::assignAction()
-{
-    QAction *objAction = qobject_cast<QAction*>( sender() );
-    quintptr iptr = objAction->data().toULongLong();
-    RamObject *obj = reinterpret_cast<RamObject*>( iptr );
     m_objectList->append(obj);
 }
 
@@ -234,17 +190,12 @@ void ObjectListEditWidget::objectAssigned(const QModelIndex &parent, int first, 
 
     if (!m_useAssignList) return;
 
-    QList<QAction *> actions = m_assignMenu->actions();
+    RamObjectFilterModel *filteredList = ui_listWidget->filteredList();
+
     for (int i = first ; i <= last; i++)
     {
-        RamObject *assignedObj = m_objectList->at(i);
-        for(int i= actions.count() -1; i >= 2; i--)
-        {
-            quintptr iptr = actions.at(i)->data().toULongLong();
-            RamObject *obj = reinterpret_cast<RamObject*>( iptr );
-
-            if (assignedObj->is(obj)) actions.at(i)->setVisible(false);
-        }
+        RamObject *assignedObj = reinterpret_cast<RamObject*>( filteredList->data( filteredList->index(i,0), Qt::UserRole ).toULongLong() );
+        ui_assignMenu->setObjectVisible(assignedObj, false);
     }
 }
 
@@ -254,18 +205,20 @@ void ObjectListEditWidget::objectUnassigned(const QModelIndex &parent, int first
 
     if (!m_useAssignList) return;
 
-    QList<QAction *> actions = m_assignMenu->actions();
+    RamObjectFilterModel *filteredList = ui_listWidget->filteredList();
+
     for (int i = first ; i <= last; i++)
     {
-        RamObject *unassignedObj = m_objectList->at(i);
-        for(int i= actions.count() -1; i >= 2; i--)
-        {
-            quintptr iptr = actions.at(i)->data().toULongLong();
-            RamObject *obj = reinterpret_cast<RamObject*>( iptr );
-
-            if (unassignedObj->is(obj)) actions.at(i)->setVisible(true);
-        }
+        RamObject *assignedObj = reinterpret_cast<RamObject*>( filteredList->data( filteredList->index(i,0), Qt::UserRole ).toULongLong() );
+        if (!assignedObj) continue;
+        ui_assignMenu->setObjectVisible(assignedObj, true);
     }
+}
+
+void ObjectListEditWidget::setSearchFocus()
+{
+    ui_listWidget->releaseKeyboard();
+    ui_searchEdit->setFocus();
 }
 
 void ObjectListEditWidget::setupUi(bool editableObjects, RamUser::UserRole editRole)
@@ -280,31 +233,31 @@ void ObjectListEditWidget::setupUi(bool editableObjects, RamUser::UserRole editR
     buttonsLayout->setSpacing(3);
     buttonsLayout->setContentsMargins(0,3,0,0);
 
-    m_title = new QLabel(this);
-    m_title->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
-    buttonsLayout->addWidget(m_title);
+    ui_title = new QLabel(this);
+    ui_title->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+    buttonsLayout->addWidget(ui_title);
 
-    m_filterBox = new RamObjectListComboBox(true, this);
-    m_filterBox->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
-    buttonsLayout->addWidget(m_filterBox);
+    ui_filterBox = new RamObjectListComboBox(true, this);
+    ui_filterBox->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+    buttonsLayout->addWidget(ui_filterBox);
 
-    m_removeButton = new QToolButton(this);
-    m_removeButton->setIcon(QIcon(":/icons/remove"));
-    m_removeButton->setIconSize(QSize(12,12));
-    buttonsLayout->addWidget(m_removeButton);
+    ui_removeButton = new QToolButton(this);
+    ui_removeButton->setIcon(QIcon(":/icons/remove"));
+    ui_removeButton->setIconSize(QSize(12,12));
+    buttonsLayout->addWidget(ui_removeButton);
 
-    m_addButton = new QToolButton(this);
-    m_addButton->setIcon(QIcon(":/icons/add"));
-    m_addButton->setIconSize(QSize(12,12));
-    buttonsLayout->addWidget(m_addButton);
+    ui_addButton = new QToolButton(this);
+    ui_addButton->setIcon(QIcon(":/icons/add"));
+    ui_addButton->setIconSize(QSize(12,12));
+    buttonsLayout->addWidget(ui_addButton);
 
     mainLayout->addLayout(buttonsLayout);
 
-    m_searchEdit = new DuQFSearchEdit(this);
-    mainLayout->addWidget(m_searchEdit);
+    ui_searchEdit = new DuQFSearchEdit(this);
+    mainLayout->addWidget(ui_searchEdit);
 
-    m_listWidget = new RamObjectListWidget(m_objectList, editableObjects, editRole, RamObjectListWidget::List, this);
-    mainLayout->addWidget(m_listWidget);
+    ui_listWidget = new RamObjectListWidget(m_objectList, editableObjects, editRole, RamObjectListWidget::List, this);
+    mainLayout->addWidget(ui_listWidget);
 
     mainLayout->setStretch(0, 0);
     mainLayout->setStretch(1, 0);
@@ -316,20 +269,31 @@ void ObjectListEditWidget::setupUi(bool editableObjects, RamUser::UserRole editR
     setEditable(true);
     // Hide filters until at least one is added
     setFilterList(nullptr);
+
+    ui_assignMenu = new RamObjectListMenu(false, this);
+    ui_assignMenu->addCreateButton();
 }
 
 void ObjectListEditWidget::connectEvents()
 {
     // add & remove buttons
-    connect(m_addButton, &QToolButton::clicked, this, &ObjectListEditWidget::add);
-    connect(m_removeButton, SIGNAL(clicked()), this, SLOT(removeSelectedObjects()));
+    connect(ui_addButton, &QToolButton::clicked, this, &ObjectListEditWidget::add);
+    connect(ui_assignMenu, &RamObjectListMenu::create, this, &ObjectListEditWidget::add);
+    connect(ui_removeButton, SIGNAL(clicked()), this, SLOT(removeSelectedObjects()));
+    connect(ui_assignMenu,SIGNAL(assign(RamObject*)),this,SLOT(assign(RamObject*)));
     // search
-    connect(m_searchEdit, SIGNAL(changing(QString)), m_listWidget, SLOT(search(QString)));
-    connect(m_searchEdit, SIGNAL(changed(QString)), m_listWidget, SLOT(search(QString)));
+    connect(ui_searchEdit, SIGNAL(changing(QString)), ui_listWidget, SLOT(search(QString)));
+    connect(ui_searchEdit, SIGNAL(changed(QString)), ui_listWidget, SLOT(search(QString)));
     // filters
-    connect(m_filterBox,SIGNAL(currentObjectChanged(RamObject*)), this, SLOT(setFilter(RamObject*)));
+    connect(ui_filterBox,SIGNAL(currentObjectChanged(RamObject*)), this, SLOT(setFilter(RamObject*)));
     // edit objects
-    connect(m_listWidget, SIGNAL(editObject(RamObject*)), this, SLOT(edit(RamObject*)));
+    connect(ui_listWidget, SIGNAL(editObject(RamObject*)), this, SLOT(edit(RamObject*)));
     // Relay list signals
-    connect(m_listWidget, &RamObjectListWidget::objectSelected, this, &ObjectListEditWidget::objectSelected);
+    connect(ui_listWidget, &RamObjectListWidget::objectSelected, this, &ObjectListEditWidget::objectSelected);
+
+    // Shortcuts
+    QShortcut *s = new QShortcut(QKeySequence(QKeySequence::Delete), ui_listWidget, nullptr, nullptr, Qt::WidgetWithChildrenShortcut );
+    connect(s, SIGNAL(activated()), this, SLOT(removeSelectedObjects()));
+    s = new QShortcut(QKeySequence(QKeySequence::Find), this, nullptr, nullptr, Qt::WidgetWithChildrenShortcut );
+    connect(s, SIGNAL(activated()), this, SLOT(setSearchFocus()));
 }

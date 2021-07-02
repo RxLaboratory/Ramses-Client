@@ -34,9 +34,12 @@ bool statusSorter(RamObject *a, RamObject *b)
 
 void RamStepStatusHistory::sort(int column, Qt::SortOrder order)
 {
-    /*if (m_sorted) return;
+    Q_UNUSED(column)
+    Q_UNUSED(order)
+
+    if (m_sorted) return;
     std::sort(m_objectsList.begin(), m_objectsList.end(), statusSorter);
-    m_sorted = false;*/
+    m_sorted = false;
 }
 
 void RamStepStatusHistory::edit(bool show)

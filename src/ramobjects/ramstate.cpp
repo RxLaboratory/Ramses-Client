@@ -13,7 +13,7 @@ RamState::RamState(QString shortName, QString name, QString uuid) :
 
 RamState::~RamState()
 {
-    m_dbi->removeState(m_uuid);
+
 }
 
 QColor RamState::color() const
@@ -46,7 +46,12 @@ void RamState::update()
 {
     if(!m_dirty) return;
     RamObject::update();
-    m_dbi->updateState(m_uuid, m_shortName, m_name, _color.name(), QString::number(_completionRatio));
+    m_dbi->updateState(m_uuid, m_shortName, m_name, _color.name(), QString::number(_completionRatio), m_comment);
+}
+
+void RamState::removeFromDB()
+{
+    m_dbi->removeState(m_uuid);
 }
 
 RamState *RamState::state(QString uuid)

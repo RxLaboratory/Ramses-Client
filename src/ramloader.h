@@ -5,6 +5,7 @@
 
 #include "processmanager.h"
 #include "ramses.h"
+#include "ramscheduleentry.h"
 
 class RamLoader : public QThread
 {
@@ -74,6 +75,9 @@ private:
     // pipefiles
     void gotPipeFiles(QJsonArray pipeFiles, RamProject *project);
     QString gotPipeFile(QJsonObject newPF, RamProject *project);
+    // schedule
+    void gotSechedule(QJsonArray schedule);
+    QString gotScheduleEntry(QJsonObject newSE);
 
     QJsonObject m_data;
 

@@ -19,12 +19,14 @@ public:
     bool isPreviewable() const;
     void setPreviewable(bool previewable);
 
-    void update() override;
+    bool check(QString filePath) const;
 
     static RamFileType *fileType(QString uuid);
 
 public slots:
+    void update() override;
     virtual void edit(bool show = true) override;
+    virtual void removeFromDB() override;
 
 private:
     QStringList m_extensions;

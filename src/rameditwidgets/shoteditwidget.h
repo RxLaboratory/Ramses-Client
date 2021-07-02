@@ -8,6 +8,7 @@
 #include "ramses.h"
 #include "statushistorywidget.h"
 #include "ramobjectlistcombobox.h"
+#include "objectlisteditwidget.h"
 #include "duqf-widgets/duqffolderdisplaywidget.h"
 #include "duqf-widgets/autoselectdoublespinbox.h"
 #include "duqf-widgets/autoselectspinbox.h"
@@ -30,7 +31,7 @@ private slots:
     void secondsChanged();
 
 private:
-    RamShot *_shot = nullptr;
+    RamShot *m_shot = nullptr;
 
     void setupUi();
     void connectEvents();
@@ -39,6 +40,7 @@ private:
     AutoSelectDoubleSpinBox *ui_secondsBox;
     AutoSelectSpinBox *ui_framesBox;
     RamObjectListComboBox *ui_sequencesBox;
+    ObjectListEditWidget *ui_assetList;
 };
 
 #endif // SHOTEDITWIDGET_H

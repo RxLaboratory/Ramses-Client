@@ -17,7 +17,10 @@ bool stateSorter(RamObject *a, RamObject *b)
 
 void RamStateList::sort(int column, Qt::SortOrder order)
 {
-    /*if (m_sorted) return;
+    Q_UNUSED(column)
+    Q_UNUSED(order)
+
+    if (m_sorted) return;
     std::sort(m_objectsList.begin(), m_objectsList.end(), stateSorter);
-    m_sorted = true;*/
+    m_sorted = true;
 }

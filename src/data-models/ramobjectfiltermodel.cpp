@@ -2,13 +2,13 @@
 
 RamObjectFilterModel::RamObjectFilterModel(QObject *parent) : QSortFilterProxyModel(parent)
 {
-
+    m_emptyList = new RamObjectList(this);
+    this->setSourceModel(m_emptyList);
 }
 
-void RamObjectFilterModel::setList(RamObjectList *list)
+void RamObjectFilterModel::setList(QAbstractItemModel *list)
 {
-    m_objectList = list;
-    if(!list) return;
+    if(!list) this->setSourceModel(m_emptyList);
     this->setSourceModel(list);
 }
 
@@ -29,6 +29,7 @@ bool RamObjectFilterModel::filterAcceptsRow(int sourceRow, const QModelIndex &so
     QModelIndex index = sourceModel()->index(sourceRow, 0, sourceParent);
 
     quintptr iptr = index.data(Qt::UserRole).toULongLong();
+    if (iptr == 0) return false;
     RamObject *obj = reinterpret_cast<RamObject*>(iptr);
 
     bool filterOK = m_currentFilterUuid == "" || obj->filterUuid() == m_currentFilterUuid;

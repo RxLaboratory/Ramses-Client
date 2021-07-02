@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1280</width>
-    <height>720</height>
+    <width>1600</width>
+    <height>800</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -110,6 +110,8 @@
    <addaction name="actionPipeline"/>
    <addaction name="actionAssets"/>
    <addaction name="actionShots"/>
+   <addaction name="actionSchedule"/>
+   <addaction name="actionStatistics"/>
   </widget>
   <action name="actionLogIn">
    <property name="icon">
@@ -211,6 +213,33 @@
    </property>
    <property name="toolTip">
     <string>Shots</string>
+   </property>
+  </action>
+  <action name="actionSchedule">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/calendar</normaloff>:/icons/calendar</iconset>
+   </property>
+   <property name="text">
+    <string>Schedule</string>
+   </property>
+   <property name="toolTip">
+    <string>Schedule</string>
+   </property>
+  </action>
+  <action name="actionStatistics">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/stats</normaloff>:/icons/stats</iconset>
+   </property>
+   <property name="text">
+    <string>Statistics</string>
    </property>
   </action>
  </widget>

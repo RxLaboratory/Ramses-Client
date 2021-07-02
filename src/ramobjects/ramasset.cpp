@@ -18,7 +18,7 @@ RamAsset::RamAsset(QString shortName, RamAssetGroup *assetGroup, QString name, Q
 
 RamAsset::~RamAsset()
 {
-    m_dbi->removeAsset(m_uuid);
+
 }
 
 RamAssetGroup *RamAsset::assetGroup() const
@@ -85,7 +85,7 @@ void RamAsset::update()
 {
     if (!m_dirty) return;
     RamObject::update();
-    m_dbi->updateAsset(m_uuid, m_shortName, m_name, m_assetGroup->uuid(), _tags.join(','));
+    m_dbi->updateAsset(m_uuid, m_shortName, m_name, m_assetGroup->uuid(), _tags.join(','), m_comment);
 }
 
 RamAsset *RamAsset::asset( QString uuid )
@@ -102,5 +102,16 @@ void RamAsset::edit(bool show)
         m_editReady = true;
     }
     showEdit(show);
+}
+
+void RamAsset::removeFromDB()
+{
+    m_dbi->removeAsset(m_uuid);
+}
+
+QString RamAsset::folderPath() const
+{
+    RamProject *p = m_assetGroup->project();
+    return  m_assetGroup->path() + "/" + p->shortName() + "_A_" + m_shortName;
 }
 

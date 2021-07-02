@@ -1,5 +1,8 @@
 #include "ramobjectlist.h"
 
+#include "ramstatus.h"
+#include "ramstate.h"
+
 RamObjectList::RamObjectList(QObject *parent)
     : QAbstractTableModel(parent)
 {
@@ -36,7 +39,8 @@ QVariant RamObjectList::data(const QModelIndex &index, int role) const
 
     if (role == Qt::DisplayRole) return obj->name();
 
-    if (role == Qt::StatusTipRole)return QString(obj->shortName() % " | " % obj->name());
+    if (role == Qt::StatusTipRole)
+        return QString(obj->shortName() % " | " % obj->name());
 
     if (role == Qt::ToolTipRole) return QString(obj->shortName() % " | " % obj->name() % "\n" % obj->comment());
 
@@ -58,9 +62,22 @@ QVariant RamObjectList::headerData(int section, Qt::Orientation orientation, int
 
 void RamObjectList::sort(int column, Qt::SortOrder order)
 {
-    /*if (m_sorted) return;
+    Q_UNUSED(column)
+    Q_UNUSED(order)
+
+    if (m_sorted) return;
     std::sort(m_objectsList.begin(), m_objectsList.end(), objectSorter);
-    m_sorted = true;*/
+
+    // Sync object order with list indices
+    for (int i = 0; i < m_objectsList.count(); i++)
+    {
+        RamObject *o = m_objectsList.at(i);
+        QSignalBlocker b( o );
+        o->setOrder(i);
+        o->update();
+    }
+
+    m_sorted = true;
 }
 
 void RamObjectList::objectChanged(RamObject *obj)
@@ -72,6 +89,54 @@ void RamObjectList::objectChanged(RamObject *obj)
     QModelIndex index = createIndex(row,0);
     emit dataChanged(index, index, {Qt::DisplayRole});
     emit headerDataChanged(Qt::Vertical, row, row);
+    emit objectDataChanged(obj);
+}
+
+void RamObjectList::objectMoved(RamObject *obj, int from, int to)
+{
+    Q_UNUSED(obj)
+
+    if (from < 0) from = 0;
+    if (to < 0) to = 0;
+    if (from >= m_objectsList.count() ) from = m_objectsList.count();
+    if (to >=  m_objectsList.count() ) to = m_objectsList.count();
+    if (from == to) return;
+
+    beginResetModel();
+
+    m_objectsList.move(from, to);
+
+    // Sync order on objects
+    for (int i = 0; i < m_objectsList.count(); i++)
+    {
+        QSignalBlocker b(m_objectsList.at(i));
+        m_objectsList.at(i)->setOrder(i);
+        m_objectsList.at(i)->update();
+    }
+
+    m_sorted = true;
+
+    endResetModel();
+}
+
+void RamObjectList::objectInserted(const QModelIndex &parent, int first, int last)
+{
+    Q_UNUSED(parent)
+
+    for (int i = first; i <= last; i++)
+    {
+        emit objectInserted( m_objectsList.at(i) );
+    }
+}
+
+void RamObjectList::objectRemoved(const QModelIndex &parent, int first, int last)
+{
+    Q_UNUSED(parent)
+
+    for (int i = first; i <= last; i++)
+    {
+        emit objectRemoved( m_objectsList.at(i) );
+    }
 }
 
 const QString &RamObjectList::name() const
@@ -119,7 +184,7 @@ void RamObjectList::connectObject(RamObject *obj)
     QList<QMetaObject::Connection> c;
     c << connect( obj, SIGNAL(removed(RamObject*)), this, SLOT(removeAll(RamObject*)));
     c << connect( obj, SIGNAL(changed(RamObject*)), this, SLOT(objectChanged(RamObject*)));
-    c << connect( obj, SIGNAL(orderChanged()), this, SLOT(sort()));
+    c << connect( obj, SIGNAL(orderChanged(RamObject*,int,int)), this, SLOT(objectMoved(RamObject*,int,int)));
     m_connections[obj->uuid()] = c;
 }
 
@@ -151,6 +216,14 @@ void RamObjectList::insertObject(int i, RamObject *obj)
     m_objects[obj->uuid()] = obj;
     connectObject(obj);
 
+    if (obj->order() == -1)
+    {
+        QSignalBlocker b(obj);
+        obj->setOrder(i);
+        obj->update();
+    }
+
+    m_sorted = false;
     endInsertRows();
 }
 
@@ -169,6 +242,7 @@ void RamObjectList::clear()
         while(!c.isEmpty()) disconnect(c.takeLast());
     }
 
+    m_sorted = true;
     endResetModel();
 }
 
@@ -233,7 +307,10 @@ QList<RamObject*> RamObjectList::removeIndices(QModelIndexList indices)
     for( int i = indices.count() -1; i >= 0; i--)
     {
         QModelIndex index = indices.at(i);
-        objs << this->takeObject(index.row());
+        quintptr iptr = index.data(Qt::UserRole).toULongLong();
+        RamObject *o = reinterpret_cast<RamObject*>( iptr );
+        objs << o;
+        removeAll(o);
     }
     return objs;
 }

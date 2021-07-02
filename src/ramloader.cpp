@@ -81,9 +81,11 @@ void RamLoader::gotUsers(QJsonArray users)
 {
     DBISuspender s;
 
+    if (users.count() == 0) return;
+
     m_pm->increment();
-    m_pm->setText("Loading projects...");
-    qDebug() << "Loading projects";
+    m_pm->setText("Loading users...");
+    qDebug() << "Loading users";
 
     QStringList uuids;
     // Update projects
@@ -92,10 +94,13 @@ void RamLoader::gotUsers(QJsonArray users)
 
     RamObjectList *us = m_ram->users();
 
-    // Remove deleted projects
+    // Remove deleted users
+    m_pm->setText("Cleaning users...");
+    qDebug() << "Cleaning users";
     for (int i = us->count() - 1; i >= 0; i--)
     {
         RamObject *u = us->at(i);
+        if (u->shortName() == "Ramses") continue;
         if (!uuids.contains(u->uuid()))
             u->remove();
     }
@@ -133,6 +138,7 @@ QString RamLoader::gotUser(QJsonObject newU)
 
     user->setFolderPath( newU.value("folderPath").toString());
     user->setRole( newU.value("role").toString("standard") );
+    user->setComment( newU.value("comment").toString());
 
     m_ram->users()->append(user);
 
@@ -141,6 +147,7 @@ QString RamLoader::gotUser(QJsonObject newU)
 
 void RamLoader::gotProjects(QJsonArray projects, bool init)
 {
+    if (projects.count() == 0) return;
     DBISuspender s;
 
     m_pm->increment();
@@ -179,17 +186,28 @@ QString RamLoader::gotProject(QJsonObject newP, bool init)
     project->setHeight( newP.value("height").toInt());
     project->setFramerate( newP.value("framerate").toDouble());
     project->setFolderPath( newP.value("folderPath").toString());
+    project->setComment( newP.value("comment").toString());
+    project->setDeadline( QDate::fromString( newP.value("deadline").toString(), "yyyy-MM-dd") );
+
+    project->users()->clear();
+
+    foreach( QJsonValue u, newP.value("users").toArray())
+        project->users()->append( RamUser::user( u.toString() ) );
 
     if (!init)
     {
-        m_pm->setMaximum(7);
-        gotSteps( newP.value("steps").toArray(), project);        
+        m_pm->setMaximum(8);
+        gotAssetGroups( newP.value("assetGroups").toArray(), project);
+        gotSequences( newP.value("sequences").toArray(), project);
+
+        gotSteps( newP.value("steps").toArray(), project);
         gotPipeFiles( newP.value("pipeFiles").toArray(), project );
         gotPipes( newP.value("pipes").toArray(), project);
-        gotAssetGroups( newP.value("assetGroups").toArray(), project);
+
         gotAssets( newP.value("assets").toArray(), project);
-        gotSequences( newP.value("sequences").toArray(), project);
         gotShots( newP.value("shots").toArray(), project);
+
+        gotSechedule( newP.value("schedule").toArray() );
     }
 
     m_ram->projects()->append(project);
@@ -199,6 +217,8 @@ QString RamLoader::gotProject(QJsonObject newP, bool init)
 
 void RamLoader::gotTemplateSteps(QJsonArray steps)
 {
+    if (steps.count() == 0) return;
+
     DBISuspender s;
 
     m_pm->setText("Loading template steps...");
@@ -239,6 +259,20 @@ QString RamLoader::gotTemplateStep(QJsonObject newS)
                 uuid
                 );
     step->setType( newS.value("type").toString());
+    step->setComment( newS.value("comment").toString());
+    step->setColor( QColor( newS.value("color").toString()) );
+
+    // Estimations
+    if (newS.value("estimationMethod").toString() == "shot" )
+        step->setEstimationMethod(RamStep::EstimatePerShot);
+    else
+        step->setEstimationMethod(RamStep::EstimatePerSecond);
+
+    step->setEstimationVeryEasy( newS.value("estimationVeryEasy").toDouble() );
+    step->setEstimationEasy( newS.value("estimationEasy").toDouble() );
+    step->setEstimationMedium( newS.value("estimationMedium").toDouble() );
+    step->setEstimationHard( newS.value("estimationHard").toDouble() );
+    step->setEstimationVeryHard( newS.value("estimationVeryHard").toDouble() );
 
     m_ram->templateSteps()->append(step);
 
@@ -247,6 +281,8 @@ QString RamLoader::gotTemplateStep(QJsonObject newS)
 
 void RamLoader::gotTemplateAssetGroups(QJsonArray assetGroups)
 {
+    if (assetGroups.count() == 0) return;
+
     DBISuspender s;
 
     m_pm->setText("Loading template asset groups...");
@@ -286,13 +322,15 @@ QString RamLoader::gotTemplateAssetGroup(QJsonObject newAG)
                 newAG.value("name").toString(),
                 uuid
                 );
-
+    assetGroup->setComment( newAG.value("comment").toString());
     m_ram->templateAssetGroups()->append(assetGroup);
+
     return uuid;
 }
 
 void RamLoader::gotStates(QJsonArray states)
 {
+    if (states.count() == 0) return;
     DBISuspender s;
 
     m_pm->setText("Loading states...");
@@ -334,6 +372,7 @@ QString RamLoader::gotState(QJsonObject newS)
                 );
     state->setColor( QColor( newS.value("color").toString()) );
     state->setCompletionRatio( newS.value("completionRatio").toInt() );
+    state->setComment( newS.value("comment").toString());
 
     m_ram->states()->append(state);
 
@@ -342,6 +381,7 @@ QString RamLoader::gotState(QJsonObject newS)
 
 void RamLoader::gotFileTypes(QJsonArray fileTypes)
 {
+    if (fileTypes.count() == 0) return;
     DBISuspender s;
 
     m_pm->setText("Loading file types...");
@@ -384,6 +424,7 @@ QString RamLoader::gotFileType(QJsonObject newFt)
                 );
 
     fileType->setPreviewable( newFt.value("previewable").toInt() != 0 );
+    fileType->setComment( newFt.value("comment").toString());
 
     m_ram->fileTypes()->append(fileType);
 
@@ -392,6 +433,7 @@ QString RamLoader::gotFileType(QJsonObject newFt)
 
 void RamLoader::gotApplications(QJsonArray applications)
 {
+    if (applications.count() == 0) return;
     DBISuspender s;
 
     m_pm->setText("Loading applications...");
@@ -432,6 +474,8 @@ QString RamLoader::gotApplication(QJsonObject newA)
                 newA.value("executableFilePath").toString(),
                 newA.value("uuid").toString()
                 );
+
+    application->setComment( newA.value("comment").toString());
 
     application->importFileTypes()->clear();
     application->exportFileTypes()->clear();
@@ -496,18 +540,28 @@ QString RamLoader::gotStep(QJsonObject newS, RamProject *project)
                 );
     step->setType( newS.value("type").toString());
     step->setOrder( newS.value("order").toInt() );
+    step->setComment( newS.value("comment").toString());
+    step->setColor( QColor( newS.value("color").toString()) );
 
-    step->users()->clear();
+    // Estimations
+    if (newS.value("estimationMethod").toString() == "shot" )
+        step->setEstimationMethod(RamStep::EstimatePerShot);
+    else
+        step->setEstimationMethod(RamStep::EstimatePerSecond);
+
+    step->setEstimationVeryEasy( newS.value("estimationVeryEasy").toDouble() );
+    step->setEstimationEasy( newS.value("estimationEasy").toDouble() );
+    step->setEstimationMedium( newS.value("estimationMedium").toDouble() );
+    step->setEstimationHard( newS.value("estimationHard").toDouble() );
+    step->setEstimationVeryHard( newS.value("estimationVeryHard").toDouble() );
+
+    RamAssetGroup *multiplyGroup = RamAssetGroup::assetGroup( newS.value("multiplyGroupUuid").toString() );
+    step->setEstimationMultiplyGroup( multiplyGroup );
+
     step->applications()->clear();
 
-    foreach( QJsonValue u, newS.value("users").toArray())
-        step->users()->append( RamUser::user( u.toString() ) );
-
-
     foreach(QJsonValue a, newS.value("applications").toArray())
-    {
         step->applications()->append( RamApplication::application(a.toString()) );
-    }
 
     project->steps()->append(step);
 
@@ -554,6 +608,7 @@ QString RamLoader::gotAssetGroup(QJsonObject newAG, RamProject *project)
                 newAG.value("name").toString(),
                 uuid
                 );
+    assetGroup->setComment( newAG.value("comment").toString());
 
     project->assetGroups()->append(assetGroup);
 
@@ -569,8 +624,6 @@ void RamLoader::gotAssets(QJsonArray assets, RamProject *project)
     qDebug() << "Loading assets";
 
     QStringList uuids;
-
-    qDebug() << assets;
 
     // Update assets
     for (int j = 0; j < assets.count(); j++)
@@ -597,8 +650,6 @@ QString RamLoader::gotAsset(QJsonObject newA, RamProject *project)
     DBISuspender s;
     QString uuid = newA.value("uuid").toString();
 
-    qDebug() << newA;
-
     RamAssetGroup *ag = RamAssetGroup::assetGroup( newA.value("assetGroupUuid").toString() );
     if (!ag) return "";
 
@@ -617,11 +668,10 @@ QString RamLoader::gotAsset(QJsonObject newA, RamProject *project)
     asset->setName(name);
     asset->setAssetGroup(ag);
     asset->setTags( newA.value("tags").toString());
+    asset->setComment( newA.value("comment").toString());
     gotStatusHistory( newA.value("statusHistory").toArray(), asset);
 
     project->assets()->append(asset);
-
-    qDebug() << ag->name() + " - " + asset->name();
 
     return uuid;
 }
@@ -668,6 +718,9 @@ QString RamLoader::gotSequence(QJsonObject newS, RamProject *project)
                 newS.value("name").toString(),
                 uuid
                 );
+
+    sequence->setComment( newS.value("comment").toString());
+    sequence->setOrder( newS.value("order").toInt());
 
     project->sequences()->append(sequence);
 
@@ -724,7 +777,18 @@ QString RamLoader::gotShot(QJsonObject newS, RamProject *project)
     shot->setSequence(seq);
     shot->setDuration( newS.value("duration").toDouble() );
     shot->setOrder( newS.value("order").toInt() );
+    shot->setComment( newS.value("comment").toString());
     gotStatusHistory( newS.value("statusHistory").toArray(), shot);
+
+    // Assign assets
+    QJsonArray assts = newS.value("assetUuids").toArray();
+    shot->assets()->clear();
+    for (int i = 0; i < assts.count(); i++)
+    {
+        RamObject *assetObj = RamAsset::asset( assts.at(i).toString() );
+        if (!assetObj) continue;
+        shot->assets()->append(assetObj);
+    }
 
     project->shots()->append(shot);
 
@@ -774,6 +838,18 @@ QString RamLoader::gotStatus(QJsonObject newS, RamItem *item)
     status->setComment( newS.value("comment").toString( ) );
     status->setVersion( newS.value("version").toInt( ) );
     status->setDate( QDateTime::fromString( newS.value("date").toString(), "yyyy-MM-dd hh:mm:ss"));
+    status->assignUser( RamUser::user( newS.value("assignedUserUuid").toString( )));
+    status->setPublished( newS.value("published").toInt() == 1);
+    status->setTimeSpent( newS.value("timeSpent").toInt() );
+    status->setEstimation( newS.value("estimation").toDouble() );
+
+    QString difficulty = newS.value("difficulty").toString();
+    if (difficulty == "veryEasy") status->setDifficulty(RamStatus::VeryEasy);
+    else if (difficulty == "easy") status->setDifficulty(RamStatus::Easy);
+    else if (difficulty == "medium") status->setDifficulty(RamStatus::Medium);
+    else if (difficulty == "hard") status->setDifficulty(RamStatus::Hard);
+    else if (difficulty == "veryHard") status->setDifficulty(RamStatus::VeryHard);
+    else status->setDifficulty(RamStatus::Medium);
 
     item->addStatus(status);
 
@@ -869,11 +945,68 @@ QString RamLoader::gotPipeFile(QJsonObject newPF, RamProject* project)
 
     pipeFile->setShortName( newPF.value("shortName").toString() );
     pipeFile->setProject( project );
+    pipeFile->setComment( newPF.value("comment").toString());
 
     RamFileType *ft = RamFileType::fileType( newPF.value("fileTypeUuid").toString() );
     if (ft) pipeFile->setFileType(ft);
 
     project->pipeFiles()->append(pipeFile);
+
+    return uuid;
+}
+
+void RamLoader::gotSechedule(QJsonArray schedule)
+{
+    DBISuspender s;
+
+    m_pm->increment();
+    m_pm->setText("Loading schedule...");
+    qDebug() << "Loading schedule";
+
+    QStringList uuids;
+    // Update schedule
+    for (int j = 0; j < schedule.count(); j++)
+        uuids << gotScheduleEntry( schedule.at(j).toObject() );
+
+    // Remove deleted entries
+    m_pm->setText("Cleaning schedule...");
+    qDebug() << "Cleaning schedule";
+    RamObjectList *users = Ramses::instance()->users();
+    for (int u = 0; u < users->count(); u++)
+    {
+        RamObjectList *userSchedule = qobject_cast<RamUser*>( users->at(u) )->schedule();
+        for (int i = userSchedule->count() - 1; i >= 0; i--)
+        {
+            RamObject *existingEntry = userSchedule->at(i);
+            if (!uuids.contains(existingEntry->uuid()))
+                existingEntry->remove();
+        }
+    }
+
+}
+
+QString RamLoader::gotScheduleEntry(QJsonObject newSE)
+{
+    DBISuspender s;
+
+    QString uuid = newSE.value("uuid").toString();
+
+    RamUser *user = RamUser::user( newSE.value("userUuid").toString() );
+    if (!user) return uuid;
+    RamStep *step = RamStep::step( newSE.value("stepUuid").toString() );
+    if (!step) return uuid;
+
+    // Get existing one if any, otherwise create it
+    RamScheduleEntry *entry = RamScheduleEntry::scheduleEntry(uuid);
+    if (!entry) entry = new RamScheduleEntry(
+                user,
+                step,
+                QDateTime::fromString( newSE.value("date").toString(), "yyyy-MM-dd hh:mm:ss"),
+                uuid
+                );
+    entry->setComment( newSE.value("comment").toString() );
+
+    user->schedule()->append(entry);
 
     return uuid;
 }

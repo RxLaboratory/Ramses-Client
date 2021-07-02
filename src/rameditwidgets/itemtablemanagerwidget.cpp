@@ -5,6 +5,11 @@ ItemTableManagerWidget::ItemTableManagerWidget(RamStep::Type productionType, QWi
     setupUi();
     m_stepFilter = new RamStepFilterModel(productionType, this);
     m_productionType = productionType;
+    if (m_productionType == RamStep::ShotProduction)
+    {
+        ui_table->setSortable(true);
+        ui_titleBar->setTitle("Shots");
+    }
     connectEvents();
 }
 
@@ -19,14 +24,14 @@ void ItemTableManagerWidget::selectAllSteps()
 
 void ItemTableManagerWidget::selectUserSteps()
 {
-    // TODO pointer as data instead of uuid
     QList<QAction*> actions = ui_stepMenu->actions();
+    RamUser *u = Ramses::instance()->currentUser();
+
     for (int i = 4; i < actions.count(); i++)
     {
         RamStep *step = reinterpret_cast<RamStep*>( actions[i]->data().toULongLong() );
         if (!step) continue;
-        RamUser *u = Ramses::instance()->currentUser();
-        if (step->users()->contains( u ))
+        if (u->isStepAssigned(step))
             actions[i]->setChecked(true);
         else
             actions[i]->setChecked(false);
@@ -92,6 +97,9 @@ void ItemTableManagerWidget::projectChanged(RamProject *project)
         ui_table->setList( project->shots() );
         ui_groupBox->setList( project->sequences() );
     }
+
+    ui_assignUserMenu->setList(project->users());
+    ui_assignUserContextMenu->setList(project->users());
 
     this->setEnabled(true);
 }
@@ -174,7 +182,7 @@ void ItemTableManagerWidget::stepActionToggled(bool checked)
 
 void ItemTableManagerWidget::editObject(RamObject *obj) const
 {
-    // Check if its a status
+    // Check if it's a status
     if (obj->objectType() == RamObject::Status)
     {
         RamStatus *status = qobject_cast<RamStatus*>( obj );
@@ -182,14 +190,8 @@ void ItemTableManagerWidget::editObject(RamObject *obj) const
         // If it's not the current user, create a new one
         RamUser *currentUser = Ramses::instance()->currentUser();
         if(!status->user()->is(currentUser))
-        {
-            status = new RamStatus(
-                        currentUser,
-                        status->state(),
-                        status->step(),
-                        status->item());
-            status->item()->addStatus(status);
-        }
+            status = RamStatus::copy( status, currentUser );
+
         status->edit();
         return;
     }
@@ -205,20 +207,109 @@ void ItemTableManagerWidget::historyObject(RamObject *obj) const
     item->statusHistory(step)->edit();
 }
 
+void ItemTableManagerWidget::unassignUser()
+{
+    QList<RamStatus*> status = beginEditSelectedStatus();
+    for (int i = 0; i < status.count(); i++)
+    {
+        status.at(i)->assignUser(nullptr);
+        status.at(i)->update();
+    }
+}
+
+void ItemTableManagerWidget::assignUser(RamObject *usrObj)
+{
+    RamUser *user = qobject_cast<RamUser*>( usrObj );
+    if (!user) return;
+
+    QList<RamStatus*> status = beginEditSelectedStatus();
+    for (int i = 0; i < status.count(); i++)
+    {
+        status.at(i)->assignUser(user);
+        status.at(i)->update();
+    }
+}
+
+void ItemTableManagerWidget::changeState(RamObject *sttObj)
+{
+    RamState *stt = qobject_cast<RamState*>( sttObj );
+    if (!stt) return;
+
+    QList<RamStatus*> status = beginEditSelectedStatus();
+    for (int i = 0; i < status.count(); i++)
+    {
+        status.at(i)->setState(stt);
+        status.at(i)->update();
+    }
+}
+
+void ItemTableManagerWidget::setVeryEasy()
+{
+    setDiffculty(RamStatus::VeryEasy);
+}
+
+void ItemTableManagerWidget::setEasy()
+{
+    setDiffculty(RamStatus::Easy);
+}
+
+void ItemTableManagerWidget::setMedium()
+{
+    setDiffculty(RamStatus::Medium);
+}
+
+void ItemTableManagerWidget::setHard()
+{
+    setDiffculty(RamStatus::Hard);
+}
+
+void ItemTableManagerWidget::setVeryHard()
+{
+    setDiffculty(RamStatus::VeryHard);
+}
+
+void ItemTableManagerWidget::setDiffculty(RamStatus::Difficulty difficulty)
+{
+    QList<RamStatus*> status = beginEditSelectedStatus();
+    for (int i = 0; i < status.count(); i++)
+    {
+        status.at(i)->setDifficulty( difficulty );
+        status.at(i)->update();
+    }
+}
+
+void ItemTableManagerWidget::setCompletion()
+{
+    QAction* action = qobject_cast<QAction*>( sender() );
+    int completion = action->data().toInt();
+    QList<RamStatus*> status = beginEditSelectedStatus();
+    for (int i = 0; i < status.count(); i++)
+    {
+        status.at(i)->setCompletionRatio( completion );
+        status.at(i)->update();
+    }
+}
+
+void ItemTableManagerWidget::contextMenuRequested(QPoint p)
+{
+    // Call the context menu
+    ui_contextMenu->popup(ui_table->viewport()->mapToGlobal(p));
+}
+
 void ItemTableManagerWidget::setupUi()
 {
     // Get the mainwindow to add the titlebar
     QMainWindow *mw = GuiUtils::appMainWindow();
     mw->addToolBarBreak(Qt::TopToolBarArea);
 
-    ui_titleBar = new TitleBar("",false, mw);
+    ui_titleBar = new TitleBar("Assets",false, mw);
     ui_titleBar->showReinitButton(false);
     mw->addToolBar(Qt::TopToolBarArea,ui_titleBar);
     ui_titleBar->setFloatable(false);
     ui_titleBar->hide();
 
     // group box
-    ui_groupBox = new RamObjectListComboBox(this);
+    ui_groupBox = new RamObjectListComboBox(true,this);
     ui_titleBar->insertLeft(ui_groupBox);
 
     // Search field
@@ -227,7 +318,30 @@ void ItemTableManagerWidget::setupUi()
     ui_searchEdit->hideSearchButton();
     ui_titleBar->insertLeft(ui_searchEdit);
 
-    // Menus
+    // View Menu
+    QMenu *viewMenu = new QMenu(this);
+
+    ui_actionTimeTracking = new QAction("Show time tracking", this);
+    ui_actionTimeTracking->setCheckable(true);
+    ui_actionTimeTracking->setChecked(true);
+    viewMenu->addAction(ui_actionTimeTracking);
+
+    ui_actionCompletionRatio = new QAction("Show completion", this);
+    ui_actionCompletionRatio->setCheckable(true);
+    ui_actionCompletionRatio->setChecked(true);
+    viewMenu->addAction(ui_actionCompletionRatio);
+
+    QToolButton *viewButton = new QToolButton(this);
+    viewButton->setText(" View");
+    viewButton->setIcon(QIcon(":/icons/show"));
+    viewButton->setMenu(viewMenu);
+    viewButton->setIconSize(QSize(16,16));
+    viewButton->setObjectName("menuButton");
+    viewButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    viewButton->setPopupMode(QToolButton::InstantPopup);
+    ui_titleBar->insertLeft(viewButton);
+
+    // Step Menu
     ui_stepMenu = new QMenu(this);
 
     ui_actionSelectAllSteps = new QAction("Select All", this);
@@ -242,7 +356,7 @@ void ItemTableManagerWidget::setupUi()
     ui_stepMenu->addSeparator();
 
     QToolButton *stepButton = new QToolButton(this);
-    stepButton->setText("Steps");
+    stepButton->setText(" Steps");
     stepButton->setIcon(QIcon(":/icons/step"));
     stepButton->setIconSize(QSize(16,16));
     stepButton->setObjectName("menuButton");
@@ -252,19 +366,144 @@ void ItemTableManagerWidget::setupUi()
 
     ui_titleBar->insertLeft(stepButton);
 
+    // Status menu
+    QMenu *statusMenu = new QMenu(this);
+
+    ui_assignUserMenu = new RamObjectListMenu(false, this);
+    ui_assignUserMenu->setTitle("Assign user");
+    ui_assignUserMenu->addCreateButton();
+    ui_assignUserMenu->actions().at(0)->setText("None");
+    statusMenu->addMenu(ui_assignUserMenu);
+
+    ui_changeStateMenu = new RamObjectListMenu(false, this);
+    ui_changeStateMenu->setTitle("Change state");
+    ui_changeStateMenu->setList(Ramses::instance()->states());
+    statusMenu->addMenu(ui_changeStateMenu);
+
+    ui_changeDifficultyMenu = new QMenu("Change difficulty", this);
+    ui_veryEasy = new QAction("Very easy", this);
+    ui_easy = new QAction("Easy", this);
+    ui_medium = new QAction("Medium", this);
+    ui_hard = new QAction("Hard", this);
+    ui_veryHard = new QAction("Very hard", this);
+    ui_changeDifficultyMenu->addAction(ui_veryEasy);
+    ui_changeDifficultyMenu->addAction(ui_easy);
+    ui_changeDifficultyMenu->addAction(ui_medium);
+    ui_changeDifficultyMenu->addAction(ui_hard);
+    ui_changeDifficultyMenu->addAction(ui_veryHard);
+    statusMenu->addMenu(ui_changeDifficultyMenu);
+
+    QMenu *completionMenu = new QMenu("Set completion", this);
+    ui_completion0   = new QAction("0%",this);
+    ui_completion10  = new QAction("10%",this);
+    ui_completion25  = new QAction("25%",this);
+    ui_completion50  = new QAction("50%",this);
+    ui_completion75  = new QAction("75%",this);
+    ui_completion90  = new QAction("90%",this);
+    ui_completion100 = new QAction("100%",this);
+    ui_completion0->setData(0);
+    ui_completion10->setData(10);
+    ui_completion25->setData(25);
+    ui_completion50->setData(50);
+    ui_completion75->setData(75);
+    ui_completion90->setData(90);
+    ui_completion100->setData(100);
+    completionMenu->addAction(ui_completion0  );
+    completionMenu->addAction(ui_completion10 );
+    completionMenu->addAction(ui_completion25 );
+    completionMenu->addAction(ui_completion50 );
+    completionMenu->addAction(ui_completion75 );
+    completionMenu->addAction(ui_completion90 );
+    completionMenu->addAction(ui_completion100);
+    statusMenu->addMenu(completionMenu);
+
+
+    QToolButton *statusButton = new QToolButton(this);
+    statusButton->setText(" Status");
+    statusButton->setIcon(QIcon(":/icons/state-l"));
+    statusButton->setIconSize(QSize(16,16));
+    statusButton->setObjectName("menuButton");
+    statusButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    statusButton->setPopupMode(QToolButton::InstantPopup);
+    statusButton->setMenu(statusMenu);
+
+    ui_titleBar->insertLeft(statusButton);
+
+
     QVBoxLayout *mainLayout = new QVBoxLayout();
     mainLayout->setSpacing(3);
     mainLayout->setContentsMargins(0,0,0,0);
 
     ui_table = new RamObjectListWidget(RamObjectListWidget::Table, this);
     ui_table->setEditableObjects(true, RamUser::ProjectAdmin);
+    ui_table->setContextMenuPolicy(Qt::CustomContextMenu);
+    ui_header = new RamStepHeaderView(ui_table);
+    ui_table->setHorizontalHeader( ui_header );
+    ui_table->setSelectionMode(QAbstractItemView::ExtendedSelection);
     mainLayout->addWidget(ui_table);
 
     this->setLayout(mainLayout);
+
+
+    ui_contextMenu = new QMenu(this);
+    ui_assignUserContextMenu = new RamObjectListMenu(false, this);
+    ui_assignUserContextMenu->setTitle("Assign user");
+    ui_assignUserContextMenu->addCreateButton();
+    ui_assignUserContextMenu->actions().at(0)->setText("None");
+    ui_contextMenu->addMenu(ui_assignUserMenu);
+
+    ui_changeStateContextMenu = new RamObjectListMenu(false, this);
+    ui_changeStateContextMenu->setTitle("Change state");
+    ui_changeStateContextMenu->setList(Ramses::instance()->states());
+    ui_contextMenu->addMenu(ui_changeStateContextMenu);
+
+    QMenu *changeDifficultyContextMenu = new QMenu("Change difficulty", this);
+    changeDifficultyContextMenu->addAction(ui_veryEasy);
+    changeDifficultyContextMenu->addAction(ui_easy);
+    changeDifficultyContextMenu->addAction(ui_medium);
+    changeDifficultyContextMenu->addAction(ui_hard);
+    changeDifficultyContextMenu->addAction(ui_veryHard);
+    ui_contextMenu->addMenu(changeDifficultyContextMenu);
+
+    QMenu *completionContextMenu = new QMenu("Set completion", this);
+    completionContextMenu->addAction(ui_completion0  );
+    completionContextMenu->addAction(ui_completion10 );
+    completionContextMenu->addAction(ui_completion25 );
+    completionContextMenu->addAction(ui_completion50 );
+    completionContextMenu->addAction(ui_completion75 );
+    completionContextMenu->addAction(ui_completion90 );
+    completionContextMenu->addAction(ui_completion100);
+    ui_contextMenu->addMenu(completionContextMenu);
+
 }
 
 void ItemTableManagerWidget::connectEvents()
 {
+    // Status actions
+    connect(ui_assignUserMenu,SIGNAL(create()),this,SLOT(unassignUser()));
+    connect(ui_assignUserMenu,SIGNAL(assign(RamObject*)),this,SLOT(assignUser(RamObject*)));
+    connect(ui_changeStateMenu,SIGNAL(assign(RamObject*)),this,SLOT(changeState(RamObject*)));
+    connect(ui_assignUserContextMenu,SIGNAL(create()),this,SLOT(unassignUser()));
+    connect(ui_assignUserContextMenu,SIGNAL(assign(RamObject*)),this,SLOT(assignUser(RamObject*)));
+    connect(ui_changeStateContextMenu,SIGNAL(assign(RamObject*)),this,SLOT(changeState(RamObject*)));
+    connect(ui_veryEasy,SIGNAL(triggered()),this,SLOT(setVeryEasy()));
+    connect(ui_easy,SIGNAL(triggered()),this,SLOT(setEasy()));
+    connect(ui_medium,SIGNAL(triggered()),this,SLOT(setMedium()));
+    connect(ui_hard,SIGNAL(triggered()),this,SLOT(setHard()));
+    connect(ui_veryHard,SIGNAL(triggered()),this,SLOT(setVeryHard()));
+    connect(ui_completion0  , SIGNAL(triggered()), this, SLOT( setCompletion() ) );
+    connect(ui_completion10 , SIGNAL(triggered()), this, SLOT( setCompletion() ) );
+    connect(ui_completion25 , SIGNAL(triggered()), this, SLOT( setCompletion() ) );
+    connect(ui_completion50 , SIGNAL(triggered()), this, SLOT( setCompletion() ) );
+    connect(ui_completion75 , SIGNAL(triggered()), this, SLOT( setCompletion() ) );
+    connect(ui_completion90 , SIGNAL(triggered()), this, SLOT( setCompletion() ) );
+    connect(ui_completion100, SIGNAL(triggered()), this, SLOT( setCompletion() ) );
+    connect(ui_table, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(contextMenuRequested(QPoint)));
+    // view actions
+    connect(ui_actionTimeTracking, SIGNAL(triggered(bool)), ui_table, SLOT(setTimeTracking(bool)));
+    connect(ui_actionCompletionRatio, SIGNAL(triggered(bool)), ui_table, SLOT(setCompletionRatio(bool)));
+    connect(ui_actionTimeTracking, SIGNAL(triggered(bool)), ui_header, SLOT(setTimeTracking(bool)));
+    connect(ui_actionCompletionRatio, SIGNAL(triggered(bool)), ui_header, SLOT(setCompletionRatio(bool)));
     // step actions
     connect(ui_actionSelectAllSteps, SIGNAL(triggered()), this, SLOT(selectAllSteps()));
     connect(ui_actionSelectNoSteps, SIGNAL(triggered()), this, SLOT(deselectSteps()));
@@ -285,4 +524,24 @@ void ItemTableManagerWidget::connectEvents()
     connect(ui_titleBar, &TitleBar::closeRequested, this, &ItemTableManagerWidget::closeRequested);
     connect(Ramses::instance(), &Ramses::currentProjectChanged, this, &ItemTableManagerWidget::projectChanged);
 
+}
+
+QList<RamStatus *> ItemTableManagerWidget::beginEditSelectedStatus()
+{
+    QList<RamStatus*> statuses;
+    RamUser *currentUser = Ramses::instance()->currentUser();
+    QModelIndexList selection = ui_table->selectionModel()->selectedIndexes();
+    for (int i = 0; i < selection.count(); i++)
+    {
+        const QModelIndex &index = selection.at(i);
+        const quintptr &iptr = index.data(Qt::UserRole).toULongLong();
+        if (iptr == 0) continue;
+        RamObject *obj = reinterpret_cast<RamObject*>( iptr );
+        if (obj->objectType() != RamObject::Status) continue;
+        RamStatus *status = qobject_cast<RamStatus*>(obj);
+        if (!status->user()->is( currentUser ))
+            status = RamStatus::copy( status, currentUser );
+        statuses << status;
+    }
+    return statuses;
 }

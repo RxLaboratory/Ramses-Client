@@ -20,7 +20,7 @@ TemplateStepEditWidget::TemplateStepEditWidget(RamStep *templateStep, QWidget *p
 
 RamStep *TemplateStepEditWidget::step() const
 {
-    return _step;
+    return m_step;
 }
 
 void TemplateStepEditWidget::setObject(RamObject *obj)
@@ -30,31 +30,70 @@ void TemplateStepEditWidget::setObject(RamObject *obj)
     this->setEnabled(false);
 
     ObjectEditWidget::setObject(step);
-    _step = step;
+    m_step = step;
 
     QSignalBlocker b1(ui_typeBox);
+    QSignalBlocker b4(ui_colorSelector);
+
+    QSignalBlocker b5(ui_veryEasyEdit);
+    QSignalBlocker b6(ui_easyEdit);
+    QSignalBlocker b7(ui_mediumEdit);
+    QSignalBlocker b8(ui_hardEdit);
+    QSignalBlocker b9(ui_veryHardEdit);
+    QSignalBlocker b10(ui_estimationTypeBox);
 
     ui_typeBox->setCurrentIndex(1);
+    ui_colorSelector->setColor(QColor(25,25,25));
+
+    ui_veryEasyEdit->setValue(0.2);
+    ui_easyEdit->setValue(0.5);
+    ui_mediumEdit->setValue(1.0);
+    ui_hardEdit->setValue(2.0);
+    ui_veryHardEdit->setValue(3.0);
+    ui_estimationTypeBox->setCurrentIndex(0);
 
     if (!step) return;
+
+    ui_colorSelector->setColor(step->color());
 
     if (step->type() == RamStep::PreProduction) ui_typeBox->setCurrentIndex(0);
     else if (step->type() == RamStep::AssetProduction) ui_typeBox->setCurrentIndex(1);
     else if (step->type() == RamStep::ShotProduction) ui_typeBox->setCurrentIndex(2);
     else if (step->type() == RamStep::PostProduction) ui_typeBox->setCurrentIndex(3);
 
-    this->setEnabled(Ramses::instance()->isAdmin());
+    ui_veryEasyEdit->setValue( step->estimationVeryEasy() );
+    ui_easyEdit->setValue( step->estimationEasy() );
+    ui_mediumEdit->setValue( step->estimationMedium()  );
+    ui_hardEdit->setValue( step->estimationHard()  );
+    ui_veryHardEdit->setValue( step->estimationVeryHard()  );
+    ui_estimationTypeBox->setCurrentIndex( step->estimationMethod() );
 
     updateEstimationSuffix();
+
+    this->setEnabled(Ramses::instance()->isAdmin());
 }
 
 void TemplateStepEditWidget::update()
 {
-    if (!_step) return;
+    if (!m_step) return;
 
     updating = true;
 
-    _step->setType(ui_typeBox->currentData().toString());
+    m_step->setColor(ui_colorSelector->color());
+    m_step->setType(ui_typeBox->currentData().toString());
+
+
+    // estimations
+    m_step->setEstimationVeryEasy( ui_veryEasyEdit->value() );
+    m_step->setEstimationEasy( ui_easyEdit->value() );
+    m_step->setEstimationMedium( ui_mediumEdit->value() );
+    m_step->setEstimationHard( ui_hardEdit->value() );
+    m_step->setEstimationVeryHard( ui_veryHardEdit->value() );
+
+    if (ui_estimationTypeBox->currentIndex() == 0)
+        m_step->setEstimationMethod( RamStep::EstimatePerShot );
+    else
+        m_step->setEstimationMethod( RamStep::EstimatePerSecond );
 
     ObjectEditWidget::update();
 
@@ -106,18 +145,24 @@ void TemplateStepEditWidget::updateEstimationSuffix()
 void TemplateStepEditWidget::setupUi()
 {
     QLabel *typeLabel = new QLabel("Type", this);
-    ui_mainFormLayout->addWidget(typeLabel, 2, 0);
+    ui_mainFormLayout->addWidget(typeLabel, 3, 0);
 
     ui_typeBox  = new QComboBox(this);
     ui_typeBox->addItem(QIcon(":/icons/project"), "       Pre-Production", "pre");
     ui_typeBox->addItem(QIcon(":/icons/asset"), "       Asset Production", "asset");
     ui_typeBox->addItem(QIcon(":/icons/shot"), "       Shot Production", "shot");
     ui_typeBox->addItem(QIcon(":/icons/film"), "       Post-Production", "post");
-    ui_mainFormLayout->addWidget(ui_typeBox, 2, 1);
+    ui_mainFormLayout->addWidget(ui_typeBox, 3, 1);
+
+    QLabel *colorLabel = new QLabel("Color", this);
+    ui_mainFormLayout->addWidget(colorLabel, 4, 0);
+
+    ui_colorSelector = new DuQFColorSelector(this);
+    ui_mainFormLayout->addWidget(ui_colorSelector, 4, 1);
 
     ui_estimationLabel = new QLabel("Estimation", this);
     ui_estimationLabel->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-    ui_mainFormLayout->addWidget(ui_estimationLabel, 3, 0);
+    ui_mainFormLayout->addWidget(ui_estimationLabel, 5, 0);
 
     ui_estimationWidget = new QWidget(this);
     QFormLayout *estimationLayout = new QFormLayout(ui_estimationWidget);
@@ -166,7 +211,7 @@ void TemplateStepEditWidget::setupUi()
     ui_veryHardEdit->setValue(3);
     estimationLayout->addRow("Very hard",ui_veryHardEdit);
 
-    ui_mainFormLayout->addWidget(ui_estimationWidget, 3, 1);
+    ui_mainFormLayout->addWidget(ui_estimationWidget, 5, 1);
 
     ui_mainLayout->addStretch();
 }
@@ -176,4 +221,12 @@ void TemplateStepEditWidget::connectEvents()
     connect(ui_typeBox, SIGNAL(currentIndexChanged(int)), this, SLOT(updateEstimationSuffix()));
     connect(ui_estimationTypeBox, SIGNAL(currentIndexChanged(int)), this, SLOT(updateEstimationSuffix()));
     connect(ui_typeBox, SIGNAL(currentIndexChanged(int)), this, SLOT(update()));
+    connect(ui_colorSelector, SIGNAL(colorChanged(QColor)), this, SLOT(update()));
+
+    connect(ui_estimationTypeBox, SIGNAL(currentIndexChanged(int)), this, SLOT(update()));
+    connect(ui_veryEasyEdit, SIGNAL(valueChanged(double)), this, SLOT(update()));
+    connect(ui_easyEdit, SIGNAL(valueChanged(double)), this, SLOT(update()));
+    connect(ui_mediumEdit, SIGNAL(valueChanged(double)), this, SLOT(update()));
+    connect(ui_hardEdit, SIGNAL(valueChanged(double)), this, SLOT(update()));
+    connect(ui_veryHardEdit, SIGNAL(valueChanged(double)), this, SLOT(update()));
 }

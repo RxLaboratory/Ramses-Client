@@ -23,8 +23,8 @@ private:
     void setupUi();
     void connectEvents();
 
-    RamObjectListComboBox *m_fileTypeBox;
-    RamObjectListComboBox *m_colorSpaceBox;
+    RamObjectListComboBox *ui_fileTypeBox;
+    RamObjectListComboBox *ui_colorSpaceBox;
 };
 
 #endif // PIPEFILEEDITWIDGET_H

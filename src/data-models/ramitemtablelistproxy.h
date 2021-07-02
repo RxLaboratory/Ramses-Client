@@ -3,6 +3,11 @@
 
 #include <QIdentityProxyModel>
 
+/**
+ * @brief The RamItemTableListProxy class is used to display a table in a single column list.
+ * It just overrides the column count to a fixed value: 1.
+ * This is necessary as in Ramses, lists are actually QTableViews with a single column.
+ */
 class RamItemTableListProxy : public QIdentityProxyModel
 {
     Q_OBJECT

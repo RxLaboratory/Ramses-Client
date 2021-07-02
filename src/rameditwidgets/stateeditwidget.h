@@ -6,6 +6,7 @@
 #include "ramses.h"
 #include "objecteditwidget.h"
 #include "duqf-widgets/duqfspinbox.h"
+#include "duqf-widgets/duqfcolorselector.h"
 
 class StateEditWidget : public ObjectEditWidget
 {
@@ -23,19 +24,14 @@ public slots:
 protected slots:
     void update() override;
 
-private slots:
-    void updateColorEditStyle();
-    void selectColor();
-
 private:
     RamState *_state;
 
     void setupUi();
     void connectEvents();
 
+    DuQFColorSelector *ui_colorSelector;
     DuQFSpinBox *completionSpinBox;
-    QLineEdit *colorEdit;
-    QToolButton *colorButton;
     QMetaObject::Connection _currentStateConnection;
 
 };

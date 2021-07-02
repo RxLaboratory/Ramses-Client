@@ -143,12 +143,13 @@ qint64 MediaUtils::convertToBytes(qint64 value, MediaUtils::SizeUnit from)
     return value;
 }
 
-QRegularExpression RegExUtils::getRegEx(QString name)
+QRegularExpression RegExUtils::getRegEx(QString name, QString replace, QString by)
 {
-    QFile regExFile(":regex/" + name );
+    QFile regExFile(":/regex/" + name );
     if (regExFile.open(QFile::ReadOnly))
     {
         QString regExStr = regExFile.readAll();
+        if (replace != "") regExStr = regExStr.replace(replace, by);
         return QRegularExpression( regExStr.trimmed() );
     }
     return QRegularExpression();
@@ -185,17 +186,28 @@ qint64 FileUtils::getDirSize(QDir d)
     return size;
 }
 
-void FileUtils::openInExplorer(QString path)
+void FileUtils::openInExplorer(QString path, bool askForCreation)
 {
     const QFileInfo fileInfo(path);
+
+    if(!fileInfo.exists() && askForCreation)
+    {
+        QMessageBox::StandardButton rep = QMessageBox::question(nullptr,
+                                                                "The folder does not exist",
+                                                                "This folder:\n\n" + path + "\n\ndoes not exist yet.\nDo you want to create it now?",
+                                                                QMessageBox::Yes | QMessageBox::No,
+                                                                QMessageBox::Yes);
+        if (rep == QMessageBox::Yes) QDir(path).mkpath(".");
+        else return;
+    }
+    else if (!fileInfo.exists()) return;
 
 #ifdef Q_OS_WIN
     QString param("");
     if (!fileInfo.isDir())
         param = "/select,";
     param += QDir::toNativeSeparators(fileInfo.canonicalFilePath());
-    QString command = "explorer.exe " + param;
-    QProcess::startDetached(command);
+    QProcess::startDetached("explorer.exe", QStringList(param));
 #endif
 #ifdef Q_OS_MAC
     QStringList scriptArgs;

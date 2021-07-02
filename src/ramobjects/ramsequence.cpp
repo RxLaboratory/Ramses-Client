@@ -18,7 +18,7 @@ RamSequence::RamSequence(QString shortName, RamProject *project, QString name, Q
 
 RamSequence::~RamSequence()
 {
-    m_dbi->removeSequence(m_uuid);
+
 }
 
 int RamSequence::shotCount() const
@@ -52,7 +52,12 @@ void RamSequence::update()
 {
     if(!m_dirty) return;
     RamObject::update();
-    m_dbi->updateSequence(m_uuid, m_shortName, m_name);
+    m_dbi->updateSequence(m_uuid, m_shortName, m_name, m_comment);
+    if (m_orderChanged)
+    {
+        m_dbi->setSequenceOrder(m_uuid, m_order);
+        m_orderChanged = false;
+    }
 }
 
 void RamSequence::edit(bool show)
@@ -64,4 +69,9 @@ void RamSequence::edit(bool show)
         m_editReady = true;
     }
     showEdit(show);
+}
+
+void RamSequence::removeFromDB()
+{
+    m_dbi->removeSequence(m_uuid);
 }

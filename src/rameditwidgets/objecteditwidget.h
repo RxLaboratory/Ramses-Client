@@ -8,6 +8,7 @@
 #include <QLineEdit>
 #include <QVBoxLayout>
 #include <QWidget>
+#include <QTextEdit>
 
 
 #include "ramobject.h"
@@ -40,6 +41,7 @@ protected slots:
 protected:
     QList<QMetaObject::Connection> _objectConnections;
     bool updating = false;
+    QStringList m_dontRename;
 
     QVBoxLayout *ui_mainLayout;
     QGridLayout *ui_mainFormLayout;
@@ -48,6 +50,10 @@ protected:
     QLabel *ui_nameLabel;
     QLabel *ui_shortNameLabel;
     QLabel *ui_statusLabel;
+    QLabel *ui_commentLabel;
+    QTextEdit *ui_commentEdit;
+
+    bool eventFilter(QObject *obj, QEvent *event) override;
 
 private slots:
     void objectRemoved(RamObject *o);
@@ -58,6 +64,8 @@ private:
 
     RamObject *m_object;
     void connectEvents();
+
+
 };
 
 #endif // OBJECTEDITWIDGET_H

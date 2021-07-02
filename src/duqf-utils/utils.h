@@ -9,6 +9,7 @@
 #include <QTime>
 #include <QDir>
 #include <QProcess>
+#include <QMessageBox>
 
 namespace FileUtils
 {
@@ -18,7 +19,7 @@ namespace FileUtils
     void copy(QString from, QString to);
     void remove(QString path);
     qint64 getDirSize(QDir d);
-    void openInExplorer(QString path);
+    void openInExplorer(QString path, bool askForCreation = false);
 };
 
 namespace MediaUtils
@@ -117,7 +118,7 @@ namespace NetworkUtils
 };
 
 namespace RegExUtils {
-    QRegularExpression getRegEx( QString name );
+    QRegularExpression getRegEx(QString name , QString replace = "", QString by = "");
 };
 
 namespace Interpolations {

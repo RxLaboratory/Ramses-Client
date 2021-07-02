@@ -12,6 +12,8 @@
 #include "duqf-widgets/duqfsearchedit.h"
 #include "data-views/ramobjectlistwidget.h"
 #include "data-views/ramobjectlistcombobox.h"
+#include "data-views/ramstepheaderview.h"
+#include "data-views/ramobjectlistmenu.h"
 #include "ramses.h"
 
 
@@ -50,6 +52,20 @@ private slots:
     void editObject(RamObject *obj) const;
     void historyObject(RamObject *obj) const;
 
+    // Status
+    void unassignUser();
+    void assignUser(RamObject *usrObj);
+    void changeState(RamObject *sttObj);
+    void setVeryEasy();
+    void setEasy();
+    void setMedium();
+    void setHard();
+    void setVeryHard();
+    void setDiffculty(RamStatus::Difficulty difficulty);
+    void setCompletion();
+
+    void contextMenuRequested(QPoint p);
+
 private:
     void setupUi();
     void connectEvents();
@@ -59,10 +75,34 @@ private:
     QAction *ui_actionSelectAllSteps ;
     QAction *ui_actionSelectNoSteps ;
     QAction *ui_actionSelectMySteps ;
+    QAction *ui_actionTimeTracking ;
+    QAction *ui_actionCompletionRatio ;
+    RamObjectListMenu *ui_assignUserMenu;
+    RamObjectListMenu *ui_changeStateMenu;
+    QMenu *ui_changeDifficultyMenu;
+    QAction *ui_veryEasy;
+    QAction *ui_easy;
+    QAction *ui_medium;
+    QAction *ui_hard;
+    QAction *ui_veryHard;
+    RamStepHeaderView *ui_header;
+    QAction *ui_completion0;
+    QAction *ui_completion10;
+    QAction *ui_completion25;
+    QAction *ui_completion50;
+    QAction *ui_completion75;
+    QAction *ui_completion90;
+    QAction *ui_completion100;
+    QMenu *ui_contextMenu;
+    RamObjectListMenu *ui_assignUserContextMenu;
+    RamObjectListMenu *ui_changeStateContextMenu;
 
     RamStepFilterModel *m_stepFilter;
     RamProject *m_project = nullptr;
     RamStep::Type m_productionType;
+
+    // utils
+    QList<RamStatus*> beginEditSelectedStatus();
 };
 
 #endif // ITEMTABLE_H

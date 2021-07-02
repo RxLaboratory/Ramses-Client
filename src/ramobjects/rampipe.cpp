@@ -26,7 +26,7 @@ RamPipe::RamPipe(RamStep *output, RamStep *input, QString uuid):
 
 RamPipe::~RamPipe()
 {
-    m_dbi->removePipe(m_uuid);
+
 }
 
 QString RamPipe::name() const
@@ -55,6 +55,11 @@ void RamPipe::edit(bool show)
         m_editReady = true;
     }
     showEdit(show);
+}
+
+void RamPipe::removeFromDB()
+{
+     m_dbi->removePipe(m_uuid);
 }
 
 RamStep *RamPipe::outputStep() const

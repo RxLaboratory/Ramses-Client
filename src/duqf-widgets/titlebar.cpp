@@ -9,7 +9,9 @@ TitleBar::TitleBar(QString title, bool mini, QWidget *parent) :
 
     titleLabel->setText(title);
     reinitButton->setToolTip("Reinitialize " + title);
+    reinitButton->setStatusTip("Reinitialize " + title);
     closeButton->setToolTip("Close " + title);
+    closeButton->setStatusTip("Close " + title);
 
     reinitButton->setObjectName("windowButton");
     closeButton->setObjectName("windowButton");
@@ -20,9 +22,24 @@ TitleBar::TitleBar(QString title, bool mini, QWidget *parent) :
     this->setObjectName("titleBar");
 }
 
+void TitleBar::setTitle(QString title)
+{
+    titleLabel->setText(title);
+    reinitButton->setToolTip("Reinitialize " + title);
+    reinitButton->setStatusTip("Reinitialize " + title);
+    closeButton->setToolTip("Close " + title);
+    closeButton->setStatusTip("Close " + title);
+}
+
 void TitleBar::showReinitButton(bool show)
 {
     reinitAction->setVisible(show);
+}
+
+void TitleBar::showCloseButton(bool show)
+{
+    qDebug() << show;
+    closeButton->setVisible(show);
 }
 
 void TitleBar::insertRight(QWidget *w)

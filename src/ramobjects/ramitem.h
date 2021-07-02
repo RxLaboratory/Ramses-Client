@@ -17,7 +17,7 @@ class RamItem : public RamObject
 public:
     explicit RamItem(QString shortName, RamProject *project, QString name = "", QString uuid = "");
 
-    void setStatus(RamUser *user, RamState *state, RamStep *step, int completionRatio = -1, QString comment = "", int version = 1);
+    RamStatus *setStatus(RamUser *user, RamState *state, RamStep *step, int completionRatio = -1, QString comment = "", int version = 1);
     void addStatus(RamStatus *status);
 
     QMap<QString, RamStepStatusHistory *> statusHistory() const;
@@ -25,9 +25,13 @@ public:
     RamStatus *status(RamObject *step);
     QList<RamStatus*> status();
 
+    RamUser *assignedUser(RamStep *step);
+
     RamProject *project() const;
     RamStep::Type productionType() const;
     static RamItem *item(QString uuid);
+
+    QString previewImagePath() const;
 
 signals:
     void statusChanged(RamItem *, RamStep *);
