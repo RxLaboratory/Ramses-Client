@@ -96,11 +96,13 @@ private:
     ProgressPage *progressPage;
     ProjectEditWidget *ui_currentProjectSettings;
     QDockWidget *ui_statsDockWidget;
+    QDockWidget *ui_consoleDockWidget;
 
-    QMenu *userMenu;
-    QToolButton *userButton;
-    QToolButton *networkButton;
-    QToolButton *refreshButton;
+    QMenu *ui_userMenu;
+    QToolButton *ui_userButton;
+    QToolButton *ui_networkButton;
+    QToolButton *ui_refreshButton;
+    QToolButton *ui_consoleButton;
     int m_currentPageIndex = 0;
 
     QList<ObjectDockWidget *> _dockedObjects;

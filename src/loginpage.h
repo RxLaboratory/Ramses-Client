@@ -7,7 +7,6 @@
 
 #include "daemon.h"
 #include "ramses.h"
-#include "duqf-widgets/duqfloggingtextedit.h"
 
 class LoginPage : public QWidget, private Ui::LoginPage
 {
@@ -26,8 +25,6 @@ private slots:
 
     void loginButton_clicked();
     void serverSettingsButton_clicked();
-
-    void showHideConsole();
 
 private:
     Ramses *_ramses;

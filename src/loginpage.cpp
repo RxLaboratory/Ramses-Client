@@ -7,8 +7,6 @@ LoginPage::LoginPage(QWidget *parent) :
 
     capsLockLabel->hide(); // TODO implement CAPS Lock detection
 
-    splitter->insertWidget(0, new DuQFLoggingTextEdit(this));
-
     _ramses = Ramses::instance();
     _failedTimer = new QTimer(this);
     _failedTimer->setSingleShot(true);
@@ -21,11 +19,6 @@ LoginPage::LoginPage(QWidget *parent) :
     passwordEdit->setText("password");
 #endif
 
-    QList<int> sizes;
-    sizes << 0;
-    sizes << 100;
-    splitter->setSizes(sizes);
-
     connect(_ramses,&Ramses::loggedIn, this, &LoginPage::loggedIn);
     connect(_ramses,&Ramses::loggedOut, this, &LoginPage::loggedOut);
     connect(usernameEdit, &QLineEdit::returnPressed, this, &LoginPage::loginButton_clicked);
@@ -37,7 +30,6 @@ LoginPage::LoginPage(QWidget *parent) :
     connect(loginButton, SIGNAL(clicked()), this, SLOT(loginButton_clicked()));
     connect(_failedTimer, &QTimer::timeout, this, &LoginPage::unFreeze);
     connect(_uiTimer, &QTimer::timeout, this, &LoginPage::updateFreeze);
-    connect(consoleButton, &QToolButton::clicked, this, &LoginPage::showHideConsole);
 }
 
 void LoginPage::loggedIn(RamUser *user)
@@ -92,23 +84,6 @@ void LoginPage::loginButton_clicked()
 void LoginPage::serverSettingsButton_clicked()
 {
     emit serverSettings();
-}
-
-void LoginPage::showHideConsole()
-{
-    QList<int> sizes = splitter->sizes();
-    if (sizes[0] < 100)
-    {
-        sizes[0] = 500;
-        sizes[1] = 500;
-        splitter->setSizes(sizes);
-    }
-    else
-    {
-        sizes[0] = 0;
-        sizes[1] = 100;
-        splitter->setSizes(sizes);
-    }
 }
 
 void LoginPage::freeze()

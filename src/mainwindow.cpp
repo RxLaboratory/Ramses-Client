@@ -38,36 +38,43 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
 
     mainStatusBar->addPermanentWidget(new ProgressBar(this));
 
-    refreshButton = new QToolButton(this);
-    refreshButton->setToolButtonStyle(Qt::ToolButtonIconOnly);
-    refreshButton->setText("");
-    refreshButton->setIcon(QIcon(":/icons/reload"));
-    mainStatusBar->addPermanentWidget(refreshButton);
-    refreshButton->hide();
+    ui_refreshButton = new QToolButton(this);
+    ui_refreshButton->setToolButtonStyle(Qt::ToolButtonIconOnly);
+    ui_refreshButton->setText("");
+    ui_refreshButton->setIcon(QIcon(":/icons/reload"));
+    mainStatusBar->addPermanentWidget(ui_refreshButton);
+    ui_refreshButton->hide();
+
+    ui_consoleButton = new QToolButton(this);
+    ui_consoleButton->setToolButtonStyle(Qt::ToolButtonIconOnly);
+    ui_consoleButton->setText("");
+    ui_consoleButton->setIcon(QIcon(":/icons/bash"));
+    ui_consoleButton->setCheckable(true);
+    mainStatusBar->addPermanentWidget(ui_consoleButton);
 
     mainStatusBar->addPermanentWidget(new DuQFLogToolButton(this));
 
-    networkButton = new QToolButton(this);
-    networkButton->setToolButtonStyle(Qt::ToolButtonTextOnly);
-    networkButton->setText("Offline");
-    networkButton->setMinimumWidth(50);
-    mainStatusBar->addPermanentWidget(networkButton);
+    ui_networkButton = new QToolButton(this);
+    ui_networkButton->setToolButtonStyle(Qt::ToolButtonTextOnly);
+    ui_networkButton->setText("Offline");
+    ui_networkButton->setMinimumWidth(50);
+    mainStatusBar->addPermanentWidget(ui_networkButton);
 
-    userMenu = new QMenu();
-    userMenu->addAction(actionLogIn);
-    userMenu->addAction(actionUserFolder);
+    ui_userMenu = new QMenu();
+    ui_userMenu->addAction(actionLogIn);
+    ui_userMenu->addAction(actionUserFolder);
     actionUserFolder->setVisible(false);
-    userMenu->addAction(actionUserProfile);
+    ui_userMenu->addAction(actionUserProfile);
     actionUserProfile->setVisible(false);
-    userMenu->addAction(actionLogOut);
+    ui_userMenu->addAction(actionLogOut);
     actionLogOut->setVisible(false);
-    userButton = new QToolButton();
-    userButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-    userButton->setText("Guest");
-    userButton->setMinimumWidth(75);
-    userButton->setMenu(userMenu);
-    userButton->setPopupMode(QToolButton::InstantPopup);
-    mainStatusBar->addPermanentWidget(userButton);
+    ui_userButton = new QToolButton();
+    ui_userButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    ui_userButton->setText("Guest");
+    ui_userButton->setMinimumWidth(75);
+    ui_userButton->setMenu(ui_userMenu);
+    ui_userButton->setPopupMode(QToolButton::InstantPopup);
+    mainStatusBar->addPermanentWidget(ui_userButton);
 
     // Add default stuff
     duqf_initUi();
@@ -174,20 +181,43 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     qDebug() << "> Schedule ready";
 #endif
 
+
+    // Docls
 #ifndef DEACTIVATE_STATS
     RamStatisticsTableWidget *statsTable = new RamStatisticsTableWidget(this);
     statsTable->setModel(new RamStatisticsTable(this));
     ui_statsDockWidget = new QDockWidget("Statistics");
     DuQFDockTitle *statsTitle = new DuQFDockTitle("Statistics", this);
     statsTitle->setObjectName("dockTitle");
+    statsTitle->setIcon(":/icons/stats");
     ui_statsDockWidget->setTitleBarWidget(statsTitle);
     ui_statsDockWidget->setAllowedAreas(Qt::AllDockWidgetAreas);
     ui_statsDockWidget->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable );
     ui_statsDockWidget->setWidget( statsTable );
     this->addDockWidget(Qt::LeftDockWidgetArea, ui_statsDockWidget);
-    ui_statsDockWidget->hide();
+
     qDebug() << "> Statistics table ready";
 #endif
+
+    // A console in a tab
+    DuQFLoggingTextEdit *console = new DuQFLoggingTextEdit(this);
+    ui_consoleDockWidget = new QDockWidget("Console");
+    DuQFDockTitle *consoleTitle = new DuQFDockTitle("Console", this);
+    consoleTitle->setObjectName("dockTitle");
+    consoleTitle->setIcon(":/icons/bash");
+    ui_consoleDockWidget->setTitleBarWidget(consoleTitle);
+    ui_consoleDockWidget->setAllowedAreas(Qt::AllDockWidgetAreas);
+    ui_consoleDockWidget->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable );
+    ui_consoleDockWidget->setWidget( console );
+    this->addDockWidget(Qt::LeftDockWidgetArea, ui_consoleDockWidget);
+    this->tabifyDockWidget( ui_statsDockWidget, ui_consoleDockWidget) ;
+
+    qDebug() << "> Console dock ready";
+
+
+    // Hide docks
+    ui_statsDockWidget->hide();
+    ui_consoleDockWidget->hide();
 
     // Progress page
     progressPage = new ProgressPage(this);
@@ -212,10 +242,12 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     connect(actionSchedule,SIGNAL(triggered(bool)), this, SLOT(schedule(bool)));
     connect(actionStatistics,SIGNAL(triggered(bool)), ui_statsDockWidget, SLOT(setVisible(bool)));
     connect(ui_statsDockWidget,SIGNAL(visibilityChanged(bool)), actionStatistics, SLOT(setChecked(bool)));
+    connect(ui_consoleDockWidget,SIGNAL(visibilityChanged(bool)), ui_consoleButton, SLOT(setChecked(bool)));
+    connect(ui_consoleButton,SIGNAL(clicked(bool)), ui_consoleDockWidget, SLOT(setVisible(bool)));
     connect(adminPage, SIGNAL(closeRequested()), this, SLOT(home()));
     connect(projectSettingsPage, SIGNAL(closeRequested()), this, SLOT(home()));
-    connect(networkButton,SIGNAL(clicked()),this, SLOT(networkButton_clicked()));
-    connect(refreshButton, SIGNAL(clicked()), Ramses::instance(), SLOT(refresh()));
+    connect(ui_networkButton,SIGNAL(clicked()),this, SLOT(networkButton_clicked()));
+    connect(ui_refreshButton, SIGNAL(clicked()), Ramses::instance(), SLOT(refresh()));
     connect(mainStack,SIGNAL(currentChanged(int)), this, SLOT(pageChanged(int)));
     connect(lp, &LoginPage::serverSettings, this, &MainWindow::serverSettings);
     connect(DuQFLogger::instance(), &DuQFLogger::newLog, this, &MainWindow::log);
@@ -653,8 +685,8 @@ void MainWindow::currentUserChanged()
     disconnect(_currentUserConnection);
 
     //defaults
-    userButton->setText("Guest");
-    userButton->setIcon(QIcon(""));
+    ui_userButton->setText("Guest");
+    ui_userButton->setIcon(QIcon(""));
     actionAdmin->setVisible(false);
     actionAdmin->setChecked(false);
     actionProjectSettings->setVisible(false);
@@ -674,7 +706,7 @@ void MainWindow::currentUserChanged()
 
     _currentUserConnection = connect(user, &RamUser::changed, this, &MainWindow::currentUserChanged);
 
-    userButton->setText(user->shortName());
+    ui_userButton->setText(user->shortName());
     actionUserProfile->setVisible(true);
     actionUserFolder->setVisible(true);
 
@@ -687,21 +719,21 @@ void MainWindow::currentUserChanged()
         actionAdmin->setVisible(true);
         actionProjectSettings->setVisible(true);
         actionPipeline->setVisible(true);
-        userButton->setIcon(QIcon(":/icons/admin"));
+        ui_userButton->setIcon(QIcon(":/icons/admin"));
     }
     else if (user->role() == RamUser::ProjectAdmin)
     {
         actionProjectSettings->setVisible(true);
         actionPipeline->setVisible(true);
-        userButton->setIcon(QIcon(":/icons/project-admin"));
+        ui_userButton->setIcon(QIcon(":/icons/project-admin"));
     }
     else if (user->role() == RamUser::Lead)
     {
-        userButton->setIcon(QIcon(":/icons/lead"));
+        ui_userButton->setIcon(QIcon(":/icons/lead"));
     }
     else
     {
-        userButton->setIcon(QIcon(":/icons/user"));
+        ui_userButton->setIcon(QIcon(":/icons/user"));
     }
 }
 
@@ -728,14 +760,14 @@ void MainWindow::dbiConnectionStatusChanged(NetworkUtils::NetworkStatus s)
 {
     if (s == NetworkUtils::Online)
     {
-        refreshButton->show();
-        networkButton->setText("Online");
+        ui_refreshButton->show();
+        ui_networkButton->setText("Online");
     }
-    else if (s == NetworkUtils::Connecting) networkButton->setText("Connecting...");
+    else if (s == NetworkUtils::Connecting) ui_networkButton->setText("Connecting...");
     else if (s == NetworkUtils::Offline)
     {
-        refreshButton->hide();
-        networkButton->setText("Offline");
+        ui_refreshButton->hide();
+        ui_networkButton->setText("Offline");
     }
 }
 
