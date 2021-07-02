@@ -42,8 +42,7 @@
 #include "applicationlistmanagerwidget.h"
 #include "pipefilelistmanagerwidget.h"
 #include "schedulemanagerwidget.h"
-#include "ramstatisticstablewidget.h"
-#include "data-models/ramstatisticstable.h"
+#include "statisticswidget.h"
 #include "dbinterface.h"
 #include "daemon.h"
 #include "ramloader.h"
@@ -97,6 +96,7 @@ private:
     ProjectEditWidget *ui_currentProjectSettings;
     QDockWidget *ui_statsDockWidget;
     QDockWidget *ui_consoleDockWidget;
+    DuQFDockTitle *ui_statsTitle;
 
     QMenu *ui_userMenu;
     QToolButton *ui_userButton;

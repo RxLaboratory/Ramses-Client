@@ -6,6 +6,7 @@
 #include "ramobject.h"
 
 class RamObjectList;
+class RamStep;
 
 class RamUser : public RamObject
 {
@@ -30,20 +31,23 @@ public:
 
     void updatePassword(QString c, QString n);
 
-    static RamUser *user(QString uuid);
-
     QSettings *userSettings() const;
 
     RamObjectList *schedule() const;
+    bool isStepAssigned(RamStep *step) const;
+
+    static RamUser *user(QString uuid);
 
 public slots:
     void update() override;
     virtual void edit(bool show = true) override;
     virtual void removeFromDB() override;
 
+private slots:
+    void scheduleChanged(RamObject *entryObj);
 
 protected:
-    virtual QString folderPath() const override;
+    virtual QString folderPath() const override;   
 
 private:
     UserRole m_role;

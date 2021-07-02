@@ -186,6 +186,11 @@ QString RamLoader::gotProject(QJsonObject newP, bool init)
     project->setComment( newP.value("comment").toString());
     project->setDeadline( QDate::fromString( newP.value("deadline").toString(), "yyyy-MM-dd") );
 
+    project->users()->clear();
+
+    foreach( QJsonValue u, newP.value("users").toArray())
+        project->users()->append( RamUser::user( u.toString() ) );
+
     if (!init)
     {
         m_pm->setMaximum(8);
@@ -543,12 +548,7 @@ QString RamLoader::gotStep(QJsonObject newS, RamProject *project)
     RamAssetGroup *multiplyGroup = RamAssetGroup::assetGroup( newS.value("multiplyGroupUuid").toString() );
     step->setEstimationMultiplyGroup( multiplyGroup );
 
-    step->users()->clear();
     step->applications()->clear();
-
-    foreach( QJsonValue u, newS.value("users").toArray())
-        step->users()->append( RamUser::user( u.toString() ) );
-
 
     foreach(QJsonValue a, newS.value("applications").toArray())
         step->applications()->append( RamApplication::application(a.toString()) );

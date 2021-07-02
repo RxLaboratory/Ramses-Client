@@ -85,7 +85,7 @@ public:
 
     QString filterUuid() const;
 
-    bool is(const RamObject *other);
+    bool is(const RamObject *other) const;
 
     static RamObject *obj(QString uuid);
 

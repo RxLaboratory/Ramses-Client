@@ -40,6 +40,7 @@ SOURCES += \
     data-views/ramobjectlistmenu.cpp \
     data-views/ramscheduledelegate.cpp \
     data-views/ramscheduletablewidget.cpp \
+    data-views/ramstatisticsdelegate.cpp \
     data-views/ramstatisticstablewidget.cpp \
     data-views/ramstepheaderview.cpp \
     duqf-widgets/duqfcolorselector.cpp \
@@ -67,11 +68,11 @@ SOURCES += \
     rameditwidgets/pipefileeditwidget.cpp \
     rameditwidgets/pipefilelistmanagerwidget.cpp \
     rameditwidgets/projectlistmanagerwidget.cpp \
-    rameditwidgets/scheduleentryeditwidget.cpp \
     rameditwidgets/schedulemanagerwidget.cpp \
     rameditwidgets/sequencelistmanagerwidget.cpp \
     rameditwidgets/shotlistmanagerwidget.cpp \
     rameditwidgets/statelistmanagerwidget.cpp \
+    rameditwidgets/statisticswidget.cpp \
     rameditwidgets/steplistmanagerwidget.cpp \
     rameditwidgets/stepstatushistorywidget.cpp \
     rameditwidgets/templateassetgrouplistmanagerwidget.cpp \
@@ -129,6 +130,7 @@ SOURCES += \
     rameditwidgets/objecteditwidget.cpp \
     rameditwidgets/pipeeditwidget.cpp \
     rameditwidgets/projecteditwidget.cpp \
+    smallwidgets/progresswidget.cpp \
     smallwidgets/projectselectorwidget.cpp \
     ramobjects/ramapplication.cpp \
     ramobjects/ramasset.cpp \
@@ -179,6 +181,7 @@ HEADERS += \
     data-views/ramobjectlistmenu.h \
     data-views/ramscheduledelegate.h \
     data-views/ramscheduletablewidget.h \
+    data-views/ramstatisticsdelegate.h \
     data-views/ramstatisticstablewidget.h \
     data-views/ramstepheaderview.h \
     dbistructures.h \
@@ -202,11 +205,11 @@ HEADERS += \
     rameditwidgets/pipefileeditwidget.h \
     rameditwidgets/pipefilelistmanagerwidget.h \
     rameditwidgets/projectlistmanagerwidget.h \
-    rameditwidgets/scheduleentryeditwidget.h \
     rameditwidgets/schedulemanagerwidget.h \
     rameditwidgets/sequencelistmanagerwidget.h \
     rameditwidgets/shotlistmanagerwidget.h \
     rameditwidgets/statelistmanagerwidget.h \
+    rameditwidgets/statisticswidget.h \
     rameditwidgets/steplistmanagerwidget.h \
     rameditwidgets/stepstatushistorywidget.h \
     rameditwidgets/templateassetgrouplistmanagerwidget.h \
@@ -264,6 +267,7 @@ HEADERS += \
     rameditwidgets/objecteditwidget.h \
     rameditwidgets/pipeeditwidget.h \
     rameditwidgets/projecteditwidget.h \
+    smallwidgets/progresswidget.h \
     smallwidgets/projectselectorwidget.h \
     ramobjects/ramapplication.h \
     ramobjects/ramasset.h \

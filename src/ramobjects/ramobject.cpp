@@ -229,7 +229,7 @@ QString RamObject::filterUuid() const
     return m_filterUuid;
 }
 
-bool RamObject::is(const RamObject *other)
+bool RamObject::is(const RamObject *other) const
 {
     if (!other) return false;
     return other->uuid() == m_uuid;

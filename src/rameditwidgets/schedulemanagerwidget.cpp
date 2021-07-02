@@ -45,8 +45,8 @@ void ScheduleManagerWidget::projectChanged(RamProject *project)
         return;
     }
 
-    m_schedule->setList( Ramses::instance()->users() );
-    ui_userMenu->setList(Ramses::instance()->users());
+    m_schedule->setList( project->users() );
+    ui_userMenu->setList( project->users() );
     ui_endDateEdit->setDate( project->deadline() );
     ui_stepMenu->setList( project->steps() );
 

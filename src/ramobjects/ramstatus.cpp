@@ -38,6 +38,7 @@ void RamStatus::setCompletionRatio(int completionRatio)
     if (completionRatio == m_completionRatio) return;
     m_dirty = true;
     m_completionRatio = completionRatio;
+    m_step->computeEstimation();
     emit changed(this);
 }
 
@@ -402,6 +403,7 @@ void RamStatus::setEstimation(float newEstimation)
     if (m_estimation == newEstimation) return;
     m_dirty = true;
     m_estimation = newEstimation;
+    m_step->computeEstimation();
     emit changed(this);
 }
 
@@ -456,6 +458,7 @@ void RamStatus::setTimeSpent(const float &ts)
     m_dirty = true;
     m_manualTimeSpent = true;
     m_timeSpent = ts;
+    m_step->computeEstimation();
     emit changed(this);
 }
 

@@ -64,6 +64,15 @@ void RamObjectListMenu::setObjectVisible(RamObject *obj, bool visible)
     }
 }
 
+void RamObjectListMenu::showAll()
+{
+    QList<QAction *> actions = this->actions();
+    for(int j= actions.count() -1; j >= 0; j--)
+    {
+        actions.at(j)->setVisible(true);
+    }
+}
+
 void RamObjectListMenu::newObject(const QModelIndex &parent, int first, int last)
 {
     Q_UNUSED(parent)

@@ -34,7 +34,6 @@ protected slots:
     void update() override;
 
 private slots:
-    void createUser();
     void createApplication();
     void updateEstimationSuffix();
 
@@ -59,8 +58,6 @@ private:
     RamObjectListComboBox *ui_estimationMultiplierBox;
     DuQFColorSelector *ui_colorSelector;
 
-
-    ObjectListEditWidget *m_userList;
     ObjectListEditWidget *m_applicationList;
 
 };

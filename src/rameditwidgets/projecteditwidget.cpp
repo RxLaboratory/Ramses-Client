@@ -22,7 +22,7 @@ ProjectEditWidget::ProjectEditWidget(RamProject *project, QWidget *parent) :
 
 RamProject *ProjectEditWidget::project() const
 {
-    return _project;
+    return m_project;
 }
 
 void ProjectEditWidget::setObject(RamObject *obj)
@@ -32,12 +32,13 @@ void ProjectEditWidget::setObject(RamObject *obj)
     this->setEnabled(false);
 
     ObjectEditWidget::setObject(project);
-    _project = project;
+    m_project = project;
 
     QSignalBlocker b1(ui_folderSelector);
     QSignalBlocker b2(ui_resolutionWidget);
     QSignalBlocker b3(ui_framerateWidget);
     QSignalBlocker b4(ui_deadlineEdit);
+    QSignalBlocker b5(m_userList);
 
     //Reset values
     ui_resolutionWidget->setHeight(1080);
@@ -46,6 +47,7 @@ void ProjectEditWidget::setObject(RamObject *obj)
     ui_folderSelector->setPath("");
     ui_folderSelector->setPlaceHolderText("Default (Ramses/Projects/Project_ShortName)");
     ui_deadlineEdit->setDate( QDate::currentDate().addDays(30) );
+    m_userList->clear();
 
     if(!project) return;
 
@@ -58,21 +60,23 @@ void ProjectEditWidget::setObject(RamObject *obj)
     ui_folderSelector->setPlaceHolderText( project->defaultPath() );
     ui_folderLabel->setText( project->path() );
 
+    m_userList->setList(project->users());
+
 
     this->setEnabled( Ramses::instance()->isAdmin() ); 
 }
 
 void ProjectEditWidget::update()
 {
-    if (!_project) return;
+    if (!m_project) return;
 
     updating = true;
 
-    _project->setFolderPath( ui_folderSelector->path() );
-    _project->setWidth( ui_resolutionWidget->getWidth() );
-    _project->setHeight( ui_resolutionWidget->getHeight() );
-    _project->setFramerate( ui_framerateWidget->framerate() );
-    _project->setDeadline( ui_deadlineEdit->date() );
+    m_project->setFolderPath( ui_folderSelector->path() );
+    m_project->setWidth( ui_resolutionWidget->getWidth() );
+    m_project->setHeight( ui_resolutionWidget->getHeight() );
+    m_project->setFramerate( ui_framerateWidget->framerate() );
+    m_project->setDeadline( ui_deadlineEdit->date() );
 
     ObjectEditWidget::update();
 
@@ -82,7 +86,7 @@ void ProjectEditWidget::update()
 void ProjectEditWidget::updateFolderLabel(QString path)
 {
     if (path != "") ui_folderLabel->setText( Ramses::instance()->pathFromRamses(path));
-    else if (_project) ui_folderLabel->setText( _project->path() );
+    else if (m_project) ui_folderLabel->setText( m_project->path() );
 }
 
 void ProjectEditWidget::currentUserChanged(RamUser *user)
@@ -90,6 +94,17 @@ void ProjectEditWidget::currentUserChanged(RamUser *user)
     if (!user) return;
     QSettings *userSettings = user->userSettings();
     ui_deadlineEdit->setDisplayFormat( userSettings->value("ramses/dateFormat","yyyy-MM-dd hh:mm:ss").toString());
+}
+
+void ProjectEditWidget::createUser()
+{
+    if (!m_project) return;
+    RamUser *user = new RamUser(
+                "NEW",
+                "John Doe");
+    Ramses::instance()->users()->append(user);
+    m_project->users()->append(user);
+    user->edit();
 }
 
 void ProjectEditWidget::setupUi()
@@ -124,7 +139,11 @@ void ProjectEditWidget::setupUi()
     ui_folderLabel = new QLabel("", this);
     ui_mainFormLayout->addWidget(ui_folderLabel, 7, 1);
 
-    ui_mainLayout->addStretch();
+    m_userList = new ObjectListEditWidget(true, RamUser::ProjectAdmin, this);
+    m_userList->setEditMode(ObjectListEditWidget::UnassignObjects);
+    m_userList->setTitle("Users");
+    m_userList->setAssignList(Ramses::instance()->users());
+    ui_mainLayout->addWidget(m_userList);
 }
 
 void ProjectEditWidget::connectEvents()
@@ -135,4 +154,5 @@ void ProjectEditWidget::connectEvents()
     connect(ui_folderSelector, &DuQFFolderSelectorWidget::pathChanging, this, &ProjectEditWidget::updateFolderLabel);
     connect(ui_folderSelector, &DuQFFolderSelectorWidget::pathChanged, this, &ProjectEditWidget::update);
     connect(ui_deadlineEdit, SIGNAL(dateChanged(QDate)), this, SLOT(update()));
+    connect(m_userList, SIGNAL(add()), this, SLOT(createUser()));
 }

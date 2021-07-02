@@ -23,6 +23,8 @@ void RamStepHeaderView::paintSection(QPainter *painter, const QRect &rect, int l
 
     if (logicalIndex == 0) return QHeaderView::paintSection(painter,rect,logicalIndex);
 
+    painter->setRenderHint(QPainter::Antialiasing);
+
     // Get the step
     quintptr iptr = this->model()->headerData( logicalIndex, Qt::Horizontal, Qt::UserRole).toULongLong();
     if (iptr == 0) return QHeaderView::paintSection(painter,rect,logicalIndex);
@@ -47,17 +49,6 @@ void RamStepHeaderView::paintSection(QPainter *painter, const QRect &rect, int l
 
     if (m_timeTracking || m_completionRatio)
     {
-        // Set a color according to the completion
-        float completionRatio = step->completionRatio() / 100.0;
-        QColor completionColor;
-        if (completionRatio < 0.12) completionColor = QColor( 197, 0, 0);
-        else if (completionRatio < 0.25) completionColor = QColor( 197, 98, 17);
-        else if (completionRatio < 0.5) completionColor = QColor( 197, 179, 40);
-        else if (completionRatio < 0.75) completionColor = QColor( 128, 197, 37);
-        else if (completionRatio < 0.88) completionColor = QColor( 100, 172, 69);
-        else if (completionRatio < 0.98) completionColor = QColor( 55, 172, 23);
-        else completionColor = QColor( 6, 116, 24);
-
         // Draw a timebar first
         float latenessRatio = step->latenessRatio();
         if (m_timeTracking && latenessRatio > 0 && step->estimation() > 0)
@@ -87,6 +78,17 @@ void RamStepHeaderView::paintSection(QPainter *painter, const QRect &rect, int l
 
         if (m_completionRatio)
         {
+            // Set a color according to the completion
+            float completionRatio = step->completionRatio() / 100.0;
+            QColor completionColor;
+            if (completionRatio < 0.12) completionColor = QColor( 197, 0, 0);
+            else if (completionRatio < 0.25) completionColor = QColor( 197, 98, 17);
+            else if (completionRatio < 0.5) completionColor = QColor( 197, 179, 40);
+            else if (completionRatio < 0.75) completionColor = QColor( 128, 197, 37);
+            else if (completionRatio < 0.88) completionColor = QColor( 100, 172, 69);
+            else if (completionRatio < 0.98) completionColor = QColor( 55, 172, 23);
+            else completionColor = QColor( 6, 116, 24);
+
             // Draw completion ratio
             statusBrush.setColor( completionColor );
             statusRect.setWidth(statusWidth * completionRatio);

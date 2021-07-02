@@ -1,17 +1,17 @@
-RamObjectWidget QFrame{
+QDockWidget QFrame{
     border-radius: @padding-small;
     background-color: @color-dark-grey;
 }
 
-RamObjectWidget QFrame:hover {
+QDockWidget QFrame:hover {
     background-color: @color-less-dark-grey;
 }
 
-RamObjectWidget QToolButton {
+QDockWidget QToolButton {
     background-color: rgba(0,0,0,0);
 }
 
-RamObjectWidget QLabel {
+QDockWidget QLabel {
     background-color: rgba(0,0,0,0);
 }
 

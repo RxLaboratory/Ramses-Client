@@ -3,6 +3,7 @@
 #include "ramses.h"
 #include "stepeditwidget.h"
 #include "ramassetgroup.h"
+#include "ramscheduleentry.h"
 
 RamStep::RamStep(QString shortName, QString name, QString uuid) :
     RamObject(shortName, name, uuid, Ramses::instance())
@@ -32,10 +33,7 @@ RamStep::~RamStep()
 void RamStep::init()
 {
     m_type = AssetProduction;
-    m_users = new RamObjectList("", "Users", this);
     m_applications = new RamObjectList("", "Applications", this);
-    connect(m_users, SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(userAssigned(QModelIndex,int,int)));
-    connect(m_users, SIGNAL(rowsAboutToBeRemoved(QModelIndex,int,int)), this, SLOT(userUnassigned(QModelIndex,int,int)));
     connect(m_applications, SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(applicationAssigned(QModelIndex,int,int)));
     connect(m_applications, SIGNAL(rowsAboutToBeRemoved(QModelIndex,int,int)), this, SLOT(applicationUnassigned(QModelIndex,int,int)));
 
@@ -91,33 +89,6 @@ void RamStep::setType(QString type)
     else if (type == "asset") setType(AssetProduction);
     else if (type == "shot") setType(ShotProduction);
     else if (type == "post") setType(PostProduction);
-}
-
-RamObjectList *RamStep::users() const
-{
-    return m_users;
-}
-
-void RamStep::userAssigned(const QModelIndex &parent, int first, int last)
-{
-    Q_UNUSED(parent)
-
-    for (int i = first; i <= last; i++)
-    {
-        RamObject *userObj = m_users->at(i);
-        m_dbi->assignUser(m_uuid, userObj->uuid());
-    }
-}
-
-void RamStep::userUnassigned(const QModelIndex &parent, int first, int last)
-{
-    Q_UNUSED(parent)
-
-    for (int i = first; i <= last; i++)
-    {
-        RamObject *userObj = m_users->at(i);
-        m_dbi->unassignUser(m_uuid, userObj->uuid());
-    }
 }
 
 RamObjectList *RamStep::applications() const
@@ -204,7 +175,7 @@ void RamStep::setEstimationMultiplyGroup(RamAssetGroup *newEstimationMultiplyGro
     m_dirty = true;
     m_estimationChanged = true;
     m_estimationMultiplyGroup = newEstimationMultiplyGroup;
-    emit estimationChanged(this);
+    emit estimationComputed(this);
 }
 
 qint64 RamStep::timeSpent() const
@@ -227,6 +198,16 @@ float RamStep::latenessRatio() const
     return m_latenessRatio;
 }
 
+float RamStep::assignedDays() const
+{
+    return m_assignedHalfDays/2.0;
+}
+
+float RamStep::unassignedDays() const
+{
+    return m_missingDays;
+}
+
 float RamStep::estimationVeryHard() const
 {
     return m_estimationVeryHard;
@@ -238,7 +219,7 @@ void RamStep::setEstimationVeryHard(float newEstimationVeryHard)
     m_dirty = true;
     m_estimationChanged = true;
     m_estimationVeryHard = newEstimationVeryHard;
-    emit estimationChanged(this);
+    emit estimationComputed(this);
 }
 
 float RamStep::estimationHard() const
@@ -252,7 +233,7 @@ void RamStep::setEstimationHard(float newEstimationHard)
     m_dirty = true;
     m_estimationChanged = true;
     m_estimationHard = newEstimationHard;
-    emit estimationChanged(this);
+    emit estimationComputed(this);
 }
 
 float RamStep::estimationMedium() const
@@ -266,7 +247,7 @@ void RamStep::setEstimationMedium(float newEstimationMedium)
     m_dirty = true;
     m_estimationChanged = true;
     m_estimationMedium = newEstimationMedium;
-    emit estimationChanged(this);
+    emit estimationComputed(this);
 }
 
 float RamStep::estimationEasy() const
@@ -280,7 +261,7 @@ void RamStep::setEstimationEasy(float newEstimationEasy)
     m_dirty = true;
     m_estimationChanged = true;
     m_estimationEasy = newEstimationEasy;
-    emit estimationChanged(this);
+    emit estimationComputed(this);
 }
 
 float RamStep::estimationVeryEasy() const
@@ -294,7 +275,7 @@ void RamStep::setEstimationVeryEasy(float newEstimationVeryEasy)
     m_dirty = true;
     m_estimationChanged = true;
     m_estimationVeryEasy = newEstimationVeryEasy;
-    emit estimationChanged(this);
+    emit estimationComputed(this);
 }
 
 const RamStep::EstimationMethod &RamStep::estimationMethod() const
@@ -308,7 +289,7 @@ void RamStep::setEstimationMethod(const EstimationMethod &newEstimationMethod)
     m_dirty = true;
     m_estimationChanged = true;
     m_estimationMethod = newEstimationMethod;
-    emit estimationChanged(this);
+    emit estimationComputed(this);
 }
 
 const QColor &RamStep::color() const
@@ -458,6 +439,32 @@ void RamStep::computeEstimation()
         m_latenessRatio = 1;
     }
 
+    // update missing days
+    float neededDays = RamStatus::hoursToDays( m_timeSpent / 3600 );
+    m_missingDays = neededDays - m_assignedHalfDays/2.0;
+
+    m_project->computeEstimation();
+    emit estimationComputed(this);
+}
+
+void RamStep::countAssignedDays()
+{
+    m_assignedHalfDays = 0;
+    for (int i = 0; i < m_project->users()->count(); i++)
+    {
+        RamUser *u = qobject_cast<RamUser*>( m_project->users()->at(i) );
+        if (!u) continue;
+        for (int j = 0; j < u->schedule()->count(); j++)
+        {
+            RamScheduleEntry *entry = qobject_cast<RamScheduleEntry*>( u->schedule()->at(i) );
+            if (!entry) continue;
+            if (this->is(entry->step())) m_assignedHalfDays++;
+        }
+    }
+
+    // update missing
+    float neededDays = RamStatus::hoursToDays( m_timeSpent / 3600 );
+    m_missingDays = neededDays - m_assignedHalfDays/2.0;
 }
 
 QString RamStep::folderPath() const

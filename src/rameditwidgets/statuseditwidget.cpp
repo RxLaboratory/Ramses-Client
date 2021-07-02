@@ -49,6 +49,12 @@ void StatusEditWidget::setStatus(RamStatus *status)
     ui_userBox->setObject(status->assignedUser());
     ui_folderWidget->setPath( status->path() );
 
+    // Get users from project
+    RamProject *project = nullptr;
+    if (status->item()) project = status->item()->project();
+    if (!project && status->step()) project = status->step()->project();
+    if (project) ui_userBox->setList( project->users() );
+
     // Try to auto compute time spent from previous status
     qint64 timeSpent = status->timeSpent();
     if (!status->isTimeSpentManual() || timeSpent == 0)
@@ -497,7 +503,6 @@ void StatusEditWidget::setupUi()
     detailsLayout->addRow("Publication", ui_publishedBox);
 
     ui_userBox = new RamObjectListComboBox(true, this);
-    ui_userBox->setList(Ramses::instance()->users());
     detailsLayout->addRow("Assigned user", ui_userBox);
 
     ui_mainLayout->addLayout( detailsLayout);

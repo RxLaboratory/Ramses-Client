@@ -20,6 +20,9 @@ void ObjectListEditWidget::setList(RamObjectList *objectList)
 {
     while(!m_listConnections.isEmpty()) disconnect(m_listConnections.takeLast());
 
+    // Show all
+    ui_assignMenu->showAll();
+
     setFilterList(nullptr);
     m_objectList = objectList;
     ui_listWidget->setList(m_objectList);
@@ -207,6 +210,7 @@ void ObjectListEditWidget::objectUnassigned(const QModelIndex &parent, int first
     for (int i = first ; i <= last; i++)
     {
         RamObject *assignedObj = reinterpret_cast<RamObject*>( filteredList->data( filteredList->index(i,0), Qt::UserRole ).toULongLong() );
+        if (!assignedObj) continue;
         ui_assignMenu->setObjectVisible(assignedObj, true);
     }
 }

@@ -154,6 +154,8 @@ void RamItem::insertStatus(const QModelIndex &parent, int first, int last)
 
     if (last != stepHistory->count() - 1) return;
 
+    stepHistory->step()->computeEstimation();
+
     emit statusChanged( this, stepHistory->step() );
 }
 
@@ -181,6 +183,7 @@ void RamItem::removeStatus(const QModelIndex &parent,int first ,int last)
 
     RamStep *step = stepHistory->step();
     if (!step) return;
+    step->computeEstimation();
     emit statusChanged( this, step );
 }
 

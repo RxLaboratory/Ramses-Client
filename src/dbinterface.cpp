@@ -282,19 +282,19 @@ void DBInterface::removeStep(QString uuid)
     request("removeStep" , q);
 }
 
-void DBInterface::assignUser(QString stepUuid, QString userUuid)
+void DBInterface::assignUser(QString projectUuid, QString userUuid)
 {
     QStringList q;
-    q << "stepUuid=" + stepUuid;
+    q << "projectUuid=" + projectUuid;
     q << "userUuid=" + userUuid;
 
     request("assignUser", q);
 }
 
-void DBInterface::unassignUser(QString stepUuid, QString userUuid)
+void DBInterface::unassignUser(QString projectUuid, QString userUuid)
 {
     QStringList q;
-    q << "stepUuid=" + stepUuid;
+    q << "projectUuid=" + projectUuid;
     q << "userUuid=" + userUuid;
 
     request("unassignUser", q);

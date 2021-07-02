@@ -61,6 +61,11 @@ public slots:
     void removeAll(RamObject *obj);
     void sort();
 
+signals:
+    void objectDataChanged(RamObject*);
+    void objectInserted(RamObject*);
+    void objectRemoved(RamObject*);
+
 protected:
     // DATA
     // For performance reasons, store both a list and a map
@@ -81,6 +86,8 @@ private slots:
     // Emits dataChanged() and headerChanged()
     void objectChanged(RamObject *obj);
     void objectMoved(RamObject *obj, int from, int to);
+    void objectInserted(const QModelIndex &parent, int first, int last);
+    void objectRemoved(const QModelIndex &parent, int first, int last);
 
 private:
     QString m_shortName;

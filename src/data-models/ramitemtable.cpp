@@ -146,13 +146,6 @@ void RamItemTable::insertObject(int i, RamObject *obj)
 
     endInsertRows();
 
-    // We can update the steps
-    for (int i = 0; i < m_steps->rowCount(); i++)
-    {
-        RamStep *step = reinterpret_cast<RamStep*>( m_steps->data( m_steps->index(i, 0), Qt::UserRole).toULongLong() );
-        step->computeEstimation();
-    }
-
     emit headerDataChanged(Qt::Horizontal, 0, m_steps->rowCount());
 }
 
@@ -197,9 +190,6 @@ void RamItemTable::statusChanged(RamItem *item, RamStep *step)
     QModelIndex index = createIndex(row, col);
 
     emit dataChanged( index, index, {Qt::DisplayRole});
-
-    // We can update the step
-    step->computeEstimation();
 
     emit headerDataChanged(Qt::Horizontal, col,col);
 }

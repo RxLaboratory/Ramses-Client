@@ -182,15 +182,14 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
 #endif
 
 
-    // Docls
+    // Docks
 #ifndef DEACTIVATE_STATS
-    RamStatisticsTableWidget *statsTable = new RamStatisticsTableWidget(this);
-    statsTable->setModel(new RamStatisticsTable(this));
+    StatisticsWidget *statsTable = new StatisticsWidget(this);
     ui_statsDockWidget = new QDockWidget("Statistics");
-    DuQFDockTitle *statsTitle = new DuQFDockTitle("Statistics", this);
-    statsTitle->setObjectName("dockTitle");
-    statsTitle->setIcon(":/icons/stats");
-    ui_statsDockWidget->setTitleBarWidget(statsTitle);
+    ui_statsTitle = new DuQFDockTitle("Statistics", this);
+    ui_statsTitle->setObjectName("dockTitle");
+    ui_statsTitle->setIcon(":/icons/stats");
+    ui_statsDockWidget->setTitleBarWidget(ui_statsTitle);
     ui_statsDockWidget->setAllowedAreas(Qt::AllDockWidgetAreas);
     ui_statsDockWidget->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable );
     ui_statsDockWidget->setWidget( statsTable );
@@ -740,6 +739,15 @@ void MainWindow::currentUserChanged()
 void MainWindow::currentProjectChanged(RamProject *project)
 {
     ui_currentProjectSettings->setObject(project);
+
+    if (!project)
+    {
+        ui_statsTitle->setTitle( "Project" );
+        ui_statsDockWidget->hide();
+        home();
+    }
+    else
+        ui_statsTitle->setTitle( project->name() );
 }
 
 void MainWindow::freezeUI(bool f)

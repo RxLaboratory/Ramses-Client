@@ -50,17 +50,26 @@ public:
     RamObjectList *pipeline();
     RamPipe *pipe(RamStep *outputStep, RamStep *inputStep);
     RamObjectList *pipeFiles();
+    // Users
+    RamObjectList *users() const;
 
     // Production Tracking
     qint64 timeSpent() const; //seconds
     float estimation() const; //days
-    float completionRatio() const;
-    float latenessRatio() const;
+    int completionRatio() const; //%
+    float latenessRatio() const; //ratio
 
     static RamProject *project(QString uuid);
 
     const QDate &deadline() const;
     void setDeadline(const QDate &newDeadline);
+
+signals:
+    void completionRatioChanged(int);
+    void latenessRatioChanged(float);
+    void timeSpentChanged(qint64);
+    void estimationChanged(float);
+    void estimationComputed(RamProject*);
 
 public slots:
     void update() override;
@@ -68,9 +77,12 @@ public slots:
 
     void computeEstimation();
 
-
 protected:
     virtual QString folderPath() const override;
+
+private slots:
+    void userAssigned(const QModelIndex &parent, int first, int last);
+    void userUnassigned(const QModelIndex &parent, int first, int last);
 
 private:
     QString m_folderPath;
@@ -85,11 +97,12 @@ private:
     RamItemTable *m_shots;
     RamObjectList *m_pipeline;
     RamObjectList *m_pipeFiles;
+    RamObjectList *m_users;
     QDate m_deadline;
 
     qint64 m_timeSpent = 0;
     float m_estimation = 0;
-    float m_completionRatio = 0;
+    int m_completionRatio = 0;
     float m_latenessRatio = 0;
 };
 

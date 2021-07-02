@@ -18,6 +18,7 @@ public:
     void addCreateButton();
 
     void setObjectVisible(RamObject *obj, bool visible = true);
+    void showAll();
 
 public slots:
     void selectAll();

@@ -13,12 +13,16 @@ RamProject::RamProject(QString shortName, QString name, QString uuid):
     m_pipeFiles = new RamObjectList("PPFLS", "Pipe files", this);
     m_shots = new RamItemTable(RamStep::ShotProduction, m_steps, "SHOTS", "Shots", this);
     m_assets = new RamItemTable(RamStep::AssetProduction, m_steps, "ASSETS", "Assets", this);
+    m_users = new RamObjectList("USRS", "Users", this);
 
     m_dbi->createProject(m_shortName, m_name, m_uuid);
 
     m_deadline = QDate::currentDate().addDays(30);
 
     this->setObjectName( "RamProject" );
+
+    connect(m_users, SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(userAssigned(QModelIndex,int,int)));
+    connect(m_users, SIGNAL(rowsAboutToBeRemoved(QModelIndex,int,int)), this, SLOT(userUnassigned(QModelIndex,int,int)));
 }
 
 RamProject::~RamProject()
@@ -149,8 +153,6 @@ void RamProject::computeEstimation()
     {
         RamStep *step = qobject_cast<RamStep*>( m_steps->at(i) );
 
-        step->computeEstimation();
-
         m_timeSpent += step->timeSpent();
         m_estimation += step->estimation();
         m_completionRatio += step->completionRatio();
@@ -170,6 +172,11 @@ void RamProject::computeEstimation()
         m_latenessRatio = 1;
     }
 
+    emit completionRatioChanged(m_completionRatio);
+    emit latenessRatioChanged(m_latenessRatio);
+    emit timeSpentChanged(m_timeSpent);
+    emit estimationChanged(m_estimation);
+    emit estimationComputed(this);
 }
 
 RamProject *RamProject::project(QString uuid)
@@ -218,6 +225,11 @@ RamObjectList *RamProject::pipeFiles()
     return m_pipeFiles;
 }
 
+RamObjectList *RamProject::users() const
+{
+    return m_users;
+}
+
 qint64 RamProject::timeSpent() const
 {
     return m_timeSpent;
@@ -228,7 +240,7 @@ float RamProject::estimation() const
     return m_estimation;
 }
 
-float RamProject::completionRatio() const
+int RamProject::completionRatio() const
 {
     return m_completionRatio;
 }
@@ -241,4 +253,26 @@ float RamProject::latenessRatio() const
 RamObjectList *RamProject::steps() const
 {
     return m_steps;
+}
+
+void RamProject::userAssigned(const QModelIndex &parent, int first, int last)
+{
+    Q_UNUSED(parent)
+
+    for (int i = first; i <= last; i++)
+    {
+        RamObject *userObj = m_users->at(i);
+        m_dbi->assignUser(m_uuid, userObj->uuid());
+    }
+}
+
+void RamProject::userUnassigned(const QModelIndex &parent, int first, int last)
+{
+    Q_UNUSED(parent)
+
+    for (int i = first; i <= last; i++)
+    {
+        RamObject *userObj = m_users->at(i);
+        m_dbi->unassignUser(m_uuid, userObj->uuid());
+    }
 }

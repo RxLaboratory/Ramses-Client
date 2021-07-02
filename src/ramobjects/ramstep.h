@@ -40,7 +40,6 @@ public:
     RamProject *project() const;
     void setProject( RamProject *project );
 
-    RamObjectList *users() const;
     RamObjectList *applications() const;
 
     void openFile(QString filePath) const;
@@ -80,9 +79,11 @@ public:
     float estimation() const; //days
     float completionRatio() const;
     float latenessRatio() const;
+    float assignedDays() const;
+    float unassignedDays() const;
 
 signals:
-    void estimationChanged(RamStep*);
+    void estimationComputed(RamStep*);
 
 public slots:
     void update() override;
@@ -90,23 +91,20 @@ public slots:
     virtual void removeFromDB() override;
 
     void computeEstimation();
+    void countAssignedDays();
 
 protected:
     virtual QString folderPath() const override;
 
 private slots:
-    void userAssigned(const QModelIndex &parent, int first, int last);
-    void userUnassigned(const QModelIndex &parent, int first, int last);
     void applicationAssigned(const QModelIndex &parent, int first, int last);
     void applicationUnassigned(const QModelIndex &parent, int first, int last);
-
 
 private:
     bool m_template;
     Type m_type;
     QColor m_color;
     RamProject *m_project;
-    RamObjectList *m_users;
     RamObjectList *m_applications;
 
     EstimationMethod m_estimationMethod = EstimatePerShot;
@@ -123,7 +121,8 @@ private:
     float m_estimation = 0;
     float m_completionRatio = 0;
     float m_latenessRatio = 0;
-
+    int m_assignedHalfDays = 0;
+    int m_missingDays = 0;
 };
 
 #endif // RAMSTEP_H

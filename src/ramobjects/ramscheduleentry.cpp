@@ -1,7 +1,5 @@
 #include "ramscheduleentry.h"
 
-#include "scheduleentryeditwidget.h"
-
 RamScheduleEntry::RamScheduleEntry(RamUser *user, RamStep *step, QDateTime date):
        RamObject(user)
 {
@@ -103,17 +101,6 @@ void RamScheduleEntry::update()
     if(!m_dirty) return;
     RamObject::update();
     m_dbi->updateSchedule(m_uuid, m_user->uuid(), m_step->uuid(), m_date, m_comment );
-}
-
-void RamScheduleEntry::edit(bool show)
-{
-    if (!m_editReady)
-    {
-        ScheduleEntryEditWidget *w = new ScheduleEntryEditWidget(this);
-        setEditWidget(w);
-        m_editReady = true;//*/
-    }
-    showEdit(show);
 }
 
 void RamScheduleEntry::removeFromDB()

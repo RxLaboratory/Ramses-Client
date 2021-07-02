@@ -6,6 +6,8 @@
 #include <QScrollBar>
 #include <QMouseEvent>
 
+#include "ramstatisticsdelegate.h"
+
 class RamStatisticsTableWidget : public QTableView
 {
     Q_OBJECT
@@ -17,6 +19,7 @@ protected:
     virtual void mousePressEvent(QMouseEvent *event) override;
     virtual void mouseReleaseEvent(QMouseEvent *event) override;
     virtual void showEvent(QShowEvent *event) override;
+    virtual void resizeEvent(QResizeEvent *event) override;
 
 private:
     void setupUi();

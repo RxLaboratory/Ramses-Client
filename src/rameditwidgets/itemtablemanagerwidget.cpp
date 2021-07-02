@@ -25,12 +25,13 @@ void ItemTableManagerWidget::selectAllSteps()
 void ItemTableManagerWidget::selectUserSteps()
 {
     QList<QAction*> actions = ui_stepMenu->actions();
+    RamUser *u = Ramses::instance()->currentUser();
+
     for (int i = 4; i < actions.count(); i++)
     {
         RamStep *step = reinterpret_cast<RamStep*>( actions[i]->data().toULongLong() );
         if (!step) continue;
-        RamUser *u = Ramses::instance()->currentUser();
-        if (step->users()->contains( u ))
+        if (u->isStepAssigned(step))
             actions[i]->setChecked(true);
         else
             actions[i]->setChecked(false);
@@ -96,6 +97,8 @@ void ItemTableManagerWidget::projectChanged(RamProject *project)
         ui_table->setList( project->shots() );
         ui_groupBox->setList( project->sequences() );
     }
+
+    ui_assignUserMenu->setList(project->users());
 
     this->setEnabled(true);
 }
@@ -363,7 +366,6 @@ void ItemTableManagerWidget::setupUi()
     ui_assignUserMenu->setTitle("Assign user");
     ui_assignUserMenu->addCreateButton();
     ui_assignUserMenu->actions().at(0)->setText("None");
-    ui_assignUserMenu->setList(Ramses::instance()->users());
     statusMenu->addMenu(ui_assignUserMenu);
 
     ui_changeStateMenu = new RamObjectListMenu(false, this);

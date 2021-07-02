@@ -44,6 +44,8 @@ public:
     void updateProject(QString uuid, QString shortName, QString name, int width = 0, int height = 0, double framerate = 0.0, QString folderPath = "", QString comment = "", QDate deadline = QDate());
     void removeProject(QString uuid);
     void assignStep(QString stepUuid, QString projectUuid);
+    void assignUser(QString projectUuid, QString userUuid);
+    void unassignUser(QString projectUuid, QString userUuid);
     //template steps
     void createTemplateStep(QString shortName, QString name, QString uuid);
     void getTemplateSteps();
@@ -62,8 +64,6 @@ public:
     void setStepOrder(QString uuid, int order);
     void setStepEstimations(QString uuid, QString method, float veryEasy = 0.2, float easy = 0.5, float medium = 1.0, float hard = 2.0, float veryHard = 3.0, QString multiplyGroupUuid = "");
     void removeStep(QString uuid);
-    void assignUser(QString stepUuid, QString userUuid);
-    void unassignUser(QString stepUuid, QString userUuid);
     void assignApplication(QString stepUuid, QString applicationUuid);
     void unassignApplication(QString stepUuid, QString applicationUuid);
     //asset groups

@@ -10,6 +10,7 @@
 #include "resolutionwidget.h"
 #include "frameratewidget.h"
 #include "duqf-widgets/duqffolderselectorwidget.h"
+#include "objectlisteditwidget.h"
 
 class ProjectEditWidget : public ObjectEditWidget
 {
@@ -30,9 +31,10 @@ protected slots:
 private slots:
     void updateFolderLabel(QString path);
     void currentUserChanged(RamUser *user);
+    void createUser();
 
 private:
-    RamProject *_project;
+    RamProject *m_project;
 
     void setupUi();
     void connectEvents();
@@ -42,6 +44,8 @@ private:
     ResolutionWidget *ui_resolutionWidget;
     FramerateWidget *ui_framerateWidget;
     QDateEdit *ui_deadlineEdit;
+
+    ObjectListEditWidget *m_userList;
 };
 
 #endif // PROJECTEDITWIDGET_H

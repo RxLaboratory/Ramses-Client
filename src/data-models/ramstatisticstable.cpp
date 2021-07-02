@@ -8,7 +8,7 @@ RamStatisticsTable::RamStatisticsTable(QObject *parent) : QAbstractTableModel(pa
 int RamStatisticsTable::columnCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent);
-    return 2;
+    return 1;
 }
 
 int RamStatisticsTable::rowCount(const QModelIndex &parent) const
@@ -16,7 +16,7 @@ int RamStatisticsTable::rowCount(const QModelIndex &parent) const
     Q_UNUSED(parent);
     if (!m_project) return 0;
 
-    return m_project->steps()->count() + 1;
+    return m_project->steps()->count();
 }
 
 QVariant RamStatisticsTable::headerData(int section, Qt::Orientation orientation, int role) const
@@ -30,14 +30,7 @@ QVariant RamStatisticsTable::headerData(int section, Qt::Orientation orientation
         return QVariant();
     }
 
-    if (section == 0)
-    {
-        if (role == Qt::DisplayRole) return QString("Project\n" % m_project->shortName());
-
-        return QVariant();
-    }
-
-    RamStep *step = qobject_cast<RamStep*>( m_project->steps()->at(section -1 ));
+    RamStep *step = qobject_cast<RamStep*>( m_project->steps()->at(section ));
 
     if (role == Qt::DisplayRole) return step->shortName();
 
@@ -53,112 +46,51 @@ QVariant RamStatisticsTable::headerData(int section, Qt::Orientation orientation
 
 QVariant RamStatisticsTable::data(const QModelIndex &index, int role) const
 {
-    int col = index.column();
     int row = index.row();
 
-    if (row == 0)
+    RamStep *step = qobject_cast<RamStep*>( m_project->steps()->at( row ));
+
+
+    if (role == Qt::DisplayRole) return QString("Completion: " %
+                                                QString::number( step->completionRatio(), 'f', 0) %
+                                                " %\nLateness: " %
+                                                QString::number( (step->latenessRatio() -1) * 100, 'f', 0) %
+                                                " %");
+    if (role == Qt::ForegroundRole)
     {
-        m_project->computeEstimation();
-        if (col == 0)
-        {
-            if (role == Qt::DisplayRole) return QString("Completion: " %
-                                                        QString::number( m_project->completionRatio(), 'f', 0) %
-                                                        "%\nLateness: " %
-                                                        QString::number( (m_project->latenessRatio() -1) * 100, 'f', 0) %
-                                                        "%");
-            if (role == Qt::ForegroundRole)
-            {
-                float latenessRatio = m_project->latenessRatio();
-                QColor timeColor;
-                if ( latenessRatio < 1.0 ) timeColor = QColor(157,157,157);
-                else if ( latenessRatio < 1.1 ) timeColor = QColor(191,177,72);
-                else if ( latenessRatio < 1.2 ) timeColor = QColor(186,100,50);
-                else if ( latenessRatio < 1.3 ) timeColor = QColor(191,148,61);
-                else if ( latenessRatio < 1.4 ) timeColor = QColor(213,98,44);
-                else if ( latenessRatio < 1.5 ) timeColor = QColor(216,62,31);
-                else if ( latenessRatio < 1.6 ) timeColor = QColor(230,31,17);
-                else if ( latenessRatio < 1.7 ) timeColor = QColor(244,2,2);
-                else timeColor = QColor(255,0,0);
-            }
-
-            if (role == Qt::ToolTipRole) return QString( m_project->name() %
-                                                         "\nCompletion: " %
-                                                         QString::number( m_project->completionRatio()) %
-                                                         "%\nLateness: " %
-                                                         QString::number( (m_project->latenessRatio() -1 )* 100, 'f', 0) );
-
-            if (role == Qt::StatusTipRole) return QString( m_project->shortName() % " | " % m_project->name() %
-                                                           " | Completion: " %
-                                                           QString::number( m_project->completionRatio()) %
-                                                           " | Lateness: " %
-                                                           QString::number( (m_project->latenessRatio() -1) * 100, 'f', 0) %
-                                                           "%");
-
-            if (role == Qt::UserRole) return m_project->completionRatio();
-            if (role == Qt::UserRole +1) return m_project->latenessRatio();
-
-            return QVariant();
-        }
-
-        if (col == 1)
-        {
-            // TODO compute in RamSteps / RamProject the ration between assigned half-days vs estimation
-            return QVariant();
-        }
-
-        return QVariant();
+        float latenessRatio = step->latenessRatio();
+        QColor timeColor;
+        if ( latenessRatio < 1.0 ) timeColor = QColor(157,157,157);
+        else if ( latenessRatio < 1.1 ) timeColor = QColor(191,177,72);
+        else if ( latenessRatio < 1.2 ) timeColor = QColor(186,100,50);
+        else if ( latenessRatio < 1.3 ) timeColor = QColor(191,148,61);
+        else if ( latenessRatio < 1.4 ) timeColor = QColor(213,98,44);
+        else if ( latenessRatio < 1.5 ) timeColor = QColor(216,62,31);
+        else if ( latenessRatio < 1.6 ) timeColor = QColor(230,31,17);
+        else if ( latenessRatio < 1.7 ) timeColor = QColor(244,2,2);
+        else timeColor = QColor(255,0,0);
     }
 
-    RamStep *step = qobject_cast<RamStep*>( m_project->steps()->at( row -1 ));
+    if (role == Qt::ToolTipRole) return QString( step->name() %
+                                                 "\nCompletion: " %
+                                                 QString::number( step->completionRatio(), 'f', 0) %
+                                                 " %\nLateness: " %
+                                                 QString::number( (step->latenessRatio() -1) * 100, 'f', 0) %
+                                                 " %");
 
-    if (col == 0)
-    {
-        step->computeEstimation();
+    if (role == Qt::StatusTipRole) return QString( step->shortName() % " | " % step->name() %
+                                                   " | Completion: " %
+                                                   QString::number( step->completionRatio()) %
+                                                   " % | Lateness: " %
+                                                   QString::number( (step->latenessRatio() -1) * 100, 'f', 0) %
+                                                   " %");
 
-        if (role == Qt::DisplayRole) return QString("Completion: " %
-                                                    QString::number( step->completionRatio(), 'f', 0) %
-                                                    "%\nLateness: " %
-                                                    QString::number( (step->latenessRatio() -1) * 100, 'f', 0) %
-                                                    "%");
-        if (role == Qt::ForegroundRole)
-        {
-            float latenessRatio = step->latenessRatio();
-            QColor timeColor;
-            if ( latenessRatio < 1.0 ) timeColor = QColor(157,157,157);
-            else if ( latenessRatio < 1.1 ) timeColor = QColor(191,177,72);
-            else if ( latenessRatio < 1.2 ) timeColor = QColor(186,100,50);
-            else if ( latenessRatio < 1.3 ) timeColor = QColor(191,148,61);
-            else if ( latenessRatio < 1.4 ) timeColor = QColor(213,98,44);
-            else if ( latenessRatio < 1.5 ) timeColor = QColor(216,62,31);
-            else if ( latenessRatio < 1.6 ) timeColor = QColor(230,31,17);
-            else if ( latenessRatio < 1.7 ) timeColor = QColor(244,2,2);
-            else timeColor = QColor(255,0,0);
-        }
-
-        if (role == Qt::ToolTipRole) return QString( step->name() %
-                                                     "\nCompletion: " %
-                                                     QString::number( step->completionRatio()) %
-                                                     "%\nLateness: " %
-                                                     QString::number( (step->latenessRatio() -1) * 100, 'f', 0) );
-
-        if (role == Qt::StatusTipRole) return QString( step->shortName() % " | " % step->name() %
-                                                       " | Completion: " %
-                                                       QString::number( step->completionRatio()) %
-                                                       " | Lateness: " %
-                                                       QString::number( (step->latenessRatio() -1) * 100, 'f', 0) %
-                                                       "%");
-
-        if (role == Qt::UserRole) return step->completionRatio();
-        if (role == Qt::UserRole +1) return step->latenessRatio();
-
-        return QVariant();
-    }
-
-    if (col == 1)
-    {
-        // TODO compute in RamSteps / RamProject the ration between assigned half-days vs estimation
-        return QVariant();
-    }
+    if (role == Qt::UserRole) return step->completionRatio();
+    if (role == Qt::UserRole +1) return step->latenessRatio();
+    if (role == Qt::UserRole +2) return step->estimation();
+    if (role == Qt::UserRole +3) return step->timeSpent();
+    if (role == Qt::UserRole +4) return step->assignedDays();
+    if (role == Qt::UserRole +5) return step->unassignedDays();
 
     return QVariant();
 }
@@ -182,7 +114,7 @@ void RamStatisticsTable::removeStep(const QModelIndex &parent, int first, int la
     Q_UNUSED(parent);
 
     // We're removing rows
-    beginRemoveRows(QModelIndex(), first+1, last+1);
+    beginRemoveRows(QModelIndex(), first, last);
     endRemoveRows();
 }
 
@@ -191,7 +123,7 @@ void RamStatisticsTable::insertStep(const QModelIndex &parent, int first, int la
     Q_UNUSED(parent);
 
     //We're inserting new rows
-    beginInsertRows(QModelIndex(), first+1, last+1);
+    beginInsertRows(QModelIndex(), first, last);
     // Finished!
     endInsertRows();
 }

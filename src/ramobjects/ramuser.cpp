@@ -3,6 +3,7 @@
 #include "ramses.h"
 #include "usereditwidget.h"
 #include "data-models/ramobjectlist.h"
+#include "ramscheduleentry.h"
 
 RamUser::RamUser(QString shortName, QString name, QString uuid) :
     RamObject(shortName, name, uuid, Ramses::instance())
@@ -18,6 +19,11 @@ RamUser::RamUser(QString shortName, QString name, QString uuid) :
     // Settings file
     QString settingsPath = path(RamObject::ConfigFolder) % "/" % "ramses.ini";
     m_userSettings = new QSettings(settingsPath,  QSettings::IniFormat, this);
+
+    // When the schedule changes, warn the step
+    connect(m_schedule, SIGNAL(objectInserted(RamObject*)),this,SLOT(scheduleChanged(RamObject*)) );
+    connect(m_schedule, SIGNAL(objectRemoved(QModelIndex,int,int)),this,SLOT(scheduleChanged(RamObject*)) );
+    connect(m_schedule, SIGNAL(objectDataChanged(RamObject*)),this,SLOT(scheduleChanged(RamObject*)));
 }
 
 RamUser::~RamUser()
@@ -57,6 +63,36 @@ QString RamUser::folderPath() const
 RamObjectList *RamUser::schedule() const
 {
     return m_schedule;
+}
+
+bool RamUser::isStepAssigned(RamStep *step) const
+{
+    // Check in schedule
+    for(int i = 0; i < m_schedule->count(); i++)
+    {
+        RamScheduleEntry *entry = qobject_cast<RamScheduleEntry*>( m_schedule->at(i) );
+        if (!entry) continue;
+
+        if (step->is(entry->step())) return true;
+    }
+
+    if (step->type() != RamStep::ShotProduction && step->type() != RamStep::AssetProduction) return false;
+
+    // Check in status
+    RamObjectList *items;
+    if (step->type() == RamStep::ShotProduction) items = step->project()->shots();
+    else items = step->project()->assets();
+
+    for (int i =0; i < items->count(); i++)
+    {
+        RamItem *item = qobject_cast<RamItem*>( items->at(i) );
+        RamStatus *status = item->status(step);
+        if (!status) continue;
+        if (this->is(status->assignedUser())) return true;
+    }
+
+
+    return false;
 }
 
 void RamUser::setFolderPath(const QString &folderPath)
@@ -122,6 +158,14 @@ void RamUser::edit(bool show)
 void RamUser::removeFromDB()
 {
     m_dbi->removeUser(m_uuid);
+}
+
+void RamUser::scheduleChanged(RamObject *entryObj)
+{
+    RamScheduleEntry *entry = qobject_cast<RamScheduleEntry*>( entryObj );
+    if (!entryObj) return;
+    if (!entry->step()) return;
+    entry->step()->countAssignedDays(  );
 }
 
 QSettings *RamUser::userSettings() const

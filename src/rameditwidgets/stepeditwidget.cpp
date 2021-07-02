@@ -31,7 +31,6 @@ void StepEditWidget::setObject(RamObject *obj)
 
     QSignalBlocker b(ui_typeBox);
     QSignalBlocker b1(m_folderWidget);
-    QSignalBlocker b2(m_userList);
     QSignalBlocker b3(m_applicationList);
     QSignalBlocker b4(ui_colorSelector);
 
@@ -46,7 +45,6 @@ void StepEditWidget::setObject(RamObject *obj)
 
     ui_typeBox->setCurrentIndex(1);
     m_folderWidget->setPath("");
-    m_userList->clear();
     m_applicationList->clear();
     ui_colorSelector->setColor(QColor(25,25,25));
 
@@ -72,7 +70,6 @@ void StepEditWidget::setObject(RamObject *obj)
     else if (step->type() == RamStep::ShotProduction) ui_typeBox->setCurrentIndex(2);
     else if (step->type() == RamStep::PostProduction) ui_typeBox->setCurrentIndex(3);
 
-    m_userList->setList(step->users());
     m_applicationList->setList(step->applications());
 
     ui_estimationMultiplierBox->setList(step->project()->assetGroups());
@@ -126,17 +123,6 @@ void StepEditWidget::update()
     ObjectEditWidget::update();
 
     updating = false;
-}
-
-void StepEditWidget::createUser()
-{
-    if (!m_step) return;
-    RamUser *user = new RamUser(
-                "NEW",
-                "John Doe");
-    Ramses::instance()->users()->append(user);
-    m_step->users()->append(user);
-    user->edit();
 }
 
 void StepEditWidget::createApplication()
@@ -274,22 +260,11 @@ void StepEditWidget::setupUi()
     m_folderWidget = new DuQFFolderDisplayWidget(this);
     ui_mainLayout->insertWidget(1, m_folderWidget);
 
-    QTabWidget *tabWidget = new QTabWidget(this);
-
-    m_userList = new ObjectListEditWidget(true, RamUser::ProjectAdmin, tabWidget);
-    m_userList->setEditMode(ObjectListEditWidget::UnassignObjects);
-    m_userList->setTitle("Users");
-    m_userList->setAssignList(Ramses::instance()->users());
-    tabWidget->addTab(m_userList, QIcon(":/icons/users"), "Users");
-
-    m_applicationList = new ObjectListEditWidget(true, RamUser::ProjectAdmin, tabWidget);
+    m_applicationList = new ObjectListEditWidget(true, RamUser::ProjectAdmin, this);
     m_applicationList->setEditMode(ObjectListEditWidget::UnassignObjects);
     m_applicationList->setTitle("Applications");
     m_applicationList->setAssignList(Ramses::instance()->applications());
-    tabWidget->addTab(m_applicationList, QIcon(":/icons/applications"), "Applications");
-
-    ui_mainLayout->addWidget(tabWidget);
-
+    ui_mainLayout->addWidget(m_applicationList);
 
     ui_mainLayout->setStretch(0,0);
     ui_mainLayout->setStretch(1,0);
@@ -303,7 +278,7 @@ void StepEditWidget::connectEvents()
     connect(ui_typeBox, SIGNAL(currentIndexChanged(int)), this, SLOT(updateEstimationSuffix()));
     connect(ui_estimationTypeBox, SIGNAL(currentIndexChanged(int)), this, SLOT(updateEstimationSuffix()));
     connect(ui_typeBox, SIGNAL(currentIndexChanged(int)), this, SLOT(update()));
-    connect(m_userList, SIGNAL(add()), this, SLOT(createUser()));
+
     connect(m_applicationList, SIGNAL(add()), this, SLOT(createApplication()));
     connect(ui_colorSelector, SIGNAL(colorChanged(QColor)), this, SLOT(update()));
 

@@ -89,6 +89,7 @@ void RamObjectList::objectChanged(RamObject *obj)
     QModelIndex index = createIndex(row,0);
     emit dataChanged(index, index, {Qt::DisplayRole});
     emit headerDataChanged(Qt::Vertical, row, row);
+    emit objectDataChanged(obj);
 }
 
 void RamObjectList::objectMoved(RamObject *obj, int from, int to)
@@ -116,6 +117,26 @@ void RamObjectList::objectMoved(RamObject *obj, int from, int to)
     m_sorted = true;
 
     endResetModel();
+}
+
+void RamObjectList::objectInserted(const QModelIndex &parent, int first, int last)
+{
+    Q_UNUSED(parent)
+
+    for (int i = first; i <= last; i++)
+    {
+        emit objectInserted( m_objectsList.at(i) );
+    }
+}
+
+void RamObjectList::objectRemoved(const QModelIndex &parent, int first, int last)
+{
+    Q_UNUSED(parent)
+
+    for (int i = first; i <= last; i++)
+    {
+        emit objectRemoved( m_objectsList.at(i) );
+    }
 }
 
 const QString &RamObjectList::name() const
