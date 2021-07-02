@@ -81,6 +81,8 @@ void RamLoader::gotUsers(QJsonArray users)
 {
     DBISuspender s;
 
+    if (users.count() == 0) return;
+
     m_pm->increment();
     m_pm->setText("Loading users...");
     qDebug() << "Loading users";
@@ -145,6 +147,7 @@ QString RamLoader::gotUser(QJsonObject newU)
 
 void RamLoader::gotProjects(QJsonArray projects, bool init)
 {
+    if (projects.count() == 0) return;
     DBISuspender s;
 
     m_pm->increment();
@@ -214,6 +217,8 @@ QString RamLoader::gotProject(QJsonObject newP, bool init)
 
 void RamLoader::gotTemplateSteps(QJsonArray steps)
 {
+    if (steps.count() == 0) return;
+
     DBISuspender s;
 
     m_pm->setText("Loading template steps...");
@@ -276,6 +281,8 @@ QString RamLoader::gotTemplateStep(QJsonObject newS)
 
 void RamLoader::gotTemplateAssetGroups(QJsonArray assetGroups)
 {
+    if (assetGroups.count() == 0) return;
+
     DBISuspender s;
 
     m_pm->setText("Loading template asset groups...");
@@ -323,6 +330,7 @@ QString RamLoader::gotTemplateAssetGroup(QJsonObject newAG)
 
 void RamLoader::gotStates(QJsonArray states)
 {
+    if (states.count() == 0) return;
     DBISuspender s;
 
     m_pm->setText("Loading states...");
@@ -373,6 +381,7 @@ QString RamLoader::gotState(QJsonObject newS)
 
 void RamLoader::gotFileTypes(QJsonArray fileTypes)
 {
+    if (fileTypes.count() == 0) return;
     DBISuspender s;
 
     m_pm->setText("Loading file types...");
@@ -424,6 +433,7 @@ QString RamLoader::gotFileType(QJsonObject newFt)
 
 void RamLoader::gotApplications(QJsonArray applications)
 {
+    if (applications.count() == 0) return;
     DBISuspender s;
 
     m_pm->setText("Loading applications...");
