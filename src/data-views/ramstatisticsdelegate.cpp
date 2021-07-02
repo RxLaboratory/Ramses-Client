@@ -132,7 +132,7 @@ void RamStatisticsDelegate::paint(QPainter *painter, const QStyleOptionViewItem 
 
 QSize RamStatisticsDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-    if (index.column() == 0) return QSize(200, m_padding*2+5);
+    if (index.column() == 0) return QSize(200,105);
     return QStyledItemDelegate::sizeHint(option, index);
 }
 

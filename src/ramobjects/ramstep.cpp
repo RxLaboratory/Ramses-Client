@@ -419,7 +419,7 @@ void RamStep::computeEstimation()
         m_timeSpent += status->timeSpent();
 
         float estimation = status->estimation();
-        if ( estimation < 0 ) estimation = status->autoEstimation();
+        if ( estimation <= 0 ) estimation = status->autoEstimation();
         m_estimation += estimation;
 
         m_completionRatio += status->completionRatio();
@@ -440,8 +440,7 @@ void RamStep::computeEstimation()
     }
 
     // update missing days
-    float neededDays = RamStatus::hoursToDays( m_timeSpent / 3600 );
-    m_missingDays = neededDays - m_assignedHalfDays/2.0;
+    m_missingDays = m_estimation - m_assignedHalfDays/2.0;
 
     m_project->computeEstimation();
     emit estimationComputed(this);
@@ -450,21 +449,24 @@ void RamStep::computeEstimation()
 void RamStep::countAssignedDays()
 {
     m_assignedHalfDays = 0;
+
     for (int i = 0; i < m_project->users()->count(); i++)
     {
         RamUser *u = qobject_cast<RamUser*>( m_project->users()->at(i) );
         if (!u) continue;
+
         for (int j = 0; j < u->schedule()->count(); j++)
         {
-            RamScheduleEntry *entry = qobject_cast<RamScheduleEntry*>( u->schedule()->at(i) );
+            RamScheduleEntry *entry = qobject_cast<RamScheduleEntry*>( u->schedule()->at(j) );
             if (!entry) continue;
             if (this->is(entry->step())) m_assignedHalfDays++;
         }
     }
 
     // update missing
-    float neededDays = RamStatus::hoursToDays( m_timeSpent / 3600 );
-    m_missingDays = neededDays - m_assignedHalfDays/2.0;
+    m_missingDays = m_estimation - m_assignedHalfDays/2.0;
+    m_project->computeEstimation();
+    emit estimationComputed(this);
 }
 
 QString RamStep::folderPath() const

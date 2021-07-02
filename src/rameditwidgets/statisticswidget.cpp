@@ -31,6 +31,25 @@ void StatisticsWidget::estimationChanged(RamProject *project)
     ui_completionLabel->setText( QString::number( project->completionRatio() ) + " %");
 
     ui_latenessLabel->setText( QString::number( project->latenessRatio(), 'f', 0) + " %");
+
+    ui_estimationLabel->setText( QString::number( project->estimation(), 'f', 0) + " days");
+
+    if (project->users()->count() > 0)
+        ui_estimationUserLabel->setText( QString::number( project->estimation() / project->users()->count(), 'f', 0) + " days/user" );
+    else
+        ui_estimationUserLabel->setText("");
+
+    if (project->unassignedDays() > 0)
+    {
+        ui_unassignedLabel->show();
+        ui_unassignedTitleLabel->show();
+        ui_unassignedLabel->setText( QString::number( project->unassignedDays(), 'f', 0) + " days");
+    }
+    else
+    {
+        ui_unassignedLabel->hide();
+        ui_unassignedTitleLabel->hide();
+    }
 }
 
 void StatisticsWidget::setupUi()
@@ -64,6 +83,22 @@ void StatisticsWidget::setupUi()
 
     ui_latenessLabel = new QLabel("-- %", this);
     detailsLayout->addWidget(ui_latenessLabel, 2, 2);
+
+    QLabel *estimationLabel = new QLabel("Estimation: ", this);
+    detailsLayout->addWidget(estimationLabel, 3,1);
+
+    ui_estimationLabel = new QLabel("-- days", this);
+    detailsLayout->addWidget(ui_estimationLabel, 3, 2);
+
+    ui_estimationUserLabel = new QLabel("-- days/user", this);
+    detailsLayout->addWidget(ui_estimationUserLabel, 4, 2);
+
+    ui_unassignedTitleLabel = new QLabel("Missing: ", this);
+    detailsLayout->addWidget(ui_unassignedTitleLabel, 5,1);
+
+    ui_unassignedLabel = new QLabel("-- days", this);
+    detailsLayout->addWidget(ui_unassignedLabel, 5,2);
+
 
     detailsLayout->setColumnStretch(0, 100);
     detailsLayout->setColumnStretch(1, 0);

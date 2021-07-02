@@ -22,7 +22,7 @@ RamUser::RamUser(QString shortName, QString name, QString uuid) :
 
     // When the schedule changes, warn the step
     connect(m_schedule, SIGNAL(objectInserted(RamObject*)),this,SLOT(scheduleChanged(RamObject*)) );
-    connect(m_schedule, SIGNAL(objectRemoved(QModelIndex,int,int)),this,SLOT(scheduleChanged(RamObject*)) );
+    connect(m_schedule, SIGNAL(objectRemoved(RamObject*)),this,SLOT(scheduleChanged(RamObject*)) );
     connect(m_schedule, SIGNAL(objectDataChanged(RamObject*)),this,SLOT(scheduleChanged(RamObject*)));
 }
 
@@ -165,7 +165,6 @@ void RamUser::scheduleChanged(RamObject *entryObj)
     RamScheduleEntry *entry = qobject_cast<RamScheduleEntry*>( entryObj );
     if (!entryObj) return;
     if (!entry->step()) return;
-    entry->step()->countAssignedDays(  );
 }
 
 QSettings *RamUser::userSettings() const

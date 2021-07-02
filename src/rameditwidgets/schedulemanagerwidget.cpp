@@ -42,6 +42,8 @@ void ScheduleManagerWidget::projectChanged(RamProject *project)
         ui_userMenu->setList(nullptr);
         ui_endDateEdit->setDate(QDate::currentDate());
         ui_stepMenu->setList(nullptr);
+        ui_stepContextMenu->setList(nullptr);
+        ui_timeRemaining->setText("");
         return;
     }
 
@@ -49,9 +51,13 @@ void ScheduleManagerWidget::projectChanged(RamProject *project)
     ui_userMenu->setList( project->users() );
     ui_endDateEdit->setDate( project->deadline() );
     ui_stepMenu->setList( project->steps() );
+    ui_stepContextMenu->setList(project->steps());
 
     ui_table->resizeColumnsToContents();
     ui_table->resizeRowsToContents();
+
+    int days = QDate::currentDate().daysTo( project->deadline() );
+    ui_timeRemaining->setText("Time remaining: " + QString::number(days) + " days");
 }
 
 void ScheduleManagerWidget::userChanged(RamUser *user)
@@ -305,6 +311,42 @@ void ScheduleManagerWidget::goToPreviousMonth()
     ui_goTo->setDate( ui_goTo->date().addMonths(-1) );
 }
 
+void ScheduleManagerWidget::contextMenuRequested(QPoint p)
+{
+    // Call the context menu
+    ui_contextMenu->popup(ui_table->viewport()->mapToGlobal(p));
+}
+
+void ScheduleManagerWidget::comment()
+{
+    // Get selection
+    QModelIndexList selection = ui_table->selectionModel()->selectedIndexes();
+    if (selection.count() == 0) return;
+
+    QList<ScheduleEntryStruct> modifiedEntries;
+
+    bool ok;
+    QString text = QInputDialog::getMultiLineText(ui_table, tr("Write a comment"),
+                                                  tr("Comment:"), "", &ok);
+    if (ok && !text.isEmpty())
+    {
+        m_dbi->suspend(true);
+
+        for (int i = 0; i < selection.count(); i++)
+        {
+            const QModelIndex &index = selection.at(i);
+            RamScheduleEntry *entry = reinterpret_cast<RamScheduleEntry*>( index.data(Qt::UserRole).toULongLong() );
+            if (!entry) continue;
+            entry->setComment(text);
+            entry->update();
+            modifiedEntries << entry->toStruct();
+        }
+
+        m_dbi->suspend(false);
+        m_dbi->updateSchedules( modifiedEntries );
+    }
+}
+
 void ScheduleManagerWidget::setupUi()
 {
     // Get the mainwindow to add the titlebar
@@ -322,6 +364,7 @@ void ScheduleManagerWidget::setupUi()
     mainLayout->setContentsMargins(0,0,0,0);
 
     ui_table = new RamScheduleTableWidget(this);
+    ui_table->setContextMenuPolicy(Qt::CustomContextMenu);
     mainLayout->addWidget(ui_table);
 
     this->setLayout(mainLayout);
@@ -386,18 +429,25 @@ void ScheduleManagerWidget::setupUi()
 
     ui_titleBar->insertLeft( dayButton );
 
+    QMenu *stepMenu = new QMenu(this);
+
+    ui_commentAction = new QAction("Add comment...", this);
+    stepMenu->addAction(ui_commentAction);
+
     ui_stepMenu = new RamObjectListMenu(false, this);
+    ui_stepMenu->setTitle("Assign");
     ui_stepMenu->addCreateButton();
     ui_stepMenu->actions().at(0)->setText("None");
+    stepMenu->addMenu(ui_stepMenu);
 
     QToolButton *stepButton = new QToolButton(this);
-    stepButton->setText("Assign step");
+    stepButton->setText("Step");
     stepButton->setIcon(QIcon(":/icons/step"));
     stepButton->setIconSize(QSize(16,16));
     stepButton->setObjectName("menuButton");
     stepButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     stepButton->setPopupMode(QToolButton::InstantPopup);
-    stepButton->setMenu(ui_stepMenu);
+    stepButton->setMenu(stepMenu);
 
     ui_titleBar->insertLeft( stepButton );
 
@@ -433,6 +483,9 @@ void ScheduleManagerWidget::setupUi()
     ui_nextMonth->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     ui_titleBar->insertLeft(ui_nextMonth);
 
+    ui_timeRemaining = new QLabel("Time remaining: -- days", this);
+    ui_titleBar->insertRight(ui_timeRemaining);
+
     QLabel *fromLabel = new QLabel("From:", this);
     ui_titleBar->insertRight(fromLabel);
 
@@ -448,6 +501,16 @@ void ScheduleManagerWidget::setupUi()
     ui_endDateEdit->setCalendarPopup(true);
     ui_endDateEdit->setDate(QDate::currentDate());
     ui_titleBar->insertRight(ui_endDateEdit);
+
+    // Context menu
+    ui_contextMenu = new QMenu(this);
+    ui_contextMenu->addAction(ui_commentAction);
+
+    ui_stepContextMenu = new RamObjectListMenu(false, this);
+    ui_stepContextMenu->setTitle("Assign");
+    ui_stepContextMenu->addCreateButton();
+    ui_stepContextMenu->actions().at(0)->setText("None");
+    ui_contextMenu->addMenu(ui_stepContextMenu);
 }
 
 void ScheduleManagerWidget::connectEvents()
@@ -475,8 +538,13 @@ void ScheduleManagerWidget::connectEvents()
     // batch steps
     connect(ui_stepMenu, SIGNAL(create()), this, SLOT(assignStep()));
     connect(ui_stepMenu, SIGNAL(assign(RamObject*)), this, SLOT(assignStep(RamObject*)));
+    connect(ui_stepContextMenu,SIGNAL(create()), this, SLOT(assignStep()));
+    connect(ui_stepContextMenu, SIGNAL(assign(RamObject*)), this, SLOT(assignStep(RamObject*)));
     QShortcut *s = new QShortcut(QKeySequence(QKeySequence::Delete), ui_table );
     connect(s, SIGNAL(activated()), this, SLOT(assignStep()));
+    // context menu
+    connect(ui_table, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(contextMenuRequested(QPoint)));
+    connect(ui_commentAction, SIGNAL(triggered()), this, SLOT(comment()));
     // other
     connect(ui_titleBar, &TitleBar::closeRequested, this, &ScheduleManagerWidget::closeRequested);
     connect(Ramses::instance(), SIGNAL(currentProjectChanged(RamProject*)), this, SLOT(projectChanged(RamProject*)));

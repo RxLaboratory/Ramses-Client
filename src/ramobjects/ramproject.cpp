@@ -147,7 +147,10 @@ void RamProject::computeEstimation()
     m_estimation = 0;
     m_completionRatio = 0;
     m_latenessRatio = 0;
+    m_assignedDays = 0;
+    m_missingDays = 0;
     int numItems = 0;
+
 
     for (int i =0; i < m_steps->count(); i++)
     {
@@ -157,6 +160,8 @@ void RamProject::computeEstimation()
         m_estimation += step->estimation();
         m_completionRatio += step->completionRatio();
         m_latenessRatio += step->latenessRatio();
+        m_assignedDays += step->assignedDays();
+        m_missingDays += step->unassignedDays();
 
         numItems++;
     }
@@ -248,6 +253,16 @@ int RamProject::completionRatio() const
 float RamProject::latenessRatio() const
 {
     return m_latenessRatio;
+}
+
+float RamProject::assignedDays() const
+{
+    return m_assignedDays;
+}
+
+float RamProject::unassignedDays() const
+{
+    return m_missingDays;
 }
 
 RamObjectList *RamProject::steps() const

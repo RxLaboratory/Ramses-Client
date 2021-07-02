@@ -193,5 +193,18 @@ void RamObjectListMenu::filter(RamObject *o)
     //reset();
 }
 
+void RamObjectListMenu::select(RamObject *o)
+{
+    if (!o) selectNone();
+    QList<QAction*> actions = this->actions();
+    for (int j = actions.count() -1; j >= 0; j--)
+    {
+        RamObject *obj = reinterpret_cast<RamObject*>( actions.at(j)->data().toULongLong() );
+        if (!obj) continue;
+        if (obj->is(o))
+            actions.at(j)->setChecked(true);
+    }
+}
+
 
 

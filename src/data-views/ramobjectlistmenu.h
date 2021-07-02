@@ -24,6 +24,7 @@ public slots:
     void selectAll();
     void selectNone();
     void filter(RamObject *o);
+    void select(RamObject *o);
 
 signals:
     void create();

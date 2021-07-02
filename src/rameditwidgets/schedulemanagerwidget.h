@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QDateEdit>
 #include <QShortcut>
+#include <QInputDialog>
 
 #include "dbinterface.h"
 #include "duqf-utils/guiutils.h"
@@ -51,6 +52,9 @@ private slots:
     void goToNextMonth();
     void goToPreviousMonth();
 
+    void contextMenuRequested(QPoint p);
+    void comment();
+
 private:
     void setupUi();
     void connectEvents();
@@ -60,6 +64,7 @@ private:
     QDateEdit *ui_startDateEdit;
     QDateEdit *ui_endDateEdit;
     RamObjectListMenu *ui_stepMenu;
+    RamObjectListMenu *ui_stepContextMenu;
     RamObjectListMenu *ui_userMenu;
     QAction *ui_meAction;
     QAction *ui_monday;
@@ -74,6 +79,9 @@ private:
     QToolButton *ui_nextMonth;
     QToolButton *ui_prevMonth;
     QDateEdit *ui_goTo;
+    QLabel *ui_timeRemaining;
+    QMenu *ui_contextMenu;
+    QAction *ui_commentAction;
 
     RamScheduleTable *m_schedule;
     RamScheduleFilter *m_scheduleFilter;

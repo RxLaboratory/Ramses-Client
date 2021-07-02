@@ -29,6 +29,7 @@ private slots:
     // TODO Connect user schedule datachanged, inserted, removed, to data changed (disconnect when remove user)
     void insertUser(const QModelIndex &parent, int first, int last);
     void removeUser(const QModelIndex &parent, int first, int last);
+    void resetUsers();
 
 private:
      RamStepFilterModel *m_steps;

@@ -7,6 +7,7 @@ RamScheduleEntry::RamScheduleEntry(RamUser *user, RamStep *step, QDateTime date)
     m_user = user;
     m_step = step;
     m_date = date;
+    m_step->countAssignedDays();
     m_dbi->createSchedule( user->uuid(), step->uuid(), date, m_uuid );
     this->setObjectName("RamScheduleEntry " + user->shortName() + " | " + step->shortName());
 }
@@ -18,13 +19,14 @@ RamScheduleEntry::RamScheduleEntry(RamUser *user, RamStep *step, QDateTime date,
     m_user = user;
     m_step = step;
     m_date = date;
+    m_step->countAssignedDays();
     m_dbi->createSchedule( user->uuid(), step->uuid(), date, m_uuid );
     this->setObjectName("RamScheduleEntry " + user->shortName() + " | " + step->shortName());
 }
 
 RamScheduleEntry::~RamScheduleEntry()
 {
-
+    if (m_step) m_step->countAssignedDays();
 }
 
 QString RamScheduleEntry::name() const
@@ -61,8 +63,9 @@ void RamScheduleEntry::setStep(RamStep *newStep)
 {
     if (newStep->is(m_step)) return;
     m_dirty = true;
+    m_step->countAssignedDays();
     m_step = newStep;
-
+    m_step->countAssignedDays();
     connect(m_step,SIGNAL(removed(RamObject*)), this, SLOT(remove()));
     emit changed(this);
 }

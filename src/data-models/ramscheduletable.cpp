@@ -13,8 +13,7 @@ void RamScheduleTable::setList(RamObjectList *userList)
 {
     beginResetModel();
 
-    if (m_users)
-        disconnect(m_users, nullptr, this, nullptr);
+    if (m_users) disconnect(m_users, nullptr, this, nullptr);
 
     m_users = userList;
 
@@ -22,6 +21,7 @@ void RamScheduleTable::setList(RamObjectList *userList)
     {
         connect( m_users, SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(insertUser(QModelIndex,int,int)));
         connect( m_users, SIGNAL(rowsAboutToBeRemoved(QModelIndex,int,int)), this, SLOT(removeUser(QModelIndex,int,int)));
+        connect( m_users, SIGNAL(modelReset()), this, SLOT(resetUsers()));
     }
 
     endResetModel();
@@ -161,6 +161,9 @@ QVariant RamScheduleTable::data(const QModelIndex &index, int role) const
             if (role == Qt::UserRole)
                 return reinterpret_cast<quintptr>( entry );
 
+            if (role == Qt::UserRole + 2)
+                return entry->comment();
+
             if (role == Qt::EditRole)
                 return reinterpret_cast<quintptr>( entry->step() );            
         }
@@ -201,6 +204,12 @@ void RamScheduleTable::removeUser(const QModelIndex &parent, int first, int last
     // We're removing rows
     beginRemoveRows(QModelIndex(), first*2, last*2+1);
     endRemoveRows();
+}
+
+void RamScheduleTable::resetUsers()
+{
+    beginResetModel();
+    endResetModel();
 }
 
 void RamScheduleTable::setEndDate(const QDate &newEndDate)

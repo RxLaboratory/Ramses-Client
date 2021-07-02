@@ -13,6 +13,8 @@ RamStatus::RamStatus(RamUser *user, RamState *state, RamStep *step, RamItem *ite
     m_completionRatio = m_state->completionRatio();
     m_date = QDateTime::currentDateTimeUtc();
 
+    m_step->computeEstimation();
+
     setObjectType(Status);
 
     connect(user, SIGNAL( removed(RamObject*)), this, SLOT(userRemoved()));
@@ -25,7 +27,7 @@ RamStatus::RamStatus(RamUser *user, RamState *state, RamStep *step, RamItem *ite
 
 RamStatus::~RamStatus()
 {
-
+    m_step->computeEstimation();
 }
 
 int RamStatus::completionRatio() const
@@ -60,6 +62,8 @@ void RamStatus::setState(RamState *state)
     if (state && state->is(m_state)) return;
     m_dirty = true;
     m_state = state;
+
+    m_step->computeEstimation();
 
     m_stateConnection = connect(state, SIGNAL(removed(RamObject*)), this, SLOT(stateRemoved()));
 
@@ -296,6 +300,7 @@ void RamStatus::statusUpdated(RamState *state, int completion, int version, QStr
     this->setTimeSpent( ui_editWidget->timeSpent() );
     this->setEstimation( ui_editWidget->estimation() );
     this->setDifficulty( ui_editWidget->difficulty() );
+    m_step->computeEstimation();
     update();
     showEdit(false);
 }
@@ -387,6 +392,9 @@ float RamStatus::latenessRatio() const
     float estimation;
     if (m_estimation <= 0) estimation = autoEstimation();
     else estimation = m_estimation;
+
+    if (estimation <= 0) return 1;
+    if (completionRatio <= 0) return 1;
 
     float timeRatio = hoursToDays(m_timeSpent/3600) / estimation;
 

@@ -99,6 +99,7 @@ void ItemTableManagerWidget::projectChanged(RamProject *project)
     }
 
     ui_assignUserMenu->setList(project->users());
+    ui_assignUserContextMenu->setList(project->users());
 
     this->setEnabled(true);
 }
@@ -289,6 +290,12 @@ void ItemTableManagerWidget::setCompletion()
     }
 }
 
+void ItemTableManagerWidget::contextMenuRequested(QPoint p)
+{
+    // Call the context menu
+    ui_contextMenu->popup(ui_table->viewport()->mapToGlobal(p));
+}
+
 void ItemTableManagerWidget::setupUi()
 {
     // Get the mainwindow to add the titlebar
@@ -429,12 +436,45 @@ void ItemTableManagerWidget::setupUi()
 
     ui_table = new RamObjectListWidget(RamObjectListWidget::Table, this);
     ui_table->setEditableObjects(true, RamUser::ProjectAdmin);
+    ui_table->setContextMenuPolicy(Qt::CustomContextMenu);
     ui_header = new RamStepHeaderView(ui_table);
     ui_table->setHorizontalHeader( ui_header );
     ui_table->setSelectionMode(QAbstractItemView::ExtendedSelection);
     mainLayout->addWidget(ui_table);
 
     this->setLayout(mainLayout);
+
+
+    ui_contextMenu = new QMenu(this);
+    ui_assignUserContextMenu = new RamObjectListMenu(false, this);
+    ui_assignUserContextMenu->setTitle("Assign user");
+    ui_assignUserContextMenu->addCreateButton();
+    ui_assignUserContextMenu->actions().at(0)->setText("None");
+    ui_contextMenu->addMenu(ui_assignUserMenu);
+
+    ui_changeStateContextMenu = new RamObjectListMenu(false, this);
+    ui_changeStateContextMenu->setTitle("Change state");
+    ui_changeStateContextMenu->setList(Ramses::instance()->states());
+    ui_contextMenu->addMenu(ui_changeStateContextMenu);
+
+    QMenu *changeDifficultyContextMenu = new QMenu("Change difficulty", this);
+    changeDifficultyContextMenu->addAction(ui_veryEasy);
+    changeDifficultyContextMenu->addAction(ui_easy);
+    changeDifficultyContextMenu->addAction(ui_medium);
+    changeDifficultyContextMenu->addAction(ui_hard);
+    changeDifficultyContextMenu->addAction(ui_veryHard);
+    ui_contextMenu->addMenu(changeDifficultyContextMenu);
+
+    QMenu *completionContextMenu = new QMenu("Set completion", this);
+    completionContextMenu->addAction(ui_completion0  );
+    completionContextMenu->addAction(ui_completion10 );
+    completionContextMenu->addAction(ui_completion25 );
+    completionContextMenu->addAction(ui_completion50 );
+    completionContextMenu->addAction(ui_completion75 );
+    completionContextMenu->addAction(ui_completion90 );
+    completionContextMenu->addAction(ui_completion100);
+    ui_contextMenu->addMenu(completionContextMenu);
+
 }
 
 void ItemTableManagerWidget::connectEvents()
@@ -443,6 +483,9 @@ void ItemTableManagerWidget::connectEvents()
     connect(ui_assignUserMenu,SIGNAL(create()),this,SLOT(unassignUser()));
     connect(ui_assignUserMenu,SIGNAL(assign(RamObject*)),this,SLOT(assignUser(RamObject*)));
     connect(ui_changeStateMenu,SIGNAL(assign(RamObject*)),this,SLOT(changeState(RamObject*)));
+    connect(ui_assignUserContextMenu,SIGNAL(create()),this,SLOT(unassignUser()));
+    connect(ui_assignUserContextMenu,SIGNAL(assign(RamObject*)),this,SLOT(assignUser(RamObject*)));
+    connect(ui_changeStateContextMenu,SIGNAL(assign(RamObject*)),this,SLOT(changeState(RamObject*)));
     connect(ui_veryEasy,SIGNAL(triggered()),this,SLOT(setVeryEasy()));
     connect(ui_easy,SIGNAL(triggered()),this,SLOT(setEasy()));
     connect(ui_medium,SIGNAL(triggered()),this,SLOT(setMedium()));
@@ -455,6 +498,7 @@ void ItemTableManagerWidget::connectEvents()
     connect(ui_completion75 , SIGNAL(triggered()), this, SLOT( setCompletion() ) );
     connect(ui_completion90 , SIGNAL(triggered()), this, SLOT( setCompletion() ) );
     connect(ui_completion100, SIGNAL(triggered()), this, SLOT( setCompletion() ) );
+    connect(ui_table, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(contextMenuRequested(QPoint)));
     // view actions
     connect(ui_actionTimeTracking, SIGNAL(triggered(bool)), ui_table, SLOT(setTimeTracking(bool)));
     connect(ui_actionCompletionRatio, SIGNAL(triggered(bool)), ui_table, SLOT(setCompletionRatio(bool)));

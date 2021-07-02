@@ -30,7 +30,7 @@ void RamScheduleDelegate::paint(QPainter *painter, const QStyleOptionViewItem &o
     // icon
     const QRect iconRect( bgRect.left() + m_padding, bgRect.top() +7 , 12, 12 );
     // text
-    const QRect textRect( iconRect.right() + 5, bgRect.top(), bgRect.width() - 37, bgRect.height() );
+    const QRect textRect( iconRect.right() + 5, iconRect.top()-5, bgRect.width() - 37, iconRect.height()+5 );
 
     // Select the bg Color
     QColor bgColor = index.data(Qt::BackgroundRole).value<QColor>();
@@ -94,6 +94,15 @@ void RamScheduleDelegate::paint(QPainter *painter, const QStyleOptionViewItem &o
         painter->setFont( m_textFont );
         painter->drawText( textRect, Qt::AlignCenter | Qt::AlignHCenter, index.data(Qt::DisplayRole).toString());
     }
+
+    // Comment
+    if (bgRect.height() > 35)
+    {
+        QRect commentRect( iconRect.left(), bgRect.top() + 30, bgRect.width() - m_padding*2, bgRect.height() - 35);
+        painter->drawText( commentRect, Qt::AlignLeft | Qt::AlignTop, index.data(Qt::UserRole +2).toString(), &commentRect);
+        if (commentRect.bottom() > bgRect.bottom() - 5) drawMore(painter, bgRect, textPen);
+    }
+
 }
 
 QSize RamScheduleDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
@@ -115,6 +124,7 @@ bool RamScheduleDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, 
     if (type == QEvent::MouseButtonPress)
     {
         QMouseEvent *e = static_cast< QMouseEvent * >( event );
+        if (e->button() != Qt::LeftButton) return false;
         if (e->modifiers() != Qt::NoModifier) return QStyledItemDelegate::editorEvent( event, model, option, index );
         m_indexPressed = index;
         return true;
@@ -122,13 +132,14 @@ bool RamScheduleDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, 
 
     if (type == QEvent::MouseButtonRelease)
     {
+        QMouseEvent *e = static_cast< QMouseEvent * >( event );
+        if (e->button() != Qt::LeftButton) return QStyledItemDelegate::editorEvent( event, model, option, index );
+
         if (m_indexPressed == index && m_indexPressed.isValid())
         {
             RamProject *proj = Ramses::instance()->currentProject();
             if (proj)
             {
-                QMouseEvent *e = static_cast< QMouseEvent * >( event );
-                if (e->modifiers() != Qt::NoModifier) return QStyledItemDelegate::editorEvent( event, model, option, index );
                 QMainWindow *mw = GuiUtils::appMainWindow();
                 RamObjectListComboBox *editor = new RamObjectListComboBox( true, mw );
                 editor->setList(proj->steps());

@@ -58,6 +58,8 @@ public:
     float estimation() const; //days
     int completionRatio() const; //%
     float latenessRatio() const; //ratio
+    float assignedDays() const; //days
+    float unassignedDays() const; //days
 
     static RamProject *project(QString uuid);
 
@@ -104,6 +106,8 @@ private:
     float m_estimation = 0;
     int m_completionRatio = 0;
     float m_latenessRatio = 0;
+    float m_missingDays = 0;
+    float m_assignedDays = 0;
 };
 
 #endif // RAMPROJECT_H

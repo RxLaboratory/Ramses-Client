@@ -29,6 +29,7 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     actionShots->setVisible(false);
     actionAssets->setVisible(false);
     actionSchedule->setVisible(false);
+    actionStatistics->setVisible(false);
 
     mainToolBar->addWidget(new ToolBarSpacer(this));
 
@@ -699,6 +700,7 @@ void MainWindow::currentUserChanged()
     actionAssets->setVisible(false);
     actionAssets->setChecked(false);
     actionSchedule->setVisible(false);
+    actionStatistics->setVisible(false);
 
     RamUser *user = Ramses::instance()->currentUser();
     if (!user) return;
@@ -712,6 +714,7 @@ void MainWindow::currentUserChanged()
     actionShots->setVisible(true);
     actionAssets->setVisible(true);
     actionSchedule->setVisible(true);
+    actionStatistics->setVisible(true);
 
     if (user->role() == RamUser::Admin)
     {

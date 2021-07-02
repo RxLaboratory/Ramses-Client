@@ -51,11 +51,27 @@ QVariant RamStatisticsTable::data(const QModelIndex &index, int role) const
     RamStep *step = qobject_cast<RamStep*>( m_project->steps()->at( row ));
 
 
-    if (role == Qt::DisplayRole) return QString("Completion: " %
-                                                QString::number( step->completionRatio(), 'f', 0) %
-                                                " %\nLateness: " %
-                                                QString::number( (step->latenessRatio() -1) * 100, 'f', 0) %
-                                                " %");
+    if (role == Qt::DisplayRole)
+    {
+        QString text = "Completion: " %
+                QString::number( step->completionRatio(), 'f', 0) %
+                " %\nLateness: " %
+                QString::number( (step->latenessRatio() -1) * 100, 'f', 0) %
+                " %\nEstimation: " %
+                QString::number( step->estimation() ) %
+                " days\nAssigned: " %
+                QString::number( step->assignedDays(), 'f', 1) %
+                " days";
+        if (step->unassignedDays() > 0) text = text %
+                                            "\nMissing: " %
+                                            QString::number( step->unassignedDays(), 'f', 1) %
+                                            " days";
+        else if (step->unassignedDays() < 0) text = text %
+                                                "\nExtra: " %
+                                                QString::number( -step->unassignedDays(), 'f', 1) %
+                                                " days";
+        return text;
+    }
     if (role == Qt::ForegroundRole)
     {
         float latenessRatio = step->latenessRatio();
@@ -105,6 +121,7 @@ void RamStatisticsTable::changeProject(RamProject *project)
 
     if (!project) return;
 
+    connect( m_project, SIGNAL(estimationComputed(RamProject*)),this,SLOT(estimationComputed()));
     connect( project->steps(), SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(insertStep(QModelIndex,int,int)));
     connect( project->steps(), SIGNAL(rowsAboutToBeRemoved(QModelIndex,int,int)), this, SLOT(removeStep(QModelIndex,int,int)));
 }
@@ -116,6 +133,11 @@ void RamStatisticsTable::removeStep(const QModelIndex &parent, int first, int la
     // We're removing rows
     beginRemoveRows(QModelIndex(), first, last);
     endRemoveRows();
+}
+
+void RamStatisticsTable::estimationComputed()
+{
+    emit dataChanged(createIndex(0,0), createIndex(rowCount()-1, 0));
 }
 
 void RamStatisticsTable::insertStep(const QModelIndex &parent, int first, int last)

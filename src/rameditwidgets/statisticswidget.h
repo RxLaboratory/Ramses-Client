@@ -29,7 +29,10 @@ private:
     QLabel *ui_completionLabel;
     QLabel *ui_remainingTimeLabel;
     QLabel *ui_latenessLabel;
-    QLabel *ui_unassignedDaysLabel;
+    QLabel *ui_estimationLabel;
+    QLabel *ui_estimationUserLabel;
+    QLabel *ui_unassignedTitleLabel;
+    QLabel *ui_unassignedLabel;
 
     RamProject *m_project = nullptr;
 

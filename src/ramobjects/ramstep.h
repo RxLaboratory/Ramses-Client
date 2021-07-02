@@ -122,7 +122,7 @@ private:
     float m_completionRatio = 0;
     float m_latenessRatio = 0;
     int m_assignedHalfDays = 0;
-    int m_missingDays = 0;
+    float m_missingDays = 0;
 };
 
 #endif // RAMSTEP_H

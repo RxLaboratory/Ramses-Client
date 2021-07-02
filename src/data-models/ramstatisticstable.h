@@ -24,6 +24,8 @@ private slots:
     void insertStep(const QModelIndex &parent, int first, int last);
     void removeStep(const QModelIndex &parent, int first, int last);
 
+    void estimationComputed();
+
 private:
 
     RamProject *m_project = nullptr;

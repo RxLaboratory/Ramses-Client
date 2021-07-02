@@ -64,6 +64,8 @@ private slots:
     void setDiffculty(RamStatus::Difficulty difficulty);
     void setCompletion();
 
+    void contextMenuRequested(QPoint p);
+
 private:
     void setupUi();
     void connectEvents();
@@ -91,6 +93,9 @@ private:
     QAction *ui_completion75;
     QAction *ui_completion90;
     QAction *ui_completion100;
+    QMenu *ui_contextMenu;
+    RamObjectListMenu *ui_assignUserContextMenu;
+    RamObjectListMenu *ui_changeStateContextMenu;
 
     RamStepFilterModel *m_stepFilter;
     RamProject *m_project = nullptr;
