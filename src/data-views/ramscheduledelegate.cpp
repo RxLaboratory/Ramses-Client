@@ -120,6 +120,10 @@ bool RamScheduleDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, 
     if (type != QEvent::MouseButtonPress && type != QEvent::MouseButtonRelease && type != QEvent::MouseMove)
         return QStyledItemDelegate::editorEvent( event, model, option, index );
 
+    RamUser *u = Ramses::instance()->currentUser();
+    if (!u) return QStyledItemDelegate::editorEvent( event, model, option, index );
+    if (u->role() < RamUser::Lead) return QStyledItemDelegate::editorEvent( event, model, option, index );
+
 
     if (type == QEvent::MouseButtonPress)
     {

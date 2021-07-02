@@ -76,6 +76,9 @@ void ScheduleManagerWidget::userChanged(RamUser *user)
     ui_friday->setChecked( uSettings->value("schedule/friday", true).toBool() );
     ui_saturday->setChecked( uSettings->value("schedule/saturday", true).toBool() );
     ui_sunday->setChecked( uSettings->value("schedule/sunday", true).toBool() );
+
+    ui_stepContextMenu->setEnabled(user->role() >= RamUser::Lead);
+    ui_stepMenu->setEnabled(user->role() >= RamUser::Lead);
 }
 
 void ScheduleManagerWidget::assignStep(RamObject *stepObj)

@@ -148,7 +148,7 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
 
         // Draw editbutton
         // Edit button
-        if (canEdit() || index.column() > 0)
+        if (canEdit(index))
         {
             const QRect editButtonRect( xpos, bgRect.top() +7, 12, 12 );
             xpos -= 22;
@@ -638,7 +638,7 @@ bool RamObjectDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, co
     if (iptr == 0) return false;
     RamObject *o = reinterpret_cast<RamObject*>( iptr );
 
-    bool edit = canEdit();
+    bool edit = canEdit(index);
     bool history = o->objectType() == RamObject::Status;
     bool folder = o->path() != "";
 
@@ -760,9 +760,21 @@ void RamObjectDelegate::setComboBoxMode(bool comboBoxMode)
     m_comboBox = comboBoxMode;
 }
 
-bool RamObjectDelegate::canEdit() const
+bool RamObjectDelegate::canEdit(const QModelIndex &index) const
 {
     RamUser *u = Ramses::instance()->currentUser();
+
+    quintptr iptr = index.data(Qt::UserRole).toULongLong();
+    if (iptr == 0) return false;
+    RamObject *o = reinterpret_cast<RamObject*>( iptr );
+    if (o->objectType() == RamObject::Status)
+    {
+        RamStatus *status = qobject_cast<RamStatus*>( o );
+        if (status->assignedUser()) if(status->assignedUser()->is(u)) return true;
+        if (u->role() > RamUser::Standard) return true;
+        return false;
+    }
+
     return m_editable && u->role() >= m_editRole;
 }
 

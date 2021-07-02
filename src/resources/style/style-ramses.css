@@ -1,16 +1,3 @@
-QDockWidget QFrame{
-    border-radius: @padding-small;
-    background-color: @color-dark-grey;
-}
-
-QDockWidget QFrame:hover {
-    background-color: @color-less-dark-grey;
-}
-
-QDockWidget QToolButton {
-    background-color: rgba(0,0,0,0);
-}
-
 QDockWidget QLabel {
     background-color: rgba(0,0,0,0);
 }

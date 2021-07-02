@@ -63,6 +63,8 @@ void RamStatus::setState(RamState *state)
     m_dirty = true;
     m_state = state;
 
+    m_completionRatio = state->completionRatio();
+
     m_step->computeEstimation();
 
     m_stateConnection = connect(state, SIGNAL(removed(RamObject*)), this, SLOT(stateRemoved()));

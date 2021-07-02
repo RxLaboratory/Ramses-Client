@@ -67,7 +67,7 @@ private:
     bool m_folderButtonPressed = false;
 
     // Utils
-    bool canEdit() const;
+    bool canEdit(const QModelIndex &index) const;
 
     // drawing specific items
     void drawMore(QPainter *painter, QRect rect, QPen pen) const;
