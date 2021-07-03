@@ -7,6 +7,8 @@ UserEditWidget::UserEditWidget(RamUser *user, QWidget *parent) :
     connectEvents();
 
     setObject(user);
+
+     m_dontRename << "Ramses" << "Removed" << "Duduf";
 }
 
 UserEditWidget::UserEditWidget(QWidget *parent) :
@@ -16,6 +18,8 @@ UserEditWidget::UserEditWidget(QWidget *parent) :
     connectEvents();
 
     setObject(nullptr);
+
+    m_dontRename << "Ramses" << "Removed" << "Duduf";
 }
 
 RamUser *UserEditWidget::user() const
@@ -68,6 +72,19 @@ void UserEditWidget::setObject(RamObject *obj)
     else
     {
         this->setEnabled(Ramses::instance()->isAdmin());
+    }
+
+    if (m_dontRename.contains(user->shortName()))
+    {
+        ui_npassword1Edit->setEnabled(false);
+        ui_npassword2Edit->setEnabled(false);
+        ui_cpasswordEdit->setEnabled(false);
+    }
+    else
+    {
+        ui_npassword1Edit->setEnabled(true);
+        ui_npassword2Edit->setEnabled(true);
+        ui_cpasswordEdit->setEnabled(true);
     }
 }
 
@@ -184,8 +201,6 @@ void UserEditWidget::setupUi()
     ui_mainLayout->insertWidget(1, ui_folderLabel);
 
     ui_mainLayout->addStretch();
-
-    m_dontRename << "Ramses" << "Removed";
 }
 
 void UserEditWidget::connectEvents()
