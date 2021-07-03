@@ -38,7 +38,7 @@
 #define URL_FORUM ""
 #define URL_DOC "http://ramses.rxlab.guide"
 #define URL_BUGREPORT "https://github.com/Rainbox-dev/Ramses-Client/issues"
-#define URL_DONATION "https://donate.rxlab.info"
+#define URL_DONATION "http://donate.rxlab.info"
 
 #define APP_ICON ":/icons/app"
 #define SPLASH_IMAGE ":/images/splash"
