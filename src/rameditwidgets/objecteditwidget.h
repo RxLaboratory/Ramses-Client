@@ -9,6 +9,7 @@
 #include <QVBoxLayout>
 #include <QWidget>
 #include <QTextEdit>
+#include <QShowEvent>
 
 
 #include "ramobject.h"
@@ -39,6 +40,8 @@ protected slots:
     void objectChanged(RamObject *o);
 
 protected:
+    void showEvent(QShowEvent *event) override;
+
     QList<QMetaObject::Connection> _objectConnections;
     bool updating = false;
     QStringList m_dontRename;

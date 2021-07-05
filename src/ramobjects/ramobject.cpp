@@ -1,5 +1,6 @@
 #include "ramobject.h"
 #include "objectdockwidget.h"
+#include "objecteditwidget.h"
 #include "mainwindow.h"
 
 QMap<QString, RamObject*> RamObject::m_existingObjects = QMap<QString, RamObject*>();
@@ -107,8 +108,10 @@ void RamObject::remove( bool updateDB )
     this->deleteLater();
 }
 
-void RamObject::setEditWidget(QWidget *w)
+void RamObject::setEditWidget(ObjectEditWidget *w)
 {
+    ui_editWidget = w;
+
     m_dockWidget = new ObjectDockWidget(this);
     QFrame *f = new QFrame(m_dockWidget);
     QVBoxLayout *l = new QVBoxLayout();

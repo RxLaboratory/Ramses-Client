@@ -116,6 +116,11 @@ void ObjectEditWidget::objectChanged(RamObject *o)
     setObject(m_object);
 }
 
+void ObjectEditWidget::showEvent(QShowEvent *event)
+{
+    if(!event->spontaneous()) this->setObject(m_object);
+}
+
 bool ObjectEditWidget::eventFilter(QObject *obj, QEvent *event)
 {
     if (obj->objectName() == "commentEdit")

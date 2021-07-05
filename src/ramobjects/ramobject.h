@@ -10,6 +10,7 @@
 #include "duqf-utils/utils.h"
 
 class ObjectDockWidget;
+class ObjectEditWidget;
 
 class RamObject : public QObject
 {
@@ -119,9 +120,11 @@ protected:
 
     static QMap<QString, RamObject*> m_existingObjects;
 
-    void setEditWidget( QWidget *w );
+    void setEditWidget(ObjectEditWidget *w );
     void showEdit(bool show = true);
     virtual QString folderPath() const { return QString(); };
+
+    ObjectEditWidget *ui_editWidget = nullptr;
 
 private:
     RamObject::ObjectType _objectType = Generic;
