@@ -161,6 +161,17 @@ void ObjectListEditWidget::removeSelectedObjects()
                                      "Sorry, " + o->shortName() + " | " + o->name() + " must not be removed.");
             return;
         }
+        if (o->shortName() == "Duduf" && o->comment() != "")
+        {
+            QMessageBox::StandardButton result = QMessageBox::question(this,
+                                     "Please read this before removing Duduf!",
+                                     o->comment() + "\n\nDo you want to go to the website to make a donation?");
+            if (result == QMessageBox::Yes)
+            {
+                QDesktopServices::openUrl(QUrl(URL_DONATION));
+                return;
+            }
+        }
     }
 
     QList<RamObject*> objs = m_objectList->removeIndices(selection);

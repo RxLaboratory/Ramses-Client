@@ -484,6 +484,7 @@ void Daemon::getPipes(QTcpSocket *client)
             }
             pipeFile.insert("fileType", fileType);
             pipeFiles.append(pipeFile);
+            pipe.insert("pipeFiles", pipeFiles);
         }
 
         pipes.append(pipe);

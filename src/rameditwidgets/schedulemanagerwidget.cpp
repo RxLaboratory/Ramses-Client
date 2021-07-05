@@ -35,6 +35,11 @@ void ScheduleManagerWidget::hideEvent(QHideEvent *event)
 
 void ScheduleManagerWidget::projectChanged(RamProject *project)
 {
+
+    if (m_project) disconnect(m_project, nullptr, this, nullptr);
+
+    m_project = project;
+
     if (!project)
     {
         this->setEnabled(false);
@@ -57,6 +62,15 @@ void ScheduleManagerWidget::projectChanged(RamProject *project)
     ui_table->resizeRowsToContents();
 
     int days = QDate::currentDate().daysTo( project->deadline() );
+    ui_timeRemaining->setText("Time remaining: " + QString::number(days) + " days");
+
+    connect (m_project, SIGNAL(changed(RamObject*)),this,SLOT(projectUpdated(RamObject*)));
+}
+
+void ScheduleManagerWidget::projectUpdated(RamObject *projObj)
+{
+    if (!m_project->is(projObj)) return;
+    int days = QDate::currentDate().daysTo( m_project->deadline() );
     ui_timeRemaining->setText("Time remaining: " + QString::number(days) + " days");
 }
 

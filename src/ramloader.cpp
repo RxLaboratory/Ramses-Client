@@ -135,6 +135,11 @@ QString RamLoader::gotUser(QJsonObject newU)
                 newU.value("name").toString(),
                 uuid
                 );
+    else
+    {
+        user->setShortName( newU.value("shortName").toString() );
+        user->setName( newU.value("name").toString() );
+    }
 
     user->setFolderPath( newU.value("folderPath").toString());
     user->setRole( newU.value("role").toString("standard") );
@@ -181,6 +186,11 @@ QString RamLoader::gotProject(QJsonObject newP, bool init)
                 newP.value("name").toString(),
                 uuid
                 );
+    else
+    {
+        project->setShortName( newP.value("shortName").toString() );
+        project->setName( newP.value("name").toString() );
+    }
 
     project->setWidth( newP.value("width").toInt());
     project->setHeight( newP.value("height").toInt());
@@ -258,6 +268,12 @@ QString RamLoader::gotTemplateStep(QJsonObject newS)
                 newS.value("name").toString(),
                 uuid
                 );
+    else
+    {
+        step->setShortName( newS.value("shortName").toString() );
+        step->setName( newS.value("name").toString() );
+    }
+
     step->setType( newS.value("type").toString());
     step->setComment( newS.value("comment").toString());
     step->setColor( QColor( newS.value("color").toString()) );
@@ -322,6 +338,12 @@ QString RamLoader::gotTemplateAssetGroup(QJsonObject newAG)
                 newAG.value("name").toString(),
                 uuid
                 );
+    else
+    {
+        assetGroup->setShortName( newAG.value("shortName").toString() );
+        assetGroup->setName( newAG.value("name").toString() );
+    }
+
     assetGroup->setComment( newAG.value("comment").toString());
     m_ram->templateAssetGroups()->append(assetGroup);
 
@@ -370,6 +392,12 @@ QString RamLoader::gotState(QJsonObject newS)
                 newS.value("name").toString(),
                 uuid
                 );
+    else
+    {
+        state->setShortName( newS.value("shortName").toString() );
+        state->setName( newS.value("name").toString() );
+    }
+
     state->setColor( QColor( newS.value("color").toString()) );
     state->setCompletionRatio( newS.value("completionRatio").toInt() );
     state->setComment( newS.value("comment").toString());
@@ -422,6 +450,12 @@ QString RamLoader::gotFileType(QJsonObject newFt)
                 newFt.value("extensions").toString(),
                 uuid
                 );
+    else
+    {
+        fileType->setShortName( newFt.value("shortName").toString() );
+        fileType->setName( newFt.value("name").toString() );
+        fileType->setExtensions( newFt.value("extensions").toString() );
+    }
 
     fileType->setPreviewable( newFt.value("previewable").toInt() != 0 );
     fileType->setComment( newFt.value("comment").toString());
@@ -474,9 +508,14 @@ QString RamLoader::gotApplication(QJsonObject newA)
                 newA.value("executableFilePath").toString(),
                 newA.value("uuid").toString()
                 );
+    else
+    {
+        application->setShortName( newA.value("shortName").toString() );
+        application->setName( newA.value("name").toString() );
+        application->setExecutableFilePath( newA.value("executableFilePath").toString() );
+    }
 
     application->setComment( newA.value("comment").toString());
-
     application->importFileTypes()->clear();
     application->exportFileTypes()->clear();
     application->nativeFileTypes()->clear();
@@ -538,6 +577,12 @@ QString RamLoader::gotStep(QJsonObject newS, RamProject *project)
                 project,
                 uuid
                 );
+    else
+    {
+        step->setShortName( newS.value("shortName").toString() );
+        step->setShortName( newS.value("name").toString() );
+    }
+
     step->setType( newS.value("type").toString());
     step->setOrder( newS.value("order").toInt() );
     step->setComment( newS.value("comment").toString());
@@ -608,8 +653,13 @@ QString RamLoader::gotAssetGroup(QJsonObject newAG, RamProject *project)
                 newAG.value("name").toString(),
                 uuid
                 );
-    assetGroup->setComment( newAG.value("comment").toString());
+    else
+    {
+        assetGroup->setShortName( newAG.value("shortName").toString() );
+        assetGroup->setName( newAG.value("name").toString() );
+    }
 
+    assetGroup->setComment( newAG.value("comment").toString());
     project->assetGroups()->append(assetGroup);
 
     return uuid;
@@ -663,10 +713,13 @@ QString RamLoader::gotAsset(QJsonObject newA, RamProject *project)
                 name,
                 uuid
                 );
+    else
+    {
+        asset->setShortName(shortName);
+        asset->setName(name);
+        asset->setAssetGroup(ag);
+    }
 
-    asset->setShortName(shortName);
-    asset->setName(name);
-    asset->setAssetGroup(ag);
     asset->setTags( newA.value("tags").toString());
     asset->setComment( newA.value("comment").toString());
     gotStatusHistory( newA.value("statusHistory").toArray(), asset);
@@ -718,6 +771,11 @@ QString RamLoader::gotSequence(QJsonObject newS, RamProject *project)
                 newS.value("name").toString(),
                 uuid
                 );
+    else
+    {
+        sequence->setShortName( newS.value("shortName").toString() );
+        sequence->setName( newS.value("name").toString() );
+    }
 
     sequence->setComment( newS.value("comment").toString());
     sequence->setOrder( newS.value("order").toInt());
@@ -772,9 +830,12 @@ QString RamLoader::gotShot(QJsonObject newS, RamProject *project)
                 name,
                 uuid
                 );
-    shot->setShortName(shortName);
-    shot->setName(name);
-    shot->setSequence(seq);
+    else {
+        shot->setShortName(shortName);
+        shot->setName(name);
+        shot->setSequence(seq);
+    }
+
     shot->setDuration( newS.value("duration").toDouble() );
     shot->setOrder( newS.value("order").toInt() );
     shot->setComment( newS.value("comment").toString());
@@ -833,6 +894,9 @@ QString RamLoader::gotStatus(QJsonObject newS, RamItem *item)
 
     RamStatus *status = RamStatus::status( uuid );
     if (!status) status = new RamStatus(user, state, step, item, uuid);
+    else {
+        status->setState(state);
+    }
 
     status->setCompletionRatio( newS.value("completionRatio").toInt( ) );
     status->setComment( newS.value("comment").toString( ) );
@@ -893,7 +957,13 @@ QString RamLoader::gotPipe(QJsonObject newP, RamProject *project)
 
     RamPipe *pipe = RamPipe::pipe(uuid);
     if (!pipe) pipe = new RamPipe(outputStep, inputStep, uuid);
+    else
+    {
+        pipe->setInputStep(inputStep);
+        pipe->setOutputStep(outputStep);
+    }
 
+    pipe->pipeFiles()->clear();
     QJsonArray newPFs = newP.value("pipeFiles").toArray();
     for (int j = 0; j < newPFs.count(); j++)
     {
@@ -1004,8 +1074,13 @@ QString RamLoader::gotScheduleEntry(QJsonObject newSE)
                 QDateTime::fromString( newSE.value("date").toString(), "yyyy-MM-dd hh:mm:ss"),
                 uuid
                 );
-    entry->setComment( newSE.value("comment").toString() );
+    else {
+        entry->setUser(user);
+        entry->setStep(step);
+        entry->setDate( QDateTime::fromString( newSE.value("date").toString(), "yyyy-MM-dd hh:mm:ss") );
+    }
 
+    entry->setComment( newSE.value("comment").toString() );
     user->schedule()->append(entry);
 
     return uuid;
