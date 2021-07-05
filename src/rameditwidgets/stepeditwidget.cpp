@@ -91,6 +91,9 @@ void StepEditWidget::setObject(RamObject *obj)
 
     updateEstimationSuffix();
 
+    // Lock the IDs of the steps
+    if (step->shortName() != "NEW") ui_shortNameEdit->setEnabled(false);
+
     this->setEnabled(Ramses::instance()->isProjectAdmin());   
 }
 

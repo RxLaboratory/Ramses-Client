@@ -65,6 +65,9 @@ void ObjectEditWidget::setObject(RamObject *object)
 
     ui_shortNameEdit->setEnabled( !m_dontRename.contains(object->shortName()) );
 
+    // If the folder already exists, freeze the ID
+    if ( object->path() != "" &&  QFileInfo::exists( object->path() ) && object->shortName() != "NEW" ) ui_shortNameEdit->setEnabled(false);
+
     _objectConnections << connect( object, &RamObject::removed, this, &ObjectEditWidget::objectRemoved);
     _objectConnections << connect( object, &RamObject::changed, this, &ObjectEditWidget::objectChanged);
 }
