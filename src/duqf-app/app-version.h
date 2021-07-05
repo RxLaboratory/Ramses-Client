@@ -2,9 +2,9 @@
 #define APPVERSION_H
 
 #define VERSION_MAJOR 0
-#define VERSION_MINOR 0
-#define VERSION_BUILD 1
-#define VERSION_SUFFIX "dev"
+#define VERSION_MINOR 1
+#define VERSION_BUILD 0
+#define VERSION_SUFFIX "Beta"
 
 #define STRINGIFY_VERSION(A, B, C) CONCAT(A, B, C )
 #define CONCAT(A, B, C ) STRINGIFY( A##.##B##.##C )
@@ -37,7 +37,7 @@
 #define URL_CHAT "http://chat.rxlab.info"
 #define URL_FORUM ""
 #define URL_DOC "http://ramses.rxlab.guide"
-#define URL_BUGREPORT "https://github.com/Rainbox-dev/Ramses-Client/issues"
+#define URL_BUGREPORT "https://github.com/RxLaboratory/Ramses/issues/new/choose"
 #define URL_DONATION "http://donate.rxlab.info"
 
 #define APP_ICON ":/icons/app"

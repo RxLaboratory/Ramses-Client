@@ -30,6 +30,7 @@ protected:
 
 private slots:
     void projectChanged(RamProject *project);
+    void projectUpdated(RamObject*projObj);
     void userChanged(RamUser *user);
 
     void assignStep(RamObject *stepObj = nullptr);
@@ -85,6 +86,8 @@ private:
 
     RamScheduleTable *m_schedule;
     RamScheduleFilter *m_scheduleFilter;
+
+    RamProject *m_project = nullptr;
 
     DBInterface *m_dbi;
 };
