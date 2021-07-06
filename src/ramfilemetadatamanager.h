@@ -9,6 +9,7 @@
 #include <QJsonArray>
 #include <QDateTime>
 #include <QFileInfo>
+#include <QVariant>
 
 class RamFileMetaDataManager: QObject
 {
