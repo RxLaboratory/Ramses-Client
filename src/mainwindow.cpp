@@ -331,10 +331,9 @@ void MainWindow::duqf_initUi()
     duqf_maximizeButton->setObjectName("windowButton");
     mainToolBar->addWidget(duqf_maximizeButton);
     //hide
-    QToolButton *hideButton;
+    QToolButton *hideButton = hideButton = new QToolButton();
     if (useSysTray)
     {
-        hideButton = new QToolButton();
         hideButton->setIcon(QIcon(":/icons/hide"));
         hideButton->setObjectName("windowButton");
         mainToolBar->addWidget(hideButton);
