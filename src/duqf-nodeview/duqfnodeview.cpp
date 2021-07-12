@@ -36,9 +36,13 @@ void DuQFNodeView::zoom(double amount)
 {
     qreal s = 1.0 + amount / 10.0 * m_zoomSensitivity;
     setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
-    scale( s, s );
 
     double z = currentZoom();
+    if (z*s < 0.25) return;
+
+    scale( s, s );
+
+    z = currentZoom();
     emit zoomed(z);
     emit zoomed(int(z*100));
 }
