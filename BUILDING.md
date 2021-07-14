@@ -2,17 +2,21 @@
 
 To ensure compatibility on most systems, here are the systems used to build *Ramses*.
 
-## Ubuntu 18.04 Bionic Beaver
+## Linux / openSSL 1.0
 
 Used to build *Ramses* for Linux systems using ***openSSL 1.0***.
 
 Using ***Qt 5.9.9 LTS*** to make sure *Ramses* runs on Ubuntu 18.04.
 
-## Ubuntu 20.04 Focal Fossa
+Deploy as a .deb package, test on Ubuntu 18.04
+
+## Linux / openSSL 1.1
 
 Used to build *Ramses* for Linux systems using ***openSSL 1.1***.
 
 Using ***Qt 5.12.5 LTS*** to make sure *Ramses* runs on Ubuntu 20.04 and above.
+
+Deploy as a .deb and an .appImage packages, test on Ubuntu 20.04
 
 ## Windows
 
