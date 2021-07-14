@@ -153,6 +153,7 @@ bool RamScheduleDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, 
                 // Get current
                 RamStep *step = reinterpret_cast<RamStep*>( index.data(Qt::EditRole).toULongLong() );
                 editor->setObject(step);
+                qDebug() << "Showing popup";
                 editor->show();
                 editor->showPopup();
                 connect(editor, SIGNAL(currentObjectChanged(RamObject*)), this, SLOT(setEntry(RamObject*)));

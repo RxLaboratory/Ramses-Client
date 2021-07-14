@@ -330,6 +330,7 @@ void ScheduleManagerWidget::goToPreviousMonth()
 
 void ScheduleManagerWidget::contextMenuRequested(QPoint p)
 {
+    qDebug() << "Context menu called";
     // Call the context menu
     ui_contextMenu->popup(ui_table->viewport()->mapToGlobal(p));
 }

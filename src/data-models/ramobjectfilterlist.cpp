@@ -22,9 +22,10 @@ QVariant RamObjectFilterList::data(const QModelIndex &index, int role) const
 {
     if (columnCount() == 0) return QVariant();
 
-
+#if QT_VERSION > QT_VERSION_CHECK(5, 11, 0)
    if (!checkIndex(index, CheckIndexOption::IndexIsValid))
             return QVariant();
+#endif
 
     // return ALL
     if (index.row() == 0)
