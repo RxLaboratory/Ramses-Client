@@ -337,7 +337,8 @@ win* {
         QMAKE_CXXFLAGS += -Wdeprecated
     }
 } else:macx {
-    # Just in case...
+    # icon
+    ICON = resources/icons/ramses.icns
 }
 
 RESOURCES += \
