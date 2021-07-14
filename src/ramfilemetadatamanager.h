@@ -44,8 +44,9 @@ public:
     void setPipeType(QString fileName, QString pipeType);
 
     QList<qint64> getModificationHistory(QString fileName) const;
-    qint64 getTimeRange(QString fileName, QDateTime after = QDate(1970,1,1).startOfDay()) const;
-    int getTimeRange( QDateTime after = QDate(1970,1,1).startOfDay() ) const;
+    // Note: QDateTime(QDate()) is deprecated on Qt 5.15 but Linux version still uses 5.12
+    qint64 getTimeRange(QString fileName, QDateTime after = QDateTime(QDate(1970,1,1))) const;
+    int getTimeRange( QDateTime after = QDateTime(QDate(1970,1,1)) ) const;
 
     static QString metaDataFileName();
 

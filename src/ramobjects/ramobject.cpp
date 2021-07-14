@@ -190,7 +190,7 @@ void RamObject::deleteFile(QString fileName, RamObject::SubFolder folder) const
 
     QString destination = QDir( trashPath ).filePath(fileName);
     if (QFileInfo::exists(destination))
-        if (!QFile::moveToTrash(destination))
+        if (!FileUtils::moveToTrash(destination))
             QFile::remove(destination);
 
     file.rename( destination );

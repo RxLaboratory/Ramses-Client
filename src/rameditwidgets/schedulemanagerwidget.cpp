@@ -129,7 +129,7 @@ void ScheduleManagerWidget::assignStep(RamObject *stepObj)
                         m_schedule->headerData( index.row(), Qt::Vertical, Qt::UserRole ).toULongLong() );
             if (!user) continue;
 
-            QDateTime date = index.data(Qt::UserRole+1).toDate().startOfDay();
+            QDateTime date = QDateTime( index.data(Qt::UserRole+1).toDate() );
             if ( m_schedule->headerData( index.row(), Qt::Vertical, Qt::UserRole+1 ).toBool() )
                 date.setTime(QTime(12,0));
 

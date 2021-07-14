@@ -119,7 +119,7 @@ QVariant RamScheduleTable::data(const QModelIndex &index, int role) const
     if (!user) return QVariant();
     RamObjectList *schedule = user->schedule();
 
-    QDateTime date = m_startDate.addDays(col).startOfDay();
+    QDateTime date = QDateTime( m_startDate.addDays(col) );
     QString ampm = "am";
     if ( headerData(row, Qt::Vertical, Qt::UserRole +1).toBool() )
     {

@@ -180,7 +180,7 @@ void RamScheduleDelegate::setEntry(RamObject *stepObj)
         RamUser *user = reinterpret_cast<RamUser*>( iptr );
         if (!user) return;
         // Get Date
-        QDateTime date = m_indexPressed.model()->headerData( m_indexPressed.column(), Qt::Horizontal, Qt::UserRole).toDate().startOfDay();
+        QDateTime date = QDateTime( m_indexPressed.model()->headerData( m_indexPressed.column(), Qt::Horizontal, Qt::UserRole).toDate() );
         if (  m_indexPressed.model()->headerData( m_indexPressed.row(), Qt::Vertical, Qt::UserRole+1 ).toBool() )
             date.setTime(QTime(12,0));
 
