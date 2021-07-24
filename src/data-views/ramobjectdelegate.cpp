@@ -573,13 +573,14 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
     if (commentRect.bottom() + 20 < bgRect.bottom() && previewImagePath != "")
     {
         QPixmap pix(previewImagePath);
-        float pixRatio = pix.width() / pix.height();
+        float pixRatio = pix.width() / float(pix.height());
         // Adjust image rect height to fit ratio
-        float rectRatio = imageRect.width() / imageRect.height();
+        float rectRatio = imageRect.width() / float(imageRect.height());
         if (rectRatio < pixRatio)
             imageRect.setHeight( imageRect.width() / pixRatio );
         else
             imageRect.setWidth( imageRect.height() * pixRatio );
+
         painter->drawPixmap( imageRect, QPixmap(previewImagePath));
     }
     else imageRect.setHeight(0);

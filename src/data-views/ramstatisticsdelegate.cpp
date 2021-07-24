@@ -21,7 +21,6 @@ void RamStatisticsDelegate::paint(QPainter *painter, const QStyleOptionViewItem 
 {
 
     int col = index.column();
-    int row = index.row();
 
     if (col != 0) return QStyledItemDelegate::paint(painter, option, index);
 

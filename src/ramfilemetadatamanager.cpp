@@ -127,7 +127,11 @@ qint64 RamFileMetaDataManager::getTimeRange(QString fileName, QDateTime after) c
     QDateTime current;
     QFileInfo fileInfo( m_folder.filePath(fileName) );
     if (fileInfo.exists())
+#if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
+        current = fileInfo.created();
+#else
         current = fileInfo.birthTime();
+#endif
     // If not found, pick the first history item
     if (!current.isValid())
         current = QDateTime::fromSecsSinceEpoch( fileHistory.at(0) );

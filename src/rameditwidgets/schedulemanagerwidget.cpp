@@ -35,6 +35,8 @@ void ScheduleManagerWidget::hideEvent(QHideEvent *event)
 
 void ScheduleManagerWidget::projectChanged(RamProject *project)
 {
+    if (!m_project && !project) return;
+    if (m_project) if (m_project->is(project) ) return;
 
     if (m_project) disconnect(m_project, nullptr, this, nullptr);
 
@@ -128,8 +130,11 @@ void ScheduleManagerWidget::assignStep(RamObject *stepObj)
             RamUser *user = reinterpret_cast<RamUser*>(
                         m_schedule->headerData( index.row(), Qt::Vertical, Qt::UserRole ).toULongLong() );
             if (!user) continue;
-
+#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
+            QDateTime date = QDateTime( index.data(Qt::UserRole+1).toDate() );
+#else
             QDateTime date = index.data(Qt::UserRole+1).toDate().startOfDay();
+#endif
             if ( m_schedule->headerData( index.row(), Qt::Vertical, Qt::UserRole+1 ).toBool() )
                 date.setTime(QTime(12,0));
 
@@ -330,6 +335,7 @@ void ScheduleManagerWidget::goToPreviousMonth()
 
 void ScheduleManagerWidget::contextMenuRequested(QPoint p)
 {
+    qDebug() << "Context menu called";
     // Call the context menu
     ui_contextMenu->popup(ui_table->viewport()->mapToGlobal(p));
 }
