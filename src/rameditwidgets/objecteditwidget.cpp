@@ -83,7 +83,6 @@ void ObjectEditWidget::update()
 
 bool ObjectEditWidget::checkInput()
 {
-    qDebug() << sender();
     if (!m_object) return false;
 
     if (ui_shortNameEdit->text() == "" && ui_shortNameEdit->isModified())
