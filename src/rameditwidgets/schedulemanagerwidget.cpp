@@ -35,6 +35,8 @@ void ScheduleManagerWidget::hideEvent(QHideEvent *event)
 
 void ScheduleManagerWidget::projectChanged(RamProject *project)
 {
+    if (!m_project && !project) return;
+    if (m_project) if (m_project->is(project) ) return;
 
     if (m_project) disconnect(m_project, nullptr, this, nullptr);
 
