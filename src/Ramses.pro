@@ -339,6 +339,7 @@ win* {
 } else:macx {
     # icon
     ICON = resources/icons/ramses.icns
+    CONFIG += sdk_no_version_check
 }
 
 RESOURCES += \

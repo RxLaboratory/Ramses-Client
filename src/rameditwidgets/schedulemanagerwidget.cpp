@@ -128,8 +128,11 @@ void ScheduleManagerWidget::assignStep(RamObject *stepObj)
             RamUser *user = reinterpret_cast<RamUser*>(
                         m_schedule->headerData( index.row(), Qt::Vertical, Qt::UserRole ).toULongLong() );
             if (!user) continue;
-
+#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
             QDateTime date = QDateTime( index.data(Qt::UserRole+1).toDate() );
+#else
+            QDateTime date = index.data(Qt::UserRole+1).toDate().startOfDay();
+#endif
             if ( m_schedule->headerData( index.row(), Qt::Vertical, Qt::UserRole+1 ).toBool() )
                 date.setTime(QTime(12,0));
 
