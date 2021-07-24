@@ -9,6 +9,8 @@
 #include <QJsonArray>
 #include <QDateTime>
 #include <QFileInfo>
+#include <QVariant>
+#include <QtGlobal>
 
 class RamFileMetaDataManager: QObject
 {
@@ -42,9 +44,18 @@ public:
     QString getPipeType(QString fileName) const;
     void setPipeType(QString fileName, QString pipeType);
 
+
     QList<qint64> getModificationHistory(QString fileName) const;
-    qint64 getTimeRange(QString fileName, QDateTime after = QDate(1970,1,1).startOfDay()) const;
+#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
+    // Note: QDateTime(QDate()) is deprecated on Qt 5.15 but Linux version still uses 5.12
+    qint64 getTimeRange(QString fileName, QDateTime after = QDateTime(QDate(1970,1,1))) const;
+    QList<qint64> getModificationHistory(QString fileName) const;
+    int getTimeRange( QDateTime after = QDateTime(QDate(1970,1,1)) ) const;
+#else
+    qint64 getTimeRange(QString fileName, QDateTime after = QDate(1970,1,1).startOfDay() ) const;
     int getTimeRange( QDateTime after = QDate(1970,1,1).startOfDay() ) const;
+#endif
+
 
     static QString metaDataFileName();
 

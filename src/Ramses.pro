@@ -334,10 +334,12 @@ win* {
     {
         QMAKE_CXXFLAGS += "-fno-sized-deallocation"
         # Ignore annoying errors on older versions of Qt
-        QMAKE_CXXFLAGS += -Wdeprecated-copy
+        QMAKE_CXXFLAGS += -Wdeprecated
     }
 } else:macx {
-    # Just in case...
+    # icon
+    ICON = resources/icons/ramses.icns
+    CONFIG += sdk_no_version_check
 }
 
 RESOURCES += \

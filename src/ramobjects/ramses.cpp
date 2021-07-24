@@ -124,6 +124,11 @@ void Ramses::setCurrentProject(RamProject *currentProject)
 {
     qDebug() << "Setting project: Database call";
     if ( currentProject ) m_dbi->getProject(currentProject->uuid());
+    else
+    {
+        m_currentProject = nullptr;
+        emit currentProjectChanged(m_currentProject);
+    }
 }
 
 void Ramses::projectReady(QString uuid)

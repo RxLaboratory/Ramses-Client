@@ -227,3 +227,137 @@ void FileUtils::openInExplorer(QString path, bool askForCreation)
 #endif
 }
 
+
+bool FileUtils::moveToTrash(const QString &fileName)
+{
+#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
+
+#ifdef Q_OS_LINUX
+
+    QStringList trashPaths;
+    QString trashPath;
+    QString trashPathInfo;
+    QString trashPathFiles;
+
+    // Get trash path
+    const char* xdg_data_home = getenv( "XDG_DATA_HOME" );
+    if( xdg_data_home ){
+        QString xdgTrash( xdg_data_home );
+        trashPaths.append( xdgTrash + "/Trash" );
+    }
+    QString home = QDir::homePath();
+    trashPaths.append( home + "/.local/share/Trash" );
+    trashPaths.append( home + "/.trash" );
+
+    foreach( QString path, trashPaths )
+    {
+        QDir dir( path );
+        if( dir.exists() ){
+            trashPath = path;
+            break;
+        }
+    }
+
+    if( trashPath.isEmpty() )
+    {
+        qWarning("Can't find the trash folder.");
+        return false;
+    }
+
+    trashPathInfo = trashPath + "/info";
+    trashPathFiles = trashPath + "/files";
+    if( !QDir( trashPathInfo ).exists() || !QDir( trashPathFiles ).exists() )
+        // doesn't respect fredesktop.org specs
+        return false;
+
+    QFileInfo original( fileName );
+    if( !original.exists() )
+    {
+        qWarning("Can't move file to trash: the file does not exist.");
+        return false;
+    }
+
+    QString info;
+    info += "[Trash Info]\nPath=";
+    info += original.absoluteFilePath();
+    info += "\nDeletionDate=";
+    info += QDateTime::currentDateTime().toString("yyyy-MM-ddThh:mm:ss.zzzZ");
+    info += "\n";
+    QString trashname = original.fileName();
+    QString infopath = trashPathInfo + "/" + trashname + ".trashinfo";
+    QString filepath = trashPathFiles + "/" + trashname;
+    int nr = 1;
+
+    while( QFileInfo( infopath ).exists() || QFileInfo( filepath ).exists() ){
+        nr++;
+        trashname = original.baseName() + "." + QString::number( nr );
+        if( !original.completeSuffix().isEmpty() ){
+            trashname += QString( "." ) + original.completeSuffix();
+        }
+        infopath = trashPathInfo + "/" + trashname + ".trashinfo";
+        filepath = trashPathFiles + "/" + trashname;
+    }
+
+    QDir dir;
+    if( !dir.rename( original.absoluteFilePath(), filepath ) )
+    {
+        qWarning("Moving file to trash failed.");
+        return false;
+    }
+
+    return true;
+
+#endif
+
+#ifdef Q_OS_WIN
+    QFileInfo fileinfo( fileName );
+
+    if( !fileinfo.exists() )
+    {
+        qWarning("Can't move file to trash: the file does not exist.");
+        return false;
+    }
+
+
+    WCHAR from[ MAX_PATH ];
+    memset( from, 0, sizeof( from ));
+    int l = fileinfo.absoluteFilePath().toWCharArray( from );
+    Q_ASSERT( 0 <= l && l < MAX_PATH );
+    from[ l ] = '\0';
+    SHFILEOPSTRUCT fileop;
+    memset( &fileop, 0, sizeof( fileop ) );
+    fileop.wFunc = FO_DELETE;
+    fileop.pFrom = from;
+    fileop.fFlags = FOF_ALLOWUNDO | FOF_NOCONFIRMATION | FOF_NOERRORUI | FOF_SILENT;
+    int rv = SHFileOperation( &fileop );
+
+    if( 0 != rv )
+    {
+        qWarning("Moving file to trash failed.");
+        return false;
+    }
+
+    return true;
+#endif
+
+#ifdef Q_OS_MAC //NEEDS TESTING
+
+    //Let's use an apple script
+    QString script = "tell app \"Finder\" to move \"" + QDir::toNativeSeparators(fileName) + "\" to trash";
+    QString osascript = "/usr/bin/osascript";
+    QStringList processArguments;
+    processArguments << "-e" << script;
+
+    QProcess p;
+    p.start(osascript, processArguments);
+
+    return true;
+#endif
+
+#else
+
+    // Use Qt API
+    return QFile::moveToTrash(fileName);
+
+#endif
+}

@@ -1,6 +1,10 @@
 #ifndef UTILS_H
 #define UTILS_H
 
+#ifdef Q_OS_WIN
+#include "windows.h"
+#endif
+
 #include <QString>
 #include <QFile>
 #include <QObject>
@@ -20,6 +24,15 @@ namespace FileUtils
     void remove(QString path);
     qint64 getDirSize(QDir d);
     void openInExplorer(QString path, bool askForCreation = false);
+
+    /**
+     * @brief moveToTrash Moves a file to the trash, works on Linux, Mac OS, Windows.
+     * If Qt < 5.15 uses a custom implementation
+     * If Qt > 5.15 uses QFile::moveToTrash(QString &fileName)
+     * @param fileName
+     * @return
+     */
+    bool moveToTrash(const QString &fileName);
 };
 
 namespace MediaUtils

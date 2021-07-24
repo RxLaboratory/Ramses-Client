@@ -580,7 +580,7 @@ QString RamLoader::gotStep(QJsonObject newS, RamProject *project)
     else
     {
         step->setShortName( newS.value("shortName").toString() );
-        step->setShortName( newS.value("name").toString() );
+        step->setName( newS.value("name").toString() );
     }
 
     step->setType( newS.value("type").toString());

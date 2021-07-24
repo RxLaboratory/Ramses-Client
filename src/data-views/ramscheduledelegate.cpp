@@ -153,6 +153,7 @@ bool RamScheduleDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, 
                 // Get current
                 RamStep *step = reinterpret_cast<RamStep*>( index.data(Qt::EditRole).toULongLong() );
                 editor->setObject(step);
+                qDebug() << "Showing popup";
                 editor->show();
                 editor->showPopup();
                 connect(editor, SIGNAL(currentObjectChanged(RamObject*)), this, SLOT(setEntry(RamObject*)));
@@ -180,7 +181,11 @@ void RamScheduleDelegate::setEntry(RamObject *stepObj)
         RamUser *user = reinterpret_cast<RamUser*>( iptr );
         if (!user) return;
         // Get Date
+#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
+        QDateTime date = QDateTime( m_indexPressed.model()->headerData( m_indexPressed.column(), Qt::Horizontal, Qt::UserRole).toDate() );
+#else
         QDateTime date = m_indexPressed.model()->headerData( m_indexPressed.column(), Qt::Horizontal, Qt::UserRole).toDate().startOfDay();
+#endif
         if (  m_indexPressed.model()->headerData( m_indexPressed.row(), Qt::Vertical, Qt::UserRole+1 ).toBool() )
             date.setTime(QTime(12,0));
 
