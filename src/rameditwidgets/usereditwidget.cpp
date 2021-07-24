@@ -24,7 +24,7 @@ UserEditWidget::UserEditWidget(QWidget *parent) :
 
 RamUser *UserEditWidget::user() const
 {
-    return _user;
+    return m_user;
 }
 
 void UserEditWidget::setObject(RamObject *obj)
@@ -34,7 +34,7 @@ void UserEditWidget::setObject(RamObject *obj)
     this->setEnabled(false);
 
     ObjectEditWidget::setObject(user);
-    _user = user;
+    m_user = user;
 
     QSignalBlocker b1(ui_cpasswordEdit);
     QSignalBlocker b2(ui_npassword1Edit);
@@ -62,6 +62,19 @@ void UserEditWidget::setObject(RamObject *obj)
     ui_folderSelector->setPlaceHolderText( user->defaultPath() );
     ui_folderLabel->setText( user->path() );
 
+    if (m_dontRename.contains(user->shortName()))
+    {
+        ui_npassword1Edit->setEnabled(false);
+        ui_npassword2Edit->setEnabled(false);
+        ui_cpasswordEdit->setEnabled(false);
+    }
+    else
+    {
+        ui_npassword1Edit->setEnabled(true);
+        ui_npassword2Edit->setEnabled(true);
+        if (user->uuid() == current->uuid()) ui_cpasswordEdit->setEnabled(true);
+    }
+
     if (user->uuid() == current->uuid())
     {
         ui_roleBox->setEnabled(false);
@@ -73,28 +86,15 @@ void UserEditWidget::setObject(RamObject *obj)
     {
         this->setEnabled(Ramses::instance()->isAdmin());
     }
-
-    if (m_dontRename.contains(user->shortName()))
-    {
-        ui_npassword1Edit->setEnabled(false);
-        ui_npassword2Edit->setEnabled(false);
-        ui_cpasswordEdit->setEnabled(false);
-    }
-    else
-    {
-        ui_npassword1Edit->setEnabled(true);
-        ui_npassword2Edit->setEnabled(true);
-        ui_cpasswordEdit->setEnabled(true);
-    }
 }
 
 void UserEditWidget::changePassword()
 {
-    if (!checkInput()) return;
+    if (!checkPasswordInput()) return;
 
     if (ui_npassword1Edit->text() != "")
     {
-        _user->updatePassword(
+        m_user->updatePassword(
                     ui_cpasswordEdit->text(),
                     ui_npassword1Edit->text() );
     }
@@ -106,44 +106,45 @@ void UserEditWidget::changePassword()
 
 void UserEditWidget::update()
 {
-    if (!_user) return;
+    if (!m_user) return;
 
     updating = true;
 
-    _user->setFolderPath( ui_folderSelector->path());
+    m_user->setFolderPath( ui_folderSelector->path());
 
     int roleIndex = ui_roleBox->currentIndex();
-    if (roleIndex == 3) _user->setRole(RamUser::Admin);
-    else if (roleIndex == 2) _user->setRole(RamUser::ProjectAdmin);
-    else if (roleIndex == 1) _user->setRole(RamUser::Lead);
-    else _user->setRole(RamUser::Standard);
+    if (roleIndex == 3) m_user->setRole(RamUser::Admin);
+    else if (roleIndex == 2) m_user->setRole(RamUser::ProjectAdmin);
+    else if (roleIndex == 1) m_user->setRole(RamUser::Lead);
+    else m_user->setRole(RamUser::Standard);
 
     ObjectEditWidget::update();
 
     updating = false;
 }
 
-bool UserEditWidget::checkInput()
+bool UserEditWidget::checkPasswordInput()
 {
-    if (!_user) return false;
+    if (!m_user) return false;
 
-    return ObjectEditWidget::checkInput();
+    bool ok = ObjectEditWidget::checkInput();
+    if (!ok) return false;
 
     if (ui_npassword1Edit->text() != "")
     {
-        if (ui_cpasswordEdit->text() == "" && _user->uuid() == Ramses::instance()->currentUser()->uuid())
+        if (ui_cpasswordEdit->text() == "" && m_user->is(Ramses::instance()->currentUser()) )
         {
-            ui_statusLabel->setText("You must specify your current password to be able to modify it.");
+            QMessageBox::warning(this, "What's your password?", "I'm sorry, you have to know your current password to change it.\nPlease try again." );
             return false;
         }
         if (ui_npassword1Edit->text() != ui_npassword2Edit->text())
         {
-            ui_statusLabel->setText("The two fields for the new password are different.");
+            QMessageBox::warning(this, "Password mismatch", "I'm sorry, the two fields for the new password are different.\nPlease try again." );
+            ui_npassword1Edit->setText("");
+            ui_npassword2Edit->setText("");
             return false;
         }
     }
-
-    ui_statusLabel->setText("");
 
     return true;
 }
@@ -151,7 +152,7 @@ bool UserEditWidget::checkInput()
 void UserEditWidget::updateFolderLabel(QString path)
 {
     if (path != "") ui_folderLabel->setText( Ramses::instance()->pathFromRamses(path) );
-    else if (_user) ui_folderLabel->setText( _user->path() );
+    else if (m_user) ui_folderLabel->setText( m_user->path() );
 }
 
 void UserEditWidget::setupUi()
@@ -180,6 +181,9 @@ void UserEditWidget::setupUi()
     ui_npassword1Edit = new QLineEdit(this);
     ui_npassword1Edit->setEchoMode(QLineEdit::Password);
     ui_mainFormLayout->addWidget(ui_npassword1Edit, 5, 1);
+
+    QLabel *newPasswordLabel2 = new QLabel("Repeat new password", this);
+    ui_mainFormLayout->addWidget(newPasswordLabel2, 6, 0);
 
     ui_npassword2Edit = new QLineEdit(this);
     ui_npassword2Edit->setEchoMode(QLineEdit::Password);

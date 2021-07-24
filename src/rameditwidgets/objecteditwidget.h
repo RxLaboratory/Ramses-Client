@@ -27,9 +27,7 @@ public:
     explicit ObjectEditWidget(RamObject *o, QWidget *parent = nullptr);
 
     RamObject *object() const;
-
     void hideName(bool hide = true);
-    void hideStatus(bool hide = true);
 
 public slots:
     virtual void setObject(RamObject *object);
@@ -52,7 +50,6 @@ protected:
     QLineEdit *ui_nameEdit;
     QLabel *ui_nameLabel;
     QLabel *ui_shortNameLabel;
-    QLabel *ui_statusLabel;
     QLabel *ui_commentLabel;
     QTextEdit *ui_commentEdit;
 

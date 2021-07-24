@@ -1,4 +1,4 @@
-#include "objecteditwidget.h"
+﻿#include "objecteditwidget.h"
 
 ObjectEditWidget::ObjectEditWidget(QWidget *parent) :
     QScrollArea(parent)
@@ -33,11 +33,6 @@ void ObjectEditWidget::hideName(bool hide)
     ui_shortNameEdit->setVisible(!hide);
 }
 
-void ObjectEditWidget::hideStatus(bool hide)
-{
-    ui_statusLabel->setVisible(!hide);
-}
-
 void ObjectEditWidget::setObject(RamObject *object)
 {
     // disconnect all
@@ -54,7 +49,6 @@ void ObjectEditWidget::setObject(RamObject *object)
 
     ui_nameEdit->setText("");
     ui_shortNameEdit->setText("");
-    ui_statusLabel->setText("");
     ui_commentEdit->setText("");
 
     if (!object) return;
@@ -95,11 +89,10 @@ bool ObjectEditWidget::checkInput()
 
     if (ui_shortNameEdit->text() == "")
     {
-        ui_statusLabel->setText("Short name cannot be empty!");
+        QMessageBox::warning(this, "Missing ID", "You need to set an UI." );
         return false;
     }
 
-    ui_statusLabel->setText("");
     return true;
 }
 
@@ -165,9 +158,6 @@ void ObjectEditWidget::setupUi()
     ui_mainFormLayout->addWidget(ui_commentEdit, 2, 1);
 
     ui_mainLayout->addLayout(ui_mainFormLayout);
-
-    ui_statusLabel = new QLabel(dummy);
-    ui_mainLayout->addWidget(ui_statusLabel);
 
     this->setWidget(dummy);
     this->setWidgetResizable(true);
