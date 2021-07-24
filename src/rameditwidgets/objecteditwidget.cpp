@@ -68,8 +68,6 @@ void ObjectEditWidget::setObject(RamObject *object)
 
 void ObjectEditWidget::update()
 {
-    if (!m_object) return;
-
     if (!checkInput()) return;
 
     updating = true;
@@ -85,11 +83,17 @@ void ObjectEditWidget::update()
 
 bool ObjectEditWidget::checkInput()
 {
+    qDebug() << sender();
     if (!m_object) return false;
 
-    if (ui_shortNameEdit->text() == "")
+    if (ui_shortNameEdit->text() == "" && ui_shortNameEdit->isModified())
     {
-        QMessageBox::warning(this, "Missing ID", "You need to set an UI." );
+        // bug in Qt, signal is fired twice when showing the message box
+        ui_shortNameEdit->setModified(false);
+
+        QMessageBox::warning(this, "Missing ID", "You need to set an ID for this item." );
+        ui_shortNameEdit->setFocus(Qt::OtherFocusReason);
+        ui_shortNameEdit->setText(m_object->shortName());
         return false;
     }
 
@@ -166,7 +170,6 @@ void ObjectEditWidget::setupUi()
 
 void ObjectEditWidget::connectEvents()
 {
-    connect(ui_shortNameEdit, &QLineEdit::textChanged, this, &ObjectEditWidget::checkInput);
     connect(ui_shortNameEdit, &QLineEdit::editingFinished, this, &ObjectEditWidget::update);
     connect(ui_nameEdit, &QLineEdit::editingFinished, this, &ObjectEditWidget::update);
     ui_commentEdit->installEventFilter(this);

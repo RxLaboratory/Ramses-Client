@@ -68,7 +68,7 @@ void ProjectEditWidget::setObject(RamObject *obj)
 
 void ProjectEditWidget::update()
 {
-    if (!m_project) return;
+    if (!checkInput()) return;
 
     updating = true;
 
