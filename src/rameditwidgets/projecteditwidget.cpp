@@ -155,4 +155,6 @@ void ProjectEditWidget::connectEvents()
     connect(ui_folderSelector, &DuQFFolderSelectorWidget::pathChanged, this, &ProjectEditWidget::update);
     connect(ui_deadlineEdit, SIGNAL(dateChanged(QDate)), this, SLOT(update()));
     connect(m_userList, SIGNAL(add()), this, SLOT(createUser()));
+
+    monitorDbQuery("updateProject");
 }

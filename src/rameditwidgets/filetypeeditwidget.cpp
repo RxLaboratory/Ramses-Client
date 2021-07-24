@@ -88,4 +88,6 @@ void FileTypeEditWidget::connectEvents()
     connect(ui_extensionsEdit, SIGNAL(editingFinished()), this, SLOT(updateExtensions()));
     connect(ui_extensionsEdit, &QLineEdit::editingFinished, this, &FileTypeEditWidget::update);
     connect(ui_previewableBox, &QCheckBox::clicked, this, &FileTypeEditWidget::update);
+
+    monitorDbQuery("updateFileType");
 }

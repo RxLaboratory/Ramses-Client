@@ -660,4 +660,6 @@ void StatusEditWidget::connectEvents()
     connect( s, SIGNAL(activated()), this, SLOT(removeSelectedPublishedFile()) );
     s = new QShortcut(QKeySequence(QKeySequence::Delete), ui_previewFileList, nullptr, nullptr, Qt::WidgetWithChildrenShortcut );
     connect( s, SIGNAL(activated()), this, SLOT(removeSelectedPreviewFile()) );
+
+    monitorDbQuery("updateStatus");
 }

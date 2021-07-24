@@ -33,6 +33,11 @@ void ObjectEditWidget::hideName(bool hide)
     ui_shortNameEdit->setVisible(!hide);
 }
 
+void ObjectEditWidget::monitorDbQuery(QString queryName)
+{
+    m_dbQueries << queryName;
+}
+
 void ObjectEditWidget::setObject(RamObject *object)
 {
     // disconnect all
@@ -85,14 +90,16 @@ bool ObjectEditWidget::checkInput()
 {
     if (!m_object) return false;
 
-    if (ui_shortNameEdit->text() == "" && ui_shortNameEdit->isModified())
+
+    if (ui_shortNameEdit->text() == "")
     {
         // bug in Qt, signal is fired twice when showing the message box
+        if (!ui_shortNameEdit->isModified()) return false;
         ui_shortNameEdit->setModified(false);
 
         QMessageBox::warning(this, "Missing ID", "You need to set an ID for this item." );
-        ui_shortNameEdit->setFocus(Qt::OtherFocusReason);
         ui_shortNameEdit->setText(m_object->shortName());
+        ui_shortNameEdit->setFocus(Qt::OtherFocusReason);
         return false;
     }
 
@@ -103,6 +110,20 @@ void ObjectEditWidget::objectRemoved(RamObject *o)
 {
     Q_UNUSED(o);
     setObject(nullptr);
+}
+
+void ObjectEditWidget::dbiDataReceived(QJsonObject data)
+{
+    // Only if we're visible!
+    if (!this->isVisible()) return;
+
+    // Show error if monitoring & unsuccessful
+    if (data.value("success").toBool(false)) return;
+
+    if (!m_dbQueries.contains( data.value("query").toString()) ) return;
+
+    if (!m_modified) return;
+    QMessageBox::warning(this, "Server Error", data.value("message").toString() );
 }
 
 void ObjectEditWidget::objectChanged(RamObject *o)
@@ -172,4 +193,5 @@ void ObjectEditWidget::connectEvents()
     connect(ui_shortNameEdit, &QLineEdit::editingFinished, this, &ObjectEditWidget::update);
     connect(ui_nameEdit, &QLineEdit::editingFinished, this, &ObjectEditWidget::update);
     ui_commentEdit->installEventFilter(this);
+    connect(DBInterface::instance(), SIGNAL(data(QJsonObject)), this, SLOT(dbiDataReceived(QJsonObject)));
 }

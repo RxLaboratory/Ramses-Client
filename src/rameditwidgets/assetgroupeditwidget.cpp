@@ -82,4 +82,6 @@ void AssetGroupEditWidget::setupUi()
 void AssetGroupEditWidget::connectEvents()
 {
     connect(ui_assetsList, SIGNAL(add()), this, SLOT(createAsset()));
+
+    monitorDbQuery("updateAssetGroup");
 }

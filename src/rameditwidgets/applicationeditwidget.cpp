@@ -134,5 +134,9 @@ void ApplicationEditWidget::connectEvents()
     connect(m_nativeList, SIGNAL(add()), this, SLOT(createForNative()));
     connect(m_importList, SIGNAL(add()), this, SLOT(createForImport()));
     connect(m_exportList, SIGNAL(add()), this, SLOT(createForExport()));
+
+    monitorDbQuery("updateApplication");
+    monitorDbQuery("assignFileType");
+    monitorDbQuery("unassignFileType");
 }
 

@@ -131,4 +131,8 @@ void ShotEditWidget::connectEvents()
     connect(ui_framesBox, SIGNAL(editingFinished()), this, SLOT(framesChanged()));
     connect(ui_framesBox, SIGNAL(editingFinished()), this, SLOT(update()));
     connect(ui_sequencesBox, SIGNAL(currentIndexChanged(int)), this, SLOT(update()));
+
+    monitorDbQuery("updateShot");
+    monitorDbQuery("assignAsset");
+    monitorDbQuery("unassignAsset");
 }

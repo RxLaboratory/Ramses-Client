@@ -229,4 +229,6 @@ void TemplateStepEditWidget::connectEvents()
     connect(ui_mediumEdit, SIGNAL(valueChanged(double)), this, SLOT(update()));
     connect(ui_hardEdit, SIGNAL(valueChanged(double)), this, SLOT(update()));
     connect(ui_veryHardEdit, SIGNAL(valueChanged(double)), this, SLOT(update()));
+
+    monitorDbQuery("updateTemplateStep");
 }

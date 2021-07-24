@@ -4,12 +4,16 @@ TemplateAssetGroupEditWidget::TemplateAssetGroupEditWidget(QWidget *parent) :
     ObjectEditWidget(parent)
 {
     setObject(nullptr);
+
+    monitorDbQuery("updateTemplateAssetGroup");
 }
 
 TemplateAssetGroupEditWidget::TemplateAssetGroupEditWidget(RamAssetGroup *templateAssetGroup, QWidget *parent) :
     ObjectEditWidget(templateAssetGroup, parent)
 {
     setObject(templateAssetGroup);
+
+    monitorDbQuery("updateTemplateAssetGroup");
 }
 
 RamAssetGroup *TemplateAssetGroupEditWidget::assetGroup() const

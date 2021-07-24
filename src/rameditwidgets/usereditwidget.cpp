@@ -217,4 +217,7 @@ void UserEditWidget::connectEvents()
     connect(ui_folderSelector, &DuQFFolderSelectorWidget::pathChanging, this, &UserEditWidget::updateFolderLabel);
     connect(ui_folderSelector, &DuQFFolderSelectorWidget::pathChanged, this, &UserEditWidget::update);
     connect(Ramses::instance(), &Ramses::loggedIn, this, &UserEditWidget::objectChanged);
+
+    monitorDbQuery("updateUser");
+    monitorDbQuery("updatePassword");
 }

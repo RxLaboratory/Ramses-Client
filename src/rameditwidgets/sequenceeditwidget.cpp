@@ -78,5 +78,7 @@ void SequenceEditWidget::setupUi()
 void SequenceEditWidget::connectEvents()
 {
     connect(ui_shotsList, SIGNAL(add()), this, SLOT(createShot()));
+
+    monitorDbQuery("updateSequence");
 }
 

@@ -92,4 +92,6 @@ void StateEditWidget::connectEvents()
 {
     connect(completionSpinBox, &DuQFSpinBox::valueChanged, this, &StateEditWidget::update);
     connect(ui_colorSelector, SIGNAL(colorChanged(QColor)), this, SLOT(update()));
+
+    monitorDbQuery("updateState");
 }
