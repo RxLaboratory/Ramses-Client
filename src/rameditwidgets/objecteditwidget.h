@@ -11,7 +11,7 @@
 #include <QTextEdit>
 #include <QShowEvent>
 
-
+#include "dbinterface.h"
 #include "ramobject.h"
 
 /**
@@ -27,9 +27,9 @@ public:
     explicit ObjectEditWidget(RamObject *o, QWidget *parent = nullptr);
 
     RamObject *object() const;
-
     void hideName(bool hide = true);
-    void hideStatus(bool hide = true);
+
+    void monitorDbQuery(QString queryName);
 
 public slots:
     virtual void setObject(RamObject *object);
@@ -52,7 +52,6 @@ protected:
     QLineEdit *ui_nameEdit;
     QLabel *ui_nameLabel;
     QLabel *ui_shortNameLabel;
-    QLabel *ui_statusLabel;
     QLabel *ui_commentLabel;
     QTextEdit *ui_commentEdit;
 
@@ -60,6 +59,7 @@ protected:
 
 private slots:
     void objectRemoved(RamObject *o);
+    void dbiDataReceived(QJsonObject data);
 
 private:
     void setupUi();
@@ -68,7 +68,8 @@ private:
     RamObject *m_object;
     void connectEvents();
 
-
+    QStringList m_dbQueries;
+    bool m_modified = true;
 };
 
 #endif // OBJECTEDITWIDGET_H

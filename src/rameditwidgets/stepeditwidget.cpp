@@ -293,4 +293,9 @@ void StepEditWidget::connectEvents()
     connect(ui_veryHardEdit, SIGNAL(valueChanged(double)), this, SLOT(update()));
     connect(ui_estimationMultiplierCheckBox, SIGNAL(clicked(bool)), this, SLOT(update()));
     connect(ui_estimationMultiplierBox, SIGNAL(currentIndexChanged(int)), this, SLOT(update()));
+
+    monitorDbQuery("updateStep");
+    monitorDbQuery("assignApplication");
+    monitorDbQuery("unassignApplication");
+    monitorDbQuery("setStepEstimations");
 }

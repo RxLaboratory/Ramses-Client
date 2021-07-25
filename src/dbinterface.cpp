@@ -1178,6 +1178,8 @@ void DBInterface::request(QString query, QStringList args, bool wait)
 #endif
 
     connect(_reply, SIGNAL(error(QNetworkReply::NetworkError)), this,SLOT(networkError(QNetworkReply::NetworkError)));
+
+    emit queried(query);
 }
 
 void DBInterface::request(QString query, QJsonObject body, bool wait)
@@ -1217,6 +1219,8 @@ void DBInterface::request(QString query, QJsonObject body, bool wait)
 #endif
 
     connect(_reply, SIGNAL(error(QNetworkReply::NetworkError)), this,SLOT(networkError(QNetworkReply::NetworkError)));
+
+    emit queried(query);
 }
 
 QString DBInterface::buildFormEncodedString(QStringList args)

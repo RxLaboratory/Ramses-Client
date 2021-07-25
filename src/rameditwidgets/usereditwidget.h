@@ -26,11 +26,11 @@ protected slots:
 
 private slots:
     void changePassword();
-    bool checkInput() override;
     void updateFolderLabel(QString path);
+    bool checkPasswordInput();
 
 private:
-    RamUser *_user;
+    RamUser *m_user;
 
     void setupUi();
     void connectEvents();

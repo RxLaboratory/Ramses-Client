@@ -135,6 +135,7 @@ public slots:
 signals:
     void connectionStatusChanged(NetworkUtils::NetworkStatus);
     void data(QJsonObject);
+    void queried(QString);
 
 protected:
     static DBInterface *_instance;

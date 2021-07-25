@@ -94,4 +94,6 @@ void AssetEditWidget::connectEvents()
 {
     connect(tagsEdit, SIGNAL(editingFinished()), this, SLOT(update()));
     connect(assetGroupBox, SIGNAL(currentIndexChanged(int)), this, SLOT(update()));
+
+    monitorDbQuery("updateAsset");
 }

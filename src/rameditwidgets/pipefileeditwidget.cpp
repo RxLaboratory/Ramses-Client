@@ -70,4 +70,6 @@ void PipeFileEditWidget::connectEvents()
 {
     connect(ui_fileTypeBox, SIGNAL(currentObjectChanged(RamObject*)), this, SLOT(update()));
     connect(ui_colorSpaceBox, SIGNAL(currentObjectChanged(RamObject*)), this, SLOT(update()));
+
+    monitorDbQuery("updatePipeFile");
 }
