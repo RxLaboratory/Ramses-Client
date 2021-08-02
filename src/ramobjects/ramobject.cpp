@@ -240,9 +240,10 @@ bool RamObject::is(const RamObject *other) const
 
 RamObject *RamObject::obj(QString uuid)
 {
-    RamObject *obj = m_existingObjects.value(uuid, nullptr );
+    /*RamObject *obj = m_existingObjects.value(uuid, nullptr );
     if (!obj) obj = new RamObject(uuid);
-    return obj;
+    return obj;*/
+    return m_existingObjects.value(uuid, nullptr );
 }
 
 void RamObject::update()

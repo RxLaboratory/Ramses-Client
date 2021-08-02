@@ -206,11 +206,14 @@ QString RamLoader::gotProject(QJsonObject newP, bool init)
 
     if (!init)
     {
+        // Freeze estimations for performance
+        project->freezeEstimations(true);
+
         m_pm->setMaximum(8);
         gotAssetGroups( newP.value("assetGroups").toArray(), project);
         gotSequences( newP.value("sequences").toArray(), project);
 
-        gotSteps( newP.value("steps").toArray(), project);
+        gotSteps( newP.value("steps").toArray(), project, true);
         gotPipeFiles( newP.value("pipeFiles").toArray(), project );
         gotPipes( newP.value("pipes").toArray(), project);
 
@@ -218,6 +221,9 @@ QString RamLoader::gotProject(QJsonObject newP, bool init)
         gotShots( newP.value("shots").toArray(), project);
 
         gotSechedule( newP.value("schedule").toArray() );
+
+        // Unfreeze and recompute estimations
+        project->freezeEstimations(false);
     }
 
     m_ram->projects()->append(project);
@@ -535,7 +541,7 @@ QString RamLoader::gotApplication(QJsonObject newA)
     return uuid;
 }
 
-void RamLoader::gotSteps(QJsonArray steps, RamProject *project)
+void RamLoader::gotSteps(QJsonArray steps, RamProject *project, bool freezeEstimations)
 {
     DBISuspender s;
 
@@ -548,7 +554,7 @@ void RamLoader::gotSteps(QJsonArray steps, RamProject *project)
     QStringList uuids;
     // Update steps
     for (int j = 0; j < steps.count(); j++)
-        uuids << gotStep( steps.at(j).toObject(), project );
+        uuids << gotStep( steps.at(j).toObject(), project, freezeEstimations );
 
     // Remove deleted shots
     m_pm->setText("Cleaning steps...");
@@ -565,7 +571,7 @@ void RamLoader::gotSteps(QJsonArray steps, RamProject *project)
     projectSteps->sort();
 }
 
-QString RamLoader::gotStep(QJsonObject newS, RamProject *project)
+QString RamLoader::gotStep(QJsonObject newS, RamProject *project, bool freezeEstimations)
 {
     DBISuspender s;
     QString uuid = newS.value("uuid").toString();
@@ -582,6 +588,9 @@ QString RamLoader::gotStep(QJsonObject newS, RamProject *project)
         step->setShortName( newS.value("shortName").toString() );
         step->setName( newS.value("name").toString() );
     }
+
+    // Freeze estimations for performance
+    step->freezeEstimations(freezeEstimations);
 
     step->setType( newS.value("type").toString());
     step->setOrder( newS.value("order").toInt() );
@@ -671,7 +680,6 @@ void RamLoader::gotAssets(QJsonArray assets, RamProject *project)
 
     m_pm->increment();
     m_pm->setText("Loading assets...");
-    qDebug() << "Loading assets";
 
     QStringList uuids;
 
@@ -684,15 +692,13 @@ void RamLoader::gotAssets(QJsonArray assets, RamProject *project)
     qDebug() << "Cleaning assets";
     for (int i = project->assets()->count() - 1; i >= 0; i--)
     {
+        qDebug() << i;
         RamObject *obj = project->assets()->at(i);
         if (!uuids.contains(obj->uuid()))
         {
             obj->remove();
         }
     }
-
-    // sort the asset group
-    project->assets()->sort();
 }
 
 QString RamLoader::gotAsset(QJsonObject newA, RamProject *project)

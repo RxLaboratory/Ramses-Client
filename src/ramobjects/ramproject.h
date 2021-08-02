@@ -14,10 +14,15 @@ class RamProject : public RamObject
 {
     Q_OBJECT
 public:   
-
-
     RamProject(QString shortName, QString name = "", QString uuid = "");
     ~RamProject();
+
+    /**
+     * @brief freezeEstimations stops automatic update of the estimations.
+     * Use this to improve performance when loading a bunch of data.
+     * @param freeze
+     */
+    void freezeEstimations(bool freeze = true, bool reCompute = true);
 
     void setFolderPath(const QString &folderPath);
     QString defaultPath() const;
@@ -101,6 +106,13 @@ private:
     RamObjectList *m_pipeFiles;
     RamObjectList *m_users;
     QDate m_deadline;
+
+    /**
+     * @brief When true, estimations won't be computed.
+     * This should be set to true when loading a bunch of data, to improve performance
+     * and reset to false afterwards.
+     */
+    bool m_freezeEstimations = false;
 
     qint64 m_timeSpent = 0;
     float m_estimation = 0;

@@ -29,6 +29,13 @@ public:
     ~RamStep();
     void init();
 
+    /**
+     * @brief freezeEstimations stops automatic update of the estimations.
+     * Use this to improve performance when loading a bunch of data.
+     * @param freeze
+     */
+    void freezeEstimations(bool freeze = true, bool reCompute = true);
+
     bool isTemplate() const;
     RamStep *createFromTemplate(RamProject *project);
     RamStep *createFromTemplate(QString projectUuid);
@@ -106,6 +113,13 @@ private:
     QColor m_color;
     RamProject *m_project;
     RamObjectList *m_applications;
+
+    /**
+     * @brief When true, estimations won't be computed.
+     * This should be set to true when loading a bunch of data, to improve performance
+     * and reset to false afterwards.
+     */
+    bool m_freezeEstimations = false;
 
     EstimationMethod m_estimationMethod = EstimatePerShot;
     float m_estimationVeryEasy = 0.2;

@@ -30,6 +30,20 @@ RamProject::~RamProject()
 
 }
 
+void RamProject::freezeEstimations(bool freeze, bool reCompute)
+{
+    m_freezeEstimations = freeze;
+
+    // Freeze steps
+    for(int i = 0; i < this->steps()->count(); i++)
+    {
+        RamStep *step = qobject_cast<RamStep*>( this->steps()->at(i) );
+        step->freezeEstimations(freeze, reCompute);
+    }
+
+    // No need to recompute, it's triggered by the steps when unfreezing
+}
+
 QString RamProject::folderPath() const
 {
     if (pathIsDefault())
@@ -143,6 +157,7 @@ void RamProject::removeFromDB()
 
 void RamProject::computeEstimation()
 {
+    if (m_freezeEstimations) return;
     m_timeSpent = 0;
     m_estimation = 0;
     m_completionRatio = 0;

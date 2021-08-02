@@ -52,8 +52,8 @@ private:
     void gotApplications(QJsonArray applications);
     QString gotApplication(QJsonObject newA);
     // steps
-    void gotSteps(QJsonArray steps, RamProject *project);
-    QString gotStep(QJsonObject newS, RamProject *project);
+    void gotSteps(QJsonArray steps, RamProject *project, bool freezeEstimations = false);
+    QString gotStep(QJsonObject newS, RamProject *project, bool freezeEstimations = false);
     // asset groups
     void gotAssetGroups(QJsonArray assetGroups, RamProject *project);
     QString gotAssetGroup(QJsonObject newAG, RamProject *project);

@@ -98,7 +98,7 @@ private slots:
     void userRemoved();
     void assignedUserRemoved();
 
-private:
+private:  
     int m_completionRatio = 50;
     RamUser *m_user;
     RamState *m_state;

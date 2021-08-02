@@ -40,6 +40,16 @@ void RamStep::init()
     this->setObjectName( "RamStep" );
 }
 
+void RamStep::freezeEstimations(bool freeze, bool reCompute)
+{
+    m_freezeEstimations = freeze;
+    if (!freeze && reCompute)
+    {
+        this->computeEstimation();
+        this->countAssignedDays();
+    }
+}
+
 bool RamStep::isTemplate() const
 {
     return m_template;
@@ -392,6 +402,8 @@ void RamStep::removeFromDB()
 
 void RamStep::computeEstimation()
 {
+    if (m_freezeEstimations) return;
+
     if (m_type == PreProduction) return;
     if (m_type == PostProduction) return;
 
@@ -448,6 +460,7 @@ void RamStep::computeEstimation()
 
 void RamStep::countAssignedDays()
 {
+    if (m_freezeEstimations) return;
     m_assignedHalfDays = 0;
 
     for (int i = 0; i < m_project->users()->count(); i++)
