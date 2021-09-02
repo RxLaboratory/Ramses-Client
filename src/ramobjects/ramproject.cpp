@@ -294,6 +294,7 @@ void RamProject::userAssigned(const QModelIndex &parent, int first, int last)
         RamObject *userObj = m_users->at(i);
         m_dbi->assignUser(m_uuid, userObj->uuid());
     }
+    emit changed(this);
 }
 
 void RamProject::userUnassigned(const QModelIndex &parent, int first, int last)
@@ -305,4 +306,5 @@ void RamProject::userUnassigned(const QModelIndex &parent, int first, int last)
         RamObject *userObj = m_users->at(i);
         m_dbi->unassignUser(m_uuid, userObj->uuid());
     }
+    emit changed(this);
 }

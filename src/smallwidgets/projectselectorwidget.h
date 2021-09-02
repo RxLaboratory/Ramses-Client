@@ -5,6 +5,7 @@
 
 #include "ramses.h"
 #include "ramobjectlistcombobox.h"
+#include "data-models/ramprojectfiltermodel.h"
 
 class ProjectSelectorWidget : public RamObjectListComboBox
 {
@@ -14,6 +15,9 @@ public:
 private slots:
     void setCurrentProject(RamObject *projObj);
     void currentProjectChanged(RamProject *p);
+    void userChanged(RamUser *user);
+private:
+    RamProjectFilterModel *m_projectFilter;
 };
 
 #endif // PROJECTSELECTORWIDGET_H

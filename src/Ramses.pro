@@ -33,6 +33,7 @@ SOURCES += \
     data-models/ramitemtablelistproxy.cpp \
     data-models/ramobjectfilterlist.cpp \
     data-models/ramobjectfiltermodel.cpp \
+    data-models/ramprojectfiltermodel.cpp \
     data-models/ramschedulefilter.cpp \
     data-models/ramscheduletable.cpp \
     data-models/ramstatisticstable.cpp \
@@ -171,6 +172,7 @@ HEADERS += \
     data-models/ramobjectfilterlist.h \
     data-models/ramobjectfiltermodel.h \
     data-models/ramobjectlist.h \
+    data-models/ramprojectfiltermodel.h \
     data-models/ramschedulefilter.h \
     data-models/ramscheduletable.h \
     data-models/ramstatelist.h \

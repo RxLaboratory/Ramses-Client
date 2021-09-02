@@ -87,7 +87,7 @@ void RamObjectList::objectChanged(RamObject *obj)
     if (row<0) return;
 
     QModelIndex index = createIndex(row,0);
-    emit dataChanged(index, index, {Qt::DisplayRole});
+    emit dataChanged(index, index, {});
     emit headerDataChanged(Qt::Vertical, row, row);
     emit objectDataChanged(obj);
 }
