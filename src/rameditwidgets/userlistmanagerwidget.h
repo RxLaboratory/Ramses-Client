@@ -11,7 +11,7 @@ public:
     explicit UserListManagerWidget(QWidget *parent = nullptr);
 
 protected slots:
-    void createObject() override;
+    RamObject *createObject() override;
 };
 
 #endif // USERLISTMANAGERWIDGET_H

@@ -53,6 +53,7 @@ SOURCES += \
     data-views/ramobjectdelegate.cpp \
     data-views/ramobjectlistcombobox.cpp \
     data-views/ramobjectlistwidget.cpp \
+    pages/projectpage.cpp \
     rameditwidgets/applicationeditwidget.cpp \
     rameditwidgets/applicationlistmanagerwidget.cpp \
     rameditwidgets/asseteditwidget.cpp \
@@ -194,6 +195,7 @@ HEADERS += \
     progresspage.h \
     data-views/ramobjectlistcombobox.h \
     data-views/ramobjectlistwidget.h \
+    pages/projectpage.h \
     rameditwidgets/applicationeditwidget.h \
     rameditwidgets/applicationlistmanagerwidget.h \
     rameditwidgets/asseteditwidget.h \

@@ -32,15 +32,9 @@
 #include "pipeline-editor/pipelinewidget.h"
 #include "templatesteplistmanagerwidget.h"
 #include "templateassetgrouplistmanagerwidget.h"
-#include "steplistmanagerwidget.h"
-#include "assetgrouplistmanagerwidget.h"
-#include "assetlistmanagerwidget.h"
-#include "shotlistmanagerwidget.h"
-#include "sequencelistmanagerwidget.h"
 #include "statelistmanagerwidget.h"
 #include "filetypelistmanagerwidget.h"
 #include "applicationlistmanagerwidget.h"
-#include "pipefilelistmanagerwidget.h"
 #include "schedulemanagerwidget.h"
 #include "statisticswidget.h"
 #include "dbinterface.h"
@@ -51,6 +45,7 @@
 #include "progresspage.h"
 #include "processmanager.h"
 #include "progressbar.h"
+#include "pages/projectpage.h"
 
 #include "rameditwidgets/itemtablemanagerwidget.h"
 
@@ -93,7 +88,6 @@ private:
     QLabel *title;
     QMenu *helpMenu;
     ProgressPage *progressPage;
-    ProjectEditWidget *ui_currentProjectSettings;
     QDockWidget *ui_statsDockWidget;
     QDockWidget *ui_consoleDockWidget;
     DuQFDockTitle *ui_statsTitle;

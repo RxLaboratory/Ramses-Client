@@ -4,6 +4,7 @@ StepListManagerWidget::StepListManagerWidget(QWidget *parent):
 ObjectListManagerWidget(
     new StepEditWidget(),
     "Steps",
+    QIcon(":icons/step"),
     parent )
 {
     changeProject(Ramses::instance()->currentProject());
@@ -24,10 +25,10 @@ ObjectListManagerWidget(
     connect(ui_createMenu, SIGNAL(assign(RamObject*)), this, SLOT(createFromTemplate(RamObject*)));
 }
 
-void StepListManagerWidget::createObject()
+RamObject *StepListManagerWidget::createObject()
 {
     RamProject *project = Ramses::instance()->currentProject();
-    if (!project) return;
+    if (!project) return nullptr;
 
     RamStep *step = new RamStep(
                 "NEW",
@@ -36,6 +37,7 @@ void StepListManagerWidget::createObject()
                 );
     project->steps()->append(step);
     editObject(step);
+    return step;
 }
 
 void StepListManagerWidget::changeProject(RamProject *project)

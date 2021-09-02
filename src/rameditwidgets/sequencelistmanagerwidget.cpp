@@ -4,6 +4,7 @@ SequenceListManagerWidget::SequenceListManagerWidget(QWidget *parent):
     ObjectListManagerWidget(
         new SequenceEditWidget(parent),
         "Sequences",
+        QIcon(":icons/sequence"),
         parent)
 {
     changeProject(Ramses::instance()->currentProject());
@@ -12,16 +13,17 @@ SequenceListManagerWidget::SequenceListManagerWidget(QWidget *parent):
     m_listEditWidget->setSortable(true);
 }
 
-void SequenceListManagerWidget::createObject()
+RamObject *SequenceListManagerWidget::createObject()
 {
     RamProject *project = Ramses::instance()->currentProject();
-    if (!project) return;
+    if (!project) return nullptr;
     RamSequence *s = new RamSequence(
                 "NEW",
                 project,
                 "New Sequence");
     project->sequences()->append(s);
     editObject(s);
+    return s;
 }
 
 void SequenceListManagerWidget::changeProject(RamProject *project)

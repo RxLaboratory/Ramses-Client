@@ -5,6 +5,7 @@ UserListManagerWidget::UserListManagerWidget(QWidget *parent) :
         Ramses::instance()->users(),
         new UserEditWidget(),
         "Users",
+        QIcon(":icons/user"),
         parent )
 {
     m_listEditWidget->setEditMode(ObjectListEditWidget::RemoveObjects);
@@ -13,12 +14,13 @@ UserListManagerWidget::UserListManagerWidget(QWidget *parent) :
     m_listEditWidget->setDontRemoveShortNameList(dontRemove);
 }
 
-void UserListManagerWidget::createObject()
+RamObject *UserListManagerWidget::createObject()
 {
     RamUser *user = new RamUser("NEW","J. Doe");
 
     Ramses::instance()->users()->append(user);
 
     editObject(user);
+    return user;
 }
 

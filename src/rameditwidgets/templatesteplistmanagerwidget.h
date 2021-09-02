@@ -11,7 +11,7 @@ public:
     TemplateStepListManagerWidget(QWidget *parent = nullptr);
 
 protected slots:
-    void createObject() override;
+    RamObject *createObject() override;
 };
 
 #endif // TEMPLATESTEPLISTMANAGERWIDGET_H

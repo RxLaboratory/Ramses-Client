@@ -12,7 +12,7 @@ public:
     explicit StateListManagerWidget(QWidget *parent = nullptr);
 
 protected slots:
-    void createObject() override;
+    RamObject *createObject() override;
 };
 
 #endif // STATELISTMANAGERWIDGET_H

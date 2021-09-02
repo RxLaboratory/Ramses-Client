@@ -20,6 +20,7 @@ public:
     explicit SettingsWidget(QString title = "Settings", QWidget *parent = nullptr);
     void addPage(QWidget *ui, QString title, QIcon icon=QIcon());
     void showReinitButton(bool show);
+    TitleBar *titleBar();
 public slots:
     void setCurrentIndex(int index);
 signals:

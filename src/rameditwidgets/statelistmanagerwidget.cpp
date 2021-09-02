@@ -5,6 +5,7 @@ StateListManagerWidget::StateListManagerWidget(QWidget *parent) :
         Ramses::instance()->states(),
         new StateEditWidget(),
         "States",
+        QIcon(":icons/state-l"),
         parent)
 {
     m_listEditWidget->setEditMode(ObjectListEditWidget::RemoveObjects);
@@ -13,12 +14,13 @@ StateListManagerWidget::StateListManagerWidget(QWidget *parent) :
     m_listEditWidget->setDontRemoveShortNameList(dontRemove);
 }
 
-void StateListManagerWidget::createObject()
+RamObject *StateListManagerWidget::createObject()
 {
     RamState *state = new RamState(
                 "NEW",
                 "New state");
     Ramses::instance()->states()->append(state);
     editObject(state);
+    return state;
 }
 

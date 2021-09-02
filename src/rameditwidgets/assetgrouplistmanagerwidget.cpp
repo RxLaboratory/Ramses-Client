@@ -4,6 +4,7 @@ AssetGroupListManagerWidget::AssetGroupListManagerWidget(QWidget *parent):
     ObjectListManagerWidget(
         new AssetGroupEditWidget(parent),
         "Asset groups",
+        QIcon(":icons/asset-group"),
         parent)
 {
     changeProject(Ramses::instance()->currentProject());
@@ -23,16 +24,17 @@ AssetGroupListManagerWidget::AssetGroupListManagerWidget(QWidget *parent):
     connect(ui_createMenu, SIGNAL(assign(RamObject*)), this, SLOT(createFromTemplate(RamObject*)));
 }
 
-void AssetGroupListManagerWidget::createObject()
+RamObject *AssetGroupListManagerWidget::createObject()
 {
     RamProject *project = Ramses::instance()->currentProject();
-    if (!project) return;
+    if (!project) return nullptr;
     RamAssetGroup *assetGroup = new RamAssetGroup(
                 "NEW",
                 project,
                 "New Asset Group");
     project->assetGroups()->append(assetGroup);
     editObject(assetGroup);
+    return assetGroup;
 }
 
 void AssetGroupListManagerWidget::changeProject(RamProject *project)

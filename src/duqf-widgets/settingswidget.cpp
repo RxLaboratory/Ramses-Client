@@ -87,7 +87,12 @@ void SettingsWidget::showReinitButton(bool show)
     m_titleBar->showReinitButton(show);
 }
 
+TitleBar *SettingsWidget::titleBar()
+{
+    return m_titleBar;
+}
+
 void SettingsWidget::mainList_currentRowChanged(int currentRow)
 {
-    m_mainStackWidget->setCurrentIndex(currentRow);
+    this->setCurrentIndex(currentRow);
 }

@@ -11,7 +11,7 @@ public:
     SequenceListManagerWidget(QWidget *parent = nullptr);
 
 protected slots:
-    void createObject() override;
+    RamObject *createObject() override;
 
 private slots:
     void changeProject(RamProject *project);

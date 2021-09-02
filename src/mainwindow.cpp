@@ -107,51 +107,38 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     mainStack->addWidget(adminPage);
     // Admin tabs
     qDebug() << "> Admin";
-    adminPage->addPage(new UserListManagerWidget(this),"Users", QIcon(":/icons/users"));
+    UserListManagerWidget *userManager = new UserListManagerWidget(this);
+    adminPage->addPage(userManager,"Users", QIcon(":/icons/users"));
+    adminPage->titleBar()->insertLeft(userManager->menuButton());
     qDebug() << "  > users ok";
-    adminPage->addPage(new ProjectListManagerWidget(this), "Projects", QIcon(":/icons/projects"));
+    ProjectListManagerWidget *projectManager = new ProjectListManagerWidget(this);
+    adminPage->addPage(projectManager, "Projects", QIcon(":/icons/projects"));
+    adminPage->titleBar()->insertLeft(projectManager->menuButton());
     qDebug() << "  > projects ok";
-    adminPage->addPage(new TemplateStepListManagerWidget(this), "Template Steps", QIcon(":/icons/steps"));
+    TemplateStepListManagerWidget *templateStepManager = new TemplateStepListManagerWidget(this);
+    adminPage->addPage(templateStepManager, "Template Steps", QIcon(":/icons/steps"));
+    adminPage->titleBar()->insertLeft(templateStepManager->menuButton());
     qDebug() << "  > template steps ok";
-    adminPage->addPage(new TemplateAssetGroupListManagerWidget(this), "Template Asset Groups", QIcon(":/icons/asset-groups"));
+    TemplateAssetGroupListManagerWidget *templateAssetGroupManager = new TemplateAssetGroupListManagerWidget(this);
+    adminPage->addPage(templateAssetGroupManager, "Template Asset Groups", QIcon(":/icons/asset-groups"));
+    adminPage->titleBar()->insertLeft(templateAssetGroupManager->menuButton());
     qDebug() << "  > template assets ok";
-    adminPage->addPage(new StateListManagerWidget(this), "States", QIcon(":/icons/state"));
+    StateListManagerWidget *stateManager = new StateListManagerWidget(this);
+    adminPage->addPage(stateManager, "States", QIcon(":/icons/state"));
+    adminPage->titleBar()->insertLeft(stateManager->menuButton());
     qDebug() << "  > states ok";
-    adminPage->addPage(new FileTypeListManagerWidget(this), "File Types", QIcon(":/icons/files"));
+    FileTypeListManagerWidget *fileTypeManager = new FileTypeListManagerWidget(this);
+    adminPage->addPage(fileTypeManager, "File Types", QIcon(":/icons/files"));
+    adminPage->titleBar()->insertLeft(fileTypeManager->menuButton());
     qDebug() << "  > file types ok";
-    adminPage->addPage(new ApplicationListManagerWidget(this), "Applications", QIcon(":/icons/applications"));
+    ApplicationListManagerWidget *applicationManager = new ApplicationListManagerWidget(this);
+    adminPage->addPage(applicationManager, "Applications", QIcon(":/icons/applications"));
+    adminPage->titleBar()->insertLeft(applicationManager->menuButton());
     qDebug() << "  > applications ok";//*/
 
     // Project settings
-    SettingsWidget *projectSettingsPage = new SettingsWidget("Project Administration", this);
-    projectSettingsPage->showReinitButton(false);
+    ProjectPage *projectSettingsPage = new ProjectPage(this);
     mainStack->addWidget(projectSettingsPage);
-    qDebug() << "> Project";
-    // A better layout for project settings
-    QWidget *pSettingsWidget = new QWidget(this);
-    QHBoxLayout *pSettingsLayout = new QHBoxLayout(pSettingsWidget);
-    pSettingsLayout->setContentsMargins(3,3,3,3);
-    pSettingsLayout->addStretch();
-    ui_currentProjectSettings = new ProjectEditWidget(this);
-    pSettingsLayout->addWidget(ui_currentProjectSettings);
-    pSettingsLayout->addStretch();
-    pSettingsLayout->setStretch(0, 20);
-    pSettingsLayout->setStretch(1, 80);
-    pSettingsLayout->setStretch(2, 20);
-    projectSettingsPage->addPage( pSettingsWidget, "Settings", QIcon(":/icons/projects"));
-    qDebug() << "  > project settings ok";
-    projectSettingsPage->addPage(new StepListManagerWidget(this), "Steps", QIcon(":/icons/steps"));
-    qDebug() << "  > steps ok";
-    projectSettingsPage->addPage(new PipeFileListManagerWidget(this), "Pipe Types", QIcon(":/icons/pipe-files"));
-    qDebug() << "  > pipe types ok";
-    projectSettingsPage->addPage(new AssetGroupListManagerWidget(this), "Asset Groups", QIcon(":/icons/asset-groups"));
-    qDebug() << "  > asset groups ok";
-    projectSettingsPage->addPage(new AssetListManagerWidget(this), "Assets", QIcon(":/icons/assets"));
-    qDebug() << "  > assets ok";
-    projectSettingsPage->addPage(new SequenceListManagerWidget(this), "Sequences", QIcon(":/icons/sequences"));
-    qDebug() << "  > sequences ok";
-    projectSettingsPage->addPage(new ShotListManagerWidget(this), "Shots", QIcon(":/icons/shots"));
-    qDebug() << "  > shots ok";//*/
 
     // Pipeline editor
 #ifndef DEACTIVATE_PIPELINE
@@ -740,8 +727,6 @@ void MainWindow::currentUserChanged()
 
 void MainWindow::currentProjectChanged(RamProject *project)
 {
-    ui_currentProjectSettings->setObject(project);
-
     if (!project)
     {
         ui_statsTitle->setTitle( "Project" );

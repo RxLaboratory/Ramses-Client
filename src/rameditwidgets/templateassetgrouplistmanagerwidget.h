@@ -11,7 +11,7 @@ public:
     TemplateAssetGroupListManagerWidget(QWidget *parent = nullptr);
 
 protected slots:
-    void createObject() override;
+    RamObject *createObject() override;
 };
 
 #endif // TEMPLATEASSETGROUPLISTMANAGERWIDGET_H
