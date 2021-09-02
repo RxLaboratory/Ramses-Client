@@ -9,6 +9,7 @@
 #include <QFile>
 #include <QObject>
 #include <QRegularExpression>
+#include <QRegExp>
 #include <QDebug>
 #include <QTime>
 #include <QDir>
@@ -131,7 +132,16 @@ namespace NetworkUtils
 };
 
 namespace RegExUtils {
-    QRegularExpression getRegEx(QString name , QString replace = "", QString by = "");
+    QRegularExpression getRegularExpression(QString name , QString replace = "", QString by = "");
+    /**
+     * @brief getRegExp Don't use this, always prefer getRegularExpression!
+     * getRegExp is meant only to be used with QRegExpValidator which doesn't accept QRegularExpression
+     * @param name
+     * @param replace
+     * @param by
+     * @return
+     */
+    QRegExp getRegExp(QString name , QString replace = "", QString by = "");
 };
 
 namespace Interpolations {

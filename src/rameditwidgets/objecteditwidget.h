@@ -10,9 +10,11 @@
 #include <QWidget>
 #include <QTextEdit>
 #include <QShowEvent>
+#include <QRegExpValidator>
 
 #include "dbinterface.h"
 #include "ramobject.h"
+#include "duqf-utils/utils.h"
 
 /**
  * @brief The ObjectEditWidget class is the base class of all editors for RamObjects (Shots, steps, etc)
@@ -63,7 +65,6 @@ private slots:
 
 private:
     void setupUi();
-
 
     RamObject *m_object;
     void connectEvents();

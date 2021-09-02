@@ -167,11 +167,21 @@ void ObjectEditWidget::setupUi()
     ui_nameEdit = new QLineEdit(dummy);
     ui_mainFormLayout->addWidget(ui_nameEdit, 0, 1);
 
+    // Name validator
+    QRegExp rxn = RegExUtils::getRegExp("name");
+    QValidator *nameValidator = new QRegExpValidator(rxn, this);
+    ui_nameEdit->setValidator(nameValidator);
+
     ui_shortNameLabel = new QLabel("ID", dummy);
     ui_mainFormLayout->addWidget(ui_shortNameLabel, 1, 0);
 
     ui_shortNameEdit = new QLineEdit(dummy);
     ui_mainFormLayout->addWidget(ui_shortNameEdit, 1, 1);
+
+    // Short Name validator
+    QRegExp rxsn = RegExUtils::getRegExp("shortname");
+    QValidator *shortNameValidator = new QRegExpValidator(rxsn, this);
+    ui_shortNameEdit->setValidator(shortNameValidator);
 
     ui_commentLabel = new QLabel("Comment", dummy);
     ui_mainFormLayout->addWidget(ui_commentLabel, 2, 0);

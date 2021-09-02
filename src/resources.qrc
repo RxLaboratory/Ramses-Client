@@ -74,6 +74,8 @@
     </qresource>
     <qresource prefix="/regex">
         <file alias="ramses-filename">resources/regex/ramses_name.txt</file>
+        <file alias="name">resources/regex/name.txt</file>
+        <file alias="shortname">resources/regex/shortname.txt</file>
     </qresource>
     <qresource prefix="/images">
         <file alias="splash">resources/icons/ramses-logo-large.svg</file>

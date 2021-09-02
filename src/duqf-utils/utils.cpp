@@ -143,7 +143,7 @@ qint64 MediaUtils::convertToBytes(qint64 value, MediaUtils::SizeUnit from)
     return value;
 }
 
-QRegularExpression RegExUtils::getRegEx(QString name, QString replace, QString by)
+QRegularExpression RegExUtils::getRegularExpression(QString name, QString replace, QString by)
 {
     QFile regExFile(":/regex/" + name );
     if (regExFile.open(QFile::ReadOnly))
@@ -153,6 +153,18 @@ QRegularExpression RegExUtils::getRegEx(QString name, QString replace, QString b
         return QRegularExpression( regExStr.trimmed() );
     }
     return QRegularExpression();
+}
+
+QRegExp RegExUtils::getRegExp(QString name, QString replace, QString by)
+{
+    QFile regExFile(":/regex/" + name );
+    if (regExFile.open(QFile::ReadOnly))
+    {
+        QString regExStr = regExFile.readAll();
+        if (replace != "") regExStr = regExStr.replace(replace, by);
+        return QRegExp( regExStr.trimmed() );
+    }
+    return QRegExp();
 }
 
 double Interpolations::linear(double val, double fromMin, double fromMax, double toMin, double toMax)

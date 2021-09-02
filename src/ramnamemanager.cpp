@@ -12,7 +12,7 @@ RamNameManager::RamNameManager()
         stateShortNames << states->at(i)->shortName();
 
     // get name regex
-    m_reName = RegExUtils::getRegEx("ramses-filename", "PUB|WIP|V", stateShortNames.join("|"));
+    m_reName = RegExUtils::getRegularExpression("ramses-filename", "PUB|WIP|V", stateShortNames.join("|"));
     m_reName.setPatternOptions(QRegularExpression::CaseInsensitiveOption | QRegularExpression::MultilineOption);
 
 }
