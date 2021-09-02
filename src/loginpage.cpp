@@ -15,7 +15,7 @@ LoginPage::LoginPage(QWidget *parent) :
 
 #ifdef QT_DEBUG
     // Test mode (auto login)
-    usernameEdit->setText("Duduf");
+    usernameEdit->setText("Duf");
     passwordEdit->setText("password");
 #endif
 

@@ -592,7 +592,7 @@ void MainWindow::pageChanged(int i)
 void MainWindow::serverSettings()
 {
     mainStack->setCurrentIndex(1);
-    settingsWidget->setCurrentIndex(1);
+    settingsWidget->setCurrentIndex(2);
 }
 
 void MainWindow::loginAction()
