@@ -30,16 +30,6 @@ void RamProjectFilterModel::clearUsers()
     invalidateFilter();
 }
 
-/*void RamProjectFilterModel::setSourceModel(QAbstractItemModel *sourceModel)
-{
-    QSortFilterProxyModel::setSourceModel(sourceModel);
-
-    connect(sourceModel, SIGNAL(dataChanged(const QModelIndex&, const QModelIndex&)), this, SLOT(doInvalidateFilter()));
-    connect(sourceModel, SIGNAL(modelReset()), this, SLOT(doInvalidateFilter()));
-
-    invalidateFilter();
-}*/
-
 bool RamProjectFilterModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
 {
     QModelIndex index = sourceModel()->index(sourceRow, 0, sourceParent);

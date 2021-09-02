@@ -64,6 +64,10 @@ private slots:
     void setDiffculty(RamStatus::Difficulty difficulty);
     void setCompletion();
 
+    // Item
+    void createItem();
+    void deleteItems();
+
     void contextMenuRequested(QPoint p);
 
 private:
@@ -71,6 +75,8 @@ private:
     void connectEvents();
 
     DuQFSearchEdit *ui_searchEdit;
+    QAction *ui_actionCreateItem;
+    QAction *ui_actionDeleteItem;
     QMenu *ui_stepMenu;
     QAction *ui_actionSelectAllSteps ;
     QAction *ui_actionSelectNoSteps ;

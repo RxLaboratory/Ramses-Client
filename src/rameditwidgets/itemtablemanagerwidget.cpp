@@ -2,9 +2,10 @@
 
 ItemTableManagerWidget::ItemTableManagerWidget(RamStep::Type productionType, QWidget *parent) : QWidget(parent)
 {   
+    m_productionType = productionType;
     setupUi();
     m_stepFilter = new RamStepFilterModel(productionType, this);
-    m_productionType = productionType;
+
     if (m_productionType == RamStep::ShotProduction)
     {
         ui_table->setSortable(true);
@@ -290,6 +291,87 @@ void ItemTableManagerWidget::setCompletion()
     }
 }
 
+void ItemTableManagerWidget::createItem()
+{
+    RamProject *project = Ramses::instance()->currentProject();
+    if (!project) return;
+    RamObject *group = ui_groupBox->currentObject();
+
+    if(m_productionType == RamStep::ShotProduction)
+    {
+        if (project->sequences()->count() == 0 ) return;
+        RamSequence *seq;
+        if (!group) seq = qobject_cast<RamSequence*>( project->sequences()->at(0) );
+        else seq = qobject_cast<RamSequence*>( group );
+        if(!seq) return;
+
+        RamShot *shot = new RamShot(
+                    "NEW",
+                    seq,
+                    "New Shot"
+                    );
+
+        project->shots()->append(shot);
+        editObject(shot);
+    }
+    else
+    {
+        if (project->assetGroups()->count() == 0 ) return;
+        RamAssetGroup *ag;
+        if (!group) ag = qobject_cast<RamAssetGroup*>( project->assetGroups()->at(0) );
+        else ag = qobject_cast<RamAssetGroup*>( group );
+        if(!ag) return;
+
+        RamAsset *asset = new RamAsset(
+                    "NEW",
+                    ag,
+                    "New Asset"
+                    );
+
+        project->assets()->append(asset);
+        editObject(asset);
+    }
+
+}
+
+void ItemTableManagerWidget::deleteItems()
+{
+    RamProject *project = Ramses::instance()->currentProject();
+    if (!project) return;
+
+    QModelIndexList selection = ui_table->selectionModel()->selectedIndexes();
+    QModelIndexList selectedItems;
+
+    for (int i = 0; i < selection.count(); i++)
+    {
+        // remove only if it's the item in the first column
+        if (selection.at(i).column() != 0) continue;
+        int row = selection.at(i).row();
+        if (m_productionType == RamStep::ShotProduction)
+            selectedItems << project->shots()->index( row, 0);
+        else
+            selectedItems << project->assets()->index( row, 0);
+    }
+
+    if (selectedItems.count() == 0) return;
+
+    QMessageBox::StandardButton confirm = QMessageBox::question( this,
+        "Confirm deletion",
+        "Are you sure you want to premanently remove the selected items?" );
+
+    if ( confirm != QMessageBox::Yes) return;
+
+    QList<RamObject*> objs;
+
+    if (m_productionType == RamStep::ShotProduction) objs = project->shots()->removeIndices(selectedItems);
+    else objs = project->assets()->removeIndices(selectedItems);
+
+    for (int i = objs.count() -1 ; i >= 0; i--)
+    {
+        objs.at(i)->remove();
+    }
+}
+
 void ItemTableManagerWidget::contextMenuRequested(QPoint p)
 {
     // Call the context menu
@@ -317,6 +399,40 @@ void ItemTableManagerWidget::setupUi()
     ui_searchEdit->setMaximumWidth(150);
     ui_searchEdit->hideSearchButton();
     ui_titleBar->insertLeft(ui_searchEdit);
+
+    // Item Menu
+    QMenu *itemMenu = new QMenu(this);
+
+    QString createItemLabel;
+    QString deleteItemLabel;
+    if (m_productionType == RamStep::ShotProduction)
+    {
+        createItemLabel = "Create new shot";
+        deleteItemLabel = "Remove selected shots";
+    }
+    else
+    {
+        createItemLabel = "Create new asset";
+        deleteItemLabel = "Remove selected assets";
+    }
+
+    ui_actionCreateItem = new QAction(QIcon(":/icons/add"), createItemLabel, this);
+    itemMenu->addAction(ui_actionCreateItem);
+
+    ui_actionDeleteItem = new QAction(QIcon(":/icons/remove"), deleteItemLabel, this);
+    itemMenu->addAction(ui_actionDeleteItem);
+
+    QToolButton *itemButton = new QToolButton(this);
+    if (m_productionType == RamStep::ShotProduction) itemButton->setText(" Shots");
+    else itemButton->setText(" Assets");
+    if (m_productionType == RamStep::ShotProduction) itemButton->setIcon(QIcon(":/icons/shot"));
+    else itemButton->setIcon(QIcon(":/icons/asset"));
+    itemButton->setMenu(itemMenu);
+    itemButton->setIconSize(QSize(16,16));
+    itemButton->setObjectName("menuButton");
+    itemButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    itemButton->setPopupMode(QToolButton::InstantPopup);
+    ui_titleBar->insertLeft(itemButton);
 
     // View Menu
     QMenu *viewMenu = new QMenu(this);
@@ -479,6 +595,9 @@ void ItemTableManagerWidget::setupUi()
 
 void ItemTableManagerWidget::connectEvents()
 {
+    // Item actions
+    connect(ui_actionCreateItem,SIGNAL(triggered()),this,SLOT(createItem()));
+    connect(ui_actionDeleteItem,SIGNAL(triggered()),this,SLOT(deleteItems()));
     // Status actions
     connect(ui_assignUserMenu,SIGNAL(create()),this,SLOT(unassignUser()));
     connect(ui_assignUserMenu,SIGNAL(assign(RamObject*)),this,SLOT(assignUser(RamObject*)));
