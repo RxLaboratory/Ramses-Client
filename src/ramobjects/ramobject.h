@@ -3,6 +3,8 @@
 
 #include <QObject>
 #include <QMap>
+#include <QSettings>
+#include <QStringBuilder>
 
 #include "dbinterface.h"
 #include "ramuuid.h"
@@ -58,6 +60,9 @@ public:
     explicit RamObject(QObject *parent = nullptr);
     explicit RamObject(QString uuid, QObject *parent = nullptr);
     explicit RamObject(QString shortName, QString name, QString uuid = "", QObject *parent = nullptr);
+
+    QSettings *settings();
+    void reInitSettingsFile();
 
     virtual QString shortName() const;
     void setShortName(const QString &shortName);
@@ -129,9 +134,9 @@ protected:
 private:
     RamObject::ObjectType _objectType = Generic;
 
-
-
     ObjectDockWidget *m_dockWidget = nullptr;
+
+    QSettings *m_settings;
 
 };
 

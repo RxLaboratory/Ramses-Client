@@ -531,7 +531,7 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
             RamUser *user = Ramses::instance()->currentUser();
             if (user)
             {
-                QSettings *uSettings = user->userSettings();
+                QSettings *uSettings = user->settings();
                 dateFormat = uSettings->value("ramses/dateFormat", dateFormat).toString();
             }
             subDetails = "Modified on: " %

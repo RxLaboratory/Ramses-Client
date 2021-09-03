@@ -224,7 +224,7 @@ void PipelineWidget::newStep(RamObject *obj)
     RamUser *u = Ramses::instance()->currentUser();
     if (u)
     {
-        QSettings *uSettings = u->userSettings();
+        QSettings *uSettings = u->settings();
         uSettings->beginGroup("nodeView");
         uSettings->beginGroup("nodeLocations");
         QPointF pos = uSettings->value(step->uuid(), QPointF(0.0,0.0)).toPointF();
@@ -254,14 +254,26 @@ void PipelineWidget::nodeMoved(QPointF pos)
     if (!node) return;
     RamObject *step = node->ramObject();
 
+    // Save node location to user settings
     RamUser *u = Ramses::instance()->currentUser();
     if (!u) return;
-    QSettings *uSettings = u->userSettings();
+    QSettings *uSettings = u->settings();
     uSettings->beginGroup("nodeView");
     uSettings->beginGroup("nodeLocations");
     uSettings->setValue(step->uuid(), pos);
     uSettings->endGroup();
     uSettings->endGroup();
+
+    // Save node location to project settings if not already there
+    QSettings *pSettings = m_project->settings();
+    pSettings->beginGroup("nodeView");
+    pSettings->beginGroup("nodeLocations");
+    if (pSettings->value(step->uuid(), QPointF()).toPointF() == QPointF())
+    {
+        pSettings->setValue(step->uuid(), pos);
+    }
+    pSettings->endGroup();
+    pSettings->endGroup();
 }
 
 void PipelineWidget::setSnapEnabled(bool enabled)
@@ -274,7 +286,7 @@ void PipelineWidget::setSnapEnabled(bool enabled)
 
     RamUser *u = Ramses::instance()->currentUser();
     if (!u) return;
-    QSettings *uSettings = u->userSettings();
+    QSettings *uSettings = u->settings();
     uSettings->setValue("nodeView/snapToGrid", enabled);
 }
 
@@ -288,7 +300,7 @@ void PipelineWidget::setGridSize(int size)
 
     RamUser *u = Ramses::instance()->currentUser();
     if (!u) return;
-    QSettings *uSettings = u->userSettings();
+    QSettings *uSettings = u->settings();
     uSettings->setValue("nodeView/gridSize", size);
 
 }
@@ -297,7 +309,7 @@ void PipelineWidget::userChanged(RamUser *u)
 {
     if (!u) return;
 
-    QSettings *uSettings = u->userSettings();
+    QSettings *uSettings = u->settings();
 
     setSnapEnabled(uSettings->value("nodeView/snapToGrid", false).toBool());
     setGridSize(uSettings->value("nodeView/gridSize", 20).toInt());

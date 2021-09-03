@@ -7,6 +7,7 @@ QMap<QString, RamObject*> RamObject::m_existingObjects = QMap<QString, RamObject
 
 RamObject::RamObject(QObject *parent) : QObject(parent)
 {
+    m_settings = nullptr;
     m_removing = false;
     m_shortName = "";
     m_name = "";
@@ -18,6 +19,7 @@ RamObject::RamObject(QObject *parent) : QObject(parent)
 
 RamObject::RamObject(QString uuid, QObject *parent): QObject(parent)
 {
+    m_settings = nullptr;
     m_removing = false;
     m_shortName = "";
     m_name = "";
@@ -29,6 +31,7 @@ RamObject::RamObject(QString uuid, QObject *parent): QObject(parent)
 
 RamObject::RamObject(QString shortName, QString name, QString uuid, QObject *parent) : QObject(parent)
 {
+    m_settings = nullptr;
     m_removing = false;
     m_shortName = shortName;
     m_name = name;
@@ -38,6 +41,22 @@ RamObject::RamObject(QString shortName, QString name, QString uuid, QObject *par
     m_dbi = DBInterface::instance();
     this->setObjectName( "RamObject" );
     m_existingObjects[m_uuid] = this;
+}
+
+QSettings *RamObject::settings()
+{
+    if (m_settings) return m_settings;
+
+    // create settings folder and file
+    QString settingsPath = path(RamObject::ConfigFolder, true) % "/" % "ramses_settings.ini";
+    m_settings = new QSettings( settingsPath, QSettings::IniFormat, this);
+    return m_settings;
+}
+
+void RamObject::reInitSettingsFile()
+{
+    m_settings->deleteLater();
+    m_settings = nullptr;
 }
 
 QString RamObject::shortName() const

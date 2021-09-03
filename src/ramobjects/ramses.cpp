@@ -116,7 +116,7 @@ RamProject *Ramses::currentProject() const
 void Ramses::init()
 {
     if(!m_currentUser) return;
-    QSettings *uSettings = m_currentUser->userSettings();
+    QSettings *uSettings = m_currentUser->settings();
     setCurrentProject(uSettings->value("ramses/currentProject", "").toString());
 }
 
@@ -141,7 +141,7 @@ void Ramses::projectReady(QString uuid)
     m_currentProject = currentProject;
     if(m_currentUser)
     {
-        QSettings *uSettings = m_currentUser->userSettings();
+        QSettings *uSettings = m_currentUser->settings();
         uSettings->setValue("ramses/currentProject", m_currentProject->uuid() );
     }
 

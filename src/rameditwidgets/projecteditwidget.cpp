@@ -92,7 +92,7 @@ void ProjectEditWidget::updateFolderLabel(QString path)
 void ProjectEditWidget::currentUserChanged(RamUser *user)
 {
     if (!user) return;
-    QSettings *userSettings = user->userSettings();
+    QSettings *userSettings = user->settings();
     ui_deadlineEdit->setDisplayFormat( userSettings->value("ramses/dateFormat","yyyy-MM-dd hh:mm:ss").toString());
 }
 

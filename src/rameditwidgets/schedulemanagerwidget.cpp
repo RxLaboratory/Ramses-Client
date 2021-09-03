@@ -83,7 +83,7 @@ void ScheduleManagerWidget::userChanged(RamUser *user)
         this->setEnabled(false);
         return;
     }
-    QSettings *uSettings = Ramses::instance()->currentUser()->userSettings();
+    QSettings *uSettings = Ramses::instance()->currentUser()->settings();
 
     ui_monday->setChecked( uSettings->value("schedule/monday", true).toBool() );
     ui_tuesday->setChecked( uSettings->value("schedule/tuesday", true).toBool() );
@@ -190,7 +190,7 @@ void ScheduleManagerWidget::showMonday(bool show)
 
     if(Ramses::instance()->currentUser())
     {
-        QSettings *uSettings = Ramses::instance()->currentUser()->userSettings();
+        QSettings *uSettings = Ramses::instance()->currentUser()->settings();
         uSettings->setValue("schedule/monday", show);
     }
 
@@ -203,7 +203,7 @@ void ScheduleManagerWidget::showTuesday(bool show)
 
     if (Ramses::instance()->currentUser() )
     {
-        QSettings *uSettings = Ramses::instance()->currentUser()->userSettings();
+        QSettings *uSettings = Ramses::instance()->currentUser()->settings();
         uSettings->setValue("schedule/tuesday", show);
     }
 }
@@ -215,7 +215,7 @@ void ScheduleManagerWidget::showWednesday(bool show)
 
     if (Ramses::instance()->currentUser() )
     {
-        QSettings *uSettings = Ramses::instance()->currentUser()->userSettings();
+        QSettings *uSettings = Ramses::instance()->currentUser()->settings();
         uSettings->setValue("schedule/wednesday", show);
     }
 }
@@ -227,7 +227,7 @@ void ScheduleManagerWidget::showThursday(bool show)
 
     if ( Ramses::instance()->currentUser() )
     {
-        QSettings *uSettings = Ramses::instance()->currentUser()->userSettings();
+        QSettings *uSettings = Ramses::instance()->currentUser()->settings();
         uSettings->setValue("schedule/thursday", show);
     }
 }
@@ -239,7 +239,7 @@ void ScheduleManagerWidget::showFriday(bool show)
 
     if ( Ramses::instance()->currentUser() )
     {
-        QSettings *uSettings = Ramses::instance()->currentUser()->userSettings();
+        QSettings *uSettings = Ramses::instance()->currentUser()->settings();
         uSettings->setValue("schedule/friday", show);
     }
 }
@@ -251,7 +251,7 @@ void ScheduleManagerWidget::showSaturday(bool show)
 
     if(Ramses::instance()->currentUser() )
     {
-        QSettings *uSettings = Ramses::instance()->currentUser()->userSettings();
+        QSettings *uSettings = Ramses::instance()->currentUser()->settings();
         uSettings->setValue("schedule/saturday", show);
     }
 }
@@ -263,7 +263,7 @@ void ScheduleManagerWidget::showSunday(bool show)
 
     if (Ramses::instance()->currentUser() )
     {
-        QSettings *uSettings = Ramses::instance()->currentUser()->userSettings();
+        QSettings *uSettings = Ramses::instance()->currentUser()->settings();
         uSettings->setValue("schedule/sunday", show);
     }
 }

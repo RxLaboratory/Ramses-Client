@@ -40,6 +40,6 @@ void LocalSettingsWidget::setDateFormat()
 {
     RamUser *user = Ramses::instance()->currentUser();
     if (!user ) return;
-    QSettings *userSettings = user->userSettings();
+    QSettings *userSettings = user->settings();
     userSettings->setValue("ramses/dateFormat", dateFormatBox->currentData().toString());
 }

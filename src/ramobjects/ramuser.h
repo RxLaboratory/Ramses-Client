@@ -31,8 +31,6 @@ public:
 
     void updatePassword(QString c, QString n);
 
-    QSettings *userSettings() const;
-
     RamObjectList *schedule() const;
     bool isStepAssigned(RamStep *step) const;
 
@@ -52,7 +50,6 @@ protected:
 private:
     UserRole m_role;
     QString m_folderPath;
-    QSettings *m_userSettings;
     RamObjectList *m_schedule;
 };
 

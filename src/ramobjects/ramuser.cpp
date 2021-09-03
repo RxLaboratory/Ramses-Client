@@ -16,10 +16,6 @@ RamUser::RamUser(QString shortName, QString name, QString uuid) :
 
     this->setObjectName( "RamUser" );
 
-    // Settings file
-    QString settingsPath = path(RamObject::ConfigFolder) % "/" % "ramses.ini";
-    m_userSettings = new QSettings(settingsPath,  QSettings::IniFormat, this);
-
     // When the schedule changes, warn the step
     connect(m_schedule, SIGNAL(objectInserted(RamObject*)),this,SLOT(scheduleChanged(RamObject*)) );
     connect(m_schedule, SIGNAL(objectRemoved(RamObject*)),this,SLOT(scheduleChanged(RamObject*)) );
@@ -102,9 +98,7 @@ void RamUser::setFolderPath(const QString &folderPath)
     m_folderPath = folderPath;
 
     // Settings file
-    QString settingsPath = path(RamObject::ConfigFolder) % "/" % "ramses.ini";
-    delete m_userSettings;
-    m_userSettings = new QSettings(settingsPath,  QSettings::IniFormat, this);
+    reInitSettingsFile();
 
     emit changed(this);
 }
@@ -165,9 +159,4 @@ void RamUser::scheduleChanged(RamObject *entryObj)
     RamScheduleEntry *entry = qobject_cast<RamScheduleEntry*>( entryObj );
     if (!entryObj) return;
     if (!entry->step()) return;
-}
-
-QSettings *RamUser::userSettings() const
-{
-    return m_userSettings;
 }
