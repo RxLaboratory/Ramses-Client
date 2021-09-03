@@ -85,6 +85,16 @@ PipelineWidget::PipelineWidget(QWidget *parent) :
     layButton->setPopupMode(QToolButton::InstantPopup);
     layButton->setMenu(layMenu);
 
+    layMenu->addSeparator();
+
+    QAction *actionLayoutLoad = new QAction("Reload project layout", this);
+    actionLayoutLoad->setShortcut(QKeySequence("Shift+R"));
+    layMenu->addAction(actionLayoutLoad);
+
+    QAction *actionLayoutSave = new QAction("Save project layout", this);
+    actionLayoutSave->setShortcut(QKeySequence("Shift+S"));
+    layMenu->addAction(actionLayoutSave);
+
     ui_titleBar->insertLeft(layButton);
 
     // Step menu
@@ -187,6 +197,8 @@ PipelineWidget::PipelineWidget(QWidget *parent) :
     connect(actionLayoutAll, SIGNAL(triggered()), m_nodeScene, SLOT(autoLayoutAll()));
     connect(actionLayoutAll, SIGNAL(triggered()), ui_nodeView, SLOT(frameSelected()));
     connect(actionLayoutSelected, SIGNAL(triggered()), m_nodeScene, SLOT(autoLayoutSelectedNodes()));
+    connect(actionLayoutLoad, SIGNAL(triggered()), this, SLOT(loadProjectLayout()));
+    connect(actionLayoutSave, SIGNAL(triggered()), this, SLOT(saveProjectLayout()));
     connect(actionSelectAll, SIGNAL(triggered()), m_nodeScene, SLOT(selectAllNodes()));
     connect(actionSelectChildren, SIGNAL(triggered()), m_nodeScene, SLOT(selectChildNodes()));
     connect(actionSelectParents, SIGNAL(triggered()), m_nodeScene, SLOT(selectParentNodes()));
@@ -222,17 +234,35 @@ void PipelineWidget::newStep(RamObject *obj)
 
     // Reset position
     RamUser *u = Ramses::instance()->currentUser();
+    bool ok = false;
     if (u)
     {
         QSettings *uSettings = u->settings();
         uSettings->beginGroup("nodeView");
         uSettings->beginGroup("nodeLocations");
         QPointF pos = uSettings->value(step->uuid(), QPointF(0.0,0.0)).toPointF();
-        if (pos.x() != 0.0 && pos.y() != 0.0) stepNode->setPos( pos );
+        if (pos.x() != 0.0 && pos.y() != 0.0)
+        {
+            stepNode->setPos( pos );
+            ok = true;
+        }
         uSettings->endGroup();
         uSettings->endGroup();
     }
-
+    // not found, try from project
+    if (!ok)
+    {
+        QSettings *pSettings = m_project->settings();
+        pSettings->beginGroup("nodeView");
+        pSettings->beginGroup("nodeLocations");
+        QPointF pos = pSettings->value(step->uuid(), QPointF(0.0,0.0)).toPointF();
+        if (pos.x() != 0.0 && pos.y() != 0.0)
+        {
+            stepNode->setPos( pos );
+        }
+        pSettings->endGroup();
+        pSettings->endGroup();
+    }
 
     connect(stepNode, &DuQFNode::moved, this, &PipelineWidget::nodeMoved);
 }
@@ -496,6 +526,53 @@ void PipelineWidget::connectionRemoved(DuQFConnection *co)
 
     RamPipe *p = project->pipe(output, input);
     if (p) p->remove();
+}
+
+void PipelineWidget::loadProjectLayout()
+{
+    QList<DuQFNode *> nodes = m_nodeScene->nodes();
+    for(int i = 0; i < nodes.count(); i++)
+    {
+        ObjectNode *node = qgraphicsitem_cast<ObjectNode*>(nodes.at(i));
+        RamObject *step = node->ramObject();
+
+        QSettings *pSettings = m_project->settings();
+        pSettings->beginGroup("nodeView");
+        pSettings->beginGroup("nodeLocations");
+
+        QPointF pos = pSettings->value(step->uuid(), QPointF(0.0,0.0)).toPointF();
+        if (pos.x() != 0.0 && pos.y() != 0.0)
+        {
+            node->setPos( pos );
+        }
+
+        pSettings->endGroup();
+        pSettings->endGroup();
+    }
+}
+
+void PipelineWidget::saveProjectLayout()
+{
+    QMessageBox::StandardButton confirm = QMessageBox::question( this,
+        "Confirm overwrite",
+        "This will overwrite the default layout for this project, for all users.\nDo you want to continue?" );
+
+    if ( confirm != QMessageBox::Yes) return;
+
+    QList<DuQFNode *> nodes = m_nodeScene->nodes();
+    for(int i = 0; i < nodes.count(); i++)
+    {
+        ObjectNode *node = qgraphicsitem_cast<ObjectNode*>(nodes.at(i));
+        RamObject *step = node->ramObject();
+        QPointF pos = node->pos();
+
+        QSettings *pSettings = m_project->settings();
+        pSettings->beginGroup("nodeView");
+        pSettings->beginGroup("nodeLocations");
+        pSettings->setValue(step->uuid(), pos);
+        pSettings->endGroup();
+        pSettings->endGroup();
+    }
 }
 
 void PipelineWidget::pipeChanged(RamObject *p)

@@ -53,11 +53,15 @@ private slots:
 
     void stepsConnected(DuQFConnection *co);
     void connectionRemoved(DuQFConnection *co);
+
+    void loadProjectLayout();
+    void saveProjectLayout();
+
 protected:
     void showEvent(QShowEvent *event) override;
     void hideEvent(QHideEvent *event) override;
 
-private:  
+private:
     void changeProject();
 
     TitleBar *ui_titleBar;
