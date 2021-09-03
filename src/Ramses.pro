@@ -27,6 +27,7 @@ INCLUDEPATH += rameditwidgets \
     ramobjects \
     item-tables \
     data-views \
+    pages \
     data-model
 
 SOURCES += \
@@ -125,7 +126,7 @@ SOURCES += \
     rameditwidgets/filetypeeditwidget.cpp \
     smallwidgets/frameratewidget.cpp \
     settingswidgets/localsettingswidget.cpp \
-    loginpage.cpp \
+    pages/loginpage.cpp \
     main.cpp \
     mainwindow.cpp \
     rameditwidgets/objectdockwidget.cpp \
@@ -265,7 +266,7 @@ HEADERS += \
     rameditwidgets/filetypeeditwidget.h \
     smallwidgets/frameratewidget.h \
     settingswidgets/localsettingswidget.h \
-    loginpage.h \
+    pages/loginpage.h \
     mainwindow.h \
     rameditwidgets/objectdockwidget.h \
     rameditwidgets/objecteditwidget.h \
@@ -312,7 +313,7 @@ FORMS += \
     duqf-widgets/duqffolderselectorwidget.ui \
     duqf-widgets/toolbarspacer.ui \
     settingswidgets/localsettingswidget.ui \
-    loginpage.ui \
+    pages/loginpage.ui \
     mainwindow.ui \
     pipeline-editor/pipelinewidget.ui \
     settingswidgets/serversettingswidget.ui \

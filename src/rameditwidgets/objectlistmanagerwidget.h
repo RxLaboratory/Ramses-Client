@@ -26,7 +26,7 @@ protected:
 
 protected slots:
     virtual RamObject *createObject() { return nullptr; };
-    void createEditObject();;
+    void createEditObject();
 
 private:
     void setupUi(QString title, QIcon icon);
@@ -39,6 +39,9 @@ private:
 
     QToolButton *ui_itemButton;
     QAction *ui_createAction;
+
+    QShortcut *ui_createShortcut;
+    QShortcut *ui_removeShortcut;
 };
 
 #endif // OBJECTLISTMANAGERWIDGET_H

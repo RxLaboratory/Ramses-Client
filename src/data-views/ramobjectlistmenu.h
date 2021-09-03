@@ -16,6 +16,7 @@ public:
     RamObjectListMenu(bool checkable = false, QWidget *parent = nullptr);
     void setList(QAbstractItemModel *list);
     void addCreateButton();
+    RamObjectFilterModel *filteredList();
 
     void setObjectVisible(RamObject *obj, bool visible = true);
     void showAll();

@@ -19,8 +19,21 @@ public:
 private slots:
     void currentProjectChanged(RamProject *project);
 
+    void assignUser(RamObject *userObj);
+    void unAssignUser(RamObject *userObj);
+    void userAssigned(const QModelIndex &parent,int first,int last);
+    void userUnassigned(const QModelIndex &parent,int first,int last);
+
+    void createStepFromTemplate(RamObject *stepObj);
+    void createAssetGroupFromTemplate(RamObject *agObj);
+
 private:
     ProjectEditWidget *ui_currentProjectSettings;
+
+    QList<QMetaObject::Connection> m_userConnections;
+
+    RamObjectListMenu *ui_assignUserMenu;
+    RamObjectListMenu *ui_unAssignUserMenu;
 };
 
 #endif // PROJECTPAGE_H

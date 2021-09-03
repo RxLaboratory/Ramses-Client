@@ -78,6 +78,10 @@ void ObjectListManagerWidget::setupUi(QString title, QIcon icon)
     ui_itemButton->setObjectName("menuButton");
     ui_itemButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     ui_itemButton->setPopupMode(QToolButton::InstantPopup);
+
+    // Shortcuts
+    ui_createShortcut = new QShortcut(QKeySequence("Shift+A"),this);
+    ui_removeShortcut = new QShortcut(QKeySequence("Shift+X"),this);
 }
 
 void ObjectListManagerWidget::connectEvents()
@@ -85,6 +89,8 @@ void ObjectListManagerWidget::connectEvents()
     connect( m_listEditWidget, SIGNAL(objectSelected(RamObject*)), m_editWidget, SLOT(setObject(RamObject*)) );
     connect( m_listEditWidget, SIGNAL(add()), this, SLOT(createObject()) );
     connect( ui_createAction, SIGNAL(triggered()), this, SLOT(createEditObject()) );
+    connect( ui_createShortcut, SIGNAL(activated()), this, SLOT(createObject()));
+    connect( ui_removeShortcut, SIGNAL(activated()), m_listEditWidget, SLOT(removeSelectedObjects()));
 }
 
 QString ObjectListManagerWidget::currentFilter() const

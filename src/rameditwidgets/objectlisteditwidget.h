@@ -51,13 +51,13 @@ public:
 
 public slots:
     void setFilter(RamObject *o);
+    void removeSelectedObjects();
 
 signals:
     void objectSelected(RamObject*);
     void add();
 
 private slots:
-    void removeSelectedObjects();
     void edit(RamObject *obj);
 
     void assign(RamObject *obj);

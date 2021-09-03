@@ -51,6 +51,11 @@ void RamObjectListMenu::addCreateButton()
     connect(createAction,SIGNAL(triggered()),this,SLOT(actionCreate()));
 }
 
+RamObjectFilterModel *RamObjectListMenu::filteredList()
+{
+    return m_objects;
+}
+
 void RamObjectListMenu::setObjectVisible(RamObject *obj, bool visible)
 {
     QList<QAction *> actions = this->actions();
