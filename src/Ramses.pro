@@ -153,6 +153,7 @@ SOURCES += \
     rameditwidgets/sequenceeditwidget.cpp \
     settingswidgets/serversettingswidget.cpp \
     rameditwidgets/shoteditwidget.cpp \
+    smallwidgets/shotscreationdialog.cpp \
     smallwidgets/statebox.cpp \
     rameditwidgets/stateeditwidget.cpp \
     rameditwidgets/statuseditwidget.cpp \
@@ -292,6 +293,7 @@ HEADERS += \
     rameditwidgets/sequenceeditwidget.h \
     settingswidgets/serversettingswidget.h \
     rameditwidgets/shoteditwidget.h \
+    smallwidgets/shotscreationdialog.h \
     smallwidgets/statebox.h \
     rameditwidgets/stateeditwidget.h \
     rameditwidgets/statuseditwidget.h \
@@ -317,6 +319,7 @@ FORMS += \
     mainwindow.ui \
     pipeline-editor/pipelinewidget.ui \
     settingswidgets/serversettingswidget.ui \
+    smallwidgets/shotscreationdialog.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

@@ -15,7 +15,7 @@
 #include "data-views/ramstepheaderview.h"
 #include "data-views/ramobjectlistmenu.h"
 #include "ramses.h"
-
+#include "shotscreationdialog.h"
 
 class ItemTableManagerWidget : public QWidget
 {
@@ -67,16 +67,23 @@ private slots:
     // Item
     void createItem();
     void deleteItems();
+    void createMultiple();
 
     void contextMenuRequested(QPoint p);
+
+    void currentUserChanged(RamUser *user);
 
 private:
     void setupUi();
     void connectEvents();
 
     DuQFSearchEdit *ui_searchEdit;
+    QToolButton *ui_itemButton;
+    QAction *ui_actionItem;
+    QMenu *ui_itemMenu;
     QAction *ui_actionCreateItem;
     QAction *ui_actionDeleteItem;
+    QAction *ui_actionCreateMultiple;
     QMenu *ui_stepMenu;
     QAction *ui_actionSelectAllSteps ;
     QAction *ui_actionSelectNoSteps ;

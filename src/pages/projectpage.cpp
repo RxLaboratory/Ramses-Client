@@ -80,6 +80,11 @@ ProjectPage::ProjectPage(QWidget *parent):
     ShotListManagerWidget *shotManager = new ShotListManagerWidget(this);
     this->addPage(shotManager, "Shots", QIcon(":/icons/shots"));
     this->titleBar()->insertLeft(shotManager->menuButton());
+
+    // Create multiple shots
+    QAction *createMultipleShotsAction = new QAction("Create multiple shots...", this);
+    shotManager->menuButton()->menu()->addAction(createMultipleShotsAction);
+
     qDebug() << "  > shots ok";
 
     connect(Ramses::instance(), SIGNAL(currentProjectChanged(RamProject*)), this, SLOT(currentProjectChanged(RamProject*)));
@@ -87,6 +92,7 @@ ProjectPage::ProjectPage(QWidget *parent):
     connect(ui_unAssignUserMenu, SIGNAL(assign(RamObject*)), this, SLOT(unAssignUser(RamObject*)));
     connect(stepTemplateMenu, SIGNAL(assign(RamObject*)), this, SLOT(createStepFromTemplate(RamObject*)));
     connect(agTemplateMenu, SIGNAL(assign(RamObject*)), this, SLOT(createAssetGroupFromTemplate(RamObject*)));
+    connect(createMultipleShotsAction, SIGNAL(triggered()), this, SLOT(createShots()));
 }
 
 void ProjectPage::currentProjectChanged(RamProject *project)
@@ -170,4 +176,13 @@ void ProjectPage::createAssetGroupFromTemplate(RamObject *agObj)
     RamAssetGroup *ag = templateAG->createFromTemplate(project);
     project->assetGroups()->append(ag);
     ag->edit();
+}
+
+void ProjectPage::createShots()
+{
+    RamProject *proj = Ramses::instance()->currentProject();
+    if (!proj) return;
+
+    ShotsCreationDialog dialog(proj, this);
+    dialog.exec();
 }

@@ -3,6 +3,7 @@
 
 #include "objectlistmanagerwidget.h"
 #include "shoteditwidget.h"
+#include "shotscreationdialog.h"
 
 class ShotListManagerWidget : public ObjectListManagerWidget
 {
@@ -15,6 +16,7 @@ protected slots:
 
 private slots:
     void changeProject(RamProject *project);
+    void batchCreate();
 
 };
 

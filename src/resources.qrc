@@ -75,6 +75,9 @@
         <file alias="ramses-filename">resources/regex/ramses_name.txt</file>
         <file alias="name">resources/regex/name.txt</file>
         <file alias="shortname">resources/regex/shortname.txt</file>
+        <file alias="shotnumber">resources/regex/shotnumber.txt</file>
+        <file alias="shotshortname">resources/regex/shotshortname.txt</file>
+        <file alias="shotname">resources/regex/shotname.txt</file>
     </qresource>
     <qresource prefix="/images">
         <file alias="splash">resources/icons/ramses-logo-large.svg</file>

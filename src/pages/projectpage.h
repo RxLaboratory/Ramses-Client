@@ -27,6 +27,8 @@ private slots:
     void createStepFromTemplate(RamObject *stepObj);
     void createAssetGroupFromTemplate(RamObject *agObj);
 
+    void createShots();
+
 private:
     ProjectEditWidget *ui_currentProjectSettings;
 

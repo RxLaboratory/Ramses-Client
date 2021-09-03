@@ -25,9 +25,9 @@ public:
     void setTitle(QString title);
     void showReinitButton(bool show);
     void showCloseButton(bool show);
-    void insertRight(QWidget *w);
+    QAction *insertRight(QWidget *w);
     void insertRight(QAction *a);
-    void insertLeft(QWidget *w);
+    QAction *insertLeft(QWidget *w);
     void insertLeft(QAction *a);
 
 signals:

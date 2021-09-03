@@ -38,13 +38,12 @@ void TitleBar::showReinitButton(bool show)
 
 void TitleBar::showCloseButton(bool show)
 {
-    qDebug() << show;
     closeButton->setVisible(show);
 }
 
-void TitleBar::insertRight(QWidget *w)
+QAction *TitleBar::insertRight(QWidget *w)
 {
-    this->insertWidget(rightAction, w);
+    return this->insertWidget(rightAction, w);
 }
 
 void TitleBar::insertRight(QAction *a)
@@ -52,9 +51,9 @@ void TitleBar::insertRight(QAction *a)
     this->insertAction(rightAction, a);
 }
 
-void TitleBar::insertLeft(QWidget *w)
+QAction *TitleBar::insertLeft(QWidget *w)
 {
-    this->insertWidget(leftAction, w);
+    return this->insertWidget(leftAction, w);
 }
 
 void TitleBar::insertLeft(QAction *a)

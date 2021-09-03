@@ -11,6 +11,9 @@ ItemTableManagerWidget::ItemTableManagerWidget(RamStep::Type productionType, QWi
         ui_table->setSortable(true);
         ui_titleBar->setTitle("Shots");
     }
+
+    currentUserChanged(nullptr);
+
     connectEvents();
 }
 
@@ -372,10 +375,30 @@ void ItemTableManagerWidget::deleteItems()
     }
 }
 
+void ItemTableManagerWidget::createMultiple()
+{
+    RamProject *project = Ramses::instance()->currentProject();
+    if (!project) return;
+
+    ShotsCreationDialog dialog(project, this);
+    dialog.exec();
+}
+
 void ItemTableManagerWidget::contextMenuRequested(QPoint p)
 {
     // Call the context menu
     ui_contextMenu->popup(ui_table->viewport()->mapToGlobal(p));
+}
+
+void ItemTableManagerWidget::currentUserChanged(RamUser *user)
+{
+    ui_actionItem->setVisible(false);
+    if (!user) return;
+    qDebug() << user->role();
+    if (user->role() >= RamUser::ProjectAdmin)
+    {
+        ui_actionItem->setVisible(true);
+    }
 }
 
 void ItemTableManagerWidget::setupUi()
@@ -401,7 +424,7 @@ void ItemTableManagerWidget::setupUi()
     ui_titleBar->insertLeft(ui_searchEdit);
 
     // Item Menu
-    QMenu *itemMenu = new QMenu(this);
+    ui_itemMenu = new QMenu(this);
 
     QString createItemLabel;
     QString deleteItemLabel;
@@ -417,22 +440,29 @@ void ItemTableManagerWidget::setupUi()
     }
 
     ui_actionCreateItem = new QAction(QIcon(":/icons/add"), createItemLabel, this);
-    itemMenu->addAction(ui_actionCreateItem);
+    ui_itemMenu->addAction(ui_actionCreateItem);
 
     ui_actionDeleteItem = new QAction(QIcon(":/icons/remove"), deleteItemLabel, this);
-    itemMenu->addAction(ui_actionDeleteItem);
+    ui_itemMenu->addAction(ui_actionDeleteItem);
 
-    QToolButton *itemButton = new QToolButton(this);
-    if (m_productionType == RamStep::ShotProduction) itemButton->setText(" Shots");
-    else itemButton->setText(" Assets");
-    if (m_productionType == RamStep::ShotProduction) itemButton->setIcon(QIcon(":/icons/shot"));
-    else itemButton->setIcon(QIcon(":/icons/asset"));
-    itemButton->setMenu(itemMenu);
-    itemButton->setIconSize(QSize(16,16));
-    itemButton->setObjectName("menuButton");
-    itemButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-    itemButton->setPopupMode(QToolButton::InstantPopup);
-    ui_titleBar->insertLeft(itemButton);
+    ui_actionCreateMultiple = new QAction("Create multiple shots...", this);
+
+    if (m_productionType == RamStep::ShotProduction)
+    {
+        ui_itemMenu->addAction(ui_actionCreateMultiple);
+    }
+
+    ui_itemButton = new QToolButton(this);
+    if (m_productionType == RamStep::ShotProduction) ui_itemButton->setText(" Shots");
+    else ui_itemButton->setText(" Assets");
+    if (m_productionType == RamStep::ShotProduction) ui_itemButton->setIcon(QIcon(":/icons/shot"));
+    else ui_itemButton->setIcon(QIcon(":/icons/asset"));
+    ui_itemButton->setMenu(ui_itemMenu);
+    ui_itemButton->setIconSize(QSize(16,16));
+    ui_itemButton->setObjectName("menuButton");
+    ui_itemButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    ui_itemButton->setPopupMode(QToolButton::InstantPopup);
+    ui_actionItem = ui_titleBar->insertLeft(ui_itemButton);
 
     // View Menu
     QMenu *viewMenu = new QMenu(this);
@@ -598,6 +628,7 @@ void ItemTableManagerWidget::connectEvents()
     // Item actions
     connect(ui_actionCreateItem,SIGNAL(triggered()),this,SLOT(createItem()));
     connect(ui_actionDeleteItem,SIGNAL(triggered()),this,SLOT(deleteItems()));
+    connect(ui_actionCreateMultiple,SIGNAL(triggered()),this,SLOT(createMultiple()));
     // Status actions
     connect(ui_assignUserMenu,SIGNAL(create()),this,SLOT(unassignUser()));
     connect(ui_assignUserMenu,SIGNAL(assign(RamObject*)),this,SLOT(assignUser(RamObject*)));
@@ -642,7 +673,7 @@ void ItemTableManagerWidget::connectEvents()
     // other
     connect(ui_titleBar, &TitleBar::closeRequested, this, &ItemTableManagerWidget::closeRequested);
     connect(Ramses::instance(), &Ramses::currentProjectChanged, this, &ItemTableManagerWidget::projectChanged);
-
+    connect(Ramses::instance(), SIGNAL(loggedIn(RamUser*)), this, SLOT(currentUserChanged(RamUser*)));
 }
 
 QList<RamStatus *> ItemTableManagerWidget::beginEditSelectedStatus()

@@ -67,7 +67,7 @@ void ObjectListManagerWidget::setupUi(QString title, QIcon icon)
     // Menu
     QMenu *itemMenu = new QMenu();
 
-    ui_createAction = new QAction(QIcon(":icons/add"), "Create new", this);
+    ui_createAction = new QAction("Create new", this);
     itemMenu->addAction(ui_createAction);
 
     ui_itemButton = new QToolButton();
