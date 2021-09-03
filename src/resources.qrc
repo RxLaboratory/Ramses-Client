@@ -10,7 +10,6 @@
         <file alias="user-settings">resources/icons/user-settings_sl.svg</file>
         <file alias="users">resources/icons/users_bl.svg</file>
         <file alias="add">resources/icons/add_sl.svg</file>
-        <file alias="remove">resources/icons/remove_sl.svg</file>
         <file alias="admin">resources/icons/admininstrator_sl.svg</file>
         <file alias="apply">resources/icons/check_sl.svg</file>
         <file alias="lead">resources/icons/leader-head-checker_sl.svg</file>

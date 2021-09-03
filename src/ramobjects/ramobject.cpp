@@ -222,7 +222,7 @@ void RamObject::revealFolder(RamObject::SubFolder subFolder)
     FileUtils::openInExplorer( p, true );
 }
 
-QString RamObject::subFolderName(RamObject::SubFolder folder) const
+QString RamObject::subFolderName(RamObject::SubFolder folder)
 {
     switch(folder)
     {

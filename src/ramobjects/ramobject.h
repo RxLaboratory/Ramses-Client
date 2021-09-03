@@ -87,7 +87,7 @@ public:
     void deleteFile(QString fileName, SubFolder folder=NoFolder) const;
     void revealFolder(SubFolder subFolder = NoFolder);
 
-    QString subFolderName(SubFolder folder) const;
+    static QString subFolderName(SubFolder folder);
 
     QString filterUuid() const;
 

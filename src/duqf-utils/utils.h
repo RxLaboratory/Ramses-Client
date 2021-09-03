@@ -20,7 +20,7 @@ namespace FileUtils
 {
     void setReadWrite(QFile *file);
     void setReadWrite(QString path);
-    void move(QString from, QString to);
+    bool move(QString from, QString to, bool moveToTrashIfExists = false);
     void copy(QString from, QString to);
     void remove(QString path);
     qint64 getDirSize(QDir d);

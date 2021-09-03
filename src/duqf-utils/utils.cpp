@@ -14,11 +14,39 @@ void FileUtils::setReadWrite(QString path)
     }
 }
 
-void FileUtils::move(QString from, QString to)
+bool FileUtils::move(QString from, QString to, bool moveToTrashIfExists)
 {
-    QFile origin(from);
-    origin.rename(to);
-    setReadWrite(&origin);
+    QFileInfo destinationInfo(to);
+    if (destinationInfo.exists())
+    {
+        if(moveToTrashIfExists)
+            FileUtils::moveToTrash(to);
+        else return false;
+    }
+
+    QFileInfo info(from);
+    if (!info.exists())
+    {
+        qWarning() << "Can't move file, it doesn't exist.";
+        return false;
+    }
+    if (info.isDir())
+    {
+        QDir dir;
+        return !dir.rename( from, to );
+    }
+    else
+    {
+        QFile origin(from);
+        if( origin.rename(to) )
+        {
+            setReadWrite(&origin);
+            return true;
+        }
+        return false;
+    }
+    return false;
+
 }
 
 void FileUtils::copy(QString from, QString to)
@@ -242,6 +270,27 @@ void FileUtils::openInExplorer(QString path, bool askForCreation)
 
 bool FileUtils::moveToTrash(const QString &fileName)
 {
+
+    QFileInfo original( fileName );
+    if( !original.exists() )
+    {
+        qWarning("Can't move file to trash: the file does not exist.");
+        return false;
+    }
+
+    // If it's a folder, move the files then remove the folder
+    if (original.isDir())
+    {
+        QDir dir(fileName);
+        QFileInfoList files = dir.entryInfoList(QDir::AllDirs | QDir::Files | QDir::NoSymLinks | QDir::NoDotAndDotDot | QDir::Hidden);
+        for (int i = 0; i < files.count(); i++)
+        {
+            FileUtils::moveToTrash(files.at(i).absoluteFilePath());
+        }
+        dir.removeRecursively();
+        return true;
+    }
+
 #if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
 
 #ifdef Q_OS_LINUX
@@ -282,13 +331,6 @@ bool FileUtils::moveToTrash(const QString &fileName)
         // doesn't respect fredesktop.org specs
         return false;
 
-    QFileInfo original( fileName );
-    if( !original.exists() )
-    {
-        qWarning("Can't move file to trash: the file does not exist.");
-        return false;
-    }
-
     QString info;
     info += "[Trash Info]\nPath=";
     info += original.absoluteFilePath();
@@ -323,13 +365,6 @@ bool FileUtils::moveToTrash(const QString &fileName)
 
 #ifdef Q_OS_WIN
     QFileInfo fileinfo( fileName );
-
-    if( !fileinfo.exists() )
-    {
-        qWarning("Can't move file to trash: the file does not exist.");
-        return false;
-    }
-
 
     WCHAR from[ MAX_PATH ];
     memset( from, 0, sizeof( from ));

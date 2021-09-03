@@ -197,6 +197,7 @@ void UserEditWidget::setupUi()
     ui_mainFormLayout->addWidget(uFolderLabel, 8, 0);
 
     ui_folderSelector = new DuQFFolderSelectorWidget(DuQFFolderSelectorWidget::Folder, this);
+    ui_folderSelector->showDeleteButton( RamObject::subFolderName( RamObject::TrashFolder ) );
     ui_folderSelector->setPlaceHolderText("Default (Ramses/Users/User_ShortName)");
     ui_mainFormLayout->addWidget(ui_folderSelector, 8, 1);
 
@@ -216,6 +217,7 @@ void UserEditWidget::connectEvents()
     connect(ui_passwordButton, SIGNAL(clicked()), this, SLOT(changePassword()));
     connect(ui_folderSelector, &DuQFFolderSelectorWidget::pathChanging, this, &UserEditWidget::updateFolderLabel);
     connect(ui_folderSelector, &DuQFFolderSelectorWidget::pathChanged, this, &UserEditWidget::update);
+    connect(ui_folderSelector, SIGNAL(fileRemoved()),this, SLOT(checkPath()));
     connect(Ramses::instance(), &Ramses::loggedIn, this, &UserEditWidget::objectChanged);
 
     monitorDbQuery("updateUser");

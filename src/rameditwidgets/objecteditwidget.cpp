@@ -62,15 +62,7 @@ void ObjectEditWidget::setObject(RamObject *object)
     ui_shortNameEdit->setText(object->shortName());
     ui_commentEdit->setText(object->comment());
 
-    ui_shortNameEdit->setEnabled( !m_dontRename.contains(object->shortName()) );
-    ui_nameEdit->setEnabled(true);
-
-    // If the folder already exists, freeze the ID or the name (according to specific types)
-    if ( object->path() != "" &&  QFileInfo::exists( object->path() ) && object->shortName() != "NEW" )
-    {
-        if (object->objectType() == RamObject::AssetGroup) ui_nameEdit->setEnabled(false);
-        else ui_shortNameEdit->setEnabled(false);
-    }
+    checkPath();
 
     _objectConnections << connect( object, &RamObject::removed, this, &ObjectEditWidget::objectRemoved);
     _objectConnections << connect( object, &RamObject::changed, this, &ObjectEditWidget::objectChanged);
@@ -136,6 +128,20 @@ void ObjectEditWidget::objectChanged(RamObject *o)
     if (updating) return;
     Q_UNUSED(o);
     setObject(m_object);
+}
+
+void ObjectEditWidget::checkPath()
+{
+    if(!m_object) return;
+    ui_shortNameEdit->setEnabled( !m_dontRename.contains(m_object->shortName()) );
+    ui_nameEdit->setEnabled(true);
+    qDebug() << QFileInfo::exists( m_object->path() );
+    // If the folder already exists, freeze the ID or the name (according to specific types)
+    if ( m_object->path() != "" &&  QFileInfo::exists( m_object->path() ) && m_object->shortName() != "NEW" )
+    {
+        if (m_object->objectType() == RamObject::AssetGroup) ui_nameEdit->setEnabled(false);
+        else ui_shortNameEdit->setEnabled(false);
+    }
 }
 
 void ObjectEditWidget::showEvent(QShowEvent *event)

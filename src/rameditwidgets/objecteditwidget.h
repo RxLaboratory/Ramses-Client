@@ -40,6 +40,7 @@ protected slots:
     virtual void update();
     virtual bool checkInput();
     void objectChanged(RamObject *o);
+    void checkPath();
 
 protected:
     void showEvent(QShowEvent *event) override;
