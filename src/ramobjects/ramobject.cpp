@@ -227,7 +227,7 @@ QString RamObject::subFolderName(RamObject::SubFolder folder) const
     switch(folder)
     {
     case AdminFolder: return "00-ADMIN";
-    case ConfigFolder: return "Config";
+    case ConfigFolder: return "_config";
     case PreProdFolder: return "01-PRE-PROD";
     case ProdFolder: return "02-PROD";
     case PostProdFolder: return "03-POST-PROD";
