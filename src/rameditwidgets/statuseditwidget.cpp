@@ -226,16 +226,6 @@ void StatusEditWidget::currentStateChanged(RamObject *stateObj)
     }
 }
 
-void StatusEditWidget::adjustCommentEditSize()
-{
-    // Get text height (returns the number of lines and not the actual height in pixels
-    int docHeight = ui_statusCommentEdit->document()->size().toSize().height();
-    // Compute needed height in pixels
-    int h = docHeight * ( ui_statusCommentEdit->fontMetrics().height() ) + ui_statusCommentEdit->fontMetrics().height() * 2;
-    //commentEdit->resize(commentEdit->width(), h);
-    ui_statusCommentEdit->setMaximumHeight(h);
-}
-
 void StatusEditWidget::revert()
 {
     setStatus(m_status);
@@ -491,14 +481,25 @@ void StatusEditWidget::setupUi()
 
     ui_mainLayout->insertLayout(0, cLayout);
 
+    QSplitter *commentSplitter = new QSplitter(this);
+    commentSplitter->setOrientation(Qt::Vertical);
+    ui_mainLayout->addWidget( commentSplitter );
+
     ui_statusCommentEdit = new QPlainTextEdit(this);
     ui_statusCommentEdit->setPlaceholderText("Comment...");
     ui_statusCommentEdit->setMinimumHeight(30);
     ui_statusCommentEdit->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     ui_commentEdit->setObjectName("commentEdit");
-    ui_mainLayout->addWidget( ui_statusCommentEdit);
+
+    commentSplitter->addWidget( ui_statusCommentEdit );
+
+    QWidget *bottomWidget = new QWidget(this);
+    QVBoxLayout *bottomLayout = new QVBoxLayout(bottomWidget);
+    bottomLayout->setSpacing(0);
+    bottomLayout->setContentsMargins(0,0,0,0);
 
     QFormLayout *detailsLayout = new QFormLayout();
+    bottomLayout->addLayout(detailsLayout);
 
     ui_difficultyBox = new QComboBox(this);
     ui_difficultyBox->addItem("Very easy");
@@ -568,7 +569,7 @@ void StatusEditWidget::setupUi()
     ui_setButton->setIcon(QIcon(":/icons/apply"));
     buttonsLayout->addWidget(ui_setButton);*/
 
-    ui_mainLayout->addLayout(buttonsLayout);
+    bottomLayout->addLayout(buttonsLayout);
 
     QTabWidget *tabWidget = new QTabWidget(this);
 
@@ -663,10 +664,12 @@ void StatusEditWidget::setupUi()
 
     tabWidget->addTab(previewFilesWidget, QIcon(":/icons/files"), "Preview");
 
-    ui_mainLayout->addWidget(tabWidget);
+    bottomLayout->addWidget(tabWidget);
 
     ui_folderWidget = new DuQFFolderDisplayWidget(this);
-    ui_mainLayout->addWidget(ui_folderWidget);
+    bottomLayout->addWidget(ui_folderWidget);
+
+    commentSplitter->addWidget(bottomWidget);
 }
 
 void StatusEditWidget::connectEvents()
@@ -682,7 +685,6 @@ void StatusEditWidget::connectEvents()
     connect( ui_estimationEdit, SIGNAL(valueChanged(double)), this, SLOT(update()));
     connect( ui_difficultyBox, SIGNAL(currentIndexChanged(int)), this, SLOT(update()));
 
-    connect(ui_statusCommentEdit, &QPlainTextEdit::textChanged, this, &StatusEditWidget::adjustCommentEditSize);
     connect(ui_stateBox, SIGNAL(currentObjectChanged(RamObject*)), this, SLOT(currentStateChanged(RamObject*)));
     connect(ui_revertButton, &QToolButton::clicked, this, &StatusEditWidget::revert);
     connect(ui_versionBox, SIGNAL(valueChanged(int)), this, SLOT(checkPublished(int)));

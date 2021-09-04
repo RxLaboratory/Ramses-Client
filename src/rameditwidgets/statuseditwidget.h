@@ -8,6 +8,7 @@
 #include <QListWidget>
 #include <QShortcut>
 #include <QMenu>
+#include <QSplitter>
 
 #include "duqf-widgets/duqfspinbox.h"
 #include "duqf-widgets/autoselectspinbox.h"
@@ -55,7 +56,6 @@ protected slots:
 
 private slots:
     void currentStateChanged(RamObject *stateObj);
-    void adjustCommentEditSize();
     void revert();
     void checkPublished(int v);
 
