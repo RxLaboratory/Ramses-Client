@@ -32,6 +32,7 @@ void StatusEditWidget::setStatus(RamStatus *status)
     QSignalBlocker b11(ui_difficultyBox);
     QSignalBlocker b12(ui_autoEstimationBox);
     QSignalBlocker b13(ui_userBox);
+    QSignalBlocker b14(ui_estimationEdit);
 
     ui_stateBox->setCurrentText("STB");
     ui_completionBox->setValue(0);
@@ -46,6 +47,7 @@ void StatusEditWidget::setStatus(RamStatus *status)
     ui_folderWidget->setPath("");
     ui_difficultyBox->setCurrentIndex(2);
     ui_autoEstimationBox->setChecked(true);
+    ui_estimationEdit->setValue(0);
 
     // Remove template list
     QList<QAction*> templateActions = ui_createFromTemplateMenu->actions();
@@ -123,9 +125,15 @@ void StatusEditWidget::setStatus(RamStatus *status)
     ui_difficultyBox->setCurrentIndex( status->difficulty() );
     ui_autoEstimationBox->setChecked( status->estimation() <= 0 );
     if (!ui_autoEstimationBox->isChecked())
+    {
+        ui_estimationEdit->setEnabled(true);
         ui_estimationEdit->setValue( status->estimation() );
+    }
     else
+    {
+        ui_estimationEdit->setEnabled(false);
         autoEstimate(true);
+    }
 
     ui_timeSpent->setValue( timeSpent / 3600 );
 }
@@ -669,6 +677,7 @@ void StatusEditWidget::connectEvents()
     ui_statusCommentEdit->installEventFilter(this);
     connect( ui_userBox, SIGNAL(currentIndexChanged(int)), this, SLOT(update()));
     connect( ui_publishedBox, SIGNAL(clicked(bool)), this, SLOT(update()));
+    connect( ui_autoEstimationBox, SIGNAL(clicked(bool)), this, SLOT(update()));
     connect( ui_timeSpent, SIGNAL(valueChanged(bool)), this, SLOT(update()));
     connect( ui_estimationEdit, SIGNAL(valueChanged(double)), this, SLOT(update()));
     connect( ui_difficultyBox, SIGNAL(currentIndexChanged(int)), this, SLOT(update()));
