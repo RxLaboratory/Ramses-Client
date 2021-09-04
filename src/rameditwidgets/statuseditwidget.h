@@ -50,9 +50,11 @@ public:
 signals:
     void statusUpdated(RamState*, int completion, int version, QString comment);
 
+protected slots:
+    void update() override;
+
 private slots:
     void currentStateChanged(RamObject *stateObj);
-    void updateStatus();
     void adjustCommentEditSize();
     void revert();
     void checkPublished(int v);
@@ -83,7 +85,7 @@ private:
     DuQFSpinBox *ui_completionBox;
     AutoSelectSpinBox *ui_versionBox;
     QPlainTextEdit *ui_statusCommentEdit;
-    QToolButton *ui_setButton;
+    //QToolButton *ui_setButton;
     QToolButton *ui_revertButton;
     QCheckBox *ui_publishedBox;
     RamObjectListComboBox *ui_userBox;

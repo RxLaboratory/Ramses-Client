@@ -44,6 +44,7 @@ protected slots:
 
 protected:
     void showEvent(QShowEvent *event) override;
+    void hideEvent(QHideEvent *event) override;
 
     QList<QMetaObject::Connection> _objectConnections;
     bool updating = false;

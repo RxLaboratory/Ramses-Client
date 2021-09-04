@@ -19,6 +19,20 @@ void StatusEditWidget::setStatus(RamStatus *status)
 {
     m_status = status;
 
+    QSignalBlocker b1(ui_stateBox);
+    QSignalBlocker b2(ui_completionBox);
+    QSignalBlocker b3(ui_versionBox);
+    QSignalBlocker b4(ui_statusCommentEdit);
+    QSignalBlocker b5(ui_publishedBox);
+    QSignalBlocker b6(ui_timeSpent);
+    QSignalBlocker b7(ui_mainFileList);
+    QSignalBlocker b8(ui_publishedFileList);
+    QSignalBlocker b9(ui_previewFileList);
+    QSignalBlocker b10(ui_folderWidget);
+    QSignalBlocker b11(ui_difficultyBox);
+    QSignalBlocker b12(ui_autoEstimationBox);
+    QSignalBlocker b13(ui_userBox);
+
     ui_stateBox->setCurrentText("STB");
     ui_completionBox->setValue(0);
     ui_versionBox->setValue(1);
@@ -46,14 +60,16 @@ void StatusEditWidget::setStatus(RamStatus *status)
     ui_completionBox->setValue(status->completionRatio());
     ui_versionBox->setValue(status->version());
     ui_statusCommentEdit->setPlainText(status->comment());
-    ui_userBox->setObject(status->assignedUser());
     ui_folderWidget->setPath( status->path() );
+    ui_publishedBox->setChecked( status->isPublished() );
 
     // Get users from project
     RamProject *project = nullptr;
     if (status->item()) project = status->item()->project();
     if (!project && status->step()) project = status->step()->project();
     if (project) ui_userBox->setList( project->users() );
+
+    ui_userBox->setObject(status->assignedUser());
 
     // Try to auto compute time spent from previous status
     qint64 timeSpent = status->timeSpent();
@@ -168,6 +184,27 @@ RamStatus::Difficulty StatusEditWidget::difficulty() const
     return RamStatus::Medium;
 }
 
+void StatusEditWidget::update()
+{
+    if (!m_status) return;
+
+    updating = true;
+
+    m_status->setState( state() );
+    m_status->setCompletionRatio( completionRatio() );
+    m_status->setVersion( version() );
+    m_status->setComment( comment() );
+    m_status->assignUser( assignedUser() );
+    m_status->setPublished( isPublished() );
+    m_status->setTimeSpent( timeSpent() );
+    m_status->setEstimation( estimation() );
+    m_status->setDifficulty( difficulty() );
+
+    m_status->update();
+
+    updating = false;
+}
+
 void StatusEditWidget::currentStateChanged(RamObject *stateObj)
 {
     RamState *state = qobject_cast<RamState*>(stateObj);
@@ -179,11 +216,6 @@ void StatusEditWidget::currentStateChanged(RamObject *stateObj)
     {
         ui_completionBox->setValue(50);
     }
-}
-
-void StatusEditWidget::updateStatus()
-{
-    emit statusUpdated(state(), ui_completionBox->value(), ui_versionBox->value(), ui_statusCommentEdit->toPlainText() );
 }
 
 void StatusEditWidget::adjustCommentEditSize()
@@ -455,6 +487,7 @@ void StatusEditWidget::setupUi()
     ui_statusCommentEdit->setPlaceholderText("Comment...");
     ui_statusCommentEdit->setMinimumHeight(30);
     ui_statusCommentEdit->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    ui_commentEdit->setObjectName("commentEdit");
     ui_mainLayout->addWidget( ui_statusCommentEdit);
 
     QFormLayout *detailsLayout = new QFormLayout();
@@ -520,12 +553,12 @@ void StatusEditWidget::setupUi()
     ui_revertButton->setIcon(QIcon(":/icons/undo"));
     buttonsLayout->addWidget(ui_revertButton);
 
-    ui_setButton = new QToolButton(this);
+    /*ui_setButton = new QToolButton(this);
     ui_setButton->setText("Update");
     ui_setButton->setToolTip("Update / Save changes\nSave the changes for the current status.");
     ui_setButton->setStatusTip("Save the changes for the current status.");
     ui_setButton->setIcon(QIcon(":/icons/apply"));
-    buttonsLayout->addWidget(ui_setButton);
+    buttonsLayout->addWidget(ui_setButton);*/
 
     ui_mainLayout->addLayout(buttonsLayout);
 
@@ -630,9 +663,18 @@ void StatusEditWidget::setupUi()
 
 void StatusEditWidget::connectEvents()
 {
+    connect( ui_stateBox, SIGNAL(currentIndexChanged(int)), this, SLOT(update()));
+    connect( ui_completionBox, SIGNAL(valueChanging(int)), this, SLOT(update()));
+    connect( ui_versionBox, SIGNAL(valueChanged(int)), this, SLOT(update()));
+    ui_statusCommentEdit->installEventFilter(this);
+    connect( ui_userBox, SIGNAL(currentIndexChanged(int)), this, SLOT(update()));
+    connect( ui_publishedBox, SIGNAL(clicked(bool)), this, SLOT(update()));
+    connect( ui_timeSpent, SIGNAL(valueChanged(bool)), this, SLOT(update()));
+    connect( ui_estimationEdit, SIGNAL(valueChanged(double)), this, SLOT(update()));
+    connect( ui_difficultyBox, SIGNAL(currentIndexChanged(int)), this, SLOT(update()));
+
     connect(ui_statusCommentEdit, &QPlainTextEdit::textChanged, this, &StatusEditWidget::adjustCommentEditSize);
     connect(ui_stateBox, SIGNAL(currentObjectChanged(RamObject*)), this, SLOT(currentStateChanged(RamObject*)));
-    connect(ui_setButton, &QToolButton::clicked, this, &StatusEditWidget::updateStatus);
     connect(ui_revertButton, &QToolButton::clicked, this, &StatusEditWidget::revert);
     connect(ui_versionBox, SIGNAL(valueChanged(int)), this, SLOT(checkPublished(int)));
 

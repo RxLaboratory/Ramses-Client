@@ -149,14 +149,23 @@ void ObjectEditWidget::showEvent(QShowEvent *event)
     if(!event->spontaneous()) this->setObject(m_object);
 }
 
+void ObjectEditWidget::hideEvent(QHideEvent *event)
+{
+    Q_UNUSED(event)
+    update();
+}
+
 bool ObjectEditWidget::eventFilter(QObject *obj, QEvent *event)
 {
     if (obj->objectName() == "commentEdit")
-        if (event->type() == QEvent::FocusOut)
+    {
+        QEvent::Type t = event->type();
+        if (t == QEvent::FocusOut || t == QEvent::Hide)
         {
             update();
             //return true;
         }
+    }
     return false;
 }
 
