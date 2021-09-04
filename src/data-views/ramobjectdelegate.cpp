@@ -13,6 +13,10 @@ RamObjectDelegate::RamObjectDelegate(QObject *parent)
     m_detailsFont = m_textFont;
     m_detailsFont.setItalic(true);
     m_padding = 10;
+
+    m_editIcon = QIcon(":/icons/edit").pixmap(QSize(12,12));
+    m_historyIcon = QIcon(":/icons/list").pixmap(QSize(12,12));
+    m_folderIcon = QIcon(":/icons/reveal-folder-s").pixmap(QSize(12,12));
 }
 
 void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
@@ -152,7 +156,7 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
         {
             const QRect editButtonRect( xpos, bgRect.top() +7, 12, 12 );
             xpos -= 22;
-            drawButton(painter, editButtonRect, ":/icons/edit", m_editButtonHover);
+            drawButton(painter, editButtonRect, m_editIcon, m_editButtonHover);
         }
 
         // Draw History button
@@ -161,7 +165,7 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
         {
             QRect historyButtonRect( xpos, bgRect.top() +7, 12, 12);
             xpos -= 22;
-            drawButton(painter, historyButtonRect, ":/icons/list", m_historyButtonHover);
+            drawButton(painter, historyButtonRect, m_historyIcon, m_historyButtonHover);
         }
 
 
@@ -171,7 +175,7 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
         if ( obj->path() != "" )
         {
              const QRect folderButtonRect( xpos, bgRect.top() +7, 12, 12 );
-             drawButton(painter, folderButtonRect, ":/icons/reveal-folder-s", m_folderButtonHover);
+             drawButton(painter, folderButtonRect, m_folderIcon, m_folderButtonHover);
         }
     }
 
@@ -594,7 +598,7 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
         painter->drawText( subDetailsRect, Qt::AlignLeft | Qt::AlignTop | Qt::TextWordWrap, subDetails, &subDetailsRect);
         if (subDetailsRect.bottom() + 5 > bgRect.bottom()) drawMore(painter, bgRect, commentPen);
     }
-
+//*/
 }
 
 QSize RamObjectDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
@@ -791,7 +795,7 @@ void RamObjectDelegate::drawMore(QPainter *painter, QRect rect, QPen pen) const
     painter->restore();
 }
 
-void RamObjectDelegate::drawButton(QPainter *painter, QRect rect, QString iconPath, bool hover) const
+void RamObjectDelegate::drawButton(QPainter *painter, QRect rect, QPixmap icon, bool hover) const
 {
     if (hover)
     {
@@ -799,5 +803,5 @@ void RamObjectDelegate::drawButton(QPainter *painter, QRect rect, QString iconPa
         path.addRoundedRect(rect.adjusted(-5, -5, 5, 5), 3, 3);
         painter->fillPath(path, QBrush(m_dark));
     }
-    painter->drawPixmap( rect, QIcon(iconPath).pixmap(QSize(12,12)));
+    painter->drawPixmap( rect, icon );
 }

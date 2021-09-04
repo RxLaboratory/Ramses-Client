@@ -51,6 +51,11 @@ private:
     QFont m_detailsFont;
     int m_padding;
 
+    // Buttons
+    QPixmap m_editIcon;
+    QPixmap m_historyIcon;
+    QPixmap m_folderIcon;
+
     // Settings
     bool m_editable = false;
     bool m_comboBox = false;
@@ -71,7 +76,7 @@ private:
 
     // drawing specific items
     void drawMore(QPainter *painter, QRect rect, QPen pen) const;
-    void drawButton(QPainter *painter, QRect rect, QString iconPath, bool hover = false) const;
+    void drawButton(QPainter *painter, QRect rect, QPixmap icon, bool hover = false) const;
 };
 
 #endif // RAMOBJECTDELEGATE_H
