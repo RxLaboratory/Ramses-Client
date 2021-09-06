@@ -333,6 +333,65 @@ void ScheduleManagerWidget::goToPreviousMonth()
     ui_goTo->setDate( ui_goTo->date().addMonths(-1) );
 }
 
+void ScheduleManagerWidget::copyComment()
+{
+    QModelIndex currentIndex = ui_table->selectionModel()->currentIndex();
+    if ( !currentIndex.isValid() ) return;
+
+    const quintptr &iptr = currentIndex.data(Qt::UserRole).toULongLong();
+    if (iptr == 0) return;
+    RamScheduleEntry *entry = reinterpret_cast<RamScheduleEntry*>( currentIndex.data(Qt::UserRole).toULongLong() );
+    if (!entry) return;
+
+    QClipboard *clipboard = QGuiApplication::clipboard();
+    clipboard->setText( entry->comment() );
+}
+
+void ScheduleManagerWidget::cutComment()
+{
+    QModelIndex currentIndex = ui_table->selectionModel()->currentIndex();
+    if ( !currentIndex.isValid() ) return;
+
+    const quintptr &iptr = currentIndex.data(Qt::UserRole).toULongLong();
+    if (iptr == 0) return;
+    RamScheduleEntry *entry = reinterpret_cast<RamScheduleEntry*>( currentIndex.data(Qt::UserRole).toULongLong() );
+    if (!entry) return;
+
+    QClipboard *clipboard = QGuiApplication::clipboard();
+    clipboard->setText( entry->comment() );
+
+    entry->setComment("");
+    entry->update();
+}
+
+void ScheduleManagerWidget::pasteComment()
+{
+    QClipboard *clipboard = QGuiApplication::clipboard();
+    QString comment = clipboard->text();
+    if (comment == "") return;
+
+    // Get selection
+    QModelIndexList selection = ui_table->selectionModel()->selectedIndexes();
+    if (selection.count() == 0) return;
+
+    QList<ScheduleEntryStruct> modifiedEntries;
+
+    m_dbi->suspend(true);
+
+    for (int i = 0; i < selection.count(); i++)
+    {
+        const QModelIndex &index = selection.at(i);
+        RamScheduleEntry *entry = reinterpret_cast<RamScheduleEntry*>( index.data(Qt::UserRole).toULongLong() );
+        if (!entry) continue;
+        entry->setComment(comment);
+        entry->update();
+        modifiedEntries << entry->toStruct();
+    }
+
+    m_dbi->suspend(false);
+    m_dbi->updateSchedules( modifiedEntries );
+}
+
 void ScheduleManagerWidget::contextMenuRequested(QPoint p)
 {
     qDebug() << "Context menu called";
@@ -454,8 +513,27 @@ void ScheduleManagerWidget::setupUi()
 
     QMenu *stepMenu = new QMenu(this);
 
-    ui_commentAction = new QAction("Add comment...", this);
+    ui_commentAction = new QAction(QIcon(":/icons/comment"), "Add comment...", this);
     stepMenu->addAction(ui_commentAction);
+
+    stepMenu->addSeparator();
+
+    ui_copyComment = new QAction("Copy comment", this);
+    ui_copyComment->setShortcut(QKeySequence("Ctrl+C"));
+    ui_copyComment->setIcon(QIcon(":/icons/copy"));
+    stepMenu->addAction(ui_copyComment);
+
+    ui_cutComment = new QAction("Cut comment", this);
+    ui_cutComment->setShortcut(QKeySequence("Ctrl+X"));
+    ui_cutComment->setIcon(QIcon(":/icons/cut"));
+    stepMenu->addAction(ui_cutComment);
+
+    ui_pasteComment = new QAction("Paste as comment", this);
+    ui_pasteComment->setShortcut(QKeySequence("Ctrl+V"));
+    ui_pasteComment->setIcon(QIcon(":/icons/paste"));
+    stepMenu->addAction(ui_pasteComment);
+
+    stepMenu->addSeparator();
 
     ui_stepMenu = new RamObjectListMenu(false, this);
     ui_stepMenu->setTitle("Assign");
@@ -529,6 +607,14 @@ void ScheduleManagerWidget::setupUi()
     ui_contextMenu = new QMenu(this);
     ui_contextMenu->addAction(ui_commentAction);
 
+    ui_contextMenu->addSeparator();
+
+    ui_contextMenu->addAction(ui_copyComment);
+    ui_contextMenu->addAction(ui_cutComment);
+    ui_contextMenu->addAction(ui_pasteComment);
+
+    ui_contextMenu->addSeparator();
+
     ui_stepContextMenu = new RamObjectListMenu(false, this);
     ui_stepContextMenu->setTitle("Assign");
     ui_stepContextMenu->addCreateButton();
@@ -568,6 +654,10 @@ void ScheduleManagerWidget::connectEvents()
     // context menu
     connect(ui_table, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(contextMenuRequested(QPoint)));
     connect(ui_commentAction, SIGNAL(triggered()), this, SLOT(comment()));
+    // comment actions
+    connect(ui_copyComment, SIGNAL(triggered()), this, SLOT(copyComment()));
+    connect(ui_cutComment, SIGNAL(triggered()), this, SLOT(cutComment()));
+    connect(ui_pasteComment, SIGNAL(triggered()), this, SLOT(pasteComment()));
     // other
     connect(ui_titleBar, &TitleBar::closeRequested, this, &ScheduleManagerWidget::closeRequested);
     connect(Ramses::instance(), SIGNAL(currentProjectChanged(RamProject*)), this, SLOT(projectChanged(RamProject*)));

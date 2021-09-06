@@ -68,6 +68,10 @@
         <file alias="stats">resources/icons/counter_bl.svg</file>
         <file alias="snap">resources/icons/magnet-snap_sl.svg</file>
         <file alias="shots-table">resources/icons/shots-frames-table.svg</file>
+        <file alias="copy">resources/icons/copy_sl.svg</file>
+        <file alias="cut">resources/icons/cut_sl.svg</file>
+        <file alias="paste">resources/icons/paste_sl.svg</file>
+        <file alias="comment">resources/icons/comment_sl.svg</file>
     </qresource>
     <qresource prefix="/styles">
         <file alias="default-ramses">resources/style/style-ramses.css</file>

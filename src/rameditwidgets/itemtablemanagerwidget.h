@@ -6,6 +6,7 @@
 #include <QHideEvent>
 #include <QMenu>
 #include <QComboBox>
+#include <QClipboard>
 
 #include "duqf-widgets/titlebar.h"
 #include "duqf-utils/guiutils.h"
@@ -85,6 +86,9 @@ private slots:
     void setVeryHard();
     void setDiffculty(RamStatus::Difficulty difficulty);
     void setCompletion();
+    void copyComment();
+    void cutComment();
+    void pasteComment();
 
     // Item
     void createItem();
@@ -140,6 +144,9 @@ private:
     QAction *ui_completion90;
     QAction *ui_completion100;
     QMenu *ui_contextMenu;
+    QAction *ui_copyComment;
+    QAction *ui_cutComment;
+    QAction *ui_pasteComment;
     RamObjectListMenu *ui_assignUserContextMenu;
     RamObjectListMenu *ui_changeStateContextMenu;
 

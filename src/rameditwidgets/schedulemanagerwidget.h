@@ -5,6 +5,7 @@
 #include <QDateEdit>
 #include <QShortcut>
 #include <QInputDialog>
+#include <QClipboard>
 
 #include "dbinterface.h"
 #include "duqf-utils/guiutils.h"
@@ -53,6 +54,10 @@ private slots:
     void goToNextMonth();
     void goToPreviousMonth();
 
+    void copyComment();
+    void cutComment();
+    void pasteComment();
+
     void contextMenuRequested(QPoint p);
     void comment();
 
@@ -82,6 +87,9 @@ private:
     QDateEdit *ui_goTo;
     QLabel *ui_timeRemaining;
     QMenu *ui_contextMenu;
+    QAction *ui_copyComment;
+    QAction *ui_cutComment;
+    QAction *ui_pasteComment;
     QAction *ui_commentAction;
 
     RamScheduleTable *m_schedule;

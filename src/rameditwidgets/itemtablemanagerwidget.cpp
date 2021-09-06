@@ -612,6 +612,57 @@ void ItemTableManagerWidget::setCompletion()
     }
 }
 
+void ItemTableManagerWidget::copyComment()
+{
+    QModelIndex currentIndex = ui_table->selectionModel()->currentIndex();
+    if ( !currentIndex.isValid() ) return;
+
+    const quintptr &iptr = currentIndex.data(Qt::UserRole).toULongLong();
+    if (iptr == 0) return;
+    RamObject *obj = reinterpret_cast<RamObject*>( iptr );
+    if (obj->objectType() != RamObject::Status) return;
+    RamStatus *status = qobject_cast<RamStatus*>(obj);
+    QClipboard *clipboard = QGuiApplication::clipboard();
+    clipboard->setText( status->comment() );
+}
+
+void ItemTableManagerWidget::cutComment()
+{
+    QModelIndex currentIndex = ui_table->selectionModel()->currentIndex();
+    if ( !currentIndex.isValid() ) return;
+
+    const quintptr &iptr = currentIndex.data(Qt::UserRole).toULongLong();
+    if (iptr == 0) return;
+    RamObject *obj = reinterpret_cast<RamObject*>( iptr );
+    if (obj->objectType() != RamObject::Status) return;
+    RamStatus *status = qobject_cast<RamStatus*>(obj);
+
+    QClipboard *clipboard = QGuiApplication::clipboard();
+    clipboard->setText( status->comment() );
+
+    // If it's not the current user, create a new one
+    RamUser *currentUser = Ramses::instance()->currentUser();
+    if(!status->user()->is(currentUser))
+        status = RamStatus::copy( status, currentUser );
+
+    status->setComment("");
+    status->update();
+}
+
+void ItemTableManagerWidget::pasteComment()
+{
+    QClipboard *clipboard = QGuiApplication::clipboard();
+    QString comment = clipboard->text();
+    if (comment == "") return;
+
+    QList<RamStatus*> status = beginEditSelectedStatus();
+    for (int i = 0; i < status.count(); i++)
+    {
+        status.at(i)->setComment( comment );
+        status.at(i)->update();
+    }
+}
+
 void ItemTableManagerWidget::createItem()
 {
     RamProject *project = Ramses::instance()->currentProject();
@@ -888,6 +939,23 @@ void ItemTableManagerWidget::setupUi()
     // Status menu
     QMenu *statusMenu = new QMenu(this);
 
+    ui_copyComment = new QAction("Copy comment", this);
+    ui_copyComment->setShortcut(QKeySequence("Ctrl+C"));
+    ui_copyComment->setIcon(QIcon(":/icons/copy"));
+    statusMenu->addAction(ui_copyComment);
+
+    ui_cutComment = new QAction("Cut comment", this);
+    ui_cutComment->setShortcut(QKeySequence("Ctrl+X"));
+    ui_cutComment->setIcon(QIcon(":/icons/cut"));
+    statusMenu->addAction(ui_cutComment);
+
+    ui_pasteComment = new QAction("Paste as comment", this);
+    ui_pasteComment->setShortcut(QKeySequence("Ctrl+V"));
+    ui_pasteComment->setIcon(QIcon(":/icons/paste"));
+    statusMenu->addAction(ui_pasteComment);
+
+    statusMenu->addSeparator();
+
     ui_assignUserMenu = new RamObjectListMenu(false, this);
     ui_assignUserMenu->setTitle("Assign user");
     ui_assignUserMenu->addCreateButton();
@@ -968,6 +1036,13 @@ void ItemTableManagerWidget::setupUi()
 
 
     ui_contextMenu = new QMenu(this);
+
+    ui_contextMenu->addAction(ui_copyComment);
+    ui_contextMenu->addAction(ui_cutComment);
+    ui_contextMenu->addAction(ui_pasteComment);
+
+    ui_contextMenu->addSeparator();
+
     ui_assignUserContextMenu = new RamObjectListMenu(false, this);
     ui_assignUserContextMenu->setTitle("Assign user");
     ui_assignUserContextMenu->addCreateButton();
@@ -996,7 +1071,6 @@ void ItemTableManagerWidget::setupUi()
     completionContextMenu->addAction(ui_completion90 );
     completionContextMenu->addAction(ui_completion100);
     ui_contextMenu->addMenu(completionContextMenu);
-
 }
 
 void ItemTableManagerWidget::connectEvents()
@@ -1045,6 +1119,10 @@ void ItemTableManagerWidget::connectEvents()
     connect(Ramses::instance()->states(), SIGNAL(rowsInserted(QModelIndex,int,int)),this,SLOT(addState(QModelIndex,int,int)));
     connect(Ramses::instance()->states(), SIGNAL(rowsAboutToBeRemoved(QModelIndex,int,int)),this,SLOT(removeState(QModelIndex,int,int)));
     connect(Ramses::instance()->states(), SIGNAL(dataChanged(QModelIndex,QModelIndex,QVector<int>)), this, SLOT(stateChanged(QModelIndex,QModelIndex,QVector<int>)));
+    // comment actions
+    connect(ui_copyComment, SIGNAL(triggered()), this, SLOT(copyComment()));
+    connect(ui_cutComment, SIGNAL(triggered()), this, SLOT(cutComment()));
+    connect(ui_pasteComment, SIGNAL(triggered()), this, SLOT(pasteComment()));
     // cell buttons
     connect(ui_table, SIGNAL(editObject(RamObject*)), this, SLOT(editObject(RamObject*)));
     connect(ui_table, SIGNAL(historyObject(RamObject*)), this, SLOT(historyObject(RamObject*)));
