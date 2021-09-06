@@ -10,6 +10,7 @@ RamShot::RamShot(QString shortName, RamSequence *sequence, QString name, QString
     setObjectType(Shot);
     setProductionType(RamStep::ShotProduction);
     m_sequence = sequence;
+    m_sequenceConnection = connect(sequence, SIGNAL(removed(RamObject*)),this,SLOT(remove()));
     m_filterUuid = sequence->uuid();
     m_dbi->createShot(m_shortName, m_name, m_sequence->uuid(), m_uuid);
 

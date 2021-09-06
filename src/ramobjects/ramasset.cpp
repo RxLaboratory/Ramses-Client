@@ -11,6 +11,7 @@ RamAsset::RamAsset(QString shortName, RamAssetGroup *assetGroup, QString name, Q
     setProductionType(RamStep::AssetProduction);
     m_assetGroup = assetGroup;
     m_filterUuid = assetGroup->uuid();
+    m_assetGroupConnection = connect(assetGroup, SIGNAL(removed(RamObject*)), this, SLOT(remove()));
     m_dbi->createAsset(m_shortName, m_name, m_assetGroup->uuid(), "", m_uuid);
 
     this->setObjectName( "RamAsset " + m_shortName);
