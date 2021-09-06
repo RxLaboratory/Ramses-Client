@@ -66,7 +66,7 @@ private:
 
     TitleBar *ui_titleBar;
     DuQFSpinBox *ui_gridSizeBox;
-    QCheckBox *ui_snapButton;
+    QToolButton *ui_snapButton;
     DuQFNodeScene *m_nodeScene;
     DuQFNodeView *ui_nodeView;
     QMenu *ui_stepMenu;

@@ -172,7 +172,9 @@ PipelineWidget::PipelineWidget(QWidget *parent) :
     ui_gridSizeBox->setPrefix("Grid size: ");
     ui_titleBar->insertRight(ui_gridSizeBox);
 
-    ui_snapButton = new QCheckBox("Snap to grid");
+    ui_snapButton = new QToolButton();
+    ui_snapButton->setCheckable(true);
+    ui_snapButton->setIcon(QIcon(":/icons/snap"));
     ui_titleBar->insertRight(ui_snapButton);
 
     ui_nodeView = new DuQFNodeView(this);
