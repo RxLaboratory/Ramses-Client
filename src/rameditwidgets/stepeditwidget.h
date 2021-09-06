@@ -53,7 +53,7 @@ private:
     AutoSelectDoubleSpinBox *ui_mediumEdit;
     AutoSelectDoubleSpinBox *ui_hardEdit;
     AutoSelectDoubleSpinBox *ui_veryHardEdit;
-    DuQFFolderDisplayWidget *m_folderWidget;
+    DuQFFolderDisplayWidget *ui_folderWidget;
     QCheckBox *ui_estimationMultiplierCheckBox;
     RamObjectListComboBox *ui_estimationMultiplierBox;
     DuQFColorSelector *ui_colorSelector;

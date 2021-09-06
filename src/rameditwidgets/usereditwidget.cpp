@@ -40,7 +40,7 @@ void UserEditWidget::setObject(RamObject *obj)
     QSignalBlocker b2(ui_npassword1Edit);
     QSignalBlocker b3(ui_npassword2Edit);
     QSignalBlocker b4(ui_roleBox);
-    QSignalBlocker b5(ui_folderSelector);
+    QSignalBlocker b5(ui_folderWidget);
 
     ui_cpasswordEdit->setText("");
     ui_npassword1Edit->setText("");
@@ -49,18 +49,13 @@ void UserEditWidget::setObject(RamObject *obj)
     ui_roleBox->setEnabled(true);
     ui_roleBox->setToolTip("");
     ui_cpasswordEdit->setEnabled(false);
-    ui_folderSelector->setPath("");
-    ui_folderSelector->setPlaceHolderText("Default (Ramses/Users/User_ShortName)");
-    updateFolderLabel("");
+    ui_folderWidget->setPath("");
 
     RamUser *current = Ramses::instance()->currentUser();
     if (!user || !current) return;
 
+    ui_folderWidget->setPath( user->path() );
     ui_roleBox->setCurrentIndex(user->role());
-
-    if (!user->pathIsDefault()) ui_folderSelector->setPath( user->path() );
-    ui_folderSelector->setPlaceHolderText( user->defaultPath() );
-    ui_folderLabel->setText( user->path() );
 
     if (m_dontRename.contains(user->shortName()))
     {
@@ -110,8 +105,6 @@ void UserEditWidget::update()
 
     updating = true;
 
-    m_user->setFolderPath( ui_folderSelector->path());
-
     int roleIndex = ui_roleBox->currentIndex();
     if (roleIndex == 3) m_user->setRole(RamUser::Admin);
     else if (roleIndex == 2) m_user->setRole(RamUser::ProjectAdmin);
@@ -147,12 +140,6 @@ bool UserEditWidget::checkPasswordInput()
     }
 
     return true;
-}
-
-void UserEditWidget::updateFolderLabel(QString path)
-{
-    if (path != "") ui_folderLabel->setText( Ramses::instance()->pathFromRamses(path) );
-    else if (m_user) ui_folderLabel->setText( m_user->path() );
 }
 
 void UserEditWidget::setupUi()
@@ -196,14 +183,8 @@ void UserEditWidget::setupUi()
     QLabel *uFolderLabel = new QLabel("Personal folder", this);
     ui_mainFormLayout->addWidget(uFolderLabel, 8, 0);
 
-    ui_folderSelector = new DuQFFolderSelectorWidget(DuQFFolderSelectorWidget::Folder, this);
-    ui_folderSelector->showDeleteButton( RamObject::subFolderName( RamObject::TrashFolder ) );
-    ui_folderSelector->setPlaceHolderText("Default (Ramses/Users/User_ShortName)");
-    ui_mainFormLayout->addWidget(ui_folderSelector, 8, 1);
-
-    ui_folderLabel = new QLabel(this);
-    ui_folderLabel->setEnabled(false);
-    ui_mainLayout->insertWidget(1, ui_folderLabel);
+    ui_folderWidget = new DuQFFolderDisplayWidget(this);
+    ui_mainFormLayout->addWidget(ui_folderWidget, 8, 1);
 
     ui_mainLayout->addStretch();
 }
@@ -215,9 +196,6 @@ void UserEditWidget::connectEvents()
     connect(ui_npassword2Edit, &QLineEdit::textChanged, this, &UserEditWidget::checkInput);
     connect(ui_roleBox, SIGNAL(currentIndexChanged(int)), this, SLOT(update()));
     connect(ui_passwordButton, SIGNAL(clicked()), this, SLOT(changePassword()));
-    connect(ui_folderSelector, &DuQFFolderSelectorWidget::pathChanging, this, &UserEditWidget::updateFolderLabel);
-    connect(ui_folderSelector, &DuQFFolderSelectorWidget::pathChanged, this, &UserEditWidget::update);
-    connect(ui_folderSelector, SIGNAL(fileRemoved()),this, SLOT(checkPath()));
     connect(Ramses::instance(), &Ramses::loggedIn, this, &UserEditWidget::objectChanged);
 
     monitorDbQuery("updateUser");

@@ -33,6 +33,9 @@ private slots:
     void currentUserChanged(RamUser *user);
     void createUser();
 
+    void savePath();
+    void reinitPath();
+
 private:
     RamProject *m_project;
 
@@ -44,6 +47,8 @@ private:
     ResolutionWidget *ui_resolutionWidget;
     FramerateWidget *ui_framerateWidget;
     QDateEdit *ui_deadlineEdit;
+    QToolButton *ui_savePathButton;
+    QToolButton *ui_reinitPathButton;
 
     ObjectListEditWidget *m_userList;
 };

@@ -135,7 +135,6 @@ void ObjectEditWidget::checkPath()
     if(!m_object) return;
     ui_shortNameEdit->setEnabled( !m_dontRename.contains(m_object->shortName()) );
     ui_nameEdit->setEnabled(true);
-    qDebug() << QFileInfo::exists( m_object->path() );
     // If the folder already exists, freeze the ID or the name (according to specific types)
     if ( m_object->path() != "" &&  QFileInfo::exists( m_object->path() ) && m_object->shortName() != "NEW" )
     {

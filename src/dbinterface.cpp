@@ -35,14 +35,13 @@ void DBInterface::getUsers()
     request("getUsers");
 }
 
-void DBInterface::updateUser(QString uuid, QString shortName, QString name, QString role, QString folderPath, QString comment)
+void DBInterface::updateUser(QString uuid, QString shortName, QString name, QString role, QString comment)
 {
     QStringList q;
     q << "uuid=" + uuid;
     q << "shortName=" + shortName;
     q << "name=" + name;
     q << "role=" + role;
-    q << "folderPath=" + folderPath;
     q << "comment=" + comment;
 
     request("updateUser", q);

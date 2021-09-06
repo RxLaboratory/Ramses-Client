@@ -25,8 +25,10 @@ public:
     void freezeEstimations(bool freeze = true, bool reCompute = true);
 
     void setFolderPath(const QString &folderPath);
+    void resetDbFolderPath();
     QString defaultPath() const;
     bool pathIsDefault() const;
+    bool pathIsDefault(QString p) const;
 
     qreal framerate() const;
     void setFramerate(const qreal &framerate);
@@ -71,6 +73,9 @@ public:
     const QDate &deadline() const;
     void setDeadline(const QDate &newDeadline);
 
+    const QString &dbFolderPath() const;
+    void setDbFolderPath(const QString &newDbFolderPath);
+
 signals:
     void completionRatioChanged(int);
     void latenessRatioChanged(float);
@@ -80,6 +85,7 @@ signals:
 
 public slots:
     void update() override;
+    void updatePath();
     virtual void removeFromDB() override;
 
     void computeEstimation();
@@ -93,6 +99,7 @@ private slots:
 
 private:
     QString m_folderPath;
+    QString m_dbFolderPath;
     qreal m_framerate = 24;
     int m_width = 1920;
     int m_height = 1080;

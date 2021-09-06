@@ -27,18 +27,18 @@ RamProject *ProjectEditWidget::project() const
 
 void ProjectEditWidget::setObject(RamObject *obj)
 {
-    RamProject *project = (RamProject*)obj;
-
-    this->setEnabled(false);
-
-    ObjectEditWidget::setObject(project);
-    m_project = project;
+    RamProject *project = qobject_cast<RamProject*>(obj);
 
     QSignalBlocker b1(ui_folderSelector);
     QSignalBlocker b2(ui_resolutionWidget);
     QSignalBlocker b3(ui_framerateWidget);
     QSignalBlocker b4(ui_deadlineEdit);
     QSignalBlocker b5(m_userList);
+
+    this->setEnabled(false);
+
+    ObjectEditWidget::setObject(project);
+    m_project = project;
 
     //Reset values
     ui_resolutionWidget->setHeight(1080);
@@ -86,7 +86,7 @@ void ProjectEditWidget::update()
 void ProjectEditWidget::updateFolderLabel(QString path)
 {
     if (path != "") ui_folderLabel->setText( Ramses::instance()->pathFromRamses(path));
-    else if (m_project) ui_folderLabel->setText( m_project->path() );
+    else if (m_project) ui_folderLabel->setText( m_project->defaultPath() );
 }
 
 void ProjectEditWidget::currentUserChanged(RamUser *user)
@@ -105,6 +105,29 @@ void ProjectEditWidget::createUser()
     Ramses::instance()->users()->append(user);
     m_project->users()->append(user);
     user->edit();
+}
+
+void ProjectEditWidget::savePath()
+{
+    if (!m_project) return;
+
+    QMessageBox::StandardButton confirm = QMessageBox::question( this,
+        "Confirm overwrite",
+        "This will overwrite the default path for this project, for all users.\nDo you want to continue?" );
+
+    if ( confirm != QMessageBox::Yes) return;
+
+    m_project->updatePath();
+}
+
+void ProjectEditWidget::reinitPath()
+{
+    QSignalBlocker b(m_project);
+    m_project->resetDbFolderPath();
+    if (!m_project->pathIsDefault()) ui_folderSelector->setPath( m_project->path() );
+    else ui_folderSelector->setPath( "" );
+    ui_folderSelector->setPlaceHolderText( m_project->defaultPath() );
+    ui_folderLabel->setText( m_project->path() );
 }
 
 void ProjectEditWidget::setupUi()
@@ -136,8 +159,27 @@ void ProjectEditWidget::setupUi()
     ui_folderSelector->setPlaceHolderText("Default (Ramses/Users/User_ShortName)");
     ui_mainFormLayout->addWidget(ui_folderSelector,6, 1);
 
+    QWidget *fWidget = new QWidget();
+    QHBoxLayout *fLayout = new QHBoxLayout(fWidget);
+    fLayout->setSpacing(3);
+    fLayout->setContentsMargins(0,0,0,0);
+
     ui_folderLabel = new QLabel("", this);
-    ui_mainFormLayout->addWidget(ui_folderLabel, 7, 1);
+    fLayout->addWidget(ui_folderLabel);
+
+    ui_savePathButton = new QToolButton(this);
+    ui_savePathButton->setToolTip("Save path as default");
+    ui_savePathButton->setIcon(QIcon(":/icons/save"));
+    ui_savePathButton->setIconSize(QSize(16,16));
+    fLayout->addWidget(ui_savePathButton);
+
+    ui_reinitPathButton = new QToolButton(this);
+    ui_reinitPathButton->setToolTip("Restore default path");
+    ui_reinitPathButton->setIcon(QIcon(":/icons/reinit"));
+    ui_reinitPathButton->setIconSize(QSize(16,16));
+    fLayout->addWidget(ui_reinitPathButton);
+
+    ui_mainFormLayout->addWidget(fWidget, 7, 1);
 
     m_userList = new ObjectListEditWidget(true, RamUser::ProjectAdmin, this);
     m_userList->setEditMode(ObjectListEditWidget::UnassignObjects);
@@ -155,6 +197,8 @@ void ProjectEditWidget::connectEvents()
     connect(ui_folderSelector, &DuQFFolderSelectorWidget::pathChanged, this, &ProjectEditWidget::update);
     connect(ui_deadlineEdit, SIGNAL(dateChanged(QDate)), this, SLOT(update()));
     connect(m_userList, SIGNAL(add()), this, SLOT(createUser()));
+    connect(ui_savePathButton, SIGNAL(clicked()), this, SLOT(savePath()));
+    connect(ui_reinitPathButton, SIGNAL(clicked()), this, SLOT(reinitPath()));
 
     monitorDbQuery("updateProject");
 }

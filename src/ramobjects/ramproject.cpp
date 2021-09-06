@@ -19,6 +19,15 @@ RamProject::RamProject(QString shortName, QString name, QString uuid):
 
     m_deadline = QDate::currentDate().addDays(30);
 
+    // Get path
+    QSettings settings;
+    settings.beginGroup("projects");
+    settings.beginGroup(m_uuid);
+    QString p = settings.value("path", "no-path").toString();
+    settings.endGroup();
+    settings.endGroup();
+    if (p != "no-path") m_folderPath = p;
+
     this->setObjectName( "RamProject" );
 
     connect(m_users, SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(userAssigned(QModelIndex,int,int)));
@@ -47,7 +56,11 @@ void RamProject::freezeEstimations(bool freeze, bool reCompute)
 QString RamProject::folderPath() const
 {
     if (pathIsDefault())
-        return defaultPath();
+    {
+        QString p = m_dbFolderPath;
+        if (pathIsDefault(p)) return defaultPath();
+        return p;
+    }
 
     return m_folderPath;
 }
@@ -68,9 +81,22 @@ void RamProject::setDeadline(const QDate &newDeadline)
 void RamProject::setFolderPath(const QString &folderPath)
 {
     if (folderPath == m_folderPath) return;
-    m_dirty = true;
     m_folderPath = folderPath;
+
+    // Store this as a local setting
+    QSettings settings;
+    settings.beginGroup("projects");
+    settings.beginGroup(m_uuid);
+    settings.setValue("path", m_folderPath);
+    settings.endGroup();
+    settings.endGroup();
+
     emit changed(this);
+}
+
+void RamProject::resetDbFolderPath()
+{
+    setFolderPath(m_dbFolderPath);
 }
 
 QString RamProject::defaultPath() const
@@ -138,13 +164,23 @@ void RamProject::setAspectRatio(const qreal &aspectRatio)
 
 bool RamProject::pathIsDefault() const
 {
-    return m_folderPath == "" || m_folderPath.toLower() == "auto";
+    return pathIsDefault(m_folderPath);
+}
+
+bool RamProject::pathIsDefault(QString p) const
+{
+    return p == "" || p.toLower() == "auto";
 }
 
 void RamProject::update()
 {
     if (!m_dirty) return;
     RamObject::update();
+    m_dbi->updateProject(m_uuid, m_shortName, m_name, m_width, m_height, m_framerate, "", m_comment, m_deadline);
+}
+
+void RamProject::updatePath()
+{
     QString path = m_folderPath;
     if (path == "") path = "auto";
     m_dbi->updateProject(m_uuid, m_shortName, m_name, m_width, m_height, m_framerate, path, m_comment, m_deadline);
@@ -307,4 +343,14 @@ void RamProject::userUnassigned(const QModelIndex &parent, int first, int last)
         m_dbi->unassignUser(m_uuid, userObj->uuid());
     }
     emit changed(this);
+}
+
+const QString &RamProject::dbFolderPath() const
+{
+    return m_dbFolderPath;
+}
+
+void RamProject::setDbFolderPath(const QString &newDbFolderPath)
+{
+    m_dbFolderPath = newDbFolderPath;
 }

@@ -6,7 +6,7 @@
 
 #include "objecteditwidget.h"
 #include "ramses.h"
-#include "duqf-widgets/duqffolderselectorwidget.h"
+#include "duqf-widgets/duqffolderdisplaywidget.h"
 
 class UserEditWidget : public ObjectEditWidget
 {
@@ -26,7 +26,6 @@ protected slots:
 
 private slots:
     void changePassword();
-    void updateFolderLabel(QString path);
     bool checkPasswordInput();
 
 private:
@@ -35,7 +34,7 @@ private:
     void setupUi();
     void connectEvents();
 
-    DuQFFolderSelectorWidget *ui_folderSelector;
+    DuQFFolderDisplayWidget *ui_folderWidget;
     QComboBox *ui_roleBox;
     QLineEdit *ui_cpasswordEdit;
     QLineEdit *ui_npassword1Edit;

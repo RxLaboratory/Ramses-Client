@@ -31,6 +31,7 @@
         <file alias="ok">duqf_resources/icons/ok_sl.svg</file>
         <file alias="warning">duqf_resources/icons/warning_bl.svg</file>
         <file alias="pin">duqf_resources/icons/pin-attach_sl.svg</file>
+        <file alias="save">duqf_resources/icons/save.svg</file>
     </qresource>
     <qresource prefix="/images"/>
     <qresource prefix="/styles">

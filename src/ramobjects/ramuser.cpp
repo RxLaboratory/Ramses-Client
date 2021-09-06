@@ -50,10 +50,7 @@ void RamUser::setRole(const QString role)
 
 QString RamUser::folderPath() const
 {
-    if (pathIsDefault())
-        return defaultPath();
-
-    return m_folderPath;
+    return Ramses::instance()->path(RamObject::UsersFolder) + "/" + m_shortName;
 }
 
 RamObjectList *RamUser::schedule() const
@@ -91,28 +88,6 @@ bool RamUser::isStepAssigned(RamStep *step) const
     return false;
 }
 
-void RamUser::setFolderPath(const QString &folderPath)
-{
-    if (folderPath == m_folderPath) return;
-    m_dirty = true;
-    m_folderPath = folderPath;
-
-    // Settings file
-    reInitSettingsFile();
-
-    emit changed(this);
-}
-
-QString RamUser::defaultPath() const
-{
-    return Ramses::instance()->path(RamObject::UsersFolder) + "/" + m_shortName;
-}
-
-bool RamUser::pathIsDefault() const
-{
-    return m_folderPath == "" || m_folderPath.toLower() == "auto";
-}
-
 void RamUser::update()
 {
     if(!m_dirty) return;
@@ -122,10 +97,7 @@ void RamUser::update()
     else if (m_role == ProjectAdmin) role = "project";
     else if (m_role == Lead) role = "lead";
 
-    QString path = m_folderPath;
-    if (path == "") path = "auto";
-
-    m_dbi->updateUser(m_uuid, m_shortName, m_name, role, path, m_comment);
+    m_dbi->updateUser(m_uuid, m_shortName, m_name, role, m_comment);
 }
 
 void RamUser::updatePassword(QString c, QString n)

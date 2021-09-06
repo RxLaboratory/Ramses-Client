@@ -141,7 +141,6 @@ QString RamLoader::gotUser(QJsonObject newU)
         user->setName( newU.value("name").toString() );
     }
 
-    user->setFolderPath( newU.value("folderPath").toString());
     user->setRole( newU.value("role").toString("standard") );
     user->setComment( newU.value("comment").toString());
 
@@ -195,9 +194,11 @@ QString RamLoader::gotProject(QJsonObject newP, bool init)
     project->setWidth( newP.value("width").toInt());
     project->setHeight( newP.value("height").toInt());
     project->setFramerate( newP.value("framerate").toDouble());
-    project->setFolderPath( newP.value("folderPath").toString());
     project->setComment( newP.value("comment").toString());
     project->setDeadline( QDate::fromString( newP.value("deadline").toString(), "yyyy-MM-dd") );
+
+    project->setDbFolderPath( newP.value("folderPath").toString() );
+    if ( project->pathIsDefault() ) project->resetDbFolderPath();
 
     project->users()->clear();
 

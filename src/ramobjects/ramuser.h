@@ -25,10 +25,6 @@ public:
     void setRole(const UserRole &role);
     void setRole(const QString role);
 
-    void setFolderPath(const QString &folderPath);
-    QString defaultPath() const;
-    bool pathIsDefault() const;
-
     void updatePassword(QString c, QString n);
 
     RamObjectList *schedule() const;
@@ -49,7 +45,6 @@ protected:
 
 private:
     UserRole m_role;
-    QString m_folderPath;
     RamObjectList *m_schedule;
 };
 
