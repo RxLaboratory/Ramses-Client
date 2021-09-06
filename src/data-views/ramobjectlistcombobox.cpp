@@ -91,6 +91,12 @@ void RamObjectListComboBox::setObject(RamObject *obj)
 
 void RamObjectListComboBox::showPopup()
 {
+    // Update size
+    // get the minimum width that fits the largest item.
+    int width = this->minimumSizeHint().width();
+    // set the view to that width + icon and margins.
+    this->view()->setMinimumWidth(width + 40);
+
     QComboBox::showPopup();
     emit popupShown();
 }
@@ -115,6 +121,7 @@ void RamObjectListComboBox::currentObjectChanged(int i)
 
 void RamObjectListComboBox::setupUi()
 {
+    //this->setSizeAdjustPolicy(SizeAdjustPolicy::AdjustToContents);
     RamObjectDelegate *delegate = new RamObjectDelegate(this);
     delegate->setComboBoxMode(true);
     this->setItemDelegate(delegate);

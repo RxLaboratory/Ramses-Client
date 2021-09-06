@@ -3,6 +3,7 @@
 
 #include <QComboBox>
 #include <QSortFilterProxyModel>
+#include <QColumnView>
 
 #include "data-models/ramobjectlist.h"
 #include "data-models/ramobjectfilterlist.h"
