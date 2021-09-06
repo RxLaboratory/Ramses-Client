@@ -169,6 +169,10 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     qDebug() << "> Schedule ready";
 #endif
 
+    // Install page
+    InstallPage *installPage = new InstallPage(this);
+    mainStack->addWidget(installPage);
+    qDebug() << "> Install page ready";
 
     // Docks
 #ifndef DEACTIVATE_STATS
@@ -237,6 +241,7 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     connect(ui_refreshButton, SIGNAL(clicked()), Ramses::instance(), SLOT(refresh()));
     connect(mainStack,SIGNAL(currentChanged(int)), this, SLOT(pageChanged(int)));
     connect(lp, &LoginPage::serverSettings, this, &MainWindow::serverSettings);
+    connect(installPage, SIGNAL(login()), this, SLOT(home()));
     connect(DuQFLogger::instance(), &DuQFLogger::newLog, this, &MainWindow::log);
     connect(Daemon::instance(), &Daemon::raise, this, &MainWindow::raise);
     connect(Daemon::instance(), &Daemon::raise, this, &MainWindow::show);
@@ -251,6 +256,11 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     qDebug() << "Setting CSS";
 
     duqf_setStyle();
+
+    // Check if we need to go to the install page
+    QString serverAddress = settings.value("server/address", "").toString();
+    QString localFolder = settings.value("ramsesPath", "").toString();
+    if (serverAddress == "" || localFolder == "" || serverAddress == "/") install();
 }
 
 void MainWindow::addObjectDockWidget(ObjectDockWidget *w)
@@ -641,6 +651,12 @@ void MainWindow::assets(bool show)
 void MainWindow::schedule(bool show)
 {
     if (show) mainStack->setCurrentIndex(8);
+    else home();
+}
+
+void MainWindow::install(bool show)
+{
+    if (show) mainStack->setCurrentIndex(9);
     else home();
 }
 

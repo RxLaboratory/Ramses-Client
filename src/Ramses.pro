@@ -54,6 +54,7 @@ SOURCES += \
     data-views/ramobjectdelegate.cpp \
     data-views/ramobjectlistcombobox.cpp \
     data-views/ramobjectlistwidget.cpp \
+    pages/installpage.cpp \
     pages/projectpage.cpp \
     rameditwidgets/applicationeditwidget.cpp \
     rameditwidgets/applicationlistmanagerwidget.cpp \
@@ -192,6 +193,7 @@ HEADERS += \
     dbistructures.h \
     duqf-widgets/duqfcolorselector.h \
     duqf-widgets/duqfsearchedit.h \
+    pages/installpage.h \
     processmanager.h \
     progressbar.h \
     progresspage.h \
@@ -309,6 +311,7 @@ HEADERS += \
     pipeline-editor/stepnode.h
 
 FORMS += \
+    pages/installpage.ui \
     settingswidgets/daemonsettingswidget.ui \
     duqf-widgets/aboutdialog.ui \
     duqf-widgets/appearancesettingswidget.ui \

@@ -22,7 +22,7 @@ private slots:
     void logout();
     void dbiConnectionStatusChanged(NetworkUtils::NetworkStatus s);
 private:
-    QSettings settings;
+    QSettings m_settings;
     DuApplication *_app;
 };
 

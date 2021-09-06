@@ -592,6 +592,29 @@ QMenu::separator {
   margin-bottom: @padding-small;
 }
 
+/* GROUPBOXES */
+
+QGroupBox {
+    border-radius: @padding-small;
+    padding: @padding-large;
+    padding-top: @padding-extra-large;
+    background-color: @color-darker-grey;
+}
+
+QGroupBox::title {
+    color: @color-light-grey;
+    padding: @padding-medium;
+}
+
+QGroupBox QWidget {
+    background-color: @color-transparent;
+}
+
+QGroupBox QLineEdit {
+    background-color: @color-very-dark-grey;
+}
+
+
 /* TITLE BAR */
 
 #titleBar {

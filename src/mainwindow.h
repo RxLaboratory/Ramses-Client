@@ -46,6 +46,7 @@
 #include "processmanager.h"
 #include "progressbar.h"
 #include "pages/projectpage.h"
+#include "pages/installpage.h"
 
 #include "rameditwidgets/itemtablemanagerwidget.h"
 
@@ -137,6 +138,7 @@ private slots:
     void shots(bool show = true);
     void assets(bool show = true);
     void schedule(bool show = true);
+    void install(bool show = true);
     void networkButton_clicked();
     void loggedIn();
     void loggedOut();

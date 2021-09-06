@@ -5,12 +5,12 @@ ServerSettingsWidget::ServerSettingsWidget(QWidget *parent) :
 {
     setupUi(this);
 
-    serverAddressEdit->setText(settings.value("server/address", "localhost/ramses/").toString());
-    sslCheckBox->setChecked( settings.value("server/ssl", true).toBool() );
-    updateFreqSpinBox->setValue( settings.value("server/updateFreq", 2).toInt());
-    timeoutSpinBox->setValue( settings.value("server/timeout", 3000).toInt()/1000 );
+    serverAddressEdit->setText(m_settings.value("server/address", "localhost/ramses/").toString());
+    sslCheckBox->setChecked( m_settings.value("server/ssl", true).toBool() );
+    updateFreqSpinBox->setValue( m_settings.value("server/updateFreq", 2).toInt());
+    timeoutSpinBox->setValue( m_settings.value("server/timeout", 3000).toInt()/1000 );
     _app = (DuApplication *)qApp;
-    _app->setIdleTimeOut( settings.value("server/updateFreq", 2).toInt()*60*1000 );
+    _app->setIdleTimeOut( m_settings.value("server/updateFreq", 2).toInt()*60*1000 );
 
     logoutWidget->hide();
 
@@ -30,25 +30,25 @@ void ServerSettingsWidget::serverAddressEdit_edingFinished()
         address += "/";
         serverAddressEdit->setText(address);
     }
-    settings.setValue("server/address", address);
+    m_settings.setValue("server/address", address);
 }
 
 void ServerSettingsWidget::sslCheckBox_clicked(bool checked)
 {
-    settings.setValue("server/ssl", checked);
+    m_settings.setValue("server/ssl", checked);
 }
 
 void ServerSettingsWidget::updateFreqSpinBox_editingFinished()
 {
     int to = updateFreqSpinBox->value();
-    settings.setValue("server/updateFreq", to );
+    m_settings.setValue("server/updateFreq", to );
     _app->setIdleTimeOut( to*60*1000 );
 }
 
 void ServerSettingsWidget::timeoutSpinBox_editingFinished()
 {
     int to = timeoutSpinBox->value();
-    settings.setValue("server/timeout", to*1000 );
+    m_settings.setValue("server/timeout", to*1000 );
 }
 
 void ServerSettingsWidget::logout()
