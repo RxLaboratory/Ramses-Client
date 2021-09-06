@@ -54,7 +54,6 @@
         <file alias="shots">resources/icons/shot-settings.svg</file>
         <file alias="list">resources/icons/history.svg</file>
         <file alias="assets-table">resources/icons/assets-property-table_bl.svg</file>
-        <file alias="shots-table">resources/icons/shots-frames-table_bl.svg</file>
         <file alias="search">resources/icons/search_sl.svg</file>
         <file alias="asset-group">resources/icons/assetgroup_sl.svg</file>
         <file alias="file">resources/icons/file_sl.svg</file>
@@ -68,6 +67,7 @@
         <file alias="calendar">resources/icons/calendar_sl.svg</file>
         <file alias="stats">resources/icons/counter_bl.svg</file>
         <file alias="snap">resources/icons/magnet-snap_sl.svg</file>
+        <file alias="shots-table">resources/icons/shots-frames-table.svg</file>
     </qresource>
     <qresource prefix="/styles">
         <file alias="default-ramses">resources/style/style-ramses.css</file>
