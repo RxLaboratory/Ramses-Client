@@ -30,7 +30,7 @@ void StepEditWidget::setObject(RamObject *obj)
     m_step = step;
 
     QSignalBlocker b(ui_typeBox);
-    QSignalBlocker b1(m_folderWidget);
+    QSignalBlocker b1(ui_folderWidget);
     QSignalBlocker b3(m_applicationList);
     QSignalBlocker b4(ui_colorSelector);
 
@@ -44,7 +44,7 @@ void StepEditWidget::setObject(RamObject *obj)
     QSignalBlocker b12(ui_estimationMultiplierBox);
 
     ui_typeBox->setCurrentIndex(1);
-    m_folderWidget->setPath("");
+    ui_folderWidget->setPath("");
     m_applicationList->clear();
     ui_colorSelector->setColor(QColor(25,25,25));
 
@@ -63,7 +63,7 @@ void StepEditWidget::setObject(RamObject *obj)
 
     ui_colorSelector->setColor(step->color());
 
-    m_folderWidget->setPath( step->path() );
+    ui_folderWidget->setPath( step->path() );
 
     if (step->type() == RamStep::PreProduction) ui_typeBox->setCurrentIndex(0);
     else if (step->type() == RamStep::AssetProduction) ui_typeBox->setCurrentIndex(1);
@@ -260,8 +260,8 @@ void StepEditWidget::setupUi()
 
     ui_mainFormLayout->addWidget(ui_estimationWidget, 5, 1);
 
-    m_folderWidget = new DuQFFolderDisplayWidget(this);
-    ui_mainLayout->insertWidget(1, m_folderWidget);
+    ui_folderWidget = new DuQFFolderDisplayWidget(this);
+    ui_mainLayout->insertWidget(1, ui_folderWidget);
 
     m_applicationList = new ObjectListEditWidget(true, RamUser::ProjectAdmin, this);
     m_applicationList->setEditMode(ObjectListEditWidget::UnassignObjects);

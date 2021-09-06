@@ -22,6 +22,7 @@ signals:
     void refresh();
     void ready();
     void projectReady(QString);
+    void loggedIn();
 
 protected:
     static RamLoader *_instance;

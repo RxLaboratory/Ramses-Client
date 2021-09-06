@@ -22,9 +22,11 @@ class Ramses : public RamObject
 public:
     static Ramses *instance();
     ~Ramses();
+    // User
     void login(QString username, QString password);
     void logout();
-    bool isConnected() const;
+    // Server connection
+    bool isOnline() const;
     // Tree base
     void setRamsesPath(const QString &ramsesPath);
     QString pathFromRamses(QString p, bool create = false) const;
@@ -64,7 +66,8 @@ public slots:
     void init();
     void refresh();
     void projectReady(QString uuid);
-
+    void setOnline();
+    void setOffline();
 
 signals:
     void loggedIn(RamUser*);
@@ -105,7 +108,6 @@ private:
     // Users
     RamObjectList *m_users;
     RamUser *m_currentUser;
-    QString m_currentUserShortName;
     RamUser *m_ramUser;
     RamUser *m_removedUser;
 

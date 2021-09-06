@@ -152,6 +152,16 @@ void Ramses::projectReady(QString uuid)
     emit currentProjectChanged(m_currentProject);
 }
 
+void Ramses::setOnline()
+{
+    m_connected = true;
+}
+
+void Ramses::setOffline()
+{
+    m_connected = false;
+}
+
 QString Ramses::folderPath() const
 {
     return m_ramsesPath;
@@ -277,7 +287,7 @@ RamState *Ramses::wipState()
 
 void Ramses::logout()
 {
-    m_connected = false;
+    setOffline();
     m_currentUser = nullptr;
     emit loggedOut();
 }
@@ -297,11 +307,15 @@ void Ramses::refresh()
     _dbi->getFileTypes();
     // Get applications
     _dbi->getApplications();*/
+
+    // Only if connected
+    if (!isOnline()) return;
+
     // Get current project
     m_dbi->init();
 }
 
-bool Ramses::isConnected() const
+bool Ramses::isOnline() const
 {
     return m_connected;
 }

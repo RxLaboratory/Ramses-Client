@@ -15,6 +15,7 @@ RamLoader::RamLoader(QObject *parent):
     m_ram = Ramses::instance();
 
     connect(this, &RamLoader::refresh, m_ram, &Ramses::refresh);
+    connect(this, &RamLoader::loggedIn, m_ram, &Ramses::setOnline);
     connect(this, &RamLoader::ready, m_ram, &Ramses::init);
     connect(this, &RamLoader::projectReady, m_ram, &Ramses::projectReady);
 }
@@ -73,6 +74,8 @@ void RamLoader::login(QJsonObject user)
 {
     // Set the current user shortName
     m_currentUserShortName = user.value("shortName").toString("Guest");
+    // Tell Ramses we've correctly logged in
+    emit loggedIn();
     // Now we can ask Ramses to refresh all
     emit refresh();
 }
