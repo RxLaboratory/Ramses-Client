@@ -185,6 +185,16 @@ QString RamObject::path(RamObject::SubFolder subFolder, bool create) const
     return Ramses::instance()->pathFromRamses( p, create );
 }
 
+QString RamObject::path(SubFolder subFolder, QString subPath, bool create) const
+{
+    QString p = path(subFolder, create);
+    if (p == "") return "";
+
+    p += "/" + subPath;
+
+    return p;
+}
+
 QStringList RamObject::listFiles(RamObject::SubFolder subFolder) const
 {
     QDir dir( path(subFolder));
@@ -199,6 +209,13 @@ QStringList RamObject::listFiles(RamObject::SubFolder subFolder, QString subPath
     QStringList files = dir.entryList( QDir::Files );
     files.removeAll( RamFileMetaDataManager::metaDataFileName() );
     return files;
+}
+
+QStringList RamObject::listFolders(SubFolder subFolder) const
+{
+    QDir dir( path(subFolder) );
+    QStringList folders = dir.entryList( QDir::Dirs | QDir::NoDotAndDotDot, QDir::Name );
+    return folders;
 }
 
 void RamObject::deleteFile(QString fileName, RamObject::SubFolder folder) const

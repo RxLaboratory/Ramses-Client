@@ -56,8 +56,9 @@ public:
 
     bool isPublished() const;
     bool checkPublished(int version = -1) const;
-    QStringList publishedFiles() const;
-    QStringList publishedFiles(QString resource) const;
+    QStringList publishedVersionFolders() const;
+    QStringList publishedFiles( QString versionFolder ) const;
+    QStringList publishedFiles( QString resource, QString versionFolder ) const;
     void setPublished(bool published);
 
     QString previewImagePath() const;

@@ -171,7 +171,7 @@ bool ObjectEditWidget::eventFilter(QObject *obj, QEvent *event)
 void ObjectEditWidget::setupUi()
 {
     QWidget *dummy = new QWidget(this);
-    dummy->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
+    dummy->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     ui_mainLayout = new QVBoxLayout(dummy);
     ui_mainLayout->setSpacing(3);

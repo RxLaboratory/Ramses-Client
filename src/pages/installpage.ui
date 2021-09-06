@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>978</width>
-    <height>798</height>
+    <width>1069</width>
+    <height>616</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -30,7 +30,7 @@
     <number>0</number>
    </property>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_7" stretch="25,0,25">
+    <layout class="QHBoxLayout" name="horizontalLayout_7" stretch="25,0,0,25">
      <item>
       <spacer name="horizontalSpacer_9">
        <property name="orientation">
@@ -45,6 +45,34 @@
       </spacer>
      </item>
      <item>
+      <widget class="QLabel" name="label">
+       <property name="minimumSize">
+        <size>
+         <width>128</width>
+         <height>128</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>128</width>
+         <height>128</height>
+        </size>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="pixmap">
+        <pixmap>:/icons/icon-large</pixmap>
+       </property>
+       <property name="scaledContents">
+        <bool>true</bool>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QWidget" name="installWidget" native="true">
        <property name="maximumSize">
         <size>
@@ -52,68 +80,10 @@
          <height>16777215</height>
         </size>
        </property>
-       <layout class="QVBoxLayout" name="verticalLayout_5" stretch="0,0,0,0,0,0,0,1">
+       <layout class="QVBoxLayout" name="verticalLayout_5" stretch="0,0,0,0,0,0,1">
         <property name="spacing">
          <number>16</number>
         </property>
-        <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_6">
-          <item>
-           <spacer name="horizontalSpacer_7">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item>
-           <widget class="QLabel" name="label">
-            <property name="minimumSize">
-             <size>
-              <width>128</width>
-              <height>128</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>128</width>
-              <height>128</height>
-             </size>
-            </property>
-            <property name="text">
-             <string/>
-            </property>
-            <property name="pixmap">
-             <pixmap resource="../resources.qrc">:/icons/icon-large</pixmap>
-            </property>
-            <property name="scaledContents">
-             <bool>true</bool>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignCenter</set>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <spacer name="horizontalSpacer_8">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-         </layout>
-        </item>
         <item>
          <widget class="QLabel" name="label_2">
           <property name="text">
@@ -297,6 +267,19 @@
                  <number>0</number>
                 </property>
                 <item>
+                 <spacer name="horizontalSpacer_11">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>40</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+                <item>
                  <widget class="QLabel" name="label_9">
                   <property name="text">
                    <string>http(s)://</string>
@@ -395,7 +378,7 @@
              <string>Log in!</string>
             </property>
             <property name="icon">
-             <iconset resource="../resources.qrc">
+             <iconset>
               <normaloff>:/icons/login</normaloff>:/icons/login</iconset>
             </property>
            </widget>
@@ -449,7 +432,6 @@
   </layout>
  </widget>
  <resources>
-  <include location="../resources.qrc"/>
   <include location="../duqf_resources.qrc"/>
  </resources>
  <connections/>

@@ -497,12 +497,18 @@ bool RamStatus::checkPublished( int version ) const
     return false;
 }
 
-QStringList RamStatus::publishedFiles() const
+QStringList RamStatus::publishedVersionFolders() const
 {
-    return listFiles(PublishFolder);
+    return listFolders(PublishFolder);
 }
 
-QStringList RamStatus::publishedFiles(QString resource) const
+QStringList RamStatus::publishedFiles(QString versionFolder) const
+{
+    // List subfolders and check if they're correctly named
+    return listFiles(PublishFolder, versionFolder);
+}
+
+QStringList RamStatus::publishedFiles(QString resource, QString versionFolder ) const
 {
     QStringList files;
 
@@ -511,7 +517,7 @@ QStringList RamStatus::publishedFiles(QString resource) const
     RamProject *p = m_item->project();
 
     // look for files with the same resource
-    foreach(QString file, publishedFiles())
+    foreach(QString file, publishedFiles( versionFolder ))
     {
         if (nm.setFileName(file))
         {

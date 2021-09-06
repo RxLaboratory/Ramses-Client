@@ -33,6 +33,7 @@ void StatusEditWidget::setStatus(RamStatus *status)
     QSignalBlocker b12(ui_autoEstimationBox);
     QSignalBlocker b13(ui_userBox);
     QSignalBlocker b14(ui_estimationEdit);
+    QSignalBlocker b15(ui_versionPublishBox);
 
     ui_stateBox->setCurrentText("STB");
     ui_completionBox->setValue(0);
@@ -48,6 +49,7 @@ void StatusEditWidget::setStatus(RamStatus *status)
     ui_difficultyBox->setCurrentIndex(2);
     ui_autoEstimationBox->setChecked(true);
     ui_estimationEdit->setValue(0);
+    ui_versionPublishBox->clear();
 
     // Remove template list
     QList<QAction*> templateActions = ui_createFromTemplateMenu->actions();
@@ -100,11 +102,16 @@ void StatusEditWidget::setStatus(RamStatus *status)
         QListWidgetItem *item = new QListWidgetItem(file, ui_mainFileList);
         item->setIcon(QIcon(":/icons/file"));
     }
-    foreach(QString file, status->publishedFiles())
+    QStringList publishedVersionFolders = status->publishedVersionFolders();
+    for (int i = publishedVersionFolders.count()-1; i>=0; i-- )
     {
-        QListWidgetItem *item = new QListWidgetItem(file, ui_publishedFileList);
-        item->setIcon(QIcon(":/icons/file"));
+        QString title = publishedVersionFolders.at(i);
+        if (title.split("_")[0].toInt() != 0)
+            title = "v" + title.replace("_", " | ");
+        ui_versionPublishBox->addItem( title, publishedVersionFolders.at(i) );
     }
+    ui_versionPublishBox->setCurrentIndex(0);
+    loadPublishedFiles();
     foreach(QString file, status->previewFiles())
     {
         QListWidgetItem *item = new QListWidgetItem(file, ui_previewFileList);
@@ -211,6 +218,12 @@ void StatusEditWidget::update()
     m_status->update();
 
     updating = false;
+}
+
+void StatusEditWidget::showEvent(QShowEvent *event)
+{
+    //ui_commentSplitter->setSizes(QList<int>() << 200 << 600);
+    QWidget::showEvent(event);
 }
 
 void StatusEditWidget::currentStateChanged(RamObject *stateObj)
@@ -352,6 +365,19 @@ void StatusEditWidget::createFromDefaultTemplate()
     revert();
 }
 
+void StatusEditWidget::loadPublishedFiles()
+{
+    ui_publishedFileList->clear();
+    QString versionFolder = ui_versionPublishBox->currentData(Qt::UserRole).toString();
+    qDebug() << versionFolder;
+    QStringList publishedFiles = m_status->publishedFiles(versionFolder);
+    for(int i = 0; i < publishedFiles.count(); i++)
+    {
+        QListWidgetItem *item = new QListWidgetItem(publishedFiles.at(i), ui_publishedFileList);
+        item->setIcon(QIcon(":/icons/file"));
+    }
+}
+
 void StatusEditWidget::publishedFileSelected(int row)
 {
     ui_openPublishedFileButton->setEnabled(row >= 0);
@@ -363,7 +389,7 @@ void StatusEditWidget::openPublishedFile()
     if (row < 0) return;
 
     QString filePathToOpen = QDir(
-                m_status->path( RamObject::PublishFolder )
+                m_status->path( RamObject::PublishFolder, ui_versionPublishBox->currentData().toString() )
                 ).filePath( ui_publishedFileList->item(row)->text() );
 
     m_status->step()->openFile( filePathToOpen );
@@ -457,6 +483,8 @@ void StatusEditWidget::estimateDays(int hours)
 
 void StatusEditWidget::setupUi()
 {
+    //this->setWidgetResizable(true);
+
     this->hideName();
     ui_commentEdit->hide();
     ui_commentLabel->hide();
@@ -479,11 +507,10 @@ void StatusEditWidget::setupUi()
     cLayout->setStretch(0,0);
     cLayout->setStretch(1,100);
 
-    ui_mainLayout->insertLayout(0, cLayout);
+    ui_mainLayout->addLayout(cLayout);
 
-    QSplitter *commentSplitter = new QSplitter(this);
-    commentSplitter->setOrientation(Qt::Vertical);
-    ui_mainLayout->addWidget( commentSplitter );
+    ui_commentSplitter = new QSplitter();
+    ui_commentSplitter->setOrientation(Qt::Vertical);
 
     ui_statusCommentEdit = new QPlainTextEdit(this);
     ui_statusCommentEdit->setPlaceholderText("Comment...");
@@ -491,15 +518,16 @@ void StatusEditWidget::setupUi()
     ui_statusCommentEdit->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     ui_commentEdit->setObjectName("commentEdit");
 
-    commentSplitter->addWidget( ui_statusCommentEdit );
+    ui_commentSplitter->addWidget( ui_statusCommentEdit );
 
     QWidget *bottomWidget = new QWidget(this);
     QVBoxLayout *bottomLayout = new QVBoxLayout(bottomWidget);
-    bottomLayout->setSpacing(0);
+    bottomLayout->setSpacing(3);
     bottomLayout->setContentsMargins(0,0,0,0);
 
     QFormLayout *detailsLayout = new QFormLayout();
-    bottomLayout->addLayout(detailsLayout);
+    detailsLayout->setSpacing(3);
+    detailsLayout->setContentsMargins(0,0,0,0);
 
     ui_difficultyBox = new QComboBox(this);
     ui_difficultyBox->addItem("Very easy");
@@ -547,29 +575,7 @@ void StatusEditWidget::setupUi()
     ui_userBox = new RamObjectListComboBox(true, this);
     detailsLayout->addRow("Assigned user", ui_userBox);
 
-    ui_mainLayout->addLayout( detailsLayout);
-
-    QHBoxLayout *buttonsLayout = new QHBoxLayout();
-    buttonsLayout->setSpacing(3);
-    buttonsLayout->setContentsMargins(0,0,0,0);
-
-    buttonsLayout->addStretch();
-
-    ui_revertButton = new QToolButton(this);
-    ui_revertButton->setText("Revert");
-    ui_revertButton->setToolTip("Cancel changes\nRevert to the current state.");
-    ui_revertButton->setStatusTip("Revert to the current state.");
-    ui_revertButton->setIcon(QIcon(":/icons/undo"));
-    buttonsLayout->addWidget(ui_revertButton);
-
-    /*ui_setButton = new QToolButton(this);
-    ui_setButton->setText("Update");
-    ui_setButton->setToolTip("Update / Save changes\nSave the changes for the current status.");
-    ui_setButton->setStatusTip("Save the changes for the current status.");
-    ui_setButton->setIcon(QIcon(":/icons/apply"));
-    buttonsLayout->addWidget(ui_setButton);*/
-
-    bottomLayout->addLayout(buttonsLayout);
+    bottomLayout->addLayout( detailsLayout);
 
     QTabWidget *tabWidget = new QTabWidget(this);
 
@@ -579,6 +585,7 @@ void StatusEditWidget::setupUi()
     mainFileLayout->setSpacing(3);
 
     ui_mainFileList = new QListWidget(this);
+    ui_mainFileList->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     mainFileLayout->addWidget(ui_mainFileList);
 
     QHBoxLayout *mainFileButtonLayout = new QHBoxLayout();
@@ -618,10 +625,14 @@ void StatusEditWidget::setupUi()
 
     QWidget *publishedFilesWidget = new QWidget(tabWidget);
     QVBoxLayout *publishedFileLayout = new QVBoxLayout(publishedFilesWidget);
-    publishedFileLayout->setContentsMargins(0,0,0,0);
+    publishedFileLayout->setContentsMargins(0,3,0,0);
     publishedFileLayout->setSpacing(3);
 
+    ui_versionPublishBox = new QComboBox(this);
+    publishedFileLayout->addWidget(ui_versionPublishBox);
+
     ui_publishedFileList = new QListWidget(this);
+    ui_publishedFileList->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     publishedFileLayout->addWidget(ui_publishedFileList);
 
     QHBoxLayout *publishedFileButtonLayout = new QHBoxLayout();
@@ -646,6 +657,7 @@ void StatusEditWidget::setupUi()
     previewFileLayout->setSpacing(3);
 
     ui_previewFileList = new QListWidget(this);
+    ui_previewFileList->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     previewFileLayout->addWidget(ui_previewFileList);
 
     QHBoxLayout *previewFileButtonLayout = new QHBoxLayout();
@@ -666,10 +678,25 @@ void StatusEditWidget::setupUi()
 
     bottomLayout->addWidget(tabWidget);
 
-    ui_folderWidget = new DuQFFolderDisplayWidget(this);
-    bottomLayout->addWidget(ui_folderWidget);
+    QHBoxLayout *buttonsLayout = new QHBoxLayout();
+    buttonsLayout->setSpacing(3);
+    buttonsLayout->setContentsMargins(0,0,0,0);
 
-    commentSplitter->addWidget(bottomWidget);
+    ui_folderWidget = new DuQFFolderDisplayWidget(this);
+    buttonsLayout->addWidget(ui_folderWidget);
+
+    ui_revertButton = new QToolButton(this);
+    ui_revertButton->setText("Reload");
+    ui_revertButton->setToolTip("Reloads the list of available files.");
+    ui_revertButton->setStatusTip("Reload the list of available files.");
+    ui_revertButton->setIcon(QIcon(":/icons/undo"));
+    buttonsLayout->addWidget(ui_revertButton);
+
+    bottomLayout->addLayout(buttonsLayout);
+
+    ui_commentSplitter->addWidget(bottomWidget);
+
+    ui_mainLayout->addWidget( ui_commentSplitter );
 }
 
 void StatusEditWidget::connectEvents()
@@ -681,7 +708,7 @@ void StatusEditWidget::connectEvents()
     connect( ui_userBox, SIGNAL(currentIndexChanged(int)), this, SLOT(update()));
     connect( ui_publishedBox, SIGNAL(clicked(bool)), this, SLOT(update()));
     connect( ui_autoEstimationBox, SIGNAL(clicked(bool)), this, SLOT(update()));
-    connect( ui_timeSpent, SIGNAL(valueChanged(bool)), this, SLOT(update()));
+    connect( ui_timeSpent, SIGNAL(valueChanged(int)), this, SLOT(update()));
     connect( ui_estimationEdit, SIGNAL(valueChanged(double)), this, SLOT(update()));
     connect( ui_difficultyBox, SIGNAL(currentIndexChanged(int)), this, SLOT(update()));
 
@@ -694,6 +721,7 @@ void StatusEditWidget::connectEvents()
     connect(ui_openMainFileButton, SIGNAL(clicked()),this,SLOT(openMainFile()));
     connect(ui_createFromTemplateAction, SIGNAL(triggered()), this, SLOT(createFromDefaultTemplate()));
 
+    connect(ui_versionPublishBox, SIGNAL(currentIndexChanged(int)), this, SLOT(loadPublishedFiles()));
     connect(ui_publishedFileList, SIGNAL(currentRowChanged(int)),this, SLOT(publishedFileSelected(int)));
     connect(ui_previewFileList, SIGNAL(currentRowChanged(int)),this, SLOT(previewFileSelected(int)));
     connect(ui_openPublishedFileButton, SIGNAL(clicked()),this,SLOT(openPublishedFile()));

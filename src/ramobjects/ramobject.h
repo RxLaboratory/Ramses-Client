@@ -82,8 +82,10 @@ public:
     void setOrder(int order);
 
     QString path(SubFolder subFolder = NoFolder, bool create = false) const;
+    QString path(SubFolder subFolder, QString subPath, bool create = false) const;
     QStringList listFiles(SubFolder subFolder = NoFolder) const;
     QStringList listFiles(SubFolder subFolder, QString subPath) const;
+    QStringList listFolders(SubFolder subFolder = NoFolder) const;
     void deleteFile(QString fileName, SubFolder folder=NoFolder) const;
     void revealFolder(SubFolder subFolder = NoFolder);
 

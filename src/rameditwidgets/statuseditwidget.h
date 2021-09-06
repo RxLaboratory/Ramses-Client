@@ -54,6 +54,9 @@ signals:
 protected slots:
     void update() override;
 
+protected:
+    void showEvent(QShowEvent *event) override;
+
 private slots:
     void currentStateChanged(RamObject *stateObj);
     void revert();
@@ -66,6 +69,7 @@ private slots:
     void createFromTemplate();
     void createFromDefaultTemplate();
 
+    void loadPublishedFiles();
     void publishedFileSelected(int row);
     void openPublishedFile();
     void removeSelectedPublishedFile();
@@ -85,7 +89,6 @@ private:
     DuQFSpinBox *ui_completionBox;
     AutoSelectSpinBox *ui_versionBox;
     QPlainTextEdit *ui_statusCommentEdit;
-    //QToolButton *ui_setButton;
     QToolButton *ui_revertButton;
     QCheckBox *ui_publishedBox;
     RamObjectListComboBox *ui_userBox;
@@ -94,6 +97,7 @@ private:
     QListWidget *ui_previewFileList;
     QListWidget *ui_publishedFileList;
     QComboBox *ui_versionFileBox;
+    QComboBox *ui_versionPublishBox;
     QToolButton *ui_openMainFileButton;
     QToolButton *ui_createMainFileButton;
     QMenu *ui_createFromTemplateMenu;
@@ -104,6 +108,8 @@ private:
     QComboBox *ui_difficultyBox;
     AutoSelectDoubleSpinBox *ui_estimationEdit;
     QCheckBox *ui_autoEstimationBox;
+
+    QSplitter *ui_commentSplitter;
 
     RamStatus *m_status;
 };
