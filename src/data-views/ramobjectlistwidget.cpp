@@ -7,7 +7,7 @@ RamObjectListWidget::RamObjectListWidget(DisplayMode mode, QWidget *parent):
     m_displayMode = mode;
     setupUi();
     connectEvents();
-    m_objectList = new RamObjectFilterModel(this);
+    m_objectList = new RamItemFilterModel(this);
     if (mode == List)
     {
         RamItemTableListProxy *tlp = new RamItemTableListProxy(this);
@@ -28,7 +28,7 @@ RamObjectListWidget::RamObjectListWidget(RamObjectList *list, DisplayMode mode, 
     m_displayMode = mode;
     setupUi();
     connectEvents();
-    m_objectList = new RamObjectFilterModel(this);
+    m_objectList = new RamItemFilterModel(this);
     if (mode == List)
     {
         RamItemTableListProxy *tlp = new RamItemTableListProxy(this);
@@ -51,7 +51,7 @@ RamObjectListWidget::RamObjectListWidget(RamObjectList *list, bool editableObjec
     m_delegate->setEditRole(editRole);
     setupUi();
     connectEvents();
-    m_objectList = new RamObjectFilterModel(this);
+    m_objectList = new RamItemFilterModel(this);
     if (mode == List)
     {
         RamItemTableListProxy *tlp = new RamItemTableListProxy(this);
@@ -70,9 +70,10 @@ void RamObjectListWidget::setList(RamObjectList *list)
     m_objectList->setList(list);
     this->resizeRowsToContents();
     this->resizeColumnsToContents();
+
 }
 
-RamObjectFilterModel *RamObjectListWidget::filteredList()
+RamItemFilterModel *RamObjectListWidget::filteredList()
 {
     return m_objectList;
 }

@@ -28,6 +28,14 @@ public slots:
     void selectUserSteps();
     void deselectSteps();
 
+    void selectAllUsers();
+    void selectMyself();
+    void deselectUsers();
+    void showUnassigned(bool show);
+
+    void selectAllStates();
+    void deselectStates();
+
 signals:
     void closeRequested();
 
@@ -47,7 +55,21 @@ private slots:
     void removeStep(const QModelIndex &parent, int first, int last);
     void stepChanged(const QModelIndex &first, const QModelIndex &last,QVector<int> roles = QVector<int>());
 
+    void addUser(const QModelIndex &parent, int first, int last);
+    void removeUser(const QModelIndex &parent, int first, int last);
+    void userChanged(const QModelIndex &first, const QModelIndex &last,QVector<int> roles = QVector<int>());
+
+    void addState(const QModelIndex &parent, int first, int last);
+    void removeState(const QModelIndex &parent, int first, int last);
+    void stateChanged(const QModelIndex &first, const QModelIndex &last,QVector<int> roles = QVector<int>());
+
     void stepActionToggled(bool checked);
+    void userActionToggled(bool checked);
+    void stateActionToggled(bool checked);
+
+    void checkStepFilters();
+    void checkUserFilters();
+    void checkStateFilters();
 
     void editObject(RamObject *obj) const;
     void historyObject(RamObject *obj) const;
@@ -84,6 +106,17 @@ private:
     QAction *ui_actionCreateItem;
     QAction *ui_actionDeleteItem;
     QAction *ui_actionCreateMultiple;
+    QToolButton *ui_userButton;
+    QMenu *ui_userMenu;
+    QAction *ui_actionSelectAllUsers;
+    QAction *ui_actionSelectNoUser;
+    QAction *ui_actionSelectMyself;
+    QAction *ui_actionNotAssigned;
+    QToolButton *ui_stateButton;
+    QMenu *ui_stateMenu;
+    QAction *ui_actionSelectAllStates;
+    QAction *ui_actionSelectNoState;
+    QToolButton *ui_stepButton;
     QMenu *ui_stepMenu;
     QAction *ui_actionSelectAllSteps ;
     QAction *ui_actionSelectNoSteps ;
@@ -110,9 +143,10 @@ private:
     RamObjectListMenu *ui_assignUserContextMenu;
     RamObjectListMenu *ui_changeStateContextMenu;
 
-    RamStepFilterModel *m_stepFilter;
     RamProject *m_project = nullptr;
     RamStep::Type m_productionType;
+
+    QList<QMetaObject::Connection> m_projectConnections;
 
     // utils
     QList<RamStatus*> beginEditSelectedStatus();

@@ -4,8 +4,7 @@
 RamItemTable::RamItemTable(RamStep::Type productionType, RamObjectList *steps, QObject *parent) : RamObjectList(parent)
 {
     m_productionType = productionType;
-    m_steps = new RamStepFilterModel(productionType, this);
-    m_steps->setList(steps);
+    m_steps = steps;
     connectEvents();
 }
 
@@ -13,8 +12,7 @@ RamItemTable::RamItemTable(RamStep::Type productionType, RamObjectList *steps, Q
         : RamObjectList(shortName, name, parent)
 {
     m_productionType = productionType;
-    m_steps = new RamStepFilterModel(productionType, this);
-    m_steps->setList(steps);
+    m_steps = steps;
     connectEvents();
 }
 
@@ -147,16 +145,6 @@ void RamItemTable::insertObject(int i, RamObject *obj)
     endInsertRows();
 
     emit headerDataChanged(Qt::Horizontal, 0, m_steps->rowCount());
-}
-
-void RamItemTable::addStepFilter(RamObject *stepObj)
-{
-    m_steps->ignoreUuid(stepObj->uuid());
-}
-
-void RamItemTable::removeStepFilter(RamObject *stepObj)
-{
-    m_steps->acceptUuid(stepObj->uuid());
 }
 
 void RamItemTable::insertStep(const QModelIndex &parent, int first, int last)

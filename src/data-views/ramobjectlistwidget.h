@@ -9,7 +9,7 @@
 #include "data-models/ramobjectlist.h"
 #include "processmanager.h"
 #include "ramobjectdelegate.h"
-#include "data-models/ramobjectfiltermodel.h"
+#include "data-models/ramitemfiltermodel.h"
 #include "data-models/ramitemtablelistproxy.h"
 
 /**
@@ -31,7 +31,7 @@ public:
     explicit RamObjectListWidget(RamObjectList *list, bool editableObjects, RamUser::UserRole editRole = RamUser::Admin, DisplayMode mode = List, QWidget *parent = nullptr);
     // Content
     void setList(RamObjectList *list);
-    RamObjectFilterModel *filteredList();
+    RamItemFilterModel *filteredList();
     // Settings
     void setEditableObjects(bool editableObjects, RamUser::UserRole editRole = RamUser::Admin);
     void setSortable(bool sortable = true);
@@ -69,7 +69,7 @@ private:
     void setupUi();
     void connectEvents();
 
-    RamObjectFilterModel *m_objectList = nullptr;
+    RamItemFilterModel *m_objectList = nullptr;
     DisplayMode m_displayMode;
 
     // Delegate

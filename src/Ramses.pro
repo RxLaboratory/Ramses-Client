@@ -31,6 +31,7 @@ INCLUDEPATH += rameditwidgets \
     data-model
 
 SOURCES += \
+    data-models/ramitemfiltermodel.cpp \
     data-models/ramitemtablelistproxy.cpp \
     data-models/ramobjectfilterlist.cpp \
     data-models/ramobjectfiltermodel.cpp \
@@ -38,7 +39,6 @@ SOURCES += \
     data-models/ramschedulefilter.cpp \
     data-models/ramscheduletable.cpp \
     data-models/ramstatisticstable.cpp \
-    data-models/ramstepfiltermodel.cpp \
     data-views/ramobjectlistmenu.cpp \
     data-views/ramscheduledelegate.cpp \
     data-views/ramscheduletablewidget.cpp \
@@ -170,6 +170,7 @@ SOURCES += \
 
 HEADERS += \
     config.h \
+    data-models/ramitemfiltermodel.h \
     data-models/ramitemtable.h \
     data-models/ramitemtablelistproxy.h \
     data-models/ramobjectfilterlist.h \
@@ -180,7 +181,6 @@ HEADERS += \
     data-models/ramscheduletable.h \
     data-models/ramstatelist.h \
     data-models/ramstatisticstable.h \
-    data-models/ramstepfiltermodel.h \
     data-models/ramstepstatushistory.h \
     data-views/ramobjectdelegate.h \
     data-views/ramobjectlistmenu.h \

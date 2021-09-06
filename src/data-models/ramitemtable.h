@@ -4,8 +4,6 @@
 #include "ramobjectlist.h"
 #include "ramstepstatushistory.h"
 #include "ramitem.h"
-#include "data-models/ramstepfiltermodel.h"
-
 
 /**
  * @brief The RamItemTable class is the model used to associate shots/assets with their status.
@@ -26,17 +24,13 @@ public:
     // MODEL EDITING REIMPLEMENTATION
     virtual void insertObject(int i, RamObject *obj) override; // Insert Row
 
-    // Step Filters
-    void addStepFilter(RamObject *stepObj);
-    void removeStepFilter(RamObject *stepObj);
-
 private slots:
     void insertStep(const QModelIndex &parent, int first, int last);
     void removeStep(const QModelIndex &parent, int first, int last);
     void statusChanged(RamItem *item, RamStep *step);
 
 private:
-    RamStepFilterModel *m_steps;
+    RamObjectList *m_steps;
     RamStep::Type m_productionType;
 
     // Connect submodels and relay events

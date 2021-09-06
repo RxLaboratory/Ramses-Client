@@ -1,6 +1,7 @@
 #include "ramitem.h"
 
 #include "ramproject.h"
+#include "ramses.h"
 
 RamItem::RamItem(QString shortName, RamProject *project, QString name, QString uuid) :
     RamObject(shortName, name, uuid, project)
@@ -81,6 +82,7 @@ RamStatus *RamItem::status(RamObject *step)
 QList<RamStatus *> RamItem::status()
 {
     QList<RamStatus *> statuses;
+    if (m_history.count() == 0) return statuses;
     QMapIterator<QString, RamStepStatusHistory*> i(m_history);
     while(i.hasNext())
     {
@@ -99,6 +101,72 @@ RamUser *RamItem::assignedUser(RamStep *step)
         return previous->assignedUser();
 
     return nullptr;
+}
+
+bool RamItem::isUserAssigned(RamUser *u, RamStep *step)
+{
+    if(step)
+    {
+        RamStatus *s = status(step);
+        if (!s) return false;
+        if ( !s->assignedUser() ) return false;
+        return s->assignedUser()->is(u);
+    }
+
+    QList<RamStatus*> s = status();
+    for (int i = 0; i < s.count(); i++)
+    {
+        if (!s.at(i)) continue;
+        if (!s.at(i)->assignedUser()) continue;
+        if (s.at(i)->assignedUser()->is(u)) return true;
+    }
+    return false;
+}
+
+bool RamItem::isUnassigned(RamStep *step)
+{
+    if(step)
+    {
+        RamStatus *s = status(step);
+        if (!s) return true;
+        if ( !s->assignedUser() ) return true;
+        return false;
+    }
+
+    QList<RamStatus*> s = status();
+    for (int i = 0; i < s.count(); i++)
+    {
+        if (!s.at(i)) return true;
+        if (!s.at(i)->assignedUser()) return true;
+    }
+    return false;
+}
+
+bool RamItem::hasState(RamState *state, RamStep *step)
+{
+    RamState *noState = Ramses::instance()->noState();
+
+    if(step)
+    {
+        RamStatus *s = status(step);
+        if (!s && state->is(noState)) return true;
+        if (!s) return false;
+        if( !s->state() && state->is(noState)) return true;
+        if( !s->state()) return false;
+        return s->state()->is(state);
+    }
+
+    QList<RamStatus*> s = status();
+
+    for (int i = 0; i < s.count(); i++)
+    {
+        if(!s.at(i) && state->is(noState)) return true;
+        if(!s.at(i)) continue;
+        if(!s.at(i)->state() && state->is(noState)) return true;
+        if(!s.at(i)->state()) continue;
+        if(s.at(i)->state()->is(state)) return true;
+    }
+    return false;
 }
 
 RamStep::Type RamItem::productionType() const

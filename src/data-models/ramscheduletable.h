@@ -4,7 +4,6 @@
 #include <QStringBuilder>
 
 #include "ramobjectlist.h"
-#include "data-models/ramstepfiltermodel.h"
 #include "ramscheduleentry.h"
 
 
@@ -32,7 +31,6 @@ private slots:
     void resetUsers();
 
 private:
-     RamStepFilterModel *m_steps;
      RamObjectList *m_users = nullptr;
 
      QDate m_startDate;

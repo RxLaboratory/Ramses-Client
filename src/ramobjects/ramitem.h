@@ -22,10 +22,23 @@ public:
 
     QMap<QString, RamStepStatusHistory *> statusHistory() const;
     RamStepStatusHistory *statusHistory(RamObject *stepObj);
+    /**
+     * @brief status The latest (current) status for a specific step
+     * @param step
+     * @return The status
+     */
     RamStatus *status(RamObject *step);
+    /**
+     * @brief status All the latest (current) status
+     * @return The latest status for each step
+     */
     QList<RamStatus*> status();
 
     RamUser *assignedUser(RamStep *step);
+    bool isUserAssigned(RamUser *u, RamStep *step = nullptr);
+    bool isUnassigned(RamStep *step = nullptr);
+
+    bool hasState(RamState *state, RamStep *step = nullptr);
 
     RamProject *project() const;
     RamStep::Type productionType() const;
