@@ -96,6 +96,7 @@ public:
     bool is(const RamObject *other) const;
 
     static RamObject *obj(QString uuid);
+    static RamObject *objFromName(QString shortNameOrName , ObjectType objType);
 
 
 public slots:

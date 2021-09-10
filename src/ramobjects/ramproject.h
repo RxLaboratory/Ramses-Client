@@ -69,6 +69,7 @@ public:
     float unassignedDays() const; //days
 
     static RamProject *project(QString uuid);
+    static RamProject *projectFromName(QString nameOrShortName);
 
     const QDate &deadline() const;
     void setDeadline(const QDate &newDeadline);

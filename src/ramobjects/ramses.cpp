@@ -120,10 +120,12 @@ void Ramses::init()
     setCurrentProject(uSettings->value("ramses/currentProject", "").toString());
 }
 
-void Ramses::setCurrentProject(RamProject *currentProject)
+void Ramses::setCurrentProject(RamProject *project)
 {
     qDebug() << "Setting project: Database call";
-    if ( currentProject ) m_dbi->getProject(currentProject->uuid());
+    qDebug() << project;
+    if ( m_currentProject ) if ( m_currentProject->is(project) ) return;
+    if ( project ) m_dbi->getProject(project->uuid());
     else
     {
         m_currentProject = nullptr;
@@ -167,9 +169,14 @@ QString Ramses::folderPath() const
     return m_ramsesPath;
 }
 
-void Ramses::setCurrentProject(QString uuidOrShortName)
+void Ramses::setCurrentProject(QString shortName)
 {
-    setCurrentProject( RamProject::project(uuidOrShortName) );
+    setCurrentProject( RamProject::projectFromName(shortName) );
+}
+
+void Ramses::setCurrentProjectUuid(QString uuid)
+{
+    setCurrentProject( RamProject::project(uuid) );
 }
 
 RamObjectList *Ramses::templateSteps() const

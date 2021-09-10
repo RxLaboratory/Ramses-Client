@@ -49,8 +49,9 @@ public:
     // Projects
     RamObjectList *projects() const;
     RamProject *currentProject() const;
-    void setCurrentProject(RamProject *currentProject);
-    void setCurrentProject(QString uuidOrShortName);
+    void setCurrentProject(RamProject *project);
+    void setCurrentProject(QString shortName);
+    void setCurrentProjectUuid(QString uuid);
     // Template Steps
     RamObjectList *templateSteps() const;
     // Template Asset Groups

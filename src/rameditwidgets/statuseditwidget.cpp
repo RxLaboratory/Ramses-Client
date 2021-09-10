@@ -106,8 +106,23 @@ void StatusEditWidget::setStatus(RamStatus *status)
     for (int i = publishedVersionFolders.count()-1; i>=0; i-- )
     {
         QString title = publishedVersionFolders.at(i);
-        if (title.split("_")[0].toInt() != 0)
-            title = "v" + title.replace("_", " | ");
+        // Let's split
+        QStringList splitTitle = title.split("_");
+        // Test length to know what we've got
+        if (splitTitle.count() == 3) // resource, version, state
+        {
+            title = splitTitle[0] + " | v" + splitTitle[1] + " | " + splitTitle[2];
+        }
+        else if (splitTitle.count() < 3) // version (state)
+        {
+            if (splitTitle[0].toInt() != 0)
+                title = "v" + splitTitle.join(" | ");
+        }
+        else
+        {
+            title = splitTitle.join(" | ");
+        }
+
         ui_versionPublishBox->addItem( title, publishedVersionFolders.at(i) );
     }
     ui_versionPublishBox->setCurrentIndex(0);

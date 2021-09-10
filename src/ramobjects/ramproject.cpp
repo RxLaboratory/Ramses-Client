@@ -240,6 +240,11 @@ RamProject *RamProject::project(QString uuid)
     return qobject_cast<RamProject*>( RamObject::obj(uuid) );
 }
 
+RamProject *RamProject::projectFromName(QString nameOrShortName )
+{
+    return qobject_cast<RamProject*>( RamObject::objFromName(nameOrShortName, ObjectType::Project) );
+}
+
 RamObjectList *RamProject::assetGroups() const
 {
     return m_assetGroups;

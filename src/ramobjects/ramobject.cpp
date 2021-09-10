@@ -282,6 +282,22 @@ RamObject *RamObject::obj(QString uuid)
     return m_existingObjects.value(uuid, nullptr );
 }
 
+RamObject *RamObject::objFromName(QString shortNameOrName, ObjectType objType)
+{
+    QMapIterator<QString, RamObject*> i(m_existingObjects);
+    while (i.hasNext())
+    {
+        i.next();
+        RamObject *obj = i.value();
+        if (obj->objectType() == objType)
+        {
+            if ( obj->shortName() == shortNameOrName ) return obj;
+            if ( obj->name() == shortNameOrName ) return obj;
+        }
+    }
+    return nullptr;
+}
+
 void RamObject::update()
 {
     m_dirty = false;
