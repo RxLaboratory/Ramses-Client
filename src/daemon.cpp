@@ -454,6 +454,7 @@ void Daemon::getPipes(QTcpSocket *client)
         QJsonObject pipe;
         if (!p->inputStep()) continue;
         if (!p->outputStep()) continue;
+        if (p->inputStep()->is(p->outputStep())) continue;
         pipe.insert("inputStepShortName", p->inputStep()->shortName());
         pipe.insert("outputStepShortName", p->outputStep()->shortName());
         QJsonArray pipeFiles;
