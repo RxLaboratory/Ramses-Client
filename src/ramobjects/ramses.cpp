@@ -117,13 +117,12 @@ void Ramses::init()
 {
     if(!m_currentUser) return;
     QSettings *uSettings = m_currentUser->settings();
-    setCurrentProject(uSettings->value("ramses/currentProject", "").toString());
+    setCurrentProjectUuid(uSettings->value("ramses/currentProject", "").toString());
 }
 
 void Ramses::setCurrentProject(RamProject *project)
 {
     qDebug() << "Setting project: Database call";
-    qDebug() << project;
     if ( m_currentProject ) if ( m_currentProject->is(project) ) return;
     if ( project ) m_dbi->getProject(project->uuid());
     else
