@@ -28,6 +28,7 @@ public:
 
     QString title() const;
     void setTitle(const QString &title);
+    void setTitleColor(const QColor &color);
     QString titleToolTip() const;
     void setTitleToolTip(const QString &toolTip);
     void setIcon(QString icon);

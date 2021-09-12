@@ -33,4 +33,5 @@ void StepNode::stepChanged()
     {
         this->setIcon(":/icons/film");
     }
+    this->setTitleColor(_step->color());
 }

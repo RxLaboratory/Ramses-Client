@@ -32,7 +32,7 @@ void RamStepHeaderView::paintSection(QPainter *painter, const QRect &rect, int l
 
     // Draw title
     QRect titleRect( rect.left(), rect.top(), rect.width(), rect.height() - 16 );
-    QPen textPen( m_lessLight );
+    QPen textPen( step->color() );
     painter->setPen( textPen );
     painter->setFont( m_textFont );
     painter->drawText( titleRect, Qt::AlignCenter | Qt::AlignVCenter | Qt::TextWordWrap, step->name(), &titleRect);

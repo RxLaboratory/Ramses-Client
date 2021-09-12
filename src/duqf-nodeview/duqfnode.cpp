@@ -29,6 +29,7 @@ DuQFNode::DuQFNode(QString title, QGraphicsItem *parent):
     m_titleItem = new QGraphicsTextItem(title);
     QFont f = qApp->font();
     f.setPixelSize( DuUI::getSize("font", "size-small") );
+    f.setWeight(QFont::Bold);
     m_titleItem->setFont(f);
     m_titleItem->setDefaultTextColor(DuUI::getColor("light-grey"));
     m_titleItem->setParentItem(this);
@@ -195,6 +196,11 @@ void DuQFNode::setTitle(const QString &title)
         right += m_iconItem->boundingRect().right() * m_iconItem->scale() + m_padding;
     m_defaultOutputSlot->setPos(right , rect.center().y());
     m_defaultInputSlot->setPos(rect.left()+2, rect.center().y());
+}
+
+void DuQFNode::setTitleColor(const QColor &color)
+{
+    m_titleItem->setDefaultTextColor(color.lighter(115));
 }
 
 QString DuQFNode::titleToolTip() const
