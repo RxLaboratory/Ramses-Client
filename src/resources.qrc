@@ -2,7 +2,6 @@
     <qresource prefix="/icons">
         <file alias="icon-large">resources/icons/ramses-icon-large.svg</file>
         <file alias="server-settings">resources/icons/server-settings.svg</file>
-        <file alias="logo-large">resources/icons/ramses-logo-large.svg</file>
         <file alias="login-big">resources/icons/login_bl.svg</file>
         <file alias="login">resources/icons/login_sl.svg</file>
         <file alias="logout-big">resources/icons/logout_bl.svg</file>
@@ -72,6 +71,7 @@
         <file alias="cut">resources/icons/cut_sl.svg</file>
         <file alias="paste">resources/icons/paste_sl.svg</file>
         <file alias="comment">resources/icons/comment_sl.svg</file>
+        <file alias="logo_large">resources/icons/logo_large.png</file>
     </qresource>
     <qresource prefix="/styles">
         <file alias="default-ramses">resources/style/style-ramses.css</file>
@@ -85,6 +85,6 @@
         <file alias="shotname">resources/regex/shotname.txt</file>
     </qresource>
     <qresource prefix="/images">
-        <file alias="splash">resources/icons/ramses-logo-large.svg</file>
+        <file alias="splash">resources/images/splash.png</file>
     </qresource>
 </RCC>

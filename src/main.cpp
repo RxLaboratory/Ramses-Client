@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
     // show splashscreen
     a.showSplashScreen();
     DuSplashScreen *s = a.splashScreen();
-    s->showMessage("Checking if Ramses is already running...");
+    s->newMessage("Checking if Ramses is already running...");
 
     // Single instance, check if the daemon is already running.
     QTcpSocket *tcpSocket = new QTcpSocket();
