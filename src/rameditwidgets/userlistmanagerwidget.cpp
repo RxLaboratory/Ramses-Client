@@ -16,7 +16,7 @@ UserListManagerWidget::UserListManagerWidget(QWidget *parent) :
 
 RamObject *UserListManagerWidget::createObject()
 {
-    RamUser *user = new RamUser("NEW","J. Doe");
+    RamUser *user = new RamUser("NEW","J-Doe");
 
     Ramses::instance()->users()->append(user);
 

@@ -154,6 +154,17 @@ void ObjectListEditWidget::removeSelectedObjects()
         quintptr iptr = index.data(Qt::UserRole).toULongLong();
         if(iptr == 0) continue;
         RamObject *o = reinterpret_cast<RamObject*>( iptr );
+        // Don't remove yourself if you're a user
+        if (o->objectType() == RamObject::User)
+        {
+            if (o->is( Ramses::instance()->currentUser() ))
+            {
+                QMessageBox::information(this,
+                                         "Can't remove this user",
+                                         "Sorry, you can't remove yourself!\nAsk for someone else to remove you, that's safer.");
+                return;
+            }
+        }
         if (m_dontRemove.contains(o->shortName()))
         {
             QMessageBox::information(this,
