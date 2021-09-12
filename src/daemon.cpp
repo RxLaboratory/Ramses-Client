@@ -771,6 +771,11 @@ QJsonObject Daemon::stepToJson(RamStep *s)
     QJsonObject step;
     step.insert("shortName", s->shortName());
     step.insert("name", s->name());
+    QJsonArray col;
+    col.append( s->color().red()/255.0 );
+    col.append( s->color().green()/255.0 );
+    col.append( s->color().blue()/255.0 );
+    step.insert("color", col);
     step.insert("folder", s->path(RamObject::NoFolder, true));
     QString type;
     switch (s->type())
