@@ -1,5 +1,7 @@
 #include "dbinterface.h"
 
+#include "daemon.h"
+
 DBInterface *DBInterface::_instance = nullptr;
 
 DBInterface *DBInterface::instance()
@@ -1148,6 +1150,11 @@ void DBInterface::request(QString query, QStringList args, bool wait)
 
     if (wait) if (!waitPing()) return;
 
+    // Suspend the daemon (it will be enabled again after a timeout (5s) or on getting reply for the request
+    // Will be resumed by RamLoader when getting results
+    Daemon::instance()->suspend();
+    QTimer::singleShot(5000, Daemon::instance(), &Daemon::resume);
+
     QString serverAddress = getServerAddress();
     QString protocol = getProtocol();
     if (protocol == "") return;
@@ -1186,6 +1193,11 @@ void DBInterface::request(QString query, QJsonObject body, bool wait)
     if (_suspended) return;
 
     if (wait) if (!waitPing()) return;
+
+    // Suspend the daemon (it will be enabled again after a timeout (5s) or on getting reply for the request
+    // Will be resumed by RamLoader when getting results
+    Daemon::instance()->suspend();
+    QTimer::singleShot(5000, Daemon::instance(), &Daemon::resume);
 
     QString serverAddress = getServerAddress();
     QString protocol = getProtocol();

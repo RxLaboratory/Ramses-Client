@@ -24,6 +24,10 @@ public:
     void stop();
     void restart();
 
+public slots:
+    void suspend();
+    void resume();
+
 signals:
     void raise();
 
@@ -33,6 +37,7 @@ protected:
 private slots:
     void newConnection();
     void reply();
+    void reply(QString req, QTcpSocket *client);
     void ping(QTcpSocket *client);
     void setCurrentProject(QString shortName, QTcpSocket *client);
     void getCurrentStatus(QString shortName, QString name, QString type, QString stepName, QTcpSocket *client);
@@ -55,8 +60,11 @@ private slots:
 private:
     //The daemon is a singleton
     explicit Daemon(QObject *parent = nullptr);
-    QTcpServer *_tcpServer;
-    QSettings _settings;
+    QTcpServer *m_tcpServer;
+    QSettings m_settings;
+    bool m_suspended = false;
+    QStringList m_queue;
+    QList<QTcpSocket*> m_waitingClients;
 
     void post(QTcpSocket *client, QJsonObject content, QString query, QString message="", bool success = true, bool accepted = true);
 

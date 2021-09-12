@@ -13,6 +13,7 @@
 #include <QDeadlineTimer>
 #include <QApplication>
 #include <QStringBuilder>
+#include <QTimer>
 
 #include "duqf-utils/utils.h"
 #include "duqf-app/app-version.h"

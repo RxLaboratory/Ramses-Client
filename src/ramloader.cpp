@@ -1,5 +1,7 @@
 #include "ramloader.h"
 
+#include "daemon.h"
+
 RamLoader *RamLoader::_instance = nullptr;
 
 RamLoader *RamLoader::instance()
@@ -58,6 +60,8 @@ void RamLoader::run()
         emit ready();
     }
 
+    // Resume Daemon which has been suspended by DBInterface
+    Daemon::instance()->resume();
     m_pm->finish();
 }
 

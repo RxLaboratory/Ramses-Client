@@ -10,20 +10,20 @@ Daemon* Daemon::instance()
 
 void Daemon::start()
 {
-    if (!_tcpServer->listen( QHostAddress::LocalHost, _settings.value("daemon/port", 18185).toInt() )) {
-        qDebug() << _tcpServer->errorString();
-        log("Unable to start the daemon server.\n" + _tcpServer->errorString(), DuQFLog::Warning);
+    if (!m_tcpServer->listen( QHostAddress::LocalHost, m_settings.value("daemon/port", 18185).toInt() )) {
+        qDebug() << m_tcpServer->errorString();
+        log("Unable to start the daemon server.\n" + m_tcpServer->errorString(), DuQFLog::Warning);
     }
     else
     {
-        qDebug() << "Daemon started and listening on port " + QString::number(_tcpServer->serverPort());
-        log("Daemon started and listening on port " + QString::number(_tcpServer->serverPort()), DuQFLog::Information);
+        qDebug() << "Daemon started and listening on port " + QString::number(m_tcpServer->serverPort());
+        log("Daemon started and listening on port " + QString::number(m_tcpServer->serverPort()), DuQFLog::Information);
     }
 }
 
 void Daemon::stop()
 {
-    _tcpServer->close();
+    m_tcpServer->close();
     log("Daemon stopped.", DuQFLog::Information);
 }
 
@@ -33,17 +33,42 @@ void Daemon::restart()
     start();
 }
 
+void Daemon::suspend()
+{
+    qDebug() << "Suspending Daemon";
+    m_suspended = true;
+}
+
+void Daemon::resume()
+{
+    qDebug() << "Resuming Daemon";
+    m_suspended = false;
+    while ( !m_queue.isEmpty() ) reply(m_queue.takeFirst(), m_waitingClients.takeFirst());
+}
+
 void Daemon::newConnection()
 {
-    QTcpSocket *client = _tcpServer->nextPendingConnection();
+    QTcpSocket *client = m_tcpServer->nextPendingConnection();
     connect(client, &QAbstractSocket::disconnected, client, &QObject::deleteLater);
-    connect(client, &QAbstractSocket::readyRead, this, &Daemon::reply);
+    connect(client, SIGNAL(readyRead()), this,SLOT(reply()));
 }
 
 void Daemon::reply()
 {
     QTcpSocket *client = (QTcpSocket*)sender();
     QString request = client->readAll();
+    if (m_suspended)
+    {
+        m_queue << request;
+        m_waitingClients << client;
+        return;
+    }
+
+    reply(request, client);
+}
+
+void Daemon::reply(QString request, QTcpSocket *client)
+{
     //split args
     QStringList requestArgs = request.split("&");
     log("I've got these args: \n" + requestArgs.join("\n"), DuQFLog::Debug);
@@ -693,11 +718,11 @@ void Daemon::getRamsesFolder(QTcpSocket *client)
 
 Daemon::Daemon(QObject *parent) : DuQFLoggerObject("Daemon", parent)
 {
-    _tcpServer = new QTcpServer(this);
+    m_tcpServer = new QTcpServer(this);
 
     start();
 
-    connect(_tcpServer, &QTcpServer::newConnection, this, &Daemon::newConnection);
+    connect(m_tcpServer, &QTcpServer::newConnection, this, &Daemon::newConnection);
 }
 
 void Daemon::post(QTcpSocket *client, QJsonObject content, QString query, QString message, bool success, bool accepted)
