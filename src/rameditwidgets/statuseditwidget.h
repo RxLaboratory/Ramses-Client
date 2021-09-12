@@ -67,7 +67,6 @@ private slots:
     void removeSelectedMainFile();
 
     void createFromTemplate();
-    void createFromDefaultTemplate();
 
     void loadPublishedFiles();
     void publishedFileSelected(int row);
@@ -101,7 +100,6 @@ private:
     QToolButton *ui_openMainFileButton;
     QToolButton *ui_createMainFileButton;
     QMenu *ui_createFromTemplateMenu;
-    QAction *ui_createFromTemplateAction;
     QToolButton *ui_openPublishedFileButton;
     QToolButton *ui_openPreviewFileButton;
     DuQFFolderDisplayWidget *ui_folderWidget;

@@ -53,7 +53,7 @@ void StatusEditWidget::setStatus(RamStatus *status)
 
     // Remove template list
     QList<QAction*> templateActions = ui_createFromTemplateMenu->actions();
-    for (int i = 2; i < templateActions.count(); i++)
+    for (int i = 0; i < templateActions.count(); i++)
     {
         templateActions.at(i)->deleteLater();
     }
@@ -134,11 +134,13 @@ void StatusEditWidget::setStatus(RamStatus *status)
     }
 
     // List templates
-    QStringList templateFiles =status->step()->publishedTemplates();
+    QStringList templateFiles = status->step()->publishedTemplates();
     ui_createMainFileButton->setEnabled( templateFiles.count() > 0);
     foreach(QString file, templateFiles)
     {
-        QAction *action = new QAction(file);
+        QFileInfo fileInfo( file );
+        QAction *action = new QAction( fileInfo.baseName() );
+        action->setData( file );
         ui_createFromTemplateMenu->addAction(action);
         connect(action,SIGNAL(triggered()), this, SLOT(createFromTemplate()));
     }
@@ -347,31 +349,11 @@ void StatusEditWidget::removeSelectedMainFile()
 void StatusEditWidget::createFromTemplate()
 {
     QAction *action = qobject_cast<QAction*>( sender() );
-    QString fileName = action->text();
+    QString filePath = action->data().toString();
 
-    DuQFLogger::instance()->log("Creating " + fileName + "...");
+    DuQFLogger::instance()->log("Creating " + action->text() + "...");
 
-    QString templateFile = m_status->createFileFromTemplate( fileName );
-
-    DuQFLogger::instance()->log("Opening " + templateFile + "...");
-
-    if (templateFile != "") m_status->step()->openFile(templateFile);
-
-    revert();
-}
-
-void StatusEditWidget::createFromDefaultTemplate()
-{
-
-    DuQFLogger::instance()->log("Creating from default template...");
-
-    QString templateFile = m_status->createFileFromTemplate( "" );
-
-    if (templateFile == "")
-    {
-        DuQFLogger::instance()->log("Default template file not found!");
-        return;
-    }
+    QString templateFile = m_status->createFileFromTemplate( filePath );
 
     DuQFLogger::instance()->log("Opening " + templateFile + "...");
 
@@ -624,10 +606,6 @@ void StatusEditWidget::setupUi()
     ui_createMainFileButton->setMenu(ui_createFromTemplateMenu);
     ui_createMainFileButton->setPopupMode(QToolButton::InstantPopup);
 
-    ui_createFromTemplateAction = new QAction("Create from default template", this);
-    ui_createFromTemplateMenu->addAction( ui_createFromTemplateAction );
-    ui_createFromTemplateMenu->addSeparator();
-
     ui_openMainFileButton = new QToolButton(this);
     ui_openMainFileButton->setText("Open");
     ui_openMainFileButton->setToolTip("Open\nOpen the file.");
@@ -734,7 +712,6 @@ void StatusEditWidget::connectEvents()
     connect(ui_mainFileList, SIGNAL(currentRowChanged(int)),this, SLOT(mainFileSelected(int)));
     connect(ui_mainFileList,SIGNAL(itemDoubleClicked(QListWidgetItem*)),this,SLOT(openMainFile()));
     connect(ui_openMainFileButton, SIGNAL(clicked()),this,SLOT(openMainFile()));
-    connect(ui_createFromTemplateAction, SIGNAL(triggered()), this, SLOT(createFromDefaultTemplate()));
 
     connect(ui_versionPublishBox, SIGNAL(currentIndexChanged(int)), this, SLOT(loadPublishedFiles()));
     connect(ui_publishedFileList, SIGNAL(currentRowChanged(int)),this, SLOT(publishedFileSelected(int)));

@@ -121,7 +121,30 @@ void RamStep::openFile(QString filePath) const
 
 QStringList RamStep::publishedTemplates() const
 {
-    return listFiles(TemplatesFolder, subFolderName(PublishFolder));
+    // Get the published folders
+    QStringList folders = listFolders(TemplatesFolder, subFolderName(PublishFolder));
+    QString publishPath = path(TemplatesFolder, subFolderName(PublishFolder));
+    QStringList resources;
+    QStringList templates;
+    for (int i = 0; i < folders.count(); i++)
+    {
+        QString title = folders.at(i);
+        QStringList splitTitle = title.split("_");
+        QString resource = "";
+        if (splitTitle.count() == 3) resource = splitTitle[0];
+        if (resources.contains(resource)) continue;
+
+        resources << resource;
+
+        QDir dir( publishPath + "/" + title );
+        QStringList files = dir.entryList( QDir::Files );
+        for (int j = 0; j < files.count(); j++)
+        {
+            templates << publishPath + "/" + title + "/" + files.at(j);
+        }
+
+    }
+    return templates;
 }
 
 QString RamStep::templateFile(QString templateFileName) const

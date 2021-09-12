@@ -37,7 +37,7 @@ public:
     void setState(RamState *state);
 
     QStringList mainFiles() const;
-    QString createFileFromTemplate(QString templateFileName) const;
+    QString createFileFromTemplate(QString filePath) const;
 
     int version() const;
     QStringList versionFiles() const;

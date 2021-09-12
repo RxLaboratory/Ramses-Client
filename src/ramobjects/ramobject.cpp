@@ -218,6 +218,13 @@ QStringList RamObject::listFolders(SubFolder subFolder) const
     return folders;
 }
 
+QStringList RamObject::listFolders(SubFolder subFolder, QString subPath) const
+{
+    QDir dir( path(subFolder, subPath) );
+    QStringList folders = dir.entryList( QDir::Dirs | QDir::NoDotAndDotDot, QDir::Name );
+    return folders;
+}
+
 void RamObject::deleteFile(QString fileName, RamObject::SubFolder folder) const
 {
     QFile file( QDir(path(folder)).filePath(fileName));

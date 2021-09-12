@@ -86,6 +86,7 @@ public:
     QStringList listFiles(SubFolder subFolder = NoFolder) const;
     QStringList listFiles(SubFolder subFolder, QString subPath) const;
     QStringList listFolders(SubFolder subFolder = NoFolder) const;
+    QStringList listFolders(SubFolder subFolder, QString subPath) const;
     void deleteFile(QString fileName, SubFolder folder=NoFolder) const;
     void revealFolder(SubFolder subFolder = NoFolder);
 

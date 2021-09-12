@@ -62,6 +62,7 @@ void RamStatus::setState(RamState *state)
     if (state && state->is(m_state)) return;
     m_dirty = true;
     m_state = state;
+    if (!state) return;
 
     m_completionRatio = state->completionRatio();
 
@@ -77,11 +78,8 @@ QStringList RamStatus::mainFiles() const
     return listFiles();
 }
 
-QString RamStatus::createFileFromTemplate(QString templateFileName) const
+QString RamStatus::createFileFromTemplate(QString filePath) const
 {
-
-    QString filePath = m_step->templateFile( templateFileName );
-
     if (!QFileInfo::exists( filePath)) return "";
 
     // Generate destination name
