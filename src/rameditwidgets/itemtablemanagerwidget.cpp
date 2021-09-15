@@ -292,7 +292,6 @@ void ItemTableManagerWidget::removeUser(const QModelIndex &parent, int first, in
         {
             if (actions[i]->data().toULongLong() == iptr)
             {
-                quintptr iptr = users->data(users->index(i,0), Qt::UserRole).toULongLong();
                 RamUser *user = reinterpret_cast<RamUser*>( iptr );
                 ui_table->filteredList()->hideUser(user);
                 actions[i]->deleteLater();
