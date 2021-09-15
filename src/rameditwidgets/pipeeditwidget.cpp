@@ -55,8 +55,10 @@ void PipeEditWidget::update()
     if (!project) return;
 
     RamStep *inputStep = reinterpret_cast<RamStep*>( ui_toBox->currentData().toULongLong() );
+    if (!inputStep) return;
     _pipe->setInputStep( inputStep );
     RamStep *outputStep = reinterpret_cast<RamStep*>( ui_fromBox->currentData().toULongLong() );
+    if (!outputStep) return;
     _pipe->setOutputStep( outputStep );
 
     ObjectEditWidget::update();

@@ -45,6 +45,7 @@ Ramses::Ramses(QObject *parent) : RamObject(parent)
 
 void Ramses::login(QString username, QString password)
 {
+    m_dbi->suspend(false);
     m_dbi->login(username, password);
 }
 
@@ -294,6 +295,9 @@ RamState *Ramses::wipState()
 void Ramses::logout()
 {
     setOffline();
+    // Suspend the db interface until there's a login!
+    m_dbi->suspend();
+    setCurrentProject(nullptr);
     m_currentUser = nullptr;
     emit loggedOut();
 }

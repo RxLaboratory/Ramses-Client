@@ -115,6 +115,9 @@ void RamObject::remove( bool updateDB )
     if (m_removing) return;
     qDebug().noquote() << "> Accepted";
 
+    // Remove from the list of objects we keep to get them by uuid
+    m_existingObjects.remove(this->uuid());
+
     m_removing = true;
 #ifdef DUMP_OBJECT_DEBUG
     dumpObjectInfo();

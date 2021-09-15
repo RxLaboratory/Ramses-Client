@@ -768,6 +768,7 @@ void RamObjectDelegate::setComboBoxMode(bool comboBoxMode)
 bool RamObjectDelegate::canEdit(const QModelIndex &index) const
 {
     RamUser *u = Ramses::instance()->currentUser();
+    if (!u) return false;
 
     quintptr iptr = index.data(Qt::UserRole).toULongLong();
     if (iptr == 0) return false;

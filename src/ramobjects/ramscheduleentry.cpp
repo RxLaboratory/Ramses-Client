@@ -96,7 +96,8 @@ ScheduleEntryStruct RamScheduleEntry::toStruct() const
 
 RamScheduleEntry *RamScheduleEntry::scheduleEntry(QString uuid)
 {
-    return qobject_cast<RamScheduleEntry*>( RamObject::obj(uuid) );
+    RamObject *obj = RamObject::obj(uuid);
+    return qobject_cast<RamScheduleEntry*>( obj );
 }
 
 void RamScheduleEntry::update()
