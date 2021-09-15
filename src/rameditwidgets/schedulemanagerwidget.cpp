@@ -53,6 +53,7 @@ void ScheduleManagerWidget::projectChanged(RamProject *project)
         ui_timeRemaining->setText("");
         return;
     }
+    this->setEnabled(true);
 
     m_schedule->setList( project->users() );
     ui_userMenu->setList( project->users() );
@@ -66,7 +67,7 @@ void ScheduleManagerWidget::projectChanged(RamProject *project)
     int days = QDate::currentDate().daysTo( project->deadline() );
     ui_timeRemaining->setText("Time remaining: " + QString::number(days) + " days");
 
-    connect (m_project, SIGNAL(changed(RamObject*)),this,SLOT(projectUpdated(RamObject*)));
+    connect (m_project, SIGNAL(changed(RamObject*)),this,SLOT(projectUpdated(RamObject*)));//*/
 }
 
 void ScheduleManagerWidget::projectUpdated(RamObject *projObj)
