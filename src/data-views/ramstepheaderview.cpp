@@ -1,5 +1,7 @@
 #include "ramstepheaderview.h"
 
+#include "ramses.h"
+
 RamStepHeaderView::RamStepHeaderView(QWidget *parent):
     QHeaderView(Qt::Horizontal, parent)
 {
@@ -13,6 +15,9 @@ RamStepHeaderView::RamStepHeaderView(QWidget *parent):
     m_detailsFont = m_textFont;
     m_detailsFont.setItalic(true);
     m_padding = 10;
+
+    m_editIcon = QIcon(":/icons/edit").pixmap(QSize(12,12));
+    m_folderIcon = QIcon(":/icons/reveal-folder-s").pixmap(QSize(12,12));
 
     this->setMinimumHeight( 42 );
 }
@@ -36,6 +41,23 @@ void RamStepHeaderView::paintSection(QPainter *painter, const QRect &rect, int l
     painter->setPen( textPen );
     painter->setFont( m_textFont );
     painter->drawText( titleRect, Qt::AlignCenter | Qt::AlignVCenter | Qt::TextWordWrap, step->name(), &titleRect);
+
+    // Draw buttons
+    int xpos = rect.right() - 20;
+
+    // Draw editbutton
+    // Edit button
+    if (canEdit())
+    {
+        const QRect editButtonRect( xpos, rect.top() +7, 12, 12 );
+        xpos -= 22;
+        drawButton(painter, editButtonRect, m_editIcon, m_editButtonHover == logicalIndex);
+    }
+
+    // Draw Folder button
+    // Folder button
+    const QRect folderButtonRect( xpos, rect.top() +7, 12, 12 );
+    drawButton(painter, folderButtonRect, m_folderIcon, m_folderButtonHover == logicalIndex);
 
     // Draw status
 
@@ -96,11 +118,136 @@ void RamStepHeaderView::paintSection(QPainter *painter, const QRect &rect, int l
             completionPath.addRoundedRect(statusRect, 5, 5);
             painter->fillPath(completionPath, statusBrush);
         }
+    }
+}
 
+void RamStepHeaderView::mousePressEvent(QMouseEvent *event)
+{
+    const QPoint pos = event->pos();
+    const int sectionIndex = this->logicalIndexAt( pos );
+    const int sectionWidth = this->sectionSize( sectionIndex );
+    const int sectionLeft = this->sectionViewportPosition( sectionIndex );
+
+    const bool edit = canEdit();
+
+    int xpos = sectionLeft + sectionWidth - 22;
+    const QRect editButtonRect = QRect( xpos, 7, 20, 20 );
+    if (edit) xpos -= 22;
+    const QRect folderButtonRect( xpos, 7, 20, 20 );
+
+    if (editButtonRect.contains(pos) && edit)
+    {
+        m_editButtonPressed = sectionIndex;
+        return;
     }
 
+    if (folderButtonRect.contains(pos))
+    {
+        m_folderButtonPressed = sectionIndex;
+        return;
+    }
 
+    QHeaderView::mousePressEvent(event);
+}
 
+void RamStepHeaderView::mouseReleaseEvent(QMouseEvent *event)
+{
+    const QPoint pos = event->pos();
+    const int sectionIndex = this->logicalIndexAt( pos );
+    const int sectionWidth = this->sectionSize( sectionIndex );
+    const int sectionLeft = this->sectionViewportPosition( sectionIndex );
+
+    const bool edit = canEdit();
+
+    int xpos = sectionLeft + sectionWidth - 22;
+    const QRect editButtonRect = QRect( xpos, 7, 20, 20 );
+
+    if (edit) xpos -= 22;
+    const QRect folderButtonRect( xpos, 7, 20, 20 );
+
+    if (m_editButtonPressed == sectionIndex)
+    {
+        if (editButtonRect.contains(pos))
+        {
+            // Get the step
+            quintptr iptr = this->model()->headerData( sectionIndex, Qt::Horizontal, Qt::UserRole).toULongLong();
+            RamStep *step = reinterpret_cast<RamStep*>( iptr );
+            step->edit();
+        }
+        m_editButtonPressed = -1;
+        return;
+    }
+
+    if (m_folderButtonPressed == sectionIndex)
+    {
+        if (folderButtonRect.contains(pos))
+        {
+            // Get the step
+            quintptr iptr = this->model()->headerData( sectionIndex, Qt::Horizontal, Qt::UserRole).toULongLong();
+            RamStep *step = reinterpret_cast<RamStep*>( iptr );
+            step->revealFolder();
+        }
+        m_folderButtonPressed = -1;
+        return;
+    }
+
+    QHeaderView::mouseReleaseEvent(event);
+}
+
+void RamStepHeaderView::mouseMoveEvent(QMouseEvent *event)
+{
+    const QPoint pos = event->pos();
+    const int sectionIndex = this->logicalIndexAt( pos );
+    const int sectionWidth = this->sectionSize( sectionIndex );
+    const int sectionLeft = this->sectionViewportPosition( sectionIndex );
+
+    const bool edit = canEdit();
+
+    int xpos = sectionLeft + sectionWidth - 22;
+    const QRect editButtonRect = QRect( xpos, 7, 20, 20 );
+
+    if (edit) xpos -= 22;
+    const QRect folderButtonRect( xpos, 7, 20, 20 );
+
+    if (editButtonRect.contains(pos) && edit)
+    {
+        m_editButtonHover = sectionIndex;
+        this->update();
+    }
+    else if (m_editButtonHover == sectionIndex)
+    {
+        m_editButtonHover = -1;
+        this->update();
+    }
+
+    if (folderButtonRect.contains(pos))
+    {
+        m_folderButtonHover = sectionIndex;
+        this->update();
+    }
+    else if (m_folderButtonHover == sectionIndex)
+    {
+        m_folderButtonHover = -1;
+        this->update();
+    }
+
+    QHeaderView::mouseMoveEvent(event);
+}
+
+bool RamStepHeaderView::canEdit() const
+{
+    return Ramses::instance()->isProjectAdmin();
+}
+
+void RamStepHeaderView::drawButton(QPainter *painter, QRect rect, QPixmap icon, bool hover) const
+{
+    if (hover)
+    {
+        QPainterPath path;
+        path.addRoundedRect(rect.adjusted(-5, -5, 5, 5), 3, 3);
+        painter->fillPath(path, QBrush(m_abyss));
+    }
+    painter->drawPixmap( rect, icon );
 }
 
 void RamStepHeaderView::setCompletionRatio(bool newCompletionRatio)

@@ -56,8 +56,9 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
     }
     else if (option.state & QStyle::State_MouseOver)
     {
-        bgColor = bgColor.lighter();
-        detailsColor = detailsColor.darker();
+        bgColor = bgColor.lighter(120);
+        detailsColor = detailsColor.lighter(120);
+        textColor = textColor.lighter(120);
     }
 
     QBrush bgBrush(bgColor);
