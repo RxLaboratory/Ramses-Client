@@ -63,7 +63,11 @@ void ProjectEditWidget::setObject(RamObject *obj)
     m_userList->setList(project->users());
 
 
-    this->setEnabled( Ramses::instance()->isAdmin() ); 
+    this->setEnabled( Ramses::instance()->isAdmin() );
+    if (!this->isEnabled())
+    {
+        this->setEnabled( project->is(Ramses::instance()->currentProject()) && Ramses::instance()->isProjectAdmin() );
+    }
 }
 
 void ProjectEditWidget::update()
