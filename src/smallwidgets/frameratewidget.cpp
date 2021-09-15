@@ -40,6 +40,8 @@ void FramerateWidget::selectPreset(double fr)
 
 void FramerateWidget::setupUi()
 {
+    this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+
     QVBoxLayout *l = new QVBoxLayout();
     l->setContentsMargins(0,0,0,0);
     l->setSpacing(3);

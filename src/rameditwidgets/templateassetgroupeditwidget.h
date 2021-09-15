@@ -20,6 +20,7 @@ public slots:
 private slots:
 
 private:
+    void setupUi();
     RamAssetGroup *_assetGroup;
 };
 

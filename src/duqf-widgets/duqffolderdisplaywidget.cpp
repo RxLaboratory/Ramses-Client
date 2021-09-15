@@ -32,6 +32,7 @@ void DuQFFolderDisplayWidget::exploreButton_clicked()
 
 void DuQFFolderDisplayWidget::setupUi()
 {
+    this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     this->setObjectName(QStringLiteral("DuQFFolderDisplayWidget"));
     QHBoxLayout *horizontalLayout = new QHBoxLayout(this);
     horizontalLayout->setSpacing(3);

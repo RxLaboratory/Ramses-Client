@@ -81,6 +81,8 @@ void FileTypeEditWidget::setupUi()
 
     ui_previewableBox = new QCheckBox("This file can be used for previews\n(image, video...).", this);
     ui_mainFormLayout->addWidget(ui_previewableBox, 4, 1);
+
+    ui_mainLayout->addStretch();
 }
 
 void FileTypeEditWidget::connectEvents()

@@ -86,6 +86,8 @@ void StateEditWidget::setupUi()
     ui_mainLayout->setStretch(2,100);
 
     m_dontRename << "TODO" << "STB" << "NO" << "WIP" << "OK";
+
+    ui_mainLayout->addStretch();
 }
 
 void StateEditWidget::connectEvents()

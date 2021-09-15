@@ -64,6 +64,8 @@ void PipeFileEditWidget::setupUi()
 
     ui_colorSpaceBox = new RamObjectListComboBox(this);
     ui_mainFormLayout->addWidget(ui_colorSpaceBox, 4, 1);
+
+    ui_mainLayout->addStretch(100);
 }
 
 void PipeFileEditWidget::connectEvents()

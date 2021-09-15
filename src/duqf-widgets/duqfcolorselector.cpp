@@ -37,7 +37,7 @@ void DuQFColorSelector::selectColor()
 
 void DuQFColorSelector::setupUi()
 {
-    this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
+    this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
     QHBoxLayout *colorLayout = new QHBoxLayout(this);
     colorLayout->setSpacing(3);

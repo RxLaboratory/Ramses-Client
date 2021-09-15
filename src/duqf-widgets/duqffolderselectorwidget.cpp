@@ -107,6 +107,8 @@ void DuQFFolderSelectorWidget::deleteButton_clicked()
 
 void DuQFFolderSelectorWidget::setupUi()
 {
+    this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+
     this->setObjectName(QStringLiteral("DuQFFolderSelectorWidget"));
     QHBoxLayout *horizontalLayout = new QHBoxLayout(this);
     horizontalLayout->setSpacing(3);

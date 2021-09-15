@@ -137,14 +137,14 @@ void ProjectEditWidget::reinitPath()
 void ProjectEditWidget::setupUi()
 {
     QLabel *rLabel = new QLabel("Resolution", this);
-    rLabel->setAlignment(Qt::AlignTop | Qt::AlignLeft);
+    //rLabel->setAlignment(Qt::AlignTop | Qt::AlignLeft);
     ui_mainFormLayout->addWidget(rLabel, 3, 0);
 
     ui_resolutionWidget = new ResolutionWidget(this);
     ui_mainFormLayout->addWidget(ui_resolutionWidget, 3, 1);
 
     QLabel *frLabel = new QLabel("Framerate", this);
-    frLabel->setAlignment(Qt::AlignTop | Qt::AlignLeft);
+    //frLabel->setAlignment(Qt::AlignTop | Qt::AlignLeft);
     ui_mainFormLayout->addWidget(frLabel, 4, 0);
 
     ui_framerateWidget = new FramerateWidget(this);
@@ -164,6 +164,7 @@ void ProjectEditWidget::setupUi()
     ui_mainFormLayout->addWidget(ui_folderSelector,6, 1);
 
     QWidget *fWidget = new QWidget();
+    fWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     QHBoxLayout *fLayout = new QHBoxLayout(fWidget);
     fLayout->setSpacing(3);
     fLayout->setContentsMargins(0,0,0,0);

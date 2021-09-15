@@ -170,6 +170,8 @@ bool ObjectEditWidget::eventFilter(QObject *obj, QEvent *event)
 
 void ObjectEditWidget::setupUi()
 {
+    this->setMaximumWidth(500);
+
     QWidget *dummy = new QWidget(this);
     dummy->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
@@ -206,7 +208,7 @@ void ObjectEditWidget::setupUi()
     ui_mainFormLayout->addWidget(ui_commentLabel, 2, 0);
 
     ui_commentEdit = new QTextEdit(dummy);
-    ui_commentEdit->setMaximumHeight(50);
+    ui_commentEdit->setMaximumHeight(80);
     ui_commentEdit->setObjectName("commentEdit");
     ui_mainFormLayout->addWidget(ui_commentEdit, 2, 1);
 

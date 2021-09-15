@@ -3,6 +3,7 @@
 TemplateAssetGroupEditWidget::TemplateAssetGroupEditWidget(QWidget *parent) :
     ObjectEditWidget(parent)
 {
+    setupUi();
     setObject(nullptr);
 
     monitorDbQuery("updateTemplateAssetGroup");
@@ -11,6 +12,7 @@ TemplateAssetGroupEditWidget::TemplateAssetGroupEditWidget(QWidget *parent) :
 TemplateAssetGroupEditWidget::TemplateAssetGroupEditWidget(RamAssetGroup *templateAssetGroup, QWidget *parent) :
     ObjectEditWidget(templateAssetGroup, parent)
 {
+    setupUi();
     setObject(templateAssetGroup);
 
     monitorDbQuery("updateTemplateAssetGroup");
@@ -34,4 +36,9 @@ void TemplateAssetGroupEditWidget::setObject(RamObject *obj)
 
     this->setEnabled(Ramses::instance()->isAdmin());
 
+}
+
+void TemplateAssetGroupEditWidget::setupUi()
+{
+    ui_mainLayout->addStretch();
 }
