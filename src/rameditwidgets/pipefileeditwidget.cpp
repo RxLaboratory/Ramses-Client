@@ -18,16 +18,20 @@ void PipeFileEditWidget::setObject(RamObject *obj)
 
     QSignalBlocker b1(ui_fileTypeBox);
     QSignalBlocker b2(ui_colorSpaceBox);
+    QSignalBlocker b3(ui_customSettingsEdit);
 
     //Reset values
     ui_fileTypeBox->setCurrentIndex(-1);
     ui_colorSpaceBox->setCurrentIndex(-1);
+    ui_customSettingsEdit->setText("");
 
     if (!pipeFile) return;
 
     // Select file type
     RamFileType *ft = pipeFile->fileType();
     if(ft) ui_fileTypeBox->setObject( ft );
+
+    ui_customSettingsEdit->setText( pipeFile->customSettings() );
 
     this->setEnabled(Ramses::instance()->isProjectAdmin());
 }
@@ -42,6 +46,8 @@ void PipeFileEditWidget::update()
 
     RamFileType *ft = qobject_cast<RamFileType*>(ui_fileTypeBox->currentObject());
     if(ft) m_pipeFile->setFileType( ft );
+
+    m_pipeFile->setCustomSettings(ui_customSettingsEdit->text());
 
     ObjectEditWidget::update();
 
@@ -65,6 +71,12 @@ void PipeFileEditWidget::setupUi()
     ui_colorSpaceBox = new RamObjectListComboBox(this);
     ui_mainFormLayout->addWidget(ui_colorSpaceBox, 4, 1);
 
+    QLabel *customSettingsLabel = new QLabel("Custom settings", this);
+    ui_mainFormLayout->addWidget(customSettingsLabel, 5, 0);
+
+    ui_customSettingsEdit = new QLineEdit();
+    ui_mainFormLayout->addWidget(ui_customSettingsEdit, 5, 1);
+
     ui_mainLayout->addStretch(100);
 }
 
@@ -72,6 +84,7 @@ void PipeFileEditWidget::connectEvents()
 {
     connect(ui_fileTypeBox, SIGNAL(currentObjectChanged(RamObject*)), this, SLOT(update()));
     connect(ui_colorSpaceBox, SIGNAL(currentObjectChanged(RamObject*)), this, SLOT(update()));
+    connect(ui_customSettingsEdit, &QLineEdit::editingFinished, this, &PipeFileEditWidget::update);
 
     monitorDbQuery("updatePipeFile");
 }

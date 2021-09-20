@@ -1030,6 +1030,7 @@ QString RamLoader::gotPipeFile(QJsonObject newPF, RamProject* project)
     pipeFile->setShortName( newPF.value("shortName").toString() );
     pipeFile->setProject( project );
     pipeFile->setComment( newPF.value("comment").toString());
+    pipeFile->setCustomSettings( newPF.value("customSettings").toString() );
 
     RamFileType *ft = RamFileType::fileType( newPF.value("fileTypeUuid").toString() );
     if (ft) pipeFile->setFileType(ft);

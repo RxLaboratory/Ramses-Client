@@ -489,6 +489,7 @@ void Daemon::getPipes(QTcpSocket *client)
             RamPipeFile *pf = qobject_cast<RamPipeFile*>( p->pipeFiles()->at(j) );
             pipeFile.insert("colorSpace", "");
             pipeFile.insert("shortName", pf->shortName());
+            pipeFile.insert("customSettings", pf->customSettings());
             QJsonObject fileType;
             RamFileType *ft = pf->fileType();
             if (ft)

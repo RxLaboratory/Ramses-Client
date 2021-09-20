@@ -31,6 +31,9 @@ public:
 
     static RamPipeFile *pipeFile(QString uuid);
 
+    const QString &customSettings() const;
+    void setCustomSettings(const QString &newCustomSettings);
+
 public slots:
     void update() override;
     virtual void edit(bool show = true) override;
@@ -39,6 +42,8 @@ public slots:
 private:
     RamFileType *m_fileType;
     RamProject *m_project;
+
+    QString m_customSettings = "";
 };
 
 #endif // RAMPIPEFILE_H

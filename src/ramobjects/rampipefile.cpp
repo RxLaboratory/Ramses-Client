@@ -55,7 +55,7 @@ void RamPipeFile::update()
     RamObject::update();
     QString ft = "";
     if (m_fileType) ft = m_fileType->uuid();
-    m_dbi->updatePipeFile(m_uuid, m_shortName, ft, "", m_comment );
+    m_dbi->updatePipeFile(m_uuid, m_shortName, ft, "", m_comment, m_customSettings );
 }
 
 const RamProject *RamPipeFile::project() const
@@ -87,4 +87,17 @@ void RamPipeFile::edit(bool show)
 void RamPipeFile::removeFromDB()
 {
     m_dbi->removePipeFile(m_uuid);
+}
+
+const QString &RamPipeFile::customSettings() const
+{
+    return m_customSettings;
+}
+
+void RamPipeFile::setCustomSettings(const QString &newCustomSettings)
+{
+    if (m_customSettings == newCustomSettings) return;
+    m_dirty = true;
+    m_customSettings = newCustomSettings;
+    emit changed(this);
 }

@@ -711,7 +711,7 @@ void DBInterface::createPipeFile(QString shortName, QString projectUuid, QString
     request("createPipeFile", q);
 }
 
-void DBInterface::updatePipeFile(QString uuid, QString shortName, QString fileTypeUuid, QString colorSpaceUuid, QString comment)
+void DBInterface::updatePipeFile(QString uuid, QString shortName, QString fileTypeUuid, QString colorSpaceUuid, QString comment, QString customSettings)
 {
     QStringList q;
     q << "shortName=" + shortName;
@@ -719,6 +719,7 @@ void DBInterface::updatePipeFile(QString uuid, QString shortName, QString fileTy
     q << "fileTypeUuid=" + fileTypeUuid;
     q << "colorSpaceUuid=" + colorSpaceUuid;
     q << "comment=" + comment;
+    q << "customSettings=" + customSettings;
 
     request("updatePipeFile", q);
 }
