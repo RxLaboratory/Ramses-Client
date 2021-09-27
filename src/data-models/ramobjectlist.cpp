@@ -96,10 +96,11 @@ void RamObjectList::objectMoved(RamObject *obj, int from, int to)
 {
     Q_UNUSED(obj)
 
+    // Can't sort if out of range. When loading, call sort() when all objects have been added.
     if (from < 0) from = 0;
     if (to < 0) to = 0;
-    if (from >= m_objectsList.count() ) from = m_objectsList.count();
-    if (to >=  m_objectsList.count() ) to = m_objectsList.count();
+    if (from >= m_objectsList.count() ) from = m_objectsList.count()-1;
+    if (to >=  m_objectsList.count() ) to = m_objectsList.count()-1;
     if (from == to) return;
 
     beginResetModel();
