@@ -323,12 +323,20 @@ void RamStatus::assignedUserRemoved()
 
 float RamStatus::estimation() const
 {
+    // If state is none, 0!
+    RamState *noState = Ramses::instance()->noState();
+    if (noState->is(m_state)) return 0.0;
+
     return m_estimation;
 }
 
 float RamStatus::autoEstimation(int difficulty) const
 {
     float estimation = 0.0;
+
+    // If state is none, 0!
+    RamState *noState = Ramses::instance()->noState();
+    if (noState->is(m_state)) return 0.0;
 
     switch (difficulty)
     {

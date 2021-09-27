@@ -234,6 +234,9 @@ void StatusEditWidget::update()
 
     m_status->update();
 
+    //Update auto estimation
+    autoEstimate( ui_autoEstimationBox->isChecked() );
+
     updating = false;
 }
 
