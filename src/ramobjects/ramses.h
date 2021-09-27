@@ -76,6 +76,7 @@ signals:
     void currentProjectChanged(RamProject*);
     void newStep(RamStep *);
     void newAssetGroup(RamAssetGroup *);
+    void busy(bool);
 
 protected:
     static Ramses *_instance;

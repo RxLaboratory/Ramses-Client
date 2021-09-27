@@ -7,6 +7,11 @@ ProcessManager::ProcessManager(QObject *parent) : QObject(parent)
 
 }
 
+bool ProcessManager::isBusy() const
+{
+    return m_busy;
+}
+
 ProcessManager *ProcessManager::instance()
 {
     if (!_instance) _instance = new ProcessManager();
@@ -45,6 +50,7 @@ void ProcessManager::freeze(const bool &f)
 
 void ProcessManager::increment()
 {
+    m_busy = true;
     setProgress(m_val + 1);
 }
 
@@ -63,11 +69,13 @@ void ProcessManager::reInit()
 
 void ProcessManager::finish()
 {
+    m_busy = false;
     emit finished();
 }
 
 void ProcessManager::start()
 {
+    m_busy = true;
     reInit();
     emit started();
 }

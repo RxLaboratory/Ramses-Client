@@ -123,11 +123,16 @@ void Ramses::init()
 
 void Ramses::setCurrentProject(RamProject *project)
 {
-    qDebug() << "Setting project: Database call";
+
     if ( m_currentProject ) if ( m_currentProject->is(project) ) return;
-    if ( project ) m_dbi->getProject(project->uuid());
+    if ( project )
+    {
+        qDebug() << "Setting project: Database call";
+        m_dbi->getProject(project->uuid());
+    }
     else
     {
+        qDebug() << "Setting project to none";
         m_currentProject = nullptr;
         emit currentProjectChanged(m_currentProject);
     }

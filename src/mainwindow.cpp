@@ -750,7 +750,9 @@ void MainWindow::currentProjectChanged(RamProject *project)
         home();
     }
     else
+    {
         ui_statsTitle->setTitle( project->name() );
+    }
 }
 
 void MainWindow::freezeUI(bool f)

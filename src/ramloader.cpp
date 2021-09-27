@@ -57,12 +57,13 @@ void RamLoader::run()
         gotFileTypes( content.value("fileTypes").toArray());
         gotApplications( content.value("applications").toArray());
         gotProjects( content.value("projects").toArray(), true);
-        emit ready();
     }
 
     // Resume Daemon which has been suspended by DBInterface
     Daemon::instance()->resume();
     m_pm->finish();
+
+    if (query == "init") emit ready();
 }
 
 void RamLoader::newData(QJsonObject data)

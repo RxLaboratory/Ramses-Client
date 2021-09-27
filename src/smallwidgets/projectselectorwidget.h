@@ -4,6 +4,7 @@
 #include <QComboBox>
 
 #include "ramses.h"
+#include "processmanager.h"
 #include "ramobjectlistcombobox.h"
 #include "data-models/ramprojectfiltermodel.h"
 
@@ -18,6 +19,7 @@ private slots:
     void userChanged(RamUser *user);
 private:
     RamProjectFilterModel *m_projectFilter;
+    ProcessManager *m_pm;
 };
 
 #endif // PROJECTSELECTORWIDGET_H

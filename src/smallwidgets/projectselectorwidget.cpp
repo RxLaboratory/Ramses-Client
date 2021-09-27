@@ -8,6 +8,8 @@ ProjectSelectorWidget::ProjectSelectorWidget(QWidget *parent):
     this->setModel(m_projectFilter);
     this->setMinimumWidth(200);
 
+    m_pm = ProcessManager::instance();
+
     connect(this, SIGNAL(currentObjectChanged(RamObject*)), this, SLOT(setCurrentProject(RamObject*)));
     connect(Ramses::instance(), SIGNAL(currentProjectChanged(RamProject*)), this, SLOT(currentProjectChanged(RamProject*)));
     connect(Ramses::instance(), SIGNAL(loggedIn(RamUser*)), this, SLOT(userChanged(RamUser*)));
@@ -15,6 +17,7 @@ ProjectSelectorWidget::ProjectSelectorWidget(QWidget *parent):
 
 void ProjectSelectorWidget::setCurrentProject(RamObject *projObj)
 {
+    if (m_pm->isBusy()) return;
     RamProject *proj = qobject_cast<RamProject*>( projObj );
     Ramses::instance()->setCurrentProject( proj );
 }
@@ -34,6 +37,7 @@ void ProjectSelectorWidget::currentProjectChanged(RamProject *p)
 
 void ProjectSelectorWidget::userChanged(RamUser *user)
 {
+    if (m_pm->isBusy()) return;
     m_projectFilter->clearUsers();
     m_projectFilter->addUser(user->uuid());
 }

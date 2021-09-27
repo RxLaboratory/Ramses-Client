@@ -18,6 +18,7 @@ public:
     void reInit();
     void finish();
     void start();
+    bool isBusy() const;
 
 signals:
     void progress(int);
@@ -36,7 +37,7 @@ private:
 
     int m_val = 0;
     int m_maximum = 0;
-
+    bool m_busy = false;
 };
 
 #endif // PROCESSMANAGER_H

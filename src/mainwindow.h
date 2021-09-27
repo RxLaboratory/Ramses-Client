@@ -152,6 +152,5 @@ protected:
     void keyPressEvent(QKeyEvent *key) override;
     void keyReleaseEvent(QKeyEvent *key) override;
     bool eventFilter(QObject *obj, QEvent *event) override;
-
 };
 #endif // MAINWINDOW_H
