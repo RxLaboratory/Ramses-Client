@@ -124,6 +124,31 @@ void ItemTableManagerWidget::hideEvent(QHideEvent *event)
     {
         ui_titleBar->hide();
     }
+
+    // Save filters and layout
+    RamUser *user = Ramses::instance()->currentUser();
+    if (user)
+    {
+        QSettings *uSettings = user->settings();
+
+        if (m_productionType == RamStep::ShotProduction)
+            uSettings->beginGroup("shotTable");
+        else
+            uSettings->beginGroup("assetTable");
+
+        // View
+        uSettings->setValue("showTimeTracking", ui_actionTimeTracking->isChecked());
+        uSettings->setValue("showCompletion", ui_actionCompletionRatio->isChecked());
+        uSettings->setValue("showDetails", ui_actionShowDetails->isChecked());
+        // Users
+        ui_userMenu->saveState(uSettings, "users");
+        // Steps
+        ui_stepMenu->saveState(uSettings, "steps");
+        // States
+        ui_stateMenu->saveState(uSettings, "states");
+
+        uSettings->endGroup();
+    }
     QWidget::hideEvent(event);
 }
 
@@ -158,8 +183,8 @@ void ItemTableManagerWidget::projectChanged(RamProject *project)
     }
 
     // Populate list and table
-    addStep(QModelIndex(), 0, project->steps()->rowCount()-1 );
-    addUser(QModelIndex(), 0, project->users()->rowCount()-1 );
+    ui_userMenu->setList( project->users() );
+    ui_stepMenu->setList( project->steps() );
     ui_actionNotAssigned->setChecked(true);
 
     if (m_productionType == RamStep::AssetProduction)
@@ -176,254 +201,23 @@ void ItemTableManagerWidget::projectChanged(RamProject *project)
     ui_assignUserMenu->setList(project->users());
     ui_assignUserContextMenu->setList(project->users());
 
-    m_projectConnections << connect(project->users(), SIGNAL(rowsInserted(QModelIndex,int,int)),this,SLOT(addUser(QModelIndex,int,int)));
-    m_projectConnections << connect(project->users(), SIGNAL(rowsAboutToBeRemoved(QModelIndex,int,int)),this,SLOT(removeUser(QModelIndex,int,int)));
-    m_projectConnections << connect(project->users(), SIGNAL(dataChanged(QModelIndex,QModelIndex,QVector<int>)), this, SLOT(userChanged(QModelIndex,QModelIndex,QVector<int>)));
-    m_projectConnections << connect(project->steps(), SIGNAL(rowsInserted(QModelIndex,int,int)),this,SLOT(addStep(QModelIndex,int,int)));
-    m_projectConnections << connect(project->steps(), SIGNAL(rowsAboutToBeRemoved(QModelIndex,int,int)),this,SLOT(removeStep(QModelIndex,int,int)));
-    m_projectConnections << connect(project->steps(), SIGNAL(dataChanged(QModelIndex,QModelIndex,QVector<int>)), this, SLOT(stepChanged(QModelIndex,QModelIndex,QVector<int>)));
+    ui_stateMenu->selectAll();
+    ui_stepMenu->selectAll();
+    ui_userMenu->selectAll();
+
+    loadSettings();
 
     this->setEnabled(true);
 }
 
-void ItemTableManagerWidget::addStep(const QModelIndex &parent, int first, int last)
-{
-    Q_UNUSED(parent)
-
-    if (!m_project) return;
-    RamObjectList *steps = m_project->steps();
-
-    for(int i = first; i <= last; i++)
-    {
-        quintptr iptr = steps->data(steps->index(i,0), Qt::UserRole).toULongLong();
-        RamStep *step = reinterpret_cast<RamStep*>( iptr );
-        if (m_productionType != step->type()) continue;
-        QAction *stepAction = new QAction(step->name(), this);
-        stepAction->setCheckable(true);
-        stepAction->setData( iptr );
-        stepAction->setChecked(true);
-        ui_stepMenu->addAction(stepAction);
-        connect (stepAction, SIGNAL(toggled(bool)), this, SLOT(stepActionToggled(bool)));
-    }
-}
-
-void ItemTableManagerWidget::removeStep(const QModelIndex &parent, int first, int last)
-{
-    Q_UNUSED(parent)
-
-    if (!m_project) return;
-    RamObjectList *steps = m_project->steps();
-
-    for(int i = first; i <= last; i++)
-    {
-        quintptr iptr = steps->data(steps->index(i,0), Qt::UserRole).toULongLong();
-        QList<QAction*> actions = ui_stepMenu->actions();
-        for (int i = 4; i < actions.count(); i++)
-        {
-            if (actions[i]->data().toULongLong() == iptr)
-            {
-                actions[i]->deleteLater();
-                return;
-            }
-        }
-    }
-
-    checkStepFilters();
-
-}
-
-void ItemTableManagerWidget::stepChanged(const QModelIndex &first, const QModelIndex &last, QVector<int> roles)
-{
-    Q_UNUSED(roles)
-
-    if (!m_project) return;
-    RamObjectList *steps = m_project->steps();
-
-    for(int i = first.row(); i <= last.row(); i++)
-    {
-        quintptr iptr = steps->data(steps->index(i,0), Qt::UserRole).toULongLong();
-        QList<QAction*> actions = ui_stepMenu->actions();
-        for (int i = 4; i < actions.count(); i++)
-        {
-            if (actions[i]->data().toULongLong() == iptr)
-            {
-                RamStep *step = reinterpret_cast<RamStep*>( iptr );
-                actions[i]->setText(step->name());
-                return;
-            }
-        }
-    }
-}
-
-void ItemTableManagerWidget::addUser(const QModelIndex &parent, int first, int last)
-{
-    Q_UNUSED(parent)
-
-    if (!m_project) return;
-    RamObjectList *users = m_project->users();
-
-    for(int i = first; i <= last; i++)
-    {
-        quintptr iptr = users->data(users->index(i,0), Qt::UserRole).toULongLong();
-        RamUser *user = reinterpret_cast<RamUser*>( iptr );
-        QAction *userAction = new QAction(user->name(), this);
-        userAction->setCheckable(true);
-        userAction->setData( iptr );
-        userAction->setChecked(true);
-        ui_userMenu->addAction(userAction);
-        ui_table->filteredList()->showUser(user);
-        connect (userAction, SIGNAL(toggled(bool)), this, SLOT(userActionToggled(bool)));
-    }
-}
-
-void ItemTableManagerWidget::removeUser(const QModelIndex &parent, int first, int last)
-{
-    Q_UNUSED(parent)
-
-    if (!m_project) return;
-
-    RamObjectList *users = m_project->users();
-
-    for(int i = first; i <= last; i++)
-    {
-        quintptr iptr = users->data(users->index(i,0), Qt::UserRole).toULongLong();
-        QList<QAction*> actions = ui_userMenu->actions();
-        for (int i = 5; i < actions.count(); i++)
-        {
-            if (actions[i]->data().toULongLong() == iptr)
-            {
-                RamUser *user = reinterpret_cast<RamUser*>( iptr );
-                ui_table->filteredList()->hideUser(user);
-                actions[i]->deleteLater();
-                return;
-            }
-        }
-    }
-
-    checkUserFilters();
-}
-
-void ItemTableManagerWidget::userChanged(const QModelIndex &first, const QModelIndex &last, QVector<int> roles)
-{
-    Q_UNUSED(roles)
-
-    if (!m_project) return;
-
-    RamObjectList *users = m_project->users();
-
-    for(int i = first.row(); i <= last.row(); i++)
-    {
-        quintptr iptr = users->data(users->index(i,0), Qt::UserRole).toULongLong();
-        QList<QAction*> actions = ui_userMenu->actions();
-        for (int i = 4; i < actions.count(); i++)
-        {
-            if (actions[i]->data().toULongLong() == iptr)
-            {
-                RamUser *user = reinterpret_cast<RamUser*>( iptr );
-                actions[i]->setText(user->name());
-                return;
-            }
-        }
-    }
-}
-
-void ItemTableManagerWidget::addState(const QModelIndex &parent, int first, int last)
-{
-    Q_UNUSED(parent)
-
-    RamObjectList *states = Ramses::instance()->states();
-
-    for(int i = first; i <= last; i++)
-    {
-        quintptr iptr = states->data(states->index(i,0), Qt::UserRole).toULongLong();
-        RamState *state = reinterpret_cast<RamState*>( iptr );
-        QAction *stateAction = new QAction(state->name(), this);
-        stateAction->setCheckable(true);
-        stateAction->setData( iptr );
-        stateAction->setChecked(true);
-        ui_stateMenu->addAction(stateAction);
-        ui_table->filteredList()->showState(state);
-        connect (stateAction, SIGNAL(toggled(bool)), this, SLOT(stateActionToggled(bool)));
-    }
-}
-
-void ItemTableManagerWidget::removeState(const QModelIndex &parent, int first, int last)
-{
-    Q_UNUSED(parent)
-
-    RamObjectList *states = Ramses::instance()->states();
-
-    for(int i = first; i <= last; i++)
-    {
-        quintptr iptr = states->data(states->index(i,0), Qt::UserRole).toULongLong();
-        QList<QAction*> actions = ui_stateMenu->actions();
-        for (int i = 3; i < actions.count(); i++)
-        {
-            if (actions[i]->data().toULongLong() == iptr)
-            {
-                quintptr iptr = states->data(states->index(i,0), Qt::UserRole).toULongLong();
-                RamState *state = reinterpret_cast<RamState*>( iptr );
-                ui_table->filteredList()->hideState(state);
-                actions[i]->deleteLater();
-                return;
-            }
-        }
-    }
-
-    checkStateFilters();
-}
-
-void ItemTableManagerWidget::stateChanged(const QModelIndex &first, const QModelIndex &last, QVector<int> roles)
-{
-    Q_UNUSED(roles)
-
-    RamObjectList *states = Ramses::instance()->states();
-
-    for(int i = first.row(); i <= last.row(); i++)
-    {
-        quintptr iptr = states->data(states->index(i,0), Qt::UserRole).toULongLong();
-        QList<QAction*> actions = ui_stateMenu->actions();
-        for (int i = 3; i < actions.count(); i++)
-        {
-            if (actions[i]->data().toULongLong() == iptr)
-            {
-                RamState *state = reinterpret_cast<RamState*>( iptr );
-                actions[i]->setText(state->name());
-                return;
-            }
-        }
-    }
-}
-
-void ItemTableManagerWidget::stepActionToggled(bool checked)
+void ItemTableManagerWidget::showUser(RamObject *userObj, bool s)
 {
     if(!m_project) return;
-    QAction *action = (QAction*)sender();
-    quintptr iptr = action->data().toULongLong();
-    RamStep *step = reinterpret_cast<RamStep*>( iptr );
-    if(checked)
-    {
-        ui_table->filteredList()->showStep( step );
-        ui_table->resizeColumnsToContents();
-        ui_table->resizeRowsToContents();
-    }
-    else
-    {
-        ui_table->filteredList()->hideStep( step );
-    }
-    checkStepFilters();
-}
-
-void ItemTableManagerWidget::userActionToggled(bool checked)
-{
-    if(!m_project) return;
-    QAction *action = (QAction*)sender();
-    quintptr iptr = action->data().toULongLong();
-    RamUser *user = reinterpret_cast<RamUser*>( iptr );
-    if(checked)
+    RamUser *user = qobject_cast<RamUser*>( userObj );
+    if(s)
     {
         ui_table->filteredList()->showUser(user);
-        ui_table->resizeRowsToContents();
+        //ui_table->resizeRowsToContents();
     }
     else
     {
@@ -432,13 +226,28 @@ void ItemTableManagerWidget::userActionToggled(bool checked)
     checkUserFilters();
 }
 
-void ItemTableManagerWidget::stateActionToggled(bool checked)
+void ItemTableManagerWidget::showStep(RamObject *stepObj, bool s)
 {
     if(!m_project) return;
-    QAction *action = (QAction*)sender();
-    quintptr iptr = action->data().toULongLong();
-    RamState *state = reinterpret_cast<RamState*>( iptr );
-    if(checked)
+    RamStep *step = qobject_cast<RamStep*>( stepObj );
+    if(s)
+    {
+        ui_table->filteredList()->showStep( step );
+        ui_table->resizeColumnsToContents();
+        //ui_table->resizeRowsToContents();
+    }
+    else
+    {
+        ui_table->filteredList()->hideStep( step );
+    }
+    checkStepFilters();
+}
+
+void ItemTableManagerWidget::showState(RamObject *stateObj, bool s)
+{
+    if(!m_project) return;
+    RamState *state = qobject_cast<RamState*>( stateObj );
+    if(s)
     {
         ui_table->filteredList()->showState(state);
         ui_table->resizeRowsToContents();
@@ -452,16 +261,8 @@ void ItemTableManagerWidget::stateActionToggled(bool checked)
 
 void ItemTableManagerWidget::checkStepFilters()
 {
-    QList<QAction*> actions = ui_stepMenu->actions();
-    bool ok = true;
-    for (int i = 4; i < actions.count(); i++)
-    {
-        if(!actions[i]->isChecked())
-        {
-            ok = false;
-            break;
-        }
-    }
+    bool ok = ui_stepMenu->isAllChecked();
+
     QString t = ui_stepButton->text().replace(" ▽","");
     if (!ok) t = t + " ▽";
     ui_stepButton->setText( t );
@@ -469,16 +270,8 @@ void ItemTableManagerWidget::checkStepFilters()
 
 void ItemTableManagerWidget::checkUserFilters()
 {
-    QList<QAction*> actions = ui_userMenu->actions();
-    bool ok = true;
-    for (int i = 4; i < actions.count(); i++)
-    {
-        if(!actions[i]->isChecked())
-        {
-            ok = false;
-            break;
-        }
-    }
+    bool ok = ui_userMenu->isAllChecked();
+
     QString t = ui_userButton->text().replace(" ▽","");
     if (!ok) t = t + " ▽";
     ui_userButton->setText( t );
@@ -486,16 +279,8 @@ void ItemTableManagerWidget::checkUserFilters()
 
 void ItemTableManagerWidget::checkStateFilters()
 {
-    QList<QAction*> actions = ui_stateMenu->actions();
-    bool ok = true;
-    for (int i = 3; i < actions.count(); i++)
-    {
-        if(!actions[i]->isChecked())
-        {
-            ok = false;
-            break;
-        }
-    }
+    bool ok = ui_stateMenu->isAllChecked();
+
     QString t = ui_stateButton->text().replace(" ▽","");
     if (!ok) t = t + " ▽";
     ui_stateButton->setText( t );
@@ -762,11 +547,11 @@ void ItemTableManagerWidget::currentUserChanged(RamUser *user)
 {
     ui_actionItem->setVisible(false);
     if (!user) return;
-    qDebug() << user->role();
     if (user->role() >= RamUser::ProjectAdmin)
     {
         ui_actionItem->setVisible(true);
     }
+    loadSettings();
 }
 
 void ItemTableManagerWidget::setupUi()
@@ -790,6 +575,33 @@ void ItemTableManagerWidget::setupUi()
     ui_searchEdit->setMaximumWidth(150);
     ui_searchEdit->hideSearchButton();
     ui_titleBar->insertLeft(ui_searchEdit);
+
+    // View Menu
+    QMenu *viewMenu = new QMenu(this);
+
+    ui_actionTimeTracking = new QAction("Show time tracking", this);
+    ui_actionTimeTracking->setCheckable(true);
+    ui_actionTimeTracking->setChecked(true);
+    viewMenu->addAction(ui_actionTimeTracking);
+
+    ui_actionCompletionRatio = new QAction("Show completion", this);
+    ui_actionCompletionRatio->setCheckable(true);
+    ui_actionCompletionRatio->setChecked(true);
+    viewMenu->addAction(ui_actionCompletionRatio);
+
+    ui_actionShowDetails = new QAction("Show details", this);
+    ui_actionShowDetails->setCheckable(true);
+    viewMenu->addAction(ui_actionShowDetails);
+
+    QToolButton *viewButton = new QToolButton(this);
+    viewButton->setText(" View");
+    viewButton->setIcon(QIcon(":/icons/show"));
+    viewButton->setMenu(viewMenu);
+    viewButton->setIconSize(QSize(16,16));
+    viewButton->setObjectName("menuButton");
+    viewButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    viewButton->setPopupMode(QToolButton::InstantPopup);
+    ui_titleBar->insertLeft(viewButton);
 
     // Item Menu
     ui_itemMenu = new QMenu(this);
@@ -832,42 +644,11 @@ void ItemTableManagerWidget::setupUi()
     ui_itemButton->setPopupMode(QToolButton::InstantPopup);
     ui_actionItem = ui_titleBar->insertLeft(ui_itemButton);
 
-    // View Menu
-    QMenu *viewMenu = new QMenu(this);
-
-    ui_actionTimeTracking = new QAction("Show time tracking", this);
-    ui_actionTimeTracking->setCheckable(true);
-    ui_actionTimeTracking->setChecked(true);
-    viewMenu->addAction(ui_actionTimeTracking);
-
-    ui_actionCompletionRatio = new QAction("Show completion", this);
-    ui_actionCompletionRatio->setCheckable(true);
-    ui_actionCompletionRatio->setChecked(true);
-    viewMenu->addAction(ui_actionCompletionRatio);
-
-    QToolButton *viewButton = new QToolButton(this);
-    viewButton->setText(" View");
-    viewButton->setIcon(QIcon(":/icons/show"));
-    viewButton->setMenu(viewMenu);
-    viewButton->setIconSize(QSize(16,16));
-    viewButton->setObjectName("menuButton");
-    viewButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-    viewButton->setPopupMode(QToolButton::InstantPopup);
-    ui_titleBar->insertLeft(viewButton);
-
     // User Menu
-    ui_userMenu = new QMenu(this);
-
-    ui_actionSelectAllUsers = new QAction("Select All", this);
-    ui_userMenu->addAction(ui_actionSelectAllUsers);
-
-    ui_actionSelectNoUser = new QAction("Select None", this);
-    ui_userMenu->addAction(ui_actionSelectNoUser);
+    ui_userMenu = new RamObjectListMenu(true, this);
 
     ui_actionSelectMyself = new QAction("Select myself", this);
-    ui_userMenu->addAction(ui_actionSelectMyself);
-
-    ui_userMenu->addSeparator();
+    ui_userMenu->insertAction( ui_userMenu->actions().at(0), ui_actionSelectMyself);
 
     ui_actionNotAssigned = new QAction("Unassigned", this);
     ui_actionNotAssigned->setCheckable(true);
@@ -886,18 +667,10 @@ void ItemTableManagerWidget::setupUi()
     ui_titleBar->insertLeft(ui_userButton);
 
     // Step Menu
-    ui_stepMenu = new QMenu(this);
-
-    ui_actionSelectAllSteps = new QAction("Select All", this);
-    ui_stepMenu->addAction(ui_actionSelectAllSteps);
-
-    ui_actionSelectNoSteps = new QAction("Select None", this);
-    ui_stepMenu->addAction(ui_actionSelectNoSteps);
+    ui_stepMenu = new RamObjectListMenu(true, this);
 
     ui_actionSelectMySteps = new QAction("Select my steps", this);
-    ui_stepMenu->addAction(ui_actionSelectMySteps);
-
-    ui_stepMenu->addSeparator();
+    ui_stepMenu->insertAction( ui_stepMenu->actions().at(2), ui_actionSelectMySteps);
 
     ui_stepButton = new QToolButton(this);
     ui_stepButton->setText(" Steps");
@@ -912,15 +685,7 @@ void ItemTableManagerWidget::setupUi()
 
     // State menu
 
-    ui_stateMenu = new QMenu(this);
-
-    ui_actionSelectAllStates = new QAction("Select All", this);
-    ui_stateMenu->addAction(ui_actionSelectAllStates);
-
-    ui_actionSelectNoState = new QAction("Select None", this);
-    ui_stateMenu->addAction(ui_actionSelectNoState);
-
-    ui_stateMenu->addSeparator();
+    ui_stateMenu = new RamObjectListMenu(true, this);
 
     ui_stateButton = new QToolButton(this);
     ui_stateButton->setText(" States");
@@ -931,7 +696,7 @@ void ItemTableManagerWidget::setupUi()
     ui_stateButton->setPopupMode(QToolButton::InstantPopup);
     ui_stateButton->setMenu(ui_stateMenu);
 
-    addState(QModelIndex(), 0, Ramses::instance()->states()->rowCount()-1 );
+    ui_stateMenu->setList( Ramses::instance()->states() );
 
     ui_titleBar->insertLeft(ui_stateButton);
 
@@ -1099,25 +864,20 @@ void ItemTableManagerWidget::connectEvents()
     connect(ui_completion100, SIGNAL(triggered()), this, SLOT( setCompletion() ) );
     connect(ui_table, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(contextMenuRequested(QPoint)));
     // view actions
-    connect(ui_actionTimeTracking, SIGNAL(triggered(bool)), ui_table, SLOT(setTimeTracking(bool)));
-    connect(ui_actionCompletionRatio, SIGNAL(triggered(bool)), ui_table, SLOT(setCompletionRatio(bool)));
-    connect(ui_actionTimeTracking, SIGNAL(triggered(bool)), ui_header, SLOT(setTimeTracking(bool)));
-    connect(ui_actionCompletionRatio, SIGNAL(triggered(bool)), ui_header, SLOT(setCompletionRatio(bool)));
+    connect(ui_actionTimeTracking, SIGNAL(toggled(bool)), ui_table, SLOT(setTimeTracking(bool)));
+    connect(ui_actionCompletionRatio, SIGNAL(toggled(bool)), ui_table, SLOT(setCompletionRatio(bool)));
+    connect(ui_actionTimeTracking, SIGNAL(toggled(bool)), ui_header, SLOT(setTimeTracking(bool)));
+    connect(ui_actionCompletionRatio, SIGNAL(toggled(bool)), ui_header, SLOT(setCompletionRatio(bool)));
+    connect(ui_actionShowDetails, SIGNAL(toggled(bool)), ui_table, SLOT(showDetails(bool)));
     // step actions
-    connect(ui_actionSelectAllSteps, SIGNAL(triggered()), this, SLOT(selectAllSteps()));
-    connect(ui_actionSelectNoSteps, SIGNAL(triggered()), this, SLOT(deselectSteps()));
+    connect(ui_stepMenu,SIGNAL(assign(RamObject*,bool)), this, SLOT(showStep(RamObject*,bool)));
     connect(ui_actionSelectMySteps, SIGNAL(triggered()), this, SLOT(selectUserSteps()));
     // user actions
+    connect(ui_userMenu,SIGNAL(assign(RamObject*,bool)), this, SLOT(showUser(RamObject*,bool)));
     connect(ui_actionNotAssigned, SIGNAL(toggled(bool)), this, SLOT(showUnassigned(bool)));
-    connect(ui_actionSelectAllUsers, SIGNAL(triggered()), this, SLOT(selectAllUsers()));
-    connect(ui_actionSelectNoUser, SIGNAL(triggered()), this, SLOT(deselectUsers()));
     connect(ui_actionSelectMyself, SIGNAL(triggered()), this, SLOT(selectMyself()));
     // state actions
-    connect(ui_actionSelectAllStates, SIGNAL(triggered()), this, SLOT(selectAllStates()));
-    connect(ui_actionSelectNoState, SIGNAL(triggered()), this, SLOT(deselectStates()));
-    connect(Ramses::instance()->states(), SIGNAL(rowsInserted(QModelIndex,int,int)),this,SLOT(addState(QModelIndex,int,int)));
-    connect(Ramses::instance()->states(), SIGNAL(rowsAboutToBeRemoved(QModelIndex,int,int)),this,SLOT(removeState(QModelIndex,int,int)));
-    connect(Ramses::instance()->states(), SIGNAL(dataChanged(QModelIndex,QModelIndex,QVector<int>)), this, SLOT(stateChanged(QModelIndex,QModelIndex,QVector<int>)));
+    connect(ui_stateMenu,SIGNAL(assign(RamObject*,bool)), this, SLOT(showState(RamObject*,bool)));
     // comment actions
     connect(ui_copyComment, SIGNAL(triggered()), this, SLOT(copyComment()));
     connect(ui_cutComment, SIGNAL(triggered()), this, SLOT(cutComment()));
@@ -1134,6 +894,30 @@ void ItemTableManagerWidget::connectEvents()
     connect(ui_titleBar, &TitleBar::closeRequested, this, &ItemTableManagerWidget::closeRequested);
     connect(Ramses::instance(), &Ramses::currentProjectChanged, this, &ItemTableManagerWidget::projectChanged);
     connect(Ramses::instance(), SIGNAL(loggedIn(RamUser*)), this, SLOT(currentUserChanged(RamUser*)));
+}
+
+void ItemTableManagerWidget::loadSettings()
+{
+    RamUser *u = Ramses::instance()->currentUser();
+    if (!u) return;
+    QSettings *uSettings = u->settings();
+    if (m_productionType == RamStep::ShotProduction)
+        uSettings->beginGroup("shotTable");
+    else
+        uSettings->beginGroup("assetTable");
+
+    // View
+    ui_actionTimeTracking->setChecked( uSettings->value("showTimeTracking", true).toBool() );
+    ui_actionCompletionRatio->setChecked( uSettings->value("showCompletion", true).toBool() );
+    ui_actionShowDetails->setChecked( uSettings->value("showDetails", true).toBool() );
+    // Users
+    ui_userMenu->restoreState(uSettings, "users");
+    // Steps
+    ui_stepMenu->restoreState(uSettings, "steps");
+    // States
+    ui_stateMenu->restoreState(uSettings, "states");
+
+    uSettings->endGroup();
 }
 
 QList<RamStatus *> ItemTableManagerWidget::beginEditSelectedStatus()

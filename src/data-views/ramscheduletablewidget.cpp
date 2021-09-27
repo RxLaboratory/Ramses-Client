@@ -4,8 +4,16 @@ RamScheduleTableWidget::RamScheduleTableWidget(QWidget *parent):
     QTableView(parent)
 {
     setupUi();
-    this->setItemDelegate( new RamScheduleDelegate(this));
+    m_delegate = new RamScheduleDelegate(this);
+    this->setItemDelegate( m_delegate );
     connectEvents();
+}
+
+void RamScheduleTableWidget::showDetails(bool s)
+{
+    m_delegate->showDetails(s);
+    this->resizeRowsToContents();
+    this->resizeColumnsToContents();
 }
 
 void RamScheduleTableWidget::mouseMoveEvent(QMouseEvent *event)

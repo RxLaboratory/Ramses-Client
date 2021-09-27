@@ -21,6 +21,9 @@ public:
 
     bool editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index) override;
 
+    void showDetails(bool s);
+    bool details() const;
+
 private slots:
     void setEntry(RamObject *stepObj);
 
@@ -37,6 +40,8 @@ private:
 
     // Events
     QModelIndex m_indexPressed;
+
+    bool m_details = false;
 
     // drawing specific items
     void drawMore(QPainter *painter, QRect rect, QPen pen) const;

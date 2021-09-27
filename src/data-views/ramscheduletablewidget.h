@@ -13,6 +13,9 @@ class RamScheduleTableWidget : public QTableView
 public:
     RamScheduleTableWidget(QWidget *parent = nullptr);
 
+public slots:
+    void showDetails(bool s);
+
 protected:
     virtual void mouseMoveEvent(QMouseEvent *event) override;
     virtual void mousePressEvent(QMouseEvent *event) override;
@@ -23,6 +26,8 @@ private slots:
 private:
     void setupUi();
     void connectEvents();
+
+    RamScheduleDelegate *m_delegate;
 
     // UI Events
     QPoint m_initialDragPos;

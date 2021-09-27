@@ -21,11 +21,16 @@ public:
     void setObjectVisible(RamObject *obj, bool visible = true);
     void showAll();
 
+    bool isAllChecked() const;
+
 public slots:
     void selectAll();
     void selectNone();
     void filter(RamObject *o);
     void select(RamObject *o);
+
+    void saveState(QSettings *settings, QString group) const;
+    void restoreState(QSettings *settings, QString group);
 
 signals:
     void create();

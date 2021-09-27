@@ -99,10 +99,16 @@ void RamObjectListWidget::setCompletionRatio(bool showCompletion)
     m_delegate->setCompletionRatio(showCompletion);
 }
 
+void RamObjectListWidget::showDetails(bool s)
+{
+    m_delegate->showDetails(s);
+    this->resizeRowsToContents();
+}
+
 void RamObjectListWidget::search(QString s)
 {
     m_objectList->search(s);
-    this->resizeRowsToContents();
+    //this->resizeRowsToContents();
 }
 
 void RamObjectListWidget::mouseMoveEvent(QMouseEvent *event)
@@ -146,9 +152,12 @@ void RamObjectListWidget::mouseReleaseEvent(QMouseEvent *event)
 void RamObjectListWidget::resizeEvent(QResizeEvent *event)
 {
     if (m_displayMode == List) this->setColumnWidth( 0, event->size().width() );
-    this->setRowHeight(0,10);
+    // Incorrect draw after resize, fixed by resizing the first row...
+    this->setRowHeight(0,30);
+    this->resizeRowToContents(0);
+    /*this->setRowHeight(0,10);
     if (m_displayMode == Table) this->setRowHeight(0,42);
-    else this->setRowHeight(0,30);
+    else this->setRowHeight(0,30);*/
 }
 
 void RamObjectListWidget::showEvent(QShowEvent *event)

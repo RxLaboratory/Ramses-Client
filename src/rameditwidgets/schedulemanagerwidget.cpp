@@ -30,7 +30,39 @@ void ScheduleManagerWidget::hideEvent(QHideEvent *event)
     {
         ui_titleBar->hide();
     }
+
+    // Save filters and layout
+    RamUser *user = Ramses::instance()->currentUser();
+    if (user)
+    {
+        QSettings *uSettings = user->settings();
+
+        uSettings->beginGroup("schedule");
+        // Days of the week
+        uSettings->setValue("monday", ui_monday->isChecked());
+        uSettings->setValue("tuesday", ui_tuesday->isChecked());
+        uSettings->setValue("wednesday", ui_wednesday->isChecked());
+        uSettings->setValue("thursday", ui_thursday->isChecked());
+        uSettings->setValue("friday", ui_friday->isChecked());
+        uSettings->setValue("saturday", ui_saturday->isChecked());
+        uSettings->setValue("sunday", ui_sunday->isChecked());
+        // Show details
+        uSettings->setValue("showDetails", ui_actionShowDetails->isChecked());
+        // User filters
+        ui_userMenu->saveState(uSettings, "users");
+        uSettings->endGroup();
+    }
+
     QWidget::hideEvent(event);
+}
+
+void ScheduleManagerWidget::checkUserFilter()
+{
+    bool ok = ui_userMenu->isAllChecked();
+
+    QString t = ui_userButton->text().replace(" ▽","");
+    if (!ok) t = t + " ▽";
+    ui_userButton->setText( t );
 }
 
 void ScheduleManagerWidget::projectChanged(RamProject *project)
@@ -67,6 +99,8 @@ void ScheduleManagerWidget::projectChanged(RamProject *project)
     int days = QDate::currentDate().daysTo( project->deadline() );
     ui_timeRemaining->setText("Time remaining: " + QString::number(days) + " days");
 
+    loadSettings();
+
     connect (m_project, SIGNAL(changed(RamObject*)),this,SLOT(projectUpdated(RamObject*)));//*/
 }
 
@@ -84,15 +118,9 @@ void ScheduleManagerWidget::userChanged(RamUser *user)
         this->setEnabled(false);
         return;
     }
-    QSettings *uSettings = Ramses::instance()->currentUser()->settings();
 
-    ui_monday->setChecked( uSettings->value("schedule/monday", true).toBool() );
-    ui_tuesday->setChecked( uSettings->value("schedule/tuesday", true).toBool() );
-    ui_wednesday->setChecked( uSettings->value("schedule/wednesday", true).toBool() );
-    ui_thursday->setChecked( uSettings->value("schedule/thursday", true).toBool() );
-    ui_friday->setChecked( uSettings->value("schedule/friday", true).toBool() );
-    ui_saturday->setChecked( uSettings->value("schedule/saturday", true).toBool() );
-    ui_sunday->setChecked( uSettings->value("schedule/sunday", true).toBool() );
+    // Reload settings
+    loadSettings();
 
     ui_stepContextMenu->setEnabled(user->role() >= RamUser::Lead);
     ui_stepMenu->setEnabled(user->role() >= RamUser::Lead);
@@ -166,6 +194,8 @@ void ScheduleManagerWidget::filterUser(RamObject *userObj, bool filter)
 {
     if (filter) m_scheduleFilter->acceptUserUuid( userObj->uuid() );
     else m_scheduleFilter->ignoreUserUuid( userObj->uuid() );
+
+    checkUserFilter();
 }
 
 void ScheduleManagerWidget::filterMe()
@@ -182,91 +212,50 @@ void ScheduleManagerWidget::filterMe()
         if (!u) continue;
         a->setChecked( u->is(current) );
     }
+
+    checkUserFilter();
 }
 
 void ScheduleManagerWidget::showMonday(bool show)
 {
     if (show) m_scheduleFilter->showDay(1);
     else m_scheduleFilter->hideDay(1);
-
-    if(Ramses::instance()->currentUser())
-    {
-        QSettings *uSettings = Ramses::instance()->currentUser()->settings();
-        uSettings->setValue("schedule/monday", show);
-    }
-
 }
 
 void ScheduleManagerWidget::showTuesday(bool show)
 {
     if (show) m_scheduleFilter->showDay(2);
     else m_scheduleFilter->hideDay(2);
-
-    if (Ramses::instance()->currentUser() )
-    {
-        QSettings *uSettings = Ramses::instance()->currentUser()->settings();
-        uSettings->setValue("schedule/tuesday", show);
-    }
 }
 
 void ScheduleManagerWidget::showWednesday(bool show)
 {
     if (show) m_scheduleFilter->showDay(3);
     else m_scheduleFilter->hideDay(3);
-
-    if (Ramses::instance()->currentUser() )
-    {
-        QSettings *uSettings = Ramses::instance()->currentUser()->settings();
-        uSettings->setValue("schedule/wednesday", show);
-    }
 }
 
 void ScheduleManagerWidget::showThursday(bool show)
 {
     if (show) m_scheduleFilter->showDay(4);
     else m_scheduleFilter->hideDay(4);
-
-    if ( Ramses::instance()->currentUser() )
-    {
-        QSettings *uSettings = Ramses::instance()->currentUser()->settings();
-        uSettings->setValue("schedule/thursday", show);
-    }
 }
 
 void ScheduleManagerWidget::showFriday(bool show)
 {
     if (show) m_scheduleFilter->showDay(5);
     else m_scheduleFilter->hideDay(5);
-
-    if ( Ramses::instance()->currentUser() )
-    {
-        QSettings *uSettings = Ramses::instance()->currentUser()->settings();
-        uSettings->setValue("schedule/friday", show);
-    }
 }
 
 void ScheduleManagerWidget::showSaturday(bool show)
 {
     if (show) m_scheduleFilter->showDay(6);
     else m_scheduleFilter->hideDay(6);
-
-    if(Ramses::instance()->currentUser() )
-    {
-        QSettings *uSettings = Ramses::instance()->currentUser()->settings();
-        uSettings->setValue("schedule/saturday", show);
-    }
 }
 
 void ScheduleManagerWidget::showSunday(bool show)
 {
     if (show) m_scheduleFilter->showDay(7);
     else m_scheduleFilter->hideDay(7);
-
-    if (Ramses::instance()->currentUser() )
-    {
-        QSettings *uSettings = Ramses::instance()->currentUser()->settings();
-        uSettings->setValue("schedule/sunday", show);
-    }
 }
 
 void ScheduleManagerWidget::goTo(QDate date)
@@ -454,21 +443,37 @@ void ScheduleManagerWidget::setupUi()
 
     // Title bar
 
+    QMenu *viewMenu = new QMenu(this);
+
+    ui_actionShowDetails = new QAction("Show details", this);
+    ui_actionShowDetails->setCheckable(true);
+    viewMenu->addAction(ui_actionShowDetails);
+
+    QToolButton *viewButton = new QToolButton(this);
+    viewButton->setText(" View");
+    viewButton->setIcon(QIcon(":/icons/show"));
+    viewButton->setMenu(viewMenu);
+    viewButton->setIconSize(QSize(16,16));
+    viewButton->setObjectName("menuButton");
+    viewButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    viewButton->setPopupMode(QToolButton::InstantPopup);
+    ui_titleBar->insertLeft(viewButton);
+
     ui_userMenu = new RamObjectListMenu(true, this);
 
     ui_meAction = new QAction("Me", this);
     ui_userMenu->insertAction( ui_userMenu->actions().at(0), ui_meAction);
 
-    QToolButton *userButton = new QToolButton(this);
-    userButton->setText("Users");
-    userButton->setIcon(QIcon(":/icons/user"));
-    userButton->setIconSize(QSize(16,16));
-    userButton->setObjectName("menuButton");
-    userButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-    userButton->setPopupMode(QToolButton::InstantPopup);
-    userButton->setMenu(ui_userMenu);
+    ui_userButton = new QToolButton(this);
+    ui_userButton->setText("Users");
+    ui_userButton->setIcon(QIcon(":/icons/user"));
+    ui_userButton->setIconSize(QSize(16,16));
+    ui_userButton->setObjectName("menuButton");
+    ui_userButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    ui_userButton->setPopupMode(QToolButton::InstantPopup);
+    ui_userButton->setMenu(ui_userMenu);
 
-    ui_titleBar->insertLeft( userButton );
+    ui_titleBar->insertLeft( ui_userButton );
 
     QMenu *dayMenu = new QMenu(this);
 
@@ -625,6 +630,8 @@ void ScheduleManagerWidget::setupUi()
 
 void ScheduleManagerWidget::connectEvents()
 {
+    // view
+    connect(ui_actionShowDetails, SIGNAL(toggled(bool)), ui_table, SLOT(showDetails(bool)));
     // dates
     connect(ui_startDateEdit, SIGNAL(dateChanged(QDate)), m_schedule, SLOT(setStartDate(QDate)));
     connect(ui_endDateEdit, SIGNAL(dateChanged(QDate)), m_schedule, SLOT(setEndDate(QDate)));
@@ -664,6 +671,27 @@ void ScheduleManagerWidget::connectEvents()
     connect(Ramses::instance(), SIGNAL(currentProjectChanged(RamProject*)), this, SLOT(projectChanged(RamProject*)));
     connect(Ramses::instance(), SIGNAL(loggedIn(RamUser*)), this, SLOT(userChanged(RamUser*)));
 
+}
+
+void ScheduleManagerWidget::loadSettings()
+{
+    RamUser *u = Ramses::instance()->currentUser();
+    if (!u) return;
+    QSettings *uSettings = u->settings();
+    uSettings->beginGroup("schedule");
+    // Days
+    ui_monday->setChecked( uSettings->value("monday", true).toBool() );
+    ui_tuesday->setChecked( uSettings->value("tuesday", true).toBool() );
+    ui_wednesday->setChecked( uSettings->value("wednesday", true).toBool() );
+    ui_thursday->setChecked( uSettings->value("thursday", true).toBool() );
+    ui_friday->setChecked( uSettings->value("friday", true).toBool() );
+    ui_saturday->setChecked( uSettings->value("saturday", true).toBool() );
+    ui_sunday->setChecked( uSettings->value("sunday", true).toBool() );
+    // Details
+    ui_actionShowDetails->setChecked( uSettings->value("showDetails", true).toBool() );
+    // Users
+    ui_userMenu->restoreState(uSettings, "users");
+    uSettings->endGroup();
 }
 
 

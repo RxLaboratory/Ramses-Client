@@ -78,6 +78,18 @@ void RamObjectListMenu::showAll()
     }
 }
 
+bool RamObjectListMenu::isAllChecked() const
+{
+    QList<QAction*> as = this->actions();
+
+    for (int i = 0; i < as.count(); i++)
+    {
+        if (as.at(i)->isCheckable() && !as.at(i)->isChecked()) return false;
+    }
+
+    return true;
+}
+
 void RamObjectListMenu::newObject(const QModelIndex &parent, int first, int last)
 {
     Q_UNUSED(parent)
@@ -175,8 +187,13 @@ void RamObjectListMenu::selectAll()
     QList<QAction*> actions = this->actions();
     for (int j = actions.count() -1; j >= 0; j--)
     {
-        if (actions.at(j)->data().toULongLong() != 0)
-            actions.at(j)->setChecked(true);
+        QAction *a = actions.at(j);
+        if (a->isCheckable()) a->setChecked(true);
+
+        quintptr iptr = actions.at(j)->data().toULongLong();
+        if (iptr == 0) continue;
+        RamObject *o = reinterpret_cast<RamObject*>(iptr);
+        if (o) emit assign( o, true );
     }
 }
 
@@ -185,8 +202,13 @@ void RamObjectListMenu::selectNone()
     QList<QAction*> actions = this->actions();
     for (int j = actions.count() -1; j >= 0; j--)
     {
-        if (actions.at(j)->data().toULongLong() != 0)
-            actions.at(j)->setChecked(false);
+        QAction *a = actions.at(j);
+        if (a->isCheckable()) a->setChecked(false);
+
+        quintptr iptr = actions.at(j)->data().toULongLong();
+        if (iptr == 0) continue;
+        RamObject *o = reinterpret_cast<RamObject*>(iptr);
+        if (o) emit assign( o, false );
     }
 }
 
@@ -209,6 +231,56 @@ void RamObjectListMenu::select(RamObject *o)
         if (obj->is(o))
             actions.at(j)->setChecked(true);
     }
+}
+
+void RamObjectListMenu::saveState(QSettings *settings, QString group) const
+{
+    settings->beginGroup(group);
+    QList<QAction*> as = this->actions();
+    for (int i = 0; i < as.count(); i++)
+    {
+        QAction *a = as.at(i);
+        if (!a->isCheckable()) continue;
+
+        QString uuid = "";
+
+        // Get object uuid
+        quintptr iptr = a->data().toULongLong();
+        if (iptr == 0) uuid = a->text();
+        RamObject *obj = reinterpret_cast<RamObject*>(iptr);
+        if (!obj) uuid = a->text();
+        else uuid = obj->uuid();
+
+        settings->setValue(uuid, a->isChecked() );
+    }
+    settings->endGroup();
+}
+
+void RamObjectListMenu::restoreState(QSettings *settings, QString group)
+{
+    settings->beginGroup(group);
+
+    QList<QAction*> as = this->actions();
+
+    for (int i = 0; i < as.count(); i++)
+    {
+        QAction *a = as.at(i);
+
+        QString objUuid;
+
+        // Get object uuid
+        quintptr iptr = a->data().toULongLong();
+        if (iptr == 0) objUuid = a->text();
+        RamObject *obj = reinterpret_cast<RamObject*>(iptr);
+        if (!obj) objUuid = a->text();
+        else objUuid = obj->uuid();
+
+        bool ok = settings->value(objUuid, true).toBool();
+        a->setChecked( ok );
+        if (obj) emit assign( obj, ok );
+    }
+
+    settings->endGroup();
 }
 
 

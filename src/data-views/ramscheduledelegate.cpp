@@ -108,9 +108,17 @@ void RamScheduleDelegate::paint(QPainter *painter, const QStyleOptionViewItem &o
 QSize RamScheduleDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
     Q_UNUSED(option)
-    Q_UNUSED(index)
 
-    return QSize(75, 30);
+    // Get the entry
+    quintptr iptr = index.data(Qt::UserRole).toULongLong();
+    if (iptr == 0) return QSize(75, 10);
+    RamScheduleEntry *entry = reinterpret_cast<RamScheduleEntry*>( iptr );
+    if (!entry) return QSize(75, 10);
+    RamStep *step = entry->step();
+    if (!step) return QSize(75, 10);
+
+    if (m_details && entry->comment() != "") return QSize(100, 75);
+    return QSize(75, 25);
 }
 
 bool RamScheduleDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index)
@@ -166,6 +174,11 @@ bool RamScheduleDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, 
     return QStyledItemDelegate::editorEvent( event, model, option, index );
 }
 
+void RamScheduleDelegate::showDetails(bool s)
+{
+    m_details = s;
+}
+
 void RamScheduleDelegate::setEntry(RamObject *stepObj)
 {
     if (!m_indexPressed.isValid()) return;
@@ -202,6 +215,11 @@ void RamScheduleDelegate::setEntry(RamObject *stepObj)
         else
             entry->remove();
     }
+}
+
+bool RamScheduleDelegate::details() const
+{
+    return m_details;
 }
 
 void RamScheduleDelegate::drawMore(QPainter *painter, QRect rect, QPen pen) const

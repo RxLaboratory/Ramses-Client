@@ -31,6 +31,7 @@ public:
 public slots:
     void setTimeTracking(bool newTimeTracking);
     void setCompletionRatio(bool newCompletionRatio);
+    void showDetails(bool s);
 
 signals:
     void editObject(RamObject*);
@@ -62,6 +63,7 @@ private:
     RamUser::UserRole m_editRole = RamUser::Admin;
     bool m_timeTracking = true;
     bool m_completionRatio = true;
+    bool m_details = false;
 
     // Events
     bool m_editButtonPressed = false;

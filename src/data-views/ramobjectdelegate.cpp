@@ -412,9 +412,10 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
             // Ratio
             estimation = status->estimation();
             if (estimation < 0) estimation = status->autoEstimation();
-            if (estimation < 0) estimation = 1;
+            if (estimation < 0) estimation = 0;
             timeSpentDays = RamStatus::hoursToDays( status->timeSpent()/3600 );
-            float ratio = timeSpentDays / estimation;
+            float ratio = 0;
+            if (estimation > 0) ratio = timeSpentDays / estimation;
 
             QColor timeColor = statusColor;
 
@@ -614,9 +615,22 @@ QSize RamObjectDelegate::sizeHint(const QStyleOptionViewItem &option, const QMod
     RamObject *obj = reinterpret_cast<RamObject*>(iptr);
     RamObject::ObjectType ramType = obj->objectType();
 
-    if ((ramType == RamObject::State || ramType == RamObject::Status) && (m_timeTracking || m_completionRatio)) return QSize(300, 42);
+    int height = 30;
+    int width = 200;
 
-    return QSize(200,30);
+    if (m_details)
+    {
+        if (ramType == RamObject::Status || ramType == RamObject::Shot || ramType == RamObject::Asset) height = 300;
+        else height = 60;
+    }
+
+    if ((ramType == RamObject::State || ramType == RamObject::Status) && (m_timeTracking || m_completionRatio))
+    {
+        height += 12;
+        width = 300;
+    }
+
+    return QSize(width,height);
 }
 
 void RamObjectDelegate::setEditable(bool editable)
@@ -754,6 +768,11 @@ bool RamObjectDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, co
 void RamObjectDelegate::setCompletionRatio(bool newCompletionRatio)
 {
     m_completionRatio = newCompletionRatio;
+}
+
+void RamObjectDelegate::showDetails(bool s)
+{
+    m_details = s;
 }
 
 void RamObjectDelegate::setTimeTracking(bool newTimeTracking)

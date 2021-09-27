@@ -30,6 +30,8 @@ protected:
     void hideEvent(QHideEvent *event) override;
 
 private slots:
+    void checkUserFilter();
+
     void projectChanged(RamProject *project);
     void projectUpdated(RamObject*projObj);
     void userChanged(RamUser *user);
@@ -64,13 +66,16 @@ private slots:
 private:
     void setupUi();
     void connectEvents();
+    void loadSettings();
 
     TitleBar *ui_titleBar;
+    QAction *ui_actionShowDetails;
     RamScheduleTableWidget *ui_table;
     QDateEdit *ui_startDateEdit;
     QDateEdit *ui_endDateEdit;
     RamObjectListMenu *ui_stepMenu;
     RamObjectListMenu *ui_stepContextMenu;
+    QToolButton *ui_userButton;
     RamObjectListMenu *ui_userMenu;
     QAction *ui_meAction;
     QAction *ui_monday;
