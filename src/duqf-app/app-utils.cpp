@@ -36,6 +36,11 @@ DuApplication::DuApplication(int &argc, char *argv[]) : QApplication(argc, argv)
     connect(_idleTimer,SIGNAL(timeout()),this,SLOT(idleTimeOut()));
     _idleTimeout=120*60*1000;
     _idleTimer->start(_idleTimeout);
+
+    for (int i = 1; i < argc; i++)
+    {
+        _args << QString(argv[i]);
+    }
 }
 
 DuSplashScreen *DuApplication::splashScreen() const
@@ -61,12 +66,11 @@ bool DuApplication::processArgs(QStringList examples, QStringList helpStrings)
 
     // No console without args on windows
 #ifdef Q_OS_WIN
-    bool hideConsole = _argc == 1;
+    bool hideConsole = _args.count() == 0;
 #endif
-
-    for (int i = 1; i < _argc; i++)
+    for (int i = 0; i < _args.count(); i++)
     {
-        QString arg = _argv[i];
+        QString arg = _args.at(i);
         if ( arg.toLower() == "--no-banner" ) nobanner = true;
         if (arg.toLower() == "-h" || arg.toLower() == "--help" ) help = true;
 #ifdef Q_OS_WIN

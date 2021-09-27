@@ -127,8 +127,7 @@ private:
     DuSplashScreen *_splashScreen;
     QTimer *_idleTimer;
     int _idleTimeout;
-    int _argc;
-    char *_argv[];
+    QStringList _args;
 };
 
 #endif // APPUTILS_H
