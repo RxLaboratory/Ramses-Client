@@ -700,7 +700,6 @@ void RamLoader::gotAssets(QJsonArray assets, RamProject *project)
     qDebug() << "Cleaning assets";
     for (int i = project->assets()->count() - 1; i >= 0; i--)
     {
-        qDebug() << i;
         RamObject *obj = project->assets()->at(i);
         if (!uuids.contains(obj->uuid()))
         {
