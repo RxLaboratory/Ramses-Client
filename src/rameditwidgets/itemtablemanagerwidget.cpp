@@ -156,6 +156,9 @@ void ItemTableManagerWidget::projectChanged(RamProject *project)
 {
     this->setEnabled(false );
 
+    if (!m_project && !project) return;
+    if (m_project) if (m_project->is(project) ) return;
+
     while (!m_projectConnections.isEmpty()) disconnect( m_projectConnections.takeLast() );
 
     // Clear step list
@@ -201,9 +204,9 @@ void ItemTableManagerWidget::projectChanged(RamProject *project)
     ui_assignUserMenu->setList(project->users());
     ui_assignUserContextMenu->setList(project->users());
 
-    ui_stateMenu->selectAll();
+    /*ui_stateMenu->selectAll();
     ui_stepMenu->selectAll();
-    ui_userMenu->selectAll();
+    ui_userMenu->selectAll();*/
 
     loadSettings();
 
@@ -545,6 +548,7 @@ void ItemTableManagerWidget::contextMenuRequested(QPoint p)
 
 void ItemTableManagerWidget::currentUserChanged(RamUser *user)
 {
+
     ui_actionItem->setVisible(false);
     if (!user) return;
     if (user->role() >= RamUser::ProjectAdmin)
@@ -898,6 +902,9 @@ void ItemTableManagerWidget::connectEvents()
 
 void ItemTableManagerWidget::loadSettings()
 {
+    // Freeze filters to improve performance
+    ui_table->filteredList()->freeze();
+
     RamUser *u = Ramses::instance()->currentUser();
     if (!u) return;
     QSettings *uSettings = u->settings();
@@ -918,6 +925,9 @@ void ItemTableManagerWidget::loadSettings()
     ui_stateMenu->restoreState(uSettings, "states");
 
     uSettings->endGroup();
+
+    // Unfreeze
+    ui_table->filteredList()->unFreeze();
 }
 
 QList<RamStatus *> ItemTableManagerWidget::beginEditSelectedStatus()

@@ -14,6 +14,9 @@ class RamItemFilterModel : public RamObjectFilterModel
 public:
     explicit RamItemFilterModel(QObject *parent = nullptr);
 
+    void freeze();
+    void unFreeze();
+
     void useFilters(bool use = true);
 
     void hideUser(RamUser *u);
@@ -49,6 +52,7 @@ private:
     RamStep *step( int column ) const;
     bool m_userFilters = false;
 
+    bool m_frozen = false;
 };
 
 #endif // RAMITEMFILTERMODEL_H

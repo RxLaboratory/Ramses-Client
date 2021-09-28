@@ -5,6 +5,17 @@ RamItemFilterModel::RamItemFilterModel(QObject *parent) : RamObjectFilterModel(p
 
 }
 
+void RamItemFilterModel::freeze()
+{
+    m_frozen = true;
+}
+
+void RamItemFilterModel::unFreeze()
+{
+    m_frozen = false;
+    invalidateFilter();
+}
+
 void RamItemFilterModel::useFilters(bool use)
 {
     m_userFilters = use;
@@ -13,31 +24,31 @@ void RamItemFilterModel::useFilters(bool use)
 void RamItemFilterModel::hideUser(RamUser *u)
 {
     m_users.removeAll(u);
-    invalidateFilter();
+    if (!m_frozen) invalidateFilter();
 }
 
 void RamItemFilterModel::showUser(RamUser *u)
 {
     if (!m_users.contains(u)) m_users << u;
-    invalidateFilter();
+    if (!m_frozen) invalidateFilter();
 }
 
 void RamItemFilterModel::clearUsers()
 {
     m_users.clear();
-    invalidateFilter();
+    if (!m_frozen) invalidateFilter();
 }
 
 void RamItemFilterModel::showUnassigned(bool show)
 {
     m_showUnassigned = show;
-    invalidateFilter();
+    if (!m_frozen) invalidateFilter();
 }
 
 void RamItemFilterModel::hideState(RamState *s)
 {
     m_states.removeAll(s);
-    invalidateFilter();
+    if (!m_frozen) invalidateFilter();
 }
 
 void RamItemFilterModel::showState(RamState *s)
@@ -45,20 +56,20 @@ void RamItemFilterModel::showState(RamState *s)
     if (!m_states.contains(s))
     {
         m_states << s;
-        invalidateFilter();
+        if (!m_frozen) invalidateFilter();
     }
 }
 
 void RamItemFilterModel::clearStates()
 {
     m_states.clear();
-    invalidateFilter();
+    if (!m_frozen) invalidateFilter();
 }
 
 void RamItemFilterModel::setStepType(RamStep::Type t)
 {
     m_stepType = t;
-    invalidateFilter();
+    if (!m_frozen) invalidateFilter();
 }
 
 void RamItemFilterModel::hideStep(RamStep *s)
@@ -66,20 +77,20 @@ void RamItemFilterModel::hideStep(RamStep *s)
     if (!m_hiddenSteps.contains(s))
     {
         m_hiddenSteps << s;
-        invalidateFilter();
+        if (!m_frozen) invalidateFilter();
     }
 }
 
 void RamItemFilterModel::showStep(RamStep *s)
 {
     m_hiddenSteps.removeAll(s);
-    invalidateFilter();
+    if (!m_frozen) invalidateFilter();
 }
 
 void RamItemFilterModel::showAllSteps()
 {
     m_hiddenSteps.clear();
-    invalidateFilter();
+    if (!m_frozen) invalidateFilter();
 }
 
 bool RamItemFilterModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const

@@ -95,15 +95,17 @@ QString Ramses::pathFromRamses(QString p, bool create) const
 
 void Ramses::setCurrentUser(RamUser *u)
 {
+    if (u) m_connected = true;
+    else m_connected = false;
+
+    if (!m_currentUser && !u) return;
+    if (m_currentUser) if (m_currentUser->is(u)) return;
+
     m_currentUser = u;
-    if (u)
-    {
-        m_connected = true;
-        emit loggedIn(m_currentUser);
-    }
+
+    if (u) emit loggedIn(m_currentUser);
     else
     {
-        m_connected = false;
         setCurrentProject(nullptr);
         emit loggedOut();
     }
