@@ -52,6 +52,7 @@ QVariant RamScheduleTable::headerData(int section, Qt::Orientation orientation, 
     if (orientation == Qt::Vertical)
     {
         RamObject *usrObj = m_users->at(section / 2);
+        RamUser *user = qobject_cast<RamUser*>(usrObj);
 
         QString ampm = " | AM";
         if (section % 2 == 1) ampm = " | PM";
@@ -73,6 +74,9 @@ QVariant RamScheduleTable::headerData(int section, Qt::Orientation orientation, 
 
         if ( role == Qt::StatusTipRole )
             return QString(usrObj->shortName() % " | " % usrObj->name() % ampm);
+
+        if ( role == Qt::ForegroundRole && user )
+            return QBrush( user->color() );
     }
     else
     {

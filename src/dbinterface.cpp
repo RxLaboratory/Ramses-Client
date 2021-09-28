@@ -37,7 +37,7 @@ void DBInterface::getUsers()
     request("getUsers");
 }
 
-void DBInterface::updateUser(QString uuid, QString shortName, QString name, QString role, QString comment)
+void DBInterface::updateUser(QString uuid, QString shortName, QString name, QString role, QString comment, QColor color)
 {
     QStringList q;
     q << "uuid=" + uuid;
@@ -45,6 +45,7 @@ void DBInterface::updateUser(QString uuid, QString shortName, QString name, QStr
     q << "name=" + name;
     q << "role=" + role;
     q << "comment=" + comment;
+    if (color.isValid()) q << "color=" + color.name();
 
     request("updateUser", q);
 }

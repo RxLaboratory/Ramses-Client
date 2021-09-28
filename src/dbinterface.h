@@ -34,7 +34,7 @@ public:
     //users
     void login(QString username, QString password);
     void getUsers();
-    void updateUser(QString uuid, QString shortName, QString name, QString role = "", QString comment = "");
+    void updateUser(QString uuid, QString shortName, QString name, QString role = "", QString comment = "", QColor color = QColor());
     void updateUserPassword(QString uuid, QString c, QString n);
     void createUser(QString shortName, QString name, QString uuid, QString password = "password");
     void removeUser(QString uuid);

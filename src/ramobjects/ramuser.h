@@ -32,6 +32,9 @@ public:
 
     static RamUser *user(QString uuid);
 
+    const QColor &color() const;
+    void setColor(const QColor &newColor);
+
 public slots:
     void update() override;
     virtual void edit(bool show = true) override;
@@ -46,6 +49,8 @@ protected:
 private:
     UserRole m_role;
     RamObjectList *m_schedule;
+
+    QColor m_color;
 };
 
 #endif // RAMUSER_H

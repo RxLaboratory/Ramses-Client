@@ -151,6 +151,7 @@ QString RamLoader::gotUser(QJsonObject newU)
 
     user->setRole( newU.value("role").toString("standard") );
     user->setComment( newU.value("comment").toString());
+    user->setColor( QColor( newU.value("color").toString()) );
 
     m_ram->users()->append(user);
 

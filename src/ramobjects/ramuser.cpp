@@ -53,6 +53,19 @@ QString RamUser::folderPath() const
     return Ramses::instance()->path(RamObject::UsersFolder) + "/" + m_shortName;
 }
 
+const QColor &RamUser::color() const
+{
+    return m_color;
+}
+
+void RamUser::setColor(const QColor &newColor)
+{
+    if (m_color == newColor) return;
+    m_dirty = true;
+    m_color = newColor;
+    emit changed(this);
+}
+
 RamObjectList *RamUser::schedule() const
 {
     return m_schedule;
@@ -97,7 +110,7 @@ void RamUser::update()
     else if (m_role == ProjectAdmin) role = "project";
     else if (m_role == Lead) role = "lead";
 
-    m_dbi->updateUser(m_uuid, m_shortName, m_name, role, m_comment);
+    m_dbi->updateUser(m_uuid, m_shortName, m_name, role, m_comment, m_color);
 }
 
 void RamUser::updatePassword(QString c, QString n)

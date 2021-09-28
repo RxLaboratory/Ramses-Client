@@ -41,6 +41,7 @@ void UserEditWidget::setObject(RamObject *obj)
     QSignalBlocker b3(ui_npassword2Edit);
     QSignalBlocker b4(ui_roleBox);
     QSignalBlocker b5(ui_folderWidget);
+    QSignalBlocker b6(ui_colorSelector);
 
     ui_cpasswordEdit->setText("");
     ui_npassword1Edit->setText("");
@@ -50,12 +51,14 @@ void UserEditWidget::setObject(RamObject *obj)
     ui_roleBox->setToolTip("");
     ui_cpasswordEdit->setEnabled(false);
     ui_folderWidget->setPath("");
+    ui_colorSelector->setColor(QColor(200,200,200));
 
     RamUser *current = Ramses::instance()->currentUser();
     if (!user || !current) return;
 
     ui_folderWidget->setPath( user->path() );
     ui_roleBox->setCurrentIndex(user->role());
+    ui_colorSelector->setColor(user->color());
 
     if (m_dontRename.contains(user->shortName()))
     {
@@ -111,6 +114,8 @@ void UserEditWidget::update()
     else if (roleIndex == 1) m_user->setRole(RamUser::Lead);
     else m_user->setRole(RamUser::Standard);
 
+    m_user->setColor(ui_colorSelector->color());
+
     ObjectEditWidget::update();
 
     updating = false;
@@ -155,36 +160,42 @@ void UserEditWidget::setupUi()
     ui_roleBox->setCurrentIndex(0);
     ui_mainFormLayout->addWidget(ui_roleBox, 3, 1);
 
+    QLabel *colorLabel = new QLabel("Color", this);
+    ui_mainFormLayout->addWidget(colorLabel, 4, 0);
+
+    ui_colorSelector = new DuQFColorSelector(this);
+    ui_mainFormLayout->addWidget(ui_colorSelector, 4, 1);
+
     QLabel *currentPasswordLabel = new QLabel("Current password", this);
-    ui_mainFormLayout->addWidget(currentPasswordLabel, 4, 0);
+    ui_mainFormLayout->addWidget(currentPasswordLabel, 5, 0);
 
     ui_cpasswordEdit = new QLineEdit(this);
     ui_cpasswordEdit->setEchoMode(QLineEdit::Password);
-    ui_mainFormLayout->addWidget(ui_cpasswordEdit, 4, 1);
+    ui_mainFormLayout->addWidget(ui_cpasswordEdit, 5, 1);
 
     QLabel *newPasswordLabel = new QLabel("New password", this);
-    ui_mainFormLayout->addWidget(newPasswordLabel, 5, 0);
+    ui_mainFormLayout->addWidget(newPasswordLabel, 6, 0);
 
     ui_npassword1Edit = new QLineEdit(this);
     ui_npassword1Edit->setEchoMode(QLineEdit::Password);
-    ui_mainFormLayout->addWidget(ui_npassword1Edit, 5, 1);
+    ui_mainFormLayout->addWidget(ui_npassword1Edit, 6, 1);
 
     QLabel *newPasswordLabel2 = new QLabel("Repeat new password", this);
-    ui_mainFormLayout->addWidget(newPasswordLabel2, 6, 0);
+    ui_mainFormLayout->addWidget(newPasswordLabel2, 7, 0);
 
     ui_npassword2Edit = new QLineEdit(this);
     ui_npassword2Edit->setEchoMode(QLineEdit::Password);
-    ui_mainFormLayout->addWidget(ui_npassword2Edit, 6, 1);
+    ui_mainFormLayout->addWidget(ui_npassword2Edit, 7, 1);
 
     ui_passwordButton = new QToolButton(this);
     ui_passwordButton->setText("Change password");
-    ui_mainFormLayout->addWidget(ui_passwordButton, 7, 1);
+    ui_mainFormLayout->addWidget(ui_passwordButton, 8, 1);
 
     QLabel *uFolderLabel = new QLabel("Personal folder", this);
-    ui_mainFormLayout->addWidget(uFolderLabel, 8, 0);
+    ui_mainFormLayout->addWidget(uFolderLabel, 9, 0);
 
     ui_folderWidget = new DuQFFolderDisplayWidget(this);
-    ui_mainFormLayout->addWidget(ui_folderWidget, 8, 1);
+    ui_mainFormLayout->addWidget(ui_folderWidget, 9, 1);
 
     ui_mainLayout->addStretch();
 }
@@ -197,6 +208,7 @@ void UserEditWidget::connectEvents()
     connect(ui_roleBox, SIGNAL(currentIndexChanged(int)), this, SLOT(update()));
     connect(ui_passwordButton, SIGNAL(clicked()), this, SLOT(changePassword()));
     connect(Ramses::instance(), &Ramses::loggedIn, this, &UserEditWidget::objectChanged);
+    connect(ui_colorSelector, SIGNAL(colorChanged(QColor)), this, SLOT(update()));
 
     monitorDbQuery("updateUser");
     monitorDbQuery("updatePassword");

@@ -134,6 +134,14 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
         if (m_comboBox) title = state->shortName();
         break;
     }
+    case RamObject::User:
+    {
+        RamUser *user = qobject_cast<RamUser*>( obj );
+        QColor userColor = user->color();
+        if (userColor.lightness() < 150) userColor.setHsl( userColor.hue(), userColor.saturation(), 150);
+        textPen.setColor( userColor );
+        break;
+    }
     default:
     {
         title = obj->name();
@@ -385,6 +393,17 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
     case RamObject::Status:
     {
         RamStatus *status = qobject_cast<RamStatus*>( obj );
+
+        // Draw a colored rect for the assigned user
+        RamUser *user = status->assignedUser();
+        if (user)
+        {
+            QRect userRect(titleRect.left() - 15, titleRect.top() + 3, 10, 10);
+            QPainterPath path;
+            path.addRect(userRect);
+            painter->fillPath(path, QBrush(user->color()));
+        }
+
         // Draw a progress bar
         QColor statusColor = status->state()->color();
         if (!m_completionRatio) statusColor = QColor(150,150,150);
