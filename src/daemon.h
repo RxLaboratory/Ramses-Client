@@ -49,6 +49,7 @@ private slots:
     void getCurrentUser(QTcpSocket *client);
     void getPipes(QTcpSocket *client);
     void getProjects(QTcpSocket *client);
+    void getSequences(QTcpSocket *client);
     void getShots(QString filter, QTcpSocket *client);
     void getShot(QString shortName, QString name, QTcpSocket *client);
     void getStates(QTcpSocket *client);

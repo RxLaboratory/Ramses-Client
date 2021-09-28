@@ -103,6 +103,8 @@ void Daemon::reply(QString request, QTcpSocket *client)
         getAsset(args.value("shortName"), args.value("name", ""), client);
     else if (args.contains("getAssetGroups"))
         getAssetGroups(client);
+    else if (args.contains("getSequences"))
+        getSequences(client);
     else if (args.contains("getCurrentProject"))
         getProject("","",client);
     else if (args.contains("getProject"))
@@ -544,6 +546,34 @@ void Daemon::getProjects(QTcpSocket *client)
     post(client, content, "getProjects", "Project list retrived");
 }
 
+void Daemon::getSequences(QTcpSocket *client)
+{
+    log("I'm replying to this request: getSequences", DuQFLog::Debug);
+
+    RamProject *proj = Ramses::instance()->currentProject();
+
+    QJsonObject content;
+
+    if (!proj)
+    {
+        post(client, content, "getSequences", "Sorry, there's no current project. Select a project first!", false);
+        return;
+    }
+
+    QJsonArray sequences;
+    for( int i = 0; i < proj->sequences()->count(); i++)
+    {
+        RamSequence *seq = qobject_cast<RamSequence*>( proj->sequences()->at(i) );
+        QJsonObject sequence;
+        sequence.insert("shortName", seq->shortName());
+        sequence.insert("name", seq->name());
+
+        sequences.append(sequence);
+    }
+    content.insert("sequences", sequences);
+    post(client, content, "getSequences", "Sequence list retrieved.");
+}
+
 void Daemon::getShots(QString filter, QTcpSocket *client)
 {
     log("I'm replying to this request: getShots", DuQFLog::Debug);
@@ -774,6 +804,7 @@ QJsonObject Daemon::shotToJson(RamShot *s)
     shot.insert("name", s->name());
     shot.insert("folder", s->path(RamObject::NoFolder, true));
     shot.insert("duration", s->duration());
+    shot.insert("sequence", s->sequence()->name());
     return shot;
 }
 
