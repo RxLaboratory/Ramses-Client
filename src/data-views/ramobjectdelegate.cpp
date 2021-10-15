@@ -70,8 +70,6 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
         if (noState->is(status->state()))
         {
             bgColor = QColor(0,0,0,0);
-            detailsColor = detailsColor.darker(150);
-            textColor = textColor.darker(150);
         }
     }
 
@@ -139,7 +137,15 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
                 " (v" %
                 QString::number(status->version()) %
                 ")";
-        textPen.setColor(m_medium);
+        RamState *noState = Ramses::instance()->noState();
+        if (noState->is(status->state()))
+        {
+            textPen.setColor(m_dark);
+        }
+        else
+        {
+            textPen.setColor(m_medium);
+        }
         break;
     }
     case RamObject::State:
