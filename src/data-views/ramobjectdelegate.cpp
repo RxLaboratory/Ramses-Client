@@ -61,6 +61,19 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
         textColor = textColor.lighter(120);
     }
 
+    // NO Status
+    if (ramType == RamObject::Status)
+    {
+        RamStatus *status = qobject_cast<RamStatus*>( obj );
+        RamState *noState = Ramses::instance()->noState();
+        if (noState->is(status->state()))
+        {
+            bgColor = QColor(0,0,0,0);
+            detailsColor = detailsColor.darker(150);
+            textColor = textColor.darker(150);
+        }
+    }
+
     QBrush bgBrush(bgColor);
     QPen textPen(textColor);
     QPen commentPen(textColor);
