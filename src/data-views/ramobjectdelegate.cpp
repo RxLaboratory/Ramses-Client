@@ -49,20 +49,21 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
     QColor textColor = m_lessLight;
     QColor detailsColor = m_medium;
 
-    // State
-    if (option.state & QStyle::State_Selected)
-    {
-        bgColor = bgColor.darker();
-    }
-    else if (option.state & QStyle::State_MouseOver)
+    // State mouseover
+    if (option.state & QStyle::State_MouseOver)
     {
         bgColor = bgColor.lighter(120);
         detailsColor = detailsColor.lighter(120);
         textColor = textColor.lighter(120);
     }
 
-    // NO Status
-    if (ramType == RamObject::Status)
+    // Selected
+    if (option.state & QStyle::State_Selected)
+    {
+        bgColor = bgColor.darker();
+        textColor = textColor.lighter(150);
+    }
+    else if (ramType == RamObject::Status)
     {
         RamStatus *status = qobject_cast<RamStatus*>( obj );
         RamState *noState = Ramses::instance()->noState();
