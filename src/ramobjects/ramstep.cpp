@@ -140,6 +140,10 @@ QStringList RamStep::publishedTemplates() const
         QStringList files = dir.entryList( QDir::Files );
         for (int j = 0; j < files.count(); j++)
         {
+            QString f = files.at(j);
+            qDebug() << f;
+            qDebug() << fileName(MetaDataFile);
+            if (f == fileName(MetaDataFile)) continue;
             templates << publishPath + "/" + title + "/" + files.at(j);
         }
 

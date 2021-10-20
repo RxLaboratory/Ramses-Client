@@ -57,6 +57,11 @@ public:
                    TrashFolder};
     Q_ENUM( SubFolder )
 
+    enum File {
+        MetaDataFile
+    };
+    Q_ENUM( File )
+
     explicit RamObject(QObject *parent = nullptr);
     explicit RamObject(QString uuid, QObject *parent = nullptr);
     explicit RamObject(QString shortName, QString name, QString uuid = "", QObject *parent = nullptr);
@@ -91,6 +96,7 @@ public:
     void revealFolder(SubFolder subFolder = NoFolder);
 
     static QString subFolderName(SubFolder folder);
+    static QString fileName(File file);
 
     QString filterUuid() const;
 
