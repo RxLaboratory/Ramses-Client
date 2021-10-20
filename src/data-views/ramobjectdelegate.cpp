@@ -450,7 +450,7 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
             float latenessRatio = status->latenessRatio();
             // Ratio
             estimation = status->estimation();
-            if (estimation < 0) estimation = status->autoEstimation();
+            if (estimation <= 0) estimation = status->autoEstimation();
             if (estimation < 0) estimation = 0;
             timeSpentDays = RamStatus::hoursToDays( status->timeSpent()/3600 );
             float ratio = 0;
