@@ -65,12 +65,24 @@ void ScheduleManagerWidget::checkUserFilter()
     ui_userButton->setText( t );
 }
 
+void ScheduleManagerWidget::usersInserted(const QModelIndex &parent, int first, int last)
+{
+    Q_UNUSED(parent);
+    for( int i = first; i <= last; i++)
+    {
+        ui_table->resizeRowToContents(i);
+    }
+}
+
 void ScheduleManagerWidget::projectChanged(RamProject *project)
 {
     if (!m_project && !project) return;
     if (m_project) if (m_project->is(project) ) return;
 
-    if (m_project) disconnect(m_project, nullptr, this, nullptr);
+    if (m_project)
+    {
+        disconnect(m_project, nullptr, this, nullptr);
+    }
 
     m_project = project;
 
@@ -671,6 +683,7 @@ void ScheduleManagerWidget::connectEvents()
     connect(Ramses::instance(), SIGNAL(currentProjectChanged(RamProject*)), this, SLOT(projectChanged(RamProject*)));
     connect(Ramses::instance(), SIGNAL(loggedIn(RamUser*)), this, SLOT(userChanged(RamUser*)));
 
+    connect(m_schedule, SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(usersInserted(QModelIndex,int,int)));
 }
 
 void ScheduleManagerWidget::loadSettings()

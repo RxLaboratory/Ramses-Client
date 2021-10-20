@@ -31,6 +31,7 @@ protected:
 
 private slots:
     void checkUserFilter();
+    void usersInserted(const QModelIndex &parent, int first, int last);
 
     void projectChanged(RamProject *project);
     void projectUpdated(RamObject*projObj);
