@@ -293,6 +293,8 @@ void StatusEditWidget::mainFileSelected(int row)
     ui_versionFileBox->clear();
     ui_versionFileBox->addItem("Current version", "");
 
+    // Use a map to automatically sort the result by title (version)
+    QMap<QString, QString> files;
     foreach(QString file, m_status->versionFiles(resource))
     {
         nm.setFileName(file);
@@ -300,8 +302,18 @@ void StatusEditWidget::mainFileSelected(int row)
         // Retrieve comment if any
         QString comment = mdm.getComment(file);
         if (comment != "") title += " | " + comment;
-        ui_versionFileBox->addItem(title, file);
+        files[title] = file;
     }
+
+    QMapIterator<QString, QString> i(files);
+    // Start by the end (most recent first)
+    i.toBack();
+    while(i.hasPrevious())
+    {
+        i.previous();
+        ui_versionFileBox->addItem(i.key(), i.value());
+    }
+
 }
 
 void StatusEditWidget::openMainFile()
