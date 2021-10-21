@@ -121,4 +121,7 @@ private:
 
 };
 
+bool versionFolderSorter(QString a, QString b);
+int getVersionFolderRank(QString folder);
+
 #endif // RAMSTATUS_H

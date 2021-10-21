@@ -505,7 +505,10 @@ bool RamStatus::checkPublished( int version ) const
 
 QStringList RamStatus::publishedVersionFolders() const
 {
-    return listFolders(PublishFolder);
+    // Sort before returning
+    QStringList folders = listFolders(PublishFolder);
+    std::sort(folders.begin(), folders.end(), versionFolderSorter);
+    return folders;
 }
 
 QStringList RamStatus::publishedFiles(QString versionFolder) const
@@ -638,4 +641,37 @@ int RamStatus::daysToHours(float days)
 {
     // let's use an 8h-day
     return days*8;
+}
+
+bool versionFolderSorter(QString a, QString b)
+{
+    int ai = getVersionFolderRank(a);
+    int bi = getVersionFolderRank(b);
+    return ai < bi;
+}
+
+int getVersionFolderRank(QString folder)
+{
+    QFileInfo folderInfo(folder);
+    QString name = folderInfo.baseName();
+    QStringList nameBlocks = name.split("_");
+    int num = nameBlocks.length();
+    // Invalid, return lowest value possible
+    if (num == 0 || num  > 3) return INT32_MIN;
+    // Single or Dual Block, first should be a number
+    if (num == 1 || num == 2)
+    {
+        bool ok;
+        int i = nameBlocks[0].toInt(&ok);
+        if (ok) return i;
+        return INT32_MIN;
+    }
+    // We've got a resource
+    bool ok;
+    int i = nameBlocks[1].toInt(&ok);
+    if (!ok) return INT32_MIN;
+    // Hash the resource, add the version
+    std::hash<std::string> hasher;
+    int hashed = hasher(nameBlocks[0].toStdString());
+    return hashed + i;
 }
