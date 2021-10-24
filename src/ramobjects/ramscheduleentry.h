@@ -34,8 +34,8 @@ public slots:
     virtual void removeFromDB() override;
 
 private:
-    RamUser *m_user;
-    RamStep *m_step;
+    RamUser *m_user = nullptr;
+    RamStep *m_step = nullptr;
     QDateTime m_date;
 };
 

@@ -4,8 +4,8 @@ RamScheduleEntry::RamScheduleEntry(RamUser *user, RamStep *step, QDateTime date)
        RamObject(user)
 {
     this->setObjectType(ScheduleEntry);
-    m_user = user;
-    m_step = step;
+    setUser(user);
+    setStep(step);
     m_date = date;
     m_step->countAssignedDays();
     m_dbi->createSchedule( user->uuid(), step->uuid(), date, m_uuid );
@@ -16,8 +16,8 @@ RamScheduleEntry::RamScheduleEntry(RamUser *user, RamStep *step, QDateTime date,
     RamObject(uuid, user)
 {
     this->setObjectType(ScheduleEntry);
-    m_user = user;
-    m_step = step;
+    setUser(user);
+    setStep(step);
     m_date = date;
     m_step->countAssignedDays();
     m_dbi->createSchedule( user->uuid(), step->uuid(), date, m_uuid );
@@ -47,7 +47,9 @@ RamUser *RamScheduleEntry::user() const
 void RamScheduleEntry::setUser(RamUser *newUser)
 {
     if (newUser->is(m_user)) return;
+
     m_dirty = true;
+
     m_user = newUser;
 
     connect(m_user,SIGNAL(removed(RamObject*)), this, SLOT(remove()));
@@ -62,11 +64,20 @@ RamStep *RamScheduleEntry::step() const
 void RamScheduleEntry::setStep(RamStep *newStep)
 {
     if (newStep->is(m_step)) return;
+    // update assigned days for the previous step
+    if (m_step) m_step->countAssignedDays();
+
     m_dirty = true;
-    m_step->countAssignedDays();
+
     m_step = newStep;
-    m_step->countAssignedDays();
-    connect(m_step,SIGNAL(removed(RamObject*)), this, SLOT(remove()));
+    // update assigned days for the new step (if not nullptr)
+    if (m_step)
+    {
+        m_step->countAssignedDays();
+
+        connect(m_step,SIGNAL(removed(RamObject*)), this, SLOT(remove()));
+    }
+
     emit changed(this);
 }
 

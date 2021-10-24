@@ -144,8 +144,13 @@ QVariant RamScheduleTable::data(const QModelIndex &index, int role) const
     for (int i = 0; i < schedule->count(); i++)
     {
         RamScheduleEntry *entry = qobject_cast<RamScheduleEntry*>( schedule->at(i) );
+        if (!entry) continue;
+        RamStep *entryStep = entry->step();
+        if (!entryStep) continue;
+        RamProject *entryProj = entryStep->project();
+        if (!entryProj) continue;
         // For current project only
-        if (!entry->step()->project()->is(currentProject)) continue;
+        if (!entryProj->is(currentProject)) continue;
 
         if (entry->date() == date)
         {
