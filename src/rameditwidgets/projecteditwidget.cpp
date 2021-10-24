@@ -58,7 +58,9 @@ void ProjectEditWidget::setObject(RamObject *obj)
 
     if (!project->pathIsDefault()) ui_folderSelector->setPath( project->path() );
     ui_folderSelector->setPlaceHolderText( project->defaultPath() );
-    ui_folderLabel->setText( project->path() );
+    QString p = project->path();
+    if (p.count() > 45) p = p.replace(0, p.count()-45, "(...)");
+    ui_folderLabel->setText( p );
 
     m_userList->setList(project->users());
 

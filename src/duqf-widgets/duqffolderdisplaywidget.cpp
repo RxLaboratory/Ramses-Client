@@ -15,11 +15,11 @@ void DuQFFolderDisplayWidget::setPath(QString p)
 {
     p = QDir::toNativeSeparators(p);
     _path = p;
-    if (p.count() > 30) p = p.replace(0, p.count()-30, "(...)");
+    if (p.count() > 45) p = p.replace(0, p.count()-45, "(...)");
     folderLabel->setText(p);
-    folderLabel->setToolTip(p);
-    exploreButton->setToolTip("Reveal folder at " + p);
-    exploreButton->setEnabled(p != "");
+    folderLabel->setToolTip(_path);
+    exploreButton->setToolTip("Reveal folder at " + _path);
+    exploreButton->setEnabled(_path != "");
 }
 
 void DuQFFolderDisplayWidget::exploreButton_clicked()
