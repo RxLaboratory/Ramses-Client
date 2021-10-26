@@ -970,6 +970,9 @@ QString RamLoader::gotPipe(QJsonObject newP, RamProject *project)
     RamStep *inputStep = RamStep::step( newP.value("inputStepUuid").toString( ) );
     RamStep *outputStep = RamStep::step( newP.value("outputStepUuid").toString( ) );
 
+    if (!inputStep) return uuid;
+    if (!outputStep) return uuid;
+
     RamPipe *pipe = RamPipe::pipe(uuid);
     if (!pipe) pipe = new RamPipe(outputStep, inputStep, uuid);
     else
