@@ -52,67 +52,73 @@ void RamStatisticsDelegate::paint(QPainter *painter, const QStyleOptionViewItem 
     painter->fillPath(path, bgBrush);
 
     // Completion bar
-    QBrush statusBrush( m_abyss );
     int statusWidth = bgRect.width() - m_padding ;
-    QRect statusRect( bgRect.left() + m_padding / 2, bgRect.top() + m_padding, statusWidth, 5 );
-    QPainterPath statusPath;
-    statusPath.addRoundedRect(statusRect, 5, 5);
-    painter->fillPath(statusPath, statusBrush);
+    QRect statusRect( bgRect.left() + m_padding / 2, bgRect.top() + m_padding, statusWidth, 0 );
 
-    if (m_timeTracking || m_completionRatio)
+    RamStep::Type stepType = static_cast<RamStep::Type>( index.data(Qt::UserRole +6).toInt() );
+    if (stepType == RamStep::AssetProduction || stepType == RamStep::ShotProduction )
     {
+        statusRect.setHeight(5);
+        QBrush statusBrush( m_abyss );
+        QPainterPath statusPath;
+        statusPath.addRoundedRect(statusRect, 5, 5);
+        painter->fillPath(statusPath, statusBrush);
 
-        float latenessRatio = index.data(Qt::UserRole +1).toFloat();
-        float estimation = index.data(Qt::UserRole + 2).toFloat();
-        qint64 timeSpent = index.data(Qt::UserRole + 3).toLongLong();
-
-        // Draw a timebar first
-        if (m_timeTracking && latenessRatio > 0 && estimation > 0)
+        if (m_timeTracking || m_completionRatio)
         {
-            QColor timeColor;
-            if ( latenessRatio < 1.1 ) timeColor = QColor(32,62,32);
-            else if ( latenessRatio < 1.2 ) timeColor = QColor(76,30,0);
-            else if ( latenessRatio < 1.3 ) timeColor = QColor(93,31,0);
-            else if ( latenessRatio < 1.4 ) timeColor = QColor(118,27,0);
-            else if ( latenessRatio < 1.5 ) timeColor = QColor(140,23,0);
-            else if ( latenessRatio < 1.6 ) timeColor = QColor(168,14,0);
-            else if ( latenessRatio < 1.7 ) timeColor = QColor(188,0,0);
-            else if ( latenessRatio < 1.8 ) timeColor = QColor(214,0,0);
-            else if ( latenessRatio < 1.9 ) timeColor = QColor(236,0,0);
-            else timeColor = QColor(255,0,0);
-            statusBrush.setColor( timeColor );
 
-            float timeSpentDays = RamStatus::hoursToDays( timeSpent/3600 );
-            float ratio = timeSpentDays / estimation;
+            float latenessRatio = index.data(Qt::UserRole +1).toFloat();
+            float estimation = index.data(Qt::UserRole + 2).toFloat();
+            qint64 timeSpent = index.data(Qt::UserRole + 3).toLongLong();
 
-            statusRect.setWidth( statusWidth * ratio );
-            if (statusRect.right() > bgRect.right() - 10) statusRect.setRight( bgRect.right() - 10);
-            QPainterPath timePath;
-            timePath.addRoundedRect(statusRect, 3, 3);
-            painter->fillPath(timePath, statusBrush);
+            // Draw a timebar first
+            if (m_timeTracking && latenessRatio > 0 && estimation > 0)
+            {
+                QColor timeColor;
+                if ( latenessRatio < 1.1 ) timeColor = QColor(32,62,32);
+                else if ( latenessRatio < 1.2 ) timeColor = QColor(76,30,0);
+                else if ( latenessRatio < 1.3 ) timeColor = QColor(93,31,0);
+                else if ( latenessRatio < 1.4 ) timeColor = QColor(118,27,0);
+                else if ( latenessRatio < 1.5 ) timeColor = QColor(140,23,0);
+                else if ( latenessRatio < 1.6 ) timeColor = QColor(168,14,0);
+                else if ( latenessRatio < 1.7 ) timeColor = QColor(188,0,0);
+                else if ( latenessRatio < 1.8 ) timeColor = QColor(214,0,0);
+                else if ( latenessRatio < 1.9 ) timeColor = QColor(236,0,0);
+                else timeColor = QColor(255,0,0);
+                statusBrush.setColor( timeColor );
+
+                float timeSpentDays = RamStatus::hoursToDays( timeSpent/3600 );
+                float ratio = timeSpentDays / estimation;
+
+                statusRect.setWidth( statusWidth * ratio );
+                if (statusRect.right() > bgRect.right() - 10) statusRect.setRight( bgRect.right() - 10);
+                QPainterPath timePath;
+                timePath.addRoundedRect(statusRect, 3, 3);
+                painter->fillPath(timePath, statusBrush);
+            }
+
+            if (m_completionRatio)
+            {
+                // Set a color according to the completion
+                float completionRatio = index.data(Qt::UserRole ).toInt() / 100.0;
+                QColor completionColor;
+                if (completionRatio < 0.12) completionColor = QColor( 197, 0, 0);
+                else if (completionRatio < 0.25) completionColor = QColor( 197, 98, 17);
+                else if (completionRatio < 0.5) completionColor = QColor( 197, 179, 40);
+                else if (completionRatio < 0.75) completionColor = QColor( 128, 197, 37);
+                else if (completionRatio < 0.88) completionColor = QColor( 100, 172, 69);
+                else if (completionRatio < 0.98) completionColor = QColor( 55, 172, 23);
+                else completionColor = QColor( 6, 116, 24);
+
+                // Draw completion ratio
+                statusBrush.setColor( completionColor );
+                statusRect.setWidth(statusWidth * completionRatio);
+                QPainterPath completionPath;
+                completionPath.addRoundedRect(statusRect, 5, 5);
+                painter->fillPath(completionPath, statusBrush);
+            }
+
         }
-
-        if (m_completionRatio)
-        {
-            // Set a color according to the completion
-            float completionRatio = index.data(Qt::UserRole ).toInt() / 100.0;
-            QColor completionColor;
-            if (completionRatio < 0.12) completionColor = QColor( 197, 0, 0);
-            else if (completionRatio < 0.25) completionColor = QColor( 197, 98, 17);
-            else if (completionRatio < 0.5) completionColor = QColor( 197, 179, 40);
-            else if (completionRatio < 0.75) completionColor = QColor( 128, 197, 37);
-            else if (completionRatio < 0.88) completionColor = QColor( 100, 172, 69);
-            else if (completionRatio < 0.98) completionColor = QColor( 55, 172, 23);
-            else completionColor = QColor( 6, 116, 24);
-
-            // Draw completion ratio
-            statusBrush.setColor( completionColor );
-            statusRect.setWidth(statusWidth * completionRatio);
-            QPainterPath completionPath;
-            completionPath.addRoundedRect(statusRect, 5, 5);
-            painter->fillPath(completionPath, statusBrush);
-        }
-
     }
 
     // Too Small !
@@ -131,8 +137,13 @@ void RamStatisticsDelegate::paint(QPainter *painter, const QStyleOptionViewItem 
 
 QSize RamStatisticsDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-    if (index.column() == 0) return QSize(200,105);
-    return QStyledItemDelegate::sizeHint(option, index);
+    if (index.column() != 0) return QStyledItemDelegate::sizeHint(option, index);
+
+    RamStep::Type stepType = static_cast<RamStep::Type>( index.data(Qt::UserRole +6).toInt() );
+    if (stepType == RamStep::AssetProduction || stepType == RamStep::ShotProduction )
+        return QSize(200,105);
+
+    return QSize(200,50);
 }
 
 void RamStatisticsDelegate::drawMore(QPainter *painter, QRect rect, QPen pen) const

@@ -53,23 +53,32 @@ QVariant RamStatisticsTable::data(const QModelIndex &index, int role) const
 
     if (role == Qt::DisplayRole)
     {
-        QString text = "Completion: " %
-                QString::number( step->completionRatio(), 'f', 0) %
-                " %\nLateness: " %
-                QString::number( (step->latenessRatio() -1) * 100, 'f', 0) %
-                " %\nEstimation: " %
-                QString::number( step->estimation() ) %
-                " days\nAssigned: " %
-                QString::number( step->assignedDays(), 'f', 1) %
-                " days";
-        if (step->unassignedDays() > 0) text = text %
-                                            "\nMissing: " %
-                                            QString::number( step->unassignedDays(), 'f', 1) %
-                                            " days";
-        else if (step->unassignedDays() < 0) text = text %
-                                                "\nExtra: " %
-                                                QString::number( -step->unassignedDays(), 'f', 1) %
+        QString text;
+        if (step->type() == RamStep::ShotProduction || step->type() == RamStep::AssetProduction)
+        {
+            text = "Completion: " %
+                    QString::number( step->completionRatio(), 'f', 0) %
+                    " %\nLateness: " %
+                    QString::number( (step->latenessRatio() -1) * 100, 'f', 0) %
+                    " %\nEstimation: " %
+                    QString::number( step->estimation() ) %
+                    " days\nAssigned: " %
+                    QString::number( step->assignedDays(), 'f', 1) %
+                    " days";
+            if (step->unassignedDays() > 0) text = text %
+                                                "\nMissing: " %
+                                                QString::number( step->unassignedDays(), 'f', 1) %
                                                 " days";
+            else if (step->unassignedDays() < 0) text = text %
+                                                    "\nExtra: " %
+                                                    QString::number( -step->unassignedDays(), 'f', 1) %
+                                                    " days";
+        }
+        else
+        {
+            text = " Assigned: " % QString::number( step->assignedDays(), 'f', 1) % " days";
+        }
+
         return text;
     }
     if (role == Qt::ForegroundRole)
@@ -107,6 +116,8 @@ QVariant RamStatisticsTable::data(const QModelIndex &index, int role) const
     if (role == Qt::UserRole +3) return step->timeSpent();
     if (role == Qt::UserRole +4) return step->assignedDays();
     if (role == Qt::UserRole +5) return step->unassignedDays();
+
+    if (role == Qt::UserRole +6) return step->type();
 
     return QVariant();
 }

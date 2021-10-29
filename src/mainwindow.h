@@ -36,7 +36,7 @@
 #include "filetypelistmanagerwidget.h"
 #include "applicationlistmanagerwidget.h"
 #include "schedulemanagerwidget.h"
-#include "statisticswidget.h"
+#include "docks/statisticswidget.h"
 #include "dbinterface.h"
 #include "daemon.h"
 #include "ramloader.h"

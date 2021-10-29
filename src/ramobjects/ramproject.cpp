@@ -207,6 +207,9 @@ void RamProject::computeEstimation()
     {
         RamStep *step = qobject_cast<RamStep*>( m_steps->at(i) );
 
+        //Ignore pre and post procution
+        if (step->type() != RamStep::ShotProduction && step->type() != RamStep::AssetProduction) continue;
+
         m_timeSpent += step->timeSpent();
         m_estimation += step->estimation();
         m_completionRatio += step->completionRatio();

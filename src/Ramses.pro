@@ -45,6 +45,7 @@ SOURCES += \
     data-views/ramstatisticsdelegate.cpp \
     data-views/ramstatisticstablewidget.cpp \
     data-views/ramstepheaderview.cpp \
+    docks/filemanagerwidget.cpp \
     duqf-widgets/duqfcolorselector.cpp \
     duqf-widgets/duqfsearchedit.cpp \
     data-models/ramitemtable.cpp \
@@ -76,7 +77,7 @@ SOURCES += \
     rameditwidgets/sequencelistmanagerwidget.cpp \
     rameditwidgets/shotlistmanagerwidget.cpp \
     rameditwidgets/statelistmanagerwidget.cpp \
-    rameditwidgets/statisticswidget.cpp \
+    docks/statisticswidget.cpp \
     rameditwidgets/steplistmanagerwidget.cpp \
     rameditwidgets/stepstatushistorywidget.cpp \
     rameditwidgets/templateassetgrouplistmanagerwidget.cpp \
@@ -191,6 +192,7 @@ HEADERS += \
     data-views/ramstatisticstablewidget.h \
     data-views/ramstepheaderview.h \
     dbistructures.h \
+    docks/filemanagerwidget.h \
     duqf-widgets/duqfcolorselector.h \
     duqf-widgets/duqfsearchedit.h \
     pages/installpage.h \
@@ -217,7 +219,7 @@ HEADERS += \
     rameditwidgets/sequencelistmanagerwidget.h \
     rameditwidgets/shotlistmanagerwidget.h \
     rameditwidgets/statelistmanagerwidget.h \
-    rameditwidgets/statisticswidget.h \
+    docks/statisticswidget.h \
     rameditwidgets/steplistmanagerwidget.h \
     rameditwidgets/stepstatushistorywidget.h \
     rameditwidgets/templateassetgrouplistmanagerwidget.h \
