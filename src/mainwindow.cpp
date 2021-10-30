@@ -4,6 +4,9 @@
 MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     QMainWindow(parent)
 {
+    // Check for update
+    duqf_checkUpdate();
+
     // Build the form
     setupUi(this);
 
@@ -270,6 +273,20 @@ void MainWindow::addObjectDockWidget(ObjectDockWidget *w)
     w->installEventFilter(this);
 }
 
+void MainWindow::duqf_checkUpdate()
+{
+    DuApplication *app = qobject_cast<DuApplication*>(qApp);
+    connect(app, SIGNAL(newUpdateInfo(QJsonObject)), this, SLOT(duqf_updateAvailable(QJsonObject)));
+    // Check for update
+    bool doCheckUpdate = settings.value("updates/checkUpdateAtStartup", true).toBool();
+#ifndef QT_DEBUG
+    QDate latestUpdateCheck = settings.value("updates/latestUpdateCheck", QDate(1970,1,1)).toDate();
+    if (latestUpdateCheck == QDate::currentDate()) doCheckUpdate = false;
+#endif
+    if (doCheckUpdate) app->checkUpdate();
+    else m_showUpdateAlerts = true;
+}
+
 void MainWindow::duqf_initUi()
 {
     // ===== SYSTRAY ======
@@ -370,12 +387,13 @@ void MainWindow::duqf_initUi()
     bool chat = QString(URL_CHAT) != "";
     bool bugReport = QString(URL_BUGREPORT) != "";
     bool forum = QString(URL_FORUM) != "";
+    bool donate = QString(URL_DONATION) != "";
     if (bugReport)
     {
         QAction *bugReportAction = new QAction(QIcon(":/icons/bug-report"), "Bug Report");
         bugReportAction->setToolTip("Report a bug");
         helpMenu->addAction(bugReportAction);
-        if (!chat && !forum) helpMenu->addSeparator();
+        if (!chat && !forum && !donate) helpMenu->addSeparator();
         connect(bugReportAction, SIGNAL(triggered()), this, SLOT(duqf_bugReport()));
     }
     if (chat)
@@ -383,7 +401,7 @@ void MainWindow::duqf_initUi()
         QAction *chatAction = new QAction(QIcon(":/icons/chat"), "Chat");
         chatAction->setToolTip("Come and have a chat");
         helpMenu->addAction(chatAction);
-        if (!forum) helpMenu->addSeparator();
+        if (!forum && !donate) helpMenu->addSeparator();
         connect(chatAction, SIGNAL(triggered()), this, SLOT(duqf_chat()));
     }
     if (forum)
@@ -391,8 +409,16 @@ void MainWindow::duqf_initUi()
         QAction *forumAction = new QAction(QIcon(":/icons/forum"), "Forum");
         forumAction->setToolTip("Join us on our forum");
         helpMenu->addAction(forumAction);
-        helpMenu->addSeparator();
+        if (!donate) helpMenu->addSeparator();
         connect(forumAction, SIGNAL(triggered()), this, SLOT(duqf_forum()));
+    }
+    if (donate)
+    {
+        QAction *donateAction = new QAction(QIcon(":/icons/donate"), "I ♥ " + QString(STR_FILEDESCRIPTION));
+        donateAction->setToolTip("Help us, donate now!");
+        helpMenu->addAction(donateAction);
+        helpMenu->addSeparator();
+        connect(donateAction, SIGNAL(triggered()), this, SLOT(duqf_donate()));
     }
     QAction *aboutQtAction = new QAction(QIcon(":/icons/qt"), "About Qt");
     helpMenu->addAction(aboutQtAction);
@@ -407,6 +433,9 @@ void MainWindow::duqf_initUi()
 
     AppearanceSettingsWidget *asw = new AppearanceSettingsWidget();
     settingsWidget->addPage(asw, "Appearance", QIcon(":/icons/color"));
+
+    DuQFUpdateSettingsWidget *usw = new DuQFUpdateSettingsWidget();
+    settingsWidget->addPage(usw, "Updates", QIcon(":/icons/update-settings"));
 
     // ====== CONNECTIONS ======
     connect(duqf_maximizeButton,SIGNAL(clicked()),this,SLOT(duqf_maximize()));
@@ -488,6 +517,11 @@ void MainWindow::duqf_doc()
     QDesktopServices::openUrl ( QUrl( URL_DOC ) );
 }
 
+void MainWindow::duqf_donate()
+{
+    QDesktopServices::openUrl ( QUrl( URL_DONATION ) );
+}
+
 void MainWindow::duqf_settings(bool checked)
 {
     duqf_settingsButton->setChecked(checked);
@@ -552,6 +586,18 @@ void MainWindow::duqf_askBeforeClose()
 {
     QMessageBox::StandardButton r = QMessageBox::question(this, "Quitting Ramses", "Are you sure you want to quit Ramses?");
     if (r == QMessageBox::Yes) this->close();
+}
+
+void MainWindow::duqf_updateAvailable(QJsonObject updateInfo)
+{
+    if (!updateInfo.value("update").toBool() && !m_showUpdateAlerts)
+    {
+        m_showUpdateAlerts = true;
+        return;
+    }
+
+    DuQFUpdateDialog *dialog = new DuQFUpdateDialog(updateInfo, this);
+    dialog->show();
 }
 
 void MainWindow::log(DuQFLog m)

@@ -126,6 +126,51 @@ bool DuApplication::processArgs(QStringList examples, QStringList helpStrings)
     return help;
 }
 
+void DuApplication::checkUpdate()
+{
+    if (QString(URL_UPDATE) == "") return;
+
+    // Get Sys info
+#ifdef Q_OS_LINUX
+    QString os("linux");
+    QString distrib = QSysInfo::productType() % "-" % QSysInfo::productVersion();
+    QString kernel = QSysInfo::kernelType() % "-" % QSysInfo::kernelVersion();
+#endif
+#ifdef Q_OS_WIN
+    QString os("win");
+    QString distrib = QSysInfo::productVersion();
+    QString kernel = QSysInfo::kernelType() % "-" % QSysInfo::kernelVersion();
+#endif
+#ifdef Q_OS_MAC
+    QString os("linux");
+    QString distrib = QSysInfo::productType() % "-" % QSysInfo::productVersion();
+    QString kernel = QSysInfo::kernelType() % "-" % QSysInfo::kernelVersion();
+#endif
+    // Build request
+    QString serverAddress(URL_UPDATE);
+    if (!serverAddress.endsWith("/")) serverAddress += "/";
+    QUrl url(serverAddress %
+             "?getVersion&name=" %
+             QString(STR_INTERNALNAME) %
+             "&version=" % QString(STR_VERSION) %
+             "&os=" % os %
+             "&osVersion=" % distrib % " (" % kernel % ")"
+             );
+    QNetworkRequest request;
+    request.setUrl(url);
+    request.setHeader(QNetworkRequest::UserAgentHeader, QString(STR_INTERNALNAME) + " v" + QString(STR_VERSION));
+    QNetworkAccessManager *am = new QNetworkAccessManager(this);
+
+    qInfo() << "Checking for update... This is the (only) info sent to the server at " % QString(URL_UPDATE) % ":";
+    qInfo().noquote() << "OS: " % os;
+    qInfo().noquote() << "OS Version: " % distrib % " (" % kernel % ")";
+    qInfo().noquote() << "App Name: " % QString(STR_INTERNALNAME);
+    qInfo().noquote() << "App Version: " % QString(STR_VERSION);
+
+    connect(am, SIGNAL(finished(QNetworkReply*)), this, SLOT(gotUpdateInfo(QNetworkReply*)));
+    am->get(request);
+}
+
 bool DuApplication::notify(QObject *receiver, QEvent *ev)
 {
     if(ev->type() == QEvent::KeyPress || ev->type() == QEvent::MouseButtonPress)
@@ -139,4 +184,60 @@ bool DuApplication::notify(QObject *receiver, QEvent *ev)
 void DuApplication::idleTimeOut()
 {
     emit idle();
+}
+
+void DuApplication::gotUpdateInfo(QNetworkReply *rep)
+{
+    if (rep->error() != QNetworkReply::NoError)
+    {
+        qDebug() << "Update Check failed!";
+        qDebug() << rep->errorString();
+        return;
+    }
+
+    QString repAll = rep->readAll();
+
+    qDebug() << repAll;
+
+    QJsonDocument repDoc = QJsonDocument::fromJson(repAll.toUtf8());
+    _updateInfo = repDoc.object();
+
+    if (_updateInfo.isEmpty())
+    {
+        _updateInfo.insert("message",repAll);
+        _updateInfo.insert("accepted",false);
+        _updateInfo.insert("success",false);
+    }
+    else if ( _updateInfo.value("success").toBool() )
+    {
+        QSettings settings;
+        settings.setValue("updates/latestUpdateCheck", QDate::currentDate());
+    }
+
+    if (_updateInfo.value("success").toBool())
+    {
+        qInfo() << "Got update information:";
+        if (_updateInfo.value("update").toBool())
+        {
+            qInfo().noquote() << "A new version is available! Version: " % _updateInfo.value("version").toString();
+            qInfo().noquote() << "(Current version is: " % QString(STR_VERSION) % ")";
+            qInfo().noquote() << "Update notes: " % _updateInfo.value("description").toString();
+            qInfo().noquote() << "Detailed changelog: " % _updateInfo.value("changelogURL").toString();
+            qInfo().noquote() << "Download: " % _updateInfo.value("downloadURL").toString();
+            qInfo().noquote() << "Donate: " % _updateInfo.value("donateURL").toString();
+        }
+        else
+        {
+            qInfo() << "this version is already up-to-date, congrats!";
+        }
+    }
+
+    emit newUpdateInfo(_updateInfo);
+
+    rep->deleteLater();
+}
+
+const QJsonObject &DuApplication::updateInfo() const
+{
+    return _updateInfo;
 }

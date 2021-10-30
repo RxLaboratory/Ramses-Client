@@ -11,6 +11,12 @@
 #include <QFontDatabase>
 #include <QRegularExpression>
 #include <QTimer>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QStringBuilder>
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
+#include <QSettings>
 
 #include "app-version.h"
 #include "app-style.h"
@@ -114,20 +120,29 @@ public:
     // Process the CLI arguments
     bool processArgs(QStringList examples = QStringList(), QStringList helpStrings = QStringList());
 
+    const QJsonObject &updateInfo() const;
+
+public slots:
+    // Check for updates
+    void checkUpdate();
+
 signals:
     void idle();
+    void newUpdateInfo(QJsonObject);
 
 protected:
     virtual bool notify(QObject *receiver, QEvent *ev);
 
 private slots:
     void idleTimeOut();
+    void gotUpdateInfo(QNetworkReply *rep);
 
 private:
     DuSplashScreen *_splashScreen;
     QTimer *_idleTimer;
     int _idleTimeout;
     QStringList _args;
+    QJsonObject _updateInfo;
 };
 
 #endif // APPUTILS_H

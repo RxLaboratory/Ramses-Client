@@ -32,6 +32,11 @@
         <file alias="warning">duqf_resources/icons/warning_bl.svg</file>
         <file alias="pin">duqf_resources/icons/pin-attach_sl.svg</file>
         <file alias="save">duqf_resources/icons/save.svg</file>
+        <file alias="update-settings">duqf_resources/icons/update-settings.svg</file>
+        <file alias="download">duqf_resources/icons/download.svg</file>
+        <file alias="changelog">duqf_resources/icons/changelog.svg</file>
+        <file alias="donate">duqf_resources/icons/heart.svg</file>
+        <file alias="check-update">duqf_resources/icons/check-update.svg</file>
     </qresource>
     <qresource prefix="/images"/>
     <qresource prefix="/styles">

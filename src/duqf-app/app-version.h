@@ -25,7 +25,7 @@
 
 #define STR_COMPANYNAME "Rx Laboratory"
 #define STR_FILEDESCRIPTION "Ramses"
-#define STR_INTERNALNAME "Ramses"
+#define STR_INTERNALNAME "Ramses-Client"
 #define STR_LEGALCOPYRIGHT "Copyright (c) 2021 Rx Laboratory, Nicolas Dufresne and contributors"
 #define STR_LEGALTRADEMARKS1 "All Rights Reserved"
 #define STR_ORIGINALFILENAME "Ramses.exe"
@@ -39,6 +39,7 @@
 #define URL_DOC "http://ramses.rxlab.guide"
 #define URL_BUGREPORT "https://github.com/RxLaboratory/Ramses/issues/new/choose"
 #define URL_DONATION "http://donate.rxlab.info"
+#define URL_UPDATE "http://version.rxlab.io"
 
 #define APP_ICON ":/icons/app"
 #define SPLASH_IMAGE ":/images/splash"

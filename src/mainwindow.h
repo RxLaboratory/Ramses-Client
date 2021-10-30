@@ -22,6 +22,8 @@
 #include "duqf-utils/utils.h"
 #include "duqf-widgets/toolbarspacer.h"
 #include "duqf-widgets/duqflogtoolbutton.h"
+#include "duqf-widgets/duqfupdatedialog.h"
+#include "duqf-widgets/duqfupdatesettingswidget.h"
 
 #include "serversettingswidget.h"
 #include "daemonsettingswidget.h"
@@ -62,6 +64,10 @@ public:
 
 private:
     // ========= RxOT UI ==============
+    /**
+     * @brief duqf_checkUpdate Called once to check if an update is available
+     */
+    void duqf_checkUpdate();
     /**
      * @brief initUi Called once to build the default RxOT UI
      */
@@ -106,6 +112,11 @@ private:
 
     bool m_shiftPressed = false;
 
+    /**
+     * @brief m_showUpdateAlerts is set to true after the auto-update check during startup
+     */
+    bool m_showUpdateAlerts = false;
+
 private slots:
     void duqf_maximize(bool max);
     void duqf_maximize();
@@ -113,6 +124,7 @@ private slots:
     void duqf_forum();
     void duqf_chat();
     void duqf_doc();
+    void duqf_donate();
     void duqf_settings(bool checked = true);
     void duqf_closeSettings();
     void duqf_reinitSettings();
@@ -120,6 +132,7 @@ private slots:
     void duqf_trayClicked(QSystemTrayIcon::ActivationReason reason);
     void duqf_showHide();
     void duqf_askBeforeClose();
+    void duqf_updateAvailable(QJsonObject updateInfo);
 
     void log(DuQFLog m);
 

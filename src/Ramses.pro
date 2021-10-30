@@ -55,6 +55,8 @@ SOURCES += \
     data-views/ramobjectdelegate.cpp \
     data-views/ramobjectlistcombobox.cpp \
     data-views/ramobjectlistwidget.cpp \
+    duqf-widgets/duqfupdatedialog.cpp \
+    duqf-widgets/duqfupdatesettingswidget.cpp \
     pages/installpage.cpp \
     pages/projectpage.cpp \
     rameditwidgets/applicationeditwidget.cpp \
@@ -195,6 +197,8 @@ HEADERS += \
     docks/filemanagerwidget.h \
     duqf-widgets/duqfcolorselector.h \
     duqf-widgets/duqfsearchedit.h \
+    duqf-widgets/duqfupdatedialog.h \
+    duqf-widgets/duqfupdatesettingswidget.h \
     pages/installpage.h \
     processmanager.h \
     progressbar.h \
