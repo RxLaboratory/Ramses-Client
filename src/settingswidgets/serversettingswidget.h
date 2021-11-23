@@ -15,7 +15,7 @@ class ServerSettingsWidget : public QWidget, private Ui::ServerSettingsWidget
 public:
     explicit ServerSettingsWidget(QWidget *parent = nullptr);
 private slots:
-    void serverAddressEdit_edingFinished();
+    void serverAddressEdit_editingFinished(QString address);
     void sslCheckBox_clicked(bool checked);
     void updateFreqSpinBox_editingFinished();
     void timeoutSpinBox_editingFinished();

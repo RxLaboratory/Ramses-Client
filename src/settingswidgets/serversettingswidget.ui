@@ -116,7 +116,7 @@
         </item>
         <item row="0" column="1">
          <widget class="QWidget" name="serverAddressWidget" native="true">
-          <layout class="QHBoxLayout" name="horizontalLayout_3">
+          <layout class="QHBoxLayout" name="horizontalLayout_2">
            <property name="spacing">
             <number>3</number>
            </property>
@@ -140,15 +140,15 @@
             </widget>
            </item>
            <item>
-            <widget class="QLineEdit" name="serverAddressEdit">
-             <property name="minimumSize">
-              <size>
-               <width>300</width>
-               <height>0</height>
-              </size>
+            <widget class="QComboBox" name="serverAddressBox">
+             <property name="editable">
+              <bool>true</bool>
              </property>
-             <property name="frame">
-              <bool>false</bool>
+             <property name="minimumContentsLength">
+              <number>25</number>
+             </property>
+             <property name="placeholderText">
+              <string>localhost</string>
              </property>
             </widget>
            </item>

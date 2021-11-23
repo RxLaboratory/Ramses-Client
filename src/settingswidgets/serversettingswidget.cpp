@@ -5,7 +5,15 @@ ServerSettingsWidget::ServerSettingsWidget(QWidget *parent) :
 {
     setupUi(this);
 
-    serverAddressEdit->setText(m_settings.value("server/address", "localhost/ramses/").toString());
+    int historySize = m_settings.beginReadArray("server/serverHistory");
+    for (int i = 0; i < historySize; i++)
+    {
+        m_settings.setArrayIndex( i );
+        serverAddressBox->addItem(m_settings.value("address").toString());
+    }
+    m_settings.endArray();
+
+    serverAddressBox->setCurrentText(m_settings.value("server/address", "localhost/ramses/").toString());
     sslCheckBox->setChecked( m_settings.value("server/ssl", true).toBool() );
     updateFreqSpinBox->setValue( m_settings.value("server/updateFreq", 2).toInt());
     timeoutSpinBox->setValue( m_settings.value("server/timeout", 3000).toInt()/1000 );
@@ -14,7 +22,7 @@ ServerSettingsWidget::ServerSettingsWidget(QWidget *parent) :
 
     logoutWidget->hide();
 
-    connect(serverAddressEdit, SIGNAL(editingFinished()), this, SLOT(serverAddressEdit_edingFinished()));
+    connect(serverAddressBox, SIGNAL(currentTextChanged(QString)), this, SLOT(serverAddressEdit_editingFinished(QString)));
     connect(sslCheckBox, SIGNAL(clicked(bool)), this, SLOT(sslCheckBox_clicked(bool)));
     connect(logoutButton, SIGNAL(clicked()), this, SLOT(logout()));
     connect(updateFreqSpinBox, SIGNAL(editingFinished()), this, SLOT( updateFreqSpinBox_editingFinished()));
@@ -22,13 +30,12 @@ ServerSettingsWidget::ServerSettingsWidget(QWidget *parent) :
     connect(DBInterface::instance(), &DBInterface::connectionStatusChanged, this, &ServerSettingsWidget::dbiConnectionStatusChanged);
 }
 
-void ServerSettingsWidget::serverAddressEdit_edingFinished()
+void ServerSettingsWidget::serverAddressEdit_editingFinished(QString address)
 {
-    QString address = serverAddressEdit->text();
     if (!address.endsWith("/"))
     {
         address += "/";
-        serverAddressEdit->setText(address);
+        serverAddressBox->setCurrentText(address);
     }
     m_settings.setValue("server/address", address);
 }

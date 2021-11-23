@@ -38,6 +38,29 @@ void LoginPage::loggedIn(RamUser *user)
     passwordEdit->setText("");
     loginWidget->hide();
     connectionStatusLabel->setText("Connected as " + user->name());
+
+    // Save server address to history
+    QSettings settings;
+    QString address = settings.value("server/address", "localhost/ramses/").toString();
+    bool found = false;
+    int historySize = settings.beginReadArray("server/serverHistory");
+    for (int i = 0; i < historySize; i++)
+    {
+        settings.setArrayIndex(i);
+        if (settings.value("address").toString() == address )
+        {
+            found = true;
+            break;
+        }
+    }
+    settings.endArray();
+    if (!found)
+    {
+        settings.beginWriteArray("server/serverHistory");
+        settings.setArrayIndex(historySize);
+        settings.setValue("address", address);
+        settings.endArray();
+    }
 }
 
 void LoginPage::loggedOut()
