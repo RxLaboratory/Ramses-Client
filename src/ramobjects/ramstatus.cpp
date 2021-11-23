@@ -3,7 +3,7 @@
 #include "ramitem.h"
 #include "statuseditwidget.h"
 
-RamStatus::RamStatus(RamUser *user, RamState *state, RamStep *step, RamItem *item, QString uuid):
+RamStatus::RamStatus(RamUser *user, RamState *state, RamStep *step, RamItem *item, bool computeEstimation, QString uuid):
     RamObject("", "", uuid, item)
 {
     m_user = user;
@@ -13,7 +13,8 @@ RamStatus::RamStatus(RamUser *user, RamState *state, RamStep *step, RamItem *ite
     m_completionRatio = m_state->completionRatio();
     m_date = QDateTime::currentDateTimeUtc();
 
-    m_step->computeEstimation();
+    if (m_state->is( Ramses::instance()->noState() )) computeEstimation = false;
+    if (computeEstimation) m_step->computeEstimation();
 
     setObjectType(Status);
 
@@ -27,7 +28,7 @@ RamStatus::RamStatus(RamUser *user, RamState *state, RamStep *step, RamItem *ite
 
 RamStatus::~RamStatus()
 {
-    m_step->computeEstimation();
+    if ( !m_state->is( Ramses::instance()->noState() ) ) m_step->computeEstimation();
 }
 
 int RamStatus::completionRatio() const

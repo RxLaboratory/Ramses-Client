@@ -25,7 +25,7 @@ public:
     };
     Q_ENUM(Difficulty)
 
-    explicit RamStatus(RamUser *user, RamState *state, RamStep *step, RamItem *item, QString uuid = "");
+    explicit RamStatus(RamUser *user, RamState *state, RamStep *step, RamItem *item, bool computeEstimation = true, QString uuid = "");
     ~RamStatus();
 
     int completionRatio() const;

@@ -908,7 +908,7 @@ QString RamLoader::gotStatus(QJsonObject newS, RamItem *item)
     if ( !user || !state || !step ) return "";
 
     RamStatus *status = RamStatus::status( uuid );
-    if (!status) status = new RamStatus(user, state, step, item, uuid);
+    if (!status) status = new RamStatus(user, state, step, item, false, uuid);
     else {
         status->setState(state);
     }

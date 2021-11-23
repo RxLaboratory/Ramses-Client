@@ -57,7 +57,8 @@ QVariant RamItemTable::data(const QModelIndex &index, int role) const
                         Ramses::instance()->ramUser(),
                         Ramses::instance()->noState(),
                         step,
-                        item);
+                        item,
+                        false);
 
         quintptr iptr = reinterpret_cast<quintptr>(status);
         return iptr;
