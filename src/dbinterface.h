@@ -1,4 +1,4 @@
-#ifndef DBINTERFACE_H
+﻿#ifndef DBINTERFACE_H
 #define DBINTERFACE_H
 
 #include <QObject>
@@ -14,11 +14,20 @@
 #include <QApplication>
 #include <QStringBuilder>
 #include <QTimer>
+#include <QThread>
+#include <QProgressBar>
 
 #include "duqf-utils/utils.h"
 #include "duqf-app/app-version.h"
 #include "duqf-utils/duqflogger.h"
 #include "dbistructures.h"
+
+struct Request
+{
+    QNetworkRequest request;
+    QString body;
+    QString query;
+};
 
 class DBInterface : public DuQFLoggerObject
 {
@@ -146,6 +155,8 @@ private slots:
     void sslError(QNetworkReply *rep, QList<QSslError> errs);
     void networkError(QNetworkReply::NetworkError err);
     void setConnectionStatus(NetworkUtils::NetworkStatus s);
+    void nextRequest();
+    void flushRequests();
 
 private:
     /**
@@ -163,11 +174,6 @@ private:
      */
     QNetworkAccessManager _network;
     /**
-     * @brief Stores the replies from the remote connection
-     */
-    QNetworkReply *_reply;
-
-    /**
      * @brief Online / Offline status
      */
     NetworkUtils::NetworkStatus _status;
@@ -175,6 +181,15 @@ private:
      * @brief True to suspend the interface, used when creating Ramses objects from a database update
      */
     bool _suspended;
+    /**
+     * @brief _paused True to suspend the interface BUT queue the requests
+     */
+    bool _paused;
+    /**
+     * @brief _requestDelay A delay between requests to avoid spamming the server (and being blacklisted)
+     * @todo expose this as a user setting ?
+     */
+    int _requestDelay = 500;
     /**
      * @brief The token given by the server when logging in.
      */
@@ -184,7 +199,8 @@ private:
      * @brief _forbiddenWords A list of forbidden words in URLs
      */
     QStringList _forbiddenWords;
-
+    QList<Request> _requestQueue;
+    QTimer *_requestQueueTimer;
     /**
      * @brief Requests data from the remote server
      * @param req The request to post
@@ -192,6 +208,7 @@ private:
      */
     void request(QString query, QStringList args = QStringList(), bool wait = true);
     void request(QString query, QJsonObject body, bool wait = true);
+    void queueRequest(QString query, QNetworkRequest request, QString body);
     QString buildFormEncodedString(QStringList args);
     bool waitPing();
     QString getServerAddress();

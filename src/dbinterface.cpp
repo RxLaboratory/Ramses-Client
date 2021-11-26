@@ -1,4 +1,4 @@
-#include "dbinterface.h"
+﻿#include "dbinterface.h"
 
 #include "daemon.h"
 
@@ -882,10 +882,14 @@ DBInterface::DBInterface(QObject *parent) : DuQFLoggerObject("Database Interface
 
     _forbiddenWords << "and" << "or" << "if" << "else" << "insert" << "update" << "select" << "drop" << "alter";
 
+    _requestQueueTimer = new QTimer(this);
+
     // Connect events
+    connect( _requestQueueTimer, &QTimer::timeout, this, &DBInterface::nextRequest );
     connect( &_network, &QNetworkAccessManager::finished, this, &DBInterface::dataReceived);
     connect(&_network, SIGNAL(sslErrors(QNetworkReply*,QList<QSslError>)), this,SLOT(sslError(QNetworkReply*,QList<QSslError>)));
     connect(qApp,SIGNAL(aboutToQuit()), this, SLOT(suspend()));
+    connect(qApp,SIGNAL(aboutToQuit()), this, SLOT(flushRequests()));
 
     _status = NetworkUtils::Offline;
 }
@@ -1101,6 +1105,59 @@ void DBInterface::setConnectionStatus(NetworkUtils::NetworkStatus s)
     emit connectionStatusChanged(s);
 }
 
+void DBInterface::nextRequest()
+{
+    if (_requestQueue.isEmpty())
+    {
+        _requestQueueTimer->stop();
+        return;
+    }
+    Request r = _requestQueue.takeFirst();
+
+    QNetworkReply *reply = _network.post(r.request, r.body.toUtf8());
+
+    QUrl url = r.request.url();
+
+#ifdef QT_DEBUG
+    // Log URL / GET
+    log( "New request: " +  url.toString(QUrl::RemovePassword), DuQFLog::Debug);
+    // Log POST body
+    if (r.query == "login")
+        log("Request data: [Hidden login info]", DuQFLog::Data);
+    else
+        log("Request data: " + r.body, DuQFLog::Data);
+#endif
+
+    connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this,SLOT(networkError(QNetworkReply::NetworkError)));
+    connect(reply, SIGNAL(finished()), reply,SLOT(deleteLater()));
+
+    emit queried(r.query);
+}
+
+void DBInterface::flushRequests()
+{
+    if ( _requestQueue.isEmpty() ) return;
+
+    log( "Flushing remaining requests." );
+
+    _requestQueueTimer->stop();
+
+    // Post the remaining requests
+    while( !_requestQueue.isEmpty() )
+    {
+        nextRequest();
+        qApp->processEvents();
+        // Wait a small bit
+        QThread::msleep( _requestDelay / 4 );
+    }
+
+    // Wait a last bit to be sure everything is sent
+    QThread::msleep( _requestDelay );
+    qApp->processEvents();
+
+    log( "All requests sent." );
+}
+
 bool DBInterface::waitPing()
 {
     // If not online or connecting, we need to get online
@@ -1173,21 +1230,7 @@ void DBInterface::request(QString query, QStringList args, bool wait)
     QString body = buildFormEncodedString(args);
 
     // Send post
-    _reply = _network.post(request, body.toUtf8());
-
-#ifdef QT_DEBUG
-    // Log URL / GET
-    log( "New request: " + url.toString(QUrl::RemovePassword), DuQFLog::Debug);
-    // Log POST body
-    if (query == "login")
-        log("Request data: [Hidden login info]", DuQFLog::Data);
-    else
-        log("Request data: " + body, DuQFLog::Data);
-#endif
-
-    connect(_reply, SIGNAL(error(QNetworkReply::NetworkError)), this,SLOT(networkError(QNetworkReply::NetworkError)));
-
-    emit queried(query);
+    queueRequest( query, request, body );
 }
 
 void DBInterface::request(QString query, QJsonObject body, bool wait)
@@ -1219,21 +1262,17 @@ void DBInterface::request(QString query, QJsonObject body, bool wait)
     bodyDoc.setObject(body);
 
     // Send post
-    _reply = _network.post(request, bodyDoc.toJson(QJsonDocument::Compact));
+    queueRequest( query, request, bodyDoc.toJson(QJsonDocument::Compact) );
+}
 
-#ifdef QT_DEBUG
-    // Log URL / GET
-    log( "New request: " + url.toString(QUrl::RemovePassword), DuQFLog::Debug);
-    // Log POST body
-    if (query == "login")
-        log("Request data: [Hidden login info]", DuQFLog::Data);
-    else
-        log("Request data: " + bodyDoc.toJson(), DuQFLog::Data);
-#endif
-
-    connect(_reply, SIGNAL(error(QNetworkReply::NetworkError)), this,SLOT(networkError(QNetworkReply::NetworkError)));
-
-    emit queried(query);
+void DBInterface::queueRequest(QString query, QNetworkRequest request, QString body)
+{
+    Request r;
+    r.request = request;
+    r.body = body;
+    r.query = query;
+    _requestQueue << r;
+    if (!_requestQueueTimer->isActive()) _requestQueueTimer->start(_requestDelay);
 }
 
 QString DBInterface::buildFormEncodedString(QStringList args)
