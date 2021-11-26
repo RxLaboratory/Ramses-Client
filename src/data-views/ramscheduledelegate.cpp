@@ -17,6 +17,10 @@ RamScheduleDelegate::RamScheduleDelegate(QObject *parent) : QStyledItemDelegate(
     m_detailsFont.setItalic(true);
     m_padding = 10;
 
+    m_shotProdIcon = QIcon(":/icons/shot").pixmap(QSize(12,12));
+    m_assetProdIcon = QIcon(":/icons/asset").pixmap(QSize(12,12));
+    m_preProdIcon = QIcon(":/icons/project").pixmap(QSize(12,12));
+    m_postProdIcon = QIcon(":/icons/film").pixmap(QSize(12,12));
 }
 
 void RamScheduleDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
@@ -71,10 +75,15 @@ void RamScheduleDelegate::paint(QPainter *painter, const QStyleOptionViewItem &o
     if (!step) return;
 
     // icon
-    QString icon = ":/icons/asset";
-    if (step->type() == RamStep::PreProduction) icon = ":/icons/project";
-    else if (step->type() == RamStep::ShotProduction) icon = ":/icons/shot";
-    else if (step->type() == RamStep::PostProduction) icon = ":/icons/film";
+    QPixmap icon;
+    switch( step->type())
+    {
+    case RamStep::PreProduction: icon = m_preProdIcon; break;
+    case RamStep::ShotProduction: icon = m_shotProdIcon; break;
+    case RamStep::AssetProduction: icon = m_assetProdIcon; break;
+    case RamStep::PostProduction: icon = m_postProdIcon; break;
+    default: icon = m_assetProdIcon;
+    }
 
     // icon color
     QColor iconColor;
@@ -84,7 +93,7 @@ void RamScheduleDelegate::paint(QPainter *painter, const QStyleOptionViewItem &o
     iconImage.fill( iconColor );
     QPainter iconPainter(&iconImage);
     iconPainter.setCompositionMode(QPainter::CompositionMode_DestinationIn);
-    iconPainter.drawPixmap( QRect(0,0,12,12), QIcon(icon).pixmap(QSize(12,12)) );
+    iconPainter.drawPixmap( QRect(0,0,12,12), icon );
     painter->drawImage(iconRect, iconImage);
 
     // Title

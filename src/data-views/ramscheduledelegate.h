@@ -38,6 +38,12 @@ private:
     QFont m_detailsFont;
     int m_padding;
 
+    // Step icons
+    QPixmap m_shotProdIcon;
+    QPixmap m_assetProdIcon;
+    QPixmap m_preProdIcon;
+    QPixmap m_postProdIcon;
+
     // Events
     QModelIndex m_indexPressed;
 
