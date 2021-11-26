@@ -424,6 +424,9 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
             painter->fillPath(path, QBrush(user->color()));
         }
 
+        // If no state, nothing else to draw
+        if (Ramses::instance()->noState()->is(status->state())) break;
+
         // Draw a progress bar
         QColor statusColor = status->state()->color();
         if (!m_completionRatio) statusColor = QColor(150,150,150);
