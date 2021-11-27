@@ -59,7 +59,7 @@ void DuQFLogToolButton::setupUi()
     layout->setSpacing(3);
 
     DuQFLoggingTextEdit *logWidget = new DuQFLoggingTextEdit();
-    logWidget->setLevel(DuQFLog::Information);
+    logWidget->setLevel(DuQFLog::Warning);
     layout->addWidget(logWidget);
 
     QToolButton *cButton = new QToolButton();
