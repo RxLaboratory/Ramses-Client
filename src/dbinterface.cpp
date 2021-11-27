@@ -29,7 +29,7 @@ void DBInterface::setOnline()
 {
     //ping
     _status = NetworkUtils::Connecting;
-    request("ping", QStringList(), false);
+    request("ping", QStringList("version=" + QString(STR_VERSION)), false);
 }
 
 void DBInterface::getUsers()
@@ -930,7 +930,7 @@ void DBInterface::dataReceived(QNetworkReply * rep)
 
     log(repQuery + "\n" + repMessage + "\nContent:\n" + repAll, DuQFLog::Data);
 
-    if (!repSuccess)
+    if (!repSuccess || repMessage.toLower().startsWith("warning"))
     {
         log(repMessage, DuQFLog::Warning);
     }
@@ -1183,7 +1183,7 @@ QString DBInterface::getServerAddress()
     QSettings settings;
     //Get server address
     QString serverAddress = settings.value("server/address", "localhost/ramses/").toString();
-    //if (!serverAddress.endsWith("/")) serverAddress += "/";
+    if (!serverAddress.endsWith("/")) serverAddress += "/";
     return serverAddress;
 }
 

@@ -13,7 +13,7 @@ InstallPage::InstallPage(QWidget *parent) :
     ui_serverAddressEdit->setText(m_settings.value("server/address", "localhost/ramses/").toString());
     ui_sslBox->setChecked( m_settings.value("server/ssl", true).toBool() );
 
-    connect(ui_serverAddressEdit, SIGNAL(editingFinished()), this, SLOT(serverAddressEdit_edingFinished()));
+    connect(ui_serverAddressEdit, SIGNAL(editingFinished()), this, SLOT(serverAddressEdit_editingFinished()));
     connect(ui_sslBox, SIGNAL(clicked(bool)), this, SLOT(sslCheckBox_clicked(bool)));
     connect(ui_folderSelector, &DuQFFolderSelectorWidget::pathChanged, this, &InstallPage::setRamsesPath);
     connect(ui_helpButton, SIGNAL(clicked()), this, SLOT(help()));
@@ -40,7 +40,7 @@ void InstallPage::setRamsesPath(QString p)
     Ramses::instance()->setRamsesPath(p);
 }
 
-void InstallPage::serverAddressEdit_edingFinished()
+void InstallPage::serverAddressEdit_editingFinished()
 {
     QString address = ui_serverAddressEdit->text();
     if (!address.endsWith("/"))

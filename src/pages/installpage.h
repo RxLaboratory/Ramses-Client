@@ -26,7 +26,7 @@ private slots:
     void help();
     void login_clicked();
     void setRamsesPath(QString p);
-    void serverAddressEdit_edingFinished();
+    void serverAddressEdit_editingFinished();
     void sslCheckBox_clicked(bool checked);
 
 private:

@@ -32,11 +32,11 @@ ServerSettingsWidget::ServerSettingsWidget(QWidget *parent) :
 
 void ServerSettingsWidget::serverAddressEdit_editingFinished(QString address)
 {
-    if (!address.endsWith("/"))
+    /*if (!address.endsWith("/"))
     {
         address += "/";
         serverAddressBox->setCurrentText(address);
-    }
+    }*/
     m_settings.setValue("server/address", address);
 }
 
