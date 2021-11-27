@@ -147,8 +147,8 @@
              <property name="minimumContentsLength">
               <number>25</number>
              </property>
-             <property name="placeholderText">
-              <string>localhost</string>
+             <property name="placeholderText" stdset="0">
+              <string/>
              </property>
             </widget>
            </item>
