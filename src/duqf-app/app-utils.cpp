@@ -142,7 +142,7 @@ void DuApplication::checkUpdate()
     QString kernel = QSysInfo::kernelType() % "-" % QSysInfo::kernelVersion();
 #endif
 #ifdef Q_OS_MAC
-    QString os("linux");
+    QString os("mac");
     QString distrib = QSysInfo::productType() % "-" % QSysInfo::productVersion();
     QString kernel = QSysInfo::kernelType() % "-" % QSysInfo::kernelVersion();
 #endif
