@@ -107,7 +107,7 @@ void RamObjectListComboBox::hidePopup()
     emit popupHidden();
 }
 
-void RamObjectListComboBox::currentObjectChanged(int i)
+void RamObjectListComboBox::currentObjectIndexChanged(int i)
 {
     Q_UNUSED(i)
 
@@ -116,7 +116,19 @@ void RamObjectListComboBox::currentObjectChanged(int i)
 #endif
 
     emit currentObjectChanged( currentObject() );
-    emit currentObjectChanged( currentUuid() );
+    emit currentUuidChanged( currentUuid() );
+}
+
+void RamObjectListComboBox::objectIndexActivated(int i)
+{
+    Q_UNUSED(i)
+
+#ifdef DUMP_OBJECT_DEBUG
+    dumpObjectInfo();
+#endif
+
+    emit objectActivated( currentObject() );
+    emit uuidActivated( currentUuid() );
 }
 
 void RamObjectListComboBox::setupUi()
@@ -129,5 +141,5 @@ void RamObjectListComboBox::setupUi()
 
 void RamObjectListComboBox::connectEvents()
 {
-    connect(this, SIGNAL(currentIndexChanged(int)), this, SLOT(currentObjectChanged(int)));
+    connect(this, SIGNAL(currentIndexChanged(int)), this, SLOT(currentObjectIndexChanged(int)));
 }

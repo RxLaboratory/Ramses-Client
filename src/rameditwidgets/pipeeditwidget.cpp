@@ -111,8 +111,8 @@ void PipeEditWidget::setupUi()
 
 void PipeEditWidget::connectEvents()
 {
-    connect(ui_fromBox, SIGNAL(currentIndexChanged(int)), this, SLOT(update()));
-    connect(ui_toBox, SIGNAL(currentIndexChanged(int)), this, SLOT(update()));
+    connect(ui_fromBox, SIGNAL(activated(int)), this, SLOT(update()));
+    connect(ui_toBox, SIGNAL(activated(int)), this, SLOT(update()));
     connect(ui_pipeFileList, &ObjectListEditWidget::add, this, &PipeEditWidget::createPipeFile);
 
     monitorDbQuery("updatePipe");

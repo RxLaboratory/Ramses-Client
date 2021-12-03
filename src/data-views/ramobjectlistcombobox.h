@@ -33,12 +33,15 @@ public:
 
 signals:
     void currentObjectChanged(RamObject*);
-    void currentObjectChanged(QString);
+    void currentUuidChanged(QString);
+    void objectActivated(RamObject*);
+    void uuidActivated(QString);
     void popupShown();
     void popupHidden();
 
 private slots:
-    void currentObjectChanged(int i);
+    void currentObjectIndexChanged(int i);
+    void objectIndexActivated(int i );
 
 private:
     bool m_isFilterBox = false;
