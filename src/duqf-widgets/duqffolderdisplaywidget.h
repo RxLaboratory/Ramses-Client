@@ -2,11 +2,11 @@
 #define DUQFFOLDERDISPLAYWIDGET_H
 
 #include <QWidget>
-#include <QLabel>
 #include <QToolButton>
 #include <QHBoxLayout>
 #include <QMessageBox>
 
+#include "duqf-widgets/duqfelidedlabel.h"
 #include "duqf-utils/utils.h"
 
 class DuQFFolderDisplayWidget : public QWidget
@@ -25,9 +25,9 @@ private slots:
 
 private:
     void setupUi();
-    QLabel *folderLabel;
-    QToolButton *exploreButton;
-    QString _path;
+    DuQFElidedLabel *ui_folderLabel;
+    QToolButton *ui_exploreButton;
+    QString m_path;
 };
 
 #endif // DUQFFOLDERDISPLAYWIDGET_H

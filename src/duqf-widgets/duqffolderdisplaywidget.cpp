@@ -4,31 +4,28 @@ DuQFFolderDisplayWidget::DuQFFolderDisplayWidget(QWidget *parent) : QWidget(pare
 {
     setupUi();
 
-    _path = "";
+    m_path = "";
 
-    connect(exploreButton, &QToolButton::clicked, this, &DuQFFolderDisplayWidget::exploreButton_clicked);
+    connect(ui_exploreButton, &QToolButton::clicked, this, &DuQFFolderDisplayWidget::exploreButton_clicked);
 
-    exploreButton->setEnabled(false);
+    ui_exploreButton->setEnabled(false);
 }
 
 void DuQFFolderDisplayWidget::setPath(QString p)
 {
-    p = QDir::toNativeSeparators(p);
-    _path = p;
-    if (p.count() > 45) p = p.replace(0, p.count()-45, "(...)");
-    folderLabel->setText(p);
-    folderLabel->setToolTip(_path);
-    exploreButton->setToolTip("Reveal folder at " + _path);
-    exploreButton->setEnabled(_path != "");
+    m_path = QDir::toNativeSeparators(p);
+    ui_folderLabel->setText(m_path);
+    ui_folderLabel->setToolTip(m_path);
+    ui_exploreButton->setToolTip("Reveal folder at " + m_path);
+    ui_exploreButton->setEnabled(m_path != "");
 }
 
 void DuQFFolderDisplayWidget::exploreButton_clicked()
 {
-    if (_path == "") return;
+    if (m_path == "") return;
 
-    FileUtils::openInExplorer( _path, true );
+    FileUtils::openInExplorer( m_path, true );
 }
-
 
 void DuQFFolderDisplayWidget::setupUi()
 {
@@ -38,13 +35,13 @@ void DuQFFolderDisplayWidget::setupUi()
     horizontalLayout->setSpacing(3);
     horizontalLayout->setContentsMargins(0, 0, 0, 0);
 
-    folderLabel = new QLabel(this);
+    ui_folderLabel = new DuQFElidedLabel(this);
 
-    horizontalLayout->addWidget(folderLabel);
+    horizontalLayout->addWidget(ui_folderLabel);
 
-    exploreButton = new QToolButton(this);
-    exploreButton->setObjectName(QStringLiteral("exploreButton"));
-    exploreButton->setIcon(QIcon(":/icons/reveal-folder"));
+    ui_exploreButton = new QToolButton(this);
+    ui_exploreButton->setObjectName(QStringLiteral("exploreButton"));
+    ui_exploreButton->setIcon(QIcon(":/icons/reveal-folder"));
 
-    horizontalLayout->addWidget(exploreButton);
+    horizontalLayout->addWidget(ui_exploreButton);
 }

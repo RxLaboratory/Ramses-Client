@@ -47,6 +47,7 @@ SOURCES += \
     data-views/ramstepheaderview.cpp \
     docks/filemanagerwidget.cpp \
     duqf-widgets/duqfcolorselector.cpp \
+    duqf-widgets/duqfelidedlabel.cpp \
     duqf-widgets/duqfsearchedit.cpp \
     data-models/ramitemtable.cpp \
     data-models/ramobjectlist.cpp \
@@ -196,6 +197,7 @@ HEADERS += \
     dbistructures.h \
     docks/filemanagerwidget.h \
     duqf-widgets/duqfcolorselector.h \
+    duqf-widgets/duqfelidedlabel.h \
     duqf-widgets/duqfsearchedit.h \
     duqf-widgets/duqfupdatedialog.h \
     duqf-widgets/duqfupdatesettingswidget.h \
