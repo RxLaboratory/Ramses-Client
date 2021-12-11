@@ -80,8 +80,8 @@ QVariant RamItemTable::data(const QModelIndex &index, int role) const
     if (role == Qt::ToolTipRole)
     {
         int timeSpent = status->timeSpent()/3600;
-        float estimation = status->estimation();
-        if (estimation < 0) estimation = status->autoEstimation();
+        float estimation = status->goal();
+        if (estimation < 0) estimation = status->estimation();
         return QString(
                     status->state()->shortName() %
                     " | " %

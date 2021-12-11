@@ -920,7 +920,10 @@ QString RamLoader::gotStatus(QJsonObject newS, RamItem *item)
     status->assignUser( RamUser::user( newS.value("assignedUserUuid").toString( )));
     status->setPublished( newS.value("published").toInt() == 1);
     status->setTimeSpent( newS.value("timeSpent").toInt() );
-    status->setEstimation( newS.value("estimation").toDouble() );
+    float estimation = newS.value("estimation").toDouble();
+    status->setGoal( estimation );
+    if (estimation <= 0) status->setUseAutoEstimation( true );
+    else status->setUseAutoEstimation( false );
 
     QString difficulty = newS.value("difficulty").toString();
     if (difficulty == "veryEasy") status->setDifficulty(RamStatus::VeryEasy);

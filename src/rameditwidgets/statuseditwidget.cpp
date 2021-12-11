@@ -147,17 +147,8 @@ void StatusEditWidget::setStatus(RamStatus *status)
 
     // Estimation
     ui_difficultyBox->setCurrentIndex( status->difficulty() );
-    ui_autoEstimationBox->setChecked( status->estimation() <= 0 );
-    if (!ui_autoEstimationBox->isChecked())
-    {
-        ui_estimationEdit->setEnabled(true);
-        ui_estimationEdit->setValue( status->estimation() );
-    }
-    else
-    {
-        ui_estimationEdit->setEnabled(false);
-        autoEstimate(true);
-    }
+    ui_autoEstimationBox->setChecked( status->useAutoEstimation() );
+    autoEstimate( status->useAutoEstimation() );
 
     ui_timeSpent->setValue( timeSpent / 3600 );
 }
@@ -229,7 +220,8 @@ void StatusEditWidget::update()
     m_status->assignUser( assignedUser() );
     m_status->setPublished( isPublished() );
     m_status->setTimeSpent( timeSpent() );
-    m_status->setEstimation( estimation() );
+    m_status->setGoal( estimation() );
+    m_status->setUseAutoEstimation( ui_autoEstimationBox->isChecked() );
     m_status->setDifficulty( difficulty() );
 
     m_status->update();
@@ -475,8 +467,15 @@ void StatusEditWidget::autoEstimate(bool estimate)
 {
     if (estimate)
     {
-        float daysEstimation = m_status->autoEstimation( ui_difficultyBox->currentIndex() );
+        float daysEstimation = m_status->estimation( ui_difficultyBox->currentIndex() );
         ui_estimationEdit->setValue( daysEstimation );
+        ui_estimationLabel->setText("Estimation");
+    }
+    else
+    {
+        float daysEstimation = m_status->goal();
+        ui_estimationEdit->setValue( daysEstimation );
+        ui_estimationLabel->setText("Goal");
     }
 
     ui_estimationEdit->setEnabled(!estimate);
@@ -567,7 +566,9 @@ void StatusEditWidget::setupUi()
 
     estimationLayout->setStretch(0,1);
     estimationLayout->setStretch(1,0);
-    detailsLayout->addRow("Estimation", estimationWidget);
+
+    ui_estimationLabel = new QLabel("Estimation", this);
+    detailsLayout->addRow(ui_estimationLabel, estimationWidget);
 
     ui_timeSpent = new AutoSelectSpinBox(this);
     ui_timeSpent->setMinimum(0);

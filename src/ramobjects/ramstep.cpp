@@ -457,8 +457,9 @@ void RamStep::computeEstimation()
 
         m_timeSpent += status->timeSpent();
 
-        float estimation = status->estimation();
-        if ( estimation <= 0 ) estimation = status->autoEstimation();
+        float estimation = 0;
+        if (status->useAutoEstimation()) estimation = status->estimation();
+        else estimation = status->goal();
         m_estimation += estimation;
 
         m_completionRatio += status->completionRatio();

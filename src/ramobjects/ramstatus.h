@@ -74,11 +74,13 @@ public:
     Difficulty difficulty() const;
     void setDifficulty(Difficulty newDifficulty);
 
+    float goal() const; // days
+    void setGoal(float newGoal);
     float estimation() const; // days
-    float autoEstimation() const; // days
-    float autoEstimation(int difficulty) const; // days
+    float estimation(int difficulty) const; // days
     float latenessRatio() const;
-    void setEstimation(float newEstimation);
+    void setUseAutoEstimation(bool newAutoEstimation);
+    bool useAutoEstimation() const;
 
     static RamStatus *status(QString uuid);
     static RamStatus *copy(RamStatus *other, RamUser *user);
@@ -112,7 +114,8 @@ private:
     bool m_published = false;
     RamUser* m_assignedUser = nullptr;
     Difficulty m_difficulty = Medium;
-    float m_estimation = -1.0;
+    float m_goal = -1.0;
+    bool m_useAutoEstimation = true;
 
     StatusEditWidget *ui_editWidget;
 

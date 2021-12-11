@@ -438,6 +438,7 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
         float estimation = 0;
         float timeSpentDays = 0;
         int completionWidth = 0;
+        bool useAutoEstimation = true;
 
         // details
         if (statusRect.bottom() + 5 < bgRect.bottom() && (m_timeTracking || m_completionRatio))
@@ -452,9 +453,9 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
             // Adjust color according to lateness
             float latenessRatio = status->latenessRatio();
             // Ratio
-            estimation = status->estimation();
-            if (estimation <= 0) estimation = status->autoEstimation();
-            if (estimation < 0) estimation = 0;
+            useAutoEstimation = status->useAutoEstimation();
+            if (useAutoEstimation) estimation = status->estimation();
+            else estimation = status->goal();
             timeSpentDays = RamStatus::hoursToDays( status->timeSpent()/3600 );
             float ratio = 0;
             if (estimation > 0) ratio = timeSpentDays / estimation;
@@ -553,16 +554,26 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
             qint64 timeSpentSecs = status->timeSpent();
             // Convert to hours
             int timeSpent = timeSpentSecs / 3600;
-            if (timeSpent > 0) details = details %
+            // Estimation or goal
+            if (timeSpent > 0)
+            {
+                details = details %
                     "\nTime spent: " %
                     QString::number(timeSpent) %
                     " hours (" %
                     QString::number(timeSpentDays, 'f', 0) %
                     " days) / " %
                     QString::number(estimation, 'f', 1) %
+                    " days ";
+                if (useAutoEstimation) details = details % "(estimated)";
+                else details = details % "(goal)";
+            }
+            else if (useAutoEstimation) details = details %
+                    "\nEstimation: " %
+                    QString::number(estimation, 'f', 1) %
                     " days";
             else details = details %
-                    "\nEstimation: " %
+                    "\nGoal: " %
                     QString::number(estimation, 'f', 1) %
                     " days";
 

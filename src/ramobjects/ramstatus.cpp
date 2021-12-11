@@ -246,6 +246,8 @@ void RamStatus::update()
     else if (m_difficulty == Easy) difficulty = "easy";
     else if (m_difficulty == Hard) difficulty = "hard";
     else if (m_difficulty == VeryHard) difficulty = "veryHard";
+    float estimation = -1;
+    if (!useAutoEstimation()) estimation = m_goal;
     m_dbi->updateStatus(
                 m_uuid,
                 m_state->uuid(),
@@ -257,7 +259,7 @@ void RamStatus::update()
                 timeSpent,
                 m_date,
                 difficulty,
-                m_estimation);
+                estimation);
 }
 
 void RamStatus::edit(bool show)
@@ -299,7 +301,7 @@ void RamStatus::statusUpdated(RamState *state, int completion, int version, QStr
     this->setPublished(ui_editWidget->isPublished());
     this->setDate(QDateTime::currentDateTime());
     this->setTimeSpent( ui_editWidget->timeSpent() );
-    this->setEstimation( ui_editWidget->estimation() );
+    this->setGoal( ui_editWidget->estimation() );
     this->setDifficulty( ui_editWidget->difficulty() );
     m_step->computeEstimation();
     update();
@@ -322,18 +324,51 @@ void RamStatus::assignedUserRemoved()
     assignUser(nullptr);
 }
 
-float RamStatus::estimation() const
+bool RamStatus::useAutoEstimation() const
+{
+    return m_useAutoEstimation;
+}
+
+void RamStatus::setUseAutoEstimation(bool newAutoEstimation)
+{
+    if (newAutoEstimation == m_useAutoEstimation) return;
+    m_dirty = true;
+    m_useAutoEstimation = newAutoEstimation;
+    if (!m_useAutoEstimation) m_goal = estimation();
+    m_step->computeEstimation();
+    emit changed(this);
+}
+
+float RamStatus::goal() const
 {
     // If state is none, 0!
     RamState *noState = Ramses::instance()->noState();
     if (noState->is(m_state)) return 0.0;
 
-    return m_estimation;
+    // can't be < 0
+    if (m_goal < 0) return 0.0;
+
+    return m_goal;
 }
 
-float RamStatus::autoEstimation(int difficulty) const
+void RamStatus::setGoal(float newGoal)
 {
-    float estimation = 0.0;
+    if (m_goal == newGoal) return;
+    m_dirty = true;
+    m_goal = newGoal;
+    m_useAutoEstimation = m_goal < 0;
+    m_step->computeEstimation();
+    emit changed(this);
+}
+
+float RamStatus::estimation() const
+{
+    return estimation(m_difficulty);
+}
+
+float RamStatus::estimation(int difficulty) const
+{
+    float est = 0.0;
 
     // If state is none, 0!
     RamState *noState = Ramses::instance()->noState();
@@ -343,32 +378,32 @@ float RamStatus::autoEstimation(int difficulty) const
     {
     case VeryEasy:
     {
-        estimation = m_step->estimationVeryEasy();
+        est = m_step->estimationVeryEasy();
         break;
     }
     case Easy:
     {
-        estimation = m_step->estimationEasy();
+        est = m_step->estimationEasy();
         break;
     }
     case Medium:
     {
-        estimation = m_step->estimationMedium();
+        est = m_step->estimationMedium();
         break;
     }
     case Hard:
     {
-        estimation = m_step->estimationHard();
+        est = m_step->estimationHard();
         break;
     }
     case VeryHard:
     {
-        estimation = m_step->estimationVeryHard();
+        est = m_step->estimationVeryHard();
         break;
     }
     default:
     {
-        estimation = m_step->estimationMedium();
+        est = m_step->estimationMedium();
     }
     }
 
@@ -377,7 +412,7 @@ float RamStatus::autoEstimation(int difficulty) const
     {
         RamShot *shot = qobject_cast<RamShot*>( m_item );
         if (m_step->estimationMethod() == RamStep::EstimatePerSecond)
-            estimation *= shot->duration();
+            est *= shot->duration();
         RamAssetGroup *ag = m_step->estimationMultiplyGroup();
         if (ag)
         {
@@ -388,40 +423,26 @@ float RamStatus::autoEstimation(int difficulty) const
                 RamAsset *asset = qobject_cast<RamAsset*>( shot->assets()->at(i) );
                 if (asset->assetGroup()->is(ag)) numAssets++;
             }
-            if (numAssets > 0) estimation *= numAssets;
+            if (numAssets > 0) est *= numAssets;
         }
     }
-    return estimation;
+    return est;
 }
 
 float RamStatus::latenessRatio() const
 {
     float completionRatio = m_completionRatio / 100.0;
 
-    float estimation;
-    if (m_estimation <= 0) estimation = autoEstimation();
-    else estimation = m_estimation;
+    float est;
+    if (useAutoEstimation()) est = estimation();
+    else est = m_goal;
 
-    if (estimation <= 0) return 1;
+    if (est <= 0) return 1;
     if (completionRatio <= 0) return 1;
 
-    float timeRatio = hoursToDays(m_timeSpent/3600) / estimation;
+    float timeRatio = hoursToDays(m_timeSpent/3600) / est;
 
     return timeRatio / completionRatio;
-}
-
-float RamStatus::autoEstimation() const
-{
-    return autoEstimation(m_difficulty);
-}
-
-void RamStatus::setEstimation(float newEstimation)
-{
-    if (m_estimation == newEstimation) return;
-    m_dirty = true;
-    m_estimation = newEstimation;
-    m_step->computeEstimation();
-    emit changed(this);
 }
 
 RamStatus::Difficulty RamStatus::difficulty() const
@@ -611,7 +632,7 @@ RamStatus *RamStatus::copy(RamStatus *other, RamUser *user)
     status->setTimeSpent( other->timeSpent() );
     status->assignUser( other->assignedUser() );
     status->setDifficulty( other->difficulty() );
-    status->setEstimation( other->estimation() );
+    status->setGoal( other->goal() );
     status->item()->addStatus(status);
     return status;
 }

@@ -106,6 +106,7 @@ private:
     QComboBox *ui_difficultyBox;
     AutoSelectDoubleSpinBox *ui_estimationEdit;
     QCheckBox *ui_autoEstimationBox;
+    QLabel *ui_estimationLabel;
 
     QSplitter *ui_commentSplitter;
 
