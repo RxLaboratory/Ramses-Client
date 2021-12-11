@@ -51,6 +51,9 @@ void StatusEditWidget::setStatus(RamStatus *status)
     ui_estimationEdit->setValue(0);
     ui_versionPublishBox->clear();
 
+    // User rights to assign
+    ui_userBox->setEnabled(Ramses::instance()->isLead());
+
     // Remove template list
     QList<QAction*> templateActions = ui_createFromTemplateMenu->actions();
     for (int i = 0; i < templateActions.count(); i++)

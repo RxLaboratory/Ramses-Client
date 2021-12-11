@@ -846,13 +846,13 @@ bool RamObjectDelegate::canEdit(const QModelIndex &index) const
     quintptr iptr = index.data(Qt::UserRole).toULongLong();
     if (iptr == 0) return false;
     RamObject *o = reinterpret_cast<RamObject*>( iptr );
-    if (o->objectType() == RamObject::Status)
-    {
+    if (o->objectType() == RamObject::Status) return false;
+    /*{
         RamStatus *status = qobject_cast<RamStatus*>( o );
         if (status->assignedUser()) if(status->assignedUser()->is(u)) return true;
         if (u->role() > RamUser::Standard) return true;
         return false;
-    }
+    }*/
 
     return m_editable && u->role() >= m_editRole;
 }

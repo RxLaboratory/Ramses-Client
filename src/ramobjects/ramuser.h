@@ -12,12 +12,6 @@ class RamUser : public RamObject
 {
     Q_OBJECT
 public:
-    enum UserRole { Admin = 3,
-                    ProjectAdmin = 2,
-                    Lead = 1,
-                    Standard = 0 };
-    Q_ENUM( UserRole )
-
     explicit RamUser(QString shortName, QString name = "", QString uuid = "");
     ~RamUser();
 

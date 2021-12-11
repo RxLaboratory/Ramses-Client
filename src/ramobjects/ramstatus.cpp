@@ -2,6 +2,7 @@
 
 #include "ramitem.h"
 #include "statuseditwidget.h"
+#include "ramses.h"
 
 RamStatus::RamStatus(RamUser *user, RamState *state, RamStep *step, RamItem *item, bool computeEstimation, QString uuid):
     RamObject("", "", uuid, item)
@@ -292,6 +293,14 @@ void RamStatus::edit(bool show)
     if (show)
     {
         ui_editWidget->setStatus( this );
+        // Check if we have the right to edit
+        RamUser *u = Ramses::instance()->currentUser();
+        if (!u) m_editable = false;
+        else
+        {
+            if (u->role() == RamUser::Standard) m_editable = u->is(m_assignedUser);
+            if (!m_assignedUser) m_editable = true;
+        }
         showEdit();
     }
 }

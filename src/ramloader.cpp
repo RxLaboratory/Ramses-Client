@@ -922,7 +922,7 @@ QString RamLoader::gotStatus(QJsonObject newS, RamItem *item)
     status->setTimeSpent( newS.value("timeSpent").toInt() );
     float estimation = newS.value("estimation").toDouble();
     status->setGoal( estimation );
-    if (estimation <= 0) status->setUseAutoEstimation( true );
+    if (estimation <= 0.0) status->setUseAutoEstimation( true );
     else status->setUseAutoEstimation( false );
 
     QString difficulty = newS.value("difficulty").toString();

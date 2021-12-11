@@ -1,6 +1,7 @@
 #include "ramobject.h"
 #include "objecteditwidget.h"
 #include "mainwindow.h"
+#include "ramses.h"
 
 QMap<QString, RamObject*> RamObject::m_existingObjects = QMap<QString, RamObject*>();
 
@@ -148,26 +149,40 @@ void RamObject::showEdit(QString title)
     if (title == "") title = "Properties";
 
     QString icon = "";
+    UserRole editRole = UserRole::Admin;
     switch (m_objectType) {
         case Application: icon = ":/icons/application"; break;
-        case Asset: icon = ":/icons/asset"; break;
-        case AssetGroup: icon = ":/icons/asset-group"; break;
+        case Asset: icon = ":/icons/asset"; editRole = ProjectAdmin; break;
+        case AssetGroup: icon = ":/icons/asset-group"; editRole = ProjectAdmin; break;
         case FileType: icon = ":/icons/file"; break;
         case Generic: icon = ":/icons/asset"; break;
         case Item: icon = ":/icons/asset"; break;
-        case Pipe: icon = ":/icons/connection"; break;
-        case PipeFile: icon = ":/icons/file"; break;
+        case Pipe: icon = ":/icons/connection"; editRole = ProjectAdmin; break;
+        case PipeFile: icon = ":/icons/file"; editRole = ProjectAdmin; break;
         case Project: icon = ":/icons/project"; break;
-        case Sequence: icon = ":/icons/sequence"; break;
-        case Shot: icon = ":/icons/shot"; break;
-        case State: icon = ":/icons/state-l"; break;
-        case Status: icon = ":/icons/state-l"; break;
-        case Step: icon = ":/icons/step"; break;
-        case User: icon = ":/icons/user"; break;
-        case StepStatusHistory: icon = ":/icons/state-l"; break;
-        case ScheduleEntry: icon = ":/icons/calendar"; break;
+        case Sequence: icon = ":/icons/sequence"; editRole = ProjectAdmin; break;
+        case Shot: icon = ":/icons/shot"; editRole = ProjectAdmin; break;
+        case State: icon = ":/icons/state-l"; editRole = ProjectAdmin; break;
+        case Status: icon = ":/icons/state-l"; editRole = Standard; break;
+        case Step: icon = ":/icons/step"; editRole = ProjectAdmin; break;
+        case User: icon = ":/icons/user"; editRole = Admin; break;
+        case StepStatusHistory: icon = ":/icons/state-l"; editRole = ProjectAdmin; break;
+        case ScheduleEntry: icon = ":/icons/calendar"; editRole = Lead; break;
         default: icon = ":/icons/asset";
     }
+
+    ui_editWidget->setEnabled(false);
+
+    if (m_editable)
+    {
+        RamUser *u = Ramses::instance()->currentUser();
+        if (u)
+        {
+            ui_editWidget->setEnabled(u->role() >= editRole);
+            if (u->is(this)) ui_editWidget->setEnabled(true);
+        }
+    }
+
     mw->setPropertiesDockWidget( ui_editWidget, title, icon);
 }
 

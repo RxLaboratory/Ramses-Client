@@ -906,7 +906,7 @@ void ItemTableManagerWidget::setupUi()
     mainLayout->setContentsMargins(0,0,0,0);
 
     ui_table = new RamObjectListWidget(RamObjectListWidget::Table, this);
-    ui_table->setEditableObjects(true, RamUser::ProjectAdmin);
+    //ui_table->setEditableObjects(true, RamUser::ProjectAdmin);
     ui_table->setContextMenuPolicy(Qt::CustomContextMenu);
     ui_header = new RamStepHeaderView(ui_table);
     ui_table->setHorizontalHeader( ui_header );
@@ -1012,6 +1012,7 @@ void ItemTableManagerWidget::connectEvents()
     connect(ui_pasteComment, SIGNAL(triggered()), this, SLOT(pasteComment()));
     // cell buttons
     connect(ui_table, SIGNAL(editObject(RamObject*)), this, SLOT(editObject(RamObject*)));
+    connect(ui_table, SIGNAL(objectSelected(RamObject*)), this, SLOT(editObject(RamObject*)));
     connect(ui_table, SIGNAL(historyObject(RamObject*)), this, SLOT(historyObject(RamObject*)));
     // search
     connect(ui_searchEdit, SIGNAL(changing(QString)), ui_table, SLOT(search(QString)));

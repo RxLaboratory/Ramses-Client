@@ -62,6 +62,12 @@ public:
     };
     Q_ENUM( File )
 
+    enum UserRole { Admin = 3,
+                    ProjectAdmin = 2,
+                    Lead = 1,
+                    Standard = 0 };
+    Q_ENUM( UserRole )
+
     explicit RamObject(QObject *parent = nullptr);
     explicit RamObject(QString uuid, QObject *parent = nullptr);
     explicit RamObject(QString shortName, QString name, QString uuid = "", QObject *parent = nullptr);
@@ -105,7 +111,6 @@ public:
     static RamObject *obj(QString uuid);
     static RamObject *objFromName(QString shortNameOrName , ObjectType objType);
 
-
 public slots:
     virtual void update();
     virtual void removeFromDB() {};
@@ -124,6 +129,8 @@ protected:
     QString m_name;
     // Check if changed to limit number of signals
     bool m_dirty;
+
+    bool m_editable = true;
 
     QString m_uuid;
     QString m_comment;
