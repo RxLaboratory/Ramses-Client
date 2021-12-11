@@ -353,12 +353,14 @@ void RamStatus::assignedUserRemoved()
 
 bool RamStatus::useAutoEstimation() const
 {
+    if (m_state->shortName() == "NO") return true;
     return m_useAutoEstimation;
 }
 
 void RamStatus::setUseAutoEstimation(bool newAutoEstimation)
 {
     if (newAutoEstimation == m_useAutoEstimation) return;
+    if (m_state->shortName() == "NO") return;
     m_dirty = true;
     m_useAutoEstimation = newAutoEstimation;
     if (!m_useAutoEstimation) m_goal = estimation();
