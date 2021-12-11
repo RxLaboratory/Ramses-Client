@@ -200,11 +200,12 @@ void RamItemFilterModel::setSortMode(SortMode newSortMode)
 
 void RamItemFilterModel::resort(int col, Qt::SortOrder order)
 {
+    setSortMode(m_sortMode);
     this->sort(col, order);
 }
 
 void RamItemFilterModel::unsort()
 {
-    setSortMode(Default);
+    this->setSortRole(Qt::InitialSortOrderRole);
     resort(0,Qt::AscendingOrder);
 }
