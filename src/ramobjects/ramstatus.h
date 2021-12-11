@@ -28,6 +28,9 @@ public:
     explicit RamStatus(RamUser *user, RamState *state, RamStep *step, RamItem *item, bool computeEstimation = true, QString uuid = "");
     ~RamStatus();
 
+    virtual QString shortName() const override;
+    virtual QString name() const override;
+
     int completionRatio() const;
     void setCompletionRatio(int completionRatio);
 

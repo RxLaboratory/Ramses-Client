@@ -63,6 +63,16 @@ private slots:
     void editObject(RamObject *obj) const;
     void historyObject(RamObject *obj) const;
 
+    // Sort
+    void uncheckSort();
+    void sortDefault(bool sort = true);
+    void sortByShortName(bool sort = true);
+    void sortByName(bool sort = true);
+    void sortByDifficulty(bool sort = true);
+    void sortByTimeSpent(bool sort = true);
+    void sortByEstimation(bool sort = true);
+    void sortByCompletion(bool sort = true);
+
     // Status
     void unassignUser();
     void assignUser(RamObject *usrObj);
@@ -111,6 +121,13 @@ private:
     QAction *ui_actionTimeTracking ;
     QAction *ui_actionCompletionRatio ;
     QAction *ui_actionShowDetails;
+    QAction *ui_actionSortDefault;
+    QAction *ui_actionSortByShortName;
+    QAction *ui_actionSortByName;
+    QAction *ui_actionSortByDifficulty;
+    QAction *ui_actionSortByTimeSpent;
+    QAction *ui_actionSortByEstimation;
+    QAction *ui_actionSortByCompletion;
     RamObjectListMenu *ui_assignUserMenu;
     RamObjectListMenu *ui_changeStateMenu;
     QMenu *ui_changeDifficultyMenu;

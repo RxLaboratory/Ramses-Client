@@ -72,6 +72,10 @@
         <file alias="paste">resources/icons/paste_sl.svg</file>
         <file alias="comment">resources/icons/comment_sl.svg</file>
         <file alias="logo_large">resources/icons/logo_large.png</file>
+        <file alias="sort">resources/icons/sort_sl.svg</file>
+        <file alias="sort-down">resources/icons/sort_down_sl.svg</file>
+        <file alias="sort-up">resources/icons/sort_up_sl.svg</file>
+        <file alias="sort-no">resources/icons/sort_no_sl.svg</file>
     </qresource>
     <qresource prefix="/styles">
         <file alias="default-ramses">resources/style/style-ramses.css</file>

@@ -19,6 +19,12 @@ public slots:
     void setTimeTracking(bool newTimeTracking);
     void setCompletionRatio(bool newCompletionRatio);
 
+    void setSortable( bool sortable = true );
+
+signals:
+    void sort(int col, Qt::SortOrder);
+    void unsort();
+
 protected:
     virtual void paintSection(QPainter *painter, const QRect &rect, int logicalIndex) const override;
     virtual void mousePressEvent(QMouseEvent *event) override;
@@ -39,22 +45,32 @@ private:
     // Buttons
     QPixmap m_editIcon;
     QPixmap m_folderIcon;
+    QPixmap m_sortIcon;
+    QPixmap m_sortUpIcon;
+    QPixmap m_sortDownIcon;
 
     // Settings
     bool m_timeTracking = true;
     bool m_completionRatio = true;
+    bool m_sortable = false;
 
     // Events
     int m_editButtonPressed = -1;
     int m_editButtonHover = -1;
     int m_folderButtonHover = -1;
     int m_folderButtonPressed = -1;
+    int m_sortButtonHover = -1;
+    int m_sortButtonPressed = -1;
+
+    // Current sorting
+    int m_sortColumn = -1;
+    Qt::SortOrder m_sortOrder = Qt::DescendingOrder;
 
     // Utils
     bool canEdit() const;
 
     // drawing specific items
-    void drawButton(QPainter *painter, QRect rect, QPixmap icon, bool hover = false) const;
+    void drawButton(QPainter *painter, QRect rect, QPixmap icon, bool hover = false, bool checked = false) const;
 };
 
 #endif // RAMSTEPHEADERVIEW_H

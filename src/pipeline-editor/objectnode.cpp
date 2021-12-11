@@ -20,14 +20,10 @@ RamObject *ObjectNode::ramObject() const
     return m_object;
 }
 
-QVariant ObjectNode::itemChange(QGraphicsItem::GraphicsItemChange change, const QVariant &value)
+void ObjectNode::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-    if (change == ItemSelectedChange && scene())
-    {
-        m_object->edit( !this->isSelected() );
-    }
-
-    return DuQFNode::itemChange(change, value);
+    m_object->edit( true );
+    DuQFNode::mousePressEvent(event);
 }
 
 void ObjectNode::objectChanged()

@@ -136,13 +136,13 @@ protected:
     static QMap<QString, RamObject*> m_existingObjects;
 
     void setEditWidget(ObjectEditWidget *w );
-    void showEdit(bool show = true);
+    void showEdit(QString title = "");
     virtual QString folderPath() const { return QString(); };
 
-    ObjectEditWidget *ui_editWidget = nullptr;
+    QFrame *ui_editWidget = nullptr;
 
 private:
-    RamObject::ObjectType _objectType = Generic;
+    RamObject::ObjectType m_objectType = Generic;
 
     ObjectDockWidget *m_dockWidget = nullptr;
 

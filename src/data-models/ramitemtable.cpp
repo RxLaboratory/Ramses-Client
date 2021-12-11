@@ -27,6 +27,12 @@ QVariant RamItemTable::data(const QModelIndex &index, int role) const
     int row = index.row();
     int col = index.column();
 
+    if (row < 0 || col < 0)
+    {
+        if (role > Qt::UserRole) return INT32_MIN;
+        return 0;
+    }
+
     // Return the item
     if (col == 0)
         return RamObjectList::data(index, role);
@@ -34,6 +40,23 @@ QVariant RamItemTable::data(const QModelIndex &index, int role) const
     // Get the item
     RamObject *itemObj = m_objectsList.at(row);
     RamItem *item = qobject_cast<RamItem*>( itemObj );
+
+    if (role == Qt::InitialSortOrderRole)
+    {
+        return item->order();
+    }
+    if ( role == Qt::UserRole + 1) // Default order
+    {
+        return item->order();
+    }
+    else if (role == Qt::UserRole + 2) // Short name order
+    {
+        return item->shortName();
+    }
+    else if (role == Qt::UserRole + 3 ) // Name order
+    {
+        return item->name();
+    }
 
     // Get the step
     RamStep *step = stepAt(col);
@@ -59,9 +82,6 @@ QVariant RamItemTable::data(const QModelIndex &index, int role) const
                         step,
                         item,
                         false);
-
-        quintptr iptr = reinterpret_cast<quintptr>(status);
-        return iptr;
     }
 
     if (role == Qt::DisplayRole)
@@ -80,8 +100,9 @@ QVariant RamItemTable::data(const QModelIndex &index, int role) const
     if (role == Qt::ToolTipRole)
     {
         int timeSpent = status->timeSpent()/3600;
-        float estimation = status->goal();
-        if (estimation < 0) estimation = status->estimation();
+        float est = 0;
+        if (status->useAutoEstimation()) est = status->estimation();
+        else est = status->goal();
         return QString(
                     status->state()->shortName() %
                     " | " %
@@ -91,9 +112,27 @@ QVariant RamItemTable::data(const QModelIndex &index, int role) const
                     "%\nTime spent: " %
                     QString::number(timeSpent) % " hours (" %
                     QString::number( RamStatus::hoursToDays(timeSpent), 'f', 2) % " days)" %
-                    " / " % QString::number( estimation, 'f', 2 ) % " days" %
+                    " / " % QString::number( est, 'f', 2 ) % " days" %
                     "\n" %
                     status->comment() );
+    }
+
+    if (role == Qt::UserRole + 4) // Difficulty order
+    {
+        return status->difficulty();
+    }
+    else if (role == Qt::UserRole + 5) // Time spent order
+    {
+        return status->timeSpent();
+    }
+    else if (role == Qt::UserRole + 6) // Estimation order
+    {
+        if (status->useAutoEstimation()) return status->estimation();
+        else return status->goal();
+    }
+    else if (role == Qt::UserRole + 7) // Completion order
+    {
+        return status->completionRatio();
     }
 
     quintptr iptr = reinterpret_cast<quintptr>(status);

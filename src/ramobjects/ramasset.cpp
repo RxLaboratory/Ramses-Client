@@ -102,7 +102,7 @@ void RamAsset::edit(bool show)
         setEditWidget(w);
         m_editReady = true;
     }
-    showEdit(show);
+    if (show) showEdit();
 }
 
 void RamAsset::removeFromDB()

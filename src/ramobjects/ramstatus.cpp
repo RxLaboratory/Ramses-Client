@@ -31,6 +31,22 @@ RamStatus::~RamStatus()
     if ( !m_state->is( Ramses::instance()->noState() ) ) m_step->computeEstimation();
 }
 
+QString RamStatus::shortName() const
+{
+    QString n = "Status";
+    if (m_item) n = m_item->shortName();
+    if (m_step) n = n + " | " + m_step->shortName();
+    return n;
+}
+
+QString RamStatus::name() const
+{
+    QString n = "Status";
+    if (m_item) n = m_item->name();
+    if (m_step) n = n + " | " + m_step->name();
+    return n;
+}
+
 int RamStatus::completionRatio() const
 {
     return m_completionRatio;
@@ -273,8 +289,11 @@ void RamStatus::edit(bool show)
                  this, SLOT(statusUpdated(RamState*,int,int,QString))
                  );
     }
-    if (show) ui_editWidget->setStatus( this );
-    showEdit(show);
+    if (show)
+    {
+        ui_editWidget->setStatus( this );
+        showEdit();
+    }
 }
 
 void RamStatus::removeFromDB()
@@ -305,7 +324,6 @@ void RamStatus::statusUpdated(RamState *state, int completion, int version, QStr
     this->setDifficulty( ui_editWidget->difficulty() );
     m_step->computeEstimation();
     update();
-    showEdit(false);
 }
 
 void RamStatus::stateRemoved()

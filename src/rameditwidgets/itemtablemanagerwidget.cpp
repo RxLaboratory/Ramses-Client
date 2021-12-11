@@ -316,6 +316,80 @@ void ItemTableManagerWidget::historyObject(RamObject *obj) const
     item->statusHistory(step)->edit();
 }
 
+void ItemTableManagerWidget::uncheckSort()
+{
+    ui_actionSortDefault->setChecked(false);
+    ui_actionSortByShortName->setChecked(false);
+    ui_actionSortByName->setChecked(false);
+    ui_actionSortByDifficulty->setChecked(false);
+    ui_actionSortByTimeSpent->setChecked(false);
+    ui_actionSortByEstimation->setChecked(false);
+    ui_actionSortByCompletion->setChecked(false);
+}
+
+void ItemTableManagerWidget::sortDefault(bool sort)
+{
+    Q_UNUSED(sort)
+    uncheckSort();
+    ui_actionSortDefault->setChecked(true);
+    ui_header->setSortable(false);
+    ui_table->filteredList()->setSortMode(RamItemFilterModel::Default);
+}
+
+void ItemTableManagerWidget::sortByShortName(bool sort)
+{
+    uncheckSort();
+    ui_actionSortByShortName->setChecked(sort);
+    ui_header->setSortable(sort);
+    ui_actionSortDefault->setChecked( !sort );
+    ui_table->filteredList()->setSortMode(RamItemFilterModel::ShortName);
+}
+
+void ItemTableManagerWidget::sortByName(bool sort)
+{
+    uncheckSort();
+    ui_actionSortByName->setChecked(sort);
+    ui_header->setSortable(sort);
+    ui_actionSortDefault->setChecked( !sort );
+    ui_table->filteredList()->setSortMode(RamItemFilterModel::Name);
+}
+
+void ItemTableManagerWidget::sortByDifficulty(bool sort)
+{
+    uncheckSort();
+    ui_actionSortByDifficulty->setChecked(sort);
+    ui_header->setSortable(sort);
+    ui_actionSortDefault->setChecked( !sort );
+    ui_table->filteredList()->setSortMode(RamItemFilterModel::Difficulty);
+}
+
+void ItemTableManagerWidget::sortByTimeSpent(bool sort)
+{
+    uncheckSort();
+    ui_actionSortByTimeSpent->setChecked(sort);
+    ui_header->setSortable(sort);
+    ui_actionSortDefault->setChecked( !sort );
+    ui_table->filteredList()->setSortMode(RamItemFilterModel::TimeSpent);
+}
+
+void ItemTableManagerWidget::sortByEstimation(bool sort)
+{
+    uncheckSort();
+    ui_actionSortByEstimation->setChecked(sort);
+    ui_header->setSortable(sort);
+    ui_actionSortDefault->setChecked( !sort );
+    ui_table->filteredList()->setSortMode(RamItemFilterModel::Estimation);
+}
+
+void ItemTableManagerWidget::sortByCompletion(bool sort)
+{
+    uncheckSort();
+    ui_actionSortByCompletion->setChecked(sort);
+    ui_header->setSortable(sort);
+    ui_actionSortDefault->setChecked( !sort );
+    ui_table->filteredList()->setSortMode(RamItemFilterModel::Completion);
+}
+
 void ItemTableManagerWidget::unassignUser()
 {
     QList<RamStatus*> status = beginEditSelectedStatus();
@@ -607,6 +681,48 @@ void ItemTableManagerWidget::setupUi()
     viewButton->setPopupMode(QToolButton::InstantPopup);
     ui_titleBar->insertLeft(viewButton);
 
+    // Sort Menu
+    QMenu *sortMenu = new QMenu(this);
+
+    ui_actionSortDefault = new QAction("Default", this);
+    ui_actionSortDefault->setCheckable(true);
+    ui_actionSortDefault->setChecked(true);
+    sortMenu->addAction(ui_actionSortDefault);
+
+    ui_actionSortByShortName = new QAction("By ID", this);
+    ui_actionSortByShortName->setCheckable(true);
+    sortMenu->addAction(ui_actionSortByShortName);
+
+    ui_actionSortByName = new QAction("By name", this);
+    ui_actionSortByName->setCheckable(true);
+    sortMenu->addAction(ui_actionSortByName);
+
+    ui_actionSortByDifficulty = new QAction("By difficulty", this);
+    ui_actionSortByDifficulty->setCheckable(true);
+    sortMenu->addAction(ui_actionSortByDifficulty);
+
+    ui_actionSortByTimeSpent = new QAction("By time spent", this);
+    ui_actionSortByTimeSpent->setCheckable(true);
+    sortMenu->addAction(ui_actionSortByTimeSpent);
+
+    ui_actionSortByEstimation = new QAction("By estimation / Goal", this);
+    ui_actionSortByEstimation->setCheckable(true);
+    sortMenu->addAction(ui_actionSortByEstimation);
+
+    ui_actionSortByCompletion = new QAction("By completion ratio", this);
+    ui_actionSortByCompletion->setCheckable(true);
+    sortMenu->addAction(ui_actionSortByCompletion);
+
+    QToolButton *sortButton = new QToolButton(this);
+    sortButton->setText(" Sort");
+    sortButton->setIcon(QIcon(":/icons/sort"));
+    sortButton->setMenu(sortMenu);
+    sortButton->setIconSize(QSize(16,16));
+    sortButton->setObjectName("menuButton");
+    sortButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    sortButton->setPopupMode(QToolButton::InstantPopup);
+    ui_titleBar->insertLeft(sortButton);
+
     // Item Menu
     ui_itemMenu = new QMenu(this);
 
@@ -873,6 +989,14 @@ void ItemTableManagerWidget::connectEvents()
     connect(ui_actionTimeTracking, SIGNAL(toggled(bool)), ui_header, SLOT(setTimeTracking(bool)));
     connect(ui_actionCompletionRatio, SIGNAL(toggled(bool)), ui_header, SLOT(setCompletionRatio(bool)));
     connect(ui_actionShowDetails, SIGNAL(toggled(bool)), ui_table, SLOT(showDetails(bool)));
+    // sort actions
+    connect(ui_actionSortDefault, SIGNAL(triggered(bool)), this, SLOT(sortDefault(bool)));
+    connect(ui_actionSortByShortName, SIGNAL(triggered(bool)), this, SLOT(sortByShortName(bool)));
+    connect(ui_actionSortByName, SIGNAL(triggered(bool)), this, SLOT(sortByName(bool)));
+    connect(ui_actionSortByDifficulty, SIGNAL(triggered(bool)), this, SLOT(sortByDifficulty(bool)));
+    connect(ui_actionSortByTimeSpent, SIGNAL(triggered(bool)), this, SLOT(sortByTimeSpent(bool)));
+    connect(ui_actionSortByEstimation, SIGNAL(triggered(bool)), this, SLOT(sortByEstimation(bool)));
+    connect(ui_actionSortByCompletion, SIGNAL(triggered(bool)), this, SLOT(sortByCompletion(bool)));
     // step actions
     connect(ui_stepMenu,SIGNAL(assign(RamObject*,bool)), this, SLOT(showStep(RamObject*,bool)));
     connect(ui_actionSelectMySteps, SIGNAL(triggered()), this, SLOT(selectUserSteps()));
@@ -898,6 +1022,8 @@ void ItemTableManagerWidget::connectEvents()
     connect(ui_titleBar, &TitleBar::closeRequested, this, &ItemTableManagerWidget::closeRequested);
     connect(Ramses::instance(), &Ramses::currentProjectChanged, this, &ItemTableManagerWidget::projectChanged);
     connect(Ramses::instance(), SIGNAL(loggedIn(RamUser*)), this, SLOT(currentUserChanged(RamUser*)));
+    connect(ui_header, SIGNAL(sort(int,Qt::SortOrder)), ui_table->filteredList(), SLOT(resort(int,Qt::SortOrder)));
+    connect(ui_header, SIGNAL(unsort()), ui_table->filteredList(), SLOT(unsort()));
 }
 
 void ItemTableManagerWidget::loadSettings()

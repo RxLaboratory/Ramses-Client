@@ -185,3 +185,26 @@ RamStep *RamItemFilterModel::step(int column) const
     if( step->type() == m_stepType) return step;
     return nullptr;
 }
+
+RamItemFilterModel::SortMode RamItemFilterModel::sortMode() const
+{
+    return m_sortMode;
+}
+
+void RamItemFilterModel::setSortMode(SortMode newSortMode)
+{
+    m_sortMode = newSortMode;
+    if (m_sortMode == Default) this->setSortRole(Qt::InitialSortOrderRole);
+    else this->setSortRole(Qt::UserRole + m_sortMode);
+}
+
+void RamItemFilterModel::resort(int col, Qt::SortOrder order)
+{
+    this->sort(col, order);
+}
+
+void RamItemFilterModel::unsort()
+{
+    setSortMode(Default);
+    resort(0,Qt::AscendingOrder);
+}

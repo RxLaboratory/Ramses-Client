@@ -185,7 +185,7 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     ui_statsTitle->setObjectName("dockTitle");
     ui_statsTitle->setIcon(":/icons/stats");
     ui_statsDockWidget->setTitleBarWidget(ui_statsTitle);
-    ui_statsDockWidget->setAllowedAreas(Qt::AllDockWidgetAreas);
+    ui_statsDockWidget->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     ui_statsDockWidget->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable );
     ui_statsDockWidget->setWidget( statsTable );
     this->addDockWidget(Qt::LeftDockWidgetArea, ui_statsDockWidget);
@@ -208,10 +208,22 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
 
     qDebug() << "> Console dock ready";
 
+    // The properties dock
+    ui_propertiesDockWidget = new QDockWidget("Properties");
+    ui_propertiesTitle = new DuQFDockTitle("Properties", this);
+    ui_propertiesTitle->setObjectName("dockTitle");
+    ui_propertiesTitle->setIcon(":/icons/asset");
+    ui_propertiesDockWidget->setTitleBarWidget(ui_propertiesTitle);
+    ui_propertiesDockWidget->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    ui_propertiesDockWidget->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable );
+    this->addDockWidget(Qt::RightDockWidgetArea, ui_propertiesDockWidget);
+
+    qDebug() << "> Properties dock ready";
 
     // Hide docks
     ui_statsDockWidget->hide();
     ui_consoleDockWidget->hide();
+    ui_propertiesDockWidget->hide();
 
     // Progress page
     progressPage = new ProgressPage(this);
@@ -266,11 +278,12 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     if (serverAddress == "" || localFolder == "" || serverAddress == "/") install();
 }
 
-void MainWindow::addObjectDockWidget(ObjectDockWidget *w)
+void MainWindow::setPropertiesDockWidget(QWidget *w, QString title, QString icon)
 {
-    this->addDockWidget(Qt::RightDockWidgetArea, w);
-    connect(w, &QObject::destroyed, this, &MainWindow::dockWidgetDestroyed);
-    w->installEventFilter(this);
+    ui_propertiesDockWidget->setWidget( w );
+    ui_propertiesTitle->setTitle(title);
+    ui_propertiesTitle->setIcon(icon);
+    ui_propertiesDockWidget->show();
 }
 
 void MainWindow::duqf_checkUpdate()
@@ -613,15 +626,6 @@ void MainWindow::log(DuQFLog m)
     else if (type == DuQFLog::Fatal) mainStatusBar->showMessage(message);
 }
 
-void MainWindow::dockWidgetDestroyed(QObject *dockObj)
-{
-    ObjectDockWidget *dock = (ObjectDockWidget*)dockObj;
-    if (dock)
-    {
-        _dockedObjects.removeAll(dock);
-    }
-}
-
 void MainWindow::pageChanged(int i)
 {
     actionAdmin->setChecked(i == 3);
@@ -878,36 +882,7 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
 #endif
     }
 
-    ObjectDockWidget *o = qobject_cast<ObjectDockWidget*>(obj);
-    if (o)
-    {
-        if (event->type() == QEvent::Show)
-        {
-            for (int i = 0; i < _dockedObjects.count(); i++)
-            {
-                ObjectDockWidget *other = _dockedObjects.at(i);
-                if (!other) continue;
-
-                if (other->objectType() == o->objectType() && other->isVisible())
-                {
-                    if (m_shiftPressed)
-                        this->tabifyDockWidget( other, o);
-                    else
-                        other->hide();
-                }
-            }
-            _dockedObjects << o;
-            return false;
-        }
-        if (event->type() == QEvent::Hide)
-        {
-            _dockedObjects.removeAll(o);
-            return false;
-        }
-    }
-
     return QMainWindow::eventFilter(obj, event);
-
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)

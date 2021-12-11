@@ -5,13 +5,23 @@
 #include "ramitem.h"
 
 /**
- * @brief The RamItemFilterModel class is used to filters items according to current state, assigned user
- * @todo Refactor: Move step filter here (instead of a separate class in the item tables)
+ * @brief The RamItemFilterModel class is used to filters items according to current state, step or assigned user.
+ * It also sorts the items according to: their completion ratio, their estimation, their time spent, their difficulty, their name or their ID (or default)
  */
 class RamItemFilterModel : public RamObjectFilterModel
 {
     Q_OBJECT
 public:
+    enum SortMode {
+        Default = 1,
+        ShortName = 2,
+        Name = 3,
+        Difficulty = 4,
+        TimeSpent = 5,
+        Estimation = 6,
+        Completion = 7
+    };
+
     explicit RamItemFilterModel(QObject *parent = nullptr);
 
     void freeze();
@@ -33,6 +43,13 @@ public:
     void showStep(RamStep *s);
     void showAllSteps();
 
+    SortMode sortMode() const;
+    void setSortMode(SortMode newSortMode);
+
+public slots:
+    void resort(int col, Qt::SortOrder order = Qt::AscendingOrder);
+    void unsort();
+
 protected:
     bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const override;
     bool filterAcceptsColumn(int sourceRow, const QModelIndex &sourceParent) const override;
@@ -53,6 +70,8 @@ private:
     bool m_userFilters = false;
 
     bool m_frozen = false;
+
+    SortMode m_sortMode = Default;
 };
 
 #endif // RAMITEMFILTERMODEL_H

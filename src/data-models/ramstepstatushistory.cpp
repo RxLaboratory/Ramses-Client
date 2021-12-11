@@ -44,20 +44,16 @@ void RamStepStatusHistory::sort(int column, Qt::SortOrder order)
 
 void RamStepStatusHistory::edit(bool show)
 {
-    if (!m_editReady)
+    Q_UNUSED(show)
+    if (!ui_editWidget)
     {
         StatusHistoryWidget *w = new StatusHistoryWidget(this);
-        m_dockWidget = new ObjectDockWidget(m_item);
-        QFrame *f = new QFrame(m_dockWidget);
+        QFrame *ui_editWidget = new QFrame();
         QVBoxLayout *l = new QVBoxLayout();
         l->setContentsMargins(3,3,3,3);
         l->addWidget(w);
-        f->setLayout(l);
-        m_dockWidget->setWidget(f);
-
-        MainWindow *mw = (MainWindow*)GuiUtils::appMainWindow();
-        mw->addObjectDockWidget(m_dockWidget);
-        m_editReady = true;
+        ui_editWidget->setLayout(l);
     }
-    m_dockWidget->setVisible(show);
+    MainWindow *mw = (MainWindow*)GuiUtils::appMainWindow();
+    mw->setPropertiesDockWidget(ui_editWidget);
 }

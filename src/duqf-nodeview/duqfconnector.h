@@ -32,10 +32,11 @@ public slots:
 signals:
     void removed();
     void selected(bool);
+    void clicked();
 
 protected:
     QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
-
+    virtual void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
 
 private:
     void setupUi();

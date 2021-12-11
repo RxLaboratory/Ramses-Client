@@ -44,6 +44,8 @@ QVariant RamObjectList::data(const QModelIndex &index, int role) const
 
     if (role == Qt::ToolTipRole) return QString(obj->shortName() % " | " % obj->name() % "\n" % obj->comment());
 
+    if (role == Qt::InitialSortOrderRole) return obj->order();
+
     quintptr iptr = reinterpret_cast<quintptr>(obj);
     return iptr;
 }

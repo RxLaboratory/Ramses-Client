@@ -2,7 +2,6 @@
 #define RAMFILETYPE_H
 
 #include "ramobject.h"
-#include "objectdockwidget.h"
 
 class RamFileType : public RamObject
 {

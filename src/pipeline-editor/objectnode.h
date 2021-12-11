@@ -8,7 +8,6 @@
 
 #include "ramobject.h"
 #include "objecteditwidget.h"
-#include "objectdockwidget.h"
 
 class ObjectNode : public DuQFNode
 {
@@ -17,7 +16,7 @@ public:
     RamObject *ramObject() const;
 
 protected:
-    QVariant itemChange(GraphicsItemChange change, const QVariant &value) Q_DECL_OVERRIDE;
+    virtual void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
 
 private slots:
     void removeObject();
@@ -26,6 +25,8 @@ private slots:
 
 private:
     RamObject *m_object;
+
+    bool m_mousePress;
 };
 
 #endif // STEPNODE_H

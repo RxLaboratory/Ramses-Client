@@ -183,6 +183,12 @@ QVariant DuQFConnector::itemChange(QGraphicsItem::GraphicsItemChange change, con
     return QGraphicsItem::itemChange(change, value);
 }
 
+void DuQFConnector::mousePressEvent(QGraphicsSceneMouseEvent *event)
+{
+    emit clicked();
+    QGraphicsObject::mouseReleaseEvent(event);
+}
+
 void DuQFConnector::setupUi()
 {
     m_titleItem = new QGraphicsTextItem("");

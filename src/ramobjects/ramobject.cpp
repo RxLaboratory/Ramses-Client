@@ -1,5 +1,4 @@
 #include "ramobject.h"
-#include "objectdockwidget.h"
 #include "objecteditwidget.h"
 #include "mainwindow.h"
 
@@ -132,34 +131,54 @@ void RamObject::remove( bool updateDB )
 
 void RamObject::setEditWidget(ObjectEditWidget *w)
 {
-    ui_editWidget = w;
-
-    m_dockWidget = new ObjectDockWidget(this);
-    QFrame *f = new QFrame(m_dockWidget);
+    ui_editWidget = new QFrame();
     QVBoxLayout *l = new QVBoxLayout();
     l->setContentsMargins(3,3,3,3);
     l->addWidget(w);
-    f->setLayout(l);
-    m_dockWidget->setWidget(f);
-
-    MainWindow *mw = (MainWindow*)GuiUtils::appMainWindow();
-    mw->addObjectDockWidget(m_dockWidget);
+    ui_editWidget->setLayout(l);
 }
 
-void RamObject::showEdit(bool show)
+void RamObject::showEdit(QString title)
 {
-    if (m_dockWidget != nullptr )
-        m_dockWidget->setVisible(show);
+    if (!ui_editWidget) return;
+
+    MainWindow *mw = (MainWindow*)GuiUtils::appMainWindow();
+    if (title == "") title = this->name();
+    if (title == "") title = this->shortName();
+    if (title == "") title = "Properties";
+
+    QString icon = "";
+    switch (m_objectType) {
+        case Application: icon = ":/icons/application"; break;
+        case Asset: icon = ":/icons/asset"; break;
+        case AssetGroup: icon = ":/icons/asset-group"; break;
+        case FileType: icon = ":/icons/file"; break;
+        case Generic: icon = ":/icons/asset"; break;
+        case Item: icon = ":/icons/asset"; break;
+        case Pipe: icon = ":/icons/connection"; break;
+        case PipeFile: icon = ":/icons/file"; break;
+        case Project: icon = ":/icons/project"; break;
+        case Sequence: icon = ":/icons/sequence"; break;
+        case Shot: icon = ":/icons/shot"; break;
+        case State: icon = ":/icons/state-l"; break;
+        case Status: icon = ":/icons/state-l"; break;
+        case Step: icon = ":/icons/step"; break;
+        case User: icon = ":/icons/user"; break;
+        case StepStatusHistory: icon = ":/icons/state-l"; break;
+        case ScheduleEntry: icon = ":/icons/calendar"; break;
+        default: icon = ":/icons/asset";
+    }
+    mw->setPropertiesDockWidget( ui_editWidget, title, icon);
 }
 
 RamObject::ObjectType RamObject::objectType() const
 {
-    return _objectType;
+    return m_objectType;
 }
 
 void RamObject::setObjectType(RamObject::ObjectType type)
 {
-    _objectType = type;
+    m_objectType = type;
 }
 
 int RamObject::order() const

@@ -134,7 +134,6 @@ SOURCES += \
     pages/loginpage.cpp \
     main.cpp \
     mainwindow.cpp \
-    rameditwidgets/objectdockwidget.cpp \
     rameditwidgets/objecteditwidget.cpp \
     rameditwidgets/pipeeditwidget.cpp \
     rameditwidgets/projecteditwidget.cpp \
@@ -279,7 +278,6 @@ HEADERS += \
     settingswidgets/localsettingswidget.h \
     pages/loginpage.h \
     mainwindow.h \
-    rameditwidgets/objectdockwidget.h \
     rameditwidgets/objecteditwidget.h \
     rameditwidgets/pipeeditwidget.h \
     rameditwidgets/projecteditwidget.h \

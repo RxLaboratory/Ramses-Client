@@ -24,6 +24,7 @@
 #include "duqf-widgets/duqflogtoolbutton.h"
 #include "duqf-widgets/duqfupdatedialog.h"
 #include "duqf-widgets/duqfupdatesettingswidget.h"
+#include "duqf-widgets/duqfdocktitle.h"
 
 #include "serversettingswidget.h"
 #include "daemonsettingswidget.h"
@@ -60,7 +61,7 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
 public:
     explicit MainWindow(QStringList args, QWidget *parent = nullptr);
 
-    void addObjectDockWidget(ObjectDockWidget *w);
+    void setPropertiesDockWidget(QWidget *w, QString title = "Properties", QString icon = ":/icons/asset");
 
 private:
     // ========= RxOT UI ==============
@@ -97,7 +98,9 @@ private:
     ProgressPage *progressPage;
     QDockWidget *ui_statsDockWidget;
     QDockWidget *ui_consoleDockWidget;
+    QDockWidget *ui_propertiesDockWidget;
     DuQFDockTitle *ui_statsTitle;
+    DuQFDockTitle *ui_propertiesTitle;
 
     QMenu *ui_userMenu;
     QToolButton *ui_userButton;
@@ -105,8 +108,6 @@ private:
     QToolButton *ui_refreshButton;
     QToolButton *ui_consoleButton;
     int m_currentPageIndex = 0;
-
-    QList<ObjectDockWidget *> _dockedObjects;
 
     QMetaObject::Connection _currentUserConnection;
 
@@ -135,8 +136,6 @@ private slots:
     void duqf_updateAvailable(QJsonObject updateInfo);
 
     void log(DuQFLog m);
-
-    void dockWidgetDestroyed(QObject *dockObj);
 
     void pageChanged(int i);
     void serverSettings();

@@ -464,19 +464,9 @@ void PipelineWidget::newPipe(RamObject *p)
     // Title
     co->connector()->setTitle( p->name() );
 
-    // Create an edit dockwidget
-    ObjectDockWidget *dockWidget = new ObjectDockWidget(pipe);
-    dockWidget->setTitle("Pipe");
-    dockWidget->setIcon(":/icons/connection");
-    PipeEditWidget *editWidget = new PipeEditWidget(pipe, dockWidget);
-    dockWidget->setWidget(editWidget);
-    MainWindow *mw = (MainWindow*)GuiUtils::appMainWindow();
-    mw->addObjectDockWidget(dockWidget);
-    dockWidget->hide();
-
     QList<QMetaObject::Connection> c;
     c << connect(pipe, SIGNAL(changed(RamObject*)), this, SLOT(pipeChanged(RamObject*)));
-    c << connect(co->connector(), SIGNAL(selected(bool)), dockWidget, SLOT(setVisible(bool)));
+    c << connect(co->connector(), SIGNAL(clicked()), pipe, SLOT(edit()));
     m_pipeObjectConnections[pipe->uuid()] = c;
 
     m_pipeConnections[pipe->uuid()] = co;

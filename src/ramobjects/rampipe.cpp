@@ -54,7 +54,7 @@ void RamPipe::edit(bool show)
         setEditWidget(w);
         m_editReady = true;
     }
-    showEdit(show);
+    if (show) showEdit();
 }
 
 void RamPipe::removeFromDB()

@@ -18,6 +18,9 @@ RamStepHeaderView::RamStepHeaderView(QWidget *parent):
 
     m_editIcon = QIcon(":/icons/edit").pixmap(QSize(12,12));
     m_folderIcon = QIcon(":/icons/reveal-folder-s").pixmap(QSize(12,12));
+    m_sortIcon = QIcon(":/icons/sort-no").pixmap(QSize(12,12));
+    m_sortUpIcon = QIcon(":/icons/sort-up").pixmap(QSize(12,12));
+    m_sortDownIcon = QIcon(":/icons/sort-down").pixmap(QSize(12,12));
 
     this->setMinimumHeight( 42 );
 }
@@ -58,6 +61,15 @@ void RamStepHeaderView::paintSection(QPainter *painter, const QRect &rect, int l
     // Folder button
     const QRect folderButtonRect( xpos, rect.top() +7, 12, 12 );
     drawButton(painter, folderButtonRect, m_folderIcon, m_folderButtonHover == logicalIndex);
+
+    // Draw Sort button
+    if (m_sortable)
+    {
+        const QRect sortButtonRect( rect.left() + 10, rect.top( ) + 7, 12, 12 );
+        if (m_sortColumn != logicalIndex) drawButton(painter, sortButtonRect, m_sortIcon, m_sortButtonHover == logicalIndex);
+        else if (m_sortOrder == Qt::AscendingOrder) drawButton(painter, sortButtonRect, m_sortUpIcon, m_sortButtonHover == logicalIndex, true);
+        else drawButton(painter, sortButtonRect, m_sortDownIcon, m_sortButtonHover == logicalIndex, true);
+    }
 
     // Draw status
 
@@ -135,6 +147,8 @@ void RamStepHeaderView::mousePressEvent(QMouseEvent *event)
     if (edit) xpos -= 22;
     const QRect folderButtonRect( xpos, 7, 20, 20 );
 
+    const QRect sortButtonRect( sectionLeft + 10, 7, 20, 20);
+
     if (editButtonRect.contains(pos) && edit)
     {
         m_editButtonPressed = sectionIndex;
@@ -145,6 +159,11 @@ void RamStepHeaderView::mousePressEvent(QMouseEvent *event)
     {
         m_folderButtonPressed = sectionIndex;
         return;
+    }
+
+    if (m_sortable && sortButtonRect.contains(pos))
+    {
+        m_sortButtonPressed = sectionIndex;
     }
 
     QHeaderView::mousePressEvent(event);
@@ -164,6 +183,8 @@ void RamStepHeaderView::mouseReleaseEvent(QMouseEvent *event)
 
     if (edit) xpos -= 22;
     const QRect folderButtonRect( xpos, 7, 20, 20 );
+
+    const QRect sortButtonRect( sectionLeft + 10, 7, 20, 20);
 
     if (m_editButtonPressed == sectionIndex)
     {
@@ -191,6 +212,29 @@ void RamStepHeaderView::mouseReleaseEvent(QMouseEvent *event)
         return;
     }
 
+    if (m_sortable && m_sortButtonPressed == sectionIndex)
+    {
+        if (sortButtonRect.contains(pos))
+        {
+            // New sorting
+            if (sectionIndex != m_sortColumn)
+            {
+                m_sortOrder = Qt::AscendingOrder;
+                m_sortColumn = sectionIndex;
+                emit sort( sectionIndex, m_sortOrder );
+            }
+            else if (m_sortOrder == Qt::AscendingOrder)
+            {
+                m_sortOrder = Qt::DescendingOrder;
+                emit sort( sectionIndex, m_sortOrder );
+            }
+            else {
+                m_sortColumn = -1;
+                emit unsort();
+            }
+        }
+    }
+
     QHeaderView::mouseReleaseEvent(event);
 }
 
@@ -208,6 +252,8 @@ void RamStepHeaderView::mouseMoveEvent(QMouseEvent *event)
 
     if (edit) xpos -= 22;
     const QRect folderButtonRect( xpos, 7, 20, 20 );
+
+    const QRect sortButtonRect( sectionLeft + 10, 7, 20, 20);
 
     if (editButtonRect.contains(pos) && edit)
     {
@@ -231,6 +277,17 @@ void RamStepHeaderView::mouseMoveEvent(QMouseEvent *event)
         this->update();
     }
 
+    if (m_sortable && sortButtonRect.contains(pos))
+    {
+        m_sortButtonHover = sectionIndex;
+        this->update();
+    }
+    else if (m_sortButtonHover == sectionIndex)
+    {
+        m_sortButtonHover = -1;
+        this->update();
+    }
+
     QHeaderView::mouseMoveEvent(event);
 }
 
@@ -239,12 +296,13 @@ bool RamStepHeaderView::canEdit() const
     return Ramses::instance()->isProjectAdmin();
 }
 
-void RamStepHeaderView::drawButton(QPainter *painter, QRect rect, QPixmap icon, bool hover) const
+void RamStepHeaderView::drawButton(QPainter *painter, QRect rect, QPixmap icon, bool hover, bool checked) const
 {
-    if (hover)
+    if (hover || checked)
     {
         QPainterPath path;
         path.addRoundedRect(rect.adjusted(-5, -5, 5, 5), 3, 3);
+        if (hover && checked) painter->fillPath(path, QBrush(m_abyss));
         painter->fillPath(path, QBrush(m_abyss));
     }
     painter->drawPixmap( rect, icon );
@@ -253,6 +311,11 @@ void RamStepHeaderView::drawButton(QPainter *painter, QRect rect, QPixmap icon, 
 void RamStepHeaderView::setCompletionRatio(bool newCompletionRatio)
 {
     m_completionRatio = newCompletionRatio;
+}
+
+void RamStepHeaderView::setSortable(bool sortable)
+{
+    m_sortable = sortable;
 }
 
 void RamStepHeaderView::setTimeTracking(bool newTimeTracking)

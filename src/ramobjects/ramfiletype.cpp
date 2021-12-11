@@ -73,7 +73,7 @@ void RamFileType::edit(bool show)
         setEditWidget(ftw);
         m_editReady = true;
     }
-    showEdit(show);
+    if (show) showEdit();
 }
 
 void RamFileType::removeFromDB()

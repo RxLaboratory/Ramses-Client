@@ -28,8 +28,7 @@ private:
     RamStep *m_step;
     RamItem *m_item;
 
-    bool m_editReady = false;
-    ObjectDockWidget *m_dockWidget;
+    QFrame *ui_editWidget = nullptr;
 };
 
 bool statusSorter(RamObject *a, RamObject *b);
