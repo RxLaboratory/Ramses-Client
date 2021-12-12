@@ -130,7 +130,7 @@ void RamStepHeaderView::paintSection(QPainter *painter, const QRect &rect, int l
             completionPath.addRoundedRect(statusRect, 5, 5);
             painter->fillPath(completionPath, statusBrush);
         }
-    }
+    }//*/
 }
 
 void RamStepHeaderView::mousePressEvent(QMouseEvent *event)

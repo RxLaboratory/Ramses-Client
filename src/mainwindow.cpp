@@ -191,6 +191,7 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     this->addDockWidget(Qt::LeftDockWidgetArea, ui_statsDockWidget);
 
     qDebug() << "> Statistics table ready";
+    ui_statsDockWidget->hide();
 #endif
 
     // A console in a tab
@@ -206,6 +207,7 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     this->addDockWidget(Qt::LeftDockWidgetArea, ui_consoleDockWidget);
     this->tabifyDockWidget( ui_statsDockWidget, ui_consoleDockWidget) ;
 
+    ui_consoleDockWidget->hide();
     qDebug() << "> Console dock ready";
 
     // The properties dock
@@ -218,12 +220,8 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     ui_propertiesDockWidget->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable );
     this->addDockWidget(Qt::RightDockWidgetArea, ui_propertiesDockWidget);
 
-    qDebug() << "> Properties dock ready";
-
-    // Hide docks
-    ui_statsDockWidget->hide();
-    ui_consoleDockWidget->hide();
     ui_propertiesDockWidget->hide();
+    qDebug() << "> Properties dock ready";   
 
     // Progress page
     progressPage = new ProgressPage(this);

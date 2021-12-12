@@ -41,10 +41,10 @@ void DuQFElidedLabel::paintEvent(QPaintEvent *event)
 {
     Q_UNUSED(event);
 
-    QPainter *painter = new QPainter(this);
+    QPainter painter(this);
     QFontMetrics fm = this->fontMetrics();
     int margin = this->margin();
     int newMargin = fm.horizontalAdvance("x") / 2;
     QRect rect = this->contentsRect().adjusted( newMargin, margin, -newMargin, -margin);
-    painter->drawText(rect, this->alignment(), fm.elidedText(this->text(), m_elideMode, rect.width()) );
+    painter.drawText(rect, this->alignment(), fm.elidedText(this->text(), m_elideMode, rect.width()) );//*/
 }

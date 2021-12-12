@@ -25,7 +25,7 @@ RamScheduleDelegate::RamScheduleDelegate(QObject *parent) : QStyledItemDelegate(
 
 void RamScheduleDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-    // Base Settings
+     // Base Settings
     const QRect rect = option.rect;
     painter->setRenderHint(QPainter::Antialiasing);
 
@@ -111,7 +111,7 @@ void RamScheduleDelegate::paint(QPainter *painter, const QStyleOptionViewItem &o
         painter->drawText( commentRect, Qt::AlignLeft | Qt::AlignTop, index.data(Qt::UserRole +2).toString(), &commentRect);
         if (commentRect.bottom() > bgRect.bottom() - 5) drawMore(painter, bgRect, textPen);
     }
-
+//*/
 }
 
 QSize RamScheduleDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const

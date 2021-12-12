@@ -316,7 +316,7 @@ void RamStatus::stateRemoved()
 void RamStatus::userRemoved()
 {
     m_user = Ramses::instance()->removedUser();
-    m_dbi->setStatusUser( m_uuid, m_user->uuid() );
+    if (m_user) m_dbi->setStatusUser( m_uuid, m_user->uuid() );
 }
 
 void RamStatus::assignedUserRemoved()

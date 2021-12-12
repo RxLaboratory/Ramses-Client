@@ -101,7 +101,7 @@ void ProgressWidget::paintEvent(QPaintEvent *event)
         QPainterPath completionPath;
         completionPath.addRoundedRect(statusRect, 5, 5);
         painter.fillPath(completionPath, statusBrush);
-    }
+    }//*/
 }
 
 

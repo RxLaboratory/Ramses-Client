@@ -683,7 +683,7 @@ QSize RamObjectDelegate::sizeHint(const QStyleOptionViewItem &option, const QMod
         width = 300;
     }
 
-    return QSize(width,height);
+    return QSize(width,height);//*/
 }
 
 void RamObjectDelegate::setEditable(bool editable)

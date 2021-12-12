@@ -132,7 +132,7 @@ void RamStatisticsDelegate::paint(QPainter *painter, const QStyleOptionViewItem 
     if (detailsRect.bottom() > bgRect.bottom() - 5)
     {
         drawMore(painter, bgRect, textPen);
-    }
+    }//*/
 }
 
 QSize RamStatisticsDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const

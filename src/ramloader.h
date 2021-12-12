@@ -6,6 +6,7 @@
 #include "processmanager.h"
 #include "ramses.h"
 #include "ramscheduleentry.h"
+#include "dbisuspender.h"
 
 class RamLoader : public QThread
 {
