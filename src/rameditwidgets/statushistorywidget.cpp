@@ -9,7 +9,7 @@ StatusHistoryWidget::StatusHistoryWidget(RamStepStatusHistory *history, QWidget 
 
 void StatusHistoryWidget::editObject(RamObject *obj) const
 {
-    obj->edit();
+    if (obj) obj->edit();
 }
 
 void StatusHistoryWidget::setupUi()

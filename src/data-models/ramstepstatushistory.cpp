@@ -47,13 +47,14 @@ void RamStepStatusHistory::edit(bool show)
     Q_UNUSED(show)
     if (!ui_editWidget)
     {
-        StatusHistoryWidget *w = new StatusHistoryWidget(this);
-        QFrame *ui_editWidget = new QFrame();
-        QVBoxLayout *l = new QVBoxLayout();
-        l->setContentsMargins(3,3,3,3);
-        l->addWidget(w);
-        ui_editWidget->setLayout(l);
+        ui_editWidget = new QFrame();
+        ui_editWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+
+        QVBoxLayout *layout = new QVBoxLayout(ui_editWidget);
+        layout->setContentsMargins(3,3,3,3);
+        layout->addWidget( new StatusHistoryWidget( this ) );
+
     }
     MainWindow *mw = (MainWindow*)GuiUtils::appMainWindow();
-    mw->setPropertiesDockWidget(ui_editWidget);
+    mw->setPropertiesDockWidget(ui_editWidget, m_step->name() + " history", ":/icons/step");
 }
