@@ -38,18 +38,7 @@ public:
      */
     void setStatus(RamStatus *status);
 
-    RamState *state() const;
-    int completionRatio() const;
-    int version() const;
-    QString comment() const;
-    RamUser *assignedUser() const;
-    bool isPublished() const;
-    qint64 timeSpent() const;
-    float estimation() const;
     RamStatus::Difficulty difficulty() const;
-
-signals:
-    void statusUpdated(RamState*, int completion, int version, QString comment);
 
 protected slots:
     void update() override;
@@ -77,7 +66,7 @@ private slots:
     void openPreviewFile();
     void removeSelectedPreviewFile();
 
-    void autoEstimate(bool estimate);
+    void autoEstimate(bool useAutoEstimation);
     void autoEstimate();
     void estimateDays(int hours);
 

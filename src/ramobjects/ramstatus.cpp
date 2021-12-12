@@ -286,21 +286,10 @@ void RamStatus::edit(bool show)
         ui_editWidget = new StatusEditWidget(this);
         setEditWidget(ui_editWidget);
         m_editReady = true;
-        connect( ui_editWidget, SIGNAL(statusUpdated(RamState*,int,int,QString)),
-                 this, SLOT(statusUpdated(RamState*,int,int,QString))
-                 );
     }
     if (show)
     {
         ui_editWidget->setStatus( this );
-        // Check if we have the right to edit
-        RamUser *u = Ramses::instance()->currentUser();
-        if (!u) m_editable = false;
-        else
-        {
-            if (u->role() == RamUser::Standard) m_editable = u->is(m_assignedUser);
-            if (!m_assignedUser) m_editable = true;
-        }
         showEdit();
     }
 }
@@ -317,22 +306,6 @@ QString RamStatus::folderPath() const
     if (m_item->objectType() == RamObject::Shot) type = "_S_";
     else if (m_item->objectType() == RamObject::Asset) type = "_A_";
     return m_item->path() + "/" + project->shortName() + type + m_item->shortName() + "_" + m_step->shortName();
-}
-
-void RamStatus::statusUpdated(RamState *state, int completion, int version, QString comment)
-{
-    this->setState(state);
-    this->setCompletionRatio(completion);
-    this->setVersion(version);
-    this->setComment(comment);
-    this->assignUser(ui_editWidget->assignedUser());
-    this->setPublished(ui_editWidget->isPublished());
-    this->setDate(QDateTime::currentDateTime());
-    this->setTimeSpent( ui_editWidget->timeSpent() );
-    this->setGoal( ui_editWidget->estimation() );
-    this->setDifficulty( ui_editWidget->difficulty() );
-    m_step->computeEstimation();
-    update();
 }
 
 void RamStatus::stateRemoved()
@@ -359,7 +332,6 @@ bool RamStatus::useAutoEstimation() const
 
 void RamStatus::setUseAutoEstimation(bool newAutoEstimation)
 {
-    if (newAutoEstimation == m_useAutoEstimation) return;
     if (m_state->shortName() == "NO") return;
     m_dirty = true;
     m_useAutoEstimation = newAutoEstimation;
@@ -663,6 +635,7 @@ RamStatus *RamStatus::copy(RamStatus *other, RamUser *user)
     status->setDifficulty( other->difficulty() );
     status->setGoal( other->goal() );
     status->item()->addStatus(status);
+    status->setUseAutoEstimation( other->useAutoEstimation() );
     return status;
 }
 

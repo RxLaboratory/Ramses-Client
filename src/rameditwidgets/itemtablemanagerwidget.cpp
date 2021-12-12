@@ -291,6 +291,7 @@ void ItemTableManagerWidget::checkStateFilters()
 
 void ItemTableManagerWidget::editObject(RamObject *obj) const
 {
+    if (!obj) return;
     // Check if it's a status
     if (obj->objectType() == RamObject::Status)
     {

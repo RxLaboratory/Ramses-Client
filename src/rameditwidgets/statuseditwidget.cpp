@@ -17,6 +17,8 @@ StatusEditWidget::StatusEditWidget(RamStatus *status, QWidget *parent) : ObjectE
 
 void StatusEditWidget::setStatus(RamStatus *status)
 {
+    this->setEnabled(false);
+
     m_status = status;
 
     QSignalBlocker b1(ui_stateBox);
@@ -51,9 +53,6 @@ void StatusEditWidget::setStatus(RamStatus *status)
     ui_estimationEdit->setValue(0);
     ui_versionPublishBox->clear();
 
-    // User rights to assign
-    ui_userBox->setEnabled(Ramses::instance()->isLead());
-
     // Remove template list
     QList<QAction*> templateActions = ui_createFromTemplateMenu->actions();
     for (int i = 0; i < templateActions.count(); i++)
@@ -62,6 +61,16 @@ void StatusEditWidget::setStatus(RamStatus *status)
     }
 
     if (!status) return;
+
+    // Rights to edit
+    RamUser *u = Ramses::instance()->currentUser();
+    if (u)
+    {
+        if (u->role() == RamUser::Standard) this->setEnabled( u->is( status->assignedUser() ) );
+        if (!status->assignedUser()) this->setEnabled(true);
+    }
+    // User rights to assign
+    ui_userBox->setEnabled(Ramses::instance()->isLead());
 
     ui_stateBox->setObject(status->state());
     ui_completionBox->setValue(status->completionRatio());
@@ -156,47 +165,6 @@ void StatusEditWidget::setStatus(RamStatus *status)
     ui_timeSpent->setValue( timeSpent / 3600 );
 }
 
-RamState *StatusEditWidget::state() const
-{
-    return qobject_cast<RamState*>( ui_stateBox->currentObject() );
-}
-
-int StatusEditWidget::completionRatio() const
-{
-    return ui_completionBox->value();
-}
-
-int StatusEditWidget::version() const
-{
-    return ui_versionBox->value();
-}
-
-QString StatusEditWidget::comment() const
-{
-    return ui_statusCommentEdit->toPlainText();
-}
-
-RamUser *StatusEditWidget::assignedUser() const
-{
-    return qobject_cast<RamUser*>( ui_userBox->currentObject() );
-}
-
-bool StatusEditWidget::isPublished() const
-{
-    return ui_publishedBox->isChecked();
-}
-
-qint64 StatusEditWidget::timeSpent() const
-{
-    return ui_timeSpent->value() * 3600;
-}
-
-float StatusEditWidget::estimation() const
-{
-    if (ui_autoEstimationBox->isChecked()) return -1;
-    return ui_estimationEdit->value();
-}
-
 RamStatus::Difficulty StatusEditWidget::difficulty() const
 {
     switch(ui_difficultyBox->currentIndex())
@@ -216,14 +184,14 @@ void StatusEditWidget::update()
 
     updating = true;
 
-    m_status->setState( state() );
-    m_status->setCompletionRatio( completionRatio() );
-    m_status->setVersion( version() );
-    m_status->setComment( comment() );
-    m_status->assignUser( assignedUser() );
-    m_status->setPublished( isPublished() );
-    m_status->setTimeSpent( timeSpent() );
-    m_status->setGoal( estimation() );
+    m_status->setState( qobject_cast<RamState*>( ui_stateBox->currentObject() ) );
+    m_status->setCompletionRatio( ui_completionBox->value() );
+    m_status->setVersion(ui_versionBox->value() );
+    m_status->setComment( ui_statusCommentEdit->toPlainText() );
+    m_status->assignUser( qobject_cast<RamUser*>( ui_userBox->currentObject() ) );
+    m_status->setPublished( ui_publishedBox->isChecked() );
+    m_status->setTimeSpent( ui_timeSpent->value() * 3600 );
+    m_status->setGoal( ui_estimationEdit->value() );
     m_status->setUseAutoEstimation( ui_autoEstimationBox->isChecked() );
     m_status->setDifficulty( difficulty() );
 
@@ -466,22 +434,23 @@ void StatusEditWidget::removeSelectedPreviewFile()
     revert();
 }
 
-void StatusEditWidget::autoEstimate(bool estimate)
+void StatusEditWidget::autoEstimate(bool useAutoEstimation)
 {
-    if (estimate)
+    float est = 0;
+
+    if (useAutoEstimation)
     {
-        float daysEstimation = m_status->estimation( ui_difficultyBox->currentIndex() );
-        ui_estimationEdit->setValue( daysEstimation );
+        est = m_status->estimation( ui_difficultyBox->currentIndex() );
         ui_estimationLabel->setText("Estimation");
     }
     else
     {
-        float daysEstimation = m_status->goal();
-        ui_estimationEdit->setValue( daysEstimation );
+        est = m_status->goal();
         ui_estimationLabel->setText("Goal");
     }
 
-    ui_estimationEdit->setEnabled(!estimate);
+    ui_estimationEdit->setValue( est );
+    ui_estimationEdit->setEnabled(!useAutoEstimation);
 }
 
 void StatusEditWidget::autoEstimate()
@@ -740,7 +709,7 @@ void StatusEditWidget::connectEvents()
     connect(ui_publishedFileList,SIGNAL(itemDoubleClicked(QListWidgetItem*)),this,SLOT(openPublishedFile()));
     connect(ui_previewFileList,SIGNAL(itemDoubleClicked(QListWidgetItem*)),this,SLOT(openPreviewFile()));
 
-    connect(ui_autoEstimationBox, SIGNAL(toggled(bool)), this, SLOT(autoEstimate(bool)));
+    connect(ui_autoEstimationBox, SIGNAL(clicked(bool)), this, SLOT(autoEstimate(bool)));
     connect(ui_difficultyBox, SIGNAL(currentIndexChanged(int)), this, SLOT(autoEstimate()));
     connect(ui_timeSpent, SIGNAL(valueChanged(int)),this, SLOT(estimateDays(int)));
 

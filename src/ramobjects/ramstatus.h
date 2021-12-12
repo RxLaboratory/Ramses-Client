@@ -99,7 +99,6 @@ protected:
     virtual QString folderPath() const override;
 
 private slots:
-    void statusUpdated(RamState *state, int completion, int version, QString comment);
     void stateRemoved();
     void userRemoved();
     void assignedUserRemoved();
