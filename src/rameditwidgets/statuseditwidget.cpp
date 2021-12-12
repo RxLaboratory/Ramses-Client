@@ -67,6 +67,7 @@ void StatusEditWidget::setStatus(RamStatus *status)
     if (u)
     {
         if (u->role() == RamUser::Standard) this->setEnabled( u->is( status->assignedUser() ) );
+        else this->setEnabled(true);
         if (!status->assignedUser()) this->setEnabled(true);
     }
     // User rights to assign
@@ -160,7 +161,7 @@ void StatusEditWidget::setStatus(RamStatus *status)
     // Estimation
     ui_difficultyBox->setCurrentIndex( status->difficulty() );
     ui_autoEstimationBox->setChecked( status->useAutoEstimation() );
-    autoEstimate( status->useAutoEstimation() );
+    autoEstimationClicked( status->useAutoEstimation() );
 
     ui_timeSpent->setValue( timeSpent / 3600 );
 }
@@ -196,9 +197,6 @@ void StatusEditWidget::update()
     m_status->setDifficulty( difficulty() );
 
     m_status->update();
-
-    //Update auto estimation
-    autoEstimate( ui_autoEstimationBox->isChecked() );
 
     updating = false;
 }
@@ -434,7 +432,7 @@ void StatusEditWidget::removeSelectedPreviewFile()
     revert();
 }
 
-void StatusEditWidget::autoEstimate(bool useAutoEstimation)
+void StatusEditWidget::autoEstimationClicked(bool useAutoEstimation)
 {
     float est = 0;
 
@@ -453,9 +451,12 @@ void StatusEditWidget::autoEstimate(bool useAutoEstimation)
     ui_estimationEdit->setEnabled(!useAutoEstimation);
 }
 
-void StatusEditWidget::autoEstimate()
+void StatusEditWidget::difficultyBoxChanged()
 {
-    autoEstimate( ui_autoEstimationBox->isChecked() );
+    if( !ui_autoEstimationBox->isChecked() ) return;
+
+    float est = m_status->estimation( ui_difficultyBox->currentIndex() );
+    ui_estimationEdit->setValue( est );
 }
 
 void StatusEditWidget::estimateDays(int hours)
@@ -709,8 +710,8 @@ void StatusEditWidget::connectEvents()
     connect(ui_publishedFileList,SIGNAL(itemDoubleClicked(QListWidgetItem*)),this,SLOT(openPublishedFile()));
     connect(ui_previewFileList,SIGNAL(itemDoubleClicked(QListWidgetItem*)),this,SLOT(openPreviewFile()));
 
-    connect(ui_autoEstimationBox, SIGNAL(clicked(bool)), this, SLOT(autoEstimate(bool)));
-    connect(ui_difficultyBox, SIGNAL(currentIndexChanged(int)), this, SLOT(autoEstimate()));
+    connect(ui_autoEstimationBox, SIGNAL(clicked(bool)), this, SLOT(autoEstimationClicked(bool)));
+    connect(ui_difficultyBox, SIGNAL(currentIndexChanged(int)), this, SLOT(difficultyBoxChanged()));
     connect(ui_timeSpent, SIGNAL(valueChanged(int)),this, SLOT(estimateDays(int)));
 
     // Shortcuts

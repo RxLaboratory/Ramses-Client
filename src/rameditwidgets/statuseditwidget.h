@@ -66,8 +66,8 @@ private slots:
     void openPreviewFile();
     void removeSelectedPreviewFile();
 
-    void autoEstimate(bool useAutoEstimation);
-    void autoEstimate();
+    void autoEstimationClicked(bool useAutoEstimation);
+    void difficultyBoxChanged();
     void estimateDays(int hours);
 
 private:
