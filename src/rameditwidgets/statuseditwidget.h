@@ -31,14 +31,11 @@ class StatusEditWidget : public ObjectEditWidget
 public:
     StatusEditWidget(QWidget *parent = nullptr);
     StatusEditWidget(RamStatus *status, QWidget *parent = nullptr);
-    /**
-     * @brief setStatus Use this method to set all fields corresponding to an existing status
-     * Note that this Widget WILL NOT change the status you set with this method or the constructor
-     * @param status
-     */
-    void setStatus(RamStatus *status);
 
     RamStatus::Difficulty difficulty() const;
+
+public slots:
+     void setObject(RamObject *statusObj) override;
 
 protected slots:
     void update() override;

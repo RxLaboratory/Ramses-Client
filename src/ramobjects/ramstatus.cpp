@@ -289,7 +289,7 @@ void RamStatus::edit(bool show)
     }
     if (show)
     {
-        ui_editWidget->setStatus( this );
+        ui_editWidget->setObject( this );
         showEdit();
     }
 }

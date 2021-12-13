@@ -5,20 +5,22 @@ StatusEditWidget::StatusEditWidget(QWidget *parent) :
 {
     setupUi();
     connectEvents();
-    setStatus(nullptr);
+    setObject(nullptr);
 }
 
 StatusEditWidget::StatusEditWidget(RamStatus *status, QWidget *parent) : ObjectEditWidget(status, parent)
 {
     setupUi();
     connectEvents();
-    setStatus(status);
+    setObject(status);
 }
 
-void StatusEditWidget::setStatus(RamStatus *status)
+void StatusEditWidget::setObject(RamObject *statusObj)
 {
+    RamStatus *status = qobject_cast<RamStatus*>( statusObj );
     this->setEnabled(false);
 
+    ObjectEditWidget::setObject(status);
     m_status = status;
 
     QSignalBlocker b1(ui_stateBox);
@@ -222,7 +224,7 @@ void StatusEditWidget::currentStateChanged(RamObject *stateObj)
 
 void StatusEditWidget::revert()
 {
-    setStatus(m_status);
+    setObject(m_status);
 }
 
 void StatusEditWidget::checkPublished( int v )
