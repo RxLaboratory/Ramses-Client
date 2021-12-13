@@ -15,13 +15,13 @@ void RamObjectFilterModel::setList(QAbstractItemModel *list)
 void RamObjectFilterModel::setFilterUuid(const QString &filterUuid)
 {
     m_currentFilterUuid = filterUuid;
-    invalidateFilter();
+    prepareFilter();
 }
 
 void RamObjectFilterModel::search(const QString &searchStr)
 {
     m_searchString = searchStr;
-    invalidateFilter();
+    prepareFilter();
 }
 
 bool RamObjectFilterModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
@@ -37,4 +37,10 @@ bool RamObjectFilterModel::filterAcceptsRow(int sourceRow, const QModelIndex &so
     if (m_searchString == "") return true;
     if (obj->shortName().contains(m_searchString, Qt::CaseInsensitive)) return true;
     return obj->name().contains(m_searchString, Qt::CaseInsensitive);
+}
+
+void RamObjectFilterModel::prepareFilter()
+{
+    emit aboutToFilter();
+    invalidateFilter();
 }

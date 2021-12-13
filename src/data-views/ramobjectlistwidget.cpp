@@ -6,7 +6,6 @@ RamObjectListWidget::RamObjectListWidget(DisplayMode mode, QWidget *parent):
     m_delegate = new RamObjectDelegate();
     m_displayMode = mode;
     setupUi();
-    connectEvents();
     m_objectList = new RamItemFilterModel(this);
     if (mode == List)
     {
@@ -18,7 +17,7 @@ RamObjectListWidget::RamObjectListWidget(DisplayMode mode, QWidget *parent):
     {
         this->setModel(m_objectList);
     }
-
+    connectEvents();
 }
 
 RamObjectListWidget::RamObjectListWidget(RamObjectList *list, DisplayMode mode, QWidget *parent):
@@ -27,7 +26,6 @@ RamObjectListWidget::RamObjectListWidget(RamObjectList *list, DisplayMode mode, 
     m_delegate = new RamObjectDelegate();
     m_displayMode = mode;
     setupUi();
-    connectEvents();
     m_objectList = new RamItemFilterModel(this);
     if (mode == List)
     {
@@ -40,6 +38,7 @@ RamObjectListWidget::RamObjectListWidget(RamObjectList *list, DisplayMode mode, 
         this->setModel(m_objectList);
     }
     this->setList(list);
+    connectEvents();
 }
 
 RamObjectListWidget::RamObjectListWidget(RamObjectList *list, bool editableObjects, RamUser::UserRole editRole, DisplayMode mode, QWidget *parent):
@@ -50,7 +49,6 @@ RamObjectListWidget::RamObjectListWidget(RamObjectList *list, bool editableObjec
     m_delegate->setEditable(editableObjects);
     m_delegate->setEditRole(editRole);
     setupUi();
-    connectEvents();
     m_objectList = new RamItemFilterModel(this);
     if (mode == List)
     {
@@ -63,14 +61,14 @@ RamObjectListWidget::RamObjectListWidget(RamObjectList *list, bool editableObjec
         this->setModel(m_objectList);
     }
     setList(list);
+    connectEvents();
 }
 
 void RamObjectListWidget::setList(RamObjectList *list)
-{ 
+{
     m_objectList->setList(list);
     this->resizeRowsToContents();
     this->resizeColumnsToContents();
-
 }
 
 RamItemFilterModel *RamObjectListWidget::filteredList()
@@ -107,6 +105,7 @@ void RamObjectListWidget::showDetails(bool s)
 
 void RamObjectListWidget::search(QString s)
 {
+    // Search
     m_objectList->search(s);
     //this->resizeRowsToContents();
 }
@@ -267,5 +266,7 @@ void RamObjectListWidget::connectEvents()
     connect(m_delegate, &RamObjectDelegate::folderObject, this, &RamObjectListWidget::revealFolder);
     // SORT
     connect( this->verticalHeader(), SIGNAL(sectionMoved(int,int,int)), this, SLOT(rowMoved(int,int,int)));
+    // Unselect before filtering
+    connect(m_objectList, SIGNAL(aboutToFilter()), this->selectionModel(), SLOT(clear()));
 }
 

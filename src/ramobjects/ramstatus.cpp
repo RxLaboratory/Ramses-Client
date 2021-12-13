@@ -635,6 +635,7 @@ RamStatus *RamStatus::copy(RamStatus *other, RamUser *user)
     status->setGoal( other->goal() );
     status->item()->addStatus(status);
     status->setUseAutoEstimation( other->useAutoEstimation() );
+    status->setComment( other->comment() );
     return status;
 }
 

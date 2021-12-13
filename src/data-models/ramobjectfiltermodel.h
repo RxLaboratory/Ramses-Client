@@ -19,13 +19,22 @@ public:
     void setFilterUuid(const QString &filterUuid);
     void search(const QString &searchStr);
 
+signals:
+    void aboutToFilter();
+
 protected:
     bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const override;
+    /**
+     * @brief prepareFilter calls invalidateFilter but emits aboutToFilter() first.
+     */
+    void prepareFilter();
 
 private:
     QString m_currentFilterUuid;
     QString m_searchString;
     RamObjectList *m_emptyList;
+
+
 };
 
 #endif // RAMOBJECTFILTERMODEL_H
