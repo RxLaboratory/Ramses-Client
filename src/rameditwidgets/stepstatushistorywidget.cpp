@@ -40,6 +40,7 @@ void StepStatusHistoryWidget::setupUi()
     m_statusList->setTitle("Status history");
     m_statusList->setEditable(false);
     m_statusList->setSearchable(false);
+    m_statusList->listWidget()->showDetails(true);
     layout->addWidget( m_statusList );
 }
 

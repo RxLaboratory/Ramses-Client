@@ -133,6 +133,11 @@ RamObject *ObjectListEditWidget::currentFilter() const
     return ui_filterBox->currentObject();
 }
 
+RamObjectListWidget *ObjectListEditWidget::listWidget()
+{
+    return ui_listWidget;
+}
+
 void ObjectListEditWidget::removeSelectedObjects()
 {
     QModelIndexList selection = ui_listWidget->selectionModel()->selectedRows();

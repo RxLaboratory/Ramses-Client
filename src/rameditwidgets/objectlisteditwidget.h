@@ -49,6 +49,8 @@ public:
     QString currentFilterUuid() const;
     RamObject *currentFilter() const;
 
+    RamObjectListWidget *listWidget();
+
 public slots:
     void setFilter(RamObject *o);
     void removeSelectedObjects();

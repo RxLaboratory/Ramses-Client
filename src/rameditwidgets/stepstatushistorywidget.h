@@ -2,6 +2,8 @@
 #define STEPSTATUSHISTORYWIDGET_H
 
 #include <QWidget>
+#include <QClipboard>
+
 #include "objectlisteditwidget.h"
 #include "data-models/ramstepstatushistory.h"
 #include "ramitem.h"
@@ -15,6 +17,8 @@ public:
     void setHistory(RamStepStatusHistory *history);
 
 signals:
+
+private slots:
 
 private:
     void setupUi();
