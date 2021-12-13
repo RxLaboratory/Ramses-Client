@@ -840,21 +840,24 @@ void RamObjectDelegate::setComboBoxMode(bool comboBoxMode)
 
 bool RamObjectDelegate::canEdit(const QModelIndex &index) const
 {
+    if (!m_editable) return false;
+
     RamUser *u = Ramses::instance()->currentUser();
     if (!u) return false;
 
     quintptr iptr = index.data(Qt::UserRole).toULongLong();
     if (iptr == 0) return false;
     RamObject *o = reinterpret_cast<RamObject*>( iptr );
-    if (o->objectType() == RamObject::Status) return false;
-    /*{
+    if (o->objectType() == RamObject::Status)
+    {
         RamStatus *status = qobject_cast<RamStatus*>( o );
+        if (!status) return false;
         if (status->assignedUser()) if(status->assignedUser()->is(u)) return true;
         if (u->role() > RamUser::Standard) return true;
         return false;
-    }*/
+    }
 
-    return m_editable && u->role() >= m_editRole;
+    return u->role() >= m_editRole;
 }
 
 void RamObjectDelegate::drawMore(QPainter *painter, QRect rect, QPen pen) const

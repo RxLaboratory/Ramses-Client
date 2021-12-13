@@ -908,6 +908,7 @@ void ItemTableManagerWidget::setupUi()
 
     ui_table = new RamObjectListWidget(RamObjectListWidget::Table, this);
     //ui_table->setEditableObjects(true, RamUser::ProjectAdmin);
+    ui_table->setEditableObjects(false);
     ui_table->setContextMenuPolicy(Qt::CustomContextMenu);
     ui_header = new RamStepHeaderView(ui_table);
     ui_table->setHorizontalHeader( ui_header );
