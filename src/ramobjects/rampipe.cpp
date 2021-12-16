@@ -6,6 +6,7 @@
 RamPipe::RamPipe(RamStep *output, RamStep *input, QString uuid):
     RamObject("PIPE","Pipe",uuid)
 {
+    this->setObjectType(Pipe);
     m_outputStep = output;
     m_inputStep = input;
     m_pipeFiles = new RamObjectList("PPFS", "Pipe files", this);
