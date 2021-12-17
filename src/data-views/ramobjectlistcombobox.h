@@ -28,6 +28,9 @@ public:
     void setObject(QString uuid);
     void setObject(RamObject *obj);
 
+    void beginReset();
+    void endReset();
+
     void showPopup() override;
     void hidePopup() override;
 
@@ -45,6 +48,9 @@ private slots:
 
 private:
     bool m_isFilterBox = false;
+
+    RamObject *m_resettingObject = nullptr;
+    bool m_resetting = false;
 
     void setupUi();
     void connectEvents();

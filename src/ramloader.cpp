@@ -209,10 +209,22 @@ QString RamLoader::gotProject(QJsonObject newP, bool init)
     project->setDbFolderPath( newP.value("folderPath").toString() );
     if ( project->pathIsDefault() ) project->resetDbFolderPath();
 
-    project->users()->clear();
-
+    // Update user list
+    QJsonArray newUsers = newP.value("users").toArray();
+    // Remove
+    for (int i = 0; i < project->users()->count(); i++)
+    {
+        RamObject *uObj = project->users()->at(i);
+        if (!newUsers.contains( uObj->uuid() )) project->users()->removeAll(uObj);
+    }
+    // Add / Update
     foreach( QJsonValue u, newP.value("users").toArray())
+    {
+        // Check if the user is already available
+        if (project->users()->contains( u.toString() )) continue;
+        // Add
         project->users()->append( RamUser::user( u.toString() ) );
+    }
 
     if (!init)
     {

@@ -89,6 +89,18 @@ void RamObjectListComboBox::setObject(RamObject *obj)
     else setObject(obj->uuid());
 }
 
+void RamObjectListComboBox::beginReset()
+{
+    m_resetting = true;
+    m_resettingObject = currentObject();
+}
+
+void RamObjectListComboBox::endReset()
+{
+    m_resetting = false;
+    setObject(m_resettingObject);
+}
+
 void RamObjectListComboBox::showPopup()
 {
     // Update size
@@ -115,8 +127,11 @@ void RamObjectListComboBox::currentObjectIndexChanged(int i)
     dumpObjectInfo();
 #endif
 
-    emit currentObjectChanged( currentObject() );
-    emit currentUuidChanged( currentUuid() );
+    if (!m_resetting)
+    {
+        emit currentObjectChanged( currentObject() );
+        emit currentUuidChanged( currentUuid() );
+    }
 }
 
 void RamObjectListComboBox::objectIndexActivated(int i)

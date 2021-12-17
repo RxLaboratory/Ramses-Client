@@ -685,16 +685,16 @@ void StatusEditWidget::setupUi()
 
 void StatusEditWidget::connectEvents()
 {
-    connect( ui_stateBox, SIGNAL(currentIndexChanged(int)), this, SLOT(update()));
+    connect( ui_stateBox, SIGNAL(activated(int)), this, SLOT(update()));
     connect( ui_completionBox, SIGNAL(valueChanging(int)), this, SLOT(update()));
     connect( ui_versionBox, SIGNAL(valueChanged(int)), this, SLOT(update()));
     ui_statusCommentEdit->installEventFilter(this);
-    connect( ui_userBox, SIGNAL(currentIndexChanged(int)), this, SLOT(update()));
+    connect( ui_userBox, SIGNAL(activated(int)), this, SLOT(update()));
     connect( ui_publishedBox, SIGNAL(clicked(bool)), this, SLOT(update()));
     connect( ui_autoEstimationBox, SIGNAL(clicked(bool)), this, SLOT(update()));
     connect( ui_timeSpent, SIGNAL(valueChanged(int)), this, SLOT(update()));
     connect( ui_estimationEdit, SIGNAL(valueChanged(double)), this, SLOT(update()));
-    connect( ui_difficultyBox, SIGNAL(currentIndexChanged(int)), this, SLOT(update()));
+    connect( ui_difficultyBox, SIGNAL(activated(int)), this, SLOT(update()));
 
     connect(ui_stateBox, SIGNAL(currentObjectChanged(RamObject*)), this, SLOT(currentStateChanged(RamObject*)));
     connect(ui_revertButton, &QToolButton::clicked, this, &StatusEditWidget::revert);

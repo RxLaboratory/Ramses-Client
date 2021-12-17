@@ -465,11 +465,18 @@ RamUser *RamStatus::assignedUser() const
 
 void RamStatus::assignUser(RamUser *assignedUser)
 {
-    disconnect(m_assignedUserConnection);
-
     if (!assignedUser && !m_assignedUser) return;
     if (assignedUser)
         if (assignedUser->is(m_assignedUser)) return;
+
+    disconnect(m_assignedUserConnection);
+
+    if (this->item()->shortName() == "sq01sh001")
+    {
+        qDebug() << assignedUser;
+        if (assignedUser) qDebug() << assignedUser->name();
+    }
+
     m_dirty = true;
     m_assignedUser = assignedUser;
 

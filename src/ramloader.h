@@ -87,6 +87,8 @@ private:
 
     ProcessManager *m_pm;
     Ramses *m_ram;
+
+
 };
 
 #endif // RAMLOADER_H
