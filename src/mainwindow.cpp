@@ -23,6 +23,10 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     // The ramses loader
     RamLoader::instance();
 
+    qDebug() << "> Loading settings";
+
+    QSettings settings;
+
     qDebug() << "> Setting up menus";
 
     // Populate Toolbar
@@ -181,6 +185,7 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
 #ifndef DEACTIVATE_STATS
     StatisticsWidget *statsTable = new StatisticsWidget(this);
     ui_statsDockWidget = new QDockWidget("Statistics");
+    ui_statsDockWidget->setObjectName("statsDock");
     ui_statsTitle = new DuQFDockTitle("Statistics", this);
     ui_statsTitle->setObjectName("dockTitle");
     ui_statsTitle->setIcon(":/icons/stats");
@@ -188,15 +193,16 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     ui_statsDockWidget->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     ui_statsDockWidget->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable );
     ui_statsDockWidget->setWidget( statsTable );
-    this->addDockWidget(Qt::LeftDockWidgetArea, ui_statsDockWidget);
+    Qt::DockWidgetArea area = static_cast<Qt::DockWidgetArea>( settings.value("ui/statsArea", Qt::LeftDockWidgetArea).toInt() );
+    this->addDockWidget(area, ui_statsDockWidget);
 
     qDebug() << "> Statistics table ready";
-    ui_statsDockWidget->hide();
 #endif
 
     // A console in a tab
     DuQFLoggingTextEdit *console = new DuQFLoggingTextEdit(this);
     ui_consoleDockWidget = new QDockWidget("Console");
+    ui_consoleDockWidget->setObjectName("consoleDock");
     DuQFDockTitle *consoleTitle = new DuQFDockTitle("Console", this);
     consoleTitle->setObjectName("dockTitle");
     consoleTitle->setIcon(":/icons/bash");
@@ -205,13 +211,18 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     ui_consoleDockWidget->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable );
     ui_consoleDockWidget->setWidget( console );
     this->addDockWidget(Qt::LeftDockWidgetArea, ui_consoleDockWidget);
-    this->tabifyDockWidget( ui_statsDockWidget, ui_consoleDockWidget) ;
+    this->tabifyDockWidget( ui_statsDockWidget, ui_consoleDockWidget);
+    qDebug() << settings.value("ui/consoleVisible", false).toBool();
+    if (!settings.value("ui/consoleVisible", false).toBool())
+        ui_consoleDockWidget->hide();
+    else
+        ui_consoleButton->setChecked(true);
 
-    ui_consoleDockWidget->hide();
     qDebug() << "> Console dock ready";
 
     // The properties dock
     ui_propertiesDockWidget = new QDockWidget("Properties");
+    ui_propertiesDockWidget->setObjectName("propertiesDock");
     ui_propertiesTitle = new DuQFDockTitle("Properties", this);
     ui_propertiesTitle->setObjectName("dockTitle");
     ui_propertiesTitle->setIcon(":/icons/asset");
@@ -220,7 +231,6 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     ui_propertiesDockWidget->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable );
     this->addDockWidget(Qt::RightDockWidgetArea, ui_propertiesDockWidget);
 
-    ui_propertiesDockWidget->hide();
     qDebug() << "> Properties dock ready";   
 
     // Progress page
@@ -274,6 +284,16 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     QString serverAddress = settings.value("server/address", "").toString();
     QString localFolder = settings.value("ramsesPath", "").toString();
     if (serverAddress == "" || localFolder == "" || serverAddress == "/") install();
+
+    // Restore UI state
+    settings.beginGroup("ui");
+    if (settings.value("maximized", false).toBool() )
+        this->showMaximized();
+    this->restoreState( settings.value("windowState").toByteArray() );
+    settings.endGroup();
+    // re-hide docks
+    ui_propertiesDockWidget->hide();
+    ui_statsDockWidget->hide();
 }
 
 void MainWindow::setPropertiesDockWidget(QWidget *w, QString title, QString icon)
@@ -289,6 +309,7 @@ void MainWindow::duqf_checkUpdate()
     DuApplication *app = qobject_cast<DuApplication*>(qApp);
     connect(app, SIGNAL(newUpdateInfo(QJsonObject)), this, SLOT(duqf_updateAvailable(QJsonObject)));
     // Check for update
+    QSettings settings;
     bool doCheckUpdate = settings.value("updates/checkUpdateAtStartup", true).toBool();
 #ifndef QT_DEBUG
     QDate latestUpdateCheck = settings.value("updates/latestUpdateCheck", QDate(1970,1,1)).toDate();
@@ -307,6 +328,7 @@ void MainWindow::duqf_initUi()
     if (useSysTray)
     {
         QMenu *trayMenu = new QMenu(QString(STR_INTERNALNAME),this);
+        QSettings settings;
 #ifdef Q_OS_LINUX
         QString trayIconType = settings.value("appearance/trayIconType", "light").toString();
 #else
@@ -471,6 +493,7 @@ void MainWindow::duqf_setStyle()
     // ======== STYLE ========
 
     //Re-set StyleSheet
+    QSettings settings;
     QString cssFile = settings.value("appearance/cssFile", ":/styles/default").toString();
     QString style = settings.value("appearance/style","Default").toString();
     if (cssFile != "")
@@ -556,6 +579,7 @@ void MainWindow::duqf_reinitSettings()
     QMessageBox::StandardButton choice = QMessageBox::question(this, "Reset settings", "This will reset all settings to their default values and restart the application.\nAre you sure you want to continue?" );
     if (choice == QMessageBox::Yes)
     {
+        QSettings settings;
         settings.clear();
         settings.sync();
         this->close();
@@ -633,6 +657,7 @@ void MainWindow::pageChanged(int i)
     actionShots->setChecked(i == 7);
     actionSchedule->setChecked(i == 8);
     duqf_settingsButton->setChecked(i == 1);
+    ui_propertiesDockWidget->hide();
 }
 
 void MainWindow::serverSettings()
@@ -887,10 +912,20 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
+    // Get to the home page first to make sure all toolbars are hidden
+    home();
+
+    // Let's save the ui state
+    QSettings settings;
+    settings.beginGroup("ui");
+    settings.setValue("maximized", this->isMaximized());
+    settings.setValue("windowState", this->saveState());
+    settings.endGroup();
+
     DBInterface::instance()->suspend(true);
     QFontDatabase::removeAllApplicationFonts();
     trayIcon->hide();
-    event->accept();
+    QMainWindow::closeEvent(event);
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *key)

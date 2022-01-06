@@ -92,7 +92,6 @@ private:
     AboutDialog *duqf_aboutDialog;
     QAction *duqf_actionShowHide;
     QSystemTrayIcon *trayIcon;
-    QSettings settings;
     SettingsWidget *settingsWidget;
     QLabel *title;
     QMenu *helpMenu;
