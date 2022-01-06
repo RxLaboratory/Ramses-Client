@@ -64,6 +64,7 @@ protected slots:
 
 private slots:
     void revealFolder(RamObject *obj);
+    void select(const QModelIndex &index);
 
 private:
     void setupUi();

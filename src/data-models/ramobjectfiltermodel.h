@@ -33,8 +33,6 @@ private:
     QString m_currentFilterUuid;
     QString m_searchString;
     RamObjectList *m_emptyList;
-
-
 };
 
 #endif // RAMOBJECTFILTERMODEL_H

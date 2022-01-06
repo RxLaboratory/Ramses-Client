@@ -86,7 +86,8 @@ void RamObjectList::objectChanged(RamObject *obj)
 {
     // Get row
     int row = objRow(obj);
-    if (row<0) return;
+    if (row < 0) return;
+    if (row >= rowCount()) return;
 
     QModelIndex index = createIndex(row,0);
     emit dataChanged(index, index, {});

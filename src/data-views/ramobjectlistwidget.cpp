@@ -174,9 +174,21 @@ void RamObjectListWidget::currentChanged(const QModelIndex &current, const QMode
     Q_UNUSED(previous)
 
     quintptr iptr = current.data(Qt::UserRole).toULongLong();
+    if (iptr == 0) return;
     RamObject *obj = reinterpret_cast<RamObject*>( iptr) ;
+    if (!obj) return;
+    //emit objectSelected(obj);
+}
+
+void RamObjectListWidget::select(const QModelIndex &index)
+{
+    quintptr iptr = index.data(Qt::UserRole).toULongLong();
+    if (iptr == 0) return;
+    RamObject *obj = reinterpret_cast<RamObject*>( iptr) ;
+    if (!obj) return;
     emit objectSelected(obj);
 }
+
 
 void RamObjectListWidget::rowMoved(int logicalIndex, int oldVisualIndex, int newVisualIndex)
 {
@@ -225,7 +237,9 @@ void RamObjectListWidget::select(RamObject *o)
         RamObject *obj = reinterpret_cast<RamObject*>( iptr );
         if (obj->is(o))
         {
-            this->setCurrentIndex( m_objectList->index(i, 0));
+            QModelIndex index = m_objectList->index(i, 0);
+            this->setCurrentIndex( index );
+            this->select( index );
         }
     }
 }
@@ -266,6 +280,8 @@ void RamObjectListWidget::connectEvents()
     connect(m_delegate, &RamObjectDelegate::folderObject, this, &RamObjectListWidget::revealFolder);
     // SORT
     connect( this->verticalHeader(), SIGNAL(sectionMoved(int,int,int)), this, SLOT(rowMoved(int,int,int)));
+    // SELECT
+    connect(this, SIGNAL(clicked(QModelIndex)), this, SLOT(select(QModelIndex)));
     // Unselect before filtering
     connect(m_objectList, SIGNAL(aboutToFilter()), this->selectionModel(), SLOT(clear()));
 }

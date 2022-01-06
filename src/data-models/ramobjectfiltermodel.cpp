@@ -31,6 +31,7 @@ bool RamObjectFilterModel::filterAcceptsRow(int sourceRow, const QModelIndex &so
     quintptr iptr = index.data(Qt::UserRole).toULongLong();
     if (iptr == 0) return false;
     RamObject *obj = reinterpret_cast<RamObject*>(iptr);
+    if (!obj) return false;
 
     bool filterOK = m_currentFilterUuid == "" || obj->filterUuid() == m_currentFilterUuid;
     if (!filterOK) return false;
