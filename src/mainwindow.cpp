@@ -632,6 +632,7 @@ void MainWindow::pageChanged(int i)
     actionAssets->setChecked(i == 6);
     actionShots->setChecked(i == 7);
     actionSchedule->setChecked(i == 8);
+    duqf_settingsButton->setChecked(i == 1);
 }
 
 void MainWindow::serverSettings()
