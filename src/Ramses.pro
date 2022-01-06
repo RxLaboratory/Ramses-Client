@@ -46,6 +46,7 @@ SOURCES += \
     data-views/ramstatisticstablewidget.cpp \
     data-views/ramstepheaderview.cpp \
     docks/filemanagerwidget.cpp \
+    duqf-widgets/duqfautosizetoolbutton.cpp \
     duqf-widgets/duqfcolorselector.cpp \
     duqf-widgets/duqfelidedlabel.cpp \
     duqf-widgets/duqfsearchedit.cpp \
@@ -195,6 +196,7 @@ HEADERS += \
     data-views/ramstepheaderview.h \
     dbistructures.h \
     docks/filemanagerwidget.h \
+    duqf-widgets/duqfautosizetoolbutton.h \
     duqf-widgets/duqfcolorselector.h \
     duqf-widgets/duqfelidedlabel.h \
     duqf-widgets/duqfsearchedit.h \

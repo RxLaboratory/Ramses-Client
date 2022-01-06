@@ -25,6 +25,7 @@
 #include "duqf-widgets/duqfupdatedialog.h"
 #include "duqf-widgets/duqfupdatesettingswidget.h"
 #include "duqf-widgets/duqfdocktitle.h"
+#include "duqf-widgets/duqfautosizetoolbutton.h"
 
 #include "serversettingswidget.h"
 #include "daemonsettingswidget.h"
@@ -103,8 +104,8 @@ private:
     DuQFDockTitle *ui_propertiesTitle;
 
     QMenu *ui_userMenu;
-    QToolButton *ui_userButton;
-    QToolButton *ui_networkButton;
+    DuQFAutoSizeToolButton *ui_userButton;
+    DuQFAutoSizeToolButton *ui_networkButton;
     QToolButton *ui_refreshButton;
     QToolButton *ui_consoleButton;
     int m_currentPageIndex = 0;

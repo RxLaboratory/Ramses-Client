@@ -1178,7 +1178,7 @@ bool DBInterface::waitPing()
     return true;
 }
 
-QString DBInterface::getServerAddress()
+QString DBInterface::serverAddress()
 {
     QSettings settings;
     //Get server address
@@ -1214,11 +1214,11 @@ void DBInterface::request(QString query, QStringList args, bool wait)
     Daemon::instance()->suspend();
     QTimer::singleShot(5000, Daemon::instance(), &Daemon::resume);
 
-    QString serverAddress = getServerAddress();
+    QString address = serverAddress();
     QString protocol = getProtocol();
     if (protocol == "") return;
 
-    QUrl url(protocol % serverAddress % "?" % query);
+    QUrl url(protocol % address % "?" % query);
     QNetworkRequest request;
     request.setUrl(url);
 
@@ -1244,11 +1244,11 @@ void DBInterface::request(QString query, QJsonObject body, bool wait)
     Daemon::instance()->suspend();
     QTimer::singleShot(5000, Daemon::instance(), &Daemon::resume);
 
-    QString serverAddress = getServerAddress();
+    QString address = serverAddress();
     QString protocol = getProtocol();
     if (protocol == "") return;
 
-    QUrl url(protocol % serverAddress % "?" % query);
+    QUrl url(protocol % address % "?" % query);
     QNetworkRequest request;
     request.setUrl(url);
 

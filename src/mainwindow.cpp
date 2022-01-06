@@ -58,10 +58,10 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
 
     mainStatusBar->addPermanentWidget(new DuQFLogToolButton(this));
 
-    ui_networkButton = new QToolButton(this);
+    ui_networkButton = new DuQFAutoSizeToolButton(this);
     ui_networkButton->setToolButtonStyle(Qt::ToolButtonTextOnly);
-    ui_networkButton->setText("Offline");
-    ui_networkButton->setMinimumWidth(50);
+    ui_networkButton->setText(DBInterface::instance()->serverAddress() + " (offline)");
+    //ui_networkButton->setMinimumWidth(100);
     mainStatusBar->addPermanentWidget(ui_networkButton);
 
     ui_userMenu = new QMenu();
@@ -72,10 +72,10 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     actionUserProfile->setVisible(false);
     ui_userMenu->addAction(actionLogOut);
     actionLogOut->setVisible(false);
-    ui_userButton = new QToolButton();
+    ui_userButton = new DuQFAutoSizeToolButton(this);
     ui_userButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     ui_userButton->setText("Guest");
-    ui_userButton->setMinimumWidth(75);
+    //ui_userButton->setMinimumWidth(75);
     ui_userButton->setMenu(ui_userMenu);
     ui_userButton->setPopupMode(QToolButton::InstantPopup);
     mainStatusBar->addPermanentWidget(ui_userButton);
@@ -819,16 +819,17 @@ void MainWindow::freezeUI(bool f)
 
 void MainWindow::dbiConnectionStatusChanged(NetworkUtils::NetworkStatus s)
 {
+    QString address =  DBInterface::instance()->serverAddress();
     if (s == NetworkUtils::Online)
     {
         ui_refreshButton->show();
-        ui_networkButton->setText("Online");
+        ui_networkButton->setText(address);
     }
-    else if (s == NetworkUtils::Connecting) ui_networkButton->setText("Connecting...");
+    else if (s == NetworkUtils::Connecting) ui_networkButton->setText("Connecting to " + address);
     else if (s == NetworkUtils::Offline)
     {
         ui_refreshButton->hide();
-        ui_networkButton->setText("Offline");
+        ui_networkButton->setText(address + " (offline)");
     }
 }
 

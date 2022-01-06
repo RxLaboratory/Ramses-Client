@@ -40,6 +40,7 @@ public:
     void setOnline();
     bool isSuspended() const;
     void init();
+    QString serverAddress();
     //users
     void login(QString username, QString password);
     void getUsers();
@@ -211,7 +212,6 @@ private:
     void queueRequest(QString query, QNetworkRequest request, QString body);
     QString buildFormEncodedString(QStringList args);
     bool waitPing();
-    QString getServerAddress();
     QString getProtocol();
 
     /**
