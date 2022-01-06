@@ -3,7 +3,7 @@
 
 #define VERSION_MAJOR 0
 #define VERSION_MINOR 2
-#define VERSION_BUILD 8
+#define VERSION_BUILD 9
 #define VERSION_SUFFIX "Alpha"
 
 #define STRINGIFY_VERSION(A, B, C) CONCAT(A, B, C )
@@ -32,7 +32,7 @@
 #define STR_PRODUCTNAME "Ramses - Rx Asset Management System"
 #define STR_PRODUCTDESCRIPTION "Client application for the Rx Asset and production management system for motion pictures production."
 
-#define STR_COMPANYDOMAIN "rainboxlab.org"
+#define STR_COMPANYDOMAIN "rxlaboratory.org"
 
 #define URL_CHAT "http://chat.rxlab.info"
 #define URL_FORUM ""
