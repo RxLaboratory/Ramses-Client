@@ -56,6 +56,8 @@ private:
     QPixmap m_editIcon;
     QPixmap m_historyIcon;
     QPixmap m_folderIcon;
+    QPixmap m_historyDarkIcon;
+    QPixmap m_folderDarkIcon;
 
     // Settings
     bool m_editable = false;
@@ -66,17 +68,12 @@ private:
     bool m_details = false;
 
     // Events
-    bool m_editButtonPressed = false;
-    bool m_editButtonHover = false;
     bool m_historyButtonPressed = false;
     bool m_cellPressed = false;
-    bool m_historyButtonHover = false;
-    bool m_folderButtonHover = false;
     bool m_folderButtonPressed = false;
-    bool m_cellHover = false;
+    QModelIndex m_historyButtonHover = QModelIndex();
+    QModelIndex m_folderButtonHover = QModelIndex();
 
-    // Utils
-    bool canEdit(const QModelIndex &index) const;
 
     // drawing specific items
     void drawMore(QPainter *painter, QRect rect, QPen pen) const;
