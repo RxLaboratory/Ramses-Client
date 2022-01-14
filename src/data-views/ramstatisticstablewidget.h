@@ -10,7 +10,6 @@
 
 class RamStatisticsTableWidget : public QTableView
 {
-    Q_OBJECT
 public:
     RamStatisticsTableWidget(QWidget *parent = nullptr);
 

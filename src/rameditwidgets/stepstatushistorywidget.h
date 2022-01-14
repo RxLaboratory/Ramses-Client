@@ -10,15 +10,10 @@
 
 class StepStatusHistoryWidget : public QWidget
 {
-    Q_OBJECT
 public:
     explicit StepStatusHistoryWidget(QWidget *parent = nullptr);
     explicit StepStatusHistoryWidget(RamStepStatusHistory *history, QWidget *parent = nullptr);
     void setHistory(RamStepStatusHistory *history);
-
-signals:
-
-private slots:
 
 private:
     void setupUi();

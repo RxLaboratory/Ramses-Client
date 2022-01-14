@@ -10,7 +10,6 @@
  */
 class RamItemTableListProxy : public QIdentityProxyModel
 {
-    Q_OBJECT
 public:
     RamItemTableListProxy(QObject *parent = nullptr);
 

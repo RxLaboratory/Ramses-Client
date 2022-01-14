@@ -6,7 +6,6 @@
 
 class DuQFAutoSizeToolButton : public QToolButton
 {
-    Q_OBJECT
 public:
     DuQFAutoSizeToolButton(QWidget *parent = nullptr);
 

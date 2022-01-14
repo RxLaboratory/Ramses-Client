@@ -7,7 +7,6 @@
 
 class DuQFElidedLabel : public QLabel
 {
-    Q_OBJECT
 public:
     DuQFElidedLabel(QWidget *parent = nullptr);
 

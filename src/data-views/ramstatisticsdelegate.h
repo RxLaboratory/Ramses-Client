@@ -9,7 +9,6 @@
 
 class RamStatisticsDelegate : public QStyledItemDelegate
 {
-    Q_OBJECT
 public:
     explicit RamStatisticsDelegate(QObject *parent = nullptr);
     void paint(QPainter *painter, const QStyleOptionViewItem &option,

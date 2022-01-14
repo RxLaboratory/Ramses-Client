@@ -7,7 +7,6 @@
 
 class AutoSelectSpinBox : public QSpinBox
 {
-    Q_OBJECT
 public:
     AutoSelectSpinBox(QWidget *parent = nullptr);
 

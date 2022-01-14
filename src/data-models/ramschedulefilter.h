@@ -8,7 +8,6 @@
 
 class RamScheduleFilter : public QSortFilterProxyModel
 {
-    Q_OBJECT
 public:
     explicit RamScheduleFilter(QObject *parent = nullptr);
     void setList(QAbstractItemModel *list);

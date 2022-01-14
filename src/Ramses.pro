@@ -21,6 +21,10 @@ CONFIG += c++11
 # In order to do so, uncomment the following line.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
+# Try to speed up build with precompiled headers
+PRECOMPILED_HEADER = pch/pch.h
+CONFIG += precompile_header
+
 INCLUDEPATH += rameditwidgets \
     settingswidgets \
     smallwidgets \

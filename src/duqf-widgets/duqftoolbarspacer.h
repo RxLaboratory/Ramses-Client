@@ -7,7 +7,6 @@
 
 class DuQFToolBarSpacer : public QWidget
 {
-    Q_OBJECT
 public:
     explicit DuQFToolBarSpacer(QWidget *parent = nullptr);
 

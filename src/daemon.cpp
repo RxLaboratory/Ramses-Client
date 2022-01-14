@@ -868,3 +868,4 @@ QJsonObject Daemon::statusToJson(RamStatus *s)
     status.insert("version", s->version() );
     return status;
 }
+

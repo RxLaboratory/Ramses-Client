@@ -7,7 +7,6 @@
 
 class DuQFLoggingTextEdit : public QTextEdit
 {
-    Q_OBJECT
 public:
     DuQFLoggingTextEdit(QWidget *parent = nullptr);
     DuQFLoggingTextEdit(DuQFLoggerObject *o, QWidget *parent = nullptr);

@@ -7,7 +7,6 @@
 
 class ProgressBar : public QProgressBar
 {
-    Q_OBJECT
 public:
     ProgressBar(QWidget *parent = nullptr);
 };

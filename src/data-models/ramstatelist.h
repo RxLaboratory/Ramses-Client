@@ -10,7 +10,6 @@
  */
 class RamStateList : public RamObjectList
 {
-    Q_OBJECT
 public:
     explicit RamStateList(QObject *parent = nullptr);
 

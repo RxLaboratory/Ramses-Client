@@ -8,7 +8,6 @@
 
 class AutoSelectLineEdit : public QLineEdit
 {
-    Q_OBJECT
 public:
     AutoSelectLineEdit(QWidget *parent = nullptr);
 

@@ -11,7 +11,6 @@
  */
 class RamObjectFilterList : public QSortFilterProxyModel
 {
-    Q_OBJECT
 public:
     RamObjectFilterList(QObject *parent = nullptr);
     void setList(RamObjectList *list);
