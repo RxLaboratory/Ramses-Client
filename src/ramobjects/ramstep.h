@@ -6,6 +6,7 @@
 #include "ramobject.h"
 #include "ramuser.h"
 #include "ramapplication.h"
+#include "ramworkingfolder.h"
 #include "data-models/ramobjectlist.h"
 
 class RamAssetGroup;
@@ -50,8 +51,7 @@ public:
     RamObjectList *applications() const;
 
     void openFile(QString filePath) const;
-    QStringList publishedTemplates() const;
-    QString templateFile(QString templateFileName) const;
+    QList<RamWorkingFolder> templateWorkingFolders() const;
 
     QList<RamObject *> inputFileTypes();
     QList<RamObject *> outputFileTypes();

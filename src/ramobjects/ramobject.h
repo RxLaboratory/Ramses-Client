@@ -57,11 +57,6 @@ public:
                    TrashFolder};
     Q_ENUM( SubFolder )
 
-    enum File {
-        MetaDataFile
-    };
-    Q_ENUM( File )
-
     enum UserRole { Admin = 3,
                     ProjectAdmin = 2,
                     Lead = 1,
@@ -102,7 +97,6 @@ public:
     void revealFolder(SubFolder subFolder = NoFolder);
 
     static QString subFolderName(SubFolder folder);
-    static QString fileName(File file);
 
     QString filterUuid() const;
 

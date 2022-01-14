@@ -1,6 +1,12 @@
 #include "ramnamemanager.h"
 #include "ramses.h"
 
+// Constants
+const QString RamNameManager::ShotType = "S";
+const QString RamNameManager::AssetType = "A";
+const QString RamNameManager::GeneralType = "G";
+const QString RamNameManager::MetaDataFileName = "_ramses_data.json";
+
 RamNameManager::RamNameManager()
 {
     init();

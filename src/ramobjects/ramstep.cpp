@@ -123,61 +123,22 @@ void RamStep::openFile(QString filePath) const
     QDesktopServices::openUrl(QUrl("file:///" + filePath));
 }
 
-QStringList RamStep::publishedTemplates() const
+QList<RamWorkingFolder> RamStep::templateWorkingFolders() const
 {
-    // Get the published folders
-    QStringList folders = listFolders(TemplatesFolder, subFolderName(PublishFolder));
-    QString publishPath = path(TemplatesFolder, subFolderName(PublishFolder));
-    QStringList resources;
-    QStringList templates;
-    for (int i = 0; i < folders.count(); i++)
+    QString templatesPath = path(TemplatesFolder);
+    QDir dir(templatesPath);
+    QStringList subdirs = dir.entryList( QDir::Dirs | QDir::NoDotAndDotDot );
+
+    RamNameManager nm;
+    QList<RamWorkingFolder> templateFolders;
+    foreach (QString subdir, subdirs)
     {
-        QString title = folders.at(i);
-        QStringList splitTitle = title.split("_");
-        QString resource = "";
-        if (splitTitle.count() == 3) resource = splitTitle[0];
-        if (resources.contains(resource)) continue;
-
-        resources << resource;
-
-        QDir dir( publishPath + "/" + title );
-        QStringList files = dir.entryList( QDir::Files );
-        for (int j = 0; j < files.count(); j++)
-        {
-            QString f = files.at(j);
-            qDebug() << f;
-            qDebug() << fileName(MetaDataFile);
-            if (f == fileName(MetaDataFile)) continue;
-            templates << publishPath + "/" + title + "/" + files.at(j);
-        }
-
-    }
-    return templates;
-}
-
-QString RamStep::templateFile(QString templateFileName) const
-{
-    if (templateFileName == "")
-    {
-        //Get the default one
-        RamNameManager nm;
-        nm.setProject(project()->shortName() );
-        nm.setType( "G" );
-        nm.setShortName( "Template" );
-        nm.setStep( m_shortName );
-        QDir templatesDir = QDir(path(TemplatesFolder) + "/" + subFolderName(PublishFolder));
-        if(!templatesDir.exists()) return "";
-        QStringList files = templatesDir.entryList(QStringList( nm.fileName() + "*" ));
-        if (files.count() == 0) return "";
-        templateFileName = files.at(0);
+        // check name
+        if (nm.setFileName(subdir))
+            templateFolders.append(RamWorkingFolder( templatesPath + "/" + subdir ));
     }
 
-    QString filePath = QDir(
-                path( TemplatesFolder ) + "/" + subFolderName(PublishFolder)
-                ).filePath(templateFileName);
-
-    if (QFileInfo::exists(filePath)) return filePath;
-    return "";
+    return templateFolders;
 }
 
 void RamStep::applicationAssigned(const QModelIndex &parent, int first, int last)

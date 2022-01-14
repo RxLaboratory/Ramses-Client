@@ -284,15 +284,6 @@ QString RamObject::subFolderName(RamObject::SubFolder folder)
     return "";
 }
 
-QString RamObject::fileName(File file)
-{
-    switch(file)
-    {
-    case MetaDataFile: return "_ramses_data.json";
-    }
-    return "";
-}
-
 QString RamObject::filterUuid() const
 {
     return m_filterUuid;

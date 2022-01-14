@@ -149,15 +149,26 @@ void StatusEditWidget::setObject(RamObject *statusObj)
     }
 
     // List templates
-    QStringList templateFiles = status->step()->publishedTemplates();
-    ui_createMainFileButton->setEnabled( templateFiles.count() > 0);
-    foreach(QString file, templateFiles)
+    QList<RamWorkingFolder> templateFolders = status->step()->templateWorkingFolders();
+
+    RamNameManager nm;
+    foreach(RamWorkingFolder templateFolder, templateFolders)
     {
-        QFileInfo fileInfo( file );
-        QAction *action = new QAction( fileInfo.baseName() );
+        // Check if there's a file with the default resource
+        QString file = templateFolder.defaultWorkingFile();
+        if (file == "") continue;
+        // enable the template button if we've found at least one file
+        ui_createMainFileButton->setEnabled(true);
+
+        nm.setFileName(file);
+        QString label = nm.shortName();
+        if (!templateFolder.isPublished()) label = label + " [Not published]";
+
+        QAction *action = new QAction( label );
         action->setData( file );
+        action->setToolTip( "Create from template:\n" + file );
         ui_createFromTemplateMenu->addAction(action);
-        connect(action,SIGNAL(triggered()), this, SLOT(createFromTemplate()));
+        connect(action, SIGNAL(triggered()), this, SLOT(createFromTemplate()));
     }
 
     // Estimation
@@ -331,7 +342,7 @@ void StatusEditWidget::createFromTemplate()
 
     DuQFLogger::instance()->log("Creating " + action->text() + "...");
 
-    QString templateFile = m_status->createFileFromTemplate( filePath );
+    QString templateFile = m_status->createFileFromResource( filePath );
 
     DuQFLogger::instance()->log("Opening " + templateFile + "...");
 

@@ -41,6 +41,7 @@ public:
 
     QStringList mainFiles() const;
     QString createFileFromTemplate(QString filePath) const;
+    QString createFileFromResource(QString filePath) const;
 
     int version() const;
     QStringList versionFiles() const;

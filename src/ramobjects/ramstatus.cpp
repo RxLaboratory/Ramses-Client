@@ -131,6 +131,28 @@ QString RamStatus::createFileFromTemplate(QString filePath) const
      return "";
 }
 
+QString RamStatus::createFileFromResource(QString filePath) const
+{
+    // Get infos
+    RamNameManager nm;
+    nm.setFileName(filePath);
+
+    RamWorkingFolder wf( QFileInfo(filePath).path() );
+
+    // Get the latest publish if any
+    QStringList templateFiles = wf.publishedFiles(nm.resource());
+    foreach (QString tFile, templateFiles)
+    {
+        // Check the file extension, which should be the same
+        if ( QFileInfo(tFile).suffix() == nm.extension()) return createFileFromTemplate(tFile);
+    }
+    // Try with the first published file
+    if (templateFiles.count() > 0) return createFileFromTemplate(templateFiles.at(0));
+
+    // Use the given file path
+    return createFileFromTemplate( filePath );
+}
+
 int RamStatus::version() const
 {
     return m_version;

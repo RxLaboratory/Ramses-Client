@@ -96,6 +96,7 @@ SOURCES += \
     ramobjects/rampipefile.cpp \
     ramobjects/ramscheduleentry.cpp \
     ramobjects/ramsequence.cpp \
+    ramobjects/ramworkingfolder.cpp \
     settingswidgets/daemonsettingswidget.cpp \
     dbinterface.cpp \
     dbisuspender.cpp \
@@ -241,6 +242,7 @@ HEADERS += \
     ramobjects/rampipefile.h \
     ramobjects/ramscheduleentry.h \
     ramobjects/ramsequence.h \
+    ramobjects/ramworkingfolder.h \
     settingswidgets/daemonsettingswidget.h \
     dbinterface.h \
     dbisuspender.h \

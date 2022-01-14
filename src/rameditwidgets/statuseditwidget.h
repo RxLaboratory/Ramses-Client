@@ -21,9 +21,6 @@
 
 /**
  * @brief The StatusEditWidget class is used to edit a RamStatus.
- * IT DOES NOT update the status by itself (so it can be used either to edit an existing one, or get a new status).
- * The 'statusUpdated' signal is sent when the status needs to be updated.
- * The 'setStatus' method is used to show an existing status information, but the status itself won't be changed.
  */
 class StatusEditWidget : public ObjectEditWidget
 {

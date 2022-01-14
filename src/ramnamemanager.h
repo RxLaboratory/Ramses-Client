@@ -8,8 +8,21 @@ class RamNameManager
 public:
     RamNameManager();
 
+    /**
+     * @brief originalFileName Gets the filname as it was when set with setFileName()
+     * @return
+     */
     QString originalFileName() const;
+    /**
+     * @brief fileName Gets the filename constructed with the parameters
+     * @return
+     */
     QString fileName() const;
+    /**
+     * @brief setFileName Sets a path or name to init the manager
+     * @param name
+     * @return
+     */
     bool setFileName(const QString &name);
 
     // Get results
@@ -20,6 +33,10 @@ public:
     QString state() const;
     QString resource() const;
     int version() const;
+    /**
+     * @brief extension The extension without the leading "."
+     * @return
+     */
     QString extension() const;
 
     // Setters
@@ -32,16 +49,20 @@ public:
     void setVersion(const int &version);
     void setExtension(const QString &extension);
 
+    // Utils - Constants
+    static const QString ShotType;
+    static const QString ShotTemplateType;
+    static const QString AssetType;
+    static const QString AssetTemplateType;
+    static const QString GeneralType;
+    static const QString GeneralTemplateType;
+    static const QString MetaDataFileName;
+
 private:
     void init();
 
     // Regexes
     QRegularExpression m_reName;
-
-    // Utils - Constants
-    QString ShotType = "S";
-    QString AssetType = "A";
-    QString GeneralType = "G";
 
     QString m_fileName;
 
