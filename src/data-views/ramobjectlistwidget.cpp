@@ -189,7 +189,6 @@ void RamObjectListWidget::select(const QModelIndex &index)
     emit objectSelected(obj);
 }
 
-
 void RamObjectListWidget::rowMoved(int logicalIndex, int oldVisualIndex, int newVisualIndex)
 {
     QSignalBlocker b(this->verticalHeader());

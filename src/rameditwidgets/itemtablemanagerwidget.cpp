@@ -1014,7 +1014,6 @@ void ItemTableManagerWidget::connectEvents()
     connect(ui_pasteComment, SIGNAL(triggered()), this, SLOT(pasteComment()));
     // cell buttons
     connect(ui_table, SIGNAL(editObject(RamObject*)), this, SLOT(editObject(RamObject*)));
-    connect(ui_table, SIGNAL(objectSelected(RamObject*)), this, SLOT(editObject(RamObject*)));
     connect(ui_table, SIGNAL(historyObject(RamObject*)), this, SLOT(historyObject(RamObject*)));
     // search
     connect(ui_searchEdit, SIGNAL(changing(QString)), ui_table, SLOT(search(QString)));

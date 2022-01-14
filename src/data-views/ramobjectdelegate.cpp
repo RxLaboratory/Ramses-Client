@@ -751,6 +751,8 @@ bool RamObjectDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, co
             m_folderButtonPressed = true;
             return true;
         }
+
+        m_cellPressed = true;
         break;
     }
     case QEvent::MouseMove:
@@ -771,6 +773,11 @@ bool RamObjectDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, co
             return m_folderButtonHover = true;
         else if (m_folderButtonHover)
             return !(m_folderButtonHover = false);
+
+        if (bgRect.contains(e->pos()))
+            return m_cellHover = true;
+        else if (m_cellHover)
+            return !(m_cellHover = false);
 
         return QStyledItemDelegate::editorEvent( event, model, option, index );
     }
@@ -808,6 +815,13 @@ bool RamObjectDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, co
             return true;
         }
 
+        if (bgRect.contains(e->pos()))
+        {
+            emit editObject(o);
+        }
+        m_cellPressed = false;
+
+        return true;
         break;
     }
     default:

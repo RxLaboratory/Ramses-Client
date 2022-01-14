@@ -69,9 +69,11 @@ private:
     bool m_editButtonPressed = false;
     bool m_editButtonHover = false;
     bool m_historyButtonPressed = false;
+    bool m_cellPressed = false;
     bool m_historyButtonHover = false;
     bool m_folderButtonHover = false;
     bool m_folderButtonPressed = false;
+    bool m_cellHover = false;
 
     // Utils
     bool canEdit(const QModelIndex &index) const;
