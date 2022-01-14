@@ -2,7 +2,6 @@
 
 SequenceListManagerWidget::SequenceListManagerWidget(QWidget *parent):
     ObjectListManagerWidget(
-        new SequenceEditWidget(parent),
         "Sequences",
         QIcon(":icons/sequence"),
         parent)
@@ -22,7 +21,7 @@ RamObject *SequenceListManagerWidget::createObject()
                 project,
                 "New Sequence");
     project->sequences()->append(s);
-    editObject(s);
+    s->edit();
     return s;
 }
 

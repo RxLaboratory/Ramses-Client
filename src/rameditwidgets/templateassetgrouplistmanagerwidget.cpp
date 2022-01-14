@@ -3,7 +3,6 @@
 TemplateAssetGroupListManagerWidget::TemplateAssetGroupListManagerWidget(QWidget *parent) :
     ObjectListManagerWidget(
         Ramses::instance()->templateAssetGroups(),
-        new TemplateAssetGroupEditWidget(),
         "Template asset groups",
         QIcon(":icons/asset-group"),
         parent )
@@ -17,6 +16,6 @@ RamObject *TemplateAssetGroupListManagerWidget::createObject()
                 "NEW",
                 "New Template group");
     Ramses::instance()->templateAssetGroups()->append(ag);
-    editObject(ag);
+    ag->edit();
     return ag;
 }

@@ -3,7 +3,6 @@
 StateListManagerWidget::StateListManagerWidget(QWidget *parent) :
     ObjectListManagerWidget(
         Ramses::instance()->states(),
-        new StateEditWidget(),
         "States",
         QIcon(":icons/state-l"),
         parent)
@@ -20,7 +19,7 @@ RamObject *StateListManagerWidget::createObject()
                 "NEW",
                 "New state");
     Ramses::instance()->states()->append(state);
-    editObject(state);
+    state->edit();
     return state;
 }
 

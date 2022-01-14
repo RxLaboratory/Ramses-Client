@@ -170,7 +170,7 @@ bool ObjectEditWidget::eventFilter(QObject *obj, QEvent *event)
 
 void ObjectEditWidget::setupUi()
 {
-    this->setMaximumWidth(500);
+    //this->setMaximumWidth(500);
 
     QWidget *dummy = new QWidget(this);
     dummy->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);

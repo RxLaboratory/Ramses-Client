@@ -2,6 +2,7 @@
 #include "ramproject.h"
 #include "ramses.h"
 #include "stepeditwidget.h"
+#include "templatestepeditwidget.h"
 #include "ramassetgroup.h"
 #include "ramscheduleentry.h"
 
@@ -417,9 +418,14 @@ void RamStep::edit(bool show)
 {
     if (!m_editReady)
     {
-        StepEditWidget *w = new StepEditWidget(this);
+        ObjectEditWidget *w;
+        if (this->isTemplate())
+            w = new TemplateStepEditWidget(this);
+        else
+            w = new StepEditWidget(this);
         setEditWidget(w);
         m_editReady = true;
+
     }
     if (show) showEdit();
 }

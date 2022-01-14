@@ -3,7 +3,6 @@
 ProjectListManagerWidget::ProjectListManagerWidget(QWidget *parent) :
     ObjectListManagerWidget(
         Ramses::instance()->projects(),
-        new ProjectEditWidget(),
         "Projects",
         QIcon(":icons/project"),
         parent )
@@ -18,7 +17,7 @@ RamObject *ProjectListManagerWidget::createObject()
                 "New Project"
                 );
     Ramses::instance()->projects()->append(project);
-    editObject(project);
+    project->edit();
     return project;
 }
 

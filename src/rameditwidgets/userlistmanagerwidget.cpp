@@ -3,7 +3,6 @@
 UserListManagerWidget::UserListManagerWidget(QWidget *parent) :
     ObjectListManagerWidget(
         Ramses::instance()->users(),
-        new UserEditWidget(),
         "Users",
         QIcon(":icons/user"),
         parent )
@@ -19,8 +18,7 @@ RamObject *UserListManagerWidget::createObject()
     RamUser *user = new RamUser("NEW","J-Doe");
 
     Ramses::instance()->users()->append(user);
-
-    editObject(user);
+    user->edit();
     return user;
 }
 

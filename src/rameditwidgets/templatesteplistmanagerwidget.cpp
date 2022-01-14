@@ -3,7 +3,6 @@
 TemplateStepListManagerWidget::TemplateStepListManagerWidget(QWidget *parent) :
     ObjectListManagerWidget(
         Ramses::instance()->templateSteps(),
-        new TemplateStepEditWidget(),
         "Template steps",
         QIcon(":icons/step"),
         parent )
@@ -20,6 +19,6 @@ RamObject *TemplateStepListManagerWidget::createObject()
 
     Ramses::instance()->templateSteps()->append(ts);
 
-    editObject(ts);
+    ts->edit();
     return ts;
 }

@@ -1,6 +1,7 @@
 #include "ramproject.h"
 
 #include "ramses.h"
+#include "projecteditwidget.h"
 
 RamProject::RamProject(QString shortName, QString name, QString uuid):
     RamObject(shortName, name, uuid, Ramses::instance())
@@ -192,6 +193,17 @@ void RamProject::updatePath()
 void RamProject::removeFromDB()
 {
     m_dbi->removeProject(m_uuid);
+}
+
+void RamProject::edit(bool show)
+{
+    if (!m_editReady)
+    {
+        ProjectEditWidget *w = new ProjectEditWidget(this);
+        setEditWidget(w);
+        m_editReady = true;
+    }
+    if (show) showEdit();
 }
 
 void RamProject::computeEstimation()

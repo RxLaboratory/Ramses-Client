@@ -1,19 +1,17 @@
 #include "objectlistmanagerwidget.h"
 
-ObjectListManagerWidget::ObjectListManagerWidget(ObjectEditWidget *editWidget, QString title, QIcon icon, QWidget *parent) :
+ObjectListManagerWidget::ObjectListManagerWidget(QString title, QIcon icon, QWidget *parent) :
     QWidget(parent)
 {
-    m_editWidget = editWidget;
     setupUi(title,icon);
     connectEvents();
     m_listEditWidget->setTitle(title);
     clear();
 }
 
-ObjectListManagerWidget::ObjectListManagerWidget(RamObjectList *objectList, ObjectEditWidget *editWidget, QString title, QIcon icon, QWidget *parent) :
+ObjectListManagerWidget::ObjectListManagerWidget(RamObjectList *objectList, QString title, QIcon icon, QWidget *parent) :
     QWidget(parent)
 {
-    m_editWidget = editWidget;
     setupUi(title,icon);
     connectEvents();
     m_listEditWidget->setTitle(title);
@@ -40,29 +38,11 @@ void ObjectListManagerWidget::setupUi(QString title, QIcon icon)
     QHBoxLayout *lay = new QHBoxLayout(this);
     lay->setContentsMargins(3,0,0,0);
 
-    m_splitter = new QSplitter(this);
-    m_splitter->setOrientation(Qt::Horizontal);
-    m_splitter->setHandleWidth(9);
-
     m_listEditWidget = new ObjectListEditWidget( false, RamUser::Admin, this);
-    m_splitter->addWidget(m_listEditWidget);
+    m_listEditWidget->setMaximumWidth(500);
+    lay->addWidget(m_listEditWidget);
 
-    QWidget *eWidget = new QWidget(this);
-    QHBoxLayout *editLayout = new QHBoxLayout(eWidget);
-
-    editLayout->addStretch();
-
-    editLayout->addWidget(m_editWidget);
-
-    editLayout->addStretch();
-
-    editLayout->setStretch(0,20);
-    editLayout->setStretch(1,80);
-    editLayout->setStretch(2,20);
-
-    m_splitter->addWidget(eWidget);
-
-    lay->addWidget(m_splitter);
+    lay->addStretch();
 
     // Menu
     QMenu *itemMenu = new QMenu();
@@ -86,7 +66,6 @@ void ObjectListManagerWidget::setupUi(QString title, QIcon icon)
 
 void ObjectListManagerWidget::connectEvents()
 {
-    connect( m_listEditWidget, SIGNAL(objectSelected(RamObject*)), m_editWidget, SLOT(setObject(RamObject*)) );
     connect( m_listEditWidget, SIGNAL(add()), this, SLOT(createObject()) );
     connect( ui_createAction, SIGNAL(triggered()), this, SLOT(createEditObject()) );
     connect( ui_createShortcut, SIGNAL(activated()), this, SLOT(createObject()));
@@ -98,21 +77,9 @@ QString ObjectListManagerWidget::currentFilter() const
     return m_listEditWidget->currentFilterUuid();
 }
 
-void ObjectListManagerWidget::editObject(RamObject *o)
-{
-    m_listEditWidget->select(o);
-    m_editWidget->setObject(o);
-}
-
 QToolButton *ObjectListManagerWidget::menuButton()
 {
     return ui_itemButton;
-}
-
-void ObjectListManagerWidget::showEvent(QShowEvent *event)
-{
-    m_splitter->setSizes(QList<int>() << 400 << 1000);
-    QWidget::showEvent(event);
 }
 
 void ObjectListManagerWidget::createEditObject()

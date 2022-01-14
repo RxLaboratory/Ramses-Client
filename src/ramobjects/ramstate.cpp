@@ -1,6 +1,7 @@
 #include "ramstate.h"
 
 #include "ramses.h"
+#include "stateeditwidget.h"
 
 RamState::RamState(QString shortName, QString name, QString uuid) :
     RamObject(shortName, name, uuid, Ramses::instance())
@@ -55,6 +56,17 @@ void RamState::update()
 void RamState::removeFromDB()
 {
     m_dbi->removeState(m_uuid);
+}
+
+void RamState::edit(bool show)
+{
+    if (!m_editReady)
+    {
+        StateEditWidget *w = new StateEditWidget(this);
+        setEditWidget(w);
+        m_editReady = true;
+    }
+    if (show) showEdit();
 }
 
 RamState *RamState::state(QString uuid)

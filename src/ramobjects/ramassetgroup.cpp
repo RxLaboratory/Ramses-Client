@@ -3,6 +3,7 @@
 #include "ramses.h"
 
 #include "assetgroupeditwidget.h"
+#include "templateassetgroupeditwidget.h"
 
 RamAssetGroup::RamAssetGroup(QString shortName, QString name, QString uuid) :
     RamObject(shortName, name, uuid, Ramses::instance())
@@ -77,7 +78,11 @@ void RamAssetGroup::edit(bool show)
 {
     if (!m_editReady)
     {
-        AssetGroupEditWidget *w = new AssetGroupEditWidget(this);
+        ObjectEditWidget *w;
+        if (this->isTemplate())
+            w = new TemplateAssetGroupEditWidget(this);
+        else
+            w = new AssetGroupEditWidget(this);
         setEditWidget(w);
         m_editReady = true;
     }

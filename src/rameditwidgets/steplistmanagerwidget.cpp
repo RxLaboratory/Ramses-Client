@@ -2,7 +2,6 @@
 
 StepListManagerWidget::StepListManagerWidget(QWidget *parent):
 ObjectListManagerWidget(
-    new StepEditWidget(),
     "Steps",
     QIcon(":icons/step"),
     parent )
@@ -36,7 +35,7 @@ RamObject *StepListManagerWidget::createObject()
                 project
                 );
     project->steps()->append(step);
-    editObject(step);
+    step->edit();
     return step;
 }
 
@@ -56,5 +55,5 @@ void StepListManagerWidget::createFromTemplate(RamObject *stepObj)
     if (!templateStep) return;
     RamStep *step = templateStep->createFromTemplate(project);
     project->steps()->append(step);
-    editObject(step);
+    step->edit();
 }

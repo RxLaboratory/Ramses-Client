@@ -88,6 +88,7 @@ public slots:
     void update() override;
     void updatePath();
     virtual void removeFromDB() override;
+    virtual void edit(bool show = true) override;
 
     void computeEstimation();
 

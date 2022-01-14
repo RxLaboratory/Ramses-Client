@@ -2,7 +2,6 @@
 
 AssetGroupListManagerWidget::AssetGroupListManagerWidget(QWidget *parent):
     ObjectListManagerWidget(
-        new AssetGroupEditWidget(parent),
         "Asset groups",
         QIcon(":icons/asset-group"),
         parent)
@@ -33,7 +32,7 @@ RamObject *AssetGroupListManagerWidget::createObject()
                 project,
                 "New Asset Group");
     project->assetGroups()->append(assetGroup);
-    editObject(assetGroup);
+    assetGroup->edit();
     return assetGroup;
 }
 
@@ -53,5 +52,5 @@ void AssetGroupListManagerWidget::createFromTemplate(RamObject *obj)
     if (!templateAG) return;
     RamAssetGroup *ag = templateAG->createFromTemplate(project);
     project->assetGroups()->append(ag);
-    editObject(ag);
+    ag->edit();
 }

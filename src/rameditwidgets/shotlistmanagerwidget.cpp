@@ -2,7 +2,6 @@
 
 ShotListManagerWidget::ShotListManagerWidget(QWidget *parent):
     ObjectListManagerWidget(
-        new ShotEditWidget(),
         "Shots",
         QIcon(":icons/shot"),
         parent)
@@ -46,7 +45,7 @@ RamObject *ShotListManagerWidget::createObject()
                 );
 
     project->shots()->append(shot);
-    editObject(shot);
+    shot->edit();
     return shot;
 }
 

@@ -2,7 +2,6 @@
 
 AssetListManagerWidget::AssetListManagerWidget(QWidget *parent):
     ObjectListManagerWidget(
-        new AssetEditWidget(),
         "Assets",
         QIcon(":icons/asset"),
         parent)
@@ -28,7 +27,7 @@ RamObject *AssetListManagerWidget::createObject()
                 );
 
     project->assets()->append(asset);
-    editObject(asset);
+    asset->edit();
     return asset;
 }
 

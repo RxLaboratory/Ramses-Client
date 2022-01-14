@@ -5,7 +5,6 @@
 ApplicationListManagerWidget::ApplicationListManagerWidget(QWidget *parent) :
     ObjectListManagerWidget(
         Ramses::instance()->applications(),
-        new ApplicationEditWidget(),
         "Applications",
         QIcon(":icons/application"),
         parent )
@@ -19,6 +18,6 @@ RamObject *ApplicationListManagerWidget::createObject()
                 "NEW",
                 "New Application");
     Ramses::instance()->applications()->append(a);
-    editObject(a);
+    a->edit();
     return a;
 }

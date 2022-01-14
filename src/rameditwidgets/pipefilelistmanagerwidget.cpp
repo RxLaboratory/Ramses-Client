@@ -2,7 +2,6 @@
 
 PipeFileListManagerWidget::PipeFileListManagerWidget(QWidget *parent):
     ObjectListManagerWidget(
-        new PipeFileEditWidget(),
         "Pipe Types",
         QIcon(":icons/file"),
         parent)
@@ -20,7 +19,7 @@ RamObject *PipeFileListManagerWidget::createObject()
                 "NEW",
                 project);
     project->pipeFiles()->append(pf);
-    editObject(pf);
+    pf->edit();
     return pf;
 }
 
