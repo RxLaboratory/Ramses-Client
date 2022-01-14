@@ -14,14 +14,14 @@
 #include <QtWidgets/QWidget>
 #include <QtDebug>
 
-#include "toolbarspacer.h"
+#include "duqftoolbarspacer.h"
 
-class TitleBar : public QToolBar
+class DuQFTitleBar : public QToolBar
 {
     Q_OBJECT
 
 public:
-    explicit TitleBar(QString title, bool mini = false, QWidget *parent = nullptr);
+    explicit DuQFTitleBar(QString title, bool mini = false, QWidget *parent = nullptr);
     void setTitle(QString title);
     void showReinitButton(bool show);
     void showCloseButton(bool show);
@@ -34,16 +34,21 @@ signals:
     void reinitRequested();
     void closeRequested();
 
+private slots:
+    void changeOrientation(Qt::Orientation orientation);
+
 private:
     void setupUi(bool mini);
 
-    ToolBarSpacer *spacer;
+    DuQFToolBarSpacer *spacer;
     QLabel *titleLabel;
     QToolButton *reinitButton;
     QToolButton *closeButton;
     QAction *reinitAction;
     QAction *leftAction;
     QAction *rightAction;
+
+    QList<QAction*> m_actions;
 };
 
 #endif // TITLEBAR_H

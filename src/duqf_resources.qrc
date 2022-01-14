@@ -37,6 +37,8 @@
         <file alias="changelog">duqf_resources/icons/changelog.svg</file>
         <file alias="donate">duqf_resources/icons/heart.svg</file>
         <file alias="check-update">duqf_resources/icons/check-update.svg</file>
+        <file alias="vgrip">duqf_resources/icons/vgrip_sd.svg</file>
+        <file alias="hgrip">duqf_resources/icons/hgrip_sd.svg</file>
     </qresource>
     <qresource prefix="/images"/>
     <qresource prefix="/styles">

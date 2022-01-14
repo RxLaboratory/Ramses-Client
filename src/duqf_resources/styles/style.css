@@ -615,85 +615,106 @@ QGroupBox QLineEdit {
 }
 
 
-/* TITLE BAR */
-
-#titleBar {
-    background-color: @color-less-dark-grey;
-}
-
-#titleBar QWidget {
-    background-color: rgba(0,0,0,0);
-}
-
-#titleBar QLineEdit, #titleBar QComboBox, #titleBar QAbstractSpinBox {
-    background-color: @color-dark-grey;
-}
-
-/* TOOLBAR */
+/* TOOLBARS */
 
 QToolBar {
-        background: @color-medium-grey;
-        border: none;
-        padding: @margin;
+    background-color: @color-less-dark-grey;
+    border: none;
+    padding: @margin;
+}
+
+QToolBar::handle:top, QToolBar::handle:bottom {
+    image: url(:/icons/vgrip);
+    padding-left: @margin;
+    padding-right: @margin;
+}
+
+QToolBar::handle:left, QToolBar::handle:right {
+    image: url(:/icons/hgrip);
+    padding-top: @margin;
+    padding-bottom: @margin;
 }
 
 QToolBar QWidget {
+    background-color: rgba(0,0,0,0);
+}
+
+QToolBar:top QWidget, QToolBar:bottom QWidget {
     margin-right: @margin;
 }
 
-#windowButton {
-    width: @small-button-size;
-    height: @small-button-size;
+QToolBar:left QWidget, QToolBar:right QWidget {
+    margin-bottom: @margin;
 }
 
-QToolBar QToolButton:hover, #titleBar QToolButton:hover {
+
+QToolBar QLineEdit, QToolBar QComboBox, QToolBar QAbstractSpinBox {
     background-color: @color-dark-grey;
 }
 
-QToolBar QToolButton:pressed, #titleBar QToolButton:pressed {
+QToolBar QToolButton:hover {
+    background-color: @color-dark-grey;
+}
+
+QToolBar QToolButton:pressed {
     background-color: @color-abyss-grey;
 }
 
-QToolBar QToolButton:disabled, #titleBar QToolButton:disabled {
+QToolBar QToolButton:disabled {
     background-color: @color-medium-grey;
     color: @color-less-light-grey;
 }
 
-QToolBar QLabel {
-    color: @color-light-grey;
-}
-
-QToolBar QToolButton:checked, #titleBar QToolButton:checked  {
+QToolBar QToolButton:checked  {
     background-color: @color-dark-grey;
 }
 
-QToolBar QComboBox:hover, #titleBar QComboBox:hover {
+QToolBar QComboBox:hover {
     background-color: @color-very-dark-grey;
 }
 
-#titleBar DuQFSlider, #titleBar DuQFDoubleSlider {
+QToolBar DuQFSlider, QToolBar DuQFDoubleSlider {
     color: @color-light-grey;
     border-radius: @padding-small;
     height: @small-button-size;
     background-color:@color-very-dark-grey;
 }
 
-#titleBar DuQFSlider::chunk, #titleBar DuQFDoubleSlider::chunk {
+QToolBar DuQFSlider::chunk, QToolBar DuQFDoubleSlider::chunk {
     border-radius: @padding-small;
     background-color:@color-dark-grey;
 }
 
-#titleBar DuQFSlider::chunk:hover, #titleBar DuQFDoubleSlider::chunk:hover {
+QToolBar DuQFSlider::chunk:hover, QToolBar DuQFDoubleSlider::chunk:hover {
     background-color: @color-medium-grey;
 }
 
-#titleBar #menuButton {
+QToolBar #menuButton {
     background-color: @color-dark-grey;
     max-height: @padding-extra-large;
 }
 
-#titleBar #menuButton:hover {
+QToolBar #menuButton:hover {
     background-color: @color-very-dark-grey;
+}
+
+/* MAIN TOOLBAR */
+
+#mainToolBar {
+        background: @color-medium-grey;
+}
+
+#mainToolBar QWidget {
+    margin-right: @margin;
+}
+
+#mainToolBar QLabel {
+    color: @color-light-grey;
+}
+
+#windowButton {
+    width: @small-button-size;
+    height: @small-button-size;
 }
 
 /* STATUSBAR */

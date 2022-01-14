@@ -8,7 +8,7 @@
 #include "ui_pipelinewidget.h"
 #include "duqf-nodeview/duqfnodeview.h"
 #include "duqf-nodeview/duqfnodescene.h"
-#include "duqf-widgets/titlebar.h"
+#include "duqf-widgets/duqftitlebar.h"
 #include "duqf-widgets/duqfspinbox.h"
 #include "duqf-app/app-version.h"
 #include "duqf-utils/guiutils.h"
@@ -63,7 +63,7 @@ protected:
 private:
     void changeProject();
 
-    TitleBar *ui_titleBar;
+    DuQFTitleBar *ui_titleBar;
     DuQFSpinBox *ui_gridSizeBox;
     QToolButton *ui_snapButton;
     DuQFNodeScene *m_nodeScene;

@@ -9,7 +9,7 @@
 #include <QShowEvent>
 #include <QHideEvent>
 
-#include "duqf-widgets/titlebar.h"
+#include "duqf-widgets/duqftitlebar.h"
 #include "duqf-utils/guiutils.h"
 
 class SettingsWidget : public QWidget
@@ -20,7 +20,7 @@ public:
     explicit SettingsWidget(QString title = "Settings", QWidget *parent = nullptr);
     void addPage(QWidget *ui, QString title, QIcon icon=QIcon());
     void showReinitButton(bool show);
-    TitleBar *titleBar();
+    DuQFTitleBar *titleBar();
 public slots:
     void setCurrentIndex(int index);
 signals:
@@ -36,7 +36,7 @@ private:
     QSplitter *m_splitter;
     QListWidget *m_mainList;
     QStackedWidget *m_mainStackWidget;
-    TitleBar *m_titleBar;
+    DuQFTitleBar *m_titleBar;
 };
 
 #endif // SETTINGSWIDGET_H

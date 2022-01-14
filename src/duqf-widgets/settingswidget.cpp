@@ -5,8 +5,8 @@ SettingsWidget::SettingsWidget(QString title, QWidget *parent) :
 {
     setupUi(title);
 
-    connect(m_titleBar, &TitleBar::reinitRequested, this, &SettingsWidget::reinitRequested);
-    connect(m_titleBar, &TitleBar::closeRequested, this, &SettingsWidget::closeRequested);
+    connect(m_titleBar, &DuQFTitleBar::reinitRequested, this, &SettingsWidget::reinitRequested);
+    connect(m_titleBar, &DuQFTitleBar::closeRequested, this, &SettingsWidget::closeRequested);
     connect(m_mainList, SIGNAL(currentRowChanged(int)), this, SLOT(mainList_currentRowChanged(int)));
 }
 
@@ -21,7 +21,7 @@ void SettingsWidget::setupUi(QString title)
     QMainWindow *mw = GuiUtils::appMainWindow();
     mw->addToolBarBreak(Qt::TopToolBarArea);
 
-    m_titleBar = new TitleBar(title, false, mw);
+    m_titleBar = new DuQFTitleBar(title, false, mw);
     mw->addToolBar(Qt::TopToolBarArea,m_titleBar);
     //mw->insertToolBar(mw->findChild<QToolBar*>("mainToolBar"), m_titleBar);
     m_titleBar->setFloatable(false);
@@ -87,7 +87,7 @@ void SettingsWidget::showReinitButton(bool show)
     m_titleBar->showReinitButton(show);
 }
 
-TitleBar *SettingsWidget::titleBar()
+DuQFTitleBar *SettingsWidget::titleBar()
 {
     return m_titleBar;
 }

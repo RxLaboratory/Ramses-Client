@@ -57,6 +57,8 @@ SOURCES += \
     data-views/ramobjectdelegate.cpp \
     data-views/ramobjectlistcombobox.cpp \
     data-views/ramobjectlistwidget.cpp \
+    duqf-widgets/duqftitlebar.cpp \
+    duqf-widgets/duqftoolbarspacer.cpp \
     duqf-widgets/duqfupdatedialog.cpp \
     duqf-widgets/duqfupdatesettingswidget.cpp \
     pages/installpage.cpp \
@@ -127,8 +129,6 @@ SOURCES += \
     duqf-widgets/duqfslider.cpp \
     duqf-widgets/duqfspinbox.cpp \
     duqf-widgets/settingswidget.cpp \
-    duqf-widgets/titlebar.cpp \
-    duqf-widgets/toolbarspacer.cpp \
     rameditwidgets/filetypeeditwidget.cpp \
     smallwidgets/frameratewidget.cpp \
     settingswidgets/localsettingswidget.cpp \
@@ -200,6 +200,8 @@ HEADERS += \
     duqf-widgets/duqfcolorselector.h \
     duqf-widgets/duqfelidedlabel.h \
     duqf-widgets/duqfsearchedit.h \
+    duqf-widgets/duqftitlebar.h \
+    duqf-widgets/duqftoolbarspacer.h \
     duqf-widgets/duqfupdatedialog.h \
     duqf-widgets/duqfupdatesettingswidget.h \
     pages/installpage.h \
@@ -273,8 +275,6 @@ HEADERS += \
     duqf-widgets/duqfslider.h \
     duqf-widgets/duqfspinbox.h \
     duqf-widgets/settingswidget.h \
-    duqf-widgets/titlebar.h \
-    duqf-widgets/toolbarspacer.h \
     rameditwidgets/filetypeeditwidget.h \
     smallwidgets/frameratewidget.h \
     settingswidgets/localsettingswidget.h \
@@ -324,7 +324,6 @@ FORMS += \
     duqf-widgets/aboutdialog.ui \
     duqf-widgets/appearancesettingswidget.ui \
     duqf-widgets/duqffolderselectorwidget.ui \
-    duqf-widgets/toolbarspacer.ui \
     settingswidgets/localsettingswidget.ui \
     pages/loginpage.ui \
     mainwindow.ui \

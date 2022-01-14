@@ -8,7 +8,7 @@
 #include <QComboBox>
 #include <QClipboard>
 
-#include "duqf-widgets/titlebar.h"
+#include "duqf-widgets/duqftitlebar.h"
 #include "duqf-utils/guiutils.h"
 #include "duqf-widgets/duqfsearchedit.h"
 #include "data-views/ramobjectlistwidget.h"
@@ -45,7 +45,7 @@ protected:
     void hideEvent(QHideEvent *event) override;
 
     RamObjectListWidget *ui_table;
-    TitleBar *ui_titleBar;
+    DuQFTitleBar *ui_titleBar;
     RamObjectListComboBox *ui_groupBox;
 
 protected slots:

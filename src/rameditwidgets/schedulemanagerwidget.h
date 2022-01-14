@@ -9,7 +9,7 @@
 
 #include "dbinterface.h"
 #include "duqf-utils/guiutils.h"
-#include "duqf-widgets/titlebar.h"
+#include "duqf-widgets/duqftitlebar.h"
 #include "data-views/ramscheduletablewidget.h"
 #include "data-models/ramscheduletable.h"
 #include "data-views/ramobjectlistmenu.h"
@@ -69,7 +69,7 @@ private:
     void connectEvents();
     void loadSettings();
 
-    TitleBar *ui_titleBar;
+    DuQFTitleBar *ui_titleBar;
     QAction *ui_actionShowDetails;
     RamScheduleTableWidget *ui_table;
     QDateEdit *ui_startDateEdit;

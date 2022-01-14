@@ -437,7 +437,8 @@ void ScheduleManagerWidget::setupUi()
     QMainWindow *mw = GuiUtils::appMainWindow();
     mw->addToolBarBreak(Qt::TopToolBarArea);
 
-    ui_titleBar = new TitleBar("Schedule",false, mw);
+    ui_titleBar = new DuQFTitleBar("Schedule",false, mw);
+    ui_titleBar->setObjectName("scheduleToolBar");
     ui_titleBar->showReinitButton(false);
     mw->addToolBar(Qt::TopToolBarArea,ui_titleBar);
     ui_titleBar->setFloatable(false);
@@ -679,7 +680,7 @@ void ScheduleManagerWidget::connectEvents()
     connect(ui_cutComment, SIGNAL(triggered()), this, SLOT(cutComment()));
     connect(ui_pasteComment, SIGNAL(triggered()), this, SLOT(pasteComment()));
     // other
-    connect(ui_titleBar, &TitleBar::closeRequested, this, &ScheduleManagerWidget::closeRequested);
+    connect(ui_titleBar, &DuQFTitleBar::closeRequested, this, &ScheduleManagerWidget::closeRequested);
     connect(Ramses::instance(), SIGNAL(currentProjectChanged(RamProject*)), this, SLOT(projectChanged(RamProject*)));
     connect(Ramses::instance(), SIGNAL(loggedIn(RamUser*)), this, SLOT(userChanged(RamUser*)));
 

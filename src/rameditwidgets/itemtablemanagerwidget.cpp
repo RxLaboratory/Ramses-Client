@@ -10,6 +10,7 @@ ItemTableManagerWidget::ItemTableManagerWidget(RamStep::Type productionType, QWi
         // Not implemented yet
         //ui_table->setSortable(true);
         ui_titleBar->setTitle("Shots");
+        ui_titleBar->setObjectName("shotToolBar");
     }
 
     currentUserChanged(nullptr);
@@ -639,7 +640,8 @@ void ItemTableManagerWidget::setupUi()
     QMainWindow *mw = GuiUtils::appMainWindow();
     mw->addToolBarBreak(Qt::TopToolBarArea);
 
-    ui_titleBar = new TitleBar("Assets",false, mw);
+    ui_titleBar = new DuQFTitleBar("Assets",false, mw);
+    ui_titleBar->setObjectName("assetToolBar");
     ui_titleBar->showReinitButton(false);
     mw->addToolBar(Qt::TopToolBarArea,ui_titleBar);
     ui_titleBar->setFloatable(false);
@@ -1021,7 +1023,7 @@ void ItemTableManagerWidget::connectEvents()
     // group filter
     connect(ui_groupBox, SIGNAL(currentObjectChanged(RamObject*)), ui_table, SLOT(filter(RamObject*)));
     // other
-    connect(ui_titleBar, &TitleBar::closeRequested, this, &ItemTableManagerWidget::closeRequested);
+    connect(ui_titleBar, &DuQFTitleBar::closeRequested, this, &ItemTableManagerWidget::closeRequested);
     connect(Ramses::instance(), &Ramses::currentProjectChanged, this, &ItemTableManagerWidget::projectChanged);
     connect(Ramses::instance(), SIGNAL(loggedIn(RamUser*)), this, SLOT(currentUserChanged(RamUser*)));
     connect(ui_header, SIGNAL(sort(int,Qt::SortOrder)), ui_table->filteredList(), SLOT(resort(int,Qt::SortOrder)));

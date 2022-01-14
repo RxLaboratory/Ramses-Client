@@ -38,7 +38,7 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     actionSchedule->setVisible(false);
     actionStatistics->setVisible(false);
 
-    mainToolBar->addWidget(new ToolBarSpacer(this));
+    mainToolBar->addWidget(new DuQFToolBarSpacer(this));
 
     mainToolBar->addWidget(new ProjectSelectorWidget(this));
 
@@ -110,6 +110,7 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
 
     // admin
     SettingsWidget *adminPage = new SettingsWidget("Administration", this);
+    adminPage->titleBar()->setObjectName("adminToolBar");
     adminPage->showReinitButton(false);
     mainStack->addWidget(adminPage);
     // Admin tabs
@@ -359,7 +360,7 @@ void MainWindow::duqf_initUi()
     mainToolBar->installEventFilter(this);
 
     // ==== TOOLBAR BUTTONS
-    mainToolBar->addWidget(new ToolBarSpacer());
+    mainToolBar->addWidget(new DuQFToolBarSpacer());
     title = new QLabel(STR_FILEDESCRIPTION);
     mainToolBar->addWidget(title);
 
@@ -443,6 +444,7 @@ void MainWindow::duqf_initUi()
     // ========= SETTINGS ========
 
     settingsWidget = new SettingsWidget();
+    settingsWidget->titleBar()->setObjectName("settingsToolBar");
     duqf_settingsLayout->addWidget(settingsWidget);
 
     AppearanceSettingsWidget *asw = new AppearanceSettingsWidget();

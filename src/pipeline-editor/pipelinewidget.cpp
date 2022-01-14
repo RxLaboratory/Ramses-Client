@@ -11,7 +11,8 @@ PipelineWidget::PipelineWidget(QWidget *parent) :
     QMainWindow *mw = GuiUtils::appMainWindow();
     mw->addToolBarBreak(Qt::TopToolBarArea);
 
-    ui_titleBar = new TitleBar("Pipeline Editor",false, mw);
+    ui_titleBar = new DuQFTitleBar("Pipeline Editor",false, mw);
+    ui_titleBar->setObjectName("pipelineToolBar");
     ui_titleBar->showReinitButton(false);
     mw->addToolBar(Qt::TopToolBarArea,ui_titleBar);
     ui_titleBar->setFloatable(false);
@@ -182,7 +183,7 @@ PipelineWidget::PipelineWidget(QWidget *parent) :
     mainLayout->addWidget(ui_nodeView);
 
     // Connections
-    connect(ui_titleBar, &TitleBar::closeRequested, this, &PipelineWidget::closeRequested);
+    connect(ui_titleBar, &DuQFTitleBar::closeRequested, this, &PipelineWidget::closeRequested);
     connect(viewAllButton, SIGNAL(clicked()), ui_nodeView, SLOT(reinitTransform()));
     connect(actionReinitView, SIGNAL(triggered()), ui_nodeView, SLOT(reinitTransform()));
     connect(viewSelectedButton, SIGNAL(clicked()), ui_nodeView, SLOT(frameSelected()));

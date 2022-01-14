@@ -4,6 +4,7 @@ ProjectPage::ProjectPage(QWidget *parent):
     SettingsWidget("Project Administration", parent)
 {
     this->showReinitButton(false);
+    this->titleBar()->setObjectName("projectToolBar");
 
     qDebug() << "> Project";
     // A better layout for project settings
