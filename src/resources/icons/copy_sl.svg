@@ -2,20 +2,20 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   xmlns:dc="http://purl.org/dc/elements/1.1/"
-   xmlns:cc="http://creativecommons.org/ns#"
-   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-   xmlns:svg="http://www.w3.org/2000/svg"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    width="32"
    height="32"
    viewBox="0 0 8.4666666 8.4666666"
    version="1.1"
    id="svg8"
-   inkscape:version="0.92.5 (2060ec1f9f, 2020-04-08)"
-   sodipodi:docname="copy_sl.svg">
+   inkscape:version="1.1.1 (3bf5ae0d25, 2021-09-20)"
+   sodipodi:docname="copy_sl.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
   <defs
      id="defs2">
     <style
@@ -59,16 +59,16 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="22.627416"
-     inkscape:cx="9.7895342"
-     inkscape:cy="11.390174"
+     inkscape:cx="9.811107"
+     inkscape:cy="11.38"
      inkscape:document-units="mm"
      inkscape:current-layer="svg8"
      showgrid="false"
      units="px"
-     inkscape:window-width="1868"
-     inkscape:window-height="1016"
-     inkscape:window-x="0"
-     inkscape:window-y="27"
+     inkscape:window-width="1858"
+     inkscape:window-height="1057"
+     inkscape:window-x="54"
+     inkscape:window-y="150"
      inkscape:window-maximized="1"
      inkscape:snap-bbox="true"
      inkscape:bbox-paths="true"
@@ -79,7 +79,8 @@
      inkscape:snap-others="true"
      inkscape:snap-object-midpoints="true"
      inkscape:snap-page="true"
-     showguides="false">
+     showguides="false"
+     inkscape:pagecheckerboard="0">
     <sodipodi:guide
        position="8.4666666,0"
        orientation="-32,0"
@@ -112,5 +113,5 @@
      id="path834"
      d="m 5.8880114,7.4083329 v 0.6614587 c 0,0.2191907 -0.1776842,0.3968751 -0.3968749,0.3968751 H 0.99322017 c -0.2191907,0 -0.396875,-0.1776844 -0.396875,-0.3968751 V 1.984375 c 0,-0.2191908 0.1776843,-0.3968751 0.396875,-0.3968751 H 2.1838448 v 4.8947918 c 0,0.5106294 0.4154125,0.9260412 0.9260418,0.9260412 z m 0,-5.6885413 V 0 H 3.1098866 C 2.8906958,0 2.7130116,0.17768425 2.7130116,0.39687499 V 6.4822917 c 0,0.2191906 0.1776842,0.396875 0.396875,0.396875 h 4.4979163 c 0.2191912,0 0.396875,-0.1776844 0.396875,-0.396875 V 2.1166666 H 6.2848865 c -0.2182813,0 -0.3968751,-0.1785937 -0.3968751,-0.396875 z M 7.8884435,1.2066819 6.7979962,0.11623475 A 0.39687499,0.39687499 0 0 0 6.5173725,0 H 6.417178 V 1.5874999 H 8.0046779 V 1.4873056 A 0.39687499,0.39687499 0 0 0 7.8884435,1.2066819 Z"
      inkscape:connector-curvature="0"
-     style="stroke-width:0.01653646;fill:#83d3f6;fill-opacity:1" />
+     style="stroke-width:0.01653646;fill:#e3e3e3;fill-opacity:1" />
 </svg>

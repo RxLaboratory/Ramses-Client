@@ -2,9 +2,7 @@
     <qresource prefix="/icons">
         <file alias="icon-large">resources/icons/ramses-icon-large.svg</file>
         <file alias="server-settings">resources/icons/server-settings.svg</file>
-        <file alias="login-big">resources/icons/login_bl.svg</file>
         <file alias="login">resources/icons/login_sl.svg</file>
-        <file alias="logout-big">resources/icons/logout_bl.svg</file>
         <file alias="logout">resources/icons/logout_sl.svg</file>
         <file alias="user-settings">resources/icons/user-settings_sl.svg</file>
         <file alias="users">resources/icons/users_bl.svg</file>
@@ -23,7 +21,6 @@
         <file alias="state">resources/icons/state.svg</file>
         <file alias="color-dialog">resources/icons/color-palette_sl.svg</file>
         <file alias="admin-settings">resources/icons/admin.svg</file>
-        <file alias="project-settings">resources/icons/cinema-movie-settings_bl.svg</file>
         <file alias="reveal-folder">resources/icons/go-to-explore-reveal-folder_sl.svg</file>
         <file alias="browse-folder">resources/icons/set-folder_sl.svg</file>
         <file alias="storage">resources/icons/storage_sl.svg</file>
@@ -39,7 +36,6 @@
         <file alias="filter">resources/icons/filter_sl.svg</file>
         <file alias="edit">resources/icons/edit-comment-modify_sl.svg</file>
         <file alias="sequences">resources/icons/sequences.svg</file>
-        <file alias="pipeline">resources/icons/edit-connections-pipeline_bl.svg</file>
         <file alias="view-selected">resources/icons/frame-focus-center-target-nodes_sl.svg</file>
         <file alias="view-all">resources/icons/frame-focus-center-target_sl.svg</file>
         <file alias="step">resources/icons/step-node_sl.svg</file>
@@ -77,6 +73,7 @@
         <file alias="sort-no">resources/icons/sort_no_sl.svg</file>
         <file alias="status">resources/icons/status.svg</file>
         <file alias="create">resources/icons/create-from-template.svg</file>
+        <file alias="status-edit">resources/icons/status_edit.svg</file>
     </qresource>
     <qresource prefix="/styles">
         <file alias="default-ramses-client">resources/style/style-ramses.css</file>

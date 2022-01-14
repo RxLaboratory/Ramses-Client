@@ -2,20 +2,20 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   xmlns:dc="http://purl.org/dc/elements/1.1/"
-   xmlns:cc="http://creativecommons.org/ns#"
-   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-   xmlns:svg="http://www.w3.org/2000/svg"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    width="32"
    height="32"
    viewBox="0 0 8.4666666 8.4666666"
    version="1.1"
    id="svg8"
-   inkscape:version="0.92.5 (2060ec1f9f, 2020-04-08)"
-   sodipodi:docname="pin-attach_sl.svg">
+   inkscape:version="1.1.1 (3bf5ae0d25, 2021-09-20)"
+   sodipodi:docname="pin-attach_sl.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
   <defs
      id="defs2">
     <style
@@ -61,16 +61,16 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="15.999999"
-     inkscape:cx="-5.4952534"
-     inkscape:cy="10.357845"
+     inkscape:cx="-5.5000003"
+     inkscape:cy="10.343751"
      inkscape:document-units="mm"
      inkscape:current-layer="svg8"
      showgrid="false"
      units="px"
-     inkscape:window-width="3388"
-     inkscape:window-height="1376"
-     inkscape:window-x="1277"
-     inkscape:window-y="507"
+     inkscape:window-width="1858"
+     inkscape:window-height="1057"
+     inkscape:window-x="54"
+     inkscape:window-y="150"
      inkscape:window-maximized="1"
      inkscape:snap-bbox="true"
      inkscape:bbox-paths="true"
@@ -80,7 +80,8 @@
      inkscape:snap-nodes="true"
      inkscape:snap-others="true"
      inkscape:snap-object-midpoints="true"
-     inkscape:snap-page="true">
+     inkscape:snap-page="true"
+     inkscape:pagecheckerboard="0">
     <sodipodi:guide
        position="8.4666666,0"
        orientation="-32,0"
@@ -112,17 +113,17 @@
   <g
      id="g852"
      transform="matrix(0.37186209,0,0,0.37186209,-1.7711305,-1.5512979)"
-     style="fill:#83d3f6">
+     style="fill:#e3e3e3;fill-opacity:1">
     <path
        id="path840"
        d="m 21.84,4.52 4.79,4.57 a 1.19,1.19 0 0 1 -0.08,1.79 L 22.42,14.13 21.26,20.78 10.42,10.44 17,9 20,4.73 a 1.18,1.18 0 0 1 1.84,-0.21 z"
        class="cls-1"
        inkscape:connector-curvature="0"
-       style="fill:#83d3f6" />
+       style="fill:#e3e3e3;fill-opacity:1" />
     <polygon
        id="polygon842"
-       points="8.48,21.68 5.28,26.94 10.23,23.23 15.8,17.66 14.05,16.11 "
+       points="10.23,23.23 15.8,17.66 14.05,16.11 8.48,21.68 5.28,26.94 "
        class="cls-1"
-       style="fill:#83d3f6" />
+       style="fill:#e3e3e3;fill-opacity:1" />
   </g>
 </svg>

@@ -158,7 +158,7 @@
    </property>
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/icons/project-settings</normaloff>:/icons/project-settings</iconset>
+     <normaloff>:/icons/project</normaloff>:/icons/project</iconset>
    </property>
    <property name="text">
     <string>Project</string>
@@ -182,7 +182,7 @@
    </property>
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/icons/pipeline</normaloff>:/icons/pipeline</iconset>
+     <normaloff>:/icons/steps-menu</normaloff>:/icons/steps-menu</iconset>
    </property>
    <property name="text">
     <string>Pipeline</string>

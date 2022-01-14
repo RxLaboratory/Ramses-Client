@@ -129,10 +129,10 @@
      inkscape:current-layer="svg8"
      showgrid="false"
      units="px"
-     inkscape:window-width="3378"
-     inkscape:window-height="1417"
-     inkscape:window-x="1974"
-     inkscape:window-y="-8"
+     inkscape:window-width="1858"
+     inkscape:window-height="1057"
+     inkscape:window-x="54"
+     inkscape:window-y="150"
      inkscape:window-maximized="1"
      inkscape:pagecheckerboard="0"
      inkscape:snap-bbox="true"
@@ -170,7 +170,7 @@
   </metadata>
   <path
      id="path899"
-     style="fill:#8cffef;fill-opacity:1;stroke-width:0.0498701"
+     style="fill:#83d3f6;fill-opacity:1;stroke-width:0.0498701"
      d="M 10.125 3.8710938 C 8.8049271 3.8710938 7.7324219 5.006925 7.7324219 6.4042969 L 7.7324219 25.412109 C 7.7324219 26.809482 8.8049271 27.945313 10.125 27.945312 L 21.675781 27.945312 C 22.995853 27.945312 24.070313 26.809482 24.070312 25.412109 L 24.070312 6.4042969 C 24.070312 5.006925 22.995853 3.8710937 21.675781 3.8710938 L 10.125 3.8710938 z M 19.25 14.353516 C 20.131212 14.353516 20.845703 15.068007 20.845703 15.949219 C 20.846268 16.830431 20.13171 17.546875 19.25 17.546875 C 18.368787 17.546875 17.654297 16.830431 17.654297 15.949219 C 17.654297 15.068007 18.368787 14.353516 19.25 14.353516 z "
      transform="scale(0.26458333)" />
 </svg>
