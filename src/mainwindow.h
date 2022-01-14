@@ -87,7 +87,6 @@ private:
      * Used for drag n drop feature
      */
     QPoint duqf_dragPosition;
-    QToolButton *duqf_maximizeButton;
     QToolButton *duqf_settingsButton;
     AboutDialog *duqf_aboutDialog;
     QAction *duqf_actionShowHide;
@@ -119,8 +118,6 @@ private:
     bool m_showUpdateAlerts = false;
 
 private slots:
-    void duqf_maximize(bool max);
-    void duqf_maximize();
     void duqf_bugReport();
     void duqf_forum();
     void duqf_chat();
