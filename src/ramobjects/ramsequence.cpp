@@ -5,6 +5,9 @@
 RamSequence::RamSequence(QString shortName, RamProject *project, QString name, QString uuid):
     RamObject(shortName, name, uuid, project)
 {
+    m_icon = ":/icons/sequence";
+    m_editRole = ProjectAdmin;
+
     this->setObjectType(Sequence);
     m_project = project;
     m_dbi->createSequence(m_shortName, m_name, m_project->uuid(), m_uuid);

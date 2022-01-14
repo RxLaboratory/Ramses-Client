@@ -7,6 +7,9 @@
 RamPipeFile::RamPipeFile(QString shortName, RamProject *project) :
     RamObject(shortName, "", "", project)
 {
+    m_icon = ":/icons/file";
+    m_editRole = ProjectAdmin;
+
     this->setObjectType(PipeFile);
     m_project = project;
     m_fileType = nullptr;

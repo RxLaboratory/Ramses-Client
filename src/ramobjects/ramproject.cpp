@@ -5,6 +5,9 @@
 RamProject::RamProject(QString shortName, QString name, QString uuid):
     RamObject(shortName, name, uuid, Ramses::instance())
 {
+    m_icon = ":/icons/project";
+    m_editRole = Admin;
+
     setObjectType(Project);
     m_sequences = new RamObjectList("SEQS", "Sequences", this);
     m_assetGroups = new RamObjectList("AGS", "Asset Groups", this);

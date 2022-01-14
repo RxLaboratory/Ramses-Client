@@ -7,6 +7,9 @@
 RamFileType::RamFileType(QString shortName, QString name, QStringList extensions, QString uuid):
     RamObject(shortName, name, uuid, Ramses::instance())
 {
+    m_icon = ":/icons/file";
+    m_editRole = Admin;
+
     setObjectType(FileType);
     m_extensions = extensions;
     m_dbi->createFileType(m_shortName, m_name, m_extensions, m_uuid);

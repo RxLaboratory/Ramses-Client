@@ -7,6 +7,9 @@
 RamAssetGroup::RamAssetGroup(QString shortName, QString name, QString uuid) :
     RamObject(shortName, name, uuid, Ramses::instance())
 {
+    m_icon = ":/icons/asset-group";
+    m_editRole = ProjectAdmin;
+
     this->setObjectType(AssetGroup);
     m_project = nullptr;
     m_template = true;

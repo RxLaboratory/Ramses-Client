@@ -8,6 +8,9 @@
 RamStep::RamStep(QString shortName, QString name, QString uuid) :
     RamObject(shortName, name, uuid, Ramses::instance())
 {
+    m_icon = ":/icons/step";
+    m_editRole = ProjectAdmin;
+
     setObjectType(Step);
     m_project = nullptr;
     m_template = true;

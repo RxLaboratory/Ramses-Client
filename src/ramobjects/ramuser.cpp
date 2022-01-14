@@ -8,6 +8,9 @@
 RamUser::RamUser(QString shortName, QString name, QString uuid) :
     RamObject(shortName, name, uuid, Ramses::instance())
 {
+    m_icon = ":/icons/user";
+    m_editRole = Admin;
+
     setObjectType(User);
     m_role = Standard;
     m_schedule = new RamObjectList("SCHDL", "Schedule", this);

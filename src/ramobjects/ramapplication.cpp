@@ -6,6 +6,9 @@
 RamApplication::RamApplication(QString shortName, QString name, QString executableFilePath, QString uuid):
     RamObject(shortName, name, uuid, Ramses::instance())
 {
+    m_icon = ":/icons/application";
+    m_editRole = Admin;
+
     m_nativeFileTypes = new RamObjectList(this);
     m_importFileTypes = new RamObjectList(this);
     m_exportFileTypes = new RamObjectList(this);

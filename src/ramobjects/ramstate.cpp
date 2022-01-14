@@ -5,6 +5,9 @@
 RamState::RamState(QString shortName, QString name, QString uuid) :
     RamObject(shortName, name, uuid, Ramses::instance())
 {
+    m_icon = ":/icons/state-l";
+    m_editRole = Admin;
+
     this->setObjectType(State);
     m_dbi->createState(m_shortName, m_name, m_uuid);
 

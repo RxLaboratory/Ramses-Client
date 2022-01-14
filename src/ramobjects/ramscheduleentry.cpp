@@ -3,6 +3,9 @@
 RamScheduleEntry::RamScheduleEntry(RamUser *user, RamStep *step, QDateTime date):
        RamObject(user)
 {
+    m_icon = ":/icons/calendar";
+    m_editRole = Lead;
+
     this->setObjectType(ScheduleEntry);
     setUser(user);
     setStep(step);

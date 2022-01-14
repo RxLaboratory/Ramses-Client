@@ -6,6 +6,9 @@
 RamShot::RamShot(QString shortName, RamSequence *sequence, QString name, QString uuid):
     RamItem(shortName, sequence->project(), name, uuid)
 {
+    m_icon = ":/icons/shot";
+    m_editRole = ProjectAdmin;
+
     m_assets = new RamObjectList("SHOTASSETS", "Assets", this);
     setObjectType(Shot);
     setProductionType(RamStep::ShotProduction);

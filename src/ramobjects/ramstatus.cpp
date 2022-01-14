@@ -7,6 +7,9 @@
 RamStatus::RamStatus(RamUser *user, RamState *state, RamStep *step, RamItem *item, bool computeEstimation, QString uuid):
     RamObject("", "", uuid, item)
 {
+    m_icon = ":/icons/status";
+    m_editRole = Standard;
+
     m_user = user;
     m_state = state;
     m_step = step;

@@ -6,6 +6,9 @@
 RamPipe::RamPipe(RamStep *output, RamStep *input, QString uuid):
     RamObject("PIPE","Pipe",uuid)
 {
+    m_icon = ":/icons/connection";
+    m_editRole = ProjectAdmin;
+
     this->setObjectType(Pipe);
     m_outputStep = output;
     m_inputStep = input;

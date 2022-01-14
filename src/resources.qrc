@@ -59,7 +59,6 @@
         <file alias="sequence">resources/icons/sequence.svg</file>
         <file alias="pipe-files">resources/icons/pipes_sl.svg</file>
         <file alias="reveal-folder-s">resources/icons/go-to-explore-reveal-folder_small.svg</file>
-        <file alias="create">resources/icons/create-save-incremental_sl.svg</file>
         <file alias="open">resources/icons/load_sl.svg</file>
         <file alias="show">resources/icons/show_sl.svg</file>
         <file alias="state-l">resources/icons/state_l.svg</file>
@@ -76,6 +75,8 @@
         <file alias="sort-down">resources/icons/sort_down_sl.svg</file>
         <file alias="sort-up">resources/icons/sort_up_sl.svg</file>
         <file alias="sort-no">resources/icons/sort_no_sl.svg</file>
+        <file alias="status">resources/icons/status.svg</file>
+        <file alias="create">resources/icons/create-from-template.svg</file>
     </qresource>
     <qresource prefix="/styles">
         <file alias="default-ramses-client">resources/style/style-ramses.css</file>

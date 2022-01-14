@@ -7,6 +7,9 @@
 RamAsset::RamAsset(QString shortName, RamAssetGroup *assetGroup, QString name, QString uuid) :
     RamItem(shortName, assetGroup->project(), name, uuid)
 {
+    m_icon = ":/icons/asset";
+    m_editRole = ProjectAdmin;
+
     setObjectType(Asset);
     setProductionType(RamStep::AssetProduction);
     m_assetGroup = assetGroup;

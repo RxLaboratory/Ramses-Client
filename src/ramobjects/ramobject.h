@@ -127,6 +127,8 @@ protected:
     DBInterface *m_dbi;
     QString m_shortName;
     QString m_name;
+    QString m_icon = ":/icons/asset";
+    UserRole m_editRole = Admin;
     // Check if changed to limit number of signals
     bool m_dirty;
 
