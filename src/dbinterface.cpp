@@ -1226,7 +1226,11 @@ void DBInterface::request(QString query, QStringList args, bool wait)
     request.setHeader(QNetworkRequest::UserAgentHeader, QString(STR_INTERNALNAME) + " v" + QString(STR_VERSION));
 
     // Post body
+    // Add version
+    args << "version=" + QString(STR_VERSION);
+    // Current token
     if (_sessionToken != "") args << "token=" + _sessionToken;
+    // Build body
     QString body = buildFormEncodedString(args);
 
     // Send post
@@ -1256,8 +1260,11 @@ void DBInterface::request(QString query, QJsonObject body, bool wait)
     request.setHeader(QNetworkRequest::UserAgentHeader, QString(STR_INTERNALNAME) + " v" + QString(STR_VERSION));
 
     // Post body
-
+    // Add version
+    body.insert("version=", STR_VERSION);
+    // Current token
     if (_sessionToken != "") body.insert("token", _sessionToken );
+    // Build body
     QJsonDocument bodyDoc;
     bodyDoc.setObject(body);
 
