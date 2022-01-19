@@ -182,10 +182,6 @@ QList<QFileInfo> RamWorkingFolder::versionFileInfos(QString resource) const
     // Get current information
     RamNameManager nm;
     nm.setFileName(m_path);
-    qDebug() << m_path;
-    qDebug() << nm.project();
-    qDebug() << nm.step();
-    qDebug() << nm.shortName();
 
     // look for files with the same resource
     QList<QFileInfo> files;
