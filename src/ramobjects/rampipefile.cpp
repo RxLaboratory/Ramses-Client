@@ -20,6 +20,9 @@ RamPipeFile::RamPipeFile(QString shortName, RamProject *project) :
 RamPipeFile::RamPipeFile(QString uuid, QObject *parent):
     RamObject(uuid, parent)
 {
+    m_icon = ":/icons/file";
+    m_editRole = ProjectAdmin;
+
     this->setObjectType(PipeFile);
     m_fileType = nullptr;
     m_project = nullptr;

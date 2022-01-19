@@ -9,7 +9,7 @@ RamAssetGroup::RamAssetGroup(QString shortName, QString name, QString uuid) :
     RamObject(shortName, name, uuid, Ramses::instance())
 {
     m_icon = ":/icons/asset-group";
-    m_editRole = ProjectAdmin;
+    m_editRole = Admin;
 
     this->setObjectType(AssetGroup);
     m_project = nullptr;
@@ -22,6 +22,9 @@ RamAssetGroup::RamAssetGroup(QString shortName, QString name, QString uuid) :
 RamAssetGroup::RamAssetGroup(QString shortName, RamProject *project, QString name, QString uuid):
     RamObject(shortName, name, uuid, project)
 {
+    m_icon = ":/icons/asset-group";
+    m_editRole = ProjectAdmin;
+
     this->setObjectType(AssetGroup);
     m_project = project;
     m_template = false;
