@@ -127,6 +127,7 @@ void RamObjectListWidget::mouseMoveEvent(QMouseEvent *event)
 
 void RamObjectListWidget::mousePressEvent(QMouseEvent *event)
 {
+    // Middle click for dragging view
     if (event->button() == Qt::MiddleButton)
     {
         m_initialDragPos = event->globalPos();
@@ -134,16 +135,32 @@ void RamObjectListWidget::mousePressEvent(QMouseEvent *event)
         event->accept();
         return;
     }
+    // Simple click detection
+    else if (event->button() == Qt::LeftButton && event->modifiers().testFlag(Qt::NoModifier))
+    {
+        // Get the index
+        m_clicking = this->indexAt( event->localPos().toPoint() );
+    }
     QTableView::mousePressEvent(event);
 }
 
 void RamObjectListWidget::mouseReleaseEvent(QMouseEvent *event)
 {
+    // Middle click for dragging view
     if (event->button() == Qt::MiddleButton)
     {
         m_dragging = false;
         event->accept();
         return;
+    }
+    // Simple click to select
+    else if (m_clicking.isValid())
+    {
+        // Check index
+        QModelIndex testIndex = this->indexAt( event->localPos().toPoint() );
+        if (testIndex == m_clicking && event->modifiers().testFlag(Qt::NoModifier)) select(m_clicking);
+        // Release
+        m_clicking = QModelIndex();
     }
     QTableView::mouseReleaseEvent(event);
 }
@@ -167,17 +184,6 @@ void RamObjectListWidget::showEvent(QShowEvent *event)
     this->resizeRowsToContents();
     this->resizeColumnsToContents();
     m_layout = true;
-}
-
-void RamObjectListWidget::currentChanged(const QModelIndex &current, const QModelIndex &previous)
-{
-    Q_UNUSED(previous)
-
-    quintptr iptr = current.data(Qt::UserRole).toULongLong();
-    if (iptr == 0) return;
-    RamObject *obj = reinterpret_cast<RamObject*>( iptr) ;
-    if (!obj) return;
-    //emit objectSelected(obj);
 }
 
 void RamObjectListWidget::select(const QModelIndex &index)
@@ -280,7 +286,6 @@ void RamObjectListWidget::connectEvents()
     // SORT
     connect( this->verticalHeader(), SIGNAL(sectionMoved(int,int,int)), this, SLOT(rowMoved(int,int,int)));
     // SELECT
-    connect(this, SIGNAL(clicked(QModelIndex)), this, SLOT(select(QModelIndex)));
     // Unselect before filtering
     connect(m_objectList, SIGNAL(aboutToFilter()), this->selectionModel(), SLOT(clear()));
 }

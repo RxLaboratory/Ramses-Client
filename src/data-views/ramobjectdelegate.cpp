@@ -755,7 +755,8 @@ bool RamObjectDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, co
             return true;
         }
 
-        m_cellPressed = true;
+        if (e->modifiers().testFlag(Qt::NoModifier)) m_cellPressed = true;
+
         break;
     }
     case QEvent::MouseMove:
@@ -814,7 +815,7 @@ bool RamObjectDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, co
 
         if (m_cellPressed)
         {
-            if (bgRect.contains(e->pos()))
+            if (bgRect.contains(e->pos()) && e->modifiers().testFlag(Qt::NoModifier) )
             {
                 emit editObject(o);
             }

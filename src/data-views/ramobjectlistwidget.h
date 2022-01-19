@@ -57,8 +57,6 @@ protected:
     virtual void showEvent(QShowEvent *event) override;
 
 protected slots:
-    // Relay to the objectSelected signal
-    virtual void currentChanged(const QModelIndex &current, const QModelIndex &previous) override;
     // Moved
     void rowMoved( int logicalIndex, int oldVisualIndex, int newVisualIndex);
 
@@ -83,6 +81,7 @@ private:
     QPoint m_initialDragPos;
     bool m_dragging = false;
     bool m_layout = false;
+    QModelIndex m_clicking = QModelIndex();
 };
 
 #endif // RAMOBJECTLISTWIDGET_H
