@@ -39,6 +39,9 @@
         <file alias="check-update">duqf_resources/icons/check-update.svg</file>
         <file alias="vgrip">duqf_resources/icons/vgrip_sd.svg</file>
         <file alias="hgrip">duqf_resources/icons/hgrip_sd.svg</file>
+        <file alias="file">duqf_resources/icons/file_sl.svg</file>
+        <file alias="folder">duqf_resources/icons/folder.svg</file>
+        <file alias="shortcut">duqf_resources/icons/shortcut.svg</file>
     </qresource>
     <qresource prefix="/images"/>
     <qresource prefix="/styles">

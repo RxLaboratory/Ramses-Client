@@ -51,7 +51,6 @@
         <file alias="assets-table">resources/icons/assets-property-table_bl.svg</file>
         <file alias="search">resources/icons/search_sl.svg</file>
         <file alias="asset-group">resources/icons/assetgroup_sl.svg</file>
-        <file alias="file">resources/icons/file_sl.svg</file>
         <file alias="sequence">resources/icons/sequence.svg</file>
         <file alias="pipe-files">resources/icons/pipes_sl.svg</file>
         <file alias="reveal-folder-s">resources/icons/go-to-explore-reveal-folder_small.svg</file>
