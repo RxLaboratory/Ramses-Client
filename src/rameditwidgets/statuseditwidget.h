@@ -15,6 +15,7 @@
 #include "duqf-widgets/autoselectdoublespinbox.h"
 #include "data-views/ramobjectlistcombobox.h"
 #include "duqf-widgets/duqffolderdisplaywidget.h"
+#include "duqf-widgets/duqffilelist.h"
 #include "objecteditwidget.h"
 #include "statebox.h"
 #include "ramses.h"
@@ -45,18 +46,18 @@ private slots:
     void revert();
     void checkPublished(int v);
 
-    void mainFileSelected(int row);
+    void mainFileSelected();
     void openMainFile();
     void removeSelectedMainFile();
 
     void createFromTemplate();
 
     void loadPublishedFiles();
-    void publishedFileSelected(int row);
+    void publishedFileSelected();
     void openPublishedFile();
     void removeSelectedPublishedFile();
 
-    void previewFileSelected(int row);
+    void previewFileSelected();
     void openPreviewFile();
     void removeSelectedPreviewFile();
 
@@ -75,9 +76,9 @@ private:
     QCheckBox *ui_publishedBox;
     RamObjectListComboBox *ui_userBox;
     AutoSelectSpinBox *ui_timeSpent;
-    QListWidget *ui_mainFileList;
-    QListWidget *ui_previewFileList;
-    QListWidget *ui_publishedFileList;
+    DuQFFileList *ui_mainFileList;
+    DuQFFileList *ui_previewFileList;
+    DuQFFileList *ui_publishedFileList;
     QComboBox *ui_versionFileBox;
     QComboBox *ui_versionPublishBox;
     QToolButton *ui_openMainFileButton;

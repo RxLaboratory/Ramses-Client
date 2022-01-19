@@ -12,6 +12,8 @@
 #include <QVariant>
 #include <QtGlobal>
 
+#include "ramnamemanager.h"
+
 class RamFileMetaDataManager: QObject
 {
     Q_OBJECT
@@ -54,12 +56,6 @@ public:
     qint64 getTimeRange(QString fileName, QDateTime after = QDate(1970,1,1).startOfDay() ) const;
     int getTimeRange( QDateTime after = QDate(1970,1,1).startOfDay() ) const;
 #endif
-
-
-    static QString metaDataFileName();
-
-protected:
-    static const QString m_metaDataFileName;
 
 private:
     QDir m_folder;

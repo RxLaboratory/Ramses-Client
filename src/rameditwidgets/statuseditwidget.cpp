@@ -107,20 +107,23 @@ void StatusEditWidget::setObject(RamObject *statusObj)
         }
     }
 
+    // Get info from the files
+    RamWorkingFolder statusFolder = status->workingFolder();
+
     // (try to) Auto-detect version
-    int v = status->latestVersion("");
+    int v = statusFolder.latestVersion("");
     if (v > status->version()) ui_versionBox->setValue(v);
 
     // List files
-    foreach(QString file, status->mainFiles())
-    {
-        QListWidgetItem *item = new QListWidgetItem(file, ui_mainFileList);
-        item->setIcon(QIcon(":/icons/file"));
-    }
-    QStringList publishedVersionFolders = status->publishedVersionFolders();
+    // Working files
+    ui_mainFileList->setList( statusFolder.workingFileInfos() );
+
+    // Published versions and files
+    QList<QFileInfo> publishedVersionFolders = statusFolder.publishedVersionFolderInfos();
     for (int i = publishedVersionFolders.count()-1; i>=0; i-- )
     {
-        QString title = publishedVersionFolders.at(i);
+        QFileInfo folderInfo = publishedVersionFolders.at(i);
+        QString title = folderInfo.fileName();
         // Let's split
         QStringList splitTitle = title.split("_");
         // Test length to know what we've got
@@ -138,15 +141,16 @@ void StatusEditWidget::setObject(RamObject *statusObj)
             title = splitTitle.join(" | ");
         }
 
-        ui_versionPublishBox->addItem( title, publishedVersionFolders.at(i) );
+        // Add date
+        title = title + " | " + folderInfo.lastModified().toString(ui_mainFileList->dateFormat());
+
+        ui_versionPublishBox->addItem( title, folderInfo.absoluteFilePath() );
     }
     ui_versionPublishBox->setCurrentIndex(0);
     loadPublishedFiles();
-    foreach(QString file, status->previewFiles())
-    {
-        QListWidgetItem *item = new QListWidgetItem(file, ui_previewFileList);
-        item->setIcon(QIcon(":/icons/file"));
-    }
+
+    // Preview files
+    ui_previewFileList->setList(statusFolder.previewFileInfos());
 
     // List templates
     QList<RamWorkingFolder> templateFolders = status->step()->templateWorkingFolders();
@@ -240,13 +244,15 @@ void StatusEditWidget::revert()
 
 void StatusEditWidget::checkPublished( int v )
 {
-    bool p = m_status->checkPublished( v );
+    bool p = m_status->workingFolder().isPublished(v);
     ui_publishedBox->setChecked(p);
 }
 
-void StatusEditWidget::mainFileSelected(int row)
+void StatusEditWidget::mainFileSelected()
 {
-    if (row < 0)
+    ui_versionFileBox->clear();
+
+    if (!ui_mainFileList->currentItem())
     {
         ui_versionFileBox->setEnabled(false);
         ui_openMainFileButton->setEnabled(false);
@@ -257,26 +263,26 @@ void StatusEditWidget::mainFileSelected(int row)
     ui_openMainFileButton->setEnabled(true);
 
     // List versions
-    QString fileName = ui_mainFileList->item(row)->text();
+    QString fileName = ui_mainFileList->currentFileName();
     RamNameManager nm;
     nm.setFileName(fileName);
     QString resource = nm.resource();
 
     RamFileMetaDataManager mdm(m_status->path(RamObject::VersionsFolder));
 
-    ui_versionFileBox->clear();
     ui_versionFileBox->addItem("Current version", "");
 
     // Use a map to automatically sort the result by title (version)
     QMap<QString, QString> files;
-    foreach(QString file, m_status->versionFiles(resource))
+    foreach(QFileInfo file, m_status->workingFolder().versionFileInfos(resource))
     {
         nm.setFileName(file);
         QString title = "v" + QString::number(nm.version()) + " | " + nm.state();
         // Retrieve comment if any
-        QString comment = mdm.getComment(file);
+        QString comment = mdm.getComment(file.fileName());
         if (comment != "") title += " | " + comment;
-        files[title] = file;
+        title += " | " + file.lastModified().toString(ui_mainFileList->dateFormat());
+        files[title] = file.absoluteFilePath();
     }
 
     QMapIterator<QString, QString> i(files);
@@ -285,24 +291,21 @@ void StatusEditWidget::mainFileSelected(int row)
     while(i.hasPrevious())
     {
         i.previous();
-        ui_versionFileBox->addItem(i.key(), i.value());
+        ui_versionFileBox->addItem( i.key(), i.value() );
     }
 
 }
 
 void StatusEditWidget::openMainFile()
 {
-    int row = ui_mainFileList->currentRow();
-    if (row < 0) return;
+    if (!ui_mainFileList->currentItem()) return;
 
     QString filePathToOpen;
 
     // If current version, open the main file
     int versionIndex = ui_versionFileBox->currentIndex();
     if (versionIndex < 1)
-        filePathToOpen = QDir(
-                    m_status->path()
-                    ).filePath( ui_mainFileList->item(row)->text() );
+        filePathToOpen = ui_mainFileList->currentFilePath();
     // Else, copy/rename from the versions folder
     else
         filePathToOpen = m_status->restoreVersionFile(
@@ -318,10 +321,9 @@ void StatusEditWidget::openMainFile()
 
 void StatusEditWidget::removeSelectedMainFile()
 {
-    int row = ui_mainFileList->currentRow();
-    if (row < 0) return;
+    if (!ui_mainFileList->currentItem()) return;
 
-    QString fileName = ui_mainFileList->item(row)->text();
+    QString fileName = ui_mainFileList->currentFileName();
 
     QMessageBox::StandardButton confirm = QMessageBox::question( this,
         "Confirm deletion",
@@ -354,29 +356,22 @@ void StatusEditWidget::createFromTemplate()
 void StatusEditWidget::loadPublishedFiles()
 {
     ui_publishedFileList->clear();
+    if (ui_versionPublishBox->currentIndex() < 0) return;
     QString versionFolder = ui_versionPublishBox->currentData(Qt::UserRole).toString();
-    qDebug() << versionFolder;
-    QStringList publishedFiles = m_status->publishedFiles(versionFolder);
-    for(int i = 0; i < publishedFiles.count(); i++)
-    {
-        QListWidgetItem *item = new QListWidgetItem(publishedFiles.at(i), ui_publishedFileList);
-        item->setIcon(QIcon(":/icons/file"));
-    }
+    ui_publishedFileList->setList(RamWorkingFolder::listFileInfos(versionFolder));
 }
 
-void StatusEditWidget::publishedFileSelected(int row)
+void StatusEditWidget::publishedFileSelected()
 {
-    ui_openPublishedFileButton->setEnabled(row >= 0);
+    if ( ui_publishedFileList->currentItem() ) ui_openPublishedFileButton->setEnabled(true);
+    else ui_openPublishedFileButton->setEnabled(false);
 }
 
 void StatusEditWidget::openPublishedFile()
 {
-    int row = ui_publishedFileList->currentRow();
-    if (row < 0) return;
+    if (!ui_publishedFileList->currentItem()) return;
 
-    QString filePathToOpen = QDir(
-                m_status->path( RamObject::PublishFolder, ui_versionPublishBox->currentData().toString() )
-                ).filePath( ui_publishedFileList->item(row)->text() );
+    QString filePathToOpen = ui_publishedFileList->currentFilePath();
 
     m_status->step()->openFile( filePathToOpen );
 
@@ -387,10 +382,9 @@ void StatusEditWidget::openPublishedFile()
 
 void StatusEditWidget::removeSelectedPublishedFile()
 {
-    int row = ui_publishedFileList->currentRow();
-    if (row < 0) return;
+    if (!ui_publishedFileList->currentItem()) return;
 
-    QString fileName = ui_publishedFileList->item(row)->text();
+    QString fileName = ui_publishedFileList->currentFileName();
 
     QMessageBox::StandardButton confirm = QMessageBox::question( this,
         "Confirm deletion",
@@ -404,19 +398,17 @@ void StatusEditWidget::removeSelectedPublishedFile()
     revert();
 }
 
-void StatusEditWidget::previewFileSelected(int row)
+void StatusEditWidget::previewFileSelected()
 {
-    ui_openPreviewFileButton->setEnabled(row >= 0);
+    if ( ui_previewFileList->currentItem() ) ui_openPreviewFileButton->setEnabled(true);
+    else ui_previewFileList->setEnabled(false);
 }
 
 void StatusEditWidget::openPreviewFile()
 {
-    int row = ui_previewFileList->currentRow();
-    if (row < 0) return;
+    if (!ui_previewFileList->currentItem()) return;
 
-    QString filePathToOpen = QDir(
-                m_status->path( RamObject::PreviewFolder )
-                ).filePath( ui_previewFileList->item(row)->text() );
+    QString filePathToOpen = ui_previewFileList->currentFilePath();
 
     // Try with the default app on the system
     QDesktopServices::openUrl(QUrl("file:///" + filePathToOpen));
@@ -428,10 +420,9 @@ void StatusEditWidget::openPreviewFile()
 
 void StatusEditWidget::removeSelectedPreviewFile()
 {
-    int row = ui_previewFileList->currentRow();
-    if (row < 0) return;
+    if ( ui_previewFileList->currentItem()) return;
 
-    QString fileName = ui_previewFileList->item(row)->text();
+    QString fileName = ui_previewFileList->currentFileName();
 
     QMessageBox::StandardButton confirm = QMessageBox::question( this,
         "Confirm deletion",
@@ -583,7 +574,11 @@ void StatusEditWidget::setupUi()
     mainFileLayout->setContentsMargins(0,0,0,0);
     mainFileLayout->setSpacing(3);
 
-    ui_mainFileList = new QListWidget(this);
+    QSettings settings;
+    QString dateFormat = settings.value("ramses/dateFormat", "yyyy-MM-dd hh:mm:ss").toString();
+
+    ui_mainFileList = new DuQFFileList(this);
+    ui_mainFileList->setDateFormat(dateFormat);
     ui_mainFileList->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     mainFileLayout->addWidget(ui_mainFileList);
 
@@ -626,7 +621,8 @@ void StatusEditWidget::setupUi()
     ui_versionPublishBox = new QComboBox(this);
     publishedFileLayout->addWidget(ui_versionPublishBox);
 
-    ui_publishedFileList = new QListWidget(this);
+    ui_publishedFileList = new DuQFFileList(this);
+    ui_publishedFileList->setDateFormat(dateFormat);
     ui_publishedFileList->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     publishedFileLayout->addWidget(ui_publishedFileList);
 
@@ -651,7 +647,8 @@ void StatusEditWidget::setupUi()
     previewFileLayout->setContentsMargins(0,0,0,0);
     previewFileLayout->setSpacing(3);
 
-    ui_previewFileList = new QListWidget(this);
+    ui_previewFileList = new DuQFFileList(this);
+    ui_previewFileList->setDateFormat(dateFormat);
     ui_previewFileList->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     previewFileLayout->addWidget(ui_previewFileList);
 
@@ -711,17 +708,17 @@ void StatusEditWidget::connectEvents()
     connect(ui_revertButton, &QToolButton::clicked, this, &StatusEditWidget::revert);
     connect(ui_versionBox, SIGNAL(valueChanged(int)), this, SLOT(checkPublished(int)));
 
-    connect(ui_mainFileList, SIGNAL(currentRowChanged(int)),this, SLOT(mainFileSelected(int)));
-    connect(ui_mainFileList,SIGNAL(itemDoubleClicked(QListWidgetItem*)),this,SLOT(openMainFile()));
+    connect(ui_mainFileList, SIGNAL(currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)),this, SLOT(mainFileSelected()));
+    connect(ui_mainFileList,SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),this,SLOT(openMainFile()));
     connect(ui_openMainFileButton, SIGNAL(clicked()),this,SLOT(openMainFile()));
 
     connect(ui_versionPublishBox, SIGNAL(currentIndexChanged(int)), this, SLOT(loadPublishedFiles()));
-    connect(ui_publishedFileList, SIGNAL(currentRowChanged(int)),this, SLOT(publishedFileSelected(int)));
-    connect(ui_previewFileList, SIGNAL(currentRowChanged(int)),this, SLOT(previewFileSelected(int)));
+    connect(ui_publishedFileList, SIGNAL(currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)),this, SLOT(publishedFileSelected()));
+    connect(ui_previewFileList, SIGNAL(currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)),this, SLOT(previewFileSelected()));
     connect(ui_openPublishedFileButton, SIGNAL(clicked()),this,SLOT(openPublishedFile()));
     connect(ui_openPreviewFileButton, SIGNAL(clicked()),this,SLOT(openPreviewFile()));
-    connect(ui_publishedFileList,SIGNAL(itemDoubleClicked(QListWidgetItem*)),this,SLOT(openPublishedFile()));
-    connect(ui_previewFileList,SIGNAL(itemDoubleClicked(QListWidgetItem*)),this,SLOT(openPreviewFile()));
+    connect(ui_publishedFileList,SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),this,SLOT(openPublishedFile()));
+    connect(ui_previewFileList,SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),this,SLOT(openPreviewFile()));
 
     connect(ui_autoEstimationBox, SIGNAL(clicked(bool)), this, SLOT(autoEstimationClicked(bool)));
     connect(ui_difficultyBox, SIGNAL(currentIndexChanged(int)), this, SLOT(difficultyBoxChanged()));

@@ -39,15 +39,11 @@ public:
     RamState *state() const;
     void setState(RamState *state);
 
-    QStringList mainFiles() const;
+    RamWorkingFolder workingFolder() const;
     QString createFileFromTemplate(QString filePath) const;
     QString createFileFromResource(QString filePath) const;
 
     int version() const;
-    QStringList versionFiles() const;
-    QStringList versionFiles(QString resource) const;
-    int latestVersion() const;
-    int latestVersion(QString resource) const;
     void setVersion(int version);
     QString restoreVersionFile(QString fileName) const;
 
@@ -59,14 +55,9 @@ public:
     void setDate(const QDateTime &date);
 
     bool isPublished() const;
-    bool checkPublished(int version = -1) const;
-    QStringList publishedVersionFolders() const;
-    QStringList publishedFiles( QString versionFolder ) const;
-    QStringList publishedFiles( QString resource, QString versionFolder ) const;
     void setPublished(bool published);
 
     QString previewImagePath() const;
-    QStringList previewFiles() const;
 
     RamUser *assignedUser() const;
     void assignUser(RamUser *assignedUser);
@@ -126,8 +117,5 @@ private:
     QMetaObject::Connection m_assignedUserConnection;
 
 };
-
-bool versionFolderSorter(QString a, QString b);
-int getVersionFolderRank(QString folder);
 
 #endif // RAMSTATUS_H

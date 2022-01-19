@@ -209,19 +209,23 @@ QString RamObject::path(SubFolder subFolder, QString subPath, bool create) const
     return p;
 }
 
-QStringList RamObject::listFiles(RamObject::SubFolder subFolder) const
-{
-    QDir dir( path(subFolder));
-    QStringList files = dir.entryList( QDir::Files );
-    files.removeAll( RamFileMetaDataManager::metaDataFileName() );
-    return files;
-}
-
 QStringList RamObject::listFiles(RamObject::SubFolder subFolder, QString subPath) const
 {
     QDir dir( path(subFolder) + "/" + subPath);
     QStringList files = dir.entryList( QDir::Files );
-    files.removeAll( RamFileMetaDataManager::metaDataFileName() );
+    files.removeAll( RamNameManager::MetaDataFileName );
+    return files;
+}
+
+QList<QFileInfo> RamObject::listFileInfos(SubFolder subFolder, QString subPath) const
+{
+    QDir dir( path(subFolder) + "/" + subPath);
+    QList<QFileInfo> files = dir.entryInfoList( QDir::Files );
+    // Remove the ramses data file
+    for (int i = files.length() - 1; i >= 0; i--)
+    {
+        if (files.at(i).fileName() == RamNameManager::MetaDataFileName ) files.removeAt(i);
+    }
     return files;
 }
 

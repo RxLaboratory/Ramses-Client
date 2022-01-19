@@ -94,9 +94,9 @@ void RamStatus::setState(RamState *state)
     emit changed(this);
 }
 
-QStringList RamStatus::mainFiles() const
+RamWorkingFolder RamStatus::workingFolder() const
 {
-    return listFiles();
+    return RamWorkingFolder(this->path());
 }
 
 QString RamStatus::createFileFromTemplate(QString filePath) const
@@ -156,81 +156,6 @@ QString RamStatus::createFileFromResource(QString filePath) const
 int RamStatus::version() const
 {
     return m_version;
-}
-
-QStringList RamStatus::versionFiles() const
-{
-    return listFiles(VersionsFolder);
-}
-
-QStringList RamStatus::versionFiles(QString resource) const
-{
-    QStringList files;
-
-    RamNameManager nm;
-
-    RamProject *p = m_item->project();
-
-    // look for files with the same resource
-    foreach(QString file, versionFiles())
-    {
-        if (nm.setFileName(file))
-        {
-            if (nm.project().toLower() != p->shortName().toLower()) continue;
-            if (nm.step().toLower() != m_step->shortName().toLower()) continue;
-            if (nm.shortName().toLower() != m_item->shortName().toLower()) continue;
-            if (nm.resource() == resource) files << file;
-        }
-    }
-    return files;
-}
-
-int RamStatus::latestVersion() const
-{
-    QStringList files;
-
-    RamNameManager nm;
-
-    RamProject *p = m_item->project();
-
-    int v = 0;
-
-    // look for files with the same resource
-    foreach(QString file, versionFiles())
-    {
-        if (nm.setFileName(file))
-        {
-            if (nm.project().toLower() != p->shortName().toLower()) continue;
-            if (nm.step().toLower() != m_step->shortName().toLower()) continue;
-            if (nm.shortName().toLower() != m_item->shortName().toLower()) continue;
-            if (nm.version() > v) v = nm.version();
-        }
-    }
-    return v;
-}
-
-int RamStatus::latestVersion(QString resource) const
-{
-    QStringList files;
-
-    RamNameManager nm;
-
-    int v = 0;
-
-    RamProject *p = m_item->project();
-
-    // look for files with the same resource
-    foreach(QString file, versionFiles())
-    {
-        if (nm.setFileName(file))
-        {
-            if (nm.project().toLower() != p->shortName().toLower()) continue;
-            if (nm.step().toLower() != m_step->shortName().toLower()) continue;
-            if (nm.shortName().toLower() != m_item->shortName().toLower()) continue;
-            if (nm.resource() == resource && nm.version() > v) v = nm.version();
-        }
-    }
-    return v;
 }
 
 void RamStatus::setVersion(int version)
@@ -542,57 +467,6 @@ bool RamStatus::isPublished() const
     return m_published;
 }
 
-bool RamStatus::checkPublished( int version ) const
-{
-    // Check if there's a published file corresponding to the version
-    QStringList files = publishedFiles("");
-    if (version == -1 ) return files.count() > 0;
-
-    RamFileMetaDataManager mdm( path( RamObject::PublishFolder ));
-
-    foreach(QString file, files)
-    {
-        if ( mdm.getVersion(file) == version) return true;
-    }
-    return false;
-}
-
-QStringList RamStatus::publishedVersionFolders() const
-{
-    // Sort before returning
-    QStringList folders = listFolders(PublishFolder);
-    std::sort(folders.begin(), folders.end(), versionFolderSorter);
-    return folders;
-}
-
-QStringList RamStatus::publishedFiles(QString versionFolder) const
-{
-    // List subfolders and check if they're correctly named
-    return listFiles(PublishFolder, versionFolder);
-}
-
-QStringList RamStatus::publishedFiles(QString resource, QString versionFolder ) const
-{
-    QStringList files;
-
-    RamNameManager nm;
-
-    RamProject *p = m_item->project();
-
-    // look for files with the same resource
-    foreach(QString file, publishedFiles( versionFolder ))
-    {
-        if (nm.setFileName(file))
-        {
-            if (nm.project().toLower() != p->shortName().toLower()) continue;
-            if (nm.step().toLower() != m_step->shortName().toLower()) continue;
-            if (nm.shortName().toLower() != m_item->shortName().toLower()) continue;
-            if (nm.resource() == resource) files << file;
-        }
-    }
-    return files;
-}
-
 void RamStatus::setPublished(bool published)
 {
     if (published == m_published) return;
@@ -627,11 +501,6 @@ QString RamStatus::previewImagePath() const
 
     // Not found, return the first one
     return previewDir.filePath( images.at(0) );
-}
-
-QStringList RamStatus::previewFiles() const
-{
-    return listFiles(PreviewFolder);
 }
 
 QDateTime RamStatus::date() const
@@ -699,35 +568,3 @@ int RamStatus::daysToHours(float days)
     return days*8;
 }
 
-bool versionFolderSorter(QString a, QString b)
-{
-    int ai = getVersionFolderRank(a);
-    int bi = getVersionFolderRank(b);
-    return ai < bi;
-}
-
-int getVersionFolderRank(QString folder)
-{
-    QFileInfo folderInfo(folder);
-    QString name = folderInfo.baseName();
-    QStringList nameBlocks = name.split("_");
-    int num = nameBlocks.length();
-    // Invalid, return lowest value possible
-    if (num == 0 || num  > 3) return INT32_MIN;
-    // Single or Dual Block, first should be a number
-    if (num == 1 || num == 2)
-    {
-        bool ok;
-        int i = nameBlocks[0].toInt(&ok);
-        if (ok) return i;
-        return INT32_MIN;
-    }
-    // We've got a resource
-    bool ok;
-    int i = nameBlocks[1].toInt(&ok);
-    if (!ok) return INT32_MIN;
-    // Hash the resource, add the version
-    std::hash<std::string> hasher;
-    int hashed = hasher(nameBlocks[0].toStdString());
-    return hashed + i;
-}

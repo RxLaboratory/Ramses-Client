@@ -53,6 +53,7 @@ SOURCES += \
     duqf-widgets/duqfautosizetoolbutton.cpp \
     duqf-widgets/duqfcolorselector.cpp \
     duqf-widgets/duqfelidedlabel.cpp \
+    duqf-widgets/duqffilelist.cpp \
     duqf-widgets/duqfsearchedit.cpp \
     data-models/ramitemtable.cpp \
     data-models/ramobjectlist.cpp \
@@ -204,6 +205,7 @@ HEADERS += \
     duqf-widgets/duqfautosizetoolbutton.h \
     duqf-widgets/duqfcolorselector.h \
     duqf-widgets/duqfelidedlabel.h \
+    duqf-widgets/duqffilelist.h \
     duqf-widgets/duqfsearchedit.h \
     duqf-widgets/duqftitlebar.h \
     duqf-widgets/duqftoolbarspacer.h \

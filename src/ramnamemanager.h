@@ -23,7 +23,8 @@ public:
      * @param name
      * @return
      */
-    bool setFileName(const QString &name);
+    bool setFileName(QString name);
+    bool setFileName(const QFileInfo &name);
 
     // Get results
     QString project() const;

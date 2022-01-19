@@ -78,11 +78,19 @@ QString RamNameManager::fileName() const
 
 }
 
-bool RamNameManager::setFileName(const QString &name)
+bool RamNameManager::setFileName(QString name)
+{
+
+    // remove trailing "/"
+    return setFileName(QFileInfo( name.replace(QRegExp("[\\/\\\\]$"), "") ));
+}
+
+bool RamNameManager::setFileName(const QFileInfo &name)
 {
     init();
 
-    m_fileName = QFileInfo(name).fileName();
+    m_fileName = name.fileName();
+
     QRegularExpressionMatch match = m_reName.match( m_fileName );
 
     if (!match.hasMatch()) return false;
