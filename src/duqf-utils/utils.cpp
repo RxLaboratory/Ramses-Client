@@ -214,6 +214,45 @@ QString MediaUtils::durationToTimecode(double duration)
     return d.toString("hh:mm:ss.zzz");
 }
 
+
+QProcess *ProcessUtils::runProcess(QString binary, QStringList arguments)
+{
+    QProcess *p = new QProcess();
+    ProcessUtils::runProcess(p, binary, arguments);
+    return p;
+}
+
+void ProcessUtils::runIndependantProcess(QString binary, QStringList arguments)
+{
+    QProcess *p = new QProcess();
+    QObject::connect(p, SIGNAL(finished(int)), p, SLOT(deleteLater()));
+    ProcessUtils::runProcess(p, binary, arguments);
+}
+
+void ProcessUtils::runProcess(QProcess *p, QString binary, QStringList arguments)
+{
+    // To fix potential issues (especially on Mac OS and aerender) it's better to set the working dir to be the same as the binary
+    QString workingDir = QFileInfo(binary).absolutePath();
+    p->setProgram(binary);
+    p->setWorkingDirectory(workingDir);
+    p->setArguments(arguments);
+
+    QString args = "";
+    foreach(QString arg, arguments)
+    {
+        if (arg.indexOf(" ") > 0) args = args + " \"" + arg + "\"";
+        else args = args + " " + arg;
+    }
+    qDebug().noquote() << p->program() + args;
+
+    p->start(QIODevice::ReadWrite);
+}
+
+QString FileUtils::applicationTempPath()
+{
+    return QDir::tempPath() + "/" + qApp->applicationName() + "/";
+}
+
 qint64 FileUtils::getDirSize(QDir d)
 {
     qint64 size = 0;
@@ -266,7 +305,6 @@ void FileUtils::openInExplorer(QString path, bool askForCreation)
     QProcess::execute("xdg-open", QStringList(p));
 #endif
 }
-
 
 bool FileUtils::moveToTrash(const QString &fileName)
 {

@@ -25,6 +25,7 @@ namespace FileUtils
     void remove(QString path);
     qint64 getDirSize(QDir d);
     void openInExplorer(QString path, bool askForCreation = false);
+    QString applicationTempPath();
 
     /**
      * @brief moveToTrash Moves a file to the trash, works on Linux, Mac OS, Windows.
@@ -146,6 +147,12 @@ namespace RegExUtils {
 
 namespace Interpolations {
     double linear( double val, double fromMin, double fromMax, double toMin = 0, double toMax = 100);
+}
+
+namespace ProcessUtils {
+    QProcess *runProcess(QString binary, QStringList arguments = QStringList());
+    void runProcess(QProcess *p, QString binary, QStringList arguments = QStringList());
+    void runIndependantProcess(QString binary, QStringList arguments = QStringList());
 }
 
 #endif // UTILS_H

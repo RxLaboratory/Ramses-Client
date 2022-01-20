@@ -23,10 +23,10 @@
 #define VER_PRODUCTVERSION VERSION_MAJOR,VERSION_MINOR,VERSION_BUILD,0
 #define STR_PRODUCTVERSION STR_VERSION
 
-#define STR_COMPANYNAME "Rx Laboratory"
+#define STR_COMPANYNAME "RxLaboratory"
 #define STR_FILEDESCRIPTION "Ramses"
 #define STR_INTERNALNAME "Ramses-Client"
-#define STR_LEGALCOPYRIGHT "Copyright (c) 2021 Rx Laboratory, Nicolas Dufresne and contributors"
+#define STR_LEGALCOPYRIGHT "Copyright (c) 2021-2022 RxLaboratory, Nicolas Dufresne and contributors"
 #define STR_LEGALTRADEMARKS1 "All Rights Reserved"
 #define STR_ORIGINALFILENAME "Ramses.exe"
 #define STR_PRODUCTNAME "Ramses - Rx Asset Management System"
