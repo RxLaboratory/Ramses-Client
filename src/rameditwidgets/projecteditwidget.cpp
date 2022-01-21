@@ -66,10 +66,11 @@ void ProjectEditWidget::setObject(RamObject *obj)
 
 
     this->setEnabled( Ramses::instance()->isAdmin() );
-    if (!this->isEnabled())
+    // Projects should be edited only by admins
+    /*if (!this->isEnabled())
     {
         this->setEnabled( project->is(Ramses::instance()->currentProject()) && Ramses::instance()->isProjectAdmin() );
-    }
+    }*/
 }
 
 void ProjectEditWidget::update()
