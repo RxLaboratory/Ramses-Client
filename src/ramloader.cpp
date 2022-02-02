@@ -1104,7 +1104,6 @@ QString RamLoader::gotScheduleEntry(QJsonObject newSE)
     RamUser *user = RamUser::user( newSE.value("userUuid").toString() );
     if (!user) return uuid;
     RamStep *step = RamStep::step( newSE.value("stepUuid").toString() );
-    if (!step) return uuid;
 
     // Get existing one if any, otherwise create it
     RamScheduleEntry *entry = RamScheduleEntry::scheduleEntry(uuid);
