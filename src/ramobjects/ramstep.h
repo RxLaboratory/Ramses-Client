@@ -88,7 +88,9 @@ public:
     float latenessRatio() const;
     float assignedDays() const;
     float unassignedDays() const;
-    float futureAssignedDays() const;
+    float missingDays() const;
+    float daysSpent() const;
+    float neededDays() const;
 
 signals:
     void estimationComputed(RamStep*);

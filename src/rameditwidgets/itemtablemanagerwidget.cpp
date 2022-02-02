@@ -138,8 +138,8 @@ void ItemTableManagerWidget::hideEvent(QHideEvent *event)
             uSettings->beginGroup("assetTable");
 
         // View
-        uSettings->setValue("showTimeTracking", ui_actionTimeTracking->isChecked());
-        uSettings->setValue("showCompletion", ui_actionCompletionRatio->isChecked());
+        //uSettings->setValue("showTimeTracking", ui_actionTimeTracking->isChecked());
+        //uSettings->setValue("showCompletion", ui_actionCompletionRatio->isChecked());
         uSettings->setValue("showDetails", ui_actionShowDetails->isChecked());
         // Users
         ui_userMenu->saveState(uSettings, "users");
@@ -660,15 +660,15 @@ void ItemTableManagerWidget::setupUi()
     // View Menu
     QMenu *viewMenu = new QMenu(this);
 
-    ui_actionTimeTracking = new QAction("Show time tracking", this);
+    /*ui_actionTimeTracking = new QAction("Show time tracking", this);
     ui_actionTimeTracking->setCheckable(true);
     ui_actionTimeTracking->setChecked(true);
-    viewMenu->addAction(ui_actionTimeTracking);
+    viewMenu->addAction(ui_actionTimeTracking);//*/
 
-    ui_actionCompletionRatio = new QAction("Show completion", this);
+    /*ui_actionCompletionRatio = new QAction("Show completion", this);
     ui_actionCompletionRatio->setCheckable(true);
     ui_actionCompletionRatio->setChecked(true);
-    viewMenu->addAction(ui_actionCompletionRatio);
+    viewMenu->addAction(ui_actionCompletionRatio);//*/
 
     ui_actionShowDetails = new QAction("Show details", this);
     ui_actionShowDetails->setCheckable(true);
@@ -915,6 +915,8 @@ void ItemTableManagerWidget::setupUi()
     ui_header = new RamStepHeaderView(ui_table);
     ui_table->setHorizontalHeader( ui_header );
     ui_table->setSelectionMode(QAbstractItemView::ExtendedSelection);
+    ui_table->setTimeTracking(false);
+    ui_header->setTimeTracking(false);
     if (m_productionType == RamStep::ShotProduction) ui_table->setSortable(true);
     mainLayout->addWidget(ui_table);
 
@@ -988,10 +990,10 @@ void ItemTableManagerWidget::connectEvents()
     connect(ui_completion100, SIGNAL(triggered()), this, SLOT( setCompletion() ) );
     connect(ui_table, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(contextMenuRequested(QPoint)));
     // view actions
-    connect(ui_actionTimeTracking, SIGNAL(toggled(bool)), ui_table, SLOT(setTimeTracking(bool)));
-    connect(ui_actionCompletionRatio, SIGNAL(toggled(bool)), ui_table, SLOT(setCompletionRatio(bool)));
-    connect(ui_actionTimeTracking, SIGNAL(toggled(bool)), ui_header, SLOT(setTimeTracking(bool)));
-    connect(ui_actionCompletionRatio, SIGNAL(toggled(bool)), ui_header, SLOT(setCompletionRatio(bool)));
+    //connect(ui_actionTimeTracking, SIGNAL(toggled(bool)), ui_table, SLOT(setTimeTracking(bool)));
+    //connect(ui_actionCompletionRatio, SIGNAL(toggled(bool)), ui_table, SLOT(setCompletionRatio(bool)));
+    //connect(ui_actionTimeTracking, SIGNAL(toggled(bool)), ui_header, SLOT(setTimeTracking(bool)));
+    //connect(ui_actionCompletionRatio, SIGNAL(toggled(bool)), ui_header, SLOT(setCompletionRatio(bool)));
     connect(ui_actionShowDetails, SIGNAL(toggled(bool)), ui_table, SLOT(showDetails(bool)));
     // sort actions
     connect(ui_actionSortDefault, SIGNAL(triggered(bool)), this, SLOT(sortDefault(bool)));
@@ -1044,8 +1046,8 @@ void ItemTableManagerWidget::loadSettings()
         uSettings->beginGroup("assetTable");
 
     // View
-    ui_actionTimeTracking->setChecked( uSettings->value("showTimeTracking", true).toBool() );
-    ui_actionCompletionRatio->setChecked( uSettings->value("showCompletion", true).toBool() );
+    //ui_actionTimeTracking->setChecked( uSettings->value("showTimeTracking", true).toBool() );
+    //ui_actionCompletionRatio->setChecked( uSettings->value("showCompletion", true).toBool() );
     ui_actionShowDetails->setChecked( uSettings->value("showDetails", true).toBool() );
     // Users
     ui_userMenu->restoreState(uSettings, "users");

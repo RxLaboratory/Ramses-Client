@@ -118,8 +118,8 @@ private:
     QToolButton *ui_stepButton;
     RamObjectListMenu *ui_stepMenu;
     QAction *ui_actionSelectMySteps ;
-    QAction *ui_actionTimeTracking ;
-    QAction *ui_actionCompletionRatio ;
+    //QAction *ui_actionTimeTracking ;
+    //QAction *ui_actionCompletionRatio ;
     QAction *ui_actionShowDetails;
     QAction *ui_actionSortDefault;
     QAction *ui_actionSortByShortName;

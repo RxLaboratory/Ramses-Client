@@ -58,9 +58,9 @@ QVariant RamStatisticsTable::data(const QModelIndex &index, int role) const
         {
             int completion = step->completionRatio();
             float estimation = step->estimation();
-            float daysSpent = completion * estimation / 100.0;
-            float needed = estimation - daysSpent;
-            float futureUnassigned = needed - step->futureAssignedDays();
+            float daysSpent = step->daysSpent();
+            float needed = step->neededDays();
+            float futureUnassigned = step->missingDays();
             text = "Completion: " %
                     QString::number( completion ) % " % (" %
                     QString::number( daysSpent, 'f', 1 ) % " / " % QString::number(estimation, 'f', 1) % " days)";
@@ -101,18 +101,21 @@ QVariant RamStatisticsTable::data(const QModelIndex &index, int role) const
         return text;
     }
     if (role == Qt::ForegroundRole)
-    {
+    {       
         float latenessRatio = step->latenessRatio();
         QColor timeColor;
-        if ( latenessRatio < 1.0 ) timeColor = QColor(157,157,157);
-        else if ( latenessRatio < 1.1 ) timeColor = QColor(191,177,72);
-        else if ( latenessRatio < 1.2 ) timeColor = QColor(186,100,50);
-        else if ( latenessRatio < 1.3 ) timeColor = QColor(191,148,61);
-        else if ( latenessRatio < 1.4 ) timeColor = QColor(213,98,44);
-        else if ( latenessRatio < 1.5 ) timeColor = QColor(216,62,31);
-        else if ( latenessRatio < 1.6 ) timeColor = QColor(230,31,17);
-        else if ( latenessRatio < 1.7 ) timeColor = QColor(244,2,2);
+        if ( latenessRatio < -0.05 ) timeColor = QColor(44,98,230);
+        else if ( latenessRatio < -0.01 ) timeColor = QColor(50,100,186);
+        else if ( latenessRatio < 0.01 ) timeColor = QColor(157,157,157);
+        else if ( latenessRatio < 0.02 ) timeColor = QColor(191,177,72);
+        else if ( latenessRatio < 0.05 ) timeColor = QColor(191,148,61);
+        else if ( latenessRatio < 0.10 ) timeColor = QColor(186,100,50);
+        else if ( latenessRatio < 0.15 ) timeColor = QColor(213,98,44);
+        else if ( latenessRatio < 0.20 ) timeColor = QColor(216,62,31);
+        else if ( latenessRatio < 0.25 ) timeColor = QColor(230,31,17);
+        else if ( latenessRatio < 0.33 ) timeColor = QColor(244,2,2);
         else timeColor = QColor(255,0,0);
+        return timeColor;
     }
 
     if (role == Qt::ToolTipRole) return QString( step->name() %
@@ -135,8 +138,8 @@ QVariant RamStatisticsTable::data(const QModelIndex &index, int role) const
     if (role == Qt::UserRole +3) return step->timeSpent();
     if (role == Qt::UserRole +4) return step->assignedDays();
     if (role == Qt::UserRole +5) return step->unassignedDays();
-
     if (role == Qt::UserRole +6) return step->type();
+    if (role == Qt::UserRole +7) return step->missingDays();
 
     return QVariant();
 }

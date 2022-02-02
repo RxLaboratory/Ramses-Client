@@ -200,7 +200,7 @@ float RamStep::completionRatio() const
 
 float RamStep::latenessRatio() const
 {
-    return m_latenessRatio;
+    return missingDays() / neededDays();
 }
 
 float RamStep::assignedDays() const
@@ -213,9 +213,19 @@ float RamStep::unassignedDays() const
     return m_missingDays;
 }
 
-float RamStep::futureAssignedDays() const
+float RamStep::missingDays() const
 {
-    return m_assignedFutureHalfDays/2.0;
+    return neededDays() - m_assignedFutureHalfDays/2.0;
+}
+
+float RamStep::daysSpent() const
+{
+    return m_estimation * m_completionRatio / 100;
+}
+
+float RamStep::neededDays() const
+{
+    return m_estimation - daysSpent();
 }
 
 float RamStep::estimationVeryHard() const
@@ -428,6 +438,8 @@ void RamStep::computeEstimation()
     m_latenessRatio = 0;
     int numItems = 0;
 
+    float completedDays = 0;
+
     RamState *no = Ramses::instance()->noState();
 
     for (int i =0; i < items->count(); i++)
@@ -444,24 +456,22 @@ void RamStep::computeEstimation()
         float estimation = 0;
         if (status->useAutoEstimation()) estimation = status->estimation();
         else estimation = status->goal();
+
+        completedDays += estimation * status->completionRatio() / 100.0;
         m_estimation += estimation;
 
-        m_completionRatio += status->completionRatio();
         m_latenessRatio += status->latenessRatio();
 
         numItems++;
     }
 
-    if (numItems > 0)
-    {
-        m_completionRatio /= numItems;
-        m_latenessRatio /= numItems;
-    }
-    else
-    {
-        m_completionRatio  = 100;
-        m_latenessRatio = 1;
-    }
+    if (numItems > 0) m_latenessRatio /= numItems;
+    else m_latenessRatio = 1;
+
+    if (m_estimation > 0) m_completionRatio = completedDays / m_estimation * 100;
+    else m_completionRatio = 100;
+
+    m_completionRatio = std::min(100, (int)m_completionRatio);
 
     // update missing days
     m_missingDays = m_estimation - m_assignedHalfDays/2.0;
