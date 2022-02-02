@@ -22,7 +22,7 @@ void TimelineWidget::setupUi()
     buttonsLayout->addStretch();
 
     ui_zoomSlider = new DuQFDoubleSlider(this);
-    ui_zoomSlider->setMinimum(0.25);
+    ui_zoomSlider->setMinimum(0.1);
     ui_zoomSlider->setMaximum(4.0);
     ui_zoomSlider->showValue(false);
     ui_zoomSlider->setPrefix("Zoom");

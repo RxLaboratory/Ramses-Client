@@ -24,6 +24,7 @@ public:
 
 public slots:
     void update() override;
+    bool move(int index) override;
     virtual void edit(bool show = true) override;
 
 protected:

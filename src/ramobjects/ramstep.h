@@ -94,11 +94,13 @@ signals:
 
 public slots:
     void update() override;
+    bool move(int index) override;
     virtual void edit(bool show = true) override;
     virtual void removeFromDB() override;
 
     void computeEstimation();
     void countAssignedDays();
+
 
 protected:
     virtual QString folderPath() const override;

@@ -105,6 +105,27 @@ void TimelineView::resizeEvent(QResizeEvent *event)
     this->setRowHeight(0, event->size().height());
 }
 
+void TimelineView::columnMoved(int logicalIndex, int oldVisualIndex, int newVisualIndex)
+{
+    Q_UNUSED(logicalIndex);
+
+    QSignalBlocker b(this->horizontalHeader());
+
+    // Get the source model to move the row
+    RamItemTableListProxy *tlp = reinterpret_cast<RamItemTableListProxy*>(m_objectList->sourceModel());
+    RamObjectList *model = reinterpret_cast<RamObjectList*>(tlp->sourceModel());
+
+    // Convert the filtered index to the model index
+    QModelIndex oldIndex = m_objectList->index(0, oldVisualIndex);
+    QModelIndex newIndex = m_objectList->index(0, newVisualIndex);
+    oldIndex = m_objectList->mapToSource(oldIndex);
+    newIndex = m_objectList->mapToSource(newIndex);
+    model->moveRow(QModelIndex(), oldIndex.row(), QModelIndex(), newIndex.row());//*/
+
+    // move back to the (new) logical index
+    this->horizontalHeader()->moveSection(newVisualIndex, oldVisualIndex);
+}
+
 void TimelineView::changeProject(RamProject *project)
 {
     if (project) this->setList(project->shots());
@@ -191,8 +212,6 @@ void TimelineView::zoom(double amount)
 {
     qreal s = 1.0 + amount / 10.0 * m_zoomSensitivity;
 
-    if (m_zoom*s < 0.25) return;
-
     setZoom( m_zoom*s );
 
     emit zoomed(m_zoom);
@@ -254,4 +273,6 @@ void TimelineView::connectEvents()
     connect(m_delegate, SIGNAL(editObject(RamObject*)), this, SLOT(select(RamObject*)));
     // Select
     connect(TimelineManager::instance(), SIGNAL(currentShotChanged(RamShot*)), this, SLOT(selectShot(RamShot*)));
+    // SORT
+    connect( this->horizontalHeader(), SIGNAL(sectionMoved(int,int,int)), this, SLOT(columnMoved(int,int,int)));
 }

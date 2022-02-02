@@ -915,13 +915,13 @@ void ItemTableManagerWidget::setupUi()
     ui_header = new RamStepHeaderView(ui_table);
     ui_table->setHorizontalHeader( ui_header );
     ui_table->setSelectionMode(QAbstractItemView::ExtendedSelection);
+    if (m_productionType == RamStep::ShotProduction) ui_table->setSortable(true);
     mainLayout->addWidget(ui_table);
 
     ui_table->filteredList()->setStepType(m_productionType);
     ui_table->filteredList()->useFilters(true);
 
     this->setLayout(mainLayout);
-
 
     ui_contextMenu = new QMenu(this);
 

@@ -36,6 +36,8 @@ public:
     virtual void insertObject(int i, RamObject *obj); // Insert Row
     virtual RamObject *takeObject(int i); // Remove Row
     virtual QList<RamObject *> removeIndices( QModelIndexList indices ); // Used to remove selection. Returns the removed objects
+    virtual bool moveRow(const QModelIndex &sourceParent, int sourceRow, const QModelIndex &destinationParent, int destinationChild); // Updates objects order
+    virtual bool moveRows(const QModelIndex &sourceParent, int sourceRow, int count, const QModelIndex &destinationParent, int destinationChild) override;
 
     // CONVENIENCE METHODS
     // Info
@@ -85,7 +87,6 @@ protected:
 private slots:
     // Emits dataChanged() and headerChanged()
     void objectChanged(RamObject *obj);
-    void objectMoved(RamObject *obj, int from, int to);
     void objectInserted(const QModelIndex &parent, int first, int last);
     void objectRemoved(const QModelIndex &parent, int first, int last);
 

@@ -205,35 +205,21 @@ void RamObjectListView::selectShot(RamShot *shot)
 
 void RamObjectListView::rowMoved(int logicalIndex, int oldVisualIndex, int newVisualIndex)
 {
+    Q_UNUSED(logicalIndex);
+
     QSignalBlocker b(this->verticalHeader());
 
-    quintptr ciptr = m_objectList->data( m_objectList->index(logicalIndex, 0), Qt::UserRole).toULongLong();
-    RamObject *movedObject = reinterpret_cast<RamObject*>( ciptr );
+    // Get the source model to move the row
+    RamObjectList *model = reinterpret_cast<RamObjectList*>(m_objectList->sourceModel());
+    // Convert the filtered index to the model index
+    QModelIndex oldIndex = m_objectList->index(oldVisualIndex, 0);
+    QModelIndex newIndex = m_objectList->index(newVisualIndex, 0);
+    oldIndex = m_objectList->mapToSource(oldIndex);
+    newIndex = m_objectList->mapToSource(newIndex);
+    model->moveRow(QModelIndex(), oldIndex.row(), QModelIndex(), newIndex.row());//*/
 
-    bool up = oldVisualIndex < newVisualIndex;
-
-    // if up, the new index is the one of the below neighbour
-    // else it's the one of the neighbour above
-    int nVisualIndex = 0;
-    if (up) nVisualIndex = newVisualIndex -1;
-    else nVisualIndex = newVisualIndex + 1;
-    //limit
-    if (nVisualIndex < 0) nVisualIndex = 0;
-    if (nVisualIndex > m_objectList->rowCount() -1) nVisualIndex = m_objectList->rowCount() -1;
-
-
-    int neighbour = this->verticalHeader()->logicalIndex(nVisualIndex);
-    quintptr iptr = m_objectList->data( m_objectList->index(neighbour, 0), Qt::UserRole).toULongLong();
-    RamObject *nObj = reinterpret_cast<RamObject*>( iptr );
-
-    movedObject->setOrder( nObj->order() );
-    movedObject->update();
-
-    // move back to the logical index
+    // move back to the (new) logical index
     this->verticalHeader()->moveSection(newVisualIndex, oldVisualIndex);
-
-    // sort just to be sure everything is up-to-date
-    m_objectList->sourceModel()->sort(0);
 }
 
 void RamObjectListView::revealFolder(RamObject *obj)

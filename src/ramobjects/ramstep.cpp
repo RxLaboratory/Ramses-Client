@@ -340,6 +340,12 @@ QList<RamObject *> RamStep::outputFileTypes()
 
 void RamStep::update()
 {
+    if (m_orderChanged)
+    {
+        m_dbi->setStepOrder(m_uuid, m_order);
+        m_orderChanged = false;
+    }
+
     if(!m_dirty) return;
     RamObject::update();
     QString type = "asset";
@@ -351,12 +357,6 @@ void RamStep::update()
         m_dbi->updateTemplateStep(m_uuid, m_shortName, m_name, type, m_comment, m_color);
     else
         m_dbi->updateStep(m_uuid, m_shortName, m_name, type, m_comment, m_color);
-
-    if (m_orderChanged)
-    {
-        m_dbi->setStepOrder(m_uuid, m_order);
-        m_orderChanged = false;
-    }
 
     if (m_estimationChanged)
     {
@@ -371,6 +371,12 @@ void RamStep::update()
             m_dbi->setStepEstimations(m_uuid, method, m_estimationVeryEasy, m_estimationEasy, m_estimationMedium, m_estimationHard, m_estimationVeryHard, multiplyGroupUuid);
         m_estimationChanged = false;
     }
+}
+
+bool RamStep::move(int index) {
+    if (!RamObject::move(index)) return false;
+    m_dbi->moveStep(m_uuid, m_order);
+    return true;
 }
 
 RamStep *RamStep::step(QString uuid)

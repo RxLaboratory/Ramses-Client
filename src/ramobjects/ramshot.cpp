@@ -70,14 +70,23 @@ RamShot *RamShot::shot(QString uuid)
 
 void RamShot::update()
 {
-    if(!m_dirty) return;
-    RamObject::update();
-    m_dbi->updateShot(m_uuid, m_shortName, m_name, m_sequence->uuid(), m_duration, m_comment);
     if (m_orderChanged)
     {
         m_dbi->setShotOrder(m_uuid, m_order);
         m_orderChanged = false;
     }
+
+    if(!m_dirty) return;
+    RamObject::update();
+    m_dbi->updateShot(m_uuid, m_shortName, m_name, m_sequence->uuid(), m_duration, m_comment);
+}
+
+bool RamShot::move(int index)
+{
+    if (!RamObject::move(index)) return false;
+
+    m_dbi->moveShot(m_uuid, m_order);
+    return true;
 }
 
 void RamShot::edit(bool show)

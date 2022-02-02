@@ -25,6 +25,7 @@ public:
     void setList(RamObjectList *shots);
     void zoom(double amount);
     double currentZoom() const;
+
 public slots:
     void select(RamObject *o);
     void setZoom(double zoom);
@@ -40,6 +41,10 @@ protected:
     virtual void mousePressEvent(QMouseEvent *event) override;
     virtual void mouseReleaseEvent(QMouseEvent *event) override;
     virtual void resizeEvent(QResizeEvent *event) override;
+
+protected slots:
+    // Moved
+    void columnMoved( int logicalIndex, int oldVisualIndex, int newVisualIndex);
 
 private slots:
     void changeProject(RamProject*project);

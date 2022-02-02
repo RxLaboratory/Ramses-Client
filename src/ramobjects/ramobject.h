@@ -108,14 +108,13 @@ public:
 
 public slots:
     virtual void update();
+    virtual bool move(int newIndex);
     virtual void removeFromDB() {};
     virtual void remove(bool updateDB = true);
     virtual void edit(bool s = true) { Q_UNUSED(s) };
 
 signals:
     void changed(RamObject *);
-    void orderChanged(RamObject *, int p, int n);
-    void orderChanged();
     void removed(RamObject *);
 
 protected:

@@ -181,11 +181,8 @@ int RamObject::order() const
 void RamObject::setOrder(int order)
 {
     if (order == m_order) return;
-    m_dirty = true;
-    int previous = m_order;
     m_order = order;
     if (!m_dbi->isSuspended()) m_orderChanged = true;
-    emit orderChanged(this, previous, order);
 }
 
 QString RamObject::path(RamObject::SubFolder subFolder, bool create) const
@@ -326,4 +323,11 @@ RamObject *RamObject::objFromName(QString shortNameOrName, ObjectType objType)
 void RamObject::update()
 {
     m_dirty = false;
+}
+
+bool RamObject::move(int newIndex)
+{
+    if (newIndex == m_order) return false;
+    m_order = newIndex;
+    return true;
 }

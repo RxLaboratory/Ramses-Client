@@ -70,15 +70,6 @@ void RamObjectList::sort(int column, Qt::SortOrder order)
     if (m_sorted) return;
     std::sort(m_objectsList.begin(), m_objectsList.end(), objectSorter);
 
-    // Sync object order with list indices
-    for (int i = 0; i < m_objectsList.count(); i++)
-    {
-        RamObject *o = m_objectsList.at(i);
-        QSignalBlocker b( o );
-        o->setOrder(i);
-        o->update();
-    }
-
     m_sorted = true;
 }
 
@@ -93,34 +84,6 @@ void RamObjectList::objectChanged(RamObject *obj)
     emit dataChanged(index, index, {});
     emit headerDataChanged(Qt::Vertical, row, row);
     emit objectDataChanged(obj);
-}
-
-void RamObjectList::objectMoved(RamObject *obj, int from, int to)
-{
-    Q_UNUSED(obj)
-
-    // Can't sort if out of range. When loading, call sort() when all objects have been added.
-    if (from < 0) from = 0;
-    if (to < 0) to = 0;
-    if (from >= m_objectsList.count() ) from = m_objectsList.count()-1;
-    if (to >=  m_objectsList.count() ) to = m_objectsList.count()-1;
-    if (from == to) return;
-
-    beginResetModel();
-
-    m_objectsList.move(from, to);
-
-    // Sync order on objects
-    for (int i = 0; i < m_objectsList.count(); i++)
-    {
-        QSignalBlocker b(m_objectsList.at(i));
-        m_objectsList.at(i)->setOrder(i);
-        m_objectsList.at(i)->update();
-    }
-
-    m_sorted = true;
-
-    endResetModel();
 }
 
 void RamObjectList::objectInserted(const QModelIndex &parent, int first, int last)
@@ -188,7 +151,6 @@ void RamObjectList::connectObject(RamObject *obj)
     QList<QMetaObject::Connection> c;
     c << connect( obj, SIGNAL(removed(RamObject*)), this, SLOT(removeAll(RamObject*)));
     c << connect( obj, SIGNAL(changed(RamObject*)), this, SLOT(objectChanged(RamObject*)));
-    c << connect( obj, SIGNAL(orderChanged(RamObject*,int,int)), this, SLOT(objectMoved(RamObject*,int,int)));
     m_connections[obj->uuid()] = c;
 }
 
@@ -317,6 +279,40 @@ QList<RamObject*> RamObjectList::removeIndices(QModelIndexList indices)
         removeAll(o);
     }
     return objs;
+}
+
+bool RamObjectList::moveRow(const QModelIndex &sourceParent, int sourceRow, const QModelIndex &destinationParent, int destinationChild)
+{
+    Q_UNUSED(sourceParent)
+    Q_UNUSED(destinationParent)
+
+    beginMoveRows(sourceParent, sourceRow, sourceRow, destinationParent, destinationChild);
+
+    m_objectsList.move(sourceRow, destinationChild);
+    m_objectsList.at(destinationChild)->move(destinationChild);
+
+    endMoveRows();
+    return true;
+}
+
+bool RamObjectList::moveRows(const QModelIndex &sourceParent, int sourceRow, int count, const QModelIndex &destinationParent, int destinationChild)
+{
+    Q_UNUSED(sourceParent)
+    Q_UNUSED(destinationParent)
+
+    beginMoveRows(sourceParent, sourceRow, sourceRow + count, destinationParent, destinationChild);
+
+    int offset = 0;
+    for (int i = sourceRow; i < sourceRow+count; i++)
+    {
+        int newRow = destinationChild + offset;
+        m_objectsList.move(i, newRow);
+        m_objectsList.at(newRow)->move(newRow);
+        offset++;
+    }
+
+    endMoveRows();
+    return true;
 }
 
 RamObject *RamObjectList::takeFromUuid(QString uuid)
