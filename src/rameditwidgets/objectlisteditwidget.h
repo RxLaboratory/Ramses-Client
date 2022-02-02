@@ -11,7 +11,7 @@
 #include <QMenu>
 #include <QShortcut>
 
-#include "ramobjectlistwidget.h"
+#include "ramobjectlistview.h"
 #include "ramobjectlistcombobox.h"
 #include "duqf-widgets/duqfsearchedit.h"
 #include "filetypeeditwidget.h"
@@ -49,7 +49,7 @@ public:
     QString currentFilterUuid() const;
     RamObject *currentFilter() const;
 
-    RamObjectListWidget *listWidget();
+    RamObjectListView *listWidget();
 
 public slots:
     void setFilter(RamObject *o);
@@ -79,7 +79,7 @@ private:
     QLabel *ui_title;
     RamObjectListComboBox *ui_filterBox;
     DuQFSearchEdit *ui_searchEdit;
-    RamObjectListWidget *ui_listWidget;
+    RamObjectListView *ui_listWidget;
     RamObjectListMenu *ui_assignMenu = nullptr;
 
     // Settings

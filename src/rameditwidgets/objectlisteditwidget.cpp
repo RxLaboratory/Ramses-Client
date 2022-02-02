@@ -133,7 +133,7 @@ RamObject *ObjectListEditWidget::currentFilter() const
     return ui_filterBox->currentObject();
 }
 
-RamObjectListWidget *ObjectListEditWidget::listWidget()
+RamObjectListView *ObjectListEditWidget::listWidget()
 {
     return ui_listWidget;
 }
@@ -283,7 +283,7 @@ void ObjectListEditWidget::setupUi(bool editableObjects, RamUser::UserRole editR
     ui_searchEdit = new DuQFSearchEdit(this);
     mainLayout->addWidget(ui_searchEdit);
 
-    ui_listWidget = new RamObjectListWidget(m_objectList, editableObjects, editRole, RamObjectListWidget::List, this);
+    ui_listWidget = new RamObjectListView(m_objectList, editableObjects, editRole, RamObjectListView::List, this);
     mainLayout->addWidget(ui_listWidget);
 
     mainLayout->setStretch(0, 0);
@@ -316,7 +316,7 @@ void ObjectListEditWidget::connectEvents()
     // edit objects
     connect(ui_listWidget, SIGNAL(editObject(RamObject*)), this, SLOT(edit(RamObject*)));
     // Relay list signals
-    connect(ui_listWidget, &RamObjectListWidget::objectSelected, this, &ObjectListEditWidget::objectSelected);
+    connect(ui_listWidget, &RamObjectListView::objectSelected, this, &ObjectListEditWidget::objectSelected);
 
     // Shortcuts
     QShortcut *s = new QShortcut(QKeySequence(QKeySequence::Delete), ui_listWidget, nullptr, nullptr, Qt::WidgetWithChildrenShortcut );

@@ -1,6 +1,8 @@
-#include "ramobjectlistwidget.h"
+#include "ramobjectlistview.h"
 
-RamObjectListWidget::RamObjectListWidget(DisplayMode mode, QWidget *parent):
+#include "timelinemanager.h"
+
+RamObjectListView::RamObjectListView(DisplayMode mode, QWidget *parent):
         QTableView(parent)
 {
     m_delegate = new RamObjectDelegate();
@@ -20,7 +22,7 @@ RamObjectListWidget::RamObjectListWidget(DisplayMode mode, QWidget *parent):
     connectEvents();
 }
 
-RamObjectListWidget::RamObjectListWidget(RamObjectList *list, DisplayMode mode, QWidget *parent):
+RamObjectListView::RamObjectListView(RamObjectList *list, DisplayMode mode, QWidget *parent):
     QTableView(parent)
 {
     m_delegate = new RamObjectDelegate();
@@ -41,7 +43,7 @@ RamObjectListWidget::RamObjectListWidget(RamObjectList *list, DisplayMode mode, 
     connectEvents();
 }
 
-RamObjectListWidget::RamObjectListWidget(RamObjectList *list, bool editableObjects, RamUser::UserRole editRole, DisplayMode mode, QWidget *parent):
+RamObjectListView::RamObjectListView(RamObjectList *list, bool editableObjects, RamUser::UserRole editRole, DisplayMode mode, QWidget *parent):
     QTableView(parent)
 {
     m_displayMode = mode;
@@ -64,53 +66,53 @@ RamObjectListWidget::RamObjectListWidget(RamObjectList *list, bool editableObjec
     connectEvents();
 }
 
-void RamObjectListWidget::setList(RamObjectList *list)
+void RamObjectListView::setList(RamObjectList *list)
 {
     m_objectList->setList(list);
     this->resizeRowsToContents();
     this->resizeColumnsToContents();
 }
 
-RamItemFilterModel *RamObjectListWidget::filteredList()
+RamItemFilterModel *RamObjectListView::filteredList()
 {
     return m_objectList;
 }
 
-void RamObjectListWidget::setEditableObjects(bool editableObjects, RamUser::UserRole editRole)
+void RamObjectListView::setEditableObjects(bool editableObjects, RamUser::UserRole editRole)
 {
     m_delegate->setEditable(editableObjects);
     m_delegate->setEditRole(editRole);
 }
 
-void RamObjectListWidget::setSortable(bool sortable)
+void RamObjectListView::setSortable(bool sortable)
 {
     this->verticalHeader()->setSectionsMovable(sortable);
 }
 
-void RamObjectListWidget::setTimeTracking(bool trackTime)
+void RamObjectListView::setTimeTracking(bool trackTime)
 {
     m_delegate->setTimeTracking(trackTime);
 }
 
-void RamObjectListWidget::setCompletionRatio(bool showCompletion)
+void RamObjectListView::setCompletionRatio(bool showCompletion)
 {
     m_delegate->setCompletionRatio(showCompletion);
 }
 
-void RamObjectListWidget::showDetails(bool s)
+void RamObjectListView::showDetails(bool s)
 {
     m_delegate->showDetails(s);
     this->resizeRowsToContents();
 }
 
-void RamObjectListWidget::search(QString s)
+void RamObjectListView::search(QString s)
 {
     // Search
     m_objectList->search(s);
     //this->resizeRowsToContents();
 }
 
-void RamObjectListWidget::mouseMoveEvent(QMouseEvent *event)
+void RamObjectListView::mouseMoveEvent(QMouseEvent *event)
 {
     if (m_dragging)
     {
@@ -125,7 +127,7 @@ void RamObjectListWidget::mouseMoveEvent(QMouseEvent *event)
     QTableView::mouseMoveEvent(event);
 }
 
-void RamObjectListWidget::mousePressEvent(QMouseEvent *event)
+void RamObjectListView::mousePressEvent(QMouseEvent *event)
 {
     // Middle click for dragging view
     if (event->button() == Qt::MiddleButton)
@@ -144,7 +146,7 @@ void RamObjectListWidget::mousePressEvent(QMouseEvent *event)
     QTableView::mousePressEvent(event);
 }
 
-void RamObjectListWidget::mouseReleaseEvent(QMouseEvent *event)
+void RamObjectListView::mouseReleaseEvent(QMouseEvent *event)
 {
     // Middle click for dragging view
     if (event->button() == Qt::MiddleButton)
@@ -165,7 +167,7 @@ void RamObjectListWidget::mouseReleaseEvent(QMouseEvent *event)
     QTableView::mouseReleaseEvent(event);
 }
 
-void RamObjectListWidget::resizeEvent(QResizeEvent *event)
+void RamObjectListView::resizeEvent(QResizeEvent *event)
 {
     if (m_displayMode == List) this->setColumnWidth( 0, event->size().width() );
     // Incorrect draw after resize, fixed by resizing the first row...
@@ -176,7 +178,7 @@ void RamObjectListWidget::resizeEvent(QResizeEvent *event)
     else this->setRowHeight(0,30);*/
 }
 
-void RamObjectListWidget::showEvent(QShowEvent *event)
+void RamObjectListView::showEvent(QShowEvent *event)
 {
     Q_UNUSED(event)
 
@@ -186,16 +188,22 @@ void RamObjectListWidget::showEvent(QShowEvent *event)
     m_layout = true;
 }
 
-void RamObjectListWidget::select(const QModelIndex &index)
+void RamObjectListView::select(const QModelIndex &index)
 {
     quintptr iptr = index.data(Qt::UserRole).toULongLong();
     if (iptr == 0) return;
     RamObject *obj = reinterpret_cast<RamObject*>( iptr) ;
     if (!obj) return;
+    this->selectionModel()->select(index, QItemSelectionModel::ClearAndSelect);
     emit objectSelected(obj);
 }
 
-void RamObjectListWidget::rowMoved(int logicalIndex, int oldVisualIndex, int newVisualIndex)
+void RamObjectListView::selectShot(RamShot *shot)
+{
+    select(shot);
+}
+
+void RamObjectListView::rowMoved(int logicalIndex, int oldVisualIndex, int newVisualIndex)
 {
     QSignalBlocker b(this->verticalHeader());
 
@@ -228,12 +236,12 @@ void RamObjectListWidget::rowMoved(int logicalIndex, int oldVisualIndex, int new
     m_objectList->sourceModel()->sort(0);
 }
 
-void RamObjectListWidget::revealFolder(RamObject *obj)
+void RamObjectListView::revealFolder(RamObject *obj)
 {
     obj->revealFolder();
 }
 
-void RamObjectListWidget::select(RamObject *o)
+void RamObjectListView::select(RamObject *o)
 {
     if (!m_objectList) return;
     for (int i = 0; i< m_objectList->rowCount(); i++)
@@ -245,18 +253,22 @@ void RamObjectListWidget::select(RamObject *o)
             QModelIndex index = m_objectList->index(i, 0);
             this->setCurrentIndex( index );
             this->select( index );
+            this->scrollTo(index, QAbstractItemView::PositionAtTop);
+            RamShot *shot = reinterpret_cast<RamShot*>( obj );
+            if (shot) TimelineManager::instance()->setCurrentShot(shot);
+            return;
         }
     }
 }
 
-void RamObjectListWidget::filter(RamObject *o)
+void RamObjectListView::filter(RamObject *o)
 {
     if (!o) m_objectList->setFilterUuid("");
     else m_objectList->setFilterUuid(o->uuid());
     this->resizeRowsToContents();
 }
 
-void RamObjectListWidget::setupUi()
+void RamObjectListView::setupUi()
 {
     this->setSelectionMode(QAbstractItemView::ExtendedSelection);
     this->setFrameShape(QFrame::NoFrame);
@@ -278,15 +290,17 @@ void RamObjectListWidget::setupUi()
     this->setItemDelegate( m_delegate );
 }
 
-void RamObjectListWidget::connectEvents()
+void RamObjectListView::connectEvents()
 {
-    connect(m_delegate, &RamObjectDelegate::editObject, this, &RamObjectListWidget::editObject);
-    connect(m_delegate, &RamObjectDelegate::historyObject, this, &RamObjectListWidget::historyObject);
-    connect(m_delegate, &RamObjectDelegate::folderObject, this, &RamObjectListWidget::revealFolder);
+    connect(m_delegate, &RamObjectDelegate::editObject, this, &RamObjectListView::editObject);
+    connect(m_delegate, SIGNAL(editObject(RamObject*)), this, SLOT(select(RamObject*)));
+    connect(m_delegate, &RamObjectDelegate::historyObject, this, &RamObjectListView::historyObject);
+    connect(m_delegate, &RamObjectDelegate::folderObject, this, &RamObjectListView::revealFolder);
     // SORT
     connect( this->verticalHeader(), SIGNAL(sectionMoved(int,int,int)), this, SLOT(rowMoved(int,int,int)));
     // SELECT
     // Unselect before filtering
     connect(m_objectList, SIGNAL(aboutToFilter()), this->selectionModel(), SLOT(clear()));
+    connect(TimelineManager::instance(), SIGNAL(currentShotChanged(RamShot*)), this, SLOT(selectShot(RamShot*)));
 }
 

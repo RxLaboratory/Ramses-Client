@@ -73,6 +73,7 @@
         <file alias="status">resources/icons/status.svg</file>
         <file alias="create">resources/icons/create-from-template.svg</file>
         <file alias="status-edit">resources/icons/status_edit.svg</file>
+        <file alias="timeline">resources/icons/timeline-time_sl.svg</file>
     </qresource>
     <qresource prefix="/styles">
         <file alias="default-ramses-client">resources/style/style-ramses.css</file>

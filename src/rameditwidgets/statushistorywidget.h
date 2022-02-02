@@ -5,7 +5,7 @@
 
 #include "ramitem.h"
 #include "statuseditwidget.h"
-#include "ramobjectlistwidget.h"
+#include "ramobjectlistview.h"
 
 class StatusHistoryWidget : public QWidget
 {
@@ -21,7 +21,7 @@ private slots:
 private:
     void setupUi();
     void connectEvents();
-    RamObjectListWidget *ui_statusList;
+    RamObjectListView *ui_statusList;
 };
 
 #endif // STATUSHISTORYWIDGET_H

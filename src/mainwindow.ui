@@ -110,6 +110,7 @@
    <addaction name="actionPipeline"/>
    <addaction name="actionAssets"/>
    <addaction name="actionShots"/>
+   <addaction name="actionTimeline"/>
    <addaction name="actionSchedule"/>
    <addaction name="actionStatistics"/>
   </widget>
@@ -240,6 +241,21 @@
    </property>
    <property name="text">
     <string>Statistics</string>
+   </property>
+  </action>
+  <action name="actionTimeline">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/timeline</normaloff>:/icons/timeline</iconset>
+   </property>
+   <property name="text">
+    <string>Timeline</string>
+   </property>
+   <property name="toolTip">
+    <string>All shots in a timeline view</string>
    </property>
   </action>
  </widget>

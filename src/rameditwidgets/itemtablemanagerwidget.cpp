@@ -908,7 +908,7 @@ void ItemTableManagerWidget::setupUi()
     mainLayout->setSpacing(3);
     mainLayout->setContentsMargins(0,0,0,0);
 
-    ui_table = new RamObjectListWidget(RamObjectListWidget::Table, this);
+    ui_table = new RamObjectListView(RamObjectListView::Table, this);
     //ui_table->setEditableObjects(true, RamUser::ProjectAdmin);
     ui_table->setEditableObjects(false);
     ui_table->setContextMenuPolicy(Qt::CustomContextMenu);

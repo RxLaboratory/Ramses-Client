@@ -41,6 +41,7 @@
 #include "applicationlistmanagerwidget.h"
 #include "schedulemanagerwidget.h"
 #include "docks/statisticswidget.h"
+#include "docks/timelinewidget.h"
 #include "dbinterface.h"
 #include "daemon.h"
 #include "ramloader.h"
@@ -98,6 +99,7 @@ private:
     QDockWidget *ui_statsDockWidget;
     QDockWidget *ui_consoleDockWidget;
     QDockWidget *ui_propertiesDockWidget;
+    QDockWidget *ui_timelineDockWidget;
     DuQFDockTitle *ui_statsTitle;
     DuQFDockTitle *ui_propertiesTitle;
 

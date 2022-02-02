@@ -1,5 +1,5 @@
-#ifndef RAMOBJECTLISTWIDGET_H
-#define RAMOBJECTLISTWIDGET_H
+#ifndef RAMOBJECTLISTVIEW_H
+#define RAMOBJECTLISTVIEW_H
 
 #include <QTableView>
 #include <QHeaderView>
@@ -13,11 +13,11 @@
 #include "data-models/ramitemtablelistproxy.h"
 
 /**
- * @brief The RamObjectListWidget class is the base class displaying for all lists in Ramses, displaying RamObject
+ * @brief The RamObjectListView class is the base class displaying for all lists in Ramses, displaying RamObject
  * It displays a RamObjectList using RamObjectDelegate for the painging.
  * It used mainly in ObjectListEditWidget (in order to manage the list)
  */
-class RamObjectListWidget : public QTableView
+class RamObjectListView : public QTableView
 {
     Q_OBJECT
 public:
@@ -26,9 +26,9 @@ public:
     enum DisplayMode { List, Table };
     Q_ENUM( DisplayMode )
 
-    explicit RamObjectListWidget(DisplayMode mode = List, QWidget *parent = nullptr);
-    explicit RamObjectListWidget(RamObjectList *list, DisplayMode mode = List, QWidget *parent = nullptr);
-    explicit RamObjectListWidget(RamObjectList *list, bool editableObjects, RamUser::UserRole editRole = RamUser::Admin, DisplayMode mode = List, QWidget *parent = nullptr);
+    explicit RamObjectListView(DisplayMode mode = List, QWidget *parent = nullptr);
+    explicit RamObjectListView(RamObjectList *list, DisplayMode mode = List, QWidget *parent = nullptr);
+    explicit RamObjectListView(RamObjectList *list, bool editableObjects, RamUser::UserRole editRole = RamUser::Admin, DisplayMode mode = List, QWidget *parent = nullptr);
     // Content
     void setList(RamObjectList *list);
     RamItemFilterModel *filteredList();
@@ -63,6 +63,7 @@ protected slots:
 private slots:
     void revealFolder(RamObject *obj);
     void select(const QModelIndex &index);
+    void selectShot(RamShot *shot);
 
 private:
     void setupUi();
@@ -84,4 +85,4 @@ private:
     QModelIndex m_clicking = QModelIndex();
 };
 
-#endif // RAMOBJECTLISTWIDGET_H
+#endif // RAMOBJECTLISTVIEW_H

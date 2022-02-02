@@ -20,12 +20,12 @@ void StatusHistoryWidget::setupUi()
     layout->setContentsMargins(0,0,0,0);
     layout->setSpacing(3);
 
-    ui_statusList = new RamObjectListWidget( RamObjectListWidget::List, this);
+    ui_statusList = new RamObjectListView( RamObjectListView::List, this);
     ui_statusList->setEditableObjects(true, RamUser::Admin);
     layout->addWidget( ui_statusList );
 }
 
 void StatusHistoryWidget::connectEvents()
 {
-    connect(ui_statusList, &RamObjectListWidget::editObject, this, &StatusHistoryWidget::editObject);
+    connect(ui_statusList, &RamObjectListView::editObject, this, &StatusHistoryWidget::editObject);
 }

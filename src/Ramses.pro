@@ -44,11 +44,14 @@ SOURCES += \
     data-models/ramscheduletable.cpp \
     data-models/ramstatisticstable.cpp \
     data-views/ramobjectlistmenu.cpp \
+    data-views/ramobjectlistview.cpp \
     data-views/ramscheduledelegate.cpp \
     data-views/ramscheduletablewidget.cpp \
     data-views/ramstatisticsdelegate.cpp \
     data-views/ramstatisticstablewidget.cpp \
     data-views/ramstepheaderview.cpp \
+    data-views/timelinedelegate.cpp \
+    data-views/timelineview.cpp \
     docks/filemanagerwidget.cpp \
     duqf-widgets/duqfautosizetoolbutton.cpp \
     duqf-widgets/duqfcolorselector.cpp \
@@ -61,7 +64,6 @@ SOURCES += \
     data-models/ramstepstatushistory.cpp \
     data-views/ramobjectdelegate.cpp \
     data-views/ramobjectlistcombobox.cpp \
-    data-views/ramobjectlistwidget.cpp \
     duqf-widgets/duqftitlebar.cpp \
     duqf-widgets/duqftoolbarspacer.cpp \
     duqf-widgets/duqfupdatedialog.cpp \
@@ -93,6 +95,7 @@ SOURCES += \
     rameditwidgets/stepstatushistorywidget.cpp \
     rameditwidgets/templateassetgrouplistmanagerwidget.cpp \
     rameditwidgets/templatesteplistmanagerwidget.cpp \
+    docks/timelinewidget.cpp \
     rameditwidgets/userlistmanagerwidget.cpp \
     ramfilemetadatamanager.cpp \
     ramloader.cpp \
@@ -173,6 +176,7 @@ SOURCES += \
     rameditwidgets/templateassetgroupeditwidget.cpp \
     rameditwidgets/templatestepeditwidget.cpp \
     rameditwidgets/usereditwidget.cpp \
+    timelinemanager.cpp \
     userprofilepage.cpp \
     rameditwidgets/itemtablemanagerwidget.cpp \
     pipeline-editor/objectnode.cpp \
@@ -195,11 +199,14 @@ HEADERS += \
     data-models/ramstepstatushistory.h \
     data-views/ramobjectdelegate.h \
     data-views/ramobjectlistmenu.h \
+    data-views/ramobjectlistview.h \
     data-views/ramscheduledelegate.h \
     data-views/ramscheduletablewidget.h \
     data-views/ramstatisticsdelegate.h \
     data-views/ramstatisticstablewidget.h \
     data-views/ramstepheaderview.h \
+    data-views/timelinedelegate.h \
+    data-views/timelineview.h \
     dbistructures.h \
     docks/filemanagerwidget.h \
     duqf-widgets/duqfautosizetoolbutton.h \
@@ -216,7 +223,6 @@ HEADERS += \
     progressbar.h \
     progresspage.h \
     data-views/ramobjectlistcombobox.h \
-    data-views/ramobjectlistwidget.h \
     pages/projectpage.h \
     rameditwidgets/applicationeditwidget.h \
     rameditwidgets/applicationlistmanagerwidget.h \
@@ -240,6 +246,7 @@ HEADERS += \
     rameditwidgets/stepstatushistorywidget.h \
     rameditwidgets/templateassetgrouplistmanagerwidget.h \
     rameditwidgets/templatesteplistmanagerwidget.h \
+    docks/timelinewidget.h \
     rameditwidgets/userlistmanagerwidget.h \
     ramfilemetadatamanager.h \
     ramloader.h \
@@ -320,6 +327,7 @@ HEADERS += \
     rameditwidgets/templateassetgroupeditwidget.h \
     rameditwidgets/templatestepeditwidget.h \
     rameditwidgets/usereditwidget.h \
+    timelinemanager.h \
     userprofilepage.h \
     rameditwidgets/itemtablemanagerwidget.h \
     pipeline-editor/objectnode.h \

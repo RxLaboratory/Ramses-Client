@@ -11,7 +11,7 @@
 #include "duqf-widgets/duqftitlebar.h"
 #include "duqf-utils/guiutils.h"
 #include "duqf-widgets/duqfsearchedit.h"
-#include "data-views/ramobjectlistwidget.h"
+#include "data-views/ramobjectlistview.h"
 #include "data-views/ramobjectlistcombobox.h"
 #include "data-views/ramstepheaderview.h"
 #include "data-views/ramobjectlistmenu.h"
@@ -44,7 +44,7 @@ protected:
     void showEvent(QShowEvent *event) override;
     void hideEvent(QHideEvent *event) override;
 
-    RamObjectListWidget *ui_table;
+    RamObjectListView *ui_table;
     DuQFTitleBar *ui_titleBar;
     RamObjectListComboBox *ui_groupBox;
 

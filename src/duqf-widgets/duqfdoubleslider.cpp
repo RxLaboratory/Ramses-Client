@@ -16,7 +16,7 @@ void DuQFDoubleSlider::setValue(double v)
 {
     _value = v;
     QProgressBar::setValue(v * _multiplicator);
-    emit valueChanged(v);
+    emit valueChanging(v);
     repaint();
 }
 

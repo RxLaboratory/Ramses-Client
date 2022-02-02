@@ -37,6 +37,7 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     actionAssets->setVisible(false);
     actionSchedule->setVisible(false);
     actionStatistics->setVisible(false);
+    actionTimeline->setVisible(false);
 
     mainToolBar->addWidget(new DuQFToolBarSpacer(this));
 
@@ -196,6 +197,7 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     ui_statsDockWidget->setWidget( statsTable );
     Qt::DockWidgetArea area = static_cast<Qt::DockWidgetArea>( settings.value("ui/statsArea", Qt::LeftDockWidgetArea).toInt() );
     this->addDockWidget(area, ui_statsDockWidget);
+    ui_statsDockWidget->hide();
 
     qDebug() << "> Statistics table ready";
 #endif
@@ -213,13 +215,25 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     ui_consoleDockWidget->setWidget( console );
     this->addDockWidget(Qt::LeftDockWidgetArea, ui_consoleDockWidget);
     this->tabifyDockWidget( ui_statsDockWidget, ui_consoleDockWidget);
-    qDebug() << settings.value("ui/consoleVisible", false).toBool();
-    if (!settings.value("ui/consoleVisible", false).toBool())
-        ui_consoleDockWidget->hide();
-    else
-        ui_consoleButton->setChecked(true);
+    ui_consoleDockWidget->hide();
 
     qDebug() << "> Console dock ready";
+
+    // The timeline
+    TimelineWidget *timeline = new TimelineWidget(this);
+    ui_timelineDockWidget = new QDockWidget("Timeline");
+    ui_timelineDockWidget->setObjectName("timelineDock");
+    DuQFDockTitle *timelineTitle = new DuQFDockTitle("Timeline", this);
+    timeline->setObjectName("dockTitle");
+    timelineTitle->setIcon(":/icons/timeline");
+    ui_timelineDockWidget->setTitleBarWidget(timelineTitle);
+    ui_timelineDockWidget->setAllowedAreas(Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea);
+    ui_timelineDockWidget->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable );
+    ui_timelineDockWidget->setWidget( timeline );
+    this->addDockWidget(Qt::BottomDockWidgetArea, ui_timelineDockWidget);
+    ui_timelineDockWidget->hide();
+
+    qDebug() << "> Timeline dock ready";
 
     // The properties dock
     ui_propertiesDockWidget = new QDockWidget("Properties");
@@ -231,6 +245,7 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     ui_propertiesDockWidget->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     ui_propertiesDockWidget->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable );
     this->addDockWidget(Qt::RightDockWidgetArea, ui_propertiesDockWidget);
+    ui_propertiesDockWidget->hide();
 
     qDebug() << "> Properties dock ready";   
 
@@ -259,6 +274,8 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     connect(ui_statsDockWidget,SIGNAL(visibilityChanged(bool)), actionStatistics, SLOT(setChecked(bool)));
     connect(ui_consoleDockWidget,SIGNAL(visibilityChanged(bool)), ui_consoleButton, SLOT(setChecked(bool)));
     connect(ui_consoleButton,SIGNAL(clicked(bool)), ui_consoleDockWidget, SLOT(setVisible(bool)));
+    connect(actionTimeline,SIGNAL(triggered(bool)), ui_timelineDockWidget, SLOT(setVisible(bool)));
+    connect(ui_timelineDockWidget,SIGNAL(visibilityChanged(bool)), actionTimeline, SLOT(setChecked(bool)));
     connect(adminPage, SIGNAL(closeRequested()), this, SLOT(home()));
     connect(projectSettingsPage, SIGNAL(closeRequested()), this, SLOT(home()));
     connect(ui_networkButton,SIGNAL(clicked()),this, SLOT(networkButton_clicked()));
@@ -295,6 +312,7 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     // re-hide docks
     ui_propertiesDockWidget->hide();
     ui_statsDockWidget->hide();
+    ui_timelineDockWidget->hide();
 }
 
 void MainWindow::setPropertiesDockWidget(QWidget *w, QString title, QString icon)
@@ -735,6 +753,7 @@ void MainWindow::currentUserChanged()
     actionAssets->setChecked(false);
     actionSchedule->setVisible(false);
     actionStatistics->setVisible(false);
+    actionTimeline->setVisible(false);
 
     RamUser *user = Ramses::instance()->currentUser();
     if (!user) return;
@@ -749,6 +768,7 @@ void MainWindow::currentUserChanged()
     actionAssets->setVisible(true);
     actionSchedule->setVisible(true);
     actionStatistics->setVisible(true);
+    actionTimeline->setVisible(true);
 
     if (user->role() == RamUser::Admin)
     {

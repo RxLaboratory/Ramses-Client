@@ -13,8 +13,6 @@ class DuQFDoubleSlider : public QProgressBar
         Q_OBJECT
 public:
     DuQFDoubleSlider(QWidget *parent = nullptr);
-
-    void setValue(double v);
     double value() const;
 
     int decimals() const;
@@ -37,8 +35,11 @@ public:
 
     virtual QString text() const override;
 
+public slots:
+    void setValue(double v);
+
 signals:
-    void valueChanged(double);
+    void valueChanging(double);
 
 private:
     double _value;
