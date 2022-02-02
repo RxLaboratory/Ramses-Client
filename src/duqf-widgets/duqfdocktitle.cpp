@@ -13,12 +13,6 @@ DuQFDockTitle::DuQFDockTitle(QString title, QWidget *parent) : QWidget(parent)
     layout->setContentsMargins(3,0,3,0);
     layout->setSpacing(3);
 
-    QToolButton *pinButton = new QToolButton(this);
-    pinButton->setIcon(QIcon(":/icons/pin"));
-    pinButton->setCheckable(true);
-    pinButton->setObjectName("windowButton");
-    layout->addWidget(pinButton);
-
     layout->addStretch();
 
     _iconLabel = new QLabel(this);
@@ -43,7 +37,6 @@ DuQFDockTitle::DuQFDockTitle(QString title, QWidget *parent) : QWidget(parent)
     this->setLayout(vlayout);
 
     connect(closeButton, &QToolButton::clicked, this, &DuQFDockTitle::closeDockWidget);
-    connect(pinButton, &QToolButton::clicked, this, &DuQFDockTitle::pinDockWidget);
 }
 
 void DuQFDockTitle::setTitle(QString title)
@@ -58,6 +51,5 @@ void DuQFDockTitle::setIcon(QString icon)
 
 void DuQFDockTitle::closeDockWidget()
 {
-    emit pinDockWidget(false);
     parentWidget()->hide();
 }

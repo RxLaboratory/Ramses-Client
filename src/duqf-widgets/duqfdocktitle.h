@@ -16,12 +16,8 @@ public:
     void setTitle(QString title);
     void setIcon(QString icon);
 
-signals:
-    void pinDockWidget(bool);
-
 private slots:
     void closeDockWidget();
-
 
 private:
     QLabel *_titleLabel;
