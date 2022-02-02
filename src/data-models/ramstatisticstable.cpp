@@ -56,15 +56,34 @@ QVariant RamStatisticsTable::data(const QModelIndex &index, int role) const
         QString text;
         if (step->type() == RamStep::ShotProduction || step->type() == RamStep::AssetProduction)
         {
+            int completion = step->completionRatio();
+            float estimation = step->estimation();
+            float daysSpent = completion * estimation / 100.0;
+            float needed = estimation - daysSpent;
+            float futureUnassigned = needed - step->futureAssignedDays();
             text = "Completion: " %
-                    QString::number( step->completionRatio(), 'f', 0) %
-                    " %\nLateness: " %
-                    QString::number( (step->latenessRatio() -1) * 100, 'f', 0) %
-                    " %\nEstimation: " %
-                    QString::number( step->estimation() ) %
-                    " days\nAssigned: " %
-                    QString::number( step->assignedDays(), 'f', 1) %
-                    " days";
+                    QString::number( completion ) % " % (" %
+                    QString::number( daysSpent, 'f', 1 ) % " / " % QString::number(estimation, 'f', 1) % " days)";
+
+            if (completion > 99.9)
+            {
+                text = text % "\n\nFinished!\n\n";
+            }
+            else if (futureUnassigned > 0.4)
+            {
+                text = text % "\n\nRemaining: " % QString::number( needed, 'f', 1  ) % " days\nMissing: " % QString::number( futureUnassigned, 'f', 1  ) % " days\n";
+            }
+            else if ( futureUnassigned < -0.4 )
+            {
+                text = text % "\n\nThere are " % QString::number( -futureUnassigned, 'f', 1  ) % " extra days.\n\n";
+            }
+            else
+            {
+                text = text % "\n\nSchedule seems OK\n\n";
+            }
+
+            text = text % "\nAssigned: " % QString::number( step->assignedDays(), 'f', 1) % " days";
+
             if (step->unassignedDays() > 0) text = text %
                                                 "\nMissing: " %
                                                 QString::number( step->unassignedDays(), 'f', 1) %

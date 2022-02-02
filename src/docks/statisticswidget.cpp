@@ -26,30 +26,16 @@ void StatisticsWidget::estimationChanged(RamProject *project)
     ui_progressWidget->setEstimation( project->estimation() );
 
     int remainingDays = QDate::currentDate().daysTo( project->deadline() );
+    int completion = project->completionRatio();
+    int estimation = project->estimation();
+
     ui_remainingTimeLabel->setText( QString::number(remainingDays) + " days");
 
-    ui_completionLabel->setText( QString::number( project->completionRatio() ) + " %");
+    ui_completionLabel->setText( QString::number( completion ) + " %" );
+
+    ui_remainingWorkLabel->setText( QString::number( int(completion * estimation / 100) ) + " / " + QString::number( estimation ) + " days" );
 
     ui_latenessLabel->setText( QString::number( project->latenessRatio(), 'f', 0) + " %");
-
-    ui_estimationLabel->setText( QString::number( project->estimation(), 'f', 0) + " days");
-
-    if (project->users()->count() > 0)
-        ui_estimationUserLabel->setText( QString::number( project->estimation() / project->users()->count(), 'f', 0) + " days/user" );
-    else
-        ui_estimationUserLabel->setText("");
-
-    if (project->unassignedDays() > 0)
-    {
-        ui_unassignedLabel->show();
-        ui_unassignedTitleLabel->show();
-        ui_unassignedLabel->setText( QString::number( project->unassignedDays(), 'f', 0) + " days");
-    }
-    else
-    {
-        ui_unassignedLabel->hide();
-        ui_unassignedTitleLabel->hide();
-    }
 }
 
 void StatisticsWidget::setupUi()
@@ -66,7 +52,7 @@ void StatisticsWidget::setupUi()
     detailsLayout->setContentsMargins(0,0,0,0);
     detailsLayout->setSpacing(3);
 
-    QLabel *timeRemaining = new QLabel("Time remaining: ", this);
+    QLabel *timeRemaining = new QLabel("Remaining time: ", this);
     detailsLayout->addWidget(timeRemaining, 0, 1);
 
     ui_remainingTimeLabel = new QLabel("-- days", this);
@@ -78,27 +64,14 @@ void StatisticsWidget::setupUi()
     ui_completionLabel = new QLabel("-- %", this);
     detailsLayout->addWidget(ui_completionLabel, 1, 2);
 
-    QLabel *latenessLabel = new QLabel("Lateness: ", this);
-    detailsLayout->addWidget(latenessLabel, 2,1);
+    ui_remainingWorkLabel = new QLabel("-- days (done) / -- days (total)");
+    detailsLayout->addWidget(ui_remainingWorkLabel, 2, 2);
+
+    QLabel *latenessLabel = new QLabel("Estimated lateness: ", this);
+    detailsLayout->addWidget(latenessLabel, 3,1);
 
     ui_latenessLabel = new QLabel("-- %", this);
-    detailsLayout->addWidget(ui_latenessLabel, 2, 2);
-
-    QLabel *estimationLabel = new QLabel("Estimation: ", this);
-    detailsLayout->addWidget(estimationLabel, 3,1);
-
-    ui_estimationLabel = new QLabel("-- days", this);
-    detailsLayout->addWidget(ui_estimationLabel, 3, 2);
-
-    ui_estimationUserLabel = new QLabel("-- days/user", this);
-    detailsLayout->addWidget(ui_estimationUserLabel, 4, 2);
-
-    ui_unassignedTitleLabel = new QLabel("Missing: ", this);
-    detailsLayout->addWidget(ui_unassignedTitleLabel, 5,1);
-
-    ui_unassignedLabel = new QLabel("-- days", this);
-    detailsLayout->addWidget(ui_unassignedLabel, 5,2);
-
+    detailsLayout->addWidget(ui_latenessLabel, 3, 2);
 
     detailsLayout->setColumnStretch(0, 100);
     detailsLayout->setColumnStretch(1, 0);

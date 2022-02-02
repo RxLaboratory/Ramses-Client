@@ -213,6 +213,11 @@ float RamStep::unassignedDays() const
     return m_missingDays;
 }
 
+float RamStep::futureAssignedDays() const
+{
+    return m_assignedFutureHalfDays/2.0;
+}
+
 float RamStep::estimationVeryHard() const
 {
     return m_estimationVeryHard;
@@ -469,6 +474,7 @@ void RamStep::countAssignedDays()
 {
     if (m_freezeEstimations) return;
     m_assignedHalfDays = 0;
+    m_assignedFutureHalfDays = 0;
 
     for (int i = 0; i < m_project->users()->count(); i++)
     {
@@ -479,7 +485,11 @@ void RamStep::countAssignedDays()
         {
             RamScheduleEntry *entry = qobject_cast<RamScheduleEntry*>( u->schedule()->at(j) );
             if (!entry) continue;
-            if (this->is(entry->step())) m_assignedHalfDays++;
+            if (this->is(entry->step()))
+            {
+                m_assignedHalfDays++;
+                if (entry->date() > QDateTime::currentDateTime()) m_assignedFutureHalfDays++;
+            }
         }
     }
 
