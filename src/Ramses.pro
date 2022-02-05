@@ -43,6 +43,7 @@ SOURCES += \
     data-models/ramschedulefilter.cpp \
     data-models/ramscheduletable.cpp \
     data-models/ramstatisticstable.cpp \
+    data-models/timelineproxy.cpp \
     data-views/ramobjectlistmenu.cpp \
     data-views/ramobjectlistview.cpp \
     data-views/ramscheduledelegate.cpp \
@@ -198,6 +199,7 @@ HEADERS += \
     data-models/ramstatelist.h \
     data-models/ramstatisticstable.h \
     data-models/ramstepstatushistory.h \
+    data-models/timelineproxy.h \
     data-views/ramobjectdelegate.h \
     data-views/ramobjectlistmenu.h \
     data-views/ramobjectlistview.h \

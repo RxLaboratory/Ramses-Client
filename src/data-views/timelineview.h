@@ -2,8 +2,8 @@
 #define TIMELINEVIEW_H
 
 #include <QTableView>
-#include "duqf-utils/qtransposeproxymodel.h"
 
+#include "data-models/timelineproxy.h"
 #include "data-models/ramobjectlist.h"
 #include "data-models/ramitemtablelistproxy.h"
 #include "timelinedelegate.h"
@@ -60,8 +60,7 @@ private:
     TimelineDelegate *m_delegate;
     // List
     RamObjectList *m_emptyList;
-    QTransposeProxyModel *m_objectList;
-    RamItemTableListProxy *m_tlp;
+    TimeLineProxy *m_objectList;
 
     // Settings
     double m_zoom = 1.0;

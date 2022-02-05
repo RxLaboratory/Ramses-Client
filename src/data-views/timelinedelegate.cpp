@@ -11,7 +11,7 @@ TimelineDelegate::TimelineDelegate(QObject *parent)
 
 void TimelineDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-    RamShot *shot = reinterpret_cast<RamShot*>(getObject(index));
+    RamShot *shot = qobject_cast<RamShot*>(getObject(index));
     if (!shot) return RamObjectDelegate::paint(painter, option, index);
 
     // Base Settings
@@ -19,7 +19,10 @@ void TimelineDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opti
     painter->setRenderHint(QPainter::Antialiasing);
 
     // Select the bg Color
-    QColor bgColor = shot->sequence()->color();
+    QColor bgColor;
+    RamSequence *seq = shot->sequence();
+    if (seq) bgColor = seq->color();
+    else bgColor = m_dark;
     QColor textColor = m_lessLight;
     QColor detailsColor = m_medium;
 

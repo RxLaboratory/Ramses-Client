@@ -8,9 +8,7 @@ TimelineView::TimelineView(QWidget *parent):
     m_delegate = new TimelineDelegate();
     m_emptyList = new RamObjectList();
 
-    m_objectList = new QTransposeProxyModel(this);
-    m_tlp = new RamItemTableListProxy(this);
-    m_objectList->setSourceModel(m_tlp);
+    m_objectList = new TimeLineProxy(this);
     this->setModel(m_objectList);
 
     setupUi();
@@ -19,15 +17,15 @@ TimelineView::TimelineView(QWidget *parent):
 
 void TimelineView::setList(RamObjectList *shots)
 {
-    if (m_tlp->sourceModel() != m_emptyList)
-        disconnect(m_tlp->sourceModel(), nullptr, this, nullptr);
+    if (m_objectList->sourceModel() != m_emptyList)
+        disconnect(m_objectList->sourceModel(), nullptr, this, nullptr);
     if (!shots)
     {
-        m_tlp->setSourceModel(m_emptyList);
+        m_objectList->setSourceModel(m_emptyList);
     }
     else
     {
-        m_tlp->setSourceModel(shots);
+        m_objectList->setSourceModel(shots);
         connect(shots, &RamObjectList::dataChanged, this, &TimelineView::resetZoom);
         connect(shots, &RamObjectList::layoutChanged, this, &TimelineView::resetZoom);
         connect(shots, &RamObjectList::orderChanged, this, &TimelineView::resetZoom);
