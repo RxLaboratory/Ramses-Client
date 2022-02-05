@@ -2,7 +2,7 @@
 #define TIMELINEVIEW_H
 
 #include <QTableView>
-#include <QTransposeProxyModel>
+#include "duqf-utils/qtransposeproxymodel.h"
 
 #include "data-models/ramobjectlist.h"
 #include "data-models/ramitemtablelistproxy.h"

@@ -307,12 +307,21 @@ bool RamObjectList::moveRow(const QModelIndex &sourceParent, int sourceRow, cons
     Q_UNUSED(sourceParent)
     Q_UNUSED(destinationParent)
 
-    beginMoveRows(sourceParent, sourceRow, sourceRow, destinationParent, destinationChild);
+    int dest = destinationChild;
+    if (dest == sourceRow + 1) dest++;
+
+    qDebug() << sourceRow;
+    qDebug() << dest;
+
+    if (!beginMoveRows(sourceParent, sourceRow, sourceRow, destinationParent, dest))
+        return false;
 
     m_objectsList.move(sourceRow, destinationChild);
     m_objectsList.at(destinationChild)->move(destinationChild);
 
     endMoveRows();
+    emit orderChanged();
+
     return true;
 }
 
@@ -321,18 +330,25 @@ bool RamObjectList::moveRows(const QModelIndex &sourceParent, int sourceRow, int
     Q_UNUSED(sourceParent)
     Q_UNUSED(destinationParent)
 
-    beginMoveRows(sourceParent, sourceRow, sourceRow + count, destinationParent, destinationChild);
+    int dest = destinationChild;
+    if (dest > sourceRow )
+        while (dest <= sourceRow + count )
+            dest++;
 
-    int offset = 0;
-    for (int i = sourceRow; i < sourceRow+count; i++)
+    if (!beginMoveRows(sourceParent, sourceRow, sourceRow + count - 1, destinationParent, dest))
+        return false;
+
+    const int fromRow = destinationChild < sourceRow ? (sourceRow + count - 1) : sourceRow;
+
+    while(count--)
     {
-        int newRow = destinationChild + offset;
-        m_objectsList.move(i, newRow);
-        m_objectsList.at(newRow)->move(newRow);
-        offset++;
+       m_objectsList.move(fromRow, destinationChild);
+       m_objectsList.at(destinationChild)->move(destinationChild);
     }
 
     endMoveRows();
+    emit orderChanged();
+
     return true;
 }
 

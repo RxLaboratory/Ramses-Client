@@ -19,7 +19,8 @@ TimelineView::TimelineView(QWidget *parent):
 
 void TimelineView::setList(RamObjectList *shots)
 {
-    disconnect(m_tlp->sourceModel(), nullptr, this, nullptr);
+    if (m_tlp->sourceModel() != m_emptyList)
+        disconnect(m_tlp->sourceModel(), nullptr, this, nullptr);
     if (!shots)
     {
         m_tlp->setSourceModel(m_emptyList);
@@ -28,6 +29,8 @@ void TimelineView::setList(RamObjectList *shots)
     {
         m_tlp->setSourceModel(shots);
         connect(shots, &RamObjectList::dataChanged, this, &TimelineView::resetZoom);
+        connect(shots, &RamObjectList::layoutChanged, this, &TimelineView::resetZoom);
+        connect(shots, &RamObjectList::orderChanged, this, &TimelineView::resetZoom);
     }
     resetZoom();
 }
@@ -111,19 +114,14 @@ void TimelineView::columnMoved(int logicalIndex, int oldVisualIndex, int newVisu
 
     QSignalBlocker b(this->horizontalHeader());
 
-    // Get the source model to move the row
-    RamItemTableListProxy *tlp = reinterpret_cast<RamItemTableListProxy*>(m_objectList->sourceModel());
-    RamObjectList *model = reinterpret_cast<RamObjectList*>(tlp->sourceModel());
-
-    // Convert the filtered index to the model index
-    QModelIndex oldIndex = m_objectList->index(0, oldVisualIndex);
-    QModelIndex newIndex = m_objectList->index(0, newVisualIndex);
-    oldIndex = m_objectList->mapToSource(oldIndex);
-    newIndex = m_objectList->mapToSource(newIndex);
-    model->moveRow(QModelIndex(), oldIndex.row(), QModelIndex(), newIndex.row());//*/
+    // Actually move the row in the model
+    m_objectList->moveColumn(QModelIndex(), oldVisualIndex, QModelIndex(), newVisualIndex);
 
     // move back to the (new) logical index
     this->horizontalHeader()->moveSection(newVisualIndex, oldVisualIndex);
+
+    // Reset column widths
+    resetZoom();
 }
 
 void TimelineView::changeProject(RamProject *project)

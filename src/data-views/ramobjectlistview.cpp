@@ -209,6 +209,8 @@ void RamObjectListView::rowMoved(int logicalIndex, int oldVisualIndex, int newVi
 
     QSignalBlocker b(this->verticalHeader());
 
+    //m_objectList->moveRow(QModelIndex(), oldVisualIndex, QModelIndex(), newVisualIndex);
+
     // Get the source model to move the row
     RamObjectList *model = reinterpret_cast<RamObjectList*>(m_objectList->sourceModel());
     // Convert the filtered index to the model index

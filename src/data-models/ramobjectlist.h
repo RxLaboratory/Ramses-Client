@@ -67,6 +67,7 @@ signals:
     void objectDataChanged(RamObject*);
     void objectInserted(RamObject*);
     void objectRemoved(RamObject*);
+    void orderChanged();
 
 protected:
     // DATA
