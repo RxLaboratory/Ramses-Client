@@ -36,16 +36,7 @@ RamObjectDelegate::RamObjectDelegate(QObject *parent)
 
 void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-    // Reinterpret the int to a pointer
-    quintptr iptr = index.data(Qt::UserRole).toULongLong();
-    RamObject *obj = reinterpret_cast<RamObject*>(iptr);
-
-    if (iptr == 0)
-    {
-        obj = new RamObject("", index.data(Qt::DisplayRole).toString());
-    }
-
-
+    RamObject *obj = getObject(index);
     RamObject::ObjectType ramType = obj->objectType();
 
     // Base Settings
@@ -831,6 +822,19 @@ bool RamObjectDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, co
 
     return QStyledItemDelegate::editorEvent( event, model, option, index );
 
+}
+
+RamObject *RamObjectDelegate::getObject(const QModelIndex &index) const
+{
+    // Reinterpret the int to a pointer
+    quintptr iptr = index.data(Qt::UserRole).toULongLong();
+    RamObject *obj = reinterpret_cast<RamObject*>(iptr);
+
+    if (iptr == 0)
+    {
+        obj = new RamObject("", index.data(Qt::DisplayRole).toString());
+    }
+    return obj;
 }
 
 void RamObjectDelegate::setCompletionRatio(bool newCompletionRatio)

@@ -31,6 +31,8 @@ void TimelineWidget::setupUi()
     ui_zoomSlider->setValue(1.0);
     buttonsLayout->addWidget(ui_zoomSlider);
 
+    buttonsLayout->addStretch();
+
     ui_timeline = new TimelineView(this);
     mainLayout->addWidget(ui_timeline);
 }

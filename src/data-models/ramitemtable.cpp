@@ -33,7 +33,7 @@ QVariant RamItemTable::data(const QModelIndex &index, int role) const
         return 0;
     }
 
-    // Return the item
+    // Return
     if (col == 0)
         return RamObjectList::data(index, role);
 

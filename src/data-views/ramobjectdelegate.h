@@ -41,7 +41,13 @@ signals:
 protected:
     bool editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index) override;
 
-private:
+    // Utils
+    RamObject *getObject(const QModelIndex &index) const;
+
+    // drawing specific items
+    void drawMore(QPainter *painter, QRect rect, QPen pen) const;
+    void drawButton(QPainter *painter, QRect rect, QPixmap icon, bool hover = false) const;
+
     // Style
     QColor m_abyss;
     QColor m_dark;
@@ -59,6 +65,11 @@ private:
     QPixmap m_historyDarkIcon;
     QPixmap m_folderDarkIcon;
 
+    // Buttons hover
+    QModelIndex m_historyButtonHover = QModelIndex();
+    QModelIndex m_folderButtonHover = QModelIndex();
+
+private:
     // Settings
     bool m_editable = false;
     bool m_comboBox = false;
@@ -71,13 +82,6 @@ private:
     bool m_historyButtonPressed = false;
     bool m_cellPressed = false;
     bool m_folderButtonPressed = false;
-    QModelIndex m_historyButtonHover = QModelIndex();
-    QModelIndex m_folderButtonHover = QModelIndex();
-
-
-    // drawing specific items
-    void drawMore(QPainter *painter, QRect rect, QPen pen) const;
-    void drawButton(QPainter *painter, QRect rect, QPixmap icon, bool hover = false) const;
 };
 
 #endif // RAMOBJECTDELEGATE_H

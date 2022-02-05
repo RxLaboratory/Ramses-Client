@@ -3,6 +3,8 @@
 #include "ramstatus.h"
 #include "ramstate.h"
 
+#include "ramshot.h"
+
 RamObjectList::RamObjectList(QObject *parent)
     : QAbstractTableModel(parent)
 {
@@ -40,9 +42,28 @@ QVariant RamObjectList::data(const QModelIndex &index, int role) const
     if (role == Qt::DisplayRole) return obj->name();
 
     if (role == Qt::StatusTipRole)
-        return QString(obj->shortName() % " | " % obj->name());
+    {
+        QString statusTip = QString(obj->shortName() % " | " % obj->name());
+        // If it's a shot, let's add the duration
+        RamShot *s = reinterpret_cast<RamShot*>(obj);
+        if (s)
+        {
+            statusTip += " | " % QString::number(s->duration(), 'f', 2) % "s";
+        }
+        return statusTip;
+    }
 
-    if (role == Qt::ToolTipRole) return QString(obj->shortName() % " | " % obj->name() % "\n" % obj->comment());
+    if (role == Qt::ToolTipRole) {
+        QString toopTip = obj->shortName() % " | " % obj->name();
+        // If it's a shot, add the duration
+        RamShot *s = reinterpret_cast<RamShot*>(obj);
+        if (s)
+        {
+            toopTip += "\n" % QString::number(s->duration(), 'f', 2) % "s";
+        }
+        toopTip += "\n" % obj->comment();
+        return  toopTip;
+    }
 
     if (role == Qt::InitialSortOrderRole) return obj->order();
 
