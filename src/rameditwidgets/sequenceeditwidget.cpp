@@ -39,6 +39,7 @@ void SequenceEditWidget::setObject(RamObject *obj)
     //Reset values
     ui_shotsList->setList(m_sequence->project()->shots());
     ui_shotsList->setFilter(sequence);
+    ui_colorSelector->setColor(sequence->color());
 
     this->setEnabled(Ramses::instance()->isProjectAdmin());
 }
@@ -50,6 +51,8 @@ void SequenceEditWidget::update()
     updating = true;
 
     if (!checkInput()) return;
+
+    m_sequence->setColor( ui_colorSelector->color() );
 
     ObjectEditWidget::update();
 
@@ -69,6 +72,12 @@ void SequenceEditWidget::createShot()
 
 void SequenceEditWidget::setupUi()
 {
+    QLabel *colorLabel = new QLabel("Color", this);
+    ui_mainFormLayout->addWidget(colorLabel, 3, 0);
+
+    ui_colorSelector = new DuQFColorSelector(this);
+    ui_mainFormLayout->addWidget(ui_colorSelector, 3, 1);
+
     ui_shotsList = new ObjectListEditWidget(true, RamUser::ProjectAdmin, this);
     ui_shotsList->setEditMode(ObjectListEditWidget::UnassignObjects);
     ui_shotsList->setTitle("Shots");
@@ -78,6 +87,7 @@ void SequenceEditWidget::setupUi()
 void SequenceEditWidget::connectEvents()
 {
     connect(ui_shotsList, SIGNAL(add()), this, SLOT(createShot()));
+    connect(ui_colorSelector, SIGNAL(colorChanged(QColor)), this, SLOT(update()));
 
     monitorDbQuery("updateSequence");
 }

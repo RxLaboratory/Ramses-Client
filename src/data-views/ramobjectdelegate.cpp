@@ -171,6 +171,22 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
         textPen.setColor( userColor );
         break;
     }
+    case RamObject::Sequence:
+    {
+        RamSequence *seq = qobject_cast<RamSequence*>( obj );
+        QColor seqColor = seq->color();
+        if (seqColor.lightness() < 150) seqColor.setHsl( seqColor.hue(), seqColor.saturation(), 150);
+        textPen.setColor( seqColor );
+        break;
+    }
+    case RamObject::Shot:
+    {
+        RamShot *shot = qobject_cast<RamShot*>( obj );
+        QColor seqColor = shot->sequence()->color();
+        if (seqColor.lightness() < 150) seqColor.setHsl( seqColor.hue(), seqColor.saturation(), 150);
+        textPen.setColor( seqColor );
+        break;
+    }
     default:
     {
         title = obj->name();

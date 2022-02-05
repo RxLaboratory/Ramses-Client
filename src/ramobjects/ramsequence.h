@@ -20,6 +20,9 @@ public:
 
     static RamSequence *sequence(QString uuid);
 
+    const QColor &color() const;
+    void setColor(const QColor &newColor);
+
 public slots:
     void update() override;
     virtual void edit(bool show = true) override;
@@ -28,6 +31,7 @@ public slots:
 private:
     RamProject *m_project;
     RamObjectFilterModel *m_shots;
+    QColor m_color;
 };
 
 #endif // RAMSEQUENCE_H

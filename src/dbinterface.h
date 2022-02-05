@@ -88,7 +88,7 @@ public:
     void setAssetStatus(QString assetUuid, QString stateUuid, QString stepUuid, QString userUuid = "", int completionRatio = -1, QString comment = "", int version = 1, QString uuid = "", QString assignedUserUuid = "");
     //sequences
     void createSequence(QString shortName, QString name, QString projectUuid, QString uuid);
-    void updateSequence(QString uuid, QString shortName, QString name, QString comment = "");
+    void updateSequence(QString uuid, QString shortName, QString name, QString comment = "", QColor color = QColor(43, 43, 43));
     void removeSequence(QString uuid);
     void setSequenceOrder(QString uuid, int order);
     //shots

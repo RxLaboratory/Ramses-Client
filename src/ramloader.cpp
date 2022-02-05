@@ -806,6 +806,7 @@ QString RamLoader::gotSequence(QJsonObject newS, RamProject *project)
 
     sequence->setComment( newS.value("comment").toString());
     sequence->setOrder( newS.value("order").toInt());
+    sequence->setColor( QColor( newS.value("color").toString()) );
 
     project->sequences()->append(sequence);
 

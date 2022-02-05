@@ -8,6 +8,8 @@ RamSequence::RamSequence(QString shortName, RamProject *project, QString name, Q
     m_icon = ":/icons/sequence";
     m_editRole = ProjectAdmin;
 
+    m_color = QColor(43,43,43);
+
     this->setObjectType(Sequence);
     m_project = project;
     m_dbi->createSequence(m_shortName, m_name, m_project->uuid(), m_uuid);
@@ -55,7 +57,7 @@ void RamSequence::update()
 {
     if(!m_dirty) return;
     RamObject::update();
-    m_dbi->updateSequence(m_uuid, m_shortName, m_name, m_comment);
+    m_dbi->updateSequence(m_uuid, m_shortName, m_name, m_comment, m_color);
     if (m_orderChanged)
     {
         m_dbi->setSequenceOrder(m_uuid, m_order);
@@ -77,4 +79,17 @@ void RamSequence::edit(bool show)
 void RamSequence::removeFromDB()
 {
     m_dbi->removeSequence(m_uuid);
+}
+
+const QColor &RamSequence::color() const
+{
+    return m_color;
+}
+
+void RamSequence::setColor(const QColor &newColor)
+{
+    if (m_color == newColor) return;
+    m_dirty = true;
+    m_color = newColor;
+    emit changed(this);
 }

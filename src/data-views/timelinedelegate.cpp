@@ -19,9 +19,16 @@ void TimelineDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opti
     painter->setRenderHint(QPainter::Antialiasing);
 
     // Select the bg Color
-    QColor bgColor = m_dark; // TODO Use sequence color
+    QColor bgColor = shot->sequence()->color();
     QColor textColor = m_lessLight;
     QColor detailsColor = m_medium;
+
+    // Adjust according to bg
+    if (bgColor.lightness() > 100)
+    {
+        textColor = m_abyss;
+        detailsColor = m_dark;
+    }
 
     // State mouseover
     if (option.state & QStyle::State_MouseOver)

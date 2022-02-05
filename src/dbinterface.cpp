@@ -410,13 +410,14 @@ void DBInterface::createSequence(QString shortName, QString name, QString projec
     request("createSequence", q);
 }
 
-void DBInterface::updateSequence(QString uuid, QString shortName, QString name, QString comment)
+void DBInterface::updateSequence(QString uuid, QString shortName, QString name, QString comment, QColor color)
 {
     QStringList q;
     q << "uuid=" + uuid;
     q << "shortName=" + shortName;
     q << "name=" + name;
     q << "comment=" + comment;
+    q << "color=" + color.name();
 
     request("updateSequence", q);
 }
