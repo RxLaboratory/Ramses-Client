@@ -18,6 +18,8 @@ public:
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
 
+    void setUser(RamUser *newUser);
+
 private slots:
     void changeProject(RamProject *project);
 
@@ -29,6 +31,7 @@ private slots:
 private:
 
     RamProject *m_project = nullptr;
+    RamUser *m_user = nullptr;
 
     // Connect submodels and relay events
     void connectEvents();

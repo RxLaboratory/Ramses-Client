@@ -21,21 +21,25 @@ ProgressWidget::ProgressWidget(QWidget *parent) : QWidget(parent)
 void ProgressWidget::setCompletionRatio(int completionRatio)
 {
     m_completionRatio = completionRatio;
+    update();
 }
 
 void ProgressWidget::setLatenessRatio(float latenessRatio)
 {
     m_latenessRatio = latenessRatio;
+    update();
 }
 
 void ProgressWidget::setTimeSpent(qint64 timeSpent)
 {
     m_timeSpent = timeSpent;
+    update();
 }
 
 void ProgressWidget::setEstimation(float newEstimation)
 {
     m_estimation = newEstimation;
+    update();
 }
 
 void ProgressWidget::paintEvent(QPaintEvent *event)

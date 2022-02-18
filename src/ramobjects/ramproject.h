@@ -67,6 +67,11 @@ public:
     float latenessRatio() const; //ratio
     float assignedDays() const; //days
     float unassignedDays() const; //days
+    /**
+     * @brief stats
+     * @return a list of number of days <estimation, completed, assigned, future>
+     */
+    QList<float> stats(RamUser *user);
 
     static RamProject *project(QString uuid);
     static RamProject *projectFromName(QString nameOrShortName);

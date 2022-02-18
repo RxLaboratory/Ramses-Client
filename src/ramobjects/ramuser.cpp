@@ -100,7 +100,6 @@ bool RamUser::isStepAssigned(RamStep *step) const
         if (this->is(status->assignedUser())) return true;
     }
 
-
     return false;
 }
 

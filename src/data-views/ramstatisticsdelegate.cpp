@@ -55,8 +55,10 @@ void RamStatisticsDelegate::paint(QPainter *painter, const QStyleOptionViewItem 
     int statusWidth = bgRect.width() - m_padding ;
     QRect statusRect( bgRect.left() + m_padding / 2, bgRect.top() + m_padding, statusWidth, 0 );
 
+    int estimation = index.data(Qt::UserRole +2).toInt();
+
     RamStep::Type stepType = static_cast<RamStep::Type>( index.data(Qt::UserRole +6).toInt() );
-    if (stepType == RamStep::AssetProduction || stepType == RamStep::ShotProduction )
+    if ( (stepType == RamStep::AssetProduction || stepType == RamStep::ShotProduction) && estimation > 0)
     {
         statusRect.setHeight(5);
         QBrush statusBrush( m_abyss );
@@ -127,13 +129,15 @@ QSize RamStatisticsDelegate::sizeHint(const QStyleOptionViewItem &option, const 
 {
     if (index.column() != 0) return QStyledItemDelegate::sizeHint(option, index);
 
+    if (index.data(Qt::UserRole +4).toInt() <= 0) return QSize(200,20);
+
     RamStep::Type stepType = static_cast<RamStep::Type>( index.data(Qt::UserRole +6).toInt() );
     if (stepType == RamStep::AssetProduction || stepType == RamStep::ShotProduction )
     {
         float completionRatio = index.data(Qt::UserRole ).toInt();
         if (completionRatio > 99) return QSize(200,50);
         return QSize(200,105);
-    }
+    } 
 
     return QSize(200,50);
 }

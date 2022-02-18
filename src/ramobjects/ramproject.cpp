@@ -339,6 +339,22 @@ float RamProject::unassignedDays() const
     return m_missingDays;
 }
 
+QList<float> RamProject::stats(RamUser *user)
+{
+    QList<float> s;
+    s << 0 << 0 << 0 << 0;
+    for (int i = 0; i < this->steps()->count(); i++)
+    {
+        RamStep *step = qobject_cast<RamStep*>( this->steps()->at(i) );
+        QList<float> stepStats = step->stats(user);
+        s[0] = s.at(0) + stepStats.at(0);
+        s[1] = s.at(1) + stepStats.at(1);
+        s[2] = s.at(2) + stepStats.at(2);
+        s[3] = s.at(3) + stepStats.at(3);
+    }
+    return s;
+}
+
 RamObjectList *RamProject::steps() const
 {
     return m_steps;

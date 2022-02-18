@@ -6,6 +6,13 @@ RamStatisticsTableWidget::RamStatisticsTableWidget(QWidget *parent):
     setupUi();
     this->setItemDelegate( new RamStatisticsDelegate(this));
     connectEvents();
+    m_statsModel = new RamStatisticsTable(this);
+    this->setModel(m_statsModel);
+}
+
+void RamStatisticsTableWidget::setUser(RamUser *user)
+{
+    m_statsModel->setUser(user);
 }
 
 void RamStatisticsTableWidget::mouseMoveEvent(QMouseEvent *event)

@@ -200,12 +200,14 @@ float RamStep::completionRatio() const
 
 float RamStep::latenessRatio() const
 {
-    return missingDays() / neededDays();
+    if (neededDays() > 0)
+        return missingDays() / neededDays();
+    else return 0;
 }
 
 float RamStep::assignedDays() const
 {
-    return m_assignedHalfDays/2.0;
+    return m_scheduledHalfDays/2.0;
 }
 
 float RamStep::unassignedDays() const
@@ -215,7 +217,7 @@ float RamStep::unassignedDays() const
 
 float RamStep::missingDays() const
 {
-    return neededDays() - m_assignedFutureHalfDays/2.0;
+    return neededDays() - m_scheduledFutureHalfDays/2.0;
 }
 
 float RamStep::daysSpent() const
@@ -226,6 +228,64 @@ float RamStep::daysSpent() const
 float RamStep::neededDays() const
 {
     return m_estimation - daysSpent();
+}
+
+QList<float> RamStep::stats(RamUser *user)
+{
+    if (!user)
+    {
+        return QList<float>() << m_estimation
+                            << m_estimation * m_completionRatio / 100
+                            << m_scheduledHalfDays/2.0
+                            << m_scheduledFutureHalfDays/2.0;
+    }
+
+    int assignedHalfDays = 0;
+    int assignedFutureHalfDays = 0;
+
+    // Count assigned and future days
+    for (int j = 0; j < user->schedule()->count(); j++)
+    {
+        RamScheduleEntry *entry = qobject_cast<RamScheduleEntry*>( user->schedule()->at(j) );
+        if (!entry) continue;
+        if (this->is(entry->step()))
+        {
+            assignedHalfDays++;
+            if (entry->date() > QDateTime::currentDateTime()) assignedFutureHalfDays++;
+        }
+    }
+
+    // check completed days
+    RamObjectList *items;
+    if (m_type == ShotProduction) items = m_project->shots();
+    else if(m_type == AssetProduction) items = m_project->assets();
+    else return QList<float>() << 0 << 0 << assignedHalfDays / 2.0 << assignedFutureHalfDays / 2.0;
+
+    float estimation = 0;
+    float completedDays = 0;
+
+    RamState *no = Ramses::instance()->noState();
+
+    for (int i =0; i < items->count(); i++)
+    {
+        RamItem *item = qobject_cast<RamItem*>( items->at(i) );
+        RamObject *stepObj = qobject_cast<RamObject*>(this);
+        RamStatus *status = item->status(stepObj);
+
+        if (!status) continue;
+        if (no->is(status->state())) continue;
+        if (!status->assignedUser()) continue;
+        if (!status->assignedUser()->is(user)) continue;
+
+        float estim = 0;
+        if (status->useAutoEstimation()) estim = status->estimation();
+        else estim = status->goal();
+
+        completedDays += estim * status->completionRatio() / 100.0;
+        estimation += estim;
+    }
+
+    return QList<float>() << estimation << completedDays << assignedHalfDays / 2.0 << assignedFutureHalfDays / 2.0;
 }
 
 float RamStep::estimationVeryHard() const
@@ -474,7 +534,7 @@ void RamStep::computeEstimation()
     m_completionRatio = std::min(100, (int)m_completionRatio);
 
     // update missing days
-    m_missingDays = m_estimation - m_assignedHalfDays/2.0;
+    m_missingDays = m_estimation - m_scheduledHalfDays/2.0;
 
     m_project->computeEstimation();
     emit estimationComputed(this);
@@ -483,8 +543,8 @@ void RamStep::computeEstimation()
 void RamStep::countAssignedDays()
 {
     if (m_freezeEstimations) return;
-    m_assignedHalfDays = 0;
-    m_assignedFutureHalfDays = 0;
+    m_scheduledHalfDays = 0;
+    m_scheduledFutureHalfDays = 0;
 
     for (int i = 0; i < m_project->users()->count(); i++)
     {
@@ -497,14 +557,14 @@ void RamStep::countAssignedDays()
             if (!entry) continue;
             if (this->is(entry->step()))
             {
-                m_assignedHalfDays++;
-                if (entry->date() > QDateTime::currentDateTime()) m_assignedFutureHalfDays++;
+                m_scheduledHalfDays++;
+                if (entry->date() > QDateTime::currentDateTime()) m_scheduledFutureHalfDays++;
             }
         }
     }
 
     // update missing
-    m_missingDays = m_estimation - m_assignedHalfDays/2.0;
+    m_missingDays = m_estimation - m_scheduledHalfDays/2.0;
     m_project->computeEstimation();
     emit estimationComputed(this);
 }

@@ -7,11 +7,13 @@
 #include <QMouseEvent>
 
 #include "ramstatisticsdelegate.h"
+#include "data-models/ramstatisticstable.h"
 
 class RamStatisticsTableWidget : public QTableView
 {
 public:
     RamStatisticsTableWidget(QWidget *parent = nullptr);
+    void setUser(RamUser *user);
 
 protected:
     virtual void mouseMoveEvent(QMouseEvent *event) override;
@@ -23,6 +25,9 @@ protected:
 private:
     void setupUi();
     void connectEvents();
+
+    // Models
+    RamStatisticsTable *m_statsModel;
 
     // UI Events
     QPoint m_initialDragPos;

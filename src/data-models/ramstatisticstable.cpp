@@ -50,19 +50,24 @@ QVariant RamStatisticsTable::data(const QModelIndex &index, int role) const
 
     RamStep *step = qobject_cast<RamStep*>( m_project->steps()->at( row ));
 
+    QList<float> userStats = step->stats(m_user);
+    float estimation = userStats.at(0);
+    float daysSpent = userStats.at(1);
+    float assigned = userStats.at(2);
+    float needed = estimation - daysSpent;
+    float futureUnassigned = needed - userStats.at(3);
+    float unassignedDays = estimation - assigned;
+    float completion = 100;
+    if (estimation > 0)
+        completion = daysSpent / estimation * 100;
 
     if (role == Qt::DisplayRole)
     {
         QString text;
-        if (step->type() == RamStep::ShotProduction || step->type() == RamStep::AssetProduction)
+        if ((step->type() == RamStep::ShotProduction || step->type() == RamStep::AssetProduction) && estimation > 0)
         {
-            int completion = step->completionRatio();
-            float estimation = step->estimation();
-            float daysSpent = step->daysSpent();
-            float needed = step->neededDays();
-            float futureUnassigned = step->missingDays();
             text = "Completion: " %
-                    QString::number( completion ) % " % (" %
+                    QString::number( completion, 'f', 0 ) % " % (" %
                     QString::number( daysSpent, 'f', 1 ) % " / " % QString::number(estimation, 'f', 1) % " days)";
 
             if (completion > 99.9)
@@ -82,20 +87,20 @@ QVariant RamStatisticsTable::data(const QModelIndex &index, int role) const
                 text = text % "\n\nSchedule seems OK\n\n";
             }
 
-            text = text % "\nAssigned: " % QString::number( step->assignedDays(), 'f', 1) % " days";
+            text = text % "\nScheduled: " % QString::number( assigned, 'f', 1) % " days";
 
-            if (step->unassignedDays() > 0) text = text %
+            if (unassignedDays > 0) text = text %
                                                 "\nMissing: " %
-                                                QString::number( step->unassignedDays(), 'f', 1) %
+                                                QString::number( unassignedDays, 'f', 1) %
                                                 " days";
-            else if (step->unassignedDays() < 0) text = text %
+            else if (unassignedDays < 0) text = text %
                                                     "\nExtra: " %
-                                                    QString::number( -step->unassignedDays(), 'f', 1) %
+                                                    QString::number( -unassignedDays, 'f', 1) %
                                                     " days";
         }
         else
         {
-            text = " Assigned: " % QString::number( step->assignedDays(), 'f', 1) % " days";
+            text = "Scheduled: " % QString::number( assigned, 'f', 1) % " days";
         }
 
         return text;
@@ -120,26 +125,26 @@ QVariant RamStatisticsTable::data(const QModelIndex &index, int role) const
 
     if (role == Qt::ToolTipRole) return QString( step->name() %
                                                  "\nCompletion: " %
-                                                 QString::number( step->completionRatio(), 'f', 0) %
+                                                 QString::number( completion, 'f', 0) %
                                                  " %\nLateness: " %
                                                  QString::number( (step->latenessRatio() -1) * 100, 'f', 0) %
                                                  " %");
 
     if (role == Qt::StatusTipRole) return QString( step->shortName() % " | " % step->name() %
                                                    " | Completion: " %
-                                                   QString::number( step->completionRatio()) %
+                                                   QString::number( completion ) %
                                                    " % | Lateness: " %
                                                    QString::number( (step->latenessRatio() -1) * 100, 'f', 0) %
                                                    " %");
 
-    if (role == Qt::UserRole) return step->completionRatio();
+    if (role == Qt::UserRole) return completion;
     if (role == Qt::UserRole +1) return step->latenessRatio();
-    if (role == Qt::UserRole +2) return step->estimation();
+    if (role == Qt::UserRole +2) return estimation;
     if (role == Qt::UserRole +3) return step->timeSpent();
-    if (role == Qt::UserRole +4) return step->assignedDays();
-    if (role == Qt::UserRole +5) return step->unassignedDays();
+    if (role == Qt::UserRole +4) return assigned;
+    if (role == Qt::UserRole +5) return unassignedDays;
     if (role == Qt::UserRole +6) return step->type();
-    if (role == Qt::UserRole +7) return step->missingDays();
+    if (role == Qt::UserRole +7) return futureUnassigned;
 
     return QVariant();
 }
@@ -171,6 +176,13 @@ void RamStatisticsTable::removeStep(const QModelIndex &parent, int first, int la
 void RamStatisticsTable::estimationComputed()
 {
     emit dataChanged(createIndex(0,0), createIndex(rowCount()-1, 0));
+}
+
+void RamStatisticsTable::setUser(RamUser *newUser)
+{
+    beginResetModel();
+    m_user = newUser;
+    endResetModel();
 }
 
 void RamStatisticsTable::insertStep(const QModelIndex &parent, int first, int last)

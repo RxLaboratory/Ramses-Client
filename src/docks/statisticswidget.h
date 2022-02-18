@@ -5,6 +5,7 @@
 #include <QVBoxLayout>
 #include <QGridLayout>
 
+#include "data-views/ramobjectlistcombobox.h"
 #include "ramstatisticstablewidget.h"
 #include "data-models/ramstatisticstable.h"
 #include "smallwidgets/progresswidget.h"
@@ -20,16 +21,20 @@ signals:
 private slots:
     void projectChanged(RamProject*project);
     void estimationChanged(RamProject *project);
+    void changeUser(RamObject *userObj);
 
 private:
     void setupUi();
     void connectEvents();
 
+    RamObjectListComboBox *ui_userBox;
     ProgressWidget *ui_progressWidget;
     QLabel *ui_completionLabel;
     QLabel *ui_remainingTimeLabel;
+    QLabel *ui_scheduledWorkLabel;
     QLabel *ui_remainingWorkLabel;
     QLabel *ui_latenessLabel;
+    RamStatisticsTableWidget *ui_statsTable;
 
     RamProject *m_project = nullptr;
 

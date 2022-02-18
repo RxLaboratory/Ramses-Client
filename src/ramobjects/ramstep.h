@@ -91,6 +91,11 @@ public:
     float missingDays() const;
     float daysSpent() const;
     float neededDays() const;
+    /**
+     * @brief stats
+     * @return a list of number of days <estimation, completed, scheduled, scheduled in the future>
+     */
+    QList<float> stats(RamUser *user);
 
 signals:
     void estimationComputed(RamStep*);
@@ -140,8 +145,8 @@ private:
     float m_estimation = 0;
     float m_completionRatio = 0;
     float m_latenessRatio = 0;
-    int m_assignedHalfDays = 0;
-    int m_assignedFutureHalfDays = 0;
+    int m_scheduledHalfDays = 0;
+    int m_scheduledFutureHalfDays = 0;
     float m_missingDays = 0;
 };
 
