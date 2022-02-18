@@ -8,10 +8,10 @@
 #include <QLineEdit>
 #include <QVBoxLayout>
 #include <QWidget>
-#include <QTextEdit>
 #include <QShowEvent>
 #include <QRegExpValidator>
 
+#include "duqf-widgets/duqftextedit.h"
 #include "dbinterface.h"
 #include "ramobject.h"
 #include "duqf-utils/utils.h"
@@ -57,13 +57,13 @@ protected:
     QLabel *ui_nameLabel;
     QLabel *ui_shortNameLabel;
     QLabel *ui_commentLabel;
-    QTextEdit *ui_commentEdit;
-
-    bool eventFilter(QObject *obj, QEvent *event) override;
+    DuQFTextEdit *ui_commentEdit;
 
 private slots:
     void objectRemoved(RamObject *o);
     void dbiDataReceived(QJsonObject data);
+
+    void test();
 
 private:
     void setupUi();

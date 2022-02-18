@@ -10,6 +10,7 @@
 #include <QMenu>
 #include <QSplitter>
 
+#include "duqf-widgets/duqftextedit.h"
 #include "duqf-widgets/duqfspinbox.h"
 #include "duqf-widgets/autoselectspinbox.h"
 #include "duqf-widgets/autoselectdoublespinbox.h"
@@ -71,7 +72,7 @@ private:
     StateBox *ui_stateBox;
     DuQFSpinBox *ui_completionBox;
     AutoSelectSpinBox *ui_versionBox;
-    QPlainTextEdit *ui_statusCommentEdit;
+    DuQFTextEdit *ui_statusCommentEdit;
     QToolButton *ui_revertButton;
     QCheckBox *ui_publishedBox;
     RamObjectListComboBox *ui_userBox;

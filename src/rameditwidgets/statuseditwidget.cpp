@@ -78,7 +78,7 @@ void StatusEditWidget::setObject(RamObject *statusObj)
     ui_stateBox->setObject(status->state());
     ui_completionBox->setValue(status->completionRatio());
     ui_versionBox->setValue(status->version());
-    ui_statusCommentEdit->setPlainText(status->comment());
+    ui_statusCommentEdit->setMarkdown(status->comment());
     ui_folderWidget->setPath( status->path() );
     ui_publishedBox->setChecked( status->isPublished() );
 
@@ -205,12 +205,12 @@ void StatusEditWidget::update()
     m_status->setState( qobject_cast<RamState*>( ui_stateBox->currentObject() ) );
     m_status->setCompletionRatio( ui_completionBox->value() );
     m_status->setVersion(ui_versionBox->value() );
-    m_status->setComment( ui_statusCommentEdit->toPlainText() );
+    m_status->setComment( ui_statusCommentEdit->toMarkdown() );
     m_status->assignUser( qobject_cast<RamUser*>( ui_userBox->currentObject() ) );
     m_status->setPublished( ui_publishedBox->isChecked() );
     m_status->setTimeSpent( ui_timeSpent->value() * 3600 );
-    m_status->setGoal( ui_estimationEdit->value() );
     m_status->setUseAutoEstimation( ui_autoEstimationBox->isChecked() );
+    m_status->setGoal( ui_estimationEdit->value() );
     m_status->setDifficulty( difficulty() );
 
     m_status->update();
@@ -500,7 +500,7 @@ void StatusEditWidget::setupUi()
     ui_commentSplitter = new QSplitter();
     ui_commentSplitter->setOrientation(Qt::Vertical);
 
-    ui_statusCommentEdit = new QPlainTextEdit(this);
+    ui_statusCommentEdit = new DuQFTextEdit(this);
     ui_statusCommentEdit->setPlaceholderText("Comment...");
     ui_statusCommentEdit->setMinimumHeight(30);
     ui_statusCommentEdit->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -696,7 +696,7 @@ void StatusEditWidget::connectEvents()
     connect( ui_stateBox, SIGNAL(activated(int)), this, SLOT(update()));
     connect( ui_completionBox, SIGNAL(valueChanging(int)), this, SLOT(update()));
     connect( ui_versionBox, SIGNAL(valueChanged(int)), this, SLOT(update()));
-    ui_statusCommentEdit->installEventFilter(this);
+    connect( ui_statusCommentEdit, SIGNAL(editingFinished()), this, SLOT(update()));
     connect( ui_userBox, SIGNAL(activated(int)), this, SLOT(update()));
     connect( ui_publishedBox, SIGNAL(clicked(bool)), this, SLOT(update()));
     connect( ui_autoEstimationBox, SIGNAL(clicked(bool)), this, SLOT(update()));

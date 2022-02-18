@@ -213,8 +213,9 @@ void RamStatus::update()
     else if (m_difficulty == Easy) difficulty = "easy";
     else if (m_difficulty == Hard) difficulty = "hard";
     else if (m_difficulty == VeryHard) difficulty = "veryHard";
-    float estimation = -1;
-    if (!m_useAutoEstimation) estimation = m_goal;
+    float estim = -1;
+    if (!m_useAutoEstimation) estim = m_goal;
+    qDebug() << estim;
     m_dbi->updateStatus(
                 m_uuid,
                 m_state->uuid(),
@@ -226,7 +227,7 @@ void RamStatus::update()
                 timeSpent,
                 m_date,
                 difficulty,
-                estimation);
+                estim);
 }
 
 void RamStatus::edit(bool show)
@@ -285,6 +286,7 @@ void RamStatus::setUseAutoEstimation(bool newAutoEstimation)
     if (m_state->shortName() == "NO") return;
     m_dirty = true;
     m_useAutoEstimation = newAutoEstimation;
+    if (!m_useAutoEstimation && m_goal <= 0) m_goal = estimation();
     m_step->computeEstimation();
     emit changed(this);
 }
@@ -308,6 +310,7 @@ void RamStatus::setGoal(float newGoal)
     m_goal = newGoal;
     m_useAutoEstimation = m_goal < 0;
     m_step->computeEstimation();
+    qDebug() << m_goal;
     emit changed(this);
 }
 

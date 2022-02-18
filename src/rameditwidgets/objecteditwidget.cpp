@@ -76,7 +76,7 @@ void ObjectEditWidget::update()
 
     m_object->setName(ui_nameEdit->text());
     m_object->setShortName(ui_shortNameEdit->text());
-    m_object->setComment(ui_commentEdit->toPlainText());
+    m_object->setComment(ui_commentEdit->toMarkdown());
 
     m_object->update();
 
@@ -123,6 +123,11 @@ void ObjectEditWidget::dbiDataReceived(QJsonObject data)
     QMessageBox::warning(this, "Server Error", data.value("message").toString() );
 }
 
+void ObjectEditWidget::test()
+{
+    qDebug() << ui_commentEdit->toPlainText();
+}
+
 void ObjectEditWidget::objectChanged(RamObject *o)
 {
     if (updating) return;
@@ -152,20 +157,6 @@ void ObjectEditWidget::hideEvent(QHideEvent *event)
 {
     Q_UNUSED(event)
     update();
-}
-
-bool ObjectEditWidget::eventFilter(QObject *obj, QEvent *event)
-{
-    if (obj->objectName() == "commentEdit")
-    {
-        QEvent::Type t = event->type();
-        if (t == QEvent::FocusOut || t == QEvent::Hide)
-        {
-            update();
-            //return true;
-        }
-    }
-    return false;
 }
 
 void ObjectEditWidget::setupUi()
@@ -207,7 +198,7 @@ void ObjectEditWidget::setupUi()
     ui_commentLabel = new QLabel("Comment", dummy);
     ui_mainFormLayout->addWidget(ui_commentLabel, 2, 0);
 
-    ui_commentEdit = new QTextEdit(dummy);
+    ui_commentEdit = new DuQFTextEdit(dummy);
     ui_commentEdit->setMaximumHeight(80);
     ui_commentEdit->setObjectName("commentEdit");
     ui_mainFormLayout->addWidget(ui_commentEdit, 2, 1);
@@ -223,6 +214,6 @@ void ObjectEditWidget::connectEvents()
 {
     connect(ui_shortNameEdit, &QLineEdit::editingFinished, this, &ObjectEditWidget::update);
     connect(ui_nameEdit, &QLineEdit::editingFinished, this, &ObjectEditWidget::update);
-    ui_commentEdit->installEventFilter(this);
+    connect(ui_commentEdit, &DuQFTextEdit::editingFinished, this, &ObjectEditWidget::update);
     connect(DBInterface::instance(), SIGNAL(data(QJsonObject)), this, SLOT(dbiDataReceived(QJsonObject)));
 }
