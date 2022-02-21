@@ -24,6 +24,7 @@ public:
     ~Ramses();
     // User
     void login(QString username, QString password);
+    void loginHashed(QString username, QString hashedPassword);
     void logout();
     // Server connection
     bool isOnline() const;

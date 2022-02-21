@@ -13,44 +13,69 @@ LoginPage::LoginPage(QWidget *parent) :
     _uiTimer = new QTimer(this);
     _failedAttempts = 0;
 
-#ifdef QT_DEBUG
-    // Test mode (auto login)
-    ui_usernameEdit->setText("Duf");
-    ui_passwordEdit->setText("password");
-#endif
-
     connectEvents();
 }
 
 void LoginPage::loggedIn(RamUser *user)
 {
-    ui_usernameEdit->setText(user->shortName());
-    ui_passwordEdit->setText("");
     ui_loginWidget->hide();
     ui_connectionStatusLabel->setText("Connected as " + user->name());
 
     // Save server address to history
     QSettings settings;
     QString address = settings.value("server/address", "localhost/ramses/").toString();
-    bool found = false;
     int historySize = settings.beginReadArray("server/serverHistory");
+    int historyIndex = 0;
     for (int i = 0; i < historySize; i++)
     {
         settings.setArrayIndex(i);
         if (settings.value("address").toString() == address )
-        {
-            found = true;
             break;
-        }
+        historyIndex++;
     }
     settings.endArray();
-    if (!found)
+
+    settings.beginWriteArray("server/serverHistory", historySize);
+    settings.setArrayIndex(historyIndex);
+    settings.setValue("address", address);
+
+    // Save credentials
+    if (ui_saveUsername->isChecked())
     {
-        settings.beginWriteArray("server/serverHistory");
-        settings.setArrayIndex(historySize);
-        settings.setValue("address", address);
-        settings.endArray();
+        // Encrypt
+        SimpleCrypt crypto( SimpleCrypt::machineKey() );
+
+        settings.setValue("username", crypto.encryptToString(ui_usernameEdit->text()));
+
+        if (ui_savePassword->isChecked())
+        {
+            // Save the hashed password
+            QString hashed;
+            if (ui_passwordEdit->text() == "" && ui_passwordEdit->placeholderText() == "Use saved password." && m_hashedPassword != "")
+            {
+                hashed = m_hashedPassword;
+            }
+            else
+            {
+                hashed = DBInterface::instance()->generatePassHash( ui_passwordEdit->text() );
+            }
+            // But encrypted, as the hashed password can be used to login
+            settings.setValue("password", crypto.encryptToString( hashed ));
+        }
+        else
+        {
+            settings.setValue("password", "");
+        }
     }
+    else
+    {
+        settings.setValue("username", "");
+        settings.setValue("password", "");
+    }
+    settings.endArray();
+
+    ui_usernameEdit->setText("");
+    ui_passwordEdit->setText("");
 }
 
 void LoginPage::loggedOut()
@@ -84,19 +109,109 @@ void LoginPage::loginButton_clicked()
         ui_connectionStatusLabel->setText("Please fill your username in.");
         return;
     }
-    if (ui_passwordEdit->text() == "")
+
+    if (ui_passwordEdit->text() == "" && (ui_passwordEdit->placeholderText() != "Use saved password." || m_hashedPassword == ""))
     {
         ui_connectionStatusLabel->setText("Please fill your password in.");
         return;
     }
 
-    _ramses->login(ui_usernameEdit->text(), ui_passwordEdit->text());
+    if (ui_passwordEdit->text() == "")
+    {
+        _ramses->loginHashed(ui_usernameEdit->text(), m_hashedPassword);
+    }
+    else
+    {
+        _ramses->login(ui_usernameEdit->text(), ui_passwordEdit->text());
+    }
+
     ui_connectionStatusLabel->setText("Connecting...");
 }
 
 void LoginPage::serverSettingsButton_clicked()
 {
     emit serverSettings();
+}
+
+void LoginPage::serverAddressChanged(QString address)
+{
+    // Notify the interface
+    DBInterface::instance()->setServerAddress(address);
+
+    // Load saved username and password
+    QSettings settings;
+
+    int historySize = settings.beginReadArray("server/serverHistory");
+    for (int i = 0; i < historySize; i++)
+    {
+        settings.setArrayIndex(i);
+        if (settings.value("address").toString() == address )
+        {
+            // Decrypt
+            SimpleCrypt crypto( SimpleCrypt::machineKey() );
+
+            QString username = settings.value("username", "").toString();
+
+            if (username == "")
+            {
+                ui_saveUsername->setChecked(false);
+                ui_usernameEdit->setText("");
+                ui_passwordEdit->setText("");
+                ui_passwordEdit->setPlaceholderText("Password");
+            }
+            else
+            {
+                username = crypto.decryptToString( username );
+                ui_usernameEdit->setText( username );
+                ui_saveUsername->setChecked(true);
+
+                QString password = settings.value("password", "").toString();
+                if (password == "")
+                {
+                    ui_savePassword->setChecked(false);
+                    ui_passwordEdit->setText("");
+                    ui_passwordEdit->setPlaceholderText("Password");
+                    m_hashedPassword = "";
+                }
+                else
+                {
+                    ui_savePassword->setChecked(true);
+                    m_hashedPassword = crypto.decryptToString( password );
+                    ui_passwordEdit->setPlaceholderText("Use saved password.");
+                    ui_passwordEdit->setText("");
+                }
+            }
+            break;
+        }
+    }
+    settings.endArray();
+}
+
+void LoginPage::toggleSaveUsername(bool enabled)
+{
+    if (enabled) {
+        ui_savePassword->setEnabled(true);
+    }
+    else {
+        ui_savePassword->setEnabled(false);
+        ui_savePassword->setChecked(false);
+    }
+}
+
+void LoginPage::toggleSavePassword(bool enabled)
+{
+    if (!enabled) return;
+
+    // Confirm that !
+
+    QMessageBox::StandardButton result = QMessageBox::question(
+                this,
+                "Please confirm",
+                "Saving the password is unsafe.\nAre you sure you want to save your password?",
+                QMessageBox::Yes | QMessageBox::No,
+                QMessageBox::No
+                );
+    if (result == QMessageBox::No) ui_savePassword->setChecked(false);
 }
 
 void LoginPage::setupUi()
@@ -136,22 +251,37 @@ void LoginPage::setupUi()
     ui_serverBox = new DuQFServerComboBox("localhost/ramses", this);
     serverLayout->addWidget(ui_serverBox);
 
-    ui_sslBox = new DuQFSSLCheckbox(this);
+    ui_sslBox = new DuQFSSLCheckbox("Secure", this);
     serverLayout->addWidget(ui_sslBox);
 
     serverLayout->setStretch(0, 100);
     serverLayout->setStretch(1, 0);
 
+    QHBoxLayout *usernameLayout = new QHBoxLayout();
+    usernameLayout->setSpacing(3);
+    usernameLayout->setContentsMargins(0,0,0,0);
+    loginLayout->addLayout(usernameLayout);
+
     ui_usernameEdit = new QLineEdit(this);
     ui_usernameEdit->setPlaceholderText("Username");
-    ui_usernameEdit->setAlignment(Qt::AlignCenter);
-    loginLayout->addWidget(ui_usernameEdit);
+    usernameLayout->addWidget(ui_usernameEdit);
+
+    ui_saveUsername = new QCheckBox("Save", this);
+    usernameLayout->addWidget(ui_saveUsername);
+
+    QHBoxLayout *passwordLayout = new QHBoxLayout();
+    passwordLayout->setSpacing(3);
+    passwordLayout->setContentsMargins(0,0,0,0);
+    loginLayout->addLayout(passwordLayout);
 
     ui_passwordEdit = new QLineEdit(this);
     ui_passwordEdit->setEchoMode(QLineEdit::Password);
     ui_passwordEdit->setPlaceholderText("Password");
-    ui_passwordEdit->setAlignment(Qt::AlignCenter);
-    loginLayout->addWidget(ui_passwordEdit);
+    passwordLayout->addWidget(ui_passwordEdit);
+
+    ui_savePassword = new QCheckBox("Save", this);
+    ui_savePassword->setEnabled(false);
+    passwordLayout->addWidget(ui_savePassword);
 
     ui_capsLockLabel = new QLabel("Be careful, CAPS LOCK is on!", this);
     ui_capsLockLabel->setWordWrap(true);
@@ -173,6 +303,9 @@ void LoginPage::setupUi()
 
 void LoginPage::connectEvents()
 {
+    connect(ui_saveUsername, SIGNAL(toggled(bool)), this, SLOT(toggleSaveUsername(bool)));
+    connect(ui_savePassword, SIGNAL(clicked(bool)), this, SLOT(toggleSavePassword(bool)));
+
     connect(_ramses,&Ramses::loggedIn, this, &LoginPage::loggedIn);
     connect(_ramses,&Ramses::loggedOut, this, &LoginPage::loggedOut);
     connect(ui_usernameEdit, &QLineEdit::returnPressed, this, &LoginPage::loginButton_clicked);
@@ -183,6 +316,15 @@ void LoginPage::connectEvents()
     connect(ui_loginButton, SIGNAL(clicked()), this, SLOT(loginButton_clicked()));
     connect(_failedTimer, &QTimer::timeout, this, &LoginPage::unFreeze);
     connect(_uiTimer, &QTimer::timeout, this, &LoginPage::updateFreeze);
+
+    connect(DBInterface::instance(), SIGNAL(serverAddressChanged(QString)), ui_serverBox, SLOT(setAddress(QString)));
+    connect(DBInterface::instance(), SIGNAL(sslChanged(bool)), ui_sslBox, SLOT(setChecked(bool)));
+
+    connect(ui_serverBox, SIGNAL(addressChanged(QString)), this, SLOT(serverAddressChanged(QString)));
+    connect(ui_sslBox, SIGNAL(toggled(bool)), DBInterface::instance(), SLOT(setSSL(bool)));
+
+    // Needs to be called once
+    serverAddressChanged(ui_serverBox->currentText());
 }
 
 void LoginPage::freeze()
@@ -192,6 +334,7 @@ void LoginPage::freeze()
     qDebug() << "Freezing login page for " + QString::number(timeout) + " seconds";
     _failedTimer->start(timeout*1000);
     _uiTimer->start(1000);
+
     ui_connectionStatusLabel->setEnabled(true);
 }
 

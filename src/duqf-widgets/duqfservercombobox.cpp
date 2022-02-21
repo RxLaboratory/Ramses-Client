@@ -41,6 +41,7 @@ void DuQFServerComboBox::textChanged(QString text)
     this->setCurrentText(newAddress);
     // Save in settings
     m_settings.setValue("server/address", newAddress);
+    b.unblock();
     // emit
     emit addressChanged(newAddress);
 }

@@ -17,6 +17,7 @@
 #include <QThread>
 #include <QProgressBar>
 
+#include "duqf-app/app-config.h"
 #include "duqf-utils/utils.h"
 #include "duqf-app/app-version.h"
 #include "duqf-utils/duqflogger.h"
@@ -35,8 +36,16 @@ class DBInterface : public DuQFLoggerObject
 public:
     static DBInterface *instance();
     //settings
-    QString serverAddress();
+    QString serverAddress() const;
+    bool ssl() const;
     //connection
+    /**
+     * @brief Generates a hash for a password
+     * @param password The password to hash
+     * @param salt The salt to use
+     * @return The hashed password
+     */
+    QString generatePassHash(QString password, QString salt = HASH_SALT);
     NetworkUtils::NetworkStatus connectionStatus() const;
     void setOffline();
     void setOnline();
@@ -44,6 +53,7 @@ public:
     void init();
     //users
     void login(QString username, QString password);
+    void loginHashed(QString username, QString hashedPassword);
     void getUsers();
     void updateUser(QString uuid, QString shortName, QString name, QString role = "", QString comment = "", QColor color = QColor());
     void updateUserPassword(QString uuid, QString c, QString n);
@@ -144,6 +154,9 @@ public:
 public slots:
     void suspend(bool suspended = true);
 
+    void setSSL(bool enabled);
+    void setServerAddress(QString address);
+
 signals:
     void connectionStatusChanged(NetworkUtils::NetworkStatus);
     void data(QJsonObject);
@@ -216,16 +229,8 @@ private:
     QString buildFormEncodedString(QStringList args);
     bool waitPing();
     QString getProtocol();
-    QString m_currentServerAddress;
-    bool m_currentProtocol;
-
-    /**
-     * @brief Generates a hash for a password
-     * @param password The password to hash
-     * @param salt The salt to use
-     * @return The hashed password
-     */
-    QString generatePassHash(QString password, QString salt = "H6BuYLsW");
+    QString m_serverAddress;
+    bool m_ssl;
 };
 
 #endif // DBINTERFACE_H

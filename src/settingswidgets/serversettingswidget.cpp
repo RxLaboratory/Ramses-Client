@@ -129,5 +129,8 @@ void ServerSettingsWidget::connectEvents()
     connect(dbi, &DBInterface::connectionStatusChanged, this, &ServerSettingsWidget::dbiConnectionStatusChanged);
     connect(dbi, SIGNAL(serverAddressChanged(QString)), ui_serverAddressBox, SLOT(setAddress(QString)));
     connect(dbi, SIGNAL(sslChanged(bool)), ui_sslCheckBox, SLOT(setChecked(bool)));
+
+    connect(ui_serverAddressBox, SIGNAL(addressChanged(QString)), DBInterface::instance(), SLOT(setServerAddress(QString)));
+    connect(ui_sslCheckBox, SIGNAL(toggled(bool)), DBInterface::instance(), SLOT(setSSL(bool)));
 }
 

@@ -20,6 +20,17 @@ void DBInterface::login(QString username, QString password)
     request("login", q);
 }
 
+void DBInterface::loginHashed(QString username, QString hashedPassword)
+{
+    //request url
+    QStringList q;
+    q << "username=" + username;
+    q << "password=" + hashedPassword;
+
+    request("login", q);
+}
+
+
 void DBInterface::setOffline()
 {
     setConnectionStatus(NetworkUtils::Offline);
@@ -1179,39 +1190,57 @@ bool DBInterface::waitPing()
     return true;
 }
 
-QString DBInterface::serverAddress()
+QString DBInterface::serverAddress() const
 {
-    QSettings settings;
+    /*QSettings settings;
     //Get server address
     QString address = settings.value("server/address", "localhost/ramses/").toString();
     if (!address.endsWith("/")) address += "/";
     if (address != m_currentServerAddress) {
         m_currentServerAddress = address;
         emit serverAddressChanged(address);
+    }//*/
+    return m_serverAddress;
+}
+
+void DBInterface::setServerAddress(QString address)
+{
+    if (address == m_serverAddress) return;
+    m_serverAddress = address;
+    emit serverAddressChanged(address);
+}
+
+bool DBInterface::ssl() const
+{
+    return m_ssl;
+}
+
+void DBInterface::setSSL(bool enabled)
+{
+    if (enabled == m_ssl) return;
+    if (enabled && !QSslSocket::supportsSsl()) {
+        log("SSL is not available on this system. Please install OpenSSL to securely connect to the specified server.", DuQFLog::Critical);
+        m_ssl = false;
     }
-    return address;
+    else
+    {
+        m_ssl = enabled;
+    }
+    emit sslChanged(m_ssl);
 }
 
 QString DBInterface::getProtocol()
 {
-    QSettings settings;
-    //Get server address
     QString protocol = "http://";
-    bool p = false;
-    if (settings.value("server/ssl", true).toBool())
+    if (m_ssl)
     {
-        p = true;
         protocol = "https://";
         if (!QSslSocket::supportsSsl()) {
             log("SSL is not available on this system. Please install OpenSSL to securely connect to the specified server.", DuQFLog::Critical);
             return "";
         }
     }
-    if (p != m_currentProtocol)
-    {
-        m_currentProtocol = p;
-        emit sslChanged(p);
-    }
+
     return protocol;
 }
 

@@ -55,6 +55,7 @@ SOURCES += \
     data-views/timelineview.cpp \
     docks/filemanagerwidget.cpp \
     duqf-utils/qtransposeproxymodel.cpp \
+    duqf-utils/simplecrypt.cpp \
     duqf-widgets/duqfautosizetoolbutton.cpp \
     duqf-widgets/duqfcolorselector.cpp \
     duqf-widgets/duqfelidedlabel.cpp \
@@ -215,7 +216,9 @@ HEADERS += \
     data-views/timelineview.h \
     dbistructures.h \
     docks/filemanagerwidget.h \
+    duqf-app/app-config.h \
     duqf-utils/qtransposeproxymodel.h \
+    duqf-utils/simplecrypt.h \
     duqf-widgets/duqfautosizetoolbutton.h \
     duqf-widgets/duqfcolorselector.h \
     duqf-widgets/duqfelidedlabel.h \

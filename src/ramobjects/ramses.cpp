@@ -49,6 +49,12 @@ void Ramses::login(QString username, QString password)
     m_dbi->login(username, password);
 }
 
+void Ramses::loginHashed(QString username, QString hashedPassword)
+{
+    m_dbi->suspend(false);
+    m_dbi->loginHashed(username, hashedPassword);
+}
+
 void Ramses::dbiConnectionStatusChanged(NetworkUtils::NetworkStatus s)
 {
     if (s != NetworkUtils::Online)
