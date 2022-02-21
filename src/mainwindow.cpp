@@ -65,7 +65,7 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
 
     ui_networkButton = new DuQFAutoSizeToolButton(this);
     ui_networkButton->setToolButtonStyle(Qt::ToolButtonTextOnly);
-    ui_networkButton->setText(DBInterface::instance()->serverAddress() + " (offline)");
+    ui_networkButton->setText("Offline");
     //ui_networkButton->setMinimumWidth(100);
     mainStatusBar->addPermanentWidget(ui_networkButton);
 
@@ -833,7 +833,7 @@ void MainWindow::dbiConnectionStatusChanged(NetworkUtils::NetworkStatus s)
     else if (s == NetworkUtils::Offline)
     {
         ui_refreshButton->hide();
-        ui_networkButton->setText(address + " (offline)");
+        ui_networkButton->setText("Offline");
     }
 }
 

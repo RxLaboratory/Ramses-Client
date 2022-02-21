@@ -1197,13 +1197,20 @@ QString DBInterface::getProtocol()
     QSettings settings;
     //Get server address
     QString protocol = "http://";
+    bool p = false;
     if (settings.value("server/ssl", true).toBool())
     {
+        p = true;
         protocol = "https://";
         if (!QSslSocket::supportsSsl()) {
             log("SSL is not available on this system. Please install OpenSSL to securely connect to the specified server.", DuQFLog::Critical);
             return "";
         }
+    }
+    if (p != m_currentProtocol)
+    {
+        m_currentProtocol = p;
+        emit sslChanged(p);
     }
     return protocol;
 }

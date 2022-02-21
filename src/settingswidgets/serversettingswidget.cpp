@@ -5,7 +5,6 @@ ServerSettingsWidget::ServerSettingsWidget(QWidget *parent) :
 {
     setupUi();
 
-    ui_sslCheckBox->setChecked( m_settings.value("server/ssl", true).toBool() );
     ui_updateFreqSpinBox->setValue( m_settings.value("server/updateFreq", 2).toInt());
     ui_timeoutSpinBox->setValue( m_settings.value("server/timeout", 3000).toInt()/1000 );
     _app = (DuApplication *)qApp;
@@ -14,11 +13,6 @@ ServerSettingsWidget::ServerSettingsWidget(QWidget *parent) :
     ui_logoutWidget->hide();
 
     connectEvents();
-}
-
-void ServerSettingsWidget::sslCheckBox_clicked(bool checked)
-{
-    m_settings.setValue("server/ssl", checked);
 }
 
 void ServerSettingsWidget::updateFreqSpinBox_editingFinished()
@@ -99,7 +93,7 @@ void ServerSettingsWidget::setupUi()
     QLabel *sslLabel = new QLabel("Secure connexion", this);
     settingsLayout->setWidget(1, QFormLayout::LabelRole, sslLabel);
 
-    ui_sslCheckBox = new QCheckBox("Use SSL", this);
+    ui_sslCheckBox = new DuQFSSLCheckbox(this);
     settingsLayout->setWidget(1, QFormLayout::FieldRole, ui_sslCheckBox);
 
     QLabel *updateFreqLabel = new QLabel("Update every", this);
@@ -128,12 +122,12 @@ void ServerSettingsWidget::setupUi()
 
 void ServerSettingsWidget::connectEvents()
 {
-
-    connect(ui_sslCheckBox, SIGNAL(clicked(bool)), this, SLOT(sslCheckBox_clicked(bool)));
     connect(ui_logoutButton, SIGNAL(clicked()), this, SLOT(logout()));
     connect(ui_updateFreqSpinBox, SIGNAL(editingFinished()), this, SLOT( updateFreqSpinBox_editingFinished()));
     connect(ui_timeoutSpinBox, SIGNAL(editingFinished()), this, SLOT( timeoutSpinBox_editingFinished()));
-    connect(DBInterface::instance(), &DBInterface::connectionStatusChanged, this, &ServerSettingsWidget::dbiConnectionStatusChanged);
-    connect(DBInterface::instance(), SIGNAL(serverAddressChanged(QString)), ui_serverAddressBox, SLOT(setAddress(QString)));
+    DBInterface *dbi = DBInterface::instance();
+    connect(dbi, &DBInterface::connectionStatusChanged, this, &ServerSettingsWidget::dbiConnectionStatusChanged);
+    connect(dbi, SIGNAL(serverAddressChanged(QString)), ui_serverAddressBox, SLOT(setAddress(QString)));
+    connect(dbi, SIGNAL(sslChanged(bool)), ui_sslCheckBox, SLOT(setChecked(bool)));
 }
 

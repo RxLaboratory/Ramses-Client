@@ -149,6 +149,7 @@ signals:
     void data(QJsonObject);
     void queried(QString);
     void serverAddressChanged(QString);
+    void sslChanged(bool);
 
 protected:
     static DBInterface *_instance;
@@ -216,6 +217,7 @@ private:
     bool waitPing();
     QString getProtocol();
     QString m_currentServerAddress;
+    bool m_currentProtocol;
 
     /**
      * @brief Generates a hash for a password

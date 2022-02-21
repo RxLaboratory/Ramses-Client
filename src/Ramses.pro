@@ -67,6 +67,7 @@ SOURCES += \
     data-views/ramobjectdelegate.cpp \
     data-views/ramobjectlistcombobox.cpp \
     duqf-widgets/duqfservercombobox.cpp \
+    duqf-widgets/duqfsslcheckbox.cpp \
     duqf-widgets/duqftextedit.cpp \
     duqf-widgets/duqftitlebar.cpp \
     duqf-widgets/duqftoolbarspacer.cpp \
@@ -221,6 +222,7 @@ HEADERS += \
     duqf-widgets/duqffilelist.h \
     duqf-widgets/duqfsearchedit.h \
     duqf-widgets/duqfservercombobox.h \
+    duqf-widgets/duqfsslcheckbox.h \
     duqf-widgets/duqftextedit.h \
     duqf-widgets/duqftitlebar.h \
     duqf-widgets/duqftoolbarspacer.h \
@@ -352,7 +354,6 @@ FORMS += \
     pages/loginpage.ui \
     mainwindow.ui \
     pipeline-editor/pipelinewidget.ui \
-    settingswidgets/serversettingswidget.ui \
     smallwidgets/shotscreationdialog.ui
 
 # Default rules for deployment.
