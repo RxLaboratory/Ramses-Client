@@ -1183,9 +1183,13 @@ QString DBInterface::serverAddress()
 {
     QSettings settings;
     //Get server address
-    QString serverAddress = settings.value("server/address", "localhost/ramses/").toString();
-    if (!serverAddress.endsWith("/")) serverAddress += "/";
-    return serverAddress;
+    QString address = settings.value("server/address", "localhost/ramses/").toString();
+    if (!address.endsWith("/")) address += "/";
+    if (address != m_currentServerAddress) {
+        m_currentServerAddress = address;
+        emit serverAddressChanged(address);
+    }
+    return address;
 }
 
 QString DBInterface::getProtocol()

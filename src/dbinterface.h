@@ -34,13 +34,14 @@ class DBInterface : public DuQFLoggerObject
     Q_OBJECT
 public:
     static DBInterface *instance();
+    //settings
+    QString serverAddress();
     //connection
     NetworkUtils::NetworkStatus connectionStatus() const;
     void setOffline();
     void setOnline();
     bool isSuspended() const;
     void init();
-    QString serverAddress();
     //users
     void login(QString username, QString password);
     void getUsers();
@@ -147,6 +148,7 @@ signals:
     void connectionStatusChanged(NetworkUtils::NetworkStatus);
     void data(QJsonObject);
     void queried(QString);
+    void serverAddressChanged(QString);
 
 protected:
     static DBInterface *_instance;
@@ -213,6 +215,7 @@ private:
     QString buildFormEncodedString(QStringList args);
     bool waitPing();
     QString getProtocol();
+    QString m_currentServerAddress;
 
     /**
      * @brief Generates a hash for a password

@@ -30,6 +30,20 @@ void StatisticsWidget::estimationChanged(RamProject *project)
     //ui_progressWidget->setTimeSpent( project->timeSpent() );
     //ui_progressWidget->setEstimation( project->estimation() );
 
+    if (!project)
+    {
+        ui_progressWidget->setCompletionRatio( 0 );
+
+        ui_remainingTimeLabel->setText( "-- days");
+
+        ui_scheduledWorkLabel->setText( "-- days");
+
+        ui_completionLabel->setText( "-- %" );
+
+        ui_remainingWorkLabel->setText( "-- days" );
+        return;
+    }
+
     int remainingDays = QDate::currentDate().daysTo( project->deadline() );
 
     RamUser *user = qobject_cast<RamUser*>(ui_userBox->currentObject());

@@ -66,6 +66,7 @@ SOURCES += \
     data-models/ramstepstatushistory.cpp \
     data-views/ramobjectdelegate.cpp \
     data-views/ramobjectlistcombobox.cpp \
+    duqf-widgets/duqfservercombobox.cpp \
     duqf-widgets/duqftextedit.cpp \
     duqf-widgets/duqftitlebar.cpp \
     duqf-widgets/duqftoolbarspacer.cpp \
@@ -219,6 +220,7 @@ HEADERS += \
     duqf-widgets/duqfelidedlabel.h \
     duqf-widgets/duqffilelist.h \
     duqf-widgets/duqfsearchedit.h \
+    duqf-widgets/duqfservercombobox.h \
     duqf-widgets/duqftextedit.h \
     duqf-widgets/duqftitlebar.h \
     duqf-widgets/duqftoolbarspacer.h \
