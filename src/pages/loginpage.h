@@ -23,6 +23,9 @@ public:
 signals:
     void serverSettings();
 
+protected:
+    void showEvent(QShowEvent *event) override;
+
 private slots:
     void loggedIn(RamUser *user);
     void loggedOut();

@@ -16,6 +16,17 @@ LoginPage::LoginPage(QWidget *parent) :
     connectEvents();
 }
 
+void LoginPage::showEvent(QShowEvent *event)
+{
+    if(event->spontaneous())
+    {
+        QWidget::showEvent(event);
+        return;
+    }
+
+    serverAddressChanged( ui_serverBox->address() );
+}
+
 void LoginPage::loggedIn(RamUser *user)
 {
     ui_loginWidget->hide();
@@ -29,7 +40,11 @@ void LoginPage::loggedIn(RamUser *user)
     for (int i = 0; i < historySize; i++)
     {
         settings.setArrayIndex(i);
-        if (settings.value("address").toString() == address )
+        // Get adress in settings, check with "/" no matter what
+        QString settingsAddress = settings.value("address").toString();
+        if (!settingsAddress.endsWith("/")) settingsAddress += "/";
+
+        if (settingsAddress == address )
             break;
         historyIndex++;
     }
@@ -74,14 +89,21 @@ void LoginPage::loggedIn(RamUser *user)
     }
     settings.endArray();
 
-    ui_usernameEdit->setText("");
     ui_passwordEdit->setText("");
+    if (ui_savePassword->isChecked())
+        ui_passwordEdit->setPlaceholderText("Use saved password.");
+    else
+        ui_passwordEdit->setPlaceholderText("Password");
+
+    if (!ui_saveUsername->isChecked())
+        ui_saveUsername->setText("");
 }
 
 void LoginPage::loggedOut()
 {
     ui_loginWidget->show();
     ui_connectionStatusLabel->setText("Ready");
+    serverAddressChanged( ui_serverBox->address() );
 }
 
 void LoginPage::dbiData(QJsonObject data)
@@ -145,7 +167,10 @@ void LoginPage::serverAddressChanged(QString address)
     for (int i = 0; i < historySize; i++)
     {
         settings.setArrayIndex(i);
-        if (settings.value("address").toString() == address )
+        // Get adress in settings, check with "/" no matter what
+        QString settingsAddress = settings.value("address").toString();
+        if (!settingsAddress.endsWith("/")) settingsAddress += "/";
+        if (settingsAddress == address )
         {
             // Decrypt
             SimpleCrypt crypto( SimpleCrypt::machineKey() );

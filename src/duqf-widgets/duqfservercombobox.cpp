@@ -38,6 +38,10 @@ void DuQFServerComboBox::textChanged(QString text)
     QSignalBlocker b(this);
     // Trim, just in case
     QString newAddress = text.trimmed();
+    // Add trailing slash
+    if (m_addTrailingSlash && !newAddress.endsWith("/"))
+        newAddress = newAddress + "/";
+    // Set new text
     this->setCurrentText(newAddress);
     // Save in settings
     m_settings.setValue("server/address", newAddress);

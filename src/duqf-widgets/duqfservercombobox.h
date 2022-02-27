@@ -17,6 +17,7 @@ private slots:
     void textChanged(QString text);
 private:
     QSettings m_settings;
+    bool m_addTrailingSlash = true;
 };
 
 #endif // DUQFSERVERCOMBOBOX_H

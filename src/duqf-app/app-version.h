@@ -4,7 +4,7 @@
 #define VERSION_MAJOR 0
 #define VERSION_MINOR 2
 #define VERSION_BUILD 12
-#define VERSION_SUFFIX "Rubika_2"
+#define VERSION_SUFFIX "Rubika_3"
 
 #define STRINGIFY_VERSION(A, B, C) CONCAT(A, B, C )
 #define CONCAT(A, B, C ) STRINGIFY( A##.##B##.##C )
