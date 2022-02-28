@@ -273,12 +273,23 @@ RamObjectList *RamProject::sequences() const
     return m_sequences;
 }
 
-RamItemTable *RamProject::shots()
+RamItemTable *RamProject::shots() const
 {
     return m_shots;
 }
 
-RamItemTable *RamProject::assets()
+double RamProject::duration() const
+{
+    double duration = 0;
+    for (int i = 0; i < m_sequences->count(); i++)
+    {
+        RamSequence *seq = qobject_cast<RamSequence*>(m_sequences->at(i));
+        if (seq) duration += seq->duration();
+    }
+    return duration;
+}
+
+RamItemTable *RamProject::assets() const
 {
     return m_assets;
 }

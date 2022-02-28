@@ -17,6 +17,7 @@
 #include "data-views/ramobjectlistmenu.h"
 #include "ramses.h"
 #include "shotscreationdialog.h"
+#include "duqf-utils/utils.h"
 
 class ItemTableManagerWidget : public QWidget
 {
@@ -62,6 +63,9 @@ private slots:
 
     void editObject(RamObject *obj) const;
     void historyObject(RamObject *obj) const;
+
+    // Filter
+    void filter(RamObject *filterObj);
 
     // Sort
     void uncheckSort();

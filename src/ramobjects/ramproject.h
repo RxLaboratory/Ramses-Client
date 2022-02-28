@@ -50,9 +50,10 @@ public:
     // Sequences
     RamObjectList *sequences() const;
     // Shots
-    RamItemTable *shots();
+    RamItemTable *shots() const;
+    double duration() const;
     // Assets
-    RamItemTable *assets();
+    RamItemTable *assets() const;
     // Pipeline
     RamObjectList *pipeline();
     RamPipe *pipe(RamStep *outputStep, RamStep *inputStep);

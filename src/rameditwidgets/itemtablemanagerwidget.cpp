@@ -5,15 +5,8 @@ ItemTableManagerWidget::ItemTableManagerWidget(RamStep::Type productionType, QWi
     m_productionType = productionType;
     setupUi();
 
-    if (m_productionType == RamStep::ShotProduction)
-    {
-        // Not implemented yet
-        //ui_table->setSortable(true);
-        ui_titleBar->setTitle("Shots");
-        ui_titleBar->setObjectName("shotToolBar");
-    }
-
     currentUserChanged(nullptr);
+    filter(nullptr);
 
     connectEvents();
 }
@@ -316,6 +309,53 @@ void ItemTableManagerWidget::historyObject(RamObject *obj) const
     RamStep *step = status->step();
     RamItem *item = status->item();
     item->statusHistory(step)->edit();
+}
+
+void ItemTableManagerWidget::filter(RamObject *filterObj)
+{
+    ui_table->filter(filterObj);
+
+    if (m_productionType == RamStep::ShotProduction)
+    {
+        int shotCount = 0;
+        double duration = 0;
+        if (filterObj)
+        {
+            RamSequence *sequence = qobject_cast<RamSequence*>(filterObj);
+            if (sequence)
+            {
+                shotCount = sequence->shotCount();
+                duration = sequence->duration();
+            }
+        }
+        else if (m_project)
+        {
+            shotCount = m_project->shots()->count();
+            duration = m_project->duration();
+        }
+        QString title;
+        if (shotCount == 1) title = QString::number(shotCount) + " Shot";
+        else if (shotCount > 0) title = QString::number(shotCount) + " Shots";
+        else title = "Shots";
+        if (duration > 0) title += " (" + MediaUtils::durationToTimecode(duration) + ")";
+        ui_titleBar->setTitle(title);
+    }
+    else
+    {
+        int assetCount = 0;
+        if (filterObj)
+        {
+            RamAssetGroup *group = qobject_cast<RamAssetGroup*>(filterObj);
+            if (group) assetCount = group->assetCount();
+        }
+        else if (m_project)
+        {
+            assetCount = m_project->assets()->count();
+        }
+        if (assetCount == 1) ui_titleBar->setTitle(QString::number(assetCount) + " Asset");
+        else if (assetCount > 0) ui_titleBar->setTitle(QString::number(assetCount) + " Assets");
+        else ui_titleBar->setTitle("Assets");
+    }
 }
 
 void ItemTableManagerWidget::uncheckSort()
@@ -1023,7 +1063,7 @@ void ItemTableManagerWidget::connectEvents()
     connect(ui_searchEdit, SIGNAL(changing(QString)), ui_table, SLOT(search(QString)));
     connect(ui_searchEdit, SIGNAL(changed(QString)), ui_table, SLOT(search(QString)));
     // group filter
-    connect(ui_groupBox, SIGNAL(currentObjectChanged(RamObject*)), ui_table, SLOT(filter(RamObject*)));
+    connect(ui_groupBox, SIGNAL(currentObjectChanged(RamObject*)), this, SLOT(filter(RamObject*)));
     // other
     connect(ui_titleBar, &DuQFTitleBar::closeRequested, this, &ItemTableManagerWidget::closeRequested);
     connect(Ramses::instance(), &Ramses::currentProjectChanged, this, &ItemTableManagerWidget::projectChanged);
