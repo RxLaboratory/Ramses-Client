@@ -13,6 +13,8 @@ public slots:
     void setAddress(QString newAddress);
 signals:
     void addressChanged(QString);
+protected:
+    void focusOutEvent(QFocusEvent *e) override;
 private slots:
     void textChanged(QString text);
 private:

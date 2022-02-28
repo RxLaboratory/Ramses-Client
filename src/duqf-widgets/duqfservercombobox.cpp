@@ -19,7 +19,7 @@ DuQFServerComboBox::DuQFServerComboBox(QString defaultAddress, QWidget *parent):
     this->setCurrentText(m_settings.value("server/address", defaultAddress).toString());
 
     // connect the text changed
-    connect(this, SIGNAL(currentTextChanged(QString)), this, SLOT(textChanged(QString)));
+    //connect(this, SIGNAL(currentTextChanged(QString)), this, SLOT(textChanged(QString)));
 }
 
 void DuQFServerComboBox::setAddress(QString newAddress)
@@ -30,6 +30,13 @@ void DuQFServerComboBox::setAddress(QString newAddress)
 QString DuQFServerComboBox::address() const
 {
     return this->currentText();
+}
+
+void DuQFServerComboBox::focusOutEvent(QFocusEvent *e)
+{
+    QString text = this->currentText();
+    textChanged(text);
+    QComboBox::focusOutEvent(e);
 }
 
 void DuQFServerComboBox::textChanged(QString text)
@@ -49,3 +56,4 @@ void DuQFServerComboBox::textChanged(QString text)
     // emit
     emit addressChanged(newAddress);
 }
+
