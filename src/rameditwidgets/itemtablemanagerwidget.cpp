@@ -620,8 +620,9 @@ void ItemTableManagerWidget::deleteItems()
     for (int i = 0; i < selection.count(); i++)
     {
         // remove only if it's the item in the first column
-        if (selection.at(i).column() != 0) continue;
-        int row = selection.at(i).row();
+        // if (selection.at(i).column() != 0) continue;
+        QModelIndex sourceIndex = ui_table->filteredList()->mapToSource(selection.at(i));
+        int row = sourceIndex.row();
         if (m_productionType == RamStep::ShotProduction)
             selectedItems << project->shots()->index( row, 0);
         else
