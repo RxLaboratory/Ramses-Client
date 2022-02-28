@@ -342,7 +342,7 @@ void ScheduleManagerWidget::copyComment()
 
     const quintptr &iptr = currentIndex.data(Qt::UserRole).toULongLong();
     if (iptr == 0) return;
-    RamScheduleEntry *entry = reinterpret_cast<RamScheduleEntry*>( currentIndex.data(Qt::UserRole).toULongLong() );
+    RamScheduleEntry *entry = reinterpret_cast<RamScheduleEntry*>( iptr );
     if (!entry) return;
 
     QClipboard *clipboard = QGuiApplication::clipboard();
@@ -396,7 +396,6 @@ void ScheduleManagerWidget::pasteComment()
 
 void ScheduleManagerWidget::contextMenuRequested(QPoint p)
 {
-    qDebug() << "Context menu called";
     // Call the context menu
     ui_contextMenu->popup(ui_table->viewport()->mapToGlobal(p));
 }
@@ -409,9 +408,18 @@ void ScheduleManagerWidget::comment()
 
     QList<ScheduleEntryStruct> modifiedEntries;
 
+    QString currentComment;
+    QModelIndex currentIndex = ui_table->selectionModel()->currentIndex();
+    if ( currentIndex.isValid() )
+    {
+        const quintptr &iptr = currentIndex.data(Qt::UserRole).toULongLong();
+        RamScheduleEntry *entry = reinterpret_cast<RamScheduleEntry*>( iptr );
+        if (entry) currentComment = entry->comment();
+    }
+
     bool ok;
     QString text = QInputDialog::getMultiLineText(ui_table, tr("Write a comment"),
-                                                  tr("Comment:"), "", &ok);
+                                                  tr("Comment:"), currentComment, &ok);
     if (ok && !text.isEmpty())
     {
         m_dbi->suspend(true);
@@ -532,7 +540,7 @@ void ScheduleManagerWidget::setupUi()
 
     QMenu *stepMenu = new QMenu(this);
 
-    ui_commentAction = new QAction(QIcon(":/icons/comment"), "Add comment...", this);
+    ui_commentAction = new QAction(QIcon(":/icons/comment"), "Comment...", this);
     stepMenu->addAction(ui_commentAction);
 
     stepMenu->addSeparator();
