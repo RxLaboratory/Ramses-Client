@@ -30,7 +30,6 @@ void DBInterface::loginHashed(QString username, QString hashedPassword)
     request("login", q);
 }
 
-
 void DBInterface::setOffline()
 {
     setConnectionStatus(NetworkUtils::Offline);
@@ -40,7 +39,7 @@ void DBInterface::setOnline()
 {
     //ping
     _status = NetworkUtils::Connecting;
-    request("ping", QStringList("version=" + QString(STR_VERSION)), false);
+    request("ping", QStringList(), false);
 }
 
 void DBInterface::getUsers()

@@ -520,7 +520,7 @@ void RamLoader::gotApplications(QJsonArray applications)
             existingApp->remove();
     }
 
-    // sort the steps
+    // sort the apps
     apps->sort();
 }
 
