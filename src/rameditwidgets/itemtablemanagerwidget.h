@@ -50,7 +50,7 @@ protected:
     RamObjectListComboBox *ui_groupBox;
 
 protected slots:
-    virtual void projectChanged(RamProject *project);
+    virtual void projectChanged(RamProject *project, bool force = false);
 
 private slots:
     void showUser(RamObject *userObj, bool s);

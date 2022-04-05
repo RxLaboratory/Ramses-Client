@@ -218,8 +218,8 @@ void RamObjectList::clear()
 {
     beginResetModel();
 
-    m_objects.clear();
     m_objectsList.clear();
+    m_objects.clear();
 
     // Disconnect all
     QMapIterator<QString, QList<QMetaObject::Connection>> i(m_connections);
@@ -227,6 +227,32 @@ void RamObjectList::clear()
         i.next();
         QList<QMetaObject::Connection> c = i.value();
         while(!c.isEmpty()) disconnect(c.takeLast());
+    }
+    m_connections.clear();
+
+    m_sorted = true;
+    endResetModel();
+}
+
+void RamObjectList::deleteAll()
+{
+    beginResetModel();
+
+    // Disconnect all
+    QMapIterator<QString, QList<QMetaObject::Connection>> i(m_connections);
+    while (i.hasNext()) {
+        i.next();
+        QList<QMetaObject::Connection> c = i.value();
+        while(!c.isEmpty()) disconnect(c.takeLast());
+    }
+    m_connections.clear();
+
+    while( !m_objectsList.isEmpty() ){
+        RamObject *obj = m_objectsList.takeLast();
+        // Remove from map
+        m_objects.remove(obj->uuid());
+        // Remove / Delete
+        obj->remove();
     }
 
     m_sorted = true;

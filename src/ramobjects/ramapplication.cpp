@@ -76,7 +76,17 @@ void RamApplication::edit(bool show)
 
 void RamApplication::removeFromDB()
 {
-     m_dbi->removeApplication(m_uuid);
+    m_dbi->removeApplication(m_uuid);
+}
+
+void RamApplication::remove(bool updateDB)
+{
+    // Remove lists
+    m_exportFileTypes->clear();
+    m_importFileTypes->clear();
+    m_nativeFileTypes->clear();
+
+    RamObject::remove(updateDB);
 }
 
 bool RamApplication::canExportFileType(RamFileType *ft) const

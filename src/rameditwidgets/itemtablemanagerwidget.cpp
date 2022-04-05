@@ -146,12 +146,12 @@ void ItemTableManagerWidget::hideEvent(QHideEvent *event)
     QWidget::hideEvent(event);
 }
 
-void ItemTableManagerWidget::projectChanged(RamProject *project)
+void ItemTableManagerWidget::projectChanged(RamProject *project, bool force)
 {
     this->setEnabled(false );
 
     if (!m_project && !project) return;
-    if (m_project) if (m_project->is(project) ) return;
+    if (m_project) if (m_project->is(project) && !force ) return;
 
     while (!m_projectConnections.isEmpty()) disconnect( m_projectConnections.takeLast() );
 
@@ -180,7 +180,9 @@ void ItemTableManagerWidget::projectChanged(RamProject *project)
     }
 
     // Populate list and table
+    qDebug() << "=====USER LIST=====";
     ui_userMenu->setList( project->users() );
+     qDebug() << "=====STEP LIST=====";
     ui_stepMenu->setList( project->steps() );
     ui_actionNotAssigned->setChecked(true);
 
@@ -665,7 +667,6 @@ void ItemTableManagerWidget::contextMenuRequested(QPoint p)
 
 void ItemTableManagerWidget::currentUserChanged(RamUser *user)
 {
-
     ui_actionItem->setVisible(false);
     if (!user) return;
     if (user->role() >= RamUser::ProjectAdmin)
@@ -673,6 +674,8 @@ void ItemTableManagerWidget::currentUserChanged(RamUser *user)
         ui_actionItem->setVisible(true);
     }
     loadSettings();
+    // Reload project
+    //projectChanged(Ramses::instance()->currentProject(), true);
 }
 
 void ItemTableManagerWidget::setupUi()
@@ -1067,7 +1070,7 @@ void ItemTableManagerWidget::connectEvents()
     connect(ui_groupBox, SIGNAL(currentObjectChanged(RamObject*)), this, SLOT(filter(RamObject*)));
     // other
     connect(ui_titleBar, &DuQFTitleBar::closeRequested, this, &ItemTableManagerWidget::closeRequested);
-    connect(Ramses::instance(), &Ramses::currentProjectChanged, this, &ItemTableManagerWidget::projectChanged);
+    connect(Ramses::instance(), SIGNAL(currentProjectChanged(RamProject*)), this,SLOT(projectChanged(RamProject*)));
     connect(Ramses::instance(), SIGNAL(loggedIn(RamUser*)), this, SLOT(currentUserChanged(RamUser*)));
     connect(ui_header, SIGNAL(sort(int,Qt::SortOrder)), ui_table->filteredList(), SLOT(resort(int,Qt::SortOrder)));
     connect(ui_header, SIGNAL(unsort()), ui_table->filteredList(), SLOT(unsort()));

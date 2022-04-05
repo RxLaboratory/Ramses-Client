@@ -310,9 +310,23 @@ void Ramses::logout()
     setOffline();
     // Suspend the db interface until there's a login!
     m_dbi->suspend();
+
     setCurrentProject(nullptr);
     m_currentUser = nullptr;
+
     emit loggedOut();
+
+    qDebug() << "=== Logged out: Freeing memory ===";
+    // Clear Projects
+    m_projects->deleteAll();
+    // Other objects
+    m_applications->deleteAll();
+    m_fileTypes->deleteAll();
+    m_states->deleteAll();
+    m_templateAssetGroups->deleteAll();
+    m_templateSteps->deleteAll();
+    m_users->deleteAll();
+    qDebug() << "=== Logged out: Ready ===";
 }
 
 void Ramses::refresh()

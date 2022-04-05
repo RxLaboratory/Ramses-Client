@@ -33,6 +33,7 @@ public slots:
     void update() override;
     virtual void edit(bool show = true) override;
     virtual void removeFromDB() override;
+    virtual void remove(bool updateDB = true) override;
 
 private slots:
     void scheduleChanged(RamObject *entryObj);

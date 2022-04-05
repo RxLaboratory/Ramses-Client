@@ -63,7 +63,13 @@ void RamPipe::edit(bool show)
 
 void RamPipe::removeFromDB()
 {
-     m_dbi->removePipe(m_uuid);
+    m_dbi->removePipe(m_uuid);
+}
+
+void RamPipe::remove(bool updateDB)
+{
+    m_pipeFiles->clear();
+    RamObject::remove(updateDB);
 }
 
 RamStep *RamPipe::outputStep() const

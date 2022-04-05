@@ -36,6 +36,7 @@ public slots:
 private:
     RamUser *m_user = nullptr;
     RamStep *m_step = nullptr;
+    QMetaObject::Connection m_stepConnection;
     QDateTime m_date;
 };
 

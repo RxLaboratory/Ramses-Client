@@ -30,11 +30,6 @@ RamStatus::RamStatus(RamUser *user, RamState *state, RamStep *step, RamItem *ite
     this->setObjectName( "RamStatus" );
 }
 
-RamStatus::~RamStatus()
-{
-    if ( !m_state->is( Ramses::instance()->noState() ) ) m_step->computeEstimation();
-}
-
 QString RamStatus::shortName() const
 {
     QString n = "Status";
@@ -247,6 +242,12 @@ void RamStatus::edit(bool show)
 void RamStatus::removeFromDB()
 {
     m_dbi->removeStatus(m_uuid);
+}
+
+void RamStatus::remove(bool updateDB)
+{
+    RamObject::remove(updateDB);
+    if ( !m_state->is( Ramses::instance()->noState() ) ) m_step->computeEstimation();
 }
 
 QString RamStatus::folderPath() const

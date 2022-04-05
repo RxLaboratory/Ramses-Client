@@ -26,7 +26,6 @@ public:
     Q_ENUM(Difficulty)
 
     explicit RamStatus(RamUser *user, RamState *state, RamStep *step, RamItem *item, bool computeEstimation = true, QString uuid = "");
-    ~RamStatus();
 
     virtual QString shortName() const override;
     virtual QString name() const override;
@@ -86,6 +85,7 @@ public slots:
     void update() override;
     virtual void edit(bool show = true) override;
     virtual void removeFromDB() override;
+    virtual void remove(bool updateDB = true) override;
 
 protected:
     virtual QString folderPath() const override;

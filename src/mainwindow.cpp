@@ -726,6 +726,7 @@ void MainWindow::loggedIn()
 
 void MainWindow::loggedOut()
 {
+    qDebug() << "LOGGEDOUT";
     actionLogIn->setVisible(true);
     actionLogOut->setVisible(false);
     currentUserChanged();

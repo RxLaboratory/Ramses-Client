@@ -33,6 +33,7 @@ public:
 
     // MODEL EDITING
     void clear(); // Reset
+    void deleteAll(); // Reset and delete objects
     virtual void insertObject(int i, RamObject *obj); // Insert Row
     virtual RamObject *takeObject(int i); // Remove Row
     virtual QList<RamObject *> removeIndices( QModelIndexList indices ); // Used to remove selection. Returns the removed objects

@@ -8,8 +8,14 @@ RamObjectFilterModel::RamObjectFilterModel(QObject *parent) : QSortFilterProxyMo
 
 void RamObjectFilterModel::setList(QAbstractItemModel *list)
 {
+    if(this->sourceModel() == list) return;
     if(!list) this->setSourceModel(m_emptyList);
     this->setSourceModel(list);
+    // Refresh
+    QString f = m_currentFilterUuid;
+    setFilterUuid("");
+    setFilterUuid(f);
+    // prepareFilter();
 }
 
 void RamObjectFilterModel::setFilterUuid(const QString &filterUuid)

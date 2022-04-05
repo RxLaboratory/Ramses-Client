@@ -29,7 +29,7 @@ RamScheduleEntry::RamScheduleEntry(RamUser *user, RamStep *step, QDateTime date,
 
 RamScheduleEntry::~RamScheduleEntry()
 {
-    if (m_step) m_step->countAssignedDays();
+    //if (m_step) m_step->countAssignedDays();
 }
 
 QString RamScheduleEntry::name() const
@@ -70,6 +70,9 @@ void RamScheduleEntry::setStep(RamStep *newStep)
     // update assigned days for the previous step
     if (m_step) m_step->countAssignedDays();
 
+    // Disconnect
+    disconnect(m_stepConnection);
+
     m_dirty = true;
 
     m_step = newStep;
@@ -79,6 +82,7 @@ void RamScheduleEntry::setStep(RamStep *newStep)
         m_step->countAssignedDays();
 
         connect(m_step,SIGNAL(removed(RamObject*)), this, SLOT(remove()));
+        m_stepConnection = connect(this, SIGNAL(removed(RamObject*)), m_step, SLOT(countAssignedDays()));
     }
 
     emit changed(this);

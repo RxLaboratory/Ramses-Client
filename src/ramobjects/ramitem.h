@@ -49,6 +49,9 @@ public:
 signals:
     void statusChanged(RamItem *, RamStep *);
 
+public slots:
+    virtual void remove(bool updateDB = true) override;
+
 protected:
     void setProductionType(RamStep::Type newProductionType);
 

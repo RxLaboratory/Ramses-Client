@@ -141,6 +141,12 @@ void RamUser::removeFromDB()
     m_dbi->removeUser(m_uuid);
 }
 
+void RamUser::remove(bool updateDB)
+{
+    m_schedule->deleteAll();
+    RamObject::remove(updateDB);
+}
+
 void RamUser::scheduleChanged(RamObject *entryObj)
 {
     RamScheduleEntry *entry = qobject_cast<RamScheduleEntry*>( entryObj );

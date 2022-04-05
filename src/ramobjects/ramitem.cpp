@@ -244,6 +244,20 @@ void RamItem::statusChanged(const QModelIndex &first, const QModelIndex &last)
     emit statusChanged( this, step );
 }
 
+void RamItem::remove(bool updateDB)
+{
+    QMapIterator<QString, RamStepStatusHistory* > i(m_history);
+    i.toBack();
+    while(i.hasPrevious())
+    {
+        i.previous();
+        RamStepStatusHistory *r = i.value();
+        r->deleteAll();
+        r->deleteLater();
+    }
+    m_history.clear();
+}
+
 void RamItem::removeStatus(const QModelIndex &parent,int first ,int last)
 {
     Q_UNUSED(parent)

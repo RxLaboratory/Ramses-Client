@@ -206,6 +206,20 @@ void RamProject::edit(bool show)
     if (show) showEdit();
 }
 
+void RamProject::remove(bool updateDB)
+{
+    // Empty lists
+    m_users->clear();
+    m_shots->deleteAll();
+    m_assets->deleteAll();
+    m_assetGroups->deleteAll();
+    m_sequences->deleteAll();
+    m_pipeline->deleteAll();
+    m_pipeFiles->deleteAll();
+    m_steps->deleteAll();
+    RamObject::remove(updateDB);
+}
+
 void RamProject::computeEstimation()
 {
     if (m_freezeEstimations) return;
