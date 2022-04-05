@@ -726,11 +726,15 @@ void MainWindow::loggedIn()
 
 void MainWindow::loggedOut()
 {
-    qDebug() << "LOGGEDOUT";
-    actionLogIn->setVisible(true);
+    // Let's just restart app
+    this->close();
+    QProcess::startDetached(qApp->arguments()[0], qApp->arguments());
+
+
+/*    actionLogIn->setVisible(true);
     actionLogOut->setVisible(false);
     currentUserChanged();
-    if (mainStack->currentIndex() != 1) mainStack->setCurrentIndex(0);
+    if (mainStack->currentIndex() != 1) mainStack->setCurrentIndex(0);*/
 }
 
 void MainWindow::currentUserChanged()
