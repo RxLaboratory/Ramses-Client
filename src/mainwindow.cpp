@@ -726,6 +726,13 @@ void MainWindow::loggedIn()
 
 void MainWindow::loggedOut()
 {
+    // Warn user
+    QMessageBox::information(this,
+                             "Log out",
+                             "You've been logged out, Ramses is restarting.",
+                             QMessageBox::Ok,
+                             QMessageBox::Ok);
+
     // Let's just restart app
     this->close();
     QProcess::startDetached(qApp->arguments()[0], qApp->arguments());
