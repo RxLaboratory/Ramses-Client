@@ -69,6 +69,32 @@ void RamScheduleDelegate::paint(QPainter *painter, const QStyleOptionViewItem &o
 
     // Get the entry
     quintptr iptr = index.data(Qt::UserRole).toULongLong();
+
+    if (index.data(Qt::UserRole + 3).toBool()) // comment
+    {
+        QString text = index.data(Qt::DisplayRole).toString();
+        QStringList lines = text.split("\n");
+
+        // Title
+        painter->setPen( textPen );
+        QFont titleFont = m_textFont;
+        titleFont.setBold(true);
+        painter->setFont( titleFont );
+        painter->drawText( textRect.adjusted(-12,0,0,0), Qt::AlignCenter | Qt::AlignHCenter, lines.takeFirst());
+
+        // Other lines
+        // Comment
+        if (bgRect.height() > 35 && lines.count() > 0)
+        {
+            QRect commentRect( iconRect.left(), bgRect.top() + 35, bgRect.width() - m_padding*2, bgRect.height() - 35);
+            painter->setFont( m_textFont );
+            painter->drawText( commentRect, Qt::AlignLeft | Qt::AlignTop, lines.join("\n"), &commentRect);
+            if (commentRect.bottom() > bgRect.bottom() - 5) drawMore(painter, bgRect, textPen);
+        }
+
+        return;
+    }
+
     if (iptr == 0) return;
     RamScheduleEntry *entry = reinterpret_cast<RamScheduleEntry*>( iptr );
     RamStep *step = entry->step();
@@ -121,6 +147,16 @@ QSize RamScheduleDelegate::sizeHint(const QStyleOptionViewItem &option, const QM
     // Get the entry
     quintptr iptr = index.data(Qt::UserRole).toULongLong();
     if (iptr == 0) return QSize(75, 10);
+
+    if (index.data(Qt::UserRole + 3).toBool()) {
+        RamScheduleComment *comment = reinterpret_cast<RamScheduleComment*>( iptr );
+        if (comment) {
+            if (comment->comment().indexOf("\n") >= 0) return QSize(100, 75);
+        }
+        return QSize(75, 10);
+    }
+
+
     RamScheduleEntry *entry = reinterpret_cast<RamScheduleEntry*>( iptr );
     if (!entry) return QSize(75, 10);
     RamStep *step = entry->step();
@@ -156,7 +192,7 @@ bool RamScheduleDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, 
         QMouseEvent *e = static_cast< QMouseEvent * >( event );
         if (e->button() != Qt::LeftButton) return QStyledItemDelegate::editorEvent( event, model, option, index );
 
-        if (m_indexPressed == index && m_indexPressed.isValid())
+        if (m_indexPressed == index && m_indexPressed.isValid() && !index.data(Qt::UserRole+3).toBool())
         {
             RamProject *proj = Ramses::instance()->currentProject();
             if (proj)
@@ -170,7 +206,6 @@ bool RamScheduleDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, 
                 // Get current
                 RamStep *step = reinterpret_cast<RamStep*>( index.data(Qt::EditRole).toULongLong() );
                 editor->setObject(step);
-                qDebug() << "Showing popup";
                 editor->show();
                 editor->showPopup();
                 connect(editor, SIGNAL(currentObjectChanged(RamObject*)), this, SLOT(setEntry(RamObject*)));

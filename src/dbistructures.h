@@ -12,4 +12,12 @@ struct ScheduleEntryStruct {
     QString comment = "";
 };
 
+struct ScheduleCommentStruct {
+    QString uuid = "";
+    QString projectUuid = "";
+    QDateTime date = QDateTime();
+    QString comment = "";
+    QColor color = QColor(227, 227, 227);
+};
+
 #endif // DBISTRUCTURES_H

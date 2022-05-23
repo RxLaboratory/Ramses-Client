@@ -244,6 +244,8 @@ QString RamLoader::gotProject(QJsonObject newP, bool init)
 
         gotSechedule( newP.value("schedule").toArray() );
 
+        gotScheduleComments( newP.value("scheduleComments").toArray() );
+
         // Unfreeze and recompute estimations
         project->freezeEstimations(false);
     }
@@ -1122,6 +1124,63 @@ QString RamLoader::gotScheduleEntry(QJsonObject newSE)
 
     entry->setComment( newSE.value("comment").toString() );
     user->schedule()->append(entry);
+
+    return uuid;
+}
+
+void RamLoader::gotScheduleComments(QJsonArray comments)
+{
+    DBISuspender s;
+
+    m_pm->increment();
+    m_pm->setText("Loading schedule...");
+    qDebug() << "Loading schedule comments";
+
+    QStringList uuids;
+    // Update schedule
+    for (int j = 0; j < comments.count(); j++)
+        uuids << gotScheduleComment( comments.at(j).toObject() );
+
+    // Remove deleted entries
+    m_pm->setText("Cleaning schedule...");
+    qDebug() << "Cleaning schedule comments";
+    RamObjectList *projects = Ramses::instance()->projects();
+    for (int u = 0; u < projects->count(); u++)
+    {
+        RamProject *p = qobject_cast<RamProject*>(  projects->at(u) );
+        RamObjectList *schedulecomments = p->scheduleComments();
+        for (int i = schedulecomments->count() - 1; i >= 0; i--)
+        {
+            RamObject *existingComment = schedulecomments->at(i);
+            if (!uuids.contains(existingComment->uuid()))
+                existingComment->remove();
+        }
+    }
+}
+
+QString RamLoader::gotScheduleComment(QJsonObject newComment)
+{
+    DBISuspender s;
+
+    QString uuid = newComment.value("uuid").toString();
+
+    RamProject *project = RamProject::project( newComment.value("projectUuid").toString() );
+    if (!project) return uuid;
+
+    // Get existing one if any, otherwise create it
+    RamScheduleComment *comment = RamScheduleComment::scheduleComment(uuid);
+    if (!comment) comment = new RamScheduleComment(
+                project,
+                QDateTime::fromString( newComment.value("date").toString(), "yyyy-MM-dd hh:mm:ss"),
+                uuid
+                );
+    else {
+        comment->setDate( QDateTime::fromString( newComment.value("date").toString(), "yyyy-MM-dd hh:mm:ss") );
+    }
+
+    comment->setComment( newComment.value("comment").toString() );
+    comment->setColor( QColor( newComment.value("color").toString()) );
+    project->scheduleComments()->append(comment);
 
     return uuid;
 }

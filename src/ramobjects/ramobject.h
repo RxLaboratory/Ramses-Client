@@ -37,7 +37,8 @@ public:
                     ObjectList,
                     ObjectUberList,
                     StepStatusHistory,
-                    ScheduleEntry};
+                    ScheduleEntry,
+                    ScheduleComment};
     Q_ENUM( ObjectType )
 
     enum SubFolder { NoFolder,

@@ -870,6 +870,39 @@ void DBInterface::removeSchedules(QList<ScheduleEntryStruct> entries)
     request("removeSchedules", requestObj);
 }
 
+void DBInterface::updateScheduleComment(QString uuid, QString projectUuid, QDateTime date, QString comment, QColor color)
+{
+    QStringList q;
+    q << "uuid=" + uuid;
+    q << "projectUuid=" + projectUuid;
+    q << "comment=" + comment;
+    q << "date=" + date.toString("yyyy-MM-dd hh:mm:ss");
+    if (color.isValid()) q << "color=" + color.name();
+
+    request("updateScheduleComment", q);
+}
+
+void DBInterface::updateScheduleComments(QList<ScheduleCommentStruct> comments)
+{
+    if (comments.count() == 0) return;
+    QJsonArray commentsArr;
+    for (int i = 0; i < comments.count(); i++)
+    {
+        ScheduleCommentStruct c = comments.at(i);
+        QJsonObject comment;
+        comment.insert("uuid", c.uuid);
+        comment.insert("projectUuid", c.projectUuid);
+        comment.insert("color", c.color.name());
+        comment.insert("comment", c.comment);
+        comment.insert("date", c.date.toString("yyyy-MM-dd hh:mm:ss"));
+        commentsArr.append(comment);
+    }
+    QJsonObject requestObj;
+    requestObj.insert("comments", commentsArr);
+
+    request("updateScheduleComments", requestObj);
+}
+
 void DBInterface::init()
 {
     request("init");

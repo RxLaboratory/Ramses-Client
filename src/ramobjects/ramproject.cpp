@@ -18,6 +18,7 @@ RamProject::RamProject(QString shortName, QString name, QString uuid):
     m_shots = new RamItemTable(RamStep::ShotProduction, m_steps, "SHOTS", "Shots", this);
     m_assets = new RamItemTable(RamStep::AssetProduction, m_steps, "ASSETS", "Assets", this);
     m_users = new RamObjectList("USRS", "Users", this);
+    m_scheduleComments = new RamObjectList("SCHDLCOMTS", "Schedule comments", this);
 
     m_dbi->createProject(m_shortName, m_name, m_uuid);
 
@@ -332,6 +333,11 @@ RamObjectList *RamProject::pipeFiles()
 RamObjectList *RamProject::users() const
 {
     return m_users;
+}
+
+RamObjectList *RamProject::scheduleComments() const
+{
+    return m_scheduleComments;
 }
 
 qint64 RamProject::timeSpent() const

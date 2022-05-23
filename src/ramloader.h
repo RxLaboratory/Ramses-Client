@@ -6,6 +6,7 @@
 #include "processmanager.h"
 #include "ramses.h"
 #include "ramscheduleentry.h"
+#include "ramschedulecomment.h"
 #include "dbisuspender.h"
 
 class RamLoader : public QThread
@@ -80,6 +81,8 @@ private:
     // schedule
     void gotSechedule(QJsonArray schedule);
     QString gotScheduleEntry(QJsonObject newSE);
+    void gotScheduleComments(QJsonArray comments);
+    QString gotScheduleComment(QJsonObject newComment);
 
     QJsonObject m_data;
 

@@ -60,6 +60,8 @@ public:
     RamObjectList *pipeFiles();
     // Users
     RamObjectList *users() const;
+    // Schedule comments
+    RamObjectList *scheduleComments() const;
 
     // Production Tracking
     qint64 timeSpent() const; //seconds
@@ -121,6 +123,7 @@ private:
     RamObjectList *m_pipeline;
     RamObjectList *m_pipeFiles;
     RamObjectList *m_users;
+    RamObjectList *m_scheduleComments;
     QDate m_deadline;
 
     /**

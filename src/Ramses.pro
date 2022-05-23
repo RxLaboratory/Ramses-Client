@@ -108,6 +108,7 @@ SOURCES += \
     ramnamemanager.cpp \
     ramobjects/ramassetgroup.cpp \
     ramobjects/rampipefile.cpp \
+    ramobjects/ramschedulecomment.cpp \
     ramobjects/ramscheduleentry.cpp \
     ramobjects/ramsequence.cpp \
     ramobjects/ramworkingfolder.cpp \
@@ -266,6 +267,7 @@ HEADERS += \
     ramnamemanager.h \
     ramobjects/ramassetgroup.h \
     ramobjects/rampipefile.h \
+    ramobjects/ramschedulecomment.h \
     ramobjects/ramscheduleentry.h \
     ramobjects/ramsequence.h \
     ramobjects/ramworkingfolder.h \

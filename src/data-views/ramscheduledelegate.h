@@ -8,6 +8,7 @@
 #include "duqf-app/app-style.h"
 #include "ramses.h"
 #include "ramobjectlistcombobox.h"
+#include "ramschedulecomment.h"
 
 class RamScheduleDelegate : public QStyledItemDelegate
 {

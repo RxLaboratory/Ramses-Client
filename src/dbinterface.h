@@ -149,6 +149,8 @@ public:
     void updateSchedules(QList<ScheduleEntryStruct> entries);
     void removeSchedule(QString uuid);
     void removeSchedules(QList<ScheduleEntryStruct> entries);
+    void updateScheduleComment(QString uuid, QString projectUuid, QDateTime date, QString comment, QColor color);
+    void updateScheduleComments(QList<ScheduleCommentStruct> comments);
 
 
 public slots:
