@@ -903,6 +903,31 @@ void DBInterface::updateScheduleComments(QList<ScheduleCommentStruct> comments)
     request("updateScheduleComments", requestObj);
 }
 
+void DBInterface::removeScheduleComment(QString uuid)
+{
+    QStringList q;
+    q << "uuid=" + uuid;
+
+    request("removeScheduleComment", q);
+}
+
+void DBInterface::removeScheduleComments(QList<ScheduleCommentStruct> comments)
+{
+    if (comments.count() == 0) return;
+    QJsonArray commentsArr;
+    for (int i = 0; i < comments.count(); i++)
+    {
+        ScheduleCommentStruct c = comments.at(i);
+        QJsonObject comment;
+        comment.insert("uuid", c.uuid);
+        commentsArr.append(comment);
+    }
+    QJsonObject requestObj;
+    requestObj.insert("comments", commentsArr);
+
+    request("removeScheduleComments", requestObj);
+}
+
 void DBInterface::init()
 {
     request("init");

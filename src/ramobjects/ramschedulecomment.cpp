@@ -91,5 +91,5 @@ void RamScheduleComment::update()
 
 void RamScheduleComment::removeFromDB()
 {
-    m_dbi->updateScheduleComment(m_uuid, m_project->uuid(), m_date, "", QColor(227, 227, 227));
+    m_dbi->removeScheduleComment(m_uuid);
 }

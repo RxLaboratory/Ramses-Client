@@ -151,7 +151,7 @@ QSize RamScheduleDelegate::sizeHint(const QStyleOptionViewItem &option, const QM
     if (index.data(Qt::UserRole + 3).toBool()) {
         RamScheduleComment *comment = reinterpret_cast<RamScheduleComment*>( iptr );
         if (comment) {
-            if (comment->comment().indexOf("\n") >= 0) return QSize(100, 75);
+            if (comment->comment().indexOf("\n") >= 0 && m_details) return QSize(200, 75);
         }
         return QSize(75, 10);
     }
@@ -162,7 +162,7 @@ QSize RamScheduleDelegate::sizeHint(const QStyleOptionViewItem &option, const QM
     RamStep *step = entry->step();
     if (!step) return QSize(75, 10);
 
-    if (m_details && entry->comment() != "") return QSize(100, 75);
+    if (m_details && entry->comment() != "") return QSize(200, 75);
     return QSize(75, 25);
 }
 

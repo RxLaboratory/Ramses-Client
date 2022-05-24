@@ -149,16 +149,23 @@ void ScheduleManagerWidget::assignStep(RamObject *stepObj)
     QList<ScheduleEntryStruct> modifiedEntries;
     QList<ScheduleEntryStruct> newEntries;
     QList<ScheduleEntryStruct> removedEntries;
+    QList<ScheduleCommentStruct> removedComments;
 
     QModelIndexList selection = ui_table->selectionModel()->selectedIndexes();
     for (int i = 0; i < selection.count(); i++)
     {
         const QModelIndex &index = selection.at(i);
-        RamScheduleEntry *entry = reinterpret_cast<RamScheduleEntry*>( index.data(Qt::UserRole).toULongLong() );
+        const quintptr &iptr = index.data(Qt::UserRole).toULongLong();
+        RamScheduleEntry *entry = reinterpret_cast<RamScheduleEntry*>( iptr );
+        RamScheduleComment *comment = reinterpret_cast<RamScheduleComment*>( iptr );
 
         if (!step)
         {
-            if (entry)
+            if (index.data(Qt::UserRole + 3).toBool() && comment) {
+                removedComments << comment->toStruct();
+                comment->remove(false);
+            }
+            else if (entry)
             {
                 removedEntries << entry->toStruct();
                 entry->remove(false);
@@ -198,6 +205,7 @@ void ScheduleManagerWidget::assignStep(RamObject *stepObj)
     m_dbi->createSchedules( newEntries );
     m_dbi->updateSchedules( modifiedEntries );
     m_dbi->removeSchedules( removedEntries );
+    m_dbi->removeScheduleComments( removedComments );
 
     this->update();
 }
@@ -494,6 +502,11 @@ void ScheduleManagerWidget::comment()
     }
 }
 
+void ScheduleManagerWidget::removeCommment()
+{
+
+}
+
 void ScheduleManagerWidget::color()
 {
     // Get selection
@@ -760,6 +773,11 @@ void ScheduleManagerWidget::setupUi()
     ui_commentContextMenu->addAction(ui_cutComment);
     ui_commentContextMenu->addAction(ui_pasteComment);
 
+    ui_commentContextMenu->addSeparator();
+
+    ui_removeCommentAction = new QAction(QIcon(":/icons/remove"), "Remove", this);
+    ui_commentContextMenu->addAction(ui_removeCommentAction);
+
 }
 
 void ScheduleManagerWidget::connectEvents()
@@ -797,6 +815,7 @@ void ScheduleManagerWidget::connectEvents()
     connect(ui_table, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(contextMenuRequested(QPoint)));
     connect(ui_commentAction, SIGNAL(triggered()), this, SLOT(comment()));
     connect(ui_colorAction, SIGNAL(triggered()), this, SLOT(color()));
+    connect(ui_removeCommentAction, SIGNAL(triggered()), this, SLOT(assignStep()));
     // comment actions
     connect(ui_copyComment, SIGNAL(triggered()), this, SLOT(copyComment()));
     connect(ui_cutComment, SIGNAL(triggered()), this, SLOT(cutComment()));
