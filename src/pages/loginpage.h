@@ -38,6 +38,8 @@ private slots:
     void toggleSaveUsername(bool enabled);
     void toggleSavePassword(bool enabled);
 
+    void setSSL(bool ssl);
+
 private:
     void setupUi();
     void connectEvents();
@@ -55,10 +57,10 @@ private:
 
     QString m_hashedPassword;
 
-    Ramses *_ramses;
-    QTimer *_failedTimer;
-    QTimer *_uiTimer;
-    int _failedAttempts;
+    Ramses *m_ramses;
+    QTimer *m_failedTimer;
+    QTimer *m_uiTimer;
+    int m_failedAttempts;
     void freeze();
     void unFreeze();
     void updateFreeze();

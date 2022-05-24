@@ -7,11 +7,11 @@ LoginPage::LoginPage(QWidget *parent) :
 
     ui_capsLockLabel->hide(); // TODO implement CAPS Lock detection
 
-    _ramses = Ramses::instance();
-    _failedTimer = new QTimer(this);
-    _failedTimer->setSingleShot(true);
-    _uiTimer = new QTimer(this);
-    _failedAttempts = 0;
+    m_ramses = Ramses::instance();
+    m_failedTimer = new QTimer(this);
+    m_failedTimer->setSingleShot(true);
+    m_uiTimer = new QTimer(this);
+    m_failedAttempts = 0;
 
     connectEvents();
 }
@@ -118,11 +118,11 @@ void LoginPage::dbiData(QJsonObject data)
         if (data.value("success").toBool())
         {
             unFreeze();
-            _failedAttempts = 0;
+            m_failedAttempts = 0;
         }
         else
         {
-            _failedAttempts++;
+            m_failedAttempts++;
             freeze();
         }
     }
@@ -130,6 +130,8 @@ void LoginPage::dbiData(QJsonObject data)
 
 void LoginPage::loginButton_clicked()
 {
+    setSSL(ui_sslBox->isChecked());
+
     //check login in database, initiate
     if (ui_usernameEdit->text() == "")
     {
@@ -145,11 +147,11 @@ void LoginPage::loginButton_clicked()
 
     if (ui_passwordEdit->text() == "")
     {
-        _ramses->loginHashed(ui_usernameEdit->text(), m_hashedPassword);
+        m_ramses->loginHashed(ui_usernameEdit->text(), m_hashedPassword);
     }
     else
     {
-        _ramses->login(ui_usernameEdit->text(), ui_passwordEdit->text());
+        m_ramses->login(ui_usernameEdit->text(), ui_passwordEdit->text());
     }
 
     ui_connectionStatusLabel->setText("Connecting...");
@@ -165,7 +167,7 @@ void LoginPage::serverAddressChanged(QString address)
     // Notify the interface
     DBInterface::instance()->setServerAddress(address);
 
-    // Load saved username and password
+    // Load saved username and password and ssl
     QSettings settings;
 
     int historySize = settings.beginReadArray("server/serverHistory");
@@ -211,6 +213,8 @@ void LoginPage::serverAddressChanged(QString address)
                     ui_passwordEdit->setText("");
                 }
             }
+
+            ui_sslBox->setChecked( settings.value("ssl", true).toBool() );
             break;
         }
     }
@@ -242,6 +246,40 @@ void LoginPage::toggleSavePassword(bool enabled)
                 QMessageBox::No
                 );
     if (result == QMessageBox::No) ui_savePassword->setChecked(false);
+}
+
+void LoginPage::setSSL(bool ssl)
+{
+    // Save setting
+    QSettings settings;
+
+    QString address = ui_serverBox->address();
+    int historySize = settings.beginReadArray("server/serverHistory");
+    int historyIndex = -1;
+    for (int i = 0; i < historySize; i++)
+    {
+         settings.setArrayIndex(i);
+         // Get adress in settings, check with "/" no matter what
+         QString settingsAddress = settings.value("address").toString();
+         if (!settingsAddress.endsWith("/")) settingsAddress += "/";
+         if (settingsAddress == address )
+         {
+             historyIndex = i;
+             break;
+         }
+    }
+    settings.endArray();
+
+    if (historyIndex > 0)
+    {
+        settings.beginWriteArray("server/serverHistory", historySize);
+        settings.setArrayIndex(historyIndex);
+        settings.setValue("ssl", ssl);
+        settings.endArray();
+    }
+
+    // Set the dbi
+    DBInterface::instance()->setSSL(ssl);
 }
 
 void LoginPage::setupUi()
@@ -340,22 +378,21 @@ void LoginPage::connectEvents()
     connect(ui_saveUsername, SIGNAL(toggled(bool)), this, SLOT(toggleSaveUsername(bool)));
     connect(ui_savePassword, SIGNAL(clicked(bool)), this, SLOT(toggleSavePassword(bool)));
 
-    connect(_ramses,&Ramses::loggedIn, this, &LoginPage::loggedIn);
-    connect(_ramses,&Ramses::loggedOut, this, &LoginPage::loggedOut);
+    connect(m_ramses,&Ramses::loggedIn, this, &LoginPage::loggedIn);
+    connect(m_ramses,&Ramses::loggedOut, this, &LoginPage::loggedOut);
     connect(ui_usernameEdit, &QLineEdit::returnPressed, this, &LoginPage::loginButton_clicked);
     connect(ui_passwordEdit, &QLineEdit::returnPressed, this, &LoginPage::loginButton_clicked);
     //connect(DBInterface::instance(), &DBInterface::log, this, &LoginPage::dbiLog);
     //connect(Daemon::instance(), &Daemon::log, this, &LoginPage::daemonLog);
     connect(DBInterface::instance(), &DBInterface::data, this, &LoginPage::dbiData);
     connect(ui_loginButton, SIGNAL(clicked()), this, SLOT(loginButton_clicked()));
-    connect(_failedTimer, &QTimer::timeout, this, &LoginPage::unFreeze);
-    connect(_uiTimer, &QTimer::timeout, this, &LoginPage::updateFreeze);
+    connect(m_failedTimer, &QTimer::timeout, this, &LoginPage::unFreeze);
+    connect(m_uiTimer, &QTimer::timeout, this, &LoginPage::updateFreeze);
+
+    connect(ui_serverBox, SIGNAL(addressChanged(QString)), this, SLOT(serverAddressChanged(QString)));
 
     connect(DBInterface::instance(), SIGNAL(serverAddressChanged(QString)), ui_serverBox, SLOT(setAddress(QString)));
     connect(DBInterface::instance(), SIGNAL(sslChanged(bool)), ui_sslBox, SLOT(setChecked(bool)));
-
-    connect(ui_serverBox, SIGNAL(addressChanged(QString)), this, SLOT(serverAddressChanged(QString)));
-    connect(ui_sslBox, SIGNAL(toggled(bool)), DBInterface::instance(), SLOT(setSSL(bool)));
 
     // Needs to be called once
     serverAddressChanged(ui_serverBox->currentText());
@@ -364,10 +401,10 @@ void LoginPage::connectEvents()
 void LoginPage::freeze()
 {
     ui_loginWidget->hide();
-    int timeout = _failedAttempts * _failedAttempts;
+    int timeout = m_failedAttempts * m_failedAttempts;
     qDebug() << "Freezing login page for " + QString::number(timeout) + " seconds";
-    _failedTimer->start(timeout*1000);
-    _uiTimer->start(1000);
+    m_failedTimer->start(timeout*1000);
+    m_uiTimer->start(1000);
 
     ui_connectionStatusLabel->setEnabled(true);
 }
@@ -377,13 +414,13 @@ void LoginPage::unFreeze()
     ui_loginWidget->show();
     ui_connectionStatusLabel->setText("Ready.");
     ui_connectionStatusLabel->setEnabled(false);
-    _uiTimer->stop();
-    _failedTimer->stop();
+    m_uiTimer->stop();
+    m_failedTimer->stop();
 }
 
 void LoginPage::updateFreeze()
 {
-    int remaining = _failedTimer->remainingTime() / 1000;
-    ui_connectionStatusLabel->setText(QString::number(_failedAttempts) + " failed Attempts.\nPlease wait " + QString::number(remaining) + " seconds.");
+    int remaining = m_failedTimer->remainingTime() / 1000;
+    ui_connectionStatusLabel->setText(QString::number(m_failedAttempts) + " failed Attempts.\nPlease wait " + QString::number(remaining) + " seconds.");
 }
 
