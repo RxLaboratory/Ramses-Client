@@ -17,6 +17,7 @@ protected:
     void focusOutEvent(QFocusEvent *e) override;
 private slots:
     void textChanged(QString text);
+    void indexChanged(int index);
 private:
     QSettings m_settings;
     bool m_addTrailingSlash = true;

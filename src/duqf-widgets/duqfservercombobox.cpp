@@ -20,6 +20,7 @@ DuQFServerComboBox::DuQFServerComboBox(QString defaultAddress, QWidget *parent):
 
     // connect the text changed
     //connect(this, SIGNAL(currentTextChanged(QString)), this, SLOT(textChanged(QString)));
+    connect(this, SIGNAL(currentIndexChanged(int)), this, SLOT(indexChanged(int)));
 }
 
 void DuQFServerComboBox::setAddress(QString newAddress)
@@ -55,5 +56,12 @@ void DuQFServerComboBox::textChanged(QString text)
     b.unblock();
     // emit
     emit addressChanged(newAddress);
+}
+
+void DuQFServerComboBox::indexChanged(int index)
+{
+    Q_UNUSED(index)
+
+    textChanged(this->currentText());
 }
 
