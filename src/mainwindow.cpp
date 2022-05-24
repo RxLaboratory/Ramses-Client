@@ -64,8 +64,10 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     mainStatusBar->addPermanentWidget(new DuQFLogToolButton(this));
 
     ui_networkButton = new DuQFAutoSizeToolButton(this);
-    ui_networkButton->setToolButtonStyle(Qt::ToolButtonTextOnly);
+    ui_networkButton->setObjectName("menuButton");
     ui_networkButton->setText("Offline");
+    ui_networkButton->setIcon(QIcon(":/icons/folder"));
+    ui_networkButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     //ui_networkButton->setMinimumWidth(100);
     mainStatusBar->addPermanentWidget(ui_networkButton);
 
@@ -840,12 +842,27 @@ void MainWindow::dbiConnectionStatusChanged(NetworkUtils::NetworkStatus s)
     {
         ui_refreshButton->show();
         ui_networkButton->setText(address);
+        if (DBInterface::instance()->ssl())
+        {
+            ui_networkButton->setIcon(QIcon(":/icons/shield"));
+            ui_networkButton->setToolTip("Connected.");
+            ui_networkButton->setStatusTip("");
+        }
+        else
+        {
+            ui_networkButton->setIcon(QIcon(":/icons/no-shield"));
+            ui_networkButton->setToolTip("WARNING: Connection is not secured!");
+            ui_networkButton->setStatusTip("WARNING: Connection is not secured!");
+        }
     }
     else if (s == NetworkUtils::Connecting) ui_networkButton->setText("Connecting to " + address);
     else if (s == NetworkUtils::Offline)
     {
         ui_refreshButton->hide();
         ui_networkButton->setText("Offline");
+        ui_networkButton->setIcon(QIcon(":/icons/folder"));
+        ui_networkButton->setToolTip("Offline.");
+        ui_networkButton->setStatusTip("");
     }
 }
 

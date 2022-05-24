@@ -127,7 +127,7 @@ namespace NetworkUtils
 {
     Q_NAMESPACE
 
-    enum NetworkStatus { Connecting, Online, Offline };
+    enum NetworkStatus { Connecting, Online, Offline, Error };
     Q_ENUM_NS(NetworkStatus)
 
 };

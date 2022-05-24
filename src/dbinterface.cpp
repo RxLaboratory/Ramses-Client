@@ -945,6 +945,7 @@ DBInterface::DBInterface(QObject *parent) : DuQFLoggerObject("Database Interface
     // REMOTE
 
     _network.setCookieJar(new QNetworkCookieJar());
+    _network.setStrictTransportSecurityEnabled(true);
     _sessionToken = "";
 
     _suspended = false;
@@ -1009,8 +1010,11 @@ void DBInterface::dataReceived(QNetworkReply * rep)
     }
 
     //if we recieved the reply from the ping, set online
-    if (repQuery == "ping" && repSuccess) setConnectionStatus(NetworkUtils::Online);
-    else if (repQuery == "ping") setConnectionStatus(NetworkUtils::Offline);
+    if (repQuery == "ping" && repSuccess)
+    {
+        setConnectionStatus(NetworkUtils::Online);
+    }
+    else if (repQuery == "ping") setConnectionStatus(NetworkUtils::Error);
 
     //if login, get the token
     if (repQuery == "login" && repSuccess) _sessionToken = repObj.value("content").toObject().value("token").toString();
@@ -1032,6 +1036,7 @@ void DBInterface::sslError(QNetworkReply* /*rep*/, QList<QSslError> errs)
         log(err.errorString(), DuQFLog::Warning);
     }
     log("SSL Error. Connection may not be secured.", DuQFLog::Warning);
+    setConnectionStatus( _status );
 }
 
 void DBInterface::networkError(QNetworkReply::NetworkError err)
@@ -1169,6 +1174,7 @@ void DBInterface::networkError(QNetworkReply::NetworkError err)
 
 void DBInterface::setConnectionStatus(NetworkUtils::NetworkStatus s)
 {
+    if (s != _status && s == NetworkUtils::Online && !m_ssl) log("Connection is not secured!", DuQFLog::Critical);
     _status = s;
     if (s == NetworkUtils::Offline) _sessionToken = "";
     emit connectionStatusChanged(s);
