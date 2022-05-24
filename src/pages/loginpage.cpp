@@ -329,6 +329,10 @@ void LoginPage::setupUi()
 
     layout->addStretch();
     mainLayout->addStretch();
+
+    // Tab order
+    QWidget::setTabOrder(ui_serverBox, ui_usernameEdit);
+    QWidget::setTabOrder(ui_usernameEdit, ui_passwordEdit);
 }
 
 void LoginPage::connectEvents()
