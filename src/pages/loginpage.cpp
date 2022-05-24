@@ -37,6 +37,7 @@ void LoginPage::loggedIn(RamUser *user)
     QString address = settings.value("server/address", "localhost/ramses/").toString();
     int historySize = settings.beginReadArray("server/serverHistory");
     int historyIndex = 0;
+    bool found = false;
     for (int i = 0; i < historySize; i++)
     {
         settings.setArrayIndex(i);
@@ -45,11 +46,15 @@ void LoginPage::loggedIn(RamUser *user)
         if (!settingsAddress.endsWith("/")) settingsAddress += "/";
 
         if (settingsAddress == address )
+        {
+            found = true;
             break;
+        }
         historyIndex++;
     }
     settings.endArray();
 
+    if (!found) historySize++;
     settings.beginWriteArray("server/serverHistory", historySize);
     settings.setArrayIndex(historyIndex);
     settings.setValue("address", address);
