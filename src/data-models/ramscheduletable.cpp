@@ -142,8 +142,6 @@ QVariant RamScheduleTable::data(const QModelIndex &index, int role) const
     QDateTime date = QDate( m_startDate.addDays(col) ).startOfDay();
 #endif
 
-    if (role == Qt::UserRole +1 )
-        return date;
 
     if (row == 0 && m_comments)
     {
@@ -187,9 +185,7 @@ QVariant RamScheduleTable::data(const QModelIndex &index, int role) const
         return QVariant();
     }
 
-    if (m_comments) row--;
-
-    RamObject *usrObj = m_users->at(row / 2);
+    RamObject *usrObj = m_users->at((row-1) / 2);
     RamUser *user = qobject_cast<RamUser*>( usrObj );
     if (!user) return QVariant();
     RamObjectList *schedule = user->schedule();
@@ -200,6 +196,9 @@ QVariant RamScheduleTable::data(const QModelIndex &index, int role) const
         ampm = "pm";
         date.setTime(QTime(12,0));
     }
+
+    if (role == Qt::UserRole +1 )
+        return date;
 
     RamProject *currentProject = Ramses::instance()->currentProject();
 

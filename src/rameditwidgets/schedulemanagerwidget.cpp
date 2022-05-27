@@ -183,7 +183,8 @@ void ScheduleManagerWidget::assignStep(RamObject *stepObj)
 #else
             QDateTime date = index.data(Qt::UserRole+1).toDate().startOfDay();
 #endif
-            if (  ui_table->selectionModel()->model()->headerData( index.row(), Qt::Vertical, Qt::UserRole+1 ).toBool() )
+            bool ispm = ui_table->selectionModel()->model()->headerData( index.row(), Qt::Vertical, Qt::UserRole+1 ).toBool();
+            if ( ispm )
                 date.setTime(QTime(12,0));
 
             entry = new RamScheduleEntry( user, step, date );
