@@ -481,7 +481,17 @@ void ScheduleManagerWidget::comment()
             if (index.data(Qt::UserRole + 3).toBool()) {
                 RamScheduleComment *comment = reinterpret_cast<RamScheduleComment*>( iptr );
                 if (!comment) {
-                    comment = new RamScheduleComment( m_project, index.data(Qt::UserRole + 1).toDateTime() );
+
+#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
+                    QDateTime date = QDateTime( index.data(Qt::UserRole+1).toDate() );
+#else
+                    QDateTime date = index.data(Qt::UserRole+1).toDate().startOfDay();
+#endif
+                    bool ispm = ui_table->selectionModel()->model()->headerData( index.row(), Qt::Vertical, Qt::UserRole+1 ).toBool();
+                    if ( ispm )
+                        date.setTime(QTime(12,0));
+
+                    comment = new RamScheduleComment( m_project, date );
                     m_project->scheduleComments()->append(comment);
                 }
                 comment->setComment(text);
