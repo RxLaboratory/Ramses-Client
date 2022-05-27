@@ -1,5 +1,5 @@
 ﻿#include "dbinterface.h"
-
+#include "duqf-app/app-version.h"
 #include "daemon.h"
 
 DBInterface *DBInterface::_instance = nullptr;
@@ -32,7 +32,7 @@ void DBInterface::loginHashed(QString username, QString hashedPassword)
 
 void DBInterface::setOffline()
 {
-    setConnectionStatus(NetworkUtils::Offline);
+    setConnectionStatus(NetworkUtils::Offline, "Switched to offline mode.");
 }
 
 void DBInterface::setOnline()
@@ -1012,9 +1012,9 @@ void DBInterface::dataReceived(QNetworkReply * rep)
     //if we recieved the reply from the ping, set online
     if (repQuery == "ping" && repSuccess)
     {
-        setConnectionStatus(NetworkUtils::Online);
+        setConnectionStatus(NetworkUtils::Online, "Server ready");
     }
-    else if (repQuery == "ping") setConnectionStatus(NetworkUtils::Error);
+    else if (repQuery == "ping") setConnectionStatus(NetworkUtils::Error, "The server request was not successful.\nThis is probably a bug or a configuration error.\nPlease report bugs on " + QString(URL_SOURCECODE));
 
     //if login, get the token
     if (repQuery == "login" && repSuccess) _sessionToken = repObj.value("content").toObject().value("token").toString();
@@ -1023,7 +1023,7 @@ void DBInterface::dataReceived(QNetworkReply * rep)
     if (repQuery == "loggedout")
     {
         _sessionToken = "";
-        setConnectionStatus(NetworkUtils::Offline);
+        setConnectionStatus(NetworkUtils::Offline, "The server ended your session.");
     }
 
     emit data(repObj);
@@ -1031,12 +1031,14 @@ void DBInterface::dataReceived(QNetworkReply * rep)
 
 void DBInterface::sslError(QNetworkReply* /*rep*/, QList<QSslError> errs)
 {
+    QString errors;
     foreach (QSslError err, errs)
     {
         log(err.errorString(), DuQFLog::Warning);
+        errors = errors + "\n> " + err.errorString();
     }
     log("SSL Error. Connection may not be secured.", DuQFLog::Warning);
-    setConnectionStatus( _status );
+    setConnectionStatus( _status, "There were SSL errors, the connection may not be secured.\n" + errors );
 }
 
 void DBInterface::networkError(QNetworkReply::NetworkError err)
@@ -1168,16 +1170,16 @@ void DBInterface::networkError(QNetworkReply::NetworkError err)
     {
         reason = "Unknown server error.";
     }
-    setConnectionStatus( NetworkUtils::Offline );
+    setConnectionStatus( NetworkUtils::Offline, "Network error:\n" + reason);
     log(reason, DuQFLog::Critical);
 }
 
-void DBInterface::setConnectionStatus(NetworkUtils::NetworkStatus s)
+void DBInterface::setConnectionStatus(NetworkUtils::NetworkStatus s, QString reason)
 {
     if (s != _status && s == NetworkUtils::Online && !m_ssl) log("Connection is not secured!", DuQFLog::Critical);
     _status = s;
     if (s == NetworkUtils::Offline) _sessionToken = "";
-    emit connectionStatusChanged(s);
+    emit connectionStatusChanged(s, reason);
 }
 
 void DBInterface::nextRequest()

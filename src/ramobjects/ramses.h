@@ -25,7 +25,7 @@ public:
     // User
     void login(QString username, QString password);
     void loginHashed(QString username, QString hashedPassword);
-    void logout();
+    void logout(QString reason="");
     // Server connection
     bool isOnline() const;
     // Tree base
@@ -73,7 +73,7 @@ public slots:
 
 signals:
     void loggedIn(RamUser*);
-    void loggedOut();
+    void loggedOut(QString);
     void currentProjectChanged(RamProject*);
     void newStep(RamStep *);
     void newAssetGroup(RamAssetGroup *);
@@ -85,7 +85,7 @@ protected:
 
 private slots:
     //TODO This should be modified when implementing offline version
-    void dbiConnectionStatusChanged(NetworkUtils::NetworkStatus s);
+    void dbiConnectionStatusChanged(NetworkUtils::NetworkStatus s, QString reason);
 
 private:
     /**

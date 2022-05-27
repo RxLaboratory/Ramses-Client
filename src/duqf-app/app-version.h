@@ -37,6 +37,7 @@
 #define URL_CHAT "http://chat.rxlab.info"
 #define URL_FORUM ""
 #define URL_DOC "http://ramses.rxlab.guide"
+#define URL_SOURCECODE "https://github.com/RxLaboratory/Ramses"
 #define URL_BUGREPORT "https://github.com/RxLaboratory/Ramses/issues/new/choose"
 #define URL_DONATION "http://donate.rxlab.info"
 #define URL_UPDATE "http://version.rxlab.io"

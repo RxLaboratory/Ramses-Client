@@ -152,7 +152,7 @@ private slots:
     void install(bool show = true);
     void networkButton_clicked();
     void loggedIn();
-    void loggedOut();
+    void loggedOut(QString reason="");
     void currentUserChanged();
     void currentProjectChanged(RamProject *project);
     void freezeUI(bool f = true);

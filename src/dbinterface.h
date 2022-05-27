@@ -162,7 +162,7 @@ public slots:
     void setServerAddress(QString address);
 
 signals:
-    void connectionStatusChanged(NetworkUtils::NetworkStatus);
+    void connectionStatusChanged(NetworkUtils::NetworkStatus, QString);
     void data(QJsonObject);
     void queried(QString);
     void serverAddressChanged(QString);
@@ -175,7 +175,7 @@ private slots:
     void dataReceived(QNetworkReply *rep);
     void sslError(QNetworkReply *rep, QList<QSslError> errs);
     void networkError(QNetworkReply::NetworkError err);
-    void setConnectionStatus(NetworkUtils::NetworkStatus s);
+    void setConnectionStatus(NetworkUtils::NetworkStatus s, QString reason = "");
     void nextRequest();
     void flushRequests();
 

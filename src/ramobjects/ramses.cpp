@@ -55,12 +55,12 @@ void Ramses::loginHashed(QString username, QString hashedPassword)
     m_dbi->loginHashed(username, hashedPassword);
 }
 
-void Ramses::dbiConnectionStatusChanged(NetworkUtils::NetworkStatus s)
+void Ramses::dbiConnectionStatusChanged(NetworkUtils::NetworkStatus s, QString reason)
 {
     if (s != NetworkUtils::Online)
     {
         QSignalBlocker b(m_dbi);
-        logout();
+        logout(reason);
     }
 }
 
@@ -113,7 +113,7 @@ void Ramses::setCurrentUser(RamUser *u)
     else
     {
         setCurrentProject(nullptr);
-        emit loggedOut();
+        emit loggedOut("No current user");
     }
 }
 
@@ -305,7 +305,7 @@ RamState *Ramses::wipState()
     return m_wipState;
 }
 
-void Ramses::logout()
+void Ramses::logout(QString reason)
 {
     setOffline();
     // Suspend the db interface until there's a login!
@@ -314,7 +314,7 @@ void Ramses::logout()
     setCurrentProject(nullptr);
     m_currentUser = nullptr;
 
-    emit loggedOut();
+    emit loggedOut(reason);
 }
 
 void Ramses::refresh()

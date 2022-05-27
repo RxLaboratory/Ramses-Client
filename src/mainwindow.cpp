@@ -726,12 +726,13 @@ void MainWindow::loggedIn()
     currentUserChanged();
 }
 
-void MainWindow::loggedOut()
+void MainWindow::loggedOut(QString reason)
 {
+    if (reason == "") reason = "Unknown reason... Sorry, there's a glitch in the Matrix.";
     // Warn user
     QMessageBox::information(this,
                              "Log out",
-                             "You've been logged out, Ramses is restarting.",
+                             "You've been logged out, Ramses is restarting.\n\nReason:\n\n> " + reason,
                              QMessageBox::Ok,
                              QMessageBox::Ok);
 
