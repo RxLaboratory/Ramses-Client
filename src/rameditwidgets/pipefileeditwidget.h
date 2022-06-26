@@ -25,7 +25,7 @@ private:
 
     RamObjectListComboBox *ui_fileTypeBox;
     RamObjectListComboBox *ui_colorSpaceBox;
-    QLineEdit *ui_customSettingsEdit;
+    DuQFTextEdit *ui_customSettingsEdit;
 };
 
 #endif // PIPEFILEEDITWIDGET_H
