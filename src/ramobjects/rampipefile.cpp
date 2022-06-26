@@ -52,6 +52,39 @@ void RamPipeFile::setFileType(RamFileType *newFileType)
     if (newFileType->is(m_fileType)) return;
     m_dirty = true;
     m_fileType = newFileType;
+
+    // Update the custom settings
+    QString format;
+    QStringList extensions = newFileType->extensions();
+    if (extensions.count() > 0)
+        format = newFileType->extensions()[0];
+    else
+        format = "*";
+
+    QStringList settings = m_customSettings.split("\n");
+    bool found = false;
+
+    for(int i = 0; i < settings.count(); i++)
+    {
+        QString s = settings[i].trimmed();
+        if (s.startsWith("format:"))
+        {
+            found = true;
+            QStringList setting = settings[i].split(":");
+            if (setting.count() > 1) setting[1] = format;
+            else setting << format;
+            settings[i] = setting.join(": ");
+            break;
+        }
+    }
+
+    if (!found)
+    {
+        settings << "format: " + format;
+    }
+
+    setCustomSettings(settings.join("\n"));
+
     emit changed(this);
 }
 

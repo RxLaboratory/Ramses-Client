@@ -57,6 +57,7 @@ private slots:
     void getSteps(QTcpSocket *client);
     void getStep(QString shortName, QString name, QTcpSocket *client);
     void getRamsesFolder(QTcpSocket *client);
+    void setPublishSettings(QString stepShortName, QString stepName, QString settings, QTcpSocket *client);
 
 private:
     //The daemon is a singleton

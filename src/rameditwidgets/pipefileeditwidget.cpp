@@ -44,14 +44,20 @@ void PipeFileEditWidget::update()
 
     updating = true;
 
-    RamFileType *ft = qobject_cast<RamFileType*>(ui_fileTypeBox->currentObject());
-    if(ft) m_pipeFile->setFileType( ft );
-
     m_pipeFile->setCustomSettings(ui_customSettingsEdit->toPlainText());
 
     ObjectEditWidget::update();
 
     updating = false;
+}
+
+void PipeFileEditWidget::setFileType()
+{
+    if (!m_pipeFile) return;
+    RamFileType *ft = qobject_cast<RamFileType*>(ui_fileTypeBox->currentObject());
+    if(ft) m_pipeFile->setFileType( ft );
+    update();
+    //ui_customSettingsEdit->setPlainText( m_pipeFile->customSettings() );
 }
 
 void PipeFileEditWidget::setupUi()
@@ -83,7 +89,7 @@ void PipeFileEditWidget::setupUi()
 
 void PipeFileEditWidget::connectEvents()
 {
-    connect(ui_fileTypeBox, SIGNAL(currentObjectChanged(RamObject*)), this, SLOT(update()));
+    connect(ui_fileTypeBox, SIGNAL(currentObjectChanged(RamObject*)), this, SLOT(setFileType()));
     connect(ui_colorSpaceBox, SIGNAL(currentObjectChanged(RamObject*)), this, SLOT(update()));
     connect(ui_customSettingsEdit, &DuQFTextEdit::editingFinished, this, &PipeFileEditWidget::update);
 

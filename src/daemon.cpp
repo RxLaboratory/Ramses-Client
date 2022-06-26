@@ -153,6 +153,13 @@ void Daemon::reply(QString request, QTcpSocket *client)
         getStep(args.value("shortName"), args.value("name", ""), client);
     else if (args.contains("getRamsesFolderPath"))
         getRamsesFolder(client);
+    else if (args.contains("setPublishSettings"))
+        setPublishSettings(
+                    args.value("shortName"),
+                    args.value("name", ""),
+                    args.value("settings", ""),
+                    client
+                    );
     else
         post(client, QJsonObject(), "", "Unknown query: " + request, false, false);
 
@@ -745,6 +752,34 @@ void Daemon::getRamsesFolder(QTcpSocket *client)
     QJsonObject content;
     content.insert("folder", Ramses::instance()->path(RamObject::NoFolder, true));
     post(client, content, "getRamsesFolder", "Ramses folder retrieved.");
+}
+
+void Daemon::setPublishSettings(QString stepShortName, QString stepName, QString settings, QTcpSocket *client)
+{
+    log("I'm replying to this request: setPublishSettings", DuQFLog::Debug);
+
+    RamProject *proj = Ramses::instance()->currentProject();
+
+    QJsonObject content;
+
+    if (!proj)
+    {
+        post(client, content, "setPublishSettings", "Sorry, there's no current project. Select a project first!", false);
+        return;
+    }
+
+    RamStep *step = qobject_cast<RamStep*>(proj->steps()->fromName(stepShortName, stepName));
+
+    if (!step)
+    {
+        post(client, content, "setPublishSettings", "Sorry, step not found. Check its name and short name", false);
+        return;
+    }
+
+    step->setPublishSettings(settings);
+    step->update();
+
+    post(client, content, "setPublishSettings", "Publish settings updated!");
 }
 
 Daemon::Daemon(QObject *parent) : DuQFLoggerObject("Daemon", parent)

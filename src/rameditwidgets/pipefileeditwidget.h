@@ -17,6 +17,9 @@ public slots:
 protected slots:
     void update() override;
 
+private slots:
+    void setFileType();
+
 private:
     RamPipeFile *m_pipeFile = nullptr;
 
