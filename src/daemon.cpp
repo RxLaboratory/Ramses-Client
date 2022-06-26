@@ -833,6 +833,8 @@ QJsonObject Daemon::stepToJson(RamStep *s)
     col.append( s->color().green()/255.0 );
     col.append( s->color().blue()/255.0 );
     step.insert("color", col);
+    step.insert("comment", s->comment());
+    step.insert("publishSettings", s->publishSettings());
     step.insert("folder", s->path(RamObject::NoFolder, true));
     QString type;
     switch (s->type())
