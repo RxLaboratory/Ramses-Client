@@ -240,7 +240,7 @@ void DBInterface::createStep(QString shortName, QString name, QString projectUui
     request("createStep", q);
 }
 
-void DBInterface::updateStep(QString uuid, QString shortName, QString name, QString type, QString comment, QColor color)
+void DBInterface::updateStep(QString uuid, QString shortName, QString name, QString type, QString comment, QColor color, QString publishSettings)
 {
     QStringList q;
     q << "uuid=" + uuid;
@@ -248,6 +248,7 @@ void DBInterface::updateStep(QString uuid, QString shortName, QString name, QStr
     q << "name=" + name;
     q << "type=" + type;
     q << "comment=" + comment;
+    q << "publishSettings=" + publishSettings;
     if (color.isValid()) q << "color=" + color.name();
 
     request("updateStep", q);

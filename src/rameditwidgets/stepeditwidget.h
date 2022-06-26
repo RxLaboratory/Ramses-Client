@@ -44,10 +44,11 @@ private:
     RamStep *m_step;
 
     QComboBox *ui_typeBox;
-    QLabel *ui_estimationLabel;
     QWidget *ui_estimationWidget;
     QComboBox *ui_estimationTypeBox;
     QLabel *ui_estimationTypeLabel;
+    DuQFTextEdit *ui_publishSettingsEdit;
+    QTabWidget *ui_tabWidget;
     AutoSelectDoubleSpinBox *ui_veryEasyEdit;
     AutoSelectDoubleSpinBox *ui_easyEdit;
     AutoSelectDoubleSpinBox *ui_mediumEdit;

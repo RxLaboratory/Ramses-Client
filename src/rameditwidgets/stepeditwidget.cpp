@@ -33,6 +33,7 @@ void StepEditWidget::setObject(RamObject *obj)
     QSignalBlocker b1(ui_folderWidget);
     QSignalBlocker b3(m_applicationList);
     QSignalBlocker b4(ui_colorSelector);
+    QSignalBlocker b13(ui_publishSettingsEdit);
 
     QSignalBlocker b5(ui_veryEasyEdit);
     QSignalBlocker b6(ui_easyEdit);
@@ -47,6 +48,7 @@ void StepEditWidget::setObject(RamObject *obj)
     ui_folderWidget->setPath("");
     m_applicationList->clear();
     ui_colorSelector->setColor(QColor(25,25,25));
+    ui_publishSettingsEdit->setPlainText("");
 
     ui_veryEasyEdit->setValue(0.2);
     ui_easyEdit->setValue(0.5);
@@ -62,6 +64,7 @@ void StepEditWidget::setObject(RamObject *obj)
     if (!step) return;
 
     ui_colorSelector->setColor(step->color());
+    ui_publishSettingsEdit->setPlainText(step->publishSettings());
 
     ui_folderWidget->setPath( step->path() );
 
@@ -105,6 +108,7 @@ void StepEditWidget::update()
 
     m_step->setType(ui_typeBox->currentData().toString());
     m_step->setColor(ui_colorSelector->color());
+    m_step->setPublishSettings(ui_publishSettingsEdit->toPlainText());
 
     // estimations
     m_step->setEstimationVeryEasy( ui_veryEasyEdit->value() );
@@ -141,16 +145,14 @@ void StepEditWidget::createApplication()
 
 void StepEditWidget::updateEstimationSuffix()
 {
-    ui_estimationWidget->hide();
-    ui_estimationLabel->hide();
+    ui_tabWidget->setTabEnabled(0, false);
     ui_estimationMultiplierCheckBox->hide();
     ui_estimationMultiplierBox->hide();
 
     if (ui_typeBox->currentIndex() == 0 || ui_typeBox->currentIndex() == 3)
         return;
 
-    ui_estimationWidget->show();
-    ui_estimationLabel->show();
+    ui_tabWidget->setTabEnabled(0, true);
 
     QString suffix;
 
@@ -201,13 +203,11 @@ void StepEditWidget::setupUi()
     ui_colorSelector = new DuQFColorSelector(this);
     ui_mainFormLayout->addWidget(ui_colorSelector, 4, 1);
 
-    ui_estimationLabel = new QLabel("Estimation", this);
-    ui_estimationLabel->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-    ui_mainFormLayout->addWidget(ui_estimationLabel, 5, 0);
+    ui_tabWidget = new QTabWidget(this);
 
-    ui_estimationWidget = new QWidget(this);
+    ui_estimationWidget = new QWidget(ui_tabWidget);
     QFormLayout *estimationLayout = new QFormLayout(ui_estimationWidget);
-    estimationLayout->setContentsMargins(0,0,0,0);
+    estimationLayout->setContentsMargins(0,3,0,0);
     estimationLayout->setSpacing(3);
 
     ui_estimationTypeLabel = new QLabel("Method", this);
@@ -258,21 +258,27 @@ void StepEditWidget::setupUi()
     ui_estimationMultiplierBox->setEnabled(false);
     estimationLayout->addRow(ui_estimationMultiplierCheckBox, ui_estimationMultiplierBox);
 
-    ui_mainFormLayout->addWidget(ui_estimationWidget, 5, 1);
-
-    ui_folderWidget = new DuQFFolderDisplayWidget(this);
-    ui_mainLayout->insertWidget(1, ui_folderWidget);
+    ui_tabWidget->addTab(ui_estimationWidget, QIcon(":/icons/stats-settings"), "Estim.");
 
     m_applicationList = new ObjectListEditWidget(true, RamUser::ProjectAdmin, this);
     m_applicationList->setEditMode(ObjectListEditWidget::UnassignObjects);
     m_applicationList->setTitle("Applications");
     m_applicationList->setAssignList(Ramses::instance()->applications());
-    ui_mainLayout->addWidget(m_applicationList);
+
+    ui_tabWidget->addTab(m_applicationList, QIcon(":/icons/applications"), "Apps");
+
+    ui_publishSettingsEdit = new DuQFTextEdit(ui_tabWidget);
+    ui_publishSettingsEdit->setUseMarkdown(false);
+    ui_tabWidget->addTab(ui_publishSettingsEdit, QIcon(":/icons/admin-settings"), "Settings");
+
+    ui_mainLayout->addWidget(ui_tabWidget);
+
+    ui_folderWidget = new DuQFFolderDisplayWidget(this);
+    ui_mainLayout->addWidget(ui_folderWidget);
 
     ui_mainLayout->setStretch(0,0);
-    ui_mainLayout->setStretch(1,0);
+    ui_mainLayout->setStretch(1,100);
     ui_mainLayout->setStretch(2,0);
-    ui_mainLayout->setStretch(3,100);
 }
 
 void StepEditWidget::connectEvents()
@@ -281,6 +287,7 @@ void StepEditWidget::connectEvents()
     connect(ui_typeBox, SIGNAL(currentIndexChanged(int)), this, SLOT(updateEstimationSuffix()));
     connect(ui_estimationTypeBox, SIGNAL(currentIndexChanged(int)), this, SLOT(updateEstimationSuffix()));
     connect(ui_typeBox, SIGNAL(currentIndexChanged(int)), this, SLOT(update()));
+    connect(ui_publishSettingsEdit, SIGNAL(editingFinished()), this, SLOT(update()));
 
     connect(m_applicationList, SIGNAL(add()), this, SLOT(createApplication()));
     connect(ui_colorSelector, SIGNAL(colorChanged(QColor)), this, SLOT(update()));

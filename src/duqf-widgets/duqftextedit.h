@@ -16,6 +16,8 @@ public:
     DuQFTextEdit(QWidget *parent = nullptr);
     bool captureEnterKey() const;
     void setCaptureEnterKey(bool newCaptureEnterKey);
+    void setUseMarkdown(bool use);
+
 public slots:
     void showMarkdown();
     void showRichText();
@@ -48,6 +50,7 @@ private:
     bool m_changed = false;
     bool m_captureEnterKey = true;
     bool m_freezeValidation = false;
+    bool m_useMarkdown = true;
 };
 
 #endif // DUQFTEXTEDIT_H

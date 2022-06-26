@@ -81,7 +81,7 @@ public:
     void removeTemplateAssetGroup(QString uuid);
     //steps
     void createStep(QString shortName, QString name, QString projectUuid, QString uuid);
-    void updateStep(QString uuid, QString shortName, QString name, QString type, QString comment = "", QColor color = QColor());
+    void updateStep(QString uuid, QString shortName, QString name, QString type, QString comment = "", QColor color = QColor(), QString publishSettings = "");
     void moveStep(QString uuid, int order);
     void setStepOrder(QString uuid, int order);
     void setStepEstimations(QString uuid, QString method, float veryEasy = 0.2, float easy = 0.5, float medium = 1.0, float hard = 2.0, float veryHard = 3.0, QString multiplyGroupUuid = "");

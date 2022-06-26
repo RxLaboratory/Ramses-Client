@@ -620,6 +620,7 @@ QString RamLoader::gotStep(QJsonObject newS, RamProject *project, bool freezeEst
     step->setOrder( newS.value("order").toInt() );
     step->setComment( newS.value("comment").toString());
     step->setColor( QColor( newS.value("color").toString()) );
+    step->setPublishSettings( newS.value("publishSettings").toString() );
 
     // Estimations
     if (newS.value("estimationMethod").toString() == "shot" )

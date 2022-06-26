@@ -61,6 +61,9 @@ public:
     const QColor &color() const;
     void setColor(const QColor &newColor);
 
+    const QString &publishSettings() const;
+    void setPublishSettings(const QString &newPublishSettings);
+
     const EstimationMethod &estimationMethod() const;
     void setEstimationMethod(const EstimationMethod &newEstimationMethod);
 
@@ -121,6 +124,7 @@ private:
     bool m_template;
     Type m_type;
     QColor m_color;
+    QString m_publishSettings;
     RamProject *m_project;
     RamObjectList *m_applications;
 

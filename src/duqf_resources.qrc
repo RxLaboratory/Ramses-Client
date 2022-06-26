@@ -46,6 +46,7 @@
         <file alias="text-file">duqf_resources/icons/text-file_sl.svg</file>
         <file alias="undo">duqf_resources/icons/undo_sl.svg</file>
         <file alias="code">duqf_resources/icons/code_sl.svg</file>
+        <file alias="stats-settings">resources/icons/counter-edit.svg</file>
     </qresource>
     <qresource prefix="/images"/>
     <qresource prefix="/styles">

@@ -48,7 +48,7 @@ void DuQFTextEdit::finishEditing()
     // Remember cursor position to reset it
     if (m_changed) {
         QTextCursor cursor = this->textCursor();
-        this->setMarkdown( this->toMarkdown() );
+        if (m_useMarkdown) this->setMarkdown( this->toMarkdown() );
         this->setTextCursor(cursor);
         emit editingFinished();
     }
@@ -129,6 +129,11 @@ void DuQFTextEdit::setupUi()
     ui_contextMenu->addAction(ui_validate);
 }
 
+void DuQFTextEdit::setUseMarkdown(bool use)
+{
+    m_useMarkdown = use;
+}
+
 void DuQFTextEdit::connectEvents()
 {
     connect(this, SIGNAL(textChanged()), this, SLOT(setTextChanged()));
@@ -157,6 +162,7 @@ void DuQFTextEdit::setCaptureEnterKey(bool newCaptureEnterKey)
 
 void DuQFTextEdit::showMarkdown()
 {
+    if (!m_useMarkdown) return;
     showRichText();
     QString source = this->toMarkdown();
     this->setCurrentCharFormat(QTextCharFormat());
@@ -165,6 +171,7 @@ void DuQFTextEdit::showMarkdown()
 
 void DuQFTextEdit::showRichText()
 {
+    if (!m_useMarkdown) return;
     this->setMarkdown( this->toMarkdown() );
 }
 

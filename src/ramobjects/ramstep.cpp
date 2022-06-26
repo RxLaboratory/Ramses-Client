@@ -385,6 +385,19 @@ void RamStep::setColor(const QColor &newColor)
     emit changed(this);
 }
 
+const QString &RamStep::publishSettings() const
+{
+    return m_publishSettings;
+}
+
+void RamStep::setPublishSettings(const QString &newPublishSettings)
+{
+    if (m_publishSettings == newPublishSettings) return;
+    m_dirty = true;
+    m_publishSettings = newPublishSettings;
+    emit changed(this);
+}
+
 QList<RamObject *> RamStep::inputFileTypes()
 {
     QList<RamObject *> fts;
@@ -431,7 +444,7 @@ void RamStep::update()
     if (m_template)
         m_dbi->updateTemplateStep(m_uuid, m_shortName, m_name, type, m_comment, m_color);
     else
-        m_dbi->updateStep(m_uuid, m_shortName, m_name, type, m_comment, m_color);
+        m_dbi->updateStep(m_uuid, m_shortName, m_name, type, m_comment, m_color, m_publishSettings);
 
     if (m_estimationChanged)
     {
