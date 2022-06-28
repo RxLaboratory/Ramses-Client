@@ -94,7 +94,7 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
 
     // Add settings
     LocalSettingsWidget *lsw = new LocalSettingsWidget(this);
-    settingsWidget->addPage(lsw, "Ramses data", QIcon(":/icons/storage"));
+    settingsWidget->addPage(lsw, "Local data", QIcon(":/icons/storage"));
     ServerSettingsWidget *csw = new ServerSettingsWidget(this);
     settingsWidget->addPage(csw, "Server", QIcon(":/icons/server-settings"));
     DaemonSettingsWidget *dsw = new DaemonSettingsWidget(this);
