@@ -301,9 +301,13 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     duqf_setStyle();
 
     // Check if we need to go to the install page
+#ifdef FORCE_WELCOME_SCREEN
+    install();
+#else
     QString serverAddress = settings.value("server/address", "").toString();
     QString localFolder = settings.value("ramsesPath", "").toString();
     if (serverAddress == "" || localFolder == "" || serverAddress == "/") install();
+#endif
 
     // Restore UI state
     settings.beginGroup("ui");
