@@ -215,7 +215,10 @@ private:
      * @brief The token given by the server when logging in.
      */
     QString _sessionToken;
-
+    /**
+     * @brief The key to use to hash passwords for the current session.
+     */
+    QString _sessionKey;
     /**
      * @brief _forbiddenWords A list of forbidden words in URLs
      */

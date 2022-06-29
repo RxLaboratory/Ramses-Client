@@ -1019,6 +1019,10 @@ void DBInterface::dataReceived(QNetworkReply * rep)
     if (repQuery == "login" && repSuccess) _sessionToken = repObj.value("content").toObject().value("token").toString();
     else if (repQuery == "login") _sessionToken = "";
 
+    //if ping, get the session key
+    if (repQuery == "ping" && repSuccess) _sessionKey = repObj.value("content").toObject().value("sessionKey").toString();
+    else if (repQuery == "ping") _sessionKey = "";
+
     if (repQuery == "loggedout")
     {
         _sessionToken = "";
