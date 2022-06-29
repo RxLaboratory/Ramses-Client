@@ -12,20 +12,18 @@ DBInterface *DBInterface::instance()
 
 void DBInterface::login(QString username, QString password)
 {
-    //request url
-    QStringList q;
-    q << "username=" + username;
-    q << "password=" + generatePassHash(password);
+    QJsonObject q;
+    q.insert("username", username);
+    q.insert("password", generatePassHash(password));
 
     request("login", q);
 }
 
 void DBInterface::loginHashed(QString username, QString hashedPassword)
 {
-    //request url
-    QStringList q;
-    q << "username=" + username;
-    q << "password=" + hashedPassword;
+    QJsonObject q;
+    q.insert("username", username);
+    q.insert("password", hashedPassword);
 
     request("login", q);
 }
@@ -39,23 +37,23 @@ void DBInterface::setOnline()
 {
     //ping
     _status = NetworkUtils::Connecting;
-    request("ping", QStringList(), false);
+    request("ping", QJsonObject(), false);
 }
 
 void DBInterface::getUsers()
 {
-    request("getUsers");
+    request("getUsers", QJsonObject());
 }
 
 void DBInterface::updateUser(QString uuid, QString shortName, QString name, QString role, QString comment, QColor color)
 {
-    QStringList q;
-    q << "uuid=" + uuid;
-    q << "shortName=" + shortName;
-    q << "name=" + name;
-    q << "role=" + role;
-    q << "comment=" + comment;
-    if (color.isValid()) q << "color=" + color.name();
+    QJsonObject q;
+    q.insert("uuid=", uuid);
+    q.insert("shortName=", shortName);
+    q.insert("name=", name);
+    q.insert("role=", role);
+    q.insert("comment=", comment);
+    if (color.isValid()) q.insert("color=", color.name());
 
     request("updateUser", q);
 }
