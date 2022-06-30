@@ -1025,6 +1025,9 @@ void DBInterface::dataReceived(QNetworkReply * rep)
 
         // get the new token
         _sessionToken = repObj.value("token").toString();
+
+        // get the server version
+         m_serverVersion = repObj.value("content").toObject().value("version").toString();
     }
 
 
@@ -1330,6 +1333,11 @@ QString DBInterface::getProtocol()
     return protocol;
 }
 
+const QString &DBInterface::serverVersion() const
+{
+    return m_serverVersion;
+}
+
 void DBInterface::request(QString query, QStringList args, bool wait)
 {
     if (_suspended) return;
@@ -1429,8 +1437,16 @@ QString DBInterface::buildFormEncodedString(QStringList args)
 
 QString DBInterface::generatePassHash(QString password, QString salt)
 {
+    // We need to check the server version before hashing.
+    // < 0.3.0 -> don't include adress in Hash
+    QString passToHash = "";
+    if (waitPing())
+    {
+        QVersionNumber version = QVersionNumber::fromString(m_serverVersion);
+        if (version >= QVersionNumber(0,3,0)) passToHash = m_serverAddress.toLower().replace("/","");
+    }
     //hash password
-    QString passToHash = m_serverAddress.toLower().replace("/","") + password + salt;
+    passToHash += password + salt;
     qDebug() << passToHash;
     QString hashed = QCryptographicHash::hash(passToHash.toUtf8(), QCryptographicHash::Sha3_512).toHex();
     qDebug() << hashed;

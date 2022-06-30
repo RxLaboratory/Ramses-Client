@@ -16,6 +16,7 @@
 #include <QTimer>
 #include <QThread>
 #include <QProgressBar>
+#include <QVersionNumber>
 
 #include "duqf-app/app-config.h"
 #include "duqf-utils/utils.h"
@@ -47,6 +48,7 @@ public:
      */
     QString generatePassHash(QString password, QString salt = CLIENT_BUILD_KEY);
     NetworkUtils::NetworkStatus connectionStatus() const;
+    const QString &serverVersion() const;
     void setOffline();
     void setOnline();
     bool isSuspended() const;
@@ -154,7 +156,6 @@ public:
     void removeScheduleComment(QString uuid);
     void removeScheduleComments(QList<ScheduleCommentStruct> comments);
 
-
 public slots:
     void suspend(bool suspended = true);
 
@@ -241,6 +242,7 @@ private:
     QString m_serverAddress;
     QString m_serverKey = "";
     bool m_ssl;
+    QString m_serverVersion = "";
 };
 
 #endif // DBINTERFACE_H
