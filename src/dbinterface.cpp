@@ -1439,16 +1439,8 @@ QString DBInterface::generatePassHash(QString password, QString salt)
 {
     // We need to check the server version before hashing.
     // < 0.3.0 -> don't include adress in Hash
-    QString passToHash = "";
-    if (waitPing())
-    {
-        QVersionNumber version = QVersionNumber::fromString(m_serverVersion);
-        if (version >= QVersionNumber(0,3,0)) passToHash = m_serverAddress.toLower().replace("/","");
-    }
     //hash password
-    passToHash += password + salt;
-    qDebug() << passToHash;
+    QString passToHash = m_serverAddress.toLower().replace("/","") + password + salt;
     QString hashed = QCryptographicHash::hash(passToHash.toUtf8(), QCryptographicHash::Sha3_512).toHex();
-    qDebug() << hashed;
     return hashed;
 }
