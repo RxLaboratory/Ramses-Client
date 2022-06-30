@@ -52,6 +52,7 @@
 #include "progressbar.h"
 #include "pages/projectpage.h"
 #include "pages/installpage.h"
+#include "docks/consolewidget.h"
 
 #include "rameditwidgets/itemtablemanagerwidget.h"
 

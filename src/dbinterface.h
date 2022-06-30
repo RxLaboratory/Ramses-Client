@@ -161,6 +161,8 @@ public slots:
     void setSSL(bool enabled);
     void setServerAddress(QString address);
 
+    void checkConnection();
+
 signals:
     void connectionStatusChanged(NetworkUtils::NetworkStatus, QString);
     void data(QJsonObject);
@@ -211,6 +213,7 @@ private:
      * @todo expose this as a user setting ?
      */
     int _requestDelay = 500;
+    int _pingDelay = 30000;
     /**
      * @brief The token given by the server when logging in.
      */
@@ -222,6 +225,7 @@ private:
     QStringList _forbiddenWords;
     QList<Request> _requestQueue;
     QTimer *_requestQueueTimer;
+    QTimer *_pingTimer;
     /**
      * @brief Requests data from the remote server
      * @param req The request to post
@@ -231,7 +235,7 @@ private:
     void request(QString query, QJsonObject body, bool wait = true);
     void queueRequest(QString query, QNetworkRequest request, QString body);
     QString buildFormEncodedString(QStringList args);
-    bool waitPing();
+    bool waitPing(bool force=false);
     QString getProtocol();
     QString m_serverAddress;
     bool m_ssl;

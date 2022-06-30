@@ -38,6 +38,7 @@ void DBInterface::setOnline()
     //ping
     _status = NetworkUtils::Connecting;
     request("ping", QJsonObject(), false);
+    _pingTimer->start(_pingDelay);
 }
 
 void DBInterface::getUsers()
@@ -952,9 +953,11 @@ DBInterface::DBInterface(QObject *parent) : DuQFLoggerObject("Database Interface
     _forbiddenWords << "and" << "or" << "if" << "else" << "insert" << "update" << "select" << "drop" << "alter";
 
     _requestQueueTimer = new QTimer(this);
+    _pingTimer = new QTimer(this);
 
     // Connect events
     connect( _requestQueueTimer, &QTimer::timeout, this, &DBInterface::nextRequest );
+    connect( _pingTimer, &QTimer::timeout, this, &DBInterface::checkConnection );
     connect( &_network, &QNetworkAccessManager::finished, this, &DBInterface::dataReceived);
     connect(&_network, SIGNAL(sslErrors(QNetworkReply*,QList<QSslError>)), this,SLOT(sslError(QNetworkReply*,QList<QSslError>)));
     connect(qApp,SIGNAL(aboutToQuit()), this, SLOT(suspend()));
@@ -1009,19 +1012,27 @@ void DBInterface::dataReceived(QNetworkReply * rep)
     }
 
     //if we recieved the reply from the ping, set online
-    if (repQuery == "ping" && repSuccess)
+    if (repQuery == "ping")
     {
-        setConnectionStatus(NetworkUtils::Online, "Server ready");
-    }
-    else if (repQuery == "ping") setConnectionStatus(NetworkUtils::Error, "The server request was not successful.\nThis is probably a bug or a configuration error.\nPlease report bugs on " + QString(URL_SOURCECODE));
+        if (repSuccess)
+        {
+            setConnectionStatus(NetworkUtils::Online, "Server ready");
+        }
+        else
+        {
+            setConnectionStatus(NetworkUtils::Error, "The server request was not successful.\nThis is probably a bug or a configuration error.\nPlease report bugs on " + QString(URL_SOURCECODE));
+        }
 
-    //if login, get the token
-    if (repQuery == "login" && repSuccess) _sessionToken = repObj.value("content").toObject().value("token").toString();
-    else if (repQuery == "login") _sessionToken = "";
+        // get the new token
+        _sessionToken = repObj.value("token").toString();
+        #ifdef QT_DEBUG
+        qDebug() << "New token: " + _sessionToken;
+        #endif
+    }
+
 
     if (repQuery == "loggedout")
     {
-        _sessionToken = "";
         setConnectionStatus(NetworkUtils::Offline, "The server ended your session.");
     }
 
@@ -1234,10 +1245,15 @@ void DBInterface::flushRequests()
     log( "All requests sent." );
 }
 
-bool DBInterface::waitPing()
+void DBInterface::checkConnection()
+{
+    waitPing(true);
+}
+
+bool DBInterface::waitPing(bool force)
 {
     // If not online or connecting, we need to get online
-    if (_status == NetworkUtils::Offline) setOnline();
+    if (_status == NetworkUtils::Offline || force) setOnline();
     //wait three seconds when connecting or set offline
     int timeout = QSettings().value("server/timeout", 3000).toInt();
     QDeadlineTimer t(timeout);
@@ -1366,7 +1382,7 @@ void DBInterface::request(QString query, QJsonObject body, bool wait)
 
     // Post body
     // Add version
-    body.insert("version=", STR_VERSION);
+    body.insert("version", STR_VERSION);
     // Current token
     if (_sessionToken != "") body.insert("token", _sessionToken );
     // Build body

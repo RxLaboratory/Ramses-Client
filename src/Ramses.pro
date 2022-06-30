@@ -53,6 +53,7 @@ SOURCES += \
     data-views/ramstepheaderview.cpp \
     data-views/timelinedelegate.cpp \
     data-views/timelineview.cpp \
+    docks/consolewidget.cpp \
     docks/filemanagerwidget.cpp \
     duqf-utils/qtransposeproxymodel.cpp \
     duqf-utils/simplecrypt.cpp \
@@ -216,6 +217,7 @@ HEADERS += \
     data-views/timelinedelegate.h \
     data-views/timelineview.h \
     dbistructures.h \
+    docks/consolewidget.h \
     docks/filemanagerwidget.h \
     duqf-app/app-config.h \
     duqf-utils/qtransposeproxymodel.h \

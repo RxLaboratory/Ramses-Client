@@ -205,7 +205,7 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
 #endif
 
     // A console in a tab
-    DuQFLoggingTextEdit *console = new DuQFLoggingTextEdit(this);
+    ConsoleWidget *console = new ConsoleWidget(this);
     ui_consoleDockWidget = new QDockWidget("Console");
     ui_consoleDockWidget->setObjectName("consoleDock");
     DuQFDockTitle *consoleTitle = new DuQFDockTitle("Console", this);

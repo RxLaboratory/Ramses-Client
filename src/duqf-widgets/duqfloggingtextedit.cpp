@@ -18,11 +18,6 @@ DuQFLoggingTextEdit::DuQFLoggingTextEdit(DuQFLoggerObject *o, QWidget *parent): 
 
 void DuQFLoggingTextEdit::log(DuQFLog m)
 {
-    //ignore debug messages on release
-#ifndef QT_DEBUG
-    if (m.type() < DuQFLog::Information) return;
-#endif
-
     if (m.type() < _level) return;
 
     // Time

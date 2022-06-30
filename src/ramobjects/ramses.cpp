@@ -57,7 +57,7 @@ void Ramses::loginHashed(QString username, QString hashedPassword)
 
 void Ramses::dbiConnectionStatusChanged(NetworkUtils::NetworkStatus s, QString reason)
 {
-    if (s != NetworkUtils::Online)
+    if (s == NetworkUtils::Offline)
     {
         QSignalBlocker b(m_dbi);
         logout(reason);
