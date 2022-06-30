@@ -1025,9 +1025,6 @@ void DBInterface::dataReceived(QNetworkReply * rep)
 
         // get the new token
         _sessionToken = repObj.value("token").toString();
-        #ifdef QT_DEBUG
-        qDebug() << "New token: " + _sessionToken;
-        #endif
     }
 
 
