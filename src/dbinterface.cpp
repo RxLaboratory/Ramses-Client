@@ -1437,8 +1437,6 @@ QString DBInterface::buildFormEncodedString(QStringList args)
 
 QString DBInterface::generatePassHash(QString password, QString salt)
 {
-    // We need to check the server version before hashing.
-    // < 0.3.0 -> don't include adress in Hash
     //hash password
     QString passToHash = m_serverAddress.toLower().replace("/","") + password + salt;
     QString hashed = QCryptographicHash::hash(passToHash.toUtf8(), QCryptographicHash::Sha3_512).toHex();
