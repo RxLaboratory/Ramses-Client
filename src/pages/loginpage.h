@@ -47,6 +47,7 @@ private:
     QWidget *ui_loginWidget;
     DuQFServerComboBox *ui_serverBox;
     DuQFSSLCheckbox *ui_sslBox;
+    QLineEdit *ui_keyEdit;
     QLineEdit *ui_usernameEdit;
     QCheckBox *ui_saveUsername;
     QLineEdit *ui_passwordEdit;

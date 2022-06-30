@@ -97,23 +97,25 @@ void ServerSettingsWidget::setupUi()
     settingsLayout->setWidget(1, QFormLayout::FieldRole, ui_sslCheckBox);
 
     QLabel *updateFreqLabel = new QLabel("Update every", this);
-    settingsLayout->setWidget(2, QFormLayout::LabelRole, updateFreqLabel);
+    settingsLayout->setWidget(3, QFormLayout::LabelRole, updateFreqLabel);
 
     ui_updateFreqSpinBox = new QSpinBox(this);
     ui_updateFreqSpinBox->setMinimum(1);
     ui_updateFreqSpinBox->setMaximum(10);
     ui_updateFreqSpinBox->setValue(2);
     ui_updateFreqSpinBox->setSuffix(" minutes");
-    settingsLayout->setWidget(2, QFormLayout::FieldRole, ui_updateFreqSpinBox);
+    settingsLayout->setWidget(3, QFormLayout::FieldRole, ui_updateFreqSpinBox);
 
     QLabel *timeOutLabel = new QLabel("Server timeout", this);
-    settingsLayout->setWidget(3, QFormLayout::LabelRole, timeOutLabel);
+    settingsLayout->setWidget(4, QFormLayout::LabelRole, timeOutLabel);
 
     ui_timeoutSpinBox = new QSpinBox(this);
     ui_timeoutSpinBox->setMinimum(1);
     ui_timeoutSpinBox->setMaximum(10);
     ui_timeoutSpinBox->setValue(3);
     ui_timeoutSpinBox->setSuffix(" seconds");
+    settingsLayout->setWidget(4, QFormLayout::FieldRole, ui_timeoutSpinBox);
+
 
     layout->addStretch();
 

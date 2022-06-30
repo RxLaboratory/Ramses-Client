@@ -1202,15 +1202,19 @@ void DBInterface::nextRequest()
 
     QUrl url = r.request.url();
 
-#ifdef QT_DEBUG
+
     // Log URL / GET
     log( "New request: " +  url.toString(QUrl::RemovePassword), DuQFLog::Debug);
     // Log POST body
     if (r.query == "login")
+        #ifdef QT_DEBUG
+        log("Request data: " + r.body, DuQFLog::Data);
+        #else
         log("Request data: [Hidden login info]", DuQFLog::Data);
+        #endif
     else
         log("Request data: " + r.body, DuQFLog::Data);
-#endif
+
 
     connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this,SLOT(networkError(QNetworkReply::NetworkError)));
     connect(reply, SIGNAL(finished()), reply,SLOT(deleteLater()));
@@ -1285,6 +1289,11 @@ void DBInterface::setServerAddress(QString address)
     if (address == m_serverAddress) return;
     m_serverAddress = address;
     emit serverAddressChanged(address);
+}
+
+void DBInterface::setServerKey(QString key)
+{
+    m_serverKey = key;
 }
 
 bool DBInterface::ssl() const
@@ -1421,6 +1430,9 @@ QString DBInterface::buildFormEncodedString(QStringList args)
 QString DBInterface::generatePassHash(QString password, QString salt)
 {
     //hash password
-    QString passToHash = password + salt;
-    return QCryptographicHash::hash(passToHash.toUtf8(), QCryptographicHash::Sha3_512).toHex();
+    QString passToHash = m_serverAddress.toLower().replace("/","") + password + salt;
+    qDebug() << passToHash;
+    QString hashed = QCryptographicHash::hash(passToHash.toUtf8(), QCryptographicHash::Sha3_512).toHex();
+    qDebug() << hashed;
+    return hashed;
 }

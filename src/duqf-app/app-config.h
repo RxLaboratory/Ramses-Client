@@ -1,7 +1,7 @@
 #ifndef APPCONFIG_H
 #define APPCONFIG_H
 
-#define HASH_SALT "H6BuYLsW"
+#define CLIENT_BUILD_KEY "H6BuYLsW"
 
 //#define FORCE_WELCOME_SCREEN
 

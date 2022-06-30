@@ -5,6 +5,7 @@
 #include "duqf-app/app-utils.h"
 #include "duqf-widgets/duqfservercombobox.h"
 #include "duqf-widgets/duqfsslcheckbox.h"
+#include "duqf-utils/simplecrypt.h"
 
 #include <QSettings>
 

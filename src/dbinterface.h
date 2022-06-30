@@ -45,7 +45,7 @@ public:
      * @param salt The salt to use
      * @return The hashed password
      */
-    QString generatePassHash(QString password, QString salt = HASH_SALT);
+    QString generatePassHash(QString password, QString salt = CLIENT_BUILD_KEY);
     NetworkUtils::NetworkStatus connectionStatus() const;
     void setOffline();
     void setOnline();
@@ -160,6 +160,7 @@ public slots:
 
     void setSSL(bool enabled);
     void setServerAddress(QString address);
+    void setServerKey(QString key);
 
     void checkConnection();
 
@@ -238,6 +239,7 @@ private:
     bool waitPing(bool force=false);
     QString getProtocol();
     QString m_serverAddress;
+    QString m_serverKey = "";
     bool m_ssl;
 };
 
