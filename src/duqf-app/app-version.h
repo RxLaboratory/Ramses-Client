@@ -2,8 +2,8 @@
 #define APPVERSION_H
 
 #define VERSION_MAJOR 0
-#define VERSION_MINOR 2
-#define VERSION_BUILD 14
+#define VERSION_MINOR 3
+#define VERSION_BUILD 0
 #define VERSION_SUFFIX "Alpha"
 
 #define STRINGIFY_VERSION(A, B, C) CONCAT(A, B, C )
