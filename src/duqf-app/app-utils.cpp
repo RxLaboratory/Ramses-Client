@@ -224,11 +224,17 @@ void DuApplication::gotUpdateInfo(QNetworkReply *rep)
             qInfo().noquote() << "Update notes: " % _updateInfo.value("description").toString();
             qInfo().noquote() << "Detailed changelog: " % _updateInfo.value("changelogURL").toString();
             qInfo().noquote() << "Download: " % _updateInfo.value("downloadURL").toString();
-            qInfo().noquote() << "Donate: " % _updateInfo.value("donateURL").toString();
         }
         else
         {
             qInfo() << "this version is already up-to-date, congrats!";
+        }
+        qInfo().noquote() << "Donate: " % _updateInfo.value("donateURL").toString();
+        double month = _updateInfo.value("monthlyFund").toDouble(0.0);
+        double goal = _updateInfo.value("fundingGoal").toDouble(4000);
+        if (goal > 0) {
+            double ratio = month / goal * 100;
+            qInfo().noquote() << "This month, we've collected $" % QString::number(month) % ". That's " % QString::number(ratio, 'f', 0) % " % of our monthly goal. Thanks for your support!";
         }
     }
 

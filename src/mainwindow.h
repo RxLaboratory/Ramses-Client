@@ -92,6 +92,7 @@ private:
     QToolButton *duqf_settingsButton;
     AboutDialog *duqf_aboutDialog;
     QAction *duqf_actionShowHide;
+    QProgressBar *duqf_fundingBar;
     QSystemTrayIcon *trayIcon;
     SettingsWidget *settingsWidget;
     QLabel *title;

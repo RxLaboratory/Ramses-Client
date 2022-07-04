@@ -411,6 +411,10 @@ void MainWindow::duqf_initUi()
     helpButton->setToolTip("Get Help");
     helpButton->setPopupMode( QToolButton::InstantPopup );
     helpMenu = new QMenu(this);
+
+    helpButton->setMenu(helpMenu);
+    mainStatusBar->addPermanentWidget(helpButton);
+
     if (QString(URL_DOC) != "")
     {
         QAction *docAction = new QAction(QIcon(":/icons/documentation"), "Help");
@@ -458,12 +462,15 @@ void MainWindow::duqf_initUi()
         helpMenu->addAction(donateAction);
         helpMenu->addSeparator();
         connect(donateAction, SIGNAL(triggered()), this, SLOT(duqf_donate()));
+
+        /*QToolButton *donateButton = new QToolButton();
+        donateButton->setIcon(QIcon(":/icons/donate"));
+        donateButton->setToolTip("I ♥ " + QString(STR_FILEDESCRIPTION));
+        mainStatusBar->addPermanentWidget(donateButton);
+        connect(donateButton, SIGNAL(clicked()), this, SLOT(duqf_donate()));*/
     }
     QAction *aboutQtAction = new QAction(QIcon(":/icons/qt"), "About Qt");
     helpMenu->addAction(aboutQtAction);
-
-    helpButton->setMenu(helpMenu);
-    mainStatusBar->addPermanentWidget(helpButton);
 
     // ========= SETTINGS ========
 
@@ -607,6 +614,29 @@ void MainWindow::duqf_askBeforeClose()
 
 void MainWindow::duqf_updateAvailable(QJsonObject updateInfo)
 {
+    // Check funding
+    bool donate = QString(URL_DONATION) != "";
+    if (donate)
+    {
+        double month = updateInfo.value("monthlyFund").toDouble(0.0);
+        double goal = updateInfo.value("fundingGoal").toDouble(4000);
+        if (goal > 0) {
+            double ratio = month / goal * 100;
+            duqf_fundingBar = new QProgressBar(this);
+            duqf_fundingBar->setObjectName("fundingBar");
+            duqf_fundingBar->setMaximumWidth(75);
+            duqf_fundingBar->setFormat("♥ donate");
+            duqf_fundingBar->setMaximum(goal);
+            duqf_fundingBar->setValue(month);
+            duqf_fundingBar->setToolTip( "This month, we've collected $" % QString::number(month) %
+                                         ". That's " % QString::number(ratio, 'f', 0) % " % of our monthly goal." %
+                                         "Thanks for your support!\n\n" %
+                                         "Click to Donate now!\nor go to: " + QString(URL_DONATION));
+            duqf_fundingBar->installEventFilter(this);
+            mainStatusBar->addPermanentWidget(duqf_fundingBar);
+        }
+    }
+
     if (!updateInfo.value("update").toBool() && !m_showUpdateAlerts)
     {
         m_showUpdateAlerts = true;
@@ -907,6 +937,12 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
         {
             duqf_toolBarClicked = false;
             return false;
+        }
+    }
+    else if (obj->objectName() == "fundingBar")
+    {
+        if (event->type() == QEvent::MouseButtonPress) {
+            duqf_donate();
         }
     }
 

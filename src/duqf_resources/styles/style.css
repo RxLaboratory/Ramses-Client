@@ -634,7 +634,6 @@ QGroupBox QLineEdit {
     background-color: @color-very-dark-grey;
 }
 
-
 /* TOOLBARS */
 
 QToolBar {
@@ -666,7 +665,6 @@ QToolBar:top QWidget, QToolBar:bottom QWidget {
 QToolBar:left QWidget, QToolBar:right QWidget {
     margin-bottom: @margin;
 }
-
 
 QToolBar QLineEdit, QToolBar QComboBox, QToolBar QAbstractSpinBox {
     background-color: @color-dark-grey;
@@ -784,6 +782,15 @@ QStatusBar QToolButton:checked {
 
 QStatusBar QToolButton:pressed {
     background-color: @color-abyss-grey;
+}
+
+#fundingBar:hover {
+        color: @color-light-grey;
+        background-color: @color-dark-grey;
+}
+
+#fundingBar::chunk:hover {
+        background-color: @color-less-light-grey;
 }
 
 /* SPLASH SCREEN */
