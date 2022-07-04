@@ -336,10 +336,6 @@ void MainWindow::duqf_checkUpdate()
     // Check for update
     QSettings settings;
     bool doCheckUpdate = settings.value("updates/checkUpdateAtStartup", true).toBool();
-#ifndef QT_DEBUG
-    QDate latestUpdateCheck = settings.value("updates/latestUpdateCheck", QDate(1970,1,1)).toDate();
-    if (latestUpdateCheck == QDate::currentDate()) doCheckUpdate = false;
-#endif
     if (doCheckUpdate) app->checkUpdate();
     else m_showUpdateAlerts = true;
 }
@@ -642,6 +638,10 @@ void MainWindow::duqf_updateAvailable(QJsonObject updateInfo)
         m_showUpdateAlerts = true;
         return;
     }
+
+    QSettings settings;
+    QDate latestUpdateCheck = settings.value("updates/latestUpdateCheck", QDate(1970,1,1)).toDate();
+    if (latestUpdateCheck == QDate::currentDate()) return;
 
     DuQFUpdateDialog *dialog = new DuQFUpdateDialog(updateInfo, this);
     dialog->show();
