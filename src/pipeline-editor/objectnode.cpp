@@ -9,7 +9,7 @@ ObjectNode::ObjectNode(RamObject *obj):
 
     this->setTitleToolTip(m_object->name());
 
-    connect(obj, &RamObject::changed, this, &ObjectNode::objectChanged);
+    connect(obj, &RamObject::dataChanged, this, &ObjectNode::objectChanged);
     connect(obj, &RamObject::removed, this, &ObjectNode::objectRemoved);
 
     this->setObjectName( "ObjectNode" );

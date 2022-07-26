@@ -80,7 +80,7 @@ void RamProject::setDeadline(const QDate &newDeadline)
     if (m_deadline == newDeadline) return;
     m_dirty = true;
     m_deadline = newDeadline;
-    emit changed(this);
+    emit dataChanged(this);
 }
 
 void RamProject::setFolderPath(const QString &folderPath)
@@ -96,7 +96,7 @@ void RamProject::setFolderPath(const QString &folderPath)
     settings.endGroup();
     settings.endGroup();
 
-    emit changed(this);
+    emit dataChanged(this);
 }
 
 void RamProject::resetDbFolderPath()
@@ -119,7 +119,7 @@ void RamProject::setFramerate(const qreal &framerate)
     if (framerate == m_framerate) return;
     m_dirty = true;
     m_framerate = framerate;
-    emit changed(this);
+    emit dataChanged(this);
 }
 
 int RamProject::width() const
@@ -156,7 +156,7 @@ qreal RamProject::aspectRatio() const
 void RamProject::updateAspectRatio(const qreal &pixelAspect)
 {
     m_aspectRatio = qreal(m_width) / qreal(m_height) * pixelAspect;
-    emit changed(this);
+    emit dataChanged(this);
 }
 
 void RamProject::setAspectRatio(const qreal &aspectRatio)
@@ -164,7 +164,7 @@ void RamProject::setAspectRatio(const qreal &aspectRatio)
     if (aspectRatio == m_aspectRatio) return;
     m_dirty = true;
     m_aspectRatio = aspectRatio;
-    emit changed(this);
+    emit dataChanged(this);
 }
 
 bool RamProject::pathIsDefault() const
@@ -400,7 +400,7 @@ void RamProject::userAssigned(const QModelIndex &parent, int first, int last)
         RamObject *userObj = m_users->at(i);
         m_dbi->assignUser(m_uuid, userObj->uuid());
     }
-    emit changed(this);
+    emit dataChanged(this);
 }
 
 void RamProject::userUnassigned(const QModelIndex &parent, int first, int last)
@@ -412,7 +412,7 @@ void RamProject::userUnassigned(const QModelIndex &parent, int first, int last)
         RamObject *userObj = m_users->at(i);
         m_dbi->unassignUser(m_uuid, userObj->uuid());
     }
-    emit changed(this);
+    emit dataChanged(this);
 }
 
 const QString &RamProject::dbFolderPath() const

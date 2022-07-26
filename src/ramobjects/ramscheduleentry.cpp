@@ -56,7 +56,7 @@ void RamScheduleEntry::setUser(RamUser *newUser)
     m_user = newUser;
 
     connect(m_user,SIGNAL(removed(RamObject*)), this, SLOT(remove()));
-    emit changed(this);
+    emit dataChanged(this);
 }
 
 RamStep *RamScheduleEntry::step() const
@@ -85,7 +85,7 @@ void RamScheduleEntry::setStep(RamStep *newStep)
         m_stepConnection = connect(this, SIGNAL(removed(RamObject*)), m_step, SLOT(countAssignedDays()));
     }
 
-    emit changed(this);
+    emit dataChanged(this);
 }
 
 const QDateTime &RamScheduleEntry::date() const
@@ -98,7 +98,7 @@ void RamScheduleEntry::setDate(const QDateTime &newDate)
     if (newDate == m_date) return;
     m_dirty = true;
     m_date = newDate;
-    emit changed(this);
+    emit dataChanged(this);
 }
 
 ScheduleEntryStruct RamScheduleEntry::toStruct() const

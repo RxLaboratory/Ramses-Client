@@ -36,7 +36,7 @@ void RamScheduleComment::setComment(const QString &newComment)
     if (newComment == m_comment) return;
     m_dirty = true;
     m_comment = newComment;
-    emit changed(this);
+    emit dataChanged(this);
 }
 
 const QColor &RamScheduleComment::color() const
@@ -49,7 +49,7 @@ void RamScheduleComment::setColor(const QColor &newColor)
     if (m_color == newColor) return;
     m_dirty = true;
     m_color = newColor;
-    emit changed(this);
+    emit dataChanged(this);
 }
 
 const QDateTime &RamScheduleComment::date() const
@@ -62,7 +62,7 @@ void RamScheduleComment::setDate(const QDateTime &newDate)
     if (m_date == newDate) return;
     m_dirty = true;
     m_date = newDate;
-    emit changed(this);
+    emit dataChanged(this);
 }
 
 ScheduleCommentStruct RamScheduleComment::toStruct() const

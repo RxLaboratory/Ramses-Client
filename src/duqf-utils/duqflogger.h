@@ -4,9 +4,7 @@
 #include <QObject>
 #include <QTime>
 #include <QColor>
-#include "utils.h"
 
-#include "config.h"
 
 class DuQFLog
 {
@@ -65,7 +63,7 @@ public:
 
 public slots:
     void log(QString message);
-    void log(DuQFLog message);
+     void log(DuQFLog message);
 
 signals:
     void newLog(DuQFLog message);

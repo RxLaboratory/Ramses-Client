@@ -91,4 +91,7 @@
     <qresource prefix="/images">
         <file alias="splash">resources/images/splash.png</file>
     </qresource>
+    <qresource prefix="/data">
+        <file alias="template">resources/data/templateDB.sqlite</file>
+    </qresource>
 </RCC>

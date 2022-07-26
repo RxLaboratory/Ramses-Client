@@ -57,7 +57,7 @@ void RamStatus::setCompletionRatio(int completionRatio)
     m_dirty = true;
     m_completionRatio = completionRatio;
     m_step->computeEstimation();
-    emit changed(this);
+    emit dataChanged(this);
 }
 
 RamUser *RamStatus::user() const
@@ -86,7 +86,7 @@ void RamStatus::setState(RamState *state)
 
     m_stateConnection = connect(state, SIGNAL(removed(RamObject*)), this, SLOT(stateRemoved()));
 
-    emit changed(this);
+    emit dataChanged(this);
 }
 
 RamWorkingFolder RamStatus::workingFolder() const
@@ -158,7 +158,7 @@ void RamStatus::setVersion(int version)
     if (m_version == version) return;
     m_dirty = true;
     m_version = version;
-    emit changed(this);
+    emit dataChanged(this);
 }
 
 QString RamStatus::restoreVersionFile(QString fileName) const
@@ -288,7 +288,7 @@ void RamStatus::setUseAutoEstimation(bool newAutoEstimation)
     m_useAutoEstimation = newAutoEstimation;
     if (!m_useAutoEstimation && m_goal <= 0) m_goal = estimation();
     m_step->computeEstimation();
-    emit changed(this);
+    emit dataChanged(this);
 }
 
 float RamStatus::goal() const
@@ -310,7 +310,7 @@ void RamStatus::setGoal(float newGoal)
     m_goal = newGoal;
     m_useAutoEstimation = m_goal < 0;
     m_step->computeEstimation();
-    emit changed(this);
+    emit dataChanged(this);
 }
 
 float RamStatus::estimation() const
@@ -407,7 +407,7 @@ void RamStatus::setDifficulty(Difficulty newDifficulty)
     if (m_difficulty == newDifficulty) return;
     m_dirty = true;
     m_difficulty = newDifficulty;
-    emit changed(this);
+    emit dataChanged(this);
 }
 
 RamUser *RamStatus::assignedUser() const
@@ -434,7 +434,7 @@ void RamStatus::assignUser(RamUser *assignedUser)
 
     if (m_assignedUser) m_assignedUserConnection = connect(assignedUser, SIGNAL(removed(RamObject*)), this, SLOT(assignedUserRemoved()));
 
-    emit changed(this);
+    emit dataChanged(this);
 }
 
 qint64 RamStatus::timeSpent()
@@ -456,7 +456,7 @@ void RamStatus::setTimeSpent(const float &ts)
     m_manualTimeSpent = true;
     m_timeSpent = ts;
     m_step->computeEstimation();
-    emit changed(this);
+    emit dataChanged(this);
 }
 
 bool RamStatus::isTimeSpentManual() const
@@ -474,7 +474,7 @@ void RamStatus::setPublished(bool published)
     if (published == m_published) return;
     m_dirty = true;
     m_published = published;
-    emit changed(this);
+    emit dataChanged(this);
 }
 
 QString RamStatus::previewImagePath() const
@@ -515,7 +515,7 @@ void RamStatus::setDate(const QDateTime &date)
     if (m_date == date) return;
     m_dirty = true;
     m_date = date;
-    emit changed(this);
+    emit dataChanged(this);
 }
 
 RamStatus *RamStatus::status(QString uuid)

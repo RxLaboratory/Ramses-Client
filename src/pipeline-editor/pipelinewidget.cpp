@@ -381,7 +381,7 @@ void PipelineWidget::newTemplateStep(RamObject *obj)
     stepAction->setData(iptr);
     ui_stepMenu->insertAction(ui_stepMenuSeparator, stepAction);
     connect(stepAction, &QAction::triggered, this, &PipelineWidget::assignStep);
-    connect(obj, &RamObject::changed, this, &PipelineWidget::templateStepChanged);
+    connect(obj, &RamObject::dataChanged, this, &PipelineWidget::templateStepChanged);
 
 }
 

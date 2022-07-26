@@ -44,7 +44,7 @@ void RamAsset::setAssetGroup(RamAssetGroup *assetGroup)
 
     m_assetGroupConnection = connect(assetGroup, SIGNAL(removed(RamObject*)), this, SLOT(remove()));
 
-    emit changed(this);
+    emit dataChanged(this);
 }
 
 QStringList RamAsset::tags() const
@@ -61,7 +61,7 @@ void RamAsset::setTags(QString tags)
     {
         _tags << t.trimmed().toLower();
     }
-    emit changed(this);
+    emit dataChanged(this);
 }
 
 void RamAsset::addTag(QString tag)
@@ -69,7 +69,7 @@ void RamAsset::addTag(QString tag)
     if (_tags.contains(tag) ) return;
     m_dirty = true;
     _tags << tag.trimmed().toLower();
-    emit changed(this);
+    emit dataChanged(this);
 }
 
 void RamAsset::removeTag(QString tag)
@@ -77,7 +77,7 @@ void RamAsset::removeTag(QString tag)
     if (!_tags.contains(tag)) return;
     _tags.removeAll(tag.toLower());
     m_dirty = true;
-    emit changed(this);
+    emit dataChanged(this);
 }
 
 bool RamAsset::hasTag(QString tag)

@@ -85,7 +85,7 @@ void RamPipeFile::setFileType(RamFileType *newFileType)
 
     setCustomSettings(settings.join("\n"));
 
-    emit changed(this);
+    emit dataChanged(this);
 }
 
 void RamPipeFile::update()
@@ -138,5 +138,5 @@ void RamPipeFile::setCustomSettings(const QString &newCustomSettings)
     if (m_customSettings == newCustomSettings) return;
     m_dirty = true;
     m_customSettings = newCustomSettings;
-    emit changed(this);
+    emit dataChanged(this);
 }

@@ -45,7 +45,7 @@ void RamApplication::setExecutableFilePath(const QString &executableFilePath)
     m_dirty = true;
     m_executableFilePath = executableFilePath;
 
-    emit changed(this);
+    emit dataChanged(this);
 }
 
 void RamApplication::update()

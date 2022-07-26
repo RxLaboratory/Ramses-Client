@@ -97,7 +97,7 @@ void RamStep::setType(const Type &type)
     if (type == m_type) return;
     m_dirty = true;
     m_type = type;
-    emit changed(this);
+    emit dataChanged(this);
 }
 
 void RamStep::setType(QString type)
@@ -382,7 +382,7 @@ void RamStep::setColor(const QColor &newColor)
     if (m_color == newColor) return;
     m_dirty = true;
     m_color = newColor;
-    emit changed(this);
+    emit dataChanged(this);
 }
 
 const QString &RamStep::publishSettings() const
@@ -395,7 +395,7 @@ void RamStep::setPublishSettings(const QString &newPublishSettings)
     if (m_publishSettings == newPublishSettings) return;
     m_dirty = true;
     m_publishSettings = newPublishSettings;
-    emit changed(this);
+    emit dataChanged(this);
 }
 
 QList<RamObject *> RamStep::inputFileTypes()

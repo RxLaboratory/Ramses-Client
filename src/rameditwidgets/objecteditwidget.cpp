@@ -65,7 +65,7 @@ void ObjectEditWidget::setObject(RamObject *object)
     checkPath();
 
     _objectConnections << connect( object, &RamObject::removed, this, &ObjectEditWidget::objectRemoved);
-    _objectConnections << connect( object, &RamObject::changed, this, &ObjectEditWidget::objectChanged);
+    _objectConnections << connect( object, &RamObject::dataChanged, this, &ObjectEditWidget::objectChanged);
 }
 
 void ObjectEditWidget::update()

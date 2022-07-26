@@ -807,7 +807,7 @@ void MainWindow::currentUserChanged()
     RamUser *user = Ramses::instance()->currentUser();
     if (!user) return;
 
-    _currentUserConnection = connect(user, &RamUser::changed, this, &MainWindow::currentUserChanged);
+    _currentUserConnection = connect(user, &RamUser::dataChanged, this, &MainWindow::currentUserChanged);
 
     ui_userButton->setText(user->shortName());
     actionUserProfile->setVisible(true);

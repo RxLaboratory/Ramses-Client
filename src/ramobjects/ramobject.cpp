@@ -3,44 +3,159 @@
 #include "mainwindow.h"
 #include "ramses.h"
 
-QMap<QString, RamObject*> RamObject::m_existingObjects = QMap<QString, RamObject*>();
+#include "ramdatainterface/dbinterface.h"
 
-RamObject::RamObject(QObject *parent) : QObject(parent)
+// STATIC //
+QMetaEnum const RamObject::m_typeMeta = QMetaEnum::fromType<RamObject::ObjectType>();
+
+const QString RamObject::objectTypeName(ObjectType type)
 {
-    m_settings = nullptr;
-    m_removing = false;
-    m_shortName = "";
-    m_name = "";
-    m_uuid = RamUuid::generateUuidString(m_shortName);
-    m_dbi = DBInterface::instance();
-    this->setObjectName( "RamObject" );
-    m_existingObjects[m_uuid] = this;
+    return "Ram" + QString(m_typeMeta.valueToKey(type));
 }
 
-RamObject::RamObject(QString uuid, QObject *parent): QObject(parent)
+const QString RamObject::subFolderName(SubFolder folder)
 {
-    m_settings = nullptr;
-    m_removing = false;
-    m_shortName = "";
-    m_name = "";
-    m_uuid = uuid;
-    m_dbi = DBInterface::instance();
-    this->setObjectName( "RamObject" );
-    m_existingObjects[m_uuid] = this;
+    switch(folder)
+    {
+    case AdminFolder: return "00-ADMIN";
+    case ConfigFolder: return "_config";
+    case PreProdFolder: return "01-PRE-PROD";
+    case ProdFolder: return "02-PROD";
+    case PostProdFolder: return "03-POST-PROD";
+    case AssetsFolder: return "04-ASSETS";
+    case ShotsFolder: return "05-SHOTS";
+    case ExportFolder: return "06-EXPORT";
+    case TemplatesFolder: return "Templates";
+    case PublishFolder: return "_published";
+    case VersionsFolder: return "_versions";
+    case PreviewFolder: return "_preview";
+    case UsersFolder: return "Users";
+    case ProjectsFolder: return "Projects";
+    case TrashFolder: return "_trash";
+    case DataFolder: return "_data";
+    case NoFolder: return "";
+    }
+    return "";
 }
 
-RamObject::RamObject(QString shortName, QString name, QString uuid, QObject *parent) : QObject(parent)
+RamObject *RamObject::obj(QString uuid)
 {
-    m_settings = nullptr;
-    m_removing = false;
-    m_shortName = shortName;
-    m_name = name;
-    if(m_name == "" ) m_name = shortName;
-    if (uuid != "") m_uuid = uuid;
-    else m_uuid = RamUuid::generateUuidString(m_shortName);
-    m_dbi = DBInterface::instance();
-    this->setObjectName( "RamObject" );
-    m_existingObjects[m_uuid] = this;
+    return m_existingObjects.value( uuid, nullptr );
+}
+
+RamObject *RamObject::objFromName(QString shortNameOrName, ObjectType objType)
+{
+    QMapIterator<QString, RamObject*> i(m_existingObjects);
+    while (i.hasNext())
+    {
+        i.next();
+        RamObject *obj = i.value();
+        if (obj->objectType() == objType)
+        {
+            if ( obj->shortName() == shortNameOrName ) return obj;
+            if ( obj->name() == shortNameOrName ) return obj;
+        }
+    }
+    return nullptr;
+}
+
+// PUBLIC //
+RamObject::~RamObject()
+{
+    m_existingObjects.remove(m_uuid);
+}
+
+QString RamObject::uuid() const
+{
+    return m_uuid;
+}
+
+QJsonObject RamObject::data() const
+{
+    return DBInterface::instance()->objectData(m_uuid, objectTypeName());
+}
+
+void RamObject::setData(QJsonObject data)
+{
+    DBInterface::instance()->setObjectData(m_uuid, objectTypeName(), data);
+    emit dataChanged(this, data);
+}
+
+void RamObject::insertData(QString key, QJsonValue value)
+{
+    // Update data before inserting
+    QJsonObject d = data();
+    d.insert(key, value);
+    setData(d);
+}
+
+RamObject::ObjectType RamObject::objectType() const
+{
+    return m_objectType;
+}
+
+QString RamObject::objectTypeName() const
+{
+    return RamObject::objectTypeName(m_objectType);
+}
+
+void RamObject::setObjectType(RamObject::ObjectType type)
+{
+    m_objectType = type;
+}
+
+QString RamObject::shortName() const
+{
+    return data().value("shortName").toString("");
+}
+
+void RamObject::setShortName(const QString &shortName)
+{
+    insertData("shortName", shortName);
+}
+
+QString RamObject::name() const
+{
+    return data().value("name").toString("");
+}
+
+void RamObject::setName(const QString &name)
+{
+    insertData("name", name);
+}
+
+QString RamObject::comment() const
+{
+    return data().value("comment").toString("");
+}
+
+void RamObject::setComment(const QString comment)
+{
+    insertData("comment", comment);
+}
+
+int RamObject::order() const
+{
+    return data().value("order").toInt(0);
+}
+
+void RamObject::setOrder(int order)
+{
+    insertData("comment", order);
+}
+
+void RamObject::remove()
+{
+    m_removed = true;
+    DBInterface::instance()->removeObject(m_uuid, objectTypeName());
+    emit removed(this);
+}
+
+void RamObject::restore()
+{
+    m_removed = false;
+    DBInterface::instance()->restoreObject(m_uuid, objectTypeName());
+    emit restored(this);
 }
 
 QSettings *RamObject::settings()
@@ -57,132 +172,6 @@ void RamObject::reInitSettingsFile()
 {
     m_settings->deleteLater();
     m_settings = nullptr;
-}
-
-QString RamObject::shortName() const
-{
-    return m_shortName;
-}
-
-void RamObject::setShortName(const QString &shortName)
-{
-    // Sanitize
-    QString newShortName = shortName.trimmed();
-    if (newShortName.startsWith(".")) newShortName = newShortName.remove(0,1);
-
-    // Check and set
-    if (newShortName == m_shortName) return;
-    m_dirty  = true;
-    m_shortName = shortName;
-    emit changed(this);
-}
-
-QString RamObject::name() const
-{
-    return m_name;
-}
-
-void RamObject::setName(const QString &name)
-{
-    if (name == m_name) return;
-    m_dirty = true;
-    m_name = name;
-    emit changed(this);
-}
-
-QString RamObject::comment() const
-{
-    return m_comment;
-}
-
-void RamObject::setComment(const QString comment)
-{
-    if (comment == m_comment) return;
-    m_dirty = true;
-    m_comment = comment;
-    emit changed(this);
-}
-
-QString RamObject::uuid() const
-{
-    return m_uuid;
-}
-
-void RamObject::remove( bool updateDB )
-{
-    qDebug().noquote() << "Removing: " + m_name + " (uuid: " + m_uuid + ")";
-    qDebug().noquote() << "- " + this->objectName();
-    if (m_removing) return;
-    qDebug().noquote() << "> Accepted";
-
-    // Remove from the list of objects we keep to get them by uuid
-    m_existingObjects.remove(this->uuid());
-
-    m_removing = true;
-#ifdef DUMP_OBJECT_DEBUG
-    dumpObjectInfo();
-#endif
-    emit removed(this);
-    qDebug().noquote() << "> " + m_name + " Removed";
-
-    if (updateDB) removeFromDB();
-
-    this->deleteLater();
-}
-
-void RamObject::setEditWidget(ObjectEditWidget *w)
-{
-    ui_editWidget = new QFrame();
-    QVBoxLayout *l = new QVBoxLayout();
-    l->setContentsMargins(3,3,3,3);
-    l->addWidget(w);
-    ui_editWidget->setLayout(l);
-}
-
-void RamObject::showEdit(QString title)
-{
-    if (!ui_editWidget) return;
-
-    MainWindow *mw = (MainWindow*)GuiUtils::appMainWindow();
-    if (title == "") title = this->name();
-    if (title == "") title = this->shortName();
-    if (title == "") title = "Properties";
-
-    ui_editWidget->setEnabled(false);
-
-    if (m_editable)
-    {
-        RamUser *u = Ramses::instance()->currentUser();
-        if (u)
-        {
-            ui_editWidget->setEnabled(u->role() >= m_editRole);
-            if (u->is(this)) ui_editWidget->setEnabled(true);
-        }
-    }
-
-    mw->setPropertiesDockWidget( ui_editWidget, title, m_icon);
-}
-
-RamObject::ObjectType RamObject::objectType() const
-{
-    return m_objectType;
-}
-
-void RamObject::setObjectType(RamObject::ObjectType type)
-{
-    m_objectType = type;
-}
-
-int RamObject::order() const
-{
-    return m_order;
-}
-
-void RamObject::setOrder(int order)
-{
-    if (order == m_order) return;
-    m_order = order;
-    if (!m_dbi->isSuspended()) m_orderChanged = true;
 }
 
 QString RamObject::path(RamObject::SubFolder subFolder, bool create) const
@@ -261,73 +250,56 @@ void RamObject::revealFolder(RamObject::SubFolder subFolder)
     FileUtils::openInExplorer( p, true );
 }
 
-QString RamObject::subFolderName(RamObject::SubFolder folder)
-{
-    switch(folder)
-    {
-    case AdminFolder: return "00-ADMIN";
-    case ConfigFolder: return "_config";
-    case PreProdFolder: return "01-PRE-PROD";
-    case ProdFolder: return "02-PROD";
-    case PostProdFolder: return "03-POST-PROD";
-    case AssetsFolder: return "04-ASSETS";
-    case ShotsFolder: return "05-SHOTS";
-    case ExportFolder: return "06-EXPORT";
-    case TemplatesFolder: return "Templates";
-    case PublishFolder: return "_published";
-    case VersionsFolder: return "_versions";
-    case PreviewFolder: return "_preview";
-    case UsersFolder: return "Users";
-    case ProjectsFolder: return "Projects";
-    case TrashFolder: return "_trash";
-    case NoFolder: return "";
-    }
-    return "";
-}
-
 QString RamObject::filterUuid() const
 {
     return m_filterUuid;
 }
 
-bool RamObject::is(const RamObject *other) const
+// PROTECTED //
+
+RamObject::RamObject(QString uuid, ObjectType type, QObject *parent): QObject(parent)
 {
-    if (!other) return false;
-    return other->uuid() == m_uuid;
+    m_objectType = type;
+    m_uuid = uuid;
+    this->setObjectName( objectTypeName() );
+
+    m_existingObjects.insert(m_uuid, this);
 }
 
-RamObject *RamObject::obj(QString uuid)
+void RamObject::setEditWidget(ObjectEditWidget *w)
 {
-    /*RamObject *obj = m_existingObjects.value(uuid, nullptr );
-    if (!obj) obj = new RamObject(uuid);
-    return obj;*/
-    return m_existingObjects.value(uuid, nullptr );
+    ui_editWidget = new QFrame();
+    QVBoxLayout *l = new QVBoxLayout();
+    l->setContentsMargins(3,3,3,3);
+    l->addWidget(w);
+    ui_editWidget->setLayout(l);
 }
 
-RamObject *RamObject::objFromName(QString shortNameOrName, ObjectType objType)
+void RamObject::showEdit(QString title)
 {
-    QMapIterator<QString, RamObject*> i(m_existingObjects);
-    while (i.hasNext())
+    if (!ui_editWidget) return;
+
+    MainWindow *mw = (MainWindow*)GuiUtils::appMainWindow();
+    if (title == "") title = this->name();
+    if (title == "") title = this->shortName();
+    if (title == "") title = "Properties";
+
+    ui_editWidget->setEnabled(false);
+
+    if (m_editable)
     {
-        i.next();
-        RamObject *obj = i.value();
-        if (obj->objectType() == objType)
+        RamUser *u = Ramses::instance()->currentUser();
+        if (u)
         {
-            if ( obj->shortName() == shortNameOrName ) return obj;
-            if ( obj->name() == shortNameOrName ) return obj;
+            ui_editWidget->setEnabled(u->role() >= m_editRole);
+            if (u == this) ui_editWidget->setEnabled(true);
         }
     }
-    return nullptr;
+
+    mw->setPropertiesDockWidget( ui_editWidget, title, m_icon);
 }
 
-void RamObject::update()
-{
-    m_dirty = false;
-}
 
-bool RamObject::move(int newIndex)
-{
-    if (newIndex == m_order) return false;
-    m_order = newIndex;
-    return true;
-}
+
+
+

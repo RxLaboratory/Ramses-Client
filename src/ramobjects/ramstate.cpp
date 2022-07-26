@@ -30,7 +30,7 @@ void RamState::setColor(const QColor &color)
     if (_color == color) return;
     m_dirty = true;
     _color = color;
-    emit changed(this);
+    emit dataChanged(this);
 }
 
 int RamState::completionRatio() const
@@ -43,7 +43,7 @@ void RamState::setCompletionRatio(int completionRatio)
     if (_completionRatio == completionRatio) return;
     m_dirty = true;
     _completionRatio = completionRatio;
-    emit changed(this);
+    emit dataChanged(this);
 }
 
 void RamState::update()

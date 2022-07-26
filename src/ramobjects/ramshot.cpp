@@ -46,7 +46,7 @@ void RamShot::setSequence(RamSequence *sequence)
 
     m_sequenceConnection = connect(sequence, SIGNAL(removed(RamObject*)),this,SLOT(remove()));
 
-    emit changed(this);
+    emit dataChanged(this);
 }
 
 qreal RamShot::duration() const
@@ -60,7 +60,7 @@ void RamShot::setDuration(const qreal &duration)
     if (m_duration == duration) return;
     m_dirty = true;
     m_duration = duration;
-    emit changed(this);
+    emit dataChanged(this);
 }
 
 RamShot *RamShot::shot(QString uuid)

@@ -40,7 +40,7 @@ void RamUser::setRole(const UserRole &role)
     if (role == m_role) return;
     m_dirty = true;
     m_role = role;
-    emit changed(this);
+    emit dataChanged(this);
 }
 
 void RamUser::setRole(const QString role)
@@ -66,7 +66,7 @@ void RamUser::setColor(const QColor &newColor)
     if (m_color == newColor) return;
     m_dirty = true;
     m_color = newColor;
-    emit changed(this);
+    emit dataChanged(this);
 }
 
 RamObjectList *RamUser::schedule() const

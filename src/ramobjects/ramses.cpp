@@ -46,7 +46,12 @@ Ramses::Ramses(QObject *parent) : RamObject(parent)
 void Ramses::login(QString username, QString password)
 {
     m_dbi->suspend(false);
-    m_dbi->login(username, password);
+    // Hash password and post
+    password = m_dbi->generatePassHash(password);
+    QJsonObject data;
+    data.insert("username", username);
+    data.insert("password", password);
+    m_dbi->post("login", data);
 }
 
 void Ramses::loginHashed(QString username, QString hashedPassword)
@@ -337,7 +342,7 @@ void Ramses::refresh()
     if (!isOnline()) return;
 
     // Get current project
-    m_dbi->init();
+    m_dbi->post("init");
 }
 
 bool Ramses::isOnline() const

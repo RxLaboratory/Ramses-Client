@@ -91,5 +91,5 @@ void RamSequence::setColor(const QColor &newColor)
     if (m_color == newColor) return;
     m_dirty = true;
     m_color = newColor;
-    emit changed(this);
+    emit dataChanged(this);
 }

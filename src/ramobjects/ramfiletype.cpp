@@ -43,7 +43,7 @@ void RamFileType::setExtensions(QString extensions)
         m_extensions << ext.trimmed();
     }
 
-    emit changed(this);
+    emit dataChanged(this);
 }
 
 void RamFileType::setExtensions(QStringList extensions)
@@ -94,7 +94,7 @@ void RamFileType::setPreviewable(bool previewable)
     if (previewable == m_previewable) return;
     m_dirty = true;
     m_previewable = previewable;
-    emit changed(this);
+    emit dataChanged(this);
 }
 
 bool RamFileType::check(QString filePath) const

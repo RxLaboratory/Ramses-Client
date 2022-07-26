@@ -85,7 +85,7 @@ void RamPipe::setOutputStep(RamStep *outputStep)
     disconnect( m_outputConnection );
     m_outputStep = outputStep;
     m_outputConnection = connect( m_outputStep, &RamStep::removed, this, &RamObject::remove);
-    emit changed(this);
+    emit dataChanged(this);
 }
 
 RamStep *RamPipe::inputStep() const
@@ -101,7 +101,7 @@ void RamPipe::setInputStep(RamStep *inputStep)
     disconnect( m_inputConnection );
     m_inputStep = inputStep;
     m_inputConnection = connect( m_inputStep, &RamStep::removed, this, &RamObject::remove);
-    emit changed(this);
+    emit dataChanged(this);
 }
 
 RamProject *RamPipe::project() const
@@ -139,16 +139,16 @@ void RamPipe::pipeFileAssigned(const QModelIndex &parent, int first, int last)
         RamPipeFile *pf = qobject_cast<RamPipeFile*>( m_pipeFiles->at(i) );
         m_dbi->assignPipeFile(m_uuid, pf->uuid());
     }
-    emit changed(this);
+    emit dataChanged(this);
 }
 
 void RamPipe::pipeFileUnassigned()
 {
-    emit changed(this);
+    emit dataChanged(this);
 }
 
 void RamPipe::pipeFileChanged()
 {
-    emit changed(this);
+    emit dataChanged(this);
 }
 

@@ -77,6 +77,9 @@ SOURCES += \
     duqf-widgets/duqfupdatesettingswidget.cpp \
     pages/installpage.cpp \
     pages/projectpage.cpp \
+    ramdatainterface/dbsync.cpp \
+    ramdatainterface/localdatainterface.cpp \
+    ramdatainterface/ramserverinterface.cpp \
     rameditwidgets/applicationeditwidget.cpp \
     rameditwidgets/applicationlistmanagerwidget.cpp \
     rameditwidgets/asseteditwidget.cpp \
@@ -114,8 +117,8 @@ SOURCES += \
     ramobjects/ramsequence.cpp \
     ramobjects/ramworkingfolder.cpp \
     settingswidgets/daemonsettingswidget.cpp \
-    dbinterface.cpp \
-    dbisuspender.cpp \
+    ramdatainterface/dbinterface.cpp \
+    ramdatainterface/dbisuspender.cpp \
     duqf-app/app-style.cpp \
     duqf-app/app-utils.cpp \
     duqf-nodeview/duqfconnection.cpp \
@@ -216,7 +219,7 @@ HEADERS += \
     data-views/ramstepheaderview.h \
     data-views/timelinedelegate.h \
     data-views/timelineview.h \
-    dbistructures.h \
+    ramdatainterface/dbistructures.h \
     docks/consolewidget.h \
     docks/filemanagerwidget.h \
     duqf-app/app-config.h \
@@ -240,6 +243,9 @@ HEADERS += \
     progresspage.h \
     data-views/ramobjectlistcombobox.h \
     pages/projectpage.h \
+    ramdatainterface/dbsync.h \
+    ramdatainterface/localdatainterface.h \
+    ramdatainterface/ramserverinterface.h \
     rameditwidgets/applicationeditwidget.h \
     rameditwidgets/applicationlistmanagerwidget.h \
     rameditwidgets/asseteditwidget.h \
@@ -274,8 +280,8 @@ HEADERS += \
     ramobjects/ramsequence.h \
     ramobjects/ramworkingfolder.h \
     settingswidgets/daemonsettingswidget.h \
-    dbinterface.h \
-    dbisuspender.h \
+    ramdatainterface/dbinterface.h \
+    ramdatainterface/dbisuspender.h \
     duqf-app/app-style.h \
     duqf-app/app-utils.h \
     duqf-app/app-version.h \

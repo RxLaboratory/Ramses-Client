@@ -1,0 +1,41 @@
+TODO in settings:
+  Create local data
+
+
+Login:
+
+RamUser data is encrypted.
+
+check local password
+- if ok, load user, get uuid
+  if online, check distant password using uuid to get user
+    - if ok, setonline
+    - if not, setoffline, show error
+    
+Data storage as JSON
+
+RamObjects
+
+toJson -> all attributes as JSON, using UUIDs for links
+fromJson
+save method -> call toJson and save to database
+
+database:
+Single RamObjects table with:
+- id
+- uuid
+- data
+- modified
+- removed
+
+except for users
+
+Client sync procedure
+
+post & receive: local. Directly from RamObjects, using SQLite
+
+separate thread: send changes since last sync to server, get new data.
+  on demand sync
+  periodic sync: Sync interval: option, default, 30s
+  get online
+  get offline (voluntarily)
