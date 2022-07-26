@@ -22,6 +22,16 @@ void DBInterface::setOnline()
     setConnectionStatus(NetworkUtils::Connecting, "Connecting to the Ramses Server...");
 }
 
+const QString &DBInterface::dataFile() const
+{
+    return m_ldi->dataFile();
+}
+
+void DBInterface::setDataFile(const QString &file)
+{
+    m_ldi->setDataFile(file);
+}
+
 DBInterface::DBInterface(QObject *parent) : DuQFLoggerObject("Database Interface", parent)
 {
     // LOCAL
@@ -37,16 +47,12 @@ void DBInterface::connectEvents()
 
 const QString &DBInterface::serverAddress() const
 {
-    return m_serverAddress;
+    return m_rsi->serverAddress();
 }
 
 void DBInterface::setServerAddress(const QString &newServerAddress)
 {
-    if (newServerAddress == m_serverAddress) return;
-
-    m_ldi->setServerAddress(newServerAddress);
-
-    m_serverAddress = newServerAddress;
+    m_rsi->setServerAddress(newServerAddress);
 }
 
 NetworkUtils::NetworkStatus DBInterface::connectionStatus() const

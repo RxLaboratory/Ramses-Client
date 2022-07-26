@@ -64,6 +64,9 @@ public:
     void removeObject(QString uuid, QString table);
     void restoreObject(QString uuid, QString table);
 
+    const QString &dataFile() const;
+    void setDataFile(const QString &file);
+
     const QString &serverAddress() const;
     void setServerAddress(const QString &newServerAddress);
 

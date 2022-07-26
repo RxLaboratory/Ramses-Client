@@ -1,7 +1,17 @@
 #ifndef LOCALDATAINTERFACE_H
 #define LOCALDATAINTERFACE_H
 
+#include <QSqlQuery>
+
 #include "duqf-utils/duqflogger.h"
+
+struct ServerConfig {
+    QString address = "";
+    int updateDelay = 60;
+    int timeout = 3;
+    bool useSsl = true;
+    QString path = "";
+};
 
 class LocalDataInterface : public DuQFLoggerObject
 {
@@ -22,7 +32,10 @@ public:
     void removeObject(QString uuid, QString table);
     void restoreObject(QString uuid, QString table);
 
-    void setServerAddress(QString address);
+    ServerConfig serverConfig();
+
+    const QString &dataFile() const;
+    void setDataFile(const QString &file);
 
 protected:
     static LocalDataInterface *_instance;
@@ -34,9 +47,9 @@ private:
      */
     LocalDataInterface();
     /**
-     * @brief The Local database for offline mode (SQLite)
+     * @brief m_dataFile The SQLite file path
      */
-    QSqlDatabase m_localDB;
+    QString m_dataFile;
 };
 
 #endif // LOCALDATAINTERFACE_H
