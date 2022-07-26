@@ -1,41 +1,26 @@
-TODO in login page:
-  Create or open database
-  list of recent files
+1- New login page & Settings data
+	- Create or open database
+		- create: UI to set server settings or offline, and local data path
+		- if server: connect and sync
+	- list of recent files
+	- current file server settings somewhere
 
-Login:
+2- New login
+	- dbi login
+		- ldi login, if ok, load user and get uuid
+		- if online, rsi login using uuid
+		- if ok, set online, else setoffline and show error
+  
+3- encrypt user data
 
-RamUser data is encrypted.
+4- implement all ramobjects
+	toJson -> all attributes as JSON, using UUIDs for links
+	fromJson
+	save method -> call toJson and save to database
 
-check local password
-- if ok, load user, get uuid
-  if online, check distant password using uuid to get user
-    - if ok, setonline
-    - if not, setoffline, show error
-    
-Data storage as JSON
-
-RamObjects
-
-toJson -> all attributes as JSON, using UUIDs for links
-fromJson
-save method -> call toJson and save to database
-
-database:
-Single RamObjects table with:
-- id
-- uuid
-- data
-- modified
-- removed
-
-except for users
-
-Client sync procedure
-
-post & receive: local. Directly from RamObjects, using SQLite
-
-separate thread: send changes since last sync to server, get new data.
-  on demand sync
-  periodic sync: Sync interval: option, default, 30s
-  get online
-  get offline (voluntarily)
+5- Sync process
+	separate thread: send changes since last sync to server, get new data.
+		on demand sync
+		periodic sync: Sync interval: option, default, 30s
+		get online
+		get offline (voluntarily)
