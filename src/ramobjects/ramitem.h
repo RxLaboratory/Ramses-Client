@@ -15,13 +15,24 @@ class RamItem : public RamObject
 {
     Q_OBJECT
 public:
-    explicit RamItem(QString shortName, RamProject *project, QString name = "", QString uuid = "");
+
+    // STATIC //
+
+    static RamItem *item(QString uuid, bool constructNew = false);
+
+    // OTHER //
+
+    RamItem(QString shortName, QString name, RamStep::Type productionType, RamProject *project );
+
+    RamProject *project() const;
+    RamStep::Type productionType() const;
+
+    QMap<QString, RamStepStatusHistory *> statusHistory() const;
+    RamStepStatusHistory *statusHistory(RamObject *stepObj);
 
     RamStatus *setStatus(RamUser *user, RamState *state, RamStep *step, int completionRatio = -1, QString comment = "", int version = 1);
     void addStatus(RamStatus *status);
 
-    QMap<QString, RamStepStatusHistory *> statusHistory() const;
-    RamStepStatusHistory *statusHistory(RamObject *stepObj);
     /**
      * @brief status The latest (current) status for a specific step
      * @param step
@@ -40,37 +51,24 @@ public:
 
     bool hasState(RamState *state, RamStep *step = nullptr);
 
-    RamProject *project() const;
-    RamStep::Type productionType() const;
-    static RamItem *item(QString uuid);
-
     QString previewImagePath() const;
 
 signals:
     void statusChanged(RamItem *, RamStep *);
 
-public slots:
-    virtual void remove(bool updateDB = true) override;
-
 protected:
-    void setProductionType(RamStep::Type newProductionType);
-
-private slots:
-    // Relay status changed if needed (if the last one has changed only)
-    void insertStatus(const QModelIndex &parent,int first ,int last);
-    void statusChanged(const QModelIndex &first, const QModelIndex &last);
-    void removeStatus(const QModelIndex &parent,int first ,int last);
-    void statusMoved(const QModelIndex &parent, int start, int end, const QModelIndex &destination, int row);
-    void statusCleared();
-
-private:
-    QMap<QString, RamStepStatusHistory*> m_history;
+    RamItem(QString uuid);
+    // Immutable data
+    // item can't be transfered (yet)
+    // and shots/assets can't be converted to one another
     RamProject *m_project;
-    RamObjectList *m_steps;
     RamStep::Type m_productionType;
 
-    QMap<QString, QMetaObject::Connection> m_stepConnections;
-    QMap<QString, QList<QMetaObject::Connection>> m_statusConnections;
+private:
+    void construct();
+
+    RamObjectList *m_steps;
+    QMap<QString, RamStepStatusHistory*> m_history;
 };
 
 #endif // RAMITEM_H
