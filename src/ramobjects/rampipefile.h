@@ -11,39 +11,33 @@ class RamPipeFile : public RamObject
 {
     Q_OBJECT
 public:
-    explicit RamPipeFile(QString shortName, RamProject *project);
-    /**
-     * @brief RamPipeFile Creqtes qn empty pipefile instqnce. Note that this will NOT creqte it in the database
-     * Use RamPipeFile(QString shortName, RamProject *project, QObject *parent = nullptr) to qdd it to the database
-     * @param uuid The pipefile uuid
-     * @param parent The parent QObject
-     */
-    explicit RamPipeFile(QString uuid, QObject *parent = nullptr);
-    ~RamPipeFile();
 
-    QString name() const override;
+    // STATIC //
+
+    static RamPipeFile *getObject(QString uuid, bool constructNew = false);
+
+    // OTHER //
+
+    RamPipeFile(QString shortName, RamProject *project);
 
     RamFileType *fileType() const;
-    void setFileType(RamFileType *newFileType);  
+    void setFileType(RamFileType *newFileType);
 
     const RamProject *project() const;
-    void setProject(RamProject *project);
 
-    static RamPipeFile *pipeFile(QString uuid);
-
-    const QString &customSettings() const;
+    QString customSettings() const;
     void setCustomSettings(const QString &newCustomSettings);
 
 public slots:
-    void update() override;
     virtual void edit(bool show = true) override;
-    virtual void removeFromDB() override;
+
+protected:
+    RamPipeFile(QString uuid);
 
 private:
-    RamFileType *m_fileType;
-    RamProject *m_project;
+    void construct();
 
-    QString m_customSettings = "";
+    RamProject *m_project;
 };
 
 #endif // RAMPIPEFILE_H

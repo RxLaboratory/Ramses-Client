@@ -1,57 +1,37 @@
 #include "rampipefile.h"
-
 #include "ramproject.h"
-
 #include "pipefileeditwidget.h"
 
+// STATIC //
+
+RamPipeFile *RamPipeFile::getObject(QString uuid, bool constructNew)
+{
+    RamObject *obj = RamObject::getObject(uuid);
+    if (!obj && constructNew) return new RamPipeFile( uuid );
+    return qobject_cast<RamPipeFile*>( obj );
+}
+
+// PUBLIC //
+
 RamPipeFile::RamPipeFile(QString shortName, RamProject *project) :
-    RamObject(shortName, "", "", project)
+    RamObject(shortName, shortName, PipeFile, project)
 {
-    m_icon = ":/icons/file";
-    m_editRole = ProjectAdmin;
+    construct();
 
-    this->setObjectType(PipeFile);
     m_project = project;
-    m_fileType = nullptr;
-    m_dbi->createPipeFile(m_shortName, m_project->uuid(), "", m_uuid, "");
-    this->setObjectName("RamPipeFile " + shortName);
-}
-
-RamPipeFile::RamPipeFile(QString uuid, QObject *parent):
-    RamObject(uuid, parent)
-{
-    m_icon = ":/icons/file";
-    m_editRole = ProjectAdmin;
-
-    this->setObjectType(PipeFile);
-    m_fileType = nullptr;
-    m_project = nullptr;
-    this->setObjectName("RamPipeFile");
-}
-
-RamPipeFile::~RamPipeFile()
-{
-
-}
-
-QString RamPipeFile::name() const
-{
-    QString t = m_shortName;
-    RamFileType *ft = m_fileType;
-    if (ft) t = t + "." + ft->shortName();
-    return t;
 }
 
 RamFileType *RamPipeFile::fileType() const
 {
-    return m_fileType;
+    return RamFileType::getObject( data().value("fileType").toString(), true );
 }
 
 void RamPipeFile::setFileType(RamFileType *newFileType)
 {
-    if (newFileType->is(m_fileType)) return;
-    m_dirty = true;
-    m_fileType = newFileType;
+    QJsonObject d = data();
+
+    // set file type
+    d.insert("fileType", newFileType->uuid());
 
     // Update the custom settings
     QString format;
@@ -61,7 +41,7 @@ void RamPipeFile::setFileType(RamFileType *newFileType)
     else
         format = "*";
 
-    QStringList settings = m_customSettings.split("\n");
+    QStringList settings = d.value("customSettings").toString().split("\n");
     bool found = false;
 
     for(int i = 0; i < settings.count(); i++)
@@ -83,18 +63,9 @@ void RamPipeFile::setFileType(RamFileType *newFileType)
         settings << "format: " + format;
     }
 
-    setCustomSettings(settings.join("\n"));
+    d.insert("customSettings", settings.join("\n"));
 
-    emit dataChanged(this);
-}
-
-void RamPipeFile::update()
-{
-    if(!m_dirty) return;
-    RamObject::update();
-    QString ft = "";
-    if (m_fileType) ft = m_fileType->uuid();
-    m_dbi->updatePipeFile(m_uuid, m_shortName, ft, "", m_comment, m_customSettings );
+    setData(d);
 }
 
 const RamProject *RamPipeFile::project() const
@@ -102,41 +73,40 @@ const RamProject *RamPipeFile::project() const
     return m_project;
 }
 
-void RamPipeFile::setProject(RamProject *project)
+QString RamPipeFile::customSettings() const
 {
-    m_project = project;
-}
-
-RamPipeFile *RamPipeFile::pipeFile(QString uuid)
-{
-    return qobject_cast<RamPipeFile*>( RamObject::obj(uuid) );
-}
-
-void RamPipeFile::edit(bool show)
-{
-    if (!m_editReady)
-    {
-        PipeFileEditWidget *w = new PipeFileEditWidget(this);
-        setEditWidget(w);
-        m_editReady = true;//*/
-    }
-    if (show) showEdit();
-}
-
-void RamPipeFile::removeFromDB()
-{
-    m_dbi->removePipeFile(m_uuid);
-}
-
-const QString &RamPipeFile::customSettings() const
-{
-    return m_customSettings;
+    return data().value("customSettings").toString();
 }
 
 void RamPipeFile::setCustomSettings(const QString &newCustomSettings)
 {
-    if (m_customSettings == newCustomSettings) return;
-    m_dirty = true;
-    m_customSettings = newCustomSettings;
-    emit dataChanged(this);
+    insertData("customSettings", newCustomSettings);
+}
+
+void RamPipeFile::edit(bool show)
+{
+    if (!ui_editWidget) setEditWidget(new PipeFileEditWidget(this));
+
+    if (show) showEdit();
+}
+
+// PROTECTED //
+
+RamPipeFile::RamPipeFile(QString uuid):
+    RamObject(uuid, PipeFile)
+{
+    construct();
+
+    QJsonObject d = data();
+    m_project = RamProject::project(d.value("project").toString(), true);
+
+    this->setParent(m_project);
+}
+
+// PRIVATE //
+
+void RamPipeFile::construct()
+{
+    m_icon = ":/icons/file";
+    m_editRole = ProjectAdmin;
 }
