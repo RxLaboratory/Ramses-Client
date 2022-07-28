@@ -18,7 +18,7 @@ public:
 
     // STATIC METHODS //
 
-    RamObjectList *objectList(QString uuid, bool constructNew = false);
+    static RamObjectList<RO> *getObject(QString uuid, bool constructNew = false);
 
     // METHODS //
 
@@ -35,25 +35,25 @@ public:
     // Empty
     void clear(bool removeObjects = false);
     // Add
-    virtual void insertObject(int i, RO *obj); // Insert object at i
-    void append(RO *obj); // Append object
+    virtual void insertObject(int i, RO obj); // Insert object at i
+    void append(RO obj); // Append object
     // Remove
-    virtual QList<RO *> removeIndices( QModelIndexList indices ); // Used to remove selection. Returns the removed objects
-    virtual RO *takeObject(int i); // Remove and returns object at i
-    RO *takeObject(QString uuid); // Remove and return object using uuid
+    virtual QList<RO> removeIndices( QModelIndexList indices ); // Used to remove selection. Returns the removed objects
+    virtual RO takeObject(int i); // Remove and returns object at i
+    RO takeObject(QString uuid); // Remove and return object using uuid
     void removeAll(QString uuid); // Removes object using uuid
 
     // LIST INFORMATION
     // Info
-    bool contains(RO *obj) const;
+    bool contains(RO obj) const;
     bool contains(QString uuid) const;
     // Accessors
-    RO *fromUuid(QString uuid) const;
-    RO *fromName(QString shortName, QString name = "") const;
-    RO *at(int i) const;
+    RO fromUuid(QString uuid) const;
+    RO fromName(QString shortName, QString name = "") const;
+    RO at(int i) const;
 
 public slots:
-    void removeAll(RO *obj);
+    void removeAll(RO obj);
     void sort();
 
 protected:
@@ -61,16 +61,16 @@ protected:
 
     // DATA
     // For performance reasons, store both a list and a map
-    QMap<QString, RO*> m_objects;
-    QList<RO*> m_objectList;
+    QMap<QString, RO> m_objects;
+    QList<RO> m_objectList;
 
     // UTILS
-    virtual void connectObject(RO *obj);
-    int objRow(RO *obj);
+    virtual void connectObject(RO obj);
+    int objRow(RO obj);
 
 private slots:
     // Emits dataChanged() and headerChanged()
-    void objectChanged(RO *obj);
+    void objectChanged(RO obj);
 
     /**
      * @brief listChanged monitors the list to save it to the database
