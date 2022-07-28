@@ -5,9 +5,9 @@
 
 // STATIC //
 
-RamItem *RamItem::item(QString uuid, bool constructNew)
+RamItem *RamItem::getObject(QString uuid, bool constructNew)
 {
-    RamObject *obj = RamObject::obj(uuid);
+    RamObject *obj = RamObject::getObject(uuid);
     if (!obj && constructNew) return new RamItem( uuid );
     return qobject_cast<RamItem*>( obj );
 }

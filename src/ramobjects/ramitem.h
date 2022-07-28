@@ -18,7 +18,7 @@ public:
 
     // STATIC //
 
-    static RamItem *item(QString uuid, bool constructNew = false);
+    static RamItem *getObject(QString uuid, bool constructNew = false);
 
     // OTHER //
 
