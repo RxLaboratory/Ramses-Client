@@ -4,118 +4,120 @@
 
 #include "ramproject.h"
 
-RamAsset::RamAsset(QString shortName, RamAssetGroup *assetGroup, QString name, QString uuid) :
-    RamItem(shortName, assetGroup->project(), name, uuid)
+// STATIC //
+
+RamAsset *RamAsset::getObject( QString uuid, bool constructNew )
 {
-    m_icon = ":/icons/asset";
-    m_editRole = ProjectAdmin;
-
-    setObjectType(Asset);
-    setProductionType(RamStep::AssetProduction);
-    m_assetGroup = assetGroup;
-    m_filterUuid = assetGroup->uuid();
-    m_assetGroupConnection = connect(assetGroup, SIGNAL(removed(RamObject*)), this, SLOT(remove()));
-    m_dbi->createAsset(m_shortName, m_name, m_assetGroup->uuid(), "", m_uuid);
-
-    this->setObjectName( "RamAsset " + m_shortName);
+    RamObject *obj = RamItem::getObject(uuid);
+    if (!obj && constructNew) return new RamAsset( uuid );
+    return qobject_cast<RamAsset*>( obj );
 }
 
-RamAsset::~RamAsset()
-{
+// PUBLIC //
 
+RamAsset::RamAsset(QString shortName, QString name, RamAssetGroup *ag, RamProject *project) :
+    RamItem(shortName, name, RamStep::AssetProduction, project)
+{
+    Q_ASSERT_X(ag, "RamAsset(shortname, name, assetgroup, prokect)", "AssetGroup can't be null!");
+    construct();
+    setAssetGroup(ag);
 }
 
 RamAssetGroup *RamAsset::assetGroup() const
 {
-    return m_assetGroup;
+    return RamAssetGroup::assetGroup( data().value("assetGroup").toString(), true );
 }
 
 void RamAsset::setAssetGroup(RamAssetGroup *assetGroup)
 {
     if(!assetGroup) return;
-    if (m_assetGroup->is(assetGroup)) return;
-    m_dirty = true;
 
-    disconnect(m_assetGroupConnection);
-
-    this->setParent(assetGroup);
-    m_assetGroup = assetGroup;
-    m_filterUuid = assetGroup->uuid();
-
-    m_assetGroupConnection = connect(assetGroup, SIGNAL(removed(RamObject*)), this, SLOT(remove()));
-
-    emit dataChanged(this);
+    insertData("assetGroup", assetGroup->uuid());
 }
 
 QStringList RamAsset::tags() const
 {
-    return _tags;
+    QJsonArray arr = data().value("tags").toArray();
+    QStringList ts;
+    for (int i = 0; i < arr.count(); i++)
+    {
+        ts << arr.at(i).toString();
+    }
+    return ts;
 }
 
 void RamAsset::setTags(QString tags)
 {
-    m_dirty = true;
     QStringList ts = tags.toLower().split(",");
-    _tags.clear();
-    foreach(QString t, ts)
+    QJsonArray arr;
+    for(int i = 0; i < ts.count(); i++)
     {
-        _tags << t.trimmed().toLower();
+        arr.append( ts[i].trimmed().toLower() );
     }
-    emit dataChanged(this);
+    insertData("tags", arr);
 }
 
 void RamAsset::addTag(QString tag)
 {
-    if (_tags.contains(tag) ) return;
-    m_dirty = true;
-    _tags << tag.trimmed().toLower();
-    emit dataChanged(this);
+    QJsonArray arr = data().value("tags").toArray();
+    arr.append(tag.trimmed().toLower());
+    insertData("tags", arr);
 }
 
 void RamAsset::removeTag(QString tag)
 {
-    if (!_tags.contains(tag)) return;
-    _tags.removeAll(tag.toLower());
-    m_dirty = true;
-    emit dataChanged(this);
+    QJsonArray arr = data().value("tags").toArray();
+    if (!arr.contains(tag)) return;
+    for (int i = 0; i < arr.count(); i++)
+    {
+        if (arr.at(i).toString() == tag)
+        {
+            arr.removeAt(i);
+            break;
+        }
+    }
+    insertData("tags", arr);
 }
 
 bool RamAsset::hasTag(QString tag)
 {
-    return _tags.contains(tag, Qt::CaseInsensitive);
+    QJsonArray arr = data().value("tags").toArray();
+    return arr.contains(tag);
 }
 
-void RamAsset::update()
+QString RamAsset::filterUuid() const
 {
-    if (!m_dirty) return;
-    RamObject::update();
-    m_dbi->updateAsset(m_uuid, m_shortName, m_name, m_assetGroup->uuid(), _tags.join(','), m_comment);
-}
-
-RamAsset *RamAsset::asset( QString uuid )
-{
-    return qobject_cast<RamAsset*>( RamObject::obj(uuid) );
+    RamAssetGroup *ag = assetGroup();
+    if (ag) return assetGroup()->uuid();
+    return "";
 }
 
 void RamAsset::edit(bool show)
 {
-    if (!m_editReady)
-    {
-        AssetEditWidget *w = new AssetEditWidget(this);
-        setEditWidget(w);
-        m_editReady = true;
-    }
+    if (!ui_editWidget) setEditWidget(new AssetEditWidget(this));
+
     if (show) showEdit();
 }
 
-void RamAsset::removeFromDB()
+// PROTECTED //
+
+RamAsset::RamAsset(QString uuid):
+    RamItem(uuid)
 {
-    m_dbi->removeAsset(m_uuid);
+    construct();
 }
 
 QString RamAsset::folderPath() const
 {
-    RamProject *p = m_assetGroup->project();
-    return  m_assetGroup->path() + "/" + p->shortName() + "_A_" + m_shortName;
+    return  assetGroup()->path() + "/" + m_project->shortName() + "_A_" + shortName();
+}
+
+// PRIVATE //
+
+void RamAsset::construct()
+{
+    m_icon = ":/icons/asset";
+    m_editRole = ProjectAdmin;
+    m_productionType = RamStep::AssetProduction;
 }
 

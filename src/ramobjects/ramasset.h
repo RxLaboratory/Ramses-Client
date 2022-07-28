@@ -10,8 +10,14 @@ class RamAsset : public RamItem
 {
     Q_OBJECT
 public:
-    explicit RamAsset(QString shortName, RamAssetGroup *assetGroup, QString name = "",  QString uuid = "");
-    ~RamAsset();
+
+    // STATIC //
+
+    static RamAsset *getObject(QString uuid, bool constructNew = false);
+
+    // OTHER //
+
+    RamAsset(QString shortName, QString name, RamAssetGroup *ag, RamProject *project);
 
     RamAssetGroup *assetGroup() const;
     void setAssetGroup(RamAssetGroup *assetGroup);
@@ -20,24 +26,19 @@ public:
     void setTags(QString tags);
     void addTag(QString tag);
     void removeTag(QString tag);
-    bool hasTag(QString tag);   
+    bool hasTag(QString tag);
 
-    static RamAsset *asset(QString uuid);
+    QString filterUuid() const override;
 
 public slots:
-    void update() override;
     virtual void edit(bool show = true) override;
-    virtual void removeFromDB() override;
 
 protected:
+    RamAsset(QString uuid);
     virtual QString folderPath() const override;
 
 private:
-    QStringList _tags;
-    // Containers
-    RamAssetGroup *m_assetGroup;
-
-    QMetaObject::Connection m_assetGroupConnection;
+    void construct();
 };
 
 #endif // RAMASSET_H
