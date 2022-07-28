@@ -58,17 +58,17 @@ public:
 
     // DATA INTERFACE //
 
+    void createObject(QString uuid, QString table, QJsonObject data);
+
     QJsonObject objectData(QString uuid, QString table);
     void setObjectData(QString uuid, QString table, QJsonObject data);
 
     void removeObject(QString uuid, QString table);
     void restoreObject(QString uuid, QString table);
+    bool isRemoved(QString uuid, QString table);
 
     const QString &dataFile() const;
-    void setDataFile(const QString &file);
-
-    const QString &serverAddress() const;
-    void setServerAddress(const QString &newServerAddress);
+    ServerConfig setDataFile(const QString &file);
 
 signals:
     /**

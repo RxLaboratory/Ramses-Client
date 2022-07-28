@@ -26,16 +26,19 @@ public:
 
     // DATA INTERFACE //
 
+    void createObject(QString uuid, QString table, QJsonObject data);
+
     QJsonObject objectData(QString uuid, QString table);
     void setObjectData(QString uuid, QString table, QJsonObject data);
 
     void removeObject(QString uuid, QString table);
     void restoreObject(QString uuid, QString table);
+    bool isRemoved(QString uuid, QString table);
 
-    ServerConfig serverConfig();
+    ServerConfig serverConfig() const;
 
     const QString &dataFile() const;
-    void setDataFile(const QString &file);
+    ServerConfig setDataFile(const QString &file);
 
 protected:
     static LocalDataInterface *_instance;

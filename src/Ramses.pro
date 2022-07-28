@@ -32,7 +32,8 @@ INCLUDEPATH += rameditwidgets \
     item-tables \
     data-views \
     pages \
-    data-model
+    data-model \
+    ramdatainterface
 
 SOURCES += \
     data-models/ramitemfiltermodel.cpp \
@@ -110,6 +111,7 @@ SOURCES += \
     ramfilemetadatamanager.cpp \
     ramloader.cpp \
     ramnamemanager.cpp \
+    ramobjects/ramabstractobject.cpp \
     ramobjects/ramassetgroup.cpp \
     ramobjects/rampipefile.cpp \
     ramobjects/ramschedulecomment.cpp \
@@ -273,6 +275,7 @@ HEADERS += \
     ramfilemetadatamanager.h \
     ramloader.h \
     ramnamemanager.h \
+    ramobjects/ramabstractobject.h \
     ramobjects/ramassetgroup.h \
     ramobjects/rampipefile.h \
     ramobjects/ramschedulecomment.h \

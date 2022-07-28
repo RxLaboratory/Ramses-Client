@@ -1,28 +1,28 @@
 #ifndef RAMOBJECTLIST_H
 #define RAMOBJECTLIST_H
 
-#include "ramobject.h"
-
 #include <QAbstractTableModel>
 #include <QIcon>
 #include <QStringBuilder>
 
-#include "dbisuspender.h"
+#include "ramabstractobject.h"
 
 /**
  * @brief The RamObjectList class is the base class used for almost all of Ramses' lists (assets, steps, shots, applications...).
  */
-class RamObjectList : public QAbstractTableModel
+template<typename RO> class RamObjectList : public QAbstractTableModel, public RamAbstractObject
 {
     Q_OBJECT
-public:
-    RamObjectList(QObject *parent = nullptr);
-    RamObjectList(QString shortName, QString name = "", QObject *parent = nullptr);
 
-    const QString &shortName() const;
-    void setShortName(const QString &newShortName);
-    const QString &name() const;
-    void setName(const QString &newName);
+public:
+
+    // STATIC METHODS //
+
+    RamObjectList *objectList(QString uuid, bool constructNew = false);
+
+    // METHODS //
+
+    RamObjectList(QString shortName, QString name, QObject *parent = nullptr);
 
     // MODEL reimplementation
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
@@ -31,74 +31,64 @@ public:
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
     virtual void sort(int column, Qt::SortOrder order = Qt::AscendingOrder) override;
 
-    // MODEL EDITING
-    void clear(); // Reset
-    void deleteAll(); // Reset and delete objects
-    virtual void insertObject(int i, RamObject *obj); // Insert Row
-    virtual RamObject *takeObject(int i); // Remove Row
-    virtual QList<RamObject *> removeIndices( QModelIndexList indices ); // Used to remove selection. Returns the removed objects
-    virtual bool moveRow(const QModelIndex &sourceParent, int sourceRow, const QModelIndex &destinationParent, int destinationChild); // Updates objects order
-    virtual bool moveRows(const QModelIndex &sourceParent, int sourceRow, int count, const QModelIndex &destinationParent, int destinationChild) override;
+    // LIST EDITING
+    // Empty
+    void clear(bool removeObjects = false);
+    // Add
+    virtual void insertObject(int i, RO *obj); // Insert object at i
+    void append(RO *obj); // Append object
+    // Remove
+    virtual QList<RO *> removeIndices( QModelIndexList indices ); // Used to remove selection. Returns the removed objects
+    virtual RO *takeObject(int i); // Remove and returns object at i
+    RO *takeObject(QString uuid); // Remove and return object using uuid
+    void removeAll(QString uuid); // Removes object using uuid
 
-    // CONVENIENCE METHODS
+    // LIST INFORMATION
     // Info
-    int count() const;
-    bool contains(RamObject *obj) const;
+    bool contains(RO *obj) const;
     bool contains(QString uuid) const;
     // Accessors
-    RamObject *fromUuid(QString uuid) const;
-    RamObject *fromName(QString shortName, QString name = "") const;
-    RamObject *at(int i) const;
-    RamObject *last() const;
-    QList<RamObject*> toList() const;
-    // Insertion
-    void append(RamObject *obj);
-    // Removal
-    void removeAt(int i);
-    void removeFirst();
-    void removeLast();
-    void removeAll(QString uuid);
-    RamObject *takeFromUuid(QString uuid);
+    RO *fromUuid(QString uuid) const;
+    RO *fromName(QString shortName, QString name = "") const;
+    RO *at(int i) const;
 
 public slots:
-    void removeAll(RamObject *obj);
+    void removeAll(RO *obj);
     void sort();
 
-signals:
-    void objectDataChanged(RamObject*);
-    void objectInserted(RamObject*);
-    void objectRemoved(RamObject*);
-    void orderChanged();
-
 protected:
+    RamObjectList(QString uuid, QObject *parent = nullptr);
+
     // DATA
     // For performance reasons, store both a list and a map
-    QMap<QString, RamObject*> m_objects;
-    QList<RamObject*> m_objectsList;
-
-    // Object connections (to detect changes)
-    QMap<QString, QList<QMetaObject::Connection>> m_connections;
+    QMap<QString, RO*> m_objects;
+    QList<RO*> m_objectList;
 
     // UTILS
-    virtual void connectObject(RamObject *obj);
-    int objRow(RamObject *obj);
-
-    // Used for perf, sort only when needed
-    bool m_sorted = true;
+    virtual void connectObject(RO *obj);
+    int objRow(RO *obj);
 
 private slots:
     // Emits dataChanged() and headerChanged()
-    void objectChanged(RamObject *obj);
-    void objectInserted(const QModelIndex &parent, int first, int last);
-    void objectRemoved(const QModelIndex &parent, int first, int last);
+    void objectChanged(RO *obj);
+
+    /**
+     * @brief listChanged monitors the list to save it to the database
+     */
+    void listChanged();
 
 private:
-    QString m_shortName;
-    QString m_name;
+    void construct(QObject *parent);
+    void connectEvents();
+
+
+    QString m_uuid;
 
     bool m_updatingOrders = false;
 
 };
+
+class RamObject;
 
 bool objectSorter(RamObject *a, RamObject *b);
 bool indexSorter(QModelIndex a, QModelIndex b);

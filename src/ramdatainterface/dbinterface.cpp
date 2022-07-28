@@ -22,14 +22,52 @@ void DBInterface::setOnline()
     setConnectionStatus(NetworkUtils::Connecting, "Connecting to the Ramses Server...");
 }
 
+void DBInterface::createObject(QString uuid, QString table, QJsonObject data)
+{
+    m_ldi->createObject(uuid, table, data);
+}
+
+QJsonObject DBInterface::objectData(QString uuid, QString table)
+{
+    return m_ldi->objectData(uuid, table);
+}
+
+void DBInterface::setObjectData(QString uuid, QString table, QJsonObject data)
+{
+    m_ldi->setObjectData(uuid, table, data);
+}
+
+void DBInterface::removeObject(QString uuid, QString table)
+{
+    m_ldi->removeObject(uuid, table);
+}
+
+void DBInterface::restoreObject(QString uuid, QString table)
+{
+    m_ldi->restoreObject(uuid, table);
+}
+
+bool DBInterface::isRemoved(QString uuid, QString table)
+{
+    return m_ldi->isRemoved(uuid, table);
+}
+
 const QString &DBInterface::dataFile() const
 {
     return m_ldi->dataFile();
 }
 
-void DBInterface::setDataFile(const QString &file)
+ServerConfig DBInterface::setDataFile(const QString &file)
 {
-    m_ldi->setDataFile(file);
+    ServerConfig config = m_ldi->setDataFile(file);
+    // Set the new server params
+    if (config.address != "")
+    {
+        m_rsi->setServerAddress(config.address);
+        m_rsi->setTimeout(config.timeout);
+        m_rsi->setSsl(config.useSsl);
+    }
+    return config;
 }
 
 DBInterface::DBInterface(QObject *parent) : DuQFLoggerObject("Database Interface", parent)
@@ -43,16 +81,6 @@ DBInterface::DBInterface(QObject *parent) : DuQFLoggerObject("Database Interface
 void DBInterface::connectEvents()
 {
     connect(m_rsi, SIGNAL(connectionStatusChanged(NetworkUtils::NetworkStatus)), this, SLOT(serverConnectionStatusChanged(NetworkUtils::NetworkStatus)));
-}
-
-const QString &DBInterface::serverAddress() const
-{
-    return m_rsi->serverAddress();
-}
-
-void DBInterface::setServerAddress(const QString &newServerAddress)
-{
-    m_rsi->setServerAddress(newServerAddress);
 }
 
 NetworkUtils::NetworkStatus DBInterface::connectionStatus() const

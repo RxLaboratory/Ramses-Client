@@ -30,6 +30,11 @@ void RamServerInterface::setSsl(bool useSsl)
     emit sslChanged(m_ssl);
 }
 
+void RamServerInterface::setTimeout(int newTimeout)
+{
+    m_timeout = newTimeout;
+}
+
 const QString &RamServerInterface::serverVersion() const
 {
     return m_serverVersion;
@@ -375,8 +380,7 @@ bool RamServerInterface::waitPing(bool force)
     // If offline, we need to get online
     if (m_status == NetworkUtils::Offline || force) setOnline();
     //wait three seconds when connecting or set offline
-    int timeout = QSettings().value("server/timeout", 3000).toInt();
-    QDeadlineTimer t(timeout);
+    QDeadlineTimer t(m_timeout);
     while (m_status != NetworkUtils::Online)
     {
         qApp->processEvents();
@@ -511,3 +515,4 @@ QString RamServerInterface::buildFormEncodedString(QStringList args)
     }
     return q;
 }
+

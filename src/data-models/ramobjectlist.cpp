@@ -1,43 +1,51 @@
 #include "ramobjectlist.h"
 
-#include "ramstatus.h"
-#include "ramstate.h"
+#include "ramses.h"
 
-#include "ramshot.h"
+// STATIC //
 
-RamObjectList::RamObjectList(QObject *parent)
-    : QAbstractTableModel(parent)
+template<typename RO>
+RamObjectList<RO> *RamObjectList<RO>::objectList(QString uuid, bool constructNew)
 {
-    this->setObjectName( "RamObjectList" );
+    RamAbstractObject *obj = RamAbstractObject::getObject(uuid);
+    if (!obj && constructNew) return new RamObjectList(uuid);
+    return static_cast<RamObjectList*>( obj ) ;
 }
 
-RamObjectList::RamObjectList(QString shortName, QString name, QObject *parent)
-    : QAbstractTableModel(parent)
-{
-    m_shortName = shortName;
-    m_name = name;
+// PUBLIC //
 
-    this->setObjectName( "RamObjectList" );
+template<typename RO>
+RamObjectList<RO>::RamObjectList(QString shortName, QString name, QObject *parent):
+    QAbstractTableModel(parent),
+    RamAbstractObject(shortName, name, ObjectList)
+
+{
+    construct(parent);
 }
 
-int RamObjectList::rowCount(const QModelIndex & parent) const
+// QAbstractTableModel Reimplementation
+
+template<typename RO>
+int RamObjectList<RO>::rowCount(const QModelIndex & parent) const
 {
     Q_UNUSED(parent);
-    return m_objectsList.count();
+    return m_objectList.count();
 }
 
-int RamObjectList::columnCount(const QModelIndex & parent) const
+template<typename RO>
+int RamObjectList<RO>::columnCount(const QModelIndex & parent) const
 {
     Q_UNUSED(parent);
     return 1;
 }
 
-QVariant RamObjectList::data(const QModelIndex &index, int role) const
+template<typename RO>
+QVariant RamObjectList<RO>::data(const QModelIndex &index, int role) const
 {
     Q_UNUSED(role);
 
     // Pass the pointer as an int to our delegate
-    RamObject *obj = m_objectsList.at(index.row());
+    RO *obj = m_objectList.at(index.row());
 
     if (role == Qt::DisplayRole) return obj->name();
 
@@ -45,343 +53,136 @@ QVariant RamObjectList::data(const QModelIndex &index, int role) const
     {
         QString statusTip = QString(obj->shortName() % " | " % obj->name());
         // If it's a shot, let's add the duration
-        RamShot *s = reinterpret_cast<RamShot*>(obj);
-        if (s)
+        if (obj->objectType() == RamAbstractObject::Shot)
         {
-            statusTip += " | " % QString::number(s->duration(), 'f', 2) % "s";
+            statusTip += " | " % QString::number(obj->duration(), 'f', 2) % "s";
         }
         return statusTip;
     }
 
     if (role == Qt::ToolTipRole) {
         QString toopTip = obj->shortName() % " | " % obj->name();
-        // If it's a shot, add the duration
-        RamShot *s = reinterpret_cast<RamShot*>(obj);
-        if (s)
+        // If it's a shot, let's add the duration
+        if (obj->objectType() == RamAbstractObject::Shot)
         {
-            toopTip += "\n" % QString::number(s->duration(), 'f', 2) % "s";
+            toopTip += "\n" % QString::number(obj->duration(), 'f', 2) % "s";
         }
         toopTip += "\n" % obj->comment();
         return  toopTip;
     }
 
-    if (role == Qt::InitialSortOrderRole) return obj->order();
-
     quintptr iptr = reinterpret_cast<quintptr>(obj);
     return iptr;
 }
 
-QVariant RamObjectList::headerData(int section, Qt::Orientation orientation, int role) const
+template<typename RO>
+QVariant RamObjectList<RO>::headerData(int section, Qt::Orientation orientation, int role) const
 {
     if(orientation == Qt::Vertical)
     {
         if ( role == Qt::DisplayRole )
-            return m_objectsList.at( section )->shortName();
+            return m_objectList.at( section )->shortName();
         if ( role == Qt::UserRole )
-            return m_objectsList.at( section )->uuid();
+            return m_objectList.at( section )->uuid();
     }
     return QAbstractTableModel::headerData(section, orientation, role);
 }
 
-void RamObjectList::sort(int column, Qt::SortOrder order)
+template<typename RO>
+void RamObjectList<RO>::sort(int column, Qt::SortOrder order)
 {
     Q_UNUSED(column)
     Q_UNUSED(order)
 
-    if (m_sorted) return;
-    std::sort(m_objectsList.begin(), m_objectsList.end(), objectSorter);
-
-    m_sorted = true;
+    std::sort(m_objectList.begin(), m_objectList.end(), objectSorter);
 }
 
-void RamObjectList::objectChanged(RamObject *obj)
+// List editing
+
+template<typename RO>
+void RamObjectList<RO>::clear(bool removeObjects)
 {
-    // Get row
-    int row = objRow(obj);
-    if (row < 0) return;
-    if (row >= rowCount()) return;
+    beginResetModel();
 
-    QModelIndex index = createIndex(row,0);
-    emit dataChanged(index, index, {});
-    emit headerDataChanged(Qt::Vertical, row, row);
-    emit objectDataChanged(obj);
-}
-
-void RamObjectList::objectInserted(const QModelIndex &parent, int first, int last)
-{
-    Q_UNUSED(parent)
-
-    for (int i = first; i <= last; i++)
+    // disconnect and remove objects
+    for (int i = 0; i < m_objectList.count(); i++)
     {
-        emit objectInserted( m_objectsList.at(i) );
+        RO *o = m_objectList.at(i);
+        if (removeObjects) o->remove();
+        disconnect(o, nullptr, this, nullptr);
     }
+
+    m_objectList.clear();
+    m_objects.clear();
+
+    endResetModel();
 }
 
-void RamObjectList::objectRemoved(const QModelIndex &parent, int first, int last)
-{
-    Q_UNUSED(parent)
-
-    for (int i = first; i <= last; i++)
-    {
-        emit objectRemoved( m_objectsList.at(i) );
-    }
-}
-
-const QString &RamObjectList::name() const
-{
-    return m_name;
-}
-
-void RamObjectList::setName(const QString &newName)
-{
-    m_name = newName;
-}
-
-const QString &RamObjectList::shortName() const
-{
-    return m_shortName;
-}
-
-void RamObjectList::setShortName(const QString &newShortName)
-{
-    m_shortName = newShortName;
-}
-
-RamObject *RamObjectList::fromUuid(QString uuid) const
-{
-    return m_objects.value(uuid, nullptr);
-}
-
-RamObject *RamObjectList::fromName(QString shortName, QString name) const
-{
-    QMapIterator<QString, RamObject*> i(m_objects);
-    while (i.hasNext()) {
-        i.next();
-        RamObject *o = i.value();
-        if (o->shortName() == shortName)
-        {
-            if (name == "") return o;
-            if (o->name() == name) return o;
-        }
-    }
-    return nullptr;
-}
-
-void RamObjectList::connectObject(RamObject *obj)
-{
-    QList<QMetaObject::Connection> c;
-    c << connect( obj, SIGNAL(removed(RamObject*)), this, SLOT(removeAll(RamObject*)));
-    c << connect( obj, SIGNAL(changed(RamObject*)), this, SLOT(objectChanged(RamObject*)));
-    m_connections[obj->uuid()] = c;
-}
-
-int RamObjectList::objRow(RamObject *obj)
-{
-    for (int i = m_objectsList.count() - 1; i >= 0; i--)
-    {
-        if ( m_objectsList.at(i)->is(obj) ) return i;
-    }
-    return -1;
-}
-
-void RamObjectList::append(RamObject *obj)
-{
-
-    if (!obj) return;
-    if (contains(obj)) return;
-
-    insertObject(this->m_objectsList.count(), obj);
-}
-
-void RamObjectList::insertObject(int i, RamObject *obj)
+template<typename RO>
+void RamObjectList<RO>::insertObject(int i, RO *obj)
 {
     if (contains(obj)) return;
 
     beginInsertRows(QModelIndex(), i, i);
 
-    m_objectsList.insert(i , obj);
+    m_objectList.insert(i , obj);
     m_objects[obj->uuid()] = obj;
     connectObject(obj);
 
-    if (obj->order() == -1)
-    {
-        QSignalBlocker b(obj);
-        obj->setOrder(i);
-        obj->update();
-    }
-
     m_sorted = false;
+
     endInsertRows();
 }
 
-void RamObjectList::clear()
+template<typename RO>
+void RamObjectList<RO>::append(RO *obj)
 {
-    beginResetModel();
 
-    m_objectsList.clear();
-    m_objects.clear();
+    if (!obj) return;
+    if (contains(obj)) return;
 
-    // Disconnect all
-    QMapIterator<QString, QList<QMetaObject::Connection>> i(m_connections);
-    while (i.hasNext()) {
-        i.next();
-        QList<QMetaObject::Connection> c = i.value();
-        while(!c.isEmpty()) disconnect(c.takeLast());
-    }
-    m_connections.clear();
-
-    m_sorted = true;
-    endResetModel();
+    insertObject(this->m_objectList.count(), obj);
 }
 
-void RamObjectList::deleteAll()
-{
-    beginResetModel();
-
-    // Disconnect all
-    QMapIterator<QString, QList<QMetaObject::Connection>> i(m_connections);
-    while (i.hasNext()) {
-        i.next();
-        QList<QMetaObject::Connection> c = i.value();
-        while(!c.isEmpty()) disconnect(c.takeLast());
-    }
-    m_connections.clear();
-
-    while( !m_objectsList.isEmpty() ){
-        RamObject *obj = m_objectsList.takeLast();
-        // Remove from map
-        m_objects.remove(obj->uuid());
-        // Remove / Delete
-        obj->remove();
-    }
-
-    m_sorted = true;
-    endResetModel();
-}
-
-RamObject *RamObjectList::at(int i) const
-{
-    return m_objectsList.at(i);
-}
-
-RamObject *RamObjectList::last() const
-{
-    if (m_objectsList.count() == 0) return nullptr;
-    return m_objectsList.last();
-}
-
-QList<RamObject *> RamObjectList::toList() const
-{
-    return m_objectsList;
-}
-
-void RamObjectList::removeAt(int i)
-{
-    takeObject(i);
-}
-
-void RamObjectList::removeFirst()
-{
-    if (m_objects.count() > 0) removeAt(0);
-}
-
-void RamObjectList::removeLast()
-{
-    if (m_objects.count() > 0) removeAt(m_objects.count() - 1);
-}
-
-RamObject *RamObjectList::takeObject(int i)
-{
-    beginRemoveRows(QModelIndex(), i, i);
-
-    // take from list
-    RamObject *obj = m_objectsList.takeAt(i);
-
-    // remove from map
-    if( m_objects.contains(obj->uuid()) )m_objects.remove(obj->uuid());
-
-    // disconnect
-    if (m_connections.contains(obj->uuid()))
-    {
-        QList<QMetaObject::Connection> c = m_connections.take(obj->uuid());
-        while (!c.isEmpty()) disconnect( c.takeLast() );
-    }
-
-    endRemoveRows();
-    return obj;
-}
-
-QList<RamObject*> RamObjectList::removeIndices(QModelIndexList indices)
+template<typename RO>
+QList<RO*> RamObjectList<RO>::removeIndices(QModelIndexList indices)
 {
     std::sort(indices.begin(), indices.end(), indexSorter);
 
-    QList<RamObject*> objs;
+    QList<RO*> objs;
 
     for( int i = indices.count() -1; i >= 0; i--)
     {
         QModelIndex index = indices.at(i);
         quintptr iptr = index.data(Qt::UserRole).toULongLong();
-        RamObject *o = reinterpret_cast<RamObject*>( iptr );
+        RO *o = reinterpret_cast<RO*>( iptr );
         objs << o;
         removeAll(o);
     }
     return objs;
 }
 
-bool RamObjectList::moveRow(const QModelIndex &sourceParent, int sourceRow, const QModelIndex &destinationParent, int destinationChild)
+template<typename RO>
+RO *RamObjectList<RO>::takeObject(int i)
 {
-    Q_UNUSED(sourceParent)
-    Q_UNUSED(destinationParent)
+    beginRemoveRows(QModelIndex(), i, i);
 
-    int dest = destinationChild;
-    if (dest == sourceRow + 1) dest++;
+    // take from list
+    RO *obj = m_objectList.takeAt(i);
+    disconnect(obj, nullptr, this, nullptr);
 
-    qDebug() << sourceRow;
-    qDebug() << dest;
+    // remove from map
+    if( m_objects.contains(obj->uuid()) ) m_objects.remove(obj->uuid());
 
-    if (!beginMoveRows(sourceParent, sourceRow, sourceRow, destinationParent, dest))
-        return false;
-
-    m_objectsList.move(sourceRow, destinationChild);
-    m_objectsList.at(destinationChild)->move(destinationChild);
-
-    endMoveRows();
-    emit orderChanged();
-
-    return true;
+    endRemoveRows();
+    return obj;
 }
 
-bool RamObjectList::moveRows(const QModelIndex &sourceParent, int sourceRow, int count, const QModelIndex &destinationParent, int destinationChild)
-{
-    Q_UNUSED(sourceParent)
-    Q_UNUSED(destinationParent)
-
-    int dest = destinationChild;
-    if (dest > sourceRow )
-        while (dest <= sourceRow + count )
-            dest++;
-
-    if (!beginMoveRows(sourceParent, sourceRow, sourceRow + count - 1, destinationParent, dest))
-        return false;
-
-    const int fromRow = destinationChild < sourceRow ? (sourceRow + count - 1) : sourceRow;
-
-    while(count--)
-    {
-       m_objectsList.move(fromRow, destinationChild);
-       m_objectsList.at(destinationChild)->move(destinationChild);
-    }
-
-    endMoveRows();
-    emit orderChanged();
-
-    return true;
-}
-
-RamObject *RamObjectList::takeFromUuid(QString uuid)
+template<typename RO>
+RO *RamObjectList<RO>::takeObject(QString uuid)
 {
     // get from map
-    RamObject *obj = m_objects.value(uuid, nullptr);
+    RO *obj = m_objects.value(uuid, nullptr);
     if (!obj) return nullptr;
 
     // get index from list to remove
@@ -393,38 +194,11 @@ RamObject *RamObjectList::takeFromUuid(QString uuid)
     return nullptr;
 }
 
-int RamObjectList::count() const
-{
-    return m_objects.count();
-}
-
-bool RamObjectList::contains(RamObject *obj) const
-{
-    return contains(obj->uuid());
-}
-
-bool RamObjectList::contains(QString uuid) const
-{
-    return m_objects.contains( uuid );
-}
-
-void RamObjectList::removeAll(RamObject *obj)
-{
-    int row = objRow(obj);
-    if (row<0) return;
-
-    takeObject(row);
-}
-
-void RamObjectList::sort()
-{
-    sort(0);
-}
-
-void RamObjectList::removeAll(QString uuid)
+template<typename RO>
+void RamObjectList<RO>::removeAll(QString uuid)
 {
     // get from map
-    RamObject *obj = m_objects.value(uuid, nullptr);
+    RO *obj = m_objects.value(uuid, nullptr);
     if (!obj) return;
 
     int row = objRow(obj);
@@ -433,13 +207,150 @@ void RamObjectList::removeAll(QString uuid)
     takeObject(row);
 }
 
-bool objectSorter(RamObject *a, RamObject *b)
+template<typename RO>
+void RamObjectList<RO>::removeAll(RO *obj)
+{
+    int row = objRow(obj);
+    if (row<0) return;
+
+    takeObject(row);
+}
+
+// List information
+
+template<typename RO>
+bool RamObjectList<RO>::contains(RO *obj) const
+{
+    return contains(obj->uuid());
+}
+
+template<typename RO>
+bool RamObjectList<RO>::contains(QString uuid) const
+{
+    return m_objects.contains( uuid );
+}
+
+template<typename RO>
+RO *RamObjectList<RO>::fromUuid(QString uuid) const
+{
+    return m_objects.value(uuid, nullptr);
+}
+
+template<typename RO>
+RO *RamObjectList<RO>::fromName(QString shortName, QString name) const
+{
+    for (int i = 0; i < m_objectList.count(); i++)
+    {
+        RO *o = m_objectList.at(i);
+        if (o->shortName() == shortName)
+        {
+            if (name == "") return o;
+            if (o->name() == name) return o;
+        }
+    }
+
+    return nullptr;
+}
+
+template<typename RO>
+RO *RamObjectList<RO>::at(int i) const
+{
+    return m_objectList.at(i);
+}
+
+// PUBLIC SLOTS //
+
+template<typename RO>
+void RamObjectList<RO>::sort()
+{
+    sort(0);
+}
+
+// PROTECTED //
+
+template<typename RO>
+RamObjectList<RO>::RamObjectList(QString uuid, QObject *parent):
+    QAbstractTableModel(parent),
+    RamAbstractObject(uuid, ObjectList)
+{
+    construct();
+    // Populate the list
+    QJsonObject d = RamAbstractObject::data();
+    QJsonArray arr = d.value("list").toArray();
+    for (int i = 0; i < arr.count(); i++)
+    {
+        QString uuid = arr.at(i).toString();
+        RO *obj = RO::getObject(uuid, true);
+        append(obj);
+    }
+}
+
+template<typename RO>
+void RamObjectList<RO>::connectObject(RO *obj)
+{
+    connect( obj, SIGNAL(removed(RamObject*)), this, SLOT(removeAll(RamObject*)));
+    connect( obj, SIGNAL(changed(RamObject*)), this, SLOT(objectChanged(RamObject*)));
+}
+
+template<typename RO>
+int RamObjectList<RO>::objRow(RO *obj)
+{
+    for (int i = m_objectList.count() - 1; i >= 0; i--)
+    {
+        if ( m_objectList.at(i)->is(obj) ) return i;
+    }
+    return -1;
+}
+
+// PRIVATE SLOTS //
+
+template<typename RO> void RamObjectList<RO>::objectChanged(RO *obj)
+{
+    // Get row
+    int row = objRow(obj);
+    if (row < 0) return;
+    if (row >= rowCount()) return;
+
+    QModelIndex index = createIndex(row,0);
+    emit dataChanged(index, index, {});
+    emit headerDataChanged(Qt::Vertical, row, row);
+}
+
+template<typename RO>
+void RamObjectList<RO>::listChanged()
+{
+    // Convert to json array and save
+    QJsonArray arr;
+    for(int i = 0; i < m_objectList.count(); i++)
+    {
+        arr.append( m_objectList.at(i)->uuid() );
+    }
+    insertData("list", arr);
+}
+
+// PRIVATE //
+
+template<typename RO> void RamObjectList<RO>::construct(QObject *parent)
+{
+    this->setObjectName(objectTypeName());
+    if (!parent) setParent(Ramses::instance());
+}
+
+template<typename RO> void RamObjectList<RO>::connectEvents()
+{
+    connect(this, &QAbstractTableModel::rowsInserted, this, &RamObjectList::listChanged);
+    connect(this, &QAbstractTableModel::rowsRemoved, this, &RamObjectList::listChanged);
+}
+
+// SORTERS //
+
+template<typename RO> bool objectSorter(RamObject *a, RamObject *b)
 {
     if (a->order() != b->order()) return a->order() < b->order();
     else return a->shortName() < b->shortName();
 }
 
-bool indexSorter(QModelIndex a, QModelIndex b)
+template<typename RO> bool indexSorter(QModelIndex a, QModelIndex b)
 {
     return a.row() < b.row();
 }

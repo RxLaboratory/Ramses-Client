@@ -9,12 +9,30 @@ LocalDataInterface *LocalDataInterface::instance()
     return _instance;
 }
 
+void LocalDataInterface::createObject(QString uuid, QString table, QJsonObject data)
+{
+    QDateTime modified = QDateTime::currentDateTimeUtc();
+    QJsonDocument doc = QJsonDocument(data);
+
+
+    QSqlDatabase db = QSqlDatabase::database("localdata");
+    QSqlQuery query = QSqlQuery(db);
+
+    query.prepare("INSERT INTO :table (uuid, data, modified, removed) VALUES (:uuid, :data, :modified, 0);");
+    query.bindValue(":table", table);
+    query.bindValue(":uuid", uuid);
+    query.bindValue(":data", doc.toJson(QJsonDocument::Compact));
+    query.bindValue(":modified", modified.toString("yyy-MM-dd hh:mm:ss:zzz"));
+
+    query.exec();
+}
+
 QJsonObject LocalDataInterface::objectData(QString uuid, QString table)
 {
     QSqlDatabase db = QSqlDatabase::database("localdata");
     QSqlQuery query = QSqlQuery(db);
 
-    query.prepare("SELECT data FROM :table WHERE uuid = :uuid");
+    query.prepare("SELECT data FROM :table WHERE uuid = :uuid;");
     query.bindValue(":table", table);
     query.bindValue(":uuid", uuid);
 
@@ -32,14 +50,15 @@ QJsonObject LocalDataInterface::objectData(QString uuid, QString table)
 void LocalDataInterface::setObjectData(QString uuid, QString table, QJsonObject data)
 {
     QDateTime modified = QDateTime::currentDateTimeUtc();
+    QJsonDocument doc = QJsonDocument(data);
 
     QSqlDatabase db = QSqlDatabase::database("localdata");
     QSqlQuery query = QSqlQuery(db);
 
-    query.prepare("UPDATE :table SET data = :data, modified = :modified WHERE uuid = :uuid");
+    query.prepare("UPDATE :table SET data = :data, modified = :modified WHERE uuid = :uuid;");
     query.bindValue(":table", table);
     query.bindValue(":uuid", uuid);
-    query.bindValue(":data", data);
+    query.bindValue(":data", doc.toJson(QJsonDocument::Compact));
     query.bindValue(":modified", modified.toString("yyy-MM-dd hh:mm:ss:zzz"));
 
     query.exec();
@@ -51,7 +70,7 @@ void LocalDataInterface::removeObject(QString uuid, QString table)
     QSqlQuery query = QSqlQuery(db);
 
     // Set removed to 0
-    query.prepare("UPDATE :table SET removed = 0 WHERE uuid = :uuid");
+    query.prepare("UPDATE :table SET removed = 0 WHERE uuid = :uuid;");
     query.bindValue(":table", table);
     query.bindValue(":uuid", uuid);
 
@@ -64,12 +83,34 @@ void LocalDataInterface::restoreObject(QString uuid, QString table)
     QSqlQuery query = QSqlQuery(db);
 
     // Set removed to 1
-    query.prepare("UPDATE :table SET removed = 1 WHERE uuid = :uuid");
+    query.prepare("UPDATE :table SET removed = 1 WHERE uuid = :uuid;");
     query.bindValue(":table", table);
     query.bindValue(":uuid", uuid);
+
+    query.exec();
 }
 
-ServerConfig LocalDataInterface::serverConfig()
+bool LocalDataInterface::isRemoved(QString uuid, QString table)
+{
+    QSqlDatabase db = QSqlDatabase::database("localdata");
+    QSqlQuery query = QSqlQuery(db);
+
+    query.prepare("SELECT removed FROM :table WHERE uuid = :uuid;");
+    query.bindValue(":table", table);
+    query.bindValue(":uuid", uuid);
+
+    query.exec();
+
+
+    if (query.first())
+    {
+        return query.value(0).toBool();
+    }
+
+    return true;
+}
+
+ServerConfig LocalDataInterface::serverConfig() const
 {
     QSqlDatabase db = QSqlDatabase::database("localdata");
     QSqlQuery query = db.exec("SELECT address, useSsl, updateDelay, timeout, path FROM RamServer;");
@@ -91,7 +132,7 @@ const QString &LocalDataInterface::dataFile() const
     return m_dataFile;
 }
 
-void LocalDataInterface::setDataFile(const QString &file)
+ServerConfig LocalDataInterface::setDataFile(const QString &file)
 {
     QSqlDatabase db = QSqlDatabase::database("localdata");
     // Set the SQLite file
@@ -99,6 +140,8 @@ void LocalDataInterface::setDataFile(const QString &file)
     // Open
     db.setDatabaseName(file);
     if (!db.open()) log("Can't save data to the disk.", DuQFLog::Fatal);
+
+    return serverConfig();
 }
 
 LocalDataInterface::LocalDataInterface()

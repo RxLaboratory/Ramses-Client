@@ -44,6 +44,11 @@ public:
      */
     void setSsl(bool useSsl);
     /**
+     * @brief setTimeout sets how long to wait for the server on ping, in seconds
+     * @param newTimeout the new timeout
+     */
+    void setTimeout(int newTimeout);
+    /**
      * @brief The version of the Ramses Server (if we've been online at least once).
      * @return
      */
@@ -224,6 +229,10 @@ private:
      * @brief The version of the server we're connected to
      */
     QString m_serverVersion = "";
+    /**
+     * @brief m_timeout How long to wait for the server on ping, in seconds
+     */
+    int m_timeout = 3;
 };
 
 #endif // RAMSERVERINTERFACE_H
