@@ -5,52 +5,41 @@
 #include "assetgroupeditwidget.h"
 #include "templateassetgroupeditwidget.h"
 
-RamAssetGroup::RamAssetGroup(QString shortName, QString name, QString uuid) :
-    RamObject(shortName, name, uuid, Ramses::instance())
+// STATIC //
+
+RamAssetGroup *RamAssetGroup::assetGroup(QString uuid, bool constructNew)
 {
-    m_icon = ":/icons/asset-group";
-    m_editRole = Admin;
-
-    this->setObjectType(AssetGroup);
-    m_project = nullptr;
-    m_template = true;
-    if (m_template) m_dbi->createTemplateAssetGroup(m_shortName, m_name, m_uuid);
-
-    this->setObjectName( "RamAssetGroup (template) " + m_shortName );
+    RamObject *obj = RamObject::obj(uuid);
+    if (!obj && constructNew) return new RamAssetGroup( uuid );
+    return qobject_cast<RamAssetGroup*>( obj );
 }
 
-RamAssetGroup::RamAssetGroup(QString shortName, RamProject *project, QString name, QString uuid):
-    RamObject(shortName, name, uuid, project)
+// PUBLIC //
+
+RamAssetGroup::RamAssetGroup(QString shortName, QString name) :
+    RamObject(shortName, name, AssetGroup)
 {
-    m_icon = ":/icons/asset-group";
-    m_editRole = ProjectAdmin;
-
-    this->setObjectType(AssetGroup);
-    m_project = project;
-    m_template = false;
-    m_dbi->createAssetGroup(m_shortName, m_name, m_project->uuid(), m_uuid);
-
-    m_assets = new RamObjectFilterModel(this);
-    m_assets->setSourceModel(project->assets());
-    m_assets->setFilterUuid( m_uuid );
-
-    this->setObjectName( "RamAssetGroup " + m_shortName);
+    construct();
+    insertData("template", true);
 }
 
-RamAssetGroup::~RamAssetGroup()
+RamAssetGroup::RamAssetGroup(QString shortName, QString name, RamProject *project):
+    RamObject(shortName, name, AssetGroup, project)
 {
-
+    construct();
+    insertData("template", false);
+    setProject(project);
 }
 
 bool RamAssetGroup::isTemplate() const
 {
-    return m_template;
+    return data().value("template").toBool(true);
 }
 
 RamAssetGroup *RamAssetGroup::createFromTemplate(RamProject *project)
 {
     // Create
-    RamAssetGroup *assetGroup = new RamAssetGroup(m_shortName, project, m_name);
+    RamAssetGroup *assetGroup = new RamAssetGroup(shortName(), name(), project);
     return assetGroup;
 }
 
@@ -64,43 +53,57 @@ RamProject *RamAssetGroup::project() const
     return m_project;
 }
 
-RamAssetGroup *RamAssetGroup::assetGroup(QString uuid)
-{
-    return qobject_cast<RamAssetGroup*>( RamObject::obj(uuid));
-}
-
-void RamAssetGroup::update()
-{
-    if (!m_dirty) return;
-    RamObject::update();
-    if (m_template) m_dbi->updateTemplateAssetGroup(m_uuid, m_shortName, m_name, m_comment);
-    else m_dbi->updateAssetGroup(m_uuid, m_shortName, m_name, m_comment);
-}
-
 void RamAssetGroup::edit(bool show)
 {
-    if (!m_editReady)
+    if (!ui_editWidget)
     {
-        ObjectEditWidget *w;
         if (this->isTemplate())
-            w = new TemplateAssetGroupEditWidget(this);
+            setEditWidget(new TemplateAssetGroupEditWidget(this));
         else
-            w = new AssetGroupEditWidget(this);
-        setEditWidget(w);
-        m_editReady = true;
+            setEditWidget(new AssetGroupEditWidget(this));
     }
+
     if (show) showEdit();
 }
 
-void RamAssetGroup::removeFromDB()
+// PROTECTED //
+
+RamAssetGroup::RamAssetGroup(QString uuid):
+    RamObject(uuid, AssetGroup)
 {
-    if (m_template) m_dbi->removeTemplateAssetGroup(m_uuid);
-    else m_dbi->removeAssetGroup(m_uuid);
+    construct();
+
+    QJsonObject d = data();
+
+    QString projUuid = d.value("project").toString();
+
+    if (!d.value("template").toBool(true) && projUuid != "")
+    {
+        setProject( RamProject::project(projUuid, true) );
+    }
 }
 
 QString RamAssetGroup::folderPath() const
 {
-    if (m_template) return "";
-    return m_project->path(RamObject::AssetsFolder) + "/" + m_name;
+    if (isTemplate()) return "";
+    return m_project->path(RamObject::AssetsFolder) + "/" + name();
+}
+
+// PRIVATE //
+
+void RamAssetGroup::construct()
+{
+    m_icon = ":/icons/asset-group";
+    m_editRole = Admin;
+    m_project = nullptr;
+    m_assets = new RamObjectFilterModel(this);
+}
+
+void RamAssetGroup::setProject(RamProject *project)
+{
+    m_project = project;
+    m_assets->setSourceModel( m_project->assets() );
+    m_assets->setFilterUuid( m_uuid );
+    this->setParent( m_project );
 }
 
