@@ -46,18 +46,6 @@ void RamState::setCompletionRatio(int completionRatio)
     emit dataChanged(this);
 }
 
-void RamState::update()
-{
-    if(!m_dirty) return;
-    RamObject::update();
-    m_dbi->updateState(m_uuid, m_shortName, m_name, _color.name(), QString::number(_completionRatio), m_comment);
-}
-
-void RamState::removeFromDB()
-{
-    m_dbi->removeState(m_uuid);
-}
-
 void RamState::edit(bool show)
 {
     if (!m_editReady)

@@ -3,22 +3,85 @@
 #include "ramses.h"
 #include "projecteditwidget.h"
 
-RamProject::RamProject(QString shortName, QString name, QString uuid):
-    RamObject(shortName, name, uuid, Ramses::instance())
-{
-    m_icon = ":/icons/project";
-    m_editRole = Admin;
+// STATIC
 
-    setObjectType(Project);
-    m_sequences = new RamObjectList("SEQS", "Sequences", this);
-    m_assetGroups = new RamObjectList("AGS", "Asset Groups", this);
-    m_pipeline = new RamObjectList("PPLN", "Pipeline", this);
-    m_steps = new RamObjectList("STPS", "Steps", this);
+RamProject *RamProject::project(QString uuid, bool constructNew)
+{
+    RamObject *obj = RamObject::obj(uuid);
+    if (!obj && constructNew) return new RamProject( uuid );
+    return qobject_cast<RamProject*>( obj );
+}
+
+RamProject::RamProject(QString uuid):
+    RamObject(uuid, Project)
+{
+    construct();
+
+    // Populate lists
+
+    QJsonObject d = data();
+
+    QJsonArray seqArray = d.value("sequences").toArray();
+    for (int i = 0; i < seqArray.count(); i++)
+    {
+        RamSequence *seq = RamSequence::sequence(seqArray.at(i).toString(), true);
+        m_sequences->append(seq);
+    }
+
+    QJsonArray agArray = d.value("assetGroups").toArray();
+    for (int i = 0; i < agArray.count(); i++)
+    {
+        RamAssetGroup *ag = RamAssetGroup::assetGroup(agArray.at(i).toString(), true);
+        m_assetGroups->append(ag);
+    }
+
+    QJsonArray pArray = d.value("pipeLine").toArray();
+    for (int i = 0; i < pArray.count(); i++)
+    {
+        RamPipe *p = RamPipe::getObject(pArray.at(i).toString(), true);
+        m_pipeline->append(p);
+    }
+
+    QJsonArray sArray = d.value("steps").toArray();
+    for (int i = 0; i < pArray.count(); i++)
+    {
+        RamStep *s = RamStep::step(sArray.at(i).toString(), true);
+        m_steps->append(s);
+    }
+
+
+
+
+
     m_pipeFiles = new RamObjectList("PPFLS", "Pipe files", this);
     m_shots = new RamItemTable(RamStep::ShotProduction, m_steps, "SHOTS", "Shots", this);
     m_assets = new RamItemTable(RamStep::AssetProduction, m_steps, "ASSETS", "Assets", this);
     m_users = new RamObjectList("USRS", "Users", this);
     m_scheduleComments = new RamObjectList("SCHDLCOMTS", "Schedule comments", this);
+}
+
+// PUBLIC //
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+RamProject::RamProject(QString shortName, QString name):
+    RamObject(shortName, name, uuid, Ramses::instance())
+{
+
+
+    setObjectType(Project);
+
 
     m_dbi->createProject(m_shortName, m_name, m_uuid);
 
@@ -39,10 +102,7 @@ RamProject::RamProject(QString shortName, QString name, QString uuid):
     connect(m_users, SIGNAL(rowsAboutToBeRemoved(QModelIndex,int,int)), this, SLOT(userUnassigned(QModelIndex,int,int)));
 }
 
-RamProject::~RamProject()
-{
 
-}
 
 void RamProject::freezeEstimations(bool freeze, bool reCompute)
 {
@@ -177,12 +237,6 @@ bool RamProject::pathIsDefault(QString p) const
     return p == "" || p.toLower() == "auto";
 }
 
-void RamProject::update()
-{
-    if (!m_dirty) return;
-    RamObject::update();
-    m_dbi->updateProject(m_uuid, m_shortName, m_name, m_width, m_height, m_framerate, "", m_comment, m_deadline);
-}
 
 void RamProject::updatePath()
 {
@@ -191,10 +245,6 @@ void RamProject::updatePath()
     m_dbi->updateProject(m_uuid, m_shortName, m_name, m_width, m_height, m_framerate, path, m_comment, m_deadline);
 }
 
-void RamProject::removeFromDB()
-{
-    m_dbi->removeProject(m_uuid);
-}
 
 void RamProject::edit(bool show)
 {
@@ -207,19 +257,6 @@ void RamProject::edit(bool show)
     if (show) showEdit();
 }
 
-void RamProject::remove(bool updateDB)
-{
-    // Empty lists
-    m_users->clear();
-    m_shots->deleteAll();
-    m_assets->deleteAll();
-    m_assetGroups->deleteAll();
-    m_sequences->deleteAll();
-    m_pipeline->deleteAll();
-    m_pipeFiles->deleteAll();
-    m_steps->deleteAll();
-    RamObject::remove(updateDB);
-}
 
 void RamProject::computeEstimation()
 {
@@ -268,10 +305,7 @@ void RamProject::computeEstimation()
     emit estimationComputed(this);
 }
 
-RamProject *RamProject::project(QString uuid)
-{
-    return qobject_cast<RamProject*>( RamObject::obj(uuid) );
-}
+
 
 RamProject *RamProject::projectFromName(QString nameOrShortName )
 {
@@ -413,6 +447,22 @@ void RamProject::userUnassigned(const QModelIndex &parent, int first, int last)
         m_dbi->unassignUser(m_uuid, userObj->uuid());
     }
     emit dataChanged(this);
+}
+
+void RamProject::construct()
+{
+    m_icon = ":/icons/project";
+    m_editRole = Admin;
+
+    m_sequences = new RamObjectList("SEQS", "Sequences", this);
+    m_assetGroups = new RamObjectList("AGS", "Asset Groups", this);
+    m_pipeline = new RamObjectList("PPLN", "Pipeline", this);
+    m_steps = new RamObjectList("STPS", "Steps", this);
+    m_pipeFiles = new RamObjectList("PPFLS", "Pipe files", this);
+    m_shots = new RamItemTable(RamStep::ShotProduction, m_steps, "SHOTS", "Shots", this);
+    m_assets = new RamItemTable(RamStep::AssetProduction, m_steps, "ASSETS", "Assets", this);
+    m_users = new RamObjectList("USRS", "Users", this);
+    m_scheduleComments = new RamObjectList("SCHDLCOMTS", "Schedule comments", this);
 }
 
 const QString &RamProject::dbFolderPath() const

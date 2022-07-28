@@ -1,22 +1,24 @@
-1- New login page & Settings data
+1- implement all ramobjects
+	- arrivé à RamProject
+	- ramsteptatushistory:
+		- status added, changed or removed or cleared: trigger step computeEstimation if and only if it's the last one, and notify containing item to emit statusChanged
+	- reimplement herited ramobjectlist
+
+2- New login page & Settings data
 	- Create or open database
 		- create: UI to set server settings or offline, and local data path
 		- if server: connect and sync
 	- list of recent files
 	- current file server settings somewhere
 
-2- New login
+3- New login
 	- dbi login
 		- ldi login, if ok, load user and get uuid
 		- if online, rsi login using uuid
 		- if ok, set online, else setoffline and show error
   
-3- encrypt user data
+4- encrypt user data
 
-4- implement all ramobjects
-	toJson -> all attributes as JSON, using UUIDs for links
-	fromJson
-	save method -> call toJson and save to database
 
 5- Sync process
 	separate thread: send changes since last sync to server, get new data.
@@ -24,3 +26,17 @@
 		periodic sync: Sync interval: option, default, 30s
 		get online
 		get offline (voluntarily)
+		
+		
+		
+CREATE TABLE "RamUser" (
+	"id"	INTEGER NOT NULL UNIQUE,
+	"uuid"	TEXT NOT NULL UNIQUE,
+	"data"	TEXT NOT NULL DEFAULT '{}',
+	"modified"	timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	"removed"	INTEGER NOT NULL DEFAULT 0,
+	PRIMARY KEY("id" AUTOINCREMENT)
+)
+
+
+n715gU1+6?.

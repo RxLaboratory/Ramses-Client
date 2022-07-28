@@ -6,6 +6,26 @@
 #include "ramassetgroup.h"
 #include "ramscheduleentry.h"
 
+// STATIC //
+
+QMetaEnum const RamStep::m_stepTypeMeta = QMetaEnum::fromType<RamStep::Type>();
+
+const QString RamStep::stepTypeName(Type type)
+{
+    return QString(m_stepTypeMeta.valueToKey(type));
+}
+
+RamStep::Type RamStep::stepTypeFromName(QString typeName)
+{
+    if (typeName == "PreProduction") return PreProduction;
+    if (typeName == "AssetProduction") return AssetProduction;
+    if (typeName == "ShotProduction") return ShotProduction;
+    if (typeName == "PostProduction") return PostProduction;
+    if (typeName == "All") return All;
+}
+
+// PUBLIC //
+
 RamStep::RamStep(QString shortName, QString name, QString uuid) :
     RamObject(shortName, name, uuid, Ramses::instance())
 {
@@ -426,47 +446,6 @@ QList<RamObject *> RamStep::outputFileTypes()
     return fts;
 }
 
-void RamStep::update()
-{
-    if (m_orderChanged)
-    {
-        m_dbi->setStepOrder(m_uuid, m_order);
-        m_orderChanged = false;
-    }
-
-    if(!m_dirty) return;
-    RamObject::update();
-    QString type = "asset";
-    if (m_type == PostProduction) type = "post";
-    else if (m_type == PreProduction) type = "pre";
-    else if (m_type == ShotProduction) type = "shot";
-
-    if (m_template)
-        m_dbi->updateTemplateStep(m_uuid, m_shortName, m_name, type, m_comment, m_color);
-    else
-        m_dbi->updateStep(m_uuid, m_shortName, m_name, type, m_comment, m_color, m_publishSettings);
-
-    if (m_estimationChanged)
-    {
-        QString method = "shot";
-        if (m_estimationMethod == RamStep::EstimatePerSecond) method = "second";
-        QString multiplyGroupUuid = "";
-        if (m_estimationMultiplyGroup) multiplyGroupUuid = m_estimationMultiplyGroup->uuid();
-
-        if (m_template)
-            m_dbi->setTemplateStepEstimations(m_uuid, method, m_estimationVeryEasy, m_estimationEasy, m_estimationMedium, m_estimationHard, m_estimationVeryHard);
-        else
-            m_dbi->setStepEstimations(m_uuid, method, m_estimationVeryEasy, m_estimationEasy, m_estimationMedium, m_estimationHard, m_estimationVeryHard, multiplyGroupUuid);
-        m_estimationChanged = false;
-    }
-}
-
-bool RamStep::move(int index) {
-    if (!RamObject::move(index)) return false;
-    m_dbi->moveStep(m_uuid, m_order);
-    return true;
-}
-
 RamStep *RamStep::step(QString uuid)
 {
     return qobject_cast<RamStep*>( RamObject::obj(uuid) );
@@ -486,12 +465,6 @@ void RamStep::edit(bool show)
 
     }
     if (show) showEdit();
-}
-
-void RamStep::removeFromDB()
-{
-    if (m_template) m_dbi->removeTemplateStep(m_uuid);
-    else m_dbi->removeStep(m_uuid);
 }
 
 void RamStep::computeEstimation()

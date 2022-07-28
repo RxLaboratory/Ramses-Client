@@ -5,7 +5,6 @@
 
 #include "ramobject.h"
 #include "ramuser.h"
-#include "ramapplication.h"
 #include "ramworkingfolder.h"
 #include "data-models/ramobjectlist.h"
 
@@ -16,12 +15,31 @@ class RamStep : public RamObject
 {
     Q_OBJECT
 public:
-    enum Type{ PreProduction, AssetProduction, ShotProduction, PostProduction, All };
+
+    // ENUMS //
+
+    enum Type{ PreProduction,
+               AssetProduction,
+               ShotProduction,
+               PostProduction,
+               All };
     Q_ENUM(Type)
 
     enum EstimationMethod { EstimatePerShot = 0,
                             EstimatePerSecond = 1 };
     Q_ENUM(EstimationMethod)
+
+    // STATIC //
+
+    /**
+     * @brief stepTypeName gets the name of a type, as used in the Database and API classes
+     * @param type
+     * @return
+     */
+    static const QString stepTypeName(Type type);
+    static Type stepTypeFromName(QString typeName);
+
+    // OTHER //
 
     // Template (no project set)
     explicit RamStep(QString shortName, QString name = "", QString uuid = "");
@@ -104,16 +122,22 @@ signals:
     void estimationComputed(RamStep*);
 
 public slots:
-    void update() override;
-    bool move(int index) override;
     virtual void edit(bool show = true) override;
-    virtual void removeFromDB() override;
 
     void computeEstimation();
     void countAssignedDays();
 
 
 protected:
+
+    // STATIC //
+
+    /**
+     * @brief m_stepTypeMeta is used to return information from the type,
+     * like the corresponding string
+     */
+    static const QMetaEnum m_stepTypeMeta;
+
     virtual QString folderPath() const override;
 
 private slots:

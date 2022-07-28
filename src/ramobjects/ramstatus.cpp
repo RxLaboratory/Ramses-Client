@@ -194,36 +194,6 @@ RamItem *RamStatus::item() const
     return m_item;
 }
 
-void RamStatus::update()
-{
-    if(!m_dirty) return;
-    RamObject::update();
-    if (!m_state) return;
-    QString assignedUser = "NULL";
-    if (m_assignedUser) assignedUser = m_assignedUser->uuid();
-    qint64 timeSpent = -1;
-    if (m_timeSpent > 0) timeSpent = m_timeSpent;
-    QString difficulty = "medium";
-    if (m_difficulty == VeryEasy) difficulty = "veryEasy";
-    else if (m_difficulty == Easy) difficulty = "easy";
-    else if (m_difficulty == Hard) difficulty = "hard";
-    else if (m_difficulty == VeryHard) difficulty = "veryHard";
-    float estim = -1;
-    if (!m_useAutoEstimation) estim = m_goal;
-    m_dbi->updateStatus(
-                m_uuid,
-                m_state->uuid(),
-                m_comment,
-                m_version,
-                m_completionRatio,
-                m_published,
-                assignedUser,
-                timeSpent,
-                m_date,
-                difficulty,
-                estim);
-}
-
 void RamStatus::edit(bool show)
 {
     if (!m_editReady)
@@ -237,17 +207,6 @@ void RamStatus::edit(bool show)
         ui_editWidget->setObject( this );
         showEdit();
     }
-}
-
-void RamStatus::removeFromDB()
-{
-    m_dbi->removeStatus(m_uuid);
-}
-
-void RamStatus::remove(bool updateDB)
-{
-    RamObject::remove(updateDB);
-    if ( !m_state->is( Ramses::instance()->noState() ) ) m_step->computeEstimation();
 }
 
 QString RamStatus::folderPath() const

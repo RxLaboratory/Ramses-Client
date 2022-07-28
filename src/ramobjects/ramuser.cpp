@@ -103,18 +103,6 @@ bool RamUser::isStepAssigned(RamStep *step) const
     return false;
 }
 
-void RamUser::update()
-{
-    if(!m_dirty) return;
-    RamObject::update();
-    QString role = "standard";
-    if (m_role == Admin) role = "admin";
-    else if (m_role == ProjectAdmin) role = "project";
-    else if (m_role == Lead) role = "lead";
-
-    m_dbi->updateUser(m_uuid, m_shortName, m_name, role, m_comment, m_color);
-}
-
 void RamUser::updatePassword(QString c, QString n)
 {
     m_dbi->updateUserPassword(m_uuid, c, n);
@@ -134,17 +122,6 @@ void RamUser::edit(bool show)
         m_editReady = true;
     }
     if (show) showEdit();
-}
-
-void RamUser::removeFromDB()
-{
-    m_dbi->removeUser(m_uuid);
-}
-
-void RamUser::remove(bool updateDB)
-{
-    m_schedule->deleteAll();
-    RamObject::remove(updateDB);
 }
 
 void RamUser::scheduleChanged(RamObject *entryObj)

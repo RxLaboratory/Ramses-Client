@@ -21,8 +21,6 @@ public:
     static RamState *state(QString uuid);
 
 public slots:
-    void update() override;
-    virtual void removeFromDB() override;
     virtual void edit(bool show = true) override;
 
 private:

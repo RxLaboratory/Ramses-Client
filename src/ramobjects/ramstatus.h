@@ -6,8 +6,6 @@
 #include "ramuser.h"
 #include "ramstate.h"
 #include "ramstep.h"
-#include "ramfilemetadatamanager.h"
-#include "ramnamemanager.h"
 
 class RamItem;
 class StatusEditWidget;
@@ -82,10 +80,7 @@ public:
     static int daysToHours(float days);
 
 public slots:
-    void update() override;
     virtual void edit(bool show = true) override;
-    virtual void removeFromDB() override;
-    virtual void remove(bool updateDB = true) override;
 
 protected:
     virtual QString folderPath() const override;

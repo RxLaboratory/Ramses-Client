@@ -13,9 +13,22 @@
 class RamProject : public RamObject
 {
     Q_OBJECT
-public:   
-    RamProject(QString shortName, QString name = "", QString uuid = "");
-    ~RamProject();
+public:
+
+    // STATIC //
+
+    static RamProject *project(QString uuid, bool constructNew = false);
+
+    // OTHER //
+
+    RamProject(QString uuid);
+
+
+
+
+
+
+    RamProject(QString shortName, QString name);
 
     /**
      * @brief freezeEstimations stops automatic update of the estimations.
@@ -76,7 +89,7 @@ public:
      */
     QList<float> stats(RamUser *user);
 
-    static RamProject *project(QString uuid);
+
     static RamProject *projectFromName(QString nameOrShortName);
 
     const QDate &deadline() const;
@@ -93,11 +106,8 @@ signals:
     void estimationComputed(RamProject*);
 
 public slots:
-    void update() override;
     void updatePath();
-    virtual void removeFromDB() override;
     virtual void edit(bool show = true) override;
-    virtual void remove(bool updateDB = true) override;
 
     void computeEstimation();
 
@@ -109,12 +119,8 @@ private slots:
     void userUnassigned(const QModelIndex &parent, int first, int last);
 
 private:
-    QString m_folderPath;
-    QString m_dbFolderPath;
-    qreal m_framerate = 24;
-    int m_width = 1920;
-    int m_height = 1080;
-    qreal m_aspectRatio = 1.78;
+    void construct();
+
     RamObjectList *m_steps;
     RamObjectList *m_sequences;
     RamObjectList *m_assetGroups;
@@ -124,7 +130,6 @@ private:
     RamObjectList *m_pipeFiles;
     RamObjectList *m_users;
     RamObjectList *m_scheduleComments;
-    QDate m_deadline;
 
     /**
      * @brief When true, estimations won't be computed.
