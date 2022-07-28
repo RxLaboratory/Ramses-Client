@@ -3,152 +3,109 @@
 
 #include "ramproject.h"
 
-RamPipe::RamPipe(RamStep *output, RamStep *input, QString uuid):
-    RamObject("PIPE","Pipe",uuid)
+// STATIC
+
+RamPipe *RamPipe::getObject(QString uuid, bool constructNew)
 {
-    m_icon = ":/icons/connection";
-    m_editRole = ProjectAdmin;
+    RamObject *obj = RamObject::getObject(uuid);
+    if (!obj && constructNew) return new RamPipe( uuid );
+    return qobject_cast<RamPipe*>( obj );
+}
 
-    this->setObjectType(Pipe);
-    m_outputStep = output;
-    m_inputStep = input;
-    m_pipeFiles = new RamObjectList("PPFS", "Pipe files", this);
+// PUBLIC //
 
-    m_inputConnection = connect( m_inputStep, &RamStep::removed, this, &RamObject::remove);
-    m_outputConnection = connect( m_outputStep, &RamStep::removed, this, &RamObject::remove);
-    m_dbi->createPipe(output->uuid(), input->uuid(), m_uuid);
+RamPipe::RamPipe(RamStep *output, RamStep *input):
+    RamObject("PIPE","Pipe", Pipe)
+{
+    construct();
 
-    connect(m_pipeFiles, SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(pipeFileAssigned(QModelIndex,int,int)));
-    connect(m_pipeFiles, SIGNAL(rowsAboutToBeRemoved(QModelIndex,int,int)), this, SLOT(pipeFileUnassigned(QModelIndex,int,int)));
-    connect(m_pipeFiles, SIGNAL(rowsRemoved(QModelIndex,int,int)), this, SLOT(pipeFileUnassigned()));
-    connect(m_pipeFiles, SIGNAL(dataChanged(QModelIndex,QModelIndex,QVector<int>)), this, SLOT(pipeFileChanged()));
+    QJsonObject d = data();
+
+    d.insert("outputStep", output->uuid());
+    d.insert("inputStep", input->uuid());
+
+    m_pipeFiles = new RamObjectList<RamPipeFile *>("PPFS", "Pipe files", this);
+    d.insert("pipeFiles", m_pipeFiles->uuid());
+    setData(d);
 
     this->setParent( this->project() );
 
-    this->setObjectName( "RamPipe" );
-}
-
-RamPipe::~RamPipe()
-{
-
-}
-
-QString RamPipe::name() const
-{
-    QStringList n;
-    for (int i =0; i < m_pipeFiles->count(); i++)
-    {
-        n << m_pipeFiles->at(i)->name();
-    }
-    return n.join("\n");
-}
-
-void RamPipe::update()
-{
-    if (!m_dirty) return;
-    RamObject::update();
-    m_dbi->updatePipe(m_uuid, m_inputStep->uuid(), m_outputStep->uuid());
-}
-
-void RamPipe::edit(bool show)
-{
-    if (!m_editReady)
-    {
-        PipeEditWidget *w = new PipeEditWidget(this);
-        setEditWidget(w);
-        m_editReady = true;
-    }
-    if (show) showEdit();
-}
-
-void RamPipe::removeFromDB()
-{
-    m_dbi->removePipe(m_uuid);
-}
-
-void RamPipe::remove(bool updateDB)
-{
-    m_pipeFiles->clear();
-    RamObject::remove(updateDB);
+    connectEvents();
 }
 
 RamStep *RamPipe::outputStep() const
 {
-    return m_outputStep;
-}
-
-void RamPipe::setOutputStep(RamStep *outputStep)
-{
-    if (!outputStep && !m_outputStep) return;
-    if (outputStep && outputStep->is(m_outputStep)) return;
-    m_dirty = true;
-    disconnect( m_outputConnection );
-    m_outputStep = outputStep;
-    m_outputConnection = connect( m_outputStep, &RamStep::removed, this, &RamObject::remove);
-    emit dataChanged(this);
+    return RamStep::step( data().value("outputStep").toString() );
 }
 
 RamStep *RamPipe::inputStep() const
 {
-    return m_inputStep;
-}
-
-void RamPipe::setInputStep(RamStep *inputStep)
-{
-    if (!inputStep && !m_inputStep) return;
-    if (inputStep && inputStep->is(m_inputStep)) return;
-    m_dirty = true;
-    disconnect( m_inputConnection );
-    m_inputStep = inputStep;
-    m_inputConnection = connect( m_inputStep, &RamStep::removed, this, &RamObject::remove);
-    emit dataChanged(this);
+    return RamStep::step( data().value("inputStep").toString() );
 }
 
 RamProject *RamPipe::project() const
 {
-    return m_outputStep->project();
+    return outputStep()->project();
 }
 
-RamObjectList *RamPipe::pipeFiles() const
+RamObjectList<RamPipeFile *> *RamPipe::pipeFiles() const
 {
     return m_pipeFiles;
 }
 
-RamPipe *RamPipe::pipe(QString uuid)
+// PUBLIC SLOTS //
+
+void RamPipe::edit(bool show)
 {
-    return qobject_cast<RamPipe*>( RamObject::obj(uuid) );
+    if (!ui_editWidget) setEditWidget(new PipeEditWidget(this));
+
+    if (show) showEdit();
 }
 
-void RamPipe::pipeFileUnassigned(const QModelIndex &parent, int first, int last)
-{
-    Q_UNUSED(parent)
+// PROTECTED //
 
-    for (int i = first; i <= last; i++)
+RamPipe::RamPipe(QString uuid):
+    RamObject(uuid, Pipe)
+{
+    construct();
+
+    QJsonObject d = data();
+
+    m_pipeFiles = RamObjectList<RamPipeFile *>::getObject( d.value("pipeFiles").toString(), true);
+
+    this->setParent( this->project() );
+
+    connectEvents();
+}
+
+// PRIVATE SLOTS //
+
+void RamPipe::pipeFileListChanged()
+{
+    QStringList n;
+    for (int i =0; i < m_pipeFiles->rowCount(); i++)
     {
-        RamObject *pfObj = m_pipeFiles->at(i);
-        m_dbi->unassignPipeFile(m_uuid, pfObj->uuid());
+        n << m_pipeFiles->at(i)->name();
     }
+    setName(n.join("\n"));
 }
 
-void RamPipe::pipeFileAssigned(const QModelIndex &parent, int first, int last)
+// PRIVATE //
+
+void RamPipe::construct()
 {
-    Q_UNUSED(parent)
-
-    for (int i = first; i <= last; i++)
-    {
-        RamPipeFile *pf = qobject_cast<RamPipeFile*>( m_pipeFiles->at(i) );
-        m_dbi->assignPipeFile(m_uuid, pf->uuid());
-    }
-    emit dataChanged(this);
+    m_icon = ":/icons/connection";
+    m_editRole = ProjectAdmin;
 }
 
-void RamPipe::pipeFileUnassigned()
+void RamPipe::connectEvents()
 {
-    emit dataChanged(this);
-}
+    // Set short name
+    insertData("shortName", outputStep()->shortName() + "-" + inputStep()->shortName());
 
-void RamPipe::pipeFileChanged()
-{
-    emit dataChanged(this);
-}
+    connect( inputStep(), &RamStep::removed, this, &RamObject::remove);
+    connect( outputStep(), &RamStep::removed, this, &RamObject::remove);
 
+    connect(m_pipeFiles, SIGNAL(listChanged()), this, SLOT(pipeFileListChanged()));
+    connect(m_pipeFiles, &RamObjectList<RamPipeFile *>::dataChanged, this, &RamPipe::pipeFileListChanged);
+}
