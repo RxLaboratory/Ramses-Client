@@ -20,11 +20,11 @@ RamApplication::RamApplication(QString uuid):
     // Populate lists
     QJsonObject d = data();
 
-    m_nativeFileTypes = RamObjectList<RamFileType*>::getObject(uuid, true);
+    m_nativeFileTypes = RamObjectList<RamFileType*>::getObject(d.value("nativeFileTypes").toString(), true);
     m_nativeFileTypes->setParent(this);
-    m_importFileTypes = RamObjectList<RamFileType*>::getObject(uuid, true);
+    m_importFileTypes = RamObjectList<RamFileType*>::getObject(d.value("importileTypes").toString(), true);
     m_importFileTypes->setParent(this);
-    m_exportFileTypes = RamObjectList<RamFileType*>::getObject(uuid, true);
+    m_exportFileTypes = RamObjectList<RamFileType*>::getObject(d.value("exportFileTypes").toString(), true);
     m_exportFileTypes->setParent(this);
 }
 
@@ -37,6 +37,11 @@ RamApplication::RamApplication(QString shortName, QString name):
     m_nativeFileTypes = new RamObjectList<RamFileType*>(shortName + "-native", name, this);
     m_importFileTypes = new RamObjectList<RamFileType*>(shortName + "-import", name, this);
     m_exportFileTypes = new RamObjectList<RamFileType*>(shortName + "-export", name, this);
+    QJsonObject d = data();
+    d.insert("nativeFileTypes", m_nativeFileTypes->uuid());
+    d.insert("importileTypes", m_importFileTypes->uuid());
+    d.insert("exportFileTypes", m_exportFileTypes->uuid());
+    setData(d);
 }
 
 QString RamApplication::executableFilePath() const
