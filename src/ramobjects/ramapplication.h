@@ -49,7 +49,7 @@ public:
     bool open(QString filePath) const;
 
 public slots:
-    void unassignFileType(RamFileType *o);
+    void unassignFileType(RamFileType *ft);
     virtual void edit(bool show = true) override;
 
 private:
