@@ -32,7 +32,7 @@ void FileTypeEditWidget::setObject(RamObject *obj)
     if (!_fileType) return;
 
     ui_extensionsEdit->setText(_fileType->extensions().join(", "));
-    ui_previewableBox->setChecked(_fileType->isPreviewable());
+    ui_previewableBox->setChecked(_fileType->previewable());
 
     this->setEnabled(Ramses::instance()->isProjectAdmin());
 }

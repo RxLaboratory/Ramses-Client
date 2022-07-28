@@ -7,29 +7,33 @@ class RamFileType : public RamObject
 {
     Q_OBJECT
 public:
-    RamFileType(QString shortName, QString name = "", QStringList extensions = QStringList(), QString uuid = "");
-    RamFileType(QString shortName, QString name, QString extensions, QString uuid = "");
-    ~RamFileType();
+
+    // STATIC //
+
+    static RamFileType *getObject(QString uuid, bool constructNew = false);
+
+    // OTHER //
+
+    RamFileType(QString shortName, QString name);
 
     void setExtensions(QString extensions);
     void setExtensions(QStringList extensions);
     QStringList extensions() const;
 
-    bool isPreviewable() const;
+    bool previewable() const;
     void setPreviewable(bool previewable);
 
     bool check(QString filePath) const;
 
-    static RamFileType *fileType(QString uuid);
-
 public slots:
-    void update() override;
     virtual void edit(bool show = true) override;
-    virtual void removeFromDB() override;
+
+protected:
+    RamFileType(QString uuid);
 
 private:
-    QStringList m_extensions;
-    bool m_previewable = false;
+    void construct();
+
 };
 
 #endif // RAMFILETYPE_H

@@ -3,107 +3,96 @@
 #include "ramses.h"
 #include "filetypeeditwidget.h"
 
+// STATIC //
 
-RamFileType::RamFileType(QString shortName, QString name, QStringList extensions, QString uuid):
-    RamObject(shortName, name, uuid, Ramses::instance())
+RamFileType *RamFileType::getObject(QString uuid, bool constructNew)
 {
-    m_icon = ":/icons/file";
-    m_editRole = Admin;
-
-    setObjectType(FileType);
-    m_extensions = extensions;
-    m_dbi->createFileType(m_shortName, m_name, m_extensions, m_uuid);
-
-    this->setObjectName( "RamFileType" );
+    RamObject *obj = RamObject::getObject(uuid);
+    if (!obj && constructNew) return new RamFileType( uuid );
+    return qobject_cast<RamFileType*>( obj );
 }
 
-RamFileType::RamFileType(QString shortName, QString name, QString extensions, QString uuid):
-    RamObject(shortName, name, uuid, Ramses::instance())
+RamFileType::RamFileType(QString shortName, QString name):
+    RamObject(shortName, name, FileType)
 {
-    setObjectType(FileType);
-    setExtensions(extensions);
-    m_dbi->createFileType(m_shortName, m_name, m_extensions, m_uuid);
-
-    this->setObjectName( "RamFileType" );
-}
-
-RamFileType::~RamFileType()
-{
-
+    construct();
 }
 
 void RamFileType::setExtensions(QString extensions)
 {
-    m_dirty = true;
     QStringList exts = extensions.split(",");
-    m_extensions.clear();
-    foreach(QString ext, exts)
-    {
-        if (ext.startsWith(".")) ext = ext.remove(0, 1);
-        m_extensions << ext.trimmed();
-    }
-
-    emit dataChanged(this);
+    setExtensions(exts);
 }
 
 void RamFileType::setExtensions(QStringList extensions)
 {
-    m_extensions << extensions;
+    QJsonArray arr;
+    for(int i = 0; i < extensions.count(); i++)
+    {
+        QString ext = extensions[i];
+        if (ext.startsWith(".")) ext = ext.remove(0, 1);
+
+        arr.append( ext.trimmed().toLower() );
+    }
+    insertData("extensions", arr);
 }
 
 QStringList RamFileType::extensions() const
 {
-    return m_extensions;
-}
-
-void RamFileType::update()
-{
-    if (!m_dirty) return;
-    RamObject::update();
-    m_dbi->updateFileType(m_uuid, m_shortName, m_name, m_extensions, m_previewable, m_comment);
-}
-
-RamFileType *RamFileType::fileType(QString uuid)
-{
-    return qobject_cast<RamFileType*>( RamObject::obj(uuid) );
-}
-
-void RamFileType::edit(bool show)
-{
-    if (!m_editReady)
+    QJsonArray arr = data().value("extensions").toArray();
+    QStringList exts;
+    for (int i = 0; i < arr.count(); i++)
     {
-        FileTypeEditWidget *ftw = new FileTypeEditWidget(this);
-        setEditWidget(ftw);
-        m_editReady = true;
+        exts << arr.at(i).toString();
     }
-    if (show) showEdit();
+    return exts;
 }
 
-void RamFileType::removeFromDB()
+bool RamFileType::previewable() const
 {
-    m_dbi->removeFileType(m_uuid);
-}
-
-bool RamFileType::isPreviewable() const
-{
-    return m_previewable;
+    return data().value("previewable").toBool(false);
 }
 
 void RamFileType::setPreviewable(bool previewable)
 {
-    if (previewable == m_previewable) return;
-    m_dirty = true;
-    m_previewable = previewable;
-    emit dataChanged(this);
+    insertData("previewable", previewable);
 }
 
 bool RamFileType::check(QString filePath) const
 {
     QFileInfo info(filePath);
     if (!info.isFile()) return false;
-    QString ext = info.completeSuffix();
+    QString ext = info.completeSuffix().toLower();
 
-    if (m_shortName == ext) return true;
+    if (shortName() == ext) return true;
 
     return extensions().contains(ext);
 }
+
+void RamFileType::edit(bool show)
+{
+    if (!ui_editWidget) setEditWidget(new FileTypeEditWidget(this));
+
+    if (show) showEdit();
+}
+
+// PROTECTED //
+
+RamFileType::RamFileType(QString uuid):
+    RamObject(uuid, FileType)
+{
+    construct();
+}
+
+// PRIVATE //
+
+void RamFileType::construct()
+{
+    m_icon = ":/icons/file";
+    m_editRole = Admin;
+}
+
+
+
+
+
