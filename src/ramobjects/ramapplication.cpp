@@ -12,22 +12,6 @@ RamApplication *RamApplication::getObject(QString uuid, bool constructNew)
     return qobject_cast<RamApplication*>( obj );
 }
 
-RamApplication::RamApplication(QString uuid):
-    RamObject(uuid, ObjectType::Application)
-{
-    construct();
-
-    // Populate lists
-    QJsonObject d = data();
-
-    m_nativeFileTypes = RamObjectList<RamFileType*>::getObject(d.value("nativeFileTypes").toString(), true);
-    m_nativeFileTypes->setParent(this);
-    m_importFileTypes = RamObjectList<RamFileType*>::getObject(d.value("importileTypes").toString(), true);
-    m_importFileTypes->setParent(this);
-    m_exportFileTypes = RamObjectList<RamFileType*>::getObject(d.value("exportFileTypes").toString(), true);
-    m_exportFileTypes->setParent(this);
-}
-
 // PUBLIC //
 
 RamApplication::RamApplication(QString shortName, QString name):
@@ -41,7 +25,7 @@ RamApplication::RamApplication(QString shortName, QString name):
     d.insert("nativeFileTypes", m_nativeFileTypes->uuid());
     d.insert("importileTypes", m_importFileTypes->uuid());
     d.insert("exportFileTypes", m_exportFileTypes->uuid());
-    setData(d);
+    this->setData(d);
 }
 
 QString RamApplication::executableFilePath() const
@@ -149,6 +133,24 @@ void RamApplication::edit(bool show)
     if (!ui_editWidget) setEditWidget(new ApplicationEditWidget(this));
 
     if (show) showEdit();
+}
+
+// PROTECTED //
+
+RamApplication::RamApplication(QString uuid):
+    RamObject(uuid, ObjectType::Application)
+{
+    construct();
+
+    // Populate lists
+    QJsonObject d = data();
+
+    m_nativeFileTypes = RamObjectList<RamFileType*>::getObject(d.value("nativeFileTypes").toString(), true);
+    m_nativeFileTypes->setParent(this);
+    m_importFileTypes = RamObjectList<RamFileType*>::getObject(d.value("importileTypes").toString(), true);
+    m_importFileTypes->setParent(this);
+    m_exportFileTypes = RamObjectList<RamFileType*>::getObject(d.value("exportFileTypes").toString(), true);
+    m_exportFileTypes->setParent(this);
 }
 
 // PRIVATE //

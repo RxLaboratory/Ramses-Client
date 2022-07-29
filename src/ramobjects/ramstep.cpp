@@ -84,7 +84,7 @@ bool RamStep::isTemplate() const
 
 RamStep *RamStep::createFromTemplate(QString projectUuid)
 {
-    RamProject *project = RamProject::project( projectUuid );
+    RamProject *project = RamProject::getObject( projectUuid );
     if ( !project ) return nullptr;
     return createFromTemplate(project);
 }

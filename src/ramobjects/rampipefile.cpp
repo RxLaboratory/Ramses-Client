@@ -98,7 +98,7 @@ RamPipeFile::RamPipeFile(QString uuid):
     construct();
 
     QJsonObject d = data();
-    m_project = RamProject::project(d.value("project").toString(), true);
+    m_project = RamProject::getObject(d.value("project").toString(), true);
 
     this->setParent(m_project);
 }

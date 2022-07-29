@@ -153,7 +153,7 @@ void Ramses::setCurrentProject(RamProject *project)
 
 void Ramses::projectReady(QString uuid)
 {
-    RamProject *currentProject = RamProject::project(uuid);
+    RamProject *currentProject = RamProject::getObject(uuid);
     if ( !currentProject ) return;
 
     if (currentProject->is( m_currentProject )) return;
@@ -194,7 +194,7 @@ void Ramses::setCurrentProject(QString shortName)
 
 void Ramses::setCurrentProjectUuid(QString uuid)
 {
-    setCurrentProject( RamProject::project(uuid) );
+    setCurrentProject( RamProject::getObject(uuid) );
 }
 
 RamObjectList *Ramses::templateSteps() const

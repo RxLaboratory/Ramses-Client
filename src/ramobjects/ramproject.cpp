@@ -5,12 +5,17 @@
 
 // STATIC
 
-RamProject *RamProject::project(QString uuid, bool constructNew)
+RamProject *RamProject::getObject(QString uuid, bool constructNew)
 {
-    RamObject *obj = RamObject::obj(uuid);
+    RamObject *obj = RamObject::getObject(uuid);
     if (!obj && constructNew) return new RamProject( uuid );
     return qobject_cast<RamProject*>( obj );
 }
+
+// PUBLIC //
+
+
+// PROTECTED //
 
 RamProject::RamProject(QString uuid):
     RamObject(uuid, Project)
@@ -21,46 +26,35 @@ RamProject::RamProject(QString uuid):
 
     QJsonObject d = data();
 
-    QJsonArray seqArray = d.value("sequences").toArray();
-    for (int i = 0; i < seqArray.count(); i++)
-    {
-        RamSequence *seq = RamSequence::sequence(seqArray.at(i).toString(), true);
-        m_sequences->append(seq);
-    }
-
-    QJsonArray agArray = d.value("assetGroups").toArray();
-    for (int i = 0; i < agArray.count(); i++)
-    {
-        RamAssetGroup *ag = RamAssetGroup::assetGroup(agArray.at(i).toString(), true);
-        m_assetGroups->append(ag);
-    }
-
-    QJsonArray pArray = d.value("pipeLine").toArray();
-    for (int i = 0; i < pArray.count(); i++)
-    {
-        RamPipe *p = RamPipe::getObject(pArray.at(i).toString(), true);
-        m_pipeline->append(p);
-    }
-
-    QJsonArray sArray = d.value("steps").toArray();
-    for (int i = 0; i < pArray.count(); i++)
-    {
-        RamStep *s = RamStep::step(sArray.at(i).toString(), true);
-        m_steps->append(s);
-    }
-
-
-
-
-
-    m_pipeFiles = new RamObjectList("PPFLS", "Pipe files", this);
-    m_shots = new RamItemTable(RamStep::ShotProduction, m_steps, "SHOTS", "Shots", this);
-    m_assets = new RamItemTable(RamStep::AssetProduction, m_steps, "ASSETS", "Assets", this);
-    m_users = new RamObjectList("USRS", "Users", this);
-    m_scheduleComments = new RamObjectList("SCHDLCOMTS", "Schedule comments", this);
+    m_sequences = RamObjectList<RamSequence*>::getObject( d.value("sequences").toString(), true);
+    m_sequences->setParent(this);
+    m_assetGroups = RamObjectList<RamAssetGroup*>::getObject( d.value("assetGroups").toString(), true);
+    m_assetGroups->setParent(this);
+    m_pipeline = RamObjectList<RamPipe*>::getObject( d.value("pipeline").toString(), true);
+    m_pipeline->setParent(this);
+    m_steps = RamObjectList<RamStep*>::getObject( d.value("steps").toString(), true);
+    m_steps->setParent(this);
+    m_pipeFiles = RamObjectList<RamPipeFile*>::getObject( d.value("pipeFiles").toString(), true);
+    m_pipeFiles->setParent(this);
+    m_shots = RamItemTable<RamShot*>::getObject( d.value("shots").toString(), true);
+    m_shots->setParent(this);
+    m_assets = RamItemTable<RamAsset*>::getObject( d.value("assets").toString(), true);
+    m_assets->setParent(this);
+    m_users = RamObjectList<RamUser*>::getObject( d.value("users").toString(), true);
+    m_users->setParent(this);
+    m_scheduleComments = RamObjectList<RamScheduleComment*>::getObject( d.value("scheduleComments").toString(), true);
+    m_scheduleComments->setParent(this);
 }
 
-// PUBLIC //
+// PRIVATE //
+
+void RamProject::construct()
+{
+    m_icon = ":/icons/project";
+    m_editRole = Admin;
+}
+
+
 
 
 
@@ -449,21 +443,7 @@ void RamProject::userUnassigned(const QModelIndex &parent, int first, int last)
     emit dataChanged(this);
 }
 
-void RamProject::construct()
-{
-    m_icon = ":/icons/project";
-    m_editRole = Admin;
 
-    m_sequences = new RamObjectList("SEQS", "Sequences", this);
-    m_assetGroups = new RamObjectList("AGS", "Asset Groups", this);
-    m_pipeline = new RamObjectList("PPLN", "Pipeline", this);
-    m_steps = new RamObjectList("STPS", "Steps", this);
-    m_pipeFiles = new RamObjectList("PPFLS", "Pipe files", this);
-    m_shots = new RamItemTable(RamStep::ShotProduction, m_steps, "SHOTS", "Shots", this);
-    m_assets = new RamItemTable(RamStep::AssetProduction, m_steps, "ASSETS", "Assets", this);
-    m_users = new RamObjectList("USRS", "Users", this);
-    m_scheduleComments = new RamObjectList("SCHDLCOMTS", "Schedule comments", this);
-}
 
 const QString &RamProject::dbFolderPath() const
 {

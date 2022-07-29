@@ -79,7 +79,7 @@ RamAssetGroup::RamAssetGroup(QString uuid):
 
     if (!d.value("template").toBool(true) && projUuid != "")
     {
-        setProject( RamProject::project(projUuid, true) );
+        setProject( RamProject::getObject(projUuid, true) );
     }
 }
 

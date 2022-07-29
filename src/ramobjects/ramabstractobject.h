@@ -21,6 +21,7 @@ public:
                     FileType,
                     Object,
                     Item,
+                    ItemTable,
                     Pipe,
                     PipeFile,
                     Project,

@@ -291,7 +291,7 @@ void RamObjectList<RO>::connectObject(RO obj)
 }
 
 template<typename RO>
-int RamObjectList<RO>::objRow(RO obj)
+int RamObjectList<RO>::objRow(RO obj) const
 {
     for (int i = m_objectList.count() - 1; i >= 0; i--)
     {
@@ -328,7 +328,8 @@ void RamObjectList<RO>::listChanged()
 
 // PRIVATE //
 
-template<typename RO> void RamObjectList<RO>::construct(QObject *parent)
+template<typename RO>
+void RamObjectList<RO>::construct(QObject *parent)
 {
     this->setObjectName(objectTypeName());
     if (!parent) setParent(Ramses::instance());

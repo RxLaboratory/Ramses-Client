@@ -1,18 +1,23 @@
 #include "ramitemtable.h"
 #include "ramses.h"
 
-RamItemTable::RamItemTable(RamStep::Type productionType, RamObjectList *steps, QObject *parent) : RamObjectList(parent)
+// STATIC //
+
+RamItemTable *RamItemTable::getObject(QString uuid, bool constructNew)
 {
-    m_productionType = productionType;
-    m_steps = steps;
-    connectEvents();
+    RamObjectList<RamItem*> *obj = RamObjectList<RamItem*>::getObject(uuid);
+    if (!obj && constructNew) return new RamItemTable(uuid);
+    return static_cast<RamItemTable*>( obj ) ;
 }
 
-RamItemTable::RamItemTable(RamStep::Type productionType, RamObjectList *steps, QString shortName, QString name, QObject *parent)
-        : RamObjectList(shortName, name, parent)
+// PUBLIC //
+
+RamItemTable::RamItemTable(QString shortName, QString name, RamObjectList<RamStep *> *steps, QObject *parent):
+    RamObjectList<RamItem*>(shortName, name, parent)
 {
-    m_productionType = productionType;
+    construct();
     m_steps = steps;
+    this->insertData("steps", steps->uuid());
     connectEvents();
 }
 
@@ -35,19 +40,18 @@ QVariant RamItemTable::data(const QModelIndex &index, int role) const
 
     // Return
     if (col == 0)
-        return RamObjectList::data(index, role);
+        return RamObjectList<RamItem*>::data(index, role);
 
     // Get the item
-    RamObject *itemObj = m_objectsList.at(row);
-    RamItem *item = qobject_cast<RamItem*>( itemObj );
+    RamItem *item = RamObjectList<RamItem*>::m_objectList.at(row);
 
     if (role == Qt::InitialSortOrderRole)
     {
-        return item->order();
+        return RamObjectList<RamItem*>::objRow(item);
     }
     if ( role == Qt::UserRole + 1) // Default order
     {
-        return item->order();
+        return RamObjectList<RamItem*>::objRow(item);
     }
     else if (role == Qt::UserRole + 2) // Short name order
     {
@@ -141,15 +145,13 @@ QVariant RamItemTable::data(const QModelIndex &index, int role) const
 
 QVariant RamItemTable::headerData(int section, Qt::Orientation orientation, int role) const
 {
-    if(orientation == Qt::Vertical) return RamObjectList::headerData(section, orientation, role);
+    if (orientation == Qt::Vertical) return RamObjectList<RamItem*>::headerData(section, orientation, role);
 
     if (section == 0)
     {
         if ( role == Qt::DisplayRole )
         {
-            if (m_productionType == RamStep::AssetProduction) return "Assets";
-            else if (m_productionType == RamStep::ShotProduction) return "Shots";
-            else return "Items";
+            return name();
         }
         return QVariant();
     }
@@ -166,26 +168,38 @@ QVariant RamItemTable::headerData(int section, Qt::Orientation orientation, int 
     return QAbstractTableModel::headerData(section, orientation, role);
 }
 
-void RamItemTable::insertObject(int i, RamObject *obj)
+void RamItemTable::insertObject(int i, RamItem *item)
 {
-    if (contains(obj)) return;
+    if (contains(item)) return;
 
-    RamItem *item = qobject_cast<RamItem*>( obj );
     // insert only valid items
     if (!item) return;
 
     // We're inserting rows
     beginInsertRows(QModelIndex(), i, i);
 
-    m_objectsList.insert(i , obj);
-    m_objects[obj->uuid()] = obj;
-    connectObject(obj);
+    m_objectList.insert(i , item);
+    m_objects[item->uuid()] = item;
+    connectObject(item);
     connectItem(item);
 
     endInsertRows();
 
     emit headerDataChanged(Qt::Horizontal, 0, m_steps->rowCount());
 }
+
+// PROTECTED //
+
+RamItemTable::RamItemTable(QString uuid, QObject *parent):
+    RamObjectList<RamItem*>(uuid, parent)
+{
+    construct();
+    // Populate the list of steps
+    QJsonObject d = RamAbstractObject::data();
+    m_steps = RamObjectList<RamStep*>::getObject( d.value("steps").toString(), true );
+}
+
+// PRIVATE SLOTS //
 
 void RamItemTable::insertStep(const QModelIndex &parent, int first, int last)
 {
@@ -222,6 +236,14 @@ void RamItemTable::statusChanged(RamItem *item, RamStep *step)
     emit headerDataChanged(Qt::Horizontal, col,col);
 }
 
+// PRIVATE //
+
+void RamItemTable::construct()
+{
+    this->m_objectType = RamAbstractObject::ItemTable;
+    this->setObjectName(this->objectTypeName());
+}
+
 void RamItemTable::connectEvents()
 {
     connect( m_steps, SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(insertStep(QModelIndex,int,int)));
@@ -230,9 +252,7 @@ void RamItemTable::connectEvents()
 
 void RamItemTable::connectItem(RamItem *item)
 {
-    QList<QMetaObject::Connection> c = m_connections[ item->uuid() ];
-    c << connect( item, SIGNAL(statusChanged(RamItem*,RamStep*)), this, SLOT(statusChanged(RamItem*,RamStep*)) );
-    m_connections[ item->uuid() ] << c;
+    connect( item, SIGNAL(statusChanged(RamItem*,RamStep*)), this, SLOT(statusChanged(RamItem*,RamStep*)) );
 }
 
 RamStep *RamItemTable::stepAt(int col) const
@@ -251,5 +271,3 @@ int RamItemTable::stepCol(RamStep *step) const
     }
     return -1;
 }
-
-

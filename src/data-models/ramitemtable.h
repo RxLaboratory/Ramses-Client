@@ -9,12 +9,18 @@
  * @brief The RamItemTable class is the model used to associate shots/assets with their status.
  * It keeps the latest status for each step associated to the corresponding shot/asset
  */
-class RamItemTable : public RamObjectList
+class RamItemTable : public RamObjectList<RamItem*>
 {
     Q_OBJECT
 public:
-    explicit RamItemTable(RamStep::Type productionType, RamObjectList *steps, QObject *parent = nullptr);
-    RamItemTable(RamStep::Type productionType, RamObjectList *steps, QString shortName, QString name = "", QObject *parent = nullptr);
+
+    // STATIC METHODS //
+
+    static RamItemTable *getObject(QString uuid, bool constructNew = false);
+
+    // METHODS //
+
+    RamItemTable(QString shortName, QString name, RamObjectList<RamStep *> *steps, QObject *parent = nullptr);
 
     // MODEL REIMPLEMENTATION
     int columnCount(const QModelIndex &parent = QModelIndex()) const override;
@@ -22,7 +28,10 @@ public:
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
 
     // MODEL EDITING REIMPLEMENTATION
-    virtual void insertObject(int i, RamObject *obj) override; // Insert Row
+    virtual void insertObject(int i, RamItem *item) override; // Insert Row
+
+protected:
+    RamItemTable(QString uuid, QObject *parent = nullptr);
 
 private slots:
     void insertStep(const QModelIndex &parent, int first, int last);
@@ -30,16 +39,20 @@ private slots:
     void statusChanged(RamItem *item, RamStep *step);
 
 private:
-    RamObjectList *m_steps;
-    RamStep::Type m_productionType;
 
+    // METHODS //
+
+    void construct();
     // Connect submodels and relay events
     void connectEvents();
-
     // Utils
     void connectItem(RamItem *item);
     RamStep *stepAt(int col) const;
     int stepCol(RamStep *step) const;
+
+    // ATTRIBUTES //
+
+    RamObjectList<RamStep*> *m_steps;
 };
 
 #endif // RAMITEMTABLE_H

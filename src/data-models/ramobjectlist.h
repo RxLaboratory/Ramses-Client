@@ -66,7 +66,7 @@ protected:
 
     // UTILS
     virtual void connectObject(RO obj);
-    int objRow(RO obj);
+    int objRow(RO obj) const;
 
 private slots:
     // Emits dataChanged() and headerChanged()

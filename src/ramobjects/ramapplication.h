@@ -22,11 +22,6 @@ public:
     // OTHER //
 
     /**
-     * @brief RamApplication constructs a RamApplication from the database
-     * @param uuid
-     */
-    RamApplication(QString uuid);
-    /**
      * @brief RamApplication creates a new Application in the database
      * @param shortName
      * @param name
@@ -51,6 +46,13 @@ public:
 public slots:
     void unassignFileType(RamFileType *ft);
     virtual void edit(bool show = true) override;
+
+protected:
+    /**
+     * @brief RamApplication constructs a RamApplication from the database
+     * @param uuid
+     */
+    RamApplication(QString uuid);
 
 private:
     void construct();

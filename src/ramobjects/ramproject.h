@@ -1,10 +1,12 @@
 #ifndef RAMPROJECT_H
 #define RAMPROJECT_H
 
+#include "data-models/ramobjectlist.h"
 #include "ramobject.h"
 #include "ramstep.h"
 #include "ramassetgroup.h"
 #include "ramsequence.h"
+#include "ramschedulecomment.h"
 #include "rampipe.h"
 #include "dbisuspender.h"
 #include "data-models/ramitemtable.h"
@@ -15,13 +17,13 @@ class RamProject : public RamObject
     Q_OBJECT
 public:
 
-    // STATIC //
+    // STATIC METHODS //
 
-    static RamProject *project(QString uuid, bool constructNew = false);
+    static RamProject *getObject(QString uuid, bool constructNew = false);
 
-    // OTHER //
+    // METHODS //
 
-    RamProject(QString uuid);
+
 
 
 
@@ -112,6 +114,7 @@ public slots:
     void computeEstimation();
 
 protected:
+    RamProject(QString uuid);
     virtual QString folderPath() const override;
 
 private slots:
@@ -121,15 +124,15 @@ private slots:
 private:
     void construct();
 
-    RamObjectList *m_steps;
-    RamObjectList *m_sequences;
-    RamObjectList *m_assetGroups;
-    RamItemTable *m_assets;
-    RamItemTable *m_shots;
-    RamObjectList *m_pipeline;
-    RamObjectList *m_pipeFiles;
-    RamObjectList *m_users;
-    RamObjectList *m_scheduleComments;
+    RamObjectList<RamStep*> *m_steps;
+    RamObjectList<RamSequence*> *m_sequences;
+    RamObjectList<RamAssetGroup*> *m_assetGroups;
+    RamItemTable<RamAsset*> *m_assets;
+    RamItemTable<RamShot*> *m_shots;
+    RamObjectList<RamPipe*> *m_pipeline;
+    RamObjectList<RamPipeFile*> *m_pipeFiles;
+    RamObjectList<RamUser*> *m_users;
+    RamObjectList<RamScheduleComment*> *m_scheduleComments;
 
     /**
      * @brief When true, estimations won't be computed.
