@@ -1,95 +1,73 @@
 #include "ramschedulecomment.h"
 
-RamScheduleComment::RamScheduleComment(RamProject *project, QDateTime date)
-    : RamObject(project)
+#include "ramproject.h"
+
+// STATIC //
+
+
+RamScheduleComment *RamScheduleComment::getObject(QString uuid, bool constructNew)
 {
-    m_date = date;
-    m_comment = "";
-    m_color = QColor(227, 227, 227);
+    RamObject *obj = RamObject::getObject(uuid);
+    if (!obj && constructNew) return new RamScheduleComment( uuid );
+    return qobject_cast<RamScheduleComment*>( obj );
+}
+
+// PUBLIC //
+
+RamScheduleComment::RamScheduleComment(RamProject *project)
+    : RamObject("schdlCmnt", "Schedule Comment", ObjectType::ScheduleComment, project)
+{
     m_project = project;
 
-    m_dbi->updateScheduleComment(m_uuid, project->uuid(), m_date, m_comment, m_color);
-    this->setObjectType(ScheduleComment);
-    this->setObjectName("RamScheduleComment " + project->shortName() );
+    insertData("project", project->uuid() );
 }
 
-RamScheduleComment::RamScheduleComment(RamProject *project, QDateTime date, QString uuid)
-    : RamObject(uuid, project)
+QColor RamScheduleComment::color() const
 {
-    m_date = date;
-    m_comment = "";
-    m_color = QColor(227, 227, 227);
-    m_project = project;
-
-    m_dbi->updateScheduleComment(m_uuid, project->uuid(), m_date, m_comment, m_color);
-    this->setObjectType(ScheduleComment);
-    this->setObjectName("RamScheduleComment " + project->shortName() );
-}
-
-const QString &RamScheduleComment::comment() const
-{
-    return m_comment;
-}
-
-void RamScheduleComment::setComment(const QString &newComment)
-{
-    if (newComment == m_comment) return;
-    m_dirty = true;
-    m_comment = newComment;
-    emit dataChanged(this);
-}
-
-const QColor &RamScheduleComment::color() const
-{
-    return m_color;
+    return QColor( data().value("color").toString("#e3e3e3") );
 }
 
 void RamScheduleComment::setColor(const QColor &newColor)
 {
-    if (m_color == newColor) return;
-    m_dirty = true;
-    m_color = newColor;
-    emit dataChanged(this);
+    insertData( "color", newColor.name() );
 }
 
-const QDateTime &RamScheduleComment::date() const
+QDateTime RamScheduleComment::date() const
 {
-    return m_date;
+    return QDateTime::fromString( data().value("date").toString(), "yyyy-MM-dd hh:mm:ss" );
 }
 
 void RamScheduleComment::setDate(const QDateTime &newDate)
 {
-    if (m_date == newDate) return;
-    m_dirty = true;
-    m_date = newDate;
-    emit dataChanged(this);
+    insertData("date", newDate.toString("yyyy-MM-dd hh:mm:ss"));
 }
 
-ScheduleCommentStruct RamScheduleComment::toStruct() const
+// PROTECTED //
+
+RamScheduleComment::RamScheduleComment(QString uuid):
+    RamObject(uuid, ObjectType::ScheduleComment)
 {
-    ScheduleCommentStruct s;
-    s.uuid = m_uuid;
-    s.projectUuid = m_project->uuid();
-    s.comment = m_comment;
-    s.color = m_color;
-    s.date = m_date;
-    return s;
+    construct();
+
+    QJsonObject d = data();
+    m_project = RamProject::getObject( d.value("project").toString(), true);
+
+    this->setParent(m_project);
 }
 
-RamScheduleComment *RamScheduleComment::scheduleComment(QString uuid)
+// PRIVATE //
+
+void RamScheduleComment::construct()
 {
-    RamObject *obj = RamObject::obj(uuid);
-    return qobject_cast<RamScheduleComment*>( obj );
+    m_icon = ":/icons/asset";
+    m_editRole = Standard;
 }
 
-void RamScheduleComment::update()
-{
-    if(!m_dirty) return;
-    RamObject::update();
-    m_dbi->updateScheduleComment(m_uuid, m_project->uuid(), m_date, m_comment, m_color);
-}
 
-void RamScheduleComment::removeFromDB()
-{
-    m_dbi->removeScheduleComment(m_uuid);
-}
+
+
+
+
+
+
+

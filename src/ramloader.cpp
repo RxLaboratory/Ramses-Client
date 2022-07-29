@@ -1169,7 +1169,7 @@ QString RamLoader::gotScheduleComment(QJsonObject newComment)
     if (!project) return uuid;
 
     // Get existing one if any, otherwise create it
-    RamScheduleComment *comment = RamScheduleComment::scheduleComment(uuid);
+    RamScheduleComment *comment = RamScheduleComment::getObject(uuid);
     if (!comment) comment = new RamScheduleComment(
                 project,
                 QDateTime::fromString( newComment.value("date").toString(), "yyyy-MM-dd hh:mm:ss"),

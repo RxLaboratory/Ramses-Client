@@ -2,38 +2,35 @@
 #define RAMSCHEDULECOMMENT_H
 
 #include "ramobject.h"
-#include "ramproject.h"
+
+class RamProject;
 
 class RamScheduleComment : public RamObject
 {
     Q_OBJECT
 public:
-    explicit RamScheduleComment(RamProject *project, QDateTime date);
-    explicit RamScheduleComment(RamProject *project, QDateTime date, QString uuid);
 
+    // STATIC METHODS //
 
-    const QString &comment() const;
-    void setComment(const QString &newComment);
+    static RamScheduleComment *getObject(QString uuid, bool constructNew = false);
 
-    const QColor &color() const;
+    // METHODS //
+
+    RamScheduleComment(RamProject *project);
+
+    QColor color() const;
     void setColor(const QColor &newColor);
 
-    const QDateTime &date() const;
+    QDateTime date() const;
     void setDate(const QDateTime &newDate);
 
-    struct ScheduleCommentStruct toStruct() const;
-
-    static RamScheduleComment *scheduleComment(QString uuid);
-
-public slots:
-    void update() override;
-    virtual void removeFromDB() override;
+protected:
+    RamScheduleComment(QString uuid);
 
 private:
+    void construct();
+
     RamProject *m_project = nullptr;
-    QString m_comment;
-    QColor m_color;
-    QDateTime m_date;
 };
 
 #endif // RAMSCHEDULECOMMENT_H
