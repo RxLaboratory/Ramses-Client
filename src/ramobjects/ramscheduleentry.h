@@ -12,14 +12,11 @@ public:
 
     // STATIC METHODS //
 
-    static RamScheduleEntry *getObject(QString uuid);
+    static RamScheduleEntry *getObject(QString uuid, bool constructNew = false);
 
     // METHODS
 
     explicit RamScheduleEntry(RamUser *user, RamStep *step, QDateTime date);
-
-    QString name() const override;
-    QString shortName() const override;
 
     RamUser *user() const;
     RamStep *step() const;
@@ -30,6 +27,7 @@ protected:
 
 private:
     void construct();
+    void connectEvents();
 
     RamUser *m_user = nullptr;
     RamStep *m_step = nullptr;
