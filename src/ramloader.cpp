@@ -1110,7 +1110,7 @@ QString RamLoader::gotScheduleEntry(QJsonObject newSE)
     RamStep *step = RamStep::step( newSE.value("stepUuid").toString() );
 
     // Get existing one if any, otherwise create it
-    RamScheduleEntry *entry = RamScheduleEntry::scheduleEntry(uuid);
+    RamScheduleEntry *entry = RamScheduleEntry::getObject(uuid);
     if (!entry) entry = new RamScheduleEntry(
                 user,
                 step,

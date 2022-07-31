@@ -9,34 +9,30 @@ class RamScheduleEntry : public RamObject
 {
     Q_OBJECT
 public:
+
+    // STATIC METHODS //
+
+    static RamScheduleEntry *getObject(QString uuid);
+
+    // METHODS
+
     explicit RamScheduleEntry(RamUser *user, RamStep *step, QDateTime date);
-    explicit RamScheduleEntry(RamUser *user, RamStep *step, QDateTime date, QString uuid);
-    ~RamScheduleEntry();
 
     QString name() const override;
     QString shortName() const override;
 
     RamUser *user() const;
-    void setUser(RamUser *newUser);
-
     RamStep *step() const;
-    void setStep(RamStep *newStep);
-
     const QDateTime &date() const;
-    void setDate(const QDateTime &newDate);
 
-    struct ScheduleEntryStruct toStruct() const;
-
-    static RamScheduleEntry *scheduleEntry(QString uuid);
-
-public slots:
-    void update() override;
-    virtual void removeFromDB() override;
+protected:
+    RamScheduleEntry(QString uuid);
 
 private:
+    void construct();
+
     RamUser *m_user = nullptr;
     RamStep *m_step = nullptr;
-    QMetaObject::Connection m_stepConnection;
     QDateTime m_date;
 };
 
