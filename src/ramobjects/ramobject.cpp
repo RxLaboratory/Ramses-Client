@@ -21,6 +21,12 @@ RamObject::RamObject(QString shortName, QString name, ObjectType type, QObject *
     construct(parent);
 }
 
+void RamObject::remove()
+{
+    this->disconnect();
+    RamAbstractObject::remove();
+}
+
 // PROTECTED //
 
 RamObject::RamObject(QString uuid, ObjectType type, QObject *parent):

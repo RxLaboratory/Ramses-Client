@@ -35,12 +35,12 @@ RamPipe::RamPipe(RamStep *output, RamStep *input):
 
 RamStep *RamPipe::outputStep() const
 {
-    return RamStep::step( data().value("outputStep").toString() );
+    return RamStep::getObject( getData("outputStep").toString() );
 }
 
 RamStep *RamPipe::inputStep() const
 {
-    return RamStep::step( data().value("inputStep").toString() );
+    return RamStep::getObject( getData("inputStep").toString() );
 }
 
 RamProject *RamPipe::project() const

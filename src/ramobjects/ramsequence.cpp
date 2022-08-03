@@ -2,28 +2,32 @@
 #include "ramproject.h"
 #include "sequenceeditwidget.h"
 
-RamSequence::RamSequence(QString shortName, RamProject *project, QString name, QString uuid):
-    RamObject(shortName, name, uuid, project)
+// STATIC //
+
+RamSequence *RamSequence::getObject(QString uuid, bool constructNew)
 {
-    m_icon = ":/icons/sequence";
-    m_editRole = ProjectAdmin;
-
-    m_color = QColor(43,43,43);
-
-    this->setObjectType(Sequence);
-    m_project = project;
-    m_dbi->createSequence(m_shortName, m_name, m_project->uuid(), m_uuid);
-
-    m_shots = new RamObjectFilterModel(this);
-    m_shots->setSourceModel( project->shots() );
-    m_shots->setFilterUuid( m_uuid );
-
-    this->setObjectName( "RamSequence" );
+    RamObject *obj = RamObject::getObject(uuid);
+    if (!obj && constructNew) return new RamSequence( uuid );
+    return qobject_cast<RamSequence*>( obj );
 }
 
-RamSequence::~RamSequence()
-{
+// PUBLIC //
 
+RamSequence::RamSequence(QString shortName, QString name, RamProject *project):
+    RamObject(shortName, name, Sequence, project)
+{
+    construct();
+    setProject(project);
+}
+
+QColor RamSequence::color() const
+{
+    return QColor( getData("color").toString("#434343") );
+}
+
+void RamSequence::setColor(const QColor &newColor)
+{
+    insertData("color", newColor.name() );
 }
 
 int RamSequence::shotCount() const
@@ -48,48 +52,53 @@ RamProject *RamSequence::project() const
     return m_project;
 }
 
-RamSequence *RamSequence::sequence(QString uuid)
-{
-    return qobject_cast<RamSequence*>( RamObject::obj(uuid) );
-}
-
-void RamSequence::update()
-{
-    if(!m_dirty) return;
-    RamObject::update();
-    m_dbi->updateSequence(m_uuid, m_shortName, m_name, m_comment, m_color);
-    if (m_orderChanged)
-    {
-        m_dbi->setSequenceOrder(m_uuid, m_order);
-        m_orderChanged = false;
-    }
-}
+// PUBLIC SLOTS //
 
 void RamSequence::edit(bool show)
 {
-    if (!m_editReady)
-    {
-        SequenceEditWidget *w = new SequenceEditWidget(this);
-        setEditWidget(w);
-        m_editReady = true;
-    }
+    if (!ui_editWidget) setEditWidget(new SequenceEditWidget(this));
+
     if (show) showEdit();
 }
 
-void RamSequence::removeFromDB()
+// PROTECTED //
+
+RamSequence::RamSequence(QString uuid):
+   RamObject(uuid, Sequence)
 {
-    m_dbi->removeSequence(m_uuid);
+    construct();
+
+    QJsonObject d = data();
+
+    QString projUuid = d.value("project").toString();
+    setProject( RamProject::getObject(projUuid, true) );
 }
 
-const QColor &RamSequence::color() const
+// PRIVATE //
+
+void RamSequence::construct()
 {
-    return m_color;
+    m_icon = ":/icons/sequence";
+    m_editRole = ProjectAdmin;
+    m_project = nullptr;
+    m_shots = new RamObjectFilterModel(this);
 }
 
-void RamSequence::setColor(const QColor &newColor)
+void RamSequence::setProject(RamProject *project)
 {
-    if (m_color == newColor) return;
-    m_dirty = true;
-    m_color = newColor;
-    emit dataChanged(this);
+    m_project = project;
+    m_shots->setSourceModel( m_project->shots() );
+    m_shots->setFilterUuid( m_uuid );
+    this->setParent( m_project );
 }
+
+
+
+
+
+
+
+
+
+
+

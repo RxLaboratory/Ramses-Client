@@ -1,6 +1,8 @@
 #include "ramstepstatushistory.h"
 
 #include "ramitem.h"
+#include "ramstep.h"
+#include "ramstatus"
 #include "statushistorywidget.h"
 #include "mainwindow.h"
 

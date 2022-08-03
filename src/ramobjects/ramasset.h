@@ -17,7 +17,7 @@ public:
 
     // OTHER //
 
-    RamAsset(QString shortName, QString name, RamAssetGroup *ag, RamProject *project);
+    RamAsset(QString shortName, QString name, RamAssetGroup *ag);
 
     RamAssetGroup *assetGroup() const;
     void setAssetGroup(RamAssetGroup *assetGroup);

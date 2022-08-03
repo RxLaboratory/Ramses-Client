@@ -121,6 +121,11 @@ public:
      */
     QJsonObject data() const;
     /**
+     * @brief getData returns the data for a specific key
+     * @return
+     */
+    QJsonValue getData(QString key) const;
+    /**
      * @brief setData sets an entirely new data
      * @param data
      */
@@ -156,7 +161,7 @@ public:
     /**
      * @brief remove marks the object as removed in the database
      */
-    void remove();
+    virtual void remove();
     /**
      * @brief restore markes the object as available in the database
      */

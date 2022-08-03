@@ -1,16 +1,24 @@
 #ifndef RAMSHOT_H
 #define RAMSHOT_H
 
+#include "data-models/ramobjectlist.h"
 #include "ramitem.h"
 
 class RamSequence;
+class RamAsset;
 
 class RamShot : public RamItem
 {
     Q_OBJECT
 public:
-    explicit RamShot(QString shortName, RamSequence *sequence, QString name = "", QString uuid = "");
-    ~RamShot();
+
+    // STATIC METHODS //
+
+    static RamShot *getObject(QString uuid, bool constructNew = false);
+
+    // METHODS //
+
+    RamShot(QString shortName, QString name, RamSequence *sequence);
 
     RamSequence *sequence() const;
     void setSequence(RamSequence *sequence);
@@ -18,29 +26,21 @@ public:
     qreal duration() const;
     void setDuration(const qreal &duration);
 
-    RamObjectList *assets() const;
+    RamObjectList<RamAsset *> *assets() const;
 
-    static RamShot *shot(QString uuid);
+    virtual QString filterUuid() const override;
 
 public slots:
-    void update() override;
-    bool move(int index) override;
     virtual void edit(bool show = true) override;
 
 protected:
+    RamShot(QString uuid);
     virtual QString folderPath() const override;
 
-private slots:
-    void assetAssigned(const QModelIndex &parent, int first, int last);
-    void assetUnassigned(const QModelIndex &parent, int first, int last);
-    virtual void removeFromDB() override;
-
 private:
-    RamSequence *m_sequence;
-    qreal m_duration = 0.0;
-    RamObjectList *m_assets;
+    void construct();
 
-    QMetaObject::Connection m_sequenceConnection;
+    RamObjectList<RamAsset*> *m_assets;
 };
 
 #endif // RAMSHOT_H

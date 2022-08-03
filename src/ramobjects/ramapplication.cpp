@@ -30,7 +30,7 @@ RamApplication::RamApplication(QString shortName, QString name):
 
 QString RamApplication::executableFilePath() const
 {
-    return data().value("executableFilePath").toString("");
+    return getData("executableFilePath").toString("");
 }
 
 void RamApplication::setExecutableFilePath(const QString &executableFilePath)

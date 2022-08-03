@@ -1,8 +1,11 @@
 #ifndef RAMSTATUSHISTORY_H
 #define RAMSTATUSHISTORY_H
 
-#include "ramobjectlist.h"
-#include "ramstatus.h"
+#include "data-models/ramobjectlist.h"
+
+class RamStatus;
+class RamStep;
+class RamItem;
 
 /**
  * @brief The RamStepStatusHistory class is a list of RamStatus for a specific step and item
@@ -10,7 +13,7 @@
  * and it also keeps a pointer to the corresponding item and step.
  * Furthermore, it implements and 'edit' method, similar to RamObject::edit() which shows a dock widget listing all the RamStatus
  */
-class RamStepStatusHistory : public RamObjectList
+class RamStepStatusHistory : public RamObjectList<RamStatus*>
 {
     Q_OBJECT
 public:

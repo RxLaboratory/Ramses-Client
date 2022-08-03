@@ -127,6 +127,11 @@ QJsonObject RamAbstractObject::data() const
     return DBInterface::instance()->objectData(m_uuid, objectTypeName());
 }
 
+QJsonValue RamAbstractObject::getData(QString key) const
+{
+    return data().value(key);
+}
+
 void RamAbstractObject::setData(QJsonObject data)
 {
     DBInterface::instance()->setObjectData(m_uuid, objectTypeName(), data);
@@ -143,7 +148,7 @@ void RamAbstractObject::insertData(QString key, QJsonValue value)
 
 QString RamAbstractObject::shortName() const
 {
-    return data().value("shortName").toString("");
+    return getData("shortName").toString("");
 }
 
 void RamAbstractObject::setShortName(const QString &shortName)
@@ -153,7 +158,7 @@ void RamAbstractObject::setShortName(const QString &shortName)
 
 QString RamAbstractObject::name() const
 {
-    return data().value("name").toString("");
+    return getData("name").toString("");
 }
 
 void RamAbstractObject::setName(const QString &name)
@@ -163,7 +168,7 @@ void RamAbstractObject::setName(const QString &name)
 
 QString RamAbstractObject::comment() const
 {
-    return data().value("comment").toString("");
+    return getData("comment").toString("");
 }
 
 void RamAbstractObject::setComment(const QString comment)

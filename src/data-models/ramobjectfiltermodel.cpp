@@ -2,20 +2,21 @@
 
 RamObjectFilterModel::RamObjectFilterModel(QObject *parent) : QSortFilterProxyModel(parent)
 {
-    m_emptyList = new RamObjectList(this);
-    this->setSourceModel(m_emptyList);
+    m_emptyList = RamObjectList<RamObject *>::getObject("emptylist", true);
+    setSourceModel(m_emptyList);
 }
 
 void RamObjectFilterModel::setList(QAbstractItemModel *list)
 {
-    if(this->sourceModel() == list) return;
-    if(!list) this->setSourceModel(m_emptyList);
-    this->setSourceModel(list);
+    if (this->sourceModel() == list) return;
+
+    if (!list) this->setSourceModel(m_emptyList);
+    else this->setSourceModel(list);
+
     // Refresh
     QString f = m_currentFilterUuid;
     setFilterUuid("");
     setFilterUuid(f);
-    // prepareFilter();
 }
 
 void RamObjectFilterModel::setFilterUuid(const QString &filterUuid)

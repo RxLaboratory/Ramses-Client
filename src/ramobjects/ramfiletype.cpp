@@ -39,7 +39,7 @@ void RamFileType::setExtensions(QStringList extensions)
 
 QStringList RamFileType::extensions() const
 {
-    QJsonArray arr = data().value("extensions").toArray();
+    QJsonArray arr = getData("extensions").toArray();
     QStringList exts;
     for (int i = 0; i < arr.count(); i++)
     {
@@ -50,7 +50,7 @@ QStringList RamFileType::extensions() const
 
 bool RamFileType::previewable() const
 {
-    return data().value("previewable").toBool(false);
+    return getData("previewable").toBool(false);
 }
 
 void RamFileType::setPreviewable(bool previewable)

@@ -36,6 +36,9 @@ public:
      */
     RamObject(QString shortName, QString name, ObjectType type, QObject *parent = nullptr);
 
+    // reimplemented to disconnect signals
+    virtual void remove() override;
+
     virtual QString filterUuid() const { return QString(); };
 
 public slots:
@@ -80,7 +83,7 @@ protected:
     QFrame *ui_editWidget = nullptr;
 
 private:
-    void construct(QObject *parent);
+    void construct(QObject *parent = nullptr);
     ObjectDockWidget *m_dockWidget = nullptr;
 };
 

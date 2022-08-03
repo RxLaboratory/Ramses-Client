@@ -256,6 +256,12 @@ RO RamObjectList<RO>::at(int i) const
     return m_objectList.at(i);
 }
 
+template<typename RO>
+QList<RO> RamObjectList<RO>::toList()
+{
+    return m_objectList;
+}
+
 // PUBLIC SLOTS //
 
 template<typename RO>

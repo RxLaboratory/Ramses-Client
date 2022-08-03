@@ -292,7 +292,7 @@ QString RamLoader::gotTemplateStep(QJsonObject newS)
     DBISuspender s;
     QString uuid = newS.value("uuid").toString();
 
-    RamStep *step = RamStep::step( uuid );
+    RamStep *step = RamStep::getObject( uuid );
     if(!step) step = new RamStep(
                 newS.value("shortName").toString(),
                 newS.value("name").toString(),
@@ -362,7 +362,7 @@ QString RamLoader::gotTemplateAssetGroup(QJsonObject newAG)
     DBISuspender s;
     QString uuid = newAG.value("uuid").toString();
 
-    RamAssetGroup *assetGroup = RamAssetGroup::assetGroup( uuid );
+    RamAssetGroup *assetGroup = RamAssetGroup::getObject( uuid );
     if(!assetGroup) assetGroup = new RamAssetGroup(
                 newAG.value("shortName").toString(),
                 newAG.value("name").toString(),
@@ -600,7 +600,7 @@ QString RamLoader::gotStep(QJsonObject newS, RamProject *project, bool freezeEst
     DBISuspender s;
     QString uuid = newS.value("uuid").toString();
 
-    RamStep *step = RamStep::step( uuid );
+    RamStep *step = RamStep::getObject( uuid );
     if (!step ) step = new RamStep(
                 newS.value("shortName").toString(),
                 newS.value("name").toString(),
@@ -634,7 +634,7 @@ QString RamLoader::gotStep(QJsonObject newS, RamProject *project, bool freezeEst
     step->setEstimationHard( newS.value("estimationHard").toDouble() );
     step->setEstimationVeryHard( newS.value("estimationVeryHard").toDouble() );
 
-    RamAssetGroup *multiplyGroup = RamAssetGroup::assetGroup( newS.value("multiplyGroupUuid").toString() );
+    RamAssetGroup *multiplyGroup = RamAssetGroup::getObject( newS.value("multiplyGroupUuid").toString() );
     step->setEstimationMultiplyGroup( multiplyGroup );
 
     step->applications()->clear();
@@ -680,7 +680,7 @@ QString RamLoader::gotAssetGroup(QJsonObject newAG, RamProject *project)
     DBISuspender s;
     QString uuid = newAG.value("uuid").toString();
 
-    RamAssetGroup *assetGroup = RamAssetGroup::assetGroup( uuid );
+    RamAssetGroup *assetGroup = RamAssetGroup::getObject( uuid );
     if (!assetGroup) assetGroup = new RamAssetGroup(
                 newAG.value("shortName").toString(),
                 project,
@@ -730,7 +730,7 @@ QString RamLoader::gotAsset(QJsonObject newA, RamProject *project)
     DBISuspender s;
     QString uuid = newA.value("uuid").toString();
 
-    RamAssetGroup *ag = RamAssetGroup::assetGroup( newA.value("assetGroupUuid").toString() );
+    RamAssetGroup *ag = RamAssetGroup::getObject( newA.value("assetGroupUuid").toString() );
     if (!ag) return "";
 
     QString shortName = newA.value("shortName").toString();
@@ -794,7 +794,7 @@ QString RamLoader::gotSequence(QJsonObject newS, RamProject *project)
     DBISuspender s;
     QString uuid = newS.value("uuid").toString();
 
-    RamSequence *sequence = RamSequence::sequence( uuid );
+    RamSequence *sequence = RamSequence::getObject( uuid );
     if (!sequence) sequence = new RamSequence(
                 newS.value("shortName").toString(),
                 project,
@@ -848,13 +848,13 @@ QString RamLoader::gotShot(QJsonObject newS, RamProject *project)
     DBISuspender s;
     QString uuid = newS.value("uuid").toString();
 
-    RamSequence *seq = RamSequence::sequence( newS.value("sequenceUuid").toString() );
+    RamSequence *seq = RamSequence::getObject( newS.value("sequenceUuid").toString() );
     if (!seq) return "";
 
     QString shortName = newS.value("shortName").toString();
     QString name = newS.value("name").toString();
 
-    RamShot *shot = RamShot::shot( uuid );
+    RamShot *shot = RamShot::getObject( uuid );
     if (!shot) shot = new RamShot(
                 shortName,
                 seq,
@@ -920,7 +920,7 @@ QString RamLoader::gotStatus(QJsonObject newS, RamItem *item)
 
     RamUser *user = RamUser::user( newS.value("userUuid").toString( ) );
     RamState *state = RamState::state( newS.value("stateUuid").toString( ) );
-    RamStep *step = RamStep::step( newS.value("stepUuid").toString( ) );
+    RamStep *step = RamStep::getObject( newS.value("stepUuid").toString( ) );
     if ( !user || !state || !step ) return "";
 
     RamStatus *status = RamStatus::status( uuid );
@@ -992,8 +992,8 @@ QString RamLoader::gotPipe(QJsonObject newP, RamProject *project)
     DBISuspender s;
     QString uuid = newP.value("uuid").toString();
 
-    RamStep *inputStep = RamStep::step( newP.value("inputStepUuid").toString( ) );
-    RamStep *outputStep = RamStep::step( newP.value("outputStepUuid").toString( ) );
+    RamStep *inputStep = RamStep::getObject( newP.value("inputStepUuid").toString( ) );
+    RamStep *outputStep = RamStep::getObject( newP.value("outputStepUuid").toString( ) );
 
     if (!inputStep) return uuid;
     if (!outputStep) return uuid;
@@ -1107,7 +1107,7 @@ QString RamLoader::gotScheduleEntry(QJsonObject newSE)
 
     RamUser *user = RamUser::user( newSE.value("userUuid").toString() );
     if (!user) return uuid;
-    RamStep *step = RamStep::step( newSE.value("stepUuid").toString() );
+    RamStep *step = RamStep::getObject( newSE.value("stepUuid").toString() );
 
     // Get existing one if any, otherwise create it
     RamScheduleEntry *entry = RamScheduleEntry::getObject(uuid);

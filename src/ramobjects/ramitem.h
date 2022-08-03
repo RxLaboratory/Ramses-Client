@@ -2,7 +2,6 @@
 #define RAMITEM_H
 
 #include "ramstatus.h"
-#include "data-models/ramobjectlist.h"
 #include "data-models/ramstepstatushistory.h"
 
 class RamProject;
@@ -38,7 +37,7 @@ public:
      * @param step
      * @return The status
      */
-    RamStatus *status(RamObject *step);
+    RamStatus *status(RamStep *step);
     /**
      * @brief status All the latest (current) status
      * @return The latest status for each step
@@ -67,7 +66,6 @@ protected:
 private:
     void construct();
 
-    RamObjectList *m_steps;
     QMap<QString, RamStepStatusHistory*> m_history;
 };
 

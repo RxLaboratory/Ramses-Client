@@ -79,12 +79,12 @@ void RamItem::addStatus(RamStatus *status)
     history->sort();
 }
 
-RamStatus *RamItem::status(RamObject *step)
+RamStatus *RamItem::status(RamStep *step)
 {
     // Get the new current status
     RamStepStatusHistory *history = statusHistory(step);
 
-    if (history->count() == 0) return nullptr;
+    if (history->rowCount() == 0) return nullptr;
 
     history->sort();
     RamStatus *currentStatus = qobject_cast<RamStatus*> ( history->last() );

@@ -1,4 +1,5 @@
 #include "ramstep.h"
+#include "ramnamemanager.h"
 #include "ramproject.h"
 #include "ramses.h"
 #include "stepeditwidget.h"
@@ -24,182 +25,215 @@ RamStep::Type RamStep::stepTypeFromName(QString typeName)
     if (typeName == "All") return All;
 }
 
+RamStep *RamStep::getObject(QString uuid, bool constructNew)
+{
+    RamObject *obj = RamObject::getObject(uuid);
+    if (!obj && constructNew) return new RamStep( uuid );
+    return qobject_cast<RamStep*>( obj );
+}
+
 // PUBLIC //
 
-RamStep::RamStep(QString shortName, QString name, QString uuid) :
-    RamObject(shortName, name, uuid, Ramses::instance())
+RamStep::RamStep(QString shortName, QString name) :
+    RamObject(shortName, name, Step)
 {
-    m_icon = ":/icons/step";
-    m_editRole = Admin;
+    construct();
 
-    setObjectType(Step);
-    m_project = nullptr;
-    m_template = true;
-    if (m_template) m_dbi->createTemplateStep(m_shortName, m_name, m_uuid);
-    init();
+    QJsonObject d = data();
+
+    d.insert("template", true);
+    m_applications = new RamObjectList<RamApplication*>(shortName + "-Apps", name + " | Applications", this);
+    d.insert("applications", m_applications->uuid());
+
+    setData(d);
 }
 
-RamStep::RamStep(QString shortName, QString name, RamProject *project, QString uuid):
-    RamObject(shortName, name, uuid, project)
+RamStep::RamStep(QString shortName, QString name, RamProject *project):
+    RamObject(shortName, name, Step, project)
 {
-    m_icon = ":/icons/step";
-    m_editRole = ProjectAdmin;
-
-    setObjectType(Step);
+    construct();
     m_project = project;
-    m_template = false;
-    m_dbi->createStep(m_shortName, m_name, m_project->uuid(), m_uuid);
-    init();
-}
 
-RamStep::~RamStep()
-{
+    QJsonObject d = data();
 
-}
+    d.insert("template", false);
+    d.insert("project", project->uuid());
+    m_applications = new RamObjectList<RamApplication*>(shortName + "-Apps", name + " | Applications", this);
+    d.insert("applications", m_applications->uuid());
 
-void RamStep::init()
-{
-    m_type = AssetProduction;
-    m_applications = new RamObjectList("", "Applications", this);
-    connect(m_applications, SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(applicationAssigned(QModelIndex,int,int)));
-    connect(m_applications, SIGNAL(rowsAboutToBeRemoved(QModelIndex,int,int)), this, SLOT(applicationUnassigned(QModelIndex,int,int)));
-
-    this->setObjectName( "RamStep" );
-}
-
-void RamStep::freezeEstimations(bool freeze, bool reCompute)
-{
-    m_freezeEstimations = freeze;
-    if (!freeze && reCompute)
-    {
-        this->computeEstimation();
-        this->countAssignedDays();
-    }
+    setData(d);
 }
 
 bool RamStep::isTemplate() const
 {
-    return m_template;
+    return getData("template").toBool(true) || !m_project;
 }
 
 RamStep *RamStep::createFromTemplate(QString projectUuid)
 {
-    RamProject *project = RamProject::getObject( projectUuid );
-    if ( !project ) return nullptr;
-    return createFromTemplate(project);
+    QJsonObject d = data();
+    // Create
+    RamStep *step = new RamStep(d.value("shortName").toString(), d.value("name").toString());
+    // Update and assign data
+    d.insert("project", projectUuid);
+    d.insert("template", false);
+    step->setData(d);
+    return step;
 }
 
 RamStep* RamStep::createFromTemplate(RamProject *project)
 {
-    // Create
-    RamStep *step = new RamStep(m_shortName, m_name, project);
-    step->setType(m_type);
-    step->setColor(m_color);
-    // estimations
-    step->setEstimationMethod( m_estimationMethod );
-    step->setEstimationVeryEasy( m_estimationVeryEasy );
-    step->setEstimationEasy( m_estimationEasy );
-    step->setEstimationMedium( m_estimationMedium );
-    step->setEstimationHard( m_estimationHard );
-    step->setEstimationVeryHard( m_estimationVeryHard );
-    // and update
-    step->update();
-    return step;
+    return createFromTemplate( project->uuid() );
 }
 
-RamStep::Type RamStep::type() const
+RamProject *RamStep::project() const
 {
-    return m_type;
+    return m_project;
 }
 
-void RamStep::setType(const Type &type)
-{
-    if (type == m_type) return;
-    m_dirty = true;
-    m_type = type;
-    emit dataChanged(this);
-}
-
-void RamStep::setType(QString type)
-{
-    if (type == "pre") setType(PreProduction);
-    else if (type == "asset") setType(AssetProduction);
-    else if (type == "shot") setType(ShotProduction);
-    else if (type == "post") setType(PostProduction);
-}
-
-RamObjectList *RamStep::applications() const
+RamObjectList<RamApplication *> *RamStep::applications() const
 {
     return m_applications;
 }
 
-void RamStep::openFile(QString filePath) const
+RamStep::Type RamStep::type() const
 {
-    // Get the application
-    for (int i = 0; i < m_applications->count(); i++)
-    {
-        RamApplication *app = qobject_cast<RamApplication*>( m_applications->at(i) );
-        if (app->open( filePath )) return;
-    }
+    QString typeStr = getData("type").toString();
 
-    // Try with the default app on the system
-    QDesktopServices::openUrl(QUrl("file:///" + filePath));
+    if (typeStr == "pre") return PreProduction;
+    else if (typeStr == "asset") return AssetProduction;
+    else if (typeStr == "shot") return ShotProduction;
+    else if (typeStr == "post") return PostProduction;
+    else return All;
 }
 
-QList<RamWorkingFolder> RamStep::templateWorkingFolders() const
+void RamStep::setType(const Type &type)
 {
-    QString templatesPath = path(TemplatesFolder);
-    QDir dir(templatesPath);
-    QStringList subdirs = dir.entryList( QDir::Dirs | QDir::NoDotAndDotDot );
-
-    RamNameManager nm;
-    QList<RamWorkingFolder> templateFolders;
-    foreach (QString subdir, subdirs)
-    {
-        // check name
-        if (nm.setFileName(subdir))
-            templateFolders.append(RamWorkingFolder( templatesPath + "/" + subdir ));
-    }
-
-    return templateFolders;
-}
-
-void RamStep::applicationAssigned(const QModelIndex &parent, int first, int last)
-{
-    Q_UNUSED(parent)
-
-    for (int i = first; i <= last; i++)
-    {
-        RamObject *appObj = m_applications->at(i);
-        m_dbi->assignApplication(m_uuid, appObj->uuid());
+    switch(type){
+    case PreProduction:
+        insertData("type", "pre");
+        break;
+    case AssetProduction:
+        insertData("type", "asset");
+        break;
+    case ShotProduction:
+        insertData("type", "shot");
+        break;
+    case PostProduction:
+        insertData("type", "post");
+        break;
+    case All:
+        insertData("type", "all");
+        break;
     }
 }
 
-void RamStep::applicationUnassigned(const QModelIndex &parent, int first, int last)
+void RamStep::setType(QString type)
 {
-    Q_UNUSED(parent)
+    insertData("type", type);
+}
 
-    for (int i = first; i <= last; i++)
+QColor RamStep::color() const
+{
+    return QColor( getData("color").toString("#434343") );
+}
+
+void RamStep::setColor(const QColor &newColor)
+{
+    insertData("color", newColor.name());
+}
+
+QString RamStep::publishSettings() const
+{
+    return getData("publishSettings").toString();
+}
+
+void RamStep::setPublishSettings(const QString &newPublishSettings)
+{
+    insertData("publishSettings", newPublishSettings);
+}
+
+float RamStep::estimationVeryHard() const
+{
+    return getData("estimationVeryHard").toDouble();
+}
+
+void RamStep::setEstimationVeryHard(float newEstimationVeryHard)
+{
+    insertData("estimationVeryHard", newEstimationVeryHard);
+}
+
+float RamStep::estimationHard() const
+{
+    return getData("estimationHard").toDouble();
+}
+
+void RamStep::setEstimationHard(float newEstimationHard)
+{
+    insertData("estimationHard", newEstimationHard);
+}
+
+float RamStep::estimationMedium() const
+{
+    return getData("estimationMedium").toDouble();
+}
+
+void RamStep::setEstimationMedium(float newEstimationMedium)
+{
+    insertData("estimationMedium", newEstimationMedium);
+}
+
+float RamStep::estimationEasy() const
+{
+    return getData("estimationEasy").toDouble();
+}
+
+void RamStep::setEstimationEasy(float newEstimationEasy)
+{
+    insertData("estimationEasy", newEstimationEasy);
+}
+
+float RamStep::estimationVeryEasy() const
+{
+    return getData("estimationVeryEasy").toDouble();
+}
+
+void RamStep::setEstimationVeryEasy(float newEstimationVeryEasy)
+{
+    insertData("estimationVeryEasy", newEstimationVeryEasy);
+}
+
+RamStep::EstimationMethod RamStep::estimationMethod() const
+{
+    QString methodStr = getData("estimationMethod").toString("shot");
+    if (methodStr == "shot") return EstimatePerShot;
+    else return EstimatePerSecond;
+}
+
+void RamStep::setEstimationMethod(const EstimationMethod &newEstimationMethod)
+{
+    switch(newEstimationMethod)
     {
-        RamObject *appObj = m_applications->at(i);
-        m_dbi->unassignApplication(m_uuid, appObj->uuid());
+    case EstimatePerShot:
+        insertData("estimationMethod", "shot");
+        break;
+    case EstimatePerSecond:
+        insertData("estimationMethod", "second");
+        break;
     }
 }
 
 RamAssetGroup *RamStep::estimationMultiplyGroup() const
 {
-    return m_estimationMultiplyGroup;
+    return RamAssetGroup::getObject( getData("estimationMultiplyGroup").toString("none"), true);
 }
 
 void RamStep::setEstimationMultiplyGroup(RamAssetGroup *newEstimationMultiplyGroup)
 {
-    if (!newEstimationMultiplyGroup && !m_estimationMultiplyGroup) return;
-    if (newEstimationMultiplyGroup)
-        if (newEstimationMultiplyGroup->is(m_estimationMultiplyGroup)) return;
+    if (newEstimationMultiplyGroup) insertData("estimationMultiplyGroup", newEstimationMultiplyGroup->uuid() );
+    else insertData("estimationMultiplyGroup", "none" );
 
-    m_dirty = true;
     m_estimationChanged = true;
-    m_estimationMultiplyGroup = newEstimationMultiplyGroup;
     emit estimationComputed(this);
 }
 
@@ -276,9 +310,9 @@ QList<float> RamStep::stats(RamUser *user)
     }
 
     // check completed days
-    RamObjectList *items;
-    if (m_type == ShotProduction) items = m_project->shots();
-    else if(m_type == AssetProduction) items = m_project->assets();
+    RamObjectList<RamItem*> *items;
+    if (type() == ShotProduction) items = m_project->shots();
+    else if(type() == AssetProduction) items = m_project->assets();
     else return QList<float>() << 0 << 0 << assignedHalfDays / 2.0 << assignedFutureHalfDays / 2.0;
 
     float estimation = 0;
@@ -286,11 +320,10 @@ QList<float> RamStep::stats(RamUser *user)
 
     RamState *no = Ramses::instance()->noState();
 
-    for (int i =0; i < items->count(); i++)
+    for (int i =0; i < items->rowCount(); i++)
     {
-        RamItem *item = qobject_cast<RamItem*>( items->at(i) );
-        RamObject *stepObj = qobject_cast<RamObject*>(this);
-        RamStatus *status = item->status(stepObj);
+        RamItem *item = items->at(i);
+        RamStatus *status = item->status(this);
 
         if (!status) continue;
         if (no->is(status->state())) continue;
@@ -308,123 +341,54 @@ QList<float> RamStep::stats(RamUser *user)
     return QList<float>() << estimation << completedDays << assignedHalfDays / 2.0 << assignedFutureHalfDays / 2.0;
 }
 
-float RamStep::estimationVeryHard() const
+void RamStep::freezeEstimations(bool freeze, bool reCompute)
 {
-    return m_estimationVeryHard;
-}
-
-void RamStep::setEstimationVeryHard(float newEstimationVeryHard)
-{
-    if (m_estimationVeryHard == newEstimationVeryHard) return;
-    m_dirty = true;
-    m_estimationChanged = true;
-    m_estimationVeryHard = newEstimationVeryHard;
-    emit estimationComputed(this);
-}
-
-float RamStep::estimationHard() const
-{
-    return m_estimationHard;
-}
-
-void RamStep::setEstimationHard(float newEstimationHard)
-{
-    if (m_estimationHard == newEstimationHard) return;
-    m_dirty = true;
-    m_estimationChanged = true;
-    m_estimationHard = newEstimationHard;
-    emit estimationComputed(this);
-}
-
-float RamStep::estimationMedium() const
-{
-    return m_estimationMedium;
-}
-
-void RamStep::setEstimationMedium(float newEstimationMedium)
-{
-    if (m_estimationMedium == newEstimationMedium) return;
-    m_dirty = true;
-    m_estimationChanged = true;
-    m_estimationMedium = newEstimationMedium;
-    emit estimationComputed(this);
-}
-
-float RamStep::estimationEasy() const
-{
-    return m_estimationEasy;
-}
-
-void RamStep::setEstimationEasy(float newEstimationEasy)
-{
-    if (m_estimationEasy == newEstimationEasy) return;
-    m_dirty = true;
-    m_estimationChanged = true;
-    m_estimationEasy = newEstimationEasy;
-    emit estimationComputed(this);
-}
-
-float RamStep::estimationVeryEasy() const
-{
-    return m_estimationVeryEasy;
-}
-
-void RamStep::setEstimationVeryEasy(float newEstimationVeryEasy)
-{
-    if (m_estimationVeryEasy == newEstimationVeryEasy) return;
-    m_dirty = true;
-    m_estimationChanged = true;
-    m_estimationVeryEasy = newEstimationVeryEasy;
-    emit estimationComputed(this);
-}
-
-const RamStep::EstimationMethod &RamStep::estimationMethod() const
-{
-    return m_estimationMethod;
-}
-
-void RamStep::setEstimationMethod(const EstimationMethod &newEstimationMethod)
-{
-    if (m_estimationMethod == newEstimationMethod) return;
-    m_dirty = true;
-    m_estimationChanged = true;
-    m_estimationMethod = newEstimationMethod;
-    emit estimationComputed(this);
-}
-
-const QColor &RamStep::color() const
-{
-    return m_color;
-}
-
-void RamStep::setColor(const QColor &newColor)
-{
-    if (m_color == newColor) return;
-    m_dirty = true;
-    m_color = newColor;
-    emit dataChanged(this);
-}
-
-const QString &RamStep::publishSettings() const
-{
-    return m_publishSettings;
-}
-
-void RamStep::setPublishSettings(const QString &newPublishSettings)
-{
-    if (m_publishSettings == newPublishSettings) return;
-    m_dirty = true;
-    m_publishSettings = newPublishSettings;
-    emit dataChanged(this);
-}
-
-QList<RamObject *> RamStep::inputFileTypes()
-{
-    QList<RamObject *> fts;
-
-    for ( int i = 0; i < m_applications->count(); i++)
+    m_freezeEstimations = freeze;
+    if (!freeze && reCompute)
     {
-        RamApplication *app = qobject_cast<RamApplication*>( m_applications->at(i) );
+        this->computeEstimation();
+        this->countAssignedDays();
+    }
+}
+
+void RamStep::openFile(QString filePath) const
+{
+    // Get the application
+    for (int i = 0; i < m_applications->rowCount(); i++)
+    {
+        RamApplication *app = m_applications->at(i);
+        if (app->open( filePath )) return;
+    }
+
+    // Try with the default app on the system
+    QDesktopServices::openUrl(QUrl("file:///" + filePath));
+}
+
+QList<RamWorkingFolder> RamStep::templateWorkingFolders() const
+{
+    QString templatesPath = path(TemplatesFolder);
+    QDir dir(templatesPath);
+    QStringList subdirs = dir.entryList( QDir::Dirs | QDir::NoDotAndDotDot );
+
+    RamNameManager nm;
+    QList<RamWorkingFolder> templateFolders;
+    foreach (QString subdir, subdirs)
+    {
+        // check name
+        if (nm.setFileName(subdir))
+            templateFolders.append(RamWorkingFolder( templatesPath + "/" + subdir ));
+    }
+
+    return templateFolders;
+}
+
+QList<RamFileType *> RamStep::inputFileTypes()
+{
+    QList<RamFileType *> fts;
+
+    for ( int i = 0; i < m_applications->rowCount(); i++)
+    {
+        RamApplication *app = m_applications->at(i);
         fts.append( app->importFileTypes()->toList() );
         fts.append( app->nativeFileTypes()->toList() );
     }
@@ -432,13 +396,13 @@ QList<RamObject *> RamStep::inputFileTypes()
     return fts;
 }
 
-QList<RamObject *> RamStep::outputFileTypes()
+QList<RamFileType *> RamStep::outputFileTypes()
 {
-    QList<RamObject *> fts;
+    QList<RamFileType *> fts;
 
-    for ( int i = 0; i < m_applications->count(); i++)
+    for ( int i = 0; i < m_applications->rowCount(); i++)
     {
-        RamApplication *app = qobject_cast<RamApplication*>( m_applications->at(i) );
+        RamApplication *app = m_applications->at(i);
         fts.append( app->exportFileTypes()->toList() );
         fts.append( app->nativeFileTypes()->toList() );
     }
@@ -446,24 +410,18 @@ QList<RamObject *> RamStep::outputFileTypes()
     return fts;
 }
 
-RamStep *RamStep::step(QString uuid)
-{
-    return qobject_cast<RamStep*>( RamObject::obj(uuid) );
-}
+// PUBLIC SLOTS //
 
 void RamStep::edit(bool show)
 {
-    if (!m_editReady)
+    if (!ui_editWidget)
     {
-        ObjectEditWidget *w;
         if (this->isTemplate())
-            w = new TemplateStepEditWidget(this);
+            setEditWidget(new TemplateStepEditWidget(this));
         else
-            w = new StepEditWidget(this);
-        setEditWidget(w);
-        m_editReady = true;
-
+            setEditWidget(new StepEditWidget(this));
     }
+
     if (show) showEdit();
 }
 
@@ -471,11 +429,13 @@ void RamStep::computeEstimation()
 {
     if (m_freezeEstimations) return;
 
-    if (m_type == PreProduction) return;
-    if (m_type == PostProduction) return;
+    Type t = type();
 
-    RamObjectList *items;
-    if (m_type == ShotProduction) items = m_project->shots();
+    if (t == PreProduction) return;
+    if (t == PostProduction) return;
+
+    RamObjectList<RamItem*> *items;
+    if (t == ShotProduction) items = m_project->shots();
     else items = m_project->assets();
 
     m_timeSpent = 0;
@@ -488,9 +448,9 @@ void RamStep::computeEstimation()
 
     RamState *no = Ramses::instance()->noState();
 
-    for (int i =0; i < items->count(); i++)
+    for (int i =0; i < items->rowCount(); i++)
     {
-        RamItem *item = qobject_cast<RamItem*>( items->at(i) );
+        RamItem *item = items->at(i);
         RamStatus *status = item->status(this);
 
         if (!status) continue;
@@ -532,14 +492,14 @@ void RamStep::countAssignedDays()
     m_scheduledHalfDays = 0;
     m_scheduledFutureHalfDays = 0;
 
-    for (int i = 0; i < m_project->users()->count(); i++)
+    for (int i = 0; i < m_project->users()->rowCount(); i++)
     {
-        RamUser *u = qobject_cast<RamUser*>( m_project->users()->at(i) );
+        RamUser *u = m_project->users()->at(i);
         if (!u) continue;
 
         for (int j = 0; j < u->schedule()->count(); j++)
         {
-            RamScheduleEntry *entry = qobject_cast<RamScheduleEntry*>( u->schedule()->at(j) );
+            RamScheduleEntry *entry = u->schedule()->at(j);
             if (!entry) continue;
             if (this->is(entry->step()))
             {
@@ -555,25 +515,44 @@ void RamStep::countAssignedDays()
     emit estimationComputed(this);
 }
 
+// PROTECTED //
+
+RamStep::RamStep(QString uuid):
+    RamObject(uuid, Step)
+{
+    construct();
+
+    QJsonObject d = data();
+
+    QString projUuid = d.value("project").toString();
+
+    if (!d.value("template").toBool(true) && projUuid != "")
+    {
+        m_project = RamProject::getObject( projUuid, true );
+    }
+
+    m_applications = RamObjectList<RamApplication*>::getObject( d.value("applications").toString(), true );
+}
+
 QString RamStep::folderPath() const
 {
-    if (m_template) return "";
-    if (m_type == RamStep::PreProduction)
-        return m_project->path(RamObject::PreProdFolder) + "/" + m_project->shortName() + "_G_" + m_shortName;
+    if (isTemplate()) return "";
+    if (type() == RamStep::PreProduction)
+        return m_project->path(RamObject::PreProdFolder) + "/" + m_project->shortName() + "_G_" + shortName();
 
-    else if (m_type == RamStep::PostProduction)
-        return m_project->path(RamObject::PostProdFolder) + "/" + m_project->shortName() + "_G_" + m_shortName;
+    else if (type() == RamStep::PostProduction)
+        return m_project->path(RamObject::PostProdFolder) + "/" + m_project->shortName() + "_G_" + shortName();
 
     else
-        return m_project->path(RamObject::ProdFolder) + "/" + m_project->shortName() + "_G_" + m_shortName;
+        return m_project->path(RamObject::ProdFolder) + "/" + m_project->shortName() + "_G_" + shortName();
 }
 
-RamProject *RamStep::project() const
-{
-    return m_project;
-}
+// PRIVATE //
 
-void RamStep::setProject( RamProject *project )
+void RamStep::construct()
 {
-    m_project = project;
+    m_icon = ":/icons/step";
+    m_editRole = Admin;
+
+    m_project = nullptr;
 }

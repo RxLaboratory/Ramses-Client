@@ -3,61 +3,64 @@
 #include "ramses.h"
 #include "stateeditwidget.h"
 
-RamState::RamState(QString shortName, QString name, QString uuid) :
-    RamObject(shortName, name, uuid, Ramses::instance())
+// STATIC //
+
+RamState *RamState::getObject(QString uuid, bool constructNew )
 {
-    m_icon = ":/icons/state-l";
-    m_editRole = Admin;
-
-    this->setObjectType(State);
-    m_dbi->createState(m_shortName, m_name, m_uuid);
-
-    this->setObjectName( "RamState" );
+    RamObject *obj = RamObject::getObject(uuid);
+    if (!obj && constructNew) return new RamState( uuid );
+    return qobject_cast<RamState*>( obj );
 }
 
-RamState::~RamState()
-{
+// PUBLIC //
 
+RamState::RamState(QString shortName, QString name) :
+    RamObject(shortName, name, State, Ramses::instance())
+{
+    construct();
 }
 
 QColor RamState::color() const
 {
-    return _color;
+    return QColor( getData("color").toString("#434343") );
 }
 
 void RamState::setColor(const QColor &color)
 {
-    if (_color == color) return;
-    m_dirty = true;
-    _color = color;
-    emit dataChanged(this);
+    insertData("color", color.name() );
 }
 
 int RamState::completionRatio() const
 {
-    return _completionRatio;
+    return getData("completionRatio").toInt(50);
 }
 
 void RamState::setCompletionRatio(int completionRatio)
 {
-    if (_completionRatio == completionRatio) return;
-    m_dirty = true;
-    _completionRatio = completionRatio;
-    emit dataChanged(this);
+    insertData("completionRatio", completionRatio);
 }
+
+// PUBLIC SLOTS //
 
 void RamState::edit(bool show)
 {
-    if (!m_editReady)
-    {
-        StateEditWidget *w = new StateEditWidget(this);
-        setEditWidget(w);
-        m_editReady = true;
-    }
+    if (!ui_editWidget) setEditWidget(new StateEditWidget(this));
+
     if (show) showEdit();
 }
 
-RamState *RamState::state(QString uuid)
+// PROTECTED //
+
+RamState::RamState(QString uuid):
+    RamObject(uuid, State)
 {
-    return qobject_cast<RamState*>( RamObject::obj(uuid) );
+    construct();
+}
+
+// PRIVATE //
+
+void RamState::construct()
+{
+    m_icon = ":/icons/state-l";
+    m_editRole = Admin;
 }

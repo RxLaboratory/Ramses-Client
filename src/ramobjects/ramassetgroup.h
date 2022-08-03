@@ -14,7 +14,7 @@ public:
 
     // STATIC //
 
-    static RamAssetGroup *assetGroup(QString uuid, bool constructNew = false);
+    static RamAssetGroup *getObject(QString uuid, bool constructNew = false);
 
     // OTHER //
 

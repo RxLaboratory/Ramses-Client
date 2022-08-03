@@ -24,7 +24,7 @@ RamScheduleComment::RamScheduleComment(RamProject *project)
 
 QColor RamScheduleComment::color() const
 {
-    return QColor( data().value("color").toString("#e3e3e3") );
+    return QColor( getData("color").toString("#e3e3e3") );
 }
 
 void RamScheduleComment::setColor(const QColor &newColor)
@@ -34,7 +34,7 @@ void RamScheduleComment::setColor(const QColor &newColor)
 
 QDateTime RamScheduleComment::date() const
 {
-    return QDateTime::fromString( data().value("date").toString(), "yyyy-MM-dd hh:mm:ss" );
+    return QDateTime::fromString( getData("date").toString(), "yyyy-MM-dd hh:mm:ss" );
 }
 
 void RamScheduleComment::setDate(const QDateTime &newDate)

@@ -23,7 +23,7 @@ RamPipeFile::RamPipeFile(QString shortName, RamProject *project) :
 
 RamFileType *RamPipeFile::fileType() const
 {
-    return RamFileType::getObject( data().value("fileType").toString(), true );
+    return RamFileType::getObject( getData("fileType").toString(), true );
 }
 
 void RamPipeFile::setFileType(RamFileType *newFileType)
@@ -75,7 +75,7 @@ const RamProject *RamPipeFile::project() const
 
 QString RamPipeFile::customSettings() const
 {
-    return data().value("customSettings").toString();
+    return getData("customSettings").toString();
 }
 
 void RamPipeFile::setCustomSettings(const QString &newCustomSettings)

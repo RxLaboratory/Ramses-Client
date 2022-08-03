@@ -7,9 +7,9 @@
 
 // STATIC //
 
-RamAssetGroup *RamAssetGroup::assetGroup(QString uuid, bool constructNew)
+RamAssetGroup *RamAssetGroup::getObject(QString uuid, bool constructNew)
 {
-    RamObject *obj = RamObject::obj(uuid);
+    RamObject *obj = RamObject::getObject(uuid);
     if (!obj && constructNew) return new RamAssetGroup( uuid );
     return qobject_cast<RamAssetGroup*>( obj );
 }
@@ -33,7 +33,7 @@ RamAssetGroup::RamAssetGroup(QString shortName, QString name, RamProject *projec
 
 bool RamAssetGroup::isTemplate() const
 {
-    return data().value("template").toBool(true);
+    return getData("template").toBool(true);
 }
 
 RamAssetGroup *RamAssetGroup::createFromTemplate(RamProject *project)

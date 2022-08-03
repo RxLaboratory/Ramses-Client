@@ -3,137 +3,114 @@
 #include "ramproject.h"
 #include "shoteditwidget.h"
 
-RamShot::RamShot(QString shortName, RamSequence *sequence, QString name, QString uuid):
-    RamItem(shortName, sequence->project(), name, uuid)
+// STATIC //
+
+RamShot *RamShot::getObject(QString uuid, bool constructNew )
 {
-    m_icon = ":/icons/shot";
-    m_editRole = ProjectAdmin;
-
-    m_assets = new RamObjectList("SHOTASSETS", "Assets", this);
-    setObjectType(Shot);
-    setProductionType(RamStep::ShotProduction);
-    m_sequence = sequence;
-    m_sequenceConnection = connect(sequence, SIGNAL(removed(RamObject*)),this,SLOT(remove()));
-    m_filterUuid = sequence->uuid();
-    m_dbi->createShot(m_shortName, m_name, m_sequence->uuid(), m_uuid);
-
-    this->setObjectName( "RamShot " + m_shortName );
-
-    connect(m_assets, SIGNAL(rowsInserted(QModelIndex,int,int)),this,SLOT(assetAssigned(QModelIndex,int,int)));
-    connect(m_assets, SIGNAL(rowsAboutToBeRemoved(QModelIndex,int,int)),this,SLOT(assetUnassigned(QModelIndex,int,int)));
+    RamObject *obj = RamItem::getObject(uuid);
+    if (!obj && constructNew) return new RamShot( uuid );
+    return qobject_cast<RamShot*>( obj );
 }
 
-RamShot::~RamShot()
-{
+// PUBLIC //
 
+RamShot::RamShot(QString shortName, QString name, RamSequence *sequence):
+    RamItem(shortName, name, RamStep::ShotProduction, sequence->project())
+{
+    Q_ASSERT_X(sequence, "RamAsset(shortname, name, assetgroup)", "Sequence can't be null!");
+    construct();
+    insertData("sequence", sequence->uuid() );
+    m_assets = new RamObjectList<RamAsset *>(shortName + "-Assets", name + " Assets", this);
 }
 
 RamSequence *RamShot::sequence() const
 {
-    return m_sequence;
+    return RamSequence::getObject( getData("sequence").toString(), true);
 }
 
 void RamShot::setSequence(RamSequence *sequence)
 {
-    if (m_sequence->is(sequence)) return;
-    m_dirty = true;
-
-    disconnect(m_sequenceConnection);
-
-    setParent(sequence);
-    m_sequence = sequence;
-    m_filterUuid = sequence->uuid();
-
-    m_sequenceConnection = connect(sequence, SIGNAL(removed(RamObject*)),this,SLOT(remove()));
-
-    emit dataChanged(this);
+    insertData("sequence", sequence->uuid() );
 }
 
 qreal RamShot::duration() const
 {
-    if (m_duration == 0) return 5;
-    return m_duration;
+    return getData("duration").toDouble(5);
 }
 
 void RamShot::setDuration(const qreal &duration)
 {
-    if (m_duration == duration) return;
-    m_dirty = true;
-    m_duration = duration;
-    emit dataChanged(this);
+    insertData("duration", duration);
 }
 
-RamShot *RamShot::shot(QString uuid)
+RamObjectList<RamAsset *> *RamShot::assets() const
 {
-    return qobject_cast<RamShot*>( RamObject::obj(uuid) );
+    return m_assets;
 }
 
-void RamShot::update()
+QString RamShot::filterUuid() const
 {
-    if (m_orderChanged)
-    {
-        m_dbi->setShotOrder(m_uuid, m_order);
-        m_orderChanged = false;
-    }
-
-    if(!m_dirty) return;
-    RamObject::update();
-    m_dbi->updateShot(m_uuid, m_shortName, m_name, m_sequence->uuid(), m_duration, m_comment);
+    return getData("sequence").toString();
 }
 
-bool RamShot::move(int index)
-{
-    if (!RamObject::move(index)) return false;
-
-    m_dbi->moveShot(m_uuid, m_order);
-    return true;
-}
+// PUBLIC SLOTS //
 
 void RamShot::edit(bool show)
 {
-    if (!m_editReady)
-    {
-        ShotEditWidget *w = new ShotEditWidget(this);
-        setEditWidget(w);
-        m_editReady = true;
-    }
+    if (!ui_editWidget) setEditWidget(new ShotEditWidget(this));
+
     if (show) showEdit();
+}
+
+// PROTECTED //
+
+RamShot::RamShot(QString uuid):
+    RamItem(uuid)
+{
+    construct();
+    // Get asset list
+    QJsonObject d = data();
+    m_assets = RamObjectList<RamAsset *>::getObject( d.value("assets").toString(), true );
 }
 
 QString RamShot::folderPath() const
 {
-    RamProject *p = m_sequence->project();
-    return p->path(RamObject::ShotsFolder) + "/" + p->shortName() + "_S_" + m_shortName;
+    return m_project->path(RamObject::ShotsFolder) + "/" + m_project->shortName() + "_S_" + shortName();
 }
 
-void RamShot::assetAssigned(const QModelIndex &parent, int first, int last)
+// PRIVATE //
+
+void RamShot::construct()
 {
-    Q_UNUSED(parent)
-
-    for (int i  = first; i <= last; i++)
-    {
-        RamObject *assetObj = m_assets->at(i);
-        m_dbi->assignAsset(m_uuid, assetObj->uuid());
-    }
+    m_icon = ":/icons/shot";
+    m_editRole = ProjectAdmin;
+    m_productionType = RamStep::ShotProduction;
 }
 
-void RamShot::assetUnassigned(const QModelIndex &parent, int first, int last)
-{
-    Q_UNUSED(parent)
 
-    for (int i  = first; i <= last; i++)
-    {
-        RamObject *assetObj = m_assets->at(i);
-        m_dbi->unassignAsset(m_uuid, assetObj->uuid());
-    }
-}
 
-void RamShot::removeFromDB()
-{
-    m_dbi->removeShot(m_uuid);
-}
 
-RamObjectList *RamShot::assets() const
-{
-    return m_assets;
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -15,17 +15,17 @@ RamAsset *RamAsset::getObject( QString uuid, bool constructNew )
 
 // PUBLIC //
 
-RamAsset::RamAsset(QString shortName, QString name, RamAssetGroup *ag, RamProject *project) :
-    RamItem(shortName, name, RamStep::AssetProduction, project)
+RamAsset::RamAsset(QString shortName, QString name, RamAssetGroup *ag) :
+    RamItem(shortName, name, RamStep::AssetProduction, ag->project())
 {
-    Q_ASSERT_X(ag, "RamAsset(shortname, name, assetgroup, prokect)", "AssetGroup can't be null!");
+    Q_ASSERT_X(ag, "RamAsset(shortname, name, assetgroup)", "AssetGroup can't be null!");
     construct();
     setAssetGroup(ag);
 }
 
 RamAssetGroup *RamAsset::assetGroup() const
 {
-    return RamAssetGroup::assetGroup( data().value("assetGroup").toString(), true );
+    return RamAssetGroup::getObject( getData("assetGroup").toString(), true );
 }
 
 void RamAsset::setAssetGroup(RamAssetGroup *assetGroup)
@@ -37,7 +37,7 @@ void RamAsset::setAssetGroup(RamAssetGroup *assetGroup)
 
 QStringList RamAsset::tags() const
 {
-    QJsonArray arr = data().value("tags").toArray();
+    QJsonArray arr = getData("tags").toArray();
     QStringList ts;
     for (int i = 0; i < arr.count(); i++)
     {
@@ -59,14 +59,14 @@ void RamAsset::setTags(QString tags)
 
 void RamAsset::addTag(QString tag)
 {
-    QJsonArray arr = data().value("tags").toArray();
+    QJsonArray arr = getData("tags").toArray();
     arr.append(tag.trimmed().toLower());
     insertData("tags", arr);
 }
 
 void RamAsset::removeTag(QString tag)
 {
-    QJsonArray arr = data().value("tags").toArray();
+    QJsonArray arr = getData("tags").toArray();
     if (!arr.contains(tag)) return;
     for (int i = 0; i < arr.count(); i++)
     {
@@ -81,7 +81,7 @@ void RamAsset::removeTag(QString tag)
 
 bool RamAsset::hasTag(QString tag)
 {
-    QJsonArray arr = data().value("tags").toArray();
+    QJsonArray arr = getData("tags").toArray();
     return arr.contains(tag);
 }
 

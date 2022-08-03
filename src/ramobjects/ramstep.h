@@ -3,13 +3,15 @@
 
 #include <QDesktopServices>
 
-#include "ramobject.h"
-#include "ramuser.h"
-#include "ramworkingfolder.h"
 #include "data-models/ramobjectlist.h"
+#include "ramobject.h"
 
 class RamAssetGroup;
 class RamProject;
+class RamApplication;
+class RamFileType;
+class RamUser;
+class RamWorkingFolder;
 
 class RamStep : public RamObject
 {
@@ -29,7 +31,7 @@ public:
                             EstimatePerSecond = 1 };
     Q_ENUM(EstimationMethod)
 
-    // STATIC //
+    // STATIC METHODS //
 
     /**
      * @brief stepTypeName gets the name of a type, as used in the Database and API classes
@@ -39,50 +41,33 @@ public:
     static const QString stepTypeName(Type type);
     static Type stepTypeFromName(QString typeName);
 
-    // OTHER //
+    static RamStep *getObject(QString uuid, bool constructNew = false);
+
+    // METHODS //
 
     // Template (no project set)
-    explicit RamStep(QString shortName, QString name = "", QString uuid = "");
+    explicit RamStep(QString shortName, QString name);
     // Actual step
-    explicit RamStep(QString shortName, QString name, RamProject *project,  QString uuid = "");
-    ~RamStep();
-    void init();
-
-    /**
-     * @brief freezeEstimations stops automatic update of the estimations.
-     * Use this to improve performance when loading a bunch of data.
-     * @param freeze
-     */
-    void freezeEstimations(bool freeze = true, bool reCompute = true);
+    explicit RamStep(QString shortName, QString name, RamProject *project);
 
     bool isTemplate() const;
     RamStep *createFromTemplate(RamProject *project);
     RamStep *createFromTemplate(QString projectUuid);
 
+    RamProject *project() const;
+    RamObjectList<RamApplication*> *applications() const;
+
     Type type() const;
     void setType(const Type &type);
     void setType(QString type);
 
-    RamProject *project() const;
-    void setProject( RamProject *project );
-
-    RamObjectList *applications() const;
-
-    void openFile(QString filePath) const;
-    QList<RamWorkingFolder> templateWorkingFolders() const;
-
-    QList<RamObject *> inputFileTypes();
-    QList<RamObject *> outputFileTypes();
-
-    static RamStep *step(QString uuid);
-
-    const QColor &color() const;
+    QColor color() const;
     void setColor(const QColor &newColor);
 
-    const QString &publishSettings() const;
+    QString publishSettings() const;
     void setPublishSettings(const QString &newPublishSettings);
 
-    const EstimationMethod &estimationMethod() const;
+    EstimationMethod estimationMethod() const;
     void setEstimationMethod(const EstimationMethod &newEstimationMethod);
 
     float estimationVeryEasy() const;
@@ -118,6 +103,20 @@ public:
      */
     QList<float> stats(RamUser *user);
 
+    /**
+     * @brief freezeEstimations stops automatic update of the estimations.
+     * Use this to improve performance when loading a bunch of data.
+     * @param freeze Whether to freeze the estimations
+     * @param reCompute When false, the estimation will not be recomputed on unfreeze
+     */
+    void freezeEstimations(bool freeze = true, bool reCompute = true);
+
+    void openFile(QString filePath) const;
+    QList<RamWorkingFolder> templateWorkingFolders() const;
+
+    QList<RamFileType *> inputFileTypes();
+    QList<RamFileType *> outputFileTypes();
+
 signals:
     void estimationComputed(RamStep*);
 
@@ -126,7 +125,6 @@ public slots:
 
     void computeEstimation();
     void countAssignedDays();
-
 
 protected:
 
@@ -138,19 +136,18 @@ protected:
      */
     static const QMetaEnum m_stepTypeMeta;
 
+    // METHODS //
+
+    RamStep(QString uuid);
+
     virtual QString folderPath() const override;
 
-private slots:
-    void applicationAssigned(const QModelIndex &parent, int first, int last);
-    void applicationUnassigned(const QModelIndex &parent, int first, int last);
-
 private:
-    bool m_template;
-    Type m_type;
-    QColor m_color;
-    QString m_publishSettings;
+    void construct();
+
+
     RamProject *m_project;
-    RamObjectList *m_applications;
+    RamObjectList<RamApplication*> *m_applications;
 
     /**
      * @brief When true, estimations won't be computed.
@@ -159,16 +156,12 @@ private:
      */
     bool m_freezeEstimations = false;
 
-    EstimationMethod m_estimationMethod = EstimatePerShot;
-    float m_estimationVeryEasy = 0.2;
-    float m_estimationEasy = 0.5;
-    float m_estimationMedium = 1.0;
-    float m_estimationHard = 2.0;
-    float m_estimationVeryHard = 3.0;
-    RamAssetGroup *m_estimationMultiplyGroup = nullptr;
+    /**
+     * @brief m_estimationChanged is set to true if the estimation needs to be recomputed
+     */
     bool m_estimationChanged = false;
 
-
+    // Estimation cache
     qint64 m_timeSpent = 0;
     float m_estimation = 0;
     float m_completionRatio = 0;

@@ -52,6 +52,8 @@ public:
     RO fromName(QString shortName, QString name = "") const;
     RO at(int i) const;
 
+    QList<RO> toList();
+
 public slots:
     void removeAll(RO obj);
     void sort();
