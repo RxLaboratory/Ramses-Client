@@ -217,7 +217,11 @@ public:
      * @return
      */
     static quint64 machineKey();
-
+    /**
+     * @brief clientKey Returns a key derived from clientBuildKey
+     * @return
+     */
+    static quint64 clientKey(QByteArray clientBuildKey);
 private:
 
     void splitKey();

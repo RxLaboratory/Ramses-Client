@@ -3,9 +3,10 @@
 
 #include <QObject>
 
-#include "ramfiletype.h"
+#include "ramobject.h"
 
 class RamProject;
+class RamFileType;
 
 class RamPipeFile : public RamObject
 {

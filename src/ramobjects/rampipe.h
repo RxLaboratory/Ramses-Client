@@ -1,11 +1,12 @@
 #ifndef RAMPIPE_H
 #define RAMPIPE_H
 
-#include "rampipefile.h"
-#include "data-models/ramobjectlist.h"
-#include "ramstep.h"
+#include "ramobject.h"
 
+template<typename RO> class RamObjectList;
 class RamProject;
+class RamStep;
+class RamPipeFile;
 
 class RamPipe : public RamObject
 {

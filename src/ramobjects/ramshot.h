@@ -1,11 +1,11 @@
 #ifndef RAMSHOT_H
 #define RAMSHOT_H
 
-#include "data-models/ramobjectlist.h"
 #include "ramitem.h"
 
 class RamSequence;
 class RamAsset;
+template<typename RO> class RamObjectList;
 
 class RamShot : public RamItem
 {

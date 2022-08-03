@@ -1,10 +1,7 @@
 ﻿#include "ramstatus.h"
 
-#include "ramasset.h"
-#include "ramshot.h"
 #include "statuseditwidget.h"
 #include "ramses.h"
-
 #include "ramfilemetadatamanager.h"
 
 // PROTECTED //

@@ -137,7 +137,7 @@ QString RamLoader::gotUser(QJsonObject newU)
     DBISuspender s;
     QString uuid = newU.value("uuid").toString();
 
-    RamUser *user = RamUser::user( uuid );
+    RamUser *user = RamUser::getObject( uuid );
     if(!user) user = new RamUser(
                 newU.value("shortName").toString(),
                 newU.value("name").toString(),
@@ -223,7 +223,7 @@ QString RamLoader::gotProject(QJsonObject newP, bool init)
         // Check if the user is already available
         if (project->users()->contains( u.toString() )) continue;
         // Add
-        project->users()->append( RamUser::user( u.toString() ) );
+        project->users()->append( RamUser::getObject( u.toString() ) );
     }
 
     if (!init)
@@ -918,7 +918,7 @@ QString RamLoader::gotStatus(QJsonObject newS, RamItem *item)
     DBISuspender s;
     QString uuid = newS.value("uuid").toString();
 
-    RamUser *user = RamUser::user( newS.value("userUuid").toString( ) );
+    RamUser *user = RamUser::getObject( newS.value("userUuid").toString( ) );
     RamState *state = RamState::state( newS.value("stateUuid").toString( ) );
     RamStep *step = RamStep::getObject( newS.value("stepUuid").toString( ) );
     if ( !user || !state || !step ) return "";
@@ -933,7 +933,7 @@ QString RamLoader::gotStatus(QJsonObject newS, RamItem *item)
     status->setComment( newS.value("comment").toString( ) );
     status->setVersion( newS.value("version").toInt( ) );
     status->setDate( QDateTime::fromString( newS.value("date").toString(), "yyyy-MM-dd hh:mm:ss"));
-    status->assignUser( RamUser::user( newS.value("assignedUserUuid").toString( )));
+    status->assignUser( RamUser::getObject( newS.value("assignedUserUuid").toString( )));
     status->setPublished( newS.value("published").toInt() == 1);
     status->setTimeSpent( newS.value("timeSpent").toInt() );
     float estimation = newS.value("estimation").toDouble();
@@ -1105,7 +1105,7 @@ QString RamLoader::gotScheduleEntry(QJsonObject newSE)
 
     QString uuid = newSE.value("uuid").toString();
 
-    RamUser *user = RamUser::user( newSE.value("userUuid").toString() );
+    RamUser *user = RamUser::getObject( newSE.value("userUuid").toString() );
     if (!user) return uuid;
     RamStep *step = RamStep::getObject( newSE.value("stepUuid").toString() );
 

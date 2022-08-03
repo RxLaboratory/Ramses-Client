@@ -1,10 +1,13 @@
 #ifndef RAMITEM_H
 #define RAMITEM_H
 
-#include "ramstatus.h"
-#include "data-models/ramstepstatushistory.h"
+#include "ramstep.h"
 
-class RamProject;
+class RamStepStatusHistory;
+class RamStatus;
+template<typename RO> class RamObjectList;
+
+class RamState;
 
 /**
  * @brief The RamItem class is the base class for RamShot and RamAsset

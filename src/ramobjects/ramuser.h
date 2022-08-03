@@ -5,44 +5,51 @@
 
 #include "ramobject.h"
 
-class RamObjectList;
 class RamStep;
+class RamScheduleEntry;
+template<typename RO> class RamObjectList;
 
 class RamUser : public RamObject
 {
     Q_OBJECT
 public:
-    explicit RamUser(QString shortName, QString name = "", QString uuid = "");
-    ~RamUser();
+
+    // STATIC METHODS //
+
+    static RamUser *getObject(QString uuid, bool constructNew = false);
+
+    // METHODS //
+
+    RamUser(QString shortName, QString name);
 
     UserRole role() const;
     void setRole(const UserRole &role);
     void setRole(const QString role);
 
-    void updatePassword(QString c, QString n);
+    QColor color() const;
+    void setColor(const QColor &newColor);
 
-    RamObjectList *schedule() const;
+    RamObjectList<RamScheduleEntry*> *schedule() const;
     bool isStepAssigned(RamStep *step) const;
 
-    static RamUser *user(QString uuid);
-
-    const QColor &color() const;
-    void setColor(const QColor &newColor);
+    void updatePassword(QString c, QString n);
 
 public slots:
     virtual void edit(bool show = true) override;
 
-private slots:
-    void scheduleChanged(RamObject *entryObj);
-
 protected:
-    virtual QString folderPath() const override;   
+    RamUser(QString uuid);
+    virtual QString folderPath() const override;
+
+    // Reimplement data methods to encrypt user data
+    virtual QString dataString() const override;
+    virtual void setDataString(QString data) override;
+    virtual void createData(QString data) override;
 
 private:
-    UserRole m_role;
-    RamObjectList *m_schedule;
+    void construct();
 
-    QColor m_color;
+    RamObjectList<RamScheduleEntry*> *m_schedule;
 };
 
 #endif // RAMUSER_H

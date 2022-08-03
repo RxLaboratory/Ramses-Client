@@ -3,7 +3,6 @@
 
 #include <QDesktopServices>
 
-#include "data-models/ramobjectlist.h"
 #include "ramobject.h"
 
 class RamAssetGroup;
@@ -12,6 +11,7 @@ class RamApplication;
 class RamFileType;
 class RamUser;
 class RamWorkingFolder;
+template<typename RO> class RamObjectList;
 
 class RamStep : public RamObject
 {

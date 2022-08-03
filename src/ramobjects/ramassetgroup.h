@@ -3,9 +3,8 @@
 
 #include "ramobject.h"
 
-#include "data-models/ramobjectfiltermodel.h"
-
 class RamProject;
+class RamObjectFilterModel;
 
 class RamAssetGroup : public RamObject
 {

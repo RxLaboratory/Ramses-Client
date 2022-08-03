@@ -1,6 +1,5 @@
 #include "ramitem.h"
 
-#include "ramproject.h"
 #include "ramses.h"
 
 // STATIC //

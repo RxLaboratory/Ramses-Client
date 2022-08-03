@@ -15,7 +15,7 @@ RamState *RamState::getObject(QString uuid, bool constructNew )
 // PUBLIC //
 
 RamState::RamState(QString shortName, QString name) :
-    RamObject(shortName, name, State, Ramses::instance())
+    RamObject(shortName, name, State)
 {
     construct();
 }

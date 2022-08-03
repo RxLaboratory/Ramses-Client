@@ -22,17 +22,17 @@ void DBInterface::setOnline()
     setConnectionStatus(NetworkUtils::Connecting, "Connecting to the Ramses Server...");
 }
 
-void DBInterface::createObject(QString uuid, QString table, QJsonObject data)
+void DBInterface::createObject(QString uuid, QString table, QString data)
 {
     m_ldi->createObject(uuid, table, data);
 }
 
-QJsonObject DBInterface::objectData(QString uuid, QString table)
+QString DBInterface::objectData(QString uuid, QString table)
 {
     return m_ldi->objectData(uuid, table);
 }
 
-void DBInterface::setObjectData(QString uuid, QString table, QJsonObject data)
+void DBInterface::setObjectData(QString uuid, QString table, QString data)
 {
     m_ldi->setObjectData(uuid, table, data);
 }

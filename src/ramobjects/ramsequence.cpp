@@ -1,4 +1,5 @@
 #include "ramsequence.h"
+
 #include "ramproject.h"
 #include "sequenceeditwidget.h"
 

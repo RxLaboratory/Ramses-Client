@@ -92,7 +92,8 @@ RamAbstractObject::RamAbstractObject(QString shortName, QString name, ObjectType
     data.insert("shortName", shortName);
     data.insert("name", name);
     data.insert("comment", "");
-    DBInterface::instance()->createObject(m_uuid, objectTypeName(), data);
+    QJsonDocument doc(data);
+    createData(doc.toJson(QJsonDocument::Compact));
 }
 
 RamAbstractObject::~RamAbstractObject()
@@ -124,7 +125,11 @@ QString RamAbstractObject::objectTypeName() const
 
 QJsonObject RamAbstractObject::data() const
 {
-    return DBInterface::instance()->objectData(m_uuid, objectTypeName());
+    QString dataStr = dataString();
+    if (dataStr == "") return QJsonObject();
+
+    QJsonDocument doc = QJsonDocument::fromJson(dataStr.toUtf8());
+    return doc.object();
 }
 
 QJsonValue RamAbstractObject::getData(QString key) const
@@ -134,7 +139,8 @@ QJsonValue RamAbstractObject::getData(QString key) const
 
 void RamAbstractObject::setData(QJsonObject data)
 {
-    DBInterface::instance()->setObjectData(m_uuid, objectTypeName(), data);
+    QJsonDocument doc = QJsonDocument(data);
+    setDataString(doc.toJson(QJsonDocument::Compact));
     emitDataChanged(data);
 }
 
@@ -291,4 +297,19 @@ RamAbstractObject::RamAbstractObject(QString uuid, ObjectType type)
 {
     m_uuid = uuid;
     m_objectType = type;
+}
+
+void RamAbstractObject::setDataString(QString data)
+{
+    DBInterface::instance()->setObjectData(m_uuid, objectTypeName(), data);
+}
+
+QString RamAbstractObject::dataString() const
+{
+    return DBInterface::instance()->objectData(m_uuid, objectTypeName());
+}
+
+void RamAbstractObject::createData(QString data)
+{
+    DBInterface::instance()->createObject(m_uuid, objectTypeName(), data);
 }

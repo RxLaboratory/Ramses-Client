@@ -1,8 +1,7 @@
 #include "ramasset.h"
-#include "ramassetgroup.h"
-#include "asseteditwidget.h"
 
-#include "ramproject.h"
+#include "asseteditwidget.h"
+#include "ramses.h"
 
 // STATIC //
 

@@ -3,12 +3,13 @@
 
 #include <QDateTime>
 
-#include "ramuser.h"
-#include "ramstate.h"
-#include "ramstep.h"
+#include "ramobject.h"
 
 class RamItem;
-class StatusEditWidget;
+class RamUser;
+class RamStep;
+class RamState;
+class RamWorkingFolder;
 
 class RamStatus : public RamObject
 {

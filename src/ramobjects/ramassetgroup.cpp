@@ -1,7 +1,6 @@
 #include "ramassetgroup.h"
-#include "ramproject.h"
-#include "ramses.h"
 
+#include "ramses.h"
 #include "assetgroupeditwidget.h"
 #include "templateassetgroupeditwidget.h"
 

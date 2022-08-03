@@ -2,7 +2,6 @@
 #define RAMITEMTABLE_H
 
 #include "ramobjectlist.h"
-#include "ramstepstatushistory.h"
 #include "ramitem.h"
 
 /**

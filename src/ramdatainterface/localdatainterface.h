@@ -26,10 +26,10 @@ public:
 
     // DATA INTERFACE //
 
-    void createObject(QString uuid, QString table, QJsonObject data);
+    void createObject(QString uuid, QString table, QString data);
 
-    QJsonObject objectData(QString uuid, QString table);
-    void setObjectData(QString uuid, QString table, QJsonObject data);
+    QString objectData(QString uuid, QString table);
+    void setObjectData(QString uuid, QString table, QString data);
 
     void removeObject(QString uuid, QString table);
     void restoreObject(QString uuid, QString table);

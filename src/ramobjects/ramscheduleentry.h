@@ -2,8 +2,9 @@
 #define RAMSCHEDULEENTRY_H
 
 #include "ramobject.h"
-#include "ramuser.h"
-#include "ramstep.h"
+
+class RamUser;
+class RamStep;
 
 class RamScheduleEntry : public RamObject
 {

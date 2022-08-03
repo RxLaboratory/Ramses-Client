@@ -2,8 +2,9 @@
 #define RAMAPPLICATION_H
 
 #include "ramobject.h"
-#include "ramfiletype.h"
-#include "data-models/ramobjectlist.h"
+
+template<typename RO> class RamObjectList;
+class RamFileType;
 
 class RamApplication : public RamObject
 {

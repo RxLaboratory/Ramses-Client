@@ -189,7 +189,7 @@ QString Ramses::folderPath() const
 
 void Ramses::setCurrentProject(QString shortName)
 {
-    setCurrentProject( RamProject::projectFromName(shortName) );
+    setCurrentProject( RamProject::objectFromName(shortName) );
 }
 
 void Ramses::setCurrentProjectUuid(QString uuid)

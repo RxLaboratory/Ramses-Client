@@ -1,5 +1,5 @@
 1- implement all ramobjects
-	- arrivé à RamProject
+	- faire Ramses
 	- ramsteptatushistory:
 		- status added, changed or removed or cleared: trigger step computeEstimation if and only if it's the last one, and notify containing item to emit statusChanged
 	- reimplement herited ramobjectlist
@@ -26,7 +26,9 @@
 		periodic sync: Sync interval: option, default, 30s
 		get online
 		get offline (voluntarily)
-		
+
+6- Doc
+	Private data: local user data is just obfuscated, it doesn't use a strong encryption. Keep the file safe!
 		
 		
 CREATE TABLE "RamUser" (

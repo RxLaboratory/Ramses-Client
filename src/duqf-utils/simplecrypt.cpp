@@ -265,3 +265,16 @@ quint64 SimpleCrypt::machineKey()
     quint64 key = id.toULongLong(nullptr, 16);
     return key;
 }
+
+quint64 SimpleCrypt::clientKey(QByteArray clientBuildKey)
+{
+    // Get key
+    QByteArray id = QCryptographicHash::hash(clientBuildKey, QCryptographicHash::Sha3_512);
+    // Convert to hex
+    id = id.toHex();
+    // Truncate to 64 bits (4 hex words)
+    id.truncate(16);
+    // Get our uint64
+    quint64 key = id.toULongLong(nullptr, 16);
+    return key;
+}

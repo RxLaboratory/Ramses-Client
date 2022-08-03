@@ -1,16 +1,17 @@
 #ifndef RAMPROJECT_H
 #define RAMPROJECT_H
 
-#include "data-models/ramobjectlist.h"
 #include "ramobject.h"
-#include "ramstep.h"
-#include "ramassetgroup.h"
-#include "ramsequence.h"
-#include "ramschedulecomment.h"
-#include "rampipe.h"
-#include "dbisuspender.h"
-#include "data-models/ramitemtable.h"
-#include "rampipefile.h"
+
+class RamSequence;
+class RamPipe;
+class RamPipeFile;
+class RamScheduleComment;
+class RamStep;
+class RamAssetGroup;
+class RamItemTable;
+class RamUser;
+template<typename RO> class RamObjectList;
 
 class RamProject : public RamObject
 {
@@ -23,30 +24,28 @@ public:
 
     // METHODS //
 
-
-
-
-
-
-
-
     RamProject(QString shortName, QString name);
 
-    /**
-     * @brief freezeEstimations stops automatic update of the estimations.
-     * Use this to improve performance when loading a bunch of data.
-     * @param freeze
-     */
-    void freezeEstimations(bool freeze = true, bool reCompute = true);
-
-    void setFolderPath(const QString &folderPath);
-    void resetDbFolderPath();
-    QString defaultPath() const;
-    bool pathIsDefault() const;
-    bool pathIsDefault(QString p) const;
+    // Steps
+    RamObjectList<RamStep*> *steps() const;
+    // Asset Groups
+    RamObjectList<RamAssetGroup*> *assetGroups() const;
+    // Sequences
+    RamObjectList<RamSequence*> *sequences() const;
+    // Shots
+    RamItemTable *shots() const;
+    // Assets
+    RamItemTable *assets() const;
+    // Pipeline
+    RamObjectList<RamPipe*> *pipeline() const;
+    RamObjectList<RamPipeFile*> *pipeFiles() const;
+    // Users
+    RamObjectList<RamUser*> *users() const;
+    // Schedule comments
+    RamObjectList<RamScheduleComment*> *scheduleComments() const;
 
     qreal framerate() const;
-    void setFramerate(const qreal &framerate);
+    void setFramerate(const qreal &newFramerate);
 
     int width() const;
     void setWidth(const int width, const qreal &pixelAspect = 1);
@@ -58,26 +57,19 @@ public:
     void updateAspectRatio(const qreal &pixelAspect = 1);
     void setAspectRatio(const qreal &aspectRatio);
 
-    // Steps
-    RamObjectList *steps() const;
-    // Asset Groups
-    RamObjectList *assetGroups() const;
-    // Sequences
-    RamObjectList *sequences() const;
-    // Shots
-    RamItemTable *shots() const;
-    double duration() const;
-    // Assets
-    RamItemTable *assets() const;
-    // Pipeline
-    RamObjectList *pipeline();
-    RamPipe *pipe(RamStep *outputStep, RamStep *inputStep);
-    RamObjectList *pipeFiles();
-    // Users
-    RamObjectList *users() const;
-    // Schedule comments
-    RamObjectList *scheduleComments() const;
+    QDate deadline() const;
+    void setDeadline(const QDate &newDeadline);
 
+    double duration() const;
+
+    RamPipe *pipe(RamStep *outputStep, RamStep *inputStep);
+
+    /**
+     * @brief freezeEstimations stops automatic update of the estimations.
+     * Use this to improve performance when loading a bunch of data.
+     * @param freeze
+     */
+    void freezeEstimations(bool freeze = true, bool reCompute = true);
     // Production Tracking
     qint64 timeSpent() const; //seconds
     float estimation() const; //days
@@ -91,13 +83,13 @@ public:
      */
     QList<float> stats(RamUser *user);
 
+    void setFolderPath(const QString &newFolderPath);
+    void resetDbFolderPath();
+    QString defaultPath() const;
+    bool pathIsDefault() const;
+    bool pathIsDefault(QString p) const;
 
-    static RamProject *projectFromName(QString nameOrShortName);
-
-    const QDate &deadline() const;
-    void setDeadline(const QDate &newDeadline);
-
-    const QString &dbFolderPath() const;
+    QString dbFolderPath() const;
     void setDbFolderPath(const QString &newDbFolderPath);
 
 signals:
@@ -110,25 +102,21 @@ signals:
 public slots:
     void updatePath();
     virtual void edit(bool show = true) override;
-
     void computeEstimation();
 
 protected:
     RamProject(QString uuid);
     virtual QString folderPath() const override;
 
-private slots:
-    void userAssigned(const QModelIndex &parent, int first, int last);
-    void userUnassigned(const QModelIndex &parent, int first, int last);
-
 private:
     void construct();
 
+    // LISTS
     RamObjectList<RamStep*> *m_steps;
     RamObjectList<RamSequence*> *m_sequences;
     RamObjectList<RamAssetGroup*> *m_assetGroups;
-    RamItemTable<RamAsset*> *m_assets;
-    RamItemTable<RamShot*> *m_shots;
+    RamItemTable *m_assets;
+    RamItemTable *m_shots;
     RamObjectList<RamPipe*> *m_pipeline;
     RamObjectList<RamPipeFile*> *m_pipeFiles;
     RamObjectList<RamUser*> *m_users;

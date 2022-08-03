@@ -1,5 +1,5 @@
 #include "ramshot.h"
-#include "ramsequence.h"
+
 #include "ramproject.h"
 #include "shoteditwidget.h"
 

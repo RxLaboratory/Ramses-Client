@@ -119,7 +119,7 @@ public:
      * @brief data gets the data from the database
      * @return
      */
-    QJsonObject data() const;
+    virtual QJsonObject data() const;
     /**
      * @brief getData returns the data for a specific key
      * @return
@@ -129,7 +129,7 @@ public:
      * @brief setData sets an entirely new data
      * @param data
      */
-    void setData(QJsonObject data);
+    virtual void setData(QJsonObject data);
     /**
      * @brief insertData inserts or updates a value in the data
      * @param key
@@ -193,6 +193,11 @@ protected:
      * @param uuid
      */
     RamAbstractObject(QString uuid, ObjectType type);
+
+    // Low level data handling.
+    virtual QString dataString() const;
+    virtual void setDataString(QString data);
+    virtual void createData(QString data);
 
     virtual void emitDataChanged(QJsonObject data) { Q_UNUSED(data) };
     virtual void emitRemoved() {};

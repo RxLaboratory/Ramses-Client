@@ -1,11 +1,8 @@
 #include "ramstep.h"
-#include "ramnamemanager.h"
-#include "ramproject.h"
+
 #include "ramses.h"
 #include "stepeditwidget.h"
 #include "templatestepeditwidget.h"
-#include "ramassetgroup.h"
-#include "ramscheduleentry.h"
 
 // STATIC //
 

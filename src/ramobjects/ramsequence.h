@@ -2,8 +2,8 @@
 #define RAMSEQUENCE_H
 
 #include "ramobject.h"
-#include "data-models/ramobjectfiltermodel.h"
 
+class RamObjectFilterModel;
 class RamProject;
 
 class RamSequence : public RamObject

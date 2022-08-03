@@ -9,11 +9,9 @@ LocalDataInterface *LocalDataInterface::instance()
     return _instance;
 }
 
-void LocalDataInterface::createObject(QString uuid, QString table, QJsonObject data)
+void LocalDataInterface::createObject(QString uuid, QString table, QString data)
 {
     QDateTime modified = QDateTime::currentDateTimeUtc();
-    QJsonDocument doc = QJsonDocument(data);
-
 
     QSqlDatabase db = QSqlDatabase::database("localdata");
     QSqlQuery query = QSqlQuery(db);
@@ -21,13 +19,13 @@ void LocalDataInterface::createObject(QString uuid, QString table, QJsonObject d
     query.prepare("INSERT INTO :table (uuid, data, modified, removed) VALUES (:uuid, :data, :modified, 0);");
     query.bindValue(":table", table);
     query.bindValue(":uuid", uuid);
-    query.bindValue(":data", doc.toJson(QJsonDocument::Compact));
+    query.bindValue(":data", data);
     query.bindValue(":modified", modified.toString("yyy-MM-dd hh:mm:ss:zzz"));
 
     query.exec();
 }
 
-QJsonObject LocalDataInterface::objectData(QString uuid, QString table)
+QString LocalDataInterface::objectData(QString uuid, QString table)
 {
     QSqlDatabase db = QSqlDatabase::database("localdata");
     QSqlQuery query = QSqlQuery(db);
@@ -38,19 +36,13 @@ QJsonObject LocalDataInterface::objectData(QString uuid, QString table)
 
     query.exec();
 
-    if (query.first()) {
-        QString dataStr = query.value(0).toString();
-        QJsonDocument doc = QJsonDocument::fromJson(dataStr.toUtf8());
-        return doc.object();
-    }
-
-    return QJsonObject();
+    if (query.first()) return query.value(0).toString();
+    return "";
 }
 
-void LocalDataInterface::setObjectData(QString uuid, QString table, QJsonObject data)
+void LocalDataInterface::setObjectData(QString uuid, QString table, QString data)
 {
     QDateTime modified = QDateTime::currentDateTimeUtc();
-    QJsonDocument doc = QJsonDocument(data);
 
     QSqlDatabase db = QSqlDatabase::database("localdata");
     QSqlQuery query = QSqlQuery(db);
@@ -58,7 +50,7 @@ void LocalDataInterface::setObjectData(QString uuid, QString table, QJsonObject 
     query.prepare("UPDATE :table SET data = :data, modified = :modified WHERE uuid = :uuid;");
     query.bindValue(":table", table);
     query.bindValue(":uuid", uuid);
-    query.bindValue(":data", doc.toJson(QJsonDocument::Compact));
+    query.bindValue(":data", data);
     query.bindValue(":modified", modified.toString("yyy-MM-dd hh:mm:ss:zzz"));
 
     query.exec();

@@ -1,5 +1,7 @@
 #include "ramscheduleentry.h"
 
+#include "ramproject.h"
+
 // STATIC //
 
 RamScheduleEntry *RamScheduleEntry::getObject(QString uuid, bool constructNew)

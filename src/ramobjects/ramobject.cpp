@@ -1,4 +1,5 @@
 #include "ramobject.h"
+
 #include "objecteditwidget.h"
 #include "mainwindow.h"
 #include "ramses.h"

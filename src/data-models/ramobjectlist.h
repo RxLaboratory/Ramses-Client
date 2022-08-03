@@ -58,6 +58,11 @@ public slots:
     void removeAll(RO obj);
     void sort();
 
+signals:
+    void objectInserted(RO);
+    void objectRemoved(RO);
+    void objectDataChanged(RO);
+
 protected:
     RamObjectList(QString uuid, QObject *parent = nullptr);
 
