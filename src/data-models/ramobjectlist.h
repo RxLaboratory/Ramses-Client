@@ -22,7 +22,7 @@ public:
 
     // METHODS //
 
-    RamObjectList(QString shortName, QString name, QObject *parent = nullptr);
+    RamObjectList(QString shortName, QString name, QObject *parent = nullptr, bool isVirtual = false);
 
     // MODEL reimplementation
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
@@ -42,6 +42,8 @@ public:
     virtual RO takeObject(int i); // Remove and returns object at i
     RO takeObject(QString uuid); // Remove and return object using uuid
     void removeAll(QString uuid); // Removes object using uuid
+    // Reset
+    void reload(QStringList uuids);
 
     // LIST INFORMATION
     // Info
@@ -92,7 +94,6 @@ private:
     QString m_uuid;
 
     bool m_updatingOrders = false;
-
 };
 
 class RamObject;

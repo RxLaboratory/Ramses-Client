@@ -1,5 +1,6 @@
 #include "localdatainterface.h"
-#include "ramses.h"
+
+#include "datacrypto.h"
 
 LocalDataInterface LocalDataInterface::*_instance = nullptr;
 
@@ -7,6 +8,49 @@ LocalDataInterface *LocalDataInterface::instance()
 {
     if (!_instance) _instance = new LocalDataInterface();
     return _instance;
+}
+
+QString LocalDataInterface::login(QString username, QString password)
+{
+    // Get user data
+    QSqlDatabase db = QSqlDatabase::database("localdata");
+    QSqlQuery query = QSqlQuery(db);
+
+    query.prepare("SELECT data, uuid FROM RamUser WHERE userName = :userName;");
+    query.bindValue(":userName", username);
+
+    query.exec();
+
+    if(!query.first()) return "";
+
+    // Decrypt and check password
+    QString data = query.value(0).toString();
+    data = DataCrypto::instance()->clientDecrypt(data);
+
+    QJsonDocument doc = QJsonDocument::fromJson( data.toUtf8() );
+    QJsonObject dataObj = doc.object();
+
+    QString test = dataObj.value("password").toString();
+    if( password == test ) return query.value(1).toString();
+
+    return "";
+}
+
+QStringList LocalDataInterface::tableData(QString table)
+{
+    QSqlDatabase db = QSqlDatabase::database("localdata");
+    QSqlQuery query = QSqlQuery(db);
+
+    query.prepare("SELECT uuid FROM :table WHERE removed = 0;");
+    query.bindValue(":table", table);
+
+    query.exec();
+
+    QStringList data;
+
+    while (query.next()) data << query.value(0).toString();
+
+    return data;
 }
 
 void LocalDataInterface::createObject(QString uuid, QString table, QString data)
@@ -100,6 +144,18 @@ bool LocalDataInterface::isRemoved(QString uuid, QString table)
     }
 
     return true;
+}
+
+void LocalDataInterface::setUsername(QString uuid, QString username)
+{
+    QSqlDatabase db = QSqlDatabase::database("localdata");
+    QSqlQuery query = QSqlQuery(db);
+
+    query.prepare("UPDATE RamUser SET userName = :userName WHERE uuid = :uuid;");
+    query.bindValue(":userName", username);
+    query.bindValue(":uuid", uuid);
+
+    query.exec();
 }
 
 ServerConfig LocalDataInterface::serverConfig() const

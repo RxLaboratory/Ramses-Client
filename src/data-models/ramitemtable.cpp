@@ -81,7 +81,7 @@ QVariant RamItemTable::data(const QModelIndex &index, int role) const
             return "NO | Nothing to do";
 
         status = new RamStatus(
-                        Ramses::instance()->ramUser(),
+                        Ramses::instance()->ramsesUser(),
                         Ramses::instance()->noState(),
                         step,
                         item,

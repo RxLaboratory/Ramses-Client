@@ -22,6 +22,8 @@ public:
 
     RamUser(QString shortName, QString name);
 
+    virtual void setShortName(const QString &shortName) override;
+
     UserRole role() const;
     void setRole(const UserRole &role);
     void setRole(const QString role);

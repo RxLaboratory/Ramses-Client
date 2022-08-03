@@ -4,13 +4,14 @@
 #include <QSortFilterProxyModel>
 #include <QtDebug>
 
-#include "ramobjectlist.h"
+template<typename RO> class RamObjectList;
+class RamScheduleEntry;
 
 class RamScheduleFilter : public QSortFilterProxyModel
 {
 public:
     explicit RamScheduleFilter(QObject *parent = nullptr);
-    void setList(QAbstractItemModel *list);
+    void setList(RamObjectList<RamScheduleEntry *> *list);
 
     void ignoreUserUuid(QString uuid);
     void acceptUserUuid(QString uuid);
@@ -23,7 +24,7 @@ protected:
     bool filterAcceptsColumn(int sourceCol, const QModelIndex &sourceParent) const override;
 
 private:
-    RamObjectList *m_emptyList;
+    RamObjectList<RamScheduleEntry*> *m_emptyList;
 
     QStringList m_filterUserUuids;
     QList<int> m_hiddenDays;

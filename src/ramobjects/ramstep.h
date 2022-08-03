@@ -3,7 +3,7 @@
 
 #include <QDesktopServices>
 
-#include "ramobject.h"
+#include "ramtemplatestep.h"
 
 class RamAssetGroup;
 class RamProject;
@@ -13,77 +13,19 @@ class RamUser;
 class RamWorkingFolder;
 template<typename RO> class RamObjectList;
 
-class RamStep : public RamObject
+class RamStep : public RamTemplateStep
 {
     Q_OBJECT
 public:
-
-    // ENUMS //
-
-    enum Type{ PreProduction,
-               AssetProduction,
-               ShotProduction,
-               PostProduction,
-               All };
-    Q_ENUM(Type)
-
-    enum EstimationMethod { EstimatePerShot = 0,
-                            EstimatePerSecond = 1 };
-    Q_ENUM(EstimationMethod)
-
-    // STATIC METHODS //
-
-    /**
-     * @brief stepTypeName gets the name of a type, as used in the Database and API classes
-     * @param type
-     * @return
-     */
-    static const QString stepTypeName(Type type);
-    static Type stepTypeFromName(QString typeName);
-
     static RamStep *getObject(QString uuid, bool constructNew = false);
+
+    static RamStep *createFromTemplate(RamTemplateStep *tempStep, RamProject *project);
 
     // METHODS //
 
-    // Template (no project set)
-    explicit RamStep(QString shortName, QString name);
-    // Actual step
-    explicit RamStep(QString shortName, QString name, RamProject *project);
-
-    bool isTemplate() const;
-    RamStep *createFromTemplate(RamProject *project);
-    RamStep *createFromTemplate(QString projectUuid);
+    RamStep(QString shortName, QString name, RamProject *project);
 
     RamProject *project() const;
-    RamObjectList<RamApplication*> *applications() const;
-
-    Type type() const;
-    void setType(const Type &type);
-    void setType(QString type);
-
-    QColor color() const;
-    void setColor(const QColor &newColor);
-
-    QString publishSettings() const;
-    void setPublishSettings(const QString &newPublishSettings);
-
-    EstimationMethod estimationMethod() const;
-    void setEstimationMethod(const EstimationMethod &newEstimationMethod);
-
-    float estimationVeryEasy() const;
-    void setEstimationVeryEasy(float newEstimationVeryEasy);
-
-    float estimationEasy() const;
-    void setEstimationEasy(float newEstimationEasy);
-
-    float estimationMedium() const;
-    void setEstimationMedium(float newEstimationMedium);
-
-    float estimationHard() const;
-    void setEstimationHard(float newEstimationHard);
-
-    float estimationVeryHard() const;
-    void setEstimationVeryHard(float newEstimationVeryHard);
 
     RamAssetGroup *estimationMultiplyGroup() const;
     void setEstimationMultiplyGroup(RamAssetGroup *newEstimationMultiplyGroup);
@@ -127,17 +69,6 @@ public slots:
     void countAssignedDays();
 
 protected:
-
-    // STATIC //
-
-    /**
-     * @brief m_stepTypeMeta is used to return information from the type,
-     * like the corresponding string
-     */
-    static const QMetaEnum m_stepTypeMeta;
-
-    // METHODS //
-
     RamStep(QString uuid);
 
     virtual QString folderPath() const override;
@@ -145,9 +76,7 @@ protected:
 private:
     void construct();
 
-
     RamProject *m_project;
-    RamObjectList<RamApplication*> *m_applications;
 
     /**
      * @brief When true, estimations won't be computed.

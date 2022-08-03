@@ -18,7 +18,6 @@
 #include <QProgressBar>
 #include <QVersionNumber>
 
-#include "duqf-app/app-config.h"
 #include "duqf-utils/utils.h"
 #include "duqf-utils/duqflogger.h"
 #include "ramserverinterface.h"
@@ -33,13 +32,7 @@ public:
      * @return the unique instance.
      */
     static DBInterface *instance();
-    /**
-     * @brief Generates a hash for a password
-     * @param password The password to hash
-     * @param salt The salt to use
-     * @return The hashed password
-     */
-    QString generatePassHash(QString password, QString salt = CLIENT_BUILD_KEY);
+
     /**
      * @brief The current status (offline or online, maybe connecting)
      * @return
@@ -56,7 +49,13 @@ public:
      */
     void setOnline();
 
+    // AUTHENTIFICATION //
+
+    QString login(QString username, QString password);
+
     // DATA INTERFACE //
+
+    QStringList tableData(QString table);
 
     void createObject(QString uuid, QString table, QString data);
 
@@ -66,6 +65,8 @@ public:
     void removeObject(QString uuid, QString table);
     void restoreObject(QString uuid, QString table);
     bool isRemoved(QString uuid, QString table);
+
+    void setUsername(QString uuid, QString username);
 
     const QString &dataFile() const;
     ServerConfig setDataFile(const QString &file);

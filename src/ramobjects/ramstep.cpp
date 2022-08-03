@@ -2,222 +2,58 @@
 
 #include "ramses.h"
 #include "stepeditwidget.h"
-#include "templatestepeditwidget.h"
 
 // STATIC //
 
-QMetaEnum const RamStep::m_stepTypeMeta = QMetaEnum::fromType<RamStep::Type>();
-
-const QString RamStep::stepTypeName(Type type)
-{
-    return QString(m_stepTypeMeta.valueToKey(type));
-}
-
-RamStep::Type RamStep::stepTypeFromName(QString typeName)
-{
-    if (typeName == "PreProduction") return PreProduction;
-    if (typeName == "AssetProduction") return AssetProduction;
-    if (typeName == "ShotProduction") return ShotProduction;
-    if (typeName == "PostProduction") return PostProduction;
-    if (typeName == "All") return All;
-}
-
 RamStep *RamStep::getObject(QString uuid, bool constructNew)
 {
-    RamObject *obj = RamObject::getObject(uuid);
+    RamTemplateStep *obj = RamTemplateStep::getObject(uuid);
     if (!obj && constructNew) return new RamStep( uuid );
     return qobject_cast<RamStep*>( obj );
 }
 
-// PUBLIC //
-
-RamStep::RamStep(QString shortName, QString name) :
-    RamObject(shortName, name, Step)
+RamStep *RamStep::createFromTemplate(RamTemplateStep *tempStep, RamProject *project)
 {
-    construct();
+    RamStep *step = new RamStep(tempStep->shortName(), tempStep->name(), project);
 
-    QJsonObject d = data();
+    // Copy data
 
-    d.insert("template", true);
-    m_applications = new RamObjectList<RamApplication*>(shortName + "-Apps", name + " | Applications", this);
-    d.insert("applications", m_applications->uuid());
+    // populate apps list
+    RamObjectList<RamApplication*> *apps = tempStep->applications();
+    for (int i = 0; i < apps->rowCount(); i++)
+    {
+        step->applications()->append(apps->at(i));
+    }
 
-    setData(d);
+    // Set new data
+    QJsonObject tempD = tempStep->data();
+    tempD.insert("applications", step->applications()->uuid());
+    tempD.insert("project", project->uuid());
+    step->setData(tempD);
+
+    return step;
 }
 
+// PUBLIC //
+
 RamStep::RamStep(QString shortName, QString name, RamProject *project):
-    RamObject(shortName, name, Step, project)
+    RamTemplateStep(shortName, name)
 {
     construct();
     m_project = project;
 
+    setParent(m_project);
+
     QJsonObject d = data();
 
-    d.insert("template", false);
     d.insert("project", project->uuid());
-    m_applications = new RamObjectList<RamApplication*>(shortName + "-Apps", name + " | Applications", this);
-    d.insert("applications", m_applications->uuid());
 
     setData(d);
-}
-
-bool RamStep::isTemplate() const
-{
-    return getData("template").toBool(true) || !m_project;
-}
-
-RamStep *RamStep::createFromTemplate(QString projectUuid)
-{
-    QJsonObject d = data();
-    // Create
-    RamStep *step = new RamStep(d.value("shortName").toString(), d.value("name").toString());
-    // Update and assign data
-    d.insert("project", projectUuid);
-    d.insert("template", false);
-    step->setData(d);
-    return step;
-}
-
-RamStep* RamStep::createFromTemplate(RamProject *project)
-{
-    return createFromTemplate( project->uuid() );
 }
 
 RamProject *RamStep::project() const
 {
     return m_project;
-}
-
-RamObjectList<RamApplication *> *RamStep::applications() const
-{
-    return m_applications;
-}
-
-RamStep::Type RamStep::type() const
-{
-    QString typeStr = getData("type").toString();
-
-    if (typeStr == "pre") return PreProduction;
-    else if (typeStr == "asset") return AssetProduction;
-    else if (typeStr == "shot") return ShotProduction;
-    else if (typeStr == "post") return PostProduction;
-    else return All;
-}
-
-void RamStep::setType(const Type &type)
-{
-    switch(type){
-    case PreProduction:
-        insertData("type", "pre");
-        break;
-    case AssetProduction:
-        insertData("type", "asset");
-        break;
-    case ShotProduction:
-        insertData("type", "shot");
-        break;
-    case PostProduction:
-        insertData("type", "post");
-        break;
-    case All:
-        insertData("type", "all");
-        break;
-    }
-}
-
-void RamStep::setType(QString type)
-{
-    insertData("type", type);
-}
-
-QColor RamStep::color() const
-{
-    return QColor( getData("color").toString("#434343") );
-}
-
-void RamStep::setColor(const QColor &newColor)
-{
-    insertData("color", newColor.name());
-}
-
-QString RamStep::publishSettings() const
-{
-    return getData("publishSettings").toString();
-}
-
-void RamStep::setPublishSettings(const QString &newPublishSettings)
-{
-    insertData("publishSettings", newPublishSettings);
-}
-
-float RamStep::estimationVeryHard() const
-{
-    return getData("estimationVeryHard").toDouble();
-}
-
-void RamStep::setEstimationVeryHard(float newEstimationVeryHard)
-{
-    insertData("estimationVeryHard", newEstimationVeryHard);
-}
-
-float RamStep::estimationHard() const
-{
-    return getData("estimationHard").toDouble();
-}
-
-void RamStep::setEstimationHard(float newEstimationHard)
-{
-    insertData("estimationHard", newEstimationHard);
-}
-
-float RamStep::estimationMedium() const
-{
-    return getData("estimationMedium").toDouble();
-}
-
-void RamStep::setEstimationMedium(float newEstimationMedium)
-{
-    insertData("estimationMedium", newEstimationMedium);
-}
-
-float RamStep::estimationEasy() const
-{
-    return getData("estimationEasy").toDouble();
-}
-
-void RamStep::setEstimationEasy(float newEstimationEasy)
-{
-    insertData("estimationEasy", newEstimationEasy);
-}
-
-float RamStep::estimationVeryEasy() const
-{
-    return getData("estimationVeryEasy").toDouble();
-}
-
-void RamStep::setEstimationVeryEasy(float newEstimationVeryEasy)
-{
-    insertData("estimationVeryEasy", newEstimationVeryEasy);
-}
-
-RamStep::EstimationMethod RamStep::estimationMethod() const
-{
-    QString methodStr = getData("estimationMethod").toString("shot");
-    if (methodStr == "shot") return EstimatePerShot;
-    else return EstimatePerSecond;
-}
-
-void RamStep::setEstimationMethod(const EstimationMethod &newEstimationMethod)
-{
-    switch(newEstimationMethod)
-    {
-    case EstimatePerShot:
-        insertData("estimationMethod", "shot");
-        break;
-    case EstimatePerSecond:
-        insertData("estimationMethod", "second");
-        break;
-    }
 }
 
 RamAssetGroup *RamStep::estimationMultiplyGroup() const
@@ -411,13 +247,7 @@ QList<RamFileType *> RamStep::outputFileTypes()
 
 void RamStep::edit(bool show)
 {
-    if (!ui_editWidget)
-    {
-        if (this->isTemplate())
-            setEditWidget(new TemplateStepEditWidget(this));
-        else
-            setEditWidget(new StepEditWidget(this));
-    }
+    if (!ui_editWidget) setEditWidget(new StepEditWidget(this));
 
     if (show) showEdit();
 }
@@ -515,20 +345,14 @@ void RamStep::countAssignedDays()
 // PROTECTED //
 
 RamStep::RamStep(QString uuid):
-    RamObject(uuid, Step)
+    RamTemplateStep(uuid)
 {
     construct();
 
-    QJsonObject d = data();
+    QString projUuid = getData("project").toString();
+    m_project = RamProject::getObject( projUuid, true );
 
-    QString projUuid = d.value("project").toString();
-
-    if (!d.value("template").toBool(true) && projUuid != "")
-    {
-        m_project = RamProject::getObject( projUuid, true );
-    }
-
-    m_applications = RamObjectList<RamApplication*>::getObject( d.value("applications").toString(), true );
+    setParent(m_project);
 }
 
 QString RamStep::folderPath() const
@@ -548,8 +372,6 @@ QString RamStep::folderPath() const
 
 void RamStep::construct()
 {
-    m_icon = ":/icons/step";
-    m_editRole = Admin;
-
+    m_objectType = Step;
     m_project = nullptr;
 }

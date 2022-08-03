@@ -78,6 +78,7 @@ SOURCES += \
     duqf-widgets/duqfupdatesettingswidget.cpp \
     pages/installpage.cpp \
     pages/projectpage.cpp \
+    ramdatainterface/datacrypto.cpp \
     ramdatainterface/dbsync.cpp \
     ramdatainterface/localdatainterface.cpp \
     ramdatainterface/ramserverinterface.cpp \
@@ -117,6 +118,8 @@ SOURCES += \
     ramobjects/ramschedulecomment.cpp \
     ramobjects/ramscheduleentry.cpp \
     ramobjects/ramsequence.cpp \
+    ramobjects/ramtemplateassetgroup.cpp \
+    ramobjects/ramtemplatestep.cpp \
     ramobjects/ramworkingfolder.cpp \
     settingswidgets/daemonsettingswidget.cpp \
     ramdatainterface/dbinterface.cpp \
@@ -221,6 +224,7 @@ HEADERS += \
     data-views/ramstepheaderview.h \
     data-views/timelinedelegate.h \
     data-views/timelineview.h \
+    ramdatainterface/datacrypto.h \
     ramdatainterface/dbistructures.h \
     docks/consolewidget.h \
     docks/filemanagerwidget.h \
@@ -281,6 +285,8 @@ HEADERS += \
     ramobjects/ramschedulecomment.h \
     ramobjects/ramscheduleentry.h \
     ramobjects/ramsequence.h \
+    ramobjects/ramtemplateassetgroup.h \
+    ramobjects/ramtemplatestep.h \
     ramobjects/ramworkingfolder.h \
     settingswidgets/daemonsettingswidget.h \
     ramdatainterface/dbinterface.h \

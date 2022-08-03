@@ -1,5 +1,7 @@
 #include "ramstatisticstable.h"
 
+#include "ramses.h"
+
 RamStatisticsTable::RamStatisticsTable(QObject *parent) : QAbstractTableModel(parent)
 {
     connectEvents();
@@ -16,7 +18,7 @@ int RamStatisticsTable::rowCount(const QModelIndex &parent) const
     Q_UNUSED(parent);
     if (!m_project) return 0;
 
-    return m_project->steps()->count();
+    return m_project->steps()->rowCount();
 }
 
 QVariant RamStatisticsTable::headerData(int section, Qt::Orientation orientation, int role) const
@@ -30,7 +32,7 @@ QVariant RamStatisticsTable::headerData(int section, Qt::Orientation orientation
         return QVariant();
     }
 
-    RamStep *step = qobject_cast<RamStep*>( m_project->steps()->at(section ));
+    RamStep *step = m_project->steps()->at(section);
 
     if (role == Qt::DisplayRole) return step->shortName();
 
@@ -48,7 +50,7 @@ QVariant RamStatisticsTable::data(const QModelIndex &index, int role) const
 {
     int row = index.row();
 
-    RamStep *step = qobject_cast<RamStep*>( m_project->steps()->at( row ));
+    RamStep *step = m_project->steps()->at( row );
 
     QList<float> userStats = step->stats(m_user);
     float estimation = userStats.at(0);

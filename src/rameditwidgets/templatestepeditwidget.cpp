@@ -9,7 +9,7 @@ TemplateStepEditWidget::TemplateStepEditWidget(QWidget *parent) :
     setObject(nullptr);
 }
 
-TemplateStepEditWidget::TemplateStepEditWidget(RamStep *templateStep, QWidget *parent) :
+TemplateStepEditWidget::TemplateStepEditWidget(RamTemplateStep *templateStep, QWidget *parent) :
     ObjectEditWidget(templateStep, parent)
 {
     setupUi();

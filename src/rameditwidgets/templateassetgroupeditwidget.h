@@ -10,7 +10,7 @@ class TemplateAssetGroupEditWidget : public ObjectEditWidget
 
 public:
     explicit TemplateAssetGroupEditWidget(QWidget *parent = nullptr);
-    explicit TemplateAssetGroupEditWidget(RamAssetGroup *templateAssetGroup, QWidget *parent = nullptr);
+    explicit TemplateAssetGroupEditWidget(RamTemplateAssetGroup *templateAssetGroup, QWidget *parent = nullptr);
 
     RamAssetGroup *assetGroup() const;
 

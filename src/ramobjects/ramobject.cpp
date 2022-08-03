@@ -15,9 +15,9 @@ RamObject *RamObject::getObject(QString uuid, bool constructNew)
 
 // PUBLIC //
 
-RamObject::RamObject(QString shortName, QString name, ObjectType type, QObject *parent):
+RamObject::RamObject(QString shortName, QString name, ObjectType type, QObject *parent, bool isVirtual):
     QObject(parent),
-    RamAbstractObject(shortName, name, type)
+    RamAbstractObject(shortName, name, type, isVirtual)
 {
     construct(parent);
 }

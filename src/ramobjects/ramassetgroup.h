@@ -1,12 +1,13 @@
 #ifndef RAMASSETGROUP_H
 #define RAMASSETGROUP_H
 
-#include "ramobject.h"
+#include "ramtemplateassetgroup.h"
 
 class RamProject;
-class RamObjectFilterModel;
+template<typename RO> class RamObjectFilterModel;
+class RamAsset;
 
-class RamAssetGroup : public RamObject
+class RamAssetGroup : public RamTemplateAssetGroup
 {
     Q_OBJECT
 public:
@@ -14,19 +15,14 @@ public:
     // STATIC //
 
     static RamAssetGroup *getObject(QString uuid, bool constructNew = false);
+    static RamAssetGroup *createFromTemplate(RamTemplateAssetGroup *tempAG, RamProject *project);
 
     // OTHER //
 
-    // Template (no project set)
-    explicit RamAssetGroup(QString shortName, QString name);
     // Actual group
     explicit RamAssetGroup(QString shortName, QString name, RamProject *project);
 
-    bool isTemplate() const;
-    RamAssetGroup *createFromTemplate(RamProject *project);
-
     int assetCount() const;
-
     RamProject *project() const;
 
 public slots:
@@ -41,7 +37,7 @@ private:
     void setProject(RamProject *project);
 
     RamProject *m_project = nullptr;
-    RamObjectFilterModel *m_assets;
+    RamObjectFilterModel<RamAsset*> *m_assets;
 };
 
 #endif // RAMASSETGROUP_H

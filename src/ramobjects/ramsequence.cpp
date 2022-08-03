@@ -82,13 +82,13 @@ void RamSequence::construct()
     m_icon = ":/icons/sequence";
     m_editRole = ProjectAdmin;
     m_project = nullptr;
-    m_shots = new RamObjectFilterModel(this);
+    m_shots = new RamObjectFilterModel<RamShot*>(this);
 }
 
 void RamSequence::setProject(RamProject *project)
 {
     m_project = project;
-    m_shots->setSourceModel( m_project->shots() );
+    m_shots->setList( m_project->shots() );
     m_shots->setFilterUuid( m_uuid );
     this->setParent( m_project );
 }

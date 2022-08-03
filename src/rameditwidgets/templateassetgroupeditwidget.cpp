@@ -9,7 +9,7 @@ TemplateAssetGroupEditWidget::TemplateAssetGroupEditWidget(QWidget *parent) :
     monitorDbQuery("updateTemplateAssetGroup");
 }
 
-TemplateAssetGroupEditWidget::TemplateAssetGroupEditWidget(RamAssetGroup *templateAssetGroup, QWidget *parent) :
+TemplateAssetGroupEditWidget::TemplateAssetGroupEditWidget(RamTemplateAssetGroup *templateAssetGroup, QWidget *parent) :
     ObjectEditWidget(templateAssetGroup, parent)
 {
     setupUi();

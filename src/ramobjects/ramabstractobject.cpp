@@ -82,10 +82,13 @@ RamAbstractObject *RamAbstractObject::getObject(QString shortNameOrName, ObjectT
 
 // PUBLIC //
 
-RamAbstractObject::RamAbstractObject(QString shortName, QString name, ObjectType type)
+RamAbstractObject::RamAbstractObject(QString shortName, QString name, ObjectType type, bool isVirtual)
 {
     m_uuid = RamUuid::generateUuidString(shortName + name);
     m_objectType = type;
+
+    m_virtual = isVirtual;
+    if (m_virtual) return;
 
     // Create in the database
     QJsonObject data;
@@ -301,6 +304,7 @@ RamAbstractObject::RamAbstractObject(QString uuid, ObjectType type)
 
 void RamAbstractObject::setDataString(QString data)
 {
+    if (m_virtual) return;
     DBInterface::instance()->setObjectData(m_uuid, objectTypeName(), data);
 }
 
@@ -311,5 +315,6 @@ QString RamAbstractObject::dataString() const
 
 void RamAbstractObject::createData(QString data)
 {
+    if (m_virtual) return;
     DBInterface::instance()->createObject(m_uuid, objectTypeName(), data);
 }

@@ -24,7 +24,19 @@ public:
      */
     static LocalDataInterface *instance();
 
+    // AUTHENTIFICATION //
+
+    /**
+     * @brief login Checks the username and password in the local data
+     * @param username
+     * @param password
+     * @return The user uuid if successful, empty string otherwise
+     */
+    QString login(QString username, QString password);
+
     // DATA INTERFACE //
+
+    QStringList tableData(QString table);
 
     void createObject(QString uuid, QString table, QString data);
 
@@ -34,6 +46,8 @@ public:
     void removeObject(QString uuid, QString table);
     void restoreObject(QString uuid, QString table);
     bool isRemoved(QString uuid, QString table);
+
+    void setUsername(QString uuid, QString username);
 
     ServerConfig serverConfig() const;
 

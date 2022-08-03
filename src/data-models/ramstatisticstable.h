@@ -4,7 +4,8 @@
 #include <QAbstractTableModel>
 #include <QStringBuilder>
 
-#include "ramses.h"
+#include "ramproject.h"
+#include "ramstep.h"
 
 class RamStatisticsTable : public QAbstractTableModel
 {

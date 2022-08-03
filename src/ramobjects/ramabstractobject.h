@@ -34,7 +34,11 @@ public:
                     ObjectList,
                     StepStatusHistory,
                     ScheduleEntry,
-                    ScheduleComment };
+                    ScheduleComment,
+                    TemplateStep,
+                    TemplateAssetGroup,
+                    Ramses
+                    };
     /**
      * @brief The SubFolder enum lists all predefined subfolders
      */
@@ -97,7 +101,8 @@ public:
 
     // METHODS //
 
-    RamAbstractObject(QString shortName, QString name, ObjectType type);
+    RamAbstractObject(QString uuid, QString data);
+    RamAbstractObject(QString shortName, QString name, ObjectType type, bool isVirtual = false);
     ~RamAbstractObject();
 
     bool is(RamAbstractObject *other) const;
@@ -119,7 +124,7 @@ public:
      * @brief data gets the data from the database
      * @return
      */
-    virtual QJsonObject data() const;
+    QJsonObject data() const;
     /**
      * @brief getData returns the data for a specific key
      * @return
@@ -129,7 +134,7 @@ public:
      * @brief setData sets an entirely new data
      * @param data
      */
-    virtual void setData(QJsonObject data);
+    void setData(QJsonObject data);
     /**
      * @brief insertData inserts or updates a value in the data
      * @param key
@@ -142,7 +147,7 @@ public:
      * @return
      */
     virtual QString shortName() const;
-    void setShortName(const QString &shortName);
+    virtual void setShortName(const QString &shortName);
 
     /**
      * @brief name the user-friendly name of the object
@@ -220,6 +225,7 @@ protected:
 
     QString m_uuid;
     ObjectType m_objectType;
+    bool m_virtual = false;
 
 private:
     QSettings *m_settings = nullptr;

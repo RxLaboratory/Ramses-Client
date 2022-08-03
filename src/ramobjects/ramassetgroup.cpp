@@ -2,44 +2,31 @@
 
 #include "ramses.h"
 #include "assetgroupeditwidget.h"
-#include "templateassetgroupeditwidget.h"
+#include "data-models/ramobjectfiltermodel.h"
 
 // STATIC //
 
 RamAssetGroup *RamAssetGroup::getObject(QString uuid, bool constructNew)
 {
-    RamObject *obj = RamObject::getObject(uuid);
+    RamTemplateAssetGroup *obj = RamTemplateAssetGroup::getObject(uuid);
     if (!obj && constructNew) return new RamAssetGroup( uuid );
     return qobject_cast<RamAssetGroup*>( obj );
 }
 
-// PUBLIC //
-
-RamAssetGroup::RamAssetGroup(QString shortName, QString name) :
-    RamObject(shortName, name, AssetGroup)
-{
-    construct();
-    insertData("template", true);
-}
-
-RamAssetGroup::RamAssetGroup(QString shortName, QString name, RamProject *project):
-    RamObject(shortName, name, AssetGroup, project)
-{
-    construct();
-    insertData("template", false);
-    setProject(project);
-}
-
-bool RamAssetGroup::isTemplate() const
-{
-    return getData("template").toBool(true);
-}
-
-RamAssetGroup *RamAssetGroup::createFromTemplate(RamProject *project)
+RamAssetGroup *RamAssetGroup::createFromTemplate(RamTemplateAssetGroup *tempAG, RamProject *project)
 {
     // Create
-    RamAssetGroup *assetGroup = new RamAssetGroup(shortName(), name(), project);
+    RamAssetGroup *assetGroup = new RamAssetGroup(tempAG->shortName(), tempAG->name(), project);
     return assetGroup;
+}
+
+// PUBLIC //
+
+RamAssetGroup::RamAssetGroup(QString shortName, QString name, RamProject *project):
+    RamTemplateAssetGroup(shortName, name)
+{
+    construct();
+    setProject(project);
 }
 
 int RamAssetGroup::assetCount() const
@@ -54,13 +41,7 @@ RamProject *RamAssetGroup::project() const
 
 void RamAssetGroup::edit(bool show)
 {
-    if (!ui_editWidget)
-    {
-        if (this->isTemplate())
-            setEditWidget(new TemplateAssetGroupEditWidget(this));
-        else
-            setEditWidget(new AssetGroupEditWidget(this));
-    }
+    if (!ui_editWidget) setEditWidget(new AssetGroupEditWidget(this));
 
     if (show) showEdit();
 }
@@ -68,7 +49,7 @@ void RamAssetGroup::edit(bool show)
 // PROTECTED //
 
 RamAssetGroup::RamAssetGroup(QString uuid):
-    RamObject(uuid, AssetGroup)
+    RamTemplateAssetGroup(uuid)
 {
     construct();
 
@@ -92,16 +73,15 @@ QString RamAssetGroup::folderPath() const
 
 void RamAssetGroup::construct()
 {
-    m_icon = ":/icons/asset-group";
-    m_editRole = Admin;
+    m_objectType = AssetGroup;
     m_project = nullptr;
-    m_assets = new RamObjectFilterModel(this);
+    m_assets = new RamObjectFilterModel<RamAsset*>(this);
 }
 
 void RamAssetGroup::setProject(RamProject *project)
 {
     m_project = project;
-    m_assets->setSourceModel( m_project->assets() );
+    m_assets->setList( m_project->assets() );
     m_assets->setFilterUuid( m_uuid );
     this->setParent( m_project );
 }

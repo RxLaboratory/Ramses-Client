@@ -4,7 +4,7 @@
 #include <QStringBuilder>
 
 #include "ramobjectlist.h"
-#include "ramscheduleentry.h"
+#include "ramuser.h"
 #include "ramschedulecomment.h"
 
 class RamScheduleTable : public QAbstractTableModel
@@ -12,7 +12,7 @@ class RamScheduleTable : public QAbstractTableModel
     Q_OBJECT
 public:
     explicit RamScheduleTable(QObject *parent = nullptr);
-    void setList(RamObjectList *userList, RamObjectList *comments);
+    void setList(RamObjectList<RamUser*> *userList, RamObjectList<RamScheduleComment*> *comments);
 
     // MODEL REIMPLEMENTATION
     int columnCount(const QModelIndex &parent = QModelIndex()) const override;
@@ -31,8 +31,8 @@ private slots:
     void resetUsers();
 
 private:
-     RamObjectList *m_users = nullptr;
-     RamObjectList *m_comments = nullptr;
+     RamObjectList<RamUser*> *m_users = nullptr;
+     RamObjectList<RamScheduleComment*> *m_comments = nullptr;
 
      QDate m_startDate;
      QDate m_endDate;

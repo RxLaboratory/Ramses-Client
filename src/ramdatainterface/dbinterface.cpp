@@ -22,6 +22,28 @@ void DBInterface::setOnline()
     setConnectionStatus(NetworkUtils::Connecting, "Connecting to the Ramses Server...");
 }
 
+QString DBInterface::login(QString username, QString password)
+{
+    // 1- Check local data
+    QString uuid = m_ldi->login(username, password);
+    if ( uuid == "" ) return "";
+
+    // 2- Check online server
+    if (m_connectionStatus == NetworkUtils::Online)
+    {
+        // TODO
+        // generate server passhash using m_serverAddress.toLower().replace("/",".") as prefix
+        // m_rsi->login(uuid, password);
+    }
+
+    return uuid;
+}
+
+QStringList DBInterface::tableData(QString table)
+{
+    return m_ldi->tableData(table);
+}
+
 void DBInterface::createObject(QString uuid, QString table, QString data)
 {
     m_ldi->createObject(uuid, table, data);
@@ -50,6 +72,11 @@ void DBInterface::restoreObject(QString uuid, QString table)
 bool DBInterface::isRemoved(QString uuid, QString table)
 {
     return m_ldi->isRemoved(uuid, table);
+}
+
+void DBInterface::setUsername(QString uuid, QString username)
+{
+    m_ldi->setUsername(uuid, username);
 }
 
 const QString &DBInterface::dataFile() const
@@ -107,12 +134,4 @@ void DBInterface::serverConnectionStatusChanged(NetworkUtils::NetworkStatus stat
     default:
         return;
     }
-}
-
-QString DBInterface::generatePassHash(QString password, QString salt)
-{
-    //hash password
-    QString passToHash = m_serverAddress.toLower().replace("/",".") + password + salt;
-    QString hashed = QCryptographicHash::hash(passToHash.toUtf8(), QCryptographicHash::Sha3_512).toHex();
-    return hashed;
 }

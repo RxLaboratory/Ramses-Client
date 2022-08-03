@@ -1,24 +1,28 @@
 #include "ramobjectfilterlist.h"
 
-RamObjectFilterList::RamObjectFilterList(QObject *parent) : QSortFilterProxyModel(parent)
+template<typename RO>
+RamObjectFilterList<RO>::RamObjectFilterList(QObject *parent) : QSortFilterProxyModel(parent)
 {
 
 }
 
-void RamObjectFilterList::setList(RamObjectList *list)
+template<typename RO>
+void RamObjectFilterList<RO>::setList(RamObjectList<RO> *list)
 {
     m_objectList = list;
     if(!list) return;
     this->setSourceModel(list);
 }
 
-int RamObjectFilterList::rowCount(const QModelIndex &parent) const
+template<typename RO>
+int RamObjectFilterList<RO>::rowCount(const QModelIndex &parent) const
 {
     if (!m_objectList) return 1;
     return m_objectList->rowCount(parent) + 1;
 }
 
-QVariant RamObjectFilterList::data(const QModelIndex &index, int role) const
+template<typename RO>
+QVariant RamObjectFilterList<RO>::data(const QModelIndex &index, int role) const
 {
     if (columnCount() == 0) return QVariant();
 
@@ -39,7 +43,8 @@ QVariant RamObjectFilterList::data(const QModelIndex &index, int role) const
     return QSortFilterProxyModel::data( createIndex(index.row(),index.column()), role);
 }
 
-QModelIndex RamObjectFilterList::mapFromSource(const QModelIndex &sourceIndex) const
+template<typename RO>
+QModelIndex RamObjectFilterList<RO>::mapFromSource(const QModelIndex &sourceIndex) const
 {
     if (!sourceIndex.isValid())
             return QModelIndex();
@@ -50,7 +55,8 @@ QModelIndex RamObjectFilterList::mapFromSource(const QModelIndex &sourceIndex) c
     return createIndex(sourceIndex.row()+1, sourceIndex.column());
 }
 
-QModelIndex RamObjectFilterList::mapToSource(const QModelIndex &proxyIndex) const
+template<typename RO>
+QModelIndex RamObjectFilterList<RO>::mapToSource(const QModelIndex &proxyIndex) const
 {
     if (!proxyIndex.isValid())
         return QModelIndex();
@@ -61,7 +67,8 @@ QModelIndex RamObjectFilterList::mapToSource(const QModelIndex &proxyIndex) cons
     return m_objectList->index(proxyIndex.row() - 1, proxyIndex.column());
 }
 
-Qt::ItemFlags RamObjectFilterList::flags(const QModelIndex &index) const
+template<typename RO>
+Qt::ItemFlags RamObjectFilterList<RO>::flags(const QModelIndex &index) const
 {
     if (!index.isValid())
          return Qt::NoItemFlags;
@@ -70,7 +77,8 @@ Qt::ItemFlags RamObjectFilterList::flags(const QModelIndex &index) const
      return QSortFilterProxyModel::flags(createIndex(index.row(),index.column()));
 }
 
-QModelIndex RamObjectFilterList::index(int row, int column, const QModelIndex &parent) const
+template<typename RO>
+QModelIndex RamObjectFilterList<RO>::index(int row, int column, const QModelIndex &parent) const
 {
     Q_UNUSED(parent)
 
@@ -79,10 +87,10 @@ QModelIndex RamObjectFilterList::index(int row, int column, const QModelIndex &p
     return createIndex(row, column);
 }
 
-QModelIndex RamObjectFilterList::parent(const QModelIndex &child) const
+template<typename RO>
+QModelIndex RamObjectFilterList<RO>::parent(const QModelIndex &child) const
 {
     Q_UNUSED(child)
 
     return QModelIndex();
 }
-

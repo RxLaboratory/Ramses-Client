@@ -15,7 +15,7 @@ class TemplateStepEditWidget : public ObjectEditWidget
 
 public:
     explicit TemplateStepEditWidget(QWidget *parent = nullptr);
-    explicit TemplateStepEditWidget(RamStep *templateStep, QWidget *parent = nullptr);
+    explicit TemplateStepEditWidget(RamTemplateStep *templateStep, QWidget *parent = nullptr);
 
     RamStep *step() const;
 

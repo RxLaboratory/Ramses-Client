@@ -3,19 +3,20 @@
 
 #include <QSortFilterProxyModel>
 
-#include "ramobject.h"
-#include "ramobjectlist.h"
+template<typename RO> class RamObjectList;
+class RamItemTable;
 
 /**
  * @brief The RamObjectFilterModel class is a proxy used to filter and search items displayed in Ramses' lists.
  * It filters RamObjects according to ther filterUuid property, or if their shortName/name corresponds to a search string.
  */
-class RamObjectFilterModel : public QSortFilterProxyModel
+template<typename RO> class RamObjectFilterModel : public QSortFilterProxyModel
 {
     Q_OBJECT
 public:
     explicit RamObjectFilterModel(QObject *parent = nullptr);
-    void setList(QAbstractItemModel *list);
+    void setList(RamObjectList<RO> *list);
+    void setList(RamItemTable *list);
     void setFilterUuid(const QString &filterUuid);
     void search(const QString &searchStr);
 
@@ -32,7 +33,7 @@ protected:
 private:
     QString m_currentFilterUuid;
     QString m_searchString;
-    RamObjectList<RamObject *> *m_emptyList;
+    RamObjectList<RO> *m_emptyList;
 };
 
 #endif // RAMOBJECTFILTERMODEL_H

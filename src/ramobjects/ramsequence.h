@@ -3,8 +3,9 @@
 
 #include "ramobject.h"
 
-class RamObjectFilterModel;
+template<typename RO> class RamObjectFilterModel;
 class RamProject;
+class RamShot;
 
 class RamSequence : public RamObject
 {
@@ -38,7 +39,7 @@ private:
     void setProject(RamProject *project);
 
     RamProject *m_project;
-    RamObjectFilterModel *m_shots;
+    RamObjectFilterModel<RamShot*> *m_shots;
 };
 
 #endif // RAMSEQUENCE_H

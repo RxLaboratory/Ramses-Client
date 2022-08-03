@@ -2,8 +2,8 @@
 
 #include "ramses.h"
 #include "usereditwidget.h"
+#include "datacrypto.h"
 #include "ramdatainterface/dbinterface.h"
-#include "duqf-utils/simplecrypt.h"
 
 // STATIC //
 
@@ -23,6 +23,13 @@ RamUser::RamUser(QString shortName, QString name) :
 
     m_schedule = new RamObjectList<RamScheduleEntry*>(shortName + "-schdl", name + " | Schedule", this);
     insertData("schedule", m_schedule->uuid());
+}
+
+void RamUser::setShortName(const QString &shortName)
+{
+    RamAbstractObject::setShortName(shortName);
+    // Set username
+    DBInterface::instance()->setUsername(m_uuid, shortName);
 }
 
 RamUser::UserRole RamUser::role() const
@@ -142,16 +149,13 @@ QString RamUser::dataString() const
     QString dataStr = RamAbstractObject::dataString();
     if (dataStr == "") return "";
     // Decrypt
-    SimpleCrypt crypto( SimpleCrypt::clientKey(CLIENT_BUILD_KEY) );
-    dataStr = crypto.decryptToString(dataStr);
-    return dataStr;
+    return DataCrypto::instance()->clientDecrypt( dataStr );
 }
 
 void RamUser::setDataString(QString data)
 {
     // Encrypt
-    SimpleCrypt crypto( SimpleCrypt::clientKey(CLIENT_BUILD_KEY) );
-    data = crypto.encryptToString(data);
+    data = DataCrypto::instance()->clientEncrypt( data );
     // Set
     RamAbstractObject::setDataString(data);
 }
@@ -159,8 +163,7 @@ void RamUser::setDataString(QString data)
 void RamUser::createData(QString data)
 {
     // Encrypt
-    SimpleCrypt crypto( SimpleCrypt::clientKey(CLIENT_BUILD_KEY) );
-    data = crypto.encryptToString(data);
+    data = DataCrypto::instance()->clientEncrypt( data );
     // Set
     RamAbstractObject::createData(data);
 }

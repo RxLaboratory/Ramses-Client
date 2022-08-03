@@ -1,6 +1,7 @@
 #include "ramscheduletable.h"
 
 #include "ramses.h"
+#include "ramscheduleentry.h"
 
 RamScheduleTable::RamScheduleTable(QObject *parent) : QAbstractTableModel(parent)
 {
@@ -9,7 +10,7 @@ RamScheduleTable::RamScheduleTable(QObject *parent) : QAbstractTableModel(parent
     connectEvents();
 }
 
-void RamScheduleTable::setList(RamObjectList *userList, RamObjectList *comments)
+void RamScheduleTable::setList(RamObjectList<RamUser*> *userList, RamObjectList<RamScheduleComment*> *comments)
 {
     beginResetModel();
 
@@ -46,7 +47,7 @@ int RamScheduleTable::rowCount(const QModelIndex &parent) const
     if (!m_users && !m_comments) return c;
 
     // Two rows per user: AM and PM
-    if (m_users) c = m_users->count()*2;
+    if (m_users) c = m_users->rowCount()*2;
     // If there are comments, it's on an additionnal row
     if (m_comments) c++;
 
@@ -159,7 +160,7 @@ QVariant RamScheduleTable::data(const QModelIndex &index, int role) const
     // THE COMMENT
     if (row == 0 && m_comments)
     {
-        for(int i = 0; i < m_comments->count(); i++)
+        for(int i = 0; i < m_comments->rowCount(); i++)
         {
             RamObject *cObj = m_comments->at(i);
             RamScheduleComment *c = qobject_cast<RamScheduleComment*>( cObj );
@@ -203,13 +204,13 @@ QVariant RamScheduleTable::data(const QModelIndex &index, int role) const
     RamObject *usrObj = m_users->at((row-1) / 2);
     RamUser *user = qobject_cast<RamUser*>( usrObj );
     if (!user) return QVariant();
-    RamObjectList *schedule = user->schedule();
+    RamObjectList<RamScheduleEntry*> *schedule = user->schedule();
 
     RamProject *currentProject = Ramses::instance()->currentProject();
 
-    for (int i = 0; i < schedule->count(); i++)
+    for (int i = 0; i < schedule->rowCount(); i++)
     {
-        RamScheduleEntry *entry = qobject_cast<RamScheduleEntry*>( schedule->at(i) );
+        RamScheduleEntry *entry = schedule->at(i);
         if (!entry) continue;
         RamStep *entryStep = entry->step();
         if (!entryStep) continue;

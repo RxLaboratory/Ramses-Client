@@ -311,7 +311,7 @@ void Daemon::setStatus(QString shortName, QString name, QString step, QString ty
     {
         usr = Ramses::instance()->currentUser();
         if (!usr)
-            usr = Ramses::instance()->ramUser();
+            usr = Ramses::instance()->ramsesUser();
     }
     else usr = qobject_cast<RamUser*>( u );
 

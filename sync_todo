@@ -1,8 +1,7 @@
 1- implement all ramobjects
-	- faire Ramses
 	- ramsteptatushistory:
 		- status added, changed or removed or cleared: trigger step computeEstimation if and only if it's the last one, and notify containing item to emit statusChanged
-	- reimplement herited ramobjectlist
+	- fix editwidgets
 
 2- New login page & Settings data
 	- Create or open database

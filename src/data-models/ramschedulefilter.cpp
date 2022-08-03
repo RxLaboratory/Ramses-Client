@@ -1,12 +1,14 @@
 #include "ramschedulefilter.h"
 
+#include "ramobjectlist.h"
+
 RamScheduleFilter::RamScheduleFilter(QObject *parent) : QSortFilterProxyModel(parent)
 {
-    m_emptyList = new RamObjectList();
+    m_emptyList = RamObjectList<RamScheduleEntry*>::getObject("emptylist", true);
     this->setSourceModel(m_emptyList);
 }
 
-void RamScheduleFilter::setList(QAbstractItemModel *list)
+void RamScheduleFilter::setList(RamObjectList<RamScheduleEntry*> *list)
 {
     if(!list) this->setSourceModel(m_emptyList);
     this->setSourceModel(list);

@@ -30,7 +30,6 @@ bool statusSorter(RamObject *a, RamObject *b)
     RamStatus *as = qobject_cast<RamStatus*>(a);
     RamStatus *bs = qobject_cast<RamStatus*>(b);
     if (as->date() != bs->date()) return as->date() < bs->date();
-    if (a->order() != b->order()) return a->order() < b->order();
     else return a->shortName() < b->shortName();
 }
 
@@ -39,9 +38,7 @@ void RamStepStatusHistory::sort(int column, Qt::SortOrder order)
     Q_UNUSED(column)
     Q_UNUSED(order)
 
-    if (m_sorted) return;
-    std::sort(m_objectsList.begin(), m_objectsList.end(), statusSorter);
-    m_sorted = false;
+    std::sort(m_objectList.begin(), m_objectList.end(), statusSorter);
 }
 
 void RamStepStatusHistory::edit(bool show)
