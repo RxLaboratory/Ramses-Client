@@ -8,7 +8,7 @@
  * @brief The RamItemFilterModel class is used to filters items according to current state, step or assigned user.
  * It also sorts the items according to: their completion ratio, their estimation, their time spent, their difficulty, their name or their ID (or default)
  */
-class RamItemFilterModel : public RamObjectFilterModel
+class RamItemFilterModel : public RamObjectFilterModel<RamItem*>
 {
     Q_OBJECT
 public:

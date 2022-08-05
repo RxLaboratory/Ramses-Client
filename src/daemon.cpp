@@ -1,4 +1,6 @@
 #include "daemon.h"
+#include "data-models/ramitemtable.h"
+#include "data-models/ramstepstatushistory.h"
 
 Daemon *Daemon::_instance = nullptr;
 
@@ -231,8 +233,8 @@ void Daemon::getCurrentStatus(QString shortName, QString name, QString type, QSt
     QJsonArray statuses;
 
     RamItem *item = nullptr;
-    if (type == "A") item = qobject_cast<RamItem*>( proj->assets()->fromName(shortName, name) );
-    else item = qobject_cast<RamItem*>( proj->shots()->fromName(shortName, name) );
+    if (type == "A") item = proj->assets()->fromName(shortName, name);
+    else item = proj->shots()->fromName(shortName, name);
 
     if (!item)
     {

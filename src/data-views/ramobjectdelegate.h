@@ -6,13 +6,24 @@
 #include <QPainterPath>
 #include <QStringBuilder>
 
-#include "duqf-app/app-style.h"
-#include "ramses.h"
+#include "ramstatus.h"
+#include "ramuser.h"
+
+struct PaintParameters
+{
+    QColor bgColor;
+    QColor textColor;
+    QColor detailsColor;
+    QRect bgRect;
+    QRect iconRect;
+    QRect detailsRect;
+    QRect titleRect;
+};
 
 /**
  * @brief The RamObjectDelegate class is the main delegate used to paint RamObject in almost all the lists in Ramses.
  */
-class RamObjectDelegate : public QStyledItemDelegate
+template<typename RO> class RamObjectDelegate : public QStyledItemDelegate
 {
     Q_OBJECT
 public:
@@ -34,15 +45,15 @@ public slots:
     void showDetails(bool s);
 
 signals:
-    void editObject(RamObject*);
-    void historyObject(RamObject*);
-    void folderObject(RamObject*);
+    void editObject(RO);
+    void historyObject(RO);
+    void folderObject(RO);
 
 protected:
     bool editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index) override;
 
     // Utils
-    RamObject *getObject(const QModelIndex &index) const;
+    RO getObject(const QModelIndex &index) const;
 
     // drawing specific items
     void drawMore(QPainter *painter, QRect rect, QPen pen) const;
@@ -70,6 +81,16 @@ protected:
     QModelIndex m_folderButtonHover = QModelIndex();
 
 private:
+    // UTILS //
+    PaintParameters getPaintParameters(const QStyleOptionViewItem &option, RO obj = nullptr) const;
+    void paintBG(QPainter *painter, PaintParameters *params) const;
+    void paintTitle(RO obj, QPainter *painter, PaintParameters *params) const;
+    void paintTitle(QString title, QPainter *painter, PaintParameters *params) const;
+    void paintButtons(RO obj, QPainter *painter, PaintParameters *params, const QModelIndex &index) const;
+    void paintDetails(QString details, QPainter *painter, PaintParameters *params) const;
+    void paintDetails(RO obj, QPainter *painter, PaintParameters *params) const;
+
+
     // Settings
     bool m_editable = false;
     bool m_comboBox = false;

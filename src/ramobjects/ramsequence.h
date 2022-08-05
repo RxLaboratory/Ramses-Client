@@ -20,13 +20,12 @@ public:
 
     RamSequence(QString shortName, QString name, RamProject *project);
 
-    QColor color() const;
-    void setColor(const QColor &newColor);
-
     int shotCount() const;
     double duration() const;
 
     RamProject *project() const;
+
+    virtual QString details() const override;
 
 public slots:
     virtual void edit(bool show = true) override;

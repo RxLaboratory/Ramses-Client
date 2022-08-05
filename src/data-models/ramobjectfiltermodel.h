@@ -3,8 +3,9 @@
 
 #include <QSortFilterProxyModel>
 
+#include "data-models/ramitemtable.h"
+
 template<typename RO> class RamObjectList;
-class RamItemTable;
 
 /**
  * @brief The RamObjectFilterModel class is a proxy used to filter and search items displayed in Ramses' lists.
@@ -19,6 +20,9 @@ public:
     void setList(RamItemTable *list);
     void setFilterUuid(const QString &filterUuid);
     void search(const QString &searchStr);
+
+    // LIST INFORMATION
+    RO at(int i) const;
 
 signals:
     void aboutToFilter();

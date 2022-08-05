@@ -3,8 +3,6 @@
 
 #include <QSortFilterProxyModel>
 
-#include "ramses.h"
-
 class RamProjectFilterModel : public QSortFilterProxyModel
 {
     Q_OBJECT

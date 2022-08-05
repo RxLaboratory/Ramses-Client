@@ -1,6 +1,10 @@
 #include "ramobjectlistcombobox.h"
 
-RamObjectListComboBox::RamObjectListComboBox(QWidget *parent) :
+#include "data-models/ramobjectfilterlist.h"
+#include "ramobjectdelegate.h"
+
+template<typename RO>
+RamObjectListComboBox<RO>::RamObjectListComboBox(QWidget *parent) :
     QComboBox(parent)
 {
     setupUi();
@@ -8,7 +12,8 @@ RamObjectListComboBox::RamObjectListComboBox(QWidget *parent) :
     connectEvents();
 }
 
-RamObjectListComboBox::RamObjectListComboBox(bool isFilterBox, QWidget *parent) :
+template<typename RO>
+RamObjectListComboBox<RO>::RamObjectListComboBox(bool isFilterBox, QWidget *parent) :
     QComboBox(parent)
 {
     setupUi();
@@ -17,7 +22,8 @@ RamObjectListComboBox::RamObjectListComboBox(bool isFilterBox, QWidget *parent) 
     connectEvents();
 }
 
-RamObjectListComboBox::RamObjectListComboBox(RamObjectList *list, QWidget *parent) :
+template<typename RO>
+RamObjectListComboBox<RO>::RamObjectListComboBox(RamObjectList<RO> *list, QWidget *parent) :
     QComboBox(parent)
 {
     setupUi();
@@ -25,45 +31,44 @@ RamObjectListComboBox::RamObjectListComboBox(RamObjectList *list, QWidget *paren
     connectEvents();
 }
 
-void RamObjectListComboBox::setList(RamObjectList *list)
+template<typename RO>
+void RamObjectListComboBox<RO>::setList(RamObjectList<RO> *list)
 {
     if (m_isFilterBox)
     {
-        RamObjectFilterList *proxyModel = new RamObjectFilterList(this);
+        RamObjectFilterList<RO> *proxyModel = new RamObjectFilterList<RO>(this);
         proxyModel->setList(list);
         this->setModel(proxyModel);
     }
     else
     {
-        QSortFilterProxyModel *proxyModel = new QSortFilterProxyModel(this);
-        proxyModel->setSourceModel(list);
-        this->setModel(proxyModel);
+        this->setModel(list);
     }
 }
 
-RamObject *RamObjectListComboBox::currentObject()
+template<typename RO>
+RO RamObjectListComboBox<RO>::currentObject()
 {
-    quintptr iptr = this->currentData().toULongLong();
-    if (iptr == 0) return nullptr;
-    RamObject *obj = reinterpret_cast<RamObject*>(iptr);
-    return obj;
+    int i = this->currentIndex();
+    return object(i);
 }
 
-QString RamObjectListComboBox::currentUuid()
+template<typename RO>
+QString RamObjectListComboBox<RO>::currentUuid()
 {
-    RamObject *obj = this->currentObject();
-    if (!obj) return "";
-    return obj->uuid();
+    int i = this->currentIndex();
+    return uuid(i);
 }
 
-void RamObjectListComboBox::setObject(QString uuid)
+template<typename RO>
+void RamObjectListComboBox<RO>::setObject(QString objUuid)
 {
-    if (uuid == "" && m_isFilterBox)
+    if (objUuid == "" && m_isFilterBox)
     {
         setCurrentIndex(0);
         return;
     }
-    if (uuid == "")
+    if (objUuid == "")
     {
         setCurrentIndex(-1);
         return;
@@ -71,10 +76,8 @@ void RamObjectListComboBox::setObject(QString uuid)
 
     for(int i = 0; i < this->count(); i++)
     {
-        quintptr iptr = this->itemData(i).toULongLong();
-        RamObject *obj = reinterpret_cast<RamObject*>(iptr);
-        if (!obj) continue;
-        if (obj->uuid() == uuid)
+        QString ou = uuid(i);
+        if (objUuid == ou)
         {
             this->setCurrentIndex(i);
             return;
@@ -83,25 +86,52 @@ void RamObjectListComboBox::setObject(QString uuid)
     this->setCurrentIndex(-1);
 }
 
-void RamObjectListComboBox::setObject(RamObject *obj)
+template<typename RO>
+void RamObjectListComboBox<RO>::setObject(RO obj)
 {
     if (!obj) setObject("");
     else setObject(obj->uuid());
 }
 
-void RamObjectListComboBox::beginReset()
+template<typename RO>
+RO RamObjectListComboBox<RO>::object(int i)
+{
+    if (m_isFilterBox)
+    {
+        RamObjectFilterList<RO> *m = qobject_cast<RamObjectFilterList<RO> >(model());
+        return m->at(i);
+    }
+    else
+    {
+        RamObjectList<RO> *m = qobject_cast<RamObjectList<RO>>(model());
+        return m->at(i);
+    }
+}
+
+template<typename RO>
+QString RamObjectListComboBox<RO>::uuid(int i)
+{
+    RO o = object(i);
+    if (o) return o->uuid();
+    return "";
+}
+
+template<typename RO>
+void RamObjectListComboBox<RO>::beginReset()
 {
     m_resetting = true;
     m_resettingObject = currentObject();
 }
 
-void RamObjectListComboBox::endReset()
+template<typename RO>
+void RamObjectListComboBox<RO>::endReset()
 {
     m_resetting = false;
     setObject(m_resettingObject);
 }
 
-void RamObjectListComboBox::showPopup()
+template<typename RO>
+void RamObjectListComboBox<RO>::showPopup()
 {
     // Update size
     // get the minimum width that fits the largest item.
@@ -113,13 +143,15 @@ void RamObjectListComboBox::showPopup()
     emit popupShown();
 }
 
-void RamObjectListComboBox::hidePopup()
+template<typename RO>
+void RamObjectListComboBox<RO>::hidePopup()
 {
     QComboBox::hidePopup();
     emit popupHidden();
 }
 
-void RamObjectListComboBox::currentObjectIndexChanged(int i)
+template<typename RO>
+void RamObjectListComboBox<RO>::currentObjectIndexChanged(int i)
 {
     Q_UNUSED(i)
 
@@ -134,7 +166,8 @@ void RamObjectListComboBox::currentObjectIndexChanged(int i)
     }
 }
 
-void RamObjectListComboBox::objectIndexActivated(int i)
+template<typename RO>
+void RamObjectListComboBox<RO>::objectIndexActivated(int i)
 {
     Q_UNUSED(i)
 
@@ -146,7 +179,8 @@ void RamObjectListComboBox::objectIndexActivated(int i)
     emit uuidActivated( currentUuid() );
 }
 
-void RamObjectListComboBox::setupUi()
+template<typename RO>
+void RamObjectListComboBox<RO>::setupUi()
 {
     //this->setSizeAdjustPolicy(SizeAdjustPolicy::AdjustToContents);
     RamObjectDelegate *delegate = new RamObjectDelegate(this);
@@ -154,7 +188,8 @@ void RamObjectListComboBox::setupUi()
     this->setItemDelegate(delegate);
 }
 
-void RamObjectListComboBox::connectEvents()
+template<typename RO>
+void RamObjectListComboBox<RO>::connectEvents()
 {
     connect(this, SIGNAL(currentIndexChanged(int)), this, SLOT(currentObjectIndexChanged(int)));
 }

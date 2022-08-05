@@ -1,6 +1,9 @@
 #include "ramshot.h"
 
+#include "ramasset.h"
+#include "ramassetgroup.h"
 #include "ramproject.h"
+#include "ramsequence.h"
 #include "shoteditwidget.h"
 
 // STATIC //
@@ -51,6 +54,34 @@ RamObjectList<RamAsset *> *RamShot::assets() const
 QString RamShot::filterUuid() const
 {
     return getData("sequence").toString();
+}
+
+QString RamShot::details() const
+{
+    QString details = "Duration: " +
+                    QString::number(duration(), 'f', 2) +
+                    " s | " +
+                    QString::number(duration() * m_project->framerate(), 'f', 2) +
+                    " f";
+
+    // List assigned assets
+    QMap<QString,QStringList> assts;
+    for (int i = 0; i < assets()->rowCount(); i++)
+    {
+        RamAsset *asset = assets()->at(i);
+        QString agName = asset->assetGroup()->name();
+        QStringList ag = assts.value( agName );
+        ag << asset->shortName();
+        assts[ agName ] = ag;
+    }
+    QMapIterator<QString,QStringList> i(assts);
+    while(i.hasNext())
+    {
+        i.next();
+        details = details + "\n" % i.key() + " ► " + i.value().join(", ");
+    }
+
+    return details;
 }
 
 // PUBLIC SLOTS //

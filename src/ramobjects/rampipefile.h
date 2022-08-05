@@ -29,6 +29,8 @@ public:
     QString customSettings() const;
     void setCustomSettings(const QString &newCustomSettings);
 
+    virtual QString details() const override;
+
 public slots:
     virtual void edit(bool show = true) override;
 

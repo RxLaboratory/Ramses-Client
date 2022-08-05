@@ -1,5 +1,7 @@
 ﻿#include "ramstatus.h"
 
+#include "ramitem.h"
+#include "ramworkingfolder.h"
 #include "statuseditwidget.h"
 #include "ramses.h"
 #include "ramfilemetadatamanager.h"
@@ -35,6 +37,16 @@ RamStatus *RamStatus::copy(RamStatus *other, RamUser *user)
     return status;
 }
 
+RamStatus *RamStatus::noStatus(RamItem *item, RamStep *step)
+{
+    RamStatus *no = new RamStatus(
+                Ramses::instance()->ramsesUser(),
+                item,
+                step,
+                true);
+    return no;
+}
+
 float RamStatus::hoursToDays(int hours)
 {
     // 1 day ( more or less )
@@ -65,11 +77,12 @@ int RamStatus::daysToHours(float days)
 
 // PUBLIC //
 
-RamStatus::RamStatus(RamUser *user, RamItem *item, RamStep *step):
+RamStatus::RamStatus(RamUser *user, RamItem *item, RamStep *step, bool isVirtual):
     RamObject(item->shortName() + "-" + step->shortName(),
               item->name() + " | " + step->name(),
               Status,
-              item)
+              item,
+              isVirtual)
 {
     construct();
 
@@ -86,6 +99,9 @@ RamStatus::RamStatus(RamUser *user, RamItem *item, RamStep *step):
     else d.insert("itemType", "item");
 
     d.insert("step", step->uuid());
+
+    d.insert("state", Ramses::instance()->noState()->uuid());
+    d.insert("completionRatio", 0);
 
     setData(d);
 
@@ -105,6 +121,12 @@ RamStep *RamStatus::step() const
 RamItem *RamStatus::item() const
 {
     return m_item;
+}
+
+bool RamStatus::isNoState() const
+{
+    RamState *noState = Ramses::instance()->noState();
+    return noState->is(state());
 }
 
 int RamStatus::completionRatio() const
@@ -182,7 +204,7 @@ void RamStatus::assignUser(RamUser *assignedUser)
     }
 }
 
-qint64 RamStatus::timeSpent()
+qint64 RamStatus::timeSpent() const
 {
     qint64 ts = getData("timeSpent").toInt();
     if (ts == 0)
@@ -473,6 +495,81 @@ QString RamStatus::previewImagePath() const
 
     // Not found, return the first one
     return previewDir.filePath( images.at(0) );
+}
+
+QString RamStatus::details() const
+{
+    QString details;
+
+    RamUser *au = assignedUser();
+    if (au) details = "Assigned to: " +
+            au->name() %
+            "\nDifficulty: ";
+    else details = "Not assigned\nDifficulty: ";
+
+    switch( difficulty() )
+    {
+    case RamStatus::VeryEasy: { details += "Very easy"; break; }
+    case RamStatus::Easy: { details += "Easy"; break; }
+    case RamStatus::Medium: { details += "Medium"; break; }
+    case RamStatus::Hard: { details += "Hard"; break; }
+    case RamStatus::VeryHard: { details += "Very hard"; break; }
+    }
+
+    qint64 timeSpentSecs = timeSpent();
+    // Convert to hours
+    int timeSpentHours = timeSpentSecs / 3600;
+
+    // Ratio
+    float est = 0;
+    bool useAuto = useAutoEstimation();
+    if (useAuto) est = estimation();
+    else est = goal();
+    float timeSpentDays = RamStatus::hoursToDays( timeSpentHours/3600 );
+
+    // Estimation or goal
+    if (timeSpentHours > 0)
+    {
+        details = details +
+            "\nTime spent: " +
+            QString::number(timeSpentHours) +
+            " hours (" +
+            QString::number(timeSpentDays, 'f', 0) +
+            " days) / " +
+            QString::number(est, 'f', 1) +
+            " days ";
+        if (useAutoEstimation()) details += "(estimated)";
+        else details += "(goal)";
+    }
+    else if (useAuto) details +=
+            "\nEstimation: " +
+            QString::number(est, 'f', 1) +
+            " days";
+    else details +=
+            "\nGoal: " +
+            QString::number(est, 'f', 1) +
+            " days";
+
+   if (isPublished()) details += "\n► Published";
+
+   return details;
+
+}
+
+QString RamStatus::subDetails() const
+{
+    //subdetails
+    QString dateFormat = "yyyy-MM-dd hh:mm:ss";
+    RamUser *u = Ramses::instance()->currentUser();
+    if (u)
+    {
+        QSettings *uSettings = u->settings();
+        dateFormat = uSettings->value("ramses/dateFormat", dateFormat).toString();
+    }
+    return "Modified on: " +
+            date().toString(dateFormat) +
+            "\nBy: " +
+            user()->name();
 }
 
 // PUBLIC SLOTS //

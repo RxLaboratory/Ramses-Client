@@ -94,3 +94,14 @@ QModelIndex RamObjectFilterList<RO>::parent(const QModelIndex &child) const
 
     return QModelIndex();
 }
+
+template<typename RO>
+RO RamObjectFilterList<RO>::at(int i)
+{
+    if (!m_objectList) return nullptr;
+    if (!hasIndex(i, 0)) return nullptr;
+
+    QModelIndex proxyIndex = index(i, 0);
+    QModelIndex sourceIndex = mapToSource(proxyIndex);
+    return m_objectList->at(sourceIndex.row());
+}

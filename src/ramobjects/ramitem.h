@@ -66,8 +66,13 @@ protected:
     RamProject *m_project;
     RamStep::Type m_productionType;
 
+private slots:
+    void latestStatusChanged(RamStepStatusHistory*history);
+
 private:
     void construct();
+    // Monitors changes to emit statusChanged
+    void connectHistory(RamStepStatusHistory *history);
 
     QMap<QString, RamStepStatusHistory*> m_history;
 };

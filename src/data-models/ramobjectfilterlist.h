@@ -23,6 +23,9 @@ public:
     QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const override;
     QModelIndex parent(const QModelIndex &child) const override;
 
+    // LIST INFO
+    RO at(int i );
+
 private:
     RamObjectList<RO> *m_objectList = nullptr;
 };

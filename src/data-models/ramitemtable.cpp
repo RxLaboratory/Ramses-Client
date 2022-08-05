@@ -1,5 +1,6 @@
 #include "ramitemtable.h"
 #include "ramses.h"
+#include "ramstatus.h"
 
 // STATIC //
 
@@ -80,12 +81,7 @@ QVariant RamItemTable::data(const QModelIndex &index, int role) const
         if (role == Qt::ToolTipRole)
             return "NO | Nothing to do";
 
-        status = new RamStatus(
-                        Ramses::instance()->ramsesUser(),
-                        Ramses::instance()->noState(),
-                        step,
-                        item,
-                        false);
+        status = RamStatus::noStatus(item, step);
     }
 
     if (role == Qt::DisplayRole)

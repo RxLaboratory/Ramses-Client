@@ -2,17 +2,31 @@
 
 #include "ramitem.h"
 #include "ramstep.h"
-#include "ramstatus"
+#include "ramstatus.h"
 #include "statushistorywidget.h"
 #include "mainwindow.h"
+
+RamStepStatusHistory *RamStepStatusHistory::getObject(QString uuid, bool constructNew)
+{
+    RamObjectList<RamStatus*> *obj = RamObjectList<RamStatus*>::getObject(uuid);
+    if (!obj && constructNew) return new RamStepStatusHistory( uuid );
+    return qobject_cast<RamStepStatusHistory*>( obj );
+}
 
 RamStepStatusHistory::RamStepStatusHistory(RamStep *step, RamItem *item):
     RamObjectList(step->shortName(), step->name(), item)
 {
+    construct();
+
     m_item = item;
     m_step = step;
 
-    this->setObjectName( "RamStepStatusHistory " + step->shortName() );
+    QJsonObject d = RamAbstractObject::data();
+    d.insert("item", m_item->uuid());
+    d.insert("step", m_step->uuid());
+    RamAbstractObject::setData(d);
+
+    connectEvents();
 }
 
 RamItem *RamStepStatusHistory::item() const
@@ -56,4 +70,55 @@ void RamStepStatusHistory::edit(bool show)
     }
     MainWindow *mw = (MainWindow*)GuiUtils::appMainWindow();
     mw->setPropertiesDockWidget(ui_editWidget, m_step->name() + " history", ":/icons/step");
+}
+
+// PROTECTED //
+
+RamStepStatusHistory::RamStepStatusHistory(QString uuid, QObject *parent):
+    RamObjectList(uuid, parent)
+{
+    construct();
+
+    QJsonObject d = RamAbstractObject::data();
+
+    m_item = RamItem::getObject(d.value("item").toString(), true);
+    m_step = RamStep::getObject(d.value("step").toString(), true);
+
+    connectEvents();
+}
+
+void RamStepStatusHistory::rowsChanged(QModelIndex parent, int start, int end)
+{
+    Q_UNUSED(parent)
+    Q_UNUSED(start)
+
+    if (end == rowCount() - 1)
+    {
+        m_step->computeEstimation();
+        emit latestStatusChanged(this);
+    }
+}
+
+void RamStepStatusHistory::changeData(QModelIndex topLeft, QModelIndex bottomRight, QVector<int> roles)
+{
+    Q_UNUSED(topLeft)
+    Q_UNUSED(roles)
+
+    if (bottomRight.row() == rowCount() - 1)
+    {
+        m_step->computeEstimation();
+        emit latestStatusChanged(this);
+    }
+}
+
+void RamStepStatusHistory::construct()
+{
+    m_objectType = StepStatusHistory;
+}
+
+void RamStepStatusHistory::connectEvents()
+{
+    connect(this, SIGNAL(rowsAboutRemoved(QModelIndex,int,int)), this, SLOT(rowsChanged(QModelIndex,int,int)));
+    connect(this, SIGNAL(rowsAboutRemoved(QModelIndex,int,int)), this, SLOT(rowsChanged(QModelIndex,int,int)));
+    connect(this, SIGNAL(dataChanged(QModelIndex,QModelIndex,QVector<int>)), this, SLOT(changeData(QModelIndex,QModelIndex,QVector<int>)));
 }

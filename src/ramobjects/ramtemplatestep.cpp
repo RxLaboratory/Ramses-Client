@@ -84,16 +84,6 @@ void RamTemplateStep::setType(QString type)
     insertData("type", type);
 }
 
-QColor RamTemplateStep::color() const
-{
-    return QColor( getData("color").toString("#434343") );
-}
-
-void RamTemplateStep::setColor(const QColor &newColor)
-{
-    insertData("color", newColor.name());
-}
-
 QString RamTemplateStep::publishSettings() const
 {
     return getData("publishSettings").toString();
@@ -112,6 +102,40 @@ float RamTemplateStep::estimationVeryHard() const
 void RamTemplateStep::setEstimationVeryHard(float newEstimationVeryHard)
 {
     insertData("estimationVeryHard", newEstimationVeryHard);
+}
+
+QIcon RamTemplateStep::icon() const
+{
+    switch(type())
+    {
+    case PreProduction:
+        return QIcon(":/icons/asset");
+    case ShotProduction:
+        return QIcon(":/icons/shot");
+    case AssetProduction:
+        return QIcon(":/icons/asset");
+    case PostProduction:
+        return QIcon(":/icons/film");
+    case All:
+        return QIcon(":/icons/step");
+    }
+}
+
+QString RamTemplateStep::details() const
+{
+    switch(type())
+    {
+    case PreProduction:
+        return "Pre-production";
+    case ShotProduction:
+        return "Shot production";
+    case AssetProduction:
+        return "Asset production";
+    case PostProduction:
+        return "Post-production";
+    case All:
+        return "";
+    }
 }
 
 void RamTemplateStep::edit(bool show)

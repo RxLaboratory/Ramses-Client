@@ -46,9 +46,6 @@ public:
     void setType(const Type &type);
     void setType(QString type);
 
-    QColor color() const;
-    void setColor(const QColor &newColor);
-
     QString publishSettings() const;
     void setPublishSettings(const QString &newPublishSettings);
 
@@ -70,6 +67,9 @@ public:
     float estimationVeryHard() const;
     void setEstimationVeryHard(float newEstimationVeryHard);
 
+    virtual QIcon icon() const override;
+    virtual QString details() const override;
+
 public slots:
     virtual void edit(bool show = true) override;
 
@@ -87,10 +87,12 @@ protected:
 
     RamTemplateStep(QString uuid);
 
-private:
-    void construct();
+    // ATTRIBUTES //
 
     RamObjectList<RamApplication*> *m_applications;
+
+private:
+    void construct();
 };
 
 #endif // RAMTEMPLATESTEP_H

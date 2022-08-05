@@ -18,11 +18,10 @@ public:
 
     RamState(QString shortName, QString name);
 
-    QColor color() const;
-    void setColor(const QColor &color);
-
     int completionRatio() const;
     void setCompletionRatio(int completionRatio);
+
+    virtual QString details() const override;
 
 protected:
     RamState(QString uuid);

@@ -1,6 +1,8 @@
 #include "ramscheduleentry.h"
 
 #include "ramproject.h"
+#include "ramstep.h"
+#include "ramuser.h"
 
 // STATIC //
 
@@ -13,19 +15,17 @@ RamScheduleEntry *RamScheduleEntry::getObject(QString uuid, bool constructNew)
 
 // PUBLIC //
 
-RamScheduleEntry::RamScheduleEntry(RamUser *user, RamStep *step, QDateTime date):
-       RamObject(step->shortName(), step->name(), ObjectType::ScheduleEntry, user)
+RamScheduleEntry::RamScheduleEntry(RamUser *user, QDateTime date):
+       RamObject(user->shortName(), user->name() + " | " + date.toString("yyyy-MM-dd ap"), ObjectType::ScheduleEntry, user)
 {
     construct();
 
     m_user = user;
-    m_step = step;
     m_date = date;
-    m_step->countAssignedDays();
 
     QJsonObject d = data();
     d.insert("user", user->uuid());
-    d.insert("step", step->uuid());
+    d.insert("step", "none");
     d.insert("date", date.toString("yyyy-MM-dd hh:mm:ss"));
     setData(d);
 
@@ -39,12 +39,32 @@ RamUser *RamScheduleEntry::user() const
 
 RamStep *RamScheduleEntry::step() const
 {
-    return m_step;
+    return RamStep::getObject( getData("step").toString(), true);
 }
 
 const QDateTime &RamScheduleEntry::date() const
 {
     return m_date;
+}
+
+void RamScheduleEntry::setStep(RamStep *newStep)
+{
+    RamStep *currentStep = step();
+    if (currentStep)
+    {
+        disconnect(currentStep, nullptr, this, nullptr);
+        disconnect(this, nullptr, currentStep, nullptr);
+        currentStep->countAssignedDays();
+    }
+
+    if (newStep)
+    {
+        insertData("step", newStep->uuid());
+        connect(this, SIGNAL(removed(RamObject*)), newStep, SLOT(countAssignedDays()));
+        connect(newStep, SIGNAL(removed(RamObject*)), this, SLOT(stepRemoved()));
+        newStep->countAssignedDays();
+    }
+    else insertData("step", "none");
 }
 
 // PROTECTED //
@@ -56,12 +76,16 @@ RamScheduleEntry::RamScheduleEntry(QString uuid):
 
     QJsonObject d = data();
     m_user = RamUser::getObject( d.value("user").toString(), true );
-    m_step = RamStep::getObject( d.value("step").toString(), true );
     m_date = QDateTime::fromString( d.value("date").toString(), "yyyy-MM-dd hh:mm:ss");
 
     this->setParent(m_user);
 
     connectEvents();
+}
+
+void RamScheduleEntry::stepRemoved()
+{
+    setStep(nullptr);
 }
 
 void RamScheduleEntry::construct()
@@ -73,6 +97,4 @@ void RamScheduleEntry::construct()
 void RamScheduleEntry::connectEvents()
 {
     connect(m_user,SIGNAL(removed(RamObject*)), this, SLOT(remove()));
-    connect(m_step,SIGNAL(removed(RamObject*)), this, SLOT(remove()));
-    connect(this, SIGNAL(removed(RamObject*)), m_step, SLOT(countAssignedDays()));
 }

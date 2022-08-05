@@ -33,16 +33,20 @@ public:
 
     static RamStatus *copy(RamStatus *other, RamUser *user);
 
+    static RamStatus *noStatus(RamItem *item, RamStep *step);
+
     static float hoursToDays(int hours);
     static int daysToHours(float days);
 
     // METHODS //
 
-    RamStatus(RamUser *user, RamItem *item, RamStep *step);
+    RamStatus(RamUser *user, RamItem *item, RamStep *step, bool isVirtual = false);
 
     RamUser *user() const;
     RamStep *step() const;
     RamItem *item() const;
+
+    bool isNoState() const;
 
     int completionRatio() const;
     void setCompletionRatio(int completionRatio);
@@ -62,7 +66,7 @@ public:
     RamUser *assignedUser() const;
     void assignUser(RamUser *assignedUser);
 
-    qint64 timeSpent(); // seconds
+    qint64 timeSpent() const; // seconds
     void setTimeSpent(const float &ts);
     bool isTimeSpentManual() const;
 
@@ -88,6 +92,9 @@ public:
     QString restoreVersionFile(QString fileName) const;
 
     QString previewImagePath() const;
+
+    virtual QString details() const override;
+    virtual QString subDetails() const override;
 
 public slots:
     virtual void edit(bool show = true) override;

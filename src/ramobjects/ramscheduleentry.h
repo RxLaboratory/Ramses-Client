@@ -17,21 +17,25 @@ public:
 
     // METHODS
 
-    explicit RamScheduleEntry(RamUser *user, RamStep *step, QDateTime date);
+    explicit RamScheduleEntry(RamUser *user, QDateTime date);
 
     RamUser *user() const;
-    RamStep *step() const;
     const QDateTime &date() const;
+
+    RamStep *step() const;
+    void setStep(RamStep *newStep);
 
 protected:
     RamScheduleEntry(QString uuid);
+
+private slots:
+    void stepRemoved();
 
 private:
     void construct();
     void connectEvents();
 
     RamUser *m_user = nullptr;
-    RamStep *m_step = nullptr;
     QDateTime m_date;
 };
 

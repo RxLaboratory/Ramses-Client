@@ -1,8 +1,11 @@
 #include "ramscheduledelegate.h"
 
+#include "ramobjectlistcombobox.h"
+#include "ramses.h"
+#include "ramschedulecomment.h"
 #include "ramscheduleentry.h"
-
 #include "duqf-utils/guiutils.h"
+#include "duqf-app/app-style.h"
 
 RamScheduleDelegate::RamScheduleDelegate(QObject *parent) : QStyledItemDelegate(parent)
 {
@@ -198,7 +201,7 @@ bool RamScheduleDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, 
             if (proj)
             {
                 QMainWindow *mw = GuiUtils::appMainWindow();
-                RamObjectListComboBox *editor = new RamObjectListComboBox( true, mw );
+                RamObjectListComboBox<RamStep*> *editor = new RamObjectListComboBox<RamStep*>( true, mw );
                 editor->setList(proj->steps());
                 QRect rect = option.rect.adjusted(m_padding,2,-m_padding,-2);
                 editor->setGeometry( rect );
@@ -223,7 +226,7 @@ void RamScheduleDelegate::showDetails(bool s)
     m_details = s;
 }
 
-void RamScheduleDelegate::setEntry(RamObject *stepObj)
+void RamScheduleDelegate::setEntry(RamStep *stepObj)
 {
     if (!m_indexPressed.isValid()) return;
 

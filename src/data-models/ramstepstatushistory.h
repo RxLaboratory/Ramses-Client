@@ -17,6 +17,8 @@ class RamStepStatusHistory : public RamObjectList<RamStatus*>
 {
     Q_OBJECT
 public:
+    static RamStepStatusHistory *getObject(QString uuid, bool constructNew = false);
+
     RamStepStatusHistory(RamStep *step, RamItem *item);
     RamItem *item() const;
     RamStep *step() const;
@@ -27,7 +29,22 @@ public:
 public slots:
     void edit(bool show = true);
 
+signals:
+    void latestStatusChanged(RamStepStatusHistory*);
+
+protected:
+    RamStepStatusHistory(QString uuid, QObject *parent = nullptr);
+
+private slots:
+    // monitors the changes to trigger computeEstimations on the step
+    void rowsChanged(QModelIndex parent, int start, int end);
+    void changeData(QModelIndex topLeft, QModelIndex bottomRight, QVector<int> roles);
+
 private:
+    void construct();
+    // monitors the changes to trigger computeEstimations on the step
+    void connectEvents();
+
     RamStep *m_step;
     RamItem *m_item;
 

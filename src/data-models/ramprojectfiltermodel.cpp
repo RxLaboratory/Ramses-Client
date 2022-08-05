@@ -1,8 +1,10 @@
 #include "ramprojectfiltermodel.h"
 
+#include "ramses.h"
+
 RamProjectFilterModel::RamProjectFilterModel(QObject *parent) : QSortFilterProxyModel(parent)
 {
-    RamObjectList *projects = Ramses::instance()->projects();
+    RamObjectList<RamProject*> *projects = Ramses::instance()->projects();
     this->setDynamicSortFilter(true);
     this->setSourceModel(projects);
     connect(projects, SIGNAL(dataChanged(const QModelIndex&, const QModelIndex&)), this, SLOT(doInvalidateFilter()));
@@ -32,18 +34,20 @@ void RamProjectFilterModel::clearUsers()
 
 bool RamProjectFilterModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
 {
-    QModelIndex index = sourceModel()->index(sourceRow, 0, sourceParent);
-
-    quintptr iptr = index.data(Qt::UserRole).toULongLong();
-    if (iptr == 0) return false;
-    RamProject *project = reinterpret_cast<RamProject*>(iptr);
+    Q_UNUSED(sourceParent)
 
     if ( m_userUuids.count() == 0 ) return true;
+
+    RamObjectList<RamProject*> *projects = Ramses::instance()->projects();
+    RamProject *project = projects->at(sourceRow);
+
+    if (!project) return false;
 
     for (int i = 0; i < m_userUuids.count(); i++)
     {
         if ( project->users()->contains(m_userUuids.at(i))) return true;
     }
+
     return false;
 }
 

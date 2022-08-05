@@ -1,5 +1,6 @@
 #include "rampipefile.h"
 
+#include "ramfiletype.h"
 #include "ramses.h"
 #include "pipefileeditwidget.h"
 
@@ -84,6 +85,13 @@ void RamPipeFile::setCustomSettings(const QString &newCustomSettings)
     insertData("customSettings", newCustomSettings);
 }
 
+QString RamPipeFile::details() const
+{
+    RamFileType *ft = fileType();
+    if (ft) return "File type: " + ft->name();
+    return RamObject::details();
+}
+
 void RamPipeFile::edit(bool show)
 {
     if (!ui_editWidget) setEditWidget(new PipeFileEditWidget(this));
@@ -108,6 +116,6 @@ RamPipeFile::RamPipeFile(QString uuid):
 
 void RamPipeFile::construct()
 {
-    m_icon = ":/icons/file";
+    m_icon = ":/icons/connection";
     m_editRole = ProjectAdmin;
 }

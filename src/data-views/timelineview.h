@@ -5,9 +5,8 @@
 
 #include "data-models/timelineproxy.h"
 #include "data-models/ramobjectlist.h"
-#include "data-models/ramitemtablelistproxy.h"
+#include "ramshot.h"
 #include "timelinedelegate.h"
-#include "ramses.h"
 
 /**
  * @brief The TimelineView class displays shots on a horizontal line,
@@ -22,7 +21,7 @@ public:
 
     TimelineView(QWidget *parent = nullptr);
     // Content
-    void setList(RamObjectList *shots);
+    void setList(RamObjectList<RamShot*> *shots);
     void zoom(double amount);
     double currentZoom() const;
 
@@ -59,7 +58,7 @@ private:
     // Delegate
     TimelineDelegate *m_delegate;
     // List
-    RamObjectList *m_emptyList;
+    RamObjectList<RamShot*> *m_emptyList;
     TimeLineProxy *m_objectList;
 
     // Settings

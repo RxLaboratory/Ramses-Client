@@ -281,6 +281,8 @@ RO RamObjectList<RO>::fromName(QString shortName, QString name) const
 template<typename RO>
 RO RamObjectList<RO>::at(int i) const
 {
+    if (i < 0) return nullptr;
+    if (i > m_objectList.count() - 1) return nullptr;
     return m_objectList.at(i);
 }
 
@@ -380,8 +382,7 @@ template<typename RO> void RamObjectList<RO>::connectEvents()
 
 template<typename RO> bool objectSorter(RamObject *a, RamObject *b)
 {
-    if (a->order() != b->order()) return a->order() < b->order();
-    else return a->shortName() < b->shortName();
+    return a->shortName() < b->shortName();
 }
 
 template<typename RO> bool indexSorter(QModelIndex a, QModelIndex b)

@@ -6,27 +6,27 @@
 #include <QColumnView>
 
 #include "data-models/ramobjectlist.h"
-#include "data-models/ramobjectfilterlist.h"
-#include "ramobjectdelegate.h"
 
 /**
  * @brief The RamObjectListComboBox class is a QComboBox which lists the objects of a RamObjectList.
  * It can be used as a filter selection, in which case it adds an "All" item in the top of the list (using the RamObjectFilterList proxy)
  */
-class RamObjectListComboBox : public QComboBox
+template<typename RO> class RamObjectListComboBox : public QComboBox
 {
     Q_OBJECT
 public:
     RamObjectListComboBox(QWidget *parent = nullptr);
     RamObjectListComboBox(bool isFilterBox, QWidget *parent = nullptr);
-    RamObjectListComboBox(RamObjectList *list, QWidget *parent = nullptr);
+    RamObjectListComboBox(RamObjectList<RO> *list, QWidget *parent = nullptr);
 
-    void setList(RamObjectList *list);
+    void setList(RamObjectList<RO> *list);
 
-    RamObject *currentObject();
+    RO currentObject();
     QString currentUuid();
-    void setObject(QString uuid);
-    void setObject(RamObject *obj);
+    void setObject(QString objUuid);
+    void setObject(RO obj);
+    RO object(int i);
+    QString uuid(int i);
 
     void beginReset();
     void endReset();
@@ -35,9 +35,9 @@ public:
     void hidePopup() override;
 
 signals:
-    void currentObjectChanged(RamObject*);
+    void currentObjectChanged(RO);
     void currentUuidChanged(QString);
-    void objectActivated(RamObject*);
+    void objectActivated(RO);
     void uuidActivated(QString);
     void popupShown();
     void popupHidden();
@@ -47,6 +47,7 @@ private slots:
     void objectIndexActivated(int i );
 
 private:
+
     bool m_isFilterBox = false;
 
     RamObject *m_resettingObject = nullptr;

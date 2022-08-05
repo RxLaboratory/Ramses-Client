@@ -69,6 +69,11 @@ bool RamFileType::check(QString filePath) const
     return extensions().contains(ext);
 }
 
+QString RamFileType::details() const
+{
+    return "Extensions: " + extensions().join(", ");
+}
+
 void RamFileType::edit(bool show)
 {
     if (!ui_editWidget) setEditWidget(new FileTypeEditWidget(this));

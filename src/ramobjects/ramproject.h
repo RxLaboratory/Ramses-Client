@@ -92,6 +92,8 @@ public:
     QString dbFolderPath() const;
     void setDbFolderPath(const QString &newDbFolderPath);
 
+    virtual QString details() const override;
+
 signals:
     void completionRatioChanged(int);
     void latenessRatioChanged(float);

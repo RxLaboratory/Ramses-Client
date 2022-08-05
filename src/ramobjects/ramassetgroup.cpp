@@ -39,6 +39,11 @@ RamProject *RamAssetGroup::project() const
     return m_project;
 }
 
+QString RamAssetGroup::details() const
+{
+    return "Contains " + QString::number(assetCount()) + " assets";
+}
+
 void RamAssetGroup::edit(bool show)
 {
     if (!ui_editWidget) setEditWidget(new AssetGroupEditWidget(this));

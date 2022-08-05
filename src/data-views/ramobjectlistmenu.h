@@ -9,16 +9,16 @@
  * The items can be checkable to be used as a selection list, and in this case the menu contains a 'Select all' and a 'Select none' QAction.
  * A 'Create new...' QAction can also be added to the top of the list.
  */
-class RamObjectListMenu : public QMenu
+template<typename RO> class RamObjectListMenu : public QMenu
 {
     Q_OBJECT
 public:
     RamObjectListMenu(bool checkable = false, QWidget *parent = nullptr);
-    void setList(QAbstractItemModel *list);
+    void setList(RamObjectList<RO> *list);
     void addCreateButton();
-    RamObjectFilterModel *filteredList();
+    RamObjectFilterModel<RO> *filteredList();
 
-    void setObjectVisible(RamObject *obj, bool visible = true);
+    void setObjectVisible(RO obj, bool visible = true);
     void showAll();
 
     bool isAllChecked() const;
@@ -26,16 +26,16 @@ public:
 public slots:
     void selectAll();
     void selectNone();
-    void filter(RamObject *o);
-    void select(RamObject *o);
+    void filter(RO o);
+    void select(RO o);
 
     void saveState(QSettings *settings, QString group) const;
     void restoreState(QSettings *settings, QString group);
 
 signals:
-    void create();
-    void assign(RamObject*,bool);
-    void assign(RamObject*);
+    void createTriggered();
+    void assignmentChanged(RamObject*,bool);
+    void assigned(RamObject*);
 
 private slots:
     void newObject(const QModelIndex &parent, int first, int last);
@@ -50,8 +50,12 @@ private slots:
     void reset();
 
 private:
-    RamObjectFilterModel *m_objects;
-    RamObjectList *m_emptyList;
+    // UTILS //
+    QString objectUuid(QAction *a);
+    RO object(QAction *a);
+
+    RamObjectFilterModel<RO> *m_objects;
+    RamObjectList<RO> *m_emptyList;
     bool m_checkable = false;
 };
 

@@ -20,16 +20,6 @@ RamState::RamState(QString shortName, QString name) :
     construct();
 }
 
-QColor RamState::color() const
-{
-    return QColor( getData("color").toString("#434343") );
-}
-
-void RamState::setColor(const QColor &color)
-{
-    insertData("color", color.name() );
-}
-
 int RamState::completionRatio() const
 {
     return getData("completionRatio").toInt(50);
@@ -38,6 +28,11 @@ int RamState::completionRatio() const
 void RamState::setCompletionRatio(int completionRatio)
 {
     insertData("completionRatio", completionRatio);
+}
+
+QString RamState::details() const
+{
+    return "Completion ratio: " + QString::number(completionRatio()) + "%";
 }
 
 // PUBLIC SLOTS //

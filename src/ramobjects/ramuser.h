@@ -28,13 +28,13 @@ public:
     void setRole(const UserRole &role);
     void setRole(const QString role);
 
-    QColor color() const;
-    void setColor(const QColor &newColor);
-
     RamObjectList<RamScheduleEntry*> *schedule() const;
     bool isStepAssigned(RamStep *step) const;
 
     void updatePassword(QString c, QString n);
+
+    virtual QIcon icon() const override;
+    virtual QString details() const override;
 
 public slots:
     virtual void edit(bool show = true) override;

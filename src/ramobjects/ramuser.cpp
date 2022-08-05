@@ -47,15 +47,19 @@ void RamUser::setRole(const UserRole &role)
     {
     case Admin:
         insertData("role", "admin");
+        m_icon = ":/icons/admin";
         break;
     case ProjectAdmin:
         insertData("role", "project");
+        m_icon = ":/icons/project-admin";
         break;
     case Lead:
         insertData("role", "lead");
+        m_icon = ":/icons/lead";
         break;
     case Standard:
         insertData("role", "standard");
+        m_icon = ":/icons/user";
         break;
     }
 }
@@ -63,16 +67,6 @@ void RamUser::setRole(const UserRole &role)
 void RamUser::setRole(const QString role)
 {
     insertData("role", role);
-}
-
-QColor RamUser::color() const
-{
-    return QColor( getData("color").toString("#434343") );
-}
-
-void RamUser::setColor(const QColor &newColor)
-{
-    insertData("color", newColor.name());
 }
 
 RamObjectList<RamScheduleEntry*> *RamUser::schedule() const
@@ -114,10 +108,40 @@ void RamUser::updatePassword(QString c, QString n)
     QString prev = getData("password").toString();
 
     // Hash passwords
-    c = DBInterface::instance()->generatePassHash(c);
-    n = DBInterface::instance()->generatePassHash(n);
+    c = DataCrypto::instance()->generatePassHash(c);
+    n = DataCrypto::instance()->generatePassHash(n);
 
     if (c == prev) insertData("password", n);
+}
+
+QIcon RamUser::icon() const
+{
+    switch(role())
+    {
+    case Admin:
+        return QIcon(":/icons/admin");
+    case ProjectAdmin:
+        return QIcon(":/icons/project-admin");
+    case Lead:
+        return QIcon(":/icons/lead");
+    case Standard:
+        return QIcon(":/icons/user");
+    }
+}
+
+QString RamUser::details() const
+{
+    switch(role())
+    {
+    case Admin:
+        return "Administrator";
+    case ProjectAdmin:
+        return "Project Admin";
+    case Lead:
+        return "Lead";
+    case Standard:
+        return "Standard User";
+    }
 }
 
 // PUBLIC SLOTS //

@@ -1,6 +1,12 @@
 #include "ramstep.h"
 
+#include "ramassetgroup.h"
+#include "ramscheduleentry.h"
 #include "ramses.h"
+#include "ramstatus.h"
+#include "ramnamemanager.h"
+#include "data-models/ramitemtable.h"
+#include "ramworkingfolder.h"
 #include "stepeditwidget.h"
 
 // STATIC //
@@ -131,9 +137,9 @@ QList<float> RamStep::stats(RamUser *user)
     int assignedFutureHalfDays = 0;
 
     // Count assigned and future days
-    for (int j = 0; j < user->schedule()->count(); j++)
+    for (int j = 0; j < user->schedule()->rowCount(); j++)
     {
-        RamScheduleEntry *entry = qobject_cast<RamScheduleEntry*>( user->schedule()->at(j) );
+        RamScheduleEntry *entry = user->schedule()->at(j);
         if (!entry) continue;
         if (this->is(entry->step()))
         {
@@ -261,7 +267,7 @@ void RamStep::computeEstimation()
     if (t == PreProduction) return;
     if (t == PostProduction) return;
 
-    RamObjectList<RamItem*> *items;
+    RamItemTable *items;
     if (t == ShotProduction) items = m_project->shots();
     else items = m_project->assets();
 
@@ -324,7 +330,7 @@ void RamStep::countAssignedDays()
         RamUser *u = m_project->users()->at(i);
         if (!u) continue;
 
-        for (int j = 0; j < u->schedule()->count(); j++)
+        for (int j = 0; j < u->schedule()->rowCount(); j++)
         {
             RamScheduleEntry *entry = u->schedule()->at(j);
             if (!entry) continue;
@@ -357,7 +363,6 @@ RamStep::RamStep(QString uuid):
 
 QString RamStep::folderPath() const
 {
-    if (isTemplate()) return "";
     if (type() == RamStep::PreProduction)
         return m_project->path(RamObject::PreProdFolder) + "/" + m_project->shortName() + "_G_" + shortName();
 

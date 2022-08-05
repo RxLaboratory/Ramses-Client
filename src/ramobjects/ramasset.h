@@ -30,6 +30,8 @@ public:
 
     QString filterUuid() const override;
 
+    virtual QString details() const override;
+
 public slots:
     virtual void edit(bool show = true) override;
 

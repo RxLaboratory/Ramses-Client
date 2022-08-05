@@ -1,6 +1,4 @@
 1- implement all ramobjects
-	- ramsteptatushistory:
-		- status added, changed or removed or cleared: trigger step computeEstimation if and only if it's the last one, and notify containing item to emit statusChanged
 	- fix editwidgets
 
 2- New login page & Settings data

@@ -41,6 +41,10 @@ public:
 
     virtual QString filterUuid() const { return QString(); };
 
+    virtual QIcon icon() const { return QIcon(m_icon); };
+    virtual QString details() const { return QString(); };
+    virtual QString subDetails() const { return QString(); };
+
 public slots:
     virtual void edit(bool s = true) { Q_UNUSED(s) };
 

@@ -4,6 +4,7 @@
 #include "dbinterface.h"
 #include "ramses.h"
 #include "ramnamemanager.h"
+#include "duqf-app/app-style.h"
 
 // STATIC //
 
@@ -30,6 +31,10 @@ const QString RamAbstractObject::objectTypeName(ObjectType type)
     case StepStatusHistory: return "RamStepStatusHistory";
     case ScheduleEntry: return "RamScheduleEntry";
     case ScheduleComment: return "RamScheduleComment";
+    case TemplateStep: return "RamTemplateStep";
+    case TemplateAssetGroup: return "RamTemplateAssetGroup";
+    case Ramses: return "Ramses";
+    case ItemTable: return "RamItemTable";
     }
 }
 
@@ -108,6 +113,7 @@ RamAbstractObject::~RamAbstractObject()
 
 bool RamAbstractObject::is(RamAbstractObject *other) const
 {
+    if (!other) return false;
     return this->uuid() == other->uuid();
 }
 
@@ -183,6 +189,18 @@ QString RamAbstractObject::comment() const
 void RamAbstractObject::setComment(const QString comment)
 {
     insertData("comment", comment);
+}
+
+QColor RamAbstractObject::color() const
+{
+    QString colorName = getData("color").toString("");
+    if (colorName == "") return DuUI::getColor("less-light-grey");
+    return QColor( colorName );
+}
+
+void RamAbstractObject::setColor(QColor color)
+{
+    insertData("color", color.name() );
 }
 
 void RamAbstractObject::remove()

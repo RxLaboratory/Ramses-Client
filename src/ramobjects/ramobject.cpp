@@ -28,6 +28,11 @@ void RamObject::remove()
     RamAbstractObject::remove();
 }
 
+QString RamObject::icon() const
+{
+    return m_icon;
+}
+
 // PROTECTED //
 
 RamObject::RamObject(QString uuid, ObjectType type, QObject *parent):

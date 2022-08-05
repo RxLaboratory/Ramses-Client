@@ -1,6 +1,455 @@
 #include "ramobjectdelegate.h"
 
-RamObjectDelegate::RamObjectDelegate(QObject *parent)
+#include "ramfiletype.h"
+#include "ramitem.h"
+#include "ramsequence.h"
+#include "ramses.h"
+#include "ramassetgroup.h"
+#include "ramshot.h"
+#include "ramstatus.h"
+#include "rampipefile.h"
+#include "duqf-app/app-style.h"
+
+
+template<typename RO>
+PaintParameters RamObjectDelegate<RO>::getPaintParameters(const QStyleOptionViewItem &option, RO obj) const
+{
+    Q_UNUSED(obj)
+
+    // Default
+    PaintParameters params;
+
+    // Layout
+    params.bgRect = option.rect.adjusted(m_padding,2,-m_padding,-2);
+    params.iconRect = QRect(
+                params.bgRect.left() + m_padding,
+                params.bgRect.top() + 7,
+                12, 12
+                );
+    params.titleRect = QRect(
+                params.bgRect.left() + 27,
+                params.bgRect.top() + 5,
+                params.bgRect.width() - 32,
+                params.bgRect.height() - 10
+                );
+
+    // Colors
+    params.bgColor = m_dark;
+    params.textColor = m_lessLight;
+    params.detailsColor = m_medium;
+
+    if (option.state & QStyle::State_MouseOver)
+    {
+        params.bgColor = params.bgColor.lighter(120);
+        params.detailsColor = params.detailsColor.lighter(120);
+        params.textColor = params.textColor.lighter(120);
+    }
+    // Selected
+    if (option.state & QStyle::State_Selected)
+    {
+        params.bgColor = params.bgColor.darker();
+        params.textColor = params.textColor.lighter(150);
+    }
+
+    return params;
+}
+
+template<>
+PaintParameters RamObjectDelegate<RamStatus *>::getPaintParameters(const QStyleOptionViewItem &option, RamStatus *status) const
+{
+    // Default
+    PaintParameters params;
+
+    // Layout
+    params.bgRect = option.rect.adjusted(m_padding,2,-m_padding,-2);
+    params.iconRect = QRect(
+                params.bgRect.left() + m_padding,
+                params.bgRect.top() + 7,
+                12, 12
+                );
+
+    // Colors
+    params.bgColor = m_dark;
+    params.textColor = m_lessLight;
+    params.detailsColor = m_medium;
+
+    if (status->isNoState())
+    {
+        params.bgColor = QColor(0,0,0,0);
+        params.textColor = m_dark;
+    }
+
+    if (option.state & QStyle::State_MouseOver)
+    {
+        params.bgColor = params.bgColor.lighter(120);
+        params.detailsColor = params.detailsColor.lighter(120);
+        params.textColor = params.textColor.lighter(120);
+    }
+    // Selected
+    if (option.state & QStyle::State_Selected)
+    {
+        params.bgColor = params.bgColor.darker();
+        params.textColor = params.textColor.lighter(150);
+    }
+
+    return params;
+}
+
+template<typename RO>
+void RamObjectDelegate<RO>::paintBG(QPainter *painter, PaintParameters *params) const
+{
+    painter->setRenderHint(QPainter::Antialiasing);
+
+    // Background
+    QPainterPath path;
+    path.addRoundedRect(params->bgRect, 5, 5);
+    painter->fillPath(path, QBrush(params->bgColor));
+
+    // Too Small !
+    if (params->bgRect.height() < 26 )
+    {
+        drawMore(painter, params->bgRect, QPen(params->textColor));
+    }
+}
+
+template<typename RO>
+void RamObjectDelegate<RO>::paintTitle(RO obj, QPainter *painter, PaintParameters *params) const
+{
+    QString title = obj->name();
+    QColor color = obj->color();
+    if (color.lightness() < 150) color.setHsl( color.hue(), color.saturation(), 150);
+    params->textColor = color;
+    // Draw title
+    paintTitle(title, painter, params);
+}
+
+template<typename RO>
+void RamObjectDelegate<RO>::paintTitle(QString title, QPainter *painter, PaintParameters *params) const
+{
+    // Draw title
+    painter->setPen( QPen(params->textColor) );
+    painter->setFont( m_textFont );
+    QRect result;
+    painter->drawText( params->titleRect, Qt::AlignLeft | Qt::AlignTop | Qt::TextWordWrap, title, &result);
+    params->titleRect = result;
+    params->detailsRect = QRect(
+                params->iconRect.left() + 5,
+                params->titleRect.bottom() + 3,
+                params->bgRect.width() - params->iconRect.width() -5,
+                params->bgRect.height() - params->titleRect.height() - 15
+                );
+}
+
+template<>
+void RamObjectDelegate<RamStatus *>::paintTitle(RamStatus *obj, QPainter *painter, PaintParameters *params) const
+{
+    QString title = obj->item()->shortName() %
+            " | " %
+            obj->step()->shortName() %
+            " | " %
+            obj->state()->shortName() %
+            " (v" %
+            QString::number(obj->version()) %
+            ")";
+    paintTitle(title, painter, params);
+    // Draw title
+    paintTitle(title, painter, params);
+}
+
+template<>
+void RamObjectDelegate<RamTemplateAssetGroup *>::paintTitle(RamTemplateAssetGroup *obj, QPainter *painter, PaintParameters *params) const
+{
+    QString title = obj->name() % " [Template]";
+    // Draw title
+    paintTitle(title, painter, params);
+}
+
+template<>
+void RamObjectDelegate<RamTemplateStep *>::paintTitle(RamTemplateStep *obj, QPainter *painter, PaintParameters *params) const
+{
+    QString title = obj->name() % " [Template]";
+    QColor stepColor = obj->color();
+    if (stepColor.lightness() < 150) stepColor.setHsl( stepColor.hue(), stepColor.saturation(), 150);
+    params->textColor = stepColor;
+    // Draw title
+    paintTitle(title, painter, params);
+}
+
+template<>
+void RamObjectDelegate<RamFileType *>::paintTitle(RamFileType *obj, QPainter *painter, PaintParameters *params) const
+{
+    QString title = obj->name() % " (." % obj->shortName() + ")";
+    QColor color = obj->color();
+    if (color.lightness() < 150) color.setHsl( color.hue(), color.saturation(), 150);
+    params->textColor = color;
+    // Draw title
+    paintTitle(title, painter, params);
+}
+
+template<>
+void RamObjectDelegate<RamState *>::paintTitle(RamState *obj, QPainter *painter, PaintParameters *params) const
+{
+    QString title = obj->name();
+    if (m_comboBox) title = obj->shortName();
+    else
+    {
+        QColor color = obj->color();
+        if (color.lightness() < 150) color.setHsl( color.hue(), color.saturation(), 150);
+        params->textColor = color;
+    }
+    // Draw title
+    paintTitle(title, painter, params);
+}
+
+template<>
+void RamObjectDelegate<RamPipeFile *>::paintTitle(RamPipeFile *obj, QPainter *painter, PaintParameters *params) const
+{
+    QString title = obj->shortName();
+    RamFileType *ft = obj->fileType();
+    if (ft) title = title % "." % ft->shortName();
+    QColor color = obj->color();
+    if (color.lightness() < 150) color.setHsl( color.hue(), color.saturation(), 150);
+    params->textColor = color;
+    // Draw title
+    paintTitle(title, painter, params);
+}
+
+template<>
+void RamObjectDelegate<RamShot *>::paintTitle(RamShot *obj, QPainter *painter, PaintParameters *params) const
+{
+    QString title = obj->name();
+    QColor seqColor = obj->sequence()->color();
+    if (seqColor.lightness() < 150) seqColor.setHsl( seqColor.hue(), seqColor.saturation(), 150);
+    params->textColor = seqColor;
+    // Draw title
+    paintTitle(title, painter, params);
+}
+
+template<typename RO>
+void RamObjectDelegate<RO>::paintButtons(RO obj, QPainter *painter, PaintParameters *params, const QModelIndex &index) const
+{
+    if(m_comboBox) return;
+
+    int xpos = params->bgRect.right() - 20;
+
+    // Draw Folder button
+    // Folder button
+    if ( obj->path() != "" )
+    {
+        const QRect folderButtonRect( xpos, params.bgRect.top() +7, 12, 12 );
+        drawButton(painter, folderButtonRect, m_folderIcon, m_folderButtonHover == index);
+    }
+}
+
+template<>
+void RamObjectDelegate<RamStatus *>::paintButtons(RamStatus *obj, QPainter *painter, PaintParameters *params, const QModelIndex &index) const
+{
+    if(m_comboBox) return;
+
+    int xpos = params->bgRect.right() - 20;
+
+    QRect historyButtonRect( xpos, params->bgRect.top() +7, 12, 12);
+    xpos -= 22;
+
+    bool statusNo = obj->isNoState();
+
+    if (statusNo)
+        drawButton(painter, historyButtonRect, m_historyDarkIcon, m_historyButtonHover == index);
+    else
+        drawButton(painter, historyButtonRect, m_historyIcon, m_historyButtonHover == index);
+
+    // Draw Folder button
+    // Folder button
+    if ( obj->path() != "" )
+    {
+        const QRect folderButtonRect( xpos, params->bgRect.top() +7, 12, 12 );
+        if (statusNo)
+            drawButton(painter, folderButtonRect, m_folderDarkIcon, m_folderButtonHover == index);
+        else
+            drawButton(painter, folderButtonRect, m_folderIcon, m_folderButtonHover == index);
+    }
+}
+
+template<typename RO>
+void RamObjectDelegate<RO>::paintDetails(QString details, QPainter *painter, PaintParameters *params) const
+{
+    if (params->detailsRect.height() <= 15) return;
+
+    painter->setPen( QPen(params->detailsColor) );
+    painter->setFont( m_detailsFont );
+    QRect result;
+    painter->drawText( params->detailsRect, Qt::AlignLeft | Qt::AlignTop | Qt::TextWordWrap, details, &result);
+    params->detailsRect = result;
+    if (params->detailsRect.bottom() + 5 > params->bgRect.bottom()) drawMore(painter, params->bgRect, QPen(params->textColor));
+}
+
+template<typename RO>
+void RamObjectDelegate<RO>::paintDetails(RO obj, QPainter *painter, PaintParameters *params) const
+{
+    painter->drawPixmap( params->iconRect, QIcon(obj->icon()).pixmap(QSize(12,12)));
+    paintDetails(obj->details(), painter, params);
+}
+
+template<>
+void RamObjectDelegate<RamState *>::paintDetails(RamState *obj, QPainter *painter, PaintParameters *params) const
+{
+    painter->drawPixmap( params->iconRect, QIcon(obj->icon()).pixmap(QSize(12,12)));
+
+    // Draw a progress bar
+    QColor statusColor = obj->color();
+    QBrush statusBrush(statusColor.darker());
+    QPainterPath path;
+    QRect statusRect( params->bgRect.left() + 5, params->titleRect.bottom() + 5, params->bgRect.width() - 10, 5 );
+    if (statusRect.bottom() + 5 < params->bgRect.bottom())
+    {
+        path.addRoundedRect(statusRect, 5, 5);
+        painter->fillPath(path, statusBrush);
+        statusBrush.setColor(statusColor);
+        statusRect.adjust(0,0, -statusRect.width() * (1-(obj->completionRatio() / 100.0)), 0);
+        QPainterPath completionPath;
+        completionPath.addRoundedRect(statusRect, 5, 5);
+        painter->fillPath(completionPath, statusBrush);
+
+        //details
+        params->detailsRect.moveTop(statusRect.bottom() + 5);
+        params->detailsRect.setHeight( params->bgRect.bottom() - statusRect.bottom() - 10);
+    }
+
+
+    paintDetails(obj->details(), painter, params);
+}
+
+template<>
+void RamObjectDelegate<RamStatus *>::paintDetails(RamStatus *obj, QPainter *painter, PaintParameters *params) const
+{
+    // If no state, nothing else to draw
+    if (obj->isNoState()) return;
+
+    painter->drawPixmap( params->iconRect, QIcon(obj->icon()).pixmap(QSize(12,12)));
+
+    // Draw a progress bar
+    QColor statusColor = obj->state()->color();
+    if (!m_completionRatio) statusColor = QColor(150,150,150);
+    QBrush statusBrush(statusColor.darker(300));
+    int statusWidth = params->bgRect.width() - m_padding;
+    QRect statusRect( params->bgRect.left() + 5, params->titleRect.bottom() + 5, statusWidth, 6 );
+
+    // Values to be reused
+    float estimation = 0;
+    float timeSpentDays = 0;
+    int completionWidth = 0;
+    bool useAutoEstimation = true;
+
+    if (statusRect.bottom() + 5 < params->bgRect.bottom() && (m_timeTracking || m_completionRatio))
+    {
+
+        // Draw a colored rect for the assigned user
+        RamUser *user = obj->assignedUser();
+        if (user)
+        {
+            QRect userRect(params.titleRect.left() - 16, params.titleRect.top() + 4, 8, 8);
+            QPainterPath path;
+            path.addEllipse(userRect);
+            painter->fillPath(path, QBrush(user->color()));
+        }
+
+        // Status BG
+        QPainterPath path;
+        path.addRoundedRect(statusRect, 5, 5);
+        painter->fillPath(path, statusBrush);
+
+        // Adjust color according to lateness
+        float latenessRatio = obj->latenessRatio();
+        // Ratio
+        useAutoEstimation = obj->useAutoEstimation();
+        if (useAutoEstimation) estimation = obj->estimation();
+        else estimation = obj->goal();
+        timeSpentDays = RamStatus::hoursToDays( obj->timeSpent()/3600 );
+        float ratio = 0;
+        if (estimation > 0) ratio = timeSpentDays / estimation;
+
+        QColor timeColor = statusColor;
+
+        //If we're late, draw the timebar first
+        if (latenessRatio > 1 && m_timeTracking)
+        {
+
+
+            if ( latenessRatio < 1.2 )
+            {
+                int red = std::min( timeColor.red() + 50, 255 );
+                int green = std::min( timeColor.green() + 50, 255 );
+                int blue = std::max( timeColor.blue() -50, 0);
+                timeColor.setRed( red );
+                timeColor.setGreen( green );
+                timeColor.setBlue( blue );
+                timeColor = timeColor.darker(200);
+            }
+            // Very late, orange
+            else if ( latenessRatio < 1.4 )
+            {
+                int red = std::min( timeColor.red() + 150, 255 );
+                int green = std::min( timeColor.green() + 25, 255 );
+                int blue = std::max( timeColor.blue() - 100, 0);
+                timeColor.setRed( red );
+                timeColor.setGreen( green );
+                timeColor.setBlue( blue );
+                timeColor = timeColor.darker(200);
+            }
+            // Extreme, red
+            else
+            {
+                int red = std::min( timeColor.red() + 200, 255 );
+                int green = std::max( timeColor.green() - 150, 0 );
+                int blue = std::max( timeColor.blue() - 150, 0);
+                timeColor.setRed( red );
+                timeColor.setGreen( green );
+                timeColor.setBlue( blue );
+                timeColor = timeColor.darker(200);
+            }
+            statusBrush.setColor( timeColor );
+
+            statusRect.setWidth( statusWidth * ratio );
+            if (statusRect.right() > params.bgRect.right() - 5) statusRect.setRight( params.bgRect.right() - 5);
+            QPainterPath timePath;
+            timePath.addRoundedRect(statusRect, 3, 3);
+            painter->fillPath(timePath, statusBrush);
+        }
+
+        if (m_completionRatio)
+        {
+            // Now draw the completion bar
+            statusBrush.setColor( statusColor );
+
+            completionWidth = statusWidth * ( obj->completionRatio() / 100.0 );
+            statusRect.setWidth(completionWidth);
+            QPainterPath completionPath;
+            completionPath.addRoundedRect(statusRect, 5, 5);
+            painter->fillPath(completionPath, statusBrush);
+        }
+
+        // And draw the Time bar if we're early
+        if (latenessRatio <= 1 && m_timeTracking)
+        {
+            // Adjust color according to lateness
+            statusBrush.setColor( timeColor.darker(130) );
+
+            statusRect.setWidth( statusWidth * ratio );
+            QPainterPath timePath;
+            timePath.addRoundedRect(statusRect, 3, 3);
+            painter->fillPath(timePath, statusBrush);
+        }
+
+        params->detailsRect.moveTop(statusRect.bottom() + 5);
+        params->detailsRect.setHeight( params->bgRect.bottom() - statusRect.bottom() - 10);
+
+        paintDetails(obj->details(), painter, params);
+    }
+}
+
+
+template<typename RO>
+RamObjectDelegate<RO>::RamObjectDelegate(QObject *parent)
     : QStyledItemDelegate(parent)
 {
     m_abyss = DuUI::getColor("abyss-grey");
@@ -34,623 +483,44 @@ RamObjectDelegate::RamObjectDelegate(QObject *parent)
     folderPainter.drawPixmap(0,0,darkMap);
 }
 
-void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
+// Default
+template<typename RO>
+void RamObjectDelegate<RO>::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-    RamObject *obj = getObject(index);
-    RamObject::ObjectType ramType = obj->objectType();
+    // Base
+    PaintParameters params = getPaintParameters(option);
 
-    // Base Settings
-    const QRect rect = option.rect;
-    painter->setRenderHint(QPainter::Antialiasing);
+    // BG
+    paintBG(painter, &params);
 
-    // Layout (Rects)
-    // Constant rects
-    // bg
-    const QRect bgRect = rect.adjusted(m_padding,2,-m_padding,-2);
-    // icon
-    const QRect iconRect( bgRect.left() + m_padding, bgRect.top() +7 , 12, 12 );
+    // no more room, finished
+    if (params.bgRect.height() < 26 ) return;
 
-    // Select the bg Color
-    QColor bgColor = m_dark;
-    QColor textColor = m_lessLight;
-    QColor detailsColor = m_medium;
-
-    bool statusNo = false;
-
-    // State mouseover
-    if (option.state & QStyle::State_MouseOver)
-    {
-        bgColor = bgColor.lighter(120);
-        detailsColor = detailsColor.lighter(120);
-        textColor = textColor.lighter(120);
-    }
-
-    // Selected
-    if (option.state & QStyle::State_Selected)
-    {
-        bgColor = bgColor.darker();
-        textColor = textColor.lighter(150);
-    }
-    else if (ramType == RamObject::Status)
-    {
-        RamStatus *status = qobject_cast<RamStatus*>( obj );
-        RamState *noState = Ramses::instance()->noState();
-        if (noState->is(status->state()))
-        {
-            bgColor = QColor(0,0,0,0);
-            statusNo = true;
-        }
-    }
-
-    QBrush bgBrush(bgColor);
-    QPen textPen(textColor);
-    QPen commentPen(textColor);
-    QPen detailsPen(detailsColor);
-
-    // Background
-    QPainterPath path;
-    path.addRoundedRect(bgRect, 5, 5);
-    painter->fillPath(path, bgBrush);
-
-    // Too Small !
-    if (bgRect.height() < 26 )
-    {
-        drawMore(painter, bgRect, textPen);
-        return;
-    }
+    RO obj = getObject(index);
 
     // Title
-    QString title = obj->name();
-    switch(ramType)
-    {
-    case RamObject::AssetGroup:
-    {
-        RamAssetGroup *ag = qobject_cast<RamAssetGroup*>( obj );
-        // Title
-        if (ag->isTemplate())
-            title = title % " [Template]";
-        break;
-    }
-    case RamObject::Step:
-    {
-        RamStep *step = qobject_cast<RamStep*>( obj );
-        if (step->isTemplate())
-            title = title % " [Template]";
-        QColor stepColor = step->color();
-        if (stepColor.lightness() < 150) stepColor.setHsl( stepColor.hue(), stepColor.saturation(), 150);
-        textPen.setColor( stepColor );
-        break;
-    }
-    case RamObject::FileType:
-    {
-        RamFileType *fileType = qobject_cast<RamFileType*>( obj );
-        title = title % " (." % fileType->shortName() + ")";
-        break;
-    }
-    case RamObject::PipeFile:
-    {
-        RamPipeFile *pf = qobject_cast<RamPipeFile*>( obj );
-        RamFileType *ft = pf->fileType();
-        title = pf->shortName();
-        if (ft) title = title % "." % ft->shortName();
-        break;
-    }
-    case RamObject::Status:
-    {
-        RamStatus *status = qobject_cast<RamStatus*>( obj );
-        title = status->item()->shortName() %
-                " | " %
-                status->step()->shortName() %
-                " | " %
-                status->state()->shortName() %
-                " (v" %
-                QString::number(status->version()) %
-                ")";
-        RamState *noState = Ramses::instance()->noState();
-        if (noState->is(status->state()))
-        {
-            textPen.setColor(m_dark);
-        }
-        else
-        {
-            textPen.setColor(m_medium);
-        }
-        break;
-    }
-    case RamObject::State:
-    {
-        RamState *state = qobject_cast<RamState*>( obj );
-        if (m_comboBox) title = state->shortName();
-        break;
-    }
-    case RamObject::User:
-    {
-        RamUser *user = qobject_cast<RamUser*>( obj );
-        QColor userColor = user->color();
-        if (userColor.lightness() < 150) userColor.setHsl( userColor.hue(), userColor.saturation(), 150);
-        textPen.setColor( userColor );
-        break;
-    }
-    case RamObject::Sequence:
-    {
-        RamSequence *seq = qobject_cast<RamSequence*>( obj );
-        QColor seqColor = seq->color();
-        if (seqColor.lightness() < 150) seqColor.setHsl( seqColor.hue(), seqColor.saturation(), 150);
-        textPen.setColor( seqColor );
-        break;
-    }
-    case RamObject::Shot:
-    {
-        RamShot *shot = qobject_cast<RamShot*>( obj );
-        QColor seqColor = shot->sequence()->color();
-        if (seqColor.lightness() < 150) seqColor.setHsl( seqColor.hue(), seqColor.saturation(), 150);
-        textPen.setColor( seqColor );
-        break;
-    }
-    default:
-    {
-        title = obj->name();
-    }
-    }
-
-    // Draw title
-    QRect titleRect( bgRect.left() + 27, bgRect.top() + 5, bgRect.width() - 32, bgRect.height() - 10 );
-    painter->setPen( textPen );
-    painter->setFont( m_textFont );
-    painter->drawText( titleRect, Qt::AlignLeft | Qt::AlignTop | Qt::TextWordWrap, title, &titleRect);
+    paintTitle(obj, painter, &params);
 
     // Draw buttons
-    if (!m_comboBox)
-    {
-        int xpos = bgRect.right() - 20;
+    paintButtons(obj, painter, &params, index);
 
-        // Draw History button
-        // History button
-        if ( ramType == RamObject::Status )
-        {
-            QRect historyButtonRect( xpos, bgRect.top() +7, 12, 12);
-            xpos -= 22;
-            if (statusNo)
-                drawButton(painter, historyButtonRect, m_historyDarkIcon, m_historyButtonHover == index);
-            else
-                drawButton(painter, historyButtonRect, m_historyIcon, m_historyButtonHover == index);
-        }
-
-
-        // Draw Folder button
-        // Folder button
-        if ( obj->path() != "" )
-        {
-             const QRect folderButtonRect( xpos, bgRect.top() +7, 12, 12 );
-             if (statusNo)
-                 drawButton(painter, folderButtonRect, m_folderDarkIcon, m_folderButtonHover == index);
-             else
-                 drawButton(painter, folderButtonRect, m_folderIcon, m_folderButtonHover == index);
-        }
-    }
-
-    QString details;
-    QString subDetails;
-    QString previewImagePath;
-    QRect detailsRect( iconRect.left() + 5, titleRect.bottom() + 3, bgRect.width() - iconRect.width() -5, bgRect.height() - titleRect.height() - 15 );
-
-    // Type Specific Drawing
-    switch(ramType)
-    {
-    case RamObject::User:
-    {
-        RamUser *user = qobject_cast<RamUser*>( obj );
-
-        // icon
-        QString icon = ":/icons/user";
-        details = "Standard user";
-        if (user->role() == RamUser::Admin)
-        {
-            icon = ":/icons/admin";
-            details = "Administrator";
-        }
-        else if (user->role() == RamUser::ProjectAdmin)
-        {
-            icon = ":/icons/project-admin";
-            details = "Project administrator";
-        }
-        else if (user->role() == RamUser::Lead)
-        {
-            icon = ":/icons/lead";
-            details = "Lead";
-        }
-        painter->drawPixmap( iconRect, QIcon(icon).pixmap(QSize(12,12)));
-        break;
-    }
-    case RamObject::Project:
-    {
-        RamProject *project = qobject_cast<RamProject*>( obj );
-        // icon
-        painter->drawPixmap( iconRect, QIcon(":/icons/project").pixmap(QSize(12,12)));
-        // details
-        details = QString::number(project->width()) %
-                " x " %
-                QString::number(project->height()) %
-                " (" %
-                QString::number(project->aspectRatio(),'f',2) %
-                ":1)" %
-                " @ " %
-                QString::number(project->framerate(), 'f', 2) %
-                "fps";
-        break;
-    }
-    case RamObject::Step:
-    {
-        RamStep *step = qobject_cast<RamStep*>( obj );
-        // icon
-        QString icon = ":/icons/asset";
-        details = "Asset production";
-        if (step->type() == RamStep::PreProduction)
-        {
-            icon = ":/icons/project";
-            details = "Pre-production";
-        }
-        else if (step->type() == RamStep::ShotProduction)
-        {
-            icon = ":/icons/shot";
-            details = "Shot production";
-        }
-        else if (step->type() == RamStep::PostProduction)
-        {
-            icon = ":/icons/film";
-            details = "Post-production";
-        }
-        painter->drawPixmap( iconRect, QIcon(icon).pixmap(QSize(12,12)));
-        break;
-    }
-    case RamObject::AssetGroup:
-    {
-        RamAssetGroup *ag = qobject_cast<RamAssetGroup*>( obj );
-        // icon
-        painter->drawPixmap( iconRect, QIcon(":/icons/asset-group").pixmap(QSize(12,12)));
-        if (!ag->isTemplate()) details = "Contains "  % QString::number(ag->assetCount()) % " assets";
-        else detailsRect.setHeight(0);
-        break;
-    }
-    case RamObject::FileType:
-    {
-        RamFileType *fileType = qobject_cast<RamFileType*>( obj );        // icon
-        painter->drawPixmap( iconRect, QIcon(":/icons/file").pixmap(QSize(12,12)));
-        details = "Extensions: " % fileType->extensions().join(", ");
-        break;
-    }
-    case RamObject::Application:
-    {
-        //RamApplication *app = qobject_cast<RamApplication*>( obj );
-        // icon
-        painter->drawPixmap( iconRect, QIcon(":/icons/application").pixmap(QSize(12,12)));
-        detailsRect.setHeight(0);
-        break;
-    }
-    case RamObject::PipeFile:
-    {
-        RamPipeFile *pf = qobject_cast<RamPipeFile*>( obj );
-        RamFileType *ft = pf->fileType();
-        // icon
-        painter->drawPixmap( iconRect, QIcon(":/icons/connection").pixmap(QSize(12,12)));
-        if(ft) details = "File type: " % ft->name();
-        else detailsRect.setHeight(0);
-        break;
-    }
-    case RamObject::Sequence:
-    {
-        RamSequence *seq = qobject_cast<RamSequence*>( obj );
-        // icon
-        painter->drawPixmap( iconRect, QIcon(":/icons/sequence").pixmap(QSize(12,12)));
-        QTime duration(0, 0, seq->duration());
-        details = "Contains: " %
-                QString::number(seq->shotCount()) %
-                " shots\n" %
-                "Duration: " %
-                duration.toString("mm 'mn' ss 's'");
-        break;
-    }
-    case RamObject::Shot:
-    {
-        RamShot *shot = qobject_cast<RamShot*>( obj );
-        // icon
-        painter->drawPixmap( iconRect, QIcon(":/icons/shot").pixmap(QSize(12,12)));
-        if (titleRect.bottom() + 5 < bgRect.bottom())
-        {
-            details = "Duration: " %
-                            QString::number(shot->duration(), 'f', 2) %
-                            " s | " %
-                            QString::number(shot->duration() * shot->project()->framerate(), 'f', 2) %
-                            " f";
-            // List assigned assets
-            if (shot->assets()->count() > 0)
-            {
-                QMap<QString,QStringList> assets;
-                for (int i = 0; i < shot->assets()->count(); i++)
-                {
-                    RamAsset *asset = qobject_cast<RamAsset*>( shot->assets()->at(i) );
-                    QString agName = asset->assetGroup()->name();
-                    QStringList ag = assets.value( agName );
-                    ag << asset->shortName();
-                    assets[ agName ] = ag;
-                }
-                QMapIterator<QString,QStringList> i(assets);
-                while(i.hasNext())
-                {
-                    i.next();
-                    details = details % "\n" % i.key() % " ► " % i.value().join(", ");
-                }
-            }
-
-
-        }
-        // Preview
-        if (titleRect.bottom() + 25 < bgRect.bottom())
-            previewImagePath = shot->previewImagePath();
-        break;
-    }
-    case RamObject::Asset:
-    {
-        RamAsset *asset = qobject_cast<RamAsset*>( obj );
-        // icon
-        painter->drawPixmap( iconRect, QIcon(":/icons/asset").pixmap(QSize(12,12)));
-        details = asset->assetGroup()->name() %
-                            "\n" %
-                            asset->tags().join(", ");
-
-        // Preview
-        if (titleRect.bottom() + 25 < bgRect.bottom())
-            previewImagePath = asset->previewImagePath();
-        break;
-    }
-    case RamObject::State:
-    {
-        RamState *state = qobject_cast<RamState*>( obj );
-        // icon
-        painter->drawPixmap( iconRect, QIcon(":/icons/state").pixmap(QSize(12,12)));
-        // Draw a progress bar
-        QColor statusColor = state->color();
-        QBrush statusBrush(statusColor.darker());
-        QPainterPath path;
-        QRect statusRect( bgRect.left() + 5, titleRect.bottom() + 5, bgRect.width() - 10, 5 );
-        if (statusRect.bottom() + 5 < bgRect.bottom())
-        {
-            path.addRoundedRect(statusRect, 5, 5);
-            painter->fillPath(path, statusBrush);
-            statusBrush.setColor(statusColor);
-            statusRect.adjust(0,0, -statusRect.width() * (1-(state->completionRatio() / 100.0)), 0);
-            QPainterPath completionPath;
-            completionPath.addRoundedRect(statusRect, 5, 5);
-            painter->fillPath(completionPath, statusBrush);
-
-            //details
-            details = "Completion ratio: " % QString::number(state->completionRatio()) % "%";
-            detailsRect.moveTop(statusRect.bottom() + 5);
-            detailsRect.setHeight( bgRect.bottom() - statusRect.bottom() - 10);
-        }
-
-        break;
-    }
-    case RamObject::Status:
-    {
-        RamStatus *status = qobject_cast<RamStatus*>( obj );
-
-        // Draw a colored rect for the assigned user
-        RamUser *user = status->assignedUser();
-        if (user && !statusNo)
-        {
-            QRect userRect(titleRect.left() - 16, titleRect.top() + 4, 8, 8);
-            QPainterPath path;
-            path.addEllipse(userRect);
-            painter->fillPath(path, QBrush(user->color()));
-        }
-
-        // If no state, nothing else to draw
-        if (Ramses::instance()->noState()->is(status->state())) break;
-
-        // Draw a progress bar
-        QColor statusColor = status->state()->color();
-        if (!m_completionRatio) statusColor = QColor(150,150,150);
-        QBrush statusBrush(statusColor.darker(300));
-        int statusWidth = bgRect.width() - m_padding;
-        QRect statusRect( bgRect.left() + 5, titleRect.bottom() + 5, statusWidth, 6 );
-
-        // Values to be reused
-        float estimation = 0;
-        float timeSpentDays = 0;
-        int completionWidth = 0;
-        bool useAutoEstimation = true;
-
-        // details
-        if (statusRect.bottom() + 5 < bgRect.bottom() && (m_timeTracking || m_completionRatio))
-        {
-            // Draw status
-
-            // Status BG
-            QPainterPath path;
-            path.addRoundedRect(statusRect, 5, 5);
-            painter->fillPath(path, statusBrush);
-
-            // Adjust color according to lateness
-            float latenessRatio = status->latenessRatio();
-            // Ratio
-            useAutoEstimation = status->useAutoEstimation();
-            if (useAutoEstimation) estimation = status->estimation();
-            else estimation = status->goal();
-            timeSpentDays = RamStatus::hoursToDays( status->timeSpent()/3600 );
-            float ratio = 0;
-            if (estimation > 0) ratio = timeSpentDays / estimation;
-
-            QColor timeColor = statusColor;
-
-            //If we're late, draw the timebar first
-            if (latenessRatio > 1 && m_timeTracking)
-            {
-                if ( latenessRatio < 1.2 )
-                {
-                    int red = std::min( timeColor.red() + 50, 255 );
-                    int green = std::min( timeColor.green() + 50, 255 );
-                    int blue = std::max( timeColor.blue() -50, 0);
-                    timeColor.setRed( red );
-                    timeColor.setGreen( green );
-                    timeColor.setBlue( blue );
-                    timeColor = timeColor.darker(200);
-                }
-                // Very late, orange
-                else if ( latenessRatio < 1.4 )
-                {
-                    int red = std::min( timeColor.red() + 150, 255 );
-                    int green = std::min( timeColor.green() + 25, 255 );
-                    int blue = std::max( timeColor.blue() - 100, 0);
-                    timeColor.setRed( red );
-                    timeColor.setGreen( green );
-                    timeColor.setBlue( blue );
-                    timeColor = timeColor.darker(200);
-                }
-                // Extreme, red
-                else
-                {
-                    int red = std::min( timeColor.red() + 200, 255 );
-                    int green = std::max( timeColor.green() - 150, 0 );
-                    int blue = std::max( timeColor.blue() - 150, 0);
-                    timeColor.setRed( red );
-                    timeColor.setGreen( green );
-                    timeColor.setBlue( blue );
-                    timeColor = timeColor.darker(200);
-                }
-                statusBrush.setColor( timeColor );
-
-                statusRect.setWidth( statusWidth * ratio );
-                if (statusRect.right() > bgRect.right() - 5) statusRect.setRight( bgRect.right() - 5);
-                QPainterPath timePath;
-                timePath.addRoundedRect(statusRect, 3, 3);
-                painter->fillPath(timePath, statusBrush);
-            }
-
-            if (m_completionRatio)
-            {
-                // Now draw the completion bar
-                statusBrush.setColor( statusColor );
-
-                completionWidth = statusWidth * ( status->completionRatio() / 100.0 );
-                statusRect.setWidth(completionWidth);
-                QPainterPath completionPath;
-                completionPath.addRoundedRect(statusRect, 5, 5);
-                painter->fillPath(completionPath, statusBrush);
-            }
-
-
-            // And draw the Time bar if we're early
-
-            if (latenessRatio <= 1 && m_timeTracking)
-            {
-                // Adjust color according to lateness
-                statusBrush.setColor( timeColor.darker(130) );
-
-                statusRect.setWidth( statusWidth * ratio );
-                QPainterPath timePath;
-                timePath.addRoundedRect(statusRect, 3, 3);
-                painter->fillPath(timePath, statusBrush);
-            }
-
-        }
-        if (statusRect.bottom() + 5 < bgRect.bottom())
-        {
-            // details
-            RamUser *assignedUser = status->assignedUser();
-            if (assignedUser) details = "Assigned to: " %
-                    assignedUser->name() %
-                    "\nDifficulty: ";
-            else details = "Not assigned\nDifficulty: ";
-
-            switch( status->difficulty() )
-            {
-            case RamStatus::VeryEasy: { details += "Very easy"; break; }
-            case RamStatus::Easy: { details += "Easy"; break; }
-            case RamStatus::Medium: { details += "Medium"; break; }
-            case RamStatus::Hard: { details += "Hard"; break; }
-            case RamStatus::VeryHard: { details += "Very hard"; break; }
-            }
-
-            qint64 timeSpentSecs = status->timeSpent();
-            // Convert to hours
-            int timeSpent = timeSpentSecs / 3600;
-            // Estimation or goal
-            if (timeSpent > 0)
-            {
-                details = details %
-                    "\nTime spent: " %
-                    QString::number(timeSpent) %
-                    " hours (" %
-                    QString::number(timeSpentDays, 'f', 0) %
-                    " days) / " %
-                    QString::number(estimation, 'f', 1) %
-                    " days ";
-                if (useAutoEstimation) details = details % "(estimated)";
-                else details = details % "(goal)";
-            }
-            else if (useAutoEstimation) details = details %
-                    "\nEstimation: " %
-                    QString::number(estimation, 'f', 1) %
-                    " days";
-            else details = details %
-                    "\nGoal: " %
-                    QString::number(estimation, 'f', 1) %
-                    " days";
-
-            if (status->isPublished()) details = details % "\n► Published";
-
-            detailsRect.moveTop(statusRect.bottom() + 5);
-            detailsRect.setHeight( bgRect.bottom() - statusRect.bottom() - 10);
-        }
-        // subdetails
-        if (statusRect.bottom() + 25 < bgRect.bottom())
-        {
-            //subdetails
-            QString dateFormat = "yyyy-MM-dd hh:mm:ss";
-            RamUser *user = Ramses::instance()->currentUser();
-            if (user)
-            {
-                QSettings *uSettings = user->settings();
-                dateFormat = uSettings->value("ramses/dateFormat", dateFormat).toString();
-            }
-            subDetails = "Modified on: " %
-                    status->date().toString(dateFormat) %
-                    "\nBy: " %
-                    status->user()->name();
-
-            previewImagePath = status->previewImagePath();
-        }
-
-        break;
-    }
-    default:
-        detailsRect.setHeight(0);
-    }
-
-    // Draw details
-    if (detailsRect.height() > 15 )
-    {
-        painter->setPen( detailsPen );
-        painter->setFont( m_detailsFont );
-        painter->drawText( detailsRect, Qt::AlignLeft | Qt::AlignTop | Qt::TextWordWrap, details, &detailsRect);
-        if (detailsRect.bottom() + 5 > bgRect.bottom()) drawMore(painter, bgRect, commentPen);
-    }
 
     // Draw Comment
-    QRect commentRect( iconRect.left() + 5, detailsRect.bottom() + 5, bgRect.width() - 30, bgRect.bottom() - detailsRect.bottom() - 5);
-    if (detailsRect.bottom() + 20 < bgRect.bottom() && obj->comment() != "")
+    QRect commentRect( params.iconRect.left() + 5, params.detailsRect.bottom() + 5, params.bgRect.width() - 30, params.bgRect.bottom() - params.detailsRect.bottom() - 5);
+    QPen commentPen(params.textColor);
+    if (params.detailsRect.bottom() + 20 < params.bgRect.bottom() && obj->comment() != "")
     {
         painter->setPen( commentPen );
         painter->setFont(m_textFont);
         painter->drawText( commentRect, Qt::AlignLeft | Qt::AlignTop | Qt::TextWordWrap, obj->comment(), &commentRect);
-        if (commentRect.bottom() + 5 > bgRect.bottom()) drawMore(painter, bgRect, commentPen);
+        if (commentRect.bottom() + 5 > params.bgRect.bottom()) drawMore(painter, params.bgRect, commentPen);
     }
     else commentRect.setHeight(0);
 
     // Draw image preview
-    QRect imageRect( iconRect.left() + 5, commentRect.bottom() + 5, bgRect.width() - 30, bgRect.bottom() - commentRect.bottom() - 5);
-    if (commentRect.bottom() + 20 < bgRect.bottom() && previewImagePath != "")
+    QString previewImagePath = obj->previewImagePath();
+    QRect imageRect( params.iconRect.left() + 5, commentRect.bottom() + 5, params.bgRect.width() - 30, params.bgRect.bottom() - commentRect.bottom() - 5);
+    if (commentRect.bottom() + 20 < params.bgRect.bottom() && previewImagePath != "")
     {
         QPixmap pix(previewImagePath);
         float pixRatio = pix.width() / float(pix.height());
@@ -661,32 +531,32 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
         else
             imageRect.setWidth( imageRect.height() * pixRatio );
 
-        painter->drawPixmap( imageRect, QPixmap(previewImagePath));
+        painter->drawPixmap( imageRect, pix);
     }
     else imageRect.setHeight(0);
 
     // Draw subdetails
-    QRect subDetailsRect( iconRect.left() + 5, imageRect.bottom() + 5, bgRect.width() - 30, bgRect.bottom() - imageRect.bottom() - 5);
-    if (commentRect.bottom() + 20 < bgRect.bottom() && subDetails != "")
+    QRect subDetailsRect( params.iconRect.left() + 5, imageRect.bottom() + 5, params.bgRect.width() - 30, params.bgRect.bottom() - imageRect.bottom() - 5);
+    QString subDetails = obj.subDetails();
+    if (commentRect.bottom() + 20 < params.bgRect.bottom() && subDetails != "")
     {
-        painter->setPen( detailsPen );
+        painter->setPen( params.detailsColor );
         painter->setFont( m_detailsFont );
         painter->drawText( subDetailsRect, Qt::AlignLeft | Qt::AlignTop | Qt::TextWordWrap, subDetails, &subDetailsRect);
-        if (subDetailsRect.bottom() + 5 > bgRect.bottom()) drawMore(painter, bgRect, commentPen);
+        if (subDetailsRect.bottom() + 5 > params.bgRect.bottom()) drawMore(painter, params.bgRect, commentPen);
     }
 //*/
 }
 
-QSize RamObjectDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
+template<typename RO>
+QSize RamObjectDelegate<RO>::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
     Q_UNUSED(option)
 
-    // Reinterpret the int to a pointer
-    quintptr iptr = index.data(Qt::UserRole).toULongLong();
+    RO obj = getObject(index);
 
-    if (iptr == 0) return QSize(200, 30);
+    if (!obj) return QSize(200, 30);
 
-    RamObject *obj = reinterpret_cast<RamObject*>(iptr);
     RamObject::ObjectType ramType = obj->objectType();
 
     int height = 30;
@@ -707,17 +577,20 @@ QSize RamObjectDelegate::sizeHint(const QStyleOptionViewItem &option, const QMod
     return QSize(width,height);//*/
 }
 
-void RamObjectDelegate::setEditable(bool editable)
+template<typename RO>
+void RamObjectDelegate<RO>::setEditable(bool editable)
 {
     m_editable = editable;
 }
 
-void RamObjectDelegate::setEditRole(RamUser::UserRole role)
+template<typename RO>
+void RamObjectDelegate<RO>::setEditRole(RamUser::UserRole role)
 {
     m_editRole = role;
 }
 
-bool RamObjectDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index)
+template<typename RO>
+bool RamObjectDelegate<RO>::editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index)
 {
     // Return asap if we don't manage the event
     QEvent::Type type = event->type();
@@ -840,40 +713,41 @@ bool RamObjectDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, co
 
 }
 
-RamObject *RamObjectDelegate::getObject(const QModelIndex &index) const
+template<typename RO>
+RO RamObjectDelegate<RO>::getObject(const QModelIndex &index) const
 {
     // Reinterpret the int to a pointer
     quintptr iptr = index.data(Qt::UserRole).toULongLong();
-    RamObject *obj = reinterpret_cast<RamObject*>(iptr);
-
-    if (iptr == 0)
-    {
-        obj = new RamObject("", index.data(Qt::DisplayRole).toString());
-    }
-    return obj;
+    if (iptr == 0) return nullptr;
+    return reinterpret_cast<RO>(iptr);
 }
 
-void RamObjectDelegate::setCompletionRatio(bool newCompletionRatio)
+template<typename RO>
+void RamObjectDelegate<RO>::setCompletionRatio(bool newCompletionRatio)
 {
     m_completionRatio = newCompletionRatio;
 }
 
-void RamObjectDelegate::showDetails(bool s)
+template<typename RO>
+void RamObjectDelegate<RO>::showDetails(bool s)
 {
     m_details = s;
 }
 
-void RamObjectDelegate::setTimeTracking(bool newTimeTracking)
+template<typename RO>
+void RamObjectDelegate<RO>::setTimeTracking(bool newTimeTracking)
 {
     m_timeTracking = newTimeTracking;
 }
 
-void RamObjectDelegate::setComboBoxMode(bool comboBoxMode)
+template<typename RO>
+void RamObjectDelegate<RO>::setComboBoxMode(bool comboBoxMode)
 {
     m_comboBox = comboBoxMode;
 }
 
-void RamObjectDelegate::drawMore(QPainter *painter, QRect rect, QPen pen) const
+template<typename RO>
+void RamObjectDelegate<RO>::drawMore(QPainter *painter, QRect rect, QPen pen) const
 {
     painter->save();
     painter->setPen( pen );
@@ -885,7 +759,8 @@ void RamObjectDelegate::drawMore(QPainter *painter, QRect rect, QPen pen) const
     painter->restore();
 }
 
-void RamObjectDelegate::drawButton(QPainter *painter, QRect rect, QPixmap icon, bool hover) const
+template<typename RO>
+void RamObjectDelegate<RO>::drawButton(QPainter *painter, QRect rect, QPixmap icon, bool hover) const
 {
     if (hover)
     {

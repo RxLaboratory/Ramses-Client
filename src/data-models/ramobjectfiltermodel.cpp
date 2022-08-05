@@ -24,8 +24,6 @@ void RamObjectFilterModel<RO>::setList(RamObjectList<RO> *list)
 template<typename RO>
 void RamObjectFilterModel<RO>::setList(RamItemTable *list)
 {
-    if (this->sourceModel() == list) return;
-
     if (!list) this->setSourceModel(m_emptyList);
     else this->setSourceModel(list);
 
@@ -47,6 +45,18 @@ void RamObjectFilterModel<RO>::search(const QString &searchStr)
 {
     m_searchString = searchStr;
     prepareFilter();
+}
+
+template<typename RO>
+RO RamObjectFilterModel<RO>::at(int i) const
+{
+    // Get the source index
+    if (!hasIndex(i, 0)) return nullptr;
+
+    QModelIndex filterIndex = index(i, 0);
+    QModelIndex sourceIndex = mapToSource(filterIndex);
+    RamObjectList<RO> *list = qobject_cast<RamObjectList<RO> *>(this->sourceModel());
+    return list->at(sourceIndex.row());
 }
 
 template<typename RO>

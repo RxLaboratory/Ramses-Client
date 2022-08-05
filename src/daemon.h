@@ -13,7 +13,9 @@
 #include "duqf-utils/utils.h"
 #include "duqf-utils/duqflogger.h"
 
+#include "ramasset.h"
 #include "ramses.h"
+#include "ramshot.h"
 
 class Daemon : public DuQFLoggerObject
 {

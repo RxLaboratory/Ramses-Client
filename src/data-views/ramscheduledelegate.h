@@ -5,10 +5,7 @@
 #include <QPainter>
 #include <QPainterPath>
 
-#include "duqf-app/app-style.h"
-#include "ramses.h"
-#include "ramobjectlistcombobox.h"
-#include "ramschedulecomment.h"
+#include "ramstep.h"
 
 class RamScheduleDelegate : public QStyledItemDelegate
 {
@@ -26,7 +23,7 @@ public:
     bool details() const;
 
 private slots:
-    void setEntry(RamObject *stepObj);
+    void setEntry(RamStep *stepObj);
 
 private:
     // Style

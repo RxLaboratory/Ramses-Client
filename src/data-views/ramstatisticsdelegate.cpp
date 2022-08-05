@@ -1,6 +1,7 @@
 #include "ramstatisticsdelegate.h"
 
 #include "ramstatus.h"
+#include "ramstep.h"
 
 RamStatisticsDelegate::RamStatisticsDelegate(QObject *parent) : QStyledItemDelegate(parent)
 {

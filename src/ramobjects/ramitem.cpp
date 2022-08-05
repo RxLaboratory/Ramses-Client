@@ -1,6 +1,8 @@
 #include "ramitem.h"
 
+#include "data-models/ramstepstatushistory.h"
 #include "ramses.h"
+#include "ramstatus.h"
 
 // STATIC //
 
@@ -47,6 +49,7 @@ RamStepStatusHistory *RamItem::statusHistory(RamObject *stepObj)
         RamStep *step = qobject_cast<RamStep*>( stepObj );
         stepHistory = new RamStepStatusHistory(step, this);
         m_history[ step->uuid() ] = stepHistory;
+        connectHistory(stepHistory);
     }
     return stepHistory;
 }
@@ -231,7 +234,13 @@ RamItem::RamItem(QString uuid):
         QString historyUuid = history.value(stepUuid).toString();
         RamStepStatusHistory *stepHistory = RamStepStatusHistory::getObject(historyUuid, true);
         m_history[ stepUuid ] = stepHistory;
+        connectHistory(stepHistory);
     }
+}
+
+void RamItem::latestStatusChanged(RamStepStatusHistory *history)
+{
+    emit statusChanged( history->item(), history->step());
 }
 
 // PRIVATE //
@@ -241,3 +250,9 @@ void RamItem::construct()
     m_icon = ":/icons/asset";
     m_editRole = Admin;
 }
+
+void RamItem::connectHistory(RamStepStatusHistory *history)
+{
+    connect(history, SIGNAL(latestStatusChanged(RamStepStatusHistory*)), this, SLOT(latestStatusChanged(RamStepStatusHistory*)));
+}
+

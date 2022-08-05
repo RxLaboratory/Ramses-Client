@@ -285,6 +285,19 @@ void RamProject::setDbFolderPath(const QString &newDbFolderPath)
     insertData("path", newDbFolderPath);
 }
 
+QString RamProject::details() const
+{
+    return QString::number(width()) +
+            " x " +
+            QString::number(height()) +
+            " (" +
+            QString::number(aspectRatio(),'f',2) +
+            ":1)" +
+            " @ " +
+            QString::number(framerate(), 'f', 2) +
+            "fps";
+}
+
 // PUBLIC SLOTS //
 
 void RamProject::updatePath()

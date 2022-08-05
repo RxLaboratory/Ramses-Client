@@ -1,6 +1,7 @@
 #include "ramasset.h"
 
 #include "asseteditwidget.h"
+#include "ramassetgroup.h"
 #include "ramses.h"
 
 // STATIC //
@@ -89,6 +90,13 @@ QString RamAsset::filterUuid() const
     RamAssetGroup *ag = assetGroup();
     if (ag) return assetGroup()->uuid();
     return "";
+}
+
+QString RamAsset::details() const
+{
+    return assetGroup()->name() +
+            "\n" +
+            tags().join(", ");
 }
 
 void RamAsset::edit(bool show)

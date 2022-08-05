@@ -163,6 +163,9 @@ public:
     QString comment() const;
     void setComment(const QString comment);
 
+    QColor color() const;
+    void setColor(QColor color);
+
     /**
      * @brief remove marks the object as removed in the database
      */

@@ -22,16 +22,6 @@ RamScheduleComment::RamScheduleComment(RamProject *project)
     insertData("project", project->uuid() );
 }
 
-QColor RamScheduleComment::color() const
-{
-    return QColor( getData("color").toString("#e3e3e3") );
-}
-
-void RamScheduleComment::setColor(const QColor &newColor)
-{
-    insertData( "color", newColor.name() );
-}
-
 QDateTime RamScheduleComment::date() const
 {
     return QDateTime::fromString( getData("date").toString(), "yyyy-MM-dd hh:mm:ss" );

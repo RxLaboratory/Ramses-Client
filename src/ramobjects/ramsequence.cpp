@@ -1,6 +1,7 @@
 #include "ramsequence.h"
 
 #include "ramproject.h"
+#include "ramshot.h"
 #include "sequenceeditwidget.h"
 
 // STATIC //
@@ -19,16 +20,6 @@ RamSequence::RamSequence(QString shortName, QString name, RamProject *project):
 {
     construct();
     setProject(project);
-}
-
-QColor RamSequence::color() const
-{
-    return QColor( getData("color").toString("#434343") );
-}
-
-void RamSequence::setColor(const QColor &newColor)
-{
-    insertData("color", newColor.name() );
 }
 
 int RamSequence::shotCount() const
@@ -51,6 +42,16 @@ double RamSequence::duration() const
 RamProject *RamSequence::project() const
 {
     return m_project;
+}
+
+QString RamSequence::details() const
+{
+    QTime dur(0, 0, duration());
+    return "Contains: " +
+            QString::number(shotCount()) +
+            " shots\n" +
+            "Duration: " +
+            dur.toString("mm 'mn' ss 's'");
 }
 
 // PUBLIC SLOTS //

@@ -18,9 +18,6 @@ public:
 
     RamScheduleComment(RamProject *project);
 
-    QColor color() const;
-    void setColor(const QColor &newColor);
-
     QDateTime date() const;
     void setDate(const QDateTime &newDate);
 

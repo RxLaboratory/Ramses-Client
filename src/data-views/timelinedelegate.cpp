@@ -1,6 +1,9 @@
 #include "timelinedelegate.h"
 
 #include "duqf-app/app-style.h"
+#include "ramasset.h"
+#include "ramassetgroup.h"
+#include "ramsequence.h"
 #include "ramshot.h"
 
 TimelineDelegate::TimelineDelegate(QObject *parent)
@@ -93,23 +96,20 @@ void TimelineDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opti
                             QString::number(shot->duration() * shot->project()->framerate(), 'f', 2) %
                             " f";
             // List assigned assets
-            if (shot->assets()->count() > 0)
+            QMap<QString,QStringList> assets;
+            for (int i = 0; i < shot->assets()->rowCount(); i++)
             {
-                QMap<QString,QStringList> assets;
-                for (int i = 0; i < shot->assets()->count(); i++)
-                {
-                    RamAsset *asset = qobject_cast<RamAsset*>( shot->assets()->at(i) );
-                    QString agName = asset->assetGroup()->name();
-                    QStringList ag = assets.value( agName );
-                    ag << asset->shortName();
-                    assets[ agName ] = ag;
-                }
-                QMapIterator<QString,QStringList> i(assets);
-                while(i.hasNext())
-                {
-                    i.next();
-                    details = details % "\n" % i.key() % " ► " % i.value().join(", ");
-                }
+                RamAsset *asset = shot->assets()->at(i);
+                QString agName = asset->assetGroup()->name();
+                QStringList ag = assets.value( agName );
+                ag << asset->shortName();
+                assets[ agName ] = ag;
+            }
+            QMapIterator<QString,QStringList> i(assets);
+            while(i.hasNext())
+            {
+                i.next();
+                details = details % "\n" % i.key() % " ► " % i.value().join(", ");
             }
 
             // Draw details
