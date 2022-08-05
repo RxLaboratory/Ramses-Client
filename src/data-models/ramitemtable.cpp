@@ -1,5 +1,5 @@
 #include "ramitemtable.h"
-#include "ramses.h"
+#include "ramstate.h"
 #include "ramstatus.h"
 
 // STATIC //
@@ -13,8 +13,8 @@ RamItemTable *RamItemTable::getObject(QString uuid, bool constructNew)
 
 // PUBLIC //
 
-RamItemTable::RamItemTable(QString shortName, QString name, RamObjectList<RamStep *> *steps, QObject *parent):
-    RamObjectList<RamItem*>(shortName, name, parent)
+RamItemTable::RamItemTable(QString shortName, QString name, RamObjectList<RamStep *> *steps, QObject *parent, bool isVirtual):
+    RamObjectList<RamItem*>(shortName, name, parent, isVirtual)
 {
     construct();
     m_steps = steps;

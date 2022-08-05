@@ -3,8 +3,8 @@
 
 #include <QTableView>
 
+#include "data-models/ramitemtable.h"
 #include "data-models/timelineproxy.h"
-#include "data-models/ramobjectlist.h"
 #include "ramshot.h"
 #include "timelinedelegate.h"
 
@@ -21,7 +21,7 @@ public:
 
     TimelineView(QWidget *parent = nullptr);
     // Content
-    void setList(RamObjectList<RamShot*> *shots);
+    void setList(RamItemTable *shots);
     void zoom(double amount);
     double currentZoom() const;
 
@@ -58,7 +58,7 @@ private:
     // Delegate
     TimelineDelegate *m_delegate;
     // List
-    RamObjectList<RamShot*> *m_emptyList;
+    RamItemTable *m_emptyList;
     TimeLineProxy *m_objectList;
 
     // Settings

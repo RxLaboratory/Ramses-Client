@@ -1,12 +1,13 @@
 #include "timelineview.h"
 
+#include "ramproject.h"
 #include "timelinemanager.h"
 
 TimelineView::TimelineView(QWidget *parent):
     QTableView(parent)
 {
     m_delegate = new TimelineDelegate();
-    m_emptyList = new RamObjectList<RamShot*>("emptylist", "Timeline", parent, true);
+    m_emptyList = new RamItemTable("emptylist", "Timeline", new RamObjectList<RamStep*>("emptylist", "steps"), parent, true);
 
     m_objectList = new TimeLineProxy(this);
     this->setModel(m_objectList);
@@ -15,7 +16,7 @@ TimelineView::TimelineView(QWidget *parent):
     connectEvents();
 }
 
-void TimelineView::setList(RamObjectList<RamShot*> *shots)
+void TimelineView::setList(RamItemTable *shots)
 {
     if (m_objectList->sourceModel() != m_emptyList)
         disconnect(m_objectList->sourceModel(), nullptr, this, nullptr);
@@ -26,9 +27,9 @@ void TimelineView::setList(RamObjectList<RamShot*> *shots)
     else
     {
         m_objectList->setSourceModel(shots);
-        connect(shots, &RamObjectList<RamShot*>::dataChanged, this, &TimelineView::resetZoom);
-        connect(shots, &RamObjectList<RamShot*>::layoutChanged, this, &TimelineView::resetZoom);
-        connect(shots, &RamObjectList<RamShot*>::rowsMoved, this, &TimelineView::resetZoom);
+        connect(shots, &RamItemTable::dataChanged, this, &TimelineView::resetZoom);
+        connect(shots, &RamItemTable::layoutChanged, this, &TimelineView::resetZoom);
+        connect(shots, &RamItemTable::rowsMoved, this, &TimelineView::resetZoom);
     }
     resetZoom();
 }
