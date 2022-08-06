@@ -1,21 +1,12 @@
 ﻿#include "objecteditwidget.h"
+#include "duqf-utils/utils.h"
 
 ObjectEditWidget::ObjectEditWidget(QWidget *parent) :
     QScrollArea(parent)
 {
     setupUi();
 
-    setObject(nullptr);
-
-    connectEvents();
-}
-
-ObjectEditWidget::ObjectEditWidget(RamObject *o, QWidget *parent) :
-    QScrollArea(parent)
-{
-    setupUi();
-
-    setObject(o);
+    m_object = nullptr;
 
     connectEvents();
 }
@@ -33,74 +24,82 @@ void ObjectEditWidget::hideName(bool hide)
     ui_shortNameEdit->setVisible(!hide);
 }
 
-void ObjectEditWidget::monitorDbQuery(QString queryName)
-{
-    m_dbQueries << queryName;
-}
-
 void ObjectEditWidget::setObject(RamObject *object)
 {
-    // disconnect all
-    while(_objectConnections.count() > 0)
-    {
-        disconnect( _objectConnections.takeLast() );
-    }
-
+    // disconnect
+    if (m_object) disconnect(m_object, nullptr, this, nullptr);
     m_object = object;
 
-    QSignalBlocker b1(ui_nameEdit);
-    QSignalBlocker b2(ui_shortNameEdit);
-    QSignalBlocker b3(ui_commentEdit);
+    if (object) {
+        ui_nameEdit->setText(object->name());
+        ui_shortNameEdit->setText(object->shortName());
+        ui_commentEdit->setText(object->comment());
 
-    ui_nameEdit->setText("");
-    ui_shortNameEdit->setText("");
-    ui_commentEdit->setText("");
+        this->setEnabled(object->canEdit());
+    }
+    else {
+        ui_nameEdit->setText("");
+        ui_shortNameEdit->setText("");
+        ui_commentEdit->setText("");
 
-    if (!object) return;
+        this->setEnabled(false);
+    }
 
-    ui_nameEdit->setText(object->name());
-    ui_shortNameEdit->setText(object->shortName());
-    ui_commentEdit->setText(object->comment());
+    reInit(object);
 
-    checkPath();
+    if (object) {
+        checkPath();
 
-    _objectConnections << connect( object, &RamObject::removed, this, &ObjectEditWidget::objectRemoved);
-    _objectConnections << connect( object, &RamObject::dataChanged, this, &ObjectEditWidget::objectChanged);
+        connect( object, &RamObject::removed, this, &ObjectEditWidget::objectRemoved);
+        connect( object, &RamObject::dataChanged, this, &ObjectEditWidget::objectChanged);
+    }
 }
 
-void ObjectEditWidget::update()
+void ObjectEditWidget::setShortName()
 {
-    if (!checkInput()) return;
-
-    updating = true;
-
-    m_object->setName(ui_nameEdit->text());
-    m_object->setShortName(ui_shortNameEdit->text());
-    m_object->setComment(ui_commentEdit->toMarkdown());
-
-    m_object->update();
-
-    updating = false;
-}
-
-bool ObjectEditWidget::checkInput()
-{
-    if (!m_object) return false;
-
+    if (!m_object) return;
 
     if (ui_shortNameEdit->text() == "")
     {
         // bug in Qt, signal is fired twice when showing the message box
-        if (!ui_shortNameEdit->isModified()) return false;
+        if (!ui_shortNameEdit->isModified()) return;
         ui_shortNameEdit->setModified(false);
 
         QMessageBox::warning(this, "Missing ID", "You need to set an ID for this item." );
         ui_shortNameEdit->setText(m_object->shortName());
         ui_shortNameEdit->setFocus(Qt::OtherFocusReason);
-        return false;
+
+        return;
     }
 
-    return true;
+    m_object->setShortName(ui_shortNameEdit->text());
+}
+
+void ObjectEditWidget::setName()
+{
+    if (!m_object) return;
+
+    if (ui_nameEdit->text() == "")
+    {
+        // bug in Qt, signal is fired twice when showing the message box
+        if (!ui_nameEdit->isModified()) return;
+        ui_nameEdit->setModified(false);
+
+        QMessageBox::warning(this, "Missing Name", "You need to set a name for this item." );
+        ui_nameEdit->setText(m_object->name());
+        ui_nameEdit->setFocus(Qt::OtherFocusReason);
+
+        return;
+    }
+
+    m_object->setName(ui_nameEdit->text());
+}
+
+void ObjectEditWidget::setComment()
+{
+    if (!m_object) return;
+
+    m_object->setComment(ui_commentEdit->toMarkdown());
 }
 
 void ObjectEditWidget::objectRemoved(RamObject *o)
@@ -109,28 +108,8 @@ void ObjectEditWidget::objectRemoved(RamObject *o)
     setObject(nullptr);
 }
 
-void ObjectEditWidget::dbiDataReceived(QJsonObject data)
-{
-    // Only if we're visible!
-    if (!this->isVisible()) return;
-
-    // Show error if monitoring & unsuccessful
-    if (data.value("success").toBool(false)) return;
-
-    if (!m_dbQueries.contains( data.value("query").toString()) ) return;
-
-    if (!m_modified) return;
-    QMessageBox::warning(this, "Server Error", data.value("message").toString() );
-}
-
-void ObjectEditWidget::test()
-{
-    qDebug() << ui_commentEdit->toPlainText();
-}
-
 void ObjectEditWidget::objectChanged(RamObject *o)
 {
-    if (updating) return;
     Q_UNUSED(o);
     setObject(m_object);
 }
@@ -212,8 +191,7 @@ void ObjectEditWidget::setupUi()
 
 void ObjectEditWidget::connectEvents()
 {
-    connect(ui_shortNameEdit, &QLineEdit::editingFinished, this, &ObjectEditWidget::update);
-    connect(ui_nameEdit, &QLineEdit::editingFinished, this, &ObjectEditWidget::update);
-    connect(ui_commentEdit, &DuQFTextEdit::editingFinished, this, &ObjectEditWidget::update);
-    connect(DBInterface::instance(), SIGNAL(data(QJsonObject)), this, SLOT(dbiDataReceived(QJsonObject)));
+    connect(ui_shortNameEdit, SIGNAL(editingFinished()), this, SLOT(setShortName()));
+    connect(ui_nameEdit, SIGNAL(editingFinished()), this, SLOT(setName()));
+    connect(ui_commentEdit, SIGNAL(editingFinished()), this, SLOT(setComment()));
 }

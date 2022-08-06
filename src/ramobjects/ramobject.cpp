@@ -28,9 +28,17 @@ void RamObject::remove()
     RamAbstractObject::remove();
 }
 
-QString RamObject::icon() const
+bool RamObject::canEdit()
 {
-    return m_icon;
+    RamUser *u = Ramses::instance()->currentUser();
+    if (!u) return false;
+    return u->role() >= m_editRole;
+}
+
+void RamObject::reload()
+{
+    QJsonObject d = reloadData();
+    emit dataChanged(this, d );
 }
 
 // PROTECTED //
@@ -40,6 +48,11 @@ RamObject::RamObject(QString uuid, ObjectType type, QObject *parent):
     RamAbstractObject(uuid, type)
 {
     construct(parent);
+}
+
+QJsonObject RamObject::reloadData()
+{
+    return data();
 }
 
 void RamObject::emitDataChanged(QJsonObject data)

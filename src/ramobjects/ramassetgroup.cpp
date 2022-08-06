@@ -17,6 +17,7 @@ RamAssetGroup *RamAssetGroup::createFromTemplate(RamTemplateAssetGroup *tempAG, 
 {
     // Create
     RamAssetGroup *assetGroup = new RamAssetGroup(tempAG->shortName(), tempAG->name(), project);
+    project->assetGroups()->append(assetGroup);
     return assetGroup;
 }
 

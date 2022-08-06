@@ -1,17 +1,20 @@
 #include "assetgrouplistmanagerwidget.h"
 
+#include "ramassetgroup.h"
+#include "ramses.h"
+
 AssetGroupListManagerWidget::AssetGroupListManagerWidget(QWidget *parent):
-    ObjectListManagerWidget(
+    ObjectListManagerWidget<RamAssetGroup*, RamProject*>(
         "Asset groups",
         QIcon(":icons/asset-group"),
         parent)
 {
     changeProject(Ramses::instance()->currentProject());
     connect(Ramses::instance(), SIGNAL(currentProjectChanged(RamProject*)), this, SLOT(changeProject(RamProject*)));
-    m_listEditWidget->setEditMode(ObjectListEditWidget::RemoveObjects);
+    m_listEditWidget->setEditMode(ObjectListEditWidget<RamAssetGroup*, RamProject*>::RemoveObjects);
 
     // Create from template actions
-    ui_createMenu = new RamObjectListMenu(false, this);
+    ui_createMenu = new RamObjectListMenu<RamTemplateAssetGroup*>(false, this);
     ui_createMenu->addCreateButton();
     QToolButton *addButton = m_listEditWidget->addButton();
     addButton->setPopupMode(QToolButton::InstantPopup);
@@ -23,14 +26,15 @@ AssetGroupListManagerWidget::AssetGroupListManagerWidget(QWidget *parent):
     connect(ui_createMenu, SIGNAL(assign(RamObject*)), this, SLOT(createFromTemplate(RamObject*)));
 }
 
-RamObject *AssetGroupListManagerWidget::createObject()
+RamAssetGroup *AssetGroupListManagerWidget::createObject()
 {
     RamProject *project = Ramses::instance()->currentProject();
     if (!project) return nullptr;
     RamAssetGroup *assetGroup = new RamAssetGroup(
                 "NEW",
-                project,
-                "New Asset Group");
+                "New Asset Group",
+                project
+                );
     project->assetGroups()->append(assetGroup);
     assetGroup->edit();
     return assetGroup;
@@ -44,13 +48,11 @@ void AssetGroupListManagerWidget::changeProject(RamProject *project)
     this->setList( project->assetGroups() );
 }
 
-void AssetGroupListManagerWidget::createFromTemplate(RamObject *obj)
+void AssetGroupListManagerWidget::createFromTemplate(RamTemplateAssetGroup *templateAG)
 {
     RamProject *project = Ramses::instance()->currentProject();
     if (!project) return;
-    RamAssetGroup *templateAG = qobject_cast<RamAssetGroup*>( obj );
     if (!templateAG) return;
-    RamAssetGroup *ag = templateAG->createFromTemplate(project);
-    project->assetGroups()->append(ag);
+    RamAssetGroup *ag = RamAssetGroup::createFromTemplate( templateAG, project);
     ag->edit();
 }

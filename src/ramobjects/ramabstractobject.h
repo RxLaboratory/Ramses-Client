@@ -206,6 +206,7 @@ protected:
     virtual QString dataString() const;
     virtual void setDataString(QString data);
     virtual void createData(QString data);
+    virtual QJsonObject reloadData() = 0;
 
     virtual void emitDataChanged(QJsonObject data) { Q_UNUSED(data) };
     virtual void emitRemoved() {};

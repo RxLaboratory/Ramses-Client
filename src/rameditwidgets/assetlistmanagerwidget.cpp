@@ -1,29 +1,33 @@
 #include "assetlistmanagerwidget.h"
 
+#include "ramasset.h"
+#include "ramassetgroup.h"
+#include "ramses.h"
+
 AssetListManagerWidget::AssetListManagerWidget(QWidget *parent):
-    ObjectListManagerWidget(
+    ObjectListManagerWidget<RamItem*, RamAssetGroup*>(
         "Assets",
         QIcon(":icons/asset"),
         parent)
 {
     changeProject(Ramses::instance()->currentProject());
     connect(Ramses::instance(), SIGNAL(currentProjectChanged(RamProject*)), this, SLOT(changeProject(RamProject*)));
-    m_listEditWidget->setEditMode(ObjectListEditWidget::RemoveObjects);
+    m_listEditWidget->setEditMode(ObjectListEditWidget<RamItem*, RamAssetGroup*>::RemoveObjects);
 }
 
-RamObject *AssetListManagerWidget::createObject()
+RamItem *AssetListManagerWidget::createObject()
 {
     RamProject *project = Ramses::instance()->currentProject();
     if (!project) return nullptr;
-    if (project->assetGroups()->count() == 0 ) return nullptr;
-    RamAssetGroup *ag = RamAssetGroup::assetGroup( currentFilter() );
-    if (!ag) ag = qobject_cast<RamAssetGroup*>( project->assetGroups()->at(0) );
-    if(!ag) return nullptr;
+    if (project->assetGroups()->rowCount() == 0 ) return nullptr;
+    RamAssetGroup *ag = RamAssetGroup::getObject( currentFilter() );
+    if (!ag) ag = project->assetGroups()->at(0);
+    if (!ag) return nullptr;
 
     RamAsset *asset = new RamAsset(
                 "NEW",
-                ag,
-                "New Asset"
+                "New Asset",
+                ag
                 );
 
     project->assets()->append(asset);

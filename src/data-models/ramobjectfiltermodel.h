@@ -23,6 +23,7 @@ public:
 
     // LIST INFORMATION
     RO at(int i) const;
+    RO at(QModelIndex i) const;
 
 signals:
     void aboutToFilter();

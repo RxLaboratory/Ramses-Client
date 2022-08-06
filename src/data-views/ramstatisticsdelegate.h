@@ -5,8 +5,6 @@
 #include <QPainter>
 #include <QPainterPath>
 
-#include "duqf-app/app-style.h"
-
 class RamStatisticsDelegate : public QStyledItemDelegate
 {
 public:

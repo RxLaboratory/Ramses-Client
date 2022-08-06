@@ -4,33 +4,30 @@
 #include <QWidget>
 #include <QSplitter>
 
-#include "objecteditwidget.h"
 #include "objectlisteditwidget.h"
 
-class ObjectListManagerWidget : public QWidget
+template<typename RO, typename ROF> class ObjectListManagerWidget : public QWidget
 {
     Q_OBJECT
 public:
     explicit ObjectListManagerWidget(QString title, QIcon icon = QIcon(), QWidget *parent = nullptr);
-    explicit ObjectListManagerWidget(RamObjectList *objectList, QString title, QIcon icon = QIcon(), QWidget *parent = nullptr);
-    void setList(RamObjectList *objectList);
+    explicit ObjectListManagerWidget(RamObjectList<RO> *objectList, QString title, QIcon icon = QIcon(), QWidget *parent = nullptr);
+    void setList(RamObjectList<RO> *objectList);
     void clear();
     QString currentFilter() const;
 
     QToolButton *menuButton();
 
 protected:
-    ObjectListEditWidget *m_listEditWidget;
+    ObjectListEditWidget<RO, ROF> *m_listEditWidget;
 
 protected slots:
-    virtual RamObject *createObject() { return nullptr; };
+    virtual RO createObject() { return nullptr; };
     void createEditObject();
 
 private:
     void setupUi(QString title, QIcon icon);
     void connectEvents();
-
-    QList<QMetaObject::Connection> m_listConnection;
 
     QToolButton *ui_itemButton;
     QAction *ui_createAction;

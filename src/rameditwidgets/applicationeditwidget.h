@@ -6,9 +6,8 @@
 
 #include "objecteditwidget.h"
 #include "duqf-widgets/duqffolderselectorwidget.h"
-#include "ramses.h"
-
-class ObjectListEditWidget;
+#include "objectlisteditwidget.h"
+#include "ramapplication.h"
 
 class ApplicationEditWidget : public ObjectEditWidget
 {
@@ -16,15 +15,11 @@ class ApplicationEditWidget : public ObjectEditWidget
 
 public:
     explicit ApplicationEditWidget(QWidget *parent = nullptr);
-    explicit ApplicationEditWidget(RamApplication *app, QWidget *parent = nullptr);
 
     RamApplication *application() const;
 
-public slots:
-    void setObject(RamObject *obj) override;
-
-protected slots:
-    void update() override;
+protected:
+    virtual void reInit(RamObject *o) override;
 
 private slots:
     void createForNative();
@@ -38,9 +33,9 @@ private:
     void connectEvents();
 
     DuQFFolderSelectorWidget *m_folderSelector;
-    ObjectListEditWidget *m_nativeList;
-    ObjectListEditWidget *m_importList;
-    ObjectListEditWidget *m_exportList;
+    ObjectListEditWidget<RamFileType*> *m_nativeList;
+    ObjectListEditWidget<RamFileType*> *m_importList;
+    ObjectListEditWidget<RamFileType*> *m_exportList;
 };
 
 #endif // APPLICATIONEDITWIDGET_H

@@ -2,9 +2,9 @@
 #define ASSETEDITWIDGET_H
 
 #include "objecteditwidget.h"
-#include "ramses.h"
-#include "ramobjectlistcombobox.h"
+#include "ramasset.h"
 #include "duqf-widgets/duqffolderdisplaywidget.h"
+#include "ramobjectlistcombobox.h"
 
 /**
  * @brief The AssetEditWidget class is the Widget used to edit an Asset, including its Status History
@@ -15,24 +15,25 @@ class AssetEditWidget : public ObjectEditWidget
 
 public:
     AssetEditWidget(QWidget *parent = nullptr);
-    AssetEditWidget(RamAsset *asset, QWidget *parent = nullptr);
+
     RamAsset *asset() const;
 
-public slots:
-    void setObject(RamObject *obj) override;
+protected:
+    virtual void reInit(RamObject *o) override;
 
-protected slots:
-    void update() override;
+private slots:
+    void setTags();
+    void setAssetGroup(RamAssetGroup *ag);
 
 private:
-    RamAsset *_asset = nullptr;
+    RamAsset *m_asset = nullptr;
 
     void setupUi();
     void connectEvents();
 
-    DuQFFolderDisplayWidget *folderWidget;
-    QLineEdit *tagsEdit;
-    RamObjectListComboBox *assetGroupBox;
+    DuQFFolderDisplayWidget *ui_folderWidget;
+    QLineEdit *ui_tagsEdit;
+    RamObjectListComboBox<RamAssetGroup*> *ui_assetGroupBox;
 };
 
 #endif // ASSETEDITWIDGET_H

@@ -6,9 +6,6 @@
 #include <QPainter>
 #include <QPainterPath>
 
-#include "ramstep.h"
-#include "ramstatus.h"
-
 class RamStepHeaderView : public QHeaderView
 {
     Q_OBJECT

@@ -26,12 +26,12 @@ public:
     double currentZoom() const;
 
 public slots:
-    void select(RamObject *o);
+    void select(RamShot *o);
     void setZoom(double zoom);
     void resetZoom();
 
 signals:
-    void objectSelected(RamObject*);
+    void objectSelected(RamShot*);
     void zoomed(double);
 
 protected:
@@ -49,8 +49,8 @@ private slots:
     void changeProject(RamProject*project);
     void select(const QModelIndex &index);
     void selectShot(RamShot *shot);
-    void revealFolder(RamObject *obj);
-    void editObject(RamObject *obj);
+    void revealFolder(RamShot *obj);
+    void editObject(RamShot *obj);
 
 private:
     void setupUi();

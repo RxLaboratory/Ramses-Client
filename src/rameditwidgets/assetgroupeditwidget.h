@@ -5,7 +5,6 @@
 #include "objectlisteditwidget.h"
 #include "ramassetgroup.h"
 #include "duqf-widgets/duqffolderdisplaywidget.h"
-#include "ramses.h"
 
 /**
  * @brief The AssetGroupEditWidget class is used to edit AssetGroups and can be shown either in the main UI or in the Dock
@@ -16,15 +15,11 @@ class AssetGroupEditWidget : public ObjectEditWidget
 
 public:
     explicit AssetGroupEditWidget(QWidget *parent = nullptr);
-    explicit AssetGroupEditWidget(RamAssetGroup *ag, QWidget *parent = nullptr);
 
     RamAssetGroup *assetGroup() const;
 
-public slots:
-    void setObject(RamObject *obj) override;
-
-protected slots:
-    void update() override;
+protected:
+    virtual void reInit(RamObject *o) override;
 
 private slots:
     void createAsset();
@@ -36,7 +31,7 @@ private:
     void connectEvents();
 
     DuQFFolderDisplayWidget *ui_folderWidget;
-    ObjectListEditWidget *ui_assetsList;
+    ObjectListEditWidget<RamItem*> *ui_assetsList;
 };
 
 #endif // ASSETGROUPEDITWIDGET_H

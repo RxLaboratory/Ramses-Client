@@ -6,18 +6,17 @@
 #include <QScrollBar>
 #include <QSortFilterProxyModel>
 
-#include "data-models/ramobjectlist.h"
-#include "processmanager.h"
-#include "ramobjectdelegate.h"
 #include "data-models/ramitemfiltermodel.h"
-#include "data-models/ramitemtablelistproxy.h"
+#include "ramobjectdelegate.h"
+#include "ramshot.h"
+#include "ramuser.h"
 
 /**
  * @brief The RamObjectListView class is the base class displaying for all lists in Ramses, displaying RamObject
  * It displays a RamObjectList using RamObjectDelegate for the painging.
  * It used mainly in ObjectListEditWidget (in order to manage the list)
  */
-class RamObjectListView : public QTableView
+template<typename RO> class RamObjectListView : public QTableView
 {
     Q_OBJECT
 public:
@@ -27,24 +26,24 @@ public:
     Q_ENUM( DisplayMode )
 
     explicit RamObjectListView(DisplayMode mode = List, QWidget *parent = nullptr);
-    explicit RamObjectListView(RamObjectList *list, DisplayMode mode = List, QWidget *parent = nullptr);
-    explicit RamObjectListView(RamObjectList *list, bool editableObjects, RamUser::UserRole editRole = RamUser::Admin, DisplayMode mode = List, QWidget *parent = nullptr);
+    explicit RamObjectListView(RamObjectList<RO> *list, DisplayMode mode = List, QWidget *parent = nullptr);
+    explicit RamObjectListView(RamObjectList<RO> *list, bool editableObjects, RamUser::UserRole editRole = RamUser::Admin, DisplayMode mode = List, QWidget *parent = nullptr);
     // Content
-    void setList(RamObjectList *list);
+    void setList(RamObjectList<RO> *list);
     RamItemFilterModel *filteredList();
     // Settings
     void setEditableObjects(bool editableObjects, RamUser::UserRole editRole = RamUser::Admin);
     void setSortable(bool sortable = true);
 
 signals:
-    void objectSelected(RamObject*);
-    void editObject(RamObject*);
-    void historyObject(RamObject*);
+    void objectSelected(RO);
+    void editObject(RO);
+    void historyObject(RO);
 
 public slots:
     void search(QString s);
-    void select(RamObject *o);
-    void filter(RamObject *o);
+    void select(RO o);
+    void filter(RO o);
     void setTimeTracking(bool trackTime);
     void setCompletionRatio(bool showCompletion);
     void showDetails(bool s);
@@ -63,7 +62,6 @@ protected slots:
 private slots:
     void revealFolder(RamObject *obj);
     void select(const QModelIndex &index);
-    void selectShot(RamShot *shot);
 
 private:
     void setupUi();
@@ -73,7 +71,7 @@ private:
     DisplayMode m_displayMode;
 
     // Delegate
-    RamObjectDelegate *m_delegate;
+    RamObjectDelegate<RO> *m_delegate;
 
     // Filters
     QString m_currentFilterUuid;

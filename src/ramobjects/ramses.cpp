@@ -260,13 +260,13 @@ void Ramses::refresh()
 
     // (Re)Load admin data
 
-    m_users->reload( m_dbi->tableData("RamUser") );
-    m_templateSteps->reload( m_dbi->tableData("RamTemplateStep") );
-    m_templateAssetGroups->reload( m_dbi->tableData("RamTemplateAssetGroup") );
-    m_states->reload( m_dbi->tableData("RamState") );
-    m_fileTypes->reload( m_dbi->tableData("RamFileType") );
-    m_applications->reload( m_dbi->tableData("RamApplication") );
-    m_projects->reload( m_dbi->tableData("RamProject") );
+    m_users->reloadData();
+    m_templateSteps->reloadData();
+    m_templateAssetGroups->reloadData();
+    m_states->reloadData();
+    m_fileTypes->reloadData();
+    m_applications->reloadData();
+    m_projects->reloadData();
 }
 
 // PROTECTED
@@ -284,13 +284,13 @@ Ramses::Ramses(QObject *parent):
     qDebug() << "Initialising Ramses";
     m_dbi = DBInterface::instance();
 
-    m_users = new RamObjectList<RamUser*>("USRS", "Users", this, true);
+    m_users = new RamObjectList<RamUser*>("RamUser", "Users", this, RamObjectList<RamUser*>::Table);
     m_states = new RamStateList(this);
-    m_projects = new RamObjectList<RamProject*>("PRJCTS", "Projects", this, true);
-    m_templateSteps = new RamObjectList<RamTemplateStep*>("TPLTSTPS", "Template steps", this, true);
-    m_templateAssetGroups = new RamObjectList<RamTemplateAssetGroup*>("TPLTAGS", "Template asset groups", this, true);
-    m_fileTypes = new RamObjectList<RamFileType*>("FLTPS", "File types", this, true);
-    m_applications = new RamObjectList<RamApplication*>("APPS", "Applications", this, true);
+    m_projects = new RamObjectList<RamProject*>("RamProject", "Projects", this, RamObjectList<RamProject*>::Table);
+    m_templateSteps = new RamObjectList<RamTemplateStep*>("RamTemplateStep", "Template steps", this, RamObjectList<RamTemplateStep*>::Table);
+    m_templateAssetGroups = new RamObjectList<RamTemplateAssetGroup*>("RamTemplateAssetGroup", "Template asset groups", this, RamObjectList<RamTemplateAssetGroup*>::Table);
+    m_fileTypes = new RamObjectList<RamFileType*>("RamFileType", "File types", this, RamObjectList<RamFileType*>::Table);
+    m_applications = new RamObjectList<RamApplication*>("RamApplication", "Applications", this, RamObjectList<RamApplication*>::Table);
 
     this->setObjectName( "Ramses Class" );
 

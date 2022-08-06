@@ -2,25 +2,25 @@
 #define ASSETGROUPLISTMANAGERWIDGET_H
 
 #include "objectlistmanagerwidget.h"
-#include "assetgroupeditwidget.h"
 #include "data-views/ramobjectlistmenu.h"
+#include "ramtemplateassetgroup.h"
 
-class AssetGroupListManagerWidget : public ObjectListManagerWidget
+class AssetGroupListManagerWidget : public ObjectListManagerWidget<RamAssetGroup*, RamProject*>
 {
     Q_OBJECT
 public:
     AssetGroupListManagerWidget(QWidget *parent = nullptr);
 
 protected slots:
-    RamObject *createObject() override;
+    RamAssetGroup *createObject() override;
 
 private slots:
     void changeProject(RamProject *project);
 
-    void createFromTemplate(RamObject *obj);
+    void createFromTemplate(RamTemplateAssetGroup *templateAG);
 
 private:
-    RamObjectListMenu *ui_createMenu;
+    RamObjectListMenu<RamTemplateAssetGroup *> *ui_createMenu;
 };
 
 #endif // ASSETGROUPLISTMANAGERWIDGET_H

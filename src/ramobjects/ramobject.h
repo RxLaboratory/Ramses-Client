@@ -41,12 +41,15 @@ public:
 
     virtual QString filterUuid() const { return QString(); };
 
+    virtual bool canEdit();
+
     virtual QIcon icon() const { return QIcon(m_icon); };
     virtual QString details() const { return QString(); };
     virtual QString subDetails() const { return QString(); };
 
 public slots:
     virtual void edit(bool s = true) { Q_UNUSED(s) };
+    void reload();
 
 signals:
     void dataChanged(RamObject *, QJsonObject);
@@ -62,6 +65,8 @@ protected:
      * @param parent
      */
     RamObject(QString uuid, ObjectType type, QObject *parent = nullptr);
+
+    virtual QJsonObject reloadData() override;
 
     void emitDataChanged(QJsonObject data) override;
     void emitRemoved() override;

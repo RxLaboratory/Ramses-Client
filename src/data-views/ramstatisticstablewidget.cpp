@@ -1,5 +1,7 @@
 #include "ramstatisticstablewidget.h"
 
+#include "ramstatisticsdelegate.h"
+
 RamStatisticsTableWidget::RamStatisticsTableWidget(QWidget *parent):
     QTableView(parent)
 {

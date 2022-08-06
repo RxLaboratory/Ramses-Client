@@ -16,13 +16,19 @@ template<typename RO> class RamObjectList : public QAbstractTableModel, public R
 
 public:
 
+    enum DataListMode {
+        Object, // a List saved in the RamObject table
+        Table, // a complete table
+        Temp // temporary list, not saved
+    };
+
     // STATIC METHODS //
 
     static RamObjectList<RO> *getObject(QString uuid, bool constructNew = false);
 
     // METHODS //
 
-    RamObjectList(QString shortName, QString name, QObject *parent = nullptr, bool isVirtual = false);
+    RamObjectList(QString shortName, QString name, QObject *parent = nullptr, DataListMode mode = Object);
 
     // MODEL reimplementation
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
@@ -42,8 +48,6 @@ public:
     virtual RO takeObject(int i); // Remove and returns object at i
     RO takeObject(QString uuid); // Remove and return object using uuid
     void removeAll(QString uuid); // Removes object using uuid
-    // Reset
-    void reload(QStringList uuids);
 
     // LIST INFORMATION
     // Info
@@ -53,12 +57,14 @@ public:
     RO fromUuid(QString uuid) const;
     RO fromName(QString shortName, QString name = "") const;
     RO at(int i) const;
+    RO at(QModelIndex i) const;
 
     QList<RO> toList();
 
 public slots:
     void removeAll(RO obj);
     void sort();
+    void reload();
 
 signals:
     void objectInserted(RO);
@@ -67,6 +73,8 @@ signals:
 
 protected:
     RamObjectList(QString uuid, QObject *parent = nullptr);
+
+    virtual QJsonObject reloadData() override;
 
     // DATA
     // For performance reasons, store both a list and a map
@@ -90,10 +98,8 @@ private:
     void construct(QObject *parent);
     void connectEvents();
 
-
-    QString m_uuid;
-
-    bool m_updatingOrders = false;
+    DataListMode m_dataMode = Object;
+    QString m_tableName;
 };
 
 class RamObject;

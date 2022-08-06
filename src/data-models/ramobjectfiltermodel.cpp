@@ -60,6 +60,12 @@ RO RamObjectFilterModel<RO>::at(int i) const
 }
 
 template<typename RO>
+RO RamObjectFilterModel<RO>::at(QModelIndex i) const
+{
+    return at(i.row());
+}
+
+template<typename RO>
 bool RamObjectFilterModel<RO>::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
 {
     QModelIndex index = sourceModel()->index(sourceRow, 0, sourceParent);

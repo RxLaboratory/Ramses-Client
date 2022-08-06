@@ -15,13 +15,15 @@ RamObjectList<RO> *RamObjectList<RO>::getObject(QString uuid, bool constructNew)
 // PUBLIC //
 
 template<typename RO>
-RamObjectList<RO>::RamObjectList(QString shortName, QString name, QObject *parent, bool isVirtual):
+RamObjectList<RO>::RamObjectList(QString shortName, QString name, QObject *parent, DataListMode mode):
     QAbstractTableModel(parent),
-    RamAbstractObject(shortName, name, ObjectList, isVirtual)
+    RamAbstractObject(shortName, name, ObjectList)
 
 {
     construct(parent);
-    m_virtual = isVirtual;
+    m_dataMode = mode;
+
+    m_tableName = shortName;
 }
 
 // QAbstractTableModel Reimplementation
@@ -206,8 +208,10 @@ void RamObjectList<RO>::removeAll(QString uuid)
 }
 
 template<typename RO>
-void RamObjectList<RO>::reload(QStringList uuids)
+QJsonObject RamObjectList<RO>::reloadData()
 {
+    QJsonObject d = data();
+
     beginResetModel();
 
     // disconnect objects
@@ -221,6 +225,20 @@ void RamObjectList<RO>::reload(QStringList uuids)
     m_objects.clear();
 
     // Reload
+    QStringList uuids;
+    if (m_dataMode == Table)
+    {
+        uuids = DBInterface::instance()->tableData(m_tableName);
+    }
+    else if (m_dataMode == Object)
+    {
+        QJsonArray arr = d.value("list").toArray();
+        for (int i = 0; i < arr.count(); i++)
+        {
+            uuids << arr[i].toString();
+        }
+    }
+
     for (int i = 0; i < uuids.count(); i++)
     {
         QString uuid = uuids.at(i);
@@ -231,6 +249,8 @@ void RamObjectList<RO>::reload(QStringList uuids)
     }
 
     endResetModel();
+
+    return d;
 }
 
 template<typename RO>
@@ -287,6 +307,12 @@ RO RamObjectList<RO>::at(int i) const
 }
 
 template<typename RO>
+RO RamObjectList<RO>::at(QModelIndex i) const
+{
+    return at(i.row());
+}
+
+template<typename RO>
 QList<RO> RamObjectList<RO>::toList()
 {
     return m_objectList;
@@ -300,6 +326,12 @@ void RamObjectList<RO>::sort()
     sort(0);
 }
 
+template<typename RO>
+void RamObjectList<RO>::reload()
+{
+    reloadData();
+}
+
 // PROTECTED //
 
 template<typename RO>
@@ -308,6 +340,7 @@ RamObjectList<RO>::RamObjectList(QString uuid, QObject *parent):
     RamAbstractObject(uuid, ObjectList)
 {
     construct();
+    m_dataMode = Object;
     // Populate the list
     QJsonObject d = RamAbstractObject::data();
     QJsonArray arr = d.value("list").toArray();
@@ -353,14 +386,28 @@ template<typename RO> void RamObjectList<RO>::objectChanged(RO obj)
 template<typename RO>
 void RamObjectList<RO>::listChanged()
 {
-    if (m_virtual) return;
-    // Convert to json array and save
-    QJsonArray arr;
-    for(int i = 0; i < m_objectList.count(); i++)
+    switch(m_dataMode)
     {
-        arr.append( m_objectList.at(i)->uuid() );
+    case Object:
+    {
+        // Convert to json array and save
+        QJsonArray arr;
+        for(int i = 0; i < m_objectList.count(); i++)
+        {
+            arr.append( m_objectList.at(i)->uuid() );
+        }
+        insertData("list", arr);
+        return;
     }
-    insertData("list", arr);
+    case Table:
+    {
+        return; // Nothing to do: no order, and creation/removal is handled by the objects themselves.
+    }
+    case Temp:
+    {
+        return;
+    }
+    }
 }
 
 // PRIVATE //
@@ -376,6 +423,7 @@ template<typename RO> void RamObjectList<RO>::connectEvents()
 {
     connect(this, &QAbstractTableModel::rowsInserted, this, &RamObjectList::listChanged);
     connect(this, &QAbstractTableModel::rowsRemoved, this, &RamObjectList::listChanged);
+    connect(this, &QAbstractTableModel::rowsMoved, this, &RamObjectList::listChanged);
 }
 
 // SORTERS //

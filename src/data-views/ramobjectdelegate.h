@@ -6,7 +6,6 @@
 #include <QPainterPath>
 #include <QStringBuilder>
 
-#include "ramstatus.h"
 #include "ramuser.h"
 
 struct PaintParameters

@@ -12,9 +12,7 @@
 #include <QRegExpValidator>
 
 #include "duqf-widgets/duqftextedit.h"
-#include "dbinterface.h"
 #include "ramobject.h"
-#include "duqf-utils/utils.h"
 
 /**
  * @brief The ObjectEditWidget class is the base class of all editors for RamObjects (Shots, steps, etc)
@@ -26,28 +24,27 @@ class ObjectEditWidget : public QScrollArea
 
 public:
     explicit ObjectEditWidget(QWidget *parent = nullptr);
-    explicit ObjectEditWidget(RamObject *o, QWidget *parent = nullptr);
 
     RamObject *object() const;
     void hideName(bool hide = true);
 
-    void monitorDbQuery(QString queryName);
-
 public slots:
-    virtual void setObject(RamObject *object);
+    void setObject(RamObject *object);
 
 protected slots:
-    virtual void update();
-    virtual bool checkInput();
+    void setShortName();
+    void setName();
+    void setComment();
+
     void objectChanged(RamObject *o);
+
     void checkPath();
 
 protected:
+    virtual void reInit(RamObject *o) = 0;
     void showEvent(QShowEvent *event) override;
     void hideEvent(QHideEvent *event) override;
 
-    QList<QMetaObject::Connection> _objectConnections;
-    bool updating = false;
     QStringList m_dontRename;
 
     QVBoxLayout *ui_mainLayout;
@@ -61,18 +58,12 @@ protected:
 
 private slots:
     void objectRemoved(RamObject *o);
-    void dbiDataReceived(QJsonObject data);
-
-    void test();
 
 private:
     void setupUi();
-
-    RamObject *m_object;
     void connectEvents();
 
-    QStringList m_dbQueries;
-    bool m_modified = true;
+    RamObject *m_object;
 };
 
 #endif // OBJECTEDITWIDGET_H

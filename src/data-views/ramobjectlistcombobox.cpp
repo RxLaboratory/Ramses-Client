@@ -183,7 +183,7 @@ template<typename RO>
 void RamObjectListComboBox<RO>::setupUi()
 {
     //this->setSizeAdjustPolicy(SizeAdjustPolicy::AdjustToContents);
-    RamObjectDelegate *delegate = new RamObjectDelegate(this);
+    RamObjectDelegate<RO> *delegate = new RamObjectDelegate<RO>(this);
     delegate->setComboBoxMode(true);
     this->setItemDelegate(delegate);
 }

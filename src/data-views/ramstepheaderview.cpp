@@ -1,7 +1,9 @@
 #include "ramstepheaderview.h"
 
-#include "ramses.h"
+#include "ramstatus.h"
 #include "duqf-app/app-style.h"
+#include "ramstep.h"
+#include "ramses.h"
 
 RamStepHeaderView::RamStepHeaderView(QWidget *parent):
     QHeaderView(Qt::Horizontal, parent)

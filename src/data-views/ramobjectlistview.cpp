@@ -1,11 +1,13 @@
 #include "ramobjectlistview.h"
 
+#include "data-models/ramitemtablelistproxy.h"
 #include "timelinemanager.h"
 
-RamObjectListView::RamObjectListView(DisplayMode mode, QWidget *parent):
+template<typename RO>
+RamObjectListView<RO>::RamObjectListView(DisplayMode mode, QWidget *parent):
         QTableView(parent)
 {
-    m_delegate = new RamObjectDelegate();
+    m_delegate = new RamObjectDelegate<RO>();
     m_displayMode = mode;
     setupUi();
     m_objectList = new RamItemFilterModel(this);
@@ -22,10 +24,11 @@ RamObjectListView::RamObjectListView(DisplayMode mode, QWidget *parent):
     connectEvents();
 }
 
-RamObjectListView::RamObjectListView(RamObjectList *list, DisplayMode mode, QWidget *parent):
+template<typename RO>
+RamObjectListView<RO>::RamObjectListView(RamObjectList<RO> *list, DisplayMode mode, QWidget *parent):
     QTableView(parent)
 {
-    m_delegate = new RamObjectDelegate();
+    m_delegate = new RamObjectDelegate<RO>();
     m_displayMode = mode;
     setupUi();
     m_objectList = new RamItemFilterModel(this);
@@ -43,11 +46,12 @@ RamObjectListView::RamObjectListView(RamObjectList *list, DisplayMode mode, QWid
     connectEvents();
 }
 
-RamObjectListView::RamObjectListView(RamObjectList *list, bool editableObjects, RamUser::UserRole editRole, DisplayMode mode, QWidget *parent):
+template<typename RO>
+RamObjectListView<RO>::RamObjectListView(RamObjectList<RO> *list, bool editableObjects, RamUser::UserRole editRole, DisplayMode mode, QWidget *parent):
     QTableView(parent)
 {
     m_displayMode = mode;
-    m_delegate = new RamObjectDelegate();
+    m_delegate = new RamObjectDelegate<RO>();
     m_delegate->setEditable(editableObjects);
     m_delegate->setEditRole(editRole);
     setupUi();
@@ -66,53 +70,62 @@ RamObjectListView::RamObjectListView(RamObjectList *list, bool editableObjects, 
     connectEvents();
 }
 
-void RamObjectListView::setList(RamObjectList *list)
+template<typename RO>
+void RamObjectListView<RO>::setList(RamObjectList<RO> *list)
 {
     m_objectList->setList(list);
     this->resizeRowsToContents();
     this->resizeColumnsToContents();
 }
 
-RamItemFilterModel *RamObjectListView::filteredList()
+template<typename RO>
+RamItemFilterModel *RamObjectListView<RO>::filteredList()
 {
     return m_objectList;
 }
 
-void RamObjectListView::setEditableObjects(bool editableObjects, RamUser::UserRole editRole)
+template<typename RO>
+void RamObjectListView<RO>::setEditableObjects(bool editableObjects, RamUser::UserRole editRole)
 {
     m_delegate->setEditable(editableObjects);
     m_delegate->setEditRole(editRole);
 }
 
-void RamObjectListView::setSortable(bool sortable)
+template<typename RO>
+void RamObjectListView<RO>::setSortable(bool sortable)
 {
     this->verticalHeader()->setSectionsMovable(sortable);
 }
 
-void RamObjectListView::setTimeTracking(bool trackTime)
+template<typename RO>
+void RamObjectListView<RO>::setTimeTracking(bool trackTime)
 {
     m_delegate->setTimeTracking(trackTime);
 }
 
-void RamObjectListView::setCompletionRatio(bool showCompletion)
+template<typename RO>
+void RamObjectListView<RO>::setCompletionRatio(bool showCompletion)
 {
     m_delegate->setCompletionRatio(showCompletion);
 }
 
-void RamObjectListView::showDetails(bool s)
+template<typename RO>
+void RamObjectListView<RO>::showDetails(bool s)
 {
     m_delegate->showDetails(s);
     this->resizeRowsToContents();
 }
 
-void RamObjectListView::search(QString s)
+template<typename RO>
+void RamObjectListView<RO>::search(QString s)
 {
     // Search
     m_objectList->search(s);
     //this->resizeRowsToContents();
 }
 
-void RamObjectListView::mouseMoveEvent(QMouseEvent *event)
+template<typename RO>
+void RamObjectListView<RO>::mouseMoveEvent(QMouseEvent *event)
 {
     if (m_dragging)
     {
@@ -127,7 +140,8 @@ void RamObjectListView::mouseMoveEvent(QMouseEvent *event)
     QTableView::mouseMoveEvent(event);
 }
 
-void RamObjectListView::mousePressEvent(QMouseEvent *event)
+template<typename RO>
+void RamObjectListView<RO>::mousePressEvent(QMouseEvent *event)
 {
     // Middle click for dragging view
     if (event->button() == Qt::MiddleButton)
@@ -146,7 +160,8 @@ void RamObjectListView::mousePressEvent(QMouseEvent *event)
     QTableView::mousePressEvent(event);
 }
 
-void RamObjectListView::mouseReleaseEvent(QMouseEvent *event)
+template<typename RO>
+void RamObjectListView<RO>::mouseReleaseEvent(QMouseEvent *event)
 {
     // Middle click for dragging view
     if (event->button() == Qt::MiddleButton)
@@ -167,7 +182,8 @@ void RamObjectListView::mouseReleaseEvent(QMouseEvent *event)
     QTableView::mouseReleaseEvent(event);
 }
 
-void RamObjectListView::resizeEvent(QResizeEvent *event)
+template<typename RO>
+void RamObjectListView<RO>::resizeEvent(QResizeEvent *event)
 {
     if (m_displayMode == List) this->setColumnWidth( 0, event->size().width() );
     // Incorrect draw after resize, fixed by resizing the first row...
@@ -178,7 +194,8 @@ void RamObjectListView::resizeEvent(QResizeEvent *event)
     else this->setRowHeight(0,30);*/
 }
 
-void RamObjectListView::showEvent(QShowEvent *event)
+template<typename RO>
+void RamObjectListView<RO>::showEvent(QShowEvent *event)
 {
     Q_UNUSED(event)
 
@@ -188,22 +205,26 @@ void RamObjectListView::showEvent(QShowEvent *event)
     m_layout = true;
 }
 
-void RamObjectListView::select(const QModelIndex &index)
+template<typename RO>
+void RamObjectListView<RO>::select(const QModelIndex &index)
 {
-    quintptr iptr = index.data(Qt::UserRole).toULongLong();
-    if (iptr == 0) return;
-    RamObject *obj = reinterpret_cast<RamObject*>( iptr) ;
+    RO obj = m_objectList->at(index);
     if (!obj) return;
     this->selectionModel()->select(index, QItemSelectionModel::ClearAndSelect);
     emit objectSelected(obj);
 }
 
-void RamObjectListView::selectShot(RamShot *shot)
+template<>
+void RamObjectListView<RamShot *>::select(const QModelIndex &index)
 {
-    select(shot);
+    RamShot *obj = qobject_cast<RamShot *>( m_objectList->at(index) );
+    if (!obj) return;
+    this->selectionModel()->select(index, QItemSelectionModel::ClearAndSelect);
+    emit objectSelected(obj);
 }
 
-void RamObjectListView::rowMoved(int logicalIndex, int oldVisualIndex, int newVisualIndex)
+template<typename RO>
+void RamObjectListView<RO>::rowMoved(int logicalIndex, int oldVisualIndex, int newVisualIndex)
 {
     Q_UNUSED(logicalIndex);
 
@@ -212,7 +233,7 @@ void RamObjectListView::rowMoved(int logicalIndex, int oldVisualIndex, int newVi
     //m_objectList->moveRow(QModelIndex(), oldVisualIndex, QModelIndex(), newVisualIndex);
 
     // Get the source model to move the row
-    RamObjectList *model = reinterpret_cast<RamObjectList*>(m_objectList->sourceModel());
+    QAbstractItemModel *model = m_objectList->sourceModel();
     // Convert the filtered index to the model index
     QModelIndex oldIndex = m_objectList->index(oldVisualIndex, 0);
     QModelIndex newIndex = m_objectList->index(newVisualIndex, 0);
@@ -224,18 +245,19 @@ void RamObjectListView::rowMoved(int logicalIndex, int oldVisualIndex, int newVi
     this->verticalHeader()->moveSection(newVisualIndex, oldVisualIndex);
 }
 
-void RamObjectListView::revealFolder(RamObject *obj)
+template<typename RO>
+void RamObjectListView<RO>::revealFolder(RamObject *obj)
 {
     obj->revealFolder();
 }
 
-void RamObjectListView::select(RamObject *o)
+template<typename RO>
+void RamObjectListView<RO>::select(RO o)
 {
     if (!m_objectList) return;
     for (int i = 0; i< m_objectList->rowCount(); i++)
     {
-        quintptr iptr = m_objectList->data( m_objectList->index(i, 0), Qt::UserRole).toULongLong();
-        RamObject *obj = reinterpret_cast<RamObject*>( iptr );
+        RO obj = m_objectList->at(i);
         if (obj->is(o))
         {
             QModelIndex index = m_objectList->index(i, 0);
@@ -249,14 +271,35 @@ void RamObjectListView::select(RamObject *o)
     }
 }
 
-void RamObjectListView::filter(RamObject *o)
+template<>
+void RamObjectListView<RamShot*>::select(RamShot *o)
+{
+    if (!m_objectList) return;
+    for (int i = 0; i< m_objectList->rowCount(); i++)
+    {
+        RamItem *obj = m_objectList->at(i);
+        if (obj->is(o))
+        {
+            QModelIndex index = m_objectList->index(i, 0);
+            this->setCurrentIndex( index );
+            this->select( index );
+            this->scrollTo(index, QAbstractItemView::PositionAtTop);
+            TimelineManager::instance()->setCurrentShot(o);
+            return;
+        }
+    }
+}
+
+template<typename RO>
+void RamObjectListView<RO>::filter(RO o)
 {
     if (!o) m_objectList->setFilterUuid("");
     else m_objectList->setFilterUuid(o->uuid());
     this->resizeRowsToContents();
 }
 
-void RamObjectListView::setupUi()
+template<typename RO>
+void RamObjectListView<RO>::setupUi()
 {
     this->setSelectionMode(QAbstractItemView::ExtendedSelection);
     this->setFrameShape(QFrame::NoFrame);
@@ -278,12 +321,13 @@ void RamObjectListView::setupUi()
     this->setItemDelegate( m_delegate );
 }
 
-void RamObjectListView::connectEvents()
+template<typename RO>
+void RamObjectListView<RO>::connectEvents()
 {
-    connect(m_delegate, &RamObjectDelegate::editObject, this, &RamObjectListView::editObject);
+    connect(m_delegate, &RamObjectDelegate<RO>::editObject, this, &RamObjectListView::editObject);
     connect(m_delegate, SIGNAL(editObject(RamObject*)), this, SLOT(select(RamObject*)));
-    connect(m_delegate, &RamObjectDelegate::historyObject, this, &RamObjectListView::historyObject);
-    connect(m_delegate, &RamObjectDelegate::folderObject, this, &RamObjectListView::revealFolder);
+    connect(m_delegate, &RamObjectDelegate<RO>::historyObject, this, &RamObjectListView::historyObject);
+    connect(m_delegate, &RamObjectDelegate<RO>::folderObject, this, &RamObjectListView::revealFolder);
     // SORT
     connect( this->verticalHeader(), SIGNAL(sectionMoved(int,int,int)), this, SLOT(rowMoved(int,int,int)));
     // SELECT
@@ -291,4 +335,3 @@ void RamObjectListView::connectEvents()
     connect(m_objectList, SIGNAL(aboutToFilter()), this->selectionModel(), SLOT(clear()));
     connect(TimelineManager::instance(), SIGNAL(currentShotChanged(RamShot*)), this, SLOT(selectShot(RamShot*)));
 }
-

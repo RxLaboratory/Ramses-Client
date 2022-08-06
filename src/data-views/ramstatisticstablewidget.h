@@ -6,7 +6,6 @@
 #include <QScrollBar>
 #include <QMouseEvent>
 
-#include "ramstatisticsdelegate.h"
 #include "data-models/ramstatisticstable.h"
 
 class RamStatisticsTableWidget : public QTableView

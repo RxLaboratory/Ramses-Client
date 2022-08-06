@@ -1,6 +1,8 @@
 #include "objectlistmanagerwidget.h"
 
-ObjectListManagerWidget::ObjectListManagerWidget(QString title, QIcon icon, QWidget *parent) :
+
+template<typename RO, typename ROF>
+ObjectListManagerWidget<RO,ROF>::ObjectListManagerWidget(QString title, QIcon icon, QWidget *parent) :
     QWidget(parent)
 {
     setupUi(title,icon);
@@ -9,7 +11,8 @@ ObjectListManagerWidget::ObjectListManagerWidget(QString title, QIcon icon, QWid
     clear();
 }
 
-ObjectListManagerWidget::ObjectListManagerWidget(RamObjectList *objectList, QString title, QIcon icon, QWidget *parent) :
+template<typename RO, typename ROF>
+ObjectListManagerWidget<RO,ROF>::ObjectListManagerWidget(RamObjectList<RO> *objectList, QString title, QIcon icon, QWidget *parent) :
     QWidget(parent)
 {
     setupUi(title,icon);
@@ -18,27 +21,28 @@ ObjectListManagerWidget::ObjectListManagerWidget(RamObjectList *objectList, QStr
     setList(objectList);
 }
 
-void ObjectListManagerWidget::setList(RamObjectList *objectList)
+template<typename RO, typename ROF>
+void ObjectListManagerWidget<RO,ROF>::setList(RamObjectList<RO> *objectList)
 {
-    while  (m_listConnection.count() > 0 ) disconnect( m_listConnection.takeLast() );
     m_listEditWidget->setList( objectList );
     if (!objectList) return;
     this->setEnabled(true);
 }
 
-void ObjectListManagerWidget::clear()
+template<typename RO, typename ROF>
+void ObjectListManagerWidget<RO,ROF>::clear()
 {
     this->setEnabled(false);
-    while  (m_listConnection.count() > 0 ) disconnect( m_listConnection.takeLast() );
     m_listEditWidget->clear();
 }
 
-void ObjectListManagerWidget::setupUi(QString title, QIcon icon)
+template<typename RO, typename ROF>
+void ObjectListManagerWidget<RO,ROF>::setupUi(QString title, QIcon icon)
 {
     QHBoxLayout *lay = new QHBoxLayout(this);
     lay->setContentsMargins(3,0,0,0);
 
-    m_listEditWidget = new ObjectListEditWidget( false, RamUser::Admin, this);
+    m_listEditWidget = new ObjectListEditWidget<RO,ROF>( false, RamUser::Admin, this);
     m_listEditWidget->setMaximumWidth(500);
     lay->addWidget(m_listEditWidget);
 
@@ -64,7 +68,8 @@ void ObjectListManagerWidget::setupUi(QString title, QIcon icon)
     ui_removeShortcut = new QShortcut(QKeySequence("Shift+X"),this);
 }
 
-void ObjectListManagerWidget::connectEvents()
+template<typename RO, typename ROF>
+void ObjectListManagerWidget<RO,ROF>::connectEvents()
 {
     connect( m_listEditWidget, SIGNAL(add()), this, SLOT(createObject()) );
     connect( ui_createAction, SIGNAL(triggered()), this, SLOT(createEditObject()) );
@@ -72,17 +77,20 @@ void ObjectListManagerWidget::connectEvents()
     connect( ui_removeShortcut, SIGNAL(activated()), m_listEditWidget, SLOT(removeSelectedObjects()));
 }
 
-QString ObjectListManagerWidget::currentFilter() const
+template<typename RO, typename ROF>
+QString ObjectListManagerWidget<RO,ROF>::currentFilter() const
 {
     return m_listEditWidget->currentFilterUuid();
 }
 
-QToolButton *ObjectListManagerWidget::menuButton()
+template<typename RO, typename ROF>
+QToolButton *ObjectListManagerWidget<RO,ROF>::menuButton()
 {
     return ui_itemButton;
 }
 
-void ObjectListManagerWidget::createEditObject()
+template<typename RO, typename ROF>
+void ObjectListManagerWidget<RO,ROF>::createEditObject()
 {
     RamObject *o = createObject();
     if (o) o->edit();

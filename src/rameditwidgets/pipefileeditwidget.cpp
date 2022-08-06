@@ -1,5 +1,7 @@
 #include "pipefileeditwidget.h"
 
+#include "ramses.h"
+
 PipeFileEditWidget::PipeFileEditWidget(RamPipeFile *pipeFile, QWidget *parent):
     ObjectEditWidget(pipeFile, parent)
 {
@@ -68,13 +70,13 @@ void PipeFileEditWidget::setupUi()
     QLabel *fileTypeLabel = new QLabel("File type", this);
     ui_mainFormLayout->addWidget(fileTypeLabel, 3, 0);
 
-    ui_fileTypeBox = new RamObjectListComboBox(Ramses::instance()->fileTypes(), this);
+    ui_fileTypeBox = new RamObjectListComboBox<RamFileType *>(Ramses::instance()->fileTypes(), this);
     ui_mainFormLayout->addWidget(ui_fileTypeBox, 3, 1);
 
     QLabel *colorSpaceLabel = new QLabel("Color space", this);
     ui_mainFormLayout->addWidget(colorSpaceLabel, 4, 0);
 
-    ui_colorSpaceBox = new RamObjectListComboBox(this);
+    ui_colorSpaceBox = new RamObjectListComboBox<RamObject*>(this);
     ui_mainFormLayout->addWidget(ui_colorSpaceBox, 4, 1);
 
     QLabel *customSettingsLabel = new QLabel("Custom settings", this);

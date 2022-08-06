@@ -1,8 +1,8 @@
 #include "timelinedelegate.h"
 
-#include "duqf-app/app-style.h"
 #include "ramasset.h"
 #include "ramassetgroup.h"
+#include "ramproject.h"
 #include "ramsequence.h"
 #include "ramshot.h"
 

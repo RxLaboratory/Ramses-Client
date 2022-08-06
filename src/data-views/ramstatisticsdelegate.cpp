@@ -1,7 +1,7 @@
 #include "ramstatisticsdelegate.h"
 
-#include "ramstatus.h"
 #include "ramstep.h"
+#include "duqf-app/app-style.h"
 
 RamStatisticsDelegate::RamStatisticsDelegate(QObject *parent) : QStyledItemDelegate(parent)
 {
@@ -45,7 +45,6 @@ void RamStatisticsDelegate::paint(QPainter *painter, const QStyleOptionViewItem 
 
     QBrush bgBrush(bgColor);
     QPen textPen(textColor);
-    QPen detailsPen(detailsColor);
 
     // Background
     QPainterPath path;

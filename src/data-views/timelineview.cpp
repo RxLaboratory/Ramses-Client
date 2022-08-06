@@ -2,6 +2,7 @@
 
 #include "ramproject.h"
 #include "timelinemanager.h"
+#include "ramses.h"
 
 TimelineView::TimelineView(QWidget *parent):
     QTableView(parent)
@@ -133,7 +134,7 @@ void TimelineView::select(const QModelIndex &index)
 {
     quintptr iptr = index.data(Qt::UserRole).toULongLong();
     if (iptr == 0) return;
-    RamObject *obj = reinterpret_cast<RamObject*>( iptr) ;
+    RamShot *obj = reinterpret_cast<RamShot*>( iptr) ;
     if (!obj) return;
     this->selectionModel()->select(index, QItemSelectionModel::ClearAndSelect);
     emit objectSelected(obj);
@@ -144,17 +145,17 @@ void TimelineView::selectShot(RamShot *shot)
     select(shot);
 }
 
-void TimelineView::revealFolder(RamObject *obj)
+void TimelineView::revealFolder(RamShot *obj)
 {
     obj->revealFolder();
 }
 
-void TimelineView::editObject(RamObject *obj)
+void TimelineView::editObject(RamShot *obj)
 {
     obj->edit();
 }
 
-void TimelineView::select(RamObject *o)
+void TimelineView::select(RamShot *o)
 {
     for (int i = 0; i< m_objectList->columnCount(); i++)
     {
@@ -265,8 +266,8 @@ void TimelineView::connectEvents()
     // Update list when project changes
     connect(Ramses::instance(), &Ramses::currentProjectChanged, this, &TimelineView::changeProject);
     // Delegate buttons
-    connect(m_delegate, &RamObjectDelegate::folderObject, this, &TimelineView::revealFolder);
-    connect(m_delegate, &RamObjectDelegate::editObject, this, &TimelineView::editObject);
+    connect(m_delegate, &TimelineDelegate::folderObject, this, &TimelineView::revealFolder);
+    connect(m_delegate, &TimelineDelegate::editObject, this, &TimelineView::editObject);
     connect(m_delegate, SIGNAL(editObject(RamObject*)), this, SLOT(select(RamObject*)));
     // Select
     connect(TimelineManager::instance(), SIGNAL(currentShotChanged(RamShot*)), this, SLOT(selectShot(RamShot*)));

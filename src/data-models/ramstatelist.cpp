@@ -1,7 +1,7 @@
 #include "ramstatelist.h"
 
 RamStateList::RamStateList(QObject *parent):
-    RamObjectList<RamState*>("STATES", "States", parent, true)
+    RamObjectList<RamState*>("STATES", "States", parent, RamObjectList<RamState*>::Table)
 {
     this->setObjectName( "RamStateList" );
 }

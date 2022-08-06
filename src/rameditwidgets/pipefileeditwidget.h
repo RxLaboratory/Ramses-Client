@@ -2,8 +2,8 @@
 #define PIPEFILEEDITWIDGET_H
 
 #include "objecteditwidget.h"
-#include "ramses.h"
 #include "ramobjectlistcombobox.h"
+#include "rampipefile.h"
 
 class PipeFileEditWidget : public ObjectEditWidget
 {
@@ -26,8 +26,8 @@ private:
     void setupUi();
     void connectEvents();
 
-    RamObjectListComboBox *ui_fileTypeBox;
-    RamObjectListComboBox *ui_colorSpaceBox;
+    RamObjectListComboBox<RamFileType *> *ui_fileTypeBox;
+    RamObjectListComboBox<RamObject*> *ui_colorSpaceBox;
     DuQFTextEdit *ui_customSettingsEdit;
 };
 

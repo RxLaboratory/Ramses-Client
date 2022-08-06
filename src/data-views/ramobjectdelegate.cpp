@@ -1,10 +1,11 @@
 #include "ramobjectdelegate.h"
 
+#include "ramstate.h"
+#include "ramtemplateassetgroup.h"
+
 #include "ramfiletype.h"
 #include "ramitem.h"
 #include "ramsequence.h"
-#include "ramses.h"
-#include "ramassetgroup.h"
 #include "ramshot.h"
 #include "ramstatus.h"
 #include "rampipefile.h"
@@ -236,7 +237,7 @@ void RamObjectDelegate<RO>::paintButtons(RO obj, QPainter *painter, PaintParamet
     // Folder button
     if ( obj->path() != "" )
     {
-        const QRect folderButtonRect( xpos, params.bgRect.top() +7, 12, 12 );
+        const QRect folderButtonRect( xpos, params->bgRect.top() +7, 12, 12 );
         drawButton(painter, folderButtonRect, m_folderIcon, m_folderButtonHover == index);
     }
 }
@@ -347,7 +348,7 @@ void RamObjectDelegate<RamStatus *>::paintDetails(RamStatus *obj, QPainter *pain
         RamUser *user = obj->assignedUser();
         if (user)
         {
-            QRect userRect(params.titleRect.left() - 16, params.titleRect.top() + 4, 8, 8);
+            QRect userRect(params->titleRect.left() - 16, params->titleRect.top() + 4, 8, 8);
             QPainterPath path;
             path.addEllipse(userRect);
             painter->fillPath(path, QBrush(user->color()));
@@ -410,7 +411,7 @@ void RamObjectDelegate<RamStatus *>::paintDetails(RamStatus *obj, QPainter *pain
             statusBrush.setColor( timeColor );
 
             statusRect.setWidth( statusWidth * ratio );
-            if (statusRect.right() > params.bgRect.right() - 5) statusRect.setRight( params.bgRect.right() - 5);
+            if (statusRect.right() > params->bgRect.right() - 5) statusRect.setRight( params->bgRect.right() - 5);
             QPainterPath timePath;
             timePath.addRoundedRect(statusRect, 3, 3);
             painter->fillPath(timePath, statusBrush);

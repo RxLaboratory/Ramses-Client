@@ -226,11 +226,9 @@ void RamScheduleDelegate::showDetails(bool s)
     m_details = s;
 }
 
-void RamScheduleDelegate::setEntry(RamStep *stepObj)
+void RamScheduleDelegate::setEntry(RamStep *step)
 {
     if (!m_indexPressed.isValid()) return;
-
-    RamStep *step = qobject_cast<RamStep*>( stepObj );
 
     // Get current entry if any
     RamScheduleEntry *entry = reinterpret_cast<RamScheduleEntry*>( m_indexPressed.data(Qt::UserRole).toULongLong() );
@@ -249,16 +247,14 @@ void RamScheduleDelegate::setEntry(RamStep *stepObj)
         if (  m_indexPressed.model()->headerData( m_indexPressed.row(), Qt::Vertical, Qt::UserRole+1 ).toBool() )
             date.setTime(QTime(12,0));
 
-        entry = new RamScheduleEntry( user, step, date );
+        entry = new RamScheduleEntry( user, date );
+        entry->setStep(step);
         user->schedule()->append(entry);
     }
-    else
+    else if (entry)
     {
         if (step)
-        {
             entry->setStep( step );
-            entry->update();
-        }
         else
             entry->remove();
     }
