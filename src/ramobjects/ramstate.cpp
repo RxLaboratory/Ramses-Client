@@ -1,6 +1,5 @@
 #include "ramstate.h"
 
-#include "ramses.h"
 #include "stateeditwidget.h"
 
 // STATIC //

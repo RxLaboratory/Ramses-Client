@@ -1,8 +1,7 @@
 #include "ramitem.h"
 
-#include "data-models/ramstepstatushistory.h"
+#include "ramnamemanager.h"
 #include "ramses.h"
-#include "ramstatus.h"
 
 // STATIC //
 
@@ -56,11 +55,11 @@ RamStepStatusHistory *RamItem::statusHistory(RamObject *stepObj)
 
 RamStatus *RamItem::setStatus(RamUser *user, RamState *state, RamStep *step, int completionRatio, QString comment, int version)
 {
-    RamStatus *newStatus = new RamStatus(user, state, step, this);
+    RamStatus *newStatus = new RamStatus(user, this, step );
+    newStatus->setState(state);
     if (completionRatio >= 0) newStatus->setCompletionRatio(completionRatio);
     if (comment != "") newStatus->setComment(comment);
     newStatus->setVersion(version);
-
 
     addStatus(newStatus);
 

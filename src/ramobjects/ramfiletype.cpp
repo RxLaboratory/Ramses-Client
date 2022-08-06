@@ -1,6 +1,5 @@
 #include "ramfiletype.h"
 
-#include "ramses.h"
 #include "filetypeeditwidget.h"
 
 // STATIC //

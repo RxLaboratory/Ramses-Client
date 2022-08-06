@@ -15,6 +15,7 @@ class AssetGroupEditWidget : public ObjectEditWidget
 
 public:
     explicit AssetGroupEditWidget(QWidget *parent = nullptr);
+    explicit AssetGroupEditWidget(RamAssetGroup *ag, QWidget *parent = nullptr);
 
     RamAssetGroup *assetGroup() const;
 
@@ -31,7 +32,7 @@ private:
     void connectEvents();
 
     DuQFFolderDisplayWidget *ui_folderWidget;
-    ObjectListEditWidget<RamItem*> *ui_assetsList;
+    ObjectListEditWidget<RamItem*, RamAssetGroup *> *ui_assetsList;
 };
 
 #endif // ASSETGROUPEDITWIDGET_H

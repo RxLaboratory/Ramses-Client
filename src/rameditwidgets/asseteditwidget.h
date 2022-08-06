@@ -15,6 +15,7 @@ class AssetEditWidget : public ObjectEditWidget
 
 public:
     AssetEditWidget(QWidget *parent = nullptr);
+    AssetEditWidget(RamAsset *asset, QWidget *parent = nullptr);
 
     RamAsset *asset() const;
 

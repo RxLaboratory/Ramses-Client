@@ -1,7 +1,6 @@
 #include "rampipe.h"
 
 #include "pipeeditwidget.h"
-#include "ramses.h"
 
 // STATIC
 

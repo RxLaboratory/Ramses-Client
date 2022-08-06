@@ -1,7 +1,7 @@
 #ifndef RAMSCHEDULECOMMENT_H
 #define RAMSCHEDULECOMMENT_H
 
-#include "ramobject.h"
+#include "ramproject.h"
 
 class RamProject;
 

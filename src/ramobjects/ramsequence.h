@@ -4,8 +4,8 @@
 #include "ramobject.h"
 
 template<typename RO> class RamObjectFilterModel;
-class RamProject;
-class RamShot;
+#include "ramproject.h"
+#include "ramshot.h"
 
 class RamSequence : public RamObject
 {

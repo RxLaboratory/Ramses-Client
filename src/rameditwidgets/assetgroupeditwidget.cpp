@@ -10,6 +10,14 @@ AssetGroupEditWidget::AssetGroupEditWidget(QWidget *parent) :
     connectEvents();
 }
 
+AssetGroupEditWidget::AssetGroupEditWidget(RamAssetGroup *ag, QWidget *parent) :
+    ObjectEditWidget(parent)
+{
+    setupUi();
+    connectEvents();
+    setObject(ag);
+}
+
 RamAssetGroup *AssetGroupEditWidget::assetGroup() const
 {
     return m_assetGroup;
@@ -48,8 +56,8 @@ void AssetGroupEditWidget::setupUi()
     ui_folderWidget = new DuQFFolderDisplayWidget(this);
     ui_mainLayout->insertWidget(1, ui_folderWidget);
 
-    ui_assetsList = new ObjectListEditWidget<RamItem*>(true, RamUser::ProjectAdmin, this);
-    ui_assetsList->setEditMode(ObjectListEditWidget<RamItem*>::RemoveObjects);
+    ui_assetsList = new ObjectListEditWidget<RamItem*, RamAssetGroup *>(true, RamUser::ProjectAdmin, this);
+    ui_assetsList->setEditMode(ObjectListEditWidget<RamItem*, RamAssetGroup *>::RemoveObjects);
     ui_assetsList->setTitle("Assets");
     ui_mainLayout->addWidget(ui_assetsList);
 }

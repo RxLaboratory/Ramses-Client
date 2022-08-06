@@ -1,6 +1,8 @@
 #include "ramproject.h"
 
+#include "ramsequence.h"
 #include "ramses.h"
+#include "rampipe.h"
 #include "projecteditwidget.h"
 
 // STATIC

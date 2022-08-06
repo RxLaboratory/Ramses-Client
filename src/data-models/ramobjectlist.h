@@ -58,6 +58,8 @@ public:
     RO fromName(QString shortName, QString name = "") const;
     RO at(int i) const;
     RO at(QModelIndex i) const;
+    RO last() const;
+    RO first() const;
 
     QList<RO> toList();
 

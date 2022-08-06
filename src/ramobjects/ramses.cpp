@@ -215,10 +215,14 @@ RamProject *Ramses::currentProject() const
 
 void Ramses::setCurrentProject(RamProject *project)
 {
-    if ( m_currentProject ) if ( m_currentProject->is(project) ) return;
+    if ( m_currentProject )
+    {
+        if ( m_currentProject->is(project) ) return;
+    }
+
     m_currentProject = project;
 
-    if (m_currentUser)
+    if (m_currentUser && m_currentProject)
     {
         QSettings *uSettings = m_currentUser->settings();
         uSettings->setValue("ramses/currentProject", m_currentProject->uuid() );
@@ -260,13 +264,13 @@ void Ramses::refresh()
 
     // (Re)Load admin data
 
-    m_users->reloadData();
-    m_templateSteps->reloadData();
-    m_templateAssetGroups->reloadData();
-    m_states->reloadData();
-    m_fileTypes->reloadData();
-    m_applications->reloadData();
-    m_projects->reloadData();
+    m_users->reload();
+    m_templateSteps->reload();
+    m_templateAssetGroups->reload();
+    m_states->reload();
+    m_fileTypes->reload();
+    m_applications->reload();
+    m_projects->reload();
 }
 
 // PROTECTED

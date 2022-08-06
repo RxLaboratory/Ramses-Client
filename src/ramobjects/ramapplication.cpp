@@ -1,6 +1,5 @@
 #include "ramapplication.h"
 
-#include "ramses.h"
 #include "applicationeditwidget.h"
 
 // STATIC //

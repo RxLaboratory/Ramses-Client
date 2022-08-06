@@ -4,7 +4,7 @@
 #include "ramobject.h"
 
 template<typename RO> class RamObjectList;
-class RamFileType;
+#include "ramfiletype.h"
 
 class RamApplication : public RamObject
 {

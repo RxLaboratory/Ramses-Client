@@ -313,6 +313,18 @@ RO RamObjectList<RO>::at(QModelIndex i) const
 }
 
 template<typename RO>
+RO RamObjectList<RO>::last() const
+{
+    return at(rowCount() - 1);
+}
+
+template<typename RO>
+RO RamObjectList<RO>::first() const
+{
+    return at(0);
+}
+
+template<typename RO>
 QList<RO> RamObjectList<RO>::toList()
 {
     return m_objectList;

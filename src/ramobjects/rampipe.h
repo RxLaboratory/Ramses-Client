@@ -6,7 +6,7 @@
 template<typename RO> class RamObjectList;
 class RamProject;
 class RamStep;
-class RamPipeFile;
+#include "rampipefile.h"
 
 class RamPipe : public RamObject
 {

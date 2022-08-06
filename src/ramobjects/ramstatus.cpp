@@ -1,6 +1,7 @@
 ﻿#include "ramstatus.h"
 
-#include "ramitem.h"
+#include "ramshot.h"
+#include "ramasset.h"
 #include "ramworkingfolder.h"
 #include "statuseditwidget.h"
 #include "ramses.h"
@@ -338,7 +339,7 @@ float RamStatus::estimation(int difficulty) const
         {
             // count assets
             int numAssets = 0;
-            for (int i = 0; i < shot->assets()->count(); i++)
+            for (int i = 0; i < shot->assets()->rowCount(); i++)
             {
                 RamAsset *asset = qobject_cast<RamAsset*>( shot->assets()->at(i) );
                 if (asset->assetGroup()->is(ag)) numAssets++;

@@ -1,8 +1,6 @@
 #include "ramassetgroup.h"
 
-#include "ramses.h"
 #include "assetgroupeditwidget.h"
-#include "data-models/ramobjectfiltermodel.h"
 
 // STATIC //
 
@@ -71,7 +69,6 @@ RamAssetGroup::RamAssetGroup(QString uuid):
 
 QString RamAssetGroup::folderPath() const
 {
-    if (isTemplate()) return "";
     return m_project->path(RamObject::AssetsFolder) + "/" + name();
 }
 

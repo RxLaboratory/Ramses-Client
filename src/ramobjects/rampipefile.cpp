@@ -1,7 +1,5 @@
 #include "rampipefile.h"
 
-#include "ramfiletype.h"
-#include "ramses.h"
 #include "pipefileeditwidget.h"
 
 // STATIC //

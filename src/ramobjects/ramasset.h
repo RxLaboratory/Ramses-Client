@@ -2,9 +2,7 @@
 #define RAMASSET_H
 
 #include "ramitem.h"
-
-class RamProject;
-class RamAssetGroup;
+#include "ramassetgroup.h"
 
 class RamAsset : public RamItem
 {

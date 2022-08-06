@@ -3,9 +3,8 @@
 
 #include "ramstep.h"
 
-class RamStepStatusHistory;
-class RamStatus;
-template<typename RO> class RamObjectList;
+#include "data-models/ramstepstatushistory.h"
+#include "ramstatus.h"
 
 class RamState;
 

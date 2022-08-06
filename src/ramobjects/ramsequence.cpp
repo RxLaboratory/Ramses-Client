@@ -1,7 +1,5 @@
 #include "ramsequence.h"
 
-#include "ramproject.h"
-#include "ramshot.h"
 #include "sequenceeditwidget.h"
 
 // STATIC //

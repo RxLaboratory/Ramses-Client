@@ -9,6 +9,14 @@ AssetEditWidget::AssetEditWidget(QWidget *parent) :
     connectEvents();
 }
 
+AssetEditWidget::AssetEditWidget(RamAsset *asset, QWidget *parent) :
+    ObjectEditWidget(parent)
+{
+    setupUi();
+    connectEvents();
+    setObject(asset);
+}
+
 RamAsset *AssetEditWidget::asset() const
 {
     return m_asset;

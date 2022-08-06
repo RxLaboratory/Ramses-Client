@@ -1,9 +1,6 @@
 #include "ramschedulecomment.h"
 
-#include "ramproject.h"
-
 // STATIC //
-
 
 RamScheduleComment *RamScheduleComment::getObject(QString uuid, bool constructNew)
 {

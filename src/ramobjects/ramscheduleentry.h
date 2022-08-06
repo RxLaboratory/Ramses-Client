@@ -3,8 +3,8 @@
 
 #include "ramobject.h"
 
-class RamUser;
-class RamStep;
+#include "ramstep.h"
+#include "ramuser.h"
 
 class RamScheduleEntry : public RamObject
 {

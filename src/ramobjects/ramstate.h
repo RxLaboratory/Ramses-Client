@@ -3,8 +3,6 @@
 
 #include "ramobject.h"
 
-#include <QColor>
-
 class RamState : public RamObject
 {
     Q_OBJECT

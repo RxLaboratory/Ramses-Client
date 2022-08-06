@@ -15,6 +15,7 @@ class ApplicationEditWidget : public ObjectEditWidget
 
 public:
     explicit ApplicationEditWidget(QWidget *parent = nullptr);
+    explicit ApplicationEditWidget(RamApplication *app, QWidget *parent = nullptr);
 
     RamApplication *application() const;
 
@@ -33,9 +34,9 @@ private:
     void connectEvents();
 
     DuQFFolderSelectorWidget *m_folderSelector;
-    ObjectListEditWidget<RamFileType*> *m_nativeList;
-    ObjectListEditWidget<RamFileType*> *m_importList;
-    ObjectListEditWidget<RamFileType*> *m_exportList;
+    ObjectListEditWidget<RamFileType*, int> *m_nativeList;
+    ObjectListEditWidget<RamFileType*, int> *m_importList;
+    ObjectListEditWidget<RamFileType*, int> *m_exportList;
 };
 
 #endif // APPLICATIONEDITWIDGET_H

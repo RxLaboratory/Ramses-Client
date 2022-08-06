@@ -3,8 +3,8 @@
 
 #include "ramtemplateassetgroup.h"
 
-class RamProject;
-template<typename RO> class RamObjectFilterModel;
+#include "ramproject.h"
+#include "data-models/ramobjectfiltermodel.h"
 class RamAsset;
 
 class RamAssetGroup : public RamTemplateAssetGroup

@@ -1,6 +1,9 @@
 #include "ramuser.h"
 
+#include "data-models/ramitemtable.h"
+#include "ramitem.h"
 #include "ramses.h"
+#include "ramscheduleentry.h"
 #include "usereditwidget.h"
 #include "datacrypto.h"
 #include "ramdatainterface/dbinterface.h"
@@ -88,7 +91,7 @@ bool RamUser::isStepAssigned(RamStep *step) const
     if (step->type() != RamStep::ShotProduction && step->type() != RamStep::AssetProduction) return false;
 
     // Check in status
-    RamObjectList<RamItem*> *items;
+    RamItemTable *items;
     if (step->type() == RamStep::ShotProduction) items = step->project()->shots();
     else items = step->project()->assets();
 

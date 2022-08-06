@@ -4,9 +4,8 @@
 #include <QObject>
 
 #include "ramobject.h"
-
-class RamProject;
-class RamFileType;
+#include "ramproject.h"
+#include "ramfiletype.h"
 
 class RamPipeFile : public RamObject
 {
