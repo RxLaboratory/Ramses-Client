@@ -83,20 +83,20 @@ void ApplicationEditWidget::setupUi()
 
     QTabWidget *tabWidget = new QTabWidget(this);
 
-    m_nativeList = new ObjectListEditWidget<RamFileType*, int>(true, RamUser::Admin);
-    m_nativeList->setEditMode(ObjectListEditWidget<RamFileType*, int>::UnassignObjects);
+    m_nativeList = new ObjectListEditWidget<RamFileType*,int>(true, RamUser::Admin);
+    m_nativeList->setEditMode(ObjectListEditWidget<RamFileType*,int>::UnassignObjects);
     m_nativeList->setTitle("Native file types");
     m_nativeList->setAssignList(Ramses::instance()->fileTypes());
     tabWidget->addTab(m_nativeList, QIcon(":/icons/files"), "Native");
 
-    m_importList = new ObjectListEditWidget<RamFileType*, int>(true, RamUser::Admin);
-    m_importList->setEditMode(ObjectListEditWidget<RamFileType*, int>::UnassignObjects);
+    m_importList = new ObjectListEditWidget<RamFileType*,int>(true, RamUser::Admin);
+    m_importList->setEditMode(ObjectListEditWidget<RamFileType*,int>::UnassignObjects);
     m_importList->setTitle("Imports");
     m_importList->setAssignList(Ramses::instance()->fileTypes());
     tabWidget->addTab(m_importList, QIcon(":/icons/files"), "Import");
 
-    m_exportList = new ObjectListEditWidget<RamFileType*, int>(true, RamUser::Admin);
-    m_exportList->setEditMode(ObjectListEditWidget<RamFileType*, int>::UnassignObjects);
+    m_exportList = new ObjectListEditWidget<RamFileType*,int>(true, RamUser::Admin);
+    m_exportList->setEditMode(ObjectListEditWidget<RamFileType*,int>::UnassignObjects);
     m_exportList->setTitle("Exports");
     m_exportList->setAssignList(Ramses::instance()->fileTypes());
     tabWidget->addTab(m_exportList, QIcon(":/icons/files"), "Export");

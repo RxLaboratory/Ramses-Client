@@ -20,7 +20,7 @@ RamItem *AssetListManagerWidget::createObject()
     RamProject *project = Ramses::instance()->currentProject();
     if (!project) return nullptr;
     if (project->assetGroups()->rowCount() == 0 ) return nullptr;
-    RamAssetGroup *ag = RamAssetGroup::getObject( currentFilter() );
+    RamAssetGroup *ag = RamAssetGroup::getObject( currentFilterUuid() );
     if (!ag) ag = project->assetGroups()->at(0);
     if (!ag) return nullptr;
 

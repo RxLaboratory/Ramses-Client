@@ -9,16 +9,17 @@ class PipeFileEditWidget : public ObjectEditWidget
 {
     Q_OBJECT
 public:
-    PipeFileEditWidget(RamPipeFile *pipeFile = nullptr, QWidget *parent = nullptr);
+    PipeFileEditWidget(QWidget *parent = nullptr);
+    PipeFileEditWidget(RamPipeFile *pipeFile, QWidget *parent = nullptr);
 
-public slots:
-    void setObject(RamObject *obj) override;
+    RamPipeFile *pipeFile() const;
 
-protected slots:
-    void update() override;
+protected:
+    virtual void reInit(RamObject *o) override;
 
 private slots:
-    void setFileType();
+    void setFileType(RamFileType *ft);
+    void setCustomSettings();
 
 private:
     RamPipeFile *m_pipeFile = nullptr;
@@ -27,7 +28,7 @@ private:
     void connectEvents();
 
     RamObjectListComboBox<RamFileType *> *ui_fileTypeBox;
-    RamObjectListComboBox<RamObject*> *ui_colorSpaceBox;
+    //RamObjectListComboBox<RamObject*> *ui_colorSpaceBox;
     DuQFTextEdit *ui_customSettingsEdit;
 };
 

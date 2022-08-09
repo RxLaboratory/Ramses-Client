@@ -5,13 +5,12 @@
 #include <QSpinBox>
 
 #include "objecteditwidget.h"
-#include "ramses.h"
-#include "statushistorywidget.h"
-#include "ramobjectlistcombobox.h"
-#include "objectlisteditwidget.h"
 #include "duqf-widgets/duqffolderdisplaywidget.h"
 #include "duqf-widgets/autoselectdoublespinbox.h"
 #include "duqf-widgets/autoselectspinbox.h"
+#include "objectlisteditwidget.h"
+#include "ramobjectlistcombobox.h"
+#include "ramshot.h"
 
 class ShotEditWidget : public ObjectEditWidget
 {
@@ -20,13 +19,14 @@ public:
     ShotEditWidget(QWidget *parent = nullptr);
     ShotEditWidget(RamShot *shot, QWidget *parent = nullptr);
 
-public slots:
-    void setObject(RamObject *obj) override;
+    RamShot *shot();
 
-protected slots:
-    void update() override;
+protected:
+    virtual void reInit(RamObject *o) override;
 
 private slots:
+    void setDuration();
+    void setSequence(RamSequence *seq);
     void framesChanged();
     void secondsChanged();
 
@@ -39,8 +39,8 @@ private:
     DuQFFolderDisplayWidget *ui_folderWidget;
     AutoSelectDoubleSpinBox *ui_secondsBox;
     AutoSelectSpinBox *ui_framesBox;
-    RamObjectListComboBox *ui_sequencesBox;
-    ObjectListEditWidget *ui_assetList;
+    RamObjectListComboBox<RamSequence*> *ui_sequencesBox;
+    ObjectListEditWidget<RamItem*, RamAssetGroup*> *ui_assetList;
 };
 
 #endif // SHOTEDITWIDGET_H

@@ -22,7 +22,9 @@ public:
     RamPipe(RamStep *output, RamStep *input);
 
     RamStep *outputStep() const;
+    void setOutputStep(RamStep *outputStep);
     RamStep *inputStep() const;
+    void setInputStep(RamStep *inputStep);
 
     RamProject *project() const;
 
@@ -41,9 +43,6 @@ private slots:
 private:
     void construct();
     void connectEvents();
-
-    void setOutputStep(RamStep *outputStep);
-    void setInputStep(RamStep *inputStep);
 
     RamObjectList<RamPipeFile*> *m_pipeFiles;
 };

@@ -1,25 +1,28 @@
 #include "sequencelistmanagerwidget.h"
 
+#include "ramsequence.h"
+#include "ramses.h"
+
 SequenceListManagerWidget::SequenceListManagerWidget(QWidget *parent):
-    ObjectListManagerWidget(
+    ObjectListManagerWidget<RamSequence*,RamProject*>(
         "Sequences",
         QIcon(":icons/sequence"),
         parent)
 {
     changeProject(Ramses::instance()->currentProject());
     connect(Ramses::instance(), SIGNAL(currentProjectChanged(RamProject*)), this, SLOT(changeProject(RamProject*)));
-    m_listEditWidget->setEditMode(ObjectListEditWidget::RemoveObjects);
+    m_listEditWidget->setEditMode(ObjectListEditWidget<RamSequence*,RamProject*>::RemoveObjects);
     m_listEditWidget->setSortable(true);
 }
 
-RamObject *SequenceListManagerWidget::createObject()
+RamSequence *SequenceListManagerWidget::createObject()
 {
     RamProject *project = Ramses::instance()->currentProject();
     if (!project) return nullptr;
     RamSequence *s = new RamSequence(
                 "NEW",
-                project,
-                "New Sequence");
+                "New Sequence",
+                project);
     project->sequences()->append(s);
     s->edit();
     return s;

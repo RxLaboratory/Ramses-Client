@@ -1,4 +1,5 @@
 #include "shoteditwidget.h"
+#include "ramproject.h"
 
 ShotEditWidget::ShotEditWidget(QWidget *parent) :
     ObjectEditWidget(parent)
@@ -15,59 +16,50 @@ ShotEditWidget::ShotEditWidget(RamShot *shot, QWidget *parent) :
     setObject(shot);
 }
 
-void ShotEditWidget::setObject(RamObject *obj)
+RamShot *ShotEditWidget::shot()
 {
-    this->setEnabled(false);
-    RamShot *shot = qobject_cast<RamShot*>(obj);
-
-    ObjectEditWidget::setObject(shot);
-    m_shot = shot;
-
-    QSignalBlocker b1(ui_framesBox);
-    QSignalBlocker b2(ui_secondsBox);
-    QSignalBlocker b3(ui_sequencesBox);
-    QSignalBlocker b4(ui_folderWidget);
-
-    //Reset values
-    ui_framesBox->setValue(0);
-    ui_secondsBox->setValue(0);
-    ui_folderWidget->setPath("");
-    ui_sequencesBox->setCurrentIndex(-1);
-
-    if (!shot) return;
-
-    ui_secondsBox->setValue(m_shot->duration());
-    secondsChanged();
-    ui_folderWidget->setPath( shot->path() );
-
-    // Set sequence
-    RamProject *project = shot->project();
-    ui_sequencesBox->setList(project->sequences());
-    ui_sequencesBox->setObject( m_shot->sequence() );
-
-    // Set assets
-    ui_assetList->setList( m_shot->assets() );
-    ui_assetList->setFilterList( project->assetGroups() );
-    ui_assetList->setAssignList( project->assets() );
-
-    this->setEnabled(Ramses::instance()->isLead());
+    return m_shot;
 }
 
-void ShotEditWidget::update()
+void ShotEditWidget::reInit(RamObject *o)
+{
+    m_shot = qobject_cast<RamShot*>(o);
+    if (m_shot)
+    {
+        ui_secondsBox->setValue(m_shot->duration());
+        secondsChanged();
+        ui_folderWidget->setPath( m_shot->path() );
+
+        // Set sequence
+        RamProject *project = m_shot->project();
+        ui_sequencesBox->setList(project->sequences());
+        ui_sequencesBox->setObject( m_shot->sequence() );
+
+        // Set assets
+        ui_assetList->setList( m_shot->assets() );
+        ui_assetList->setFilterList( project->assetGroups() );
+        ui_assetList->setAssignList( project->assets() );
+    }
+    else
+    {
+        //Reset values
+        ui_framesBox->setValue(0);
+        ui_secondsBox->setValue(0);
+        ui_folderWidget->setPath("");
+        ui_sequencesBox->setCurrentIndex(-1);
+    }
+}
+
+void ShotEditWidget::setDuration()
+{
+    if(!m_shot) return;
+    m_shot->setDuration(ui_secondsBox->value());
+}
+
+void ShotEditWidget::setSequence(RamSequence *seq)
 {
     if (!m_shot) return;
-
-    if (!checkInput()) return;
-
-    updating = true;
-
-    m_shot->setDuration(ui_secondsBox->value());
-    RamSequence *seq = qobject_cast<RamSequence*>( ui_sequencesBox->currentObject() );
     m_shot->setSequence(seq);
-
-    ObjectEditWidget::update();
-
-    updating = false;
 }
 
 void ShotEditWidget::framesChanged()
@@ -109,14 +101,14 @@ void ShotEditWidget::setupUi()
     QLabel *seqLabel = new QLabel("Sequence", this);
     ui_mainFormLayout->addWidget(seqLabel, 5,0);
 
-    ui_sequencesBox = new RamObjectListComboBox(this);
+    ui_sequencesBox = new RamObjectListComboBox<RamSequence*>(this);
     ui_mainFormLayout->addWidget(ui_sequencesBox, 5, 1);
 
     ui_folderWidget = new DuQFFolderDisplayWidget(this);
     ui_mainLayout->addWidget( ui_folderWidget);
 
-    ui_assetList = new ObjectListEditWidget(true, RamUser::Lead, this);
-    ui_assetList->setEditMode(ObjectListEditWidget::UnassignObjects);
+    ui_assetList = new ObjectListEditWidget<RamItem*, RamAssetGroup *>(true, RamUser::Lead, this);
+    ui_assetList->setEditMode(ObjectListEditWidget<RamItem*, RamAssetGroup *>::UnassignObjects);
     ui_assetList->setEditable(true);
     ui_assetList->setSearchable(true);
     ui_assetList->setTitle("Assets");
@@ -127,12 +119,8 @@ void ShotEditWidget::setupUi()
 void ShotEditWidget::connectEvents()
 {
     connect(ui_secondsBox, SIGNAL(editingFinished()), this, SLOT(secondsChanged()));
-    connect(ui_secondsBox, SIGNAL(editingFinished()), this, SLOT(update()));
+    connect(ui_secondsBox, SIGNAL(editingFinished()), this, SLOT(setDuration()));
     connect(ui_framesBox, SIGNAL(editingFinished()), this, SLOT(framesChanged()));
-    connect(ui_framesBox, SIGNAL(editingFinished()), this, SLOT(update()));
-    connect(ui_sequencesBox, SIGNAL(currentIndexChanged(int)), this, SLOT(update()));
-
-    monitorDbQuery("updateShot");
-    monitorDbQuery("assignAsset");
-    monitorDbQuery("unassignAsset");
+    connect(ui_framesBox, SIGNAL(editingFinished()), this, SLOT(setDuration()));
+    connect(ui_sequencesBox, SIGNAL(currentObjectChanged(RamSequence*)), this, SLOT(setSequence(RamSequence*)));
 }

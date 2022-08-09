@@ -1,16 +1,18 @@
 #include "filetypelistmanagerwidget.h"
 
+#include "ramses.h"
+
 FileTypeListManagerWidget::FileTypeListManagerWidget(QWidget *parent) :
-    ObjectListManagerWidget(
+    ObjectListManagerWidget<RamFileType*, int>(
         Ramses::instance()->fileTypes(),
         "File types",
         QIcon(":icons/file"),
         parent )
 {
-    m_listEditWidget->setEditMode(ObjectListEditWidget::RemoveObjects);
+    m_listEditWidget->setEditMode(ObjectListEditWidget<RamFileType*, int>::RemoveObjects);
 }
 
-RamObject *FileTypeListManagerWidget::createObject()
+RamFileType *FileTypeListManagerWidget::createObject()
 {
     RamFileType *ft = new RamFileType(
                 "NEW",

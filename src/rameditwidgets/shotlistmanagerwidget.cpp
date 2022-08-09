@@ -1,14 +1,19 @@
 #include "shotlistmanagerwidget.h"
 
+#include "ramses.h"
+#include "ramsequence.h"
+
+#include "shotscreationdialog.h"
+
 ShotListManagerWidget::ShotListManagerWidget(QWidget *parent):
-    ObjectListManagerWidget(
+    ObjectListManagerWidget<RamItem*, RamSequence*>(
         "Shots",
         QIcon(":icons/shot"),
         parent)
 {
     changeProject(Ramses::instance()->currentProject());
     connect(Ramses::instance(), SIGNAL(currentProjectChanged(RamProject*)), this, SLOT(changeProject(RamProject*)));
-    m_listEditWidget->setEditMode(ObjectListEditWidget::RemoveObjects);
+    m_listEditWidget->setEditMode(ObjectListEditWidget<RamItem*, RamSequence*>::RemoveObjects);
     m_listEditWidget->setSortable(true);
 
     // Batch create
@@ -29,19 +34,19 @@ ShotListManagerWidget::ShotListManagerWidget(QWidget *parent):
 
 }
 
-RamObject *ShotListManagerWidget::createObject()
+RamShot *ShotListManagerWidget::createObject()
 {
     RamProject *project = Ramses::instance()->currentProject();
     if (!project) return nullptr;
-    if (project->sequences()->count() == 0 ) return nullptr;
-    RamSequence *seq = RamSequence::getObject( currentFilter() );
-    if (!seq) seq = qobject_cast<RamSequence*>( project->sequences()->at(0) );
+    if (project->sequences()->rowCount() == 0 ) return nullptr;
+    RamSequence *seq = currentFilter();
+    if (!seq) seq = project->sequences()->first();
     if(!seq) return nullptr;
 
     RamShot *shot = new RamShot(
                 "NEW",
-                seq,
-                "New Shot"
+                "New Shot",
+                seq
                 );
 
     project->shots()->append(shot);
@@ -62,8 +67,8 @@ void ShotListManagerWidget::batchCreate()
 {
     RamProject *project = Ramses::instance()->currentProject();
     if (!project) return;
-    if (project->sequences()->count() == 0 ) return;
-    RamSequence *seq = RamSequence::getObject( currentFilter() );
+    if (project->sequences()->rowCount() == 0 ) return;
+    RamSequence *seq = RamSequence::getObject( currentFilterUuid() );
     if (!seq) seq = qobject_cast<RamSequence*>( project->sequences()->at(0) );
     if(!seq) return;
 

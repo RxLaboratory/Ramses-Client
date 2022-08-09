@@ -2,17 +2,15 @@
 #define SHOTLISTMANAGERWIDGET_H
 
 #include "objectlistmanagerwidget.h"
-#include "shoteditwidget.h"
-#include "shotscreationdialog.h"
 
-class ShotListManagerWidget : public ObjectListManagerWidget
+class ShotListManagerWidget : public ObjectListManagerWidget<RamItem*, RamSequence*>
 {
     Q_OBJECT
 public:
     ShotListManagerWidget(QWidget *parent = nullptr);
 
 protected slots:
-    RamObject *createObject() override;
+    RamShot *createObject() override;
 
 private slots:
     void changeProject(RamProject *project);

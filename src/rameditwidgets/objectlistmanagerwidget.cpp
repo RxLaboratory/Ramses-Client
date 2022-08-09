@@ -78,9 +78,15 @@ void ObjectListManagerWidget<RO,ROF>::connectEvents()
 }
 
 template<typename RO, typename ROF>
-QString ObjectListManagerWidget<RO,ROF>::currentFilter() const
+QString ObjectListManagerWidget<RO,ROF>::currentFilterUuid() const
 {
     return m_listEditWidget->currentFilterUuid();
+}
+
+template<typename RO, typename ROF>
+ROF ObjectListManagerWidget<RO, ROF>::currentFilter() const
+{
+    return m_listEditWidget->currentFilter();
 }
 
 template<typename RO, typename ROF>

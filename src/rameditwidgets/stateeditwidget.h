@@ -3,10 +3,10 @@
 
 #include <QColorDialog>
 
-#include "ramses.h"
 #include "objecteditwidget.h"
 #include "duqf-widgets/duqfspinbox.h"
 #include "duqf-widgets/duqfcolorselector.h"
+#include "ramstate.h"
 
 class StateEditWidget : public ObjectEditWidget
 {
@@ -18,22 +18,21 @@ public:
 
     RamState *state() const;
 
-public slots:
-    void setObject(RamObject *obj) override;
+protected:
+    virtual void reInit(RamObject *o) override;
 
-protected slots:
-    void update() override;
+private slots:
+    void setCompletion(int c);
+    void setColor(QColor c);
 
 private:
-    RamState *_state;
+    RamState *m_state;
 
     void setupUi();
     void connectEvents();
 
     DuQFColorSelector *ui_colorSelector;
-    DuQFSpinBox *completionSpinBox;
-    QMetaObject::Connection _currentStateConnection;
-
+    DuQFSpinBox *ui_completionSpinBox;
 };
 
 #endif // STATEEDITWIDGET_H

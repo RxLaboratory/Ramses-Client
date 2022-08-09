@@ -13,12 +13,13 @@ RamItemTable *RamItemTable::getObject(QString uuid, bool constructNew)
 
 // PUBLIC //
 
-RamItemTable::RamItemTable(QString shortName, QString name, RamObjectList<RamStep *> *steps, QObject *parent, bool isVirtual):
-    RamObjectList<RamItem*>(shortName, name, parent, isVirtual)
+RamItemTable::RamItemTable(QString shortName, QString name, RamObjectList<RamStep *> *steps, QObject *parent, DataListMode mode):
+    RamObjectList<RamItem*>(shortName, name, parent, mode)
 {
     construct();
     m_steps = steps;
-    this->insertData("steps", steps->uuid());
+    if (mode == Object)
+        this->insertData("steps", steps->uuid());
     connectEvents();
 }
 

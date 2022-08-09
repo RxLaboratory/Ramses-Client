@@ -2,7 +2,6 @@
 #define SEQUENCEEDITWIDGET_H
 
 #include "objecteditwidget.h"
-#include "ramses.h"
 #include "objectlisteditwidget.h"
 #include "duqf-widgets/duqfcolorselector.h"
 
@@ -15,17 +14,15 @@ class SequenceEditWidget : public ObjectEditWidget
 
 public:
     explicit SequenceEditWidget(QWidget *parent = nullptr);
-    explicit SequenceEditWidget(RamSequence *s = nullptr, QWidget *parent = nullptr);
+    explicit SequenceEditWidget(RamSequence *s, QWidget *parent = nullptr);
 
     RamSequence *sequence() const;
 
-public slots:
-    void setObject(RamObject *obj) override;
-
-protected slots:
-    void update() override;
+protected:
+    virtual void reInit(RamObject *o) override;
 
 private slots:
+    void setColor(QColor c);
     void createShot();
 
 private:
@@ -36,7 +33,7 @@ private:
 
     DuQFColorSelector *ui_colorSelector;
 
-    ObjectListEditWidget *ui_shotsList;
+    ObjectListEditWidget<RamItem*, RamSequence*> *ui_shotsList;
 };
 
 #endif // SEQUENCEEDITWIDGET_H

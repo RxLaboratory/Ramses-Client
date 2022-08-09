@@ -2,16 +2,15 @@
 #define SEQUENCELISTMANAGERWIDGET_H
 
 #include "objectlistmanagerwidget.h"
-#include "sequenceeditwidget.h"
 
-class SequenceListManagerWidget : public ObjectListManagerWidget
+class SequenceListManagerWidget : public ObjectListManagerWidget<RamSequence*,RamProject*>
 {
     Q_OBJECT
 public:
     SequenceListManagerWidget(QWidget *parent = nullptr);
 
 protected slots:
-    RamObject *createObject() override;
+    RamSequence *createObject() override;
 
 private slots:
     void changeProject(RamProject *project);

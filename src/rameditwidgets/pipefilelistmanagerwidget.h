@@ -2,16 +2,16 @@
 #define PIPEFILELISTMANAGERWIDGET_H
 
 #include "objectlistmanagerwidget.h"
-#include "pipefileeditwidget.h"
+#include "rampipefile.h"
 
-class PipeFileListManagerWidget : public ObjectListManagerWidget
+class PipeFileListManagerWidget : public ObjectListManagerWidget<RamPipeFile *, RamProject*>
 {
     Q_OBJECT
 public:
     PipeFileListManagerWidget(QWidget *parent = nullptr);
 
 protected slots:
-    RamObject *createObject() override;
+    RamPipeFile *createObject() override;
 
 private slots:
     void changeProject(RamProject *project);

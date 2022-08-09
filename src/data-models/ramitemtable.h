@@ -19,7 +19,7 @@ public:
 
     // METHODS //
 
-    RamItemTable(QString shortName, QString name, RamObjectList<RamStep *> *steps, QObject *parent = nullptr, bool isVirtual = false);
+    RamItemTable(QString shortName, QString name, RamObjectList<RamStep *> *steps, QObject *parent = nullptr, DataListMode mode = Object);
 
     // MODEL REIMPLEMENTATION
     int columnCount(const QModelIndex &parent = QModelIndex()) const override;

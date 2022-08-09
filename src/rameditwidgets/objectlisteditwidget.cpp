@@ -44,7 +44,7 @@ void ObjectListEditWidget<RO,ROF>::setList(RamObjectList<RO> *objectList)
 }
 
 template<typename RO, typename ROF>
-void ObjectListEditWidget<RO,ROF>::setFilterList(RamObjectList<RamAssetGroup *> *filterList)
+void ObjectListEditWidget<RO,ROF>::setFilterList(RamObjectList<ROF> *filterList)
 {
     ui_filterBox->setList(filterList);
     m_filterList = filterList;
@@ -60,11 +60,6 @@ void ObjectListEditWidget<RO,ROF>::setFilterList(RamObjectList<RamAssetGroup *> 
     }
 }
 
-template<typename RO, typename ROF>
-void ObjectListEditWidget<RO,ROF>::setFilterList(RamObjectList<RamSequence *> *filterList)
-{
-
-}
 
 template<typename RO, typename ROF>
 void ObjectListEditWidget<RO,ROF>::setAssignList(RamObjectList<RO> *assignList)
@@ -310,11 +305,11 @@ void ObjectListEditWidget<RO,ROF>::objectAssigned(const QModelIndex &parent, int
 
     if (!m_useAssignList) return;
 
-    RamObjectFilterModel<RO> *filteredList = ui_listWidget->filteredList();
+    RamObjectFilterModel<ROF> *filteredList = ui_listWidget->filteredList();
 
     for (int i = first ; i <= last; i++)
     {
-        RO assignedObj = filteredList->at(i);
+        ROF assignedObj = filteredList->at(i);
         ui_assignMenu->setObjectVisible(assignedObj, false);
     }
 }
@@ -326,7 +321,7 @@ void ObjectListEditWidget<RO,ROF>::objectUnassigned(const QModelIndex &parent, i
 
     if (!m_useAssignList) return;
 
-    RamObjectFilterModel<RO> *filteredList = ui_listWidget->filteredList();
+    RamObjectFilterModel<ROF> *filteredList = ui_listWidget->filteredList();
 
     for (int i = first ; i <= last; i++)
     {
@@ -360,7 +355,7 @@ void ObjectListEditWidget<RO,ROF>::setupUi(bool editableObjects, RamUser::UserRo
     ui_title->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
     buttonsLayout->addWidget(ui_title);
 
-    ui_filterBox = new RamObjectListComboBox<ROF>(true, this);
+    ui_filterBox = new RamObjectListComboBox<RamObject *>(true, this);
     ui_filterBox->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
     buttonsLayout->addWidget(ui_filterBox);
 

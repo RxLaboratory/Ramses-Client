@@ -1,17 +1,19 @@
 #include "pipefilelistmanagerwidget.h"
 
+#include "ramses.h"
+
 PipeFileListManagerWidget::PipeFileListManagerWidget(QWidget *parent):
-    ObjectListManagerWidget(
+    ObjectListManagerWidget<RamPipeFile *, RamProject*>(
         "Pipe Types",
         QIcon(":icons/file"),
         parent)
 {
     changeProject(Ramses::instance()->currentProject());
     connect(Ramses::instance(), SIGNAL(currentProjectChanged(RamProject*)), this, SLOT(changeProject(RamProject*)));
-    m_listEditWidget->setEditMode(ObjectListEditWidget::RemoveObjects);
+    m_listEditWidget->setEditMode(ObjectListEditWidget<RamPipeFile *, RamProject*>::RemoveObjects);
 }
 
-RamObject *PipeFileListManagerWidget::createObject()
+RamPipeFile *PipeFileListManagerWidget::createObject()
 {
     RamProject *project = Ramses::instance()->currentProject();
     if (!project) return nullptr;

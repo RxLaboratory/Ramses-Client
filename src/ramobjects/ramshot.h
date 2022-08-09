@@ -1,6 +1,7 @@
 #ifndef RAMSHOT_H
 #define RAMSHOT_H
 
+#include "data-models/ramitemtable.h"
 #include "ramitem.h"
 
 class RamSequence;
@@ -26,7 +27,7 @@ public:
     qreal duration() const;
     void setDuration(const qreal &duration);
 
-    RamObjectList<RamAsset *> *assets() const;
+    RamItemTable *assets() const;
 
     virtual QString filterUuid() const override;
 
@@ -42,7 +43,7 @@ protected:
 private:
     void construct();
 
-    RamObjectList<RamAsset*> *m_assets;
+    RamItemTable *m_assets;
 };
 
 #endif // RAMSHOT_H

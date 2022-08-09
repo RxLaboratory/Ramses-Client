@@ -2,17 +2,15 @@
 #define STATELISTMANAGERWIDGET_H
 
 #include "objectlistmanagerwidget.h"
-#include "stateeditwidget.h"
-#include "ramses.h"
 
-class StateListManagerWidget : public ObjectListManagerWidget
+class StateListManagerWidget : public ObjectListManagerWidget<RamState*, int>
 {
     Q_OBJECT
 public:
     explicit StateListManagerWidget(QWidget *parent = nullptr);
 
 protected slots:
-    RamObject *createObject() override;
+    RamState *createObject() override;
 };
 
 #endif // STATELISTMANAGERWIDGET_H

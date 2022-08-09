@@ -37,9 +37,19 @@ RamStep *RamPipe::outputStep() const
     return RamStep::getObject( getData("outputStep").toString() );
 }
 
+void RamPipe::setOutputStep(RamStep *outputStep)
+{
+    insertData("outputStep", outputStep->uuid());
+}
+
 RamStep *RamPipe::inputStep() const
 {
     return RamStep::getObject( getData("inputStep").toString() );
+}
+
+void RamPipe::setInputStep(RamStep *inputStep)
+{
+    insertData("inputStep", inputStep->uuid());
 }
 
 RamProject *RamPipe::project() const

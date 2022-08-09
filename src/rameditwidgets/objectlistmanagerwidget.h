@@ -14,7 +14,8 @@ public:
     explicit ObjectListManagerWidget(RamObjectList<RO> *objectList, QString title, QIcon icon = QIcon(), QWidget *parent = nullptr);
     void setList(RamObjectList<RO> *objectList);
     void clear();
-    QString currentFilter() const;
+    QString currentFilterUuid() const;
+    ROF currentFilter() const;
 
     QToolButton *menuButton();
 

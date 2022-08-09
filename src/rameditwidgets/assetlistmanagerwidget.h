@@ -3,7 +3,7 @@
 
 #include "objectlistmanagerwidget.h"
 
-class AssetListManagerWidget : public ObjectListManagerWidget<RamItem*,RamAssetGroup*>
+class AssetListManagerWidget : public ObjectListManagerWidget<RamItem*, RamAssetGroup*>
 {
     Q_OBJECT
 public:

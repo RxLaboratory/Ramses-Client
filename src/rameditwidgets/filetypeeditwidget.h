@@ -3,29 +3,28 @@
 
 #include <QCheckBox>
 
-#include "ramses.h"
 #include "objecteditwidget.h"
+#include "ramfiletype.h"
 
 class FileTypeEditWidget : public ObjectEditWidget
 {
     Q_OBJECT
 
 public:
-    explicit FileTypeEditWidget(RamFileType *fileType = nullptr);
+    explicit FileTypeEditWidget(QWidget *parent = nullptr);
+    explicit FileTypeEditWidget(RamFileType *ag, QWidget *parent = nullptr);
 
     RamFileType *fileType() const;
 
-public slots:
-    void setObject(RamObject *obj) override;
-
-protected slots:
-    void update() override;
+protected:
+    virtual void reInit(RamObject *o) override;
 
 private slots:
-    void updateExtensions();
+    void setExtensions();
+    void setPreviewable(bool p);
 
 private:
-    RamFileType *_fileType;
+    RamFileType *m_fileType;
 
     void setupUi();
     void connectEvents();
