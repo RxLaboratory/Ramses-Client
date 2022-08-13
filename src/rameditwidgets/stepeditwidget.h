@@ -12,7 +12,6 @@
 
 #include "duqf-widgets/autoselectdoublespinbox.h"
 #include "objecteditwidget.h"
-#include "ramses.h"
 #include "objectlisteditwidget.h"
 #include "duqf-widgets/duqffolderdisplaywidget.h"
 #include "data-views/ramobjectlistcombobox.h"
@@ -27,15 +26,24 @@ public:
 
     RamStep *step() const;
 
-public slots:
-    void setObject(RamObject *obj) override;
-
-protected slots:
-    void update() override;
+protected:
+    virtual void reInit(RamObject *o) override;
 
 private slots:
     void createApplication();
     void updateEstimationSuffix();
+
+    void setType(int t);
+    void setPublishSettings();
+    void setColor(QColor c);
+    void setEstimationType(int t);
+    void setVeryEasy(double e);
+    void setEasy(double e);
+    void setMedium(double e);
+    void setHard(double e);
+    void setVeryHard(double e);
+    void activateMultiplier(bool a);
+    void setMultiplier(RamAssetGroup* ag);
 
 private:
     void setupUi();
@@ -56,10 +64,10 @@ private:
     AutoSelectDoubleSpinBox *ui_veryHardEdit;
     DuQFFolderDisplayWidget *ui_folderWidget;
     QCheckBox *ui_estimationMultiplierCheckBox;
-    RamObjectListComboBox *ui_estimationMultiplierBox;
+    RamObjectListComboBox<RamAssetGroup*> *ui_estimationMultiplierBox;
     DuQFColorSelector *ui_colorSelector;
 
-    ObjectListEditWidget *m_applicationList;
+    ObjectListEditWidget<RamApplication*, int> *m_applicationList;
 
 };
 

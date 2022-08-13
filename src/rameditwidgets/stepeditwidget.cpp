@@ -1,14 +1,14 @@
 ﻿#include "stepeditwidget.h"
+#include "ramproject.h"
+#include "ramses.h"
 
 StepEditWidget::StepEditWidget(QWidget *parent) : ObjectEditWidget(parent)
 {
     setupUi();
     connectEvents();
-
-    setObject(nullptr);
 }
 
-StepEditWidget::StepEditWidget(RamStep *s, QWidget *parent) : ObjectEditWidget(s, parent)
+StepEditWidget::StepEditWidget(RamStep *s, QWidget *parent) : ObjectEditWidget(parent)
 {
     setupUi();
     connectEvents();
@@ -21,115 +21,62 @@ RamStep *StepEditWidget::step() const
     return m_step;
 }
 
-void StepEditWidget::setObject(RamObject *obj)
+void StepEditWidget::reInit(RamObject *obj)
 {
-    RamStep *step = qobject_cast<RamStep*>( obj );
-    this->setEnabled(false);
-
-    ObjectEditWidget::setObject(step);
-    m_step = step;
-
-    QSignalBlocker b(ui_typeBox);
-    QSignalBlocker b1(ui_folderWidget);
-    QSignalBlocker b3(m_applicationList);
-    QSignalBlocker b4(ui_colorSelector);
-    QSignalBlocker b13(ui_publishSettingsEdit);
-
-    QSignalBlocker b5(ui_veryEasyEdit);
-    QSignalBlocker b6(ui_easyEdit);
-    QSignalBlocker b7(ui_mediumEdit);
-    QSignalBlocker b8(ui_hardEdit);
-    QSignalBlocker b9(ui_veryHardEdit);
-    QSignalBlocker b10(ui_estimationTypeBox);
-    QSignalBlocker b11(ui_estimationMultiplierCheckBox);
-    QSignalBlocker b12(ui_estimationMultiplierBox);
-
-    ui_typeBox->setCurrentIndex(1);
-    ui_folderWidget->setPath("");
-    m_applicationList->clear();
-    ui_colorSelector->setColor(QColor(25,25,25));
-    ui_publishSettingsEdit->setPlainText("");
-
-    ui_veryEasyEdit->setValue(0.2);
-    ui_easyEdit->setValue(0.5);
-    ui_mediumEdit->setValue(1.0);
-    ui_hardEdit->setValue(2.0);
-    ui_veryHardEdit->setValue(3.0);
-    ui_estimationTypeBox->setCurrentIndex(0);
-    ui_estimationMultiplierCheckBox->setChecked(false);
-    ui_estimationMultiplierBox->setCurrentIndex(-1);
-    ui_estimationMultiplierBox->setEnabled(false);
-
-
-    if (!step) return;
-
-    ui_colorSelector->setColor(step->color());
-    ui_publishSettingsEdit->setPlainText(step->publishSettings());
-
-    ui_folderWidget->setPath( step->path() );
-
-    if (step->type() == RamStep::PreProduction) ui_typeBox->setCurrentIndex(0);
-    else if (step->type() == RamStep::AssetProduction) ui_typeBox->setCurrentIndex(1);
-    else if (step->type() == RamStep::ShotProduction) ui_typeBox->setCurrentIndex(2);
-    else if (step->type() == RamStep::PostProduction) ui_typeBox->setCurrentIndex(3);
-
-    m_applicationList->setList(step->applications());
-
-    ui_estimationMultiplierBox->setList(step->project()->assetGroups());
-
-    ui_veryEasyEdit->setValue( step->estimationVeryEasy() );
-    ui_easyEdit->setValue( step->estimationEasy() );
-    ui_mediumEdit->setValue( step->estimationMedium()  );
-    ui_hardEdit->setValue( step->estimationHard()  );
-    ui_veryHardEdit->setValue( step->estimationVeryHard()  );
-    ui_estimationTypeBox->setCurrentIndex( step->estimationMethod() );
-
-    if (step->estimationMultiplyGroup())
+    m_step = qobject_cast<RamStep*>( obj );
+    if (m_step)
     {
-        ui_estimationMultiplierBox->setEnabled(true);
-        ui_estimationMultiplierCheckBox->setChecked(true);
-        ui_estimationMultiplierBox->setObject( step->estimationMultiplyGroup() );
+        ui_colorSelector->setColor(m_step->color());
+        ui_publishSettingsEdit->setPlainText(m_step->publishSettings());
+
+        ui_folderWidget->setPath( m_step->path() );
+
+        if (m_step->type() == RamStep::PreProduction) ui_typeBox->setCurrentIndex(0);
+        else if (m_step->type() == RamStep::AssetProduction) ui_typeBox->setCurrentIndex(1);
+        else if (m_step->type() == RamStep::ShotProduction) ui_typeBox->setCurrentIndex(2);
+        else if (m_step->type() == RamStep::PostProduction) ui_typeBox->setCurrentIndex(3);
+
+        m_applicationList->setList(m_step->applications());
+
+        ui_estimationMultiplierBox->setList(m_step->project()->assetGroups());
+
+        ui_veryEasyEdit->setValue( m_step->estimationVeryEasy() );
+        ui_easyEdit->setValue( m_step->estimationEasy() );
+        ui_mediumEdit->setValue( m_step->estimationMedium()  );
+        ui_hardEdit->setValue( m_step->estimationHard()  );
+        ui_veryHardEdit->setValue( m_step->estimationVeryHard()  );
+        ui_estimationTypeBox->setCurrentIndex( m_step->estimationMethod() );
+
+        if (m_step->estimationMultiplyGroup())
+        {
+            ui_estimationMultiplierBox->setEnabled(true);
+            ui_estimationMultiplierCheckBox->setChecked(true);
+            ui_estimationMultiplierBox->setObject( m_step->estimationMultiplyGroup() );
+        }
+
+        updateEstimationSuffix();
+
+        // Lock the IDs of the steps
+        if (m_step->shortName() != "NEW") ui_shortNameEdit->setEnabled(false);
     }
-
-
-    updateEstimationSuffix();
-
-    // Lock the IDs of the steps
-    if (step->shortName() != "NEW") ui_shortNameEdit->setEnabled(false);
-
-    this->setEnabled(Ramses::instance()->isProjectAdmin());   
-}
-
-void StepEditWidget::update()
-{
-    if(!m_step) return;
-
-    updating = true;
-
-    m_step->setType(ui_typeBox->currentData().toString());
-    m_step->setColor(ui_colorSelector->color());
-    m_step->setPublishSettings(ui_publishSettingsEdit->toPlainText());
-
-    // estimations
-    m_step->setEstimationVeryEasy( ui_veryEasyEdit->value() );
-    m_step->setEstimationEasy( ui_easyEdit->value() );
-    m_step->setEstimationMedium( ui_mediumEdit->value() );
-    m_step->setEstimationHard( ui_hardEdit->value() );
-    m_step->setEstimationVeryHard( ui_veryHardEdit->value() );
-
-    if (ui_estimationTypeBox->currentIndex() == 0)
-        m_step->setEstimationMethod( RamStep::EstimatePerShot );
     else
-        m_step->setEstimationMethod( RamStep::EstimatePerSecond );
+    {
+        ui_typeBox->setCurrentIndex(1);
+        ui_folderWidget->setPath("");
+        m_applicationList->clear();
+        ui_colorSelector->setColor(QColor(25,25,25));
+        ui_publishSettingsEdit->setPlainText("");
 
-    if (ui_estimationMultiplierCheckBox->isChecked())
-        m_step->setEstimationMultiplyGroup( qobject_cast<RamAssetGroup*>( ui_estimationMultiplierBox->currentObject() ));
-    else
-        m_step->setEstimationMultiplyGroup( nullptr );
-
-    ObjectEditWidget::update();
-
-    updating = false;
+        ui_veryEasyEdit->setValue(0.2);
+        ui_easyEdit->setValue(0.5);
+        ui_mediumEdit->setValue(1.0);
+        ui_hardEdit->setValue(2.0);
+        ui_veryHardEdit->setValue(3.0);
+        ui_estimationTypeBox->setCurrentIndex(0);
+        ui_estimationMultiplierCheckBox->setChecked(false);
+        ui_estimationMultiplierBox->setCurrentIndex(-1);
+        ui_estimationMultiplierBox->setEnabled(false);
+    }
 }
 
 void StepEditWidget::createApplication()
@@ -183,6 +130,69 @@ void StepEditWidget::updateEstimationSuffix()
     ui_mediumEdit->setSuffix(suffix);
     ui_hardEdit->setSuffix(suffix);
     ui_veryHardEdit->setSuffix(suffix);
+}
+
+void StepEditWidget::setType(int t)
+{
+    Q_UNUSED(t);
+
+    m_step->setType(ui_typeBox->currentData().toString());
+}
+
+void StepEditWidget::setPublishSettings()
+{
+    m_step->setPublishSettings(ui_publishSettingsEdit->toPlainText());
+}
+
+void StepEditWidget::setColor(QColor c)
+{
+    m_step->setColor(c);
+}
+
+void StepEditWidget::setEstimationType(int t)
+{
+    if (t == 0)
+        m_step->setEstimationMethod( RamStep::EstimatePerShot );
+    else
+        m_step->setEstimationMethod( RamStep::EstimatePerSecond );
+}
+
+void StepEditWidget::setVeryEasy(double e)
+{
+    m_step->setEstimationVeryEasy(e);
+}
+
+void StepEditWidget::setEasy(double e)
+{
+    m_step->setEstimationEasy(e);
+}
+
+void StepEditWidget::setMedium(double e)
+{
+    m_step->setEstimationMedium(e);
+}
+
+void StepEditWidget::setHard(double e)
+{
+    m_step->setEstimationHard(e);
+}
+
+void StepEditWidget::setVeryHard(double e)
+{
+    m_step->setEstimationVeryHard(e);
+}
+
+void StepEditWidget::activateMultiplier(bool a)
+{
+    if (a)
+        m_step->setEstimationMultiplyGroup( ui_estimationMultiplierBox->currentObject() );
+    else
+        m_step->setEstimationMultiplyGroup( nullptr );
+}
+
+void StepEditWidget::setMultiplier(RamAssetGroup *ag)
+{
+    m_step->setEstimationMultiplyGroup( ag );
 }
 
 void StepEditWidget::setupUi()
@@ -254,14 +264,14 @@ void StepEditWidget::setupUi()
 
     ui_estimationMultiplierCheckBox = new QCheckBox("Multiply by", this);
     ui_estimationMultiplierCheckBox->setToolTip("Multiply estimation by the number of assets in the specific asset group.");
-    ui_estimationMultiplierBox = new RamObjectListComboBox(this);
+    ui_estimationMultiplierBox = new RamObjectListComboBox<RamAssetGroup*>(this);
     ui_estimationMultiplierBox->setEnabled(false);
     estimationLayout->addRow(ui_estimationMultiplierCheckBox, ui_estimationMultiplierBox);
 
     ui_tabWidget->addTab(ui_estimationWidget, QIcon(":/icons/stats-settings"), "Estim.");
 
-    m_applicationList = new ObjectListEditWidget(true, RamUser::ProjectAdmin, this);
-    m_applicationList->setEditMode(ObjectListEditWidget::UnassignObjects);
+    m_applicationList = new ObjectListEditWidget<RamApplication*,int>(true, RamUser::ProjectAdmin, this);
+    m_applicationList->setEditMode(ObjectListEditWidget<RamApplication*,int>::UnassignObjects);
     m_applicationList->setTitle("Applications");
     m_applicationList->setAssignList(Ramses::instance()->applications());
 
@@ -286,23 +296,18 @@ void StepEditWidget::connectEvents()
     connect(ui_estimationMultiplierCheckBox, SIGNAL(clicked(bool)), ui_estimationMultiplierBox, SLOT(setEnabled(bool)));
     connect(ui_typeBox, SIGNAL(currentIndexChanged(int)), this, SLOT(updateEstimationSuffix()));
     connect(ui_estimationTypeBox, SIGNAL(currentIndexChanged(int)), this, SLOT(updateEstimationSuffix()));
-    connect(ui_typeBox, SIGNAL(currentIndexChanged(int)), this, SLOT(update()));
-    connect(ui_publishSettingsEdit, SIGNAL(editingFinished()), this, SLOT(update()));
+    connect(ui_typeBox, SIGNAL(currentIndexChanged(int)), this, SLOT(setType(int)));
+    connect(ui_publishSettingsEdit, SIGNAL(editingFinished()), this, SLOT(setPublishSettings()));
 
     connect(m_applicationList, SIGNAL(add()), this, SLOT(createApplication()));
-    connect(ui_colorSelector, SIGNAL(colorChanged(QColor)), this, SLOT(update()));
+    connect(ui_colorSelector, SIGNAL(colorChanged(QColor)), this, SLOT(setColor(QColor)));
 
-    connect(ui_estimationTypeBox, SIGNAL(currentIndexChanged(int)), this, SLOT(update()));
-    connect(ui_veryEasyEdit, SIGNAL(valueChanged(double)), this, SLOT(update()));
-    connect(ui_easyEdit, SIGNAL(valueChanged(double)), this, SLOT(update()));
-    connect(ui_mediumEdit, SIGNAL(valueChanged(double)), this, SLOT(update()));
-    connect(ui_hardEdit, SIGNAL(valueChanged(double)), this, SLOT(update()));
-    connect(ui_veryHardEdit, SIGNAL(valueChanged(double)), this, SLOT(update()));
-    connect(ui_estimationMultiplierCheckBox, SIGNAL(clicked(bool)), this, SLOT(update()));
-    connect(ui_estimationMultiplierBox, SIGNAL(currentIndexChanged(int)), this, SLOT(update()));
-
-    monitorDbQuery("updateStep");
-    monitorDbQuery("assignApplication");
-    monitorDbQuery("unassignApplication");
-    monitorDbQuery("setStepEstimations");
+    connect(ui_estimationTypeBox, SIGNAL(currentIndexChanged(int)), this, SLOT(setEstimationType(int)));
+    connect(ui_veryEasyEdit, SIGNAL(valueChanged(double)), this, SLOT(setVeryEasy(double)));
+    connect(ui_easyEdit, SIGNAL(valueChanged(double)), this, SLOT(setEasy(double)));
+    connect(ui_mediumEdit, SIGNAL(valueChanged(double)), this, SLOT(setMedium(double)));
+    connect(ui_hardEdit, SIGNAL(valueChanged(double)), this, SLOT(setHard(double)));
+    connect(ui_veryHardEdit, SIGNAL(valueChanged(double)), this, SLOT(setVeryHard(double)));
+    connect(ui_estimationMultiplierCheckBox, SIGNAL(clicked(bool)), this, SLOT(activateMultiplier(bool)));
+    connect(ui_estimationMultiplierBox, SIGNAL(currentObjectChanged(RamAssetGroup*)), this, SLOT(setMultiplier(RamAssetGroup*)));
 }
