@@ -1,5 +1,7 @@
 #include "app-utils.h"
 
+#include "duqf-app/app-style.h"
+
 DuApplication::DuApplication(int &argc, char *argv[]) : QApplication(argc, argv)
 {
 #ifndef QT_DEBUG
@@ -154,7 +156,8 @@ void DuApplication::checkUpdate()
              QString(STR_INTERNALNAME) %
              "&version=" % QString(STR_VERSION) %
              "&os=" % os %
-             "&osVersion=" % distrib % " (" % kernel % ")"
+             "&osVersion=" % distrib % " (" % kernel % ")" %
+             "&languageCode=en"
              );
     QNetworkRequest request;
     request.setUrl(url);
