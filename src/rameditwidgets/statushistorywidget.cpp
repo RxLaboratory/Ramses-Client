@@ -7,7 +7,7 @@ StatusHistoryWidget::StatusHistoryWidget(RamStepStatusHistory *history, QWidget 
     connectEvents();
 }
 
-void StatusHistoryWidget::editObject(RamObject *obj) const
+void StatusHistoryWidget::editObject(RamStatus *obj) const
 {
     if (obj) obj->edit();
 }
@@ -20,12 +20,12 @@ void StatusHistoryWidget::setupUi()
     layout->setContentsMargins(0,0,0,0);
     layout->setSpacing(3);
 
-    ui_statusList = new RamObjectListView( RamObjectListView::List, this);
+    ui_statusList = new RamObjectListView<RamStatus*>( RamObjectListView<RamStatus*>::List, this);
     ui_statusList->setEditableObjects(true, RamUser::Admin);
     layout->addWidget( ui_statusList );
 }
 
 void StatusHistoryWidget::connectEvents()
 {
-    connect(ui_statusList, &RamObjectListView::editObject, this, &StatusHistoryWidget::editObject);
+    connect(ui_statusList, SIGNAL(editObject(RamStatus*)), this, SLOT(editObject(RamStatus*)));
 }

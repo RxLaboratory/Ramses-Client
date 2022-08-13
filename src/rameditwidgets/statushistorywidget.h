@@ -3,8 +3,6 @@
 
 #include <QSplitter>
 
-#include "ramitem.h"
-#include "statuseditwidget.h"
 #include "ramobjectlistview.h"
 
 class StatusHistoryWidget : public QWidget
@@ -16,12 +14,12 @@ public:
 signals:
 
 private slots:
-    void editObject(RamObject *obj) const;
+    void editObject(RamStatus *obj) const;
 
 private:
     void setupUi();
     void connectEvents();
-    RamObjectListView *ui_statusList;
+    RamObjectListView<RamStatus*> *ui_statusList;
 };
 
 #endif // STATUSHISTORYWIDGET_H
