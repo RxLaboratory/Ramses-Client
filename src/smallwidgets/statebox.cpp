@@ -1,15 +1,15 @@
 #include "statebox.h"
 
+#include "ramses.h"
+
 StateBox::StateBox(QWidget *parent): RamObjectListComboBox(parent)
 {
     this->setList(Ramses::instance()->states());
-    connect(this, SIGNAL(currentObjectChanged(RamObject*)), this, SLOT(currentStateChanged(RamObject*)));
+    connect(this, SIGNAL(currentObjectChanged(RamState*)), this, SLOT(currentStateChanged(RamState*)));
 }
 
-void StateBox::currentStateChanged(RamObject *obj)
+void StateBox::currentStateChanged(RamState *state)
 {
-    if (!obj) return;
-    RamState *state = qobject_cast<RamState*>(obj);
     if (!state) return;
 
     this->setItemData(this->currentIndex(), state->shortName(), Qt::DisplayRole);

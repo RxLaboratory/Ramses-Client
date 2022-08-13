@@ -5,10 +5,10 @@
 #include <QPaintEvent>
 #include <QStylePainter>
 
-#include "ramses.h"
 #include "data-views/ramobjectlistcombobox.h"
+#include "ramstate.h"
 
-class StateBox : public RamObjectListComboBox
+class StateBox : public RamObjectListComboBox<RamState *>
 {
     Q_OBJECT
 public:
@@ -17,7 +17,7 @@ public:
 protected:
 
 private slots:
-    void currentStateChanged(RamObject *obj);
+    void currentStateChanged(RamState *state);
 
 };
 
