@@ -110,7 +110,6 @@ SOURCES += \
     docks/timelinewidget.cpp \
     rameditwidgets/userlistmanagerwidget.cpp \
     ramfilemetadatamanager.cpp \
-    ramloader.cpp \
     ramnamemanager.cpp \
     ramobjects/ramabstractobject.cpp \
     ramobjects/ramassetgroup.cpp \
@@ -276,7 +275,6 @@ HEADERS += \
     docks/timelinewidget.h \
     rameditwidgets/userlistmanagerwidget.h \
     ramfilemetadatamanager.h \
-    ramloader.h \
     ramnamemanager.h \
     ramobjects/ramabstractobject.h \
     ramobjects/ramassetgroup.h \

@@ -13,8 +13,8 @@ RamNameManager::RamNameManager()
 
     // get state shortnames
     QStringList stateShortNames;
-    RamObjectList *states = Ramses::instance()->states();
-    for(int i = 0; i < states->count(); i++)
+    RamObjectList<RamState*> *states = Ramses::instance()->states();
+    for(int i = 0; i < states->rowCount(); i++)
         stateShortNames << states->at(i)->shortName();
 
     // get name regex
