@@ -1,5 +1,7 @@
 #include "projectselectorwidget.h"
 
+#include "ramses.h"
+
 ProjectSelectorWidget::ProjectSelectorWidget(QWidget *parent):
     RamObjectListComboBox(
         parent)

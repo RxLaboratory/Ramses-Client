@@ -3,12 +3,12 @@
 
 #include <QComboBox>
 
-#include "ramses.h"
 #include "processmanager.h"
 #include "ramobjectlistcombobox.h"
 #include "data-models/ramprojectfiltermodel.h"
+#include "ramproject.h"
 
-class ProjectSelectorWidget : public RamObjectListComboBox
+class ProjectSelectorWidget : public RamObjectListComboBox<RamProject*>
 {
     Q_OBJECT
 public:
