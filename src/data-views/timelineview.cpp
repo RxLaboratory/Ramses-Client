@@ -8,7 +8,7 @@ TimelineView::TimelineView(QWidget *parent):
     QTableView(parent)
 {
     m_delegate = new TimelineDelegate();
-    m_emptyList = RamItemTable::getObject("emptyList", true);
+    m_emptyList = RamObjectList::getObject("emptyList", true);
 
     m_objectList = new TimeLineProxy(this);
     this->setModel(m_objectList);
@@ -17,7 +17,7 @@ TimelineView::TimelineView(QWidget *parent):
     connectEvents();
 }
 
-void TimelineView::setList(RamItemTable *shots)
+void TimelineView::setList(RamObjectList *shots)
 {
     if (m_objectList->sourceModel() != m_emptyList)
         disconnect(m_objectList->sourceModel(), nullptr, this, nullptr);
@@ -145,7 +145,7 @@ void TimelineView::selectShot(RamShot *shot)
     select(shot);
 }
 
-void TimelineView::select(RamShot *o)
+void TimelineView::select(RamObject *o)
 {
     for (int i = 0; i< m_objectList->columnCount(); i++)
     {
@@ -256,9 +256,9 @@ void TimelineView::connectEvents()
     // Update list when project changes
     connect(Ramses::instance(), &Ramses::currentProjectChanged, this, &TimelineView::changeProject);
     // Delegate buttons
-    connect(m_delegate, SIGNAL(editObject(RamObject*)), this, SLOT(select(RamObject*)));
+    connect(m_delegate, SIGNAL(edited(RamObject*)), this, SLOT(select(RamObject*)));
     // Select
-    connect(TimelineManager::instance(), SIGNAL(currentShotChanged(RamShot*)), this, SLOT(selectShot(RamShot*)));
+    connect(TimelineManager::instance(), &TimelineManager::currentShotChanged, this, &TimelineView::selectShot);
     // SORT
     connect( this->horizontalHeader(), SIGNAL(sectionMoved(int,int,int)), this, SLOT(columnMoved(int,int,int)));
 }

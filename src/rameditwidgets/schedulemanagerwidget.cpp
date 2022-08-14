@@ -143,7 +143,7 @@ void ScheduleManagerWidget::userChanged(RamUser *user)
     ui_stepMenu->setEnabled(user->role() >= RamUser::Lead);
 }
 
-void ScheduleManagerWidget::assignStep(RamStep *step)
+void ScheduleManagerWidget::assignStep(RamObject *step)
 {
     QModelIndexList selection = ui_table->selectionModel()->selectedIndexes();
     for (int i = 0; i < selection.count(); i++)
@@ -180,18 +180,18 @@ void ScheduleManagerWidget::assignStep(RamStep *step)
                 date.setTime(QTime(12,0));
 
             entry = new RamScheduleEntry( user, date );
-            entry->setStep(step);
+            entry->setStep( RamStep::c(step) );
             user->schedule()->append(entry);
         }
         else
         {
-            entry->setStep( step );
+            entry->setStep( RamStep::c(step) );
         }
 
     }
 }
 
-void ScheduleManagerWidget::filterUser(RamUser *user, bool filter)
+void ScheduleManagerWidget::filterUser(RamObject *user, bool filter)
 {
     if (filter) m_scheduleFilter->acceptUserUuid( user->uuid() );
     else m_scheduleFilter->ignoreUserUuid( user->uuid() );
@@ -752,13 +752,13 @@ void ScheduleManagerWidget::connectEvents()
     connect(ui_saturday,SIGNAL(toggled(bool)),this,SLOT(showSaturday(bool)));
     connect(ui_sunday,SIGNAL(toggled(bool)),this,SLOT(showSunday(bool)));
     // users
-    connect(ui_userMenu,SIGNAL(assign(RamObject*,bool)), this, SLOT(filterUser(RamObject*,bool)));
+    connect(ui_userMenu,SIGNAL(assignmentChanged(RamObject*,bool)), this, SLOT(filterUser(RamObject*,bool)));
     connect(ui_meAction,SIGNAL(triggered()), this, SLOT(filterMe()));
     // batch steps
-    connect(ui_stepMenu, SIGNAL(create()), this, SLOT(assignStep()));
-    connect(ui_stepMenu, SIGNAL(assign(RamObject*)), this, SLOT(assignStep(RamObject*)));
-    connect(ui_stepContextMenu,SIGNAL(create()), this, SLOT(assignStep()));
-    connect(ui_stepContextMenu, SIGNAL(assign(RamObject*)), this, SLOT(assignStep(RamObject*)));
+    connect(ui_stepMenu, SIGNAL(createTriggered()), this, SLOT(assignStep()));
+    connect(ui_stepMenu, SIGNAL(assigned(RamObject*)), this, SLOT(assignStep(RamObject*)));
+    connect(ui_stepContextMenu,SIGNAL(createTriggered()), this, SLOT(assignStep()));
+    connect(ui_stepContextMenu, SIGNAL(assigned(RamObject*)), this, SLOT(assignStep(RamObject*)));
     QShortcut *s = new QShortcut(QKeySequence(QKeySequence::Delete), ui_table );
     connect(s, SIGNAL(activated()), this, SLOT(assignStep()));
     // context menu

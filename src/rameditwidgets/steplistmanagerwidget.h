@@ -15,7 +15,7 @@ protected slots:
 private slots:
     void changeProject(RamProject *project);
 
-    void createFromTemplate(RamTemplateStep *templateStep);
+    void createFromTemplate(RamObject *templateStepObj);
 
 private:
     RamObjectListMenu *ui_createMenu;

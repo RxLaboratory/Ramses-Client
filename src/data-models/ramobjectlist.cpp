@@ -83,7 +83,7 @@ QVariant RamObjectList::data(const QModelIndex &index, int role) const
 
     if (role == Pointer) return reinterpret_cast<quintptr>(obj);
 
-    return QAbstractTableModel::data(index, role);
+    return QVariant();
 }
 
 QVariant RamObjectList::headerData(int section, Qt::Orientation orientation, int role) const

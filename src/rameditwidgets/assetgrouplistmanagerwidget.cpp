@@ -22,8 +22,8 @@ AssetGroupListManagerWidget::AssetGroupListManagerWidget(QWidget *parent):
 
     ui_createMenu->setList(Ramses::instance()->templateAssetGroups());
 
-    connect(ui_createMenu, SIGNAL(create()), this, SLOT(createObject()));
-    connect(ui_createMenu, SIGNAL(assign(RamObject*)), this, SLOT(createFromTemplate(RamObject*)));
+    connect(ui_createMenu, &RamObjectListMenu::createTriggered, this, &AssetGroupListManagerWidget::createObject);
+    connect(ui_createMenu, &RamObjectListMenu::assigned, this, &AssetGroupListManagerWidget::createFromTemplate);
 }
 
 RamAssetGroup *AssetGroupListManagerWidget::createObject()
@@ -48,8 +48,10 @@ void AssetGroupListManagerWidget::changeProject(RamProject *project)
     this->setList( project->assetGroups() );
 }
 
-void AssetGroupListManagerWidget::createFromTemplate(RamTemplateAssetGroup *templateAG)
+void AssetGroupListManagerWidget::createFromTemplate(RamObject *templateAGObj)
 {
+    RamTemplateAssetGroup *templateAG = RamTemplateAssetGroup::c(templateAGObj);
+
     RamProject *project = Ramses::instance()->currentProject();
     if (!project) return;
     if (!templateAG) return;

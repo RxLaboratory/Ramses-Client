@@ -35,9 +35,9 @@ private slots:
     void projectUpdated(RamObject*projObj);
     void userChanged(RamUser *user);
 
-    void assignStep(RamStep *step = nullptr);
+    void assignStep(RamObject *step = nullptr);
 
-    void filterUser(RamUser *user, bool filter);
+    void filterUser(RamObject *user, bool filter);
     void filterMe();
 
     void showMonday(bool show);

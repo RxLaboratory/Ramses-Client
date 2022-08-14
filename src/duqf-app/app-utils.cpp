@@ -169,6 +169,7 @@ void DuApplication::checkUpdate()
     qInfo().noquote() << "OS Version: " % distrib % " (" % kernel % ")";
     qInfo().noquote() << "App Name: " % QString(STR_INTERNALNAME);
     qInfo().noquote() << "App Version: " % QString(STR_VERSION);
+    qInfo().noquote() << "Language code: en";
 
     connect(am, SIGNAL(finished(QNetworkReply*)), this, SLOT(gotUpdateInfo(QNetworkReply*)));
     am->get(request);

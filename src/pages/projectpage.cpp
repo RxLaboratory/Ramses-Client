@@ -99,10 +99,10 @@ ProjectPage::ProjectPage(QWidget *parent):
     qDebug() << "  > shots ok";
 
     connect(Ramses::instance(), SIGNAL(currentProjectChanged(RamProject*)), this, SLOT(currentProjectChanged(RamProject*)));
-    connect(ui_assignUserMenu, SIGNAL(assign(RamUser*)), this, SLOT(assignUser(RamUser*)));
-    connect(ui_unAssignUserMenu, SIGNAL(assign(RamUser*)), this, SLOT(unAssignUser(RamUser*)));
-    connect(stepTemplateMenu, SIGNAL(assign(RamTemplateStep*)), this, SLOT(createStepFromTemplate(RamTemplateStep*)));
-    connect(agTemplateMenu, SIGNAL(assign(RamTemplateAssetGroup*)), this, SLOT(createAssetGroupFromTemplate(RamTemplateAssetGroup*)));
+    connect(ui_assignUserMenu, SIGNAL(assigned(RamObject*)), this, SLOT(assignUser(RamObject*)));
+    connect(ui_unAssignUserMenu, SIGNAL(assigned(RamObject*)), this, SLOT(unAssignUser(RamObject*)));
+    connect(stepTemplateMenu, SIGNAL(assigned(RamObject*)), this, SLOT(createStepFromTemplate(RamObject*)));
+    connect(agTemplateMenu, SIGNAL(assigned(RamObject*)), this, SLOT(createAssetGroupFromTemplate(RamObject*)));
     connect(createMultipleShotsAction, SIGNAL(triggered()), this, SLOT(createShots()));
 }
 
@@ -124,14 +124,14 @@ void ProjectPage::currentProjectChanged(RamProject *project)
         ui_unAssignUserMenu->setList(nullptr);
 }
 
-void ProjectPage::assignUser(RamUser *user)
+void ProjectPage::assignUser(RamObject *user)
 {
     RamProject *proj = Ramses::instance()->currentProject();
     if (!proj) return;
     proj->users()->append( user );
 }
 
-void ProjectPage::unAssignUser(RamUser *user)
+void ProjectPage::unAssignUser(RamObject *user)
 {
     RamProject *proj = Ramses::instance()->currentProject();
     if (!proj) return;
@@ -166,8 +166,9 @@ void ProjectPage::userUnassigned(const QModelIndex &parent, int first, int last)
     }
 }
 
-void ProjectPage::createStepFromTemplate(RamTemplateStep *templateStep)
+void ProjectPage::createStepFromTemplate(RamObject *templateStepObj)
 {
+    RamTemplateStep *templateStep = RamTemplateStep::c(templateStepObj);
     if (!templateStep) return;
 
     RamProject *project = Ramses::instance()->currentProject();
@@ -178,8 +179,9 @@ void ProjectPage::createStepFromTemplate(RamTemplateStep *templateStep)
     step->edit();
 }
 
-void ProjectPage::createAssetGroupFromTemplate(RamTemplateAssetGroup *templateAG)
+void ProjectPage::createAssetGroupFromTemplate(RamObject *templateAGObj)
 {
+    RamTemplateAssetGroup *templateAG = RamTemplateAssetGroup::c(templateAGObj);
     if (!templateAG) return;
 
     RamProject *project = Ramses::instance()->currentProject();

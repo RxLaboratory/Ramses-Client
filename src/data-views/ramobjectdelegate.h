@@ -43,6 +43,9 @@ public slots:
     void setCompletionRatio(bool newCompletionRatio);
     void showDetails(bool s);
 
+signals:
+    void edited(RamObject*);
+
 protected:
     bool editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index) override;
 

@@ -2,7 +2,7 @@
 #define APPVERSION_H
 
 #define VERSION_MAJOR 0
-#define VERSION_MINOR 3
+#define VERSION_MINOR 5
 #define VERSION_BUILD 0
 #define VERSION_SUFFIX "Alpha"
 
@@ -40,7 +40,7 @@
 #define URL_SOURCECODE "https://github.com/RxLaboratory/Ramses"
 #define URL_BUGREPORT "https://github.com/RxLaboratory/Ramses/issues/new/choose"
 #define URL_DONATION "http://donate.rxlab.info"
-#define URL_UPDATE "http://version.rxlab.io"
+#define URL_UPDATE "http://api.rxlab.io"
 
 #define APP_ICON ":/icons/app"
 #define SPLASH_IMAGE ":/images/splash"

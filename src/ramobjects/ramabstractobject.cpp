@@ -8,6 +8,8 @@
 
 // STATIC //
 
+QMap<QString, RamAbstractObject*> RamAbstractObject::m_existingObjects = QMap<QString, RamAbstractObject*>();
+
 const QString RamAbstractObject::objectTypeName(ObjectType type)
 {
     switch (type)

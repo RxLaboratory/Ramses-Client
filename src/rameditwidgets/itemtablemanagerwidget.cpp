@@ -933,14 +933,15 @@ void ItemTableManagerWidget::connectEvents()
     // Item actions
     connect(ui_actionCreateItem,SIGNAL(triggered()),this,SLOT(createItem()));
     connect(ui_actionDeleteItem,SIGNAL(triggered()),this,SLOT(deleteItems()));
-    connect(ui_actionCreateMultiple,SIGNAL(triggered()),this,SLOT(createMultiple()));
+    if (m_productionType == RamStep::ShotProduction)
+        connect(ui_actionCreateMultiple,SIGNAL(triggered()),this,SLOT(createMultiple()));
     // Status actions
-    connect(ui_assignUserMenu,SIGNAL(create()),this,SLOT(unassignUser()));
-    connect(ui_assignUserMenu,SIGNAL(assign(RamObject*)),this,SLOT(assignUser(RamObject*)));
-    connect(ui_changeStateMenu,SIGNAL(assign(RamObject*)),this,SLOT(changeState(RamObject*)));
-    connect(ui_assignUserContextMenu,SIGNAL(create()),this,SLOT(unassignUser()));
-    connect(ui_assignUserContextMenu,SIGNAL(assign(RamObject*)),this,SLOT(assignUser(RamObject*)));
-    connect(ui_changeStateContextMenu,SIGNAL(assign(RamObject*)),this,SLOT(changeState(RamObject*)));
+    connect(ui_assignUserMenu,SIGNAL(createTriggered()),this,SLOT(unassignUser()));
+    connect(ui_assignUserMenu,SIGNAL(assigned(RamObject*)),this,SLOT(assignUser(RamObject*)));
+    connect(ui_changeStateMenu,SIGNAL(assigned(RamObject*)),this,SLOT(changeState(RamObject*)));
+    connect(ui_assignUserContextMenu,SIGNAL(createTriggered()),this,SLOT(unassignUser()));
+    connect(ui_assignUserContextMenu,SIGNAL(assigned(RamObject*)),this,SLOT(assignUser(RamObject*)));
+    connect(ui_changeStateContextMenu,SIGNAL(assigned(RamObject*)),this,SLOT(changeState(RamObject*)));
     connect(ui_veryEasy,SIGNAL(triggered()),this,SLOT(setVeryEasy()));
     connect(ui_easy,SIGNAL(triggered()),this,SLOT(setEasy()));
     connect(ui_medium,SIGNAL(triggered()),this,SLOT(setMedium()));
@@ -969,14 +970,14 @@ void ItemTableManagerWidget::connectEvents()
     connect(ui_actionSortByEstimation, SIGNAL(triggered(bool)), this, SLOT(sortByEstimation(bool)));
     connect(ui_actionSortByCompletion, SIGNAL(triggered(bool)), this, SLOT(sortByCompletion(bool)));
     // step actions
-    connect(ui_stepMenu,SIGNAL(assign(RamObject*,bool)), this, SLOT(showStep(RamObject*,bool)));
+    connect(ui_stepMenu,SIGNAL(assignmentChanged(RamObject*,bool)), this, SLOT(showStep(RamObject*,bool)));
     connect(ui_actionSelectMySteps, SIGNAL(triggered()), this, SLOT(selectUserSteps()));
     // user actions
-    connect(ui_userMenu,SIGNAL(assign(RamObject*,bool)), this, SLOT(showUser(RamObject*,bool)));
+    connect(ui_userMenu,SIGNAL(assignmentChanged(RamObject*,bool)), this, SLOT(showUser(RamObject*,bool)));
     connect(ui_actionNotAssigned, SIGNAL(toggled(bool)), this, SLOT(showUnassigned(bool)));
     connect(ui_actionSelectMyself, SIGNAL(triggered()), this, SLOT(selectMyself()));
     // state actions
-    connect(ui_stateMenu,SIGNAL(assign(RamObject*,bool)), this, SLOT(showState(RamObject*,bool)));
+    connect(ui_stateMenu,SIGNAL(assignmentChanged(RamObject*,bool)), this, SLOT(showState(RamObject*,bool)));
     // comment actions
     connect(ui_copyComment, SIGNAL(triggered()), this, SLOT(copyComment()));
     connect(ui_cutComment, SIGNAL(triggered()), this, SLOT(cutComment()));
@@ -985,7 +986,7 @@ void ItemTableManagerWidget::connectEvents()
     connect(ui_searchEdit, SIGNAL(changing(QString)), ui_table, SLOT(search(QString)));
     connect(ui_searchEdit, SIGNAL(changed(QString)), ui_table, SLOT(search(QString)));
     // group filter
-    connect(ui_groupBox, SIGNAL(currentObjectChanged(Ramobject*)), this, SLOT(filter(RamObject*)));
+    connect(ui_groupBox, SIGNAL(currentObjectChanged(RamObject*)), this, SLOT(filter(RamObject*)));
     // other
     connect(ui_titleBar, &DuQFTitleBar::closeRequested, this, &ItemTableManagerWidget::closeRequested);
     connect(Ramses::instance(), SIGNAL(currentProjectChanged(RamProject*)), this,SLOT(projectChanged(RamProject*)));

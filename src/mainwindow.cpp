@@ -121,7 +121,7 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     // Add default stuff
     duqf_initUi();
 
-    qDebug() << "> Loading settings";
+    qDebug() << "> Loading setting pages";
 
     // Add settings
     LocalSettingsWidget *lsw = new LocalSettingsWidget(this);

@@ -127,12 +127,10 @@ void ServerSettingsWidget::connectEvents()
     connect(ui_logoutButton, SIGNAL(clicked()), this, SLOT(logout()));
     connect(ui_updateFreqSpinBox, SIGNAL(editingFinished()), this, SLOT( updateFreqSpinBox_editingFinished()));
     connect(ui_timeoutSpinBox, SIGNAL(editingFinished()), this, SLOT( timeoutSpinBox_editingFinished()));
-    DBInterface *dbi = DBInterface::instance();
-    connect(dbi, &DBInterface::connectionStatusChanged, this, &ServerSettingsWidget::dbiConnectionStatusChanged);
-    connect(dbi, SIGNAL(serverAddressChanged(QString)), ui_serverAddressBox, SLOT(setAddress(QString)));
-    connect(dbi, SIGNAL(sslChanged(bool)), ui_sslCheckBox, SLOT(setChecked(bool)));
+    connect(DBInterface::instance(), &DBInterface::connectionStatusChanged, this, &ServerSettingsWidget::dbiConnectionStatusChanged);
+    connect(RamServerInterface::instance(), SIGNAL(sslChanged(bool)), ui_sslCheckBox, SLOT(setChecked(bool)));
 
-    connect(ui_serverAddressBox, SIGNAL(addressChanged(QString)), DBInterface::instance(), SLOT(setServerAddress(QString)));
-    connect(ui_sslCheckBox, SIGNAL(toggled(bool)), DBInterface::instance(), SLOT(setSSL(bool)));
+    connect(ui_serverAddressBox, SIGNAL(addressChanged(QString)), RamServerInterface::instance(), SLOT(setServerAddress(QString)));
+    connect(ui_sslCheckBox, SIGNAL(toggled(bool)), RamServerInterface::instance(), SLOT(setSsl(bool)));
 }
 

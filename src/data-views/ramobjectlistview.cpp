@@ -268,11 +268,10 @@ void RamObjectListView::setupUi()
 
 void RamObjectListView::connectEvents()
 {
-    connect(m_delegate, SIGNAL(editObject(RamObject*)), this, SLOT(select(RamObject*)));
+    connect(m_delegate, SIGNAL(edited(RamObject*)), this, SLOT(select(RamObject*)));
     // SORT
     connect( this->verticalHeader(), SIGNAL(sectionMoved(int,int,int)), this, SLOT(rowMoved(int,int,int)));
     // SELECT
     // Unselect before filtering
     connect(m_objectList, SIGNAL(aboutToFilter()), this->selectionModel(), SLOT(clear()));
-    connect(TimelineManager::instance(), SIGNAL(currentShotChanged(RamShot*)), this, SLOT(selectShot(RamShot*)));
 }

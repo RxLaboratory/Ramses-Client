@@ -665,6 +665,7 @@ bool RamObjectDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, co
                     o->edit();
             }
             m_cellPressed = false;
+            emit edited(o);
             return true;
         }
 

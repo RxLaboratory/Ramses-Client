@@ -39,11 +39,6 @@ public:
      */
     bool ssl() const;
     /**
-     * @brief setSsl Sets the use of a secured connection
-     * @param useSsl
-     */
-    void setSsl(bool useSsl);
-    /**
      * @brief setTimeout sets how long to wait for the server on ping, in seconds
      * @param newTimeout the new timeout
      */
@@ -67,6 +62,7 @@ public slots:
     void setOnline();
     void setOffline();
     void setServerAddress(const QString &newServerAddress);
+    void setSsl(bool useSsl);
 
 signals:
     /**

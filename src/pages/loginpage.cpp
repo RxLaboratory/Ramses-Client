@@ -374,8 +374,7 @@ void LoginPage::connectEvents()
 
     connect(ui_serverBox, SIGNAL(addressChanged(QString)), this, SLOT(serverAddressChanged(QString)));
 
-    connect(DBInterface::instance(), SIGNAL(serverAddressChanged(QString)), ui_serverBox, SLOT(setAddress(QString)));
-    connect(DBInterface::instance(), SIGNAL(sslChanged(bool)), ui_sslBox, SLOT(setChecked(bool)));
+    connect(RamServerInterface::instance(), SIGNAL(sslChanged(bool)), ui_sslBox, SLOT(setChecked(bool)));
 
     // Needs to be called once
     serverAddressChanged(ui_serverBox->currentText());

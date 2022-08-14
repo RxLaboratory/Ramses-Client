@@ -60,8 +60,6 @@ signals:
     void add();
 
 private slots:
-    void edit(RamObject *obj);
-
     void assign(RamObject *obj);
 
     void objectAssigned(const QModelIndex &parent,int first,int last);

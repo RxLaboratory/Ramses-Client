@@ -22,8 +22,8 @@ ObjectListManagerWidget(
 
     ui_createMenu->setList(Ramses::instance()->templateSteps());
 
-    connect(ui_createMenu, SIGNAL(create()), this, SLOT(createObject()));
-    connect(ui_createMenu, SIGNAL(assign(RamObject*)), this, SLOT(createFromTemplate(RamObject*)));
+    connect(ui_createMenu, &RamObjectListMenu::createTriggered, this, &StepListManagerWidget::createObject);
+    connect(ui_createMenu, &RamObjectListMenu::assigned, this, &StepListManagerWidget::createFromTemplate);
 }
 
 RamStep *StepListManagerWidget::createObject()
@@ -49,9 +49,11 @@ void StepListManagerWidget::changeProject(RamProject *project)
     this->setList( project->steps() );
 }
 
-void StepListManagerWidget::createFromTemplate(RamTemplateStep *templateStep)
+void StepListManagerWidget::createFromTemplate(RamObject *templateStepObj)
 {
+    RamTemplateStep *templateStep = RamTemplateStep::c(templateStepObj);
     if (!templateStep) return;
+
     RamProject *project = Ramses::instance()->currentProject();
     if (!project) return;
     RamStep *step = RamStep::createFromTemplate(templateStep, project);

@@ -13,13 +13,13 @@ public:
 private slots:
     void currentProjectChanged(RamProject *project);
 
-    void assignUser(RamUser *user);
-    void unAssignUser(RamUser *user);
+    void assignUser(RamObject *user);
+    void unAssignUser(RamObject *user);
     void userAssigned(const QModelIndex &parent,int first,int last);
     void userUnassigned(const QModelIndex &parent,int first,int last);
 
-    void createStepFromTemplate(RamTemplateStep *templateStep);
-    void createAssetGroupFromTemplate(RamTemplateAssetGroup *templateAG);
+    void createStepFromTemplate(RamObject *templateStepObj);
+    void createAssetGroupFromTemplate(RamObject *templateAGObj);
 
     void createShots();
 

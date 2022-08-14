@@ -2,7 +2,7 @@
 
 #include "datacrypto.h"
 
-LocalDataInterface LocalDataInterface::*_instance = nullptr;
+LocalDataInterface *LocalDataInterface::_instance = nullptr;
 
 LocalDataInterface *LocalDataInterface::instance()
 {

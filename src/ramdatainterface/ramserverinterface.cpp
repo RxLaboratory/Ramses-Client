@@ -2,12 +2,12 @@
 
 #include "duqf-app/app-version.h"
 
-RamServerInterface RamServerInterface::*_instance = nullptr;
+RamServerInterface *RamServerInterface::_instance = nullptr;
 
 RamServerInterface *RamServerInterface::instance()
 {
-    if (!_instance) _instance = new RamServerInterface();
-    return _instance;
+    if (!RamServerInterface::_instance) RamServerInterface::_instance = new RamServerInterface();
+    return RamServerInterface::_instance;
 }
 
 bool RamServerInterface::ssl() const

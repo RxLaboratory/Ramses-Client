@@ -106,7 +106,6 @@ void RamObject::showEdit(QString title)
 void RamObject::construct(QObject *parent)
 {
     this->setObjectName( objectTypeName() );
-    if (!parent) setParent(Ramses::instance());
 }
 
 

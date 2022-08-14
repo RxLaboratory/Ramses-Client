@@ -36,9 +36,13 @@ void RamObjectListComboBox::setList(RamObjectList *list)
         proxyModel->setList(list);
         this->setModel(proxyModel);
     }
-    else
+    else if (list)
     {
         this->setModel(list);
+    }
+    else
+    {
+        this->setModel(RamObjectList::getObject("emptyList", true));
     }
 }
 
