@@ -99,7 +99,7 @@ void TimelineDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opti
             QMap<QString,QStringList> assets;
             for (int i = 0; i < shot->assets()->rowCount(); i++)
             {
-                RamAsset *asset = shot->assets()->at(i);
+                RamAsset *asset = shot->assetAt(i);
                 QString agName = asset->assetGroup()->name();
                 QStringList ag = assets.value( agName );
                 ag << asset->shortName();

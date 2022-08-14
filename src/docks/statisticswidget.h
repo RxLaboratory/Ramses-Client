@@ -7,7 +7,6 @@
 
 #include "data-views/ramobjectlistcombobox.h"
 #include "ramstatisticstablewidget.h"
-#include "data-models/ramstatisticstable.h"
 #include "smallwidgets/progresswidget.h"
 
 class StatisticsWidget : public QWidget
@@ -21,13 +20,13 @@ signals:
 private slots:
     void projectChanged(RamProject*project);
     void estimationChanged(RamProject *project);
-    void changeUser(RamObject *userObj);
+    void changeUser(RamUser *user);
 
 private:
     void setupUi();
     void connectEvents();
 
-    RamObjectListComboBox *ui_userBox;
+    RamObjectListComboBox<RamUser*> *ui_userBox;
     ProgressWidget *ui_progressWidget;
     QLabel *ui_completionLabel;
     QLabel *ui_remainingTimeLabel;

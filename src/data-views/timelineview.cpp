@@ -8,7 +8,7 @@ TimelineView::TimelineView(QWidget *parent):
     QTableView(parent)
 {
     m_delegate = new TimelineDelegate();
-    m_emptyList = new RamItemTable("emptylist", "Timeline", new RamObjectList<RamStep*>("emptylist", "steps"), parent, true);
+    m_emptyList = new RamItemTable("emptylist", "Timeline", new RamObjectList<RamStep*>("emptylist", "steps"), parent, RamItemTable::Temp);
 
     m_objectList = new TimeLineProxy(this);
     this->setModel(m_objectList);

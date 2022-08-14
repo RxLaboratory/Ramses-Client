@@ -51,6 +51,11 @@ RamItemTable *RamShot::assets() const
     return m_assets;
 }
 
+RamAsset *RamShot::assetAt(int row) const
+{
+    return qobject_cast<RamAsset*>( m_assets->at(row) );
+}
+
 QString RamShot::filterUuid() const
 {
     return getData("sequence").toString();

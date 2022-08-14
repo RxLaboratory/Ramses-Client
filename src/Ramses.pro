@@ -123,7 +123,6 @@ SOURCES += \
     ramobjects/ramworkingfolder.cpp \
     settingswidgets/daemonsettingswidget.cpp \
     ramdatainterface/dbinterface.cpp \
-    ramdatainterface/dbisuspender.cpp \
     duqf-app/app-style.cpp \
     duqf-app/app-utils.cpp \
     duqf-nodeview/duqfconnection.cpp \
@@ -290,7 +289,6 @@ HEADERS += \
     ramobjects/ramworkingfolder.h \
     settingswidgets/daemonsettingswidget.h \
     ramdatainterface/dbinterface.h \
-    ramdatainterface/dbisuspender.h \
     duqf-app/app-style.h \
     duqf-app/app-utils.h \
     duqf-app/app-version.h \

@@ -28,6 +28,7 @@ public:
     void setDuration(const qreal &duration);
 
     RamItemTable *assets() const;
+    RamAsset *assetAt(int row) const;
 
     virtual QString filterUuid() const override;
 

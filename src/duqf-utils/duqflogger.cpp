@@ -156,7 +156,7 @@ DuQFLoggerObject::DuQFLoggerObject(QString component, QObject *parent): QObject(
     DuQFLogger::instance()->tie(this);
 }
 
-const void DuQFLoggerObject::log(QString message, DuQFLog::LogType type)
+void DuQFLoggerObject::log(QString message, DuQFLog::LogType type)
 {
     emit newLog(DuQFLog(message, type, _c));
 }

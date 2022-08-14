@@ -1,5 +1,7 @@
 #include "statisticswidget.h"
 
+#include "ramses.h"
+
 StatisticsWidget::StatisticsWidget(QWidget *parent) : QWidget(parent)
 {
     setupUi();
@@ -46,7 +48,7 @@ void StatisticsWidget::estimationChanged(RamProject *project)
 
     int remainingDays = QDate::currentDate().daysTo( project->deadline() );
 
-    RamUser *user = qobject_cast<RamUser*>(ui_userBox->currentObject());
+    RamUser *user = ui_userBox->currentObject();
     QList<float> stats = project->stats(user);
 
     float estimation = stats.at(0);
@@ -69,9 +71,8 @@ void StatisticsWidget::estimationChanged(RamProject *project)
     //ui_latenessLabel->setText( QString::number( project->latenessRatio(), 'f', 0) + " %");
 }
 
-void StatisticsWidget::changeUser(RamObject *userObj)
+void StatisticsWidget::changeUser(RamUser *user)
 {
-    RamUser *user = qobject_cast<RamUser*>(userObj);
     ui_statsTable->setUser(user);
     ui_statsTable->resizeRowsToContents();
     estimationChanged(m_project);
@@ -83,7 +84,7 @@ void StatisticsWidget::setupUi()
     mainLayout->setContentsMargins(0,0,0,0);
     mainLayout->setSpacing(3);
 
-    ui_userBox = new RamObjectListComboBox(true, this);
+    ui_userBox = new RamObjectListComboBox<RamUser*>(true, this);
     mainLayout->addWidget(ui_userBox);
 
     QVBoxLayout *projectLayout = new QVBoxLayout();
@@ -142,5 +143,5 @@ void StatisticsWidget::setupUi()
 void StatisticsWidget::connectEvents()
 {
     connect(Ramses::instance(), SIGNAL(currentProjectChanged(RamProject*)), this, SLOT(projectChanged(RamProject*)));
-    connect(ui_userBox, SIGNAL(currentObjectChanged(RamObject*)), this, SLOT(changeUser(RamObject*)));
+    connect(ui_userBox, SIGNAL(currentObjectChanged(RamUser*)), this, SLOT(changeUser(RamUser*)));
 }
