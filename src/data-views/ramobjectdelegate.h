@@ -44,9 +44,7 @@ public slots:
     void showDetails(bool s);
 
 signals:
-    void editObject(RO);
-    void historyObject(RO);
-    void folderObject(RO);
+    void folderObject(RamObject*);
 
 protected:
     bool editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index) override;

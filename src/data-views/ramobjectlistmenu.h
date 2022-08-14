@@ -21,6 +21,8 @@ public:
     void setObjectVisible(RO obj, bool visible = true);
     void showAll();
 
+    RO objectAt(int i);
+
     bool isAllChecked() const;
 
 public slots:

@@ -83,6 +83,13 @@ void RamObjectListMenu<RO>::showAll()
 }
 
 template<typename RO>
+RO RamObjectListMenu<RO>::objectAt(int i)
+{
+    QList<QAction*> actions = this->actions();
+    return reinterpret_cast<RO>( actions[i]->data().toULongLong() );
+}
+
+template<typename RO>
 bool RamObjectListMenu<RO>::isAllChecked() const
 {
     QList<QAction*> as = this->actions();

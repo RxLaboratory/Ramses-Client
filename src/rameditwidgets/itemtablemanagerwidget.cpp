@@ -1,8 +1,15 @@
 #include "itemtablemanagerwidget.h"
 
-ItemTableManagerWidget::ItemTableManagerWidget(RamStep::Type productionType, QWidget *parent) : QWidget(parent)
+#include "duqf-utils/guiutils.h"
+#include "ramasset.h"
+#include "ramses.h"
+#include "ramassetgroup.h"
+#include "ramsequence.h"
+#include "shotscreationdialog.h"
+
+template<typename ROF>
+ItemTableManagerWidget<ROF>::ItemTableManagerWidget(QWidget *parent) : QWidget(parent)
 {   
-    m_productionType = productionType;
     setupUi();
 
     currentUserChanged(nullptr);
@@ -11,7 +18,8 @@ ItemTableManagerWidget::ItemTableManagerWidget(RamStep::Type productionType, QWi
     connectEvents();
 }
 
-void ItemTableManagerWidget::selectAllSteps()
+template<typename ROF>
+void ItemTableManagerWidget<ROF>::selectAllSteps()
 {
     QList<QAction*> actions = ui_stepMenu->actions();
     for (int i = 4; i < actions.count(); i++)
@@ -20,14 +28,15 @@ void ItemTableManagerWidget::selectAllSteps()
     }
 }
 
-void ItemTableManagerWidget::selectUserSteps()
+template<typename ROF>
+void ItemTableManagerWidget<ROF>::selectUserSteps()
 {
     QList<QAction*> actions = ui_stepMenu->actions();
     RamUser *u = Ramses::instance()->currentUser();
 
     for (int i = 4; i < actions.count(); i++)
     {
-        RamStep *step = reinterpret_cast<RamStep*>( actions[i]->data().toULongLong() );
+        RamStep *step = ui_stepMenu->objectAt(i);
         if (!step) continue;
         if (u->isStepAssigned(step))
             actions[i]->setChecked(true);
@@ -36,7 +45,8 @@ void ItemTableManagerWidget::selectUserSteps()
     }
 }
 
-void ItemTableManagerWidget::deselectSteps()
+template<typename ROF>
+void ItemTableManagerWidget<ROF>::deselectSteps()
 {
     QList<QAction*> actions = ui_stepMenu->actions();
     for (int i = 4; i < actions.count(); i++)
@@ -45,7 +55,8 @@ void ItemTableManagerWidget::deselectSteps()
     }
 }
 
-void ItemTableManagerWidget::selectAllUsers()
+template<typename ROF>
+void ItemTableManagerWidget<ROF>::selectAllUsers()
 {
     QList<QAction*> actions = ui_userMenu->actions();
     for (int i = 4; i < actions.count(); i++)
@@ -54,7 +65,8 @@ void ItemTableManagerWidget::selectAllUsers()
     }
 }
 
-void ItemTableManagerWidget::selectMyself()
+template<typename ROF>
+void ItemTableManagerWidget<ROF>::selectMyself()
 {
     QList<QAction*> actions = ui_userMenu->actions();
     RamUser *u = Ramses::instance()->currentUser();
@@ -63,7 +75,7 @@ void ItemTableManagerWidget::selectMyself()
 
     for (int i = 4; i < actions.count(); i++)
     {
-        RamUser *user = reinterpret_cast<RamUser*>( actions[i]->data().toULongLong() );
+        RamUser *user = ui_userMenu->objectAt(i);
         if (!user) continue;
         if (user->is(u))
             actions[i]->setChecked(true);
@@ -72,7 +84,8 @@ void ItemTableManagerWidget::selectMyself()
     }
 }
 
-void ItemTableManagerWidget::deselectUsers()
+template<typename ROF>
+void ItemTableManagerWidget<ROF>::deselectUsers()
 {
     QList<QAction*> actions = ui_userMenu->actions();
     for (int i = 4; i < actions.count(); i++)
@@ -81,14 +94,16 @@ void ItemTableManagerWidget::deselectUsers()
     }
 }
 
-void ItemTableManagerWidget::showUnassigned(bool show)
+template<typename ROF>
+void ItemTableManagerWidget<ROF>::showUnassigned(bool show)
 {
     ui_table->filteredList()->showUnassigned(show);
     if (show) ui_table->resizeRowsToContents();
     checkUserFilters();
 }
 
-void ItemTableManagerWidget::selectAllStates()
+template<typename ROF>
+void ItemTableManagerWidget<ROF>::selectAllStates()
 {
     QList<QAction*> actions = ui_stateMenu->actions();
     for (int i = 3; i < actions.count(); i++)
@@ -97,7 +112,8 @@ void ItemTableManagerWidget::selectAllStates()
     }
 }
 
-void ItemTableManagerWidget::deselectStates()
+template<typename ROF>
+void ItemTableManagerWidget<ROF>::deselectStates()
 {
     QList<QAction*> actions = ui_stateMenu->actions();
     for (int i = 3; i < actions.count(); i++)
@@ -106,13 +122,15 @@ void ItemTableManagerWidget::deselectStates()
     }
 }
 
-void ItemTableManagerWidget::showEvent(QShowEvent *event)
+template<typename ROF>
+void ItemTableManagerWidget<ROF>::showEvent(QShowEvent *event)
 {
     if (!event->spontaneous()) ui_titleBar->show();
     QWidget::showEvent(event);
 }
 
-void ItemTableManagerWidget::hideEvent(QHideEvent *event)
+template<typename ROF>
+void ItemTableManagerWidget<ROF>::hideEvent(QHideEvent *event)
 {
     if (!event->spontaneous())
     {
@@ -125,10 +143,7 @@ void ItemTableManagerWidget::hideEvent(QHideEvent *event)
     {
         QSettings *uSettings = user->settings();
 
-        if (m_productionType == RamStep::ShotProduction)
-            uSettings->beginGroup("shotTable");
-        else
-            uSettings->beginGroup("assetTable");
+        beginSettings(uSettings);
 
         // View
         //uSettings->setValue("showTimeTracking", ui_actionTimeTracking->isChecked());
@@ -146,14 +161,16 @@ void ItemTableManagerWidget::hideEvent(QHideEvent *event)
     QWidget::hideEvent(event);
 }
 
-void ItemTableManagerWidget::projectChanged(RamProject *project, bool force)
+template<typename ROF>
+void ItemTableManagerWidget<ROF>::projectChanged(RamProject *project, bool force)
 {
     this->setEnabled(false );
+
+    disconnect(m_project, nullptr, this, nullptr);
 
     if (!m_project && !project) return;
     if (m_project) if (m_project->is(project) && !force ) return;
 
-    while (!m_projectConnections.isEmpty()) disconnect( m_projectConnections.takeLast() );
 
     // Clear step list
     QList<QAction*> actions = ui_stepMenu->actions();
@@ -182,20 +199,11 @@ void ItemTableManagerWidget::projectChanged(RamProject *project, bool force)
     // Populate list and table
     qDebug() << "=====USER LIST=====";
     ui_userMenu->setList( project->users() );
-     qDebug() << "=====STEP LIST=====";
+    qDebug() << "=====STEP LIST=====";
     ui_stepMenu->setList( project->steps() );
     ui_actionNotAssigned->setChecked(true);
 
-    if (m_productionType == RamStep::AssetProduction)
-    {
-        ui_table->setList( project->assets() );
-        ui_groupBox->setList( project->assetGroups() );
-    }
-    else if (m_productionType == RamStep::ShotProduction)
-    {
-        ui_table->setList( project->shots() );
-        ui_groupBox->setList( project->sequences() );
-    }
+    setList();
 
     ui_assignUserMenu->setList(project->users());
     ui_assignUserContextMenu->setList(project->users());
@@ -209,10 +217,10 @@ void ItemTableManagerWidget::projectChanged(RamProject *project, bool force)
     this->setEnabled(true);
 }
 
-void ItemTableManagerWidget::showUser(RamObject *userObj, bool s)
+template<typename ROF>
+void ItemTableManagerWidget<ROF>::showUser(RamUser *user, bool s)
 {
     if(!m_project) return;
-    RamUser *user = qobject_cast<RamUser*>( userObj );
     if(s)
     {
         ui_table->filteredList()->showUser(user);
@@ -225,10 +233,10 @@ void ItemTableManagerWidget::showUser(RamObject *userObj, bool s)
     checkUserFilters();
 }
 
-void ItemTableManagerWidget::showStep(RamObject *stepObj, bool s)
+template<typename ROF>
+void ItemTableManagerWidget<ROF>::showStep(RamStep *step, bool s)
 {
     if(!m_project) return;
-    RamStep *step = qobject_cast<RamStep*>( stepObj );
     if(s)
     {
         ui_table->filteredList()->showStep( step );
@@ -242,10 +250,10 @@ void ItemTableManagerWidget::showStep(RamObject *stepObj, bool s)
     checkStepFilters();
 }
 
-void ItemTableManagerWidget::showState(RamObject *stateObj, bool s)
+template<typename ROF>
+void ItemTableManagerWidget<ROF>::showState(RamState *state, bool s)
 {
     if(!m_project) return;
-    RamState *state = qobject_cast<RamState*>( stateObj );
     if(s)
     {
         ui_table->filteredList()->showState(state);
@@ -258,7 +266,8 @@ void ItemTableManagerWidget::showState(RamObject *stateObj, bool s)
     checkStateFilters();
 }
 
-void ItemTableManagerWidget::checkStepFilters()
+template<typename ROF>
+void ItemTableManagerWidget<ROF>::checkStepFilters()
 {
     bool ok = ui_stepMenu->isAllChecked();
 
@@ -267,7 +276,8 @@ void ItemTableManagerWidget::checkStepFilters()
     ui_stepButton->setText( t );
 }
 
-void ItemTableManagerWidget::checkUserFilters()
+template<typename ROF>
+void ItemTableManagerWidget<ROF>::checkUserFilters()
 {
     bool ok = ui_userMenu->isAllChecked();
 
@@ -276,7 +286,8 @@ void ItemTableManagerWidget::checkUserFilters()
     ui_userButton->setText( t );
 }
 
-void ItemTableManagerWidget::checkStateFilters()
+template<typename ROF>
+void ItemTableManagerWidget<ROF>::checkStateFilters()
 {
     bool ok = ui_stateMenu->isAllChecked();
 
@@ -285,82 +296,58 @@ void ItemTableManagerWidget::checkStateFilters()
     ui_stateButton->setText( t );
 }
 
-void ItemTableManagerWidget::editObject(RamObject *obj) const
+template<typename ROF>
+void ItemTableManagerWidget<ROF>::filter(ROF filterObj)
 {
-    if (!obj) return;
-    // Check if it's a status
-    if (obj->objectType() == RamObject::Status)
-    {
-        RamStatus *status = qobject_cast<RamStatus*>( obj );
-
-        // If it's not the current user, create a new one
-        RamUser *currentUser = Ramses::instance()->currentUser();
-        if(!status->user()->is(currentUser))
-            status = RamStatus::copy( status, currentUser );
-
-        status->edit();
-        return;
-    }
-    obj->edit();
+    ui_table->filter(filterObj);
 }
 
-void ItemTableManagerWidget::historyObject(RamObject *obj) const
-{
-    // get the step history
-    RamStatus *status = qobject_cast<RamStatus*>(obj);
-    RamStep *step = status->step();
-    RamItem *item = status->item();
-    item->statusHistory(step)->edit();
-}
-
-void ItemTableManagerWidget::filter(RamObject *filterObj)
+template<>
+void ItemTableManagerWidget<RamAssetGroup*>::filter(RamAssetGroup *filterObj)
 {
     ui_table->filter(filterObj);
 
-    if (m_productionType == RamStep::ShotProduction)
+    int assetCount = 0;
+    if (filterObj)
     {
-        int shotCount = 0;
-        double duration = 0;
-        if (filterObj)
-        {
-            RamSequence *sequence = qobject_cast<RamSequence*>(filterObj);
-            if (sequence)
-            {
-                shotCount = sequence->shotCount();
-                duration = sequence->duration();
-            }
-        }
-        else if (m_project)
-        {
-            shotCount = m_project->shots()->count();
-            duration = m_project->duration();
-        }
-        QString title;
-        if (shotCount == 1) title = QString::number(shotCount) + " Shot";
-        else if (shotCount > 0) title = QString::number(shotCount) + " Shots";
-        else title = "Shots";
-        if (duration > 0) title += " (" + MediaUtils::durationToTimecode(duration) + ")";
-        ui_titleBar->setTitle(title);
+        assetCount = filterObj->assetCount();
     }
-    else
+    else if (m_project)
     {
-        int assetCount = 0;
-        if (filterObj)
-        {
-            RamAssetGroup *group = qobject_cast<RamAssetGroup*>(filterObj);
-            if (group) assetCount = group->assetCount();
-        }
-        else if (m_project)
-        {
-            assetCount = m_project->assets()->count();
-        }
-        if (assetCount == 1) ui_titleBar->setTitle(QString::number(assetCount) + " Asset");
-        else if (assetCount > 0) ui_titleBar->setTitle(QString::number(assetCount) + " Assets");
-        else ui_titleBar->setTitle("Assets");
+        assetCount = m_project->assets()->rowCount();
     }
+    if (assetCount == 1) ui_titleBar->setTitle(QString::number(assetCount) + " Asset");
+    else if (assetCount > 0) ui_titleBar->setTitle(QString::number(assetCount) + " Assets");
+    else ui_titleBar->setTitle("Assets");
 }
 
-void ItemTableManagerWidget::uncheckSort()
+template<>
+void ItemTableManagerWidget<RamSequence*>::filter(RamSequence *filterObj)
+{
+    ui_table->filter(filterObj);
+
+    int shotCount = 0;
+    double duration = 0;
+    if (filterObj)
+    {
+        shotCount = filterObj->shotCount();
+        duration = filterObj->duration();
+    }
+    else if (m_project)
+    {
+        shotCount = m_project->shots()->rowCount();
+        duration = m_project->duration();
+    }
+    QString title;
+    if (shotCount == 1) title = QString::number(shotCount) + " Shot";
+    else if (shotCount > 0) title = QString::number(shotCount) + " Shots";
+    else title = "Shots";
+    if (duration > 0) title += " (" + MediaUtils::durationToTimecode(duration) + ")";
+    ui_titleBar->setTitle(title);
+}
+
+template<typename ROF>
+void ItemTableManagerWidget<ROF>::uncheckSort()
 {
     ui_actionSortDefault->setChecked(false);
     ui_actionSortByShortName->setChecked(false);
@@ -371,7 +358,8 @@ void ItemTableManagerWidget::uncheckSort()
     ui_actionSortByCompletion->setChecked(false);
 }
 
-void ItemTableManagerWidget::sortDefault(bool sort)
+template<typename ROF>
+void ItemTableManagerWidget<ROF>::sortDefault(bool sort)
 {
     Q_UNUSED(sort)
     uncheckSort();
@@ -380,7 +368,8 @@ void ItemTableManagerWidget::sortDefault(bool sort)
     ui_table->filteredList()->setSortMode(RamItemFilterModel::Default);
 }
 
-void ItemTableManagerWidget::sortByShortName(bool sort)
+template<typename ROF>
+void ItemTableManagerWidget<ROF>::sortByShortName(bool sort)
 {
     uncheckSort();
     ui_actionSortByShortName->setChecked(sort);
@@ -389,7 +378,8 @@ void ItemTableManagerWidget::sortByShortName(bool sort)
     ui_table->filteredList()->setSortMode(RamItemFilterModel::ShortName);
 }
 
-void ItemTableManagerWidget::sortByName(bool sort)
+template<typename ROF>
+void ItemTableManagerWidget<ROF>::sortByName(bool sort)
 {
     uncheckSort();
     ui_actionSortByName->setChecked(sort);
@@ -398,7 +388,8 @@ void ItemTableManagerWidget::sortByName(bool sort)
     ui_table->filteredList()->setSortMode(RamItemFilterModel::Name);
 }
 
-void ItemTableManagerWidget::sortByDifficulty(bool sort)
+template<typename ROF>
+void ItemTableManagerWidget<ROF>::sortByDifficulty(bool sort)
 {
     uncheckSort();
     ui_actionSortByDifficulty->setChecked(sort);
@@ -407,7 +398,8 @@ void ItemTableManagerWidget::sortByDifficulty(bool sort)
     ui_table->filteredList()->setSortMode(RamItemFilterModel::Difficulty);
 }
 
-void ItemTableManagerWidget::sortByTimeSpent(bool sort)
+template<typename ROF>
+void ItemTableManagerWidget<ROF>::sortByTimeSpent(bool sort)
 {
     uncheckSort();
     ui_actionSortByTimeSpent->setChecked(sort);
@@ -416,7 +408,8 @@ void ItemTableManagerWidget::sortByTimeSpent(bool sort)
     ui_table->filteredList()->setSortMode(RamItemFilterModel::TimeSpent);
 }
 
-void ItemTableManagerWidget::sortByEstimation(bool sort)
+template<typename ROF>
+void ItemTableManagerWidget<ROF>::sortByEstimation(bool sort)
 {
     uncheckSort();
     ui_actionSortByEstimation->setChecked(sort);
@@ -425,7 +418,8 @@ void ItemTableManagerWidget::sortByEstimation(bool sort)
     ui_table->filteredList()->setSortMode(RamItemFilterModel::Estimation);
 }
 
-void ItemTableManagerWidget::sortByCompletion(bool sort)
+template<typename ROF>
+void ItemTableManagerWidget<ROF>::sortByCompletion(bool sort)
 {
     uncheckSort();
     ui_actionSortByCompletion->setChecked(sort);
@@ -434,78 +428,82 @@ void ItemTableManagerWidget::sortByCompletion(bool sort)
     ui_table->filteredList()->setSortMode(RamItemFilterModel::Completion);
 }
 
-void ItemTableManagerWidget::unassignUser()
+template<typename ROF>
+void ItemTableManagerWidget<ROF>::unassignUser()
 {
     QList<RamStatus*> status = beginEditSelectedStatus();
     for (int i = 0; i < status.count(); i++)
     {
         status.at(i)->assignUser(nullptr);
-        status.at(i)->update();
     }
 }
 
-void ItemTableManagerWidget::assignUser(RamObject *usrObj)
+template<typename ROF>
+void ItemTableManagerWidget<ROF>::assignUser(RamUser *user)
 {
-    RamUser *user = qobject_cast<RamUser*>( usrObj );
     if (!user) return;
 
     QList<RamStatus*> status = beginEditSelectedStatus();
     for (int i = 0; i < status.count(); i++)
     {
         status.at(i)->assignUser(user);
-        status.at(i)->update();
     }
 }
 
-void ItemTableManagerWidget::changeState(RamObject *sttObj)
+template<typename ROF>
+void ItemTableManagerWidget<ROF>::changeState(RamState *stt)
 {
-    RamState *stt = qobject_cast<RamState*>( sttObj );
     if (!stt) return;
 
     QList<RamStatus*> status = beginEditSelectedStatus();
     for (int i = 0; i < status.count(); i++)
     {
         status.at(i)->setState(stt);
-        status.at(i)->update();
     }
 }
 
-void ItemTableManagerWidget::setVeryEasy()
+template<typename ROF>
+void ItemTableManagerWidget<ROF>::setVeryEasy()
 {
     setDiffculty(RamStatus::VeryEasy);
 }
 
-void ItemTableManagerWidget::setEasy()
+template<typename ROF>
+void ItemTableManagerWidget<ROF>::setEasy()
 {
     setDiffculty(RamStatus::Easy);
 }
 
-void ItemTableManagerWidget::setMedium()
+template<typename ROF>
+void ItemTableManagerWidget<ROF>::setMedium()
 {
     setDiffculty(RamStatus::Medium);
 }
 
-void ItemTableManagerWidget::setHard()
+template<typename ROF>
+void ItemTableManagerWidget<ROF>::setHard()
 {
     setDiffculty(RamStatus::Hard);
 }
 
-void ItemTableManagerWidget::setVeryHard()
+template<typename ROF>
+void ItemTableManagerWidget<ROF>::setVeryHard()
 {
     setDiffculty(RamStatus::VeryHard);
 }
 
-void ItemTableManagerWidget::setDiffculty(RamStatus::Difficulty difficulty)
+template<typename ROF>
+void ItemTableManagerWidget<ROF>::setDiffculty(RamStatus::Difficulty difficulty)
 {
     QList<RamStatus*> status = beginEditSelectedStatus();
     for (int i = 0; i < status.count(); i++)
     {
         status.at(i)->setDifficulty( difficulty );
-        status.at(i)->update();
     }
 }
 
-void ItemTableManagerWidget::setCompletion()
+template<typename ROF>
+void ItemTableManagerWidget<ROF>::setCompletion()
 {
     QAction* action = qobject_cast<QAction*>( sender() );
     int completion = action->data().toInt();
@@ -513,11 +511,11 @@ void ItemTableManagerWidget::setCompletion()
     for (int i = 0; i < status.count(); i++)
     {
         status.at(i)->setCompletionRatio( completion );
-        status.at(i)->update();
     }
 }
 
-void ItemTableManagerWidget::copyComment()
+template<typename ROF>
+void ItemTableManagerWidget<ROF>::copyComment()
 {
     QModelIndex currentIndex = ui_table->selectionModel()->currentIndex();
     if ( !currentIndex.isValid() ) return;
@@ -531,7 +529,8 @@ void ItemTableManagerWidget::copyComment()
     clipboard->setText( status->comment() );
 }
 
-void ItemTableManagerWidget::cutComment()
+template<typename ROF>
+void ItemTableManagerWidget<ROF>::cutComment()
 {
     QModelIndex currentIndex = ui_table->selectionModel()->currentIndex();
     if ( !currentIndex.isValid() ) return;
@@ -551,10 +550,10 @@ void ItemTableManagerWidget::cutComment()
         status = RamStatus::copy( status, currentUser );
 
     status->setComment("");
-    status->update();
 }
 
-void ItemTableManagerWidget::pasteComment()
+template<typename ROF>
+void ItemTableManagerWidget<ROF>::pasteComment()
 {
     QClipboard *clipboard = QGuiApplication::clipboard();
     QString comment = clipboard->text();
@@ -564,54 +563,66 @@ void ItemTableManagerWidget::pasteComment()
     for (int i = 0; i < status.count(); i++)
     {
         status.at(i)->setComment( comment );
-        status.at(i)->update();
     }
 }
 
-void ItemTableManagerWidget::createItem()
+template<typename ROF>
+void ItemTableManagerWidget<ROF>::createItem()
+{
+
+}
+
+template<>
+void ItemTableManagerWidget<RamAssetGroup*>::createItem()
 {
     RamProject *project = Ramses::instance()->currentProject();
     if (!project) return;
-    RamObject *group = ui_groupBox->currentObject();
+    if (project->assetGroups()->rowCount() == 0 ) return;
 
-    if(m_productionType == RamStep::ShotProduction)
-    {
-        if (project->sequences()->count() == 0 ) return;
-        RamSequence *seq;
-        if (!group) seq = qobject_cast<RamSequence*>( project->sequences()->at(0) );
-        else seq = qobject_cast<RamSequence*>( group );
-        if(!seq) return;
 
-        RamShot *shot = new RamShot(
-                    "NEW",
-                    seq,
-                    "New Shot"
-                    );
+    RamAssetGroup *ag = ui_groupBox->currentObject();
+    if (!ag) ag = project->assetGroups()->first();
+    if (!ag) return;
 
-        project->shots()->append(shot);
-        editObject(shot);
-    }
-    else
-    {
-        if (project->assetGroups()->count() == 0 ) return;
-        RamAssetGroup *ag;
-        if (!group) ag = qobject_cast<RamAssetGroup*>( project->assetGroups()->at(0) );
-        else ag = qobject_cast<RamAssetGroup*>( group );
-        if(!ag) return;
+    RamAsset *asset = new RamAsset(
+                "NEW",
+                "New Asset",
+                ag
+                );
 
-        RamAsset *asset = new RamAsset(
-                    "NEW",
-                    ag,
-                    "New Asset"
-                    );
+    project->assets()->append(asset);
+    asset->edit();
+}
 
-        project->assets()->append(asset);
-        editObject(asset);
-    }
+template<>
+void ItemTableManagerWidget<RamSequence*>::createItem()
+{
+    RamProject *project = Ramses::instance()->currentProject();
+    if (!project) return;
+    if (project->sequences()->rowCount() == 0 ) return;
+
+    RamSequence *seq = ui_groupBox->currentObject();
+    if (!seq) seq = project->sequences()->first();
+    if(!seq) return;
+
+    RamShot *shot = new RamShot(
+                "NEW",
+                "New Shot",
+                seq
+                );
+
+    project->shots()->append(shot);
+    shot->edit();
+}
+
+template<typename ROF>
+void ItemTableManagerWidget<ROF>::deleteItems()
+{
 
 }
 
-void ItemTableManagerWidget::deleteItems()
+template<>
+void ItemTableManagerWidget<RamAssetGroup*>::deleteItems()
 {
     RamProject *project = Ramses::instance()->currentProject();
     if (!project) return;
@@ -625,24 +636,18 @@ void ItemTableManagerWidget::deleteItems()
         // if (selection.at(i).column() != 0) continue;
         QModelIndex sourceIndex = ui_table->filteredList()->mapToSource(selection.at(i));
         int row = sourceIndex.row();
-        if (m_productionType == RamStep::ShotProduction)
-            selectedItems << project->shots()->index( row, 0);
-        else
-            selectedItems << project->assets()->index( row, 0);
+        selectedItems << project->assets()->index( row, 0);
     }
 
     if (selectedItems.count() == 0) return;
 
     QMessageBox::StandardButton confirm = QMessageBox::question( this,
         "Confirm deletion",
-        "Are you sure you want to premanently remove the selected items?" );
+        "Are you sure you want to premanently remove the selected assets?" );
 
     if ( confirm != QMessageBox::Yes) return;
 
-    QList<RamObject*> objs;
-
-    if (m_productionType == RamStep::ShotProduction) objs = project->shots()->removeIndices(selectedItems);
-    else objs = project->assets()->removeIndices(selectedItems);
+    QList<RamItem*> objs = project->assets()->removeIndices(selectedItems);
 
     for (int i = objs.count() -1 ; i >= 0; i--)
     {
@@ -650,7 +655,42 @@ void ItemTableManagerWidget::deleteItems()
     }
 }
 
-void ItemTableManagerWidget::createMultiple()
+template<>
+void ItemTableManagerWidget<RamSequence*>::deleteItems()
+{
+    RamProject *project = Ramses::instance()->currentProject();
+    if (!project) return;
+
+    QModelIndexList selection = ui_table->selectionModel()->selectedIndexes();
+    QModelIndexList selectedItems;
+
+    for (int i = 0; i < selection.count(); i++)
+    {
+        // remove only if it's the item in the first column
+        // if (selection.at(i).column() != 0) continue;
+        QModelIndex sourceIndex = ui_table->filteredList()->mapToSource(selection.at(i));
+        int row = sourceIndex.row();
+        selectedItems << project->shots()->index( row, 0);
+    }
+
+    if (selectedItems.count() == 0) return;
+
+    QMessageBox::StandardButton confirm = QMessageBox::question( this,
+        "Confirm deletion",
+        "Are you sure you want to premanently remove the selected shots?" );
+
+    if ( confirm != QMessageBox::Yes) return;
+
+    QList<RamItem*> objs = project->shots()->removeIndices(selectedItems);
+
+    for (int i = objs.count() -1 ; i >= 0; i--)
+    {
+        objs.at(i)->remove();
+    }
+}
+
+template<>
+void ItemTableManagerWidget<RamSequence*>::createMultiple()
 {
     RamProject *project = Ramses::instance()->currentProject();
     if (!project) return;
@@ -659,13 +699,15 @@ void ItemTableManagerWidget::createMultiple()
     dialog.exec();
 }
 
-void ItemTableManagerWidget::contextMenuRequested(QPoint p)
+template<typename ROF>
+void ItemTableManagerWidget<ROF>::contextMenuRequested(QPoint p)
 {
     // Call the context menu
     ui_contextMenu->popup(ui_table->viewport()->mapToGlobal(p));
 }
 
-void ItemTableManagerWidget::currentUserChanged(RamUser *user)
+template<typename ROF>
+void ItemTableManagerWidget<ROF>::currentUserChanged(RamUser *user)
 {
     ui_actionItem->setVisible(false);
     if (!user) return;
@@ -678,7 +720,8 @@ void ItemTableManagerWidget::currentUserChanged(RamUser *user)
     //projectChanged(Ramses::instance()->currentProject(), true);
 }
 
-void ItemTableManagerWidget::setupUi()
+template<typename ROF>
+void ItemTableManagerWidget<ROF>::setupUi()
 {
     // Get the mainwindow to add the titlebar
     QMainWindow *mw = GuiUtils::appMainWindow();
@@ -692,7 +735,7 @@ void ItemTableManagerWidget::setupUi()
     ui_titleBar->hide();
 
     // group box
-    ui_groupBox = new RamObjectListComboBox(true,this);
+    ui_groupBox = new RamObjectListComboBox<ROF>(true,this);
     ui_titleBar->insertLeft(ui_groupBox);
 
     // Search field
@@ -773,46 +816,10 @@ void ItemTableManagerWidget::setupUi()
     // Item Menu
     ui_itemMenu = new QMenu(this);
 
-    QString createItemLabel;
-    QString deleteItemLabel;
-    if (m_productionType == RamStep::ShotProduction)
-    {
-        createItemLabel = "Create new shot";
-        deleteItemLabel = "Remove selected shots";
-    }
-    else
-    {
-        createItemLabel = "Create new asset";
-        deleteItemLabel = "Remove selected assets";
-    }
-
-    ui_actionCreateItem = new QAction(QIcon(":/icons/add"), createItemLabel, this);
-    ui_itemMenu->addAction(ui_actionCreateItem);
-
-    ui_actionDeleteItem = new QAction(QIcon(":/icons/remove"), deleteItemLabel, this);
-    ui_itemMenu->addAction(ui_actionDeleteItem);
-
-    ui_actionCreateMultiple = new QAction("Create multiple shots...", this);
-
-    if (m_productionType == RamStep::ShotProduction)
-    {
-        ui_itemMenu->addAction(ui_actionCreateMultiple);
-    }
-
-    ui_itemButton = new QToolButton(this);
-    if (m_productionType == RamStep::ShotProduction) ui_itemButton->setText(" Shots");
-    else ui_itemButton->setText(" Assets");
-    if (m_productionType == RamStep::ShotProduction) ui_itemButton->setIcon(QIcon(":/icons/shot"));
-    else ui_itemButton->setIcon(QIcon(":/icons/asset"));
-    ui_itemButton->setMenu(ui_itemMenu);
-    ui_itemButton->setIconSize(QSize(16,16));
-    ui_itemButton->setObjectName("menuButton");
-    ui_itemButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-    ui_itemButton->setPopupMode(QToolButton::InstantPopup);
-    ui_actionItem = ui_titleBar->insertLeft(ui_itemButton);
+    setupItemMenu();
 
     // User Menu
-    ui_userMenu = new RamObjectListMenu(true, this);
+    ui_userMenu = new RamObjectListMenu<RamUser*>(true, this);
 
     ui_actionSelectMyself = new QAction("Select myself", this);
     ui_userMenu->insertAction( ui_userMenu->actions().at(0), ui_actionSelectMyself);
@@ -834,7 +841,7 @@ void ItemTableManagerWidget::setupUi()
     ui_titleBar->insertLeft(ui_userButton);
 
     // Step Menu
-    ui_stepMenu = new RamObjectListMenu(true, this);
+    ui_stepMenu = new RamObjectListMenu<RamStep*>(true, this);
 
     ui_actionSelectMySteps = new QAction("Select my steps", this);
     ui_stepMenu->insertAction( ui_stepMenu->actions().at(2), ui_actionSelectMySteps);
@@ -852,7 +859,7 @@ void ItemTableManagerWidget::setupUi()
 
     // State menu
 
-    ui_stateMenu = new RamObjectListMenu(true, this);
+    ui_stateMenu = new RamObjectListMenu<RamState*>(true, this);
 
     ui_stateButton = new QToolButton(this);
     ui_stateButton->setText(" States");
@@ -887,13 +894,13 @@ void ItemTableManagerWidget::setupUi()
 
     statusMenu->addSeparator();
 
-    ui_assignUserMenu = new RamObjectListMenu(false, this);
+    ui_assignUserMenu = new RamObjectListMenu<RamUser*>(false, this);
     ui_assignUserMenu->setTitle("Assign user");
     ui_assignUserMenu->addCreateButton();
     ui_assignUserMenu->actions().at(0)->setText("None");
     statusMenu->addMenu(ui_assignUserMenu);
 
-    ui_changeStateMenu = new RamObjectListMenu(false, this);
+    ui_changeStateMenu = new RamObjectListMenu<RamState*>(false, this);
     ui_changeStateMenu->setTitle("Change state");
     ui_changeStateMenu->setList(Ramses::instance()->states());
     statusMenu->addMenu(ui_changeStateMenu);
@@ -952,7 +959,7 @@ void ItemTableManagerWidget::setupUi()
     mainLayout->setSpacing(3);
     mainLayout->setContentsMargins(0,0,0,0);
 
-    ui_table = new RamObjectListView(RamObjectListView::Table, this);
+    ui_table = new RamObjectListView<RamItem*>(RamObjectListView<RamItem*>::Table, this);
     //ui_table->setEditableObjects(true, RamUser::ProjectAdmin);
     ui_table->setEditableObjects(false);
     ui_table->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -961,10 +968,8 @@ void ItemTableManagerWidget::setupUi()
     ui_table->setSelectionMode(QAbstractItemView::ExtendedSelection);
     ui_table->setTimeTracking(false);
     ui_header->setTimeTracking(false);
-    if (m_productionType == RamStep::ShotProduction) ui_table->setSortable(true);
     mainLayout->addWidget(ui_table);
 
-    ui_table->filteredList()->setStepType(m_productionType);
     ui_table->filteredList()->useFilters(true);
 
     this->setLayout(mainLayout);
@@ -977,13 +982,13 @@ void ItemTableManagerWidget::setupUi()
 
     ui_contextMenu->addSeparator();
 
-    ui_assignUserContextMenu = new RamObjectListMenu(false, this);
+    ui_assignUserContextMenu = new RamObjectListMenu<RamUser*>(false, this);
     ui_assignUserContextMenu->setTitle("Assign user");
     ui_assignUserContextMenu->addCreateButton();
     ui_assignUserContextMenu->actions().at(0)->setText("None");
     ui_contextMenu->addMenu(ui_assignUserMenu);
 
-    ui_changeStateContextMenu = new RamObjectListMenu(false, this);
+    ui_changeStateContextMenu = new RamObjectListMenu<RamState*>(false, this);
     ui_changeStateContextMenu->setTitle("Change state");
     ui_changeStateContextMenu->setList(Ramses::instance()->states());
     ui_contextMenu->addMenu(ui_changeStateContextMenu);
@@ -1007,7 +1012,8 @@ void ItemTableManagerWidget::setupUi()
     ui_contextMenu->addMenu(completionContextMenu);
 }
 
-void ItemTableManagerWidget::connectEvents()
+template<typename ROF>
+void ItemTableManagerWidget<ROF>::connectEvents()
 {
     // Item actions
     connect(ui_actionCreateItem,SIGNAL(triggered()),this,SLOT(createItem()));
@@ -1015,11 +1021,11 @@ void ItemTableManagerWidget::connectEvents()
     connect(ui_actionCreateMultiple,SIGNAL(triggered()),this,SLOT(createMultiple()));
     // Status actions
     connect(ui_assignUserMenu,SIGNAL(create()),this,SLOT(unassignUser()));
-    connect(ui_assignUserMenu,SIGNAL(assign(RamObject*)),this,SLOT(assignUser(RamObject*)));
-    connect(ui_changeStateMenu,SIGNAL(assign(RamObject*)),this,SLOT(changeState(RamObject*)));
+    connect(ui_assignUserMenu,SIGNAL(assign(RamUser*)),this,SLOT(assignUser(RamUser*)));
+    connect(ui_changeStateMenu,SIGNAL(assign(RamState*)),this,SLOT(changeState(RamState*)));
     connect(ui_assignUserContextMenu,SIGNAL(create()),this,SLOT(unassignUser()));
-    connect(ui_assignUserContextMenu,SIGNAL(assign(RamObject*)),this,SLOT(assignUser(RamObject*)));
-    connect(ui_changeStateContextMenu,SIGNAL(assign(RamObject*)),this,SLOT(changeState(RamObject*)));
+    connect(ui_assignUserContextMenu,SIGNAL(assign(RamUser*)),this,SLOT(assignUser(RamUser*)));
+    connect(ui_changeStateContextMenu,SIGNAL(assign(RamState*)),this,SLOT(changeState(RamState*)));
     connect(ui_veryEasy,SIGNAL(triggered()),this,SLOT(setVeryEasy()));
     connect(ui_easy,SIGNAL(triggered()),this,SLOT(setEasy()));
     connect(ui_medium,SIGNAL(triggered()),this,SLOT(setMedium()));
@@ -1048,35 +1054,33 @@ void ItemTableManagerWidget::connectEvents()
     connect(ui_actionSortByEstimation, SIGNAL(triggered(bool)), this, SLOT(sortByEstimation(bool)));
     connect(ui_actionSortByCompletion, SIGNAL(triggered(bool)), this, SLOT(sortByCompletion(bool)));
     // step actions
-    connect(ui_stepMenu,SIGNAL(assign(RamObject*,bool)), this, SLOT(showStep(RamObject*,bool)));
+    connect(ui_stepMenu,SIGNAL(assign(RamStep*,bool)), this, SLOT(showStep(RamStep*,bool)));
     connect(ui_actionSelectMySteps, SIGNAL(triggered()), this, SLOT(selectUserSteps()));
     // user actions
-    connect(ui_userMenu,SIGNAL(assign(RamObject*,bool)), this, SLOT(showUser(RamObject*,bool)));
+    connect(ui_userMenu,SIGNAL(assign(RamUser*,bool)), this, SLOT(showUser(RamUser*,bool)));
     connect(ui_actionNotAssigned, SIGNAL(toggled(bool)), this, SLOT(showUnassigned(bool)));
     connect(ui_actionSelectMyself, SIGNAL(triggered()), this, SLOT(selectMyself()));
     // state actions
-    connect(ui_stateMenu,SIGNAL(assign(RamObject*,bool)), this, SLOT(showState(RamObject*,bool)));
+    connect(ui_stateMenu,SIGNAL(assign(RamState*,bool)), this, SLOT(showState(RamState*,bool)));
     // comment actions
     connect(ui_copyComment, SIGNAL(triggered()), this, SLOT(copyComment()));
     connect(ui_cutComment, SIGNAL(triggered()), this, SLOT(cutComment()));
     connect(ui_pasteComment, SIGNAL(triggered()), this, SLOT(pasteComment()));
-    // cell buttons
-    connect(ui_table, SIGNAL(editObject(RamObject*)), this, SLOT(editObject(RamObject*)));
-    connect(ui_table, SIGNAL(historyObject(RamObject*)), this, SLOT(historyObject(RamObject*)));
     // search
     connect(ui_searchEdit, SIGNAL(changing(QString)), ui_table, SLOT(search(QString)));
     connect(ui_searchEdit, SIGNAL(changed(QString)), ui_table, SLOT(search(QString)));
     // group filter
-    connect(ui_groupBox, SIGNAL(currentObjectChanged(RamObject*)), this, SLOT(filter(RamObject*)));
+    connect(ui_groupBox, SIGNAL(currentObjectChanged(ROF)), this, SLOT(filter(ROF)));
     // other
-    connect(ui_titleBar, &DuQFTitleBar::closeRequested, this, &ItemTableManagerWidget::closeRequested);
+    connect(ui_titleBar, &DuQFTitleBar::closeRequested, this, &ItemTableManagerWidget<ROF>::closeRequested);
     connect(Ramses::instance(), SIGNAL(currentProjectChanged(RamProject*)), this,SLOT(projectChanged(RamProject*)));
     connect(Ramses::instance(), SIGNAL(loggedIn(RamUser*)), this, SLOT(currentUserChanged(RamUser*)));
     connect(ui_header, SIGNAL(sort(int,Qt::SortOrder)), ui_table->filteredList(), SLOT(resort(int,Qt::SortOrder)));
     connect(ui_header, SIGNAL(unsort()), ui_table->filteredList(), SLOT(unsort()));
 }
 
-void ItemTableManagerWidget::loadSettings()
+template<typename ROF>
+void ItemTableManagerWidget<ROF>::loadSettings()
 {
     // Freeze filters to improve performance
     ui_table->filteredList()->freeze();
@@ -1084,10 +1088,7 @@ void ItemTableManagerWidget::loadSettings()
     RamUser *u = Ramses::instance()->currentUser();
     if (!u) return;
     QSettings *uSettings = u->settings();
-    if (m_productionType == RamStep::ShotProduction)
-        uSettings->beginGroup("shotTable");
-    else
-        uSettings->beginGroup("assetTable");
+    beginSettings(uSettings);
 
     // View
     //ui_actionTimeTracking->setChecked( uSettings->value("showTimeTracking", true).toBool() );
@@ -1106,7 +1107,123 @@ void ItemTableManagerWidget::loadSettings()
     ui_table->filteredList()->unFreeze();
 }
 
-QList<RamStatus *> ItemTableManagerWidget::beginEditSelectedStatus()
+template<typename ROF>
+void ItemTableManagerWidget<ROF>::beginSettings(QSettings *s)
+{
+    Q_UNUSED(s)
+}
+
+template<>
+void ItemTableManagerWidget<RamAssetGroup*>::beginSettings(QSettings *s)
+{
+    s->beginGroup("assetTable");
+}
+
+template<>
+void ItemTableManagerWidget<RamSequence*>::beginSettings(QSettings *s)
+{
+    s->beginGroup("shotTable");
+}
+
+template<typename ROF>
+void ItemTableManagerWidget<ROF>::setList()
+{
+    ui_table->setList( nullptr );
+    ui_groupBox->setList( nullptr );
+}
+
+template<>
+void ItemTableManagerWidget<RamAssetGroup*>::setList()
+{
+    if (!m_project) return;
+    ui_table->setList( m_project->assets() );
+    ui_groupBox->setList( m_project->assetGroups() );
+}
+
+template<>
+void ItemTableManagerWidget<RamSequence*>::setList()
+{
+    if (!m_project) return;
+    ui_table->setList( m_project->shots() );
+    ui_groupBox->setList( m_project->sequences() );
+}
+
+template<typename ROF>
+void ItemTableManagerWidget<ROF>::setupItemMenu()
+{
+
+}
+
+template<>
+void ItemTableManagerWidget<RamAssetGroup*>::setupItemMenu()
+{
+     QString createItemLabel = "Create new asset";
+     QString deleteItemLabel = "Remove selected assets";
+
+     ui_actionCreateItem = new QAction(QIcon(":/icons/add"), createItemLabel, this);
+     ui_itemMenu->addAction(ui_actionCreateItem);
+
+     ui_actionDeleteItem = new QAction(QIcon(":/icons/remove"), deleteItemLabel, this);
+     ui_itemMenu->addAction(ui_actionDeleteItem);
+
+     ui_itemButton = new QToolButton(this);
+     ui_itemButton->setText(" Assets");
+     ui_itemButton->setIcon(QIcon(":/icons/asset"));
+     ui_itemButton->setMenu(ui_itemMenu);
+     ui_itemButton->setIconSize(QSize(16,16));
+     ui_itemButton->setObjectName("menuButton");
+     ui_itemButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+     ui_itemButton->setPopupMode(QToolButton::InstantPopup);
+     ui_actionItem = ui_titleBar->insertLeft(ui_itemButton);
+}
+
+template<>
+void ItemTableManagerWidget<RamSequence*>::setupItemMenu()
+{
+     QString createItemLabel = "Create new shot";
+     QString deleteItemLabel = "Remove selected shots";
+
+     ui_actionCreateItem = new QAction(QIcon(":/icons/add"), createItemLabel, this);
+     ui_itemMenu->addAction(ui_actionCreateItem);
+
+     ui_actionDeleteItem = new QAction(QIcon(":/icons/remove"), deleteItemLabel, this);
+     ui_itemMenu->addAction(ui_actionDeleteItem);
+
+     ui_actionCreateMultiple = new QAction("Create multiple shots...", this);
+     ui_itemMenu->addAction(ui_actionCreateMultiple);
+
+     ui_itemButton = new QToolButton(this);
+     ui_itemButton->setText(" Shots");
+     ui_itemButton->setIcon(QIcon(":/icons/shot"));
+     ui_itemButton->setMenu(ui_itemMenu);
+     ui_itemButton->setIconSize(QSize(16,16));
+     ui_itemButton->setObjectName("menuButton");
+     ui_itemButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+     ui_itemButton->setPopupMode(QToolButton::InstantPopup);
+     ui_actionItem = ui_titleBar->insertLeft(ui_itemButton);
+}
+
+template<typename ROF>
+void ItemTableManagerWidget<ROF>::setupTable()
+{
+
+}
+
+template<>
+void ItemTableManagerWidget<RamAssetGroup*>::setupTable()
+{
+    ui_table->filteredList()->setStepType(RamStep::AssetProduction);
+}
+
+template<>
+void ItemTableManagerWidget<RamSequence*>::setupTable()
+{
+    ui_table->setSortable(true);
+    ui_table->filteredList()->setStepType(RamStep::ShotProduction);
+}
+
+template<typename ROF>
+QList<RamStatus *> ItemTableManagerWidget<ROF>::beginEditSelectedStatus()
 {
     QList<RamStatus*> statuses;
     RamUser *currentUser = Ramses::instance()->currentUser();

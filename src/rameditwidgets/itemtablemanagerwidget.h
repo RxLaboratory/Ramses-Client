@@ -9,21 +9,18 @@
 #include <QClipboard>
 
 #include "duqf-widgets/duqftitlebar.h"
-#include "duqf-utils/guiutils.h"
-#include "duqf-widgets/duqfsearchedit.h"
 #include "data-views/ramobjectlistview.h"
+#include "duqf-widgets/duqfsearchedit.h"
+
 #include "data-views/ramobjectlistcombobox.h"
 #include "data-views/ramstepheaderview.h"
 #include "data-views/ramobjectlistmenu.h"
-#include "ramses.h"
-#include "shotscreationdialog.h"
-#include "duqf-utils/utils.h"
 
-class ItemTableManagerWidget : public QWidget
+template<typename ROF> class ItemTableManagerWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit ItemTableManagerWidget(RamStep::Type productionType, QWidget *parent = nullptr);
+    explicit ItemTableManagerWidget(QWidget *parent = nullptr);
 
 public slots:
     void selectAllSteps();
@@ -45,27 +42,24 @@ protected:
     void showEvent(QShowEvent *event) override;
     void hideEvent(QHideEvent *event) override;
 
-    RamObjectListView *ui_table;
+    RamObjectListView<RamItem*> *ui_table;
     DuQFTitleBar *ui_titleBar;
-    RamObjectListComboBox *ui_groupBox;
+    RamObjectListComboBox<ROF> *ui_groupBox;
 
 protected slots:
     virtual void projectChanged(RamProject *project, bool force = false);
 
 private slots:
-    void showUser(RamObject *userObj, bool s);
-    void showStep(RamObject *stepObj, bool s);
-    void showState(RamObject *stateObj, bool s);
+    void showUser(RamUser *user, bool s);
+    void showStep(RamStep *step, bool s);
+    void showState(RamState *state, bool s);
 
     void checkStepFilters();
     void checkUserFilters();
     void checkStateFilters();
 
-    void editObject(RamObject *obj) const;
-    void historyObject(RamObject *obj) const;
-
     // Filter
-    void filter(RamObject *filterObj);
+    void filter(ROF filterObj);
 
     // Sort
     void uncheckSort();
@@ -79,8 +73,8 @@ private slots:
 
     // Status
     void unassignUser();
-    void assignUser(RamObject *usrObj);
-    void changeState(RamObject *sttObj);
+    void assignUser(RamUser *user);
+    void changeState(RamState *stt);
     void setVeryEasy();
     void setEasy();
     void setMedium();
@@ -106,6 +100,12 @@ private:
     void connectEvents();
     void loadSettings();
 
+    // Specialized functions
+    void beginSettings(QSettings *s);
+    void setList();
+    void setupItemMenu();
+    void setupTable();
+
     DuQFSearchEdit *ui_searchEdit;
     QToolButton *ui_itemButton;
     QAction *ui_actionItem;
@@ -114,13 +114,13 @@ private:
     QAction *ui_actionDeleteItem;
     QAction *ui_actionCreateMultiple;
     QToolButton *ui_userButton;
-    RamObjectListMenu *ui_userMenu;
+    RamObjectListMenu<RamUser*> *ui_userMenu;
     QAction *ui_actionSelectMyself;
     QAction *ui_actionNotAssigned;
     QToolButton *ui_stateButton;
-    RamObjectListMenu *ui_stateMenu;
+    RamObjectListMenu<RamState*> *ui_stateMenu;
     QToolButton *ui_stepButton;
-    RamObjectListMenu *ui_stepMenu;
+    RamObjectListMenu<RamStep*> *ui_stepMenu;
     QAction *ui_actionSelectMySteps ;
     //QAction *ui_actionTimeTracking ;
     //QAction *ui_actionCompletionRatio ;
@@ -132,8 +132,8 @@ private:
     QAction *ui_actionSortByTimeSpent;
     QAction *ui_actionSortByEstimation;
     QAction *ui_actionSortByCompletion;
-    RamObjectListMenu *ui_assignUserMenu;
-    RamObjectListMenu *ui_changeStateMenu;
+    RamObjectListMenu<RamUser*> *ui_assignUserMenu;
+    RamObjectListMenu<RamState*> *ui_changeStateMenu;
     QMenu *ui_changeDifficultyMenu;
     QAction *ui_veryEasy;
     QAction *ui_easy;
@@ -152,13 +152,11 @@ private:
     QAction *ui_copyComment;
     QAction *ui_cutComment;
     QAction *ui_pasteComment;
-    RamObjectListMenu *ui_assignUserContextMenu;
-    RamObjectListMenu *ui_changeStateContextMenu;
+    RamObjectListMenu<RamUser*> *ui_assignUserContextMenu;
+    RamObjectListMenu<RamState*> *ui_changeStateContextMenu;
+
 
     RamProject *m_project = nullptr;
-    RamStep::Type m_productionType;
-
-    QList<QMetaObject::Connection> m_projectConnections;
 
     // utils
     QList<RamStatus*> beginEditSelectedStatus();

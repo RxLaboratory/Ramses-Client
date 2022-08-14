@@ -246,12 +246,6 @@ void RamObjectListView<RO>::rowMoved(int logicalIndex, int oldVisualIndex, int n
 }
 
 template<typename RO>
-void RamObjectListView<RO>::revealFolder(RamObject *obj)
-{
-    obj->revealFolder();
-}
-
-template<typename RO>
 void RamObjectListView<RO>::select(RO o)
 {
     if (!m_objectList) return;
@@ -291,7 +285,7 @@ void RamObjectListView<RamShot*>::select(RamShot *o)
 }
 
 template<typename RO>
-void RamObjectListView<RO>::filter(RO o)
+void RamObjectListView<RO>::filter(RamObject *o)
 {
     if (!o) m_objectList->setFilterUuid("");
     else m_objectList->setFilterUuid(o->uuid());
@@ -324,10 +318,7 @@ void RamObjectListView<RO>::setupUi()
 template<typename RO>
 void RamObjectListView<RO>::connectEvents()
 {
-    connect(m_delegate, &RamObjectDelegate<RO>::editObject, this, &RamObjectListView::editObject);
     connect(m_delegate, SIGNAL(editObject(RamObject*)), this, SLOT(select(RamObject*)));
-    connect(m_delegate, &RamObjectDelegate<RO>::historyObject, this, &RamObjectListView::historyObject);
-    connect(m_delegate, &RamObjectDelegate<RO>::folderObject, this, &RamObjectListView::revealFolder);
     // SORT
     connect( this->verticalHeader(), SIGNAL(sectionMoved(int,int,int)), this, SLOT(rowMoved(int,int,int)));
     // SELECT

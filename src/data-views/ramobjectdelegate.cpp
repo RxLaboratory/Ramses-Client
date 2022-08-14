@@ -9,6 +9,7 @@
 #include "ramshot.h"
 #include "ramstatus.h"
 #include "rampipefile.h"
+#include "ramses.h"
 #include "duqf-app/app-style.h"
 
 
@@ -606,13 +607,13 @@ bool RamObjectDelegate<RO>::editorEvent(QEvent *event, QAbstractItemModel *model
     if (iptr == 0) return false;
     RamObject *o = reinterpret_cast<RamObject*>( iptr );
 
-    bool history = o->objectType() == RamObject::Status;
+    bool isStatus = o->objectType() == RamObject::Status;
     bool folder = o->path() != "";
 
     int xpos = bgRect.right() - 22;
 
     const QRect historyButtonRect( xpos, bgRect.top() +7, 20, 20 );
-    if (history) xpos -= 22;
+    if (isStatus) xpos -= 22;
 
     const QRect folderButtonRect( xpos, bgRect.top() +7, 20, 20 );
 
@@ -624,7 +625,7 @@ bool RamObjectDelegate<RO>::editorEvent(QEvent *event, QAbstractItemModel *model
 
         if (e->button() != Qt::LeftButton) return QStyledItemDelegate::editorEvent( event, model, option, index );
 
-        if ( historyButtonRect.contains(e->pos()) && history)
+        if ( historyButtonRect.contains(e->pos()) && isStatus)
         {
             m_historyButtonPressed = true;
             return true;
@@ -644,7 +645,7 @@ bool RamObjectDelegate<RO>::editorEvent(QEvent *event, QAbstractItemModel *model
     {
         QMouseEvent *e = static_cast< QMouseEvent * >( event );
 
-        if (historyButtonRect.contains(e->pos()) && history)
+        if (historyButtonRect.contains(e->pos()) && isStatus)
         {
             m_historyButtonHover = index;
             return true;
@@ -674,9 +675,13 @@ bool RamObjectDelegate<RO>::editorEvent(QEvent *event, QAbstractItemModel *model
 
         if (m_historyButtonPressed)
         {
-            if (historyButtonRect.contains(e->pos()))
+            if (historyButtonRect.contains(e->pos()) && isStatus)
             {
-                emit historyObject(o);
+                // get the step history
+                RamStatus *status = qobject_cast<RamStatus*>(o);
+                RamStep *step = status->step();
+                RamItem *item = status->item();
+                item->statusHistory(step)->edit();
             }
             m_historyButtonPressed = false;
             m_historyButtonHover = QModelIndex();
@@ -687,7 +692,7 @@ bool RamObjectDelegate<RO>::editorEvent(QEvent *event, QAbstractItemModel *model
         {
             if (folderButtonRect.contains(e->pos()))
             {
-                emit folderObject(o);
+                o->revealFolder();
             }
             m_folderButtonPressed = false;
             m_folderButtonHover = QModelIndex();
@@ -696,9 +701,22 @@ bool RamObjectDelegate<RO>::editorEvent(QEvent *event, QAbstractItemModel *model
 
         if (m_cellPressed)
         {
-            if (bgRect.contains(e->pos()) && e->modifiers().testFlag(Qt::NoModifier) )
+            if (bgRect.contains(e->pos()) && e->modifiers().testFlag(Qt::NoModifier) && o)
             {
-                emit editObject(o);
+                // Check if it's a status
+                if (isStatus)
+                {
+                    RamStatus *status = qobject_cast<RamStatus*>( o );
+
+                    // If it's not the current user, create a new one
+                    RamUser *currentUser = Ramses::instance()->currentUser();
+                    if(!status->user()->is(currentUser))
+                        status = RamStatus::copy( status, currentUser );
+
+                    status->edit();
+                }
+                else
+                    o->edit();
             }
             m_cellPressed = false;
             return true;

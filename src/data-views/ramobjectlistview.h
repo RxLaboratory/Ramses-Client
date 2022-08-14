@@ -37,13 +37,11 @@ public:
 
 signals:
     void objectSelected(RO);
-    void editObject(RO);
-    void historyObject(RO);
 
 public slots:
     void search(QString s);
     void select(RO o);
-    void filter(RO o);
+    void filter(RamObject *o);
     void setTimeTracking(bool trackTime);
     void setCompletionRatio(bool showCompletion);
     void showDetails(bool s);
@@ -60,7 +58,6 @@ protected slots:
     void rowMoved( int logicalIndex, int oldVisualIndex, int newVisualIndex);
 
 private slots:
-    void revealFolder(RamObject *obj);
     void select(const QModelIndex &index);
 
 private:
