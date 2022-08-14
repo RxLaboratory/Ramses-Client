@@ -12,6 +12,7 @@ public:
     // STATIC //
 
     static RamAsset *getObject(QString uuid, bool constructNew = false);
+    static RamAsset *c(RamObject *o);
 
     // OTHER //
 

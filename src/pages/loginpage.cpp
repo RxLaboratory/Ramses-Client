@@ -1,4 +1,5 @@
 #include "loginpage.h"
+#include "datacrypto.h"
 
 LoginPage::LoginPage(QWidget *parent) :
     QWidget(parent)
@@ -63,9 +64,9 @@ void LoginPage::loggedIn(RamUser *user)
     if (ui_saveUsername->isChecked())
     {
         // Encrypt
-        SimpleCrypt crypto( SimpleCrypt::machineKey() );
+        DataCrypto *crypto = DataCrypto::instance();
 
-        settings.setValue("username", crypto.encryptToString(ui_usernameEdit->text()));
+        settings.setValue("username", crypto->machineEncrypt(ui_usernameEdit->text()));
 
         if (ui_savePassword->isChecked())
         {
@@ -77,10 +78,10 @@ void LoginPage::loggedIn(RamUser *user)
             }
             else
             {
-                hashed = DBInterface::instance()->generatePassHash( ui_passwordEdit->text() );
+                hashed = crypto->generatePassHash( ui_passwordEdit->text() );
             }
             // But encrypted, as the hashed password can be used to login
-            settings.setValue("password", crypto.encryptToString( hashed ));
+            settings.setValue("password", crypto->machineEncrypt( hashed ));
         }
         else
         {
@@ -109,23 +110,6 @@ void LoginPage::loggedOut()
     ui_loginWidget->show();
     ui_connectionStatusLabel->setText("Ready");
     serverAddressChanged( ui_serverBox->address() );
-}
-
-void LoginPage::dbiData(QJsonObject data)
-{
-    if (data.value("query").toString() == "login")
-    {
-        if (data.value("success").toBool())
-        {
-            unFreeze();
-            m_failedAttempts = 0;
-        }
-        else
-        {
-            m_failedAttempts++;
-            freeze();
-        }
-    }
 }
 
 void LoginPage::loginButton_clicked()
@@ -165,7 +149,7 @@ void LoginPage::serverSettingsButton_clicked()
 void LoginPage::serverAddressChanged(QString address)
 {
     // Notify the interface
-    DBInterface::instance()->setServerAddress(address);
+    RamServerInterface::instance()->setServerAddress(address);
 
     // Load saved username and password and ssl
     QSettings settings;
@@ -180,7 +164,7 @@ void LoginPage::serverAddressChanged(QString address)
         if (settingsAddress == address )
         {
             // Decrypt
-            SimpleCrypt crypto( SimpleCrypt::machineKey() );
+            DataCrypto *crypto = DataCrypto::instance();
 
             QString username = settings.value("username", "").toString();
 
@@ -193,7 +177,7 @@ void LoginPage::serverAddressChanged(QString address)
             }
             else
             {
-                username = crypto.decryptToString( username );
+                username = crypto->machineDecrypt( username );
                 ui_usernameEdit->setText( username );
                 ui_saveUsername->setChecked(true);
 
@@ -208,7 +192,7 @@ void LoginPage::serverAddressChanged(QString address)
                 else
                 {
                     ui_savePassword->setChecked(true);
-                    m_hashedPassword = crypto.decryptToString( password );
+                    m_hashedPassword = crypto->machineDecrypt( password );
                     ui_passwordEdit->setPlaceholderText("Use saved password.");
                     ui_passwordEdit->setText("");
                 }
@@ -279,7 +263,7 @@ void LoginPage::setSSL(bool ssl)
     }
 
     // Set the dbi
-    DBInterface::instance()->setSSL(ssl);
+    RamServerInterface::instance()->setSsl(ssl);
 }
 
 void LoginPage::setupUi()
@@ -384,7 +368,6 @@ void LoginPage::connectEvents()
     connect(ui_passwordEdit, &QLineEdit::returnPressed, this, &LoginPage::loginButton_clicked);
     //connect(DBInterface::instance(), &DBInterface::log, this, &LoginPage::dbiLog);
     //connect(Daemon::instance(), &Daemon::log, this, &LoginPage::daemonLog);
-    connect(DBInterface::instance(), &DBInterface::data, this, &LoginPage::dbiData);
     connect(ui_loginButton, SIGNAL(clicked()), this, SLOT(loginButton_clicked()));
     connect(m_failedTimer, &QTimer::timeout, this, &LoginPage::unFreeze);
     connect(m_uiTimer, &QTimer::timeout, this, &LoginPage::updateFreeze);

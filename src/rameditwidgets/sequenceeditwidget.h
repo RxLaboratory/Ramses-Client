@@ -33,7 +33,7 @@ private:
 
     DuQFColorSelector *ui_colorSelector;
 
-    ObjectListEditWidget<RamItem*, RamSequence*> *ui_shotsList;
+    ObjectListEditWidget *ui_shotsList;
 };
 
 #endif // SEQUENCEEDITWIDGET_H

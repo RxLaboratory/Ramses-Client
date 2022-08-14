@@ -18,7 +18,7 @@ private:
     void setupUi();
     void connectEvents();
 
-    ObjectListEditWidget<RamStatus*, RamStep*> *m_statusList;
+    ObjectListEditWidget *m_statusList;
 
     RamStepStatusHistory *m_history = nullptr;
 };

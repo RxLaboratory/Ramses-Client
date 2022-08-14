@@ -11,6 +11,11 @@ RamAssetGroup *RamAssetGroup::getObject(QString uuid, bool constructNew)
     return qobject_cast<RamAssetGroup*>( obj );
 }
 
+RamAssetGroup *RamAssetGroup::c(RamObject *o)
+{
+    return qobject_cast<RamAssetGroup*>(o);
+}
+
 RamAssetGroup *RamAssetGroup::createFromTemplate(RamTemplateAssetGroup *tempAG, RamProject *project)
 {
     // Create
@@ -78,7 +83,7 @@ void RamAssetGroup::construct()
 {
     m_objectType = AssetGroup;
     m_project = nullptr;
-    m_assets = new RamObjectFilterModel<RamAsset*>(this);
+    m_assets = new RamObjectFilterModel(this);
 }
 
 void RamAssetGroup::setProject(RamProject *project)

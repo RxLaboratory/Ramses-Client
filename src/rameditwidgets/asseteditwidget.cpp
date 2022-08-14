@@ -67,7 +67,7 @@ void AssetEditWidget::setupUi()
     QLabel *assetGroupLabel = new QLabel("Asset group", this);
     ui_mainFormLayout->addWidget(assetGroupLabel, 4, 0);
 
-    ui_assetGroupBox = new RamObjectListComboBox<RamAssetGroup*>(this);
+    ui_assetGroupBox = new RamObjectListComboBox(this);
     ui_mainFormLayout->addWidget(ui_assetGroupBox, 4, 1);
 
     ui_folderWidget = new DuQFFolderDisplayWidget(this);

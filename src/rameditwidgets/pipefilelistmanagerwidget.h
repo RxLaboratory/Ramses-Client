@@ -4,7 +4,7 @@
 #include "objectlistmanagerwidget.h"
 #include "rampipefile.h"
 
-class PipeFileListManagerWidget : public ObjectListManagerWidget<RamPipeFile *, RamProject*>
+class PipeFileListManagerWidget : public ObjectListManagerWidget
 {
     Q_OBJECT
 public:

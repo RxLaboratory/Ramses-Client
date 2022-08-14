@@ -14,7 +14,7 @@ TimelineDelegate::TimelineDelegate(QObject *parent)
 
 void TimelineDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-    RamShot *shot = qobject_cast<RamShot*>(getObject(index));
+    RamShot *shot = RamShot::c( RamObjectList::at(index) );
     if (!shot) return RamObjectDelegate::paint(painter, option, index);
 
     // Base Settings

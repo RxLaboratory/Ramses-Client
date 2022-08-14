@@ -50,7 +50,7 @@ void StatusEditWidget::reInit(RamObject *o)
             RamStepStatusHistory *history = m_status->item()->statusHistory( m_status->step() );
             if (history->rowCount() > 1)
             {
-                RamStatus *previous = history->at( history->rowCount() -2);
+                RamStatus *previous = RamStatus::c( history->at( history->rowCount() -2) );
                 timeSpent = previous->timeSpent();
                 RamFileMetaDataManager mdm( m_status->path(RamObject::VersionsFolder ));
                 if (mdm.isValid())
@@ -584,7 +584,7 @@ void StatusEditWidget::setupUi()
     ui_publishedBox = new QCheckBox("Published",this);
     detailsLayout->addRow("Publication", ui_publishedBox);
 
-    ui_userBox = new RamObjectListComboBox<RamUser*>(true, this);
+    ui_userBox = new RamObjectListComboBox(true, this);
     detailsLayout->addRow("Assigned user", ui_userBox);
 
     bottomLayout->addLayout( detailsLayout);

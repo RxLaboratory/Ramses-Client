@@ -3,10 +3,9 @@
 
 #include "ramobject.h"
 
-template<typename RO> class RamObjectList;
-class RamProject;
+#include "ramproject.h"
+class RamObjectList;
 class RamStep;
-#include "rampipefile.h"
 
 class RamPipe : public RamObject
 {
@@ -16,6 +15,7 @@ public:
     // STATIC //
 
     static RamPipe *getObject(QString uuid, bool constructNew = false);
+    static RamPipe *c(RamObject *o);
 
     // OTHER //
 
@@ -28,7 +28,7 @@ public:
 
     RamProject *project() const;
 
-    RamObjectList<RamPipeFile*> *pipeFiles() const;
+    RamObjectList *pipeFiles() const;
 
 public slots:
     virtual void edit(bool show = true) override;
@@ -44,7 +44,7 @@ private:
     void construct();
     void connectEvents();
 
-    RamObjectList<RamPipeFile*> *m_pipeFiles;
+    RamObjectList *m_pipeFiles;
 };
 
 #endif // RAMPIPE_H

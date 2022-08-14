@@ -63,8 +63,8 @@ void SequenceEditWidget::setupUi()
     ui_colorSelector = new DuQFColorSelector(this);
     ui_mainFormLayout->addWidget(ui_colorSelector, 3, 1);
 
-    ui_shotsList = new ObjectListEditWidget<RamItem*, RamSequence *>(true, RamUser::ProjectAdmin, this);
-    ui_shotsList->setEditMode(ObjectListEditWidget<RamItem*, RamSequence *>::UnassignObjects);
+    ui_shotsList = new ObjectListEditWidget(true, RamUser::ProjectAdmin, this);
+    ui_shotsList->setEditMode(ObjectListEditWidget::UnassignObjects);
     ui_shotsList->setTitle("Shots");
     ui_mainLayout->addWidget(ui_shotsList);
 }

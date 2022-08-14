@@ -22,7 +22,7 @@ struct PaintParameters
 /**
  * @brief The RamObjectDelegate class is the main delegate used to paint RamObject in almost all the lists in Ramses.
  */
-template<typename RO> class RamObjectDelegate : public QStyledItemDelegate
+class RamObjectDelegate : public QStyledItemDelegate
 {
     Q_OBJECT
 public:
@@ -45,9 +45,6 @@ public slots:
 
 protected:
     bool editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index) override;
-
-    // Utils
-    RO getObject(const QModelIndex &index) const;
 
     // drawing specific items
     void drawMore(QPainter *painter, QRect rect, QPen pen) const;
@@ -76,13 +73,13 @@ protected:
 
 private:
     // UTILS //
-    PaintParameters getPaintParameters(const QStyleOptionViewItem &option, RO obj = nullptr) const;
+    PaintParameters getPaintParameters(const QStyleOptionViewItem &option, RamObject *obj = nullptr) const;
     void paintBG(QPainter *painter, PaintParameters *params) const;
-    void paintTitle(RO obj, QPainter *painter, PaintParameters *params) const;
+    void paintTitle(RamObject *obj, QPainter *painter, PaintParameters *params) const;
     void paintTitle(QString title, QPainter *painter, PaintParameters *params) const;
-    void paintButtons(RO obj, QPainter *painter, PaintParameters *params, const QModelIndex &index) const;
+    void paintButtons(RamObject *obj, QPainter *painter, PaintParameters *params, const QModelIndex &index) const;
     void paintDetails(QString details, QPainter *painter, PaintParameters *params) const;
-    void paintDetails(RO obj, QPainter *painter, PaintParameters *params) const;
+    void paintDetails(RamObject *obj, QPainter *painter, PaintParameters *params) const;
 
 
     // Settings

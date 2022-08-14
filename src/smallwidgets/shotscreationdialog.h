@@ -28,7 +28,7 @@ private:
     QString getShortName(int n = -1);
     QString getName(int n = -1);
     RamProject *m_project;
-    RamObjectListComboBox<RamSequence*> *ui_sequenceBox;
+    RamObjectListComboBox *ui_sequenceBox;
 };
 
 #endif // SHOTSCREATIONDIALOG_H

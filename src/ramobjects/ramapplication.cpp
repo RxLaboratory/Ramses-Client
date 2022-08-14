@@ -11,15 +11,20 @@ RamApplication *RamApplication::getObject(QString uuid, bool constructNew)
     return qobject_cast<RamApplication*>( obj );
 }
 
+RamApplication *RamApplication::c(RamObject *o)
+{
+    return qobject_cast<RamApplication*>(o);
+}
+
 // PUBLIC //
 
 RamApplication::RamApplication(QString shortName, QString name):
     RamObject(shortName, name, ObjectType::Application)
 {
     construct();
-    m_nativeFileTypes = new RamObjectList<RamFileType*>(shortName + "-native", name, this);
-    m_importFileTypes = new RamObjectList<RamFileType*>(shortName + "-import", name, this);
-    m_exportFileTypes = new RamObjectList<RamFileType*>(shortName + "-export", name, this);
+    m_nativeFileTypes = new RamObjectList(shortName + "-native", name, this);
+    m_importFileTypes = new RamObjectList(shortName + "-import", name, this);
+    m_exportFileTypes = new RamObjectList(shortName + "-export", name, this);
     QJsonObject d = data();
     d.insert("nativeFileTypes", m_nativeFileTypes->uuid());
     d.insert("importileTypes", m_importFileTypes->uuid());
@@ -37,17 +42,17 @@ void RamApplication::setExecutableFilePath(const QString &executableFilePath)
     insertData("executableFilePath", executableFilePath);
 }
 
-RamObjectList<RamFileType *> *RamApplication::nativeFileTypes() const
+RamObjectList *RamApplication::nativeFileTypes() const
 {
     return m_nativeFileTypes;
 }
 
-RamObjectList<RamFileType *> *RamApplication::importFileTypes() const
+RamObjectList *RamApplication::importFileTypes() const
 {
     return m_importFileTypes;
 }
 
-RamObjectList<RamFileType *> *RamApplication::exportFileTypes() const
+RamObjectList *RamApplication::exportFileTypes() const
 {
     return m_exportFileTypes;
 }
@@ -144,11 +149,11 @@ RamApplication::RamApplication(QString uuid):
     // Populate lists
     QJsonObject d = data();
 
-    m_nativeFileTypes = RamObjectList<RamFileType*>::getObject(d.value("nativeFileTypes").toString(), true);
+    m_nativeFileTypes = RamObjectList::getObject(d.value("nativeFileTypes").toString(), true);
     m_nativeFileTypes->setParent(this);
-    m_importFileTypes = RamObjectList<RamFileType*>::getObject(d.value("importileTypes").toString(), true);
+    m_importFileTypes = RamObjectList::getObject(d.value("importileTypes").toString(), true);
     m_importFileTypes->setParent(this);
-    m_exportFileTypes = RamObjectList<RamFileType*>::getObject(d.value("exportFileTypes").toString(), true);
+    m_exportFileTypes = RamObjectList::getObject(d.value("exportFileTypes").toString(), true);
     m_exportFileTypes->setParent(this);
 }
 

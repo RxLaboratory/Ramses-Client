@@ -2,8 +2,9 @@
 #define SEQUENCELISTMANAGERWIDGET_H
 
 #include "objectlistmanagerwidget.h"
+#include "ramsequence.h"
 
-class SequenceListManagerWidget : public ObjectListManagerWidget<RamSequence*,RamProject*>
+class SequenceListManagerWidget : public ObjectListManagerWidget
 {
     Q_OBJECT
 public:

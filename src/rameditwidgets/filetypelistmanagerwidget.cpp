@@ -3,13 +3,13 @@
 #include "ramses.h"
 
 FileTypeListManagerWidget::FileTypeListManagerWidget(QWidget *parent) :
-    ObjectListManagerWidget<RamFileType*, int>(
+    ObjectListManagerWidget(
         Ramses::instance()->fileTypes(),
         "File types",
         QIcon(":icons/file"),
         parent )
 {
-    m_listEditWidget->setEditMode(ObjectListEditWidget<RamFileType*, int>::RemoveObjects);
+    m_listEditWidget->setEditMode(ObjectListEditWidget::RemoveObjects);
 }
 
 RamFileType *FileTypeListManagerWidget::createObject()

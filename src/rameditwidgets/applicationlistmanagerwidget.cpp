@@ -3,13 +3,13 @@
 #include "ramses.h"
 
 ApplicationListManagerWidget::ApplicationListManagerWidget(QWidget *parent) :
-    ObjectListManagerWidget<RamApplication*,int>(
+    ObjectListManagerWidget(
         Ramses::instance()->applications(),
         "Applications",
         QIcon(":icons/application"),
         parent )
 {
-    m_listEditWidget->setEditMode(ObjectListEditWidget<RamApplication *,int>::RemoveObjects);
+    m_listEditWidget->setEditMode(ObjectListEditWidget::RemoveObjects);
 }
 
 RamApplication *ApplicationListManagerWidget::createObject()

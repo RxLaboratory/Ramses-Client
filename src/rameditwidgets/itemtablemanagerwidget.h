@@ -16,11 +16,11 @@
 #include "data-views/ramstepheaderview.h"
 #include "data-views/ramobjectlistmenu.h"
 
-template<typename ROF> class ItemTableManagerWidget : public QWidget
+class ItemTableManagerWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit ItemTableManagerWidget(QWidget *parent = nullptr);
+    explicit ItemTableManagerWidget(RamStep::Type type, QWidget *parent = nullptr);
 
 public slots:
     void selectAllSteps();
@@ -42,24 +42,24 @@ protected:
     void showEvent(QShowEvent *event) override;
     void hideEvent(QHideEvent *event) override;
 
-    RamObjectListView<RamItem*> *ui_table;
+    RamObjectListView *ui_table;
     DuQFTitleBar *ui_titleBar;
-    RamObjectListComboBox<ROF> *ui_groupBox;
+    RamObjectListComboBox *ui_groupBox;
 
 protected slots:
     virtual void projectChanged(RamProject *project, bool force = false);
 
 private slots:
-    void showUser(RamUser *user, bool s);
-    void showStep(RamStep *step, bool s);
-    void showState(RamState *state, bool s);
+    void showUser(RamObject *user, bool s);
+    void showStep(RamObject *step, bool s);
+    void showState(RamObject *state, bool s);
 
     void checkStepFilters();
     void checkUserFilters();
     void checkStateFilters();
 
     // Filter
-    void filter(ROF filterObj);
+    void filter(RamObject *filterObj);
 
     // Sort
     void uncheckSort();
@@ -73,8 +73,8 @@ private slots:
 
     // Status
     void unassignUser();
-    void assignUser(RamUser *user);
-    void changeState(RamState *stt);
+    void assignUser(RamObject *user);
+    void changeState(RamObject *stt);
     void setVeryEasy();
     void setEasy();
     void setMedium();
@@ -101,7 +101,6 @@ private:
     void loadSettings();
 
     // Specialized functions
-    void beginSettings(QSettings *s);
     void setList();
     void setupItemMenu();
     void setupTable();
@@ -114,13 +113,13 @@ private:
     QAction *ui_actionDeleteItem;
     QAction *ui_actionCreateMultiple;
     QToolButton *ui_userButton;
-    RamObjectListMenu<RamUser*> *ui_userMenu;
+    RamObjectListMenu *ui_userMenu;
     QAction *ui_actionSelectMyself;
     QAction *ui_actionNotAssigned;
     QToolButton *ui_stateButton;
-    RamObjectListMenu<RamState*> *ui_stateMenu;
+    RamObjectListMenu *ui_stateMenu;
     QToolButton *ui_stepButton;
-    RamObjectListMenu<RamStep*> *ui_stepMenu;
+    RamObjectListMenu *ui_stepMenu;
     QAction *ui_actionSelectMySteps ;
     //QAction *ui_actionTimeTracking ;
     //QAction *ui_actionCompletionRatio ;
@@ -132,8 +131,8 @@ private:
     QAction *ui_actionSortByTimeSpent;
     QAction *ui_actionSortByEstimation;
     QAction *ui_actionSortByCompletion;
-    RamObjectListMenu<RamUser*> *ui_assignUserMenu;
-    RamObjectListMenu<RamState*> *ui_changeStateMenu;
+    RamObjectListMenu *ui_assignUserMenu;
+    RamObjectListMenu *ui_changeStateMenu;
     QMenu *ui_changeDifficultyMenu;
     QAction *ui_veryEasy;
     QAction *ui_easy;
@@ -152,11 +151,12 @@ private:
     QAction *ui_copyComment;
     QAction *ui_cutComment;
     QAction *ui_pasteComment;
-    RamObjectListMenu<RamUser*> *ui_assignUserContextMenu;
-    RamObjectListMenu<RamState*> *ui_changeStateContextMenu;
+    RamObjectListMenu *ui_assignUserContextMenu;
+    RamObjectListMenu *ui_changeStateContextMenu;
 
 
     RamProject *m_project = nullptr;
+    RamStep::Type m_productionType;
 
     // utils
     QList<RamStatus*> beginEditSelectedStatus();

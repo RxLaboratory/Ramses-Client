@@ -4,7 +4,7 @@
 #include "objectlistmanagerwidget.h"
 #include "data-views/ramobjectlistmenu.h"
 
-class StepListManagerWidget : public ObjectListManagerWidget<RamStep*, RamProject*>
+class StepListManagerWidget : public ObjectListManagerWidget
 {
     Q_OBJECT
 public:
@@ -18,7 +18,7 @@ private slots:
     void createFromTemplate(RamTemplateStep *templateStep);
 
 private:
-    RamObjectListMenu<RamTemplateStep*> *ui_createMenu;
+    RamObjectListMenu *ui_createMenu;
 };
 
 #endif // STEPLISTMANAGERWIDGET_H

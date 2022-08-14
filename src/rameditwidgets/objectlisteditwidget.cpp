@@ -4,8 +4,7 @@
 
 #include "ramses.h"
 
-template<typename RO, typename ROF>
-ObjectListEditWidget<RO,ROF>::ObjectListEditWidget(bool editableObjects, RamUser::UserRole editRole, QWidget *parent) :
+ObjectListEditWidget::ObjectListEditWidget(bool editableObjects, RamUser::UserRole editRole, QWidget *parent) :
     QWidget(parent)
 {
     m_objectList = nullptr;
@@ -13,8 +12,7 @@ ObjectListEditWidget<RO,ROF>::ObjectListEditWidget(bool editableObjects, RamUser
     connectEvents();
 }
 
-template<typename RO, typename ROF>
-ObjectListEditWidget<RO,ROF>::ObjectListEditWidget(RamObjectList<RO> *objectList, bool editableObjects, RamUser::UserRole editRole, QWidget *parent) :
+ObjectListEditWidget::ObjectListEditWidget(RamObjectList *objectList, bool editableObjects, RamUser::UserRole editRole, QWidget *parent) :
     QWidget(parent)
 {
     setupUi(editableObjects, editRole);
@@ -22,8 +20,7 @@ ObjectListEditWidget<RO,ROF>::ObjectListEditWidget(RamObjectList<RO> *objectList
     setList(objectList);
 }
 
-template<typename RO, typename ROF>
-void ObjectListEditWidget<RO,ROF>::setList(RamObjectList<RO> *objectList)
+void ObjectListEditWidget::setList(RamObjectList *objectList)
 {
     if (m_objectList) disconnect(ui_listWidget->filteredList(), nullptr, this, nullptr);
 
@@ -40,11 +37,10 @@ void ObjectListEditWidget<RO,ROF>::setList(RamObjectList<RO> *objectList)
     connect(ui_listWidget->filteredList(), SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(objectAssigned(QModelIndex,int,int)));
     connect(ui_listWidget->filteredList(), SIGNAL(rowsAboutToBeRemoved(QModelIndex,int,int)), this, SLOT(objectUnassigned(QModelIndex,int,int)));
 
-    objectAssigned(QModelIndex(), 0, m_objectList->count() - 1);
+    objectAssigned(QModelIndex(), 0, m_objectList->rowCount() - 1);
 }
 
-template<typename RO, typename ROF>
-void ObjectListEditWidget<RO,ROF>::setFilterList(RamObjectList<ROF> *filterList)
+void ObjectListEditWidget::setFilterList(RamObjectList *filterList)
 {
     ui_filterBox->setList(filterList);
     m_filterList = filterList;
@@ -60,9 +56,7 @@ void ObjectListEditWidget<RO,ROF>::setFilterList(RamObjectList<ROF> *filterList)
     }
 }
 
-
-template<typename RO, typename ROF>
-void ObjectListEditWidget<RO,ROF>::setAssignList(RamObjectList<RO> *assignList)
+void ObjectListEditWidget::setAssignList(RamObjectList *assignList)
 {
     ui_assignMenu->setList(assignList);
     ui_addButton->setPopupMode(QToolButton::InstantPopup);
@@ -71,65 +65,56 @@ void ObjectListEditWidget<RO,ROF>::setAssignList(RamObjectList<RO> *assignList)
     // hide already assigned
     if(m_objectList)
     {
-        if (m_objectList->count())
-            objectAssigned(QModelIndex(), 0, m_objectList->count() - 1);
+        if (m_objectList->rowCount())
+            objectAssigned(QModelIndex(), 0, m_objectList->rowCount() - 1);
     }
 
     m_useAssignList = true;
 }
 
-template<typename RO, typename ROF>
-void ObjectListEditWidget<RO,ROF>::setDontRemoveShortNameList(QStringList dontRemove)
+void ObjectListEditWidget::setDontRemoveShortNameList(QStringList dontRemove)
 {
     m_dontRemove = dontRemove;
 }
 
-template<typename RO, typename ROF>
-void ObjectListEditWidget<RO,ROF>::clear()
+void ObjectListEditWidget::clear()
 {
     ui_listWidget->setList(nullptr);
 }
 
-template<typename RO, typename ROF>
-void ObjectListEditWidget<RO,ROF>::setEditMode(EditMode editMode)
+void ObjectListEditWidget::setEditMode(EditMode editMode)
 {
     m_editMode = editMode;
 }
 
-template<typename RO, typename ROF>
-void ObjectListEditWidget<RO,ROF>::setEditable(bool editable)
+void ObjectListEditWidget::setEditable(bool editable)
 {
     ui_removeButton->setVisible(editable);
     ui_addButton->setVisible(editable);
 }
 
-template<typename RO, typename ROF>
-void ObjectListEditWidget<RO,ROF>::setSearchable(bool searchable)
+void ObjectListEditWidget::setSearchable(bool searchable)
 {
     ui_searchEdit->setVisible(searchable);
 }
 
-template<typename RO, typename ROF>
-void ObjectListEditWidget<RO,ROF>::setSortable(bool sortable)
+void ObjectListEditWidget::setSortable(bool sortable)
 {
     ui_listWidget->setSortable(sortable);
 }
 
-template<typename RO, typename ROF>
-void ObjectListEditWidget<RO,ROF>::setTitle(QString title)
+void ObjectListEditWidget::setTitle(QString title)
 {
     ui_title->setVisible(title != "");
     ui_title->setText(title);
 }
 
-template<typename RO, typename ROF>
-void ObjectListEditWidget<RO,ROF>::select(RO o)
+void ObjectListEditWidget::select(RamObject *o)
 {
     ui_listWidget->select(o);
 }
 
-template<typename RO, typename ROF>
-void ObjectListEditWidget<RO,ROF>::setFilter(ROF o)
+void ObjectListEditWidget::setFilter(RamObject *o)
 {
     QSignalBlocker b(ui_filterBox);
     ui_filterBox->setObject(o);
@@ -137,32 +122,27 @@ void ObjectListEditWidget<RO,ROF>::setFilter(ROF o)
     ui_listWidget->filter(o);
 }
 
-template<typename RO, typename ROF>
-QToolButton *ObjectListEditWidget<RO,ROF>::addButton() const
+QToolButton *ObjectListEditWidget::addButton() const
 {
     return ui_addButton;
 }
 
-template<typename RO, typename ROF>
-QString ObjectListEditWidget<RO,ROF>::currentFilterUuid() const
+QString ObjectListEditWidget::currentFilterUuid() const
 {
     return ui_filterBox->currentUuid();
 }
 
-template<typename RO, typename ROF>
-ROF ObjectListEditWidget<RO,ROF>::currentFilter() const
+RamObject *ObjectListEditWidget::currentFilter() const
 {
     return ui_filterBox->currentObject();
 }
 
-template<typename RO, typename ROF>
-RamObjectListView<RO> *ObjectListEditWidget<RO,ROF>::listWidget()
+RamObjectListView *ObjectListEditWidget::listWidget()
 {
     return ui_listWidget;
 }
 
-template<typename RO, typename ROF>
-void ObjectListEditWidget<RO,ROF>::removeSelectedObjects()
+void ObjectListEditWidget::removeSelectedObjects()
 {
     QModelIndexList selection = ui_listWidget->selectionModel()->selectedRows();
     if (selection.count() == 0) return;
@@ -179,10 +159,7 @@ void ObjectListEditWidget<RO,ROF>::removeSelectedObjects()
     // Check if we can remove these objects
     for (int i = 0; i < selection.count(); i++)
     {
-        QModelIndex index = selection.at(i);
-        quintptr iptr = index.data(Qt::UserRole).toULongLong();
-        if(iptr == 0) continue;
-        RO o = reinterpret_cast<RO>( iptr );
+        RamObject *o = RamObjectList::at( selection.at(i) );
         // Don't remove yourself if you're a user
         if (o->objectType() == RamObject::User)
         {
@@ -214,7 +191,7 @@ void ObjectListEditWidget<RO,ROF>::removeSelectedObjects()
         }
     }
 
-    QList<RO> objs = m_objectList->removeIndices(selection);
+    QList<RamObject*> objs = m_objectList->removeIndices(selection);
 
     if (m_editMode == RemoveObjects)
     {
@@ -225,121 +202,54 @@ void ObjectListEditWidget<RO,ROF>::removeSelectedObjects()
     }
 }
 
-template<>
-void ObjectListEditWidget<RamUser *, int>::removeSelectedObjects()
-{
-    QModelIndexList selection = ui_listWidget->selectionModel()->selectedRows();
-    if (selection.count() == 0) return;
-
-    if (m_editMode == RemoveObjects)
-    {
-        QMessageBox::StandardButton confirm = QMessageBox::question( this,
-            "Confirm deletion",
-            "Are you sure you want to permanently remove the selected users?" );
-
-        if ( confirm != QMessageBox::Yes) return;
-    }
-
-    // Check if we can remove these objects
-    for (int i = 0; i < selection.count(); i++)
-    {
-        QModelIndex index = selection.at(i);
-        quintptr iptr = index.data(Qt::UserRole).toULongLong();
-        if(iptr == 0) continue;
-        RamUser *o = reinterpret_cast<RamUser *>( iptr );
-        // Don't remove yourself if you're a user
-        if (o->is( Ramses::instance()->currentUser() ))
-        {
-            QMessageBox::information(this,
-                                     "Can't remove this user",
-                                     "Sorry, you can't remove yourself!\nAsk for someone else to remove you, that's safer.");
-            return;
-        }
-        if (m_dontRemove.contains(o->shortName()))
-        {
-            QMessageBox::information(this,
-                                     "Can't remove this",
-                                     "Sorry, " + o->shortName() + " | " + o->name() + " must not be removed.");
-            return;
-        }
-        if (o->shortName() == "Duduf" && o->comment() != "")
-        {
-            QMessageBox::StandardButton result = QMessageBox::question(this,
-                                     "Please read this before removing Duduf!",
-                                     o->comment() + "\n\nDo you want to go to the website to make a donation?");
-            if (result == QMessageBox::Yes)
-            {
-                QDesktopServices::openUrl(QUrl(URL_DONATION));
-                return;
-            }
-        }
-    }
-
-    QList<RamUser *> objs = m_objectList->removeIndices(selection);
-
-    if (m_editMode == RemoveObjects)
-    {
-        for (int i = objs.count() -1 ; i >= 0; i--)
-        {
-            objs.at(i)->remove();
-        }
-    }
-}
-
-template<typename RO, typename ROF>
-void ObjectListEditWidget<RO,ROF>::edit(RO obj)
+void ObjectListEditWidget::edit(RamObject *obj)
 {
     obj->edit();
 }
 
-template<typename RO, typename ROF>
-void ObjectListEditWidget<RO,ROF>::assign(RO obj)
+void ObjectListEditWidget::assign(RamObject *obj)
 {
     m_objectList->append(obj);
 }
 
-template<typename RO, typename ROF>
-void ObjectListEditWidget<RO,ROF>::objectAssigned(const QModelIndex &parent, int first, int last)
+void ObjectListEditWidget::objectAssigned(const QModelIndex &parent, int first, int last)
 {
     Q_UNUSED(parent)
 
     if (!m_useAssignList) return;
 
-    RamObjectFilterModel<ROF> *filteredList = ui_listWidget->filteredList();
+    RamObjectFilterModel *filteredList = ui_listWidget->filteredList();
 
     for (int i = first ; i <= last; i++)
     {
-        ROF assignedObj = filteredList->at(i);
+        RamObject *assignedObj = filteredList->at(i);
         ui_assignMenu->setObjectVisible(assignedObj, false);
     }
 }
 
-template<typename RO, typename ROF>
-void ObjectListEditWidget<RO,ROF>::objectUnassigned(const QModelIndex &parent, int first, int last)
+void ObjectListEditWidget::objectUnassigned(const QModelIndex &parent, int first, int last)
 {
     Q_UNUSED(parent)
 
     if (!m_useAssignList) return;
 
-    RamObjectFilterModel<ROF> *filteredList = ui_listWidget->filteredList();
+    RamObjectFilterModel *filteredList = ui_listWidget->filteredList();
 
     for (int i = first ; i <= last; i++)
     {
-        RO assignedObj = filteredList->at(i);
+        RamObject *assignedObj = filteredList->at(i);
         if (!assignedObj) continue;
         ui_assignMenu->setObjectVisible(assignedObj, true);
     }
 }
 
-template<typename RO, typename ROF>
-void ObjectListEditWidget<RO,ROF>::setSearchFocus()
+void ObjectListEditWidget::setSearchFocus()
 {
     ui_listWidget->releaseKeyboard();
     ui_searchEdit->setFocus();
 }
 
-template<typename RO, typename ROF>
-void ObjectListEditWidget<RO,ROF>::setupUi(bool editableObjects, RamUser::UserRole editRole)
+void ObjectListEditWidget::setupUi(bool editableObjects, RamUser::UserRole editRole)
 {
     this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
@@ -355,7 +265,7 @@ void ObjectListEditWidget<RO,ROF>::setupUi(bool editableObjects, RamUser::UserRo
     ui_title->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
     buttonsLayout->addWidget(ui_title);
 
-    ui_filterBox = new RamObjectListComboBox<RamObject *>(true, this);
+    ui_filterBox = new RamObjectListComboBox(true, this);
     ui_filterBox->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
     buttonsLayout->addWidget(ui_filterBox);
 
@@ -374,7 +284,7 @@ void ObjectListEditWidget<RO,ROF>::setupUi(bool editableObjects, RamUser::UserRo
     ui_searchEdit = new DuQFSearchEdit(this);
     mainLayout->addWidget(ui_searchEdit);
 
-    ui_listWidget = new RamObjectListView<RO>(m_objectList, editableObjects, editRole, RamObjectListView<RO>::List, this);
+    ui_listWidget = new RamObjectListView(m_objectList, editableObjects, editRole, RamObjectListView::List, this);
     mainLayout->addWidget(ui_listWidget);
 
     mainLayout->setStretch(0, 0);
@@ -388,16 +298,15 @@ void ObjectListEditWidget<RO,ROF>::setupUi(bool editableObjects, RamUser::UserRo
     // Hide filters until at least one is added
     setFilterList(nullptr);
 
-    ui_assignMenu = new RamObjectListMenu<RO>(false, this);
+    ui_assignMenu = new RamObjectListMenu(false, this);
     ui_assignMenu->addCreateButton();
 }
 
-template<typename RO, typename ROF>
-void ObjectListEditWidget<RO,ROF>::connectEvents()
+void ObjectListEditWidget::connectEvents()
 {
     // add & remove buttons
     connect(ui_addButton, &QToolButton::clicked, this, &ObjectListEditWidget::add);
-    connect(ui_assignMenu, &RamObjectListMenu<RO>::create, this, &ObjectListEditWidget::add);
+    connect(ui_assignMenu, &RamObjectListMenu::createTriggered, this, &ObjectListEditWidget::add);
     connect(ui_removeButton, SIGNAL(clicked()), this, SLOT(removeSelectedObjects()));
     connect(ui_assignMenu,SIGNAL(assign(RamObject*)),this,SLOT(assign(RamObject*)));
     // search
@@ -408,7 +317,7 @@ void ObjectListEditWidget<RO,ROF>::connectEvents()
     // edit objects
     connect(ui_listWidget, SIGNAL(editObject(RamObject*)), this, SLOT(edit(RamObject*)));
     // Relay list signals
-    connect(ui_listWidget, &RamObjectListView<RO>::objectSelected, this, &ObjectListEditWidget::objectSelected);
+    connect(ui_listWidget, &RamObjectListView::objectSelected, this, &ObjectListEditWidget::objectSelected);
 
     // Shortcuts
     QShortcut *s = new QShortcut(QKeySequence(QKeySequence::Delete), ui_listWidget, nullptr, nullptr, Qt::WidgetWithChildrenShortcut );

@@ -3,7 +3,7 @@
 
 #include "objectlistmanagerwidget.h"
 
-class TemplateStepListManagerWidget : public ObjectListManagerWidget<RamTemplateStep*,int>
+class TemplateStepListManagerWidget : public ObjectListManagerWidget
 {
     Q_OBJECT
 public:

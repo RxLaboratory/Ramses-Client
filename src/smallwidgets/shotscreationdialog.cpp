@@ -1,6 +1,8 @@
 #include "shotscreationdialog.h"
 #include "duqf-utils/utils.h"
 
+#include "ramsequence.h"
+
 ShotsCreationDialog::ShotsCreationDialog(RamProject *proj, QWidget *parent) :
     QDialog(parent)
 {
@@ -10,7 +12,7 @@ ShotsCreationDialog::ShotsCreationDialog(RamProject *proj, QWidget *parent) :
     setupUi(this);
 
     // Add the Sequence selector
-    ui_sequenceBox = new RamObjectListComboBox<RamSequence*>(m_project->sequences(), this);
+    ui_sequenceBox = new RamObjectListComboBox(m_project->sequences(), this);
     ui_sequenceLayout->addWidget(ui_sequenceBox);
 
     QRegExp rxsn = RegExUtils::getRegExp("shotshortname");
@@ -65,7 +67,7 @@ void ShotsCreationDialog::create()
     int startNumber = ui_nStartEdit->text().toInt();
     int endNumber = ui_nEndEdit->text().toInt();
 
-    RamSequence *seq = ui_sequenceBox->currentObject();
+    RamSequence *seq = RamSequence::c( ui_sequenceBox->currentObject() );
 
     for(int i = startNumber; i <= endNumber; i++)
     {

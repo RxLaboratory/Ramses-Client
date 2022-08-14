@@ -9,6 +9,11 @@ RamScheduleComment *RamScheduleComment::getObject(QString uuid, bool constructNe
     return qobject_cast<RamScheduleComment*>( obj );
 }
 
+RamScheduleComment *RamScheduleComment::c(RamObject *o)
+{
+    return qobject_cast<RamScheduleComment*>(o);
+}
+
 // PUBLIC //
 
 RamScheduleComment::RamScheduleComment(RamProject *project)

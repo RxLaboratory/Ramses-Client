@@ -34,9 +34,9 @@ private:
     void connectEvents();
 
     DuQFFolderSelectorWidget *m_folderSelector;
-    ObjectListEditWidget<RamFileType*, int> *m_nativeList;
-    ObjectListEditWidget<RamFileType*, int> *m_importList;
-    ObjectListEditWidget<RamFileType*, int> *m_exportList;
+    ObjectListEditWidget *m_nativeList;
+    ObjectListEditWidget *m_importList;
+    ObjectListEditWidget *m_exportList;
 };
 
 #endif // APPLICATIONEDITWIDGET_H

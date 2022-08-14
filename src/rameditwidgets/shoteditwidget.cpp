@@ -1,5 +1,6 @@
 #include "shoteditwidget.h"
 #include "ramproject.h"
+#include "ramsequence.h"
 
 ShotEditWidget::ShotEditWidget(QWidget *parent) :
     ObjectEditWidget(parent)
@@ -101,14 +102,14 @@ void ShotEditWidget::setupUi()
     QLabel *seqLabel = new QLabel("Sequence", this);
     ui_mainFormLayout->addWidget(seqLabel, 5,0);
 
-    ui_sequencesBox = new RamObjectListComboBox<RamSequence*>(this);
+    ui_sequencesBox = new RamObjectListComboBox(this);
     ui_mainFormLayout->addWidget(ui_sequencesBox, 5, 1);
 
     ui_folderWidget = new DuQFFolderDisplayWidget(this);
     ui_mainLayout->addWidget( ui_folderWidget);
 
-    ui_assetList = new ObjectListEditWidget<RamItem*, RamAssetGroup *>(true, RamUser::Lead, this);
-    ui_assetList->setEditMode(ObjectListEditWidget<RamItem*, RamAssetGroup *>::UnassignObjects);
+    ui_assetList = new ObjectListEditWidget(true, RamUser::Lead, this);
+    ui_assetList->setEditMode(ObjectListEditWidget::UnassignObjects);
     ui_assetList->setEditable(true);
     ui_assetList->setSearchable(true);
     ui_assetList->setTitle("Assets");

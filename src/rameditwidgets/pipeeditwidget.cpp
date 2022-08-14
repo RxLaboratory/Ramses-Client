@@ -1,5 +1,7 @@
 #include "pipeeditwidget.h"
 
+#include "rampipefile.h"
+
 PipeEditWidget::PipeEditWidget(QWidget *parent) :
     ObjectEditWidget(parent)
 {
@@ -69,14 +71,14 @@ void PipeEditWidget::setInputStep(int i)
 {
     Q_UNUSED(i)
     if (!m_pipe) return;
-    m_pipe->setInputStep(ui_fromBox->currentObject());
+    m_pipe->setInputStep(RamStep::c( ui_fromBox->currentObject() ));
 }
 
 void PipeEditWidget::setOutputStep(int i)
 {
     Q_UNUSED(i)
     if (!m_pipe) return;
-    m_pipe->setOutputStep(ui_fromBox->currentObject());
+    m_pipe->setOutputStep(RamStep::c( ui_fromBox->currentObject() ));
 }
 
 void PipeEditWidget::setupUi()
@@ -89,17 +91,17 @@ void PipeEditWidget::setupUi()
     QLabel *fromLabel = new QLabel("From", this);
     ui_mainFormLayout->addWidget(fromLabel, 3, 0);
 
-    ui_fromBox = new RamObjectListComboBox<RamStep*>(this);
+    ui_fromBox = new RamObjectListComboBox(this);
     ui_mainFormLayout->addWidget(ui_fromBox, 3, 1);
 
     QLabel *toLabel = new QLabel("To", this);
     ui_mainFormLayout->addWidget(toLabel, 4, 0);
 
-    ui_toBox = new RamObjectListComboBox<RamStep*>(this);
+    ui_toBox = new RamObjectListComboBox(this);
     ui_mainFormLayout->addWidget(ui_toBox, 4, 1);
 
-    ui_pipeFileList = new ObjectListEditWidget<RamPipeFile*,RamProject*>(true, RamUser::ProjectAdmin, this);
-    ui_pipeFileList->setEditMode(ObjectListEditWidget<RamPipeFile*,RamProject*>::UnassignObjects);
+    ui_pipeFileList = new ObjectListEditWidget(true, RamUser::ProjectAdmin, this);
+    ui_pipeFileList->setEditMode(ObjectListEditWidget::UnassignObjects);
     ui_pipeFileList->setTitle("Files");
     ui_mainLayout->addWidget(ui_pipeFileList);
 }

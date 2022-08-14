@@ -49,7 +49,7 @@ private:
     QDateEdit *ui_deadlineEdit;
     QToolButton *ui_savePathButton;
     QToolButton *ui_reinitPathButton;
-    ObjectListEditWidget<RamUser*, RamProject*> *ui_userList;
+    ObjectListEditWidget *ui_userList;
 };
 
 #endif // PROJECTEDITWIDGET_H

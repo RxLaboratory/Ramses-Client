@@ -34,7 +34,7 @@ private:
 
     DuQFFolderDisplayWidget *ui_folderWidget;
     QLineEdit *ui_tagsEdit;
-    RamObjectListComboBox<RamAssetGroup*> *ui_assetGroupBox;
+    RamObjectListComboBox *ui_assetGroupBox;
 };
 
 #endif // ASSETEDITWIDGET_H

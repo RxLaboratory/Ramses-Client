@@ -2,13 +2,12 @@
 #define RAMSTATELIST_H
 
 #include "ramobjectlist.h"
-#include "ramstate.h"
 
 /**
  * @brief The RamStateList class stores the list of available states in Ramses.
  * It is just a simple heritance of RamObjectList used to sort the states according to their completion ratio.
  */
-class RamStateList : public RamObjectList<RamState*>
+class RamStateList : public RamObjectList
 {
 public:
     explicit RamStateList(QObject *parent = nullptr);

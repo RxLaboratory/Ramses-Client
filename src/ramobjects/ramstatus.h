@@ -30,6 +30,7 @@ public:
     // STATIC METHODS //
 
     static RamStatus *getObject(QString uuid, bool constructNew = false);
+    static RamStatus *c(RamObject *o);
 
     static RamStatus *copy(RamStatus *other, RamUser *user);
 
@@ -64,7 +65,7 @@ public:
     void setPublished(bool published);
 
     RamUser *assignedUser() const;
-    void assignUser(RamUser *assignedUser);
+    void assignUser(RamObject *assignedUser);
 
     qint64 timeSpent() const; // seconds
     void setTimeSpent(const float &ts);
@@ -90,8 +91,6 @@ public:
     QString createFileFromResource(QString filePath) const;
 
     QString restoreVersionFile(QString fileName) const;
-
-    QString previewImagePath() const;
 
     virtual QString details() const override;
     virtual QString subDetails() const override;

@@ -11,6 +11,11 @@ RamTemplateAssetGroup *RamTemplateAssetGroup::getObject(QString uuid, bool const
     return qobject_cast<RamTemplateAssetGroup*>( obj );
 }
 
+RamTemplateAssetGroup *RamTemplateAssetGroup::c(RamObject *o)
+{
+    return qobject_cast<RamTemplateAssetGroup*>(o);
+}
+
 // PUBLIC //
 
 RamTemplateAssetGroup::RamTemplateAssetGroup(QString shortName, QString name) :

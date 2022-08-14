@@ -17,6 +17,11 @@ RamUser *RamUser::getObject(QString uuid, bool constructNew )
     return qobject_cast<RamUser*>( obj );
 }
 
+RamUser *RamUser::c(RamObject *o)
+{
+    return qobject_cast<RamUser*>(o);
+}
+
 // PUBLIC //
 
 RamUser::RamUser(QString shortName, QString name) :
@@ -24,7 +29,7 @@ RamUser::RamUser(QString shortName, QString name) :
 {
     construct();
 
-    m_schedule = new RamObjectList<RamScheduleEntry*>(shortName + "-schdl", name + " | Schedule", this);
+    m_schedule = new RamObjectList(shortName + "-schdl", name + " | Schedule", this);
     insertData("schedule", m_schedule->uuid());
 }
 
@@ -72,7 +77,7 @@ void RamUser::setRole(const QString role)
     insertData("role", role);
 }
 
-RamObjectList<RamScheduleEntry*> *RamUser::schedule() const
+RamObjectList *RamUser::schedule() const
 {
     return m_schedule;
 }
@@ -82,7 +87,7 @@ bool RamUser::isStepAssigned(RamStep *step) const
     // Check in schedule
     for(int i = 0; i < m_schedule->rowCount(); i++)
     {
-        RamScheduleEntry *entry = m_schedule->at(i);
+        RamScheduleEntry *entry = RamScheduleEntry::c( m_schedule->at(i) );
         if (!entry) continue;
 
         if (step->is(entry->step())) return true;
@@ -97,7 +102,7 @@ bool RamUser::isStepAssigned(RamStep *step) const
 
     for (int i =0; i < items->rowCount(); i++)
     {
-        RamItem *item = items->at(i);
+        RamItem *item = RamItem::c( items->at(i) );
         RamStatus *status = item->status(step);
         if (!status) continue;
         if (this->is(status->assignedUser())) return true;
@@ -163,7 +168,7 @@ RamUser::RamUser(QString uuid):
 {
     construct();
 
-    m_schedule = RamObjectList<RamScheduleEntry*>::getObject( getData("schedule").toString(), true);
+    m_schedule = RamObjectList::getObject( getData("schedule").toString(), true);
 }
 
 QString RamUser::folderPath() const

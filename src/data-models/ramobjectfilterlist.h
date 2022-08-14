@@ -9,11 +9,11 @@
  * @brief The RamObjectFilterList class is used to add an "ALL" item in the top of a list,
  * Used by QComboBox when displaying a list of filters.
  */
-template<typename RO> class RamObjectFilterList : public QSortFilterProxyModel
+class RamObjectFilterList : public QSortFilterProxyModel
 {
 public:
     RamObjectFilterList(QObject *parent = nullptr);
-    void setList(RamObjectList<RO> *list);
+    void setList(RamObjectList *list);
 
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
@@ -24,10 +24,10 @@ public:
     QModelIndex parent(const QModelIndex &child) const override;
 
     // LIST INFO
-    RO at(int i );
+    RamObject *at(int i );
 
 private:
-    RamObjectList<RO> *m_objectList = nullptr;
+    RamObjectList *m_objectList = nullptr;
 };
 
 #endif // RAMOBJECTFILTERLIST_H

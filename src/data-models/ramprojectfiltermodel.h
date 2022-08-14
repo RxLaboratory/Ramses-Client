@@ -20,7 +20,6 @@ private slots:
 
 private:
     QStringList m_userUuids;
-    QMap<QString, QList<QMetaObject::Connection>> m_projectConnections;
 };
 
 #endif // RAMPROJECTFILTERMODEL_H

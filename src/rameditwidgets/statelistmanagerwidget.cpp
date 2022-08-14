@@ -3,13 +3,13 @@
 #include "ramses.h"
 
 StateListManagerWidget::StateListManagerWidget(QWidget *parent) :
-    ObjectListManagerWidget<RamState*, int>(
+    ObjectListManagerWidget(
         Ramses::instance()->states(),
         "States",
         QIcon(":icons/state-l"),
         parent)
 {
-    m_listEditWidget->setEditMode(ObjectListEditWidget<RamState*, int>::RemoveObjects);
+    m_listEditWidget->setEditMode(ObjectListEditWidget::RemoveObjects);
     QStringList dontRemove;
     dontRemove << "TODO" << "STB" << "NO" << "WIP" << "OK";
     m_listEditWidget->setDontRemoveShortNameList(dontRemove);

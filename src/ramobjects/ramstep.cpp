@@ -1,5 +1,6 @@
 #include "ramstep.h"
 
+#include "ramapplication.h"
 #include "ramassetgroup.h"
 #include "ramscheduleentry.h"
 #include "ramses.h"
@@ -18,6 +19,11 @@ RamStep *RamStep::getObject(QString uuid, bool constructNew)
     return qobject_cast<RamStep*>( obj );
 }
 
+RamStep *RamStep::c(RamObject *o)
+{
+    return qobject_cast<RamStep*>(o);
+}
+
 RamStep *RamStep::createFromTemplate(RamTemplateStep *tempStep, RamProject *project)
 {
     RamStep *step = new RamStep(tempStep->shortName(), tempStep->name(), project);
@@ -25,7 +31,7 @@ RamStep *RamStep::createFromTemplate(RamTemplateStep *tempStep, RamProject *proj
     // Copy data
 
     // populate apps list
-    RamObjectList<RamApplication*> *apps = tempStep->applications();
+    RamObjectList *apps = tempStep->applications();
     for (int i = 0; i < apps->rowCount(); i++)
     {
         step->applications()->append(apps->at(i));
@@ -139,7 +145,7 @@ QList<float> RamStep::stats(RamUser *user)
     // Count assigned and future days
     for (int j = 0; j < user->schedule()->rowCount(); j++)
     {
-        RamScheduleEntry *entry = user->schedule()->at(j);
+        RamScheduleEntry *entry = RamScheduleEntry::c( user->schedule()->at(j) );
         if (!entry) continue;
         if (this->is(entry->step()))
         {
@@ -149,7 +155,7 @@ QList<float> RamStep::stats(RamUser *user)
     }
 
     // check completed days
-    RamObjectList<RamItem*> *items;
+    RamObjectList *items;
     if (type() == ShotProduction) items = m_project->shots();
     else if(type() == AssetProduction) items = m_project->assets();
     else return QList<float>() << 0 << 0 << assignedHalfDays / 2.0 << assignedFutureHalfDays / 2.0;
@@ -161,7 +167,7 @@ QList<float> RamStep::stats(RamUser *user)
 
     for (int i =0; i < items->rowCount(); i++)
     {
-        RamItem *item = items->at(i);
+        RamItem *item = RamItem::c(items->at(i));
         RamStatus *status = item->status(this);
 
         if (!status) continue;
@@ -195,7 +201,7 @@ void RamStep::openFile(QString filePath) const
     // Get the application
     for (int i = 0; i < m_applications->rowCount(); i++)
     {
-        RamApplication *app = m_applications->at(i);
+        RamApplication *app = RamApplication::c( m_applications->at(i) );
         if (app->open( filePath )) return;
     }
 
@@ -221,13 +227,13 @@ QList<RamWorkingFolder> RamStep::templateWorkingFolders() const
     return templateFolders;
 }
 
-QList<RamFileType *> RamStep::inputFileTypes()
+QList<RamObject *> RamStep::inputFileTypes()
 {
-    QList<RamFileType *> fts;
+    QList<RamObject *> fts;
 
     for ( int i = 0; i < m_applications->rowCount(); i++)
     {
-        RamApplication *app = m_applications->at(i);
+        RamApplication *app = RamApplication::c( m_applications->at(i) );
         fts.append( app->importFileTypes()->toList() );
         fts.append( app->nativeFileTypes()->toList() );
     }
@@ -235,13 +241,13 @@ QList<RamFileType *> RamStep::inputFileTypes()
     return fts;
 }
 
-QList<RamFileType *> RamStep::outputFileTypes()
+QList<RamObject *> RamStep::outputFileTypes()
 {
-    QList<RamFileType *> fts;
+    QList<RamObject *> fts;
 
     for ( int i = 0; i < m_applications->rowCount(); i++)
     {
-        RamApplication *app = m_applications->at(i);
+        RamApplication *app = RamApplication::c( m_applications->at(i) );
         fts.append( app->exportFileTypes()->toList() );
         fts.append( app->nativeFileTypes()->toList() );
     }
@@ -283,7 +289,7 @@ void RamStep::computeEstimation()
 
     for (int i =0; i < items->rowCount(); i++)
     {
-        RamItem *item = items->at(i);
+        RamItem *item = RamItem::c( items->at(i) );
         RamStatus *status = item->status(this);
 
         if (!status) continue;
@@ -327,12 +333,12 @@ void RamStep::countAssignedDays()
 
     for (int i = 0; i < m_project->users()->rowCount(); i++)
     {
-        RamUser *u = m_project->users()->at(i);
+        RamUser *u = RamUser::c( m_project->users()->at(i) );
         if (!u) continue;
 
         for (int j = 0; j < u->schedule()->rowCount(); j++)
         {
-            RamScheduleEntry *entry = u->schedule()->at(j);
+            RamScheduleEntry *entry = RamScheduleEntry::c( u->schedule()->at(j) );
             if (!entry) continue;
             if (this->is(entry->step()))
             {

@@ -12,6 +12,11 @@ RamItem *RamItem::getObject(QString uuid, bool constructNew)
     return qobject_cast<RamItem*>( obj );
 }
 
+RamItem *RamItem::c(RamObject *o)
+{
+    return qobject_cast<RamItem*>(o);
+}
+
 // PUBLIC //
 
 RamItem::RamItem(QString shortName, QString name, RamStep::Type productionType, RamProject *project) :
@@ -118,7 +123,7 @@ RamUser *RamItem::assignedUser(RamStep *step)
     return nullptr;
 }
 
-bool RamItem::isUserAssigned(RamUser *u, RamStep *step)
+bool RamItem::isUserAssigned(RamObject *u, RamStep *step)
 {
     if(step)
     {
@@ -157,16 +162,16 @@ bool RamItem::isUnassigned(RamStep *step)
     return false;
 }
 
-bool RamItem::hasState(RamState *state, RamStep *step)
+bool RamItem::hasState(RamObject *state, RamStep *step)
 {
     RamState *noState = Ramses::instance()->noState();
 
     if(step)
     {
         RamStatus *s = status(step);
-        if (!s && state->is(noState)) return true;
+        if (!s && noState->is(state)) return true;
         if (!s) return false;
-        if( !s->state() && state->is(noState)) return true;
+        if( !s->state() && noState->is(state)) return true;
         if( !s->state()) return false;
         return s->state()->is(state);
     }
@@ -182,31 +187,6 @@ bool RamItem::hasState(RamState *state, RamStep *step)
         if(s.at(i)->state()->is(state)) return true;
     }
     return false;
-}
-
-QString RamItem::previewImagePath() const
-{
-    QDir previewDir = path(RamObject::PreviewFolder);
-    QStringList filters;
-    filters << "*.jpg" << "*.png" << "*.jpeg" << "*.gif";
-    QStringList images = previewDir.entryList(filters, QDir::Files );
-
-    if (images.count() == 0) return "";
-
-    RamNameManager nm;
-
-    foreach(QString file, images)
-    {
-        if (nm.setFileName(file))
-        {
-            if (nm.project().toLower() != m_project->shortName().toLower()) continue;
-            if (nm.shortName().toLower() != shortName().toLower()) continue;
-            return previewDir.filePath( file );
-        }
-    }
-
-    // Not found, return the first one
-    return previewDir.filePath( images.at(0) );
 }
 
 // PROTECTED //

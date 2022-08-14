@@ -39,8 +39,8 @@ private:
     DuQFFolderDisplayWidget *ui_folderWidget;
     AutoSelectDoubleSpinBox *ui_secondsBox;
     AutoSelectSpinBox *ui_framesBox;
-    RamObjectListComboBox<RamSequence*> *ui_sequencesBox;
-    ObjectListEditWidget<RamItem*, RamAssetGroup*> *ui_assetList;
+    RamObjectListComboBox *ui_sequencesBox;
+    ObjectListEditWidget *ui_assetList;
 };
 
 #endif // SHOTEDITWIDGET_H

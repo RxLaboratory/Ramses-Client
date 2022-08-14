@@ -2,6 +2,7 @@
 
 #include "duqf-utils/guiutils.h"
 #include "ramscheduleentry.h"
+#include "ramschedulecomment.h"
 #include "ramses.h"
 
 ScheduleManagerWidget::ScheduleManagerWidget(QWidget *parent) : QWidget(parent)
@@ -541,7 +542,7 @@ void ScheduleManagerWidget::setupUi()
     viewButton->setPopupMode(QToolButton::InstantPopup);
     ui_titleBar->insertLeft(viewButton);
 
-    ui_userMenu = new RamObjectListMenu<RamUser*>(true, this);
+    ui_userMenu = new RamObjectListMenu(true, this);
 
     ui_meAction = new QAction("Me", this);
     ui_userMenu->insertAction( ui_userMenu->actions().at(0), ui_meAction);
@@ -623,7 +624,7 @@ void ScheduleManagerWidget::setupUi()
 
     stepMenu->addSeparator();
 
-    ui_stepMenu = new RamObjectListMenu<RamStep*>(false, this);
+    ui_stepMenu = new RamObjectListMenu(false, this);
     ui_stepMenu->setTitle("Assign");
     ui_stepMenu->addCreateButton();
     ui_stepMenu->actions().at(0)->setText("None");
@@ -703,7 +704,7 @@ void ScheduleManagerWidget::setupUi()
 
     ui_contextMenu->addSeparator();
 
-    ui_stepContextMenu = new RamObjectListMenu<RamStep*>(false, this);
+    ui_stepContextMenu = new RamObjectListMenu(false, this);
     ui_stepContextMenu->setTitle("Assign");
     ui_stepContextMenu->addCreateButton();
     ui_stepContextMenu->actions().at(0)->setText("None");

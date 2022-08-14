@@ -201,7 +201,7 @@ bool RamScheduleDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, 
             if (proj)
             {
                 QMainWindow *mw = GuiUtils::appMainWindow();
-                RamObjectListComboBox<RamStep*> *editor = new RamObjectListComboBox<RamStep*>( true, mw );
+                RamObjectListComboBox *editor = new RamObjectListComboBox( true, mw );
                 editor->setList(proj->steps());
                 QRect rect = option.rect.adjusted(m_padding,2,-m_padding,-2);
                 editor->setGeometry( rect );

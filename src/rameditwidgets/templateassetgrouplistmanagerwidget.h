@@ -4,7 +4,7 @@
 #include "objectlistmanagerwidget.h"
 #include "ramtemplateassetgroup.h"
 
-class TemplateAssetGroupListManagerWidget : public ObjectListManagerWidget<RamTemplateAssetGroup*, int>
+class TemplateAssetGroupListManagerWidget : public ObjectListManagerWidget
 {
     Q_OBJECT
 public:

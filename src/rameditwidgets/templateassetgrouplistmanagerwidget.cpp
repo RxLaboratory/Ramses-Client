@@ -3,13 +3,13 @@
 #include "ramses.h"
 
 TemplateAssetGroupListManagerWidget::TemplateAssetGroupListManagerWidget(QWidget *parent) :
-    ObjectListManagerWidget<RamTemplateAssetGroup*, int>(
+    ObjectListManagerWidget(
         Ramses::instance()->templateAssetGroups(),
         "Template asset groups",
         QIcon(":icons/asset-group"),
         parent )
 {
-    m_listEditWidget->setEditMode(ObjectListEditWidget<RamTemplateAssetGroup*, int>::RemoveObjects);
+    m_listEditWidget->setEditMode(ObjectListEditWidget::RemoveObjects);
 }
 
 RamTemplateAssetGroup *TemplateAssetGroupListManagerWidget::createObject()

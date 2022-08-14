@@ -5,14 +5,14 @@
 #include "ramses.h"
 
 AssetListManagerWidget::AssetListManagerWidget(QWidget *parent):
-    ObjectListManagerWidget<RamItem*, RamAssetGroup*>(
+    ObjectListManagerWidget(
         "Assets",
         QIcon(":icons/asset"),
         parent)
 {
     changeProject(Ramses::instance()->currentProject());
     connect(Ramses::instance(), SIGNAL(currentProjectChanged(RamProject*)), this, SLOT(changeProject(RamProject*)));
-    m_listEditWidget->setEditMode(ObjectListEditWidget<RamItem*, RamAssetGroup*>::RemoveObjects);
+    m_listEditWidget->setEditMode(ObjectListEditWidget::RemoveObjects);
 }
 
 RamItem *AssetListManagerWidget::createObject()
@@ -21,7 +21,7 @@ RamItem *AssetListManagerWidget::createObject()
     if (!project) return nullptr;
     if (project->assetGroups()->rowCount() == 0 ) return nullptr;
     RamAssetGroup *ag = RamAssetGroup::getObject( currentFilterUuid() );
-    if (!ag) ag = project->assetGroups()->at(0);
+    if (!ag) ag = RamAssetGroup::c( project->assetGroups()->at(0) );
     if (!ag) return nullptr;
 
     RamAsset *asset = new RamAsset(

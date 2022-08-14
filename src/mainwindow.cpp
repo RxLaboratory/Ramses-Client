@@ -191,14 +191,14 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
 #endif
 
 #ifndef DEACTIVATE_ASSETSTABLE
-    ItemTableManagerWidget<RamAssetGroup*> *assetsTable = new ItemTableManagerWidget<RamAssetGroup*>(this);
+    ItemTableManagerWidget *assetsTable = new ItemTableManagerWidget(RamStep::AssetProduction, this);
     mainStack->addWidget(assetsTable);
     connect(assetsTable, SIGNAL(closeRequested()), this, SLOT(home()));
     qDebug() << "> Assets table ready";
 #endif
 
 #ifndef DEACTIVATE_SHOTSTABLE
-    ItemTableManagerWidget<RamSequence*> *shotsTable = new ItemTableManagerWidget<RamSequence*>(this);
+    ItemTableManagerWidget *shotsTable = new ItemTableManagerWidget(RamStep::ShotProduction, this);
     mainStack->addWidget(shotsTable);
     connect(shotsTable, SIGNAL(closeRequested()), this, SLOT(home()));
     qDebug() << "> Shots table ready";

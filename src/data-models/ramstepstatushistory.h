@@ -13,7 +13,7 @@ class RamItem;
  * and it also keeps a pointer to the corresponding item and step.
  * Furthermore, it implements and 'edit' method, similar to RamObject::edit() which shows a dock widget listing all the RamStatus
  */
-class RamStepStatusHistory : public RamObjectList<RamStatus*>
+class RamStepStatusHistory : public RamObjectList
 {
     Q_OBJECT
 public:

@@ -63,7 +63,7 @@ void PipeFileEditWidget::setupUi()
     QLabel *fileTypeLabel = new QLabel("File type", this);
     ui_mainFormLayout->addWidget(fileTypeLabel, 3, 0);
 
-    ui_fileTypeBox = new RamObjectListComboBox<RamFileType *>(Ramses::instance()->fileTypes(), this);
+    ui_fileTypeBox = new RamObjectListComboBox(Ramses::instance()->fileTypes(), this);
     ui_mainFormLayout->addWidget(ui_fileTypeBox, 3, 1);
 
     QLabel *colorSpaceLabel = new QLabel("Color space", this);
@@ -84,7 +84,7 @@ void PipeFileEditWidget::setupUi()
 
 void PipeFileEditWidget::connectEvents()
 {
-    connect(ui_fileTypeBox, SIGNAL(currentObjectChanged(RamFileType*)), this, SLOT(setFileType(RamFileType*)));
+    connect(ui_fileTypeBox, SIGNAL(currentObjectChanged(RamObject*)), this, SLOT(setFileType(RamObject*)));
     //connect(ui_colorSpaceBox, SIGNAL(currentObjectChanged(RamObject*)), this, SLOT(update()));
     connect(ui_customSettingsEdit, SIGNAL(editingFinished()), this, SLOT(setCustomSettings()));
 }

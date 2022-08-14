@@ -11,7 +11,7 @@ class RamStep;
 class RamAssetGroup;
 class RamItemTable;
 class RamUser;
-template<typename RO> class RamObjectList;
+class RamObjectList;
 
 class RamProject : public RamObject
 {
@@ -21,28 +21,29 @@ public:
     // STATIC METHODS //
 
     static RamProject *getObject(QString uuid, bool constructNew = false);
+    static RamProject *c(RamObject *o);
 
     // METHODS //
 
     RamProject(QString shortName, QString name);
 
     // Steps
-    RamObjectList<RamStep*> *steps() const;
+    RamObjectList *steps() const;
     // Asset Groups
-    RamObjectList<RamAssetGroup*> *assetGroups() const;
+    RamObjectList *assetGroups() const;
     // Sequences
-    RamObjectList<RamSequence*> *sequences() const;
+    RamObjectList *sequences() const;
     // Shots
     RamItemTable *shots() const;
     // Assets
     RamItemTable *assets() const;
     // Pipeline
-    RamObjectList<RamPipe*> *pipeline() const;
-    RamObjectList<RamPipeFile*> *pipeFiles() const;
+    RamObjectList *pipeline() const;
+    RamObjectList *pipeFiles() const;
     // Users
-    RamObjectList<RamUser*> *users() const;
+    RamObjectList *users() const;
     // Schedule comments
-    RamObjectList<RamScheduleComment*> *scheduleComments() const;
+    RamObjectList *scheduleComments() const;
 
     qreal framerate() const;
     void setFramerate(const qreal &newFramerate);
@@ -114,15 +115,15 @@ private:
     void construct();
 
     // LISTS
-    RamObjectList<RamStep*> *m_steps;
-    RamObjectList<RamSequence*> *m_sequences;
-    RamObjectList<RamAssetGroup*> *m_assetGroups;
+    RamObjectList *m_steps;
+    RamObjectList *m_sequences;
+    RamObjectList *m_assetGroups;
     RamItemTable *m_assets;
     RamItemTable *m_shots;
-    RamObjectList<RamPipe*> *m_pipeline;
-    RamObjectList<RamPipeFile*> *m_pipeFiles;
-    RamObjectList<RamUser*> *m_users;
-    RamObjectList<RamScheduleComment*> *m_scheduleComments;
+    RamObjectList *m_pipeline;
+    RamObjectList *m_pipeFiles;
+    RamObjectList *m_users;
+    RamObjectList *m_scheduleComments;
 
     /**
      * @brief When true, estimations won't be computed.

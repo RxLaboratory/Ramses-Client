@@ -2,8 +2,9 @@
 #define ASSETLISTMANAGERWIDGET_H
 
 #include "objectlistmanagerwidget.h"
+#include "ramitem.h"
 
-class AssetListManagerWidget : public ObjectListManagerWidget<RamItem*, RamAssetGroup*>
+class AssetListManagerWidget : public ObjectListManagerWidget
 {
     Q_OBJECT
 public:

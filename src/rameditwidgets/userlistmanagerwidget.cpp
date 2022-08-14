@@ -3,13 +3,13 @@
 #include "ramses.h"
 
 UserListManagerWidget::UserListManagerWidget(QWidget *parent) :
-    ObjectListManagerWidget<RamUser*, int>(
+    ObjectListManagerWidget(
         Ramses::instance()->users(),
         "Users",
         QIcon(":icons/user"),
         parent )
 {
-    m_listEditWidget->setEditMode(ObjectListEditWidget<RamUser*, int>::RemoveObjects);
+    m_listEditWidget->setEditMode(ObjectListEditWidget::RemoveObjects);
     QStringList dontRemove;
     dontRemove << "Ramses" << "Removed";
     m_listEditWidget->setDontRemoveShortNameList(dontRemove);

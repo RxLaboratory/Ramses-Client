@@ -15,6 +15,11 @@ RamShot *RamShot::getObject(QString uuid, bool constructNew )
     return qobject_cast<RamShot*>( obj );
 }
 
+RamShot *RamShot::c(RamObject *obj)
+{
+    return qobject_cast<RamShot*>(obj);
+}
+
 // PUBLIC //
 
 RamShot::RamShot(QString shortName, QString name, RamSequence *sequence):

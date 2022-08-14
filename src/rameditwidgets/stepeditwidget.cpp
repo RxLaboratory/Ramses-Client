@@ -1,6 +1,8 @@
 ﻿#include "stepeditwidget.h"
+#include "ramapplication.h"
 #include "ramproject.h"
 #include "ramses.h"
+#include "ramassetgroup.h"
 
 StepEditWidget::StepEditWidget(QWidget *parent) : ObjectEditWidget(parent)
 {
@@ -194,7 +196,7 @@ void StepEditWidget::activateMultiplier(bool a)
 {
     if (!m_step) return;
     if (a)
-        m_step->setEstimationMultiplyGroup( ui_estimationMultiplierBox->currentObject() );
+        m_step->setEstimationMultiplyGroup( RamAssetGroup::c( ui_estimationMultiplierBox->currentObject() ) );
     else
         m_step->setEstimationMultiplyGroup( nullptr );
 }
@@ -274,14 +276,14 @@ void StepEditWidget::setupUi()
 
     ui_estimationMultiplierCheckBox = new QCheckBox("Multiply by", this);
     ui_estimationMultiplierCheckBox->setToolTip("Multiply estimation by the number of assets in the specific asset group.");
-    ui_estimationMultiplierBox = new RamObjectListComboBox<RamAssetGroup*>(this);
+    ui_estimationMultiplierBox = new RamObjectListComboBox(this);
     ui_estimationMultiplierBox->setEnabled(false);
     estimationLayout->addRow(ui_estimationMultiplierCheckBox, ui_estimationMultiplierBox);
 
     ui_tabWidget->addTab(ui_estimationWidget, QIcon(":/icons/stats-settings"), "Estim.");
 
-    m_applicationList = new ObjectListEditWidget<RamApplication*,int>(true, RamUser::ProjectAdmin, this);
-    m_applicationList->setEditMode(ObjectListEditWidget<RamApplication*,int>::UnassignObjects);
+    m_applicationList = new ObjectListEditWidget(true, RamUser::ProjectAdmin, this);
+    m_applicationList->setEditMode(ObjectListEditWidget::UnassignObjects);
     m_applicationList->setTitle("Applications");
     m_applicationList->setAssignList(Ramses::instance()->applications());
 

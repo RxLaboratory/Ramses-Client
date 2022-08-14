@@ -3,7 +3,7 @@
 
 #include "objectlistmanagerwidget.h"
 
-class ShotListManagerWidget : public ObjectListManagerWidget<RamItem*, RamSequence*>
+class ShotListManagerWidget : public ObjectListManagerWidget
 {
     Q_OBJECT
 public:

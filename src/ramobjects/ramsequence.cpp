@@ -11,6 +11,11 @@ RamSequence *RamSequence::getObject(QString uuid, bool constructNew)
     return qobject_cast<RamSequence*>( obj );
 }
 
+RamSequence *RamSequence::c(RamObject *o)
+{
+    return qobject_cast<RamSequence*>(o);
+}
+
 // PUBLIC //
 
 RamSequence::RamSequence(QString shortName, QString name, RamProject *project):
@@ -81,7 +86,7 @@ void RamSequence::construct()
     m_icon = ":/icons/sequence";
     m_editRole = ProjectAdmin;
     m_project = nullptr;
-    m_shots = new RamObjectFilterModel<RamShot*>(this);
+    m_shots = new RamObjectFilterModel(this);
 }
 
 void RamSequence::setProject(RamProject *project)

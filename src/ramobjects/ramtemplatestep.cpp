@@ -18,6 +18,7 @@ RamTemplateStep::Type RamTemplateStep::stepTypeFromName(QString typeName)
     if (typeName == "ShotProduction") return ShotProduction;
     if (typeName == "PostProduction") return PostProduction;
     if (typeName == "All") return All;
+    return All;
 }
 
 RamTemplateStep *RamTemplateStep::getObject(QString uuid, bool constructNew)
@@ -25,6 +26,11 @@ RamTemplateStep *RamTemplateStep::getObject(QString uuid, bool constructNew)
     RamObject *obj = RamObject::getObject(uuid);
     if (!obj && constructNew) return new RamTemplateStep( uuid );
     return qobject_cast<RamTemplateStep*>( obj );
+}
+
+RamTemplateStep *RamTemplateStep::c(RamObject *o)
+{
+    return qobject_cast<RamTemplateStep*>(o);
 }
 
 // PUBLIC //
@@ -36,13 +42,13 @@ RamTemplateStep::RamTemplateStep(QString shortName, QString name) :
 
     QJsonObject d = data();
 
-    m_applications = new RamObjectList<RamApplication*>(shortName + "-Apps", name + " | Applications", this);
+    m_applications = new RamObjectList(shortName + "-Apps", name + " | Applications", this);
     d.insert("applications", m_applications->uuid());
 
     setData(d);
 }
 
-RamObjectList<RamApplication *> *RamTemplateStep::applications() const
+RamObjectList *RamTemplateStep::applications() const
 {
     return m_applications;
 }
@@ -212,7 +218,7 @@ RamTemplateStep::RamTemplateStep(QString uuid):
 {
     construct();
 
-    m_applications = RamObjectList<RamApplication*>::getObject( getData("applications").toString(), true );
+    m_applications = RamObjectList::getObject( getData("applications").toString(), true );
 }
 
 void RamTemplateStep::construct()

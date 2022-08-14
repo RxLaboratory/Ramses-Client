@@ -1,24 +1,34 @@
 #include "ramobjectlist.h"
 
 #include "ramses.h"
+#include "ramshot.h"
 
 // STATIC //
 
-template<typename RO>
-RamObjectList<RO> *RamObjectList<RO>::getObject(QString uuid, bool constructNew)
+RamObjectList *RamObjectList::getObject(QString uuid, bool constructNew)
 {
     RamAbstractObject *obj = RamAbstractObject::getObject(uuid);
     if (!obj && constructNew) return new RamObjectList(uuid);
     return static_cast<RamObjectList*>( obj ) ;
 }
 
+RamObjectList *RamObjectList::c(QObject *obj)
+{
+    return qobject_cast<RamObjectList*>(obj);
+}
+
+RamObject *RamObjectList::at(QModelIndex i)
+{
+    quintptr iptr = i.data(Pointer).toULongLong();
+    if (iptr == 0) return nullptr;
+    return reinterpret_cast<RamObject *>(iptr);
+}
+
 // PUBLIC //
 
-template<typename RO>
-RamObjectList<RO>::RamObjectList(QString shortName, QString name, QObject *parent, DataListMode mode):
+RamObjectList::RamObjectList(QString shortName, QString name, QObject *parent, DataListMode mode):
     QAbstractTableModel(parent),
     RamAbstractObject(shortName, name, ObjectList)
-
 {
     construct(parent);
     m_dataMode = mode;
@@ -28,27 +38,22 @@ RamObjectList<RO>::RamObjectList(QString shortName, QString name, QObject *paren
 
 // QAbstractTableModel Reimplementation
 
-template<typename RO>
-int RamObjectList<RO>::rowCount(const QModelIndex & parent) const
+int RamObjectList::rowCount(const QModelIndex & parent) const
 {
     Q_UNUSED(parent);
     return m_objectList.count();
 }
 
-template<typename RO>
-int RamObjectList<RO>::columnCount(const QModelIndex & parent) const
+int RamObjectList::columnCount(const QModelIndex & parent) const
 {
     Q_UNUSED(parent);
     return 1;
 }
 
-template<typename RO>
-QVariant RamObjectList<RO>::data(const QModelIndex &index, int role) const
+QVariant RamObjectList::data(const QModelIndex &index, int role) const
 {
-    Q_UNUSED(role);
-
     // Pass the pointer as an int to our delegate
-    RO obj = m_objectList.at(index.row());
+    RamObject *obj = m_objectList.at(index.row());
 
     if (role == Qt::DisplayRole) return obj->name();
 
@@ -58,7 +63,8 @@ QVariant RamObjectList<RO>::data(const QModelIndex &index, int role) const
         // If it's a shot, let's add the duration
         if (obj->objectType() == RamAbstractObject::Shot)
         {
-            statusTip += " | " % QString::number(obj->duration(), 'f', 2) % "s";
+            RamShot *shot = RamShot::c(obj);
+            statusTip += " | " % QString::number(shot->duration(), 'f', 2) % "s";
         }
         return statusTip;
     }
@@ -68,18 +74,19 @@ QVariant RamObjectList<RO>::data(const QModelIndex &index, int role) const
         // If it's a shot, let's add the duration
         if (obj->objectType() == RamAbstractObject::Shot)
         {
-            toopTip += "\n" % QString::number(obj->duration(), 'f', 2) % "s";
+            RamShot *shot = RamShot::c(obj);
+            toopTip += "\n" % QString::number(shot->duration(), 'f', 2) % "s";
         }
         toopTip += "\n" % obj->comment();
         return  toopTip;
     }
 
-    quintptr iptr = reinterpret_cast<quintptr>(obj);
-    return iptr;
+    if (role == Pointer) return reinterpret_cast<quintptr>(obj);
+
+    return QAbstractTableModel::data(index, role);
 }
 
-template<typename RO>
-QVariant RamObjectList<RO>::headerData(int section, Qt::Orientation orientation, int role) const
+QVariant RamObjectList::headerData(int section, Qt::Orientation orientation, int role) const
 {
     if(orientation == Qt::Vertical)
     {
@@ -91,8 +98,7 @@ QVariant RamObjectList<RO>::headerData(int section, Qt::Orientation orientation,
     return QAbstractTableModel::headerData(section, orientation, role);
 }
 
-template<typename RO>
-void RamObjectList<RO>::sort(int column, Qt::SortOrder order)
+void RamObjectList::sort(int column, Qt::SortOrder order)
 {
     Q_UNUSED(column)
     Q_UNUSED(order)
@@ -102,15 +108,14 @@ void RamObjectList<RO>::sort(int column, Qt::SortOrder order)
 
 // List editing
 
-template<typename RO>
-void RamObjectList<RO>::clear(bool removeObjects)
+void RamObjectList::clear(bool removeObjects)
 {
     beginResetModel();
 
     // disconnect and remove objects
     for (int i = 0; i < m_objectList.count(); i++)
     {
-        RO o = m_objectList.at(i);
+        RamObject *o = m_objectList.at(i);
         if (removeObjects) o->remove();
         disconnect(o, nullptr, this, nullptr);
     }
@@ -121,8 +126,7 @@ void RamObjectList<RO>::clear(bool removeObjects)
     endResetModel();
 }
 
-template<typename RO>
-void RamObjectList<RO>::insertObject(int i, RO obj)
+void RamObjectList::insertObject(int i, RamObject *obj)
 {
     if (contains(obj)) return;
 
@@ -135,8 +139,7 @@ void RamObjectList<RO>::insertObject(int i, RO obj)
     endInsertRows();
 }
 
-template<typename RO>
-void RamObjectList<RO>::append(RO obj)
+void RamObjectList::append(RamObject *obj)
 {
     if (!obj) return;
     if (contains(obj)) return;
@@ -144,31 +147,29 @@ void RamObjectList<RO>::append(RO obj)
     insertObject(this->m_objectList.count(), obj);
 }
 
-template<typename RO>
-QList<RO> RamObjectList<RO>::removeIndices(QModelIndexList indices)
+QList<RamObject *> RamObjectList::removeIndices(QModelIndexList indices)
 {
     std::sort(indices.begin(), indices.end(), indexSorter);
 
-    QList<RO> objs;
+    QList<RamObject *> objs;
 
     for( int i = indices.count() -1; i >= 0; i--)
     {
         QModelIndex index = indices.at(i);
-        quintptr iptr = index.data(Qt::UserRole).toULongLong();
-        RO o = reinterpret_cast<RO>( iptr );
+        quintptr iptr = index.data(Pointer).toULongLong();
+        RamObject *o = reinterpret_cast<RamObject*>( iptr );
         objs << o;
         removeAll(o);
     }
     return objs;
 }
 
-template<typename RO>
-RO RamObjectList<RO>::takeObject(int i)
+RamObject *RamObjectList::takeObject(int i)
 {
     beginRemoveRows(QModelIndex(), i, i);
 
     // take from list
-    RO obj = m_objectList.takeAt(i);
+    RamObject *obj = m_objectList.takeAt(i);
     disconnect(obj, nullptr, this, nullptr);
 
     // remove from map
@@ -178,11 +179,10 @@ RO RamObjectList<RO>::takeObject(int i)
     return obj;
 }
 
-template<typename RO>
-RO RamObjectList<RO>::takeObject(QString uuid)
+RamObject *RamObjectList::takeObject(QString uuid)
 {
     // get from map
-    RO obj = m_objects.value(uuid, nullptr);
+    RamObject *obj = m_objects.value(uuid, nullptr);
     if (!obj) return nullptr;
 
     // get index from list to remove
@@ -194,11 +194,10 @@ RO RamObjectList<RO>::takeObject(QString uuid)
     return nullptr;
 }
 
-template<typename RO>
-void RamObjectList<RO>::removeAll(QString uuid)
+void RamObjectList::removeAll(QString uuid)
 {
     // get from map
-    RO obj = m_objects.value(uuid, nullptr);
+    RamObject *obj = m_objects.value(uuid, nullptr);
     if (!obj) return;
 
     int row = objRow(obj);
@@ -207,17 +206,16 @@ void RamObjectList<RO>::removeAll(QString uuid)
     takeObject(row);
 }
 
-template<typename RO>
-QJsonObject RamObjectList<RO>::reloadData()
+QJsonObject RamObjectList::reloadData()
 {
-    QJsonObject d = data();
+    QJsonObject d = RamAbstractObject::data();
 
     beginResetModel();
 
     // disconnect objects
     for (int i = 0; i < m_objectList.count(); i++)
     {
-        RO o = m_objectList.at(i);
+        RamObject *o = m_objectList.at(i);
         disconnect(o, nullptr, this, nullptr);
     }
 
@@ -242,7 +240,7 @@ QJsonObject RamObjectList<RO>::reloadData()
     for (int i = 0; i < uuids.count(); i++)
     {
         QString uuid = uuids.at(i);
-        RO o = RO::getObject( uuid );
+        RamObject *o = RamObject::getObject( uuid );
         m_objectList << o;
         m_objects[uuid] = o;
         connectObject(o);
@@ -253,8 +251,7 @@ QJsonObject RamObjectList<RO>::reloadData()
     return d;
 }
 
-template<typename RO>
-void RamObjectList<RO>::removeAll(RO obj)
+void RamObjectList::removeAll(RamObject *obj)
 {
     int row = objRow(obj);
     if (row<0) return;
@@ -264,30 +261,26 @@ void RamObjectList<RO>::removeAll(RO obj)
 
 // List information
 
-template<typename RO>
-bool RamObjectList<RO>::contains(RO obj) const
+bool RamObjectList::contains(RamObject *obj) const
 {
     return contains(obj->uuid());
 }
 
-template<typename RO>
-bool RamObjectList<RO>::contains(QString uuid) const
+bool RamObjectList::contains(QString uuid) const
 {
     return m_objects.contains( uuid );
 }
 
-template<typename RO>
-RO RamObjectList<RO>::fromUuid(QString uuid) const
+RamObject *RamObjectList::fromUuid(QString uuid) const
 {
     return m_objects.value(uuid, nullptr);
 }
 
-template<typename RO>
-RO RamObjectList<RO>::fromName(QString shortName, QString name) const
+RamObject *RamObjectList::fromName(QString shortName, QString name) const
 {
     for (int i = 0; i < m_objectList.count(); i++)
     {
-        RO o = m_objectList.at(i);
+        RamObject *o = m_objectList.at(i);
         if (o->shortName() == shortName)
         {
             if (name == "") return o;
@@ -298,60 +291,47 @@ RO RamObjectList<RO>::fromName(QString shortName, QString name) const
     return nullptr;
 }
 
-template<typename RO>
-RO RamObjectList<RO>::at(int i) const
+RamObject *RamObjectList::at(int i) const
 {
     if (i < 0) return nullptr;
     if (i > m_objectList.count() - 1) return nullptr;
     return m_objectList.at(i);
 }
 
-template<typename RO>
-RO RamObjectList<RO>::at(QModelIndex i) const
-{
-    return at(i.row());
-}
-
-template<typename RO>
-RO RamObjectList<RO>::last() const
+RamObject *RamObjectList::last() const
 {
     return at(rowCount() - 1);
 }
 
-template<typename RO>
-RO RamObjectList<RO>::first() const
+RamObject *RamObjectList::first() const
 {
     return at(0);
 }
 
-template<typename RO>
-QList<RO> RamObjectList<RO>::toList()
+QList<RamObject*> RamObjectList::toList()
 {
     return m_objectList;
 }
 
 // PUBLIC SLOTS //
 
-template<typename RO>
-void RamObjectList<RO>::sort()
+void RamObjectList::sort()
 {
     sort(0);
 }
 
-template<typename RO>
-void RamObjectList<RO>::reload()
+void RamObjectList::reload()
 {
     reloadData();
 }
 
 // PROTECTED //
 
-template<typename RO>
-RamObjectList<RO>::RamObjectList(QString uuid, QObject *parent):
+RamObjectList::RamObjectList(QString uuid, QObject *parent):
     QAbstractTableModel(parent),
     RamAbstractObject(uuid, ObjectList)
 {
-    construct();
+    construct(parent);
     m_dataMode = Object;
     // Populate the list
     QJsonObject d = RamAbstractObject::data();
@@ -359,20 +339,18 @@ RamObjectList<RO>::RamObjectList(QString uuid, QObject *parent):
     for (int i = 0; i < arr.count(); i++)
     {
         QString uuid = arr.at(i).toString();
-        RO obj = RO::getObject(uuid, true);
+        RamObject *obj = RamObject::getObject(uuid, true);
         append(obj);
     }
 }
 
-template<typename RO>
-void RamObjectList<RO>::connectObject(RO obj)
+void RamObjectList::connectObject(RamObject *obj)
 {
     connect( obj, SIGNAL(removed(RamObject*)), this, SLOT(removeAll(RamObject*)));
     connect( obj, SIGNAL(changed(RamObject*)), this, SLOT(objectChanged(RamObject*)));
 }
 
-template<typename RO>
-int RamObjectList<RO>::objRow(RO obj) const
+int RamObjectList::objRow(RamObject *obj) const
 {
     for (int i = m_objectList.count() - 1; i >= 0; i--)
     {
@@ -383,7 +361,7 @@ int RamObjectList<RO>::objRow(RO obj) const
 
 // PRIVATE SLOTS //
 
-template<typename RO> void RamObjectList<RO>::objectChanged(RO obj)
+void RamObjectList::objectChanged(RamObject *obj)
 {
     // Get row
     int row = objRow(obj);
@@ -395,8 +373,7 @@ template<typename RO> void RamObjectList<RO>::objectChanged(RO obj)
     emit headerDataChanged(Qt::Vertical, row, row);
 }
 
-template<typename RO>
-void RamObjectList<RO>::listChanged()
+void RamObjectList::listChanged()
 {
     switch(m_dataMode)
     {
@@ -424,14 +401,13 @@ void RamObjectList<RO>::listChanged()
 
 // PRIVATE //
 
-template<typename RO>
-void RamObjectList<RO>::construct(QObject *parent)
+void RamObjectList::construct(QObject *parent)
 {
     this->setObjectName(objectTypeName());
     if (!parent) setParent(Ramses::instance());
 }
 
-template<typename RO> void RamObjectList<RO>::connectEvents()
+void RamObjectList::connectEvents()
 {
     connect(this, &QAbstractTableModel::rowsInserted, this, &RamObjectList::listChanged);
     connect(this, &QAbstractTableModel::rowsRemoved, this, &RamObjectList::listChanged);
@@ -440,12 +416,12 @@ template<typename RO> void RamObjectList<RO>::connectEvents()
 
 // SORTERS //
 
-template<typename RO> bool objectSorter(RamObject *a, RamObject *b)
+bool objectSorter(RamObject *a, RamObject *b)
 {
     return a->shortName() < b->shortName();
 }
 
-template<typename RO> bool indexSorter(QModelIndex a, QModelIndex b)
+bool indexSorter(QModelIndex a, QModelIndex b)
 {
     return a.row() < b.row();
 }

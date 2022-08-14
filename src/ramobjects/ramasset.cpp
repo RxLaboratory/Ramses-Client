@@ -12,6 +12,11 @@ RamAsset *RamAsset::getObject( QString uuid, bool constructNew )
     return qobject_cast<RamAsset*>( obj );
 }
 
+RamAsset *RamAsset::c(RamObject *o)
+{
+    return qobject_cast<RamAsset*>(o);
+}
+
 // PUBLIC //
 
 RamAsset::RamAsset(QString shortName, QString name, RamAssetGroup *ag) :

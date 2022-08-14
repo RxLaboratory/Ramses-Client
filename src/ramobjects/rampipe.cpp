@@ -11,6 +11,11 @@ RamPipe *RamPipe::getObject(QString uuid, bool constructNew)
     return qobject_cast<RamPipe*>( obj );
 }
 
+RamPipe *RamPipe::c(RamObject *o)
+{
+    return qobject_cast<RamPipe*>(o);
+}
+
 // PUBLIC //
 
 RamPipe::RamPipe(RamStep *output, RamStep *input):
@@ -23,7 +28,7 @@ RamPipe::RamPipe(RamStep *output, RamStep *input):
     d.insert("outputStep", output->uuid());
     d.insert("inputStep", input->uuid());
 
-    m_pipeFiles = new RamObjectList<RamPipeFile *>("PPFS", "Pipe files", this);
+    m_pipeFiles = new RamObjectList("PPFS", "Pipe files", this);
     d.insert("pipeFiles", m_pipeFiles->uuid());
     setData(d);
 
@@ -57,7 +62,7 @@ RamProject *RamPipe::project() const
     return outputStep()->project();
 }
 
-RamObjectList<RamPipeFile *> *RamPipe::pipeFiles() const
+RamObjectList *RamPipe::pipeFiles() const
 {
     return m_pipeFiles;
 }
@@ -80,7 +85,7 @@ RamPipe::RamPipe(QString uuid):
 
     QJsonObject d = data();
 
-    m_pipeFiles = RamObjectList<RamPipeFile *>::getObject( d.value("pipeFiles").toString(), true);
+    m_pipeFiles = RamObjectList::getObject( d.value("pipeFiles").toString(), true);
 
     this->setParent( this->project() );
 
@@ -116,5 +121,5 @@ void RamPipe::connectEvents()
     connect( outputStep(), &RamStep::removed, this, &RamObject::remove);
 
     connect(m_pipeFiles, SIGNAL(listChanged()), this, SLOT(pipeFileListChanged()));
-    connect(m_pipeFiles, &RamObjectList<RamPipeFile *>::dataChanged, this, &RamPipe::pipeFileListChanged);
+    connect(m_pipeFiles, &RamObjectList::dataChanged, this, &RamPipe::pipeFileListChanged);
 }

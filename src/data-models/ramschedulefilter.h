@@ -6,7 +6,7 @@
 
 #include "data-models/ramscheduletable.h"
 
-template<typename RO> class RamObjectList;
+class RamObjectList;
 class RamScheduleEntry;
 
 class RamScheduleFilter : public QSortFilterProxyModel
@@ -26,7 +26,7 @@ protected:
     bool filterAcceptsColumn(int sourceCol, const QModelIndex &sourceParent) const override;
 
 private:
-    RamObjectList<RamScheduleEntry*> *m_emptyList;
+    RamObjectList *m_emptyList;
 
     QStringList m_filterUserUuids;
     QList<int> m_hiddenDays;

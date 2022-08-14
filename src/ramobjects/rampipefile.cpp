@@ -11,6 +11,11 @@ RamPipeFile *RamPipeFile::getObject(QString uuid, bool constructNew)
     return qobject_cast<RamPipeFile*>( obj );
 }
 
+RamPipeFile *RamPipeFile::c(RamObject *o)
+{
+    return qobject_cast<RamPipeFile*>(o);
+}
+
 // PUBLIC //
 
 RamPipeFile::RamPipeFile(QString shortName, RamProject *project) :

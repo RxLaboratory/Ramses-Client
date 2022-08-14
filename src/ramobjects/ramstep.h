@@ -11,14 +11,14 @@ class RamApplication;
 class RamFileType;
 class RamUser;
 class RamWorkingFolder;
-template<typename RO> class RamObjectList;
+class RamObjectList;
 
 class RamStep : public RamTemplateStep
 {
     Q_OBJECT
 public:
     static RamStep *getObject(QString uuid, bool constructNew = false);
-
+    static RamStep *c(RamObject *o);
     static RamStep *createFromTemplate(RamTemplateStep *tempStep, RamProject *project);
 
     // METHODS //
@@ -56,8 +56,8 @@ public:
     void openFile(QString filePath) const;
     QList<RamWorkingFolder> templateWorkingFolders() const;
 
-    QList<RamFileType *> inputFileTypes();
-    QList<RamFileType *> outputFileTypes();
+    QList<RamObject *> inputFileTypes();
+    QList<RamObject *> outputFileTypes();
 
 signals:
     void estimationComputed(RamStep*);

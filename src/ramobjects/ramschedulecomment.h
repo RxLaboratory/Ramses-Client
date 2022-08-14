@@ -13,6 +13,7 @@ public:
     // STATIC METHODS //
 
     static RamScheduleComment *getObject(QString uuid, bool constructNew = false);
+    static RamScheduleComment *c(RamObject *o);
 
     // METHODS //
 

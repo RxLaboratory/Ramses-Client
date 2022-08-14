@@ -3,7 +3,7 @@
 
 #include "ramobject.h"
 
-template<typename RO> class RamObjectList;
+#include "data-models/ramobjectlist.h"
 #include "ramfiletype.h"
 
 class RamApplication : public RamObject
@@ -19,6 +19,7 @@ public:
      * @return
      */
     static RamApplication *getObject(QString uuid, bool constructNew = false);
+    static RamApplication *c(RamObject *o);
 
     // OTHER //
 
@@ -32,9 +33,9 @@ public:
     QString executableFilePath() const;
     void setExecutableFilePath(const QString &executableFilePath);
 
-    RamObjectList<RamFileType *> *nativeFileTypes() const;
-    RamObjectList<RamFileType *> *importFileTypes() const;
-    RamObjectList<RamFileType *> *exportFileTypes() const;
+    RamObjectList *nativeFileTypes() const;
+    RamObjectList *importFileTypes() const;
+    RamObjectList *exportFileTypes() const;
 
     bool canExportFileType(RamFileType *ft) const;
     bool canExportFileType(QString extension) const;
@@ -58,9 +59,9 @@ protected:
 private:
     void construct();
 
-    RamObjectList<RamFileType*> *m_nativeFileTypes;
-    RamObjectList<RamFileType*> *m_importFileTypes;
-    RamObjectList<RamFileType*> *m_exportFileTypes;
+    RamObjectList *m_nativeFileTypes;
+    RamObjectList *m_importFileTypes;
+    RamObjectList *m_exportFileTypes;
 };
 
 #endif // RAMAPPLICATION_H

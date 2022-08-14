@@ -6,15 +6,15 @@
 
 RamItemTable *RamItemTable::getObject(QString uuid, bool constructNew)
 {
-    RamObjectList<RamItem*> *obj = RamObjectList<RamItem*>::getObject(uuid);
+    RamObjectList *obj = RamObjectList::getObject(uuid);
     if (!obj && constructNew) return new RamItemTable(uuid);
     return static_cast<RamItemTable*>( obj ) ;
 }
 
 // PUBLIC //
 
-RamItemTable::RamItemTable(QString shortName, QString name, RamObjectList<RamStep *> *steps, QObject *parent, DataListMode mode):
-    RamObjectList<RamItem*>(shortName, name, parent, mode)
+RamItemTable::RamItemTable(QString shortName, QString name, RamObjectList *steps, QObject *parent, DataListMode mode):
+    RamObjectList(shortName, name, parent, mode)
 {
     construct();
     m_steps = steps;
@@ -42,26 +42,26 @@ QVariant RamItemTable::data(const QModelIndex &index, int role) const
 
     // Return
     if (col == 0)
-        return RamObjectList<RamItem*>::data(index, role);
+        return RamObjectList::data(index, role);
 
     // Get the item
-    RamItem *item = RamObjectList<RamItem*>::m_objectList.at(row);
+    RamItem *item = RamItem::c( m_objectList.at(row) );
 
     if (role == Qt::InitialSortOrderRole)
     {
-        return RamObjectList<RamItem*>::objRow(item);
+        return row;
     }
-    if ( role == Qt::UserRole + 1) // Default order
-    {
-        return RamObjectList<RamItem*>::objRow(item);
-    }
-    else if (role == Qt::UserRole + 2) // Short name order
+    else if (role == ItemShortName)
     {
         return item->shortName();
     }
-    else if (role == Qt::UserRole + 3 ) // Name order
+    else if (role == ItemName )
     {
         return item->name();
+    }
+    else if (role == Pointer )
+    {
+        return reinterpret_cast<quintptr>(item);
     }
 
     // Get the step
@@ -118,31 +118,34 @@ QVariant RamItemTable::data(const QModelIndex &index, int role) const
                     status->comment() );
     }
 
-    if (role == Qt::UserRole + 4) // Difficulty order
+    if (role == Difficulty) // Difficulty order
     {
         return status->difficulty();
     }
-    else if (role == Qt::UserRole + 5) // Time spent order
+    else if (role == TimeSpent) // Time spent order
     {
         return status->timeSpent();
     }
-    else if (role == Qt::UserRole + 6) // Estimation order
+    else if (role == Estimation) // Estimation order
     {
         if (status->useAutoEstimation()) return status->estimation();
         else return status->goal();
     }
-    else if (role == Qt::UserRole + 7) // Completion order
+    else if (role == Completion) // Completion order
     {
         return status->completionRatio();
     }
+    else if (role == Pointer)
+    {
+        return reinterpret_cast<quintptr>(status);
+    }
 
-    quintptr iptr = reinterpret_cast<quintptr>(status);
-    return iptr;
+    return QVariant();
 }
 
 QVariant RamItemTable::headerData(int section, Qt::Orientation orientation, int role) const
 {
-    if (orientation == Qt::Vertical) return RamObjectList<RamItem*>::headerData(section, orientation, role);
+    if (orientation == Qt::Vertical) return RamObjectList::headerData(section, orientation, role);
 
     if (section == 0)
     {
@@ -159,41 +162,21 @@ QVariant RamItemTable::headerData(int section, Qt::Orientation orientation, int 
     if ( role == Qt::ForegroundRole )
         return QBrush(stepAt(section)->color());
 
-    if ( role == Qt::UserRole)
+    if ( role == Pointer)
         return reinterpret_cast<quintptr>( stepAt(section) );
 
     return QAbstractTableModel::headerData(section, orientation, role);
 }
 
-void RamItemTable::insertObject(int i, RamItem *item)
-{
-    if (contains(item)) return;
-
-    // insert only valid items
-    if (!item) return;
-
-    // We're inserting rows
-    beginInsertRows(QModelIndex(), i, i);
-
-    m_objectList.insert(i , item);
-    m_objects[item->uuid()] = item;
-    connectObject(item);
-    connectItem(item);
-
-    endInsertRows();
-
-    emit headerDataChanged(Qt::Horizontal, 0, m_steps->rowCount());
-}
-
 // PROTECTED //
 
 RamItemTable::RamItemTable(QString uuid, QObject *parent):
-    RamObjectList<RamItem*>(uuid, parent)
+    RamObjectList(uuid, parent)
 {
     construct();
     // Populate the list of steps
     QJsonObject d = RamAbstractObject::data();
-    m_steps = RamObjectList<RamStep*>::getObject( d.value("steps").toString(), true );
+    m_steps = RamObjectList::getObject( d.value("steps").toString(), true );
 }
 
 // PRIVATE SLOTS //

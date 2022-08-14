@@ -312,6 +312,30 @@ void RamAbstractObject::revealFolder(RamObject::SubFolder subFolder)
     FileUtils::openInExplorer( p, true );
 }
 
+QString RamAbstractObject::previewImagePath()
+{
+    QDir previewDir = path(RamObject::PreviewFolder);
+    QStringList filters;
+    filters << "*.jpg" << "*.png" << "*.jpeg" << "*.gif";
+    QStringList images = previewDir.entryList(filters, QDir::Files );
+
+    if (images.count() == 0) return "";
+
+    RamNameManager nm;
+
+    foreach(QString file, images)
+    {
+        if (nm.setFileName(file))
+        {
+            if (nm.shortName().toLower() != shortName().toLower()) continue;
+            return previewDir.filePath( file );
+        }
+    }
+
+    // Not found, return the first one
+    return previewDir.filePath( images.at(0) );
+}
+
 // PROTECTED //
 
 RamAbstractObject::RamAbstractObject(QString uuid, ObjectType type)

@@ -8,7 +8,7 @@
 #include "data-views/ramobjectlistcombobox.h"
 #include "ramstate.h"
 
-class StateBox : public RamObjectListComboBox<RamState *>
+class StateBox : public RamObjectListComboBox
 {
     Q_OBJECT
 public:

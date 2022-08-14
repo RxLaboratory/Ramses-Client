@@ -6,7 +6,7 @@
 
 class RamSequence;
 class RamAsset;
-template<typename RO> class RamObjectList;
+class RamObjectList;
 
 class RamShot : public RamItem
 {
@@ -16,6 +16,8 @@ public:
     // STATIC METHODS //
 
     static RamShot *getObject(QString uuid, bool constructNew = false);
+    // Short for qobject_cast<RamShot*>
+    static RamShot *c(RamObject *obj);
 
     // METHODS //
 

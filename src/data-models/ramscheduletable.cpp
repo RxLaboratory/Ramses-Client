@@ -1,7 +1,9 @@
 #include "ramscheduletable.h"
 
-#include "ramses.h"
+#include "ramschedulecomment.h"
+
 #include "ramscheduleentry.h"
+#include "ramses.h"
 
 RamScheduleTable::RamScheduleTable(QObject *parent) : QAbstractTableModel(parent)
 {
@@ -10,7 +12,7 @@ RamScheduleTable::RamScheduleTable(QObject *parent) : QAbstractTableModel(parent
     connectEvents();
 }
 
-void RamScheduleTable::setList(RamObjectList<RamUser*> *userList, RamObjectList<RamScheduleComment*> *comments)
+void RamScheduleTable::setList(RamObjectList *userList, RamObjectList *comments)
 {
     beginResetModel();
 
@@ -66,7 +68,7 @@ QVariant RamScheduleTable::headerData(int section, Qt::Orientation orientation, 
                 return "NOTES";
             if ( role == Qt::ToolTipRole )
                 return QString("Use this line to add comments for specific dates.");
-            if ( role == Qt::UserRole + 1 )  // Is PM
+            if ( role == RamObjectList::IsPM )
                 return false;
             return QAbstractTableModel::headerData(section, orientation, role);
         }
@@ -81,13 +83,13 @@ QVariant RamScheduleTable::headerData(int section, Qt::Orientation orientation, 
         if ( role == Qt::DisplayRole )
             return QString(usrObj->shortName() % ampm);
 
-        if ( role == Qt::UserRole)
+        if ( role == RamObjectList::Pointer)
             return reinterpret_cast<quintptr>( usrObj );
 
-        if ( role == Qt::UserRole + 1)
-            return section % 2 == 1; // is pm
+        if ( role == RamObjectList::IsPM)
+            return section % 2 == 1;
 
-        if ( role == Qt::UserRole + 2)
+        if ( role == RamObjectList::UUID)
             return usrObj->uuid();
 
         if ( role == Qt::ToolTipRole )
@@ -126,7 +128,7 @@ QVariant RamScheduleTable::headerData(int section, Qt::Orientation orientation, 
 
         }
 
-        if (role == Qt::UserRole)
+        if (role ==  RamObjectList::Date)
             return date;
     }
     return QAbstractTableModel::headerData(section, orientation, role);
@@ -147,13 +149,13 @@ QVariant RamScheduleTable::data(const QModelIndex &index, int role) const
 
     // THE DATE
     QString ampm = "am";
-    if ( headerData(row, Qt::Vertical, Qt::UserRole +1).toBool() )
+    if ( headerData(row, Qt::Vertical,  RamObjectList::IsPM).toBool() )
     {
         ampm = "pm";
         date.setTime(QTime(12,0));
     }
 
-    if (role == Qt::UserRole +1 ) {
+    if (role ==  RamObjectList::Date ) {
         return date;
     }
 
@@ -175,17 +177,17 @@ QVariant RamScheduleTable::data(const QModelIndex &index, int role) const
                 if ( role == Qt::BackgroundRole )
                     return c->color();
 
-                if (role == Qt::UserRole)
+                if (role ==  RamObjectList::Pointer)
                     return reinterpret_cast<quintptr>( c );
 
-                if (role == Qt::UserRole + 3) // isComment
+                if (role ==  RamObjectList::IsComment) // isComment
                     return true;
 
                 return QVariant();
             }
         }
 
-        if (role == Qt::UserRole + 3) // isComment
+        if (role == RamObjectList::IsComment) // isComment
             return true;
 
         if (role == Qt::BackgroundRole )
@@ -202,15 +204,15 @@ QVariant RamScheduleTable::data(const QModelIndex &index, int role) const
 
     // THE ENTRY
     RamObject *usrObj = m_users->at((row-1) / 2);
-    RamUser *user = qobject_cast<RamUser*>( usrObj );
+    RamUser *user = RamUser::c( usrObj );
     if (!user) return QVariant();
-    RamObjectList<RamScheduleEntry*> *schedule = user->schedule();
+    RamObjectList *schedule = user->schedule();
 
     RamProject *currentProject = Ramses::instance()->currentProject();
 
     for (int i = 0; i < schedule->rowCount(); i++)
     {
-        RamScheduleEntry *entry = schedule->at(i);
+        RamScheduleEntry *entry = RamScheduleEntry::c(schedule->at(i));
         if (!entry) continue;
         RamStep *entryStep = entry->step();
         if (!entryStep) continue;
@@ -239,13 +241,13 @@ QVariant RamScheduleTable::data(const QModelIndex &index, int role) const
             if ( role == Qt::BackgroundRole )
                 return entry->step()->color();
 
-            if (role == Qt::UserRole)
+            if (role == RamObjectList::Pointer)
                 return reinterpret_cast<quintptr>( entry );
 
-            if (role == Qt::UserRole + 2)
+            if (role == RamObjectList::Comment)
                 return entry->comment();
 
-            if (role == Qt::UserRole + 3) // isComment
+            if (role == RamObjectList::IsComment)
                 return false;
 
             if (role == Qt::EditRole)

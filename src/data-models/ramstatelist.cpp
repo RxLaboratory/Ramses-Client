@@ -1,15 +1,17 @@
 #include "ramstatelist.h"
 
+#include "ramstate.h"
+
 RamStateList::RamStateList(QObject *parent):
-    RamObjectList<RamState*>("STATES", "States", parent, RamObjectList<RamState*>::Table)
+    RamObjectList("STATES", "States", parent, RamObjectList::Table)
 {
     this->setObjectName( "RamStateList" );
 }
 
 bool stateSorter(RamObject *a, RamObject *b)
 {
-    RamState *as = (RamState*)a;
-    RamState *bs = (RamState*)b;
+    RamState *as = RamState::c(a);
+    RamState *bs = RamState::c(b);
     if (as->completionRatio() != bs->completionRatio()) return as->completionRatio() < bs->completionRatio();
     else return a->shortName() < b->shortName();
 }

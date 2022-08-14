@@ -75,10 +75,10 @@ private:
     RamScheduleTableWidget *ui_table;
     QDateEdit *ui_startDateEdit;
     QDateEdit *ui_endDateEdit;
-    RamObjectListMenu<RamStep*> *ui_stepMenu;
-    RamObjectListMenu<RamStep*> *ui_stepContextMenu;
+    RamObjectListMenu *ui_stepMenu;
+    RamObjectListMenu *ui_stepContextMenu;
     QToolButton *ui_userButton;
-    RamObjectListMenu<RamUser*> *ui_userMenu;
+    RamObjectListMenu *ui_userMenu;
     QAction *ui_meAction;
     QAction *ui_monday;
     QAction *ui_tuesday;

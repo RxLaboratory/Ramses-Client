@@ -72,7 +72,7 @@ private:
     DuQFTextEdit *ui_statusCommentEdit;
     QToolButton *ui_revertButton;
     QCheckBox *ui_publishedBox;
-    RamObjectListComboBox<RamUser*> *ui_userBox;
+    RamObjectListComboBox *ui_userBox;
     AutoSelectSpinBox *ui_timeSpent;
     DuQFFileList *ui_mainFileList;
     DuQFFileList *ui_previewFileList;

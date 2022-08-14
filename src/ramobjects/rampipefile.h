@@ -15,6 +15,7 @@ public:
     // STATIC //
 
     static RamPipeFile *getObject(QString uuid, bool constructNew = false);
+    static RamPipeFile *c(RamObject *o);
 
     // OTHER //
 

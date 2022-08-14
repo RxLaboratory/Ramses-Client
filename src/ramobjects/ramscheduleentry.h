@@ -14,6 +14,7 @@ public:
     // STATIC METHODS //
 
     static RamScheduleEntry *getObject(QString uuid, bool constructNew = false);
+    static RamScheduleEntry* c(RamObject *o);
 
     // METHODS
 

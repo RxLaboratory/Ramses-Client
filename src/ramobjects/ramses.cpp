@@ -85,7 +85,7 @@ QString Ramses::pathFromRamses(QString p, bool create) const
         return p;
 }
 
-RamObjectList<RamUser *> *Ramses::users() const
+RamObjectList *Ramses::users() const
 {
     return m_users;
 }
@@ -99,7 +99,7 @@ RamUser *Ramses::ramsesUser()
 {
     if (m_ramsesUser) return m_ramsesUser;
 
-    m_ramsesUser = m_users->fromName("Ramses");
+    m_ramsesUser = RamUser::c( m_users->fromName("Ramses") );
 
     if (!m_ramsesUser)
     {
@@ -113,7 +113,7 @@ RamUser *Ramses::removedUser()
 {
     if (m_removedUser) return m_removedUser;
 
-    m_removedUser = m_users->fromName("Removed");
+    m_removedUser = RamUser::c( m_users->fromName("Removed") );
     if (!m_removedUser)
     {
         m_removedUser = new RamUser("Removed", "Removed User");
@@ -148,7 +148,7 @@ RamStateList *Ramses::states() const
 RamState *Ramses::noState()
 {
     if(m_noState) return m_noState;
-    m_noState = m_states->fromName("NO");
+    m_noState = RamState::c( m_states->fromName("NO") );
     if (!m_noState)
     {
         m_noState = new RamState("NO", "Nothing to do");
@@ -161,7 +161,7 @@ RamState *Ramses::noState()
 RamState *Ramses::todoState()
 {
     if(m_todoState) return m_todoState;
-    m_todoState =  m_states->fromName("TODO");
+    m_todoState =  RamState::c( m_states->fromName("TODO") );
     if (!m_todoState)
     {
         m_todoState = new RamState("TODO", "To do");
@@ -174,7 +174,7 @@ RamState *Ramses::todoState()
 RamState *Ramses::okState()
 {
     if(m_okState) return m_okState;
-    m_okState =  m_states->fromName("OK");
+    m_okState =  RamState::c( m_states->fromName("OK") );
     if (!m_okState)
     {
         m_okState = new RamState("OK", "Finished");
@@ -187,7 +187,7 @@ RamState *Ramses::okState()
 RamState *Ramses::stbState()
 {
     if(m_stbState) return m_stbState;
-    m_stbState = m_states->fromName("STB");
+    m_stbState = RamState::c( m_states->fromName("STB") );
     if (!m_stbState)
     {
         m_stbState = new RamState("STB", "Stand by");
@@ -200,7 +200,7 @@ RamState *Ramses::stbState()
 RamState *Ramses::wipState()
 {
     if (m_wipState) return m_wipState;
-    m_wipState = m_states->fromName("WIP");
+    m_wipState = RamState::c( m_states->fromName("WIP") );
     if (!m_wipState)
     {
         m_wipState = new RamState("WIP", "Work in progress");
@@ -210,7 +210,7 @@ RamState *Ramses::wipState()
     return m_wipState;
 }
 
-RamObjectList<RamProject*> *Ramses::projects() const
+RamObjectList *Ramses::projects() const
 {
     return m_projects;
 }
@@ -240,25 +240,25 @@ void Ramses::setCurrentProject(RamProject *project)
 
 void Ramses::setCurrentProject(QString shortName)
 {
-    setCurrentProject( m_projects->fromName(shortName) );
+    setCurrentProject( RamProject::c(m_projects->fromName(shortName)) );
 }
 
-RamObjectList<RamTemplateStep *> *Ramses::templateSteps() const
+RamObjectList *Ramses::templateSteps() const
 {
     return m_templateSteps;
 }
 
-RamObjectList<RamTemplateAssetGroup *> *Ramses::templateAssetGroups() const
+RamObjectList *Ramses::templateAssetGroups() const
 {
     return m_templateAssetGroups;
 }
 
-RamObjectList<RamFileType *> *Ramses::fileTypes() const
+RamObjectList *Ramses::fileTypes() const
 {
     return m_fileTypes;
 }
 
-RamObjectList<RamApplication *> *Ramses::applications() const
+RamObjectList *Ramses::applications() const
 {
     return m_applications;
 }
@@ -295,13 +295,13 @@ Ramses::Ramses(QObject *parent):
     qDebug() << "Initialising Ramses";
     m_dbi = DBInterface::instance();
 
-    m_users = new RamObjectList<RamUser*>("RamUser", "Users", this, RamObjectList<RamUser*>::Table);
+    m_users = new RamObjectList("RamUser", "Users", this, RamObjectList::Table);
     m_states = new RamStateList(this);
-    m_projects = new RamObjectList<RamProject*>("RamProject", "Projects", this, RamObjectList<RamProject*>::Table);
-    m_templateSteps = new RamObjectList<RamTemplateStep*>("RamTemplateStep", "Template steps", this, RamObjectList<RamTemplateStep*>::Table);
-    m_templateAssetGroups = new RamObjectList<RamTemplateAssetGroup*>("RamTemplateAssetGroup", "Template asset groups", this, RamObjectList<RamTemplateAssetGroup*>::Table);
-    m_fileTypes = new RamObjectList<RamFileType*>("RamFileType", "File types", this, RamObjectList<RamFileType*>::Table);
-    m_applications = new RamObjectList<RamApplication*>("RamApplication", "Applications", this, RamObjectList<RamApplication*>::Table);
+    m_projects = new RamObjectList("RamProject", "Projects", this, RamObjectList::Table);
+    m_templateSteps = new RamObjectList("RamTemplateStep", "Template steps", this, RamObjectList::Table);
+    m_templateAssetGroups = new RamObjectList("RamTemplateAssetGroup", "Template asset groups", this, RamObjectList::Table);
+    m_fileTypes = new RamObjectList("RamFileType", "File types", this, RamObjectList::Table);
+    m_applications = new RamObjectList("RamApplication", "Applications", this, RamObjectList::Table);
 
     this->setObjectName( "Ramses Class" );
 

@@ -20,6 +20,7 @@ public:
     // STATIC //
 
     static RamItem *getObject(QString uuid, bool constructNew = false);
+    static RamItem *c(RamObject *o);
 
     // OTHER //
 
@@ -47,12 +48,10 @@ public:
     QList<RamStatus*> status();
 
     RamUser *assignedUser(RamStep *step);
-    bool isUserAssigned(RamUser *u, RamStep *step = nullptr);
+    bool isUserAssigned(RamObject *u, RamStep *step = nullptr);
     bool isUnassigned(RamStep *step = nullptr);
 
-    bool hasState(RamState *state, RamStep *step = nullptr);
-
-    QString previewImagePath() const;
+    bool hasState(RamObject *state, RamStep *step = nullptr);
 
 signals:
     void statusChanged(RamItem *, RamStep *);

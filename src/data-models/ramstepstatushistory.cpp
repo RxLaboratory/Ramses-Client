@@ -8,7 +8,7 @@
 
 RamStepStatusHistory *RamStepStatusHistory::getObject(QString uuid, bool constructNew)
 {
-    RamObjectList<RamStatus*> *obj = RamObjectList<RamStatus*>::getObject(uuid);
+    RamObjectList *obj = RamObjectList::getObject(uuid);
     if (!obj && constructNew) return new RamStepStatusHistory( uuid );
     return qobject_cast<RamStepStatusHistory*>( obj );
 }

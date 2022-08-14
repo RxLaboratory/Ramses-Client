@@ -4,7 +4,7 @@
 #include "objectlistmanagerwidget.h"
 #include "ramuser.h"
 
-class UserListManagerWidget : public ObjectListManagerWidget<RamUser*, int>
+class UserListManagerWidget : public ObjectListManagerWidget
 {
     Q_OBJECT
 public:

@@ -2,8 +2,9 @@
 #define PROJECTLISTMANAGERWIDGET_H
 
 #include "objectlistmanagerwidget.h"
+#include "ramproject.h"
 
-class ProjectListManagerWidget : public ObjectListManagerWidget<RamProject *, int>
+class ProjectListManagerWidget : public ObjectListManagerWidget
 {
     Q_OBJECT
 public:

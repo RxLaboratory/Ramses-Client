@@ -4,7 +4,6 @@
 #include "ramobject.h"
 
 #include "data-models/ramobjectlist.h"
-#include "ramapplication.h"
 
 class RamTemplateStep : public RamObject
 {
@@ -35,12 +34,13 @@ public:
     static Type stepTypeFromName(QString typeName);
 
     static RamTemplateStep *getObject(QString uuid, bool constructNew = false);
+    static RamTemplateStep *c(RamObject *o);
 
     // OTHER METHODS //
 
     explicit RamTemplateStep(QString shortName, QString name);
 
-    RamObjectList<RamApplication*> *applications() const;
+    RamObjectList *applications() const;
 
     Type type() const;
     void setType(const Type &type);
@@ -89,7 +89,7 @@ protected:
 
     // ATTRIBUTES //
 
-    RamObjectList<RamApplication*> *m_applications;
+    RamObjectList *m_applications;
 
 private:
     void construct();

@@ -2,8 +2,9 @@
 #define FILETYPELISTMANAGERWIDGET_H
 
 #include "objectlistmanagerwidget.h"
+#include "ramfiletype.h"
 
-class FileTypeListManagerWidget : public ObjectListManagerWidget<RamFileType*, int>
+class FileTypeListManagerWidget : public ObjectListManagerWidget
 {
     Q_OBJECT
 public:

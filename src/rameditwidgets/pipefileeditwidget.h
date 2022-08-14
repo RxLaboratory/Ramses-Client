@@ -27,7 +27,7 @@ private:
     void setupUi();
     void connectEvents();
 
-    RamObjectListComboBox<RamFileType *> *ui_fileTypeBox;
+    RamObjectListComboBox *ui_fileTypeBox;
     //RamObjectListComboBox<RamObject*> *ui_colorSpaceBox;
     DuQFTextEdit *ui_customSettingsEdit;
 };

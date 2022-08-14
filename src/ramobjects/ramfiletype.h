@@ -11,6 +11,7 @@ public:
     // STATIC //
 
     static RamFileType *getObject(QString uuid, bool constructNew = false);
+    static RamFileType *c(RamObject *o);
 
     // OTHER //
 

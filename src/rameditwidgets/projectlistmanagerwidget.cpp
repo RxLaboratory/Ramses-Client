@@ -3,13 +3,13 @@
 #include "ramses.h"
 
 ProjectListManagerWidget::ProjectListManagerWidget(QWidget *parent) :
-    ObjectListManagerWidget<RamProject *, int>(
+    ObjectListManagerWidget(
         Ramses::instance()->projects(),
         "Projects",
         QIcon(":icons/project"),
         parent )
 {
-    m_listEditWidget->setEditMode(ObjectListEditWidget<RamProject *, int>::RemoveObjects);
+    m_listEditWidget->setEditMode(ObjectListEditWidget::RemoveObjects);
 }
 
 RamProject *ProjectListManagerWidget::createObject()

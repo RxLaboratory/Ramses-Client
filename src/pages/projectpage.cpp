@@ -40,11 +40,11 @@ ProjectPage::ProjectPage(QWidget *parent):
     projectButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     projectButton->setPopupMode(QToolButton::InstantPopup);
     this->titleBar()->insertLeft(projectButton);
-    ui_assignUserMenu = new RamObjectListMenu<RamUser*>(false, this);
+    ui_assignUserMenu = new RamObjectListMenu(false, this);
     ui_assignUserMenu->setTitle("Assign user");
     ui_assignUserMenu->setList(Ramses::instance()->users());
     projectMenu->addMenu(ui_assignUserMenu);
-    ui_unAssignUserMenu = new RamObjectListMenu<RamUser*>(false, this);
+    ui_unAssignUserMenu = new RamObjectListMenu(false, this);
     ui_unAssignUserMenu->setTitle("Unassign user");
     projectMenu->addMenu(ui_unAssignUserMenu);
 
@@ -55,7 +55,7 @@ ProjectPage::ProjectPage(QWidget *parent):
     this->titleBar()->insertLeft(stepManager->menuButton());
 
     // Create step from template menu
-    RamObjectListMenu<RamTemplateStep*> *stepTemplateMenu = new RamObjectListMenu<RamTemplateStep*>(false, this);
+    RamObjectListMenu *stepTemplateMenu = new RamObjectListMenu(false, this);
     stepTemplateMenu->setTitle("Create from template...");
     stepTemplateMenu->setList( Ramses::instance()->templateSteps() );
     stepManager->menuButton()->menu()->addMenu(stepTemplateMenu);
@@ -71,7 +71,7 @@ ProjectPage::ProjectPage(QWidget *parent):
     this->addPage(assetGroupManager, "Asset Groups", QIcon(":/icons/asset-groups"));
     this->titleBar()->insertLeft(assetGroupManager->menuButton());
 
-    RamObjectListMenu<RamTemplateAssetGroup*> *agTemplateMenu = new RamObjectListMenu<RamTemplateAssetGroup*>(false, this);
+    RamObjectListMenu *agTemplateMenu = new RamObjectListMenu(false, this);
     agTemplateMenu->setTitle("Create from template...");
     agTemplateMenu->setList( Ramses::instance()->templateAssetGroups() );
     assetGroupManager->menuButton()->menu()->addMenu(agTemplateMenu);
@@ -147,7 +147,7 @@ void ProjectPage::userAssigned(const QModelIndex &parent, int first, int last)
 
     for (int i = first ; i <= last; i++)
     {
-        RamUser *user = proj->users()->at(i);
+        RamObject *user = proj->users()->at(i);
         ui_assignUserMenu->setObjectVisible(user, false);
     }
 }
@@ -161,7 +161,7 @@ void ProjectPage::userUnassigned(const QModelIndex &parent, int first, int last)
 
     for (int i = first ; i <= last; i++)
     {
-        RamUser *user = proj->users()->at(i);
+        RamObject *user = proj->users()->at(i);
         ui_assignUserMenu->setObjectVisible(user, true);
     }
 }

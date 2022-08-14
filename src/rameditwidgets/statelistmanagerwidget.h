@@ -2,8 +2,9 @@
 #define STATELISTMANAGERWIDGET_H
 
 #include "objectlistmanagerwidget.h"
+#include "ramstate.h"
 
-class StateListManagerWidget : public ObjectListManagerWidget<RamState*, int>
+class StateListManagerWidget : public ObjectListManagerWidget
 {
     Q_OBJECT
 public:

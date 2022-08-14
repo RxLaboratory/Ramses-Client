@@ -3,13 +3,13 @@
 #include "ramses.h"
 
 TemplateStepListManagerWidget::TemplateStepListManagerWidget(QWidget *parent) :
-    ObjectListManagerWidget<RamTemplateStep*,int>(
+    ObjectListManagerWidget(
         Ramses::instance()->templateSteps(),
         "Template steps",
         QIcon(":icons/step"),
         parent )
 {
-    m_listEditWidget->setEditMode(ObjectListEditWidget<RamTemplateStep*,int>::RemoveObjects);
+    m_listEditWidget->setEditMode(ObjectListEditWidget::RemoveObjects);
 }
 
 RamTemplateStep *TemplateStepListManagerWidget::createObject()

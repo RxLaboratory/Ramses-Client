@@ -4,17 +4,17 @@
 #include "ramses.h"
 
 AssetGroupListManagerWidget::AssetGroupListManagerWidget(QWidget *parent):
-    ObjectListManagerWidget<RamAssetGroup*, RamProject*>(
+    ObjectListManagerWidget(
         "Asset groups",
         QIcon(":icons/asset-group"),
         parent)
 {
     changeProject(Ramses::instance()->currentProject());
     connect(Ramses::instance(), SIGNAL(currentProjectChanged(RamProject*)), this, SLOT(changeProject(RamProject*)));
-    m_listEditWidget->setEditMode(ObjectListEditWidget<RamAssetGroup*, RamProject*>::RemoveObjects);
+    m_listEditWidget->setEditMode(ObjectListEditWidget::RemoveObjects);
 
     // Create from template actions
-    ui_createMenu = new RamObjectListMenu<RamTemplateAssetGroup*>(false, this);
+    ui_createMenu = new RamObjectListMenu(false, this);
     ui_createMenu->addCreateButton();
     QToolButton *addButton = m_listEditWidget->addButton();
     addButton->setPopupMode(QToolButton::InstantPopup);

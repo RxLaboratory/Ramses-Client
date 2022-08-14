@@ -19,7 +19,7 @@ private slots:
 private:
     void setupUi();
     void connectEvents();
-    RamObjectListView<RamStatus*> *ui_statusList;
+    RamObjectListView *ui_statusList;
 };
 
 #endif // STATUSHISTORYWIDGET_H

@@ -11,21 +11,21 @@
  * @brief The RamObjectListComboBox class is a QComboBox which lists the objects of a RamObjectList.
  * It can be used as a filter selection, in which case it adds an "All" item in the top of the list (using the RamObjectFilterList proxy)
  */
-template<typename RO> class RamObjectListComboBox : public QComboBox
+class RamObjectListComboBox : public QComboBox
 {
     Q_OBJECT
 public:
     RamObjectListComboBox(QWidget *parent = nullptr);
     RamObjectListComboBox(bool isFilterBox, QWidget *parent = nullptr);
-    RamObjectListComboBox(RamObjectList<RO> *list, QWidget *parent = nullptr);
+    RamObjectListComboBox(RamObjectList *list, QWidget *parent = nullptr);
 
-    void setList(RamObjectList<RO> *list);
+    void setList(RamObjectList *list);
 
-    RO currentObject();
+    RamObject *currentObject();
     QString currentUuid();
     void setObject(QString objUuid);
-    void setObject(RO obj);
-    RO object(int i);
+    void setObject(RamObject *obj);
+    RamObject *object(int i);
     QString uuid(int i);
 
     void beginReset();
@@ -35,9 +35,9 @@ public:
     void hidePopup() override;
 
 signals:
-    void currentObjectChanged(RO);
+    void currentObjectChanged(RamObject*);
     void currentUuidChanged(QString);
-    void objectActivated(RO);
+    void objectActivated(RamObject*);
     void uuidActivated(QString);
     void popupShown();
     void popupHidden();

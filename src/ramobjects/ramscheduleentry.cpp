@@ -9,6 +9,11 @@ RamScheduleEntry *RamScheduleEntry::getObject(QString uuid, bool constructNew)
     return qobject_cast<RamScheduleEntry*>( obj );
 }
 
+RamScheduleEntry *RamScheduleEntry::c(RamObject *o)
+{
+    return qobject_cast<RamScheduleEntry*>(o);
+}
+
 // PUBLIC //
 
 RamScheduleEntry::RamScheduleEntry(RamUser *user, QDateTime date):

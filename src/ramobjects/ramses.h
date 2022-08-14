@@ -33,7 +33,7 @@ public:
     QString pathFromRamses(QString p = "", bool create = false) const;
 
     // Users
-    RamObjectList<RamUser*> *users() const;
+    RamObjectList *users() const;
     RamUser *currentUser() const;
     RamUser *ramsesUser();
     RamUser *removedUser();
@@ -50,22 +50,22 @@ public:
     RamState *wipState();
 
     // Projects
-    RamObjectList<RamProject*> *projects() const;
+    RamObjectList *projects() const;
     RamProject *currentProject() const;
     void setCurrentProject(RamProject *project);
     void setCurrentProject(QString shortName);
 
     // Template Steps
-    RamObjectList<RamTemplateStep*> *templateSteps() const;
+    RamObjectList *templateSteps() const;
 
     // Template Asset Groups
-    RamObjectList<RamTemplateAssetGroup*> *templateAssetGroups() const;
+    RamObjectList *templateAssetGroups() const;
 
     // File Types
-    RamObjectList<RamFileType*> *fileTypes() const;
+    RamObjectList *fileTypes() const;
 
     // Applications
-    RamObjectList<RamApplication*> *applications() const;
+    RamObjectList *applications() const;
 
 public slots:
     void refresh();
@@ -95,13 +95,13 @@ private:
     // ATTRIBUTES //
 
     // DATA (lists)
-    RamObjectList<RamUser*> *m_users;
-    RamObjectList<RamTemplateStep*> *m_templateSteps;
-    RamObjectList<RamTemplateAssetGroup*> *m_templateAssetGroups;
+    RamObjectList *m_users;
+    RamObjectList *m_templateSteps;
+    RamObjectList *m_templateAssetGroups;
     RamStateList *m_states;
-    RamObjectList<RamFileType*> *m_fileTypes;
-    RamObjectList<RamApplication*> *m_applications;
-    RamObjectList<RamProject*> *m_projects;
+    RamObjectList *m_fileTypes;
+    RamObjectList *m_applications;
+    RamObjectList *m_projects;
 
     // Users
     RamUser *m_currentUser = nullptr;

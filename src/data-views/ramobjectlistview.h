@@ -16,7 +16,7 @@
  * It displays a RamObjectList using RamObjectDelegate for the painging.
  * It used mainly in ObjectListEditWidget (in order to manage the list)
  */
-template<typename RO> class RamObjectListView : public QTableView
+class RamObjectListView : public QTableView
 {
     Q_OBJECT
 public:
@@ -26,21 +26,21 @@ public:
     Q_ENUM( DisplayMode )
 
     explicit RamObjectListView(DisplayMode mode = List, QWidget *parent = nullptr);
-    explicit RamObjectListView(RamObjectList<RO> *list, DisplayMode mode = List, QWidget *parent = nullptr);
-    explicit RamObjectListView(RamObjectList<RO> *list, bool editableObjects, RamUser::UserRole editRole = RamUser::Admin, DisplayMode mode = List, QWidget *parent = nullptr);
+    explicit RamObjectListView(RamObjectList *list, DisplayMode mode = List, QWidget *parent = nullptr);
+    explicit RamObjectListView(RamObjectList *list, bool editableObjects, RamUser::UserRole editRole = RamUser::Admin, DisplayMode mode = List, QWidget *parent = nullptr);
     // Content
-    void setList(RamObjectList<RO> *list);
+    void setList(RamObjectList *list);
     RamItemFilterModel *filteredList();
     // Settings
     void setEditableObjects(bool editableObjects, RamUser::UserRole editRole = RamUser::Admin);
     void setSortable(bool sortable = true);
 
 signals:
-    void objectSelected(RO);
+    void objectSelected(RamObject*);
 
 public slots:
     void search(QString s);
-    void select(RO o);
+    void select(RamObject *o);
     void filter(RamObject *o);
     void setTimeTracking(bool trackTime);
     void setCompletionRatio(bool showCompletion);
@@ -68,7 +68,7 @@ private:
     DisplayMode m_displayMode;
 
     // Delegate
-    RamObjectDelegate<RO> *m_delegate;
+    RamObjectDelegate *m_delegate;
 
     // Filters
     QString m_currentFilterUuid;

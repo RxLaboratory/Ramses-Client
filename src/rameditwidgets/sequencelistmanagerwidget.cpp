@@ -4,14 +4,14 @@
 #include "ramses.h"
 
 SequenceListManagerWidget::SequenceListManagerWidget(QWidget *parent):
-    ObjectListManagerWidget<RamSequence*,RamProject*>(
+    ObjectListManagerWidget(
         "Sequences",
         QIcon(":icons/sequence"),
         parent)
 {
     changeProject(Ramses::instance()->currentProject());
     connect(Ramses::instance(), SIGNAL(currentProjectChanged(RamProject*)), this, SLOT(changeProject(RamProject*)));
-    m_listEditWidget->setEditMode(ObjectListEditWidget<RamSequence*,RamProject*>::RemoveObjects);
+    m_listEditWidget->setEditMode(ObjectListEditWidget::RemoveObjects);
     m_listEditWidget->setSortable(true);
 }
 

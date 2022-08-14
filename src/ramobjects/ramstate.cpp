@@ -11,6 +11,11 @@ RamState *RamState::getObject(QString uuid, bool constructNew )
     return qobject_cast<RamState*>( obj );
 }
 
+RamState *RamState::c(RamObject *o)
+{
+    return qobject_cast<RamState*>(o);
+}
+
 // PUBLIC //
 
 RamState::RamState(QString shortName, QString name) :

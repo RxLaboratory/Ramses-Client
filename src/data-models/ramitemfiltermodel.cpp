@@ -1,5 +1,8 @@
 #include "ramitemfiltermodel.h"
 
+#include "ramstep.h"
+#include "ramuser.h"
+
 RamItemFilterModel::RamItemFilterModel(QObject *parent) : RamObjectFilterModel(parent)
 {
 
@@ -21,13 +24,13 @@ void RamItemFilterModel::useFilters(bool use)
     m_userFilters = use;
 }
 
-void RamItemFilterModel::hideUser(RamUser *u)
+void RamItemFilterModel::hideUser(RamObject *u)
 {
     m_users.removeAll(u);
     if (!m_frozen) prepareFilter();
 }
 
-void RamItemFilterModel::showUser(RamUser *u)
+void RamItemFilterModel::showUser(RamObject *u)
 {
     if (!m_users.contains(u)) m_users << u;
     if (!m_frozen) prepareFilter();
@@ -45,13 +48,13 @@ void RamItemFilterModel::showUnassigned(bool show)
     if (!m_frozen) prepareFilter();
 }
 
-void RamItemFilterModel::hideState(RamState *s)
+void RamItemFilterModel::hideState(RamObject *s)
 {
     m_states.removeAll(s);
     if (!m_frozen) prepareFilter();
 }
 
-void RamItemFilterModel::showState(RamState *s)
+void RamItemFilterModel::showState(RamObject *s)
 {
     if (!m_states.contains(s))
     {
@@ -72,7 +75,7 @@ void RamItemFilterModel::setStepType(RamStep::Type t)
     if (!m_frozen) prepareFilter();
 }
 
-void RamItemFilterModel::hideStep(RamStep *s)
+void RamItemFilterModel::hideStep(RamObject *s)
 {
     if (!m_hiddenSteps.contains(s))
     {
@@ -81,7 +84,7 @@ void RamItemFilterModel::hideStep(RamStep *s)
     }
 }
 
-void RamItemFilterModel::showStep(RamStep *s)
+void RamItemFilterModel::showStep(RamObject *s)
 {
     m_hiddenSteps.removeAll(s);
     if (!m_frozen) prepareFilter();

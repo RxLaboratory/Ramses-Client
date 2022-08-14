@@ -4,10 +4,10 @@
 #include <QStringBuilder>
 
 #include "ramobject.h"
+#include "data-models/ramobjectlist.h"
 
 class RamStep;
 class RamScheduleEntry;
-template<typename RO> class RamObjectList;
 
 class RamUser : public RamObject
 {
@@ -17,6 +17,7 @@ public:
     // STATIC METHODS //
 
     static RamUser *getObject(QString uuid, bool constructNew = false);
+    static RamUser *c(RamObject *o);
 
     // METHODS //
 
@@ -28,7 +29,7 @@ public:
     void setRole(const UserRole &role);
     void setRole(const QString role);
 
-    RamObjectList<RamScheduleEntry*> *schedule() const;
+    RamObjectList *schedule() const;
     bool isStepAssigned(RamStep *step) const;
 
     void updatePassword(QString c, QString n);
@@ -51,7 +52,7 @@ protected:
 private:
     void construct();
 
-    RamObjectList<RamScheduleEntry*> *m_schedule;
+    RamObjectList *m_schedule;
 };
 
 #endif // RAMUSER_H

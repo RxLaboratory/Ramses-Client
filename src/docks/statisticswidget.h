@@ -20,13 +20,13 @@ signals:
 private slots:
     void projectChanged(RamProject*project);
     void estimationChanged(RamProject *project);
-    void changeUser(RamUser *user);
+    void changeUser(RamObject *userObj);
 
 private:
     void setupUi();
     void connectEvents();
 
-    RamObjectListComboBox<RamUser*> *ui_userBox;
+    RamObjectListComboBox *ui_userBox;
     ProgressWidget *ui_progressWidget;
     QLabel *ui_completionLabel;
     QLabel *ui_remainingTimeLabel;

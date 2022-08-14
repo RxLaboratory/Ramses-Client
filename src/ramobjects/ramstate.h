@@ -11,6 +11,7 @@ public:
     // STATIC METHODS //
 
     static RamState *getObject(QString uuid, bool constructNew = false);
+    static RamState *c(RamObject *o);
 
     // METHODS //
 

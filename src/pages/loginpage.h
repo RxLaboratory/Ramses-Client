@@ -6,11 +6,7 @@
 
 #include "duqf-widgets/duqfservercombobox.h"
 #include "duqf-widgets/duqfsslcheckbox.h"
-#include "duqf-utils/simplecrypt.h"
 
-#include "ui_loginpage.h"
-
-#include "daemon.h"
 #include "ramses.h"
 
 class LoginPage : public QWidget
@@ -29,7 +25,6 @@ protected:
 private slots:
     void loggedIn(RamUser *user);
     void loggedOut();
-    void dbiData(QJsonObject data);
 
     void loginButton_clicked();
     void serverSettingsButton_clicked();

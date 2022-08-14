@@ -2,8 +2,9 @@
 #define APPLICATIONLISTMANAGERWIDGET_H
 
 #include "objectlistmanagerwidget.h"
+#include "ramapplication.h"
 
-class ApplicationListManagerWidget : public ObjectListManagerWidget<RamApplication*, int>
+class ApplicationListManagerWidget : public ObjectListManagerWidget
 {
     Q_OBJECT
 public:

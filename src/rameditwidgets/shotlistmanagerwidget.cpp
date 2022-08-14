@@ -6,14 +6,14 @@
 #include "shotscreationdialog.h"
 
 ShotListManagerWidget::ShotListManagerWidget(QWidget *parent):
-    ObjectListManagerWidget<RamItem*, RamSequence*>(
+    ObjectListManagerWidget(
         "Shots",
         QIcon(":icons/shot"),
         parent)
 {
     changeProject(Ramses::instance()->currentProject());
     connect(Ramses::instance(), SIGNAL(currentProjectChanged(RamProject*)), this, SLOT(changeProject(RamProject*)));
-    m_listEditWidget->setEditMode(ObjectListEditWidget<RamItem*, RamSequence*>::RemoveObjects);
+    m_listEditWidget->setEditMode(ObjectListEditWidget::RemoveObjects);
     m_listEditWidget->setSortable(true);
 
     // Batch create
@@ -39,8 +39,8 @@ RamShot *ShotListManagerWidget::createObject()
     RamProject *project = Ramses::instance()->currentProject();
     if (!project) return nullptr;
     if (project->sequences()->rowCount() == 0 ) return nullptr;
-    RamSequence *seq = currentFilter();
-    if (!seq) seq = project->sequences()->first();
+    RamSequence *seq = RamSequence::c( currentFilter() );
+    if (!seq) seq = RamSequence::c( project->sequences()->first() );
     if(!seq) return nullptr;
 
     RamShot *shot = new RamShot(

@@ -11,6 +11,11 @@ RamFileType *RamFileType::getObject(QString uuid, bool constructNew)
     return qobject_cast<RamFileType*>( obj );
 }
 
+RamFileType *RamFileType::c(RamObject *o)
+{
+    return qobject_cast<RamFileType*>(o);
+}
+
 RamFileType::RamFileType(QString shortName, QString name):
     RamObject(shortName, name, FileType)
 {

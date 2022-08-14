@@ -32,7 +32,7 @@ private:
     void connectEvents();
 
     DuQFFolderDisplayWidget *ui_folderWidget;
-    ObjectListEditWidget<RamItem*,RamAssetGroup*> *ui_assetsList;
+    ObjectListEditWidget *ui_assetsList;
 };
 
 #endif // ASSETGROUPEDITWIDGET_H

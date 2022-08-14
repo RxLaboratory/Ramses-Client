@@ -56,8 +56,8 @@ void AssetGroupEditWidget::setupUi()
     ui_folderWidget = new DuQFFolderDisplayWidget(this);
     ui_mainLayout->insertWidget(1, ui_folderWidget);
 
-    ui_assetsList = new ObjectListEditWidget<RamItem*, RamAssetGroup*>(true, RamUser::ProjectAdmin, this);
-    ui_assetsList->setEditMode(ObjectListEditWidget<RamItem*, RamAssetGroup*>::RemoveObjects);
+    ui_assetsList = new ObjectListEditWidget(true, RamUser::ProjectAdmin, this);
+    ui_assetsList->setEditMode(ObjectListEditWidget::RemoveObjects);
     ui_assetsList->setTitle("Assets");
     ui_mainLayout->addWidget(ui_assetsList);
 }

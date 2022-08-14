@@ -3,18 +3,18 @@
 #include "ramses.h"
 
 StepListManagerWidget::StepListManagerWidget(QWidget *parent):
-ObjectListManagerWidget<RamStep*, RamProject*>(
+ObjectListManagerWidget(
     "Steps",
     QIcon(":icons/step"),
     parent )
 {
     changeProject(Ramses::instance()->currentProject());
     connect(Ramses::instance(), SIGNAL(currentProjectChanged(RamProject*)), this, SLOT(changeProject(RamProject*)));
-    m_listEditWidget->setEditMode(ObjectListEditWidget<RamStep*, RamProject*>::RemoveObjects);
+    m_listEditWidget->setEditMode(ObjectListEditWidget::RemoveObjects);
     m_listEditWidget->setSortable(true);
 
     // Create from template actions
-    ui_createMenu = new RamObjectListMenu<RamTemplateStep*>(false, this);
+    ui_createMenu = new RamObjectListMenu(false, this);
     ui_createMenu->addCreateButton();
     QToolButton *addButton = m_listEditWidget->addButton();
     addButton->setPopupMode(QToolButton::InstantPopup);

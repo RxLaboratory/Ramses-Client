@@ -1,11 +1,10 @@
 #include "ramobjectlistmenu.h"
 
-template<typename RO>
-RamObjectListMenu<RO>::RamObjectListMenu(bool checkable, QWidget *parent):
+RamObjectListMenu::RamObjectListMenu(bool checkable, QWidget *parent):
     QMenu(parent)
 {
-    m_emptyList = new RamObjectList<RO>(this);
-    m_objects = new RamObjectFilterModel<RO>(this);
+    m_emptyList = RamObjectList::getObject("emptyList", true);
+    m_objects = new RamObjectFilterModel(this);
     m_objects->setSourceModel(m_emptyList);
 
     m_checkable = checkable;
@@ -29,15 +28,13 @@ RamObjectListMenu<RO>::RamObjectListMenu(bool checkable, QWidget *parent):
     connect(m_objects, SIGNAL(modelReset()),this,SLOT(reset()));
 }
 
-template<typename RO>
-void RamObjectListMenu<RO>::setList(RamObjectList<RO> *list)
+void RamObjectListMenu::setList(RamObjectList *list)
 {
     if (!list) m_objects->setList(m_emptyList);
     else m_objects->setList(list);
 }
 
-template<typename RO>
-void RamObjectListMenu<RO>::addCreateButton()
+void RamObjectListMenu::addCreateButton()
 {
     QAction *createAction = new QAction("Create new...");
     createAction->setData(-1);
@@ -55,25 +52,22 @@ void RamObjectListMenu<RO>::addCreateButton()
     connect(createAction,SIGNAL(triggered()),this,SLOT(actionCreate()));
 }
 
-template<typename RO>
-RamObjectFilterModel<RO> *RamObjectListMenu<RO>::filteredList()
+RamObjectFilterModel *RamObjectListMenu::filteredList()
 {
     return m_objects;
 }
 
-template<typename RO>
-void RamObjectListMenu<RO>::setObjectVisible(RO obj, bool visible)
+void RamObjectListMenu::setObjectVisible(RamObject *obj, bool visible)
 {
     QList<QAction *> actions = this->actions();
     for(int j= actions.count() -1; j >= 0; j--)
     {
-        RO o = object(actions.at(j));
+        RamObject *o = object(actions.at(j));
         if (obj->is(o)) actions.at(j)->setVisible(visible);
     }
 }
 
-template<typename RO>
-void RamObjectListMenu<RO>::showAll()
+void RamObjectListMenu::showAll()
 {
     QList<QAction *> actions = this->actions();
     for(int j= actions.count() -1; j >= 0; j--)
@@ -82,15 +76,13 @@ void RamObjectListMenu<RO>::showAll()
     }
 }
 
-template<typename RO>
-RO RamObjectListMenu<RO>::objectAt(int i)
+RamObject *RamObjectListMenu::objectAt(int i)
 {
     QList<QAction*> actions = this->actions();
-    return reinterpret_cast<RO>( actions[i]->data().toULongLong() );
+    return reinterpret_cast<RamObject*>( actions[i]->data().toULongLong() );
 }
 
-template<typename RO>
-bool RamObjectListMenu<RO>::isAllChecked() const
+bool RamObjectListMenu::isAllChecked() const
 {
     QList<QAction*> as = this->actions();
 
@@ -102,14 +94,13 @@ bool RamObjectListMenu<RO>::isAllChecked() const
     return true;
 }
 
-template<typename RO>
-void RamObjectListMenu<RO>::newObject(const QModelIndex &parent, int first, int last)
+void RamObjectListMenu::newObject(const QModelIndex &parent, int first, int last)
 {
     Q_UNUSED(parent)
 
     for(int i = first; i <= last; i++)
     {
-        RO o = m_objects->at(i);
+        RamObject *o = m_objects->at(i);
         QAction *a = new QAction( o->name() );
         a->setData( i );
         a->setCheckable(m_checkable);
@@ -120,8 +111,7 @@ void RamObjectListMenu<RO>::newObject(const QModelIndex &parent, int first, int 
     }
 }
 
-template<typename RO>
-void RamObjectListMenu<RO>::removeObject(const QModelIndex &parent, int first, int last)
+void RamObjectListMenu::removeObject(const QModelIndex &parent, int first, int last)
 {
     Q_UNUSED(parent)
 
@@ -139,8 +129,7 @@ void RamObjectListMenu<RO>::removeObject(const QModelIndex &parent, int first, i
     }
 }
 
-template<typename RO>
-void RamObjectListMenu<RO>::objectChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &roles)
+void RamObjectListMenu::objectChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &roles)
 {
     Q_UNUSED(roles)
     QList<QAction*> actions = this->actions();
@@ -157,28 +146,24 @@ void RamObjectListMenu<RO>::objectChanged(const QModelIndex &topLeft, const QMod
     }
 }
 
-template<typename RO>
-void RamObjectListMenu<RO>::actionAssign(bool checked)
+void RamObjectListMenu::actionAssign(bool checked)
 {
     QAction *a = qobject_cast<QAction*>( sender() );
-    emit assign( object(a), checked );
+    emit assignmentChanged( object(a), checked );
 }
 
-template<typename RO>
-void RamObjectListMenu<RO>::actionAssign()
+void RamObjectListMenu::actionAssign()
 {
     QAction *a = qobject_cast<QAction*>( sender() );
-    emit assign( object(a) );
+    emit assigned( object(a) );
 }
 
-template<typename RO>
-void RamObjectListMenu<RO>::actionCreate()
+void RamObjectListMenu::actionCreate()
 {
     emit createTriggered();
 }
 
-template<typename RO>
-void RamObjectListMenu<RO>::clear()
+void RamObjectListMenu::clear()
 {
     // Remove all
     QList<QAction*> actions = this->actions();
@@ -189,33 +174,29 @@ void RamObjectListMenu<RO>::clear()
     }
 }
 
-template<typename RO>
-void RamObjectListMenu<RO>::reset()
+void RamObjectListMenu::reset()
 {
     //Add all
     newObject(QModelIndex(),0,m_objects->rowCount()-1);
 }
 
-template<typename RO>
-QString RamObjectListMenu<RO>::objectUuid(QAction *a)
+QString RamObjectListMenu::objectUuid(QAction *a) const
 {
-    RO obj = object(a);
+    RamObject *obj = object(a);
 
     if (!obj) return a->text();
 
     return obj->uuid();
 }
 
-template<typename RO>
-RO RamObjectListMenu<RO>::object(QAction *a)
+RamObject *RamObjectListMenu::object(QAction *a) const
 {
     int oIndex = a->data().toInt();
-    RO obj = m_objects->at(oIndex);
+    RamObject *obj = m_objects->at(oIndex);
     return obj;
 }
 
-template<typename RO>
-void RamObjectListMenu<RO>::selectAll()
+void RamObjectListMenu::selectAll()
 {
     QList<QAction*> actions = this->actions();
     for (int j = actions.count() -1; j >= 0; j--)
@@ -223,13 +204,12 @@ void RamObjectListMenu<RO>::selectAll()
         QAction *a = actions.at(j);
         if (a->isCheckable()) a->setChecked(true);
 
-        RO *o = object(a);
-        if (o) emit assign( o, true );
+        RamObject *o = object(a);
+        if (o) emit assignmentChanged( o, true );
     }
 }
 
-template<typename RO>
-void RamObjectListMenu<RO>::selectNone()
+void RamObjectListMenu::selectNone()
 {
     QList<QAction*> actions = this->actions();
     for (int j = actions.count() -1; j >= 0; j--)
@@ -237,13 +217,12 @@ void RamObjectListMenu<RO>::selectNone()
         QAction *a = actions.at(j);
         if (a->isCheckable()) a->setChecked(false);
 
-        RO *o = object(a);
-        if (o) emit assign( o, false );
+        RamObject *o = object(a);
+        if (o) emit assignmentChanged( o, false );
     }
 }
 
-template<typename RO>
-void RamObjectListMenu<RO>::filter(RO o)
+void RamObjectListMenu::filter(RamObject *o)
 {
     //clear();
     if (o) m_objects->setFilterUuid( o->uuid() );
@@ -251,21 +230,24 @@ void RamObjectListMenu<RO>::filter(RO o)
     //reset();
 }
 
-template<typename RO>
-void RamObjectListMenu<RO>::select(RO o)
+void RamObjectListMenu::select(RamObject *o)
 {
-    if (!o) selectNone();
+    if (!o)
+    {
+        selectNone();
+        return;
+    }
+
     QList<QAction*> actions = this->actions();
     for (int j = actions.count() -1; j >= 0; j--)
     {
-        RO obj = object( actions.at(j) );
+        RamObject *obj = object( actions.at(j) );
         if (o->is(obj))
             actions.at(j)->setChecked(true);
     }
 }
 
-template<typename RO>
-void RamObjectListMenu<RO>::saveState(QSettings *settings, QString group) const
+void RamObjectListMenu::saveState(QSettings *settings, QString group) const
 {
     settings->beginGroup(group);
     QList<QAction*> as = this->actions();
@@ -281,8 +263,7 @@ void RamObjectListMenu<RO>::saveState(QSettings *settings, QString group) const
     settings->endGroup();
 }
 
-template<typename RO>
-void RamObjectListMenu<RO>::restoreState(QSettings *settings, QString group)
+void RamObjectListMenu::restoreState(QSettings *settings, QString group)
 {
     settings->beginGroup(group);
 
@@ -292,12 +273,12 @@ void RamObjectListMenu<RO>::restoreState(QSettings *settings, QString group)
     {
         QAction *a = as.at(i);
 
-        RO obj = object(a);
+        RamObject *obj = object(a);
         QString uuid = objectUuid(a);
 
         bool ok = settings->value(uuid, true).toBool();
         a->setChecked( ok );
-        if (obj) emit assign( obj, ok );
+        if (obj) emit assignmentChanged( obj, ok );
     }
 
     settings->endGroup();

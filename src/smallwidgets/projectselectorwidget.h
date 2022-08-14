@@ -8,7 +8,7 @@
 #include "data-models/ramprojectfiltermodel.h"
 #include "ramproject.h"
 
-class ProjectSelectorWidget : public RamObjectListComboBox<RamProject*>
+class ProjectSelectorWidget : public RamObjectListComboBox
 {
     Q_OBJECT
 public:

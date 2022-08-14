@@ -6,24 +6,24 @@
 
 #include "objectlisteditwidget.h"
 
-template<typename RO, typename ROF> class ObjectListManagerWidget : public QWidget
+class ObjectListManagerWidget : public QWidget
 {
     Q_OBJECT
 public:
     explicit ObjectListManagerWidget(QString title, QIcon icon = QIcon(), QWidget *parent = nullptr);
-    explicit ObjectListManagerWidget(RamObjectList<RO> *objectList, QString title, QIcon icon = QIcon(), QWidget *parent = nullptr);
-    void setList(RamObjectList<RO> *objectList);
+    explicit ObjectListManagerWidget(RamObjectList *objectList, QString title, QIcon icon = QIcon(), QWidget *parent = nullptr);
+    void setList(RamObjectList *objectList);
     void clear();
     QString currentFilterUuid() const;
-    ROF currentFilter() const;
+    RamObject *currentFilter() const;
 
     QToolButton *menuButton();
 
 protected:
-    ObjectListEditWidget<RO, ROF> *m_listEditWidget;
+    ObjectListEditWidget *m_listEditWidget;
 
 protected slots:
-    virtual RO createObject() { return nullptr; };
+    virtual RamObject *createObject() { return nullptr; };
     void createEditObject();
 
 private:

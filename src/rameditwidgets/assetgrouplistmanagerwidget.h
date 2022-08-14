@@ -4,8 +4,9 @@
 #include "objectlistmanagerwidget.h"
 #include "data-views/ramobjectlistmenu.h"
 #include "ramtemplateassetgroup.h"
+#include "ramassetgroup.h"
 
-class AssetGroupListManagerWidget : public ObjectListManagerWidget<RamAssetGroup*, RamProject*>
+class AssetGroupListManagerWidget : public ObjectListManagerWidget
 {
     Q_OBJECT
 public:
@@ -20,7 +21,7 @@ private slots:
     void createFromTemplate(RamTemplateAssetGroup *templateAG);
 
 private:
-    RamObjectListMenu<RamTemplateAssetGroup *> *ui_createMenu;
+    RamObjectListMenu *ui_createMenu;
 };
 
 #endif // ASSETGROUPLISTMANAGERWIDGET_H

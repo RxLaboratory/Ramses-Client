@@ -8,7 +8,7 @@
  * @brief The RamItemFilterModel class is used to filters items according to current state, step or assigned user.
  * It also sorts the items according to: their completion ratio, their estimation, their time spent, their difficulty, their name or their ID (or default)
  */
-class RamItemFilterModel : public RamObjectFilterModel<RamItem*>
+class RamItemFilterModel : public RamObjectFilterModel
 {
     Q_OBJECT
 public:
@@ -29,18 +29,18 @@ public:
 
     void useFilters(bool use = true);
 
-    void hideUser(RamUser *u);
-    void showUser(RamUser *u);
+    void hideUser(RamObject *u);
+    void showUser(RamObject *u);
     void clearUsers();
     void showUnassigned(bool show);
 
-    void hideState(RamState *s);
-    void showState(RamState *s);
+    void hideState(RamObject *s);
+    void showState(RamObject *s);
     void clearStates();
 
     void setStepType(RamStep::Type t);
-    void hideStep(RamStep *s);
-    void showStep(RamStep *s);
+    void hideStep(RamObject *s);
+    void showStep(RamObject *s);
     void showAllSteps();
 
     SortMode sortMode() const;
@@ -54,9 +54,9 @@ protected:
     bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const override;
     bool filterAcceptsColumn(int sourceRow, const QModelIndex &sourceParent) const override;
 
-    QList<RamState*> m_states;
-    QList<RamUser*> m_users;
-    QList<RamStep*> m_hiddenSteps;
+    QList<RamObject*> m_states;
+    QList<RamObject*> m_users;
+    QList<RamObject*> m_hiddenSteps;
     bool m_showUnassigned = true;
     RamStep::Type m_stepType = RamStep::All;
 

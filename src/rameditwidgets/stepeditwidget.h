@@ -64,10 +64,10 @@ private:
     AutoSelectDoubleSpinBox *ui_veryHardEdit;
     DuQFFolderDisplayWidget *ui_folderWidget;
     QCheckBox *ui_estimationMultiplierCheckBox;
-    RamObjectListComboBox<RamAssetGroup*> *ui_estimationMultiplierBox;
+    RamObjectListComboBox *ui_estimationMultiplierBox;
     DuQFColorSelector *ui_colorSelector;
 
-    ObjectListEditWidget<RamApplication*, int> *m_applicationList;
+    ObjectListEditWidget *m_applicationList;
 
 };
 

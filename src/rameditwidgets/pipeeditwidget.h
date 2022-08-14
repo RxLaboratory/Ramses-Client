@@ -36,9 +36,9 @@ private:
     void connectEvents();
     void populateMenus(RamProject *project);
 
-    RamObjectListComboBox<RamStep *> *ui_fromBox;
-    RamObjectListComboBox<RamStep *> *ui_toBox;
-    ObjectListEditWidget<RamPipeFile *, RamProject *> *ui_pipeFileList;
+    RamObjectListComboBox *ui_fromBox;
+    RamObjectListComboBox *ui_toBox;
+    ObjectListEditWidget *ui_pipeFileList;
 };
 
 #endif // PIPEEDITWIDGET_H

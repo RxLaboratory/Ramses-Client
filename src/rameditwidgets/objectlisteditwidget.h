@@ -25,7 +25,7 @@
  * It includes some filters
  * And a searh field
  */
-template<typename RO, typename ROF> class ObjectListEditWidget : public QWidget
+class ObjectListEditWidget : public QWidget
 {
     Q_OBJECT
 public:
@@ -33,10 +33,10 @@ public:
     Q_ENUM( EditMode )
 
     explicit ObjectListEditWidget(bool editableObjects = false, RamUser::UserRole editRole = RamUser::Admin, QWidget *parent = nullptr);
-    explicit ObjectListEditWidget(RamObjectList<RO> *objectList, bool editableObjects = false, RamUser::UserRole editRole = RamUser::Admin, QWidget *parent = nullptr);
-    void setList(RamObjectList<RO> *objectList);
-    void setFilterList(RamObjectList<ROF> *filterList);
-    void setAssignList(RamObjectList<RO> *assignList);
+    explicit ObjectListEditWidget(RamObjectList *objectList, bool editableObjects = false, RamUser::UserRole editRole = RamUser::Admin, QWidget *parent = nullptr);
+    void setList(RamObjectList *objectList);
+    void setFilterList(RamObjectList *filterList);
+    void setAssignList(RamObjectList *assignList);
     void setDontRemoveShortNameList(QStringList dontRemove);
     void clear();
     void setEditMode(ObjectListEditWidget::EditMode editMode);
@@ -44,25 +44,25 @@ public:
     void setSearchable(bool searchable = true);
     void setSortable(bool sortable = true);
     void setTitle(QString title);
-    void select(RO o);
+    void select(RamObject *o);
     QToolButton *addButton() const;
     QString currentFilterUuid() const;
-    ROF currentFilter() const;
+    RamObject *currentFilter() const;
 
-    RamObjectListView<RO> *listWidget();
+    RamObjectListView *listWidget();
 
 public slots:
-    void setFilter(ROF o);
+    void setFilter(RamObject *o);
     void removeSelectedObjects();
 
 signals:
-    void objectSelected(RO);
+    void objectSelected(RamObject*);
     void add();
 
 private slots:
-    void edit(RO obj);
+    void edit(RamObject *obj);
 
-    void assign(RO obj);
+    void assign(RamObject *obj);
 
     void objectAssigned(const QModelIndex &parent,int first,int last);
     void objectUnassigned(const QModelIndex &parent,int first,int last);
@@ -77,10 +77,10 @@ private:
     QToolButton *ui_addButton;
     QToolButton *ui_removeButton;
     QLabel *ui_title;
-    RamObjectListComboBox<ROF> *ui_filterBox;
+    RamObjectListComboBox *ui_filterBox;
     DuQFSearchEdit *ui_searchEdit;
-    RamObjectListView<RO> *ui_listWidget;
-    RamObjectListMenu<RO> *ui_assignMenu = nullptr;
+    RamObjectListView *ui_listWidget;
+    RamObjectListMenu *ui_assignMenu = nullptr;
 
     // Settings
     EditMode m_editMode = UnassignObjects;
@@ -88,9 +88,9 @@ private:
     QStringList m_dontRemove;
 
     // Current List
-    RamObjectList<RO> *m_objectList = nullptr;
-    RamObjectList<RO> *m_assignList = nullptr;
-    RamObjectList<ROF> *m_filterList = nullptr;
+    RamObjectList *m_objectList = nullptr;
+    RamObjectList *m_assignList = nullptr;
+    RamObjectList *m_filterList = nullptr;
 
     QList<QMetaObject::Connection> m_listConnections;
 };

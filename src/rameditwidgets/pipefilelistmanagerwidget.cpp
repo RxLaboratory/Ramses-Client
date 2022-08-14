@@ -3,14 +3,14 @@
 #include "ramses.h"
 
 PipeFileListManagerWidget::PipeFileListManagerWidget(QWidget *parent):
-    ObjectListManagerWidget<RamPipeFile *, RamProject*>(
+    ObjectListManagerWidget(
         "Pipe Types",
         QIcon(":icons/file"),
         parent)
 {
     changeProject(Ramses::instance()->currentProject());
     connect(Ramses::instance(), SIGNAL(currentProjectChanged(RamProject*)), this, SLOT(changeProject(RamProject*)));
-    m_listEditWidget->setEditMode(ObjectListEditWidget<RamPipeFile *, RamProject*>::RemoveObjects);
+    m_listEditWidget->setEditMode(ObjectListEditWidget::RemoveObjects);
 }
 
 RamPipeFile *PipeFileListManagerWidget::createObject()

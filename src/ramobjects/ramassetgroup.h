@@ -15,6 +15,7 @@ public:
     // STATIC //
 
     static RamAssetGroup *getObject(QString uuid, bool constructNew = false);
+    static RamAssetGroup *c(RamObject *o);
     static RamAssetGroup *createFromTemplate(RamTemplateAssetGroup *tempAG, RamProject *project);
 
     // OTHER //
@@ -39,7 +40,7 @@ private:
     void setProject(RamProject *project);
 
     RamProject *m_project = nullptr;
-    RamObjectFilterModel<RamAsset*> *m_assets;
+    RamObjectFilterModel *m_assets;
 };
 
 #endif // RAMASSETGROUP_H

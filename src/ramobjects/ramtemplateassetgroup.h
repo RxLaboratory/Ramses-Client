@@ -11,6 +11,7 @@ public:
     //STATIC //
 
     static RamTemplateAssetGroup *getObject(QString uuid, bool constructNew = false);
+    static RamTemplateAssetGroup *c(RamObject *o);
 
     // OTHER //
 

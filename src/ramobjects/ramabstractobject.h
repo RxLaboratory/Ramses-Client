@@ -191,6 +191,7 @@ public:
     QStringList listFolders(SubFolder subFolder, QString subPath) const;
     void deleteFile(QString fileName, SubFolder folder=NoFolder) const;
     void revealFolder(SubFolder subFolder = NoFolder);
+    QString previewImagePath();
 
 protected:
 

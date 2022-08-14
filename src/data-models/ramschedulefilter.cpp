@@ -4,7 +4,7 @@
 
 RamScheduleFilter::RamScheduleFilter(QObject *parent) : QSortFilterProxyModel(parent)
 {
-    m_emptyList = RamObjectList<RamScheduleEntry*>::getObject("emptylist", true);
+    m_emptyList = RamObjectList::getObject("emptylist", true);
     this->setSourceModel(m_emptyList);
 }
 
