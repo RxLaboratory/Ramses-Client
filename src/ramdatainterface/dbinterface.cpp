@@ -22,6 +22,11 @@ void DBInterface::setOnline()
     setConnectionStatus(NetworkUtils::Connecting, "Connecting to the Ramses Server...");
 }
 
+void DBInterface::setRamsesPath(QString p)
+{
+    m_ldi->setRamsesPath(p);
+}
+
 QString DBInterface::login(QString username, QString password)
 {
     // 1- Check local data

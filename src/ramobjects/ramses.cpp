@@ -61,8 +61,15 @@ void Ramses::logout(QString reason)
     emit loggedOut(reason);
 }
 
+void Ramses::setRamsesPath(QString p)
+{
+    m_dbi->setRamsesPath(p);
+}
+
 QString Ramses::pathFromRamses(QString p, bool create) const
 {
+    if (p == "") return folderPath();
+
     QString path;
     if (QFileInfo( p ).isRelative())
     {

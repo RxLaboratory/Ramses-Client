@@ -49,6 +49,12 @@ public:
      */
     void setOnline();
 
+    /**
+     * @brief setRamsesPath sets the path to the local data for this database
+     * @param p
+     */
+    void setRamsesPath(QString p);
+
     // AUTHENTIFICATION //
 
     QString login(QString username, QString password);

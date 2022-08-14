@@ -36,6 +36,22 @@ QString LocalDataInterface::login(QString username, QString password)
     return "";
 }
 
+void LocalDataInterface::setRamsesPath(QString p)
+{
+    QSqlDatabase db = QSqlDatabase::database("localdata");
+    QSqlQuery query = QSqlQuery(db);
+
+    // Keep history
+    query.prepare("UPDATE Settings SET current = 0 WHERE current = 1;");
+    query.exec();
+
+    // Add new
+    query.prepare("INSERT INTO Settings (localDataPath, current) VALUES  (:path, 1);");
+    query.bindValue(":path", p);
+
+    query.exec();
+}
+
 QStringList LocalDataInterface::tableData(QString table)
 {
     QSqlDatabase db = QSqlDatabase::database("localdata");

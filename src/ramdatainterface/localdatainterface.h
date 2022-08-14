@@ -34,6 +34,12 @@ public:
      */
     QString login(QString username, QString password);
 
+    /**
+     * @brief setRamsesPath sets the path to the local data for this database
+     * @param p
+     */
+    void setRamsesPath(QString p);
+
     // DATA INTERFACE //
 
     QStringList tableData(QString table);

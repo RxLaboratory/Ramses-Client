@@ -8,7 +8,7 @@ LocalSettingsWidget::LocalSettingsWidget(QWidget *parent) :
     folderSelector = new DuQFFolderSelectorWidget(DuQFFolderSelectorWidget::Folder, this);
     mainFolderLayout->addWidget(folderSelector);
 
-    folderSelector->setPath(m_settings.value("ramsesPath", QDir::homePath() + "/Ramses").toString());
+    folderSelector->setPath( Ramses::instance()->pathFromRamses() );
 
     QDateTime d = QDateTime::fromString("2021-04-26 10:53:31", "yyyy-MM-dd hh:mm:ss");
     QString f = "yyyy-MM-dd hh:mm:ss";
@@ -32,7 +32,6 @@ LocalSettingsWidget::LocalSettingsWidget(QWidget *parent) :
 
 void LocalSettingsWidget::setRamsesPath(QString p)
 {
-    m_settings.setValue("ramsesPath", p);
     Ramses::instance()->setRamsesPath(p);
 }
 

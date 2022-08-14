@@ -29,7 +29,8 @@ public:
     void logout(QString reason="");
 
     // Tree base
-    QString pathFromRamses(QString p, bool create = false) const;
+    void setRamsesPath(QString p);
+    QString pathFromRamses(QString p = "", bool create = false) const;
 
     // Users
     RamObjectList<RamUser*> *users() const;

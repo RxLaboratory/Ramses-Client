@@ -2,14 +2,8 @@
 #define PROJECTPAGE_H
 
 #include "duqf-widgets/settingswidget.h"
-#include "ramses.h"
 #include "projecteditwidget.h"
-#include "steplistmanagerwidget.h"
-#include "pipefilelistmanagerwidget.h"
-#include "assetgrouplistmanagerwidget.h"
-#include "assetlistmanagerwidget.h"
-#include "sequencelistmanagerwidget.h"
-#include "shotlistmanagerwidget.h"
+#include "ramtemplateassetgroup.h"
 
 class ProjectPage : public SettingsWidget
 {
@@ -19,13 +13,13 @@ public:
 private slots:
     void currentProjectChanged(RamProject *project);
 
-    void assignUser(RamObject *userObj);
-    void unAssignUser(RamObject *userObj);
+    void assignUser(RamUser *user);
+    void unAssignUser(RamUser *user);
     void userAssigned(const QModelIndex &parent,int first,int last);
     void userUnassigned(const QModelIndex &parent,int first,int last);
 
-    void createStepFromTemplate(RamObject *stepObj);
-    void createAssetGroupFromTemplate(RamObject *agObj);
+    void createStepFromTemplate(RamTemplateStep *templateStep);
+    void createAssetGroupFromTemplate(RamTemplateAssetGroup *templateAG);
 
     void createShots();
 
@@ -34,8 +28,8 @@ private:
 
     QList<QMetaObject::Connection> m_userConnections;
 
-    RamObjectListMenu *ui_assignUserMenu;
-    RamObjectListMenu *ui_unAssignUserMenu;
+    RamObjectListMenu<RamUser*> *ui_assignUserMenu;
+    RamObjectListMenu<RamUser*> *ui_unAssignUserMenu;
 };
 
 #endif // PROJECTPAGE_H

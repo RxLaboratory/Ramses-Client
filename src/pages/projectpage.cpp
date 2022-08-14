@@ -1,5 +1,15 @@
 #include "projectpage.h"
 
+#include "assetgrouplistmanagerwidget.h"
+#include "assetlistmanagerwidget.h"
+#include "pipefilelistmanagerwidget.h"
+#include "ramassetgroup.h"
+#include "ramses.h"
+#include "sequencelistmanagerwidget.h"
+#include "shotlistmanagerwidget.h"
+#include "shotscreationdialog.h"
+#include "steplistmanagerwidget.h"
+
 ProjectPage::ProjectPage(QWidget *parent):
     SettingsWidget("Project Administration", parent)
 {
@@ -30,11 +40,11 @@ ProjectPage::ProjectPage(QWidget *parent):
     projectButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     projectButton->setPopupMode(QToolButton::InstantPopup);
     this->titleBar()->insertLeft(projectButton);
-    ui_assignUserMenu = new RamObjectListMenu(false, this);
+    ui_assignUserMenu = new RamObjectListMenu<RamUser*>(false, this);
     ui_assignUserMenu->setTitle("Assign user");
     ui_assignUserMenu->setList(Ramses::instance()->users());
     projectMenu->addMenu(ui_assignUserMenu);
-    ui_unAssignUserMenu = new RamObjectListMenu(false, this);
+    ui_unAssignUserMenu = new RamObjectListMenu<RamUser*>(false, this);
     ui_unAssignUserMenu->setTitle("Unassign user");
     projectMenu->addMenu(ui_unAssignUserMenu);
 
@@ -45,7 +55,7 @@ ProjectPage::ProjectPage(QWidget *parent):
     this->titleBar()->insertLeft(stepManager->menuButton());
 
     // Create step from template menu
-    RamObjectListMenu *stepTemplateMenu = new RamObjectListMenu(false, this);
+    RamObjectListMenu<RamTemplateStep*> *stepTemplateMenu = new RamObjectListMenu<RamTemplateStep*>(false, this);
     stepTemplateMenu->setTitle("Create from template...");
     stepTemplateMenu->setList( Ramses::instance()->templateSteps() );
     stepManager->menuButton()->menu()->addMenu(stepTemplateMenu);
@@ -61,7 +71,7 @@ ProjectPage::ProjectPage(QWidget *parent):
     this->addPage(assetGroupManager, "Asset Groups", QIcon(":/icons/asset-groups"));
     this->titleBar()->insertLeft(assetGroupManager->menuButton());
 
-    RamObjectListMenu *agTemplateMenu = new RamObjectListMenu(false, this);
+    RamObjectListMenu<RamTemplateAssetGroup*> *agTemplateMenu = new RamObjectListMenu<RamTemplateAssetGroup*>(false, this);
     agTemplateMenu->setTitle("Create from template...");
     agTemplateMenu->setList( Ramses::instance()->templateAssetGroups() );
     assetGroupManager->menuButton()->menu()->addMenu(agTemplateMenu);
@@ -89,10 +99,10 @@ ProjectPage::ProjectPage(QWidget *parent):
     qDebug() << "  > shots ok";
 
     connect(Ramses::instance(), SIGNAL(currentProjectChanged(RamProject*)), this, SLOT(currentProjectChanged(RamProject*)));
-    connect(ui_assignUserMenu, SIGNAL(assign(RamObject*)), this, SLOT(assignUser(RamObject*)));
-    connect(ui_unAssignUserMenu, SIGNAL(assign(RamObject*)), this, SLOT(unAssignUser(RamObject*)));
-    connect(stepTemplateMenu, SIGNAL(assign(RamObject*)), this, SLOT(createStepFromTemplate(RamObject*)));
-    connect(agTemplateMenu, SIGNAL(assign(RamObject*)), this, SLOT(createAssetGroupFromTemplate(RamObject*)));
+    connect(ui_assignUserMenu, SIGNAL(assign(RamUser*)), this, SLOT(assignUser(RamUser*)));
+    connect(ui_unAssignUserMenu, SIGNAL(assign(RamUser*)), this, SLOT(unAssignUser(RamUser*)));
+    connect(stepTemplateMenu, SIGNAL(assign(RamTemplateStep*)), this, SLOT(createStepFromTemplate(RamTemplateStep*)));
+    connect(agTemplateMenu, SIGNAL(assign(RamTemplateAssetGroup*)), this, SLOT(createAssetGroupFromTemplate(RamTemplateAssetGroup*)));
     connect(createMultipleShotsAction, SIGNAL(triggered()), this, SLOT(createShots()));
 }
 
@@ -105,8 +115,8 @@ void ProjectPage::currentProjectChanged(RamProject *project)
     {
         ui_unAssignUserMenu->setList(project->users());
         // hide already assigned
-        if (project->users()->count())
-            userAssigned(QModelIndex(), 0, project->users()->count() - 1);
+        if (project->users()->rowCount())
+            userAssigned(QModelIndex(), 0, project->users()->rowCount() - 1);
         m_userConnections << connect(project->users(), SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(userAssigned(QModelIndex,int,int)));
         m_userConnections << connect(project->users(), SIGNAL(rowsAboutToBeRemoved(QModelIndex,int,int)), this, SLOT(userUnassigned(QModelIndex,int,int)));
     }
@@ -114,18 +124,18 @@ void ProjectPage::currentProjectChanged(RamProject *project)
         ui_unAssignUserMenu->setList(nullptr);
 }
 
-void ProjectPage::assignUser(RamObject *userObj)
+void ProjectPage::assignUser(RamUser *user)
 {
     RamProject *proj = Ramses::instance()->currentProject();
     if (!proj) return;
-    proj->users()->append( userObj );
+    proj->users()->append( user );
 }
 
-void ProjectPage::unAssignUser(RamObject *userObj)
+void ProjectPage::unAssignUser(RamUser *user)
 {
     RamProject *proj = Ramses::instance()->currentProject();
     if (!proj) return;
-    proj->users()->removeAll(userObj);
+    proj->users()->removeAll(user);
 }
 
 void ProjectPage::userAssigned(const QModelIndex &parent, int first, int last)
@@ -137,8 +147,8 @@ void ProjectPage::userAssigned(const QModelIndex &parent, int first, int last)
 
     for (int i = first ; i <= last; i++)
     {
-        RamObject *assignedObj = reinterpret_cast<RamObject*>( proj->users()->data( proj->users()->index(i,0), Qt::UserRole ).toULongLong() );
-        ui_assignUserMenu->setObjectVisible(assignedObj, false);
+        RamUser *user = proj->users()->at(i);
+        ui_assignUserMenu->setObjectVisible(user, false);
     }
 }
 
@@ -151,30 +161,31 @@ void ProjectPage::userUnassigned(const QModelIndex &parent, int first, int last)
 
     for (int i = first ; i <= last; i++)
     {
-        RamObject *assignedObj = reinterpret_cast<RamObject*>( proj->users()->data( proj->users()->index(i,0), Qt::UserRole ).toULongLong() );
-        if (!assignedObj) continue;
-        ui_assignUserMenu->setObjectVisible(assignedObj, true);
+        RamUser *user = proj->users()->at(i);
+        ui_assignUserMenu->setObjectVisible(user, true);
     }
 }
 
-void ProjectPage::createStepFromTemplate(RamObject *stepObj)
+void ProjectPage::createStepFromTemplate(RamTemplateStep *templateStep)
 {
+    if (!templateStep) return;
+
     RamProject *project = Ramses::instance()->currentProject();
     if (!project) return;
-    RamStep *templateStep= qobject_cast<RamStep*>( stepObj );
-    if (!templateStep) return;
-    RamStep *step = templateStep->createFromTemplate(project);
+
+    RamStep *step = RamStep::createFromTemplate(templateStep, project);
     project->steps()->append(step);
     step->edit();
 }
 
-void ProjectPage::createAssetGroupFromTemplate(RamObject *agObj)
+void ProjectPage::createAssetGroupFromTemplate(RamTemplateAssetGroup *templateAG)
 {
+    if (!templateAG) return;
+
     RamProject *project = Ramses::instance()->currentProject();
     if (!project) return;
-    RamAssetGroup *templateAG = qobject_cast<RamAssetGroup*>( agObj );
-    if (!templateAG) return;
-    RamAssetGroup *ag = templateAG->createFromTemplate(project);
+
+    RamAssetGroup *ag = RamAssetGroup::createFromTemplate(templateAG, project);
     project->assetGroups()->append(ag);
     ag->edit();
 }

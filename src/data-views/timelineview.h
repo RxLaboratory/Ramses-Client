@@ -49,8 +49,6 @@ private slots:
     void changeProject(RamProject*project);
     void select(const QModelIndex &index);
     void selectShot(RamShot *shot);
-    void revealFolder(RamShot *obj);
-    void editObject(RamShot *obj);
 
 private:
     void setupUi();

@@ -145,16 +145,6 @@ void TimelineView::selectShot(RamShot *shot)
     select(shot);
 }
 
-void TimelineView::revealFolder(RamShot *obj)
-{
-    obj->revealFolder();
-}
-
-void TimelineView::editObject(RamShot *obj)
-{
-    obj->edit();
-}
-
 void TimelineView::select(RamShot *o)
 {
     for (int i = 0; i< m_objectList->columnCount(); i++)
@@ -266,8 +256,6 @@ void TimelineView::connectEvents()
     // Update list when project changes
     connect(Ramses::instance(), &Ramses::currentProjectChanged, this, &TimelineView::changeProject);
     // Delegate buttons
-    connect(m_delegate, &TimelineDelegate::folderObject, this, &TimelineView::revealFolder);
-    connect(m_delegate, &TimelineDelegate::editObject, this, &TimelineView::editObject);
     connect(m_delegate, SIGNAL(editObject(RamObject*)), this, SLOT(select(RamObject*)));
     // Select
     connect(TimelineManager::instance(), SIGNAL(currentShotChanged(RamShot*)), this, SLOT(selectShot(RamShot*)));
