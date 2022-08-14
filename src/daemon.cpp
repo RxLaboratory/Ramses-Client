@@ -1,6 +1,10 @@
 #include "daemon.h"
 #include "data-models/ramitemtable.h"
 #include "data-models/ramstepstatushistory.h"
+#include "duqf-app/app-version.h"
+#include "rampipe.h"
+#include "ramsequence.h"
+#include "ramses.h"
 
 Daemon *Daemon::_instance = nullptr;
 
@@ -347,9 +351,9 @@ void Daemon::getAssets(QTcpSocket *client)
     }
 
     QJsonArray assets;
-    for (int i = 0; i < proj->assets()->count(); i++)
+    for (int i = 0; i < proj->assets()->rowCount(); i++)
     {
-        RamAsset *a = qobject_cast<RamAsset*>( proj->assets()->at(i) );
+        RamAsset *a = qobject_cast<RamAsset*>(proj->assets()->at(i));
         QJsonObject asset = assetToJson(a);
         assets.append(asset);
     }
@@ -395,9 +399,9 @@ void Daemon::getAssetGroups(QTcpSocket *client)
     }
 
     QJsonArray assetGroups;
-    for( int i = 0; i < proj->assetGroups()->count(); i++)
+    for( int i = 0; i < proj->assetGroups()->rowCount(); i++)
     {
-        RamAssetGroup *ag = qobject_cast<RamAssetGroup*>( proj->assetGroups()->at(i) );
+        RamAssetGroup *ag = proj->assetGroups()->at(i);
         QJsonObject assetGroup;
         assetGroup.insert("shortName", ag->shortName());
         assetGroup.insert("name", ag->name());
@@ -484,9 +488,9 @@ void Daemon::getPipes(QTcpSocket *client)
     }
 
     QJsonArray pipes;
-    for (int i = 0; i < proj->pipeline()->count(); i++)
+    for (int i = 0; i < proj->pipeline()->rowCount(); i++)
     {
-        RamPipe *p = qobject_cast<RamPipe*>( proj->pipeline()->at(i));
+        RamPipe *p = proj->pipeline()->at(i);
         QJsonObject pipe;
         if (!p->inputStep()) continue;
         if (!p->outputStep()) continue;
@@ -494,10 +498,10 @@ void Daemon::getPipes(QTcpSocket *client)
         pipe.insert("inputStepShortName", p->inputStep()->shortName());
         pipe.insert("outputStepShortName", p->outputStep()->shortName());
         QJsonArray pipeFiles;
-        for( int j =0; j < p->pipeFiles()->count();j++)
+        for( int j =0; j < p->pipeFiles()->rowCount();j++)
         {
             QJsonObject pipeFile;
-            RamPipeFile *pf = qobject_cast<RamPipeFile*>( p->pipeFiles()->at(j) );
+            RamPipeFile *pf = p->pipeFiles()->at(j);
             pipeFile.insert("colorSpace", "");
             pipeFile.insert("shortName", pf->shortName());
             pipeFile.insert("customSettings", pf->customSettings());
@@ -538,9 +542,9 @@ void Daemon::getProjects(QTcpSocket *client)
 
     QJsonObject content;
     QJsonArray projects;
-    for (int i = 0; i < Ramses::instance()->projects()->count(); i++)
+    for (int i = 0; i < Ramses::instance()->projects()->rowCount(); i++)
     {
-        RamProject *p = (RamProject*)Ramses::instance()->projects()->at(i);
+        RamProject *p = Ramses::instance()->projects()->at(i);
         QJsonObject project;
         project.insert("shortName", p->shortName());
         project.insert("name", p->name());
@@ -570,9 +574,9 @@ void Daemon::getSequences(QTcpSocket *client)
     }
 
     QJsonArray sequences;
-    for( int i = 0; i < proj->sequences()->count(); i++)
+    for( int i = 0; i < proj->sequences()->rowCount(); i++)
     {
-        RamSequence *seq = qobject_cast<RamSequence*>( proj->sequences()->at(i) );
+        RamSequence *seq = proj->sequences()->at(i);
         QJsonObject sequence;
         sequence.insert("shortName", seq->shortName());
         sequence.insert("name", seq->name());
@@ -604,7 +608,7 @@ void Daemon::getShots(QString filter, QTcpSocket *client)
     QRegularExpression re(filter,QRegularExpression::CaseInsensitiveOption);
 
     QJsonArray shots;
-    for (int i = 0; i < proj->shots()->count(); i++)
+    for (int i = 0; i < proj->shots()->rowCount(); i++)
     {
         RamShot *s = qobject_cast<RamShot*>( proj->shots()->at(i) );
 
@@ -655,7 +659,7 @@ void Daemon::getStates(QTcpSocket *client)
     QJsonObject content;
     QJsonArray states;
     RamStateList *ramStates = Ramses::instance()->states();
-    for (int i = 0; i < ramStates->count(); i++)
+    for (int i = 0; i < ramStates->rowCount(); i++)
     {
         RamState *s = qobject_cast<RamState*>( ramStates->at(i) );
         QJsonObject state = stateToJson(s);
@@ -698,10 +702,10 @@ void Daemon::getSteps(QTcpSocket *client)
     }
 
     QJsonArray steps;
-    RamObjectList *projectSteps = proj->steps();
-    for (int i = 0; i < projectSteps->count(); i++)
+    RamObjectList<RamStep*> *projectSteps = proj->steps();
+    for (int i = 0; i < projectSteps->rowCount(); i++)
     {
-        RamStep *s = qobject_cast<RamStep*>( projectSteps->at(i) );
+        RamStep *s = projectSteps->at(i);
         QJsonObject step = stepToJson(s);
         steps.append(step);
     }
@@ -724,10 +728,10 @@ void Daemon::getStep(QString shortName, QString name, QTcpSocket *client)
     }
 
     RamStep *step = nullptr;
-    RamObjectList *steps = proj->steps();
-    for (int i = 0; i < steps->count(); i++)
+    RamObjectList<RamStep*> *steps = proj->steps();
+    for (int i = 0; i < steps->rowCount(); i++)
     {
-        RamStep *s = qobject_cast<RamStep*>( steps->at(i) );
+        RamStep *s = steps->at(i);
         if (s->shortName() == shortName)
         {
             if (name == "" || s->name() == name)
@@ -779,7 +783,6 @@ void Daemon::setPublishSettings(QString stepShortName, QString stepName, QString
     }
 
     step->setPublishSettings(settings);
-    step->update();
 
     post(client, content, "setPublishSettings", "Publish settings updated!");
 }

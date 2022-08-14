@@ -1,5 +1,38 @@
 #include "mainwindow.h"
-#include "config.h"
+
+#include "itemtablemanagerwidget.h"
+#include "processmanager.h"
+#include "progressbar.h"
+#include "pages/projectpage.h"
+#include "pages/installpage.h"
+#include "docks/consolewidget.h"
+#include "serversettingswidget.h"
+#include "daemonsettingswidget.h"
+#include "loginpage.h"
+#include "userprofilepage.h"
+#include "userlistmanagerwidget.h"
+#include "projectlistmanagerwidget.h"
+#include "pipeline-editor/pipelinewidget.h"
+#include "templatesteplistmanagerwidget.h"
+#include "templateassetgrouplistmanagerwidget.h"
+#include "statelistmanagerwidget.h"
+#include "filetypelistmanagerwidget.h"
+#include "applicationlistmanagerwidget.h"
+#include "schedulemanagerwidget.h"
+#include "docks/statisticswidget.h"
+#include "docks/timelinewidget.h"
+#include "dbinterface.h"
+#include "daemon.h"
+#include "projectselectorwidget.h"
+#include "localsettingswidget.h"
+#include "duqf-widgets/duqftoolbarspacer.h"
+#include "duqf-widgets/duqflogtoolbutton.h"
+#include "duqf-widgets/duqfupdatedialog.h"
+#include "duqf-widgets/duqfupdatesettingswidget.h"
+#include "duqf-widgets/appearancesettingswidget.h"
+#include "duqf-app/app-version.h"
+#include "duqf-app/app-style.h"
+#include "duqf-widgets/duqftoolbarspacer.h"
 
 MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     QMainWindow(parent)
@@ -20,8 +53,6 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     ProcessManager::instance();
     // Ramses
     Ramses::instance();
-    // The ramses loader
-    RamLoader::instance();
 
     qDebug() << "> Loading settings";
 
@@ -160,14 +191,14 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
 #endif
 
 #ifndef DEACTIVATE_ASSETSTABLE
-    ItemTableManagerWidget *assetsTable = new ItemTableManagerWidget(RamStep::AssetProduction, this);
+    ItemTableManagerWidget<RamAssetGroup*> *assetsTable = new ItemTableManagerWidget<RamAssetGroup*>(this);
     mainStack->addWidget(assetsTable);
     connect(assetsTable, SIGNAL(closeRequested()), this, SLOT(home()));
     qDebug() << "> Assets table ready";
 #endif
 
 #ifndef DEACTIVATE_SHOTSTABLE
-    ItemTableManagerWidget *shotsTable = new ItemTableManagerWidget(RamStep::ShotProduction, this);
+    ItemTableManagerWidget<RamSequence*> *shotsTable = new ItemTableManagerWidget<RamSequence*>(this);
     mainStack->addWidget(shotsTable);
     connect(shotsTable, SIGNAL(closeRequested()), this, SLOT(home()));
     qDebug() << "> Shots table ready";
@@ -291,7 +322,6 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     connect(Ramses::instance(),&Ramses::loggedIn, this, &MainWindow::loggedIn);
     connect(Ramses::instance(),&Ramses::loggedOut, this, &MainWindow::loggedOut);
     connect(Ramses::instance(), SIGNAL(currentProjectChanged(RamProject*)), this, SLOT(currentProjectChanged(RamProject*)));
-    connect(DBInterface::instance(),&DBInterface::data, RamLoader::instance(), &RamLoader::newData );
     connect(DBInterface::instance(),&DBInterface::connectionStatusChanged, this, &MainWindow::dbiConnectionStatusChanged);
 
     // Set style
@@ -872,12 +902,12 @@ void MainWindow::freezeUI(bool f)
 
 void MainWindow::dbiConnectionStatusChanged(NetworkUtils::NetworkStatus s)
 {
-    QString address =  DBInterface::instance()->serverAddress();
+    QString address =  RamServerInterface::instance()->serverAddress();
     if (s == NetworkUtils::Online)
     {
         ui_refreshButton->show();
         ui_networkButton->setText(address);
-        if (DBInterface::instance()->ssl())
+        if (RamServerInterface::instance()->ssl())
         {
             ui_networkButton->setIcon(QIcon(":/icons/shield"));
             ui_networkButton->setToolTip("Connected.");
@@ -961,7 +991,8 @@ void MainWindow::closeEvent(QCloseEvent *event)
     settings.setValue("windowState", this->saveState());
     settings.endGroup();
 
-    DBInterface::instance()->suspend(true);
+    // TODO One last Sync
+
     QFontDatabase::removeAllApplicationFonts();
     trayIcon->hide();
     QMainWindow::closeEvent(event);

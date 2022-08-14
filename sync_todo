@@ -1,5 +1,4 @@
-1- implement all ramobjects
-	- fix editwidgets (arrivé à assetlistmanagerwidget)
+1- fix all issues
 
 2- New login page & Settings data
 	- Create or open database
@@ -14,18 +13,17 @@
 		- if online, rsi login using uuid
 		- if ok, set online, else setoffline and show error
   
-4- encrypt user data
-
-
 5- Sync process
 	separate thread: send changes since last sync to server, get new data.
 		on demand sync
 		periodic sync: Sync interval: option, default, 30s
 		get online
 		get offline (voluntarily)
+		on quit (see mainwindow closeEvent)
+		
+6- simplify daemon & reimplment api
 
-6- Doc
-	Private data: local user data is just obfuscated, it doesn't use a strong encryption. Keep the file safe!
+7- Doc
 		
 		
 

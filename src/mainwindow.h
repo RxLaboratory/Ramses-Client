@@ -13,49 +13,15 @@
 #include <QSystemTrayIcon>
 
 #include "ui_mainwindow.h"
-#include "duqf-app/app-version.h"
-#include "duqf-app/app-style.h"
-#include "duqf-widgets/duqftoolbarspacer.h"
+
 #include "duqf-widgets/settingswidget.h"
-#include "duqf-widgets/appearancesettingswidget.h"
 #include "duqf-widgets/aboutdialog.h"
 #include "duqf-utils/utils.h"
-#include "duqf-widgets/duqftoolbarspacer.h"
-#include "duqf-widgets/duqflogtoolbutton.h"
-#include "duqf-widgets/duqfupdatedialog.h"
-#include "duqf-widgets/duqfupdatesettingswidget.h"
+#include "duqf-utils/duqflogger.h"
 #include "duqf-widgets/duqfdocktitle.h"
 #include "duqf-widgets/duqfautosizetoolbutton.h"
-
-#include "serversettingswidget.h"
-#include "daemonsettingswidget.h"
-#include "loginpage.h"
-#include "userprofilepage.h"
-#include "userlistmanagerwidget.h"
-#include "projectlistmanagerwidget.h"
-#include "pipeline-editor/pipelinewidget.h"
-#include "templatesteplistmanagerwidget.h"
-#include "templateassetgrouplistmanagerwidget.h"
-#include "statelistmanagerwidget.h"
-#include "filetypelistmanagerwidget.h"
-#include "applicationlistmanagerwidget.h"
-#include "schedulemanagerwidget.h"
-#include "docks/statisticswidget.h"
-#include "docks/timelinewidget.h"
-#include "dbinterface.h"
-#include "daemon.h"
-#include "ramloader.h"
-#include "projectselectorwidget.h"
-#include "localsettingswidget.h"
 #include "progresspage.h"
-#include "processmanager.h"
-#include "progressbar.h"
-#include "pages/projectpage.h"
-#include "pages/installpage.h"
-#include "docks/consolewidget.h"
-
-#include "rameditwidgets/itemtablemanagerwidget.h"
-
+#include "ramproject.h"
 
 class MainWindow : public QMainWindow, private Ui::MainWindow
 {
