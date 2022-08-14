@@ -176,8 +176,8 @@ void ProjectEditWidget::setupUi()
 
     ui_mainFormLayout->addWidget(fWidget, 7, 1);
 
-    ui_userList = new ObjectListEditWidget(true, RamUser::ProjectAdmin, this);
-    ui_userList->setEditMode(ObjectListEditWidget::UnassignObjects);
+    ui_userList = new ObjectListEditWidget<RamUser*, RamProject*>(true, RamUser::ProjectAdmin, this);
+    ui_userList->setEditMode(ObjectListEditWidget<RamUser*, RamProject*>::UnassignObjects);
     ui_userList->setTitle("Users");
     ui_userList->setAssignList(Ramses::instance()->users());
     ui_mainLayout->addWidget(ui_userList);
