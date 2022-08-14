@@ -8,13 +8,11 @@
 #include <QClipboard>
 
 #include "dbinterface.h"
-#include "duqf-utils/guiutils.h"
 #include "duqf-widgets/duqftitlebar.h"
 #include "data-views/ramscheduletablewidget.h"
 #include "data-models/ramscheduletable.h"
 #include "data-views/ramobjectlistmenu.h"
 #include "data-models/ramschedulefilter.h"
-#include "ramses.h"
 
 class ScheduleManagerWidget : public QWidget
 {
@@ -37,9 +35,9 @@ private slots:
     void projectUpdated(RamObject*projObj);
     void userChanged(RamUser *user);
 
-    void assignStep(RamObject *stepObj = nullptr);
+    void assignStep(RamStep *step = nullptr);
 
-    void filterUser(RamObject *userObj, bool filter);
+    void filterUser(RamUser *user, bool filter);
     void filterMe();
 
     void showMonday(bool show);
@@ -77,10 +75,10 @@ private:
     RamScheduleTableWidget *ui_table;
     QDateEdit *ui_startDateEdit;
     QDateEdit *ui_endDateEdit;
-    RamObjectListMenu *ui_stepMenu;
-    RamObjectListMenu *ui_stepContextMenu;
+    RamObjectListMenu<RamStep*> *ui_stepMenu;
+    RamObjectListMenu<RamStep*> *ui_stepContextMenu;
     QToolButton *ui_userButton;
-    RamObjectListMenu *ui_userMenu;
+    RamObjectListMenu<RamUser*> *ui_userMenu;
     QAction *ui_meAction;
     QAction *ui_monday;
     QAction *ui_tuesday;

@@ -4,6 +4,8 @@
 #include <QSortFilterProxyModel>
 #include <QtDebug>
 
+#include "data-models/ramscheduletable.h"
+
 template<typename RO> class RamObjectList;
 class RamScheduleEntry;
 
@@ -11,7 +13,7 @@ class RamScheduleFilter : public QSortFilterProxyModel
 {
 public:
     explicit RamScheduleFilter(QObject *parent = nullptr);
-    void setList(RamObjectList<RamScheduleEntry *> *list);
+    void setList(RamScheduleTable *list);
 
     void ignoreUserUuid(QString uuid);
     void acceptUserUuid(QString uuid);

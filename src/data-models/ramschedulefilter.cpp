@@ -8,7 +8,7 @@ RamScheduleFilter::RamScheduleFilter(QObject *parent) : QSortFilterProxyModel(pa
     this->setSourceModel(m_emptyList);
 }
 
-void RamScheduleFilter::setList(RamObjectList<RamScheduleEntry*> *list)
+void RamScheduleFilter::setList(RamScheduleTable *list)
 {
     if(!list) this->setSourceModel(m_emptyList);
     this->setSourceModel(list);

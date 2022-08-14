@@ -1,5 +1,9 @@
 #include "schedulemanagerwidget.h"
 
+#include "duqf-utils/guiutils.h"
+#include "ramscheduleentry.h"
+#include "ramses.h"
+
 ScheduleManagerWidget::ScheduleManagerWidget(QWidget *parent) : QWidget(parent)
 {
     m_dbi = DBInterface::instance();
@@ -138,19 +142,8 @@ void ScheduleManagerWidget::userChanged(RamUser *user)
     ui_stepMenu->setEnabled(user->role() >= RamUser::Lead);
 }
 
-void ScheduleManagerWidget::assignStep(RamObject *stepObj)
+void ScheduleManagerWidget::assignStep(RamStep *step)
 {
-    RamStep *step = qobject_cast<RamStep*>(stepObj);
-
-    if (Ramses::instance()->currentProject()->steps()->count() == 0) step = nullptr;
-
-    m_dbi->suspend(true);
-
-    QList<ScheduleEntryStruct> modifiedEntries;
-    QList<ScheduleEntryStruct> newEntries;
-    QList<ScheduleEntryStruct> removedEntries;
-    QList<ScheduleCommentStruct> removedComments;
-
     QModelIndexList selection = ui_table->selectionModel()->selectedIndexes();
     for (int i = 0; i < selection.count(); i++)
     {
@@ -162,13 +155,11 @@ void ScheduleManagerWidget::assignStep(RamObject *stepObj)
         if (!step)
         {
             if (index.data(Qt::UserRole + 3).toBool() && comment) {
-                removedComments << comment->toStruct();
-                comment->remove(false);
+                comment->remove();
             }
             else if (entry)
             {
-                removedEntries << entry->toStruct();
-                entry->remove(false);
+                entry->remove();
             }
             continue;
         }
@@ -187,34 +178,22 @@ void ScheduleManagerWidget::assignStep(RamObject *stepObj)
             if ( ispm )
                 date.setTime(QTime(12,0));
 
-            entry = new RamScheduleEntry( user, step, date );
+            entry = new RamScheduleEntry( user, date );
+            entry->setStep(step);
             user->schedule()->append(entry);
-
-            newEntries << entry->toStruct();
         }
         else
         {
             entry->setStep( step );
-            entry->update();
-            modifiedEntries << entry->toStruct();
         }
 
     }
-
-    m_dbi->suspend(false);
-
-    m_dbi->createSchedules( newEntries );
-    m_dbi->updateSchedules( modifiedEntries );
-    m_dbi->removeSchedules( removedEntries );
-    m_dbi->removeScheduleComments( removedComments );
-
-    this->update();
 }
 
-void ScheduleManagerWidget::filterUser(RamObject *userObj, bool filter)
+void ScheduleManagerWidget::filterUser(RamUser *user, bool filter)
 {
-    if (filter) m_scheduleFilter->acceptUserUuid( userObj->uuid() );
-    else m_scheduleFilter->ignoreUserUuid( userObj->uuid() );
+    if (filter) m_scheduleFilter->acceptUserUuid( user->uuid() );
+    else m_scheduleFilter->ignoreUserUuid( user->uuid() );
 
     checkUserFilter();
 }
@@ -224,16 +203,7 @@ void ScheduleManagerWidget::filterMe()
     QList<QAction*> actions = ui_userMenu->actions();
 
     RamUser *current = Ramses::instance()->currentUser();
-    for (int i =0; i < actions.count(); i++)
-    {
-        QAction *a = actions.at(i);
-        quintptr iptr = a->data().toULongLong();
-        if (iptr == 0) continue;
-        RamUser *u = reinterpret_cast<RamUser*>( iptr );
-        if (!u) continue;
-        a->setChecked( u->is(current) );
-    }
-
+    ui_userMenu->select(current);
     checkUserFilter();
 }
 
@@ -378,7 +348,6 @@ void ScheduleManagerWidget::cutComment()
         QClipboard *clipboard = QGuiApplication::clipboard();
         clipboard->setText( comment->comment() );
         comment->setComment("");
-        comment->update();
     }
     else {
         RamScheduleEntry *entry = reinterpret_cast<RamScheduleEntry*>( iptr );
@@ -386,7 +355,6 @@ void ScheduleManagerWidget::cutComment()
         QClipboard *clipboard = QGuiApplication::clipboard();
         clipboard->setText( entry->comment() );
         entry->setComment("");
-        entry->update();
     }
 }
 
@@ -400,11 +368,6 @@ void ScheduleManagerWidget::pasteComment()
     QModelIndexList selection = ui_table->selectionModel()->selectedIndexes();
     if (selection.count() == 0) return;
 
-    QList<ScheduleEntryStruct> modifiedEntries;
-    QList<ScheduleCommentStruct> modifiedComments;
-
-    m_dbi->suspend(true);
-
     for (int i = 0; i < selection.count(); i++)
     {
         const QModelIndex &index = selection.at(i);
@@ -414,21 +377,14 @@ void ScheduleManagerWidget::pasteComment()
             RamScheduleComment *c = reinterpret_cast<RamScheduleComment*>( iptr );
             if (!c) continue;
             c->setComment(comment);
-            c->update();
-            modifiedComments << c->toStruct();
         }
         else
         {
             RamScheduleEntry *entry = reinterpret_cast<RamScheduleEntry*>( iptr );
             if (!entry) continue;
             entry->setComment(comment);
-            entry->update();
-            modifiedEntries << entry->toStruct();
         }
     }
-
-    m_dbi->suspend(false);
-    m_dbi->updateSchedules( modifiedEntries );
 }
 
 void ScheduleManagerWidget::contextMenuRequested(QPoint p)
@@ -447,9 +403,6 @@ void ScheduleManagerWidget::comment()
     // Get selection
     QModelIndexList selection = ui_table->selectionModel()->selectedIndexes();
     if (selection.count() == 0) return;
-
-    QList<ScheduleEntryStruct> modifiedEntries;
-    QList<ScheduleCommentStruct> modifiedComments;
 
     QString currentComment;
     QModelIndex currentIndex = ui_table->selectionModel()->currentIndex();
@@ -472,8 +425,6 @@ void ScheduleManagerWidget::comment()
                                                   tr("Comment:"), currentComment, &ok);
     if (ok && !text.isEmpty())
     {
-        m_dbi->suspend(true);
-
         for (int i = 0; i < selection.count(); i++)
         {
             const QModelIndex &index = selection.at(i);
@@ -491,25 +442,18 @@ void ScheduleManagerWidget::comment()
                     if ( ispm )
                         date.setTime(QTime(12,0));
 
-                    comment = new RamScheduleComment( m_project, date );
+                    comment = new RamScheduleComment( m_project );
+                    comment->setDate(date);
                     m_project->scheduleComments()->append(comment);
                 }
                 comment->setComment(text);
-                comment->update();
-                modifiedComments << comment->toStruct();
             }
             else {
                 RamScheduleEntry *entry = reinterpret_cast<RamScheduleEntry*>( iptr );
                 if (!entry) continue;
                 entry->setComment(text);
-                entry->update();
-                modifiedEntries << entry->toStruct();
             }
         }
-
-        m_dbi->suspend(false);
-        m_dbi->updateSchedules( modifiedEntries );
-        m_dbi->updateScheduleComments( modifiedComments );
     }
 }
 
@@ -524,7 +468,6 @@ void ScheduleManagerWidget::color()
     QModelIndexList selection = ui_table->selectionModel()->selectedIndexes();
     if (selection.count() == 0) return;
 
-    QList<ScheduleCommentStruct> modifiedComments;
     QColor currentColor;
 
     QModelIndex currentIndex = ui_table->selectionModel()->currentIndex();
@@ -539,7 +482,6 @@ void ScheduleManagerWidget::color()
 
     QColor color = QColorDialog::getColor(currentColor, this, "Select color" );
     if (color.isValid()) {
-        m_dbi->suspend(true);
 
         for (int i = 0; i < selection.count(); i++)
         {
@@ -548,17 +490,13 @@ void ScheduleManagerWidget::color()
             if (index.data(Qt::UserRole + 3).toBool()) {
                 RamScheduleComment *comment = reinterpret_cast<RamScheduleComment*>( iptr );
                 if (!comment) {
-                    comment = new RamScheduleComment( m_project, index.data(Qt::UserRole + 1).toDateTime() );
+                    comment = new RamScheduleComment( m_project );
+                    comment->setDate(index.data(Qt::UserRole + 1).toDateTime());
                     m_project->scheduleComments()->append(comment);
                 }
                 comment->setColor(color);
-                comment->update();
-                modifiedComments << comment->toStruct();
             }
         }
-
-        m_dbi->suspend(false);
-        m_dbi->updateScheduleComments( modifiedComments );
     }
 }
 
@@ -603,7 +541,7 @@ void ScheduleManagerWidget::setupUi()
     viewButton->setPopupMode(QToolButton::InstantPopup);
     ui_titleBar->insertLeft(viewButton);
 
-    ui_userMenu = new RamObjectListMenu(true, this);
+    ui_userMenu = new RamObjectListMenu<RamUser*>(true, this);
 
     ui_meAction = new QAction("Me", this);
     ui_userMenu->insertAction( ui_userMenu->actions().at(0), ui_meAction);
@@ -685,7 +623,7 @@ void ScheduleManagerWidget::setupUi()
 
     stepMenu->addSeparator();
 
-    ui_stepMenu = new RamObjectListMenu(false, this);
+    ui_stepMenu = new RamObjectListMenu<RamStep*>(false, this);
     ui_stepMenu->setTitle("Assign");
     ui_stepMenu->addCreateButton();
     ui_stepMenu->actions().at(0)->setText("None");
@@ -765,7 +703,7 @@ void ScheduleManagerWidget::setupUi()
 
     ui_contextMenu->addSeparator();
 
-    ui_stepContextMenu = new RamObjectListMenu(false, this);
+    ui_stepContextMenu = new RamObjectListMenu<RamStep*>(false, this);
     ui_stepContextMenu->setTitle("Assign");
     ui_stepContextMenu->addCreateButton();
     ui_stepContextMenu->actions().at(0)->setText("None");
