@@ -6,17 +6,13 @@
 #include <QSettings>
 
 #include "ui_pipelinewidget.h"
+
+#include "ramproject.h"
+#include "ramuser.h"
 #include "duqf-nodeview/duqfnodeview.h"
 #include "duqf-nodeview/duqfnodescene.h"
 #include "duqf-widgets/duqftitlebar.h"
 #include "duqf-widgets/duqfspinbox.h"
-#include "duqf-app/app-version.h"
-#include "duqf-utils/guiutils.h"
-
-#include "processmanager.h"
-#include "stepnode.h"
-#include "ramses.h"
-#include "pipeeditwidget.h"
 
 class PipelineWidget : public QWidget, private Ui::PipelineWidget
 {

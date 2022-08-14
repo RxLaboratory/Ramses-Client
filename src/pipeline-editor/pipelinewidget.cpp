@@ -1,6 +1,11 @@
 #include "pipelinewidget.h"
 
-#include "mainwindow.h"
+#include "duqf-utils/guiutils.h"
+
+#include "processmanager.h"
+#include "stepnode.h"
+#include "ramses.h"
+#include "rampipe.h"
 
 PipelineWidget::PipelineWidget(QWidget *parent) :
     QWidget(parent)
@@ -125,7 +130,7 @@ PipelineWidget::PipelineWidget(QWidget *parent) :
     stepButton->setMenu(ui_stepMenu);
 
     // Load template steps
-    for (int i = 0; i < Ramses::instance()->templateSteps()->count(); i++) newTemplateStep( Ramses::instance()->templateSteps()->at(i) );
+    for (int i = 0; i < Ramses::instance()->templateSteps()->rowCount(); i++) newTemplateStep( Ramses::instance()->templateSteps()->at(i) );
 
     ui_titleBar->insertLeft(stepButton);
 
@@ -429,7 +434,7 @@ void PipelineWidget::assignStep()
     quintptr iptr = stepAction->data().toULongLong();
     RamStep *templateStep = reinterpret_cast<RamStep*>( iptr );
     if (!templateStep) return;
-    RamStep *step = templateStep->createFromTemplate(project);
+    RamStep *step = RamStep::createFromTemplate(templateStep, project);
     project->steps()->append(step);
     step->edit();
 }
@@ -653,7 +658,6 @@ void PipelineWidget::changeProject()
 {
     if (!m_projectChanged) return;
     m_projectChanged = false;
-    DBISuspender b;
 
     ProcessManager *pm = ProcessManager::instance();
 
@@ -674,10 +678,10 @@ void PipelineWidget::changeProject()
 
     pm->start();
     pm->setText("Loading project...");
-    pm->setMaximum( m_project->steps()->count() + m_project->pipeline()->count() );
+    pm->setMaximum( m_project->steps()->rowCount() + m_project->pipeline()->rowCount() );
 
     // add steps
-    for(int i = 0; i < m_project->steps()->count(); i++)
+    for(int i = 0; i < m_project->steps()->rowCount(); i++)
     {
         pm->setText("Building step nodes...");
         pm->increment();
@@ -685,7 +689,7 @@ void PipelineWidget::changeProject()
     }
 
     // add pipes
-    for ( int i = 0; i < m_project->pipeline()->count(); i++ )
+    for ( int i = 0; i < m_project->pipeline()->rowCount(); i++ )
     {
         pm->setText("Building pipes...");
         pm->increment();
