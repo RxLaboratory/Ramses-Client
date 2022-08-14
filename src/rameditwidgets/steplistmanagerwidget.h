@@ -2,24 +2,23 @@
 #define STEPLISTMANAGERWIDGET_H
 
 #include "objectlistmanagerwidget.h"
-#include "stepeditwidget.h"
 #include "data-views/ramobjectlistmenu.h"
 
-class StepListManagerWidget : public ObjectListManagerWidget
+class StepListManagerWidget : public ObjectListManagerWidget<RamStep*, RamProject*>
 {
     Q_OBJECT
 public:
     StepListManagerWidget(QWidget *parent = nullptr);
 
 protected slots:
-    RamObject *createObject() override;
+    RamStep *createObject() override;
 private slots:
     void changeProject(RamProject *project);
 
-    void createFromTemplate(RamObject *stepObj);
+    void createFromTemplate(RamTemplateStep *templateStep);
 
 private:
-    RamObjectListMenu *ui_createMenu;
+    RamObjectListMenu<RamTemplateStep*> *ui_createMenu;
 };
 
 #endif // STEPLISTMANAGERWIDGET_H

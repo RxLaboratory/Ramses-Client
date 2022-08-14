@@ -1,7 +1,9 @@
 #include "usereditwidget.h"
 
+#include "ramses.h"
+
 UserEditWidget::UserEditWidget(RamUser *user, QWidget *parent) :
-    ObjectEditWidget(user, parent)
+    ObjectEditWidget(parent)
 {
     setupUi();
     connectEvents();
@@ -16,9 +18,6 @@ UserEditWidget::UserEditWidget(QWidget *parent) :
 {
     setupUi();
     connectEvents();
-
-    setObject(nullptr);
-
     m_dontRename << "Ramses" << "Removed" << "Duduf";
 }
 
@@ -27,62 +26,52 @@ RamUser *UserEditWidget::user() const
     return m_user;
 }
 
-void UserEditWidget::setObject(RamObject *obj)
+void UserEditWidget::reInit(RamObject *o)
 {
-    RamUser *user = qobject_cast<RamUser*>(obj);
-
-    this->setEnabled(false);
-
-    ObjectEditWidget::setObject(user);
-    m_user = user;
-
-    QSignalBlocker b1(ui_cpasswordEdit);
-    QSignalBlocker b2(ui_npassword1Edit);
-    QSignalBlocker b3(ui_npassword2Edit);
-    QSignalBlocker b4(ui_roleBox);
-    QSignalBlocker b5(ui_folderWidget);
-    QSignalBlocker b6(ui_colorSelector);
-
-    ui_cpasswordEdit->setText("");
-    ui_npassword1Edit->setText("");
-    ui_npassword2Edit->setText("");
-    ui_roleBox->setCurrentIndex(0);
-    ui_roleBox->setEnabled(true);
-    ui_roleBox->setToolTip("");
-    ui_cpasswordEdit->setEnabled(false);
-    ui_folderWidget->setPath("");
-    ui_colorSelector->setColor(QColor(200,200,200));
-
+    m_user = qobject_cast<RamUser*>(o);
     RamUser *current = Ramses::instance()->currentUser();
-    if (!user || !current) return;
-
-    ui_folderWidget->setPath( user->path() );
-    ui_roleBox->setCurrentIndex(user->role());
-    ui_colorSelector->setColor(user->color());
-
-    if (m_dontRename.contains(user->shortName()))
+    if (m_user && current)
     {
-        ui_npassword1Edit->setEnabled(false);
-        ui_npassword2Edit->setEnabled(false);
+        ui_cpasswordEdit->setText("");
+        ui_npassword1Edit->setText("");
+        ui_npassword2Edit->setText("");
+
+        ui_folderWidget->setPath( m_user->path() );
+        ui_roleBox->setCurrentIndex(m_user->role());
+        ui_colorSelector->setColor(m_user->color());
+
+        if (m_dontRename.contains(m_user->shortName()))
+        {
+            ui_npassword1Edit->setEnabled(false);
+            ui_npassword2Edit->setEnabled(false);
+            ui_cpasswordEdit->setEnabled(false);
+        }
+        else
+        {
+            ui_npassword1Edit->setEnabled(true);
+            ui_npassword2Edit->setEnabled(true);
+            if (m_user->is(current)) ui_cpasswordEdit->setEnabled(true);
+        }
+
+        if (m_user->is(current))
+        {
+            ui_roleBox->setEnabled(false);
+            ui_roleBox->setToolTip("You cannot change your own role!");
+            ui_cpasswordEdit->setEnabled(true);
+            this->setEnabled(true);
+        }
+    }
+    else
+    {
+        ui_cpasswordEdit->setText("");
+        ui_npassword1Edit->setText("");
+        ui_npassword2Edit->setText("");
+        ui_roleBox->setCurrentIndex(0);
+        ui_roleBox->setEnabled(true);
+        ui_roleBox->setToolTip("");
         ui_cpasswordEdit->setEnabled(false);
-    }
-    else
-    {
-        ui_npassword1Edit->setEnabled(true);
-        ui_npassword2Edit->setEnabled(true);
-        if (user->uuid() == current->uuid()) ui_cpasswordEdit->setEnabled(true);
-    }
-
-    if (user->uuid() == current->uuid())
-    {
-        ui_roleBox->setEnabled(false);
-        ui_roleBox->setToolTip("You cannot change your own role!");
-        ui_cpasswordEdit->setEnabled(true);
-        this->setEnabled(true);
-    }
-    else
-    {
-        this->setEnabled(Ramses::instance()->isAdmin());
+        ui_folderWidget->setPath("");
+        ui_colorSelector->setColor(QColor(200,200,200));
     }
 }
 
@@ -102,31 +91,9 @@ void UserEditWidget::changePassword()
     ui_cpasswordEdit->setText("");
 }
 
-void UserEditWidget::update()
-{
-    if (!m_user) return;
-
-    updating = true;
-
-    int roleIndex = ui_roleBox->currentIndex();
-    if (roleIndex == 3) m_user->setRole(RamUser::Admin);
-    else if (roleIndex == 2) m_user->setRole(RamUser::ProjectAdmin);
-    else if (roleIndex == 1) m_user->setRole(RamUser::Lead);
-    else m_user->setRole(RamUser::Standard);
-
-    m_user->setColor(ui_colorSelector->color());
-
-    ObjectEditWidget::update();
-
-    updating = false;
-}
-
 bool UserEditWidget::checkPasswordInput()
 {
     if (!m_user) return false;
-
-    bool ok = ObjectEditWidget::checkInput();
-    if (!ok) return false;
 
     if (ui_npassword1Edit->text() != "")
     {
@@ -145,6 +112,21 @@ bool UserEditWidget::checkPasswordInput()
     }
 
     return true;
+}
+
+void UserEditWidget::setRole(int r)
+{
+    if (!m_user) return;
+    if (r == 3) m_user->setRole(RamUser::Admin);
+    else if (r == 2) m_user->setRole(RamUser::ProjectAdmin);
+    else if (r == 1) m_user->setRole(RamUser::Lead);
+    else m_user->setRole(RamUser::Standard);
+}
+
+void UserEditWidget::setColor(QColor c)
+{
+    if (!m_user) return;
+    m_user->setColor(c);
 }
 
 void UserEditWidget::setupUi()
@@ -202,14 +184,8 @@ void UserEditWidget::setupUi()
 
 void UserEditWidget::connectEvents()
 {
-    connect(ui_cpasswordEdit, &QLineEdit::textChanged, this, &UserEditWidget::checkInput);
-    connect(ui_npassword1Edit, &QLineEdit::textChanged, this, &UserEditWidget::checkInput);
-    connect(ui_npassword2Edit, &QLineEdit::textChanged, this, &UserEditWidget::checkInput);
-    connect(ui_roleBox, SIGNAL(currentIndexChanged(int)), this, SLOT(update()));
+    connect(ui_roleBox, SIGNAL(currentIndexChanged(int)), this, SLOT(setRole(int)));
     connect(ui_passwordButton, SIGNAL(clicked()), this, SLOT(changePassword()));
     connect(Ramses::instance(), &Ramses::loggedIn, this, &UserEditWidget::objectChanged);
-    connect(ui_colorSelector, SIGNAL(colorChanged(QColor)), this, SLOT(update()));
-
-    monitorDbQuery("updateUser");
-    monitorDbQuery("updatePassword");
+    connect(ui_colorSelector, SIGNAL(colorChanged(QColor)), this, SLOT(setColor(QColor)));
 }

@@ -4,38 +4,23 @@ TemplateAssetGroupEditWidget::TemplateAssetGroupEditWidget(QWidget *parent) :
     ObjectEditWidget(parent)
 {
     setupUi();
-    setObject(nullptr);
-
-    monitorDbQuery("updateTemplateAssetGroup");
 }
 
 TemplateAssetGroupEditWidget::TemplateAssetGroupEditWidget(RamTemplateAssetGroup *templateAssetGroup, QWidget *parent) :
-    ObjectEditWidget(templateAssetGroup, parent)
+    ObjectEditWidget(parent)
 {
     setupUi();
     setObject(templateAssetGroup);
-
-    monitorDbQuery("updateTemplateAssetGroup");
 }
 
-RamAssetGroup *TemplateAssetGroupEditWidget::assetGroup() const
+RamTemplateAssetGroup *TemplateAssetGroupEditWidget::assetGroup() const
 {
-    return _assetGroup;
+    return m_assetGroup;
 }
 
-void TemplateAssetGroupEditWidget::setObject(RamObject *obj)
+void TemplateAssetGroupEditWidget::reInit(RamObject *obj)
 {
-    RamAssetGroup *assetGroup = (RamAssetGroup*)obj;
-
-    this->setEnabled(false);
-
-    ObjectEditWidget::setObject(assetGroup);
-    _assetGroup = assetGroup;
-
-    if (!assetGroup) return;
-
-    this->setEnabled(Ramses::instance()->isAdmin());
-
+    m_assetGroup = qobject_cast<RamTemplateAssetGroup*>(obj);
 }
 
 void TemplateAssetGroupEditWidget::setupUi()

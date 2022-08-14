@@ -5,9 +5,9 @@
 #include <QToolButton>
 
 #include "objecteditwidget.h"
-#include "ramses.h"
 #include "duqf-widgets/duqffolderdisplaywidget.h"
 #include "duqf-widgets/duqfcolorselector.h"
+#include "ramuser.h"
 
 class UserEditWidget : public ObjectEditWidget
 {
@@ -19,15 +19,14 @@ public:
 
     RamUser *user() const;
 
-public slots:
-    void setObject(RamObject *obj) override;
-
-protected slots:
-    void update() override;
+protected:
+    virtual void reInit(RamObject *o) override;
 
 private slots:
     void changePassword();
     bool checkPasswordInput();
+    void setRole(int r);
+    void setColor(QColor c);
 
 private:
     RamUser *m_user;

@@ -135,22 +135,25 @@ void StepEditWidget::updateEstimationSuffix()
 void StepEditWidget::setType(int t)
 {
     Q_UNUSED(t);
-
+    if (!m_step) return;
     m_step->setType(ui_typeBox->currentData().toString());
 }
 
 void StepEditWidget::setPublishSettings()
 {
+    if (!m_step) return;
     m_step->setPublishSettings(ui_publishSettingsEdit->toPlainText());
 }
 
 void StepEditWidget::setColor(QColor c)
 {
+    if (!m_step) return;
     m_step->setColor(c);
 }
 
 void StepEditWidget::setEstimationType(int t)
 {
+    if (!m_step) return;
     if (t == 0)
         m_step->setEstimationMethod( RamStep::EstimatePerShot );
     else
@@ -159,31 +162,37 @@ void StepEditWidget::setEstimationType(int t)
 
 void StepEditWidget::setVeryEasy(double e)
 {
+    if (!m_step) return;
     m_step->setEstimationVeryEasy(e);
 }
 
 void StepEditWidget::setEasy(double e)
 {
+    if (!m_step) return;
     m_step->setEstimationEasy(e);
 }
 
 void StepEditWidget::setMedium(double e)
 {
+    if (!m_step) return;
     m_step->setEstimationMedium(e);
 }
 
 void StepEditWidget::setHard(double e)
 {
+    if (!m_step) return;
     m_step->setEstimationHard(e);
 }
 
 void StepEditWidget::setVeryHard(double e)
 {
+    if (!m_step) return;
     m_step->setEstimationVeryHard(e);
 }
 
 void StepEditWidget::activateMultiplier(bool a)
 {
+    if (!m_step) return;
     if (a)
         m_step->setEstimationMultiplyGroup( ui_estimationMultiplierBox->currentObject() );
     else
@@ -192,6 +201,7 @@ void StepEditWidget::activateMultiplier(bool a)
 
 void StepEditWidget::setMultiplier(RamAssetGroup *ag)
 {
+    if (!m_step) return;
     m_step->setEstimationMultiplyGroup( ag );
 }
 

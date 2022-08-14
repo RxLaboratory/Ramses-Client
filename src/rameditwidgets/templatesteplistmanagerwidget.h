@@ -2,16 +2,15 @@
 #define TEMPLATESTEPLISTMANAGERWIDGET_H
 
 #include "objectlistmanagerwidget.h"
-#include "templatestepeditwidget.h"
 
-class TemplateStepListManagerWidget : public ObjectListManagerWidget
+class TemplateStepListManagerWidget : public ObjectListManagerWidget<RamTemplateStep*,int>
 {
     Q_OBJECT
 public:
     TemplateStepListManagerWidget(QWidget *parent = nullptr);
 
 protected slots:
-    RamObject *createObject() override;
+    RamTemplateStep *createObject() override;
 };
 
 #endif // TEMPLATESTEPLISTMANAGERWIDGET_H

@@ -6,7 +6,6 @@
 
 #include "objectlisteditwidget.h"
 #include "data-models/ramstepstatushistory.h"
-#include "ramitem.h"
 
 class StepStatusHistoryWidget : public QWidget
 {
@@ -19,7 +18,7 @@ private:
     void setupUi();
     void connectEvents();
 
-    ObjectListEditWidget *m_statusList;
+    ObjectListEditWidget<RamStatus*, RamStep*> *m_statusList;
 
     RamStepStatusHistory *m_history = nullptr;
 };

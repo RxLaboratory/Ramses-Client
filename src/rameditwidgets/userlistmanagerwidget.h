@@ -2,16 +2,16 @@
 #define USERLISTMANAGERWIDGET_H
 
 #include "objectlistmanagerwidget.h"
-#include "usereditwidget.h"
+#include "ramuser.h"
 
-class UserListManagerWidget : public ObjectListManagerWidget
+class UserListManagerWidget : public ObjectListManagerWidget<RamUser*, int>
 {
     Q_OBJECT
 public:
     explicit UserListManagerWidget(QWidget *parent = nullptr);
 
 protected slots:
-    RamObject *createObject() override;
+    RamUser *createObject() override;
 };
 
 #endif // USERLISTMANAGERWIDGET_H

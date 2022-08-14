@@ -1,18 +1,20 @@
 #include "templateassetgrouplistmanagerwidget.h"
 
+#include "ramses.h"
+
 TemplateAssetGroupListManagerWidget::TemplateAssetGroupListManagerWidget(QWidget *parent) :
-    ObjectListManagerWidget(
+    ObjectListManagerWidget<RamTemplateAssetGroup*, int>(
         Ramses::instance()->templateAssetGroups(),
         "Template asset groups",
         QIcon(":icons/asset-group"),
         parent )
 {
-    m_listEditWidget->setEditMode(ObjectListEditWidget::RemoveObjects);
+    m_listEditWidget->setEditMode(ObjectListEditWidget<RamTemplateAssetGroup*, int>::RemoveObjects);
 }
 
-RamObject *TemplateAssetGroupListManagerWidget::createObject()
+RamTemplateAssetGroup *TemplateAssetGroupListManagerWidget::createObject()
 {
-    RamAssetGroup *ag = new RamAssetGroup(
+    RamTemplateAssetGroup *ag = new RamTemplateAssetGroup(
                 "NEW",
                 "New Template group");
     Ramses::instance()->templateAssetGroups()->append(ag);

@@ -1,18 +1,20 @@
 #include "templatesteplistmanagerwidget.h"
 
+#include "ramses.h"
+
 TemplateStepListManagerWidget::TemplateStepListManagerWidget(QWidget *parent) :
-    ObjectListManagerWidget(
+    ObjectListManagerWidget<RamTemplateStep*,int>(
         Ramses::instance()->templateSteps(),
         "Template steps",
         QIcon(":icons/step"),
         parent )
 {
-    m_listEditWidget->setEditMode(ObjectListEditWidget::RemoveObjects);
+    m_listEditWidget->setEditMode(ObjectListEditWidget<RamTemplateStep*,int>::RemoveObjects);
 }
 
-RamObject *TemplateStepListManagerWidget::createObject()
+RamTemplateStep *TemplateStepListManagerWidget::createObject()
 {
-    RamStep *ts = new RamStep(
+    RamTemplateStep *ts = new RamTemplateStep(
                 "NEW",
                 "New Template Step"
                 );

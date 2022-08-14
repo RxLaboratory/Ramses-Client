@@ -198,6 +198,7 @@ void StatusEditWidget::refresh()
 
 void StatusEditWidget::setVersion( int v )
 {
+    if (!m_status) return;
     bool p = m_status->workingFolder().isPublished(v);
     ui_publishedBox->setChecked(p);
     m_status->setVersion(v);
@@ -205,26 +206,31 @@ void StatusEditWidget::setVersion( int v )
 
 void StatusEditWidget::setCompletion(int c)
 {
+    if (!m_status) return;
     m_status->setCompletionRatio(c);
 }
 
 void StatusEditWidget::setComment()
 {
+    if (!m_status) return;
     m_status->setComment( ui_statusCommentEdit->toMarkdown() );
 }
 
 void StatusEditWidget::assignUser(RamUser *u)
 {
+    if (!m_status) return;
     m_status->assignUser(u);
 }
 
 void StatusEditWidget::setPublished(bool p)
 {
+    if (!m_status) return;
     m_status->setPublished(p);
 }
 
 void StatusEditWidget::setAutoEstimation(bool a)
 {
+    if (!m_status) return;
     m_status->setUseAutoEstimation(a);
 
     float est = 0;
@@ -246,6 +252,7 @@ void StatusEditWidget::setAutoEstimation(bool a)
 
 void StatusEditWidget::setTimeSpent(int t)
 {
+    if (!m_status) return;
     m_status->setTimeSpent(t);
 
     float days = RamStatus::hoursToDays(t);
@@ -254,11 +261,13 @@ void StatusEditWidget::setTimeSpent(int t)
 
 void StatusEditWidget::setEstimation(double e)
 {
+    if (!m_status) return;
     m_status->setGoal(e);
 }
 
 void StatusEditWidget::setDifficulty(int d)
 {
+    if (!m_status) return;
     switch(d)
     {
     case 0:

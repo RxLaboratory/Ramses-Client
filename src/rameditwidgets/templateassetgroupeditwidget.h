@@ -2,7 +2,7 @@
 #define TEMPLATEASSETGROUPEDITWIDGET_H
 
 #include "objecteditwidget.h"
-#include "ramses.h"
+#include "ramtemplateassetgroup.h"
 
 class TemplateAssetGroupEditWidget : public ObjectEditWidget
 {
@@ -12,16 +12,17 @@ public:
     explicit TemplateAssetGroupEditWidget(QWidget *parent = nullptr);
     explicit TemplateAssetGroupEditWidget(RamTemplateAssetGroup *templateAssetGroup, QWidget *parent = nullptr);
 
-    RamAssetGroup *assetGroup() const;
+    RamTemplateAssetGroup *assetGroup() const;
 
-public slots:
-    void setObject(RamObject *obj) override;
+protected:
+    virtual void reInit(RamObject *o) override;
 
 private slots:
 
 private:
     void setupUi();
-    RamAssetGroup *_assetGroup;
+
+    RamTemplateAssetGroup *m_assetGroup;
 };
 
 #endif // TEMPLATEASSETGROUPEDITWIDGET_H
