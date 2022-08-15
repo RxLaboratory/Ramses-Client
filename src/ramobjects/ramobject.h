@@ -34,7 +34,7 @@ public:
      * @param shortName
      * @param name
      */
-    RamObject(QString shortName, QString name, ObjectType type, QObject *parent = nullptr, bool isVirtual = false);
+    RamObject(QString shortName, QString name, ObjectType type, QObject *parent = nullptr, bool isVirtual = false, bool encryptData = false);
 
     // reimplemented to disconnect signals
     virtual void remove() override;

@@ -15,9 +15,9 @@ RamObject *RamObject::getObject(QString uuid, bool constructNew)
 
 // PUBLIC //
 
-RamObject::RamObject(QString shortName, QString name, ObjectType type, QObject *parent, bool isVirtual):
+RamObject::RamObject(QString shortName, QString name, ObjectType type, QObject *parent, bool isVirtual, bool encryptData):
     QObject(parent),
-    RamAbstractObject(shortName, name, type, isVirtual)
+    RamAbstractObject(shortName, name, type, isVirtual, encryptData)
 {
     construct(parent);
 }
@@ -105,6 +105,7 @@ void RamObject::showEdit(QString title)
 
 void RamObject::construct(QObject *parent)
 {
+    if (!parent && m_objectType != Ramses) this->setParent(Ramses::instance());
     this->setObjectName( objectTypeName() );
 }
 

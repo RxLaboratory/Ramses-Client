@@ -10,16 +10,3 @@ StateBox::down-arrow {
     image: none;
     padding: none;
 }
-
-QTabBar::tab {
-    background-color: @color-less-dark-grey;
-    color: @color-light-grey;
-}
-
-QTabBar::tab:selected {
-    background-color: @color-very-dark-grey;
-}
-
-QTabBar::tab:hover {
-        background-color: @color-medium-grey;
-}

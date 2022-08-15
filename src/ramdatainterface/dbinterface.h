@@ -41,7 +41,7 @@ public:
     /**
      * @brief Changes to offline mode: data is stored locally until we get a connection to the server to sync.
      */
-    void setOffline();
+    void setOffline(QString reason = "");
     /**
      * @brief Changes to online mode: data is sent to the server and then stored locally.
      * The timestamp is set to be the same.
@@ -82,6 +82,11 @@ signals:
      * @brief Emitted if the mode has changed
      */
     void connectionStatusChanged(NetworkUtils::NetworkStatus, QString);
+    /**
+     * @brief dataUpdated is emitted when the whole data has changed.
+     * e.g. when the local data file has been changed.
+     */
+    void dataReset();
 
 protected:
     /**

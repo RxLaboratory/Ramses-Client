@@ -69,20 +69,25 @@ QStringList LocalDataInterface::tableData(QString table)
     return data;
 }
 
-void LocalDataInterface::createObject(QString uuid, QString table, QString data)
+bool LocalDataInterface::createObject(QString uuid, QString table, QString data)
 {
     QDateTime modified = QDateTime::currentDateTimeUtc();
 
     QSqlDatabase db = QSqlDatabase::database("localdata");
     QSqlQuery query = QSqlQuery(db);
 
-    query.prepare("INSERT INTO :table (uuid, data, modified, removed) VALUES (:uuid, :data, :modified, 0);");
-    query.bindValue(":table", table);
-    query.bindValue(":uuid", uuid);
-    query.bindValue(":data", data);
-    query.bindValue(":modified", modified.toString("yyy-MM-dd hh:mm:ss:zzz"));
+    if (!query.exec("INSERT INTO '" % table % "' (uuid, data, modified, removed)"
+                       "VALUES ( '" % uuid % "' , '" % data % "' , '" % modified.toString("yyyy-MM-dd hh:mm:ss:zzz") % "' , 0);"))
+    {
+        QString errorMessage = "Something went wrong when saving the data.\nHere's some information:";
+        errorMessage += "\n> " + tr("Query:") + "\n" + query.lastQuery();
+        errorMessage += "\n> " + tr("Database Error:") + "\n" + query.lastError().databaseText();
+        errorMessage += "\n> " + tr("Driver Error:") + "\n" + query.lastError().driverText();
+        log(errorMessage, DuQFLog::Critical);
+        return false;
+    }
 
-    query.exec();
+    return true;
 }
 
 QString LocalDataInterface::objectData(QString uuid, QString table)
@@ -177,7 +182,7 @@ void LocalDataInterface::setUsername(QString uuid, QString username)
 ServerConfig LocalDataInterface::serverConfig() const
 {
     QSqlDatabase db = QSqlDatabase::database("localdata");
-    QSqlQuery query = db.exec("SELECT address, useSsl, updateDelay, timeout, path FROM RamServer;");
+    QSqlQuery query = db.exec("SELECT address, useSsl, updateDelay, timeout FROM RamServer;");
 
     ServerConfig config;
     if (query.first()) {
@@ -185,7 +190,6 @@ ServerConfig LocalDataInterface::serverConfig() const
         config.useSsl = query.value(1).toBool();
         config.updateDelay = query.value(2).toInt();
         config.timeout = query.value(3).toInt();
-        config.path = query.value(4).toString();
     }
 
     return config;

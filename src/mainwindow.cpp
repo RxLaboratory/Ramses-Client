@@ -793,7 +793,7 @@ void MainWindow::loggedIn()
 void MainWindow::loggedOut(QString reason)
 {
     if (reason == "") reason = "Unknown reason... Sorry, there's a glitch in the Matrix.";
-    // Warn user
+    /*// Warn user
     QMessageBox::information(this,
                              "Log out",
                              "You've been logged out, Ramses is restarting.\n\nReason:\n\n> " + reason,
@@ -802,7 +802,7 @@ void MainWindow::loggedOut(QString reason)
 
     // Let's just restart app
     this->close();
-    QProcess::startDetached(qApp->arguments()[0], qApp->arguments());
+    QProcess::startDetached(qApp->arguments()[0], qApp->arguments());*/
 
 
 /*    actionLogIn->setVisible(true);

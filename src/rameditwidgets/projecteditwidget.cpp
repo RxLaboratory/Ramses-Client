@@ -75,11 +75,13 @@ void ProjectEditWidget::updateFolderLabel(QString path)
 
 void ProjectEditWidget::setPath(QString p)
 {
+    if (!m_project) return;
     m_project->setFolderPath(p);
 }
 
 void ProjectEditWidget::setDeadline(QDate d)
 {
+    if (!m_project) return;
     m_project->setDeadline(d);
 }
 

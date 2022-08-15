@@ -455,23 +455,25 @@ QSplitter::handle {
 /* TABS */
 
 QTabWidget {
-    background-color: @color-dark-grey;
+    background-color: @color-transparent;
 }
 
 QTabWidget::pane { /* The tab widget frame */
     border:none;
-    background-color: @color-dark-grey;
+    background-color: @color-transparent;
 }
 
 QTabBar::tab {
-    background-color: @color-very-dark-grey;
+    background-color: @color-transparent;
     color: @color-medium-grey;
     border: none;
     padding: @padding-small;
+    border-radius: @padding-small;
+    margin-right: @padding-small;
 }
 
 QTabBar::tab:selected {
-        background-color: @color-dark-grey;
+        background-color: @color-very-dark-grey;
         color: @color-less-light-grey;
 }
 

@@ -8,11 +8,11 @@ DBInterface *DBInterface::instance()
     return _instance;
 }
 
-void DBInterface::setOffline()
+void DBInterface::setOffline(QString reason)
 {
     // Disconnects from the Ramses Server and change connection status
     m_rsi->setOffline();
-    setConnectionStatus(NetworkUtils::Offline, "Disconnecting from the Ramses Server.");
+    setConnectionStatus(NetworkUtils::Offline, reason);
 }
 
 void DBInterface::setOnline()
@@ -98,6 +98,11 @@ ServerConfig DBInterface::setDataFile(const QString &file)
         m_rsi->setServerAddress(config.address);
         m_rsi->setTimeout(config.timeout);
         m_rsi->setSsl(config.useSsl);
+        setOnline();
+    }
+    else
+    {
+        setOffline(tr("Database set to offline mode"));
     }
     return config;
 }

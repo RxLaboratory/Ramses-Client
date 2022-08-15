@@ -33,8 +33,6 @@ RamUser *Ramses::loginHashed(QString username, QString hashedPassword)
         return nullptr;
     }
 
-    refresh();
-
     // Set current user
     m_currentUser = RamUser::getObject(uuid, true);
 

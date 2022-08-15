@@ -102,7 +102,7 @@ public:
     // METHODS //
 
     RamAbstractObject(QString uuid, QString data);
-    RamAbstractObject(QString shortName, QString name, ObjectType type, bool isVirtual = false);
+    RamAbstractObject(QString shortName, QString name, ObjectType type, bool isVirtual = false, bool encryptData = false);
     ~RamAbstractObject();
 
     bool is(RamAbstractObject *other) const;
@@ -204,9 +204,9 @@ protected:
     RamAbstractObject(QString uuid, ObjectType type);
 
     // Low level data handling.
-    virtual QString dataString() const;
-    virtual void setDataString(QString data);
-    virtual void createData(QString data);
+    QString dataString() const;
+    void setDataString(QString data);
+    void createData(QString data);
     virtual QJsonObject reloadData() = 0;
 
     virtual void emitDataChanged(QJsonObject data) { Q_UNUSED(data) };
@@ -231,6 +231,7 @@ protected:
     QString m_uuid;
     ObjectType m_objectType;
     bool m_virtual = false;
+    bool m_dataEncrypted = false;
 
 private:
     QSettings *m_settings = nullptr;

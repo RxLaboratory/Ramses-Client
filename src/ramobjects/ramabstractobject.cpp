@@ -4,6 +4,7 @@
 #include "dbinterface.h"
 #include "ramses.h"
 #include "ramnamemanager.h"
+#include "datacrypto.h"
 #include "duqf-app/app-style.h"
 
 // STATIC //
@@ -89,11 +90,11 @@ RamAbstractObject *RamAbstractObject::getObject(QString shortNameOrName, ObjectT
 
 // PUBLIC //
 
-RamAbstractObject::RamAbstractObject(QString shortName, QString name, ObjectType type, bool isVirtual)
+RamAbstractObject::RamAbstractObject(QString shortName, QString name, ObjectType type, bool isVirtual, bool encryptData)
 {
     m_uuid = RamUuid::generateUuidString(shortName + name);
     m_objectType = type;
-
+    m_dataEncrypted = encryptData;
     m_virtual = isVirtual;
     if (m_virtual) return;
 
@@ -349,16 +350,27 @@ RamAbstractObject::RamAbstractObject(QString uuid, ObjectType type)
 void RamAbstractObject::setDataString(QString data)
 {
     if (m_virtual) return;
+    if (m_dataEncrypted)
+    {
+        data = DataCrypto::instance()->clientEncrypt( data );
+    }
     DBInterface::instance()->setObjectData(m_uuid, objectTypeName(), data);
 }
 
 QString RamAbstractObject::dataString() const
 {
-    return DBInterface::instance()->objectData(m_uuid, objectTypeName());
+    QString dataStr = DBInterface::instance()->objectData(m_uuid, objectTypeName());
+    if (dataStr == "") return "";
+    // Decrypt
+    return DataCrypto::instance()->clientDecrypt( dataStr );
 }
 
 void RamAbstractObject::createData(QString data)
 {
     if (m_virtual) return;
+    if (m_dataEncrypted)
+    {
+        data = DataCrypto::instance()->clientEncrypt( data );
+    }
     DBInterface::instance()->createObject(m_uuid, objectTypeName(), data);
 }

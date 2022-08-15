@@ -25,12 +25,13 @@ RamUser *RamUser::c(RamObject *o)
 // PUBLIC //
 
 RamUser::RamUser(QString shortName, QString name) :
-    RamObject(shortName, name, User)
+    RamObject(shortName, name, User, nullptr, false, true)
 {
     construct();
 
     m_schedule = new RamObjectList(shortName + "-schdl", name + " | Schedule", this);
     insertData("schedule", m_schedule->uuid());
+    DBInterface::instance()->setUsername(m_uuid, shortName);
 }
 
 void RamUser::setShortName(const QString &shortName)
@@ -174,30 +175,6 @@ RamUser::RamUser(QString uuid):
 QString RamUser::folderPath() const
 {
     return Ramses::instance()->path(RamObject::UsersFolder) + "/" + shortName();
-}
-
-QString RamUser::dataString() const
-{
-    QString dataStr = RamAbstractObject::dataString();
-    if (dataStr == "") return "";
-    // Decrypt
-    return DataCrypto::instance()->clientDecrypt( dataStr );
-}
-
-void RamUser::setDataString(QString data)
-{
-    // Encrypt
-    data = DataCrypto::instance()->clientEncrypt( data );
-    // Set
-    RamAbstractObject::setDataString(data);
-}
-
-void RamUser::createData(QString data)
-{
-    // Encrypt
-    data = DataCrypto::instance()->clientEncrypt( data );
-    // Set
-    RamAbstractObject::createData(data);
 }
 
 // PRIVATE //

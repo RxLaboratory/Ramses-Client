@@ -28,7 +28,7 @@ RamObject *RamObjectList::at(QModelIndex i)
 
 RamObjectList::RamObjectList(QString shortName, QString name, QObject *parent, DataListMode mode):
     QAbstractTableModel(parent),
-    RamAbstractObject(shortName, name, ObjectList)
+    RamAbstractObject(shortName, name, ObjectList, mode != Object)
 {
     construct(parent);
     m_dataMode = mode;

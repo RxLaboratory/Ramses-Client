@@ -4,9 +4,10 @@
 #include <QScrollBar>
 #include <QSysInfo>
 
-#include "ramses.h"
+#include "duqf-widgets/duqfservercombobox.h"
+#include "duqf-widgets/duqfsslcheckbox.h"
 
-#include "databasecreatewidget.h"
+#include "ramses.h"
 
 class LoginPage : public QWidget
 {
@@ -22,26 +23,25 @@ protected:
     void showEvent(QShowEvent *event) override;
 
 private slots:
-    void createDatabase();
-
     void loggedIn(RamUser *user);
     void loggedOut();
 
     void loginButton_clicked();
     void serverSettingsButton_clicked();
+    void serverAddressChanged(QString address);
 
     void toggleSaveUsername(bool enabled);
     void toggleSavePassword(bool enabled);
+
+    void setSSL(bool ssl);
 
 private:
     void setupUi();
     void connectEvents();
 
     QWidget *ui_loginWidget;
-    QComboBox *ui_dataBaseBox;
-    QPushButton *ui_createDBButton;
-    QPushButton *ui_openDBButton;
-    QPushButton *ui_settingsDBButton;
+    DuQFServerComboBox *ui_serverBox;
+    DuQFSSLCheckbox *ui_sslBox;
     QLineEdit *ui_keyEdit;
     QLineEdit *ui_usernameEdit;
     QCheckBox *ui_saveUsername;
@@ -50,7 +50,6 @@ private:
     QLabel *ui_capsLockLabel;
     QPushButton *ui_loginButton;
     QLabel *ui_connectionStatusLabel;
-    DatabaseCreateWidget *ui_databaseEdit = nullptr;
 
     QString m_hashedPassword;
 

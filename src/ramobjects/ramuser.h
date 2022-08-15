@@ -44,11 +44,6 @@ protected:
     RamUser(QString uuid);
     virtual QString folderPath() const override;
 
-    // Reimplement data methods to encrypt user data
-    virtual QString dataString() const override;
-    virtual void setDataString(QString data) override;
-    virtual void createData(QString data) override;
-
 private:
     void construct();
 

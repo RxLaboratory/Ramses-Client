@@ -2,6 +2,8 @@
 #define LOCALDATAINTERFACE_H
 
 #include <QSqlQuery>
+#include <QSqlError>
+#include <QStringBuilder>
 
 #include "duqf-utils/duqflogger.h"
 
@@ -10,7 +12,6 @@ struct ServerConfig {
     int updateDelay = 60;
     int timeout = 3;
     bool useSsl = true;
-    QString path = "";
 };
 
 class LocalDataInterface : public DuQFLoggerObject
@@ -44,7 +45,7 @@ public:
 
     QStringList tableData(QString table);
 
-    void createObject(QString uuid, QString table, QString data);
+    bool createObject(QString uuid, QString table, QString data);
 
     QString objectData(QString uuid, QString table);
     void setObjectData(QString uuid, QString table, QString data);

@@ -92,6 +92,7 @@ SOURCES += \
     daemon.cpp \
     rameditwidgets/assetgrouplistmanagerwidget.cpp \
     rameditwidgets/assetlistmanagerwidget.cpp \
+    rameditwidgets/databasecreatewidget.cpp \
     rameditwidgets/filetypelistmanagerwidget.cpp \
     rameditwidgets/objectlisteditwidget.cpp \
     rameditwidgets/objectlistmanagerwidget.cpp \
@@ -257,6 +258,7 @@ HEADERS += \
     daemon.h \
     rameditwidgets/assetgrouplistmanagerwidget.h \
     rameditwidgets/assetlistmanagerwidget.h \
+    rameditwidgets/databasecreatewidget.h \
     rameditwidgets/filetypelistmanagerwidget.h \
     rameditwidgets/objectlisteditwidget.h \
     rameditwidgets/objectlistmanagerwidget.h \

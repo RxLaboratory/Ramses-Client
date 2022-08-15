@@ -1,8 +1,6 @@
 #include "loginpage.h"
 #include "datacrypto.h"
 
-#include "mainwindow.h"
-
 LoginPage::LoginPage(QWidget *parent) :
     QWidget(parent)
 {
@@ -26,22 +24,8 @@ void LoginPage::showEvent(QShowEvent *event)
         QWidget::showEvent(event);
         return;
     }
-}
 
-void LoginPage::createDatabase()
-{
-    if (!ui_databaseEdit)
-    {
-        ui_databaseEdit = new DatabaseCreateWidget();
-        QFrame *frame = new QFrame();
-        QVBoxLayout *l = new QVBoxLayout();
-        l->setContentsMargins(3,3,3,3);
-        l->addWidget(ui_databaseEdit);
-        frame->setLayout(l);
-    }
-
-    MainWindow *mw = (MainWindow*)GuiUtils::appMainWindow();
-    mw->setPropertiesDockWidget( ui_databaseEdit, tr("Create Ramses Database"), ":/icons/storage" );
+    serverAddressChanged( ui_serverBox->address() );
 }
 
 void LoginPage::loggedIn(RamUser *user)
@@ -125,10 +109,13 @@ void LoginPage::loggedOut()
 {
     ui_loginWidget->show();
     ui_connectionStatusLabel->setText("Ready");
+    serverAddressChanged( ui_serverBox->address() );
 }
 
 void LoginPage::loginButton_clicked()
 {
+    setSSL(ui_sslBox->isChecked());
+
     //check login in database, initiate
     if (ui_usernameEdit->text() == "")
     {
@@ -159,6 +146,65 @@ void LoginPage::serverSettingsButton_clicked()
     emit serverSettings();
 }
 
+void LoginPage::serverAddressChanged(QString address)
+{
+    // Notify the interface
+    RamServerInterface::instance()->setServerAddress(address);
+
+    // Load saved username and password and ssl
+    QSettings settings;
+
+    int historySize = settings.beginReadArray("server/serverHistory");
+    for (int i = 0; i < historySize; i++)
+    {
+        settings.setArrayIndex(i);
+        // Get adress in settings, check with "/" no matter what
+        QString settingsAddress = settings.value("address").toString();
+        if (!settingsAddress.endsWith("/")) settingsAddress += "/";
+        if (settingsAddress == address )
+        {
+            // Decrypt
+            DataCrypto *crypto = DataCrypto::instance();
+
+            QString username = settings.value("username", "").toString();
+
+            if (username == "")
+            {
+                ui_saveUsername->setChecked(false);
+                ui_usernameEdit->setText("");
+                ui_passwordEdit->setText("");
+                ui_passwordEdit->setPlaceholderText("Password");
+            }
+            else
+            {
+                username = crypto->machineDecrypt( username );
+                ui_usernameEdit->setText( username );
+                ui_saveUsername->setChecked(true);
+
+                QString password = settings.value("password", "").toString();
+                if (password == "")
+                {
+                    ui_savePassword->setChecked(false);
+                    ui_passwordEdit->setText("");
+                    ui_passwordEdit->setPlaceholderText("Password");
+                    m_hashedPassword = "";
+                }
+                else
+                {
+                    ui_savePassword->setChecked(true);
+                    m_hashedPassword = crypto->machineDecrypt( password );
+                    ui_passwordEdit->setPlaceholderText("Use saved password.");
+                    ui_passwordEdit->setText("");
+                }
+            }
+
+            ui_sslBox->setChecked( settings.value("ssl", true).toBool() );
+            break;
+        }
+    }
+    settings.endArray();
+}
+
 void LoginPage::toggleSaveUsername(bool enabled)
 {
     if (enabled) {
@@ -184,6 +230,40 @@ void LoginPage::toggleSavePassword(bool enabled)
                 QMessageBox::No
                 );
     if (result == QMessageBox::No) ui_savePassword->setChecked(false);
+}
+
+void LoginPage::setSSL(bool ssl)
+{
+    // Save setting
+    QSettings settings;
+
+    QString address = ui_serverBox->address();
+    int historySize = settings.beginReadArray("server/serverHistory");
+    int historyIndex = -1;
+    for (int i = 0; i < historySize; i++)
+    {
+         settings.setArrayIndex(i);
+         // Get adress in settings, check with "/" no matter what
+         QString settingsAddress = settings.value("address").toString();
+         if (!settingsAddress.endsWith("/")) settingsAddress += "/";
+         if (settingsAddress == address )
+         {
+             historyIndex = i;
+             break;
+         }
+    }
+    settings.endArray();
+
+    if (historyIndex > 0)
+    {
+        settings.beginWriteArray("server/serverHistory", historySize);
+        settings.setArrayIndex(historyIndex);
+        settings.setValue("ssl", ssl);
+        settings.endArray();
+    }
+
+    // Set the dbi
+    RamServerInterface::instance()->setSsl(ssl);
 }
 
 void LoginPage::setupUi()
@@ -215,32 +295,19 @@ void LoginPage::setupUi()
     loginLayout->setSpacing(3);
     loginLayout->setContentsMargins(0,0,0,0);
 
-    QHBoxLayout *dataBaseLayout = new QHBoxLayout();
-    dataBaseLayout->setSpacing(3);
-    dataBaseLayout->setContentsMargins(0,0,0,0);
-    loginLayout->addLayout(dataBaseLayout);
+    QHBoxLayout *serverLayout = new QHBoxLayout();
+    serverLayout->setSpacing(3);
+    serverLayout->setContentsMargins(0,0,0,0);
+    loginLayout->addLayout(serverLayout);
 
-    ui_dataBaseBox = new QComboBox(this);
-    dataBaseLayout->addWidget(ui_dataBaseBox);
+    ui_serverBox = new DuQFServerComboBox("localhost/ramses", this);
+    serverLayout->addWidget(ui_serverBox);
 
-    ui_settingsDBButton = new QPushButton(this);
-    ui_settingsDBButton->setIcon(QIcon(":/icons/settings"));
-    ui_settingsDBButton->setToolTip("Database settings");
-    ui_settingsDBButton->setEnabled(false);
-    dataBaseLayout->addWidget(ui_settingsDBButton);
+    ui_sslBox = new DuQFSSLCheckbox("Secure", this);
+    serverLayout->addWidget(ui_sslBox);
 
-    ui_openDBButton = new QPushButton(this);
-    ui_openDBButton->setIcon(QIcon(":/icons/open"));
-    ui_settingsDBButton->setToolTip("Open database");
-    dataBaseLayout->addWidget(ui_openDBButton);
-
-    ui_createDBButton = new QPushButton(this);
-    ui_createDBButton->setIcon(QIcon(":/icons/add"));
-    ui_settingsDBButton->setToolTip("Create new database");
-    dataBaseLayout->addWidget(ui_createDBButton);
-
-    dataBaseLayout->setStretch(0, 100);
-    dataBaseLayout->setStretch(1, 0);
+    serverLayout->setStretch(0, 100);
+    serverLayout->setStretch(1, 0);
 
     QHBoxLayout *usernameLayout = new QHBoxLayout();
     usernameLayout->setSpacing(3);
@@ -286,14 +353,12 @@ void LoginPage::setupUi()
     mainLayout->addStretch();
 
     // Tab order
-    QWidget::setTabOrder(ui_dataBaseBox, ui_usernameEdit);
+    QWidget::setTabOrder(ui_serverBox, ui_usernameEdit);
     QWidget::setTabOrder(ui_usernameEdit, ui_passwordEdit);
 }
 
 void LoginPage::connectEvents()
 {
-    connect(ui_createDBButton, &QPushButton::clicked, this, &LoginPage::createDatabase);
-
     connect(ui_saveUsername, SIGNAL(toggled(bool)), this, SLOT(toggleSaveUsername(bool)));
     connect(ui_savePassword, SIGNAL(clicked(bool)), this, SLOT(toggleSavePassword(bool)));
 
@@ -306,6 +371,13 @@ void LoginPage::connectEvents()
     connect(ui_loginButton, SIGNAL(clicked()), this, SLOT(loginButton_clicked()));
     connect(m_failedTimer, &QTimer::timeout, this, &LoginPage::unFreeze);
     connect(m_uiTimer, &QTimer::timeout, this, &LoginPage::updateFreeze);
+
+    connect(ui_serverBox, SIGNAL(addressChanged(QString)), this, SLOT(serverAddressChanged(QString)));
+
+    connect(RamServerInterface::instance(), SIGNAL(sslChanged(bool)), ui_sslBox, SLOT(setChecked(bool)));
+
+    // Needs to be called once
+    serverAddressChanged(ui_serverBox->currentText());
 }
 
 void LoginPage::freeze()
