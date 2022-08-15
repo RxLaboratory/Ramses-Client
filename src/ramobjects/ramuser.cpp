@@ -25,7 +25,7 @@ RamUser *RamUser::c(RamObject *o)
 // PUBLIC //
 
 RamUser::RamUser(QString shortName, QString name) :
-    RamObject(shortName, name, User, nullptr, false, true)
+    RamObject(shortName, name, User, nullptr, false, ENCRYPT_USER_DATA)
 {
     construct();
 
@@ -114,10 +114,10 @@ bool RamUser::isStepAssigned(RamStep *step) const
 
 void RamUser::updatePassword(QString c, QString n)
 {
-    QString prev = getData("password").toString();
+    QString prev = getData("password").toString("");
 
     // Hash passwords
-    c = DataCrypto::instance()->generatePassHash(c);
+    if (c != "") c = DataCrypto::instance()->generatePassHash(c);
     n = DataCrypto::instance()->generatePassHash(n);
 
     if (c == prev) insertData("password", n);
@@ -165,11 +165,14 @@ void RamUser::edit(bool show)
 // PROTECTED //
 
 RamUser::RamUser(QString uuid):
-    RamObject(uuid, State)
+    RamObject(uuid, User, nullptr, ENCRYPT_USER_DATA)
 {
     construct();
 
-    m_schedule = RamObjectList::getObject( getData("schedule").toString(), true);
+    QString scheduleUuid = getData("schedule").toString();
+    qDebug() << data();
+    qDebug() << scheduleUuid;
+    m_schedule = RamObjectList::getObject( scheduleUuid, true);
 }
 
 QString RamUser::folderPath() const

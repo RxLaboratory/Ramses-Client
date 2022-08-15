@@ -341,10 +341,11 @@ QString RamAbstractObject::previewImagePath()
 
 // PROTECTED //
 
-RamAbstractObject::RamAbstractObject(QString uuid, ObjectType type)
+RamAbstractObject::RamAbstractObject(QString uuid, ObjectType type, bool encryptData)
 {
     m_uuid = uuid;
     m_objectType = type;
+    m_dataEncrypted = encryptData;
 }
 
 void RamAbstractObject::setDataString(QString data)
@@ -362,7 +363,8 @@ QString RamAbstractObject::dataString() const
     QString dataStr = DBInterface::instance()->objectData(m_uuid, objectTypeName());
     if (dataStr == "") return "";
     // Decrypt
-    return DataCrypto::instance()->clientDecrypt( dataStr );
+    if (m_dataEncrypted) dataStr = DataCrypto::instance()->clientDecrypt( dataStr );
+    return dataStr;
 }
 
 void RamAbstractObject::createData(QString data)

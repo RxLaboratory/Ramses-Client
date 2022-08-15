@@ -4,6 +4,7 @@
 #include "duqf-utils/utils.h"
 #include "ramuser.h"
 #include "ramses.h"
+#include "mainwindow.h"
 
 DatabaseCreateWidget::DatabaseCreateWidget(QWidget *parent) :
     QScrollArea(parent)
@@ -54,24 +55,43 @@ void DatabaseCreateWidget::createDB()
             return;
         }
 
-        // Copy the file
-        FileUtils::copy(":/data/template", ui_fileSelector->path());
-
-        if (!QFileInfo::exists(ui_fileSelector->path()))
+        // Remove existing file
+        QString newFilePath = ui_fileSelector->path();
+        if (QFileInfo::exists(newFilePath))
         {
-            QMessageBox::warning(this, tr("I can't save the database"), tr("I'm sorry, I've failed to create the database.\nMaybe you can try another location...") );
+            QMessageBox::StandardButton ok = QMessageBox::question(this, tr("Confirm file overwrite"), tr("Are you sure you want to overwrite this file?") + "\n\n" + newFilePath);
+            if (ok != QMessageBox::Yes) return;
+            FileUtils::remove(newFilePath);
+        }
+
+        // Copy the file
+        FileUtils::copy(":/data/template", newFilePath);
+
+        if (!QFileInfo::exists(newFilePath))
+        {
+            QMessageBox::warning(this, tr("I can't save the database"), tr("I'm sorry, I've failed to create the database at this location.\nMaybe you can try another location...") + "\n\n" + newFilePath );
             return;
         }
 
         // Set File
-        DBInterface::instance()->setDataFile(ui_fileSelector->path());
+        DBInterface::instance()->setDataFile(newFilePath);
 
         // Create user
         RamUser *newUser = new RamUser(ui_shortNameEdit->text(), ui_shortNameEdit->text());
         newUser->updatePassword("", ui_npassword1Edit->text());
+        newUser->setRole(RamUser::Admin);
 
         // Login
-        Ramses::instance()->login(ui_shortNameEdit->text(), ui_npassword1Edit->text());
+        RamUser *currentUser = Ramses::instance()->login(ui_shortNameEdit->text(), ui_npassword1Edit->text());
+        if (!currentUser)
+        {
+            QMessageBox::warning(this, tr("I can't log in"), tr("I'm sorry, I can't log in after the database creation.\nThat's probably a bug...") );
+            return;
+        }
+
+        // Hide dock
+        MainWindow *mw = (MainWindow*)GuiUtils::appMainWindow();
+        mw->hidePropertiesDock();
     }
     // Online
     else
@@ -185,6 +205,13 @@ void DatabaseCreateWidget::setupUi()
     ui_createButton = new QPushButton(tr("Create database!"));
     ui_createButton->setIcon(QIcon(":/icons/apply"));
     mainLayout->addWidget(ui_createButton);
+
+#ifdef QT_DEBUG
+    ui_fileSelector->setPath("/home/duduf/Documents/test.ramses");
+    ui_shortNameEdit->setText("Duf");
+    ui_npassword1Edit->setText("pass");
+    ui_npassword2Edit->setText("pass");
+#endif
 }
 
 void DatabaseCreateWidget::connectEvents()

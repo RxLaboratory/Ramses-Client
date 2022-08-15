@@ -43,9 +43,9 @@ void RamObject::reload()
 
 // PROTECTED //
 
-RamObject::RamObject(QString uuid, ObjectType type, QObject *parent):
+RamObject::RamObject(QString uuid, ObjectType type, QObject *parent, bool encryptData):
     QObject(parent),
-    RamAbstractObject(uuid, type)
+    RamAbstractObject(uuid, type, encryptData)
 {
     construct(parent);
 }

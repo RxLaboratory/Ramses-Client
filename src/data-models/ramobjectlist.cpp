@@ -333,6 +333,12 @@ RamObjectList::RamObjectList(QString uuid, QObject *parent):
 {
     construct(parent);
     m_dataMode = Object;
+    if (uuid.toLower() == "emptylist")
+    {
+        m_dataMode = Temp;
+        return;
+    }
+
     // Populate the list
     QJsonObject d = RamAbstractObject::data();
     QJsonArray arr = d.value("list").toArray();

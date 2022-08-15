@@ -30,86 +30,177 @@ void LoginPage::showEvent(QShowEvent *event)
 
 void LoginPage::createDatabase()
 {
-    if (!ui_databaseEdit)
+    if (!ui_databaseCreateWidget)
     {
-        ui_databaseEdit = new DatabaseCreateWidget();
-        QFrame *frame = new QFrame();
-        QVBoxLayout *l = new QVBoxLayout();
-        l->setContentsMargins(3,3,3,3);
-        l->addWidget(ui_databaseEdit);
-        frame->setLayout(l);
+        ui_databaseCreateWidget = new DatabaseCreateWidget();
     }
 
     MainWindow *mw = (MainWindow*)GuiUtils::appMainWindow();
-    mw->setPropertiesDockWidget( ui_databaseEdit, tr("Create Ramses Database"), ":/icons/storage" );
+    mw->setPropertiesDockWidget( ui_databaseCreateWidget, tr("Create Ramses Database"), ":/icons/storage" );
+}
+
+void LoginPage::updateDatabaseRecentList()
+{
+    ui_dataBaseBox->clear();
+    QSettings settings;
+    int n = settings.beginReadArray("database/recent");
+    for (int i = 0; i < n; i++)
+    {
+        settings.setArrayIndex(i);
+        QString p = settings.value("path").toString();
+        QFileInfo f(p);
+        ui_dataBaseBox->addItem( f.fileName(), p);
+    }
+    settings.endArray();
+
+    ui_dataBaseBox->setCurrentIndex(0);
+}
+
+void LoginPage::databaseChanged(int i)
+{
+    // Reset login fields
+    ui_usernameEdit->setText("");
+    ui_passwordEdit->setText("");
+    ui_settingsDBButton->setEnabled(i >= 0);
+    ui_loginButton->setEnabled(i >= 0);
+    ui_passwordEdit->setEnabled(i >= 0);
+    ui_usernameEdit->setEnabled(i >= 0);
+    ui_saveUsername->setEnabled(i >= 0);
+    ui_savePassword->setEnabled(i >= 0);
+    if (i < 0) return;
+
+    // Load saved credentials
+    QSettings settings;
+    QString dbPath = ui_dataBaseBox->itemData(i).toString();
+
+    int historySize = settings.beginReadArray("database/recent");
+    for (int i = 0; i < historySize; i++)
+    {
+        settings.setArrayIndex(i);
+        // Get adress in settings
+        QString settingsAddress = settings.value("path").toString();
+        if (settingsAddress == dbPath )
+        {
+            // Decrypt
+            DataCrypto *crypto = DataCrypto::instance();
+
+            QString username = settings.value("username", "").toString();
+
+            if (username == "")
+            {
+                ui_saveUsername->setChecked(false);
+                ui_usernameEdit->setText("");
+                ui_passwordEdit->setText("");
+                ui_passwordEdit->setPlaceholderText("Password");
+            }
+            else
+            {
+                username = crypto->machineDecrypt( username );
+                ui_usernameEdit->setText( username );
+                ui_saveUsername->setChecked(true);
+
+                QString password = settings.value("password", "").toString();
+                if (password == "")
+                {
+                    ui_savePassword->setChecked(false);
+                    ui_passwordEdit->setText("");
+                    ui_passwordEdit->setPlaceholderText("Password");
+                    m_hashedPassword = "";
+                }
+                else
+                {
+                    ui_savePassword->setChecked(true);
+                    m_hashedPassword = crypto->machineDecrypt( password );
+                    ui_passwordEdit->setPlaceholderText("Use saved password.");
+                    ui_passwordEdit->setText("");
+                }
+            }
+
+            break;
+        }
+    }
+    settings.endArray();
 }
 
 void LoginPage::loggedIn(RamUser *user)
 {
-    ui_loginWidget->hide();
-    ui_connectionStatusLabel->setText("Connected as " + user->name());
-
-    // Save server address to history
-    QSettings settings;
-    QString address = settings.value("server/address", "localhost/ramses/").toString();
-    int historySize = settings.beginReadArray("server/serverHistory");
-    int historyIndex = 0;
-    bool found = false;
-    for (int i = 0; i < historySize; i++)
-    {
-        settings.setArrayIndex(i);
-        // Get adress in settings, check with "/" no matter what
-        QString settingsAddress = settings.value("address").toString();
-        if (!settingsAddress.endsWith("/")) settingsAddress += "/";
-
-        if (settingsAddress == address )
-        {
-            found = true;
-            break;
-        }
-        historyIndex++;
-    }
-    settings.endArray();
-
-    if (!found) historySize++;
-    settings.beginWriteArray("server/serverHistory", historySize);
-    settings.setArrayIndex(historyIndex);
-    settings.setValue("address", address);
-
     // Save credentials
-    if (ui_saveUsername->isChecked())
+    if (user)
     {
-        // Encrypt
-        DataCrypto *crypto = DataCrypto::instance();
+        // Save credentials
+        QSettings settings;
+        QString dbPath = DBInterface::instance()->dataFile();
 
-        settings.setValue("username", crypto->machineEncrypt(ui_usernameEdit->text()));
+        qDebug() << "Saving credentials for " + dbPath;
 
-        if (ui_savePassword->isChecked())
+        int historySize = settings.beginReadArray("database/recent");
+        int historyIndex = 0;
+        bool found = false;
+        for (int i = 0; i < historySize; i++)
         {
-            // Save the hashed password
-            QString hashed;
-            if (ui_passwordEdit->text() == "" && ui_passwordEdit->placeholderText() == "Use saved password." && m_hashedPassword != "")
+            settings.setArrayIndex(i);
+            // Get adress in settings
+            QString settingsAddress = settings.value("path").toString();
+
+            qDebug() << settingsAddress;
+
+            if (settingsAddress == dbPath )
             {
-                hashed = m_hashedPassword;
+                found = true;
+                break;
+            }
+            historyIndex++;
+        }
+        settings.endArray();
+
+        if (found)
+        {
+            qDebug() << "test";
+            settings.beginWriteArray("database/recent");
+            settings.setArrayIndex(historyIndex);
+
+            // Save credentials
+            if (ui_saveUsername->isChecked())
+            {
+                qDebug() << "test";
+                // Encrypt
+                DataCrypto *crypto = DataCrypto::instance();
+
+                settings.setValue("username", crypto->machineEncrypt(ui_usernameEdit->text()));
+
+                if (ui_savePassword->isChecked())
+                {
+                    // Save the hashed password
+                    QString hashed;
+                    if (ui_passwordEdit->text() == "" && ui_passwordEdit->placeholderText() == "Use saved password." && m_hashedPassword != "")
+                    {
+                        hashed = m_hashedPassword;
+                    }
+                    else
+                    {
+                        hashed = crypto->generatePassHash( ui_passwordEdit->text() );
+                    }
+                    // But encrypted, as the hashed password can be used to login
+                    settings.setValue("password", crypto->machineEncrypt( hashed ));
+                }
+                else
+                {
+                    settings.setValue("password", "");
+                }
             }
             else
             {
-                hashed = crypto->generatePassHash( ui_passwordEdit->text() );
+                settings.setValue("username", "");
+                settings.setValue("password", "");
             }
-            // But encrypted, as the hashed password can be used to login
-            settings.setValue("password", crypto->machineEncrypt( hashed ));
-        }
-        else
-        {
-            settings.setValue("password", "");
+
+            settings.endArray();
         }
     }
-    else
-    {
-        settings.setValue("username", "");
-        settings.setValue("password", "");
-    }
-    settings.endArray();
+
+    ui_loginWidget->hide();
+    updateDatabaseRecentList();
+    ui_connectionStatusLabel->setText("Connected as " + user->name());
 
     ui_passwordEdit->setText("");
     if (ui_savePassword->isChecked())
@@ -142,6 +233,9 @@ void LoginPage::loginButton_clicked()
         return;
     }
 
+    // Set database
+    DBInterface::instance()->setDataFile( ui_dataBaseBox->currentData().toString() );
+
     if (ui_passwordEdit->text() == "")
     {
         m_ramses->loginHashed(ui_usernameEdit->text(), m_hashedPassword);
@@ -150,8 +244,6 @@ void LoginPage::loginButton_clicked()
     {
         m_ramses->login(ui_usernameEdit->text(), ui_passwordEdit->text());
     }
-
-    ui_connectionStatusLabel->setText("Connecting...");
 }
 
 void LoginPage::serverSettingsButton_clicked()
@@ -288,11 +380,16 @@ void LoginPage::setupUi()
     // Tab order
     QWidget::setTabOrder(ui_dataBaseBox, ui_usernameEdit);
     QWidget::setTabOrder(ui_usernameEdit, ui_passwordEdit);
+
+    updateDatabaseRecentList();
+    databaseChanged(ui_dataBaseBox->currentIndex());
 }
 
 void LoginPage::connectEvents()
 {
     connect(ui_createDBButton, &QPushButton::clicked, this, &LoginPage::createDatabase);
+
+    connect(ui_dataBaseBox, SIGNAL(currentIndexChanged(int)), this, SLOT(databaseChanged(int)));
 
     connect(ui_saveUsername, SIGNAL(toggled(bool)), this, SLOT(toggleSaveUsername(bool)));
     connect(ui_savePassword, SIGNAL(clicked(bool)), this, SLOT(toggleSavePassword(bool)));

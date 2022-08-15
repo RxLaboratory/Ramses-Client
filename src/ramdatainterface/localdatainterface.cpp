@@ -10,186 +10,165 @@ LocalDataInterface *LocalDataInterface::instance()
     return _instance;
 }
 
-QString LocalDataInterface::login(QString username, QString password)
+QString LocalDataInterface::login(QString username, QString password) const
 {
     // Get user data
-    QSqlDatabase db = QSqlDatabase::database("localdata");
-    QSqlQuery query = QSqlQuery(db);
+    QString q = "SELECT data, uuid FROM RamUser WHERE userName = '%1';";
+    QSqlQuery qry = query( q.arg(username) );
 
-    query.prepare("SELECT data, uuid FROM RamUser WHERE userName = :userName;");
-    query.bindValue(":userName", username);
-
-    query.exec();
-
-    if(!query.first()) return "";
+    if(!qry.first()) return "";
 
     // Decrypt and check password
-    QString data = query.value(0).toString();
-    data = DataCrypto::instance()->clientDecrypt(data);
+    QString data = qry.value(0).toString();
+
+    if (ENCRYPT_USER_DATA) data = DataCrypto::instance()->clientDecrypt(data);
 
     QJsonDocument doc = QJsonDocument::fromJson( data.toUtf8() );
     QJsonObject dataObj = doc.object();
 
     QString test = dataObj.value("password").toString();
-    if( password == test ) return query.value(1).toString();
+
+    if ( password == test )
+    {
+        // Save the current DB to recent files
+        QSettings settings;
+        // Get all to remove non existing, and insert new at first
+        QStringList dbs;
+        int n = settings.beginReadArray("database/recent");
+        for (int i = 0; i < n; i++)
+        {
+            settings.setArrayIndex(i);
+            dbs << settings.value("path", "-").toString();
+        }
+        settings.endArray();
+        // Check
+        for (int i = dbs.count() - 1; i >= 0; i--)
+        {
+            if (!QFileInfo::exists(dbs.at(i)))
+            {
+                dbs.removeAt(i);
+                continue;
+            }
+            if (dbs.at(i) == m_dataFile) dbs.removeAt(i);
+        }
+        // Insert
+        dbs.insert(0, m_dataFile);
+        // Write
+        settings.beginWriteArray("database/recent");
+        for (int i = 0; i < dbs.count(); i++)
+        {
+            settings.setArrayIndex(i);
+            settings.setValue("path", dbs.at(i));
+        }
+        settings.endArray();
+
+        return qry.value(1).toString();
+    }
 
     return "";
 }
 
-void LocalDataInterface::setRamsesPath(QString p)
+void LocalDataInterface::setRamsesPath(QString p) const
 {
-    QSqlDatabase db = QSqlDatabase::database("localdata");
-    QSqlQuery query = QSqlQuery(db);
-
     // Keep history
-    query.prepare("UPDATE Settings SET current = 0 WHERE current = 1;");
-    query.exec();
+    QString q = "UPDATE Settings SET current = 0 WHERE current = 1;";
+    query( q );
 
     // Add new
-    query.prepare("INSERT INTO Settings (localDataPath, current) VALUES  (:path, 1);");
-    query.bindValue(":path", p);
+    q = "INSERT INTO Settings (localDataPath, current) VALUES  ( '%1', 1);";
+    query( q.arg(p) );
 
-    query.exec();
 }
 
-QStringList LocalDataInterface::tableData(QString table)
+QStringList LocalDataInterface::tableData(QString table) const
 {
-    QSqlDatabase db = QSqlDatabase::database("localdata");
-    QSqlQuery query = QSqlQuery(db);
-
-    query.prepare("SELECT uuid FROM :table WHERE removed = 0;");
-    query.bindValue(":table", table);
-
-    query.exec();
+    QString q = "SELECT uuid FROM '%1' WHERE removed = 0;";
+    QSqlQuery qry = query( q.arg(table) );
 
     QStringList data;
 
-    while (query.next()) data << query.value(0).toString();
+    while (qry.next()) data << qry.value(0).toString();
 
     return data;
 }
 
-bool LocalDataInterface::createObject(QString uuid, QString table, QString data)
+void LocalDataInterface::createObject(QString uuid, QString table, QString data) const
 {
     QDateTime modified = QDateTime::currentDateTimeUtc();
 
-    QSqlDatabase db = QSqlDatabase::database("localdata");
-    QSqlQuery query = QSqlQuery(db);
+    QString q = "INSERT INTO '%1' (uuid, data, modified, removed)"
+                "VALUES ( '%2' , '%3' , '%4' , 0);";
 
-    if (!query.exec("INSERT INTO '" % table % "' (uuid, data, modified, removed)"
-                       "VALUES ( '" % uuid % "' , '" % data % "' , '" % modified.toString("yyyy-MM-dd hh:mm:ss:zzz") % "' , 0);"))
-    {
-        QString errorMessage = "Something went wrong when saving the data.\nHere's some information:";
-        errorMessage += "\n> " + tr("Query:") + "\n" + query.lastQuery();
-        errorMessage += "\n> " + tr("Database Error:") + "\n" + query.lastError().databaseText();
-        errorMessage += "\n> " + tr("Driver Error:") + "\n" + query.lastError().driverText();
-        log(errorMessage, DuQFLog::Critical);
-        return false;
-    }
-
-    return true;
+    query( q.arg(
+                  table,
+                  uuid,
+                  data,
+                  modified.toString("yyyy-MM-dd hh:mm:ss:zzz")
+                  )
+            );
 }
 
-QString LocalDataInterface::objectData(QString uuid, QString table)
+QString LocalDataInterface::objectData(QString uuid, QString table) const
 {
-    QSqlDatabase db = QSqlDatabase::database("localdata");
-    QSqlQuery query = QSqlQuery(db);
+    QString q = "SELECT data FROM %1 WHERE uuid = '%2';";
+    QSqlQuery qry = query( q.arg(table, uuid) );
 
-    query.prepare("SELECT data FROM :table WHERE uuid = :uuid;");
-    query.bindValue(":table", table);
-    query.bindValue(":uuid", uuid);
-
-    query.exec();
-
-    if (query.first()) return query.value(0).toString();
+    if (qry.first()) return qry.value(0).toString();
     return "";
 }
 
-void LocalDataInterface::setObjectData(QString uuid, QString table, QString data)
+void LocalDataInterface::setObjectData(QString uuid, QString table, QString data) const
 {
     QDateTime modified = QDateTime::currentDateTimeUtc();
 
-    QSqlDatabase db = QSqlDatabase::database("localdata");
-    QSqlQuery query = QSqlQuery(db);
+    data = data.replace("'", "\\'");
 
-    query.prepare("UPDATE :table SET data = :data, modified = :modified WHERE uuid = :uuid;");
-    query.bindValue(":table", table);
-    query.bindValue(":uuid", uuid);
-    query.bindValue(":data", data);
-    query.bindValue(":modified", modified.toString("yyy-MM-dd hh:mm:ss:zzz"));
-
-    query.exec();
+    QString q = "UPDATE %1 SET data = '%2', modified = '%3' WHERE uuid = '%4';";
+    query( q.arg(table, data, modified.toString("yyyy-MM-dd hh:mm:ss:zzz"), uuid) );
 }
 
-void LocalDataInterface::removeObject(QString uuid, QString table)
+void LocalDataInterface::removeObject(QString uuid, QString table) const
 {
-    QSqlDatabase db = QSqlDatabase::database("localdata");
-    QSqlQuery query = QSqlQuery(db);
-
-    // Set removed to 0
-    query.prepare("UPDATE :table SET removed = 0 WHERE uuid = :uuid;");
-    query.bindValue(":table", table);
-    query.bindValue(":uuid", uuid);
-
-    query.exec();
+    QString q = "UPDATE %1 SET removed = 0 WHERE uuid = '%2';";
+    query( q.arg(table, uuid) );
 }
 
-void LocalDataInterface::restoreObject(QString uuid, QString table)
+void LocalDataInterface::restoreObject(QString uuid, QString table) const
 {
-    QSqlDatabase db = QSqlDatabase::database("localdata");
-    QSqlQuery query = QSqlQuery(db);
-
-    // Set removed to 1
-    query.prepare("UPDATE :table SET removed = 1 WHERE uuid = :uuid;");
-    query.bindValue(":table", table);
-    query.bindValue(":uuid", uuid);
-
-    query.exec();
+    QString q = "UPDATE %1 SET removed = 1 WHERE uuid = '%2';";
+    query( q.arg(table, uuid) );
 }
 
-bool LocalDataInterface::isRemoved(QString uuid, QString table)
+bool LocalDataInterface::isRemoved(QString uuid, QString table) const
 {
-    QSqlDatabase db = QSqlDatabase::database("localdata");
-    QSqlQuery query = QSqlQuery(db);
+    QString q = "SELECT removed FROM %1 WHERE uuid = '%2';";
+    QSqlQuery qry = query( q.arg(table, uuid) );
 
-    query.prepare("SELECT removed FROM :table WHERE uuid = :uuid;");
-    query.bindValue(":table", table);
-    query.bindValue(":uuid", uuid);
-
-    query.exec();
-
-
-    if (query.first())
+    if (qry.first())
     {
-        return query.value(0).toBool();
+        return qry.value(0).toBool();
     }
 
     return true;
 }
 
-void LocalDataInterface::setUsername(QString uuid, QString username)
+void LocalDataInterface::setUsername(QString uuid, QString username) const
 {
-    QSqlDatabase db = QSqlDatabase::database("localdata");
-    QSqlQuery query = QSqlQuery(db);
-
-    query.prepare("UPDATE RamUser SET userName = :userName WHERE uuid = :uuid;");
-    query.bindValue(":userName", username);
-    query.bindValue(":uuid", uuid);
-
-    query.exec();
+    QString q = "UPDATE RamUser SET userName = '%1' WHERE uuid = '%2';";
+    query( q.arg(username, uuid) );
 }
 
 ServerConfig LocalDataInterface::serverConfig() const
 {
-    QSqlDatabase db = QSqlDatabase::database("localdata");
-    QSqlQuery query = db.exec("SELECT address, useSsl, updateDelay, timeout FROM RamServer;");
+    QString q = "SELECT address, useSsl, updateDelay, timeout FROM RamServer;";
+    QSqlQuery qry = query( q );
 
     ServerConfig config;
-    if (query.first()) {
-        config.address = query.value(0).toString();
-        config.useSsl = query.value(1).toBool();
-        config.updateDelay = query.value(2).toInt();
-        config.timeout = query.value(3).toInt();
+    if (qry.first()) {
+        config.address = qry.value(0).toString();
+        config.useSsl = qry.value(1).toBool();
+        config.updateDelay = qry.value(2).toInt();
+        config.timeout = qry.value(3).toInt();
     }
 
     return config;
@@ -209,6 +188,8 @@ ServerConfig LocalDataInterface::setDataFile(const QString &file)
     db.setDatabaseName(file);
     if (!db.open()) log("Can't save data to the disk.", DuQFLog::Fatal);
 
+    m_dataFile = file;
+
     return serverConfig();
 }
 
@@ -217,4 +198,23 @@ LocalDataInterface::LocalDataInterface()
     //Load local database
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE","localdata");
     db.setHostName("localhost");
+}
+
+QSqlQuery LocalDataInterface::query(QString q) const
+{
+    QSqlDatabase db = QSqlDatabase::database("localdata");
+    QSqlQuery qry = QSqlQuery(db);
+
+    log(tr("Querying:") + "\n" + q, DuQFLog::Data);
+
+    if (!qry.exec(q))
+    {
+        QString errorMessage = "Something went wrong when saving the data.\nHere's some information:";
+        errorMessage += "\n> " + tr("Query:") + "\n" + qry.lastQuery();
+        errorMessage += "\n> " + tr("Database Error:") + "\n" + qry.lastError().databaseText();
+        errorMessage += "\n> " + tr("Driver Error:") + "\n" + qry.lastError().driverText();
+        log(errorMessage, DuQFLog::Critical);
+    }
+
+    return qry;
 }

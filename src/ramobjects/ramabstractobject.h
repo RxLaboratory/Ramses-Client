@@ -101,7 +101,6 @@ public:
 
     // METHODS //
 
-    RamAbstractObject(QString uuid, QString data);
     RamAbstractObject(QString shortName, QString name, ObjectType type, bool isVirtual = false, bool encryptData = false);
     ~RamAbstractObject();
 
@@ -201,7 +200,7 @@ protected:
      * @brief RamAbstractObject constructs an existing object from an existing uuid. This method is private, use obj(QString) to get an object from the uuid
      * @param uuid
      */
-    RamAbstractObject(QString uuid, ObjectType type);
+    RamAbstractObject(QString uuid, ObjectType type, bool encryptData = false);
 
     // Low level data handling.
     QString dataString() const;

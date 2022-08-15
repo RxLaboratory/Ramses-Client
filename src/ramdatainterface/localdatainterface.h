@@ -33,28 +33,28 @@ public:
      * @param password
      * @return The user uuid if successful, empty string otherwise
      */
-    QString login(QString username, QString password);
+    QString login(QString username, QString password) const;
 
     /**
      * @brief setRamsesPath sets the path to the local data for this database
      * @param p
      */
-    void setRamsesPath(QString p);
+    void setRamsesPath(QString p) const;
 
     // DATA INTERFACE //
 
-    QStringList tableData(QString table);
+    QStringList tableData(QString table) const;
 
-    bool createObject(QString uuid, QString table, QString data);
+    void createObject(QString uuid, QString table, QString data) const;
 
-    QString objectData(QString uuid, QString table);
-    void setObjectData(QString uuid, QString table, QString data);
+    QString objectData(QString uuid, QString table) const;
+    void setObjectData(QString uuid, QString table, QString data) const;
 
-    void removeObject(QString uuid, QString table);
-    void restoreObject(QString uuid, QString table);
-    bool isRemoved(QString uuid, QString table);
+    void removeObject(QString uuid, QString table) const;
+    void restoreObject(QString uuid, QString table) const;
+    bool isRemoved(QString uuid, QString table) const;
 
-    void setUsername(QString uuid, QString username);
+    void setUsername(QString uuid, QString username) const;
 
     ServerConfig serverConfig() const;
 
@@ -70,6 +70,9 @@ private:
      * @param parent
      */
     LocalDataInterface();
+
+    QSqlQuery query(QString q) const;
+
     /**
      * @brief m_dataFile The SQLite file path
      */

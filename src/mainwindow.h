@@ -31,6 +31,7 @@ public:
     explicit MainWindow(QStringList args, QWidget *parent = nullptr);
 
     void setPropertiesDockWidget(QWidget *w, QString title = "Properties", QString icon = ":/icons/asset");
+    void hidePropertiesDock();
 
 private:
     // ========= RxOT UI ==============

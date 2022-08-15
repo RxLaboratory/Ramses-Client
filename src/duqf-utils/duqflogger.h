@@ -42,9 +42,9 @@ class DuQFLoggerObject: public QObject
 public:
     explicit DuQFLoggerObject(QString component = "", QObject *parent = nullptr);
 signals:
-    void newLog(DuQFLog message);
+    void newLog(DuQFLog message) const;
 protected:
-    void log(QString message, DuQFLog::LogType type = DuQFLog::Information);
+    void log(QString message, DuQFLog::LogType type = DuQFLog::Information) const;
 private:
     QString _c;
 };

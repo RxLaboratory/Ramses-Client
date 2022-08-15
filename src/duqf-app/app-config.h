@@ -2,6 +2,7 @@
 #define APPCONFIG_H
 
 #define CLIENT_BUILD_KEY "H6BuYLsW"
+#define ENCRYPT_USER_DATA true
 
 //#define FORCE_WELCOME_SCREEN
 

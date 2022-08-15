@@ -359,6 +359,11 @@ void MainWindow::setPropertiesDockWidget(QWidget *w, QString title, QString icon
     ui_propertiesDockWidget->show();
 }
 
+void MainWindow::hidePropertiesDock()
+{
+    ui_propertiesDockWidget->hide();
+}
+
 void MainWindow::duqf_checkUpdate()
 {
     DuApplication *app = qobject_cast<DuApplication*>(qApp);

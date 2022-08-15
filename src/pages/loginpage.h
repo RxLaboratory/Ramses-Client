@@ -23,6 +23,8 @@ protected:
 
 private slots:
     void createDatabase();
+    void updateDatabaseRecentList();
+    void databaseChanged(int i);
 
     void loggedIn(RamUser *user);
     void loggedOut();
@@ -50,7 +52,7 @@ private:
     QLabel *ui_capsLockLabel;
     QPushButton *ui_loginButton;
     QLabel *ui_connectionStatusLabel;
-    DatabaseCreateWidget *ui_databaseEdit = nullptr;
+    DatabaseCreateWidget *ui_databaseCreateWidget = nullptr;
 
     QString m_hashedPassword;
 

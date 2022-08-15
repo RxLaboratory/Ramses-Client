@@ -64,7 +64,7 @@ protected:
      * @param uuid
      * @param parent
      */
-    RamObject(QString uuid, ObjectType type, QObject *parent = nullptr);
+    RamObject(QString uuid, ObjectType type, QObject *parent = nullptr, bool encryptData = false);
 
     virtual QJsonObject reloadData() override;
 
