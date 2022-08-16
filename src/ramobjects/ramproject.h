@@ -113,6 +113,7 @@ protected:
 
 private:
     void construct();
+    void getCreateLists();
 
     // LISTS
     RamObjectList *m_steps;

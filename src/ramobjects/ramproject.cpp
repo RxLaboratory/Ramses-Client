@@ -21,74 +21,12 @@ RamProject::RamProject(QString shortName, QString name):
     RamObject(shortName, name, Project)
 {
     construct();
-
-    QJsonObject d = data();
-
-    // Create lists
-
-    m_sequences = new RamObjectList(shortName + "-sqnc", name + " | Sequences", Sequence, RamObjectList::ListObject, this);
-    d.insert("sequences", m_sequences->uuid());
-
-    m_assetGroups = new RamObjectList(shortName + "-asstgrp", name + " | Asset groups", AssetGroup, RamObjectList::ListObject, this);
-    d.insert("assetGroups", m_assetGroups->uuid());
-
-    m_pipeline = new RamObjectList(shortName + "-ppln", name + " | Pipeline", Pipe, RamObjectList::ListObject, this);
-    d.insert("pipeline", m_pipeline->uuid());
-
-    m_steps = new RamObjectList(shortName + "-stp", name + " | Steps", Step, RamObjectList::ListObject, this);
-    d.insert("steps", m_steps->uuid());
-
-    m_pipeFiles = new RamObjectList(shortName + "-ppfl", name + " | Pipe files", PipeFile, RamObjectList::ListObject, this);
-    d.insert("pipeFiles", m_pipeFiles->uuid());
-
-    m_shots = new RamItemTable(shortName + "-sht", name + " | Shots", m_steps, Shot, this);
-    d.insert("shots", m_shots->uuid());
-
-    m_assets = new RamItemTable(shortName + "-asst", name + " | Assets", m_steps, Asset, this);
-    d.insert("assets", m_assets->uuid());
-
-    m_users = new RamObjectList(shortName + "-usr", name + " | Users", User, RamObjectList::ListObject, this);
-    d.insert("users", m_users->uuid());
-
-    m_scheduleComments = new RamObjectList(shortName + "-schdlcmmnt", name + " | Schedule comments", ScheduleComment, RamObjectList::ListObject, this);
-    d.insert("scheduleComments", m_scheduleComments->uuid());
 }
 
 RamProject::RamProject(QString uuid):
     RamObject(uuid, Project)
 {
     construct();
-
-    // Populate lists
-
-    QJsonObject d = data();
-
-    m_sequences = RamObjectList::get( d.value("sequences").toString(), ObjectList);
-    m_sequences->setParent(this);
-
-    m_assetGroups = RamObjectList::get( d.value("assetGroups").toString(), ObjectList);
-    m_assetGroups->setParent(this);
-
-    m_pipeline = RamObjectList::get( d.value("pipeline").toString(), ObjectList);
-    m_pipeline->setParent(this);
-
-    m_steps = RamObjectList::get( d.value("steps").toString(), ObjectList);
-    m_steps->setParent(this);
-
-    m_pipeFiles = RamObjectList::get( d.value("pipeFiles").toString(), ObjectList);
-    m_pipeFiles->setParent(this);
-
-    m_shots = RamItemTable::get( d.value("shots").toString());
-    m_shots->setParent(this);
-
-    m_assets = RamItemTable::get( d.value("assets").toString());
-    m_assets->setParent(this);
-
-    m_users = RamObjectList::get( d.value("users").toString(), ObjectList);
-    m_users->setParent(this);
-
-    m_scheduleComments = RamObjectList::get( d.value("scheduleComments").toString(), ObjectList);
-    m_scheduleComments->setParent(this);
 }
 
 RamObjectList *RamProject::steps() const
@@ -431,4 +369,70 @@ void RamProject::construct()
 {
     m_icon = ":/icons/project";
     m_editRole = Admin;
+
+    getCreateLists();
+}
+
+void RamProject::getCreateLists()
+{
+    QJsonObject d = data();
+
+    QString shortName = d.value("shortName").toString();
+    QString name = d.value("name").toString();
+
+    QString uuid = d.value("sequences").toString();
+    if (uuid == "") m_sequences = new RamObjectList(shortName + "-sqnc", name + " | Sequences", Sequence, RamObjectList::ListObject, this);
+    else m_sequences = RamObjectList::get( uuid, ObjectList);
+    m_sequences->setParent(this);
+    d.insert("sequences", m_sequences->uuid());
+
+    uuid = d.value("assetGroups").toString();
+    if (uuid == "") m_assetGroups = new RamObjectList(shortName + "-asstgrp", name + " | Asset groups", AssetGroup, RamObjectList::ListObject, this);
+    else m_assetGroups = RamObjectList::get( uuid, ObjectList);
+    m_assetGroups->setParent(this);
+    d.insert("assetGroups", m_assetGroups->uuid());
+
+    uuid = d.value("pipeline").toString();
+    if (uuid == "") m_pipeline = new RamObjectList(shortName + "-ppln", name + " | Pipeline", Pipe, RamObjectList::ListObject, this);
+    else m_pipeline = RamObjectList::get( uuid, ObjectList);
+    m_pipeline->setParent(this);
+    d.insert("pipeline", m_pipeline->uuid());
+
+    uuid = d.value("steps").toString();
+    if (uuid == "") m_steps = new RamObjectList(shortName + "-stp", name + " | Steps", Step, RamObjectList::ListObject, this);
+    else m_steps = RamObjectList::get( uuid, ObjectList);
+    m_steps->setParent(this);
+    d.insert("steps", m_steps->uuid());
+
+    uuid = d.value("pipeFiles").toString();
+    if (uuid == "") m_pipeFiles = new RamObjectList(shortName + "-ppfl", name + " | Pipe files", PipeFile, RamObjectList::ListObject, this);
+    else m_pipeFiles = RamObjectList::get( uuid, ObjectList);
+    m_pipeFiles->setParent(this);
+    d.insert("pipeFiles", m_pipeFiles->uuid());
+
+    uuid = d.value("shots").toString();
+    if (uuid == "") m_shots = new RamItemTable(shortName + "-sht", name + " | Shots", m_steps, Shot, this);
+    else m_shots = RamItemTable::get( uuid );
+    m_shots->setParent(this);
+    d.insert("shots", m_shots->uuid());
+
+    uuid = d.value("assets").toString();
+    if (uuid == "") m_assets = new RamItemTable(shortName + "-asst", name + " | Assets", m_steps, Asset, this);
+    else m_assets = RamItemTable::get( uuid );
+    m_assets->setParent(this);
+    d.insert("assets", m_assets->uuid());
+
+    uuid = d.value("users").toString();
+    if (uuid == "") m_users = new RamObjectList(shortName + "-usr", name + " | Users", User, RamObjectList::ListObject, this);
+    else m_users = RamObjectList::get( uuid, ObjectList);
+    m_users->setParent(this);
+    d.insert("users", m_users->uuid());
+
+    uuid = d.value("users").toString();
+    if (uuid == "") m_scheduleComments = new RamObjectList(shortName + "-schdlcmmnt", name + " | Schedule comments", ScheduleComment, RamObjectList::ListObject, this);
+    else m_scheduleComments = RamObjectList::get( uuid, ObjectList);
+    m_scheduleComments->setParent(this);
+    d.insert("scheduleComments", m_scheduleComments->uuid());
+
+    setData(d);
 }
