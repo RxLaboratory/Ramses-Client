@@ -43,7 +43,7 @@ private slots:
     void setHard(double e);
     void setVeryHard(double e);
     void activateMultiplier(bool a);
-    void setMultiplier(RamAssetGroup* ag);
+    void setMultiplier(RamObject *ag);
 
 private:
     void setupUi();

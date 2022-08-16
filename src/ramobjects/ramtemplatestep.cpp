@@ -33,8 +33,8 @@ RamTemplateStep *RamTemplateStep::c(RamObject *o)
 
 // PUBLIC //
 
-RamTemplateStep::RamTemplateStep(QString shortName, QString name) :
-    RamObject(shortName, name, TemplateStep)
+RamTemplateStep::RamTemplateStep(QString shortName, QString name, ObjectType type) :
+    RamObject(shortName, name, type)
 {
     construct();
 
@@ -46,8 +46,8 @@ RamTemplateStep::RamTemplateStep(QString shortName, QString name) :
     setData(d);
 }
 
-RamTemplateStep::RamTemplateStep(QString uuid):
-    RamObject(uuid, TemplateStep)
+RamTemplateStep::RamTemplateStep(QString uuid, ObjectType type):
+    RamObject(uuid, type)
 {
     construct();
 

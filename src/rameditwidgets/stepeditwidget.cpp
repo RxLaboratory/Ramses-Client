@@ -201,7 +201,7 @@ void StepEditWidget::activateMultiplier(bool a)
         m_step->setEstimationMultiplyGroup( nullptr );
 }
 
-void StepEditWidget::setMultiplier(RamAssetGroup *ag)
+void StepEditWidget::setMultiplier(RamObject *ag)
 {
     if (!m_step) return;
     m_step->setEstimationMultiplyGroup( ag );
@@ -321,5 +321,5 @@ void StepEditWidget::connectEvents()
     connect(ui_hardEdit, SIGNAL(valueChanged(double)), this, SLOT(setHard(double)));
     connect(ui_veryHardEdit, SIGNAL(valueChanged(double)), this, SLOT(setVeryHard(double)));
     connect(ui_estimationMultiplierCheckBox, SIGNAL(clicked(bool)), this, SLOT(activateMultiplier(bool)));
-    connect(ui_estimationMultiplierBox, SIGNAL(currentObjectChanged(RamAssetGroup*)), this, SLOT(setMultiplier(RamAssetGroup*)));
+    connect(ui_estimationMultiplierBox, &RamObjectListComboBox::currentObjectChanged, this, &StepEditWidget::setMultiplier);
 }

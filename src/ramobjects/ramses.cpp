@@ -43,6 +43,7 @@ RamUser *Ramses::loginHashed(QString username, QString hashedPassword)
         QSettings *uSettings = m_currentUser->settings();
         QString projUuid = uSettings->value("ramses/currentProject", "").toString();
         if (projUuid != "") setCurrentProject( RamProject::get(projUuid) );
+        else setCurrentProject(nullptr);
     }
 
     emit loggedIn(m_currentUser);

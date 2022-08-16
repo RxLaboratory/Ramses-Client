@@ -38,8 +38,8 @@ public:
 
     // OTHER METHODS //
 
-    explicit RamTemplateStep(QString shortName, QString name);
-    RamTemplateStep(QString uuid);
+    explicit RamTemplateStep(QString shortName, QString name, ObjectType type = TemplateStep);
+    RamTemplateStep(QString uuid, ObjectType type = TemplateStep);
 
     RamObjectList *applications() const;
 

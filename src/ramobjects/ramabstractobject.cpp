@@ -109,6 +109,9 @@ RamAbstractObject::RamAbstractObject(QString shortName, QString name, ObjectType
     m_objectType = type;
     m_dataEncrypted = encryptData;
     m_virtual = isVirtual;
+
+    m_existingObjects[m_uuid] = this;
+
     if (m_virtual) return;
 
     // Create in the database
@@ -360,6 +363,8 @@ RamAbstractObject::RamAbstractObject(QString uuid, ObjectType type, bool encrypt
     m_uuid = uuid;
     m_objectType = type;
     m_dataEncrypted = encryptData;
+
+    m_existingObjects[m_uuid] = this;
 }
 
 void RamAbstractObject::setDataString(QString data)

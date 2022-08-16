@@ -168,6 +168,8 @@ void ItemTableManagerWidget::projectChanged(RamProject *project, bool force)
     for (int i = actions.count() -1; i >= 4; i--)
     {
         actions.at(i)->deleteLater();
+        qDebug() << i;
+        qDebug() << actions.at(i);
     }
     ui_table->filteredList()->showAllSteps();
 
@@ -176,6 +178,8 @@ void ItemTableManagerWidget::projectChanged(RamProject *project, bool force)
     for (int i = actions.count() -1; i >= 5; i--)
     {
         actions.at(i)->deleteLater();
+        qDebug() << i;
+        qDebug() << actions.at(i);
     }
     ui_table->filteredList()->clearUsers();
 
@@ -188,14 +192,11 @@ void ItemTableManagerWidget::projectChanged(RamProject *project, bool force)
     }
 
     // Populate list and table
-    qDebug() << "=====USER LIST=====";
-    ui_userMenu->setList( project->users() );
-    qDebug() << "=====STEP LIST=====";
-    ui_stepMenu->setList( project->steps() );
-    ui_actionNotAssigned->setChecked(true);
-
     setList();
 
+    ui_userMenu->setList( project->users() );
+    ui_stepMenu->setList( project->steps() );
+    //ui_actionNotAssigned->setChecked(true);
     ui_assignUserMenu->setList(project->users());
     ui_assignUserContextMenu->setList(project->users());
 

@@ -29,7 +29,7 @@ public:
     RamProject *project() const;
 
     RamAssetGroup *estimationMultiplyGroup() const;
-    void setEstimationMultiplyGroup(RamAssetGroup *newEstimationMultiplyGroup);
+    void setEstimationMultiplyGroup(RamObject *newEstimationMultiplyGroup);
 
     qint64 timeSpent() const; //seconds
     float estimation() const; //days

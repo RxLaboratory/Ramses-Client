@@ -47,7 +47,7 @@ RamStep *RamStep::createFromTemplate(RamTemplateStep *tempStep, RamProject *proj
 // PUBLIC //
 
 RamStep::RamStep(QString shortName, QString name, RamProject *project):
-    RamTemplateStep(shortName, name)
+    RamTemplateStep(shortName, name, Step)
 {
     construct();
     m_project = project;
@@ -62,7 +62,7 @@ RamStep::RamStep(QString shortName, QString name, RamProject *project):
 }
 
 RamStep::RamStep(QString uuid):
-    RamTemplateStep(uuid)
+    RamTemplateStep(uuid, Step)
 {
     construct();
 
@@ -82,7 +82,7 @@ RamAssetGroup *RamStep::estimationMultiplyGroup() const
     return RamAssetGroup::get( getData("estimationMultiplyGroup").toString("none") );
 }
 
-void RamStep::setEstimationMultiplyGroup(RamAssetGroup *newEstimationMultiplyGroup)
+void RamStep::setEstimationMultiplyGroup(RamObject *newEstimationMultiplyGroup)
 {
     if (newEstimationMultiplyGroup) insertData("estimationMultiplyGroup", newEstimationMultiplyGroup->uuid() );
     else insertData("estimationMultiplyGroup", "none" );
