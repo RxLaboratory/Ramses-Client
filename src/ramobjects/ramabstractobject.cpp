@@ -205,7 +205,7 @@ QString RamAbstractObject::comment() const
 
 void RamAbstractObject::setComment(const QString comment)
 {
-    insertData("comment", comment);
+    insertData("comment", comment.trimmed());
 }
 
 QColor RamAbstractObject::color() const

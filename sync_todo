@@ -1,7 +1,7 @@
 4- Ramses and editors
-	- draw progress bar for states
 	- test all editors
-		Done : users, projects, template steps, template asset groups
+		Done : users, projects, template steps, template asset groups, states, filetypes, applications
+		Done : 
 	- set default estimations
 	- recreate defaults (templates, states...) in included db
 	

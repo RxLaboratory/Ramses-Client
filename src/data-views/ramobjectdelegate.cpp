@@ -488,8 +488,11 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
     // Draw buttons
     paintButtons(obj, painter, &params, index);
 
+    // Draw details
+    paintDetails(obj, painter, &params);
+
     // Draw Comment
-    QRect commentRect = params.detailsRect;
+    QRect commentRect(params.detailsRect.left(), params.detailsRect.bottom() + 3, params.bgRect.width() - 15, params.bgRect.height() - params.detailsRect.height() - params.titleRect.height() - 15);
     QPen commentPen(m_lessLight);
     if (commentRect.height() > 10 && obj->comment() != "")
     {
