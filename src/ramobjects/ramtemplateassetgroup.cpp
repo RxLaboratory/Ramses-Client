@@ -16,14 +16,14 @@ RamTemplateAssetGroup *RamTemplateAssetGroup::c(RamObject *o)
 
 // PUBLIC //
 
-RamTemplateAssetGroup::RamTemplateAssetGroup(QString shortName, QString name) :
-    RamObject(shortName, name, TemplateAssetGroup)
+RamTemplateAssetGroup::RamTemplateAssetGroup(QString shortName, QString name, ObjectType type) :
+    RamObject(shortName, name, type)
 {
     construct();
 }
 
-RamTemplateAssetGroup::RamTemplateAssetGroup(QString uuid):
-    RamObject(uuid, TemplateAssetGroup)
+RamTemplateAssetGroup::RamTemplateAssetGroup(QString uuid, ObjectType type):
+    RamObject(uuid, type)
 {
     construct();
 }

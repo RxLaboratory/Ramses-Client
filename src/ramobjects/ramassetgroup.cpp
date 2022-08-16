@@ -25,14 +25,14 @@ RamAssetGroup *RamAssetGroup::createFromTemplate(RamTemplateAssetGroup *tempAG, 
 // PUBLIC //
 
 RamAssetGroup::RamAssetGroup(QString shortName, QString name, RamProject *project):
-    RamTemplateAssetGroup(shortName, name)
+    RamTemplateAssetGroup(shortName, name, AssetGroup)
 {
     construct();
     setProject(project);
 }
 
 RamAssetGroup::RamAssetGroup(QString uuid):
-    RamTemplateAssetGroup(uuid)
+    RamTemplateAssetGroup(uuid, AssetGroup)
 {
     construct();
 
