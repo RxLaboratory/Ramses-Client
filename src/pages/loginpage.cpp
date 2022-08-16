@@ -30,6 +30,16 @@ void LoginPage::createDatabase()
     mw->setPropertiesDockWidget( ui_databaseCreateWidget, tr("Create Ramses Database"), ":/icons/storage" );
 }
 
+void LoginPage::openDatabase()
+{
+    QString p = QFileDialog::getOpenFileName(this, tr("Open Ramses Database"), "", "Ramses DB (*.ramses);;SQLite (*.sqlite);;All Files (*.*)");
+    if (p == "") return;
+
+    // Add to combobox and select
+    ui_dataBaseBox->insertItem(0, QFileInfo(p).fileName(), p);
+    ui_dataBaseBox->setCurrentIndex(0);
+}
+
 void LoginPage::updateDatabaseRecentList()
 {
     ui_dataBaseBox->clear();
@@ -385,6 +395,7 @@ void LoginPage::setupUi()
 void LoginPage::connectEvents()
 {
     connect(ui_createDBButton, &QPushButton::clicked, this, &LoginPage::createDatabase);
+    connect(ui_openDBButton, &QPushButton::clicked, this, &LoginPage::openDatabase);
 
     connect(ui_dataBaseBox, SIGNAL(currentIndexChanged(int)), this, SLOT(databaseChanged(int)));
 
