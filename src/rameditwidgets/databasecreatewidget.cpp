@@ -134,7 +134,7 @@ void DatabaseCreateWidget::setupUi()
     QGridLayout *offlineLayout = new QGridLayout(offlineWidget);
     offlineLayout->setAlignment(Qt::AlignTop);
     offlineLayout->setSpacing(3);
-    offlineLayout->setContentsMargins(0,0,0,0);
+    offlineLayout->setContentsMargins(3,3,3,3);
 
     QLabel *userLabel = new QLabel("User ID", dummy);
     offlineLayout->addWidget(userLabel, 0, 0);
@@ -161,7 +161,7 @@ void DatabaseCreateWidget::setupUi()
     QVBoxLayout *onlineLayout = new QVBoxLayout(onlineWidget);
     onlineLayout->setAlignment(Qt::AlignTop);
     onlineLayout->setSpacing(3);
-    onlineLayout->setContentsMargins(0,0,0,0);
+    onlineLayout->setContentsMargins(3,3,3,3);
 
     ui_serverEdit = new ServerEditWidget(onlineWidget);
     onlineLayout->addWidget(ui_serverEdit);
