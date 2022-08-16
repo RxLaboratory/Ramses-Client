@@ -1,5 +1,6 @@
 #include "ramobjectlist.h"
 
+#include "data-models/ramitemtable.h"
 #include "ramses.h"
 #include "ramshot.h"
 

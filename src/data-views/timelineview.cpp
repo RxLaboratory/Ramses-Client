@@ -3,6 +3,7 @@
 #include "ramproject.h"
 #include "timelinemanager.h"
 #include "ramses.h"
+#include "data-models/ramitemtable.h"
 
 TimelineView::TimelineView(QWidget *parent):
     QTableView(parent)
@@ -28,9 +29,9 @@ void TimelineView::setList(RamObjectList *shots)
     else
     {
         m_objectList->setSourceModel(shots);
-        connect(shots, &RamItemTable::dataChanged, this, &TimelineView::resetZoom);
-        connect(shots, &RamItemTable::layoutChanged, this, &TimelineView::resetZoom);
-        connect(shots, &RamItemTable::rowsMoved, this, &TimelineView::resetZoom);
+        connect(shots, &RamObjectList::dataChanged, this, &TimelineView::resetZoom);
+        connect(shots, &RamObjectList::layoutChanged, this, &TimelineView::resetZoom);
+        connect(shots, &RamObjectList::rowsMoved, this, &TimelineView::resetZoom);
     }
     resetZoom();
 }

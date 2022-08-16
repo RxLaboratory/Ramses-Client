@@ -26,9 +26,6 @@ RamUser::RamUser(QString shortName, QString name) :
     RamObject(shortName, name, User, nullptr, false, ENCRYPT_USER_DATA)
 {
     construct();
-
-    m_schedule = new RamObjectList(shortName + "-schdl", name + " | Schedule", ScheduleEntry, RamObjectList::ListObject, this);
-    insertData("schedule", m_schedule->uuid());
     DBInterface::instance()->setUsername(m_uuid, shortName);
 }
 
@@ -36,11 +33,6 @@ RamUser::RamUser(QString uuid):
     RamObject(uuid, User, nullptr, ENCRYPT_USER_DATA)
 {
     construct();
-
-    QString scheduleUuid = getData("schedule").toString();
-    qDebug() << data();
-    qDebug() << scheduleUuid;
-    m_schedule = RamObjectList::get( scheduleUuid, ObjectList);
 }
 
 void RamUser::setShortName(const QString &shortName)
@@ -184,4 +176,18 @@ void RamUser::construct()
 {
     m_icon = ":/icons/user";
     m_editRole = Admin;
+    getCreateLists();
+}
+
+void RamUser::getCreateLists()
+{
+    QJsonObject d = data();
+
+    QString uuid = d.value("schedule").toString();
+    if (uuid == "") m_schedule = new RamObjectList("schedule", "Schedule", ScheduleEntry, RamObjectList::ListObject, this);
+    else m_schedule = RamObjectList::get( uuid, ObjectList);
+    m_schedule->setParent(this);
+    d.insert("schedule", m_schedule->uuid());
+
+    setData(d);
 }

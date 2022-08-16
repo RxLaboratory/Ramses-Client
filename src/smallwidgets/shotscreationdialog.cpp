@@ -1,4 +1,5 @@
 #include "shotscreationdialog.h"
+#include "data-models/ramitemtable.h"
 #include "duqf-utils/utils.h"
 
 #include "ramsequence.h"

@@ -24,11 +24,7 @@ RamPipe::RamPipe(RamStep *output, RamStep *input):
     d.insert("outputStep", output->uuid());
     d.insert("inputStep", input->uuid());
 
-    m_pipeFiles = new RamObjectList("PPFS", "Pipe files", PipeFile, RamObjectList::ListObject, this);
-    d.insert("pipeFiles", m_pipeFiles->uuid());
     setData(d);
-
-    this->setParent( this->project() );
 
     connectEvents();
 }
@@ -37,13 +33,6 @@ RamPipe::RamPipe(QString uuid):
     RamObject(uuid, Pipe)
 {
     construct();
-
-    QJsonObject d = data();
-
-    m_pipeFiles = RamObjectList::get( d.value("pipeFiles").toString(), ObjectList);
-
-    this->setParent( this->project() );
-
     connectEvents();
 }
 
@@ -104,6 +93,21 @@ void RamPipe::construct()
 {
     m_icon = ":/icons/connection";
     m_editRole = ProjectAdmin;
+    getCreateLists();
+    this->setParent( this->project() );
+}
+
+void RamPipe::getCreateLists()
+{
+    QJsonObject d = data();
+
+    QString uuid = d.value("pipeFiles").toString();
+    if (uuid == "") m_pipeFiles = new RamObjectList("pipeFiles", "Files", FileType, RamObjectList::ListObject, this);
+    else m_pipeFiles = RamObjectList::get( uuid, ObjectList);
+    m_pipeFiles->setParent(this);
+    d.insert("pipeFiles", m_pipeFiles->uuid());
+
+    setData(d);
 }
 
 void RamPipe::connectEvents()

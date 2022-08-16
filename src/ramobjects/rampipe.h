@@ -40,6 +40,7 @@ private slots:
 
 private:
     void construct();
+    void getCreateLists();
     void connectEvents();
 
     RamObjectList *m_pipeFiles;

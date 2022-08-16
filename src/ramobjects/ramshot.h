@@ -1,7 +1,6 @@
 #ifndef RAMSHOT_H
 #define RAMSHOT_H
 
-#include "data-models/ramitemtable.h"
 #include "ramitem.h"
 
 class RamSequence;
@@ -45,6 +44,7 @@ protected:
 
 private:
     void construct();
+    void getCreateLists();
 
     RamObjectList *m_assets;
 };

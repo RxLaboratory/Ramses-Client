@@ -51,6 +51,7 @@ public slots:
 
 private:
     void construct();
+    void getCreateLists();
 
     RamObjectList *m_nativeFileTypes;
     RamObjectList *m_importFileTypes;

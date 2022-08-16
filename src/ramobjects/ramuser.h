@@ -46,6 +46,7 @@ protected:
 
 private:
     void construct();
+    void getCreateLists();
 
     RamObjectList *m_schedule;
 };

@@ -374,59 +374,56 @@ void RamProject::getCreateLists()
 {
     QJsonObject d = data();
 
-    QString shortName = d.value("shortName").toString();
-    QString name = d.value("name").toString();
-
     QString uuid = d.value("sequences").toString();
-    if (uuid == "") m_sequences = new RamObjectList(shortName + "-sqnc", name + " | Sequences", Sequence, RamObjectList::ListObject, this);
+    if (uuid == "") m_sequences = new RamObjectList("sqnc", "Sequences", Sequence, RamObjectList::ListObject, this);
     else m_sequences = RamObjectList::get( uuid, ObjectList);
     m_sequences->setParent(this);
     d.insert("sequences", m_sequences->uuid());
 
     uuid = d.value("assetGroups").toString();
-    if (uuid == "") m_assetGroups = new RamObjectList(shortName + "-asstgrp", name + " | Asset groups", AssetGroup, RamObjectList::ListObject, this);
+    if (uuid == "") m_assetGroups = new RamObjectList("asstgrp", "Asset groups", AssetGroup, RamObjectList::ListObject, this);
     else m_assetGroups = RamObjectList::get( uuid, ObjectList);
     m_assetGroups->setParent(this);
     d.insert("assetGroups", m_assetGroups->uuid());
 
     uuid = d.value("pipeline").toString();
-    if (uuid == "") m_pipeline = new RamObjectList(shortName + "-ppln", name + " | Pipeline", Pipe, RamObjectList::ListObject, this);
+    if (uuid == "") m_pipeline = new RamObjectList("ppln", "Pipeline", Pipe, RamObjectList::ListObject, this);
     else m_pipeline = RamObjectList::get( uuid, ObjectList);
     m_pipeline->setParent(this);
     d.insert("pipeline", m_pipeline->uuid());
 
     uuid = d.value("steps").toString();
-    if (uuid == "") m_steps = new RamObjectList(shortName + "-stp", name + " | Steps", Step, RamObjectList::ListObject, this);
+    if (uuid == "") m_steps = new RamObjectList("stp", "Steps", Step, RamObjectList::ListObject, this);
     else m_steps = RamObjectList::get( uuid, ObjectList);
     m_steps->setParent(this);
     d.insert("steps", m_steps->uuid());
 
     uuid = d.value("pipeFiles").toString();
-    if (uuid == "") m_pipeFiles = new RamObjectList(shortName + "-ppfl", name + " | Pipe files", PipeFile, RamObjectList::ListObject, this);
+    if (uuid == "") m_pipeFiles = new RamObjectList("ppfl", "Pipe files", PipeFile, RamObjectList::ListObject, this);
     else m_pipeFiles = RamObjectList::get( uuid, ObjectList);
     m_pipeFiles->setParent(this);
     d.insert("pipeFiles", m_pipeFiles->uuid());
 
     uuid = d.value("shots").toString();
-    if (uuid == "") m_shots = new RamItemTable(shortName + "-sht", name + " | Shots", Shot, this);
+    if (uuid == "") m_shots = new RamItemTable("sht", "Shots", Shot, this);
     else m_shots = RamItemTable::get( uuid );
     m_shots->setParent(this);
     d.insert("shots", m_shots->uuid());
 
     uuid = d.value("assets").toString();
-    if (uuid == "") m_assets = new RamItemTable(shortName + "-asst", name + " | Assets", Asset, this);
+    if (uuid == "") m_assets = new RamItemTable("asst", "Assets", Asset, this);
     else m_assets = RamItemTable::get( uuid );
     m_assets->setParent(this);
     d.insert("assets", m_assets->uuid());
 
     uuid = d.value("users").toString();
-    if (uuid == "") m_users = new RamObjectList(shortName + "-usr", name + " | Users", User, RamObjectList::ListObject, this);
+    if (uuid == "") m_users = new RamObjectList("usr", "Users", User, RamObjectList::ListObject, this);
     else m_users = RamObjectList::get( uuid, ObjectList);
     m_users->setParent(this);
     d.insert("users", m_users->uuid());
 
     uuid = d.value("users").toString();
-    if (uuid == "") m_scheduleComments = new RamObjectList(shortName + "-schdlcmmnt", name + " | Schedule comments", ScheduleComment, RamObjectList::ListObject, this);
+    if (uuid == "") m_scheduleComments = new RamObjectList("schdlcmmnt", "Schedule comments", ScheduleComment, RamObjectList::ListObject, this);
     else m_scheduleComments = RamObjectList::get( uuid, ObjectList);
     m_scheduleComments->setParent(this);
     d.insert("scheduleComments", m_scheduleComments->uuid());

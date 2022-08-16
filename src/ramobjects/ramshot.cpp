@@ -26,7 +26,12 @@ RamShot::RamShot(QString shortName, QString name, RamSequence *sequence):
     Q_ASSERT_X(sequence, "RamAsset(shortname, name, assetgroup)", "Sequence can't be null!");
     construct();
     insertData("sequence", sequence->uuid() );
-    m_assets = new RamObjectList(shortName + "-Assets", name + " | Assets", Asset, RamObjectList::ListObject, this);
+}
+
+RamShot::RamShot(QString uuid):
+    RamItem(uuid)
+{
+    construct();
 }
 
 RamSequence *RamShot::sequence() const
@@ -103,15 +108,6 @@ void RamShot::edit(bool show)
 
 // PROTECTED //
 
-RamShot::RamShot(QString uuid):
-    RamItem(uuid)
-{
-    construct();
-    // Get asset list
-    QJsonObject d = data();
-    m_assets = RamObjectList::get( d.value("assets").toString(), ObjectList);
-}
-
 QString RamShot::folderPath() const
 {
     return m_project->path(RamObject::ShotsFolder) + "/" + m_project->shortName() + "_S_" + shortName();
@@ -124,6 +120,20 @@ void RamShot::construct()
     m_icon = ":/icons/shot";
     m_editRole = ProjectAdmin;
     m_productionType = RamStep::ShotProduction;
+    getCreateLists();
+}
+
+void RamShot::getCreateLists()
+{
+    QJsonObject d = data();
+
+    QString uuid = d.value("assets").toString();
+    if (uuid == "") m_assets = new RamObjectList("assets", "Assets", Asset, RamObjectList::ListObject, this);
+    else m_assets = RamObjectList::get( uuid, ObjectList);
+    m_assets->setParent(this);
+    d.insert("assets", m_assets->uuid());
+
+    setData(d);
 }
 
 
