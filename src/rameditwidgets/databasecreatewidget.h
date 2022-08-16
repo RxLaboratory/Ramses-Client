@@ -4,6 +4,7 @@
 #include <QScrollArea>
 
 #include "duqf-widgets/duqffolderselectorwidget.h"
+#include "servereditwidget.h"
 
 class DatabaseCreateWidget : public QScrollArea
 {
@@ -24,10 +25,7 @@ private:
     QLineEdit *ui_shortNameEdit;
     QLineEdit *ui_npassword1Edit;
     QLineEdit *ui_npassword2Edit;
-    QLineEdit *ui_serverAddressEdit;
-    QCheckBox *ui_sslCheckBox;
-    QSpinBox *ui_updateFreqSpinBox;
-    QSpinBox *ui_timeoutSpinBox;
+    ServerEditWidget *ui_serverEdit;
     QPushButton *ui_createButton;
 };
 

@@ -1,13 +1,7 @@
 2- New login page & Settings data
 	- Update all app settings
 	- check updates: should not add a progress bar
-	
-3- New welcome page on first launch
-	- if no recent files in the database
-	- Options to:
-		- Create a new database
-		- Open an existing database
-		
+
 4- Ramses and editors
 	- Local data signal dataReset()
 	- connect dataReset to Ramses
@@ -23,9 +17,9 @@
 		get offline (voluntarily)
 		on quit (see mainwindow closeEvent)
 		
-6- simplify daemon & reimplment api
+6- simplify daemon & reimplement api
+
+7- Improve Icons
 
 7- Doc
-		
-		
 

@@ -133,6 +133,8 @@ void DatabaseCreateWidget::setupUi()
     ui_tabWidget->addTab(offlineWidget, QIcon(":/icons/folder"), tr("Offline"));
     QGridLayout *offlineLayout = new QGridLayout(offlineWidget);
     offlineLayout->setAlignment(Qt::AlignTop);
+    offlineLayout->setSpacing(3);
+    offlineLayout->setContentsMargins(0,0,0,0);
 
     QLabel *userLabel = new QLabel("User ID", dummy);
     offlineLayout->addWidget(userLabel, 0, 0);
@@ -156,50 +158,13 @@ void DatabaseCreateWidget::setupUi()
 
     QWidget *onlineWidget = new QWidget(ui_tabWidget);
     ui_tabWidget->addTab(onlineWidget, QIcon(":/icons/server-settings"), tr("Online (Sync)"));
-    QGridLayout *onlineLayout = new QGridLayout(onlineWidget);
+    QVBoxLayout *onlineLayout = new QVBoxLayout(onlineWidget);
     onlineLayout->setAlignment(Qt::AlignTop);
+    onlineLayout->setSpacing(3);
+    onlineLayout->setContentsMargins(0,0,0,0);
 
-    QLabel *adressLabel = new QLabel("Server Address", onlineWidget);
-    onlineLayout->addWidget(adressLabel, 0, 0);
-
-    QHBoxLayout *adressLayout = new QHBoxLayout();
-    adressLayout->setSpacing(3);
-    adressLayout->setContentsMargins(0,0,0,0);
-    onlineLayout->addLayout(adressLayout, 0, 1);
-
-    QLabel *protocolLabel = new QLabel("http(s)://", onlineWidget);
-    adressLayout->addWidget(protocolLabel);
-
-    ui_serverAddressEdit = new QLineEdit(onlineWidget);
-    ui_serverAddressEdit->setPlaceholderText("ramses.rxlab.io/yourAccountName");
-    adressLayout->addWidget(ui_serverAddressEdit);
-
-    QLabel *sslLabel = new QLabel(tr("Secure connexion"), this);
-    onlineLayout->addWidget(sslLabel, 1, 0);
-
-    ui_sslCheckBox = new QCheckBox("Use SSL", this);
-    ui_sslCheckBox->setChecked(true);
-    onlineLayout->addWidget(ui_sslCheckBox, 1, 1);
-
-    QLabel *updateFreqLabel = new QLabel(tr("Update every"), this);
-    onlineLayout->addWidget(updateFreqLabel, 2, 0);
-
-    ui_updateFreqSpinBox = new QSpinBox(this);
-    ui_updateFreqSpinBox->setMinimum(15);
-    ui_updateFreqSpinBox->setMaximum(600);
-    ui_updateFreqSpinBox->setValue(60);
-    ui_updateFreqSpinBox->setSuffix(" seconds");
-    onlineLayout->addWidget(ui_updateFreqSpinBox, 2, 1);
-
-    QLabel *timeOutLabel = new QLabel(tr("Server timeout"), this);
-    onlineLayout->addWidget(timeOutLabel, 3, 0);
-
-    ui_timeoutSpinBox = new QSpinBox(this);
-    ui_timeoutSpinBox->setMinimum(1);
-    ui_timeoutSpinBox->setMaximum(10);
-    ui_timeoutSpinBox->setValue(3);
-    ui_timeoutSpinBox->setSuffix(" seconds");
-    onlineLayout->addWidget(ui_timeoutSpinBox, 3, 1);
+    ui_serverEdit = new ServerEditWidget(onlineWidget);
+    onlineLayout->addWidget(ui_serverEdit);
 
     ui_createButton = new QPushButton(tr("Create and log in"));
     ui_createButton->setIcon(QIcon(":/icons/apply"));
