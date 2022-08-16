@@ -101,7 +101,7 @@ SOURCES += \
     rameditwidgets/projectlistmanagerwidget.cpp \
     rameditwidgets/schedulemanagerwidget.cpp \
     rameditwidgets/sequencelistmanagerwidget.cpp \
-    rameditwidgets/servereditwidget.cpp \
+    smallwidgets/servereditwidget.cpp \
     rameditwidgets/shotlistmanagerwidget.cpp \
     rameditwidgets/statelistmanagerwidget.cpp \
     docks/statisticswidget.cpp \
@@ -156,7 +156,6 @@ SOURCES += \
     duqf-widgets/settingswidget.cpp \
     rameditwidgets/filetypeeditwidget.cpp \
     smallwidgets/frameratewidget.cpp \
-    settingswidgets/localsettingswidget.cpp \
     pages/loginpage.cpp \
     main.cpp \
     mainwindow.cpp \
@@ -181,7 +180,6 @@ SOURCES += \
     ramobjects/ramuuid.cpp \
     smallwidgets/resolutionwidget.cpp \
     rameditwidgets/sequenceeditwidget.cpp \
-    settingswidgets/serversettingswidget.cpp \
     rameditwidgets/shoteditwidget.cpp \
     smallwidgets/shotscreationdialog.cpp \
     smallwidgets/statebox.cpp \
@@ -268,7 +266,7 @@ HEADERS += \
     rameditwidgets/projectlistmanagerwidget.h \
     rameditwidgets/schedulemanagerwidget.h \
     rameditwidgets/sequencelistmanagerwidget.h \
-    rameditwidgets/servereditwidget.h \
+    smallwidgets/servereditwidget.h \
     rameditwidgets/shotlistmanagerwidget.h \
     rameditwidgets/statelistmanagerwidget.h \
     docks/statisticswidget.h \
@@ -324,7 +322,6 @@ HEADERS += \
     duqf-widgets/settingswidget.h \
     rameditwidgets/filetypeeditwidget.h \
     smallwidgets/frameratewidget.h \
-    settingswidgets/localsettingswidget.h \
     pages/loginpage.h \
     mainwindow.h \
     rameditwidgets/objecteditwidget.h \
@@ -348,7 +345,6 @@ HEADERS += \
     ramobjects/ramuuid.h \
     smallwidgets/resolutionwidget.h \
     rameditwidgets/sequenceeditwidget.h \
-    settingswidgets/serversettingswidget.h \
     rameditwidgets/shoteditwidget.h \
     smallwidgets/shotscreationdialog.h \
     smallwidgets/statebox.h \
@@ -371,7 +367,6 @@ FORMS += \
     duqf-widgets/aboutdialog.ui \
     duqf-widgets/appearancesettingswidget.ui \
     duqf-widgets/duqffolderselectorwidget.ui \
-    settingswidgets/localsettingswidget.ui \
     pages/loginpage.ui \
     mainwindow.ui \
     pipeline-editor/pipelinewidget.ui \

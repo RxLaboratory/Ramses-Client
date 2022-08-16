@@ -5,7 +5,6 @@
 #include "progressbar.h"
 #include "pages/projectpage.h"
 #include "docks/consolewidget.h"
-#include "serversettingswidget.h"
 #include "daemonsettingswidget.h"
 #include "loginpage.h"
 #include "userprofilepage.h"
@@ -23,7 +22,6 @@
 #include "dbinterface.h"
 #include "daemon.h"
 #include "projectselectorwidget.h"
-#include "localsettingswidget.h"
 #include "duqf-widgets/duqftoolbarspacer.h"
 #include "duqf-widgets/duqflogtoolbutton.h"
 #include "duqf-widgets/duqfupdatedialog.h"
@@ -31,6 +29,7 @@
 #include "duqf-widgets/appearancesettingswidget.h"
 #include "duqf-app/app-version.h"
 #include "duqf-app/app-style.h"
+#include "duqf-app/app-utils.h"
 #include "duqf-widgets/duqftoolbarspacer.h"
 
 MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
@@ -123,10 +122,6 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     qDebug() << "> Loading setting pages";
 
     // Add settings
-    LocalSettingsWidget *lsw = new LocalSettingsWidget(this);
-    settingsWidget->addPage(lsw, "Local data", QIcon(":/icons/storage"));
-    ServerSettingsWidget *csw = new ServerSettingsWidget(this);
-    settingsWidget->addPage(csw, "Server", QIcon(":/icons/server-settings"));
     DaemonSettingsWidget *dsw = new DaemonSettingsWidget(this);
     settingsWidget->addPage(dsw, "Daemon", QIcon(":/icons/daemon"));
 

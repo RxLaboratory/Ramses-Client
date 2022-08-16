@@ -3,8 +3,6 @@
 
 #include "ui_appearancesettingswidget.h"
 
-#include "duqf-app/app-style.h"
-
 #include <QtDebug>
 #include <QSettings>
 #include <QApplication>
@@ -25,6 +23,7 @@ private slots:
     void on_toolsComboBox_currentIndexChanged(int index);
     void on_styleComboBox_currentIndexChanged(int index);
     void on_fontComboBox_currentFontChanged(const QFont &f);
+    void on_dateFormatBox_currentIndexChanged(int index);
 
 private:
     QSettings settings;
