@@ -166,7 +166,7 @@ QVariant RamScheduleTable::data(const QModelIndex &index, int role) const
         {
             RamObject *cObj = m_comments->at(i);
             RamScheduleComment *c = qobject_cast<RamScheduleComment*>( cObj );
-            if (c->date() == date)
+            if (c && c->date() == date)
             {
                 if ( role == Qt::DisplayRole )
                     return c->comment();

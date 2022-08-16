@@ -17,7 +17,7 @@ public:
 
     // METHODS //
 
-    RamItemTable(QString shortName, QString name, RamObjectList *steps, ObjectType type, QObject *parent = nullptr, DataListMode mode = ListObject);
+    RamItemTable(QString shortName, QString name, ObjectType type, QObject *parent = nullptr, DataListMode mode = ListObject);
     RamItemTable(QString uuid, QObject *parent = nullptr);
 
     // MODEL REIMPLEMENTATION
@@ -31,21 +31,22 @@ private slots:
     void removeStep(const QModelIndex &parent, int first, int last);
     void statusChanged(RamItem *item, RamStep *step);
 
+    // Used to update the list of steps
+    // when the first item is inserted.
+    void inserted();
+
 private:
 
     // METHODS //
-
     void construct();
-    // Connect submodels and relay events
     void connectEvents();
     // Utils
     void connectItem(RamItem *item);
     RamStep *stepAt(int col) const;
     int stepCol(RamStep *step) const;
 
-    // ATTRIBUTES //
+    RamObjectList *m_steps = nullptr;
 
-    RamObjectList *m_steps;
 };
 
 #endif // RAMITEMTABLE_H

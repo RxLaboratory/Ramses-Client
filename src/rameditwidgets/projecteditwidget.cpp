@@ -34,7 +34,7 @@ void ProjectEditWidget::reInit(RamObject *o)
         ui_framerateWidget->setFramerate(m_project->framerate());
         ui_deadlineEdit->setDate( m_project->deadline() );
 
-        if (!m_project->pathIsDefault()) ui_folderSelector->setPath( m_project->path() );
+        ui_folderSelector->setPath( m_project->path() );
         ui_folderSelector->setPlaceHolderText( m_project->defaultPath() );
         QString p = m_project->path();
         if (p.count() > 45) p = p.replace(0, p.count()-45, "(...)");
@@ -64,6 +64,7 @@ void ProjectEditWidget::setResolution(int w, int h)
 
 void ProjectEditWidget::setFramerate(double f)
 {
+    if (!m_project) return;
     m_project->setFramerate(f);
 }
 
@@ -120,8 +121,7 @@ void ProjectEditWidget::reinitPath()
 {
     QSignalBlocker b(m_project);
     m_project->resetDbFolderPath();
-    if (!m_project->pathIsDefault()) ui_folderSelector->setPath( m_project->path() );
-    else ui_folderSelector->setPath( "" );
+    ui_folderSelector->setPath( m_project->path() );
     ui_folderSelector->setPlaceHolderText( m_project->defaultPath() );
     ui_folderLabel->setText( m_project->path() );
 }

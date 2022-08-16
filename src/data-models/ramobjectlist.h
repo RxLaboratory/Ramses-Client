@@ -93,6 +93,7 @@ protected:
     static RamObjectList *m_emptyList;
 
     virtual QJsonObject reloadData() override;
+    virtual void saveData();
 
     // DATA
     // For performance reasons, store both a list and a map
@@ -102,6 +103,8 @@ protected:
     // UTILS
     virtual void connectObject(RamObject *obj);
     int objRow(RamObject *obj) const;
+
+    ObjectType m_contentType;
 
 private slots:
     // Emits dataChanged() and headerChanged()
@@ -117,7 +120,6 @@ private:
     void connectEvents();
 
     DataListMode m_dataMode = ListObject;
-    ObjectType m_contentType;
 };
 
 class RamObject;

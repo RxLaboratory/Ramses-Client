@@ -118,7 +118,7 @@ void ScheduleManagerWidget::projectChanged(RamProject *project)
 
     loadSettings();
 
-    connect (m_project, SIGNAL(changed(RamObject*)),this,SLOT(projectUpdated(RamObject*)));//*/
+    connect (m_project, &RamProject::dataChanged,this, &ScheduleManagerWidget::projectUpdated);//*/
 }
 
 void ScheduleManagerWidget::projectUpdated(RamObject *projObj)

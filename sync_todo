@@ -1,6 +1,6 @@
 4- Ramses and editors
-	- Local data signal dataReset()
-	- connect dataReset to Ramses
+	- sublists sont nommées NEW -> update when set name et shortname ? ou les virer
+	- commentaires pas affichés dans les listes
 	- test all editors
 	
 5A - Move all settings to database (RamSettings object)

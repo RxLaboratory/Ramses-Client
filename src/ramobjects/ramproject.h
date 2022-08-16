@@ -88,7 +88,6 @@ public:
     void setFolderPath(const QString &newFolderPath);
     void resetDbFolderPath();
     QString defaultPath() const;
-    bool pathIsDefault() const;
     bool pathIsDefault(QString p) const;
 
     QString dbFolderPath() const;

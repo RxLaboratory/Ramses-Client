@@ -91,16 +91,9 @@ void RamObjectListComboBox::setObject(RamObject *obj)
 
 RamObject *RamObjectListComboBox::object(int i)
 {
-    if (m_isFilterBox)
-    {
-        RamObjectFilterList *m = reinterpret_cast<RamObjectFilterList*>(model());
-        return m->at(i);
-    }
-    else
-    {
-        RamObjectList *m = qobject_cast<RamObjectList*>(model());
-        return m->at(i);
-    }
+    quintptr iptr = model()->data( model()->index(i, 0), Qt::UserRole).toULongLong();
+    if (iptr == 0) return nullptr;
+    return reinterpret_cast<RamObject*>(iptr);
 }
 
 QString RamObjectListComboBox::uuid(int i)

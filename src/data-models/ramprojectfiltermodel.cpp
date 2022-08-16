@@ -7,7 +7,7 @@ RamProjectFilterModel::RamProjectFilterModel(QObject *parent) : QSortFilterProxy
     RamObjectList *projects = Ramses::instance()->projects();
     this->setDynamicSortFilter(true);
     this->setSourceModel(projects);
-    connect(projects, SIGNAL(dataChanged(const QModelIndex&, const QModelIndex&)), this, SLOT(doInvalidateFilter()));
+    connect(projects, SIGNAL(dataChanged(QModelIndex,QModelIndex)), this, SLOT(doInvalidateFilter()));
     connect(projects, SIGNAL(modelReset()), this, SLOT(doInvalidateFilter()));
 }
 

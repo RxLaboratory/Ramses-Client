@@ -125,7 +125,7 @@ void RamProject::updateAspectRatio(const qreal &pixelAspect)
 
 void RamProject::setAspectRatio(const qreal &aspectRatio)
 {
-    insertData("aspectRation", aspectRatio);
+    insertData("aspectRatio", aspectRatio);
 }
 
 QDate RamProject::deadline() const
@@ -244,11 +244,6 @@ QString RamProject::defaultPath() const
     return Ramses::instance()->path(RamObject::ProjectsFolder) + "/" + shortName();
 }
 
-bool RamProject::pathIsDefault() const
-{
-    return pathIsDefault(folderPath());
-}
-
 bool RamProject::pathIsDefault(QString p) const
 {
     return p == "" || p.toLower() == "auto";
@@ -344,23 +339,25 @@ void RamProject::computeEstimation()
 
 QString RamProject::folderPath() const
 {
-    if (pathIsDefault())
-    {
-        QString p = dbFolderPath();
-        if (pathIsDefault(p)) return defaultPath();
-        return p;
-    }
-
-    // Get path
+    // Get path in settings first
     QSettings settings;
     settings.beginGroup("projects");
     settings.beginGroup(m_uuid);
     QString p = settings.value("path", "no-path").toString();
     settings.endGroup();
     settings.endGroup();
-    if (p != "no-path") return p;
 
-    return defaultPath();
+    if (p == "no-path")
+    {
+        // Then return the DB path
+        p = dbFolderPath();
+    }
+
+    if (pathIsDefault(p))
+    {
+        return defaultPath();
+    }
+    else return p;
 }
 
 // PRIVATE //
@@ -411,13 +408,13 @@ void RamProject::getCreateLists()
     d.insert("pipeFiles", m_pipeFiles->uuid());
 
     uuid = d.value("shots").toString();
-    if (uuid == "") m_shots = new RamItemTable(shortName + "-sht", name + " | Shots", m_steps, Shot, this);
+    if (uuid == "") m_shots = new RamItemTable(shortName + "-sht", name + " | Shots", Shot, this);
     else m_shots = RamItemTable::get( uuid );
     m_shots->setParent(this);
     d.insert("shots", m_shots->uuid());
 
     uuid = d.value("assets").toString();
-    if (uuid == "") m_assets = new RamItemTable(shortName + "-asst", name + " | Assets", m_steps, Asset, this);
+    if (uuid == "") m_assets = new RamItemTable(shortName + "-asst", name + " | Assets", Asset, this);
     else m_assets = RamItemTable::get( uuid );
     m_assets->setParent(this);
     d.insert("assets", m_assets->uuid());

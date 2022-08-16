@@ -1,4 +1,5 @@
 #include "ramitemtable.h"
+#include "ramproject.h"
 #include "ramstate.h"
 #include "ramstatus.h"
 
@@ -14,13 +15,10 @@ RamItemTable *RamItemTable::c(RamObjectList *o)
     return qobject_cast<RamItemTable*>(o);
 }
 
-RamItemTable::RamItemTable(QString shortName, QString name, RamObjectList *steps, ObjectType type, QObject *parent, DataListMode mode):
+RamItemTable::RamItemTable(QString shortName, QString name, ObjectType type, QObject *parent, DataListMode mode):
     RamObjectList(shortName, name, type, mode, parent)
 {
     construct();
-    m_steps = steps;
-    if (mode == ListObject)
-        this->insertData("steps", steps->uuid());
     connectEvents();
 }
 
@@ -28,14 +26,14 @@ RamItemTable::RamItemTable(QString uuid, QObject *parent):
     RamObjectList(uuid, parent)
 {
     construct();
-    // Populate the list of steps
-    QJsonObject d = RamAbstractObject::data();
-    m_steps = RamObjectList::get( d.value("steps").toString(), ObjectList );
+    connectEvents();
 }
 
 int RamItemTable::columnCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent);
+
+    if (!m_steps) return 0;
     return m_steps->rowCount() + 1;
 }
 
@@ -215,6 +213,22 @@ void RamItemTable::statusChanged(RamItem *item, RamStep *step)
     emit headerDataChanged(Qt::Horizontal, col,col);
 }
 
+void RamItemTable::inserted()
+{
+    if (m_steps) return;
+
+    RamItem *i = RamItem::c( m_objectList.first() );
+    Q_ASSERT(i);
+
+    RamProject *p = i->project();
+    Q_ASSERT(p);
+
+    m_steps = p->steps();
+
+    connect( m_steps, SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(insertStep(QModelIndex,int,int)));
+    connect( m_steps, SIGNAL(rowsAboutToBeRemoved(QModelIndex,int,int)), this, SLOT(removeStep(QModelIndex,int,int)));
+}
+
 // PRIVATE //
 
 void RamItemTable::construct()
@@ -225,8 +239,7 @@ void RamItemTable::construct()
 
 void RamItemTable::connectEvents()
 {
-    connect( m_steps, SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(insertStep(QModelIndex,int,int)));
-    connect( m_steps, SIGNAL(rowsAboutToBeRemoved(QModelIndex,int,int)), this, SLOT(removeStep(QModelIndex,int,int)));
+    connect( this, &RamItemTable::rowsInserted, this, &RamItemTable::inserted);
 }
 
 void RamItemTable::connectItem(RamItem *item)
@@ -236,6 +249,7 @@ void RamItemTable::connectItem(RamItem *item)
 
 RamStep *RamItemTable::stepAt(int col) const
 {
+    if (!m_steps) return nullptr;
     quintptr stepIptr = m_steps->data(m_steps->index(col-1, 0), Qt::UserRole).toULongLong();
     RamStep *step = reinterpret_cast<RamStep*>( stepIptr );
     return step;
@@ -243,6 +257,7 @@ RamStep *RamItemTable::stepAt(int col) const
 
 int RamItemTable::stepCol(RamStep *step) const
 {
+    if (!m_steps) return -1;
     for (int i = 0; i < m_steps->rowCount(); i++)
     {
         RamObject *obj = reinterpret_cast<RamObject*>( m_steps->data( m_steps->index(i, 0), Qt::UserRole).toULongLong() );

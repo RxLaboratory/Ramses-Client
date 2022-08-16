@@ -197,6 +197,8 @@ void ObjectListEditWidget::removeSelectedObjects()
     {
         for (int i = objs.count() -1 ; i >= 0; i--)
         {
+            qDebug() << ">>>>>>>>>>> remove ";
+            qDebug() << objs.at(i);
             objs.at(i)->remove();
         }
     }

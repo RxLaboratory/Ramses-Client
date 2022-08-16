@@ -183,6 +183,9 @@ void RamObjectList::insertObject(int i, RamObject *obj)
     m_objects[obj->uuid()] = obj;
     connectObject(obj);
 
+    // Save data
+    saveData();
+
     endInsertRows();
 }
 
@@ -221,6 +224,8 @@ RamObject *RamObjectList::takeObject(int i)
 
     // remove from map
     if( m_objects.contains(obj->uuid()) ) m_objects.remove(obj->uuid());
+
+    saveData();
 
     endRemoveRows();
     return obj;
@@ -297,6 +302,25 @@ QJsonObject RamObjectList::reloadData()
     endResetModel();
 
     return d;
+}
+
+void RamObjectList::saveData()
+{
+    if (m_dataMode == ListObject)
+    {
+        QJsonObject d = RamAbstractObject::data();
+
+        QJsonArray arr;
+
+        for (int i = 0; i < m_objectList.count(); i++)
+        {
+            arr.append( m_objectList.at(i)->uuid() );
+        }
+
+        d.insert("list", arr);
+
+        RamAbstractObject::setData(d);
+    }
 }
 
 void RamObjectList::removeAll(RamObject *obj)

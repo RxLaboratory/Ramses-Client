@@ -224,13 +224,13 @@ void LocalDataInterface::setObjectData(QString uuid, QString table, QString data
 
 void LocalDataInterface::removeObject(QString uuid, QString table) const
 {
-    QString q = "UPDATE %1 SET removed = 0 WHERE uuid = '%2';";
+    QString q = "UPDATE %1 SET removed = 1 WHERE uuid = '%2';";
     query( q.arg(table, uuid) );
 }
 
 void LocalDataInterface::restoreObject(QString uuid, QString table) const
 {
-    QString q = "UPDATE %1 SET removed = 1 WHERE uuid = '%2';";
+    QString q = "UPDATE %1 SET removed = 0 WHERE uuid = '%2';";
     query( q.arg(table, uuid) );
 }
 
@@ -306,7 +306,7 @@ QSqlQuery LocalDataInterface::query(QString q) const
     QSqlDatabase db = QSqlDatabase::database("localdata");
     QSqlQuery qry = QSqlQuery(db);
 
-    log(tr("Querying:") + "\n" + q, DuQFLog::Data);
+    //log(tr("Querying:") + "\n" + q, DuQFLog::Data);
 
     if (!qry.exec(q))
     {
