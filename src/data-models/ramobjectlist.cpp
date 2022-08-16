@@ -34,6 +34,11 @@ RamObjectList::RamObjectList(QString shortName, QString name, QObject *parent, D
     m_dataMode = mode;
 
     m_tableName = shortName;
+
+    if (mode == Table)
+    {
+        connect(DBInterface::instance(), &DBInterface::dataReset, this, &RamObjectList::reload);
+    }
 }
 
 // QAbstractTableModel Reimplementation

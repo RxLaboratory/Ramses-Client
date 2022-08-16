@@ -3,7 +3,6 @@
 #include "itemtablemanagerwidget.h"
 #include "processmanager.h"
 #include "progressbar.h"
-#include "pages/projectpage.h"
 #include "docks/consolewidget.h"
 #include "daemonsettingswidget.h"
 #include "loginpage.h"
@@ -137,44 +136,44 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     mainStack->addWidget(up);
 
     // admin
-    SettingsWidget *adminPage = new SettingsWidget("Administration", this);
-    adminPage->titleBar()->setObjectName("adminToolBar");
-    adminPage->showReinitButton(false);
-    mainStack->addWidget(adminPage);
+    ui_adminPage = new SettingsWidget("Administration", this);
+    ui_adminPage->titleBar()->setObjectName("adminToolBar");
+    ui_adminPage->showReinitButton(false);
+    mainStack->addWidget(ui_adminPage);
     // Admin tabs
     qDebug() << "> Admin";
     UserListManagerWidget *userManager = new UserListManagerWidget(this);
-    adminPage->addPage(userManager,"Users", QIcon(":/icons/users"));
-    adminPage->titleBar()->insertLeft(userManager->menuButton());
+    ui_adminPage->addPage(userManager,"Users", QIcon(":/icons/users"));
+    ui_adminPage->titleBar()->insertLeft(userManager->menuButton());
     qDebug() << "  > users ok";
     ProjectListManagerWidget *projectManager = new ProjectListManagerWidget(this);
-    adminPage->addPage(projectManager, "Projects", QIcon(":/icons/projects"));
-    adminPage->titleBar()->insertLeft(projectManager->menuButton());
+    ui_adminPage->addPage(projectManager, "Projects", QIcon(":/icons/projects"));
+    ui_adminPage->titleBar()->insertLeft(projectManager->menuButton());
     qDebug() << "  > projects ok";
     TemplateStepListManagerWidget *templateStepManager = new TemplateStepListManagerWidget(this);
-    adminPage->addPage(templateStepManager, "Template Steps", QIcon(":/icons/steps"));
-    adminPage->titleBar()->insertLeft(templateStepManager->menuButton());
+    ui_adminPage->addPage(templateStepManager, "Template Steps", QIcon(":/icons/steps"));
+    ui_adminPage->titleBar()->insertLeft(templateStepManager->menuButton());
     qDebug() << "  > template steps ok";
     TemplateAssetGroupListManagerWidget *templateAssetGroupManager = new TemplateAssetGroupListManagerWidget(this);
-    adminPage->addPage(templateAssetGroupManager, "Template Asset Groups", QIcon(":/icons/asset-groups"));
-    adminPage->titleBar()->insertLeft(templateAssetGroupManager->menuButton());
+    ui_adminPage->addPage(templateAssetGroupManager, "Template Asset Groups", QIcon(":/icons/asset-groups"));
+    ui_adminPage->titleBar()->insertLeft(templateAssetGroupManager->menuButton());
     qDebug() << "  > template assets ok";
     StateListManagerWidget *stateManager = new StateListManagerWidget(this);
-    adminPage->addPage(stateManager, "States", QIcon(":/icons/state"));
-    adminPage->titleBar()->insertLeft(stateManager->menuButton());
+    ui_adminPage->addPage(stateManager, "States", QIcon(":/icons/state"));
+    ui_adminPage->titleBar()->insertLeft(stateManager->menuButton());
     qDebug() << "  > states ok";
     FileTypeListManagerWidget *fileTypeManager = new FileTypeListManagerWidget(this);
-    adminPage->addPage(fileTypeManager, "File Types", QIcon(":/icons/files"));
-    adminPage->titleBar()->insertLeft(fileTypeManager->menuButton());
+    ui_adminPage->addPage(fileTypeManager, "File Types", QIcon(":/icons/files"));
+    ui_adminPage->titleBar()->insertLeft(fileTypeManager->menuButton());
     qDebug() << "  > file types ok";
     ApplicationListManagerWidget *applicationManager = new ApplicationListManagerWidget(this);
-    adminPage->addPage(applicationManager, "Applications", QIcon(":/icons/applications"));
-    adminPage->titleBar()->insertLeft(applicationManager->menuButton());
+    ui_adminPage->addPage(applicationManager, "Applications", QIcon(":/icons/applications"));
+    ui_adminPage->titleBar()->insertLeft(applicationManager->menuButton());
     qDebug() << "  > applications ok";//*/
 
     // Project settings
-    ProjectPage *projectSettingsPage = new ProjectPage(this);
-    mainStack->addWidget(projectSettingsPage);
+    ui_projectSettingsPage = new ProjectPage(this);
+    mainStack->addWidget(ui_projectSettingsPage);
 
     // Pipeline editor
 #ifndef DEACTIVATE_PIPELINE
@@ -280,36 +279,7 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
 
     qDebug() << "> Connecting events";
 
-    // Connect events
-    connect(ProcessManager::instance(), &ProcessManager::freezeUI, this, &MainWindow::freezeUI);
-    connect(actionLogIn,SIGNAL(triggered()), this, SLOT(loginAction()));
-    connect(actionLogOut,SIGNAL(triggered()), this, SLOT(logoutAction()));
-    connect(actionUserProfile,SIGNAL(triggered()), this, SLOT(userProfile()));
-    connect(actionUserFolder,SIGNAL(triggered()), this, SLOT(revealUserFolder()));
-    connect(actionAdmin,SIGNAL(triggered(bool)), this, SLOT(admin(bool)));
-    connect(actionProjectSettings,SIGNAL(triggered(bool)), this, SLOT(projectSettings(bool)));
-    connect(actionPipeline, SIGNAL(triggered(bool)), this, SLOT(pipeline(bool)));
-    connect(actionShots,SIGNAL(triggered(bool)), this, SLOT(shots(bool)));
-    connect(actionAssets,SIGNAL(triggered(bool)), this, SLOT(assets(bool)));
-    connect(actionSchedule,SIGNAL(triggered(bool)), this, SLOT(schedule(bool)));
-    connect(actionStatistics,SIGNAL(triggered(bool)), ui_statsDockWidget, SLOT(setVisible(bool)));
-    connect(ui_statsDockWidget,SIGNAL(visibilityChanged(bool)), actionStatistics, SLOT(setChecked(bool)));
-    connect(ui_consoleDockWidget,SIGNAL(visibilityChanged(bool)), ui_consoleButton, SLOT(setChecked(bool)));
-    connect(ui_consoleButton,SIGNAL(clicked(bool)), ui_consoleDockWidget, SLOT(setVisible(bool)));
-    connect(actionTimeline,SIGNAL(triggered(bool)), ui_timelineDockWidget, SLOT(setVisible(bool)));
-    connect(ui_timelineDockWidget,SIGNAL(visibilityChanged(bool)), actionTimeline, SLOT(setChecked(bool)));
-    connect(adminPage, SIGNAL(closeRequested()), this, SLOT(home()));
-    connect(projectSettingsPage, SIGNAL(closeRequested()), this, SLOT(home()));
-    connect(ui_networkButton,SIGNAL(clicked()),this, SLOT(networkButton_clicked()));
-    connect(ui_refreshButton, SIGNAL(clicked()), Ramses::instance(), SLOT(refresh()));
-    connect(mainStack,SIGNAL(currentChanged(int)), this, SLOT(pageChanged(int)));
-    connect(DuQFLogger::instance(), &DuQFLogger::newLog, this, &MainWindow::log);
-    connect(Daemon::instance(), &Daemon::raise, this, &MainWindow::raise);
-    connect(Daemon::instance(), &Daemon::raise, this, &MainWindow::show);
-    connect(Ramses::instance(),&Ramses::loggedIn, this, &MainWindow::loggedIn);
-    connect(Ramses::instance(),&Ramses::loggedOut, this, &MainWindow::loggedOut);
-    connect(Ramses::instance(), SIGNAL(currentProjectChanged(RamProject*)), this, SLOT(currentProjectChanged(RamProject*)));
-    connect(DBInterface::instance(),&DBInterface::connectionStatusChanged, this, &MainWindow::dbiConnectionStatusChanged);
+    connectEvents();
 
     // Set style
 
@@ -327,6 +297,50 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     ui_propertiesDockWidget->hide();
     ui_statsDockWidget->hide();
     ui_timelineDockWidget->hide();
+}
+
+void MainWindow::connectEvents()
+{
+    // Connect events
+    connect(ProcessManager::instance(), &ProcessManager::freezeUI, this, &MainWindow::freezeUI);
+
+    // Toolbar and other tools
+    connect(actionLogIn,SIGNAL(triggered()), this, SLOT(loginAction()));
+    connect(actionLogOut,SIGNAL(triggered()), this, SLOT(logoutAction()));
+    connect(actionUserProfile,SIGNAL(triggered()), this, SLOT(userProfile()));
+    connect(actionUserFolder,SIGNAL(triggered()), this, SLOT(revealUserFolder()));
+    connect(actionAdmin,SIGNAL(triggered(bool)), this, SLOT(admin(bool)));
+    connect(actionProjectSettings,SIGNAL(triggered(bool)), this, SLOT(projectSettings(bool)));
+    connect(actionPipeline, SIGNAL(triggered(bool)), this, SLOT(pipeline(bool)));
+    connect(actionShots,SIGNAL(triggered(bool)), this, SLOT(shots(bool)));
+    connect(actionAssets,SIGNAL(triggered(bool)), this, SLOT(assets(bool)));
+    connect(actionSchedule,SIGNAL(triggered(bool)), this, SLOT(schedule(bool)));
+
+    // Docks
+    connect(actionStatistics,SIGNAL(triggered(bool)), ui_statsDockWidget, SLOT(setVisible(bool)));
+    connect(ui_statsDockWidget,SIGNAL(visibilityChanged(bool)), actionStatistics, SLOT(setChecked(bool)));
+    connect(ui_consoleDockWidget,SIGNAL(visibilityChanged(bool)), ui_consoleButton, SLOT(setChecked(bool)));
+    connect(ui_consoleButton,SIGNAL(clicked(bool)), ui_consoleDockWidget, SLOT(setVisible(bool)));
+    connect(actionTimeline,SIGNAL(triggered(bool)), ui_timelineDockWidget, SLOT(setVisible(bool)));
+    connect(ui_timelineDockWidget,SIGNAL(visibilityChanged(bool)), actionTimeline, SLOT(setChecked(bool)));
+
+    // Pages
+    connect(ui_adminPage, SIGNAL(closeRequested()), this, SLOT(home()));
+    connect(ui_projectSettingsPage, SIGNAL(closeRequested()), this, SLOT(home()));
+    connect(ui_networkButton,SIGNAL(clicked()),this, SLOT(networkButton_clicked()));
+
+    // Other buttons
+    connect(ui_refreshButton, SIGNAL(clicked()), Ramses::instance(), SLOT(refresh()));
+    connect(mainStack,SIGNAL(currentChanged(int)), this, SLOT(pageChanged(int)));
+
+    // Misc
+    connect(DuQFLogger::instance(), &DuQFLogger::newLog, this, &MainWindow::log);
+    connect(Daemon::instance(), &Daemon::raise, this, &MainWindow::raise);
+    connect(Daemon::instance(), &Daemon::raise, this, &MainWindow::show);
+    connect(Ramses::instance(),&Ramses::loggedIn, this, &MainWindow::loggedIn);
+    connect(Ramses::instance(),&Ramses::loggedOut, this, &MainWindow::loggedOut);
+    connect(Ramses::instance(), SIGNAL(currentProjectChanged(RamProject*)), this, SLOT(currentProjectChanged(RamProject*)));
+    connect(DBInterface::instance(),&DBInterface::connectionStatusChanged, this, &MainWindow::dbiConnectionStatusChanged);
 }
 
 void MainWindow::setPropertiesDockWidget(QWidget *w, QString title, QString icon)
@@ -782,7 +796,20 @@ void MainWindow::loggedIn()
 
 void MainWindow::loggedOut(QString reason)
 {
-    if (reason == "") reason = "Unknown reason... Sorry, there's a glitch in the Matrix.";
+    actionLogIn->setVisible(true);
+    actionLogOut->setVisible(false);
+    currentUserChanged();
+    if (mainStack->currentIndex() != 1) mainStack->setCurrentIndex(0);
+
+    if (reason == "") reason = tr("You've been logged out.");
+    else reason = tr("You've been logged out.\nReason:") + "\n\n" + reason;
+    // Warn user
+    QMessageBox::information(this,
+                             tr("Log out"),
+                             reason,
+                             QMessageBox::Ok,
+                             QMessageBox::Ok);
+
     /*// Warn user
     QMessageBox::information(this,
                              "Log out",

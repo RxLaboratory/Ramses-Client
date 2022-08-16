@@ -12,6 +12,7 @@
 #include <QMessageBox>
 #include <QSystemTrayIcon>
 
+#include "projectpage.h"
 #include "ui_mainwindow.h"
 
 #include "duqf-widgets/settingswidget.h"
@@ -36,6 +37,8 @@ public slots:
     void hidePropertiesDock();
 
 private:
+    void connectEvents();
+
     // ========= RxOT UI ==============
     /**
      * @brief duqf_checkUpdate Called once to check if an update is available
@@ -73,6 +76,9 @@ private:
     QDockWidget *ui_timelineDockWidget;
     DuQFDockTitle *ui_statsTitle;
     DuQFDockTitle *ui_propertiesTitle;
+
+    SettingsWidget *ui_adminPage;
+    ProjectPage *ui_projectSettingsPage;
 
     QMenu *ui_userMenu;
     DuQFAutoSizeToolButton *ui_userButton;

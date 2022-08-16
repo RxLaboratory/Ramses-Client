@@ -327,6 +327,7 @@ void LoginPage::setupUi()
     layout->addStretch();
 
     ui_stackWiget = new QStackedWidget(this);
+    ui_stackWiget->setMaximumWidth(256);
     layout->addWidget(ui_stackWiget);
 
     ui_bigButtonWidget = new QWidget(this);

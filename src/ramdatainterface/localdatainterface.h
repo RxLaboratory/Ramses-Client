@@ -69,6 +69,9 @@ public:
     const QString &dataFile() const;
     ServerConfig setDataFile(const QString &file);
 
+signals:
+    void dataReset();
+
 protected:
     static LocalDataInterface *_instance;
 

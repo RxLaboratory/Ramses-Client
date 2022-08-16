@@ -276,6 +276,8 @@ ServerConfig LocalDataInterface::setDataFile(const QString &file)
 
     m_dataFile = file;
 
+    emit dataReset();
+
     return serverConfig();
 }
 

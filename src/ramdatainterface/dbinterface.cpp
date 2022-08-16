@@ -113,6 +113,8 @@ DBInterface::DBInterface(QObject *parent) : DuQFLoggerObject("Database Interface
     m_ldi = LocalDataInterface::instance();
     // REMOTE
     m_rsi = RamServerInterface::instance();
+
+    connect(m_ldi, &LocalDataInterface::dataReset, this, &DBInterface::dataReset);
 }
 
 void DBInterface::connectEvents()

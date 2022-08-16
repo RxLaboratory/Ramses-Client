@@ -1,6 +1,3 @@
-2- New login page & Settings data
-	- check updates: should not add a progress bar
-
 4- Ramses and editors
 	- Local data signal dataReset()
 	- connect dataReset to Ramses
