@@ -13,12 +13,7 @@ public:
 
     // STATIC //
 
-    /**
-     * @brief application return an existing Application
-     * @param uuid
-     * @return
-     */
-    static RamApplication *getObject(QString uuid, bool constructNew = false);
+    static RamApplication *get(QString uuid);
     static RamApplication *c(RamObject *o);
 
     // OTHER //
@@ -29,6 +24,11 @@ public:
      * @param name
      */
     RamApplication(QString shortName, QString name);
+    /**
+     * @brief RamApplication constructs a RamApplication from the database
+     * @param uuid
+     */
+    RamApplication(QString uuid);
 
     QString executableFilePath() const;
     void setExecutableFilePath(const QString &executableFilePath);
@@ -48,13 +48,6 @@ public:
 public slots:
     void unassignFileType(RamFileType *ft);
     virtual void edit(bool show = true) override;
-
-protected:
-    /**
-     * @brief RamApplication constructs a RamApplication from the database
-     * @param uuid
-     */
-    RamApplication(QString uuid);
 
 private:
     void construct();

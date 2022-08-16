@@ -14,14 +14,14 @@ public:
 
     // STATIC //
 
-    static RamAssetGroup *getObject(QString uuid, bool constructNew = false);
+    static RamAssetGroup *get(QString uuid);
     static RamAssetGroup *c(RamObject *o);
     static RamAssetGroup *createFromTemplate(RamTemplateAssetGroup *tempAG, RamProject *project);
 
     // OTHER //
 
-    // Actual group
     explicit RamAssetGroup(QString shortName, QString name, RamProject *project);
+    RamAssetGroup(QString uuid);
 
     int assetCount() const;
     RamProject *project() const;
@@ -32,7 +32,6 @@ public slots:
     virtual void edit(bool show = true) override;
 
 protected:
-    RamAssetGroup(QString uuid);
     virtual QString folderPath() const override;
 
 private:

@@ -4,11 +4,9 @@
 
 // STATIC //
 
-RamSequence *RamSequence::getObject(QString uuid, bool constructNew)
+RamSequence *RamSequence::get(QString uuid)
 {
-    RamObject *obj = RamObject::getObject(uuid);
-    if (!obj && constructNew) return new RamSequence( uuid );
-    return qobject_cast<RamSequence*>( obj );
+    return c( RamObject::get(uuid, Sequence) );
 }
 
 RamSequence *RamSequence::c(RamObject *o)
@@ -23,6 +21,17 @@ RamSequence::RamSequence(QString shortName, QString name, RamProject *project):
 {
     construct();
     setProject(project);
+}
+
+RamSequence::RamSequence(QString uuid):
+   RamObject(uuid, Sequence)
+{
+    construct();
+
+    QJsonObject d = data();
+
+    QString projUuid = d.value("project").toString();
+    setProject( RamProject::get(projUuid) );
 }
 
 int RamSequence::shotCount() const
@@ -64,19 +73,6 @@ void RamSequence::edit(bool show)
     if (!ui_editWidget) setEditWidget(new SequenceEditWidget(this));
 
     if (show) showEdit();
-}
-
-// PROTECTED //
-
-RamSequence::RamSequence(QString uuid):
-   RamObject(uuid, Sequence)
-{
-    construct();
-
-    QJsonObject d = data();
-
-    QString projUuid = d.value("project").toString();
-    setProject( RamProject::getObject(projUuid, true) );
 }
 
 // PRIVATE //

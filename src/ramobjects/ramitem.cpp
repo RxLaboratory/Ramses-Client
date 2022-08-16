@@ -1,15 +1,12 @@
 #include "ramitem.h"
 
-#include "ramnamemanager.h"
 #include "ramses.h"
 
 // STATIC //
 
-RamItem *RamItem::getObject(QString uuid, bool constructNew)
+RamItem *RamItem::get(QString uuid)
 {
-    RamObject *obj = RamObject::getObject(uuid);
-    if (!obj && constructNew) return new RamItem( uuid );
-    return qobject_cast<RamItem*>( obj );
+    return c( RamObject::get(uuid, Item) );
 }
 
 RamItem *RamItem::c(RamObject *o)
@@ -26,6 +23,32 @@ RamItem::RamItem(QString shortName, QString name, RamStep::Type productionType, 
 
     m_project = project;
     m_productionType = productionType;
+}
+
+RamItem::RamItem(QString uuid):
+    RamObject(uuid, ObjectType::Item)
+{
+    construct();
+
+    // Set the project this item belongs to
+    QJsonObject d = data();
+    m_project = RamProject::get(d.value("project").toString() );
+    this->setParent( m_project );
+
+    // Set the type
+    m_productionType = RamStep::stepTypeFromName( d.value("productionType").toString("AssetProduction") );
+
+    // Get the status history
+    QJsonObject history = d.value("statusHistory").toObject();
+    QStringList stepUuids = history.keys();
+    for (int i = 0; i < stepUuids.count(); i++)
+    {
+        QString stepUuid = stepUuids[i];
+        QString historyUuid = history.value(stepUuid).toString();
+        RamStepStatusHistory *stepHistory = RamStepStatusHistory::get(historyUuid);
+        m_history[ stepUuid ] = stepHistory;
+        connectHistory(stepHistory);
+    }
 }
 
 RamProject *RamItem::project() const
@@ -190,32 +213,6 @@ bool RamItem::hasState(RamObject *state, RamStep *step)
 }
 
 // PROTECTED //
-
-RamItem::RamItem(QString uuid):
-    RamObject(uuid, ObjectType::Item)
-{
-    construct();
-
-    // Set the project this item belongs to
-    QJsonObject d = data();
-    m_project = RamProject::getObject(d.value("project").toString(), true);
-    this->setParent( m_project );
-
-    // Set the type
-    m_productionType = RamStep::stepTypeFromName( d.value("productionType").toString("AssetProduction") );
-
-    // Get the status history
-    QJsonObject history = d.value("statusHistory").toObject();
-    QStringList stepUuids = history.keys();
-    for (int i = 0; i < stepUuids.count(); i++)
-    {
-        QString stepUuid = stepUuids[i];
-        QString historyUuid = history.value(stepUuid).toString();
-        RamStepStatusHistory *stepHistory = RamStepStatusHistory::getObject(historyUuid, true);
-        m_history[ stepUuid ] = stepHistory;
-        connectHistory(stepHistory);
-    }
-}
 
 void RamItem::latestStatusChanged(RamStepStatusHistory *history)
 {

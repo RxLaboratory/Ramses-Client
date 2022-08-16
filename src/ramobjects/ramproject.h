@@ -20,12 +20,13 @@ public:
 
     // STATIC METHODS //
 
-    static RamProject *getObject(QString uuid, bool constructNew = false);
+    static RamProject *get(QString uuid);
     static RamProject *c(RamObject *o);
 
     // METHODS //
 
     RamProject(QString shortName, QString name);
+    RamProject(QString uuid);
 
     // Steps
     RamObjectList *steps() const;
@@ -108,7 +109,6 @@ public slots:
     void computeEstimation();
 
 protected:
-    RamProject(QString uuid);
     virtual QString folderPath() const override;
 
 private:

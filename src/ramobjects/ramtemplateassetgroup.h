@@ -10,18 +10,16 @@ public:
 
     //STATIC //
 
-    static RamTemplateAssetGroup *getObject(QString uuid, bool constructNew = false);
+    static RamTemplateAssetGroup *get(QString uuid );
     static RamTemplateAssetGroup *c(RamObject *o);
 
     // OTHER //
 
     explicit RamTemplateAssetGroup(QString shortName, QString name);
+    RamTemplateAssetGroup(QString uuid);
 
 public slots:
     virtual void edit(bool show = true) override;
-
-protected:
-    RamTemplateAssetGroup(QString uuid);
 
 private:
     void construct();

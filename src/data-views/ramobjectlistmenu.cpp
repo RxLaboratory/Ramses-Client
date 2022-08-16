@@ -3,7 +3,7 @@
 RamObjectListMenu::RamObjectListMenu(bool checkable, QWidget *parent):
     QMenu(parent)
 {
-    m_emptyList = RamObjectList::getObject("emptyList", true);
+    m_emptyList = RamObjectList::emptyList();
     m_objects = new RamObjectFilterModel(this);
     m_objects->setSourceModel(m_emptyList);
 

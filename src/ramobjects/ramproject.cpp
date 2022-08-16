@@ -5,13 +5,9 @@
 #include "rampipe.h"
 #include "projecteditwidget.h"
 
-// STATIC
-
-RamProject *RamProject::getObject(QString uuid, bool constructNew)
+RamProject *RamProject::get(QString uuid)
 {
-    RamObject *obj = RamObject::getObject(uuid);
-    if (!obj && constructNew) return new RamProject( uuid );
-    return qobject_cast<RamProject*>( obj );
+    return c( RamObject::get(uuid, Project) );
 }
 
 RamProject *RamProject::c(RamObject *o)
@@ -30,32 +26,69 @@ RamProject::RamProject(QString shortName, QString name):
 
     // Create lists
 
-    m_sequences = new RamObjectList(shortName + "-sqnc", name + " | Sequences", this);
+    m_sequences = new RamObjectList(shortName + "-sqnc", name + " | Sequences", Sequence, RamObjectList::ListObject, this);
     d.insert("sequences", m_sequences->uuid());
 
-    m_assetGroups = new RamObjectList(shortName + "-asstgrp", name + " | Asset groups", this);
+    m_assetGroups = new RamObjectList(shortName + "-asstgrp", name + " | Asset groups", AssetGroup, RamObjectList::ListObject, this);
     d.insert("assetGroups", m_assetGroups->uuid());
 
-    m_pipeline = new RamObjectList(shortName + "-ppln", name + " | Pipeline", this);
+    m_pipeline = new RamObjectList(shortName + "-ppln", name + " | Pipeline", Pipe, RamObjectList::ListObject, this);
     d.insert("pipeline", m_pipeline->uuid());
 
-    m_steps = new RamObjectList(shortName + "-stp", name + " | Steps", this);
+    m_steps = new RamObjectList(shortName + "-stp", name + " | Steps", Step, RamObjectList::ListObject, this);
     d.insert("steps", m_steps->uuid());
 
-    m_pipeFiles = new RamObjectList(shortName + "-ppfl", name + " | Pipe files", this);
+    m_pipeFiles = new RamObjectList(shortName + "-ppfl", name + " | Pipe files", PipeFile, RamObjectList::ListObject, this);
     d.insert("pipeFiles", m_pipeFiles->uuid());
 
-    m_shots = new RamItemTable(shortName + "-sht", name + " | Shots", m_steps, this);
+    m_shots = new RamItemTable(shortName + "-sht", name + " | Shots", m_steps, Shot, this);
     d.insert("shots", m_shots->uuid());
 
-    m_assets = new RamItemTable(shortName + "-asst", name + " | Assets", m_steps, this);
+    m_assets = new RamItemTable(shortName + "-asst", name + " | Assets", m_steps, Asset, this);
     d.insert("assets", m_assets->uuid());
 
-    m_users = new RamObjectList(shortName + "-usr", name + " | Users", this);
+    m_users = new RamObjectList(shortName + "-usr", name + " | Users", User, RamObjectList::ListObject, this);
     d.insert("users", m_users->uuid());
 
-    m_scheduleComments = new RamObjectList(shortName + "-schdlcmmnt", name + " | Schedule comments", this);
+    m_scheduleComments = new RamObjectList(shortName + "-schdlcmmnt", name + " | Schedule comments", ScheduleComment, RamObjectList::ListObject, this);
     d.insert("scheduleComments", m_scheduleComments->uuid());
+}
+
+RamProject::RamProject(QString uuid):
+    RamObject(uuid, Project)
+{
+    construct();
+
+    // Populate lists
+
+    QJsonObject d = data();
+
+    m_sequences = RamObjectList::get( d.value("sequences").toString(), ObjectList);
+    m_sequences->setParent(this);
+
+    m_assetGroups = RamObjectList::get( d.value("assetGroups").toString(), ObjectList);
+    m_assetGroups->setParent(this);
+
+    m_pipeline = RamObjectList::get( d.value("pipeline").toString(), ObjectList);
+    m_pipeline->setParent(this);
+
+    m_steps = RamObjectList::get( d.value("steps").toString(), ObjectList);
+    m_steps->setParent(this);
+
+    m_pipeFiles = RamObjectList::get( d.value("pipeFiles").toString(), ObjectList);
+    m_pipeFiles->setParent(this);
+
+    m_shots = RamItemTable::get( d.value("shots").toString());
+    m_shots->setParent(this);
+
+    m_assets = RamItemTable::get( d.value("assets").toString());
+    m_assets->setParent(this);
+
+    m_users = RamObjectList::get( d.value("users").toString(), ObjectList);
+    m_users->setParent(this);
+
+    m_scheduleComments = RamObjectList::get( d.value("scheduleComments").toString(), ObjectList);
+    m_scheduleComments->setParent(this);
 }
 
 RamObjectList *RamProject::steps() const
@@ -370,43 +403,6 @@ void RamProject::computeEstimation()
 }
 
 // PROTECTED //
-
-RamProject::RamProject(QString uuid):
-    RamObject(uuid, Project)
-{
-    construct();
-
-    // Populate lists
-
-    QJsonObject d = data();
-
-    m_sequences = RamObjectList::getObject( d.value("sequences").toString(), true);
-    m_sequences->setParent(this);
-
-    m_assetGroups = RamObjectList::getObject( d.value("assetGroups").toString(), true);
-    m_assetGroups->setParent(this);
-
-    m_pipeline = RamObjectList::getObject( d.value("pipeline").toString(), true);
-    m_pipeline->setParent(this);
-
-    m_steps = RamObjectList::getObject( d.value("steps").toString(), true);
-    m_steps->setParent(this);
-
-    m_pipeFiles = RamObjectList::getObject( d.value("pipeFiles").toString(), true);
-    m_pipeFiles->setParent(this);
-
-    m_shots = RamItemTable::getObject( d.value("shots").toString(), true);
-    m_shots->setParent(this);
-
-    m_assets = RamItemTable::getObject( d.value("assets").toString(), true);
-    m_assets->setParent(this);
-
-    m_users = RamObjectList::getObject( d.value("users").toString(), true);
-    m_users->setParent(this);
-
-    m_scheduleComments = RamObjectList::getObject( d.value("scheduleComments").toString(), true);
-    m_scheduleComments->setParent(this);
-}
 
 QString RamProject::folderPath() const
 {

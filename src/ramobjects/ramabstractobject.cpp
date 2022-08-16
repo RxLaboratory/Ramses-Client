@@ -41,6 +41,35 @@ const QString RamAbstractObject::objectTypeName(ObjectType type)
     }
 }
 
+RamAbstractObject::ObjectType RamAbstractObject::objectTypeFromName(QString name)
+{
+    if (name == "RamApplication") return Application;
+    if (name == "RamAsset") return Asset;
+    if (name == "RamApplication") return Application;
+    if (name == "RamAssetGroup") return AssetGroup;
+    if (name == "RamFileType") return FileType;
+    if (name == "RamObject") return Object;
+    if (name == "RamItem") return Item;
+    if (name == "RamPipe") return Pipe;
+    if (name == "RamPipeFile") return PipeFile;
+    if (name == "RamProject") return Project;
+    if (name == "RamSequence") return Sequence;
+    if (name == "RamShot") return Shot;
+    if (name == "RamState") return State;
+    if (name == "RamStatus") return Status;
+    if (name == "RamStep") return Step;
+    if (name == "RamUser") return User;
+    if (name == "RamObjectList") return ObjectList;
+    if (name == "RamStepStatusHistory") return StepStatusHistory;
+    if (name == "RamScheduleEntry") return ScheduleEntry;
+    if (name == "RamScheduleComment") return ScheduleComment;
+    if (name == "RamTemplateStep") return TemplateStep;
+    if (name == "RamTemplateAssetGroup") return TemplateAssetGroup;
+    if (name == "Ramses") return Ramses;
+    if (name == "RamItemTable") return ItemTable;
+    return Object;
+}
+
 const QString RamAbstractObject::subFolderName(SubFolder folder)
 {
     switch(folder)
@@ -65,27 +94,11 @@ const QString RamAbstractObject::subFolderName(SubFolder folder)
     }
 }
 
-RamAbstractObject *RamAbstractObject::getObject(QString uuid)
+RamAbstractObject *RamAbstractObject::get(QString uuid)
 {
     Q_ASSERT_X(uuid != "", "RamObject::obj(uuid)", "UUID cannot be empty!");
 
     return m_existingObjects.value( uuid, nullptr );
-}
-
-RamAbstractObject *RamAbstractObject::getObject(QString shortNameOrName, ObjectType objType)
-{
-    QMapIterator<QString, RamAbstractObject*> i(m_existingObjects);
-    while (i.hasNext())
-    {
-        i.next();
-        RamAbstractObject *obj = i.value();
-        if (obj->objectType() == objType)
-        {
-            if ( obj->shortName() == shortNameOrName ) return obj;
-            if ( obj->name() == shortNameOrName ) return obj;
-        }
-    }
-    return nullptr;
 }
 
 // PUBLIC //

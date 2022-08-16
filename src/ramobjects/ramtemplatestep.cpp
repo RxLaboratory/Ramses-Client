@@ -21,11 +21,9 @@ RamTemplateStep::Type RamTemplateStep::stepTypeFromName(QString typeName)
     return All;
 }
 
-RamTemplateStep *RamTemplateStep::getObject(QString uuid, bool constructNew)
+RamTemplateStep *RamTemplateStep::get(QString uuid)
 {
-    RamObject *obj = RamObject::getObject(uuid);
-    if (!obj && constructNew) return new RamTemplateStep( uuid );
-    return qobject_cast<RamTemplateStep*>( obj );
+    return c( RamObject::get(uuid, TemplateStep) );
 }
 
 RamTemplateStep *RamTemplateStep::c(RamObject *o)
@@ -42,10 +40,18 @@ RamTemplateStep::RamTemplateStep(QString shortName, QString name) :
 
     QJsonObject d = data();
 
-    m_applications = new RamObjectList(shortName + "-Apps", name + " | Applications", this);
+    m_applications = new RamObjectList(shortName + "-Apps", name + " | Applications", Application, RamObjectList::ListObject, this);
     d.insert("applications", m_applications->uuid());
 
     setData(d);
+}
+
+RamTemplateStep::RamTemplateStep(QString uuid):
+    RamObject(uuid, TemplateStep)
+{
+    construct();
+
+    m_applications = RamObjectList::get( getData("applications").toString(), ObjectList );
 }
 
 RamObjectList *RamTemplateStep::applications() const
@@ -212,14 +218,6 @@ void RamTemplateStep::setEstimationMethod(const EstimationMethod &newEstimationM
 }
 
 // PROTECTED //
-
-RamTemplateStep::RamTemplateStep(QString uuid):
-    RamObject(uuid, TemplateStep)
-{
-    construct();
-
-    m_applications = RamObjectList::getObject( getData("applications").toString(), true );
-}
 
 void RamTemplateStep::construct()
 {

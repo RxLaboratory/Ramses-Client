@@ -2,13 +2,9 @@
 
 #include "pipefileeditwidget.h"
 
-// STATIC //
-
-RamPipeFile *RamPipeFile::getObject(QString uuid, bool constructNew)
+RamPipeFile *RamPipeFile::get(QString uuid)
 {
-    RamObject *obj = RamObject::getObject(uuid);
-    if (!obj && constructNew) return new RamPipeFile( uuid );
-    return qobject_cast<RamPipeFile*>( obj );
+    return c( RamObject::get(uuid, PipeFile) );
 }
 
 RamPipeFile *RamPipeFile::c(RamObject *o)
@@ -26,9 +22,20 @@ RamPipeFile::RamPipeFile(QString shortName, RamProject *project) :
     m_project = project;
 }
 
+RamPipeFile::RamPipeFile(QString uuid):
+    RamObject(uuid, PipeFile)
+{
+    construct();
+
+    QJsonObject d = data();
+    m_project = RamProject::get(d.value("project").toString());
+
+    this->setParent(m_project);
+}
+
 RamFileType *RamPipeFile::fileType() const
 {
-    return RamFileType::getObject( getData("fileType").toString(), true );
+    return RamFileType::get( getData("fileType").toString() );
 }
 
 void RamPipeFile::setFileType(RamFileType *newFileType)
@@ -100,19 +107,6 @@ void RamPipeFile::edit(bool show)
     if (!ui_editWidget) setEditWidget(new PipeFileEditWidget(this));
 
     if (show) showEdit();
-}
-
-// PROTECTED //
-
-RamPipeFile::RamPipeFile(QString uuid):
-    RamObject(uuid, PipeFile)
-{
-    construct();
-
-    QJsonObject d = data();
-    m_project = RamProject::getObject(d.value("project").toString(), true);
-
-    this->setParent(m_project);
 }
 
 // PRIVATE //

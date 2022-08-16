@@ -33,12 +33,13 @@ public:
     static const QString stepTypeName(Type type);
     static Type stepTypeFromName(QString typeName);
 
-    static RamTemplateStep *getObject(QString uuid, bool constructNew = false);
+    static RamTemplateStep *get(QString uuid);
     static RamTemplateStep *c(RamObject *o);
 
     // OTHER METHODS //
 
     explicit RamTemplateStep(QString shortName, QString name);
+    RamTemplateStep(QString uuid);
 
     RamObjectList *applications() const;
 
@@ -83,9 +84,6 @@ protected:
      */
     static const QMetaEnum m_stepTypeMeta;
 
-    // METHODS //
-
-    RamTemplateStep(QString uuid);
 
     // ATTRIBUTES //
 

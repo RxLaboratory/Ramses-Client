@@ -17,13 +17,14 @@ class RamStep : public RamTemplateStep
 {
     Q_OBJECT
 public:
-    static RamStep *getObject(QString uuid, bool constructNew = false);
+    static RamStep *get(QString uuid);
     static RamStep *c(RamObject *o);
     static RamStep *createFromTemplate(RamTemplateStep *tempStep, RamProject *project);
 
     // METHODS //
 
     RamStep(QString shortName, QString name, RamProject *project);
+    RamStep(QString uuid);
 
     RamProject *project() const;
 
@@ -69,8 +70,6 @@ public slots:
     void countAssignedDays();
 
 protected:
-    RamStep(QString uuid);
-
     virtual QString folderPath() const override;
 
 private:

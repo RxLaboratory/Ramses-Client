@@ -3,15 +3,49 @@
 #include "duqf-utils/guiutils.h"
 #include "objecteditwidget.h"
 #include "mainwindow.h"
+#include "ramapplication.h"
+#include "ramasset.h"
+#include "rampipe.h"
+#include "rampipefile.h"
+#include "ramschedulecomment.h"
+#include "ramscheduleentry.h"
+#include "ramsequence.h"
 #include "ramses.h"
 
 // STATIC //
 
-RamObject *RamObject::getObject(QString uuid, bool constructNew)
+RamObject *RamObject::get(QString uuid, ObjectType type)
 {
-    RamAbstractObject *obj = RamAbstractObject::getObject(uuid);
-    if (!obj && constructNew) return new RamObject(uuid, ObjectType::Object);
-    return static_cast<RamObject*>( obj ) ;
+    RamAbstractObject *obj = RamAbstractObject::get(uuid);
+    if (obj) return static_cast<RamObject*>( obj ) ;
+
+    // Check if the UUID exists in the database
+    if (!DBInterface::instance()->hasUuid( objectTypeName(type))) return nullptr;
+
+    switch(type)
+    {
+    case Application: return new RamApplication(uuid);
+    case Asset: return new RamAsset(uuid);
+    case AssetGroup: return new RamAssetGroup(uuid);
+    case FileType: return new RamFileType(uuid);
+    case Object: return new RamObject(uuid, Object);
+    case Item: return new RamItem(uuid);
+    case Pipe: return new RamPipe(uuid);
+    case PipeFile: return new RamPipeFile(uuid);
+    case Project: return new RamProject(uuid);
+    case Sequence: return new RamSequence(uuid);
+    case Shot: return new RamShot(uuid);
+    case State: return new RamState(uuid);
+    case Status: return new RamStatus(uuid);
+    case Step: return new RamStep(uuid);
+    case User: return new RamUser(uuid);
+    case ScheduleEntry: return new RamScheduleEntry(uuid);
+    case ScheduleComment: return new RamScheduleComment(uuid);
+    case TemplateStep: return new RamTemplateStep(uuid);
+    case TemplateAssetGroup: return new RamTemplateAssetGroup(uuid);
+    case Ramses: return Ramses::instance();
+    default: return new RamObject(uuid, Object);
+    }
 }
 
 // PUBLIC //

@@ -12,18 +12,17 @@ public:
 
     // STATIC METHODS //
 
-    static RamScheduleComment *getObject(QString uuid, bool constructNew = false);
+    static RamScheduleComment *get(QString uuid);
     static RamScheduleComment *c(RamObject *o);
 
     // METHODS //
 
     RamScheduleComment(RamProject *project);
+    RamScheduleComment(QString uuid);
 
     QDateTime date() const;
     void setDate(const QDateTime &newDate);
 
-protected:
-    RamScheduleComment(QString uuid);
 
 private:
     void construct();

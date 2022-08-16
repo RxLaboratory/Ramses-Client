@@ -3,7 +3,7 @@
 #include "ramstate.h"
 
 RamStateList::RamStateList(QObject *parent):
-    RamObjectList("RamState", "States", parent, RamObjectList::Table)
+    RamObjectList("RamState", "States", State, Table, parent)
 {
     this->setObjectName( "RamStateList" );
 }

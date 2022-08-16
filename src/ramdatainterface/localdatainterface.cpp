@@ -178,6 +178,15 @@ QStringList LocalDataInterface::tableData(QString table) const
     return data;
 }
 
+bool LocalDataInterface::hasUuid(QString table) const
+{
+    QString q = "SELECT uuid FROM '%1';";
+    QSqlQuery qry = query( q.arg(table) );
+
+    if (qry.first()) return true;
+    return false;
+}
+
 void LocalDataInterface::createObject(QString uuid, QString table, QString data) const
 {
     QDateTime modified = QDateTime::currentDateTimeUtc();

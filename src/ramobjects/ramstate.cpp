@@ -4,11 +4,9 @@
 
 // STATIC //
 
-RamState *RamState::getObject(QString uuid, bool constructNew )
+RamState *RamState::get(QString uuid )
 {
-    RamObject *obj = RamObject::getObject(uuid);
-    if (!obj && constructNew) return new RamState( uuid );
-    return qobject_cast<RamState*>( obj );
+    return c( RamObject::get(uuid, State) );
 }
 
 RamState *RamState::c(RamObject *o)
@@ -20,6 +18,12 @@ RamState *RamState::c(RamObject *o)
 
 RamState::RamState(QString shortName, QString name) :
     RamObject(shortName, name, State)
+{
+    construct();
+}
+
+RamState::RamState(QString uuid):
+    RamObject(uuid, State)
 {
     construct();
 }
@@ -46,14 +50,6 @@ void RamState::edit(bool show)
     if (!ui_editWidget) setEditWidget(new StateEditWidget(this));
 
     if (show) showEdit();
-}
-
-// PROTECTED //
-
-RamState::RamState(QString uuid):
-    RamObject(uuid, State)
-{
-    construct();
 }
 
 // PRIVATE //

@@ -12,22 +12,19 @@ class RamItemTable : public RamObjectList
 {
     Q_OBJECT
 public:
-
-    // STATIC METHODS //
-
-    static RamItemTable *getObject(QString uuid, bool constructNew = false);
+    static RamItemTable *get(QString uuid);
+    static RamItemTable *c(RamObjectList *o);
 
     // METHODS //
 
-    RamItemTable(QString shortName, QString name, RamObjectList *steps, QObject *parent = nullptr, DataListMode mode = Object);
+    RamItemTable(QString shortName, QString name, RamObjectList *steps, ObjectType type, QObject *parent = nullptr, DataListMode mode = ListObject);
+    RamItemTable(QString uuid, QObject *parent = nullptr);
 
     // MODEL REIMPLEMENTATION
     int columnCount(const QModelIndex &parent = QModelIndex()) const override;
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
 
-protected:
-    RamItemTable(QString uuid, QObject *parent = nullptr);
 
 private slots:
     void insertStep(const QModelIndex &parent, int first, int last);

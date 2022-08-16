@@ -18,7 +18,7 @@ class RamObjectList : public QAbstractTableModel, public RamAbstractObject
 public:
 
     enum DataListMode {
-        Object, // a List saved in the RamObject table
+        ListObject, // a List saved in the RamObject table
         Table, // a complete table
         Temp // temporary list, not saved
     };
@@ -41,13 +41,15 @@ public:
 
     // STATIC METHODS //
 
-    static RamObjectList *getObject(QString uuid, bool constructNew = false);
+    static RamObjectList *get(QString uuid, ObjectType type);
     static RamObjectList *c(QObject *obj);
+    static RamObjectList *emptyList();
     static RamObject *at(QModelIndex i);
 
     // METHODS //
 
-    RamObjectList(QString shortName, QString name, QObject *parent = nullptr, DataListMode mode = Object);
+    RamObjectList(QString shortName, QString name, ObjectType type, DataListMode mode, QObject *parent = nullptr);
+    RamObjectList(QString uuid, QObject *parent = nullptr);
 
     // MODEL reimplementation
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
@@ -87,7 +89,8 @@ public slots:
     void reload();
 
 protected:
-    RamObjectList(QString uuid, QObject *parent = nullptr);
+    // An empty list is useful
+    static RamObjectList *m_emptyList;
 
     virtual QJsonObject reloadData() override;
 
@@ -113,8 +116,8 @@ private:
     void construct(QObject *parent);
     void connectEvents();
 
-    DataListMode m_dataMode = Object;
-    QString m_tableName;
+    DataListMode m_dataMode = ListObject;
+    ObjectType m_contentType;
 };
 
 class RamObject;

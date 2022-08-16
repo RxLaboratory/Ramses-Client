@@ -10,12 +10,13 @@ public:
 
     // STATIC //
 
-    static RamFileType *getObject(QString uuid, bool constructNew = false);
+    static RamFileType *get(QString uuid);
     static RamFileType *c(RamObject *o);
 
     // OTHER //
 
     RamFileType(QString shortName, QString name);
+    RamFileType(QString uuid);
 
     void setExtensions(QString extensions);
     void setExtensions(QStringList extensions);
@@ -31,8 +32,6 @@ public:
 public slots:
     virtual void edit(bool show = true) override;
 
-protected:
-    RamFileType(QString uuid);
 
 private:
     void construct();

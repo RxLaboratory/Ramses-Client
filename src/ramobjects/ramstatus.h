@@ -29,7 +29,7 @@ public:
 
     // STATIC METHODS //
 
-    static RamStatus *getObject(QString uuid, bool constructNew = false);
+    static RamStatus *get(QString uuid);
     static RamStatus *c(RamObject *o);
 
     static RamStatus *copy(RamStatus *other, RamUser *user);
@@ -42,6 +42,7 @@ public:
     // METHODS //
 
     RamStatus(RamUser *user, RamItem *item, RamStep *step, bool isVirtual = false);
+    RamStatus(QString uuid);
 
     RamUser *user() const;
     RamStep *step() const;
@@ -99,7 +100,6 @@ public slots:
     virtual void edit(bool show = true) override;
 
 protected:
-    RamStatus(QString uuid);
     virtual QString folderPath() const override;
 
 private slots:

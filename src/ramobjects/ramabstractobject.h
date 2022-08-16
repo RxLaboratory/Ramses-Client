@@ -75,6 +75,7 @@ public:
      * @return
      */
     static const QString objectTypeName(ObjectType type);
+    ObjectType objectTypeFromName(QString name);
 
     /**
      * @brief subFolderName gets the actual name of a subfolder
@@ -88,16 +89,7 @@ public:
      * @param uuid The object uuid
      * @return the object or nullptr if it doesn't exist yet
      */
-    static RamAbstractObject *getObject(QString uuid);
-
-    /**
-     * @brief objFromName gets an object using its name or shortname
-     * @param shortNameOrName
-     * @param objType
-     * @return
-     */
-    static RamAbstractObject *getObject(QString shortNameOrName , ObjectType objType);
-
+    static RamAbstractObject *get(QString uuid);
 
     // METHODS //
 

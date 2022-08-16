@@ -4,11 +4,9 @@
 
 // STATIC //
 
-RamAssetGroup *RamAssetGroup::getObject(QString uuid, bool constructNew)
+RamAssetGroup *RamAssetGroup::get(QString uuid)
 {
-    RamTemplateAssetGroup *obj = RamTemplateAssetGroup::getObject(uuid);
-    if (!obj && constructNew) return new RamAssetGroup( uuid );
-    return qobject_cast<RamAssetGroup*>( obj );
+    return c( RamObject::get(uuid, AssetGroup) );
 }
 
 RamAssetGroup *RamAssetGroup::c(RamObject *o)
@@ -31,6 +29,21 @@ RamAssetGroup::RamAssetGroup(QString shortName, QString name, RamProject *projec
 {
     construct();
     setProject(project);
+}
+
+RamAssetGroup::RamAssetGroup(QString uuid):
+    RamTemplateAssetGroup(uuid)
+{
+    construct();
+
+    QJsonObject d = data();
+
+    QString projUuid = d.value("project").toString();
+
+    if (!d.value("template").toBool(true) && projUuid != "")
+    {
+        setProject( RamProject::get(projUuid) );
+    }
 }
 
 int RamAssetGroup::assetCount() const
@@ -56,21 +69,6 @@ void RamAssetGroup::edit(bool show)
 }
 
 // PROTECTED //
-
-RamAssetGroup::RamAssetGroup(QString uuid):
-    RamTemplateAssetGroup(uuid)
-{
-    construct();
-
-    QJsonObject d = data();
-
-    QString projUuid = d.value("project").toString();
-
-    if (!d.value("template").toBool(true) && projUuid != "")
-    {
-        setProject( RamProject::getObject(projUuid, true) );
-    }
-}
 
 QString RamAssetGroup::folderPath() const
 {

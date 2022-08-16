@@ -62,6 +62,7 @@ public:
     // DATA INTERFACE //
 
     QStringList tableData(QString table);
+    bool hasUuid(QString table);
 
     void createObject(QString uuid, QString table, QString data);
 

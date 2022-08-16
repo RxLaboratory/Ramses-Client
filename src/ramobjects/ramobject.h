@@ -25,7 +25,7 @@ public:
      * @param constructNew When true, will construct a new object if it's not already available
      * @return the object or nullptr if it doesn't exist yet
      */
-    static RamObject *getObject(QString uuid, bool constructNew = false);
+    static RamObject *get(QString uuid, ObjectType type);
 
     // METHODS //
 

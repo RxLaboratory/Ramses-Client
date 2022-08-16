@@ -16,12 +16,13 @@ public:
 
     // STATIC METHODS //
 
-    static RamUser *getObject(QString uuid, bool constructNew = false);
+    static RamUser *get(QString uuid);
     static RamUser *c(RamObject *o);
 
     // METHODS //
 
     RamUser(QString shortName, QString name);
+    RamUser(QString uuid);
 
     virtual void setShortName(const QString &shortName) override;
 
@@ -41,7 +42,6 @@ public slots:
     virtual void edit(bool show = true) override;
 
 protected:
-    RamUser(QString uuid);
     virtual QString folderPath() const override;
 
 private:

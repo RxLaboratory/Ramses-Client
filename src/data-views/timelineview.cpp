@@ -8,7 +8,7 @@ TimelineView::TimelineView(QWidget *parent):
     QTableView(parent)
 {
     m_delegate = new TimelineDelegate();
-    m_emptyList = RamObjectList::getObject("emptyList", true);
+    m_emptyList = RamObjectList::emptyList();
 
     m_objectList = new TimeLineProxy(this);
     this->setModel(m_objectList);

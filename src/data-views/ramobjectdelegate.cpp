@@ -32,25 +32,34 @@ PaintParameters RamObjectDelegate::getPaintParameters(const QStyleOptionViewItem
                 );
 
     // Colors
-    switch (obj->objectType())
+    if (obj)
     {
-    case RamObject::Status:
-    {
-        RamStatus *status = RamStatus::c(obj);
-        if (status->isNoState())
+        switch (obj->objectType())
         {
-            params.bgColor = QColor(0,0,0,0);
-            params.textColor = m_dark;
-            params.detailsColor = m_dark;
+        case RamObject::Status:
+        {
+            RamStatus *status = RamStatus::c(obj);
+            if (status->isNoState())
+            {
+                params.bgColor = QColor(0,0,0,0);
+                params.textColor = m_dark;
+                params.detailsColor = m_dark;
+            }
+            break;
         }
-        break;
+        default:
+        {
+            params.bgColor = m_dark;
+            params.textColor = m_lessLight;
+            params.detailsColor = m_medium;
+        }
+        }
     }
-    default:
+    else
     {
         params.bgColor = m_dark;
         params.textColor = m_lessLight;
         params.detailsColor = m_medium;
-    }
     }
 
     if (option.state & QStyle::State_MouseOver)

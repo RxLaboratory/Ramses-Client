@@ -4,11 +4,9 @@
 
 // STATIC //
 
-RamFileType *RamFileType::getObject(QString uuid, bool constructNew)
+RamFileType *RamFileType::get(QString uuid)
 {
-    RamObject *obj = RamObject::getObject(uuid);
-    if (!obj && constructNew) return new RamFileType( uuid );
-    return qobject_cast<RamFileType*>( obj );
+    return c( RamObject::get(uuid, FileType) );
 }
 
 RamFileType *RamFileType::c(RamObject *o)
@@ -18,6 +16,12 @@ RamFileType *RamFileType::c(RamObject *o)
 
 RamFileType::RamFileType(QString shortName, QString name):
     RamObject(shortName, name, FileType)
+{
+    construct();
+}
+
+RamFileType::RamFileType(QString uuid):
+    RamObject(uuid, FileType)
 {
     construct();
 }
@@ -83,14 +87,6 @@ void RamFileType::edit(bool show)
     if (!ui_editWidget) setEditWidget(new FileTypeEditWidget(this));
 
     if (show) showEdit();
-}
-
-// PROTECTED //
-
-RamFileType::RamFileType(QString uuid):
-    RamObject(uuid, FileType)
-{
-    construct();
 }
 
 // PRIVATE //

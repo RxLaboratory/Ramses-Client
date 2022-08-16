@@ -5,11 +5,9 @@
 
 // STATIC //
 
-RamAsset *RamAsset::getObject( QString uuid, bool constructNew )
+RamAsset *RamAsset::get(QString uuid)
 {
-    RamObject *obj = RamItem::getObject(uuid);
-    if (!obj && constructNew) return new RamAsset( uuid );
-    return qobject_cast<RamAsset*>( obj );
+    return c( RamObject::get(uuid, Asset) );
 }
 
 RamAsset *RamAsset::c(RamObject *o)
@@ -27,9 +25,15 @@ RamAsset::RamAsset(QString shortName, QString name, RamAssetGroup *ag) :
     setAssetGroup(ag);
 }
 
+RamAsset::RamAsset(QString uuid):
+    RamItem(uuid)
+{
+    construct();
+}
+
 RamAssetGroup *RamAsset::assetGroup() const
 {
-    return RamAssetGroup::getObject( getData("assetGroup").toString(), true );
+    return RamAssetGroup::get( getData("assetGroup").toString() );
 }
 
 void RamAsset::setAssetGroup(RamAssetGroup *assetGroup)
@@ -111,12 +115,6 @@ void RamAsset::edit(bool show)
 }
 
 // PROTECTED //
-
-RamAsset::RamAsset(QString uuid):
-    RamItem(uuid)
-{
-    construct();
-}
 
 QString RamAsset::folderPath() const
 {

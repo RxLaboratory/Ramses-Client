@@ -12,11 +12,9 @@
 
 // STATIC //
 
-RamStep *RamStep::getObject(QString uuid, bool constructNew)
+RamStep *RamStep::get(QString uuid)
 {
-    RamTemplateStep *obj = RamTemplateStep::getObject(uuid);
-    if (!obj && constructNew) return new RamStep( uuid );
-    return qobject_cast<RamStep*>( obj );
+    return c( RamObject::get(uuid, Step) );
 }
 
 RamStep *RamStep::c(RamObject *o)
@@ -63,6 +61,17 @@ RamStep::RamStep(QString shortName, QString name, RamProject *project):
     setData(d);
 }
 
+RamStep::RamStep(QString uuid):
+    RamTemplateStep(uuid)
+{
+    construct();
+
+    QString projUuid = getData("project").toString();
+    m_project = RamProject::get( projUuid );
+
+    setParent(m_project);
+}
+
 RamProject *RamStep::project() const
 {
     return m_project;
@@ -70,7 +79,7 @@ RamProject *RamStep::project() const
 
 RamAssetGroup *RamStep::estimationMultiplyGroup() const
 {
-    return RamAssetGroup::getObject( getData("estimationMultiplyGroup").toString("none"), true);
+    return RamAssetGroup::get( getData("estimationMultiplyGroup").toString("none") );
 }
 
 void RamStep::setEstimationMultiplyGroup(RamAssetGroup *newEstimationMultiplyGroup)
@@ -355,17 +364,6 @@ void RamStep::countAssignedDays()
 }
 
 // PROTECTED //
-
-RamStep::RamStep(QString uuid):
-    RamTemplateStep(uuid)
-{
-    construct();
-
-    QString projUuid = getData("project").toString();
-    m_project = RamProject::getObject( projUuid, true );
-
-    setParent(m_project);
-}
 
 QString RamStep::folderPath() const
 {

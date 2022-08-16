@@ -10,11 +10,9 @@
 
 // STATIC //
 
-RamUser *RamUser::getObject(QString uuid, bool constructNew )
+RamUser *RamUser::get(QString uuid )
 {
-    RamObject *obj = RamObject::getObject(uuid);
-    if (!obj && constructNew) return new RamUser( uuid );
-    return qobject_cast<RamUser*>( obj );
+    return c( RamObject::get(uuid, User) );
 }
 
 RamUser *RamUser::c(RamObject *o)
@@ -29,9 +27,20 @@ RamUser::RamUser(QString shortName, QString name) :
 {
     construct();
 
-    m_schedule = new RamObjectList(shortName + "-schdl", name + " | Schedule", this);
+    m_schedule = new RamObjectList(shortName + "-schdl", name + " | Schedule", ScheduleEntry, RamObjectList::ListObject, this);
     insertData("schedule", m_schedule->uuid());
     DBInterface::instance()->setUsername(m_uuid, shortName);
+}
+
+RamUser::RamUser(QString uuid):
+    RamObject(uuid, User, nullptr, ENCRYPT_USER_DATA)
+{
+    construct();
+
+    QString scheduleUuid = getData("schedule").toString();
+    qDebug() << data();
+    qDebug() << scheduleUuid;
+    m_schedule = RamObjectList::get( scheduleUuid, ObjectList);
 }
 
 void RamUser::setShortName(const QString &shortName)
@@ -163,17 +172,6 @@ void RamUser::edit(bool show)
 }
 
 // PROTECTED //
-
-RamUser::RamUser(QString uuid):
-    RamObject(uuid, User, nullptr, ENCRYPT_USER_DATA)
-{
-    construct();
-
-    QString scheduleUuid = getData("schedule").toString();
-    qDebug() << data();
-    qDebug() << scheduleUuid;
-    m_schedule = RamObjectList::getObject( scheduleUuid, true);
-}
 
 QString RamUser::folderPath() const
 {

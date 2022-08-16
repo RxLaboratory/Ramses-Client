@@ -9,11 +9,9 @@
 
 // PROTECTED //
 
-RamStatus *RamStatus::getObject(QString uuid, bool constructNew)
+RamStatus *RamStatus::get(QString uuid)
 {
-    RamObject *obj = RamObject::getObject(uuid);
-    if (!obj && constructNew) return new RamStatus( uuid );
-    return qobject_cast<RamStatus*>( obj );
+    return c( RamObject::get(uuid, Status) );
 }
 
 RamStatus *RamStatus::c(RamObject *o)
@@ -114,6 +112,30 @@ RamStatus::RamStatus(RamUser *user, RamItem *item, RamStep *step, bool isVirtual
     connect(state(), SIGNAL(removed(RamObject*)), this, SLOT(stateRemoved()));
 }
 
+RamStatus::RamStatus(QString uuid):
+    RamObject(uuid, Status)
+{
+    construct();
+
+    QJsonObject d = data();
+    m_user = RamUser::get( d.value("user").toString() );
+
+    QString itemType = d.value("itemType").toString("asset");
+    if (itemType == "asset") {
+        m_item = RamAsset::get( d.value("item").toString() );
+    }
+    else if (itemType == "shot") {
+        m_item = RamShot::get( d.value("item").toString() );
+    }
+    else {
+        m_item = RamItem::get( d.value("item").toString() );
+    }
+
+    m_step = RamStep::get( d.value("step").toString() );
+
+    connectEvents();
+}
+
 RamUser *RamStatus::user() const
 {
     return m_user;
@@ -147,7 +169,7 @@ void RamStatus::setCompletionRatio(int completionRatio)
 
 RamState *RamStatus::state() const
 {
-    return RamState::getObject( getData("state").toString(), true);
+    return RamState::get( getData("state").toString() );
 }
 
 void RamStatus::setState(RamState *newState)
@@ -197,7 +219,7 @@ void RamStatus::setPublished(bool published)
 
 RamUser *RamStatus::assignedUser() const
 {
-    return RamUser::getObject( getData("assignedUser").toString("none"), true );
+    return RamUser::get( getData("assignedUser").toString("none") );
 }
 
 void RamStatus::assignUser(RamObject *assignedUser)
@@ -560,30 +582,6 @@ void RamStatus::edit(bool show)
 }
 
 // PROTECTED //
-
-RamStatus::RamStatus(QString uuid):
-    RamObject(uuid, Status)
-{
-    construct();
-
-    QJsonObject d = data();
-    m_user = RamUser::getObject( d.value("user").toString(), true );
-
-    QString itemType = d.value("itemType").toString("asset");
-    if (itemType == "asset") {
-        m_item = RamAsset::getObject( d.value("item").toString(), true);
-    }
-    else if (itemType == "shot") {
-        m_item = RamShot::getObject( d.value("item").toString(), true);
-    }
-    else {
-        m_item = RamItem::getObject( d.value("item").toString(), true);
-    }
-
-    m_step = RamStep::getObject( d.value("step").toString(), true);
-
-    connectEvents();
-}
 
 QString RamStatus::folderPath() const
 {

@@ -4,11 +4,9 @@
 
 // STATIC //
 
-RamApplication *RamApplication::getObject(QString uuid, bool constructNew)
+RamApplication *RamApplication::get(QString uuid)
 {
-    RamObject *obj = RamObject::getObject(uuid);
-    if (!obj && constructNew) return new RamApplication( uuid );
-    return qobject_cast<RamApplication*>( obj );
+    return c( RamObject::get(uuid, Application) );
 }
 
 RamApplication *RamApplication::c(RamObject *o)
@@ -22,14 +20,30 @@ RamApplication::RamApplication(QString shortName, QString name):
     RamObject(shortName, name, ObjectType::Application)
 {
     construct();
-    m_nativeFileTypes = new RamObjectList(shortName + "-native", name, this);
-    m_importFileTypes = new RamObjectList(shortName + "-import", name, this);
-    m_exportFileTypes = new RamObjectList(shortName + "-export", name, this);
+    m_nativeFileTypes = new RamObjectList(shortName + "-native", name, FileType, RamObjectList::ListObject, this);
+    m_importFileTypes = new RamObjectList(shortName + "-import", name, FileType, RamObjectList::ListObject,  this);
+    m_exportFileTypes = new RamObjectList(shortName + "-export", name, FileType, RamObjectList::ListObject,  this);
     QJsonObject d = data();
     d.insert("nativeFileTypes", m_nativeFileTypes->uuid());
     d.insert("importileTypes", m_importFileTypes->uuid());
     d.insert("exportFileTypes", m_exportFileTypes->uuid());
     this->setData(d);
+}
+
+RamApplication::RamApplication(QString uuid):
+    RamObject(uuid, ObjectType::Application)
+{
+    construct();
+
+    // Populate lists
+    QJsonObject d = data();
+
+    m_nativeFileTypes = RamObjectList::get(d.value("nativeFileTypes").toString(), ObjectList );
+    m_nativeFileTypes->setParent(this);
+    m_importFileTypes = RamObjectList::get(d.value("importileTypes").toString(), ObjectList );
+    m_importFileTypes->setParent(this);
+    m_exportFileTypes = RamObjectList::get(d.value("exportFileTypes").toString(), ObjectList );
+    m_exportFileTypes->setParent(this);
 }
 
 QString RamApplication::executableFilePath() const
@@ -137,24 +151,6 @@ void RamApplication::edit(bool show)
     if (!ui_editWidget) setEditWidget(new ApplicationEditWidget(this));
 
     if (show) showEdit();
-}
-
-// PROTECTED //
-
-RamApplication::RamApplication(QString uuid):
-    RamObject(uuid, ObjectType::Application)
-{
-    construct();
-
-    // Populate lists
-    QJsonObject d = data();
-
-    m_nativeFileTypes = RamObjectList::getObject(d.value("nativeFileTypes").toString(), true);
-    m_nativeFileTypes->setParent(this);
-    m_importFileTypes = RamObjectList::getObject(d.value("importileTypes").toString(), true);
-    m_importFileTypes->setParent(this);
-    m_exportFileTypes = RamObjectList::getObject(d.value("exportFileTypes").toString(), true);
-    m_exportFileTypes->setParent(this);
 }
 
 // PRIVATE //

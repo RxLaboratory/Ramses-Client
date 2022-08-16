@@ -2,13 +2,9 @@
 
 #include "pipeeditwidget.h"
 
-// STATIC
-
-RamPipe *RamPipe::getObject(QString uuid, bool constructNew)
+RamPipe *RamPipe::get(QString uuid)
 {
-    RamObject *obj = RamObject::getObject(uuid);
-    if (!obj && constructNew) return new RamPipe( uuid );
-    return qobject_cast<RamPipe*>( obj );
+    return c( RamObject::get(uuid, Pipe) );
 }
 
 RamPipe *RamPipe::c(RamObject *o)
@@ -28,7 +24,7 @@ RamPipe::RamPipe(RamStep *output, RamStep *input):
     d.insert("outputStep", output->uuid());
     d.insert("inputStep", input->uuid());
 
-    m_pipeFiles = new RamObjectList("PPFS", "Pipe files", this);
+    m_pipeFiles = new RamObjectList("PPFS", "Pipe files", PipeFile, RamObjectList::ListObject, this);
     d.insert("pipeFiles", m_pipeFiles->uuid());
     setData(d);
 
@@ -37,9 +33,23 @@ RamPipe::RamPipe(RamStep *output, RamStep *input):
     connectEvents();
 }
 
+RamPipe::RamPipe(QString uuid):
+    RamObject(uuid, Pipe)
+{
+    construct();
+
+    QJsonObject d = data();
+
+    m_pipeFiles = RamObjectList::get( d.value("pipeFiles").toString(), ObjectList);
+
+    this->setParent( this->project() );
+
+    connectEvents();
+}
+
 RamStep *RamPipe::outputStep() const
 {
-    return RamStep::getObject( getData("outputStep").toString() );
+    return RamStep::get( getData("outputStep").toString() );
 }
 
 void RamPipe::setOutputStep(RamStep *outputStep)
@@ -49,7 +59,7 @@ void RamPipe::setOutputStep(RamStep *outputStep)
 
 RamStep *RamPipe::inputStep() const
 {
-    return RamStep::getObject( getData("inputStep").toString() );
+    return RamStep::get( getData("inputStep").toString() );
 }
 
 void RamPipe::setInputStep(RamStep *inputStep)
@@ -74,22 +84,6 @@ void RamPipe::edit(bool show)
     if (!ui_editWidget) setEditWidget(new PipeEditWidget(this));
 
     if (show) showEdit();
-}
-
-// PROTECTED //
-
-RamPipe::RamPipe(QString uuid):
-    RamObject(uuid, Pipe)
-{
-    construct();
-
-    QJsonObject d = data();
-
-    m_pipeFiles = RamObjectList::getObject( d.value("pipeFiles").toString(), true);
-
-    this->setParent( this->project() );
-
-    connectEvents();
 }
 
 // PRIVATE SLOTS //

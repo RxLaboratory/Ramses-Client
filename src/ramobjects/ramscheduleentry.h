@@ -13,21 +13,19 @@ public:
 
     // STATIC METHODS //
 
-    static RamScheduleEntry *getObject(QString uuid, bool constructNew = false);
+    static RamScheduleEntry *get(QString uuid);
     static RamScheduleEntry* c(RamObject *o);
 
     // METHODS
 
     explicit RamScheduleEntry(RamUser *user, QDateTime date);
+    RamScheduleEntry(QString uuid);
 
     RamUser *user() const;
     const QDateTime &date() const;
 
     RamStep *step() const;
     void setStep(RamStep *newStep);
-
-protected:
-    RamScheduleEntry(QString uuid);
 
 private slots:
     void stepRemoved();

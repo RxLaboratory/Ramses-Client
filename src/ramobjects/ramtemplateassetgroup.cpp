@@ -4,11 +4,9 @@
 
 // STATIC //
 
-RamTemplateAssetGroup *RamTemplateAssetGroup::getObject(QString uuid, bool constructNew)
+RamTemplateAssetGroup *RamTemplateAssetGroup::get(QString uuid)
 {
-    RamObject *obj = RamObject::getObject(uuid);
-    if (!obj && constructNew) return new RamTemplateAssetGroup( uuid );
-    return qobject_cast<RamTemplateAssetGroup*>( obj );
+    return c( RamObject::get(uuid, TemplateAssetGroup) );
 }
 
 RamTemplateAssetGroup *RamTemplateAssetGroup::c(RamObject *o)
@@ -24,6 +22,12 @@ RamTemplateAssetGroup::RamTemplateAssetGroup(QString shortName, QString name) :
     construct();
 }
 
+RamTemplateAssetGroup::RamTemplateAssetGroup(QString uuid):
+    RamObject(uuid, TemplateAssetGroup)
+{
+    construct();
+}
+
 // PUBLIC SLOTS //
 
 void RamTemplateAssetGroup::edit(bool show)
@@ -31,14 +35,6 @@ void RamTemplateAssetGroup::edit(bool show)
     if (!ui_editWidget) setEditWidget(new TemplateAssetGroupEditWidget(this));
 
     if (show) showEdit();
-}
-
-// PROTECTED //
-
-RamTemplateAssetGroup::RamTemplateAssetGroup(QString uuid):
-    RamObject(uuid, TemplateAssetGroup)
-{
-    construct();
 }
 
 // PRIVATE //

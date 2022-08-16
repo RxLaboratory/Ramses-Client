@@ -8,11 +8,9 @@
 
 // STATIC //
 
-RamShot *RamShot::getObject(QString uuid, bool constructNew )
+RamShot *RamShot::get(QString uuid)
 {
-    RamObject *obj = RamItem::getObject(uuid);
-    if (!obj && constructNew) return new RamShot( uuid );
-    return qobject_cast<RamShot*>( obj );
+    return c( RamObject::get(uuid, Shot) );
 }
 
 RamShot *RamShot::c(RamObject *obj)
@@ -28,12 +26,12 @@ RamShot::RamShot(QString shortName, QString name, RamSequence *sequence):
     Q_ASSERT_X(sequence, "RamAsset(shortname, name, assetgroup)", "Sequence can't be null!");
     construct();
     insertData("sequence", sequence->uuid() );
-    m_assets = new RamItemTable(shortName + "-Assets", name + " Assets", sequence->project()->steps(), this);
+    m_assets = new RamObjectList(shortName + "-Assets", name + " | Assets", Asset, RamObjectList::ListObject, this);
 }
 
 RamSequence *RamShot::sequence() const
 {
-    return RamSequence::getObject( getData("sequence").toString(), true);
+    return RamSequence::get( getData("sequence").toString() );
 }
 
 void RamShot::setSequence(RamSequence *sequence)
@@ -51,7 +49,7 @@ void RamShot::setDuration(const qreal &duration)
     insertData("duration", duration);
 }
 
-RamItemTable *RamShot::assets() const
+RamObjectList *RamShot::assets() const
 {
     return m_assets;
 }
@@ -111,7 +109,7 @@ RamShot::RamShot(QString uuid):
     construct();
     // Get asset list
     QJsonObject d = data();
-    m_assets = RamItemTable::getObject( d.value("assets").toString(), true );
+    m_assets = RamObjectList::get( d.value("assets").toString(), ObjectList);
 }
 
 QString RamShot::folderPath() const

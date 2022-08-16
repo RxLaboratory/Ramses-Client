@@ -14,12 +14,13 @@ public:
 
     // STATIC //
 
-    static RamPipe *getObject(QString uuid, bool constructNew = false);
+    static RamPipe *get(QString uuid);
     static RamPipe *c(RamObject *o);
 
     // OTHER //
 
     RamPipe(RamStep *output, RamStep *input);
+    RamPipe(QString uuid);
 
     RamStep *outputStep() const;
     void setOutputStep(RamStep *outputStep);
@@ -32,9 +33,6 @@ public:
 
 public slots:
     virtual void edit(bool show = true) override;
-
-protected:
-    RamPipe(QString uuid);
 
 private slots:
     // updates the name

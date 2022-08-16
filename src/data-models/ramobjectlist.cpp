@@ -5,16 +5,30 @@
 
 // STATIC //
 
-RamObjectList *RamObjectList::getObject(QString uuid, bool constructNew)
+RamObjectList *RamObjectList::m_emptyList = nullptr;
+
+RamObjectList *RamObjectList::get(QString uuid, ObjectType type)
 {
-    RamAbstractObject *obj = RamAbstractObject::getObject(uuid);
-    if (!obj && constructNew) return new RamObjectList(uuid);
-    return static_cast<RamObjectList*>( obj ) ;
+    RamAbstractObject *obj = RamAbstractObject::get(uuid);
+    if (obj) return static_cast<RamObjectList*>( obj ) ;
+
+    switch(type)
+    {
+    case ItemTable: return new RamItemTable(uuid);
+    case StepStatusHistory: return new RamStepStatusHistory(uuid);
+    default: return new RamObjectList(uuid);
+    }
 }
 
 RamObjectList *RamObjectList::c(QObject *obj)
 {
     return qobject_cast<RamObjectList*>(obj);
+}
+
+RamObjectList *RamObjectList::emptyList()
+{
+    if (m_emptyList) m_emptyList = new RamObjectList("emptylist", "Empty", Object, Temp);
+    return m_emptyList;
 }
 
 RamObject *RamObjectList::at(QModelIndex i)
@@ -26,18 +40,46 @@ RamObject *RamObjectList::at(QModelIndex i)
 
 // PUBLIC //
 
-RamObjectList::RamObjectList(QString shortName, QString name, QObject *parent, DataListMode mode):
+RamObjectList::RamObjectList(QString shortName, QString name, ObjectType type, DataListMode mode, QObject *parent):
     QAbstractTableModel(parent),
-    RamAbstractObject(shortName, name, ObjectList, mode != Object)
+    RamAbstractObject(shortName, name, ObjectList, mode != ListObject)
 {
     construct(parent);
     m_dataMode = mode;
+    m_contentType = type;
 
-    m_tableName = shortName;
-
-    if (mode == Table)
+    if (mode == ListObject)
+    {
+        insertData("type", objectTypeName( m_contentType ));
+    }
+    else if (mode == Table)
     {
         connect(DBInterface::instance(), &DBInterface::dataReset, this, &RamObjectList::reload);
+    }
+}
+
+RamObjectList::RamObjectList(QString uuid, QObject *parent):
+    QAbstractTableModel(parent),
+    RamAbstractObject(uuid, ObjectList)
+{
+    construct(parent);
+    m_dataMode = ListObject;
+    if (uuid.toLower() == "emptylist")
+    {
+        m_dataMode = Temp;
+        return;
+    }
+
+    m_contentType = objectTypeFromName( getData("type").toString() );
+
+    // Populate the list
+    QJsonObject d = RamAbstractObject::data();
+    QJsonArray arr = d.value("list").toArray();
+    for (int i = 0; i < arr.count(); i++)
+    {
+        QString uuid = arr.at(i).toString();
+        RamObject *obj = RamObject::get(uuid, m_contentType);
+        append(obj);
     }
 }
 
@@ -231,9 +273,9 @@ QJsonObject RamObjectList::reloadData()
     QStringList uuids;
     if (m_dataMode == Table)
     {
-        uuids = DBInterface::instance()->tableData(m_tableName);
+        uuids = DBInterface::instance()->tableData( objectTypeName(m_contentType) );
     }
-    else if (m_dataMode == Object)
+    else if (m_dataMode == ListObject)
     {
         QJsonArray arr = d.value("list").toArray();
         for (int i = 0; i < arr.count(); i++)
@@ -245,7 +287,8 @@ QJsonObject RamObjectList::reloadData()
     for (int i = 0; i < uuids.count(); i++)
     {
         QString uuid = uuids.at(i);
-        RamObject *o = RamObject::getObject( uuid );
+        RamObject *o = RamObject::get( uuid, m_contentType );
+        if (!o) continue;
         m_objectList << o;
         m_objects[uuid] = o;
         connectObject(o);
@@ -332,33 +375,10 @@ void RamObjectList::reload()
 
 // PROTECTED //
 
-RamObjectList::RamObjectList(QString uuid, QObject *parent):
-    QAbstractTableModel(parent),
-    RamAbstractObject(uuid, ObjectList)
-{
-    construct(parent);
-    m_dataMode = Object;
-    if (uuid.toLower() == "emptylist")
-    {
-        m_dataMode = Temp;
-        return;
-    }
-
-    // Populate the list
-    QJsonObject d = RamAbstractObject::data();
-    QJsonArray arr = d.value("list").toArray();
-    for (int i = 0; i < arr.count(); i++)
-    {
-        QString uuid = arr.at(i).toString();
-        RamObject *obj = RamObject::getObject(uuid, true);
-        append(obj);
-    }
-}
-
 void RamObjectList::connectObject(RamObject *obj)
 {
-    connect( obj, SIGNAL(removed(RamObject*)), this, SLOT(removeAll(RamObject*)));
-    connect( obj, SIGNAL(changed(RamObject*)), this, SLOT(objectChanged(RamObject*)));
+    connect( obj, SIGNAL(removed(RamObject*)), this, SLOT(removeAll(RamObject*)) );
+    connect( obj, &RamObject::dataChanged, this, &RamObjectList::objectChanged);
 }
 
 int RamObjectList::objRow(RamObject *obj) const
@@ -388,7 +408,7 @@ void RamObjectList::listChanged()
 {
     switch(m_dataMode)
     {
-    case Object:
+    case ListObject:
     {
         // Convert to json array and save
         QJsonArray arr;

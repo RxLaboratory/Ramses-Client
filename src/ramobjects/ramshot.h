@@ -15,13 +15,14 @@ public:
 
     // STATIC METHODS //
 
-    static RamShot *getObject(QString uuid, bool constructNew = false);
+    static RamShot *get(QString uuid);
     // Short for qobject_cast<RamShot*>
     static RamShot *c(RamObject *obj);
 
     // METHODS //
 
     RamShot(QString shortName, QString name, RamSequence *sequence);
+    RamShot(QString uuid);
 
     RamSequence *sequence() const;
     void setSequence(RamSequence *sequence);
@@ -29,7 +30,7 @@ public:
     qreal duration() const;
     void setDuration(const qreal &duration);
 
-    RamItemTable *assets() const;
+    RamObjectList *assets() const;
     RamAsset *assetAt(int row) const;
 
     virtual QString filterUuid() const override;
@@ -40,13 +41,12 @@ public slots:
     virtual void edit(bool show = true) override;
 
 protected:
-    RamShot(QString uuid);
     virtual QString folderPath() const override;
 
 private:
     void construct();
 
-    RamItemTable *m_assets;
+    RamObjectList *m_assets;
 };
 
 #endif // RAMSHOT_H

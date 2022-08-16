@@ -35,14 +35,14 @@ RamUser *Ramses::loginHashed(QString username, QString hashedPassword)
     }
 
     // Set current user
-    m_currentUser = RamUser::getObject(uuid, true);
+    m_currentUser = RamUser::get(uuid);
 
     // Set current project
     if (m_currentUser)
     {
         QSettings *uSettings = m_currentUser->settings();
         QString projUuid = uSettings->value("ramses/currentProject", "").toString();
-        if (projUuid != "") setCurrentProject( RamProject::getObject(projUuid) );
+        if (projUuid != "") setCurrentProject( RamProject::get(projUuid) );
     }
 
     emit loggedIn(m_currentUser);
@@ -295,13 +295,13 @@ Ramses::Ramses(QObject *parent):
     qDebug() << "Initialising Ramses";
     m_dbi = DBInterface::instance();
 
-    m_users = new RamObjectList("RamUser", "Users", this, RamObjectList::Table);
+    m_users = new RamObjectList("RamUser", "Users", User, RamObjectList::Table, this);
     m_states = new RamStateList(this);
-    m_projects = new RamObjectList("RamProject", "Projects", this, RamObjectList::Table);
-    m_templateSteps = new RamObjectList("RamTemplateStep", "Template steps", this, RamObjectList::Table);
-    m_templateAssetGroups = new RamObjectList("RamTemplateAssetGroup", "Template asset groups", this, RamObjectList::Table);
-    m_fileTypes = new RamObjectList("RamFileType", "File types", this, RamObjectList::Table);
-    m_applications = new RamObjectList("RamApplication", "Applications", this, RamObjectList::Table);
+    m_projects = new RamObjectList("RamProject", "Projects", Project, RamObjectList::Table, this);
+    m_templateSteps = new RamObjectList("RamTemplateStep", "Template steps", TemplateStep, RamObjectList::Table, this);
+    m_templateAssetGroups = new RamObjectList("RamTemplateAssetGroup", "Template asset groups", TemplateAssetGroup, RamObjectList::Table, this);
+    m_fileTypes = new RamObjectList("RamFileType", "File types", FileType, RamObjectList::Table, this);
+    m_applications = new RamObjectList("RamApplication", "Applications", Application, RamObjectList::Table, this);
 
     this->setObjectName( "Ramses Class" );
 

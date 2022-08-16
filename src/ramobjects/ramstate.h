@@ -10,20 +10,18 @@ public:
 
     // STATIC METHODS //
 
-    static RamState *getObject(QString uuid, bool constructNew = false);
+    static RamState *get(QString uuid);
     static RamState *c(RamObject *o);
 
     // METHODS //
 
     RamState(QString shortName, QString name);
+    RamState(QString uuid);
 
     int completionRatio() const;
     void setCompletionRatio(int completionRatio);
 
     virtual QString details() const override;
-
-protected:
-    RamState(QString uuid);
 
 public slots:
     virtual void edit(bool show = true) override;

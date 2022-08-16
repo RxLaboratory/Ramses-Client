@@ -19,12 +19,13 @@ public:
 
     // STATIC //
 
-    static RamItem *getObject(QString uuid, bool constructNew = false);
+    static RamItem *get(QString uuid);
     static RamItem *c(RamObject *o);
 
     // OTHER //
 
     RamItem(QString shortName, QString name, RamStep::Type productionType, RamProject *project );
+    RamItem(QString uuid);
 
     RamProject *project() const;
     RamStep::Type productionType() const;
@@ -57,7 +58,6 @@ signals:
     void statusChanged(RamItem *, RamStep *);
 
 protected:
-    RamItem(QString uuid);
     // Immutable data
     // item can't be transfered (yet)
     // and shots/assets can't be converted to one another

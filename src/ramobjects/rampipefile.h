@@ -14,12 +14,13 @@ public:
 
     // STATIC //
 
-    static RamPipeFile *getObject(QString uuid, bool constructNew = false);
+    static RamPipeFile *get(QString uuid);
     static RamPipeFile *c(RamObject *o);
 
     // OTHER //
 
     RamPipeFile(QString shortName, RamProject *project);
+    RamPipeFile(QString uuid);
 
     RamFileType *fileType() const;
     void setFileType(RamFileType *newFileType);
@@ -33,9 +34,6 @@ public:
 
 public slots:
     virtual void edit(bool show = true) override;
-
-protected:
-    RamPipeFile(QString uuid);
 
 private:
     void construct();

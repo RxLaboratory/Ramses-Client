@@ -4,18 +4,22 @@
 #include "ramitem.h"
 #include "ramstep.h"
 #include "ramstatus.h"
+#include "ramasset.h"
 #include "statushistorywidget.h"
 #include "mainwindow.h"
 
-RamStepStatusHistory *RamStepStatusHistory::getObject(QString uuid, bool constructNew)
+RamStepStatusHistory *RamStepStatusHistory::get(QString uuid)
 {
-    RamObjectList *obj = RamObjectList::getObject(uuid);
-    if (!obj && constructNew) return new RamStepStatusHistory( uuid );
-    return qobject_cast<RamStepStatusHistory*>( obj );
+    return c( RamObjectList::get(uuid, StepStatusHistory) );
+}
+
+RamStepStatusHistory *RamStepStatusHistory::c(RamObjectList *o)
+{
+    return qobject_cast<RamStepStatusHistory*>(o);
 }
 
 RamStepStatusHistory::RamStepStatusHistory(RamStep *step, RamItem *item):
-    RamObjectList(step->shortName(), step->name(), item)
+    RamObjectList(step->shortName(), step->name(), Status, ListObject, item)
 {
     construct();
 
@@ -82,8 +86,12 @@ RamStepStatusHistory::RamStepStatusHistory(QString uuid, QObject *parent):
 
     QJsonObject d = RamAbstractObject::data();
 
-    m_item = RamItem::getObject(d.value("item").toString(), true);
-    m_step = RamStep::getObject(d.value("step").toString(), true);
+
+    m_step = RamStep::get(d.value("step").toString() );
+    RamStep::Type t = m_step->type();
+    if (t == RamStep::ShotProduction) m_item = RamShot::get(d.value("item").toString() );
+    else if (t == RamStep::AssetProduction) m_item = RamAsset::get(d.value("item").toString() );
+    else m_item = RamItem::get(d.value("item").toString() );
 
     connectEvents();
 }

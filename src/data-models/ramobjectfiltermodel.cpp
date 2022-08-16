@@ -2,7 +2,7 @@
 
 RamObjectFilterModel::RamObjectFilterModel(QObject *parent) : QSortFilterProxyModel(parent)
 {
-    m_emptyList = RamObjectList::getObject("emptylist", true);
+    m_emptyList = RamObjectList::emptyList();
     setSourceModel(m_emptyList);
 }
 

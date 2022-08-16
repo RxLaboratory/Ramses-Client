@@ -13,12 +13,13 @@ public:
 
     // STATIC METHODS //
 
-    static RamSequence *getObject(QString uuid, bool constructNew = false);
+    static RamSequence *get(QString uuid);
     static RamSequence *c(RamObject *o);
 
     // METHODS //
 
     RamSequence(QString shortName, QString name, RamProject *project);
+    RamSequence(QString uuid);
 
     int shotCount() const;
     double duration() const;
@@ -29,9 +30,6 @@ public:
 
 public slots:
     virtual void edit(bool show = true) override;
-
-protected:
-    RamSequence(QString uuid);
 
 private:
     void construct();

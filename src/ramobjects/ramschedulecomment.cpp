@@ -2,11 +2,9 @@
 
 // STATIC //
 
-RamScheduleComment *RamScheduleComment::getObject(QString uuid, bool constructNew)
+RamScheduleComment *RamScheduleComment::get(QString uuid)
 {
-    RamObject *obj = RamObject::getObject(uuid);
-    if (!obj && constructNew) return new RamScheduleComment( uuid );
-    return qobject_cast<RamScheduleComment*>( obj );
+    return c( RamObject::get(uuid, ScheduleComment) );
 }
 
 RamScheduleComment *RamScheduleComment::c(RamObject *o)
@@ -24,6 +22,17 @@ RamScheduleComment::RamScheduleComment(RamProject *project)
     insertData("project", project->uuid() );
 }
 
+RamScheduleComment::RamScheduleComment(QString uuid):
+    RamObject(uuid, ObjectType::ScheduleComment)
+{
+    construct();
+
+    QJsonObject d = data();
+    m_project = RamProject::get( d.value("project").toString() );
+
+    this->setParent(m_project);
+}
+
 QDateTime RamScheduleComment::date() const
 {
     return QDateTime::fromString( getData("date").toString(), "yyyy-MM-dd hh:mm:ss" );
@@ -32,19 +41,6 @@ QDateTime RamScheduleComment::date() const
 void RamScheduleComment::setDate(const QDateTime &newDate)
 {
     insertData("date", newDate.toString("yyyy-MM-dd hh:mm:ss"));
-}
-
-// PROTECTED //
-
-RamScheduleComment::RamScheduleComment(QString uuid):
-    RamObject(uuid, ObjectType::ScheduleComment)
-{
-    construct();
-
-    QJsonObject d = data();
-    m_project = RamProject::getObject( d.value("project").toString(), true);
-
-    this->setParent(m_project);
 }
 
 // PRIVATE //

@@ -2,25 +2,35 @@
 #include "ramstate.h"
 #include "ramstatus.h"
 
-// STATIC //
-
-RamItemTable *RamItemTable::getObject(QString uuid, bool constructNew)
-{
-    RamObjectList *obj = RamObjectList::getObject(uuid);
-    if (!obj && constructNew) return new RamItemTable(uuid);
-    return static_cast<RamItemTable*>( obj ) ;
-}
-
 // PUBLIC //
 
-RamItemTable::RamItemTable(QString shortName, QString name, RamObjectList *steps, QObject *parent, DataListMode mode):
-    RamObjectList(shortName, name, parent, mode)
+RamItemTable *RamItemTable::get(QString uuid)
+{
+    return c( RamObjectList::get(uuid, ItemTable) );
+}
+
+RamItemTable *RamItemTable::c(RamObjectList *o)
+{
+    return qobject_cast<RamItemTable*>(o);
+}
+
+RamItemTable::RamItemTable(QString shortName, QString name, RamObjectList *steps, ObjectType type, QObject *parent, DataListMode mode):
+    RamObjectList(shortName, name, type, mode, parent)
 {
     construct();
     m_steps = steps;
-    if (mode == Object)
+    if (mode == ListObject)
         this->insertData("steps", steps->uuid());
     connectEvents();
+}
+
+RamItemTable::RamItemTable(QString uuid, QObject *parent):
+    RamObjectList(uuid, parent)
+{
+    construct();
+    // Populate the list of steps
+    QJsonObject d = RamAbstractObject::data();
+    m_steps = RamObjectList::get( d.value("steps").toString(), ObjectList );
 }
 
 int RamItemTable::columnCount(const QModelIndex &parent) const
@@ -166,17 +176,6 @@ QVariant RamItemTable::headerData(int section, Qt::Orientation orientation, int 
         return reinterpret_cast<quintptr>( stepAt(section) );
 
     return QAbstractTableModel::headerData(section, orientation, role);
-}
-
-// PROTECTED //
-
-RamItemTable::RamItemTable(QString uuid, QObject *parent):
-    RamObjectList(uuid, parent)
-{
-    construct();
-    // Populate the list of steps
-    QJsonObject d = RamAbstractObject::data();
-    m_steps = RamObjectList::getObject( d.value("steps").toString(), true );
 }
 
 // PRIVATE SLOTS //

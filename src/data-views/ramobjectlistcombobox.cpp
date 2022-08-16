@@ -42,7 +42,7 @@ void RamObjectListComboBox::setList(RamObjectList *list)
     }
     else
     {
-        this->setModel(RamObjectList::getObject("emptyList", true));
+        this->setModel( RamObjectList::emptyList() );
     }
 }
 
