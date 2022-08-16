@@ -1,5 +1,6 @@
 #include "ramstepstatushistory.h"
 
+#include "duqf-utils/guiutils.h"
 #include "ramitem.h"
 #include "ramstep.h"
 #include "ramstatus.h"

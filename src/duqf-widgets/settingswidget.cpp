@@ -1,5 +1,7 @@
 #include "settingswidget.h"
 
+#include "duqf-utils/guiutils.h"
+
 SettingsWidget::SettingsWidget(QString title, QWidget *parent) :
     QWidget(parent)
 {
@@ -35,7 +37,7 @@ void SettingsWidget::setupUi(QString title)
     horizontalLayout->setContentsMargins(0, 0, 0, 0);
 
     m_splitter = new QSplitter(this);
-    m_splitter->setHandleWidth(9);
+    m_splitter->setHandleWidth(6);
 
     m_mainList = new QListWidget(this);
     m_mainList->setFrameShape(QFrame::NoFrame);

@@ -1,6 +1,7 @@
 #include "loginpage.h"
 #include "datacrypto.h"
 
+#include "duqf-utils/guiutils.h"
 #include "mainwindow.h"
 
 LoginPage::LoginPage(QWidget *parent) :

@@ -1,6 +1,7 @@
 #include "databasecreatewidget.h"
 
 #include "dbinterface.h"
+#include "duqf-utils/guiutils.h"
 #include "duqf-utils/utils.h"
 #include "ramuser.h"
 #include "ramses.h"
