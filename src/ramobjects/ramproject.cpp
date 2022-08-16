@@ -144,7 +144,7 @@ double RamProject::duration() const
     for (int i = 0; i < m_sequences->rowCount(); i++)
     {
         RamShot *shot = RamShot::c( m_sequences->at(i) );
-        duration += shot->duration();
+        if (shot) duration += shot->duration();
     }
     return duration;
 }
@@ -374,37 +374,7 @@ void RamProject::getCreateLists()
 {
     QJsonObject d = data();
 
-    QString uuid = d.value("sequences").toString();
-    if (uuid == "") m_sequences = new RamObjectList("sqnc", "Sequences", Sequence, RamObjectList::ListObject, this);
-    else m_sequences = RamObjectList::get( uuid, ObjectList);
-    m_sequences->setParent(this);
-    d.insert("sequences", m_sequences->uuid());
-
-    uuid = d.value("assetGroups").toString();
-    if (uuid == "") m_assetGroups = new RamObjectList("asstgrp", "Asset groups", AssetGroup, RamObjectList::ListObject, this);
-    else m_assetGroups = RamObjectList::get( uuid, ObjectList);
-    m_assetGroups->setParent(this);
-    d.insert("assetGroups", m_assetGroups->uuid());
-
-    uuid = d.value("pipeline").toString();
-    if (uuid == "") m_pipeline = new RamObjectList("ppln", "Pipeline", Pipe, RamObjectList::ListObject, this);
-    else m_pipeline = RamObjectList::get( uuid, ObjectList);
-    m_pipeline->setParent(this);
-    d.insert("pipeline", m_pipeline->uuid());
-
-    uuid = d.value("steps").toString();
-    if (uuid == "") m_steps = new RamObjectList("stp", "Steps", Step, RamObjectList::ListObject, this);
-    else m_steps = RamObjectList::get( uuid, ObjectList);
-    m_steps->setParent(this);
-    d.insert("steps", m_steps->uuid());
-
-    uuid = d.value("pipeFiles").toString();
-    if (uuid == "") m_pipeFiles = new RamObjectList("ppfl", "Pipe files", PipeFile, RamObjectList::ListObject, this);
-    else m_pipeFiles = RamObjectList::get( uuid, ObjectList);
-    m_pipeFiles->setParent(this);
-    d.insert("pipeFiles", m_pipeFiles->uuid());
-
-    uuid = d.value("shots").toString();
+    QString uuid = d.value("shots").toString();
     if (uuid == "") m_shots = new RamItemTable("sht", "Shots", Shot, this);
     else m_shots = RamItemTable::get( uuid );
     m_shots->setParent(this);
@@ -422,11 +392,41 @@ void RamProject::getCreateLists()
     m_users->setParent(this);
     d.insert("users", m_users->uuid());
 
-    uuid = d.value("users").toString();
+    uuid = d.value("scheduleComments").toString();
     if (uuid == "") m_scheduleComments = new RamObjectList("schdlcmmnt", "Schedule comments", ScheduleComment, RamObjectList::ListObject, this);
     else m_scheduleComments = RamObjectList::get( uuid, ObjectList);
     m_scheduleComments->setParent(this);
     d.insert("scheduleComments", m_scheduleComments->uuid());
+
+    uuid = d.value("pipeFiles").toString();
+    if (uuid == "") m_pipeFiles = new RamObjectList("ppfl", "Pipe files", PipeFile, RamObjectList::ListObject, this);
+    else m_pipeFiles = RamObjectList::get( uuid, ObjectList);
+    m_pipeFiles->setParent(this);
+    d.insert("pipeFiles", m_pipeFiles->uuid());
+
+    uuid = d.value("steps").toString();
+    if (uuid == "") m_steps = new RamObjectList("stp", "Steps", Step, RamObjectList::ListObject, this);
+    else m_steps = RamObjectList::get( uuid, ObjectList);
+    m_steps->setParent(this);
+    d.insert("steps", m_steps->uuid());
+
+    uuid = d.value("pipeline").toString();
+    if (uuid == "") m_pipeline = new RamObjectList("ppln", "Pipeline", Pipe, RamObjectList::ListObject, this);
+    else m_pipeline = RamObjectList::get( uuid, ObjectList);
+    m_pipeline->setParent(this);
+    d.insert("pipeline", m_pipeline->uuid());
+
+    uuid = d.value("sequences").toString();
+    if (uuid == "") m_sequences = new RamObjectList("sqnc", "Sequences", Sequence, RamObjectList::ListObject, this);
+    else m_sequences = RamObjectList::get( uuid, ObjectList);
+    m_sequences->setParent(this);
+    d.insert("sequences", m_sequences->uuid());
+
+    uuid = d.value("assetGroups").toString();
+    if (uuid == "") m_assetGroups = new RamObjectList("asstgrp", "Asset groups", AssetGroup, RamObjectList::ListObject, this);
+    else m_assetGroups = RamObjectList::get( uuid, ObjectList);
+    m_assetGroups->setParent(this);
+    d.insert("assetGroups", m_assetGroups->uuid());
 
     setData(d);
 }

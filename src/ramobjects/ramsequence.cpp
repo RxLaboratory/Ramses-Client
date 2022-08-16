@@ -91,6 +91,7 @@ void RamSequence::setProject(RamProject *project)
     m_shots->setList( m_project->shots() );
     m_shots->setFilterUuid( m_uuid );
     this->setParent( m_project );
+    insertData("project", project->uuid());
 }
 
 
