@@ -181,14 +181,12 @@ void LoginPage::loggedIn(RamUser *user)
 
         if (found)
         {
-            qDebug() << "test";
             settings.beginWriteArray("database/recent");
             settings.setArrayIndex(historyIndex);
 
             // Save credentials
             if (ui_saveUsername->isChecked())
             {
-                qDebug() << "test";
                 // Encrypt
                 DataCrypto *crypto = DataCrypto::instance();
 
