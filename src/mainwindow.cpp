@@ -631,18 +631,25 @@ void MainWindow::duqf_updateAvailable(QJsonObject updateInfo)
         double goal = updateInfo.value("fundingGoal").toDouble(4000);
         if (goal > 0) {
             double ratio = month / goal * 100;
-            duqf_fundingBar = new QProgressBar(this);
-            duqf_fundingBar->setObjectName("fundingBar");
-            duqf_fundingBar->setMaximumWidth(75);
-            duqf_fundingBar->setFormat("♥ donate");
+            if (!duqf_fundingBar)
+            {
+                duqf_fundingBar = new QProgressBar(this);
+                duqf_fundingBar->setObjectName("fundingBar");
+                duqf_fundingBar->setMaximumWidth(75);
+                duqf_fundingBar->setFormat("♥ donate");
+                duqf_fundingBar->installEventFilter(this);
+                mainStatusBar->addPermanentWidget(duqf_fundingBar);
+            }
             duqf_fundingBar->setMaximum(goal);
             duqf_fundingBar->setValue(month);
-            duqf_fundingBar->setToolTip( "This month, we've collected $" % QString::number(month) %
-                                         ". That's " % QString::number(ratio, 'f', 0) % " % of our monthly goal." %
-                                         "Thanks for your support!\n\n" %
-                                         "Click to Donate now!\nor go to: " + QString(URL_DONATION));
-            duqf_fundingBar->installEventFilter(this);
-            mainStatusBar->addPermanentWidget(duqf_fundingBar);
+            duqf_fundingBar->setToolTip( tr("This month, we've collected $%1.\n"
+                                            "That's %2 % of our monthly goal.\n"
+                                            "Thanks for your support!\n\n"
+                                            "Click to Donate now!\nor go to: %3").arg(
+                                             QString::number(month),
+                                             QString::number(ratio, 'f', 0),
+                                             QString(URL_DONATION)
+                                             ));
         }
     }
 

@@ -61,7 +61,7 @@ private:
     QToolButton *duqf_settingsButton;
     AboutDialog *duqf_aboutDialog;
     QAction *duqf_actionShowHide;
-    QProgressBar *duqf_fundingBar;
+    QProgressBar *duqf_fundingBar = nullptr;
     QSystemTrayIcon *trayIcon;
     SettingsWidget *settingsWidget;
     QLabel *title;

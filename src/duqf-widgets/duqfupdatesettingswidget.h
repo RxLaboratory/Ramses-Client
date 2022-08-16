@@ -8,8 +8,6 @@
 #include <QPushButton>
 #include <QSettings>
 
-#include "duqf-widgets/duqfupdatedialog.h"
-
 class DuQFUpdateSettingsWidget : public QWidget
 {
     Q_OBJECT
