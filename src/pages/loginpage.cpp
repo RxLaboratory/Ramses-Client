@@ -19,15 +19,6 @@ LoginPage::LoginPage(QWidget *parent) :
     connectEvents();
 }
 
-void LoginPage::showEvent(QShowEvent *event)
-{
-    if(event->spontaneous())
-    {
-        QWidget::showEvent(event);
-        return;
-    }
-}
-
 void LoginPage::createDatabase()
 {
     if (!ui_databaseCreateWidget)
@@ -212,10 +203,11 @@ void LoginPage::loggedIn(RamUser *user)
         ui_saveUsername->setText("");
 }
 
-void LoginPage::loggedOut()
+void LoginPage::loggedOut(QString reason)
 {
+    if (reason == "") reason = tr("Ready...");
     ui_loginWidget->show();
-    ui_connectionStatusLabel->setText("Ready");
+    ui_connectionStatusLabel->setText(reason);
 }
 
 void LoginPage::loginButton_clicked()
@@ -236,19 +228,19 @@ void LoginPage::loginButton_clicked()
     // Set database
     DBInterface::instance()->setDataFile( ui_dataBaseBox->currentData().toString() );
 
+    RamUser *user;
+
     if (ui_passwordEdit->text() == "")
     {
-        m_ramses->loginHashed(ui_usernameEdit->text(), m_hashedPassword);
+        user = m_ramses->loginHashed(ui_usernameEdit->text(), m_hashedPassword);
     }
     else
     {
-        m_ramses->login(ui_usernameEdit->text(), ui_passwordEdit->text());
+        user = m_ramses->login(ui_usernameEdit->text(), ui_passwordEdit->text());
     }
-}
 
-void LoginPage::serverSettingsButton_clicked()
-{
-    emit serverSettings();
+    if (!user) freeze();
+    else m_failedAttempts = 0;
 }
 
 void LoginPage::toggleSaveUsername(bool enabled)
@@ -308,7 +300,7 @@ void LoginPage::setupUi()
     loginLayout->setContentsMargins(0,0,0,0);
 
     QHBoxLayout *dataBaseLayout = new QHBoxLayout();
-    dataBaseLayout->setSpacing(3);
+    dataBaseLayout->setSpacing(0);
     dataBaseLayout->setContentsMargins(0,0,0,0);
     loginLayout->addLayout(dataBaseLayout);
 
@@ -317,18 +309,18 @@ void LoginPage::setupUi()
 
     ui_settingsDBButton = new QPushButton(this);
     ui_settingsDBButton->setIcon(QIcon(":/icons/settings"));
-    ui_settingsDBButton->setToolTip("Database settings");
+    ui_settingsDBButton->setToolTip(tr("Database settings"));
     ui_settingsDBButton->setEnabled(false);
     dataBaseLayout->addWidget(ui_settingsDBButton);
 
     ui_openDBButton = new QPushButton(this);
     ui_openDBButton->setIcon(QIcon(":/icons/open"));
-    ui_settingsDBButton->setToolTip("Open database");
+    ui_openDBButton->setToolTip(tr("Open database"));
     dataBaseLayout->addWidget(ui_openDBButton);
 
     ui_createDBButton = new QPushButton(this);
     ui_createDBButton->setIcon(QIcon(":/icons/add"));
-    ui_settingsDBButton->setToolTip("Create new database");
+    ui_createDBButton->setToolTip(tr("Create new database"));
     dataBaseLayout->addWidget(ui_createDBButton);
 
     dataBaseLayout->setStretch(0, 100);
@@ -340,7 +332,7 @@ void LoginPage::setupUi()
     loginLayout->addLayout(usernameLayout);
 
     ui_usernameEdit = new QLineEdit(this);
-    ui_usernameEdit->setPlaceholderText("Username");
+    ui_usernameEdit->setPlaceholderText(tr("Username"));
     usernameLayout->addWidget(ui_usernameEdit);
 
     ui_saveUsername = new QCheckBox("Save", this);
@@ -353,26 +345,31 @@ void LoginPage::setupUi()
 
     ui_passwordEdit = new QLineEdit(this);
     ui_passwordEdit->setEchoMode(QLineEdit::Password);
-    ui_passwordEdit->setPlaceholderText("Password");
+    ui_passwordEdit->setPlaceholderText(tr("Password"));
     passwordLayout->addWidget(ui_passwordEdit);
 
     ui_savePassword = new QCheckBox("Save", this);
     ui_savePassword->setEnabled(false);
     passwordLayout->addWidget(ui_savePassword);
 
-    ui_capsLockLabel = new QLabel("Be careful, CAPS LOCK is on!", this);
+    ui_capsLockLabel = new QLabel(tr("Be careful, CAPS LOCK is on!"), this);
     ui_capsLockLabel->setWordWrap(true);
     loginLayout->addWidget(ui_capsLockLabel);
 
-    ui_loginButton = new QPushButton("Log in", this);
+    ui_loginButton = new QPushButton(tr("Log in"), this);
     ui_loginButton->setIcon(QIcon(":/icons/login"));
     loginLayout->addWidget(ui_loginButton);
 
-    ui_connectionStatusLabel = new QLabel("Ready...", this);
+    ui_connectionStatusLabel = new QLabel(tr("Ready..."), this);
     ui_connectionStatusLabel->setEnabled(false);
     ui_connectionStatusLabel->setWordWrap(true);
     ui_connectionStatusLabel->setAlignment(Qt::AlignCenter);
     layout->addWidget(ui_connectionStatusLabel);
+
+    ui_waitLabel = new QLabel(this);
+    ui_waitLabel->setAlignment(Qt::AlignCenter);
+    ui_waitLabel->hide();
+    layout->addWidget(ui_waitLabel);
 
     layout->addStretch();
     mainLayout->addStretch();
@@ -407,27 +404,27 @@ void LoginPage::connectEvents()
 
 void LoginPage::freeze()
 {
+    m_failedAttempts++;
     ui_loginWidget->hide();
     int timeout = m_failedAttempts * m_failedAttempts;
     qDebug() << "Freezing login page for " + QString::number(timeout) + " seconds";
     m_failedTimer->start(timeout*1000);
     m_uiTimer->start(1000);
-
-    ui_connectionStatusLabel->setEnabled(true);
+    ui_waitLabel->show();
+    updateFreeze();
 }
 
 void LoginPage::unFreeze()
 {
     ui_loginWidget->show();
-    ui_connectionStatusLabel->setText("Ready.");
-    ui_connectionStatusLabel->setEnabled(false);
     m_uiTimer->stop();
     m_failedTimer->stop();
+    ui_waitLabel->hide();
 }
 
 void LoginPage::updateFreeze()
 {
     int remaining = m_failedTimer->remainingTime() / 1000;
-    ui_connectionStatusLabel->setText(QString::number(m_failedAttempts) + " failed Attempts.\nPlease wait " + QString::number(remaining) + " seconds.");
+    ui_waitLabel->setText(QString::number(m_failedAttempts) + " failed Attempts.\nPlease wait " + QString::number(remaining+1) + " seconds.");
 }
 

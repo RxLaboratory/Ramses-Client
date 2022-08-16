@@ -314,7 +314,6 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     connect(ui_networkButton,SIGNAL(clicked()),this, SLOT(networkButton_clicked()));
     connect(ui_refreshButton, SIGNAL(clicked()), Ramses::instance(), SLOT(refresh()));
     connect(mainStack,SIGNAL(currentChanged(int)), this, SLOT(pageChanged(int)));
-    connect(lp, &LoginPage::serverSettings, this, &MainWindow::serverSettings);
     connect(installPage, SIGNAL(login()), this, SLOT(home()));
     connect(DuQFLogger::instance(), &DuQFLogger::newLog, this, &MainWindow::log);
     connect(Daemon::instance(), &Daemon::raise, this, &MainWindow::raise);

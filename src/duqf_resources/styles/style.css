@@ -39,7 +39,7 @@ QLabel:disabled {
 /* PUSH BUTTONS */
 
 QPushButton {
-    background-color: @color-less-dark-grey;
+    background: none;
     border-radius: @padding-small;
     padding: @padding-small;
     border: none;
@@ -181,7 +181,7 @@ QCheckBox::indicator:disabled, QRadioButton::indicator:disabled {
 /* COMBO BOX */
 
 QComboBox {
-    background-color: @color-less-dark-grey;
+    background-color: @color-transparent;
     border-radius: @padding-small;
     padding: @padding-small;
     border:none;
@@ -223,7 +223,7 @@ QComboBox::down-arrow, QDateTimeEdit::down-arrow {
 }
 
 QComboBox QAbstractItemView {
-    background-color: @color-less-dark-grey;
+    background-color: none;
     selection-color: @color-light-grey;
     selection-background-color: @color-very-dark-grey;
     padding-left: @padding-small;

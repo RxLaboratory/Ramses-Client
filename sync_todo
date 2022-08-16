@@ -1,22 +1,27 @@
-1- fix all issues
-
 2- New login page & Settings data
-	- Create or open database
-		- create: UI to set server settings or offline, and local data path
-		- if server: connect and sync
-	- list of recent files
-	- current file server settings somewhere
-
-3- New login
-	- dbi login
-		- ldi login, if ok, load user and get uuid
-		- if online, rsi login using uuid
-		- if ok, set online, else setoffline and show error
+	- Alert on wrong password/username (login clicked)
+	- Open database button implementation
+	- Database settings button implementation
+	- Update all app settings
+	- check updates: should not add a progress bar
+	
+3- New welcome page on first launch
+	- if no recent files in the database
+	- Options to:
+		- Create a new database
+		- Open an existing database
+		
+4- Ramses and editors
+	- Local data signal dataReset()
+	- connect dataReset to Ramses
+	- test all editors
+	
+5A - Move all settings to database (RamSettings object)
   
 5- Sync process
 	separate thread: send changes since last sync to server, get new data.
 		on demand sync
-		periodic sync: Sync interval: option, default, 30s
+		periodic sync: Sync interval: option, default, 60s
 		get online
 		get offline (voluntarily)
 		on quit (see mainwindow closeEvent)

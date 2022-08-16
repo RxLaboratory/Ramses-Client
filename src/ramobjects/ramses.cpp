@@ -30,7 +30,7 @@ RamUser *Ramses::loginHashed(QString username, QString hashedPassword)
     if (uuid == "")
     {
         logout("Invalid user name or password.");
-        qDebug() << "Login failed, invalid use name or password";
+        qDebug() << "Login failed, invalid user name or password";
         return nullptr;
     }
 

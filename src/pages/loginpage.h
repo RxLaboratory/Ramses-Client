@@ -15,22 +15,15 @@ class LoginPage : public QWidget
 public:
     explicit LoginPage(QWidget *parent = nullptr);
 
-signals:
-    void serverSettings();
-
-protected:
-    void showEvent(QShowEvent *event) override;
-
 private slots:
     void createDatabase();
     void updateDatabaseRecentList();
     void databaseChanged(int i);
 
     void loggedIn(RamUser *user);
-    void loggedOut();
+    void loggedOut(QString reason);
 
     void loginButton_clicked();
-    void serverSettingsButton_clicked();
 
     void toggleSaveUsername(bool enabled);
     void toggleSavePassword(bool enabled);
@@ -52,6 +45,7 @@ private:
     QLabel *ui_capsLockLabel;
     QPushButton *ui_loginButton;
     QLabel *ui_connectionStatusLabel;
+    QLabel *ui_waitLabel;
     DatabaseCreateWidget *ui_databaseCreateWidget = nullptr;
 
     QString m_hashedPassword;
