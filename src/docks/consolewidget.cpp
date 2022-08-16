@@ -15,10 +15,11 @@ ConsoleWidget::ConsoleWidget(DuQFLoggerObject *o, QWidget *parent)
 
 void ConsoleWidget::levelIndexChanged(int index)
 {
-    qDebug() << index;
+    QSettings settings;
+    settings.setValue("console/level", index);
+
     switch(index) {
     case 0:
-        qDebug() << "data";
         ui_consoleEdit->setLevel( DuQFLog::Data );
         break;
     case 2:
@@ -59,8 +60,10 @@ void ConsoleWidget::setupUi(DuQFLoggerObject *o)
     ui_levelBox->addItem("Warning", DuQFLog::Warning);
     ui_levelBox->addItem("Critical", DuQFLog::Critical);
     ui_levelBox->addItem("Fatal", DuQFLog::Fatal);
-    ui_levelBox->setCurrentIndex(2);
     mainLayout->addWidget(ui_levelBox);
+
+    QSettings settings;
+    ui_levelBox->setCurrentIndex(settings.value("console/level", 2).toInt());
 }
 
 void ConsoleWidget::connectEvents()
