@@ -1,7 +1,6 @@
 #include "databaseeditwidget.h"
 
 #include "ramdatainterface/localdatainterface.h"
-#include "mainwindow.h"
 
 DatabaseEditWidget::DatabaseEditWidget(QWidget *parent) :
     QScrollArea(parent)
@@ -30,15 +29,7 @@ void DatabaseEditWidget::setDbFile(const QString &newDbFile)
     // Check if the address is valid
     bool sync = ui_serverEdit->address() != "";
     ui_syncBox->setChecked(sync);
-    setSync(sync);
-}
-
-void DatabaseEditWidget::setSync(bool s)
-{
-    if (s) ui_syncBox->setText(tr("Online (Sync)"));
-    else ui_syncBox->setText(tr("Offline (No sync)"));
-
-    ui_serverEdit->setEnabled(s);
+    ui_serverEdit->setEnabled(sync);
 }
 
 void DatabaseEditWidget::apply()
@@ -76,7 +67,7 @@ void DatabaseEditWidget::setupUi()
     mainLayout->setSpacing(3);
     mainLayout->setContentsMargins(3, 3, 3, 3);
 
-    ui_syncBox = new QCheckBox(tr("Offline (no sync)"), dummy);
+    ui_syncBox = new QCheckBox(tr("Online (Sync)"), dummy);
     mainLayout->addWidget(ui_syncBox);
 
     ui_serverEdit = new ServerEditWidget();
@@ -101,7 +92,7 @@ void DatabaseEditWidget::setupUi()
 
 void DatabaseEditWidget::connectEvents()
 {
-    connect(ui_syncBox, &QCheckBox::clicked, this, &DatabaseEditWidget::setSync);
+    connect(ui_syncBox, &QCheckBox::clicked, ui_serverEdit, &ServerEditWidget::setEnabled);
     connect(ui_resetButton, &QPushButton::clicked, this, &DatabaseEditWidget::reset);
     connect(ui_applyButton, &QPushButton::clicked, this, &DatabaseEditWidget::apply);
 }

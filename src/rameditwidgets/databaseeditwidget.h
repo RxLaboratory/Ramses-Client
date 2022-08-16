@@ -18,7 +18,6 @@ signals:
     void applied();
 
 private slots:
-    void setSync(bool s);
     void apply();
     void reset();
 

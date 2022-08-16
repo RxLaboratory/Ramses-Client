@@ -126,6 +126,7 @@ void DatabaseCreateWidget::setupUi()
     mainLayout->addWidget(ui_fileSelector);
 
     ui_tabWidget = new QTabWidget(dummy);
+    ui_tabWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
     mainLayout->addWidget(ui_tabWidget);
 
     QWidget *offlineWidget = new QWidget(ui_tabWidget);
@@ -200,11 +201,11 @@ void DatabaseCreateWidget::setupUi()
     ui_timeoutSpinBox->setSuffix(" seconds");
     onlineLayout->addWidget(ui_timeoutSpinBox, 3, 1);
 
-    mainLayout->addStretch();
-
-    ui_createButton = new QPushButton(tr("Create database!"));
+    ui_createButton = new QPushButton(tr("Create and log in"));
     ui_createButton->setIcon(QIcon(":/icons/apply"));
     mainLayout->addWidget(ui_createButton);
+
+    mainLayout->addStretch();
 
 #ifdef QT_DEBUG
     ui_fileSelector->setPath("/home/duduf/Documents/test.ramses");

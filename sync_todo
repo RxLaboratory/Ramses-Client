@@ -1,5 +1,4 @@
 2- New login page & Settings data
-	- Database settings button implementation
 	- Update all app settings
 	- check updates: should not add a progress bar
 	
