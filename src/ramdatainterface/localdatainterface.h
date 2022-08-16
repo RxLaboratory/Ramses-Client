@@ -25,6 +25,14 @@ public:
      */
     static LocalDataInterface *instance();
 
+    /**
+     * @brief setServerSettings updates the server settings for a given database
+     * @param dbFile The database to update
+     * @param c The new settings
+     */
+    static void setServerSettings(QString dbFile, ServerConfig c);
+    static ServerConfig getServerSettings(QString dbFile);
+
     // AUTHENTIFICATION //
 
     /**

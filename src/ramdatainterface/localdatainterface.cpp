@@ -10,6 +10,92 @@ LocalDataInterface *LocalDataInterface::instance()
     return _instance;
 }
 
+void LocalDataInterface::setServerSettings(QString dbFile, ServerConfig c)
+{
+    // Make sure the interface is ready
+    LocalDataInterface::instance();
+
+    QSqlDatabase db = QSqlDatabase::database("editdb");
+    // Set the SQLite file
+    db.close();
+    // Open
+    db.setDatabaseName(dbFile);
+    if (!db.open()) LocalDataInterface::instance()->log("Can't save data to the disk.", DuQFLog::Fatal);
+
+    // Remove previous settings
+    QSqlQuery qry = QSqlQuery(db);
+    if (!qry.exec("DELETE FROM RamServer;"))
+    {
+        QString errorMessage = "Something went wrong when saving the data.\nHere's some information:";
+        errorMessage += "\n> " + tr("Query:") + "\n" + qry.lastQuery();
+        errorMessage += "\n> " + tr("Database Error:") + "\n" + qry.lastError().databaseText();
+        errorMessage += "\n> " + tr("Driver Error:") + "\n" + qry.lastError().driverText();
+        LocalDataInterface::instance()->log(errorMessage, DuQFLog::Critical);
+
+        db.close();
+        return;
+    }
+
+    // Add new settings
+    QString q = "INSERT INTO RamServer (address, useSsl, updateDelay, timeout) "
+            "VALUES ('%1', %2, %3, %4)";
+
+    QString useSsl = "1";
+    if (!c.useSsl) useSsl = "0";
+    if (!qry.exec(q.arg(c.address, useSsl, QString::number(c.updateDelay), QString::number(c.timeout))))
+    {
+        QString errorMessage = "Something went wrong when saving the data.\nHere's some information:";
+        errorMessage += "\n> " + tr("Query:") + "\n" + qry.lastQuery();
+        errorMessage += "\n> " + tr("Database Error:") + "\n" + qry.lastError().databaseText();
+        errorMessage += "\n> " + tr("Driver Error:") + "\n" + qry.lastError().driverText();
+        LocalDataInterface::instance()->log(errorMessage, DuQFLog::Critical);
+    }
+
+    db.close();
+}
+
+ServerConfig LocalDataInterface::getServerSettings(QString dbFile)
+{
+    // Make sure the interface is ready
+    LocalDataInterface::instance();
+
+    QSqlDatabase db = QSqlDatabase::database("editdb");
+    // Set the SQLite file
+    db.close();
+    // Open
+    db.setDatabaseName(dbFile);
+    if (!db.open()) LocalDataInterface::instance()->log("Can't save data to the disk.", DuQFLog::Fatal);
+
+    // Get settings
+    QSqlQuery qry = QSqlQuery(db);
+
+    if (!qry.exec("SELECT address, useSsl, updateDelay, timeout FROM RamServer;"))
+    {
+        QString errorMessage = "Something went wrong when saving the data.\nHere's some information:";
+        errorMessage += "\n> " + tr("Query:") + "\n" + qry.lastQuery();
+        errorMessage += "\n> " + tr("Database Error:") + "\n" + qry.lastError().databaseText();
+        errorMessage += "\n> " + tr("Driver Error:") + "\n" + qry.lastError().driverText();
+        LocalDataInterface::instance()->log(errorMessage, DuQFLog::Critical);
+
+        db.close();
+        return ServerConfig();
+    }
+
+    ServerConfig s;
+
+    if (qry.first())
+    {
+        s.address = qry.value(0).toString();
+        s.useSsl = qry.value(1).toBool();
+        s.updateDelay = qry.value(2).toInt();
+        s.timeout = qry.value(3).toInt();
+    }
+
+    db.close();
+
+    return s;
+}
+
 QString LocalDataInterface::login(QString username, QString password) const
 {
     // Get user data
@@ -96,7 +182,7 @@ void LocalDataInterface::createObject(QString uuid, QString table, QString data)
 {
     QDateTime modified = QDateTime::currentDateTimeUtc();
 
-    QString q = "INSERT INTO '%1' (uuid, data, modified, removed)"
+    QString q = "INSERT INTO '%1' (uuid, data, modified, removed) "
                 "VALUES ( '%2' , '%3' , '%4' , 0);";
 
     query( q.arg(
@@ -193,11 +279,15 @@ ServerConfig LocalDataInterface::setDataFile(const QString &file)
     return serverConfig();
 }
 
-LocalDataInterface::LocalDataInterface()
+LocalDataInterface::LocalDataInterface() :
+    DuQFLoggerObject("Local Data Interface")
 {
     //Load local database
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE","localdata");
     db.setHostName("localhost");
+
+    QSqlDatabase editdb = QSqlDatabase::addDatabase("QSQLITE","editdb");
+    editdb.setHostName("localhost");
 }
 
 QSqlQuery LocalDataInterface::query(QString q) const

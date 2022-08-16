@@ -7,6 +7,7 @@
 #include "ramses.h"
 
 #include "databasecreatewidget.h"
+#include "databaseeditwidget.h"
 
 class LoginPage : public QWidget
 {
@@ -18,6 +19,8 @@ public:
 private slots:
     void createDatabase();
     void openDatabase();
+    void editDatabase();
+
     void updateDatabaseRecentList();
     void databaseChanged(int i);
 
@@ -48,6 +51,7 @@ private:
     QLabel *ui_connectionStatusLabel;
     QLabel *ui_waitLabel;
     DatabaseCreateWidget *ui_databaseCreateWidget = nullptr;
+    DatabaseEditWidget *ui_databaseEditWidget = nullptr;
 
     QString m_hashedPassword;
 

@@ -40,6 +40,20 @@ void LoginPage::openDatabase()
     ui_dataBaseBox->setCurrentIndex(0);
 }
 
+void LoginPage::editDatabase()
+{
+    MainWindow *mw = (MainWindow*)GuiUtils::appMainWindow();
+
+    if (!ui_databaseEditWidget)
+    {
+        ui_databaseEditWidget = new DatabaseEditWidget();
+        connect(ui_databaseEditWidget, &DatabaseEditWidget::applied, mw, &MainWindow::hidePropertiesDock);
+    }
+
+    ui_databaseEditWidget->setDbFile( ui_dataBaseBox->itemData( ui_dataBaseBox->currentIndex() ).toString() );
+    mw->setPropertiesDockWidget( ui_databaseEditWidget, tr("Edit") + " " + ui_dataBaseBox->currentText(), ":/icons/storage" );
+}
+
 void LoginPage::updateDatabaseRecentList()
 {
     ui_dataBaseBox->clear();
@@ -396,6 +410,7 @@ void LoginPage::connectEvents()
 {
     connect(ui_createDBButton, &QPushButton::clicked, this, &LoginPage::createDatabase);
     connect(ui_openDBButton, &QPushButton::clicked, this, &LoginPage::openDatabase);
+    connect(ui_settingsDBButton, &QPushButton::clicked, this, &LoginPage::editDatabase);
 
     connect(ui_dataBaseBox, SIGNAL(currentIndexChanged(int)), this, SLOT(databaseChanged(int)));
 

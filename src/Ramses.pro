@@ -93,6 +93,7 @@ SOURCES += \
     rameditwidgets/assetgrouplistmanagerwidget.cpp \
     rameditwidgets/assetlistmanagerwidget.cpp \
     rameditwidgets/databasecreatewidget.cpp \
+    rameditwidgets/databaseeditwidget.cpp \
     rameditwidgets/filetypelistmanagerwidget.cpp \
     rameditwidgets/objectlisteditwidget.cpp \
     rameditwidgets/objectlistmanagerwidget.cpp \
@@ -101,6 +102,7 @@ SOURCES += \
     rameditwidgets/projectlistmanagerwidget.cpp \
     rameditwidgets/schedulemanagerwidget.cpp \
     rameditwidgets/sequencelistmanagerwidget.cpp \
+    rameditwidgets/servereditwidget.cpp \
     rameditwidgets/shotlistmanagerwidget.cpp \
     rameditwidgets/statelistmanagerwidget.cpp \
     docks/statisticswidget.cpp \
@@ -259,6 +261,7 @@ HEADERS += \
     rameditwidgets/assetgrouplistmanagerwidget.h \
     rameditwidgets/assetlistmanagerwidget.h \
     rameditwidgets/databasecreatewidget.h \
+    rameditwidgets/databaseeditwidget.h \
     rameditwidgets/filetypelistmanagerwidget.h \
     rameditwidgets/objectlisteditwidget.h \
     rameditwidgets/objectlistmanagerwidget.h \
@@ -267,6 +270,7 @@ HEADERS += \
     rameditwidgets/projectlistmanagerwidget.h \
     rameditwidgets/schedulemanagerwidget.h \
     rameditwidgets/sequencelistmanagerwidget.h \
+    rameditwidgets/servereditwidget.h \
     rameditwidgets/shotlistmanagerwidget.h \
     rameditwidgets/statelistmanagerwidget.h \
     docks/statisticswidget.h \

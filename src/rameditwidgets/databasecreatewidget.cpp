@@ -184,10 +184,10 @@ void DatabaseCreateWidget::setupUi()
     onlineLayout->addWidget(updateFreqLabel, 2, 0);
 
     ui_updateFreqSpinBox = new QSpinBox(this);
-    ui_updateFreqSpinBox->setMinimum(1);
-    ui_updateFreqSpinBox->setMaximum(10);
-    ui_updateFreqSpinBox->setValue(2);
-    ui_updateFreqSpinBox->setSuffix(" minutes");
+    ui_updateFreqSpinBox->setMinimum(15);
+    ui_updateFreqSpinBox->setMaximum(600);
+    ui_updateFreqSpinBox->setValue(60);
+    ui_updateFreqSpinBox->setSuffix(" seconds");
     onlineLayout->addWidget(ui_updateFreqSpinBox, 2, 1);
 
     QLabel *timeOutLabel = new QLabel(tr("Server timeout"), this);
