@@ -63,7 +63,9 @@ void ConsoleWidget::setupUi(DuQFLoggerObject *o)
     mainLayout->addWidget(ui_levelBox);
 
     QSettings settings;
-    ui_levelBox->setCurrentIndex(settings.value("console/level", 2).toInt());
+    int level = settings.value("console/level", 2).toInt();
+    ui_levelBox->setCurrentIndex( level );
+    levelIndexChanged( level );
 }
 
 void ConsoleWidget::connectEvents()
