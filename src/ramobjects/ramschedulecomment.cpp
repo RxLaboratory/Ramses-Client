@@ -47,7 +47,7 @@ void RamScheduleComment::setDate(const QDateTime &newDate)
 
 void RamScheduleComment::construct()
 {
-    m_icon = ":/icons/asset";
+    m_icon = ":/icons/calendar";
     m_editRole = Standard;
 }
 

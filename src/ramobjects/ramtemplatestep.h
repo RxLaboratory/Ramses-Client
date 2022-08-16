@@ -68,7 +68,7 @@ public:
     float estimationVeryHard() const;
     void setEstimationVeryHard(float newEstimationVeryHard);
 
-    virtual QIcon icon() const override;
+    virtual QString iconName() const override;
     virtual QString details() const override;
 
 public slots:

@@ -82,6 +82,7 @@ void RamAssetGroup::construct()
     m_objectType = AssetGroup;
     m_project = nullptr;
     m_assets = new RamObjectFilterModel(this);
+    m_icon = ":/icons/asset-group";
 }
 
 void RamAssetGroup::setProject(RamProject *project)

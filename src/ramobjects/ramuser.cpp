@@ -132,18 +132,18 @@ void RamUser::updatePassword(QString c, QString n)
     if (c == prev) insertData("password", n);
 }
 
-QIcon RamUser::icon() const
+QString RamUser::iconName() const
 {
     switch(role())
     {
     case Admin:
-        return QIcon(":/icons/admin");
+        return ":/icons/admin";
     case ProjectAdmin:
-        return QIcon(":/icons/project-admin");
+        return ":/icons/project-admin";
     case Lead:
-        return QIcon(":/icons/lead");
+        return ":/icons/lead";
     case Standard:
-        return QIcon(":/icons/user");
+        return ":/icons/user";
     }
 }
 

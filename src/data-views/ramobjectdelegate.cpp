@@ -187,9 +187,9 @@ void RamObjectDelegate::paintTitle(QString title, QPainter *painter, PaintParame
     painter->drawText( params->titleRect, Qt::AlignLeft | Qt::AlignTop | Qt::TextWordWrap, title, &result);
     params->titleRect = result;
     params->detailsRect = QRect(
-                params->iconRect.left() + 5,
-                params->titleRect.bottom() + 3,
-                params->bgRect.width() - params->iconRect.width() -5,
+                params->iconRect.right() + 5,
+                params->titleRect.bottom() + 5,
+                params->bgRect.width() - params->iconRect.width() - 15,
                 params->bgRect.height() - params->titleRect.height() - 15
                 );
 }
@@ -430,6 +430,25 @@ RamObjectDelegate::RamObjectDelegate(QObject *parent)
     m_historyDarkIcon = m_historyIcon;
     m_folderDarkIcon = m_folderIcon;
 
+    // The icons
+    m_icons[":/icons/asset"] = QIcon(":/icons/asset").pixmap(QSize(12,12));
+    m_icons[":/icons/application"] = QIcon(":/icons/application").pixmap(QSize(12,12));
+    m_icons[":/icons/asset-group"] = QIcon(":/icons/asset-group").pixmap(QSize(12,12));
+    m_icons[":/icons/file"] = QIcon(":/icons/file").pixmap(QSize(12,12));
+    m_icons[":/icons/connection"] = QIcon(":/icons/connection").pixmap(QSize(12,12));
+    m_icons[":/icons/project"] = QIcon(":/icons/project").pixmap(QSize(12,12));
+    m_icons[":/icons/calendar"] = QIcon(":/icons/calendar").pixmap(QSize(12,12));
+    m_icons[":/icons/sequence"] = QIcon(":/icons/sequence").pixmap(QSize(12,12));
+    m_icons[":/icons/shot"] = QIcon(":/icons/shot").pixmap(QSize(12,12));
+    m_icons[":/icons/state-l"] = QIcon(":/icons/state-l").pixmap(QSize(12,12));
+    m_icons[":/icons/status"] = QIcon(":/icons/status").pixmap(QSize(12,12));
+    m_icons[":/icons/film"] = QIcon(":/icons/film").pixmap(QSize(12,12));
+    m_icons[":/icons/step"] = QIcon(":/icons/step").pixmap(QSize(12,12));
+    m_icons[":/icons/admin"] = QIcon(":/icons/admin").pixmap(QSize(12,12));
+    m_icons[":/icons/project-admin"] = QIcon(":/icons/project-admin").pixmap(QSize(12,12));
+    m_icons[":/icons/lead"] = QIcon(":/icons/lead").pixmap(QSize(12,12));
+    m_icons[":/icons/user"] = QIcon(":/icons/user").pixmap(QSize(12,12));
+
     QPixmap darkMap = QPixmap(12,12);
     darkMap.fill(m_dark);
 
@@ -459,17 +478,20 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
 
     RamObject *obj = RamObjectList::at(index);
 
+    // Icon
+    QPixmap pm = m_icons.value( obj->iconName() );
+    painter->drawPixmap( params.iconRect, pm );
+
     // Title
     paintTitle(obj, painter, &params);
 
     // Draw buttons
     paintButtons(obj, painter, &params, index);
 
-
     // Draw Comment
-    QRect commentRect( params.iconRect.left() + 5, params.detailsRect.bottom() + 5, params.bgRect.width() - 30, params.bgRect.bottom() - params.detailsRect.bottom() - 5);
-    QPen commentPen(params.textColor);
-    if (params.detailsRect.bottom() + 20 < params.bgRect.bottom() && obj->comment() != "")
+    QRect commentRect = params.detailsRect;
+    QPen commentPen(m_lessLight);
+    if (commentRect.height() > 10 && obj->comment() != "")
     {
         painter->setPen( commentPen );
         painter->setFont(m_textFont);

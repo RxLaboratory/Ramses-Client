@@ -98,6 +98,8 @@ ServerConfig LocalDataInterface::getServerSettings(QString dbFile)
 
 QString LocalDataInterface::login(QString username, QString password) const
 {
+    username.replace("'", "''");
+
     // Get user data
     QString q = "SELECT data, uuid FROM RamUser WHERE userName = '%1';";
     QSqlQuery qry = query( q.arg(username) );
@@ -156,6 +158,8 @@ QString LocalDataInterface::login(QString username, QString password) const
 
 void LocalDataInterface::setRamsesPath(QString p) const
 {
+    p.replace("'", "''");
+
     // Keep history
     QString q = "UPDATE Settings SET current = 0 WHERE current = 1;";
     query( q );
@@ -189,6 +193,8 @@ bool LocalDataInterface::hasUuid(QString table) const
 
 void LocalDataInterface::createObject(QString uuid, QString table, QString data) const
 {
+    data.replace("'", "''");
+
     QDateTime modified = QDateTime::currentDateTimeUtc();
 
     QString q = "INSERT INTO '%1' (uuid, data, modified, removed) "
@@ -214,9 +220,10 @@ QString LocalDataInterface::objectData(QString uuid, QString table) const
 
 void LocalDataInterface::setObjectData(QString uuid, QString table, QString data) const
 {
+    data.replace("'", "''");
+
     QDateTime modified = QDateTime::currentDateTimeUtc();
 
-    data = data.replace("'", "\\'");
 
     QString q = "UPDATE %1 SET data = '%2', modified = '%3' WHERE uuid = '%4';";
     query( q.arg(table, data, modified.toString("yyyy-MM-dd hh:mm:ss:zzz"), uuid) );
@@ -249,6 +256,8 @@ bool LocalDataInterface::isRemoved(QString uuid, QString table) const
 
 void LocalDataInterface::setUsername(QString uuid, QString username) const
 {
+    username.replace("'", "''");
+
     QString q = "UPDATE RamUser SET userName = '%1' WHERE uuid = '%2';";
     query( q.arg(username, uuid) );
 }

@@ -116,20 +116,20 @@ void RamTemplateStep::setEstimationVeryHard(float newEstimationVeryHard)
     insertData("estimationVeryHard", newEstimationVeryHard);
 }
 
-QIcon RamTemplateStep::icon() const
+QString RamTemplateStep::iconName() const
 {
     switch(type())
     {
     case PreProduction:
-        return QIcon(":/icons/asset");
+        return ":/icons/asset";
     case ShotProduction:
-        return QIcon(":/icons/shot");
+        return ":/icons/shot";
     case AssetProduction:
-        return QIcon(":/icons/asset");
+        return ":/icons/asset";
     case PostProduction:
-        return QIcon(":/icons/film");
+        return ":/icons/film";
     case All:
-        return QIcon(":/icons/step");
+        return ":/icons/step";
     }
 }
 

@@ -17,7 +17,7 @@ RamTemplateAssetGroup *RamTemplateAssetGroup::c(RamObject *o)
 // PUBLIC //
 
 RamTemplateAssetGroup::RamTemplateAssetGroup(QString shortName, QString name) :
-    RamObject(shortName, name, AssetGroup)
+    RamObject(shortName, name, TemplateAssetGroup)
 {
     construct();
 }

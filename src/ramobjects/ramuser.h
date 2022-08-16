@@ -35,7 +35,7 @@ public:
 
     void updatePassword(QString c, QString n);
 
-    virtual QIcon icon() const override;
+    virtual QString iconName() const override;
     virtual QString details() const override;
 
 public slots:

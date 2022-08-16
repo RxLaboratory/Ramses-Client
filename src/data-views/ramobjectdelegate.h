@@ -70,6 +70,9 @@ protected:
     QPixmap m_historyDarkIcon;
     QPixmap m_folderDarkIcon;
 
+    // Icons stored as pixmap here for performance
+    QMap<QString, QPixmap> m_icons;
+
     // Buttons hover
     QModelIndex m_historyButtonHover = QModelIndex();
     QModelIndex m_folderButtonHover = QModelIndex();

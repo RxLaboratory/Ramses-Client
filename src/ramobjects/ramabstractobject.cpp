@@ -173,6 +173,7 @@ void RamAbstractObject::insertData(QString key, QJsonValue value)
 {
     // Update data before inserting
     QJsonObject d = data();
+    qDebug() << value;
     d.insert(key, value);
     setData(d);
 }

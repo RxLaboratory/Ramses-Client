@@ -43,7 +43,8 @@ public:
 
     virtual bool canEdit();
 
-    virtual QIcon icon() const { return QIcon(m_icon); };
+    QIcon icon() const;
+    virtual QString iconName() const { return m_icon; };
     virtual QString details() const { return QString(); };
     virtual QString subDetails() const { return QString(); };
 
