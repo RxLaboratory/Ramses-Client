@@ -4,7 +4,6 @@
 #include "processmanager.h"
 #include "progressbar.h"
 #include "pages/projectpage.h"
-#include "pages/installpage.h"
 #include "docks/consolewidget.h"
 #include "serversettingswidget.h"
 #include "daemonsettingswidget.h"
@@ -211,11 +210,6 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     qDebug() << "> Schedule ready";
 #endif
 
-    // Install page
-    InstallPage *installPage = new InstallPage(this);
-    mainStack->addWidget(installPage);
-    qDebug() << "> Install page ready";
-
     // Docks
 #ifndef DEACTIVATE_STATS
     StatisticsWidget *statsTable = new StatisticsWidget(this);
@@ -314,7 +308,6 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     connect(ui_networkButton,SIGNAL(clicked()),this, SLOT(networkButton_clicked()));
     connect(ui_refreshButton, SIGNAL(clicked()), Ramses::instance(), SLOT(refresh()));
     connect(mainStack,SIGNAL(currentChanged(int)), this, SLOT(pageChanged(int)));
-    connect(installPage, SIGNAL(login()), this, SLOT(home()));
     connect(DuQFLogger::instance(), &DuQFLogger::newLog, this, &MainWindow::log);
     connect(Daemon::instance(), &Daemon::raise, this, &MainWindow::raise);
     connect(Daemon::instance(), &Daemon::raise, this, &MainWindow::show);
@@ -328,15 +321,6 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     qDebug() << "Setting CSS";
 
     duqf_setStyle();
-
-    // Check if we need to go to the install page
-#ifdef FORCE_WELCOME_SCREEN
-    install();
-#else
-    QString serverAddress = settings.value("server/address", "").toString();
-    QString localFolder = settings.value("ramsesPath", "").toString();
-    if (serverAddress == "" || localFolder == "" || serverAddress == "/") install();
-#endif
 
     // Restore UI state
     settings.beginGroup("ui");

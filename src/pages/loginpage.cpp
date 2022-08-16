@@ -38,6 +38,8 @@ void LoginPage::openDatabase()
     // Add to combobox and select
     ui_dataBaseBox->insertItem(0, QFileInfo(p).fileName(), p);
     ui_dataBaseBox->setCurrentIndex(0);
+
+    ui_stackWiget->setCurrentIndex(1);
 }
 
 void LoginPage::editDatabase()
@@ -57,6 +59,7 @@ void LoginPage::editDatabase()
 void LoginPage::updateDatabaseRecentList()
 {
     ui_dataBaseBox->clear();
+
     QSettings settings;
     int n = settings.beginReadArray("database/recent");
     for (int i = 0; i < n; i++)
@@ -68,7 +71,15 @@ void LoginPage::updateDatabaseRecentList()
     }
     settings.endArray();
 
-    ui_dataBaseBox->setCurrentIndex(0);
+    if (ui_dataBaseBox->count() == 0)
+    {
+        ui_stackWiget->setCurrentIndex(0);
+    }
+    else
+    {
+        ui_dataBaseBox->setCurrentIndex(0);
+        ui_stackWiget->setCurrentIndex(1);
+    }
 }
 
 void LoginPage::databaseChanged(int i)
@@ -315,9 +326,32 @@ void LoginPage::setupUi()
 
     layout->addStretch();
 
+    ui_stackWiget = new QStackedWidget(this);
+    layout->addWidget(ui_stackWiget);
+
+    ui_bigButtonWidget = new QWidget(this);
+    ui_bigButtonWidget->setMaximumWidth(256);
+    QVBoxLayout *bigButtonLayout = new QVBoxLayout(ui_bigButtonWidget);
+    bigButtonLayout->setSpacing(3);
+    bigButtonLayout->setContentsMargins(0,0,0,0);
+    bigButtonLayout->setAlignment(Qt::AlignTop);
+    ui_stackWiget->addWidget(ui_bigButtonWidget);
+
+    ui_bigOpenButton = new QPushButton(tr("Open existing database..."), ui_bigButtonWidget);
+    ui_bigOpenButton->setIcon(QIcon(":/icons/storage"));
+    bigButtonLayout->addWidget(ui_bigOpenButton);
+
+    QLabel *bigLabel = new QLabel(tr("or"), ui_bigButtonWidget);
+    bigButtonLayout->addWidget(bigLabel);
+    bigLabel->setAlignment(Qt::AlignCenter);
+
+    ui_bigCreateButton = new QPushButton(tr("Create new database..."), ui_bigButtonWidget);
+    ui_bigCreateButton->setIcon(QIcon(":/icons/add"));
+    bigButtonLayout->addWidget(ui_bigCreateButton);
+
     ui_loginWidget = new QWidget(this);
     ui_loginWidget->setMaximumWidth(256);
-    layout->addWidget(ui_loginWidget);
+    ui_stackWiget->addWidget(ui_loginWidget);
 
     QVBoxLayout *loginLayout = new QVBoxLayout(ui_loginWidget);
     loginLayout->setSpacing(3);
@@ -338,7 +372,7 @@ void LoginPage::setupUi()
     dataBaseLayout->addWidget(ui_settingsDBButton);
 
     ui_openDBButton = new QPushButton(this);
-    ui_openDBButton->setIcon(QIcon(":/icons/open"));
+    ui_openDBButton->setIcon(QIcon(":/icons/storage"));
     ui_openDBButton->setToolTip(tr("Open database"));
     dataBaseLayout->addWidget(ui_openDBButton);
 
@@ -359,7 +393,7 @@ void LoginPage::setupUi()
     ui_usernameEdit->setPlaceholderText(tr("Username"));
     usernameLayout->addWidget(ui_usernameEdit);
 
-    ui_saveUsername = new QCheckBox("Save", this);
+    ui_saveUsername = new QCheckBox(tr("Save"), this);
     usernameLayout->addWidget(ui_saveUsername);
 
     QHBoxLayout *passwordLayout = new QHBoxLayout();
@@ -372,7 +406,7 @@ void LoginPage::setupUi()
     ui_passwordEdit->setPlaceholderText(tr("Password"));
     passwordLayout->addWidget(ui_passwordEdit);
 
-    ui_savePassword = new QCheckBox("Save", this);
+    ui_savePassword = new QCheckBox(tr("Save"), this);
     ui_savePassword->setEnabled(false);
     passwordLayout->addWidget(ui_savePassword);
 
@@ -388,11 +422,14 @@ void LoginPage::setupUi()
     ui_connectionStatusLabel->setEnabled(false);
     ui_connectionStatusLabel->setWordWrap(true);
     ui_connectionStatusLabel->setAlignment(Qt::AlignCenter);
+    ui_connectionStatusLabel->setMaximumWidth(256);
     layout->addWidget(ui_connectionStatusLabel);
 
     ui_waitLabel = new QLabel(this);
     ui_waitLabel->setAlignment(Qt::AlignCenter);
     ui_waitLabel->hide();
+    ui_waitLabel->setMaximumWidth(256);
+    ui_connectionStatusLabel->setWordWrap(true);
     layout->addWidget(ui_waitLabel);
 
     layout->addStretch();
@@ -409,7 +446,9 @@ void LoginPage::setupUi()
 void LoginPage::connectEvents()
 {
     connect(ui_createDBButton, &QPushButton::clicked, this, &LoginPage::createDatabase);
+    connect(ui_bigCreateButton, &QPushButton::clicked, this, &LoginPage::createDatabase);
     connect(ui_openDBButton, &QPushButton::clicked, this, &LoginPage::openDatabase);
+    connect(ui_bigOpenButton, &QPushButton::clicked, this, &LoginPage::openDatabase);
     connect(ui_settingsDBButton, &QPushButton::clicked, this, &LoginPage::editDatabase);
 
     connect(ui_dataBaseBox, SIGNAL(currentIndexChanged(int)), this, SLOT(databaseChanged(int)));

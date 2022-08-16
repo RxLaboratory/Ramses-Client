@@ -76,7 +76,6 @@ SOURCES += \
     duqf-widgets/duqftoolbarspacer.cpp \
     duqf-widgets/duqfupdatedialog.cpp \
     duqf-widgets/duqfupdatesettingswidget.cpp \
-    pages/installpage.cpp \
     pages/projectpage.cpp \
     ramdatainterface/datacrypto.cpp \
     ramdatainterface/dbsync.cpp \
@@ -244,7 +243,6 @@ HEADERS += \
     duqf-widgets/duqftoolbarspacer.h \
     duqf-widgets/duqfupdatedialog.h \
     duqf-widgets/duqfupdatesettingswidget.h \
-    pages/installpage.h \
     processmanager.h \
     progressbar.h \
     progresspage.h \
@@ -369,7 +367,6 @@ HEADERS += \
     pipeline-editor/stepnode.h
 
 FORMS += \
-    pages/installpage.ui \
     settingswidgets/daemonsettingswidget.ui \
     duqf-widgets/aboutdialog.ui \
     duqf-widgets/appearancesettingswidget.ui \

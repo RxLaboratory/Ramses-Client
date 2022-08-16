@@ -36,7 +36,11 @@ private:
     void setupUi();
     void connectEvents();
 
+    QStackedWidget *ui_stackWiget;
     QWidget *ui_loginWidget;
+    QWidget *ui_bigButtonWidget;
+    QPushButton *ui_bigOpenButton;
+    QPushButton *ui_bigCreateButton;
     QComboBox *ui_dataBaseBox;
     QPushButton *ui_createDBButton;
     QPushButton *ui_openDBButton;
