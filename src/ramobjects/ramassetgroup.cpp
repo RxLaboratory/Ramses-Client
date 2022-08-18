@@ -72,6 +72,7 @@ void RamAssetGroup::edit(bool show)
 
 QString RamAssetGroup::folderPath() const
 {
+    if (!m_project) return "";
     return m_project->path(RamObject::AssetsFolder) + "/" + name();
 }
 
@@ -91,5 +92,6 @@ void RamAssetGroup::setProject(RamProject *project)
     m_assets->setList( m_project->assets() );
     m_assets->setFilterUuid( m_uuid );
     this->setParent( m_project );
+    insertData("project", project->uuid());
 }
 
