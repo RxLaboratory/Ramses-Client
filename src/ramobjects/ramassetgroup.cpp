@@ -40,10 +40,7 @@ RamAssetGroup::RamAssetGroup(QString uuid):
 
     QString projUuid = d.value("project").toString();
 
-    if (!d.value("template").toBool(true) && projUuid != "")
-    {
-        setProject( RamProject::get(projUuid) );
-    }
+    setProject( RamProject::get(projUuid) );
 }
 
 int RamAssetGroup::assetCount() const
