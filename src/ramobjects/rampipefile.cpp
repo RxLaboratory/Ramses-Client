@@ -19,7 +19,7 @@ RamPipeFile::RamPipeFile(QString shortName, RamProject *project) :
 {
     construct();
 
-    m_project = project;
+    insertData("project", project->uuid());
 }
 
 RamPipeFile::RamPipeFile(QString uuid):
@@ -28,14 +28,19 @@ RamPipeFile::RamPipeFile(QString uuid):
     construct();
 
     QJsonObject d = data();
-    m_project = RamProject::get(d.value("project").toString());
+}
 
-    this->setParent(m_project);
+QString RamPipeFile::name() const
+{
+    QString name = shortName();
+    RamFileType *ft = fileType();
+    if (!ft) return name;
+    return name + "." + ft->shortName();
 }
 
 RamFileType *RamPipeFile::fileType() const
 {
-    return RamFileType::get( getData("fileType").toString() );
+    return RamFileType::get( getData("fileType").toString("none") );
 }
 
 void RamPipeFile::setFileType(RamFileType *newFileType)
@@ -49,7 +54,7 @@ void RamPipeFile::setFileType(RamFileType *newFileType)
     QString format;
     QStringList extensions = newFileType->extensions();
     if (extensions.count() > 0)
-        format = newFileType->extensions()[0];
+        format = extensions.first();
     else
         format = "*";
 
@@ -82,7 +87,7 @@ void RamPipeFile::setFileType(RamFileType *newFileType)
 
 const RamProject *RamPipeFile::project() const
 {
-    return m_project;
+    return RamProject::get( getData("project").toString() );
 }
 
 QString RamPipeFile::customSettings() const

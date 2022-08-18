@@ -22,6 +22,8 @@ public:
     RamPipeFile(QString shortName, RamProject *project);
     RamPipeFile(QString uuid);
 
+    QString name() const override;
+
     RamFileType *fileType() const;
     void setFileType(RamFileType *newFileType);
 
@@ -37,8 +39,6 @@ public slots:
 
 private:
     void construct();
-
-    RamProject *m_project;
 };
 
 #endif // RAMPIPEFILE_H

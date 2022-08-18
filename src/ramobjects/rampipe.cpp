@@ -26,6 +26,7 @@ RamPipe::RamPipe(RamStep *output, RamStep *input):
 
     setData(d);
 
+    this->setParent(this->project());
     connectEvents();
 }
 
@@ -54,6 +55,20 @@ RamStep *RamPipe::inputStep() const
 void RamPipe::setInputStep(RamStep *inputStep)
 {
     insertData("inputStep", inputStep->uuid());
+}
+
+QString RamPipe::name() const
+{
+    if (!m_pipeFiles) return "";
+    int numFiles = m_pipeFiles->rowCount();
+    if (numFiles == 0) return "";
+
+    QStringList nameList;
+    for (int i = 0; i < m_pipeFiles->rowCount(); i++)
+    {
+        nameList << m_pipeFiles->at(i)->name();
+    }
+    return nameList.join("\n");
 }
 
 RamProject *RamPipe::project() const
@@ -94,7 +109,6 @@ void RamPipe::construct()
     m_icon = ":/icons/connection";
     m_editRole = ProjectAdmin;
     getCreateLists();
-    this->setParent( this->project() );
 }
 
 void RamPipe::getCreateLists()
@@ -118,6 +132,6 @@ void RamPipe::connectEvents()
     connect( inputStep(), &RamStep::removed, this, &RamObject::remove);
     connect( outputStep(), &RamStep::removed, this, &RamObject::remove);
 
-    connect(m_pipeFiles, SIGNAL(listChanged()), this, SLOT(pipeFileListChanged()));
+    connect(m_pipeFiles, &RamObjectList::listChanged, this, &RamPipe::pipeFileListChanged);
     connect(m_pipeFiles, &RamObjectList::dataChanged, this, &RamPipe::pipeFileListChanged);
 }

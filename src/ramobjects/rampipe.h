@@ -27,6 +27,8 @@ public:
     RamStep *inputStep() const;
     void setInputStep(RamStep *inputStep);
 
+    QString name() const override;
+
     RamProject *project() const;
 
     RamObjectList *pipeFiles() const;
