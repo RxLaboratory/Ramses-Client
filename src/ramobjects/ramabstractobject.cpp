@@ -184,7 +184,7 @@ void RamAbstractObject::insertData(QString key, QJsonValue value)
 
 QString RamAbstractObject::shortName() const
 {
-    return getData("shortName").toString("");
+    return getData("shortName").toString("UNKNOWN");
 }
 
 void RamAbstractObject::setShortName(const QString &shortName)
@@ -194,7 +194,7 @@ void RamAbstractObject::setShortName(const QString &shortName)
 
 QString RamAbstractObject::name() const
 {
-    return getData("name").toString("");
+    return getData("name").toString("Unnamed");
 }
 
 void RamAbstractObject::setName(const QString &name)
