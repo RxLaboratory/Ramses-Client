@@ -18,7 +18,7 @@ protected:
     virtual void reInit(RamObject *o) override;
 
 private slots:
-    void setFileType(RamFileType *ft);
+    void setFileType(RamObject *ft);
     void setCustomSettings();
 
 private:

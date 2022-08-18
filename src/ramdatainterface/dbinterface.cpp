@@ -49,9 +49,9 @@ QStringList DBInterface::tableData(QString table)
     return m_ldi->tableData(table);
 }
 
-bool DBInterface::hasUuid(QString table)
+bool DBInterface::contains(QString uuid, QString table)
 {
-    return m_ldi->hasUuid(table);
+    return m_ldi->contains(uuid, table);
 }
 
 void DBInterface::createObject(QString uuid, QString table, QString data)

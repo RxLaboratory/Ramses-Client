@@ -17,21 +17,6 @@ RamStep *StepNode::step() const
 
 void StepNode::stepChanged()
 {
-    if (_step->type() == RamStep::AssetProduction)
-    {
-        this->setIcon(":/icons/asset");
-    }
-    else if (_step->type() == RamStep::ShotProduction)
-    {
-        this->setIcon(":/icons/shot");
-    }
-    else if (_step->type() == RamStep::PreProduction)
-    {
-        this->setIcon(":/icons/project");
-    }
-    else if (_step->type() == RamStep::PostProduction)
-    {
-        this->setIcon(":/icons/film");
-    }
+    this->setIcon(_step->iconName());
     this->setTitleColor(_step->color());
 }

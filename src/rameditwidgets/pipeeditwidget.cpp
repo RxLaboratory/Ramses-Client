@@ -31,8 +31,11 @@ void PipeEditWidget::reInit(RamObject *o)
         if (!project) return;
 
         // find output and input steps
+        QSignalBlocker b1(ui_toBox);
+        QSignalBlocker b2(ui_fromBox);
         ui_fromBox->setList( project->steps() );
         ui_toBox->setList( project->steps() );
+
         ui_fromBox->setObject( m_pipe->outputStep() );
         ui_toBox->setObject( m_pipe->inputStep() );
 
@@ -67,18 +70,16 @@ void PipeEditWidget::createPipeFile()
     pipeFile->edit();
 }
 
-void PipeEditWidget::setInputStep(int i)
+void PipeEditWidget::setInputStep(RamObject *step)
 {
-    Q_UNUSED(i)
-    if (!m_pipe) return;
-    m_pipe->setInputStep(RamStep::c( ui_fromBox->currentObject() ));
+    Q_UNUSED(step)
+    m_pipe->setInputStep( step );
 }
 
-void PipeEditWidget::setOutputStep(int i)
+void PipeEditWidget::setOutputStep(RamObject *step)
 {
-    Q_UNUSED(i)
     if (!m_pipe) return;
-    m_pipe->setOutputStep(RamStep::c( ui_fromBox->currentObject() ));
+    m_pipe->setOutputStep( step );
 }
 
 void PipeEditWidget::setupUi()
@@ -108,8 +109,8 @@ void PipeEditWidget::setupUi()
 
 void PipeEditWidget::connectEvents()
 {
-    connect(ui_fromBox, SIGNAL(activated(int)), this, SLOT(setInputStep(int)));
-    connect(ui_toBox, SIGNAL(activated(int)), this, SLOT(setOutputStep(int)));
-    connect(ui_pipeFileList, SIGNAL(add()), this, SLOT(createPipeFile()));
+    connect(ui_fromBox, &RamObjectListComboBox::currentObjectChanged, this, &PipeEditWidget::setOutputStep);
+    connect(ui_toBox,  &RamObjectListComboBox::currentObjectChanged, this, &PipeEditWidget::setInputStep);
+    connect(ui_pipeFileList, &ObjectListEditWidget::add, this, &PipeEditWidget::createPipeFile);
 }
 

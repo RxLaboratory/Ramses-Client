@@ -30,7 +30,7 @@ void PipeFileEditWidget::reInit(RamObject *o)
     {
         // Select file type
         RamFileType *ft = m_pipeFile->fileType();
-        if(ft) ui_fileTypeBox->setObject( ft );
+        ui_fileTypeBox->setObject( ft );
 
         ui_customSettingsEdit->setPlainText( m_pipeFile->customSettings() );
     }
@@ -43,10 +43,10 @@ void PipeFileEditWidget::reInit(RamObject *o)
     }
 }
 
-void PipeFileEditWidget::setFileType(RamFileType *ft)
+void PipeFileEditWidget::setFileType(RamObject *ft)
 {
     if (!m_pipeFile) return;
-    if(ft) m_pipeFile->setFileType( ft );
+    if (ft) m_pipeFile->setFileType( RamFileType::c( ft ) );
     //ui_customSettingsEdit->setPlainText( m_pipeFile->customSettings() );
 }
 
@@ -84,7 +84,7 @@ void PipeFileEditWidget::setupUi()
 
 void PipeFileEditWidget::connectEvents()
 {
-    connect(ui_fileTypeBox, SIGNAL(currentObjectChanged(RamObject*)), this, SLOT(setFileType(RamObject*)));
+    connect(ui_fileTypeBox, &RamObjectListComboBox::currentObjectChanged, this, &PipeFileEditWidget::setFileType);
     //connect(ui_colorSpaceBox, SIGNAL(currentObjectChanged(RamObject*)), this, SLOT(update()));
     connect(ui_customSettingsEdit, SIGNAL(editingFinished()), this, SLOT(setCustomSettings()));
 }

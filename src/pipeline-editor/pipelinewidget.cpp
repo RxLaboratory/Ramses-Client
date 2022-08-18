@@ -471,7 +471,7 @@ void PipelineWidget::newPipe(RamObject *p)
     co->connector()->setTitle( p->name() );
 
     QList<QMetaObject::Connection> c;
-    c << connect(pipe, SIGNAL(changed(RamObject*)), this, SLOT(pipeChanged(RamObject*)));
+    c << connect(pipe, &RamPipe::dataChanged, this, &PipelineWidget::pipeChanged);
     c << connect(co->connector(), SIGNAL(clicked()), pipe, SLOT(edit()));
     m_pipeObjectConnections[pipe->uuid()] = c;
 
@@ -523,6 +523,7 @@ void PipelineWidget::connectionRemoved(DuQFConnection *co)
     if (!input) return;
 
     RamPipe *p = project->pipe(output, input);
+    qDebug() << p;
     if (p) p->remove();
 }
 

@@ -39,20 +39,20 @@ RamPipe::RamPipe(QString uuid):
 
 RamStep *RamPipe::outputStep() const
 {
-    return RamStep::get( getData("outputStep").toString() );
+    return RamStep::get( getData("outputStep").toString("none") );
 }
 
-void RamPipe::setOutputStep(RamStep *outputStep)
+void RamPipe::setOutputStep(RamObject *outputStep)
 {
     insertData("outputStep", outputStep->uuid());
 }
 
 RamStep *RamPipe::inputStep() const
 {
-    return RamStep::get( getData("inputStep").toString() );
+    return RamStep::get( getData("inputStep").toString("none") );
 }
 
-void RamPipe::setInputStep(RamStep *inputStep)
+void RamPipe::setInputStep(RamObject *inputStep)
 {
     insertData("inputStep", inputStep->uuid());
 }

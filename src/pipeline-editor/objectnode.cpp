@@ -1,13 +1,12 @@
 #include "objectnode.h"
 
-#include "mainwindow.h"
-
 ObjectNode::ObjectNode(RamObject *obj):
     DuQFNode(obj->shortName())
 {
     m_object = obj;
 
     this->setTitleToolTip(m_object->name());
+    this->setIcon(obj->iconName());
 
     connect(obj, &RamObject::dataChanged, this, &ObjectNode::objectChanged);
     connect(obj, &RamObject::removed, this, &ObjectNode::objectRemoved);

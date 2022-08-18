@@ -69,7 +69,6 @@ public:
     virtual QList<RamObject *> removeIndices( QModelIndexList indices ); // Used to remove selection. Returns the removed objects
     virtual RamObject *takeObject(int i); // Remove and returns object at i
     RamObject *takeObject(QString uuid); // Remove and return object using uuid
-    void removeAll(QString uuid); // Removes object using uuid
 
     // LIST INFORMATION
     // Info

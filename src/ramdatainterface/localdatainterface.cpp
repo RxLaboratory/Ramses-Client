@@ -182,12 +182,14 @@ QStringList LocalDataInterface::tableData(QString table) const
     return data;
 }
 
-bool LocalDataInterface::hasUuid(QString table) const
+bool LocalDataInterface::contains(QString uuid, QString table) const
 {
-    QString q = "SELECT uuid FROM '%1';";
-    QSqlQuery qry = query( q.arg(table) );
+    QString q = "SELECT uuid FROM '%1' WHERE uuid = '%2' AND removed = 0;";
+    q = q.arg(table, uuid);
+    qDebug() << q;
+    QSqlQuery qry = query( q );
 
-    if (qry.first()) return true;
+    if (qry.first() && qry.value(0) != "") return true;
     return false;
 }
 

@@ -22,7 +22,7 @@ RamObject *RamObject::get(QString uuid, ObjectType type)
     if (obj) return static_cast<RamObject*>( obj ) ;
 
     // Check if the UUID exists in the database
-    if (!DBInterface::instance()->hasUuid( objectTypeName(type))) return nullptr;
+    if (!DBInterface::instance()->contains(uuid, objectTypeName(type))) return nullptr;
 
     switch(type)
     {
@@ -61,8 +61,8 @@ RamObject::RamObject(QString shortName, QString name, ObjectType type, QObject *
 
 void RamObject::remove()
 {
-    this->disconnect();
     RamAbstractObject::remove();
+    this->disconnect();
 }
 
 bool RamObject::canEdit()

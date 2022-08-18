@@ -23,9 +23,9 @@ public:
     RamPipe(QString uuid);
 
     RamStep *outputStep() const;
-    void setOutputStep(RamStep *outputStep);
+    void setOutputStep(RamObject *outputStep);
     RamStep *inputStep() const;
-    void setInputStep(RamStep *inputStep);
+    void setInputStep(RamObject *inputStep);
 
     QString name() const override;
 

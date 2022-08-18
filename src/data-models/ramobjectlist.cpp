@@ -80,7 +80,7 @@ RamObjectList::RamObjectList(QString uuid, QObject *parent, ObjectType listType)
     {
         QString uuid = arr.at(i).toString();
         RamObject *obj = RamObject::get(uuid, m_contentType);
-        addObj(obj);
+        if (obj) addObj(obj);
     }
 }
 
@@ -271,18 +271,6 @@ RamObject *RamObjectList::takeObject(QString uuid)
     return nullptr;
 }
 
-void RamObjectList::removeAll(QString uuid)
-{
-    // get from map
-    RamObject *obj = m_objects.value(uuid, nullptr);
-    if (!obj) return;
-
-    int row = objRow(obj);
-    if (row<0) return;
-
-    takeObject(row);
-}
-
 QJsonObject RamObjectList::reloadData()
 {
     QJsonObject d = RamAbstractObject::data();
@@ -358,6 +346,8 @@ void RamObjectList::saveData()
 
 void RamObjectList::removeAll(RamObject *obj)
 {
+    qDebug() << "Removing";
+    qDebug() << obj;
     int row = objRow(obj);
     if (row<0) return;
 
@@ -434,7 +424,7 @@ void RamObjectList::reload()
 
 void RamObjectList::connectObject(RamObject *obj)
 {
-    connect( obj, SIGNAL(removed(RamObject*)), this, SLOT(removeAll(RamObject*)) );
+    connect( obj, &RamObject::removed, this, &RamObjectList::removeAll );
     connect( obj, &RamObject::dataChanged, this, &RamObjectList::objectChanged);
 }
 

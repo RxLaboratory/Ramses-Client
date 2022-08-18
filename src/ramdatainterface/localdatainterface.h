@@ -52,7 +52,7 @@ public:
     // DATA INTERFACE //
 
     QStringList tableData(QString table) const;
-    bool hasUuid(QString table) const;
+    bool contains(QString uuid, QString table) const;
 
     void createObject(QString uuid, QString table, QString data) const;
 

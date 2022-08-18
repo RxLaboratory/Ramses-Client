@@ -40,5 +40,5 @@ void ProjectSelectorWidget::currentProjectChanged(RamProject *p)
 void ProjectSelectorWidget::userChanged(RamUser *user)
 {
     m_projectFilter->clearUsers();
-    m_projectFilter->addUser(user->uuid());
+    if (user) m_projectFilter->addUser(user->uuid());
 }

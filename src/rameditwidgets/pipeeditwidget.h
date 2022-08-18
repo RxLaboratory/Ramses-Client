@@ -26,8 +26,8 @@ protected:
 private slots:
     void appChanged();
     void createPipeFile();
-    void setInputStep(int i);
-    void setOutputStep(int i);
+    void setInputStep(RamObject *step);
+    void setOutputStep(RamObject *step);
 
 private:
     RamPipe *m_pipe = nullptr;
