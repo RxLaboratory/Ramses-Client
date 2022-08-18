@@ -21,7 +21,7 @@ RamItem::RamItem(QString shortName, QString name, ObjectType type, RamProject *p
 {
     construct();
 
-    m_project = project;
+    setProject(project);
 }
 
 RamItem::RamItem(QString uuid, ObjectType type):
@@ -29,10 +29,7 @@ RamItem::RamItem(QString uuid, ObjectType type):
 {
     construct();
 
-    // Set the project this item belongs to
     QJsonObject d = data();
-    m_project = RamProject::get(d.value("project").toString() );
-    this->setParent( m_project );
 
     // Get the status history
     QJsonObject history = d.value("statusHistory").toObject();
@@ -49,7 +46,7 @@ RamItem::RamItem(QString uuid, ObjectType type):
 
 RamProject *RamItem::project() const
 {
-    return m_project;
+    return RamProject::get( getData("project").toString("none") );
 }
 
 QMap<QString, RamStepStatusHistory*> RamItem::statusHistory() const
@@ -216,6 +213,12 @@ void RamItem::construct()
 {
     m_icon = ":/icons/asset";
     m_editRole = Admin;
+}
+
+void RamItem::setProject(RamProject *proj)
+{
+    insertData("project", proj->uuid());
+    setParent(proj);
 }
 
 void RamItem::connectHistory(RamStepStatusHistory *history)

@@ -81,6 +81,7 @@ void DatabaseCreateWidget::createDB()
         RamUser *newUser = new RamUser(ui_shortNameEdit->text(), ui_shortNameEdit->text());
         newUser->updatePassword("", ui_npassword1Edit->text());
         newUser->setRole(RamUser::Admin);
+        Ramses::instance()->users()->append(newUser);
 
         // Login
         RamUser *currentUser = Ramses::instance()->login(ui_shortNameEdit->text(), ui_npassword1Edit->text());

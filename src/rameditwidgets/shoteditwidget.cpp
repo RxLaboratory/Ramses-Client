@@ -58,7 +58,7 @@ void ShotEditWidget::setDuration()
     m_shot->setDuration(ui_secondsBox->value());
 }
 
-void ShotEditWidget::setSequence(RamSequence *seq)
+void ShotEditWidget::setSequence(RamObject *seq)
 {
     if (!m_shot) return;
     m_shot->setSequence(seq);
@@ -124,5 +124,5 @@ void ShotEditWidget::connectEvents()
     connect(ui_secondsBox, SIGNAL(editingFinished()), this, SLOT(setDuration()));
     connect(ui_framesBox, SIGNAL(editingFinished()), this, SLOT(framesChanged()));
     connect(ui_framesBox, SIGNAL(editingFinished()), this, SLOT(setDuration()));
-    connect(ui_sequencesBox, SIGNAL(currentObjectChanged(RamSequence*)), this, SLOT(setSequence(RamSequence*)));
+    connect(ui_sequencesBox, &RamObjectListComboBox::currentObjectChanged, this, &ShotEditWidget::setSequence);
 }

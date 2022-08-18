@@ -148,7 +148,7 @@ void RamObject::showEdit(QString title)
 void RamObject::construct(QObject *parent)
 {
     if (!parent && m_objectType != Ramses) this->setParent(Ramses::instance());
-    this->setObjectName( objectTypeName() );
+    this->setObjectName( objectTypeName() + " | " + shortName() + " (" + m_uuid + ")" );
 }
 
 

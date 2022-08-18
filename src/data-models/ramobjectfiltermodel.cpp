@@ -39,11 +39,6 @@ RamObject *RamObjectFilterModel::at(int i) const
     return RamObjectList::at(index(i, 0));
 }
 
-RamObject *RamObjectFilterModel::at(QModelIndex i) const
-{
-    return RamObjectList::at(i);
-}
-
 bool RamObjectFilterModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
 {
     QModelIndex index = sourceModel()->index(sourceRow, 0, sourceParent);

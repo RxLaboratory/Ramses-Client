@@ -20,6 +20,8 @@
 
 7- Improve Icons
 
+7A - look for memory leaks (object parenting, project must be parent of its content)
+
 7B - DB Clean tool
 	- Run vacuum once a day (in localdbi)
 	- Button to clean and vacuum: removes unused objects, sync, vacuum

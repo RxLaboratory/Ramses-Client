@@ -198,7 +198,9 @@ void LocalDataInterface::createObject(QString uuid, QString table, QString data)
     QDateTime modified = QDateTime::currentDateTimeUtc();
 
     QString q = "INSERT INTO '%1' (uuid, data, modified, removed) "
-                "VALUES ( '%2' , '%3' , '%4' , 0);";
+                "VALUES ('%2', '%3', '%4', 0) "
+                "ON CONFLICT(uuid) DO UPDATE "
+                "SET data=excluded.data, modified=excluded.modified ;";
 
     query( q.arg(
                   table,
@@ -225,7 +227,11 @@ void LocalDataInterface::setObjectData(QString uuid, QString table, QString data
     QDateTime modified = QDateTime::currentDateTimeUtc();
 
 
-    QString q = "UPDATE %1 SET data = '%2', modified = '%3' WHERE uuid = '%4';";
+    QString q = "INSERT INTO %1 (data, modified, uuid) "
+                "VALUES ( '%2', '%3', '%4') "
+                "ON CONFLICT(uuid) DO UPDATE "
+                "SET data=excluded.data, modified=excluded.modified ;";
+
     query( q.arg(table, data, modified.toString("yyyy-MM-dd hh:mm:ss:zzz"), uuid) );
 }
 
@@ -258,8 +264,13 @@ void LocalDataInterface::setUsername(QString uuid, QString username) const
 {
     username.replace("'", "''");
 
-    QString q = "UPDATE RamUser SET userName = '%1' WHERE uuid = '%2';";
-    query( q.arg(username, uuid) );
+    QDateTime modified = QDateTime::currentDateTimeUtc();
+
+    QString q = "INSERT INTO RamUser (userName, modified, uuid) "
+                "VALUES ('%1', '%2', '%3') "
+                "ON CONFLICT(uuid) DO UPDATE "
+                "SET userName=excluded.userName, modified=excluded.modified ;";
+    query( q.arg(username, modified.toString("yyyy-MM-dd hh:mm:ss:zzz"), uuid) );
 }
 
 ServerConfig LocalDataInterface::serverConfig() const
@@ -316,6 +327,7 @@ QSqlQuery LocalDataInterface::query(QString q) const
     QSqlQuery qry = QSqlQuery(db);
 
     //log(tr("Querying:") + "\n" + q, DuQFLog::Data);
+    //qDebug() << q;
 
     if (!qry.exec(q))
     {

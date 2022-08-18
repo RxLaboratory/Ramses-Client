@@ -18,14 +18,12 @@ RamItemTable *RamItemTable::c(RamObjectList *o)
 RamItemTable::RamItemTable(QString shortName, QString name, ObjectType type, QObject *parent, DataListMode mode):
     RamObjectList(shortName, name, type, mode, parent, ItemTable)
 {
-    construct();
     connectEvents();
 }
 
 RamItemTable::RamItemTable(QString uuid, QObject *parent):
     RamObjectList(uuid, parent, ItemTable)
 {
-    construct();
     connectEvents();
 }
 
@@ -33,7 +31,7 @@ int RamItemTable::columnCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent);
 
-    if (!m_steps) return 0;
+    if (!m_steps) return 1;
     return m_steps->rowCount() + 1;
 }
 
@@ -257,12 +255,6 @@ void RamItemTable::inserted(const QModelIndex &parent, int first, int last)
 }
 
 // PRIVATE //
-
-void RamItemTable::construct()
-{
-    this->m_objectType = RamAbstractObject::ItemTable;
-    this->setObjectName(this->objectTypeName());
-}
 
 void RamItemTable::connectEvents()
 {

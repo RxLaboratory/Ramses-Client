@@ -226,7 +226,7 @@ void RamScheduleDelegate::showDetails(bool s)
     m_details = s;
 }
 
-void RamScheduleDelegate::setEntry(RamStep *step)
+void RamScheduleDelegate::setEntry(RamObject *step)
 {
     if (!m_indexPressed.isValid()) return;
 
@@ -248,13 +248,13 @@ void RamScheduleDelegate::setEntry(RamStep *step)
             date.setTime(QTime(12,0));
 
         entry = new RamScheduleEntry( user, date );
-        entry->setStep(step);
+        entry->setStep( RamStep::c( step ) );
         user->schedule()->append(entry);
     }
     else if (entry)
     {
         if (step)
-            entry->setStep( step );
+            entry->setStep( RamStep::c( step ) );
         else
             entry->remove();
     }

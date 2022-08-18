@@ -478,6 +478,7 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
     RamObject *obj = RamObjectList::at(index);
     if (!obj)
     {
+        qDebug() << "Painting inaccessible object!";
         paintTitle( index.data(Qt::DisplayRole).toString(), painter, &params );
         return;
     }

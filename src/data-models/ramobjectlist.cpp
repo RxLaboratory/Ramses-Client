@@ -73,14 +73,14 @@ RamObjectList::RamObjectList(QString uuid, QObject *parent, ObjectType listType)
 
     m_contentType = objectTypeFromName( getData("type").toString() );
 
-    // Populate the list
     QJsonObject d = RamAbstractObject::data();
+    // Populate the list
     QJsonArray arr = d.value("list").toArray();
     for (int i = 0; i < arr.count(); i++)
     {
         QString uuid = arr.at(i).toString();
         RamObject *obj = RamObject::get(uuid, m_contentType);
-        append(obj);
+        addObj(obj);
     }
 }
 
@@ -100,6 +100,17 @@ int RamObjectList::columnCount(const QModelIndex & parent) const
 
 QVariant RamObjectList::data(const QModelIndex &index, int role) const
 {
+    // Invalid index
+    int row = index.row();
+    if (row < 0 || row >= m_objectList.count())
+    {
+        if (role == Qt::DisplayRole) return "Invalid index";
+        if (role == Qt::StatusTipRole) return "Found an index which doesn't contain a valid object. That may be a bug.";
+        if (role == Qt::ToolTipRole)  return "Found an index which doesn't contain a valid object. That may be a bug.";
+        if (role == Pointer) return 0;
+        return QVariant();
+    }
+
     // Pass the pointer as an int to our delegate
     RamObject *obj = m_objectList.at(index.row());
 
@@ -136,14 +147,29 @@ QVariant RamObjectList::data(const QModelIndex &index, int role) const
 
 QVariant RamObjectList::headerData(int section, Qt::Orientation orientation, int role) const
 {
-    if(orientation == Qt::Vertical)
+    if (orientation == Qt::Vertical)
     {
+        // Invalid index
+        if (section < 0 || section >= m_objectList.count())
+        {
+#ifdef QT_DEBUG
+            if (role == Qt::DisplayRole) return "Invalid";
+#endif
+            return QVariant();
+        }
+
         if ( role == Qt::DisplayRole )
             return m_objectList.at( section )->shortName();
         if ( role == Qt::UserRole )
             return m_objectList.at( section )->uuid();
     }
     return QAbstractTableModel::headerData(section, orientation, role);
+}
+
+QModelIndex RamObjectList::index(int row, int column, const QModelIndex &parent) const
+{
+    Q_UNUSED(parent);
+    return createIndex(row, column);
 }
 
 void RamObjectList::sort(int column, Qt::SortOrder order)
@@ -180,9 +206,7 @@ void RamObjectList::insertObject(int i, RamObject *obj)
 
     beginInsertRows(QModelIndex(), i, i);
 
-    m_objectList.insert(i , obj);
-    m_objects[obj->uuid()] = obj;
-    connectObject(obj);
+    addObj(obj, i);
 
     // Save data
     saveData();
@@ -295,9 +319,7 @@ QJsonObject RamObjectList::reloadData()
         QString uuid = uuids.at(i);
         RamObject *o = RamObject::get( uuid, m_contentType );
         if (!o) continue;
-        m_objectList << o;
-        m_objects[uuid] = o;
-        connectObject(o);
+        addObj(o);
     }
 
     endResetModel();
@@ -307,7 +329,6 @@ QJsonObject RamObjectList::reloadData()
 
 void RamObjectList::saveData()
 {
-    qDebug() << "Save list data: " + name();
     switch(m_dataMode)
     {
     case ListObject:
@@ -417,6 +438,18 @@ void RamObjectList::connectObject(RamObject *obj)
     connect( obj, &RamObject::dataChanged, this, &RamObjectList::objectChanged);
 }
 
+void RamObjectList::addObj(RamObject *o, int row)
+{
+    if (!o) return;
+    if (contains(o)) return;
+
+    if (row < 0) row = m_objectList.count();
+
+    m_objectList.insert(row , o);
+    m_objects[o->uuid()] = o;
+    connectObject(o);
+}
+
 int RamObjectList::objRow(RamObject *obj) const
 {
     for (int i = m_objectList.count() - 1; i >= 0; i--)
@@ -444,7 +477,7 @@ void RamObjectList::objectChanged(RamObject *obj)
 
 void RamObjectList::construct(QObject *parent)
 {
-    this->setObjectName(objectTypeName());
+    this->setObjectName(objectTypeName() + " | " + shortName() + "(" + m_uuid + ")");
     if (!parent) setParent(Ramses::instance());
 }
 

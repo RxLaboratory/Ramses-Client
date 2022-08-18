@@ -191,7 +191,7 @@ void RamObjectListView::showEvent(QShowEvent *event)
 
 void RamObjectListView::select(const QModelIndex &index)
 {
-    RamObject *obj = m_objectList->at(index);
+    RamObject *obj = RamObjectList::at(index);
     if (!obj) return;
     this->selectionModel()->select(index, QItemSelectionModel::ClearAndSelect);
     emit objectSelected(obj);

@@ -24,7 +24,7 @@ public:
     RamShot(QString uuid);
 
     RamSequence *sequence() const;
-    void setSequence(RamSequence *sequence);
+    void setSequence(RamObject *sequence);
 
     qreal duration() const;
     void setDuration(const qreal &duration);

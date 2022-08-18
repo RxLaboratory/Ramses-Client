@@ -62,6 +62,13 @@ QVariant RamScheduleTable::headerData(int section, Qt::Orientation orientation, 
 
     if (orientation == Qt::Vertical)
     {
+        // Invalid index
+        if (section < 0 || section > m_users->rowCount()*2)
+        {
+            //if (role == Qt::DisplayRole) return "Invalid";
+            return QVariant();
+        }
+
         // The comments
         if (section == 0 && m_comments) {
             if ( role == Qt::DisplayRole )

@@ -115,7 +115,9 @@ void RamAsset::edit(bool show)
 
 QString RamAsset::folderPath() const
 {
-    return  assetGroup()->path() + "/" + m_project->shortName() + "_A_" + shortName();
+    RamProject *proj = project();
+    if (!proj) return "";
+    return  assetGroup()->path() + "/" + proj->shortName() + "_A_" + shortName();
 }
 
 // PRIVATE //
@@ -124,6 +126,5 @@ void RamAsset::construct()
 {
     m_icon = ":/icons/asset";
     m_editRole = ProjectAdmin;
-    m_productionType = RamStep::AssetProduction;
 }
 

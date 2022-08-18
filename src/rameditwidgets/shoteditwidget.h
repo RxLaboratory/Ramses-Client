@@ -26,7 +26,7 @@ protected:
 
 private slots:
     void setDuration();
-    void setSequence(RamSequence *seq);
+    void setSequence(RamObject *seq);
     void framesChanged();
     void secondsChanged();
 

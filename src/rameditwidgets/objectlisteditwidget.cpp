@@ -308,7 +308,7 @@ void ObjectListEditWidget::connectEvents()
     connect(ui_searchEdit, SIGNAL(changing(QString)), ui_listWidget, SLOT(search(QString)));
     connect(ui_searchEdit, SIGNAL(changed(QString)), ui_listWidget, SLOT(search(QString)));
     // filters
-    connect(ui_filterBox,SIGNAL(currentObjectChanged(RamObject*)), this, SLOT(setFilter(RamObject*)));
+    connect(ui_filterBox, &RamObjectListComboBox::currentObjectChanged, this, &ObjectListEditWidget::setFilter);
     // Relay list signals
     connect(ui_listWidget, &RamObjectListView::objectSelected, this, &ObjectListEditWidget::objectSelected);
 

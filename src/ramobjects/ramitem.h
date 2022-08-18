@@ -57,18 +57,12 @@ public:
 signals:
     void statusChanged(RamItem *, RamStep *);
 
-protected:
-    // Immutable data
-    // item can't be transfered (yet)
-    // and shots/assets can't be converted to one another
-    RamProject *m_project;
-    RamStep::Type m_productionType;
-
 private slots:
     void latestStatusChanged(RamStepStatusHistory*history);
 
 private:
     void construct();
+    void setProject(RamProject *proj);
     // Monitors changes to emit statusChanged
     void connectHistory(RamStepStatusHistory *history);
 

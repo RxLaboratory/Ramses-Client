@@ -39,7 +39,7 @@ RamSequence *RamShot::sequence() const
     return RamSequence::get( getData("sequence").toString() );
 }
 
-void RamShot::setSequence(RamSequence *sequence)
+void RamShot::setSequence(RamObject *sequence)
 {
     insertData("sequence", sequence->uuid() );
 }
@@ -71,10 +71,13 @@ QString RamShot::filterUuid() const
 
 QString RamShot::details() const
 {
-    QString details = "Duration: " +
+    RamProject *proj = project();
+    if (!proj) return tr("Invalid Shot.\n\nMaybe the database needs to be repaired.");
+
+    QString details = tr("Duration:") + " " +
                     QString::number(duration(), 'f', 2) +
                     " s | " +
-                    QString::number(duration() * m_project->framerate(), 'f', 2) +
+                    QString::number(duration() * proj->framerate(), 'f', 2) +
                     " f";
 
     // List assigned assets
@@ -110,7 +113,9 @@ void RamShot::edit(bool show)
 
 QString RamShot::folderPath() const
 {
-    return m_project->path(RamObject::ShotsFolder) + "/" + m_project->shortName() + "_S_" + shortName();
+    RamProject *proj = project();
+    if (!proj) return "";
+    return proj->path(RamObject::ShotsFolder) + "/" + proj->shortName() + "_S_" + shortName();
 }
 
 // PRIVATE //
@@ -119,7 +124,6 @@ void RamShot::construct()
 {
     m_icon = ":/icons/shot";
     m_editRole = ProjectAdmin;
-    m_productionType = RamStep::ShotProduction;
     getCreateLists();
 }
 

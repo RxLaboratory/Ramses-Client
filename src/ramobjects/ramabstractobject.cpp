@@ -391,6 +391,7 @@ QString RamAbstractObject::dataString() const
     if (dataStr == "") return "";
     // Decrypt
     if (m_dataEncrypted) dataStr = DataCrypto::instance()->clientDecrypt( dataStr );
+    //qDebug() << dataStr;
     return dataStr;
 }
 

@@ -56,13 +56,14 @@ public:
     int columnCount(const QModelIndex &parent = QModelIndex()) const override;
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
+    virtual QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const override;
     virtual void sort(int column, Qt::SortOrder order = Qt::AscendingOrder) override;
 
     // LIST EDITING
     // Empty
     void clear(bool removeObjects = false);
     // Add
-    virtual void insertObject(int i, RamObject *obj); // Insert object at i
+    void insertObject(int i, RamObject *obj); // Insert object at i
     void append(RamObject *obj); // Append object
     // Remove
     virtual QList<RamObject *> removeIndices( QModelIndexList indices ); // Used to remove selection. Returns the removed objects
@@ -111,12 +112,16 @@ protected slots:
     void objectChanged(RamObject *obj);
 
     virtual QJsonObject reloadData() override;
-    virtual void saveData();
+    void saveData();
 
 private:
     void construct(QObject *parent);
     void connectEvents();
     void connectObject(RamObject *obj);
+
+    // used only when populating data
+    // does not call insert row, does not save the data
+    void addObj(RamObject *o, int row = -1);
 
     DataListMode m_dataMode = ListObject;
 };

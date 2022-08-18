@@ -21,7 +21,6 @@ public:
 
     // LIST INFORMATION
     RamObject *at(int i) const;
-    RamObject *at(QModelIndex i) const;
 
 signals:
     void aboutToFilter();

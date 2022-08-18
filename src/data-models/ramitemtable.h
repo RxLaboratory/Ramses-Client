@@ -39,7 +39,6 @@ private slots:
 private:
 
     // METHODS //
-    void construct();
     void connectEvents();
     // Utils
     RamStep *stepAt(int col) const;
