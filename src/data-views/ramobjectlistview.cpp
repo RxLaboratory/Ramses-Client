@@ -70,6 +70,7 @@ RamObjectListView::RamObjectListView(RamObjectList *list, bool editableObjects, 
 void RamObjectListView::setList(RamObjectList *list)
 {
     m_objectList->setList(list);
+
     this->resizeRowsToContents();
     this->resizeColumnsToContents();
 }

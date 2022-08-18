@@ -169,8 +169,6 @@ void ItemTableManagerWidget::projectChanged(RamProject *project, bool force)
     for (int i = actions.count() -1; i >= 4; i--)
     {
         actions.at(i)->deleteLater();
-        qDebug() << i;
-        qDebug() << actions.at(i);
     }
     ui_table->filteredList()->showAllSteps();
 
@@ -178,9 +176,8 @@ void ItemTableManagerWidget::projectChanged(RamProject *project, bool force)
     actions = ui_userMenu->actions();
     for (int i = actions.count() -1; i >= 5; i--)
     {
-        actions.at(i)->deleteLater();
         qDebug() << i;
-        qDebug() << actions.at(i);
+        actions.at(i)->deleteLater();
     }
     ui_table->filteredList()->clearUsers();
 
@@ -886,6 +883,7 @@ void ItemTableManagerWidget::setupUi()
     ui_table->setSelectionMode(QAbstractItemView::ExtendedSelection);
     ui_table->setTimeTracking(false);
     ui_header->setTimeTracking(false);
+    setupTable();
     mainLayout->addWidget(ui_table);
 
     ui_table->filteredList()->useFilters(true);

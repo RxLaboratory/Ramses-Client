@@ -5,10 +5,10 @@
 StateBox::StateBox(QWidget *parent): RamObjectListComboBox(parent)
 {
     this->setList(Ramses::instance()->states());
-    connect(this, SIGNAL(currentObjectChanged(RamState*)), this, SLOT(currentStateChanged(RamState*)));
+    connect(this, &RamObjectListComboBox::currentObjectChanged, this, &StateBox::changeCurrentState);
 }
 
-void StateBox::currentStateChanged(RamState *state)
+void StateBox::changeCurrentState(RamObject *state)
 {
     if (!state) return;
 
@@ -26,4 +26,6 @@ void StateBox::currentStateChanged(RamState *state)
     this->setStyleSheet(style);
 
     this->setToolTip(state->name());
+
+    emit currentStateChanged(RamState::c( state ));
 }

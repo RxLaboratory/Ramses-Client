@@ -1,7 +1,6 @@
 #include "ramitemfiltermodel.h"
 
 #include "ramstep.h"
-#include "ramuser.h"
 
 RamItemFilterModel::RamItemFilterModel(QObject *parent) : RamObjectFilterModel(parent)
 {
@@ -114,7 +113,7 @@ bool RamItemFilterModel::filterAcceptsRow(int sourceRow, const QModelIndex &sour
     // check users
     bool ok = false;
 
-    for(int i = 0; i < m_users.count(); i++)
+    for (int i = 0; i < m_users.count(); i++)
     {
         for (int j = 1; j < sourceModel()->columnCount(); j++)
         {
@@ -179,7 +178,7 @@ RamStep *RamItemFilterModel::step(int column) const
 {
     if (column == 0) return nullptr;
 
-    quintptr iptr = sourceModel()->headerData( column, Qt::Horizontal, Qt::UserRole).toULongLong();
+    quintptr iptr = sourceModel()->headerData( column, Qt::Horizontal, RamObjectList::Pointer).toULongLong();
     if (iptr == 0) return nullptr;
     RamStep *step = reinterpret_cast<RamStep*>(iptr);
 

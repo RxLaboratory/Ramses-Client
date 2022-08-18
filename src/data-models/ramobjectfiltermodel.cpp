@@ -10,12 +10,13 @@ void RamObjectFilterModel::setList(RamObjectList *list)
 {
     if (this->sourceModel() == list) return;
 
-    if (!list) this->setSourceModel(m_emptyList);
-    else this->setSourceModel(list);
-
     // Refresh
     QString f = m_currentFilterUuid;
     setFilterUuid("");
+
+    if (!list) this->setSourceModel(m_emptyList);
+    else this->setSourceModel(list);
+
     setFilterUuid(f);
 }
 

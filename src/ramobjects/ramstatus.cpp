@@ -38,6 +38,8 @@ RamStatus *RamStatus::copy(RamStatus *other, RamUser *user)
     status->setUseAutoEstimation( other->useAutoEstimation() );
     status->setComment( other->comment() );
 
+    qDebug() << user;
+
     return status;
 }
 
@@ -46,8 +48,7 @@ RamStatus *RamStatus::noStatus(RamItem *item, RamStep *step)
     RamStatus *no = new RamStatus(
                 Ramses::instance()->ramsesUser(),
                 item,
-                step,
-                true);
+                step);
     return no;
 }
 
@@ -104,12 +105,11 @@ RamStatus::RamStatus(RamUser *user, RamItem *item, RamStep *step, bool isVirtual
 
     d.insert("step", step->uuid());
 
-    d.insert("state", Ramses::instance()->noState()->uuid());
+    RamState *state = Ramses::instance()->noState();
+    d.insert("state", state->uuid());
     d.insert("completionRatio", 0);
 
     setData(d);
-
-    connect(state(), SIGNAL(removed(RamObject*)), this, SLOT(stateRemoved()));
 }
 
 RamStatus::RamStatus(QString uuid):
@@ -153,6 +153,7 @@ RamItem *RamStatus::item() const
 
 bool RamStatus::isNoState() const
 {
+    if (!state()) return true;
     RamState *noState = Ramses::instance()->noState();
     return noState->is(state());
 }
@@ -169,7 +170,7 @@ void RamStatus::setCompletionRatio(int completionRatio)
 
 RamState *RamStatus::state() const
 {
-    return RamState::get( getData("state").toString() );
+    return RamState::get( getData("state").toString("none") );
 }
 
 void RamStatus::setState(RamState *newState)
@@ -620,7 +621,7 @@ void RamStatus::construct()
 
 void RamStatus::connectEvents()
 {
-    connect(m_user, SIGNAL( removed(RamObject*)), this, SLOT(userRemoved()));
-    connect(m_item, SIGNAL( removed(RamObject*)), this, SLOT(remove()));
-    connect(m_step, SIGNAL( removed(RamObject*)), this, SLOT(remove()));
+    connect(m_user, &RamUser::removed, this, &RamStatus::userRemoved);
+    connect(m_item, &RamItem::removed, this, &RamStatus::remove);
+    connect(m_step, &RamStep::removed, this, &RamStatus::remove);
 }

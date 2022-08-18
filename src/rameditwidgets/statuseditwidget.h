@@ -41,7 +41,7 @@ private slots:
     void setVersion(int v);
     void setCompletion(int c);
     void setComment();
-    void assignUser(RamUser *u);
+    void assignUser(RamObject *u);
     void setPublished(bool p);
     void setAutoEstimation(bool a);
     void setTimeSpent(int t);

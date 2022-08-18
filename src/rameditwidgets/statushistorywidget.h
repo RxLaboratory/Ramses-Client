@@ -18,7 +18,6 @@ private slots:
 
 private:
     void setupUi();
-    void connectEvents();
     RamObjectListView *ui_statusList;
 };
 

@@ -148,7 +148,7 @@ RamStateList *Ramses::states() const
 
 RamState *Ramses::noState()
 {
-    if(m_noState) return m_noState;
+    if (m_noState) return m_noState;
     m_noState = RamState::c( m_states->fromName("NO") );
     if (!m_noState)
     {

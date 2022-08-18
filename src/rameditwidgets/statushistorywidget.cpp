@@ -4,7 +4,6 @@ StatusHistoryWidget::StatusHistoryWidget(RamStepStatusHistory *history, QWidget 
 {
     setupUi();
     ui_statusList->setList(history);
-    connectEvents();
 }
 
 void StatusHistoryWidget::editObject(RamStatus *obj) const
@@ -25,7 +24,3 @@ void StatusHistoryWidget::setupUi()
     layout->addWidget( ui_statusList );
 }
 
-void StatusHistoryWidget::connectEvents()
-{
-    connect(ui_statusList, SIGNAL(editObject(RamStatus*)), this, SLOT(editObject(RamStatus*)));
-}

@@ -26,7 +26,7 @@ signals:
     void aboutToFilter();
 
 protected:
-    bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const override;
+    virtual bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const override;
     /**
      * @brief prepareFilter calls invalidateFilter but emits aboutToFilter() first.
      */

@@ -79,7 +79,7 @@ protected:
 
 private:
     // UTILS //
-    PaintParameters getPaintParameters(const QStyleOptionViewItem &option, RamObject *obj = nullptr) const;
+    PaintParameters getPaintParameters(const QStyleOptionViewItem &option, RamObject *obj) const;
     void paintBG(QPainter *painter, PaintParameters *params) const;
     void paintTitle(RamObject *obj, QPainter *painter, PaintParameters *params) const;
     void paintTitle(QString title, QPainter *painter, PaintParameters *params) const;

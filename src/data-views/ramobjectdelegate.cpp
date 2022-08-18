@@ -4,7 +4,6 @@
 
 #include "ramfiletype.h"
 #include "ramitem.h"
-#include "ramsequence.h"
 #include "ramshot.h"
 #include "ramstatus.h"
 #include "rampipefile.h"
@@ -31,6 +30,7 @@ PaintParameters RamObjectDelegate::getPaintParameters(const QStyleOptionViewItem
                 );
 
     // Colors
+    bool mustBeDark = false;
     if (obj)
     {
         switch (obj->objectType())
@@ -40,16 +40,24 @@ PaintParameters RamObjectDelegate::getPaintParameters(const QStyleOptionViewItem
             RamStatus *status = RamStatus::c(obj);
             if (status->isNoState())
             {
+                mustBeDark = true;
                 params.bgColor = QColor(0,0,0,0);
                 params.textColor = m_dark;
                 params.detailsColor = m_dark;
             }
             break;
         }
+        case RamObject::State:
+        {
+            params.bgColor = m_dark;
+            params.textColor = obj->color();
+            params.detailsColor = m_medium;
+            if (m_comboBox) params.textColor = QColor(150,150,150);
+        }
         default:
         {
             params.bgColor = m_dark;
-            params.textColor = m_lessLight;
+            params.textColor = obj->color();
             params.detailsColor = m_medium;
         }
         }
@@ -60,6 +68,8 @@ PaintParameters RamObjectDelegate::getPaintParameters(const QStyleOptionViewItem
         params.textColor = m_lessLight;
         params.detailsColor = m_medium;
     }
+
+    if (params.textColor.lightness() < 150 && !mustBeDark) params.textColor.setHsl( params.textColor.hue(), params.textColor.saturation(), 150);
 
     if (option.state & QStyle::State_MouseOver)
     {
@@ -97,7 +107,6 @@ void RamObjectDelegate::paintTitle(RamObject *obj, QPainter *painter, PaintParam
 {
     // Title
     QString title;
-    QColor color;
 
     switch (obj->objectType())
     {
@@ -112,25 +121,21 @@ void RamObjectDelegate::paintTitle(RamObject *obj, QPainter *painter, PaintParam
             " (v" %
             QString::number(status->version()) %
             ")";
-        color = obj->color();
         break;
     }
     case RamObject::TemplateAssetGroup:
     {
         title = obj->name() % " [Template]";
-        color = obj->color();
         break;
     }
     case RamObject::TemplateStep:
     {
         title = obj->name() % " [Template]";
-        color = obj->color();
         break;
     }
     case RamObject::FileType:
     {
         title = obj->name() % " (." % obj->shortName() + ")";
-        color = obj->color();
         break;
     }
     case RamObject::State:
@@ -139,12 +144,10 @@ void RamObjectDelegate::paintTitle(RamObject *obj, QPainter *painter, PaintParam
         if (m_comboBox)
         {
             title = obj->shortName();
-            color = QColor(150,150,150);
         }
         else
         {
             title = obj->name();
-            color = obj->color();
         }
         break;
     }
@@ -154,26 +157,20 @@ void RamObjectDelegate::paintTitle(RamObject *obj, QPainter *painter, PaintParam
         RamPipeFile *pf = RamPipeFile::c(obj);
         RamFileType *ft = pf->fileType();
         if (ft) title = title % "." % ft->shortName();
-        color = obj->color();
         break;
     }
     case RamObject::Shot:
     {
         RamShot *shot = RamShot::c(obj);
         title = shot->name();
-        color = shot->sequence()->color();
         break;
     }
     default:
     {
         title = obj->name();
-        color = obj->color();
     }
     }
 
-    // Draw title
-    if (color.lightness() < 150) color.setHsl( color.hue(), color.saturation(), 150);
-    params->textColor = color;
     paintTitle(title, painter, params);
 }
 
@@ -466,8 +463,10 @@ RamObjectDelegate::RamObjectDelegate(QObject *parent)
 
 void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
+    RamObject *obj = RamObjectList::at(index);
+
     // Base
-    PaintParameters params = getPaintParameters(option);
+    PaintParameters params = getPaintParameters(option, obj);
 
     // BG
     paintBG(painter, &params);
@@ -475,17 +474,19 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
     // no more room, finished
     if (params.bgRect.height() < 26 ) return;
 
-    RamObject *obj = RamObjectList::at(index);
     if (!obj)
     {
-        qDebug() << "Painting inaccessible object!";
         paintTitle( index.data(Qt::DisplayRole).toString(), painter, &params );
         return;
     }
 
     // Icon
-    QPixmap pm = m_icons.value( obj->iconName() );
-    painter->drawPixmap( params.iconRect, pm );
+    if (obj->objectType() != RamObject::Status)
+    {
+        QPixmap pm = m_icons.value( obj->iconName() );
+        painter->drawPixmap( params.iconRect, pm );
+    }
+
 
     // Title
     paintTitle(obj, painter, &params);
@@ -691,7 +692,8 @@ bool RamObjectDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, co
                 // Check if it's a status
                 if (isStatus)
                 {
-                    RamStatus *status = qobject_cast<RamStatus*>( o );
+                    qDebug() << "status";
+                    RamStatus *status = RamStatus::c( o );
 
                     // If it's not the current user, create a new one
                     RamUser *currentUser = Ramses::instance()->currentUser();

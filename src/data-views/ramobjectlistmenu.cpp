@@ -37,7 +37,6 @@ void RamObjectListMenu::setList(RamObjectList *list)
 void RamObjectListMenu::addCreateButton()
 {
     QAction *createAction = new QAction("Create new...");
-    createAction->setData(-1);
     if (this->actions().count() > 0)
     {
         this->insertAction(this->actions().at(0), createAction);
@@ -80,7 +79,7 @@ void RamObjectListMenu::showAll()
 RamObject *RamObjectListMenu::objectAt(int i)
 {
     QList<QAction*> actions = this->actions();
-    return reinterpret_cast<RamObject*>( actions[i]->data().toULongLong() );
+    return object( actions[i] );
 }
 
 bool RamObjectListMenu::isAllChecked() const
@@ -102,8 +101,9 @@ void RamObjectListMenu::newObject(const QModelIndex &parent, int first, int last
     for(int i = first; i <= last; i++)
     {
         RamObject *o = m_objects->at(i);
+        if (!o) continue;
         QAction *a = new QAction( o->name() );
-        a->setData( i );
+        a->setData( reinterpret_cast<quintptr>(o) );
         a->setCheckable(m_checkable);
         if (m_checkable) a->setChecked(true);
         this->addAction(a);
@@ -121,7 +121,9 @@ void RamObjectListMenu::removeObject(const QModelIndex &parent, int first, int l
         QList<QAction*> actions = this->actions();
         for (int j = actions.count() -1; j >= 0; j--)
         {
-            if (actions.at(j)->data().toInt() == i)
+            RamObject *o = object(actions.at(j));
+            RamObject *t = m_objects->at(i);
+            if (t && t->is(o))
             {
                 actions.at(j)->deleteLater();
                 break;
@@ -138,7 +140,9 @@ void RamObjectListMenu::objectChanged(const QModelIndex &topLeft, const QModelIn
     {
         for (int j = actions.count() -1; j >= 0; j--)
         {
-            if (actions.at(j)->data().toInt() == i)
+            RamObject *o = object(actions.at(j));
+            RamObject *t = m_objects->at(i);
+            if (t && t->is(o))
             {
                 actions.at(j)->setText(m_objects->at(i)->name());
                 break;
@@ -170,7 +174,7 @@ void RamObjectListMenu::clear()
     QList<QAction*> actions = this->actions();
     for (int j = actions.count() -1; j >= 0; j--)
     {
-        if (actions.at(j)->data().toInt() >= 0)
+        if (actions.at(j)->data().toInt() != 0)
             actions.at(j)->deleteLater();
     }
 }
@@ -192,8 +196,9 @@ QString RamObjectListMenu::objectUuid(QAction *a) const
 
 RamObject *RamObjectListMenu::object(QAction *a) const
 {
-    int oIndex = a->data().toInt();
-    RamObject *obj = m_objects->at(oIndex);
+    quintptr iptr = a->data().toULongLong();
+    if (iptr == 0) return nullptr;
+    RamObject *obj = reinterpret_cast<RamObject*>(iptr);
     return obj;
 }
 

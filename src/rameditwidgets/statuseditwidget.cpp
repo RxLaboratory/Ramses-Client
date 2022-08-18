@@ -216,7 +216,7 @@ void StatusEditWidget::setComment()
     m_status->setComment( ui_statusCommentEdit->toMarkdown() );
 }
 
-void StatusEditWidget::assignUser(RamUser *u)
+void StatusEditWidget::assignUser(RamObject *u)
 {
     if (!m_status) return;
     m_status->assignUser(u);
@@ -715,12 +715,12 @@ void StatusEditWidget::setupUi()
 
 void StatusEditWidget::connectEvents()
 {
-    connect(ui_stateBox, SIGNAL(currentObjectChanged(RamState*)), this, SLOT(setState(RamState*)));
+    connect(ui_stateBox, &StateBox::currentStateChanged, this, &StatusEditWidget::setState);
     connect(ui_revertButton, &QToolButton::clicked, this, &StatusEditWidget::refresh);
     connect(ui_versionBox, SIGNAL(valueChanged(int)), this, SLOT(setVersion(int)));
     connect( ui_completionBox, SIGNAL(valueChanging(int)), this, SLOT(setCompletion(int)));
-    connect( ui_statusCommentEdit, SIGNAL(editingFinished(int)), this, SLOT(setComment()));
-    connect( ui_userBox, SIGNAL(currentObjectChanged(RamUser*)), this, SLOT(assignUser(RamUser*)));
+    connect( ui_statusCommentEdit, SIGNAL(editingFinished()), this, SLOT(setComment()));
+    connect( ui_userBox, &RamObjectListComboBox::currentObjectChanged, this, &StatusEditWidget::assignUser);
     connect( ui_publishedBox, SIGNAL(clicked(bool)), this, SLOT(setPublished(bool)));
     connect( ui_autoEstimationBox, SIGNAL(clicked(bool)), this, SLOT(setAutoEstimation(bool)));
     connect( ui_timeSpent, SIGNAL(valueChanged(int)), this, SLOT(setTimeSpent(int)));

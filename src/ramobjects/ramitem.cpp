@@ -39,8 +39,11 @@ RamItem::RamItem(QString uuid, ObjectType type):
         QString stepUuid = stepUuids[i];
         QString historyUuid = history.value(stepUuid).toString();
         RamStepStatusHistory *stepHistory = RamStepStatusHistory::get(historyUuid);
-        m_history[ stepUuid ] = stepHistory;
-        connectHistory(stepHistory);
+        if (stepHistory)
+        {
+            m_history[ stepUuid ] = stepHistory;
+            connectHistory(stepHistory);
+        }
     }
 }
 
@@ -61,9 +64,17 @@ RamStepStatusHistory *RamItem::statusHistory(RamObject *stepObj)
     RamStepStatusHistory *stepHistory = m_history.value( stepObj->uuid(), nullptr );
     if (!stepHistory)
     {
-        RamStep *step = qobject_cast<RamStep*>( stepObj );
+        RamStep *step = RamStep::c( stepObj );
         stepHistory = new RamStepStatusHistory(step, this);
-        m_history[ step->uuid() ] = stepHistory;
+        m_history[step->uuid()] = stepHistory;
+        QJsonObject history;
+        QMapIterator<QString, RamStepStatusHistory*> i(m_history);
+        while (i.hasNext())
+        {
+            i.next();
+            history.insert(i.key(), i.value()->uuid());
+        }
+        insertData("statusHistory", history);
         connectHistory(stepHistory);
     }
     return stepHistory;
@@ -156,7 +167,7 @@ bool RamItem::isUserAssigned(RamObject *u, RamStep *step)
 
 bool RamItem::isUnassigned(RamStep *step)
 {
-    if(step)
+    if (step)
     {
         RamStatus *s = status(step);
         if (!s) return true;

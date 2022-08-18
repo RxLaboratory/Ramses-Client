@@ -14,10 +14,11 @@ class StateBox : public RamObjectListComboBox
 public:
     StateBox(QWidget *parent = nullptr);
 
-protected:
+signals:
+    void currentStateChanged(RamState *state);
 
 private slots:
-    void currentStateChanged(RamState *state);
+    void changeCurrentState(RamObject *state);
 
 };
 

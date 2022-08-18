@@ -27,8 +27,6 @@ public:
 
 
 private slots:
-    void insertStep(const QModelIndex &parent, int first, int last);
-    void removeStep(const QModelIndex &parent, int first, int last);
     void removeItem(const QModelIndex &parent, int first, int last);
     void statusChanged(RamItem *item, RamStep *step);
 
@@ -40,12 +38,10 @@ private:
 
     // METHODS //
     void connectEvents();
+    void updateStepList() const;
     // Utils
     RamStep *stepAt(int col) const;
     int stepCol(RamStep *step) const;
-
-    RamObjectList *m_steps = nullptr;
-
 };
 
 #endif // RAMITEMTABLE_H

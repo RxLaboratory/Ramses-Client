@@ -13,6 +13,9 @@ RamObjectList *RamObjectList::get(QString uuid, ObjectType type)
     RamAbstractObject *obj = RamAbstractObject::get(uuid);
     if (obj) return static_cast<RamObjectList*>( obj ) ;
 
+    // Check if the UUID exists in the database
+    if (!DBInterface::instance()->contains(uuid, objectTypeName(type))) return nullptr;
+
     switch(type)
     {
     case ItemTable: return new RamItemTable(uuid);
