@@ -1,6 +1,7 @@
 #include "ramassetgroup.h"
 
 #include "assetgroupeditwidget.h"
+#include "data-models/ramitemtable.h"
 
 // STATIC //
 

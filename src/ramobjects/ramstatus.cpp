@@ -98,8 +98,8 @@ RamStatus::RamStatus(RamUser *user, RamItem *item, RamStep *step, bool isVirtual
 
     d.insert("user", user->uuid());
     d.insert("item", item->uuid());
-    if (item->productionType() == RamStep::ShotProduction) d.insert("itemType", "shot");
-    else if (item->productionType() == RamStep::AssetProduction) d.insert("itemType", "asset");
+    if (item->objectType() == RamObject::Shot) d.insert("itemType", "shot");
+    else if (item->objectType() == RamObject::Asset) d.insert("itemType", "asset");
     else d.insert("itemType", "item");
 
     d.insert("step", step->uuid());

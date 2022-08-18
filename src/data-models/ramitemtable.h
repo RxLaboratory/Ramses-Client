@@ -29,11 +29,12 @@ public:
 private slots:
     void insertStep(const QModelIndex &parent, int first, int last);
     void removeStep(const QModelIndex &parent, int first, int last);
+    void removeItem(const QModelIndex &parent, int first, int last);
     void statusChanged(RamItem *item, RamStep *step);
 
     // Used to update the list of steps
     // when the first item is inserted.
-    void inserted();
+    void inserted(const QModelIndex &parent, int first, int last);
 
 private:
 
@@ -41,7 +42,6 @@ private:
     void construct();
     void connectEvents();
     // Utils
-    void connectItem(RamItem *item);
     RamStep *stepAt(int col) const;
     int stepCol(RamStep *step) const;
 

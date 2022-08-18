@@ -16,17 +16,16 @@ RamItem *RamItem::c(RamObject *o)
 
 // PUBLIC //
 
-RamItem::RamItem(QString shortName, QString name, RamStep::Type productionType, RamProject *project) :
-    RamObject(shortName, name, Item, project)
+RamItem::RamItem(QString shortName, QString name, ObjectType type, RamProject *project) :
+    RamObject(shortName, name, type, project)
 {
     construct();
 
     m_project = project;
-    m_productionType = productionType;
 }
 
-RamItem::RamItem(QString uuid):
-    RamObject(uuid, ObjectType::Item)
+RamItem::RamItem(QString uuid, ObjectType type):
+    RamObject(uuid, type)
 {
     construct();
 
@@ -34,9 +33,6 @@ RamItem::RamItem(QString uuid):
     QJsonObject d = data();
     m_project = RamProject::get(d.value("project").toString() );
     this->setParent( m_project );
-
-    // Set the type
-    m_productionType = RamStep::stepTypeFromName( d.value("productionType").toString("AssetProduction") );
 
     // Get the status history
     QJsonObject history = d.value("statusHistory").toObject();
@@ -54,11 +50,6 @@ RamItem::RamItem(QString uuid):
 RamProject *RamItem::project() const
 {
     return m_project;
-}
-
-RamStep::Type RamItem::productionType() const
-{
-    return m_productionType;
 }
 
 QMap<QString, RamStepStatusHistory*> RamItem::statusHistory() const

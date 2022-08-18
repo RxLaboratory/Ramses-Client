@@ -6,6 +6,7 @@
 #include "ramassetgroup.h"
 #include "ramsequence.h"
 #include "shotscreationdialog.h"
+#include "data-models/ramitemtable.h"
 
 ItemTableManagerWidget::ItemTableManagerWidget(RamTemplateStep::Type type, QWidget *parent) : QWidget(parent)
 {   

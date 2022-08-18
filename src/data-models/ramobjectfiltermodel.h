@@ -3,9 +3,8 @@
 
 #include <QSortFilterProxyModel>
 
-#include "data-models/ramitemtable.h"
 
-class RamObjectList;
+#include "ramobjectlist.h"
 
 /**
  * @brief The RamObjectFilterModel class is a proxy used to filter and search items displayed in Ramses' lists.

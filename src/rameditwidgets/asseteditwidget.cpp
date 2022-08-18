@@ -48,10 +48,10 @@ void AssetEditWidget::setTags()
     m_asset->setTags(ui_tagsEdit->text());
 }
 
-void AssetEditWidget::setAssetGroup(RamAssetGroup *ag)
+void AssetEditWidget::setAssetGroup(RamObject *ag)
 {
     if(!m_asset) return;
-    m_asset->setAssetGroup(ag);
+    m_asset->setAssetGroup(RamAssetGroup::c(ag));
 }
 
 void AssetEditWidget::setupUi()
@@ -79,5 +79,5 @@ void AssetEditWidget::setupUi()
 void AssetEditWidget::connectEvents()
 {
     connect(ui_tagsEdit, SIGNAL(editingFinished()), this, SLOT(setTags()));
-    connect(ui_assetGroupBox, SIGNAL(currentObjectChanged(RamAssetGroup*)), this, SLOT(setAssetGroup(RamAssetGroup*)));
+    connect(ui_assetGroupBox, &RamObjectListComboBox::currentObjectChanged, this, &AssetEditWidget::setAssetGroup);
 }

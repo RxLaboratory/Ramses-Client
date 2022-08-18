@@ -24,7 +24,7 @@ protected:
 
 private slots:
     void setTags();
-    void setAssetGroup(RamAssetGroup *ag);
+    void setAssetGroup(RamObject *ag);
 
 private:
     RamAsset *m_asset = nullptr;

@@ -223,7 +223,7 @@ QComboBox::down-arrow, QDateTimeEdit::down-arrow {
 }
 
 QComboBox QAbstractItemView {
-    background-color: none;
+    background-color: @color-less-dark-grey;
     selection-color: @color-light-grey;
     selection-background-color: @color-very-dark-grey;
     padding-left: @padding-small;

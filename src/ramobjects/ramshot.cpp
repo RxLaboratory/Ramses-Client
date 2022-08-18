@@ -21,7 +21,7 @@ RamShot *RamShot::c(RamObject *obj)
 // PUBLIC //
 
 RamShot::RamShot(QString shortName, QString name, RamSequence *sequence):
-    RamItem(shortName, name, RamStep::ShotProduction, sequence->project())
+    RamItem(shortName, name, Shot, sequence->project())
 {
     Q_ASSERT_X(sequence, "RamAsset(shortname, name, assetgroup)", "Sequence can't be null!");
     construct();
@@ -29,7 +29,7 @@ RamShot::RamShot(QString shortName, QString name, RamSequence *sequence):
 }
 
 RamShot::RamShot(QString uuid):
-    RamItem(uuid)
+    RamItem(uuid, Shot)
 {
     construct();
 }

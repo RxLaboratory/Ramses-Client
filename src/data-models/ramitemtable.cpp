@@ -16,14 +16,14 @@ RamItemTable *RamItemTable::c(RamObjectList *o)
 }
 
 RamItemTable::RamItemTable(QString shortName, QString name, ObjectType type, QObject *parent, DataListMode mode):
-    RamObjectList(shortName, name, type, mode, parent)
+    RamObjectList(shortName, name, type, mode, parent, ItemTable)
 {
     construct();
     connectEvents();
 }
 
 RamItemTable::RamItemTable(QString uuid, QObject *parent):
-    RamObjectList(uuid, parent)
+    RamObjectList(uuid, parent, ItemTable)
 {
     construct();
     connectEvents();
@@ -196,6 +196,21 @@ void RamItemTable::removeStep(const QModelIndex &parent, int first, int last)
     endRemoveColumns();
 }
 
+void RamItemTable::removeItem(const QModelIndex &parent, int first, int last)
+{
+    Q_UNUSED(parent)
+
+    for (int i = first; i <= last; i++)
+    {
+        RamItem *item = RamItem::c( m_objectList.at(i) );
+        Q_ASSERT(item);
+
+        // Disonnect the item
+        disconnect(item, nullptr, this, nullptr);
+    }
+
+}
+
 void RamItemTable::statusChanged(RamItem *item, RamStep *step)
 {
     // We just need to notify that the data has changed for the item/step
@@ -213,14 +228,26 @@ void RamItemTable::statusChanged(RamItem *item, RamStep *step)
     emit headerDataChanged(Qt::Horizontal, col,col);
 }
 
-void RamItemTable::inserted()
+void RamItemTable::inserted(const QModelIndex &parent, int first, int last)
 {
+    Q_UNUSED(parent)
+
+    for (int i = first; i <= last; i++)
+    {
+        RamItem *item = RamItem::c( m_objectList.at(i) );
+        Q_ASSERT(item);
+
+        // Connect the item to monitor its status
+        connect( item, SIGNAL(statusChanged(RamItem*,RamStep*)), this, SLOT(statusChanged(RamItem*,RamStep*)) );
+    }
+
+    // Update the list of steps
     if (m_steps) return;
 
-    RamItem *i = RamItem::c( m_objectList.first() );
-    Q_ASSERT(i);
+    RamItem *item = RamItem::c( m_objectList.first() );
+    Q_ASSERT(item);
 
-    RamProject *p = i->project();
+    RamProject *p = item->project();
     Q_ASSERT(p);
 
     m_steps = p->steps();
@@ -240,11 +267,7 @@ void RamItemTable::construct()
 void RamItemTable::connectEvents()
 {
     connect( this, &RamItemTable::rowsInserted, this, &RamItemTable::inserted);
-}
-
-void RamItemTable::connectItem(RamItem *item)
-{
-    connect( item, SIGNAL(statusChanged(RamItem*,RamStep*)), this, SLOT(statusChanged(RamItem*,RamStep*)) );
+    connect( this, &RamItemTable::rowsAboutToBeRemoved, this, &RamItemTable::removeItem);
 }
 
 RamStep *RamItemTable::stepAt(int col) const

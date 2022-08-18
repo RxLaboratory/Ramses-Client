@@ -18,7 +18,7 @@ RamAsset *RamAsset::c(RamObject *o)
 // PUBLIC //
 
 RamAsset::RamAsset(QString shortName, QString name, RamAssetGroup *ag) :
-    RamItem(shortName, name, RamStep::AssetProduction, ag->project())
+    RamItem(shortName, name, Asset, ag->project())
 {
     Q_ASSERT_X(ag, "RamAsset(shortname, name, assetgroup)", "AssetGroup can't be null!");
     construct();
@@ -26,7 +26,7 @@ RamAsset::RamAsset(QString shortName, QString name, RamAssetGroup *ag) :
 }
 
 RamAsset::RamAsset(QString uuid):
-    RamItem(uuid)
+    RamItem(uuid, Asset)
 {
     construct();
 }
@@ -36,11 +36,10 @@ RamAssetGroup *RamAsset::assetGroup() const
     return RamAssetGroup::get( getData("assetGroup").toString() );
 }
 
-void RamAsset::setAssetGroup(RamAssetGroup *assetGroup)
+void RamAsset::setAssetGroup(RamAssetGroup *ag)
 {
-    if(!assetGroup) return;
-
-    insertData("assetGroup", assetGroup->uuid());
+    if(!ag) return;
+    insertData("assetGroup", ag->uuid());
 }
 
 QStringList RamAsset::tags() const
@@ -95,9 +94,7 @@ bool RamAsset::hasTag(QString tag)
 
 QString RamAsset::filterUuid() const
 {
-    RamAssetGroup *ag = assetGroup();
-    if (ag) return assetGroup()->uuid();
-    return "";
+    return getData("assetGroup").toString();
 }
 
 QString RamAsset::details() const

@@ -16,6 +16,8 @@
 
 RamObject *RamObject::get(QString uuid, ObjectType type)
 {
+    if (uuid == "none") return nullptr;
+
     RamAbstractObject *obj = RamAbstractObject::get(uuid);
     if (obj) return static_cast<RamObject*>( obj ) ;
 
@@ -78,7 +80,7 @@ QIcon RamObject::icon() const
 void RamObject::reload()
 {
     QJsonObject d = reloadData();
-    emit dataChanged(this, d );
+    emit dataChanged(this);
 }
 
 // PROTECTED //
@@ -95,9 +97,9 @@ QJsonObject RamObject::reloadData()
     return data();
 }
 
-void RamObject::emitDataChanged(QJsonObject data)
+void RamObject::emitDataChanged()
 {
-    emit dataChanged(this, data);
+    emit dataChanged(this);
 }
 
 void RamObject::emitRemoved()

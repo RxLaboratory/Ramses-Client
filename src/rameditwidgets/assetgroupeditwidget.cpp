@@ -2,6 +2,7 @@
 
 #include "ramasset.h"
 #include "ramproject.h"
+#include "data-models/ramitemtable.h"
 
 AssetGroupEditWidget::AssetGroupEditWidget(QWidget *parent) :
     ObjectEditWidget(parent)

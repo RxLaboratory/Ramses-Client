@@ -200,7 +200,7 @@ protected:
     void createData(QString data);
     virtual QJsonObject reloadData() = 0;
 
-    virtual void emitDataChanged(QJsonObject data) { Q_UNUSED(data) };
+    virtual void emitDataChanged() {};
     virtual void emitRemoved() {};
     virtual void emitRestored() {};
 

@@ -161,7 +161,7 @@ void ObjectListEditWidget::removeSelectedObjects()
     {
         RamObject *o = RamObjectList::at( selection.at(i) );
         // Don't remove yourself if you're a user
-        if (o->objectType() == RamObject::User)
+        if (o->objectType() == RamObject::User && m_editMode == RemoveObjects)
         {
             if (o->is( Ramses::instance()->currentUser() ))
             {

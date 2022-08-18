@@ -24,8 +24,8 @@ public:
 
     // OTHER //
 
-    RamItem(QString shortName, QString name, RamStep::Type productionType, RamProject *project );
-    RamItem(QString uuid);
+    RamItem(QString shortName, QString name, ObjectType type, RamProject *project );
+    RamItem(QString uuid, ObjectType type = Item);
 
     RamProject *project() const;
     RamStep::Type productionType() const;

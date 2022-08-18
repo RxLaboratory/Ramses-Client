@@ -59,6 +59,7 @@ RamObjectFilterModel *RamObjectListMenu::filteredList()
 
 void RamObjectListMenu::setObjectVisible(RamObject *obj, bool visible)
 {
+    if (!obj) return;
     QList<QAction *> actions = this->actions();
     for(int j= actions.count() -1; j >= 0; j--)
     {

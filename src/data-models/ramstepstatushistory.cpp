@@ -19,7 +19,7 @@ RamStepStatusHistory *RamStepStatusHistory::c(RamObjectList *o)
 }
 
 RamStepStatusHistory::RamStepStatusHistory(RamStep *step, RamItem *item):
-    RamObjectList(step->shortName(), step->name(), Status, ListObject, item)
+    RamObjectList(step->shortName(), step->name(), Status, ListObject, item, StepStatusHistory)
 {
     construct();
 
@@ -30,6 +30,23 @@ RamStepStatusHistory::RamStepStatusHistory(RamStep *step, RamItem *item):
     d.insert("item", m_item->uuid());
     d.insert("step", m_step->uuid());
     RamAbstractObject::setData(d);
+
+    connectEvents();
+}
+
+RamStepStatusHistory::RamStepStatusHistory(QString uuid, QObject *parent):
+    RamObjectList(uuid, parent, StepStatusHistory)
+{
+    construct();
+
+    QJsonObject d = RamAbstractObject::data();
+
+
+    m_step = RamStep::get(d.value("step").toString() );
+    RamStep::Type t = m_step->type();
+    if (t == RamStep::ShotProduction) m_item = RamShot::get(d.value("item").toString() );
+    else if (t == RamStep::AssetProduction) m_item = RamAsset::get(d.value("item").toString() );
+    else m_item = RamItem::get(d.value("item").toString() );
 
     connectEvents();
 }
@@ -77,25 +94,6 @@ void RamStepStatusHistory::edit(bool show)
     mw->setPropertiesDockWidget(ui_editWidget, m_step->name() + " history", ":/icons/step");
 }
 
-// PROTECTED //
-
-RamStepStatusHistory::RamStepStatusHistory(QString uuid, QObject *parent):
-    RamObjectList(uuid, parent)
-{
-    construct();
-
-    QJsonObject d = RamAbstractObject::data();
-
-
-    m_step = RamStep::get(d.value("step").toString() );
-    RamStep::Type t = m_step->type();
-    if (t == RamStep::ShotProduction) m_item = RamShot::get(d.value("item").toString() );
-    else if (t == RamStep::AssetProduction) m_item = RamAsset::get(d.value("item").toString() );
-    else m_item = RamItem::get(d.value("item").toString() );
-
-    connectEvents();
-}
-
 void RamStepStatusHistory::rowsChanged(QModelIndex parent, int start, int end)
 {
     Q_UNUSED(parent)
@@ -127,7 +125,7 @@ void RamStepStatusHistory::construct()
 
 void RamStepStatusHistory::connectEvents()
 {
-    connect(this, SIGNAL(rowsAboutRemoved(QModelIndex,int,int)), this, SLOT(rowsChanged(QModelIndex,int,int)));
-    connect(this, SIGNAL(rowsAboutRemoved(QModelIndex,int,int)), this, SLOT(rowsChanged(QModelIndex,int,int)));
+    connect(this, &RamStepStatusHistory::rowsAboutToBeRemoved, this, &RamStepStatusHistory::rowsChanged);
+    connect(this, &RamStepStatusHistory::rowsInserted, this, &RamStepStatusHistory::rowsChanged);
     connect(this, SIGNAL(dataChanged(QModelIndex,QModelIndex,QVector<int>)), this, SLOT(changeData(QModelIndex,QModelIndex,QVector<int>)));
 }

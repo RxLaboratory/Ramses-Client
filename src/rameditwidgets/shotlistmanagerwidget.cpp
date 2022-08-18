@@ -4,6 +4,7 @@
 #include "ramsequence.h"
 
 #include "shotscreationdialog.h"
+#include "data-models/ramitemtable.h"
 
 ShotListManagerWidget::ShotListManagerWidget(QWidget *parent):
     ObjectListManagerWidget(
@@ -39,6 +40,7 @@ RamShot *ShotListManagerWidget::createObject()
     RamProject *project = Ramses::instance()->currentProject();
     if (!project) return nullptr;
     if (project->sequences()->rowCount() == 0 ) return nullptr;
+
     RamSequence *seq = RamSequence::c( currentFilter() );
     if (!seq) seq = RamSequence::c( project->sequences()->first() );
     if(!seq) return nullptr;

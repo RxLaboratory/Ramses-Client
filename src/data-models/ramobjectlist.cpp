@@ -41,9 +41,9 @@ RamObject *RamObjectList::at(QModelIndex i)
 
 // PUBLIC //
 
-RamObjectList::RamObjectList(QString shortName, QString name, ObjectType type, DataListMode mode, QObject *parent):
+RamObjectList::RamObjectList(QString shortName, QString name, ObjectType type, DataListMode mode, QObject *parent, ObjectType listType):
     QAbstractTableModel(parent),
-    RamAbstractObject(shortName, name, ObjectList, mode != ListObject)
+    RamAbstractObject(shortName, name, listType, mode != ListObject)
 {
     construct(parent);
     m_dataMode = mode;
@@ -59,9 +59,9 @@ RamObjectList::RamObjectList(QString shortName, QString name, ObjectType type, D
     }
 }
 
-RamObjectList::RamObjectList(QString uuid, QObject *parent):
+RamObjectList::RamObjectList(QString uuid, QObject *parent, ObjectType listType):
     QAbstractTableModel(parent),
-    RamAbstractObject(uuid, ObjectList)
+    RamAbstractObject(uuid, listType)
 {
     construct(parent);
     m_dataMode = ListObject;
@@ -307,21 +307,32 @@ QJsonObject RamObjectList::reloadData()
 
 void RamObjectList::saveData()
 {
-    if (m_dataMode == ListObject)
+    qDebug() << "Save list data: " + name();
+    switch(m_dataMode)
     {
-        QJsonObject d = RamAbstractObject::data();
-
+    case ListObject:
+    {
+        // Convert to json array and save
         QJsonArray arr;
-
-        for (int i = 0; i < m_objectList.count(); i++)
+        for(int i = 0; i < m_objectList.count(); i++)
         {
             arr.append( m_objectList.at(i)->uuid() );
         }
+        insertData("list", arr);
 
-        d.insert("list", arr);
-
-        RamAbstractObject::setData(d);
+        break;
     }
+    case Table:
+    {
+        break; // Nothing to do: no order, and creation/removal is handled by the objects themselves.
+    }
+    case Temp:
+    {
+        break;
+    }
+    }
+
+    emit listChanged(this);
 }
 
 void RamObjectList::removeAll(RamObject *obj)
@@ -429,32 +440,6 @@ void RamObjectList::objectChanged(RamObject *obj)
     emit headerDataChanged(Qt::Vertical, row, row);
 }
 
-void RamObjectList::listChanged()
-{
-    switch(m_dataMode)
-    {
-    case ListObject:
-    {
-        // Convert to json array and save
-        QJsonArray arr;
-        for(int i = 0; i < m_objectList.count(); i++)
-        {
-            arr.append( m_objectList.at(i)->uuid() );
-        }
-        insertData("list", arr);
-        return;
-    }
-    case Table:
-    {
-        return; // Nothing to do: no order, and creation/removal is handled by the objects themselves.
-    }
-    case Temp:
-    {
-        return;
-    }
-    }
-}
-
 // PRIVATE //
 
 void RamObjectList::construct(QObject *parent)
@@ -465,9 +450,9 @@ void RamObjectList::construct(QObject *parent)
 
 void RamObjectList::connectEvents()
 {
-    connect(this, &QAbstractTableModel::rowsInserted, this, &RamObjectList::listChanged);
-    connect(this, &QAbstractTableModel::rowsRemoved, this, &RamObjectList::listChanged);
-    connect(this, &QAbstractTableModel::rowsMoved, this, &RamObjectList::listChanged);
+    connect(this, &QAbstractTableModel::rowsInserted, this, &RamObjectList::saveData);
+    connect(this, &QAbstractTableModel::rowsRemoved, this, &RamObjectList::saveData);
+    connect(this, &QAbstractTableModel::rowsMoved, this, &RamObjectList::saveData);
 }
 
 // SORTERS //

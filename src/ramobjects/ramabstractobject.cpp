@@ -96,7 +96,9 @@ const QString RamAbstractObject::subFolderName(SubFolder folder)
 
 RamAbstractObject *RamAbstractObject::get(QString uuid)
 {
-    Q_ASSERT_X(uuid != "", "RamObject::obj(uuid)", "UUID cannot be empty!");
+    if (uuid =="")
+        qDebug() << "<Warning> RamAbstractObject::get(uuid) | UUID is empty!";
+    Q_ASSERT_X(uuid != "", "RamAbstractObject::get(uuid)", "UUID is empty");
 
     return m_existingObjects.value( uuid, nullptr );
 }
@@ -169,14 +171,13 @@ void RamAbstractObject::setData(QJsonObject data)
 {
     QJsonDocument doc = QJsonDocument(data);
     setDataString(doc.toJson(QJsonDocument::Compact));
-    emitDataChanged(data);
+    emitDataChanged();
 }
 
 void RamAbstractObject::insertData(QString key, QJsonValue value)
 {
     // Update data before inserting
     QJsonObject d = data();
-    qDebug() << value;
     d.insert(key, value);
     setData(d);
 }
@@ -374,6 +375,13 @@ void RamAbstractObject::setDataString(QString data)
     {
         data = DataCrypto::instance()->clientEncrypt( data );
     }
+
+    qDebug() << ">>>";
+    qDebug() << "Setting data for: " + shortName() + " (" + objectTypeName() + ")";
+    qDebug() << "UUID: " + m_uuid;
+    qDebug() << "DATA: " + data;
+    qDebug() << ">>>";
+
     DBInterface::instance()->setObjectData(m_uuid, objectTypeName(), data);
 }
 

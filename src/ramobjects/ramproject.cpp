@@ -1,9 +1,9 @@
 #include "ramproject.h"
 
-#include "ramsequence.h"
 #include "ramses.h"
 #include "rampipe.h"
 #include "projecteditwidget.h"
+#include "data-models/ramitemtable.h"
 
 RamProject *RamProject::get(QString uuid)
 {
@@ -231,7 +231,7 @@ void RamProject::setFolderPath(const QString &newFolderPath)
     settings.endGroup();
     settings.endGroup();
 
-    emit dataChanged(this, data());
+    emit dataChanged(this);
 }
 
 void RamProject::resetDbFolderPath()
@@ -360,6 +360,12 @@ QString RamProject::folderPath() const
     else return p;
 }
 
+void RamProject::listChanged(RamObjectList *list)
+{
+    qDebug() << ">>>>>>>>>>> Data changed for " + list->name();
+    emit dataChanged(this);
+}
+
 // PRIVATE //
 
 void RamProject::construct()
@@ -427,6 +433,16 @@ void RamProject::getCreateLists()
     else m_assetGroups = RamObjectList::get( uuid, ObjectList);
     m_assetGroups->setParent(this);
     d.insert("assetGroups", m_assetGroups->uuid());
+
+    // Connect lists to dataChanged
+    connect(m_shots, &RamObjectList::listChanged, this, &RamProject::listChanged);
+    connect(m_assets, &RamObjectList::listChanged, this, &RamProject::listChanged);
+    connect(m_users, &RamObjectList::listChanged, this, &RamProject::listChanged);
+    connect(m_scheduleComments, &RamObjectList::listChanged, this, &RamProject::listChanged);
+    connect(m_pipeFiles, &RamObjectList::listChanged, this, &RamProject::listChanged);
+    connect(m_pipeline, &RamObjectList::listChanged, this, &RamProject::listChanged);
+    connect(m_sequences, &RamObjectList::listChanged, this, &RamProject::listChanged);
+    connect(m_assetGroups, &RamObjectList::listChanged, this, &RamProject::listChanged);
 
     setData(d);
 }

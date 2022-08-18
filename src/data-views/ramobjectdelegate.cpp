@@ -1,7 +1,6 @@
 #include "ramobjectdelegate.h"
 
 #include "ramstate.h"
-#include "ramtemplateassetgroup.h"
 
 #include "ramfiletype.h"
 #include "ramitem.h"
@@ -477,6 +476,11 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
     if (params.bgRect.height() < 26 ) return;
 
     RamObject *obj = RamObjectList::at(index);
+    if (!obj)
+    {
+        paintTitle( index.data(Qt::DisplayRole).toString(), painter, &params );
+        return;
+    }
 
     // Icon
     QPixmap pm = m_icons.value( obj->iconName() );

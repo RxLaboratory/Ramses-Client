@@ -48,8 +48,8 @@ public:
 
     // METHODS //
 
-    RamObjectList(QString shortName, QString name, ObjectType type, DataListMode mode, QObject *parent = nullptr);
-    RamObjectList(QString uuid, QObject *parent = nullptr);
+    RamObjectList(QString shortName, QString name, ObjectType type, DataListMode mode, QObject *parent = nullptr, ObjectType listType = ObjectList);
+    RamObjectList(QString uuid, QObject *parent = nullptr, ObjectType listType = ObjectList);
 
     // MODEL reimplementation
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
@@ -88,12 +88,13 @@ public slots:
     void sort();
     void reload();
 
+signals:
+    // Emitted when rows inserted, removed or reordered
+    void listChanged(RamObjectList*);
+
 protected:
     // An empty list is useful
     static RamObjectList *m_emptyList;
-
-    virtual QJsonObject reloadData() override;
-    virtual void saveData();
 
     // DATA
     // For performance reasons, store both a list and a map
@@ -101,23 +102,21 @@ protected:
     QList<RamObject*> m_objectList;
 
     // UTILS
-    virtual void connectObject(RamObject *obj);
     int objRow(RamObject *obj) const;
 
     ObjectType m_contentType;
 
-private slots:
+protected slots:
     // Emits dataChanged() and headerChanged()
     void objectChanged(RamObject *obj);
 
-    /**
-     * @brief listChanged monitors the list to save it to the database
-     */
-    void listChanged();
+    virtual QJsonObject reloadData() override;
+    virtual void saveData();
 
 private:
     void construct(QObject *parent);
     void connectEvents();
+    void connectObject(RamObject *obj);
 
     DataListMode m_dataMode = ListObject;
 };

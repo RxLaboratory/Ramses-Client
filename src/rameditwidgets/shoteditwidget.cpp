@@ -1,6 +1,7 @@
 #include "shoteditwidget.h"
 #include "ramproject.h"
 #include "ramsequence.h"
+#include "data-models/ramitemtable.h"
 
 ShotEditWidget::ShotEditWidget(QWidget *parent) :
     ObjectEditWidget(parent)

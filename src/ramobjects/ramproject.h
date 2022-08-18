@@ -110,6 +110,9 @@ public slots:
 protected:
     virtual QString folderPath() const override;
 
+private slots:
+    void listChanged(RamObjectList *list);
+
 private:
     void construct();
     void getCreateLists();

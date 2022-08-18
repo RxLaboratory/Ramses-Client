@@ -3,6 +3,7 @@
 #include "ramasset.h"
 #include "ramassetgroup.h"
 #include "ramses.h"
+#include "data-models/ramitemtable.h"
 
 AssetListManagerWidget::AssetListManagerWidget(QWidget *parent):
     ObjectListManagerWidget(
@@ -20,7 +21,8 @@ RamItem *AssetListManagerWidget::createObject()
     RamProject *project = Ramses::instance()->currentProject();
     if (!project) return nullptr;
     if (project->assetGroups()->rowCount() == 0 ) return nullptr;
-    RamAssetGroup *ag = RamAssetGroup::get( currentFilterUuid() );
+
+    RamAssetGroup *ag = RamAssetGroup::c( currentFilter() );
     if (!ag) ag = RamAssetGroup::c( project->assetGroups()->at(0) );
     if (!ag) return nullptr;
 

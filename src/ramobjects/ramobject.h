@@ -53,7 +53,7 @@ public slots:
     void reload();
 
 signals:
-    void dataChanged(RamObject *, QJsonObject);
+    void dataChanged(RamObject *);
     void removed(RamObject *);
     void restored(RamObject *);
 
@@ -69,7 +69,7 @@ protected:
 
     virtual QJsonObject reloadData() override;
 
-    void emitDataChanged(QJsonObject data) override;
+    void emitDataChanged() override;
     void emitRemoved() override;
     void emitRestored() override;
 

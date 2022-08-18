@@ -20,7 +20,7 @@ public:
     RamAsset(QString uuid);
 
     RamAssetGroup *assetGroup() const;
-    void setAssetGroup(RamAssetGroup *assetGroup);
+    void setAssetGroup(RamAssetGroup *ag);
 
     QStringList tags() const;
     void setTags(QString tags);
