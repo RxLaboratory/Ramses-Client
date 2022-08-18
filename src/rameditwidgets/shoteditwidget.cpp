@@ -14,8 +14,8 @@ ShotEditWidget::ShotEditWidget(RamShot *shot, QWidget *parent) :
     ObjectEditWidget(parent)
 {
     setupUi();
-    connectEvents();
     setObject(shot);
+    connectEvents();
 }
 
 RamShot *ShotEditWidget::shot()
@@ -34,6 +34,7 @@ void ShotEditWidget::reInit(RamObject *o)
 
         // Set sequence
         RamProject *project = m_shot->project();
+        QSignalBlocker b(ui_sequencesBox);
         ui_sequencesBox->setList(project->sequences());
         ui_sequencesBox->setObject( m_shot->sequence() );
 

@@ -13,8 +13,9 @@ AssetEditWidget::AssetEditWidget(RamAsset *asset, QWidget *parent) :
     ObjectEditWidget(parent)
 {
     setupUi();
-    connectEvents();
     setObject(asset);
+    connectEvents();
+
 }
 
 RamAsset *AssetEditWidget::asset() const
@@ -31,6 +32,7 @@ void AssetEditWidget::reInit(RamObject *o)
         ui_folderWidget->setPath(m_asset->path());
         //set asset group
         RamProject *project = m_asset->project();
+        QSignalBlocker b(ui_assetGroupBox);
         ui_assetGroupBox->setList( project->assetGroups() );
         ui_assetGroupBox->setObject( m_asset->assetGroup() );
     }

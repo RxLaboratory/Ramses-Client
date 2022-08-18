@@ -376,11 +376,11 @@ void RamAbstractObject::setDataString(QString data)
         data = DataCrypto::instance()->clientEncrypt( data );
     }
 
-    qDebug() << ">>>";
+    /*qDebug() << ">>>";
     qDebug() << "Setting data for: " + shortName() + " (" + objectTypeName() + ")";
     qDebug() << "UUID: " + m_uuid;
     qDebug() << "DATA: " + data;
-    qDebug() << ">>>";
+    qDebug() << ">>>";*/
 
     DBInterface::instance()->setObjectData(m_uuid, objectTypeName(), data);
 }

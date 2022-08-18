@@ -1,7 +1,7 @@
 4- Ramses and editors
 	- test all editors
 		Done : users, projects, template steps, template asset groups, states, filetypes, applications
-		Done (project) : setps, asset groups, sequences
+		Done (project) : setps, asset groups, sequences, assets
 	- add color to asset groups (and assets, like shots, override ramabstractobject color)
 	- set default estimations
 	- recreate defaults (templates, states...) in included db
