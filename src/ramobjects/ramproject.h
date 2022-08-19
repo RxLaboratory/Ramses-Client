@@ -104,7 +104,7 @@ signals:
 public slots:
     void updatePath();
     virtual void edit(bool show = true) override;
-    void computeEstimation();
+    void computeEstimation(bool recompute = false);
 
 protected:
     static QMap<QString, RamProject*> m_existingObjects;

@@ -34,6 +34,8 @@ RamProject::RamProject(QString uuid):
     RamObject(uuid, Project)
 {
     construct();
+
+    computeEstimation(true);
 }
 
 RamObjectList *RamProject::steps() const
@@ -295,7 +297,7 @@ void RamProject::edit(bool show)
     if (show) showEdit();
 }
 
-void RamProject::computeEstimation()
+void RamProject::computeEstimation(bool recompute)
 {
     if (m_freezeEstimations) return;
     m_timeSpent = 0;
@@ -310,6 +312,11 @@ void RamProject::computeEstimation()
     for (int i =0; i < m_steps->rowCount(); i++)
     {
         RamStep *step = RamStep::c(m_steps->at(i));
+        if (recompute)
+        {
+            step->computeEstimation();
+            step->countAssignedDays();
+        }
 
         //Ignore pre and post procution
         if (step->type() != RamStep::ShotProduction && step->type() != RamStep::AssetProduction) continue;

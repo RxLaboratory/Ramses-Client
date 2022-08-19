@@ -115,7 +115,7 @@ void RamTemplateStep::setPublishSettings(const QString &newPublishSettings)
 
 float RamTemplateStep::estimationVeryHard() const
 {
-    return getData("estimationVeryHard").toDouble();
+    return getData("estimationVeryHard").toDouble(4);
 }
 
 void RamTemplateStep::setEstimationVeryHard(float newEstimationVeryHard)
@@ -166,7 +166,7 @@ void RamTemplateStep::edit(bool show)
 
 float RamTemplateStep::estimationHard() const
 {
-    return getData("estimationHard").toDouble();
+    return getData("estimationHard").toDouble(2);
 }
 
 void RamTemplateStep::setEstimationHard(float newEstimationHard)
@@ -176,7 +176,7 @@ void RamTemplateStep::setEstimationHard(float newEstimationHard)
 
 float RamTemplateStep::estimationMedium() const
 {
-    return getData("estimationMedium").toDouble();
+    return getData("estimationMedium").toDouble(1);
 }
 
 void RamTemplateStep::setEstimationMedium(float newEstimationMedium)
@@ -186,7 +186,7 @@ void RamTemplateStep::setEstimationMedium(float newEstimationMedium)
 
 float RamTemplateStep::estimationEasy() const
 {
-    return getData("estimationEasy").toDouble();
+    return getData("estimationEasy").toDouble(0.5);
 }
 
 void RamTemplateStep::setEstimationEasy(float newEstimationEasy)
@@ -196,7 +196,7 @@ void RamTemplateStep::setEstimationEasy(float newEstimationEasy)
 
 float RamTemplateStep::estimationVeryEasy() const
 {
-    return getData("estimationVeryEasy").toDouble();
+    return getData("estimationVeryEasy").toDouble(0.2);
 }
 
 void RamTemplateStep::setEstimationVeryEasy(float newEstimationVeryEasy)
