@@ -14,6 +14,23 @@ struct ServerConfig {
     bool useSsl = true;
 };
 
+class Querier : public DuQFLoggerObject
+{
+    Q_OBJECT
+public:
+    Querier(QString dbName);
+public slots:
+    void setDataFile(QString f);
+    QSqlQuery query(QString q);
+signals:
+    void ready(QSqlQuery);
+    void error(QString);
+private:
+    QString m_query;
+    QString m_dataFile;
+    QString m_dbName;
+};
+
 class LocalDataInterface : public DuQFLoggerObject
 {
     Q_OBJECT
@@ -47,23 +64,23 @@ public:
      * @brief setRamsesPath sets the path to the local data for this database
      * @param p
      */
-    void setRamsesPath(QString p) const;
+    void setRamsesPath(QString p);
 
     // DATA INTERFACE //
 
     QStringList tableData(QString table) const;
     bool contains(QString uuid, QString table) const;
 
-    void createObject(QString uuid, QString table, QString data) const;
+    void createObject(QString uuid, QString table, QString data);
 
     QString objectData(QString uuid, QString table) const;
-    void setObjectData(QString uuid, QString table, QString data) const;
+    void setObjectData(QString uuid, QString table, QString data);
 
-    void removeObject(QString uuid, QString table) const;
-    void restoreObject(QString uuid, QString table) const;
+    void removeObject(QString uuid, QString table);
+    void restoreObject(QString uuid, QString table);
     bool isRemoved(QString uuid, QString table) const;
 
-    void setUsername(QString uuid, QString username) const;
+    void setUsername(QString uuid, QString username);
 
     ServerConfig serverConfig() const;
 
@@ -72,9 +89,14 @@ public:
 
 signals:
     void dataReset();
+    void newQuery(QString);
+    void newDataFile(QString);
 
 protected:
     static LocalDataInterface *_instance;
+
+private slots:
+    void logError(QString err);
 
 private:
     /**
@@ -84,11 +106,15 @@ private:
     LocalDataInterface();
 
     QSqlQuery query(QString q) const;
+    void threadedQuery(QString q);
 
     /**
      * @brief m_dataFile The SQLite file path
      */
     QString m_dataFile;
+    QThread m_queryThread;
+    Querier *m_tQuerier;
+    Querier *m_querier;
 };
 
 #endif // LOCALDATAINTERFACE_H

@@ -2,6 +2,55 @@
 
 #include "datacrypto.h"
 
+// QUERIER
+
+Querier::Querier(QString dbName): DuQFLoggerObject("Local Data Interface Querier")
+{
+    m_dbName = dbName;
+}
+
+void Querier::setDataFile(QString f)
+{
+    m_dataFile = f;
+
+    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", m_dbName);
+    db.setHostName("localhost");
+    db.setDatabaseName(m_dataFile);
+    if (!db.open())
+    {
+        emit error("Can't access data from the disk.");
+    }
+}
+
+QSqlQuery Querier::query(QString q)
+{
+    if (m_dataFile =="") return QSqlQuery();
+
+    //Load local database
+    QSqlDatabase db = QSqlDatabase::database(m_dbName);
+    QSqlQuery qry = QSqlQuery(db);
+
+    //log(tr("Querying:") + "\n" + q, DuQFLog::Data);
+    //qDebug() << q;
+
+    if (!qry.exec(q))
+    {
+        QString errorMessage = "Something went wrong when %1 the data.\nHere's some information:";
+        if (m_dbName == "getter") errorMessage = errorMessage.arg("getting");
+        else errorMessage = errorMessage.arg("saving");
+        errorMessage += "\n> " + tr("Query:") + "\n" + qry.lastQuery();
+        errorMessage += "\n> " + tr("Database Error:") + "\n" + qry.lastError().databaseText();
+        errorMessage += "\n> " + tr("Driver Error:") + "\n" + qry.lastError().driverText();
+        emit error(errorMessage);
+        return QSqlQuery();
+    }
+
+    emit ready(qry);
+    return qry;
+}
+
+// INTERFACE
+
 LocalDataInterface *LocalDataInterface::_instance = nullptr;
 
 LocalDataInterface *LocalDataInterface::instance()
@@ -156,7 +205,7 @@ QString LocalDataInterface::login(QString username, QString password) const
     return "";
 }
 
-void LocalDataInterface::setRamsesPath(QString p) const
+void LocalDataInterface::setRamsesPath(QString p)
 {
     p.replace("'", "''");
 
@@ -166,7 +215,7 @@ void LocalDataInterface::setRamsesPath(QString p) const
 
     // Add new
     q = "INSERT INTO Settings (localDataPath, current) VALUES  ( '%1', 1);";
-    query( q.arg(p) );
+    threadedQuery( q.arg(p) );
 
 }
 
@@ -192,7 +241,7 @@ bool LocalDataInterface::contains(QString uuid, QString table) const
     return false;
 }
 
-void LocalDataInterface::createObject(QString uuid, QString table, QString data) const
+void LocalDataInterface::createObject(QString uuid, QString table, QString data)
 {
     data.replace("'", "''");
 
@@ -203,7 +252,7 @@ void LocalDataInterface::createObject(QString uuid, QString table, QString data)
                 "ON CONFLICT(uuid) DO UPDATE "
                 "SET data=excluded.data, modified=excluded.modified ;";
 
-    query( q.arg(
+    threadedQuery( q.arg(
                   table,
                   uuid,
                   data,
@@ -221,7 +270,7 @@ QString LocalDataInterface::objectData(QString uuid, QString table) const
     return "";
 }
 
-void LocalDataInterface::setObjectData(QString uuid, QString table, QString data) const
+void LocalDataInterface::setObjectData(QString uuid, QString table, QString data)
 {
     data.replace("'", "''");
 
@@ -233,19 +282,19 @@ void LocalDataInterface::setObjectData(QString uuid, QString table, QString data
                 "ON CONFLICT(uuid) DO UPDATE "
                 "SET data=excluded.data, modified=excluded.modified ;";
 
-    query( q.arg(table, data, modified.toString("yyyy-MM-dd hh:mm:ss:zzz"), uuid) );
+    threadedQuery( q.arg(table, data, modified.toString("yyyy-MM-dd hh:mm:ss:zzz"), uuid) );
 }
 
-void LocalDataInterface::removeObject(QString uuid, QString table) const
+void LocalDataInterface::removeObject(QString uuid, QString table)
 {
     QString q = "UPDATE %1 SET removed = 1 WHERE uuid = '%2';";
-    query( q.arg(table, uuid) );
+    threadedQuery( q.arg(table, uuid) );
 }
 
-void LocalDataInterface::restoreObject(QString uuid, QString table) const
+void LocalDataInterface::restoreObject(QString uuid, QString table)
 {
     QString q = "UPDATE %1 SET removed = 0 WHERE uuid = '%2';";
-    query( q.arg(table, uuid) );
+    threadedQuery( q.arg(table, uuid) );
 }
 
 bool LocalDataInterface::isRemoved(QString uuid, QString table) const
@@ -261,7 +310,7 @@ bool LocalDataInterface::isRemoved(QString uuid, QString table) const
     return true;
 }
 
-void LocalDataInterface::setUsername(QString uuid, QString username) const
+void LocalDataInterface::setUsername(QString uuid, QString username)
 {
     username.replace("'", "''");
 
@@ -271,7 +320,7 @@ void LocalDataInterface::setUsername(QString uuid, QString username) const
                 "VALUES ('%1', '%2', '%3') "
                 "ON CONFLICT(uuid) DO UPDATE "
                 "SET userName=excluded.userName, modified=excluded.modified ;";
-    query( q.arg(username, modified.toString("yyyy-MM-dd hh:mm:ss:zzz"), uuid) );
+    threadedQuery( q.arg(username, modified.toString("yyyy-MM-dd hh:mm:ss:zzz"), uuid) );
 }
 
 ServerConfig LocalDataInterface::serverConfig() const
@@ -297,12 +346,15 @@ const QString &LocalDataInterface::dataFile() const
 
 ServerConfig LocalDataInterface::setDataFile(const QString &file)
 {
-    QSqlDatabase db = QSqlDatabase::database("localdata");
+    /*QSqlDatabase db = QSqlDatabase::database("localdata");
     // Set the SQLite file
     db.close();
     // Open
     db.setDatabaseName(file);
-    if (!db.open()) log("Can't save data to the disk.", DuQFLog::Fatal);
+    if (!db.open()) log("Can't save data to the disk.", DuQFLog::Fatal);*/
+
+    m_querier->setDataFile(file);
+    emit newDataFile(file);
 
     m_dataFile = file;
 
@@ -311,35 +363,36 @@ ServerConfig LocalDataInterface::setDataFile(const QString &file)
     return serverConfig();
 }
 
+void LocalDataInterface::logError(QString err)
+{
+    log(err, DuQFLog::Critical);
+}
+
 LocalDataInterface::LocalDataInterface() :
     DuQFLoggerObject("Local Data Interface")
 {
-    //Load local database
-    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE","localdata");
-    db.setHostName("localhost");
+    m_querier = new Querier("getter");
+    m_tQuerier = new Querier("setter");
+    m_tQuerier->moveToThread(&m_queryThread);
+
+    connect(m_querier, &Querier::error, this, &LocalDataInterface::logError);
+    connect(m_tQuerier, &Querier::error, this, &LocalDataInterface::logError);
+    connect(this, &LocalDataInterface::newQuery, m_tQuerier, &Querier::query);
+    connect(this, &LocalDataInterface::newDataFile, m_tQuerier, &Querier::setDataFile);
 
     QSqlDatabase editdb = QSqlDatabase::addDatabase("QSQLITE","editdb");
     editdb.setHostName("localhost");
+
+    m_queryThread.start();
 }
 
 QSqlQuery LocalDataInterface::query(QString q) const
 {
-    if (m_dataFile =="") return QSqlQuery();
-
-    QSqlDatabase db = QSqlDatabase::database("localdata");
-    QSqlQuery qry = QSqlQuery(db);
-
-    //log(tr("Querying:") + "\n" + q, DuQFLog::Data);
-    //qDebug() << q;
-
-    if (!qry.exec(q))
-    {
-        QString errorMessage = "Something went wrong when saving the data.\nHere's some information:";
-        errorMessage += "\n> " + tr("Query:") + "\n" + qry.lastQuery();
-        errorMessage += "\n> " + tr("Database Error:") + "\n" + qry.lastError().databaseText();
-        errorMessage += "\n> " + tr("Driver Error:") + "\n" + qry.lastError().driverText();
-        log(errorMessage, DuQFLog::Critical);
-    }
-
-    return qry;
+    return m_querier->query(q);
 }
+
+void LocalDataInterface::threadedQuery(QString q)
+{
+    emit newQuery(q);
+}
+
