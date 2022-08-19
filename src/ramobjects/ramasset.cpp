@@ -5,9 +5,16 @@
 
 // STATIC //
 
+QMap<QString, RamAsset*> RamAsset::m_existingObjects = QMap<QString, RamAsset*>();
+
 RamAsset *RamAsset::get(QString uuid)
 {
-    return c( RamObject::get(uuid, Asset) );
+    if (!checkUuid(uuid, Asset)) return nullptr;
+
+    if (m_existingObjects.contains(uuid)) return m_existingObjects.value(uuid);
+
+    // Finally return a new instance
+    return new RamAsset(uuid);
 }
 
 RamAsset *RamAsset::c(RamObject *o)
@@ -18,7 +25,7 @@ RamAsset *RamAsset::c(RamObject *o)
 // PUBLIC //
 
 RamAsset::RamAsset(QString shortName, QString name, RamAssetGroup *ag) :
-    RamItem(shortName, name, Asset, ag->project())
+    RamAbstractItem(shortName, name, Asset, ag->project())
 {
     Q_ASSERT_X(ag, "RamAsset(shortname, name, assetgroup)", "AssetGroup can't be null!");
     construct();
@@ -26,7 +33,7 @@ RamAsset::RamAsset(QString shortName, QString name, RamAssetGroup *ag) :
 }
 
 RamAsset::RamAsset(QString uuid):
-    RamItem(uuid, Asset)
+    RamAbstractItem(uuid, Asset)
 {
     construct();
 }
@@ -124,6 +131,7 @@ QString RamAsset::folderPath() const
 
 void RamAsset::construct()
 {
+    m_existingObjects[m_uuid] = this;
     m_icon = ":/icons/asset";
     m_editRole = ProjectAdmin;
 }

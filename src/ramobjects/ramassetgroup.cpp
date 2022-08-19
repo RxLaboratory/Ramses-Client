@@ -5,9 +5,16 @@
 
 // STATIC //
 
+QMap<QString, RamAssetGroup*> RamAssetGroup::m_existingObjects = QMap<QString, RamAssetGroup*>();
+
 RamAssetGroup *RamAssetGroup::get(QString uuid)
 {
-    return c( RamObject::get(uuid, AssetGroup) );
+    if (!checkUuid(uuid, AssetGroup)) return nullptr;
+
+    if (m_existingObjects.contains(uuid)) return m_existingObjects.value(uuid);
+
+    // Finally return a new instance
+    return new RamAssetGroup(uuid);
 }
 
 RamAssetGroup *RamAssetGroup::c(RamObject *o)
@@ -78,6 +85,7 @@ QString RamAssetGroup::folderPath() const
 
 void RamAssetGroup::construct()
 {
+    m_existingObjects[m_uuid] = this;
     m_objectType = AssetGroup;
     m_project = nullptr;
     m_assets = new RamObjectFilterModel(this);

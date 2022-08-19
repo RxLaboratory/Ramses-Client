@@ -1,18 +1,27 @@
 #include "ramuser.h"
 
 #include "data-models/ramitemtable.h"
-#include "ramitem.h"
+#include "ramabstractitem.h"
 #include "ramses.h"
 #include "ramscheduleentry.h"
 #include "usereditwidget.h"
 #include "datacrypto.h"
 #include "ramdatainterface/dbinterface.h"
+#include "ramasset.h"
+#include "ramshot.h"
 
 // STATIC //
 
+QMap<QString, RamUser*> RamUser::m_existingObjects = QMap<QString, RamUser*>();
+
 RamUser *RamUser::get(QString uuid )
 {
-    return c( RamObject::get(uuid, User) );
+    if (!checkUuid(uuid, User)) return nullptr;
+
+    if (m_existingObjects.contains(uuid)) return m_existingObjects.value(uuid);
+
+    // Finally return a new instance
+    return new RamUser(uuid);
 }
 
 RamUser *RamUser::c(RamObject *o)
@@ -99,12 +108,15 @@ bool RamUser::isStepAssigned(RamStep *step) const
 
     // Check in status
     RamItemTable *items;
-    if (step->type() == RamStep::ShotProduction) items = step->project()->shots();
+    RamStep::Type type = step->type();
+    if (type == RamStep::ShotProduction) items = step->project()->shots();
     else items = step->project()->assets();
 
     for (int i =0; i < items->rowCount(); i++)
     {
-        RamItem *item = RamItem::c( items->at(i) );
+        RamAbstractItem *item;
+        if (type == RamStep::ShotProduction) item = RamShot::c( items->at(i) );
+        else item = RamAsset::c( items->at(i) );
         RamStatus *status = item->status(step);
         if (!status) continue;
         if (this->is(status->assignedUser())) return true;
@@ -174,6 +186,7 @@ QString RamUser::folderPath() const
 
 void RamUser::construct()
 {
+    m_existingObjects[m_uuid] = this;
     m_icon = ":/icons/user";
     m_editRole = Admin;
     getCreateLists();
@@ -185,7 +198,7 @@ void RamUser::getCreateLists()
 
     QString uuid = d.value("schedule").toString();
     if (uuid == "") m_schedule = new RamObjectList("schedule", "Schedule", ScheduleEntry, RamObjectList::ListObject, this);
-    else m_schedule = RamObjectList::get( uuid, ObjectList);
+    else m_schedule = RamObjectList::get( uuid );
     m_schedule->setParent(this);
     d.insert("schedule", m_schedule->uuid());
 

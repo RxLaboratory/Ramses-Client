@@ -19,7 +19,7 @@ public:
     // METHODS //
 
     RamSequence(QString shortName, QString name, RamProject *project);
-    RamSequence(QString uuid);
+
 
     int shotCount() const;
     double duration() const;
@@ -30,6 +30,11 @@ public:
 
 public slots:
     virtual void edit(bool show = true) override;
+
+protected:
+    static QMap<QString, RamSequence*> m_existingObjects;
+    RamSequence(QString uuid);
+    virtual QString folderPath() const override { return ""; };
 
 private:
     void construct();

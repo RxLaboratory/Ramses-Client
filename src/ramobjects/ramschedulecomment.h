@@ -18,11 +18,14 @@ public:
     // METHODS //
 
     RamScheduleComment(RamProject *project);
-    RamScheduleComment(QString uuid);
 
     QDateTime date() const;
     void setDate(const QDateTime &newDate);
 
+protected:
+    static QMap<QString, RamScheduleComment*> m_existingObjects;
+    RamScheduleComment(QString uuid);
+    virtual QString folderPath() const override { return ""; };
 
 private:
     void construct();

@@ -39,7 +39,6 @@ public:
     // OTHER METHODS //
 
     explicit RamTemplateStep(QString shortName, QString name, ObjectType type = TemplateStep);
-    RamTemplateStep(QString uuid, ObjectType type = TemplateStep);
 
     RamObjectList *applications() const;
 
@@ -73,6 +72,11 @@ public:
 
 public slots:
     virtual void edit(bool show = true) override;
+
+protected:
+    static QMap<QString, RamTemplateStep*> m_existingObjects;
+    RamTemplateStep(QString uuid, ObjectType type = TemplateStep);
+    virtual QString folderPath() const override { return ""; };
 
 protected:
 

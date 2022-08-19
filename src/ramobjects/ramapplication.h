@@ -24,11 +24,6 @@ public:
      * @param name
      */
     RamApplication(QString shortName, QString name);
-    /**
-     * @brief RamApplication constructs a RamApplication from the database
-     * @param uuid
-     */
-    RamApplication(QString uuid);
 
     QString executableFilePath() const;
     void setExecutableFilePath(const QString &executableFilePath);
@@ -48,6 +43,15 @@ public:
 public slots:
     void unassignFileType(RamFileType *ft);
     virtual void edit(bool show = true) override;
+
+protected:
+    static QMap<QString, RamApplication*> m_existingObjects;
+    /**
+     * @brief RamApplication constructs a RamApplication from the database
+     * @param uuid
+     */
+    RamApplication(QString uuid);
+    virtual QString folderPath() const override;
 
 private:
     void construct();

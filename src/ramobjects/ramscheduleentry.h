@@ -19,13 +19,17 @@ public:
     // METHODS
 
     explicit RamScheduleEntry(RamUser *user, QDateTime date);
-    RamScheduleEntry(QString uuid);
 
     RamUser *user() const;
     const QDateTime &date() const;
 
     RamStep *step() const;
     void setStep(RamStep *newStep);
+
+protected:
+    static QMap<QString, RamScheduleEntry*> m_existingObjects;
+    RamScheduleEntry(QString uuid);
+    virtual QString folderPath() const override { return ""; };
 
 private slots:
     void stepRemoved();

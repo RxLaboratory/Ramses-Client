@@ -26,7 +26,6 @@ public:
     // METHODS //
 
     RamProject(QString shortName, QString name);
-    RamProject(QString uuid);
 
     // Steps
     RamObjectList *steps() const;
@@ -108,6 +107,8 @@ public slots:
     void computeEstimation();
 
 protected:
+    static QMap<QString, RamProject*> m_existingObjects;
+    RamProject(QString uuid);
     virtual QString folderPath() const override;
 
 private slots:

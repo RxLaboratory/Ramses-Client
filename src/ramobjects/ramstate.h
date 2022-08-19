@@ -16,7 +16,6 @@ public:
     // METHODS //
 
     RamState(QString shortName, QString name);
-    RamState(QString uuid);
 
     int completionRatio() const;
     void setCompletionRatio(int completionRatio);
@@ -25,6 +24,11 @@ public:
 
 public slots:
     virtual void edit(bool show = true) override;
+
+protected:
+    static QMap<QString, RamState*> m_existingObjects;
+    RamState(QString uuid);
+    virtual QString folderPath() const override { return ""; };
 
 private:
     void construct();

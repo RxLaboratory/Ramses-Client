@@ -1,16 +1,23 @@
 #include "ramstepstatushistory.h"
 
 #include "duqf-utils/guiutils.h"
-#include "ramitem.h"
+#include "ramabstractitem.h"
 #include "ramstep.h"
 #include "ramstatus.h"
 #include "ramasset.h"
 #include "statushistorywidget.h"
 #include "mainwindow.h"
 
+QMap<QString, RamStepStatusHistory*> RamStepStatusHistory::m_existingObjects = QMap<QString, RamStepStatusHistory*>();
+
 RamStepStatusHistory *RamStepStatusHistory::get(QString uuid)
 {
-    return c( RamObjectList::get(uuid, StepStatusHistory) );
+    if (!checkUuid(uuid, StepStatusHistory)) return nullptr;
+
+    if (m_existingObjects.contains(uuid)) return m_existingObjects.value(uuid);
+
+    // Finally return a new instance
+    return new RamStepStatusHistory(uuid);
 }
 
 RamStepStatusHistory *RamStepStatusHistory::c(RamObjectList *o)
@@ -18,7 +25,7 @@ RamStepStatusHistory *RamStepStatusHistory::c(RamObjectList *o)
     return qobject_cast<RamStepStatusHistory*>(o);
 }
 
-RamStepStatusHistory::RamStepStatusHistory(RamStep *step, RamItem *item):
+RamStepStatusHistory::RamStepStatusHistory(RamStep *step, RamAbstractItem *item):
     RamObjectList(step->shortName(), step->name(), Status, ListObject, item, StepStatusHistory)
 {
     construct();
@@ -45,13 +52,12 @@ RamStepStatusHistory::RamStepStatusHistory(QString uuid, QObject *parent):
     m_step = RamStep::get(d.value("step").toString() );
     RamStep::Type t = m_step->type();
     if (t == RamStep::ShotProduction) m_item = RamShot::get(d.value("item").toString() );
-    else if (t == RamStep::AssetProduction) m_item = RamAsset::get(d.value("item").toString() );
-    else m_item = RamItem::get(d.value("item").toString() );
+    else m_item = RamAsset::get(d.value("item").toString() );
 
     connectEvents();
 }
 
-RamItem *RamStepStatusHistory::item() const
+RamAbstractItem *RamStepStatusHistory::item() const
 {
     return m_item;
 }
@@ -120,6 +126,7 @@ void RamStepStatusHistory::changeData(QModelIndex topLeft, QModelIndex bottomRig
 
 void RamStepStatusHistory::construct()
 {
+    m_existingObjects[m_uuid] = this;
     m_objectType = StepStatusHistory;
 }
 

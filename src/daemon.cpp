@@ -237,9 +237,9 @@ void Daemon::getCurrentStatus(QString shortName, QString name, QString type, QSt
 
     QJsonArray statuses;
 
-    RamItem *item = nullptr;
-    if (type == "A") item = RamItem::c( proj->assets()->fromName(shortName, name) );
-    else item = RamItem::c( proj->shots()->fromName(shortName, name) );
+    RamAbstractItem *item = nullptr;
+    if (type == "S") item = RamShot::c( proj->assets()->fromName(shortName, name) );
+    else item = RamAsset::c( proj->shots()->fromName(shortName, name) );
 
     if (!item)
     {
@@ -292,9 +292,9 @@ void Daemon::setStatus(QString shortName, QString name, QString step, QString ty
         return;
     }
 
-    RamItem *item = nullptr;
-    if (type == "A") item = qobject_cast<RamItem*>( proj->assets()->fromName(shortName, name) );
-    else item = qobject_cast<RamItem*>( proj->shots()->fromName(shortName, name) );
+    RamAbstractItem *item = nullptr;
+    if (type == "A") item = qobject_cast<RamAbstractItem*>( proj->assets()->fromName(shortName, name) );
+    else item = qobject_cast<RamAbstractItem*>( proj->shots()->fromName(shortName, name) );
 
     if (!item)
     {

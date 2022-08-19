@@ -2,9 +2,16 @@
 
 #include "pipeeditwidget.h"
 
+QMap<QString, RamPipe*> RamPipe::m_existingObjects = QMap<QString, RamPipe*>();
+
 RamPipe *RamPipe::get(QString uuid)
 {
-    return c( RamObject::get(uuid, Pipe) );
+    if (!checkUuid(uuid, Pipe)) return nullptr;
+
+    if (m_existingObjects.contains(uuid)) return m_existingObjects.value(uuid);
+
+    // Finally return a new instance
+    return new RamPipe(uuid);
 }
 
 RamPipe *RamPipe::c(RamObject *o)
@@ -106,6 +113,7 @@ void RamPipe::pipeFileListChanged()
 
 void RamPipe::construct()
 {
+    m_existingObjects[m_uuid] = this;
     m_icon = ":/icons/connection";
     m_editRole = ProjectAdmin;
     getCreateLists();
@@ -117,7 +125,7 @@ void RamPipe::getCreateLists()
 
     QString uuid = d.value("pipeFiles").toString();
     if (uuid == "") m_pipeFiles = new RamObjectList("pipeFiles", "Files", FileType, RamObjectList::ListObject, this);
-    else m_pipeFiles = RamObjectList::get( uuid, ObjectList);
+    else m_pipeFiles = RamObjectList::get( uuid );
     m_pipeFiles->setParent(this);
     d.insert("pipeFiles", m_pipeFiles->uuid());
 

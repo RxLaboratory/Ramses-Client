@@ -21,7 +21,6 @@ public:
     // OTHER //
 
     explicit RamAssetGroup(QString shortName, QString name, RamProject *project);
-    RamAssetGroup(QString uuid);
 
     int assetCount() const;
     RamProject *project() const;
@@ -32,6 +31,8 @@ public slots:
     virtual void edit(bool show = true) override;
 
 protected:
+    static QMap<QString, RamAssetGroup*> m_existingObjects;
+    RamAssetGroup(QString uuid);
     virtual QString folderPath() const override;
 
 private:

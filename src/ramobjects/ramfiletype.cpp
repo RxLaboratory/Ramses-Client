@@ -4,9 +4,16 @@
 
 // STATIC //
 
+QMap<QString, RamFileType*> RamFileType::m_existingObjects = QMap<QString, RamFileType*>();
+
 RamFileType *RamFileType::get(QString uuid)
 {
-    return c( RamObject::get(uuid, FileType) );
+    if (!checkUuid(uuid, FileType)) return nullptr;
+
+    if (m_existingObjects.contains(uuid)) return m_existingObjects.value(uuid);
+
+    // Finally return a new instance
+    return new RamFileType(uuid);
 }
 
 RamFileType *RamFileType::c(RamObject *o)
@@ -93,6 +100,7 @@ void RamFileType::edit(bool show)
 
 void RamFileType::construct()
 {
+    m_existingObjects[m_uuid] = this;
     m_icon = ":/icons/file";
     m_editRole = Admin;
 }

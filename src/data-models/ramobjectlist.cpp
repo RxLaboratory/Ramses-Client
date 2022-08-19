@@ -1,27 +1,21 @@
 #include "ramobjectlist.h"
 
-#include "data-models/ramitemtable.h"
 #include "ramses.h"
 #include "ramshot.h"
 
 // STATIC //
 
+QMap<QString, RamObjectList*> RamObjectList::m_existingObjects = QMap<QString, RamObjectList*>();
+
 RamObjectList *RamObjectList::m_emptyList = nullptr;
 
-RamObjectList *RamObjectList::get(QString uuid, ObjectType type)
+RamObjectList *RamObjectList::get(QString uuid)
 {
-    RamAbstractObject *obj = RamAbstractObject::get(uuid);
-    if (obj) return static_cast<RamObjectList*>( obj ) ;
+    if (!checkUuid(uuid, ObjectList)) return nullptr;
 
-    // Check if the UUID exists in the database
-    if (!DBInterface::instance()->contains(uuid, objectTypeName(type))) return nullptr;
+    if (m_existingObjects.contains(uuid)) return m_existingObjects.value(uuid);
 
-    switch(type)
-    {
-    case ItemTable: return new RamItemTable(uuid);
-    case StepStatusHistory: return new RamStepStatusHistory(uuid);
-    default: return new RamObjectList(uuid);
-    }
+    return new RamObjectList(uuid);
 }
 
 RamObjectList *RamObjectList::c(QObject *obj)
@@ -59,6 +53,8 @@ RamObjectList::RamObjectList(QString shortName, QString name, ObjectType type, D
     else if (mode == Table)
     {
         connect(DBInterface::instance(), &DBInterface::dataReset, this, &RamObjectList::reload);
+        // And (try to) reload at once
+        reload();
     }
 }
 
@@ -76,15 +72,8 @@ RamObjectList::RamObjectList(QString uuid, QObject *parent, ObjectType listType)
 
     m_contentType = objectTypeFromName( getData("type").toString() );
 
-    QJsonObject d = RamAbstractObject::data();
     // Populate the list
-    QJsonArray arr = d.value("list").toArray();
-    for (int i = 0; i < arr.count(); i++)
-    {
-        QString uuid = arr.at(i).toString();
-        RamObject *obj = RamObject::get(uuid, m_contentType);
-        if (obj) addObj(obj);
-    }
+    reload();
 }
 
 // QAbstractTableModel Reimplementation
@@ -309,6 +298,7 @@ QJsonObject RamObjectList::reloadData()
     {
         QString uuid = uuids.at(i);
         RamObject *o = RamObject::get( uuid, m_contentType );
+
         if (!o) continue;
         addObj(o);
     }

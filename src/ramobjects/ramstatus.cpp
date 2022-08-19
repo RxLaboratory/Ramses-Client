@@ -9,9 +9,16 @@
 
 // PROTECTED //
 
+QMap<QString, RamStatus*> RamStatus::m_existingObjects = QMap<QString, RamStatus*>();
+
 RamStatus *RamStatus::get(QString uuid)
 {
-    return c( RamObject::get(uuid, Status) );
+    if (!checkUuid(uuid, Status)) return nullptr;
+
+    if (m_existingObjects.contains(uuid)) return m_existingObjects.value(uuid);
+
+    // Finally return a new instance
+    return new RamStatus(uuid);
 }
 
 RamStatus *RamStatus::c(RamObject *o)
@@ -43,12 +50,13 @@ RamStatus *RamStatus::copy(RamStatus *other, RamUser *user)
     return status;
 }
 
-RamStatus *RamStatus::noStatus(RamItem *item, RamStep *step)
+RamStatus *RamStatus::noStatus(RamAbstractItem *item, RamStep *step)
 {
     RamStatus *no = new RamStatus(
                 Ramses::instance()->ramsesUser(),
                 item,
-                step);
+                step,
+                true);
     return no;
 }
 
@@ -82,7 +90,7 @@ int RamStatus::daysToHours(float days)
 
 // PUBLIC //
 
-RamStatus::RamStatus(RamUser *user, RamItem *item, RamStep *step, bool isVirtual):
+RamStatus::RamStatus(RamUser *user, RamAbstractItem *item, RamStep *step, bool isVirtual):
     RamObject(item->shortName() + "-" + step->shortName(),
               item->name() + " | " + step->name(),
               Status,
@@ -94,6 +102,8 @@ RamStatus::RamStatus(RamUser *user, RamItem *item, RamStep *step, bool isVirtual
     m_user = user;
     m_step = step;
     m_item = item;
+
+    if (m_virtual) return;
 
     QJsonObject d = data();
 
@@ -121,14 +131,13 @@ RamStatus::RamStatus(QString uuid):
     m_user = RamUser::get( d.value("user").toString() );
 
     QString itemType = d.value("itemType").toString("asset");
-    if (itemType == "asset") {
-        m_item = RamAsset::get( d.value("item").toString() );
-    }
-    else if (itemType == "shot") {
-        m_item = RamShot::get( d.value("item").toString() );
+    QString itemUuid = d.value("item").toString();
+
+    if (itemType == "shot") {
+        m_item = RamShot::get( itemUuid );
     }
     else {
-        m_item = RamItem::get( d.value("item").toString() );
+        m_item = RamAsset::get( itemUuid );
     }
 
     m_step = RamStep::get( d.value("step").toString() );
@@ -146,7 +155,7 @@ RamStep *RamStatus::step() const
     return m_step;
 }
 
-RamItem *RamStatus::item() const
+RamAbstractItem *RamStatus::item() const
 {
     return m_item;
 }
@@ -170,6 +179,7 @@ void RamStatus::setCompletionRatio(int completionRatio)
 
 RamState *RamStatus::state() const
 {
+    if (m_virtual) return Ramses::instance()->noState();
     return RamState::get( getData("state").toString("none") );
 }
 
@@ -190,6 +200,7 @@ void RamStatus::setState(RamState *newState)
 
 int RamStatus::version() const
 {
+    if (m_virtual) return 0;
     return getData("version").toInt();
 }
 
@@ -200,6 +211,7 @@ void RamStatus::setVersion(int version)
 
 QDateTime RamStatus::date() const
 {
+    if (m_virtual) return QDateTime::currentDateTime();
     return QDateTime::fromString( getData("date").toString(), "yyyy-MM-dd hh:mm:ss");
 }
 
@@ -210,6 +222,7 @@ void RamStatus::setDate(const QDateTime &date)
 
 bool RamStatus::isPublished() const
 {
+    if (m_virtual) return false;
     return getData("published").toBool();
 }
 
@@ -220,6 +233,7 @@ void RamStatus::setPublished(bool published)
 
 RamUser *RamStatus::assignedUser() const
 {
+    if (m_virtual) return nullptr;
     return RamUser::get( getData("assignedUser").toString("none") );
 }
 
@@ -235,6 +249,7 @@ void RamStatus::assignUser(RamObject *assignedUser)
 
 qint64 RamStatus::timeSpent() const
 {
+    if (m_virtual) 0;
     qint64 ts = getData("timeSpent").toInt();
     if (ts == 0)
     {
@@ -257,11 +272,13 @@ void RamStatus::setTimeSpent(const float &ts)
 
 bool RamStatus::isTimeSpentManual() const
 {
+    if (m_virtual) return true;
     return getData("manualTimeSpent").toBool(false);
 }
 
 RamStatus::Difficulty RamStatus::difficulty() const
 {
+    if (m_virtual) return Medium;
     QString dffclt = getData("difficulty").toString("medium");
     if (dffclt == "veryEasy") return VeryEasy;
     else if (dffclt == "easy") return Easy;
@@ -295,6 +312,7 @@ void RamStatus::setDifficulty(Difficulty newDifficulty)
 
 float RamStatus::goal() const
 {
+    if (m_virtual) return 0;
     // If state is none, 0!
     RamState *noState = Ramses::instance()->noState();
     if (noState->is(state())) return 0.0;
@@ -380,6 +398,7 @@ float RamStatus::estimation(int difficulty) const
 
 bool RamStatus::useAutoEstimation() const
 {
+    if (m_virtual) return true;
     RamState *noState = Ramses::instance()->noState();
     if (noState->is(state())) return true;
 
@@ -400,6 +419,7 @@ void RamStatus::setUseAutoEstimation(bool newAutoEstimation)
 
 float RamStatus::latenessRatio() const
 {
+    if (m_virtual) return 0;
     QJsonObject d = data();
 
     float completionRatio = d.value("completionRatio").toInt(50) / 100.0;
@@ -500,6 +520,7 @@ QString RamStatus::restoreVersionFile(QString fileName) const
 
 QString RamStatus::details() const
 {
+    if (m_virtual) return "";
     QString details;
 
     RamUser *au = assignedUser();
@@ -559,6 +580,7 @@ QString RamStatus::details() const
 
 QString RamStatus::subDetails() const
 {
+    if (m_virtual) return "";
     //subdetails
     QString dateFormat = "yyyy-MM-dd hh:mm:ss";
     RamUser *u = Ramses::instance()->currentUser();
@@ -615,6 +637,7 @@ void RamStatus::assignedUserRemoved()
 
 void RamStatus::construct()
 {
+    m_existingObjects[m_uuid] = this;
     m_icon = ":/icons/status";
     m_editRole = Standard;
 }
@@ -622,6 +645,6 @@ void RamStatus::construct()
 void RamStatus::connectEvents()
 {
     connect(m_user, &RamUser::removed, this, &RamStatus::userRemoved);
-    connect(m_item, &RamItem::removed, this, &RamStatus::remove);
+    connect(m_item, &RamAbstractItem::removed, this, &RamStatus::remove);
     connect(m_step, &RamStep::removed, this, &RamStatus::remove);
 }

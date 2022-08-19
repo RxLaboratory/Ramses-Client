@@ -4,9 +4,7 @@
 #include "dbinterface.h"
 #include "ramuser.h"
 #include "ramproject.h"
-#include "ramstep.h"
 #include "ramstate.h"
-#include "ramtemplateassetgroup.h"
 #include "data-models/ramstatelist.h"
 
 #include <QObject>
@@ -95,13 +93,13 @@ private:
     // ATTRIBUTES //
 
     // DATA (lists)
-    RamObjectList *m_users;
-    RamObjectList *m_templateSteps;
-    RamObjectList *m_templateAssetGroups;
-    RamStateList *m_states;
-    RamObjectList *m_fileTypes;
-    RamObjectList *m_applications;
-    RamObjectList *m_projects;
+    RamObjectList *m_users = nullptr;
+    RamObjectList *m_templateSteps = nullptr;
+    RamObjectList *m_templateAssetGroups = nullptr;
+    RamStateList *m_states = nullptr;
+    RamObjectList *m_fileTypes = nullptr;
+    RamObjectList *m_applications = nullptr;
+    RamObjectList *m_projects = nullptr;
 
     // Users
     RamUser *m_currentUser = nullptr;

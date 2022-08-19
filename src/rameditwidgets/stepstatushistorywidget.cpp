@@ -23,7 +23,7 @@ void StepStatusHistoryWidget::setHistory(RamStepStatusHistory *history)
     if (!m_history) return;
 
     m_statusList->setList(m_history);
-    RamItem *item = m_history->item();
+    RamAbstractItem *item = m_history->item();
     if (item)
         m_statusList->setTitle("Status history for " + item->name());
 

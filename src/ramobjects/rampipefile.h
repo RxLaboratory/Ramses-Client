@@ -20,7 +20,6 @@ public:
     // OTHER //
 
     RamPipeFile(QString shortName, RamProject *project);
-    RamPipeFile(QString uuid);
 
     QString name() const override;
 
@@ -36,6 +35,11 @@ public:
 
 public slots:
     virtual void edit(bool show = true) override;
+
+protected:
+    static QMap<QString, RamPipeFile*> m_existingObjects;
+    RamPipeFile(QString uuid);
+    virtual QString folderPath() const override { return ""; };
 
 private:
     void construct();

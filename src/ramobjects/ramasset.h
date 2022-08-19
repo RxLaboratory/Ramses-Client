@@ -1,10 +1,10 @@
 #ifndef RAMASSET_H
 #define RAMASSET_H
 
-#include "ramitem.h"
+#include "ramabstractitem.h"
 #include "ramassetgroup.h"
 
-class RamAsset : public RamItem
+class RamAsset : public RamAbstractItem
 {
     Q_OBJECT
 public:
@@ -17,7 +17,6 @@ public:
     // OTHER //
 
     RamAsset(QString shortName, QString name, RamAssetGroup *ag);
-    RamAsset(QString uuid);
 
     RamAssetGroup *assetGroup() const;
     void setAssetGroup(RamAssetGroup *ag);
@@ -36,6 +35,8 @@ public slots:
     virtual void edit(bool show = true) override;
 
 protected:
+    static QMap<QString, RamAsset*> m_existingObjects;
+    RamAsset(QString uuid);
     virtual QString folderPath() const override;
 
 private:

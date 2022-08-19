@@ -73,6 +73,7 @@ private:
 
     RamProject *m_project = nullptr;
     bool m_projectChanged = false;
+    bool init = true;
 };
 
 #endif // PIPELINEWIDGET_H

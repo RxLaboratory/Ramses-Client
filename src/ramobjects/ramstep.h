@@ -24,7 +24,6 @@ public:
     // METHODS //
 
     RamStep(QString shortName, QString name, RamProject *project);
-    RamStep(QString uuid);
 
     RamProject *project() const;
 
@@ -70,6 +69,8 @@ public slots:
     void countAssignedDays();
 
 protected:
+    static QMap<QString, RamStep*> m_existingObjects;
+    RamStep(QString uuid);
     virtual QString folderPath() const override;
 
 private:

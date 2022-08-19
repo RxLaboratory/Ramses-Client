@@ -3,7 +3,7 @@
 #include "ramstate.h"
 
 #include "ramfiletype.h"
-#include "ramitem.h"
+#include "ramabstractitem.h"
 #include "ramshot.h"
 #include "ramstatus.h"
 #include "rampipefile.h"
@@ -666,7 +666,7 @@ bool RamObjectDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, co
                 // get the step history
                 RamStatus *status = qobject_cast<RamStatus*>(o);
                 RamStep *step = status->step();
-                RamItem *item = status->item();
+                RamAbstractItem *item = status->item();
                 item->statusHistory(step)->edit();
             }
             m_historyButtonPressed = false;
@@ -694,6 +694,8 @@ bool RamObjectDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, co
                 {
                     qDebug() << "status";
                     RamStatus *status = RamStatus::c( o );
+                    qDebug() << status;
+                    qDebug() << status->user();
 
                     // If it's not the current user, create a new one
                     RamUser *currentUser = Ramses::instance()->currentUser();

@@ -22,7 +22,6 @@ public:
     // METHODS //
 
     RamUser(QString shortName, QString name);
-    RamUser(QString uuid);
 
     virtual void setShortName(const QString &shortName) override;
 
@@ -42,6 +41,8 @@ public slots:
     virtual void edit(bool show = true) override;
 
 protected:
+    static QMap<QString, RamUser*> m_existingObjects;
+    RamUser(QString uuid);
     virtual QString folderPath() const override;
 
 private:

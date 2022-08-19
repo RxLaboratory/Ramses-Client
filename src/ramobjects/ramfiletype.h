@@ -16,7 +16,6 @@ public:
     // OTHER //
 
     RamFileType(QString shortName, QString name);
-    RamFileType(QString uuid);
 
     void setExtensions(QString extensions);
     void setExtensions(QStringList extensions);
@@ -32,6 +31,10 @@ public:
 public slots:
     virtual void edit(bool show = true) override;
 
+protected:
+    static QMap<QString, RamFileType*> m_existingObjects;
+     RamFileType(QString uuid);
+     virtual QString folderPath() const override { return ""; };
 
 private:
     void construct();

@@ -4,9 +4,16 @@
 
 // STATIC //
 
+QMap<QString, RamState*> RamState::m_existingObjects = QMap<QString, RamState*>();
+
 RamState *RamState::get(QString uuid )
 {
-    return c( RamObject::get(uuid, State) );
+    if (!checkUuid(uuid, State)) return nullptr;
+
+    if (m_existingObjects.contains(uuid)) return m_existingObjects.value(uuid);
+
+    // Finally return a new instance
+    return new RamState(uuid);
 }
 
 RamState *RamState::c(RamObject *o)
@@ -56,6 +63,7 @@ void RamState::edit(bool show)
 
 void RamState::construct()
 {
+    m_existingObjects[m_uuid] = this;
     m_icon = ":/icons/state-l";
     m_editRole = Admin;
 }

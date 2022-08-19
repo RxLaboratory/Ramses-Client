@@ -84,13 +84,6 @@ public:
      */
     static const QString subFolderName(SubFolder folder);
 
-    /**
-     * @brief object Gets the existing object
-     * @param uuid The object uuid
-     * @return the object or nullptr if it doesn't exist yet
-     */
-    static RamAbstractObject *get(QString uuid);
-
     // METHODS //
 
     RamAbstractObject(QString shortName, QString name, ObjectType type, bool isVirtual = false, bool encryptData = false);
@@ -200,22 +193,21 @@ protected:
     void createData(QString data);
     virtual QJsonObject reloadData() = 0;
 
+    // SIGNALS in QObject instances
     virtual void emitDataChanged() {};
     virtual void emitRemoved() {};
     virtual void emitRestored() {};
 
+    // UTILS
+
+    // Checks if this is a valid uuid,
+    // and if it exists in the DB
+    static bool checkUuid(QString uuid, ObjectType type);
     /**
      * @brief folderPath the folder of this object
      * @return
      */
-    virtual QString folderPath() const { return QString(); };
-
-    // STATIC ATTRIBUTES //
-
-    /**
-     * @brief m_existingObjects is the list of all objects, used to get them from uuid.
-     */
-    static QMap<QString, RamAbstractObject*> m_existingObjects;
+    virtual QString folderPath() const = 0;
 
     // ATTRIBUTES //
 

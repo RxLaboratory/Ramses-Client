@@ -1,7 +1,7 @@
 #include "statuseditwidget.h"
 
 #include "ramfilemetadatamanager.h"
-#include "ramitem.h"
+#include "ramabstractitem.h"
 #include "ramses.h"
 #include "ramworkingfolder.h"
 

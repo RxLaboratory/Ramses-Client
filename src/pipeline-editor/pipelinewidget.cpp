@@ -129,9 +129,6 @@ PipelineWidget::PipelineWidget(QWidget *parent) :
     stepButton->setPopupMode(QToolButton::InstantPopup);
     stepButton->setMenu(ui_stepMenu);
 
-    // Load template steps
-    for (int i = 0; i < Ramses::instance()->templateSteps()->rowCount(); i++) newTemplateStep( Ramses::instance()->templateSteps()->at(i) );
-
     ui_titleBar->insertLeft(stepButton);
 
     // Connections menu
@@ -213,8 +210,6 @@ PipelineWidget::PipelineWidget(QWidget *parent) :
     connect(m_nodeScene->connectionManager(), SIGNAL(newConnection(DuQFConnection*)), this, SLOT(stepsConnected(DuQFConnection*)));
     connect(m_nodeScene->connectionManager(), SIGNAL(connectionRemoved(DuQFConnection*)), this, SLOT(connectionRemoved(DuQFConnection*)));
     // Ramses connections
-    connect(Ramses::instance()->templateSteps(), SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(templateStepInserted(QModelIndex,int,int)));
-    connect(Ramses::instance()->templateSteps(), SIGNAL(rowsAboutToBeRemoved(QModelIndex,int,int)), this, SLOT(templateStepRemoved(QModelIndex,int,int)));
     connect(Ramses::instance(), SIGNAL(currentProjectChanged(RamProject*)), this, SLOT(setProject(RamProject*)));
     connect(Ramses::instance(), &Ramses::loggedIn, this, &PipelineWidget::userChanged);
 }
@@ -346,6 +341,15 @@ void PipelineWidget::setGridSize(int size)
 void PipelineWidget::userChanged(RamUser *u)
 {
     if (!u) return;
+
+    // Load template steps
+    if (init)
+    {
+        for (int i = 0; i < Ramses::instance()->templateSteps()->rowCount(); i++) newTemplateStep( Ramses::instance()->templateSteps()->at(i) );
+        connect(Ramses::instance()->templateSteps(), SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(templateStepInserted(QModelIndex,int,int)));
+        connect(Ramses::instance()->templateSteps(), SIGNAL(rowsAboutToBeRemoved(QModelIndex,int,int)), this, SLOT(templateStepRemoved(QModelIndex,int,int)));
+        init = false;
+    }
 
     QSettings *uSettings = u->settings();
 

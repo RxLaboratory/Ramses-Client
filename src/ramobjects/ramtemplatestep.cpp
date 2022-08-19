@@ -4,6 +4,8 @@
 
 // STATIC //
 
+QMap<QString, RamTemplateStep*> RamTemplateStep::m_existingObjects = QMap<QString, RamTemplateStep*>();
+
 QMetaEnum const RamTemplateStep::m_stepTypeMeta = QMetaEnum::fromType<RamTemplateStep::Type>();
 
 const QString RamTemplateStep::stepTypeName(Type type)
@@ -23,7 +25,12 @@ RamTemplateStep::Type RamTemplateStep::stepTypeFromName(QString typeName)
 
 RamTemplateStep *RamTemplateStep::get(QString uuid)
 {
-    return c( RamObject::get(uuid, TemplateStep) );
+    if (!checkUuid(uuid, TemplateStep)) return nullptr;
+
+    if (m_existingObjects.contains(uuid)) return m_existingObjects.value(uuid);
+
+    // Finally return a new instance
+    return new RamTemplateStep(uuid);
 }
 
 RamTemplateStep *RamTemplateStep::c(RamObject *o)
@@ -51,7 +58,7 @@ RamTemplateStep::RamTemplateStep(QString uuid, ObjectType type):
 {
     construct();
 
-    m_applications = RamObjectList::get( getData("applications").toString(), ObjectList );
+    m_applications = RamObjectList::get( getData("applications").toString() );
 }
 
 RamObjectList *RamTemplateStep::applications() const
@@ -221,6 +228,7 @@ void RamTemplateStep::setEstimationMethod(const EstimationMethod &newEstimationM
 
 void RamTemplateStep::construct()
 {
+    m_existingObjects[m_uuid] = this;
     m_icon = ":/icons/step";
     m_editRole = Admin;
 }

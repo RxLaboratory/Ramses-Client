@@ -2,9 +2,16 @@
 
 // STATIC //
 
+QMap<QString, RamScheduleComment*> RamScheduleComment::m_existingObjects = QMap<QString, RamScheduleComment*>();
+
 RamScheduleComment *RamScheduleComment::get(QString uuid)
 {
-    return c( RamObject::get(uuid, ScheduleComment) );
+    if (!checkUuid(uuid, ScheduleComment)) return nullptr;
+
+    if (m_existingObjects.contains(uuid)) return m_existingObjects.value(uuid);
+
+    // Finally return a new instance
+    return new RamScheduleComment(uuid);
 }
 
 RamScheduleComment *RamScheduleComment::c(RamObject *o)
@@ -47,6 +54,7 @@ void RamScheduleComment::setDate(const QDateTime &newDate)
 
 void RamScheduleComment::construct()
 {
+    m_existingObjects[m_uuid] = this;
     m_icon = ":/icons/calendar";
     m_editRole = Standard;
 }

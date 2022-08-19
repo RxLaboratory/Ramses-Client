@@ -101,6 +101,7 @@ SOURCES += \
     rameditwidgets/projectlistmanagerwidget.cpp \
     rameditwidgets/schedulemanagerwidget.cpp \
     rameditwidgets/sequencelistmanagerwidget.cpp \
+    ramobjects/ramabstractitem.cpp \
     smallwidgets/servereditwidget.cpp \
     rameditwidgets/shotlistmanagerwidget.cpp \
     rameditwidgets/statelistmanagerwidget.cpp \
@@ -167,7 +168,6 @@ SOURCES += \
     ramobjects/ramapplication.cpp \
     ramobjects/ramasset.cpp \
     ramobjects/ramfiletype.cpp \
-    ramobjects/ramitem.cpp \
     ramobjects/ramobject.cpp \
     ramobjects/rampipe.cpp \
     ramobjects/ramproject.cpp \
@@ -266,6 +266,7 @@ HEADERS += \
     rameditwidgets/projectlistmanagerwidget.h \
     rameditwidgets/schedulemanagerwidget.h \
     rameditwidgets/sequencelistmanagerwidget.h \
+    ramobjects/ramabstractitem.h \
     smallwidgets/servereditwidget.h \
     rameditwidgets/shotlistmanagerwidget.h \
     rameditwidgets/statelistmanagerwidget.h \
@@ -332,7 +333,6 @@ HEADERS += \
     ramobjects/ramapplication.h \
     ramobjects/ramasset.h \
     ramobjects/ramfiletype.h \
-    ramobjects/ramitem.h \
     ramobjects/ramobject.h \
     ramobjects/rampipe.h \
     ramobjects/ramproject.h \

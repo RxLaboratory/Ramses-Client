@@ -2,7 +2,7 @@
 #define RAMITEMFILTERMODEL_H
 
 #include "ramobjectfiltermodel.h"
-#include "ramitem.h"
+#include "ramabstractitem.h"
 
 /**
  * @brief The RamItemFilterModel class is used to filters items according to current state, step or assigned user.

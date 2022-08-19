@@ -1,22 +1,10 @@
-#include "ramitem.h"
+#include "ramabstractitem.h"
 
 #include "ramses.h"
 
-// STATIC //
-
-RamItem *RamItem::get(QString uuid)
-{
-    return c( RamObject::get(uuid, Item) );
-}
-
-RamItem *RamItem::c(RamObject *o)
-{
-    return qobject_cast<RamItem*>(o);
-}
-
 // PUBLIC //
 
-RamItem::RamItem(QString shortName, QString name, ObjectType type, RamProject *project) :
+RamAbstractItem::RamAbstractItem(QString shortName, QString name, ObjectType type, RamProject *project) :
     RamObject(shortName, name, type, project)
 {
     construct();
@@ -24,7 +12,7 @@ RamItem::RamItem(QString shortName, QString name, ObjectType type, RamProject *p
     setProject(project);
 }
 
-RamItem::RamItem(QString uuid, ObjectType type):
+RamAbstractItem::RamAbstractItem(QString uuid, ObjectType type):
     RamObject(uuid, type)
 {
     construct();
@@ -47,17 +35,17 @@ RamItem::RamItem(QString uuid, ObjectType type):
     }
 }
 
-RamProject *RamItem::project() const
+RamProject *RamAbstractItem::project() const
 {
     return RamProject::get( getData("project").toString("none") );
 }
 
-QMap<QString, RamStepStatusHistory*> RamItem::statusHistory() const
+QMap<QString, RamStepStatusHistory*> RamAbstractItem::statusHistory() const
 {
     return m_history;
 }
 
-RamStepStatusHistory *RamItem::statusHistory(RamObject *stepObj)
+RamStepStatusHistory *RamAbstractItem::statusHistory(RamObject *stepObj)
 {
     if (!stepObj) return nullptr;
 
@@ -80,7 +68,7 @@ RamStepStatusHistory *RamItem::statusHistory(RamObject *stepObj)
     return stepHistory;
 }
 
-RamStatus *RamItem::setStatus(RamUser *user, RamState *state, RamStep *step, int completionRatio, QString comment, int version)
+RamStatus *RamAbstractItem::setStatus(RamUser *user, RamState *state, RamStep *step, int completionRatio, QString comment, int version)
 {
     RamStatus *newStatus = new RamStatus(user, this, step );
     newStatus->setState(state);
@@ -93,7 +81,7 @@ RamStatus *RamItem::setStatus(RamUser *user, RamState *state, RamStep *step, int
     return newStatus;
 }
 
-void RamItem::addStatus(RamStatus *status)
+void RamAbstractItem::addStatus(RamStatus *status)
 {
     RamStep *step = status->step();
     if (!step) return;
@@ -107,7 +95,7 @@ void RamItem::addStatus(RamStatus *status)
     history->sort();
 }
 
-RamStatus *RamItem::status(RamStep *step)
+RamStatus *RamAbstractItem::status(RamStep *step)
 {
     // Get the new current status
     RamStepStatusHistory *history = statusHistory(step);
@@ -121,7 +109,7 @@ RamStatus *RamItem::status(RamStep *step)
     return currentStatus;
 }
 
-QList<RamStatus *> RamItem::status()
+QList<RamStatus *> RamAbstractItem::status()
 {
     QList<RamStatus *> statuses;
     if (m_history.count() == 0) return statuses;
@@ -136,7 +124,7 @@ QList<RamStatus *> RamItem::status()
     return statuses;
 }
 
-RamUser *RamItem::assignedUser(RamStep *step)
+RamUser *RamAbstractItem::assignedUser(RamStep *step)
 {
     RamStatus *previous = status(step);
     if (previous)
@@ -145,7 +133,7 @@ RamUser *RamItem::assignedUser(RamStep *step)
     return nullptr;
 }
 
-bool RamItem::isUserAssigned(RamObject *u, RamStep *step)
+bool RamAbstractItem::isUserAssigned(RamObject *u, RamStep *step)
 {
     if(step)
     {
@@ -165,7 +153,7 @@ bool RamItem::isUserAssigned(RamObject *u, RamStep *step)
     return false;
 }
 
-bool RamItem::isUnassigned(RamStep *step)
+bool RamAbstractItem::isUnassigned(RamStep *step)
 {
     if (step)
     {
@@ -184,7 +172,7 @@ bool RamItem::isUnassigned(RamStep *step)
     return false;
 }
 
-bool RamItem::hasState(RamObject *state, RamStep *step)
+bool RamAbstractItem::hasState(RamObject *state, RamStep *step)
 {
     RamState *noState = Ramses::instance()->noState();
 
@@ -213,26 +201,26 @@ bool RamItem::hasState(RamObject *state, RamStep *step)
 
 // PROTECTED //
 
-void RamItem::latestStatusChanged(RamStepStatusHistory *history)
+void RamAbstractItem::latestStatusChanged(RamStepStatusHistory *history)
 {
     emit statusChanged( history->item(), history->step());
 }
 
 // PRIVATE //
 
-void RamItem::construct()
+void RamAbstractItem::construct()
 {
     m_icon = ":/icons/asset";
     m_editRole = Admin;
 }
 
-void RamItem::setProject(RamProject *proj)
+void RamAbstractItem::setProject(RamProject *proj)
 {
     insertData("project", proj->uuid());
     setParent(proj);
 }
 
-void RamItem::connectHistory(RamStepStatusHistory *history)
+void RamAbstractItem::connectHistory(RamStepStatusHistory *history)
 {
     connect(history, SIGNAL(latestStatusChanged(RamStepStatusHistory*)), this, SLOT(latestStatusChanged(RamStepStatusHistory*)));
 }

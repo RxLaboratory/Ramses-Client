@@ -1,5 +1,5 @@
-#ifndef RAMITEM_H
-#define RAMITEM_H
+#ifndef RAMABSTRACTITEM_H
+#define RAMABSTRACTITEM_H
 
 #include "ramstep.h"
 
@@ -12,20 +12,13 @@ class RamState;
  * @brief The RamItem class is the base class for RamShot and RamAsset
  * It handles the status history of the Shot or the Item
  */
-class RamItem : public RamObject
+class RamAbstractItem : public RamObject
 {
     Q_OBJECT
 public:
-
-    // STATIC //
-
-    static RamItem *get(QString uuid);
-    static RamItem *c(RamObject *o);
-
     // OTHER //
 
-    RamItem(QString shortName, QString name, ObjectType type, RamProject *project );
-    RamItem(QString uuid, ObjectType type = Item);
+    RamAbstractItem(QString shortName, QString name, ObjectType type, RamProject *project );
 
     RamProject *project() const;
     RamStep::Type productionType() const;
@@ -55,7 +48,10 @@ public:
     bool hasState(RamObject *state, RamStep *step = nullptr);
 
 signals:
-    void statusChanged(RamItem *, RamStep *);
+    void statusChanged(RamAbstractItem *, RamStep *);
+
+protected:
+    RamAbstractItem(QString uuid, ObjectType type);
 
 private slots:
     void latestStatusChanged(RamStepStatusHistory*history);
@@ -69,4 +65,4 @@ private:
     QMap<QString, RamStepStatusHistory*> m_history;
 };
 
-#endif // RAMITEM_H
+#endif // RAMABSTRACTITEM_H

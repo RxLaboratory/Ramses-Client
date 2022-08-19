@@ -1,6 +1,7 @@
 #include "ramstep.h"
 
 #include "ramapplication.h"
+#include "ramasset.h"
 #include "ramassetgroup.h"
 #include "ramscheduleentry.h"
 #include "ramses.h"
@@ -12,9 +13,16 @@
 
 // STATIC //
 
+QMap<QString, RamStep*> RamStep::m_existingObjects = QMap<QString, RamStep*>();
+
 RamStep *RamStep::get(QString uuid)
 {
-    return c( RamObject::get(uuid, Step) );
+    if (!checkUuid(uuid, Step)) return nullptr;
+
+    if (m_existingObjects.contains(uuid)) return m_existingObjects.value(uuid);
+
+    // Finally return a new instance
+    return new RamStep(uuid);
 }
 
 RamStep *RamStep::c(RamObject *o)
@@ -173,10 +181,14 @@ QList<float> RamStep::stats(RamUser *user)
     float completedDays = 0;
 
     RamState *no = Ramses::instance()->noState();
+    Type t = type();
 
     for (int i =0; i < items->rowCount(); i++)
     {
-        RamItem *item = RamItem::c(items->at(i));
+        RamAbstractItem *item;
+        if (t == ShotProduction) item = RamShot::c(items->at(i));
+        else item = RamAsset::c( items->at(i) );
+
         RamStatus *status = item->status(this);
 
         if (!status) continue;
@@ -298,7 +310,9 @@ void RamStep::computeEstimation()
 
     for (int i =0; i < items->rowCount(); i++)
     {
-        RamItem *item = RamItem::c( items->at(i) );
+        RamAbstractItem *item;
+        if (t == ShotProduction) item = RamShot::c( items->at(i) );
+        else item = RamAsset::c( items->at(i) );
         RamStatus *status = item->status(this);
 
         if (!status) continue;
@@ -381,6 +395,7 @@ QString RamStep::folderPath() const
 
 void RamStep::construct()
 {
+    m_existingObjects[m_uuid] = this;
     m_objectType = Step;
     m_project = nullptr;
 }

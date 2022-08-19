@@ -16,10 +16,14 @@ public:
     // OTHER //
 
     explicit RamTemplateAssetGroup(QString shortName, QString name, ObjectType type = TemplateAssetGroup);
-    RamTemplateAssetGroup(QString uuid, ObjectType type = TemplateAssetGroup);
 
 public slots:
     virtual void edit(bool show = true) override;
+
+protected:
+    static QMap<QString, RamTemplateAssetGroup*> m_existingObjects;
+    RamTemplateAssetGroup(QString uuid, ObjectType type = TemplateAssetGroup);
+    virtual QString folderPath() const override { return ""; };
 
 private:
     void construct();

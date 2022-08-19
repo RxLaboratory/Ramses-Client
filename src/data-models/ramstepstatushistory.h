@@ -5,7 +5,7 @@
 
 class RamStatus;
 class RamStep;
-class RamItem;
+class RamAbstractItem;
 
 /**
  * @brief The RamStepStatusHistory class is a list of RamStatus for a specific step and item
@@ -20,9 +20,8 @@ public:
     static RamStepStatusHistory *get(QString uuid);
     static RamStepStatusHistory *c(RamObjectList *o);
 
-    RamStepStatusHistory(RamStep *step, RamItem *item);
-    RamStepStatusHistory(QString uuid, QObject *parent = nullptr);
-    RamItem *item() const;
+    RamStepStatusHistory(RamStep *step, RamAbstractItem *item);
+    RamAbstractItem *item() const;
     RamStep *step() const;
 
     // MODEL REIMPLEMENTATION
@@ -33,6 +32,10 @@ public slots:
 
 signals:
     void latestStatusChanged(RamStepStatusHistory*);
+
+protected:
+    static QMap<QString, RamStepStatusHistory*> m_existingObjects;
+    RamStepStatusHistory(QString uuid, QObject *parent = nullptr);
 
 private slots:
     // monitors the changes to trigger computeEstimations on the step
@@ -45,7 +48,7 @@ private:
     void connectEvents();
 
     RamStep *m_step;
-    RamItem *m_item;
+    RamAbstractItem *m_item;
 
     QFrame *ui_editWidget = nullptr;
 };

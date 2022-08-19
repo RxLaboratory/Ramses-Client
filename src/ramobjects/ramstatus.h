@@ -5,7 +5,7 @@
 
 #include "ramobject.h"
 
-class RamItem;
+class RamAbstractItem;
 class RamUser;
 class RamStep;
 class RamState;
@@ -34,19 +34,18 @@ public:
 
     static RamStatus *copy(RamStatus *other, RamUser *user);
 
-    static RamStatus *noStatus(RamItem *item, RamStep *step);
+    static RamStatus *noStatus(RamAbstractItem *item, RamStep *step);
 
     static float hoursToDays(int hours);
     static int daysToHours(float days);
 
     // METHODS //
 
-    RamStatus(RamUser *user, RamItem *item, RamStep *step, bool isVirtual = false);
-    RamStatus(QString uuid);
+    RamStatus(RamUser *user, RamAbstractItem *item, RamStep *step, bool isVirtual = false);
 
     RamUser *user() const;
     RamStep *step() const;
-    RamItem *item() const;
+    RamAbstractItem *item() const;
 
     bool isNoState() const;
 
@@ -100,6 +99,8 @@ public slots:
     virtual void edit(bool show = true) override;
 
 protected:
+    static QMap<QString, RamStatus*> m_existingObjects;
+    RamStatus(QString uuid);
     virtual QString folderPath() const override;
 
 private slots:
@@ -112,7 +113,7 @@ private:
     void connectEvents();
 
     RamUser *m_user;
-    RamItem *m_item;
+    RamAbstractItem *m_item;
     RamStep *m_step;
 };
 

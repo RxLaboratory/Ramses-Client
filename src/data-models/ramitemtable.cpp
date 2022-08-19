@@ -1,14 +1,22 @@
 #include "ramitemtable.h"
-#include "duqf-app/app-style.h"
 #include "ramproject.h"
 #include "ramstate.h"
 #include "ramstatus.h"
+#include "ramshot.h"
+#include "ramasset.h"
 
 // PUBLIC //
 
+QMap<QString, RamItemTable*> RamItemTable::m_existingObjects = QMap<QString, RamItemTable*>();
+
 RamItemTable *RamItemTable::get(QString uuid)
 {
-    return c( RamObjectList::get(uuid, ItemTable) );
+    if (!checkUuid(uuid, ItemTable)) return nullptr;
+
+    if (m_existingObjects.contains(uuid)) return m_existingObjects.value(uuid);
+
+    // Finally return a new instance
+    return new RamItemTable(uuid);
 }
 
 RamItemTable *RamItemTable::c(RamObjectList *o)
@@ -19,12 +27,14 @@ RamItemTable *RamItemTable::c(RamObjectList *o)
 RamItemTable::RamItemTable(QString shortName, QString name, ObjectType type, QObject *parent, DataListMode mode):
     RamObjectList(shortName, name, type, mode, parent, ItemTable)
 {
+    m_existingObjects[m_uuid] = this;
     connectEvents();
 }
 
 RamItemTable::RamItemTable(QString uuid, QObject *parent):
     RamObjectList(uuid, parent, ItemTable)
 {
+    m_existingObjects[m_uuid] = this;
     connectEvents();
 }
 
@@ -34,7 +44,7 @@ int RamItemTable::columnCount(const QModelIndex &parent) const
 
     if (m_objectList.isEmpty()) return 0;
 
-    RamItem *item = RamItem::c( m_objectList.first() );
+    RamAbstractItem *item = itemAt(0);
     Q_ASSERT(item);
 
     RamProject *p = item->project();
@@ -59,7 +69,7 @@ QVariant RamItemTable::data(const QModelIndex &index, int role) const
         return RamObjectList::data(index, role);
 
     // Get the item
-    RamItem *item = RamItem::c( m_objectList.at(row) );
+    RamAbstractItem *item = itemAt(row);
 
     if (role == ItemShortName)
     {
@@ -80,7 +90,10 @@ QVariant RamItemTable::data(const QModelIndex &index, int role) const
     // Get the status
     RamStatus *status = item->status(step);
 
-    if (!status) status = RamStatus::noStatus(item, step);
+    if (!status)
+    {
+        status = RamStatus::noStatus(item, step);
+    }
 
     if (role == Qt::DisplayRole)
         return status->name();
@@ -172,7 +185,7 @@ void RamItemTable::removeItem(const QModelIndex &parent, int first, int last)
 
     for (int i = first; i <= last; i++)
     {
-        RamItem *item = RamItem::c( m_objectList.at(i) );
+        RamAbstractItem *item = itemAt(i);
         Q_ASSERT(item);
 
         // Disonnect the item
@@ -181,7 +194,7 @@ void RamItemTable::removeItem(const QModelIndex &parent, int first, int last)
 
 }
 
-void RamItemTable::statusChanged(RamItem *item, RamStep *step)
+void RamItemTable::statusChanged(RamAbstractItem *item, RamStep *step)
 {
     // We just need to notify that the data has changed for the item/step
 
@@ -204,7 +217,7 @@ void RamItemTable::inserted(const QModelIndex &parent, int first, int last)
 
     for (int i = first; i <= last; i++)
     {
-        RamItem *item = RamItem::c( m_objectList.at(i) );
+        RamAbstractItem *item = itemAt(i);
         Q_ASSERT(item);
 
         // Connect the item to monitor its status
@@ -220,11 +233,17 @@ void RamItemTable::connectEvents()
     connect( this, &RamItemTable::rowsAboutToBeRemoved, this, &RamItemTable::removeItem);
 }
 
+RamAbstractItem *RamItemTable::itemAt(int row) const
+{
+    if (m_contentType == Shot) return RamShot::c( m_objectList.at(row ) );
+    else return RamAsset::c( m_objectList.at(row ) );
+}
+
 RamStep *RamItemTable::stepAt(int col) const
 {
     if (m_objectList.isEmpty()) return nullptr;
 
-    RamItem *item = RamItem::c( m_objectList.first() );
+    RamAbstractItem *item = itemAt(0);
     Q_ASSERT(item);
 
     RamProject *p = item->project();
@@ -238,7 +257,7 @@ int RamItemTable::stepCol(RamStep *step) const
 {
     if (m_objectList.isEmpty()) return -1;
 
-    RamItem *item = RamItem::c( m_objectList.first() );
+    RamAbstractItem *item = itemAt(0);
     Q_ASSERT(item);
 
     RamProject *p = item->project();

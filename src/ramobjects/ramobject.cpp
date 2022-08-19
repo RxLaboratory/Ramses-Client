@@ -7,50 +7,49 @@
 #include "ramasset.h"
 #include "rampipe.h"
 #include "rampipefile.h"
-#include "ramschedulecomment.h"
-#include "ramscheduleentry.h"
 #include "ramsequence.h"
+#include "ramscheduleentry.h"
+#include "ramschedulecomment.h"
 #include "ramses.h"
 
-// STATIC //
+// PUBLIC //
 
 RamObject *RamObject::get(QString uuid, ObjectType type)
 {
-    if (uuid == "none") return nullptr;
-
-    RamAbstractObject *obj = RamAbstractObject::get(uuid);
-    if (obj) return static_cast<RamObject*>( obj ) ;
-
-    // Check if the UUID exists in the database
-    if (!DBInterface::instance()->contains(uuid, objectTypeName(type))) return nullptr;
+    Q_ASSERT(type != Object);
+    Q_ASSERT(type != ObjectList);
+    Q_ASSERT(type != ItemTable);
+    Q_ASSERT(type != StepStatusHistory);
+    Q_ASSERT(type != Item);
 
     switch(type)
     {
-    case Application: return new RamApplication(uuid);
-    case Asset: return new RamAsset(uuid);
-    case AssetGroup: return new RamAssetGroup(uuid);
-    case FileType: return new RamFileType(uuid);
-    case Object: return new RamObject(uuid, Object);
-    case Item: return new RamItem(uuid);
-    case Pipe: return new RamPipe(uuid);
-    case PipeFile: return new RamPipeFile(uuid);
-    case Project: return new RamProject(uuid);
-    case Sequence: return new RamSequence(uuid);
-    case Shot: return new RamShot(uuid);
-    case State: return new RamState(uuid);
-    case Status: return new RamStatus(uuid);
-    case Step: return new RamStep(uuid);
-    case User: return new RamUser(uuid);
-    case ScheduleEntry: return new RamScheduleEntry(uuid);
-    case ScheduleComment: return new RamScheduleComment(uuid);
-    case TemplateStep: return new RamTemplateStep(uuid);
-    case TemplateAssetGroup: return new RamTemplateAssetGroup(uuid);
+    case Application: return RamApplication::get(uuid);
+    case Asset: return RamAsset::get(uuid);
+    case AssetGroup: return RamAssetGroup::get(uuid);
+    case FileType: return RamFileType::get(uuid);
+    case Pipe: return RamPipe::get(uuid);
+    case PipeFile: return RamPipeFile::get(uuid);
+    case Project: return RamProject::get(uuid);
+    case Sequence: return RamSequence::get(uuid);
+    case Shot: return RamShot::get(uuid);
+    case State: return RamState::get(uuid);
+    case Status: return RamStatus::get(uuid);
+    case Step: return RamStep::get(uuid);
+    case User: return RamUser::get(uuid);
+    case ScheduleEntry: return RamScheduleEntry::get(uuid);
+    case ScheduleComment: return RamScheduleComment::get(uuid);
+    case TemplateStep: return RamTemplateStep::get(uuid);
+    case TemplateAssetGroup: return RamTemplateAssetGroup::get(uuid);
     case Ramses: return Ramses::instance();
-    default: return new RamObject(uuid, Object);
+        // These aren't valid RamObjects
+    case ObjectList: return nullptr;
+    case ItemTable: return nullptr;
+    case StepStatusHistory: return nullptr;
+    case Item: return nullptr;
+    case Object: return nullptr;
     }
 }
-
-// PUBLIC //
 
 RamObject::RamObject(QString shortName, QString name, ObjectType type, QObject *parent, bool isVirtual, bool encryptData):
     QObject(parent),

@@ -2,7 +2,7 @@
 #define ASSETLISTMANAGERWIDGET_H
 
 #include "objectlistmanagerwidget.h"
-#include "ramitem.h"
+#include "ramabstractitem.h"
 
 class AssetListManagerWidget : public ObjectListManagerWidget
 {
@@ -11,7 +11,7 @@ public:
     AssetListManagerWidget(QWidget *parent = nullptr);
 
 protected slots:
-    RamItem *createObject() override;
+    RamAbstractItem *createObject() override;
 
 private slots:
     void changeProject(RamProject *project);

@@ -106,6 +106,7 @@ RamUser *Ramses::ramsesUser()
     {
         m_ramsesUser = new RamUser("Ramses", "Ramses Daemon");
         m_ramsesUser->updatePassword("", RamUuid::generateUuidString("Ramses"));
+        m_users->append(m_ramsesUser);
     }
     return m_ramsesUser;
 }

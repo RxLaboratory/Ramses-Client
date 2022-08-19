@@ -1,13 +1,13 @@
 #ifndef RAMSHOT_H
 #define RAMSHOT_H
 
-#include "ramitem.h"
+#include "ramabstractitem.h"
 
 class RamSequence;
 class RamAsset;
 class RamObjectList;
 
-class RamShot : public RamItem
+class RamShot : public RamAbstractItem
 {
     Q_OBJECT
 public:
@@ -21,7 +21,6 @@ public:
     // METHODS //
 
     RamShot(QString shortName, QString name, RamSequence *sequence);
-    RamShot(QString uuid);
 
     RamSequence *sequence() const;
     void setSequence(RamObject *sequence);
@@ -40,7 +39,9 @@ public slots:
     virtual void edit(bool show = true) override;
 
 protected:
+    static QMap<QString, RamShot*> m_existingObjects;
     virtual QString folderPath() const override;
+    RamShot(QString uuid);
 
 private:
     void construct();

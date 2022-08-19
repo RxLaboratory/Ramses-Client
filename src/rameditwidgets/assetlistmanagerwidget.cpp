@@ -16,7 +16,7 @@ AssetListManagerWidget::AssetListManagerWidget(QWidget *parent):
     m_listEditWidget->setEditMode(ObjectListEditWidget::RemoveObjects);
 }
 
-RamItem *AssetListManagerWidget::createObject()
+RamAbstractItem *AssetListManagerWidget::createObject()
 {
     RamProject *project = Ramses::instance()->currentProject();
     if (!project) return nullptr;

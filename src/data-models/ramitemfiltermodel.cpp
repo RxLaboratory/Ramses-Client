@@ -107,7 +107,7 @@ bool RamItemFilterModel::filterAcceptsRow(int sourceRow, const QModelIndex &sour
     if (iptr == 0) return false;
     RamObject *itemObj = reinterpret_cast<RamObject*>(iptr);
     if (itemObj->objectType() != RamObject::Asset && itemObj->objectType() != RamObject::Shot) return true;
-    RamItem *item = qobject_cast<RamItem*>(itemObj);
+    RamAbstractItem *item = qobject_cast<RamAbstractItem*>(itemObj);
     if(!item) return true;
 
     // check users

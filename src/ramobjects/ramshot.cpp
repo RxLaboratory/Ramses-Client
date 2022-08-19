@@ -8,9 +8,16 @@
 
 // STATIC //
 
+QMap<QString, RamShot*> RamShot::m_existingObjects = QMap<QString, RamShot*>();
+
 RamShot *RamShot::get(QString uuid)
 {
-    return c( RamObject::get(uuid, Shot) );
+    if (!checkUuid(uuid, Shot)) return nullptr;
+
+    if (m_existingObjects.contains(uuid)) return m_existingObjects.value(uuid);
+
+    // Finally return a new instance
+    return new RamShot(uuid);
 }
 
 RamShot *RamShot::c(RamObject *obj)
@@ -21,7 +28,7 @@ RamShot *RamShot::c(RamObject *obj)
 // PUBLIC //
 
 RamShot::RamShot(QString shortName, QString name, RamSequence *sequence):
-    RamItem(shortName, name, Shot, sequence->project())
+    RamAbstractItem(shortName, name, Shot, sequence->project())
 {
     Q_ASSERT_X(sequence, "RamAsset(shortname, name, assetgroup)", "Sequence can't be null!");
     construct();
@@ -29,7 +36,7 @@ RamShot::RamShot(QString shortName, QString name, RamSequence *sequence):
 }
 
 RamShot::RamShot(QString uuid):
-    RamItem(uuid, Shot)
+    RamAbstractItem(uuid, Shot)
 {
     construct();
 }
@@ -122,6 +129,7 @@ QString RamShot::folderPath() const
 
 void RamShot::construct()
 {
+    m_existingObjects[m_uuid] = this;
     m_icon = ":/icons/shot";
     m_editRole = ProjectAdmin;
     getCreateLists();
@@ -133,7 +141,7 @@ void RamShot::getCreateLists()
 
     QString uuid = d.value("assets").toString();
     if (uuid == "") m_assets = new RamObjectList("assets", "Assets", Asset, RamObjectList::ListObject, this);
-    else m_assets = RamObjectList::get( uuid, ObjectList);
+    else m_assets = RamObjectList::get( uuid );
     m_assets->setParent(this);
     d.insert("assets", m_assets->uuid());
 

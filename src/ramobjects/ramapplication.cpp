@@ -4,9 +4,16 @@
 
 // STATIC //
 
+QMap<QString, RamApplication*> RamApplication::m_existingObjects = QMap<QString, RamApplication*>();
+
 RamApplication *RamApplication::get(QString uuid)
 {
-    return c( RamObject::get(uuid, Application) );
+    if (!checkUuid(uuid, Application)) return nullptr;
+
+    if (m_existingObjects.contains(uuid)) return m_existingObjects.value(uuid);
+
+    // Finally return a new instance
+    return new RamApplication(uuid);
 }
 
 RamApplication *RamApplication::c(RamObject *o)
@@ -18,12 +25,6 @@ RamApplication *RamApplication::c(RamObject *o)
 
 RamApplication::RamApplication(QString shortName, QString name):
     RamObject(shortName, name, ObjectType::Application)
-{
-    construct();
-}
-
-RamApplication::RamApplication(QString uuid):
-    RamObject(uuid, ObjectType::Application)
 {
     construct();
 }
@@ -135,10 +136,26 @@ void RamApplication::edit(bool show)
     if (show) showEdit();
 }
 
+// PROTECTED //
+
+RamApplication::RamApplication(QString uuid):
+    RamObject(uuid, ObjectType::Application)
+{
+    construct();
+}
+
+QString RamApplication::folderPath() const
+{
+    QFileInfo fpath( executableFilePath() );
+    if (!fpath.exists()) return "";
+    return fpath.absolutePath();
+}
+
 // PRIVATE //
 
 void RamApplication::construct()
 {
+    m_existingObjects[m_uuid] = this;
     m_icon = ":/icons/application";
     m_editRole = Admin;
     getCreateLists();
@@ -150,19 +167,19 @@ void RamApplication::getCreateLists()
 
     QString uuid = d.value("nativeFileTypes").toString();
     if (uuid == "") m_nativeFileTypes = new RamObjectList("native", "Native File Types", FileType, RamObjectList::ListObject, this);
-    else m_nativeFileTypes = RamObjectList::get( uuid, ObjectList);
+    else m_nativeFileTypes = RamObjectList::get( uuid );
     m_nativeFileTypes->setParent(this);
     d.insert("nativeFileTypes", m_nativeFileTypes->uuid());
 
     uuid = d.value("importileTypes").toString();
     if (uuid == "") m_importFileTypes = new RamObjectList("import", "Import File Types", FileType, RamObjectList::ListObject, this);
-    else m_importFileTypes = RamObjectList::get( uuid, ObjectList);
+    else m_importFileTypes = RamObjectList::get( uuid );
     m_importFileTypes->setParent(this);
     d.insert("importileTypes", m_importFileTypes->uuid());
 
     uuid = d.value("exportFileTypes").toString();
     if (uuid == "") m_exportFileTypes = new RamObjectList("export", "Export File Types", FileType, RamObjectList::ListObject, this);
-    else m_exportFileTypes = RamObjectList::get( uuid, ObjectList);
+    else m_exportFileTypes = RamObjectList::get( uuid );
     m_exportFileTypes->setParent(this);
     d.insert("exportFileTypes", m_exportFileTypes->uuid());
 

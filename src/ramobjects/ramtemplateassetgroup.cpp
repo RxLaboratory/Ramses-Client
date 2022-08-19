@@ -4,9 +4,16 @@
 
 // STATIC //
 
+QMap<QString, RamTemplateAssetGroup*> RamTemplateAssetGroup::m_existingObjects = QMap<QString, RamTemplateAssetGroup*>();
+
 RamTemplateAssetGroup *RamTemplateAssetGroup::get(QString uuid)
 {
-    return c( RamObject::get(uuid, TemplateAssetGroup) );
+    if (!checkUuid(uuid, AssetGroup)) return nullptr;
+
+    if (m_existingObjects.contains(uuid)) return m_existingObjects.value(uuid);
+
+    // Finally return a new instance
+    return new RamTemplateAssetGroup(uuid);
 }
 
 RamTemplateAssetGroup *RamTemplateAssetGroup::c(RamObject *o)
@@ -41,6 +48,7 @@ void RamTemplateAssetGroup::edit(bool show)
 
 void RamTemplateAssetGroup::construct()
 {
+    m_existingObjects[m_uuid] = this;
     m_icon = ":/icons/asset-group";
     m_editRole = Admin;
 }

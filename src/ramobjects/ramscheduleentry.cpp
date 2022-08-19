@@ -2,9 +2,16 @@
 
 // STATIC //
 
+QMap<QString, RamScheduleEntry*> RamScheduleEntry::m_existingObjects = QMap<QString, RamScheduleEntry*>();
+
 RamScheduleEntry *RamScheduleEntry::get(QString uuid)
 {
-    return c( RamObject::get(uuid, ScheduleEntry) );
+    if (!checkUuid(uuid, ScheduleEntry)) return nullptr;
+
+    if (m_existingObjects.contains(uuid)) return m_existingObjects.value(uuid);
+
+    // Finally return a new instance
+    return new RamScheduleEntry(uuid);
 }
 
 RamScheduleEntry *RamScheduleEntry::c(RamObject *o)
@@ -87,6 +94,7 @@ void RamScheduleEntry::stepRemoved()
 
 void RamScheduleEntry::construct()
 {
+    m_existingObjects[m_uuid] = this;
     m_icon = ":/icons/calendar";
     m_editRole = Lead;
 }

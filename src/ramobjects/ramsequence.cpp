@@ -5,9 +5,16 @@
 
 // STATIC //
 
+QMap<QString, RamSequence*> RamSequence::m_existingObjects = QMap<QString, RamSequence*>();
+
 RamSequence *RamSequence::get(QString uuid)
 {
-    return c( RamObject::get(uuid, Sequence) );
+    if (!checkUuid(uuid, Sequence)) return nullptr;
+
+    if (m_existingObjects.contains(uuid)) return m_existingObjects.value(uuid);
+
+    // Finally return a new instance
+    return new RamSequence(uuid);
 }
 
 RamSequence *RamSequence::c(RamObject *o)
@@ -80,6 +87,7 @@ void RamSequence::edit(bool show)
 
 void RamSequence::construct()
 {
+    m_existingObjects[m_uuid] = this;
     m_icon = ":/icons/sequence";
     m_editRole = ProjectAdmin;
     m_project = nullptr;

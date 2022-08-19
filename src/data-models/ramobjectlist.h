@@ -41,7 +41,7 @@ public:
 
     // STATIC METHODS //
 
-    static RamObjectList *get(QString uuid, ObjectType type);
+    static RamObjectList *get(QString uuid);
     static RamObjectList *c(QObject *obj);
     static RamObjectList *emptyList();
     static RamObject *at(QModelIndex i);
@@ -49,7 +49,6 @@ public:
     // METHODS //
 
     RamObjectList(QString shortName, QString name, ObjectType type, DataListMode mode, QObject *parent = nullptr, ObjectType listType = ObjectList);
-    RamObjectList(QString uuid, QObject *parent = nullptr, ObjectType listType = ObjectList);
 
     // MODEL reimplementation
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
@@ -93,6 +92,9 @@ signals:
     void listChanged(RamObjectList*);
 
 protected:
+    static QMap<QString, RamObjectList*> m_existingObjects;
+    RamObjectList(QString uuid, QObject *parent = nullptr, ObjectType listType = ObjectList);
+    virtual QString folderPath() const override { return ""; };
     // An empty list is useful
     static RamObjectList *m_emptyList;
 

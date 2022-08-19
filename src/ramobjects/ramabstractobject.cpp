@@ -9,8 +9,6 @@
 
 // STATIC //
 
-QMap<QString, RamAbstractObject*> RamAbstractObject::m_existingObjects = QMap<QString, RamAbstractObject*>();
-
 const QString RamAbstractObject::objectTypeName(ObjectType type)
 {
     switch (type)
@@ -94,15 +92,6 @@ const QString RamAbstractObject::subFolderName(SubFolder folder)
     }
 }
 
-RamAbstractObject *RamAbstractObject::get(QString uuid)
-{
-    if (uuid =="")
-        qDebug() << "<Warning> RamAbstractObject::get(uuid) | UUID is empty!";
-    Q_ASSERT_X(uuid != "", "RamAbstractObject::get(uuid)", "UUID is empty");
-
-    return m_existingObjects.value( uuid, nullptr );
-}
-
 // PUBLIC //
 
 RamAbstractObject::RamAbstractObject(QString shortName, QString name, ObjectType type, bool isVirtual, bool encryptData)
@@ -111,8 +100,6 @@ RamAbstractObject::RamAbstractObject(QString shortName, QString name, ObjectType
     m_objectType = type;
     m_dataEncrypted = encryptData;
     m_virtual = isVirtual;
-
-    m_existingObjects[m_uuid] = this;
 
     if (m_virtual) return;
 
@@ -127,8 +114,6 @@ RamAbstractObject::RamAbstractObject(QString shortName, QString name, ObjectType
 
 RamAbstractObject::~RamAbstractObject()
 {
-    m_existingObjects.remove(m_uuid);
-
     m_settings->deleteLater();
 }
 
@@ -364,8 +349,6 @@ RamAbstractObject::RamAbstractObject(QString uuid, ObjectType type, bool encrypt
     m_uuid = uuid;
     m_objectType = type;
     m_dataEncrypted = encryptData;
-
-    m_existingObjects[m_uuid] = this;
 }
 
 void RamAbstractObject::setDataString(QString data)
@@ -403,4 +386,24 @@ void RamAbstractObject::createData(QString data)
         data = DataCrypto::instance()->clientEncrypt( data );
     }
     DBInterface::instance()->createObject(m_uuid, objectTypeName(), data);
+}
+
+bool RamAbstractObject::checkUuid(QString uuid, ObjectType type)
+{
+    QString table = objectTypeName(type);
+    if (uuid == "")
+        qFatal( "RamAbstractObject::get - getting empty UUID." );
+    Q_ASSERT_X(uuid != "", QString("%1::get").arg(table).toUtf8(), "UUID can't be empty");
+
+    if (uuid == "none") return false;
+
+    // Check if the uuid exists in the DB
+    if (!DBInterface::instance()->contains(uuid, table))
+    {
+        qCritical() << QString("%1::get - This uuid can't be found in the database: %2").arg(table, uuid);
+        // Don't do anything, let the caller handle it
+        return false;
+    }
+
+    return true;
 }

@@ -221,11 +221,11 @@ void LoginPage::loggedIn(RamUser *user)
 
             settings.endArray();
         }
+        ui_connectionStatusLabel->setText("Connected as " + user->name());
     }
 
     ui_loginWidget->hide();
     updateDatabaseRecentList();
-    ui_connectionStatusLabel->setText("Connected as " + user->name());
 
     ui_passwordEdit->setText("");
     if (ui_savePassword->isChecked())

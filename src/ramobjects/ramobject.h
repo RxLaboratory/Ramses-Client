@@ -18,13 +18,6 @@ class RamObject : public QObject, public RamAbstractObject
 public:
 
     // STATIC METHODS //
-
-    /**
-     * @brief object Gets the existing object
-     * @param uuid The object uuid
-     * @param constructNew When true, will construct a new object if it's not already available
-     * @return the object or nullptr if it doesn't exist yet
-     */
     static RamObject *get(QString uuid, ObjectType type);
 
     // METHODS //
