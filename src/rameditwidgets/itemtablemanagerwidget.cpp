@@ -341,7 +341,7 @@ void ItemTableManagerWidget::sortDefault(bool sort)
     uncheckSort();
     ui_actionSortDefault->setChecked(true);
     ui_header->setSortable(false);
-    ui_table->filteredList()->setSortMode(RamItemFilterModel::Default);
+    ui_table->filteredList()->setSortMode(RamObjectList::DefaultSortOrder);
 }
 
 void ItemTableManagerWidget::sortByShortName(bool sort)
@@ -350,7 +350,7 @@ void ItemTableManagerWidget::sortByShortName(bool sort)
     ui_actionSortByShortName->setChecked(sort);
     ui_header->setSortable(sort);
     ui_actionSortDefault->setChecked( !sort );
-    ui_table->filteredList()->setSortMode(RamItemFilterModel::ShortName);
+    ui_table->filteredList()->setSortMode(RamObjectList::ShortName);
 }
 
 void ItemTableManagerWidget::sortByName(bool sort)
@@ -359,7 +359,7 @@ void ItemTableManagerWidget::sortByName(bool sort)
     ui_actionSortByName->setChecked(sort);
     ui_header->setSortable(sort);
     ui_actionSortDefault->setChecked( !sort );
-    ui_table->filteredList()->setSortMode(RamItemFilterModel::Name);
+    ui_table->filteredList()->setSortMode(RamObjectList::Name);
 }
 
 void ItemTableManagerWidget::sortByDifficulty(bool sort)
@@ -368,7 +368,7 @@ void ItemTableManagerWidget::sortByDifficulty(bool sort)
     ui_actionSortByDifficulty->setChecked(sort);
     ui_header->setSortable(sort);
     ui_actionSortDefault->setChecked( !sort );
-    ui_table->filteredList()->setSortMode(RamItemFilterModel::Difficulty);
+    ui_table->filteredList()->setSortMode(RamObjectList::Difficulty);
 }
 
 void ItemTableManagerWidget::sortByTimeSpent(bool sort)
@@ -377,7 +377,7 @@ void ItemTableManagerWidget::sortByTimeSpent(bool sort)
     ui_actionSortByTimeSpent->setChecked(sort);
     ui_header->setSortable(sort);
     ui_actionSortDefault->setChecked( !sort );
-    ui_table->filteredList()->setSortMode(RamItemFilterModel::TimeSpent);
+    ui_table->filteredList()->setSortMode(RamObjectList::TimeSpent);
 }
 
 void ItemTableManagerWidget::sortByEstimation(bool sort)
@@ -386,7 +386,7 @@ void ItemTableManagerWidget::sortByEstimation(bool sort)
     ui_actionSortByEstimation->setChecked(sort);
     ui_header->setSortable(sort);
     ui_actionSortDefault->setChecked( !sort );
-    ui_table->filteredList()->setSortMode(RamItemFilterModel::Estimation);
+    ui_table->filteredList()->setSortMode(RamObjectList::Estimation);
 }
 
 void ItemTableManagerWidget::sortByCompletion(bool sort)
@@ -395,7 +395,7 @@ void ItemTableManagerWidget::sortByCompletion(bool sort)
     ui_actionSortByCompletion->setChecked(sort);
     ui_header->setSortable(sort);
     ui_actionSortDefault->setChecked( !sort );
-    ui_table->filteredList()->setSortMode(RamItemFilterModel::Completion);
+    ui_table->filteredList()->setSortMode(RamObjectList::Completion);
 }
 
 void ItemTableManagerWidget::unassignUser()

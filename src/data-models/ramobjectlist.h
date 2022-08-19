@@ -26,8 +26,8 @@ public:
     enum DataRole {
         Pointer = Qt::UserRole,
         DefaultSortOrder = Qt::UserRole + 1,
-        ItemShortName = Qt::UserRole + 2,
-        ItemName = Qt::UserRole + 3,
+        ShortName = Qt::UserRole + 2,
+        Name = Qt::UserRole + 3,
         Difficulty = Qt::UserRole + 4,
         TimeSpent = Qt::UserRole + 5,
         Estimation = Qt::UserRole + 6,

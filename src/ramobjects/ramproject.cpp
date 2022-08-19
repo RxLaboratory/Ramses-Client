@@ -376,6 +376,7 @@ QString RamProject::folderPath() const
 
 void RamProject::listChanged(RamObjectList *list)
 {
+    Q_UNUSED(list)
     emit dataChanged(this);
 }
 

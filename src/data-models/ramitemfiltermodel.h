@@ -2,7 +2,7 @@
 #define RAMITEMFILTERMODEL_H
 
 #include "ramobjectfiltermodel.h"
-#include "ramabstractitem.h"
+#include "ramstep.h"
 
 /**
  * @brief The RamItemFilterModel class is used to filters items according to current state, step or assigned user.
@@ -12,15 +12,6 @@ class RamItemFilterModel : public RamObjectFilterModel
 {
     Q_OBJECT
 public:
-    enum SortMode {
-        Default = 1,
-        ShortName = 2,
-        Name = 3,
-        Difficulty = 4,
-        TimeSpent = 5,
-        Estimation = 6,
-        Completion = 7
-    };
 
     explicit RamItemFilterModel(QObject *parent = nullptr);
 
@@ -43,8 +34,8 @@ public:
     void showStep(RamObject *s);
     void showAllSteps();
 
-    SortMode sortMode() const;
-    void setSortMode(SortMode newSortMode);
+    RamObjectList::DataRole sortMode() const;
+    void setSortMode(RamObjectList::DataRole newSortMode);
 
 public slots:
     void resort(int col, Qt::SortOrder order = Qt::AscendingOrder);
@@ -71,7 +62,7 @@ private:
 
     bool m_frozen = false;
 
-    SortMode m_sortMode = Default;
+    RamObjectList::DataRole m_sortMode = RamObjectList::DefaultSortOrder;
 };
 
 #endif // RAMITEMFILTERMODEL_H

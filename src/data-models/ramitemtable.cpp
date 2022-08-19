@@ -71,11 +71,11 @@ QVariant RamItemTable::data(const QModelIndex &index, int role) const
     // Get the item
     RamAbstractItem *item = itemAt(row);
 
-    if (role == ItemShortName)
+    if (role == ShortName)
     {
         return item->shortName();
     }
-    else if (role == ItemName )
+    else if (role == Name )
     {
         return item->name();
     }

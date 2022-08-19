@@ -1,6 +1,7 @@
 #include "ramitemfiltermodel.h"
 
 #include "ramstep.h"
+#include "ramabstractitem.h"
 
 RamItemFilterModel::RamItemFilterModel(QObject *parent) : RamObjectFilterModel(parent)
 {
@@ -188,16 +189,15 @@ RamStep *RamItemFilterModel::step(int column) const
     return nullptr;
 }
 
-RamItemFilterModel::SortMode RamItemFilterModel::sortMode() const
+RamObjectList::DataRole RamItemFilterModel::sortMode() const
 {
     return m_sortMode;
 }
 
-void RamItemFilterModel::setSortMode(SortMode newSortMode)
+void RamItemFilterModel::setSortMode(RamObjectList::DataRole newSortMode)
 {
     m_sortMode = newSortMode;
-    if (m_sortMode == Default) this->setSortRole(Qt::InitialSortOrderRole);
-    else this->setSortRole(Qt::UserRole + m_sortMode);
+    this->setSortRole(newSortMode);
 }
 
 void RamItemFilterModel::resort(int col, Qt::SortOrder order)

@@ -106,6 +106,8 @@ QVariant RamObjectList::data(const QModelIndex &index, int role) const
     // Pass the pointer as an int to our delegate
     RamObject *obj = m_objectList.at(index.row());
 
+    if (!obj) return QVariant();
+
     if (role == Qt::DisplayRole) return obj->name();
 
     if (role == Qt::StatusTipRole)
@@ -133,6 +135,21 @@ QVariant RamObjectList::data(const QModelIndex &index, int role) const
     }
 
     if (role == Pointer) return reinterpret_cast<quintptr>(obj);
+
+    if (role == ShortName) return obj->shortName();
+
+    if (role == Name) return obj->name();
+
+    if (role == DefaultSortOrder) return row;
+
+    if (role == Difficulty || role == TimeSpent || role == Estimation || role == Completion) {
+        RamStatus *s = RamStatus::c( obj );
+        if (!s) return QVariant();
+        if (role == Difficulty) return s->difficulty();
+        if (role == TimeSpent) return s->timeSpent();
+        if (role == Estimation) return s->estimation();
+        if (role == Completion) return s->completionRatio();
+    }
 
     return QVariant();
 }
