@@ -59,6 +59,7 @@ protected:
     QColor m_medium;
     QColor m_lessLight;
     QColor m_light;
+    QColor m_transparent;
     QFont m_textFont;
     QFont m_detailsFont;
     int m_padding;

@@ -30,50 +30,42 @@ PaintParameters RamObjectDelegate::getPaintParameters(const QStyleOptionViewItem
                 );
 
     // Colors
+    params.textColor = obj->color();
+    params.detailsColor = m_medium;
+    params.bgColor = m_transparent;
     bool mustBeDark = false;
     if (obj)
     {
-        switch (obj->objectType())
-        {
-        case RamObject::Status:
+        if (obj->objectType() == RamObject::Status)
         {
             RamStatus *status = RamStatus::c(obj);
             if (status->isNoState())
             {
                 mustBeDark = true;
-                params.bgColor = QColor(0,0,0,0);
                 params.textColor = m_dark;
                 params.detailsColor = m_dark;
             }
-            break;
         }
-        case RamObject::State:
+        else if (obj->objectType() == RamObject::State)
         {
-            params.bgColor = m_dark;
             params.textColor = obj->color();
             params.detailsColor = m_medium;
             if (m_comboBox) params.textColor = QColor(150,150,150);
         }
-        default:
-        {
-            params.bgColor = m_dark;
-            params.textColor = obj->color();
-            params.detailsColor = m_medium;
-        }
-        }
     }
     else
     {
-        params.bgColor = m_dark;
         params.textColor = m_lessLight;
         params.detailsColor = m_medium;
     }
+
 
     if (params.textColor.lightness() < 150 && !mustBeDark) params.textColor.setHsl( params.textColor.hue(), params.textColor.saturation(), 150);
 
     if (option.state & QStyle::State_MouseOver)
     {
         params.bgColor = params.bgColor.lighter(120);
+        params.bgColor.setAlpha(255);
         params.detailsColor = params.detailsColor.lighter(120);
         params.textColor = params.textColor.lighter(120);
     }
@@ -81,7 +73,7 @@ PaintParameters RamObjectDelegate::getPaintParameters(const QStyleOptionViewItem
     if (option.state & QStyle::State_Selected)
     {
         params.bgColor = params.bgColor.darker();
-        params.textColor = params.textColor.lighter(150);
+        params.bgColor.setAlpha(255);
     }
 
     return params;
@@ -414,6 +406,8 @@ RamObjectDelegate::RamObjectDelegate(QObject *parent)
     m_medium = DuUI::getColor("medium-grey");
     m_lessLight = DuUI::getColor("less-light-grey");
     m_light = DuUI::getColor("light-grey");
+    m_transparent = DuUI::getColor("dark-grey");
+    m_transparent.setAlpha(0);
     m_textFont = qApp->font();
     m_textFont.setPixelSize( DuUI::getSize("font", "size-medium"));
     m_detailsFont = m_textFont;
@@ -465,11 +459,18 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
 {
     RamObject *obj = RamObjectList::at(index);
 
+    bool isNoState = false;
+    if (obj->objectType() == RamObject::Status)
+    {
+        RamStatus *s = RamStatus::c( obj );
+        isNoState = s->isNoState();
+    }
+
     // Base
     PaintParameters params = getPaintParameters(option, obj);
 
     // BG
-    paintBG(painter, &params);
+    if (!isNoState) paintBG(painter, &params);
 
     // no more room, finished
     if (params.bgRect.height() < 26 ) return;
@@ -487,12 +488,14 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
         painter->drawPixmap( params.iconRect, pm );
     }
 
-
     // Title
     paintTitle(obj, painter, &params);
 
     // Draw buttons
     paintButtons(obj, painter, &params, index);
+
+    // Don' draw any detail when NO
+    if (isNoState) return;
 
     // Draw details
     paintDetails(obj, painter, &params);

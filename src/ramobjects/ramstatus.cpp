@@ -162,7 +162,6 @@ RamAbstractItem *RamStatus::item() const
 
 bool RamStatus::isNoState() const
 {
-    if (!state()) return true;
     RamState *noState = Ramses::instance()->noState();
     return noState->is(state());
 }
