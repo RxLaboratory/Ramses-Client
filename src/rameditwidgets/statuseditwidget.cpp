@@ -264,7 +264,7 @@ void StatusEditWidget::setAutoEstimation(bool a)
 void StatusEditWidget::setTimeSpent(int t)
 {
     if (!m_status) return;
-    m_status->setTimeSpent(t);
+    m_status->setTimeSpent(t*3600);
 
     float days = RamStatus::hoursToDays(t);
     ui_timeSpent->setSuffix(" hours (" + QString::number(days, 'f', 2) + " days)");
