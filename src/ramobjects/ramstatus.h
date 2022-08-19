@@ -65,7 +65,7 @@ public:
     void setPublished(bool published);
 
     RamUser *assignedUser() const;
-    void assignUser(RamObject *assignedUser);
+    void assignUser(RamObject *user);
 
     qint64 timeSpent() const; // seconds
     void setTimeSpent(const float &ts);

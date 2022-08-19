@@ -101,5 +101,5 @@ void RamScheduleEntry::construct()
 
 void RamScheduleEntry::connectEvents()
 {
-    connect(m_user,SIGNAL(removed(RamObject*)), this, SLOT(remove()));
+    connect(m_user, &RamUser::removed, this, &RamScheduleEntry::remove);
 }

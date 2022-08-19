@@ -30,7 +30,7 @@ PaintParameters RamObjectDelegate::getPaintParameters(const QStyleOptionViewItem
                 );
 
     // Colors
-    params.textColor = obj->color();
+    params.textColor = m_lessLight;
     params.detailsColor = m_medium;
     params.bgColor = m_transparent;
     bool mustBeDark = false;
@@ -52,13 +52,11 @@ PaintParameters RamObjectDelegate::getPaintParameters(const QStyleOptionViewItem
             params.detailsColor = m_medium;
             if (m_comboBox) params.textColor = QColor(150,150,150);
         }
+        else
+        {
+            params.textColor = obj->color();
+        }
     }
-    else
-    {
-        params.textColor = m_lessLight;
-        params.detailsColor = m_medium;
-    }
-
 
     if (params.textColor.lightness() < 150 && !mustBeDark) params.textColor.setHsl( params.textColor.hue(), params.textColor.saturation(), 150);
 
@@ -244,8 +242,6 @@ void RamObjectDelegate::paintDetails(RamObject *obj, QPainter *painter, PaintPar
         // If no state, nothing else to draw
         if (RamStatus::c(obj)->isNoState()) return;
     }
-
-    painter->drawPixmap( params->iconRect, QIcon(obj->icon()).pixmap(QSize(12,12)));
 
     // State and status have a progress bar
     if (obj->objectType() == RamObject::State)
@@ -460,17 +456,17 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
     RamObject *obj = RamObjectList::at(index);
 
     bool isNoState = false;
-    if (obj->objectType() == RamObject::Status)
+    if (obj && obj->objectType() == RamObject::Status)
     {
         RamStatus *s = RamStatus::c( obj );
-        isNoState = s->isNoState();
+        if (s) isNoState = s->isNoState();
     }
 
     // Base
     PaintParameters params = getPaintParameters(option, obj);
 
     // BG
-    if (!isNoState) paintBG(painter, &params);
+    paintBG(painter, &params);
 
     // no more room, finished
     if (params.bgRect.height() < 26 ) return;

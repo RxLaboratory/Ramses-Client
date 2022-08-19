@@ -236,13 +236,13 @@ RamUser *RamStatus::assignedUser() const
     return RamUser::get( getData("assignedUser").toString("none") );
 }
 
-void RamStatus::assignUser(RamObject *assignedUser)
+void RamStatus::assignUser(RamObject *user)
 {
-    disconnect(assignedUser, nullptr, this, nullptr);
-    if (!assignedUser) insertData("assignedUser", "none");
+    disconnect(assignedUser(), nullptr, this, nullptr);
+    if (!user) insertData("assignedUser", "none");
     else {
-        insertData("assignedUser", assignedUser->uuid());
-        connect(assignedUser, SIGNAL(removed(RamObject*)), this, SLOT(assignedUserRemoved()));
+        insertData("assignedUser", user->uuid());
+        connect(user, SIGNAL(removed(RamObject*)), this, SLOT(assignedUserRemoved()));
     }
 }
 

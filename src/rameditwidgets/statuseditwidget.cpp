@@ -29,6 +29,17 @@ void StatusEditWidget::reInit(RamObject *o)
     m_status = qobject_cast<RamStatus*>(o);
     if (m_status)
     {
+        QSignalBlocker b1(ui_userBox);
+        QSignalBlocker b2(ui_stateBox);
+        QSignalBlocker b3(ui_completionBox);
+        QSignalBlocker b4(ui_versionBox);
+        QSignalBlocker b5(ui_statusCommentEdit);
+        QSignalBlocker b6(ui_folderWidget);
+        QSignalBlocker b7(ui_publishedBox);
+        QSignalBlocker b8(ui_difficultyBox);
+        QSignalBlocker b9(ui_autoEstimationBox);
+        QSignalBlocker b10(ui_timeSpent);
+
         // Get users from project
         RamProject *project = nullptr;
         if (m_status->item()) project = m_status->item()->project();
