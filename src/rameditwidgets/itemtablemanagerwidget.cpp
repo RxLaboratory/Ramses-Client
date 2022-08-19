@@ -1095,8 +1095,8 @@ void ItemTableManagerWidget::setupItemMenu()
 void ItemTableManagerWidget::setupTable()
 {
     ui_table->filteredList()->setStepType(m_productionType);
-    if (m_productionType == RamStep::ShotProduction)
-        ui_table->setSortable(true);
+    //if (m_productionType == RamStep::ShotProduction)
+    ui_table->setSortable(true);
 }
 
 QList<RamStatus *> ItemTableManagerWidget::beginEditSelectedStatus()
