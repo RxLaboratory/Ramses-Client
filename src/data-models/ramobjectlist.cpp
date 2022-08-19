@@ -72,7 +72,6 @@ RamObjectList::RamObjectList(QString uuid, QObject *parent, ObjectType listType)
 
     m_contentType = objectTypeFromName( getData("type").toString() );
 
-    // Populate the list
     reload();
 }
 

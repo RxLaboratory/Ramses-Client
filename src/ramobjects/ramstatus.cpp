@@ -128,7 +128,7 @@ RamStatus::RamStatus(QString uuid):
     construct();
 
     QJsonObject d = data();
-    m_user = RamUser::get( d.value("user").toString() );
+    m_user = RamUser::get( d.value("user").toString("none") );
 
     QString itemType = d.value("itemType").toString("asset");
     QString itemUuid = d.value("item").toString();

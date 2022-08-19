@@ -8,6 +8,11 @@ DBInterface *DBInterface::instance()
     return _instance;
 }
 
+bool DBInterface::isReady() const
+{
+    return m_ldi->isReady();
+}
+
 void DBInterface::setOffline(QString reason)
 {
     // Disconnects from the Ramses Server and change connection status

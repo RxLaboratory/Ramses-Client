@@ -23,6 +23,7 @@ public slots:
     void setDataFile(QString f);
     QSqlQuery query(QString q);
 signals:
+    void queryFinished(QString q);
     void ready(QSqlQuery);
     void error(QString);
 private:
@@ -42,6 +43,8 @@ public:
      */
     static LocalDataInterface *instance();
 
+    bool isReady() const;
+
     /**
      * @brief setServerSettings updates the server settings for a given database
      * @param dbFile The database to update
@@ -58,7 +61,7 @@ public:
      * @param password
      * @return The user uuid if successful, empty string otherwise
      */
-    QString login(QString username, QString password) const;
+    QString login(QString username, QString password);
 
     /**
      * @brief setRamsesPath sets the path to the local data for this database
@@ -68,21 +71,21 @@ public:
 
     // DATA INTERFACE //
 
-    QStringList tableData(QString table) const;
-    bool contains(QString uuid, QString table) const;
+    QStringList tableData(QString table);
+    bool contains(QString uuid, QString table);
 
     void createObject(QString uuid, QString table, QString data);
 
-    QString objectData(QString uuid, QString table) const;
+    QString objectData(QString uuid, QString table);
     void setObjectData(QString uuid, QString table, QString data);
 
     void removeObject(QString uuid, QString table);
     void restoreObject(QString uuid, QString table);
-    bool isRemoved(QString uuid, QString table) const;
+    bool isRemoved(QString uuid, QString table);
 
     void setUsername(QString uuid, QString username);
 
-    ServerConfig serverConfig() const;
+    ServerConfig serverConfig();
 
     const QString &dataFile() const;
     ServerConfig setDataFile(const QString &file);
@@ -91,12 +94,16 @@ signals:
     void dataReset();
     void newQuery(QString);
     void newDataFile(QString);
+    // emitted when all save queries have terminated
+    // (everything's been written and it's safe to get data again)
+    void ready();
 
 protected:
     static LocalDataInterface *_instance;
 
 private slots:
     void logError(QString err);
+    void finishQuery(QString q);
 
 private:
     /**
@@ -105,7 +112,7 @@ private:
      */
     LocalDataInterface();
 
-    QSqlQuery query(QString q) const;
+    QSqlQuery query(QString q);
     void threadedQuery(QString q);
 
     /**
@@ -115,6 +122,7 @@ private:
     QThread m_queryThread;
     Querier *m_tQuerier;
     Querier *m_querier;
+    QStringList m_activeQueries;
 };
 
 #endif // LOCALDATAINTERFACE_H

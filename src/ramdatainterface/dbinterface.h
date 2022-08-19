@@ -33,6 +33,8 @@ public:
      */
     static DBInterface *instance();
 
+    bool isReady() const;
+
     /**
      * @brief The current status (offline or online, maybe connecting)
      * @return

@@ -351,11 +351,20 @@ RamAbstractObject::RamAbstractObject(QString uuid, ObjectType type, bool encrypt
     m_uuid = uuid;
     m_objectType = type;
     m_dataEncrypted = encryptData;
+
+    // cache the data
+    m_cachedData = dataString();
+    if (type == User)
+        qDebug() << m_cachedData;
 }
 
 void RamAbstractObject::setDataString(QString data)
 {
     if (m_virtual) return;
+
+    // Cache the data to improve performance
+    m_cachedData = data;
+
     if (m_dataEncrypted)
     {
         data = DataCrypto::instance()->clientEncrypt( data );
@@ -372,21 +381,32 @@ void RamAbstractObject::setDataString(QString data)
 
 QString RamAbstractObject::dataString() const
 {
+    // If we have cached the data already, return it
+    if (m_cachedData != "") return m_cachedData;
+
     QString dataStr = DBInterface::instance()->objectData(m_uuid, objectTypeName());
     if (dataStr == "") return "";
     // Decrypt
     if (m_dataEncrypted) dataStr = DataCrypto::instance()->clientDecrypt( dataStr );
-    //qDebug() << dataStr;
+
+    // Cache the data to improve performance
+    //m_cachedData = data;
+
     return dataStr;
 }
 
 void RamAbstractObject::createData(QString data)
 {
     if (m_virtual) return;
+
+    // Cache the data to improve performance
+    m_cachedData = data;
+
     if (m_dataEncrypted)
     {
         data = DataCrypto::instance()->clientEncrypt( data );
     }
+
     DBInterface::instance()->createObject(m_uuid, objectTypeName(), data);
 }
 

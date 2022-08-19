@@ -24,6 +24,7 @@ public:
     // User
     RamUser *login(QString username, QString password);
     RamUser *loginHashed(QString username, QString hashedPassword);
+    void setUser(RamUser *u);
     void logout(QString reason="");
 
     // Tree base

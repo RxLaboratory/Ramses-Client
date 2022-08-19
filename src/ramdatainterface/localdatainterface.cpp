@@ -24,7 +24,11 @@ void Querier::setDataFile(QString f)
 
 QSqlQuery Querier::query(QString q)
 {
-    if (m_dataFile =="") return QSqlQuery();
+    if (m_dataFile =="")
+    {
+        emit queryFinished(q);
+        return QSqlQuery();
+    }
 
     //Load local database
     QSqlDatabase db = QSqlDatabase::database(m_dbName);
@@ -42,10 +46,11 @@ QSqlQuery Querier::query(QString q)
         errorMessage += "\n> " + tr("Database Error:") + "\n" + qry.lastError().databaseText();
         errorMessage += "\n> " + tr("Driver Error:") + "\n" + qry.lastError().driverText();
         emit error(errorMessage);
+        emit queryFinished(q);
         return QSqlQuery();
     }
-
     emit ready(qry);
+    emit queryFinished(q);
     return qry;
 }
 
@@ -57,6 +62,11 @@ LocalDataInterface *LocalDataInterface::instance()
 {
     if (!_instance) _instance = new LocalDataInterface();
     return _instance;
+}
+
+bool LocalDataInterface::isReady() const
+{
+    return m_activeQueries.isEmpty();
 }
 
 void LocalDataInterface::setServerSettings(QString dbFile, ServerConfig c)
@@ -145,7 +155,7 @@ ServerConfig LocalDataInterface::getServerSettings(QString dbFile)
     return s;
 }
 
-QString LocalDataInterface::login(QString username, QString password) const
+QString LocalDataInterface::login(QString username, QString password)
 {
     username.replace("'", "''");
 
@@ -219,7 +229,7 @@ void LocalDataInterface::setRamsesPath(QString p)
 
 }
 
-QStringList LocalDataInterface::tableData(QString table) const
+QStringList LocalDataInterface::tableData(QString table)
 {
     QString q = "SELECT uuid FROM '%1' WHERE removed = 0;";
     QSqlQuery qry = query( q.arg(table) );
@@ -231,7 +241,7 @@ QStringList LocalDataInterface::tableData(QString table) const
     return data;
 }
 
-bool LocalDataInterface::contains(QString uuid, QString table) const
+bool LocalDataInterface::contains(QString uuid, QString table)
 {
     QString q = "SELECT uuid FROM '%1' WHERE uuid = '%2' AND removed = 0;";
     q = q.arg(table, uuid);
@@ -261,7 +271,7 @@ void LocalDataInterface::createObject(QString uuid, QString table, QString data)
             );
 }
 
-QString LocalDataInterface::objectData(QString uuid, QString table) const
+QString LocalDataInterface::objectData(QString uuid, QString table)
 {
     QString q = "SELECT data FROM %1 WHERE uuid = '%2';";
     QSqlQuery qry = query( q.arg(table, uuid) );
@@ -297,7 +307,7 @@ void LocalDataInterface::restoreObject(QString uuid, QString table)
     threadedQuery( q.arg(table, uuid) );
 }
 
-bool LocalDataInterface::isRemoved(QString uuid, QString table) const
+bool LocalDataInterface::isRemoved(QString uuid, QString table)
 {
     QString q = "SELECT removed FROM %1 WHERE uuid = '%2';";
     QSqlQuery qry = query( q.arg(table, uuid) );
@@ -323,7 +333,7 @@ void LocalDataInterface::setUsername(QString uuid, QString username)
     threadedQuery( q.arg(username, modified.toString("yyyy-MM-dd hh:mm:ss:zzz"), uuid) );
 }
 
-ServerConfig LocalDataInterface::serverConfig() const
+ServerConfig LocalDataInterface::serverConfig()
 {
     QString q = "SELECT address, useSsl, updateDelay, timeout FROM RamServer;";
     QSqlQuery qry = query( q );
@@ -368,6 +378,14 @@ void LocalDataInterface::logError(QString err)
     log(err, DuQFLog::Critical);
 }
 
+void LocalDataInterface::finishQuery(QString q)
+{
+    m_activeQueries.removeOne(q);
+    if (m_activeQueries.isEmpty()) {
+        emit ready();
+    }
+}
+
 LocalDataInterface::LocalDataInterface() :
     DuQFLoggerObject("Local Data Interface")
 {
@@ -379,6 +397,7 @@ LocalDataInterface::LocalDataInterface() :
     connect(m_tQuerier, &Querier::error, this, &LocalDataInterface::logError);
     connect(this, &LocalDataInterface::newQuery, m_tQuerier, &Querier::query);
     connect(this, &LocalDataInterface::newDataFile, m_tQuerier, &Querier::setDataFile);
+    connect(m_tQuerier, &Querier::queryFinished, this, &LocalDataInterface::finishQuery);
 
     QSqlDatabase editdb = QSqlDatabase::addDatabase("QSQLITE","editdb");
     editdb.setHostName("localhost");
@@ -386,7 +405,7 @@ LocalDataInterface::LocalDataInterface() :
     m_queryThread.start();
 }
 
-QSqlQuery LocalDataInterface::query(QString q) const
+QSqlQuery LocalDataInterface::query(QString q)
 {
     return m_querier->query(q);
 }
@@ -394,5 +413,6 @@ QSqlQuery LocalDataInterface::query(QString q) const
 void LocalDataInterface::threadedQuery(QString q)
 {
     emit newQuery(q);
+    m_activeQueries << q;
 }
 

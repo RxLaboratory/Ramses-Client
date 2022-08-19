@@ -215,6 +215,7 @@ protected:
     ObjectType m_objectType;
     bool m_virtual = false;
     bool m_dataEncrypted = false;
+    QString m_cachedData = "";
 
 private:
     QSettings *m_settings = nullptr;

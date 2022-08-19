@@ -26,6 +26,7 @@ RamUser *Ramses::login(QString username, QString password)
 RamUser *Ramses::loginHashed(QString username, QString hashedPassword)
 {
     QString uuid = m_dbi->login(username, hashedPassword);
+    qDebug() << uuid;
 
     if (uuid == "")
     {
@@ -35,7 +36,15 @@ RamUser *Ramses::loginHashed(QString username, QString hashedPassword)
     }
 
     // Set current user
-    m_currentUser = RamUser::get(uuid);
+    RamUser *u = RamUser::get(uuid);
+    setUser( u );
+    return u;
+}
+
+void Ramses::setUser(RamUser *u)
+{
+    if (!u) return;
+    m_currentUser = u;
 
     // Set current project
     if (m_currentUser)
@@ -49,7 +58,6 @@ RamUser *Ramses::loginHashed(QString username, QString hashedPassword)
     emit loggedIn(m_currentUser);
 
     qDebug() << "Logged in: " + m_currentUser->name();
-    return m_currentUser;
 }
 
 void Ramses::logout(QString reason)

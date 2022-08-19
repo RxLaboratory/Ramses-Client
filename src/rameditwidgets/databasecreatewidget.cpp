@@ -84,12 +84,7 @@ void DatabaseCreateWidget::createDB()
         Ramses::instance()->users()->append(newUser);
 
         // Login
-        RamUser *currentUser = Ramses::instance()->login(ui_shortNameEdit->text(), ui_npassword1Edit->text());
-        if (!currentUser)
-        {
-            QMessageBox::warning(this, tr("I can't log in"), tr("I'm sorry, I can't log in after the database creation.\nThat's probably a bug...") );
-            return;
-        }
+        Ramses::instance()->setUser( newUser );
 
         // Hide dock
         MainWindow *mw = (MainWindow*)GuiUtils::appMainWindow();
