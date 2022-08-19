@@ -49,6 +49,8 @@ RamObject *RamObject::get(QString uuid, ObjectType type)
     case Item: return nullptr;
     case Object: return nullptr;
     }
+
+    return nullptr;
 }
 
 RamObject::RamObject(QString shortName, QString name, ObjectType type, QObject *parent, bool isVirtual, bool encryptData):

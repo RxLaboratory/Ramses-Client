@@ -37,6 +37,7 @@ const QString RamAbstractObject::objectTypeName(ObjectType type)
     case Ramses: return "Ramses";
     case ItemTable: return "RamItemTable";
     }
+    return "RamObject";
 }
 
 RamAbstractObject::ObjectType RamAbstractObject::objectTypeFromName(QString name)
@@ -90,6 +91,7 @@ const QString RamAbstractObject::subFolderName(SubFolder folder)
     case DataFolder: return "_data";
     case NoFolder: return "";
     }
+    return "";
 }
 
 // PUBLIC //

@@ -138,6 +138,7 @@ QString RamTemplateStep::iconName() const
     case All:
         return ":/icons/step";
     }
+    return ":/icons/step";
 }
 
 QString RamTemplateStep::details() const
@@ -155,6 +156,7 @@ QString RamTemplateStep::details() const
     case All:
         return "";
     }
+    return "";
 }
 
 void RamTemplateStep::edit(bool show)

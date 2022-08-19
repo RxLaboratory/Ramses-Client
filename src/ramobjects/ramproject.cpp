@@ -144,7 +144,7 @@ QDate RamProject::deadline() const
 
 void RamProject::setDeadline(const QDate &newDeadline)
 {
-    insertData("deadline", newDeadline.toString("yyy-MM-dd"));
+    insertData("deadline", newDeadline.toString("yyyy-MM-dd"));
 }
 
 double RamProject::duration() const
@@ -376,7 +376,6 @@ QString RamProject::folderPath() const
 
 void RamProject::listChanged(RamObjectList *list)
 {
-    qDebug() << ">>>>>>>>>>> Data changed for " + list->name();
     emit dataChanged(this);
 }
 

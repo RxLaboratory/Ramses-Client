@@ -248,7 +248,7 @@ void RamStatus::assignUser(RamObject *user)
 
 qint64 RamStatus::timeSpent() const
 {
-    if (m_virtual) 0;
+    if (m_virtual) return 0;
     qint64 ts = getData("timeSpent").toInt();
     if (ts == 0)
     {
@@ -284,6 +284,7 @@ RamStatus::Difficulty RamStatus::difficulty() const
     else if (dffclt == "medium") return Medium;
     else if (dffclt == "hard") return Hard;
     else if (dffclt == "veryHard") return VeryHard;
+    return Medium;
 }
 
 void RamStatus::setDifficulty(Difficulty newDifficulty)

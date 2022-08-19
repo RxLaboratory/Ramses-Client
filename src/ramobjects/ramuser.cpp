@@ -149,6 +149,7 @@ QString RamUser::iconName() const
     case Standard:
         return ":/icons/user";
     }
+    return ":/icons/user";
 }
 
 QString RamUser::details() const
@@ -164,6 +165,7 @@ QString RamUser::details() const
     case Standard:
         return "Standard User";
     }
+    return "User";
 }
 
 // PUBLIC SLOTS //

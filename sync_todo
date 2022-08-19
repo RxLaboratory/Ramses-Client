@@ -5,7 +5,6 @@
 	- implement order in tables
 	- list widths
 	- add color to asset groups (and assets, like shots, override ramabstractobject color)
-	- set default estimations
 	- recreate defaults (templates, states...) in included db
 	
 5A - Move all settings to database? see later
