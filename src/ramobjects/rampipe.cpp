@@ -124,7 +124,7 @@ void RamPipe::getCreateLists()
     QJsonObject d = data();
 
     QString uuid = d.value("pipeFiles").toString();
-    if (uuid == "") m_pipeFiles = new RamObjectList("pipeFiles", "Files", FileType, RamObjectList::ListObject, this);
+    if (uuid == "") m_pipeFiles = new RamObjectList("pipeFiles", "Files", PipeFile, RamObjectList::ListObject, this);
     else m_pipeFiles = RamObjectList::get( uuid );
     m_pipeFiles->setParent(this);
     d.insert("pipeFiles", m_pipeFiles->uuid());
