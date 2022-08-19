@@ -376,7 +376,7 @@ QString RamProject::folderPath() const
 
 void RamProject::listChanged(RamObjectList *list)
 {
-    Q_UNUSED(list)
+    Q_UNUSED(list);
     emit dataChanged(this);
 }
 
@@ -458,6 +458,15 @@ void RamProject::getCreateLists()
     connect(m_pipeline, &RamObjectList::listChanged, this, &RamProject::listChanged);
     connect(m_sequences, &RamObjectList::listChanged, this, &RamProject::listChanged);
     connect(m_assetGroups, &RamObjectList::listChanged, this, &RamProject::listChanged);
+    connect(m_steps, &RamObjectList::listChanged, this, &RamProject::listChanged);
+
+    // Connect assets and shots to steps
+    connect(m_steps, &RamObjectList::rowsInserted, m_assets, &RamItemTable::newSteps);
+    connect(m_steps, &RamObjectList::rowsInserted, m_shots, &RamItemTable::newSteps);
+    connect(m_steps, &RamObjectList::rowsRemoved, m_assets, &RamItemTable::removeSteps);
+    connect(m_steps, &RamObjectList::rowsRemoved, m_shots, &RamItemTable::removeSteps);
+    connect(m_steps, &RamObjectList::rowsMoved, m_assets, &RamItemTable::moveSteps);
+    connect(m_steps, &RamObjectList::rowsMoved, m_shots, &RamItemTable::moveSteps);
 
     setData(d);
 }

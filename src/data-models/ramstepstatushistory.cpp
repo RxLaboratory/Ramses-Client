@@ -50,6 +50,7 @@ RamStepStatusHistory::RamStepStatusHistory(QString uuid, QObject *parent):
 
 
     m_step = RamStep::get(d.value("step").toString() );
+
     RamStep::Type t = m_step->type();
     if (t == RamStep::ShotProduction) m_item = RamShot::get(d.value("item").toString() );
     else m_item = RamAsset::get(d.value("item").toString() );

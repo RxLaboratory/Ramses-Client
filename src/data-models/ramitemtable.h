@@ -24,6 +24,12 @@ public:
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
 
+public slots:
+    // Used by RamProject to warn us the list of steps have changed
+    void newSteps(const QModelIndex &parent, int first, int last);
+    void removeSteps(const QModelIndex &parent, int first, int last);
+    void moveSteps(const QModelIndex &parent, int first, int last, const QModelIndex &dest, int destRow);
+
 protected:
     static QMap<QString, RamItemTable*> m_existingObjects;
     RamItemTable(QString uuid, QObject *parent = nullptr);
@@ -43,6 +49,7 @@ private:
     void updateStepList() const;
     // Utils
     RamAbstractItem *itemAt(int row) const;
+    RamProject *project() const;
     RamStep *stepAt(int col) const;
     int stepCol(RamStep *step) const;
 };

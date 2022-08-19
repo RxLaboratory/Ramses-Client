@@ -44,13 +44,9 @@ int RamItemTable::columnCount(const QModelIndex &parent) const
 
     if (m_objectList.isEmpty()) return 0;
 
-    RamAbstractItem *item = itemAt(0);
-    Q_ASSERT(item);
+    RamProject *p = project();
 
-    RamProject *p = item->project();
-    Q_ASSERT(p);
-
-    return p->steps()->rowCount();
+    return p->steps()->rowCount() + 1;
 }
 
 QVariant RamItemTable::data(const QModelIndex &index, int role) const
@@ -177,6 +173,24 @@ QVariant RamItemTable::headerData(int section, Qt::Orientation orientation, int 
     return QAbstractTableModel::headerData(section, orientation, role);
 }
 
+void RamItemTable::newSteps(const QModelIndex &parent, int first, int last)
+{
+    beginInsertColumns(parent, first+1, last+1);
+    endInsertColumns();
+}
+
+void RamItemTable::removeSteps(const QModelIndex &parent, int first, int last)
+{
+    beginRemoveColumns(parent, first+1, last+1);
+    endRemoveColumns();
+}
+
+void RamItemTable::moveSteps(const QModelIndex &parent, int first, int last, const QModelIndex &dest, int destRow)
+{
+    beginMoveColumns(parent, first+1, last+1, dest, destRow+1);
+    endMoveColumns();
+}
+
 // PRIVATE SLOTS //
 
 void RamItemTable::removeItem(const QModelIndex &parent, int first, int last)
@@ -239,7 +253,7 @@ RamAbstractItem *RamItemTable::itemAt(int row) const
     else return RamAsset::c( m_objectList.at(row ) );
 }
 
-RamStep *RamItemTable::stepAt(int col) const
+RamProject *RamItemTable::project() const
 {
     if (m_objectList.isEmpty()) return nullptr;
 
@@ -249,6 +263,15 @@ RamStep *RamItemTable::stepAt(int col) const
     RamProject *p = item->project();
     Q_ASSERT(p);
 
+    return p;
+}
+
+RamStep *RamItemTable::stepAt(int col) const
+{
+    if (m_objectList.isEmpty()) return nullptr;
+
+    RamProject *p = project();
+
     RamObject *o = p->steps()->at(col-1);
     return RamStep::c( o );
 }
@@ -257,11 +280,7 @@ int RamItemTable::stepCol(RamStep *step) const
 {
     if (m_objectList.isEmpty()) return -1;
 
-    RamAbstractItem *item = itemAt(0);
-    Q_ASSERT(item);
-
-    RamProject *p = item->project();
-    Q_ASSERT(p);
+    RamProject *p = project();
 
     for (int i = 0; i < p->steps()->rowCount(); i++)
     {

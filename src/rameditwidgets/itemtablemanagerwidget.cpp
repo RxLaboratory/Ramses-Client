@@ -225,7 +225,7 @@ void ItemTableManagerWidget::showUser(RamObject *user, bool s)
 void ItemTableManagerWidget::showStep(RamObject *step, bool s)
 {
     if(!m_project) return;
-    if(s)
+    if (s)
     {
         ui_table->filteredList()->showStep( step );
         ui_table->resizeColumnsToContents();

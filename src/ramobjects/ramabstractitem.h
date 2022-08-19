@@ -59,6 +59,8 @@ private slots:
 private:
     void construct();
     void setProject(RamProject *proj);
+    // Saves the list of histories
+    void saveHistory();
     // Monitors changes to emit statusChanged
     void connectHistory(RamStepStatusHistory *history);
 

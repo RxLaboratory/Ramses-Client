@@ -19,7 +19,7 @@ RamAbstractItem::RamAbstractItem(QString uuid, ObjectType type):
 
     QJsonObject d = data();
 
-    // Get the status history
+    // Get (and clean) the status history
     QJsonObject history = d.value("statusHistory").toObject();
     QStringList stepUuids = history.keys();
     for (int i = 0; i < stepUuids.count(); i++)
@@ -29,10 +29,19 @@ RamAbstractItem::RamAbstractItem(QString uuid, ObjectType type):
         RamStepStatusHistory *stepHistory = RamStepStatusHistory::get(historyUuid);
         if (stepHistory)
         {
+            if ((stepHistory->step()->type() != RamStep::ShotProduction && type == Shot) ||
+                (stepHistory->step()->type() != RamStep::AssetProduction && type == Asset) )
+            {
+                stepHistory->remove();
+                stepHistory->deleteLater();
+                continue;
+            }
+
             m_history[ stepUuid ] = stepHistory;
             connectHistory(stepHistory);
         }
     }
+    saveHistory();
 }
 
 RamProject *RamAbstractItem::project() const
@@ -55,14 +64,7 @@ RamStepStatusHistory *RamAbstractItem::statusHistory(RamObject *stepObj)
         RamStep *step = RamStep::c( stepObj );
         stepHistory = new RamStepStatusHistory(step, this);
         m_history[step->uuid()] = stepHistory;
-        QJsonObject history;
-        QMapIterator<QString, RamStepStatusHistory*> i(m_history);
-        while (i.hasNext())
-        {
-            i.next();
-            history.insert(i.key(), i.value()->uuid());
-        }
-        insertData("statusHistory", history);
+        saveHistory();
         connectHistory(stepHistory);
     }
     return stepHistory;
@@ -220,6 +222,18 @@ void RamAbstractItem::setProject(RamProject *proj)
 {
     insertData("project", proj->uuid());
     setParent(proj);
+}
+
+void RamAbstractItem::saveHistory()
+{
+    QJsonObject history;
+    QMapIterator<QString, RamStepStatusHistory*> i(m_history);
+    while (i.hasNext())
+    {
+        i.next();
+        history.insert(i.key(), i.value()->uuid());
+    }
+    insertData("statusHistory", history);
 }
 
 void RamAbstractItem::connectHistory(RamStepStatusHistory *history)
