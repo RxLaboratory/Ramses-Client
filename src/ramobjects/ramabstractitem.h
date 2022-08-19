@@ -54,7 +54,7 @@ protected:
     RamAbstractItem(QString uuid, ObjectType type);
 
 private slots:
-    void latestStatusChanged(RamStepStatusHistory*history);
+    void historyChanged();
 
 private:
     void construct();

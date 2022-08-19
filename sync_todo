@@ -1,6 +1,8 @@
 4- Ramses and editors
 	- test asset & shot table
 		- steps menu filter by type?
+	- pipefiles not loaded/displayed
+	- step estimation not computed if no click on a status
 	- schedule not working
 	- implement order in tables
 	- list widths

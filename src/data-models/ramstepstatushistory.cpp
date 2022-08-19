@@ -20,7 +20,7 @@ RamStepStatusHistory *RamStepStatusHistory::get(QString uuid)
     return new RamStepStatusHistory(uuid);
 }
 
-RamStepStatusHistory *RamStepStatusHistory::c(RamObjectList *o)
+RamStepStatusHistory *RamStepStatusHistory::c(QObject *o)
 {
     return qobject_cast<RamStepStatusHistory*>(o);
 }

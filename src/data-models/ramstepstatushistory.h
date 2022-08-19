@@ -18,7 +18,7 @@ class RamStepStatusHistory : public RamObjectList
     Q_OBJECT
 public:
     static RamStepStatusHistory *get(QString uuid);
-    static RamStepStatusHistory *c(RamObjectList *o);
+    static RamStepStatusHistory *c(QObject *o);
 
     RamStepStatusHistory(RamStep *step, RamAbstractItem *item);
     RamAbstractItem *item() const;

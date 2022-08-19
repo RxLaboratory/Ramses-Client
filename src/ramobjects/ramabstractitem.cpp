@@ -201,9 +201,11 @@ bool RamAbstractItem::hasState(RamObject *state, RamStep *step)
 
 // PROTECTED //
 
-void RamAbstractItem::latestStatusChanged(RamStepStatusHistory *history)
+void RamAbstractItem::historyChanged()
 {
-    emit statusChanged( history->item(), history->step());
+    RamStepStatusHistory *h = RamStepStatusHistory::c( QObject::sender() );
+    emit statusChanged(this, h->step());
+    emit dataChanged(this);
 }
 
 // PRIVATE //
@@ -222,6 +224,7 @@ void RamAbstractItem::setProject(RamProject *proj)
 
 void RamAbstractItem::connectHistory(RamStepStatusHistory *history)
 {
-    connect(history, SIGNAL(latestStatusChanged(RamStepStatusHistory*)), this, SLOT(latestStatusChanged(RamStepStatusHistory*)));
+    connect(history, &RamStepStatusHistory::dataChanged, this, &RamAbstractItem::historyChanged);
+    connect(history, &RamStepStatusHistory::listChanged, this, &RamAbstractItem::historyChanged);
 }
 

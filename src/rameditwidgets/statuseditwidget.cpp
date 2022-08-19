@@ -729,7 +729,7 @@ void StatusEditWidget::connectEvents()
     connect(ui_stateBox, &StateBox::currentStateChanged, this, &StatusEditWidget::setState);
     connect(ui_revertButton, &QToolButton::clicked, this, &StatusEditWidget::refresh);
     connect(ui_versionBox, SIGNAL(valueChanged(int)), this, SLOT(setVersion(int)));
-    connect( ui_completionBox, SIGNAL(valueChanging(int)), this, SLOT(setCompletion(int)));
+    connect( ui_completionBox, SIGNAL(valueChanged(int)), this, SLOT(setCompletion(int)));
     connect( ui_statusCommentEdit, SIGNAL(editingFinished()), this, SLOT(setComment()));
     connect( ui_userBox, &RamObjectListComboBox::currentObjectChanged, this, &StatusEditWidget::assignUser);
     connect( ui_publishedBox, SIGNAL(clicked(bool)), this, SLOT(setPublished(bool)));

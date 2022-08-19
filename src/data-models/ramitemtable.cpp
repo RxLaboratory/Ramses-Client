@@ -221,7 +221,7 @@ void RamItemTable::inserted(const QModelIndex &parent, int first, int last)
         Q_ASSERT(item);
 
         // Connect the item to monitor its status
-        connect( item, SIGNAL(statusChanged(RamItem*,RamStep*)), this, SLOT(statusChanged(RamItem*,RamStep*)) );
+        connect( item, &RamAbstractItem::statusChanged, this, &RamItemTable::statusChanged );
     }
 }
 
