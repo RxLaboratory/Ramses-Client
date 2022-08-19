@@ -187,10 +187,6 @@ protected:
      */
     RamAbstractObject(QString uuid, ObjectType type, bool encryptData = false);
 
-    // Low level data handling.
-    QString dataString() const;
-    void setDataString(QString data);
-    void createData(QString data);
     virtual QJsonObject reloadData() = 0;
 
     // SIGNALS in QObject instances
@@ -218,6 +214,11 @@ protected:
     QString m_cachedData = "";
 
 private:
+    // Low level data handling.
+    QString dataString() const;
+    void setDataString(QString data);
+    void createData(QString data);
+
     QSettings *m_settings = nullptr;
 };
 

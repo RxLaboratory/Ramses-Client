@@ -1,6 +1,7 @@
 4- Ramses and editors
 	- test asset & shot table
 		- steps menu filter by type?
+	- Sort states (completion) and file types (shortname) and applications (name)
 	- list widths
 	- add color to asset groups (and assets, like shots, override ramabstractobject color)
 	- recreate defaults (templates, states...) in included db

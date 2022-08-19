@@ -8,7 +8,7 @@ QMap<QString, RamTemplateAssetGroup*> RamTemplateAssetGroup::m_existingObjects =
 
 RamTemplateAssetGroup *RamTemplateAssetGroup::get(QString uuid)
 {
-    if (!checkUuid(uuid, AssetGroup)) return nullptr;
+    if (!checkUuid(uuid, TemplateAssetGroup)) return nullptr;
 
     if (m_existingObjects.contains(uuid)) return m_existingObjects.value(uuid);
 
