@@ -324,6 +324,8 @@ LocalDataInterface::LocalDataInterface() :
 
 QSqlQuery LocalDataInterface::query(QString q) const
 {
+    if (m_dataFile =="") return QSqlQuery();
+
     QSqlDatabase db = QSqlDatabase::database("localdata");
     QSqlQuery qry = QSqlQuery(db);
 

@@ -363,8 +363,18 @@ void MainWindow::duqf_checkUpdate()
     // Check for update
     QSettings settings;
     bool doCheckUpdate = settings.value("updates/checkUpdateAtStartup", true).toBool();
-    if (doCheckUpdate) app->checkUpdate();
-    else m_showUpdateAlerts = true;
+    // Just once a day
+    if (doCheckUpdate)
+    {
+        QDateTime lastCheck = settings.value("updates/latestUpdateCheck").toDateTime();
+        doCheckUpdate = lastCheck.daysTo(QDateTime::currentDateTime()) > 0;
+        if (doCheckUpdate)
+        {
+            app->checkUpdate();
+            return;
+        }
+    }
+    m_showUpdateAlerts = true;
 }
 
 void MainWindow::duqf_initUi()
