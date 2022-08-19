@@ -172,6 +172,31 @@ void RamObjectList::sort(int column, Qt::SortOrder order)
     std::sort(m_objectList.begin(), m_objectList.end(), objectSorter);
 }
 
+bool RamObjectList::moveRows(const QModelIndex &sourceParent, int sourceRow, int count, const QModelIndex &destinationParent, int destinationChild)
+{
+    Q_UNUSED(sourceParent)
+    Q_UNUSED(destinationParent)
+
+    int sourceEnd = sourceRow + count-1;
+    int d = destinationChild;
+    if (sourceRow < destinationChild) d++;
+
+    if (!beginMoveRows(QModelIndex(), sourceRow, sourceEnd, QModelIndex(), d))
+        return false;
+
+    for (int i = 0; i < count ; i++)
+    {
+        if (destinationChild < sourceRow) m_objectList.move(sourceEnd, destinationChild);
+        else m_objectList.move(sourceRow, destinationChild);
+    }
+
+    saveData();
+
+    endMoveRows();
+
+    return true;
+}
+
 // List editing
 
 void RamObjectList::clear(bool removeObjects)
@@ -216,8 +241,6 @@ void RamObjectList::append(RamObject *obj)
 
 QList<RamObject *> RamObjectList::removeIndices(QModelIndexList indices)
 {
-    std::sort(indices.begin(), indices.end(), indexSorter);
-
     QList<RamObject *> objs;
 
     for( int i = indices.count() -1; i >= 0; i--)
@@ -476,9 +499,4 @@ void RamObjectList::connectEvents()
 bool objectSorter(RamObject *a, RamObject *b)
 {
     return a->shortName() < b->shortName();
-}
-
-bool indexSorter(QModelIndex a, QModelIndex b)
-{
-    return a.row() < b.row();
 }
