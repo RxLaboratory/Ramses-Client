@@ -2,6 +2,7 @@
 
 #include "ramses.h"
 #include "ramshot.h"
+#include "processmanager.h"
 
 // STATIC //
 
@@ -313,6 +314,11 @@ QJsonObject RamObjectList::reloadData()
 {
     QJsonObject d = RamAbstractObject::data();
 
+    QString typeName = objectTypeName(m_contentType);
+
+    ProcessManager *pm = ProcessManager::instance();
+    pm->setText(tr("Loading %1 list...").arg( typeName ));
+
     beginResetModel();
 
     // disconnect objects
@@ -329,7 +335,7 @@ QJsonObject RamObjectList::reloadData()
     QStringList uuids;
     if (m_dataMode == Table)
     {
-        uuids = DBInterface::instance()->tableData( objectTypeName(m_contentType) );
+        uuids = DBInterface::instance()->tableData( typeName );
     }
     else if (m_dataMode == ListObject)
     {
@@ -340,16 +346,22 @@ QJsonObject RamObjectList::reloadData()
         }
     }
 
+    pm->addToMaximum(uuids.count());
+
     for (int i = 0; i < uuids.count(); i++)
     {
+        pm->increment();
         QString uuid = uuids.at(i);
         RamObject *o = RamObject::get( uuid, m_contentType );
 
         if (!o) continue;
+        pm->setText(tr("Loading %1 list | %2").arg( typeName, o->shortName() ));
         addObj(o);
     }
 
     endResetModel();
+
+    pm->setText(tr("Ready!"));
 
     return d;
 }
