@@ -10,6 +10,7 @@
 #include "data-models/ramitemtable.h"
 #include "ramworkingfolder.h"
 #include "stepeditwidget.h"
+#include "ramshot.h"
 
 // STATIC //
 

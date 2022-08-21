@@ -11,6 +11,7 @@
 #include "ramscheduleentry.h"
 #include "ramschedulecomment.h"
 #include "ramses.h"
+#include "ramshot.h"
 
 // PUBLIC //
 

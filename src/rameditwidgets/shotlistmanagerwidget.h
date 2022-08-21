@@ -2,6 +2,7 @@
 #define SHOTLISTMANAGERWIDGET_H
 
 #include "objectlistmanagerwidget.h"
+#include "ramshot.h"
 
 class ShotListManagerWidget : public ObjectListManagerWidget
 {

@@ -16,6 +16,8 @@
 #include "data-views/ramstepheaderview.h"
 #include "data-views/ramobjectlistmenu.h"
 
+#include "ramstatus.h"
+
 class ItemTableManagerWidget : public QWidget
 {
     Q_OBJECT

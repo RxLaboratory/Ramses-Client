@@ -4,6 +4,7 @@
 #include <QSplitter>
 
 #include "ramobjectlistview.h"
+#include "data-models/ramstepstatushistory.h"
 
 class StatusHistoryWidget : public QWidget
 {

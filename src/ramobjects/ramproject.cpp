@@ -4,6 +4,7 @@
 #include "rampipe.h"
 #include "projecteditwidget.h"
 #include "data-models/ramitemtable.h"
+#include "ramshot.h"
 
 QMap<QString, RamProject*> RamProject::m_existingObjects = QMap<QString, RamProject*>();
 

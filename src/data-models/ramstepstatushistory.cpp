@@ -7,6 +7,7 @@
 #include "ramasset.h"
 #include "statushistorywidget.h"
 #include "mainwindow.h"
+#include "ramshot.h"
 
 QMap<QString, RamStepStatusHistory*> RamStepStatusHistory::m_existingObjects = QMap<QString, RamStepStatusHistory*>();
 

@@ -8,7 +8,6 @@
 
 #include "data-models/ramitemfiltermodel.h"
 #include "ramobjectdelegate.h"
-#include "ramshot.h"
 #include "ramuser.h"
 
 /**

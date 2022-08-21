@@ -1,5 +1,7 @@
 #include "stepstatushistorywidget.h"
 
+#include "ramabstractitem.h"
+
 StepStatusHistoryWidget::StepStatusHistoryWidget(QWidget *parent) : QWidget(parent)
 {
     setupUi();

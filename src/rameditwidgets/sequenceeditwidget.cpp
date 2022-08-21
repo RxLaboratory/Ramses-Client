@@ -2,6 +2,7 @@
 
 #include "ramsequence.h"
 #include "data-models/ramitemtable.h"
+#include "ramshot.h"
 
 SequenceEditWidget::SequenceEditWidget(QWidget *parent) :
     ObjectEditWidget(parent)

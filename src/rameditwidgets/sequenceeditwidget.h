@@ -4,6 +4,7 @@
 #include "objecteditwidget.h"
 #include "objectlisteditwidget.h"
 #include "duqf-widgets/duqfcolorselector.h"
+#include "ramsequence.h"
 
 /**
  * @brief The SequenceEditWidget class is used to edit Sequences and can be shown either in the main UI or in the Dock
