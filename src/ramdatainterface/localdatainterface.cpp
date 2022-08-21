@@ -1,6 +1,7 @@
 #include "localdatainterface.h"
 
 #include "datacrypto.h"
+#include "processmanager.h"
 
 // QUERIER
 
@@ -363,12 +364,29 @@ ServerConfig LocalDataInterface::setDataFile(const QString &file)
     db.setDatabaseName(file);
     if (!db.open()) log("Can't save data to the disk.", DuQFLog::Fatal);*/
 
+    ProcessManager *pm = ProcessManager::instance();
+    pm->start();
+    pm->setMaximum(3);
+    pm->setTitle(tr("Loading database"));
+    pm->setText(tr("Opening database..."));
+
     m_querier->setDataFile(file);
+
+    pm->increment();
+    pm->setText(tr("Preparing database handling thread..."));
+
     emit newDataFile(file);
 
-    m_dataFile = file;
+    pm->increment();
+    pm->setText(tr("Loading data..."));
+
+    m_dataFile = file;    
 
     emit dataReset();
+
+    pm->increment();
+    pm->setText(tr("Ready!"));
+    pm->finish();
 
     return serverConfig();
 }
