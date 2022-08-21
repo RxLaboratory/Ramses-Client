@@ -182,23 +182,20 @@ void RamObjectListView::mouseReleaseEvent(QMouseEvent *event)
 
 void RamObjectListView::resizeEvent(QResizeEvent *event)
 {
-    /*if (m_displayMode == List) this->setColumnWidth( 0, event->size().width() );
-    // Incorrect draw after resize, fixed by resizing the first row...
-    this->setRowHeight(0,30);
-    this->resizeRowToContents(0);*/
-    /*this->setRowHeight(0,10);
-    if (m_displayMode == Table) this->setRowHeight(0,42);
-    else this->setRowHeight(0,30);*/
+    Q_UNUSED(event);
+    if (m_displayMode != List) return;
+    this->horizontalHeader()->setStretchLastSection(false);
+    this->horizontalHeader()->setStretchLastSection(true);
 }
 
 void RamObjectListView::showEvent(QShowEvent *event)
 {
     Q_UNUSED(event)
 
-    /*if(m_layout) return;
+    if(m_layout) return;
     this->resizeRowsToContents();
     this->resizeColumnsToContents();
-    m_layout = true;*/
+    m_layout = true;
 }
 
 void RamObjectListView::select(const QModelIndex &index)
@@ -277,7 +274,7 @@ void RamObjectListView::setupUi()
 
     this->setItemDelegate( m_delegate );
 
-    this->horizontalHeader()->setStretchLastSection(true);
+    if (m_displayMode == List) this->horizontalHeader()->setStretchLastSection(true);
 }
 
 void RamObjectListView::connectEvents()
