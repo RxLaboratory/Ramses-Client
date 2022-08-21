@@ -2,6 +2,7 @@
 #include "data-models/ramitemtable.h"
 #include "duqf-utils/utils.h"
 
+#include "processmanager.h"
 #include "ramsequence.h"
 
 ShotsCreationDialog::ShotsCreationDialog(RamProject *proj, QWidget *parent) :
@@ -29,6 +30,8 @@ ShotsCreationDialog::ShotsCreationDialog(RamProject *proj, QWidget *parent) :
     ui_nStartEdit->setValidator(vs);
     ui_nEndEdit->setValidator(vs);
 
+    ui_progressBar->hide();
+
     connect(ui_cancelButton, SIGNAL(clicked()), this, SLOT(reject()));
     connect(ui_createButton, SIGNAL(clicked()), this, SLOT(create()));
     connect(ui_nameEdit, SIGNAL(textEdited(QString)), this, SLOT(nameExample(QString)));
@@ -48,12 +51,12 @@ void ShotsCreationDialog::create()
 {
     if( !ui_nStartEdit->hasAcceptableInput() )
     {
-        QMessageBox::information(this, "Invalid number", "You have to choose a start number.");
+        QMessageBox::information(this, tr("Invalid number"), tr("You have to choose a start number."));
         return;
     }
     if( !ui_nEndEdit->hasAcceptableInput() )
     {
-        QMessageBox::information(this, "Invalid number", "You have to choose the end number.");
+        QMessageBox::information(this, tr("Invalid number"), tr("You have to choose the end number."));
         return;
     }
 
@@ -70,7 +73,13 @@ void ShotsCreationDialog::create()
 
     RamSequence *seq = RamSequence::c( ui_sequenceBox->currentObject() );
 
-    for(int i = startNumber; i <= endNumber; i++)
+    ui_cancelButton->setEnabled(false);
+    ui_createButton->setEnabled(false);
+    ui_progressBar->show();
+    ui_progressBar->setMaximum( endNumber - startNumber +1);
+    ui_progressBar->setValue(0);
+
+    for (int i = startNumber; i <= endNumber; i++)
     {
         RamShot *shot = new RamShot(
                     getShortName(i),
@@ -78,7 +87,14 @@ void ShotsCreationDialog::create()
                     seq
                     );
         m_project->shots()->append(shot);
+        ui_progressBar->setValue( i - startNumber );
     }
+
+    m_project->shots()->reload();
+
+    ui_progressBar->hide();
+    ui_cancelButton->setEnabled(true);
+    ui_createButton->setEnabled(true);
 
     accept();
 }

@@ -1,7 +1,6 @@
 4- Ramses and editors
 	- test asset & shot table
 		- steps menu filter by type?
-	- add color to asset groups (and assets, like shots, override ramabstractobject color)
 	- recreate defaults (templates, states...) in included db
 	
 5A - Move all settings to database? see later
