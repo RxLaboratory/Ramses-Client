@@ -141,13 +141,20 @@ QVariant RamObjectList::data(const QModelIndex &index, int role) const
 
     if (role == DefaultSortOrder) return row;
 
-    if (role == Difficulty || role == TimeSpent || role == Estimation || role == Completion) {
-        RamStatus *s = RamStatus::c( obj );
-        if (!s) return QVariant();
+    RamStatus *s = RamStatus::c( obj );
+
+    if (s) {
         if (role == Difficulty) return s->difficulty();
         if (role == TimeSpent) return s->timeSpent();
         if (role == Estimation) return s->estimation();
         if (role == Completion) return s->completionRatio();
+        return QVariant();
+    }
+
+    RamState *st = RamState::c( obj );
+    if (st) {
+        if (role == Completion) return st->completionRatio();
+        return QVariant();
     }
 
     return QVariant();

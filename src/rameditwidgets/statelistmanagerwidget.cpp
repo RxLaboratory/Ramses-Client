@@ -13,6 +13,7 @@ StateListManagerWidget::StateListManagerWidget(QWidget *parent) :
     QStringList dontRemove;
     dontRemove << "TODO" << "STB" << "NO" << "WIP" << "OK";
     m_listEditWidget->setDontRemoveShortNameList(dontRemove);
+    m_listEditWidget->setSortMode(RamObjectList::Completion);
 }
 
 RamState *StateListManagerWidget::createObject()

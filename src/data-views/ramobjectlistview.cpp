@@ -91,6 +91,17 @@ void RamObjectListView::setSortable(bool sortable)
     this->verticalHeader()->setSectionsMovable(sortable);
 }
 
+void RamObjectListView::setSortMode(RamObjectList::DataRole mode)
+{
+    m_objectList->setSortMode(mode);
+    m_objectList->sort(0);
+}
+
+void RamObjectListView::sort()
+{
+    m_objectList->sort(0);
+}
+
 void RamObjectListView::setTimeTracking(bool trackTime)
 {
     m_delegate->setTimeTracking(trackTime);

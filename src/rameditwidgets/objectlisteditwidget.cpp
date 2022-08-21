@@ -137,6 +137,16 @@ RamObject *ObjectListEditWidget::currentFilter() const
     return ui_filterBox->currentObject();
 }
 
+void ObjectListEditWidget::setSortMode(RamObjectList::DataRole mode)
+{
+    ui_listWidget->setSortMode(mode);
+}
+
+void ObjectListEditWidget::sort()
+{
+    ui_listWidget->sort();
+}
+
 RamObjectListView *ObjectListEditWidget::listWidget()
 {
     return ui_listWidget;

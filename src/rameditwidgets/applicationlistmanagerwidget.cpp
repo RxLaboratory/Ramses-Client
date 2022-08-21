@@ -10,6 +10,8 @@ ApplicationListManagerWidget::ApplicationListManagerWidget(QWidget *parent) :
         parent )
 {
     m_listEditWidget->setEditMode(ObjectListEditWidget::RemoveObjects);
+    m_listEditWidget->setSortMode(RamObjectList::Name);
+    m_listEditWidget->sort();
 }
 
 RamApplication *ApplicationListManagerWidget::createObject()

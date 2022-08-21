@@ -34,6 +34,8 @@ public:
     // Settings
     void setEditableObjects(bool editableObjects, RamUser::UserRole editRole = RamUser::Admin);
     void setSortable(bool sortable = true);
+    void setSortMode(RamObjectList::DataRole mode);
+    void sort();
 
 signals:
     void objectSelected(RamObject*);

@@ -10,6 +10,8 @@ FileTypeListManagerWidget::FileTypeListManagerWidget(QWidget *parent) :
         parent )
 {
     m_listEditWidget->setEditMode(ObjectListEditWidget::RemoveObjects);
+    m_listEditWidget->setSortMode(RamObjectList::ShortName);
+    m_listEditWidget->sort();
 }
 
 RamFileType *FileTypeListManagerWidget::createObject()
