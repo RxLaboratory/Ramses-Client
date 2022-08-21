@@ -147,7 +147,7 @@ public:
     QString comment() const;
     void setComment(const QString comment);
 
-    QColor color() const;
+    virtual QColor color() const;
     void setColor(QColor color);
 
     /**

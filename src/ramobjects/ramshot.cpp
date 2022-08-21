@@ -35,6 +35,13 @@ RamShot::RamShot(QString shortName, QString name, RamSequence *sequence):
     insertData("sequence", sequence->uuid() );
 }
 
+QColor RamShot::color() const
+{
+    RamSequence *s = sequence();
+    if (s) return s->color();
+    return QColor(150,150,150);
+}
+
 RamShot::RamShot(QString uuid):
     RamAbstractItem(uuid, Shot)
 {

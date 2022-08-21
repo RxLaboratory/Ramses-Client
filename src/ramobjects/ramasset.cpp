@@ -32,6 +32,13 @@ RamAsset::RamAsset(QString shortName, QString name, RamAssetGroup *ag) :
     setAssetGroup(ag);
 }
 
+QColor RamAsset::color() const
+{
+    RamAssetGroup *ag = assetGroup();
+    if (ag) return ag->color();
+    return QColor(150,150,150);
+}
+
 RamAsset::RamAsset(QString uuid):
     RamAbstractItem(uuid, Asset)
 {

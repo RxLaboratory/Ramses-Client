@@ -201,6 +201,10 @@ void RamUser::getCreateLists()
     QString uuid = d.value("schedule").toString();
     if (uuid == "") m_schedule = new RamObjectList("schedule", "Schedule", ScheduleEntry, RamObjectList::ListObject, this);
     else m_schedule = RamObjectList::get( uuid );
+
+    // The schedule can't be found, create a new one
+    if (!m_schedule) m_schedule = new RamObjectList("schedule", "Schedule", ScheduleEntry, RamObjectList::ListObject, this);
+
     m_schedule->setParent(this);
     d.insert("schedule", m_schedule->uuid());
 

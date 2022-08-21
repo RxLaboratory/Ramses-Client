@@ -42,6 +42,7 @@ void SequenceEditWidget::reInit(RamObject *o)
 
 void SequenceEditWidget::setColor(QColor c)
 {
+    if (!m_sequence) return;
     m_sequence->setColor(c);
 }
 

@@ -18,6 +18,8 @@ public:
 
     RamAsset(QString shortName, QString name, RamAssetGroup *ag);
 
+    QColor color() const override;
+
     RamAssetGroup *assetGroup() const;
     void setAssetGroup(RamAssetGroup *ag);
 

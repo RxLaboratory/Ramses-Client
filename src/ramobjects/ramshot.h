@@ -22,6 +22,8 @@ public:
 
     RamShot(QString shortName, QString name, RamSequence *sequence);
 
+    QColor color() const override;
+
     RamSequence *sequence() const;
     void setSequence(RamObject *sequence);
 

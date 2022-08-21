@@ -70,7 +70,7 @@ void ShotListManagerWidget::batchCreate()
     RamProject *project = Ramses::instance()->currentProject();
     if (!project) return;
     if (project->sequences()->rowCount() == 0 ) return;
-    RamSequence *seq = RamSequence::get( currentFilterUuid() );
+    RamSequence *seq = RamSequence::c( currentFilter() );
     if (!seq) seq = qobject_cast<RamSequence*>( project->sequences()->at(0) );
     if(!seq) return;
 
