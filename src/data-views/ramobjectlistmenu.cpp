@@ -31,7 +31,10 @@ RamObjectListMenu::RamObjectListMenu(bool checkable, QWidget *parent):
 void RamObjectListMenu::setList(RamObjectList *list)
 {
     if (!list) m_objects->setList(m_emptyList);
-    else m_objects->setList(list);
+    else {
+        list->sort();
+        m_objects->setList(list);
+    }
 }
 
 void RamObjectListMenu::addCreateButton()

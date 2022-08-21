@@ -500,6 +500,11 @@ int RamObjectList::objRow(RamObject *obj) const
     return -1;
 }
 
+RamAbstractObject::ObjectType RamObjectList::contentType() const
+{
+    return m_contentType;
+}
+
 // PRIVATE SLOTS //
 
 void RamObjectList::objectChanged(RamObject *obj)

@@ -83,6 +83,8 @@ public:
 
     QList<RamObject *> toList();
 
+    ObjectType contentType() const;
+
 public slots:
     void removeAll(RamObject *obj);
     void sort();
@@ -131,6 +133,5 @@ private:
 class RamObject;
 
 bool objectSorter(RamObject *a, RamObject *b);
-bool indexSorter(QModelIndex a, QModelIndex b);
 
 #endif // RAMOBJECTLIST_H
