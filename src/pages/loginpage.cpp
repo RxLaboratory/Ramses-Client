@@ -158,70 +158,83 @@ void LoginPage::loggedIn(RamUser *user)
         QSettings settings;
         QString dbPath = DBInterface::instance()->dataFile();
 
-        qDebug() << "Saving credentials for " + dbPath;
+        qDebug() << "Adding DB to recent list";
 
+        QList<QStringList> dbs;
         int historySize = settings.beginReadArray("database/recent");
-        int historyIndex = 0;
-        bool found = false;
         for (int i = 0; i < historySize; i++)
         {
             settings.setArrayIndex(i);
-            // Get adress in settings
-            QString settingsAddress = settings.value("path").toString();
-
-            qDebug() << settingsAddress;
-
-            if (settingsAddress == dbPath )
-            {
-                found = true;
-                break;
-            }
-            historyIndex++;
+            QString p = settings.value("path", "-").toString();
+            if (!QFileInfo::exists(p)) continue;
+            QStringList db;
+            db << p << settings.value("username").toString() << settings.value("password").toString();
+            dbs << db;
         }
         settings.endArray();
 
-        if (found)
+        qDebug() << "Saving credentials for " + dbPath;
+
+        QString username = "";
+        QString password = "";
+        if (ui_saveUsername->isChecked())
         {
-            settings.beginWriteArray("database/recent");
-            settings.setArrayIndex(historyIndex);
+            // Encrypt
+            DataCrypto *crypto = DataCrypto::instance();
+            username = crypto->machineEncrypt(ui_usernameEdit->text());
 
-            // Save credentials
-            if (ui_saveUsername->isChecked())
+            if (ui_savePassword->isChecked())
             {
-                // Encrypt
-                DataCrypto *crypto = DataCrypto::instance();
-
-                settings.setValue("username", crypto->machineEncrypt(ui_usernameEdit->text()));
-
-                if (ui_savePassword->isChecked())
+                // Save the hashed password
+                QString hashed;
+                if (ui_passwordEdit->text() == "" && ui_passwordEdit->placeholderText() == "Use saved password." && m_hashedPassword != "")
                 {
-                    // Save the hashed password
-                    QString hashed;
-                    if (ui_passwordEdit->text() == "" && ui_passwordEdit->placeholderText() == "Use saved password." && m_hashedPassword != "")
-                    {
-                        hashed = m_hashedPassword;
-                    }
-                    else
-                    {
-                        hashed = crypto->generatePassHash( ui_passwordEdit->text() );
-                    }
-                    // But encrypted, as the hashed password can be used to login
-                    settings.setValue("password", crypto->machineEncrypt( hashed ));
+                    hashed = m_hashedPassword;
                 }
                 else
                 {
-                    settings.setValue("password", "");
+                    hashed = crypto->generatePassHash( ui_passwordEdit->text() );
                 }
+                // But encrypted, as the hashed password can be used to login
+                password = crypto->machineEncrypt( hashed );
             }
-            else
-            {
-                settings.setValue("username", "");
-                settings.setValue("password", "");
-            }
-
-            settings.endArray();
         }
-        ui_connectionStatusLabel->setText("Connected as " + user->name());
+
+        bool found = false;
+        for (int i = 0; i < dbs.count(); i++)
+        {
+            QStringList db = dbs.at(i);
+            // Get adress in settings
+            QString settingsAddress = db.at(0);
+
+            if (settingsAddress != dbPath ) continue;
+
+            // Save credentials
+            db[1] = username;
+            db[2] = password;
+            dbs[i] = db;
+            found = true;
+            break;
+        }
+
+        if (!found)
+        {
+            QStringList db;
+            db << dbPath << username << password;
+            dbs.insert(0, db);
+        }
+
+        qDebug() << "Saving settings";
+
+        settings.beginWriteArray("database/recent", dbs.count());
+        for (int i = 0; i < dbs.count(); i++)
+        {
+            settings.setArrayIndex(i);
+            settings.setValue("path", dbs[i][0]);
+            settings.setValue("username", dbs[i][1]);
+            settings.setValue("password", dbs[i][2]);
+        }
+        settings.endArray();
     }
 
     ui_loginWidget->hide();
