@@ -6,6 +6,8 @@
 5A - Move all settings to database? see later
   
 5- Sync process
+	server: login works (?), test sync (with wrong token, and with good token)
+	
 	separate thread: send changes since last sync to server, get new data.
 		on demand sync
 		periodic sync: Sync interval: option, default, 60s
