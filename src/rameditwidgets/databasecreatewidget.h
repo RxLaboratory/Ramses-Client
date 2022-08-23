@@ -26,6 +26,8 @@ private:
     QLineEdit *ui_npassword1Edit;
     QLineEdit *ui_npassword2Edit;
     ServerEditWidget *ui_serverEdit;
+    QLineEdit *ui_onlineShortNameEdit;
+    QLineEdit *ui_onlinePasswordEdit;
     QPushButton *ui_createButton;
 };
 

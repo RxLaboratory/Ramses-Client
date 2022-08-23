@@ -45,9 +45,7 @@ public:
      */
     void setOffline(QString reason = "");
     /**
-     * @brief Changes to online mode: data is sent to the server and then stored locally.
-     * The timestamp is set to be the same.
-     * All timestamps must use UTC!
+     * @brief Changes to online mode.
      */
     void setOnline();
 

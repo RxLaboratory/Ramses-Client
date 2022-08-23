@@ -125,26 +125,14 @@ void RamServerInterface::setConnectionStatus(NetworkUtils::NetworkStatus s, QStr
 
 void RamServerInterface::dataReceived(QNetworkReply *reply)
 {
-    if (reply->error() != QNetworkReply::NoError) return;
-
-    QString repAll = reply->readAll();
-
-    QJsonDocument repDoc = QJsonDocument::fromJson(repAll.toUtf8());
-    QJsonObject repObj = repDoc.object();
-
-    if (repObj.isEmpty())
-    {
-        repObj.insert("message",repAll);
-        repObj.insert("accepted",false);
-    }
+    QJsonObject repObj = processReply(reply);
+    if (repObj.value("error").toBool(false)) return;
 
     QString repQuery = repObj.value("query").toString();
     QString repMessage = repObj.value("message").toString();
     bool repSuccess = repObj.value("success").toBool();
 
-    log(repQuery + "\n" + repMessage + "\nContent:\n" + repAll, DuQFLog::Data);
-
-    if (!repSuccess || repMessage.toLower().startsWith("warning"))
+    if (!repSuccess || repMessage.startsWith("warning", Qt::CaseInsensitive))
     {
         log(repMessage, DuQFLog::Warning);
     }
@@ -394,7 +382,7 @@ bool RamServerInterface::waitPing(bool force)
     return true;
 }
 
-void RamServerInterface::postRequest(Request r)
+QNetworkReply *RamServerInterface::postRequest(Request r)
 {
     QNetworkReply *reply = m_network.post(r.request, r.body.toUtf8());
     QUrl url = r.request.url();
@@ -415,6 +403,8 @@ void RamServerInterface::postRequest(Request r)
     connect(reply, SIGNAL(finished()), reply, SLOT(deleteLater()));
 
     emit queried(r.query);
+
+    return reply;
 }
 
 Request RamServerInterface::buildRequest(QString query, QJsonObject body)
@@ -433,25 +423,6 @@ Request RamServerInterface::buildRequest(QString query, QJsonObject body)
     QJsonDocument bodyDoc;
     bodyDoc.setObject(body);
     r.body = bodyDoc.toJson(QJsonDocument::Compact);
-
-    return r;
-}
-
-Request RamServerInterface::buildRequest(QString query, QStringList args)
-{
-    Request r = buildRequest(query);
-    // Update header to URL Encoded form type
-    r.request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
-
-    // Post body
-    // Add version
-    args << "version=" + QString(STR_VERSION);
-    // Current token
-    if (m_sessionToken != "") args << "token=" + m_sessionToken;
-    // Build body
-    QString body = buildFormEncodedString(args);
-
-    r.body = body;
 
     return r;
 }
@@ -480,12 +451,6 @@ void RamServerInterface::queueRequest(QString query, QJsonObject body)
     queueRequest(r);
 }
 
-void RamServerInterface::queueRequest(QString query, QStringList args)
-{
-    Request r = buildRequest(query, args);
-    queueRequest(r);
-}
-
 void RamServerInterface::queueRequest(Request r)
 {
     m_requestQueue << r;
@@ -498,21 +463,66 @@ void RamServerInterface::startQueue()
     if (!m_requestQueueTimer->isActive()) m_requestQueueTimer->start(m_requestDelay);
 }
 
-QString RamServerInterface::buildFormEncodedString(QStringList args)
+QJsonObject RamServerInterface::processReply(QNetworkReply *reply)
 {
-    QString q;
-    bool first = true;
-    foreach(QString arg, args)
+    if (reply->error() != QNetworkReply::NoError)
     {
-        if (!first) q += "&";
-        first = false;
-        // Replace forbidden words
-        foreach(QString word, m_forbiddenWords)
-        {
-            arg = arg.replace(" " + word, "%" + word + "%");
-        }
-        q += QUrl::toPercentEncoding(arg, "=");
+        QJsonObject repObj;
+        repObj.insert("error", true);
+        return repObj;
     }
-    return q;
+
+    QString repAll = reply->readAll();
+
+    QJsonDocument repDoc = QJsonDocument::fromJson(repAll.toUtf8());
+    QJsonObject repObj = repDoc.object();
+
+    if (repObj.isEmpty())
+    {
+        repObj.insert("message",repAll);
+        repObj.insert("accepted",false);
+    }
+
+    QString repQuery = repObj.value("query").toString();
+    QString repMessage = repObj.value("message").toString();
+    log(repQuery + "\n" + repMessage + "\nContent:\n" + repAll, DuQFLog::Data);
+
+    return repObj;
+}
+
+int RamServerInterface::updateFrequency() const
+{
+    return m_updateFrequency;
+}
+
+void RamServerInterface::setUpdateFrequency(int newUpdateFrequency)
+{
+    m_updateFrequency = newUpdateFrequency;
+}
+
+QString RamServerInterface::login(QString username, QString password)
+{
+    QJsonObject body;
+    body.insert("username", username);
+    body.insert("password", password);
+    Request r = buildRequest("login", body);
+    QNetworkReply *rep = postRequest(r);
+
+    // Wait for the reply
+    QDeadlineTimer t(m_timeout);
+    while (!rep->isFinished())
+    {
+        qApp->processEvents();
+        if ( t.hasExpired() )
+        {
+            setOffline();
+            log("Cannot process request, server unavailable.", DuQFLog::Critical);
+            return "";
+        }
+    }
+    QJsonObject repObj = processReply(rep);
+    if (repObj.value("error").toBool(false)) return "";
+
+    return repObj.value("content").toObject().value("uuid").toString("");
 }
 

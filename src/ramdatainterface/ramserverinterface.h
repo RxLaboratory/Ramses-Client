@@ -48,15 +48,18 @@ public:
      * @return
      */
     const QString &serverVersion() const;
+    int updateFrequency() const;
+    void setUpdateFrequency(int newUpdateFrequency);
 
-    // DATA INTERFACE //
+    QString login(QString username, QString password);
 
     /**
-     * @brief Posts some data to the server
-     * @param query The name of the query
-     * @param data The associated data
+     * @brief Pings the server and waits for the pong
+     * @param force Set to true to force the ping even if we're already online.
+     * It's a way to reset the session token.
+     * @return
      */
-    void post(QString query, QJsonObject data);
+    bool waitPing(bool force=false);
 
 public slots:
     void setOnline();
@@ -134,44 +137,41 @@ private:
     /**
      * @brief connectEvents Connects member events
      */
-    void connectEvents();
+    void connectEvents();   
     /**
-     * @brief Pings the server and waits for the pong
-     * @param force Set to true to force the ping even if we're already online.
-     * It's a way to reset the session token.
-     * @return
+     * @brief Posts some data to the server
+     * @param query The name of the query
+     * @param data The associated data
      */
-    bool waitPing(bool force=false);
+    void post(QString query, QJsonObject data);
     /**
      * @brief Posts a request to the server
      * @param request
      */
-    void postRequest(Request r);
+    QNetworkReply *postRequest(Request r);
     /**
      * @brief buildRequest Creates a request to be queued or sent to the server
      * @param query The name of the query (See the Ramses Server API reference)
      * @param body The body of the request
      */
     Request buildRequest(QString query, QJsonObject body);
-    Request buildRequest(QString query, QStringList args);
     Request buildRequest(QString query);
     /**
      * @brief Adds a request to the queue
      * @param r the request to add
      */
     void queueRequest(QString query, QJsonObject body);
-    void queueRequest(QString query, QStringList args);
     void queueRequest(Request r);
     /**
      * @brief Starts posting requests if and only if we're Online
      */
     void startQueue();
     /**
-     * @brief Builds the form encoded string for GET or POST
-     * @param args "key=value" strings
-     * @return the args, without the leading "?"
+     * @brief processReply gets the json data from the server's reply
+     * @param reply
+     * @return
      */
-    QString buildFormEncodedString(QStringList args);
+    QJsonObject processReply(QNetworkReply *reply);
     /**
      * @brief Manages the remote connection
      */
@@ -213,6 +213,10 @@ private:
      * @todo expose this as a user setting ?
      */
     int m_requestDelay = 500;
+    /**
+     * @brief m_updateFrequency Time between two syncs in ms
+     */
+    int m_updateFrequency = 60000;
     /**
      * @brief Are we using a secured connection?
      */

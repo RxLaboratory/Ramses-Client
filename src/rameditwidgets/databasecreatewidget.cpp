@@ -6,6 +6,7 @@
 #include "ramuser.h"
 #include "ramses.h"
 #include "mainwindow.h"
+#include "datacrypto.h"
 
 DatabaseCreateWidget::DatabaseCreateWidget(QWidget *parent) :
     QScrollArea(parent)
@@ -93,7 +94,30 @@ void DatabaseCreateWidget::createDB()
     // Online
     else
     {
+        ServerConfig s;
+        s.address = ui_serverEdit->address();
+        if (s.address == "") return;
+        s.useSsl = ui_serverEdit->ssl();
+        s.updateDelay = ui_serverEdit->updateFreq();
+        s.timeout = ui_serverEdit->timeout();
+
         // Connect to  server
+        RamServerInterface *rsi = RamServerInterface::instance();
+        rsi->setServerAddress(s.address);
+        rsi->setSsl(s.useSsl);
+        rsi->setTimeout(s.timeout);
+        rsi->setUpdateFrequency(s.updateDelay);
+        // ping
+        rsi->waitPing();
+        // login
+        QString password = ui_onlinePasswordEdit->text();
+        password = DataCrypto::instance()->generatePassHash(password);
+
+        QString uuid = rsi->login(ui_onlineShortNameEdit->text(), password);
+        qDebug() << uuid;
+        if (uuid == "") return;
+
+
 
         // Download all data
 
@@ -155,13 +179,28 @@ void DatabaseCreateWidget::setupUi()
 
     QWidget *onlineWidget = new QWidget(ui_tabWidget);
     ui_tabWidget->addTab(onlineWidget, QIcon(":/icons/server-settings"), tr("Online (Sync)"));
-    QVBoxLayout *onlineLayout = new QVBoxLayout(onlineWidget);
+    QGridLayout *onlineLayout = new QGridLayout(onlineWidget);
     onlineLayout->setAlignment(Qt::AlignTop);
     onlineLayout->setSpacing(3);
     onlineLayout->setContentsMargins(3,3,3,3);
+    onlineLayout->setAlignment(Qt::AlignTop);
 
-    ui_serverEdit = new ServerEditWidget(onlineWidget);
-    onlineLayout->addWidget(ui_serverEdit);
+    onlineLayout->addWidget(new QLabel(tr("Server")), 0, 0);
+    ui_serverEdit = new ServerEditWidget();
+    onlineLayout->addWidget(ui_serverEdit, 0, 1);
+
+    QLabel *onlineUserLabel = new QLabel("User ID");
+    onlineLayout->addWidget(onlineUserLabel, 1, 0);
+
+    ui_onlineShortNameEdit = new QLineEdit();
+    onlineLayout->addWidget(ui_onlineShortNameEdit, 1, 1);
+
+    QLabel *onlineNewPasswordLabel = new QLabel(tr("Password"));
+    onlineLayout->addWidget(onlineNewPasswordLabel, 2, 0);
+
+    ui_onlinePasswordEdit = new QLineEdit();
+    ui_onlinePasswordEdit->setEchoMode(QLineEdit::Password);
+    onlineLayout->addWidget(ui_onlinePasswordEdit, 2, 1);
 
     ui_createButton = new QPushButton(tr("Create and log in"));
     ui_createButton->setIcon(QIcon(":/icons/apply"));

@@ -47,6 +47,8 @@ void DatabaseEditWidget::apply()
 
     LocalDataInterface::setServerSettings(m_dbFile, s);
 
+    //TODO Set online
+
     emit applied();
 }
 

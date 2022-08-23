@@ -6,14 +6,15 @@
 5A - Move all settings to database? see later
   
 5- Sync process
-	server: login works (?), test sync (with wrong token, and with good token)
-	
+	rewrite ramserverinterface from scratch
 	separate thread: send changes since last sync to server, get new data.
 		on demand sync
 		periodic sync: Sync interval: option, default, 60s
 		get online
 		get offline (voluntarily)
 		on quit (see mainwindow closeEvent)
+		
+5B - Check ramses data path management (ramses main folder, per database, must be saved (but not synced)
 		
 6- simplify daemon & reimplement api
 

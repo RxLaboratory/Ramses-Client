@@ -16,6 +16,8 @@ QString ServerEditWidget::address()
     QString t = ui_serverAddressEdit->text();
     if (t == "") return t;
 
+    t = t.split("/")[0];
+
     // Check if the host exists
     QHostInfo info = QHostInfo::fromName(t);
     if (info.error() != QHostInfo::NoError)
