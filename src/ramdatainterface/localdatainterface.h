@@ -112,6 +112,7 @@ protected:
 private slots:
     void logError(QString err);
     void finishQuery(QString q);
+    void quit();
 
 private:
     /**
@@ -122,6 +123,7 @@ private:
 
     QSqlQuery query(QString q);
     void threadedQuery(QString q);
+    void vacuum();
 
     /**
      * @brief m_dataFile The SQLite file path

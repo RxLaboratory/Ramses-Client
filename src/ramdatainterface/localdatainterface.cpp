@@ -382,6 +382,8 @@ ServerConfig LocalDataInterface::setDataFile(const QString &file)
     pm->setTitle(tr("Loading database"));
     pm->setText(tr("Opening database..."));
 
+    vacuum();
+
     m_querier->setDataFile(file);
 
     pm->increment();
@@ -498,6 +500,12 @@ void LocalDataInterface::sync(QJsonArray tables)
             m_updated << uuid;
         }
     }
+
+    // Save sync date
+    QString q = "DELETE FROM Sync;";
+    threadedQuery( q );
+    q = "INSERT INTO Sync ( lastSync) VALUES ( '%1' );";
+    threadedQuery( q.arg( QDateTime::currentDateTimeUtc().toString("yyyy-MM-dd hh:mm:ss") ) );
 }
 
 QStringList LocalDataInterface::tableNames()
@@ -549,8 +557,6 @@ void LocalDataInterface::finishQuery(QString q)
 
     if (m_activeQueries.isEmpty()) {
 
-        qDebug() << "LocalDataInterface is getting ready!";
-
         // Emit what needs to be emitted
         for (int i = 0; i < m_inserted.count(); i++)
         {
@@ -579,6 +585,14 @@ void LocalDataInterface::finishQuery(QString q)
     }
 }
 
+void LocalDataInterface::quit()
+{
+    qDebug() << "LocalDataInterface: Vacuuming...";
+    vacuum();
+    waitForReady();
+    qDebug() << "LocalDataInterface: Everything's clean.";
+}
+
 LocalDataInterface::LocalDataInterface() :
     DuQFLoggerObject("Local Data Interface")
 {
@@ -598,6 +612,8 @@ LocalDataInterface::LocalDataInterface() :
     infodb.setHostName("localhost");
 
     m_queryThread.start();
+
+    connect(qApp, &QApplication::aboutToQuit, this, &LocalDataInterface::quit);
 }
 
 QSqlQuery LocalDataInterface::query(QString q)
@@ -609,5 +625,11 @@ void LocalDataInterface::threadedQuery(QString q)
 {
     emit newQuery(q);
     m_activeQueries << q;
+}
+
+void LocalDataInterface::vacuum()
+{
+    QString q = "VACUUM;";
+    threadedQuery( q );
 }
 

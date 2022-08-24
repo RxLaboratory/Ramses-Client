@@ -414,10 +414,9 @@ void RamObjectList::checkAvailability(QString uuid, bool availability)
 
 void RamObjectList::inserted(QString uuid, QString tableName)
 {
-    qDebug() << tableName;
     // Not for me...
     if (tableName != objectTypeName(m_contentType)) return;
-qDebug() << uuid;
+
     RamObject *o = RamObject::get( uuid, m_contentType );
     append(o);
 }
