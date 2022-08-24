@@ -7,10 +7,10 @@
 5A - Move all settings to database? see later
   
 5- Sync process
+	TODO getSync: hash user password
 	Test LocalDataInterface.getSync
 	sync
 		send changes since last sync to server, get new data.
-			decrypt user data and remove passwords / Except for current user -> hash and add
 			server side: merge incoming user data to existing: make sure to keep existing password
 		on demand sync
 		periodic sync: Sync interval: option, default, 60s
