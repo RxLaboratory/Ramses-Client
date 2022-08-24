@@ -85,6 +85,10 @@ protected:
 
     QFrame *ui_editWidget = nullptr;
 
+private slots:
+    void checkData(QString uuid);
+    void checkAvailability(QString uuid, bool availability);
+
 private:
     void construct(QObject *parent = nullptr);
     ObjectDockWidget *m_dockWidget = nullptr;

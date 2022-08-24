@@ -43,9 +43,11 @@ RamObjectList::RamObjectList(QString shortName, QString name, ObjectType type, D
     QAbstractTableModel(parent),
     RamAbstractObject(shortName, name, listType, mode != ListObject)
 {
-    construct(parent);
     m_dataMode = mode;
     m_contentType = type;
+
+    construct(parent);
+
 
     if (mode == ListObject)
     {
@@ -57,6 +59,8 @@ RamObjectList::RamObjectList(QString shortName, QString name, ObjectType type, D
         // And (try to) reload at once
         reload();
     }
+
+    connectEvents();
 }
 
 RamObjectList::RamObjectList(QString uuid, QObject *parent, ObjectType listType):
@@ -64,6 +68,7 @@ RamObjectList::RamObjectList(QString uuid, QObject *parent, ObjectType listType)
     RamAbstractObject(uuid, listType)
 {
     construct(parent);
+
     m_dataMode = ListObject;
     if (uuid.toLower() == "emptylist")
     {
@@ -74,6 +79,8 @@ RamObjectList::RamObjectList(QString uuid, QObject *parent, ObjectType listType)
     m_contentType = objectTypeFromName( getData("type").toString() );
 
     reload();
+
+    connectEvents();
 }
 
 // QAbstractTableModel Reimplementation
@@ -214,8 +221,6 @@ bool RamObjectList::moveRows(const QModelIndex &sourceParent, int sourceRow, int
         else m_objectList.move(sourceRow, destinationChild);
     }
 
-    saveData();
-
     endMoveRows();
 
     return true;
@@ -248,9 +253,6 @@ void RamObjectList::insertObject(int i, RamObject *obj)
     beginInsertRows(QModelIndex(), i, i);
 
     addObj(obj, i);
-
-    // Save data
-    saveData();
 
     endInsertRows();
 }
@@ -288,8 +290,6 @@ RamObject *RamObjectList::takeObject(int i)
 
     // remove from map
     if( m_objects.contains(obj->uuid()) ) m_objects.remove(obj->uuid());
-
-    saveData();
 
     endRemoveRows();
     return obj;
@@ -393,6 +393,33 @@ void RamObjectList::saveData()
     }
 
     emit listChanged(this);
+}
+
+void RamObjectList::checkData(QString uuid)
+{
+    // Not for me...
+    if (uuid != m_uuid) return;
+
+    reloadData();
+}
+
+void RamObjectList::checkAvailability(QString uuid, bool availability)
+{
+    Q_UNUSED(availability)
+    // Not for me...
+    if (uuid != m_uuid) return;
+
+    // TODO ?
+}
+
+void RamObjectList::inserted(QString uuid, QString tableName)
+{
+    qDebug() << tableName;
+    // Not for me...
+    if (tableName != objectTypeName(m_contentType)) return;
+qDebug() << uuid;
+    RamObject *o = RamObject::get( uuid, m_contentType );
+    append(o);
 }
 
 void RamObjectList::removeAll(RamObject *obj)
@@ -532,6 +559,15 @@ void RamObjectList::connectEvents()
     connect(this, &QAbstractTableModel::rowsInserted, this, &RamObjectList::saveData);
     connect(this, &QAbstractTableModel::rowsRemoved, this, &RamObjectList::saveData);
     connect(this, &QAbstractTableModel::rowsMoved, this, &RamObjectList::saveData);
+    if (m_dataMode == ListObject)
+    {
+        connect(LocalDataInterface::instance(), &LocalDataInterface::dataChanged, this, &RamObjectList::checkData);
+        connect(LocalDataInterface::instance(), &LocalDataInterface::availabilityChanged, this, &RamObjectList::checkAvailability);
+    }
+    else if (m_dataMode == Table)
+    {
+        connect(LocalDataInterface::instance(), &LocalDataInterface::inserted, this, &RamObjectList::inserted);
+    }
 }
 
 // SORTERS //

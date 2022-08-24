@@ -102,6 +102,9 @@ signals:
     // emitted when all save queries have terminated
     // (everything's been written and it's safe to get data again)
     void ready();
+    void dataChanged(QString);
+    void availabilityChanged(QString,bool);
+    void inserted(QString,QString);
 
 protected:
     static LocalDataInterface *_instance;
@@ -128,6 +131,13 @@ private:
     Querier *m_tQuerier;
     Querier *m_querier;
     QStringList m_activeQueries;
+
+    /**
+     * Changes to emit after syncing
+     */
+    QList<QStringList> m_inserted;
+    QStringList m_updated;
+    QMap<QString, bool> m_availabilityChanged;
 };
 
 #endif // LOCALDATAINTERFACE_H

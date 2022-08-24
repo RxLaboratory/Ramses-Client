@@ -147,10 +147,31 @@ void RamObject::showEdit(QString title)
     mw->setPropertiesDockWidget( ui_editWidget, title, m_icon);
 }
 
+void RamObject::checkData(QString uuid)
+{
+    // Not for me...
+    if (uuid != m_uuid) return;
+
+    emit dataChanged(this);
+}
+
+void RamObject::checkAvailability(QString uuid, bool availability)
+{
+    // Not for me...
+    if (uuid != m_uuid) return;
+
+    if (availability) emit restored(this);
+    else emit removed(this);
+}
+
 void RamObject::construct(QObject *parent)
 {
     if (!parent && m_objectType != Ramses) this->setParent(Ramses::instance());
     this->setObjectName( objectTypeName() + " | " + shortName() + " (" + m_uuid + ")" );
+
+    // Monitor db changes
+    connect(LocalDataInterface::instance(), &LocalDataInterface::dataChanged, this, &RamObject::checkData);
+    connect(LocalDataInterface::instance(), &LocalDataInterface::availabilityChanged, this, &RamObject::checkAvailability);
 }
 
 

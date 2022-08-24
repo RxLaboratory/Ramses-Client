@@ -6,10 +6,9 @@
 5A - Move all settings to database? see later
   
 5- Sync process
-	hide extension for recent combobox
-	console : add clear button next to type // check combobox style for docked panels!
-	insert objects on sync -> connect each new table list to dbi sync objinserted(uuid, table)
-	update objects on sync -> connect each new object and object list to dbi sync objchanged(uuid)
+	test modifying lists (add, remove, move)
+	X insert objects on sync -> connect each new table list to dbi sync objinserted(uuid, table)
+	X update objects on sync -> connect each new object and object list to dbi sync objchanged(uuid)
 	sync
 		send changes since last sync to server, get new data.
 			decrypt user data and remove passwords / Except for current user -> hash and add

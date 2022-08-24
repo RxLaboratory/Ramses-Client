@@ -118,6 +118,11 @@ protected slots:
     virtual QJsonObject reloadData() override;
     void saveData();
 
+private slots:
+    void checkData(QString uuid);
+    void checkAvailability(QString uuid, bool availability);
+    void inserted(QString uuid, QString tableName);
+
 private:
     void construct(QObject *parent);
     void connectEvents();

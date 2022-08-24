@@ -428,7 +428,6 @@ void LocalDataInterface::sync(QJsonArray tables)
             }
             if (contains(uuid, tableName)) continue;
 
-
             QString data = incomingRow.value("data").toString().replace("'", "''");
             QString modified = incomingRow.value("modified").toString();
             QString removed = incomingRow.value("removed").toString("0");
@@ -450,10 +449,11 @@ void LocalDataInterface::sync(QJsonArray tables)
                 threadedQuery( q.arg(tableName, data, modified, uuid, removed) );
             }
 
-            incomingRows.removeAt(r);
+            QStringList ins;
+            ins << uuid << tableName;
+            m_inserted << ins;
 
-            // TODO
-            // warn containing list
+            incomingRows.removeAt(r);
         }
 
         // Update existing
@@ -464,6 +464,13 @@ void LocalDataInterface::sync(QJsonArray tables)
             QString data = incomingRow.value("data").toString().replace("'", "''");
             QString modified = incomingRow.value("modified").toString();
             QString removed = incomingRow.value("removed").toString("0");
+            bool hasBeenRemoved = incomingRow.value("removed").toBool(false);
+
+            // Check if the object has been removed or restored
+            bool wasRemoved = isRemoved(uuid, tableName);
+            bool availChanged = wasRemoved != hasBeenRemoved;
+            if (availChanged) m_availabilityChanged[uuid] = !hasBeenRemoved;
+
             if (tableName == "RamUser")
             {
                 QString userName = incomingRow.value("userName").toString().replace("'", "''");
@@ -488,8 +495,7 @@ void LocalDataInterface::sync(QJsonArray tables)
                 threadedQuery( q.arg(tableName, data, modified, removed, uuid) );
             }
 
-            // TODO
-            // warn existing object
+            m_updated << uuid;
         }
     }
 }
@@ -540,7 +546,35 @@ void LocalDataInterface::logError(QString err)
 void LocalDataInterface::finishQuery(QString q)
 {
     m_activeQueries.removeOne(q);
+
     if (m_activeQueries.isEmpty()) {
+
+        qDebug() << "LocalDataInterface is getting ready!";
+
+        // Emit what needs to be emitted
+        for (int i = 0; i < m_inserted.count(); i++)
+        {
+            QStringList ins = m_inserted.at(i);
+            emit inserted(ins.at(0), ins.at(1));
+        }
+        QMapIterator<QString,bool> avIt(m_availabilityChanged);
+        while(avIt.hasNext())
+        {
+            avIt.next();
+            emit availabilityChanged(avIt.key(), avIt.value());
+        }
+        for (int i = 0; i < m_updated.count(); i++)
+        {
+            emit dataChanged(m_updated.at(i));
+        }
+        // Clear all
+        m_inserted.clear();
+        m_availabilityChanged.clear();
+        m_updated.clear();
+
+        qDebug() << "LocalDataInterface Ready!";
+
+        // We're ready!
         emit ready();
     }
 }
