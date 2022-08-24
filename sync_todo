@@ -26,7 +26,6 @@
 7A - look for memory leaks (object parenting, project must be parent of its content)
 
 7B - DB Clean tool
-	- Run vacuum on quit
 	- Button to clean and vacuum: removes unused objects, sync, vacuum
 	- list removed objects by table / type; button to restore/delete permanently
 	- button to delete permanently all removed objects
