@@ -1,12 +1,12 @@
 #ifndef CONSOLEWIDGET_H
 #define CONSOLEWIDGET_H
 
-#include <QWidget>
+#include <QFrame>
 
 #include "duqf-widgets/duqfloggingtextedit.h"
 #include "duqf-utils/duqflogger.h"
 
-class ConsoleWidget : public QWidget
+class ConsoleWidget : public QFrame
 {
     Q_OBJECT
 public:
@@ -17,6 +17,7 @@ signals:
 
 private slots:
     void levelIndexChanged(int index);
+    void clear();
 
 private:
     void setupUi(DuQFLoggerObject *o = nullptr);
@@ -24,6 +25,7 @@ private:
 
     DuQFLoggingTextEdit *ui_consoleEdit;
     QComboBox *ui_levelBox;
+    QPushButton *ui_clearButton;
 };
 
 #endif // CONSOLEWIDGET_H

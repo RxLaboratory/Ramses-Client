@@ -831,11 +831,17 @@ QDockWidget QAbstractItemView
 }
 
 QDockWidget QComboBox,
+QDockWidget QPushButton
+{
+    background-color: @color-transparent;
+}
+
 QDockWidget QComboBox::item,
 QDockWidget QComboBox QAbstractItemView
 {
     background-color: @color-less-dark-grey;
 }
+
 
 DuQFDockTitle QFrame {
     background-color: @color-less-dark-grey;

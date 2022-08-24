@@ -1,14 +1,14 @@
 #include "consolewidget.h"
 
 ConsoleWidget::ConsoleWidget(QWidget *parent)
-    : QWidget{parent}
+    : QFrame{parent}
 {
     setupUi();
     connectEvents();
 }
 
 ConsoleWidget::ConsoleWidget(DuQFLoggerObject *o, QWidget *parent)
-    : QWidget{parent}
+    : QFrame{parent}
 {
     setupUi(o);
 }
@@ -42,16 +42,16 @@ void ConsoleWidget::levelIndexChanged(int index)
     }
 }
 
+void ConsoleWidget::clear()
+{
+    ui_consoleEdit->clear();
+}
+
 void ConsoleWidget::setupUi(DuQFLoggerObject *o)
 {
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
     mainLayout->setContentsMargins(3,3,3,3);
     mainLayout->setSpacing(3);
-
-    if (o) ui_consoleEdit = new DuQFLoggingTextEdit(o);
-    else ui_consoleEdit = new DuQFLoggingTextEdit();
-    ui_consoleEdit->setLevel(DuQFLog::Information);
-    mainLayout->addWidget(ui_consoleEdit);
 
     ui_levelBox = new QComboBox();
     ui_levelBox->addItem("Data", DuQFLog::Data);
@@ -62,6 +62,15 @@ void ConsoleWidget::setupUi(DuQFLoggerObject *o)
     ui_levelBox->addItem("Fatal", DuQFLog::Fatal);
     mainLayout->addWidget(ui_levelBox);
 
+    if (o) ui_consoleEdit = new DuQFLoggingTextEdit(o);
+    else ui_consoleEdit = new DuQFLoggingTextEdit();
+    ui_consoleEdit->setLevel(DuQFLog::Information);
+    mainLayout->addWidget(ui_consoleEdit);
+
+    ui_clearButton = new QPushButton(tr("Clear"), this);
+    ui_clearButton->setIcon(QIcon(":/icons/clean"));
+    mainLayout->addWidget(ui_clearButton);
+
     QSettings settings;
     int level = settings.value("console/level", 2).toInt();
     ui_levelBox->setCurrentIndex( level );
@@ -71,4 +80,5 @@ void ConsoleWidget::setupUi(DuQFLoggerObject *o)
 void ConsoleWidget::connectEvents()
 {
     connect(ui_levelBox, SIGNAL(currentIndexChanged(int)), this, SLOT(levelIndexChanged(int)));
+    connect(ui_clearButton, &QPushButton::clicked, this, &ConsoleWidget::clear);
 }

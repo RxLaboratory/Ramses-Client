@@ -235,7 +235,6 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     ui_consoleDockWidget->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable );
     ui_consoleDockWidget->setWidget( console );
     this->addDockWidget(Qt::LeftDockWidgetArea, ui_consoleDockWidget);
-    this->tabifyDockWidget( ui_statsDockWidget, ui_consoleDockWidget);
     ui_consoleDockWidget->hide();
 
     qDebug() << "> Console dock ready";
