@@ -62,6 +62,8 @@ public:
      * @return the uuid if success, empty string otherwise
      */
     QString login(QString username, QString password);
+    void sync(QJsonArray tables, QDateTime prevSyncDate = QDateTime::fromString("1970-01-01 00:00:00", "yyyy-MM-dd hh:mm:00"));
+    QJsonArray downloadData();
 
 public slots:
     /**
@@ -132,7 +134,7 @@ private:
      * @brief Posts a request to the server
      * @param request
      */
-    void postRequest(Request r);
+    QNetworkReply *postRequest(Request r);
     /**
      * @brief Adds a request to the queue
      * @param r the request to add
@@ -155,6 +157,7 @@ private:
      * @brief Starts posting requests if and only if we're Online
      */
     void startQueue();
+    void pauseQueue();
 
     // ATTRIBUTES //
 
@@ -190,7 +193,6 @@ private:
      * @brief The token given by the server when logging in.
      */
     QString m_sessionToken = "";
-    QString m_uuid = "";
 
     // Requests and Queue //
 
@@ -217,6 +219,8 @@ private:
      * @todo expose this as a user setting ?
      */
     int m_requestDelay = 500;
+
+    QJsonObject m_lastContent;
 
 };
 

@@ -22,6 +22,7 @@ namespace FileUtils
     void setReadWrite(QString path);
     bool move(QString from, QString to, bool moveToTrashIfExists = false);
     void copy(QString from, QString to);
+    QString copyToTemporary(QString from);
     void remove(QString path);
     qint64 getDirSize(QDir d);
     void openInExplorer(QString path, bool askForCreation = false);

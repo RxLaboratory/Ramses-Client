@@ -90,6 +90,8 @@ public:
     const QString &dataFile() const;
     ServerConfig setDataFile(const QString &file);
 
+    QStringList tableNames();
+
 signals:
     void dataReset();
     void newQuery(QString);

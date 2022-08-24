@@ -1,6 +1,7 @@
 #include "localdatainterface.h"
 
 #include "datacrypto.h"
+#include "duqf-utils/utils.h"
 #include "processmanager.h"
 
 // QUERIER
@@ -391,6 +392,44 @@ ServerConfig LocalDataInterface::setDataFile(const QString &file)
     return serverConfig();
 }
 
+QStringList LocalDataInterface::tableNames()
+{
+    QSqlDatabase db = QSqlDatabase::database("infodb");
+
+    // Copy the template to a file we can read
+    QString tempDB = FileUtils::copyToTemporary(":/data/template");
+    db.setDatabaseName(tempDB);
+
+    if (!db.open())
+    {
+        qDebug() << "Can't open template DB";
+        return QStringList();
+    }
+
+    // Get info
+    QSqlQuery qry = QSqlQuery(db);
+
+    if (!qry.exec("SELECT name FROM sqlite_schema WHERE type ='table' AND name NOT LIKE 'sqlite_%';"))
+    {
+        qDebug() << "Can't query template DB";
+        return QStringList();
+    }
+
+    QStringList tables;
+    while (qry.next())
+    {
+        QString name = qry.value(0).toString();
+        if (name.startsWith("Ram")) tables << name;
+    }
+
+    db.close();
+
+    // Remove the temp file
+    QFile::remove(tempDB);
+
+    return tables;
+}
+
 void LocalDataInterface::logError(QString err)
 {
     log(err, DuQFLog::Critical);
@@ -419,6 +458,8 @@ LocalDataInterface::LocalDataInterface() :
 
     QSqlDatabase editdb = QSqlDatabase::addDatabase("QSQLITE","editdb");
     editdb.setHostName("localhost");
+    QSqlDatabase infodb = QSqlDatabase::addDatabase("QSQLITE","infodb");
+    infodb.setHostName("localhost");
 
     m_queryThread.start();
 }

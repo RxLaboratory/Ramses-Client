@@ -1,6 +1,7 @@
 #include "ramserverinterface.h"
 
 #include "duqf-app/app-version.h"
+#include "ramdatainterface/localdatainterface.h"
 
 // STATIC //
 
@@ -94,6 +95,10 @@ void RamServerInterface::ping()
 
 QString RamServerInterface::login(QString username, QString password)
 {
+    // Pause the queue
+    pauseQueue();
+    m_lastContent = QJsonObject();
+
     QJsonObject body;
     body.insert("username", username);
     body.insert("password", password);
@@ -102,13 +107,67 @@ QString RamServerInterface::login(QString username, QString password)
 
     // Wait for the reply
     QDeadlineTimer t(m_timeout*2);
-    while (m_uuid == "")
+    while (m_lastContent.isEmpty())
     {
         qApp->processEvents();
+        if ( !isOnline() ) break;
         if ( t.hasExpired() ) break;
     }
 
-    return m_uuid;
+    // Restart queue
+    startQueue();
+
+    return m_lastContent.value("content").toObject().value("uuid").toString();;
+}
+
+void RamServerInterface::sync(QJsonArray tables, QDateTime prevSyncDate)
+{
+    QJsonObject body;
+    body.insert("tables", tables);
+    body.insert("previousSyncDate", prevSyncDate.toString("yyyy-MM-dd hh:mm:00"));
+    queueRequest("sync", body);
+    startQueue();
+}
+
+QJsonArray RamServerInterface::downloadData()
+{
+    QStringList tableNames = LocalDataInterface::instance()->tableNames();
+    QJsonArray tables;
+    for(int i = 0; i < tableNames.count(); i++)
+    {
+        QJsonObject table;
+        table.insert("name", tableNames.at(i));
+        table.insert("modifiedRows", QJsonArray());
+        tables << table;
+    }
+
+    // Pause the queue
+    pauseQueue();
+    m_lastContent = QJsonObject();
+
+    QJsonObject body;
+    body.insert("tables", tables);
+    body.insert("previousSyncDate", "1970-01-01 00:00:00");
+    Request r = buildRequest("sync", body);
+    postRequest(r);
+
+    // Wait for the reply
+    QDeadlineTimer t(m_timeout*2);
+    while (m_lastContent.isEmpty())
+    {
+        qApp->processEvents();
+        if ( !isOnline() ) return QJsonArray();
+        if ( t.hasExpired() ) break;
+    }
+
+    QJsonArray result;
+    if (m_lastContent.isEmpty()) qDebug() << "Can't download data...";
+    else result = m_lastContent.value("content").toObject().value("tables").toArray();
+
+    // Restart queue
+    startQueue();
+
+    return result;
 }
 
 // PUBLIC SLOTS //
@@ -134,10 +193,7 @@ void RamServerInterface::setConnectionStatus(NetworkUtils::NetworkStatus s, QStr
     // update status
     m_status = s;
     // remove token if offline
-    if (s == NetworkUtils::Offline) {
-        m_sessionToken = "";
-        m_uuid = "";
-    }
+    if (s == NetworkUtils::Offline) m_sessionToken = "";
 
     // log and emit signal
     if (s == NetworkUtils::Offline) log(tr("Disconnected:")  + " " + reason);
@@ -328,6 +384,8 @@ void RamServerInterface::dataReceived(QNetworkReply *reply)
 
     log(repQuery + "\n" + repMessage + "\nContent:\n" + repAll, DuQFLog::Data);
 
+    m_lastContent = repObj;
+
     if (repObj.value("error").toBool(false)) return;
 
     bool repSuccess = repObj.value("success").toBool();
@@ -364,8 +422,6 @@ void RamServerInterface::dataReceived(QNetworkReply *reply)
     {
         // get the new token
         m_sessionToken = repObj.value("content").toObject().value("token").toString();
-        // Get the uuid
-        m_uuid = repObj.value("content").toObject().value("uuid").toString();
     }
     else if (repQuery == "loggedout")
     {
@@ -380,13 +436,13 @@ void RamServerInterface::nextRequest()
 {
     if (m_requestQueue.isEmpty())
     {
-        m_requestQueueTimer->stop();
+        pauseQueue();
         return;
     }
 
     if (m_status != NetworkUtils::Online) {
         // If offline, stops the queue.
-        if (m_status == NetworkUtils::Offline) m_requestQueueTimer->stop();
+        if (m_status == NetworkUtils::Offline) pauseQueue();
         return; // Return now if we're not online
     }
 
@@ -449,7 +505,7 @@ void RamServerInterface::flushRequests()
 
     log( "Flushing remaining requests." );
 
-    m_requestQueueTimer->stop();
+    pauseQueue();
 
     // Post the remaining requests
     while( !m_requestQueue.isEmpty() )
@@ -471,6 +527,11 @@ void RamServerInterface::startQueue()
 {
     if (m_status != NetworkUtils::Online) return;
     if (!m_requestQueueTimer->isActive()) m_requestQueueTimer->start(m_requestDelay);
+}
+
+void RamServerInterface::pauseQueue()
+{
+    m_requestQueueTimer->stop();
 }
 
 // PRIVATE //
@@ -512,7 +573,7 @@ const QString RamServerInterface::serverProtocol()
     return "http://";
 }
 
-void RamServerInterface::postRequest(Request r)
+QNetworkReply *RamServerInterface::postRequest(Request r)
 {
     QNetworkReply *reply = m_network.post(r.request, r.body.toUtf8());
     QUrl url = r.request.url();
@@ -531,6 +592,8 @@ void RamServerInterface::postRequest(Request r)
 
     connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this,SLOT(networkError(QNetworkReply::NetworkError)));
     connect(reply, SIGNAL(finished()), reply, SLOT(deleteLater()));
+
+    return reply;
 }
 
 

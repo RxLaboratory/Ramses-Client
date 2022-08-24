@@ -101,11 +101,12 @@ void DatabaseCreateWidget::createDB()
         s.updateDelay = ui_serverEdit->updateFreq();
         s.timeout = ui_serverEdit->timeout();
 
-        // Connect to  server
+        // Connect to server
         RamServerInterface *rsi = RamServerInterface::instance();
         rsi->setServerAddress(s.address);
         rsi->setSsl(s.useSsl);
         rsi->setTimeout(s.timeout);
+
         // (try to ) set online
         rsi->setOnline();
         if (!rsi->isOnline())
@@ -116,17 +117,33 @@ void DatabaseCreateWidget::createDB()
                                      );
             return;
         }
+
         // login
         QString password = ui_onlinePasswordEdit->text();
         password = DataCrypto::instance()->generatePassHash(password, s.address.replace("/", ""));
 
         QString uuid = rsi->login(ui_onlineShortNameEdit->text(), password);
-        qDebug() << uuid;
-        if (uuid == "") return;
-
-
+        if (uuid == "")
+        {
+            QMessageBox::information(this,
+                                     tr("Invalid user ID or password"),
+                                     tr("Please check your ID and password.")
+                                     );
+            return;
+        }
 
         // Download all data
+        QJsonArray tables = rsi->downloadData();
+        if (tables.count() == 0)
+        {
+            QMessageBox::information(this,
+                                     tr("Can't find any data"),
+                                     tr("I can't donwnload any data from this server.\n\n"
+                                        "This may be due to a slow connexion,\n"
+                                        "try to increase the server time out.")
+                                     );
+            return;
+        }
 
         // Create DB
 

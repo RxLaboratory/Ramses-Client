@@ -446,3 +446,15 @@ bool FileUtils::moveToTrash(const QString &fileName)
 
 #endif
 }
+
+QString FileUtils::copyToTemporary(QString from)
+{
+    QFileInfo fileInfo(from);
+    QUuid uuid = QUuid::createUuid();
+    QString tempFileFullPath = QDir::toNativeSeparators(
+                QDir::tempPath() + "/"
+                + qApp->applicationName().replace(" ", "") +"_" +
+                uuid.toString(QUuid::WithoutBraces) + fileInfo.completeSuffix());
+    FileUtils::copy(from, tempFileFullPath);
+    return tempFileFullPath;
+}
