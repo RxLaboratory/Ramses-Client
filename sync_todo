@@ -7,8 +7,6 @@
   
 5- Sync process
 	test modifying lists (add, remove, move)
-	X insert objects on sync -> connect each new table list to dbi sync objinserted(uuid, table)
-	X update objects on sync -> connect each new object and object list to dbi sync objchanged(uuid)
 	sync
 		send changes since last sync to server, get new data.
 			decrypt user data and remove passwords / Except for current user -> hash and add
