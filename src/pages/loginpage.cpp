@@ -68,7 +68,7 @@ void LoginPage::updateDatabaseRecentList()
         settings.setArrayIndex(i);
         QString p = settings.value("path").toString();
         QFileInfo f(p);
-        if (f.exists()) ui_dataBaseBox->addItem( f.fileName(), p);
+        if (f.exists()) ui_dataBaseBox->addItem( f.baseName(), p);
     }
     settings.endArray();
 

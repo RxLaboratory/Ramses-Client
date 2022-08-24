@@ -7,10 +7,13 @@
   
 5- Sync process
 	hide extension for recent combobox
+	console : add clear button next to type // check combobox style for docked panels!
 	insert objects on sync -> connect each new table list to dbi sync objinserted(uuid, table)
 	update objects on sync -> connect each new object and object list to dbi sync objchanged(uuid)
 	sync
 		send changes since last sync to server, get new data.
+			decrypt user data and remove passwords / Except for current user -> hash and add
+			server side: merge incoming user data to existing: make sure to keep existing password
 		on demand sync
 		periodic sync: Sync interval: option, default, 60s
 		get online
