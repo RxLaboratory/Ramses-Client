@@ -16,10 +16,10 @@ QString ServerEditWidget::address()
     QString t = ui_serverAddressEdit->text();
     if (t == "") return t;
 
-    t = t.split("/")[0];
+    QString test = t.split("/")[0];
 
     // Check if the host exists
-    QHostInfo info = QHostInfo::fromName(t);
+    QHostInfo info = QHostInfo::fromName(test);
     if (info.error() != QHostInfo::NoError)
     {
         QMessageBox::warning(this,
@@ -54,12 +54,12 @@ int ServerEditWidget::updateFreq() const
 
 void ServerEditWidget::setTimeout(int t)
 {
-    ui_timeoutSpinBox->setValue(t);
+    ui_timeoutSpinBox->setValue(t/1000);
 }
 
 int ServerEditWidget::timeout() const
 {
-    return ui_timeoutSpinBox->value();
+    return ui_timeoutSpinBox->value()*1000;
 }
 
 void ServerEditWidget::setupUi()

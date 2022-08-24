@@ -106,12 +106,19 @@ void DatabaseCreateWidget::createDB()
         rsi->setServerAddress(s.address);
         rsi->setSsl(s.useSsl);
         rsi->setTimeout(s.timeout);
-        rsi->setUpdateFrequency(s.updateDelay);
-        // ping
-        rsi->waitPing();
+        // (try to ) set online
+        rsi->setOnline();
+        if (!rsi->isOnline())
+        {
+            QMessageBox::information(this,
+                                     tr("Server error"),
+                                     tr("Sorry, I can't connect correctly to the server.\nPlease double check the server settings.")
+                                     );
+            return;
+        }
         // login
         QString password = ui_onlinePasswordEdit->text();
-        password = DataCrypto::instance()->generatePassHash(password);
+        password = DataCrypto::instance()->generatePassHash(password, s.address.replace("/", ""));
 
         QString uuid = rsi->login(ui_onlineShortNameEdit->text(), password);
         qDebug() << uuid;
@@ -213,6 +220,10 @@ void DatabaseCreateWidget::setupUi()
     ui_shortNameEdit->setText("Duf");
     ui_npassword1Edit->setText("pass");
     ui_npassword2Edit->setText("pass");
+
+    ui_serverEdit->setAddress("ramses.rxlab.io/tests");
+    ui_onlineShortNameEdit->setText("Admin");
+    ui_onlinePasswordEdit->setText("password");
 #endif
 }
 

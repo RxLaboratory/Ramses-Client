@@ -2,12 +2,27 @@
 
 #include "duqf-app/app-version.h"
 
+// STATIC //
+
 RamServerInterface *RamServerInterface::_instance = nullptr;
 
 RamServerInterface *RamServerInterface::instance()
 {
     if (!RamServerInterface::_instance) RamServerInterface::_instance = new RamServerInterface();
     return RamServerInterface::_instance;
+}
+
+// PUBLIC //
+
+const QString &RamServerInterface::serverAddress() const
+{
+    return m_serverAddress;
+}
+
+void RamServerInterface::setServerAddress(QString newServerAddress)
+{
+    if (!newServerAddress.endsWith("/")) newServerAddress = newServerAddress + "/";
+    m_serverAddress = newServerAddress;
 }
 
 bool RamServerInterface::ssl() const
@@ -30,6 +45,11 @@ void RamServerInterface::setSsl(bool useSsl)
     emit sslChanged(m_ssl);
 }
 
+int RamServerInterface::timeOut() const
+{
+    return m_timeout;
+}
+
 void RamServerInterface::setTimeout(int newTimeout)
 {
     m_timeout = newTimeout;
@@ -40,36 +60,63 @@ const QString &RamServerInterface::serverVersion() const
     return m_serverVersion;
 }
 
-void RamServerInterface::post(QString query, QJsonObject data)
+NetworkUtils::NetworkStatus RamServerInterface::status() const
 {
-    queueRequest(query, data);
+    return m_status;
 }
 
-const QString &RamServerInterface::serverAddress() const
+bool RamServerInterface::isOnline() const
 {
-    return m_serverAddress;
-}
-
-const QString RamServerInterface::serverProtocol()
-{
-    if (m_ssl)
+    switch(m_status)
     {
-        if (!QSslSocket::supportsSsl()) {
-            log("SSL is not available on this system. Please install OpenSSL to securely connect to the specified server.", DuQFLog::Critical);
-            return "http://";
+    case NetworkUtils::Online: return true;
+    case NetworkUtils::Offline: return false;
+    default:
+        //Wait a sec or two
+        QDeadlineTimer t(2000);
+        while (m_status != NetworkUtils::Online && m_status != NetworkUtils::Offline)
+        {
+            qApp->processEvents();
+            if (t.hasExpired()) break;
         }
-        else return "https://";
+        return m_status == NetworkUtils::Online;
+    }
+    return false;
+}
+
+// API
+
+void RamServerInterface::ping()
+{
+    Request r = buildRequest("ping", QJsonObject());
+    postRequest(r);
+}
+
+QString RamServerInterface::login(QString username, QString password)
+{
+    QJsonObject body;
+    body.insert("username", username);
+    body.insert("password", password);
+    Request r = buildRequest("login", body);
+    postRequest(r);
+
+    // Wait for the reply
+    QDeadlineTimer t(m_timeout*2);
+    while (m_uuid == "")
+    {
+        qApp->processEvents();
+        if ( t.hasExpired() ) break;
     }
 
-    return "http://";
+    return m_uuid;
 }
+
+// PUBLIC SLOTS //
 
 void RamServerInterface::setOnline()
 {
     setConnectionStatus(NetworkUtils::Connecting, "Server ping");
-    Request r = buildRequest("ping", QJsonObject());
-    postRequest(r);
-    m_pingTimer->start(m_pingDelay);
+    ping();
 }
 
 void RamServerInterface::setOffline()
@@ -77,97 +124,28 @@ void RamServerInterface::setOffline()
     setConnectionStatus(NetworkUtils::Offline, "Switched to offline mode.");
 }
 
-void RamServerInterface::setServerAddress(const QString &newServerAddress)
-{
-    if (newServerAddress == m_serverAddress) return;
-    m_serverAddress = newServerAddress;
-}
-
-void RamServerInterface::nextRequest()
-{
-    if (m_requestQueue.isEmpty())
-    {
-        m_requestQueueTimer->stop();
-        return;
-    }
-
-    if (!waitPing()) {
-        m_requestQueueTimer->stop();
-        return; // Return now if we're offline
-    }
-
-    postRequest( m_requestQueue.takeFirst() );
-}
-
-void RamServerInterface::checkConnection()
-{
-    waitPing(true);
-}
+// PRIVATE SLOTS //
 
 void RamServerInterface::setConnectionStatus(NetworkUtils::NetworkStatus s, QString reason)
 {
     // Check security
-    if (s != m_status && s == NetworkUtils::Online && !m_ssl) log("Connection is not secured!", DuQFLog::Critical);
+    if (s != m_status && s == NetworkUtils::Online && !m_ssl) log(tr("The connection is not secured!"), DuQFLog::Critical);
 
     // update status
     m_status = s;
     // remove token if offline
-    if (s == NetworkUtils::Offline) m_sessionToken = "";
+    if (s == NetworkUtils::Offline) {
+        m_sessionToken = "";
+        m_uuid = "";
+    }
 
     // log and emit signal
-    if (s == NetworkUtils::Offline) log("Disconnected: " + reason);
-    else if (s == NetworkUtils::Connecting) log("Connecting: " + reason);
-    else if (s == NetworkUtils::Online) log("Connected: " + reason);
-    else if (s == NetworkUtils::Error) log("Connection error: " + reason);
+    if (s == NetworkUtils::Offline) log(tr("Disconnected:")  + " " + reason);
+    else if (s == NetworkUtils::Connecting) log(tr("Connecting:")  + " " + reason);
+    else if (s == NetworkUtils::Online) log(tr("Connected:")  + " " + reason);
+    else if (s == NetworkUtils::Error) log(tr("Connection error:")  + " " + reason);
 
     emit connectionStatusChanged(s, reason);
-}
-
-void RamServerInterface::dataReceived(QNetworkReply *reply)
-{
-    QJsonObject repObj = processReply(reply);
-    if (repObj.value("error").toBool(false)) return;
-
-    QString repQuery = repObj.value("query").toString();
-    QString repMessage = repObj.value("message").toString();
-    bool repSuccess = repObj.value("success").toBool();
-
-    if (!repSuccess || repMessage.startsWith("warning", Qt::CaseInsensitive))
-    {
-        log(repMessage, DuQFLog::Warning);
-    }
-    else
-    {
-        log(repMessage, DuQFLog::Information);
-    }
-
-    //if we recieved the reply from the ping, set online and restarts the queue
-    if (repQuery == "ping")
-    {
-        if (repSuccess)
-        {
-            setConnectionStatus(NetworkUtils::Online, "Server ready");
-            startQueue();
-        }
-        else
-        {
-            setConnectionStatus(NetworkUtils::Error, "The server request was not successful.\nThis is probably a bug or a configuration error.\nPlease report bugs on " + QString(URL_SOURCECODE));
-        }
-
-        // get the new token
-        m_sessionToken = repObj.value("token").toString();
-
-        // get the server version
-        m_serverVersion = repObj.value("content").toObject().value("version").toString();
-    }
-
-
-    if (repQuery == "loggedout")
-    {
-        setConnectionStatus(NetworkUtils::Offline, "The server ended your session.");
-    }
-
-    emit data(repObj);
 }
 
 void RamServerInterface::networkError(QNetworkReply::NetworkError err)
@@ -299,8 +277,10 @@ void RamServerInterface::networkError(QNetworkReply::NetworkError err)
     {
         reason = "Unknown server error.";
     }
-    setConnectionStatus( NetworkUtils::Offline, "Network error:\n" + reason);
-    log(reason, DuQFLog::Critical);
+    log(tr("A network error has occured."), DuQFLog::Critical);
+    log(reason, DuQFLog::Debug);
+    setConnectionStatus( NetworkUtils::Error, tr("Network error:"));
+    setConnectionStatus( NetworkUtils::Offline, tr("A network error has occured."));
 }
 
 void RamServerInterface::sslError(QNetworkReply *reply, QList<QSslError> errs)
@@ -313,98 +293,116 @@ void RamServerInterface::sslError(QNetworkReply *reply, QList<QSslError> errs)
         log(err.errorString(), DuQFLog::Warning);
         errors = errors + "\n> " + err.errorString();
     }
-    log("SSL Error. Connection may not be secured.", DuQFLog::Warning);
-    setConnectionStatus( NetworkUtils::Offline, "There were SSL errors, the connection may not be secured.\n" + errors );
+    log(tr("An SSL Error has occured. The connection may not be secured."), DuQFLog::Warning);
+    log(errors, DuQFLog::Debug);
+    setConnectionStatus( NetworkUtils::Error, tr("SSL Errors") );
+    setConnectionStatus( NetworkUtils::Offline, tr("There were SSL errors, the connection may not be secured.") );
 }
 
-void RamServerInterface::flushRequests()
+void RamServerInterface::dataReceived(QNetworkReply *reply)
 {
-    if ( m_requestQueue.isEmpty() ) return;
-
-    log( "Flushing remaining requests." );
-
-    m_requestQueueTimer->stop();
-
-    // Post the remaining requests
-    while( !m_requestQueue.isEmpty() )
+    if (reply->error() != QNetworkReply::NoError)
     {
-        nextRequest();
-        qApp->processEvents();
-        // Wait a small bit
-        QThread::msleep( m_requestDelay / 4 );
+        QJsonObject repObj;
+        repObj.insert("error", true);
+        repObj.insert("message", tr("A server error has occured."));
+        repObj.insert("accepted",false);
+        repObj.insert("success",false);
     }
 
-    // Wait a last bit to be sure everything is sent
-    QThread::msleep( m_requestDelay );
-    qApp->processEvents();
+    QString repAll = reply->readAll();
+    QJsonDocument repDoc = QJsonDocument::fromJson(repAll.toUtf8());
+    QJsonObject repObj = repDoc.object();
 
-    log( "All requests sent." );
-}
-
-RamServerInterface::RamServerInterface():
-    DuQFLoggerObject("Ramses Server Interface", nullptr)
-{
-    // Prepare network connection
-    m_network.setCookieJar(new QNetworkCookieJar());
-    m_network.setStrictTransportSecurityEnabled(true);
-
-    m_forbiddenWords << "and" << "or" << "if" << "else" << "insert" << "update" << "select" << "drop" << "alter";
-
-    m_requestQueueTimer = new QTimer(this);
-    m_pingTimer = new QTimer(this);
-}
-
-void RamServerInterface::connectEvents()
-{
-    connect(m_requestQueueTimer, SIGNAL(timeout()), this, SLOT(nextRequest()));
-    connect(m_pingTimer, SIGNAL(timeout()), this, SLOT(checkConnection()));
-    connect(&m_network, SIGNAL(finished(QNetworkReply*)), this, SLOT(dataReceived(QNetworkReply*)));
-    connect(&m_network, SIGNAL(sslErrors(QNetworkReply*,QList)), this, SLOT(sslError(QNetworkReply*,QList)));
-    connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(flushRequests()));
-}
-
-bool RamServerInterface::waitPing(bool force)
-{
-    // If offline, we need to get online
-    if (m_status == NetworkUtils::Offline || force) setOnline();
-    //wait three seconds when connecting or set offline
-    QDeadlineTimer t(m_timeout);
-    while (m_status != NetworkUtils::Online)
+    if (repObj.isEmpty())
     {
-        qApp->processEvents();
-        if ( t.hasExpired() || m_status == NetworkUtils::Offline )
-        {
-            setOffline();
-            log("Cannot process request, server unavailable.", DuQFLog::Critical);
-            return false;
-        }
+        repObj.insert("message","Received an invalid object");
+        repObj.insert("accepted",false);
+        repObj.insert("success",false);
+        repObj.insert("error", true);
+        repObj.insert("query", "unknown");
     }
-    return true;
-}
 
-QNetworkReply *RamServerInterface::postRequest(Request r)
-{
-    QNetworkReply *reply = m_network.post(r.request, r.body.toUtf8());
-    QUrl url = r.request.url();
+    QString repQuery = repObj.value("query").toString();
+    QString repMessage = repObj.value("message").toString();
 
-    // Log URL / GET
-    log( "New request: " +  url.toString(QUrl::RemovePassword), DuQFLog::Debug);
-    // Log POST body
-    if (r.query == "login")
-        #ifdef QT_DEBUG
-        log("Request data: " + r.body, DuQFLog::Data);
-        #else
-        log("Request data: [Hidden login info]", DuQFLog::Data);
-        #endif
+    log(repQuery + "\n" + repMessage + "\nContent:\n" + repAll, DuQFLog::Data);
+
+    if (repObj.value("error").toBool(false)) return;
+
+    bool repSuccess = repObj.value("success").toBool();
+
+    if (!repSuccess || repMessage.startsWith("warning", Qt::CaseInsensitive))
+    {
+        if (repQuery != "login") log(repMessage, DuQFLog::Warning);
+        else log(repMessage, DuQFLog::Information);
+    }
     else
-        log("Request data: " + r.body, DuQFLog::Data);
+    {
+        log(repMessage, DuQFLog::Information);
+    }
 
-    connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this,SLOT(networkError(QNetworkReply::NetworkError)));
-    connect(reply, SIGNAL(finished()), reply, SLOT(deleteLater()));
+    if (repSuccess)
+    {
+        setConnectionStatus(NetworkUtils::Online, tr("Server ready"));
+        startQueue();
+    }
+    else
+    {
+        QString reason = tr("The server request was not successful.\nThis is probably a bug or a configuration error.\nPlease report bugs on %1").arg(URL_SOURCECODE);
+        log(reason, DuQFLog::Warning);
+        setConnectionStatus(NetworkUtils::Error, reason);
+    }
 
-    emit queried(r.query);
+    // Parse specific data
+    if (repQuery == "ping")
+    {
+        // get the server version
+        m_serverVersion = repObj.value("content").toObject().value("version").toString();
+    }
+    else if (repQuery== "login")
+    {
+        // get the new token
+        m_sessionToken = repObj.value("content").toObject().value("token").toString();
+        // Get the uuid
+        m_uuid = repObj.value("content").toObject().value("uuid").toString();
+    }
+    else if (repQuery == "loggedout")
+    {
+        log(tr("The server logged you out."));
+        setConnectionStatus(NetworkUtils::Offline, tr("The server logged you out."));
+    }
 
-    return reply;
+    emit newData(repObj);
+}
+
+void RamServerInterface::nextRequest()
+{
+    if (m_requestQueue.isEmpty())
+    {
+        m_requestQueueTimer->stop();
+        return;
+    }
+
+    if (m_status != NetworkUtils::Online) {
+        // If offline, stops the queue.
+        if (m_status == NetworkUtils::Offline) m_requestQueueTimer->stop();
+        return; // Return now if we're not online
+    }
+
+    postRequest( m_requestQueue.takeFirst() );
+}
+
+void RamServerInterface::queueRequest(QString query, QJsonObject body)
+{
+    Request r = buildRequest(query, body);
+    queueRequest(r);
+}
+
+void RamServerInterface::queueRequest(Request r)
+{
+    m_requestQueue << r;
+    startQueue();
 }
 
 Request RamServerInterface::buildRequest(QString query, QJsonObject body)
@@ -445,16 +443,28 @@ Request RamServerInterface::buildRequest(QString query)
     return r;
 }
 
-void RamServerInterface::queueRequest(QString query, QJsonObject body)
+void RamServerInterface::flushRequests()
 {
-    Request r = buildRequest(query, body);
-    queueRequest(r);
-}
+    if ( m_requestQueue.isEmpty() ) return;
 
-void RamServerInterface::queueRequest(Request r)
-{
-    m_requestQueue << r;
-    startQueue();
+    log( "Flushing remaining requests." );
+
+    m_requestQueueTimer->stop();
+
+    // Post the remaining requests
+    while( !m_requestQueue.isEmpty() )
+    {
+        nextRequest();
+        qApp->processEvents();
+        // Wait a small bit
+        QThread::msleep( m_requestDelay / 4 );
+    }
+
+    // Wait a last bit to be sure everything is sent
+    QThread::msleep( m_requestDelay );
+    qApp->processEvents();
+
+    log( "All requests sent." );
 }
 
 void RamServerInterface::startQueue()
@@ -463,66 +473,87 @@ void RamServerInterface::startQueue()
     if (!m_requestQueueTimer->isActive()) m_requestQueueTimer->start(m_requestDelay);
 }
 
-QJsonObject RamServerInterface::processReply(QNetworkReply *reply)
+// PRIVATE //
+
+RamServerInterface::RamServerInterface():
+    DuQFLoggerObject("Ramses Server Interface", nullptr)
 {
-    if (reply->error() != QNetworkReply::NoError)
-    {
-        QJsonObject repObj;
-        repObj.insert("error", true);
-        return repObj;
-    }
+    // Prepare network connection
+    m_network.setCookieJar(new QNetworkCookieJar());
+    m_network.setStrictTransportSecurityEnabled(true);
 
-    QString repAll = reply->readAll();
+    m_forbiddenWords << "and" << "or" << "if" << "else" << "insert" << "update" << "select" << "drop" << "alter";
 
-    QJsonDocument repDoc = QJsonDocument::fromJson(repAll.toUtf8());
-    QJsonObject repObj = repDoc.object();
+    // Don't post too many request at the same time
+    m_requestQueueTimer = new QTimer(this);
 
-    if (repObj.isEmpty())
-    {
-        repObj.insert("message",repAll);
-        repObj.insert("accepted",false);
-    }
-
-    QString repQuery = repObj.value("query").toString();
-    QString repMessage = repObj.value("message").toString();
-    log(repQuery + "\n" + repMessage + "\nContent:\n" + repAll, DuQFLog::Data);
-
-    return repObj;
+    connectEvents();
 }
 
-int RamServerInterface::updateFrequency() const
+void RamServerInterface::connectEvents()
 {
-    return m_updateFrequency;
+    connect(m_requestQueueTimer, &QTimer::timeout, this, &RamServerInterface::nextRequest);
+    connect(&m_network, &QNetworkAccessManager::finished, this, &RamServerInterface::dataReceived);
+    connect(&m_network, &QNetworkAccessManager::sslErrors, this, &RamServerInterface::sslError);
+    connect(qApp, &QApplication::aboutToQuit, this, &RamServerInterface::flushRequests);
 }
 
-void RamServerInterface::setUpdateFrequency(int newUpdateFrequency)
+const QString RamServerInterface::serverProtocol()
 {
-    m_updateFrequency = newUpdateFrequency;
-}
-
-QString RamServerInterface::login(QString username, QString password)
-{
-    QJsonObject body;
-    body.insert("username", username);
-    body.insert("password", password);
-    Request r = buildRequest("login", body);
-    QNetworkReply *rep = postRequest(r);
-
-    // Wait for the reply
-    QDeadlineTimer t(m_timeout);
-    while (!rep->isFinished())
+    if (m_ssl)
     {
-        qApp->processEvents();
-        if ( t.hasExpired() )
-        {
-            setOffline();
-            log("Cannot process request, server unavailable.", DuQFLog::Critical);
-            return "";
+        if (!QSslSocket::supportsSsl()) {
+            log("SSL is not available on this system. Please install OpenSSL to securely connect to the specified server.", DuQFLog::Critical);
+            return "http://";
         }
+        else return "https://";
     }
-    QJsonObject repObj = processReply(rep);
-    if (repObj.value("error").toBool(false)) return "";
 
-    return repObj.value("content").toObject().value("uuid").toString("");
+    return "http://";
 }
+
+void RamServerInterface::postRequest(Request r)
+{
+    QNetworkReply *reply = m_network.post(r.request, r.body.toUtf8());
+    QUrl url = r.request.url();
+
+    // Log URL / GET
+    log( "New request: " +  url.toString(QUrl::RemovePassword), DuQFLog::Debug);
+    // Log POST body
+    if (r.query == "login")
+        #ifdef QT_DEBUG
+        log("Request data: " + r.body, DuQFLog::Data);
+        #else
+        log("Request data: [Hidden login info]", DuQFLog::Data);
+        #endif
+    else
+        log("Request data: " + r.body, DuQFLog::Data);
+
+    connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this,SLOT(networkError(QNetworkReply::NetworkError)));
+    connect(reply, SIGNAL(finished()), reply, SLOT(deleteLater()));
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

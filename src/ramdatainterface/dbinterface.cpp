@@ -24,7 +24,6 @@ void DBInterface::setOnline()
 {
     // Connects to the Ramses Server and change connection status
     m_rsi->setOnline();
-    setConnectionStatus(NetworkUtils::Connecting, "Connecting to the Ramses Server...");
 }
 
 void DBInterface::setRamsesPath(QString p)

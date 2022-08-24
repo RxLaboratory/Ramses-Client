@@ -139,8 +139,9 @@ QColor DuQFLog::color(bool darkBG)
 QString DuQFLog::typeString() const
 {
     switch(_t) {
+        case DuQFLog::Data: return "(Data) " + _c;
         case DuQFLog::Debug: return "(Debug) " + _c;
-        case DuQFLog::Information: return _c;
+        case DuQFLog::Information: return "(Information) " + _c;
         case DuQFLog::Warning: return "/!\\ Warning: " + _c;
         case DuQFLog::Critical: return " --- !!! Critical: " + _c;
         case DuQFLog::Fatal: return " === Fatal === " + _c;
