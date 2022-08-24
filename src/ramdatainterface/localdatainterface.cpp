@@ -3,6 +3,8 @@
 #include "datacrypto.h"
 #include "duqf-utils/utils.h"
 #include "processmanager.h"
+#include "ramuser.h"
+#include "ramses.h"
 
 // QUERIER
 
@@ -403,6 +405,80 @@ ServerConfig LocalDataInterface::setDataFile(const QString &file)
     pm->finish();
 
     return serverConfig();
+}
+
+void LocalDataInterface::getSync()
+{
+    // List all tables
+    QStringList tNames = tableNames();
+    // Get last Sync
+    QString lastSync = "1970-01-01 00:00:00";
+    QString q = "SELECT lastSync FROM Sync ;";
+    QSqlQuery qry = query(q);
+    if (qry.first()) lastSync = qry.value(0).toString();
+
+    QJsonArray tables;
+
+    // For each table, get modified rows
+
+    RamUser *u = Ramses::instance()->currentUser();
+    QString currentUuid = "";
+    if (u) currentUuid = u->uuid();
+
+    for (int i = 0; i < tNames.count(); i++)
+    {
+        QString tName = tNames.at(i);
+
+        QJsonObject table;
+        QJsonArray rows;
+        table.insert("name", tName );
+
+        if (tName == "RamUser") q = "SELECT uuid, data, modified, removed, userName FROM %1 WHERE modified >= '%2' ;";
+        else q = "SELECT uuid, data, modified, removed FROM %1 WHERE modified >= '%2' ;";
+
+        qry = query( q.arg( tName, lastSync));
+
+        while (qry.next())
+        {
+
+
+            QJsonObject obj;
+            obj.insert("uuid", qry.value(0).toString() );
+            obj.insert("modified", qry.value(2).toString() );
+            obj.insert("removed", qry.value(3).toInt() );
+            QString data = qry.value(1).toString();
+            if (tName == "RamUser")
+            {
+                if (ENCRYPT_USER_DATA) data = DataCrypto::instance()->clientDecrypt( data );
+                // Remove passwords, except for current user
+                QJsonDocument doc = QJsonDocument::fromJson(data.toUtf8());
+                QJsonObject o = doc.object();
+                if (o.value("uuid").toString() != currentUuid)
+                {
+                    o.remove("password");
+                }
+                else
+                {
+                    // TODO Encrypt password as expected by the server
+                    // url+password
+                }
+                doc.setObject(o);
+                data = doc.toJson();
+
+                obj.insert("userName", qry.value(4).toString());
+            }
+
+            obj.insert("data", data );
+            rows.append(obj);
+        }
+
+        table.insert("modifiedRows", rows);
+        tables.append(table);
+    }
+
+    qDebug() << tables;
+    qDebug() << lastSync;
+    emit readyToSync(tables, lastSync);
 }
 
 void LocalDataInterface::sync(QJsonArray tables)

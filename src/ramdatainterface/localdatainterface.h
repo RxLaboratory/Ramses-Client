@@ -91,6 +91,7 @@ public:
     const QString &dataFile() const;
     ServerConfig setDataFile(const QString &file);
 
+    void getSync();
     void sync(QJsonArray tables);
 
     QStringList tableNames();
@@ -102,6 +103,9 @@ signals:
     // emitted when all save queries have terminated
     // (everything's been written and it's safe to get data again)
     void ready();
+    // Sync trigger
+    void readyToSync(QJsonArray tables, QString lastSyncDate);
+    // Sync result
     void dataChanged(QString);
     void availabilityChanged(QString,bool);
     void inserted(QString,QString);
