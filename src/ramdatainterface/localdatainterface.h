@@ -44,6 +44,7 @@ public:
     static LocalDataInterface *instance();
 
     bool isReady() const;
+    void waitForReady(int timeout=5000) const;
 
     /**
      * @brief setServerSettings updates the server settings for a given database
@@ -89,6 +90,8 @@ public:
 
     const QString &dataFile() const;
     ServerConfig setDataFile(const QString &file);
+
+    void sync(QJsonArray tables);
 
     QStringList tableNames();
 

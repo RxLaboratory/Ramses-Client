@@ -71,6 +71,17 @@ bool LocalDataInterface::isReady() const
     return m_activeQueries.isEmpty();
 }
 
+void LocalDataInterface::waitForReady(int timeout) const
+{
+    QDeadlineTimer t(timeout);
+    while (!LocalDataInterface::isReady())
+    {
+        qApp->processEvents();
+        if (t.hasExpired()) return;
+    }
+    return;
+}
+
 void LocalDataInterface::setServerSettings(QString dbFile, ServerConfig c)
 {
     // Make sure the interface is ready
@@ -390,6 +401,97 @@ ServerConfig LocalDataInterface::setDataFile(const QString &file)
     pm->finish();
 
     return serverConfig();
+}
+
+void LocalDataInterface::sync(QJsonArray tables)
+{
+    for (int i = 0; i < tables.count(); i++)
+    {
+        QJsonObject table = tables.at(i).toObject();
+        QString tableName = table.value("name").toString();
+        if (tableName == "") continue;
+        QJsonArray incomingRows = table.value("modifiedRows").toArray();
+
+        // Insert new
+        for (int r = incomingRows.count() - 1; r >= 0; r--)
+        {
+            QJsonObject incomingRow = incomingRows.at(r).toObject();
+            qDebug() << "Incoming Row:";
+            qDebug() << incomingRow;
+
+            // Check if row exists
+            QString uuid = incomingRow.value("uuid").toString();
+            if (uuid == "")
+            {
+                incomingRows.removeAt(r);
+                continue;
+            }
+            if (contains(uuid, tableName)) continue;
+
+
+            QString data = incomingRow.value("data").toString().replace("'", "''");
+            QString modified = incomingRow.value("modified").toString();
+            QString removed = incomingRow.value("removed").toString("0");
+
+            if (tableName == "RamUser")
+            {
+                QString userName = incomingRow.value("userName").toString().replace("'", "''");
+                if (ENCRYPT_USER_DATA) data = DataCrypto::instance()->clientEncrypt( data );
+                QString q = "INSERT INTO %1 (data, modified, uuid, removed, userName) "
+                            "VALUES ( '%2', '%3', '%4', %5, '%6' );";
+
+                threadedQuery( q.arg(tableName, data, modified, uuid, removed, userName) );
+            }
+            else
+            {
+                QString q = "INSERT INTO %1 (data, modified, uuid, removed) "
+                            "VALUES ( '%2', '%3', '%4', %5 );";
+
+                threadedQuery( q.arg(tableName, data, modified, uuid, removed) );
+            }
+
+            incomingRows.removeAt(r);
+
+            // TODO
+            // warn containing list
+        }
+
+        // Update existing
+        for (int r = incomingRows.count() - 1; r >= 0; r--)
+        {
+            QJsonObject incomingRow = incomingRows.at(r).toObject();
+            QString uuid = incomingRow.value("uuid").toString();
+            QString data = incomingRow.value("data").toString().replace("'", "''");
+            QString modified = incomingRow.value("modified").toString();
+            QString removed = incomingRow.value("removed").toString("0");
+            if (tableName == "RamUser")
+            {
+                QString userName = incomingRow.value("userName").toString().replace("'", "''");
+                if (ENCRYPT_USER_DATA) data = DataCrypto::instance()->clientEncrypt( data );
+                QString q = "UPDATE %1 SET"
+                            "data = '%2',"
+                            "modified = '%3',"
+                            "removed = %4,"
+                            "userName = '%5'"
+                            "WHERE uuid = '%6';";
+
+                threadedQuery( q.arg(tableName, data, modified, removed, userName, uuid) );
+            }
+            else
+            {
+                QString q = "UPDATE %1 SET"
+                            "data = '%2',"
+                            "modified = '%3',"
+                            "removed = %4,"
+                            "WHERE uuid = '%5';";
+
+                threadedQuery( q.arg(tableName, data, modified, removed, uuid) );
+            }
+
+            // TODO
+            // warn existing object
+        }
+    }
 }
 
 QStringList LocalDataInterface::tableNames()

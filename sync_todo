@@ -6,8 +6,11 @@
 5A - Move all settings to database? see later
   
 5- Sync process
-	rewrite ramserverinterface from scratch
-	separate thread: send changes since last sync to server, get new data.
+	hide extension for recent combobox
+	insert objects on sync -> connect each new table list to dbi sync objinserted(uuid, table)
+	update objects on sync -> connect each new object and object list to dbi sync objchanged(uuid)
+	sync
+		send changes since last sync to server, get new data.
 		on demand sync
 		periodic sync: Sync interval: option, default, 60s
 		get online

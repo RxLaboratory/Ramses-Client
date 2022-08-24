@@ -20,6 +20,8 @@ private:
     void setupUi();
     void connectEvents();
 
+    void createNewDB();
+
     DuQFFolderSelectorWidget *ui_fileSelector;
     QTabWidget *ui_tabWidget;
     QLineEdit *ui_shortNameEdit;

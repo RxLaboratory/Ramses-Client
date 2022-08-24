@@ -57,26 +57,7 @@ void DatabaseCreateWidget::createDB()
             return;
         }
 
-        // Remove existing file
-        QString newFilePath = ui_fileSelector->path();
-        if (QFileInfo::exists(newFilePath))
-        {
-            QMessageBox::StandardButton ok = QMessageBox::question(this, tr("Confirm file overwrite"), tr("Are you sure you want to overwrite this file?") + "\n\n" + newFilePath);
-            if (ok != QMessageBox::Yes) return;
-            FileUtils::remove(newFilePath);
-        }
-
-        // Copy the file
-        FileUtils::copy(":/data/template", newFilePath);
-
-        if (!QFileInfo::exists(newFilePath))
-        {
-            QMessageBox::warning(this, tr("I can't save the database"), tr("I'm sorry, I've failed to create the database at this location.\nMaybe you can try another location...") + "\n\n" + newFilePath );
-            return;
-        }
-
-        // Set File
-        DBInterface::instance()->setDataFile(newFilePath);
+        createNewDB();
 
         // Create user
         RamUser *newUser = new RamUser(ui_shortNameEdit->text(), ui_shortNameEdit->text());
@@ -136,9 +117,9 @@ void DatabaseCreateWidget::createDB()
         QJsonArray tables = rsi->downloadData();
         if (tables.count() == 0)
         {
-            QMessageBox::information(this,
+            QMessageBox::warning(this,
                                      tr("Can't find any data"),
-                                     tr("I can't donwnload any data from this server.\n\n"
+                                     tr("I can't download any data from this server.\n\n"
                                         "This may be due to a slow connexion,\n"
                                         "try to increase the server time out.")
                                      );
@@ -146,8 +127,46 @@ void DatabaseCreateWidget::createDB()
         }
 
         // Create DB
+        createNewDB();
 
         // Save data to DB
+        LocalDataInterface *ldi = LocalDataInterface::instance();
+        ldi->sync(tables);
+
+        // Wait for the data to be written
+        ldi->waitForReady();
+
+        if (!ldi->isReady())
+        {
+            QMessageBox::warning(this,
+                                     tr("Can't write local data"),
+                                     tr("Writing the local data takes too long, something must be wrong.\n\n"
+                                        "You can restart the application and then try again.\n\n"
+                                        "If this happens again, file a bug report.")
+                                     );
+            return;
+        }
+
+        // Get User
+        RamUser *user = RamUser::get(uuid);
+        if (!user)
+        {
+            QMessageBox::warning(this,
+                                     tr("Can't get local user"),
+                                     tr("Something went wrong when getting the local user for this database, sorry.\n\n"
+                                        "Try again, or file a bug report.")
+                                     );
+            return;
+        }
+        // Set its password
+        user->updatePassword("", ui_onlinePasswordEdit->text());
+
+        // And finish login
+        Ramses::instance()->setUser( user );
+
+        // Hide dock
+        MainWindow *mw = (MainWindow*)GuiUtils::appMainWindow();
+        mw->hidePropertiesDock();
     }
 }
 
@@ -248,4 +267,28 @@ void DatabaseCreateWidget::connectEvents()
 {
     connect(ui_fileSelector, &DuQFFolderSelectorWidget::pathChanged, this, &DatabaseCreateWidget::checkPath);
     connect(ui_createButton, &QPushButton::clicked, this, &DatabaseCreateWidget::createDB);
+}
+
+void DatabaseCreateWidget::createNewDB()
+{
+    // Remove existing file
+    QString newFilePath = ui_fileSelector->path();
+    if (QFileInfo::exists(newFilePath))
+    {
+        QMessageBox::StandardButton ok = QMessageBox::question(this, tr("Confirm file overwrite"), tr("Are you sure you want to overwrite this file?") + "\n\n" + newFilePath);
+        if (ok != QMessageBox::Yes) return;
+        FileUtils::remove(newFilePath);
+    }
+
+    // Copy the file
+    FileUtils::copy(":/data/template", newFilePath);
+
+    if (!QFileInfo::exists(newFilePath))
+    {
+        QMessageBox::warning(this, tr("I can't save the database"), tr("I'm sorry, I've failed to create the database at this location.\nMaybe you can try another location...") + "\n\n" + newFilePath );
+        return;
+    }
+
+    // Set File
+    DBInterface::instance()->setDataFile(newFilePath);
 }
