@@ -4,6 +4,7 @@
 #include <QScrollArea>
 
 #include "duqf-widgets/duqffolderselectorwidget.h"
+#include "localdatainterface.h"
 #include "servereditwidget.h"
 
 class DatabaseCreateWidget : public QScrollArea
@@ -21,6 +22,7 @@ private:
     void connectEvents();
 
     void createNewDB();
+    void createNewDB(ServerConfig s);
 
     DuQFFolderSelectorWidget *ui_fileSelector;
     QTabWidget *ui_tabWidget;

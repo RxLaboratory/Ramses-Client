@@ -131,12 +131,13 @@ DBInterface::DBInterface(QObject *parent) : DuQFLoggerObject("Database Interface
     // REMOTE
     m_rsi = RamServerInterface::instance();
 
-    connect(m_ldi, &LocalDataInterface::dataReset, this, &DBInterface::dataReset);
+    connectEvents();
 }
 
 void DBInterface::connectEvents()
 {
-    connect(m_rsi, SIGNAL(connectionStatusChanged(NetworkUtils::NetworkStatus)), this, SLOT(serverConnectionStatusChanged(NetworkUtils::NetworkStatus)));
+    connect(m_ldi, &LocalDataInterface::dataReset, this, &DBInterface::dataReset);
+    connect(m_rsi, &RamServerInterface::connectionStatusChanged, this, &DBInterface::serverConnectionStatusChanged);
 }
 
 NetworkUtils::NetworkStatus DBInterface::connectionStatus() const

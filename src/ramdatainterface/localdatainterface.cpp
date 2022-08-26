@@ -98,7 +98,7 @@ void LocalDataInterface::setServerSettings(QString dbFile, ServerConfig c)
 
     // Remove previous settings
     QSqlQuery qry = QSqlQuery(db);
-    if (!qry.exec("DELETE FROM RamServer;"))
+    if (!qry.exec("DELETE FROM ServerSettings;"))
     {
         QString errorMessage = "Something went wrong when saving the data.\nHere's some information:";
         errorMessage += "\n> " + tr("Query:") + "\n" + qry.lastQuery();
@@ -111,7 +111,7 @@ void LocalDataInterface::setServerSettings(QString dbFile, ServerConfig c)
     }
 
     // Add new settings
-    QString q = "INSERT INTO RamServer (address, useSsl, updateDelay, timeout) "
+    QString q = "INSERT INTO ServerSettings (address, useSsl, updateDelay, timeout) "
             "VALUES ('%1', %2, %3, %4)";
 
     QString useSsl = "1";
@@ -143,7 +143,7 @@ ServerConfig LocalDataInterface::getServerSettings(QString dbFile)
     // Get settings
     QSqlQuery qry = QSqlQuery(db);
 
-    if (!qry.exec("SELECT address, useSsl, updateDelay, timeout FROM RamServer;"))
+    if (!qry.exec("SELECT address, useSsl, updateDelay, timeout FROM ServerSettings;"))
     {
         QString errorMessage = "Something went wrong when saving the data.\nHere's some information:";
         errorMessage += "\n> " + tr("Query:") + "\n" + qry.lastQuery();
@@ -350,7 +350,7 @@ void LocalDataInterface::setUsername(QString uuid, QString username)
 
 ServerConfig LocalDataInterface::serverConfig()
 {
-    QString q = "SELECT address, useSsl, updateDelay, timeout FROM RamServer;";
+    QString q = "SELECT address, useSsl, updateDelay, timeout FROM ServerSettings;";
     QSqlQuery qry = query( q );
 
     ServerConfig config;

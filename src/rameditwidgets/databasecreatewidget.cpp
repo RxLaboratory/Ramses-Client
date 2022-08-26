@@ -1,12 +1,12 @@
 #include "databasecreatewidget.h"
 
-#include "dbinterface.h"
 #include "duqf-utils/guiutils.h"
 #include "duqf-utils/utils.h"
 #include "ramuser.h"
 #include "ramses.h"
 #include "mainwindow.h"
 #include "datacrypto.h"
+#include "dbinterface.h"
 
 DatabaseCreateWidget::DatabaseCreateWidget(QWidget *parent) :
     QScrollArea(parent)
@@ -101,7 +101,8 @@ void DatabaseCreateWidget::createDB()
 
         // login
         QString password = ui_onlinePasswordEdit->text();
-        password = DataCrypto::instance()->generatePassHash(password, s.address.replace("/", ""));
+        QString servPrefix = s.address;
+        password = DataCrypto::instance()->generatePassHash(password, servPrefix.replace("/", ""));
 
         QString uuid = rsi->login(ui_onlineShortNameEdit->text(), password);
         if (uuid == "")
@@ -127,10 +128,11 @@ void DatabaseCreateWidget::createDB()
         }
 
         // Create DB
-        createNewDB();
+        createNewDB(s);
+
+        LocalDataInterface *ldi = LocalDataInterface::instance();
 
         // Save data to DB
-        LocalDataInterface *ldi = LocalDataInterface::instance();
         ldi->sync(tables);
 
         // Wait for the data to be written
@@ -282,6 +284,33 @@ void DatabaseCreateWidget::createNewDB()
 
     // Copy the file
     FileUtils::copy(":/data/template", newFilePath);
+
+    if (!QFileInfo::exists(newFilePath))
+    {
+        QMessageBox::warning(this, tr("I can't save the database"), tr("I'm sorry, I've failed to create the database at this location.\nMaybe you can try another location...") + "\n\n" + newFilePath );
+        return;
+    }
+
+    // Set File
+    DBInterface::instance()->setDataFile(newFilePath);
+}
+
+void DatabaseCreateWidget::createNewDB(ServerConfig s)
+{
+    // Remove existing file
+    QString newFilePath = ui_fileSelector->path();
+    if (QFileInfo::exists(newFilePath))
+    {
+        QMessageBox::StandardButton ok = QMessageBox::question(this, tr("Confirm file overwrite"), tr("Are you sure you want to overwrite this file?") + "\n\n" + newFilePath);
+        if (ok != QMessageBox::Yes) return;
+        FileUtils::remove(newFilePath);
+    }
+
+    // Copy the file
+    FileUtils::copy(":/data/template", newFilePath);
+
+    // Add server settings
+    LocalDataInterface::instance()->setServerSettings(ui_fileSelector->path(), s);
 
     if (!QFileInfo::exists(newFilePath))
     {
