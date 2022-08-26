@@ -15,6 +15,15 @@ bool DBInterface::isReady() const
 
 void DBInterface::setOffline(QString reason)
 {
+    // One last sync
+    if (m_rsi->isOnline()) sync();
+    // Wait for server timeout to be able to sync
+    QDeadlineTimer t( m_rsi->timeOut() );
+    while (true)
+    {
+        qApp->processEvents();
+        if (t.hasExpired()) break;
+    }
     // Disconnects from the Ramses Server and change connection status
     m_rsi->setOffline();
     setConnectionStatus(NetworkUtils::Offline, reason);
@@ -46,6 +55,9 @@ QString DBInterface::login(QString username, QString password)
         // generate server passhash using m_serverAddress.toLower().replace("/",".") as prefix
         // m_rsi->login(uuid, password);
     }
+
+    // First sync
+    sync();
 
     return uuid;
 }
@@ -127,6 +139,11 @@ void DBInterface::sync()
     m_rsi->sync(syncBody);
 }
 
+void DBInterface::quit()
+{
+    setOffline("About to quit.");
+}
+
 DBInterface::DBInterface(QObject *parent) : DuQFLoggerObject("Database Interface", parent)
 {
     // LOCAL
@@ -145,6 +162,8 @@ void DBInterface::connectEvents()
     connect(m_rsi, &RamServerInterface::connectionStatusChanged, this, &DBInterface::serverConnectionStatusChanged);
     connect(m_rsi, &RamServerInterface::syncReady, m_ldi, &LocalDataInterface::sync);
     connect(m_updateTimer, &QTimer::timeout, this, &DBInterface::sync);
+
+    connect(qApp, &QApplication::aboutToQuit, this, &DBInterface::quit);
 }
 
 NetworkUtils::NetworkStatus DBInterface::connectionStatus() const

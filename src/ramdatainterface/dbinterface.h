@@ -40,14 +40,6 @@ public:
      * @return
      */
     NetworkUtils::NetworkStatus connectionStatus() const;
-    /**
-     * @brief Changes to offline mode: data is stored locally until we get a connection to the server to sync.
-     */
-    void setOffline(QString reason = "");
-    /**
-     * @brief Changes to online mode.
-     */
-    void setOnline();
 
     /**
      * @brief setRamsesPath sets the path to the local data for this database
@@ -91,6 +83,15 @@ signals:
 
 public slots:
     void sync();
+    void quit();
+    /**
+     * @brief Changes to offline mode: data is stored locally until we get a connection to the server to sync.
+     */
+    void setOffline(QString reason = "");
+    /**
+     * @brief Changes to online mode.
+     */
+    void setOnline();
 
 protected:
     /**

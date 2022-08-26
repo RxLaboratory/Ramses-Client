@@ -7,12 +7,16 @@
 5A - Move all settings to database? see later
   
 5- Sync process
-	sync
-		periodic sync: Sync interval: option, default, 60s
-		get online
-		get offline (voluntarily)
-		on quit (see mainwindow closeEvent)
-	on login: if distant login fails, propose to re-create local database because it may be the password has been changed with another computer, or ask an administrator to reset the pasword (warn all local and unsynced modifications will be lost)
+	remove offline authentication
+		password: only on remote DB as its own column in RamUser
+		server: reimplement: install, dev, login
+		server: method to update password
+		client: login page: remove user/password fields
+		client: createdb: remove user/password fields
+		client: ask login on setonline via a popup. If login failed, set back offline.
+		client: set offline if the server logs out
+		client: usereditwidget: password fields only if online
+	implement server edit widget (set offline, make changes, set online)
 		
 5B - Check ramses data path management (ramses main folder, per database, must be saved (but not synced)
 		
@@ -20,9 +24,9 @@
 
 7- Improve Icons
 
-7A - look for memory leaks (object parenting, project must be parent of its content)
+7A - look for memory leaks (object parenting, project must be parent of its content) see later
 
-7B - DB Clean tool
+7B - DB Clean tool see later
 	- Button to clean and vacuum: removes unused objects, sync, vacuum
 	- list removed objects by table / type; button to restore/delete permanently
 	- button to delete permanently all removed objects
