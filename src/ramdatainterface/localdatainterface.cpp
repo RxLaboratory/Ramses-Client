@@ -281,7 +281,7 @@ void LocalDataInterface::createObject(QString uuid, QString table, QString data)
                   table,
                   uuid,
                   data,
-                  modified.toString("yyyy-MM-dd hh:mm:ss:zzz")
+                  modified.toString("yyyy-MM-dd hh:mm:ss")
                   )
             );
 }
@@ -307,19 +307,29 @@ void LocalDataInterface::setObjectData(QString uuid, QString table, QString data
                 "ON CONFLICT(uuid) DO UPDATE "
                 "SET data=excluded.data, modified=excluded.modified ;";
 
-    threadedQuery( q.arg(table, data, modified.toString("yyyy-MM-dd hh:mm:ss:zzz"), uuid) );
+    threadedQuery( q.arg(table, data, modified.toString("yyyy-MM-dd hh:mm:ss"), uuid) );
 }
 
 void LocalDataInterface::removeObject(QString uuid, QString table)
 {
-    QString q = "UPDATE %1 SET removed = 1 WHERE uuid = '%2';";
-    threadedQuery( q.arg(table, uuid) );
+    QDateTime modified = QDateTime::currentDateTimeUtc();
+
+    QString q = "UPDATE %1 SET "
+                "removed = 1,"
+                "modified = '%2' "
+                "WHERE uuid = '%3';";
+    threadedQuery( q.arg(table, modified.toString("yyyy-MM-dd hh:mm:ss"), uuid) );
 }
 
 void LocalDataInterface::restoreObject(QString uuid, QString table)
 {
-    QString q = "UPDATE %1 SET removed = 0 WHERE uuid = '%2';";
-    threadedQuery( q.arg(table, uuid) );
+    QDateTime modified = QDateTime::currentDateTimeUtc();
+
+    QString q = "UPDATE %1 SET "
+                "removed = 0,"
+                "modified = '%2' "
+                "WHERE uuid = '%3';";
+    threadedQuery( q.arg(table, modified.toString("yyyy-MM-dd hh:mm:ss"), uuid) );
 }
 
 bool LocalDataInterface::isRemoved(QString uuid, QString table)
@@ -345,7 +355,7 @@ void LocalDataInterface::setUsername(QString uuid, QString username)
                 "VALUES ('%1', '%2', '%3') "
                 "ON CONFLICT(uuid) DO UPDATE "
                 "SET userName=excluded.userName, modified=excluded.modified ;";
-    threadedQuery( q.arg(username, modified.toString("yyyy-MM-dd hh:mm:ss:zzz"), uuid) );
+    threadedQuery( q.arg(username, modified.toString("yyyy-MM-dd hh:mm:ss"), uuid) );
 }
 
 ServerConfig LocalDataInterface::serverConfig()
@@ -480,8 +490,8 @@ QJsonObject LocalDataInterface::getSync()
         tables.append(table);
     }
 
-    qDebug() << tables;
-    qDebug() << lastSync;
+    qDebug() << "SENDING TABLES >>> " << tables;
+
     QJsonObject result;
     result.insert("tables", tables);
     result.insert("previousSyncDate", lastSync);
@@ -489,7 +499,7 @@ QJsonObject LocalDataInterface::getSync()
     //emit readyToSync(tables, lastSync);
 }
 
-void LocalDataInterface::sync(QJsonArray tables)
+void LocalDataInterface::saveSync(QJsonArray tables)
 {
     for (int i = 0; i < tables.count(); i++)
     {
@@ -561,22 +571,22 @@ void LocalDataInterface::sync(QJsonArray tables)
             {
                 QString userName = incomingRow.value("userName").toString().replace("'", "''");
                 if (ENCRYPT_USER_DATA) data = DataCrypto::instance()->clientEncrypt( data );
-                QString q = "UPDATE %1 SET"
-                            "data = '%2',"
-                            "modified = '%3',"
-                            "removed = %4,"
-                            "userName = '%5'"
+                QString q = "UPDATE %1 SET "
+                            "data = '%2', "
+                            "modified = '%3', "
+                            "removed = %4, "
+                            "userName = '%5' "
                             "WHERE uuid = '%6';";
 
                 threadedQuery( q.arg(tableName, data, modified, removed, userName, uuid) );
             }
             else
             {
-                QString q = "UPDATE %1 SET"
-                            "data = '%2',"
-                            "modified = '%3',"
-                            "removed = %4,"
-                            "WHERE uuid = '%5';";
+                QString q = "UPDATE %1 SET "
+                            "data = '%2', "
+                            "modified = '%3', "
+                            "removed = %4 "
+                            "WHERE uuid = '%5' ;";
 
                 threadedQuery( q.arg(tableName, data, modified, removed, uuid) );
             }
@@ -584,6 +594,12 @@ void LocalDataInterface::sync(QJsonArray tables)
             m_updated << uuid;
         }
     }
+    qDebug() << "RECIEVED TABLES <<< " << tables;
+}
+
+void LocalDataInterface::sync(QJsonArray tables)
+{
+    saveSync(tables);
 
     // Save sync date
     QString q = "DELETE FROM Sync;";

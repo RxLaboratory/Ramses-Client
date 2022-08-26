@@ -192,6 +192,7 @@ void RamServerInterface::setOffline()
 
 void RamServerInterface::setConnectionStatus(NetworkUtils::NetworkStatus s, QString reason)
 {
+    if (s == m_status) return;
     // Check security
     if (s != m_status && s == NetworkUtils::Online && !m_ssl) log(tr("The connection is not secured!"), DuQFLog::Critical);
 
@@ -432,6 +433,10 @@ void RamServerInterface::dataReceived(QNetworkReply *reply)
     {
         log(tr("The server logged you out."));
         setConnectionStatus(NetworkUtils::Offline, tr("The server logged you out."));
+    }
+    else if (repQuery == "sync")
+    {
+        emit syncReady(repObj.value("content").toObject().value("tables").toArray());
     }
 
     emit newData(repObj);

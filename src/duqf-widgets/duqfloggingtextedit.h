@@ -12,9 +12,11 @@ public:
     DuQFLoggingTextEdit(DuQFLoggerObject *o, QWidget *parent = nullptr);
     void setLevel(const DuQFLog::LogType &level);
 
+private slots:
+    void log(DuQFLog m);
+
 private:
     DuQFLoggerObject *_loggerObject;
-    void log(DuQFLog m);
     DuQFLog::LogType _level;
 };
 

@@ -77,6 +77,7 @@ public slots:
 signals:
     void sslChanged(bool);
     void connectionStatusChanged(NetworkUtils::NetworkStatus, QString);
+    void syncReady(QJsonArray);
     void newData(QJsonObject);
 
 protected:

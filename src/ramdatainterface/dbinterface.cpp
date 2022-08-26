@@ -121,7 +121,7 @@ void DBInterface::sync()
     // Get modified rows from local
     QJsonObject syncBody = m_ldi->getSync();
     // Post to ramserver
-    //m_rsi->sync(syncBody);
+    m_rsi->sync(syncBody);
 }
 
 DBInterface::DBInterface(QObject *parent) : DuQFLoggerObject("Database Interface", parent)
@@ -138,6 +138,7 @@ void DBInterface::connectEvents()
 {
     connect(m_ldi, &LocalDataInterface::dataReset, this, &DBInterface::dataReset);
     connect(m_rsi, &RamServerInterface::connectionStatusChanged, this, &DBInterface::serverConnectionStatusChanged);
+    connect(m_rsi, &RamServerInterface::syncReady, m_ldi, &LocalDataInterface::sync);
 }
 
 NetworkUtils::NetworkStatus DBInterface::connectionStatus() const
@@ -147,6 +148,7 @@ NetworkUtils::NetworkStatus DBInterface::connectionStatus() const
 
 void DBInterface::setConnectionStatus(NetworkUtils::NetworkStatus s, QString reason)
 {
+    if (s == m_connectionStatus) return;
     m_connectionStatus = s;
     emit connectionStatusChanged(s, reason);
 }

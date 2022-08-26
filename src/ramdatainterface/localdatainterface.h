@@ -92,9 +92,12 @@ public:
     ServerConfig setDataFile(const QString &file);
 
     QJsonObject getSync();
-    void sync(QJsonArray tables);
+    void saveSync(QJsonArray tables);
 
     QStringList tableNames();
+
+public slots:
+    void sync(QJsonArray tables);
 
 signals:
     void dataReset();

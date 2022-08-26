@@ -133,10 +133,13 @@ void DatabaseCreateWidget::createDB()
         LocalDataInterface *ldi = LocalDataInterface::instance();
 
         // Save data to DB
-        ldi->sync(tables);
+        ldi->saveSync(tables);
 
         // Wait for the data to be written
         ldi->waitForReady();
+
+        // And trigger the first Sync
+        DBInterface::instance()->sync();
 
         if (!ldi->isReady())
         {
