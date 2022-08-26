@@ -18,12 +18,14 @@ void DBInterface::setOffline(QString reason)
     // Disconnects from the Ramses Server and change connection status
     m_rsi->setOffline();
     setConnectionStatus(NetworkUtils::Offline, reason);
+    m_updateTimer->stop();
 }
 
 void DBInterface::setOnline()
 {
     // Connects to the Ramses Server and change connection status
     m_rsi->setOnline();
+    m_updateTimer->start(m_updateFrequency);
 }
 
 void DBInterface::setRamsesPath(QString p)
@@ -107,6 +109,7 @@ ServerConfig DBInterface::setDataFile(const QString &file)
         m_rsi->setServerAddress(config.address);
         m_rsi->setTimeout(config.timeout);
         m_rsi->setSsl(config.useSsl);
+        m_updateFrequency = config.updateDelay*1000;
         setOnline();
     }
     else
@@ -131,6 +134,8 @@ DBInterface::DBInterface(QObject *parent) : DuQFLoggerObject("Database Interface
     // REMOTE
     m_rsi = RamServerInterface::instance();
 
+    m_updateTimer = new QTimer(this);
+
     connectEvents();
 }
 
@@ -139,6 +144,7 @@ void DBInterface::connectEvents()
     connect(m_ldi, &LocalDataInterface::dataReset, this, &DBInterface::dataReset);
     connect(m_rsi, &RamServerInterface::connectionStatusChanged, this, &DBInterface::serverConnectionStatusChanged);
     connect(m_rsi, &RamServerInterface::syncReady, m_ldi, &LocalDataInterface::sync);
+    connect(m_updateTimer, &QTimer::timeout, this, &DBInterface::sync);
 }
 
 NetworkUtils::NetworkStatus DBInterface::connectionStatus() const

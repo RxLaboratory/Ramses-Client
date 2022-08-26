@@ -22,19 +22,19 @@ void ConsoleWidget::levelIndexChanged(int index)
     case 0:
         ui_consoleEdit->setLevel( DuQFLog::Data );
         break;
-    case 2:
+    case 1:
         ui_consoleEdit->setLevel( DuQFLog::Debug );
         break;
-    case 3:
+    case 2:
         ui_consoleEdit->setLevel( DuQFLog::Information );
         break;
-    case 4:
+    case 3:
         ui_consoleEdit->setLevel( DuQFLog::Warning );
         break;
-    case 5:
+    case 4:
         ui_consoleEdit->setLevel( DuQFLog::Critical );
         break;
-    case 6:
+    case 5:
         ui_consoleEdit->setLevel( DuQFLog::Fatal );
         break;
     default:

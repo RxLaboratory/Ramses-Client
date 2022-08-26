@@ -8,13 +8,11 @@
   
 5- Sync process
 	sync
-		send changes since last sync to server, get new data.
-			server side: merge incoming user data to existing: make sure to keep existing password
-		on demand sync
 		periodic sync: Sync interval: option, default, 60s
 		get online
 		get offline (voluntarily)
 		on quit (see mainwindow closeEvent)
+	on login: if distant login fails, propose to re-create local database because it may be the password has been changed with another computer, or ask an administrator to reset the pasword (warn all local and unsynced modifications will be lost)
 		
 5B - Check ramses data path management (ramses main folder, per database, must be saved (but not synced)
 		

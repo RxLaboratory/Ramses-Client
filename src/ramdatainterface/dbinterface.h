@@ -137,6 +137,11 @@ private:
      * @brief m_serverAddress The address of the server
      */
     QString m_serverAddress;
+    /**
+     * @brief m_updateFrequency 60s by default
+     */
+    int m_updateFrequency = 60000;
+    QTimer *m_updateTimer;
 };
 
 #endif // DBINTERFACE_H
