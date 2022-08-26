@@ -31,7 +31,7 @@ public:
 
     // Settings
 
-    const QString &serverAddress() const;
+    QString serverAddress() const;
     void setServerAddress(QString newServerAddress);
 
     bool ssl() const;
@@ -63,6 +63,7 @@ public:
      */
     QString login(QString username, QString password);
     void sync(QJsonArray tables, QDateTime prevSyncDate = QDateTime::fromString("1970-01-01 00:00:00", "yyyy-MM-dd hh:mm:00"));
+    void sync(QJsonObject body);
     QJsonArray downloadData();
 
 public slots:

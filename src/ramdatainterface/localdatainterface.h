@@ -91,7 +91,7 @@ public:
     const QString &dataFile() const;
     ServerConfig setDataFile(const QString &file);
 
-    void getSync();
+    QJsonObject getSync();
     void sync(QJsonArray tables);
 
     QStringList tableNames();

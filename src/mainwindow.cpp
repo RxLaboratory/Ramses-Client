@@ -329,7 +329,7 @@ void MainWindow::connectEvents()
     connect(ui_networkButton,SIGNAL(clicked()),this, SLOT(networkButton_clicked()));
 
     // Other buttons
-    connect(ui_refreshButton, SIGNAL(clicked()), Ramses::instance(), SLOT(refresh()));
+    connect(ui_refreshButton, &QToolButton::clicked, DBInterface::instance(), &DBInterface::sync);
     connect(mainStack,SIGNAL(currentChanged(int)), this, SLOT(pageChanged(int)));
 
     // Misc

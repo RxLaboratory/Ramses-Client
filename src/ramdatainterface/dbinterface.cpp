@@ -116,6 +116,14 @@ ServerConfig DBInterface::setDataFile(const QString &file)
     return config;
 }
 
+void DBInterface::sync()
+{
+    // Get modified rows from local
+    QJsonObject syncBody = m_ldi->getSync();
+    // Post to ramserver
+    //m_rsi->sync(syncBody);
+}
+
 DBInterface::DBInterface(QObject *parent) : DuQFLoggerObject("Database Interface", parent)
 {
     // LOCAL

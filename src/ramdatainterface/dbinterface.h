@@ -89,6 +89,9 @@ signals:
      */
     void dataReset();
 
+public slots:
+    void sync();
+
 protected:
     /**
      * @brief The unique DBInteface instance

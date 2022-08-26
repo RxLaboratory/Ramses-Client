@@ -407,7 +407,7 @@ ServerConfig LocalDataInterface::setDataFile(const QString &file)
     return serverConfig();
 }
 
-void LocalDataInterface::getSync()
+QJsonObject LocalDataInterface::getSync()
 {
     // List all tables
     QStringList tNames = tableNames();
@@ -440,8 +440,6 @@ void LocalDataInterface::getSync()
 
         while (qry.next())
         {
-
-
             QJsonObject obj;
             obj.insert("uuid", qry.value(0).toString() );
             obj.insert("modified", qry.value(2).toString() );
@@ -459,8 +457,14 @@ void LocalDataInterface::getSync()
                 }
                 else
                 {
-                    // TODO Encrypt password as expected by the server
-                    // url+password
+                    // Encrypt as expected by the server
+                    DataCrypto *crypto = DataCrypto::instance();
+                    QString password = o.value("password").toString();
+                    o.insert("password",
+                             crypto->generatePassHash(
+                                 password,
+                                 RamServerInterface::instance()->serverAddress().replace("/","")
+                                 ));
                 }
                 doc.setObject(o);
                 data = doc.toJson();
@@ -478,7 +482,11 @@ void LocalDataInterface::getSync()
 
     qDebug() << tables;
     qDebug() << lastSync;
-    emit readyToSync(tables, lastSync);
+    QJsonObject result;
+    result.insert("tables", tables);
+    result.insert("previousSyncDate", lastSync);
+    return result;
+    //emit readyToSync(tables, lastSync);
 }
 
 void LocalDataInterface::sync(QJsonArray tables)

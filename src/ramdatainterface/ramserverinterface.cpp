@@ -15,7 +15,7 @@ RamServerInterface *RamServerInterface::instance()
 
 // PUBLIC //
 
-const QString &RamServerInterface::serverAddress() const
+QString RamServerInterface::serverAddress() const
 {
     return m_serverAddress;
 }
@@ -125,6 +125,11 @@ void RamServerInterface::sync(QJsonArray tables, QDateTime prevSyncDate)
     QJsonObject body;
     body.insert("tables", tables);
     body.insert("previousSyncDate", prevSyncDate.toString("yyyy-MM-dd hh:mm:00"));
+    sync(body);
+}
+
+void RamServerInterface::sync(QJsonObject body)
+{
     queueRequest("sync", body);
     startQueue();
 }
