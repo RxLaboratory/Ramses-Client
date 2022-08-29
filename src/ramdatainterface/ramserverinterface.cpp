@@ -1,7 +1,10 @@
 #include "ramserverinterface.h"
 
+#include "datacrypto.h"
 #include "duqf-app/app-version.h"
 #include "ramdatainterface/localdatainterface.h"
+#include "ramdatainterface/logindialog.h"
+#include "duqf-utils/guiutils.h"
 
 // STATIC //
 
@@ -93,10 +96,11 @@ void RamServerInterface::ping()
     postRequest(r);
 }
 
-QString RamServerInterface::login(QString username, QString password)
+QString RamServerInterface::doLogin(QString username, QString password, bool saveUsername, bool savePassword)
 {
     // Pause the queue
     pauseQueue();
+
     m_lastContent = QJsonObject();
 
     QJsonObject body;
@@ -117,7 +121,91 @@ QString RamServerInterface::login(QString username, QString password)
     // Restart queue
     startQueue();
 
-    return m_lastContent.value("content").toObject().value("uuid").toString();;
+    QString uuid = m_lastContent.value("content").toObject().value("uuid").toString();
+    if (uuid == "")
+    {
+        setConnectionStatus(NetworkUtils::Connecting, "Login failed.");
+        // Try again
+        login();
+        return uuid;
+    }
+
+    // Save credentials
+    if (saveUsername)
+    {
+        QSettings settings;
+
+        qDebug() << "Saving server credentials";
+
+        int serverIndex = 0;
+        int historySize = settings.beginReadArray("servers");
+        while (serverIndex < historySize)
+        {
+            settings.setArrayIndex(serverIndex);
+            QString url = settings.value("url", "-").toString();
+            if (url == m_serverAddress) break;
+            serverIndex++;
+        }
+        settings.endArray();
+
+        // Encrypt
+        DataCrypto *crypto = DataCrypto::instance();
+        username = crypto->machineEncrypt(username);
+        if (savePassword) password = crypto->machineEncrypt(password);
+        else password = "";
+
+        settings.beginWriteArray("servers");
+        settings.setArrayIndex(serverIndex);
+        settings.setValue("url", m_serverAddress);
+        settings.setValue("username", username);
+        settings.setValue("password", password);
+        settings.endArray();
+    }
+
+    return uuid;
+}
+
+void RamServerInterface::login()
+{
+    setConnectionStatus(NetworkUtils::Connecting, "Logging in...");
+
+    // Check if we have saved credentials
+    QSettings settings;
+    int historySize = settings.beginReadArray("servers");
+    QString username = "";
+    QString password = "";
+    for (int i = 0; i < historySize; i++)
+    {
+        settings.setArrayIndex(i);
+        QString settingsAddress = settings.value("url").toString();
+        if (settingsAddress == m_serverAddress )
+        {
+            // Decrypt
+            DataCrypto *crypto = DataCrypto::instance();
+
+            username = settings.value("username", "").toString();
+            if (username != "") username = crypto->machineDecrypt( username );
+            password = settings.value("password", "").toString();
+            if (password != "") password = crypto->machineDecrypt( password );
+        }
+    }
+    settings.endArray();
+
+    if (username != "" && password != "")
+    {
+        doLogin(username, password, true, true);
+        return;
+    }
+
+    // Show the login dialog (if both the username and password have not been saved)
+    LoginDialog *dialog = new LoginDialog(GuiUtils::appMainWindow());
+    dialog->setServerAddress( m_serverAddress );
+
+    connect(dialog, &LoginDialog::loggedIn, this, &RamServerInterface::doLogin);
+    connect(dialog, &LoginDialog::accepted, dialog, &LoginDialog::deleteLater);
+    connect(dialog, &LoginDialog::rejected, dialog, &LoginDialog::deleteLater);
+
+    dialog->open();
 }
 
 void RamServerInterface::sync(QJsonArray tables, QDateTime prevSyncDate)
@@ -396,50 +484,63 @@ void RamServerInterface::dataReceived(QNetworkReply *reply)
 
     bool repSuccess = repObj.value("success").toBool();
 
-    if (!repSuccess || repMessage.startsWith("warning", Qt::CaseInsensitive))
-    {
-        if (repQuery != "login") log(repMessage, DuQFLog::Warning);
-        else log(repMessage, DuQFLog::Information);
-    }
-    else
-    {
-        log(repMessage, DuQFLog::Information);
-    }
-
-    if (repSuccess)
-    {
-        setConnectionStatus(NetworkUtils::Online, tr("Server ready"));
-        startQueue();
-    }
-    else
-    {
-        QString reason = tr("The server request was not successful.\nThis is probably a bug or a configuration error.\nPlease report bugs on %1").arg(URL_SOURCECODE);
-        log(reason, DuQFLog::Warning);
-        setConnectionStatus(NetworkUtils::Error, reason);
-    }
+    // Log the rep message
+    DuQFLog::LogType logLevel = DuQFLog::Information;
+    if (repQuery != "login" && !repSuccess) logLevel = DuQFLog::Warning;
+    if (repMessage.startsWith("warning", Qt::CaseInsensitive)) logLevel = DuQFLog::Warning;
+    log(repMessage, logLevel);
 
     // Parse specific data
     if (repQuery == "ping")
     {
+        // If ping is not successful, set offline.
+        if (!repSuccess)
+        {
+            QString reason = tr("The server ping was not successful.\nThis is probably a bug or a configuration error.\nPlease report bugs on %1").arg(URL_SOURCECODE);
+            log(reason, DuQFLog::Warning);
+            setConnectionStatus(NetworkUtils::Offline, reason);
+            return;
+        }
+
         // get the server version
         m_serverVersion = repObj.value("content").toObject().value("version").toString();
+        // If we're connecting, login!
+        if (m_status == NetworkUtils::Connecting) login();
     }
     else if (repQuery== "login")
     {
+        // If login is not successful, set offline.
+        if (!repSuccess)
+        {
+            QString reason = tr("The server login was not successful.\nThis is probably a bug or a configuration error.\nPlease report bugs on %1").arg(URL_SOURCECODE);
+            log(reason, DuQFLog::Warning);
+            setConnectionStatus(NetworkUtils::Offline, reason);
+            return;
+        }
+
         // get the new token
         m_sessionToken = repObj.value("content").toObject().value("token").toString();
+        setConnectionStatus(NetworkUtils::Online, tr("Server ready"));
     }
     else if (repQuery == "loggedout")
     {
+        log(repMessage, DuQFLog::Warning);
         log(tr("The server logged you out."));
         setConnectionStatus(NetworkUtils::Offline, tr("The server logged you out."));
     }
     else if (repQuery == "sync")
     {
+        // If sync is not successful, set offline.
+        if (!repSuccess)
+        {
+            QString reason = tr("The server sync was not successful.\nThis is probably a bug or a configuration error.\nPlease report bugs on %1").arg(URL_SOURCECODE);
+            log(reason, DuQFLog::Warning);
+            setConnectionStatus(NetworkUtils::Offline, reason);
+            return;
+        }
+
         emit syncReady(repObj.value("content").toObject().value("tables").toArray());
     }
-
-    emit newData(repObj);
 }
 
 void RamServerInterface::nextRequest()

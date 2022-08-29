@@ -104,7 +104,7 @@ void DatabaseCreateWidget::createDB()
         QString servPrefix = s.address;
         password = DataCrypto::instance()->generatePassHash(password, servPrefix.replace("/", ""));
 
-        QString uuid = rsi->login(ui_onlineShortNameEdit->text(), password);
+        QString uuid = rsi->doLogin(ui_onlineShortNameEdit->text(), password);
         if (uuid == "")
         {
             QMessageBox::information(this,

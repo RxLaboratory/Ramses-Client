@@ -42,26 +42,6 @@ void DBInterface::setRamsesPath(QString p)
     m_ldi->setRamsesPath(p);
 }
 
-QString DBInterface::login(QString username, QString password)
-{
-    // 1- Check local data
-    QString uuid = m_ldi->login(username, password);
-    if ( uuid == "" ) return "";
-
-    // 2- Check online server
-    if (m_connectionStatus == NetworkUtils::Online)
-    {
-        // TODO
-        // generate server passhash using m_serverAddress.toLower().replace("/",".") as prefix
-        // m_rsi->login(uuid, password);
-    }
-
-    // First sync
-    sync();
-
-    return uuid;
-}
-
 QStringList DBInterface::tableData(QString table)
 {
     return m_ldi->tableData(table);

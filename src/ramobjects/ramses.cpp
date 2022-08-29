@@ -1,6 +1,5 @@
 #include "ramses.h"
 
-#include "datacrypto.h"
 #include "ramuuid.h"
 
 // STATIC //
@@ -15,7 +14,7 @@ Ramses *Ramses::instance()
 
 // PUBLIC
 
-RamUser *Ramses::login(QString username, QString password)
+/*RamUser *Ramses::login(QString username, QString password)
 {
     // Hash password and login
     password = DataCrypto::instance()->generatePassHash(password);
@@ -39,7 +38,7 @@ RamUser *Ramses::loginHashed(QString username, QString hashedPassword)
     RamUser *u = RamUser::get(uuid);
     setUser( u );
     return u;
-}
+}*/
 
 void Ramses::setUser(RamUser *u)
 {
@@ -60,7 +59,7 @@ void Ramses::setUser(RamUser *u)
     qDebug() << "Logged in: " + m_currentUser->name();
 }
 
-void Ramses::logout(QString reason)
+/*void Ramses::logout(QString reason)
 {
     m_loggedin = false;
 
@@ -68,7 +67,7 @@ void Ramses::logout(QString reason)
     m_currentUser = nullptr;
 
     emit loggedOut(reason);
-}
+}*/
 
 void Ramses::setRamsesPath(QString p)
 {

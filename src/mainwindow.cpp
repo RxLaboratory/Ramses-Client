@@ -728,7 +728,7 @@ void MainWindow::loginAction()
 
 void MainWindow::logoutAction()
 {
-    Ramses::instance()->logout();
+    //Ramses::instance()->logout();
 }
 
 void MainWindow::home()

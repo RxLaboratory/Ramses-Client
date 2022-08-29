@@ -55,13 +55,6 @@ public:
      * @param wait when true, waits for the pong
      */
     void ping();
-    /**
-     * @brief login
-     * @param username
-     * @param password
-     * @return the uuid if success, empty string otherwise
-     */
-    QString login(QString username, QString password);
     void sync(QJsonArray tables, QDateTime prevSyncDate = QDateTime::fromString("1970-01-01 00:00:00", "yyyy-MM-dd hh:mm:00"));
     void sync(QJsonObject body);
     QJsonArray downloadData();
@@ -73,6 +66,8 @@ public slots:
      */
     void setOnline();
     void setOffline();
+    void login();
+    QString doLogin(QString username, QString password, bool saveUsername = false, bool savePassword = false);
 
 signals:
     void sslChanged(bool);

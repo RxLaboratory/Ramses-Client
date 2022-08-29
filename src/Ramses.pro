@@ -80,6 +80,7 @@ SOURCES += \
     ramdatainterface/datacrypto.cpp \
     ramdatainterface/dbsync.cpp \
     ramdatainterface/localdatainterface.cpp \
+    ramdatainterface/logindialog.cpp \
     ramdatainterface/ramserverinterface.cpp \
     rameditwidgets/applicationeditwidget.cpp \
     rameditwidgets/applicationlistmanagerwidget.cpp \
@@ -248,6 +249,7 @@ HEADERS += \
     pages/projectpage.h \
     ramdatainterface/dbsync.h \
     ramdatainterface/localdatainterface.h \
+    ramdatainterface/logindialog.h \
     ramdatainterface/ramserverinterface.h \
     rameditwidgets/applicationeditwidget.h \
     rameditwidgets/applicationlistmanagerwidget.h \

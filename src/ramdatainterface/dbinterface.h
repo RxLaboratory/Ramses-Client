@@ -47,10 +47,6 @@ public:
      */
     void setRamsesPath(QString p);
 
-    // AUTHENTIFICATION //
-
-    QString login(QString username, QString password);
-
     // DATA INTERFACE //
 
     QStringList tableData(QString table);
