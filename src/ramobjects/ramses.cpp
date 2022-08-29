@@ -12,33 +12,13 @@ Ramses *Ramses::instance()
     return _instance;
 }
 
-// PUBLIC
-
-/*RamUser *Ramses::login(QString username, QString password)
+void Ramses::setUserUuid(QString uuid)
 {
-    // Hash password and login
-    password = DataCrypto::instance()->generatePassHash(password);
-
-    return loginHashed( username, password );
+    RamUser *u = RamUser::get(uuid);
+    setUser(u);
 }
 
-RamUser *Ramses::loginHashed(QString username, QString hashedPassword)
-{
-    QString uuid = m_dbi->login(username, hashedPassword);
-    qDebug() << uuid;
-
-    if (uuid == "")
-    {
-        logout("Invalid user name or password.");
-        qDebug() << "Login failed, invalid user name or password";
-        return nullptr;
-    }
-
-    // Set current user
-    RamUser *u = RamUser::get(uuid);
-    setUser( u );
-    return u;
-}*/
+// PUBLIC
 
 void Ramses::setUser(RamUser *u)
 {
@@ -46,28 +26,17 @@ void Ramses::setUser(RamUser *u)
     m_currentUser = u;
 
     // Set current project
-    if (m_currentUser)
-    {
-        QSettings *uSettings = m_currentUser->settings();
-        QString projUuid = uSettings->value("ramses/currentProject", "").toString();
-        if (projUuid != "") setCurrentProject( RamProject::get(projUuid) );
-        else setCurrentProject(nullptr);
-    }
+    QSettings *uSettings = m_currentUser->settings();
+    QString projUuid = uSettings->value("ramses/currentProject", "").toString();
+    if (projUuid != "") setCurrentProject( RamProject::get(projUuid) );
+    else setCurrentProject(nullptr);
+
+    m_dbi->setCurrentUserUuid(m_currentUser->uuid());
 
     emit loggedIn(m_currentUser);
 
     qDebug() << "Logged in: " + m_currentUser->name();
 }
-
-/*void Ramses::logout(QString reason)
-{
-    m_loggedin = false;
-
-    setCurrentProject(nullptr);
-    m_currentUser = nullptr;
-
-    emit loggedOut(reason);
-}*/
 
 void Ramses::setRamsesPath(QString p)
 {
@@ -313,6 +282,8 @@ Ramses::Ramses(QObject *parent):
     m_applications = new RamObjectList("RamApplication", "Applications", Application, RamObjectList::Table, this);
 
     this->setObjectName( "Ramses Class" );
+
+    connect(m_dbi, &DBInterface::userChanged, this, &Ramses::setUserUuid);
 
     qDebug() << "Ramses Ready!";
 }

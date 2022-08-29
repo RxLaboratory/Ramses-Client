@@ -381,13 +381,6 @@ const QString &LocalDataInterface::dataFile() const
 
 ServerConfig LocalDataInterface::setDataFile(const QString &file)
 {
-    /*QSqlDatabase db = QSqlDatabase::database("localdata");
-    // Set the SQLite file
-    db.close();
-    // Open
-    db.setDatabaseName(file);
-    if (!db.open()) log("Can't save data to the disk.", DuQFLog::Fatal);*/
-
     ProcessManager *pm = ProcessManager::instance();
     pm->start();
     pm->setMaximum(10);
@@ -595,6 +588,28 @@ void LocalDataInterface::saveSync(QJsonArray tables)
         }
     }
     qDebug() << "RECIEVED TABLES <<< " << tables;
+}
+
+QString LocalDataInterface::currentUserUuid()
+{
+    QString q = "SELECT uuid FROM UserSettings WHERE current = 1;";
+    QSqlQuery qry = query( q );
+
+    if (qry.first()) return qry.value(0).toString();
+    return "";
+}
+
+void LocalDataInterface::setCurrentUserUuid(QString uuid)
+{
+    // Set everyone to not current
+    threadedQuery( "UPDATE UserSettings SET current = 0 ;" );
+
+    QString q = "INSERT INTO UserSettings (uuid, current) "
+                "VALUES ('%1', 1 ) "
+                "ON CONFLICT(uuid) DO UPDATE "
+                "SET current=excluded.current ;";
+
+    threadedQuery( q.arg(uuid) );
 }
 
 void LocalDataInterface::sync(QJsonArray tables)

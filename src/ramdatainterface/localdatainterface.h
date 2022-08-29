@@ -94,6 +94,9 @@ public:
     QJsonObject getSync();
     void saveSync(QJsonArray tables);
 
+    QString currentUserUuid();
+    void setCurrentUserUuid(QString uuid);
+
     QStringList tableNames();
 
 public slots:

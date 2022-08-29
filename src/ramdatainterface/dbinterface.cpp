@@ -13,7 +13,7 @@ bool DBInterface::isReady() const
     return m_ldi->isReady();
 }
 
-void DBInterface::setOffline(QString reason)
+void DBInterface::setOffline()
 {
     // One last sync
     if (m_rsi->isOnline()) sync();
@@ -24,17 +24,14 @@ void DBInterface::setOffline(QString reason)
         qApp->processEvents();
         if (t.hasExpired()) break;
     }
-    // Disconnects from the Ramses Server and change connection status
+    // Disconnects from the Ramses Server
     m_rsi->setOffline();
-    setConnectionStatus(NetworkUtils::Offline, reason);
-    m_updateTimer->stop();
 }
 
 void DBInterface::setOnline()
 {
     // Connects to the Ramses Server and change connection status
     m_rsi->setOnline();
-    m_updateTimer->start(m_updateFrequency);
 }
 
 void DBInterface::setRamsesPath(QString p)
@@ -92,7 +89,7 @@ const QString &DBInterface::dataFile() const
     return m_ldi->dataFile();
 }
 
-ServerConfig DBInterface::setDataFile(const QString &file)
+void DBInterface::setDataFile(const QString &file)
 {
     ServerConfig config = m_ldi->setDataFile(file);
     // Set the new server params
@@ -106,9 +103,14 @@ ServerConfig DBInterface::setDataFile(const QString &file)
     }
     else
     {
-        setOffline(tr("Database set to offline mode"));
+        setOffline();
+        emit userChanged( m_ldi->currentUserUuid() );
     }
-    return config;
+}
+
+void DBInterface::setCurrentUserUuid(QString uuid)
+{
+    m_ldi->setCurrentUserUuid(uuid);
 }
 
 void DBInterface::sync()
@@ -121,7 +123,7 @@ void DBInterface::sync()
 
 void DBInterface::quit()
 {
-    setOffline("About to quit.");
+    setOffline();
 }
 
 DBInterface::DBInterface(QObject *parent) : DuQFLoggerObject("Database Interface", parent)
@@ -141,6 +143,8 @@ void DBInterface::connectEvents()
     connect(m_ldi, &LocalDataInterface::dataReset, this, &DBInterface::dataReset);
     connect(m_rsi, &RamServerInterface::connectionStatusChanged, this, &DBInterface::serverConnectionStatusChanged);
     connect(m_rsi, &RamServerInterface::syncReady, m_ldi, &LocalDataInterface::sync);
+    connect(m_rsi, &RamServerInterface::userChanged, m_ldi, &LocalDataInterface::setCurrentUserUuid);
+    connect(m_rsi, &RamServerInterface::userChanged, this, &DBInterface::userChanged);
     connect(m_updateTimer, &QTimer::timeout, this, &DBInterface::sync);
 
     connect(qApp, &QApplication::aboutToQuit, this, &DBInterface::quit);
@@ -164,9 +168,11 @@ void DBInterface::serverConnectionStatusChanged(NetworkUtils::NetworkStatus stat
     {
     case NetworkUtils::Offline:
         setConnectionStatus(status, "Disconnected from the Ramses Server.");
+        m_updateTimer->stop();
         break;
     case NetworkUtils::Online:
         setConnectionStatus(status, "Connected to the Ramses Server.");
+        m_updateTimer->start(m_updateFrequency);
         break;
     default:
         return;

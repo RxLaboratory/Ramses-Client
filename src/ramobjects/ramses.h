@@ -22,10 +22,8 @@ public:
     // OTHER METHODS //
 
     // User
-    //RamUser *login(QString username, QString password);
-    //RamUser *loginHashed(QString username, QString hashedPassword);
+    void setUserUuid(QString uuid);
     void setUser(RamUser *u);
-    //·void logout(QString reason="");
 
     // Tree base
     void setRamsesPath(QString p);

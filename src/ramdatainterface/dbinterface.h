@@ -64,7 +64,9 @@ public:
     void setUsername(QString uuid, QString username);
 
     const QString &dataFile() const;
-    ServerConfig setDataFile(const QString &file);
+    void setDataFile(const QString &file);
+
+    void setCurrentUserUuid(QString uuid);
 
 signals:
     /**
@@ -76,6 +78,7 @@ signals:
      * e.g. when the local data file has been changed.
      */
     void dataReset();
+    void userChanged(QString);
 
 public slots:
     void sync();
@@ -83,7 +86,7 @@ public slots:
     /**
      * @brief Changes to offline mode: data is stored locally until we get a connection to the server to sync.
      */
-    void setOffline(QString reason = "");
+    void setOffline();
     /**
      * @brief Changes to online mode.
      */

@@ -162,6 +162,9 @@ QString RamServerInterface::doLogin(QString username, QString password, bool sav
         settings.endArray();
     }
 
+    // Warn everyone we've logged in
+    emit userChanged(uuid);
+
     return uuid;
 }
 
