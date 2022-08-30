@@ -62,6 +62,11 @@ int ServerEditWidget::timeout() const
     return ui_timeoutSpinBox->value()*1000;
 }
 
+void ServerEditWidget::orderServer()
+{
+    QDesktopServices::openUrl ( QUrl( "http://ramses.rxlab.io" ) );
+}
+
 void ServerEditWidget::setupUi()
 {
     QGridLayout *formLayout = new QGridLayout(this);
@@ -114,4 +119,13 @@ void ServerEditWidget::setupUi()
     ui_timeoutSpinBox->setValue(3);
     ui_timeoutSpinBox->setSuffix(" seconds");
     formLayout->addWidget(ui_timeoutSpinBox, 3, 1);
+
+    ui_orderServerButton = new QPushButton(
+                tr("If you don't have access to a server yet,\n"
+                   "you can get one on ramses.rxlab.io"),
+                this
+                );
+    formLayout->addWidget(ui_orderServerButton,4,1);
+
+    connect(ui_orderServerButton, &QPushButton::clicked, this, &ServerEditWidget::orderServer);
 }

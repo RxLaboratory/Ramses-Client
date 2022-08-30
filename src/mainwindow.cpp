@@ -99,7 +99,7 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     ui_networkButton = new DuQFAutoSizeToolButton(this);
     ui_networkButton->setObjectName("menuButton");
     ui_networkButton->setText("Offline");
-    ui_networkButton->setIcon(QIcon(":/icons/folder"));
+    ui_networkButton->setIcon(QIcon(":/icons/storage"));
     ui_networkButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     //ui_networkButton->setMinimumWidth(100);
     ui_networkButton->setMenu(ui_databaseMenu);
@@ -955,7 +955,7 @@ void MainWindow::dbiConnectionStatusChanged(NetworkUtils::NetworkStatus s)
     {
         ui_refreshButton->hide();
         ui_networkButton->setText("Offline");
-        ui_networkButton->setIcon(QIcon(":/icons/folder"));
+        ui_networkButton->setIcon(QIcon(":/icons/storage"));
         ui_networkButton->setToolTip("Offline.");
         ui_networkButton->setStatusTip("");
         actionSetOnline->setVisible(true);

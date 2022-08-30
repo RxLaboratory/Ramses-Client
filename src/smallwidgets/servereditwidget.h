@@ -25,6 +25,9 @@ public:
 
 signals:
 
+private slots:
+    void orderServer();
+
 private:
     void setupUi();
 
@@ -32,6 +35,7 @@ private:
     QCheckBox *ui_sslCheckBox;
     QSpinBox *ui_updateFreqSpinBox;
     QSpinBox *ui_timeoutSpinBox;
+    QPushButton *ui_orderServerButton;
 };
 
 #endif // SERVEREDITWIDGET_H

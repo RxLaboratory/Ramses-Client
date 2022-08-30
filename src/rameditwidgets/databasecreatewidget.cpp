@@ -197,9 +197,8 @@ void DatabaseCreateWidget::setupUi()
     onlineLayout->setContentsMargins(3,3,3,3);
     onlineLayout->setAlignment(Qt::AlignTop);
 
-    onlineLayout->addWidget(new QLabel(tr("Server")), 0, 0);
     ui_serverEdit = new ServerEditWidget();
-    onlineLayout->addWidget(ui_serverEdit, 0, 1);
+    onlineLayout->addWidget(ui_serverEdit, 0, 0);
 
     ui_createButton = new QPushButton(tr("Create and log in"));
     ui_createButton->setIcon(QIcon(":/icons/apply"));
