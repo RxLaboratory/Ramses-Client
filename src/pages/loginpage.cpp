@@ -51,7 +51,7 @@ void LoginPage::editDatabase()
     }
 
     ui_databaseEditWidget->setDbFile( ui_dataBaseBox->itemData( ui_dataBaseBox->currentIndex() ).toString() );
-    mw->setPropertiesDockWidget( ui_databaseEditWidget, tr("Edit") + " " + ui_dataBaseBox->currentText(), ":/icons/storage" );
+    mw->setPropertiesDockWidget( ui_databaseEditWidget, tr("Edit %1").arg(ui_dataBaseBox->currentText()), ":/icons/storage" );
 }
 
 void LoginPage::updateDatabaseRecentList()

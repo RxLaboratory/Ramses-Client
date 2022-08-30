@@ -94,6 +94,7 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     ui_databaseMenu = new QMenu();
     ui_databaseMenu->addAction(actionSetOffline);
     ui_databaseMenu->addAction(actionSetOnline);
+    ui_databaseMenu->addAction(actionDatabaseSettings);
     actionSetOffline->setVisible(false);
     ui_networkButton = new DuQFAutoSizeToolButton(this);
     ui_networkButton->setObjectName("menuButton");
@@ -104,6 +105,7 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     ui_networkButton->setMenu(ui_databaseMenu);
     ui_networkButton->setPopupMode(QToolButton::InstantPopup);
     mainStatusBar->addPermanentWidget(ui_networkButton);
+    ui_networkButton->setVisible(false);
 
     ui_userMenu = new QMenu();
     ui_userMenu->addAction(actionLogIn);
@@ -314,6 +316,7 @@ void MainWindow::connectEvents()
     connect(actionLogOut,SIGNAL(triggered()), this, SLOT(logoutAction()));
     connect(actionSetOnline, &QAction::triggered, this, &MainWindow::setOnlineAction);
     connect(actionSetOffline, &QAction::triggered, this, &MainWindow::setOfflineAction);
+    connect(actionDatabaseSettings, &QAction::triggered, this, &MainWindow::databaseSettingsAction);
     connect(actionUserProfile,SIGNAL(triggered()), this, SLOT(userProfile()));
     connect(actionUserFolder,SIGNAL(triggered()), this, SLOT(revealUserFolder()));
     connect(actionAdmin,SIGNAL(triggered(bool)), this, SLOT(admin(bool)));
@@ -748,6 +751,24 @@ void MainWindow::setOnlineAction()
     DBInterface::instance()->setOnline();
 }
 
+void MainWindow::databaseSettingsAction()
+{
+    QString dataFilePath = DBInterface::instance()->dataFile();
+    if (dataFilePath == "") return;
+
+    QFileInfo dataFile(dataFilePath);
+    if (!dataFile.exists()) return;
+
+    if (!ui_databaseEditWidget)
+    {
+        ui_databaseEditWidget = new DatabaseEditWidget();
+        connect(ui_databaseEditWidget, &DatabaseEditWidget::applied, this, &MainWindow::hidePropertiesDock);
+    }
+
+    ui_databaseEditWidget->setDbFile( dataFilePath );
+    this->setPropertiesDockWidget( ui_databaseEditWidget, tr("Edit %1").arg(dataFile.baseName()), ":/icons/storage" );
+}
+
 void MainWindow::home()
 {
     mainStack->setCurrentIndex(0);
@@ -836,11 +857,13 @@ void MainWindow::currentUserChanged()
     {
         actionLogIn->setVisible(true);
         actionLogOut->setVisible(false);
+        ui_networkButton->setVisible(false);
         return;
     }
 
     actionLogIn->setVisible(false);
     actionLogOut->setVisible(true);
+    ui_networkButton->setVisible(true);
 
     _currentUserConnection = connect(user, &RamUser::dataChanged, this, &MainWindow::currentUserChanged);
 

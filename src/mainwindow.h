@@ -23,6 +23,7 @@
 #include "duqf-widgets/duqfautosizetoolbutton.h"
 #include "progresspage.h"
 #include "ramproject.h"
+#include "databaseeditwidget.h"
 
 class MainWindow : public QMainWindow, private Ui::MainWindow
 {
@@ -80,6 +81,8 @@ private:
     SettingsWidget *ui_adminPage;
     ProjectPage *ui_projectSettingsPage;
 
+    DatabaseEditWidget *ui_databaseEditWidget = nullptr;
+
     QMenu *ui_userMenu;
     QMenu *ui_databaseMenu;
     DuQFAutoSizeToolButton *ui_userButton;
@@ -120,6 +123,7 @@ private slots:
     void logoutAction();
     void setOfflineAction();
     void setOnlineAction();
+    void databaseSettingsAction();
     void home();
     void userProfile();
     void revealUserFolder();

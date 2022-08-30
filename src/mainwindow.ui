@@ -282,6 +282,15 @@
     <string>Deactivates sync to work offline.</string>
    </property>
   </action>
+  <action name="actionDatabaseSettings">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/admin-settings</normaloff>:/icons/admin-settings</iconset>
+   </property>
+   <property name="text">
+    <string>Database settings</string>
+   </property>
+  </action>
  </widget>
  <resources>
   <include location="resources.qrc"/>
