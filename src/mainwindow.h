@@ -81,6 +81,7 @@ private:
     ProjectPage *ui_projectSettingsPage;
 
     QMenu *ui_userMenu;
+    QMenu *ui_databaseMenu;
     DuQFAutoSizeToolButton *ui_userButton;
     DuQFAutoSizeToolButton *ui_networkButton;
     QToolButton *ui_refreshButton;
@@ -117,6 +118,8 @@ private slots:
     void serverSettings();
     void loginAction();
     void logoutAction();
+    void setOfflineAction();
+    void setOnlineAction();
     void home();
     void userProfile();
     void revealUserFolder();
@@ -127,9 +130,6 @@ private slots:
     void assets(bool show = true);
     void schedule(bool show = true);
     void install(bool show = true);
-    void networkButton_clicked();
-    void loggedIn();
-    void loggedOut(QString reason="");
     void currentUserChanged();
     void currentProjectChanged(RamProject *project);
     void freezeUI(bool f = true);

@@ -258,6 +258,30 @@
     <string>All shots in a timeline view</string>
    </property>
   </action>
+  <action name="actionSetOnline">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/server-settings</normaloff>:/icons/server-settings</iconset>
+   </property>
+   <property name="text">
+    <string>Set online</string>
+   </property>
+   <property name="toolTip">
+    <string>Activate sync</string>
+   </property>
+  </action>
+  <action name="actionSetOffline">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/browse-folder</normaloff>:/icons/browse-folder</iconset>
+   </property>
+   <property name="text">
+    <string>Set offline</string>
+   </property>
+   <property name="toolTip">
+    <string>Deactivates sync to work offline.</string>
+   </property>
+  </action>
  </widget>
  <resources>
   <include location="resources.qrc"/>

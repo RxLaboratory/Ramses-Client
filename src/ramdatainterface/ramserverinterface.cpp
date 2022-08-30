@@ -282,6 +282,17 @@ QJsonArray RamServerInterface::downloadData()
 
 void RamServerInterface::setOnline()
 {
+    if (m_serverAddress == "" || m_serverAddress == "/")
+    {
+        QMessageBox::information(
+                    GuiUtils::appMainWindow(),
+                    tr("No server"),
+                    tr("I'm sorry, you need to configure a Ramses Server first.\n\n"
+                       "Go to the database settings.")
+                    );
+        return;
+    }
+
     setConnectionStatus(NetworkUtils::Connecting, "Server ping");
 
     // Ping

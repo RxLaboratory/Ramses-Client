@@ -1,4 +1,5 @@
 ﻿#include "dbinterface.h"
+#include "duqf-utils/guiutils.h"
 
 DBInterface *DBInterface::_instance = nullptr;
 
@@ -33,6 +34,17 @@ void DBInterface::setOffline()
 
 void DBInterface::setOnline()
 {
+    if (m_ldi->dataFile() == "")
+    {
+        QMessageBox::information(
+                    GuiUtils::appMainWindow(),
+                    tr("No database"),
+                    tr("There's no open database.\n\n"
+                       "I'm sorry, you need to open or create a database to get online.")
+                    );
+        return;
+    }
+
     // Connects to the Ramses Server and change connection status
     m_rsi->setOnline();
 }
@@ -107,6 +119,7 @@ void DBInterface::setDataFile(const QString &file)
     else
     {
         setOffline();
+        m_rsi->setServerAddress("");
         emit userChanged( m_ldi->currentUserUuid() );
     }
 }

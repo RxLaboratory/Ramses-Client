@@ -91,12 +91,18 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
 
     mainStatusBar->addPermanentWidget(new DuQFLogToolButton(this));
 
+    ui_databaseMenu = new QMenu();
+    ui_databaseMenu->addAction(actionSetOffline);
+    ui_databaseMenu->addAction(actionSetOnline);
+    actionSetOffline->setVisible(false);
     ui_networkButton = new DuQFAutoSizeToolButton(this);
     ui_networkButton->setObjectName("menuButton");
     ui_networkButton->setText("Offline");
     ui_networkButton->setIcon(QIcon(":/icons/folder"));
     ui_networkButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     //ui_networkButton->setMinimumWidth(100);
+    ui_networkButton->setMenu(ui_databaseMenu);
+    ui_networkButton->setPopupMode(QToolButton::InstantPopup);
     mainStatusBar->addPermanentWidget(ui_networkButton);
 
     ui_userMenu = new QMenu();
@@ -306,6 +312,8 @@ void MainWindow::connectEvents()
     // Toolbar and other tools
     connect(actionLogIn,SIGNAL(triggered()), this, SLOT(loginAction()));
     connect(actionLogOut,SIGNAL(triggered()), this, SLOT(logoutAction()));
+    connect(actionSetOnline, &QAction::triggered, this, &MainWindow::setOnlineAction);
+    connect(actionSetOffline, &QAction::triggered, this, &MainWindow::setOfflineAction);
     connect(actionUserProfile,SIGNAL(triggered()), this, SLOT(userProfile()));
     connect(actionUserFolder,SIGNAL(triggered()), this, SLOT(revealUserFolder()));
     connect(actionAdmin,SIGNAL(triggered(bool)), this, SLOT(admin(bool)));
@@ -326,7 +334,6 @@ void MainWindow::connectEvents()
     // Pages
     connect(ui_adminPage, SIGNAL(closeRequested()), this, SLOT(home()));
     connect(ui_projectSettingsPage, SIGNAL(closeRequested()), this, SLOT(home()));
-    connect(ui_networkButton,SIGNAL(clicked()),this, SLOT(networkButton_clicked()));
 
     // Other buttons
     connect(ui_refreshButton, &QToolButton::clicked, DBInterface::instance(), &DBInterface::sync);
@@ -336,7 +343,7 @@ void MainWindow::connectEvents()
     connect(DuQFLogger::instance(), &DuQFLogger::newLog, this, &MainWindow::log);
     connect(Daemon::instance(), &Daemon::raise, this, &MainWindow::raise);
     connect(Daemon::instance(), &Daemon::raise, this, &MainWindow::show);
-    connect(Ramses::instance(),&Ramses::userChanged, this, &MainWindow::loggedIn);
+    connect(Ramses::instance(),&Ramses::userChanged, this, &MainWindow::currentUserChanged);
     connect(Ramses::instance(), SIGNAL(currentProjectChanged(RamProject*)), this, SLOT(currentProjectChanged(RamProject*)));
     connect(DBInterface::instance(),&DBInterface::connectionStatusChanged, this, &MainWindow::dbiConnectionStatusChanged);
 }
@@ -722,12 +729,23 @@ void MainWindow::serverSettings()
 
 void MainWindow::loginAction()
 {
-    mainStack->setCurrentIndex(0);
+    home();
 }
 
 void MainWindow::logoutAction()
 {
-    //Ramses::instance()->logout();
+    Ramses::instance()->setUser(nullptr);
+    home();
+}
+
+void MainWindow::setOfflineAction()
+{
+    DBInterface::instance()->setOffline();
+}
+
+void MainWindow::setOnlineAction()
+{
+    DBInterface::instance()->setOnline();
 }
 
 void MainWindow::home()
@@ -788,56 +806,10 @@ void MainWindow::install(bool show)
     else home();
 }
 
-void MainWindow::networkButton_clicked()
-{
-    DBInterface *dbi = DBInterface::instance();
-    if (dbi->connectionStatus() != NetworkUtils::Online) dbi->setOnline();
-    else dbi->setOffline();
-}
-
-void MainWindow::loggedIn()
-{
-    actionLogIn->setVisible(false);
-    actionLogOut->setVisible(true);
-    currentUserChanged();
-}
-
-void MainWindow::loggedOut(QString reason)
-{
-    actionLogIn->setVisible(true);
-    actionLogOut->setVisible(false);
-    currentUserChanged();
-    if (mainStack->currentIndex() != 1) mainStack->setCurrentIndex(0);
-
-    if (reason == "") reason = tr("You've been logged out.");
-    else reason = tr("You've been logged out.\nReason:") + "\n\n" + reason;
-    // Warn user
-    QMessageBox::information(this,
-                             tr("Log out"),
-                             reason,
-                             QMessageBox::Ok,
-                             QMessageBox::Ok);
-
-    /*// Warn user
-    QMessageBox::information(this,
-                             "Log out",
-                             "You've been logged out, Ramses is restarting.\n\nReason:\n\n> " + reason,
-                             QMessageBox::Ok,
-                             QMessageBox::Ok);
-
-    // Let's just restart app
-    this->close();
-    QProcess::startDetached(qApp->arguments()[0], qApp->arguments());*/
-
-
-/*    actionLogIn->setVisible(true);
-    actionLogOut->setVisible(false);
-    currentUserChanged();
-    if (mainStack->currentIndex() != 1) mainStack->setCurrentIndex(0);*/
-}
-
 void MainWindow::currentUserChanged()
 {
+    home();
+
     disconnect(_currentUserConnection);
 
     //defaults
@@ -860,7 +832,15 @@ void MainWindow::currentUserChanged()
     actionTimeline->setVisible(false);
 
     RamUser *user = Ramses::instance()->currentUser();
-    if (!user) return;
+    if (!user)
+    {
+        actionLogIn->setVisible(true);
+        actionLogOut->setVisible(false);
+        return;
+    }
+
+    actionLogIn->setVisible(false);
+    actionLogOut->setVisible(true);
 
     _currentUserConnection = connect(user, &RamUser::dataChanged, this, &MainWindow::currentUserChanged);
 
@@ -932,6 +912,8 @@ void MainWindow::dbiConnectionStatusChanged(NetworkUtils::NetworkStatus s)
     {
         ui_refreshButton->show();
         ui_networkButton->setText(address);
+        actionSetOnline->setVisible(false);
+        actionSetOffline->setVisible(true);
         if (RamServerInterface::instance()->ssl())
         {
             ui_networkButton->setIcon(QIcon(":/icons/shield"));
@@ -953,6 +935,8 @@ void MainWindow::dbiConnectionStatusChanged(NetworkUtils::NetworkStatus s)
         ui_networkButton->setIcon(QIcon(":/icons/folder"));
         ui_networkButton->setToolTip("Offline.");
         ui_networkButton->setStatusTip("");
+        actionSetOnline->setVisible(true);
+        actionSetOffline->setVisible(false);
     }
 }
 

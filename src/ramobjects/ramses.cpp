@@ -26,8 +26,13 @@ void Ramses::setUserUuid(QString uuid)
 
 void Ramses::setUser(RamUser *u)
 {
-    if (!u) return;
     m_currentUser = u;
+    if (!u)
+    {
+        emit userChanged(nullptr);
+        qDebug() << "Logged out.";
+        return;
+    }
 
     // Set current project
     QSettings *uSettings = m_currentUser->settings();
