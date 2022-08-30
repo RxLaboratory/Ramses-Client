@@ -14,7 +14,7 @@ ProjectSelectorWidget::ProjectSelectorWidget(QWidget *parent):
 
     connect(this, SIGNAL(currentObjectChanged(RamObject*)), this, SLOT(setCurrentProject(RamObject*)));
     connect(Ramses::instance(), SIGNAL(currentProjectChanged(RamProject*)), this, SLOT(currentProjectChanged(RamProject*)));
-    connect(Ramses::instance(), SIGNAL(loggedIn(RamUser*)), this, SLOT(userChanged(RamUser*)));
+    connect(Ramses::instance(), &Ramses::userChanged, this, &ProjectSelectorWidget::userChanged);
 }
 
 void ProjectSelectorWidget::setCurrentProject(RamObject *projObj)

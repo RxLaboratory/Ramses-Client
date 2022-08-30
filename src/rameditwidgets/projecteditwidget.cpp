@@ -89,8 +89,8 @@ void ProjectEditWidget::setDeadline(QDate d)
 void ProjectEditWidget::currentUserChanged(RamUser *user)
 {
     if (!user) return;
-    QSettings *userSettings = user->settings();
-    ui_deadlineEdit->setDisplayFormat( userSettings->value("ramses/dateFormat","yyyy-MM-dd hh:mm:ss").toString());
+    QSettings settings;
+    ui_deadlineEdit->setDisplayFormat( settings.value("appearance/dateFormat","yyyy-MM-dd hh:mm:ss").toString());
 }
 
 void ProjectEditWidget::createUser()
@@ -187,7 +187,7 @@ void ProjectEditWidget::setupUi()
 
 void ProjectEditWidget::connectEvents()
 {
-    connect(Ramses::instance(), SIGNAL(loggedIn(RamUser*)), this, SLOT(currentUserChanged(RamUser*)));
+    connect(Ramses::instance(), &Ramses::userChanged, this, &ProjectEditWidget::currentUserChanged);
     connect(ui_resolutionWidget, SIGNAL(resolutionChanged(int,int)), this, SLOT(setResolution(int,int)));
     connect(ui_framerateWidget, SIGNAL(framerateChanged(double)), this, SLOT(setFramerate(double)));
     connect(ui_folderSelector, SIGNAL(pathChanging(QString)), this, SLOT(updateFolderLabel(QString)));

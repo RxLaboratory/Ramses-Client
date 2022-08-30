@@ -96,7 +96,7 @@ void DBInterface::setDataFile(const QString &file)
     if (config.address != "")
     {
         m_rsi->setServerAddress(config.address);
-        m_rsi->setTimeout(config.timeout);
+        m_rsi->setTimeout(config.timeout*1000);
         m_rsi->setSsl(config.useSsl);
         m_updateFrequency = config.updateDelay*1000;
         setOnline();

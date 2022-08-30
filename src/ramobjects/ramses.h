@@ -68,8 +68,7 @@ public slots:
     void refresh();
 
 signals:
-    void loggedIn(RamUser*);
-    void loggedOut(QString);
+    void userChanged(RamUser*);
     void currentProjectChanged(RamProject*);
 
 protected:

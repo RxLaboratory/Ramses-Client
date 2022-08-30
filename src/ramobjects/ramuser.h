@@ -32,8 +32,6 @@ public:
     RamObjectList *schedule() const;
     bool isStepAssigned(RamStep *step) const;
 
-    void updatePassword(QString c, QString n);
-
     virtual QString iconName() const override;
     virtual QString details() const override;
 

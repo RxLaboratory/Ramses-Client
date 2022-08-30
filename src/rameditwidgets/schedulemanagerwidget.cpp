@@ -773,7 +773,7 @@ void ScheduleManagerWidget::connectEvents()
     // other
     connect(ui_titleBar, &DuQFTitleBar::closeRequested, this, &ScheduleManagerWidget::closeRequested);
     connect(Ramses::instance(), SIGNAL(currentProjectChanged(RamProject*)), this, SLOT(projectChanged(RamProject*)));
-    connect(Ramses::instance(), SIGNAL(loggedIn(RamUser*)), this, SLOT(userChanged(RamUser*)));
+    connect(Ramses::instance(), &Ramses::userChanged, this, &ScheduleManagerWidget::userChanged);
 
     connect(m_schedule, SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(usersInserted(QModelIndex,int,int)));
 }

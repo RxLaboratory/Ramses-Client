@@ -5,7 +5,6 @@
 #include "ramuser.h"
 #include "ramses.h"
 #include "mainwindow.h"
-#include "datacrypto.h"
 #include "dbinterface.h"
 
 DatabaseCreateWidget::DatabaseCreateWidget(QWidget *parent) :
@@ -36,20 +35,6 @@ void DatabaseCreateWidget::createDB()
             return;
         }
 
-        // Check password
-        if (ui_npassword1Edit->text() == "")
-        {
-            QMessageBox::warning(this, tr("What's your password?"), tr("I'm sorry, you have to choose a password to create the database.") );
-            return;
-        }
-        if (ui_npassword1Edit->text() != ui_npassword2Edit->text())
-        {
-            QMessageBox::warning(this, tr("Password mismatch"), tr("I'm sorry, the two fields for the new password are different.\nPlease try again.") );
-            ui_npassword1Edit->setText("");
-            ui_npassword2Edit->setText("");
-            return;
-        }
-
         // Check name
         if (ui_shortNameEdit->text() == "")
         {
@@ -57,11 +42,16 @@ void DatabaseCreateWidget::createDB()
             return;
         }
 
-        createNewDB();
+        if (ui_nameEdit->text() == "")
+        {
+            QMessageBox::warning(this, tr("What's your name?"), tr("I'm sorry, you have to choose a user name to create the database.") );
+            return;
+        }
+
+        if (!createNewDB()) return;
 
         // Create user
-        RamUser *newUser = new RamUser(ui_shortNameEdit->text(), ui_shortNameEdit->text());
-        newUser->updatePassword("", ui_npassword1Edit->text());
+        RamUser *newUser = new RamUser(ui_shortNameEdit->text(), ui_nameEdit->text());
         newUser->setRole(RamUser::Admin);
         Ramses::instance()->users()->append(newUser);
 
@@ -82,13 +72,16 @@ void DatabaseCreateWidget::createDB()
         s.updateDelay = ui_serverEdit->updateFreq();
         s.timeout = ui_serverEdit->timeout();
 
+        // Create DB
+        if (!createNewDB(s)) return;
+
         // Connect to server
         RamServerInterface *rsi = RamServerInterface::instance();
         rsi->setServerAddress(s.address);
         rsi->setSsl(s.useSsl);
         rsi->setTimeout(s.timeout);
 
-        // (try to ) set online
+        // (try to) set online
         rsi->setOnline();
         if (!rsi->isOnline())
         {
@@ -99,17 +92,13 @@ void DatabaseCreateWidget::createDB()
             return;
         }
 
-        // login
-        QString password = ui_onlinePasswordEdit->text();
-        QString servPrefix = s.address;
-        password = DataCrypto::instance()->generatePassHash(password, servPrefix.replace("/", ""));
-
-        QString uuid = rsi->doLogin(ui_onlineShortNameEdit->text(), password);
+        QString uuid = rsi->currentUserUuid();
         if (uuid == "")
         {
-            QMessageBox::information(this,
-                                     tr("Invalid user ID or password"),
-                                     tr("Please check your ID and password.")
+            QMessageBox::warning(this,
+                                     tr("Login issue"),
+                                     tr("I can't log you in for an unknown reason.\n\n"
+                                        "Try again, or file a bug report.")
                                      );
             return;
         }
@@ -126,9 +115,6 @@ void DatabaseCreateWidget::createDB()
                                      );
             return;
         }
-
-        // Create DB
-        createNewDB(s);
 
         LocalDataInterface *ldi = LocalDataInterface::instance();
 
@@ -152,22 +138,8 @@ void DatabaseCreateWidget::createDB()
             return;
         }
 
-        // Get User
-        RamUser *user = RamUser::get(uuid);
-        if (!user)
-        {
-            QMessageBox::warning(this,
-                                     tr("Can't get local user"),
-                                     tr("Something went wrong when getting the local user for this database, sorry.\n\n"
-                                        "Try again, or file a bug report.")
-                                     );
-            return;
-        }
-        // Set its password
-        user->updatePassword("", ui_onlinePasswordEdit->text());
-
         // And finish login
-        Ramses::instance()->setUser( user );
+        Ramses::instance()->setUserUuid( uuid );
 
         // Hide dock
         MainWindow *mw = (MainWindow*)GuiUtils::appMainWindow();
@@ -211,19 +183,11 @@ void DatabaseCreateWidget::setupUi()
     ui_shortNameEdit = new QLineEdit(dummy);
     offlineLayout->addWidget(ui_shortNameEdit, 0, 1);
 
-    QLabel *newPasswordLabel = new QLabel(tr("New password"), this);
-    offlineLayout->addWidget(newPasswordLabel, 1, 0);
+    QLabel *userNameLabel = new QLabel(tr("User name"), this);
+    offlineLayout->addWidget(userNameLabel, 1, 0);
 
-    ui_npassword1Edit = new QLineEdit(this);
-    ui_npassword1Edit->setEchoMode(QLineEdit::Password);
-    offlineLayout->addWidget(ui_npassword1Edit, 1, 1);
-
-    QLabel *newPasswordLabel2 = new QLabel(tr("Repeat new password"), this);
-    offlineLayout->addWidget(newPasswordLabel2, 2, 0);
-
-    ui_npassword2Edit = new QLineEdit(this);
-    ui_npassword2Edit->setEchoMode(QLineEdit::Password);
-    offlineLayout->addWidget(ui_npassword2Edit, 2, 1);
+    ui_nameEdit = new QLineEdit(this);
+    offlineLayout->addWidget(ui_nameEdit, 1, 1);
 
     QWidget *onlineWidget = new QWidget(ui_tabWidget);
     ui_tabWidget->addTab(onlineWidget, QIcon(":/icons/server-settings"), tr("Online (Sync)"));
@@ -237,19 +201,6 @@ void DatabaseCreateWidget::setupUi()
     ui_serverEdit = new ServerEditWidget();
     onlineLayout->addWidget(ui_serverEdit, 0, 1);
 
-    QLabel *onlineUserLabel = new QLabel("User ID");
-    onlineLayout->addWidget(onlineUserLabel, 1, 0);
-
-    ui_onlineShortNameEdit = new QLineEdit();
-    onlineLayout->addWidget(ui_onlineShortNameEdit, 1, 1);
-
-    QLabel *onlineNewPasswordLabel = new QLabel(tr("Password"));
-    onlineLayout->addWidget(onlineNewPasswordLabel, 2, 0);
-
-    ui_onlinePasswordEdit = new QLineEdit();
-    ui_onlinePasswordEdit->setEchoMode(QLineEdit::Password);
-    onlineLayout->addWidget(ui_onlinePasswordEdit, 2, 1);
-
     ui_createButton = new QPushButton(tr("Create and log in"));
     ui_createButton->setIcon(QIcon(":/icons/apply"));
     mainLayout->addWidget(ui_createButton);
@@ -259,12 +210,9 @@ void DatabaseCreateWidget::setupUi()
 #ifdef QT_DEBUG
     ui_fileSelector->setPath("/home/duduf/Documents/test.ramses");
     ui_shortNameEdit->setText("Duf");
-    ui_npassword1Edit->setText("pass");
-    ui_npassword2Edit->setText("pass");
+    ui_nameEdit->setText("Nicolas Dufresne");
 
     ui_serverEdit->setAddress("ramses.rxlab.io/tests");
-    ui_onlineShortNameEdit->setText("Admin");
-    ui_onlinePasswordEdit->setText("password");
 #endif
 }
 
@@ -274,14 +222,14 @@ void DatabaseCreateWidget::connectEvents()
     connect(ui_createButton, &QPushButton::clicked, this, &DatabaseCreateWidget::createDB);
 }
 
-void DatabaseCreateWidget::createNewDB()
+bool DatabaseCreateWidget::createNewDB()
 {
     // Remove existing file
     QString newFilePath = ui_fileSelector->path();
     if (QFileInfo::exists(newFilePath))
     {
         QMessageBox::StandardButton ok = QMessageBox::question(this, tr("Confirm file overwrite"), tr("Are you sure you want to overwrite this file?") + "\n\n" + newFilePath);
-        if (ok != QMessageBox::Yes) return;
+        if (ok != QMessageBox::Yes) return false;
         FileUtils::remove(newFilePath);
     }
 
@@ -291,21 +239,23 @@ void DatabaseCreateWidget::createNewDB()
     if (!QFileInfo::exists(newFilePath))
     {
         QMessageBox::warning(this, tr("I can't save the database"), tr("I'm sorry, I've failed to create the database at this location.\nMaybe you can try another location...") + "\n\n" + newFilePath );
-        return;
+        return false;
     }
 
     // Set File
     DBInterface::instance()->setDataFile(newFilePath);
+
+    return true;
 }
 
-void DatabaseCreateWidget::createNewDB(ServerConfig s)
+bool DatabaseCreateWidget::createNewDB(ServerConfig s)
 {
     // Remove existing file
     QString newFilePath = ui_fileSelector->path();
     if (QFileInfo::exists(newFilePath))
     {
         QMessageBox::StandardButton ok = QMessageBox::question(this, tr("Confirm file overwrite"), tr("Are you sure you want to overwrite this file?") + "\n\n" + newFilePath);
-        if (ok != QMessageBox::Yes) return;
+        if (ok != QMessageBox::Yes) return false;
         FileUtils::remove(newFilePath);
     }
 
@@ -318,9 +268,11 @@ void DatabaseCreateWidget::createNewDB(ServerConfig s)
     if (!QFileInfo::exists(newFilePath))
     {
         QMessageBox::warning(this, tr("I can't save the database"), tr("I'm sorry, I've failed to create the database at this location.\nMaybe you can try another location...") + "\n\n" + newFilePath );
-        return;
+        return false;
     }
 
     // Set File
     DBInterface::instance()->setDataFile(newFilePath);
+
+    return true;
 }

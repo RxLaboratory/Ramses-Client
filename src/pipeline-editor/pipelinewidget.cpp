@@ -211,7 +211,7 @@ PipelineWidget::PipelineWidget(QWidget *parent) :
     connect(m_nodeScene->connectionManager(), SIGNAL(connectionRemoved(DuQFConnection*)), this, SLOT(connectionRemoved(DuQFConnection*)));
     // Ramses connections
     connect(Ramses::instance(), SIGNAL(currentProjectChanged(RamProject*)), this, SLOT(setProject(RamProject*)));
-    connect(Ramses::instance(), &Ramses::loggedIn, this, &PipelineWidget::userChanged);
+    connect(Ramses::instance(), &Ramses::userChanged, this, &PipelineWidget::userChanged);
 }
 
 void PipelineWidget::setProject(RamProject *project)

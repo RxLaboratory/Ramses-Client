@@ -98,36 +98,46 @@ void RamServerInterface::ping()
 
 QString RamServerInterface::doLogin(QString username, QString password, bool saveUsername, bool savePassword)
 {
-    // Pause the queue
-    pauseQueue();
-
-    m_lastContent = QJsonObject();
-
     QJsonObject body;
     body.insert("username", username);
     body.insert("password", password);
     Request r = buildRequest("login", body);
-    postRequest(r);
+    QNetworkReply *reply = synchronousRequest(r);
 
-    // Wait for the reply
-    QDeadlineTimer t(m_timeout*2);
-    while (m_lastContent.isEmpty())
+    if (!reply)
     {
-        qApp->processEvents();
-        if ( !isOnline() ) break;
-        if ( t.hasExpired() ) break;
+        qDebug() << "<<< Can't log in... request timed out.";
+        setConnectionStatus(NetworkUtils::Offline, tr("Unable to log in (request timed out)."));
+        m_currentUserUuid = "";
+        return "";
     }
 
-    // Restart queue
-    startQueue();
+    QJsonObject repObj = parseData(reply);
+    bool repSuccess = repObj.value("success").toBool();
 
-    QString uuid = m_lastContent.value("content").toObject().value("uuid").toString();
-    if (uuid == "")
+    if (!repSuccess)
+    {
+        QString reason = tr("Failed login");
+        log(reason, DuQFLog::Warning);
+        setConnectionStatus(NetworkUtils::Offline, reason);
+        m_currentUserUuid = "";
+        return "";
+    }
+
+    qDebug() << ">>> LOGIN DATA: " << repObj;
+
+    // get the new token
+    m_sessionToken = repObj.value("content").toObject().value("token").toString();
+    setConnectionStatus(NetworkUtils::Online, tr("Server ready"));
+
+    m_currentUserUuid = repObj.value("content").toObject().value("uuid").toString();
+    qDebug() << ">>> LOGIN UUID: " << m_currentUserUuid;
+    if (m_currentUserUuid == "")
     {
         setConnectionStatus(NetworkUtils::Connecting, "Login failed.");
         // Try again
         login();
-        return uuid;
+        return m_currentUserUuid;
     }
 
     // Save credentials
@@ -163,9 +173,9 @@ QString RamServerInterface::doLogin(QString username, QString password, bool sav
     }
 
     // Warn everyone we've logged in
-    emit userChanged(uuid);
+    emit userChanged(m_currentUserUuid);
 
-    return uuid;
+    return m_currentUserUuid;
 }
 
 void RamServerInterface::login()
@@ -200,6 +210,9 @@ void RamServerInterface::login()
         return;
     }
 
+    // Wait for the dialog to return
+    QEventLoop loop;
+
     // Show the login dialog (if both the username and password have not been saved)
     LoginDialog *dialog = new LoginDialog(GuiUtils::appMainWindow());
     dialog->setServerAddress( m_serverAddress );
@@ -207,8 +220,12 @@ void RamServerInterface::login()
     connect(dialog, &LoginDialog::loggedIn, this, &RamServerInterface::doLogin);
     connect(dialog, &LoginDialog::accepted, dialog, &LoginDialog::deleteLater);
     connect(dialog, &LoginDialog::rejected, dialog, &LoginDialog::deleteLater);
+    connect(dialog, &LoginDialog::finished, &loop, &QEventLoop::quit);
 
     dialog->open();
+
+    // Wait for the dialog to return
+    loop.exec();
 }
 
 void RamServerInterface::sync(QJsonArray tables, QDateTime prevSyncDate)
@@ -227,6 +244,8 @@ void RamServerInterface::sync(QJsonObject body)
 
 QJsonArray RamServerInterface::downloadData()
 {
+    qDebug() << ">>> Downloading data";
+
     QStringList tableNames = LocalDataInterface::instance()->tableNames();
     QJsonArray tables;
     for(int i = 0; i < tableNames.count(); i++)
@@ -237,33 +256,26 @@ QJsonArray RamServerInterface::downloadData()
         tables << table;
     }
 
-    // Pause the queue
-    pauseQueue();
-    m_lastContent = QJsonObject();
-
+    // Create a request to get the data
     QJsonObject body;
     body.insert("tables", tables);
     body.insert("previousSyncDate", "1970-01-01 00:00:00");
     Request r = buildRequest("sync", body);
-    postRequest(r);
 
-    // Wait for the reply
-    QDeadlineTimer t(m_timeout*2);
-    while (m_lastContent.isEmpty())
+    // Post the request
+    QNetworkReply *reply = synchronousRequest(r);
+
+    if (!reply)
     {
-        qApp->processEvents();
-        if ( !isOnline() ) return QJsonArray();
-        if ( t.hasExpired() ) break;
+        qDebug() << "<<< Can't download data... Request timed out.";
+        return QJsonArray();
     }
 
-    QJsonArray result;
-    if (m_lastContent.isEmpty()) qDebug() << "Can't download data...";
-    else result = m_lastContent.value("content").toObject().value("tables").toArray();
+    // Parse reply
+    QJsonObject repObj = parseData(reply);
 
-    // Restart queue
-    startQueue();
-
-    return result;
+    qDebug() << "<<< Downloaded data: " << repObj;
+    return repObj.value("content").toObject().value("tables").toArray();
 }
 
 // PUBLIC SLOTS //
@@ -271,7 +283,35 @@ QJsonArray RamServerInterface::downloadData()
 void RamServerInterface::setOnline()
 {
     setConnectionStatus(NetworkUtils::Connecting, "Server ping");
-    ping();
+
+    // Ping
+    Request r = buildRequest("ping", QJsonObject());
+    QNetworkReply *reply = synchronousRequest(r);
+
+    if (!reply)
+    {
+        qDebug() << "<<< Can't set online... Ping timed out.";
+        setConnectionStatus(NetworkUtils::Offline, tr("Server unavailable (request timed out)."));
+    }
+
+    QJsonObject repObj = parseData(reply);
+
+    bool repSuccess = repObj.value("success").toBool();
+
+    // If ping is not successful, set offline.
+    if (!repSuccess)
+    {
+        QString reason = tr("The server ping was not successful.\nThis is probably a bug or a configuration error.\nPlease report bugs on %1").arg(URL_SOURCECODE);
+        log(reason, DuQFLog::Warning);
+        setConnectionStatus(NetworkUtils::Offline, reason);
+        return;
+    }
+
+    // get the server version
+    m_serverVersion = repObj.value("content").toObject().value("version").toString();
+    // login!
+    login();
+
 }
 
 void RamServerInterface::setOffline()
@@ -454,44 +494,12 @@ void RamServerInterface::sslError(QNetworkReply *reply, QList<QSslError> errs)
 
 void RamServerInterface::dataReceived(QNetworkReply *reply)
 {
-    if (reply->error() != QNetworkReply::NoError)
-    {
-        QJsonObject repObj;
-        repObj.insert("error", true);
-        repObj.insert("message", tr("A server error has occured."));
-        repObj.insert("accepted",false);
-        repObj.insert("success",false);
-    }
-
-    QString repAll = reply->readAll();
-    QJsonDocument repDoc = QJsonDocument::fromJson(repAll.toUtf8());
-    QJsonObject repObj = repDoc.object();
-
-    if (repObj.isEmpty())
-    {
-        repObj.insert("message","Received an invalid object");
-        repObj.insert("accepted",false);
-        repObj.insert("success",false);
-        repObj.insert("error", true);
-        repObj.insert("query", "unknown");
-    }
+    QJsonObject repObj = parseData(reply);
+    if (repObj.isEmpty()) return;
 
     QString repQuery = repObj.value("query").toString();
-    QString repMessage = repObj.value("message").toString();
-
-    log(repQuery + "\n" + repMessage + "\nContent:\n" + repAll, DuQFLog::Data);
-
-    m_lastContent = repObj;
-
-    if (repObj.value("error").toBool(false)) return;
-
     bool repSuccess = repObj.value("success").toBool();
-
-    // Log the rep message
-    DuQFLog::LogType logLevel = DuQFLog::Information;
-    if (repQuery != "login" && !repSuccess) logLevel = DuQFLog::Warning;
-    if (repMessage.startsWith("warning", Qt::CaseInsensitive)) logLevel = DuQFLog::Warning;
-    log(repMessage, logLevel);
+    QString repMessage = repObj.value("message").toString();
 
     // Parse specific data
     if (repQuery == "ping")
@@ -509,21 +517,6 @@ void RamServerInterface::dataReceived(QNetworkReply *reply)
         m_serverVersion = repObj.value("content").toObject().value("version").toString();
         // If we're connecting, login!
         if (m_status == NetworkUtils::Connecting) login();
-    }
-    else if (repQuery== "login")
-    {
-        // If login is not successful, set offline.
-        if (!repSuccess)
-        {
-            QString reason = tr("The server login was not successful.\nThis is probably a bug or a configuration error.\nPlease report bugs on %1").arg(URL_SOURCECODE);
-            log(reason, DuQFLog::Warning);
-            setConnectionStatus(NetworkUtils::Offline, reason);
-            return;
-        }
-
-        // get the new token
-        m_sessionToken = repObj.value("content").toObject().value("token").toString();
-        setConnectionStatus(NetworkUtils::Online, tr("Server ready"));
     }
     else if (repQuery == "loggedout")
     {
@@ -648,14 +641,66 @@ void RamServerInterface::pauseQueue()
     m_requestQueueTimer->stop();
 }
 
+QJsonObject RamServerInterface::parseData(QNetworkReply *reply)
+{
+    if (reply->error() != QNetworkReply::NoError)
+    {
+        QJsonObject repObj;
+        repObj.insert("error", true);
+        repObj.insert("message", tr("A server error has occured."));
+        repObj.insert("accepted",false);
+        repObj.insert("success",false);
+    }
+
+    QString repAll = reply->readAll();
+    QJsonDocument repDoc = QJsonDocument::fromJson(repAll.toUtf8());
+    QJsonObject repObj = repDoc.object();
+
+    if (repObj.isEmpty())
+    {
+        repObj.insert("message","Received an invalid object");
+        repObj.insert("accepted",false);
+        repObj.insert("success",false);
+        repObj.insert("error", true);
+        repObj.insert("query", "unknown");
+    }
+
+    QString repQuery = repObj.value("query").toString();
+    QString repMessage = repObj.value("message").toString();
+
+    log(repQuery + "\n" + repMessage + "\nContent:\n" + repAll, DuQFLog::Data);
+
+    if (repObj.value("error").toBool(false)) return QJsonObject();
+
+    bool repSuccess = repObj.value("success").toBool();
+
+    // Log the rep message
+    DuQFLog::LogType logLevel = DuQFLog::Information;
+    if (repQuery != "login" && !repSuccess) logLevel = DuQFLog::Warning;
+    if (repMessage.startsWith("warning", Qt::CaseInsensitive)) logLevel = DuQFLog::Warning;
+    log(repMessage, logLevel);
+
+    return repObj;
+}
+
+const QString &RamServerInterface::currentUserUuid() const
+{
+    return m_currentUserUuid;
+}
+
 // PRIVATE //
 
 RamServerInterface::RamServerInterface():
     DuQFLoggerObject("Ramses Server Interface", nullptr)
 {
     // Prepare network connection
-    m_network.setCookieJar(new QNetworkCookieJar());
-    m_network.setStrictTransportSecurityEnabled(true);
+    QNetworkCookieJar *cookies = new QNetworkCookieJar();
+    m_network = new QNetworkAccessManager();
+    m_network->setCookieJar(cookies);
+    m_network->setStrictTransportSecurityEnabled(true);
+    m_synchronousNetwork = new QNetworkAccessManager();
+    m_synchronousNetwork->setCookieJar(cookies);
+    m_synchronousNetwork->setStrictTransportSecurityEnabled(true);
 
     m_forbiddenWords << "and" << "or" << "if" << "else" << "insert" << "update" << "select" << "drop" << "alter";
 
@@ -668,8 +713,8 @@ RamServerInterface::RamServerInterface():
 void RamServerInterface::connectEvents()
 {
     connect(m_requestQueueTimer, &QTimer::timeout, this, &RamServerInterface::nextRequest);
-    connect(&m_network, &QNetworkAccessManager::finished, this, &RamServerInterface::dataReceived);
-    connect(&m_network, &QNetworkAccessManager::sslErrors, this, &RamServerInterface::sslError);
+    connect(m_network, &QNetworkAccessManager::finished, this, &RamServerInterface::dataReceived);
+    connect(m_network, &QNetworkAccessManager::sslErrors, this, &RamServerInterface::sslError);
     connect(qApp, &QApplication::aboutToQuit, this, &RamServerInterface::flushRequests);
 }
 
@@ -687,9 +732,9 @@ const QString RamServerInterface::serverProtocol()
     return "http://";
 }
 
-QNetworkReply *RamServerInterface::postRequest(Request r)
+void RamServerInterface::postRequest(Request r)
 {
-    QNetworkReply *reply = m_network.post(r.request, r.body.toUtf8());
+    QNetworkReply *reply = m_network->post(r.request, r.body.toUtf8());
     QUrl url = r.request.url();
 
     // Log URL / GET
@@ -706,6 +751,41 @@ QNetworkReply *RamServerInterface::postRequest(Request r)
 
     connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this,SLOT(networkError(QNetworkReply::NetworkError)));
     connect(reply, SIGNAL(finished()), reply, SLOT(deleteLater()));
+}
+
+QNetworkReply *RamServerInterface::synchronousRequest(Request r)
+{
+    // Log URL / GET
+    QUrl url = r.request.url();
+    log( "New request: " +  url.toString(QUrl::RemovePassword), DuQFLog::Debug);
+    // Log POST body
+    if (r.query == "login")
+        #ifdef QT_DEBUG
+        log("Request data: " + r.body, DuQFLog::Data);
+        #else
+        log("Request data: [Hidden login info]", DuQFLog::Data);
+        #endif
+    else
+        log("Request data: " + r.body, DuQFLog::Data);
+
+
+    // Create an eventloop to wait for the data
+    QEventLoop loop;
+    QTimer timer;
+    timer.setSingleShot(true);
+    connect(&timer, &QTimer::timeout, &loop, [&]{ exit(1); } );
+
+    QNetworkReply *reply = m_synchronousNetwork->post(r.request, r.body.toUtf8());
+
+    connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this,SLOT(networkError(QNetworkReply::NetworkError)));
+    connect(reply, SIGNAL(finished()), reply, SLOT(deleteLater()));
+    connect(reply, &QNetworkReply::finished, &loop, &QEventLoop::quit);
+
+    timer.start( m_timeout );
+
+    // Wait for it
+    if (loop.exec() == 0) timer.stop();
+    else return nullptr;
 
     return reply;
 }

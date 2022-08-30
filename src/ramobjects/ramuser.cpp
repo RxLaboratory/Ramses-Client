@@ -5,10 +5,10 @@
 #include "ramses.h"
 #include "ramscheduleentry.h"
 #include "usereditwidget.h"
-#include "datacrypto.h"
 #include "ramdatainterface/dbinterface.h"
 #include "ramasset.h"
 #include "ramshot.h"
+#include "duqf-app/app-config.h"
 
 // STATIC //
 
@@ -123,17 +123,6 @@ bool RamUser::isStepAssigned(RamStep *step) const
     }
 
     return false;
-}
-
-void RamUser::updatePassword(QString c, QString n)
-{
-    QString prev = getData("password").toString("");
-
-    // Hash passwords
-    if (c != "") c = DataCrypto::instance()->generatePassHash(c);
-    n = DataCrypto::instance()->generatePassHash(n);
-
-    if (c == prev) insertData("password", n);
 }
 
 QString RamUser::iconName() const

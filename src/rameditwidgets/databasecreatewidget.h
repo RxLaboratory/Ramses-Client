@@ -21,17 +21,14 @@ private:
     void setupUi();
     void connectEvents();
 
-    void createNewDB();
-    void createNewDB(ServerConfig s);
+    bool createNewDB();
+    bool createNewDB(ServerConfig s);
 
     DuQFFolderSelectorWidget *ui_fileSelector;
     QTabWidget *ui_tabWidget;
     QLineEdit *ui_shortNameEdit;
-    QLineEdit *ui_npassword1Edit;
-    QLineEdit *ui_npassword2Edit;
+    QLineEdit *ui_nameEdit;
     ServerEditWidget *ui_serverEdit;
-    QLineEdit *ui_onlineShortNameEdit;
-    QLineEdit *ui_onlinePasswordEdit;
     QPushButton *ui_createButton;
 };
 

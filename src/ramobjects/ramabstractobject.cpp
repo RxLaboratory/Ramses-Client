@@ -354,8 +354,6 @@ RamAbstractObject::RamAbstractObject(QString uuid, ObjectType type, bool encrypt
 
     // cache the data
     m_cachedData = dataString();
-    if (type == User)
-        qDebug() << m_cachedData;
 }
 
 void RamAbstractObject::setDataString(QString data)
@@ -390,7 +388,7 @@ QString RamAbstractObject::dataString() const
     if (m_dataEncrypted) dataStr = DataCrypto::instance()->clientDecrypt( dataStr );
 
     // Cache the data to improve performance
-    //m_cachedData = data;
+    //m_cachedData = dataStr;
 
     return dataStr;
 }

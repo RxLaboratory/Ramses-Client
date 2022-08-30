@@ -77,7 +77,7 @@ void UserEditWidget::reInit(RamObject *o)
 
 void UserEditWidget::changePassword()
 {
-    if (!checkPasswordInput()) return;
+    /*if (!checkPasswordInput()) return;
 
     if (ui_npassword1Edit->text() != "")
     {
@@ -88,7 +88,7 @@ void UserEditWidget::changePassword()
 
     ui_npassword1Edit->setText("");
     ui_npassword2Edit->setText("");
-    ui_cpasswordEdit->setText("");
+    ui_cpasswordEdit->setText("");*/
 }
 
 bool UserEditWidget::checkPasswordInput()
@@ -186,6 +186,6 @@ void UserEditWidget::connectEvents()
 {
     connect(ui_roleBox, SIGNAL(currentIndexChanged(int)), this, SLOT(setRole(int)));
     connect(ui_passwordButton, SIGNAL(clicked()), this, SLOT(changePassword()));
-    connect(Ramses::instance(), &Ramses::loggedIn, this, &UserEditWidget::objectChanged);
+    //connect(Ramses::instance(), &Ramses::userChanged, this, &UserEditWidget::objectChanged);
     connect(ui_colorSelector, SIGNAL(colorChanged(QColor)), this, SLOT(setColor(QColor)));
 }

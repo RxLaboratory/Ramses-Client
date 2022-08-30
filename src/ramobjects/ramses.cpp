@@ -1,6 +1,5 @@
 #include "ramses.h"
 
-#include "ramuuid.h"
 
 // STATIC //
 
@@ -14,6 +13,11 @@ Ramses *Ramses::instance()
 
 void Ramses::setUserUuid(QString uuid)
 {
+    if (uuid == "")
+    {
+        setUser(nullptr);
+        return;
+    }
     RamUser *u = RamUser::get(uuid);
     setUser(u);
 }
@@ -33,7 +37,7 @@ void Ramses::setUser(RamUser *u)
 
     m_dbi->setCurrentUserUuid(m_currentUser->uuid());
 
-    emit loggedIn(m_currentUser);
+    emit userChanged(m_currentUser);
 
     qDebug() << "Logged in: " + m_currentUser->name();
 }
@@ -81,7 +85,6 @@ RamUser *Ramses::ramsesUser()
     if (!m_ramsesUser)
     {
         m_ramsesUser = new RamUser("Ramses", "Ramses Daemon");
-        m_ramsesUser->updatePassword("", RamUuid::generateUuidString("Ramses"));
         m_users->append(m_ramsesUser);
     }
     return m_ramsesUser;
@@ -95,7 +98,6 @@ RamUser *Ramses::removedUser()
     if (!m_removedUser)
     {
         m_removedUser = new RamUser("Removed", "Removed User");
-        m_removedUser->updatePassword("", RamUuid::generateUuidString("Removed"));
     }
     return m_removedUser;
 }

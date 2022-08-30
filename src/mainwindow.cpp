@@ -336,8 +336,7 @@ void MainWindow::connectEvents()
     connect(DuQFLogger::instance(), &DuQFLogger::newLog, this, &MainWindow::log);
     connect(Daemon::instance(), &Daemon::raise, this, &MainWindow::raise);
     connect(Daemon::instance(), &Daemon::raise, this, &MainWindow::show);
-    connect(Ramses::instance(),&Ramses::loggedIn, this, &MainWindow::loggedIn);
-    connect(Ramses::instance(),&Ramses::loggedOut, this, &MainWindow::loggedOut);
+    connect(Ramses::instance(),&Ramses::userChanged, this, &MainWindow::loggedIn);
     connect(Ramses::instance(), SIGNAL(currentProjectChanged(RamProject*)), this, SLOT(currentProjectChanged(RamProject*)));
     connect(DBInterface::instance(),&DBInterface::connectionStatusChanged, this, &MainWindow::dbiConnectionStatusChanged);
 }

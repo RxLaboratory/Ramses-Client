@@ -7,16 +7,16 @@
 5A - Move all settings to database? see later
   
 5- Sync process
-	Crash on create DB (both online and offline)
-	On login/open, if no current: if db is used online: add a "get online" button, if db is used offline: ask who you are (dropdown)
+	On login/open, if no current user uuid: if db is used online: add a "get online" button, if db is used offline: ask who you are (dropdown)
 	On edit db: set online: ask user and login before sync.
 	When manual logout: erase saved password
 	remove offline authentication
-		client: createdb: remove user/password fields
 		client: usereditwidget: password fields only if online
 	implement server edit widget (set offline, make changes, set online)
 	reimplement and improve login/logout/online/offline buttons
-	option to auto open latest
+	add user method
+	Ramses does not quit? Sync issue? -> add a timer to quit no matter what?
+	Check console in information mode
 		
 5B - Check ramses data path management (ramses main folder, per database, must be saved (but not synced)
 		

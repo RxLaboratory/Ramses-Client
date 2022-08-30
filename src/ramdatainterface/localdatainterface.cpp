@@ -451,27 +451,6 @@ QJsonObject LocalDataInterface::getSync()
             if (tName == "RamUser")
             {
                 if (ENCRYPT_USER_DATA) data = DataCrypto::instance()->clientDecrypt( data );
-                // Remove passwords, except for current user
-                QJsonDocument doc = QJsonDocument::fromJson(data.toUtf8());
-                QJsonObject o = doc.object();
-                if (o.value("uuid").toString() != currentUuid)
-                {
-                    o.remove("password");
-                }
-                else
-                {
-                    // Encrypt as expected by the server
-                    DataCrypto *crypto = DataCrypto::instance();
-                    QString password = o.value("password").toString();
-                    o.insert("password",
-                             crypto->generatePassHash(
-                                 password,
-                                 RamServerInterface::instance()->serverAddress().replace("/","")
-                                 ));
-                }
-                doc.setObject(o);
-                data = doc.toJson();
-
                 obj.insert("userName", qry.value(4).toString());
             }
 
@@ -482,8 +461,6 @@ QJsonObject LocalDataInterface::getSync()
         table.insert("modifiedRows", rows);
         tables.append(table);
     }
-
-    qDebug() << "SENDING TABLES >>> " << tables;
 
     QJsonObject result;
     result.insert("tables", tables);
@@ -505,8 +482,6 @@ void LocalDataInterface::saveSync(QJsonArray tables)
         for (int r = incomingRows.count() - 1; r >= 0; r--)
         {
             QJsonObject incomingRow = incomingRows.at(r).toObject();
-            qDebug() << "Incoming Row:";
-            qDebug() << incomingRow;
 
             // Check if row exists
             QString uuid = incomingRow.value("uuid").toString();
@@ -525,6 +500,8 @@ void LocalDataInterface::saveSync(QJsonArray tables)
             {
                 QString userName = incomingRow.value("userName").toString().replace("'", "''");
                 if (ENCRYPT_USER_DATA) data = DataCrypto::instance()->clientEncrypt( data );
+
+                qDebug() << "===== USER DATA: " << data;
                 QString q = "INSERT INTO %1 (data, modified, uuid, removed, userName) "
                             "VALUES ( '%2', '%3', '%4', %5, '%6' );";
 
@@ -587,7 +564,6 @@ void LocalDataInterface::saveSync(QJsonArray tables)
             m_updated << uuid;
         }
     }
-    qDebug() << "RECIEVED TABLES <<< " << tables;
 }
 
 QString LocalDataInterface::currentUserUuid()
@@ -671,32 +647,8 @@ void LocalDataInterface::finishQuery(QString q)
     m_activeQueries.removeOne(q);
 
     if (m_activeQueries.isEmpty()) {
-
-        // Emit what needs to be emitted
-        for (int i = 0; i < m_inserted.count(); i++)
-        {
-            QStringList ins = m_inserted.at(i);
-            emit inserted(ins.at(0), ins.at(1));
-        }
-        QMapIterator<QString,bool> avIt(m_availabilityChanged);
-        while(avIt.hasNext())
-        {
-            avIt.next();
-            emit availabilityChanged(avIt.key(), avIt.value());
-        }
-        for (int i = 0; i < m_updated.count(); i++)
-        {
-            emit dataChanged(m_updated.at(i));
-        }
-        // Clear all
-        m_inserted.clear();
-        m_availabilityChanged.clear();
-        m_updated.clear();
-
-        qDebug() << "LocalDataInterface Ready!";
-
-        // We're ready!
-        emit ready();
+        // Give a little bit more time in case other writing operations are coming
+        QTimer::singleShot(1000, this, &LocalDataInterface::processUpdates);
     }
 }
 
@@ -706,6 +658,37 @@ void LocalDataInterface::quit()
     vacuum();
     waitForReady();
     qDebug() << "LocalDataInterface: Everything's clean.";
+}
+
+void LocalDataInterface::processUpdates()
+{
+    if (!m_activeQueries.isEmpty()) return;
+
+    // Emit what needs to be emitted
+    for (int i = 0; i < m_inserted.count(); i++)
+    {
+        QStringList ins = m_inserted.at(i);
+        emit inserted(ins.at(0), ins.at(1));
+    }
+    QMapIterator<QString,bool> avIt(m_availabilityChanged);
+    while(avIt.hasNext())
+    {
+        avIt.next();
+        emit availabilityChanged(avIt.key(), avIt.value());
+    }
+    for (int i = 0; i < m_updated.count(); i++)
+    {
+        emit dataChanged(m_updated.at(i));
+    }
+    // Clear all
+    m_inserted.clear();
+    m_availabilityChanged.clear();
+    m_updated.clear();
+
+    qDebug() << "LocalDataInterface Ready!";
+
+    // We're ready!
+    emit ready();
 }
 
 LocalDataInterface::LocalDataInterface() :

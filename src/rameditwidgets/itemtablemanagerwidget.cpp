@@ -990,7 +990,7 @@ void ItemTableManagerWidget::connectEvents()
     // other
     connect(ui_titleBar, &DuQFTitleBar::closeRequested, this, &ItemTableManagerWidget::closeRequested);
     connect(Ramses::instance(), SIGNAL(currentProjectChanged(RamProject*)), this,SLOT(projectChanged(RamProject*)));
-    connect(Ramses::instance(), SIGNAL(loggedIn(RamUser*)), this, SLOT(currentUserChanged(RamUser*)));
+    connect(Ramses::instance(), &Ramses::userChanged, this, &ItemTableManagerWidget::currentUserChanged);
     connect(ui_header, SIGNAL(sort(int,Qt::SortOrder)), ui_table->filteredList(), SLOT(resort(int,Qt::SortOrder)));
     connect(ui_header, SIGNAL(unsort()), ui_table->filteredList(), SLOT(unsort()));
 }

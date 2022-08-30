@@ -59,6 +59,8 @@ public:
     void sync(QJsonObject body);
     QJsonArray downloadData();
 
+    const QString &currentUserUuid() const;
+
 public slots:
     /**
      * @brief setOnline posts a ping, and set the status to "Connecting"
@@ -132,7 +134,8 @@ private:
      * @brief Posts a request to the server
      * @param request
      */
-    QNetworkReply *postRequest(Request r);
+    void postRequest(Request r);
+    QNetworkReply *synchronousRequest(Request r);
     /**
      * @brief Adds a request to the queue
      * @param r the request to add
@@ -156,6 +159,12 @@ private:
      */
     void startQueue();
     void pauseQueue();
+    /**
+     * @brief parseData Checks for errors and parses the data received from the Ramses Server
+     * @param reply
+     * @return
+     */
+    QJsonObject parseData(QNetworkReply *reply);
 
     // ATTRIBUTES //
 
@@ -164,7 +173,8 @@ private:
     /**
      * @brief Manages the remote connection
      */
-    QNetworkAccessManager m_network;
+    QNetworkAccessManager *m_network; // connected for asynchronous queries
+    QNetworkAccessManager *m_synchronousNetwork; // used for synchronous queries
     /**
      * @brief Are we using a secured connection?
      */
@@ -218,8 +228,8 @@ private:
      */
     int m_requestDelay = 500;
 
-    QJsonObject m_lastContent;
-
+    // Authentication //
+    QString m_currentUserUuid;
 };
 
 #endif // RAMSERVERINTERFACE_H

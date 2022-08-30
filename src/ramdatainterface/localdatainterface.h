@@ -123,6 +123,7 @@ private slots:
     void logError(QString err);
     void finishQuery(QString q);
     void quit();
+    void processUpdates();
 
 private:
     /**
