@@ -16,13 +16,16 @@ bool DBInterface::isReady() const
 void DBInterface::setOffline()
 {
     // One last sync
-    if (m_rsi->isOnline()) sync();
-    // Wait for server timeout to be able to sync
-    QDeadlineTimer t( m_rsi->timeOut() );
-    while (true)
+    if (m_rsi->isOnline())
     {
-        qApp->processEvents();
-        if (t.hasExpired()) break;
+        sync();
+        // Wait for server timeout to be able to sync
+        QDeadlineTimer t( m_rsi->timeOut() );
+        while (true)
+        {
+            qApp->processEvents();
+            if (t.hasExpired()) break;
+        }
     }
     // Disconnects from the Ramses Server
     m_rsi->setOffline();

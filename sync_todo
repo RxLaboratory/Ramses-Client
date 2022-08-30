@@ -10,12 +10,15 @@
 	On login/open, if no current user uuid: if db is used online: add a "get online" button, if db is used offline: ask who you are (dropdown)
 	On edit db: set online: ask user and login before sync.
 	When manual logout: erase saved password
+	test login without network
 	remove offline authentication
 		client: usereditwidget: password fields only if online
 	implement server edit widget (set offline, make changes, set online)
 	reimplement and improve login/logout/online/offline buttons
 	add user method
 	Check console in information mode
+	move user menu to a button on the toolbar
+	hide buttons on toolbar without project
 		
 5B - Check ramses data path management (ramses main folder, per database, must be saved (but not synced)
 		

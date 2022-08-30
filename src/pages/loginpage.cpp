@@ -77,14 +77,6 @@ void LoginPage::databaseChanged(int i)
     ui_settingsDBButton->setEnabled(i >= 0);
 }
 
-/*
-void LoginPage::loggedOut(QString reason)
-{
-    if (reason == "") reason = tr("Ready...");
-    ui_loginWidget->show();
-    ui_connectionStatusLabel->setText(reason);
-}*/
-
 void LoginPage::loginButton_clicked()
 {
     // Set database
@@ -120,6 +112,20 @@ void LoginPage::loginButton_clicked()
     settings.endArray();
 }
 
+void LoginPage::userChanged(RamUser *u)
+{
+    if (u)
+    {
+        ui_loginWidget->hide();
+        ui_statusLabel->setText(tr("Welcome %1!").arg(u->name()));
+    }
+    else
+    {
+        ui_loginWidget->show();
+        ui_statusLabel->setText(tr("Ready"));
+    }
+}
+
 void LoginPage::setupUi()
 {
     QHBoxLayout *mainLayout = new QHBoxLayout(this);
@@ -141,13 +147,13 @@ void LoginPage::setupUi()
 
     layout->addStretch();
 
-    QWidget *dummy = new QWidget(this);
-    dummy->setMaximumWidth(256);
-    layout->addWidget(dummy);
-    QVBoxLayout *loginLayout = new QVBoxLayout(dummy);
+    ui_loginWidget = new QWidget(this);
+    ui_loginWidget->setMaximumWidth(256);
+    layout->addWidget(ui_loginWidget);
+    QVBoxLayout *loginLayout = new QVBoxLayout(ui_loginWidget);
 
     ui_bigOpenButton = new QPushButton(this);
-    ui_bigOpenButton->setText(tr("Open recent database..."));
+    ui_bigOpenButton->setText(tr("Open database..."));
     ui_bigOpenButton->setIcon(QIcon(":/icons/storage"));
     ui_bigOpenButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
     loginLayout->addWidget(ui_bigOpenButton);
@@ -182,6 +188,11 @@ void LoginPage::setupUi()
     ui_loginButton->setIcon(QIcon(":/icons/login"));
     loginLayout->addWidget(ui_loginButton);
 
+    ui_statusLabel = new QLabel(tr("Ready"));
+    ui_statusLabel->setEnabled(false);
+    ui_statusLabel->setAlignment(Qt::AlignCenter);
+    layout->addWidget(ui_statusLabel);
+
     layout->addStretch();
     mainLayout->addStretch();
 
@@ -197,7 +208,7 @@ void LoginPage::connectEvents()
 
     connect(ui_dataBaseBox, SIGNAL(currentIndexChanged(int)), this, SLOT(databaseChanged(int)));
 
-    //connect(m_ramses,&Ramses::loggedIn, this, &LoginPage::loggedIn);
+    connect(m_ramses,&Ramses::userChanged, this, &LoginPage::userChanged);
     //connect(m_ramses,&Ramses::loggedOut, this, &LoginPage::loggedOut);
     //connect(DBInterface::instance(), &DBInterface::log, this, &LoginPage::dbiLog);
     //connect(Daemon::instance(), &Daemon::log, this, &LoginPage::daemonLog);

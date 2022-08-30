@@ -26,11 +26,14 @@ private slots:
 
     void loginButton_clicked();
 
+    void userChanged(RamUser *u);
+
 private:
     void setupUi();
     void connectEvents();
 
     QWidget *ui_loginWidget;
+    QLabel *ui_statusLabel;
     QPushButton *ui_bigOpenButton;
     QPushButton *ui_bigCreateButton;
     QComboBox *ui_dataBaseBox;
