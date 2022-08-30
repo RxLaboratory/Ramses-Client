@@ -618,6 +618,7 @@ void RamServerInterface::flushRequests()
     while( !m_requestQueue.isEmpty() )
     {
         nextRequest();
+        qDebug() << m_requestDelay;
         qApp->processEvents();
         // Wait a small bit
         QThread::msleep( m_requestDelay / 4 );
@@ -625,7 +626,6 @@ void RamServerInterface::flushRequests()
 
     // Wait a last bit to be sure everything is sent
     QThread::msleep( m_requestDelay );
-    qApp->processEvents();
 
     log( "All requests sent." );
 }

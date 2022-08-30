@@ -15,7 +15,6 @@
 	implement server edit widget (set offline, make changes, set online)
 	reimplement and improve login/logout/online/offline buttons
 	add user method
-	Ramses does not quit? Sync issue? -> add a timer to quit no matter what?
 	Check console in information mode
 		
 5B - Check ramses data path management (ramses main folder, per database, must be saved (but not synced)

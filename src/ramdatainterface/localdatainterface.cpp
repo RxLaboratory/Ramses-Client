@@ -501,7 +501,6 @@ void LocalDataInterface::saveSync(QJsonArray tables)
                 QString userName = incomingRow.value("userName").toString().replace("'", "''");
                 if (ENCRYPT_USER_DATA) data = DataCrypto::instance()->clientEncrypt( data );
 
-                qDebug() << "===== USER DATA: " << data;
                 QString q = "INSERT INTO %1 (data, modified, uuid, removed, userName) "
                             "VALUES ( '%2', '%3', '%4', %5, '%6' );";
 

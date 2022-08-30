@@ -9,8 +9,8 @@
 
 struct ServerConfig {
     QString address = "";
-    int updateDelay = 60;
-    int timeout = 3;
+    int updateDelay = 60000;
+    int timeout = 3000;
     bool useSsl = true;
 };
 

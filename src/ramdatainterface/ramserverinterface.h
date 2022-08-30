@@ -190,7 +190,7 @@ private:
     /**
      * @brief m_timeout How long to wait for the server on ping, in seconds
      */
-    int m_timeout = 3;
+    int m_timeout = 3000;
 
     /**
      * @brief Online / Offline status

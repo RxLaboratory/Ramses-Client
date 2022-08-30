@@ -44,12 +44,12 @@ bool ServerEditWidget::ssl() const
 
 void ServerEditWidget::setUpdateFreq(int f)
 {
-    ui_updateFreqSpinBox->setValue(f);
+    ui_updateFreqSpinBox->setValue(f/1000);
 }
 
 int ServerEditWidget::updateFreq() const
 {
-    return ui_updateFreqSpinBox->value();
+    return ui_updateFreqSpinBox->value()*1000;
 }
 
 void ServerEditWidget::setTimeout(int t)
