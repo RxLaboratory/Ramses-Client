@@ -4,6 +4,7 @@
 #include <QComboBox>
 #include <QToolButton>
 
+#include "duqf-utils/utils.h"
 #include "objecteditwidget.h"
 #include "duqf-widgets/duqffolderdisplaywidget.h"
 #include "duqf-widgets/duqfcolorselector.h"

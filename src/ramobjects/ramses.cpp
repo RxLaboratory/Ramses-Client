@@ -269,7 +269,9 @@ void Ramses::refresh()
 
 QString Ramses::folderPath() const
 {
-    return m_settings.value("ramsesPath", QDir::homePath() + "/Ramses").toString();
+    QString path = m_dbi->ramsesPath();
+    if (path == "" || path == "auto") path = QDir::homePath() + "/Ramses";
+    return path;
 }
 
 // PRIVATE

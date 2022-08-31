@@ -5,9 +5,7 @@
 	- can't reorder project steps
 	
 5A - Move all settings to database? see later
-
-5B - Check ramses data path management (ramses main folder, per database, must be saved (but not synced)
-		
+	
 6- simplify daemon & reimplement api
 
 7- Improve Icons, change messageboxes icons (create a new class with its own static methods)

@@ -46,6 +46,7 @@ public:
      * @param p
      */
     void setRamsesPath(QString p);
+    QString ramsesPath();
 
     // DATA INTERFACE //
 

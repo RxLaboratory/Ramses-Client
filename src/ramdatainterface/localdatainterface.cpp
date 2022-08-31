@@ -170,6 +170,73 @@ ServerConfig LocalDataInterface::getServerSettings(QString dbFile)
     return s;
 }
 
+void LocalDataInterface::setRamsesPath(QString dbFile, QString p)
+{
+    // Make sure the interface is ready
+    LocalDataInterface::instance();
+
+    QSqlDatabase db = QSqlDatabase::database("editdb");
+    // Set the SQLite file
+    db.close();
+    // Open
+    db.setDatabaseName(dbFile);
+    if (!db.open()) LocalDataInterface::instance()->log("Can't save data to the disk.", DuQFLog::Fatal);
+
+    QSqlQuery qry = QSqlQuery(db);
+
+    // Add new settings
+    QString q = "INSERT INTO _Paths (path, name) "
+                "VALUES ('%1', 'Ramses') "
+                "ON CONFLICT(name) DO UPDATE "
+                "SET path=excluded.path ;";
+
+    if (!qry.exec(q.arg(p)))
+    {
+        QString errorMessage = "Something went wrong when saving the data.\nHere's some information:";
+        errorMessage += "\n> " + tr("Query:") + "\n" + qry.lastQuery();
+        errorMessage += "\n> " + tr("Database Error:") + "\n" + qry.lastError().databaseText();
+        errorMessage += "\n> " + tr("Driver Error:") + "\n" + qry.lastError().driverText();
+        LocalDataInterface::instance()->log(errorMessage, DuQFLog::Critical);
+    }
+
+    db.close();
+}
+
+QString LocalDataInterface::getRamsesPath(QString dbFile)
+{
+    // Make sure the interface is ready
+    LocalDataInterface::instance();
+
+    QSqlDatabase db = QSqlDatabase::database("editdb");
+    // Set the SQLite file
+    db.close();
+    // Open
+    db.setDatabaseName(dbFile);
+    if (!db.open()) LocalDataInterface::instance()->log("Can't save data to the disk.", DuQFLog::Fatal);
+
+        QSqlQuery qry = QSqlQuery( db );
+    if (!qry.exec("SELECT path FROM _Paths WHERE name = 'Ramses';"))
+    {
+        QString errorMessage = "Something went wrong when saving the data.\nHere's some information:";
+        errorMessage += "\n> " + tr("Query:") + "\n" + qry.lastQuery();
+        errorMessage += "\n> " + tr("Database Error:") + "\n" + qry.lastError().databaseText();
+        errorMessage += "\n> " + tr("Driver Error:") + "\n" + qry.lastError().driverText();
+        LocalDataInterface::instance()->log(errorMessage, DuQFLog::Critical);
+
+        db.close();
+        return "auto";
+    }
+
+    if (qry.first())
+    {
+        return qry.value(0).toString();
+    }
+
+    db.close();
+
+    return "auto";
+}
+
 QString LocalDataInterface::login(QString username, QString password)
 {
     username.replace("'", "''");
@@ -228,20 +295,6 @@ QString LocalDataInterface::login(QString username, QString password)
     }
 
     return "";
-}
-
-void LocalDataInterface::setRamsesPath(QString p)
-{
-    p.replace("'", "''");
-
-    // Keep history
-    QString q = "UPDATE Settings SET current = 0 WHERE current = 1;";
-    query( q );
-
-    // Add new
-    q = "INSERT INTO Settings (localDataPath, current) VALUES  ( '%1', 1);";
-    threadedQuery( q.arg(p) );
-
 }
 
 QStringList LocalDataInterface::tableData(QString table)
@@ -372,6 +425,28 @@ ServerConfig LocalDataInterface::serverConfig()
     }
 
     return config;
+}
+
+QString LocalDataInterface::ramsesPath()
+{
+    QString q = "SELECT path FROM _Paths WHERE name = 'Ramses';";
+    QSqlQuery qry = query( q );
+    if (qry.first())
+    {
+        return qry.value(0).toString();
+    }
+    return "auto";
+}
+
+void LocalDataInterface::setRamsesPath(QString path)
+{
+    QString q = "INSERT INTO _Paths (path, name) "
+                "VALUES ('%1', 'Ramses') "
+                "ON CONFLICT(name) DO UPDATE "
+                "SET path=excluded.path ;";
+    threadedQuery( q.arg(path) );
+
+    emit ramsesPathChanged(path);
 }
 
 const QString &LocalDataInterface::dataFile() const

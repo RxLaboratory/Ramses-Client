@@ -18,6 +18,12 @@ void DatabaseEditWidget::setDbFile(const QString &newDbFile)
 {
     m_dbFile = newDbFile;
 
+    ui_folderDisplay->setPath(m_dbFile);
+
+    QString path = LocalDataInterface::getRamsesPath(m_dbFile);
+    if (path == "" || path == "auto") path = QDir::homePath() + "/Ramses";
+    ui_folderSelector->setPath(path);
+
     // Get settings
     ServerConfig s = LocalDataInterface::getServerSettings(m_dbFile);
 
@@ -45,7 +51,7 @@ void DatabaseEditWidget::apply()
         s.timeout = ui_serverEdit->timeout();
     }
 
-
+    LocalDataInterface::setRamsesPath(m_dbFile, ui_folderSelector->path());
     LocalDataInterface::setServerSettings(m_dbFile, s);
 
     // If this is the current db, set online/offline
@@ -77,8 +83,33 @@ void DatabaseEditWidget::setupUi()
     mainLayout->setSpacing(3);
     mainLayout->setContentsMargins(3, 3, 3, 3);
 
+    QGridLayout *topLayout = new QGridLayout();
+    topLayout->setSpacing(3);
+    topLayout->setContentsMargins(0,0,0,0);
+    mainLayout->addLayout(topLayout);
+
+    QLabel *localLabel = new QLabel(tr("Local Data"));
+    localLabel->setEnabled(false);
+    topLayout->addWidget(localLabel,0 , 0);
+
+    topLayout->addWidget(new QLabel(tr("Database")),1 , 0);
+
+    ui_folderDisplay = new DuQFFolderDisplayWidget();
+    topLayout->addWidget(ui_folderDisplay,1 , 1);
+
+    topLayout->addWidget(new QLabel(tr("Ramses path")),2 , 0);
+
+    ui_folderSelector = new DuQFFolderSelectorWidget();
+    topLayout->addWidget(ui_folderSelector,2 , 1);
+
+    QLabel *serverLabel = new QLabel(tr("Ramses Server"));
+    serverLabel->setEnabled(false);
+    topLayout->addWidget(serverLabel,3 , 0);
+
+    topLayout->addWidget(new QLabel(tr("Server")),4 , 0);
+
     ui_syncBox = new QCheckBox(tr("Online (Sync)"), dummy);
-    mainLayout->addWidget(ui_syncBox);
+    topLayout->addWidget(ui_syncBox, 4, 1);
 
     ui_serverEdit = new ServerEditWidget();
     ui_serverEdit->setEnabled(false);

@@ -73,6 +73,11 @@ void DBInterface::setRamsesPath(QString p)
     m_ldi->setRamsesPath(p);
 }
 
+QString DBInterface::ramsesPath()
+{
+    return m_ldi->ramsesPath();
+}
+
 QStringList DBInterface::tableData(QString table)
 {
     return m_ldi->tableData(table);

@@ -53,6 +53,8 @@ public:
      */
     static void setServerSettings(QString dbFile, ServerConfig c);
     static ServerConfig getServerSettings(QString dbFile);
+    static void setRamsesPath(QString dbFile, QString p);
+    static QString getRamsesPath(QString dbFile);
 
     // AUTHENTIFICATION //
 
@@ -63,12 +65,6 @@ public:
      * @return The user uuid if successful, empty string otherwise
      */
     QString login(QString username, QString password);
-
-    /**
-     * @brief setRamsesPath sets the path to the local data for this database
-     * @param p
-     */
-    void setRamsesPath(QString p);
 
     // DATA INTERFACE //
 
@@ -87,6 +83,9 @@ public:
     void setUsername(QString uuid, QString username);
 
     ServerConfig serverConfig();
+
+    QString ramsesPath();
+    void setRamsesPath(QString path);
 
     const QString &dataFile() const;
     ServerConfig setDataFile(const QString &file);
@@ -107,6 +106,7 @@ signals:
     void dataReset();
     void newQuery(QString);
     void newDataFile(QString);
+    void ramsesPathChanged(QString);
     // emitted when all save queries have terminated
     // (everything's been written and it's safe to get data again)
     void ready();

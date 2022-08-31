@@ -1,4 +1,5 @@
 #include "duqffolderdisplaywidget.h"
+#include "duqf-utils/utils.h"
 
 DuQFFolderDisplayWidget::DuQFFolderDisplayWidget(QWidget *parent) : QWidget(parent)
 {

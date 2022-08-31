@@ -3,6 +3,8 @@
 
 #include <QScrollArea>
 
+#include "duqf-widgets/duqffolderdisplaywidget.h"
+#include "duqf-widgets/duqffolderselectorwidget.h"
 #include "servereditwidget.h"
 
 class DatabaseEditWidget : public QScrollArea
@@ -31,6 +33,8 @@ private:
     ServerEditWidget *ui_serverEdit;
     QPushButton *ui_resetButton;
     QPushButton *ui_applyButton;
+    DuQFFolderSelectorWidget *ui_folderSelector;
+    DuQFFolderDisplayWidget *ui_folderDisplay;
 };
 
 #endif // DATABASEEDITWIDGET_H
