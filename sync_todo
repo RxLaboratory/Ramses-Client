@@ -8,8 +8,6 @@
   
 5- Sync process
 	add user method (only if online, etc)
-	Check console in information mode
-	move user menu to a button on the toolbar?
 	hide buttons on toolbar without project
 	add settings button on toolbar when logged out
 		
