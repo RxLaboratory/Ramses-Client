@@ -1,7 +1,6 @@
 4- Ramses and editors
 	- test asset & shot table
 		- steps menu filter by type?
-	- recreate defaults in included db: applications
 	- can't reorder project steps
 	
 5A - Move all settings to database? see later
@@ -10,8 +9,6 @@
 
 7- change messageboxes icons (create a new class with its own static methods)
   limit zoom in pipeline to 200%
-
-7A - look for memory leaks (object parenting, project must be parent of its content) see later
 
 7B - DB Clean tool see later
 	- Button to clean and vacuum: removes unused objects, sync, vacuum
