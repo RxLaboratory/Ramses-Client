@@ -2,6 +2,7 @@
 
 #include "datacrypto.h"
 #include "duqf-app/app-version.h"
+#include "processmanager.h"
 #include "ramdatainterface/localdatainterface.h"
 #include "ramdatainterface/logindialog.h"
 #include "duqf-utils/guiutils.h"
@@ -304,6 +305,12 @@ QJsonArray RamServerInterface::downloadData()
 
 void RamServerInterface::setOnline()
 {
+    ProcessManager *pm = ProcessManager::instance();
+
+    pm->setTitle(tr("Server connexion"));
+    pm->setText(tr("Connecting to the Ramses Server..."));
+    pm->increment();
+
     if (m_serverAddress == "" || m_serverAddress == "/")
     {
         QMessageBox::information(
@@ -316,6 +323,9 @@ void RamServerInterface::setOnline()
     }
 
     setConnectionStatus(NetworkUtils::Connecting, "Server ping");
+
+    pm->setText(tr("Ping!"));
+    pm->increment();
 
     // Ping
     Request r = buildRequest("ping", QJsonObject());
@@ -343,11 +353,19 @@ void RamServerInterface::setOnline()
         return;
     }
 
+    pm->setText(tr("Pong!"));
+    pm->increment();
+
     // get the server version
     m_serverVersion = repObj.value("content").toObject().value("version").toString();
     // login!
+
+    pm->setText(tr("Logging in..."));
+    pm->increment();
+
     login();
 
+    pm->increment();
 }
 
 void RamServerInterface::setOffline()

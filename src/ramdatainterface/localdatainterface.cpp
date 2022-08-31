@@ -382,8 +382,7 @@ const QString &LocalDataInterface::dataFile() const
 ServerConfig LocalDataInterface::setDataFile(const QString &file)
 {
     ProcessManager *pm = ProcessManager::instance();
-    pm->start();
-    pm->setMaximum(10);
+
     pm->setTitle(tr("Loading database"));
     pm->setText(tr("Opening database..."));
 
@@ -404,8 +403,6 @@ ServerConfig LocalDataInterface::setDataFile(const QString &file)
     emit dataReset();
 
     pm->increment();
-    pm->setText(tr("Ready!"));
-    pm->finish();
 
     return serverConfig();
 }

@@ -1,5 +1,6 @@
 ﻿#include "dbinterface.h"
 #include "duqf-utils/guiutils.h"
+#include "processmanager.h"
 
 DBInterface *DBInterface::_instance = nullptr;
 
@@ -16,20 +17,38 @@ bool DBInterface::isReady() const
 
 void DBInterface::setOffline()
 {
+    int timeOut = m_rsi->timeOut();
+
+    ProcessManager *pm = ProcessManager::instance();
+    pm->start();
+    pm->setMaximum(timeOut + 2);
+
+    pm->setTitle(tr("Disconnecting from the Ramses Server..."));
+
     // One last sync
     if (m_rsi->isOnline())
     {
+        pm->setText(tr("One last sync..."));
+        pm->increment();
+
         sync();
+
         // Wait for server timeout to be able to sync
-        QDeadlineTimer t( m_rsi->timeOut() );
+        QDeadlineTimer t( timeOut );
         while (true)
         {
+            pm->setProgress( timeOut - t.remainingTime() );
             qApp->processEvents();
             if (t.hasExpired()) break;
         }
     }
+
+    pm->setText(tr("Disconnecting..."));
+    pm->increment();
     // Disconnects from the Ramses Server
     m_rsi->setOffline();
+    pm->setText(tr("Ready"));
+    pm->finish();
 }
 
 void DBInterface::setOnline()
@@ -106,6 +125,10 @@ const QString &DBInterface::dataFile() const
 
 void DBInterface::setDataFile(const QString &file, bool ignoreUser)
 {
+    ProcessManager *pm = ProcessManager::instance();
+    pm->start();
+    pm->setMaximum(15);
+
     ServerConfig config = m_ldi->setDataFile(file);
     // Set the new server params
     if (config.address != "")
@@ -120,6 +143,9 @@ void DBInterface::setDataFile(const QString &file, bool ignoreUser)
 
         emit userChanged( userUuid );
         setOnline();
+
+        pm->setText(tr("Ready!"));
+        pm->finish();
     }
     else
     {
@@ -132,12 +158,16 @@ void DBInterface::setDataFile(const QString &file, bool ignoreUser)
         if (userUuid != "")
         {
             emit userChanged( userUuid );
+            pm->setText(tr("Ready!"));
+            pm->finish();
             return;
         }
 
         if (ignoreUser)
         {
             emit userChanged( userUuid );
+            pm->setText(tr("Ready!"));
+            pm->finish();
             return;
         }
 
@@ -171,6 +201,8 @@ void DBInterface::setDataFile(const QString &file, bool ignoreUser)
             }
             if (uuid != "") setCurrentUserUuid(uuid);
             emit userChanged( userUuid );
+            pm->setText(tr("Ready!"));
+            pm->finish();
             return;
         }
     }
