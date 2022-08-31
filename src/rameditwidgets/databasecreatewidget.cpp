@@ -242,7 +242,7 @@ bool DatabaseCreateWidget::createNewDB()
     }
 
     // Set File
-    DBInterface::instance()->setDataFile(newFilePath);
+    DBInterface::instance()->setDataFile(newFilePath, true);
 
     return true;
 }
@@ -271,7 +271,7 @@ bool DatabaseCreateWidget::createNewDB(ServerConfig s)
     }
 
     // Set File
-    DBInterface::instance()->setDataFile(newFilePath);
+    DBInterface::instance()->setDataFile(newFilePath, true);
 
     return true;
 }

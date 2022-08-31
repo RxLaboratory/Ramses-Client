@@ -64,7 +64,7 @@ public:
     void setUsername(QString uuid, QString username);
 
     const QString &dataFile() const;
-    void setDataFile(const QString &file);
+    void setDataFile(const QString &file, bool ignoreUser = false);
 
     void setCurrentUserUuid(QString uuid);
 
@@ -110,6 +110,11 @@ private slots:
      * @param reason A user friendly explanation
      */
     void setConnectionStatus(NetworkUtils::NetworkStatus s, QString reason = "");
+    /**
+     * @brief serverUserChanged Handles changes of users sent from the server.
+     * @param userUuid
+     */
+    void serverUserChanged(QString userUuid);
 
 private:
     /**

@@ -98,6 +98,7 @@ public:
     void setCurrentUserUuid(QString uuid);
 
     QStringList tableNames();
+    QList<QStringList> users();
 
 public slots:
     void sync(QJsonArray tables);

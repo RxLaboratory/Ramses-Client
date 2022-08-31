@@ -636,6 +636,20 @@ QStringList LocalDataInterface::tableNames()
     return tables;
 }
 
+QList<QStringList> LocalDataInterface::users()
+{
+    QString q = "SELECT uuid, userName FROM RamUSer ;";
+    QSqlQuery qry = query( q );
+    QList<QStringList> us;
+    while(qry.next())
+    {
+        QStringList u;
+        u << qry.value(0).toString() << qry.value(1).toString();
+        us << u;
+    }
+    return us;
+}
+
 void LocalDataInterface::logError(QString err)
 {
     log(err, DuQFLog::Critical);

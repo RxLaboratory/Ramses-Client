@@ -109,6 +109,7 @@ QString RamServerInterface::doLogin(QString username, QString password, bool sav
         qDebug() << "<<< Can't log in... request timed out.";
         setConnectionStatus(NetworkUtils::Offline, tr("Unable to log in (request timed out)."));
         m_currentUserUuid = "";
+        emit userChanged("");
         return "";
     }
 
@@ -121,6 +122,7 @@ QString RamServerInterface::doLogin(QString username, QString password, bool sav
         log(reason, DuQFLog::Warning);
         setConnectionStatus(NetworkUtils::Offline, reason);
         m_currentUserUuid = "";
+        emit userChanged("");
         return "";
     }
 
@@ -303,6 +305,8 @@ void RamServerInterface::setOnline()
     {
         qDebug() << "<<< Can't set online... Ping timed out.";
         setConnectionStatus(NetworkUtils::Offline, tr("Server unavailable (request timed out)."));
+        emit userChanged("");
+        return;
     }
 
     QJsonObject repObj = parseData(reply);
@@ -312,9 +316,10 @@ void RamServerInterface::setOnline()
     // If ping is not successful, set offline.
     if (!repSuccess)
     {
-        QString reason = tr("The server ping was not successful.\nThis is probably a bug or a configuration error.\nPlease report bugs on %1").arg(URL_SOURCECODE);
+        QString reason = tr("The server is unavailable.\nPlease check your network.\n\n(server ping failed)");
         log(reason, DuQFLog::Warning);
         setConnectionStatus(NetworkUtils::Offline, reason);
+        emit userChanged("");
         return;
     }
 
@@ -518,7 +523,7 @@ void RamServerInterface::dataReceived(QNetworkReply *reply)
         // If ping is not successful, set offline.
         if (!repSuccess)
         {
-            QString reason = tr("The server ping was not successful.\nThis is probably a bug or a configuration error.\nPlease report bugs on %1").arg(URL_SOURCECODE);
+            QString reason = tr("The server is unavailable.\nPlease check your network.\n\n(server ping failed)");
             log(reason, DuQFLog::Warning);
             setConnectionStatus(NetworkUtils::Offline, reason);
             return;

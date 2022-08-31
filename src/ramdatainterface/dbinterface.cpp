@@ -104,7 +104,7 @@ const QString &DBInterface::dataFile() const
     return m_ldi->dataFile();
 }
 
-void DBInterface::setDataFile(const QString &file)
+void DBInterface::setDataFile(const QString &file, bool ignoreUser)
 {
     ServerConfig config = m_ldi->setDataFile(file);
     // Set the new server params
@@ -114,13 +114,65 @@ void DBInterface::setDataFile(const QString &file)
         m_rsi->setTimeout(config.timeout);
         m_rsi->setSsl(config.useSsl);
         m_updateFrequency = config.updateDelay;
+
+        // Check the user
+        QString userUuid = m_ldi->currentUserUuid();
+
+        emit userChanged( userUuid );
         setOnline();
     }
     else
     {
         setOffline();
         m_rsi->setServerAddress("");
-        emit userChanged( m_ldi->currentUserUuid() );
+
+        // Check the user
+        QString userUuid = m_ldi->currentUserUuid();
+
+        if (userUuid != "")
+        {
+            emit userChanged( userUuid );
+            return;
+        }
+
+        if (ignoreUser)
+        {
+            emit userChanged( userUuid );
+            return;
+        }
+
+        // We need to show a list of users
+        QList<QStringList> users = m_ldi->users();
+        QStringList names;
+        for (int i = 0; i < users.count(); i++)
+        {
+            names << users[i][1];
+        }
+        bool ok;
+        QString name = QInputDialog::getItem(
+                    GuiUtils::appMainWindow(),
+                    tr("Unknown user"),
+                    tr("Who are you?"),
+                    names,
+                    0,
+                    false,
+                    &ok );
+
+        if (ok && !name.isEmpty())
+        {
+            QString uuid;
+            for (int i = 0; i < users.count(); i++)
+            {
+                if (users[i][1] == name)
+                {
+                    uuid = users[i][0];
+                    break;
+                }
+            }
+            if (uuid != "") setCurrentUserUuid(uuid);
+            emit userChanged( userUuid );
+            return;
+        }
     }
 }
 
@@ -159,8 +211,7 @@ void DBInterface::connectEvents()
     connect(m_ldi, &LocalDataInterface::dataReset, this, &DBInterface::dataReset);
     connect(m_rsi, &RamServerInterface::connectionStatusChanged, this, &DBInterface::serverConnectionStatusChanged);
     connect(m_rsi, &RamServerInterface::syncReady, m_ldi, &LocalDataInterface::sync);
-    connect(m_rsi, &RamServerInterface::userChanged, m_ldi, &LocalDataInterface::setCurrentUserUuid);
-    connect(m_rsi, &RamServerInterface::userChanged, this, &DBInterface::userChanged);
+    connect(m_rsi, &RamServerInterface::userChanged, this, &DBInterface::serverUserChanged);
     connect(m_updateTimer, &QTimer::timeout, this, &DBInterface::sync);
 
     connect(qApp, &QApplication::aboutToQuit, this, &DBInterface::quit);
@@ -176,6 +227,37 @@ void DBInterface::setConnectionStatus(NetworkUtils::NetworkStatus s, QString rea
     if (s == m_connectionStatus) return;
     m_connectionStatus = s;
     emit connectionStatusChanged(s, reason);
+}
+
+void DBInterface::serverUserChanged(QString userUuid)
+{
+    // Check if we should be online
+    ServerConfig config = m_ldi->serverConfig();
+    if (config.address != "") // online
+    {
+        if (userUuid != "") // OK
+        {
+            m_ldi->setCurrentUserUuid(userUuid);
+            emit userChanged(userUuid);
+            return;
+        }
+
+        qDebug() <<"===== "<<m_ldi->currentUserUuid();
+
+        // The ldi doesn't have user either: can't do anything
+        if (m_ldi->currentUserUuid() == "")
+        {
+            QMessageBox::warning(
+                        GuiUtils::appMainWindow(),
+                        tr("Can't log in"),
+                        tr("I'm sorry, I can't log you in.\n\n"
+                           "I don't know who you are, and the authentification failed on the server.\n"
+                           "You have to connect to the server before you can use this database.")
+                        );
+            emit userChanged("");
+            return;
+        }
+    }
 }
 
 void DBInterface::serverConnectionStatusChanged(NetworkUtils::NetworkStatus status)
