@@ -70,6 +70,7 @@ public slots:
     void setOffline();
     void login();
     QString doLogin(QString username, QString password, bool saveUsername = false, bool savePassword = false);
+    void eraseUserPassword();
 
 signals:
     void sslChanged(bool);

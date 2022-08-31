@@ -126,14 +126,12 @@ QString RamServerInterface::doLogin(QString username, QString password, bool sav
         return "";
     }
 
-    qDebug() << ">>> LOGIN DATA: " << repObj;
-
     // get the new token
     m_sessionToken = repObj.value("content").toObject().value("token").toString();
     setConnectionStatus(NetworkUtils::Online, tr("Server ready"));
 
     m_currentUserUuid = repObj.value("content").toObject().value("uuid").toString();
-    qDebug() << ">>> LOGIN UUID: " << m_currentUserUuid;
+
     if (m_currentUserUuid == "")
     {
         setConnectionStatus(NetworkUtils::Connecting, "Login failed.");
@@ -146,8 +144,6 @@ QString RamServerInterface::doLogin(QString username, QString password, bool sav
     if (saveUsername)
     {
         QSettings settings;
-
-        qDebug() << "Saving server credentials";
 
         int serverIndex = 0;
         int historySize = settings.beginReadArray("servers");
@@ -178,6 +174,29 @@ QString RamServerInterface::doLogin(QString username, QString password, bool sav
     emit userChanged(m_currentUserUuid);
 
     return m_currentUserUuid;
+}
+
+void RamServerInterface::eraseUserPassword()
+{
+    if (m_serverAddress == "" || m_serverAddress == "/") return;
+
+    QSettings settings;
+
+    int serverIndex = 0;
+    int historySize = settings.beginReadArray("servers");
+    while (serverIndex < historySize)
+    {
+        settings.setArrayIndex(serverIndex);
+        QString url = settings.value("url", "-").toString();
+        if (url == m_serverAddress) break;
+        serverIndex++;
+    }
+    settings.endArray();
+
+    settings.beginWriteArray("servers");
+    settings.setArrayIndex(serverIndex);
+    settings.setValue("password", "");
+    settings.endArray();
 }
 
 void RamServerInterface::login()

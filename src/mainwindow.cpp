@@ -737,6 +737,7 @@ void MainWindow::loginAction()
 
 void MainWindow::logoutAction()
 {
+    RamServerInterface::instance()->eraseUserPassword();
     Ramses::instance()->setUser(nullptr);
     home();
 }

@@ -7,12 +7,8 @@
 5A - Move all settings to database? see later
   
 5- Sync process
-	When manual logout: erase saved password
-	test login without network
-	remove offline authentication
-		client: usereditwidget: password fields only if online
-	implement server edit widget (set offline, make changes, set online)
-	add user method
+	client: usereditwidget: password fields only if online
+	add user method (only if online, etc)
 	Check console in information mode
 	move user menu to a button on the toolbar?
 	hide buttons on toolbar without project
