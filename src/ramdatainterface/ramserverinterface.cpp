@@ -572,6 +572,23 @@ void RamServerInterface::dataReceived(QNetworkReply *reply)
 
         emit syncReady(repObj.value("content").toObject().value("tables").toArray());
     }
+    else if (repQuery == "setPassword")
+    {
+        if (!repSuccess)
+        {
+            QMessageBox::warning(
+                        GuiUtils::appMainWindow(),
+                        tr("Failed to set new password"),
+                        repMessage
+                        );
+            return;
+        }
+        QMessageBox::information(
+                    GuiUtils::appMainWindow(),
+                    tr("Changed password"),
+                    tr("The new password has correctly been set.")
+                    );
+    }
 }
 
 void RamServerInterface::nextRequest()
@@ -653,7 +670,6 @@ void RamServerInterface::flushRequests()
     while( !m_requestQueue.isEmpty() )
     {
         nextRequest();
-        qDebug() << m_requestDelay;
         qApp->processEvents();
         // Wait a small bit
         QThread::msleep( m_requestDelay / 4 );
@@ -721,6 +737,16 @@ QJsonObject RamServerInterface::parseData(QNetworkReply *reply)
 const QString &RamServerInterface::currentUserUuid() const
 {
     return m_currentUserUuid;
+}
+
+void RamServerInterface::setUserPassword(QString uuid, QString newPassword, QString currentPassword)
+{
+    QJsonObject body;
+    body.insert("uuid", uuid);
+    body.insert("newPassword", newPassword);
+    body.insert("currentPassword", currentPassword);
+    Request r = buildRequest("setPassword", body);
+    postRequest(r);
 }
 
 // PRIVATE //

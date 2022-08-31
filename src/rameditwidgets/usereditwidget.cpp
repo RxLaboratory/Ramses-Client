@@ -1,6 +1,7 @@
 #include "usereditwidget.h"
 
 #include "ramses.h"
+#include "ramdatainterface/datacrypto.h"
 
 UserEditWidget::UserEditWidget(RamUser *user, QWidget *parent) :
     ObjectEditWidget(parent)
@@ -57,7 +58,21 @@ void UserEditWidget::reInit(RamObject *o)
         {
             ui_roleBox->setEnabled(false);
             ui_roleBox->setToolTip("You cannot change your own role!");
-            ui_cpasswordEdit->setEnabled(true);
+            ui_passwordWidget->show();
+            ui_cpasswordEdit->show();
+            ui_currentPasswordLabel->show();
+            this->setEnabled(true);
+        }
+        else if (current->role() != RamUser::Admin)
+        {
+            ui_passwordWidget->hide();
+            this->setEnabled(false);
+        }
+        else
+        {
+            ui_passwordWidget->show();
+            ui_cpasswordEdit->hide();
+            ui_currentPasswordLabel->hide();
             this->setEnabled(true);
         }
     }
@@ -66,6 +81,7 @@ void UserEditWidget::reInit(RamObject *o)
         ui_cpasswordEdit->setText("");
         ui_npassword1Edit->setText("");
         ui_npassword2Edit->setText("");
+        ui_passwordWidget->hide();
         ui_roleBox->setCurrentIndex(0);
         ui_roleBox->setEnabled(true);
         ui_roleBox->setToolTip("");
@@ -77,18 +93,31 @@ void UserEditWidget::reInit(RamObject *o)
 
 void UserEditWidget::changePassword()
 {
-    /*if (!checkPasswordInput()) return;
+    if (!m_user) return;
+    if (!checkPasswordInput()) return;
 
     if (ui_npassword1Edit->text() != "")
     {
-        m_user->updatePassword(
-                    ui_cpasswordEdit->text(),
-                    ui_npassword1Edit->text() );
+        DataCrypto *crypto = DataCrypto::instance();
+        RamServerInterface *rsi = RamServerInterface::instance();
+        QString newPassword = crypto->generatePassHash(
+                    ui_npassword1Edit->text(),
+                    rsi->serverAddress().replace("/", "")
+                    );
+        QString currentPassword = ui_cpasswordEdit->text();
+        if (currentPassword != "")
+        {
+            currentPassword = crypto->generatePassHash(
+                                currentPassword,
+                                rsi->serverAddress().replace("/", "")
+                                );
+        }
+        rsi->setUserPassword(m_user->uuid(), newPassword, currentPassword);
     }
 
     ui_npassword1Edit->setText("");
     ui_npassword2Edit->setText("");
-    ui_cpasswordEdit->setText("");*/
+    ui_cpasswordEdit->setText("");
 }
 
 bool UserEditWidget::checkPasswordInput()
@@ -99,7 +128,9 @@ bool UserEditWidget::checkPasswordInput()
     {
         if (ui_cpasswordEdit->text() == "" && m_user->is(Ramses::instance()->currentUser()) )
         {
-            QMessageBox::warning(this, "What's your password?", "I'm sorry, you have to know your current password to change it.\nPlease try again." );
+            QMessageBox::warning(this, "What's your password?", "I'm sorry, you have to know your current password to change it.\nPlease try again.\n\n"
+                                                                "If you've forgotten your password, you can ask an(other) administrator to change it.\n\n"
+                                                                "If you're the only administrator, you have to ask the server provider to reset your account." );
             return false;
         }
         if (ui_npassword1Edit->text() != ui_npassword2Edit->text())
@@ -129,6 +160,24 @@ void UserEditWidget::setColor(QColor c)
     m_user->setColor(c);
 }
 
+void UserEditWidget::connectionStatusChanged(NetworkUtils::NetworkStatus status)
+{
+    if (status == NetworkUtils::Online)
+    {
+        ui_passwordWidget->setEnabled(true);
+        ui_passwordWidget->setVisible(true);
+    }
+    else
+    {
+        ui_passwordWidget->setEnabled(false);
+        RamServerInterface *rsi = RamServerInterface::instance();
+        if (rsi->serverAddress() =="" || rsi->serverAddress() == "/")
+        {
+            ui_passwordWidget->setVisible(false);
+        }
+    }
+}
+
 void UserEditWidget::setupUi()
 {
     QLabel *roleLabel = new QLabel("Current role", this);
@@ -148,38 +197,46 @@ void UserEditWidget::setupUi()
     ui_colorSelector = new DuQFColorSelector(this);
     ui_mainFormLayout->addWidget(ui_colorSelector, 4, 1);
 
-    QLabel *currentPasswordLabel = new QLabel("Current password", this);
-    ui_mainFormLayout->addWidget(currentPasswordLabel, 5, 0);
-
-    ui_cpasswordEdit = new QLineEdit(this);
-    ui_cpasswordEdit->setEchoMode(QLineEdit::Password);
-    ui_mainFormLayout->addWidget(ui_cpasswordEdit, 5, 1);
-
-    QLabel *newPasswordLabel = new QLabel("New password", this);
-    ui_mainFormLayout->addWidget(newPasswordLabel, 6, 0);
-
-    ui_npassword1Edit = new QLineEdit(this);
-    ui_npassword1Edit->setEchoMode(QLineEdit::Password);
-    ui_mainFormLayout->addWidget(ui_npassword1Edit, 6, 1);
-
-    QLabel *newPasswordLabel2 = new QLabel("Repeat new password", this);
-    ui_mainFormLayout->addWidget(newPasswordLabel2, 7, 0);
-
-    ui_npassword2Edit = new QLineEdit(this);
-    ui_npassword2Edit->setEchoMode(QLineEdit::Password);
-    ui_mainFormLayout->addWidget(ui_npassword2Edit, 7, 1);
-
-    ui_passwordButton = new QToolButton(this);
-    ui_passwordButton->setText("Change password");
-    ui_mainFormLayout->addWidget(ui_passwordButton, 8, 1);
-
     QLabel *uFolderLabel = new QLabel("Personal folder", this);
     ui_mainFormLayout->addWidget(uFolderLabel, 9, 0);
 
     ui_folderWidget = new DuQFFolderDisplayWidget(this);
     ui_mainFormLayout->addWidget(ui_folderWidget, 9, 1);
 
+    ui_passwordWidget = new QWidget(this);
+    QGridLayout *passwordLayout = new QGridLayout(ui_passwordWidget);
+    passwordLayout->setContentsMargins(0,0,0,0);
+    passwordLayout->setSpacing(3);
+    ui_mainLayout->addWidget(ui_passwordWidget);
+
+    ui_currentPasswordLabel = new QLabel("Current password", this);
+    passwordLayout->addWidget(ui_currentPasswordLabel, 0, 0);
+
+    ui_cpasswordEdit = new QLineEdit(this);
+    ui_cpasswordEdit->setEchoMode(QLineEdit::Password);
+    passwordLayout->addWidget(ui_cpasswordEdit, 0, 1);
+
+    QLabel *newPasswordLabel = new QLabel("New password", this);
+    passwordLayout->addWidget(newPasswordLabel, 1, 0);
+
+    ui_npassword1Edit = new QLineEdit(this);
+    ui_npassword1Edit->setEchoMode(QLineEdit::Password);
+    passwordLayout->addWidget(ui_npassword1Edit, 1, 1);
+
+    QLabel *newPasswordLabel2 = new QLabel("Repeat new password", this);
+    passwordLayout->addWidget(newPasswordLabel2, 2, 0);
+
+    ui_npassword2Edit = new QLineEdit(this);
+    ui_npassword2Edit->setEchoMode(QLineEdit::Password);
+    passwordLayout->addWidget(ui_npassword2Edit, 2, 1);
+
+    ui_passwordButton = new QToolButton(this);
+    ui_passwordButton->setText("Change password");
+    passwordLayout->addWidget(ui_passwordButton, 3, 1);
+
     ui_mainLayout->addStretch();
+
+    connectionStatusChanged(RamServerInterface::instance()->status());
 }
 
 void UserEditWidget::connectEvents()
@@ -188,4 +245,5 @@ void UserEditWidget::connectEvents()
     connect(ui_passwordButton, SIGNAL(clicked()), this, SLOT(changePassword()));
     //connect(Ramses::instance(), &Ramses::userChanged, this, &UserEditWidget::objectChanged);
     connect(ui_colorSelector, SIGNAL(colorChanged(QColor)), this, SLOT(setColor(QColor)));
+    connect(RamServerInterface::instance(), &RamServerInterface::connectionStatusChanged, this, &UserEditWidget::connectionStatusChanged);
 }

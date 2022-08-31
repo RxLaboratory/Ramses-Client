@@ -27,6 +27,7 @@ private slots:
     bool checkPasswordInput();
     void setRole(int r);
     void setColor(QColor c);
+    void connectionStatusChanged(NetworkUtils::NetworkStatus status);
 
 private:
     RamUser *m_user;
@@ -42,6 +43,8 @@ private:
     QLabel *ui_folderLabel;
     QToolButton *ui_passwordButton;
     DuQFColorSelector *ui_colorSelector;
+    QWidget *ui_passwordWidget;
+    QLabel *ui_currentPasswordLabel;
 };
 
 #endif // USEREDITWIDGET_H

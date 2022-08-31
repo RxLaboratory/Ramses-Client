@@ -61,6 +61,8 @@ public:
 
     const QString &currentUserUuid() const;
 
+    void setUserPassword(QString uuid, QString newPassword, QString currentPassword);
+
 public slots:
     /**
      * @brief setOnline posts a ping, and set the status to "Connecting"
