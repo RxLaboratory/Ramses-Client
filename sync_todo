@@ -7,7 +7,6 @@
 5A - Move all settings to database? see later
   
 5- Sync process
-	on logout (set offline?): hide sync button
 	add user method (only if online, etc)
 	Check console in information mode
 	move user menu to a button on the toolbar?

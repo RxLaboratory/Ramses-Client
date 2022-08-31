@@ -83,22 +83,25 @@ void LoginDialog::accept()
         return;
     }
     QString password = ui_passwordEdit->text();
-    if (password == "" && (ui_passwordEdit->placeholderText() != "Use saved password." || m_hashedPassword == ""))
-    {
-        ui_connectionStatusLabel->setText("Please fill your password in.");
-        return;
-    }
-    else if (password == "")
-    {
-        password = m_hashedPassword;
-    }
-    else
+    if (password != "")
     {
         // Hash password
         QString address = m_serverAddress;
         address.replace("/", "");
         password = DataCrypto::instance()->generatePassHash(password, address);
     }
+    else if (password == "" && (ui_passwordEdit->placeholderText() != "Use saved password." || m_hashedPassword == ""))
+    {
+        ui_connectionStatusLabel->setText("Please fill your password in.");
+        return;
+    }
+    else
+    {
+        password = m_hashedPassword;
+    }
+
+    // Hide
+    this->hide();
 
     // Emit
     emit loggedIn(username, password, ui_saveUsername->isChecked(), ui_savePassword->isChecked());

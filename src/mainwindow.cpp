@@ -738,6 +738,7 @@ void MainWindow::loginAction()
 void MainWindow::logoutAction()
 {
     RamServerInterface::instance()->eraseUserPassword();
+    DBInterface::instance()->setOffline();
     Ramses::instance()->setUser(nullptr);
     home();
 }
@@ -934,10 +935,11 @@ void MainWindow::dbiConnectionStatusChanged(NetworkUtils::NetworkStatus s)
     QString address =  RamServerInterface::instance()->serverAddress();
     if (s == NetworkUtils::Online)
     {
-        ui_refreshButton->show();
+        ui_refreshButton->setVisible(true);
         ui_networkButton->setText(address);
         actionSetOnline->setVisible(false);
         actionSetOffline->setVisible(true);
+
         if (RamServerInterface::instance()->ssl())
         {
             ui_networkButton->setIcon(QIcon(":/icons/shield"));
@@ -954,7 +956,7 @@ void MainWindow::dbiConnectionStatusChanged(NetworkUtils::NetworkStatus s)
     else if (s == NetworkUtils::Connecting) ui_networkButton->setText("Connecting to " + address);
     else if (s == NetworkUtils::Offline)
     {
-        ui_refreshButton->hide();
+        ui_refreshButton->setVisible(false);
         ui_networkButton->setText("Offline");
         ui_networkButton->setIcon(QIcon(":/icons/storage"));
         ui_networkButton->setToolTip("Offline.");

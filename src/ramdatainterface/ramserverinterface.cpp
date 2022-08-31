@@ -118,12 +118,12 @@ QString RamServerInterface::doLogin(QString username, QString password, bool sav
 
     if (!repSuccess)
     {
-        QString reason = tr("Failed login");
-        log(reason, DuQFLog::Warning);
-        setConnectionStatus(NetworkUtils::Offline, reason);
-        m_currentUserUuid = "";
-        emit userChanged("");
-        return "";
+        setConnectionStatus(NetworkUtils::Connecting, tr("Login failed."));
+        // erase password
+        eraseUserPassword();
+        // Try again
+        setOnline();
+        return m_currentUserUuid;
     }
 
     // get the new token
@@ -134,9 +134,11 @@ QString RamServerInterface::doLogin(QString username, QString password, bool sav
 
     if (m_currentUserUuid == "")
     {
-        setConnectionStatus(NetworkUtils::Connecting, "Login failed.");
+        setConnectionStatus(NetworkUtils::Connecting, tr("Login failed."));
+        // erase password
+        eraseUserPassword();
         // Try again
-        login();
+        setOnline();
         return m_currentUserUuid;
     }
 
@@ -239,9 +241,8 @@ void RamServerInterface::login()
     dialog->setServerAddress( m_serverAddress );
 
     connect(dialog, &LoginDialog::loggedIn, this, &RamServerInterface::doLogin);
-    connect(dialog, &LoginDialog::accepted, dialog, &LoginDialog::deleteLater);
-    connect(dialog, &LoginDialog::rejected, dialog, &LoginDialog::deleteLater);
     connect(dialog, &LoginDialog::finished, &loop, &QEventLoop::quit);
+    connect(dialog, &LoginDialog::finished, dialog, &LoginDialog::deleteLater);
 
     dialog->open();
 
@@ -801,7 +802,7 @@ void RamServerInterface::postRequest(Request r)
     // Log URL / GET
     log( "New request: " +  url.toString(QUrl::RemovePassword), DuQFLog::Debug);
     // Log POST body
-    if (r.query == "login")
+    if (r.query == "login" || r.query == "setPassword")
         #ifdef QT_DEBUG
         log("Request data: " + r.body, DuQFLog::Data);
         #else
