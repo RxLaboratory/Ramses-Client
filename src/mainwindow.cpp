@@ -314,6 +314,7 @@ void MainWindow::connectEvents()
     // Toolbar and other tools
     connect(actionLogIn,SIGNAL(triggered()), this, SLOT(loginAction()));
     connect(actionLogOut,SIGNAL(triggered()), this, SLOT(logoutAction()));
+    connect(actionSettings, SIGNAL(triggered(bool)), this, SLOT(duqf_settings(bool)));
     connect(actionSetOnline, &QAction::triggered, this, &MainWindow::setOnlineAction);
     connect(actionSetOffline, &QAction::triggered, this, &MainWindow::setOfflineAction);
     connect(actionDatabaseSettings, &QAction::triggered, this, &MainWindow::databaseSettingsAction);
@@ -347,7 +348,7 @@ void MainWindow::connectEvents()
     connect(Daemon::instance(), &Daemon::raise, this, &MainWindow::raise);
     connect(Daemon::instance(), &Daemon::raise, this, &MainWindow::show);
     connect(Ramses::instance(),&Ramses::userChanged, this, &MainWindow::currentUserChanged);
-    connect(Ramses::instance(), SIGNAL(currentProjectChanged(RamProject*)), this, SLOT(currentProjectChanged(RamProject*)));
+    connect(Ramses::instance(), &Ramses::currentProjectChanged, this, &MainWindow::currentProjectChanged);
     connect(DBInterface::instance(),&DBInterface::connectionStatusChanged, this, &MainWindow::dbiConnectionStatusChanged);
 }
 
@@ -721,6 +722,8 @@ void MainWindow::pageChanged(int i)
     actionShots->setChecked(i == 7);
     actionSchedule->setChecked(i == 8);
     duqf_settingsButton->setChecked(i == 1);
+    actionSettings->setChecked(i == 1);
+    actionLogIn->setChecked(i == 0);
     ui_propertiesDockWidget->hide();
 }
 
@@ -831,8 +834,6 @@ void MainWindow::install(bool show)
 
 void MainWindow::currentUserChanged()
 {
-    home();
-
     disconnect(_currentUserConnection);
 
     //defaults
@@ -840,32 +841,24 @@ void MainWindow::currentUserChanged()
     ui_userButton->setIcon(QIcon(""));
     actionAdmin->setVisible(false);
     actionAdmin->setChecked(false);
-    actionProjectSettings->setVisible(false);
-    actionProjectSettings->setChecked(false);
     actionUserProfile->setVisible(false);
     actionUserFolder->setVisible(false);
-    actionPipeline->setVisible(false);
-    actionPipeline->setChecked(false);
-    actionShots->setVisible(false);
-    actionShots->setChecked(false);
-    actionAssets->setVisible(false);
-    actionAssets->setChecked(false);
-    actionSchedule->setVisible(false);
-    actionStatistics->setVisible(false);
-    actionTimeline->setVisible(false);
 
     RamUser *user = Ramses::instance()->currentUser();
     if (!user)
     {
         actionLogIn->setVisible(true);
         actionLogOut->setVisible(false);
+        actionSettings->setVisible(true);
         ui_networkButton->setVisible(false);
+        home();
         return;
     }
 
     actionLogIn->setVisible(false);
     actionLogOut->setVisible(true);
     ui_networkButton->setVisible(true);
+    actionSettings->setVisible(false);
 
     _currentUserConnection = connect(user, &RamUser::dataChanged, this, &MainWindow::currentUserChanged);
 
@@ -873,23 +866,13 @@ void MainWindow::currentUserChanged()
     actionUserProfile->setVisible(true);
     actionUserFolder->setVisible(true);
 
-    actionShots->setVisible(true);
-    actionAssets->setVisible(true);
-    actionSchedule->setVisible(true);
-    actionStatistics->setVisible(true);
-    actionTimeline->setVisible(true);
-
     if (user->role() == RamUser::Admin)
     {
         actionAdmin->setVisible(true);
-        actionProjectSettings->setVisible(true);
-        actionPipeline->setVisible(true);
         ui_userButton->setIcon(QIcon(":/icons/admin"));
     }
     else if (user->role() == RamUser::ProjectAdmin)
     {
-        actionProjectSettings->setVisible(true);
-        actionPipeline->setVisible(true);
         ui_userButton->setIcon(QIcon(":/icons/project-admin"));
     }
     else if (user->role() == RamUser::Lead)
@@ -904,6 +887,18 @@ void MainWindow::currentUserChanged()
 
 void MainWindow::currentProjectChanged(RamProject *project)
 {
+    actionProjectSettings->setVisible(false);
+    actionProjectSettings->setVisible(false);
+    actionPipeline->setVisible(false);
+    actionPipeline->setChecked(false);
+    actionShots->setVisible(false);
+    actionShots->setChecked(false);
+    actionAssets->setVisible(false);
+    actionAssets->setChecked(false);
+    actionSchedule->setVisible(false);
+    actionStatistics->setVisible(false);
+    actionTimeline->setVisible(false);
+
     if (!project)
     {
         ui_statsTitle->setTitle( "Project" );
@@ -912,7 +907,28 @@ void MainWindow::currentProjectChanged(RamProject *project)
     }
     else
     {
+        RamUser *user = Ramses::instance()->currentUser();
+        if (!user) return;
+
         ui_statsTitle->setTitle( project->name() );
+
+        actionShots->setVisible(true);
+        actionAssets->setVisible(true);
+        actionSchedule->setVisible(true);
+        actionStatistics->setVisible(true);
+        actionTimeline->setVisible(true);
+
+
+        if (user->role() == RamUser::Admin)
+        {
+            actionProjectSettings->setVisible(true);
+            actionPipeline->setVisible(true);
+        }
+        else if (user->role() == RamUser::ProjectAdmin)
+        {
+            actionProjectSettings->setVisible(true);
+            actionPipeline->setVisible(true);
+        }
     }
 }
 

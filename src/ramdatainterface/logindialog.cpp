@@ -109,6 +109,22 @@ void LoginDialog::accept()
     QDialog::accept();
 }
 
+int LoginDialog::exec()
+{
+    // Move to mouse
+    // Doesn't seem to work
+    /*QPoint globalCursorPos = QCursor::pos();
+    if (this->parentWidget())
+    {
+        this->move( this->parentWidget()->mapFromGlobal(globalCursorPos) );
+    }
+    else
+    {
+        this->move( globalCursorPos );
+    }*/
+    return QDialog::exec();
+}
+
 void LoginDialog::toggleSaveUsername(bool enabled)
 {
     if (enabled) {

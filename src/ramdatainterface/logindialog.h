@@ -17,6 +17,7 @@ public:
 
 public slots:
     virtual void accept() override;
+    virtual int exec() override;
 
 signals:
     void loggedIn(QString, QString, bool, bool);

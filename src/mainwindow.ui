@@ -105,6 +105,7 @@
     <bool>false</bool>
    </attribute>
    <addaction name="actionLogIn"/>
+   <addaction name="actionSettings"/>
    <addaction name="actionAdmin"/>
    <addaction name="actionProjectSettings"/>
    <addaction name="actionPipeline"/>
@@ -289,6 +290,21 @@
    </property>
    <property name="text">
     <string>Database settings</string>
+   </property>
+  </action>
+  <action name="actionSettings">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/admin-settings</normaloff>:/icons/admin-settings</iconset>
+   </property>
+   <property name="text">
+    <string>Settings</string>
+   </property>
+   <property name="toolTip">
+    <string>Ramses Application settings</string>
    </property>
   </action>
  </widget>

@@ -98,7 +98,7 @@ void LocalDataInterface::setServerSettings(QString dbFile, ServerConfig c)
 
     // Remove previous settings
     QSqlQuery qry = QSqlQuery(db);
-    if (!qry.exec("DELETE FROM ServerSettings;"))
+    if (!qry.exec("DELETE FROM _Server;"))
     {
         QString errorMessage = "Something went wrong when saving the data.\nHere's some information:";
         errorMessage += "\n> " + tr("Query:") + "\n" + qry.lastQuery();
@@ -111,7 +111,7 @@ void LocalDataInterface::setServerSettings(QString dbFile, ServerConfig c)
     }
 
     // Add new settings
-    QString q = "INSERT INTO ServerSettings (address, useSsl, updateDelay, timeout) "
+    QString q = "INSERT INTO _Server (address, useSsl, updateDelay, timeout) "
             "VALUES ('%1', %2, %3, %4)";
 
     QString useSsl = "1";
@@ -143,7 +143,7 @@ ServerConfig LocalDataInterface::getServerSettings(QString dbFile)
     // Get settings
     QSqlQuery qry = QSqlQuery(db);
 
-    if (!qry.exec("SELECT address, useSsl, updateDelay, timeout FROM ServerSettings;"))
+    if (!qry.exec("SELECT address, useSsl, updateDelay, timeout FROM _Server;"))
     {
         QString errorMessage = "Something went wrong when saving the data.\nHere's some information:";
         errorMessage += "\n> " + tr("Query:") + "\n" + qry.lastQuery();
@@ -360,7 +360,7 @@ void LocalDataInterface::setUsername(QString uuid, QString username)
 
 ServerConfig LocalDataInterface::serverConfig()
 {
-    QString q = "SELECT address, useSsl, updateDelay, timeout FROM ServerSettings;";
+    QString q = "SELECT address, useSsl, updateDelay, timeout FROM _Server;";
     QSqlQuery qry = query( q );
 
     ServerConfig config;
@@ -413,7 +413,7 @@ QJsonObject LocalDataInterface::getSync()
     QStringList tNames = tableNames();
     // Get last Sync
     QString lastSync = "1970-01-01 00:00:00";
-    QString q = "SELECT lastSync FROM Sync ;";
+    QString q = "SELECT lastSync FROM _Sync ;";
     QSqlQuery qry = query(q);
     if (qry.first()) lastSync = qry.value(0).toString();
 
@@ -564,7 +564,7 @@ void LocalDataInterface::saveSync(QJsonArray tables)
 
 QString LocalDataInterface::currentUserUuid()
 {
-    QString q = "SELECT uuid FROM UserSettings WHERE current = 1;";
+    QString q = "SELECT uuid FROM _User WHERE current = 1;";
     QSqlQuery qry = query( q );
 
     if (qry.first()) return qry.value(0).toString();
@@ -574,9 +574,9 @@ QString LocalDataInterface::currentUserUuid()
 void LocalDataInterface::setCurrentUserUuid(QString uuid)
 {
     // Set everyone to not current
-    threadedQuery( "UPDATE UserSettings SET current = 0 ;" );
+    threadedQuery( "UPDATE _User SET current = 0 ;" );
 
-    QString q = "INSERT INTO UserSettings (uuid, current) "
+    QString q = "INSERT INTO _User (uuid, current) "
                 "VALUES ('%1', 1 ) "
                 "ON CONFLICT(uuid) DO UPDATE "
                 "SET current=excluded.current ;";
@@ -589,9 +589,9 @@ void LocalDataInterface::sync(QJsonArray tables)
     saveSync(tables);
 
     // Save sync date
-    QString q = "DELETE FROM Sync;";
+    QString q = "DELETE FROM _Sync;";
     threadedQuery( q );
-    q = "INSERT INTO Sync ( lastSync) VALUES ( '%1' );";
+    q = "INSERT INTO _Sync ( lastSync) VALUES ( '%1' );";
     threadedQuery( q.arg( QDateTime::currentDateTimeUtc().toString("yyyy-MM-dd hh:mm:ss") ) );
 }
 
