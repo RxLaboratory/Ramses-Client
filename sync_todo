@@ -7,7 +7,6 @@
 5A - Move all settings to database? see later
   
 5- Sync process
-	add user method (only if online, etc)
 	hide buttons on toolbar without project
 	add settings button on toolbar when logged out
 		
