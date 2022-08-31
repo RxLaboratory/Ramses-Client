@@ -1,6 +1,6 @@
 #include "databaseeditwidget.h"
 
-#include "ramdatainterface/localdatainterface.h"
+#include "ramdatainterface/dbinterface.h"
 
 DatabaseEditWidget::DatabaseEditWidget(QWidget *parent) :
     QScrollArea(parent)
@@ -45,9 +45,17 @@ void DatabaseEditWidget::apply()
         s.timeout = ui_serverEdit->timeout();
     }
 
+
     LocalDataInterface::setServerSettings(m_dbFile, s);
 
-    //TODO Set online
+    // If this is the current db, set online/offline
+    DBInterface *dbi = DBInterface::instance();
+    if (m_dbFile == dbi->dataFile())
+    {
+        dbi->setOffline();
+        // Reload
+        dbi->setDataFile(m_dbFile);
+    }
 
     emit applied();
 }
