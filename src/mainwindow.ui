@@ -147,8 +147,8 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="resources.qrc">
-     <normaloff>:/icons/admin-settings</normaloff>:/icons/admin-settings</iconset>
+    <iconset resource="duqf_resources.qrc">
+     <normaloff>:/icons/settings</normaloff>:/icons/settings</iconset>
    </property>
    <property name="text">
     <string>Admin</string>
@@ -171,8 +171,8 @@
   </action>
   <action name="actionUserFolder">
    <property name="icon">
-    <iconset resource="resources.qrc">
-     <normaloff>:/icons/reveal-folder</normaloff>:/icons/reveal-folder</iconset>
+    <iconset resource="duqf_resources.qrc">
+     <normaloff>:/icons/folder</normaloff>:/icons/folder</iconset>
    </property>
    <property name="text">
     <string>User folder</string>
@@ -273,8 +273,8 @@
   </action>
   <action name="actionSetOffline">
    <property name="icon">
-    <iconset resource="resources.qrc">
-     <normaloff>:/icons/browse-folder</normaloff>:/icons/browse-folder</iconset>
+    <iconset resource="duqf_resources.qrc">
+     <normaloff>:/icons/folder</normaloff>:/icons/folder</iconset>
    </property>
    <property name="text">
     <string>Set offline</string>
@@ -286,7 +286,7 @@
   <action name="actionDatabaseSettings">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/icons/admin-settings</normaloff>:/icons/admin-settings</iconset>
+     <normaloff>:/icons/storage-settings</normaloff>:/icons/storage-settings</iconset>
    </property>
    <property name="text">
     <string>Database settings</string>
@@ -297,8 +297,8 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="resources.qrc">
-     <normaloff>:/icons/admin-settings</normaloff>:/icons/admin-settings</iconset>
+    <iconset resource="duqf_resources.qrc">
+     <normaloff>:/icons/settings</normaloff>:/icons/settings</iconset>
    </property>
    <property name="text">
     <string>Settings</string>
@@ -309,6 +309,7 @@
   </action>
  </widget>
  <resources>
+  <include location="duqf_resources.qrc"/>
   <include location="resources.qrc"/>
  </resources>
  <connections/>

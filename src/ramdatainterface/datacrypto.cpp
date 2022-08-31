@@ -25,6 +25,7 @@ QString DataCrypto::machineEncrypt(QString data)
 QString DataCrypto::clientDecrypt(QString cypher)
 {
     SimpleCrypt crypto( m_clientKey );
+
     return crypto.decryptToString(cypher);
 }
 
@@ -41,6 +42,7 @@ QString DataCrypto::generatePassHash(QString password, QString prefix, QString s
     QString hashed = QCryptographicHash::hash(passToHash.toUtf8(), QCryptographicHash::Sha3_512).toHex();
     return hashed;
 }
+
 
 DataCrypto::DataCrypto()
 {

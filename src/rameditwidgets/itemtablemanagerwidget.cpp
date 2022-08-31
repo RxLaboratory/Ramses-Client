@@ -860,7 +860,7 @@ void ItemTableManagerWidget::setupUi()
 
     QToolButton *statusButton = new QToolButton(this);
     statusButton->setText(" Status");
-    statusButton->setIcon(QIcon(":/icons/status-edit"));
+    statusButton->setIcon(QIcon(":/icons/status"));
     statusButton->setIconSize(QSize(16,16));
     statusButton->setObjectName("menuButton");
     statusButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);

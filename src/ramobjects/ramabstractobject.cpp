@@ -385,7 +385,12 @@ QString RamAbstractObject::dataString() const
     QString dataStr = DBInterface::instance()->objectData(m_uuid, objectTypeName());
     if (dataStr == "") return "";
     // Decrypt
-    if (m_dataEncrypted) dataStr = DataCrypto::instance()->clientDecrypt( dataStr );
+    if (m_dataEncrypted)
+    {
+        qDebug() << ">>>>" << dataStr;
+        dataStr = DataCrypto::instance()->clientDecrypt( dataStr );
+        qDebug() << "<<<<" << dataStr;
+    }
 
     // Cache the data to improve performance
     //m_cachedData = dataStr;

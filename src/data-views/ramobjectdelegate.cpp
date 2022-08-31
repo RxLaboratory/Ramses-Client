@@ -412,7 +412,7 @@ RamObjectDelegate::RamObjectDelegate(QObject *parent)
 
     m_editIcon = QIcon(":/icons/edit").pixmap(QSize(12,12));
     m_historyIcon = QIcon(":/icons/list").pixmap(QSize(12,12));
-    m_folderIcon = QIcon(":/icons/reveal-folder-s").pixmap(QSize(12,12));
+    m_folderIcon = QIcon(":/icons/folder").pixmap(QSize(12,12));
     m_historyDarkIcon = m_historyIcon;
     m_folderDarkIcon = m_folderIcon;
 

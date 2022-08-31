@@ -155,6 +155,7 @@ QString SimpleCrypt::decryptToString(const QString &cyphertext)
 {
     QByteArray cyphertextArray = QByteArray::fromBase64(cyphertext.toLatin1());
     QByteArray plaintextArray = decryptToByteArray(cyphertextArray);
+    if (plaintextArray == cyphertextArray) return cyphertext;
     QString plaintext = QString::fromUtf8(plaintextArray, plaintextArray.size());
 
     return plaintext;
@@ -194,7 +195,7 @@ QByteArray SimpleCrypt::decryptToByteArray(QByteArray cypher)
     if (version !=3) {  //we only work with version 3
         m_lastError = ErrorUnknownVersion;
         qWarning() << "Invalid version or not a cyphertext.";
-        return QByteArray();
+        return cypher;
     }
 
     CryptoFlags flags = CryptoFlags(ba.at(1));

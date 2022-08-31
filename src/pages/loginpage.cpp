@@ -153,7 +153,7 @@ void LoginPage::setupUi()
     QVBoxLayout *loginLayout = new QVBoxLayout(ui_loginWidget);
 
     ui_bigOpenButton = new QPushButton(this);
-    ui_bigOpenButton->setText(tr("Open database..."));
+    ui_bigOpenButton->setText(tr("Open existing database..."));
     ui_bigOpenButton->setIcon(QIcon(":/icons/storage"));
     ui_bigOpenButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
     loginLayout->addWidget(ui_bigOpenButton);
@@ -163,6 +163,8 @@ void LoginPage::setupUi()
     ui_bigCreateButton->setIcon(QIcon(":/icons/add"));
     ui_bigCreateButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
     loginLayout->addWidget(ui_bigCreateButton);
+
+    loginLayout->addSpacing(25);
 
     QHBoxLayout *dataBaseLayout = new QHBoxLayout();
     dataBaseLayout->setSpacing(0);
@@ -187,6 +189,8 @@ void LoginPage::setupUi()
     ui_loginButton = new QPushButton(tr("Log in"), this);
     ui_loginButton->setIcon(QIcon(":/icons/login"));
     loginLayout->addWidget(ui_loginButton);
+
+    loginLayout->addSpacing(25);
 
     ui_statusLabel = new QLabel(tr("Ready"));
     ui_statusLabel->setEnabled(false);

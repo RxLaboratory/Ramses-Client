@@ -4,7 +4,6 @@
         <file alias="minimize">duqf_resources/icons/minimize.svg</file>
         <file alias="quit">duqf_resources/icons/quit.svg</file>
         <file alias="unmaximize">duqf_resources/icons/unmaximize.svg</file>
-        <file alias="settings">duqf_resources/icons/go-to-settings.svg</file>
         <file alias="help">duqf_resources/icons/help.svg</file>
         <file alias="bug-report">duqf_resources/icons/bug-report.svg</file>
         <file alias="chat">duqf_resources/icons/chat.svg</file>
@@ -47,6 +46,12 @@
         <file alias="undo">duqf_resources/icons/undo_sl.svg</file>
         <file alias="code">duqf_resources/icons/code_sl.svg</file>
         <file alias="stats-settings">resources/icons/counter-edit.svg</file>
+        <file alias="info">duqf_resources/icons/information.svg</file>
+        <file alias="settings">duqf_resources/icons/settings.svg</file>
+        <file alias="settings-w">duqf_resources/icons/settings2.svg</file>
+        <file alias="browse-folder">duqf_resources/icons/folder-settings.svg</file>
+        <file alias="copy">duqf_resources/icons/copy.svg</file>
+        <file alias="paste">duqf_resources/icons/paste.svg</file>
     </qresource>
     <qresource prefix="/images"/>
     <qresource prefix="/styles">

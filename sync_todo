@@ -8,7 +8,8 @@
 	
 6- simplify daemon & reimplement api
 
-7- Improve Icons, change messageboxes icons (create a new class with its own static methods)
+7- change messageboxes icons (create a new class with its own static methods)
+  limit zoom in pipeline to 200%
 
 7A - look for memory leaks (object parenting, project must be parent of its content) see later
 

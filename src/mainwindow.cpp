@@ -444,7 +444,7 @@ void MainWindow::duqf_initUi()
     // version in statusbar
     mainStatusBar->addPermanentWidget(new QLabel("v" + QString(STR_VERSION)));
     duqf_settingsButton = new QToolButton();
-    duqf_settingsButton->setIcon(QIcon(":/icons/settings"));
+    duqf_settingsButton->setIcon(QIcon(":/icons/settings-w"));
     duqf_settingsButton->setToolTip("Go to Settings");
     duqf_settingsButton->setCheckable(true);
     mainStatusBar->addPermanentWidget(duqf_settingsButton);
@@ -465,7 +465,7 @@ void MainWindow::duqf_initUi()
         helpMenu->addAction(docAction);
         connect(docAction, SIGNAL(triggered()), this, SLOT(duqf_doc()));
     }
-    QAction *aboutAction = new QAction(QIcon(":/icons/about"), "About");
+    QAction *aboutAction = new QAction(QIcon(":/icons/info"), "About");
     helpMenu->addAction(aboutAction);
     connect(aboutAction, SIGNAL(triggered()), this, SLOT(duqf_about()));
     helpMenu->addSeparator();

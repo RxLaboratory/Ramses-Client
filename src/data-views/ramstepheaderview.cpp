@@ -20,7 +20,7 @@ RamStepHeaderView::RamStepHeaderView(QWidget *parent):
     m_padding = 10;
 
     m_editIcon = QIcon(":/icons/edit").pixmap(QSize(12,12));
-    m_folderIcon = QIcon(":/icons/reveal-folder-s").pixmap(QSize(12,12));
+    m_folderIcon = QIcon(":/icons/folder").pixmap(QSize(12,12));
     m_sortIcon = QIcon(":/icons/sort-no").pixmap(QSize(12,12));
     m_sortUpIcon = QIcon(":/icons/sort-up").pixmap(QSize(12,12));
     m_sortDownIcon = QIcon(":/icons/sort-down").pixmap(QSize(12,12));
