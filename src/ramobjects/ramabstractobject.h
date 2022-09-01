@@ -75,7 +75,7 @@ public:
      * @return
      */
     static const QString objectTypeName(ObjectType type);
-    ObjectType objectTypeFromName(QString name);
+    static ObjectType objectTypeFromName(QString name);
 
     /**
      * @brief subFolderName gets the actual name of a subfolder
@@ -83,6 +83,14 @@ public:
      * @return
      */
     static const QString subFolderName(SubFolder folder);
+
+    static void setObjectData(QString uuid, QString dataStr);
+    static void setObjectData(QString uuid, QJsonObject data);
+    static QJsonObject getObjectData(QString uuid);
+    static QString getObjectDataString(QString uuid);
+    static QString getObjectPath(QString uuid);
+
+    static const QString uuidFromPath(QString path, ObjectType type);
 
     // METHODS //
 
@@ -177,6 +185,10 @@ public:
     void revealFolder(SubFolder subFolder = NoFolder);
     QString previewImagePath();
 
+    // Low level data handling.
+    QString dataString() const;
+    void setDataString(QString data);
+
 protected:
 
     // METHODS //
@@ -195,7 +207,7 @@ protected:
     virtual void emitRestored() {};
 
     // UTILS
-
+    static QMap<QString, RamAbstractObject*> m_allObjects;
     // Checks if this is a valid uuid,
     // and if it exists in the DB
     static bool checkUuid(QString uuid, ObjectType type);
@@ -214,9 +226,8 @@ protected:
     QString m_cachedData = "";
 
 private:
-    // Low level data handling.
-    QString dataString() const;
-    void setDataString(QString data);
+    void construct();
+
     void createData(QString data);
 
     QSettings *m_settings = nullptr;

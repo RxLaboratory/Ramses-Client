@@ -228,6 +228,12 @@ void Ramses::setCurrentProject(QString shortName)
     setCurrentProject( RamProject::c(m_projects->fromName(shortName)) );
 }
 
+void Ramses::setCurrentProjectUuid(QString uuid)
+{
+    if (uuid == "") setCurrentProject( nullptr );
+    setCurrentProject( RamProject::get(uuid) );
+}
+
 RamObjectList *Ramses::templateSteps() const
 {
     return m_templateSteps;

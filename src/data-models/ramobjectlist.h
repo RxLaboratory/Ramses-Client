@@ -101,6 +101,9 @@ protected:
     // An empty list is useful
     static RamObjectList *m_emptyList;
 
+    // Overriden to reload the list if the daemon calls setData
+    void emitDataChanged() override;
+
     // DATA
     // For performance reasons, store both a list and a map
     QMap<QString, RamObject*> m_objects;

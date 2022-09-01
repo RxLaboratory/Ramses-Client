@@ -83,6 +83,11 @@ RamObjectList::RamObjectList(QString uuid, QObject *parent, ObjectType listType)
     connectEvents();
 }
 
+void RamObjectList::emitDataChanged()
+{
+    reload();
+}
+
 // QAbstractTableModel Reimplementation
 
 int RamObjectList::rowCount(const QModelIndex & parent) const

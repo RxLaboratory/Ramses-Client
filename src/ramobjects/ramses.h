@@ -51,6 +51,7 @@ public:
     RamProject *currentProject() const;
     void setCurrentProject(RamProject *project);
     void setCurrentProject(QString shortName);
+    void setCurrentProjectUuid(QString uuid);
 
     // Template Steps
     RamObjectList *templateSteps() const;

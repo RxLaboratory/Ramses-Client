@@ -3,12 +3,22 @@
 		- steps menu filter by type?
 	- can't reorder project steps
 	
-5A - Move all settings to database? see later
-	
+5A - Settings refactor
+	- Add set settings/get settings in RamAbstractObject
+		- a QJSonObject saved in the data "settings"
+		- can be used for everything (including pipes!)
+		- remove all other use of settings, except for local app settings
+		- save a copy of local app settings to the user settings ? at least some of them (like the appearance). On app quit?
+
 6- simplify daemon & reimplement api
+	implement api:
+		Reimplement Ramses
+	api fixes:
+		missing RamFileManager.getFileWithResource(path, resource)
+	update api doc
+	client: enable developer tools (show uuids in objects, and tooltips, etc)
 
 7- change messageboxes icons (create a new class with its own static methods)
-  limit zoom in pipeline to 200%
 
 7B - DB Clean tool see later
 	- Button to clean and vacuum: removes unused objects, sync, vacuum
@@ -19,3 +29,17 @@
 
 7- Doc
 
+9- email confirmation when creating a user, inviting him to set his password
+
+8- a reset password method using the user's email
+
+
+```json
+{
+    "shortName": "a short ID",
+    "name": "The object name",
+    "comment": "A comment associated with the object",
+    "color": "#e3e3e3",
+    "settings": { }
+}
+```

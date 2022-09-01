@@ -173,13 +173,13 @@ void RamApplication::getCreateLists()
     m_nativeFileTypes->setParent(this);
     d.insert("nativeFileTypes", m_nativeFileTypes->uuid());
 
-    uuid = d.value("importileTypes").toString();
+    uuid = d.value("importFileTypes").toString();
     if (uuid == "") m_importFileTypes = new RamObjectList("import", "Import File Types", FileType, RamObjectList::ListObject, this);
     else m_importFileTypes = RamObjectList::get( uuid );
     if (!m_importFileTypes) m_importFileTypes = new RamObjectList("native", "Native File Types", FileType, RamObjectList::ListObject, this);
 
     m_importFileTypes->setParent(this);
-    d.insert("importileTypes", m_importFileTypes->uuid());
+    d.insert("importFileTypes", m_importFileTypes->uuid());
 
     uuid = d.value("exportFileTypes").toString();
     if (uuid == "") m_exportFileTypes = new RamObjectList("export", "Export File Types", FileType, RamObjectList::ListObject, this);

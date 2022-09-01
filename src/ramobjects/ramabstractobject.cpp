@@ -9,6 +9,8 @@
 
 // STATIC //
 
+QMap<QString, RamAbstractObject*> RamAbstractObject::m_allObjects = QMap<QString, RamAbstractObject*>();
+
 const QString RamAbstractObject::objectTypeName(ObjectType type)
 {
     switch (type)
@@ -94,6 +96,81 @@ const QString RamAbstractObject::subFolderName(SubFolder folder)
     return "";
 }
 
+void RamAbstractObject::setObjectData(QString uuid, QString dataStr)
+{
+    // TODO use the localdbinterface instead? (we need the type)
+
+    RamAbstractObject *obj = nullptr;
+    if (m_allObjects.contains(uuid)) obj = m_allObjects[uuid];
+    if (!obj) return;
+
+    obj->setDataString(dataStr);
+}
+
+void RamAbstractObject::setObjectData(QString uuid, QJsonObject data)
+{
+    // TODO use the localdbinterface instead? (we need the type)
+
+    RamAbstractObject *obj = nullptr;
+    if (m_allObjects.contains(uuid)) obj = m_allObjects[uuid];
+    if (!obj) return;
+
+    obj->setData(data);
+}
+
+QJsonObject RamAbstractObject::getObjectData(QString uuid)
+{
+    // TODO use the localdbinterface instead? (we need the type)
+
+    RamAbstractObject *obj = nullptr;
+    if (m_allObjects.contains(uuid)) obj = m_allObjects[uuid];
+    if (!obj) return QJsonObject();
+
+    return obj->data();
+}
+
+QString RamAbstractObject::getObjectDataString(QString uuid)
+{
+    // TODO use the localdbinterface instead? (we need the type)
+
+    RamAbstractObject *obj = nullptr;
+    if (m_allObjects.contains(uuid)) obj = m_allObjects[uuid];
+    if (!obj) return "{}";
+
+    return obj->dataString();
+}
+
+QString RamAbstractObject::getObjectPath(QString uuid)
+{
+    RamAbstractObject *obj = nullptr;
+    if (m_allObjects.contains(uuid)) obj = m_allObjects[uuid];
+    if (!obj) return "";
+
+    return obj->path();
+}
+
+const QString RamAbstractObject::uuidFromPath(QString path, ObjectType type)
+{
+    if (!path.endsWith("/")) path = path + "/";
+
+    // Check the path of all existing ramObjects
+    QMapIterator<QString, RamAbstractObject*> i = QMapIterator<QString, RamAbstractObject*>(m_allObjects);
+    // We'll keep the closest match
+    while (i.hasNext())
+    {
+        i.next();
+        RamAbstractObject *o = i.value();
+        if (o->objectType() != type) continue;
+
+        // If we have the same starting path, that's the one!
+        QString testPath = o->path();
+        if (!testPath.endsWith("/")) testPath = testPath + "/";
+
+        if (path.startsWith(testPath)) return o->uuid();
+    }
+    return "";
+}
+
 // PUBLIC //
 
 RamAbstractObject::RamAbstractObject(QString shortName, QString name, ObjectType type, bool isVirtual, bool encryptData)
@@ -112,6 +189,8 @@ RamAbstractObject::RamAbstractObject(QString shortName, QString name, ObjectType
     data.insert("comment", "");
     QJsonDocument doc(data);
     createData(doc.toJson(QJsonDocument::Compact));
+
+    construct();
 }
 
 RamAbstractObject::~RamAbstractObject()
@@ -158,7 +237,6 @@ void RamAbstractObject::setData(QJsonObject data)
 {
     QJsonDocument doc = QJsonDocument(data);
     setDataString(doc.toJson(QJsonDocument::Compact));
-    emitDataChanged();
 }
 
 void RamAbstractObject::insertData(QString key, QJsonValue value)
@@ -354,6 +432,8 @@ RamAbstractObject::RamAbstractObject(QString uuid, ObjectType type, bool encrypt
 
     // cache the data
     m_cachedData = dataString();
+
+    construct();
 }
 
 void RamAbstractObject::setDataString(QString data)
@@ -375,6 +455,8 @@ void RamAbstractObject::setDataString(QString data)
     qDebug() << ">>>";*/
 
     DBInterface::instance()->setObjectData(m_uuid, objectTypeName(), data);
+
+    emitDataChanged();
 }
 
 QString RamAbstractObject::dataString() const
@@ -431,4 +513,9 @@ bool RamAbstractObject::checkUuid(QString uuid, ObjectType type)
     }
 
     return true;
+}
+
+void RamAbstractObject::construct()
+{
+    m_allObjects[m_uuid] = this;
 }

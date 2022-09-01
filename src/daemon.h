@@ -11,9 +11,6 @@
 
 #include "duqf-utils/duqflogger.h"
 
-#include "ramasset.h"
-#include "ramshot.h"
-
 class Daemon : public DuQFLoggerObject
 {
     Q_OBJECT
@@ -37,43 +34,163 @@ private slots:
     void newConnection();
     void reply();
     void reply(QString req, QTcpSocket *client);
+
+    // === API ===
+
+    /**
+     * @brief ping Sends the client version and the current user uuid.
+     * {
+     *  "query": "ping",
+     *  "message": "Hi, this is the Ramses Daemon",
+     *  "accepted": true,
+     *  "success": true,
+     *  "content": {
+     *      "version": "1.0.0",
+     *      "ramses": "Ramses",
+     *      "userUuid": "unique-uid"
+     *      }
+     * }
+     * @param client
+     */
     void ping(QTcpSocket *client);
-    void setCurrentProject(QString shortName, QTcpSocket *client);
-    void getCurrentStatus(QString shortName, QString name, QString type, QString stepName, QTcpSocket *client);
-    void setStatus(QString shortName, QString name, QString step, QString type, QString state, QString comment, int completionRatio, int version, bool published, QString user, QTcpSocket *client);
-    void getAssets(QTcpSocket *client);
-    void getAsset(QString shortName, QString name, QTcpSocket *client);
-    void getAssetGroups(QTcpSocket *client);
-    void getProject(QString shortName, QString name, QTcpSocket *client);
-    void getCurrentUser(QTcpSocket *client);
-    void getPipes(QTcpSocket *client);
-    void getProjects(QTcpSocket *client);
-    void getSequences(QTcpSocket *client);
-    void getShots(QString filter, QTcpSocket *client);
-    void getShot(QString shortName, QString name, QTcpSocket *client);
-    void getStates(QTcpSocket *client);
-    void getState(QString shortName, QString name, QTcpSocket *client);
-    void getSteps(QTcpSocket *client);
-    void getStep(QString shortName, QString name, QTcpSocket *client);
+
+    // Current state
+    /**
+     * @brief ping Sends the current project uuid and data.
+     * {
+     *  "query": "getCurrentProject",
+     *  "message": "\"Project Name\" is the current project.",
+     *  "accepted": true,
+     *  "success": true,
+     *  "content": {
+     *      "uuid": "unique-uid",
+     *      "data": "{some JSON data}"
+     *      }
+     * }
+     * @param client
+     */
+    void getCurrentProject(QTcpSocket *client);
+    /**
+     * @brief ping Sends the current project uuid and data.
+     * {
+     *  "query": "getCurrentProject",
+     *  "message": "Current project set to: \"Project Name\".",
+     *  "accepted": true,
+     *  "success": true,
+     *  "content": { }
+     * }
+     * @param client
+     */
+    void setCurrentProject(QString uuid, QTcpSocket *client);
+
+    // DATA
+    /**
+     * @brief ping Sends the ramses absolute folder path.
+     * {
+     *  "query": "getRamsesFolder",
+     *  "message": "I've got the Ramses folder.",
+     *  "accepted": true,
+     *  "success": true,
+     *  "content": {
+     *      "path": "path/to/ramses/data"
+     *      }
+     * }
+     * @param client
+     */
     void getRamsesFolder(QTcpSocket *client);
-    void setPublishSettings(QString stepShortName, QString stepName, QString settings, QTcpSocket *client);
+    /**
+     * @brief ping Sends the list of existing projects (for the current user).
+     * {
+     *  "query": "getProjects",
+     *  "message": "I've got the project list.",
+     *  "accepted": true,
+     *  "success": true,
+     *  "content": {
+     *      "projects": [
+     *          "unique-uid1",
+     *          "unique-uid2",
+     *          "unique-uid3"
+     *          ]
+     *      }
+     * }
+     * @param client
+     */
+    void getProjects(QTcpSocket *client);
+    /**
+     * @brief setData Updates the data of an object.
+     * {
+     *  "query": "setData",
+     *  "message": "Data updated.",
+     *  "accepted": true,
+     *  "success": true,
+     *  "content": { }
+     * }
+     * @param uuid
+     * @param data
+     * @param client
+     */
+    void setData(QString uuid, QString data, QTcpSocket *client);
+    /**
+     * @brief getData Gets the data of an object.
+     * {
+     *  "query": "getData",
+     *  "message": "I've got some data.",
+     *  "accepted": true,
+     *  "success": true,
+     *  "content": {
+     *      "uuid": "unique-uid",
+     *      "data": {"Some JSON Data"}
+     *      }
+     * }
+     * @param uuid
+     * @param client
+     */
+    void getData(QString uuid, QTcpSocket *client);
+    /**
+     * @brief uuidFromPath Gets the uuid of an object from its path.
+     * {
+     *  "query": "uuidFromPath",
+     *  "message": "I've found an object.",
+     *  "accepted": true,
+     *  "success": true,
+     *  "content": {
+     *      "uuid": "unique-uid"
+     *      }
+     * }
+     * @param uuid
+     * @param client
+     */
+    void uuidFromPath(QString path, QString objectType, QTcpSocket *client);
+
+    // PATHS
+    /**
+     * @brief getPath Gets the path of the object.
+     * {
+     *  "query": "getPath",
+     *  "message": "I've got the path of the object.",
+     *  "accepted": true,
+     *  "success": true,
+     *  "content": {
+     *      "path": "path/to/the/object"
+     *      }
+     * }
+     * @param uuid
+     * @param client
+     */
+    void getPath(QString uuid, QTcpSocket *client);
 
 private:
     //The daemon is a singleton
     explicit Daemon(QObject *parent = nullptr);
+
+    // The server and its state
     QTcpServer *m_tcpServer;
-    QSettings m_settings;
     bool m_suspended = false;
     QStringList m_queue;
     QList<QTcpSocket*> m_waitingClients;
 
+    // Post a reply
     void post(QTcpSocket *client, QJsonObject content, QString query, QString message="", bool success = true, bool accepted = true);
-
-    QJsonObject assetToJson(RamAsset *a);
-    QJsonObject shotToJson(RamShot *s);
-    QJsonObject stateToJson(RamState *s);
-    QJsonObject stepToJson(RamStep *s);
-    QJsonObject statusToJson(RamStatus *s);
 };
 
 #endif // DAEMON_H
