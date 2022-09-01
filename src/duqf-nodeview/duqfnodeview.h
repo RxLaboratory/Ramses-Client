@@ -8,7 +8,6 @@
 #include <QGraphicsSceneHoverEvent>
 #include <QGestureEvent>
 
-#include "duqf-app/app-style.h"
 #include "duqf-nodeview/duqfgrid.h"
 #include "duqf-nodeview/duqfnodescene.h"
 
@@ -33,7 +32,7 @@ public slots:
 
 signals:
     void zoomed(qreal zoom);
-    void zoomed(int zoomPercent);
+    void scaled(int zoomPercent);
 
 protected:
     void wheelEvent(QWheelEvent *event) override;

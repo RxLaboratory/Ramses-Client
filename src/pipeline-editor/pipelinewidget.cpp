@@ -191,7 +191,7 @@ PipelineWidget::PipelineWidget(QWidget *parent) :
     connect(viewSelectedButton, SIGNAL(clicked()), ui_nodeView, SLOT(frameSelected()));
     connect(actionViewAll, SIGNAL(triggered()), ui_nodeView, SLOT(frameSelected()));
     connect(zoomBox, SIGNAL(valueChanged(int)), ui_nodeView, SLOT(setZoom(int)));
-    connect(ui_nodeView, SIGNAL(zoomed(int)), zoomBox, SLOT(setValue(int)));
+    connect(ui_nodeView, SIGNAL(scaled(int)), zoomBox, SLOT(setValue(int)));
     connect(actionAddStep, SIGNAL(triggered()), this, SLOT(createStep()));
     connect(actionAddStep, SIGNAL(triggered()), ui_nodeView, SLOT(reinitTransform()));
     connect(actionDeleteStep, SIGNAL(triggered()), m_nodeScene, SLOT(removeSelectedNodes()));
