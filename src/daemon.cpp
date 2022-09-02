@@ -282,8 +282,7 @@ void Daemon::uuidFromPath(QString path, QString objectType, QTcpSocket *client)
     content.insert("uuid", uuid);
 
     if (uuid == "") post(client, content, "uuidFromPath", tr("I can't find the object."), false);
-
-    post(client, content, "uuidFromPath", tr("I've found an object."));
+    else post(client, content, "uuidFromPath", tr("I've found an object."));
 }
 
 void Daemon::getPath(QString uuid, QTcpSocket *client)
