@@ -9,6 +9,7 @@ DuQFFileList::DuQFFileList(QWidget *parent):
 
 void DuQFFileList::setList(QList<QFileInfo> fileList)
 {
+    this->clear();
     foreach(QFileInfo file, fileList)
     {
         addFile(file);

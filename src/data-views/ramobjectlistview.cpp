@@ -142,7 +142,6 @@ void RamObjectListView::mouseMoveEvent(QMouseEvent *event)
 
 void RamObjectListView::mousePressEvent(QMouseEvent *event)
 {
-    qDebug() << "CLICK!";
     // Middle click for dragging view
     if (event->button() == Qt::MiddleButton)
     {
