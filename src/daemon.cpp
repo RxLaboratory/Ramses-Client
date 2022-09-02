@@ -197,7 +197,9 @@ void Daemon::getObjects(QString type, QTcpSocket *client)
     log(tr("This is the type: %1").arg(type), DuQFLog::Data);
 
     QList<QStringList> entries = LocalDataInterface::instance()->tableData(type);
+
     QJsonObject content;
+
     QJsonArray objects;
     for (int i = 0; i < entries.count(); i++)
     {
@@ -210,7 +212,7 @@ void Daemon::getObjects(QString type, QTcpSocket *client)
     }
     content.insert("objects", objects);
 
-    post(client, QJsonObject(), "getObjects", tr("I've got the list of \"%1\".").arg(type));
+    post(client, content, "getObjects", tr("I've got the list of \"%1\".").arg(type));
 }
 
 void Daemon::getRamsesFolder(QTcpSocket *client)
