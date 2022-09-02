@@ -136,6 +136,12 @@ private:
     void addObj(RamObject *o, int row = -1);
 
     DataListMode m_dataMode = ListObject;
+
+    /**
+     * @brief m_ownEdition is true if the list is editing itself,
+     * in which case it won't reload data!
+     */
+    bool m_ownEdition = false;
 };
 
 class RamObject;

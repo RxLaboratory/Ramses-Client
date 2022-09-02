@@ -317,6 +317,8 @@ RamObject *RamObjectList::takeObject(QString uuid)
 
 QJsonObject RamObjectList::reloadData()
 {
+    if (m_ownEdition) return RamAbstractObject::data();
+
     QJsonObject d = RamAbstractObject::data();
 
     QString typeName = objectTypeName(m_contentType);
@@ -373,6 +375,8 @@ QJsonObject RamObjectList::reloadData()
 
 void RamObjectList::saveData()
 {
+    m_ownEdition = true;
+
     switch(m_dataMode)
     {
     case ListObject:
@@ -398,6 +402,8 @@ void RamObjectList::saveData()
     }
 
     emit listChanged(this);
+
+    m_ownEdition = false;
 }
 
 void RamObjectList::checkData(QString uuid)
