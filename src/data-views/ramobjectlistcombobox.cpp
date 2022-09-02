@@ -30,6 +30,7 @@ RamObjectListComboBox::RamObjectListComboBox(RamObjectList *list, QWidget *paren
 
 void RamObjectListComboBox::setList(RamObjectList *list)
 {
+    //disconnect(this->model(), nullptr, this, nullptr);
     if (m_isFilterBox)
     {
         RamObjectFilterList *proxyModel = new RamObjectFilterList(this);

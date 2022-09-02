@@ -743,6 +743,7 @@ void MainWindow::logoutAction()
     RamServerInterface::instance()->eraseUserPassword();
     DBInterface::instance()->setOffline();
     Ramses::instance()->setUser(nullptr);
+    DBInterface::instance()->setDataFile("");
     home();
 }
 

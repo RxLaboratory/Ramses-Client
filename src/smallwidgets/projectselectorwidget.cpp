@@ -12,16 +12,15 @@ ProjectSelectorWidget::ProjectSelectorWidget(QWidget *parent):
 
     m_pm = ProcessManager::instance();
 
-    connect(this, SIGNAL(currentObjectChanged(RamObject*)), this, SLOT(setCurrentProject(RamObject*)));
+    connect(this, &RamObjectListComboBox::currentObjectChanged, this,  &ProjectSelectorWidget::setCurrentProject);
     connect(Ramses::instance(), SIGNAL(currentProjectChanged(RamProject*)), this, SLOT(currentProjectChanged(RamProject*)));
     connect(Ramses::instance(), &Ramses::userChanged, this, &ProjectSelectorWidget::userChanged);
 }
 
 void ProjectSelectorWidget::setCurrentProject(RamObject *projObj)
 {
-    if (m_pm->isBusy()) return;
-    RamProject *proj = qobject_cast<RamProject*>( projObj );
-    Ramses::instance()->setCurrentProject( proj );
+    //if (m_pm->isBusy()) return;
+    Ramses::instance()->setCurrentProject( RamProject::c( projObj ) );
 }
 
 void ProjectSelectorWidget::currentProjectChanged(RamProject *p)

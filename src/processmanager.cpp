@@ -65,6 +65,7 @@ void ProcessManager::reInit()
     setTitle("");
     setProgress(0);
     setMaximum(0);
+    m_busy = false;
 }
 
 void ProcessManager::finish()
@@ -75,7 +76,7 @@ void ProcessManager::finish()
 
 void ProcessManager::start()
 {
-    m_busy = true;
     reInit();
+    m_busy = true;
     emit started();
 }
