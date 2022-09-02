@@ -29,7 +29,9 @@ void Ramses::setUser(RamUser *u)
     m_currentUser = u;
     if (!u)
     {
+        setCurrentProject(nullptr);
         emit userChanged(nullptr);
+        m_dbi->setDataFile("");
         qDebug() << "Logged out.";
         return;
     }
@@ -219,7 +221,7 @@ void Ramses::setCurrentProject(RamProject *project)
         QSettings *uSettings = m_currentUser->settings();
         uSettings->setValue("ramses/currentProject", m_currentProject->uuid() );
     }
-
+qDebug() << "==== PROJECT SET TO" << m_currentProject;
     emit currentProjectChanged(m_currentProject);
 }
 

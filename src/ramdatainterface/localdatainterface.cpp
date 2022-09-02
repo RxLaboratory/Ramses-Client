@@ -19,6 +19,7 @@ void Querier::setDataFile(QString f)
 
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", m_dbName);
     db.setHostName("localhost");
+    if (f == "") return;
     db.setDatabaseName(m_dataFile);
     if (!db.open())
     {

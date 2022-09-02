@@ -130,6 +130,7 @@ const QString &DBInterface::dataFile() const
 
 void DBInterface::setDataFile(const QString &file, bool ignoreUser)
 {
+    setOffline();
     ProcessManager *pm = ProcessManager::instance();
     pm->start();
     pm->setMaximum(15);
@@ -156,6 +157,12 @@ void DBInterface::setDataFile(const QString &file, bool ignoreUser)
     {
         setOffline();
         m_rsi->setServerAddress("");
+        if (file =="")
+        {
+            pm->setText(tr("Ready!"));
+            pm->finish();
+            return;
+        }
 
         // Check the user
         QString userUuid = m_ldi->currentUserUuid();
