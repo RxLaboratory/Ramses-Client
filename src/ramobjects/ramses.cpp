@@ -216,7 +216,6 @@ void Ramses::setCurrentProject(RamProject *project)
         QSettings *uSettings = m_currentUser->settings();
         uSettings->setValue("ramses/currentProject", m_currentProject->uuid() );
     }
-qDebug() << "==== PROJECT SET TO" << m_currentProject;
     emit currentProjectChanged(m_currentProject);
 }
 

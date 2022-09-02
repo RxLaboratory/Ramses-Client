@@ -18,7 +18,11 @@ RamStepStatusHistory *RamStepStatusHistory::get(QString uuid)
     if (m_existingObjects.contains(uuid)) return m_existingObjects.value(uuid);
 
     // Finally return a new instance
-    return new RamStepStatusHistory(uuid);
+    // Check if everything is alright
+    RamStepStatusHistory *h = new RamStepStatusHistory(uuid);
+    if (h->step())
+        return h;
+    return nullptr;
 }
 
 RamStepStatusHistory *RamStepStatusHistory::c(QObject *o)
@@ -50,13 +54,16 @@ RamStepStatusHistory::RamStepStatusHistory(QString uuid, QObject *parent):
     QJsonObject d = RamAbstractObject::data();
 
 
-    m_step = RamStep::get(d.value("step").toString() );
+    m_step = RamStep::get( d.value("step").toString() );
 
-    RamStep::Type t = m_step->type();
-    if (t == RamStep::ShotProduction) m_item = RamShot::get(d.value("item").toString() );
-    else m_item = RamAsset::get(d.value("item").toString() );
+    if (m_step)
+    {
+        RamStep::Type t = m_step->type();
+        if (t == RamStep::ShotProduction) m_item = RamShot::get(d.value("item").toString() );
+        else m_item = RamAsset::get(d.value("item").toString() );
 
-    connectEvents();
+         connectEvents();
+    }
 }
 
 RamAbstractItem *RamStepStatusHistory::item() const
@@ -137,4 +144,6 @@ void RamStepStatusHistory::connectEvents()
     connect(this, &RamStepStatusHistory::rowsAboutToBeRemoved, this, &RamStepStatusHistory::rowsChanged);
     connect(this, &RamStepStatusHistory::rowsInserted, this, &RamStepStatusHistory::rowsChanged);
     connect(this, SIGNAL(dataChanged(QModelIndex,QModelIndex,QVector<int>)), this, SLOT(changeData(QModelIndex,QModelIndex,QVector<int>)));
+    if (m_step) connect(m_step, SIGNAL(removed()), this, SLOT(remove));
+    if (m_item) connect(m_item, SIGNAL(removed()), this, SLOT(remove));
 }

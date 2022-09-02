@@ -113,9 +113,12 @@ QString RamAsset::filterUuid() const
 
 QString RamAsset::details() const
 {
-    return assetGroup()->name() +
+    RamAssetGroup *ag = assetGroup();
+    if (ag)
+        return assetGroup()->name() +
             "\n" +
             tags().join(", ");
+    return tags().join(", ");
 }
 
 void RamAsset::edit(bool show)
@@ -131,7 +134,9 @@ QString RamAsset::folderPath() const
 {
     RamProject *proj = project();
     if (!proj) return "";
-    return  assetGroup()->path() + "/" + proj->shortName() + "_A_" + shortName();
+    RamAssetGroup *ag = assetGroup();
+    if (ag) return  ag->path() + "/" + proj->shortName() + "_A_" + shortName();
+    return proj->shortName() + "_A_" + shortName();
 }
 
 // PRIVATE //
