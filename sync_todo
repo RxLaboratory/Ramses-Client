@@ -12,11 +12,25 @@
 		- save a copy of local app settings to the user settings ? at least some of them (like the appearance). On app quit?
 
 6- simplify daemon & reimplement api
-	implement api:
-		Reimplement Ramses
 	api fixes:
 		missing RamFileManager.getFileWithResource(path, resource)
 	Update maya addon, and test
+		- save as OK
+		- save comment OK
+		- save OK
+		- save Version OK
+		- Scene settings OK
+		- retrieve OK
+		- save Status
+		- Publish
+		- preview
+		- save status and preview and publish
+		- open
+		- import
+		- replace
+		- update
+		- publish settings
+		
 	client: enable developer tools (show uuids in objects, and tooltips, etc)
 
 7- change messageboxes icons (create a new class with its own static methods)
