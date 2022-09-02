@@ -38,6 +38,7 @@ void Ramses::setUser(RamUser *u)
     // Set current project
     QSettings *uSettings = m_currentUser->settings();
     QString projUuid = uSettings->value("ramses/currentProject", "").toString();
+
     if (projUuid != "") setCurrentProject( RamProject::get(projUuid) );
     else setCurrentProject(nullptr);
 
@@ -208,11 +209,6 @@ RamProject *Ramses::currentProject() const
 
 void Ramses::setCurrentProject(RamProject *project)
 {
-    if ( m_currentProject )
-    {
-        if ( m_currentProject->is(project) ) return;
-    }
-
     m_currentProject = project;
 
     if (m_currentUser && m_currentProject)
