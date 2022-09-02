@@ -17,9 +17,12 @@ void Querier::setDataFile(QString f)
 {
     m_dataFile = f;
 
+    QSqlDatabase::removeDatabase(m_dbName);
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", m_dbName);
     db.setHostName("localhost");
-    if (f == "") return;
+
+    if (m_dataFile == "") return;
+
     db.setDatabaseName(m_dataFile);
     if (!db.open())
     {
@@ -29,7 +32,7 @@ void Querier::setDataFile(QString f)
 
 QSqlQuery Querier::query(QString q)
 {
-    if (m_dataFile =="")
+    if (m_dataFile == "")
     {
         emit queryFinished(q);
         return QSqlQuery();
@@ -40,7 +43,6 @@ QSqlQuery Querier::query(QString q)
     QSqlQuery qry = QSqlQuery(db);
 
     //log(tr("Querying:") + "\n" + q, DuQFLog::Data);
-    //qDebug() << q;
 
     if (!qry.exec(q))
     {

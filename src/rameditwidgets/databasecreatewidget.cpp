@@ -261,14 +261,14 @@ bool DatabaseCreateWidget::createNewDB(ServerConfig s)
     // Copy the file
     FileUtils::copy(":/data/template", newFilePath);
 
-    // Add server settings
-    LocalDataInterface::instance()->setServerSettings(ui_fileSelector->path(), s);
-
     if (!QFileInfo::exists(newFilePath))
     {
         QMessageBox::warning(this, tr("I can't save the database"), tr("I'm sorry, I've failed to create the database at this location.\nMaybe you can try another location...") + "\n\n" + newFilePath );
         return false;
     }
+
+    // Add server settings
+    LocalDataInterface::instance()->setServerSettings(ui_fileSelector->path(), s);
 
     // Set File
     DBInterface::instance()->setDataFile(newFilePath, true);

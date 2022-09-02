@@ -31,7 +31,6 @@ void Ramses::setUser(RamUser *u)
     {
         setCurrentProject(nullptr);
         emit userChanged(nullptr);
-        m_dbi->setDataFile("");
         qDebug() << "Logged out.";
         return;
     }
