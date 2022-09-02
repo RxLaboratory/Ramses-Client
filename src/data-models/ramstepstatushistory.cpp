@@ -144,6 +144,6 @@ void RamStepStatusHistory::connectEvents()
     connect(this, &RamStepStatusHistory::rowsAboutToBeRemoved, this, &RamStepStatusHistory::rowsChanged);
     connect(this, &RamStepStatusHistory::rowsInserted, this, &RamStepStatusHistory::rowsChanged);
     connect(this, SIGNAL(dataChanged(QModelIndex,QModelIndex,QVector<int>)), this, SLOT(changeData(QModelIndex,QModelIndex,QVector<int>)));
-    if (m_step) connect(m_step, SIGNAL(removed()), this, SLOT(remove));
-    if (m_item) connect(m_item, SIGNAL(removed()), this, SLOT(remove));
+    if (m_step) connect(m_step, &RamStep::removed, this, &RamStepStatusHistory::remove);
+    if (m_item) connect(m_item, &RamAbstractItem::removed, this, &RamStepStatusHistory::remove);
 }

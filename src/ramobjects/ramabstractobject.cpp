@@ -301,7 +301,7 @@ void RamAbstractObject::restore()
     emitRestored();
 }
 
-bool RamAbstractObject::removed()
+bool RamAbstractObject::isRemoved()
 {
     return DBInterface::instance()->isRemoved(m_uuid, objectTypeName());
 }

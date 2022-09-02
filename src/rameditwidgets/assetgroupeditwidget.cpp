@@ -45,6 +45,7 @@ void AssetGroupEditWidget::reInit(RamObject *o)
 
 void AssetGroupEditWidget::setColor(QColor c)
 {
+    if (!m_assetGroup) return;
     m_assetGroup->setColor(c);
 }
 

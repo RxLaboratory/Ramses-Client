@@ -508,6 +508,12 @@ void RamObjectList::reload()
     reloadData();
 }
 
+void RamObjectList::remove()
+{
+    RamAbstractObject::remove();
+    this->disconnect();
+}
+
 // PROTECTED //
 
 void RamObjectList::connectObject(RamObject *obj)

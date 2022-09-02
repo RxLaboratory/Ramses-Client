@@ -29,9 +29,6 @@ public:
      */
     RamObject(QString shortName, QString name, ObjectType type, QObject *parent = nullptr, bool isVirtual = false, bool encryptData = false);
 
-    // reimplemented to disconnect signals
-    virtual void remove() override;
-
     virtual QString filterUuid() const { return QString(); };
 
     virtual bool canEdit();
@@ -44,6 +41,8 @@ public:
 public slots:
     virtual void edit(bool s = true) { Q_UNUSED(s) };
     void reload();
+    // reimplemented to disconnect signals
+    virtual void remove() override;
 
 signals:
     void dataChanged(RamObject *);

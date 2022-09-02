@@ -142,6 +142,7 @@ void RamObjectListView::mouseMoveEvent(QMouseEvent *event)
 
 void RamObjectListView::mousePressEvent(QMouseEvent *event)
 {
+    qDebug() << "CLICK!";
     // Middle click for dragging view
     if (event->button() == Qt::MiddleButton)
     {
@@ -194,21 +195,19 @@ void RamObjectListView::resizeEvent(QResizeEvent *event)
         this->setRowHeight(0,rowHeight);
     }
 
-    //this->setRowHeight(0);
-    //this->setRowHeight(0, rowHeight);
-    /*this->setRowHeight(0,10);
-    if (m_displayMode == Table) this->setRowHeight(0,42);
-    else this->setRowHeight(0,30);*/
+    QTableView::resizeEvent(event);
 }
 
 void RamObjectListView::showEvent(QShowEvent *event)
 {
     Q_UNUSED(event)
 
-    if(m_layout) return;
+    if (m_layout) return;
     this->resizeRowsToContents();
     this->resizeColumnsToContents();
     m_layout = true;
+
+    QTableView::showEvent(event);
 }
 
 void RamObjectListView::select(const QModelIndex &index)

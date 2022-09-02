@@ -166,7 +166,7 @@ public:
      * @brief restore markes the object as available in the database
      */
     void restore();
-    bool removed();
+    bool isRemoved();
 
     /**
      * @brief settings are the settings corresponding to this object

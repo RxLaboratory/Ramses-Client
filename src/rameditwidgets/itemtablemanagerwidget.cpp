@@ -156,8 +156,6 @@ void ItemTableManagerWidget::hideEvent(QHideEvent *event)
 
 void ItemTableManagerWidget::projectChanged(RamProject *project, bool force)
 {
-    this->setEnabled(false );
-
     disconnect(m_project, nullptr, this, nullptr);
 
     if (!m_project && !project) return;
@@ -203,8 +201,6 @@ void ItemTableManagerWidget::projectChanged(RamProject *project, bool force)
     ui_userMenu->selectAll();*/
 
     loadSettings();
-
-    this->setEnabled(true);
 }
 
 void ItemTableManagerWidget::showUser(RamObject *user, bool s)
@@ -870,12 +866,11 @@ void ItemTableManagerWidget::setupUi()
     ui_titleBar->insertLeft(statusButton);
 
 
-    QVBoxLayout *mainLayout = new QVBoxLayout();
+    QVBoxLayout *mainLayout = new QVBoxLayout(this);
     mainLayout->setSpacing(3);
     mainLayout->setContentsMargins(0,0,0,0);
 
     ui_table = new RamObjectListView(RamObjectListView::Table, this);
-    //ui_table->setEditableObjects(true, RamUser::ProjectAdmin);
     ui_table->setEditableObjects(false);
     ui_table->setContextMenuPolicy(Qt::CustomContextMenu);
     ui_header = new RamStepHeaderView(ui_table);
@@ -887,8 +882,6 @@ void ItemTableManagerWidget::setupUi()
     mainLayout->addWidget(ui_table);
 
     ui_table->filteredList()->useFilters(true);
-
-    this->setLayout(mainLayout);
 
     ui_contextMenu = new QMenu(this);
 

@@ -89,6 +89,8 @@ public slots:
     void removeAll(RamObject *obj);
     void sort();
     void reload();
+    // reimplemented to disconnect signals
+    virtual void remove() override;
 
 signals:
     // Emitted when rows inserted, removed or reordered

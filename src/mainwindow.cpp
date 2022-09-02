@@ -1043,8 +1043,6 @@ void MainWindow::closeEvent(QCloseEvent *event)
     settings.setValue("windowState", this->saveState());
     settings.endGroup();
 
-    // TODO One last Sync
-
     QFontDatabase::removeAllApplicationFonts();
     trayIcon->hide();
     QMainWindow::closeEvent(event);
