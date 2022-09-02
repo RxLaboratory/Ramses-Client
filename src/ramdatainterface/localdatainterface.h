@@ -68,7 +68,8 @@ public:
 
     // DATA INTERFACE //
 
-    QStringList tableData(QString table);
+    QStringList tableUuids(QString table);
+    QList<QStringList> tableData(QString table);
     bool contains(QString uuid, QString table);
 
     void createObject(QString uuid, QString table, QString data);

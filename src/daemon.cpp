@@ -128,6 +128,9 @@ void Daemon::reply(QString request, QTcpSocket *client)
     else if (args.contains("getPath"))
                 getPath(args.value("uuid"), client);
 
+    else if (args.contains("getObjects"))
+                getObjects(args.value("type"), client);
+
     else
         post(client, QJsonObject(), "", tr("Unknown query: %1").arg(request), false, false);
 }
@@ -177,7 +180,7 @@ void Daemon::getCurrentProject(QTcpSocket *client)
 
 void Daemon::setCurrentProject(QString uuid, QTcpSocket *client)
 {
-    log(tr("I'm replying to this request: %1.").arg("setCurrentProject") + " | " + uuid, DuQFLog::Debug);
+    log(tr("I'm replying to this request: %1.").arg("setCurrentProject"), DuQFLog::Debug);
     log(tr("This is the uuid: %1").arg(uuid), DuQFLog::Data);
 
     Ramses::instance()->setCurrentProjectUuid(uuid);
@@ -185,6 +188,29 @@ void Daemon::setCurrentProject(QString uuid, QTcpSocket *client)
     RamProject *p = Ramses::instance()->currentProject();
     if (p) post(client, QJsonObject(), "setCurrentProject", tr("Current project set to: \"%1\".").arg(p->name()));
     else post(client, QJsonObject(), "setCurrentProject", tr("Project not found, sorry!"), false);
+}
+
+void Daemon::getObjects(QString type, QTcpSocket *client)
+{
+
+    log(tr("I'm replying to this request: %1.").arg("getObjects"), DuQFLog::Debug);
+    log(tr("This is the type: %1").arg(type), DuQFLog::Data);
+
+    QList<QStringList> entries = LocalDataInterface::instance()->tableData(type);
+    QJsonObject content;
+    QJsonArray objects;
+    for (int i = 0; i < entries.count(); i++)
+    {
+        QStringList entry = entries.at(i);
+        QJsonObject obj;
+        obj.insert("uuid", entry.at(0) );
+        QJsonDocument d = QJsonDocument::fromJson( entry.at(1).toUtf8() );
+        obj.insert("data", d.object());
+        objects.append(obj);
+    }
+    content.insert("objects", objects);
+
+    post(client, QJsonObject(), "getObjects", tr("I've got the list of \"%1\".").arg(type));
 }
 
 void Daemon::getRamsesFolder(QTcpSocket *client)
@@ -209,7 +235,12 @@ void Daemon::getProjects(QTcpSocket *client)
         {
             RamProject *p = RamProject::c( ramProjects->at(i) );
             if (p->users()->contains(u))
-                projects.append( p->uuid() );
+            {
+                QJsonObject proj;
+                proj.insert("uuid", p->uuid());
+                proj.insert("data", p->data());
+                projects.append( proj );
+            }
         }
     content.insert("projects", projects);
     post(client, content, "getProjects", tr("I've got the project list."));

@@ -297,7 +297,7 @@ QString LocalDataInterface::login(QString username, QString password)
     return "";
 }
 
-QStringList LocalDataInterface::tableData(QString table)
+QStringList LocalDataInterface::tableUuids(QString table)
 {
     QString q = "SELECT uuid FROM '%1' WHERE removed = 0;";
     QSqlQuery qry = query( q.arg(table) );
@@ -305,6 +305,24 @@ QStringList LocalDataInterface::tableData(QString table)
     QStringList data;
 
     while (qry.next()) data << qry.value(0).toString();
+
+    return data;
+}
+
+QList<QStringList> LocalDataInterface::tableData(QString table)
+{
+    QString q = "SELECT `uuid`, `data` FROM '%1' WHERE removed = 0;";
+    QSqlQuery qry = query( q.arg(table) );
+
+    QList<QStringList> data;
+
+    while (qry.next())
+    {
+        QStringList entry;
+        entry << qry.value(0).toString();
+        entry << qry.value(1).toString();
+        data << entry;
+    }
 
     return data;
 }

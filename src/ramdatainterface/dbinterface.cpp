@@ -80,7 +80,7 @@ QString DBInterface::ramsesPath()
 
 QStringList DBInterface::tableData(QString table)
 {
-    return m_ldi->tableData(table);
+    return m_ldi->tableUuids(table);
 }
 
 bool DBInterface::contains(QString uuid, QString table)

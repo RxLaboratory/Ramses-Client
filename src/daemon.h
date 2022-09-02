@@ -88,6 +88,33 @@ private slots:
      * @brief ping Sends the ramses absolute folder path.
      * {
      *  "query": "getRamsesFolder",
+     *  "message": "I've got the list of \"%1\".",
+     *  "accepted": true,
+     *  "success": true,
+     *  "content": {
+     *      "objects": [
+     *          {
+     *              "uuid": "unique-uid1",
+     *              "data": { "some JSON data" }
+     *          },
+     *          {
+     *              "uuid": "unique-uid2",
+     *              "data": { "some JSON data" }
+     *          },
+     *          {
+     *              "uuid": "unique-uid3",
+     *              "data": { "some JSON data" }
+     *          }
+     *          ]
+     *      }
+     * }
+     * @param client
+     */
+    void getObjects(QString type, QTcpSocket *client);
+    /**
+     * @brief ping Sends the ramses absolute folder path.
+     * {
+     *  "query": "getRamsesFolder",
      *  "message": "I've got the Ramses folder.",
      *  "accepted": true,
      *  "success": true,
@@ -107,9 +134,18 @@ private slots:
      *  "success": true,
      *  "content": {
      *      "projects": [
-     *          "unique-uid1",
-     *          "unique-uid2",
-     *          "unique-uid3"
+     *          {
+     *              "uuid": "unique-uid1",
+     *              "data": { "some JSON data" }
+     *          },
+     *          {
+     *              "uuid": "unique-uid2",
+     *              "data": { "some JSON data" }
+     *          },
+     *          {
+     *              "uuid": "unique-uid3",
+     *              "data": { "some JSON data" }
+     *          }
      *          ]
      *      }
      * }
