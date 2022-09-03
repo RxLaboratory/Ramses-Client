@@ -262,7 +262,7 @@ void DBInterface::connectEvents()
     connect(m_rsi, &RamServerInterface::connectionStatusChanged, this, &DBInterface::serverConnectionStatusChanged);
     connect(m_rsi, &RamServerInterface::syncReady, m_ldi, &LocalDataInterface::sync);
     connect(m_rsi, &RamServerInterface::userChanged, this, &DBInterface::serverUserChanged);
-    connect(m_updateTimer, &QTimer::timeout, this, &DBInterface::sync);
+    connect(m_updateTimer, SIGNAL(timeout()), this, SLOT(sync()));
 
     connect(qApp, &QApplication::aboutToQuit, this, &DBInterface::quit);
 }

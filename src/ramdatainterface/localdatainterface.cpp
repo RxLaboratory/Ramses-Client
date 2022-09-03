@@ -647,13 +647,14 @@ void LocalDataInterface::saveSync(QJsonArray tables)
             if (tableName == "RamUser")
             {
                 QString userName = incomingRow.value("userName").toString().replace("'", "''");
+                if (userName == "Ramses") continue;
                 if (ENCRYPT_USER_DATA) data = DataCrypto::instance()->clientEncrypt( data );
                 QString q = "UPDATE %1 SET "
                             "data = '%2', "
                             "modified = '%3', "
                             "removed = %4, "
                             "userName = '%5' "
-                            "WHERE uuid = '%6';";
+                            "WHERE uuid = '%6' ;";
 
                 threadedQuery( q.arg(tableName, data, modified, QString::number(removed), userName, uuid) );
             }
