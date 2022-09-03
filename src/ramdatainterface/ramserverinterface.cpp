@@ -255,7 +255,7 @@ void RamServerInterface::sync(QJsonArray tables, QDateTime prevSyncDate)
 {
     QJsonObject body;
     body.insert("tables", tables);
-    body.insert("previousSyncDate", prevSyncDate.toString("yyyy-MM-dd hh:mm:00"));
+    body.insert("previousSyncDate", prevSyncDate.toString("yyyy-MM-dd hh:mm:ss"));
     sync(body);
 }
 

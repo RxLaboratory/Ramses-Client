@@ -332,7 +332,7 @@ QList<QStringList> LocalDataInterface::tableData(QString table)
 
 bool LocalDataInterface::contains(QString uuid, QString table)
 {
-    QString q = "SELECT uuid FROM '%1' WHERE uuid = '%2' AND removed = 0;";
+    QString q = "SELECT uuid FROM '%1' WHERE uuid = '%2';";
     q = q.arg(table, uuid);
     QSqlQuery qry = query( q );
 
@@ -590,11 +590,12 @@ void LocalDataInterface::saveSync(QJsonArray tables)
                 incomingRows.removeAt(r);
                 continue;
             }
+
             if (contains(uuid, tableName)) continue;
 
             QString data = incomingRow.value("data").toString().replace("'", "''");
             QString modified = incomingRow.value("modified").toString();
-            QString removed = incomingRow.value("removed").toString("0");
+            int removed = incomingRow.value("removed").toInt(0);
 
             if (tableName == "RamUser")
             {
@@ -604,19 +605,22 @@ void LocalDataInterface::saveSync(QJsonArray tables)
                 QString q = "INSERT INTO %1 (data, modified, uuid, removed, userName) "
                             "VALUES ( '%2', '%3', '%4', %5, '%6' );";
 
-                threadedQuery( q.arg(tableName, data, modified, uuid, removed, userName) );
+                threadedQuery( q.arg(tableName, data, modified, uuid, QString::number(removed), userName) );
             }
             else
             {
                 QString q = "INSERT INTO %1 (data, modified, uuid, removed) "
                             "VALUES ( '%2', '%3', '%4', %5 );";
 
-                threadedQuery( q.arg(tableName, data, modified, uuid, removed) );
+                threadedQuery( q.arg(tableName, data, modified, uuid, QString::number(removed)) );
             }
 
-            QStringList ins;
-            ins << uuid << tableName;
-            m_inserted << ins;
+            if (removed == 0)
+            {
+                QStringList ins;
+                ins << uuid << tableName;
+                m_inserted << ins;
+            }
 
             incomingRows.removeAt(r);
         }
@@ -625,11 +629,14 @@ void LocalDataInterface::saveSync(QJsonArray tables)
         for (int r = incomingRows.count() - 1; r >= 0; r--)
         {
             QJsonObject incomingRow = incomingRows.at(r).toObject();
+
+                        qDebug() << incomingRow;
+
             QString uuid = incomingRow.value("uuid").toString();
             QString data = incomingRow.value("data").toString().replace("'", "''");
             QString modified = incomingRow.value("modified").toString();
-            QString removed = incomingRow.value("removed").toString("0");
-            bool hasBeenRemoved = incomingRow.value("removed").toBool(false);
+            int removed = incomingRow.value("removed").toInt(0);
+            bool hasBeenRemoved = removed == 1;
 
             // Check if the object has been removed or restored
             bool wasRemoved = isRemoved(uuid, tableName);
@@ -647,7 +654,7 @@ void LocalDataInterface::saveSync(QJsonArray tables)
                             "userName = '%5' "
                             "WHERE uuid = '%6';";
 
-                threadedQuery( q.arg(tableName, data, modified, removed, userName, uuid) );
+                threadedQuery( q.arg(tableName, data, modified, QString::number(removed), userName, uuid) );
             }
             else
             {
@@ -657,7 +664,7 @@ void LocalDataInterface::saveSync(QJsonArray tables)
                             "removed = %4 "
                             "WHERE uuid = '%5' ;";
 
-                threadedQuery( q.arg(tableName, data, modified, removed, uuid) );
+                threadedQuery( q.arg(tableName, data, modified, QString::number(removed), uuid) );
             }
 
             m_updated << uuid;
