@@ -536,8 +536,8 @@ QJsonObject LocalDataInterface::getSync()
         QJsonArray rows;
         table.insert("name", tName );
 
-        if (tName == "RamUser") q = "SELECT uuid, data, modified, removed, userName FROM %1 WHERE modified >= '%2' ;";
-        else q = "SELECT uuid, data, modified, removed FROM %1 WHERE modified >= '%2' ;";
+        if (tName == "RamUser") q = "SELECT uuid, data, modified, removed, userName FROM %1 ;"; //  WHERE modified >= '%2'
+        else q = "SELECT uuid, data, modified, removed FROM %1 ;"; // WHERE modified >= '%2'
 
         qry = query( q.arg( tName, lastSync));
 

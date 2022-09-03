@@ -153,7 +153,6 @@ void RamObject::checkData(QString uuid)
     if (uuid != m_uuid) return;
     // Empty cache!
     m_cachedData = "";
-    qDebug() << "========== EMIT!";
     emit dataChanged(this);
 }
 
