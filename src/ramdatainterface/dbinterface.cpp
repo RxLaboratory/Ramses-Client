@@ -9,11 +9,11 @@ DBInterface *DBInterface::instance()
     if (!_instance) _instance = new DBInterface();
     return _instance;
 }
-
+/*
 bool DBInterface::isReady() const
 {
     return m_ldi->isReady();
-}
+}*/
 
 void DBInterface::setOffline()
 {
@@ -328,8 +328,6 @@ void DBInterface::serverConnectionStatusChanged(NetworkUtils::NetworkStatus stat
         break;
     case NetworkUtils::Online:
         setConnectionStatus(status, "Connected to the Ramses Server.");
-        // First sync
-        fullSync();
         m_updateTimer->start(m_updateFrequency);
         break;
     default:

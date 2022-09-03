@@ -77,12 +77,12 @@ void DatabaseCreateWidget::createDB()
 
         // Connect to server
         RamServerInterface *rsi = RamServerInterface::instance();
-        rsi->setServerAddress(s.address);
-        rsi->setSsl(s.useSsl);
-        rsi->setTimeout(s.timeout);
+        //rsi->setServerAddress(s.address);
+        //rsi->setSsl(s.useSsl);
+        //rsi->setTimeout(s.timeout);
 
         // (try to) set online
-        rsi->setOnline();
+        //rsi->setOnline();
         if (!rsi->isOnline())
         {
             QMessageBox::information(this,
@@ -121,29 +121,15 @@ void DatabaseCreateWidget::createDB()
         // Save data to DB
         ldi->saveSync(tables);
 
-        // Wait for the data to be written
-        ldi->waitForReady();
-
-        // And trigger the first Sync
-        DBInterface::instance()->sync();
-
-        if (!ldi->isReady())
-        {
-            QMessageBox::warning(this,
-                                     tr("Can't write local data"),
-                                     tr("Writing the local data takes too long, something must be wrong.\n\n"
-                                        "You can restart the application and then try again.\n\n"
-                                        "If this happens again, file a bug report.")
-                                     );
-            return;
-        }
-
         // And finish login
         Ramses::instance()->setUserUuid( uuid );
 
         // Hide dock
         MainWindow *mw = (MainWindow*)GuiUtils::appMainWindow();
         mw->hidePropertiesDock();
+
+        // And trigger the first Sync
+        DBInterface::instance()->fullSync();
     }
 }
 

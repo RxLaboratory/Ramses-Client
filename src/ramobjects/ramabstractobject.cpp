@@ -462,7 +462,7 @@ void RamAbstractObject::setDataString(QString data)
 QString RamAbstractObject::dataString() const
 {
     // If we have cached the data already, return it
-    if (m_cachedData != "") return m_cachedData;
+    if (m_cachedData != "" && CACHE_RAMOBJECT_DATA) return m_cachedData;
 
     QString dataStr = DBInterface::instance()->objectData(m_uuid, objectTypeName());
     if (dataStr == "") return "";
