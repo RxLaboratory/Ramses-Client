@@ -91,7 +91,7 @@ public:
     const QString &dataFile() const;
     ServerConfig setDataFile(const QString &file);
 
-    QJsonObject getSync();
+    QJsonObject getSync(bool fullSync=false);
     void saveSync(QJsonArray tables);
 
     QString currentUserUuid();

@@ -510,7 +510,7 @@ ServerConfig LocalDataInterface::setDataFile(const QString &file)
     return serverConfig();
 }
 
-QJsonObject LocalDataInterface::getSync()
+QJsonObject LocalDataInterface::getSync(bool fullSync)
 {
     // List all tables
     QStringList tNames = tableNames();
@@ -536,8 +536,9 @@ QJsonObject LocalDataInterface::getSync()
         QJsonArray rows;
         table.insert("name", tName );
 
-        if (tName == "RamUser") q = "SELECT uuid, data, modified, removed, userName FROM %1 WHERE modified >= '%2';"; //
-        else q = "SELECT uuid, data, modified, removed FROM %1 WHERE modified >= '%2';"; //
+        if (tName == "RamUser") q = "SELECT uuid, data, modified, removed, userName FROM %1 ";
+        else q = "SELECT uuid, data, modified, removed FROM %1 ";
+        if (fullSync) q += " WHERE modified >= '%2' ;";
 
         qry = query( q.arg( tName, lastSync));
 

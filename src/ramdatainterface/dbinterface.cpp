@@ -31,7 +31,7 @@ void DBInterface::setOffline()
         pm->setText(tr("One last sync..."));
         pm->increment();
 
-        sync();
+        sync(true);
 
         // Wait for server timeout to be able to sync
         QDeadlineTimer t( timeOut );
@@ -230,10 +230,11 @@ void DBInterface::setCurrentUserUuid(QString uuid)
     m_ldi->setCurrentUserUuid(uuid);
 }
 
-void DBInterface::sync()
+void DBInterface::sync(bool fullSync)
 {
     // Get modified rows from local
-    QJsonObject syncBody = m_ldi->getSync();
+    QJsonObject syncBody = m_ldi->getSync( fullSync );
+    if (fullSync) syncBody.insert("previousSyncDate", "1818-05-05 00:00:00");
     // Post to ramserver
     m_rsi->sync(syncBody);
 }
@@ -319,6 +320,8 @@ void DBInterface::serverConnectionStatusChanged(NetworkUtils::NetworkStatus stat
         break;
     case NetworkUtils::Online:
         setConnectionStatus(status, "Connected to the Ramses Server.");
+        // First sync
+        sync(true);
         m_updateTimer->start(m_updateFrequency);
         break;
     default:
