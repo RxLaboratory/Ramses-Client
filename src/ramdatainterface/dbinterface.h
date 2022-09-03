@@ -82,7 +82,8 @@ signals:
     void userChanged(QString);
 
 public slots:
-    void sync(bool fullSync = false);
+    void sync();
+    void fullSync();
     void quit();
     /**
      * @brief Changes to offline mode: data is stored locally until we get a connection to the server to sync.

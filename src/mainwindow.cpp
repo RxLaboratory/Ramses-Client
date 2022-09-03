@@ -340,7 +340,7 @@ void MainWindow::connectEvents()
     connect(ui_projectSettingsPage, SIGNAL(closeRequested()), this, SLOT(home()));
 
     // Other buttons
-    connect(ui_refreshButton, &QToolButton::clicked, DBInterface::instance(), &DBInterface::sync);
+    connect(ui_refreshButton, &QToolButton::clicked, DBInterface::instance(), &DBInterface::fullSync);
     connect(mainStack,SIGNAL(currentChanged(int)), this, SLOT(pageChanged(int)));
 
     // Misc
