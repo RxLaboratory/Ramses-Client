@@ -540,7 +540,10 @@ QJsonObject LocalDataInterface::getSync(bool fullSync)
         else q = "SELECT uuid, data, modified, removed FROM %1 ";
         if (fullSync) q += " WHERE modified >= '%2' ;";
 
-        qry = query( q.arg( tName, lastSync));
+        if (fullSync) q = q.arg(tName, lastSync);
+        else q = q.arg(tName);
+
+        qry = query( q );
 
         while (qry.next())
         {
