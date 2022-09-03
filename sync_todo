@@ -15,21 +15,17 @@
 	api fixes:
 		missing RamFileManager.getFileWithResource(path, resource)
 	Update maya addon, and test
-		- save as OK
-		- save comment OK
-		- save OK
-		- save Version OK
-		- Scene settings OK
-		- retrieve OK
-		- save Status
-		- Publish
-		- preview
-		- save status and preview and publish
-		- open
-		- import
+		- invalid item when saving iseult?
 		- replace
 		- update
-		- publish settings
+		- publish settings OK
+		- save template
+		- publish template
+		- open / import template
+		- RAMSES.currentProject() not working
+		- Daemon: order states before returning them
+		- Preview: BOTH thumbnail AND playblast
+		- Preview: check the cam selection issue
 		
 	client: enable developer tools (show uuids in objects, and tooltips, etc)
 
