@@ -83,6 +83,7 @@ void StatusEditWidget::reInit(RamObject *o)
         ui_mainFileList->setList( statusFolder.workingFileInfos() );
 
         // Published versions and files
+        ui_versionPublishBox->clear();
         QList<QFileInfo> publishedVersionFolders = statusFolder.publishedVersionFolderInfos();
         for (int i = publishedVersionFolders.count()-1; i>=0; i-- )
         {
@@ -117,6 +118,13 @@ void StatusEditWidget::reInit(RamObject *o)
         ui_previewFileList->setList(statusFolder.previewFileInfos());
 
         // List templates
+        //Clear
+        QList<QAction*> templateActions = ui_createFromTemplateMenu->actions();
+        for (int i = 0; i < templateActions.count(); i++)
+        {
+            templateActions.at(i)->deleteLater();
+        }
+        //Add
         QList<RamWorkingFolder> templateFolders = m_status->step()->templateWorkingFolders();
 
         RamNameManager nm;
@@ -467,7 +475,7 @@ void StatusEditWidget::removeSelectedPublishedFile()
 void StatusEditWidget::previewFileSelected()
 {
     if ( ui_previewFileList->currentItem() ) ui_openPreviewFileButton->setEnabled(true);
-    else ui_previewFileList->setEnabled(false);
+    else ui_openPreviewFileButton->setEnabled(false);
 }
 
 void StatusEditWidget::openPreviewFile()

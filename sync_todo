@@ -18,7 +18,6 @@
 		- publish setting do Hide on playback/hide/show/keep as is: curves, locators
 		- merge save as and save template
 		- build an "item selector" to select an item, and use in both open & save as
-		- update checks!
 		- add a 'recent' list to the open menu
 		- update the doc
 		- release new dublast for maya
@@ -26,9 +25,6 @@
 	client:
 		- enable developer tools (show uuids in objects, and tooltips, etc)
 		- status fixes/improvements:
-			- template file list not cleared on refresh
-			- published version list not cleared on refresh
-			- preview files can't be selected
 			- open folder should open the right folder
 			- refresh icon: white
 			- open icon: white
