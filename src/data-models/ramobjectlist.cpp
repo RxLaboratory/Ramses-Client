@@ -410,7 +410,8 @@ void RamObjectList::checkData(QString uuid)
 {
     // Not for me...
     if (uuid != m_uuid) return;
-
+    // Reset Cache
+    m_cachedData = "";
     reloadData();
 }
 
