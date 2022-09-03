@@ -340,7 +340,7 @@ bool LocalDataInterface::contains(QString uuid, QString table)
     return false;
 }
 
-void LocalDataInterface::createObject(QString uuid, QString table, QString data)
+void LocalDataInterface::createObject(QString uuid, QString table, QString data, bool emitInserted)
 {
     data.replace("'", "''");
 
@@ -358,6 +358,13 @@ void LocalDataInterface::createObject(QString uuid, QString table, QString data)
                   modified.toString("yyyy-MM-dd hh:mm:ss")
                   )
             );
+
+    if (emitInserted)
+    {
+        QStringList ins;
+        ins << uuid << table;
+        m_inserted << ins;
+    }
 }
 
 QString LocalDataInterface::objectData(QString uuid, QString table)

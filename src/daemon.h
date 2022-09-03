@@ -85,6 +85,21 @@ private slots:
 
     // DATA
     /**
+     * @brief create Creates a new object
+     * {
+     *  "query": "create",
+     *  "message": "I've created a new \"RamObject\".",
+     *  "accepted": true,
+     *  "success": true,
+     *  "content": { }
+     * }
+     * @param uuid
+     * @param data
+     * @param type
+     * @param client
+     */
+    void create(QString uuid, QString data, QString type, QTcpSocket *client);
+    /**
      * @brief ping Sends the ramses absolute folder path.
      * {
      *  "query": "getRamsesFolder",

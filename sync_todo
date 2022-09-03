@@ -15,19 +15,22 @@
 	api fixes:
 		missing RamFileManager.getFileWithResource(path, resource)
 	Update maya addon, and test
-		- invalid item when saving iseult?
-		- replace
-		- update
-		- publish settings OK
-		- save template
-		- publish template
-		- open / import template
+		- import template
 		- RAMSES.currentProject() not working
 		- Daemon: order states before returning them
 		- Preview: BOTH thumbnail AND playblast
 		- Preview: check the cam selection issue
+		- publish setting do Hide on playback/hide/show/keep as is: curves, locators
 		
-	client: enable developer tools (show uuids in objects, and tooltips, etc)
+	client:
+		- enable developer tools (show uuids in objects, and tooltips, etc)
+		- status:
+			- template file list not cleared on refresh
+			- published version list not cleared on refresh
+			- preview files can't be selected
+			- open folder should open the right folder
+			- refresh icon: white
+			- open icon: white
 
 7- change messageboxes icons (create a new class with its own static methods)
 

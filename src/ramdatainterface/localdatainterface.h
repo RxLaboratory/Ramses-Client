@@ -72,7 +72,7 @@ public:
     QList<QStringList> tableData(QString table);
     bool contains(QString uuid, QString table);
 
-    void createObject(QString uuid, QString table, QString data);
+    void createObject(QString uuid, QString table, QString data, bool emitInserted = false);
 
     QString objectData(QString uuid, QString table);
     void setObjectData(QString uuid, QString table, QString data);

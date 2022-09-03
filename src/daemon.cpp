@@ -131,6 +131,9 @@ void Daemon::reply(QString request, QTcpSocket *client)
     else if (args.contains("getObjects"))
                 getObjects(args.value("type"), client);
 
+    else if (args.contains("create"))
+                create(args.value("uuid"), args.value("data"), args.value("type"), client);
+
     else
         post(client, QJsonObject(), "", tr("Unknown query: %1").arg(request), false, false);
 }
@@ -188,6 +191,18 @@ void Daemon::setCurrentProject(QString uuid, QTcpSocket *client)
     RamProject *p = Ramses::instance()->currentProject();
     if (p) post(client, QJsonObject(), "setCurrentProject", tr("Current project set to: \"%1\".").arg(p->name()));
     else post(client, QJsonObject(), "setCurrentProject", tr("Project not found, sorry!"), false);
+}
+
+void Daemon::create(QString uuid, QString data, QString type, QTcpSocket *client)
+{
+    log(tr("I'm replying to this request: %1.").arg("create"), DuQFLog::Debug);
+    log(tr("This is the uuid: %1").arg(uuid), DuQFLog::Data);
+    log(tr("This is the data: %1").arg(data), DuQFLog::Data);
+    log(tr("This is the type: %1").arg(type), DuQFLog::Data);
+
+     LocalDataInterface::instance()->createObject(uuid, type, data, true);
+
+     post(client, QJsonObject(), "create", tr("I've created a new \"%1\".").arg(type));
 }
 
 void Daemon::getObjects(QString type, QTcpSocket *client)
