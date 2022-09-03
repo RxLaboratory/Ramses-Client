@@ -15,12 +15,12 @@
 	api fixes:
 		missing RamFileManager.getFileWithResource(path, resource)
 	Update maya addon, and test
-		- import template
-		- RAMSES.currentProject() not working
-		- Daemon: order states before returning them
-		- Preview: BOTH thumbnail AND playblast
-		- Preview: check the cam selection issue
 		- publish setting do Hide on playback/hide/show/keep as is: curves, locators
+		- merge save as and save template
+		- build an "item selector" to select an item, and use in both open & save as
+		- update checks!
+		- add a 'recent' list to the open menu
+		- release new dublast for maya
 		
 	client:
 		- enable developer tools (show uuids in objects, and tooltips, etc)
