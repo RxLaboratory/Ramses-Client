@@ -1,5 +1,5 @@
 4- Ramses and editors
-	- test asset & shot table
+	- asset & shot table
 		- steps menu filter by type?
 	- can't reorder project steps
 	- improve console colors
@@ -20,11 +20,12 @@
 		- build an "item selector" to select an item, and use in both open & save as
 		- update checks!
 		- add a 'recent' list to the open menu
+		- update the doc
 		- release new dublast for maya
 		
 	client:
 		- enable developer tools (show uuids in objects, and tooltips, etc)
-		- status:
+		- status fixes/improvements:
 			- template file list not cleared on refresh
 			- published version list not cleared on refresh
 			- preview files can't be selected
