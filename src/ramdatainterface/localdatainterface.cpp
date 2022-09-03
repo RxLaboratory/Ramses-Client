@@ -601,6 +601,7 @@ void LocalDataInterface::saveSync(QJsonArray tables)
             if (tableName == "RamUser")
             {
                 QString userName = incomingRow.value("userName").toString().replace("'", "''");
+                if (userName == "Ramses") continue;
                 if (ENCRYPT_USER_DATA) data = DataCrypto::instance()->clientEncrypt( data );
 
                 QString q = "INSERT INTO %1 (data, modified, uuid, removed, userName) "
@@ -631,8 +632,6 @@ void LocalDataInterface::saveSync(QJsonArray tables)
         {
             QJsonObject incomingRow = incomingRows.at(r).toObject();
 
-                        qDebug() << incomingRow;
-
             QString uuid = incomingRow.value("uuid").toString();
             QString data = incomingRow.value("data").toString().replace("'", "''");
             QString modified = incomingRow.value("modified").toString();
@@ -647,7 +646,7 @@ void LocalDataInterface::saveSync(QJsonArray tables)
             if (tableName == "RamUser")
             {
                 QString userName = incomingRow.value("userName").toString().replace("'", "''");
-                if (userName == "Ramses") continue;
+
                 if (ENCRYPT_USER_DATA) data = DataCrypto::instance()->clientEncrypt( data );
                 QString q = "UPDATE %1 SET "
                             "data = '%2', "
