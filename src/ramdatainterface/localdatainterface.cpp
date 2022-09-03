@@ -599,6 +599,7 @@ void LocalDataInterface::saveSync(QJsonArray tables)
         QJsonArray incomingRows = table.value("modifiedRows").toArray();
 
         // Insert new
+        QList<QStringList> insertedObjects;
         for (int r = incomingRows.count() - 1; r >= 0; r--)
         {
             QJsonObject incomingRow = incomingRows.at(r).toObject();
@@ -636,9 +637,21 @@ void LocalDataInterface::saveSync(QJsonArray tables)
                 query( q.arg(tableName, data, modified, uuid, QString::number(removed)) );
             }
 
-            if (removed == 0) emit inserted( uuid, tableName);
+            if (removed == 0)
+            {
+                QStringList ins;
+                ins << uuid << tableName;
+                insertedObjects << ins;
+            }
 
             incomingRows.removeAt(r);
+        }
+
+        // Emit insertions
+        for (int ins = 0; ins < insertedObjects.count(); ins++ )
+        {
+            QStringList io = insertedObjects.at(ins);
+            emit inserted( io.at(0), io.at(1) );
         }
 
         // Update existing
