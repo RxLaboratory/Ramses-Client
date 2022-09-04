@@ -1,4 +1,5 @@
 - SYNC issues
+	sync users on creation! (to be able to set the password)
 	creation bdd pas ajoutée dans les récents
 	apostrophes multipliées
 	fullSync on login/setonline (but not create)
