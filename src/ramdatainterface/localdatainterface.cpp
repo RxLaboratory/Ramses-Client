@@ -340,6 +340,19 @@ bool LocalDataInterface::contains(QString uuid, QString table)
     return false;
 }
 
+QMap<QString, QString> LocalDataInterface::modificationDates(QString table)
+{
+    QString q = "SELECT uuid, modified FROM '%1';";
+    q = q.arg(table);
+    QSqlQuery qry = query( q );
+    QMap<QString, QString> dates;
+    while(qry.next())
+    {
+        dates[ qry.value(0).toString() ] = qry.value(1).toString();
+    }
+    return dates;
+}
+
 void LocalDataInterface::createObject(QString uuid, QString table, QString data, bool emitInserted)
 {
     data.replace("'", "''");
@@ -598,6 +611,9 @@ void LocalDataInterface::saveSync(QJsonArray tables)
         if (tableName == "") continue;
         QJsonArray incomingRows = table.value("modifiedRows").toArray();
 
+        // We're going to need the uuids and dates of the table
+        QMap<QString, QString> uuidDates = modificationDates( tableName );
+
         // Insert new
         QList<QStringList> insertedObjects;
         for (int r = incomingRows.count() - 1; r >= 0; r--)
@@ -612,7 +628,7 @@ void LocalDataInterface::saveSync(QJsonArray tables)
                 continue;
             }
 
-            if (contains(uuid, tableName)) continue;
+            if (uuidDates.contains(uuid)) continue;
 
             QString data = incomingRow.value("data").toString().replace("'", "''");
             QString modified = incomingRow.value("modified").toString();
@@ -664,6 +680,11 @@ void LocalDataInterface::saveSync(QJsonArray tables)
             QString modified = incomingRow.value("modified").toString();
             int removed = incomingRow.value("removed").toInt(0);
             bool hasBeenRemoved = removed == 1;
+
+            // Only if more recent
+            QDateTime incomingDate = QDateTime::fromString(modified, "yyyy-MM-dd hh:mm:ss");
+            QDateTime currentDate = QDateTime::fromString(uuidDates[uuid], "yyyy-MM-dd hh:mm:ss");
+            if (incomingDate <= currentDate) continue;
 
             // Check if the object has been removed or restored
             bool wasRemoved = isRemoved(uuid, tableName);

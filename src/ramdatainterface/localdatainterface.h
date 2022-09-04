@@ -71,6 +71,7 @@ public:
     QStringList tableUuids(QString table);
     QList<QStringList> tableData(QString table);
     bool contains(QString uuid, QString table);
+    QMap<QString, QString> modificationDates(QString table);
 
     void createObject(QString uuid, QString table, QString data, bool emitInserted = false);
 
