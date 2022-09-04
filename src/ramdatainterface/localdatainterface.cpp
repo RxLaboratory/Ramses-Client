@@ -630,7 +630,7 @@ void LocalDataInterface::saveSync(QJsonArray tables)
 
             if (uuidDates.contains(uuid)) continue;
 
-            QString data = incomingRow.value("data").toString().replace("'", "''");
+            QString data = incomingRow.value("data").toString();
             QString modified = incomingRow.value("modified").toString();
             int removed = incomingRow.value("removed").toInt(0);
 
@@ -639,6 +639,7 @@ void LocalDataInterface::saveSync(QJsonArray tables)
                 QString userName = incomingRow.value("userName").toString().replace("'", "''");
                 if (userName == "Ramses") continue;
                 if (ENCRYPT_USER_DATA) data = DataCrypto::instance()->clientEncrypt( data );
+                else data.replace("'", "''");
 
                 QString q = "INSERT INTO %1 (data, modified, uuid, removed, userName) "
                             "VALUES ( '%2', '%3', '%4', %5, '%6' );";
@@ -647,6 +648,7 @@ void LocalDataInterface::saveSync(QJsonArray tables)
             }
             else
             {
+                data.replace("'", "''");
                 QString q = "INSERT INTO %1 (data, modified, uuid, removed) "
                             "VALUES ( '%2', '%3', '%4', %5 );";
 
@@ -676,7 +678,7 @@ void LocalDataInterface::saveSync(QJsonArray tables)
             QJsonObject incomingRow = incomingRows.at(r).toObject();
 
             QString uuid = incomingRow.value("uuid").toString();
-            QString data = incomingRow.value("data").toString().replace("'", "''");
+            QString data = incomingRow.value("data").toString();
             QString modified = incomingRow.value("modified").toString();
             int removed = incomingRow.value("removed").toInt(0);
             bool hasBeenRemoved = removed == 1;
@@ -696,6 +698,7 @@ void LocalDataInterface::saveSync(QJsonArray tables)
                 QString userName = incomingRow.value("userName").toString().replace("'", "''");
 
                 if (ENCRYPT_USER_DATA) data = DataCrypto::instance()->clientEncrypt( data );
+                else data.replace("'", "''");
                 QString q = "UPDATE %1 SET "
                             "data = '%2', "
                             "modified = '%3', "
@@ -707,6 +710,7 @@ void LocalDataInterface::saveSync(QJsonArray tables)
             }
             else
             {
+                data.replace("'", "''");
                 QString q = "UPDATE %1 SET "
                             "data = '%2', "
                             "modified = '%3', "

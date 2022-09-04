@@ -5,6 +5,8 @@
 	liste : sync: si ajout et suppression puis synchro -> ajout disparait
 	sequences are not synced? (mais ok au restart)
 	pipes are not synced? -> pas tous envoyés ? -> pas dessiné à la réception
+	console en mode data crashe au sync
+	pas possible de changer certains status après qqn d'autre
 
 
 4- Ramses and editors

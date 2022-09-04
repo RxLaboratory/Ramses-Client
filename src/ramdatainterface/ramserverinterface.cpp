@@ -829,6 +829,8 @@ void RamServerInterface::postRequest(Request r)
     else
         log("Request data: " + r.body, DuQFLog::Data);
 
+    qDebug() << r.body;
+
     connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this,SLOT(networkError(QNetworkReply::NetworkError)));
     connect(reply, SIGNAL(finished()), reply, SLOT(deleteLater()));
 }
