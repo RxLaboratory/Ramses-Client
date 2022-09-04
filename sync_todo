@@ -8,13 +8,26 @@
 		- getObjectData
 		- use methods above on sync
 		- and other specialized methods
-	- RamObjectModel // CHK
-	- DBTableModel // CHK
-	- RamOBjectSortFilterProxyModel // TODO
-	- RamObjectView // TODO
-	- RamObjectDelegate // TODO
-	- RamObjectComboBox // TODO
-	- RamObjectComboBoxDelagate // NEEDED ?
+	- MODELS
+		- RamObjectModel // CHK
+			- inherited by DBTableModel // CHK
+		- RamOBjectSortFilterProxyModel // WIP
+			- filterUuid
+			- search name/shortname
+			- adds "All items" on top for filter lists
+			- set as list mode (single column)
+	- DELEGATES
+		- RamObjectDelegate // TODO
+	- VIEWS
+		- RamObjectView // CHK
+		- RamObjectComboBox // CHK
+		- RamObjectMenu // CHK
+		- Specialized views
+			- RamStateBox // CHK
+	- WIDGETS
+		- ObjectManagerWidget // CHK
+			- and specialized
+		- ObjectListWidget // WIP // Tests: assign lists
 
 - SYNC issues
 	sync users on creation! (to be able to set the password)

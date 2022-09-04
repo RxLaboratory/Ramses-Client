@@ -5,14 +5,14 @@
 #include <QPaintEvent>
 #include <QStylePainter>
 
-#include "data-views/ramobjectlistcombobox.h"
+#include "ramobjectcombobox.h"
 #include "ramstate.h"
 
-class StateBox : public RamObjectListComboBox
+class RamStateBox : public RamObjectComboBox
 {
     Q_OBJECT
 public:
-    StateBox(QWidget *parent = nullptr);
+    RamStateBox(QWidget *parent = nullptr);
 
 signals:
     void currentStateChanged(RamState *state);

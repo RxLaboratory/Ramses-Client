@@ -12,7 +12,7 @@
 #include "pipeline-editor/pipelinewidget.h"
 #include "templatesteplistmanagerwidget.h"
 #include "templateassetgrouplistmanagerwidget.h"
-#include "statelistmanagerwidget.h"
+#include "statemanagerwidget.h"
 #include "filetypelistmanagerwidget.h"
 #include "applicationlistmanagerwidget.h"
 #include "schedulemanagerwidget.h"
@@ -166,7 +166,7 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     ui_adminPage->addPage(templateAssetGroupManager, "Template Asset Groups", QIcon(":/icons/asset-groups"));
     ui_adminPage->titleBar()->insertLeft(templateAssetGroupManager->menuButton());
     qDebug() << "  > template assets ok";
-    StateListManagerWidget *stateManager = new StateListManagerWidget(this);
+    StateManagerWidget *stateManager = new StateManagerWidget(this);
     ui_adminPage->addPage(stateManager, "States", QIcon(":/icons/state"));
     ui_adminPage->titleBar()->insertLeft(stateManager->menuButton());
     qDebug() << "  > states ok";

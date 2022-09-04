@@ -770,7 +770,7 @@ void ItemTableManagerWidget::setupUi()
 
     // State menu
 
-    ui_stateMenu = new RamObjectListMenu(true, this);
+    ui_stateMenu = new RamObjectMenu(true, this);
 
     ui_stateButton = new QToolButton(this);
     ui_stateButton->setText(" States");
@@ -781,7 +781,7 @@ void ItemTableManagerWidget::setupUi()
     ui_stateButton->setPopupMode(QToolButton::InstantPopup);
     ui_stateButton->setMenu(ui_stateMenu);
 
-    ui_stateMenu->setList( Ramses::instance()->states() );
+    ui_stateMenu->setModel( Ramses::instance()->states() );
 
     ui_titleBar->insertLeft(ui_stateButton);
 
@@ -811,9 +811,9 @@ void ItemTableManagerWidget::setupUi()
     ui_assignUserMenu->actions().at(0)->setText("None");
     statusMenu->addMenu(ui_assignUserMenu);
 
-    ui_changeStateMenu = new RamObjectListMenu(false, this);
+    ui_changeStateMenu = new RamObjectMenu(false, this);
     ui_changeStateMenu->setTitle("Change state");
-    ui_changeStateMenu->setList(Ramses::instance()->states());
+    ui_changeStateMenu->setModel(Ramses::instance()->states());
     statusMenu->addMenu(ui_changeStateMenu);
 
     ui_changeDifficultyMenu = new QMenu("Change difficulty", this);
@@ -897,9 +897,9 @@ void ItemTableManagerWidget::setupUi()
     ui_assignUserContextMenu->actions().at(0)->setText("None");
     ui_contextMenu->addMenu(ui_assignUserMenu);
 
-    ui_changeStateContextMenu = new RamObjectListMenu(false, this);
+    ui_changeStateContextMenu = new RamObjectMenu(false, this);
     ui_changeStateContextMenu->setTitle("Change state");
-    ui_changeStateContextMenu->setList(Ramses::instance()->states());
+    ui_changeStateContextMenu->setModel(Ramses::instance()->states());
     ui_contextMenu->addMenu(ui_changeStateContextMenu);
 
     QMenu *changeDifficultyContextMenu = new QMenu("Change difficulty", this);

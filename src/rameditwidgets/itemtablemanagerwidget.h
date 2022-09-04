@@ -16,6 +16,7 @@
 #include "data-views/ramstepheaderview.h"
 #include "data-views/ramobjectlistmenu.h"
 
+#include "ramobjectmenu.h"
 #include "ramstatus.h"
 
 class ItemTableManagerWidget : public QWidget
@@ -119,7 +120,7 @@ private:
     QAction *ui_actionSelectMyself;
     QAction *ui_actionNotAssigned;
     QToolButton *ui_stateButton;
-    RamObjectListMenu *ui_stateMenu;
+    RamObjectMenu *ui_stateMenu;
     QToolButton *ui_stepButton;
     RamObjectListMenu *ui_stepMenu;
     QAction *ui_actionSelectMySteps ;
@@ -134,7 +135,7 @@ private:
     QAction *ui_actionSortByEstimation;
     QAction *ui_actionSortByCompletion;
     RamObjectListMenu *ui_assignUserMenu;
-    RamObjectListMenu *ui_changeStateMenu;
+    RamObjectMenu *ui_changeStateMenu;
     QMenu *ui_changeDifficultyMenu;
     QAction *ui_veryEasy;
     QAction *ui_easy;
@@ -154,7 +155,7 @@ private:
     QAction *ui_cutComment;
     QAction *ui_pasteComment;
     RamObjectListMenu *ui_assignUserContextMenu;
-    RamObjectListMenu *ui_changeStateContextMenu;
+    RamObjectMenu *ui_changeStateContextMenu;
 
 
     RamProject *m_project = nullptr;

@@ -1,6 +1,6 @@
 #include "ramobjectlistcombobox.h"
 
-#include "data-models/ramobjectfilterlist.h"
+#include "data-models/ramfilterlistproxymodel.h"
 #include "ramobjectdelegate.h"
 
 RamObjectListComboBox::RamObjectListComboBox(QWidget *parent) :
@@ -31,9 +31,9 @@ RamObjectListComboBox::RamObjectListComboBox(RamObjectList *list, QWidget *paren
 void RamObjectListComboBox::setList(RamObjectList *list)
 {
     //disconnect(this->model(), nullptr, this, nullptr);
-    if (m_isFilterBox)
+    if (m_isFilterBox && list)
     {
-        RamObjectFilterList *proxyModel = new RamObjectFilterList(this);
+        RamFilterListProxyModel *proxyModel = new RamFilterListProxyModel(list->name(), this);
         proxyModel->setList(list);
         this->setModel(proxyModel);
     }

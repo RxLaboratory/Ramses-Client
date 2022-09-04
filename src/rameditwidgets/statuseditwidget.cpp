@@ -522,7 +522,7 @@ void StatusEditWidget::setupUi()
     cLayout->setContentsMargins(0,0,0,0);
     cLayout->setSpacing(3);
 
-    ui_stateBox = new StateBox(this);
+    ui_stateBox = new RamStateBox(this);
     cLayout->addWidget(ui_stateBox);
 
     ui_completionBox = new DuQFSpinBox(this);
@@ -734,7 +734,7 @@ void StatusEditWidget::setupUi()
 
 void StatusEditWidget::connectEvents()
 {
-    connect(ui_stateBox, &StateBox::currentStateChanged, this, &StatusEditWidget::setState);
+    connect(ui_stateBox, &RamStateBox::currentStateChanged, this, &StatusEditWidget::setState);
     connect(ui_revertButton, &QToolButton::clicked, this, &StatusEditWidget::refresh);
     connect(ui_versionBox, SIGNAL(valueChanged(int)), this, SLOT(setVersion(int)));
     connect( ui_completionBox, SIGNAL(valueChanged(int)), this, SLOT(setCompletion(int)));

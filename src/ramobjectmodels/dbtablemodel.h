@@ -15,6 +15,7 @@ public:
 private slots:
     void insertObject(QString uuid, QString table);
     void removeObject(QString uuid, QString table);
+    void reload();
 };
 
 #endif // DBTABLEMODEL_H

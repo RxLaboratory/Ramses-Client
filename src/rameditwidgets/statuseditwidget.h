@@ -17,7 +17,8 @@
 #include "duqf-widgets/duqffolderdisplaywidget.h"
 #include "duqf-widgets/duqffilelist.h"
 #include "objecteditwidget.h"
-#include "statebox.h"
+#include "ramobjectlistcombobox.h"
+#include "ramstatebox.h"
 #include "ramstatus.h"
 
 /**
@@ -66,7 +67,7 @@ private slots:
 private:
     void setupUi();
     void connectEvents();
-    StateBox *ui_stateBox;
+    RamStateBox *ui_stateBox;
     DuQFSpinBox *ui_completionBox;
     AutoSelectSpinBox *ui_versionBox;
     DuQFTextEdit *ui_statusCommentEdit;

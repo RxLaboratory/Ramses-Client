@@ -1,14 +1,15 @@
-#include "statebox.h"
+#include "ramstatebox.h"
 
 #include "ramses.h"
 
-StateBox::StateBox(QWidget *parent): RamObjectListComboBox(parent)
+RamStateBox::RamStateBox(QWidget *parent):
+    RamObjectComboBox(RamObject::State, parent)
 {
     this->setList(Ramses::instance()->states());
-    connect(this, &RamObjectListComboBox::currentObjectChanged, this, &StateBox::changeCurrentState);
+    connect(this, &RamObjectComboBox::currentObjectChanged, this, &RamStateBox::changeCurrentState);
 }
 
-void StateBox::changeCurrentState(RamObject *state)
+void RamStateBox::changeCurrentState(RamObject *state)
 {
     if (!state) return;
 

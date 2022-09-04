@@ -32,23 +32,32 @@ INCLUDEPATH += rameditwidgets \
     item-tables \
     data-views \
     pages \
-    data-model \
-    ramdatainterface
+    ramdatainterface \
+    ramobjectdelegates \
+    ramobjectmodels \
+    ramobjectviews \
+    rammanagerwidgets \
 
 SOURCES += \
-    data-models/dbtablemodel.cpp \
+    rammanagerwidgets/objectlistwidget.cpp \
+    rammanagerwidgets/objectmanagerwidget.cpp \
+    rammanagerwidgets/statemanagerwidget.cpp \
+    ramobjectmodels/dbtablemodel.cpp \
+    data-models/ramfilterlistproxymodel.cpp \
     data-models/ramitemfiltermodel.cpp \
     data-models/ramitemtablelistproxy.cpp \
-    data-models/ramobjectfilterlist.cpp \
     data-models/ramobjectfiltermodel.cpp \
-    data-models/ramobjectmodel.cpp \
+    ramobjectmodels/ramobjectmodel.cpp \
+    ramobjectmodels/ramobjectsortfilterproxymodel.cpp \
     data-models/ramprojectfiltermodel.cpp \
     data-models/ramschedulefilter.cpp \
     data-models/ramscheduletable.cpp \
     data-models/ramstatisticstable.cpp \
     data-models/timelineproxy.cpp \
+    ramobjectviews/ramobjectcombobox.cpp \
     data-views/ramobjectlistmenu.cpp \
     data-views/ramobjectlistview.cpp \
+    ramobjectviews/ramobjectmenu.cpp \
     data-views/ramscheduledelegate.cpp \
     data-views/ramscheduletablewidget.cpp \
     data-views/ramstatisticsdelegate.cpp \
@@ -105,9 +114,10 @@ SOURCES += \
     rameditwidgets/schedulemanagerwidget.cpp \
     rameditwidgets/sequencelistmanagerwidget.cpp \
     ramobjects/ramabstractitem.cpp \
+    ramobjectviews/ramobjectview.cpp \
+    smallwidgets/ramstatebox.cpp \
     smallwidgets/servereditwidget.cpp \
     rameditwidgets/shotlistmanagerwidget.cpp \
-    rameditwidgets/statelistmanagerwidget.cpp \
     docks/statisticswidget.cpp \
     rameditwidgets/steplistmanagerwidget.cpp \
     rameditwidgets/stepstatushistorywidget.cpp \
@@ -185,7 +195,6 @@ SOURCES += \
     rameditwidgets/sequenceeditwidget.cpp \
     rameditwidgets/shoteditwidget.cpp \
     smallwidgets/shotscreationdialog.cpp \
-    smallwidgets/statebox.cpp \
     rameditwidgets/stateeditwidget.cpp \
     rameditwidgets/statuseditwidget.cpp \
     rameditwidgets/statushistorywidget.cpp \
@@ -202,14 +211,18 @@ SOURCES += \
 
 HEADERS += \
     config.h \
-    data-models/dbtablemodel.h \
+    rammanagerwidgets/objectlistwidget.h \
+    rammanagerwidgets/objectmanagerwidget.h \
+    rammanagerwidgets/statemanagerwidget.h \
+    ramobjectmodels/dbtablemodel.h \
+    data-models/ramfilterlistproxymodel.h \
     data-models/ramitemfiltermodel.h \
     data-models/ramitemtable.h \
     data-models/ramitemtablelistproxy.h \
-    data-models/ramobjectfilterlist.h \
     data-models/ramobjectfiltermodel.h \
     data-models/ramobjectlist.h \
-    data-models/ramobjectmodel.h \
+    ramobjectmodels/ramobjectmodel.h \
+    ramobjectmodels/ramobjectsortfilterproxymodel.h \
     data-models/ramprojectfiltermodel.h \
     data-models/ramschedulefilter.h \
     data-models/ramscheduletable.h \
@@ -217,9 +230,11 @@ HEADERS += \
     data-models/ramstatisticstable.h \
     data-models/ramstepstatushistory.h \
     data-models/timelineproxy.h \
+    ramobjectviews/ramobjectcombobox.h \
     data-views/ramobjectdelegate.h \
     data-views/ramobjectlistmenu.h \
     data-views/ramobjectlistview.h \
+    ramobjectviews/ramobjectmenu.h \
     data-views/ramscheduledelegate.h \
     data-views/ramscheduletablewidget.h \
     data-views/ramstatisticsdelegate.h \
@@ -273,9 +288,10 @@ HEADERS += \
     rameditwidgets/schedulemanagerwidget.h \
     rameditwidgets/sequencelistmanagerwidget.h \
     ramobjects/ramabstractitem.h \
+    ramobjectviews/ramobjectview.h \
+    smallwidgets/ramstatebox.h \
     smallwidgets/servereditwidget.h \
     rameditwidgets/shotlistmanagerwidget.h \
-    rameditwidgets/statelistmanagerwidget.h \
     docks/statisticswidget.h \
     rameditwidgets/steplistmanagerwidget.h \
     rameditwidgets/stepstatushistorywidget.h \
@@ -353,7 +369,6 @@ HEADERS += \
     rameditwidgets/sequenceeditwidget.h \
     rameditwidgets/shoteditwidget.h \
     smallwidgets/shotscreationdialog.h \
-    smallwidgets/statebox.h \
     rameditwidgets/stateeditwidget.h \
     rameditwidgets/statuseditwidget.h \
     rameditwidgets/statushistorywidget.h \

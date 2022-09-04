@@ -4,15 +4,14 @@
 DBTableModel::DBTableModel(RamAbstractObject::ObjectType type, QObject *parent):
     RamObjectModel(type, parent)
 {
-    LocalDataInterface *ldi = LocalDataInterface::instance();
-
     // Initial loading
-    QStringList uuids = ldi->tableUuids( RamObject::objectTypeName( type ));
-    insertObjects(0, uuids);
+    reload();
 
     // Monitor the DB for changes
+    LocalDataInterface *ldi = LocalDataInterface::instance();
     connect(ldi, &LocalDataInterface::inserted, this, &DBTableModel::insertObject);
     connect(ldi, &LocalDataInterface::removed, this, &DBTableModel::removeObject);
+    connect(ldi, &LocalDataInterface::dataReset, this, &DBTableModel::reload);
 }
 
 void DBTableModel::insertObject(QString uuid, QString table)
@@ -33,4 +32,10 @@ void DBTableModel::removeObject(QString uuid, QString table)
 
     // Remove
     removeObjects( QStringList(uuid) );
+}
+
+void DBTableModel::reload()
+{
+    QStringList uuids = LocalDataInterface::instance()->tableUuids( RamObject::objectTypeName( type() ));
+    insertObjects(0, uuids);
 }

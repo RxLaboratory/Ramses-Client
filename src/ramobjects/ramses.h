@@ -1,7 +1,7 @@
 #ifndef RAMSES_H
 #define RAMSES_H
 
-#include "data-models/dbtablemodel.h"
+#include "dbtablemodel.h"
 #include "dbinterface.h"
 #include "ramuser.h"
 #include "ramproject.h"

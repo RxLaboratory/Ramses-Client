@@ -1,5 +1,13 @@
 #include "ramobjectmodel.h"
 
+RamObjectModel *RamObjectModel::m_emptyModel = nullptr;
+
+RamObjectModel *RamObjectModel::emptyModel()
+{
+    if (!m_emptyModel) m_emptyModel = new RamObjectModel(RamObject::Object);
+    return m_emptyModel;
+}
+
 RamObjectModel::RamObjectModel(RamAbstractObject::ObjectType type, QObject *parent)
     : QAbstractTableModel{parent}
 {
@@ -42,10 +50,14 @@ QVariant RamObjectModel::headerData(int section, Qt::Orientation orientation, in
         QString uuid = m_objectsUuids.at(section);
         return objectRoleData(uuid, role);
     }
-    else
+    else if (section > 0)
     {
         QString uuid = m_objectsUuids.at(section - 1);
         return objectRoleData(uuid, role);
+    }
+    else
+    {
+        return QVariant();
     }
 }
 
@@ -169,6 +181,11 @@ RamObject *RamObjectModel::search(QString searchString) const
         if (o->name() == searchString) return o;
     }
     return nullptr;
+}
+
+RamObject::ObjectType RamObjectModel::type() const
+{
+    return m_type;
 }
 
 void RamObjectModel::objectDataChanged(RamObject *obj)

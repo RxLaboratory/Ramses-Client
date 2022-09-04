@@ -275,7 +275,6 @@ void Ramses::refresh()
     m_users->reload();
     m_templateSteps->reload();
     m_templateAssetGroups->reload();
-    m_states->reload();
     m_fileTypes->reload();
     m_applications->reload();
     m_projects->reload();
