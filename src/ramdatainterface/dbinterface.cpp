@@ -233,7 +233,7 @@ void DBInterface::setCurrentUserUuid(QString uuid)
 void DBInterface::sync()
 {
     // Get modified rows from local
-    QJsonObject syncBody = m_ldi->getSync( );
+    QJsonObject syncBody = m_ldi->getSync( false );
     // Post to ramserver
     m_rsi->sync(syncBody);
 }
@@ -270,7 +270,7 @@ void DBInterface::connectEvents()
     connect(m_rsi, &RamServerInterface::connectionStatusChanged, this, &DBInterface::serverConnectionStatusChanged);
     connect(m_rsi, &RamServerInterface::syncReady, m_ldi, &LocalDataInterface::sync);
     connect(m_rsi, &RamServerInterface::userChanged, this, &DBInterface::serverUserChanged);
-    connect(m_updateTimer, SIGNAL(timeout()), this, SLOT(sync()));
+    connect(m_updateTimer, SIGNAL(timeout()), this, SLOT(fullSync()));
 
     connect(qApp, &QApplication::aboutToQuit, this, &DBInterface::quit);
 }
