@@ -13,14 +13,17 @@ RamNameManager::RamNameManager()
 
     // get state shortnames
     QStringList stateShortNames;
-    RamObjectList *states = Ramses::instance()->states();
+    DBTableModel *states = Ramses::instance()->states();
     for(int i = 0; i < states->rowCount(); i++)
-        stateShortNames << states->at(i)->shortName();
+    {
+
+        RamObject *o = states->get( states->index(i, 0) );
+        if (o) stateShortNames << o->shortName();
+    }
 
     // get name regex
     m_reName = RegExUtils::getRegularExpression("ramses-filename", "PUB|WIP|V", stateShortNames.join("|"));
     m_reName.setPatternOptions(QRegularExpression::CaseInsensitiveOption | QRegularExpression::MultilineOption);
-
 }
 
 QString RamNameManager::originalFileName() const

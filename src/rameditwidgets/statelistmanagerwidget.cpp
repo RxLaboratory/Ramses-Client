@@ -21,7 +21,6 @@ RamState *StateListManagerWidget::createObject()
     RamState *state = new RamState(
                 "NEW",
                 "New state");
-    Ramses::instance()->states()->append(state);
     state->edit();
     return state;
 }

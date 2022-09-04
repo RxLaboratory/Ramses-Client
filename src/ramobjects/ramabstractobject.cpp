@@ -289,6 +289,23 @@ void RamAbstractObject::setColor(QColor color)
     insertData("color", color.name() );
 }
 
+QVariant RamAbstractObject::roleData(int role) const
+{
+    switch(role)
+    {
+    case Qt::DisplayRole: return this->name();
+    case Qt::ToolTipRole: {
+        QString tt = this->shortName() + " | " + this->name();
+        tt += "\n" + this->uuid();
+        return tt;
+    }
+    case Qt::StatusTipRole: return this->shortName() + " | " + this->name();
+    case Qt::ForegroundRole: return QBrush(this->color());
+    }
+
+    return this->uuid();
+}
+
 void RamAbstractObject::remove()
 {
     DBInterface::instance()->removeObject(m_uuid, objectTypeName());

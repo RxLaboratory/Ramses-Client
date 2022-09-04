@@ -26,9 +26,9 @@ public:
 
     explicit RamObjectListView(DisplayMode mode = List, QWidget *parent = nullptr);
     explicit RamObjectListView(RamObjectList *list, DisplayMode mode = List, QWidget *parent = nullptr);
-    explicit RamObjectListView(RamObjectList *list, bool editableObjects, RamUser::UserRole editRole = RamUser::Admin, DisplayMode mode = List, QWidget *parent = nullptr);
+    explicit RamObjectListView(QAbstractItemModel *list, bool editableObjects, RamUser::UserRole editRole = RamUser::Admin, DisplayMode mode = List, QWidget *parent = nullptr);
     // Content
-    void setList(RamObjectList *list);
+    void setList(QAbstractItemModel *list);
     RamItemFilterModel *filteredList();
     // Settings
     void setEditableObjects(bool editableObjects, RamUser::UserRole editRole = RamUser::Admin);

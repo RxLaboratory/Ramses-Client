@@ -44,7 +44,7 @@ RamObjectListView::RamObjectListView(RamObjectList *list, DisplayMode mode, QWid
     connectEvents();
 }
 
-RamObjectListView::RamObjectListView(RamObjectList *list, bool editableObjects, RamUser::UserRole editRole, DisplayMode mode, QWidget *parent):
+RamObjectListView::RamObjectListView(QAbstractItemModel *list, bool editableObjects, RamUser::UserRole editRole, DisplayMode mode, QWidget *parent):
     QTableView(parent)
 {
     m_displayMode = mode;
@@ -67,7 +67,7 @@ RamObjectListView::RamObjectListView(RamObjectList *list, bool editableObjects, 
     connectEvents();
 }
 
-void RamObjectListView::setList(RamObjectList *list)
+void RamObjectListView::setList(QAbstractItemModel *list)
 {
     m_objectList->setList(list);
 

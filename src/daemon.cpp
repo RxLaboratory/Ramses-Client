@@ -200,7 +200,7 @@ void Daemon::create(QString uuid, QString data, QString type, QTcpSocket *client
     log(tr("This is the data: %1").arg(data), DuQFLog::Data);
     log(tr("This is the type: %1").arg(type), DuQFLog::Data);
 
-     LocalDataInterface::instance()->createObject(uuid, type, data, true);
+     LocalDataInterface::instance()->createObject(uuid, type, data);
 
      post(client, QJsonObject(), "create", tr("I've created a new \"%1\".").arg(type));
 }

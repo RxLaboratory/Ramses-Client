@@ -1,11 +1,11 @@
 #ifndef RAMSES_H
 #define RAMSES_H
 
+#include "data-models/dbtablemodel.h"
 #include "dbinterface.h"
 #include "ramuser.h"
 #include "ramproject.h"
 #include "ramstate.h"
-#include "data-models/ramstatelist.h"
 
 #include <QObject>
 #include <QtDebug>
@@ -39,7 +39,7 @@ public:
     bool isLead();
 
     // States
-    RamStateList *states() const;
+    DBTableModel *states() const;
     RamState *noState();
     RamState *todoState();
     RamState *okState();
@@ -92,10 +92,10 @@ private:
     // ATTRIBUTES //
 
     // DATA (lists)
+    DBTableModel *m_states;
     RamObjectList *m_users = nullptr;
     RamObjectList *m_templateSteps = nullptr;
     RamObjectList *m_templateAssetGroups = nullptr;
-    RamStateList *m_states = nullptr;
     RamObjectList *m_fileTypes = nullptr;
     RamObjectList *m_applications = nullptr;
     RamObjectList *m_projects = nullptr;

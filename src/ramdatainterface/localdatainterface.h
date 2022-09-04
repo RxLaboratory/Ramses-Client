@@ -73,7 +73,7 @@ public:
     bool contains(QString uuid, QString table);
     QMap<QString, QString> modificationDates(QString table);
 
-    void createObject(QString uuid, QString table, QString data, bool emitInserted = false);
+    void createObject(QString uuid, QString table, QString data);
 
     QString objectData(QString uuid, QString table);
     void setObjectData(QString uuid, QString table, QString data);
@@ -117,7 +117,8 @@ signals:
     // Sync result
     void dataChanged(QString);
     void availabilityChanged(QString,bool);
-    void inserted(QString,QString);
+    void inserted(QString uuid, QString table);
+    void removed(QString uuid, QString table);
 
 protected:
     static LocalDataInterface *_instance;

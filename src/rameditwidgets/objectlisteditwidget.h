@@ -34,7 +34,7 @@ public:
 
     explicit ObjectListEditWidget(bool editableObjects = false, RamUser::UserRole editRole = RamUser::Admin, QWidget *parent = nullptr);
     explicit ObjectListEditWidget(RamObjectList *objectList, bool editableObjects = false, RamUser::UserRole editRole = RamUser::Admin, QWidget *parent = nullptr);
-    void setList(RamObjectList *objectList);
+    void setList(QAbstractItemModel *objectList);
     void setFilterList(RamObjectList *filterList);
     void setAssignList(RamObjectList *assignList);
     void setDontRemoveShortNameList(QStringList dontRemove);
@@ -88,7 +88,8 @@ private:
     QStringList m_dontRemove;
 
     // Current List
-    RamObjectList *m_objectList = nullptr;
+    RamObject::ObjectType m_type = RamObject::State;
+    QAbstractItemModel *m_objectList = nullptr;
     RamObjectList *m_assignList = nullptr;
     RamObjectList *m_filterList = nullptr;
 

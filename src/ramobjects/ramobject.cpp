@@ -18,9 +18,6 @@
 RamObject *RamObject::get(QString uuid, ObjectType type)
 {
     Q_ASSERT(type != Object);
-    Q_ASSERT(type != ObjectList);
-    Q_ASSERT(type != ItemTable);
-    Q_ASSERT(type != StepStatusHistory);
     Q_ASSERT(type != Item);
 
     switch(type)

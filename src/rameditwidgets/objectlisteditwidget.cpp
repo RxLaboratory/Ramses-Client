@@ -20,7 +20,7 @@ ObjectListEditWidget::ObjectListEditWidget(RamObjectList *objectList, bool edita
     setList(objectList);
 }
 
-void ObjectListEditWidget::setList(RamObjectList *objectList)
+void ObjectListEditWidget::setList(QAbstractItemModel *objectList)
 {
     if (m_objectList) disconnect(ui_listWidget->filteredList(), nullptr, this, nullptr);
 
@@ -201,20 +201,35 @@ void ObjectListEditWidget::removeSelectedObjects()
         }
     }
 
-    QList<RamObject*> objs = m_objectList->removeIndices(selection);
-
-    if (m_editMode == RemoveObjects)
+    RamObjectList *objList = qobject_cast<RamObjectList*>( m_objectList );
+    if (objList)
     {
-        for (int i = objs.count() -1 ; i >= 0; i--)
+        QList<RamObject*> objs = objList->removeIndices(selection);
+
+        if (m_editMode == RemoveObjects)
         {
-            objs.at(i)->remove();
+            for (int i = objs.count() -1 ; i >= 0; i--)
+            {
+                objs.at(i)->remove();
+            }
         }
+        return;
     }
+
+    for( int i = selection.count() -1; i >= 0; i--)
+    {
+        QString uuid = selection.at(i).data(Qt::UserRole).toString();
+        if (uuid == "") continue;
+        RamObject *o = RamObject::get(uuid, m_type);
+        if (o) o->remove();
+    }
+
 }
 
 void ObjectListEditWidget::assign(RamObject *obj)
 {
-    m_objectList->append(obj);
+    RamObjectList *objList = qobject_cast<RamObjectList*>( m_objectList );
+    if (objList) objList->append(obj);
 }
 
 void ObjectListEditWidget::objectAssigned(const QModelIndex &parent, int first, int last)

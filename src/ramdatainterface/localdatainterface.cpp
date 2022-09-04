@@ -353,7 +353,7 @@ QMap<QString, QString> LocalDataInterface::modificationDates(QString table)
     return dates;
 }
 
-void LocalDataInterface::createObject(QString uuid, QString table, QString data, bool emitInserted)
+void LocalDataInterface::createObject(QString uuid, QString table, QString data)
 {
     data.replace("'", "''");
 
@@ -372,7 +372,7 @@ void LocalDataInterface::createObject(QString uuid, QString table, QString data,
                   )
             );
 
-    if (emitInserted) emit inserted(uuid, table);
+    emit inserted(uuid, table);
 }
 
 QString LocalDataInterface::objectData(QString uuid, QString table)
@@ -397,6 +397,7 @@ void LocalDataInterface::setObjectData(QString uuid, QString table, QString data
                 "SET data=excluded.data, modified=excluded.modified ;";
 
     query( q.arg(table, data, modified.toString("yyyy-MM-dd hh:mm:ss"), uuid) );
+    emit dataChanged(uuid);
 }
 
 void LocalDataInterface::removeObject(QString uuid, QString table)
@@ -408,6 +409,7 @@ void LocalDataInterface::removeObject(QString uuid, QString table)
                 "modified = '%2' "
                 "WHERE uuid = '%3';";
     query( q.arg(table, modified.toString("yyyy-MM-dd hh:mm:ss"), uuid) );
+    emit removed(uuid, table);
 }
 
 void LocalDataInterface::restoreObject(QString uuid, QString table)
@@ -419,6 +421,7 @@ void LocalDataInterface::restoreObject(QString uuid, QString table)
                 "modified = '%2' "
                 "WHERE uuid = '%3';";
     query( q.arg(table, modified.toString("yyyy-MM-dd hh:mm:ss"), uuid) );
+    emit inserted(uuid, table);
 }
 
 bool LocalDataInterface::isRemoved(QString uuid, QString table)

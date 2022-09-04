@@ -6,7 +6,7 @@ RamObjectFilterModel::RamObjectFilterModel(QObject *parent) : QSortFilterProxyMo
     setSourceModel(m_emptyList);
 }
 
-void RamObjectFilterModel::setList(RamObjectList *list)
+void RamObjectFilterModel::setList(QAbstractItemModel *list)
 {
     if (this->sourceModel() == list) return;
 

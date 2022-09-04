@@ -9,7 +9,7 @@ ObjectListManagerWidget::ObjectListManagerWidget(QString title, QIcon icon, QWid
     clear();
 }
 
-ObjectListManagerWidget::ObjectListManagerWidget(RamObjectList *objectList, QString title, QIcon icon, QWidget *parent) :
+ObjectListManagerWidget::ObjectListManagerWidget(QAbstractItemModel *objectList, QString title, QIcon icon, QWidget *parent) :
     QWidget(parent)
 {
     setupUi(title,icon);
@@ -18,7 +18,7 @@ ObjectListManagerWidget::ObjectListManagerWidget(RamObjectList *objectList, QStr
     setList(objectList);
 }
 
-void ObjectListManagerWidget::setList(RamObjectList *objectList)
+void ObjectListManagerWidget::setList(QAbstractItemModel *objectList)
 {
     m_listEditWidget->setList( objectList );
     if (!objectList) return;

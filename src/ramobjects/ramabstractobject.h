@@ -15,13 +15,13 @@ public:
     /**
      * @brief The ObjectType enum lists all types of RamObjects
      */
-    enum ObjectType { Application,
+    enum ObjectType {
+                    Application,
                     Asset,
                     AssetGroup,
                     FileType,
                     Object,
                     Item,
-                    ItemTable,
                     Pipe,
                     PipeFile,
                     Project,
@@ -31,13 +31,14 @@ public:
                     Status,
                     Step,
                     User,
-                    ObjectList,
-                    StepStatusHistory,
                     ScheduleEntry,
                     ScheduleComment,
                     TemplateStep,
                     TemplateAssetGroup,
-                    Ramses
+                    Ramses,
+                    ObjectList, // TODO: remove
+                    ItemTable, // TODO: remove
+                    StepStatusHistory // TODO: remove
                     };
     /**
      * @brief The SubFolder enum lists all predefined subfolders
@@ -157,6 +158,8 @@ public:
 
     virtual QColor color() const;
     void setColor(QColor color);
+
+    QVariant roleData(int role) const;
 
     /**
      * @brief remove marks the object as removed in the database
