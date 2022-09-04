@@ -1,3 +1,12 @@
+- SYNC issues
+	creation bdd pas ajoutée dans les récents
+	apostrophes multipliées
+	fullSync on login/setonline (but not create)
+	liste : sync: si ajout et suppression puis synchro -> ajout disparait
+	sequences are not synced? (mais ok au restart)
+	pipes are not synced? -> pas tous envoyés ? -> pas dessiné à la réception
+
+
 4- Ramses and editors
 	- asset & shot table
 		- steps menu filter by type?
