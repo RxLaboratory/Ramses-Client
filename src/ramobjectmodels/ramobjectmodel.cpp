@@ -93,6 +93,7 @@ void RamObjectModel::removeObjects(QStringList uuids)
             beginRemoveRows(QModelIndex(), i, i);
             m_objectsUuids.removeAt(i);
             endRemoveRows();
+            i = m_objectsUuids.indexOf(uuid);
         }
     }
 }

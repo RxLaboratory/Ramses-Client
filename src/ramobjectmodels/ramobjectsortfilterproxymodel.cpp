@@ -140,10 +140,7 @@ RamObject *RamObjectSortFilterProxyModel::searchObject(QString searchString) con
 
 RamAbstractObject::ObjectType RamObjectSortFilterProxyModel::type() const
 {
-    QAbstractItemModel *sm = sourceModel();
-    qDebug() << sm;
     RamObjectModel *model = qobject_cast<RamObjectModel*>( sourceModel() );
-     qDebug() << model;
     if (!model) return RamObject::Object;
 
     return model->type();
