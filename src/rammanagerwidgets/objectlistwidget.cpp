@@ -27,7 +27,7 @@ void ObjectListWidget::setModel(RamObjectModel *objectModel)
     ui_assignMenu->showAll();
 
     setFilterList(nullptr);
-    ui_objectView->setModel(objectModel);
+    ui_objectView->setObjectModel(objectModel);
 
     if (!objectModel) return;
 
@@ -164,7 +164,11 @@ void ObjectListWidget::removeSelectedObjects()
     // Check if we can remove these objects
     for (int i = 0; i < selection.count(); i++)
     {
-        RamObject *o = RamObjectList::at( selection.at(i) );
+        RamObject *o = RamObject::get(
+                    selection.at(i).data(Qt::UserRole).toString(),
+                    m_objectModel->type()
+                    );
+
         // Don't remove yourself if you're a user
         if (o->objectType() == RamObject::User && m_editMode == RemoveObjects)
         {
