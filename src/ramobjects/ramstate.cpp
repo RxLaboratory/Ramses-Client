@@ -50,6 +50,15 @@ QString RamState::details() const
     return "Completion ratio: " + QString::number(completionRatio()) + "%";
 }
 
+QVariant RamState::roleData(int role) const
+{
+    switch(role)
+    {
+    case RamAbstractObject::Completion: return this->completionRatio();
+    }
+    return RamAbstractObject::roleData(role);
+}
+
 // PUBLIC SLOTS //
 
 void RamState::edit(bool show)

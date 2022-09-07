@@ -12,12 +12,6 @@ class RamObjectModel : public QAbstractTableModel
 {
     Q_OBJECT
 public:
-    enum DataRole {
-        ShortName = Qt::UserRole+1,
-        Name = Qt::UserRole+2,
-        Completion = Qt::UserRole+3
-    };
-
     static RamObjectModel *emptyModel();
 
     explicit RamObjectModel(RamAbstractObject::ObjectType type, QObject *parent = nullptr);
@@ -49,6 +43,7 @@ public:
 
 protected:
     static RamObjectModel *m_emptyModel;
+
     RamObject::ObjectType m_type;
 
 private slots:

@@ -7,7 +7,7 @@
 #include <QSortFilterProxyModel>
 
 #include "data-models/ramitemfiltermodel.h"
-#include "ramobjectdelegate.h"
+#include "ramobjectdelegateold.h"
 #include "ramuser.h"
 
 /**
@@ -69,7 +69,7 @@ private:
     DisplayMode m_displayMode;
 
     // Delegate
-    RamObjectDelegate *m_delegate;
+    RamObjectDelegateOld *m_delegate;
 
     // Filters
     QString m_currentFilterUuid;

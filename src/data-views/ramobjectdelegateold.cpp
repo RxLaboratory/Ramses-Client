@@ -1,4 +1,4 @@
-#include "ramobjectdelegate.h"
+#include "ramobjectdelegateold.h"
 
 #include "ramstate.h"
 
@@ -10,10 +10,10 @@
 #include "ramses.h"
 #include "duqf-app/app-style.h"
 
-PaintParameters RamObjectDelegate::getPaintParameters(const QStyleOptionViewItem &option, RamObject *obj) const
+PaintParametersOld RamObjectDelegateOld::getPaintParameters(const QStyleOptionViewItem &option, RamObject *obj) const
 {
     // Default
-    PaintParameters params;
+    PaintParametersOld params;
 
     // Layout
     params.bgRect = option.rect.adjusted(m_padding,2,-m_padding,-2);
@@ -77,7 +77,7 @@ PaintParameters RamObjectDelegate::getPaintParameters(const QStyleOptionViewItem
     return params;
 }
 
-void RamObjectDelegate::paintBG(QPainter *painter, PaintParameters *params) const
+void RamObjectDelegateOld::paintBG(QPainter *painter, PaintParametersOld *params) const
 {
     painter->setRenderHint(QPainter::Antialiasing);
 
@@ -93,7 +93,7 @@ void RamObjectDelegate::paintBG(QPainter *painter, PaintParameters *params) cons
     }
 }
 
-void RamObjectDelegate::paintTitle(RamObject *obj, QPainter *painter, PaintParameters *params) const
+void RamObjectDelegateOld::paintTitle(RamObject *obj, QPainter *painter, PaintParametersOld *params) const
 {
     // Title
     QString title;
@@ -164,7 +164,7 @@ void RamObjectDelegate::paintTitle(RamObject *obj, QPainter *painter, PaintParam
     paintTitle(title, painter, params);
 }
 
-void RamObjectDelegate::paintTitle(QString title, QPainter *painter, PaintParameters *params) const
+void RamObjectDelegateOld::paintTitle(QString title, QPainter *painter, PaintParametersOld *params) const
 {
     // Draw title
     painter->setPen( QPen(params->textColor) );
@@ -180,7 +180,7 @@ void RamObjectDelegate::paintTitle(QString title, QPainter *painter, PaintParame
                 );
 }
 
-void RamObjectDelegate::paintButtons(RamObject *obj, QPainter *painter, PaintParameters *params, const QModelIndex &index) const
+void RamObjectDelegateOld::paintButtons(RamObject *obj, QPainter *painter, PaintParametersOld *params, const QModelIndex &index) const
 {
     if(m_comboBox) return;
 
@@ -223,7 +223,7 @@ void RamObjectDelegate::paintButtons(RamObject *obj, QPainter *painter, PaintPar
     }
 }
 
-void RamObjectDelegate::paintDetails(QString details, QPainter *painter, PaintParameters *params) const
+void RamObjectDelegateOld::paintDetails(QString details, QPainter *painter, PaintParametersOld *params) const
 {
     if (params->detailsRect.height() <= 15) return;
 
@@ -235,7 +235,7 @@ void RamObjectDelegate::paintDetails(QString details, QPainter *painter, PaintPa
     if (params->detailsRect.bottom() + 5 > params->bgRect.bottom()) drawMore(painter, params->bgRect, QPen(params->textColor));
 }
 
-void RamObjectDelegate::paintDetails(RamObject *obj, QPainter *painter, PaintParameters *params) const
+void RamObjectDelegateOld::paintDetails(RamObject *obj, QPainter *painter, PaintParametersOld *params) const
 {
     if (obj->objectType() == RamObject::Status)
     {
@@ -394,7 +394,7 @@ void RamObjectDelegate::paintDetails(RamObject *obj, QPainter *painter, PaintPar
     paintDetails(obj->details(), painter, params);
 }
 
-RamObjectDelegate::RamObjectDelegate(QObject *parent)
+RamObjectDelegateOld::RamObjectDelegateOld(QObject *parent)
     : QStyledItemDelegate(parent)
 {
     m_abyss = DuUI::getColor("abyss-grey");
@@ -451,7 +451,7 @@ RamObjectDelegate::RamObjectDelegate(QObject *parent)
 
 // Default
 
-void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
+void RamObjectDelegateOld::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
     RamObject *obj = RamObjectList::at(index);
 
@@ -463,7 +463,7 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
     }
 
     // Base
-    PaintParameters params = getPaintParameters(option, obj);
+    PaintParametersOld params = getPaintParameters(option, obj);
 
     // BG
     paintBG(painter, &params);
@@ -539,7 +539,7 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
 //*/
 }
 
-QSize RamObjectDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
+QSize RamObjectDelegateOld::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
     Q_UNUSED(option)
 
@@ -567,17 +567,17 @@ QSize RamObjectDelegate::sizeHint(const QStyleOptionViewItem &option, const QMod
     return QSize(width,height);//*/
 }
 
-void RamObjectDelegate::setEditable(bool editable)
+void RamObjectDelegateOld::setEditable(bool editable)
 {
     m_editable = editable;
 }
 
-void RamObjectDelegate::setEditRole(RamUser::UserRole role)
+void RamObjectDelegateOld::setEditRole(RamUser::UserRole role)
 {
     m_editRole = role;
 }
 
-bool RamObjectDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index)
+bool RamObjectDelegateOld::editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index)
 {
     // Return asap if we don't manage the event
     QEvent::Type type = event->type();
@@ -721,27 +721,27 @@ bool RamObjectDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, co
 
 }
 
-void RamObjectDelegate::setCompletionRatio(bool newCompletionRatio)
+void RamObjectDelegateOld::setCompletionRatio(bool newCompletionRatio)
 {
     m_completionRatio = newCompletionRatio;
 }
 
-void RamObjectDelegate::showDetails(bool s)
+void RamObjectDelegateOld::showDetails(bool s)
 {
     m_details = s;
 }
 
-void RamObjectDelegate::setTimeTracking(bool newTimeTracking)
+void RamObjectDelegateOld::setTimeTracking(bool newTimeTracking)
 {
     m_timeTracking = newTimeTracking;
 }
 
-void RamObjectDelegate::setComboBoxMode(bool comboBoxMode)
+void RamObjectDelegateOld::setComboBoxMode(bool comboBoxMode)
 {
     m_comboBox = comboBoxMode;
 }
 
-void RamObjectDelegate::drawMore(QPainter *painter, QRect rect, QPen pen) const
+void RamObjectDelegateOld::drawMore(QPainter *painter, QRect rect, QPen pen) const
 {
     painter->save();
     painter->setPen( pen );
@@ -753,7 +753,7 @@ void RamObjectDelegate::drawMore(QPainter *painter, QRect rect, QPen pen) const
     painter->restore();
 }
 
-void RamObjectDelegate::drawButton(QPainter *painter, QRect rect, QPixmap icon, bool hover) const
+void RamObjectDelegateOld::drawButton(QPainter *painter, QRect rect, QPixmap icon, bool hover) const
 {
     if (hover)
     {

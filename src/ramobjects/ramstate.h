@@ -21,6 +21,7 @@ public:
     void setCompletionRatio(int completionRatio);
 
     virtual QString details() const override;
+    virtual QVariant roleData(int role) const;
 
 public slots:
     virtual void edit(bool show = true) override;

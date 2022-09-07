@@ -13,6 +13,30 @@ public:
     // ENUMS //
 
     /**
+     * @brief The DataRole enum lists all available data got from the RamObjectModel
+     */
+    enum DataRole {
+        UUID = Qt::UserRole,
+        ShortName = Qt::UserRole+1,
+        Name = Qt::UserRole+2,
+        Completion = Qt::UserRole+3,
+        Type = Qt::UserRole+4,
+        Details = Qt::UserRole+5,
+        Disabled = Qt::UserRole+6,
+        Path = Qt::UserRole+7,
+        Comment = Qt::UserRole+8,
+        Lateness = Qt::UserRole+9,
+        Estimation = Qt::UserRole+10,
+        Goal = Qt::UserRole+11,
+        TimeSpent = Qt::UserRole+12,
+        ProgressColor = Qt::UserRole+13,
+        LabelColor = Qt::UserRole+14,
+        PreviewImagePath = Qt::UserRole+15,
+        SubDetails = Qt::UserRole+16,
+        SizeHint = Qt::UserRole+17,
+        DetailedSizeHint = Qt::UserRole+18
+    };
+    /**
      * @brief The ObjectType enum lists all types of RamObjects
      */
     enum ObjectType {
@@ -159,7 +183,16 @@ public:
     virtual QColor color() const;
     void setColor(QColor color);
 
-    QVariant roleData(int role) const;
+    QIcon icon() const;
+    virtual QString iconName() const { return m_icon; };
+    QPixmap iconPixmap() const; // TODO static list of qpixmaps by name
+
+    virtual QString details() const { return QString(); };
+    virtual QString subDetails() const { return QString(); };
+
+    virtual bool isDisabled() const { return false; }
+
+    virtual QVariant roleData(int role) const;
 
     /**
      * @brief remove marks the object as removed in the database
@@ -186,7 +219,7 @@ public:
     QStringList listFolders(SubFolder subFolder, QString subPath) const;
     void deleteFile(QString fileName, SubFolder folder=NoFolder) const;
     void revealFolder(SubFolder subFolder = NoFolder);
-    QString previewImagePath();
+    QString previewImagePath() const;
 
     // Low level data handling.
     QString dataString() const;
@@ -228,12 +261,16 @@ protected:
     bool m_dataEncrypted = false;
     QString m_cachedData = "";
 
+    static QMap<QString, QPixmap> m_iconPixmaps;
+    static QPixmap iconPixmap(QString iconName);
+
 private:
     void construct();
 
     void createData(QString data);
 
     QSettings *m_settings = nullptr;
+    QString m_icon = ":/icons/asset";
 };
 
 #endif // RAMABSTRACTOBJECT_H

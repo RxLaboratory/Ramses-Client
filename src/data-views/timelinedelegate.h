@@ -1,12 +1,12 @@
 #ifndef TIMELINEDELEGATE_H
 #define TIMELINEDELEGATE_H
 
-#include "ramobjectdelegate.h"
+#include "ramobjectdelegateold.h"
 
 /**
  * @brief The TimelineDelegate class paints the timeline (shots in a row)
  */
-class TimelineDelegate : public RamObjectDelegate
+class TimelineDelegate : public RamObjectDelegateOld
 {
 public:
     explicit TimelineDelegate(QObject *parent = nullptr);

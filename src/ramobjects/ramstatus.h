@@ -48,6 +48,7 @@ public:
     RamAbstractItem *item() const;
 
     bool isNoState() const;
+    bool isDisabled() const override;
 
     int completionRatio() const;
     void setCompletionRatio(int completionRatio);
@@ -94,6 +95,8 @@ public:
 
     virtual QString details() const override;
     virtual QString subDetails() const override;
+
+    virtual QVariant roleData(int role) const;
 
 public slots:
     virtual void edit(bool show = true) override;

@@ -1,5 +1,5 @@
-#ifndef RAMOBJECTFILTERLIST_H
-#define RAMOBJECTFILTERLIST_H
+#ifndef RAMFILTERLISTPROXYMODEL_H
+#define RAMFILTERLISTPROXYMODEL_H
 
 #include <QSortFilterProxyModel>
 
@@ -12,7 +12,6 @@ class RamFilterListProxyModel : public QSortFilterProxyModel
 {
 public:
     RamFilterListProxyModel(QString listName, QObject *parent = nullptr);
-    void setList(QAbstractItemModel *list);
 
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
@@ -23,8 +22,7 @@ public:
     QModelIndex parent(const QModelIndex &child) const override;
 
 private:
-    QAbstractItemModel *m_objectList = nullptr;
     QString m_listName;
 };
 
-#endif // RAMOBJECTFILTERLIST_H
+#endif // RAMFILTERLISTPROXYMODEL_H

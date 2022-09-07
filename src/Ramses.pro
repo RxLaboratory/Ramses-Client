@@ -39,14 +39,17 @@ INCLUDEPATH += rameditwidgets \
     rammanagerwidgets \
 
 SOURCES += \
+    data-models/ramfilterlistproxymodelold.cpp \
+    data-views/ramobjectdelegateold.cpp \
     rammanagerwidgets/objectlistwidget.cpp \
     rammanagerwidgets/objectmanagerwidget.cpp \
     rammanagerwidgets/statemanagerwidget.cpp \
+    ramobjectdelegates/ramobjectdelegate.cpp \
     ramobjectmodels/dbtablemodel.cpp \
-    data-models/ramfilterlistproxymodel.cpp \
     data-models/ramitemfiltermodel.cpp \
     data-models/ramitemtablelistproxy.cpp \
     data-models/ramobjectfiltermodel.cpp \
+    ramobjectmodels/ramfilterlistproxymodel.cpp \
     ramobjectmodels/ramobjectmodel.cpp \
     ramobjectmodels/ramobjectsortfilterproxymodel.cpp \
     data-models/ramprojectfiltermodel.cpp \
@@ -78,7 +81,6 @@ SOURCES += \
     data-models/ramobjectlist.cpp \
     data-models/ramstatelist.cpp \
     data-models/ramstepstatushistory.cpp \
-    data-views/ramobjectdelegate.cpp \
     data-views/ramobjectlistcombobox.cpp \
     duqf-widgets/duqfservercombobox.cpp \
     duqf-widgets/duqfsslcheckbox.cpp \
@@ -211,16 +213,19 @@ SOURCES += \
 
 HEADERS += \
     config.h \
+    data-models/ramfilterlistproxymodelold.h \
+    data-views/ramobjectdelegateold.h \
     rammanagerwidgets/objectlistwidget.h \
     rammanagerwidgets/objectmanagerwidget.h \
     rammanagerwidgets/statemanagerwidget.h \
+    ramobjectdelegates/ramobjectdelegate.h \
     ramobjectmodels/dbtablemodel.h \
-    data-models/ramfilterlistproxymodel.h \
     data-models/ramitemfiltermodel.h \
     data-models/ramitemtable.h \
     data-models/ramitemtablelistproxy.h \
     data-models/ramobjectfiltermodel.h \
     data-models/ramobjectlist.h \
+    ramobjectmodels/ramfilterlistproxymodel.h \
     ramobjectmodels/ramobjectmodel.h \
     ramobjectmodels/ramobjectsortfilterproxymodel.h \
     data-models/ramprojectfiltermodel.h \
@@ -231,7 +236,6 @@ HEADERS += \
     data-models/ramstepstatushistory.h \
     data-models/timelineproxy.h \
     ramobjectviews/ramobjectcombobox.h \
-    data-views/ramobjectdelegate.h \
     data-views/ramobjectlistmenu.h \
     data-views/ramobjectlistview.h \
     ramobjectviews/ramobjectmenu.h \

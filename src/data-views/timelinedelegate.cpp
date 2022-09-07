@@ -7,7 +7,7 @@
 #include "ramshot.h"
 
 TimelineDelegate::TimelineDelegate(QObject *parent)
-    : RamObjectDelegate{parent}
+    : RamObjectDelegateOld{parent}
 {
 
 }
@@ -15,7 +15,7 @@ TimelineDelegate::TimelineDelegate(QObject *parent)
 void TimelineDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
     RamShot *shot = RamShot::c( RamObjectList::at(index) );
-    if (!shot) return RamObjectDelegate::paint(painter, option, index);
+    if (!shot) return RamObjectDelegateOld::paint(painter, option, index);
 
     // Base Settings
     QRect rect = option.rect.adjusted(0,0,-3,0);

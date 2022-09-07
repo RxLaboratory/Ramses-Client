@@ -49,7 +49,7 @@ public:
     QToolButton *addButton() const;
     QString currentFilterUuid() const;
     RamObject *currentFilter() const;
-    void setSortMode(RamObjectModel::DataRole mode);
+    void setSortMode(RamObject::DataRole mode);
     void sort();
 
     RamObjectView *listWidget();

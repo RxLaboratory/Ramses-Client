@@ -80,13 +80,13 @@ protected:
 
 private:
     // UTILS //
-    PaintParameters getPaintParameters(const QStyleOptionViewItem &option, RamObject *obj) const;
+    PaintParameters getPaintParameters(const QStyleOptionViewItem &option, const QModelIndex &index) const;
     void paintBG(QPainter *painter, PaintParameters *params) const;
-    void paintTitle(RamObject *obj, QPainter *painter, PaintParameters *params) const;
-    void paintTitle(QString title, QPainter *painter, PaintParameters *params) const;
-    void paintButtons(RamObject *obj, QPainter *painter, PaintParameters *params, const QModelIndex &index) const;
-    void paintDetails(QString details, QPainter *painter, PaintParameters *params) const;
-    void paintDetails(RamObject *obj, QPainter *painter, PaintParameters *params) const;
+    void paintTitle(const QModelIndex &index, QPainter *painter, PaintParameters *params) const;
+    void paintButtons(QPainter *painter, PaintParameters *params, const QModelIndex &index) const;
+    void paintDetails(const QModelIndex &index, QPainter *painter, PaintParameters *params) const;
+    void paintProgress(const QModelIndex &index, QPainter *painter, PaintParameters *params) const;
+    void paintLabel(const QModelIndex &index, QPainter *painter, PaintParameters *params) const;
 
 
     // Settings

@@ -132,7 +132,7 @@ RamObject *ObjectListWidget::currentFilter() const
     return ui_filterBox->currentObject();
 }
 
-void ObjectListWidget::setSortMode(RamObjectModel::DataRole mode)
+void ObjectListWidget::setSortMode(RamObject::DataRole mode)
 {
     ui_objectView->setSortRole(mode);
 }

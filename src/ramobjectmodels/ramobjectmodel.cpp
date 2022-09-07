@@ -46,7 +46,8 @@ QVariant RamObjectModel::headerData(int section, Qt::Orientation orientation, in
     Q_UNUSED(role);
 
     if (section < 0) return QVariant();
-    if (section >= columnCount()) return QVariant();
+    if (orientation == Qt::Horizontal && section >= columnCount()) return QVariant();
+    if (orientation == Qt::Vertical && section >= rowCount()) return QVariant();
 
     if (orientation == Qt::Vertical)
     {
@@ -55,7 +56,7 @@ QVariant RamObjectModel::headerData(int section, Qt::Orientation orientation, in
     }
     else if (section > 0)
     {
-        QString uuid = m_objectsUuids.at(section - 1);
+        QString uuid = m_columnObjectsUuids.at(section - 1);
         return objectRoleData(uuid, role);
     }
     else

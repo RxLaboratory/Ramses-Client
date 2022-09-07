@@ -5,17 +5,10 @@ RamFilterListProxyModel::RamFilterListProxyModel(QString listName, QObject *pare
     m_listName = listName;
 }
 
-void RamFilterListProxyModel::setList(QAbstractItemModel *list)
-{
-    m_objectList = list;
-    if(!list) return;
-    this->setSourceModel(list);
-}
-
 int RamFilterListProxyModel::rowCount(const QModelIndex &parent) const
 {
-    if (!m_objectList) return 1;
-    return m_objectList->rowCount(parent) + 1;
+    if (!this->sourceModel()) return 1;
+    return sourceModel()->rowCount(parent) + 1;
 }
 
 QVariant RamFilterListProxyModel::data(const QModelIndex &index, int role) const
@@ -52,13 +45,15 @@ QModelIndex RamFilterListProxyModel::mapFromSource(const QModelIndex &sourceInde
 
 QModelIndex RamFilterListProxyModel::mapToSource(const QModelIndex &proxyIndex) const
 {
+    if (!sourceModel()) return QModelIndex();
+
     if (!proxyIndex.isValid())
         return QModelIndex();
 
     if (proxyIndex.row() == 0)
         return QModelIndex();
 
-    return m_objectList->index(proxyIndex.row() - 1, proxyIndex.column());
+    return sourceModel()->index(proxyIndex.row() - 1, proxyIndex.column());
 }
 
 Qt::ItemFlags RamFilterListProxyModel::flags(const QModelIndex &index) const

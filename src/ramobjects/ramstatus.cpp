@@ -166,6 +166,11 @@ bool RamStatus::isNoState() const
     return noState->is(state());
 }
 
+bool RamStatus::isDisabled() const
+{
+    return isNoState();
+}
+
 int RamStatus::completionRatio() const
 {
     return getData("completionRatio").toInt(50);
@@ -593,6 +598,29 @@ QString RamStatus::subDetails() const
             date().toString(dateFormat) +
             "\nBy: " +
             user()->name();
+}
+
+QVariant RamStatus::roleData(int role) const
+{
+    switch(role)
+    {
+    case RamAbstractObject::Completion: return this->completionRatio();
+    case RamAbstractObject::Lateness: return this->latenessRatio();
+    case RamAbstractObject::Estimation: {
+        if (this->useAutoEstimation()) return this->estimation();
+        return this->goal();
+    }
+    case RamAbstractObject::Goal: return this->goal();
+    case RamAbstractObject::TimeSpent: return this->timeSpent();
+    case RamAbstractObject::ProgressColor: return this->state()->color();
+    case RamAbstractObject::LabelColor: {
+        RamUser *u = this->assignedUser();
+        if (u) return u->color();
+        return QColor();
+    }
+    }
+
+    return RamAbstractObject::roleData(role);
 }
 
 // PUBLIC SLOTS //

@@ -10,6 +10,23 @@
 // STATIC //
 
 QMap<QString, QPixmap> RamAbstractObject::m_iconPixmaps = QMap<QString, QPixmap>();
+RamAbstractObject::m_iconPixmaps[":/icons/asset"] = QIcon(":/icons/asset").pixmap(QSize(12,12));
+RamAbstractObject::m_iconPixmaps[":/icons/application"] = QIcon(":/icons/application").pixmap(QSize(12,12));
+RamAbstractObject::m_iconPixmaps[":/icons/asset-group"] = QIcon(":/icons/asset-group").pixmap(QSize(12,12));
+RamAbstractObject::m_iconPixmaps[":/icons/file"] = QIcon(":/icons/file").pixmap(QSize(12,12));
+RamAbstractObject::m_iconPixmaps[":/icons/connection"] = QIcon(":/icons/connection").pixmap(QSize(12,12));
+RamAbstractObject::m_iconPixmaps[":/icons/project"] = QIcon(":/icons/project").pixmap(QSize(12,12));
+RamAbstractObject::m_iconPixmaps[":/icons/calendar"] = QIcon(":/icons/calendar").pixmap(QSize(12,12));
+RamAbstractObject::m_iconPixmaps[":/icons/sequence"] = QIcon(":/icons/sequence").pixmap(QSize(12,12));
+RamAbstractObject::m_iconPixmaps[":/icons/shot"] = QIcon(":/icons/shot").pixmap(QSize(12,12));
+RamAbstractObject::m_iconPixmaps[":/icons/state-l"] = QIcon(":/icons/state-l").pixmap(QSize(12,12));
+RamAbstractObject::m_iconPixmaps[":/icons/status"] = QIcon(":/icons/status").pixmap(QSize(12,12));
+RamAbstractObject::m_iconPixmaps[":/icons/film"] = QIcon(":/icons/film").pixmap(QSize(12,12));
+RamAbstractObject::m_iconPixmaps[":/icons/step"] = QIcon(":/icons/step").pixmap(QSize(12,12));
+RamAbstractObject::m_iconPixmaps[":/icons/admin"] = QIcon(":/icons/admin").pixmap(QSize(12,12));
+RamAbstractObject::m_iconPixmaps[":/icons/project-admin"] = QIcon(":/icons/project-admin").pixmap(QSize(12,12));
+RamAbstractObject::m_iconPixmaps[":/icons/lead"] = QIcon(":/icons/lead").pixmap(QSize(12,12));
+RamAbstractObject::m_iconPixmaps[":/icons/user"] = QIcon(":/icons/user").pixmap(QSize(12,12));
 
 QMap<QString, RamAbstractObject*> RamAbstractObject::m_allObjects = QMap<QString, RamAbstractObject*>();
 
@@ -296,9 +313,10 @@ QIcon RamAbstractObject::icon() const
     return QIcon(iconName());
 }
 
+
 QPixmap RamAbstractObject::iconPixmap() const
 {
-    return m_iconPixmaps.value(iconName(), QPixmap());
+
 }
 
 QVariant RamAbstractObject::roleData(int role) const
@@ -308,7 +326,7 @@ QVariant RamAbstractObject::roleData(int role) const
     case Qt::DisplayRole: return this->name();
     case Qt::ToolTipRole: {
         QString tt = this->shortName() + " | " + this->name();
-        tt += "\nUUID: " + this->uuid();
+        tt += "\n" + this->uuid();
         return tt;
     }
     case Qt::StatusTipRole: return this->shortName() + " | " + this->name();
@@ -318,40 +336,6 @@ QVariant RamAbstractObject::roleData(int role) const
     case RamAbstractObject::ShortName: return this->shortName();
     case RamAbstractObject::Type: return this->objectType();
     case RamAbstractObject::Details: return this->details();
-    case RamAbstractObject::Disabled: return this->isDisabled();
-    case RamAbstractObject::Path: return this->path();
-    case RamAbstractObject::Comment: return this->comment();
-    case RamAbstractObject::Completion: return 100;
-    case RamAbstractObject::Lateness: return 0;
-    case RamAbstractObject::Estimation: return 0;
-    case RamAbstractObject::Goal: return 1;
-    case RamAbstractObject::TimeSpent: return 0;
-    case RamAbstractObject::ProgressColor: return this->color();
-    case RamAbstractObject::LabelColor: return QColor();
-    case RamAbstractObject::PreviewImagePath: return this->previewImagePath();
-    case RamAbstractObject::SubDetails: return this->subDetails();
-    case RamAbstractObject::SizeHint: return QSize(200, 30);
-    case RamAbstractObject::DetailedSizeHint: {
-        int h = 30;
-        int w = 200;
-        QString comment = this->comment();
-        if (comment != "") {
-            h += 30 + comment.count("\n") * 30;
-        }
-        QString details = this->details();
-        if (details != "") {
-            h += 30 + details.count("\n") * 30;
-        }
-        QString subDetails = this->subDetails();
-        if (subDetails != "") {
-            h += 30 + subDetails.count("\n") * 30;
-        }
-        QString imagePath = this->previewImagePath();
-        if (imagePath != "") {
-            h += 300;
-        }
-        return QSize(w, h);
-    }
     }
 
     return this->uuid();
@@ -466,7 +450,7 @@ void RamAbstractObject::revealFolder(RamObject::SubFolder subFolder)
     FileUtils::openInExplorer( p, true );
 }
 
-QString RamAbstractObject::previewImagePath() const
+QString RamAbstractObject::previewImagePath()
 {
     QDir previewDir = path(RamObject::PreviewFolder);
     QStringList filters;
@@ -579,34 +563,6 @@ bool RamAbstractObject::checkUuid(QString uuid, ObjectType type)
     }
 
     return true;
-}
-
-QPixmap RamAbstractObject::iconPixmap(QString iconName)
-{
-    if (m_iconPixmaps.isEmpty())
-    {
-        m_iconPixmaps = QMap<QString, QPixmap>({
-                                               {":/icons/asset", QIcon(":/icons/asset").pixmap(QSize(12,12))},
-                                               {":/icons/application", QIcon(":/icons/application").pixmap(QSize(12,12))},
-                                               {":/icons//asset-group", QIcon(":/icons//asset-group").pixmap(QSize(12,12))},
-                                               {":/icons/file", QIcon(":/icons/file").pixmap(QSize(12,12))},
-                                               {":/icons/connection", QIcon(":/icons/connection").pixmap(QSize(12,12))},
-                                               {":/icons/project", QIcon(":/icons/project").pixmap(QSize(12,12))},
-                                               {":/icons/calendar", QIcon(":/icons/calendar").pixmap(QSize(12,12))},
-                                               {":/icons/sequence", QIcon(":/icons/sequence").pixmap(QSize(12,12))},
-                                               {":/icons/shot", QIcon(":/icons/shot").pixmap(QSize(12,12))},
-                                               {":/icons/state-l", QIcon(":/icons/state-l").pixmap(QSize(12,12))},
-                                               {":/icons/status", QIcon(":/icons/status").pixmap(QSize(12,12))},
-                                               {":/icons/film", QIcon(":/icons/film").pixmap(QSize(12,12))},
-                                               {":/icons/step", QIcon(":/icons/step").pixmap(QSize(12,12))},
-                                               {":/icons/admin", QIcon(":/icons/admin").pixmap(QSize(12,12))},
-                                               {":/icons/project-admin", QIcon(":/icons/project-admin").pixmap(QSize(12,12))},
-                                               {":/icons/lead", QIcon(":/icons/lead").pixmap(QSize(12,12))},
-                                               {":/icons/user", QIcon(":/icons/user").pixmap(QSize(12,12))}
-                                                });
-    }
-
-    return m_iconPixmaps.value(iconName, QPixmap());
 }
 
 void RamAbstractObject::construct()

@@ -71,10 +71,6 @@ bool RamObject::canEdit()
     return u->role() >= m_editRole;
 }
 
-QIcon RamObject::icon() const
-{
-    return QIcon(iconName());
-}
 
 void RamObject::reload()
 {

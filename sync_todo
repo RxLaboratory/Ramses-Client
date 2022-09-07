@@ -17,7 +17,7 @@
 			- adds "All items" on top for filter lists
 			- set as list mode (single column)
 	- DELEGATES
-		- RamObjectDelegate // TODO
+		- RamObjectDelegate // CHK
 	- VIEWS
 		- RamObjectView // CHK
 		- RamObjectComboBox // CHK
@@ -27,7 +27,9 @@
 	- WIDGETS
 		- ObjectManagerWidget // CHK
 			- and specialized
-		- ObjectListWidget // WIP // Tests: assign lists
+		- ObjectListWidget // CHK
+	- RamOBjects:
+		- roleData override for status (to return completion)
 
 - SYNC issues
 	sync users on creation! (to be able to set the password)

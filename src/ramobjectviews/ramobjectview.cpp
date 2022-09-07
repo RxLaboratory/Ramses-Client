@@ -30,7 +30,7 @@ void RamObjectView::setSortable(bool sortable)
     this->verticalHeader()->setSectionsMovable(sortable);
 }
 
-void RamObjectView::setSortRole(RamObjectModel::DataRole role)
+void RamObjectView::setSortRole(RamObject::DataRole role)
 {
     m_objectModel->setSortRole(role);
     m_objectModel->sort(0);
@@ -218,7 +218,7 @@ void RamObjectView::setupUi()
 
     // TODO New delegate
     m_delegate = new RamObjectDelegate();
-    //this->setItemDelegate( m_delegate );
+    this->setItemDelegate( m_delegate );
 
     // Set model
     m_objectModel = new RamObjectSortFilterProxyModel(this);

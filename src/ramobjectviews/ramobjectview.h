@@ -29,7 +29,7 @@ public:
     // Settings
     void setEditableObjects(bool editableObjects, RamUser::UserRole editRole = RamUser::Admin);
     void setSortable(bool sortable = true);
-    void setSortRole(RamObjectModel::DataRole role);
+    void setSortRole(RamObject::DataRole role);
     void sort();
    // Content
     void setObjectModel(RamObjectModel *model);

@@ -6,7 +6,7 @@
 RamObjectListView::RamObjectListView(DisplayMode mode, QWidget *parent):
         QTableView(parent)
 {
-    m_delegate = new RamObjectDelegate();
+    m_delegate = new RamObjectDelegateOld();
     m_displayMode = mode;
     setupUi();
     m_objectList = new RamItemFilterModel(this);
@@ -26,7 +26,7 @@ RamObjectListView::RamObjectListView(DisplayMode mode, QWidget *parent):
 RamObjectListView::RamObjectListView(RamObjectList *list, DisplayMode mode, QWidget *parent):
     QTableView(parent)
 {
-    m_delegate = new RamObjectDelegate();
+    m_delegate = new RamObjectDelegateOld();
     m_displayMode = mode;
     setupUi();
     m_objectList = new RamItemFilterModel(this);
@@ -48,7 +48,7 @@ RamObjectListView::RamObjectListView(QAbstractItemModel *list, bool editableObje
     QTableView(parent)
 {
     m_displayMode = mode;
-    m_delegate = new RamObjectDelegate();
+    m_delegate = new RamObjectDelegateOld();
     m_delegate->setEditable(editableObjects);
     m_delegate->setEditRole(editRole);
     setupUi();

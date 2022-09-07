@@ -14,21 +14,9 @@ RamObjectSortFilterProxyModel::RamObjectSortFilterProxyModel(QString listName, Q
     m_listName = listName;
 }
 
-void RamObjectSortFilterProxyModel::setFilterList()
-{
-    m_isFilterList = true;
-}
-
 void RamObjectSortFilterProxyModel::setSingleColumn(bool singleColumn)
 {
     m_isSingleColumn = singleColumn;
-}
-
-int RamObjectSortFilterProxyModel::rowCount(const QModelIndex &parent) const
-{
-    if (!sourceModel()) return 1;
-    if (m_isFilterList) return sourceModel()->rowCount(parent) + 1;
-    return sourceModel()->rowCount();
 }
 
 int RamObjectSortFilterProxyModel::columnCount(const QModelIndex &parent) const
@@ -46,63 +34,7 @@ QVariant RamObjectSortFilterProxyModel::data(const QModelIndex &index, int role)
             return QVariant();
 #endif
 
-    // return ALL
-    if (index.row() == 0)
-    {
-        if (role == Qt::DisplayRole) return "All " + m_listName;
-        if (role == Qt::StatusTipRole) return m_listName;
-        if (role == Qt::ToolTipRole) return "Do not filter " + m_listName;
-        return 0;
-    }
-
-    return QSortFilterProxyModel::data( createIndex(index.row(),index.column()), role);
-}
-
-QModelIndex RamObjectSortFilterProxyModel::mapFromSource(const QModelIndex &sourceIndex) const
-{
-    if (!sourceIndex.isValid())
-            return QModelIndex();
-
-    if (sourceIndex.parent().isValid())
-        return QModelIndex();
-
-    return createIndex(sourceIndex.row()+1, sourceIndex.column());
-}
-
-QModelIndex RamObjectSortFilterProxyModel::mapToSource(const QModelIndex &proxyIndex) const
-{
-    if (!proxyIndex.isValid())
-        return QModelIndex();
-
-    if (proxyIndex.row() == 0)
-        return QModelIndex();
-
-    return sourceModel()->index(proxyIndex.row() - 1, proxyIndex.column());
-}
-
-Qt::ItemFlags RamObjectSortFilterProxyModel::flags(const QModelIndex &index) const
-{
-    if (!index.isValid())
-         return Qt::NoItemFlags;
-     if (index.row() == 0)
-         return Qt::ItemIsSelectable | Qt::ItemIsEnabled;
-     return QSortFilterProxyModel::flags(createIndex(index.row(),index.column()));
-}
-
-QModelIndex RamObjectSortFilterProxyModel::index(int row, int column, const QModelIndex &parent) const
-{
-    Q_UNUSED(parent)
-
-    if (row > rowCount())
-            return QModelIndex();
-    return createIndex(row, column);
-}
-
-QModelIndex RamObjectSortFilterProxyModel::parent(const QModelIndex &child) const
-{
-    Q_UNUSED(child)
-
-    return QModelIndex();
+    return QSortFilterProxyModel::data( index, role);
 }
 
 RamObject *RamObjectSortFilterProxyModel::get(int row) const
