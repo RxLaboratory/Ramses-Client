@@ -73,7 +73,6 @@ protected:
 
     // ATTRIBUTES //
 
-    QString m_icon = ":/icons/asset";
     UserRole m_editRole = Admin;
     bool m_editable = true;
 

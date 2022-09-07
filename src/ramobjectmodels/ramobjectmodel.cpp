@@ -43,8 +43,6 @@ QVariant RamObjectModel::data(const QModelIndex &index, int role) const
 
 QVariant RamObjectModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
-    Q_UNUSED(role);
-
     if (section < 0) return QVariant();
     if (orientation == Qt::Horizontal && section >= columnCount()) return QVariant();
     if (orientation == Qt::Vertical && section >= rowCount()) return QVariant();
@@ -52,17 +50,18 @@ QVariant RamObjectModel::headerData(int section, Qt::Orientation orientation, in
     if (orientation == Qt::Vertical)
     {
         QString uuid = m_objectsUuids.at(section);
-        return objectRoleData(uuid, role);
+        if (role == Qt::DisplayRole) return objectRoleData(uuid, RamObject::ShortName);
+        if (role == RamObject::UUID) return uuid;
+        return QAbstractTableModel::headerData(section, orientation, role);
     }
-    else if (section > 0)
+
+    if (section > 0)
     {
         QString uuid = m_columnObjectsUuids.at(section - 1);
         return objectRoleData(uuid, role);
     }
-    else
-    {
-        return QVariant();
-    }
+
+    return QAbstractTableModel::headerData(section, orientation, role);
 }
 
 void RamObjectModel::insertObjects(int row, QStringList uuids)

@@ -1,6 +1,5 @@
 - DATA/LIST REIMPLEMENTATION
 	- Refactor a bit LocalDataInterface:
-		- remove RamObject data changed, and always use the ldi instead
 		- insertObject emit inserted
 		- removeObject emit removed
 		- restoreObject emit inserted
@@ -14,8 +13,9 @@
 		- RamOBjectSortFilterProxyModel // WIP
 			- filterUuid
 			- search name/shortname
-			- adds "All items" on top for filter lists
 			- set as list mode (single column)
+		- RamFilterListProxyModel // CHK
+			- adds "All items" on top for filter lists
 	- DELEGATES
 		- RamObjectDelegate // CHK
 	- VIEWS
@@ -34,14 +34,12 @@
 - SYNC issues
 	sync users on creation! (to be able to set the password)
 	creation bdd pas ajoutée dans les récents
-	apostrophes multipliées
 	fullSync on login/setonline (but not create)
 	liste : sync: si ajout et suppression puis synchro -> ajout disparait
 	sequences are not synced? (mais ok au restart)
 	pipes are not synced? -> pas tous envoyés ? -> pas dessiné à la réception
 	console en mode data crashe au sync
 	pas possible de changer certains status après qqn d'autre
-
 
 4- Ramses and editors
 	- asset & shot table

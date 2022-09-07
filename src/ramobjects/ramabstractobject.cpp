@@ -298,7 +298,7 @@ QIcon RamAbstractObject::icon() const
 
 QPixmap RamAbstractObject::iconPixmap() const
 {
-    return m_iconPixmaps.value(iconName(), QPixmap());
+    return RamAbstractObject::iconPixmap( iconName() );
 }
 
 QVariant RamAbstractObject::roleData(int role) const

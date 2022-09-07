@@ -185,7 +185,7 @@ public:
 
     QIcon icon() const;
     virtual QString iconName() const { return m_icon; };
-    QPixmap iconPixmap() const; // TODO static list of qpixmaps by name
+    QPixmap iconPixmap() const;
 
     virtual QString details() const { return QString(); };
     virtual QString subDetails() const { return QString(); };
@@ -260,6 +260,7 @@ protected:
     bool m_virtual = false;
     bool m_dataEncrypted = false;
     QString m_cachedData = "";
+    QString m_icon = ":/icons/asset";
 
     static QMap<QString, QPixmap> m_iconPixmaps;
     static QPixmap iconPixmap(QString iconName);
@@ -270,7 +271,6 @@ private:
     void createData(QString data);
 
     QSettings *m_settings = nullptr;
-    QString m_icon = ":/icons/asset";
 };
 
 #endif // RAMABSTRACTOBJECT_H

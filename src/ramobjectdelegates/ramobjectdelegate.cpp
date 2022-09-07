@@ -100,7 +100,7 @@ void RamObjectDelegate::paintTitle(const QModelIndex &index, QPainter *painter, 
     params->detailsRect = QRect(
                 params->iconRect.right() + 5,
                 params->titleRect.bottom() + 5,
-                params->bgRect.width() - params->iconRect.width() - 15,
+                params->bgRect.width() - params->iconRect.width() - 35,
                 params->bgRect.height() - params->titleRect.height() - 15
                 );
 }
