@@ -72,7 +72,7 @@ QString Ramses::pathFromRamses(QString p, bool create) const
         return p;
 }
 
-RamObjectList *Ramses::users() const
+RamObjectModel *Ramses::users() const
 {
     return m_users;
 }
@@ -86,12 +86,12 @@ RamUser *Ramses::ramsesUser()
 {
     if (m_ramsesUser) return m_ramsesUser;
 
-    m_ramsesUser = RamUser::c( m_users->fromName("Ramses") );
+    m_ramsesUser = RamUser::c( m_users->search("Ramses") );
 
     if (!m_ramsesUser)
     {
         m_ramsesUser = new RamUser("Ramses", "Ramses Daemon");
-        m_users->append(m_ramsesUser);
+        //m_users->append(m_ramsesUser);
     }
     return m_ramsesUser;
 }
@@ -100,7 +100,7 @@ RamUser *Ramses::removedUser()
 {
     if (m_removedUser) return m_removedUser;
 
-    m_removedUser = RamUser::c( m_users->fromName("Removed") );
+    m_removedUser = RamUser::c( m_users->search("Removed") );
     if (!m_removedUser)
     {
         m_removedUser = new RamUser("Removed", "Removed User");
@@ -244,7 +244,7 @@ void Ramses::setCurrentProjectUuid(QString uuid)
     setCurrentProject( RamProject::get(uuid) );
 }
 
-RamObjectList *Ramses::templateSteps() const
+DBTableModel *Ramses::templateSteps() const
 {
     return m_templateSteps;
 }
@@ -271,9 +271,6 @@ void Ramses::refresh()
     if (!m_loggedin) return;
 
     // (Re)Load admin data
-
-    m_users->reload();
-    m_templateSteps->reload();
     m_templateAssetGroups->reload();
     m_fileTypes->reload();
     m_applications->reload();
@@ -298,10 +295,10 @@ Ramses::Ramses(QObject *parent):
     m_dbi = DBInterface::instance();
 
     m_states = new DBTableModel(RamAbstractObject::State, this);
+    m_users = new DBTableModel(RamAbstractObject::User, this);
+    m_templateSteps = new DBTableModel(RamAbstractObject::TemplateStep, this);
 
-    m_users = new RamObjectList("RamUser", "Users", User, RamObjectList::Table, this);
     m_projects = new RamObjectList("RamProject", "Projects", Project, RamObjectList::Table, this);
-    m_templateSteps = new RamObjectList("RamTemplateStep", "Template steps", TemplateStep, RamObjectList::Table, this);
     m_templateAssetGroups = new RamObjectList("RamTemplateAssetGroup", "Template asset groups", TemplateAssetGroup, RamObjectList::Table, this);
     m_fileTypes = new RamObjectList("RamFileType", "File types", FileType, RamObjectList::Table, this);
     m_applications = new RamObjectList("RamApplication", "Applications", Application, RamObjectList::Table, this);

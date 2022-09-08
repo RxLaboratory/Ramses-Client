@@ -124,9 +124,9 @@ SOURCES += \
     rameditwidgets/steplistmanagerwidget.cpp \
     rameditwidgets/stepstatushistorywidget.cpp \
     rameditwidgets/templateassetgrouplistmanagerwidget.cpp \
-    rameditwidgets/templatesteplistmanagerwidget.cpp \
+    rammanagerwidgets/templatestepmanagerwidget.cpp \
     docks/timelinewidget.cpp \
-    rameditwidgets/userlistmanagerwidget.cpp \
+    rammanagerwidgets/usermanagerwidget.cpp \
     ramfilemetadatamanager.cpp \
     ramnamemanager.cpp \
     ramobjects/ramabstractobject.cpp \
@@ -300,9 +300,9 @@ HEADERS += \
     rameditwidgets/steplistmanagerwidget.h \
     rameditwidgets/stepstatushistorywidget.h \
     rameditwidgets/templateassetgrouplistmanagerwidget.h \
-    rameditwidgets/templatesteplistmanagerwidget.h \
+    rammanagerwidgets/templatestepmanagerwidget.h \
     docks/timelinewidget.h \
-    rameditwidgets/userlistmanagerwidget.h \
+    rammanagerwidgets/usermanagerwidget.h \
     ramfilemetadatamanager.h \
     ramnamemanager.h \
     ramobjects/ramabstractobject.h \

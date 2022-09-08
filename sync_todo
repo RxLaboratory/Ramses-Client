@@ -30,8 +30,21 @@
 		- ObjectListWidget // CHK
 	- RamOBjects:
 		- roleData override for status (to return completion)
+		
+	- Update to use new implementation :
+		- State // OK
+		- User // WIP
+			- update user list and its assignlist of projectEditWidget
+		- TemplateStep // WIP
+			- projectpage : steptemplatemenu
+			- steplistmanagerwidget : createmenu
+			- pipelinewidget load stemplatesteps in userChanged
+			- pipelinewidget templateStepInserted
+			- pipelinewidget templateStepRemoved
 
 - SYNC issues
+	RamAbstractObject: don't create objects in the db if the shortname is new, but set a var to "to be created"
+		create in the db when the shortname is changed
 	sync users on creation! (to be able to set the password)
 	creation bdd pas ajoutée dans les récents
 	fullSync on login/setonline (but not create)

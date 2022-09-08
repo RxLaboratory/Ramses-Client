@@ -20,7 +20,7 @@ ObjectListManagerWidget(
     addButton->setPopupMode(QToolButton::InstantPopup);
     addButton->setMenu(ui_createMenu);
 
-    ui_createMenu->setList(Ramses::instance()->templateSteps());
+    //ui_createMenu->setList(Ramses::instance()->templateSteps());
 
     connect(ui_createMenu, &RamObjectListMenu::createTriggered, this, &StepListManagerWidget::createObject);
     connect(ui_createMenu, &RamObjectListMenu::assigned, this, &StepListManagerWidget::createFromTemplate);

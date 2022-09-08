@@ -40,9 +40,9 @@ ProjectPage::ProjectPage(QWidget *parent):
     projectButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     projectButton->setPopupMode(QToolButton::InstantPopup);
     this->titleBar()->insertLeft(projectButton);
-    ui_assignUserMenu = new RamObjectListMenu(false, this);
+    ui_assignUserMenu = new RamObjectMenu(false, this);
     ui_assignUserMenu->setTitle("Assign user");
-    ui_assignUserMenu->setList(Ramses::instance()->users());
+    ui_assignUserMenu->setModel(Ramses::instance()->users());
     projectMenu->addMenu(ui_assignUserMenu);
     ui_unAssignUserMenu = new RamObjectListMenu(false, this);
     ui_unAssignUserMenu->setTitle("Unassign user");
@@ -57,7 +57,7 @@ ProjectPage::ProjectPage(QWidget *parent):
     // Create step from template menu
     RamObjectListMenu *stepTemplateMenu = new RamObjectListMenu(false, this);
     stepTemplateMenu->setTitle("Create from template...");
-    stepTemplateMenu->setList( Ramses::instance()->templateSteps() );
+    //stepTemplateMenu->setList( Ramses::instance()->templateSteps() );
     stepManager->menuButton()->menu()->addMenu(stepTemplateMenu);
 
     qDebug() << "  > steps ok";

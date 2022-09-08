@@ -99,7 +99,7 @@ void ProjectEditWidget::createUser()
     RamUser *user = new RamUser(
                 "NEW",
                 "John Doe");
-    Ramses::instance()->users()->append(user);
+    //Ramses::instance()->users()->append(user);
     m_project->users()->append(user);
     user->edit();
 }
@@ -181,7 +181,7 @@ void ProjectEditWidget::setupUi()
     ui_userList = new ObjectListEditWidget(true, RamUser::ProjectAdmin, this);
     ui_userList->setEditMode(ObjectListEditWidget::UnassignObjects);
     ui_userList->setTitle("Users");
-    ui_userList->setAssignList(Ramses::instance()->users());
+    //ui_userList->setAssignList(Ramses::instance()->users());
     ui_mainLayout->addWidget(ui_userList);
 }
 

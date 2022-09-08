@@ -7,10 +7,10 @@
 #include "daemonsettingswidget.h"
 #include "loginpage.h"
 #include "userprofilepage.h"
-#include "userlistmanagerwidget.h"
+#include "usermanagerwidget.h"
 #include "projectlistmanagerwidget.h"
 #include "pipeline-editor/pipelinewidget.h"
-#include "templatesteplistmanagerwidget.h"
+#include "templatestepmanagerwidget.h"
 #include "templateassetgrouplistmanagerwidget.h"
 #include "statemanagerwidget.h"
 #include "filetypelistmanagerwidget.h"
@@ -150,7 +150,7 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     mainStack->addWidget(ui_adminPage);
     // Admin tabs
     qDebug() << "> Admin";
-    UserListManagerWidget *userManager = new UserListManagerWidget(this);
+    UserManagerWidget *userManager = new UserManagerWidget(this);
     ui_adminPage->addPage(userManager,"Users", QIcon(":/icons/users"));
     ui_adminPage->titleBar()->insertLeft(userManager->menuButton());
     qDebug() << "  > users ok";
@@ -158,7 +158,7 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     ui_adminPage->addPage(projectManager, "Projects", QIcon(":/icons/projects"));
     ui_adminPage->titleBar()->insertLeft(projectManager->menuButton());
     qDebug() << "  > projects ok";
-    TemplateStepListManagerWidget *templateStepManager = new TemplateStepListManagerWidget(this);
+    TemplateStepManagerWidget *templateStepManager = new TemplateStepManagerWidget(this);
     ui_adminPage->addPage(templateStepManager, "Template Steps", QIcon(":/icons/steps"));
     ui_adminPage->titleBar()->insertLeft(templateStepManager->menuButton());
     qDebug() << "  > template steps ok";

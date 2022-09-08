@@ -3,7 +3,7 @@
 
 #include "duqf-widgets/settingswidget.h"
 #include "projecteditwidget.h"
-#include "ramtemplateassetgroup.h"
+#include "ramobjectmenu.h"
 
 class ProjectPage : public SettingsWidget
 {
@@ -28,7 +28,7 @@ private:
 
     QList<QMetaObject::Connection> m_userConnections;
 
-    RamObjectListMenu *ui_assignUserMenu;
+    RamObjectMenu *ui_assignUserMenu;
     RamObjectListMenu *ui_unAssignUserMenu;
 };
 

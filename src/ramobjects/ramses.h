@@ -30,7 +30,7 @@ public:
     QString pathFromRamses(QString p = "", bool create = false) const;
 
     // Users
-    RamObjectList *users() const;
+    RamObjectModel *users() const;
     RamUser *currentUser() const;
     RamUser *ramsesUser();
     RamUser *removedUser();
@@ -54,7 +54,7 @@ public:
     void setCurrentProjectUuid(QString uuid);
 
     // Template Steps
-    RamObjectList *templateSteps() const;
+    DBTableModel *templateSteps() const;
 
     // Template Asset Groups
     RamObjectList *templateAssetGroups() const;
@@ -93,8 +93,8 @@ private:
 
     // DATA (lists)
     DBTableModel *m_states;
-    RamObjectList *m_users = nullptr;
-    RamObjectList *m_templateSteps = nullptr;
+    DBTableModel *m_users;
+    DBTableModel *m_templateSteps = nullptr;
     RamObjectList *m_templateAssetGroups = nullptr;
     RamObjectList *m_fileTypes = nullptr;
     RamObjectList *m_applications = nullptr;
