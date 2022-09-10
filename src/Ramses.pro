@@ -123,7 +123,7 @@ SOURCES += \
     docks/statisticswidget.cpp \
     rameditwidgets/steplistmanagerwidget.cpp \
     rameditwidgets/stepstatushistorywidget.cpp \
-    rameditwidgets/templateassetgrouplistmanagerwidget.cpp \
+    rammanagerwidgets/templateassetgroupmanagerwidget.cpp \
     rammanagerwidgets/templatestepmanagerwidget.cpp \
     docks/timelinewidget.cpp \
     rammanagerwidgets/usermanagerwidget.cpp \
@@ -299,7 +299,7 @@ HEADERS += \
     docks/statisticswidget.h \
     rameditwidgets/steplistmanagerwidget.h \
     rameditwidgets/stepstatushistorywidget.h \
-    rameditwidgets/templateassetgrouplistmanagerwidget.h \
+    rammanagerwidgets/templateassetgroupmanagerwidget.h \
     rammanagerwidgets/templatestepmanagerwidget.h \
     docks/timelinewidget.h \
     rammanagerwidgets/usermanagerwidget.h \

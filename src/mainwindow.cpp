@@ -11,7 +11,7 @@
 #include "projectmanagerwidget.h"
 #include "pipeline-editor/pipelinewidget.h"
 #include "templatestepmanagerwidget.h"
-#include "templateassetgrouplistmanagerwidget.h"
+#include "templateassetgroupmanagerwidget.h"
 #include "statemanagerwidget.h"
 #include "filetypelistmanagerwidget.h"
 #include "applicationlistmanagerwidget.h"
@@ -162,7 +162,7 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     ui_adminPage->addPage(templateStepManager, "Template Steps", QIcon(":/icons/steps"));
     ui_adminPage->titleBar()->insertLeft(templateStepManager->menuButton());
     qDebug() << "  > template steps ok";
-    TemplateAssetGroupListManagerWidget *templateAssetGroupManager = new TemplateAssetGroupListManagerWidget(this);
+    TemplateAssetGroupManagerWidget *templateAssetGroupManager = new TemplateAssetGroupManagerWidget(this);
     ui_adminPage->addPage(templateAssetGroupManager, "Template Asset Groups", QIcon(":/icons/asset-groups"));
     ui_adminPage->titleBar()->insertLeft(templateAssetGroupManager->menuButton());
     qDebug() << "  > template assets ok";

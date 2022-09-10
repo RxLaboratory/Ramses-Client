@@ -44,6 +44,9 @@
 		- Project // WIP
 			- user list
 			- projecteditwidget user list->setAssignList
+		- TemplateAssetGroup // CHK
+			- test create asset groups from template in project editor
+		
 
 - SYNC issues
 	RamAbstractObject: don't create objects in the db if the shortname is new, but set a var to "to be created"

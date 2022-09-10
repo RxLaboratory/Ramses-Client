@@ -14,16 +14,16 @@ AssetGroupListManagerWidget::AssetGroupListManagerWidget(QWidget *parent):
     m_listEditWidget->setEditMode(ObjectListEditWidget::RemoveObjects);
 
     // Create from template actions
-    ui_createMenu = new RamObjectListMenu(false, this);
+    ui_createMenu = new RamObjectMenu(false, this);
     ui_createMenu->addCreateButton();
     QToolButton *addButton = m_listEditWidget->addButton();
     addButton->setPopupMode(QToolButton::InstantPopup);
     addButton->setMenu(ui_createMenu);
 
-    ui_createMenu->setList(Ramses::instance()->templateAssetGroups());
+    ui_createMenu->setModel(Ramses::instance()->templateAssetGroups());
 
-    connect(ui_createMenu, &RamObjectListMenu::createTriggered, this, &AssetGroupListManagerWidget::createObject);
-    connect(ui_createMenu, &RamObjectListMenu::assigned, this, &AssetGroupListManagerWidget::createFromTemplate);
+    connect(ui_createMenu, &RamObjectMenu::createTriggered, this, &AssetGroupListManagerWidget::createObject);
+    connect(ui_createMenu, &RamObjectMenu::assigned, this, &AssetGroupListManagerWidget::createFromTemplate);
 }
 
 RamAssetGroup *AssetGroupListManagerWidget::createObject()

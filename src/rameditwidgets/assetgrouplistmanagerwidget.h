@@ -2,8 +2,7 @@
 #define ASSETGROUPLISTMANAGERWIDGET_H
 
 #include "objectlistmanagerwidget.h"
-#include "data-views/ramobjectlistmenu.h"
-#include "ramtemplateassetgroup.h"
+#include "ramobjectmenu.h"
 #include "ramassetgroup.h"
 
 class AssetGroupListManagerWidget : public ObjectListManagerWidget
@@ -21,7 +20,7 @@ private slots:
     void createFromTemplate(RamObject *templateAGObj);
 
 private:
-    RamObjectListMenu *ui_createMenu;
+    RamObjectMenu *ui_createMenu;
 };
 
 #endif // ASSETGROUPLISTMANAGERWIDGET_H

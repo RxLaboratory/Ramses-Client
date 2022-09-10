@@ -57,7 +57,7 @@ public:
     DBTableModel *templateSteps() const;
 
     // Template Asset Groups
-    RamObjectList *templateAssetGroups() const;
+    DBTableModel *templateAssetGroups() const;
 
     // File Types
     RamObjectList *fileTypes() const;
@@ -95,7 +95,7 @@ private:
     DBTableModel *m_states;
     DBTableModel *m_users;
     DBTableModel *m_templateSteps = nullptr;
-    RamObjectList *m_templateAssetGroups = nullptr;
+    DBTableModel *m_templateAssetGroups = nullptr;
     RamObjectList *m_fileTypes = nullptr;
     RamObjectList *m_applications = nullptr;
     DBTableModel *m_projects = nullptr;

@@ -71,9 +71,9 @@ ProjectPage::ProjectPage(QWidget *parent):
     this->addPage(assetGroupManager, "Asset Groups", QIcon(":/icons/asset-groups"));
     this->titleBar()->insertLeft(assetGroupManager->menuButton());
 
-    RamObjectListMenu *agTemplateMenu = new RamObjectListMenu(false, this);
+    RamObjectMenu *agTemplateMenu = new RamObjectMenu(false, this);
     agTemplateMenu->setTitle("Create from template...");
-    agTemplateMenu->setList( Ramses::instance()->templateAssetGroups() );
+    agTemplateMenu->setModel( Ramses::instance()->templateAssetGroups() );
     assetGroupManager->menuButton()->menu()->addMenu(agTemplateMenu);
 
     qDebug() << "  > asset groups ok";

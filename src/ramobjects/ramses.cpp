@@ -249,7 +249,7 @@ DBTableModel *Ramses::templateSteps() const
     return m_templateSteps;
 }
 
-RamObjectList *Ramses::templateAssetGroups() const
+DBTableModel *Ramses::templateAssetGroups() const
 {
     return m_templateAssetGroups;
 }
@@ -271,7 +271,6 @@ void Ramses::refresh()
     if (!m_loggedin) return;
 
     // (Re)Load admin data
-    m_templateAssetGroups->reload();
     m_fileTypes->reload();
     m_applications->reload();
 }
@@ -297,8 +296,8 @@ Ramses::Ramses(QObject *parent):
     m_users = new DBTableModel(RamAbstractObject::User, this);
     m_templateSteps = new DBTableModel(RamAbstractObject::TemplateStep, this);
     m_projects = new DBTableModel(RamAbstractObject::Project, this);
+    m_templateAssetGroups = new DBTableModel(RamAbstractObject::TemplateAssetGroup, this);
 
-    m_templateAssetGroups = new RamObjectList("RamTemplateAssetGroup", "Template asset groups", TemplateAssetGroup, RamObjectList::Table, this);
     m_fileTypes = new RamObjectList("RamFileType", "File types", FileType, RamObjectList::Table, this);
     m_applications = new RamObjectList("RamApplication", "Applications", Application, RamObjectList::Table, this);
 
