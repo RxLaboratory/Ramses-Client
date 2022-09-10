@@ -96,7 +96,7 @@ SOURCES += \
     ramdatainterface/logindialog.cpp \
     ramdatainterface/ramserverinterface.cpp \
     rameditwidgets/applicationeditwidget.cpp \
-    rameditwidgets/applicationlistmanagerwidget.cpp \
+    rammanagerwidgets/applicationmanagerwidget.cpp \
     rameditwidgets/asseteditwidget.cpp \
     rameditwidgets/assetgroupeditwidget.cpp \
     processmanager.cpp \
@@ -275,7 +275,7 @@ HEADERS += \
     ramdatainterface/logindialog.h \
     ramdatainterface/ramserverinterface.h \
     rameditwidgets/applicationeditwidget.h \
-    rameditwidgets/applicationlistmanagerwidget.h \
+    rammanagerwidgets/applicationmanagerwidget.h \
     rameditwidgets/asseteditwidget.h \
     rameditwidgets/assetgroupeditwidget.h \
     daemon.h \

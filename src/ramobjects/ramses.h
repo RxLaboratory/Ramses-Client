@@ -63,7 +63,7 @@ public:
     DBTableModel *fileTypes() const;
 
     // Applications
-    RamObjectList *applications() const;
+    DBTableModel *applications() const;
 
 signals:
     void userChanged(RamUser*);
@@ -94,7 +94,7 @@ private:
     DBTableModel *m_templateSteps = nullptr;
     DBTableModel *m_templateAssetGroups = nullptr;
     DBTableModel *m_fileTypes = nullptr;
-    RamObjectList *m_applications = nullptr;
+    DBTableModel *m_applications = nullptr;
     DBTableModel *m_projects = nullptr;
 
     // Users

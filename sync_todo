@@ -32,23 +32,24 @@
 		- roleData override for status (to return completion)
 		
 	- Update to use new implementation :
-		- State // OK
-		- User // WIP
+		- State list // OK
+		- User list // WIP
 			- update user list and its assignlist of projectEditWidget
-		- TemplateStep // WIP
+		- TemplateStep list // WIP
 			- projectpage : steptemplatemenu
 			- steplistmanagerwidget : createmenu
 			- pipelinewidget load stemplatesteps in userChanged
 			- pipelinewidget templateStepInserted
 			- pipelinewidget templateStepRemoved
-		- Project // WIP
+		- Project list // WIP
 			- user list
 			- projecteditwidget user list->setAssignList
-		- TemplateAssetGroup // CHK
+		- TemplateAssetGroup list // CHK
 			- test create asset groups from template in project editor
-		- FileType // WIP
+		- FileType list // WIP
 			- ApplicationEditWidget -> setModel of the 3 file lists
-		- Application // TODO
+		- Application list // WIP
+			- StepEditWidget -> setModel of the application list
 		
 
 - SYNC issues

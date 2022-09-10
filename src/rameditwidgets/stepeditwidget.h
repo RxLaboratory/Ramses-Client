@@ -12,10 +12,10 @@
 
 #include "duqf-widgets/autoselectdoublespinbox.h"
 #include "objecteditwidget.h"
-#include "objectlisteditwidget.h"
 #include "duqf-widgets/duqffolderdisplaywidget.h"
 #include "data-views/ramobjectlistcombobox.h"
 #include "duqf-widgets/duqfcolorselector.h"
+#include "objectlistwidget.h"
 
 class StepEditWidget : public ObjectEditWidget
 {
@@ -67,7 +67,7 @@ private:
     RamObjectListComboBox *ui_estimationMultiplierBox;
     DuQFColorSelector *ui_colorSelector;
 
-    ObjectListEditWidget *m_applicationList;
+    ObjectListWidget *m_applicationList;
 
 };
 

@@ -3,6 +3,7 @@
 #include "ramproject.h"
 #include "ramses.h"
 #include "ramassetgroup.h"
+#include "ramstep.h"
 
 StepEditWidget::StepEditWidget(QWidget *parent) : ObjectEditWidget(parent)
 {
@@ -38,7 +39,7 @@ void StepEditWidget::reInit(RamObject *obj)
         else if (m_step->type() == RamStep::ShotProduction) ui_typeBox->setCurrentIndex(2);
         else if (m_step->type() == RamStep::PostProduction) ui_typeBox->setCurrentIndex(3);
 
-        m_applicationList->setList(m_step->applications());
+        //m_applicationList->setModel(m_step->applications());
 
         ui_estimationMultiplierBox->setList(m_step->project()->assetGroups());
 
@@ -87,7 +88,7 @@ void StepEditWidget::createApplication()
     RamApplication *app = new RamApplication(
                 "NEW",
                 "New Application");
-    Ramses::instance()->applications()->append(app);
+    //Ramses::instance()->applications()->append(app);
     m_step->applications()->append(app);
     app->edit();
 }
@@ -282,8 +283,8 @@ void StepEditWidget::setupUi()
 
     ui_tabWidget->addTab(ui_estimationWidget, QIcon(":/icons/stats-settings"), "Estim.");
 
-    m_applicationList = new ObjectListEditWidget(true, RamUser::ProjectAdmin, this);
-    m_applicationList->setEditMode(ObjectListEditWidget::UnassignObjects);
+    m_applicationList = new ObjectListWidget(true, RamUser::ProjectAdmin, this);
+    m_applicationList->setEditMode(ObjectListWidget::UnassignObjects);
     m_applicationList->setTitle("Applications");
     m_applicationList->setAssignList(Ramses::instance()->applications());
 

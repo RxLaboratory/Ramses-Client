@@ -14,7 +14,7 @@
 #include "templateassetgroupmanagerwidget.h"
 #include "statemanagerwidget.h"
 #include "filetypemanagerwidget.h"
-#include "applicationlistmanagerwidget.h"
+#include "applicationmanagerwidget.h"
 #include "schedulemanagerwidget.h"
 #include "docks/statisticswidget.h"
 #include "docks/timelinewidget.h"
@@ -174,7 +174,7 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     ui_adminPage->addPage(fileTypeManager, "File Types", QIcon(":/icons/files"));
     ui_adminPage->titleBar()->insertLeft(fileTypeManager->menuButton());
     qDebug() << "  > file types ok";
-    ApplicationListManagerWidget *applicationManager = new ApplicationListManagerWidget(this);
+    ApplicationManagerWidget *applicationManager = new ApplicationManagerWidget(this);
     ui_adminPage->addPage(applicationManager, "Applications", QIcon(":/icons/applications"));
     ui_adminPage->titleBar()->insertLeft(applicationManager->menuButton());
     qDebug() << "  > applications ok";//*/

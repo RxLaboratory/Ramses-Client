@@ -259,7 +259,7 @@ DBTableModel *Ramses::fileTypes() const
     return m_fileTypes;
 }
 
-RamObjectList *Ramses::applications() const
+DBTableModel *Ramses::applications() const
 {
     return m_applications;
 }
@@ -287,8 +287,7 @@ Ramses::Ramses(QObject *parent):
     m_projects = new DBTableModel(RamAbstractObject::Project, this);
     m_templateAssetGroups = new DBTableModel(RamAbstractObject::TemplateAssetGroup, this);
     m_fileTypes = new DBTableModel(RamAbstractObject::FileType, this);
-
-    m_applications = new RamObjectList("RamApplication", "Applications", Application, RamObjectList::Table, this);
+    m_applications = new DBTableModel(RamAbstractObject::Application, this);
 
     this->setObjectName( "Ramses Class" );
 
