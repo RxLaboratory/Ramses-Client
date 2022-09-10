@@ -260,6 +260,7 @@ protected:
     bool m_virtual = false;
     bool m_dataEncrypted = false;
     QString m_cachedData = "";
+    bool m_savingData = false;
     QString m_icon = ":/icons/asset";
 
     static QMap<QString, QPixmap> m_iconPixmaps;

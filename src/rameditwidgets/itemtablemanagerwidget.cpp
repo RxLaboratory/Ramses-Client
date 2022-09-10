@@ -174,7 +174,6 @@ void ItemTableManagerWidget::projectChanged(RamProject *project, bool force)
     actions = ui_userMenu->actions();
     for (int i = actions.count() -1; i >= 5; i--)
     {
-        qDebug() << i;
         actions.at(i)->deleteLater();
     }
     ui_table->filteredList()->clearUsers();

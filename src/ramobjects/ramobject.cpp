@@ -71,7 +71,6 @@ bool RamObject::canEdit()
     return u->role() >= m_editRole;
 }
 
-
 void RamObject::reload()
 {
     QJsonObject d = reloadData();
@@ -140,12 +139,39 @@ void RamObject::showEdit(QString title)
     mw->setPropertiesDockWidget( ui_editWidget, title, m_icon);
 }
 
+RamObjectModel *RamObject::createModel(RamObject::ObjectType type, QString modelName)
+{
+    RamObjectModel *model = new RamObjectModel(type, this);
+
+    // Connect all model changes to save the list
+    connect(model, &RamObjectModel::rowsInserted, this, &RamObject::saveModel);
+    connect(model, &RamObjectModel::rowsRemoved, this, &RamObject::saveModel);
+    connect(model, &RamObjectModel::rowsMoved, this, &RamObject::saveModel);
+
+    // keep
+    m_subModels[model] = modelName;
+
+    return model;
+}
+
 void RamObject::checkData(QString uuid)
 {
+    // Don't reload if we're currently saving the data
+    if (m_savingData) return;
     // Not for me...
     if (uuid != m_uuid) return;
     // Empty cache!
     m_cachedData = "";
+    // Reset lists
+    QJsonObject d = data();
+    QMapIterator<RamObjectModel *, QString> it = QMapIterator<RamObjectModel*, QString>( m_subModels );
+    while (it.hasNext()) {
+        it.next();
+        // Clear
+        RamObjectModel *model = it.key();
+        QString modelName = it.value();
+        loadModel(model, modelName, d);
+    }
     emit dataChanged(this);
 }
 
@@ -156,6 +182,41 @@ void RamObject::checkAvailability(QString uuid, bool availability)
 
     if (availability) emit restored(this);
     else emit removed(this);
+}
+
+void RamObject::saveModel()
+{
+    if (m_loadingModels) return;
+    // Get the model and its name
+    RamObjectModel *o = qobject_cast<RamObjectModel*>( sender() );
+    QString modelName = m_subModels.value(o, "");
+    if (modelName == "") return;
+
+    // Get the stringlist
+    QStringList uuids = o->toStringList();
+    QJsonArray arr = QJsonArray::fromStringList(uuids);
+    insertData(modelName, arr);
+}
+
+void RamObject::loadModel(RamObjectModel *model, QString modelName, QJsonObject d)
+{
+    if (modelName == "") return;
+    m_loadingModels = true;
+    if (d.isEmpty()) d = data();
+    model->clear();
+    // Get uuids
+    QStringList uuids;
+    if (modelName == "nativeFileTypes" && shortName() == "3DS") qDebug() << "=====" << d.value(modelName);
+    QJsonArray arr = d.value(modelName).toArray();
+    for (int i = 0; i < arr.count(); i++)
+    {
+        uuids << arr.at(i).toString();
+    }
+    if (modelName == "nativeFileTypes" && shortName() == "3DS") qDebug() << "=====" << uuids;
+    // Set uuids
+    model->insertObjects(0, uuids);
+    if (modelName == "nativeFileTypes" && shortName() == "3DS") qDebug() << "=====" << model->rowCount();
+    m_loadingModels = false;
 }
 
 void RamObject::construct(QObject *parent)

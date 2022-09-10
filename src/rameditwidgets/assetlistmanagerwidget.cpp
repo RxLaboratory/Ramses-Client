@@ -24,7 +24,6 @@ RamAbstractItem *AssetListManagerWidget::createObject()
     if (project->assetGroups()->rowCount() == 0 ) return nullptr;
 
     RamAssetGroup *ag = RamAssetGroup::c( currentFilter() );
-    qDebug() << ag;
     if (!ag) ag = RamAssetGroup::c( project->assetGroups()->at(0) );
     if (!ag) return nullptr;
 

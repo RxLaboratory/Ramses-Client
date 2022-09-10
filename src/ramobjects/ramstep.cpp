@@ -256,8 +256,16 @@ QList<RamObject *> RamStep::inputFileTypes()
     for ( int i = 0; i < m_applications->rowCount(); i++)
     {
         RamApplication *app = RamApplication::c( m_applications->at(i) );
-        fts.append( app->importFileTypes()->toList() );
-        fts.append( app->nativeFileTypes()->toList() );
+        for (int f = 0; f < app->importFileTypes()->rowCount(); f++)
+        {
+            RamFileType *ft = RamFileType::c( app->importFileTypes()->get(f) );
+            fts << ft;
+        }
+        for (int f = 0; f < app->nativeFileTypes()->rowCount(); f++)
+        {
+            RamFileType *ft = RamFileType::c( app->nativeFileTypes()->get(f) );
+            fts << ft;
+        }
     }
 
     return fts;
@@ -270,8 +278,16 @@ QList<RamObject *> RamStep::outputFileTypes()
     for ( int i = 0; i < m_applications->rowCount(); i++)
     {
         RamApplication *app = RamApplication::c( m_applications->at(i) );
-        fts.append( app->exportFileTypes()->toList() );
-        fts.append( app->nativeFileTypes()->toList() );
+        for (int f = 0; f < app->exportFileTypes()->rowCount(); f++)
+        {
+            RamFileType *ft = RamFileType::c( app->exportFileTypes()->get(f) );
+            fts << ft;
+        }
+        for (int f = 0; f < app->nativeFileTypes()->rowCount(); f++)
+        {
+            RamFileType *ft = RamFileType::c( app->nativeFileTypes()->get(f) );
+            fts << ft;
+        }
     }
 
     return fts;

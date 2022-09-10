@@ -66,11 +66,12 @@ QVariant RamObjectModel::headerData(int section, Qt::Orientation orientation, in
 
 void RamObjectModel::insertObjects(int row, QStringList uuids)
 {
-    beginInsertRows(QModelIndex(), row, row+uuids.count()-1);
+    beginInsertRows(QModelIndex(), row, row + uuids.count()-1);
 
     for (int i = uuids.count()-1; i >= 0; i--)
     {
         QString uuid = uuids.at(i);
+        qDebug() << uuid;
         m_objectsUuids.insert(row, uuid);
         connectObject( uuid );
     }
@@ -166,6 +167,15 @@ void RamObjectModel::clear()
     endResetModel();
 }
 
+void RamObjectModel::appendObject(QString uuid)
+{
+    if (m_objectsUuids.contains(uuid)) return;
+    insertObjects(
+                rowCount(),
+                QStringList(uuid)
+                );
+}
+
 RamObject *RamObjectModel::get(int row)
 {
     return get(index(row, 0));
@@ -199,9 +209,19 @@ RamObject *RamObjectModel::search(QString searchString) const
     return nullptr;
 }
 
+bool RamObjectModel::contains(QString uuid) const
+{
+    return m_objectsUuids.contains(uuid);
+}
+
 RamObject::ObjectType RamObjectModel::type() const
 {
     return m_type;
+}
+
+QStringList RamObjectModel::toStringList() const
+{
+    return m_objectsUuids;
 }
 
 void RamObjectModel::objectDataChanged(RamObject *obj)

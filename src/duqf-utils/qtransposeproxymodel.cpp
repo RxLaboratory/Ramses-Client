@@ -192,8 +192,6 @@ QVariant QTransposeProxyModel::data(const QModelIndex &index, int role) const
 
 QMap<int, QVariant> QTransposeProxyModel::itemData(const QModelIndex &proxyIndex) const
 {
-    qDebug() << "itemdata";
-    qDebug() << sourceModel()->itemData( mapToSource( proxyIndex ) );
     return sourceModel()->itemData( mapToSource( proxyIndex ) );
 }
 

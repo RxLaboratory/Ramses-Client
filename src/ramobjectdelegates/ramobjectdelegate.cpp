@@ -491,7 +491,10 @@ bool RamObjectDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, co
 
     RamObject::ObjectType ramtype = static_cast<RamObject::ObjectType>( index.data(RamObject::Type).toInt() );
     // Get the object to edit it
-    RamObject *o = RamObject::get(index.data(RamObject::UUID).toString(), ramtype);
+    QString uuid = index.data(RamObject::UUID).toString();
+    if (uuid == "") return QStyledItemDelegate::editorEvent( event, model, option, index );
+    RamObject *o = RamObject::get(uuid, ramtype);
+    if (!o) return QStyledItemDelegate::editorEvent( event, model, option, index );
 
     bool isStatus = ramtype == RamObject::Status;
     bool folder = index.data(RamObject::Path).toString() != "";
@@ -589,15 +592,10 @@ bool RamObjectDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, co
         {
             if (bgRect.contains(e->pos()) && e->modifiers().testFlag(Qt::NoModifier) && o)
             {
-
-
                 // Check if it's a status
                 if (isStatus)
                 {
-                    qDebug() << "status";
                     RamStatus *status = RamStatus::c( o );
-                    qDebug() << status;
-                    qDebug() << status->user();
 
                     // If it's not the current user, create a new one
                     RamUser *currentUser = Ramses::instance()->currentUser();

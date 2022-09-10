@@ -300,8 +300,6 @@ void DBInterface::serverUserChanged(QString userUuid)
             return;
         }
 
-        qDebug() <<"===== "<<m_ldi->currentUserUuid();
-
         // The ldi doesn't have user either: can't do anything
         if (m_ldi->currentUserUuid() == "")
         {

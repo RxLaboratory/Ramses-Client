@@ -127,7 +127,6 @@ bool RamObjectSortFilterProxyModel::filterAcceptsRow(int sourceRow, const QModel
     if (m_searchString == "") filterOK = true;
     else if (obj->shortName().contains(m_searchString, Qt::CaseInsensitive)) filterOK =  true;
     else filterOK = obj->name().contains(m_searchString, Qt::CaseInsensitive);
-    qDebug() << filterOK;
     if (!filterOK) return false;
 
     // filter list uuids

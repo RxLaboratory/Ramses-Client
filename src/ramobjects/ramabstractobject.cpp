@@ -508,6 +508,8 @@ void RamAbstractObject::setDataString(QString data)
 {
     if (m_virtual) return;
 
+    m_savingData = true;
+
     // Cache the data to improve performance
     m_cachedData = data;
 
@@ -524,7 +526,7 @@ void RamAbstractObject::setDataString(QString data)
 
     DBInterface::instance()->setObjectData(m_uuid, objectTypeName(), data);
 
-    emitDataChanged();
+    m_savingData = false;
 }
 
 QString RamAbstractObject::dataString() const

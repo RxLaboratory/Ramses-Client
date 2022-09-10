@@ -202,16 +202,20 @@ void ObjectListWidget::removeSelectedObjects()
     {
         QString uuid = selection.at(i).data(Qt::UserRole).toString();
         if (uuid == "") continue;
-        RamObject *o = RamObject::get(uuid, m_objectModel->type());
-        if (o) o->remove();
+        if (m_editMode == RemoveObjects) {
+            RamObject *o = RamObject::get(uuid, m_objectModel->type());
+            if (o) o->remove();
+        }
+        else {
+            m_objectModel->removeObjects(QStringList(uuid));
+        }
     }
-
 }
 
 void ObjectListWidget::assign(RamObject *obj)
 {
-    RamObjectList *objList = qobject_cast<RamObjectList*>( m_objectModel );
-    if (objList) objList->append(obj);
+    RamObjectModel *objList = qobject_cast<RamObjectModel*>( m_objectModel );
+    if (objList) objList->appendObject(obj->uuid());
 }
 
 void ObjectListWidget::objectAssigned(const QModelIndex &parent, int first, int last)
@@ -311,7 +315,7 @@ void ObjectListWidget::connectEvents()
     // add & remove buttons
     connect(ui_addButton, &QToolButton::clicked, this, &ObjectListWidget::add);
     connect(ui_assignMenu, &RamObjectMenu::createTriggered, this, &ObjectListWidget::add);
-    connect(ui_removeButton, SIGNAL(clicked()), this, SLOT(removeSelectedObjects()));
+    connect(ui_removeButton, &QToolButton::clicked, this, &ObjectListWidget::removeSelectedObjects);
     connect(ui_assignMenu,SIGNAL(assigned(RamObject*)),this,SLOT(assign(RamObject*)));
     // search
     connect(ui_searchEdit, &DuQFSearchEdit::changing, ui_objectView, &RamObjectView::search);

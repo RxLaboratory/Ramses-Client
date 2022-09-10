@@ -39,25 +39,25 @@ void RamApplication::setExecutableFilePath(const QString &executableFilePath)
     insertData("executableFilePath", executableFilePath);
 }
 
-RamObjectList *RamApplication::nativeFileTypes() const
+RamObjectModel *RamApplication::nativeFileTypes() const
 {
     return m_nativeFileTypes;
 }
 
-RamObjectList *RamApplication::importFileTypes() const
+RamObjectModel *RamApplication::importFileTypes() const
 {
     return m_importFileTypes;
 }
 
-RamObjectList *RamApplication::exportFileTypes() const
+RamObjectModel *RamApplication::exportFileTypes() const
 {
     return m_exportFileTypes;
 }
 
 bool RamApplication::canExportFileType(RamFileType *ft) const
 {
-    if (m_nativeFileTypes->contains(ft)) return true;
-    if (m_exportFileTypes->contains(ft)) return true;
+    if (m_nativeFileTypes->contains(ft->uuid())) return true;
+    if (m_exportFileTypes->contains(ft->uuid())) return true;
     return false;
 }
 
@@ -65,12 +65,12 @@ bool RamApplication::canExportFileType(QString extension) const
 {
     for (int i = 0; i < m_nativeFileTypes->rowCount(); i++)
     {
-        RamFileType *ft = (RamFileType*)m_nativeFileTypes->at(i);
+        RamFileType *ft = RamFileType::c( m_nativeFileTypes->get(i) );
         if (ft->extensions().contains(extension,Qt::CaseInsensitive)) return true;
     }
     for (int i = 0; i < m_exportFileTypes->rowCount(); i++)
     {
-        RamFileType *ft = (RamFileType*)m_exportFileTypes->at(i);
+        RamFileType *ft = RamFileType::c( m_exportFileTypes->get(i) );
         if (ft->extensions().contains(extension, Qt::CaseInsensitive)) return true;
     }
     return false;
@@ -78,8 +78,8 @@ bool RamApplication::canExportFileType(QString extension) const
 
 bool RamApplication::canImportFileType(RamFileType *ft) const
 {
-    if (m_nativeFileTypes->contains(ft)) return true;
-    if (m_importFileTypes->contains(ft)) return true;
+    if (m_nativeFileTypes->contains(ft->uuid())) return true;
+    if (m_importFileTypes->contains(ft->uuid())) return true;
     return false;
 }
 
@@ -87,12 +87,12 @@ bool RamApplication::canImportFileType(QString extension) const
 {
     for (int i = 0; i < m_nativeFileTypes->rowCount(); i++)
     {
-        RamFileType *ft = (RamFileType*)m_nativeFileTypes->at(i);
+        RamFileType *ft = RamFileType::c( m_nativeFileTypes->get(i) );
         if (ft->extensions().contains(extension,Qt::CaseInsensitive)) return true;
     }
     for (int i = 0; i < m_importFileTypes->rowCount(); i++)
     {
-        RamFileType *ft = (RamFileType*)m_importFileTypes->at(i);
+        RamFileType *ft = RamFileType::c( m_importFileTypes->get(i) );
         if (ft->extensions().contains(extension, Qt::CaseInsensitive)) return true;
     }
     return false;
@@ -102,7 +102,7 @@ bool RamApplication::canOpen(QString filePath) const
 {
     for(int i =0; i < m_nativeFileTypes->rowCount(); i++)
     {
-        RamFileType *ft = qobject_cast<RamFileType*>( m_nativeFileTypes->at(i) );
+        RamFileType *ft = RamFileType::c( m_nativeFileTypes->get(i) );
         if (ft->check( filePath )) return true;
     }
     return false;
@@ -124,9 +124,9 @@ bool RamApplication::open(QString filePath) const
 void RamApplication::unassignFileType(RamFileType *ft)
 {
     if (!ft) return;
-    m_nativeFileTypes->removeAll(ft);
-    m_importFileTypes->removeAll(ft);
-    m_exportFileTypes->removeAll(ft);
+    m_nativeFileTypes->removeObjects(QStringList(ft->uuid()));
+    m_importFileTypes->removeObjects(QStringList(ft->uuid()));
+    m_exportFileTypes->removeObjects(QStringList(ft->uuid()));
 }
 
 void RamApplication::edit(bool show)
@@ -142,6 +142,12 @@ RamApplication::RamApplication(QString uuid):
     RamObject(uuid, ObjectType::Application)
 {
     construct();
+
+    // Load lists
+    QJsonObject d = data();
+    loadModel(m_nativeFileTypes, "nativeFileTypes", d);
+    loadModel(m_importFileTypes, "importFileTypes", d);
+    loadModel(m_exportFileTypes, "exportFileTypes", d);
 }
 
 QString RamApplication::folderPath() const
@@ -158,36 +164,8 @@ void RamApplication::construct()
     m_existingObjects[m_uuid] = this;
     m_icon = ":/icons/application";
     m_editRole = Admin;
-    getCreateLists();
-}
 
-void RamApplication::getCreateLists()
-{
-    QJsonObject d = data();
-
-    QString uuid = d.value("nativeFileTypes").toString();
-    if (uuid == "") m_nativeFileTypes = new RamObjectList("native", "Native File Types", FileType, RamObjectList::ListObject, this);
-    else m_nativeFileTypes = RamObjectList::get( uuid );
-    if (!m_nativeFileTypes) m_nativeFileTypes = new RamObjectList("native", "Native File Types", FileType, RamObjectList::ListObject, this);
-
-    m_nativeFileTypes->setParent(this);
-    d.insert("nativeFileTypes", m_nativeFileTypes->uuid());
-
-    uuid = d.value("importFileTypes").toString();
-    if (uuid == "") m_importFileTypes = new RamObjectList("import", "Import File Types", FileType, RamObjectList::ListObject, this);
-    else m_importFileTypes = RamObjectList::get( uuid );
-    if (!m_importFileTypes) m_importFileTypes = new RamObjectList("native", "Native File Types", FileType, RamObjectList::ListObject, this);
-
-    m_importFileTypes->setParent(this);
-    d.insert("importFileTypes", m_importFileTypes->uuid());
-
-    uuid = d.value("exportFileTypes").toString();
-    if (uuid == "") m_exportFileTypes = new RamObjectList("export", "Export File Types", FileType, RamObjectList::ListObject, this);
-    else m_exportFileTypes = RamObjectList::get( uuid );
-    if (!m_exportFileTypes) m_exportFileTypes = new RamObjectList("native", "Native File Types", FileType, RamObjectList::ListObject, this);
-
-    m_exportFileTypes->setParent(this);
-    d.insert("exportFileTypes", m_exportFileTypes->uuid());
-
-    setData(d);
+    m_nativeFileTypes = createModel(RamObject::FileType, "nativeFileTypes");
+    m_importFileTypes = createModel(RamObject::FileType, "importFileTypes");
+    m_exportFileTypes = createModel(RamObject::FileType, "exportFileTypes");
 }

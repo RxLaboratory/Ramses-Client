@@ -26,9 +26,9 @@ void ApplicationEditWidget::reInit(RamObject *o)
     if (m_application)
     {
         m_folderSelector->setPath(m_application->executableFilePath());
-        //m_nativeList->setModel(m_application->nativeFileTypes());
-        //m_importList->setModel(m_application->importFileTypes());
-        //m_exportList->setModel(m_application->exportFileTypes());
+        m_nativeList->setModel(m_application->nativeFileTypes());
+        m_importList->setModel(m_application->importFileTypes());
+        m_exportList->setModel(m_application->exportFileTypes());
     }
     else
     {
@@ -45,8 +45,7 @@ void ApplicationEditWidget::createForNative()
     RamFileType *ft = new RamFileType(
                 "NEW",
                 "New file type");
-    //Ramses::instance()->fileTypes()->append(ft);
-    m_application->nativeFileTypes()->append(ft);
+    m_application->nativeFileTypes()->appendObject(ft->uuid());
     ft->edit();
 }
 
@@ -56,8 +55,7 @@ void ApplicationEditWidget::createForImport()
     RamFileType *ft = new RamFileType(
                 "NEW",
                 "New file type");
-    //Ramses::instance()->fileTypes()->append(ft);
-    m_application->importFileTypes()->append(ft);
+    m_application->importFileTypes()->appendObject(ft->uuid());
     ft->edit();
 }
 
@@ -67,8 +65,7 @@ void ApplicationEditWidget::createForExport()
     RamFileType *ft = new RamFileType(
                 "NEW",
                 "New file type");
-    //Ramses::instance()->fileTypes()->append(ft);
-    m_application->exportFileTypes()->append(ft);
+    m_application->exportFileTypes()->appendObject(ft->uuid());
     ft->edit();
 }
 

@@ -11,6 +11,7 @@
 
 class ObjectDockWidget;
 class ObjectEditWidget;
+class RamObjectModel;
 
 class RamObject : public QObject, public RamAbstractObject
 {
@@ -79,13 +80,21 @@ protected:
 
     QFrame *ui_editWidget = nullptr;
 
+protected:
+    RamObjectModel *createModel(ObjectType type, QString modelName);
+    void loadModel(RamObjectModel *model, QString modelName, QJsonObject d = QJsonObject());
+
 private slots:
     void checkData(QString uuid);
     void checkAvailability(QString uuid, bool availability);
+    void saveModel();
 
 private:
     void construct(QObject *parent = nullptr);
     ObjectDockWidget *m_dockWidget = nullptr;
+    // models and their names
+    QMap<RamObjectModel*, QString> m_subModels;
+    bool m_loadingModels = false;
 };
 
 #endif // RAMOBJECT_H
