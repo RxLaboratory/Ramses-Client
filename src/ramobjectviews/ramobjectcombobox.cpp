@@ -1,38 +1,33 @@
 #include "ramobjectcombobox.h"
-#include "ramobjectsortfilterproxymodel.h"
+#include "ramfilterlistproxymodel.h"
 #include "ramobjectdelegateold.h"
 
-RamObjectComboBox::RamObjectComboBox(RamObject::ObjectType type, QWidget *parent):
+RamObjectComboBox::RamObjectComboBox(QWidget *parent):
     QComboBox(parent)
 {
     setupUi();
-    m_type = type;
-    setList(nullptr);
+    setObjectModel(nullptr);
     connectEvents();
 }
 
-RamObjectComboBox::RamObjectComboBox(RamObject::ObjectType type, QString filterName, QWidget *parent) :
-    QComboBox(parent)
+void RamObjectComboBox::setObjectModel(RamObjectModel *model, QString filterListName)
 {
-    setupUi();
-    m_isFilterBox = true;
-    m_filterName = filterName;
-    m_type = type;
-    setList(nullptr);
-    connectEvents();
-}
-
-void RamObjectComboBox::setList(RamObjectModel *list)
-{
-    if (m_isFilterBox)
-    {
-        RamObjectSortFilterProxyModel *proxyModel = new RamObjectSortFilterProxyModel(m_filterName, this);
-        proxyModel->setSourceModel(list);
+    if (model) {
+        RamFilterListProxyModel *proxyModel = new RamFilterListProxyModel(filterListName, this);
+        proxyModel->setSourceModel(model);
         this->setModel(proxyModel);
     }
-    else if (list)
+    else
     {
-        this->setModel(list);
+        this->setModel( RamObjectModel::emptyModel() );
+    }
+}
+
+void RamObjectComboBox::setObjectModel(RamObjectModel *model)
+{
+    if (model)
+    {
+        this->setModel(model);
     }
     else
     {
@@ -67,11 +62,6 @@ QString RamObjectComboBox::currentUuid()
 
 void RamObjectComboBox::setObject(QString uuid)
 {
-    if (uuid == "" && m_isFilterBox)
-    {
-        setCurrentIndex(0);
-        return;
-    }
     if (uuid == "")
     {
         setCurrentIndex(-1);
@@ -98,15 +88,24 @@ void RamObjectComboBox::setObject(RamObject *obj)
 
 RamObject *RamObjectComboBox::objectAt(int i)
 {
-    QString uuid = uuidAt(i);
+    QModelIndex ind = modelIndex(i);
+    QString uuid = ind.data(RamObject::UUID).toString();
     if (uuid == "") return nullptr;
-    return RamObject::get(uuid, m_type);
+
+    int tI = ind.data(RamObject::Type).toInt();
+    RamObject::ObjectType t = static_cast<RamObject::ObjectType>( tI );
+    return RamObject::get(uuid, t);
 
 }
 
 QString RamObjectComboBox::uuidAt(int i)
 {
-    return model()->data( model()->index(i, 0), Qt::UserRole).toString();
+    return modelIndex(i).data(RamObject::UUID).toString();
+}
+
+QModelIndex RamObjectComboBox::modelIndex(int i)
+{
+    return model()->index(i, 0);
 }
 
 void RamObjectComboBox::beginReset()

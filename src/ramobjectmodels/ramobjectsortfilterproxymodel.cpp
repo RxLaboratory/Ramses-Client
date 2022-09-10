@@ -81,11 +81,34 @@ RamAbstractObject::ObjectType RamObjectSortFilterProxyModel::type() const
 void RamObjectSortFilterProxyModel::setFilterUuid(const QString &filterUuid)
 {
     m_currentFilterUuid = filterUuid;
+    prepareFilter();
 }
 
 void RamObjectSortFilterProxyModel::search(const QString &searchStr)
 {
     m_searchString = searchStr;
+    prepareFilter();
+}
+
+void RamObjectSortFilterProxyModel::addFilterUuid(const QString &uuid)
+{
+    if(!m_filterListUuids.contains(uuid))
+    {
+        m_filterListUuids << uuid;
+    }
+    prepareFilter();
+}
+
+void RamObjectSortFilterProxyModel::removeFilterUuid(const QString &uuid)
+{
+    m_filterListUuids.removeAll(uuid);
+    prepareFilter();
+}
+
+void RamObjectSortFilterProxyModel::clearFilterListUuids()
+{
+    m_filterListUuids.clear();
+    prepareFilter();
 }
 
 bool RamObjectSortFilterProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
@@ -96,11 +119,30 @@ bool RamObjectSortFilterProxyModel::filterAcceptsRow(int sourceRow, const QModel
     RamObject *obj = model->get(sourceRow);
     if (!obj) return false;
 
+    // filter uuid
     bool filterOK = m_currentFilterUuid == "" || obj->filterUuid() == m_currentFilterUuid;
     if (!filterOK) return false;
-    if (m_searchString == "") return true;
-    if (obj->shortName().contains(m_searchString, Qt::CaseInsensitive)) return true;
-    return obj->name().contains(m_searchString, Qt::CaseInsensitive);
+
+    // search
+    if (m_searchString == "") filterOK = true;
+    else if (obj->shortName().contains(m_searchString, Qt::CaseInsensitive)) filterOK =  true;
+    else filterOK = obj->name().contains(m_searchString, Qt::CaseInsensitive);
+    qDebug() << filterOK;
+    if (!filterOK) return false;
+
+    // filter list uuids
+    QStringList uuids = obj->filterListUuids();
+    if (m_filterListUuids.count() == 0) filterOK = true;
+    else {
+        for ( int i = 0; i < m_filterListUuids.count(); i++)
+        {
+            if (uuids.contains(m_filterListUuids.at(i))) filterOK = true;
+        }
+    }
+    if (!filterOK) return false;
+
+    // All tests passed
+    return true;
 }
 
 void RamObjectSortFilterProxyModel::prepareFilter()

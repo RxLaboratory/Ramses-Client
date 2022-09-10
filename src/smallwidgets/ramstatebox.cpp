@@ -3,9 +3,9 @@
 #include "ramses.h"
 
 RamStateBox::RamStateBox(QWidget *parent):
-    RamObjectComboBox(RamObject::State, parent)
+    RamObjectComboBox(parent)
 {
-    this->setList(Ramses::instance()->states());
+    this->setModel(Ramses::instance()->states());
     connect(this, &RamObjectComboBox::currentObjectChanged, this, &RamStateBox::changeCurrentState);
 }
 

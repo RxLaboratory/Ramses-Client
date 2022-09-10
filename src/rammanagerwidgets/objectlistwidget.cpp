@@ -1,5 +1,4 @@
 #include "objectlistwidget.h"
-#include "data-models/ramobjectfiltermodel.h"
 #include "duqf-app/app-version.h"
 
 #include "ramses.h"
@@ -35,10 +34,9 @@ void ObjectListWidget::setModel(RamObjectModel *objectModel)
     //objectAssigned(QModelIndex(), 0, objectModel->rowCount() - 1);
 }
 
-void ObjectListWidget::setFilterList(RamObjectList *filterList)
+void ObjectListWidget::setFilterList(RamObjectModel *filterList, QString filterListName)
 {
-    ui_filterBox->setList(filterList);
-    m_filterList = filterList;
+    ui_filterBox->setObjectModel(filterList, filterListName);
     if (filterList)
     {
         ui_title->hide();
@@ -51,9 +49,9 @@ void ObjectListWidget::setFilterList(RamObjectList *filterList)
     }
 }
 
-void ObjectListWidget::setAssignList(RamObjectList *assignList)
+void ObjectListWidget::setAssignList(RamObjectModel *assignList)
 {
-    ui_assignMenu->setList(assignList);
+    ui_assignMenu->setModel(assignList);
     ui_addButton->setPopupMode(QToolButton::InstantPopup);
     ui_addButton->setMenu(ui_assignMenu);
 
@@ -113,7 +111,7 @@ void ObjectListWidget::setFilter(RamObject *o)
 {
     QSignalBlocker b(ui_filterBox);
     ui_filterBox->setObject(o);
-    ui_assignMenu->filter(o);
+    ui_assignMenu->setFilterObject(o);
     ui_objectView->filter(o);
 }
 
@@ -269,7 +267,7 @@ void ObjectListWidget::setupUi(bool editableObjects, RamUser::UserRole editRole)
     ui_title->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
     buttonsLayout->addWidget(ui_title);
 
-    ui_filterBox = new RamObjectListComboBox(true, this);
+    ui_filterBox = new RamObjectComboBox(this);
     ui_filterBox->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
     buttonsLayout->addWidget(ui_filterBox);
 
@@ -304,7 +302,7 @@ void ObjectListWidget::setupUi(bool editableObjects, RamUser::UserRole editRole)
     // Hide filters until at least one is added
     setFilterList(nullptr);
 
-    ui_assignMenu = new RamObjectListMenu(false, this);
+    ui_assignMenu = new RamObjectMenu(false, this);
     ui_assignMenu->addCreateButton();
 }
 
@@ -312,14 +310,14 @@ void ObjectListWidget::connectEvents()
 {
     // add & remove buttons
     connect(ui_addButton, &QToolButton::clicked, this, &ObjectListWidget::add);
-    connect(ui_assignMenu, &RamObjectListMenu::createTriggered, this, &ObjectListWidget::add);
+    connect(ui_assignMenu, &RamObjectMenu::createTriggered, this, &ObjectListWidget::add);
     connect(ui_removeButton, SIGNAL(clicked()), this, SLOT(removeSelectedObjects()));
     connect(ui_assignMenu,SIGNAL(assigned(RamObject*)),this,SLOT(assign(RamObject*)));
     // search
-    connect(ui_searchEdit, SIGNAL(changing(QString)), ui_objectView, SLOT(search(QString)));
-    connect(ui_searchEdit, SIGNAL(changed(QString)), ui_objectView, SLOT(search(QString)));
+    connect(ui_searchEdit, &DuQFSearchEdit::changing, ui_objectView, &RamObjectView::search);
+    connect(ui_searchEdit, &DuQFSearchEdit::changed, ui_objectView, &RamObjectView::search);
     // filters
-    connect(ui_filterBox, &RamObjectListComboBox::currentObjectChanged, this, &ObjectListWidget::setFilter);
+    connect(ui_filterBox, &RamObjectComboBox::currentObjectChanged, this, &ObjectListWidget::setFilter);
     // Relay list signals
     connect(ui_objectView, &RamObjectView::objectSelected, this, &ObjectListWidget::objectSelected);
     connect(ui_objectView->model(), SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(objectAssigned(QModelIndex,int,int)));

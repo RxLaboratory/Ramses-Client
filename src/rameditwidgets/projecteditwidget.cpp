@@ -26,7 +26,7 @@ RamProject *ProjectEditWidget::project() const
 
 void ProjectEditWidget::reInit(RamObject *o)
 {
-    m_project = qobject_cast<RamProject*>(o);
+    m_project = RamProject::c(o);
     if (m_project)
     {
         ui_resolutionWidget->setHeight(m_project->height());

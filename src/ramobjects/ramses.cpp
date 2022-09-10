@@ -211,7 +211,7 @@ RamState *Ramses::wipState()
     return m_wipState;
 }
 
-RamObjectList *Ramses::projects() const
+DBTableModel *Ramses::projects() const
 {
     return m_projects;
 }
@@ -235,7 +235,7 @@ void Ramses::setCurrentProject(RamProject *project)
 
 void Ramses::setCurrentProject(QString shortName)
 {
-    setCurrentProject( RamProject::c(m_projects->fromName(shortName)) );
+    setCurrentProject( RamProject::c(m_projects->search(shortName)) );
 }
 
 void Ramses::setCurrentProjectUuid(QString uuid)
@@ -274,7 +274,6 @@ void Ramses::refresh()
     m_templateAssetGroups->reload();
     m_fileTypes->reload();
     m_applications->reload();
-    m_projects->reload();
 }
 
 // PROTECTED
@@ -297,8 +296,8 @@ Ramses::Ramses(QObject *parent):
     m_states = new DBTableModel(RamAbstractObject::State, this);
     m_users = new DBTableModel(RamAbstractObject::User, this);
     m_templateSteps = new DBTableModel(RamAbstractObject::TemplateStep, this);
+    m_projects = new DBTableModel(RamAbstractObject::Project, this);
 
-    m_projects = new RamObjectList("RamProject", "Projects", Project, RamObjectList::Table, this);
     m_templateAssetGroups = new RamObjectList("RamTemplateAssetGroup", "Template asset groups", TemplateAssetGroup, RamObjectList::Table, this);
     m_fileTypes = new RamObjectList("RamFileType", "File types", FileType, RamObjectList::Table, this);
     m_applications = new RamObjectList("RamApplication", "Applications", Application, RamObjectList::Table, this);

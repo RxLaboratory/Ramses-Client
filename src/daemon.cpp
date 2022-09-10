@@ -245,12 +245,12 @@ void Daemon::getProjects(QTcpSocket *client)
 
     QJsonObject content;
     QJsonArray projects;
-    RamObjectList *ramProjects = Ramses::instance()->projects();
+    DBTableModel *ramProjects = Ramses::instance()->projects();
     RamUser *u = Ramses::instance()->currentUser();
     if (u)
         for (int i = 0; i < ramProjects->rowCount(); i++)
         {
-            RamProject *p = RamProject::c( ramProjects->at(i) );
+            RamProject *p = RamProject::c( ramProjects->get(i) );
             if (p->users()->contains(u))
             {
                 QJsonObject proj;

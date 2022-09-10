@@ -94,6 +94,8 @@ public:
 
     virtual QString details() const override;
 
+    virtual QStringList filterListUuids() const override;
+
 signals:
     void completionRatioChanged(int);
     void latenessRatioChanged(float);

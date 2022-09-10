@@ -30,6 +30,7 @@ public:
     RamObject(QString shortName, QString name, ObjectType type, QObject *parent = nullptr, bool isVirtual = false, bool encryptData = false);
 
     virtual QString filterUuid() const { return QString(); };
+    virtual QStringList filterListUuids() const { return QStringList(); }
 
     virtual bool canEdit();
 

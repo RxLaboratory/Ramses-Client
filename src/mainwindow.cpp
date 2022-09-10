@@ -8,7 +8,7 @@
 #include "loginpage.h"
 #include "userprofilepage.h"
 #include "usermanagerwidget.h"
-#include "projectlistmanagerwidget.h"
+#include "projectmanagerwidget.h"
 #include "pipeline-editor/pipelinewidget.h"
 #include "templatestepmanagerwidget.h"
 #include "templateassetgrouplistmanagerwidget.h"
@@ -154,7 +154,7 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     ui_adminPage->addPage(userManager,"Users", QIcon(":/icons/users"));
     ui_adminPage->titleBar()->insertLeft(userManager->menuButton());
     qDebug() << "  > users ok";
-    ProjectListManagerWidget *projectManager = new ProjectListManagerWidget(this);
+    ProjectManagerWidget *projectManager = new ProjectManagerWidget(this);
     ui_adminPage->addPage(projectManager, "Projects", QIcon(":/icons/projects"));
     ui_adminPage->titleBar()->insertLeft(projectManager->menuButton());
     qDebug() << "  > projects ok";

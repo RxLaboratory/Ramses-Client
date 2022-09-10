@@ -8,10 +8,10 @@ class RamObjectComboBox : public QComboBox
 {
     Q_OBJECT
 public:
-    RamObjectComboBox(RamObject::ObjectType type, QWidget *parent = nullptr);
-    RamObjectComboBox(RamObject::ObjectType type, QString filterName, QWidget *parent = nullptr);
+    RamObjectComboBox(QWidget *parent = nullptr);
 
-    void setList(RamObjectModel *list);
+    void setObjectModel(RamObjectModel *model);
+    void setObjectModel(RamObjectModel *model, QString FilterListName);
 
     RamObject *currentObject();
     QString currentUuid();
@@ -19,6 +19,7 @@ public:
     void setObject(RamObject *obj);
     RamObject *objectAt(int i);
     QString uuidAt(int i);
+    QModelIndex modelIndex(int i);
 
     void beginReset();
     void endReset();
@@ -43,12 +44,9 @@ private:
     void setupUi();
     void connectEvents();
 
-    bool m_isFilterBox = false;
-    QString m_filterName;
-    RamObject::ObjectType  m_type;
-
     QString m_resettingUuid;
     bool m_resetting = false;
+
 };
 
 #endif // RAMOBJECTCOMBOBOX_H

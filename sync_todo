@@ -41,6 +41,9 @@
 			- pipelinewidget load stemplatesteps in userChanged
 			- pipelinewidget templateStepInserted
 			- pipelinewidget templateStepRemoved
+		- Project // WIP
+			- user list
+			- projecteditwidget user list->setAssignList
 
 - SYNC issues
 	RamAbstractObject: don't create objects in the db if the shortname is new, but set a var to "to be created"

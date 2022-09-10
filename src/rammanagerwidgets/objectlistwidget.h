@@ -12,8 +12,8 @@
 #include <QShortcut>
 
 #include "duqf-widgets/duqfsearchedit.h"
-#include "ramobjectlistcombobox.h"
-#include "ramobjectlistmenu.h"
+#include "ramobjectcombobox.h"
+#include "ramobjectmenu.h"
 #include "ramobjectmodel.h"
 #include "ramuser.h"
 #include "ramobjectview.h"
@@ -36,8 +36,8 @@ public:
     explicit ObjectListWidget(bool editableObjects = false, RamUser::UserRole editRole = RamUser::Admin, QWidget *parent = nullptr);
     explicit ObjectListWidget(RamObjectModel *objectList, bool editableObjects = false, RamUser::UserRole editRole = RamUser::Admin, QWidget *parent = nullptr);
     void setModel(RamObjectModel *objectModel);
-    void setFilterList(RamObjectList *filterList);
-    void setAssignList(RamObjectList *assignList);
+    void setFilterList(RamObjectModel *filterList, QString filterListName = "");
+    void setAssignList(RamObjectModel *assignList);
     void setDontRemoveShortNameList(QStringList dontRemove);
     void clear();
     void setEditMode(ObjectListWidget::EditMode editMode);
@@ -78,10 +78,10 @@ private:
     QToolButton *ui_addButton;
     QToolButton *ui_removeButton;
     QLabel *ui_title;
-    RamObjectListComboBox *ui_filterBox;
+    RamObjectComboBox *ui_filterBox;
     DuQFSearchEdit *ui_searchEdit;
     RamObjectView *ui_objectView;
-    RamObjectListMenu *ui_assignMenu = nullptr;
+    RamObjectMenu *ui_assignMenu = nullptr;
 
     // Settings
     EditMode m_editMode = UnassignObjects;
@@ -90,8 +90,6 @@ private:
 
     // Current List
     RamObjectModel *m_objectModel = nullptr;
-    RamObjectList *m_assignList = nullptr;
-    RamObjectList *m_filterList = nullptr;
 
     QList<QMetaObject::Connection> m_listConnections;
 };

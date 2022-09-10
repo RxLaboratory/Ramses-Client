@@ -4,7 +4,7 @@
 
 RamProjectFilterModel::RamProjectFilterModel(QObject *parent) : QSortFilterProxyModel(parent)
 {
-    RamObjectList *projects = Ramses::instance()->projects();
+    RamObjectModel *projects = Ramses::instance()->projects();
     this->setDynamicSortFilter(true);
     this->setSourceModel(projects);
     connect(projects, SIGNAL(dataChanged(QModelIndex,QModelIndex)), this, SLOT(doInvalidateFilter()));
@@ -38,8 +38,8 @@ bool RamProjectFilterModel::filterAcceptsRow(int sourceRow, const QModelIndex &s
 
     if ( m_userUuids.count() == 0 ) return true;
 
-    RamObjectList *projects = Ramses::instance()->projects();
-    RamProject *project = RamProject::c( projects->at(sourceRow) );
+    RamObjectModel *projects = Ramses::instance()->projects();
+    RamProject *project = RamProject::c( projects->get(sourceRow) );
 
     if (!project) return false;
 

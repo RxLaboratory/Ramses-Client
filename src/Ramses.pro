@@ -112,7 +112,7 @@ SOURCES += \
     rameditwidgets/objectlistmanagerwidget.cpp \
     rameditwidgets/pipefileeditwidget.cpp \
     rameditwidgets/pipefilelistmanagerwidget.cpp \
-    rameditwidgets/projectlistmanagerwidget.cpp \
+    rammanagerwidgets/projectmanagerwidget.cpp \
     rameditwidgets/schedulemanagerwidget.cpp \
     rameditwidgets/sequencelistmanagerwidget.cpp \
     ramobjects/ramabstractitem.cpp \
@@ -288,7 +288,7 @@ HEADERS += \
     rameditwidgets/objectlistmanagerwidget.h \
     rameditwidgets/pipefileeditwidget.h \
     rameditwidgets/pipefilelistmanagerwidget.h \
-    rameditwidgets/projectlistmanagerwidget.h \
+    rammanagerwidgets/projectmanagerwidget.h \
     rameditwidgets/schedulemanagerwidget.h \
     rameditwidgets/sequencelistmanagerwidget.h \
     ramobjects/ramabstractitem.h \

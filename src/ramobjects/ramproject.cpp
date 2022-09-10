@@ -282,6 +282,17 @@ QString RamProject::details() const
             "fps";
 }
 
+QStringList RamProject::filterListUuids() const
+{
+    // Return the list of user uuids
+    QStringList userUuids;
+    for (int i = 0; i < m_users->rowCount(); i++)
+    {
+        userUuids << m_users->at(i)->uuid();
+    }
+    return userUuids;
+}
+
 // PUBLIC SLOTS //
 
 void RamProject::updatePath()

@@ -47,7 +47,7 @@ public:
     RamState *wipState();
 
     // Projects
-    RamObjectList *projects() const;
+    DBTableModel *projects() const;
     RamProject *currentProject() const;
     void setCurrentProject(RamProject *project);
     void setCurrentProject(QString shortName);
@@ -98,7 +98,7 @@ private:
     RamObjectList *m_templateAssetGroups = nullptr;
     RamObjectList *m_fileTypes = nullptr;
     RamObjectList *m_applications = nullptr;
-    RamObjectList *m_projects = nullptr;
+    DBTableModel *m_projects = nullptr;
 
     // Users
     RamUser *m_currentUser = nullptr;

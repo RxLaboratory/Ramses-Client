@@ -7,8 +7,10 @@
 
 /**
  * @brief The RamObjectSortFilterProxyModel class is a proxy used to filter and sort RamObjectModel.
- * setFilterList: this will be used as a filter list, adds an "All item" on top
- * Filters: by RamObject.filterUuid, name / shortname
+ * Filters:
+ *      by RamObject.filterUuid: single uuid used as a filter (e.g. containing group/object filter))
+ *      search, by name / shortname: a string contained in the name or shortName
+ *      by RamObject.filterListUuids: a list of uuids (e.g. assigned users)
  */
 class RamObjectSortFilterProxyModel : public QSortFilterProxyModel
 {
@@ -36,6 +38,9 @@ public:
     // Set filters
     void setFilterUuid(const QString &filterUuid);
     void search(const QString &searchStr);
+    void addFilterUuid(const QString &uuid);
+    void removeFilterUuid(const QString &uuid);
+    void clearFilterListUuids();
 
 signals:
     void aboutToFilter();
@@ -53,6 +58,7 @@ private:
     // Filters
     QString m_searchString;
     QString m_currentFilterUuid;
+    QStringList m_filterListUuids;
 };
 
 #endif // RAMOBJECTSORTFILTERPROXYMODEL_H
