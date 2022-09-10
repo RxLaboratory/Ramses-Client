@@ -3,7 +3,6 @@
 #include "ramasset.h"
 #include "ramassetgroup.h"
 #include "ramses.h"
-#include "data-models/ramitemtable.h"
 
 AssetManagerWidget::AssetManagerWidget(QWidget *parent):
     ObjectManagerWidget(
@@ -33,7 +32,7 @@ RamAbstractItem *AssetManagerWidget::createObject()
                 ag
                 );
 
-    project->assets()->append(asset);
+    project->assets()->appendObject(asset->uuid());
     asset->edit();
     return asset;
 }
@@ -41,6 +40,6 @@ RamAbstractItem *AssetManagerWidget::createObject()
 void AssetManagerWidget::changeProject(RamProject *project)
 {
     if (!project) return;
-    //this->setModel( project->assets() );
+    this->setObjectModel( project->assets() );
     m_listWidget->setFilterList( project->assetGroups() );
 }

@@ -4,6 +4,7 @@
 #include <QAbstractTableModel>
 
 #include "ramobject.h"
+#include "ramobjectsortfilterproxymodel.h"
 
 /**
  * @brief The RamObjectModel class represents a list of RamObjects
@@ -25,8 +26,10 @@ public:
     // Edit structure
     virtual void insertObjects(int row, QStringList uuids);
     virtual void removeObjects(QStringList uuids);
-    virtual void insertColumnObjects(int column, QStringList uuids);
-    virtual void removeColumnObjects(QStringList uuids);
+
+    // Columns
+    void setColumnModel(RamObjectModel *model);
+    RamObjectSortFilterProxyModel *columnModel() const;
 
     // Support move rows and columns
     virtual bool moveRows(const QModelIndex &sourceParent, int sourceRow, int count, const QModelIndex &destinationParent, int destinationChild) override;
@@ -62,6 +65,12 @@ protected:
 
 private slots:
     void objectDataChanged(RamObject *obj);
+    void columnDataChanged(RamObject *obj);
+
+    // Column changes
+    void insertModelColumns(const QModelIndex &parent, int first, int last);
+    void removeModelColumns(const QModelIndex &parent, int first, int last);
+    void moveModelColumns(const QModelIndex &parent, int start, int end, const QModelIndex &destination, int row);
 
 private:
     RamObject *getObject(QString uuid) const;
@@ -70,7 +79,7 @@ private:
     QVariant objectRoleData(QString uuid, int role) const;
 
     QStringList m_objectsUuids;
-    QStringList m_columnObjectsUuids;
+    RamObjectSortFilterProxyModel *m_columnObjects;
 };
 
 #endif // RAMOBJECTMODEL_H

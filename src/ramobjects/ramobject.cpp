@@ -58,6 +58,11 @@ RamObject::RamObject(QString shortName, QString name, ObjectType type, QObject *
     construct(parent);
 }
 
+RamObject *RamObject::objectForColumn(QString columnUuid) const {
+    Q_UNUSED(columnUuid);
+    return nullptr;
+}
+
 void RamObject::remove()
 {
     RamAbstractObject::remove();
@@ -186,6 +191,7 @@ void RamObject::checkAvailability(QString uuid, bool availability)
 
 void RamObject::saveModel()
 {
+    emit dataChanged(this);
     if (m_loadingModels) return;
     // Get the model and its name
     RamObjectModel *o = qobject_cast<RamObjectModel*>( sender() );
@@ -206,16 +212,13 @@ void RamObject::loadModel(RamObjectModel *model, QString modelName, QJsonObject 
     model->clear();
     // Get uuids
     QStringList uuids;
-    if (modelName == "nativeFileTypes" && shortName() == "3DS") qDebug() << "=====" << d.value(modelName);
     QJsonArray arr = d.value(modelName).toArray();
     for (int i = 0; i < arr.count(); i++)
     {
         uuids << arr.at(i).toString();
     }
-    if (modelName == "nativeFileTypes" && shortName() == "3DS") qDebug() << "=====" << uuids;
     // Set uuids
     model->insertObjects(0, uuids);
-    if (modelName == "nativeFileTypes" && shortName() == "3DS") qDebug() << "=====" << model->rowCount();
     m_loadingModels = false;
 }
 

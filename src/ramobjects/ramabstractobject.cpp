@@ -356,6 +356,8 @@ QVariant RamAbstractObject::roleData(int role) const
     case RamAbstractObject::IsPM: return false;
     case RamAbstractObject::Date: return QDate();
     case RamAbstractObject::IsComment: return false;
+    case RamAbstractObject::DefaultSortOrder: return this->shortName();
+    case RamAbstractObject::Difficulty: return 0;
     }
 
     return this->uuid();

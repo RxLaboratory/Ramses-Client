@@ -49,7 +49,7 @@ SOURCES += \
     rammanagerwidgets/stepmanagerwidget.cpp \
     ramobjectdelegates/ramobjectdelegate.cpp \
     ramobjectmodels/dbtablemodel.cpp \
-    data-models/ramitemfiltermodel.cpp \
+    ramobjectmodels/ramitemsortfilterproxymodel.cpp \
     data-models/ramitemtablelistproxy.cpp \
     data-models/ramobjectfiltermodel.cpp \
     ramobjectmodels/ramfilterlistproxymodel.cpp \
@@ -60,9 +60,9 @@ SOURCES += \
     data-models/timelineproxy.cpp \
     ramobjectmodels/ramschedulefilterproxymodel.cpp \
     ramobjectmodels/ramscheduletablemodel.cpp \
+    ramobjectviews/ramitemview.cpp \
     ramobjectviews/ramobjectcombobox.cpp \
     data-views/ramobjectlistmenu.cpp \
-    data-views/ramobjectlistview.cpp \
     ramobjectviews/ramobjectmenu.cpp \
     ramobjectdelegates/ramscheduledelegate.cpp \
     ramobjectviews/ramscheduletableview.cpp \
@@ -70,7 +70,7 @@ SOURCES += \
     data-views/ramstatisticstablewidget.cpp \
     data-views/ramstepheaderview.cpp \
     data-views/timelinedelegate.cpp \
-    data-views/timelineview.cpp \
+    ramobjectviews/timelineview.cpp \
     docks/consolewidget.cpp \
     docks/filemanagerwidget.cpp \
     duqf-utils/qtransposeproxymodel.cpp \
@@ -83,7 +83,6 @@ SOURCES += \
     data-models/ramitemtable.cpp \
     data-models/ramobjectlist.cpp \
     data-models/ramstatelist.cpp \
-    data-models/ramstepstatushistory.cpp \
     data-views/ramobjectlistcombobox.cpp \
     duqf-widgets/duqfservercombobox.cpp \
     duqf-widgets/duqfsslcheckbox.cpp \
@@ -111,8 +110,6 @@ SOURCES += \
     rameditwidgets/databasecreatewidget.cpp \
     rameditwidgets/databaseeditwidget.cpp \
     rammanagerwidgets/filetypemanagerwidget.cpp \
-    rameditwidgets/objectlisteditwidget.cpp \
-    rameditwidgets/objectlistmanagerwidget.cpp \
     rameditwidgets/pipefileeditwidget.cpp \
     rammanagerwidgets/pipefilemanagerwidget.cpp \
     rammanagerwidgets/projectmanagerwidget.cpp \
@@ -223,7 +220,7 @@ HEADERS += \
     rammanagerwidgets/stepmanagerwidget.h \
     ramobjectdelegates/ramobjectdelegate.h \
     ramobjectmodels/dbtablemodel.h \
-    data-models/ramitemfiltermodel.h \
+    ramobjectmodels/ramitemsortfilterproxymodel.h \
     data-models/ramitemtable.h \
     data-models/ramitemtablelistproxy.h \
     data-models/ramobjectfiltermodel.h \
@@ -234,13 +231,12 @@ HEADERS += \
     data-models/ramprojectfiltermodel.h \
     data-models/ramstatelist.h \
     data-models/ramstatisticstable.h \
-    data-models/ramstepstatushistory.h \
     data-models/timelineproxy.h \
     ramobjectmodels/ramschedulefilterproxymodel.h \
     ramobjectmodels/ramscheduletablemodel.h \
+    ramobjectviews/ramitemview.h \
     ramobjectviews/ramobjectcombobox.h \
     data-views/ramobjectlistmenu.h \
-    data-views/ramobjectlistview.h \
     ramobjectviews/ramobjectmenu.h \
     ramobjectdelegates/ramscheduledelegate.h \
     ramobjectviews/ramscheduletableview.h \
@@ -248,7 +244,7 @@ HEADERS += \
     data-views/ramstatisticstablewidget.h \
     data-views/ramstepheaderview.h \
     data-views/timelinedelegate.h \
-    data-views/timelineview.h \
+    ramobjectviews/timelineview.h \
     ramdatainterface/datacrypto.h \
     ramdatainterface/dbistructures.h \
     docks/consolewidget.h \
@@ -287,8 +283,6 @@ HEADERS += \
     rameditwidgets/databasecreatewidget.h \
     rameditwidgets/databaseeditwidget.h \
     rammanagerwidgets/filetypemanagerwidget.h \
-    rameditwidgets/objectlisteditwidget.h \
-    rameditwidgets/objectlistmanagerwidget.h \
     rameditwidgets/pipefileeditwidget.h \
     rammanagerwidgets/pipefilemanagerwidget.h \
     rammanagerwidgets/projectmanagerwidget.h \

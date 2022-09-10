@@ -20,11 +20,13 @@ public:
 
     RamAbstractItem(QString shortName, QString name, ObjectType type, RamProject *project );
 
+    virtual RamObject *objectForColumn(QString columnUuid) const;
+
     RamProject *project() const;
     RamStep::Type productionType() const;
 
-    QMap<QString, RamStepStatusHistory *> statusHistory() const;
-    RamStepStatusHistory *statusHistory(RamObject *stepObj);
+    QMap<QString, RamObjectModel *> statusHistory() const;
+    RamObjectModel *statusHistory(RamObject *stepObj) const;
 
     RamStatus *setStatus(RamUser *user, RamState *state, RamStep *step, int completionRatio = -1, QString comment = "", int version = 1);
     void addStatus(RamStatus *status);
@@ -34,7 +36,7 @@ public:
      * @param step
      * @return The status
      */
-    RamStatus *status(RamStep *step);
+    RamStatus *status(RamStep *step) const;
     /**
      * @brief status All the latest (current) status
      * @return The latest status for each step
@@ -54,17 +56,14 @@ protected:
     RamAbstractItem(QString uuid, ObjectType type);
 
 private slots:
-    void historyChanged();
+    void stepInserted(const QModelIndex &parent, int first, int last);
+    void stepRemoved(const QModelIndex &parent, int first, int last);
 
 private:
     void construct();
-    void setProject(RamProject *proj);
-    // Saves the list of histories
-    void saveHistory();
-    // Monitors changes to emit statusChanged
-    void connectHistory(RamStepStatusHistory *history);
-
-    QMap<QString, RamStepStatusHistory*> m_history;
+    void connectProject(RamProject *proj);
+    void createStepHistory(RamStep *step, QJsonObject d = QJsonObject());
+    QMap<QString, RamObjectModel*> m_history;
 };
 
 #endif // RAMABSTRACTITEM_H

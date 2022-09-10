@@ -38,15 +38,14 @@ RamStep *RamStep::createFromTemplate(RamTemplateStep *tempStep, RamProject *proj
     // Copy data
 
     // populate apps list
-    RamObjectList *apps = tempStep->applications();
+    RamObjectModel *apps = tempStep->applications();
     for (int i = 0; i < apps->rowCount(); i++)
     {
-        step->applications()->append(apps->at(i));
+        step->applications()->appendObject(apps->get(i)->uuid());
     }
 
     // Set new data
     QJsonObject tempD = tempStep->data();
-    tempD.insert("applications", step->applications()->uuid());
     tempD.insert("project", project->uuid());
     step->setData(tempD);
 
@@ -173,7 +172,7 @@ QList<float> RamStep::stats(RamUser *user)
     }
 
     // check completed days
-    RamObjectList *items;
+    RamObjectModel *items;
     if (type() == ShotProduction) items = m_project->shots();
     else if(type() == AssetProduction) items = m_project->assets();
     else return QList<float>() << 0 << 0 << assignedHalfDays / 2.0 << assignedFutureHalfDays / 2.0;
@@ -187,8 +186,8 @@ QList<float> RamStep::stats(RamUser *user)
     for (int i =0; i < items->rowCount(); i++)
     {
         RamAbstractItem *item;
-        if (t == ShotProduction) item = RamShot::c(items->at(i));
-        else item = RamAsset::c( items->at(i) );
+        if (t == ShotProduction) item = RamShot::c(items->get(i));
+        else item = RamAsset::c( items->get(i) );
 
         RamStatus *status = item->status(this);
 
@@ -223,7 +222,7 @@ void RamStep::openFile(QString filePath) const
     // Get the application
     for (int i = 0; i < m_applications->rowCount(); i++)
     {
-        RamApplication *app = RamApplication::c( m_applications->at(i) );
+        RamApplication *app = RamApplication::c( m_applications->get(i) );
         if (app->open( filePath )) return;
     }
 
@@ -255,7 +254,7 @@ QList<RamObject *> RamStep::inputFileTypes()
 
     for ( int i = 0; i < m_applications->rowCount(); i++)
     {
-        RamApplication *app = RamApplication::c( m_applications->at(i) );
+        RamApplication *app = RamApplication::c( m_applications->get(i) );
         for (int f = 0; f < app->importFileTypes()->rowCount(); f++)
         {
             RamFileType *ft = RamFileType::c( app->importFileTypes()->get(f) );
@@ -277,7 +276,7 @@ QList<RamObject *> RamStep::outputFileTypes()
 
     for ( int i = 0; i < m_applications->rowCount(); i++)
     {
-        RamApplication *app = RamApplication::c( m_applications->at(i) );
+        RamApplication *app = RamApplication::c( m_applications->get(i) );
         for (int f = 0; f < app->exportFileTypes()->rowCount(); f++)
         {
             RamFileType *ft = RamFileType::c( app->exportFileTypes()->get(f) );
@@ -311,7 +310,7 @@ void RamStep::computeEstimation()
     if (t == PreProduction) return;
     if (t == PostProduction) return;
 
-    RamItemTable *items;
+    RamObjectModel *items;
     if (t == ShotProduction) items = m_project->shots();
     else items = m_project->assets();
 
@@ -328,8 +327,8 @@ void RamStep::computeEstimation()
     for (int i =0; i < items->rowCount(); i++)
     {
         RamAbstractItem *item;
-        if (t == ShotProduction) item = RamShot::c( items->at(i) );
-        else item = RamAsset::c( items->at(i) );
+        if (t == ShotProduction) item = RamShot::c( items->get(i) );
+        else item = RamAsset::c( items->get(i) );
         RamStatus *status = item->status(this);
 
         if (!status) continue;

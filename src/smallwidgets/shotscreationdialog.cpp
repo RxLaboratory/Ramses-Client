@@ -1,8 +1,6 @@
 #include "shotscreationdialog.h"
-#include "data-models/ramitemtable.h"
 #include "duqf-utils/utils.h"
 
-#include "processmanager.h"
 #include "ramsequence.h"
 
 ShotsCreationDialog::ShotsCreationDialog(RamProject *proj, QWidget *parent) :
@@ -14,7 +12,8 @@ ShotsCreationDialog::ShotsCreationDialog(RamProject *proj, QWidget *parent) :
     setupUi(this);
 
     // Add the Sequence selector
-    ui_sequenceBox = new RamObjectListComboBox(m_project->sequences(), this);
+    ui_sequenceBox = new RamObjectComboBox(this);
+    ui_sequenceBox->setObjectModel(m_project->sequences());
     ui_sequenceLayout->addWidget(ui_sequenceBox);
 
     QRegExp rxsn = RegExUtils::getRegExp("shotshortname");
@@ -64,7 +63,7 @@ void ShotsCreationDialog::create()
 
     if ( ui_shortNameEdit->text().count() > 9 + numDigits)
     {
-        QMessageBox::information(this, "Invalid ID", "Sorry, the ID can't have more than 10 characters, including the number.");
+        QMessageBox::information(this, tr("Invalid ID"), tr("Sorry, the ID can't have more than 10 characters, including the number."));
         return;
     }
 
@@ -72,6 +71,11 @@ void ShotsCreationDialog::create()
     int endNumber = ui_nEndEdit->text().toInt();
 
     RamSequence *seq = RamSequence::c( ui_sequenceBox->currentObject() );
+    if (!seq)
+    {
+        QMessageBox::information(this, tr("Invalid Sequence"), tr("You have to choose a sequence."));
+        return;
+    }
 
     ui_cancelButton->setEnabled(false);
     ui_createButton->setEnabled(false);
@@ -86,11 +90,9 @@ void ShotsCreationDialog::create()
                     getName(i),
                     seq
                     );
-        m_project->shots()->append(shot);
+        m_project->shots()->appendObject(shot->uuid());
         ui_progressBar->setValue( i - startNumber );
     }
-
-    m_project->shots()->reload();
 
     ui_progressBar->hide();
     ui_cancelButton->setEnabled(true);

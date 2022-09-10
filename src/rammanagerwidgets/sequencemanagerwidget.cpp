@@ -33,5 +33,5 @@ void SequenceManagerWidget::changeProject(RamProject *project)
     // empty list
     this->clear();
     if (!project) return;
-    this->setModel( project->sequences() );
+    this->setObjectModel( project->sequences() );
 }

@@ -47,10 +47,9 @@ signals:
 
 protected:
     virtual bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const override;
-
-private:
     void prepareFilter();
 
+private:
     // Config
     QString m_listName;
     bool m_isSingleColumn = false;

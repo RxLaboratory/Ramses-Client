@@ -570,7 +570,7 @@ bool RamObjectDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, co
                 RamStatus *status = qobject_cast<RamStatus*>(o);
                 RamStep *step = status->step();
                 RamAbstractItem *item = status->item();
-                item->statusHistory(step)->edit();
+                //item->statusHistory(step)->edit();
             }
             m_historyButtonPressed = false;
             m_historyButtonHover = QModelIndex();

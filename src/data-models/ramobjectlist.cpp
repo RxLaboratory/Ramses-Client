@@ -435,8 +435,6 @@ void RamObjectList::inserted(QString uuid, QString tableName)
 
 void RamObjectList::removeAll(RamObject *obj)
 {
-    qDebug() << "Removing";
-    qDebug() << obj;
     int row = objRow(obj);
     if (row<0) return;
 

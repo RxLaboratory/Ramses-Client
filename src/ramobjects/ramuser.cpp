@@ -109,7 +109,7 @@ bool RamUser::isStepAssigned(RamStep *step) const
     if (step->type() != RamStep::ShotProduction && step->type() != RamStep::AssetProduction) return false;
 
     // Check in status
-    RamItemTable *items;
+    RamObjectModel *items;
     RamStep::Type type = step->type();
     if (type == RamStep::ShotProduction) items = step->project()->shots();
     else items = step->project()->assets();
@@ -117,8 +117,8 @@ bool RamUser::isStepAssigned(RamStep *step) const
     for (int i =0; i < items->rowCount(); i++)
     {
         RamAbstractItem *item;
-        if (type == RamStep::ShotProduction) item = RamShot::c( items->at(i) );
-        else item = RamAsset::c( items->at(i) );
+        if (type == RamStep::ShotProduction) item = RamShot::c( items->get(i) );
+        else item = RamAsset::c( items->get(i) );
         RamStatus *status = item->status(step);
         if (!status) continue;
         if (this->is(status->assignedUser())) return true;

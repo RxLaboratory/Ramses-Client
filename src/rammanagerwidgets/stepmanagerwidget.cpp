@@ -20,7 +20,7 @@ ObjectManagerWidget(
     addButton->setPopupMode(QToolButton::InstantPopup);
     addButton->setMenu(ui_createMenu);
 
-    //ui_createMenu->setList(Ramses::instance()->templateSteps());
+    ui_createMenu->setObjectModel(Ramses::instance()->templateSteps());
 
     connect(ui_createMenu, &RamObjectMenu::createTriggered, this, &StepManagerWidget::createObject);
     connect(ui_createMenu, &RamObjectMenu::assigned, this, &StepManagerWidget::createFromTemplate);
@@ -44,9 +44,9 @@ RamStep *StepManagerWidget::createObject()
 void StepManagerWidget::changeProject(RamProject *project)
 {
     // empty list
-    this->setModel(nullptr);
+    this->setObjectModel(nullptr);
     if (!project) return;
-    this->setModel( project->steps() );
+    this->setObjectModel( project->steps() );
 }
 
 void StepManagerWidget::createFromTemplate(RamObject *templateStepObj)

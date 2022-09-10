@@ -3,14 +3,14 @@
 
 #include <QSplitter>
 
-#include "ramobjectlistview.h"
-#include "data-models/ramstepstatushistory.h"
+#include "ramobjectview.h"
+#include "ramstatus.h"
 
 class StatusHistoryWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit StatusHistoryWidget(RamStepStatusHistory *history, QWidget *parent = nullptr);
+    explicit StatusHistoryWidget(RamObjectModel *history, QWidget *parent = nullptr);
 
 signals:
 
@@ -19,7 +19,7 @@ private slots:
 
 private:
     void setupUi();
-    RamObjectListView *ui_statusList;
+    RamObjectView *ui_statusList;
 };
 
 #endif // STATUSHISTORYWIDGET_H

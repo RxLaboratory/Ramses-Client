@@ -20,7 +20,7 @@ public:
 
     TimelineView(QWidget *parent = nullptr);
     // Content
-    void setList(RamObjectList *shots);
+    void setObjectModel(RamObjectModel *shots);
     void zoom(double amount);
     double currentZoom() const;
 
@@ -55,7 +55,6 @@ private:
     // Delegate
     TimelineDelegate *m_delegate;
     // List
-    RamObjectList *m_emptyList;
     TimeLineProxy *m_objectList;
 
     // Settings

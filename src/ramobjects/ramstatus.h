@@ -96,7 +96,7 @@ public:
     virtual QString details() const override;
     virtual QString subDetails() const override;
 
-    virtual QVariant roleData(int role) const;
+    virtual QVariant roleData(int role) const override;
 
 public slots:
     virtual void edit(bool show = true) override;

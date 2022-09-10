@@ -3,7 +3,8 @@
 
 #include "ramobject.h"
 
-class RamObjectFilterModel;
+#include "ramobjectsortfilterproxymodel.h"
+
 #include "ramproject.h"
 
 class RamSequence : public RamObject
@@ -19,7 +20,6 @@ public:
     // METHODS //
 
     RamSequence(QString shortName, QString name, RamProject *project);
-
 
     int shotCount() const;
     double duration() const;
@@ -41,7 +41,7 @@ private:
     void setProject(RamProject *project);
 
     RamProject *m_project;
-    RamObjectFilterModel *m_shots;
+    RamObjectSortFilterProxyModel *m_shots;
 };
 
 #endif // RAMSEQUENCE_H

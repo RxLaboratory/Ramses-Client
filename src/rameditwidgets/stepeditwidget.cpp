@@ -39,7 +39,7 @@ void StepEditWidget::reInit(RamObject *obj)
         else if (m_step->type() == RamStep::ShotProduction) ui_typeBox->setCurrentIndex(2);
         else if (m_step->type() == RamStep::PostProduction) ui_typeBox->setCurrentIndex(3);
 
-        //m_applicationList->setModel(m_step->applications());
+       m_applicationList->setObjectModel(m_step->applications());
 
         ui_estimationMultiplierBox->setObjectModel(m_step->project()->assetGroups());
 
@@ -88,8 +88,7 @@ void StepEditWidget::createApplication()
     RamApplication *app = new RamApplication(
                 "NEW",
                 "New Application");
-    //Ramses::instance()->applications()->append(app);
-    m_step->applications()->append(app);
+    m_step->applications()->appendObject(app->uuid());
     app->edit();
 }
 

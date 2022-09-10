@@ -6,7 +6,7 @@
 #include <QScrollBar>
 #include <QSortFilterProxyModel>
 
-#include "data-models/ramitemfiltermodel.h"
+#include "ramitemsortfilterproxymodel.h"
 #include "ramobjectdelegateold.h"
 #include "ramuser.h"
 

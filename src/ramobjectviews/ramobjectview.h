@@ -51,6 +51,9 @@ protected:
     virtual void resizeEvent(QResizeEvent *event) override;
     virtual void showEvent(QShowEvent *event) override;
 
+    // Model
+    RamObjectSortFilterProxyModel *m_objectModel;
+
 protected slots:
     // Moved
     void rowMoved( int logicalIndex, int oldVisualIndex, int newVisualIndex);
@@ -63,9 +66,6 @@ private:
     void connectEvents();
 
     DisplayMode m_displayMode;
-
-    // Model
-    RamObjectSortFilterProxyModel *m_objectModel;
 
     // Delegate
     RamObjectDelegate *m_delegate;

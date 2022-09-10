@@ -2,7 +2,7 @@
 #define SEQUENCEEDITWIDGET_H
 
 #include "objecteditwidget.h"
-#include "objectlisteditwidget.h"
+#include "objectlistwidget.h"
 #include "duqf-widgets/duqfcolorselector.h"
 #include "ramsequence.h"
 
@@ -34,7 +34,7 @@ private:
 
     DuQFColorSelector *ui_colorSelector;
 
-    ObjectListEditWidget *ui_shotsList;
+    ObjectListWidget *ui_shotsList;
 };
 
 #endif // SEQUENCEEDITWIDGET_H

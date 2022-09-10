@@ -21,9 +21,7 @@ RamShot *TimelineManager::currentShot() const
 
 void TimelineManager::setCurrentShot(RamShot *newCurrentShot)
 {
-    qDebug() << newCurrentShot;
     if (m_currentShot == newCurrentShot) return;
     m_currentShot = newCurrentShot;
-    qDebug() << "changed";
     emit currentShotChanged(m_currentShot);
 }

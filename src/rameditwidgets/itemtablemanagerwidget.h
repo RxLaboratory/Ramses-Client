@@ -9,7 +9,7 @@
 #include <QClipboard>
 
 #include "duqf-widgets/duqftitlebar.h"
-#include "data-views/ramobjectlistview.h"
+#include "ramitemview.h"
 #include "duqf-widgets/duqfsearchedit.h"
 
 #include "data-views/ramobjectlistcombobox.h"
@@ -18,6 +18,7 @@
 
 #include "ramobjectmenu.h"
 #include "ramstatus.h"
+#include "ramstep.h"
 
 class ItemTableManagerWidget : public QWidget
 {
@@ -45,7 +46,7 @@ protected:
     void showEvent(QShowEvent *event) override;
     void hideEvent(QHideEvent *event) override;
 
-    RamObjectListView *ui_table;
+    RamItemView *ui_table;
     DuQFTitleBar *ui_titleBar;
     RamObjectListComboBox *ui_groupBox;
 

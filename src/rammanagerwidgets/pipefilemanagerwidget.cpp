@@ -30,5 +30,5 @@ void PipeFileManagerWidget::changeProject(RamProject *project)
     // empty list
     this->clear();
     if (!project) return;
-    this->setModel( project->pipeFiles() );
+    this->setObjectModel( project->pipeFiles() );
 }

@@ -57,7 +57,7 @@ ProjectPage::ProjectPage(QWidget *parent):
     // Create step from template menu
     RamObjectMenu *stepTemplateMenu = new RamObjectMenu(false, this);
     stepTemplateMenu->setTitle("Create from template...");
-    //stepTemplateMenu->setList( Ramses::instance()->templateSteps() );
+    stepTemplateMenu->setObjectModel( Ramses::instance()->templateSteps() );
     stepManager->menuButton()->menu()->addMenu(stepTemplateMenu);
 
     qDebug() << "  > steps ok";
@@ -75,7 +75,6 @@ ProjectPage::ProjectPage(QWidget *parent):
     agTemplateMenu->setTitle("Create from template...");
     agTemplateMenu->setObjectModel( Ramses::instance()->templateAssetGroups() );
     assetGroupManager->menuButton()->menu()->addMenu(agTemplateMenu);
-
     qDebug() << "  > asset groups ok";
 
     AssetManagerWidget *assetManager = new AssetManagerWidget(this);
@@ -95,7 +94,6 @@ ProjectPage::ProjectPage(QWidget *parent):
     // Create multiple shots
     QAction *createMultipleShotsAction = new QAction("Create multiple shots...", this);
     shotManager->menuButton()->menu()->addAction(createMultipleShotsAction);
-
     qDebug() << "  > shots ok";
 
     connect(Ramses::instance(), SIGNAL(currentProjectChanged(RamProject*)), this, SLOT(currentProjectChanged(RamProject*)));

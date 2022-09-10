@@ -58,10 +58,10 @@ void StatusEditWidget::reInit(RamObject *o)
         qint64 timeSpent = m_status->timeSpent();
         if (!m_status->isTimeSpentManual() || timeSpent == 0)
         {
-            RamStepStatusHistory *history = m_status->item()->statusHistory( m_status->step() );
+            RamObjectModel *history = m_status->item()->statusHistory( m_status->step() );
             if (history->rowCount() > 1)
             {
-                RamStatus *previous = RamStatus::c( history->at( history->rowCount() -2) );
+                RamStatus *previous = RamStatus::c( history->get( history->rowCount() -2) );
                 timeSpent = previous->timeSpent();
                 RamFileMetaDataManager mdm( m_status->path(RamObject::VersionsFolder ));
                 if (mdm.isValid())

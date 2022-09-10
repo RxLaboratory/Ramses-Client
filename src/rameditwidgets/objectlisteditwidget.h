@@ -15,7 +15,7 @@
 #include "ramobjectlistcombobox.h"
 #include "ramobjectlistmenu.h"
 #include "ramuser.h"
-#include "ramobjectlistview.h"
+#include "ramobjectview.h"
 
 /**
  * @brief The ObjectListEditWidget class displays and edits a RamObjectList

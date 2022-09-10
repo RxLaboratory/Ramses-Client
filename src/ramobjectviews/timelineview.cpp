@@ -3,13 +3,11 @@
 #include "ramproject.h"
 #include "timelinemanager.h"
 #include "ramses.h"
-#include "data-models/ramitemtable.h"
 
 TimelineView::TimelineView(QWidget *parent):
     QTableView(parent)
 {
     m_delegate = new TimelineDelegate();
-    m_emptyList = RamObjectList::emptyList();
 
     m_objectList = new TimeLineProxy(this);
     this->setModel(m_objectList);
@@ -18,13 +16,13 @@ TimelineView::TimelineView(QWidget *parent):
     connectEvents();
 }
 
-void TimelineView::setList(RamObjectList *shots)
+void TimelineView::setObjectModel(RamObjectModel *shots)
 {
-    if (m_objectList->sourceModel() != m_emptyList)
+    if (m_objectList->sourceModel() != RamObjectModel::emptyModel())
         disconnect(m_objectList->sourceModel(), nullptr, this, nullptr);
     if (!shots)
     {
-        m_objectList->setSourceModel(m_emptyList);
+        m_objectList->setSourceModel(RamObjectModel::emptyModel());
     }
     else
     {
@@ -127,18 +125,19 @@ void TimelineView::columnMoved(int logicalIndex, int oldVisualIndex, int newVisu
 
 void TimelineView::changeProject(RamProject *project)
 {
-    if (project) this->setList(project->shots());
-    else this->setList(nullptr);
+    if (project) this->setObjectModel(project->shots());
+    else this->setObjectModel(nullptr);
 }
 
 void TimelineView::select(const QModelIndex &index)
 {
-    quintptr iptr = index.data(Qt::UserRole).toULongLong();
-    if (iptr == 0) return;
-    RamShot *obj = reinterpret_cast<RamShot*>( iptr) ;
-    if (!obj) return;
+    QString shotUuid = index.data(RamObject::UUID).toString();
+    if (shotUuid == "") return;
+    RamShot *shot = RamShot::get( shotUuid );
+
+    if (!shot) return;
     this->selectionModel()->select(index, QItemSelectionModel::ClearAndSelect);
-    emit objectSelected(obj);
+    emit objectSelected(shot);
 }
 
 void TimelineView::selectShot(RamShot *shot)
@@ -150,8 +149,10 @@ void TimelineView::select(RamObject *o)
 {
     for (int i = 0; i< m_objectList->columnCount(); i++)
     {
-        quintptr iptr = m_objectList->data( m_objectList->index(0, i), Qt::UserRole).toULongLong();
-        RamShot *shot = reinterpret_cast<RamShot*>( iptr );
+        QString shotUuid = m_objectList->data( m_objectList->index(0, i), RamObject::UUID).toString();
+        if (shotUuid == "") return;
+        RamShot *shot = RamShot::get( shotUuid );
+        if (!shot) return;
         if (shot->is(o))
         {
             QModelIndex index = m_objectList->index(0, i);

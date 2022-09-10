@@ -45,7 +45,7 @@ void AssetGroupManagerWidget::changeProject(RamProject *project)
     // empty list
     this->clear();
     if (!project) return;
-    this->setModel( project->assetGroups() );
+    this->setObjectModel( project->assetGroups() );
 }
 
 void AssetGroupManagerWidget::createFromTemplate(RamObject *templateAGObj)

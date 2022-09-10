@@ -1,7 +1,6 @@
 #include "sequenceeditwidget.h"
 
 #include "ramsequence.h"
-#include "data-models/ramitemtable.h"
 #include "ramshot.h"
 
 SequenceEditWidget::SequenceEditWidget(QWidget *parent) :
@@ -29,13 +28,13 @@ void SequenceEditWidget::reInit(RamObject *o)
     m_sequence = qobject_cast<RamSequence*>(o);
     if (m_sequence)
     {
-        ui_shotsList->setList(m_sequence->project()->shots());
+        ui_shotsList->setObjectModel( m_sequence->project()->shots() );
         ui_shotsList->setFilter(m_sequence);
         ui_colorSelector->setColor(m_sequence->color());
     }
     else
     {
-        ui_shotsList->setList(nullptr);
+        ui_shotsList->setObjectModel(nullptr);
         ui_colorSelector->setColor(QColor(67,67,67));
     }
 }
@@ -53,7 +52,7 @@ void SequenceEditWidget::createShot()
                 "NEW",
                 "New Shot",
                 m_sequence);
-    m_sequence->project()->shots()->append(shot);
+    m_sequence->project()->shots()->appendObject(shot->uuid());
     shot->edit();
 }
 
@@ -65,8 +64,8 @@ void SequenceEditWidget::setupUi()
     ui_colorSelector = new DuQFColorSelector(this);
     ui_mainFormLayout->addWidget(ui_colorSelector, 3, 1);
 
-    ui_shotsList = new ObjectListEditWidget(true, RamUser::ProjectAdmin, this);
-    ui_shotsList->setEditMode(ObjectListEditWidget::UnassignObjects);
+    ui_shotsList = new ObjectListWidget(true, RamUser::ProjectAdmin, this);
+    ui_shotsList->setEditMode(ObjectListWidget::UnassignObjects);
     ui_shotsList->setTitle("Shots");
     ui_mainLayout->addWidget(ui_shotsList);
 }

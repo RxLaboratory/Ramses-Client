@@ -34,9 +34,9 @@ public:
     // Sequences
     RamObjectModel *sequences() const;
     // Shots
-    RamItemTable *shots() const;
+    RamObjectModel *shots() const;
     // Assets
-    RamItemTable *assets() const;
+    RamObjectModel *assets() const;
     // Pipeline
     RamObjectModel *pipeline() const;
     RamObjectModel *pipeFiles() const;
@@ -121,8 +121,8 @@ private:
     RamObjectModel *m_steps;
     RamObjectModel *m_sequences;
     RamObjectModel *m_assetGroups;
-    RamItemTable *m_assets;
-    RamItemTable *m_shots;
+    RamObjectModel *m_assets;
+    RamObjectModel *m_shots;
     RamObjectModel *m_pipeline;
     RamObjectModel *m_pipeFiles;
     RamObjectModel *m_users;

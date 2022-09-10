@@ -15,10 +15,10 @@ ObjectManagerWidget::ObjectManagerWidget(RamObjectModel *objectModel, QString ti
     setupUi(title,icon);
     connectEvents();
     m_listWidget->setTitle(title);
-    setModel(objectModel);
+    setObjectModel(objectModel);
 }
 
-void ObjectManagerWidget::setModel(RamObjectModel *objectModel)
+void ObjectManagerWidget::setObjectModel(RamObjectModel *objectModel)
 {
     m_listWidget->setObjectModel( objectModel );
     if (!objectModel) return;

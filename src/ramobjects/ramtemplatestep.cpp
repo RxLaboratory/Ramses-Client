@@ -44,13 +44,6 @@ RamTemplateStep::RamTemplateStep(QString shortName, QString name, ObjectType typ
     RamObject(shortName, name, type)
 {
     construct();
-
-    QJsonObject d = data();
-
-    m_applications = new RamObjectList(shortName + "-Apps", name + " | Applications", Application, RamObjectList::ListObject, this);
-    d.insert("applications", m_applications->uuid());
-
-    setData(d);
 }
 
 RamTemplateStep::RamTemplateStep(QString uuid, ObjectType type):
@@ -58,10 +51,10 @@ RamTemplateStep::RamTemplateStep(QString uuid, ObjectType type):
 {
     construct();
 
-    m_applications = RamObjectList::get( getData("applications").toString() );
+    loadModel(m_applications, "applications");
 }
 
-RamObjectList *RamTemplateStep::applications() const
+RamObjectModel *RamTemplateStep::applications() const
 {
     return m_applications;
 }
@@ -233,4 +226,6 @@ void RamTemplateStep::construct()
     m_existingObjects[m_uuid] = this;
     m_icon = ":/icons/step";
     m_editRole = Admin;
+
+    m_applications = createModel(RamObject::Application, "applications");
 }

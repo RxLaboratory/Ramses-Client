@@ -3,7 +3,6 @@
 #include "ramses.h"
 #include "rampipe.h"
 #include "projecteditwidget.h"
-#include "data-models/ramitemtable.h"
 #include "ramshot.h"
 
 QMap<QString, RamProject*> RamProject::m_existingObjects = QMap<QString, RamProject*>();
@@ -37,6 +36,8 @@ RamProject::RamProject(QString uuid):
     construct();
 
     QJsonObject d = data();
+    loadModel(m_shots, "shots", d);
+    loadModel(m_assets, "assets", d);
     loadModel(m_users, "users", d);
     loadModel(m_scheduleComments, "scheduleComments", d);
     loadModel(m_pipeFiles, "pipeFiles", d);
@@ -63,12 +64,12 @@ RamObjectModel *RamProject::sequences() const
     return m_sequences;
 }
 
-RamItemTable *RamProject::shots() const
+RamObjectModel *RamProject::shots() const
 {
     return m_shots;
 }
 
-RamItemTable *RamProject::assets() const
+RamObjectModel *RamProject::assets() const
 {
     return m_assets;
 }
@@ -403,8 +404,8 @@ void RamProject::construct()
     m_icon = ":/icons/project";
     m_editRole = Admin;
 
-    getCreateLists();
-
+    m_shots = createModel(RamObject::Shot, "shots");
+    m_assets = createModel(RamObject::Asset, "assets");
     m_users = createModel(RamObject::User, "users" );
     m_scheduleComments = createModel(RamObject::ScheduleComment, "scheduleComments" );
     m_pipeFiles = createModel(RamObject::PipeFile, "pipeFiles" );
@@ -412,31 +413,8 @@ void RamProject::construct()
     m_pipeline = createModel(RamObject::Pipe, "pipeline" );
     m_sequences = createModel(RamObject::Sequence, "sequences" );
     m_assetGroups = createModel(RamObject::AssetGroup, "assetGroups" );
+
+    m_shots->setColumnModel(m_steps);
+    m_assets->setColumnModel(m_steps);
 }
 
-void RamProject::getCreateLists()
-{
-    QJsonObject d = data();
-
-    QString uuid = d.value("shots").toString();
-    if (uuid == "") m_shots = new RamItemTable("sht", "Shots", Shot, this);
-    else m_shots = RamItemTable::get( uuid );
-    m_shots->setParent(this);
-    d.insert("shots", m_shots->uuid());
-
-    uuid = d.value("assets").toString();
-    if (uuid == "") m_assets = new RamItemTable("asst", "Assets", Asset, this);
-    else m_assets = RamItemTable::get( uuid );
-    m_assets->setParent(this);
-    d.insert("assets", m_assets->uuid());
-
-    // Connect assets and shots to steps
-    /*connect(m_steps, &RamObjectList::rowsInserted, m_assets, &RamItemTable::newSteps);
-    connect(m_steps, &RamObjectList::rowsInserted, m_shots, &RamItemTable::newSteps);
-    connect(m_steps, &RamObjectList::rowsRemoved, m_assets, &RamItemTable::removeSteps);
-    connect(m_steps, &RamObjectList::rowsRemoved, m_shots, &RamItemTable::removeSteps);
-    connect(m_steps, &RamObjectList::rowsMoved, m_assets, &RamItemTable::moveSteps);
-    connect(m_steps, &RamObjectList::rowsMoved, m_shots, &RamItemTable::moveSteps);*/
-
-    setData(d);
-}

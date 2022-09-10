@@ -216,7 +216,6 @@ void RamObjectView::setupUi()
     style += "QTableView::item:hover { background-color: none; } ";
     this->setStyleSheet(style);
 
-    // TODO New delegate
     m_delegate = new RamObjectDelegate();
     this->setItemDelegate( m_delegate );
 

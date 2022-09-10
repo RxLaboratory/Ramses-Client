@@ -1,11 +1,9 @@
 ﻿#include "statushistorywidget.h"
 
-#include "ramstatus.h"
-
-StatusHistoryWidget::StatusHistoryWidget(RamStepStatusHistory *history, QWidget *parent) : QWidget(parent)
+StatusHistoryWidget::StatusHistoryWidget(RamObjectModel *history, QWidget *parent) : QWidget(parent)
 {
     setupUi();
-    ui_statusList->setList(history);
+    ui_statusList->setObjectModel(history);
 }
 
 void StatusHistoryWidget::editObject(RamStatus *obj) const
@@ -21,7 +19,7 @@ void StatusHistoryWidget::setupUi()
     layout->setContentsMargins(0,0,0,0);
     layout->setSpacing(3);
 
-    ui_statusList = new RamObjectListView( RamObjectListView::List, this);
+    ui_statusList = new RamObjectView( RamObjectView::List, this);
     ui_statusList->setEditableObjects(true, RamUser::Admin);
     layout->addWidget( ui_statusList );
 }

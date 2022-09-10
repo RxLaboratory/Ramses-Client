@@ -4,7 +4,6 @@
 #include "ramsequence.h"
 
 #include "shotscreationdialog.h"
-#include "data-models/ramitemtable.h"
 
 ShotManagerWidget::ShotManagerWidget(QWidget *parent):
     ObjectManagerWidget(
@@ -51,7 +50,7 @@ RamShot *ShotManagerWidget::createObject()
                 seq
                 );
 
-    project->shots()->append(shot);
+    project->shots()->appendObject(shot->uuid());
     shot->edit();
     return shot;
 }
@@ -61,7 +60,7 @@ void ShotManagerWidget::changeProject(RamProject *project)
     // empty list
     this->clear();
     if (!project) return;
-    //this->setModel( project->shots() );
+    this->setObjectModel( project->shots() );
     m_listWidget->setFilterList( project->sequences() );
 }
 

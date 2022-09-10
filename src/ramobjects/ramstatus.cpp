@@ -45,8 +45,6 @@ RamStatus *RamStatus::copy(RamStatus *other, RamUser *user)
     status->setUseAutoEstimation( other->useAutoEstimation() );
     status->setComment( other->comment() );
 
-    qDebug() << user;
-
     return status;
 }
 
@@ -392,7 +390,7 @@ float RamStatus::estimation(int difficulty) const
             int numAssets = 0;
             for (int i = 0; i < shot->assets()->rowCount(); i++)
             {
-                RamAsset *asset = qobject_cast<RamAsset*>( shot->assets()->at(i) );
+                RamAsset *asset = RamAsset::c( shot->assets()->get(i) );
                 if (asset->assetGroup()->is(ag)) numAssets++;
             }
             if (numAssets > 0) est *= numAssets;
@@ -618,6 +616,7 @@ QVariant RamStatus::roleData(int role) const
         if (u) return u->color();
         return QColor();
     }
+    case RamAbstractObject::Difficulty: return this->difficulty();
     }
 
     return RamObject::roleData(role);

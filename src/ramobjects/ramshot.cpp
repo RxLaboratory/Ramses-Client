@@ -46,6 +46,7 @@ RamShot::RamShot(QString uuid):
     RamAbstractItem(uuid, Shot)
 {
     construct();
+    loadModel(m_assets, "assets");
 }
 
 RamSequence *RamShot::sequence() const
@@ -68,14 +69,14 @@ void RamShot::setDuration(const qreal &duration)
     insertData("duration", duration);
 }
 
-RamObjectList *RamShot::assets() const
+RamObjectModel *RamShot::assets() const
 {
     return m_assets;
 }
 
 RamAsset *RamShot::assetAt(int row) const
 {
-    return qobject_cast<RamAsset*>( m_assets->at(row) );
+    return RamAsset::c( m_assets->get(row) );
 }
 
 QString RamShot::filterUuid() const
@@ -98,7 +99,7 @@ QString RamShot::details() const
     QMap<QString,QStringList> assts;
     for (int i = 0; i < assets()->rowCount(); i++)
     {
-        RamAsset *asset = qobject_cast<RamAsset*>(assets()->at(i));
+        RamAsset *asset = RamAsset::c(assets()->get(i));
         QString agName = asset->assetGroup()->name();
         QStringList ag = assts.value( agName );
         ag << asset->shortName();
@@ -139,23 +140,8 @@ void RamShot::construct()
     m_existingObjects[m_uuid] = this;
     m_icon = ":/icons/shot";
     m_editRole = ProjectAdmin;
-    getCreateLists();
+    m_assets = createModel(RamObject::Asset, "assets");
 }
-
-void RamShot::getCreateLists()
-{
-    QJsonObject d = data();
-
-    QString uuid = d.value("assets").toString();
-    if (uuid == "") m_assets = new RamObjectList("assets", "Assets", Asset, RamObjectList::ListObject, this);
-    else m_assets = RamObjectList::get( uuid );
-    m_assets->setParent(this);
-    d.insert("assets", m_assets->uuid());
-
-    setData(d);
-}
-
-
 
 
 

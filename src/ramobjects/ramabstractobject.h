@@ -37,7 +37,9 @@ public:
         DetailedSizeHint = Qt::UserRole+18,
         IsPM = Qt::UserRole+19,
         Date = Qt::UserRole+20,
-        IsComment = Qt::UserRole+21
+        IsComment = Qt::UserRole+21,
+        DefaultSortOrder = Qt::UserRole+22,
+        Difficulty = Qt::UserRole+23
     };
     /**
      * @brief The ObjectType enum lists all types of RamObjects

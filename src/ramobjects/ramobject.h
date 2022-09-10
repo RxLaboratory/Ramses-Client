@@ -32,6 +32,7 @@ public:
 
     virtual QString filterUuid() const { return QString(); };
     virtual QStringList filterListUuids() const { return QStringList(); }
+    virtual RamObject *objectForColumn(QString columnUuid) const;
 
     virtual bool canEdit();
 

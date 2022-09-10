@@ -12,7 +12,7 @@ class ObjectManagerWidget : public QWidget
 public:
     explicit ObjectManagerWidget(QString title, QIcon icon = QIcon(), QWidget *parent = nullptr);
     explicit ObjectManagerWidget(RamObjectModel *objectModel, QString title, QIcon icon = QIcon(), QWidget *parent = nullptr);
-    void setModel(RamObjectModel *objectModel);
+    void setObjectModel(RamObjectModel *objectModel);
     void clear();
     QString currentFilterUuid() const;
     RamObject *currentFilter() const;

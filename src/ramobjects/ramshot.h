@@ -30,7 +30,7 @@ public:
     qreal duration() const;
     void setDuration(const qreal &duration);
 
-    RamObjectList *assets() const;
+    RamObjectModel *assets() const;
     RamAsset *assetAt(int row) const;
 
     virtual QString filterUuid() const override;
@@ -47,9 +47,8 @@ protected:
 
 private:
     void construct();
-    void getCreateLists();
 
-    RamObjectList *m_assets;
+    RamObjectModel *m_assets;
 };
 
 #endif // RAMSHOT_H

@@ -1,19 +1,19 @@
 #ifndef RAMITEMFILTERMODEL_H
 #define RAMITEMFILTERMODEL_H
 
-#include "ramobjectfiltermodel.h"
+#include "ramobjectsortfilterproxymodel.h"
 #include "ramstep.h"
 
 /**
  * @brief The RamItemFilterModel class is used to filters items according to current state, step or assigned user.
  * It also sorts the items according to: their completion ratio, their estimation, their time spent, their difficulty, their name or their ID (or default)
  */
-class RamItemFilterModel : public RamObjectFilterModel
+class RamItemSortFilterProxyModel : public RamObjectSortFilterProxyModel
 {
     Q_OBJECT
 public:
 
-    explicit RamItemFilterModel(QObject *parent = nullptr);
+    explicit RamItemSortFilterProxyModel(QObject *parent = nullptr);
 
     void freeze();
     void unFreeze();
@@ -34,8 +34,8 @@ public:
     void showStep(RamObject *s);
     void showAllSteps();
 
-    RamObjectList::DataRole sortMode() const;
-    void setSortMode(RamObjectList::DataRole newSortMode);
+    RamObject::DataRole sortMode() const;
+    void setSortMode(RamObject::DataRole newSortMode);
 
 public slots:
     void resort(int col, Qt::SortOrder order = Qt::AscendingOrder);
@@ -62,7 +62,7 @@ private:
 
     bool m_frozen = false;
 
-    RamObjectList::DataRole m_sortMode = RamObjectList::DefaultSortOrder;
+    RamObject::DataRole m_sortMode = RamObject::DefaultSortOrder;
 };
 
 #endif // RAMITEMFILTERMODEL_H

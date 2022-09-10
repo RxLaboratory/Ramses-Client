@@ -345,7 +345,7 @@ void PipelineWidget::userChanged(RamUser *u)
     // Load template steps
     if (init)
     {
-        //for (int i = 0; i < Ramses::instance()->templateSteps()->rowCount(); i++) newTemplateStep( Ramses::instance()->templateSteps()->at(i) );
+        for (int i = 0; i < Ramses::instance()->templateSteps()->rowCount(); i++) newTemplateStep( Ramses::instance()->templateSteps()->get(i) );
         connect(Ramses::instance()->templateSteps(), SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(templateStepInserted(QModelIndex,int,int)));
         connect(Ramses::instance()->templateSteps(), SIGNAL(rowsAboutToBeRemoved(QModelIndex,int,int)), this, SLOT(templateStepRemoved(QModelIndex,int,int)));
         init = false;
@@ -376,8 +376,8 @@ void PipelineWidget::templateStepInserted(const QModelIndex &parent, int first, 
 
     for (int i = first; i <= last; i++)
     {
-        //RamObject *o = Ramses::instance()->templateSteps()->at(i);
-        //newTemplateStep(o);
+       RamObject *o = Ramses::instance()->templateSteps()->get(i);
+        newTemplateStep(o);
     }
 }
 
@@ -391,7 +391,6 @@ void PipelineWidget::newTemplateStep(RamObject *obj)
     ui_stepMenu->insertAction(ui_stepMenuSeparator, stepAction);
     connect(stepAction, &QAction::triggered, this, &PipelineWidget::assignStep);
     connect(obj, &RamObject::dataChanged, this, &PipelineWidget::templateStepChanged);
-
 }
 
 void PipelineWidget::templateStepRemoved(const QModelIndex &parent, int first, int last)
@@ -402,7 +401,7 @@ void PipelineWidget::templateStepRemoved(const QModelIndex &parent, int first, i
 
     for (int i = first; i <= last; i++)
     {
-        /*RamObject *removedObj = Ramses::instance()->templateSteps()->at(i);
+        RamObject *removedObj = Ramses::instance()->templateSteps()->get(i);
         for (int j = actions.count() -1; j >= 0; j--)
         {
             quintptr iptr = actions.at(j)->data().toULongLong();
@@ -413,7 +412,7 @@ void PipelineWidget::templateStepRemoved(const QModelIndex &parent, int first, i
                 actions.at(j)->deleteLater();
                 break;
             }
-        }*/
+        }
     }
 }
 
@@ -527,7 +526,6 @@ void PipelineWidget::connectionRemoved(DuQFConnection *co)
     if (!input) return;
 
     RamPipe *p = project->pipe(output, input);
-    qDebug() << p;
     if (p) p->remove();
 }
 

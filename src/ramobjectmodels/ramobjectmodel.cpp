@@ -12,6 +12,10 @@ RamObjectModel::RamObjectModel(RamAbstractObject::ObjectType type, QObject *pare
     : QAbstractTableModel{parent}
 {
     m_type = type;
+    m_columnObjects = new RamObjectSortFilterProxyModel();
+    connect(m_columnObjects, &RamObjectModel::rowsInserted, this, &RamObjectModel::insertModelColumns);
+    connect(m_columnObjects, &RamObjectModel::rowsAboutToBeMoved, this, &RamObjectModel::removeModelColumns);
+    connect(m_columnObjects, &RamObjectModel::rowsMoved, this, &RamObjectModel::moveModelColumns);
 }
 
 int RamObjectModel::rowCount(const QModelIndex &parent) const
@@ -23,7 +27,7 @@ int RamObjectModel::rowCount(const QModelIndex &parent) const
 int RamObjectModel::columnCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent);
-    return 1 + m_columnObjectsUuids.count();
+    return 1 + m_columnObjects->rowCount();
 }
 
 QVariant RamObjectModel::data(const QModelIndex &index, int role) const
@@ -31,14 +35,21 @@ QVariant RamObjectModel::data(const QModelIndex &index, int role) const
     int row = index.row();
     int col = index.column();
 
-    if (col == 0)
-    {
-        QString uuid = m_objectsUuids.at(row);
-        return objectRoleData(uuid, role);
-    }
+    QString uuid = m_objectsUuids.at(row);
 
-    // TODO What should we return for other columns?
-    return "";
+    if (col == 0) return objectRoleData(uuid, role);
+
+    // For other columns
+    // Get the object
+    RamObject *obj = getObject(uuid);
+    if (!obj) return uuid;
+    QString colUuid = m_columnObjects->data(
+                m_columnObjects->index(col-1, 0),
+                RamObject::UUID
+                ).toString();
+    RamObject *colObj = obj->objectForColumn(colUuid);
+    if (!colObj) return QVariant();
+    return colObj->roleData(role);
 }
 
 QVariant RamObjectModel::headerData(int section, Qt::Orientation orientation, int role) const
@@ -57,8 +68,7 @@ QVariant RamObjectModel::headerData(int section, Qt::Orientation orientation, in
 
     if (section > 0)
     {
-        QString uuid = m_columnObjectsUuids.at(section - 1);
-        return objectRoleData(uuid, role);
+        return m_columnObjects->headerData(section-1, Qt::Horizontal, role);
     }
 
     return QAbstractTableModel::headerData(section, orientation, role);
@@ -71,7 +81,6 @@ void RamObjectModel::insertObjects(int row, QStringList uuids)
     for (int i = uuids.count()-1; i >= 0; i--)
     {
         QString uuid = uuids.at(i);
-        qDebug() << uuid;
         m_objectsUuids.insert(row, uuid);
         connectObject( uuid );
     }
@@ -99,37 +108,16 @@ void RamObjectModel::removeObjects(QStringList uuids)
     }
 }
 
-void RamObjectModel::insertColumnObjects(int column, QStringList uuids)
+void RamObjectModel::setColumnModel(RamObjectModel *model)
 {
-    beginInsertColumns(QModelIndex(), column+1, column+uuids.count());
-
-    for (int i = uuids.count()-1; i >= 0; i--)
-    {
-        QString uuid = uuids.at(i);
-        m_columnObjectsUuids.insert(column, uuid);
-        connectObject( uuid );
-    }
-
-    endInsertColumns();
+    beginResetModel();
+    m_columnObjects->setSourceModel(model);
+    endResetModel();
 }
 
-void RamObjectModel::removeColumnObjects(QStringList uuids)
+RamObjectSortFilterProxyModel *RamObjectModel::columnModel() const
 {
-    // TODO maybe group calls to batch remove contiguous rows
-    // if there are performance issues
-    // beginRemoveRows can take a group of rows
-    while(!uuids.isEmpty())
-    {
-        QString uuid = uuids.takeLast();
-        int i = m_columnObjectsUuids.indexOf(uuid);
-        if (i>=0) disconnectObject(uuid);
-        while( i >= 0 )
-        {
-            beginRemoveRows(QModelIndex(), i+1, i+1);
-            m_columnObjectsUuids.removeAt(i);
-            endRemoveRows();
-        }
-    }
+    return m_columnObjects;
 }
 
 bool RamObjectModel::moveRows(const QModelIndex &sourceParent, int sourceRow, int count, const QModelIndex &destinationParent, int destinationChild)
@@ -157,6 +145,8 @@ bool RamObjectModel::moveRows(const QModelIndex &sourceParent, int sourceRow, in
 
 void RamObjectModel::clear()
 {
+    if (rowCount() == 0) return;
+
     beginResetModel();
 
     while(m_objectsUuids.count() > 0)
@@ -232,17 +222,53 @@ void RamObjectModel::objectDataChanged(RamObject *obj)
     if (row >= 0 && row < m_objectsUuids.count())
     {
         QModelIndex i = index(row, 0);
-        emit dataChanged(i, i);
+        QModelIndex iEnd = index(row, columnCount() -1);
+        emit dataChanged(i, iEnd);
         emit headerDataChanged(Qt::Vertical, row, row);
         return;
     }
-    int col = m_columnObjectsUuids.indexOf(uuid);
-    if (col >= 0 && col < m_columnObjectsUuids.count())
+}
+
+void RamObjectModel::columnDataChanged(RamObject *obj)
+{
+    for (int i = 0; i < m_columnObjects->rowCount(); i++)
     {
-        emit headerDataChanged(Qt::Horizontal, col, col);
-        return;
+        if (obj->is( m_columnObjects->get(i)))
+        {
+            int col = i+1;
+            QModelIndex iStart = index(0, col);
+            QModelIndex iEnd = index(rowCount() - 1, col);
+            emit dataChanged(iStart, iEnd);
+            emit headerDataChanged(Qt::Horizontal, col, col);
+            return;
+        }
     }
-    // TODO for columns
+}
+
+void RamObjectModel::insertModelColumns(const QModelIndex &parent, int first, int last)
+{
+    beginInsertColumns(parent, first+1, last+1);
+    for (int i = first; i <= last; i++) {
+        RamObject *obj = m_columnObjects->get(i);
+        connect(obj, &RamObject::dataChanged, this, &RamObjectModel::columnDataChanged);
+    }
+    endInsertColumns();
+}
+
+void RamObjectModel::removeModelColumns(const QModelIndex &parent, int first, int last)
+{
+    beginRemoveColumns(parent, first+1, last+1);
+    for (int i = first; i <= last; i++) {
+        RamObject *obj = m_columnObjects->get(i);
+        disconnect(obj, nullptr, this, nullptr);
+    }
+    endRemoveColumns();
+}
+
+void RamObjectModel::moveModelColumns(const QModelIndex &parent, int start, int end, const QModelIndex &destination, int row)
+{
+    beginMoveColumns(parent, start+1, end+1, destination, row);
+    endMoveColumns();
 }
 
 RamObject *RamObjectModel::getObject(QString uuid) const

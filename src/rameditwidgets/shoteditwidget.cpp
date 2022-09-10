@@ -38,9 +38,9 @@ void ShotEditWidget::reInit(RamObject *o)
         ui_sequencesBox->setObject( m_shot->sequence() );
 
         // Set assets
-        //ui_assetList->setObjectModel( m_shot->assets() );
+        ui_assetList->setObjectModel( m_shot->assets() );
         ui_assetList->setFilterList( project->assetGroups() );
-        //ui_assetList->setAssignList( project->assets() );
+        ui_assetList->setAssignList( project->assets() );
     }
     else
     {

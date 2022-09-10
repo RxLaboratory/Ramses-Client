@@ -5,7 +5,6 @@
 
 #include "ramproject.h"
 #include "ramobjectsortfilterproxymodel.h"
-class RamAsset;
 
 class RamAssetGroup : public RamTemplateAssetGroup
 {

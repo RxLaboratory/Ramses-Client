@@ -6,7 +6,6 @@
 #include "ramassetgroup.h"
 #include "ramsequence.h"
 #include "shotscreationdialog.h"
-#include "data-models/ramitemtable.h"
 
 ItemTableManagerWidget::ItemTableManagerWidget(RamTemplateStep::Type type, QWidget *parent) : QWidget(parent)
 {   
@@ -91,7 +90,7 @@ void ItemTableManagerWidget::deselectUsers()
 
 void ItemTableManagerWidget::showUnassigned(bool show)
 {
-    ui_table->filteredList()->showUnassigned(show);
+    ui_table->filteredModel()->showUnassigned(show);
     if (show) ui_table->resizeRowsToContents();
     checkUserFilters();
 }
@@ -168,7 +167,7 @@ void ItemTableManagerWidget::projectChanged(RamProject *project, bool force)
     {
         actions.at(i)->deleteLater();
     }
-    ui_table->filteredList()->showAllSteps();
+    ui_table->filteredModel()->showAllSteps();
 
     // Clear user list
     actions = ui_userMenu->actions();
@@ -176,13 +175,13 @@ void ItemTableManagerWidget::projectChanged(RamProject *project, bool force)
     {
         actions.at(i)->deleteLater();
     }
-    ui_table->filteredList()->clearUsers();
+    ui_table->filteredModel()->clearUsers();
 
     m_project = project;
 
     if(!project)
     {
-        ui_table->setList(nullptr);
+        ui_table->setObjectModel(nullptr);
         return;
     }
 
@@ -202,12 +201,12 @@ void ItemTableManagerWidget::showUser(RamObject *user, bool s)
     if(!m_project) return;
     if(s)
     {
-        ui_table->filteredList()->showUser( user );
+        ui_table->filteredModel()->showUser( user );
         //ui_table->resizeRowsToContents();
     }
     else
     {
-        ui_table->filteredList()->hideUser( user );
+        ui_table->filteredModel()->hideUser( user );
     }
     checkUserFilters();
 }
@@ -217,13 +216,13 @@ void ItemTableManagerWidget::showStep(RamObject *step, bool s)
     if(!m_project) return;
     if (s)
     {
-        ui_table->filteredList()->showStep( step );
+        ui_table->filteredModel()->showStep( step );
         ui_table->resizeColumnsToContents();
         //ui_table->resizeRowsToContents();
     }
     else
     {
-        ui_table->filteredList()->hideStep( step );
+        ui_table->filteredModel()->hideStep( step );
     }
     checkStepFilters();
 }
@@ -233,12 +232,12 @@ void ItemTableManagerWidget::showState(RamObject *state, bool s)
     if(!m_project) return;
     if(s)
     {
-        ui_table->filteredList()->showState(state);
+        ui_table->filteredModel()->showState(state);
         ui_table->resizeRowsToContents();
     }
     else
     {
-        ui_table->filteredList()->hideState(state);
+        ui_table->filteredModel()->hideState(state);
     }
     checkStateFilters();
 }
@@ -331,7 +330,7 @@ void ItemTableManagerWidget::sortDefault(bool sort)
     uncheckSort();
     ui_actionSortDefault->setChecked(true);
     ui_header->setSortable(false);
-    ui_table->filteredList()->setSortMode(RamObjectList::DefaultSortOrder);
+    ui_table->filteredModel()->setSortMode(RamObject::DefaultSortOrder);
 }
 
 void ItemTableManagerWidget::sortByShortName(bool sort)
@@ -340,7 +339,7 @@ void ItemTableManagerWidget::sortByShortName(bool sort)
     ui_actionSortByShortName->setChecked(sort);
     ui_header->setSortable(sort);
     ui_actionSortDefault->setChecked( !sort );
-    ui_table->filteredList()->setSortMode(RamObjectList::ShortName);
+    ui_table->filteredModel()->setSortMode(RamObject::ShortName);
 }
 
 void ItemTableManagerWidget::sortByName(bool sort)
@@ -349,7 +348,7 @@ void ItemTableManagerWidget::sortByName(bool sort)
     ui_actionSortByName->setChecked(sort);
     ui_header->setSortable(sort);
     ui_actionSortDefault->setChecked( !sort );
-    ui_table->filteredList()->setSortMode(RamObjectList::Name);
+    ui_table->filteredModel()->setSortMode(RamObject::Name);
 }
 
 void ItemTableManagerWidget::sortByDifficulty(bool sort)
@@ -358,7 +357,7 @@ void ItemTableManagerWidget::sortByDifficulty(bool sort)
     ui_actionSortByDifficulty->setChecked(sort);
     ui_header->setSortable(sort);
     ui_actionSortDefault->setChecked( !sort );
-    ui_table->filteredList()->setSortMode(RamObjectList::Difficulty);
+    ui_table->filteredModel()->setSortMode(RamObject::Difficulty);
 }
 
 void ItemTableManagerWidget::sortByTimeSpent(bool sort)
@@ -367,7 +366,7 @@ void ItemTableManagerWidget::sortByTimeSpent(bool sort)
     ui_actionSortByTimeSpent->setChecked(sort);
     ui_header->setSortable(sort);
     ui_actionSortDefault->setChecked( !sort );
-    ui_table->filteredList()->setSortMode(RamObjectList::TimeSpent);
+    ui_table->filteredModel()->setSortMode(RamObject::TimeSpent);
 }
 
 void ItemTableManagerWidget::sortByEstimation(bool sort)
@@ -376,7 +375,7 @@ void ItemTableManagerWidget::sortByEstimation(bool sort)
     ui_actionSortByEstimation->setChecked(sort);
     ui_header->setSortable(sort);
     ui_actionSortDefault->setChecked( !sort );
-    ui_table->filteredList()->setSortMode(RamObjectList::Estimation);
+    ui_table->filteredModel()->setSortMode(RamObject::Estimation);
 }
 
 void ItemTableManagerWidget::sortByCompletion(bool sort)
@@ -385,7 +384,7 @@ void ItemTableManagerWidget::sortByCompletion(bool sort)
     ui_actionSortByCompletion->setChecked(sort);
     ui_header->setSortable(sort);
     ui_actionSortDefault->setChecked( !sort );
-    ui_table->filteredList()->setSortMode(RamObjectList::Completion);
+    ui_table->filteredModel()->setSortMode(RamObject::Completion);
 }
 
 void ItemTableManagerWidget::unassignUser()
@@ -534,7 +533,7 @@ void ItemTableManagerWidget::createItem()
                     ag
                     );
 
-        project->assets()->append(asset);
+        project->assets()->appendObject(asset->uuid());
         asset->edit();
     }
     else if ( m_productionType == RamStep::ShotProduction )
@@ -552,7 +551,7 @@ void ItemTableManagerWidget::createItem()
                     seq
                     );
 
-        project->shots()->append(shot);
+        project->shots()->appendObject(shot->uuid());
         shot->edit();
     }
 }
@@ -565,19 +564,7 @@ void ItemTableManagerWidget::deleteItems()
     QModelIndexList selection = ui_table->selectionModel()->selectedIndexes();
     QModelIndexList selectedItems;
 
-    for (int i = 0; i < selection.count(); i++)
-    {
-        // remove only if it's the item in the first column
-        // if (selection.at(i).column() != 0) continue;
-        QModelIndex sourceIndex = ui_table->filteredList()->mapToSource(selection.at(i));
-        int row = sourceIndex.row();
-        if (m_productionType == RamStep::AssetProduction)
-            selectedItems << project->assets()->index( row, 0);
-        else if (m_productionType == RamStep::ShotProduction)
-            selectedItems << project->shots()->index( row, 0);
-    }
-
-    if (selectedItems.count() == 0) return;
+    if (selection.count() == 0) return;
 
     QMessageBox::StandardButton confirm = QMessageBox::question( this,
         "Confirm deletion",
@@ -585,16 +572,22 @@ void ItemTableManagerWidget::deleteItems()
 
     if ( confirm != QMessageBox::Yes) return;
 
-    QList<RamObject*> objs;
-
-    if (m_productionType == RamStep::AssetProduction)
-        project->assets()->removeIndices(selectedItems);
-    else if (m_productionType == RamStep::ShotProduction)
-        project->shots()->removeIndices(selectedItems);
-
-    for (int i = objs.count() -1 ; i >= 0; i--)
+    for (int i = 0; i < selection.count(); i++)
     {
-        objs.at(i)->remove();
+        QString objUuid = selection.at(i).data(RamObject::UUID).toString();
+        if (objUuid == "") continue;
+        if (m_productionType == RamStep::AssetProduction)
+        {
+            RamObject *o = RamObject::get(objUuid, RamObject::Asset);
+            m_project->assets()->removeObjects(QStringList(objUuid));
+            if (o) o->remove();
+        }
+        else if (m_productionType == RamStep::ShotProduction)
+        {
+            RamObject *o = RamObject::get(objUuid, RamObject::Shot);
+            m_project->shots()->removeObjects(QStringList(objUuid));
+            if (o) o->remove();
+        }
     }
 }
 
@@ -864,18 +857,18 @@ void ItemTableManagerWidget::setupUi()
     mainLayout->setSpacing(3);
     mainLayout->setContentsMargins(0,0,0,0);
 
-    ui_table = new RamObjectListView(RamObjectListView::Table, this);
+    ui_table = new RamItemView(this);
     ui_table->setEditableObjects(false);
     ui_table->setContextMenuPolicy(Qt::CustomContextMenu);
     ui_header = new RamStepHeaderView(ui_table);
     ui_table->setHorizontalHeader( ui_header );
     ui_table->setSelectionMode(QAbstractItemView::ExtendedSelection);
-    ui_table->setTimeTracking(false);
+    //ui_table->setTimeTracking(false);
     ui_header->setTimeTracking(false);
     setupTable();
     mainLayout->addWidget(ui_table);
 
-    ui_table->filteredList()->useFilters(true);
+    ui_table->filteredModel()->useFilters(true);
 
     ui_contextMenu = new QMenu(this);
 
@@ -978,14 +971,14 @@ void ItemTableManagerWidget::connectEvents()
     connect(ui_titleBar, &DuQFTitleBar::closeRequested, this, &ItemTableManagerWidget::closeRequested);
     connect(Ramses::instance(), SIGNAL(currentProjectChanged(RamProject*)), this,SLOT(projectChanged(RamProject*)));
     connect(Ramses::instance(), &Ramses::userChanged, this, &ItemTableManagerWidget::currentUserChanged);
-    connect(ui_header, SIGNAL(sort(int,Qt::SortOrder)), ui_table->filteredList(), SLOT(resort(int,Qt::SortOrder)));
-    connect(ui_header, SIGNAL(unsort()), ui_table->filteredList(), SLOT(unsort()));
+    connect(ui_header, SIGNAL(sort(int,Qt::SortOrder)), ui_table->filteredModel(), SLOT(resort(int,Qt::SortOrder)));
+    connect(ui_header, SIGNAL(unsort()), ui_table->filteredModel(), SLOT(unsort()));
 }
 
 void ItemTableManagerWidget::loadSettings()
 {
     // Freeze filters to improve performance
-    ui_table->filteredList()->freeze();
+    ui_table->filteredModel()->freeze();
 
     RamUser *u = Ramses::instance()->currentUser();
     if (!u) return;
@@ -1010,22 +1003,22 @@ void ItemTableManagerWidget::loadSettings()
     uSettings->endGroup();
 
     // Unfreeze
-    ui_table->filteredList()->unFreeze();
+    ui_table->filteredModel()->unFreeze();
 }
 
 void ItemTableManagerWidget::setList()
 {
-    ui_table->setList( nullptr );
+    ui_table->setObjectModel( nullptr );
     ui_groupBox->setList( nullptr );
     if (!m_project) return;
     if (m_productionType == RamStep::AssetProduction)
     {
-        ui_table->setList( m_project->assets() );
+        ui_table->setObjectModel( m_project->assets() );
         //ui_groupBox->setList( m_project->assetGroups() );
     }
     else if (m_productionType == RamStep::ShotProduction)
     {
-        ui_table->setList( m_project->shots() );
+        ui_table->setObjectModel( m_project->shots() );
         //ui_groupBox->setList( m_project->sequences() );
     }
 }
@@ -1081,7 +1074,7 @@ void ItemTableManagerWidget::setupItemMenu()
 
 void ItemTableManagerWidget::setupTable()
 {
-    ui_table->filteredList()->setStepType(m_productionType);
+    ui_table->filteredModel()->setStepType(m_productionType);
     //if (m_productionType == RamStep::ShotProduction)
     ui_table->setSortable(true);
 }

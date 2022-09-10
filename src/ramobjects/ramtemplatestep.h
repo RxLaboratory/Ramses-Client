@@ -3,7 +3,7 @@
 
 #include "ramobject.h"
 
-#include "data-models/ramobjectlist.h"
+#include "ramobjectmodel.h"
 
 class RamTemplateStep : public RamObject
 {
@@ -40,7 +40,7 @@ public:
 
     explicit RamTemplateStep(QString shortName, QString name, ObjectType type = TemplateStep);
 
-    RamObjectList *applications() const;
+    RamObjectModel *applications() const;
 
     Type type() const;
     void setType(const Type &type);
@@ -91,7 +91,7 @@ protected:
 
     // ATTRIBUTES //
 
-    RamObjectList *m_applications;
+    RamObjectModel *m_applications;
 
 private:
     void construct();

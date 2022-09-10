@@ -2,7 +2,6 @@
 
 #include "ramasset.h"
 #include "ramproject.h"
-#include "data-models/ramitemtable.h"
 
 AssetGroupEditWidget::AssetGroupEditWidget(QWidget *parent) :
     ObjectEditWidget(parent)
@@ -29,7 +28,7 @@ void AssetGroupEditWidget::reInit(RamObject *o)
     m_assetGroup = qobject_cast<RamAssetGroup*>(o);
     if (m_assetGroup)
     {
-        //ui_assetsList->setModel(m_assetGroup->project()->assets());
+        ui_assetsList->setObjectModel(m_assetGroup->project()->assets());
         ui_assetsList->setFilter(m_assetGroup);
         ui_colorSelector->setColor(m_assetGroup->color());
 
@@ -56,7 +55,7 @@ void AssetGroupEditWidget::createAsset()
                 "NEW",
                 "New Asset",
                 m_assetGroup);
-    m_assetGroup->project()->assets()->append(asset);
+    m_assetGroup->project()->assets()->appendObject(asset->uuid());
     asset->edit();
 }
 

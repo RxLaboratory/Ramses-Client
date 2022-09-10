@@ -8,8 +8,15 @@ RamAbstractItem::RamAbstractItem(QString shortName, QString name, ObjectType typ
     RamObject(shortName, name, type, project)
 {
     construct();
+    insertData("project", project->uuid());
+    connectProject(project);
+}
 
-    setProject(project);
+RamObject *RamAbstractItem::objectForColumn(QString columnUuid) const
+{
+    if (columnUuid == "") return nullptr;
+    RamStep *step = RamStep::get( columnUuid );
+    return status(step);
 }
 
 RamAbstractItem::RamAbstractItem(QString uuid, ObjectType type):
@@ -19,29 +26,51 @@ RamAbstractItem::RamAbstractItem(QString uuid, ObjectType type):
 
     QJsonObject d = data();
 
-    // Get (and clean) the status history
-    QJsonObject history = d.value("statusHistory").toObject();
-    QStringList stepUuids = history.keys();
-    for (int i = 0; i < stepUuids.count(); i++)
+    // Get project first
+    QString projectUuid = d.value("project").toString("");
+    if (projectUuid != "")
     {
-        QString stepUuid = stepUuids[i];
-        QString historyUuid = history.value(stepUuid).toString();
-        RamStepStatusHistory *stepHistory = RamStepStatusHistory::get(historyUuid);
-        if (stepHistory)
+        RamProject *project = RamProject::get(projectUuid);
+        setParent(project);
+        for (int i = 0; i < project->steps()->rowCount(); i++)
         {
-            if ((stepHistory->step()->type() != RamStep::ShotProduction && type == Shot) ||
-                (stepHistory->step()->type() != RamStep::AssetProduction && type == Asset) )
-            {
-                stepHistory->remove();
-                stepHistory->deleteLater();
-                continue;
-            }
-
-            m_history[ stepUuid ] = stepHistory;
-            connectHistory(stepHistory);
+            RamStep *step = RamStep::c( project->steps()->get(i) );
+            createStepHistory(step, d);
         }
+        connectProject(project);
     }
-    saveHistory();
+}
+
+void RamAbstractItem::stepInserted(const QModelIndex &parent, int first, int last)
+{
+    Q_UNUSED(parent);
+
+    RamProject *p = RamProject::get( getData("project").toString("none") );
+    if (!p) return;
+
+    for (int i = first; i <= last; i++)
+    {
+        RamStep *step = RamStep::c( p->steps()->get(i) );
+        if (!step) return;
+        RamObjectModel *history = statusHistory(step);
+        if (!history) createStepHistory(step);
+    }
+}
+
+void RamAbstractItem::stepRemoved(const QModelIndex &parent, int first, int last)
+{
+    Q_UNUSED(parent);
+
+    RamProject *p = RamProject::get( getData("project").toString("none") );
+    if (!p) return;
+
+    for (int i = first; i <= last; i++)
+    {
+        RamObject *step = p->steps()->get(i);
+        if (!step) return;
+        RamObjectModel *history = m_history.take( step->uuid() );
+        if (history) history->deleteLater();
+    }
 }
 
 RamProject *RamAbstractItem::project() const
@@ -49,25 +78,16 @@ RamProject *RamAbstractItem::project() const
     return RamProject::get( getData("project").toString("none") );
 }
 
-QMap<QString, RamStepStatusHistory*> RamAbstractItem::statusHistory() const
+QMap<QString, RamObjectModel*> RamAbstractItem::statusHistory() const
 {
     return m_history;
 }
 
-RamStepStatusHistory *RamAbstractItem::statusHistory(RamObject *stepObj)
+RamObjectModel *RamAbstractItem::statusHistory(RamObject *stepObj) const
 {
     if (!stepObj) return nullptr;
 
-    RamStepStatusHistory *stepHistory = m_history.value( stepObj->uuid(), nullptr );
-    if (!stepHistory)
-    {
-        RamStep *step = RamStep::c( stepObj );
-        stepHistory = new RamStepStatusHistory(step, this);
-        m_history[step->uuid()] = stepHistory;
-        saveHistory();
-        connectHistory(stepHistory);
-    }
-    return stepHistory;
+    return m_history.value(stepObj->uuid(), nullptr);
 }
 
 RamStatus *RamAbstractItem::setStatus(RamUser *user, RamState *state, RamStep *step, int completionRatio, QString comment, int version)
@@ -92,20 +112,18 @@ void RamAbstractItem::addStatus(RamStatus *status)
     if (!status->assignedUser())
         status->assignUser( assignedUser(step) );
 
-    RamStepStatusHistory *history = statusHistory(step);
-    history->append( status );
-    history->sort();
+    RamObjectModel *history = statusHistory(step);
+    history->appendObject( status->uuid() );
 }
 
-RamStatus *RamAbstractItem::status(RamStep *step)
+RamStatus *RamAbstractItem::status(RamStep *step) const
 {
-    // Get the new current status
-    RamStepStatusHistory *history = statusHistory(step);
-
+    // Get the current status
+    RamObjectModel *history = statusHistory(step);
+    if (!history) return nullptr;
     if (history->rowCount() == 0) return nullptr;
 
-    history->sort();
-    RamStatus *currentStatus = qobject_cast<RamStatus*> ( history->last() );
+    RamStatus *currentStatus = RamStatus::c ( history->get(history->rowCount() - 1) );
     if (!currentStatus) return nullptr;
 
     return currentStatus;
@@ -114,23 +132,22 @@ RamStatus *RamAbstractItem::status(RamStep *step)
 QList<RamStatus *> RamAbstractItem::status()
 {
     QList<RamStatus *> statuses;
-    if (m_history.count() == 0) return statuses;
-    QMapIterator<QString, RamStepStatusHistory*> i(m_history);
+    if (m_history.isEmpty()) return statuses;
+    QMapIterator<QString, RamObjectModel*> i(m_history);
     while(i.hasNext())
     {
         i.next();
-        RamStepStatusHistory *h = i.value();
-        h->sort();
-        statuses << qobject_cast<RamStatus*>( h->last() );
+        RamObjectModel *h = i.value();
+        statuses << qobject_cast<RamStatus*>( h->get(h->rowCount() - 1) );
     }
     return statuses;
 }
 
 RamUser *RamAbstractItem::assignedUser(RamStep *step)
 {
-    RamStatus *previous = status(step);
-    if (previous)
-        return previous->assignedUser();
+    RamStatus *st = status(step);
+    if (st)
+        return st->assignedUser();
 
     return nullptr;
 }
@@ -201,15 +218,6 @@ bool RamAbstractItem::hasState(RamObject *state, RamStep *step)
     return false;
 }
 
-// PROTECTED //
-
-void RamAbstractItem::historyChanged()
-{
-    RamStepStatusHistory *h = RamStepStatusHistory::c( QObject::sender() );
-    emit statusChanged(this, h->step());
-    emit dataChanged(this);
-}
-
 // PRIVATE //
 
 void RamAbstractItem::construct()
@@ -218,27 +226,19 @@ void RamAbstractItem::construct()
     m_editRole = Admin;
 }
 
-void RamAbstractItem::setProject(RamProject *proj)
+void RamAbstractItem::connectProject(RamProject *proj)
 {
-    insertData("project", proj->uuid());
-    setParent(proj);
+    connect(proj->steps(), &RamObjectModel::rowsInserted, this, &RamAbstractItem::stepInserted);
+    connect(proj->steps(), &RamObjectModel::rowsAboutToBeRemoved, this, &RamAbstractItem::stepRemoved);
 }
 
-void RamAbstractItem::saveHistory()
+void RamAbstractItem::createStepHistory(RamStep *step, QJsonObject d)
 {
-    QJsonObject history;
-    QMapIterator<QString, RamStepStatusHistory*> i(m_history);
-    while (i.hasNext())
-    {
-        i.next();
-        history.insert(i.key(), i.value()->uuid());
-    }
-    insertData("statusHistory", history);
+    // Just for our steps
+    if (m_objectType == Asset && step->type() != RamStep::AssetProduction) return;
+    if (m_objectType == Shot && step->type() != RamStep::ShotProduction) return;
+    QString modelName = "statusHistory-" + step->uuid();
+    RamObjectModel *history = createModel(RamObject::Status, modelName);
+    loadModel(history, modelName, d);
+    m_history[step->uuid()] = history;
 }
-
-void RamAbstractItem::connectHistory(RamStepStatusHistory *history)
-{
-    connect(history, &RamStepStatusHistory::dataChanged, this, &RamAbstractItem::historyChanged);
-    connect(history, &RamStepStatusHistory::listChanged, this, &RamAbstractItem::historyChanged);
-}
-
