@@ -1,5 +1,6 @@
 #include "ramprojectfiltermodel.h"
 
+#include "data-models/ramobjectlist.h"
 #include "ramses.h"
 
 RamProjectFilterModel::RamProjectFilterModel(QObject *parent) : QSortFilterProxyModel(parent)

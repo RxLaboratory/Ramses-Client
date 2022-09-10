@@ -17,7 +17,6 @@
 #include "duqf-widgets/duqffolderdisplaywidget.h"
 #include "duqf-widgets/duqffilelist.h"
 #include "objecteditwidget.h"
-#include "ramobjectlistcombobox.h"
 #include "ramstatebox.h"
 #include "ramstatus.h"
 
@@ -73,7 +72,7 @@ private:
     DuQFTextEdit *ui_statusCommentEdit;
     QToolButton *ui_revertButton;
     QCheckBox *ui_publishedBox;
-    RamObjectListComboBox *ui_userBox;
+    RamObjectComboBox *ui_userBox;
     AutoSelectSpinBox *ui_timeSpent;
     DuQFFileList *ui_mainFileList;
     DuQFFileList *ui_previewFileList;

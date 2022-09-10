@@ -35,7 +35,7 @@ public:
 
     explicit ObjectListWidget(bool editableObjects = false, RamUser::UserRole editRole = RamUser::Admin, QWidget *parent = nullptr);
     explicit ObjectListWidget(RamObjectModel *objectList, bool editableObjects = false, RamUser::UserRole editRole = RamUser::Admin, QWidget *parent = nullptr);
-    void setModel(RamObjectModel *objectModel);
+    void setObjectModel(RamObjectModel *objectModel);
     void setFilterList(RamObjectModel *filterList, QString filterListName = "");
     void setAssignList(RamObjectModel *assignList);
     void setDontRemoveShortNameList(QStringList dontRemove);

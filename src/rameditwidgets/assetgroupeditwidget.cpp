@@ -29,7 +29,7 @@ void AssetGroupEditWidget::reInit(RamObject *o)
     m_assetGroup = qobject_cast<RamAssetGroup*>(o);
     if (m_assetGroup)
     {
-        ui_assetsList->setList(m_assetGroup->project()->assets());
+        //ui_assetsList->setModel(m_assetGroup->project()->assets());
         ui_assetsList->setFilter(m_assetGroup);
         ui_colorSelector->setColor(m_assetGroup->color());
 
@@ -38,7 +38,7 @@ void AssetGroupEditWidget::reInit(RamObject *o)
     else
     {
         ui_folderWidget->setPath("");
-        ui_assetsList->setList(nullptr);
+        ui_assetsList->setObjectModel(nullptr);
         ui_colorSelector->setColor(QColor(67,67,67));
     }
 }
@@ -70,8 +70,8 @@ void AssetGroupEditWidget::setupUi()
     ui_colorSelector = new DuQFColorSelector(this);
     ui_mainFormLayout->addWidget(ui_colorSelector, 3, 1);
 
-    ui_assetsList = new ObjectListEditWidget(true, RamUser::ProjectAdmin, this);
-    ui_assetsList->setEditMode(ObjectListEditWidget::RemoveObjects);
+    ui_assetsList = new ObjectListWidget(true, RamUser::ProjectAdmin, this);
+    ui_assetsList->setEditMode(ObjectListWidget::RemoveObjects);
     ui_assetsList->setTitle("Assets");
     ui_mainLayout->addWidget(ui_assetsList);
 }

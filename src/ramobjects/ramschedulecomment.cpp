@@ -50,6 +50,30 @@ void RamScheduleComment::setDate(const QDateTime &newDate)
     insertData("date", newDate.toString("yyyy-MM-dd hh:mm:ss"));
 }
 
+QVariant RamScheduleComment::roleData(int role) const
+{
+    switch (role)
+    {
+    case Qt::DisplayRole: return this->comment();
+    case Qt::ToolTipRole: {
+        QSettings settings;
+        QString dateFormat = settings.value("appearance/dateFormat", "yyyy-MM-dd").toString();
+        return this->date().toString(dateFormat) + "\n" + this->comment();
+    }
+    case Qt::StatusTipRole: {
+        QSettings settings;
+        QString dateFormat = settings.value("appearance/dateFormat", "yyyy-MM-dd").toString();
+        return this->date().toString(dateFormat) + "\n" + this->comment();
+    }
+    case Qt::BackgroundRole: return QBrush(this->color());
+    case IsPM: return false;
+    case Date: return this->date();
+    case IsComment: return true;
+    case SizeHint: return QSize(75,10);
+    }
+    return RamObject::roleData(role);
+}
+
 // PRIVATE //
 
 void RamScheduleComment::construct()

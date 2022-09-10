@@ -87,6 +87,77 @@ void RamScheduleEntry::setStep(RamStep *newStep)
     else insertData("step", "none");
 }
 
+QString RamScheduleEntry::iconName() const
+{
+    RamStep *s = this->step();
+    if (!s) return "";
+    switch( s->type() )
+    {
+    case RamStep::PreProduction: return ":/icons/project";
+    case RamStep::ShotProduction: return ":/icons/shot";
+    case RamStep::AssetProduction: return ":/icons/asset";
+    case RamStep::PostProduction: return ":/icons/film";
+    case RamStep::All: return "";
+    }
+    return "";
+}
+
+QVariant RamScheduleEntry::roleData(int role) const
+{
+    switch(role)
+    {
+    case Qt::DisplayRole: {
+        RamStep *s = this->step();
+        if (s) return this->step()->shortName();
+        else return "";
+    }
+    case Qt::ToolTipRole: {
+
+        RamStep *s = this->step();
+        QString stepName = "";
+        if (s) stepName = s->name();
+
+        RamUser *u = this->user();
+        QString userName = "";
+        if (u) userName = u->name();
+
+        QSettings settings;
+        QString dateFormat = settings.value("appearance/dateFormat", "yyyy-MM-dd").toString();
+        return this->date().toString(dateFormat) +
+                "\n" + stepName +
+                "\n" + userName;
+    }
+    case Qt::StatusTipRole: {
+
+        RamStep *s = this->step();
+        QString stepName = "";
+        if (s) stepName = s->shortName();
+
+        RamUser *u = this->user();
+        QString userName = "";
+        if (u) userName = u->shortName();
+
+        QSettings settings;
+        QString dateFormat = settings.value("appearance/dateFormat", "yyyy-MM-dd").toString();
+        return this->date().toString(dateFormat) +
+                " | " + stepName +
+                " | " + userName;
+    }
+    case Qt::BackgroundRole: {
+        RamStep *s = this->step();
+        if (s) return QBrush(s->color());
+        else return QBrush();
+    }
+    case Qt::EditRole: {
+        RamStep *s = this->step();
+        if (s) return s->uuid();
+        else return "";
+    }
+    case SizeHint: return QSize(75,10);
+    }
+    return RamObject::roleData(role);
+}
+
 void RamScheduleEntry::stepRemoved()
 {
     setStep(nullptr);

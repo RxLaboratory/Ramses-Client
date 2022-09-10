@@ -6,6 +6,7 @@ ProjectSelectorWidget::ProjectSelectorWidget(QWidget *parent):
     RamObjectComboBox( parent )
 {
     m_projectFilter = new RamObjectSortFilterProxyModel(this);
+    m_projectFilter->setSourceModel(Ramses::instance()->projects());
     this->setModel(m_projectFilter);
     this->setMinimumWidth(200);
 

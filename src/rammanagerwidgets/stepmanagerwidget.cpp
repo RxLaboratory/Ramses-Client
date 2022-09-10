@@ -1,32 +1,32 @@
-#include "steplistmanagerwidget.h"
+#include "stepmanagerwidget.h"
 
 #include "ramses.h"
 
-StepListManagerWidget::StepListManagerWidget(QWidget *parent):
-ObjectListManagerWidget(
+StepManagerWidget::StepManagerWidget(QWidget *parent):
+ObjectManagerWidget(
     "Steps",
     QIcon(":icons/step"),
     parent )
 {
     changeProject(Ramses::instance()->currentProject());
     connect(Ramses::instance(), SIGNAL(currentProjectChanged(RamProject*)), this, SLOT(changeProject(RamProject*)));
-    m_listEditWidget->setEditMode(ObjectListEditWidget::RemoveObjects);
-    m_listEditWidget->setSortable(true);
+    m_listWidget->setEditMode(ObjectListWidget::RemoveObjects);
+    m_listWidget->setSortable(true);
 
     // Create from template actions
-    ui_createMenu = new RamObjectListMenu(false, this);
+    ui_createMenu = new RamObjectMenu(false, this);
     ui_createMenu->addCreateButton();
-    QToolButton *addButton = m_listEditWidget->addButton();
+    QToolButton *addButton = m_listWidget->addButton();
     addButton->setPopupMode(QToolButton::InstantPopup);
     addButton->setMenu(ui_createMenu);
 
     //ui_createMenu->setList(Ramses::instance()->templateSteps());
 
-    connect(ui_createMenu, &RamObjectListMenu::createTriggered, this, &StepListManagerWidget::createObject);
-    connect(ui_createMenu, &RamObjectListMenu::assigned, this, &StepListManagerWidget::createFromTemplate);
+    connect(ui_createMenu, &RamObjectMenu::createTriggered, this, &StepManagerWidget::createObject);
+    connect(ui_createMenu, &RamObjectMenu::assigned, this, &StepManagerWidget::createFromTemplate);
 }
 
-RamStep *StepListManagerWidget::createObject()
+RamStep *StepManagerWidget::createObject()
 {
     RamProject *project = Ramses::instance()->currentProject();
     if (!project) return nullptr;
@@ -36,20 +36,20 @@ RamStep *StepListManagerWidget::createObject()
                 "New Step",
                 project
                 );
-    project->steps()->append(step);
+    project->steps()->appendObject(step->uuid());
     step->edit();
     return step;
 }
 
-void StepListManagerWidget::changeProject(RamProject *project)
+void StepManagerWidget::changeProject(RamProject *project)
 {
     // empty list
-    this->setList(nullptr);
+    this->setModel(nullptr);
     if (!project) return;
-    this->setList( project->steps() );
+    this->setModel( project->steps() );
 }
 
-void StepListManagerWidget::createFromTemplate(RamObject *templateStepObj)
+void StepManagerWidget::createFromTemplate(RamObject *templateStepObj)
 {
     RamTemplateStep *templateStep = RamTemplateStep::c(templateStepObj);
     if (!templateStep) return;
@@ -57,6 +57,6 @@ void StepListManagerWidget::createFromTemplate(RamObject *templateStepObj)
     RamProject *project = Ramses::instance()->currentProject();
     if (!project) return;
     RamStep *step = RamStep::createFromTemplate(templateStep, project);
-    project->steps()->append(step);
+    project->steps()->appendObject(step->uuid());
     step->edit();
 }

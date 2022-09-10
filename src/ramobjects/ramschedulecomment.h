@@ -22,6 +22,8 @@ public:
     QDateTime date() const;
     void setDate(const QDateTime &newDate);
 
+    virtual QVariant roleData(int role) const override;
+
 protected:
     static QMap<QString, RamScheduleComment*> m_existingObjects;
     RamScheduleComment(QString uuid);

@@ -26,6 +26,10 @@ public:
     RamStep *step() const;
     void setStep(RamStep *newStep);
 
+    virtual QString iconName() const override;
+
+    virtual QVariant roleData(int role) const override;
+
 protected:
     static QMap<QString, RamScheduleEntry*> m_existingObjects;
     RamScheduleEntry(QString uuid);

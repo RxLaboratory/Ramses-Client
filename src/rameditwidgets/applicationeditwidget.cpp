@@ -26,9 +26,9 @@ void ApplicationEditWidget::reInit(RamObject *o)
     if (m_application)
     {
         m_folderSelector->setPath(m_application->executableFilePath());
-        m_nativeList->setModel(m_application->nativeFileTypes());
-        m_importList->setModel(m_application->importFileTypes());
-        m_exportList->setModel(m_application->exportFileTypes());
+        m_nativeList->setObjectModel(m_application->nativeFileTypes());
+        m_importList->setObjectModel(m_application->importFileTypes());
+        m_exportList->setObjectModel(m_application->exportFileTypes());
     }
     else
     {

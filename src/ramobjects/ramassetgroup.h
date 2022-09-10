@@ -4,7 +4,7 @@
 #include "ramtemplateassetgroup.h"
 
 #include "ramproject.h"
-#include "data-models/ramobjectfiltermodel.h"
+#include "ramobjectsortfilterproxymodel.h"
 class RamAsset;
 
 class RamAssetGroup : public RamTemplateAssetGroup
@@ -40,7 +40,7 @@ private:
     void setProject(RamProject *project);
 
     RamProject *m_project = nullptr;
-    RamObjectFilterModel *m_assets;
+    RamObjectSortFilterProxyModel *m_assets;
 };
 
 #endif // RAMASSETGROUP_H

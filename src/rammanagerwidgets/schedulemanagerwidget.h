@@ -9,10 +9,11 @@
 
 #include "dbinterface.h"
 #include "duqf-widgets/duqftitlebar.h"
-#include "data-views/ramscheduletablewidget.h"
-#include "data-models/ramscheduletable.h"
-#include "data-views/ramobjectlistmenu.h"
-#include "data-models/ramschedulefilter.h"
+#include "ramproject.h"
+#include "ramscheduletableview.h"
+#include "ramscheduletablemodel.h"
+#include "ramobjectmenu.h"
+#include "ramschedulefilterproxymodel.h"
 
 class ScheduleManagerWidget : public QWidget
 {
@@ -69,16 +70,17 @@ private:
     void setupUi();
     void connectEvents();
     void loadSettings();
+    void setComment(QString comment, QModelIndex index);
 
     DuQFTitleBar *ui_titleBar;
     QAction *ui_actionShowDetails;
-    RamScheduleTableWidget *ui_table;
+    RamScheduleTableView *ui_table;
     QDateEdit *ui_startDateEdit;
     QDateEdit *ui_endDateEdit;
-    RamObjectListMenu *ui_stepMenu;
-    RamObjectListMenu *ui_stepContextMenu;
+    RamObjectMenu *ui_stepMenu;
+    RamObjectMenu *ui_stepContextMenu;
     QToolButton *ui_userButton;
-    RamObjectListMenu *ui_userMenu;
+    RamObjectMenu *ui_userMenu;
     QAction *ui_meAction;
     QAction *ui_monday;
     QAction *ui_tuesday;
@@ -102,8 +104,8 @@ private:
     QAction *ui_removeCommentAction;
     QMenu *ui_commentContextMenu;
 
-    RamScheduleTable *m_schedule;
-    RamScheduleFilter *m_scheduleFilter;
+    RamScheduleTableModel *m_schedule;
+    RamScheduleFilterProxyModel *m_scheduleFilter;
 
     RamProject *m_project = nullptr;
 

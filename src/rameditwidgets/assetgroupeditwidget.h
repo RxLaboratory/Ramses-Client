@@ -2,7 +2,7 @@
 #define ASSETGROUPEDITWIDGET_H
 
 #include "objecteditwidget.h"
-#include "objectlisteditwidget.h"
+#include "objectlistwidget.h"
 #include "ramassetgroup.h"
 #include "duqf-widgets/duqffolderdisplaywidget.h"
 #include "duqf-widgets/duqfcolorselector.h"
@@ -35,7 +35,7 @@ private:
 
     DuQFColorSelector *ui_colorSelector;
     DuQFFolderDisplayWidget *ui_folderWidget;
-    ObjectListEditWidget *ui_assetsList;
+    ObjectListWidget *ui_assetsList;
 };
 
 #endif // ASSETGROUPEDITWIDGET_H

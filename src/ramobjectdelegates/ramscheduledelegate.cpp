@@ -1,8 +1,7 @@
 #include "ramscheduledelegate.h"
 
-#include "ramobjectlistcombobox.h"
+#include "ramobjectcombobox.h"
 #include "ramses.h"
-#include "ramschedulecomment.h"
 #include "ramscheduleentry.h"
 #include "duqf-utils/guiutils.h"
 #include "duqf-app/app-style.h"
@@ -19,11 +18,6 @@ RamScheduleDelegate::RamScheduleDelegate(QObject *parent) : QStyledItemDelegate(
     m_detailsFont = m_textFont;
     m_detailsFont.setItalic(true);
     m_padding = 10;
-
-    m_shotProdIcon = QIcon(":/icons/shot").pixmap(QSize(12,12));
-    m_assetProdIcon = QIcon(":/icons/asset").pixmap(QSize(12,12));
-    m_preProdIcon = QIcon(":/icons/project").pixmap(QSize(12,12));
-    m_postProdIcon = QIcon(":/icons/film").pixmap(QSize(12,12));
 }
 
 void RamScheduleDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
@@ -40,14 +34,14 @@ void RamScheduleDelegate::paint(QPainter *painter, const QStyleOptionViewItem &o
     const QRect textRect( iconRect.right() + 5, iconRect.top()-5, bgRect.width() - 37, iconRect.height()+5 );
 
     // Select the bg Color
-    QColor bgColor = index.data(Qt::BackgroundRole).value<QColor>();
+    QColor bgColor = index.data(Qt::BackgroundRole).value<QBrush>().color();
 
     // State
     if (option.state & QStyle::State_Selected) bgColor = bgColor.darker();
     else if (option.state & QStyle::State_MouseOver) bgColor = bgColor.lighter();
 
     // before today -> a bit darker
-    QDate date = index.data(RamObjectList::Date).value<QDate>();
+    QDate date = index.data(RamObject::Date).value<QDate>();
     if (date < QDate::currentDate()) bgColor = bgColor.darker(175);
 
     // Text color
@@ -71,9 +65,7 @@ void RamScheduleDelegate::paint(QPainter *painter, const QStyleOptionViewItem &o
     }
 
     // Get the entry
-    quintptr iptr = index.data(RamObjectList::Pointer).toULongLong();
-
-    if (index.data(RamObjectList::IsComment).toBool()) // comment
+    if (index.data(RamObject::IsComment).toBool()) // comment
     {
         QString text = index.data(Qt::DisplayRole).toString();
         QStringList lines = text.split("\n");
@@ -98,32 +90,22 @@ void RamScheduleDelegate::paint(QPainter *painter, const QStyleOptionViewItem &o
         return;
     }
 
-    if (iptr == 0) return;
-    RamScheduleEntry *entry = reinterpret_cast<RamScheduleEntry*>( iptr );
-    RamStep *step = entry->step();
-    if (!step) return;
-
     // icon
-    QPixmap icon;
-    switch( step->type())
+    QPixmap icon = index.data(Qt::DecorationRole).value<QPixmap>();
+    if (!icon.isNull())
     {
-    case RamStep::PreProduction: icon = m_preProdIcon; break;
-    case RamStep::ShotProduction: icon = m_shotProdIcon; break;
-    case RamStep::AssetProduction: icon = m_assetProdIcon; break;
-    case RamStep::PostProduction: icon = m_postProdIcon; break;
-    default: icon = m_assetProdIcon;
+        // icon color
+        QColor iconColor;
+        if (bgColor.lightness() > 80) iconColor = m_dark;
+        else iconColor = m_medium;
+        QImage iconImage(12,12, QImage::Format_ARGB32);
+        iconImage.fill( iconColor );
+        QPainter iconPainter(&iconImage);
+        iconPainter.setCompositionMode(QPainter::CompositionMode_DestinationIn);
+        iconPainter.drawPixmap( QRect(0,0,12,12), icon );
+        painter->drawImage(iconRect, iconImage);
     }
 
-    // icon color
-    QColor iconColor;
-    if (bgColor.lightness() > 80) iconColor = m_dark;
-    else iconColor = m_medium;
-    QImage iconImage(12,12, QImage::Format_ARGB32);
-    iconImage.fill( iconColor );
-    QPainter iconPainter(&iconImage);
-    iconPainter.setCompositionMode(QPainter::CompositionMode_DestinationIn);
-    iconPainter.drawPixmap( QRect(0,0,12,12), icon );
-    painter->drawImage(iconRect, iconImage);
 
     // Title
     painter->setPen( textPen );
@@ -134,7 +116,7 @@ void RamScheduleDelegate::paint(QPainter *painter, const QStyleOptionViewItem &o
     if (bgRect.height() > 35)
     {
         QRect commentRect( iconRect.left(), bgRect.top() + 30, bgRect.width() - m_padding*2, bgRect.height() - 35);
-        painter->drawText( commentRect, Qt::AlignLeft | Qt::AlignTop, index.data(RamObjectList::Comment).toString(), &commentRect);
+        painter->drawText( commentRect, Qt::AlignLeft | Qt::AlignTop, index.data(RamObject::Comment).toString(), &commentRect);
         if (commentRect.bottom() > bgRect.bottom() - 5) drawMore(painter, bgRect, textPen);
     }
 //*/
@@ -144,26 +126,14 @@ QSize RamScheduleDelegate::sizeHint(const QStyleOptionViewItem &option, const QM
 {
     Q_UNUSED(option)
 
-    // Get the entry
-    quintptr iptr = index.data(RamObjectList::Pointer).toULongLong();
-    if (iptr == 0) return QSize(75, 10);
+    QString uuid = index.data(RamObject::UUID).toString();
+    if (uuid == "") return QSize(0,30);
 
-    if (index.data(RamObjectList::IsComment).toBool()) {
-        RamScheduleComment *comment = reinterpret_cast<RamScheduleComment*>( iptr );
-        if (comment) {
-            if (comment->comment().indexOf("\n") >= 0 && m_details) return QSize(200, 75);
-        }
-        return QSize(75, 10);
-    }
+    QSize s;
+    if (m_details) s = index.data(RamObject::DetailedSizeHint).toSize();
+    else s = index.data(RamObject::SizeHint).toSize();
 
-
-    RamScheduleEntry *entry = reinterpret_cast<RamScheduleEntry*>( iptr );
-    if (!entry) return QSize(75, 10);
-    RamStep *step = entry->step();
-    if (!step) return QSize(75, 10);
-
-    if (m_details && entry->comment() != "") return QSize(200, 75);
-    return QSize(75, 25);
+    return s;
 }
 
 bool RamScheduleDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index)
@@ -176,7 +146,6 @@ bool RamScheduleDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, 
     RamUser *u = Ramses::instance()->currentUser();
     if (!u) return QStyledItemDelegate::editorEvent( event, model, option, index );
     if (u->role() < RamUser::Lead) return QStyledItemDelegate::editorEvent( event, model, option, index );
-
 
     if (type == QEvent::MouseButtonPress)
     {
@@ -191,25 +160,28 @@ bool RamScheduleDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, 
     {
         QMouseEvent *e = static_cast< QMouseEvent * >( event );
         if (e->button() != Qt::LeftButton) return QStyledItemDelegate::editorEvent( event, model, option, index );
-
-        if (m_indexPressed == index && m_indexPressed.isValid() && !index.data(RamObjectList::IsComment).toBool())
+        if (m_indexPressed == index && m_indexPressed.isValid() && !index.data(RamObject::IsComment).toBool())
         {
             RamProject *proj = Ramses::instance()->currentProject();
             if (proj)
             {
                 QMainWindow *mw = GuiUtils::appMainWindow();
-                RamObjectListComboBox *editor = new RamObjectListComboBox( true, mw );
-                editor->setList(proj->steps());
+                RamObjectComboBox *editor = new RamObjectComboBox( mw );
+                editor->setObjectModel(proj->steps(), "Steps");
                 QRect rect = option.rect.adjusted(m_padding,2,-m_padding,-2);
                 editor->setGeometry( rect );
                 editor->move( mw->mapFromGlobal( e->globalPos() )  - e->pos() + QPoint(rect.left(), rect.top() ) );
                 // Get current
-                RamStep *step = reinterpret_cast<RamStep*>( index.data(Qt::EditRole).toULongLong() );
-                editor->setObject(step);
+                QString stepUuid = index.data(Qt::EditRole).toString();
+                if (stepUuid != "")
+                {
+                    RamStep *step = RamStep::get(stepUuid);
+                    if (step) editor->setObject(step);
+                }
                 editor->show();
                 editor->showPopup();
-                connect(editor, &RamObjectListComboBox::currentObjectChanged, this, &RamScheduleDelegate::setEntry);
-                connect(editor, &RamObjectListComboBox::popupHidden, editor, &RamObjectListComboBox::deleteLater);
+                connect(editor, &RamObjectComboBox::currentObjectChanged, this, &RamScheduleDelegate::setEntry);
+                connect(editor, &RamObjectComboBox::popupHidden, editor, &RamObjectComboBox::deleteLater);
             }
         }
         return true;
@@ -228,25 +200,28 @@ void RamScheduleDelegate::setEntry(RamObject *step)
     if (!m_indexPressed.isValid()) return;
 
     // Get current entry if any
-    RamScheduleEntry *entry = reinterpret_cast<RamScheduleEntry*>( m_indexPressed.data(RamObjectList::Pointer).toULongLong() );
+    QString entryUuid = m_indexPressed.data(RamObject::UUID).toString();
+    RamScheduleEntry *entry = nullptr;
+    if (entryUuid != "") entry = RamScheduleEntry::get( entryUuid );
     if (!entry && step)
     {
         // Get user
-        quintptr iptr = m_indexPressed.model()->headerData( m_indexPressed.row(), Qt::Vertical, RamObjectList::Pointer ).toULongLong();
-        RamUser *user = reinterpret_cast<RamUser*>( iptr );
+        QString userUuid = m_indexPressed.model()->headerData( m_indexPressed.row(), Qt::Vertical, RamObject::UUID ).toString();
+        RamUser *user = nullptr;
+        if (userUuid != "") user = RamUser::get( userUuid );
         if (!user) return;
         // Get Date
 #if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
-        QDateTime date = QDateTime( m_indexPressed.model()->headerData( m_indexPressed.column(), Qt::Horizontal, RamObjectList::Date).toDate() );
+        QDateTime date = QDateTime( m_indexPressed.model()->headerData( m_indexPressed.column(), Qt::Horizontal, RamObject::Date).toDate() );
 #else
-        QDateTime date = m_indexPressed.model()->headerData( m_indexPressed.column(), Qt::Horizontal, RamObjectList::Date).toDate().startOfDay();
+        QDateTime date = m_indexPressed.model()->headerData( m_indexPressed.column(), Qt::Horizontal, RamObject::Date).toDate().startOfDay();
 #endif
-        if (  m_indexPressed.model()->headerData( m_indexPressed.row(), Qt::Vertical, RamObjectList::IsPM ).toBool() )
+        if (  m_indexPressed.model()->headerData( m_indexPressed.row(), Qt::Vertical, RamObject::IsPM ).toBool() )
             date.setTime(QTime(12,0));
 
         entry = new RamScheduleEntry( user, date );
         entry->setStep( RamStep::c( step ) );
-        user->schedule()->append(entry);
+        user->schedule()->appendObject(entry->uuid());
     }
     else if (entry)
     {

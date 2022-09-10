@@ -1,32 +1,32 @@
-#include "assetgrouplistmanagerwidget.h"
+#include "assetgroupmanagerwidget.h"
 
 #include "ramassetgroup.h"
 #include "ramses.h"
 
-AssetGroupListManagerWidget::AssetGroupListManagerWidget(QWidget *parent):
-    ObjectListManagerWidget(
+AssetGroupManagerWidget::AssetGroupManagerWidget(QWidget *parent):
+    ObjectManagerWidget(
         "Asset groups",
         QIcon(":icons/asset-group"),
         parent)
 {
     changeProject(Ramses::instance()->currentProject());
     connect(Ramses::instance(), SIGNAL(currentProjectChanged(RamProject*)), this, SLOT(changeProject(RamProject*)));
-    m_listEditWidget->setEditMode(ObjectListEditWidget::RemoveObjects);
+    m_listWidget->setEditMode(ObjectListWidget::RemoveObjects);
 
     // Create from template actions
     ui_createMenu = new RamObjectMenu(false, this);
     ui_createMenu->addCreateButton();
-    QToolButton *addButton = m_listEditWidget->addButton();
+    QToolButton *addButton = m_listWidget->addButton();
     addButton->setPopupMode(QToolButton::InstantPopup);
     addButton->setMenu(ui_createMenu);
 
-    ui_createMenu->setModel(Ramses::instance()->templateAssetGroups());
+    ui_createMenu->setObjectModel(Ramses::instance()->templateAssetGroups());
 
-    connect(ui_createMenu, &RamObjectMenu::createTriggered, this, &AssetGroupListManagerWidget::createObject);
-    connect(ui_createMenu, &RamObjectMenu::assigned, this, &AssetGroupListManagerWidget::createFromTemplate);
+    connect(ui_createMenu, &RamObjectMenu::createTriggered, this, &AssetGroupManagerWidget::createObject);
+    connect(ui_createMenu, &RamObjectMenu::assigned, this, &AssetGroupManagerWidget::createFromTemplate);
 }
 
-RamAssetGroup *AssetGroupListManagerWidget::createObject()
+RamAssetGroup *AssetGroupManagerWidget::createObject()
 {
     RamProject *project = Ramses::instance()->currentProject();
     if (!project) return nullptr;
@@ -35,20 +35,20 @@ RamAssetGroup *AssetGroupListManagerWidget::createObject()
                 "New Asset Group",
                 project
                 );
-    project->assetGroups()->append(assetGroup);
+    project->assetGroups()->appendObject(assetGroup->uuid());
     assetGroup->edit();
     return assetGroup;
 }
 
-void AssetGroupListManagerWidget::changeProject(RamProject *project)
+void AssetGroupManagerWidget::changeProject(RamProject *project)
 {
     // empty list
     this->clear();
     if (!project) return;
-    this->setList( project->assetGroups() );
+    this->setModel( project->assetGroups() );
 }
 
-void AssetGroupListManagerWidget::createFromTemplate(RamObject *templateAGObj)
+void AssetGroupManagerWidget::createFromTemplate(RamObject *templateAGObj)
 {
     RamTemplateAssetGroup *templateAG = RamTemplateAssetGroup::c(templateAGObj);
 

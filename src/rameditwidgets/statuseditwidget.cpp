@@ -44,7 +44,7 @@ void StatusEditWidget::reInit(RamObject *o)
         RamProject *project = nullptr;
         if (m_status->item()) project = m_status->item()->project();
         if (!project && m_status->step()) project = m_status->step()->project();
-        if (project) ui_userBox->setList( project->users() );
+        if (project) ui_userBox->setObjectModel( project->users(), "Users" );
 
         ui_userBox->setObject(m_status->assignedUser());
         ui_stateBox->setObject(m_status->state());
@@ -603,7 +603,7 @@ void StatusEditWidget::setupUi()
     ui_publishedBox = new QCheckBox("Published",this);
     detailsLayout->addRow("Publication", ui_publishedBox);
 
-    ui_userBox = new RamObjectListComboBox(true, this);
+    ui_userBox = new RamObjectComboBox(this);
     detailsLayout->addRow("Assigned user", ui_userBox);
 
     bottomLayout->addLayout( detailsLayout);
@@ -739,7 +739,7 @@ void StatusEditWidget::connectEvents()
     connect(ui_versionBox, SIGNAL(valueChanged(int)), this, SLOT(setVersion(int)));
     connect( ui_completionBox, SIGNAL(valueChanged(int)), this, SLOT(setCompletion(int)));
     connect( ui_statusCommentEdit, SIGNAL(editingFinished()), this, SLOT(setComment()));
-    connect( ui_userBox, &RamObjectListComboBox::currentObjectChanged, this, &StatusEditWidget::assignUser);
+    connect( ui_userBox, &RamObjectComboBox::currentObjectChanged, this, &StatusEditWidget::assignUser);
     connect( ui_publishedBox, SIGNAL(clicked(bool)), this, SLOT(setPublished(bool)));
     connect( ui_autoEstimationBox, SIGNAL(clicked(bool)), this, SLOT(setAutoEstimation(bool)));
     connect( ui_timeSpent, SIGNAL(valueChanged(int)), this, SLOT(setTimeSpent(int)));

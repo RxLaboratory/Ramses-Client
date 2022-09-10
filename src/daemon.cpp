@@ -1,4 +1,5 @@
 #include "daemon.h"
+#include "data-models/ramobjectlist.h"
 #include "duqf-app/app-version.h"
 #include "ramses.h"
 
@@ -251,7 +252,7 @@ void Daemon::getProjects(QTcpSocket *client)
         for (int i = 0; i < ramProjects->rowCount(); i++)
         {
             RamProject *p = RamProject::c( ramProjects->get(i) );
-            if (p->users()->contains(u))
+            if (p->users()->contains(u->uuid()))
             {
                 QJsonObject proj;
                 proj.insert("uuid", p->uuid());

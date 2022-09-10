@@ -13,7 +13,6 @@
 #include "duqf-widgets/autoselectdoublespinbox.h"
 #include "objecteditwidget.h"
 #include "duqf-widgets/duqffolderdisplaywidget.h"
-#include "data-views/ramobjectlistcombobox.h"
 #include "duqf-widgets/duqfcolorselector.h"
 #include "objectlistwidget.h"
 
@@ -64,7 +63,7 @@ private:
     AutoSelectDoubleSpinBox *ui_veryHardEdit;
     DuQFFolderDisplayWidget *ui_folderWidget;
     QCheckBox *ui_estimationMultiplierCheckBox;
-    RamObjectListComboBox *ui_estimationMultiplierBox;
+    RamObjectComboBox *ui_estimationMultiplierBox;
     DuQFColorSelector *ui_colorSelector;
 
     ObjectListWidget *m_applicationList;

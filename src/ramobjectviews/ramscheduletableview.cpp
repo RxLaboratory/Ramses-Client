@@ -1,22 +1,20 @@
-#include "ramscheduletablewidget.h"
+#include "ramscheduletableview.h"
 
-RamScheduleTableWidget::RamScheduleTableWidget(QWidget *parent):
+RamScheduleTableView::RamScheduleTableView(QWidget *parent):
     QTableView(parent)
 {
     setupUi();
-    m_delegate = new RamScheduleDelegate(this);
-    this->setItemDelegate( m_delegate );
     connectEvents();
 }
 
-void RamScheduleTableWidget::showDetails(bool s)
+void RamScheduleTableView::showDetails(bool s)
 {
     m_delegate->showDetails(s);
     this->resizeRowsToContents();
     this->resizeColumnsToContents();
 }
 
-void RamScheduleTableWidget::mouseMoveEvent(QMouseEvent *event)
+void RamScheduleTableView::mouseMoveEvent(QMouseEvent *event)
 {
     if (m_dragging)
     {
@@ -31,7 +29,7 @@ void RamScheduleTableWidget::mouseMoveEvent(QMouseEvent *event)
     QTableView::mouseMoveEvent(event);
 }
 
-void RamScheduleTableWidget::mousePressEvent(QMouseEvent *event)
+void RamScheduleTableView::mousePressEvent(QMouseEvent *event)
 {
     if (event->button() == Qt::MiddleButton)
     {
@@ -43,7 +41,7 @@ void RamScheduleTableWidget::mousePressEvent(QMouseEvent *event)
     QTableView::mousePressEvent(event);
 }
 
-void RamScheduleTableWidget::mouseReleaseEvent(QMouseEvent *event)
+void RamScheduleTableView::mouseReleaseEvent(QMouseEvent *event)
 {
     if (event->button() == Qt::MiddleButton)
     {
@@ -54,7 +52,7 @@ void RamScheduleTableWidget::mouseReleaseEvent(QMouseEvent *event)
     QTableView::mouseReleaseEvent(event);
 }
 
-void RamScheduleTableWidget::setupUi()
+void RamScheduleTableView::setupUi()
 {
     this->setSelectionMode(QAbstractItemView::ExtendedSelection);
     this->setFrameShape(QFrame::NoFrame);
@@ -70,14 +68,15 @@ void RamScheduleTableWidget::setupUi()
 
     this->setEditTriggers(QAbstractItemView::DoubleClicked | QAbstractItemView::SelectedClicked);
 
-
     QString style = "QTableView { padding-top: 3px; padding-bottom: 3px; gridline-color: rgba(0,0,0,0); selection-background-color: rgba(0,0,0,0); } ";
     style += "QTableView::item:hover { background-color: none; } ";
     this->setStyleSheet(style);
 
+    m_delegate = new RamScheduleDelegate(this);
+    this->setItemDelegate(m_delegate);
 }
 
-void RamScheduleTableWidget::connectEvents()
+void RamScheduleTableView::connectEvents()
 {
 
 }

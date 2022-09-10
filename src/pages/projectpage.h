@@ -29,7 +29,7 @@ private:
     QList<QMetaObject::Connection> m_userConnections;
 
     RamObjectMenu *ui_assignUserMenu;
-    RamObjectListMenu *ui_unAssignUserMenu;
+    RamObjectMenu *ui_unAssignUserMenu;
 };
 
 #endif // PROJECTPAGE_H

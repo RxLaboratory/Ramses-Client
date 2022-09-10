@@ -27,7 +27,7 @@ RamObjectMenu::RamObjectMenu(bool checkable, QWidget *parent):
     connect(m_objects, SIGNAL(modelReset()),this,SLOT(reset()));
 }
 
-void RamObjectMenu::setModel(RamObjectModel *list)
+void RamObjectMenu::setObjectModel(RamObjectModel *list)
 {
     if (!list) m_objects->setSourceModel( RamObjectModel::emptyModel() );
     else m_objects->setSourceModel(list);

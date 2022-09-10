@@ -314,6 +314,7 @@ QVariant RamAbstractObject::roleData(int role) const
     case Qt::StatusTipRole: return this->shortName() + " | " + this->name();
     case Qt::ForegroundRole: return QBrush(this->color());
     case Qt::DecorationRole: return this->iconPixmap();
+    case Qt::EditRole: return "";
     case RamAbstractObject::Name: return this->name();
     case RamAbstractObject::ShortName: return this->shortName();
     case RamAbstractObject::Type: return this->objectType();
@@ -336,15 +337,15 @@ QVariant RamAbstractObject::roleData(int role) const
         int w = 200;
         QString comment = this->comment();
         if (comment != "") {
-            h += 30 + comment.count("\n") * 30;
+            h += 30 + comment.count("\n") * 15;
         }
         QString details = this->details();
         if (details != "") {
-            h += 30 + details.count("\n") * 30;
+            h += 30 + details.count("\n") * 15;
         }
         QString subDetails = this->subDetails();
         if (subDetails != "") {
-            h += 30 + subDetails.count("\n") * 30;
+            h += 30 + subDetails.count("\n") * 15;
         }
         QString imagePath = this->previewImagePath();
         if (imagePath != "") {
@@ -352,6 +353,9 @@ QVariant RamAbstractObject::roleData(int role) const
         }
         return QSize(w, h);
     }
+    case RamAbstractObject::IsPM: return false;
+    case RamAbstractObject::Date: return QDate();
+    case RamAbstractObject::IsComment: return false;
     }
 
     return this->uuid();

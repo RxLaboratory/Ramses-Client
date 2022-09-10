@@ -16,7 +16,7 @@ class RamObjectMenu : public QMenu
     Q_OBJECT
 public:
     RamObjectMenu(bool checkable = false, QWidget *parent = nullptr);
-    void setModel(RamObjectModel *list);
+    void setObjectModel(RamObjectModel *list);
     RamObjectSortFilterProxyModel *model();
 
     void addCreateButton();

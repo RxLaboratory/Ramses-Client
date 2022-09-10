@@ -183,7 +183,7 @@ RamObject *RamObjectModel::get(int row)
 
 RamObject *RamObjectModel::get(QModelIndex index) const
 {
-    QString uuid = index.data(Qt::UserRole).toString();
+    QString uuid = index.data(RamObject::UUID).toString();
     if (uuid == "") return nullptr;
     return RamObject::get(uuid, m_type);
 }

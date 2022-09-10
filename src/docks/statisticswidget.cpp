@@ -16,11 +16,11 @@ void StatisticsWidget::projectChanged(RamProject *project)
 
     if (!project)
     {
-        ui_userBox->setList(nullptr);
+        ui_userBox->setObjectModel(nullptr, "Users");
         return;
     }
 
-    ui_userBox->setList(project->users());
+    ui_userBox->setObjectModel(project->users(), "Users");
 
     estimationChanged(project);
     connect(m_project,SIGNAL(estimationComputed(RamProject*)),this,SLOT(estimationChanged(RamProject*)));
@@ -85,7 +85,7 @@ void StatisticsWidget::setupUi()
     mainLayout->setContentsMargins(0,0,0,0);
     mainLayout->setSpacing(3);
 
-    ui_userBox = new RamObjectListComboBox(true, this);
+    ui_userBox = new RamObjectComboBox(this);
     mainLayout->addWidget(ui_userBox);
 
     QVBoxLayout *projectLayout = new QVBoxLayout();

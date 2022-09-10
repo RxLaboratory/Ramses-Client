@@ -1,15 +1,15 @@
-#ifndef ASSETGROUPLISTMANAGERWIDGET_H
-#define ASSETGROUPLISTMANAGERWIDGET_H
+#ifndef ASSETGROUPMANAGERWIDGET_H
+#define ASSETGROUPMANAGERWIDGET_H
 
-#include "objectlistmanagerwidget.h"
+#include "objectmanagerwidget.h"
 #include "ramobjectmenu.h"
 #include "ramassetgroup.h"
 
-class AssetGroupListManagerWidget : public ObjectListManagerWidget
+class AssetGroupManagerWidget : public ObjectManagerWidget
 {
     Q_OBJECT
 public:
-    AssetGroupListManagerWidget(QWidget *parent = nullptr);
+    AssetGroupManagerWidget(QWidget *parent = nullptr);
 
 protected slots:
     RamAssetGroup *createObject() override;
@@ -23,4 +23,4 @@ private:
     RamObjectMenu *ui_createMenu;
 };
 
-#endif // ASSETGROUPLISTMANAGERWIDGET_H
+#endif // ASSETGROUPMANAGERWIDGET_H

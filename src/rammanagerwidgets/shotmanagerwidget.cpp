@@ -1,4 +1,4 @@
-#include "shotlistmanagerwidget.h"
+#include "shotmanagerwidget.h"
 
 #include "ramses.h"
 #include "ramsequence.h"
@@ -6,16 +6,16 @@
 #include "shotscreationdialog.h"
 #include "data-models/ramitemtable.h"
 
-ShotListManagerWidget::ShotListManagerWidget(QWidget *parent):
-    ObjectListManagerWidget(
+ShotManagerWidget::ShotManagerWidget(QWidget *parent):
+    ObjectManagerWidget(
         "Shots",
         QIcon(":icons/shot"),
         parent)
 {
     changeProject(Ramses::instance()->currentProject());
     connect(Ramses::instance(), SIGNAL(currentProjectChanged(RamProject*)), this, SLOT(changeProject(RamProject*)));
-    m_listEditWidget->setEditMode(ObjectListEditWidget::RemoveObjects);
-    m_listEditWidget->setSortable(true);
+    m_listWidget->setEditMode(ObjectListWidget::RemoveObjects);
+    m_listWidget->setSortable(true);
 
     // Batch create
     QMenu *createMenu = new QMenu(this);
@@ -26,7 +26,7 @@ ShotListManagerWidget::ShotListManagerWidget(QWidget *parent):
     QAction *batchAction = new QAction("Create multiple shots...");
     createMenu->addAction(batchAction);
 
-    QToolButton *addButton = m_listEditWidget->addButton();
+    QToolButton *addButton = m_listWidget->addButton();
     addButton->setPopupMode(QToolButton::InstantPopup);
     addButton->setMenu(createMenu);
 
@@ -35,14 +35,14 @@ ShotListManagerWidget::ShotListManagerWidget(QWidget *parent):
 
 }
 
-RamShot *ShotListManagerWidget::createObject()
+RamShot *ShotManagerWidget::createObject()
 {
     RamProject *project = Ramses::instance()->currentProject();
     if (!project) return nullptr;
     if (project->sequences()->rowCount() == 0 ) return nullptr;
 
     RamSequence *seq = RamSequence::c( currentFilter() );
-    if (!seq) seq = RamSequence::c( project->sequences()->first() );
+    if (!seq) seq = RamSequence::c( project->sequences()->get(0) );
     if(!seq) return nullptr;
 
     RamShot *shot = new RamShot(
@@ -56,22 +56,22 @@ RamShot *ShotListManagerWidget::createObject()
     return shot;
 }
 
-void ShotListManagerWidget::changeProject(RamProject *project)
+void ShotManagerWidget::changeProject(RamProject *project)
 {
     // empty list
     this->clear();
     if (!project) return;
-    this->setList( project->shots() );
-    m_listEditWidget->setFilterList( project->sequences() );
+    //this->setModel( project->shots() );
+    m_listWidget->setFilterList( project->sequences() );
 }
 
-void ShotListManagerWidget::batchCreate()
+void ShotManagerWidget::batchCreate()
 {
     RamProject *project = Ramses::instance()->currentProject();
     if (!project) return;
     if (project->sequences()->rowCount() == 0 ) return;
     RamSequence *seq = RamSequence::c( currentFilter() );
-    if (!seq) seq = qobject_cast<RamSequence*>( project->sequences()->at(0) );
+    if (!seq) seq = RamSequence::c( project->sequences()->get(0) );
     if(!seq) return;
 
     ShotsCreationDialog dialog(project, this);

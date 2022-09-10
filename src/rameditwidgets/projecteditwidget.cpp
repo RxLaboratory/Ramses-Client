@@ -39,8 +39,7 @@ void ProjectEditWidget::reInit(RamObject *o)
         QString p = m_project->path();
         if (p.count() > 45) p = p.replace(0, p.count()-45, "(...)");
         ui_folderLabel->setText( p );
-
-        ui_userList->setList(m_project->users());
+        ui_userList->setObjectModel(m_project->users());
     }
     else
     {
@@ -100,7 +99,7 @@ void ProjectEditWidget::createUser()
                 "NEW",
                 "John Doe");
     //Ramses::instance()->users()->append(user);
-    m_project->users()->append(user);
+    m_project->users()->appendObject(user->uuid());
     user->edit();
 }
 
@@ -178,10 +177,10 @@ void ProjectEditWidget::setupUi()
 
     ui_mainFormLayout->addWidget(fWidget, 7, 1);
 
-    ui_userList = new ObjectListEditWidget(true, RamUser::ProjectAdmin, this);
-    ui_userList->setEditMode(ObjectListEditWidget::UnassignObjects);
+    ui_userList = new ObjectListWidget(true, RamUser::ProjectAdmin, this);
+    ui_userList->setEditMode(ObjectListWidget::UnassignObjects);
     ui_userList->setTitle("Users");
-    //ui_userList->setAssignList(Ramses::instance()->users());
+    ui_userList->setAssignList(Ramses::instance()->users());
     ui_mainLayout->addWidget(ui_userList);
 }
 

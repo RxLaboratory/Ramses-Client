@@ -32,7 +32,7 @@ QVariant RamStatisticsTable::headerData(int section, Qt::Orientation orientation
         return QVariant();
     }
 
-    RamStep *step = RamStep::c( m_project->steps()->at(section) );
+    RamStep *step = RamStep::c( m_project->steps()->get(section) );
 
     if (role == Qt::DisplayRole) return step->shortName();
 
@@ -50,7 +50,7 @@ QVariant RamStatisticsTable::data(const QModelIndex &index, int role) const
 {
     int row = index.row();
 
-    RamStep *step = RamStep::c( m_project->steps()->at( row ) );
+    RamStep *step = RamStep::c( m_project->steps()->get( row ) );
 
     QList<float> userStats = step->stats(m_user);
     float estimation = userStats.at(0);

@@ -41,7 +41,7 @@ void StepEditWidget::reInit(RamObject *obj)
 
         //m_applicationList->setModel(m_step->applications());
 
-        ui_estimationMultiplierBox->setList(m_step->project()->assetGroups());
+        ui_estimationMultiplierBox->setObjectModel(m_step->project()->assetGroups());
 
         ui_veryEasyEdit->setValue( m_step->estimationVeryEasy() );
         ui_easyEdit->setValue( m_step->estimationEasy() );
@@ -277,7 +277,7 @@ void StepEditWidget::setupUi()
 
     ui_estimationMultiplierCheckBox = new QCheckBox("Multiply by", this);
     ui_estimationMultiplierCheckBox->setToolTip("Multiply estimation by the number of assets in the specific asset group.");
-    ui_estimationMultiplierBox = new RamObjectListComboBox(this);
+    ui_estimationMultiplierBox = new RamObjectComboBox(this);
     ui_estimationMultiplierBox->setEnabled(false);
     estimationLayout->addRow(ui_estimationMultiplierCheckBox, ui_estimationMultiplierBox);
 
@@ -322,5 +322,5 @@ void StepEditWidget::connectEvents()
     connect(ui_hardEdit, SIGNAL(valueChanged(double)), this, SLOT(setHard(double)));
     connect(ui_veryHardEdit, SIGNAL(valueChanged(double)), this, SLOT(setVeryHard(double)));
     connect(ui_estimationMultiplierCheckBox, SIGNAL(clicked(bool)), this, SLOT(activateMultiplier(bool)));
-    connect(ui_estimationMultiplierBox, &RamObjectListComboBox::currentObjectChanged, this, &StepEditWidget::setMultiplier);
+    connect(ui_estimationMultiplierBox, &RamObjectComboBox::currentObjectChanged, this, &StepEditWidget::setMultiplier);
 }

@@ -276,7 +276,7 @@ void PipelineWidget::newStep(const QModelIndex &parent, int first, int last)
 
     for (int i = first; i <= last; i++)
     {
-        RamObject *o = m_project->steps()->at(i);
+        RamObject *o = m_project->steps()->get(i);
         newStep(o);
     }
 }
@@ -366,7 +366,7 @@ void PipelineWidget::createStep()
                 "NEW",
                 "New step",
                 project);
-    project->steps()->append(step);
+    project->steps()->appendObject(step->uuid());
     step->edit();
 }
 
@@ -439,7 +439,7 @@ void PipelineWidget::assignStep()
     RamStep *templateStep = reinterpret_cast<RamStep*>( iptr );
     if (!templateStep) return;
     RamStep *step = RamStep::createFromTemplate(templateStep, project);
-    project->steps()->append(step);
+    project->steps()->appendObject(step->uuid());
     step->edit();
 }
 
@@ -488,7 +488,7 @@ void PipelineWidget::newPipe(const QModelIndex &parent, int first, int last)
 
     for (int i = first; i <= last; i++)
     {
-        RamObject *o = m_project->pipeline()->at(i);
+        RamObject *o = m_project->pipeline()->get(i);
         newPipe(o);
     }
 }
@@ -508,7 +508,7 @@ void PipelineWidget::stepsConnected(DuQFConnection *co)
     if (!input) return;
 
     RamPipe *pipe = new RamPipe(output, input);
-    project->pipeline()->append(pipe);
+    project->pipeline()->appendObject(pipe->uuid());
     pipe->edit();
 }
 
@@ -622,7 +622,7 @@ void PipelineWidget::pipeRemoved(const QModelIndex &parent, int first, int last)
 
     for (int i = first; i <= last; i++)
     {
-        RamObject *p = m_project->pipeline()->at(i);
+        RamObject *p = m_project->pipeline()->get(i);
         if (m_pipeObjectConnections.contains(p->uuid()))
         {
             QList<QMetaObject::Connection> c = m_pipeObjectConnections.take(p->uuid());
@@ -690,7 +690,7 @@ void PipelineWidget::changeProject()
     {
         pm->setText("Building step nodes...");
         pm->increment();
-        newStep( m_project->steps()->at(i) );
+        newStep( m_project->steps()->get(i) );
     }
 
     // add pipes
@@ -698,7 +698,7 @@ void PipelineWidget::changeProject()
     {
         pm->setText("Building pipes...");
         pm->increment();
-        newPipe( m_project->pipeline()->at(i) );
+        newPipe( m_project->pipeline()->get(i) );
     }
 
     m_projectConnections << connect(m_project->steps(), SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(newStep(QModelIndex,int,int)));

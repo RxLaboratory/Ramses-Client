@@ -28,22 +28,22 @@ public:
     RamProject(QString shortName, QString name);
 
     // Steps
-    RamObjectList *steps() const;
+    RamObjectModel *steps() const;
     // Asset Groups
-    RamObjectList *assetGroups() const;
+    RamObjectModel *assetGroups() const;
     // Sequences
-    RamObjectList *sequences() const;
+    RamObjectModel *sequences() const;
     // Shots
     RamItemTable *shots() const;
     // Assets
     RamItemTable *assets() const;
     // Pipeline
-    RamObjectList *pipeline() const;
-    RamObjectList *pipeFiles() const;
+    RamObjectModel *pipeline() const;
+    RamObjectModel *pipeFiles() const;
     // Users
-    RamObjectList *users() const;
+    RamObjectModel *users() const;
     // Schedule comments
-    RamObjectList *scheduleComments() const;
+    RamObjectModel *scheduleComments() const;
 
     qreal framerate() const;
     void setFramerate(const qreal &newFramerate);
@@ -113,23 +113,20 @@ protected:
     RamProject(QString uuid);
     virtual QString folderPath() const override;
 
-private slots:
-    void listChanged(RamObjectList *list);
-
 private:
     void construct();
     void getCreateLists();
 
     // LISTS
-    RamObjectList *m_steps;
-    RamObjectList *m_sequences;
-    RamObjectList *m_assetGroups;
+    RamObjectModel *m_steps;
+    RamObjectModel *m_sequences;
+    RamObjectModel *m_assetGroups;
     RamItemTable *m_assets;
     RamItemTable *m_shots;
-    RamObjectList *m_pipeline;
-    RamObjectList *m_pipeFiles;
-    RamObjectList *m_users;
-    RamObjectList *m_scheduleComments;
+    RamObjectModel *m_pipeline;
+    RamObjectModel *m_pipeFiles;
+    RamObjectModel *m_users;
+    RamObjectModel *m_scheduleComments;
 
     /**
      * @brief When true, estimations won't be computed.

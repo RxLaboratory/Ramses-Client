@@ -1,19 +1,13 @@
-#ifndef RAMSCHEDULEFILTER_H
-#define RAMSCHEDULEFILTER_H
+#ifndef RAMSCHEDULEFILTERPROXYMODEL_H
+#define RAMSCHEDULEFILTERPROXYMODEL_H
 
 #include <QSortFilterProxyModel>
 #include <QtDebug>
 
-#include "data-models/ramscheduletable.h"
-
-class RamObjectList;
-class RamScheduleEntry;
-
-class RamScheduleFilter : public QSortFilterProxyModel
+class RamScheduleFilterProxyModel : public QSortFilterProxyModel
 {
 public:
-    explicit RamScheduleFilter(QObject *parent = nullptr);
-    void setList(RamScheduleTable *list);
+    explicit RamScheduleFilterProxyModel(QObject *parent = nullptr);
 
     void ignoreUserUuid(QString uuid);
     void acceptUserUuid(QString uuid);
@@ -26,10 +20,8 @@ protected:
     bool filterAcceptsColumn(int sourceCol, const QModelIndex &sourceParent) const override;
 
 private:
-    RamObjectList *m_emptyList;
-
     QStringList m_filterUserUuids;
     QList<int> m_hiddenDays;
 };
 
-#endif // RAMSCHEDULEFILTER_H
+#endif // RAMSCHEDULEFILTERPROXYMODEL_H

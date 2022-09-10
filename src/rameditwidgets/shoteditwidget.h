@@ -8,8 +8,7 @@
 #include "duqf-widgets/duqffolderdisplaywidget.h"
 #include "duqf-widgets/autoselectdoublespinbox.h"
 #include "duqf-widgets/autoselectspinbox.h"
-#include "objectlisteditwidget.h"
-#include "ramobjectlistcombobox.h"
+#include "objectlistwidget.h"
 #include "ramshot.h"
 
 class ShotEditWidget : public ObjectEditWidget
@@ -39,8 +38,8 @@ private:
     DuQFFolderDisplayWidget *ui_folderWidget;
     AutoSelectDoubleSpinBox *ui_secondsBox;
     AutoSelectSpinBox *ui_framesBox;
-    RamObjectListComboBox *ui_sequencesBox;
-    ObjectListEditWidget *ui_assetList;
+    RamObjectComboBox *ui_sequencesBox;
+    ObjectListWidget *ui_assetList;
 };
 
 #endif // SHOTEDITWIDGET_H

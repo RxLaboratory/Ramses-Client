@@ -1,7 +1,6 @@
 #include "shoteditwidget.h"
 #include "ramproject.h"
 #include "ramsequence.h"
-#include "data-models/ramitemtable.h"
 
 ShotEditWidget::ShotEditWidget(QWidget *parent) :
     ObjectEditWidget(parent)
@@ -35,13 +34,13 @@ void ShotEditWidget::reInit(RamObject *o)
         // Set sequence
         RamProject *project = m_shot->project();
         QSignalBlocker b(ui_sequencesBox);
-        ui_sequencesBox->setList(project->sequences());
+        ui_sequencesBox->setObjectModel(project->sequences());
         ui_sequencesBox->setObject( m_shot->sequence() );
 
         // Set assets
-        ui_assetList->setList( m_shot->assets() );
+        //ui_assetList->setObjectModel( m_shot->assets() );
         ui_assetList->setFilterList( project->assetGroups() );
-        ui_assetList->setAssignList( project->assets() );
+        //ui_assetList->setAssignList( project->assets() );
     }
     else
     {
@@ -104,14 +103,14 @@ void ShotEditWidget::setupUi()
     QLabel *seqLabel = new QLabel("Sequence", this);
     ui_mainFormLayout->addWidget(seqLabel, 5,0);
 
-    ui_sequencesBox = new RamObjectListComboBox(this);
+    ui_sequencesBox = new RamObjectComboBox(this);
     ui_mainFormLayout->addWidget(ui_sequencesBox, 5, 1);
 
     ui_folderWidget = new DuQFFolderDisplayWidget(this);
     ui_mainLayout->addWidget( ui_folderWidget);
 
-    ui_assetList = new ObjectListEditWidget(true, RamUser::Lead, this);
-    ui_assetList->setEditMode(ObjectListEditWidget::UnassignObjects);
+    ui_assetList = new ObjectListWidget(true, RamUser::Lead, this);
+    ui_assetList->setEditMode(ObjectListWidget::UnassignObjects);
     ui_assetList->setEditable(true);
     ui_assetList->setSearchable(true);
     ui_assetList->setTitle("Assets");
@@ -125,5 +124,5 @@ void ShotEditWidget::connectEvents()
     connect(ui_secondsBox, SIGNAL(editingFinished()), this, SLOT(setDuration()));
     connect(ui_framesBox, SIGNAL(editingFinished()), this, SLOT(framesChanged()));
     connect(ui_framesBox, SIGNAL(editingFinished()), this, SLOT(setDuration()));
-    connect(ui_sequencesBox, &RamObjectListComboBox::currentObjectChanged, this, &ShotEditWidget::setSequence);
+    connect(ui_sequencesBox, &RamObjectComboBox::currentObjectChanged, this, &ShotEditWidget::setSequence);
 }

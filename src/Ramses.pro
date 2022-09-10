@@ -43,7 +43,10 @@ SOURCES += \
     data-views/ramobjectdelegateold.cpp \
     rammanagerwidgets/objectlistwidget.cpp \
     rammanagerwidgets/objectmanagerwidget.cpp \
+    rammanagerwidgets/sequencemanagerwidget.cpp \
+    rammanagerwidgets/shotmanagerwidget.cpp \
     rammanagerwidgets/statemanagerwidget.cpp \
+    rammanagerwidgets/stepmanagerwidget.cpp \
     ramobjectdelegates/ramobjectdelegate.cpp \
     ramobjectmodels/dbtablemodel.cpp \
     data-models/ramitemfiltermodel.cpp \
@@ -53,16 +56,16 @@ SOURCES += \
     ramobjectmodels/ramobjectmodel.cpp \
     ramobjectmodels/ramobjectsortfilterproxymodel.cpp \
     data-models/ramprojectfiltermodel.cpp \
-    data-models/ramschedulefilter.cpp \
-    data-models/ramscheduletable.cpp \
     data-models/ramstatisticstable.cpp \
     data-models/timelineproxy.cpp \
+    ramobjectmodels/ramschedulefilterproxymodel.cpp \
+    ramobjectmodels/ramscheduletablemodel.cpp \
     ramobjectviews/ramobjectcombobox.cpp \
     data-views/ramobjectlistmenu.cpp \
     data-views/ramobjectlistview.cpp \
     ramobjectviews/ramobjectmenu.cpp \
-    data-views/ramscheduledelegate.cpp \
-    data-views/ramscheduletablewidget.cpp \
+    ramobjectdelegates/ramscheduledelegate.cpp \
+    ramobjectviews/ramscheduletableview.cpp \
     data-views/ramstatisticsdelegate.cpp \
     data-views/ramstatisticstablewidget.cpp \
     data-views/ramstepheaderview.cpp \
@@ -103,25 +106,22 @@ SOURCES += \
     progressbar.cpp \
     progresspage.cpp \
     daemon.cpp \
-    rameditwidgets/assetgrouplistmanagerwidget.cpp \
-    rameditwidgets/assetlistmanagerwidget.cpp \
+    rammanagerwidgets/assetgroupmanagerwidget.cpp \
+    rammanagerwidgets/assetmanagerwidget.cpp \
     rameditwidgets/databasecreatewidget.cpp \
     rameditwidgets/databaseeditwidget.cpp \
     rammanagerwidgets/filetypemanagerwidget.cpp \
     rameditwidgets/objectlisteditwidget.cpp \
     rameditwidgets/objectlistmanagerwidget.cpp \
     rameditwidgets/pipefileeditwidget.cpp \
-    rameditwidgets/pipefilelistmanagerwidget.cpp \
+    rammanagerwidgets/pipefilemanagerwidget.cpp \
     rammanagerwidgets/projectmanagerwidget.cpp \
-    rameditwidgets/schedulemanagerwidget.cpp \
-    rameditwidgets/sequencelistmanagerwidget.cpp \
+    rammanagerwidgets/schedulemanagerwidget.cpp \
     ramobjects/ramabstractitem.cpp \
     ramobjectviews/ramobjectview.cpp \
     smallwidgets/ramstatebox.cpp \
     smallwidgets/servereditwidget.cpp \
-    rameditwidgets/shotlistmanagerwidget.cpp \
     docks/statisticswidget.cpp \
-    rameditwidgets/steplistmanagerwidget.cpp \
     rameditwidgets/stepstatushistorywidget.cpp \
     rammanagerwidgets/templateassetgroupmanagerwidget.cpp \
     rammanagerwidgets/templatestepmanagerwidget.cpp \
@@ -213,11 +213,14 @@ SOURCES += \
 
 HEADERS += \
     config.h \
-    data-models/ramfilterlistproxymodelold.h \
+    data-models/ramfilterlistprListoxymodelold.h \
     data-views/ramobjectdelegateold.h \
     rammanagerwidgets/objectlistwidget.h \
     rammanagerwidgets/objectmanagerwidget.h \
+    rammanagerwidgets/sequencemanagerwidget.h \
+    rammanagerwidgets/shotmanagerwidget.h \
     rammanagerwidgets/statemanagerwidget.h \
+    rammanagerwidgets/stepmanagerwidget.h \
     ramobjectdelegates/ramobjectdelegate.h \
     ramobjectmodels/dbtablemodel.h \
     data-models/ramitemfiltermodel.h \
@@ -229,18 +232,18 @@ HEADERS += \
     ramobjectmodels/ramobjectmodel.h \
     ramobjectmodels/ramobjectsortfilterproxymodel.h \
     data-models/ramprojectfiltermodel.h \
-    data-models/ramschedulefilter.h \
-    data-models/ramscheduletable.h \
     data-models/ramstatelist.h \
     data-models/ramstatisticstable.h \
     data-models/ramstepstatushistory.h \
     data-models/timelineproxy.h \
+    ramobjectmodels/ramschedulefilterproxymodel.h \
+    ramobjectmodels/ramscheduletablemodel.h \
     ramobjectviews/ramobjectcombobox.h \
     data-views/ramobjectlistmenu.h \
     data-views/ramobjectlistview.h \
     ramobjectviews/ramobjectmenu.h \
-    data-views/ramscheduledelegate.h \
-    data-views/ramscheduletablewidget.h \
+    ramobjectdelegates/ramscheduledelegate.h \
+    ramobjectviews/ramscheduletableview.h \
     data-views/ramstatisticsdelegate.h \
     data-views/ramstatisticstablewidget.h \
     data-views/ramstepheaderview.h \
@@ -279,25 +282,22 @@ HEADERS += \
     rameditwidgets/asseteditwidget.h \
     rameditwidgets/assetgroupeditwidget.h \
     daemon.h \
-    rameditwidgets/assetgrouplistmanagerwidget.h \
-    rameditwidgets/assetlistmanagerwidget.h \
+    rammanagerwidgets/assetgroupmanagerwidget.h \
+    rammanagerwidgets/assetmanagerwidget.h \
     rameditwidgets/databasecreatewidget.h \
     rameditwidgets/databaseeditwidget.h \
     rammanagerwidgets/filetypemanagerwidget.h \
     rameditwidgets/objectlisteditwidget.h \
     rameditwidgets/objectlistmanagerwidget.h \
     rameditwidgets/pipefileeditwidget.h \
-    rameditwidgets/pipefilelistmanagerwidget.h \
+    rammanagerwidgets/pipefilemanagerwidget.h \
     rammanagerwidgets/projectmanagerwidget.h \
-    rameditwidgets/schedulemanagerwidget.h \
-    rameditwidgets/sequencelistmanagerwidget.h \
+    rammanagerwidgets/schedulemanagerwidget.h \
     ramobjects/ramabstractitem.h \
     ramobjectviews/ramobjectview.h \
     smallwidgets/ramstatebox.h \
     smallwidgets/servereditwidget.h \
-    rameditwidgets/shotlistmanagerwidget.h \
     docks/statisticswidget.h \
-    rameditwidgets/steplistmanagerwidget.h \
     rameditwidgets/stepstatushistorywidget.h \
     rammanagerwidgets/templateassetgroupmanagerwidget.h \
     rammanagerwidgets/templatestepmanagerwidget.h \

@@ -1,18 +1,17 @@
-#include "ramscheduletable.h"
+#include "ramscheduletablemodel.h"
 
 #include "ramschedulecomment.h"
-
 #include "ramscheduleentry.h"
 #include "ramses.h"
 
-RamScheduleTable::RamScheduleTable(QObject *parent) : QAbstractTableModel(parent)
+RamScheduleTableModel::RamScheduleTableModel(QObject *parent) : QAbstractTableModel(parent)
 {
     m_startDate = QDate::currentDate().addDays(-5);
     m_endDate = QDate::currentDate();
     connectEvents();
 }
 
-void RamScheduleTable::setList(RamObjectList *userList, RamObjectList *comments)
+void RamScheduleTableModel::setObjectModel(RamObjectModel *userList, RamObjectModel *comments)
 {
     beginResetModel();
 
@@ -31,7 +30,7 @@ void RamScheduleTable::setList(RamObjectList *userList, RamObjectList *comments)
     endResetModel();
 }
 
-int RamScheduleTable::columnCount(const QModelIndex &parent) const
+int RamScheduleTableModel::columnCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent)
 
@@ -40,7 +39,7 @@ int RamScheduleTable::columnCount(const QModelIndex &parent) const
     return m_startDate.daysTo( m_endDate ) + 1;
 }
 
-int RamScheduleTable::rowCount(const QModelIndex &parent) const
+int RamScheduleTableModel::rowCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent)
 
@@ -56,7 +55,7 @@ int RamScheduleTable::rowCount(const QModelIndex &parent) const
     return c;
 }
 
-QVariant RamScheduleTable::headerData(int section, Qt::Orientation orientation, int role) const
+QVariant RamScheduleTableModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
     if (!m_users) return QVariant();
 
@@ -75,38 +74,34 @@ QVariant RamScheduleTable::headerData(int section, Qt::Orientation orientation, 
                 return "NOTES";
             if ( role == Qt::ToolTipRole )
                 return QString("Use this line to add comments for specific dates.");
-            if ( role == RamObjectList::IsPM )
+            if ( role == RamObject::IsPM )
                 return false;
             return QAbstractTableModel::headerData(section, orientation, role);
         }
 
         if (m_comments) section--;
-        RamObject *usrObj = m_users->at(section / 2);
-        RamUser *user = qobject_cast<RamUser*>(usrObj);
+        RamObject *usrObj = m_users->get(section / 2);
+
+        // Add AMP/PM Info to user data
 
         QString ampm = " | AM";
         if (section % 2 == 1) ampm = " | PM";
 
-        if ( role == Qt::DisplayRole )
-            return QString(usrObj->shortName() % ampm);
-
-        if ( role == RamObjectList::Pointer)
-            return reinterpret_cast<quintptr>( usrObj );
-
-        if ( role == RamObjectList::IsPM)
+        if ( role == RamObject::IsPM)
             return section % 2 == 1;
 
-        if ( role == RamObjectList::UUID)
-            return usrObj->uuid();
+        if ( role == Qt::DisplayRole )
+            return QString(usrObj->roleData(role).toString() % ampm);
 
         if ( role == Qt::ToolTipRole )
-            return QString(usrObj->shortName() % " | " % usrObj->name() % ampm);
+            return QString(usrObj->roleData(role).toString() % " | " % ampm);
 
         if ( role == Qt::StatusTipRole )
-            return QString(usrObj->shortName() % " | " % usrObj->name() % ampm);
+            return QString(usrObj->roleData(role).toString() % " | " % ampm);
 
-        if ( role == Qt::ForegroundRole && user )
-            return QBrush( user->color() );
+        // Or return default
+
+        return usrObj->roleData(role);
     }
     else
     {
@@ -132,16 +127,15 @@ QVariant RamScheduleTable::headerData(int section, Qt::Orientation orientation, 
                 return QBrush(QColor(130,130,130));
             else
                 return QBrush(QColor(170,170,170));
-
         }
 
-        if (role ==  RamObjectList::Date)
+        if (role ==  RamObject::Date)
             return date;
     }
     return QAbstractTableModel::headerData(section, orientation, role);
 }
 
-QVariant RamScheduleTable::data(const QModelIndex &index, int role) const
+QVariant RamScheduleTableModel::data(const QModelIndex &index, int role) const
 {
     if (!m_users) return QVariant();
 
@@ -156,46 +150,26 @@ QVariant RamScheduleTable::data(const QModelIndex &index, int role) const
 
     // THE DATE
     QString ampm = "am";
-    if ( headerData(row, Qt::Vertical,  RamObjectList::IsPM).toBool() )
+    if ( headerData(row, Qt::Vertical,  RamObject::IsPM).toBool() )
     {
         ampm = "pm";
         date.setTime(QTime(12,0));
     }
 
-    if (role ==  RamObjectList::Date ) {
+    if (role ==  RamObject::Date ) {
         return date;
     }
-
     // THE COMMENT
     if (row == 0 && m_comments)
     {
         for(int i = 0; i < m_comments->rowCount(); i++)
         {
-            RamObject *cObj = m_comments->at(i);
-            RamScheduleComment *c = qobject_cast<RamScheduleComment*>( cObj );
-            if (c && c->date() == date)
-            {
-                if ( role == Qt::DisplayRole )
-                    return c->comment();
-
-                if ( role == Qt::ToolTipRole || role == Qt::StatusTipRole )
-                    return QString(date.toString("yyyy-MM-dd") % "\n" % c->comment() );
-
-                if ( role == Qt::BackgroundRole )
-                    return c->color();
-
-                if (role ==  RamObjectList::Pointer)
-                    return reinterpret_cast<quintptr>( c );
-
-                if (role ==  RamObjectList::IsComment) // isComment
-                    return true;
-
-                return QVariant();
-            }
+            RamScheduleComment *c = RamScheduleComment::c(m_comments->get(i));
+            if (c->date() == date)
+                return c->roleData(role);
         }
 
-        if (role == RamObjectList::IsComment) // isComment
-            return true;
+        // Needed Default values
 
         if (role == Qt::BackgroundRole )
         {
@@ -205,21 +179,21 @@ QVariant RamScheduleTable::data(const QModelIndex &index, int role) const
                 return QColor(42,42,42);
         }
 
+        if (role == RamObject::IsComment) return true;
 
         return QVariant();
     }
-
     // THE ENTRY
-    RamObject *usrObj = m_users->at((row-1) / 2);
+    RamObject *usrObj = m_users->get((row-1) / 2);
     RamUser *user = RamUser::c( usrObj );
     if (!user) return QVariant();
-    RamObjectList *schedule = user->schedule();
+    RamObjectModel *schedule = user->schedule();
 
     RamProject *currentProject = Ramses::instance()->currentProject();
 
     for (int i = 0; i < schedule->rowCount(); i++)
     {
-        RamScheduleEntry *entry = RamScheduleEntry::c(schedule->at(i));
+        RamScheduleEntry *entry = RamScheduleEntry::c(schedule->get(i));
         if (!entry) continue;
         RamStep *entryStep = entry->step();
         if (!entryStep) continue;
@@ -230,40 +204,24 @@ QVariant RamScheduleTable::data(const QModelIndex &index, int role) const
 
         if (entry->date() == date)
         {
-            if ( role == Qt::DisplayRole )
-                return entry->step()->shortName();
+            // Add AMP/PM Info to entry data
+            if ( role == RamObject::IsPM)
+                return ampm == "pm";
 
             if ( role == Qt::ToolTipRole )
-                return QString(date.toString("yyyy-MM-dd") %
-                        " " % ampm %
-                        "\n" % entry->step()->name() %
-                        "\n" % user->name() );
+                return QString(entry->roleData(role).toString() % "\n" % ampm);
 
             if ( role == Qt::StatusTipRole )
-                return QString(date.toString("yyyy-MM-dd") %
-                               " " % ampm %
-                               " | " % entry->step()->shortName() %
-                               " | " % user->shortName() );
+                return QString(entry->roleData(role).toString() % " | " % ampm);
 
-            if ( role == Qt::BackgroundRole )
-                return entry->step()->color();
-
-            if (role == RamObjectList::Pointer)
-                return reinterpret_cast<quintptr>( entry );
-
-            if (role == RamObjectList::Comment)
-                return entry->comment();
-
-            if (role == RamObjectList::IsComment)
-                return false;
-
-            if (role == Qt::EditRole)
-                return reinterpret_cast<quintptr>( entry->step() );            
+            // Or return default
+            return entry->roleData(role);
         }
     }
 
-    if (role == Qt::EditRole)
-        return 0;
+    if (role == Qt::EditRole) {
+        return "";
+    }
 
     if (role == Qt::BackgroundRole )
     {
@@ -276,7 +234,7 @@ QVariant RamScheduleTable::data(const QModelIndex &index, int role) const
     return QVariant();
 }
 
-void RamScheduleTable::insertUser(const QModelIndex &parent, int first, int last)
+void RamScheduleTableModel::insertUser(const QModelIndex &parent, int first, int last)
 {
     Q_UNUSED(parent);
 
@@ -288,7 +246,7 @@ void RamScheduleTable::insertUser(const QModelIndex &parent, int first, int last
     endInsertRows();
 }
 
-void RamScheduleTable::removeUser(const QModelIndex &parent, int first, int last)
+void RamScheduleTableModel::removeUser(const QModelIndex &parent, int first, int last)
 {
     Q_UNUSED(parent);
 
@@ -299,13 +257,13 @@ void RamScheduleTable::removeUser(const QModelIndex &parent, int first, int last
     endRemoveRows();
 }
 
-void RamScheduleTable::resetUsers()
+void RamScheduleTableModel::resetUsers()
 {
     beginResetModel();
     endResetModel();
 }
 
-void RamScheduleTable::setEndDate(const QDate &newEndDate)
+void RamScheduleTableModel::setEndDate(const QDate &newEndDate)
 {
     if (newEndDate < m_startDate) return;
 
@@ -323,7 +281,7 @@ void RamScheduleTable::setEndDate(const QDate &newEndDate)
     }
 }
 
-void RamScheduleTable::setStartDate(const QDate &newStartDate)
+void RamScheduleTableModel::setStartDate(const QDate &newStartDate)
 {
     if (newStartDate > m_endDate) return;
 
@@ -341,7 +299,7 @@ void RamScheduleTable::setStartDate(const QDate &newStartDate)
     }
 }
 
-void RamScheduleTable::connectEvents()
+void RamScheduleTableModel::connectEvents()
 {
 
 }

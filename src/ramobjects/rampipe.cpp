@@ -1,6 +1,7 @@
 #include "rampipe.h"
 
 #include "pipeeditwidget.h"
+#include "ramstep.h"
 
 QMap<QString, RamPipe*> RamPipe::m_existingObjects = QMap<QString, RamPipe*>();
 
@@ -41,6 +42,7 @@ RamPipe::RamPipe(QString uuid):
     RamObject(uuid, Pipe)
 {
     construct();
+    loadModel(m_pipeFiles, "pipeFiles");
     connectEvents();
 }
 
@@ -73,7 +75,7 @@ QString RamPipe::name() const
     QStringList nameList;
     for (int i = 0; i < m_pipeFiles->rowCount(); i++)
     {
-        nameList << m_pipeFiles->at(i)->name();
+        nameList << m_pipeFiles->get(i)->name();
     }
     return nameList.join("\n");
 }
@@ -83,7 +85,7 @@ RamProject *RamPipe::project() const
     return outputStep()->project();
 }
 
-RamObjectList *RamPipe::pipeFiles() const
+RamObjectModel *RamPipe::pipeFiles() const
 {
     return m_pipeFiles;
 }
@@ -97,18 +99,6 @@ void RamPipe::edit(bool show)
     if (show) showEdit();
 }
 
-// PRIVATE SLOTS //
-
-void RamPipe::pipeFileListChanged()
-{
-    QStringList n;
-    for (int i =0; i < m_pipeFiles->rowCount(); i++)
-    {
-        n << m_pipeFiles->at(i)->name();
-    }
-    setName(n.join("\n"));
-}
-
 // PRIVATE //
 
 void RamPipe::construct()
@@ -116,20 +106,8 @@ void RamPipe::construct()
     m_existingObjects[m_uuid] = this;
     m_icon = ":/icons/connection";
     m_editRole = ProjectAdmin;
-    getCreateLists();
-}
 
-void RamPipe::getCreateLists()
-{
-    QJsonObject d = data();
-
-    QString uuid = d.value("pipeFiles").toString();
-    if (uuid == "") m_pipeFiles = new RamObjectList("pipeFiles", "Files", PipeFile, RamObjectList::ListObject, this);
-    else m_pipeFiles = RamObjectList::get( uuid );
-    m_pipeFiles->setParent(this);
-    d.insert("pipeFiles", m_pipeFiles->uuid());
-
-    setData(d);
+    m_pipeFiles = createModel(RamObject::PipeFile, "pipeFiles");
 }
 
 void RamPipe::connectEvents()
@@ -139,7 +117,4 @@ void RamPipe::connectEvents()
 
     connect( inputStep(), &RamStep::removed, this, &RamObject::remove);
     connect( outputStep(), &RamStep::removed, this, &RamObject::remove);
-
-    connect(m_pipeFiles, &RamObjectList::listChanged, this, &RamPipe::pipeFileListChanged);
-    connect(m_pipeFiles, &RamObjectList::dataChanged, this, &RamPipe::pipeFileListChanged);
 }

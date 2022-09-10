@@ -56,7 +56,7 @@ QVariant RamState::roleData(int role) const
     {
     case RamAbstractObject::Completion: return this->completionRatio();
     }
-    return RamAbstractObject::roleData(role);
+    return RamObject::roleData(role);
 }
 
 // PUBLIC SLOTS //

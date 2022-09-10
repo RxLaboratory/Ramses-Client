@@ -34,7 +34,10 @@ public:
         PreviewImagePath = Qt::UserRole+15,
         SubDetails = Qt::UserRole+16,
         SizeHint = Qt::UserRole+17,
-        DetailedSizeHint = Qt::UserRole+18
+        DetailedSizeHint = Qt::UserRole+18,
+        IsPM = Qt::UserRole+19,
+        Date = Qt::UserRole+20,
+        IsComment = Qt::UserRole+21
     };
     /**
      * @brief The ObjectType enum lists all types of RamObjects

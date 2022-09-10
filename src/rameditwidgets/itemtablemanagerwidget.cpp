@@ -189,15 +189,10 @@ void ItemTableManagerWidget::projectChanged(RamProject *project, bool force)
     // Populate list and table
     setList();
 
-    ui_userMenu->setList( project->users() );
-    ui_stepMenu->setList( project->steps() );
-    //ui_actionNotAssigned->setChecked(true);
-    ui_assignUserMenu->setList(project->users());
-    ui_assignUserContextMenu->setList(project->users());
-
-    /*ui_stateMenu->selectAll();
-    ui_stepMenu->selectAll();
-    ui_userMenu->selectAll();*/
+    //ui_userMenu->setList( project->users() );
+    //ui_stepMenu->setList( project->steps() );
+    //ui_assignUserMenu->setList(project->users());
+    //ui_assignUserContextMenu->setList(project->users());
 
     loadSettings();
 }
@@ -530,7 +525,7 @@ void ItemTableManagerWidget::createItem()
         RamObject *filterObj = ui_groupBox->currentObject();
         RamAssetGroup *ag = RamAssetGroup::c( filterObj );
 
-        if (!ag) ag = RamAssetGroup::c( project->assetGroups()->first() );
+        if (!ag) ag = RamAssetGroup::c( project->assetGroups()->get(0) );
         if (!ag) return;
 
         RamAsset *asset = new RamAsset(
@@ -548,7 +543,7 @@ void ItemTableManagerWidget::createItem()
 
         RamObject *filterObj = ui_groupBox->currentObject();
         RamSequence *seq = RamSequence::c( filterObj );
-        if (!seq) seq = RamSequence::c( project->sequences()->first() );
+        if (!seq) seq = RamSequence::c( project->sequences()->get(0) );
         if(!seq) return;
 
         RamShot *shot = new RamShot(
@@ -780,7 +775,7 @@ void ItemTableManagerWidget::setupUi()
     ui_stateButton->setPopupMode(QToolButton::InstantPopup);
     ui_stateButton->setMenu(ui_stateMenu);
 
-    ui_stateMenu->setModel( Ramses::instance()->states() );
+    ui_stateMenu->setObjectModel( Ramses::instance()->states() );
 
     ui_titleBar->insertLeft(ui_stateButton);
 
@@ -812,7 +807,7 @@ void ItemTableManagerWidget::setupUi()
 
     ui_changeStateMenu = new RamObjectMenu(false, this);
     ui_changeStateMenu->setTitle("Change state");
-    ui_changeStateMenu->setModel(Ramses::instance()->states());
+    ui_changeStateMenu->setObjectModel(Ramses::instance()->states());
     statusMenu->addMenu(ui_changeStateMenu);
 
     ui_changeDifficultyMenu = new QMenu("Change difficulty", this);
@@ -898,7 +893,7 @@ void ItemTableManagerWidget::setupUi()
 
     ui_changeStateContextMenu = new RamObjectMenu(false, this);
     ui_changeStateContextMenu->setTitle("Change state");
-    ui_changeStateContextMenu->setModel(Ramses::instance()->states());
+    ui_changeStateContextMenu->setObjectModel(Ramses::instance()->states());
     ui_contextMenu->addMenu(ui_changeStateContextMenu);
 
     QMenu *changeDifficultyContextMenu = new QMenu("Change difficulty", this);
@@ -1026,12 +1021,12 @@ void ItemTableManagerWidget::setList()
     if (m_productionType == RamStep::AssetProduction)
     {
         ui_table->setList( m_project->assets() );
-        ui_groupBox->setList( m_project->assetGroups() );
+        //ui_groupBox->setList( m_project->assetGroups() );
     }
     else if (m_productionType == RamStep::ShotProduction)
     {
         ui_table->setList( m_project->shots() );
-        ui_groupBox->setList( m_project->sequences() );
+        //ui_groupBox->setList( m_project->sequences() );
     }
 }
 

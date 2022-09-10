@@ -9,7 +9,8 @@
 #include "resolutionwidget.h"
 #include "frameratewidget.h"
 #include "duqf-widgets/duqffolderselectorwidget.h"
-#include "objectlisteditwidget.h"
+#include "objectlistwidget.h"
+#include "ramproject.h"
 
 class ProjectEditWidget : public ObjectEditWidget
 {
@@ -49,7 +50,7 @@ private:
     QDateEdit *ui_deadlineEdit;
     QToolButton *ui_savePathButton;
     QToolButton *ui_reinitPathButton;
-    ObjectListEditWidget *ui_userList;
+    ObjectListWidget *ui_userList;
 };
 
 #endif // PROJECTEDITWIDGET_H

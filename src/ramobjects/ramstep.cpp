@@ -163,7 +163,7 @@ QList<float> RamStep::stats(RamUser *user)
     // Count assigned and future days
     for (int j = 0; j < user->schedule()->rowCount(); j++)
     {
-        RamScheduleEntry *entry = RamScheduleEntry::c( user->schedule()->at(j) );
+        RamScheduleEntry *entry = RamScheduleEntry::c( user->schedule()->get(j) );
         if (!entry) continue;
         if (this->is(entry->step()))
         {
@@ -373,12 +373,12 @@ void RamStep::countAssignedDays()
 
     for (int i = 0; i < m_project->users()->rowCount(); i++)
     {
-        RamUser *u = RamUser::c( m_project->users()->at(i) );
+        RamUser *u = RamUser::c( m_project->users()->get(i) );
         if (!u) continue;
 
         for (int j = 0; j < u->schedule()->rowCount(); j++)
         {
-            RamScheduleEntry *entry = RamScheduleEntry::c( u->schedule()->at(j) );
+            RamScheduleEntry *entry = RamScheduleEntry::c( u->schedule()->get(j) );
             if (!entry) continue;
             if (this->is(entry->step()))
             {

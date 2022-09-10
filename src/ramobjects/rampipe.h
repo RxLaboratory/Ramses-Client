@@ -4,7 +4,7 @@
 #include "ramobject.h"
 
 #include "ramproject.h"
-class RamObjectList;
+
 class RamStep;
 
 class RamPipe : public RamObject
@@ -30,7 +30,7 @@ public:
 
     RamProject *project() const;
 
-    RamObjectList *pipeFiles() const;
+    RamObjectModel *pipeFiles() const;
 
 public slots:
     virtual void edit(bool show = true) override;
@@ -40,16 +40,11 @@ protected:
     RamPipe(QString uuid);
     virtual QString folderPath() const override { return ""; };
 
-private slots:
-    // updates the name
-    void pipeFileListChanged();
-
 private:
     void construct();
-    void getCreateLists();
     void connectEvents();
 
-    RamObjectList *m_pipeFiles;
+    RamObjectModel *m_pipeFiles;
 };
 
 #endif // RAMPIPE_H

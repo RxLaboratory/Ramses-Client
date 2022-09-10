@@ -620,7 +620,7 @@ QVariant RamStatus::roleData(int role) const
     }
     }
 
-    return RamAbstractObject::roleData(role);
+    return RamObject::roleData(role);
 }
 
 // PUBLIC SLOTS //

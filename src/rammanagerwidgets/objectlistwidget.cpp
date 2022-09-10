@@ -15,10 +15,10 @@ ObjectListWidget::ObjectListWidget(RamObjectModel *objectList, bool editableObje
 {
     setupUi(editableObjects, editRole);
     connectEvents();
-    setModel(objectList);
+    setObjectModel(objectList);
 }
 
-void ObjectListWidget::setModel(RamObjectModel *objectModel)
+void ObjectListWidget::setObjectModel(RamObjectModel *objectModel)
 {
     m_objectModel = objectModel;
 
@@ -51,7 +51,7 @@ void ObjectListWidget::setFilterList(RamObjectModel *filterList, QString filterL
 
 void ObjectListWidget::setAssignList(RamObjectModel *assignList)
 {
-    ui_assignMenu->setModel(assignList);
+    ui_assignMenu->setObjectModel(assignList);
     ui_addButton->setPopupMode(QToolButton::InstantPopup);
     ui_addButton->setMenu(ui_assignMenu);
 

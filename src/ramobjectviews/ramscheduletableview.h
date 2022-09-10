@@ -1,5 +1,5 @@
-#ifndef RAMSCHEDULETABLEWIDGET_H
-#define RAMSCHEDULETABLEWIDGET_H
+#ifndef RAMSCHEDULETABLEVIEW_H
+#define RAMSCHEDULETABLEVIEW_H
 
 #include <QTableView>
 #include <QHeaderView>
@@ -7,11 +7,11 @@
 
 #include "ramscheduledelegate.h"
 
-class RamScheduleTableWidget : public QTableView
+class RamScheduleTableView : public QTableView
 {
     Q_OBJECT
 public:
-    RamScheduleTableWidget(QWidget *parent = nullptr);
+    RamScheduleTableView(QWidget *parent = nullptr);
 
 public slots:
     void showDetails(bool s);
@@ -34,4 +34,4 @@ private:
     bool m_dragging = false;
 };
 
-#endif // RAMSCHEDULETABLEWIDGET_H
+#endif // RAMSCHEDULETABLEVIEW_H

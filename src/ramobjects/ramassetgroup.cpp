@@ -27,7 +27,7 @@ RamAssetGroup *RamAssetGroup::createFromTemplate(RamTemplateAssetGroup *tempAG, 
     // Create
     RamAssetGroup *assetGroup = new RamAssetGroup(tempAG->shortName(), tempAG->name(), project);
     assetGroup->setColor(tempAG->color());
-    project->assetGroups()->append(assetGroup);
+    project->assetGroups()->appendObject(assetGroup->uuid());
     return assetGroup;
 }
 
@@ -89,14 +89,15 @@ void RamAssetGroup::construct()
     m_existingObjects[m_uuid] = this;
     m_objectType = AssetGroup;
     m_project = nullptr;
-    m_assets = new RamObjectFilterModel(this);
+    m_assets = new RamObjectSortFilterProxyModel(this);
+    m_assets->setSingleColumn(true);
     m_icon = ":/icons/asset-group";
 }
 
 void RamAssetGroup::setProject(RamProject *project)
 {
     m_project = project;
-    m_assets->setList( m_project->assets() );
+    m_assets->setSourceModel( m_project->assets() );
     m_assets->setFilterUuid( m_uuid );
     this->setParent( m_project );
     insertData("project", project->uuid());

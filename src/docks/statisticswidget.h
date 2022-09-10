@@ -5,7 +5,7 @@
 #include <QVBoxLayout>
 #include <QGridLayout>
 
-#include "data-views/ramobjectlistcombobox.h"
+#include "ramobjectcombobox.h"
 #include "ramstatisticstablewidget.h"
 #include "smallwidgets/progresswidget.h"
 
@@ -26,7 +26,7 @@ private:
     void setupUi();
     void connectEvents();
 
-    RamObjectListComboBox *ui_userBox;
+    RamObjectComboBox *ui_userBox;
     ProgressWidget *ui_progressWidget;
     QLabel *ui_completionLabel;
     QLabel *ui_remainingTimeLabel;

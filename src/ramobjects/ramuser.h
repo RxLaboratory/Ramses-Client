@@ -4,7 +4,7 @@
 #include <QStringBuilder>
 
 #include "ramobject.h"
-#include "data-models/ramobjectlist.h"
+#include "ramobjectmodel.h"
 
 class RamStep;
 class RamScheduleEntry;
@@ -29,7 +29,7 @@ public:
     void setRole(const UserRole &role);
     void setRole(const QString role);
 
-    RamObjectList *schedule() const;
+    RamObjectModel *schedule() const;
     bool isStepAssigned(RamStep *step) const;
 
     virtual QString iconName() const override;
@@ -45,9 +45,8 @@ protected:
 
 private:
     void construct();
-    void getCreateLists();
 
-    RamObjectList *m_schedule;
+    RamObjectModel *m_schedule;
 };
 
 #endif // RAMUSER_H

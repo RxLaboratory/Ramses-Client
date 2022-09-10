@@ -5,8 +5,8 @@
 #include <QMenu>
 
 #include "objecteditwidget.h"
-#include "objectlisteditwidget.h"
-#include "ramobjectlistcombobox.h"
+#include "objectlistwidget.h"
+#include "ramobjectcombobox.h"
 #include "rampipe.h"
 
 /**
@@ -36,9 +36,9 @@ private:
     void connectEvents();
     void populateMenus(RamProject *project);
 
-    RamObjectListComboBox *ui_fromBox;
-    RamObjectListComboBox *ui_toBox;
-    ObjectListEditWidget *ui_pipeFileList;
+    RamObjectComboBox *ui_fromBox;
+    RamObjectComboBox *ui_toBox;
+    ObjectListWidget *ui_pipeFileList;
 };
 
 #endif // PIPEEDITWIDGET_H

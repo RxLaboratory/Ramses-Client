@@ -20,7 +20,7 @@ ObjectManagerWidget::ObjectManagerWidget(RamObjectModel *objectModel, QString ti
 
 void ObjectManagerWidget::setModel(RamObjectModel *objectModel)
 {
-    m_listWidget->setModel( objectModel );
+    m_listWidget->setObjectModel( objectModel );
     if (!objectModel) return;
     this->setEnabled(true);
 }

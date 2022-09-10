@@ -4,6 +4,7 @@
 #include "ramstatus.h"
 #include "ramshot.h"
 #include "ramasset.h"
+#include "ramobjectmodel.h"
 
 // PUBLIC //
 
@@ -272,7 +273,7 @@ RamStep *RamItemTable::stepAt(int col) const
 
     RamProject *p = project();
 
-    RamObject *o = p->steps()->at(col-1);
+    RamObject *o = p->steps()->get(col-1);
     return RamStep::c( o );
 }
 
@@ -284,7 +285,7 @@ int RamItemTable::stepCol(RamStep *step) const
 
     for (int i = 0; i < p->steps()->rowCount(); i++)
     {
-        RamObject *obj = p->steps()->at(i);
+        RamObject *obj = p->steps()->get(i);
         if (obj->is(step)) return i+1;
     }
     return -1;

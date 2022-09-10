@@ -42,6 +42,8 @@ RamUser::RamUser(QString uuid):
     RamObject(uuid, User, nullptr, ENCRYPT_USER_DATA)
 {
     construct();
+
+    loadModel( m_schedule, "schedule" );
 }
 
 void RamUser::setShortName(const QString &shortName)
@@ -88,7 +90,7 @@ void RamUser::setRole(const QString role)
     insertData("role", role);
 }
 
-RamObjectList *RamUser::schedule() const
+RamObjectModel *RamUser::schedule() const
 {
     return m_schedule;
 }
@@ -98,7 +100,7 @@ bool RamUser::isStepAssigned(RamStep *step) const
     // Check in schedule
     for(int i = 0; i < m_schedule->rowCount(); i++)
     {
-        RamScheduleEntry *entry = RamScheduleEntry::c( m_schedule->at(i) );
+        RamScheduleEntry *entry = RamScheduleEntry::c( m_schedule->get(i) );
         if (!entry) continue;
 
         if (step->is(entry->step())) return true;
@@ -180,22 +182,5 @@ void RamUser::construct()
     m_existingObjects[m_uuid] = this;
     m_icon = ":/icons/user";
     m_editRole = Admin;
-    getCreateLists();
-}
-
-void RamUser::getCreateLists()
-{
-    QJsonObject d = data();
-
-    QString uuid = d.value("schedule").toString();
-    if (uuid == "") m_schedule = new RamObjectList("schedule", "Schedule", ScheduleEntry, RamObjectList::ListObject, this);
-    else m_schedule = RamObjectList::get( uuid );
-
-    // The schedule can't be found, create a new one
-    if (!m_schedule) m_schedule = new RamObjectList("schedule", "Schedule", ScheduleEntry, RamObjectList::ListObject, this);
-
-    m_schedule->setParent(this);
-    d.insert("schedule", m_schedule->uuid());
-
-    setData(d);
+    m_schedule = createModel(RamObject::ScheduleEntry, "schedule");
 }
