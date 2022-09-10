@@ -46,6 +46,9 @@
 			- projecteditwidget user list->setAssignList
 		- TemplateAssetGroup // CHK
 			- test create asset groups from template in project editor
+		- FileType // WIP
+			- ApplicationEditWidget -> setModel of the 3 file lists
+		- Application // TODO
 		
 
 - SYNC issues

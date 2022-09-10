@@ -13,7 +13,7 @@
 #include "templatestepmanagerwidget.h"
 #include "templateassetgroupmanagerwidget.h"
 #include "statemanagerwidget.h"
-#include "filetypelistmanagerwidget.h"
+#include "filetypemanagerwidget.h"
 #include "applicationlistmanagerwidget.h"
 #include "schedulemanagerwidget.h"
 #include "docks/statisticswidget.h"
@@ -170,7 +170,7 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     ui_adminPage->addPage(stateManager, "States", QIcon(":/icons/state"));
     ui_adminPage->titleBar()->insertLeft(stateManager->menuButton());
     qDebug() << "  > states ok";
-    FileTypeListManagerWidget *fileTypeManager = new FileTypeListManagerWidget(this);
+    FileTypeManagerWidget *fileTypeManager = new FileTypeManagerWidget(this);
     ui_adminPage->addPage(fileTypeManager, "File Types", QIcon(":/icons/files"));
     ui_adminPage->titleBar()->insertLeft(fileTypeManager->menuButton());
     qDebug() << "  > file types ok";

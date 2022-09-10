@@ -107,7 +107,7 @@ SOURCES += \
     rameditwidgets/assetlistmanagerwidget.cpp \
     rameditwidgets/databasecreatewidget.cpp \
     rameditwidgets/databaseeditwidget.cpp \
-    rameditwidgets/filetypelistmanagerwidget.cpp \
+    rammanagerwidgets/filetypemanagerwidget.cpp \
     rameditwidgets/objectlisteditwidget.cpp \
     rameditwidgets/objectlistmanagerwidget.cpp \
     rameditwidgets/pipefileeditwidget.cpp \
@@ -283,7 +283,7 @@ HEADERS += \
     rameditwidgets/assetlistmanagerwidget.h \
     rameditwidgets/databasecreatewidget.h \
     rameditwidgets/databaseeditwidget.h \
-    rameditwidgets/filetypelistmanagerwidget.h \
+    rammanagerwidgets/filetypemanagerwidget.h \
     rameditwidgets/objectlisteditwidget.h \
     rameditwidgets/objectlistmanagerwidget.h \
     rameditwidgets/pipefileeditwidget.h \

@@ -6,7 +6,7 @@
 
 #include "objecteditwidget.h"
 #include "duqf-widgets/duqffolderselectorwidget.h"
-#include "objectlisteditwidget.h"
+#include "objectlistwidget.h"
 #include "ramapplication.h"
 
 class ApplicationEditWidget : public ObjectEditWidget
@@ -34,9 +34,9 @@ private:
     void connectEvents();
 
     DuQFFolderSelectorWidget *m_folderSelector;
-    ObjectListEditWidget *m_nativeList;
-    ObjectListEditWidget *m_importList;
-    ObjectListEditWidget *m_exportList;
+    ObjectListWidget *m_nativeList;
+    ObjectListWidget *m_importList;
+    ObjectListWidget *m_exportList;
 };
 
 #endif // APPLICATIONEDITWIDGET_H

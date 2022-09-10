@@ -60,13 +60,10 @@ public:
     DBTableModel *templateAssetGroups() const;
 
     // File Types
-    RamObjectList *fileTypes() const;
+    DBTableModel *fileTypes() const;
 
     // Applications
     RamObjectList *applications() const;
-
-public slots:
-    void refresh();
 
 signals:
     void userChanged(RamUser*);
@@ -96,7 +93,7 @@ private:
     DBTableModel *m_users;
     DBTableModel *m_templateSteps = nullptr;
     DBTableModel *m_templateAssetGroups = nullptr;
-    RamObjectList *m_fileTypes = nullptr;
+    DBTableModel *m_fileTypes = nullptr;
     RamObjectList *m_applications = nullptr;
     DBTableModel *m_projects = nullptr;
 
