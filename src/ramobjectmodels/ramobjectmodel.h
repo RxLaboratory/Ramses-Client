@@ -32,13 +32,15 @@ public:
     virtual bool moveRows(const QModelIndex &sourceParent, int sourceRow, int count, const QModelIndex &destinationParent, int destinationChild) override;
 
     // Convenience access
+    // Clear the model
+    void clear();
     // An object by its row
     RamObject *get(int row);
     // An object by index
     RamObject *get(QModelIndex index) const;
     // An object by its shortname, or name
     RamObject *search(QString searchString) const;
-
+    // The type of objects contained in this model
     RamObject::ObjectType type() const;
 
 protected:

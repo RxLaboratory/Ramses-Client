@@ -56,16 +56,6 @@ public:
     static void setRamsesPath(QString dbFile, QString p);
     static QString getRamsesPath(QString dbFile);
 
-    // AUTHENTIFICATION //
-
-    /**
-     * @brief login Checks the username and password in the local data
-     * @param username
-     * @param password
-     * @return The user uuid if successful, empty string otherwise
-     */
-    QString login(QString username, QString password);
-
     // DATA INTERFACE //
 
     QStringList tableUuids(QString table);

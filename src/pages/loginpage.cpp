@@ -124,6 +124,7 @@ void LoginPage::userChanged(RamUser *u)
         ui_loginWidget->show();
         ui_statusLabel->setText(tr("Ready"));
     }
+    updateDatabaseRecentList();
 }
 
 void LoginPage::setupUi()

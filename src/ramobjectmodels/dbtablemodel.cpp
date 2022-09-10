@@ -36,6 +36,7 @@ void DBTableModel::removeObject(QString uuid, QString table)
 
 void DBTableModel::reload()
 {
+    clear();
     QStringList uuids = LocalDataInterface::instance()->tableUuids( RamObject::objectTypeName( type() ));
     insertObjects(0, uuids);
 }

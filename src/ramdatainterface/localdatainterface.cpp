@@ -240,66 +240,6 @@ QString LocalDataInterface::getRamsesPath(QString dbFile)
     return "auto";
 }
 
-QString LocalDataInterface::login(QString username, QString password)
-{
-    username.replace("'", "''");
-
-    // Get user data
-    QString q = "SELECT data, uuid FROM RamUser WHERE userName = '%1';";
-    QSqlQuery qry = query( q.arg(username) );
-
-    if(!qry.first()) return "";
-
-    // Decrypt and check password
-    QString data = qry.value(0).toString();
-
-    if (ENCRYPT_USER_DATA) data = DataCrypto::instance()->clientDecrypt(data);
-
-    QJsonDocument doc = QJsonDocument::fromJson( data.toUtf8() );
-    QJsonObject dataObj = doc.object();
-
-    QString test = dataObj.value("password").toString();
-
-    if ( password == test )
-    {
-        // Save the current DB to recent files
-        QSettings settings;
-        // Get all to remove non existing, and insert new at first
-        QStringList dbs;
-        int n = settings.beginReadArray("database/recent");
-        for (int i = 0; i < n; i++)
-        {
-            settings.setArrayIndex(i);
-            dbs << settings.value("path", "-").toString();
-        }
-        settings.endArray();
-        // Check
-        for (int i = dbs.count() - 1; i >= 0; i--)
-        {
-            if (!QFileInfo::exists(dbs.at(i)))
-            {
-                dbs.removeAt(i);
-                continue;
-            }
-            if (dbs.at(i) == m_dataFile) dbs.removeAt(i);
-        }
-        // Insert
-        dbs.insert(0, m_dataFile);
-        // Write
-        settings.beginWriteArray("database/recent");
-        for (int i = 0; i < dbs.count(); i++)
-        {
-            settings.setArrayIndex(i);
-            settings.setValue("path", dbs.at(i));
-        }
-        settings.endArray();
-
-        return qry.value(1).toString();
-    }
-
-    return "";
-}
-
 QStringList LocalDataInterface::tableUuids(QString table)
 {
     QString q = "SELECT uuid FROM '%1' WHERE removed = 0;";
@@ -513,9 +453,42 @@ ServerConfig LocalDataInterface::setDataFile(const QString &file)
 
     emit dataReset();
 
+    // Save the current DB to recent files
+    QSettings settings;
+    // Get all to remove non existing, and insert new at first
+    QStringList dbs;
+    int n = settings.beginReadArray("database/recent");
+    for (int i = 0; i < n; i++)
+    {
+        settings.setArrayIndex(i);
+        dbs << settings.value("path", "-").toString();
+    }
+    settings.endArray();
+    // Check
+    for (int i = dbs.count() - 1; i >= 0; i--)
+    {
+        if (!QFileInfo::exists(dbs.at(i)))
+        {
+            dbs.removeAt(i);
+            continue;
+        }
+        if (dbs.at(i) == m_dataFile) dbs.removeAt(i);
+    }
+    // Insert
+    dbs.insert(0, m_dataFile);
+    // Write
+    settings.beginWriteArray("database/recent");
+    for (int i = 0; i < dbs.count(); i++)
+    {
+        settings.setArrayIndex(i);
+        settings.setValue("path", dbs.at(i));
+    }
+    settings.endArray();
+
     pm->increment();
 
     return serverConfig();
+
     /*ProcessManager *pm = ProcessManager::instance();
 
     pm->setTitle(tr("Loading database"));

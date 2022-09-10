@@ -154,6 +154,18 @@ bool RamObjectModel::moveRows(const QModelIndex &sourceParent, int sourceRow, in
     return true;
 }
 
+void RamObjectModel::clear()
+{
+    beginResetModel();
+
+    while(m_objectsUuids.count() > 0)
+    {
+        disconnectObject( m_objectsUuids.takeLast() );
+    }
+
+    endResetModel();
+}
+
 RamObject *RamObjectModel::get(int row)
 {
     return get(index(row, 0));
