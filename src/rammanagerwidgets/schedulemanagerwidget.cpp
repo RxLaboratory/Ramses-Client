@@ -156,7 +156,10 @@ void ScheduleManagerWidget::assignStep(RamObject *step)
                 if (commentUuid != "")
                 {
                     RamScheduleComment *comment = RamScheduleComment::get(commentUuid);
-                    if (comment) comment->remove();
+                    if (comment) {
+                        comment->remove();
+                        m_project->scheduleComments()->removeObjects(QStringList(commentUuid));
+                    }
                 }
             }
             else
@@ -770,6 +773,8 @@ void ScheduleManagerWidget::setComment(QString comment, QModelIndex index)
 
         if (c && comment == "") {
             c->remove();
+            // Remove from project
+            m_project->scheduleComments()->removeObjects(QStringList(uuid));
             return;
         }
     }
