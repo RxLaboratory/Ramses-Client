@@ -227,8 +227,11 @@ void RamScheduleDelegate::setEntry(RamObject *step)
     {
         if (step)
             entry->setStep( RamStep::c( step ) );
-        else
+        else {
+            RamUser *u = entry->user();
+            if (u) u->schedule()->removeObjects(QStringList(entryUuid));
             entry->remove();
+        }
     }
 }
 

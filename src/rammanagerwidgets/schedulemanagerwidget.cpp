@@ -165,7 +165,11 @@ void ScheduleManagerWidget::assignStep(RamObject *step)
                 if (entryUuid != "")
                 {
                     RamScheduleEntry *entry = RamScheduleEntry::get(entryUuid);
-                    if (entry) entry->remove();
+                    if (entry) {
+                        RamUser *u = entry->user();
+                        if (u) u->schedule()->removeObjects(QStringList(entryUuid));
+                        entry->remove();
+                    }
                 }
             }
             continue;
@@ -213,8 +217,6 @@ void ScheduleManagerWidget::filterUser(RamObject *user, bool filter)
 
 void ScheduleManagerWidget::filterMe()
 {
-    QList<QAction*> actions = ui_userMenu->actions();
-
     RamUser *current = Ramses::instance()->currentUser();
     ui_userMenu->select(current);
     checkUserFilter();
