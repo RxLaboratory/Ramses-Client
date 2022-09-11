@@ -29,10 +29,10 @@ QVariant RamObjectSortFilterProxyModel::data(const QModelIndex &index, int role)
 {
     if (columnCount() == 0) return QVariant();
 
-#if QT_VERSION > QT_VERSION_CHECK(5, 11, 0)
-   if (!checkIndex(index, CheckIndexOption::IndexIsValid))
-            return QVariant();
-#endif
+    int row = index.row();
+    int col = index.column();
+    if (row < 0 || col < 0) return QVariant();
+    if (row >= rowCount() || col >= columnCount() ) return QVariant();
 
     return QSortFilterProxyModel::data( index, role);
 }
