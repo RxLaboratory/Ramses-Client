@@ -88,7 +88,8 @@ void RamObjectDelegate::paintBG(QPainter *painter, PaintParameters *params) cons
 void RamObjectDelegate::paintTitle(const QModelIndex &index, QPainter *painter, PaintParameters *params) const
 {
     // Draw title
-    painter->setPen( index.data(Qt::ForegroundRole).value<QBrush>().color() );
+    if (index.data(RamObject::Disabled).toBool()) painter->setPen(params->textColor);
+    else painter->setPen( index.data(Qt::ForegroundRole).value<QBrush>().color() );
     painter->setFont( m_textFont );
     QRect result;
     painter->drawText(
@@ -372,19 +373,22 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
     if (params.bgRect.height() < 26 ) return;
 
     // Icon
-    QPixmap icon = index.data(Qt::DecorationRole).value<QPixmap>();
-    QColor labelColor = index.data(RamObject::LabelColor).value<QColor>();
-    if (labelColor.isValid())
+    if (!index.data(RamObject::Disabled).toBool())
     {
-        // Color the icon
-        QImage iconImage(12,12, QImage::Format_ARGB32);
-        iconImage.fill( labelColor );
-        QPainter iconPainter(&iconImage);
-        iconPainter.setCompositionMode(QPainter::CompositionMode_DestinationIn);
-        iconPainter.drawPixmap( QRect(0,0,12,12), icon );
-        painter->drawImage(params.iconRect, iconImage);
+        QPixmap icon = index.data(Qt::DecorationRole).value<QPixmap>();
+        QColor labelColor = index.data(RamObject::LabelColor).value<QColor>();
+        if (labelColor.isValid())
+        {
+            // Color the icon
+            QImage iconImage(12,12, QImage::Format_ARGB32);
+            iconImage.fill( labelColor );
+            QPainter iconPainter(&iconImage);
+            iconPainter.setCompositionMode(QPainter::CompositionMode_DestinationIn);
+            iconPainter.drawPixmap( QRect(0,0,12,12), icon );
+            painter->drawImage(params.iconRect, iconImage);
+        }
+        else painter->drawPixmap( params.iconRect, icon );
     }
-    else painter->drawPixmap( params.iconRect, icon );
 
     // Title
     paintTitle(index, painter, &params);
