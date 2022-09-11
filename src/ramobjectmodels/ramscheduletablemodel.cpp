@@ -165,6 +165,7 @@ QVariant RamScheduleTableModel::data(const QModelIndex &index, int role) const
         for(int i = 0; i < m_comments->rowCount(); i++)
         {
             RamScheduleComment *c = RamScheduleComment::c(m_comments->get(i));
+            if (!c) continue;
             if (c->date() == date)
                 return c->roleData(role);
         }
@@ -216,7 +217,7 @@ QVariant RamScheduleTableModel::data(const QModelIndex &index, int role) const
 
             // Or return default
             return entry->roleData(role);
-        }
+        }//*/
     }
 
     if (role == Qt::EditRole) {

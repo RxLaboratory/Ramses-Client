@@ -40,12 +40,20 @@ QVariant RamObjectModel::data(const QModelIndex &index, int role) const
 
     QString uuid = m_objectsUuids.at(row);
 
-    if (col == 0) return objectRoleData(uuid, role);
-
-    // For other columns
     // Get the object
     RamObject *obj = getObject(uuid);
+
+    if (role == RamObject::Pointer) {
+        if (obj) return reinterpret_cast<quintptr>(obj);
+        return 0;
+    }
+
     if (!obj) return uuid;
+
+    if (col == 0) return obj->roleData(role);
+
+    // For other columns
+
     QString colUuid = m_columnObjects->data(
                 m_columnObjects->index(col-1, 0),
                 RamObject::UUID
@@ -76,7 +84,16 @@ QVariant RamObjectModel::headerData(int section, Qt::Orientation orientation, in
     if (orientation == Qt::Vertical)
     {
         QString uuid = m_objectsUuids.at(section);
-        if (role == Qt::DisplayRole) return objectRoleData(uuid, RamObject::ShortName);
+        if (role == Qt::DisplayRole) {
+            RamObject *obj = getObject(uuid);
+            if (obj) return obj->roleData(RamObject::ShortName);
+            else return "";
+        }
+        if (role == RamObject::Pointer) {
+            RamObject *obj = getObject(uuid);
+            if (obj) return reinterpret_cast<quintptr>(obj);
+            return 0;
+        }
         if (role == RamObject::UUID) return uuid;
         return QAbstractTableModel::headerData(section, orientation, role);
     }
@@ -188,11 +205,11 @@ RamObject *RamObjectModel::get(int row)
     return get(index(row, 0));
 }
 
-RamObject *RamObjectModel::get(QModelIndex index) const
+RamObject *RamObjectModel::get(const QModelIndex &index)
 {
-    QString uuid = index.data(RamObject::UUID).toString();
-    if (uuid == "") return nullptr;
-    return RamObject::get(uuid, m_type);
+    quintptr iptr = index.data(RamObject::Pointer).toULongLong();
+    if (iptr == 0) return nullptr;
+    return reinterpret_cast<RamObject*>( iptr );
 }
 
 RamObject *RamObjectModel::search(QString searchString) const
@@ -303,12 +320,4 @@ void RamObjectModel::disconnectObject(QString uuid)
 {
     RamObject *obj = getObject( uuid );
     disconnect(obj, nullptr, this, nullptr);
-}
-
-QVariant RamObjectModel::objectRoleData(QString uuid, int role) const
-{
-    // Implement base object data
-    RamObject *obj = getObject(uuid);
-    if(!obj) return uuid;
-    return obj->roleData( role );
 }

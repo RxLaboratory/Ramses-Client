@@ -45,7 +45,7 @@ public:
     // An object by its row
     RamObject *get(int row);
     // An object by index
-    RamObject *get(QModelIndex index) const;
+    static RamObject *get(const QModelIndex &index);
     // An object by its shortname, or name
     RamObject *search(QString searchString) const;
 
@@ -76,7 +76,6 @@ private:
     RamObject *getObject(QString uuid) const;
     void connectObject(QString uuid);
     void disconnectObject(QString uuid);
-    QVariant objectRoleData(QString uuid, int role) const;
 
     QStringList m_objectsUuids;
     RamObjectSortFilterProxyModel *m_columnObjects;

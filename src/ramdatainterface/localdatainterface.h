@@ -58,8 +58,8 @@ public:
 
     // DATA INTERFACE //
 
-    QStringList tableUuids(QString table);
-    QList<QStringList> tableData(QString table);
+    QStringList tableUuids(QString table, bool includeRemoved = false);
+    QList<QStringList> tableData(QString table, bool includeRemoved = false);
     bool contains(QString uuid, QString table);
     QMap<QString, QString> modificationDates(QString table);
 
@@ -134,6 +134,10 @@ private:
      * @brief m_dataFile The SQLite file path
      */
     QString m_dataFile;
+
+    // Cache UUIDS to check their existence faster
+    QMap<QString, QStringList> m_uuids;
+
     //QThread m_queryThread;
     //Querier *m_tQuerier;
     //Querier *m_querier;

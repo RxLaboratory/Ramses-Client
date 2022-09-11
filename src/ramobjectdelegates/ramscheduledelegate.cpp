@@ -26,17 +26,16 @@ void RamScheduleDelegate::paint(QPainter *painter, const QStyleOptionViewItem &o
     const QRect rect = option.rect;
     painter->setRenderHint(QPainter::Antialiasing);
 
+    // PAINT BG
+
     // bg
     const QRect bgRect = rect.adjusted(m_padding/2,2,-m_padding/2,-2);
-    // icon
-    const QRect iconRect( bgRect.left() + m_padding, bgRect.top() +7 , 12, 12 );
-    // text
-    const QRect textRect( iconRect.right() + 5, iconRect.top()-5, bgRect.width() - 37, iconRect.height()+5 );
 
     // Select the bg Color
-    QColor bgColor = index.data(Qt::BackgroundRole).value<QBrush>().color();
+    QBrush bgBrush = index.data(Qt::BackgroundRole).value<QBrush>();
 
     // State
+    QColor bgColor = bgBrush.color();
     if (option.state & QStyle::State_Selected) bgColor = bgColor.darker();
     else if (option.state & QStyle::State_MouseOver) bgColor = bgColor.lighter();
 
@@ -44,18 +43,17 @@ void RamScheduleDelegate::paint(QPainter *painter, const QStyleOptionViewItem &o
     QDate date = index.data(RamObject::Date).value<QDate>();
     if (date < QDate::currentDate()) bgColor = bgColor.darker(175);
 
+    bgBrush.setColor(bgColor);
+
+    QPainterPath path;
+    path.addRoundedRect(bgRect, 5, 5);
+    painter->fillPath(path, bgBrush);
+
     // Text color
     QColor textColor;
     if (bgColor.lightness() > 80) textColor = m_abyss;
     else textColor = m_lessLight;
-
-    QBrush bgBrush(bgColor);
     QPen textPen(textColor);
-
-    // Background
-    QPainterPath path;
-    path.addRoundedRect(bgRect, 5, 5);
-    painter->fillPath(path, bgBrush);
 
     // Too Small !
     if (bgRect.height() < 26 )
@@ -63,6 +61,11 @@ void RamScheduleDelegate::paint(QPainter *painter, const QStyleOptionViewItem &o
         drawMore(painter, bgRect, textPen);
         return;
     }
+
+    // icon
+    const QRect iconRect( bgRect.left() + m_padding, bgRect.top() +7 , 12, 12 );
+    // text
+    const QRect textRect( iconRect.right() + 5, iconRect.top()-5, bgRect.width() - 37, iconRect.height()+5 );
 
     // Get the entry
     if (index.data(RamObject::IsComment).toBool()) // comment

@@ -336,6 +336,9 @@ void RamProject::computeEstimation(bool recompute)
     for (int i =0; i < m_steps->rowCount(); i++)
     {
         RamStep *step = RamStep::c(m_steps->get(i));
+
+        if (!step) continue;
+
         if (recompute)
         {
             step->computeEstimation();
@@ -343,7 +346,7 @@ void RamProject::computeEstimation(bool recompute)
         }
 
         //Ignore pre and post procution
-        if (step->type() != RamStep::ShotProduction && step->type() != RamStep::AssetProduction) continue;
+        if ( step->type() != RamStep::ShotProduction && step->type() != RamStep::AssetProduction) continue;
 
         m_timeSpent += step->timeSpent();
         m_estimation += step->estimation();

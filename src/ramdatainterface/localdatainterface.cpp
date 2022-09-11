@@ -240,21 +240,32 @@ QString LocalDataInterface::getRamsesPath(QString dbFile)
     return "auto";
 }
 
-QStringList LocalDataInterface::tableUuids(QString table)
+QStringList LocalDataInterface::tableUuids(QString table, bool includeRemoved)
 {
-    QString q = "SELECT uuid FROM '%1' WHERE removed = 0;";
+    // If we've got the info in the cache, use it.
+    if (CACHE_LOCAL_DATA && m_uuids.contains(table) ) return m_uuids.value(table);
+
+    QString q = "SELECT uuid FROM '%1'";
+    if (!includeRemoved) q += " WHERE removed = 0";
+    q += " ;";
     QSqlQuery qry = query( q.arg(table) );
 
     QStringList data;
 
     while (qry.next()) data << qry.value(0).toString();
 
+    // Cache
+    m_uuids[table] = data;
+
     return data;
 }
 
-QList<QStringList> LocalDataInterface::tableData(QString table)
+QList<QStringList> LocalDataInterface::tableData(QString table, bool includeRemoved)
 {
-    QString q = "SELECT `uuid`, `data` FROM '%1' WHERE removed = 0;";
+    QString q = "SELECT `uuid`, `data` FROM '%1'";
+    if (!includeRemoved) q += " WHERE removed = 0";
+    q += " ;";
+
     QSqlQuery qry = query( q.arg(table) );
 
     QList<QStringList> data;
@@ -272,12 +283,17 @@ QList<QStringList> LocalDataInterface::tableData(QString table)
 
 bool LocalDataInterface::contains(QString uuid, QString table)
 {
-    QString q = "SELECT uuid FROM '%1' WHERE uuid = '%2';";
+    // Get all UUIDS
+    QStringList uuids = tableUuids(table, true);
+    return uuids.contains(uuid);
+
+
+    /*QString q = "SELECT uuid FROM '%1' WHERE uuid = '%2';";
     q = q.arg(table, uuid);
     QSqlQuery qry = query( q );
 
     if (qry.first() && qry.value(0) != "") return true;
-    return false;
+    return false;*/
 }
 
 QMap<QString, QString> LocalDataInterface::modificationDates(QString table)
@@ -295,6 +311,9 @@ QMap<QString, QString> LocalDataInterface::modificationDates(QString table)
 
 void LocalDataInterface::createObject(QString uuid, QString table, QString data)
 {
+    // Remove table cache
+    m_uuids.remove(table);
+
     data.replace("'", "''");
 
     QDateTime modified = QDateTime::currentDateTimeUtc();
@@ -435,6 +454,9 @@ const QString &LocalDataInterface::dataFile() const
 
 ServerConfig LocalDataInterface::setDataFile(const QString &file)
 {
+    // Clear all cache
+    m_uuids.clear();
+
     ProcessManager *pm = ProcessManager::instance();
     pm->setTitle(tr("Loading database"));
     pm->setText(tr("Opening database..."));
@@ -585,6 +607,10 @@ void LocalDataInterface::saveSync(QJsonArray tables)
         QJsonObject table = tables.at(i).toObject();
         QString tableName = table.value("name").toString();
         if (tableName == "") continue;
+
+        // Clear cache
+        m_uuids.remove(tableName);
+
         QJsonArray incomingRows = table.value("modifiedRows").toArray();
 
         // We're going to need the uuids and dates of the table

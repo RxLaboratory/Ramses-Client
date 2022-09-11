@@ -39,7 +39,8 @@ public:
         Date = Qt::UserRole+20,
         IsComment = Qt::UserRole+21,
         Difficulty = Qt::UserRole+23,
-        Duration = Qt::UserRole+24
+        Duration = Qt::UserRole+24,
+        Pointer = Qt::UserRole+25
     };
     /**
      * @brief The ObjectType enum lists all types of RamObjects
