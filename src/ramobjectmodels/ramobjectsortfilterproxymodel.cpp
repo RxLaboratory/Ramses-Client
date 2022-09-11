@@ -130,6 +130,7 @@ bool RamObjectSortFilterProxyModel::filterAcceptsRow(int sourceRow, const QModel
     if (!filterOK) return false;
 
     // filter list uuids
+    filterOK = false;
     QStringList uuids = obj->filterListUuids();
     if (m_filterListUuids.count() == 0) filterOK = true;
     else {

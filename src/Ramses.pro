@@ -39,7 +39,6 @@ INCLUDEPATH += rameditwidgets \
     rammanagerwidgets \
 
 SOURCES += \
-    data-models/ramfilterlistproxymodelold.cpp \
     rammanagerwidgets/objectlistwidget.cpp \
     rammanagerwidgets/objectmanagerwidget.cpp \
     rammanagerwidgets/sequencemanagerwidget.cpp \
