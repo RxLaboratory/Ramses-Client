@@ -358,7 +358,7 @@ RamObjectDelegate::RamObjectDelegate(QObject *parent)
 
 void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-    QString uuid = index.data(Qt::UserRole).toString();
+    QString uuid = index.data(RamObject::UUID).toString();
     if (uuid == "") return QStyledItemDelegate::paint(painter, option, index);
 
     bool disabled = index.data(RamObject::Disabled).toBool();
@@ -465,7 +465,8 @@ QSize RamObjectDelegate::sizeHint(const QStyleOptionViewItem &option, const QMod
         s.setHeight( s.height() + 12);
     }
 
-    return s;//*/
+    if (s.isEmpty()) s= QSize(200,30);
+    return s;
 }
 
 void RamObjectDelegate::setEditable(bool editable)

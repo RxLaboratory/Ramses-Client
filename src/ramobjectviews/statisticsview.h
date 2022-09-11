@@ -1,17 +1,17 @@
-#ifndef RAMSTATISTICSTABLEWIDGET_H
-#define RAMSTATISTICSTABLEWIDGET_H
+#ifndef STATISTICSIEW_H
+#define STATISTICSIEW_H
 
 #include <QTableView>
 #include <QHeaderView>
 #include <QScrollBar>
 #include <QMouseEvent>
 
-#include "data-models/ramstatisticstable.h"
+#include "statisticsmodel.h"
 
-class RamStatisticsTableWidget : public QTableView
+class StatisticsView : public QTableView
 {
 public:
-    RamStatisticsTableWidget(QWidget *parent = nullptr);
+    StatisticsView(QWidget *parent = nullptr);
     void setUser(RamUser *user);
 
 protected:
@@ -26,11 +26,11 @@ private:
     void connectEvents();
 
     // Models
-    RamStatisticsTable *m_statsModel;
+    StatisticsModel *m_statsModel;
 
     // UI Events
     QPoint m_initialDragPos;
     bool m_dragging = false;
 };
 
-#endif // RAMSTATISTICSTABLEWIDGET_H
+#endif // STATISTICSIEW_H

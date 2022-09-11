@@ -136,7 +136,7 @@ void StatisticsWidget::setupUi()
     mainLayout->addLayout(projectLayout);
 
     // Add the stats table
-    ui_statsTable = new RamStatisticsTableWidget(this);
+    ui_statsTable = new StatisticsView(this);
 
     mainLayout->addWidget(ui_statsTable);
 }

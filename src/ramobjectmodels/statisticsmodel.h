@@ -7,11 +7,11 @@
 #include "ramproject.h"
 #include "ramstep.h"
 
-class RamStatisticsTable : public QAbstractTableModel
+class StatisticsModel : public QAbstractTableModel
 {
     Q_OBJECT
 public:
-    explicit RamStatisticsTable(QObject *parent = nullptr);
+    explicit StatisticsModel(QObject *parent = nullptr);
 
     // MODEL REIMPLEMENTATION
     int columnCount(const QModelIndex &parent = QModelIndex()) const override;

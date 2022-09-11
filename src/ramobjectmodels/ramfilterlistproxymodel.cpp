@@ -26,7 +26,7 @@ QVariant RamFilterListProxyModel::data(const QModelIndex &index, int role) const
         if (role == Qt::DisplayRole) return "All " + m_listName;
         if (role == Qt::StatusTipRole) return m_listName;
         if (role == Qt::ToolTipRole) return "Do not filter " + m_listName;
-        return 0;
+        return QVariant();
     }
 
     return QSortFilterProxyModel::data( createIndex(index.row(),index.column()), role);

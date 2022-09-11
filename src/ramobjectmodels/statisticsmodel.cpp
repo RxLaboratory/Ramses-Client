@@ -1,19 +1,19 @@
-#include "ramstatisticstable.h"
+#include "statisticsmodel.h"
 
 #include "ramses.h"
 
-RamStatisticsTable::RamStatisticsTable(QObject *parent) : QAbstractTableModel(parent)
+StatisticsModel::StatisticsModel(QObject *parent) : QAbstractTableModel(parent)
 {
     connectEvents();
 }
 
-int RamStatisticsTable::columnCount(const QModelIndex &parent) const
+int StatisticsModel::columnCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent);
     return 1;
 }
 
-int RamStatisticsTable::rowCount(const QModelIndex &parent) const
+int StatisticsModel::rowCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent);
     if (!m_project) return 0;
@@ -21,7 +21,7 @@ int RamStatisticsTable::rowCount(const QModelIndex &parent) const
     return m_project->steps()->rowCount();
 }
 
-QVariant RamStatisticsTable::headerData(int section, Qt::Orientation orientation, int role) const
+QVariant StatisticsModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
     if (!m_project) return QVariant();
 
@@ -46,7 +46,7 @@ QVariant RamStatisticsTable::headerData(int section, Qt::Orientation orientation
     return QVariant();
 }
 
-QVariant RamStatisticsTable::data(const QModelIndex &index, int role) const
+QVariant StatisticsModel::data(const QModelIndex &index, int role) const
 {
     int row = index.row();
 
@@ -151,7 +151,7 @@ QVariant RamStatisticsTable::data(const QModelIndex &index, int role) const
     return QVariant();
 }
 
-void RamStatisticsTable::changeProject(RamProject *project)
+void StatisticsModel::changeProject(RamProject *project)
 {
     beginResetModel();
 
@@ -166,7 +166,7 @@ void RamStatisticsTable::changeProject(RamProject *project)
     connect( project->steps(), SIGNAL(rowsAboutToBeRemoved(QModelIndex,int,int)), this, SLOT(removeStep(QModelIndex,int,int)));
 }
 
-void RamStatisticsTable::removeStep(const QModelIndex &parent, int first, int last)
+void StatisticsModel::removeStep(const QModelIndex &parent, int first, int last)
 {
     Q_UNUSED(parent);
 
@@ -175,19 +175,19 @@ void RamStatisticsTable::removeStep(const QModelIndex &parent, int first, int la
     endRemoveRows();
 }
 
-void RamStatisticsTable::estimationComputed()
+void StatisticsModel::estimationComputed()
 {
     emit dataChanged(createIndex(0,0), createIndex(rowCount()-1, 0));
 }
 
-void RamStatisticsTable::setUser(RamUser *newUser)
+void StatisticsModel::setUser(RamUser *newUser)
 {
     beginResetModel();
     m_user = newUser;
     endResetModel();
 }
 
-void RamStatisticsTable::insertStep(const QModelIndex &parent, int first, int last)
+void StatisticsModel::insertStep(const QModelIndex &parent, int first, int last)
 {
     Q_UNUSED(parent);
 
@@ -197,7 +197,7 @@ void RamStatisticsTable::insertStep(const QModelIndex &parent, int first, int la
     endInsertRows();
 }
 
-void RamStatisticsTable::connectEvents()
+void StatisticsModel::connectEvents()
 {
     connect(Ramses::instance(), SIGNAL(currentProjectChanged(RamProject*)), this, SLOT(changeProject(RamProject*)));
 }

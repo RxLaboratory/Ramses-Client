@@ -3,7 +3,7 @@
 
 #include <QTableView>
 
-#include "data-models/timelineproxy.h"
+#include "timelineproxy.h"
 #include "ramshot.h"
 #include "timelinedelegate.h"
 

@@ -1,9 +1,9 @@
-#include "ramstatisticsdelegate.h"
+#include "statisticsdelegate.h"
 
 #include "ramstep.h"
 #include "duqf-app/app-style.h"
 
-RamStatisticsDelegate::RamStatisticsDelegate(QObject *parent) : QStyledItemDelegate(parent)
+StatisticsDelegate::StatisticsDelegate(QObject *parent) : QStyledItemDelegate(parent)
 {
     m_abyss = DuUI::getColor("abyss-grey");
     m_dark = DuUI::getColor("dark-grey");
@@ -18,7 +18,7 @@ RamStatisticsDelegate::RamStatisticsDelegate(QObject *parent) : QStyledItemDeleg
 
 }
 
-void RamStatisticsDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
+void StatisticsDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
 
     int col = index.column();
@@ -125,7 +125,7 @@ void RamStatisticsDelegate::paint(QPainter *painter, const QStyleOptionViewItem 
     }//*/
 }
 
-QSize RamStatisticsDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
+QSize StatisticsDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
     if (index.column() != 0) return QStyledItemDelegate::sizeHint(option, index);
 
@@ -142,7 +142,7 @@ QSize RamStatisticsDelegate::sizeHint(const QStyleOptionViewItem &option, const 
     return QSize(200,50);
 }
 
-void RamStatisticsDelegate::drawMore(QPainter *painter, QRect rect, QPen pen) const
+void StatisticsDelegate::drawMore(QPainter *painter, QRect rect, QPen pen) const
 {
     painter->save();
     painter->setPen( pen );

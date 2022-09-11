@@ -49,14 +49,11 @@ SOURCES += \
     ramobjectdelegates/ramobjectdelegate.cpp \
     ramobjectmodels/dbtablemodel.cpp \
     ramobjectmodels/ramitemsortfilterproxymodel.cpp \
-    data-models/ramitemtablelistproxy.cpp \
-    data-models/ramobjectfiltermodel.cpp \
     ramobjectmodels/ramfilterlistproxymodel.cpp \
     ramobjectmodels/ramobjectmodel.cpp \
     ramobjectmodels/ramobjectsortfilterproxymodel.cpp \
-    data-models/ramprojectfiltermodel.cpp \
-    data-models/ramstatisticstable.cpp \
-    data-models/timelineproxy.cpp \
+    ramobjectmodels/statisticsmodel.cpp \
+    ramobjectmodels/timelineproxy.cpp \
     ramobjectmodels/ramschedulefilterproxymodel.cpp \
     ramobjectmodels/ramscheduletablemodel.cpp \
     ramobjectviews/ramitemview.cpp \
@@ -64,10 +61,10 @@ SOURCES += \
     ramobjectviews/ramobjectmenu.cpp \
     ramobjectdelegates/ramscheduledelegate.cpp \
     ramobjectviews/ramscheduletableview.cpp \
-    data-views/ramstatisticsdelegate.cpp \
-    data-views/ramstatisticstablewidget.cpp \
+    ramobjectdelegates/statisticsdelegate.cpp \
     ramobjectdelegates/ramstepheaderview.cpp \
     ramobjectdelegates/timelinedelegate.cpp \
+    ramobjectviews/statisticsview.cpp \
     ramobjectviews/timelineview.cpp \
     docks/consolewidget.cpp \
     docks/filemanagerwidget.cpp \
@@ -78,9 +75,6 @@ SOURCES += \
     duqf-widgets/duqfelidedlabel.cpp \
     duqf-widgets/duqffilelist.cpp \
     duqf-widgets/duqfsearchedit.cpp \
-    data-models/ramitemtable.cpp \
-    data-models/ramobjectlist.cpp \
-    data-models/ramstatelist.cpp \
     duqf-widgets/duqfservercombobox.cpp \
     duqf-widgets/duqfsslcheckbox.cpp \
     duqf-widgets/duqftextedit.cpp \
@@ -217,17 +211,11 @@ HEADERS += \
     ramobjectdelegates/ramobjectdelegate.h \
     ramobjectmodels/dbtablemodel.h \
     ramobjectmodels/ramitemsortfilterproxymodel.h \
-    data-models/ramitemtable.h \
-    data-models/ramitemtablelistproxy.h \
-    data-models/ramobjectfiltermodel.h \
-    data-models/ramobjectlist.h \
     ramobjectmodels/ramfilterlistproxymodel.h \
     ramobjectmodels/ramobjectmodel.h \
     ramobjectmodels/ramobjectsortfilterproxymodel.h \
-    data-models/ramprojectfiltermodel.h \
-    data-models/ramstatelist.h \
-    data-models/ramstatisticstable.h \
-    data-models/timelineproxy.h \
+    ramobjectmodels/statisticsmodel.h \
+    ramobjectmodels/timelineproxy.h \
     ramobjectmodels/ramschedulefilterproxymodel.h \
     ramobjectmodels/ramscheduletablemodel.h \
     ramobjectviews/ramitemview.h \
@@ -235,10 +223,10 @@ HEADERS += \
     ramobjectviews/ramobjectmenu.h \
     ramobjectdelegates/ramscheduledelegate.h \
     ramobjectviews/ramscheduletableview.h \
-    data-views/ramstatisticsdelegate.h \
-    data-views/ramstatisticstablewidget.h \
+    ramobjectdelegates/statisticsdelegate.h \
     ramobjectdelegates/ramstepheaderview.h \
     ramobjectdelegates/timelinedelegate.h \
+    ramobjectviews/statisticsview.h \
     ramobjectviews/timelineview.h \
     ramdatainterface/datacrypto.h \
     ramdatainterface/dbistructures.h \

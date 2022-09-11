@@ -6,7 +6,7 @@
 #include <QGridLayout>
 
 #include "ramobjectcombobox.h"
-#include "ramstatisticstablewidget.h"
+#include "statisticsview.h"
 #include "smallwidgets/progresswidget.h"
 
 class StatisticsWidget : public QWidget
@@ -33,7 +33,7 @@ private:
     QLabel *ui_scheduledWorkLabel;
     QLabel *ui_remainingWorkLabel;
     QLabel *ui_latenessLabel;
-    RamStatisticsTableWidget *ui_statsTable;
+    StatisticsView *ui_statsTable;
 
     RamProject *m_project = nullptr;
 

@@ -6,21 +6,16 @@ RamObjectComboBox::RamObjectComboBox(QWidget *parent):
     QComboBox(parent)
 {
     setupUi();
-    setObjectModel(nullptr);
+    //setObjectModel(nullptr);
     connectEvents();
 }
 
 void RamObjectComboBox::setObjectModel(RamObjectModel *model, QString filterListName)
 {
-    if (model) {
-        RamFilterListProxyModel *proxyModel = new RamFilterListProxyModel(filterListName, this);
-        proxyModel->setSourceModel(model);
-        this->setModel(proxyModel);
-    }
-    else
-    {
-        this->setModel( RamObjectModel::emptyModel() );
-    }
+    RamFilterListProxyModel *proxyModel = new RamFilterListProxyModel(filterListName, this);
+    if (model) proxyModel->setSourceModel(model);
+    else proxyModel->setSourceModel( RamObjectModel::emptyModel() );
+    this->setModel(proxyModel);
 }
 
 void RamObjectComboBox::setObjectModel(RamObjectModel *model)

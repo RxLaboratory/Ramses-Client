@@ -1,14 +1,14 @@
-#ifndef RAMSTATISTICSDELEGATE_H
-#define RAMSTATISTICSDELEGATE_H
+#ifndef STATISTICSDELEGATE_H
+#define STATISTICSDELEGATE_H
 
 #include <QStyledItemDelegate>
 #include <QPainter>
 #include <QPainterPath>
 
-class RamStatisticsDelegate : public QStyledItemDelegate
+class StatisticsDelegate : public QStyledItemDelegate
 {
 public:
-    explicit RamStatisticsDelegate(QObject *parent = nullptr);
+    explicit StatisticsDelegate(QObject *parent = nullptr);
     void paint(QPainter *painter, const QStyleOptionViewItem &option,
                const QModelIndex &index) const override;
     QSize sizeHint(const QStyleOptionViewItem &option,
@@ -33,4 +33,4 @@ private:
     bool m_completionRatio = true;
 };
 
-#endif // RAMSTATISTICSDELEGATE_H
+#endif // STATISTICSDELEGATE_H

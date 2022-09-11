@@ -1,23 +1,23 @@
-#include "ramstatisticstablewidget.h"
+#include "statisticsview.h"
 
-#include "ramstatisticsdelegate.h"
+#include "statisticsdelegate.h"
 
-RamStatisticsTableWidget::RamStatisticsTableWidget(QWidget *parent):
+StatisticsView::StatisticsView(QWidget *parent):
     QTableView(parent)
 {
     setupUi();
-    this->setItemDelegate( new RamStatisticsDelegate(this));
+    this->setItemDelegate( new StatisticsDelegate(this));
     connectEvents();
-    m_statsModel = new RamStatisticsTable(this);
+    m_statsModel = new StatisticsModel(this);
     this->setModel(m_statsModel);
 }
 
-void RamStatisticsTableWidget::setUser(RamUser *user)
+void StatisticsView::setUser(RamUser *user)
 {
     m_statsModel->setUser(user);
 }
 
-void RamStatisticsTableWidget::mouseMoveEvent(QMouseEvent *event)
+void StatisticsView::mouseMoveEvent(QMouseEvent *event)
 {
     if (m_dragging)
     {
@@ -32,7 +32,7 @@ void RamStatisticsTableWidget::mouseMoveEvent(QMouseEvent *event)
     QTableView::mouseMoveEvent(event);
 }
 
-void RamStatisticsTableWidget::mousePressEvent(QMouseEvent *event)
+void StatisticsView::mousePressEvent(QMouseEvent *event)
 {
     if (event->button() == Qt::MiddleButton)
     {
@@ -44,7 +44,7 @@ void RamStatisticsTableWidget::mousePressEvent(QMouseEvent *event)
     QTableView::mousePressEvent(event);
 }
 
-void RamStatisticsTableWidget::mouseReleaseEvent(QMouseEvent *event)
+void StatisticsView::mouseReleaseEvent(QMouseEvent *event)
 {
     if (event->button() == Qt::MiddleButton)
     {
@@ -55,7 +55,7 @@ void RamStatisticsTableWidget::mouseReleaseEvent(QMouseEvent *event)
     QTableView::mouseReleaseEvent(event);
 }
 
-void RamStatisticsTableWidget::showEvent(QShowEvent *event)
+void StatisticsView::showEvent(QShowEvent *event)
 {
     if (!event->spontaneous())
     {
@@ -64,12 +64,12 @@ void RamStatisticsTableWidget::showEvent(QShowEvent *event)
     }
 }
 
-void RamStatisticsTableWidget::resizeEvent(QResizeEvent *event)
+void StatisticsView::resizeEvent(QResizeEvent *event)
 {
     this->setColumnWidth( 0, event->size().width() );
 }
 
-void RamStatisticsTableWidget::setupUi()
+void StatisticsView::setupUi()
 {
     this->setSelectionMode(QAbstractItemView::NoSelection);
     this->setFrameShape(QFrame::NoFrame);
@@ -88,9 +88,11 @@ void RamStatisticsTableWidget::setupUi()
     style += "QTableView::item:hover { background-color: none; } ";
     style += "QHeaderView { background-color: #222222; }";
     this->setStyleSheet(style);
+
+    this->horizontalHeader()->setStretchLastSection(true);
 }
 
-void RamStatisticsTableWidget::connectEvents()
+void StatisticsView::connectEvents()
 {
 
 }
