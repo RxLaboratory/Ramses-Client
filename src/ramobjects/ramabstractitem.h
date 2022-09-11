@@ -3,7 +3,6 @@
 
 #include "ramstep.h"
 
-#include "data-models/ramstepstatushistory.h"
 #include "ramstatus.h"
 #include "stepstatushistorywidget.h"
 

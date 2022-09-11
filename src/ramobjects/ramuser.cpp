@@ -1,6 +1,5 @@
 #include "ramuser.h"
 
-#include "data-models/ramitemtable.h"
 #include "ramabstractitem.h"
 #include "ramses.h"
 #include "ramscheduleentry.h"
