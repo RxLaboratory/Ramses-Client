@@ -38,6 +38,7 @@ RamUser::RamUser(QString shortName, QString name) :
     construct();
     if (shortName.toLower() != "new" && shortName != "Ramses")
         DBInterface::instance()->setUsername(m_uuid, shortName);
+    if (shortName == "Ramses") m_uuid = "none";
 }
 
 RamUser::RamUser(QString uuid):
