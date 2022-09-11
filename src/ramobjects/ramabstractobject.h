@@ -230,6 +230,8 @@ public:
     QString dataString() const;
     void setDataString(QString data);
 
+    virtual void emitDataChanged() {};
+
 protected:
 
     // METHODS //
@@ -243,7 +245,6 @@ protected:
     virtual QJsonObject reloadData() = 0;
 
     // SIGNALS in QObject instances
-    virtual void emitDataChanged() {};
     virtual void emitRemoved() {};
     virtual void emitRestored() {};
 

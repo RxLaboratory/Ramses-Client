@@ -183,7 +183,9 @@ int RamStatus::completionRatio() const
 
 void RamStatus::setCompletionRatio(int completionRatio)
 {
-    insertData("completionRatio", completionRatio);
+    QJsonObject d = data();
+    d.insert("completionRatio", completionRatio);
+    updateData(&d);
 }
 
 RamState *RamStatus::state() const
@@ -200,10 +202,10 @@ void RamStatus::setState(RamState *newState)
 
     d.insert("state", newState->uuid());
     d.insert( "completionRatio", newState->completionRatio() );
+    updateData(&d);
 
     connect(newState, SIGNAL(removed(RamObject*)), this, SLOT(stateRemoved()));
 
-    setData(d);
     m_step->computeEstimation();
 }
 
@@ -215,7 +217,9 @@ int RamStatus::version() const
 
 void RamStatus::setVersion(int version)
 {
-    insertData("version", version);
+    QJsonObject d = data();
+    d.insert("version", version);
+    updateData(&d);
 }
 
 QDateTime RamStatus::date() const
@@ -237,7 +241,9 @@ bool RamStatus::isPublished() const
 
 void RamStatus::setPublished(bool published)
 {
-    insertData("published", published);
+    QJsonObject d = data();
+    d.insert("published", published);
+    updateData(&d);
 }
 
 RamUser *RamStatus::assignedUser() const
@@ -248,12 +254,14 @@ RamUser *RamStatus::assignedUser() const
 
 void RamStatus::assignUser(RamObject *user)
 {
+    QJsonObject d = data();
     disconnect(assignedUser(), nullptr, this, nullptr);
-    if (!user) insertData("assignedUser", "none");
+    if (!user) d.insert("assignedUser", "none");
     else {
-        insertData("assignedUser", user->uuid());
+        d.insert("assignedUser", user->uuid());
         connect(user, SIGNAL(removed(RamObject*)), this, SLOT(assignedUserRemoved()));
     }
+    updateData(&d);
 }
 
 qint64 RamStatus::timeSpent() const
@@ -275,7 +283,7 @@ void RamStatus::setTimeSpent(const float &ts)
     QJsonObject d = data();
     d.insert("timeSpent", ts);
     d.insert("manualTimeSpent", true);
-    setData(d);
+    updateData(&d);
     m_step->computeEstimation();
 }
 
@@ -299,23 +307,26 @@ RamStatus::Difficulty RamStatus::difficulty() const
 
 void RamStatus::setDifficulty(Difficulty newDifficulty)
 {
+    QJsonObject d = data();
     switch(newDifficulty) {
     case VeryEasy:
-        insertData("difficulty", "veryEasy");
+        d.insert("difficulty", "veryEasy");
         break;
     case Easy:
-        insertData("difficulty", "easy");
+        d.insert("difficulty", "easy");
         break;
     case Medium:
-        insertData("difficulty", "medium");
+        d.insert("difficulty", "medium");
         break;
     case Hard:
-        insertData("difficulty", "hard");
+        d.insert("difficulty", "hard");
         break;
     case VeryHard:
-        insertData("difficulty", "veryHard");
+        d.insert("difficulty", "veryHard");
         break;
     }
+
+    updateData(&d);
 
     m_step->computeEstimation();
 }
@@ -334,7 +345,9 @@ float RamStatus::goal() const
 
 void RamStatus::setGoal(float newGoal)
 {
-    insertData("goal", newGoal);
+    QJsonObject d = data();
+    d.insert("goal", newGoal);
+    updateData(&d);
     m_step->computeEstimation();
 }
 
@@ -422,7 +435,7 @@ void RamStatus::setUseAutoEstimation(bool newAutoEstimation)
     d.insert("useAutoEstimation", newAutoEstimation);
     if (!newAutoEstimation && d.value("goal").toDouble() <= 0) d.insert("goal", estimation());
 
-    setData(d);
+    updateData(&d);
 
     m_step->computeEstimation();
 }
@@ -717,4 +730,15 @@ void RamStatus::connectEvents()
     connect(m_user, &RamUser::removed, this, &RamStatus::userRemoved);
     connect(m_item, &RamAbstractItem::removed, this, &RamStatus::remove);
     connect(m_step, &RamStep::removed, this, &RamStatus::remove);
+}
+
+void RamStatus::updateData(QJsonObject *d)
+{
+    d->insert("date", QDateTime::currentDateTimeUtc().toString("yyyy-MM-dd hh:mm:ss"));
+
+    setData(*d);
+
+    // Emit for the models
+    RamAbstractItem *item = this->item();
+    if (item) item->emitDataChanged();
 }

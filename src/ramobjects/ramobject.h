@@ -36,6 +36,8 @@ public:
 
     virtual bool canEdit();
 
+    void emitDataChanged() override;
+
 public slots:
     virtual void edit(bool s = true) { Q_UNUSED(s) };
     void reload();
@@ -59,7 +61,6 @@ protected:
 
     virtual QJsonObject reloadData() override;
 
-    void emitDataChanged() override;
     void emitRemoved() override;
     void emitRestored() override;
 

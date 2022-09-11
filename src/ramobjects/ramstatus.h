@@ -60,7 +60,7 @@ public:
     void setVersion(int version);
 
     QDateTime date() const;
-    void setDate(const QDateTime &date);
+    void setDate(const QDateTime &date = QDateTime::currentDateTimeUtc());
 
     bool isPublished() const;
     void setPublished(bool published);
@@ -116,6 +116,8 @@ private slots:
 private:  
     void construct();
     void connectEvents();
+
+    void updateData(QJsonObject *d);
 
     RamUser *m_user;
     RamAbstractItem *m_item;
