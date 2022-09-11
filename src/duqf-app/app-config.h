@@ -3,7 +3,7 @@
 
 #define CLIENT_BUILD_KEY "drHSV2XQ"
 #define ENCRYPT_USER_DATA true
-#define CACHE_RAMOBJECT_DATA false
+#define CACHE_RAMOBJECT_DATA true
 
 //#define FORCE_WELCOME_SCREEN
 
