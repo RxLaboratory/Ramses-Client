@@ -224,7 +224,7 @@ public:
     QStringList listFolders(SubFolder subFolder, QString subPath) const;
     void deleteFile(QString fileName, SubFolder folder=NoFolder) const;
     void revealFolder(SubFolder subFolder = NoFolder);
-    QString previewImagePath() const;
+    virtual QString previewImagePath() const;
 
     // Low level data handling.
     QString dataString() const;

@@ -40,7 +40,6 @@ INCLUDEPATH += rameditwidgets \
 
 SOURCES += \
     data-models/ramfilterlistproxymodelold.cpp \
-    data-views/ramobjectdelegateold.cpp \
     rammanagerwidgets/objectlistwidget.cpp \
     rammanagerwidgets/objectmanagerwidget.cpp \
     rammanagerwidgets/sequencemanagerwidget.cpp \
@@ -62,14 +61,13 @@ SOURCES += \
     ramobjectmodels/ramscheduletablemodel.cpp \
     ramobjectviews/ramitemview.cpp \
     ramobjectviews/ramobjectcombobox.cpp \
-    data-views/ramobjectlistmenu.cpp \
     ramobjectviews/ramobjectmenu.cpp \
     ramobjectdelegates/ramscheduledelegate.cpp \
     ramobjectviews/ramscheduletableview.cpp \
     data-views/ramstatisticsdelegate.cpp \
     data-views/ramstatisticstablewidget.cpp \
     ramobjectdelegates/ramstepheaderview.cpp \
-    data-views/timelinedelegate.cpp \
+    ramobjectdelegates/timelinedelegate.cpp \
     ramobjectviews/timelineview.cpp \
     docks/consolewidget.cpp \
     docks/filemanagerwidget.cpp \
@@ -83,7 +81,6 @@ SOURCES += \
     data-models/ramitemtable.cpp \
     data-models/ramobjectlist.cpp \
     data-models/ramstatelist.cpp \
-    data-views/ramobjectlistcombobox.cpp \
     duqf-widgets/duqfservercombobox.cpp \
     duqf-widgets/duqfsslcheckbox.cpp \
     duqf-widgets/duqftextedit.cpp \
@@ -211,7 +208,6 @@ SOURCES += \
 HEADERS += \
     config.h \
     data-models/ramfilterlistprListoxymodelold.h \
-    data-views/ramobjectdelegateold.h \
     rammanagerwidgets/objectlistwidget.h \
     rammanagerwidgets/objectmanagerwidget.h \
     rammanagerwidgets/sequencemanagerwidget.h \
@@ -236,14 +232,13 @@ HEADERS += \
     ramobjectmodels/ramscheduletablemodel.h \
     ramobjectviews/ramitemview.h \
     ramobjectviews/ramobjectcombobox.h \
-    data-views/ramobjectlistmenu.h \
     ramobjectviews/ramobjectmenu.h \
     ramobjectdelegates/ramscheduledelegate.h \
     ramobjectviews/ramscheduletableview.h \
     data-views/ramstatisticsdelegate.h \
     data-views/ramstatisticstablewidget.h \
     ramobjectdelegates/ramstepheaderview.h \
-    data-views/timelinedelegate.h \
+    ramobjectdelegates/timelinedelegate.h \
     ramobjectviews/timelineview.h \
     ramdatainterface/datacrypto.h \
     ramdatainterface/dbistructures.h \
@@ -267,7 +262,6 @@ HEADERS += \
     processmanager.h \
     progressbar.h \
     progresspage.h \
-    data-views/ramobjectlistcombobox.h \
     pages/projectpage.h \
     ramdatainterface/dbsync.h \
     ramdatainterface/localdatainterface.h \

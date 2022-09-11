@@ -1,6 +1,12 @@
 #include "ramabstractitem.h"
 
+#include "duqf-utils/guiutils.h"
+#include "mainwindow.h"
 #include "ramses.h"
+
+// STATIC //
+
+StepStatusHistoryWidget *RamAbstractItem::ui_historyWidget = nullptr;
 
 // PUBLIC //
 
@@ -228,6 +234,17 @@ bool RamAbstractItem::hasState(RamObject *state, RamStep *step)
         if(s.at(i)->state()->is(state)) return true;
     }
     return false;
+}
+
+void RamAbstractItem::editHistory(RamStep *step)
+{
+    if (!step) return;
+    if (!ui_historyWidget) ui_historyWidget = new StepStatusHistoryWidget();
+    ui_historyWidget->setHistory( statusHistory(step) );
+
+    MainWindow *mw = (MainWindow*)GuiUtils::appMainWindow();
+    QString title = this->shortName() + " | " + step->shortName();
+    mw->setPropertiesDockWidget( ui_historyWidget, title, this->iconName() );
 }
 
 // PRIVATE //

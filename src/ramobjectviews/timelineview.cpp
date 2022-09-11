@@ -27,9 +27,9 @@ void TimelineView::setObjectModel(RamObjectModel *shots)
     else
     {
         m_objectList->setSourceModel(shots);
-        connect(shots, &RamObjectList::dataChanged, this, &TimelineView::resetZoom);
-        connect(shots, &RamObjectList::layoutChanged, this, &TimelineView::resetZoom);
-        connect(shots, &RamObjectList::rowsMoved, this, &TimelineView::resetZoom);
+        connect(shots, &RamObjectModel::dataChanged, this, &TimelineView::resetZoom);
+        connect(shots, &RamObjectModel::layoutChanged, this, &TimelineView::resetZoom);
+        connect(shots, &RamObjectModel::rowsMoved, this, &TimelineView::resetZoom);
     }
     resetZoom();
 }

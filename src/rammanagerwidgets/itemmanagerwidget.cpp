@@ -715,6 +715,7 @@ void ItemManagerWidget::setupUi()
     ui_userMenu->insertAction( ui_userMenu->actions().at(0), ui_actionSelectMyself);
 
     ui_actionNotAssigned = new QAction("Unassigned", this);
+    ui_actionNotAssigned->setData("unassigned");
     ui_actionNotAssigned->setCheckable(true);
     ui_actionNotAssigned->setChecked(true);
     ui_userMenu->addAction(ui_actionNotAssigned);

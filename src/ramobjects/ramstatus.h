@@ -93,6 +93,8 @@ public:
 
     QString restoreVersionFile(QString fileName) const;
 
+    virtual QString previewImagePath() const override;
+
     virtual QString details() const override;
     virtual QString subDetails() const override;
 

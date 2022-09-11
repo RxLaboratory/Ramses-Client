@@ -534,6 +534,8 @@ void RamAbstractObject::setDataString(QString data)
     DBInterface::instance()->setObjectData(m_uuid, objectTypeName(), data);
 
     m_savingData = false;
+
+    emitDataChanged();
 }
 
 QString RamAbstractObject::dataString() const

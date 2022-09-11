@@ -1,6 +1,6 @@
 #include "ramobjectcombobox.h"
 #include "ramfilterlistproxymodel.h"
-#include "ramobjectdelegateold.h"
+#include "ramobjectdelegate.h"
 
 RamObjectComboBox::RamObjectComboBox(QWidget *parent):
     QComboBox(parent)
@@ -37,7 +37,7 @@ void RamObjectComboBox::setObjectModel(RamObjectModel *model)
 
 void RamObjectComboBox::setupUi()
 {
-    RamObjectDelegateOld *delegate = new RamObjectDelegateOld(this);
+    RamObjectDelegate *delegate = new RamObjectDelegate(this);
     delegate->setComboBoxMode(true);
     this->setItemDelegate(delegate);
 }

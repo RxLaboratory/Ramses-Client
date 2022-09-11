@@ -528,6 +528,12 @@ QString RamStatus::restoreVersionFile(QString fileName) const
 
 }
 
+QString RamStatus::previewImagePath() const
+{
+    if (this->isNoState()) return "";
+    return RamObject::previewImagePath();
+}
+
 QString RamStatus::details() const
 {
     if (m_virtual) return "";

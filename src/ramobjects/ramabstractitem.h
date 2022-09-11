@@ -5,6 +5,7 @@
 
 #include "data-models/ramstepstatushistory.h"
 #include "ramstatus.h"
+#include "stepstatushistorywidget.h"
 
 class RamState;
 
@@ -49,11 +50,15 @@ public:
 
     bool hasState(RamObject *state, RamStep *step = nullptr);
 
+    void editHistory(RamStep *step);
+
 signals:
     void statusChanged(RamAbstractItem *, RamStep *);
 
 protected:
     RamAbstractItem(QString uuid, ObjectType type);
+
+    static StepStatusHistoryWidget *ui_historyWidget;
 
 private slots:
     void stepInserted(const QModelIndex &parent, int first, int last);
