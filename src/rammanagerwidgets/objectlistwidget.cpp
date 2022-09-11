@@ -213,9 +213,7 @@ void ObjectListWidget::removeSelectedObjects()
             RamObject *o = RamObject::get(uuid, m_objectModel->type());
             if (o) o->remove();
         }
-        else {
-            m_objectModel->removeObjects(QStringList(uuid));
-        }
+        m_objectModel->removeObjects(QStringList(uuid));
     }
 }
 
