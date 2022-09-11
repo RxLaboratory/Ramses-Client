@@ -48,8 +48,8 @@ void RamFileType::setExtensions(QStringList extensions)
     {
         QString ext = extensions[i];
         if (ext.startsWith(".")) ext = ext.remove(0, 1);
-
-        arr.append( ext.trimmed().toLower() );
+        ext = ext.trimmed().toLower();
+        if (ext != "") arr.append( ext );
     }
     insertData("extensions", arr);
 }
@@ -62,6 +62,9 @@ QStringList RamFileType::extensions() const
     {
         exts << arr.at(i).toString();
     }
+    QString sn = this->shortName();
+    if (sn.startsWith(".")) sn = sn.remove(0, 1);
+    if (!exts.contains(sn)) exts << sn;
     return exts;
 }
 
