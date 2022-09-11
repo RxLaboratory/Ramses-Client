@@ -276,5 +276,7 @@ RamObject *RamObjectMenu::object(QAction *a) const
 {
     QString uuid = a->data().toString();
     if (uuid == "") return nullptr;
+    RamObject::ObjectType type = m_objects->type();
+    if (type == RamObject::Object) return nullptr;
     return RamObject::get(uuid, m_objects->type() );
 }

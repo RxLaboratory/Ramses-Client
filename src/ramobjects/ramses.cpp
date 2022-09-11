@@ -67,9 +67,9 @@ QString Ramses::pathFromRamses(QString p, bool create) const
         path = p;
     }
     if (create)
-        return createPath( p );
+        return createPath( p ).replace("\\","/");
     else
-        return p;
+        return p.replace("\\","/");
 }
 
 RamObjectModel *Ramses::users() const

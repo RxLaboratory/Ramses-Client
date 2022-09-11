@@ -154,6 +154,7 @@ QString RamAbstractObject::getObjectPath(QString uuid)
 const QString RamAbstractObject::uuidFromPath(QString path, ObjectType type)
 {
     if (!path.endsWith("/")) path = path + "/";
+    path = path.replace("\\","/");
 
     // Check the path of all existing ramObjects
     QMapIterator<QString, RamAbstractObject*> i = QMapIterator<QString, RamAbstractObject*>(m_allObjects);
@@ -162,10 +163,12 @@ const QString RamAbstractObject::uuidFromPath(QString path, ObjectType type)
     {
         i.next();
         RamAbstractObject *o = i.value();
+        qDebug() << o;
         if (o->objectType() != type) continue;
 
         // If we have the same starting path, that's the one!
         QString testPath = o->path();
+        qDebug() << testPath;
         if (!testPath.endsWith("/")) testPath = testPath + "/";
 
         if (path.startsWith(testPath)) return o->uuid();

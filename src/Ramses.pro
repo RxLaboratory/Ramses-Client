@@ -200,7 +200,6 @@ SOURCES += \
 
 HEADERS += \
     config.h \
-    data-models/ramfilterlistprListoxymodelold.h \
     rammanagerwidgets/objectlistwidget.h \
     rammanagerwidgets/objectmanagerwidget.h \
     rammanagerwidgets/sequencemanagerwidget.h \
