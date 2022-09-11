@@ -34,6 +34,8 @@ QVariant StatisticsModel::headerData(int section, Qt::Orientation orientation, i
 
     RamStep *step = RamStep::c( m_project->steps()->get(section) );
 
+    if (!step) return QVariant();
+
     if (role == Qt::DisplayRole) return step->shortName();
 
     if (role == Qt::ForegroundRole)
@@ -51,6 +53,7 @@ QVariant StatisticsModel::data(const QModelIndex &index, int role) const
     int row = index.row();
 
     RamStep *step = RamStep::c( m_project->steps()->get( row ) );
+    if (!step) return QVariant();
 
     QList<float> userStats = step->stats(m_user);
     float estimation = userStats.at(0);

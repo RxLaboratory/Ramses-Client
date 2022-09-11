@@ -182,13 +182,12 @@ RamAbstractObject::RamAbstractObject(QString shortName, QString name, ObjectType
     m_dataEncrypted = encryptData;
     m_virtual = isVirtual;
 
-    if (m_virtual) return;
-
     // Create in the database
     QJsonObject data;
     data.insert("shortName", shortName);
     data.insert("name", name);
     data.insert("comment", "");
+
     QJsonDocument doc(data);
     createData(doc.toJson(QJsonDocument::Compact));
 
@@ -513,12 +512,12 @@ RamAbstractObject::RamAbstractObject(QString uuid, ObjectType type, bool encrypt
 
 void RamAbstractObject::setDataString(QString data)
 {
-    if (m_virtual) return;
-
     m_savingData = true;
 
     // Cache the data to improve performance
     m_cachedData = data;
+
+    if (m_virtual) return;
 
     if (m_dataEncrypted)
     {

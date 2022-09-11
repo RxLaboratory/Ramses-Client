@@ -110,6 +110,15 @@ QVariant RamObjectModel::headerData(int section, Qt::Orientation orientation, in
 
 void RamObjectModel::insertObjects(int row, QStringList uuids)
 {
+    // Check uuids first
+    for (int i = uuids.count() -1; i >= 0; i--)
+    {
+        if (!RamAbstractObject::checkUuid(uuids.at(i), m_type))
+        {
+            uuids.removeAt(i);
+        }
+    }
+
     beginInsertRows(QModelIndex(), row, row + uuids.count()-1);
 
     for (int i = uuids.count()-1; i >= 0; i--)
@@ -194,6 +203,7 @@ void RamObjectModel::clear()
 void RamObjectModel::appendObject(QString uuid)
 {
     if (m_objectsUuids.contains(uuid)) return;
+
     insertObjects(
                 rowCount(),
                 QStringList(uuid)
@@ -202,7 +212,11 @@ void RamObjectModel::appendObject(QString uuid)
 
 RamObject *RamObjectModel::get(int row)
 {
-    return get(index(row, 0));
+    RamObject *o = get(index(row, 0));
+    // TODO If the object is not available anymore,
+    // We should remove it at some point. (or not insert it at all?)
+    // Be careful, that will break loops which aren't "reversed"
+    return o;
 }
 
 RamObject *RamObjectModel::get(const QModelIndex &index)

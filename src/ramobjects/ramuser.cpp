@@ -33,10 +33,11 @@ RamUser *RamUser::c(RamObject *o)
 // PUBLIC //
 
 RamUser::RamUser(QString shortName, QString name) :
-    RamObject(shortName, name, User, nullptr, false, ENCRYPT_USER_DATA)
+    RamObject(shortName, name, User, nullptr, shortName == "Ramses", ENCRYPT_USER_DATA)
 {
     construct();
-    DBInterface::instance()->setUsername(m_uuid, shortName);
+    if (shortName.toLower() != "new")
+        DBInterface::instance()->setUsername(m_uuid, shortName);
 }
 
 RamUser::RamUser(QString uuid):

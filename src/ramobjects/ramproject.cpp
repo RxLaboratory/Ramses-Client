@@ -232,6 +232,7 @@ QList<float> RamProject::stats(RamUser *user)
     for (int i = 0; i < m_steps->rowCount(); i++)
     {
         RamStep *step = RamStep::c(m_steps->get(i));
+        if (!step) continue;
         QList<float> stepStats = step->stats(user);
         s[0] = s.at(0) + stepStats.at(0);
         s[1] = s.at(1) + stepStats.at(1);

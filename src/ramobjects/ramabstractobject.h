@@ -123,6 +123,10 @@ public:
 
     static const QString uuidFromPath(QString path, ObjectType type);
 
+    // Checks if this is a valid uuid,
+    // and if it exists in the DB
+    static bool checkUuid(QString uuid, ObjectType type, bool mayBeVirtual = false);
+
     // METHODS //
 
     RamAbstractObject(QString shortName, QString name, ObjectType type, bool isVirtual = false, bool encryptData = false);
@@ -251,9 +255,6 @@ protected:
 
     // UTILS
     static QMap<QString, RamAbstractObject*> m_allObjects;
-    // Checks if this is a valid uuid,
-    // and if it exists in the DB
-    static bool checkUuid(QString uuid, ObjectType type, bool mayBeVirtual = false);
     /**
      * @brief folderPath the folder of this object
      * @return
@@ -275,7 +276,6 @@ protected:
 
 private:
     void construct();
-
     void createData(QString data);
 
     QSettings *m_settings = nullptr;
