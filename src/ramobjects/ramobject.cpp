@@ -13,6 +13,10 @@
 #include "ramses.h"
 #include "ramshot.h"
 
+// STATIC //
+
+QFrame *RamObject::ui_editWidget = nullptr;
+
 // PUBLIC //
 
 RamObject *RamObject::get(QString uuid, ObjectType type)

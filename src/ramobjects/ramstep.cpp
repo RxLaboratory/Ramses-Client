@@ -7,7 +7,6 @@
 #include "ramses.h"
 #include "ramstatus.h"
 #include "ramnamemanager.h"
-#include "data-models/ramitemtable.h"
 #include "ramworkingfolder.h"
 #include "stepeditwidget.h"
 #include "ramshot.h"

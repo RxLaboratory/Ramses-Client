@@ -1,8 +1,6 @@
 #include "ramsequence.h"
 
 #include "sequenceeditwidget.h"
-#include "data-models/ramitemtable.h"
-#include "ramshot.h"
 
 // STATIC //
 
