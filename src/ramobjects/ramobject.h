@@ -80,7 +80,7 @@ protected:
     UserRole m_editRole = Admin;
     bool m_editable = true;
 
-    QFrame *ui_editWidget = nullptr;
+    static QFrame *ui_editWidget;
 
 protected:
     RamObjectModel *createModel(ObjectType type, QString modelName);
