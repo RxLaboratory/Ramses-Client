@@ -11,6 +11,8 @@
 
 // STATIC //
 
+QFrame *RamUser::ui_editWidget = nullptr;
+
 QMap<QString, RamUser*> RamUser::m_existingObjects = QMap<QString, RamUser*>();
 
 RamUser *RamUser::get(QString uuid )
@@ -162,9 +164,9 @@ QString RamUser::details() const
 
 void RamUser::edit(bool show)
 {
-    if (!ui_editWidget) setEditWidget(new UserEditWidget(this));
+    if (!ui_editWidget) ui_editWidget = createEditFrame(new UserEditWidget(this));
 
-    if (show) showEdit();
+    if (show) showEdit( ui_editWidget  );
 }
 
 // PROTECTED //

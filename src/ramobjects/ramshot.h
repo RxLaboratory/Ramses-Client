@@ -47,6 +47,8 @@ protected:
     virtual QString folderPath() const override;
     RamShot(QString uuid);
 
+    static QFrame *ui_editWidget;
+
 private:
     void construct();
 

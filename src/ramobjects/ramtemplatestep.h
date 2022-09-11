@@ -78,6 +78,8 @@ protected:
     RamTemplateStep(QString uuid, ObjectType type = TemplateStep);
     virtual QString folderPath() const override { return ""; };
 
+    static QFrame *ui_editWidget;
+
 protected:
 
     // STATIC //

@@ -65,24 +65,21 @@ protected:
     void emitRestored() override;
 
     /**
-     * @brief setEditWidget sets the widget used to edit this object in the UI
+     * @brief createEditFrame sets the widget used to edit this object in the UI
      * @param w
      */
-    void setEditWidget(ObjectEditWidget *w );
+    QFrame *createEditFrame(ObjectEditWidget *w );
     /**
      * @brief showEdit shows the edit widget
      * @param title
      */
-    void showEdit(QString title = "");
+    void showEdit(QWidget *w = nullptr, QString title = "");
 
     // ATTRIBUTES //
 
     UserRole m_editRole = Admin;
     bool m_editable = true;
 
-    static QFrame *ui_editWidget;
-
-protected:
     RamObjectModel *createModel(ObjectType type, QString modelName);
     void loadModel(RamObjectModel *model, QString modelName, QJsonObject d = QJsonObject());
 

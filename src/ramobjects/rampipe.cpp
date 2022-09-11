@@ -3,6 +3,8 @@
 #include "pipeeditwidget.h"
 #include "ramstep.h"
 
+QFrame *RamPipe::ui_editWidget = nullptr;
+
 QMap<QString, RamPipe*> RamPipe::m_existingObjects = QMap<QString, RamPipe*>();
 
 RamPipe *RamPipe::get(QString uuid)
@@ -94,9 +96,9 @@ RamObjectModel *RamPipe::pipeFiles() const
 
 void RamPipe::edit(bool show)
 {
-    if (!ui_editWidget) setEditWidget(new PipeEditWidget(this));
+    if (!ui_editWidget) ui_editWidget = createEditFrame(new PipeEditWidget());
 
-    if (show) showEdit();
+    if (show) showEdit(ui_editWidget);
 }
 
 // PRIVATE //

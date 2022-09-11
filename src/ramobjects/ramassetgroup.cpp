@@ -1,9 +1,10 @@
 #include "ramassetgroup.h"
 
 #include "assetgroupeditwidget.h"
-#include "data-models/ramitemtable.h"
 
 // STATIC //
+
+QFrame *RamAssetGroup::ui_assetGroupWidget = nullptr;
 
 QMap<QString, RamAssetGroup*> RamAssetGroup::m_existingObjects = QMap<QString, RamAssetGroup*>();
 
@@ -69,9 +70,9 @@ QString RamAssetGroup::details() const
 
 void RamAssetGroup::edit(bool show)
 {
-    if (!ui_editWidget) setEditWidget(new AssetGroupEditWidget(this));
+    if (!ui_assetGroupWidget) ui_assetGroupWidget = createEditFrame(new AssetGroupEditWidget());
 
-    if (show) showEdit();
+    if (show) showEdit(ui_assetGroupWidget);
 }
 
 // PROTECTED //

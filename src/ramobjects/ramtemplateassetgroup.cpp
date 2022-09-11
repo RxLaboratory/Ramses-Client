@@ -4,6 +4,8 @@
 
 // STATIC //
 
+QFrame *RamTemplateAssetGroup::ui_editWidget = nullptr;
+
 QMap<QString, RamTemplateAssetGroup*> RamTemplateAssetGroup::m_existingObjects = QMap<QString, RamTemplateAssetGroup*>();
 
 RamTemplateAssetGroup *RamTemplateAssetGroup::get(QString uuid)
@@ -39,9 +41,9 @@ RamTemplateAssetGroup::RamTemplateAssetGroup(QString uuid, ObjectType type):
 
 void RamTemplateAssetGroup::edit(bool show)
 {
-    if (!ui_editWidget) setEditWidget(new TemplateAssetGroupEditWidget(this));
+    if (!ui_editWidget) ui_editWidget = createEditFrame(new TemplateAssetGroupEditWidget());
 
-    if (show) showEdit();
+    if (show) showEdit( ui_editWidget );
 }
 
 // PRIVATE //

@@ -5,6 +5,8 @@
 #include "projecteditwidget.h"
 #include "ramshot.h"
 
+QFrame *RamProject::ui_editWidget = nullptr;
+
 QMap<QString, RamProject*> RamProject::m_existingObjects = QMap<QString, RamProject*>();
 
 RamProject *RamProject::get(QString uuid)
@@ -314,9 +316,9 @@ void RamProject::updatePath()
 
 void RamProject::edit(bool show)
 {
-    if (!ui_editWidget) setEditWidget(new ProjectEditWidget(this));
+    if (!ui_editWidget) ui_editWidget = createEditFrame(new ProjectEditWidget());
 
-    if (show) showEdit();
+    if (show) showEdit( ui_editWidget );
 }
 
 void RamProject::computeEstimation(bool recompute)

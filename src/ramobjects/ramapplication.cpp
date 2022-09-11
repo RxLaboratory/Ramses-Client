@@ -4,6 +4,8 @@
 
 // STATIC //
 
+QFrame *RamApplication::ui_applicationWidget = nullptr;
+
 QMap<QString, RamApplication*> RamApplication::m_existingObjects = QMap<QString, RamApplication*>();
 
 RamApplication *RamApplication::get(QString uuid)
@@ -131,9 +133,8 @@ void RamApplication::unassignFileType(RamFileType *ft)
 
 void RamApplication::edit(bool show)
 {
-    if (!ui_editWidget) setEditWidget(new ApplicationEditWidget(this));
-
-    if (show) showEdit();
+    if (!ui_applicationWidget) ui_applicationWidget = createEditFrame(new ApplicationEditWidget());
+    if (show) showEdit(ui_applicationWidget);
 }
 
 // PROTECTED //

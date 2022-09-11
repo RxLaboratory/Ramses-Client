@@ -34,6 +34,8 @@ protected:
     RamAssetGroup(QString uuid);
     virtual QString folderPath() const override;
 
+    static QFrame *ui_assetGroupWidget;
+
 private:
     void construct();
     void setProject(RamProject *project);

@@ -38,6 +38,8 @@ protected:
     RamSequence(QString uuid);
     virtual QString folderPath() const override { return ""; };
 
+    static QFrame *ui_editWidget;
+
 private:
     void construct();
     void setProject(RamProject *project);

@@ -108,6 +108,8 @@ protected:
     RamStatus(QString uuid);
     virtual QString folderPath() const override;
 
+    static QFrame *ui_editWidget;
+
 private slots:
     void stateRemoved();
     void userRemoved();

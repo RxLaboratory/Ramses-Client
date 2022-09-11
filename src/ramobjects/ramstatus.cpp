@@ -9,6 +9,8 @@
 
 // PROTECTED //
 
+QFrame *RamStatus::ui_editWidget = nullptr;
+
 QMap<QString, RamStatus*> RamStatus::m_existingObjects = QMap<QString, RamStatus*>();
 
 RamStatus *RamStatus::get(QString uuid)
@@ -682,9 +684,9 @@ QVariant RamStatus::roleData(int role) const
 
 void RamStatus::edit(bool show)
 {
-    if (!ui_editWidget) setEditWidget(new StatusEditWidget(this));
+    if (!ui_editWidget) ui_editWidget = createEditFrame(new StatusEditWidget());
 
-    if (show) showEdit();
+    if (show) showEdit( ui_editWidget );
 }
 
 // PROTECTED //

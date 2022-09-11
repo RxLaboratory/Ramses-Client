@@ -4,6 +4,8 @@
 
 // STATIC //
 
+QFrame *RamTemplateStep::ui_editWidget = nullptr;
+
 QMap<QString, RamTemplateStep*> RamTemplateStep::m_existingObjects = QMap<QString, RamTemplateStep*>();
 
 QMetaEnum const RamTemplateStep::m_stepTypeMeta = QMetaEnum::fromType<RamTemplateStep::Type>();
@@ -154,9 +156,9 @@ QString RamTemplateStep::details() const
 
 void RamTemplateStep::edit(bool show)
 {
-    if (!ui_editWidget) setEditWidget(new TemplateStepEditWidget(this));
+    if (!ui_editWidget) ui_editWidget = createEditFrame(new TemplateStepEditWidget(this));
 
-    if (show) showEdit();
+    if (show) showEdit( ui_editWidget );
 }
 
 float RamTemplateStep::estimationHard() const

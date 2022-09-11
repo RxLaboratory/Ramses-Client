@@ -5,6 +5,8 @@
 
 // STATIC //
 
+QFrame *RamAsset::ui_assetWidget = nullptr;
+
 QMap<QString, RamAsset*> RamAsset::m_existingObjects = QMap<QString, RamAsset*>();
 
 RamAsset *RamAsset::get(QString uuid)
@@ -123,9 +125,9 @@ QString RamAsset::details() const
 
 void RamAsset::edit(bool show)
 {
-    if (!ui_editWidget) setEditWidget(new AssetEditWidget(this));
+    if (!ui_assetWidget) ui_assetWidget = createEditFrame(new AssetEditWidget());
 
-    if (show) showEdit();
+    if (show) showEdit(ui_assetWidget);
 }
 
 // PROTECTED //

@@ -4,6 +4,8 @@
 
 // STATIC //
 
+QFrame *RamSequence::ui_editWidget = nullptr;
+
 QMap<QString, RamSequence*> RamSequence::m_existingObjects = QMap<QString, RamSequence*>();
 
 RamSequence *RamSequence::get(QString uuid)
@@ -84,9 +86,9 @@ QVariant RamSequence::roleData(int role) const
 
 void RamSequence::edit(bool show)
 {
-    if (!ui_editWidget) setEditWidget(new SequenceEditWidget(this));
+    if (!ui_editWidget) ui_editWidget = createEditFrame(new SequenceEditWidget());
 
-    if (show) showEdit();
+    if (show) showEdit( ui_editWidget );
 }
 
 // PRIVATE //

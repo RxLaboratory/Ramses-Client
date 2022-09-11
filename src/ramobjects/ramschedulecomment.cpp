@@ -2,6 +2,8 @@
 
 // STATIC //
 
+QFrame *RamScheduleComment::ui_editWidget = nullptr;
+
 QMap<QString, RamScheduleComment*> RamScheduleComment::m_existingObjects = QMap<QString, RamScheduleComment*>();
 
 RamScheduleComment *RamScheduleComment::get(QString uuid)

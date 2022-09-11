@@ -4,6 +4,8 @@
 
 // STATIC //
 
+QFrame *RamFileType::ui_editWidget = nullptr;
+
 QMap<QString, RamFileType*> RamFileType::m_existingObjects = QMap<QString, RamFileType*>();
 
 RamFileType *RamFileType::get(QString uuid)
@@ -91,9 +93,9 @@ QString RamFileType::details() const
 
 void RamFileType::edit(bool show)
 {
-    if (!ui_editWidget) setEditWidget(new FileTypeEditWidget(this));
+    if (!ui_editWidget) ui_editWidget = createEditFrame(new FileTypeEditWidget());
 
-    if (show) showEdit();
+    if (show) showEdit(ui_editWidget);
 }
 
 // PRIVATE //

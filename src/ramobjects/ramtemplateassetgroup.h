@@ -25,6 +25,8 @@ protected:
     RamTemplateAssetGroup(QString uuid, ObjectType type = TemplateAssetGroup);
     virtual QString folderPath() const override { return ""; };
 
+    static QFrame *ui_editWidget;
+
 private:
     void construct();
 };

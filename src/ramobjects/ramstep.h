@@ -73,6 +73,8 @@ protected:
     RamStep(QString uuid);
     virtual QString folderPath() const override;
 
+    static QFrame *ui_editWidget;
+
 private:
     void construct();
 

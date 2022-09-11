@@ -13,10 +13,6 @@
 #include "ramses.h"
 #include "ramshot.h"
 
-// STATIC //
-
-QFrame *RamObject::ui_editWidget = nullptr;
-
 // PUBLIC //
 
 RamObject *RamObject::get(QString uuid, ObjectType type)
@@ -115,37 +111,41 @@ void RamObject::emitRestored()
     emit restored(this);
 }
 
-void RamObject::setEditWidget(ObjectEditWidget *w)
+QFrame *RamObject::createEditFrame(ObjectEditWidget *w)
 {
-    ui_editWidget = new QFrame();
+    QFrame *f = new QFrame();
     QVBoxLayout *l = new QVBoxLayout();
     l->setContentsMargins(3,3,3,3);
     l->addWidget(w);
-    ui_editWidget->setLayout(l);
+    f->setLayout(l);
+    return f;
 }
 
-void RamObject::showEdit(QString title)
+void RamObject::showEdit(QWidget *w, QString title)
 {
-    if (!ui_editWidget) return;
+    if (!w) return;
+
+    ObjectEditWidget *oEdit = qobject_cast<ObjectEditWidget*>( w->layout()->itemAt(0)->widget() );
+    if (oEdit) oEdit->setObject(this);
 
     MainWindow *mw = (MainWindow*)GuiUtils::appMainWindow();
     if (title == "") title = this->name();
     if (title == "") title = this->shortName();
     if (title == "") title = "Properties";
 
-    ui_editWidget->setEnabled(false);
+    w->setEnabled(false);
 
     if (m_editable)
     {
         RamUser *u = Ramses::instance()->currentUser();
         if (u)
         {
-            ui_editWidget->setEnabled(u->role() >= m_editRole);
-            if (u->is(this)) ui_editWidget->setEnabled(true);
+            w->setEnabled(u->role() >= m_editRole);
+            if (u->is(this)) w->setEnabled(true);
         }
     }
 
-    mw->setPropertiesDockWidget( ui_editWidget, title, m_icon);
+    mw->setPropertiesDockWidget( w, title, m_icon);
 }
 
 RamObjectModel *RamObject::createModel(RamObject::ObjectType type, QString modelName)

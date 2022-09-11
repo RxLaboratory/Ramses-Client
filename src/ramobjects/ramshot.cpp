@@ -8,6 +8,8 @@
 
 // STATIC //
 
+QFrame *RamShot::ui_editWidget = nullptr;
+
 QMap<QString, RamShot*> RamShot::m_existingObjects = QMap<QString, RamShot*>();
 
 RamShot *RamShot::get(QString uuid)
@@ -127,9 +129,9 @@ QVariant RamShot::roleData(int role) const
 
 void RamShot::edit(bool show)
 {
-    if (!ui_editWidget) setEditWidget(new ShotEditWidget(this));
+    if (!ui_editWidget) ui_editWidget = createEditFrame(new ShotEditWidget());
 
-    if (show) showEdit();
+    if (show) showEdit( ui_editWidget );
 }
 
 // PROTECTED //

@@ -13,6 +13,8 @@
 
 // STATIC //
 
+QFrame *RamStep::ui_editWidget = nullptr;
+
 QMap<QString, RamStep*> RamStep::m_existingObjects = QMap<QString, RamStep*>();
 
 RamStep *RamStep::get(QString uuid)
@@ -295,9 +297,9 @@ QList<RamObject *> RamStep::outputFileTypes()
 
 void RamStep::edit(bool show)
 {
-    if (!ui_editWidget) setEditWidget(new StepEditWidget(this));
+    if (!ui_editWidget) ui_editWidget = createEditFrame(new StepEditWidget());
 
-    if (show) showEdit();
+    if (show) showEdit( ui_editWidget );
 }
 
 void RamStep::computeEstimation()

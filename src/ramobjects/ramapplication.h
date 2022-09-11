@@ -53,6 +53,8 @@ protected:
     RamApplication(QString uuid);
     virtual QString folderPath() const override;
 
+    static QFrame *ui_applicationWidget;
+
 private:
     void construct();
 

@@ -2,6 +2,8 @@
 
 #include "pipefileeditwidget.h"
 
+QFrame *RamPipeFile::ui_editWidget = nullptr;
+
 QMap<QString, RamPipeFile*> RamPipeFile::m_existingObjects = QMap<QString, RamPipeFile*>();
 
 RamPipeFile *RamPipeFile::get(QString uuid)
@@ -116,9 +118,9 @@ QString RamPipeFile::details() const
 
 void RamPipeFile::edit(bool show)
 {
-    if (!ui_editWidget) setEditWidget(new PipeFileEditWidget(this));
+    if (!ui_editWidget) ui_editWidget = createEditFrame(new PipeFileEditWidget());
 
-    if (show) showEdit();
+    if (show) showEdit(ui_editWidget);
 }
 
 // PRIVATE //
