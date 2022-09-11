@@ -36,7 +36,7 @@ RamUser::RamUser(QString shortName, QString name) :
     RamObject(shortName, name, User, nullptr, shortName == "Ramses", ENCRYPT_USER_DATA)
 {
     construct();
-    if (shortName.toLower() != "new")
+    if (shortName.toLower() != "new" && shortName != "Ramses")
         DBInterface::instance()->setUsername(m_uuid, shortName);
 }
 
