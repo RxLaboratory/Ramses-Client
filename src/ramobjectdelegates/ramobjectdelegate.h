@@ -86,8 +86,6 @@ private:
     void paintButtons(QPainter *painter, PaintParameters *params, const QModelIndex &index) const;
     void paintDetails(const QModelIndex &index, QPainter *painter, PaintParameters *params) const;
     void paintProgress(const QModelIndex &index, QPainter *painter, PaintParameters *params) const;
-    void paintLabel(const QModelIndex &index, QPainter *painter, PaintParameters *params) const;
-
 
     // Settings
     bool m_editable = false;

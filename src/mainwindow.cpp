@@ -1,6 +1,6 @@
 #include "mainwindow.h"
 
-#include "itemtablemanagerwidget.h"
+#include "itemmanagerwidget.h"
 #include "processmanager.h"
 #include "progressbar.h"
 #include "docks/consolewidget.h"
@@ -192,14 +192,14 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
 #endif
 
 #ifndef DEACTIVATE_ASSETSTABLE
-    ItemTableManagerWidget *assetsTable = new ItemTableManagerWidget(RamStep::AssetProduction, this);
+    ItemManagerWidget *assetsTable = new ItemManagerWidget(RamStep::AssetProduction, this);
     mainStack->addWidget(assetsTable);
     connect(assetsTable, SIGNAL(closeRequested()), this, SLOT(home()));
     qDebug() << "> Assets table ready";
 #endif
 
 #ifndef DEACTIVATE_SHOTSTABLE
-    ItemTableManagerWidget *shotsTable = new ItemTableManagerWidget(RamStep::ShotProduction, this);
+    ItemManagerWidget *shotsTable = new ItemManagerWidget(RamStep::ShotProduction, this);
     mainStack->addWidget(shotsTable);
     connect(shotsTable, SIGNAL(closeRequested()), this, SLOT(home()));
     qDebug() << "> Shots table ready";

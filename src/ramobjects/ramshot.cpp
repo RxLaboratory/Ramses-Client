@@ -115,6 +115,14 @@ QString RamShot::details() const
     return details;
 }
 
+QVariant RamShot::roleData(int role) const
+{
+    switch(role) {
+    case Duration: return this->duration();
+    }
+    return RamObject::roleData(role);
+}
+
 // PUBLIC SLOTS //
 
 void RamShot::edit(bool show)

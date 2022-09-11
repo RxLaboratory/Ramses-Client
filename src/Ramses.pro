@@ -68,7 +68,7 @@ SOURCES += \
     ramobjectviews/ramscheduletableview.cpp \
     data-views/ramstatisticsdelegate.cpp \
     data-views/ramstatisticstablewidget.cpp \
-    data-views/ramstepheaderview.cpp \
+    ramobjectdelegates/ramstepheaderview.cpp \
     data-views/timelinedelegate.cpp \
     ramobjectviews/timelineview.cpp \
     docks/consolewidget.cpp \
@@ -203,7 +203,7 @@ SOURCES += \
     rameditwidgets/usereditwidget.cpp \
     timelinemanager.cpp \
     userprofilepage.cpp \
-    rameditwidgets/itemtablemanagerwidget.cpp \
+    rammanagerwidgets/itemmanagerwidget.cpp \
     pipeline-editor/objectnode.cpp \
     pipeline-editor/pipelinewidget.cpp \
     pipeline-editor/stepnode.cpp
@@ -242,7 +242,7 @@ HEADERS += \
     ramobjectviews/ramscheduletableview.h \
     data-views/ramstatisticsdelegate.h \
     data-views/ramstatisticstablewidget.h \
-    data-views/ramstepheaderview.h \
+    ramobjectdelegates/ramstepheaderview.h \
     data-views/timelinedelegate.h \
     ramobjectviews/timelineview.h \
     ramdatainterface/datacrypto.h \
@@ -376,7 +376,7 @@ HEADERS += \
     rameditwidgets/usereditwidget.h \
     timelinemanager.h \
     userprofilepage.h \
-    rameditwidgets/itemtablemanagerwidget.h \
+    rammanagerwidgets/itemmanagerwidget.h \
     pipeline-editor/objectnode.h \
     pipeline-editor/pipelinewidget.h \
     pipeline-editor/stepnode.h

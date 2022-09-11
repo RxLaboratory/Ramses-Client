@@ -298,19 +298,6 @@ void RamObjectDelegate::paintProgress(const QModelIndex &index, QPainter *painte
     }
 }
 
-void RamObjectDelegate::paintLabel(const QModelIndex &index, QPainter *painter, PaintParameters *params) const
-{
-    // Draw a colored rect for the assigned user
-    QColor labelColor = index.data(RamObject::LabelColor).value<QColor>();
-    if (labelColor.isValid())
-    {
-        QRect labelRect(params->titleRect.left() - 16, params->titleRect.top() + 4, 8, 8);
-        QPainterPath path;
-        path.addEllipse(labelRect);
-        painter->fillPath(path, QBrush(labelColor));
-    }
-}
-
 RamObjectDelegate::RamObjectDelegate(QObject *parent)
     : QStyledItemDelegate(parent)
 {
@@ -386,7 +373,18 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
 
     // Icon
     QPixmap icon = index.data(Qt::DecorationRole).value<QPixmap>();
-    painter->drawPixmap( params.iconRect, icon );
+    QColor labelColor = index.data(RamObject::LabelColor).value<QColor>();
+    if (labelColor.isValid())
+    {
+        // Color the icon
+        QImage iconImage(12,12, QImage::Format_ARGB32);
+        iconImage.fill( labelColor );
+        QPainter iconPainter(&iconImage);
+        iconPainter.setCompositionMode(QPainter::CompositionMode_DestinationIn);
+        iconPainter.drawPixmap( QRect(0,0,12,12), icon );
+        painter->drawImage(params.iconRect, iconImage);
+    }
+    else painter->drawPixmap( params.iconRect, icon );
 
     // Title
     paintTitle(index, painter, &params);
@@ -396,9 +394,6 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
 
     // Don' draw any detail when NO
     if (disabled) return;
-
-    // A color label
-    paintLabel(index, painter, &params);
 
     // State and Status have a progress bar
     paintProgress(index, painter, &params);

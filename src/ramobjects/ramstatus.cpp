@@ -50,11 +50,17 @@ RamStatus *RamStatus::copy(RamStatus *other, RamUser *user)
 
 RamStatus *RamStatus::noStatus(RamAbstractItem *item, RamStep *step)
 {
+    // Check if this item has an history for the given step
+    // (wrong step types don't have history)
+    RamObjectModel *history = item->statusHistory(step);
+    if (!history) return nullptr;
+
     RamStatus *no = new RamStatus(
                 Ramses::instance()->ramsesUser(),
                 item,
-                step,
-                true);
+                step
+                );
+    item->addStatus(no);
     return no;
 }
 
@@ -145,6 +151,7 @@ RamStatus::RamStatus(QString uuid):
 
 RamUser *RamStatus::user() const
 {
+    if (!m_user) return Ramses::instance()->ramsesUser();
     return m_user;
 }
 
@@ -524,6 +531,7 @@ QString RamStatus::restoreVersionFile(QString fileName) const
 QString RamStatus::details() const
 {
     if (m_virtual) return "";
+    if (this->isNoState()) return "";
     QString details;
 
     RamUser *au = assignedUser();
@@ -584,13 +592,14 @@ QString RamStatus::details() const
 QString RamStatus::subDetails() const
 {
     if (m_virtual) return "";
+    if (this->isNoState()) return "";
     //subdetails
     QString dateFormat = "yyyy-MM-dd hh:mm:ss";
     RamUser *u = Ramses::instance()->currentUser();
     if (u)
     {
-        QSettings *uSettings = u->settings();
-        dateFormat = uSettings->value("ramses/dateFormat", dateFormat).toString();
+        QSettings settings;
+        dateFormat = settings.value("appearance/dateFormat", dateFormat).toString();
     }
     return "Modified on: " +
             date().toString(dateFormat) +
@@ -602,6 +611,24 @@ QVariant RamStatus::roleData(int role) const
 {
     switch(role)
     {
+    case Qt::DisplayRole: {
+        RamAbstractItem *item = this->item();
+        RamStep *step = this->step();
+        RamState *state = this->state();
+        return item->shortName() + " | " + step->shortName() + " | " + state->shortName();
+    }
+    case Qt::ToolTipRole: {
+        RamAbstractItem *item = this->item();
+        RamStep *step = this->step();
+        RamState *state = this->state();
+        return item->name() + " | " + step->name() + " | " + state->name();
+    }
+    case Qt::StatusTipRole: {
+        RamAbstractItem *item = this->item();
+        RamStep *step = this->step();
+        RamState *state = this->state();
+        return item->shortName() + " | " + step->shortName() + " | " + state->name();
+    }
     case RamAbstractObject::Completion: return this->completionRatio();
     case RamAbstractObject::Lateness: return this->latenessRatio();
     case RamAbstractObject::Estimation: {
@@ -617,6 +644,16 @@ QVariant RamStatus::roleData(int role) const
         return QColor();
     }
     case RamAbstractObject::Difficulty: return this->difficulty();
+    case RamAbstractObject::SizeHint: {
+        QSize s = RamObject::roleData(role).toSize();
+        s.setWidth(300);
+        return s;
+    }
+    case RamAbstractObject::DetailedSizeHint: {
+        QSize s = RamObject::roleData(role).toSize();
+        if (s.width() < 300) s.setWidth(300);
+        return s;
+    }
     }
 
     return RamObject::roleData(role);

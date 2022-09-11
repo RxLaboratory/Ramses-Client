@@ -1,4 +1,7 @@
 #include "ramobjectmodel.h"
+#include "ramstatus.h"
+#include "ramstep.h"
+#include "ramabstractitem.h"
 
 RamObjectModel *RamObjectModel::m_emptyModel = nullptr;
 
@@ -48,7 +51,18 @@ QVariant RamObjectModel::data(const QModelIndex &index, int role) const
                 RamObject::UUID
                 ).toString();
     RamObject *colObj = obj->objectForColumn(colUuid);
-    if (!colObj) return QVariant();
+    if (!colObj) {
+        // Return info from a nostatus
+        RamAbstractItem *item = qobject_cast<RamAbstractItem*>( obj );
+        if (!item) return QVariant();
+        QString stepUuid = headerData(col, Qt::Horizontal, RamObject::UUID).toString();
+        if (stepUuid == "") return QVariant();
+        RamStep *step = RamStep::get( stepUuid );
+        if (!step) return QVariant();
+        RamStatus *status = RamStatus::noStatus(item, step);
+        if (status) return status->roleData(role);
+        return QVariant();
+    }
     return colObj->roleData(role);
 }
 
@@ -58,6 +72,7 @@ QVariant RamObjectModel::headerData(int section, Qt::Orientation orientation, in
     if (orientation == Qt::Horizontal && section >= columnCount()) return QVariant();
     if (orientation == Qt::Vertical && section >= rowCount()) return QVariant();
 
+    // Vertical
     if (orientation == Qt::Vertical)
     {
         QString uuid = m_objectsUuids.at(section);
@@ -66,12 +81,14 @@ QVariant RamObjectModel::headerData(int section, Qt::Orientation orientation, in
         return QAbstractTableModel::headerData(section, orientation, role);
     }
 
+    // Horizontal
     if (section > 0)
     {
-        return m_columnObjects->headerData(section-1, Qt::Horizontal, role);
+        return m_columnObjects->headerData(section-1, Qt::Vertical, role);
     }
 
-    return QAbstractTableModel::headerData(section, orientation, role);
+    // Horizontal first column
+    return QVariant();
 }
 
 void RamObjectModel::insertObjects(int row, QStringList uuids)

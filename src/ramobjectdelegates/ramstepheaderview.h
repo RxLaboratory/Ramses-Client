@@ -6,6 +6,8 @@
 #include <QPainter>
 #include <QPainterPath>
 
+#include "ramstep.h"
+
 class RamStepHeaderView : public QHeaderView
 {
     Q_OBJECT
@@ -65,6 +67,7 @@ private:
 
     // Utils
     bool canEdit() const;
+    RamStep *getStep(int section) const;
 
     // drawing specific items
     void drawButton(QPainter *painter, QRect rect, QPixmap icon, bool hover = false, bool checked = false) const;

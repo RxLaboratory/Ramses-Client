@@ -20,6 +20,11 @@ ObjectListWidget::ObjectListWidget(RamObjectModel *objectList, bool editableObje
 
 void ObjectListWidget::setObjectModel(RamObjectModel *objectModel)
 {
+    if (ui_objectView->model())
+    {
+        disconnect(ui_objectView->model(), nullptr, this, nullptr);
+    }
+
     m_objectModel = objectModel;
 
     // Show all
@@ -30,8 +35,10 @@ void ObjectListWidget::setObjectModel(RamObjectModel *objectModel)
 
     if (!objectModel) return;
 
+    connect(ui_objectView->model(), SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(objectAssigned(QModelIndex,int,int)));
+    connect(ui_objectView->model(), SIGNAL(rowsAboutToBeRemoved(QModelIndex,int,int)), this, SLOT(objectUnassigned(QModelIndex,int,int)));
 
-    //objectAssigned(QModelIndex(), 0, objectModel->rowCount() - 1);
+    objectAssigned(QModelIndex(), 0, objectModel->rowCount() - 1);
 }
 
 void ObjectListWidget::setFilterList(RamObjectModel *filterList, QString filterListName)
@@ -324,8 +331,6 @@ void ObjectListWidget::connectEvents()
     connect(ui_filterBox, &RamObjectComboBox::currentObjectChanged, this, &ObjectListWidget::setFilter);
     // Relay list signals
     connect(ui_objectView, &RamObjectView::objectSelected, this, &ObjectListWidget::objectSelected);
-    connect(ui_objectView->model(), SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(objectAssigned(QModelIndex,int,int)));
-    connect(ui_objectView->model(), SIGNAL(rowsAboutToBeRemoved(QModelIndex,int,int)), this, SLOT(objectUnassigned(QModelIndex,int,int)));
 
     // Shortcuts
     QShortcut *s = new QShortcut(QKeySequence(QKeySequence::Delete), ui_objectView, nullptr, nullptr, Qt::WidgetWithChildrenShortcut );

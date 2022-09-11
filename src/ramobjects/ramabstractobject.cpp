@@ -349,15 +349,16 @@ QVariant RamAbstractObject::roleData(int role) const
         }
         QString imagePath = this->previewImagePath();
         if (imagePath != "") {
-            h += 300;
+            h += 250;
+            w = 400;
         }
         return QSize(w, h);
     }
     case RamAbstractObject::IsPM: return false;
     case RamAbstractObject::Date: return QDate();
     case RamAbstractObject::IsComment: return false;
-    case RamAbstractObject::DefaultSortOrder: return this->shortName();
     case RamAbstractObject::Difficulty: return 0;
+    case RamAbstractObject::Duration: return 0;
     }
 
     return this->uuid();
@@ -569,7 +570,7 @@ void RamAbstractObject::createData(QString data)
     DBInterface::instance()->createObject(m_uuid, objectTypeName(), data);
 }
 
-bool RamAbstractObject::checkUuid(QString uuid, ObjectType type)
+bool RamAbstractObject::checkUuid(QString uuid, ObjectType type, bool mayBeVirtual)
 {
     QString table = objectTypeName(type);
     if (uuid == "")
@@ -577,6 +578,8 @@ bool RamAbstractObject::checkUuid(QString uuid, ObjectType type)
     Q_ASSERT_X(uuid != "", QString("%1::get").arg(table).toUtf8(), "UUID can't be empty");
 
     if (uuid == "none") return false;
+
+    if (mayBeVirtual) return true;
 
     // Check if the uuid exists in the DB
     if (!DBInterface::instance()->contains(uuid, table))

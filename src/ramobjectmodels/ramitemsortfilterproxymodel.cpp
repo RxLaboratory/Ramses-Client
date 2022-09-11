@@ -109,7 +109,7 @@ bool RamItemSortFilterProxyModel::filterAcceptsRow(int sourceRow, const QModelIn
     RamObject *itemObj = RamObject::get(itemUuid, itemType);
     if (itemObj->objectType() != RamObject::Asset && itemObj->objectType() != RamObject::Shot) return true;
     RamAbstractItem *item = qobject_cast<RamAbstractItem*>(itemObj);
-    if(!item) return true;
+    if(!item) return false;
 
     // check users
     bool ok = false;
@@ -189,15 +189,16 @@ RamStep *RamItemSortFilterProxyModel::step(int column) const
     return nullptr;
 }
 
-RamObject::DataRole RamItemSortFilterProxyModel::sortMode() const
+int RamItemSortFilterProxyModel::sortMode() const
 {
     return m_sortMode;
 }
 
-void RamItemSortFilterProxyModel::setSortMode(RamObject::DataRole newSortMode)
+void RamItemSortFilterProxyModel::setSortMode(int newSortMode)
 {
     m_sortMode = newSortMode;
     this->setSortRole(newSortMode);
+    if (newSortMode == Qt::InitialSortOrderRole) this->sort(-1);
 }
 
 void RamItemSortFilterProxyModel::resort(int col, Qt::SortOrder order)

@@ -34,8 +34,8 @@ public:
     void showStep(RamObject *s);
     void showAllSteps();
 
-    RamObject::DataRole sortMode() const;
-    void setSortMode(RamObject::DataRole newSortMode);
+    int sortMode() const;
+    void setSortMode(int newSortMode);
 
 public slots:
     void resort(int col, Qt::SortOrder order = Qt::AscendingOrder);
@@ -62,7 +62,7 @@ private:
 
     bool m_frozen = false;
 
-    RamObject::DataRole m_sortMode = RamObject::DefaultSortOrder;
+    int m_sortMode = Qt::InitialSortOrderRole;
 };
 
 #endif // RAMITEMFILTERMODEL_H

@@ -1,5 +1,5 @@
-#ifndef ITEMTABLEMANAGERWIDGET_H
-#define ITEMTABLEMANAGERWIDGET_H
+#ifndef ITEMMANAGERWIDGET_H
+#define ITEMMANAGERWIDGET_H
 
 #include <QWidget>
 #include <QShowEvent>
@@ -12,19 +12,18 @@
 #include "ramitemview.h"
 #include "duqf-widgets/duqfsearchedit.h"
 
-#include "data-views/ramobjectlistcombobox.h"
-#include "data-views/ramstepheaderview.h"
-#include "data-views/ramobjectlistmenu.h"
+#include "ramstepheaderview.h"
 
+#include "ramobjectcombobox.h"
 #include "ramobjectmenu.h"
 #include "ramstatus.h"
 #include "ramstep.h"
 
-class ItemTableManagerWidget : public QWidget
+class ItemManagerWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit ItemTableManagerWidget(RamStep::Type type, QWidget *parent = nullptr);
+    explicit ItemManagerWidget(RamStep::Type type, QWidget *parent = nullptr);
 
 public slots:
     void selectAllSteps();
@@ -48,7 +47,7 @@ protected:
 
     RamItemView *ui_table;
     DuQFTitleBar *ui_titleBar;
-    RamObjectListComboBox *ui_groupBox;
+    RamObjectComboBox *ui_groupBox;
 
 protected slots:
     virtual void projectChanged(RamProject *project, bool force = false);
@@ -105,7 +104,7 @@ private:
     void loadSettings();
 
     // Specialized functions
-    void setList();
+    void setObjectModel();
     void setupItemMenu();
     void setupTable();
 
@@ -117,13 +116,13 @@ private:
     QAction *ui_actionDeleteItem;
     QAction *ui_actionCreateMultiple;
     QToolButton *ui_userButton;
-    RamObjectListMenu *ui_userMenu;
+    RamObjectMenu *ui_userMenu;
     QAction *ui_actionSelectMyself;
     QAction *ui_actionNotAssigned;
     QToolButton *ui_stateButton;
     RamObjectMenu *ui_stateMenu;
     QToolButton *ui_stepButton;
-    RamObjectListMenu *ui_stepMenu;
+    RamObjectMenu *ui_stepMenu;
     QAction *ui_actionSelectMySteps ;
     //QAction *ui_actionTimeTracking ;
     //QAction *ui_actionCompletionRatio ;
@@ -135,7 +134,7 @@ private:
     QAction *ui_actionSortByTimeSpent;
     QAction *ui_actionSortByEstimation;
     QAction *ui_actionSortByCompletion;
-    RamObjectListMenu *ui_assignUserMenu;
+    RamObjectMenu *ui_assignUserMenu;
     RamObjectMenu *ui_changeStateMenu;
     QMenu *ui_changeDifficultyMenu;
     QAction *ui_veryEasy;
@@ -155,7 +154,7 @@ private:
     QAction *ui_copyComment;
     QAction *ui_cutComment;
     QAction *ui_pasteComment;
-    RamObjectListMenu *ui_assignUserContextMenu;
+    RamObjectMenu *ui_assignUserContextMenu;
     RamObjectMenu *ui_changeStateContextMenu;
 
 
@@ -164,6 +163,7 @@ private:
 
     // utils
     QList<RamStatus*> beginEditSelectedStatus();
+    RamStatus *getStatus(const QModelIndex &index);
 };
 
-#endif // ITEMTABLE_H
+#endif // ITEMMANAGERWIDGET_H

@@ -8,7 +8,19 @@ RamAbstractItem::RamAbstractItem(QString shortName, QString name, ObjectType typ
     RamObject(shortName, name, type, project)
 {
     construct();
-    insertData("project", project->uuid());
+
+    QJsonObject d = data();
+    d.insert("project", project->uuid());
+    connectProject(project);
+
+    // Prepare history
+    for (int i = 0; i < project->steps()->rowCount(); i++)
+    {
+        RamStep *step = RamStep::c( project->steps()->get(i) );
+        createStepHistory(step, d);
+    }
+    setData(d);
+
     connectProject(project);
 }
 
@@ -113,7 +125,7 @@ void RamAbstractItem::addStatus(RamStatus *status)
         status->assignUser( assignedUser(step) );
 
     RamObjectModel *history = statusHistory(step);
-    history->appendObject( status->uuid() );
+    if (history) history->appendObject( status->uuid() );
 }
 
 RamStatus *RamAbstractItem::status(RamStep *step) const

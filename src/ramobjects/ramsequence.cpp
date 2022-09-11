@@ -53,9 +53,8 @@ double RamSequence::duration() const
     double duration = 0;
     for (int i = 0; i < m_shots->rowCount(); i++)
     {
-        quintptr iptr = m_shots->data( m_shots->index(i,0), Qt::UserRole).toULongLong();
-        RamShot *shot = reinterpret_cast<RamShot*>( iptr );
-        duration += shot->duration();
+        int d = m_shots->data( m_shots->index(i,0), RamObject::Duration).toDouble();
+        duration += d;
     }
     return duration;
 }
@@ -73,6 +72,14 @@ QString RamSequence::details() const
             " shots\n" +
             "Duration: " +
             dur.toString("mm 'mn' ss 's'");
+}
+
+QVariant RamSequence::roleData(int role) const
+{
+    switch(role) {
+    case Duration: return this->duration();
+    }
+    return RamObject::roleData(role);
 }
 
 // PUBLIC SLOTS //

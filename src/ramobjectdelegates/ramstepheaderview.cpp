@@ -37,9 +37,8 @@ void RamStepHeaderView::paintSection(QPainter *painter, const QRect &rect, int l
     painter->setRenderHint(QPainter::Antialiasing);
 
     // Get the step
-    quintptr iptr = this->model()->headerData( logicalIndex, Qt::Horizontal, Qt::UserRole).toULongLong();
-    if (iptr == 0) return QHeaderView::paintSection(painter,rect,logicalIndex);
-    RamStep *step = reinterpret_cast<RamStep*>( iptr );
+    RamStep *step = getStep(logicalIndex);
+    if (!step) return QHeaderView::paintSection(painter,rect,logicalIndex);
 
     // Draw title
     QRect titleRect( rect.left(), rect.top(), rect.width(), rect.height() - 16 );
@@ -194,9 +193,8 @@ void RamStepHeaderView::mouseReleaseEvent(QMouseEvent *event)
         if (editButtonRect.contains(pos))
         {
             // Get the step
-            quintptr iptr = this->model()->headerData( sectionIndex, Qt::Horizontal, Qt::UserRole).toULongLong();
-            RamStep *step = reinterpret_cast<RamStep*>( iptr );
-            step->edit();
+            RamStep *step = getStep(sectionIndex);
+            if (step) step->edit();
         }
         m_editButtonPressed = -1;
         return;
@@ -207,9 +205,8 @@ void RamStepHeaderView::mouseReleaseEvent(QMouseEvent *event)
         if (folderButtonRect.contains(pos))
         {
             // Get the step
-            quintptr iptr = this->model()->headerData( sectionIndex, Qt::Horizontal, Qt::UserRole).toULongLong();
-            RamStep *step = reinterpret_cast<RamStep*>( iptr );
-            step->revealFolder();
+            RamStep *step = getStep(sectionIndex);
+            if(step) step->revealFolder();
         }
         m_folderButtonPressed = -1;
         return;
@@ -297,6 +294,13 @@ void RamStepHeaderView::mouseMoveEvent(QMouseEvent *event)
 bool RamStepHeaderView::canEdit() const
 {
     return Ramses::instance()->isProjectAdmin();
+}
+
+RamStep *RamStepHeaderView::getStep(int section) const
+{
+    QString stepUuid = this->model()->headerData( section, Qt::Horizontal, RamObject::UUID).toString();
+    if (stepUuid == "") return nullptr;
+    return RamStep::get( stepUuid );
 }
 
 void RamStepHeaderView::drawButton(QPainter *painter, QRect rect, QPixmap icon, bool hover, bool checked) const

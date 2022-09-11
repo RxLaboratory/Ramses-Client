@@ -38,8 +38,8 @@ public:
         IsPM = Qt::UserRole+19,
         Date = Qt::UserRole+20,
         IsComment = Qt::UserRole+21,
-        DefaultSortOrder = Qt::UserRole+22,
-        Difficulty = Qt::UserRole+23
+        Difficulty = Qt::UserRole+23,
+        Duration = Qt::UserRole+24
     };
     /**
      * @brief The ObjectType enum lists all types of RamObjects
@@ -251,7 +251,7 @@ protected:
     static QMap<QString, RamAbstractObject*> m_allObjects;
     // Checks if this is a valid uuid,
     // and if it exists in the DB
-    static bool checkUuid(QString uuid, ObjectType type);
+    static bool checkUuid(QString uuid, ObjectType type, bool mayBeVirtual = false);
     /**
      * @brief folderPath the folder of this object
      * @return
