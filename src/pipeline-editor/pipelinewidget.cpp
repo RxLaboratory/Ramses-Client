@@ -526,6 +526,7 @@ void PipelineWidget::connectionRemoved(DuQFConnection *co)
     if (!input) return;
 
     RamPipe *p = project->pipe(output, input);
+    project->pipeline()->removeObjects(QStringList(p->uuid()));
     if (p) p->remove();
 }
 

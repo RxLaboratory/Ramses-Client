@@ -12,6 +12,7 @@ public:
     RamStep *step() const;
 private slots:
     void stepChanged();
+    void removeStep();
 private:
     RamStep *_step;
 };
