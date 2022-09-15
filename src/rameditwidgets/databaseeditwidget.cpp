@@ -40,6 +40,17 @@ void DatabaseEditWidget::setDbFile(const QString &newDbFile)
 
 void DatabaseEditWidget::apply()
 {
+    DBInterface *dbi = DBInterface::instance();
+    // If this is the current db, restart app
+    if (m_dbFile == dbi->dataFile())
+    {
+        QMessageBox::Button ok = QMessageBox::question(
+                    this,
+                    tr("Restart Ramses"),
+                    tr("The application needs to be restarted in order to apply changes.\nAre you sure you want to continue?"));
+        if (ok != QMessageBox::Yes) return;
+    }
+
     ServerConfig s;
 
     if (ui_syncBox->isChecked())
@@ -54,13 +65,15 @@ void DatabaseEditWidget::apply()
     LocalDataInterface::setRamsesPath(m_dbFile, ui_folderSelector->path());
     LocalDataInterface::setServerSettings(m_dbFile, s);
 
-    // If this is the current db, set online/offline
-    DBInterface *dbi = DBInterface::instance();
+    // If this is the current db, restart app
     if (m_dbFile == dbi->dataFile())
     {
         dbi->setOffline();
-        // Reload
-        dbi->setDataFile(m_dbFile);
+        // Restart
+        QString program = qApp->arguments()[0];
+        QStringList arguments = qApp->arguments().mid(1); // remove the 1st argument - the program name
+        qApp->quit();
+        QProcess::startDetached(program, arguments);
     }
 
     emit applied();

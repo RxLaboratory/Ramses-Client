@@ -745,6 +745,12 @@ void MainWindow::logoutAction()
     Ramses::instance()->setUser(nullptr);
     DBInterface::instance()->setDataFile("");
     home();
+
+    // An restart!
+    QString program = qApp->arguments()[0];
+    QStringList arguments = qApp->arguments().mid(1); // remove the 1st argument - the program name
+    qApp->quit();
+    QProcess::startDetached(program, arguments);
 }
 
 void MainWindow::setOfflineAction()
