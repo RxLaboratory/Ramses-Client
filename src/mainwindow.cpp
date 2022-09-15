@@ -375,12 +375,19 @@ void MainWindow::duqf_checkUpdate()
     // Just once a day
     if (doCheckUpdate)
     {
+        qDebug() << "Update check...";
         QDateTime lastCheck = settings.value("updates/latestUpdateCheck").toDateTime();
-        doCheckUpdate = lastCheck.daysTo(QDateTime::currentDateTime()) > 0;
-        if (doCheckUpdate)
+        qDebug().noquote() << "Last check was on: " + lastCheck.toString("yyyy-MM-dd hh:mm:ss");
+        int days = lastCheck.daysTo(QDateTime::currentDateTime());
+        qDebug().noquote() << days << " days since last check.";
+        if (days > 0 || !lastCheck.isValid())
         {
             app->checkUpdate();
             return;
+        }
+        else
+        {
+            qDebug() << "We'll check again tomorrow.";
         }
     }
     m_showUpdateAlerts = true;
