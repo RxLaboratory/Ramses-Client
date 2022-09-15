@@ -13,6 +13,7 @@ class RamStateBox : public RamObjectComboBox
     Q_OBJECT
 public:
     RamStateBox(QWidget *parent = nullptr);
+    void update();
 
 signals:
     void currentStateChanged(RamState *state);

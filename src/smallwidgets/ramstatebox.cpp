@@ -9,6 +9,11 @@ RamStateBox::RamStateBox(QWidget *parent):
     connect(this, &RamObjectComboBox::currentObjectChanged, this, &RamStateBox::changeCurrentState);
 }
 
+void RamStateBox::update()
+{
+    changeCurrentState(this->currentObject());
+}
+
 void RamStateBox::changeCurrentState(RamObject *state)
 {
     if (!state) return;

@@ -48,6 +48,7 @@ void StatusEditWidget::reInit(RamObject *o)
 
         ui_userBox->setObject(m_status->assignedUser());
         ui_stateBox->setObject(m_status->state());
+        ui_stateBox->update();
         ui_completionBox->setValue(m_status->completionRatio());
         ui_versionBox->setValue(m_status->version());
         ui_statusCommentEdit->setMarkdown(m_status->comment());
