@@ -42,6 +42,9 @@ protected:
 
     static QFrame *ui_editWidget;
 
+private slots:
+    void pipeFilesDataChanged();
+
 private:
     void construct();
     void connectEvents();

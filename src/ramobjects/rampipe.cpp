@@ -33,6 +33,7 @@ RamPipe::RamPipe(RamStep *output, RamStep *input):
 
     d.insert("outputStep", output->uuid());
     d.insert("inputStep", input->uuid());
+    d.insert("shortName", outputStep()->shortName() + "-" + inputStep()->shortName());
 
     setData(d);
 
@@ -48,6 +49,11 @@ RamPipe::RamPipe(QString uuid):
     connectEvents();
 }
 
+void RamPipe::pipeFilesDataChanged()
+{
+    emit dataChanged(this);
+}
+
 RamStep *RamPipe::outputStep() const
 {
     return RamStep::get( getData("outputStep").toString("none") );
@@ -55,7 +61,10 @@ RamStep *RamPipe::outputStep() const
 
 void RamPipe::setOutputStep(RamObject *outputStep)
 {
-    insertData("outputStep", outputStep->uuid());
+    QJsonObject d = data();
+    d.insert("outputStep", outputStep->uuid());
+    d.insert("shortName", outputStep->shortName() + "-" + inputStep()->shortName());
+    setData(d);
 }
 
 RamStep *RamPipe::inputStep() const
@@ -65,7 +74,10 @@ RamStep *RamPipe::inputStep() const
 
 void RamPipe::setInputStep(RamObject *inputStep)
 {
-    insertData("inputStep", inputStep->uuid());
+    QJsonObject d = data();
+    d.insert("inputStep", inputStep->uuid());
+    d.insert("shortName", outputStep()->shortName() + "-" + inputStep->shortName());
+    setData(d);
 }
 
 QString RamPipe::name() const
@@ -110,13 +122,13 @@ void RamPipe::construct()
     m_editRole = ProjectAdmin;
 
     m_pipeFiles = createModel(RamObject::PipeFile, "pipeFiles");
+
+    // When data has changed, we change the name/shortname
+    connect(m_pipeFiles, &RamObjectModel::dataChanged, this, &RamPipe::pipeFilesDataChanged);
 }
 
 void RamPipe::connectEvents()
 {
-    // Set short name
-    insertData("shortName", outputStep()->shortName() + "-" + inputStep()->shortName());
-
     connect( inputStep(), &RamStep::removed, this, &RamObject::remove);
     connect( outputStep(), &RamStep::removed, this, &RamObject::remove);
 }
