@@ -33,7 +33,7 @@ RamPipe::RamPipe(RamStep *output, RamStep *input):
 
     d.insert("outputStep", output->uuid());
     d.insert("inputStep", input->uuid());
-    d.insert("shortName", outputStep()->shortName() + "-" + inputStep()->shortName());
+    d.insert("shortName", output->shortName() + "-" + input->shortName());
 
     setData(d);
 
