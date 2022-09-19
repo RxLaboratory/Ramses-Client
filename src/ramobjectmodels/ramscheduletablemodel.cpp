@@ -68,6 +68,9 @@ QVariant RamScheduleTableModel::headerData(int section, Qt::Orientation orientat
             return QVariant();
         }
 
+        // General
+        if (role == Qt::TextAlignmentRole) return Qt::AlignCenter;
+
         // The comments
         if (section == 0 && m_comments) {
             if ( role == Qt::DisplayRole )
@@ -84,14 +87,14 @@ QVariant RamScheduleTableModel::headerData(int section, Qt::Orientation orientat
 
         // Add AMP/PM Info to user data
 
-        QString ampm = " | AM";
-        if (section % 2 == 1) ampm = " | PM";
+        QString ampm = "AM";
+        if (section % 2 == 1) ampm = "PM";
 
         if ( role == RamObject::IsPM)
             return section % 2 == 1;
 
         if ( role == Qt::DisplayRole )
-            return QString(usrObj->roleData(role).toString() % ampm);
+            return QString(usrObj->shortName() % "\n" % ampm);
 
         if ( role == Qt::ToolTipRole )
             return QString(usrObj->roleData(role).toString() % " | " % ampm);

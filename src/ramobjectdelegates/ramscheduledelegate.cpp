@@ -130,11 +130,14 @@ QSize RamScheduleDelegate::sizeHint(const QStyleOptionViewItem &option, const QM
     Q_UNUSED(option)
 
     QString uuid = index.data(RamObject::UUID).toString();
-    if (uuid == "") return QSize(0,30);
+    if (uuid == "") return QSize(0,40);
 
     QSize s;
     if (m_details) s = index.data(RamObject::DetailedSizeHint).toSize();
     else s = index.data(RamObject::SizeHint).toSize();
+
+    // In schedules, the height is a bit bigger
+    if (s.height() < 40) s.setHeight(40);
 
     return s;
 }
