@@ -25,6 +25,7 @@ private:
     bool createNewDB(ServerConfig s);
 
     DuQFFolderSelectorWidget *ui_fileSelector;
+    DuQFFolderSelectorWidget *ui_folderSelector;
     QTabWidget *ui_tabWidget;
     QLineEdit *ui_shortNameEdit;
     QLineEdit *ui_nameEdit;

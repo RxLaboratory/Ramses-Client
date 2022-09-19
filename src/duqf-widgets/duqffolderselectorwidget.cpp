@@ -60,6 +60,12 @@ void DuQFFolderSelectorWidget::showDeleteButton(QString trashFolder, bool show)
     ui_deleteButton->setVisible(show);
 }
 
+void DuQFFolderSelectorWidget::showRevealButton(bool show)
+{
+    if (show) ui_exploreButton->show();
+    else ui_exploreButton->hide();
+}
+
 void DuQFFolderSelectorWidget::browseButton_clicked()
 {
     QString p = "";

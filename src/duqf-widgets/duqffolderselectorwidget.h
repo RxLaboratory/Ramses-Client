@@ -21,6 +21,7 @@ public:
     void setPlaceHolderText(QString t);
     void setDialogTitle(QString t);
     void showDeleteButton(QString trashFolder, bool show = true);
+    void showRevealButton(bool show = true);
     void setMode(SelectorMode newMode);
     void setFilter(const QString &filter);
 

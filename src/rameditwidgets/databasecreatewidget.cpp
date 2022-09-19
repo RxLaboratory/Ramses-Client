@@ -145,12 +145,26 @@ void DatabaseCreateWidget::setupUi()
     mainLayout->setSpacing(3);
     mainLayout->setContentsMargins(3, 3, 3, 3);
 
+    QGridLayout *topLayout = new QGridLayout();
+    topLayout->setSpacing(3);
+    topLayout->setContentsMargins(0,0,0,0);
+    mainLayout->addLayout(topLayout);
+
+    topLayout->addWidget(new QLabel(tr("Database file")), 0, 0);
+
     ui_fileSelector = new DuQFFolderSelectorWidget(DuQFFolderSelectorWidget::File, dummy);
     ui_fileSelector->setPlaceHolderText(tr("File path of the Ramses Database..."));
     ui_fileSelector->setDialogTitle(tr("Select the location of the Ramses Database."));
     ui_fileSelector->setMode(DuQFFolderSelectorWidget::Save);
     ui_fileSelector->setFilter(tr("Ramses (*.ramses);;SQLite (*.sqlite);;All Files (*.*)"));
-    mainLayout->addWidget(ui_fileSelector);
+    topLayout->addWidget(ui_fileSelector, 0, 1);
+
+    topLayout->addWidget(new QLabel(tr("Ramses path")), 1, 0);
+
+    ui_folderSelector = new DuQFFolderSelectorWidget();
+    ui_folderSelector->showRevealButton(false);
+    ui_folderSelector->setPlaceHolderText(QDir::homePath() + "/Ramses");
+    topLayout->addWidget(ui_folderSelector, 1, 1);
 
     ui_tabWidget = new QTabWidget(dummy);
     ui_tabWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
