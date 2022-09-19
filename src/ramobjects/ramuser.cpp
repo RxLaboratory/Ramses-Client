@@ -58,7 +58,7 @@ void RamUser::setShortName(const QString &shortName)
 
 bool RamUser::validateShortName(const QString &shortName)
 {
-    if (RamAbstractObject::validateShortName(shortName)) return false;
+    if (!RamAbstractObject::validateShortName(shortName)) return false;
     return DBInterface::instance()->isUserNameAavailable(shortName);
 }
 
