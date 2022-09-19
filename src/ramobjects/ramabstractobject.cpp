@@ -9,7 +9,7 @@
 
 // STATIC //
 
-QRegExp RamAbstractObject::rxsn = RegExUtils::getRegExp("shortname");
+QRegularExpression RamAbstractObject::m_rxsn = QRegularExpression();
 
 QMap<QString, QPixmap> RamAbstractObject::m_iconPixmaps = QMap<QString, QPixmap>();
 
@@ -265,7 +265,21 @@ void RamAbstractObject::setShortName(const QString &shortName)
 
 bool RamAbstractObject::validateShortName(const QString &shortName)
 {
-    return rxsn.exactMatch(shortName);
+    // Accept "NEW"
+    if (shortName.toLower() == "new") return true;
+
+    QRegularExpression rxsn = shortNameRegularExpression();
+    QRegularExpressionMatch match = rxsn.match( shortName );
+    if (!match.hasMatch()) return false;
+
+    // Only if we've matched the whole string
+    qDebug() << m_rxsn.pattern();
+    qDebug() << match;
+    qDebug() << match.captured(0);
+    qDebug() << shortName;
+    if (match.captured(0) == shortName) return true;
+
+    return false;
 }
 
 QString RamAbstractObject::name() const
@@ -629,6 +643,13 @@ QPixmap RamAbstractObject::iconPixmap(QString iconName)
     }
 
     return m_iconPixmaps.value(iconName, QPixmap());
+}
+
+QRegularExpression RamAbstractObject::shortNameRegularExpression()
+{
+    if (m_rxsn.pattern() != "") return m_rxsn;
+    m_rxsn = RegExUtils::getRegularExpression("shortname", "", "", true);
+    return m_rxsn;
 }
 
 void RamAbstractObject::construct()

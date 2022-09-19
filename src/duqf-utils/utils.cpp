@@ -171,13 +171,16 @@ qint64 MediaUtils::convertToBytes(qint64 value, MediaUtils::SizeUnit from)
     return value;
 }
 
-QRegularExpression RegExUtils::getRegularExpression(QString name, QString replace, QString by)
+QRegularExpression RegExUtils::getRegularExpression(QString name, QString replace, QString by, bool fullMatch)
 {
     QFile regExFile(":/regex/" + name );
     if (regExFile.open(QFile::ReadOnly))
     {
-        QString regExStr = regExFile.readAll();
+        QString regExStr = regExFile.readAll().trimmed();
+        Q_ASSERT(regExStr != "");
+        qDebug() << regExStr;
         if (replace != "") regExStr = regExStr.replace(replace, by);
+        if (fullMatch) return QRegularExpression( "^" + regExStr.trimmed() + "$" );
         return QRegularExpression( regExStr.trimmed() );
     }
     return QRegularExpression();

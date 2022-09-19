@@ -134,7 +134,7 @@ namespace NetworkUtils
 };
 
 namespace RegExUtils {
-    QRegularExpression getRegularExpression(QString name , QString replace = "", QString by = "");
+    QRegularExpression getRegularExpression(QString name , QString replace = "", QString by = "", bool fullMatch = false);
     /**
      * @brief getRegExp Don't use this, always prefer getRegularExpression!
      * getRegExp is meant only to be used with QRegExpValidator which doesn't accept QRegularExpression

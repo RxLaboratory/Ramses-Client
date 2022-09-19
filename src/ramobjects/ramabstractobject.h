@@ -274,7 +274,8 @@ protected:
 
     static QMap<QString, QPixmap> m_iconPixmaps;
     static QPixmap iconPixmap(QString iconName);
-    static QRegExp rxsn;
+    static QRegularExpression m_rxsn;
+    static QRegularExpression shortNameRegularExpression();
 
 private:
     void construct();
