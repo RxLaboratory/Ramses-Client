@@ -123,6 +123,11 @@ void DBInterface::setUsername(QString uuid, QString username)
     m_ldi->setUsername(uuid, username);
 }
 
+bool DBInterface::isUserNameAavailable(const QString &userName)
+{
+    return m_ldi->isUserNameAavailable(userName);
+}
+
 const QString &DBInterface::dataFile() const
 {
     return m_ldi->dataFile();

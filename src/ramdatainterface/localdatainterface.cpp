@@ -409,6 +409,16 @@ void LocalDataInterface::setUsername(QString uuid, QString username)
     query( q.arg(username, modified.toString("yyyy-MM-dd hh:mm:ss"), uuid) );
 }
 
+bool LocalDataInterface::isUserNameAavailable(const QString &userName)
+{
+    QString q = "SELECT `uuid` FROM `RamUser` WHERE userName = '%1' AND removed = 0;";
+    q = q.arg( userName );
+    QSqlQuery qry = query( q );
+
+    if (qry.first() && qry.value(0) != "") return false;
+    return true;
+}
+
 ServerConfig LocalDataInterface::serverConfig()
 {
     QString q = "SELECT address, useSsl, updateDelay, timeout FROM _Server;";

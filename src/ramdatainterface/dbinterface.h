@@ -63,6 +63,7 @@ public:
     bool isRemoved(QString uuid, QString table);
 
     void setUsername(QString uuid, QString username);
+    bool isUserNameAavailable(const QString &userName);
 
     const QString &dataFile() const;
     void setDataFile(const QString &file, bool ignoreUser = false);

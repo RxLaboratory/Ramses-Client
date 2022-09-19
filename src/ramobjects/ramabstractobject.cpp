@@ -9,6 +9,8 @@
 
 // STATIC //
 
+QRegExp RamAbstractObject::rxsn = RegExUtils::getRegExp("shortname");
+
 QMap<QString, QPixmap> RamAbstractObject::m_iconPixmaps = QMap<QString, QPixmap>();
 
 QMap<QString, RamAbstractObject*> RamAbstractObject::m_allObjects = QMap<QString, RamAbstractObject*>();
@@ -259,6 +261,11 @@ QString RamAbstractObject::shortName() const
 void RamAbstractObject::setShortName(const QString &shortName)
 {
     insertData("shortName", shortName);
+}
+
+bool RamAbstractObject::validateShortName(const QString &shortName)
+{
+    return rxsn.exactMatch(shortName);
 }
 
 QString RamAbstractObject::name() const

@@ -72,6 +72,18 @@ void ObjectEditWidget::setShortName()
         return;
     }
 
+    if (!m_object->validateShortName(ui_shortNameEdit->text()))
+    {
+        QMessageBox::warning(this, "Invalid ID", "Sorry, this ID is invalid, please choose another one.\n\n"
+                                                 "⬣ IDs should be unique\n"
+                                                 "⬣ IDs must contain only: \"A-Z\", \"a-z\", \"0-9\", \"-\", \"+\" characters\n"
+                                                 "⬣ IDs must be less than 10-character long" );
+        ui_shortNameEdit->setText(m_object->shortName());
+        ui_shortNameEdit->setFocus(Qt::OtherFocusReason);
+
+        return;
+    }
+
     m_object->setShortName(ui_shortNameEdit->text());
 }
 

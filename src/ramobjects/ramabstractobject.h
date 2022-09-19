@@ -175,6 +175,7 @@ public:
      */
     virtual QString shortName() const;
     virtual void setShortName(const QString &shortName);
+    virtual bool validateShortName(const QString &shortName);
 
     /**
      * @brief name the user-friendly name of the object
@@ -273,6 +274,7 @@ protected:
 
     static QMap<QString, QPixmap> m_iconPixmaps;
     static QPixmap iconPixmap(QString iconName);
+    static QRegExp rxsn;
 
 private:
     void construct();

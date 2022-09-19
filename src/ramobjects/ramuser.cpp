@@ -56,6 +56,12 @@ void RamUser::setShortName(const QString &shortName)
     DBInterface::instance()->setUsername(m_uuid, shortName);
 }
 
+bool RamUser::validateShortName(const QString &shortName)
+{
+    if (RamAbstractObject::validateShortName(shortName)) return false;
+    return DBInterface::instance()->isUserNameAavailable(shortName);
+}
+
 RamUser::UserRole RamUser::role() const
 {
     QString roleStr = getData("role").toString("standard");
