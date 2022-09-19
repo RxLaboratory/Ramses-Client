@@ -18,6 +18,8 @@ private slots:
 private:
     DuQFLoggerObject *_loggerObject;
     DuQFLog::LogType _level;
+
+    int m_contentSizeLimit = 300;
 };
 
 #endif // DUQFLOGGINGTEXTEDIT_H
