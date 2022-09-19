@@ -241,6 +241,9 @@ bool DatabaseCreateWidget::createNewDB()
         return false;
     }
 
+    // Save Ramses Path
+    LocalDataInterface::setRamsesPath(newFilePath, ui_folderSelector->path());
+
     // Set File
     DBInterface::instance()->setDataFile(newFilePath, true);
 
@@ -269,6 +272,9 @@ bool DatabaseCreateWidget::createNewDB(ServerConfig s)
 
     // Add server settings
     LocalDataInterface::instance()->setServerSettings(ui_fileSelector->path(), s);
+
+    // Save Ramses Path
+    LocalDataInterface::setRamsesPath(newFilePath, ui_folderSelector->path());
 
     // Set File
     DBInterface::instance()->setDataFile(newFilePath, true);
