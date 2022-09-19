@@ -95,12 +95,14 @@ void StepEditWidget::createApplication()
 
 void StepEditWidget::updateEstimationSuffix()
 {
-    ui_tabWidget->setTabEnabled(0, false);
     ui_estimationMultiplierCheckBox->hide();
     ui_estimationMultiplierBox->hide();
 
     if (ui_typeBox->currentIndex() == 0 || ui_typeBox->currentIndex() == 3)
+    {
+        ui_tabWidget->setTabEnabled(0, false);
         return;
+    }
 
     ui_tabWidget->setTabEnabled(0, true);
 
