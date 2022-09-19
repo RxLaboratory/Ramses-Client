@@ -57,11 +57,11 @@ QString RamObjectComboBox::currentUuid()
 
 void RamObjectComboBox::setObject(QString uuid)
 {
-    if (uuid == "")
+    /*if (uuid == "")
     {
         setCurrentIndex(-1);
         return;
-    }
+    }*/
 
     for(int i = 0; i < this->count(); i++)
     {
