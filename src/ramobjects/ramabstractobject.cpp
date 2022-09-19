@@ -617,7 +617,7 @@ QPixmap RamAbstractObject::iconPixmap(QString iconName)
         m_iconPixmaps = QMap<QString, QPixmap>({
                                                {":/icons/asset", QIcon(":/icons/asset").pixmap(QSize(12,12))},
                                                {":/icons/application", QIcon(":/icons/application").pixmap(QSize(12,12))},
-                                               {":/icons//asset-group", QIcon(":/icons//asset-group").pixmap(QSize(12,12))},
+                                               {":/icons/asset-group", QIcon(":/icons/asset-group").pixmap(QSize(12,12))},
                                                {":/icons/file", QIcon(":/icons/file").pixmap(QSize(12,12))},
                                                {":/icons/connection", QIcon(":/icons/connection").pixmap(QSize(12,12))},
                                                {":/icons/project", QIcon(":/icons/project").pixmap(QSize(12,12))},
@@ -634,7 +634,6 @@ QPixmap RamAbstractObject::iconPixmap(QString iconName)
                                                {":/icons/user", QIcon(":/icons/user").pixmap(QSize(12,12))}
                                                 });
     }
-
     return m_iconPixmaps.value(iconName, QPixmap());
 }
 
