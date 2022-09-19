@@ -272,14 +272,7 @@ bool RamAbstractObject::validateShortName(const QString &shortName)
     QRegularExpressionMatch match = rxsn.match( shortName );
     if (!match.hasMatch()) return false;
 
-    // Only if we've matched the whole string
-    qDebug() << m_rxsn.pattern();
-    qDebug() << match;
-    qDebug() << match.captured(0);
-    qDebug() << shortName;
-    if (match.captured(0) == shortName) return true;
-
-    return false;
+    return true;
 }
 
 QString RamAbstractObject::name() const

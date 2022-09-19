@@ -61,7 +61,7 @@ void ShotManagerWidget::changeProject(RamProject *project)
     this->clear();
     if (!project) return;
     this->setObjectModel( project->shots() );
-    m_listWidget->setFilterList( project->sequences() );
+    m_listWidget->setFilterList( project->sequences(), "Shots" );
 }
 
 void ShotManagerWidget::batchCreate()

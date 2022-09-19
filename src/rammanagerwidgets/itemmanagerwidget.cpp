@@ -1012,7 +1012,7 @@ void ItemManagerWidget::setObjectModel()
     else if (m_productionType == RamStep::ShotProduction)
     {
         ui_table->setObjectModel( m_project->shots() );
-        ui_groupBox->setObjectModel( m_project->sequences(), "Sequences" );
+        ui_groupBox->setObjectModel( m_project->sequences(), "Shots" );
     }
 }
 
