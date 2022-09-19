@@ -28,7 +28,7 @@ void StepEditWidget::reInit(RamObject *obj)
 {
     m_step = qobject_cast<RamStep*>( obj );
     if (m_step)
-    {
+    {                
         ui_colorSelector->setColor(m_step->color());
         ui_publishSettingsEdit->setPlainText(m_step->publishSettings());
 
@@ -39,7 +39,7 @@ void StepEditWidget::reInit(RamObject *obj)
         else if (m_step->type() == RamStep::ShotProduction) ui_typeBox->setCurrentIndex(2);
         else if (m_step->type() == RamStep::PostProduction) ui_typeBox->setCurrentIndex(3);
 
-       m_applicationList->setObjectModel(m_step->applications());
+        m_applicationList->setObjectModel(m_step->applications());
 
         ui_estimationMultiplierBox->setObjectModel(m_step->project()->assetGroups());
 
@@ -69,6 +69,7 @@ void StepEditWidget::reInit(RamObject *obj)
         m_applicationList->clear();
         ui_colorSelector->setColor(QColor(25,25,25));
         ui_publishSettingsEdit->setPlainText("");
+        ui_typeBox->setCurrentText(0);
 
         ui_veryEasyEdit->setValue(0.2);
         ui_easyEdit->setValue(0.5);
@@ -291,7 +292,7 @@ void StepEditWidget::setupUi()
 
     ui_publishSettingsEdit = new DuQFTextEdit(ui_tabWidget);
     ui_publishSettingsEdit->setUseMarkdown(false);
-    ui_tabWidget->addTab(ui_publishSettingsEdit, QIcon(":/icons/admin-settings"), "Settings");
+    ui_tabWidget->addTab(ui_publishSettingsEdit, QIcon(":/icons/settings"), "Settings");
 
     ui_mainLayout->addWidget(ui_tabWidget);
 
