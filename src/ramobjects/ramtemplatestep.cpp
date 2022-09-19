@@ -46,6 +46,9 @@ RamTemplateStep::RamTemplateStep(QString shortName, QString name, ObjectType typ
     RamObject(shortName, name, type)
 {
     construct();
+
+    // Preprod as default step
+    setType("pre");
 }
 
 RamTemplateStep::RamTemplateStep(QString uuid, ObjectType type):
@@ -123,7 +126,7 @@ QString RamTemplateStep::iconName() const
     switch(type())
     {
     case PreProduction:
-        return ":/icons/asset";
+        return ":/icons/project";
     case ShotProduction:
         return ":/icons/shot";
     case AssetProduction:
