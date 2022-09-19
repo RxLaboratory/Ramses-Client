@@ -495,7 +495,7 @@ void StatusEditWidget::openPreviewFile()
 
 void StatusEditWidget::removeSelectedPreviewFile()
 {
-    if ( ui_previewFileList->currentItem()) return;
+    if (!ui_previewFileList->currentItem()) return;
 
     QString fileName = ui_previewFileList->currentFileName();
 
