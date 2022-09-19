@@ -62,6 +62,8 @@ void RamScheduleTableView::setupUi()
     this->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
     this->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
     this->verticalHeader()->setSectionsMovable(false);
+    // For some reason, the vertical header width is too low
+    this->verticalHeader()->setMinimumWidth(150);
     this->horizontalHeader()->setSectionsMovable(false);
     this->setShowGrid(false);
     //this->setMouseTracking(true);
