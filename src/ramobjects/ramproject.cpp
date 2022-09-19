@@ -98,7 +98,7 @@ RamObjectModel *RamProject::scheduleComments() const
 
 qreal RamProject::framerate() const
 {
-    return getData("framerate").toDouble();
+    return getData("framerate").toDouble(24);
 }
 
 void RamProject::setFramerate(const qreal &newFramerate)
