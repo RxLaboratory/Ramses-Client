@@ -10,6 +10,7 @@ TemplateAssetGroupManagerWidget::TemplateAssetGroupManagerWidget(QWidget *parent
         parent )
 {
     m_listWidget->setEditMode(ObjectListWidget::RemoveObjects);
+    m_listWidget->setSortable(true);
 }
 
 RamTemplateAssetGroup *TemplateAssetGroupManagerWidget::createObject()

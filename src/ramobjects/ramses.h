@@ -30,7 +30,7 @@ public:
     QString pathFromRamses(QString p = "", bool create = false) const;
 
     // Users
-    RamObjectModel *users() const;
+    DBTableModel *users() const;
     RamUser *currentUser() const;
     RamUser *ramsesUser();
     RamUser *removedUser();

@@ -11,6 +11,7 @@ PipeFileManagerWidget::PipeFileManagerWidget(QWidget *parent):
     changeProject(Ramses::instance()->currentProject());
     connect(Ramses::instance(), SIGNAL(currentProjectChanged(RamProject*)), this, SLOT(changeProject(RamProject*)));
     m_listWidget->setEditMode(ObjectListWidget::RemoveObjects);
+    m_listWidget->setSortable(true);
 }
 
 RamPipeFile *PipeFileManagerWidget::createObject()

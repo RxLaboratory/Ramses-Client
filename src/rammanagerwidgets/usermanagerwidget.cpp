@@ -13,12 +13,12 @@ UserManagerWidget::UserManagerWidget(QWidget *parent) :
     QStringList dontRemove;
     dontRemove << "Ramses" << "Removed";
     m_listWidget->setDontRemoveShortNameList(dontRemove);
+    m_listWidget->setSortable(true);
 }
 
 RamUser *UserManagerWidget::createObject()
 {
     RamUser *user = new RamUser("NEW","J-Doe");
-    //Ramses::instance()->users()->append(user);
     user->edit();
     return user;
 }

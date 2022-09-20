@@ -19,7 +19,6 @@ RamApplication *ApplicationManagerWidget::createObject()
     RamApplication *a = new RamApplication(
                 "NEW",
                 "New Application");
-    //Ramses::instance()->applications()->append(a);
     a->edit();
     return a;
 }

@@ -16,6 +16,9 @@ private slots:
     void insertObject(QString uuid, QString table);
     void removeObject(QString uuid, QString table);
     void reload();
+    void saveOrder(const QModelIndex &parent, int start, int end, const QModelIndex &destination, int row);
 };
+
+bool objSorter(const QStringList a, const QStringList b);
 
 #endif // DBTABLEMODEL_H

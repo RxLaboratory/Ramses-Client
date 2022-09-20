@@ -10,6 +10,7 @@ TemplateStepManagerWidget::TemplateStepManagerWidget(QWidget *parent) :
         parent )
 {
     m_listWidget->setEditMode(ObjectListWidget::RemoveObjects);
+    m_listWidget->setSortable(true);
 }
 
 RamTemplateStep *TemplateStepManagerWidget::createObject()
@@ -18,8 +19,6 @@ RamTemplateStep *TemplateStepManagerWidget::createObject()
                 "NEW",
                 "New Template Step"
                 );
-
-    //Ramses::instance()->templateSteps()->append(ts);
 
     ts->edit();
     return ts;

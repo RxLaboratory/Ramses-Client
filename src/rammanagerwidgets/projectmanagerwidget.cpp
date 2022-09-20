@@ -10,6 +10,7 @@ ProjectManagerWidget::ProjectManagerWidget(QWidget *parent) :
         parent )
 {
     m_listWidget->setEditMode(ObjectListWidget::RemoveObjects);
+    m_listWidget->setSortable(true);
 }
 
 RamProject *ProjectManagerWidget::createObject()

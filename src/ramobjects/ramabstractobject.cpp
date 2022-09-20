@@ -307,6 +307,16 @@ void RamAbstractObject::setColor(QColor color)
     insertData("color", color.name() );
 }
 
+int RamAbstractObject::order() const
+{
+    return getData("order").toInt(0);
+}
+
+void RamAbstractObject::setOrder(int o)
+{
+    insertData("order", o);
+}
+
 QIcon RamAbstractObject::icon() const
 {
     return QIcon(iconName());

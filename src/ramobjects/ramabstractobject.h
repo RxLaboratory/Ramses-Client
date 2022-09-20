@@ -194,6 +194,9 @@ public:
     virtual QColor color() const;
     void setColor(QColor color);
 
+    int order() const;
+    void setOrder(int o);
+
     QIcon icon() const;
     virtual QString iconName() const { return m_icon; };
     QPixmap iconPixmap() const;

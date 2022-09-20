@@ -72,7 +72,7 @@ QString Ramses::pathFromRamses(QString p, bool create) const
         return p.replace("\\","/");
 }
 
-RamObjectModel *Ramses::users() const
+DBTableModel *Ramses::users() const
 {
     return m_users;
 }
