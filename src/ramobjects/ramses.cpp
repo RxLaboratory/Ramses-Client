@@ -67,9 +67,9 @@ QString Ramses::pathFromRamses(QString p, bool create) const
         path = p;
     }
     if (create)
-        return createPath( p ).replace("\\","/");
+        return QDir::cleanPath(createPath( p ));
     else
-        return p.replace("\\","/");
+        return QDir::cleanPath(p);
 }
 
 DBTableModel *Ramses::users() const
