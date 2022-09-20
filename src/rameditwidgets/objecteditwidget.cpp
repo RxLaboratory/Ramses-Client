@@ -22,6 +22,7 @@ void ObjectEditWidget::hideName(bool hide)
     ui_nameEdit->setVisible(!hide);
     ui_shortNameLabel->setVisible(!hide);
     ui_shortNameEdit->setVisible(!hide);
+    ui_lockShortNameButton->setVisible(!hide);
 }
 
 void ObjectEditWidget::setObject(RamObject *object)
@@ -53,6 +54,12 @@ void ObjectEditWidget::setObject(RamObject *object)
         connect( object, &RamObject::removed, this, &ObjectEditWidget::objectRemoved);
         connect( object, &RamObject::dataChanged, this, &ObjectEditWidget::objectChanged);
     }
+}
+
+void ObjectEditWidget::lockShortName(bool lock)
+{
+    ui_shortNameEdit->setEnabled(!lock);
+    ui_lockShortNameButton->setVisible(lock);
 }
 
 void ObjectEditWidget::setShortName()
@@ -120,6 +127,18 @@ void ObjectEditWidget::objectRemoved(RamObject *o)
     setObject(nullptr);
 }
 
+void ObjectEditWidget::unlockShortName()
+{
+    QMessageBox::Button ok = QMessageBox::question(
+                this,
+                tr("Confirm ID change"),
+                tr("If you change the ID, you may need to manually rename and move files.\n\n"
+                   "Are you sure you want to edit this ID?")
+                );
+    if (ok != QMessageBox::Yes) return;
+    lockShortName(false);
+}
+
 void ObjectEditWidget::objectChanged(RamObject *o)
 {
     Q_UNUSED(o);
@@ -129,14 +148,15 @@ void ObjectEditWidget::objectChanged(RamObject *o)
 void ObjectEditWidget::checkPath()
 {
     if(!m_object) return;
-    ui_shortNameEdit->setEnabled( !m_dontRename.contains(m_object->shortName()) );
+    lockShortName( m_dontRename.contains(m_object->shortName()) );
     ui_nameEdit->setEnabled(true);
     // If the folder already exists, freeze the ID or the name (according to specific types)
     if ( m_object->path() != "" &&  QFileInfo::exists( m_object->path() ) && m_object->shortName() != "NEW" )
     {
-        if (m_object->objectType() == RamObject::AssetGroup) ui_nameEdit->setEnabled(false);
-        else ui_shortNameEdit->setEnabled(false);
+        lockShortName(true);
     }
+    // Always freeze step short names
+    else if (m_object->objectType() == RamObject::Step) lockShortName(true);
 }
 
 void ObjectEditWidget::showEvent(QShowEvent *event)
@@ -178,8 +198,16 @@ void ObjectEditWidget::setupUi()
     ui_shortNameLabel = new QLabel("ID", dummy);
     ui_mainFormLayout->addWidget(ui_shortNameLabel, 1, 0);
 
+    QHBoxLayout *shortNameLayout = new QHBoxLayout();
     ui_shortNameEdit = new QLineEdit(dummy);
-    ui_mainFormLayout->addWidget(ui_shortNameEdit, 1, 1);
+    shortNameLayout->addWidget(ui_shortNameEdit);
+
+    ui_lockShortNameButton = new QToolButton(this);
+    ui_lockShortNameButton->setIcon(QIcon(":/icons/lock"));
+    shortNameLayout->addWidget(ui_lockShortNameButton);
+    ui_lockShortNameButton->hide();
+
+    ui_mainFormLayout->addLayout(shortNameLayout, 1, 1);
 
     // Short Name validator
     QRegExp rxsn = RegExUtils::getRegExp("shortname");
@@ -206,4 +234,5 @@ void ObjectEditWidget::connectEvents()
     connect(ui_shortNameEdit, SIGNAL(editingFinished()), this, SLOT(setShortName()));
     connect(ui_nameEdit, SIGNAL(editingFinished()), this, SLOT(setName()));
     connect(ui_commentEdit, SIGNAL(editingFinished()), this, SLOT(setComment()));
+    connect(ui_lockShortNameButton, &QToolButton::clicked, this, &ObjectEditWidget::unlockShortName);
 }

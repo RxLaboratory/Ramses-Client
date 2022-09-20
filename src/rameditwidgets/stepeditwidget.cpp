@@ -58,9 +58,6 @@ void StepEditWidget::reInit(RamObject *obj)
         }
 
         updateEstimationSuffix();
-
-        // Lock the IDs of the steps
-        if (m_step->shortName() != "NEW") ui_shortNameEdit->setEnabled(false);
     }
     else
     {

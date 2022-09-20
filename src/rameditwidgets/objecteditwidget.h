@@ -30,6 +30,7 @@ public:
 
 public slots:
     void setObject(RamObject *object);
+    void lockShortName(bool lock = true);
 
 protected slots:
     void setShortName();
@@ -55,9 +56,11 @@ protected:
     QLabel *ui_shortNameLabel;
     QLabel *ui_commentLabel;
     DuQFTextEdit *ui_commentEdit;
+    QToolButton *ui_lockShortNameButton;
 
 private slots:
     void objectRemoved(RamObject *o);
+    void unlockShortName();
 
 private:
     void setupUi();
