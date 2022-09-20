@@ -121,6 +121,8 @@ bool DBInterface::isRemoved(QString uuid, QString table)
 void DBInterface::setUsername(QString uuid, QString username)
 {
     m_ldi->setUsername(uuid, username);
+    // Setting the username must trigger an instant sync (if it's not new)
+    if (username.toLower() != "new") sync();
 }
 
 bool DBInterface::isUserNameAavailable(const QString &userName)
