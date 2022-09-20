@@ -41,7 +41,7 @@ void UserEditWidget::reInit(RamObject *o)
         ui_roleBox->setCurrentIndex(m_user->role());
         ui_colorSelector->setColor(m_user->color());
 
-        if (m_dontRename.contains(m_user->shortName()))
+        if (m_dontRename.contains(m_user->shortName()) || m_user->shortName().toLower() == "new")
         {
             ui_npassword1Edit->setEnabled(false);
             ui_npassword2Edit->setEnabled(false);
@@ -54,6 +54,7 @@ void UserEditWidget::reInit(RamObject *o)
             if (m_user->is(current)) ui_cpasswordEdit->setEnabled(true);
         }
 
+        // Current user
         if (m_user->is(current))
         {
             ui_roleBox->setEnabled(false);
@@ -63,13 +64,17 @@ void UserEditWidget::reInit(RamObject *o)
             ui_currentPasswordLabel->show();
             this->setEnabled(true);
         }
+        // Other non-admin user
         else if (current->role() != RamUser::Admin)
         {
+            ui_roleBox->setEnabled(false);
             ui_passwordWidget->hide();
             this->setEnabled(false);
         }
+        // Admin
         else
         {
+            ui_roleBox->setEnabled(true);
             ui_passwordWidget->show();
             ui_cpasswordEdit->hide();
             ui_currentPasswordLabel->hide();
@@ -83,12 +88,15 @@ void UserEditWidget::reInit(RamObject *o)
         ui_npassword2Edit->setText("");
         ui_passwordWidget->hide();
         ui_roleBox->setCurrentIndex(0);
-        ui_roleBox->setEnabled(true);
+        ui_roleBox->setEnabled(false);
         ui_roleBox->setToolTip("");
         ui_cpasswordEdit->setEnabled(false);
         ui_folderWidget->setPath("");
         ui_colorSelector->setColor(QColor(200,200,200));
     }
+
+    // Password field visible only if online
+    ui_passwordWidget->setVisible( DBInterface::instance()->connectionStatus() == NetworkUtils::Online );
 }
 
 void UserEditWidget::changePassword()
