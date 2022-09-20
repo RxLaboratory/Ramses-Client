@@ -219,9 +219,20 @@ void ScheduleManagerWidget::filterUser(RamObject *user, bool filter)
 }
 
 void ScheduleManagerWidget::filterMe()
-{
-    RamUser *current = Ramses::instance()->currentUser();
-    ui_userMenu->select(current);
+{  
+    QList<QAction*> actions = ui_userMenu->actions();
+    RamUser *u = Ramses::instance()->currentUser();
+
+    for (int i = 4; i < actions.count(); i++)
+    {
+        RamUser *user = RamUser::c( ui_userMenu->objectAt(i) );
+        if (!user) continue;
+        if (user->is(u))
+            actions[i]->setChecked(true);
+        else
+            actions[i]->setChecked(false);
+    }
+
     checkUserFilter();
 }
 
