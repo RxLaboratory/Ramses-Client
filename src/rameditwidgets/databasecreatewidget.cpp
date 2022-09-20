@@ -53,7 +53,6 @@ void DatabaseCreateWidget::createDB()
         // Create user
         RamUser *newUser = new RamUser(ui_shortNameEdit->text(), ui_nameEdit->text());
         newUser->setRole(RamUser::Admin);
-        //Ramses::instance()->users()->append(newUser);
 
         // Login
         Ramses::instance()->setUser( newUser );

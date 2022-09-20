@@ -110,6 +110,9 @@ void LoginPage::loginButton_clicked()
         settings.setValue("path", dbs[i]);
     }
     settings.endArray();
+
+    // Trigger a full sync
+    if (RamServerInterface::instance()->isOnline()) DBInterface::instance()->fullSync();
 }
 
 void LoginPage::userChanged(RamUser *u)

@@ -768,6 +768,9 @@ void MainWindow::setOfflineAction()
 void MainWindow::setOnlineAction()
 {
     DBInterface::instance()->setOnline();
+
+    // Trigger a full sync
+    if (RamServerInterface::instance()->isOnline()) DBInterface::instance()->fullSync();
 }
 
 void MainWindow::databaseSettingsAction()
