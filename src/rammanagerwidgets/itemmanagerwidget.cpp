@@ -6,6 +6,7 @@
 #include "ramassetgroup.h"
 #include "ramsequence.h"
 #include "shotscreationdialog.h"
+#include "processmanager.h"
 
 ItemManagerWidget::ItemManagerWidget(RamTemplateStep::Type type, QWidget *parent) : QWidget(parent)
 {   
@@ -155,7 +156,7 @@ void ItemManagerWidget::hideEvent(QHideEvent *event)
 
 void ItemManagerWidget::projectChanged(RamProject *project, bool force)
 {
-    disconnect(m_project, nullptr, this, nullptr);
+    if (m_project) disconnect(m_project, nullptr, this, nullptr);
 
     if (!m_project && !project) return;
     if (m_project) if (m_project->is(project) && !force ) return;
@@ -401,10 +402,19 @@ void ItemManagerWidget::assignUser(RamObject *user)
     if (!user) return;
 
     QList<RamStatus*> status = beginEditSelectedStatus();
+
+    ProcessManager *pm = ProcessManager::instance();
+    pm->setTitle(tr("Updating status"));
+    pm->setText("Assigning user...");
+    pm->setMaximum(status.count());
+    pm->start();
+
     for (int i = 0; i < status.count(); i++)
     {
+        pm->increment();
         status.at(i)->assignUser(user);
     }
+    pm->finish();
 }
 
 void ItemManagerWidget::changeState(RamObject *stt)
@@ -412,10 +422,19 @@ void ItemManagerWidget::changeState(RamObject *stt)
     if (!stt) return;
 
     QList<RamStatus*> status = beginEditSelectedStatus();
+
+    ProcessManager *pm = ProcessManager::instance();
+    pm->setTitle(tr("Updating status"));
+    pm->setText("Changing status...");
+    pm->setMaximum(status.count());
+    pm->start();
+
     for (int i = 0; i < status.count(); i++)
     {
+        pm->increment();
         status.at(i)->setState(RamState::c( stt ));
     }
+    pm->finish();
 }
 
 void ItemManagerWidget::setVeryEasy()
@@ -446,10 +465,20 @@ void ItemManagerWidget::setVeryHard()
 void ItemManagerWidget::setDiffculty(RamStatus::Difficulty difficulty)
 {
     QList<RamStatus*> status = beginEditSelectedStatus();
+
+    ProcessManager *pm = ProcessManager::instance();
+    pm->setTitle(tr("Updating status"));
+    pm->setText("Changing difficulty...");
+    pm->setMaximum(status.count());
+    pm->start();
+
     for (int i = 0; i < status.count(); i++)
     {
+        pm->increment();
         status.at(i)->setDifficulty( difficulty );
     }
+    pm->finish();
+
 }
 
 void ItemManagerWidget::setCompletion()
@@ -457,10 +486,19 @@ void ItemManagerWidget::setCompletion()
     QAction* action = qobject_cast<QAction*>( sender() );
     int completion = action->data().toInt();
     QList<RamStatus*> status = beginEditSelectedStatus();
+
+    ProcessManager *pm = ProcessManager::instance();
+    pm->setTitle(tr("Updating status"));
+    pm->setText("Setting completion ratio...");
+    pm->setMaximum(status.count());
+    pm->start();
+
     for (int i = 0; i < status.count(); i++)
     {
+        pm->increment();
         status.at(i)->setCompletionRatio( completion );
     }
+    pm->finish();
 }
 
 void ItemManagerWidget::copyComment()
@@ -498,10 +536,19 @@ void ItemManagerWidget::pasteComment()
     if (comment == "") return;
 
     QList<RamStatus*> status = beginEditSelectedStatus();
+
+    ProcessManager *pm = ProcessManager::instance();
+    pm->setTitle(tr("Updating status"));
+    pm->setText("Setting comment...");
+    pm->setMaximum(status.count());
+    pm->start();
+
     for (int i = 0; i < status.count(); i++)
     {
+        pm->increment();
         status.at(i)->setComment( comment );
     }
+    pm->finish();
 }
 
 void ItemManagerWidget::createItem()

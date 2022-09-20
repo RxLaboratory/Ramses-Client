@@ -308,7 +308,7 @@ void RamObjectModel::removeModelColumns(const QModelIndex &parent, int first, in
     beginRemoveColumns(parent, first+1, last+1);
     for (int i = first; i <= last; i++) {
         RamObject *obj = m_columnObjects->get(i);
-        disconnect(obj, nullptr, this, nullptr);
+        if (obj) disconnect(obj, nullptr, this, nullptr);
     }
     endRemoveColumns();
 }
@@ -333,5 +333,5 @@ void RamObjectModel::connectObject(QString uuid)
 void RamObjectModel::disconnectObject(QString uuid)
 {
     RamObject *obj = getObject( uuid );
-    disconnect(obj, nullptr, this, nullptr);
+    if (obj) disconnect(obj, nullptr, this, nullptr);
 }

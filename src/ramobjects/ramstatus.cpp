@@ -198,7 +198,8 @@ RamState *RamStatus::state() const
 
 void RamStatus::setState(RamState *newState)
 {
-    disconnect(state(), nullptr, this, nullptr);
+    RamState *currentState = state();
+    if (currentState) disconnect(currentState, nullptr, this, nullptr);
 
     QJsonObject d = data();
 
@@ -257,7 +258,8 @@ RamUser *RamStatus::assignedUser() const
 void RamStatus::assignUser(RamObject *user)
 {
     QJsonObject d = data();
-    disconnect(assignedUser(), nullptr, this, nullptr);
+    RamUser *currentUser = assignedUser();
+    if (currentUser) disconnect(assignedUser(), nullptr, this, nullptr);
     if (!user) d.insert("assignedUser", "none");
     else {
         d.insert("assignedUser", user->uuid());
@@ -729,9 +731,9 @@ void RamStatus::construct()
 
 void RamStatus::connectEvents()
 {
-    connect(m_user, &RamUser::removed, this, &RamStatus::userRemoved);
-    connect(m_item, &RamAbstractItem::removed, this, &RamStatus::remove);
-    connect(m_step, &RamStep::removed, this, &RamStatus::remove);
+    if (m_user) connect(m_user, &RamUser::removed, this, &RamStatus::userRemoved);
+    if (m_item) connect(m_item, &RamAbstractItem::removed, this, &RamStatus::remove);
+    if( m_step) connect(m_step, &RamStep::removed, this, &RamStatus::remove);
 }
 
 void RamStatus::updateData(QJsonObject *d)

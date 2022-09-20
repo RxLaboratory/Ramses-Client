@@ -1,9 +1,11 @@
 #include "schedulemanagerwidget.h"
 
 #include "duqf-utils/guiutils.h"
+#include "processmanager.h"
 #include "ramscheduleentry.h"
 #include "ramschedulecomment.h"
 #include "ramses.h"
+#include "processmanager.h"
 
 ScheduleManagerWidget::ScheduleManagerWidget(QWidget *parent) : QWidget(parent)
 {
@@ -83,10 +85,7 @@ void ScheduleManagerWidget::projectChanged(RamProject *project)
     if (!m_project && !project) return;
     if (m_project) if (m_project->is(project) ) return;
 
-    if (m_project)
-    {
-        disconnect(m_project, nullptr, this, nullptr);
-    }
+    if (m_project) disconnect(m_project, nullptr, this, nullptr);
 
     m_project = project;
 
@@ -144,9 +143,18 @@ void ScheduleManagerWidget::userChanged(RamUser *user)
 
 void ScheduleManagerWidget::assignStep(RamObject *step)
 {
+    ProcessManager *pm = ProcessManager::instance();
+    pm->setTitle(tr("Creating schedule entries"));
+    pm->setText("Assigning step...");
+
     QModelIndexList selection = ui_table->selectionModel()->selectedIndexes();
+
+    pm->setMaximum(selection.count());
+    pm->start();
+
     for (int i = 0; i < selection.count(); i++)
     {
+        pm->increment();
         const QModelIndex &index = selection.at(i);
 
         if (!step)
@@ -206,8 +214,8 @@ void ScheduleManagerWidget::assignStep(RamObject *step)
         {
             entry->setStep( RamStep::c(step) );
         }
-
     }
+    pm->finish();
 }
 
 void ScheduleManagerWidget::filterUser(RamObject *user, bool filter)
@@ -411,6 +419,12 @@ void ScheduleManagerWidget::comment()
     QModelIndexList selection = ui_table->selectionModel()->selectedIndexes();
     if (selection.count() == 0) return;
 
+    ProcessManager *pm = ProcessManager::instance();
+    pm->setTitle(tr("Creating schedule entries"));
+    pm->setText("Setting comment...");
+    pm->setMaximum(selection.count());
+    pm->start();
+
     QModelIndex currentIndex = ui_table->selectionModel()->currentIndex();
     QString currentComment = currentIndex.data(RamObject::Comment).toString();
 
@@ -421,9 +435,11 @@ void ScheduleManagerWidget::comment()
     {
         for (int i = 0; i < selection.count(); i++)
         {
+            pm->increment();
             setComment(text, selection.at(i));
         }
     }
+    pm->finish();
 }
 
 void ScheduleManagerWidget::removeCommment()
@@ -444,6 +460,12 @@ void ScheduleManagerWidget::color()
     QModelIndexList selection = ui_table->selectionModel()->selectedIndexes();
     if (selection.count() == 0) return;
 
+    ProcessManager *pm = ProcessManager::instance();
+    pm->setTitle(tr("Creating schedule entries"));
+    pm->setText("Setting color...");
+    pm->setMaximum(selection.count());
+    pm->start();
+
     QModelIndex currentIndex = ui_table->selectionModel()->currentIndex();
     QColor currentColor = currentIndex.data(Qt::BackgroundRole).value<QBrush>().color();
 
@@ -452,6 +474,7 @@ void ScheduleManagerWidget::color()
     {
         for (int i = 0; i < selection.count(); i++)
         {
+            pm->increment();
             const QModelIndex &index = selection.at(i);
             if (index.data(RamObject::IsComment).toBool()) {
                 QString commentUuid = index.data(RamObject::UUID).toString();
@@ -466,6 +489,7 @@ void ScheduleManagerWidget::color()
             }
         }
     }
+    pm->finish();
 }
 
 void ScheduleManagerWidget::setupUi()

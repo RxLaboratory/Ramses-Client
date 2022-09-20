@@ -173,9 +173,12 @@ void RamObjectMenu::restoreState(QSettings *settings, QString group)
         RamObject *obj = object(a);
         QString uuid = a->data().toString();
 
-        bool ok = settings->value(uuid, true).toBool();
-        a->setChecked( ok );
-        if (obj) emit assignmentChanged( obj, ok );
+        if (uuid != "")
+        {
+            bool ok = settings->value(uuid, true).toBool();
+            a->setChecked( ok );
+            if (obj) emit assignmentChanged( obj, ok );
+        }
     }
 
     settings->endGroup();

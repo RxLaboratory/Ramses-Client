@@ -18,7 +18,7 @@ TimelineView::TimelineView(QWidget *parent):
 
 void TimelineView::setObjectModel(RamObjectModel *shots)
 {
-    if (m_objectList->sourceModel() != RamObjectModel::emptyModel())
+    if (m_objectList->sourceModel() && m_objectList->sourceModel() != RamObjectModel::emptyModel())
         disconnect(m_objectList->sourceModel(), nullptr, this, nullptr);
     if (!shots)
     {
