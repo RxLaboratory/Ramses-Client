@@ -692,8 +692,8 @@ void LocalDataInterface::saveSync(QJsonArray tables)
             QString uuid = incomingRow.value("uuid").toString();
             QString data = incomingRow.value("data").toString();
             QString modified = incomingRow.value("modified").toString();
-            int removed = incomingRow.value("removed").toInt(0);
-            bool hasBeenRemoved = removed == 1;
+            int rem = incomingRow.value("removed").toInt(0);
+            bool hasBeenRemoved = rem == 1;
 
             // Only if more recent
             QDateTime incomingDate = QDateTime::fromString(modified, "yyyy-MM-dd hh:mm:ss");
@@ -703,7 +703,10 @@ void LocalDataInterface::saveSync(QJsonArray tables)
             // Check if the object has been removed or restored
             bool wasRemoved = isRemoved(uuid, tableName);
             bool availChanged = wasRemoved != hasBeenRemoved;
-            if (availChanged) emit availabilityChanged(uuid, !hasBeenRemoved);
+            if (availChanged) {
+                emit availabilityChanged(uuid, !hasBeenRemoved);
+                if (hasBeenRemoved) emit removed(uuid, tableName);
+            }
 
             if (tableName == "RamUser")
             {

@@ -291,7 +291,7 @@ void StepEditWidget::setupUi()
 
     ui_publishSettingsEdit = new DuQFTextEdit(ui_tabWidget);
     ui_publishSettingsEdit->setUseMarkdown(false);
-    ui_tabWidget->addTab(ui_publishSettingsEdit, QIcon(":/icons/settings"), "Settings");
+    ui_tabWidget->addTab(ui_publishSettingsEdit, QIcon(":/icons/settings"), "Publish settings");
 
     ui_mainLayout->addWidget(ui_tabWidget);
 
