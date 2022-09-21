@@ -738,6 +738,8 @@ void LocalDataInterface::saveSync(QJsonArray tables)
             emit dataChanged(uuid);
         }
     }
+
+    emit synced();
 }
 
 QString LocalDataInterface::currentUserUuid()

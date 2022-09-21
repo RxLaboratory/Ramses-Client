@@ -106,6 +106,7 @@ signals:
     // Sync trigger
     //void readyToSync(QJsonArray tables, QString lastSyncDate);
     // Sync result
+    void synced();
     void dataChanged(QString);
     void availabilityChanged(QString,bool);
     void inserted(QString uuid, QString table);

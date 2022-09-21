@@ -8,7 +8,6 @@ RamScheduleTableModel::RamScheduleTableModel(QObject *parent) : QAbstractTableMo
 {
     m_startDate = QDate::currentDate().addDays(-5);
     m_endDate = QDate::currentDate();
-    connectEvents();
 }
 
 void RamScheduleTableModel::setObjectModel(RamObjectModel *userList, RamObjectModel *comments)
@@ -16,7 +15,6 @@ void RamScheduleTableModel::setObjectModel(RamObjectModel *userList, RamObjectMo
     beginResetModel();
 
     if (m_users) disconnect(m_users, nullptr, this, nullptr);
-    if (m_comments) disconnect(m_comments, nullptr, this, nullptr);
 
     m_users = userList;
     m_comments = comments;
@@ -26,15 +24,6 @@ void RamScheduleTableModel::setObjectModel(RamObjectModel *userList, RamObjectMo
         connect( m_users, SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(insertUser(QModelIndex,int,int)));
         connect( m_users, SIGNAL(rowsAboutToBeRemoved(QModelIndex,int,int)), this, SLOT(removeUser(QModelIndex,int,int)));
         connect( m_users, SIGNAL(modelReset()), this, SLOT(resetUsers()));
-        connect( m_users, SIGNAL(modelAboutToBeReset()), this, SLOT(disconnectUsers()));
-    }
-
-    if (m_comments)
-    {
-        connect( m_comments, SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(insertComment(QModelIndex,int,int)));
-        connect( m_comments, SIGNAL(rowsAboutToBeRemoved(QModelIndex,int,int)), this, SLOT(removeComment(QModelIndex,int,int)));
-        connect( m_comments, SIGNAL(modelReset()), this, SLOT(resetComments()));
-        connect( m_comments, SIGNAL(modelAboutToBeReset()), this, SLOT(disconnectComments()));
     }
 
     endResetModel();
@@ -257,10 +246,6 @@ void RamScheduleTableModel::insertUser(const QModelIndex &parent, int first, int
     //We're inserting new rows
     beginInsertRows(QModelIndex(), first*2, last*2+1);
 
-    // Connect user changes
-    for (int i = first; i <= last; i++)
-        connectUser(i);
-
     // Finished!
     endInsertRows();
 }
@@ -274,74 +259,13 @@ void RamScheduleTableModel::removeUser(const QModelIndex &parent, int first, int
     // We're removing rows
     beginRemoveRows(QModelIndex(), first*2, last*2+1);
 
-    // Disconnect user changes
-    for (int i = first; i <= last; i++)
-        disconnectUser(i);
-
     endRemoveRows();
-}
-
-void RamScheduleTableModel::disconnectUsers()
-{
-    // Disconnect all
-    for (int i = 0; i < m_users->rowCount(); i++)
-        disconnectUser(i);
 }
 
 void RamScheduleTableModel::resetUsers()
 {
     beginResetModel();
-
-    // Connect all
-    for (int i = 0; i < m_users->rowCount(); i++)
-        connectUser(i);
-
     endResetModel();
-}
-
-void RamScheduleTableModel::commentDataChanged(RamObject *obj)
-{
-    for (int i = 0; i < columnCount(); i++)
-    {
-        QString uuid = headerData(i, Qt::Horizontal, RamObject::UUID).toString();
-        if (uuid == obj->uuid())
-        {
-            QModelIndex ind = index(0, i );
-            emit dataChanged(ind, ind);
-        }
-    }
-}
-
-void RamScheduleTableModel::insertComment(const QModelIndex &parent, int first, int last)
-{
-    Q_UNUSED(parent);
-
-    // Connect comment changes
-    for (int i = first; i <= last; i++)
-        connectComment(i);
-}
-
-void RamScheduleTableModel::removeComment(const QModelIndex &parent, int first, int last)
-{
-    Q_UNUSED(parent);
-
-    // Disconnect comment changes
-    for (int i = first; i <= last; i++)
-        disconnectComment(i);
-}
-
-void RamScheduleTableModel::disconnectComments()
-{
-    // Disconnect all
-    for (int i = 0; i < m_comments->rowCount(); i++)
-        disconnectComment(i);
-}
-
-void RamScheduleTableModel::resetComments()
-{
-    // Connect all
-    for (int i = 0; i < m_comments->rowCount(); i++)
-        connectComment(i);
 }
 
 void RamScheduleTableModel::setEndDate(const QDate &newEndDate)
@@ -359,21 +283,6 @@ void RamScheduleTableModel::setEndDate(const QDate &newEndDate)
         beginRemoveColumns(QModelIndex(), columnCount() - newEndDate.daysTo(m_endDate) , columnCount() -1);
         m_endDate = newEndDate;
         endRemoveColumns();
-    }
-}
-
-void RamScheduleTableModel::userDataChanged(RamObject *obj)
-{
-    for (int i = 1; i < rowCount(); i++)
-    {
-        QString uuid = headerData(i, Qt::Vertical, RamObject::UUID).toString();
-        if (uuid == obj->uuid())
-        {
-            QModelIndex iStart = index(i, 0 );
-            QModelIndex iEnd = index(i, columnCount() - 1);
-            emit dataChanged(iStart, iEnd);
-            emit headerDataChanged(Qt::Vertical, i, i);
-        }
     }
 }
 
@@ -395,31 +304,3 @@ void RamScheduleTableModel::setStartDate(const QDate &newStartDate)
     }
 }
 
-void RamScheduleTableModel::connectEvents()
-{
-
-}
-
-void RamScheduleTableModel::connectUser(int i)
-{
-    RamObject *u = m_users->get(i);
-    connect(u, &RamObject::dataChanged, this, &RamScheduleTableModel::userDataChanged);
-}
-
-void RamScheduleTableModel::disconnectUser(int i)
-{
-    RamObject *u = m_users->get(i);
-    disconnect(u, nullptr, this, nullptr);
-}
-
-void RamScheduleTableModel::connectComment(int i)
-{
-    RamObject *c = m_users->get(i);
-    connect(c, &RamObject::dataChanged, this, &RamScheduleTableModel::commentDataChanged);
-}
-
-void RamScheduleTableModel::disconnectComment(int i)
-{
-    RamObject *c = m_users->get(i);
-    disconnect(c, nullptr, this, nullptr);
-}

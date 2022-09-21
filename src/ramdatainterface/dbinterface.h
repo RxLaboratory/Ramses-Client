@@ -81,6 +81,7 @@ signals:
      */
     void dataReset();
     void userChanged(QString);
+    void synced();
 
 public slots:
     void sync();

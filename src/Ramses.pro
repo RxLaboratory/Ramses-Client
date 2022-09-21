@@ -83,7 +83,6 @@ SOURCES += \
     duqf-widgets/duqfupdatesettingswidget.cpp \
     pages/projectpage.cpp \
     ramdatainterface/datacrypto.cpp \
-    ramdatainterface/dbsync.cpp \
     ramdatainterface/localdatainterface.cpp \
     ramdatainterface/logindialog.cpp \
     ramdatainterface/ramserverinterface.cpp \
@@ -249,7 +248,6 @@ HEADERS += \
     progressbar.h \
     progresspage.h \
     pages/projectpage.h \
-    ramdatainterface/dbsync.h \
     ramdatainterface/localdatainterface.h \
     ramdatainterface/logindialog.h \
     ramdatainterface/ramserverinterface.h \
