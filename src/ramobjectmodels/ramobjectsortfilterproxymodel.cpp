@@ -44,10 +44,10 @@ RamObject *RamObjectSortFilterProxyModel::get(int row) const
 
 RamObject *RamObjectSortFilterProxyModel::get(QModelIndex index) const
 {
-    QString uuid = index.data(Qt::UserRole).toString();
+    QString uuid = index.data(RamObject::UUID).toString();
     if (uuid == "") return nullptr;
 
-    RamObject::ObjectType t = type();
+    RamObject::ObjectType t = static_cast<RamObject::ObjectType>( index.data(RamObject::Type).toInt() );
     return RamObject::get(uuid, t);
 }
 
