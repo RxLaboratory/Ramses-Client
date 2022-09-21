@@ -612,6 +612,7 @@ QJsonObject LocalDataInterface::getSync(bool fullSync)
 
 void LocalDataInterface::saveSync(QJsonArray tables)
 {
+    // Insertions
     for (int i = 0; i < tables.count(); i++)
     {
         QJsonObject table = tables.at(i).toObject();
@@ -683,6 +684,22 @@ void LocalDataInterface::saveSync(QJsonArray tables)
             QStringList io = insertedObjects.at(ins);
             emit inserted( io.at(0), io.at(1) );
         }
+    }
+
+    // Updates
+    for (int i = 0; i < tables.count(); i++)
+    {
+        QJsonObject table = tables.at(i).toObject();
+        QString tableName = table.value("name").toString();
+        if (tableName == "") continue;
+
+        // Clear cache
+        m_uuids.remove(tableName);
+
+        QJsonArray incomingRows = table.value("modifiedRows").toArray();
+
+        // We're going to need the uuids and dates of the table
+        QMap<QString, QString> uuidDates = modificationDates( tableName );
 
         // Update existing
         for (int r = incomingRows.count() - 1; r >= 0; r--)
