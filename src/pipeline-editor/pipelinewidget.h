@@ -56,6 +56,9 @@ protected:
     void showEvent(QShowEvent *event) override;
     void hideEvent(QHideEvent *event) override;
 
+private slots:
+    void resetProject();
+
 private:
     void changeProject();
 
@@ -67,7 +70,6 @@ private:
     QMenu *ui_stepMenu;
     QAction *ui_stepMenuSeparator;
 
-    QList<QMetaObject::Connection> m_projectConnections;
     QMap<QString, QList<QMetaObject::Connection>> m_pipeObjectConnections;
     QMap<QString,DuQFConnection*> m_pipeConnections;
 

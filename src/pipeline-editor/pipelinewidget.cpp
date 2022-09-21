@@ -223,6 +223,17 @@ void PipelineWidget::setProject(RamProject *project)
     else if (!m_project && !project) return;
 
     m_projectChanged = true;
+
+    // Disconnect
+    if (m_project)
+    {
+        disconnect(m_project->steps(), nullptr, this, nullptr);
+        disconnect(m_project->pipeline(), nullptr, this, nullptr);
+    }
+
+    // Recenter view
+    ui_nodeView->reinitTransform();
+
     m_project = project;
     // Reload in the show event if not yet visible
     // to improve perf: do not refresh all the app when changing the project, only what's visible.
@@ -658,6 +669,12 @@ void PipelineWidget::hideEvent(QHideEvent *event)
     QWidget::hideEvent(event);
 }
 
+void PipelineWidget::resetProject()
+{
+    m_projectChanged = true;
+    if (this->isVisible()) changeProject();
+}
+
 void PipelineWidget::changeProject()
 {
     if (!m_projectChanged) return;
@@ -671,11 +688,8 @@ void PipelineWidget::changeProject()
 
     this->setEnabled(false);
 
-    while (m_projectConnections.count() > 0) disconnect( m_projectConnections.takeLast() );
-
     // Clear scene
     m_nodeScene->clear();
-    ui_nodeView->reinitTransform();
     m_pipeConnections.clear();
 
     if (!m_project) return;
@@ -700,9 +714,10 @@ void PipelineWidget::changeProject()
         newPipe( m_project->pipeline()->get(i) );
     }
 
-    m_projectConnections << connect(m_project->steps(), SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(newStep(QModelIndex,int,int)));
-    m_projectConnections << connect(m_project->pipeline(), SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(newPipe(QModelIndex,int,int)));
-    m_projectConnections << connect(m_project->pipeline(), SIGNAL(rowsAboutToBeRemoved(QModelIndex,int,int)), this, SLOT(pipeRemoved(QModelIndex,int,int)));
+    connect(m_project->steps(), SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(newStep(QModelIndex,int,int)));
+    connect(m_project->pipeline(), SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(newPipe(QModelIndex,int,int)));
+    connect(m_project->pipeline(), SIGNAL(rowsAboutToBeRemoved(QModelIndex,int,int)), this, SLOT(pipeRemoved(QModelIndex,int,int)));
+    connect(m_project->pipeline(), &RamObjectModel::modelReset, this, &PipelineWidget::resetProject);
 
     // Layout
     m_nodeScene->clearSelection();
