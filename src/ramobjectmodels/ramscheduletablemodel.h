@@ -22,10 +22,17 @@ public slots:
     void setEndDate(const QDate &newEndDate);
 
 private slots:
-    // TODO ? Connect user schedule datachanged, inserted, removed, to data changed (disconnect when remove user)
+    void userDataChanged(RamObject *obj);
     void insertUser(const QModelIndex &parent, int first, int last);
     void removeUser(const QModelIndex &parent, int first, int last);
+    void disconnectUsers();
     void resetUsers();
+
+    void commentDataChanged(RamObject *obj);
+    void insertComment(const QModelIndex &parent, int first, int last);
+    void removeComment(const QModelIndex &parent, int first, int last);
+    void disconnectComments();
+    void resetComments();
 
 private:
      RamObjectModel *m_users = nullptr;
@@ -36,6 +43,12 @@ private:
 
      // Connect submodels and relay events
      void connectEvents();
+
+     void connectUser(int i);
+     void disconnectUser(int i);
+
+     void connectComment(int i);
+     void disconnectComment(int i);
 };
 
 #endif // RAMSCHEDULETABLEMODEL_H
