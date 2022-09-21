@@ -230,6 +230,7 @@ void ObjectListWidget::objectAssigned(const QModelIndex &parent, int first, int 
     if (!m_useAssignList) return;
 
     RamObjectSortFilterProxyModel *model = qobject_cast<RamObjectSortFilterProxyModel*>( ui_objectView->model() );
+    if (!model) return;
 
     for (int i = first ; i <= last; i++)
     {
