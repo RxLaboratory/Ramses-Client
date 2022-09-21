@@ -179,7 +179,8 @@ void RamObject::checkData(QString uuid)
         // Clear
         RamObjectModel *model = it.key();
         QString modelName = it.value();
-        loadModel(model, modelName, d);
+        //if (m_objectType != RamAbstractObject::Project)
+            loadModel(model, modelName, d);
     }
     emit dataChanged(this);
 }
