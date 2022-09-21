@@ -115,7 +115,8 @@ QColor DuQFLog::color(bool darkBG)
     if (darkBG)
     {
         switch(_t) {
-            case DuQFLog::Debug: return QColor(109,109,109);
+            case DuQFLog::Data: return QColor(109,109,109);
+            case DuQFLog::Debug: return QColor(95,104,161);
             case DuQFLog::Information: return QColor(157,157,157);
             case DuQFLog::Warning: return QColor(236,215,24);
             case DuQFLog::Critical: return QColor(249,105,105);
@@ -126,9 +127,10 @@ QColor DuQFLog::color(bool darkBG)
     else
     {
         switch(_t) {
-            case DuQFLog::Debug: return QColor(37,37,37);
+            case DuQFLog::Data: return QColor(37,37,37);
+            case DuQFLog::Debug: return QColor(39,44,61);
             case DuQFLog::Information: return QColor(67,67,67);
-            case DuQFLog::Warning: return QColor(16,104,142);
+            case DuQFLog::Warning: return QColor(125,114,12);
             case DuQFLog::Critical: return QColor(172,16,16);
             case DuQFLog::Fatal: return QColor(129,9,173);
             default: return QColor();
