@@ -721,7 +721,7 @@ void LocalDataInterface::saveSync(QJsonArray tables)
                             "userName = '%5' "
                             "WHERE uuid = '%6' ;";
 
-                query( q.arg(tableName, data, modified, QString::number(removed), userName, uuid) );
+                query( q.arg(tableName, data, modified, QString::number(rem), userName, uuid) );
             }
             else
             {
@@ -732,7 +732,7 @@ void LocalDataInterface::saveSync(QJsonArray tables)
                             "removed = %4 "
                             "WHERE uuid = '%5' ;";
 
-                query( q.arg(tableName, data, modified, QString::number(removed), uuid) );
+                query( q.arg(tableName, data, modified, QString::number(rem), uuid) );
             }
 
             emit dataChanged(uuid);
