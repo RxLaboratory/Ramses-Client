@@ -318,9 +318,6 @@
    <property name="toolTip">
     <string>Quickly syncs the most recent data with the server.</string>
    </property>
-   <property name="shortcut">
-    <string>Ctrl+R, F5</string>
-   </property>
   </action>
   <action name="actionFullSync">
    <property name="icon">
@@ -332,9 +329,6 @@
    </property>
    <property name="toolTip">
     <string>Syncs all the data with the server.</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+Shift+R</string>
    </property>
   </action>
  </widget>

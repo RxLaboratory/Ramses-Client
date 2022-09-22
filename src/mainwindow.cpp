@@ -294,6 +294,7 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     qDebug() << "> Connecting events";
 
     connectEvents();
+    connectShortCuts();
 
     // Set style
 
@@ -363,13 +364,11 @@ void MainWindow::connectEvents()
 
 void MainWindow::connectShortCuts()
 {
-    ui_syncShortcut1 = new QShortcut(QKeySequence(tr("Ctrl+R")), this);
-    ui_syncShortcut2 = new QShortcut(QKeySequence(tr("F5")), this);
-    ui_fullSyncShortcut = new QShortcut(QKeySequence(tr("Ctrl+Shift+R")), this);
-
-    connect(ui_syncShortcut1, &QShortcut::activated, DBInterface::instance(), &DBInterface::sync);
-    connect(ui_syncShortcut2, &QShortcut::activated, DBInterface::instance(), &DBInterface::sync);
-    connect(ui_fullSyncShortcut, &QShortcut::activated, DBInterface::instance(), &DBInterface::fullSync);
+    QList<QKeySequence> syncSC;
+    syncSC << QKeySequence("Ctrl+R");
+    syncSC << QKeySequence("F5");
+    actionSync->setShortcuts( syncSC );
+    actionFullSync->setShortcut(QKeySequence("Ctrl+Shift+R"));
 }
 
 void MainWindow::setPropertiesDockWidget(QWidget *w, QString title, QString icon)

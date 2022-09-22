@@ -93,10 +93,6 @@ private:
     QToolButton *ui_consoleButton;
     int m_currentPageIndex = 0;
 
-    QShortcut *ui_syncShortcut1;
-    QShortcut *ui_syncShortcut2;
-    QShortcut *ui_fullSyncShortcut;
-
     QMetaObject::Connection _currentUserConnection;
 
     bool m_shiftPressed = false;

@@ -239,6 +239,7 @@ void DBInterface::setCurrentUserUuid(QString uuid)
 
 void DBInterface::sync()
 {
+    if (m_connectionStatus != NetworkUtils::Online) return;
     // Get modified rows from local
     QJsonObject syncBody = m_ldi->getSync( false );
     // Post to ramserver
@@ -247,6 +248,7 @@ void DBInterface::sync()
 
 void DBInterface::fullSync()
 {
+    if (m_connectionStatus != NetworkUtils::Online) return;
     // Get modified rows from local
     QJsonObject syncBody = m_ldi->getSync( true );
     // Cheat the date
