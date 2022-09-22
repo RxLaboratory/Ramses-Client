@@ -39,6 +39,7 @@ public slots:
 
 private:
     void connectEvents();
+    void connectShortCuts();
 
     // ========= RxOT UI ==============
     /**
@@ -85,11 +86,16 @@ private:
 
     QMenu *ui_userMenu;
     QMenu *ui_databaseMenu;
+    QMenu *ui_refreshMenu;
     DuQFAutoSizeToolButton *ui_userButton;
     DuQFAutoSizeToolButton *ui_networkButton;
     QToolButton *ui_refreshButton;
     QToolButton *ui_consoleButton;
     int m_currentPageIndex = 0;
+
+    QShortcut *ui_syncShortcut1;
+    QShortcut *ui_syncShortcut2;
+    QShortcut *ui_fullSyncShortcut;
 
     QMetaObject::Connection _currentUserConnection;
 

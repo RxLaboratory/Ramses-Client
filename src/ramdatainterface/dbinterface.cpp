@@ -249,6 +249,7 @@ void DBInterface::fullSync()
 {
     // Get modified rows from local
     QJsonObject syncBody = m_ldi->getSync( true );
+    // Cheat the date
     syncBody.insert("previousSyncDate", "1818-05-05 00:00:00");
     // Post to ramserver
     m_rsi->sync(syncBody);
@@ -278,7 +279,7 @@ void DBInterface::connectEvents()
     connect(m_rsi, &RamServerInterface::connectionStatusChanged, this, &DBInterface::serverConnectionStatusChanged);
     connect(m_rsi, &RamServerInterface::syncReady, m_ldi, &LocalDataInterface::sync);
     connect(m_rsi, &RamServerInterface::userChanged, this, &DBInterface::serverUserChanged);
-    connect(m_updateTimer, SIGNAL(timeout()), this, SLOT(fullSync()));
+    connect(m_updateTimer, SIGNAL(timeout()), this, SLOT(sync()));
 
     connect(qApp, &QApplication::aboutToQuit, this, &DBInterface::quit);
 }

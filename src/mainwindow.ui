@@ -307,6 +307,36 @@
     <string>Ramses Application settings</string>
    </property>
   </action>
+  <action name="actionSync">
+   <property name="icon">
+    <iconset resource="duqf_resources.qrc">
+     <normaloff>:/icons/check-update</normaloff>:/icons/check-update</iconset>
+   </property>
+   <property name="text">
+    <string>Quick sync</string>
+   </property>
+   <property name="toolTip">
+    <string>Quickly syncs the most recent data with the server.</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+R, F5</string>
+   </property>
+  </action>
+  <action name="actionFullSync">
+   <property name="icon">
+    <iconset resource="duqf_resources.qrc">
+     <normaloff>:/icons/check-update</normaloff>:/icons/check-update</iconset>
+   </property>
+   <property name="text">
+    <string>Full sync</string>
+   </property>
+   <property name="toolTip">
+    <string>Syncs all the data with the server.</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+R</string>
+   </property>
+  </action>
  </widget>
  <resources>
   <include location="duqf_resources.qrc"/>

@@ -75,10 +75,17 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
 
     mainStatusBar->addPermanentWidget(new ProgressBar(this));
 
+    ui_refreshMenu = new QMenu();
+    ui_refreshMenu->addAction(actionSync);
+    ui_refreshMenu->addAction(actionFullSync);
+
     ui_refreshButton = new QToolButton(this);
+    ui_refreshButton->setObjectName("menuButton");
     ui_refreshButton->setToolButtonStyle(Qt::ToolButtonIconOnly);
     ui_refreshButton->setText("");
     ui_refreshButton->setIcon(QIcon(":/icons/reload"));
+    ui_refreshButton->setMenu(ui_refreshMenu);
+    ui_refreshButton->setPopupMode(QToolButton::InstantPopup);
     mainStatusBar->addPermanentWidget(ui_refreshButton);
     ui_refreshButton->hide();
 
@@ -340,7 +347,8 @@ void MainWindow::connectEvents()
     connect(ui_projectSettingsPage, SIGNAL(closeRequested()), this, SLOT(home()));
 
     // Other buttons
-    connect(ui_refreshButton, &QToolButton::clicked, DBInterface::instance(), &DBInterface::fullSync);
+    connect(actionSync, SIGNAL(triggered()), DBInterface::instance(),SLOT(sync()));
+    connect(actionFullSync, SIGNAL(triggered()), DBInterface::instance(),SLOT(fullSync()));
     connect(mainStack,SIGNAL(currentChanged(int)), this, SLOT(pageChanged(int)));
 
     // Misc
@@ -351,6 +359,17 @@ void MainWindow::connectEvents()
     connect(Ramses::instance(), &Ramses::currentProjectChanged, this, &MainWindow::currentProjectChanged);
     connect(DBInterface::instance(),&DBInterface::connectionStatusChanged, this, &MainWindow::dbiConnectionStatusChanged);
     connect(DBInterface::instance(), SIGNAL(synced()), this, SLOT(update()));
+}
+
+void MainWindow::connectShortCuts()
+{
+    ui_syncShortcut1 = new QShortcut(QKeySequence(tr("Ctrl+R")), this);
+    ui_syncShortcut2 = new QShortcut(QKeySequence(tr("F5")), this);
+    ui_fullSyncShortcut = new QShortcut(QKeySequence(tr("Ctrl+Shift+R")), this);
+
+    connect(ui_syncShortcut1, &QShortcut::activated, DBInterface::instance(), &DBInterface::sync);
+    connect(ui_syncShortcut2, &QShortcut::activated, DBInterface::instance(), &DBInterface::sync);
+    connect(ui_fullSyncShortcut, &QShortcut::activated, DBInterface::instance(), &DBInterface::fullSync);
 }
 
 void MainWindow::setPropertiesDockWidget(QWidget *w, QString title, QString icon)
