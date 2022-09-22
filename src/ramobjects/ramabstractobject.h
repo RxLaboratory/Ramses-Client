@@ -241,6 +241,9 @@ public:
 
     virtual void emitDataChanged() {};
 
+    void setVirtualObject(bool newVirtual);
+    bool isVirtualObject() const;
+
 protected:
 
     // METHODS //

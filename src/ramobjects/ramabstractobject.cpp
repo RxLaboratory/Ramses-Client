@@ -190,6 +190,7 @@ RamAbstractObject::RamAbstractObject(QString shortName, QString name, ObjectType
     data.insert("shortName", shortName);
     data.insert("name", name);
     data.insert("comment", "");
+    data.insert("order", 0);
 
     QJsonDocument doc(data);
     createData(doc.toJson(QJsonDocument::Compact));
@@ -533,6 +534,16 @@ RamAbstractObject::RamAbstractObject(QString uuid, ObjectType type, bool encrypt
     m_cachedData = dataString();
 
     construct();
+}
+
+bool RamAbstractObject::isVirtualObject() const
+{
+    return m_virtual;
+}
+
+void RamAbstractObject::setVirtualObject(bool newVirtual)
+{
+    m_virtual = newVirtual;
 }
 
 void RamAbstractObject::setDataString(QString data)

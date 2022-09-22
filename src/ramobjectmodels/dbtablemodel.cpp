@@ -52,9 +52,6 @@ void DBTableModel::reload()
     }
 
     insertObjects(0, uuids);
-
-    // Make sure the order is set
-    saveOrder(QModelIndex(), 0, rowCount() -1, QModelIndex(), 0);
 }
 
 void DBTableModel::saveOrder(const QModelIndex &parent, int start, int end, const QModelIndex &destination, int row)

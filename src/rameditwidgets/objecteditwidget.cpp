@@ -1,5 +1,6 @@
 ﻿#include "objecteditwidget.h"
 #include "duqf-utils/utils.h"
+#include "objectupdateblocker.h"
 
 ObjectEditWidget::ObjectEditWidget(QWidget *parent) :
     QScrollArea(parent)
@@ -30,6 +31,8 @@ void ObjectEditWidget::setObject(RamObject *object)
     // disconnect
     if (m_object) disconnect(m_object, nullptr, this, nullptr);
     m_object = object;
+
+    ObjectUpdateBlocker b(object);
 
     if (object) {
         ui_nameEdit->setText(object->name());
