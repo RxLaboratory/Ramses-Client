@@ -39,6 +39,7 @@ RamAssetGroup::RamAssetGroup(QString shortName, QString name, RamProject *projec
 {
     construct();
     setProject(project);
+    insertData("project", project->uuid());
 }
 
 RamAssetGroup::RamAssetGroup(QString uuid):
@@ -102,6 +103,5 @@ void RamAssetGroup::setProject(RamProject *project)
     m_assets->setSourceModel( m_project->assets() );
     m_assets->setFilterUuid( m_uuid );
     this->setParent( m_project );
-    insertData("project", project->uuid());
 }
 

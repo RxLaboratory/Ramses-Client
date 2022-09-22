@@ -30,6 +30,7 @@ RamSequence::RamSequence(QString shortName, QString name, RamProject *project):
 {
     construct();
     setProject(project);
+    insertData("project", project->uuid());
 }
 
 RamSequence::RamSequence(QString uuid):
@@ -109,7 +110,6 @@ void RamSequence::setProject(RamProject *project)
     m_shots->setSourceModel( m_project->shots() );
     m_shots->setFilterUuid( m_uuid );
     this->setParent( m_project );
-    insertData("project", project->uuid());
 }
 
 
