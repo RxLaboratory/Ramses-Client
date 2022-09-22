@@ -93,6 +93,7 @@ void RamAssetGroup::construct()
     m_assets = new RamObjectSortFilterProxyModel(this);
     m_assets->setSingleColumn(true);
     m_icon = ":/icons/asset-group";
+    m_editRole = ProjectAdmin;
 }
 
 void RamAssetGroup::setProject(RamProject *project)

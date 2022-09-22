@@ -726,7 +726,7 @@ void RamStatus::construct()
 {
     m_existingObjects[m_uuid] = this;
     m_icon = ":/icons/status";
-    m_editRole = Standard;
+    m_editRole = Lead;
 }
 
 void RamStatus::connectEvents()

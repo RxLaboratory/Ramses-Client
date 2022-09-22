@@ -575,10 +575,12 @@ QJsonObject LocalDataInterface::getSync(bool fullSync)
 
         if (tName == "RamUser") q = "SELECT uuid, data, modified, removed, userName FROM %1 ";
         else q = "SELECT uuid, data, modified, removed FROM %1 ";
-        if (fullSync) q += " WHERE modified >= '%2' ;";
+        if (!fullSync) q += " WHERE modified >= '%2' ;";
 
-        if (fullSync) q = q.arg(tName, lastSync);
+        if (!fullSync) q = q.arg(tName, lastSync);
         else q = q.arg(tName);
+
+        qDebug() << q;
 
         qry = query( q );
 

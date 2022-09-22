@@ -415,4 +415,5 @@ void RamStep::construct()
     m_existingObjects[m_uuid] = this;
     m_objectType = Step;
     m_project = nullptr;
+    m_editRole = RamObject::ProjectAdmin;
 }

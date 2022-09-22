@@ -408,7 +408,7 @@ void RamProject::construct()
 {
     m_existingObjects[m_uuid] = this;
     m_icon = ":/icons/project";
-    m_editRole = Admin;
+    m_editRole = ProjectAdmin;
 
     m_shots = createModel(RamObject::Shot, "shots");
     m_assets = createModel(RamObject::Asset, "assets");
