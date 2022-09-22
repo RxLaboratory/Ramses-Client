@@ -50,11 +50,19 @@ RamAbstractItem::RamAbstractItem(QString uuid, ObjectType type):
     {
         RamProject *project = RamProject::get(projectUuid);
         setParent(project);
-        for (int i = 0; i < project->steps()->rowCount(); i++)
+        if (project)
         {
-            RamStep *step = RamStep::c( project->steps()->get(i) );
-            createStepHistory(step, d);
+            RamObjectModel *steps = project->steps();
+            if (steps) {
+                for (int i = 0; i < project->steps()->rowCount(); i++)
+                {
+                    RamStep *step = RamStep::c( project->steps()->get(i) );
+                    createStepHistory(step, d);
+                }
+            }
         }
+
+
         connectProject(project);
     }
 }
