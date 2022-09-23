@@ -368,6 +368,8 @@ void RamStep::computeEstimation()
 void RamStep::countAssignedDays()
 {
     if (m_freezeEstimations) return;
+    if (!m_project) return;
+
     m_scheduledHalfDays = 0;
     m_scheduledFutureHalfDays = 0;
 
