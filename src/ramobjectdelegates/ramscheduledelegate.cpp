@@ -129,6 +129,8 @@ QSize RamScheduleDelegate::sizeHint(const QStyleOptionViewItem &option, const QM
 {
     Q_UNUSED(option)
 
+    //return QSize(100,40);
+
     QString uuid = index.data(RamObject::UUID).toString();
     if (uuid == "") return QSize(0,40);
 
