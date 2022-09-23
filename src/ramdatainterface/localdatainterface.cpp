@@ -899,7 +899,7 @@ QString LocalDataInterface::cleanDataBase()
     // Vacuum
     vacuum();
     report += ".\n\n## Maintenance\n\n";
-    report += "Deleted and orphan data has been removed from disk,  \nthe database size has been shrinked to its minimum\n\n";
+    report += "Deleted and orphan data has been removed from disk,  \nthe database size has been shrinked to its minimum.\n\n";
 
     qDebug() << "Finished clean.";
 
