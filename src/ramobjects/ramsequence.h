@@ -44,7 +44,6 @@ private:
     void construct();
     void setProject(RamProject *project);
 
-    RamProject *m_project;
     RamObjectSortFilterProxyModel *m_shots;
 };
 

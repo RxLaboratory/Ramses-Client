@@ -40,7 +40,6 @@ private:
     void construct();
     void setProject(RamProject *project);
 
-    RamProject *m_project = nullptr;
     RamObjectSortFilterProxyModel *m_assets;
 };
 

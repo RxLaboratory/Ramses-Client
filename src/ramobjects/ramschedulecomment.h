@@ -33,8 +33,6 @@ protected:
 
 private:
     void construct();
-
-    RamProject *m_project = nullptr;
 };
 
 #endif // RAMSCHEDULECOMMENT_H

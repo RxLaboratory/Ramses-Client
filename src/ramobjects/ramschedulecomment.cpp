@@ -26,8 +26,6 @@ RamScheduleComment *RamScheduleComment::c(RamObject *o)
 RamScheduleComment::RamScheduleComment(RamProject *project)
     : RamObject("schdlCmnt", "Schedule Comment", ObjectType::ScheduleComment, project)
 {
-    m_project = project;
-
     insertData("project", project->uuid() );
 }
 
@@ -35,11 +33,6 @@ RamScheduleComment::RamScheduleComment(QString uuid):
     RamObject(uuid, ObjectType::ScheduleComment)
 {
     construct();
-
-    QJsonObject d = data();
-    m_project = RamProject::get( d.value("project").toString() );
-
-    this->setParent(m_project);
 }
 
 QDateTime RamScheduleComment::date() const

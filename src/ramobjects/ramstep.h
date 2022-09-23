@@ -78,8 +78,6 @@ protected:
 private:
     void construct();
 
-    RamProject *m_project;
-
     /**
      * @brief When true, estimations won't be computed.
      * This should be set to true when loading a bunch of data, to improve performance

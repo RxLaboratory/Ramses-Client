@@ -50,7 +50,6 @@ RamAssetGroup::RamAssetGroup(QString uuid):
     QJsonObject d = data();
 
     QString projUuid = d.value("project").toString();
-
     setProject( RamProject::get(projUuid) );
 }
 
@@ -61,7 +60,8 @@ int RamAssetGroup::assetCount() const
 
 RamProject *RamAssetGroup::project() const
 {
-    return m_project;
+    QString projUuid = getData("project").toString();
+    return RamProject::get(projUuid);
 }
 
 QString RamAssetGroup::details() const
@@ -80,8 +80,9 @@ void RamAssetGroup::edit(bool show)
 
 QString RamAssetGroup::folderPath() const
 {
-    if (!m_project) return "";
-    return m_project->path(RamObject::AssetsFolder) + "/" + name();
+    RamProject *proj = project();
+    if (!proj) return "";
+    return proj->path(RamObject::AssetsFolder) + "/" + name();
 }
 
 // PRIVATE //
@@ -90,7 +91,6 @@ void RamAssetGroup::construct()
 {
     m_existingObjects[m_uuid] = this;
     m_objectType = AssetGroup;
-    m_project = nullptr;
     m_assets = new RamObjectSortFilterProxyModel(this);
     m_assets->setSingleColumn(true);
     m_icon = ":/icons/asset-group";
@@ -99,9 +99,8 @@ void RamAssetGroup::construct()
 
 void RamAssetGroup::setProject(RamProject *project)
 {
-    m_project = project;
-    m_assets->setSourceModel( m_project->assets() );
+    m_assets->setSourceModel( project->assets() );
     m_assets->setFilterUuid( m_uuid );
-    this->setParent( m_project );
+    this->setParent( project );
 }
 

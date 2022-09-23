@@ -62,7 +62,8 @@ double RamSequence::duration() const
 
 RamProject *RamSequence::project() const
 {
-    return m_project;
+    QString projUuid = getData("project").toString();
+    return RamProject::get(projUuid);
 }
 
 QString RamSequence::details() const
@@ -99,17 +100,15 @@ void RamSequence::construct()
     m_existingObjects[m_uuid] = this;
     m_icon = ":/icons/sequence";
     m_editRole = ProjectAdmin;
-    m_project = nullptr;
     m_shots = new RamObjectSortFilterProxyModel(this);
     m_shots->setSingleColumn(true);
 }
 
 void RamSequence::setProject(RamProject *project)
 {
-    m_project = project;
-    m_shots->setSourceModel( m_project->shots() );
+    m_shots->setSourceModel( project->shots() );
     m_shots->setFilterUuid( m_uuid );
-    this->setParent( m_project );
+    this->setParent( project );
 }
 
 

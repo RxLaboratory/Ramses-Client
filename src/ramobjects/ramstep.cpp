@@ -59,12 +59,8 @@ RamStep::RamStep(QString shortName, QString name, RamProject *project):
     RamTemplateStep(shortName, name, Step)
 {
     construct();
-    m_project = project;
-
-    setParent(m_project);
 
     QJsonObject d = data();
-
     d.insert("project", project->uuid());
 
     setData(d);
@@ -74,16 +70,12 @@ RamStep::RamStep(QString uuid):
     RamTemplateStep(uuid, Step)
 {
     construct();
-
-    QString projUuid = getData("project").toString();
-    m_project = RamProject::get( projUuid );
-
-    setParent(m_project);
 }
 
 RamProject *RamStep::project() const
 {
-    return m_project;
+    QString projUuid = getData("project").toString();
+    return RamProject::get( projUuid );
 }
 
 RamAssetGroup *RamStep::estimationMultiplyGroup() const
@@ -157,6 +149,14 @@ QList<float> RamStep::stats(RamUser *user)
                             << m_scheduledFutureHalfDays/2.0;
     }
 
+    RamProject *proj = project();
+    if (!proj) {
+        return QList<float>() << 0
+                              << 0
+                              << 0
+                              << 0;
+    }
+
     int assignedHalfDays = 0;
     int assignedFutureHalfDays = 0;
 
@@ -174,8 +174,8 @@ QList<float> RamStep::stats(RamUser *user)
 
     // check completed days
     RamObjectModel *items;
-    if (type() == ShotProduction) items = m_project->shots();
-    else if(type() == AssetProduction) items = m_project->assets();
+    if (type() == ShotProduction) items = proj->shots();
+    else if(type() == AssetProduction) items = proj->assets();
     else return QList<float>() << 0 << 0 << assignedHalfDays / 2.0 << assignedFutureHalfDays / 2.0;
 
     float estimation = 0;
@@ -306,14 +306,17 @@ void RamStep::computeEstimation()
 {
     if (m_freezeEstimations) return;
 
+    RamProject *proj = project();
+    if (!proj) return;
+
     Type t = type();
 
     if (t == PreProduction) return;
     if (t == PostProduction) return;
 
     RamObjectModel *items;
-    if (t == ShotProduction) items = m_project->shots();
-    else items = m_project->assets();
+    if (t == ShotProduction) items = proj->shots();
+    else items = proj->assets();
 
     m_timeSpent = 0;
     m_estimation = 0;
@@ -361,21 +364,22 @@ void RamStep::computeEstimation()
     // update missing days
     m_missingDays = m_estimation - m_scheduledHalfDays/2.0;
 
-    m_project->computeEstimation();
+    proj->computeEstimation();
     emit estimationComputed(this);
 }
 
 void RamStep::countAssignedDays()
 {
     if (m_freezeEstimations) return;
-    if (!m_project) return;
+    RamProject *proj = project();
+    if (!proj) return;
 
     m_scheduledHalfDays = 0;
     m_scheduledFutureHalfDays = 0;
 
-    for (int i = 0; i < m_project->users()->rowCount(); i++)
+    for (int i = 0; i < proj->users()->rowCount(); i++)
     {
-        RamUser *u = RamUser::c( m_project->users()->get(i) );
+        RamUser *u = RamUser::c( proj->users()->get(i) );
         if (!u) continue;
 
         for (int j = 0; j < u->schedule()->rowCount(); j++)
@@ -392,7 +396,7 @@ void RamStep::countAssignedDays()
 
     // update missing
     m_missingDays = m_estimation - m_scheduledHalfDays/2.0;
-    m_project->computeEstimation();
+    proj->computeEstimation();
     emit estimationComputed(this);
 }
 
@@ -400,14 +404,17 @@ void RamStep::countAssignedDays()
 
 QString RamStep::folderPath() const
 {
+    RamProject *proj = project();
+    if (!proj) return "";
+
     if (type() == RamStep::PreProduction)
-        return m_project->path(RamObject::PreProdFolder) + "/" + m_project->shortName() + "_G_" + shortName();
+        return proj->path(RamObject::PreProdFolder) + "/" + proj->shortName() + "_G_" + shortName();
 
     else if (type() == RamStep::PostProduction)
-        return m_project->path(RamObject::PostProdFolder) + "/" + m_project->shortName() + "_G_" + shortName();
+        return proj->path(RamObject::PostProdFolder) + "/" + proj->shortName() + "_G_" + shortName();
 
     else
-        return m_project->path(RamObject::ProdFolder) + "/" + m_project->shortName() + "_G_" + shortName();
+        return proj->path(RamObject::ProdFolder) + "/" + proj->shortName() + "_G_" + shortName();
 }
 
 // PRIVATE //
@@ -416,6 +423,5 @@ void RamStep::construct()
 {
     m_existingObjects[m_uuid] = this;
     m_objectType = Step;
-    m_project = nullptr;
     m_editRole = RamObject::ProjectAdmin;
 }
