@@ -72,6 +72,9 @@ private:
     void loadSettings();
     void setComment(QString comment, QModelIndex index);
 
+    void changeProject();
+    bool m_projectChanged = false;
+
     DuQFTitleBar *ui_titleBar;
     QAction *ui_actionShowDetails;
     RamScheduleTableView *ui_table;

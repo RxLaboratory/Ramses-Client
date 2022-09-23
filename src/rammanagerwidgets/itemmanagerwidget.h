@@ -103,6 +103,9 @@ private:
     void connectEvents();
     void loadSettings();
 
+    void changeProject();
+    bool m_projectChanged = false;
+
     // Specialized functions
     void setObjectModel();
     void setupItemMenu();

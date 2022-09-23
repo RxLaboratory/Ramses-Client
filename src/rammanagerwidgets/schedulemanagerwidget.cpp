@@ -26,6 +26,7 @@ void ScheduleManagerWidget::showEvent(QShowEvent *event)
     if (!event->spontaneous())
     {
         ui_titleBar->show();
+        changeProject();
     }
     QWidget::showEvent(event);
 }
@@ -85,38 +86,15 @@ void ScheduleManagerWidget::projectChanged(RamProject *project)
     if (!m_project && !project) return;
     if (m_project) if (m_project->is(project) ) return;
 
+    m_projectChanged = true;
+
     if (m_project) disconnect(m_project, nullptr, this, nullptr);
 
     m_project = project;
 
-    if (!project)
-    {
-        this->setEnabled(false);
-        m_schedule->setObjectModel(nullptr, nullptr);
-        ui_userMenu->setObjectModel(nullptr);
-        ui_endDateEdit->setDate(QDate::currentDate());
-        ui_stepMenu->setObjectModel(nullptr);
-        ui_stepContextMenu->setObjectModel(nullptr);
-        ui_timeRemaining->setText("");
-        return;
-    }
-    this->setEnabled(true);
-
-    m_schedule->setObjectModel( project->users(), project->scheduleComments() );
-    ui_userMenu->setObjectModel( project->users() );
-    ui_endDateEdit->setDate( project->deadline() );
-    ui_stepMenu->setObjectModel( project->steps() );
-    ui_stepContextMenu->setObjectModel(project->steps());
-
-    ui_table->resizeColumnsToContents();
-    ui_table->resizeRowsToContents();
-
-    int days = QDate::currentDate().daysTo( project->deadline() );
-    ui_timeRemaining->setText("Time remaining: " + QString::number(days) + " days");
-
-    loadSettings();
-
-    connect (m_project, &RamProject::dataChanged,this, &ScheduleManagerWidget::projectUpdated);//*/
+    // Reload in the show event if not yet visible
+    // to improve perf: do not refresh all the app when changing the project, only what's visible.
+    if ( this->isVisible() ) changeProject();
 }
 
 void ScheduleManagerWidget::projectUpdated(RamObject *projObj)
@@ -336,14 +314,13 @@ void ScheduleManagerWidget::goToDeadline()
     RamProject *project = Ramses::instance()->currentProject();
     if (!project) return;
     ui_goTo->setDate(project->deadline());
+    goTo(ui_goTo->date());
 }
 
 void ScheduleManagerWidget::goToNextMonth()
 {
-    int col = ui_table->columnAt( ui_table->width()-100 );
-
-    QDate date = m_scheduleFilter->headerData(col, Qt::Horizontal, RamObject::Date).value<QDate>();
-    ui_goTo->setDate( date.addMonths(1) );
+    ui_goTo->setDate( ui_goTo->date().addMonths(1) );
+    goTo(ui_goTo->date());
 }
 
 void ScheduleManagerWidget::goToPreviousMonth()
@@ -820,6 +797,41 @@ void ScheduleManagerWidget::setComment(QString comment, QModelIndex index)
     if (!c) return;
 
     c->setComment(comment);
+}
+
+void ScheduleManagerWidget::changeProject()
+{
+    if (!m_projectChanged) return;
+    m_projectChanged = false;
+
+    if (!m_project)
+    {
+        this->setEnabled(false);
+        m_schedule->setObjectModel(nullptr, nullptr);
+        ui_userMenu->setObjectModel(nullptr);
+        ui_endDateEdit->setDate(QDate::currentDate());
+        ui_stepMenu->setObjectModel(nullptr);
+        ui_stepContextMenu->setObjectModel(nullptr);
+        ui_timeRemaining->setText("");
+        return;
+    }
+    this->setEnabled(true);
+
+    m_schedule->setObjectModel( m_project->users(), m_project->scheduleComments() );
+    ui_userMenu->setObjectModel( m_project->users() );
+    ui_endDateEdit->setDate( QDate::currentDate().addDays(15) );
+    ui_stepMenu->setObjectModel( m_project->steps() );
+    ui_stepContextMenu->setObjectModel(m_project->steps());
+
+    ui_table->resizeColumnsToContents();
+    ui_table->resizeRowsToContents();
+
+    int days = QDate::currentDate().daysTo( m_project->deadline() );
+    ui_timeRemaining->setText("Time remaining: " + QString::number(days) + " days");
+
+    loadSettings();
+
+    connect (m_project, &RamProject::dataChanged,this, &ScheduleManagerWidget::projectUpdated);//*/
 }
 
 

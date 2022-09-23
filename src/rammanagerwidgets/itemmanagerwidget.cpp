@@ -116,7 +116,10 @@ void ItemManagerWidget::deselectStates()
 
 void ItemManagerWidget::showEvent(QShowEvent *event)
 {
-    if (!event->spontaneous()) ui_titleBar->show();
+    if (!event->spontaneous()) {
+        ui_titleBar->show();
+        changeProject();
+    }
     QWidget::showEvent(event);
 }
 
@@ -161,40 +164,12 @@ void ItemManagerWidget::projectChanged(RamProject *project, bool force)
     if (!m_project && !project) return;
     if (m_project) if (m_project->is(project) && !force ) return;
 
-
-    // Clear step list
-    QList<QAction*> actions = ui_stepMenu->actions();
-    for (int i = actions.count() -1; i >= 4; i--)
-    {
-        actions.at(i)->deleteLater();
-    }
-    ui_table->filteredModel()->showAllSteps();
-
-    // Clear user list
-    actions = ui_userMenu->actions();
-    for (int i = actions.count() -1; i >= 5; i--)
-    {
-        actions.at(i)->deleteLater();
-    }
-    ui_table->filteredModel()->clearUsers();
+    m_projectChanged = true;
 
     m_project = project;
-
-    if(!project)
-    {
-        ui_table->setObjectModel(nullptr);
-        return;
-    }
-
-    // Populate list and table
-    setObjectModel();
-
-    ui_userMenu->setObjectModel( project->users() );
-    ui_stepMenu->setObjectModel( project->steps() );
-    ui_assignUserMenu->setObjectModel(project->users());
-    ui_assignUserContextMenu->setObjectModel(project->users());
-
-    loadSettings();
+    // Reload in the show event if not yet visible
+    // to improve perf: do not refresh all the app when changing the project, only what's visible.
+    if ( this->isVisible() ) changeProject();
 }
 
 void ItemManagerWidget::showUser(RamObject *user, bool s)
@@ -1044,6 +1019,46 @@ void ItemManagerWidget::loadSettings()
 
     // Unfreeze
     ui_table->filteredModel()->unFreeze();
+}
+
+void ItemManagerWidget::changeProject()
+{
+    if (!m_projectChanged) return;
+    m_projectChanged = false;
+
+    // Clear step list
+    QList<QAction*> actions = ui_stepMenu->actions();
+    for (int i = actions.count() -1; i >= 4; i--)
+    {
+        actions.at(i)->deleteLater();
+    }
+    ui_table->filteredModel()->showAllSteps();
+
+    // Clear user list
+    actions = ui_userMenu->actions();
+    for (int i = actions.count() -1; i >= 5; i--)
+    {
+        actions.at(i)->deleteLater();
+    }
+    ui_table->filteredModel()->clearUsers();
+
+
+
+    if(!m_project)
+    {
+        ui_table->setObjectModel(nullptr);
+        return;
+    }
+
+    // Populate list and table
+    setObjectModel();
+
+    ui_userMenu->setObjectModel( m_project->users() );
+    ui_stepMenu->setObjectModel( m_project->steps() );
+    ui_assignUserMenu->setObjectModel(m_project->users());
+    ui_assignUserContextMenu->setObjectModel(m_project->users());
+
+    loadSettings();
 }
 
 void ItemManagerWidget::setObjectModel()
