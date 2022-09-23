@@ -251,18 +251,24 @@ void RamServerInterface::login()
     loop.exec();
 }
 
-void RamServerInterface::sync(QJsonArray tables, QDateTime prevSyncDate)
+void RamServerInterface::sync(QJsonArray tables, QDateTime prevSyncDate, bool synchroneous)
 {
     QJsonObject body;
     body.insert("tables", tables);
     body.insert("previousSyncDate", prevSyncDate.toString("yyyy-MM-dd hh:mm:ss"));
-    sync(body);
+    sync(body, synchroneous);
 }
 
-void RamServerInterface::sync(QJsonObject body)
+void RamServerInterface::sync(QJsonObject body, bool synchroneous)
 {
-    queueRequest("sync", body);
-    startQueue();
+    if (!synchroneous) {
+        queueRequest("sync", body);
+        startQueue();
+    }
+    else {
+        Request r = buildRequest("sync", body);
+        synchronousRequest(r);
+    }
 }
 
 QJsonArray RamServerInterface::downloadData()

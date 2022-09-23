@@ -55,8 +55,8 @@ public:
      * @param wait when true, waits for the pong
      */
     void ping();
-    void sync(QJsonArray tables, QDateTime prevSyncDate = QDateTime::fromString("1970-01-01 00:00:00", "yyyy-MM-dd hh:mm:00"));
-    void sync(QJsonObject body);
+    void sync(QJsonArray tables, QDateTime prevSyncDate = QDateTime::fromString("1970-01-01 00:00:00", "yyyy-MM-dd hh:mm:00"), bool synchroneous = false);
+    void sync(QJsonObject body, bool synchroneous = false);
     QJsonArray downloadData();
 
     const QString &currentUserUuid() const;

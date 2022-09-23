@@ -40,6 +40,7 @@ INCLUDEPATH += rameditwidgets \
 
 SOURCES += \
     rameditwidgets/objectupdateblocker.cpp \
+    rammanagerwidgets/dbmanagerwidget.cpp \
     rammanagerwidgets/objectlistwidget.cpp \
     rammanagerwidgets/objectmanagerwidget.cpp \
     rammanagerwidgets/sequencemanagerwidget.cpp \
@@ -201,6 +202,7 @@ SOURCES += \
 HEADERS += \
     config.h \
     rameditwidgets/objectupdateblocker.h \
+    rammanagerwidgets/dbmanagerwidget.h \
     rammanagerwidgets/objectlistwidget.h \
     rammanagerwidgets/objectmanagerwidget.h \
     rammanagerwidgets/sequencemanagerwidget.h \

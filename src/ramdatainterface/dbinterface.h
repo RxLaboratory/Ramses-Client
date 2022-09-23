@@ -40,6 +40,7 @@ public:
      * @return
      */
     NetworkUtils::NetworkStatus connectionStatus() const;
+    bool isSuspended();
 
     /**
      * @brief setRamsesPath sets the path to the local data for this database
@@ -84,8 +85,10 @@ signals:
     void synced();
 
 public slots:
+    void suspendSync();
+    void resumeSync();
     void sync();
-    void fullSync();
+    void fullSync(bool synchroneous = false);
     void quit();
     /**
      * @brief Changes to offline mode: data is stored locally until we get a connection to the server to sync.
@@ -95,6 +98,10 @@ public slots:
      * @brief Changes to online mode.
      */
     void setOnline();
+    // MAINTENANCE //
+    QString cleanDabaBase();
+    bool undoClean();
+    void acceptClean();
 
 protected:
     /**
@@ -151,6 +158,7 @@ private:
      */
     int m_updateFrequency = 60000;
     QTimer *m_updateTimer;
+    bool m_suspended = true;
 };
 
 #endif // DBINTERFACE_H

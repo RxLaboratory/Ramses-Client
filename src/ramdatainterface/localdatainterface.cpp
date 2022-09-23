@@ -580,8 +580,6 @@ QJsonObject LocalDataInterface::getSync(bool fullSync)
         if (!fullSync) q = q.arg(tName, lastSync);
         else q = q.arg(tName);
 
-        qDebug() << q;
-
         qry = query( q );
 
         while (qry.next())
@@ -844,6 +842,85 @@ QList<QStringList> LocalDataInterface::users()
         us << u;
     }
     return us;
+}
+
+QString LocalDataInterface::cleanDataBase()
+{
+    QString report = "";
+
+    // Backup the DB File
+    QFileInfo dbFileInfo(m_dataFile);
+    QString backupFile = dbFileInfo.path() + "/" + dbFileInfo.baseName() + "_bak." + dbFileInfo.completeSuffix();
+    if (QFileInfo::exists(backupFile)) FileUtils::remove(backupFile);
+    FileUtils::copy(m_dataFile, backupFile);
+
+    // Clear cache
+    m_uuids.clear();
+
+    // Get needed data
+
+    // Users (not removed)
+    QStringList userUuids = tableUuids("RamUser", false);
+
+    // 1- Clean Statuses
+    report += "# Cleaning report\n\n";
+    report += ".\n\n## Status\n\n";
+    int numStatusChanged = 0;
+    QList<QStringList> statusData = tableData("RamStatus", true);
+    for (int i = 0; i < statusData.count(); i++)
+    {
+        QJsonDocument d = QJsonDocument::fromJson( statusData[i][1].toUtf8() );
+        QJsonObject o = d.object();
+        bool changed = false;
+
+        // Check user UUID
+        QString userUuid = o.value("user").toString( "" );
+        // If nothing, or if this user does not exists or has been removed,
+        // it's "none" (the Ramses user)
+        if (userUuid == "" || ( !userUuids.contains(userUuid) && userUuid != "none") ) {
+            //report += "- **" + o.value("shortName").toString() + "**: Removed invalid user.\n";
+            o.insert("user", "none");
+            changed = true;
+        }
+
+        // If the status has been changed, update it's data
+        if (changed) {
+            numStatusChanged++;
+            d.setObject(o);
+            QString uuid = statusData[i][0];
+            qDebug() << ">>> Updating data for status " + uuid;
+            setObjectData( uuid, "RamStatus", d.toJson(QJsonDocument::Compact) );
+        }
+    }
+    if (numStatusChanged == 0) report += "*Everything is fine.*\n\n";
+    else report += "**" + QString::number(numStatusChanged) + " status** were updated.\n\n";
+
+
+    // Vacuum
+    vacuum();
+    report += ".\n\n## Maintenance\n\n";
+    report += "Deleted and orphan data has been removed from disk,  \nthe database size has been shrinked to its minimum\n\n";
+
+    qDebug() << "Finished clean.";
+
+    return report;
+}
+
+bool LocalDataInterface::undoClean()
+{
+    // Restore the backuped file
+    QFileInfo dbFileInfo(m_dataFile);
+    QString backupFile = dbFileInfo.path() + "/" + dbFileInfo.baseName() + "_bak." + dbFileInfo.completeSuffix();
+    if (!QFileInfo::exists(backupFile)) return false;
+
+    // Unset the database file
+    QSqlDatabase db = QSqlDatabase::database("localdata");
+    db.close();
+
+    FileUtils::moveToTrash(m_dataFile);
+    FileUtils::copy(backupFile, m_dataFile);
+
+    return true;
 }
 
 void LocalDataInterface::logError(QString err)

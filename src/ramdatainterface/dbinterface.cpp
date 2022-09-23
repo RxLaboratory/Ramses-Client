@@ -26,7 +26,7 @@ void DBInterface::setOffline()
     pm->setTitle(tr("Disconnecting from the Ramses Server..."));
 
     // One last sync
-    if (m_rsi->isOnline())
+    if (m_rsi->isOnline() && !m_suspended)
     {
         pm->setText(tr("One last sync..."));
         pm->increment();
@@ -237,8 +237,56 @@ void DBInterface::setCurrentUserUuid(QString uuid)
     m_ldi->setCurrentUserUuid(uuid);
 }
 
+void DBInterface::suspendSync()
+{
+    m_updateTimer->stop();
+    m_suspended = true;
+}
+
+void DBInterface::resumeSync()
+{
+    m_suspended = false;
+    m_updateTimer->start(m_updateFrequency);
+}
+
+QString DBInterface::cleanDabaBase()
+{
+    qDebug() << ">>> Beginning database clean...";
+
+    // Stop auto sync
+    qDebug() << "Suspending sync!";
+    suspendSync();
+
+    // Clean !
+    qDebug() << "--- Cleaning ---";
+    return m_ldi->cleanDataBase();
+}
+
+bool DBInterface::undoClean()
+{
+    bool ok = m_ldi->undoClean();
+    if (!ok) {
+        log(tr("Can't restore DB Backup!"), DuQFLog::Critical);
+        return false;
+    }
+
+    AppUtils::restartApp();
+    return true;
+}
+
+void DBInterface::acceptClean()
+{
+    resumeSync();
+    // Full sync
+    fullSync();
+}
+
 void DBInterface::sync()
 {
+    if (m_suspended) {
+        log(tr("Sync is suspended!"), DuQFLog::Warning);
+        return;
+    }
     if (m_connectionStatus != NetworkUtils::Online) return;
     // Get modified rows from local
     QJsonObject syncBody = m_ldi->getSync( false );
@@ -246,15 +294,19 @@ void DBInterface::sync()
     m_rsi->sync(syncBody);
 }
 
-void DBInterface::fullSync()
+void DBInterface::fullSync(bool synchroneous)
 {
+    if (m_suspended) {
+        log(tr("Sync is suspended!"), DuQFLog::Warning);
+        return;
+    }
     if (m_connectionStatus != NetworkUtils::Online) return;
     // Get modified rows from local
     QJsonObject syncBody = m_ldi->getSync( true );
     // Cheat the date
     syncBody.insert("previousSyncDate", "1818-05-05 00:00:00");
     // Post to ramserver
-    m_rsi->sync(syncBody);
+    m_rsi->sync(syncBody, synchroneous);
 }
 
 void DBInterface::quit()
@@ -289,6 +341,11 @@ void DBInterface::connectEvents()
 NetworkUtils::NetworkStatus DBInterface::connectionStatus() const
 {
     return m_connectionStatus;
+}
+
+bool DBInterface::isSuspended()
+{
+    return m_suspended;
 }
 
 void DBInterface::setConnectionStatus(NetworkUtils::NetworkStatus s, QString reason)
@@ -333,11 +390,11 @@ void DBInterface::serverConnectionStatusChanged(NetworkUtils::NetworkStatus stat
     {
     case NetworkUtils::Offline:
         setConnectionStatus(status, "Disconnected from the Ramses Server.");
-        m_updateTimer->stop();
+        suspendSync();
         break;
     case NetworkUtils::Online:
         setConnectionStatus(status, "Connected to the Ramses Server.");
-        m_updateTimer->start(m_updateFrequency);
+        resumeSync();
         break;
     default:
         return;

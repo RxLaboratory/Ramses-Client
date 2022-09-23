@@ -156,4 +156,8 @@ namespace ProcessUtils {
     void runIndependantProcess(QString binary, QStringList arguments = QStringList());
 }
 
+namespace AppUtils {
+    void restartApp();
+}
+
 #endif // UTILS_H

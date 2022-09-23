@@ -21,6 +21,7 @@
 #include "dbinterface.h"
 #include "daemon.h"
 #include "projectselectorwidget.h"
+#include "dbmanagerwidget.h"
 #include "duqf-widgets/duqftoolbarspacer.h"
 #include "duqf-widgets/duqflogtoolbutton.h"
 #include "duqf-widgets/duqfupdatedialog.h"
@@ -184,7 +185,10 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     ApplicationManagerWidget *applicationManager = new ApplicationManagerWidget(this);
     ui_adminPage->addPage(applicationManager, "Applications", QIcon(":/icons/applications"));
     ui_adminPage->titleBar()->insertLeft(applicationManager->menuButton());
-    qDebug() << "  > applications ok";//*/
+    qDebug() << "  > applications ok";
+    DBManagerWidget *dbManager = new DBManagerWidget(this);
+    ui_adminPage->addPage(dbManager, "Database tools", QIcon(":/icons/applications"));
+    qDebug() << "  > DB Manager ok";//*/
 
     // Project settings
     ui_projectSettingsPage = new ProjectPage(this);
@@ -772,11 +776,7 @@ void MainWindow::logoutAction()
     DBInterface::instance()->setDataFile("");
     home();
 
-    // An restart!
-    QString program = qApp->arguments()[0];
-    QStringList arguments = qApp->arguments().mid(1); // remove the 1st argument - the program name
-    qApp->quit();
-    QProcess::startDetached(program, arguments);
+    AppUtils::restartApp();
 }
 
 void MainWindow::setOfflineAction()

@@ -92,6 +92,10 @@ public:
     QStringList tableNames();
     QList<QStringList> users();
 
+    // MAINTENANCE //
+    QString cleanDataBase();
+    bool undoClean();
+
 public slots:
     void sync(QJsonArray tables);
 

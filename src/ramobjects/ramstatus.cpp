@@ -134,7 +134,9 @@ RamStatus::RamStatus(QString uuid):
     construct();
 
     QJsonObject d = data();
-    m_user = RamUser::get( d.value("user").toString("none") );
+    QString userUuid( d.value("user").toString() );
+    if (userUuid == "none") m_user = Ramses::instance()->ramsesUser();
+    else m_user = RamUser::get( d.value("user").toString("none") );
 
     QString itemType = d.value("itemType").toString("asset");
     QString itemUuid = d.value("item").toString();
@@ -153,7 +155,9 @@ RamStatus::RamStatus(QString uuid):
 
 RamUser *RamStatus::user() const
 {
-    if (!m_user) return Ramses::instance()->ramsesUser();
+    if (!m_user) {
+        return Ramses::instance()->ramsesUser();
+    }
     return m_user;
 }
 
