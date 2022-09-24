@@ -1,5 +1,7 @@
 #include "duqf-app/app-style.h"
 
+#include "duqf-app/app-version.h"
+
 FrameLessWindow::FrameLessWindow(QMainWindow *target) :
     _target(target),
     _cursorchanged(false),
@@ -391,7 +393,7 @@ void DuUI::addCssValue(QStringList value) {
     _cssValues << value;
 }
 
-QList<QStringList> DuUI::cssValues()
+QVector<QStringList> DuUI::cssValues()
 {
     return _cssValues;
 }

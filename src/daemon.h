@@ -238,7 +238,7 @@ private:
     QTcpServer *m_tcpServer;
     bool m_suspended = false;
     QStringList m_queue;
-    QList<QTcpSocket*> m_waitingClients;
+    QVector<QTcpSocket*> m_waitingClients;
 
     // Post a reply
     void post(QTcpSocket *client, QJsonObject content, QString query, QString message="", bool success = true, bool accepted = true);

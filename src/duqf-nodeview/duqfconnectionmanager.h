@@ -25,7 +25,7 @@ public:
      * @return True if the connection was accepted
      */
     DuQFConnection * addConnection(DuQFSlot *output, DuQFSlot *input);
-    QList<DuQFConnection *> connections() const;
+    QVector<DuQFConnection *> connections() const;
 
 public slots:
     void removeConnection();
@@ -35,7 +35,7 @@ signals:
     void connectionRemoved(DuQFConnection *);
 
 private:
-    QList<DuQFConnection*> m_connections;
+    QVector<DuQFConnection*> m_connections;
 
 
 };

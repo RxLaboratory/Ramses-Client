@@ -127,7 +127,7 @@ DuQFSlot *DuQFNode::defaultInputSlot() const
     return m_defaultInputSlot;
 }
 
-QList<DuQFNode *> DuQFNode::parentNodes() const
+QVector<DuQFNode *> DuQFNode::parentNodes() const
 {
     return m_parentNodes;
 }
@@ -147,7 +147,7 @@ bool DuQFNode::hasParents() const
     return m_parentNodes.count() != 0;
 }
 
-QList<DuQFNode *> DuQFNode::childNodes() const
+QVector<DuQFNode *> DuQFNode::childNodes() const
 {
     return m_childrenNodes;
 }

@@ -1,8 +1,6 @@
 #ifndef APPSTYLE_H
 #define APPSTYLE_H
 
-#include "app-version.h"
-
 #include <QString>
 #include <QStringList>
 #include <QFontDatabase>
@@ -50,7 +48,7 @@ public:
     static int getSize(QString type, QString name = "");
 
     void addCssValue(QStringList value);
-    QList<QStringList> cssValues();
+    QVector<QStringList> cssValues();
     void clearCssValues();
 
 protected:
@@ -58,7 +56,7 @@ protected:
 
 private:
     DuUI() {};
-    QList<QStringList> _cssValues;
+    QVector<QStringList> _cssValues;
 };
 
 

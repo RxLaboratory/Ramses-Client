@@ -49,7 +49,7 @@ void StatisticsWidget::estimationChanged(RamProject *project)
     int remainingDays = QDate::currentDate().daysTo( project->deadline() );
 
     RamUser *user = RamUser::c( ui_userBox->currentObject() );
-    QList<float> stats = project->stats(user);
+    QVector<float> stats = project->stats(user);
 
     float estimation = stats.at(0);
     float daysSpent = stats.at(1);

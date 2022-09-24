@@ -20,9 +20,9 @@ QRectF DuQFNodeScene::zoomToFit(bool isForExport) const
     return calculateRectangle(isForExport);
 }
 
-QList<DuQFNode *> DuQFNodeScene::nodes()
+QVector<DuQFNode *> DuQFNodeScene::nodes()
 {
-    QList<DuQFNode*> nodes;
+    QVector<DuQFNode*> nodes;
     foreach(QGraphicsItem *i, items())
     {
         DuQFNode *n = qgraphicsitem_cast<DuQFNode*>(i);
@@ -31,9 +31,9 @@ QList<DuQFNode *> DuQFNodeScene::nodes()
     return nodes;
 }
 
-QList<DuQFNode *> DuQFNodeScene::selectedNodes()
+QVector<DuQFNode *> DuQFNodeScene::selectedNodes()
 {
-    QList<DuQFNode*> nodes;
+    QVector<DuQFNode*> nodes;
     foreach(QGraphicsItem *item, selectedItems())
     {
         DuQFNode *n = qgraphicsitem_cast<DuQFNode*>(item);
@@ -42,7 +42,7 @@ QList<DuQFNode *> DuQFNodeScene::selectedNodes()
     return nodes;
 }
 
-QGraphicsItemGroup *DuQFNodeScene::createNodeGroup(QList<DuQFNode *> nodes)
+QGraphicsItemGroup *DuQFNodeScene::createNodeGroup(QVector<DuQFNode *> nodes)
 {
     QGraphicsItemGroup *g = new QGraphicsItemGroup();
     addItem(g);
@@ -137,7 +137,7 @@ void DuQFNodeScene::autoLayoutSelectedNodes()
     autoLayoutNodes(selectedNodes());
 }
 
-void DuQFNodeScene::autoLayoutNodes(QList<DuQFNode *> nodes)
+void DuQFNodeScene::autoLayoutNodes(QVector<DuQFNode *> nodes)
 {
     // 1- Move orphan nodes appart
     qreal x = 0.0;
@@ -188,8 +188,8 @@ void DuQFNodeScene::autoLayoutNodes(QList<DuQFNode *> nodes)
         while (ancestors.count() > 0 && nodes.count() > 0)
         {
             // For each ancestor, arrange children
-            QList<DuQFNode*> nextGeneration;
-            QList<QGraphicsItemGroup*> trees;
+            QVector<DuQFNode*> nextGeneration;
+            QVector<QGraphicsItemGroup*> trees;
 
             foreach (DuQFNode *n, ancestors)
             {
@@ -197,7 +197,7 @@ void DuQFNodeScene::autoLayoutNodes(QList<DuQFNode *> nodes)
                 nodes.removeAll(n);
 
                 // Get children which are still to be arranged
-                QList<DuQFNode *> childrenNodes;
+                QVector<DuQFNode *> childrenNodes;
                 foreach(DuQFNode *n, n->childNodes())
                     if (nodes.contains(n)) childrenNodes << n;
                 nextGeneration.append(childrenNodes);
@@ -237,7 +237,7 @@ void DuQFNodeScene::selectAllNodes()
     }
 }
 
-void DuQFNodeScene::selectNodes(QList<DuQFNode*> nodes)
+void DuQFNodeScene::selectNodes(QVector<DuQFNode*> nodes)
 {
     foreach(DuQFNode *n, nodes)
     {
@@ -322,12 +322,12 @@ void DuQFNodeScene::nodeRemoved(DuQFNode *node)
     //node->deleteLater();
 }
 
-void DuQFNodeScene::layoutNodesInColumn(QList<DuQFNode *> nodes, QPointF center)
+void DuQFNodeScene::layoutNodesInColumn(QVector<DuQFNode *> nodes, QPointF center)
 {
     layoutNodesInColumn(nodes, center.x(), center.y());
 }
 
-void DuQFNodeScene::layoutNodesInColumn(QList<DuQFNode *> nodes, qreal x, qreal y)
+void DuQFNodeScene::layoutNodesInColumn(QVector<DuQFNode *> nodes, qreal x, qreal y)
 {
     if (nodes.count() == 0) return;
 
@@ -344,7 +344,7 @@ void DuQFNodeScene::layoutNodesInColumn(QList<DuQFNode *> nodes, qreal x, qreal 
     }
 }
 
-void DuQFNodeScene::layoutGroupsInColumn(QList<QGraphicsItemGroup *> groups)
+void DuQFNodeScene::layoutGroupsInColumn(QVector<QGraphicsItemGroup *> groups)
 {
     if (groups.count() == 0) return;
     // for each item, arrange vertically

@@ -36,7 +36,7 @@ DuQFConnection * DuQFConnectionManager::addConnection(DuQFSlot *output, DuQFSlot
     return co;
 }
 
-QList<DuQFConnection *> DuQFConnectionManager::connections() const
+QVector<DuQFConnection *> DuQFConnectionManager::connections() const
 {
     return m_connections;
 }

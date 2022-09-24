@@ -82,7 +82,7 @@ public:
      * @brief stats
      * @return a list of number of days <estimation, completed, assigned, future>
      */
-    QList<float> stats(RamUser *user);
+    QVector<float> stats(RamUser *user);
 
     void setFolderPath(const QString &newFolderPath);
     void resetDbFolderPath();
