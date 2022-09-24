@@ -1007,7 +1007,7 @@ void ItemManagerWidget::loadSettings()
     // View
     //ui_actionTimeTracking->setChecked( uSettings->value("showTimeTracking", true).toBool() );
     //ui_actionCompletionRatio->setChecked( uSettings->value("showCompletion", true).toBool() );
-    ui_actionShowDetails->setChecked( uSettings->value("showDetails", true).toBool() );
+    //ui_actionShowDetails->setChecked( uSettings->value("showDetails", true).toBool() );
     // Users
     ui_userMenu->restoreState(uSettings, "users");
     // Steps
@@ -1025,6 +1025,9 @@ void ItemManagerWidget::changeProject()
 {
     if (!m_projectChanged) return;
     m_projectChanged = false;
+
+    // Don't show details by default (performance issue)
+    ui_actionShowDetails->setChecked(false);
 
     // Clear step list
     QList<QAction*> actions = ui_stepMenu->actions();

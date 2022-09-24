@@ -15,8 +15,8 @@ void RamObjectView::setObjectModel(RamObjectModel *list)
 {
     m_objectModel->setSourceModel(list);
     this->setModel(m_objectModel);
-    this->resizeRowsToContents();
-    this->resizeColumnsToContents();
+    //this->resizeRowsToContents();
+    //this->resizeColumnsToContents();
 }
 
 void RamObjectView::setEditableObjects(bool editableObjects, RamUser::UserRole editRole)
@@ -56,7 +56,7 @@ void RamObjectView::search(QString s)
 {
     // Search
     m_objectModel->search(s);
-    //this->resizeRowsToContents();
+    this->resizeRowsToContents();
 }
 
 void RamObjectView::mouseMoveEvent(QMouseEvent *event)
@@ -136,8 +136,8 @@ void RamObjectView::showEvent(QShowEvent *event)
     Q_UNUSED(event)
 
     if (m_layout) return;
-    this->resizeRowsToContents();
-    this->resizeColumnsToContents();
+    //this->resizeRowsToContents();
+    //this->resizeColumnsToContents();
     m_layout = true;
 
     QTableView::showEvent(event);
