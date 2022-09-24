@@ -20,9 +20,9 @@ QRectF DuQFNodeScene::zoomToFit(bool isForExport) const
     return calculateRectangle(isForExport);
 }
 
-QVector<DuQFNode *> DuQFNodeScene::nodes()
+QSet<DuQFNode *> DuQFNodeScene::nodes()
 {
-    QVector<DuQFNode*> nodes;
+    QSet<DuQFNode*> nodes;
     foreach(QGraphicsItem *i, items())
     {
         DuQFNode *n = qgraphicsitem_cast<DuQFNode*>(i);
@@ -31,9 +31,9 @@ QVector<DuQFNode *> DuQFNodeScene::nodes()
     return nodes;
 }
 
-QVector<DuQFNode *> DuQFNodeScene::selectedNodes()
+QSet<DuQFNode *> DuQFNodeScene::selectedNodes()
 {
-    QVector<DuQFNode*> nodes;
+    QSet<DuQFNode*> nodes;
     foreach(QGraphicsItem *item, selectedItems())
     {
         DuQFNode *n = qgraphicsitem_cast<DuQFNode*>(item);
@@ -42,7 +42,7 @@ QVector<DuQFNode *> DuQFNodeScene::selectedNodes()
     return nodes;
 }
 
-QGraphicsItemGroup *DuQFNodeScene::createNodeGroup(QVector<DuQFNode *> nodes)
+QGraphicsItemGroup *DuQFNodeScene::createNodeGroup(QSet<DuQFNode *> nodes)
 {
     QGraphicsItemGroup *g = new QGraphicsItemGroup();
     addItem(g);
@@ -137,7 +137,7 @@ void DuQFNodeScene::autoLayoutSelectedNodes()
     autoLayoutNodes(selectedNodes());
 }
 
-void DuQFNodeScene::autoLayoutNodes(QVector<DuQFNode *> nodes)
+void DuQFNodeScene::autoLayoutNodes(QSet<DuQFNode *> nodes)
 {
     // 1- Move orphan nodes appart
     qreal x = 0.0;
@@ -145,15 +145,16 @@ void DuQFNodeScene::autoLayoutNodes(QVector<DuQFNode *> nodes)
 
     QGraphicsItemGroup *orphanGroup = new QGraphicsItemGroup();
     addItem(orphanGroup);
-    for (int i = nodes.count()-1; i >= 0; i--)
-    {
-        DuQFNode *n = nodes.at(i);
-        if (n->isOrphan())
-        {
-            n->setPos( x, y );
-            y += n->boundingRect().height() + m_grid.size();
-            orphanGroup->addToGroup(n);
-            nodes.removeAt(i);
+
+    QSet<DuQFNode*>::iterator n = nodes.begin();
+    while (n != nodes.end()) {
+        if ((*n)->isOrphan()) {
+            (*n)->setPos(x, y);
+            y += (*n)->boundingRect().height() + m_grid.size();
+            orphanGroup->addToGroup(*n);
+            n = nodes.erase(n);
+        } else {
+            n++;
         }
     }
 
@@ -179,7 +180,7 @@ void DuQFNodeScene::autoLayoutNodes(QVector<DuQFNode *> nodes)
         // If no ancestor (it's a loop), pick the first node
         if (ancestors.count() == 0)
         {
-            DuQFNode *n = nodes.at(0);
+            DuQFNode *n = *nodes.begin();
             n->setPos( x, y);
             ancestors << n;
         }
@@ -188,19 +189,19 @@ void DuQFNodeScene::autoLayoutNodes(QVector<DuQFNode *> nodes)
         while (ancestors.count() > 0 && nodes.count() > 0)
         {
             // For each ancestor, arrange children
-            QVector<DuQFNode*> nextGeneration;
-            QVector<QGraphicsItemGroup*> trees;
+            QSet<DuQFNode*> nextGeneration;
+            QSet<QGraphicsItemGroup*> trees;
 
             foreach (DuQFNode *n, ancestors)
             {
                 // This one is now ok
-                nodes.removeAll(n);
+                nodes.remove(n);
 
                 // Get children which are still to be arranged
-                QVector<DuQFNode *> childrenNodes;
+                QSet<DuQFNode *> childrenNodes;
                 foreach(DuQFNode *n, n->childNodes())
                     if (nodes.contains(n)) childrenNodes << n;
-                nextGeneration.append(childrenNodes);
+                nextGeneration.unite(childrenNodes);
 
                 // Layout'em
                 x = n->scenePos().x() + n->boundingRect().width()*2 + m_grid.gridSize()*3;
@@ -237,7 +238,7 @@ void DuQFNodeScene::selectAllNodes()
     }
 }
 
-void DuQFNodeScene::selectNodes(QVector<DuQFNode*> nodes)
+void DuQFNodeScene::selectNodes(QSet<DuQFNode*> nodes)
 {
     foreach(DuQFNode *n, nodes)
     {
@@ -322,12 +323,12 @@ void DuQFNodeScene::nodeRemoved(DuQFNode *node)
     //node->deleteLater();
 }
 
-void DuQFNodeScene::layoutNodesInColumn(QVector<DuQFNode *> nodes, QPointF center)
+void DuQFNodeScene::layoutNodesInColumn(QSet<DuQFNode *> nodes, QPointF center)
 {
     layoutNodesInColumn(nodes, center.x(), center.y());
 }
 
-void DuQFNodeScene::layoutNodesInColumn(QVector<DuQFNode *> nodes, qreal x, qreal y)
+void DuQFNodeScene::layoutNodesInColumn(QSet<DuQFNode *> nodes, qreal x, qreal y)
 {
     if (nodes.count() == 0) return;
 
@@ -344,7 +345,7 @@ void DuQFNodeScene::layoutNodesInColumn(QVector<DuQFNode *> nodes, qreal x, qrea
     }
 }
 
-void DuQFNodeScene::layoutGroupsInColumn(QVector<QGraphicsItemGroup *> groups)
+void DuQFNodeScene::layoutGroupsInColumn(QSet<QGraphicsItemGroup *> groups)
 {
     if (groups.count() == 0) return;
     // for each item, arrange vertically

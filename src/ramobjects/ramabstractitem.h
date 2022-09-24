@@ -41,7 +41,7 @@ public:
      * @brief status All the latest (current) status
      * @return The latest status for each step
      */
-    QList<RamStatus*> status();
+    QVector<RamStatus*> status();
 
     RamUser *assignedUser(RamStep *step);
     bool isUserAssigned(RamObject *u, RamStep *step = nullptr);

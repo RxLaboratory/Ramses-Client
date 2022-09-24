@@ -196,7 +196,7 @@ void DBInterface::setDataFile(const QString &file, bool ignoreUser)
         }
 
         // We need to show a list of users
-        QList<QStringList> users = m_ldi->users();
+        QVector<QStringList> users = m_ldi->users();
         QStringList names;
         for (int i = 0; i < users.count(); i++)
         {

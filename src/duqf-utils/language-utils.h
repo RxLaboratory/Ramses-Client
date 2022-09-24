@@ -15,7 +15,7 @@ public:
     QString get(QString id, LanguageIDType from = ISO639_2, LanguageIDType to = NATIVE_NAME) const;
 
 private:
-    QList<QStringList> _languages;
+    QVector<QStringList> _languages;
 };
 
 namespace LanguageUtils

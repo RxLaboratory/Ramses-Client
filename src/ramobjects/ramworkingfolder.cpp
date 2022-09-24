@@ -51,7 +51,7 @@ QStringList RamWorkingFolder::files(QString subPath) const
     return listFiles(m_path + subPath);
 }
 
-QList<QFileInfo> RamWorkingFolder::fileInfos(QString subPath) const
+QFileInfoList RamWorkingFolder::fileInfos(QString subPath) const
 {
     return listFileInfos(m_path + subPath);
 }
@@ -61,7 +61,7 @@ QStringList RamWorkingFolder::folders(QString subPath) const
     return listFolders(m_path + subPath);
 }
 
-QList<QFileInfo> RamWorkingFolder::folderInfos(QString subPath) const
+QFileInfoList RamWorkingFolder::folderInfos(QString subPath) const
 {
     return listFolderInfos(m_path + subPath);
 }
@@ -88,7 +88,7 @@ QStringList RamWorkingFolder::workingFiles() const
     return files();
 }
 
-QList<QFileInfo> RamWorkingFolder::workingFileInfos() const
+QFileInfoList RamWorkingFolder::workingFileInfos() const
 {
     return fileInfos();
 }
@@ -137,10 +137,10 @@ QStringList RamWorkingFolder::publishedVersionFolderNames() const
     return folders;
 }
 
-QList<QFileInfo> RamWorkingFolder::publishedVersionFolderInfos() const
+QFileInfoList RamWorkingFolder::publishedVersionFolderInfos() const
 {
     // Sort before returning
-    QList<QFileInfo> folders = listFolderInfos( publishPath() );
+    QFileInfoList folders = listFolderInfos( publishPath() );
     std::sort(folders.begin(), folders.end(), versionFolderInfoSorter);
     return folders;
 }
@@ -172,19 +172,19 @@ QStringList RamWorkingFolder::versionFiles(QString resource) const
     return files;
 }
 
-QList<QFileInfo> RamWorkingFolder::versionFileInfos() const
+QFileInfoList RamWorkingFolder::versionFileInfos() const
 {
     return listFileInfos(versionsPath());
 }
 
-QList<QFileInfo> RamWorkingFolder::versionFileInfos(QString resource) const
+QFileInfoList RamWorkingFolder::versionFileInfos(QString resource) const
 {
     // Get current information
     RamNameManager nm;
     nm.setFileName(m_path);
 
     // look for files with the same resource
-    QList<QFileInfo> files;
+    QFileInfoList files;
     RamNameManager filenm;
     foreach(QFileInfo file, versionFileInfos())
     {
@@ -206,7 +206,7 @@ int RamWorkingFolder::latestVersion() const
     nm.setFileName(m_path);
 
     // look for files with the same resource
-    QList<QFileInfo> files;
+    QFileInfoList files;
     RamNameManager filenm;
     int v = 0;
     foreach(QFileInfo file, versionFileInfos())
@@ -229,7 +229,7 @@ int RamWorkingFolder::latestVersion(QString resource) const
     nm.setFileName(m_path);
 
     // look for files with the same resource
-    QList<QFileInfo> files;
+    QFileInfoList files;
     RamNameManager filenm;
     int v = 0;
     foreach(QFileInfo file, versionFileInfos())
@@ -250,7 +250,7 @@ QStringList RamWorkingFolder::previewFiles() const
     return listFiles(previewPath());
 }
 
-QList<QFileInfo> RamWorkingFolder::previewFileInfos() const
+QFileInfoList RamWorkingFolder::previewFileInfos() const
 {
     return listFileInfos(previewPath());
 }
@@ -304,10 +304,10 @@ QStringList RamWorkingFolder::listFiles(QString absolutePath)
     return result;
 }
 
-QList<QFileInfo> RamWorkingFolder::listFileInfos(QString absolutePath)
+QFileInfoList RamWorkingFolder::listFileInfos(QString absolutePath)
 {
     QDir dir(absolutePath);
-    QList<QFileInfo> files = dir.entryInfoList( QDir::Files );
+    QFileInfoList files = dir.entryInfoList( QDir::Files );
     // Remove the ramses data file
     for (int i = files.length() - 1; i >= 0; i--)
     {
@@ -335,10 +335,10 @@ QStringList RamWorkingFolder::listFolderNames(QString absolutePath)
     return dir.entryList( QDir::Dirs | QDir::NoDotAndDotDot, QDir::Name );
 }
 
-QList<QFileInfo> RamWorkingFolder::listFolderInfos(QString absolutePath)
+QFileInfoList RamWorkingFolder::listFolderInfos(QString absolutePath)
 {
     QDir dir(absolutePath);
-    QList<QFileInfo> folderInfos = dir.entryInfoList( QDir::Dirs | QDir::NoDotAndDotDot, QDir::Name );
+    QFileInfoList folderInfos = dir.entryInfoList( QDir::Dirs | QDir::NoDotAndDotDot, QDir::Name );
     return folderInfos;
 }
 

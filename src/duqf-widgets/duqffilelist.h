@@ -10,7 +10,7 @@ class DuQFFileList : public QTreeWidget
 public:
     DuQFFileList(QWidget *parent = nullptr);
 
-    void setList(QList<QFileInfo> fileList);
+    void setList(QFileInfoList fileList);
     void addFile(QFileInfo file);
     QFileInfo currentFile() const;
     QString currentFilePath() const;

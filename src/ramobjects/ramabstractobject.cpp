@@ -445,10 +445,10 @@ QStringList RamAbstractObject::listFiles(RamObject::SubFolder subFolder, QString
     return files;
 }
 
-QList<QFileInfo> RamAbstractObject::listFileInfos(SubFolder subFolder, QString subPath) const
+QFileInfoList RamAbstractObject::listFileInfos(SubFolder subFolder, QString subPath) const
 {
     QDir dir( path(subFolder) + "/" + subPath);
-    QList<QFileInfo> files = dir.entryInfoList( QDir::Files );
+    QFileInfoList files = dir.entryInfoList( QDir::Files );
     // Remove the ramses data file
     for (int i = files.length() - 1; i >= 0; i--)
     {

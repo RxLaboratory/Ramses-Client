@@ -10,14 +10,14 @@ DuQFLogger *DuQFLogger::instance()
     return _instance;
 }
 
-QList<DuQFLog> DuQFLogger::logs()
+QVector<DuQFLog> DuQFLogger::logs()
 {
     return _logs;
 }
 
-QList<DuQFLog> DuQFLogger::logs(DuQFLog::LogType minLevel)
+QVector<DuQFLog> DuQFLogger::logs(DuQFLog::LogType minLevel)
 {
-    QList<DuQFLog> el;
+    QVector<DuQFLog> el;
     foreach(DuQFLog l, _logs)
     {
         if (l.type() >= minLevel) el << l;

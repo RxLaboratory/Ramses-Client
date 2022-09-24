@@ -365,7 +365,7 @@ void ItemManagerWidget::sortByCompletion(bool sort)
 
 void ItemManagerWidget::unassignUser()
 {
-    QList<RamStatus*> status = beginEditSelectedStatus();
+    QVector<RamStatus*> status = beginEditSelectedStatus();
     for (int i = 0; i < status.count(); i++)
     {
         status.at(i)->assignUser(nullptr);
@@ -376,7 +376,7 @@ void ItemManagerWidget::assignUser(RamObject *user)
 {
     if (!user) return;
 
-    QList<RamStatus*> status = beginEditSelectedStatus();
+    QVector<RamStatus*> status = beginEditSelectedStatus();
 
     ProcessManager *pm = ProcessManager::instance();
     pm->setTitle(tr("Updating status"));
@@ -396,7 +396,7 @@ void ItemManagerWidget::changeState(RamObject *stt)
 {
     if (!stt) return;
 
-    QList<RamStatus*> status = beginEditSelectedStatus();
+    QVector<RamStatus*> status = beginEditSelectedStatus();
 
     ProcessManager *pm = ProcessManager::instance();
     pm->setTitle(tr("Updating status"));
@@ -439,7 +439,7 @@ void ItemManagerWidget::setVeryHard()
 
 void ItemManagerWidget::setDiffculty(RamStatus::Difficulty difficulty)
 {
-    QList<RamStatus*> status = beginEditSelectedStatus();
+    QVector<RamStatus*> status = beginEditSelectedStatus();
 
     ProcessManager *pm = ProcessManager::instance();
     pm->setTitle(tr("Updating status"));
@@ -460,7 +460,7 @@ void ItemManagerWidget::setCompletion()
 {
     QAction* action = qobject_cast<QAction*>( sender() );
     int completion = action->data().toInt();
-    QList<RamStatus*> status = beginEditSelectedStatus();
+    QVector<RamStatus*> status = beginEditSelectedStatus();
 
     ProcessManager *pm = ProcessManager::instance();
     pm->setTitle(tr("Updating status"));
@@ -510,7 +510,7 @@ void ItemManagerWidget::pasteComment()
     QString comment = clipboard->text();
     if (comment == "") return;
 
-    QList<RamStatus*> status = beginEditSelectedStatus();
+    QVector<RamStatus*> status = beginEditSelectedStatus();
 
     ProcessManager *pm = ProcessManager::instance();
     pm->setTitle(tr("Updating status"));
@@ -1134,9 +1134,9 @@ void ItemManagerWidget::setupTable()
     ui_table->setSortable(true);
 }
 
-QList<RamStatus *> ItemManagerWidget::beginEditSelectedStatus()
+QVector<RamStatus *> ItemManagerWidget::beginEditSelectedStatus()
 {
-    QList<RamStatus*> statuses;
+    QVector<RamStatus*> statuses;
     RamUser *currentUser = Ramses::instance()->currentUser();
     QModelIndexList selection = ui_table->selectionModel()->selectedIndexes();
     for (int i = 0; i < selection.count(); i++)

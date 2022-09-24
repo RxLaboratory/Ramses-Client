@@ -48,7 +48,7 @@ public:
     static int getSize(QString type, QString name = "");
 
     void addCssValue(QStringList value);
-    QVector<QStringList> cssValues();
+    QSet<QStringList> cssValues();
     void clearCssValues();
 
 protected:
@@ -56,7 +56,7 @@ protected:
 
 private:
     DuUI() {};
-    QVector<QStringList> _cssValues;
+    QSet<QStringList> _cssValues;
 };
 
 

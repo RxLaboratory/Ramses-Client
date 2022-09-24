@@ -142,26 +142,24 @@ float RamStep::neededDays() const
     return m_estimation - daysSpent();
 }
 
-QList<float> RamStep::stats(RamUser *user)
+QVector<float> RamStep::stats(RamUser *user)
 {
     if (!user)
     {
-        return QList<float>() << m_estimation
-                            << m_estimation * m_completionRatio / 100
-                            << m_scheduledHalfDays/2.0
-                            << m_scheduledFutureHalfDays/2.0;
+        return QVector<float>( { m_estimation,
+                                 m_estimation * m_completionRatio / 100,
+                                 static_cast<float>(m_scheduledHalfDays/2),
+                                 static_cast<float>(m_scheduledFutureHalfDays/2)
+                               } );
     }
 
     RamProject *proj = project();
     if (!proj) {
-        return QList<float>() << 0
-                              << 0
-                              << 0
-                              << 0;
+        return QVector<float>( 4 );
     }
 
-    int assignedHalfDays = 0;
-    int assignedFutureHalfDays = 0;
+    float assignedHalfDays = 0;
+    float assignedFutureHalfDays = 0;
 
     // Count assigned and future days
     for (int j = 0; j < user->schedule()->rowCount(); j++)
@@ -179,7 +177,12 @@ QList<float> RamStep::stats(RamUser *user)
     RamObjectModel *items;
     if (type() == ShotProduction) items = proj->shots();
     else if(type() == AssetProduction) items = proj->assets();
-    else return QList<float>() << 0 << 0 << assignedHalfDays / 2.0 << assignedFutureHalfDays / 2.0;
+    else return QVector<float>( {
+                                    0,
+                                    0,
+                                    static_cast<float>(assignedHalfDays / 2.0),
+                                    static_cast<float>(assignedFutureHalfDays / 2.0) }
+                                );
 
     float estimation = 0;
     float completedDays = 0;
@@ -208,7 +211,12 @@ QList<float> RamStep::stats(RamUser *user)
         estimation += estim;
     }
 
-    return QList<float>() << estimation << completedDays << assignedHalfDays / 2.0 << assignedFutureHalfDays / 2.0;
+    return QVector<float>( {
+                               estimation,
+                               completedDays,
+                               static_cast<float>(assignedHalfDays / 2.0),
+                               static_cast<float>(assignedFutureHalfDays / 2.0)
+                           } );
 }
 
 void RamStep::freezeEstimations(bool freeze, bool reCompute)
@@ -234,27 +242,27 @@ void RamStep::openFile(QString filePath) const
     QDesktopServices::openUrl(QUrl("file:///" + filePath));
 }
 
-QList<RamWorkingFolder> RamStep::templateWorkingFolders() const
+QSet<RamWorkingFolder> RamStep::templateWorkingFolders() const
 {
     QString templatesPath = path(TemplatesFolder);
     QDir dir(templatesPath);
     QStringList subdirs = dir.entryList( QDir::Dirs | QDir::NoDotAndDotDot );
 
     RamNameManager nm;
-    QList<RamWorkingFolder> templateFolders;
+    QSet<RamWorkingFolder> templateFolders;
     foreach (QString subdir, subdirs)
     {
         // check name
         if (nm.setFileName(subdir))
-            templateFolders.append(RamWorkingFolder( templatesPath + "/" + subdir ));
+            templateFolders.insert(RamWorkingFolder( templatesPath + "/" + subdir ));
     }
 
     return templateFolders;
 }
 
-QList<RamObject *> RamStep::inputFileTypes()
+QSet<RamObject *> RamStep::inputFileTypes()
 {
-    QList<RamObject *> fts;
+    QSet<RamObject *> fts;
 
     for ( int i = 0; i < m_applications->rowCount(); i++)
     {
@@ -274,9 +282,9 @@ QList<RamObject *> RamStep::inputFileTypes()
     return fts;
 }
 
-QList<RamObject *> RamStep::outputFileTypes()
+QSet<RamObject *> RamStep::outputFileTypes()
 {
-    QList<RamObject *> fts;
+    QSet<RamObject *> fts;
 
     for ( int i = 0; i < m_applications->rowCount(); i++)
     {

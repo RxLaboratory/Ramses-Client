@@ -7,7 +7,7 @@ DuQFFileList::DuQFFileList(QWidget *parent):
     this->setHeaderLabels(QStringList() << "Name" << "Date");
 }
 
-void DuQFFileList::setList(QList<QFileInfo> fileList)
+void DuQFFileList::setList(QFileInfoList fileList)
 {
     this->clear();
     foreach(QFileInfo file, fileList)

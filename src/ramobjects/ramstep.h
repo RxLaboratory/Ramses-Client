@@ -43,7 +43,7 @@ public:
      * @brief stats
      * @return a list of number of days <estimation, completed, scheduled, scheduled in the future>
      */
-    QList<float> stats(RamUser *user);
+    QVector<float> stats(RamUser *user);
 
     /**
      * @brief freezeEstimations stops automatic update of the estimations.
@@ -54,10 +54,10 @@ public:
     void freezeEstimations(bool freeze = true, bool reCompute = true);
 
     void openFile(QString filePath) const;
-    QList<RamWorkingFolder> templateWorkingFolders() const;
+    QSet<RamWorkingFolder> templateWorkingFolders() const;
 
-    QList<RamObject *> inputFileTypes();
-    QList<RamObject *> outputFileTypes();
+    QSet<RamObject *> inputFileTypes();
+    QSet<RamObject *> outputFileTypes();
 
 signals:
     void estimationComputed(RamStep*);

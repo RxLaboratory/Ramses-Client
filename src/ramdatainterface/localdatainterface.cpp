@@ -628,7 +628,7 @@ void LocalDataInterface::saveSync(QJsonArray tables)
         QMap<QString, QString> uuidDates = modificationDates( tableName );
 
         // Insert new
-        QList<QStringList> insertedObjects;
+        QSet<QStringList> insertedObjects;
         for (int r = incomingRows.count() - 1; r >= 0; r--)
         {
             QJsonObject incomingRow = incomingRows.at(r).toObject();
@@ -679,11 +679,7 @@ void LocalDataInterface::saveSync(QJsonArray tables)
         }
 
         // Emit insertions
-        for (int ins = 0; ins < insertedObjects.count(); ins++ )
-        {
-            QStringList io = insertedObjects.at(ins);
-            emit inserted( io.at(0), io.at(1) );
-        }
+        foreach(QStringList io, insertedObjects ) emit inserted( io.at(0), io.at(1) );
     }
 
     // Updates
@@ -830,11 +826,11 @@ QStringList LocalDataInterface::tableNames()
     return tables;
 }
 
-QList<QStringList> LocalDataInterface::users()
+QVector<QStringList> LocalDataInterface::users()
 {
-    QString q = "SELECT uuid, userName FROM RamUSer ;";
+    QString q = "SELECT uuid, userName FROM RamUSer ORDER BY userName;";
     QSqlQuery qry = query( q );
-    QList<QStringList> us;
+    QVector<QStringList> us;
     while(qry.next())
     {
         QStringList u;

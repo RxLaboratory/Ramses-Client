@@ -543,10 +543,9 @@ void PipelineWidget::connectionRemoved(DuQFConnection *co)
 
 void PipelineWidget::loadProjectLayout()
 {
-    QVector<DuQFNode *> nodes = m_nodeScene->nodes();
-    for(int i = 0; i < nodes.count(); i++)
+    foreach(DuQFNode *n, m_nodeScene->nodes())
     {
-        ObjectNode *node = qgraphicsitem_cast<ObjectNode*>(nodes.at(i));
+        ObjectNode *node = qgraphicsitem_cast<ObjectNode*>( n );
         RamObject *step = node->ramObject();
 
         QSettings *pSettings = m_project->settings();
@@ -572,10 +571,9 @@ void PipelineWidget::saveProjectLayout()
 
     if ( confirm != QMessageBox::Yes) return;
 
-    QVector<DuQFNode *> nodes = m_nodeScene->nodes();
-    for(int i = 0; i < nodes.count(); i++)
+    foreach(DuQFNode *n, m_nodeScene->nodes())
     {
-        ObjectNode *node = qgraphicsitem_cast<ObjectNode*>(nodes.at(i));
+        ObjectNode *node = qgraphicsitem_cast<ObjectNode*>( n );
         RamObject *step = node->ramObject();
         QPointF pos = node->pos();
 

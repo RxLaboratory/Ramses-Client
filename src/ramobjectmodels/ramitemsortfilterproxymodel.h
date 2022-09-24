@@ -45,9 +45,9 @@ protected:
     bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const override;
     bool filterAcceptsColumn(int sourceRow, const QModelIndex &sourceParent) const override;
 
-    QList<RamObject*> m_states;
-    QList<RamObject*> m_users;
-    QList<RamObject*> m_hiddenSteps;
+    QVector<RamObject*> m_states;
+    QVector<RamObject*> m_users;
+    QVector<RamObject*> m_hiddenSteps;
     bool m_showUnassigned = true;
     RamStep::Type m_stepType = RamStep::All;
 

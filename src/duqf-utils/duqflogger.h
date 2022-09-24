@@ -55,8 +55,8 @@ class DuQFLogger : public QObject
 public:
     static DuQFLogger *instance();
 
-    QList<DuQFLog> logs();
-    QList<DuQFLog> logs(DuQFLog::LogType minLevel);
+    QVector<DuQFLog> logs();
+    QVector<DuQFLog> logs(DuQFLog::LogType minLevel);
     void clear();
 
     void tie(DuQFLoggerObject *o);
@@ -74,7 +74,7 @@ protected:
 private:
     // Singleton, private constructor
     explicit DuQFLogger(QObject *parent = nullptr);
-    QList<DuQFLog> _logs;
+    QVector<DuQFLog> _logs;
 };
 
 #endif // DUQFLOGGER_H

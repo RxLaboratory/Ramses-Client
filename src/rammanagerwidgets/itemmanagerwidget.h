@@ -165,7 +165,7 @@ private:
     RamStep::Type m_productionType;
 
     // utils
-    QList<RamStatus*> beginEditSelectedStatus();
+    QVector<RamStatus*> beginEditSelectedStatus();
     RamStatus *getStatus(const QModelIndex &index);
 };
 

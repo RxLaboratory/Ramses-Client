@@ -36,7 +36,7 @@ public:
      * @param subPath
      * @return
      */
-    QList<QFileInfo> fileInfos(QString subPath = "") const;
+    QFileInfoList fileInfos(QString subPath = "") const;
     /**
      * @brief folders Gets the folder paths in the subfolder
      * @param subPath
@@ -48,7 +48,7 @@ public:
      * @param subPath
      * @return
      */
-    QList<QFileInfo> folderInfos(QString subPath = "") const;
+    QFileInfoList folderInfos(QString subPath = "") const;
     /**
      * @brief folderInfos Gets the folder names in the subfolder
      * @param subPath
@@ -72,7 +72,7 @@ public:
      * @brief workingFileInfos Gets the available working files
      * @return The list of files
      */
-    QList<QFileInfo> workingFileInfos() const;
+    QFileInfoList workingFileInfos() const;
 
     // <=== Published Files ===>
 
@@ -92,7 +92,7 @@ public:
      * @brief publishedVersionFolderInfos Gets the version subfolders of the published folder
      * @return
      */
-    QList<QFileInfo> publishedVersionFolderInfos() const;
+    QFileInfoList publishedVersionFolderInfos() const;
 
     // <=== Version Files ===>
 
@@ -113,13 +113,13 @@ public:
      * @param resource
      * @return
      */
-    QList<QFileInfo> versionFileInfos() const;
+    QFileInfoList versionFileInfos() const;
     /**
      * @brief versionFileInfos Gets the versions of the given resource
      * @param resource
      * @return
      */
-    QList<QFileInfo> versionFileInfos(QString resource) const;
+    QFileInfoList versionFileInfos(QString resource) const;
     /**
      * @brief latestVersion Checks the highets available version for all resources
      * @return
@@ -143,7 +143,7 @@ public:
      * @brief previewFileInfos Gets the files used to previewing this work
      * @return
      */
-    QList<QFileInfo> previewFileInfos() const;
+    QFileInfoList previewFileInfos() const;
 
     // <=== Path Getters ===>
 
@@ -180,10 +180,10 @@ public:
 
 public:
     static QStringList listFiles(QString absolutePath);
-    static QList<QFileInfo> listFileInfos(QString absolutePath);
+    static QFileInfoList listFileInfos(QString absolutePath);
     static QStringList listFolders(QString absolutePath);
     static QStringList listFolderNames(QString absolutePath);
-    static QList<QFileInfo> listFolderInfos(QString absolutePath);
+    static QFileInfoList listFolderInfos(QString absolutePath);
 
 
 private:
@@ -194,6 +194,16 @@ private:
 bool versionFolderSorter(QString a, QString b);
 bool versionFolderInfoSorter(QFileInfo a, QFileInfo b);
 int getVersionFolderRank(QString folder);
+
+inline bool operator==(const RamWorkingFolder &wf1, const RamWorkingFolder &wf2)
+{
+    return wf1.path() == wf2.path();
+}
+
+inline uint qHash(const RamWorkingFolder &wf, uint seed)
+{
+    return qHash(wf.path(), seed);
+}
 
 
 #endif // RAMWORKINGFOLDER_H

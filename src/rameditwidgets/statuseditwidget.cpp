@@ -85,7 +85,7 @@ void StatusEditWidget::reInit(RamObject *o)
 
         // Published versions and files
         ui_versionPublishBox->clear();
-        QList<QFileInfo> publishedVersionFolders = statusFolder.publishedVersionFolderInfos();
+        QFileInfoList publishedVersionFolders = statusFolder.publishedVersionFolderInfos();
         for (int i = publishedVersionFolders.count()-1; i>=0; i-- )
         {
             QFileInfo folderInfo = publishedVersionFolders.at(i);
@@ -126,7 +126,7 @@ void StatusEditWidget::reInit(RamObject *o)
             templateActions.at(i)->deleteLater();
         }
         //Add
-        QList<RamWorkingFolder> templateFolders = m_status->step()->templateWorkingFolders();
+        QSet<RamWorkingFolder> templateFolders = m_status->step()->templateWorkingFolders();
 
         RamNameManager nm;
         foreach(RamWorkingFolder templateFolder, templateFolders)

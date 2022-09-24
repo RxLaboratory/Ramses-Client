@@ -59,6 +59,7 @@ public:
     // DATA INTERFACE //
 
     QSet<QString> tableUuids(QString table, bool includeRemoved = false);
+    // Returns a vector instead of set: tabledata may be sorted later
     QVector<QStringList> tableData(QString table, bool includeRemoved = false);
     bool contains(QString uuid, QString table);
     QMap<QString, QString> modificationDates(QString table);
@@ -90,7 +91,7 @@ public:
     void setCurrentUserUuid(QString uuid);
 
     QStringList tableNames();
-    QList<QStringList> users();
+    QVector<QStringList> users();
 
     // MAINTENANCE //
     QString cleanDataBase();

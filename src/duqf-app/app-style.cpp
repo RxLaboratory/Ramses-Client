@@ -393,7 +393,7 @@ void DuUI::addCssValue(QStringList value) {
     _cssValues << value;
 }
 
-QVector<QStringList> DuUI::cssValues()
+QSet<QStringList> DuUI::cssValues()
 {
     return _cssValues;
 }

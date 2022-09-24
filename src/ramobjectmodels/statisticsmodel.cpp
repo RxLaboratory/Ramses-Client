@@ -55,7 +55,7 @@ QVariant StatisticsModel::data(const QModelIndex &index, int role) const
     RamStep *step = RamStep::c( m_project->steps()->get( row ) );
     if (!step) return QVariant();
 
-    QList<float> userStats = step->stats(m_user);
+    QVector<float> userStats = step->stats(m_user);
     float estimation = userStats.at(0);
     float daysSpent = userStats.at(1);
     float assigned = userStats.at(2);

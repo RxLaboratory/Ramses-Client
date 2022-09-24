@@ -19,9 +19,9 @@ public:
     DuQFNodeScene(DuQFGrid &grid, QObject *parent = nullptr);
     void adjustSceneRect();
     QRectF zoomToFit(bool isForExport = false) const;
-    QVector<DuQFNode*> nodes();
-    QVector<DuQFNode *> selectedNodes();
-    QGraphicsItemGroup *createNodeGroup(QVector<DuQFNode *> nodes);
+    QSet<DuQFNode *> nodes();
+    QSet<DuQFNode *> selectedNodes();
+    QGraphicsItemGroup *createNodeGroup(QSet<DuQFNode *> nodes);
 
     DuQFConnectionManager *connectionManager() const;
 
@@ -33,10 +33,10 @@ public slots:
     void removeSelection();
     void autoLayoutAll();
     void autoLayoutSelectedNodes();
-    void autoLayoutNodes(QVector<DuQFNode*> nodes);
+    void autoLayoutNodes(QSet<DuQFNode *> nodes);
     void moveAllToCenter();
     void selectAllNodes();
-    void selectNodes(QVector<DuQFNode *> nodes);
+    void selectNodes(QSet<DuQFNode *> nodes);
     void selectChildNodes();
     void selectParentNodes();
     DuQFConnection *connectNodes(DuQFNode *o, DuQFNode *i);
@@ -51,9 +51,9 @@ private:
     DuQFGrid &m_grid;
 
     // Utils
-    void layoutNodesInColumn(QVector<DuQFNode*> nodes, QPointF center);
-    void layoutNodesInColumn(QVector<DuQFNode *> nodes, qreal x, qreal y);
-    void layoutGroupsInColumn(QVector<QGraphicsItemGroup *> groups);
+    void layoutNodesInColumn(QSet<DuQFNode*> nodes, QPointF center);
+    void layoutNodesInColumn(QSet<DuQFNode *> nodes, qreal x, qreal y);
+    void layoutGroupsInColumn(QSet<QGraphicsItemGroup *> groups);
 
     // TEMP
     bool containsAll() const;

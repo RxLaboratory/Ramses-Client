@@ -215,7 +215,7 @@ private:
     /**
      * @brief The waiting list for requests
      */
-    QList<Request> m_requestQueue;
+    QVector<Request> m_requestQueue;
 
     // Timers //
 

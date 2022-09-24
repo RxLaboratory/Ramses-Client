@@ -36,7 +36,7 @@ DuQFConnection * DuQFConnectionManager::addConnection(DuQFSlot *output, DuQFSlot
     return co;
 }
 
-QVector<DuQFConnection *> DuQFConnectionManager::connections() const
+QSet<DuQFConnection *> DuQFConnectionManager::connections() const
 {
     return m_connections;
 }
@@ -45,5 +45,5 @@ void DuQFConnectionManager::removeConnection()
 {
     DuQFConnection *c = (DuQFConnection*)sender();
     emit connectionRemoved(c);
-    m_connections.removeAll(c);
+    m_connections.remove(c);
 }

@@ -47,7 +47,7 @@ public:
     void setPipeType(QString fileName, QString pipeType);
 
 
-    QList<qint64> getModificationHistory(QString fileName) const;
+    QVector<qint64> getModificationHistory(QString fileName) const;
 #if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
     // Note: QDateTime(QDate()) is deprecated on Qt 5.15 but Linux version still uses 5.12
     qint64 getTimeRange(QString fileName, QDateTime after = QDateTime(QDate(1970,1,1))) const;

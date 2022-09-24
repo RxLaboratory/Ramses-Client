@@ -155,9 +155,9 @@ RamStatus *RamAbstractItem::status(RamStep *step) const
     return currentStatus;
 }
 
-QList<RamStatus *> RamAbstractItem::status()
+QVector<RamStatus *> RamAbstractItem::status()
 {
-    QList<RamStatus *> statuses;
+    QVector<RamStatus *> statuses;
     if (m_history.isEmpty()) return statuses;
     QMapIterator<QString, RamObjectModel*> i(m_history);
     while(i.hasNext())
@@ -188,7 +188,7 @@ bool RamAbstractItem::isUserAssigned(RamObject *u, RamStep *step)
         return s->assignedUser()->is(u);
     }
 
-    QList<RamStatus*> s = status();
+    QVector<RamStatus*> s = status();
     for (int i = 0; i < s.count(); i++)
     {
         if (!s.at(i)) continue;
@@ -208,7 +208,7 @@ bool RamAbstractItem::isUnassigned(RamStep *step)
         return false;
     }
 
-    QList<RamStatus*> s = status();
+    QVector<RamStatus*> s = status();
     for (int i = 0; i < s.count(); i++)
     {
         if (!s.at(i)) return true;
@@ -231,7 +231,7 @@ bool RamAbstractItem::hasState(RamObject *state, RamStep *step)
         return s->state()->is(state);
     }
 
-    QList<RamStatus*> s = status();
+    QVector<RamStatus*> s = status();
 
     for (int i = 0; i < s.count(); i++)
     {
