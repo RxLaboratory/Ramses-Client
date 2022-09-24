@@ -58,8 +58,8 @@ public:
 
     // DATA INTERFACE //
 
-    QStringList tableUuids(QString table, bool includeRemoved = false);
-    QList<QStringList> tableData(QString table, bool includeRemoved = false);
+    QSet<QString> tableUuids(QString table, bool includeRemoved = false);
+    QVector<QStringList> tableData(QString table, bool includeRemoved = false);
     bool contains(QString uuid, QString table);
     QMap<QString, QString> modificationDates(QString table);
 
@@ -142,7 +142,7 @@ private:
     QString m_dataFile;
 
     // Cache UUIDS to check their existence faster
-    QMap<QString, QStringList> m_uuids;
+    QHash<QString, QSet<QString>> m_uuids;
 
     //QThread m_queryThread;
     //Querier *m_tQuerier;

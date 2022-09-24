@@ -108,7 +108,7 @@ QVariant RamObjectModel::headerData(int section, Qt::Orientation orientation, in
     return QVariant();
 }
 
-void RamObjectModel::insertObjects(int row, QStringList uuids)
+void RamObjectModel::insertObjects(int row, QVector<QString> uuids)
 {
     // Check uuids first
     for (int i = uuids.count() -1; i >= 0; i--)
@@ -206,7 +206,7 @@ void RamObjectModel::appendObject(QString uuid)
 
     insertObjects(
                 rowCount(),
-                QStringList(uuid)
+                QVector<QString>() << uuid
                 );
 }
 
@@ -257,9 +257,15 @@ RamObject::ObjectType RamObjectModel::type() const
     return m_type;
 }
 
-QStringList RamObjectModel::toStringList() const
+QVector<QString> RamObjectModel::toVector() const
 {
     return m_objectsUuids;
+}
+
+QStringList RamObjectModel::toStringList() const
+{
+    QStringList l = m_objectsUuids.toList();
+    return l;
 }
 
 void RamObjectModel::objectDataChanged(RamObject *obj)

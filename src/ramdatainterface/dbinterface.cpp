@@ -78,7 +78,7 @@ QString DBInterface::ramsesPath()
     return m_ldi->ramsesPath();
 }
 
-QStringList DBInterface::tableData(QString table)
+QSet<QString> DBInterface::tableUuids(QString table)
 {
     return m_ldi->tableUuids(table);
 }

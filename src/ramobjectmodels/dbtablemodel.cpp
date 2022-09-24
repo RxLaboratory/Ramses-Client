@@ -24,7 +24,7 @@ void DBTableModel::insertObject(QString uuid, QString table)
     if (t != m_type) return;
 
     // Insert
-    insertObjects( rowCount(), QStringList(uuid));
+    insertObjects( rowCount(), QVector<QString>() << uuid );
 }
 
 void DBTableModel::removeObject(QString uuid, QString table)
@@ -40,12 +40,12 @@ void DBTableModel::removeObject(QString uuid, QString table)
 void DBTableModel::reload()
 {
     clear();
-    QList<QStringList> objs = LocalDataInterface::instance()->tableData( RamObject::objectTypeName( type() ));
+    QVector<QStringList> objs = LocalDataInterface::instance()->tableData( RamObject::objectTypeName( type() ));
 
     // Sort
     std::sort(objs.begin(), objs.end(), objSorter);
 
-    QStringList uuids;
+    QVector<QString> uuids;
     for (int i = 0; i < objs.count(); i++)
     {
         uuids << objs[i][0];

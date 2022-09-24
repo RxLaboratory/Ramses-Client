@@ -51,7 +51,7 @@ public:
 
     // DATA INTERFACE //
 
-    QStringList tableData(QString table);
+    QSet<QString> tableUuids(QString table);
     bool contains(QString uuid, QString table);
 
     void createObject(QString uuid, QString table, QString data);

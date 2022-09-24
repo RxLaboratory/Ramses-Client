@@ -240,7 +240,7 @@ QString LocalDataInterface::getRamsesPath(QString dbFile)
     return "auto";
 }
 
-QStringList LocalDataInterface::tableUuids(QString table, bool includeRemoved)
+QSet<QString> LocalDataInterface::tableUuids(QString table, bool includeRemoved)
 {
     // If we've got the info in the cache, use it.
     if (CACHE_LOCAL_DATA && m_uuids.contains(table) ) return m_uuids.value(table);
@@ -250,17 +250,17 @@ QStringList LocalDataInterface::tableUuids(QString table, bool includeRemoved)
     q += " ;";
     QSqlQuery qry = query( q.arg(table) );
 
-    QStringList data;
+    QSet<QString> data;
 
     while (qry.next()) data << qry.value(0).toString();
 
     // Cache
-    m_uuids[table] = data;
+    m_uuids.insert(table, data);
 
     return data;
 }
 
-QList<QStringList> LocalDataInterface::tableData(QString table, bool includeRemoved)
+QVector<QStringList> LocalDataInterface::tableData(QString table, bool includeRemoved)
 {
     QString q = "SELECT `uuid`, `data` FROM '%1'";
     if (!includeRemoved) q += " WHERE removed = 0";
@@ -268,7 +268,7 @@ QList<QStringList> LocalDataInterface::tableData(QString table, bool includeRemo
 
     QSqlQuery qry = query( q.arg(table) );
 
-    QList<QStringList> data;
+    QVector<QStringList> data;
 
     while (qry.next())
     {
@@ -284,7 +284,7 @@ QList<QStringList> LocalDataInterface::tableData(QString table, bool includeRemo
 bool LocalDataInterface::contains(QString uuid, QString table)
 {
     // Get all UUIDS
-    QStringList uuids = tableUuids(table, true);
+    QSet<QString> uuids = tableUuids(table, true);
     return uuids.contains(uuid);
 
 
@@ -860,13 +860,13 @@ QString LocalDataInterface::cleanDataBase()
     // Get needed data
 
     // Users (not removed)
-    QStringList userUuids = tableUuids("RamUser", false);
+    QSet<QString> userUuids = tableUuids("RamUser", false);
 
     // 1- Clean Statuses
     report += "# Cleaning report\n\n";
     report += ".\n\n## Status\n\n";
     int numStatusChanged = 0;
-    QList<QStringList> statusData = tableData("RamStatus", true);
+    QVector<QStringList> statusData = tableData("RamStatus", true);
     for (int i = 0; i < statusData.count(); i++)
     {
         QJsonDocument d = QJsonDocument::fromJson( statusData[i][1].toUtf8() );

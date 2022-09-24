@@ -211,7 +211,7 @@ void Daemon::getObjects(QString type, QTcpSocket *client)
     log(tr("I'm replying to this request: %1.").arg("getObjects"), DuQFLog::Debug);
     log(tr("This is the type: %1").arg(type), DuQFLog::Data);
 
-    QList<QStringList> entries = LocalDataInterface::instance()->tableData(type);
+    QVector<QStringList> entries = LocalDataInterface::instance()->tableData(type);
 
     QJsonObject content;
 

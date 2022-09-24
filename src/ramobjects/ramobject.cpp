@@ -213,7 +213,7 @@ void RamObject::loadModel(RamObjectModel *model, QString modelName, QJsonObject 
     if (d.isEmpty()) d = data();
     model->clear();
     // Get uuids
-    QStringList uuids;
+    QVector<QString> uuids;
     QJsonArray arr = d.value(modelName).toArray();
     for (int i = 0; i < arr.count(); i++)
     {

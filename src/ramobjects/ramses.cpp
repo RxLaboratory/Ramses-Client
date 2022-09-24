@@ -141,7 +141,7 @@ RamState *Ramses::noState()
         m_noState->setColor(QColor(36,36,36));
         m_states->insertObjects(
                     m_states->rowCount(),
-                    QStringList(m_noState->uuid())
+                    QVector<QString>() << m_noState->uuid()
                     );
     }
     return m_noState;
@@ -157,7 +157,7 @@ RamState *Ramses::todoState()
         m_todoState->setColor(QColor(85,170,255));
         m_states->insertObjects(
                     m_states->rowCount(),
-                    QStringList(m_todoState->uuid())
+                    QVector<QString>() << m_todoState->uuid()
                     );
     }
     return m_todoState;
@@ -173,7 +173,7 @@ RamState *Ramses::okState()
         m_okState->setColor(QColor(0,170,0));
         m_states->insertObjects(
                     m_states->rowCount(),
-                    QStringList(m_okState->uuid())
+                    QVector<QString>() << m_okState->uuid()
                     );
     }
     return m_okState;
@@ -189,7 +189,7 @@ RamState *Ramses::stbState()
         m_stbState->setColor(QColor(168,168,168));
         m_states->insertObjects(
                     m_states->rowCount(),
-                    QStringList(m_stbState->uuid())
+                    QVector<QString>() << m_stbState->uuid()
                     );
     }
     return m_stbState;
@@ -205,7 +205,7 @@ RamState *Ramses::wipState()
         m_wipState->setColor(QColor(255,255,127));
         m_states->insertObjects(
                     m_states->rowCount(),
-                    QStringList(m_wipState->uuid())
+                    QVector<QString>() << m_wipState->uuid()
                     );
     }
     return m_wipState;

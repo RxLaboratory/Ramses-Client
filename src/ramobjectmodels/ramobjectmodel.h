@@ -24,7 +24,7 @@ public:
     virtual QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
 
     // Edit structure
-    virtual void insertObjects(int row, QStringList uuids);
+    virtual void insertObjects(int row, QVector<QString> uuids);
     virtual void removeObjects(QStringList uuids);
 
     // Columns
@@ -56,6 +56,7 @@ public:
     RamObject::ObjectType type() const;
 
     // All the uuids
+    QVector<QString> toVector() const;
     QStringList toStringList() const;
 
 protected:
@@ -77,7 +78,7 @@ private:
     void connectObject(QString uuid);
     void disconnectObject(QString uuid);
 
-    QStringList m_objectsUuids;
+    QVector<QString> m_objectsUuids;
     RamObjectSortFilterProxyModel *m_columnObjects;
 };
 
