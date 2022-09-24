@@ -6,13 +6,14 @@
 
 QFrame *RamFileType::ui_editWidget = nullptr;
 
-QMap<QString, RamFileType*> RamFileType::m_existingObjects = QMap<QString, RamFileType*>();
+QHash<QString, RamFileType*> RamFileType::m_existingObjects = QHash<QString, RamFileType*>();
 
 RamFileType *RamFileType::get(QString uuid)
 {
     if (!checkUuid(uuid, FileType)) return nullptr;
 
-    if (m_existingObjects.contains(uuid)) return m_existingObjects.value(uuid);
+    RamFileType *f = m_existingObjects.value(uuid);
+    if (f) return f;
 
     // Finally return a new instance
     return new RamFileType(uuid);

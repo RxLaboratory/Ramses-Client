@@ -36,7 +36,7 @@ public slots:
     virtual void edit(bool show = true) override;
 
 protected:
-    static QMap<QString, RamPipe*> m_existingObjects;
+    static QHash<QString, RamPipe*> m_existingObjects;
     RamPipe(QString uuid);
     virtual QString folderPath() const override { return ""; };
 

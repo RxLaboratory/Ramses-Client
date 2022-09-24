@@ -6,13 +6,14 @@
 
 QFrame *RamAssetGroup::ui_assetGroupWidget = nullptr;
 
-QMap<QString, RamAssetGroup*> RamAssetGroup::m_existingObjects = QMap<QString, RamAssetGroup*>();
+QHash<QString, RamAssetGroup*> RamAssetGroup::m_existingObjects = QHash<QString, RamAssetGroup*>();
 
 RamAssetGroup *RamAssetGroup::get(QString uuid)
 {
     if (!checkUuid(uuid, AssetGroup)) return nullptr;
 
-    if (m_existingObjects.contains(uuid)) return m_existingObjects.value(uuid);
+    RamAssetGroup *a = m_existingObjects.value(uuid);
+    if (a) return a;
 
     // Finally return a new instance
     return new RamAssetGroup(uuid);

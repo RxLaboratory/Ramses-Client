@@ -25,7 +25,7 @@ public:
     virtual QVariant roleData(int role) const override;
 
 protected:
-    static QMap<QString, RamScheduleComment*> m_existingObjects;
+    static QHash<QString, RamScheduleComment*> m_existingObjects;
     RamScheduleComment(QString uuid);
     virtual QString folderPath() const override { return ""; };
 

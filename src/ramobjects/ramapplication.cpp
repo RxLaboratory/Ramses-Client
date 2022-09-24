@@ -6,13 +6,14 @@
 
 QFrame *RamApplication::ui_applicationWidget = nullptr;
 
-QMap<QString, RamApplication*> RamApplication::m_existingObjects = QMap<QString, RamApplication*>();
+QHash<QString, RamApplication*> RamApplication::m_existingObjects = QHash<QString, RamApplication*>();
 
 RamApplication *RamApplication::get(QString uuid)
 {
     if (!checkUuid(uuid, Application)) return nullptr;
 
-    if (m_existingObjects.contains(uuid)) return m_existingObjects.value(uuid);
+    RamApplication *a = m_existingObjects.value(uuid);
+    if (a) return a;
 
     // Finally return a new instance
     return new RamApplication(uuid);

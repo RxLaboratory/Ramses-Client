@@ -40,7 +40,7 @@ public slots:
     virtual void edit(bool show = true) override;
 
 protected:
-    static QMap<QString, RamUser*> m_existingObjects;
+    static QHash<QString, RamUser*> m_existingObjects;
     RamUser(QString uuid);
     virtual QString folderPath() const override;
 

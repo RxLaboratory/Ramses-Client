@@ -4,13 +4,14 @@
 
 QFrame *RamScheduleComment::ui_editWidget = nullptr;
 
-QMap<QString, RamScheduleComment*> RamScheduleComment::m_existingObjects = QMap<QString, RamScheduleComment*>();
+QHash<QString, RamScheduleComment*> RamScheduleComment::m_existingObjects = QHash<QString, RamScheduleComment*>();
 
 RamScheduleComment *RamScheduleComment::get(QString uuid)
 {
     if (!checkUuid(uuid, ScheduleComment)) return nullptr;
 
-    if (m_existingObjects.contains(uuid)) return m_existingObjects.value(uuid);
+    RamScheduleComment *s = m_existingObjects.value(uuid);
+    if (s) return s;
 
     // Finally return a new instance
     return new RamScheduleComment(uuid);

@@ -11,13 +11,14 @@
 
 QFrame *RamStatus::ui_editWidget = nullptr;
 
-QMap<QString, RamStatus*> RamStatus::m_existingObjects = QMap<QString, RamStatus*>();
+QHash<QString, RamStatus*> RamStatus::m_existingObjects = QHash<QString, RamStatus*>();
 
 RamStatus *RamStatus::get(QString uuid)
 {
     if (!checkUuid(uuid, Status)) return nullptr;
 
-    if (m_existingObjects.contains(uuid)) return m_existingObjects.value(uuid);
+    RamStatus *s = m_existingObjects.value(uuid);
+    if (s) return s;
 
     // Finally return a new instance
     return new RamStatus(uuid);

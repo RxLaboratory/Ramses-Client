@@ -7,13 +7,14 @@
 
 QFrame *RamAsset::ui_assetWidget = nullptr;
 
-QMap<QString, RamAsset*> RamAsset::m_existingObjects = QMap<QString, RamAsset*>();
+QHash<QString, RamAsset*> RamAsset::m_existingObjects = QHash<QString, RamAsset*>();
 
 RamAsset *RamAsset::get(QString uuid)
 {
     if (!checkUuid(uuid, Asset)) return nullptr;
 
-    if (m_existingObjects.contains(uuid)) return m_existingObjects.value(uuid);
+    RamAsset *a = m_existingObjects.value(uuid);
+    if (a) return a;
 
     // Finally return a new instance
     return new RamAsset(uuid);

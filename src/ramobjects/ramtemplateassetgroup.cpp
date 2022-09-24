@@ -6,13 +6,14 @@
 
 QFrame *RamTemplateAssetGroup::ui_editWidget = nullptr;
 
-QMap<QString, RamTemplateAssetGroup*> RamTemplateAssetGroup::m_existingObjects = QMap<QString, RamTemplateAssetGroup*>();
+QHash<QString, RamTemplateAssetGroup*> RamTemplateAssetGroup::m_existingObjects = QHash<QString, RamTemplateAssetGroup*>();
 
 RamTemplateAssetGroup *RamTemplateAssetGroup::get(QString uuid)
 {
     if (!checkUuid(uuid, TemplateAssetGroup)) return nullptr;
 
-    if (m_existingObjects.contains(uuid)) return m_existingObjects.value(uuid);
+    RamTemplateAssetGroup *t = m_existingObjects.value(uuid);
+    if (t) return t;
 
     // Finally return a new instance
     return new RamTemplateAssetGroup(uuid);

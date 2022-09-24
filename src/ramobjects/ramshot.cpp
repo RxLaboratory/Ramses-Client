@@ -10,13 +10,14 @@
 
 QFrame *RamShot::ui_editWidget = nullptr;
 
-QMap<QString, RamShot*> RamShot::m_existingObjects = QMap<QString, RamShot*>();
+QHash<QString, RamShot*> RamShot::m_existingObjects = QHash<QString, RamShot*>();
 
 RamShot *RamShot::get(QString uuid)
 {
     if (!checkUuid(uuid, Shot)) return nullptr;
 
-    if (m_existingObjects.contains(uuid)) return m_existingObjects.value(uuid);
+    RamShot *s = m_existingObjects.value(uuid);
+    if (s) return s;
 
     // Finally return a new instance
     return new RamShot(uuid);
@@ -100,7 +101,7 @@ QString RamShot::details() const
                     " f";
 
     // List assigned assets
-    QMap<QString,QStringList> assts;
+    QHash<QString,QStringList> assts;
     for (int i = 0; i < assets()->rowCount(); i++)
     {
         RamAsset *asset = RamAsset::c(assets()->get(i));
@@ -109,7 +110,7 @@ QString RamShot::details() const
         ag << asset->shortName();
         assts[ agName ] = ag;
     }
-    QMapIterator<QString,QStringList> i(assts);
+    QHashIterator<QString,QStringList> i(assts);
     while(i.hasNext())
     {
         i.next();

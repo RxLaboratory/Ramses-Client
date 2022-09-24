@@ -7,13 +7,14 @@
 
 QFrame *RamProject::ui_editWidget = nullptr;
 
-QMap<QString, RamProject*> RamProject::m_existingObjects = QMap<QString, RamProject*>();
+QHash<QString, RamProject*> RamProject::m_existingObjects = QHash<QString, RamProject*>();
 
 RamProject *RamProject::get(QString uuid)
 {
     if (!checkUuid(uuid, Project)) return nullptr;
 
-    if (m_existingObjects.contains(uuid)) return m_existingObjects.value(uuid);
+    RamProject *p = m_existingObjects.value(uuid);
+    if (p) return p;
 
     // Finally return a new instance
     return new RamProject(uuid);

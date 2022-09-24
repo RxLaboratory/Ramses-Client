@@ -74,7 +74,7 @@ public slots:
     virtual void edit(bool show = true) override;
 
 protected:
-    static QMap<QString, RamTemplateStep*> m_existingObjects;
+    static QHash<QString, RamTemplateStep*> m_existingObjects;
     RamTemplateStep(QString uuid, ObjectType type = TemplateStep);
     virtual QString folderPath() const override { return ""; };
 

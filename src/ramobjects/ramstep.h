@@ -69,7 +69,7 @@ public slots:
     void countAssignedDays();
 
 protected:
-    static QMap<QString, RamStep*> m_existingObjects;
+    static QHash<QString, RamStep*> m_existingObjects;
     RamStep(QString uuid);
     virtual QString folderPath() const override;
 

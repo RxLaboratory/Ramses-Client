@@ -65,10 +65,7 @@ public:
                     ScheduleComment,
                     TemplateStep,
                     TemplateAssetGroup,
-                    Ramses,
-                    ObjectList, // TODO: remove
-                    ItemTable, // TODO: remove
-                    StepStatusHistory // TODO: remove
+                    Ramses
                     };
     /**
      * @brief The SubFolder enum lists all predefined subfolders
@@ -261,7 +258,7 @@ protected:
     virtual void emitRestored() {};
 
     // UTILS
-    static QMap<QString, RamAbstractObject*> m_allObjects;
+    static QHash<QString, RamAbstractObject*> m_allObjects;
     /**
      * @brief folderPath the folder of this object
      * @return
@@ -278,7 +275,7 @@ protected:
     bool m_savingData = false;
     QString m_icon = ":/icons/asset";
 
-    static QMap<QString, QPixmap> m_iconPixmaps;
+    static QHash<QString, QPixmap> m_iconPixmaps;
     static QPixmap iconPixmap(QString iconName);
     static QRegularExpression m_rxsn;
     static QRegularExpression shortNameRegularExpression();

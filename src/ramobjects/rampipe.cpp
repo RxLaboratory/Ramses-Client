@@ -5,13 +5,14 @@
 
 QFrame *RamPipe::ui_editWidget = nullptr;
 
-QMap<QString, RamPipe*> RamPipe::m_existingObjects = QMap<QString, RamPipe*>();
+QHash<QString, RamPipe*> RamPipe::m_existingObjects = QHash<QString, RamPipe*>();
 
 RamPipe *RamPipe::get(QString uuid)
 {
     if (!checkUuid(uuid, Pipe)) return nullptr;
 
-    if (m_existingObjects.contains(uuid)) return m_existingObjects.value(uuid);
+    RamPipe *p = m_existingObjects.value(uuid);
+    if (p) return p;
 
     // Finally return a new instance
     return new RamPipe(uuid);

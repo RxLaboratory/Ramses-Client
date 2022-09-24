@@ -6,13 +6,14 @@
 
 QFrame *RamSequence::ui_editWidget = nullptr;
 
-QMap<QString, RamSequence*> RamSequence::m_existingObjects = QMap<QString, RamSequence*>();
+QHash<QString, RamSequence*> RamSequence::m_existingObjects = QHash<QString, RamSequence*>();
 
 RamSequence *RamSequence::get(QString uuid)
 {
     if (!checkUuid(uuid, Sequence)) return nullptr;
 
-    if (m_existingObjects.contains(uuid)) return m_existingObjects.value(uuid);
+    RamSequence *s = m_existingObjects.value(uuid);
+    if (s) return s;
 
     // Finally return a new instance
     return new RamSequence(uuid);

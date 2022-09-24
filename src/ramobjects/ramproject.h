@@ -109,7 +109,7 @@ public slots:
     void computeEstimation(bool recompute = false);
 
 protected:
-    static QMap<QString, RamProject*> m_existingObjects;
+    static QHash<QString, RamProject*> m_existingObjects;
     RamProject(QString uuid);
     virtual QString folderPath() const override;
 

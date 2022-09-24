@@ -45,7 +45,7 @@ public slots:
     virtual void edit(bool show = true) override;
 
 protected:
-    static QMap<QString, RamApplication*> m_existingObjects;
+    static QHash<QString, RamApplication*> m_existingObjects;
     /**
      * @brief RamApplication constructs a RamApplication from the database
      * @param uuid

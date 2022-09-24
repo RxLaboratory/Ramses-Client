@@ -6,7 +6,7 @@
 
 QFrame *RamTemplateStep::ui_editWidget = nullptr;
 
-QMap<QString, RamTemplateStep*> RamTemplateStep::m_existingObjects = QMap<QString, RamTemplateStep*>();
+QHash<QString, RamTemplateStep*> RamTemplateStep::m_existingObjects = QHash<QString, RamTemplateStep*>();
 
 QMetaEnum const RamTemplateStep::m_stepTypeMeta = QMetaEnum::fromType<RamTemplateStep::Type>();
 
@@ -29,7 +29,8 @@ RamTemplateStep *RamTemplateStep::get(QString uuid)
 {
     if (!checkUuid(uuid, TemplateStep)) return nullptr;
 
-    if (m_existingObjects.contains(uuid)) return m_existingObjects.value(uuid);
+    RamTemplateStep *t = m_existingObjects.value(uuid);
+    if (t) return t;
 
     // Finally return a new instance
     return new RamTemplateStep(uuid);

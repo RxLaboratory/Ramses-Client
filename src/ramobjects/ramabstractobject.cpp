@@ -11,9 +11,9 @@
 
 QRegularExpression RamAbstractObject::m_rxsn = QRegularExpression();
 
-QMap<QString, QPixmap> RamAbstractObject::m_iconPixmaps = QMap<QString, QPixmap>();
+QHash<QString, QPixmap> RamAbstractObject::m_iconPixmaps = QHash<QString, QPixmap>();
 
-QMap<QString, RamAbstractObject*> RamAbstractObject::m_allObjects = QMap<QString, RamAbstractObject*>();
+QHash<QString, RamAbstractObject*> RamAbstractObject::m_allObjects = QHash<QString, RamAbstractObject*>();
 
 const QString RamAbstractObject::objectTypeName(ObjectType type)
 {
@@ -34,14 +34,11 @@ const QString RamAbstractObject::objectTypeName(ObjectType type)
     case Status: return "RamStatus";
     case Step: return "RamStep";
     case User: return "RamUser";
-    case ObjectList: return "RamObjectList";
-    case StepStatusHistory: return "RamStepStatusHistory";
     case ScheduleEntry: return "RamScheduleEntry";
     case ScheduleComment: return "RamScheduleComment";
     case TemplateStep: return "RamTemplateStep";
     case TemplateAssetGroup: return "RamTemplateAssetGroup";
     case Ramses: return "Ramses";
-    case ItemTable: return "RamItemTable";
     }
     return "RamObject";
 }
@@ -64,14 +61,11 @@ RamAbstractObject::ObjectType RamAbstractObject::objectTypeFromName(QString name
     if (name == "RamStatus") return Status;
     if (name == "RamStep") return Step;
     if (name == "RamUser") return User;
-    if (name == "RamObjectList") return ObjectList;
-    if (name == "RamStepStatusHistory") return StepStatusHistory;
     if (name == "RamScheduleEntry") return ScheduleEntry;
     if (name == "RamScheduleComment") return ScheduleComment;
     if (name == "RamTemplateStep") return TemplateStep;
     if (name == "RamTemplateAssetGroup") return TemplateAssetGroup;
     if (name == "Ramses") return Ramses;
-    if (name == "RamItemTable") return ItemTable;
     return Object;
 }
 
@@ -159,7 +153,7 @@ const QString RamAbstractObject::uuidFromPath(QString path, ObjectType type)
     if (!path.endsWith("/")) path = path + "/";
 
     // Check the path of all existing ramObjects
-    QMapIterator<QString, RamAbstractObject*> i = QMapIterator<QString, RamAbstractObject*>(m_allObjects);
+    QHashIterator<QString, RamAbstractObject*> i = QHashIterator<QString, RamAbstractObject*>(m_allObjects);
     // We'll keep the closest match
     while (i.hasNext())
     {
@@ -633,7 +627,7 @@ QPixmap RamAbstractObject::iconPixmap(QString iconName)
 {
     if (m_iconPixmaps.isEmpty())
     {
-        m_iconPixmaps = QMap<QString, QPixmap>({
+        m_iconPixmaps = QHash<QString, QPixmap>({
                                                {":/icons/asset", QIcon(":/icons/asset").pixmap(QSize(12,12))},
                                                {":/icons/application", QIcon(":/icons/application").pixmap(QSize(12,12))},
                                                {":/icons/asset-group", QIcon(":/icons/asset-group").pixmap(QSize(12,12))},

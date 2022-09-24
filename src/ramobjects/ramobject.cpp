@@ -41,9 +41,6 @@ RamObject *RamObject::get(QString uuid, ObjectType type)
     case TemplateAssetGroup: return RamTemplateAssetGroup::get(uuid);
     case Ramses: return Ramses::instance();
         // These aren't valid RamObjects
-    case ObjectList: return nullptr;
-    case ItemTable: return nullptr;
-    case StepStatusHistory: return nullptr;
     case Item: return nullptr;
     case Object: return nullptr;
     }

@@ -2,13 +2,14 @@
 
 // STATIC //
 
-QMap<QString, RamScheduleEntry*> RamScheduleEntry::m_existingObjects = QMap<QString, RamScheduleEntry*>();
+QHash<QString, RamScheduleEntry*> RamScheduleEntry::m_existingObjects = QHash<QString, RamScheduleEntry*>();
 
 RamScheduleEntry *RamScheduleEntry::get(QString uuid)
 {
     if (!checkUuid(uuid, ScheduleEntry)) return nullptr;
 
-    if (m_existingObjects.contains(uuid)) return m_existingObjects.value(uuid);
+    RamScheduleEntry *s = m_existingObjects.value(uuid);
+    if (s) return s;
 
     // Finally return a new instance
     return new RamScheduleEntry(uuid);

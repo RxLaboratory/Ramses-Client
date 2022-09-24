@@ -15,13 +15,14 @@
 
 QFrame *RamStep::ui_editWidget = nullptr;
 
-QMap<QString, RamStep*> RamStep::m_existingObjects = QMap<QString, RamStep*>();
+QHash<QString, RamStep*> RamStep::m_existingObjects = QHash<QString, RamStep*>();
 
 RamStep *RamStep::get(QString uuid)
 {
     if (!checkUuid(uuid, Step)) return nullptr;
 
-    if (m_existingObjects.contains(uuid)) return m_existingObjects.value(uuid);
+    RamStep *s = m_existingObjects.value(uuid);
+    if (s) return s;
 
     // Finally return a new instance
     return new RamStep(uuid);

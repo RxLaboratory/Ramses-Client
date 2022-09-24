@@ -13,13 +13,14 @@
 
 QFrame *RamUser::ui_editWidget = nullptr;
 
-QMap<QString, RamUser*> RamUser::m_existingObjects = QMap<QString, RamUser*>();
+QHash<QString, RamUser*> RamUser::m_existingObjects = QHash<QString, RamUser*>();
 
 RamUser *RamUser::get(QString uuid )
 {
     if (!checkUuid(uuid, User)) return nullptr;
 
-    if (m_existingObjects.contains(uuid)) return m_existingObjects.value(uuid);
+    RamUser *u = m_existingObjects.value(uuid);
+    if (u) return u;
 
     // Finally return a new instance
     return new RamUser(uuid);
