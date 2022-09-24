@@ -20,7 +20,9 @@ RamAssetGroup *RamAssetGroup::get(QString uuid)
 
 RamAssetGroup *RamAssetGroup::c(RamObject *o)
 {
-    return qobject_cast<RamAssetGroup*>(o);
+    //return qobject_cast<RamAssetGroup*>(o);
+    // For performance, reinterpret_cast, but be careful with the object passed!
+    return reinterpret_cast<RamAssetGroup*>(o);
 }
 
 RamAssetGroup *RamAssetGroup::createFromTemplate(RamTemplateAssetGroup *tempAG, RamProject *project)

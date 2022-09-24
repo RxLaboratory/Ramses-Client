@@ -25,7 +25,9 @@ RamStatus *RamStatus::get(QString uuid)
 
 RamStatus *RamStatus::c(RamObject *o)
 {
-    return qobject_cast<RamStatus*>(o);
+    //return qobject_cast<RamStatus*>(o);
+    // For performance, reinterpret_cast, but be careful with the object passed!
+    return reinterpret_cast<RamStatus*>(o);
 }
 
 RamStatus *RamStatus::copy(RamStatus *other, RamUser *user)

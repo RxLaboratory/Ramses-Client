@@ -24,7 +24,9 @@ RamShot *RamShot::get(QString uuid)
 
 RamShot *RamShot::c(RamObject *obj)
 {
-    return qobject_cast<RamShot*>(obj);
+    //return qobject_cast<RamShot*>(obj);
+    // For performance, reinterpret_cast, but be careful with the object passed!
+    return reinterpret_cast<RamShot*>(obj);
 }
 
 // PUBLIC //

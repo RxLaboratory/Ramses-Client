@@ -21,6 +21,8 @@ RamSequence *RamSequence::get(QString uuid)
 RamSequence *RamSequence::c(RamObject *o)
 {
     return qobject_cast<RamSequence*>(o);
+    // For performance, reinterpret_cast, but be careful with the object passed!
+    return reinterpret_cast<RamSequence*>(o);
 }
 
 // PUBLIC //

@@ -18,7 +18,9 @@ RamPipeFile *RamPipeFile::get(QString uuid)
 
 RamPipeFile *RamPipeFile::c(RamObject *o)
 {
-    return qobject_cast<RamPipeFile*>(o);
+    // return qobject_cast<RamPipeFile*>(o);
+    // For performance, reinterpret_cast, but be careful with the object passed!
+    return reinterpret_cast<RamPipeFile*>(o);
 }
 
 // PUBLIC //

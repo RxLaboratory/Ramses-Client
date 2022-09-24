@@ -20,7 +20,9 @@ RamState *RamState::get(QString uuid )
 
 RamState *RamState::c(RamObject *o)
 {
-    return qobject_cast<RamState*>(o);
+    //return qobject_cast<RamState*>(o);
+    // For performance, reinterpret_cast, but be careful with the object passed!
+    return reinterpret_cast<RamState*>(o);
 }
 
 // PUBLIC //

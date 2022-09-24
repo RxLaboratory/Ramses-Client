@@ -27,7 +27,9 @@ RamUser *RamUser::get(QString uuid )
 
 RamUser *RamUser::c(RamObject *o)
 {
-    return qobject_cast<RamUser*>(o);
+    //return qobject_cast<RamUser*>(o);
+    // For performance, reinterpret_cast, but be careful with the object passed!
+    return reinterpret_cast<RamUser*>(o);
 }
 
 // PUBLIC //

@@ -20,7 +20,9 @@ RamApplication *RamApplication::get(QString uuid)
 
 RamApplication *RamApplication::c(RamObject *o)
 {
-    return qobject_cast<RamApplication*>(o);
+    //return qobject_cast<RamApplication*>(o);
+    // For performance, reinterpret_cast, but be careful with the object passed!
+    return reinterpret_cast<RamApplication*>(o);
 }
 
 // PUBLIC //

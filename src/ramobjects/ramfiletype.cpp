@@ -20,7 +20,9 @@ RamFileType *RamFileType::get(QString uuid)
 
 RamFileType *RamFileType::c(RamObject *o)
 {
-    return qobject_cast<RamFileType*>(o);
+    // return qobject_cast<RamFileType*>(o);
+    // For performance, reinterpret_cast, but be careful with the object passed!
+    return reinterpret_cast<RamFileType*>(o);
 }
 
 RamFileType::RamFileType(QString shortName, QString name):

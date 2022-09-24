@@ -18,7 +18,9 @@ RamScheduleComment *RamScheduleComment::get(QString uuid)
 
 RamScheduleComment *RamScheduleComment::c(RamObject *o)
 {
-    return qobject_cast<RamScheduleComment*>(o);
+    //return qobject_cast<RamScheduleComment*>(o);
+    // For performance, reinterpret_cast, but be careful with the object passed!
+    return reinterpret_cast<RamScheduleComment*>(o);
 }
 
 // PUBLIC //

@@ -16,7 +16,9 @@ RamScheduleEntry *RamScheduleEntry::get(QString uuid)
 
 RamScheduleEntry *RamScheduleEntry::c(RamObject *o)
 {
-    return qobject_cast<RamScheduleEntry*>(o);
+    //return qobject_cast<RamScheduleEntry*>(o);
+    // For performance, reinterpret_cast, but be careful with the object passed!
+    return reinterpret_cast<RamScheduleEntry*>(o);
 }
 
 // PUBLIC //

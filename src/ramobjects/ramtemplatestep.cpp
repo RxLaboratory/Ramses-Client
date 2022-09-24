@@ -37,7 +37,9 @@ RamTemplateStep *RamTemplateStep::get(QString uuid)
 
 RamTemplateStep *RamTemplateStep::c(RamObject *o)
 {
-    return qobject_cast<RamTemplateStep*>(o);
+    //return qobject_cast<RamTemplateStep*>(o);
+    // For performance, reinterpret_cast, but be careful with the object passed!
+    return reinterpret_cast<RamTemplateStep*>(o);
 }
 
 // PUBLIC //

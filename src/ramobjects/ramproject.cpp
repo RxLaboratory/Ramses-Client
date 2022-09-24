@@ -21,7 +21,9 @@ RamProject *RamProject::get(QString uuid)
 
 RamProject *RamProject::c(RamObject *o)
 {
-    return qobject_cast<RamProject*>(o);
+    // return qobject_cast<RamProject*>(o);
+    // For performance, reinterpret_cast, but be careful with the object passed!
+    return reinterpret_cast<RamProject*>(o);
 }
 
 // PUBLIC //
