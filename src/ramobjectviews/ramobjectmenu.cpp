@@ -29,8 +29,10 @@ RamObjectMenu::RamObjectMenu(bool checkable, QWidget *parent):
 
 void RamObjectMenu::setObjectModel(RamObjectModel *list)
 {
+    clear();
     if (!list) m_objects->setSourceModel( RamObjectModel::emptyModel() );
     else m_objects->setSourceModel(list);
+    //reset();
 }
 
 RamObjectSortFilterProxyModel *RamObjectMenu::model()
@@ -212,7 +214,7 @@ void RamObjectMenu::removeObject(const QModelIndex &parent, int first, int last)
         for (int j = actions.count() -1; j >= 0; j--)
         {
             QString aUuid = actions.at(j)->data().toString();
-            QString oUuid = m_objects->data(m_objects->index(i, 0), Qt::UserRole).toString();
+            QString oUuid = m_objects->data(m_objects->index(i, 0), RamObject::UUID).toString();
             if (aUuid == oUuid)
             {
                 actions.at(j)->deleteLater();
@@ -264,8 +266,11 @@ void RamObjectMenu::clear()
     QList<QAction*> actions = this->actions();
     for (int j = actions.count() -1; j >= 0; j--)
     {
-        if (actions.at(j)->data().toInt() != 0)
-            actions.at(j)->deleteLater();
+        QAction* a = actions.at(j);
+        if (actions.at(j)->data().toString() != "") {
+            this->removeAction(a);
+            a->deleteLater();
+        }
     }
 }
 
