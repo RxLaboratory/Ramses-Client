@@ -19,7 +19,6 @@ void RamStateBox::changeCurrentState(RamObject *state)
     if (!state) return;
 
     this->setItemData(this->currentIndex(), state->shortName(), Qt::DisplayRole);
-    this->repaint();
 
     QString colorStyle = "background-color: " + state->color().name() + "; ";
     if (state->color().lightness() > 80) colorStyle += "color: #232323;  ";
@@ -32,6 +31,8 @@ void RamStateBox::changeCurrentState(RamObject *state)
     this->setStyleSheet(style);
 
     this->setToolTip(state->name());
+
+    this->repaint();
 
     emit currentStateChanged(RamState::c( state ));
 }

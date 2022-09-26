@@ -169,7 +169,7 @@ void StatusEditWidget::reInit(RamObject *o)
     }
     else
     {
-        ui_stateBox->setCurrentText("STB");
+        ui_stateBox->setObject(Ramses::instance()->stbState());
         ui_completionBox->setValue(0);
         ui_versionBox->setValue(1);
         ui_statusCommentEdit->setPlainText("");

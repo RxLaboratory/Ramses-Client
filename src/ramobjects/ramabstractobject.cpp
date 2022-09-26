@@ -530,14 +530,14 @@ RamAbstractObject::RamAbstractObject(QString uuid, ObjectType type, bool encrypt
     construct();
 }
 
-bool RamAbstractObject::isVirtualObject() const
+bool RamAbstractObject::isSaveSuspended() const
 {
-    return m_virtual;
+    return m_saveSuspended;
 }
 
-void RamAbstractObject::setVirtualObject(bool newVirtual)
+void RamAbstractObject::suspendSave(bool suspend)
 {
-    m_virtual = newVirtual;
+    m_saveSuspended = suspend;
 }
 
 void RamAbstractObject::setDataString(QString data)
@@ -547,7 +547,7 @@ void RamAbstractObject::setDataString(QString data)
     // Cache the data to improve performance
     m_cachedData = data;
 
-    if (m_virtual) return;
+    if (m_virtual || m_saveSuspended) return;
 
     if (m_dataEncrypted)
     {
@@ -588,7 +588,7 @@ QString RamAbstractObject::dataString() const
 
 void RamAbstractObject::createData(QString data)
 {
-    if (m_virtual) return;
+    if (m_virtual || m_saveSuspended) return;
 
     // Cache the data to improve performance
     m_cachedData = data;

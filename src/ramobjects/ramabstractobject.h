@@ -238,8 +238,8 @@ public:
 
     virtual void emitDataChanged() {};
 
-    void setVirtualObject(bool newVirtual);
-    bool isVirtualObject() const;
+    void suspendSave(bool suspend);
+    bool isSaveSuspended() const;
 
 protected:
 
@@ -270,6 +270,7 @@ protected:
     QString m_uuid;
     ObjectType m_objectType;
     bool m_virtual = false;
+    bool m_saveSuspended = false;
     bool m_dataEncrypted = false;
     QString m_cachedData = "";
     bool m_savingData = false;
