@@ -20,9 +20,6 @@
         <file alias="project">resources/icons/cinema-movie_sl.svg</file>
         <file alias="state">resources/icons/state.svg</file>
         <file alias="color-dialog">resources/icons/color-palette_sl.svg</file>
-        <file alias="tray-color">resources/icons/ramses_sc.svg</file>
-        <file alias="tray-dark">resources/icons/ramses_sd.svg</file>
-        <file alias="tray-light">resources/icons/ramses_sl.svg</file>
         <file alias="project-admin">resources/icons/project-leader-head-admin_sl.svg</file>
         <file alias="bash">resources/icons/bash-terminal_sl.svg</file>
         <file alias="daemon">resources/icons/daemon.svg</file>
@@ -73,6 +70,7 @@
         <file alias="storage">resources/icons/storage.svg</file>
         <file alias="storage-settings">resources/icons/storage_settings.svg</file>
         <file alias="lock">resources/icons/lock_sl.svg</file>
+        <file alias="tray-color">resources/icons/ramses-picto.svg</file>
     </qresource>
     <qresource prefix="/styles">
         <file alias="default-ramses-client">resources/style/style-ramses.css</file>

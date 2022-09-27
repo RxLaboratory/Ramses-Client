@@ -46,8 +46,8 @@
 #define SPLASH_IMAGE ":/images/splash"
 
 #define USE_SYSTRAY true
-#define SYSTRAY_ICON_LIGHT ":/icons/tray-light"
+#define SYSTRAY_ICON_LIGHT ":/icons/tray-color"
 #define SYSTRAY_ICON_COLOR ":/icons/tray-color"
-#define SYSTRAY_ICON_DARK ":/icons/tray-dark"
+#define SYSTRAY_ICON_DARK ":/icons/tray-color"
 
 #endif // APPVERSION_H

@@ -143,8 +143,8 @@ void LoginPage::setupUi()
 
     QLabel *logoLabel = new QLabel(this);
     logoLabel->setPixmap(QPixmap(":/icons/logo_large"));
-    logoLabel->setMinimumSize(QSize(256, 298));
-    logoLabel->setMaximumSize(QSize(256, 298));
+    logoLabel->setMinimumSize(QSize(256, 256));
+    logoLabel->setMaximumSize(QSize(256, 256));
     logoLabel->setScaledContents(true);
     logoLabel->setAlignment(Qt::AlignCenter);
     layout->addWidget(logoLabel);
