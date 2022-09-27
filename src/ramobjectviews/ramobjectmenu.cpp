@@ -4,6 +4,7 @@ RamObjectMenu::RamObjectMenu(bool checkable, QWidget *parent):
     QMenu(parent)
 {
     m_objects = new RamObjectSortFilterProxyModel("", this);
+    setSortMode(RamObject::Order);
     m_objects->setSourceModel( RamObjectModel::emptyModel() );
 
     m_checkable = checkable;
@@ -29,15 +30,23 @@ RamObjectMenu::RamObjectMenu(bool checkable, QWidget *parent):
 
 void RamObjectMenu::setObjectModel(RamObjectModel *list)
 {
-    clear();
     if (!list) m_objects->setSourceModel( RamObjectModel::emptyModel() );
-    else m_objects->setSourceModel(list);
-    //reset();
+    else {
+        m_objects->setSourceModel(list);
+        m_objects->sort(0);
+    }
+    clear();
+    reset();
 }
 
 RamObjectSortFilterProxyModel *RamObjectMenu::model()
 {
     return m_objects;
+}
+
+void RamObjectMenu::setSortMode(RamAbstractObject::DataRole mode)
+{
+    m_objects->setSortRole(mode);
 }
 
 void RamObjectMenu::addCreateButton()
@@ -188,14 +197,13 @@ void RamObjectMenu::restoreState(QSettings *settings, QString group)
 
 void RamObjectMenu::newObject(const QModelIndex &parent, int first, int last)
 {
-    Q_UNUSED(parent)
-
     for(int i = first; i <= last; i++)
     {
-        RamObject *o = m_objects->get(i);
-        if (!o) continue;
-        QAction *a = new QAction( o->name() );
-        a->setData( o->uuid() );
+        QModelIndex index = m_objects->index(i, 0, parent);
+        QString uuid = index.data(RamObject::UUID).toString();
+        if (uuid == "") continue;
+        QAction *a = new QAction( index.data(Qt::DisplayRole).toString() );
+        a->setData( uuid );
         a->setCheckable(m_checkable);
         if (m_checkable) a->setChecked(true);
         this->addAction(a);

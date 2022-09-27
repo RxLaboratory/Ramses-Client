@@ -40,7 +40,8 @@ public:
         IsComment = Qt::UserRole+21,
         Difficulty = Qt::UserRole+23,
         Duration = Qt::UserRole+24,
-        Pointer = Qt::UserRole+25
+        Pointer = Qt::UserRole+25,
+        Order = Qt::UserRole+26
     };
     /**
      * @brief The ObjectType enum lists all types of RamObjects

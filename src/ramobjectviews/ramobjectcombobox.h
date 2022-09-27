@@ -13,6 +13,8 @@ public:
     void setObjectModel(RamObjectModel *model);
     void setObjectModel(RamObjectModel *model, QString FilterListName);
 
+    void setSortMode(RamObject::DataRole mode);
+
     RamObject *currentObject();
     QString currentUuid();
     void setObject(QString uuid);
@@ -46,6 +48,8 @@ private:
 
     QString m_resettingUuid;
     bool m_resetting = false;
+
+    RamObjectSortFilterProxyModel *m_objects;
 
 };
 

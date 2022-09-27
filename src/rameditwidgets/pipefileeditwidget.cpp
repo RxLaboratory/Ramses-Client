@@ -64,6 +64,7 @@ void PipeFileEditWidget::setupUi()
     ui_mainFormLayout->addWidget(fileTypeLabel, 3, 0);
 
     ui_fileTypeBox = new RamObjectComboBox(this);
+    ui_fileTypeBox->setSortMode(RamObject::ShortName);
     ui_fileTypeBox->setObjectModel(Ramses::instance()->fileTypes());
     ui_mainFormLayout->addWidget(ui_fileTypeBox, 3, 1);
 

@@ -773,6 +773,7 @@ void ItemManagerWidget::setupUi()
     // State menu
 
     ui_stateMenu = new RamObjectMenu(true, this);
+    ui_stateMenu->setSortMode(RamObject::Completion);
 
     ui_stateButton = new QToolButton(this);
     ui_stateButton->setText(" States");
@@ -900,6 +901,7 @@ void ItemManagerWidget::setupUi()
     ui_contextMenu->addMenu(ui_assignUserMenu);
 
     ui_changeStateContextMenu = new RamObjectMenu(false, this);
+    ui_changeStateContextMenu->setSortMode(RamObject::Completion);
     ui_changeStateContextMenu->setTitle("Change state");
     ui_changeStateContextMenu->setObjectModel(Ramses::instance()->states());
     ui_contextMenu->addMenu(ui_changeStateContextMenu);

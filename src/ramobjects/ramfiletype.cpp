@@ -97,6 +97,15 @@ QString RamFileType::details() const
     return "Extensions: " + extensions().join(", ");
 }
 
+QVariant RamFileType::roleData(int role) const
+{
+    switch(role)
+    {
+    case Qt::DisplayRole: return "." + this->shortName() + " | " + this->name();
+    }
+    return RamAbstractObject::roleData(role);
+}
+
 void RamFileType::edit(bool show)
 {
     if (!ui_editWidget) ui_editWidget = createEditFrame(new FileTypeEditWidget());

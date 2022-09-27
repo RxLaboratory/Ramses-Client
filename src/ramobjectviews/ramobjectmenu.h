@@ -19,6 +19,8 @@ public:
     void setObjectModel(RamObjectModel *list);
     RamObjectSortFilterProxyModel *model();
 
+    void setSortMode(RamObject::DataRole mode);
+
     void addCreateButton();
 
     void setObjectVisible(RamObject *obj, bool visible = true);

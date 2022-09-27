@@ -5,6 +5,10 @@
 RamObjectComboBox::RamObjectComboBox(QWidget *parent):
     QComboBox(parent)
 {
+    m_objects = new RamObjectSortFilterProxyModel("", this);
+    setSortMode(RamObject::Order);
+    m_objects->setSourceModel( RamObjectModel::emptyModel() );
+    this->setModel(m_objects);
     setupUi();
     //setObjectModel(nullptr);
     connectEvents();
@@ -18,15 +22,21 @@ void RamObjectComboBox::setObjectModel(RamObjectModel *model, QString filterList
     this->setModel(proxyModel);
 }
 
+void RamObjectComboBox::setSortMode(RamAbstractObject::DataRole mode)
+{
+    m_objects->setSortRole(mode);
+}
+
 void RamObjectComboBox::setObjectModel(RamObjectModel *model)
 {
     if (model)
     {
-        this->setModel(model);
+        m_objects->setSourceModel(model);
+        m_objects->sort(0);
     }
     else
     {
-        this->setModel( RamObjectModel::emptyModel() );
+        m_objects->setSourceModel( RamObjectModel::emptyModel() );
     }
 }
 

@@ -378,6 +378,7 @@ QVariant RamAbstractObject::roleData(int role) const
     case RamAbstractObject::IsComment: return false;
     case RamAbstractObject::Difficulty: return 0;
     case RamAbstractObject::Duration: return 0;
+    case RamAbstractObject::Order: return order();
     }
 
     return this->uuid();

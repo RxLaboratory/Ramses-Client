@@ -181,6 +181,7 @@ void ProjectEditWidget::setupUi()
     ui_userList->setEditMode(ObjectListWidget::UnassignObjects);
     ui_userList->setTitle("Users");
     ui_userList->setAssignList(Ramses::instance()->users());
+    ui_userList->setSortable(true);
     ui_mainLayout->addWidget(ui_userList);
 }
 
