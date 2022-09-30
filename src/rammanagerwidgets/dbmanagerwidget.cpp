@@ -11,9 +11,10 @@ DBManagerWidget::DBManagerWidget(QWidget *parent)
 
 void DBManagerWidget::clean()
 {
-    QString report = DBInterface::instance()->cleanDabaBase();
+    int deleteFrom = -1;
+    if (ui_deleteCheckBox->isChecked()) deleteFrom = ui_deleteFromEdit->value();
+    QString report = DBInterface::instance()->cleanDabaBase( deleteFrom );
     ui_reportEdit->setMarkdown(report);
-    ui_reportEdit->setEnabled(true);
     ui_cancelCleanButton->setEnabled(true);
     ui_acceptCleanButton->setEnabled(true);
     ui_cleanButton->setEnabled(false);
@@ -56,11 +57,27 @@ void DBManagerWidget::setupUi()
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
     mainLayout->setSpacing(3);
 
+    QGridLayout *topLayout = new QGridLayout(this);
+    topLayout->setSpacing(3);
+    topLayout->setContentsMargins(0,0,0,0);
+    mainLayout->addLayout(topLayout);
+    mainLayout->setAlignment(topLayout, Qt::AlignTop | Qt::AlignCenter);
+
+    ui_deleteCheckBox = new QCheckBox(tr("Delete removed objects older than"));
+    ui_deleteCheckBox->setChecked(false);
+    topLayout->addWidget(ui_deleteCheckBox, 0, 0);
+
+    ui_deleteFromEdit = new AutoSelectSpinBox(this);
+    ui_deleteFromEdit->setMaximum(1000);
+    ui_deleteFromEdit->setSuffix(" days");
+    ui_deleteFromEdit->setValue(180);
+    ui_deleteFromEdit->setEnabled(false);
+    topLayout->addWidget(ui_deleteFromEdit, 0, 1);
+
     ui_cleanButton = new QPushButton(tr("Clean Database"), this);
-    mainLayout->addWidget(ui_cleanButton);
+    topLayout->addWidget(ui_cleanButton, 1, 0, 1, 2);
 
     ui_reportEdit = new QTextEdit();
-    ui_reportEdit->setEnabled(false);
     ui_reportEdit->setReadOnly(true);
     mainLayout->addWidget(ui_reportEdit);
 
@@ -82,4 +99,5 @@ void DBManagerWidget::connectEvents()
     connect(ui_cleanButton, &QPushButton::clicked, this, &DBManagerWidget::clean);
     connect(ui_cancelCleanButton, &QPushButton::clicked, this, &DBManagerWidget::cancel);
     connect(ui_acceptCleanButton, &QPushButton::clicked, this, &DBManagerWidget::accept);
+    connect(ui_deleteCheckBox, &QCheckBox::clicked, ui_deleteFromEdit, &AutoSelectSpinBox::setEnabled);
 }

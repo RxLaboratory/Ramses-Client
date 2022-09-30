@@ -1,6 +1,8 @@
 #ifndef DBMANAGERWIDGET_H
 #define DBMANAGERWIDGET_H
 
+#include "duqf-widgets/autoselectspinbox.h"
+
 class DBManagerWidget : public QWidget
 {
     Q_OBJECT
@@ -22,7 +24,8 @@ private:
     QPushButton *ui_cancelCleanButton;
     QPushButton *ui_acceptCleanButton;
     QTextEdit *ui_reportEdit;
-
+    AutoSelectSpinBox *ui_deleteFromEdit;
+    QCheckBox *ui_deleteCheckBox;
 
 };
 

@@ -63,6 +63,8 @@ public:
 
     void setUserPassword(QString uuid, QString newPassword, QString currentPassword);
 
+    void deleteData(QHash<QString, QSet<QString> > uuidsToDelete);
+
 public slots:
     /**
      * @brief setOnline posts a ping, and set the status to "Connecting"
@@ -77,7 +79,7 @@ public slots:
 signals:
     void sslChanged(bool);
     void connectionStatusChanged(NetworkUtils::NetworkStatus, QString);
-    void syncReady(QJsonArray);
+    void syncReady(QJsonObject);
     void newData(QJsonObject);
     void userChanged(QString);
 

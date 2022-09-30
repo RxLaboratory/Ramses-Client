@@ -595,7 +595,7 @@ void RamServerInterface::dataReceived(QNetworkReply *reply)
             return;
         }
 
-        emit syncReady(repObj.value("content").toObject().value("tables").toArray());
+        emit syncReady(repObj.value("content").toObject());
     }
     else if (repQuery == "setPassword")
     {
@@ -771,6 +771,28 @@ void RamServerInterface::setUserPassword(QString uuid, QString newPassword, QStr
     body.insert("newPassword", newPassword);
     body.insert("currentPassword", currentPassword);
     Request r = buildRequest("setPassword", body);
+    postRequest(r);
+}
+
+void RamServerInterface::deleteData(QHash<QString, QSet<QString> > uuidsToDelete)
+{
+    QJsonObject body;
+    QJsonArray tables;
+    QHashIterator<QString, QSet<QString>> i(uuidsToDelete);
+    while (i.hasNext()) {
+        i.next();
+        QJsonArray uuids;
+        foreach(QString uuid, i.value()) {
+            uuids.append(uuid);
+        }
+        QJsonObject table;
+        table.insert("rows", uuids);
+        table.insert("name", i.key());
+        tables.append(table);
+    }
+
+    body.insert("tables", tables);
+    Request r = buildRequest("clean", body);
     postRequest(r);
 }
 

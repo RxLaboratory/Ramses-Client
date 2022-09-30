@@ -249,7 +249,7 @@ void DBInterface::resumeSync()
     m_updateTimer->start(m_updateFrequency);
 }
 
-QString DBInterface::cleanDabaBase()
+QString DBInterface::cleanDabaBase(int deleteDataOlderThan)
 {
     qDebug() << ">>> Beginning database clean...";
 
@@ -259,7 +259,7 @@ QString DBInterface::cleanDabaBase()
 
     // Clean !
     qDebug() << "--- Cleaning ---";
-    return m_ldi->cleanDataBase();
+    return m_ldi->cleanDataBase( deleteDataOlderThan );
 }
 
 bool DBInterface::undoClean()
@@ -276,6 +276,11 @@ bool DBInterface::undoClean()
 
 void DBInterface::acceptClean()
 {
+    // Get the data to delete,
+    // and clean the server data
+    QHash<QString, QSet<QString> > deletedUuids = m_ldi->deletedUuids();
+    m_rsi->deleteData( deletedUuids );
+
     resumeSync();
     // Full sync
     fullSync();

@@ -755,6 +755,23 @@ void LocalDataInterface::saveSync(QJsonArray tables)
     emit synced();
 }
 
+void LocalDataInterface::deleteData(QJsonArray tables)
+{
+    for (int i = 0; i < tables.count(); i++)
+    {
+        QJsonObject table = tables.at(i).toObject();
+        QString tableName = table.value("name").toString();
+        QJsonArray rows = table.value("rows").toArray();
+
+        for (int j = 0; j < rows.count(); j++)
+        {
+            QString uuid = rows.at(j).toString();
+            QString q = "DELETE FROM %1 WHERE `uuid` = '%2';";
+            query( q.arg( tableName, uuid ) );
+        }
+    }
+}
+
 QString LocalDataInterface::currentUserUuid()
 {
     QString q = "SELECT uuid FROM _User WHERE current = 1;";
@@ -777,9 +794,11 @@ void LocalDataInterface::setCurrentUserUuid(QString uuid)
     query( q.arg(uuid) );
 }
 
-void LocalDataInterface::sync(QJsonArray tables)
+void LocalDataInterface::sync(QJsonObject data)
 {
-    saveSync(tables);
+    saveSync(data.value("tables").toArray());
+
+    deleteData(data.value("deletedData").toArray());
 
     // Save sync date
     QString q = "DELETE FROM _Sync;";
@@ -840,7 +859,7 @@ QVector<QStringList> LocalDataInterface::users()
     return us;
 }
 
-QString LocalDataInterface::cleanDataBase()
+QString LocalDataInterface::cleanDataBase(int deleteDataOlderThan)
 {
     QString report = "";
 
@@ -891,11 +910,53 @@ QString LocalDataInterface::cleanDataBase()
     if (numStatusChanged == 0) report += "*Everything is fine.*\n\n";
     else report += "**" + QString::number(numStatusChanged) + " status** were updated.\n\n";
 
+    // 2- Get removed rows older than limit
+    if (deleteDataOlderThan >= 0)
+    {
+        report += ".\n\n## Deleted Data\n\n";
+        qDebug() << ">>> Collecting data older than " << deleteDataOlderThan << " days.";
+
+        QString limitDate = QDateTime::currentDateTimeUtc().addDays(-deleteDataOlderThan).toString("yyyy-MM-dd hh:mm:ss");
+        qDebug() << "    Date: " << limitDate;
+
+        int dataRemoved = false;
+        m_uuidsToRemove.clear();
+
+        // For each table, get UUIDs to clean
+        QStringList tables = tableNames();
+        for (int i = 0; i < tables.count(); i++) {
+
+            QString table = tables[i];
+            qDebug() << "    From: " << table;
+
+            // List uuids to remove
+            QString q = "SELECT uuid FROM %1 WHERE `removed` = 1 AND `modified` <= '%2'";
+            QSqlQuery qry = query( q.arg(table, limitDate) );
+
+            // Collect and remove uuids
+            QSet<QString> uuids;
+            while (qry.next()) {
+                QString uuid = qry.value(0).toString();
+                q = "DELETE FROM %1 WHERE `uuid` = '%2' AND `removed` = 1;";
+                query( q.arg(table, uuid) );
+                uuids.insert( uuid );
+            }
+
+            int count = uuids.count();
+            if (count > 0) {
+                qDebug() << "    count: " << count;
+                dataRemoved = true;
+                m_uuidsToRemove.insert(table, uuids);
+                report += "Deleted " + QString::number(count) + " objects from " + table + ".\n\n";
+            }
+        }
+        if (!dataRemoved) report += "*Nothing was found to delete.*\n\n";
+    }
 
     // Vacuum
     vacuum();
     report += ".\n\n## Maintenance\n\n";
-    report += "Deleted and orphan data has been removed from disk,  \nthe database size has been shrinked to its minimum.\n\n";
+    report += "Deleted and orphan data has been removed from disk,  \nthe database size has been shrinked to its minimum size.\n\n";
 
     qDebug() << "Finished clean.";
 
@@ -1033,5 +1094,10 @@ void LocalDataInterface::vacuum()
 {
     QString q = "VACUUM;";
     query( q );
+}
+
+const QHash<QString, QSet<QString> > &LocalDataInterface::deletedUuids() const
+{
+    return m_uuidsToRemove;
 }
 

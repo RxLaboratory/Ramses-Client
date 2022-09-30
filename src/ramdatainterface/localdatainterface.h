@@ -86,6 +86,7 @@ public:
 
     QJsonObject getSync(bool fullSync=true);
     void saveSync(QJsonArray tables);
+    void deleteData(QJsonArray tables);
 
     QString currentUserUuid();
     void setCurrentUserUuid(QString uuid);
@@ -94,11 +95,13 @@ public:
     QVector<QStringList> users();
 
     // MAINTENANCE //
-    QString cleanDataBase();
+    QString cleanDataBase(int deleteDataOlderThan = -1);
     bool undoClean();
 
+    const QHash<QString, QSet<QString> > &deletedUuids() const;
+
 public slots:
-    void sync(QJsonArray tables);
+    void sync(QJsonObject data);
 
 signals:
     void dataReset();
@@ -144,6 +147,9 @@ private:
 
     // Cache UUIDS to check their existence faster
     QHash<QString, QSet<QString>> m_uuids;
+
+    // The UUIDS to delete when cleaning the database
+    QHash<QString, QSet<QString>> m_uuidsToRemove;
 
     //QThread m_queryThread;
     //Querier *m_tQuerier;

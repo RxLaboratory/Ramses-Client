@@ -99,7 +99,7 @@ public slots:
      */
     void setOnline();
     // MAINTENANCE //
-    QString cleanDabaBase();
+    QString cleanDabaBase(int deleteDataOlderThan = -1);
     bool undoClean();
     void acceptClean();
 
