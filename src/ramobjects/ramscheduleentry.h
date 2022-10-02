@@ -2,40 +2,47 @@
 #define RAMSCHEDULEENTRY_H
 
 #include "ramobject.h"
-#include "ramuser.h"
+
 #include "ramstep.h"
+#include "ramuser.h"
 
 class RamScheduleEntry : public RamObject
 {
     Q_OBJECT
 public:
-    explicit RamScheduleEntry(RamUser *user, RamStep *step, QDateTime date);
-    explicit RamScheduleEntry(RamUser *user, RamStep *step, QDateTime date, QString uuid);
-    ~RamScheduleEntry();
 
-    QString name() const override;
-    QString shortName() const override;
+    // STATIC METHODS //
+
+    static RamScheduleEntry *get(QString uuid);
+    static RamScheduleEntry* c(RamObject *o);
+
+    // METHODS
+
+    explicit RamScheduleEntry(RamUser *user, QDateTime date);
 
     RamUser *user() const;
-    void setUser(RamUser *newUser);
+    const QDateTime &date() const;
 
     RamStep *step() const;
     void setStep(RamStep *newStep);
 
-    const QDateTime &date() const;
-    void setDate(const QDateTime &newDate);
+    virtual QString iconName() const override;
 
-    struct ScheduleEntryStruct toStruct() const;
+    virtual QVariant roleData(int role) const override;
 
-    static RamScheduleEntry *scheduleEntry(QString uuid);
+protected:
+    static QHash<QString, RamScheduleEntry*> m_existingObjects;
+    RamScheduleEntry(QString uuid);
+    virtual QString folderPath() const override { return ""; };
 
-public slots:
-    void update() override;
-    virtual void removeFromDB() override;
+private slots:
+    void stepRemoved();
 
 private:
+    void construct();
+    void connectEvents();
+
     RamUser *m_user = nullptr;
-    RamStep *m_step = nullptr;
     QDateTime m_date;
 };
 

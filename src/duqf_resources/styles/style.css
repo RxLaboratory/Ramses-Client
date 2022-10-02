@@ -39,7 +39,7 @@ QLabel:disabled {
 /* PUSH BUTTONS */
 
 QPushButton {
-    background-color: @color-less-dark-grey;
+    background: none;
     border-radius: @padding-small;
     padding: @padding-small;
     border: none;
@@ -181,7 +181,7 @@ QCheckBox::indicator:disabled, QRadioButton::indicator:disabled {
 /* COMBO BOX */
 
 QComboBox {
-    background-color: @color-less-dark-grey;
+    background-color: @color-transparent;
     border-radius: @padding-small;
     padding: @padding-small;
     border:none;
@@ -455,23 +455,25 @@ QSplitter::handle {
 /* TABS */
 
 QTabWidget {
-    background-color: @color-dark-grey;
+    background-color: @color-transparent;
 }
 
 QTabWidget::pane { /* The tab widget frame */
     border:none;
-    background-color: @color-dark-grey;
+    background-color: @color-transparent;
 }
 
 QTabBar::tab {
-    background-color: @color-very-dark-grey;
+    background-color: @color-transparent;
     color: @color-medium-grey;
     border: none;
     padding: @padding-small;
+    border-radius: @padding-small;
+    margin-right: @padding-small;
 }
 
 QTabBar::tab:selected {
-        background-color: @color-dark-grey;
+        background-color: @color-very-dark-grey;
         color: @color-less-light-grey;
 }
 
@@ -634,7 +636,6 @@ QGroupBox QLineEdit {
     background-color: @color-very-dark-grey;
 }
 
-
 /* TOOLBARS */
 
 QToolBar {
@@ -666,7 +667,6 @@ QToolBar:top QWidget, QToolBar:bottom QWidget {
 QToolBar:left QWidget, QToolBar:right QWidget {
     margin-bottom: @margin;
 }
-
 
 QToolBar QLineEdit, QToolBar QComboBox, QToolBar QAbstractSpinBox {
     background-color: @color-dark-grey;
@@ -786,6 +786,15 @@ QStatusBar QToolButton:pressed {
     background-color: @color-abyss-grey;
 }
 
+#fundingBar:hover {
+        color: @color-light-grey;
+        background-color: @color-dark-grey;
+}
+
+#fundingBar::chunk:hover {
+        background-color: @color-less-light-grey;
+}
+
 /* SPLASH SCREEN */
 
 QSplashScreen QProgressBar {
@@ -822,11 +831,17 @@ QDockWidget QAbstractItemView
 }
 
 QDockWidget QComboBox,
+QDockWidget QPushButton
+{
+    background-color: @color-transparent;
+}
+
 QDockWidget QComboBox::item,
 QDockWidget QComboBox QAbstractItemView
 {
     background-color: @color-less-dark-grey;
 }
+
 
 DuQFDockTitle QFrame {
     background-color: @color-less-dark-grey;

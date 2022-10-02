@@ -4,7 +4,6 @@
 #include "objectnode.h"
 
 #include "ramstep.h"
-#include "stepeditwidget.h"
 
 class StepNode : public ObjectNode
 {
@@ -13,6 +12,7 @@ public:
     RamStep *step() const;
 private slots:
     void stepChanged();
+    void removeStep();
 private:
     RamStep *_step;
 };

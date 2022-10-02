@@ -1,43 +1,50 @@
 #ifndef RAMASSET_H
 #define RAMASSET_H
 
-#include "ramitem.h"
+#include "ramabstractitem.h"
+#include "ramassetgroup.h"
 
-class RamProject;
-class RamAssetGroup;
-
-class RamAsset : public RamItem
+class RamAsset : public RamAbstractItem
 {
     Q_OBJECT
 public:
-    explicit RamAsset(QString shortName, RamAssetGroup *assetGroup, QString name = "",  QString uuid = "");
-    ~RamAsset();
+
+    // STATIC //
+
+    static RamAsset *get(QString uuid);
+    static RamAsset *c(RamObject *o);
+
+    // OTHER //
+
+    RamAsset(QString shortName, QString name, RamAssetGroup *ag);
+
+    QColor color() const override;
 
     RamAssetGroup *assetGroup() const;
-    void setAssetGroup(RamAssetGroup *assetGroup);
+    void setAssetGroup(RamAssetGroup *ag);
 
     QStringList tags() const;
     void setTags(QString tags);
     void addTag(QString tag);
     void removeTag(QString tag);
-    bool hasTag(QString tag);   
+    bool hasTag(QString tag);
 
-    static RamAsset *asset(QString uuid);
+    QString filterUuid() const override;
+
+    virtual QString details() const override;
 
 public slots:
-    void update() override;
     virtual void edit(bool show = true) override;
-    virtual void removeFromDB() override;
 
 protected:
+    static QHash<QString, RamAsset*> m_existingObjects;
+    RamAsset(QString uuid);
     virtual QString folderPath() const override;
 
-private:
-    QStringList _tags;
-    // Containers
-    RamAssetGroup *m_assetGroup;
+    static QFrame *ui_assetWidget;
 
-    QMetaObject::Connection m_assetGroupConnection;
+private:
+    void construct();
 };
 
 #endif // RAMASSET_H

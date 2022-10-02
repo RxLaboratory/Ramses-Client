@@ -1,75 +1,108 @@
 #include "ramuser.h"
 
+#include "ramabstractitem.h"
 #include "ramses.h"
-#include "usereditwidget.h"
-#include "data-models/ramobjectlist.h"
 #include "ramscheduleentry.h"
+#include "usereditwidget.h"
+#include "ramdatainterface/dbinterface.h"
+#include "ramasset.h"
+#include "ramshot.h"
+#include "duqf-app/app-config.h"
 
-RamUser::RamUser(QString shortName, QString name, QString uuid) :
-    RamObject(shortName, name, uuid, Ramses::instance())
+// STATIC //
+
+QFrame *RamUser::ui_editWidget = nullptr;
+
+QHash<QString, RamUser*> RamUser::m_existingObjects = QHash<QString, RamUser*>();
+
+RamUser *RamUser::get(QString uuid )
 {
-    m_icon = ":/icons/user";
-    m_editRole = Admin;
+    if (!checkUuid(uuid, User)) return nullptr;
 
-    setObjectType(User);
-    m_role = Standard;
-    m_schedule = new RamObjectList("SCHDL", "Schedule", this);
+    RamUser *u = m_existingObjects.value(uuid);
+    if (u) return u;
 
-    m_dbi->createUser(m_shortName, m_name, m_uuid);
-
-    this->setObjectName( "RamUser" );
-
-    // When the schedule changes, warn the step
-    connect(m_schedule, SIGNAL(objectInserted(RamObject*)),this,SLOT(scheduleChanged(RamObject*)) );
-    connect(m_schedule, SIGNAL(objectRemoved(RamObject*)),this,SLOT(scheduleChanged(RamObject*)) );
-    connect(m_schedule, SIGNAL(objectDataChanged(RamObject*)),this,SLOT(scheduleChanged(RamObject*)));
+    // Finally return a new instance
+    return new RamUser(uuid);
 }
 
-RamUser::~RamUser()
+RamUser *RamUser::c(RamObject *o)
 {
+    //return qobject_cast<RamUser*>(o);
+    // For performance, reinterpret_cast, but be careful with the object passed!
+    return reinterpret_cast<RamUser*>(o);
+}
 
+// PUBLIC //
+
+RamUser::RamUser(QString shortName, QString name) :
+    RamObject(shortName, name, User, nullptr, shortName == "Ramses", ENCRYPT_USER_DATA)
+{
+    construct();
+    if (shortName.toLower() != "new" && shortName != "Ramses")
+        DBInterface::instance()->setUsername(m_uuid, shortName);
+    if (shortName == "Ramses") m_uuid = "none";
+}
+
+RamUser::RamUser(QString uuid):
+    RamObject(uuid, User, nullptr, ENCRYPT_USER_DATA)
+{
+    construct();
+
+    loadModel( m_schedule, "schedule" );
+}
+
+void RamUser::setShortName(const QString &shortName)
+{
+    RamAbstractObject::setShortName(shortName);
+    // Set username
+    DBInterface::instance()->setUsername(m_uuid, shortName);
+}
+
+bool RamUser::validateShortName(const QString &shortName)
+{
+    if (!RamAbstractObject::validateShortName(shortName)) return false;
+    return DBInterface::instance()->isUserNameAavailable(shortName);
 }
 
 RamUser::UserRole RamUser::role() const
 {
-    return m_role;
+    QString roleStr = getData("role").toString("standard");
+    if (roleStr == "admin") return Admin;
+    if (roleStr == "project") return ProjectAdmin;
+    if (roleStr == "lead") return Lead;
+    return Standard;
 }
 
 void RamUser::setRole(const UserRole &role)
 {
-    if (role == m_role) return;
-    m_dirty = true;
-    m_role = role;
-    emit changed(this);
+    switch(role)
+    {
+    case Admin:
+        insertData("role", "admin");
+        m_icon = ":/icons/admin";
+        break;
+    case ProjectAdmin:
+        insertData("role", "project");
+        m_icon = ":/icons/project-admin";
+        break;
+    case Lead:
+        insertData("role", "lead");
+        m_icon = ":/icons/lead";
+        break;
+    case Standard:
+        insertData("role", "standard");
+        m_icon = ":/icons/user";
+        break;
+    }
 }
 
 void RamUser::setRole(const QString role)
 {
-    if (role == "admin")setRole(Admin);
-    else if (role == "project") setRole(ProjectAdmin);
-    else if (role == "lead") setRole(Lead);
-    else setRole(Standard);
+    insertData("role", role);
 }
 
-QString RamUser::folderPath() const
-{
-    return Ramses::instance()->path(RamObject::UsersFolder) + "/" + m_shortName;
-}
-
-const QColor &RamUser::color() const
-{
-    return m_color;
-}
-
-void RamUser::setColor(const QColor &newColor)
-{
-    if (m_color == newColor) return;
-    m_dirty = true;
-    m_color = newColor;
-    emit changed(this);
-}
-
-RamObjectList *RamUser::schedule() const
+RamObjectModel *RamUser::schedule() const
 {
     return m_schedule;
 }
@@ -77,9 +110,9 @@ RamObjectList *RamUser::schedule() const
 bool RamUser::isStepAssigned(RamStep *step) const
 {
     // Check in schedule
-    for(int i = 0; i < m_schedule->count(); i++)
+    for(int i = 0; i < m_schedule->rowCount(); i++)
     {
-        RamScheduleEntry *entry = qobject_cast<RamScheduleEntry*>( m_schedule->at(i) );
+        RamScheduleEntry *entry = RamScheduleEntry::c( m_schedule->get(i) );
         if (!entry) continue;
 
         if (step->is(entry->step())) return true;
@@ -88,63 +121,78 @@ bool RamUser::isStepAssigned(RamStep *step) const
     if (step->type() != RamStep::ShotProduction && step->type() != RamStep::AssetProduction) return false;
 
     // Check in status
-    RamObjectList *items;
-    if (step->type() == RamStep::ShotProduction) items = step->project()->shots();
+    RamObjectModel *items;
+    RamStep::Type type = step->type();
+    if (type == RamStep::ShotProduction) items = step->project()->shots();
     else items = step->project()->assets();
 
-    for (int i =0; i < items->count(); i++)
+    for (int i =0; i < items->rowCount(); i++)
     {
-        RamItem *item = qobject_cast<RamItem*>( items->at(i) );
+        RamAbstractItem *item;
+        if (type == RamStep::ShotProduction) item = RamShot::c( items->get(i) );
+        else item = RamAsset::c( items->get(i) );
         RamStatus *status = item->status(step);
         if (!status) continue;
         if (this->is(status->assignedUser())) return true;
     }
 
-
     return false;
 }
 
-void RamUser::update()
+QString RamUser::iconName() const
 {
-    if(!m_dirty) return;
-    RamObject::update();
-    QString role = "standard";
-    if (m_role == Admin) role = "admin";
-    else if (m_role == ProjectAdmin) role = "project";
-    else if (m_role == Lead) role = "lead";
-
-    m_dbi->updateUser(m_uuid, m_shortName, m_name, role, m_comment, m_color);
+    switch(role())
+    {
+    case Admin:
+        return ":/icons/admin";
+    case ProjectAdmin:
+        return ":/icons/project-admin";
+    case Lead:
+        return ":/icons/lead";
+    case Standard:
+        return ":/icons/user";
+    }
+    return ":/icons/user";
 }
 
-void RamUser::updatePassword(QString c, QString n)
+QString RamUser::details() const
 {
-    m_dbi->updateUserPassword(m_uuid, c, n);
+    switch(role())
+    {
+    case Admin:
+        return "Administrator";
+    case ProjectAdmin:
+        return "Project Admin";
+    case Lead:
+        return "Lead";
+    case Standard:
+        return "Standard User";
+    }
+    return "User";
 }
 
-RamUser *RamUser::user(QString uuid)
-{
-    return qobject_cast<RamUser*>( RamObject::obj(uuid) );
-}
+// PUBLIC SLOTS //
 
 void RamUser::edit(bool show)
 {
-    if (!m_editReady)
-    {
-        UserEditWidget *w = new UserEditWidget(this);
-        setEditWidget(w);
-        m_editReady = true;
-    }
-    if (show) showEdit();
+    if (!ui_editWidget) ui_editWidget = createEditFrame(new UserEditWidget(this));
+
+    if (show) showEdit( ui_editWidget  );
 }
 
-void RamUser::removeFromDB()
+// PROTECTED //
+
+QString RamUser::folderPath() const
 {
-    m_dbi->removeUser(m_uuid);
+    return Ramses::instance()->path(RamObject::UsersFolder) + "/" + shortName();
 }
 
-void RamUser::scheduleChanged(RamObject *entryObj)
+// PRIVATE //
+
+void RamUser::construct()
 {
-    RamScheduleEntry *entry = qobject_cast<RamScheduleEntry*>( entryObj );
-    if (!entryObj) return;
-    if (!entry->step()) return;
+    m_existingObjects[m_uuid] = this;
+    m_icon = ":/icons/user";
+    m_editRole = Admin;
+    m_schedule = createModel(RamObject::ScheduleEntry, "schedule");
 }

@@ -10,14 +10,14 @@ DuQFLogger *DuQFLogger::instance()
     return _instance;
 }
 
-QList<DuQFLog> DuQFLogger::logs()
+QVector<DuQFLog> DuQFLogger::logs()
 {
     return _logs;
 }
 
-QList<DuQFLog> DuQFLogger::logs(DuQFLog::LogType minLevel)
+QVector<DuQFLog> DuQFLogger::logs(DuQFLog::LogType minLevel)
 {
-    QList<DuQFLog> el;
+    QVector<DuQFLog> el;
     foreach(DuQFLog l, _logs)
     {
         if (l.type() >= minLevel) el << l;
@@ -115,7 +115,8 @@ QColor DuQFLog::color(bool darkBG)
     if (darkBG)
     {
         switch(_t) {
-            case DuQFLog::Debug: return QColor(109,109,109);
+            case DuQFLog::Data: return QColor(109,109,109);
+            case DuQFLog::Debug: return QColor(95,104,161);
             case DuQFLog::Information: return QColor(157,157,157);
             case DuQFLog::Warning: return QColor(236,215,24);
             case DuQFLog::Critical: return QColor(249,105,105);
@@ -126,9 +127,10 @@ QColor DuQFLog::color(bool darkBG)
     else
     {
         switch(_t) {
-            case DuQFLog::Debug: return QColor(37,37,37);
+            case DuQFLog::Data: return QColor(37,37,37);
+            case DuQFLog::Debug: return QColor(39,44,61);
             case DuQFLog::Information: return QColor(67,67,67);
-            case DuQFLog::Warning: return QColor(16,104,142);
+            case DuQFLog::Warning: return QColor(125,114,12);
             case DuQFLog::Critical: return QColor(172,16,16);
             case DuQFLog::Fatal: return QColor(129,9,173);
             default: return QColor();
@@ -139,8 +141,9 @@ QColor DuQFLog::color(bool darkBG)
 QString DuQFLog::typeString() const
 {
     switch(_t) {
+        case DuQFLog::Data: return "(Data) " + _c;
         case DuQFLog::Debug: return "(Debug) " + _c;
-        case DuQFLog::Information: return _c;
+        case DuQFLog::Information: return "(Information) " + _c;
         case DuQFLog::Warning: return "/!\\ Warning: " + _c;
         case DuQFLog::Critical: return " --- !!! Critical: " + _c;
         case DuQFLog::Fatal: return " === Fatal === " + _c;
@@ -156,7 +159,7 @@ DuQFLoggerObject::DuQFLoggerObject(QString component, QObject *parent): QObject(
     DuQFLogger::instance()->tie(this);
 }
 
-void DuQFLoggerObject::log(QString message, DuQFLog::LogType type)
+void DuQFLoggerObject::log(QString message, DuQFLog::LogType type) const
 {
     emit newLog(DuQFLog(message, type, _c));
 }

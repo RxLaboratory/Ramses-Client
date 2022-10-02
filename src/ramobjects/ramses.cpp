@@ -1,5 +1,7 @@
 #include "ramses.h"
 
+// STATIC //
+
 Ramses *Ramses::_instance = nullptr;
 
 Ramses *Ramses::instance()
@@ -8,212 +10,102 @@ Ramses *Ramses::instance()
     return _instance;
 }
 
-Ramses::~Ramses()
+void Ramses::setUserUuid(QString uuid)
 {
-    DBInterface::instance()->suspend(true);
-}
-
-Ramses::Ramses(QObject *parent) : RamObject(parent)
-{
-    qDebug() << "Initialising Ramses";
-    m_dbi = DBInterface::instance();
-
-    m_users = new RamObjectList("USRS", "Users", this);
-    m_states = new RamStateList(this);
-    m_projects = new RamObjectList("PRJCTS", "Projects", this);
-    m_templateSteps = new RamObjectList("TPLTSTPS", "Template steps", this);
-    m_templateAssetGroups = new RamObjectList("TPLTAGS", "Template asset groups", this);
-    m_fileTypes = new RamObjectList ("FLTPS", "File types", this);
-    m_applications = new RamObjectList("APPS", "Applications", this);
-    m_ramUser = nullptr;
-
-    DBISuspender s;
-
-    m_currentUser = nullptr;
-    m_currentProject = nullptr;
-    m_ramsesPath = m_settings.value("ramsesPath", QDir::homePath() + "/Ramses").toString();
-
-    m_connected = false;
-
-    connect( (DuApplication *)qApp, &DuApplication::idle, this, &Ramses::refresh);
-    connect( m_dbi, &DBInterface::connectionStatusChanged, this, &Ramses::dbiConnectionStatusChanged);
-
-    this->setObjectName( "Ramses Class" );
-
-    qDebug() << "Ramses Ready!";
-}
-
-void Ramses::login(QString username, QString password)
-{
-    m_dbi->suspend(false);
-    m_dbi->login(username, password);
-}
-
-void Ramses::dbiConnectionStatusChanged(NetworkUtils::NetworkStatus s)
-{
-    if (s != NetworkUtils::Online)
+    if (uuid == "")
     {
-        QSignalBlocker b(m_dbi);
-        logout();
+        setUser(nullptr);
+        return;
     }
+    RamUser *u = RamUser::get(uuid);
+    setUser(u);
 }
 
-QDir Ramses::createDir(QString p) const
+// PUBLIC
+
+void Ramses::setUser(RamUser *u)
 {
-    QDir d(p);
-    if (p != "") d.mkpath(".");
-    return d;
+    m_currentUser = u;
+    if (!u)
+    {
+        setCurrentProject(nullptr);
+        emit userChanged(nullptr);
+        qDebug() << "Logged out.";
+        return;
+    }
+
+    // Set current project
+    QSettings *uSettings = m_currentUser->settings();
+    QString projUuid = uSettings->value("ramses/currentProject", "").toString();
+
+    if (projUuid != "") setCurrentProject( RamProject::get(projUuid) );
+    else setCurrentProject(nullptr);
+
+    m_dbi->setCurrentUserUuid(m_currentUser->uuid());
+
+    emit userChanged(m_currentUser);
+
+    qDebug() << "Logged in: " + m_currentUser->name();
 }
 
-QString Ramses::createPath(QString p) const
+void Ramses::setRamsesPath(QString p)
 {
-    QDir d = createDir(p);
-    return d.absolutePath();
-}
-
-void Ramses::setRamsesPath(const QString &ramsesPath)
-{
-    m_ramsesPath = ramsesPath;
+    m_dbi->setRamsesPath(p);
 }
 
 QString Ramses::pathFromRamses(QString p, bool create) const
 {
+    if (p == "") return folderPath();
+
     QString path;
     if (QFileInfo( p ).isRelative())
     {
-        path = m_ramsesPath + "/" + p;
+        path = folderPath() + "/" + p;
     }
     else
     {
         path = p;
     }
     if (create)
-        return createPath( p );
+        return QDir::cleanPath(createPath( p ));
     else
-        return p;
+        return QDir::cleanPath(p);
 }
 
-void Ramses::setCurrentUser(RamUser *u)
+DBTableModel *Ramses::users() const
 {
-    if (u) m_connected = true;
-    else m_connected = false;
+    return m_users;
+}
 
-    if (!m_currentUser && !u) return;
-    if (m_currentUser) if (m_currentUser->is(u)) return;
+RamUser *Ramses::currentUser() const
+{
+    return m_currentUser;
+}
 
-    m_currentUser = u;
+RamUser *Ramses::ramsesUser()
+{
+    if (m_ramsesUser) return m_ramsesUser;
 
-    if (u) emit loggedIn(m_currentUser);
-    else
+    m_ramsesUser = RamUser::c( m_users->search("Ramses") );
+
+    if (!m_ramsesUser)
     {
-        setCurrentProject(nullptr);
-        emit loggedOut();
+        m_ramsesUser = new RamUser("Ramses", "Ramses Daemon");
+        //m_users->append(m_ramsesUser);
     }
+    return m_ramsesUser;
 }
 
-RamProject *Ramses::currentProject() const
+RamUser *Ramses::removedUser()
 {
-    return m_currentProject;
-}
+    if (m_removedUser) return m_removedUser;
 
-void Ramses::init()
-{
-    if(!m_currentUser) return;
-    QSettings *uSettings = m_currentUser->settings();
-    setCurrentProjectUuid(uSettings->value("ramses/currentProject", "").toString());
-}
-
-void Ramses::setCurrentProject(RamProject *project)
-{
-
-    if ( m_currentProject ) if ( m_currentProject->is(project) ) return;
-    if ( project )
+    m_removedUser = RamUser::c( m_users->search("Removed") );
+    if (!m_removedUser)
     {
-        qDebug() << "Setting project: Database call";
-        m_dbi->getProject(project->uuid());
+        m_removedUser = new RamUser("Removed", "Removed User");
     }
-    else
-    {
-        qDebug() << "Setting project to none";
-        m_currentProject = nullptr;
-        emit currentProjectChanged(m_currentProject);
-    }
-}
-
-void Ramses::projectReady(QString uuid)
-{
-    RamProject *currentProject = RamProject::project(uuid);
-    if ( !currentProject ) return;
-
-    if (currentProject->is( m_currentProject )) return;
-
-    m_currentProject = currentProject;
-    if(m_currentUser)
-    {
-        QSettings *uSettings = m_currentUser->settings();
-        uSettings->setValue("ramses/currentProject", m_currentProject->uuid() );
-    }
-
-    qDebug() << "Setting current project to: " + m_currentProject->shortName();
-#ifdef DUMP_OBJECT_DEBUG
-    dumpObjectInfo();
-#endif
-    emit currentProjectChanged(m_currentProject);
-}
-
-void Ramses::setOnline()
-{
-    m_connected = true;
-}
-
-void Ramses::setOffline()
-{
-    m_connected = false;
-}
-
-QString Ramses::folderPath() const
-{
-    return m_ramsesPath;
-}
-
-void Ramses::setCurrentProject(QString shortName)
-{
-    setCurrentProject( RamProject::projectFromName(shortName) );
-}
-
-void Ramses::setCurrentProjectUuid(QString uuid)
-{
-    setCurrentProject( RamProject::project(uuid) );
-}
-
-RamObjectList *Ramses::templateSteps() const
-{
-    return m_templateSteps;
-}
-
-RamObjectList *Ramses::templateAssetGroups() const
-{
-    return m_templateAssetGroups;
-}
-
-RamStateList *Ramses::states() const
-{
-    return m_states;
-}
-
-RamObjectList *Ramses::fileTypes() const
-{
-    return m_fileTypes;
-}
-
-RamObjectList *Ramses::applications() const
-{
-    return m_applications;
-}
-
-RamObjectList *Ramses::projects() const
-{
-    return m_projects;
+    return m_removedUser;
 }
 
 bool Ramses::isAdmin()
@@ -234,15 +126,23 @@ bool Ramses::isLead()
     return m_currentUser->role() >= RamUser::Lead;
 }
 
+DBTableModel *Ramses::states() const
+{
+    return m_states;
+}
+
 RamState *Ramses::noState()
 {
-    if(m_noState) return m_noState;
-    m_noState = qobject_cast<RamState*>( m_states->fromName("NO") );
+    if (m_noState) return m_noState;
+    m_noState = RamState::c( m_states->search("NO") );
     if (!m_noState)
     {
         m_noState = new RamState("NO", "Nothing to do");
         m_noState->setColor(QColor(36,36,36));
-        m_states->append(m_noState);
+        m_states->insertObjects(
+                    m_states->rowCount(),
+                    QVector<QString>() << m_noState->uuid()
+                    );
     }
     return m_noState;
 }
@@ -250,12 +150,15 @@ RamState *Ramses::noState()
 RamState *Ramses::todoState()
 {
     if(m_todoState) return m_todoState;
-    m_todoState =  qobject_cast<RamState*>( m_states->fromName("TODO") );
+    m_todoState =  RamState::c( m_states->search("TODO") );
     if (!m_todoState)
     {
         m_todoState = new RamState("TODO", "To do");
         m_todoState->setColor(QColor(85,170,255));
-        m_states->append(m_todoState);
+        m_states->insertObjects(
+                    m_states->rowCount(),
+                    QVector<QString>() << m_todoState->uuid()
+                    );
     }
     return m_todoState;
 }
@@ -263,12 +166,15 @@ RamState *Ramses::todoState()
 RamState *Ramses::okState()
 {
     if(m_okState) return m_okState;
-    m_okState =  qobject_cast<RamState*>( m_states->fromName("OK") );
+    m_okState =  RamState::c( m_states->search("OK") );
     if (!m_okState)
     {
         m_okState = new RamState("OK", "Finished");
         m_okState->setColor(QColor(0,170,0));
-        m_states->append(m_okState);
+        m_states->insertObjects(
+                    m_states->rowCount(),
+                    QVector<QString>() << m_okState->uuid()
+                    );
     }
     return m_okState;
 }
@@ -276,12 +182,15 @@ RamState *Ramses::okState()
 RamState *Ramses::stbState()
 {
     if(m_stbState) return m_stbState;
-    m_stbState = qobject_cast<RamState*>( m_states->fromName("STB") );
+    m_stbState = RamState::c( m_states->search("STB") );
     if (!m_stbState)
     {
         m_stbState = new RamState("STB", "Stand by");
         m_stbState->setColor(QColor(168,168,168));
-        m_states->append(m_stbState);
+        m_states->insertObjects(
+                    m_states->rowCount(),
+                    QVector<QString>() << m_stbState->uuid()
+                    );
     }
     return m_stbState;
 }
@@ -289,89 +198,148 @@ RamState *Ramses::stbState()
 RamState *Ramses::wipState()
 {
     if (m_wipState) return m_wipState;
-    m_wipState = qobject_cast<RamState*>( m_states->fromName("WIP") );
+    m_wipState = RamState::c( m_states->search("WIP") );
     if (!m_wipState)
     {
         m_wipState = new RamState("WIP", "Work in progress");
         m_wipState->setColor(QColor(255,255,127));
-        m_states->append(m_wipState);
+        m_states->insertObjects(
+                    m_states->rowCount(),
+                    QVector<QString>() << m_wipState->uuid()
+                    );
     }
     return m_wipState;
 }
 
-void Ramses::logout()
+DBTableModel *Ramses::projects() const
 {
-    setOffline();
-    // Suspend the db interface until there's a login!
-    m_dbi->suspend();
-    setCurrentProject(nullptr);
-    m_currentUser = nullptr;
-    emit loggedOut();
+    return m_projects;
 }
 
-void Ramses::refresh()
+RamProject *Ramses::currentProject() const
 {
-    /*
-    // Get Users
-    _dbi->getUsers();
-    // Get Template Steps
-    _dbi->getTemplateSteps();
-    // Get Template Asset Groups
-    _dbi->getTemplateAssetGroups();
-    // Get States
-    _dbi->getStates();
-    // Get file types
-    _dbi->getFileTypes();
-    // Get applications
-    _dbi->getApplications();*/
-
-    // Only if connected
-    if (!isOnline()) return;
-
-    // Get current project
-    m_dbi->init();
+    return m_currentProject;
 }
 
-bool Ramses::isOnline() const
+void Ramses::setCurrentProject(RamProject *project)
 {
-    return m_connected;
-}
+    m_currentProject = project;
 
-RamUser *Ramses::currentUser() const
-{
-    return m_currentUser;
-}
-
-RamUser *Ramses::ramUser()
-{
-    if (m_ramUser) return m_ramUser;
-    m_ramUser = qobject_cast<RamUser*>( m_users->fromName("Ramses") );
-    if (!m_ramUser)
+    if (m_currentUser && m_currentProject)
     {
-        m_ramUser = new RamUser("Ramses", "Ramses Daemon");
-        m_ramUser->updatePassword("", RamUuid::generateUuidString("Ramses"));
+        QSettings *uSettings = m_currentUser->settings();
+        uSettings->setValue("ramses/currentProject", m_currentProject->uuid() );
     }
-    return m_ramUser;
+    emit currentProjectChanged(m_currentProject);
 }
 
-RamUser *Ramses::removedUser()
+void Ramses::setCurrentProject(QString shortName)
 {
-    if (m_removedUser) return m_removedUser;
-    m_removedUser = qobject_cast<RamUser*>( m_users->fromName("Removed") );
-    if (!m_removedUser)
-    {
-        m_removedUser = new RamUser("Removed", "Removed User");
-        m_removedUser->updatePassword("", RamUuid::generateUuidString("Removed"));
-    }
-    return m_removedUser;
+    setCurrentProject( RamProject::c(m_projects->search(shortName)) );
 }
 
-void Ramses::setRamUser(RamUser *user)
+void Ramses::setCurrentProjectUuid(QString uuid)
 {
-    m_ramUser = user;
+    if (uuid == "") setCurrentProject( nullptr );
+    setCurrentProject( RamProject::get(uuid) );
 }
 
-RamObjectList *Ramses::users() const
+DBTableModel *Ramses::templateSteps() const
 {
-    return m_users;
+    return m_templateSteps;
 }
+
+DBTableModel *Ramses::templateAssetGroups() const
+{
+    return m_templateAssetGroups;
+}
+
+DBTableModel *Ramses::fileTypes() const
+{
+    return m_fileTypes;
+}
+
+DBTableModel *Ramses::applications() const
+{
+    return m_applications;
+}
+
+// PROTECTED
+
+QString Ramses::folderPath() const
+{
+    QString path = m_dbi->ramsesPath();
+    if (path == "" || path == "auto") path = QDir::homePath() + "/Ramses";
+    return path;
+}
+
+// PRIVATE
+
+Ramses::Ramses(QObject *parent):
+    RamObject("RMSS", "Ramses", ObjectType::Ramses, parent, true)
+{
+    qDebug() << "Initialising Ramses";
+    m_dbi = DBInterface::instance();
+
+    m_states = new DBTableModel(RamAbstractObject::State, this);
+    m_users = new DBTableModel(RamAbstractObject::User, this);
+    m_templateSteps = new DBTableModel(RamAbstractObject::TemplateStep, this);
+    m_projects = new DBTableModel(RamAbstractObject::Project, this);
+    m_templateAssetGroups = new DBTableModel(RamAbstractObject::TemplateAssetGroup, this);
+    m_fileTypes = new DBTableModel(RamAbstractObject::FileType, this);
+    m_applications = new DBTableModel(RamAbstractObject::Application, this);
+
+    this->setObjectName( "Ramses Class" );
+
+    connect(m_dbi, &DBInterface::userChanged, this, &Ramses::setUserUuid);
+
+    qDebug() << "Ramses Ready!";
+}
+
+QDir Ramses::createDir(QString p) const
+{
+    QDir d(p);
+    if (p != "") d.mkpath(".");
+    return d;
+}
+
+QString Ramses::createPath(QString p) const
+{
+    QDir d = createDir(p);
+    return d.absolutePath();
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

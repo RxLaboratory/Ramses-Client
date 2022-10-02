@@ -2,36 +2,49 @@
 #define RAMSEQUENCE_H
 
 #include "ramobject.h"
-#include "data-models/ramobjectfiltermodel.h"
 
-class RamProject;
+#include "ramobjectsortfilterproxymodel.h"
+
+#include "ramproject.h"
 
 class RamSequence : public RamObject
 {
     Q_OBJECT
 public:
-    explicit RamSequence(QString shortName, RamProject *project, QString name,  QString uuid = "");
-    ~RamSequence();
+
+    // STATIC METHODS //
+
+    static RamSequence *get(QString uuid);
+    static RamSequence *c(RamObject *o);
+
+    // METHODS //
+
+    RamSequence(QString shortName, QString name, RamProject *project);
 
     int shotCount() const;
     double duration() const;
 
     RamProject *project() const;
 
-    static RamSequence *sequence(QString uuid);
+    virtual QString details() const override;
 
-    const QColor &color() const;
-    void setColor(const QColor &newColor);
+    virtual QVariant roleData(int role) const override;
 
 public slots:
-    void update() override;
     virtual void edit(bool show = true) override;
-    virtual void removeFromDB() override;
+
+protected:
+    static QHash<QString, RamSequence*> m_existingObjects;
+    RamSequence(QString uuid);
+    virtual QString folderPath() const override { return ""; };
+
+    static QFrame *ui_editWidget;
 
 private:
-    RamProject *m_project;
-    RamObjectFilterModel *m_shots;
-    QColor m_color;
+    void construct();
+    void setProject(RamProject *project);
+
+    RamObjectSortFilterProxyModel *m_shots;
 };
 
 #endif // RAMSEQUENCE_H

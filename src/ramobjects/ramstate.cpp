@@ -1,75 +1,83 @@
 #include "ramstate.h"
 
-#include "ramses.h"
 #include "stateeditwidget.h"
 
-RamState::RamState(QString shortName, QString name, QString uuid) :
-    RamObject(shortName, name, uuid, Ramses::instance())
+// STATIC //
+
+QFrame *RamState::ui_editWidget = nullptr;
+
+QHash<QString, RamState*> RamState::m_existingObjects = QHash<QString, RamState*>();
+
+RamState *RamState::get(QString uuid )
 {
-    m_icon = ":/icons/state-l";
-    m_editRole = Admin;
+    if (!checkUuid(uuid, State)) return nullptr;
 
-    this->setObjectType(State);
-    m_dbi->createState(m_shortName, m_name, m_uuid);
+    RamState *s = m_existingObjects.value(uuid);
+    if (s) return s;
 
-    this->setObjectName( "RamState" );
+    // Finally return a new instance
+    return new RamState(uuid);
 }
 
-RamState::~RamState()
+RamState *RamState::c(RamObject *o)
 {
-
+    //return qobject_cast<RamState*>(o);
+    // For performance, reinterpret_cast, but be careful with the object passed!
+    return reinterpret_cast<RamState*>(o);
 }
 
-QColor RamState::color() const
+// PUBLIC //
+
+RamState::RamState(QString shortName, QString name) :
+    RamObject(shortName, name, State)
 {
-    return _color;
+    construct();
 }
 
-void RamState::setColor(const QColor &color)
+RamState::RamState(QString uuid):
+    RamObject(uuid, State)
 {
-    if (_color == color) return;
-    m_dirty = true;
-    _color = color;
-    emit changed(this);
+    construct();
 }
 
 int RamState::completionRatio() const
 {
-    return _completionRatio;
+    return getData("completionRatio").toInt(50);
 }
 
 void RamState::setCompletionRatio(int completionRatio)
 {
-    if (_completionRatio == completionRatio) return;
-    m_dirty = true;
-    _completionRatio = completionRatio;
-    emit changed(this);
+    insertData("completionRatio", completionRatio);
 }
 
-void RamState::update()
+QString RamState::details() const
 {
-    if(!m_dirty) return;
-    RamObject::update();
-    m_dbi->updateState(m_uuid, m_shortName, m_name, _color.name(), QString::number(_completionRatio), m_comment);
+    return "Completion ratio: " + QString::number(completionRatio()) + "%";
 }
 
-void RamState::removeFromDB()
+QVariant RamState::roleData(int role) const
 {
-    m_dbi->removeState(m_uuid);
+    switch(role)
+    {
+    case RamAbstractObject::Completion: return this->completionRatio();
+    }
+    return RamObject::roleData(role);
 }
+
+// PUBLIC SLOTS //
 
 void RamState::edit(bool show)
 {
-    if (!m_editReady)
-    {
-        StateEditWidget *w = new StateEditWidget(this);
-        setEditWidget(w);
-        m_editReady = true;
-    }
-    if (show) showEdit();
+    if (!ui_editWidget) ui_editWidget = createEditFrame(new StateEditWidget());
+
+    if (show) showEdit( ui_editWidget );
 }
 
-RamState *RamState::state(QString uuid)
+// PRIVATE //
+
+void RamState::construct()
 {
-    return qobject_cast<RamState*>( RamObject::obj(uuid) );
+    m_existingObjects[m_uuid] = this;
+    m_icon = ":/icons/state-l";
+    m_editRole = Admin;
 }

@@ -3,12 +3,12 @@
 
 #include <QComboBox>
 
-#include "ramses.h"
 #include "processmanager.h"
-#include "ramobjectlistcombobox.h"
-#include "data-models/ramprojectfiltermodel.h"
+#include "ramobjectcombobox.h"
+#include "ramobjectsortfilterproxymodel.h"
+#include "ramproject.h"
 
-class ProjectSelectorWidget : public RamObjectListComboBox
+class ProjectSelectorWidget : public RamObjectComboBox
 {
     Q_OBJECT
 public:
@@ -18,7 +18,7 @@ private slots:
     void currentProjectChanged(RamProject *p);
     void userChanged(RamUser *user);
 private:
-    RamProjectFilterModel *m_projectFilter;
+    RamObjectSortFilterProxyModel *m_projectFilter;
     ProcessManager *m_pm;
 };
 

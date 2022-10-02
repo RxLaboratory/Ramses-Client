@@ -4,24 +4,22 @@
 #include <QWidget>
 #include <QClipboard>
 
-#include "objectlisteditwidget.h"
-#include "data-models/ramstepstatushistory.h"
-#include "ramitem.h"
+#include "objectlistwidget.h"
 
 class StepStatusHistoryWidget : public QWidget
 {
 public:
     explicit StepStatusHistoryWidget(QWidget *parent = nullptr);
-    explicit StepStatusHistoryWidget(RamStepStatusHistory *history, QWidget *parent = nullptr);
-    void setHistory(RamStepStatusHistory *history);
+    explicit StepStatusHistoryWidget(RamObjectModel *history, QWidget *parent = nullptr);
+    void setHistory(RamObjectModel *history);
 
 private:
     void setupUi();
     void connectEvents();
 
-    ObjectListEditWidget *m_statusList;
+    ObjectListWidget *m_statusList;
 
-    RamStepStatusHistory *m_history = nullptr;
+    RamObjectModel *m_history = nullptr;
 };
 
 #endif // STEPSTATUSHISTORYWIDGET_H

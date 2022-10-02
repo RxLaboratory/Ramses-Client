@@ -7,7 +7,6 @@
 #include <QMessageBox>
 
 #include "duqf-widgets/duqfelidedlabel.h"
-#include "duqf-utils/utils.h"
 
 class DuQFFolderDisplayWidget : public QWidget
 {

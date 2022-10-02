@@ -3,47 +3,48 @@
 
 #include <QObject>
 
+#include "ramobject.h"
+#include "ramproject.h"
 #include "ramfiletype.h"
-
-class RamProject;
 
 class RamPipeFile : public RamObject
 {
     Q_OBJECT
 public:
-    explicit RamPipeFile(QString shortName, RamProject *project);
-    /**
-     * @brief RamPipeFile Creqtes qn empty pipefile instqnce. Note that this will NOT creqte it in the database
-     * Use RamPipeFile(QString shortName, RamProject *project, QObject *parent = nullptr) to qdd it to the database
-     * @param uuid The pipefile uuid
-     * @param parent The parent QObject
-     */
-    explicit RamPipeFile(QString uuid, QObject *parent = nullptr);
-    ~RamPipeFile();
+
+    // STATIC //
+
+    static RamPipeFile *get(QString uuid);
+    static RamPipeFile *c(RamObject *o);
+
+    // OTHER //
+
+    RamPipeFile(QString shortName, RamProject *project);
 
     QString name() const override;
 
     RamFileType *fileType() const;
-    void setFileType(RamFileType *newFileType);  
+    void setFileType(RamFileType *newFileType);
 
     const RamProject *project() const;
-    void setProject(RamProject *project);
 
-    static RamPipeFile *pipeFile(QString uuid);
-
-    const QString &customSettings() const;
+    QString customSettings() const;
     void setCustomSettings(const QString &newCustomSettings);
 
+    virtual QString details() const override;
+
 public slots:
-    void update() override;
     virtual void edit(bool show = true) override;
-    virtual void removeFromDB() override;
+
+protected:
+    static QHash<QString, RamPipeFile*> m_existingObjects;
+    RamPipeFile(QString uuid);
+    virtual QString folderPath() const override { return ""; };
+
+    static QFrame *ui_editWidget;
 
 private:
-    RamFileType *m_fileType;
-    RamProject *m_project;
-
-    QString m_customSettings = "";
+    void construct();
 };
 
 #endif // RAMPIPEFILE_H

@@ -4,10 +4,8 @@
 #include <QDockWidget>
 
 #include "duqf-nodeview/duqfnode.h"
-#include "duqf-utils/guiutils.h"
 
 #include "ramobject.h"
-#include "objecteditwidget.h"
 
 class ObjectNode : public DuQFNode
 {
@@ -19,7 +17,6 @@ protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
 
 private slots:
-    void removeObject();
     virtual void objectChanged();
     void objectRemoved();
 

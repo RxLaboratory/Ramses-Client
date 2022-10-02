@@ -1,57 +1,59 @@
 #include "ramassetgroup.h"
-#include "ramproject.h"
-#include "ramses.h"
 
 #include "assetgroupeditwidget.h"
-#include "templateassetgroupeditwidget.h"
 
-RamAssetGroup::RamAssetGroup(QString shortName, QString name, QString uuid) :
-    RamObject(shortName, name, uuid, Ramses::instance())
+// STATIC //
+
+QFrame *RamAssetGroup::ui_assetGroupWidget = nullptr;
+
+QHash<QString, RamAssetGroup*> RamAssetGroup::m_existingObjects = QHash<QString, RamAssetGroup*>();
+
+RamAssetGroup *RamAssetGroup::get(QString uuid)
 {
-    m_icon = ":/icons/asset-group";
-    m_editRole = Admin;
+    if (!checkUuid(uuid, AssetGroup)) return nullptr;
 
-    this->setObjectType(AssetGroup);
-    m_project = nullptr;
-    m_template = true;
-    if (m_template) m_dbi->createTemplateAssetGroup(m_shortName, m_name, m_uuid);
+    RamAssetGroup *a = m_existingObjects.value(uuid);
+    if (a) return a;
 
-    this->setObjectName( "RamAssetGroup (template) " + m_shortName );
+    // Finally return a new instance
+    return new RamAssetGroup(uuid);
 }
 
-RamAssetGroup::RamAssetGroup(QString shortName, RamProject *project, QString name, QString uuid):
-    RamObject(shortName, name, uuid, project)
+RamAssetGroup *RamAssetGroup::c(RamObject *o)
 {
-    m_icon = ":/icons/asset-group";
-    m_editRole = ProjectAdmin;
-
-    this->setObjectType(AssetGroup);
-    m_project = project;
-    m_template = false;
-    m_dbi->createAssetGroup(m_shortName, m_name, m_project->uuid(), m_uuid);
-
-    m_assets = new RamObjectFilterModel(this);
-    m_assets->setSourceModel(project->assets());
-    m_assets->setFilterUuid( m_uuid );
-
-    this->setObjectName( "RamAssetGroup " + m_shortName);
+    //return qobject_cast<RamAssetGroup*>(o);
+    // For performance, reinterpret_cast, but be careful with the object passed!
+    return reinterpret_cast<RamAssetGroup*>(o);
 }
 
-RamAssetGroup::~RamAssetGroup()
-{
-
-}
-
-bool RamAssetGroup::isTemplate() const
-{
-    return m_template;
-}
-
-RamAssetGroup *RamAssetGroup::createFromTemplate(RamProject *project)
+RamAssetGroup *RamAssetGroup::createFromTemplate(RamTemplateAssetGroup *tempAG, RamProject *project)
 {
     // Create
-    RamAssetGroup *assetGroup = new RamAssetGroup(m_shortName, project, m_name);
+    RamAssetGroup *assetGroup = new RamAssetGroup(tempAG->shortName(), tempAG->name(), project);
+    assetGroup->setColor(tempAG->color());
+    project->assetGroups()->appendObject(assetGroup->uuid());
     return assetGroup;
+}
+
+// PUBLIC //
+
+RamAssetGroup::RamAssetGroup(QString shortName, QString name, RamProject *project):
+    RamTemplateAssetGroup(shortName, name, AssetGroup)
+{
+    construct();
+    setProject(project);
+    insertData("project", project->uuid());
+}
+
+RamAssetGroup::RamAssetGroup(QString uuid):
+    RamTemplateAssetGroup(uuid, AssetGroup)
+{
+    construct();
+
+    QJsonObject d = data();
+
+    QString projUuid = d.value("project").toString();
+    setProject( RamProject::get(projUuid) );
 }
 
 int RamAssetGroup::assetCount() const
@@ -61,46 +63,47 @@ int RamAssetGroup::assetCount() const
 
 RamProject *RamAssetGroup::project() const
 {
-    return m_project;
+    QString projUuid = getData("project").toString();
+    return RamProject::get(projUuid);
 }
 
-RamAssetGroup *RamAssetGroup::assetGroup(QString uuid)
+QString RamAssetGroup::details() const
 {
-    return qobject_cast<RamAssetGroup*>( RamObject::obj(uuid));
-}
-
-void RamAssetGroup::update()
-{
-    if (!m_dirty) return;
-    RamObject::update();
-    if (m_template) m_dbi->updateTemplateAssetGroup(m_uuid, m_shortName, m_name, m_comment);
-    else m_dbi->updateAssetGroup(m_uuid, m_shortName, m_name, m_comment);
+    return "Contains " + QString::number(assetCount()) + " assets";
 }
 
 void RamAssetGroup::edit(bool show)
 {
-    if (!m_editReady)
-    {
-        ObjectEditWidget *w;
-        if (this->isTemplate())
-            w = new TemplateAssetGroupEditWidget(this);
-        else
-            w = new AssetGroupEditWidget(this);
-        setEditWidget(w);
-        m_editReady = true;
-    }
-    if (show) showEdit();
+    if (!ui_assetGroupWidget) ui_assetGroupWidget = createEditFrame(new AssetGroupEditWidget());
+
+    if (show) showEdit(ui_assetGroupWidget);
 }
 
-void RamAssetGroup::removeFromDB()
-{
-    if (m_template) m_dbi->removeTemplateAssetGroup(m_uuid);
-    else m_dbi->removeAssetGroup(m_uuid);
-}
+// PROTECTED //
 
 QString RamAssetGroup::folderPath() const
 {
-    if (m_template) return "";
-    return m_project->path(RamObject::AssetsFolder) + "/" + m_name;
+    RamProject *proj = project();
+    if (!proj) return "";
+    return proj->path(RamObject::AssetsFolder) + "/" + name();
+}
+
+// PRIVATE //
+
+void RamAssetGroup::construct()
+{
+    m_existingObjects[m_uuid] = this;
+    m_objectType = AssetGroup;
+    m_assets = new RamObjectSortFilterProxyModel(this);
+    m_assets->setSingleColumn(true);
+    m_icon = ":/icons/asset-group";
+    m_editRole = ProjectAdmin;
+}
+
+void RamAssetGroup::setProject(RamProject *project)
+{
+    m_assets->setSourceModel( project->assets() );
+    m_assets->setFilterUuid( m_uuid );
+    this->setParent( project );
 }
 

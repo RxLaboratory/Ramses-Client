@@ -11,11 +11,11 @@
 #include <QMenu>
 #include <QShortcut>
 
-#include "ramobjectlistview.h"
-#include "ramobjectlistcombobox.h"
 #include "duqf-widgets/duqfsearchedit.h"
-#include "filetypeeditwidget.h"
-#include "data-views/ramobjectlistmenu.h"
+#include "ramobjectlistcombobox.h"
+#include "ramobjectlistmenu.h"
+#include "ramuser.h"
+#include "ramobjectview.h"
 
 /**
  * @brief The ObjectListEditWidget class displays and edits a RamObjectList
@@ -34,7 +34,7 @@ public:
 
     explicit ObjectListEditWidget(bool editableObjects = false, RamUser::UserRole editRole = RamUser::Admin, QWidget *parent = nullptr);
     explicit ObjectListEditWidget(RamObjectList *objectList, bool editableObjects = false, RamUser::UserRole editRole = RamUser::Admin, QWidget *parent = nullptr);
-    void setList(RamObjectList *objectList);
+    void setList(QAbstractItemModel *objectList);
     void setFilterList(RamObjectList *filterList);
     void setAssignList(RamObjectList *assignList);
     void setDontRemoveShortNameList(QStringList dontRemove);
@@ -48,6 +48,8 @@ public:
     QToolButton *addButton() const;
     QString currentFilterUuid() const;
     RamObject *currentFilter() const;
+    void setSortMode(RamObjectList::DataRole mode);
+    void sort();
 
     RamObjectListView *listWidget();
 
@@ -60,8 +62,6 @@ signals:
     void add();
 
 private slots:
-    void edit(RamObject *obj);
-
     void assign(RamObject *obj);
 
     void objectAssigned(const QModelIndex &parent,int first,int last);
@@ -88,7 +88,8 @@ private:
     QStringList m_dontRemove;
 
     // Current List
-    RamObjectList *m_objectList = nullptr;
+    RamObject::ObjectType m_type = RamObject::State;
+    QAbstractItemModel *m_objectList = nullptr;
     RamObjectList *m_assignList = nullptr;
     RamObjectList *m_filterList = nullptr;
 

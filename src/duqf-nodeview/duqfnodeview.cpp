@@ -39,12 +39,13 @@ void DuQFNodeView::zoom(double amount)
 
     double z = currentZoom();
     if (z*s < 0.25) return;
+    if (z*s > 4) return;
 
     scale( s, s );
 
     z = currentZoom();
     emit zoomed(z);
-    emit zoomed(int(z*100));
+    emit scaled(int(z*100));
 }
 
 qreal DuQFNodeView::currentZoom()
@@ -79,7 +80,7 @@ void DuQFNodeView::frameSelected()
 
     double z = currentZoom();
     emit zoomed(z);
-    emit zoomed(int(z*100));
+    emit scaled(int(z*100));
 }
 
 void DuQFNodeView::reinitTransform()
@@ -89,7 +90,7 @@ void DuQFNodeView::reinitTransform()
 
     double z = currentZoom();
     emit zoomed(z);
-    emit zoomed(int(z*100));
+    emit scaled(int(z*100));
 }
 
 void DuQFNodeView::setZoom(int zoomPercent)
@@ -107,7 +108,11 @@ void DuQFNodeView::wheelEvent(QWheelEvent *event)
 
     if (!numPixels.isNull())
     {
-        zoom( numPixels.y() );
+        double y = numPixels.y();
+        // Normalize: on some systems values are insane :)
+        if (y > 10) y /= 10;
+        if (y < -10) y /= 10;
+        zoom( y );
     }
     else if (!numDegrees.isNull())
     {

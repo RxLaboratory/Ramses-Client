@@ -97,11 +97,11 @@ void RamFileMetaDataManager::setPipeType(QString fileName, QString pipeType)
     setValue(fileName, PipeType, pipeType);
 }
 
-QList<qint64> RamFileMetaDataManager::getModificationHistory(QString fileName) const
+QVector<qint64> RamFileMetaDataManager::getModificationHistory(QString fileName) const
 {
-    QList<QVariant> history = getValue(fileName, ModificationHistory).toList();
+    QVariantList history = getValue(fileName, ModificationHistory).toList();
 
-    QList<qint64> h;
+    QVector<qint64> h;
     for (int i =0; i < history.count(); i++)
     {
         h << history.at(i).toULongLong();
@@ -112,7 +112,7 @@ QList<qint64> RamFileMetaDataManager::getModificationHistory(QString fileName) c
 
 qint64 RamFileMetaDataManager::getTimeRange(QString fileName, QDateTime after) const
 {
-    QList<qint64> fileHistory = getModificationHistory(fileName);
+    QVector<qint64> fileHistory = getModificationHistory(fileName);
     if (fileHistory.count() == 0)
     {
         // if the file exists, consider there's been half an hour

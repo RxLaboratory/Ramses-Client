@@ -22,6 +22,7 @@ namespace FileUtils
     void setReadWrite(QString path);
     bool move(QString from, QString to, bool moveToTrashIfExists = false);
     void copy(QString from, QString to);
+    QString copyToTemporary(QString from);
     void remove(QString path);
     qint64 getDirSize(QDir d);
     void openInExplorer(QString path, bool askForCreation = false);
@@ -127,13 +128,13 @@ namespace NetworkUtils
 {
     Q_NAMESPACE
 
-    enum NetworkStatus { Connecting, Online, Offline };
+    enum NetworkStatus { Connecting, Online, Offline, Error };
     Q_ENUM_NS(NetworkStatus)
 
 };
 
 namespace RegExUtils {
-    QRegularExpression getRegularExpression(QString name , QString replace = "", QString by = "");
+    QRegularExpression getRegularExpression(QString name , QString replace = "", QString by = "", bool fullMatch = false);
     /**
      * @brief getRegExp Don't use this, always prefer getRegularExpression!
      * getRegExp is meant only to be used with QRegExpValidator which doesn't accept QRegularExpression
@@ -153,6 +154,10 @@ namespace ProcessUtils {
     QProcess *runProcess(QString binary, QStringList arguments = QStringList());
     void runProcess(QProcess *p, QString binary, QStringList arguments = QStringList());
     void runIndependantProcess(QString binary, QStringList arguments = QStringList());
+}
+
+namespace AppUtils {
+    void restartApp();
 }
 
 #endif // UTILS_H

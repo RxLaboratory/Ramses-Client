@@ -2,9 +2,9 @@
 #define APPVERSION_H
 
 #define VERSION_MAJOR 0
-#define VERSION_MINOR 2
-#define VERSION_BUILD 11
-#define VERSION_SUFFIX "Alpha"
+#define VERSION_MINOR 5
+#define VERSION_BUILD 0
+#define VERSION_SUFFIX "Beta1"
 
 #define STRINGIFY_VERSION(A, B, C) CONCAT(A, B, C )
 #define CONCAT(A, B, C ) STRINGIFY( A##.##B##.##C )
@@ -37,16 +37,17 @@
 #define URL_CHAT "http://chat.rxlab.info"
 #define URL_FORUM ""
 #define URL_DOC "http://ramses.rxlab.guide"
+#define URL_SOURCECODE "https://github.com/RxLaboratory/Ramses"
 #define URL_BUGREPORT "https://github.com/RxLaboratory/Ramses/issues/new/choose"
 #define URL_DONATION "http://donate.rxlab.info"
-#define URL_UPDATE "http://version.rxlab.io"
+#define URL_UPDATE "http://api.rxlab.io"
 
 #define APP_ICON ":/icons/app"
 #define SPLASH_IMAGE ":/images/splash"
 
 #define USE_SYSTRAY true
-#define SYSTRAY_ICON_LIGHT ":/icons/tray-light"
+#define SYSTRAY_ICON_LIGHT ":/icons/tray-color"
 #define SYSTRAY_ICON_COLOR ":/icons/tray-color"
-#define SYSTRAY_ICON_DARK ":/icons/tray-dark"
+#define SYSTRAY_ICON_DARK ":/icons/tray-color"
 
 #endif // APPVERSION_H

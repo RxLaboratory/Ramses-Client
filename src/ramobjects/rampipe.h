@@ -1,49 +1,55 @@
 #ifndef RAMPIPE_H
 #define RAMPIPE_H
 
-#include "ramstep.h"
-#include "data-models/ramobjectlist.h"
+#include "ramobject.h"
 
-class RamProject;
+#include "ramproject.h"
+
+class RamStep;
 
 class RamPipe : public RamObject
 {
     Q_OBJECT
 public:
-    RamPipe(RamStep *output, RamStep *input, QString uuid = "");
-    ~RamPipe();
+
+    // STATIC //
+
+    static RamPipe *get(QString uuid);
+    static RamPipe *c(RamObject *o);
+
+    // OTHER //
+
+    RamPipe(RamStep *output, RamStep *input);
+
+    RamStep *outputStep() const;
+    void setOutputStep(RamObject *outputStep);
+    RamStep *inputStep() const;
+    void setInputStep(RamObject *inputStep);
 
     QString name() const override;
 
-    RamStep *outputStep() const;
-    void setOutputStep(RamStep *outputStep);
-
-    RamStep *inputStep() const;
-    void setInputStep(RamStep *inputStep);
-
     RamProject *project() const;
 
-    RamObjectList *pipeFiles() const;
-
-    static RamPipe *pipe(QString uuid);
+    RamObjectModel *pipeFiles() const;
 
 public slots:
-    void update() override;
     virtual void edit(bool show = true) override;
-    virtual void removeFromDB() override;
+
+protected:
+    static QHash<QString, RamPipe*> m_existingObjects;
+    RamPipe(QString uuid);
+    virtual QString folderPath() const override { return ""; };
+
+    static QFrame *ui_editWidget;
 
 private slots:
-    void pipeFileUnassigned(const QModelIndex &parent, int first, int last);
-    void pipeFileAssigned(const QModelIndex &parent, int first, int last);
-    void pipeFileUnassigned();
-    void pipeFileChanged();
+    void pipeFilesDataChanged();
 
 private:
-    RamStep *m_outputStep;
-    RamStep *m_inputStep;
-    RamObjectList *m_pipeFiles;
-    QMetaObject::Connection m_inputConnection;
-    QMetaObject::Connection m_outputConnection;
+    void construct();
+    void connectEvents();
+
+    RamObjectModel *m_pipeFiles;
 };
 
 #endif // RAMPIPE_H

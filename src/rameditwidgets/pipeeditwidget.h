@@ -5,9 +5,9 @@
 #include <QMenu>
 
 #include "objecteditwidget.h"
-#include "objectlisteditwidget.h"
-#include "ramobjectlistcombobox.h"
-#include "ramses.h"
+#include "objectlistwidget.h"
+#include "ramobjectcombobox.h"
+#include "rampipe.h"
 
 /**
  * @brief The PipeEditWidget class is used to edit a RamPipe and is usually shown in the MainWindow Dock
@@ -15,28 +15,30 @@
 class PipeEditWidget : public ObjectEditWidget
 {
 public:
-    PipeEditWidget(RamPipe *pipe = nullptr, QWidget *parent = nullptr);
+    PipeEditWidget(QWidget *parent = nullptr);
+    PipeEditWidget(RamPipe *pipe, QWidget *parent = nullptr);
 
-public slots:
-    void setObject(RamObject *pipeObj) override;
+    RamPipe *pipe() const;
 
-protected slots:
-    void update() override;
+protected:
+    virtual void reInit(RamObject *o) override;
 
 private slots:
     void appChanged();
     void createPipeFile();
+    void setInputStep(RamObject *step);
+    void setOutputStep(RamObject *step);
 
 private:
-    RamPipe *_pipe = nullptr;
+    RamPipe *m_pipe = nullptr;
 
     void setupUi();
     void connectEvents();
     void populateMenus(RamProject *project);
 
-    RamObjectListComboBox *ui_fromBox;
-    RamObjectListComboBox *ui_toBox;
-    ObjectListEditWidget *ui_pipeFileList;
+    RamObjectComboBox *ui_fromBox;
+    RamObjectComboBox *ui_toBox;
+    ObjectListWidget *ui_pipeFileList;
 };
 
 #endif // PIPEEDITWIDGET_H

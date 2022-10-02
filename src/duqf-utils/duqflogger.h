@@ -4,9 +4,7 @@
 #include <QObject>
 #include <QTime>
 #include <QColor>
-#include "utils.h"
 
-#include "config.h"
 
 class DuQFLog
 {
@@ -44,9 +42,9 @@ class DuQFLoggerObject: public QObject
 public:
     explicit DuQFLoggerObject(QString component = "", QObject *parent = nullptr);
 signals:
-    void newLog(DuQFLog message);
+    void newLog(DuQFLog message) const;
 protected:
-    void log(QString message, DuQFLog::LogType type = DuQFLog::Information);
+    void log(QString message, DuQFLog::LogType type = DuQFLog::Information) const;
 private:
     QString _c;
 };
@@ -57,15 +55,15 @@ class DuQFLogger : public QObject
 public:
     static DuQFLogger *instance();
 
-    QList<DuQFLog> logs();
-    QList<DuQFLog> logs(DuQFLog::LogType minLevel);
+    QVector<DuQFLog> logs();
+    QVector<DuQFLog> logs(DuQFLog::LogType minLevel);
     void clear();
 
     void tie(DuQFLoggerObject *o);
 
 public slots:
     void log(QString message);
-    void log(DuQFLog message);
+     void log(DuQFLog message);
 
 signals:
     void newLog(DuQFLog message);
@@ -76,7 +74,7 @@ protected:
 private:
     // Singleton, private constructor
     explicit DuQFLogger(QObject *parent = nullptr);
-    QList<DuQFLog> _logs;
+    QVector<DuQFLog> _logs;
 };
 
 #endif // DUQFLOGGER_H

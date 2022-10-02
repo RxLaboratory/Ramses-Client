@@ -6,17 +6,13 @@
 #include <QSettings>
 
 #include "ui_pipelinewidget.h"
+
+#include "ramproject.h"
+#include "ramuser.h"
 #include "duqf-nodeview/duqfnodeview.h"
 #include "duqf-nodeview/duqfnodescene.h"
 #include "duqf-widgets/duqftitlebar.h"
 #include "duqf-widgets/duqfspinbox.h"
-#include "duqf-app/app-version.h"
-#include "duqf-utils/guiutils.h"
-
-#include "processmanager.h"
-#include "stepnode.h"
-#include "ramses.h"
-#include "pipeeditwidget.h"
 
 class PipelineWidget : public QWidget, private Ui::PipelineWidget
 {
@@ -60,6 +56,9 @@ protected:
     void showEvent(QShowEvent *event) override;
     void hideEvent(QHideEvent *event) override;
 
+private slots:
+    void resetProject();
+
 private:
     void changeProject();
 
@@ -71,12 +70,12 @@ private:
     QMenu *ui_stepMenu;
     QAction *ui_stepMenuSeparator;
 
-    QList<QMetaObject::Connection> m_projectConnections;
     QMap<QString, QList<QMetaObject::Connection>> m_pipeObjectConnections;
     QMap<QString,DuQFConnection*> m_pipeConnections;
 
     RamProject *m_project = nullptr;
     bool m_projectChanged = false;
+    bool init = true;
 };
 
 #endif // PIPELINEWIDGET_H

@@ -1,232 +1,203 @@
 #include "statuseditwidget.h"
 
+#include "ramfilemetadatamanager.h"
+#include "ramabstractitem.h"
+#include "ramses.h"
+#include "ramworkingfolder.h"
+
 StatusEditWidget::StatusEditWidget(QWidget *parent) :
     ObjectEditWidget( parent)
 {
     setupUi();
     connectEvents();
-    setObject(nullptr);
 }
 
-StatusEditWidget::StatusEditWidget(RamStatus *status, QWidget *parent) : ObjectEditWidget(status, parent)
+StatusEditWidget::StatusEditWidget(RamStatus *status, QWidget *parent) : ObjectEditWidget(parent)
 {
     setupUi();
     connectEvents();
     setObject(status);
 }
 
-void StatusEditWidget::setObject(RamObject *statusObj)
+RamStatus *StatusEditWidget::status() const
 {
-    RamStatus *status = qobject_cast<RamStatus*>( statusObj );
-    this->setEnabled(false);
+    return m_status;
+}
 
-    ObjectEditWidget::setObject(status);
-    m_status = status;
-
-    QSignalBlocker b1(ui_stateBox);
-    QSignalBlocker b2(ui_completionBox);
-    QSignalBlocker b3(ui_versionBox);
-    QSignalBlocker b4(ui_statusCommentEdit);
-    QSignalBlocker b5(ui_publishedBox);
-    QSignalBlocker b6(ui_timeSpent);
-    QSignalBlocker b7(ui_mainFileList);
-    QSignalBlocker b8(ui_publishedFileList);
-    QSignalBlocker b9(ui_previewFileList);
-    QSignalBlocker b10(ui_folderWidget);
-    QSignalBlocker b11(ui_difficultyBox);
-    QSignalBlocker b12(ui_autoEstimationBox);
-    QSignalBlocker b13(ui_userBox);
-    QSignalBlocker b14(ui_estimationEdit);
-    QSignalBlocker b15(ui_versionPublishBox);
-
-    ui_stateBox->setCurrentText("STB");
-    ui_completionBox->setValue(0);
-    ui_versionBox->setValue(1);
-    ui_statusCommentEdit->setPlainText("");
-    ui_publishedBox->setChecked(false);
-    ui_userBox->setObject("");
-    ui_timeSpent->setValue(0);
-    ui_mainFileList->clear();
-    ui_publishedFileList->clear();
-    ui_previewFileList->clear();
-    ui_folderWidget->setPath("");
-    ui_difficultyBox->setCurrentIndex(2);
-    ui_autoEstimationBox->setChecked(true);
-    ui_estimationEdit->setValue(0);
-    ui_versionPublishBox->clear();
-
-    // Remove template list
-    QList<QAction*> templateActions = ui_createFromTemplateMenu->actions();
-    for (int i = 0; i < templateActions.count(); i++)
+void StatusEditWidget::reInit(RamObject *o)
+{
+    m_status = qobject_cast<RamStatus*>(o);
+    if (m_status)
     {
-        templateActions.at(i)->deleteLater();
-    }
+        QSignalBlocker b1(ui_userBox);
+        QSignalBlocker b2(ui_stateBox);
+        QSignalBlocker b3(ui_completionBox);
+        QSignalBlocker b4(ui_versionBox);
+        QSignalBlocker b5(ui_statusCommentEdit);
+        QSignalBlocker b6(ui_folderWidget);
+        QSignalBlocker b7(ui_publishedBox);
+        QSignalBlocker b8(ui_difficultyBox);
+        QSignalBlocker b9(ui_autoEstimationBox);
+        QSignalBlocker b10(ui_timeSpent);
 
-    if (!status) return;
+        // Get users from project
+        RamProject *project = nullptr;
+        if (m_status->item()) project = m_status->item()->project();
+        if (!project && m_status->step()) project = m_status->step()->project();
+        if (project) ui_userBox->setObjectModel( project->users(), "Users" );
 
-    // Rights to edit
-    RamUser *u = Ramses::instance()->currentUser();
-    if (u)
-    {
-        if (u->role() == RamUser::Standard) this->setEnabled( u->is( status->assignedUser() ) );
-        else this->setEnabled(true);
-        if (!status->assignedUser()) this->setEnabled(true);
-    }
-    // User rights to assign
-    ui_userBox->setEnabled(Ramses::instance()->isLead());
+        ui_userBox->setObject(m_status->assignedUser());
+        ui_stateBox->setObject(m_status->state());
+        ui_stateBox->update();
+        ui_completionBox->setValue(m_status->completionRatio());
+        ui_versionBox->setValue(m_status->version());
+        ui_statusCommentEdit->setMarkdown(m_status->comment());
+        ui_folderWidget->setPath( m_status->path() );
+        ui_publishedBox->setChecked( m_status->isPublished() );
 
-    ui_stateBox->setObject(status->state());
-    ui_completionBox->setValue(status->completionRatio());
-    ui_versionBox->setValue(status->version());
-    ui_statusCommentEdit->setPlainText(status->comment());
-    ui_folderWidget->setPath( status->path() );
-    ui_publishedBox->setChecked( status->isPublished() );
-
-    // Get users from project
-    RamProject *project = nullptr;
-    if (status->item()) project = status->item()->project();
-    if (!project && status->step()) project = status->step()->project();
-    if (project) ui_userBox->setList( project->users() );
-
-    ui_userBox->setObject(status->assignedUser());
-
-    // Try to auto compute time spent from previous status
-    qint64 timeSpent = status->timeSpent();
-    if (!status->isTimeSpentManual() || timeSpent == 0)
-    {
-        RamStepStatusHistory *history = status->item()->statusHistory( status->step() );
-        if (history->count() > 1)
+        // Try to auto compute time spent from previous status
+        qint64 timeSpent = m_status->timeSpent();
+        if (!m_status->isTimeSpentManual() || timeSpent == 0)
         {
-            RamStatus *previous = qobject_cast<RamStatus*>( history->at( history->count() -2) );
-            timeSpent = previous->timeSpent();
-            RamFileMetaDataManager mdm( status->path(RamObject::VersionsFolder ));
-            if (mdm.isValid())
+            RamObjectModel *history = m_status->item()->statusHistory( m_status->step() );
+            if (history->rowCount() > 1)
             {
-                timeSpent += mdm.getTimeRange( previous->date() );
+                RamStatus *previous = RamStatus::c( history->get( history->rowCount() -2) );
+                timeSpent = previous->timeSpent();
+                RamFileMetaDataManager mdm( m_status->path(RamObject::VersionsFolder ));
+                if (mdm.isValid())
+                {
+                    timeSpent += mdm.getTimeRange( previous->date() );
+                }
             }
         }
-    }
 
-    // Get info from the files
-    RamWorkingFolder statusFolder = status->workingFolder();
+        // Get info from the files
+        RamWorkingFolder statusFolder = m_status->workingFolder();
 
-    // (try to) Auto-detect version
-    int v = statusFolder.latestVersion("");
-    if (v > status->version()) ui_versionBox->setValue(v);
+        // (try to) Auto-detect version
+        int v = statusFolder.latestVersion("");
+        if (v > m_status->version()) ui_versionBox->setValue(v);
 
-    // List files
-    // Working files
-    ui_mainFileList->setList( statusFolder.workingFileInfos() );
+        // List files
+        // Working files
+        ui_mainFileList->setList( statusFolder.workingFileInfos() );
 
-    // Published versions and files
-    QList<QFileInfo> publishedVersionFolders = statusFolder.publishedVersionFolderInfos();
-    for (int i = publishedVersionFolders.count()-1; i>=0; i-- )
-    {
-        QFileInfo folderInfo = publishedVersionFolders.at(i);
-        QString title = folderInfo.fileName();
-        // Let's split
-        QStringList splitTitle = title.split("_");
-        // Test length to know what we've got
-        if (splitTitle.count() == 3) // resource, version, state
+        // Published versions and files
+        ui_versionPublishBox->clear();
+        QFileInfoList publishedVersionFolders = statusFolder.publishedVersionFolderInfos();
+        for (int i = publishedVersionFolders.count()-1; i>=0; i-- )
         {
-            title = splitTitle[0] + " | v" + splitTitle[1] + " | " + splitTitle[2];
+            QFileInfo folderInfo = publishedVersionFolders.at(i);
+            QString title = folderInfo.fileName();
+            // Let's split
+            QStringList splitTitle = title.split("_");
+            // Test length to know what we've got
+            if (splitTitle.count() == 3) // resource, version, state
+            {
+                title = splitTitle[0] + " | v" + splitTitle[1] + " | " + splitTitle[2];
+            }
+            else if (splitTitle.count() < 3) // version (state)
+            {
+                if (splitTitle[0].toInt() != 0)
+                    title = "v" + splitTitle.join(" | ");
+            }
+            else
+            {
+                title = splitTitle.join(" | ");
+            }
+
+            // Add date
+            title = title + " | " + folderInfo.lastModified().toString(ui_mainFileList->dateFormat());
+
+            ui_versionPublishBox->addItem( title, folderInfo.absoluteFilePath() );
         }
-        else if (splitTitle.count() < 3) // version (state)
+        ui_versionPublishBox->setCurrentIndex(0);
+        loadPublishedFiles();
+
+        // Preview files
+        ui_previewFileList->setList(statusFolder.previewFileInfos());
+
+        // List templates
+        //Clear
+        QList<QAction*> templateActions = ui_createFromTemplateMenu->actions();
+        for (int i = 0; i < templateActions.count(); i++)
         {
-            if (splitTitle[0].toInt() != 0)
-                title = "v" + splitTitle.join(" | ");
+            templateActions.at(i)->deleteLater();
         }
-        else
+        //Add
+        QSet<RamWorkingFolder> templateFolders = m_status->step()->templateWorkingFolders();
+
+        RamNameManager nm;
+        foreach(RamWorkingFolder templateFolder, templateFolders)
         {
-            title = splitTitle.join(" | ");
+            // Check if there's a file with the default resource
+            QString file = templateFolder.defaultWorkingFile();
+            if (file == "") continue;
+            // enable the template button if we've found at least one file
+            ui_createMainFileButton->setEnabled(true);
+
+            nm.setFileName(file);
+            QString label = nm.shortName();
+            if (!templateFolder.isPublished()) label = label + " [Not published]";
+
+            QAction *action = new QAction( label );
+            action->setData( file );
+            action->setToolTip( "Create from template:\n" + file );
+            ui_createFromTemplateMenu->addAction(action);
+            connect(action, SIGNAL(triggered()), this, SLOT(createFromTemplate()));
         }
 
-        // Add date
-        title = title + " | " + folderInfo.lastModified().toString(ui_mainFileList->dateFormat());
+        // Estimation
+        ui_difficultyBox->setCurrentIndex( m_status->difficulty() );
+        ui_autoEstimationBox->setChecked( m_status->useAutoEstimation() );
+        setAutoEstimation( m_status->useAutoEstimation() );
 
-        ui_versionPublishBox->addItem( title, folderInfo.absoluteFilePath() );
+        ui_timeSpent->setValue( timeSpent / 3600 );
+
+        // User rights to assign
+        ui_userBox->setEnabled(Ramses::instance()->isLead());
+
+        // Rights to edit
+        RamUser *u = Ramses::instance()->currentUser();
+        if (u)
+        {
+            if (u->role() == RamUser::Standard) this->setEnabled( u->is( m_status->assignedUser() ) );
+            else this->setEnabled(true);
+            if (!m_status->assignedUser()) this->setEnabled(true);
+        }
     }
-    ui_versionPublishBox->setCurrentIndex(0);
-    loadPublishedFiles();
-
-    // Preview files
-    ui_previewFileList->setList(statusFolder.previewFileInfos());
-
-    // List templates
-    QList<RamWorkingFolder> templateFolders = status->step()->templateWorkingFolders();
-
-    RamNameManager nm;
-    foreach(RamWorkingFolder templateFolder, templateFolders)
+    else
     {
-        // Check if there's a file with the default resource
-        QString file = templateFolder.defaultWorkingFile();
-        if (file == "") continue;
-        // enable the template button if we've found at least one file
-        ui_createMainFileButton->setEnabled(true);
+        ui_stateBox->setObject(Ramses::instance()->stbState());
+        ui_completionBox->setValue(0);
+        ui_versionBox->setValue(1);
+        ui_statusCommentEdit->setPlainText("");
+        ui_publishedBox->setChecked(false);
+        ui_userBox->setObject("");
+        ui_timeSpent->setValue(0);
+        ui_mainFileList->clear();
+        ui_publishedFileList->clear();
+        ui_previewFileList->clear();
+        ui_folderWidget->setPath("");
+        ui_difficultyBox->setCurrentIndex(2);
+        ui_autoEstimationBox->setChecked(true);
+        ui_estimationEdit->setValue(0);
+        ui_versionPublishBox->clear();
 
-        nm.setFileName(file);
-        QString label = nm.shortName();
-        if (!templateFolder.isPublished()) label = label + " [Not published]";
+        // Remove template list
+        QList<QAction*> templateActions = ui_createFromTemplateMenu->actions();
+        for (int i = 0; i < templateActions.count(); i++)
+        {
+            templateActions.at(i)->deleteLater();
+        }
 
-        QAction *action = new QAction( label );
-        action->setData( file );
-        action->setToolTip( "Create from template:\n" + file );
-        ui_createFromTemplateMenu->addAction(action);
-        connect(action, SIGNAL(triggered()), this, SLOT(createFromTemplate()));
+        this->setEnabled(false);
     }
-
-    // Estimation
-    ui_difficultyBox->setCurrentIndex( status->difficulty() );
-    ui_autoEstimationBox->setChecked( status->useAutoEstimation() );
-    autoEstimationClicked( status->useAutoEstimation() );
-
-    ui_timeSpent->setValue( timeSpent / 3600 );
 }
 
-RamStatus::Difficulty StatusEditWidget::difficulty() const
+void StatusEditWidget::setState(RamState *state)
 {
-    switch(ui_difficultyBox->currentIndex())
-    {
-        case 0: return RamStatus::VeryEasy;
-        case 1: return RamStatus::Easy;
-        case 2: return RamStatus::Medium;
-        case 3: return RamStatus::Hard;
-        case 4: return RamStatus::VeryHard;
-    }
-    return RamStatus::Medium;
-}
-
-void StatusEditWidget::update()
-{
-    if (!m_status) return;
-
-    updating = true;
-
-    m_status->setState( qobject_cast<RamState*>( ui_stateBox->currentObject() ) );
-    m_status->setCompletionRatio( ui_completionBox->value() );
-    m_status->setVersion(ui_versionBox->value() );
-    m_status->setComment( ui_statusCommentEdit->toPlainText() );
-    m_status->assignUser( qobject_cast<RamUser*>( ui_userBox->currentObject() ) );
-    m_status->setPublished( ui_publishedBox->isChecked() );
-    m_status->setTimeSpent( ui_timeSpent->value() * 3600 );
-    m_status->setGoal( ui_estimationEdit->value() );
-    m_status->setUseAutoEstimation( ui_autoEstimationBox->isChecked() );
-    m_status->setDifficulty( difficulty() );
-
-    m_status->update();
-
-    updating = false;
-}
-
-void StatusEditWidget::showEvent(QShowEvent *event)
-{
-    //ui_commentSplitter->setSizes(QList<int>() << 200 << 600);
-    QWidget::showEvent(event);
-}
-
-void StatusEditWidget::currentStateChanged(RamObject *stateObj)
-{
-    RamState *state = qobject_cast<RamState*>(stateObj);
     if (state)
     {
         ui_completionBox->setValue(state->completionRatio());
@@ -235,17 +206,121 @@ void StatusEditWidget::currentStateChanged(RamObject *stateObj)
     {
         ui_completionBox->setValue(50);
     }
+    if (!m_status) return;
+    m_status->setState(state);
+    m_status->setCompletionRatio(ui_completionBox->value());
 }
 
-void StatusEditWidget::revert()
+void StatusEditWidget::refresh()
 {
     setObject(m_status);
 }
 
-void StatusEditWidget::checkPublished( int v )
+void StatusEditWidget::setVersion( int v )
 {
+    if (!m_status) return;
     bool p = m_status->workingFolder().isPublished(v);
     ui_publishedBox->setChecked(p);
+    m_status->setVersion(v);
+}
+
+void StatusEditWidget::setCompletion(int c)
+{
+    if (!m_status) return;
+    m_status->setCompletionRatio(c);
+}
+
+void StatusEditWidget::setComment()
+{
+    if (!m_status) return;
+    m_status->setComment( ui_statusCommentEdit->toMarkdown() );
+}
+
+void StatusEditWidget::assignUser(RamObject *u)
+{
+    if (!m_status) return;
+    m_status->assignUser(u);
+}
+
+void StatusEditWidget::setPublished(bool p)
+{
+    if (!m_status) return;
+    m_status->setPublished(p);
+}
+
+void StatusEditWidget::setAutoEstimation(bool a)
+{
+    if (!m_status) return;
+    m_status->setUseAutoEstimation(a);
+
+    float est = 0;
+
+    if (a)
+    {
+        est = m_status->estimation( ui_difficultyBox->currentIndex() );
+        ui_estimationLabel->setText("Estimation");
+    }
+    else
+    {
+        est = m_status->goal();
+        ui_estimationLabel->setText("Goal");
+    }
+
+    ui_estimationEdit->setValue( est );
+    ui_estimationEdit->setEnabled(!a);
+}
+
+void StatusEditWidget::setTimeSpent(int t)
+{
+    if (!m_status) return;
+    m_status->setTimeSpent(t*3600);
+
+    float days = RamStatus::hoursToDays(t);
+    ui_timeSpent->setSuffix(" hours (" + QString::number(days, 'f', 2) + " days)");
+}
+
+void StatusEditWidget::setEstimation(double e)
+{
+    if (!m_status) return;
+    m_status->setGoal(e);
+}
+
+void StatusEditWidget::setDifficulty(int d)
+{
+    if (!m_status) return;
+    switch(d)
+    {
+    case 0:
+    {
+        m_status->setDifficulty(RamStatus::VeryEasy);
+        break;
+    }
+    case 1:
+    {
+        m_status->setDifficulty( RamStatus::Easy);
+        break;
+    }
+    case 2:
+    {
+        m_status->setDifficulty( RamStatus::Medium);
+        break;
+    }
+    case 3:
+    {
+        m_status->setDifficulty( RamStatus::Hard);
+        break;
+    }
+    case 4:
+    {
+        m_status->setDifficulty( RamStatus::VeryHard);
+        break;
+    }
+    }
+
+    if( !ui_autoEstimationBox->isChecked() ) return;
+
+    float est = m_status->estimation( ui_difficultyBox->currentIndex() );
+    ui_estimationEdit->setValue( est );
 }
 
 void StatusEditWidget::mainFileSelected()
@@ -316,7 +391,7 @@ void StatusEditWidget::openMainFile()
 
     DuQFLogger::instance()->log("Opening " + filePathToOpen + "...");
 
-    revert();
+    refresh();
 }
 
 void StatusEditWidget::removeSelectedMainFile()
@@ -334,7 +409,7 @@ void StatusEditWidget::removeSelectedMainFile()
 
     DuQFLogger::instance()->log("Deleting " + fileName + "...");
 
-    revert();
+    refresh();
 }
 
 void StatusEditWidget::createFromTemplate()
@@ -350,7 +425,7 @@ void StatusEditWidget::createFromTemplate()
 
     if (templateFile != "") m_status->step()->openFile(templateFile);
 
-    revert();
+    refresh();
 }
 
 void StatusEditWidget::loadPublishedFiles()
@@ -377,7 +452,7 @@ void StatusEditWidget::openPublishedFile()
 
     DuQFLogger::instance()->log("Opening " + filePathToOpen + "...");
 
-    revert();
+    refresh();
 }
 
 void StatusEditWidget::removeSelectedPublishedFile()
@@ -395,13 +470,13 @@ void StatusEditWidget::removeSelectedPublishedFile()
 
     DuQFLogger::instance()->log("Deleting " + fileName + "...");
 
-    revert();
+    refresh();
 }
 
 void StatusEditWidget::previewFileSelected()
 {
     if ( ui_previewFileList->currentItem() ) ui_openPreviewFileButton->setEnabled(true);
-    else ui_previewFileList->setEnabled(false);
+    else ui_openPreviewFileButton->setEnabled(false);
 }
 
 void StatusEditWidget::openPreviewFile()
@@ -415,12 +490,12 @@ void StatusEditWidget::openPreviewFile()
 
     DuQFLogger::instance()->log("Opening " + filePathToOpen + "...");
 
-    revert();
+    refresh();
 }
 
 void StatusEditWidget::removeSelectedPreviewFile()
 {
-    if ( ui_previewFileList->currentItem()) return;
+    if (!ui_previewFileList->currentItem()) return;
 
     QString fileName = ui_previewFileList->currentFileName();
 
@@ -433,40 +508,7 @@ void StatusEditWidget::removeSelectedPreviewFile()
 
     DuQFLogger::instance()->log("Deleting " + fileName + "...");
 
-    revert();
-}
-
-void StatusEditWidget::autoEstimationClicked(bool useAutoEstimation)
-{
-    float est = 0;
-
-    if (useAutoEstimation)
-    {
-        est = m_status->estimation( ui_difficultyBox->currentIndex() );
-        ui_estimationLabel->setText("Estimation");
-    }
-    else
-    {
-        est = m_status->goal();
-        ui_estimationLabel->setText("Goal");
-    }
-
-    ui_estimationEdit->setValue( est );
-    ui_estimationEdit->setEnabled(!useAutoEstimation);
-}
-
-void StatusEditWidget::difficultyBoxChanged()
-{
-    if( !ui_autoEstimationBox->isChecked() ) return;
-
-    float est = m_status->estimation( ui_difficultyBox->currentIndex() );
-    ui_estimationEdit->setValue( est );
-}
-
-void StatusEditWidget::estimateDays(int hours)
-{
-    float days = RamStatus::hoursToDays(hours);
-    ui_timeSpent->setSuffix(" hours (" + QString::number(days, 'f', 2) + " days)");
+    refresh();
 }
 
 void StatusEditWidget::setupUi()
@@ -481,7 +523,7 @@ void StatusEditWidget::setupUi()
     cLayout->setContentsMargins(0,0,0,0);
     cLayout->setSpacing(3);
 
-    ui_stateBox = new StateBox(this);
+    ui_stateBox = new RamStateBox(this);
     cLayout->addWidget(ui_stateBox);
 
     ui_completionBox = new DuQFSpinBox(this);
@@ -500,7 +542,7 @@ void StatusEditWidget::setupUi()
     ui_commentSplitter = new QSplitter();
     ui_commentSplitter->setOrientation(Qt::Vertical);
 
-    ui_statusCommentEdit = new QPlainTextEdit(this);
+    ui_statusCommentEdit = new DuQFTextEdit(this);
     ui_statusCommentEdit->setPlaceholderText("Comment...");
     ui_statusCommentEdit->setMinimumHeight(30);
     ui_statusCommentEdit->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -562,7 +604,7 @@ void StatusEditWidget::setupUi()
     ui_publishedBox = new QCheckBox("Published",this);
     detailsLayout->addRow("Publication", ui_publishedBox);
 
-    ui_userBox = new RamObjectListComboBox(true, this);
+    ui_userBox = new RamObjectComboBox(this);
     detailsLayout->addRow("Assigned user", ui_userBox);
 
     bottomLayout->addLayout( detailsLayout);
@@ -693,20 +735,17 @@ void StatusEditWidget::setupUi()
 
 void StatusEditWidget::connectEvents()
 {
-    connect( ui_stateBox, SIGNAL(activated(int)), this, SLOT(update()));
-    connect( ui_completionBox, SIGNAL(valueChanging(int)), this, SLOT(update()));
-    connect( ui_versionBox, SIGNAL(valueChanged(int)), this, SLOT(update()));
-    ui_statusCommentEdit->installEventFilter(this);
-    connect( ui_userBox, SIGNAL(activated(int)), this, SLOT(update()));
-    connect( ui_publishedBox, SIGNAL(clicked(bool)), this, SLOT(update()));
-    connect( ui_autoEstimationBox, SIGNAL(clicked(bool)), this, SLOT(update()));
-    connect( ui_timeSpent, SIGNAL(valueChanged(int)), this, SLOT(update()));
-    connect( ui_estimationEdit, SIGNAL(valueChanged(double)), this, SLOT(update()));
-    connect( ui_difficultyBox, SIGNAL(activated(int)), this, SLOT(update()));
-
-    connect(ui_stateBox, SIGNAL(currentObjectChanged(RamObject*)), this, SLOT(currentStateChanged(RamObject*)));
-    connect(ui_revertButton, &QToolButton::clicked, this, &StatusEditWidget::revert);
-    connect(ui_versionBox, SIGNAL(valueChanged(int)), this, SLOT(checkPublished(int)));
+    connect(ui_stateBox, &RamStateBox::currentStateChanged, this, &StatusEditWidget::setState);
+    connect(ui_revertButton, &QToolButton::clicked, this, &StatusEditWidget::refresh);
+    connect(ui_versionBox, SIGNAL(valueChanged(int)), this, SLOT(setVersion(int)));
+    connect( ui_completionBox, SIGNAL(valueChanged(int)), this, SLOT(setCompletion(int)));
+    connect( ui_statusCommentEdit, SIGNAL(editingFinished()), this, SLOT(setComment()));
+    connect( ui_userBox, &RamObjectComboBox::currentObjectChanged, this, &StatusEditWidget::assignUser);
+    connect( ui_publishedBox, SIGNAL(clicked(bool)), this, SLOT(setPublished(bool)));
+    connect( ui_autoEstimationBox, SIGNAL(clicked(bool)), this, SLOT(setAutoEstimation(bool)));
+    connect( ui_timeSpent, SIGNAL(valueChanged(int)), this, SLOT(setTimeSpent(int)));
+    connect( ui_estimationEdit, SIGNAL(valueChanged(double)), this, SLOT(setEstimation(double)));
+    connect( ui_difficultyBox, SIGNAL(activated(int)), this, SLOT(setDifficulty(int)));
 
     connect(ui_mainFileList, SIGNAL(currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)),this, SLOT(mainFileSelected()));
     connect(ui_mainFileList,SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),this,SLOT(openMainFile()));
@@ -720,10 +759,6 @@ void StatusEditWidget::connectEvents()
     connect(ui_publishedFileList,SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),this,SLOT(openPublishedFile()));
     connect(ui_previewFileList,SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),this,SLOT(openPreviewFile()));
 
-    connect(ui_autoEstimationBox, SIGNAL(clicked(bool)), this, SLOT(autoEstimationClicked(bool)));
-    connect(ui_difficultyBox, SIGNAL(currentIndexChanged(int)), this, SLOT(difficultyBoxChanged()));
-    connect(ui_timeSpent, SIGNAL(valueChanged(int)),this, SLOT(estimateDays(int)));
-
     // Shortcuts
     QShortcut *s;
     s = new QShortcut(QKeySequence(QKeySequence::Delete), ui_mainFileList, nullptr, nullptr, Qt::WidgetWithChildrenShortcut );
@@ -732,6 +767,4 @@ void StatusEditWidget::connectEvents()
     connect( s, SIGNAL(activated()), this, SLOT(removeSelectedPublishedFile()) );
     s = new QShortcut(QKeySequence(QKeySequence::Delete), ui_previewFileList, nullptr, nullptr, Qt::WidgetWithChildrenShortcut );
     connect( s, SIGNAL(activated()), this, SLOT(removeSelectedPreviewFile()) );
-
-    monitorDbQuery("updateStatus");
 }

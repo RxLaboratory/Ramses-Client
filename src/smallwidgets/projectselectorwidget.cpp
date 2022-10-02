@@ -1,25 +1,26 @@
 #include "projectselectorwidget.h"
 
+#include "ramses.h"
+
 ProjectSelectorWidget::ProjectSelectorWidget(QWidget *parent):
-    RamObjectListComboBox(
-        parent)
+    RamObjectComboBox( parent )
 {
-    m_projectFilter = new RamProjectFilterModel(this);
+    m_projectFilter = new RamObjectSortFilterProxyModel(this);
+    m_projectFilter->setSourceModel(Ramses::instance()->projects());
     this->setModel(m_projectFilter);
     this->setMinimumWidth(200);
 
     m_pm = ProcessManager::instance();
 
-    connect(this, SIGNAL(currentObjectChanged(RamObject*)), this, SLOT(setCurrentProject(RamObject*)));
+    connect(this, &RamObjectComboBox::currentObjectChanged, this,  &ProjectSelectorWidget::setCurrentProject);
     connect(Ramses::instance(), SIGNAL(currentProjectChanged(RamProject*)), this, SLOT(currentProjectChanged(RamProject*)));
-    connect(Ramses::instance(), SIGNAL(loggedIn(RamUser*)), this, SLOT(userChanged(RamUser*)));
+    connect(Ramses::instance(), &Ramses::userChanged, this, &ProjectSelectorWidget::userChanged);
 }
 
 void ProjectSelectorWidget::setCurrentProject(RamObject *projObj)
 {
-    if (m_pm->isBusy()) return;
-    RamProject *proj = qobject_cast<RamProject*>( projObj );
-    Ramses::instance()->setCurrentProject( proj );
+    //if (m_pm->isBusy()) return;
+    Ramses::instance()->setCurrentProject( RamProject::c( projObj ) );
 }
 
 void ProjectSelectorWidget::currentProjectChanged(RamProject *p)
@@ -37,6 +38,6 @@ void ProjectSelectorWidget::currentProjectChanged(RamProject *p)
 
 void ProjectSelectorWidget::userChanged(RamUser *user)
 {
-    m_projectFilter->clearUsers();
-    m_projectFilter->addUser(user->uuid());
+    m_projectFilter->clearFilterListUuids();
+    if (user) m_projectFilter->addFilterUuid(user->uuid());
 }

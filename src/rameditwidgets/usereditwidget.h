@@ -4,10 +4,11 @@
 #include <QComboBox>
 #include <QToolButton>
 
+#include "duqf-utils/utils.h"
 #include "objecteditwidget.h"
-#include "ramses.h"
 #include "duqf-widgets/duqffolderdisplaywidget.h"
 #include "duqf-widgets/duqfcolorselector.h"
+#include "ramuser.h"
 
 class UserEditWidget : public ObjectEditWidget
 {
@@ -19,15 +20,15 @@ public:
 
     RamUser *user() const;
 
-public slots:
-    void setObject(RamObject *obj) override;
-
-protected slots:
-    void update() override;
+protected:
+    virtual void reInit(RamObject *o) override;
 
 private slots:
     void changePassword();
     bool checkPasswordInput();
+    void setRole(int r);
+    void setColor(QColor c);
+    void connectionStatusChanged(NetworkUtils::NetworkStatus status);
 
 private:
     RamUser *m_user;
@@ -43,6 +44,8 @@ private:
     QLabel *ui_folderLabel;
     QToolButton *ui_passwordButton;
     DuQFColorSelector *ui_colorSelector;
+    QWidget *ui_passwordWidget;
+    QLabel *ui_currentPasswordLabel;
 };
 
 #endif // USEREDITWIDGET_H

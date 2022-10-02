@@ -1,46 +1,187 @@
 #include "ramproject.h"
 
 #include "ramses.h"
+#include "rampipe.h"
 #include "projecteditwidget.h"
+#include "ramshot.h"
 
-RamProject::RamProject(QString shortName, QString name, QString uuid):
-    RamObject(shortName, name, uuid, Ramses::instance())
+QFrame *RamProject::ui_editWidget = nullptr;
+
+QHash<QString, RamProject*> RamProject::m_existingObjects = QHash<QString, RamProject*>();
+
+RamProject *RamProject::get(QString uuid)
 {
-    m_icon = ":/icons/project";
-    m_editRole = Admin;
+    if (!checkUuid(uuid, Project)) return nullptr;
 
-    setObjectType(Project);
-    m_sequences = new RamObjectList("SEQS", "Sequences", this);
-    m_assetGroups = new RamObjectList("AGS", "Asset Groups", this);
-    m_pipeline = new RamObjectList("PPLN", "Pipeline", this);
-    m_steps = new RamObjectList("STPS", "Steps", this);
-    m_pipeFiles = new RamObjectList("PPFLS", "Pipe files", this);
-    m_shots = new RamItemTable(RamStep::ShotProduction, m_steps, "SHOTS", "Shots", this);
-    m_assets = new RamItemTable(RamStep::AssetProduction, m_steps, "ASSETS", "Assets", this);
-    m_users = new RamObjectList("USRS", "Users", this);
+    RamProject *p = m_existingObjects.value(uuid);
+    if (p) return p;
 
-    m_dbi->createProject(m_shortName, m_name, m_uuid);
-
-    m_deadline = QDate::currentDate().addDays(30);
-
-    // Get path
-    QSettings settings;
-    settings.beginGroup("projects");
-    settings.beginGroup(m_uuid);
-    QString p = settings.value("path", "no-path").toString();
-    settings.endGroup();
-    settings.endGroup();
-    if (p != "no-path") m_folderPath = p;
-
-    this->setObjectName( "RamProject" );
-
-    connect(m_users, SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(userAssigned(QModelIndex,int,int)));
-    connect(m_users, SIGNAL(rowsAboutToBeRemoved(QModelIndex,int,int)), this, SLOT(userUnassigned(QModelIndex,int,int)));
+    // Finally return a new instance
+    return new RamProject(uuid);
 }
 
-RamProject::~RamProject()
+RamProject *RamProject::c(RamObject *o)
 {
+    // return qobject_cast<RamProject*>(o);
+    // For performance, reinterpret_cast, but be careful with the object passed!
+    return reinterpret_cast<RamProject*>(o);
+}
 
+// PUBLIC //
+
+RamProject::RamProject(QString shortName, QString name):
+    RamObject(shortName, name, Project)
+{
+    construct();
+}
+
+RamProject::RamProject(QString uuid):
+    RamObject(uuid, Project)
+{
+    construct();
+
+    QJsonObject d = data();
+    loadModel(m_shots, "shots", d);
+    loadModel(m_assets, "assets", d);
+    loadModel(m_users, "users", d);
+    loadModel(m_scheduleComments, "scheduleComments", d);
+    loadModel(m_pipeFiles, "pipeFiles", d);
+    loadModel(m_steps, "steps", d);
+    loadModel(m_pipeline, "pipeline", d);
+    loadModel(m_sequences, "sequences", d);
+    loadModel(m_assetGroups, "assetGroups", d);
+
+    computeEstimation(true);
+}
+
+RamObjectModel *RamProject::steps() const
+{
+    return m_steps;
+}
+
+RamObjectModel *RamProject::assetGroups() const
+{
+    return m_assetGroups;
+}
+
+RamObjectModel *RamProject::sequences() const
+{
+    return m_sequences;
+}
+
+RamObjectModel *RamProject::shots() const
+{
+    return m_shots;
+}
+
+RamObjectModel *RamProject::assets() const
+{
+    return m_assets;
+}
+
+RamObjectModel *RamProject::pipeline() const
+{
+    return m_pipeline;
+}
+
+RamObjectModel *RamProject::pipeFiles() const
+{
+    return m_pipeFiles;
+}
+
+RamObjectModel *RamProject::users() const
+{
+    return m_users;
+}
+
+RamObjectModel *RamProject::scheduleComments() const
+{
+    return m_scheduleComments;
+}
+
+qreal RamProject::framerate() const
+{
+    return getData("framerate").toDouble(24);
+}
+
+void RamProject::setFramerate(const qreal &newFramerate)
+{
+    insertData("framerate", newFramerate);
+}
+
+int RamProject::width() const
+{
+    return getData("width").toInt(1920);
+}
+
+void RamProject::setWidth(const int width, const qreal &pixelAspect)
+{
+    insertData("width", width);
+    updateAspectRatio(pixelAspect);
+}
+
+int RamProject::height() const
+{
+    return getData("height").toInt(1080);
+}
+
+void RamProject::setHeight(const int height, const qreal &pixelAspect)
+{
+    insertData("height", height);
+    updateAspectRatio(pixelAspect);
+}
+
+qreal RamProject::aspectRatio() const
+{
+    QJsonObject d = data();
+    double w = d.value("width").toDouble(1920);
+    double h = d.value("height").toDouble(1080);
+    return d.value("aspectRatio").toDouble(w/h);
+}
+
+void RamProject::updateAspectRatio(const qreal &pixelAspect)
+{
+    QJsonObject d = data();
+    qreal w = d.value("width").toDouble(1920);
+    qreal h = d.value("height").toDouble(1080);
+    qreal r = w / h * pixelAspect;
+    setAspectRatio(r);
+}
+
+void RamProject::setAspectRatio(const qreal &aspectRatio)
+{
+    insertData("aspectRatio", aspectRatio);
+}
+
+QDate RamProject::deadline() const
+{
+    return QDate::fromString( getData("deadline").toString(), "yyyy-MM-dd");
+}
+
+void RamProject::setDeadline(const QDate &newDeadline)
+{
+    insertData("deadline", newDeadline.toString("yyyy-MM-dd"));
+}
+
+double RamProject::duration() const
+{
+    double duration = 0;
+    for (int i = 0; i < m_sequences->rowCount(); i++)
+    {
+        RamShot *shot = RamShot::c( m_sequences->get(i) );
+        if (shot) duration += shot->duration();
+    }
+    return duration;
+}
+
+RamPipe *RamProject::pipe(RamStep *outputStep, RamStep *inputStep)
+{
+    for (int i = 0; i < m_pipeline->rowCount(); i++)
+    {
+        RamPipe *p = RamPipe::c( m_pipeline->get(i) );
+        if ( p->outputStep()->is(outputStep) && p->inputStep()->is(inputStep) ) return p;
+    }
+    return nullptr;
 }
 
 void RamProject::freezeEstimations(bool freeze, bool reCompute)
@@ -48,265 +189,13 @@ void RamProject::freezeEstimations(bool freeze, bool reCompute)
     m_freezeEstimations = freeze;
 
     // Freeze steps
-    for(int i = 0; i < this->steps()->count(); i++)
+    for(int i = 0; i < m_steps->rowCount(); i++)
     {
-        RamStep *step = qobject_cast<RamStep*>( this->steps()->at(i) );
+        RamStep *step = RamStep::c(m_steps->get(i));
         step->freezeEstimations(freeze, reCompute);
     }
 
     // No need to recompute, it's triggered by the steps when unfreezing
-}
-
-QString RamProject::folderPath() const
-{
-    if (pathIsDefault())
-    {
-        QString p = m_dbFolderPath;
-        if (pathIsDefault(p)) return defaultPath();
-        return p;
-    }
-
-    return m_folderPath;
-}
-
-const QDate &RamProject::deadline() const
-{
-    return m_deadline;
-}
-
-void RamProject::setDeadline(const QDate &newDeadline)
-{
-    if (m_deadline == newDeadline) return;
-    m_dirty = true;
-    m_deadline = newDeadline;
-    emit changed(this);
-}
-
-void RamProject::setFolderPath(const QString &folderPath)
-{
-    if (folderPath == m_folderPath) return;
-    m_folderPath = folderPath;
-
-    // Store this as a local setting
-    QSettings settings;
-    settings.beginGroup("projects");
-    settings.beginGroup(m_uuid);
-    settings.setValue("path", m_folderPath);
-    settings.endGroup();
-    settings.endGroup();
-
-    emit changed(this);
-}
-
-void RamProject::resetDbFolderPath()
-{
-    setFolderPath(m_dbFolderPath);
-}
-
-QString RamProject::defaultPath() const
-{
-    return Ramses::instance()->path(RamObject::ProjectsFolder) + "/" + m_shortName;
-}
-
-qreal RamProject::framerate() const
-{
-    return m_framerate;
-}
-
-void RamProject::setFramerate(const qreal &framerate)
-{
-    if (framerate == m_framerate) return;
-    m_dirty = true;
-    m_framerate = framerate;
-    emit changed(this);
-}
-
-int RamProject::width() const
-{
-    return m_width;
-}
-
-void RamProject::setWidth(const int width, const qreal &pixelAspect)
-{
-    if (width == m_width) return;
-    m_dirty = true;
-    m_width = width;
-    updateAspectRatio(pixelAspect);
-}
-
-int RamProject::height() const
-{
-    return m_height;
-}
-
-void RamProject::setHeight(const int height, const qreal &pixelAspect)
-{
-    if (height == m_height) return;
-    m_dirty = true;
-    m_height = height;
-    updateAspectRatio(pixelAspect);
-}
-
-qreal RamProject::aspectRatio() const
-{
-    return m_aspectRatio;
-}
-
-void RamProject::updateAspectRatio(const qreal &pixelAspect)
-{
-    m_aspectRatio = qreal(m_width) / qreal(m_height) * pixelAspect;
-    emit changed(this);
-}
-
-void RamProject::setAspectRatio(const qreal &aspectRatio)
-{
-    if (aspectRatio == m_aspectRatio) return;
-    m_dirty = true;
-    m_aspectRatio = aspectRatio;
-    emit changed(this);
-}
-
-bool RamProject::pathIsDefault() const
-{
-    return pathIsDefault(m_folderPath);
-}
-
-bool RamProject::pathIsDefault(QString p) const
-{
-    return p == "" || p.toLower() == "auto";
-}
-
-void RamProject::update()
-{
-    if (!m_dirty) return;
-    RamObject::update();
-    m_dbi->updateProject(m_uuid, m_shortName, m_name, m_width, m_height, m_framerate, "", m_comment, m_deadline);
-}
-
-void RamProject::updatePath()
-{
-    QString path = m_folderPath;
-    if (path == "") path = "auto";
-    m_dbi->updateProject(m_uuid, m_shortName, m_name, m_width, m_height, m_framerate, path, m_comment, m_deadline);
-}
-
-void RamProject::removeFromDB()
-{
-    m_dbi->removeProject(m_uuid);
-}
-
-void RamProject::edit(bool show)
-{
-    if (!m_editReady)
-    {
-        ProjectEditWidget *w = new ProjectEditWidget(this);
-        setEditWidget(w);
-        m_editReady = true;
-    }
-    if (show) showEdit();
-}
-
-void RamProject::computeEstimation()
-{
-    if (m_freezeEstimations) return;
-    m_timeSpent = 0;
-    m_estimation = 0;
-    m_completionRatio = 0;
-    m_latenessRatio = 0;
-    m_assignedDays = 0;
-    m_missingDays = 0;
-    int numItems = 0;
-
-
-    for (int i =0; i < m_steps->count(); i++)
-    {
-        RamStep *step = qobject_cast<RamStep*>( m_steps->at(i) );
-
-        //Ignore pre and post procution
-        if (step->type() != RamStep::ShotProduction && step->type() != RamStep::AssetProduction) continue;
-
-        m_timeSpent += step->timeSpent();
-        m_estimation += step->estimation();
-        m_completionRatio += step->completionRatio();
-        m_latenessRatio += step->latenessRatio();
-        m_assignedDays += step->assignedDays();
-        m_missingDays += step->unassignedDays();
-
-        numItems++;
-    }
-
-    if (numItems > 0)
-    {
-        m_completionRatio /= numItems;
-        m_latenessRatio /= numItems;
-    }
-    else
-    {
-        m_completionRatio  = 100;
-        m_latenessRatio = 1;
-    }
-
-    emit completionRatioChanged(m_completionRatio);
-    emit latenessRatioChanged(m_latenessRatio);
-    emit timeSpentChanged(m_timeSpent);
-    emit estimationChanged(m_estimation);
-    emit estimationComputed(this);
-}
-
-RamProject *RamProject::project(QString uuid)
-{
-    return qobject_cast<RamProject*>( RamObject::obj(uuid) );
-}
-
-RamProject *RamProject::projectFromName(QString nameOrShortName )
-{
-    return qobject_cast<RamProject*>( RamObject::objFromName(nameOrShortName, ObjectType::Project) );
-}
-
-RamObjectList *RamProject::assetGroups() const
-{
-    return m_assetGroups;
-}
-
-RamObjectList *RamProject::sequences() const
-{
-    return m_sequences;
-}
-
-RamItemTable *RamProject::shots()
-{
-    return m_shots;
-}
-
-RamItemTable *RamProject::assets()
-{
-    return m_assets;
-}
-
-RamObjectList *RamProject::pipeline()
-{
-    return m_pipeline;
-}
-
-RamPipe *RamProject::pipe(RamStep *outputStep, RamStep *inputStep)
-{
-    for (int i = 0; i < m_pipeline->count(); i++)
-    {
-        RamPipe *p = qobject_cast<RamPipe*>(m_pipeline->at(i));
-        if ( p->outputStep()->is(outputStep) && p->inputStep()->is(inputStep) ) return p;
-    }
-
-    return nullptr;
-}
-
-RamObjectList *RamProject::pipeFiles()
-{
-    return m_pipeFiles;
-}
-
-RamObjectList *RamProject::users() const
-{
-    return m_users;
 }
 
 qint64 RamProject::timeSpent() const
@@ -339,41 +228,201 @@ float RamProject::unassignedDays() const
     return m_missingDays;
 }
 
-RamObjectList *RamProject::steps() const
+QVector<float> RamProject::stats(RamUser *user)
 {
-    return m_steps;
-}
-
-void RamProject::userAssigned(const QModelIndex &parent, int first, int last)
-{
-    Q_UNUSED(parent)
-
-    for (int i = first; i <= last; i++)
+    QVector<float> s(4);
+    for (int i = 0; i < m_steps->rowCount(); i++)
     {
-        RamObject *userObj = m_users->at(i);
-        m_dbi->assignUser(m_uuid, userObj->uuid());
+        RamStep *step = RamStep::c(m_steps->get(i));
+        if (!step) continue;
+        QVector<float> stepStats = step->stats(user);
+        s[0] = s.at(0) + stepStats.at(0);
+        s[1] = s.at(1) + stepStats.at(1);
+        s[2] = s.at(2) + stepStats.at(2);
+        s[3] = s.at(3) + stepStats.at(3);
     }
-    emit changed(this);
+    return s;
 }
 
-void RamProject::userUnassigned(const QModelIndex &parent, int first, int last)
+void RamProject::setFolderPath(const QString &newFolderPath)
 {
-    Q_UNUSED(parent)
+    if (newFolderPath == folderPath()) return;
 
-    for (int i = first; i <= last; i++)
-    {
-        RamObject *userObj = m_users->at(i);
-        m_dbi->unassignUser(m_uuid, userObj->uuid());
-    }
-    emit changed(this);
+    // Store this as a local setting
+    QSettings settings;
+    settings.beginGroup("projects");
+    settings.beginGroup(m_uuid);
+    settings.setValue("path", newFolderPath);
+    settings.endGroup();
+    settings.endGroup();
+
+    emit dataChanged(this);
 }
 
-const QString &RamProject::dbFolderPath() const
+void RamProject::resetDbFolderPath()
 {
-    return m_dbFolderPath;
+    setFolderPath(dbFolderPath());
+}
+
+QString RamProject::defaultPath() const
+{
+    return Ramses::instance()->path(RamObject::ProjectsFolder) + "/" + shortName();
+}
+
+bool RamProject::pathIsDefault(QString p) const
+{
+    return p == "" || p.toLower() == "auto";
+}
+
+QString RamProject::dbFolderPath() const
+{
+    return getData("path").toString("auto");
 }
 
 void RamProject::setDbFolderPath(const QString &newDbFolderPath)
 {
-    m_dbFolderPath = newDbFolderPath;
+    insertData("path", newDbFolderPath);
 }
+
+QString RamProject::details() const
+{
+    return QString::number(width()) +
+            " x " +
+            QString::number(height()) +
+            " (" +
+            QString::number(aspectRatio(),'f',2) +
+            ":1)" +
+            " @ " +
+            QString::number(framerate(), 'f', 2) +
+            "fps";
+}
+
+QStringList RamProject::filterListUuids() const
+{
+    // Return the list of user uuids
+    QStringList userUuids;
+    for (int i = 0; i < m_users->rowCount(); i++)
+    {
+        userUuids << m_users->get(i)->uuid();
+    }
+    return userUuids;
+}
+
+// PUBLIC SLOTS //
+
+void RamProject::updatePath()
+{
+    QString path = folderPath();
+    if (path == "") path = "auto";
+    insertData("path", path);
+}
+
+void RamProject::edit(bool show)
+{
+    if (!ui_editWidget) ui_editWidget = createEditFrame(new ProjectEditWidget());
+
+    if (show) showEdit( ui_editWidget );
+}
+
+void RamProject::computeEstimation(bool recompute)
+{
+    if (m_freezeEstimations) return;
+    m_timeSpent = 0;
+    m_estimation = 0;
+    m_completionRatio = 0;
+    m_latenessRatio = 0;
+    m_assignedDays = 0;
+    m_missingDays = 0;
+    int numItems = 0;
+
+
+    for (int i =0; i < m_steps->rowCount(); i++)
+    {
+        RamStep *step = RamStep::c(m_steps->get(i));
+
+        if (!step) continue;
+
+        if (recompute)
+        {
+            step->computeEstimation();
+            step->countAssignedDays();
+        }
+
+        //Ignore pre and post procution
+        if ( step->type() != RamStep::ShotProduction && step->type() != RamStep::AssetProduction) continue;
+
+        m_timeSpent += step->timeSpent();
+        m_estimation += step->estimation();
+        m_completionRatio += step->completionRatio();
+        m_latenessRatio += step->latenessRatio();
+        m_assignedDays += step->assignedDays();
+        m_missingDays += step->unassignedDays();
+
+        numItems++;
+    }
+
+    if (numItems > 0)
+    {
+        m_completionRatio /= numItems;
+        m_latenessRatio /= numItems;
+    }
+    else
+    {
+        m_completionRatio  = 100;
+        m_latenessRatio = 1;
+    }
+
+    emit completionRatioChanged(m_completionRatio);
+    emit latenessRatioChanged(m_latenessRatio);
+    emit timeSpentChanged(m_timeSpent);
+    emit estimationChanged(m_estimation);
+    emit estimationComputed(this);
+}
+
+// PROTECTED //
+
+QString RamProject::folderPath() const
+{
+    // Get path in settings first
+    QSettings settings;
+    settings.beginGroup("projects");
+    settings.beginGroup(m_uuid);
+    QString p = settings.value("path", "no-path").toString();
+    settings.endGroup();
+    settings.endGroup();
+
+    if (p == "no-path")
+    {
+        // Then return the DB path
+        p = dbFolderPath();
+    }
+
+    if (pathIsDefault(p))
+    {
+        return defaultPath();
+    }
+    else return p;
+}
+
+// PRIVATE //
+
+void RamProject::construct()
+{
+    m_existingObjects[m_uuid] = this;
+    m_icon = ":/icons/project";
+    m_editRole = ProjectAdmin;
+
+    m_shots = createModel(RamObject::Shot, "shots");
+    m_assets = createModel(RamObject::Asset, "assets");
+    m_users = createModel(RamObject::User, "users" );
+    m_scheduleComments = createModel(RamObject::ScheduleComment, "scheduleComments" );
+    m_pipeFiles = createModel(RamObject::PipeFile, "pipeFiles" );
+    m_steps = createModel(RamObject::Step, "steps" );
+    m_pipeline = createModel(RamObject::Pipe, "pipeline" );
+    m_sequences = createModel(RamObject::Sequence, "sequences" );
+    m_assetGroups = createModel(RamObject::AssetGroup, "assetGroups" );
+
+    m_shots->setColumnModel(m_steps);
+    m_assets->setColumnModel(m_steps);
+}
+

@@ -2,20 +2,24 @@
 #define PIPEFILEEDITWIDGET_H
 
 #include "objecteditwidget.h"
-#include "ramses.h"
-#include "ramobjectlistcombobox.h"
+#include "ramobjectcombobox.h"
+#include "rampipefile.h"
 
 class PipeFileEditWidget : public ObjectEditWidget
 {
     Q_OBJECT
 public:
-    PipeFileEditWidget(RamPipeFile *pipeFile = nullptr, QWidget *parent = nullptr);
+    PipeFileEditWidget(QWidget *parent = nullptr);
+    PipeFileEditWidget(RamPipeFile *pipeFile, QWidget *parent = nullptr);
 
-public slots:
-    void setObject(RamObject *obj) override;
+    RamPipeFile *pipeFile() const;
 
-protected slots:
-    void update() override;
+protected:
+    virtual void reInit(RamObject *o) override;
+
+private slots:
+    void setFileType(RamObject *ft);
+    void setCustomSettings();
 
 private:
     RamPipeFile *m_pipeFile = nullptr;
@@ -23,9 +27,9 @@ private:
     void setupUi();
     void connectEvents();
 
-    RamObjectListComboBox *ui_fileTypeBox;
-    RamObjectListComboBox *ui_colorSpaceBox;
-    QLineEdit *ui_customSettingsEdit;
+    RamObjectComboBox *ui_fileTypeBox;
+    //RamObjectListComboBox<RamObject*> *ui_colorSpaceBox;
+    DuQFTextEdit *ui_customSettingsEdit;
 };
 
 #endif // PIPEFILEEDITWIDGET_H

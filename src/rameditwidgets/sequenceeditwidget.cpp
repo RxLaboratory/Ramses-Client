@@ -1,15 +1,17 @@
 #include "sequenceeditwidget.h"
 
+#include "ramsequence.h"
+#include "ramshot.h"
+
 SequenceEditWidget::SequenceEditWidget(QWidget *parent) :
     ObjectEditWidget(parent)
 {
     setupUi();
     connectEvents();
-    setObject(nullptr);
 }
 
 SequenceEditWidget::SequenceEditWidget(RamSequence *sequence, QWidget *parent) :
-    ObjectEditWidget(sequence, parent)
+    ObjectEditWidget(parent)
 {
     setupUi();
     connectEvents();
@@ -21,42 +23,26 @@ RamSequence *SequenceEditWidget::sequence() const
     return m_sequence;
 }
 
-void SequenceEditWidget::setObject(RamObject *obj)
+void SequenceEditWidget::reInit(RamObject *o)
 {
-    RamSequence *sequence = qobject_cast<RamSequence*>(obj);
-
-    this->setEnabled(false);
-
-    ObjectEditWidget::setObject(sequence);
-    m_sequence = sequence;
-
-    QSignalBlocker b1(ui_shotsList);
-
-    ui_shotsList->setList(nullptr);
-
-    if (!sequence) return;
-
-    //Reset values
-    ui_shotsList->setList(m_sequence->project()->shots());
-    ui_shotsList->setFilter(sequence);
-    ui_colorSelector->setColor(sequence->color());
-
-    this->setEnabled(Ramses::instance()->isProjectAdmin());
+    m_sequence = qobject_cast<RamSequence*>(o);
+    if (m_sequence)
+    {
+        ui_shotsList->setObjectModel( m_sequence->project()->shots() );
+        ui_shotsList->setFilter(m_sequence);
+        ui_colorSelector->setColor(m_sequence->color());
+    }
+    else
+    {
+        ui_shotsList->setObjectModel(nullptr);
+        ui_colorSelector->setColor(QColor(67,67,67));
+    }
 }
 
-void SequenceEditWidget::update()
+void SequenceEditWidget::setColor(QColor c)
 {
     if (!m_sequence) return;
-
-    updating = true;
-
-    if (!checkInput()) return;
-
-    m_sequence->setColor( ui_colorSelector->color() );
-
-    ObjectEditWidget::update();
-
-    updating = false;
+    m_sequence->setColor(c);
 }
 
 void SequenceEditWidget::createShot()
@@ -64,9 +50,9 @@ void SequenceEditWidget::createShot()
     if (!m_sequence) return;
     RamShot *shot = new RamShot(
                 "NEW",
-                m_sequence,
-                "New Shot");
-    m_sequence->project()->shots()->append(shot);
+                "New Shot",
+                m_sequence);
+    m_sequence->project()->shots()->appendObject(shot->uuid());
     shot->edit();
 }
 
@@ -78,8 +64,8 @@ void SequenceEditWidget::setupUi()
     ui_colorSelector = new DuQFColorSelector(this);
     ui_mainFormLayout->addWidget(ui_colorSelector, 3, 1);
 
-    ui_shotsList = new ObjectListEditWidget(true, RamUser::ProjectAdmin, this);
-    ui_shotsList->setEditMode(ObjectListEditWidget::UnassignObjects);
+    ui_shotsList = new ObjectListWidget(true, RamUser::ProjectAdmin, this);
+    ui_shotsList->setEditMode(ObjectListWidget::UnassignObjects);
     ui_shotsList->setTitle("Shots");
     ui_mainLayout->addWidget(ui_shotsList);
 }
@@ -87,8 +73,6 @@ void SequenceEditWidget::setupUi()
 void SequenceEditWidget::connectEvents()
 {
     connect(ui_shotsList, SIGNAL(add()), this, SLOT(createShot()));
-    connect(ui_colorSelector, SIGNAL(colorChanged(QColor)), this, SLOT(update()));
-
-    monitorDbQuery("updateSequence");
+    connect(ui_colorSelector, SIGNAL(colorChanged(QColor)), this, SLOT(setColor(QColor)));
 }
 

@@ -3,31 +3,39 @@
 
 #include "ramobject.h"
 
-#include <QColor>
-
 class RamState : public RamObject
 {
     Q_OBJECT
 public:
-    explicit RamState(QString shortName, QString name = "", QString uuid = "");
-    ~RamState();
 
-    QColor color() const;
-    void setColor(const QColor &color);
+    // STATIC METHODS //
+
+    static RamState *get(QString uuid);
+    static RamState *c(RamObject *o);
+
+    // METHODS //
+
+    RamState(QString shortName, QString name);
 
     int completionRatio() const;
     void setCompletionRatio(int completionRatio);
 
-    static RamState *state(QString uuid);
+    virtual QString details() const override;
+    virtual QVariant roleData(int role) const override;
 
 public slots:
-    void update() override;
-    virtual void removeFromDB() override;
     virtual void edit(bool show = true) override;
 
+protected:
+    static QHash<QString, RamState*> m_existingObjects;
+    RamState(QString uuid);
+    virtual QString folderPath() const override { return ""; };
+
+    static QFrame *ui_editWidget;
+
 private:
-    QColor _color;
-    int _completionRatio = 50;
+    void construct();
+
 };
 
 #endif // RAMSTATE_H

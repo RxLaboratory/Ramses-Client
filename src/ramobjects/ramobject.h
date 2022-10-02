@@ -5,152 +5,95 @@
 #include <QMap>
 #include <QSettings>
 #include <QStringBuilder>
+#include <QMetaEnum>
 
-#include "dbinterface.h"
-#include "ramuuid.h"
-#include "config.h"
-#include "duqf-utils/utils.h"
-#include "ramworkingfolder.h"
+#include "ramabstractobject.h"
 
 class ObjectDockWidget;
 class ObjectEditWidget;
+class RamObjectModel;
 
-class RamObject : public QObject
+class RamObject : public QObject, public RamAbstractObject
 {
     Q_OBJECT
 public:
-    enum ObjectType { Application,
-                    Asset,
-                    AssetGroup,
-                    FileType,
-                    Generic,
-                    Item,
-                    Pipe,
-                    PipeFile,
-                    Project,
-                    Sequence,
-                    Shot,
-                    State,
-                    Status,
-                    Step,
-                    User,
-                    ObjectList,
-                    ObjectUberList,
-                    StepStatusHistory,
-                    ScheduleEntry};
-    Q_ENUM( ObjectType )
 
-    enum SubFolder { NoFolder,
-                   ConfigFolder,
-                   AdminFolder,
-                   PreProdFolder,
-                   ProdFolder,
-                   PostProdFolder,
-                   AssetsFolder,
-                   ShotsFolder,
-                   ExportFolder,
-                   TemplatesFolder,
-                   PublishFolder,
-                   VersionsFolder,
-                   PreviewFolder,
-                   UsersFolder,
-                   ProjectsFolder,
-                   TrashFolder};
-    Q_ENUM( SubFolder )
+    // STATIC METHODS //
+    static RamObject *get(QString uuid, ObjectType type);
 
-    enum UserRole { Admin = 3,
-                    ProjectAdmin = 2,
-                    Lead = 1,
-                    Standard = 0 };
-    Q_ENUM( UserRole )
+    // METHODS //
 
-    explicit RamObject(QObject *parent = nullptr);
-    explicit RamObject(QString uuid, QObject *parent = nullptr);
-    explicit RamObject(QString shortName, QString name, QString uuid = "", QObject *parent = nullptr);
+    /**
+     * @brief RamObject constructs a new object and adds it in the database
+     * @param shortName
+     * @param name
+     */
+    RamObject(QString shortName, QString name, ObjectType type, QObject *parent = nullptr, bool isVirtual = false, bool encryptData = false);
 
-    QSettings *settings();
-    void reInitSettingsFile();
+    virtual QString filterUuid() const { return QString(); };
+    virtual QStringList filterListUuids() const { return QStringList(); }
+    virtual RamObject *objectForColumn(QString columnUuid) const;
 
-    virtual QString shortName() const;
-    void setShortName(const QString &shortName);
+    virtual bool canEdit();
 
-    virtual QString name() const;
-    void setName(const QString &name);
-
-    QString comment() const;
-    void setComment(const QString comment);
-
-    QString uuid() const;
-
-    RamObject::ObjectType objectType() const;
-    void setObjectType(ObjectType type);
-
-    int order() const;
-    void setOrder(int order);
-
-    QString path(SubFolder subFolder = NoFolder, bool create = false) const;
-    QString path(SubFolder subFolder, QString subPath, bool create = false) const;
-    QStringList listFiles(SubFolder subFolder = NoFolder, QString subPath = "") const;
-    QList<QFileInfo> listFileInfos(SubFolder subFolder = NoFolder, QString subPath = "") const;
-    QStringList listFolders(SubFolder subFolder = NoFolder) const;
-    QStringList listFolders(SubFolder subFolder, QString subPath) const;
-    void deleteFile(QString fileName, SubFolder folder=NoFolder) const;
-    void revealFolder(SubFolder subFolder = NoFolder);
-
-    static QString subFolderName(SubFolder folder);
-
-    QString filterUuid() const;
-
-    bool is(const RamObject *other) const;
-
-    static RamObject *obj(QString uuid);
-    static RamObject *objFromName(QString shortNameOrName , ObjectType objType);
+    void emitDataChanged() override;
 
 public slots:
-    virtual void update();
-    virtual bool move(int newIndex);
-    virtual void removeFromDB() {};
-    virtual void remove(bool updateDB = true);
     virtual void edit(bool s = true) { Q_UNUSED(s) };
+    void reload();
+    // reimplemented to disconnect signals
+    virtual void remove() override;
 
 signals:
-    void changed(RamObject *);
+    void dataChanged(RamObject *);
     void removed(RamObject *);
+    void restored(RamObject *);
 
 protected:
-    DBInterface *m_dbi;
-    QString m_shortName;
-    QString m_name;
-    QString m_icon = ":/icons/asset";
-    UserRole m_editRole = Admin;
-    // Check if changed to limit number of signals
-    bool m_dirty;
+    // METHODS //
 
+    /**
+     * @brief RamObject constructs an object using its UUID and type. The UUID must exist in the database.
+     * @param uuid
+     * @param parent
+     */
+    RamObject(QString uuid, ObjectType type, QObject *parent = nullptr, bool encryptData = false);
+
+    virtual QJsonObject reloadData() override;
+
+    void emitRemoved() override;
+    void emitRestored() override;
+
+    /**
+     * @brief createEditFrame sets the widget used to edit this object in the UI
+     * @param w
+     */
+    QFrame *createEditFrame(ObjectEditWidget *w );
+    /**
+     * @brief showEdit shows the edit widget
+     * @param title
+     */
+    void showEdit(QWidget *w = nullptr, QString title = "");
+
+    // ATTRIBUTES //
+
+    UserRole m_editRole = Admin;
     bool m_editable = true;
 
-    QString m_uuid;
-    QString m_comment;
-    int m_order = -1;
-    bool m_orderChanged = false;
-    bool m_removing = false;
-    bool m_editReady = false;
-    QString m_filterUuid;
+    RamObjectModel *createModel(ObjectType type, QString modelName);
+    void loadModel(RamObjectModel *model, QString modelName, QJsonObject d = QJsonObject());
 
-    static QMap<QString, RamObject*> m_existingObjects;
-
-    void setEditWidget(ObjectEditWidget *w );
-    void showEdit(QString title = "");
-    virtual QString folderPath() const { return QString(); };
-
-    QFrame *ui_editWidget = nullptr;
+private slots:
+    void checkData(QString uuid);
+    void checkAvailability(QString uuid, bool availability);
+    void saveModel();
 
 private:
-    RamObject::ObjectType m_objectType = Generic;
-
+    void construct(QObject *parent = nullptr);
     ObjectDockWidget *m_dockWidget = nullptr;
-
-    QSettings *m_settings;
-
+    // models and their names
+    QMap<RamObjectModel*, QString> m_subModels;
+    bool m_loadingModels = false;
 };
 
 #endif // RAMOBJECT_H

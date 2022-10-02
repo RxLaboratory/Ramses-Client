@@ -2,10 +2,10 @@
 #define ASSETGROUPEDITWIDGET_H
 
 #include "objecteditwidget.h"
-#include "objectlisteditwidget.h"
+#include "objectlistwidget.h"
 #include "ramassetgroup.h"
 #include "duqf-widgets/duqffolderdisplaywidget.h"
-#include "ramses.h"
+#include "duqf-widgets/duqfcolorselector.h"
 
 /**
  * @brief The AssetGroupEditWidget class is used to edit AssetGroups and can be shown either in the main UI or in the Dock
@@ -20,13 +20,11 @@ public:
 
     RamAssetGroup *assetGroup() const;
 
-public slots:
-    void setObject(RamObject *obj) override;
-
-protected slots:
-    void update() override;
+protected:
+    virtual void reInit(RamObject *o) override;
 
 private slots:
+    void setColor(QColor c);
     void createAsset();
 
 private:
@@ -35,8 +33,9 @@ private:
     void setupUi();
     void connectEvents();
 
+    DuQFColorSelector *ui_colorSelector;
     DuQFFolderDisplayWidget *ui_folderWidget;
-    ObjectListEditWidget *ui_assetsList;
+    ObjectListWidget *ui_assetsList;
 };
 
 #endif // ASSETGROUPEDITWIDGET_H

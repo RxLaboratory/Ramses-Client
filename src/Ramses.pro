@@ -32,84 +32,102 @@ INCLUDEPATH += rameditwidgets \
     item-tables \
     data-views \
     pages \
-    data-model
+    ramdatainterface \
+    ramobjectdelegates \
+    ramobjectmodels \
+    ramobjectviews \
+    rammanagerwidgets \
 
 SOURCES += \
-    data-models/ramitemfiltermodel.cpp \
-    data-models/ramitemtablelistproxy.cpp \
-    data-models/ramobjectfilterlist.cpp \
-    data-models/ramobjectfiltermodel.cpp \
-    data-models/ramprojectfiltermodel.cpp \
-    data-models/ramschedulefilter.cpp \
-    data-models/ramscheduletable.cpp \
-    data-models/ramstatisticstable.cpp \
-    data-models/timelineproxy.cpp \
-    data-views/ramobjectlistmenu.cpp \
-    data-views/ramobjectlistview.cpp \
-    data-views/ramscheduledelegate.cpp \
-    data-views/ramscheduletablewidget.cpp \
-    data-views/ramstatisticsdelegate.cpp \
-    data-views/ramstatisticstablewidget.cpp \
-    data-views/ramstepheaderview.cpp \
-    data-views/timelinedelegate.cpp \
-    data-views/timelineview.cpp \
+    rameditwidgets/objectupdateblocker.cpp \
+    rammanagerwidgets/dbmanagerwidget.cpp \
+    rammanagerwidgets/objectlistwidget.cpp \
+    rammanagerwidgets/objectmanagerwidget.cpp \
+    rammanagerwidgets/sequencemanagerwidget.cpp \
+    rammanagerwidgets/shotmanagerwidget.cpp \
+    rammanagerwidgets/statemanagerwidget.cpp \
+    rammanagerwidgets/stepmanagerwidget.cpp \
+    ramobjectdelegates/ramobjectdelegate.cpp \
+    ramobjectmodels/dbtablemodel.cpp \
+    ramobjectmodels/ramitemsortfilterproxymodel.cpp \
+    ramobjectmodels/ramfilterlistproxymodel.cpp \
+    ramobjectmodels/ramobjectmodel.cpp \
+    ramobjectmodels/ramobjectsortfilterproxymodel.cpp \
+    ramobjectmodels/statisticsmodel.cpp \
+    ramobjectmodels/timelineproxy.cpp \
+    ramobjectmodels/ramschedulefilterproxymodel.cpp \
+    ramobjectmodels/ramscheduletablemodel.cpp \
+    ramobjectviews/ramitemview.cpp \
+    ramobjectviews/ramobjectcombobox.cpp \
+    ramobjectviews/ramobjectmenu.cpp \
+    ramobjectdelegates/ramscheduledelegate.cpp \
+    ramobjectviews/ramscheduletableview.cpp \
+    ramobjectdelegates/statisticsdelegate.cpp \
+    ramobjectdelegates/ramstepheaderview.cpp \
+    ramobjectdelegates/timelinedelegate.cpp \
+    ramobjectviews/statisticsview.cpp \
+    ramobjectviews/timelineview.cpp \
+    docks/consolewidget.cpp \
     docks/filemanagerwidget.cpp \
     duqf-utils/qtransposeproxymodel.cpp \
+    duqf-utils/simplecrypt.cpp \
     duqf-widgets/duqfautosizetoolbutton.cpp \
     duqf-widgets/duqfcolorselector.cpp \
     duqf-widgets/duqfelidedlabel.cpp \
     duqf-widgets/duqffilelist.cpp \
     duqf-widgets/duqfsearchedit.cpp \
-    data-models/ramitemtable.cpp \
-    data-models/ramobjectlist.cpp \
-    data-models/ramstatelist.cpp \
-    data-models/ramstepstatushistory.cpp \
-    data-views/ramobjectdelegate.cpp \
-    data-views/ramobjectlistcombobox.cpp \
+    duqf-widgets/duqfservercombobox.cpp \
+    duqf-widgets/duqfsslcheckbox.cpp \
+    duqf-widgets/duqftextedit.cpp \
     duqf-widgets/duqftitlebar.cpp \
     duqf-widgets/duqftoolbarspacer.cpp \
     duqf-widgets/duqfupdatedialog.cpp \
     duqf-widgets/duqfupdatesettingswidget.cpp \
-    pages/installpage.cpp \
     pages/projectpage.cpp \
+    ramdatainterface/datacrypto.cpp \
+    ramdatainterface/localdatainterface.cpp \
+    ramdatainterface/logindialog.cpp \
+    ramdatainterface/ramserverinterface.cpp \
     rameditwidgets/applicationeditwidget.cpp \
-    rameditwidgets/applicationlistmanagerwidget.cpp \
+    rammanagerwidgets/applicationmanagerwidget.cpp \
     rameditwidgets/asseteditwidget.cpp \
     rameditwidgets/assetgroupeditwidget.cpp \
     processmanager.cpp \
     progressbar.cpp \
     progresspage.cpp \
     daemon.cpp \
-    rameditwidgets/assetgrouplistmanagerwidget.cpp \
-    rameditwidgets/assetlistmanagerwidget.cpp \
-    rameditwidgets/filetypelistmanagerwidget.cpp \
-    rameditwidgets/objectlisteditwidget.cpp \
-    rameditwidgets/objectlistmanagerwidget.cpp \
+    rammanagerwidgets/assetgroupmanagerwidget.cpp \
+    rammanagerwidgets/assetmanagerwidget.cpp \
+    rameditwidgets/databasecreatewidget.cpp \
+    rameditwidgets/databaseeditwidget.cpp \
+    rammanagerwidgets/filetypemanagerwidget.cpp \
     rameditwidgets/pipefileeditwidget.cpp \
-    rameditwidgets/pipefilelistmanagerwidget.cpp \
-    rameditwidgets/projectlistmanagerwidget.cpp \
-    rameditwidgets/schedulemanagerwidget.cpp \
-    rameditwidgets/sequencelistmanagerwidget.cpp \
-    rameditwidgets/shotlistmanagerwidget.cpp \
-    rameditwidgets/statelistmanagerwidget.cpp \
+    rammanagerwidgets/pipefilemanagerwidget.cpp \
+    rammanagerwidgets/projectmanagerwidget.cpp \
+    rammanagerwidgets/schedulemanagerwidget.cpp \
+    ramobjects/ramabstractitem.cpp \
+    ramobjectviews/ramobjectview.cpp \
+    smallwidgets/ramstatebox.cpp \
+    smallwidgets/servereditwidget.cpp \
     docks/statisticswidget.cpp \
-    rameditwidgets/steplistmanagerwidget.cpp \
     rameditwidgets/stepstatushistorywidget.cpp \
-    rameditwidgets/templateassetgrouplistmanagerwidget.cpp \
-    rameditwidgets/templatesteplistmanagerwidget.cpp \
+    rammanagerwidgets/templateassetgroupmanagerwidget.cpp \
+    rammanagerwidgets/templatestepmanagerwidget.cpp \
     docks/timelinewidget.cpp \
-    rameditwidgets/userlistmanagerwidget.cpp \
+    rammanagerwidgets/usermanagerwidget.cpp \
     ramfilemetadatamanager.cpp \
-    ramloader.cpp \
     ramnamemanager.cpp \
+    ramobjects/ramabstractobject.cpp \
     ramobjects/ramassetgroup.cpp \
     ramobjects/rampipefile.cpp \
+    ramobjects/ramschedulecomment.cpp \
     ramobjects/ramscheduleentry.cpp \
     ramobjects/ramsequence.cpp \
+    ramobjects/ramtemplateassetgroup.cpp \
+    ramobjects/ramtemplatestep.cpp \
     ramobjects/ramworkingfolder.cpp \
     settingswidgets/daemonsettingswidget.cpp \
-    dbinterface.cpp \
-    dbisuspender.cpp \
+    ramdatainterface/dbinterface.cpp \
     duqf-app/app-style.cpp \
     duqf-app/app-utils.cpp \
     duqf-nodeview/duqfconnection.cpp \
@@ -142,7 +160,6 @@ SOURCES += \
     duqf-widgets/settingswidget.cpp \
     rameditwidgets/filetypeeditwidget.cpp \
     smallwidgets/frameratewidget.cpp \
-    settingswidgets/localsettingswidget.cpp \
     pages/loginpage.cpp \
     main.cpp \
     mainwindow.cpp \
@@ -154,7 +171,6 @@ SOURCES += \
     ramobjects/ramapplication.cpp \
     ramobjects/ramasset.cpp \
     ramobjects/ramfiletype.cpp \
-    ramobjects/ramitem.cpp \
     ramobjects/ramobject.cpp \
     ramobjects/rampipe.cpp \
     ramobjects/ramproject.cpp \
@@ -167,10 +183,8 @@ SOURCES += \
     ramobjects/ramuuid.cpp \
     smallwidgets/resolutionwidget.cpp \
     rameditwidgets/sequenceeditwidget.cpp \
-    settingswidgets/serversettingswidget.cpp \
     rameditwidgets/shoteditwidget.cpp \
     smallwidgets/shotscreationdialog.cpp \
-    smallwidgets/statebox.cpp \
     rameditwidgets/stateeditwidget.cpp \
     rameditwidgets/statuseditwidget.cpp \
     rameditwidgets/statushistorywidget.cpp \
@@ -180,89 +194,104 @@ SOURCES += \
     rameditwidgets/usereditwidget.cpp \
     timelinemanager.cpp \
     userprofilepage.cpp \
-    rameditwidgets/itemtablemanagerwidget.cpp \
+    rammanagerwidgets/itemmanagerwidget.cpp \
     pipeline-editor/objectnode.cpp \
     pipeline-editor/pipelinewidget.cpp \
     pipeline-editor/stepnode.cpp
 
 HEADERS += \
     config.h \
-    data-models/ramitemfiltermodel.h \
-    data-models/ramitemtable.h \
-    data-models/ramitemtablelistproxy.h \
-    data-models/ramobjectfilterlist.h \
-    data-models/ramobjectfiltermodel.h \
-    data-models/ramobjectlist.h \
-    data-models/ramprojectfiltermodel.h \
-    data-models/ramschedulefilter.h \
-    data-models/ramscheduletable.h \
-    data-models/ramstatelist.h \
-    data-models/ramstatisticstable.h \
-    data-models/ramstepstatushistory.h \
-    data-models/timelineproxy.h \
-    data-views/ramobjectdelegate.h \
-    data-views/ramobjectlistmenu.h \
-    data-views/ramobjectlistview.h \
-    data-views/ramscheduledelegate.h \
-    data-views/ramscheduletablewidget.h \
-    data-views/ramstatisticsdelegate.h \
-    data-views/ramstatisticstablewidget.h \
-    data-views/ramstepheaderview.h \
-    data-views/timelinedelegate.h \
-    data-views/timelineview.h \
-    dbistructures.h \
+    rameditwidgets/objectupdateblocker.h \
+    rammanagerwidgets/dbmanagerwidget.h \
+    rammanagerwidgets/objectlistwidget.h \
+    rammanagerwidgets/objectmanagerwidget.h \
+    rammanagerwidgets/sequencemanagerwidget.h \
+    rammanagerwidgets/shotmanagerwidget.h \
+    rammanagerwidgets/statemanagerwidget.h \
+    rammanagerwidgets/stepmanagerwidget.h \
+    ramobjectdelegates/ramobjectdelegate.h \
+    ramobjectmodels/dbtablemodel.h \
+    ramobjectmodels/ramitemsortfilterproxymodel.h \
+    ramobjectmodels/ramfilterlistproxymodel.h \
+    ramobjectmodels/ramobjectmodel.h \
+    ramobjectmodels/ramobjectsortfilterproxymodel.h \
+    ramobjectmodels/statisticsmodel.h \
+    ramobjectmodels/timelineproxy.h \
+    ramobjectmodels/ramschedulefilterproxymodel.h \
+    ramobjectmodels/ramscheduletablemodel.h \
+    ramobjectviews/ramitemview.h \
+    ramobjectviews/ramobjectcombobox.h \
+    ramobjectviews/ramobjectmenu.h \
+    ramobjectdelegates/ramscheduledelegate.h \
+    ramobjectviews/ramscheduletableview.h \
+    ramobjectdelegates/statisticsdelegate.h \
+    ramobjectdelegates/ramstepheaderview.h \
+    ramobjectdelegates/timelinedelegate.h \
+    ramobjectviews/statisticsview.h \
+    ramobjectviews/timelineview.h \
+    ramdatainterface/datacrypto.h \
+    ramdatainterface/dbistructures.h \
+    docks/consolewidget.h \
     docks/filemanagerwidget.h \
+    duqf-app/app-config.h \
     duqf-utils/qtransposeproxymodel.h \
+    duqf-utils/simplecrypt.h \
     duqf-widgets/duqfautosizetoolbutton.h \
     duqf-widgets/duqfcolorselector.h \
     duqf-widgets/duqfelidedlabel.h \
     duqf-widgets/duqffilelist.h \
     duqf-widgets/duqfsearchedit.h \
+    duqf-widgets/duqfservercombobox.h \
+    duqf-widgets/duqfsslcheckbox.h \
+    duqf-widgets/duqftextedit.h \
     duqf-widgets/duqftitlebar.h \
     duqf-widgets/duqftoolbarspacer.h \
     duqf-widgets/duqfupdatedialog.h \
     duqf-widgets/duqfupdatesettingswidget.h \
-    pages/installpage.h \
     processmanager.h \
     progressbar.h \
     progresspage.h \
-    data-views/ramobjectlistcombobox.h \
     pages/projectpage.h \
+    ramdatainterface/localdatainterface.h \
+    ramdatainterface/logindialog.h \
+    ramdatainterface/ramserverinterface.h \
     rameditwidgets/applicationeditwidget.h \
-    rameditwidgets/applicationlistmanagerwidget.h \
+    rammanagerwidgets/applicationmanagerwidget.h \
     rameditwidgets/asseteditwidget.h \
     rameditwidgets/assetgroupeditwidget.h \
     daemon.h \
-    rameditwidgets/assetgrouplistmanagerwidget.h \
-    rameditwidgets/assetlistmanagerwidget.h \
-    rameditwidgets/filetypelistmanagerwidget.h \
-    rameditwidgets/objectlisteditwidget.h \
-    rameditwidgets/objectlistmanagerwidget.h \
+    rammanagerwidgets/assetgroupmanagerwidget.h \
+    rammanagerwidgets/assetmanagerwidget.h \
+    rameditwidgets/databasecreatewidget.h \
+    rameditwidgets/databaseeditwidget.h \
+    rammanagerwidgets/filetypemanagerwidget.h \
     rameditwidgets/pipefileeditwidget.h \
-    rameditwidgets/pipefilelistmanagerwidget.h \
-    rameditwidgets/projectlistmanagerwidget.h \
-    rameditwidgets/schedulemanagerwidget.h \
-    rameditwidgets/sequencelistmanagerwidget.h \
-    rameditwidgets/shotlistmanagerwidget.h \
-    rameditwidgets/statelistmanagerwidget.h \
+    rammanagerwidgets/pipefilemanagerwidget.h \
+    rammanagerwidgets/projectmanagerwidget.h \
+    rammanagerwidgets/schedulemanagerwidget.h \
+    ramobjects/ramabstractitem.h \
+    ramobjectviews/ramobjectview.h \
+    smallwidgets/ramstatebox.h \
+    smallwidgets/servereditwidget.h \
     docks/statisticswidget.h \
-    rameditwidgets/steplistmanagerwidget.h \
     rameditwidgets/stepstatushistorywidget.h \
-    rameditwidgets/templateassetgrouplistmanagerwidget.h \
-    rameditwidgets/templatesteplistmanagerwidget.h \
+    rammanagerwidgets/templateassetgroupmanagerwidget.h \
+    rammanagerwidgets/templatestepmanagerwidget.h \
     docks/timelinewidget.h \
-    rameditwidgets/userlistmanagerwidget.h \
+    rammanagerwidgets/usermanagerwidget.h \
     ramfilemetadatamanager.h \
-    ramloader.h \
     ramnamemanager.h \
+    ramobjects/ramabstractobject.h \
     ramobjects/ramassetgroup.h \
     ramobjects/rampipefile.h \
+    ramobjects/ramschedulecomment.h \
     ramobjects/ramscheduleentry.h \
     ramobjects/ramsequence.h \
+    ramobjects/ramtemplateassetgroup.h \
+    ramobjects/ramtemplatestep.h \
     ramobjects/ramworkingfolder.h \
     settingswidgets/daemonsettingswidget.h \
-    dbinterface.h \
-    dbisuspender.h \
+    ramdatainterface/dbinterface.h \
     duqf-app/app-style.h \
     duqf-app/app-utils.h \
     duqf-app/app-version.h \
@@ -296,7 +325,6 @@ HEADERS += \
     duqf-widgets/settingswidget.h \
     rameditwidgets/filetypeeditwidget.h \
     smallwidgets/frameratewidget.h \
-    settingswidgets/localsettingswidget.h \
     pages/loginpage.h \
     mainwindow.h \
     rameditwidgets/objecteditwidget.h \
@@ -307,7 +335,6 @@ HEADERS += \
     ramobjects/ramapplication.h \
     ramobjects/ramasset.h \
     ramobjects/ramfiletype.h \
-    ramobjects/ramitem.h \
     ramobjects/ramobject.h \
     ramobjects/rampipe.h \
     ramobjects/ramproject.h \
@@ -320,10 +347,8 @@ HEADERS += \
     ramobjects/ramuuid.h \
     smallwidgets/resolutionwidget.h \
     rameditwidgets/sequenceeditwidget.h \
-    settingswidgets/serversettingswidget.h \
     rameditwidgets/shoteditwidget.h \
     smallwidgets/shotscreationdialog.h \
-    smallwidgets/statebox.h \
     rameditwidgets/stateeditwidget.h \
     rameditwidgets/statuseditwidget.h \
     rameditwidgets/statushistorywidget.h \
@@ -333,22 +358,19 @@ HEADERS += \
     rameditwidgets/usereditwidget.h \
     timelinemanager.h \
     userprofilepage.h \
-    rameditwidgets/itemtablemanagerwidget.h \
+    rammanagerwidgets/itemmanagerwidget.h \
     pipeline-editor/objectnode.h \
     pipeline-editor/pipelinewidget.h \
     pipeline-editor/stepnode.h
 
 FORMS += \
-    pages/installpage.ui \
     settingswidgets/daemonsettingswidget.ui \
     duqf-widgets/aboutdialog.ui \
     duqf-widgets/appearancesettingswidget.ui \
     duqf-widgets/duqffolderselectorwidget.ui \
-    settingswidgets/localsettingswidget.ui \
     pages/loginpage.ui \
     mainwindow.ui \
     pipeline-editor/pipelinewidget.ui \
-    settingswidgets/serversettingswidget.ui \
     smallwidgets/shotscreationdialog.ui
 
 # Default rules for deployment.

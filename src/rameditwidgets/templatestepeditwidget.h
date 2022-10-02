@@ -6,8 +6,8 @@
 
 #include "duqf-widgets/autoselectdoublespinbox.h"
 #include "objecteditwidget.h"
-#include "ramses.h"
 #include "duqf-widgets/duqfcolorselector.h"
+#include "ramtemplatestep.h"
 
 class TemplateStepEditWidget : public ObjectEditWidget
 {
@@ -15,21 +15,26 @@ class TemplateStepEditWidget : public ObjectEditWidget
 
 public:
     explicit TemplateStepEditWidget(QWidget *parent = nullptr);
-    explicit TemplateStepEditWidget(RamStep *templateStep, QWidget *parent = nullptr);
+    explicit TemplateStepEditWidget(RamTemplateStep *templateStep, QWidget *parent = nullptr);
 
-    RamStep *step() const;
+    RamTemplateStep *step() const;
 
-public slots:
-    void setObject(RamObject *obj) override;
-
-protected slots:
-    void update() override;
+protected:
+    virtual void reInit(RamObject *o) override;
 
 private slots:
     void updateEstimationSuffix();
+    void setType(int t);
+    void setColor(QColor c);
+    void setEstimationType(int t);
+    void setVeryEasy(double e);
+    void setEasy(double e);
+    void setMedium(double e);
+    void setHard(double e);
+    void setVeryHard(double e);
 
 private:
-    RamStep *m_step;
+    RamTemplateStep *m_step;
 
     void setupUi();
     void connectEvents();

@@ -1,69 +1,56 @@
 #include "pipeeditwidget.h"
 
+#include "rampipefile.h"
+#include "ramstep.h"
 
-PipeEditWidget::PipeEditWidget(RamPipe *pipe, QWidget *parent) : ObjectEditWidget(pipe, parent)
+PipeEditWidget::PipeEditWidget(QWidget *parent) :
+    ObjectEditWidget(parent)
 {
     setupUi();
     connectEvents();
+}
 
+PipeEditWidget::PipeEditWidget(RamPipe *pipe, QWidget *parent) : ObjectEditWidget( parent)
+{
+    setupUi();
+    connectEvents();
     setObject(pipe);
 }
 
-void PipeEditWidget::setObject(RamObject *pipeObj)
+RamPipe *PipeEditWidget::pipe() const
 {
-    RamPipe *pipe = qobject_cast<RamPipe*>( pipeObj );
-    this->setEnabled(false);
-
-    ObjectEditWidget::setObject(pipe);
-    _pipe = pipe;
-
-    QSignalBlocker b1(ui_fromBox);
-    QSignalBlocker b2(ui_toBox);
-    QSignalBlocker b3(ui_pipeFileList);
-
-    // Clear boxes
-    ui_fromBox->setList(nullptr);
-    ui_toBox->setList(nullptr);
-    ui_pipeFileList->setList(nullptr);
-
-    if (!pipe) return;
-
-    // Load steps
-    RamProject *project = pipe->project();
-    if (!project) return;
-
-    // find output and input steps
-    ui_fromBox->setList( project->steps() );
-    ui_toBox->setList( project->steps() );
-    ui_fromBox->setObject( pipe->outputStep() );
-    ui_toBox->setObject( pipe->inputStep() );
-
-    // Load file types
-    ui_pipeFileList->setAssignList( project->pipeFiles() );
-    ui_pipeFileList->setList( pipe->pipeFiles() );
-
-    this->setEnabled(Ramses::instance()->isProjectAdmin());
+    return m_pipe;
 }
 
-void PipeEditWidget::update()
+void PipeEditWidget::reInit(RamObject *o)
 {
-    if (!_pipe) return;
+    m_pipe = qobject_cast<RamPipe*>(o);
+    if (m_pipe)
+    {
+        // Load steps
+        RamProject *project = m_pipe->project();
+        if (!project) return;
 
-    updating = true;
+        // find output and input steps
+        QSignalBlocker b1(ui_toBox);
+        QSignalBlocker b2(ui_fromBox);
+        ui_fromBox->setObjectModel( project->steps() );
+        ui_toBox->setObjectModel( project->steps() );
 
-    RamProject *project = _pipe->project();
-    if (!project) return;
+        ui_fromBox->setObject( m_pipe->outputStep() );
+        ui_toBox->setObject( m_pipe->inputStep() );
 
-    RamStep *inputStep = reinterpret_cast<RamStep*>( ui_toBox->currentData().toULongLong() );
-    if (!inputStep) return;
-    _pipe->setInputStep( inputStep );
-    RamStep *outputStep = reinterpret_cast<RamStep*>( ui_fromBox->currentData().toULongLong() );
-    if (!outputStep) return;
-    _pipe->setOutputStep( outputStep );
-
-    ObjectEditWidget::update();
-
-    updating = false;
+        // Load file types
+        ui_pipeFileList->setAssignList( project->pipeFiles() );
+        ui_pipeFileList->setObjectModel( m_pipe->pipeFiles() );
+    }
+    else
+    {
+        // Clear boxes
+        ui_fromBox->setObjectModel(nullptr);
+        ui_toBox->setObjectModel(nullptr);
+        ui_pipeFileList->setObjectModel(nullptr);
+    }
 }
 
 void PipeEditWidget::appChanged()
@@ -73,15 +60,29 @@ void PipeEditWidget::appChanged()
 
 void PipeEditWidget::createPipeFile()
 {
-    if(!_pipe) return;
-    RamProject *project = _pipe->project();
+    if(!m_pipe) return;
+    RamProject *project = m_pipe->project();
     if (!project) return;
     RamPipeFile *pipeFile = new RamPipeFile(
                 "NEW",
                 project);
-    project->pipeFiles()->append(pipeFile);
-    _pipe->pipeFiles()->append(pipeFile);
+    project->pipeFiles()->appendObject(pipeFile->uuid());
+    m_pipe->pipeFiles()->appendObject(pipeFile->uuid());
     pipeFile->edit();
+}
+
+void PipeEditWidget::setInputStep(RamObject *step)
+{
+    if (!m_pipe) return;
+    if (!step) return;
+    m_pipe->setInputStep( step );
+}
+
+void PipeEditWidget::setOutputStep(RamObject *step)
+{
+    if (!m_pipe) return;
+    if (!step) return;
+    m_pipe->setOutputStep( step );
 }
 
 void PipeEditWidget::setupUi()
@@ -94,29 +95,25 @@ void PipeEditWidget::setupUi()
     QLabel *fromLabel = new QLabel("From", this);
     ui_mainFormLayout->addWidget(fromLabel, 3, 0);
 
-    ui_fromBox = new RamObjectListComboBox(this);
+    ui_fromBox = new RamObjectComboBox(this);
     ui_mainFormLayout->addWidget(ui_fromBox, 3, 1);
 
     QLabel *toLabel = new QLabel("To", this);
     ui_mainFormLayout->addWidget(toLabel, 4, 0);
 
-    ui_toBox = new RamObjectListComboBox(this);
+    ui_toBox = new RamObjectComboBox(this);
     ui_mainFormLayout->addWidget(ui_toBox, 4, 1);
 
-    ui_pipeFileList = new ObjectListEditWidget(true, RamUser::ProjectAdmin, this);
-    ui_pipeFileList->setEditMode(ObjectListEditWidget::UnassignObjects);
+    ui_pipeFileList = new ObjectListWidget(true, RamUser::ProjectAdmin, this);
+    ui_pipeFileList->setEditMode(ObjectListWidget::UnassignObjects);
     ui_pipeFileList->setTitle("Files");
     ui_mainLayout->addWidget(ui_pipeFileList);
 }
 
 void PipeEditWidget::connectEvents()
 {
-    connect(ui_fromBox, SIGNAL(activated(int)), this, SLOT(update()));
-    connect(ui_toBox, SIGNAL(activated(int)), this, SLOT(update()));
-    connect(ui_pipeFileList, &ObjectListEditWidget::add, this, &PipeEditWidget::createPipeFile);
-
-    monitorDbQuery("updatePipe");
-    monitorDbQuery("assignPipeFile");
-    monitorDbQuery("unassignPipeFile");
+    connect(ui_fromBox, &RamObjectComboBox::currentObjectChanged, this, &PipeEditWidget::setOutputStep);
+    connect(ui_toBox,  &RamObjectComboBox::currentObjectChanged, this, &PipeEditWidget::setInputStep);
+    connect(ui_pipeFileList, &ObjectListWidget::add, this, &PipeEditWidget::createPipeFile);
 }
 

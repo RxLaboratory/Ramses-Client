@@ -5,10 +5,9 @@
 #include <QRegExpValidator>
 
 #include "ui_shotscreationdialog.h"
-#include "duqf-utils/utils.h"
 #include "ramproject.h"
 #include "ramshot.h"
-#include "ramobjectlistcombobox.h"
+#include "ramobjectcombobox.h"
 
 class ShotsCreationDialog : public QDialog, private Ui::ShotsCreationDialog
 {
@@ -29,7 +28,7 @@ private:
     QString getShortName(int n = -1);
     QString getName(int n = -1);
     RamProject *m_project;
-    RamObjectListComboBox *ui_sequenceBox;
+    RamObjectComboBox *ui_sequenceBox;
 };
 
 #endif // SHOTSCREATIONDIALOG_H

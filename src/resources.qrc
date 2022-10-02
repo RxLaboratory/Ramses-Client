@@ -20,13 +20,6 @@
         <file alias="project">resources/icons/cinema-movie_sl.svg</file>
         <file alias="state">resources/icons/state.svg</file>
         <file alias="color-dialog">resources/icons/color-palette_sl.svg</file>
-        <file alias="admin-settings">resources/icons/admin.svg</file>
-        <file alias="reveal-folder">resources/icons/go-to-explore-reveal-folder_sl.svg</file>
-        <file alias="browse-folder">resources/icons/set-folder_sl.svg</file>
-        <file alias="storage">resources/icons/storage_sl.svg</file>
-        <file alias="tray-color">resources/icons/ramses_sc.svg</file>
-        <file alias="tray-dark">resources/icons/ramses_sd.svg</file>
-        <file alias="tray-light">resources/icons/ramses_sl.svg</file>
         <file alias="project-admin">resources/icons/project-leader-head-admin_sl.svg</file>
         <file alias="bash">resources/icons/bash-terminal_sl.svg</file>
         <file alias="daemon">resources/icons/daemon.svg</file>
@@ -53,7 +46,6 @@
         <file alias="asset-group">resources/icons/assetgroup_sl.svg</file>
         <file alias="sequence">resources/icons/sequence.svg</file>
         <file alias="pipe-files">resources/icons/pipes_sl.svg</file>
-        <file alias="reveal-folder-s">resources/icons/go-to-explore-reveal-folder_small.svg</file>
         <file alias="open">resources/icons/load_sl.svg</file>
         <file alias="show">resources/icons/show_sl.svg</file>
         <file alias="state-l">resources/icons/state_l.svg</file>
@@ -61,9 +53,7 @@
         <file alias="stats">resources/icons/counter_bl.svg</file>
         <file alias="snap">resources/icons/magnet-snap_sl.svg</file>
         <file alias="shots-table">resources/icons/shots-frames-table.svg</file>
-        <file alias="copy">resources/icons/copy_sl.svg</file>
         <file alias="cut">resources/icons/cut_sl.svg</file>
-        <file alias="paste">resources/icons/paste_sl.svg</file>
         <file alias="comment">resources/icons/comment_sl.svg</file>
         <file alias="logo_large">resources/icons/logo_large.png</file>
         <file alias="sort">resources/icons/sort_sl.svg</file>
@@ -74,6 +64,13 @@
         <file alias="create">resources/icons/create-from-template.svg</file>
         <file alias="status-edit">resources/icons/status_edit.svg</file>
         <file alias="timeline">resources/icons/timeline-time_sl.svg</file>
+        <file alias="shield">resources/icons/shield-secure-block-ssl_sl.svg</file>
+        <file alias="no-shield">resources/icons/shield-unsecure-unblock_sl.svg</file>
+        <file alias="clean">resources/icons/clean-empty-broom_sl.svg</file>
+        <file alias="storage">resources/icons/storage.svg</file>
+        <file alias="storage-settings">resources/icons/storage_settings.svg</file>
+        <file alias="lock">resources/icons/lock_sl.svg</file>
+        <file alias="tray-color">resources/icons/ramses-picto.svg</file>
     </qresource>
     <qresource prefix="/styles">
         <file alias="default-ramses-client">resources/style/style-ramses.css</file>
@@ -88,5 +85,8 @@
     </qresource>
     <qresource prefix="/images">
         <file alias="splash">resources/images/splash.png</file>
+    </qresource>
+    <qresource prefix="/data">
+        <file alias="template">resources/data/templateDB.sqlite</file>
     </qresource>
 </RCC>

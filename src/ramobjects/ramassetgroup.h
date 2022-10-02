@@ -1,44 +1,46 @@
 #ifndef RAMASSETGROUP_H
 #define RAMASSETGROUP_H
 
-#include "ramasset.h"
-#include "ramobject.h"
-#include "data-models/ramobjectfiltermodel.h"
+#include "ramtemplateassetgroup.h"
 
-class RamProject;
+#include "ramproject.h"
+#include "ramobjectsortfilterproxymodel.h"
 
-class RamAssetGroup : public RamObject
+class RamAssetGroup : public RamTemplateAssetGroup
 {
     Q_OBJECT
 public:
-    // Template (no project set)
-    explicit RamAssetGroup(QString shortName, QString name = "",  QString uuid = "" );
-    // Actual group
-    explicit RamAssetGroup(QString shortName, RamProject *project, QString name,  QString uuid = "");
-    ~RamAssetGroup();
 
-    bool isTemplate() const;
-    RamAssetGroup *createFromTemplate(RamProject *project);
+    // STATIC //
+
+    static RamAssetGroup *get(QString uuid);
+    static RamAssetGroup *c(RamObject *o);
+    static RamAssetGroup *createFromTemplate(RamTemplateAssetGroup *tempAG, RamProject *project);
+
+    // OTHER //
+
+    explicit RamAssetGroup(QString shortName, QString name, RamProject *project);
 
     int assetCount() const;
-
     RamProject *project() const;
 
-    static RamAssetGroup *assetGroup(QString uuid);
+    virtual QString details() const override;
 
 public slots:
-    void update() override;
     virtual void edit(bool show = true) override;
-    virtual void removeFromDB() override;
 
 protected:
+    static QHash<QString, RamAssetGroup*> m_existingObjects;
+    RamAssetGroup(QString uuid);
     virtual QString folderPath() const override;
 
-private:
-    bool m_template;
+    static QFrame *ui_assetGroupWidget;
 
-    RamProject *m_project = nullptr;
-    RamObjectFilterModel *m_assets;
+private:
+    void construct();
+    void setProject(RamProject *project);
+
+    RamObjectSortFilterProxyModel *m_assets;
 };
 
 #endif // RAMASSETGROUP_H

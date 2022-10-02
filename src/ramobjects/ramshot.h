@@ -1,46 +1,58 @@
 #ifndef RAMSHOT_H
 #define RAMSHOT_H
 
-#include "ramitem.h"
+#include "ramabstractitem.h"
 
 class RamSequence;
+class RamAsset;
+class RamObjectList;
 
-class RamShot : public RamItem
+class RamShot : public RamAbstractItem
 {
     Q_OBJECT
 public:
-    explicit RamShot(QString shortName, RamSequence *sequence, QString name = "", QString uuid = "");
-    ~RamShot();
+
+    // STATIC METHODS //
+
+    static RamShot *get(QString uuid);
+    // Short for qobject_cast<RamShot*>
+    static RamShot *c(RamObject *obj);
+
+    // METHODS //
+
+    RamShot(QString shortName, QString name, RamSequence *sequence);
+
+    QColor color() const override;
 
     RamSequence *sequence() const;
-    void setSequence(RamSequence *sequence);
+    void setSequence(RamObject *sequence);
 
     qreal duration() const;
     void setDuration(const qreal &duration);
 
-    RamObjectList *assets() const;
+    RamObjectModel *assets() const;
+    RamAsset *assetAt(int row) const;
 
-    static RamShot *shot(QString uuid);
+    virtual QString filterUuid() const override;
+
+    virtual QString details() const override;
+
+    virtual QVariant roleData(int role) const override;
 
 public slots:
-    void update() override;
-    bool move(int index) override;
     virtual void edit(bool show = true) override;
 
 protected:
+    static QHash<QString, RamShot*> m_existingObjects;
     virtual QString folderPath() const override;
+    RamShot(QString uuid);
 
-private slots:
-    void assetAssigned(const QModelIndex &parent, int first, int last);
-    void assetUnassigned(const QModelIndex &parent, int first, int last);
-    virtual void removeFromDB() override;
+    static QFrame *ui_editWidget;
 
 private:
-    RamSequence *m_sequence;
-    qreal m_duration = 0.0;
-    RamObjectList *m_assets;
+    void construct();
 
-    QMetaObject::Connection m_sequenceConnection;
+    RamObjectModel *m_assets;
 };
 
 #endif // RAMSHOT_H

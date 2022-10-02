@@ -7,14 +7,14 @@ StepStatusHistoryWidget::StepStatusHistoryWidget(QWidget *parent) : QWidget(pare
     connectEvents();
 }
 
-StepStatusHistoryWidget::StepStatusHistoryWidget(RamStepStatusHistory *history, QWidget *parent) : QWidget(parent)
+StepStatusHistoryWidget::StepStatusHistoryWidget(RamObjectModel *history, QWidget *parent) : QWidget(parent)
 {
     setupUi();
     setHistory(history);
     connectEvents();
 }
 
-void StepStatusHistoryWidget::setHistory(RamStepStatusHistory *history)
+void StepStatusHistoryWidget::setHistory(RamObjectModel *history)
 {
     this->setEnabled(false);
 
@@ -22,10 +22,8 @@ void StepStatusHistoryWidget::setHistory(RamStepStatusHistory *history)
 
     if (!m_history) return;
 
-    m_statusList->setList(m_history);
-    RamItem *item = m_history->item();
-    if (item)
-        m_statusList->setTitle("Status history for " + item->name());
+    m_statusList->setObjectModel(m_history);
+    m_statusList->setTitle("Status history");
 
     this->setEnabled(true);
 }
@@ -36,7 +34,7 @@ void StepStatusHistoryWidget::setupUi()
     layout->setContentsMargins(0,0,0,0);
     layout->setSpacing(3);
 
-    m_statusList = new ObjectListEditWidget(true, RamUser::ProjectAdmin, this);
+    m_statusList = new ObjectListWidget(true, RamUser::ProjectAdmin, this);
     m_statusList->setTitle("Status history");
     m_statusList->setEditable(false);
     m_statusList->setSearchable(false);

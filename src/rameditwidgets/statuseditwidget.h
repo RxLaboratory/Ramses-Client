@@ -10,15 +10,15 @@
 #include <QMenu>
 #include <QSplitter>
 
+#include "duqf-widgets/duqftextedit.h"
 #include "duqf-widgets/duqfspinbox.h"
 #include "duqf-widgets/autoselectspinbox.h"
 #include "duqf-widgets/autoselectdoublespinbox.h"
-#include "data-views/ramobjectlistcombobox.h"
 #include "duqf-widgets/duqffolderdisplaywidget.h"
 #include "duqf-widgets/duqffilelist.h"
 #include "objecteditwidget.h"
-#include "statebox.h"
-#include "ramses.h"
+#include "ramstatebox.h"
+#include "ramstatus.h"
 
 /**
  * @brief The StatusEditWidget class is used to edit a RamStatus.
@@ -30,21 +30,23 @@ public:
     StatusEditWidget(QWidget *parent = nullptr);
     StatusEditWidget(RamStatus *status, QWidget *parent = nullptr);
 
-    RamStatus::Difficulty difficulty() const;
-
-public slots:
-     void setObject(RamObject *statusObj) override;
-
-protected slots:
-    void update() override;
+    RamStatus *status() const;
 
 protected:
-    void showEvent(QShowEvent *event) override;
+    virtual void reInit(RamObject *o) override;
 
 private slots:
-    void currentStateChanged(RamObject *stateObj);
-    void revert();
-    void checkPublished(int v);
+    void setState(RamState *state);
+    void refresh();
+    void setVersion(int v);
+    void setCompletion(int c);
+    void setComment();
+    void assignUser(RamObject *u);
+    void setPublished(bool p);
+    void setAutoEstimation(bool a);
+    void setTimeSpent(int t);
+    void setEstimation(double e);
+    void setDifficulty(int d);
 
     void mainFileSelected();
     void openMainFile();
@@ -61,20 +63,16 @@ private slots:
     void openPreviewFile();
     void removeSelectedPreviewFile();
 
-    void autoEstimationClicked(bool useAutoEstimation);
-    void difficultyBoxChanged();
-    void estimateDays(int hours);
-
 private:
     void setupUi();
     void connectEvents();
-    StateBox *ui_stateBox;
+    RamStateBox *ui_stateBox;
     DuQFSpinBox *ui_completionBox;
     AutoSelectSpinBox *ui_versionBox;
-    QPlainTextEdit *ui_statusCommentEdit;
+    DuQFTextEdit *ui_statusCommentEdit;
     QToolButton *ui_revertButton;
     QCheckBox *ui_publishedBox;
-    RamObjectListComboBox *ui_userBox;
+    RamObjectComboBox *ui_userBox;
     AutoSelectSpinBox *ui_timeSpent;
     DuQFFileList *ui_mainFileList;
     DuQFFileList *ui_previewFileList;

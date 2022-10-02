@@ -1,21 +1,13 @@
 ﻿#include "objecteditwidget.h"
+#include "duqf-utils/utils.h"
+#include "objectupdateblocker.h"
 
 ObjectEditWidget::ObjectEditWidget(QWidget *parent) :
     QScrollArea(parent)
 {
     setupUi();
 
-    setObject(nullptr);
-
-    connectEvents();
-}
-
-ObjectEditWidget::ObjectEditWidget(RamObject *o, QWidget *parent) :
-    QScrollArea(parent)
-{
-    setupUi();
-
-    setObject(o);
+    m_object = nullptr;
 
     connectEvents();
 }
@@ -31,76 +23,105 @@ void ObjectEditWidget::hideName(bool hide)
     ui_nameEdit->setVisible(!hide);
     ui_shortNameLabel->setVisible(!hide);
     ui_shortNameEdit->setVisible(!hide);
-}
-
-void ObjectEditWidget::monitorDbQuery(QString queryName)
-{
-    m_dbQueries << queryName;
+    ui_lockShortNameButton->setVisible(!hide);
 }
 
 void ObjectEditWidget::setObject(RamObject *object)
 {
-    // disconnect all
-    while(_objectConnections.count() > 0)
-    {
-        disconnect( _objectConnections.takeLast() );
-    }
-
+    // disconnect
+    if (m_object) disconnect(m_object, nullptr, this, nullptr);
     m_object = object;
 
-    QSignalBlocker b1(ui_nameEdit);
-    QSignalBlocker b2(ui_shortNameEdit);
-    QSignalBlocker b3(ui_commentEdit);
+    ObjectUpdateBlocker b(object);
 
-    ui_nameEdit->setText("");
-    ui_shortNameEdit->setText("");
-    ui_commentEdit->setText("");
+    if (object) {
+        ui_nameEdit->setText(object->name());
+        ui_shortNameEdit->setText(object->shortName());
+        ui_commentEdit->setText(object->comment());
 
-    if (!object) return;
+        this->setEnabled(object->canEdit());
+    }
+    else {
+        ui_nameEdit->setText("");
+        ui_shortNameEdit->setText("");
+        ui_commentEdit->setText("");
 
-    ui_nameEdit->setText(object->name());
-    ui_shortNameEdit->setText(object->shortName());
-    ui_commentEdit->setText(object->comment());
+        this->setEnabled(false);
+    }
 
-    checkPath();
+    reInit(object);
 
-    _objectConnections << connect( object, &RamObject::removed, this, &ObjectEditWidget::objectRemoved);
-    _objectConnections << connect( object, &RamObject::changed, this, &ObjectEditWidget::objectChanged);
+    if (object) {
+        checkPath();
+
+        connect( object, &RamObject::removed, this, &ObjectEditWidget::objectRemoved);
+        connect( object, &RamObject::dataChanged, this, &ObjectEditWidget::objectChanged);
+    }
 }
 
-void ObjectEditWidget::update()
+void ObjectEditWidget::lockShortName(bool lock)
 {
-    if (!checkInput()) return;
-
-    updating = true;
-
-    m_object->setName(ui_nameEdit->text());
-    m_object->setShortName(ui_shortNameEdit->text());
-    m_object->setComment(ui_commentEdit->toPlainText());
-
-    m_object->update();
-
-    updating = false;
+    ui_shortNameEdit->setEnabled(!lock);
+    ui_lockShortNameButton->setVisible(lock);
 }
 
-bool ObjectEditWidget::checkInput()
+void ObjectEditWidget::setShortName()
 {
-    if (!m_object) return false;
-
+    if (!m_object) return;
 
     if (ui_shortNameEdit->text() == "")
     {
         // bug in Qt, signal is fired twice when showing the message box
-        if (!ui_shortNameEdit->isModified()) return false;
+        if (!ui_shortNameEdit->isModified()) return;
         ui_shortNameEdit->setModified(false);
 
         QMessageBox::warning(this, "Missing ID", "You need to set an ID for this item." );
         ui_shortNameEdit->setText(m_object->shortName());
         ui_shortNameEdit->setFocus(Qt::OtherFocusReason);
-        return false;
+
+        return;
     }
 
-    return true;
+    if (!m_object->validateShortName(ui_shortNameEdit->text()))
+    {
+        QMessageBox::warning(this, "Invalid ID", "Sorry, this ID is invalid, please choose another one.\n\n"
+                                                 "⬣ IDs should be unique\n"
+                                                 "⬣ IDs must contain only: \"A-Z\", \"a-z\", \"0-9\", \"-\", \"+\" characters\n"
+                                                 "⬣ IDs must be less than 10-character long" );
+        ui_shortNameEdit->setText(m_object->shortName());
+        ui_shortNameEdit->setFocus(Qt::OtherFocusReason);
+
+        return;
+    }
+
+    m_object->setShortName(ui_shortNameEdit->text());
+}
+
+void ObjectEditWidget::setName()
+{
+    if (!m_object) return;
+
+    if (ui_nameEdit->text() == "")
+    {
+        // bug in Qt, signal is fired twice when showing the message box
+        if (!ui_nameEdit->isModified()) return;
+        ui_nameEdit->setModified(false);
+
+        QMessageBox::warning(this, "Missing Name", "You need to set a name for this item." );
+        ui_nameEdit->setText(m_object->name());
+        ui_nameEdit->setFocus(Qt::OtherFocusReason);
+
+        return;
+    }
+
+    m_object->setName(ui_nameEdit->text());
+}
+
+void ObjectEditWidget::setComment()
+{
+    if (!m_object) return;
+
+    m_object->setComment(ui_commentEdit->toMarkdown());
 }
 
 void ObjectEditWidget::objectRemoved(RamObject *o)
@@ -109,23 +130,20 @@ void ObjectEditWidget::objectRemoved(RamObject *o)
     setObject(nullptr);
 }
 
-void ObjectEditWidget::dbiDataReceived(QJsonObject data)
+void ObjectEditWidget::unlockShortName()
 {
-    // Only if we're visible!
-    if (!this->isVisible()) return;
-
-    // Show error if monitoring & unsuccessful
-    if (data.value("success").toBool(false)) return;
-
-    if (!m_dbQueries.contains( data.value("query").toString()) ) return;
-
-    if (!m_modified) return;
-    QMessageBox::warning(this, "Server Error", data.value("message").toString() );
+    QMessageBox::Button ok = QMessageBox::question(
+                this,
+                tr("Confirm ID change"),
+                tr("If you change the ID, you may need to manually rename and move files.\n\n"
+                   "Are you sure you want to edit this ID?")
+                );
+    if (ok != QMessageBox::Yes) return;
+    lockShortName(false);
 }
 
 void ObjectEditWidget::objectChanged(RamObject *o)
 {
-    if (updating) return;
     Q_UNUSED(o);
     setObject(m_object);
 }
@@ -133,14 +151,15 @@ void ObjectEditWidget::objectChanged(RamObject *o)
 void ObjectEditWidget::checkPath()
 {
     if(!m_object) return;
-    ui_shortNameEdit->setEnabled( !m_dontRename.contains(m_object->shortName()) );
+    lockShortName( m_dontRename.contains(m_object->shortName()) );
     ui_nameEdit->setEnabled(true);
     // If the folder already exists, freeze the ID or the name (according to specific types)
     if ( m_object->path() != "" &&  QFileInfo::exists( m_object->path() ) && m_object->shortName() != "NEW" )
     {
-        if (m_object->objectType() == RamObject::AssetGroup) ui_nameEdit->setEnabled(false);
-        else ui_shortNameEdit->setEnabled(false);
+        lockShortName(true);
     }
+    // Always freeze step short names
+    else if (m_object->objectType() == RamObject::Step) lockShortName(true);
 }
 
 void ObjectEditWidget::showEvent(QShowEvent *event)
@@ -152,20 +171,6 @@ void ObjectEditWidget::hideEvent(QHideEvent *event)
 {
     Q_UNUSED(event)
     update();
-}
-
-bool ObjectEditWidget::eventFilter(QObject *obj, QEvent *event)
-{
-    if (obj->objectName() == "commentEdit")
-    {
-        QEvent::Type t = event->type();
-        if (t == QEvent::FocusOut || t == QEvent::Hide)
-        {
-            update();
-            //return true;
-        }
-    }
-    return false;
 }
 
 void ObjectEditWidget::setupUi()
@@ -196,8 +201,16 @@ void ObjectEditWidget::setupUi()
     ui_shortNameLabel = new QLabel("ID", dummy);
     ui_mainFormLayout->addWidget(ui_shortNameLabel, 1, 0);
 
+    QHBoxLayout *shortNameLayout = new QHBoxLayout();
     ui_shortNameEdit = new QLineEdit(dummy);
-    ui_mainFormLayout->addWidget(ui_shortNameEdit, 1, 1);
+    shortNameLayout->addWidget(ui_shortNameEdit);
+
+    ui_lockShortNameButton = new QToolButton(this);
+    ui_lockShortNameButton->setIcon(QIcon(":/icons/lock"));
+    shortNameLayout->addWidget(ui_lockShortNameButton);
+    ui_lockShortNameButton->hide();
+
+    ui_mainFormLayout->addLayout(shortNameLayout, 1, 1);
 
     // Short Name validator
     QRegExp rxsn = RegExUtils::getRegExp("shortname");
@@ -207,7 +220,7 @@ void ObjectEditWidget::setupUi()
     ui_commentLabel = new QLabel("Comment", dummy);
     ui_mainFormLayout->addWidget(ui_commentLabel, 2, 0);
 
-    ui_commentEdit = new QTextEdit(dummy);
+    ui_commentEdit = new DuQFTextEdit(dummy);
     ui_commentEdit->setMaximumHeight(80);
     ui_commentEdit->setObjectName("commentEdit");
     ui_mainFormLayout->addWidget(ui_commentEdit, 2, 1);
@@ -221,8 +234,8 @@ void ObjectEditWidget::setupUi()
 
 void ObjectEditWidget::connectEvents()
 {
-    connect(ui_shortNameEdit, &QLineEdit::editingFinished, this, &ObjectEditWidget::update);
-    connect(ui_nameEdit, &QLineEdit::editingFinished, this, &ObjectEditWidget::update);
-    ui_commentEdit->installEventFilter(this);
-    connect(DBInterface::instance(), SIGNAL(data(QJsonObject)), this, SLOT(dbiDataReceived(QJsonObject)));
+    connect(ui_shortNameEdit, SIGNAL(editingFinished()), this, SLOT(setShortName()));
+    connect(ui_nameEdit, SIGNAL(editingFinished()), this, SLOT(setName()));
+    connect(ui_commentEdit, SIGNAL(editingFinished()), this, SLOT(setComment()));
+    connect(ui_lockShortNameButton, &QToolButton::clicked, this, &ObjectEditWidget::unlockShortName);
 }

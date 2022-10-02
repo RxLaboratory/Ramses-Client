@@ -1,57 +1,42 @@
 #include "filetypeeditwidget.h"
 
-FileTypeEditWidget::FileTypeEditWidget(RamFileType *fileType) :
-    ObjectEditWidget(fileType)
+
+FileTypeEditWidget::FileTypeEditWidget(QWidget *parent) :
+    ObjectEditWidget(parent)
 {
     setupUi();
     connectEvents();
+}
 
+FileTypeEditWidget::FileTypeEditWidget(RamFileType *fileType, QWidget *parent) :
+    ObjectEditWidget(parent)
+{
+    setupUi();
+    connectEvents();
     setObject(fileType);
 }
 
 RamFileType *FileTypeEditWidget::fileType() const
 {
-    return _fileType;
+    return m_fileType;
 }
 
-void FileTypeEditWidget::setObject(RamObject *obj)
+void FileTypeEditWidget::reInit(RamObject *o)
 {
-    RamFileType *fileType = (RamFileType*)obj;
-
-    this->setEnabled(false);
-
-    ObjectEditWidget::setObject(fileType);
-    _fileType = fileType;
-
-    QSignalBlocker b1(ui_extensionsEdit);
-    QSignalBlocker b2(ui_previewableBox);
-
-    ui_extensionsEdit->setText("");
-    ui_previewableBox->setChecked(false);
-
-    if (!_fileType) return;
-
-    ui_extensionsEdit->setText(_fileType->extensions().join(", "));
-    ui_previewableBox->setChecked(_fileType->isPreviewable());
-
-    this->setEnabled(Ramses::instance()->isProjectAdmin());
+    m_fileType = qobject_cast<RamFileType*>(o);
+    if (m_fileType)
+    {
+        ui_extensionsEdit->setText(m_fileType->extensions().join(", "));
+        ui_previewableBox->setChecked(m_fileType->previewable());
+    }
+    else
+    {
+        ui_extensionsEdit->setText("");
+        ui_previewableBox->setChecked(false);
+    }
 }
 
-void FileTypeEditWidget::update()
-{
-    if (!_fileType) return;
-
-    updating = true;
-
-    _fileType->setExtensions(ui_extensionsEdit->text());
-    _fileType->setPreviewable(ui_previewableBox->isChecked());
-
-    ObjectEditWidget::update();
-
-    updating = false;
-}
-
-void FileTypeEditWidget::updateExtensions()
+void FileTypeEditWidget::setExtensions()
 {
     QStringList extensions = ui_extensionsEdit->text().split(",");
     QStringList fixedExtensions;
@@ -62,7 +47,14 @@ void FileTypeEditWidget::updateExtensions()
         fixedExtensions << ext;
     }
     ui_extensionsEdit->setText( fixedExtensions.join(", "));
-    update();
+
+    if (m_fileType) m_fileType->setExtensions( ui_extensionsEdit->text() );
+}
+
+void FileTypeEditWidget::setPreviewable(bool p)
+{
+    if (!m_fileType) return;
+    m_fileType->setPreviewable(p);
 }
 
 void FileTypeEditWidget::setupUi()
@@ -87,9 +79,6 @@ void FileTypeEditWidget::setupUi()
 
 void FileTypeEditWidget::connectEvents()
 {
-    connect(ui_extensionsEdit, SIGNAL(editingFinished()), this, SLOT(updateExtensions()));
-    connect(ui_extensionsEdit, &QLineEdit::editingFinished, this, &FileTypeEditWidget::update);
-    connect(ui_previewableBox, &QCheckBox::clicked, this, &FileTypeEditWidget::update);
-
-    monitorDbQuery("updateFileType");
+    connect(ui_extensionsEdit, SIGNAL(editingFinished()), this, SLOT(setExtensions()));
+    connect(ui_previewableBox, SIGNAL(clicked(bool)), this, SLOT(setPreviewable(bool)));
 }

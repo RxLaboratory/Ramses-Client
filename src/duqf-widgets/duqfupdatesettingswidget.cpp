@@ -43,7 +43,7 @@ void DuQFUpdateSettingsWidget::setupUi()
 
     ui_checkNowButton = new QPushButton("Check now", this);
     ui_checkNowButton->setIcon(QIcon(":/icons/check-update"));
-    formLayout->addRow("", ui_checkNowButton);
+    vLayout->addWidget(ui_checkNowButton);
 
     vLayout->addStretch();
     mainLayout->addStretch();

@@ -1,7 +1,7 @@
 #include "stateeditwidget.h"
 
 StateEditWidget::StateEditWidget(RamState *state, QWidget *parent) :
-    ObjectEditWidget(state, parent)
+    ObjectEditWidget(parent)
 {
     setupUi();
     connectEvents();
@@ -14,52 +14,38 @@ StateEditWidget::StateEditWidget(QWidget *parent) :
 {
     setupUi();
     connectEvents();
-
-    setObject(nullptr);
-
-    this->setEnabled(false);
 }
 
 RamState *StateEditWidget::state() const
 {
-    return _state;
+    return m_state;
 }
 
-void StateEditWidget::setObject(RamObject *obj)
+void StateEditWidget::reInit(RamObject *o)
 {
-    RamState *state = (RamState*)obj;
-
-    this->setEnabled(false);
-
-    QSignalBlocker b1(ui_colorSelector);
-    QSignalBlocker b2(completionSpinBox);
-
-    ObjectEditWidget::setObject(state);
-    _state = state;
-
-    ui_colorSelector->setColor(QColor(25,25,25));
-    completionSpinBox->setValue(50);
-
-    if (!state) return;
-
-    ui_colorSelector->setColor(state->color());
-    completionSpinBox->setValue(state->completionRatio());
-
-    this->setEnabled(Ramses::instance()->isAdmin());
+    m_state = qobject_cast<RamState*>(o);
+    if (m_state)
+    {
+        ui_colorSelector->setColor(m_state->color());
+        ui_completionSpinBox->setValue(m_state->completionRatio());
+    }
+    else
+    {
+        ui_colorSelector->setColor(QColor(25,25,25));
+        ui_completionSpinBox->setValue(50);
+    }
 }
 
-void StateEditWidget::update()
+void StateEditWidget::setCompletion(int c)
 {
-    if (!_state) return;
+    if(!m_state) return;
+    m_state->setCompletionRatio(c);
+}
 
-    updating = true;
-
-    _state->setColor(ui_colorSelector->color());
-    _state->setCompletionRatio(completionSpinBox->value());
-
-    ObjectEditWidget::update();
-
-    updating = false;
+void StateEditWidget::setColor(QColor c)
+{
+    if(!m_state) return;
+    m_state->setColor(c);
 }
 
 void StateEditWidget::setupUi()
@@ -74,10 +60,10 @@ void StateEditWidget::setupUi()
     QLabel *completionLabel = new QLabel("Completion ratio", this);
     ui_mainFormLayout->addWidget(completionLabel, 4, 0);
 
-    completionSpinBox = new DuQFSpinBox(this);
-    completionSpinBox->setSuffix("%");
-    completionSpinBox->setMaximumHeight(completionLabel->height());
-    ui_mainFormLayout->addWidget(completionSpinBox, 4, 1);
+    ui_completionSpinBox = new DuQFSpinBox(this);
+    ui_completionSpinBox->setSuffix("%");
+    ui_completionSpinBox->setMaximumHeight(completionLabel->height());
+    ui_mainFormLayout->addWidget(ui_completionSpinBox, 4, 1);
 
     ui_mainLayout->addStretch();
 
@@ -92,8 +78,6 @@ void StateEditWidget::setupUi()
 
 void StateEditWidget::connectEvents()
 {
-    connect(completionSpinBox, &DuQFSpinBox::valueChanged, this, &StateEditWidget::update);
-    connect(ui_colorSelector, SIGNAL(colorChanged(QColor)), this, SLOT(update()));
-
-    monitorDbQuery("updateState");
+    connect(ui_completionSpinBox, SIGNAL(valueChanged(int)), this, SLOT(setCompletion(int)));
+    connect(ui_colorSelector, SIGNAL(colorChanged(QColor)), this, SLOT(setColor(QColor)));
 }

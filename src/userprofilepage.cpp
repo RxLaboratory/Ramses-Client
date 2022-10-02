@@ -5,8 +5,7 @@ UserProfilePage::UserProfilePage(QWidget *parent) :
 {
     setupUi();
 
-    connect(Ramses::instance(),&Ramses::loggedIn,this,&UserProfilePage::loggedIn);
-    connect(Ramses::instance(),&Ramses::loggedOut,this,&UserProfilePage::loggedOut);
+    connect(Ramses::instance(),&Ramses::userChanged,this,&UserProfilePage::loggedIn);
 }
 
 void UserProfilePage::loggedIn(RamUser *user)

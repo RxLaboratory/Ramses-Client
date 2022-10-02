@@ -1,29 +1,50 @@
 #include "ramsequence.h"
-#include "ramproject.h"
+
 #include "sequenceeditwidget.h"
 
-RamSequence::RamSequence(QString shortName, RamProject *project, QString name, QString uuid):
-    RamObject(shortName, name, uuid, project)
+// STATIC //
+
+QFrame *RamSequence::ui_editWidget = nullptr;
+
+QHash<QString, RamSequence*> RamSequence::m_existingObjects = QHash<QString, RamSequence*>();
+
+RamSequence *RamSequence::get(QString uuid)
 {
-    m_icon = ":/icons/sequence";
-    m_editRole = ProjectAdmin;
+    if (!checkUuid(uuid, Sequence)) return nullptr;
 
-    m_color = QColor(43,43,43);
+    RamSequence *s = m_existingObjects.value(uuid);
+    if (s) return s;
 
-    this->setObjectType(Sequence);
-    m_project = project;
-    m_dbi->createSequence(m_shortName, m_name, m_project->uuid(), m_uuid);
-
-    m_shots = new RamObjectFilterModel(this);
-    m_shots->setSourceModel( project->shots() );
-    m_shots->setFilterUuid( m_uuid );
-
-    this->setObjectName( "RamSequence" );
+    // Finally return a new instance
+    return new RamSequence(uuid);
 }
 
-RamSequence::~RamSequence()
+RamSequence *RamSequence::c(RamObject *o)
 {
+    return qobject_cast<RamSequence*>(o);
+    // For performance, reinterpret_cast, but be careful with the object passed!
+    return reinterpret_cast<RamSequence*>(o);
+}
 
+// PUBLIC //
+
+RamSequence::RamSequence(QString shortName, QString name, RamProject *project):
+    RamObject(shortName, name, Sequence, project)
+{
+    construct();
+    setProject(project);
+    insertData("project", project->uuid());
+}
+
+RamSequence::RamSequence(QString uuid):
+   RamObject(uuid, Sequence)
+{
+    construct();
+
+    QJsonObject d = data();
+
+    QString projUuid = d.value("project").toString();
+    setProject( RamProject::get(projUuid) );
 }
 
 int RamSequence::shotCount() const
@@ -36,60 +57,70 @@ double RamSequence::duration() const
     double duration = 0;
     for (int i = 0; i < m_shots->rowCount(); i++)
     {
-        quintptr iptr = m_shots->data( m_shots->index(i,0), Qt::UserRole).toULongLong();
-        RamShot *shot = reinterpret_cast<RamShot*>( iptr );
-        duration += shot->duration();
+        int d = m_shots->data( m_shots->index(i,0), RamObject::Duration).toDouble();
+        duration += d;
     }
     return duration;
 }
 
 RamProject *RamSequence::project() const
 {
-    return m_project;
+    QString projUuid = getData("project").toString();
+    return RamProject::get(projUuid);
 }
 
-RamSequence *RamSequence::sequence(QString uuid)
+QString RamSequence::details() const
 {
-    return qobject_cast<RamSequence*>( RamObject::obj(uuid) );
+    QTime dur(0, 0, duration());
+    return "Contains: " +
+            QString::number(shotCount()) +
+            " shots\n" +
+            "Duration: " +
+            dur.toString("mm 'mn' ss 's'");
 }
 
-void RamSequence::update()
+QVariant RamSequence::roleData(int role) const
 {
-    if(!m_dirty) return;
-    RamObject::update();
-    m_dbi->updateSequence(m_uuid, m_shortName, m_name, m_comment, m_color);
-    if (m_orderChanged)
-    {
-        m_dbi->setSequenceOrder(m_uuid, m_order);
-        m_orderChanged = false;
+    switch(role) {
+    case Duration: return this->duration();
     }
+    return RamObject::roleData(role);
 }
+
+// PUBLIC SLOTS //
 
 void RamSequence::edit(bool show)
 {
-    if (!m_editReady)
-    {
-        SequenceEditWidget *w = new SequenceEditWidget(this);
-        setEditWidget(w);
-        m_editReady = true;
-    }
-    if (show) showEdit();
+    if (!ui_editWidget) ui_editWidget = createEditFrame(new SequenceEditWidget());
+
+    if (show) showEdit( ui_editWidget );
 }
 
-void RamSequence::removeFromDB()
+// PRIVATE //
+
+void RamSequence::construct()
 {
-    m_dbi->removeSequence(m_uuid);
+    m_existingObjects[m_uuid] = this;
+    m_icon = ":/icons/sequence";
+    m_editRole = ProjectAdmin;
+    m_shots = new RamObjectSortFilterProxyModel(this);
+    m_shots->setSingleColumn(true);
 }
 
-const QColor &RamSequence::color() const
+void RamSequence::setProject(RamProject *project)
 {
-    return m_color;
+    m_shots->setSourceModel( project->shots() );
+    m_shots->setFilterUuid( m_uuid );
+    this->setParent( project );
 }
 
-void RamSequence::setColor(const QColor &newColor)
-{
-    if (m_color == newColor) return;
-    m_dirty = true;
-    m_color = newColor;
-    emit changed(this);
-}
+
+
+
+
+
+
+
+
+
+

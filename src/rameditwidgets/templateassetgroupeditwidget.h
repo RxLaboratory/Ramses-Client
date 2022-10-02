@@ -2,7 +2,8 @@
 #define TEMPLATEASSETGROUPEDITWIDGET_H
 
 #include "objecteditwidget.h"
-#include "ramses.h"
+#include "ramtemplateassetgroup.h"
+#include "duqf-widgets/duqfcolorselector.h"
 
 class TemplateAssetGroupEditWidget : public ObjectEditWidget
 {
@@ -10,18 +11,22 @@ class TemplateAssetGroupEditWidget : public ObjectEditWidget
 
 public:
     explicit TemplateAssetGroupEditWidget(QWidget *parent = nullptr);
-    explicit TemplateAssetGroupEditWidget(RamAssetGroup *templateAssetGroup, QWidget *parent = nullptr);
+    explicit TemplateAssetGroupEditWidget(RamTemplateAssetGroup *templateAssetGroup, QWidget *parent = nullptr);
 
-    RamAssetGroup *assetGroup() const;
+    RamTemplateAssetGroup *assetGroup() const;
 
-public slots:
-    void setObject(RamObject *obj) override;
+protected:
+    virtual void reInit(RamObject *o) override;
 
 private slots:
+    void setColor(QColor c);
 
 private:
     void setupUi();
-    RamAssetGroup *_assetGroup;
+    void connectEvents();
+
+    DuQFColorSelector *ui_colorSelector;
+    RamTemplateAssetGroup *m_assetGroup;
 };
 
 #endif // TEMPLATEASSETGROUPEDITWIDGET_H

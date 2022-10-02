@@ -3,19 +3,21 @@
 
 #include <QDateTime>
 
-#include "ramuser.h"
-#include "ramstate.h"
-#include "ramstep.h"
-#include "ramfilemetadatamanager.h"
-#include "ramnamemanager.h"
+#include "ramobject.h"
 
-class RamItem;
-class StatusEditWidget;
+class RamAbstractItem;
+class RamUser;
+class RamStep;
+class RamState;
+class RamWorkingFolder;
 
 class RamStatus : public RamObject
 {
     Q_OBJECT
 public:
+
+    // ENUMS //
+
     enum Difficulty {
         VeryEasy = 0,
         Easy = 1,
@@ -25,44 +27,48 @@ public:
     };
     Q_ENUM(Difficulty)
 
-    explicit RamStatus(RamUser *user, RamState *state, RamStep *step, RamItem *item, bool computeEstimation = true, QString uuid = "");
-    ~RamStatus();
+    // STATIC METHODS //
 
-    virtual QString shortName() const override;
-    virtual QString name() const override;
+    static RamStatus *get(QString uuid);
+    static RamStatus *c(RamObject *o);
+
+    static RamStatus *copy(RamStatus *other, RamUser *user);
+
+    static RamStatus *noStatus(RamAbstractItem *item, RamStep *step);
+
+    static float hoursToDays(int hours);
+    static int daysToHours(float days);
+
+    // METHODS //
+
+    RamStatus(RamUser *user, RamAbstractItem *item, RamStep *step, bool isVirtual = false);
+
+    RamUser *user() const;
+    RamStep *step() const;
+    RamAbstractItem *item() const;
+
+    bool isNoState() const;
+    bool isDisabled() const override;
 
     int completionRatio() const;
     void setCompletionRatio(int completionRatio);
 
-    RamUser *user() const;
-
     RamState *state() const;
-    void setState(RamState *state);
-
-    RamWorkingFolder workingFolder() const;
-    QString createFileFromTemplate(QString filePath) const;
-    QString createFileFromResource(QString filePath) const;
+    void setState(RamState *newState);
 
     int version() const;
     void setVersion(int version);
-    QString restoreVersionFile(QString fileName) const;
-
-    RamStep *step() const;
-
-    RamItem *item() const;
 
     QDateTime date() const;
-    void setDate(const QDateTime &date);
+    void setDate(const QDateTime &date = QDateTime::currentDateTimeUtc());
 
     bool isPublished() const;
     void setPublished(bool published);
 
-    QString previewImagePath() const;
-
     RamUser *assignedUser() const;
-    void assignUser(RamUser *assignedUser);
+    void assignUser(RamObject *user);
 
-    qint64 timeSpent(); // seconds
+    qint64 timeSpent() const; // seconds
     void setTimeSpent(const float &ts);
     bool isTimeSpentManual() const;
 
@@ -71,24 +77,38 @@ public:
 
     float goal() const; // days
     void setGoal(float newGoal);
+
     float estimation() const; // days
     float estimation(int difficulty) const; // days
-    float latenessRatio() const;
+
     void setUseAutoEstimation(bool newAutoEstimation);
     bool useAutoEstimation() const;
 
-    static RamStatus *status(QString uuid);
-    static RamStatus *copy(RamStatus *other, RamUser *user);
-    static float hoursToDays(int hours);
-    static int daysToHours(float days);
+    float latenessRatio() const;
+
+    RamWorkingFolder workingFolder() const;
+
+    QString createFileFromTemplate(QString filePath) const;
+    QString createFileFromResource(QString filePath) const;
+
+    QString restoreVersionFile(QString fileName) const;
+
+    virtual QString previewImagePath() const override;
+
+    virtual QString details() const override;
+    virtual QString subDetails() const override;
+
+    virtual QVariant roleData(int role) const override;
 
 public slots:
-    void update() override;
     virtual void edit(bool show = true) override;
-    virtual void removeFromDB() override;
 
 protected:
+    static QHash<QString, RamStatus*> m_existingObjects;
+    RamStatus(QString uuid);
     virtual QString folderPath() const override;
+
+    static QFrame *ui_editWidget;
 
 private slots:
     void stateRemoved();
@@ -96,26 +116,14 @@ private slots:
     void assignedUserRemoved();
 
 private:  
-    int m_completionRatio = 50;
+    void construct();
+    void connectEvents();
+
+    void updateData(QJsonObject *d);
+
     RamUser *m_user;
-    RamState *m_state;
-    RamItem *m_item;
-    int m_version = 1;
+    RamAbstractItem *m_item;
     RamStep *m_step;
-    QDateTime m_date;
-    qint64 m_timeSpent = 0;
-    bool m_manualTimeSpent = false;
-    bool m_published = false;
-    RamUser* m_assignedUser = nullptr;
-    Difficulty m_difficulty = Medium;
-    float m_goal = -1.0;
-    bool m_useAutoEstimation = true;
-
-    StatusEditWidget *ui_editWidget;
-
-    QMetaObject::Connection m_stateConnection;
-    QMetaObject::Connection m_assignedUserConnection;
-
 };
 
 #endif // RAMSTATUS_H

@@ -10,7 +10,6 @@
 #include <QHideEvent>
 
 #include "duqf-widgets/duqftitlebar.h"
-#include "duqf-utils/guiutils.h"
 
 class SettingsWidget : public QWidget
 {

@@ -1,17 +1,11 @@
 #ifndef RAMSES_H
 #define RAMSES_H
 
+#include "dbtablemodel.h"
+#include "dbinterface.h"
 #include "ramuser.h"
 #include "ramproject.h"
-#include "ramstep.h"
 #include "ramstate.h"
-#include "ramassetgroup.h"
-#include "ramfiletype.h"
-#include "ramapplication.h"
-#include "ramshot.h"
-#include "data-models/ramstatelist.h"
-#include "dbisuspender.h"
-#include "duqf-app/app-utils.h"
 
 #include <QObject>
 #include <QtDebug>
@@ -20,121 +14,108 @@ class Ramses : public RamObject
 {
     Q_OBJECT
 public:
+
+    // STATIC METHODS //
+
     static Ramses *instance();
-    ~Ramses();
+
+    // OTHER METHODS //
+
     // User
-    void login(QString username, QString password);
-    void logout();
-    // Server connection
-    bool isOnline() const;
+    void setUserUuid(QString uuid);
+    void setUser(RamUser *u);
+
     // Tree base
-    void setRamsesPath(const QString &ramsesPath);
-    QString pathFromRamses(QString p, bool create = false) const;
+    void setRamsesPath(QString p);
+    QString pathFromRamses(QString p = "", bool create = false) const;
+
     // Users
-    void setCurrentUser(RamUser *u);
-    RamObjectList *users() const;
+    DBTableModel *users() const;
     RamUser *currentUser() const;
-    RamUser *ramUser();
+    RamUser *ramsesUser();
     RamUser *removedUser();
-    void setRamUser(RamUser *user);
     bool isAdmin();
     bool isProjectAdmin();
     bool isLead();
+
     // States
+    DBTableModel *states() const;
     RamState *noState();
     RamState *todoState();
     RamState *okState();
     RamState *stbState();
     RamState *wipState();
+
     // Projects
-    RamObjectList *projects() const;
+    DBTableModel *projects() const;
     RamProject *currentProject() const;
     void setCurrentProject(RamProject *project);
     void setCurrentProject(QString shortName);
     void setCurrentProjectUuid(QString uuid);
-    // Template Steps
-    RamObjectList *templateSteps() const;
-    // Template Asset Groups
-    RamObjectList *templateAssetGroups() const;
-    // States
-    RamStateList *states() const;
-    // File Types
-    RamObjectList *fileTypes() const;
-    // Applications
-    RamObjectList *applications() const;
 
-public slots:
-    void init();
-    void refresh();
-    void projectReady(QString uuid);
-    void setOnline();
-    void setOffline();
+    // Template Steps
+    DBTableModel *templateSteps() const;
+
+    // Template Asset Groups
+    DBTableModel *templateAssetGroups() const;
+
+    // File Types
+    DBTableModel *fileTypes() const;
+
+    // Applications
+    DBTableModel *applications() const;
 
 signals:
-    void loggedIn(RamUser*);
-    void loggedOut();
+    void userChanged(RamUser*);
     void currentProjectChanged(RamProject*);
-    void newStep(RamStep *);
-    void newAssetGroup(RamAssetGroup *);
-    void busy(bool);
 
 protected:
     static Ramses *_instance;
     virtual QString folderPath() const override;
 
-private slots:
-    //TODO This should be modified when implementing offline version
-    void dbiConnectionStatusChanged(NetworkUtils::NetworkStatus s);
-
 private:
+
+    // METHODS //
+
     /**
      * @brief Ramses is the class managing all data. It is a singleton
      * @param parent
      */
     explicit Ramses(QObject *parent = nullptr);
 
-    QSettings m_settings;
-
-    DBInterface *m_dbi;
-
-    /**
-     * @brief True when loogged in, false otherwise.
-     */
-    bool m_connected;
-
-    // Tree
-    QString m_ramsesPath;
     QDir createDir(QString p) const;
     QString createPath(QString p) const;
 
+    // ATTRIBUTES //
+
+    // DATA (lists)
+    DBTableModel *m_states;
+    DBTableModel *m_users;
+    DBTableModel *m_templateSteps = nullptr;
+    DBTableModel *m_templateAssetGroups = nullptr;
+    DBTableModel *m_fileTypes = nullptr;
+    DBTableModel *m_applications = nullptr;
+    DBTableModel *m_projects = nullptr;
+
     // Users
-    RamObjectList *m_users;
-    RamUser *m_currentUser;
-    RamUser *m_ramUser;
-    RamUser *m_removedUser;
-
-    // Projects
-    RamObjectList *m_projects;
-    RamProject *m_currentProject;
-
-    // Template steps
-    RamObjectList *m_templateSteps;
-
-    // Template asset groups
-    RamObjectList *m_templateAssetGroups;
+    RamUser *m_currentUser = nullptr;
+    RamUser *m_ramsesUser = nullptr;
+    RamUser *m_removedUser = nullptr;
+    bool m_loggedin = false;
 
     // States
-    RamStateList *m_states;
     RamState *m_noState = nullptr;
     RamState *m_okState = nullptr;
     RamState *m_todoState = nullptr;
     RamState *m_stbState = nullptr;
     RamState *m_wipState = nullptr;
 
-    // File types
-    RamObjectList *m_fileTypes;
-    // Applications
-    RamObjectList *m_applications;
+    // Projects
+    RamProject *m_currentProject = nullptr;
+
+    // LOW LEVEL
+    DBInterface *m_dbi;
+    QSettings m_settings;
 };
 
 #endif // RAMSES_H

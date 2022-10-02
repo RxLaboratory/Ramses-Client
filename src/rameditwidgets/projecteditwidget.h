@@ -6,11 +6,11 @@
 #include <QDateTimeEdit>
 
 #include "objecteditwidget.h"
-#include "ramses.h"
 #include "resolutionwidget.h"
 #include "frameratewidget.h"
 #include "duqf-widgets/duqffolderselectorwidget.h"
-#include "objectlisteditwidget.h"
+#include "objectlistwidget.h"
+#include "ramproject.h"
 
 class ProjectEditWidget : public ObjectEditWidget
 {
@@ -22,14 +22,15 @@ public:
 
     RamProject *project() const;
 
-public slots:
-    void setObject(RamObject *obj) override;
-
-protected slots:
-    void update() override;
+protected:
+    virtual void reInit(RamObject *o) override;
 
 private slots:
+    void setResolution(int w, int h);
+    void setFramerate(double f);
     void updateFolderLabel(QString path);
+    void setPath(QString p);
+    void setDeadline(QDate d);
     void currentUserChanged(RamUser *user);
     void createUser();
 
@@ -49,8 +50,7 @@ private:
     QDateEdit *ui_deadlineEdit;
     QToolButton *ui_savePathButton;
     QToolButton *ui_reinitPathButton;
-
-    ObjectListEditWidget *m_userList;
+    ObjectListWidget *ui_userList;
 };
 
 #endif // PROJECTEDITWIDGET_H

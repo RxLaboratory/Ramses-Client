@@ -171,13 +171,15 @@ qint64 MediaUtils::convertToBytes(qint64 value, MediaUtils::SizeUnit from)
     return value;
 }
 
-QRegularExpression RegExUtils::getRegularExpression(QString name, QString replace, QString by)
+QRegularExpression RegExUtils::getRegularExpression(QString name, QString replace, QString by, bool fullMatch)
 {
     QFile regExFile(":/regex/" + name );
     if (regExFile.open(QFile::ReadOnly))
     {
-        QString regExStr = regExFile.readAll();
+        QString regExStr = regExFile.readAll().trimmed();
+        Q_ASSERT(regExStr != "");
         if (replace != "") regExStr = regExStr.replace(replace, by);
+        if (fullMatch) return QRegularExpression( "^" + regExStr.trimmed() + "$" );
         return QRegularExpression( regExStr.trimmed() );
     }
     return QRegularExpression();
@@ -445,4 +447,25 @@ bool FileUtils::moveToTrash(const QString &fileName)
     return QFile::moveToTrash(fileName);
 
 #endif
+}
+
+QString FileUtils::copyToTemporary(QString from)
+{
+    QFileInfo fileInfo(from);
+    QUuid uuid = QUuid::createUuid();
+    QString tempFileFullPath = QDir::toNativeSeparators(
+                QDir::tempPath() + "/"
+                + qApp->applicationName().replace(" ", "") +"_" +
+                uuid.toString(QUuid::WithoutBraces) + fileInfo.completeSuffix());
+    FileUtils::copy(from, tempFileFullPath);
+    return tempFileFullPath;
+}
+
+void AppUtils::restartApp()
+{
+    // An restart!
+    QString program = qApp->arguments()[0];
+    QStringList arguments = qApp->arguments().mid(1); // remove the 1st argument - the program name
+    qApp->quit();
+    QProcess::startDetached(program, arguments);
 }

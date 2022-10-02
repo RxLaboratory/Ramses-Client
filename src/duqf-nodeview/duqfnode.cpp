@@ -127,7 +127,7 @@ DuQFSlot *DuQFNode::defaultInputSlot() const
     return m_defaultInputSlot;
 }
 
-QList<DuQFNode *> DuQFNode::parentNodes() const
+QSet<DuQFNode *> DuQFNode::parentNodes() const
 {
     return m_parentNodes;
 }
@@ -147,7 +147,7 @@ bool DuQFNode::hasParents() const
     return m_parentNodes.count() != 0;
 }
 
-QList<DuQFNode *> DuQFNode::childNodes() const
+QSet<DuQFNode *> DuQFNode::childNodes() const
 {
     return m_childrenNodes;
 }
@@ -169,12 +169,12 @@ void DuQFNode::addParentNode(DuQFNode *parentNode)
 
 void DuQFNode::removeChildNode(DuQFNode *childNode)
 {
-    m_childrenNodes.removeAll(childNode);
+    m_childrenNodes.remove(childNode);
 }
 
 void DuQFNode::removeParentNode(DuQFNode *parentNode)
 {
-    m_parentNodes.removeAll(parentNode);
+    m_parentNodes.remove(parentNode);
 }
 
 void DuQFNode::setGrid(DuQFGrid *grid)

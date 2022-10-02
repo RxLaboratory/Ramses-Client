@@ -19,8 +19,6 @@
 #include <QSettings>
 
 #include "app-version.h"
-#include "app-style.h"
-#include "../duqf-utils/utils.h"
 #include "../duqf-utils/duqflogger.h"
 
 #ifdef Q_OS_WIN

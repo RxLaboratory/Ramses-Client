@@ -5,12 +5,10 @@ TemplateStepEditWidget::TemplateStepEditWidget(QWidget *parent) :
 {
     setupUi();
     connectEvents();
-
-    setObject(nullptr);
 }
 
-TemplateStepEditWidget::TemplateStepEditWidget(RamStep *templateStep, QWidget *parent) :
-    ObjectEditWidget(templateStep, parent)
+TemplateStepEditWidget::TemplateStepEditWidget(RamTemplateStep *templateStep, QWidget *parent) :
+    ObjectEditWidget(parent)
 {
     setupUi();
     connectEvents();
@@ -18,86 +16,44 @@ TemplateStepEditWidget::TemplateStepEditWidget(RamStep *templateStep, QWidget *p
     setObject(templateStep);
 }
 
-RamStep *TemplateStepEditWidget::step() const
+RamTemplateStep *TemplateStepEditWidget::step() const
 {
     return m_step;
 }
 
-void TemplateStepEditWidget::setObject(RamObject *obj)
+void TemplateStepEditWidget::reInit(RamObject *o)
 {
-    RamStep *step = (RamStep*)obj;
+    m_step = qobject_cast<RamTemplateStep*>(o);
+    if (m_step)
+    {
+        ui_colorSelector->setColor(m_step->color());
 
-    this->setEnabled(false);
+        if (m_step->type() == RamTemplateStep::PreProduction) ui_typeBox->setCurrentIndex(0);
+        else if (m_step->type() == RamTemplateStep::AssetProduction) ui_typeBox->setCurrentIndex(1);
+        else if (m_step->type() == RamTemplateStep::ShotProduction) ui_typeBox->setCurrentIndex(2);
+        else if (m_step->type() == RamTemplateStep::PostProduction) ui_typeBox->setCurrentIndex(3);
 
-    ObjectEditWidget::setObject(step);
-    m_step = step;
+        ui_veryEasyEdit->setValue( m_step->estimationVeryEasy() );
+        ui_easyEdit->setValue( m_step->estimationEasy() );
+        ui_mediumEdit->setValue( m_step->estimationMedium()  );
+        ui_hardEdit->setValue( m_step->estimationHard()  );
+        ui_veryHardEdit->setValue( m_step->estimationVeryHard()  );
+        ui_estimationTypeBox->setCurrentIndex( m_step->estimationMethod() );
 
-    QSignalBlocker b1(ui_typeBox);
-    QSignalBlocker b4(ui_colorSelector);
-
-    QSignalBlocker b5(ui_veryEasyEdit);
-    QSignalBlocker b6(ui_easyEdit);
-    QSignalBlocker b7(ui_mediumEdit);
-    QSignalBlocker b8(ui_hardEdit);
-    QSignalBlocker b9(ui_veryHardEdit);
-    QSignalBlocker b10(ui_estimationTypeBox);
-
-    ui_typeBox->setCurrentIndex(1);
-    ui_colorSelector->setColor(QColor(25,25,25));
-
-    ui_veryEasyEdit->setValue(0.2);
-    ui_easyEdit->setValue(0.5);
-    ui_mediumEdit->setValue(1.0);
-    ui_hardEdit->setValue(2.0);
-    ui_veryHardEdit->setValue(3.0);
-    ui_estimationTypeBox->setCurrentIndex(0);
-
-    if (!step) return;
-
-    ui_colorSelector->setColor(step->color());
-
-    if (step->type() == RamStep::PreProduction) ui_typeBox->setCurrentIndex(0);
-    else if (step->type() == RamStep::AssetProduction) ui_typeBox->setCurrentIndex(1);
-    else if (step->type() == RamStep::ShotProduction) ui_typeBox->setCurrentIndex(2);
-    else if (step->type() == RamStep::PostProduction) ui_typeBox->setCurrentIndex(3);
-
-    ui_veryEasyEdit->setValue( step->estimationVeryEasy() );
-    ui_easyEdit->setValue( step->estimationEasy() );
-    ui_mediumEdit->setValue( step->estimationMedium()  );
-    ui_hardEdit->setValue( step->estimationHard()  );
-    ui_veryHardEdit->setValue( step->estimationVeryHard()  );
-    ui_estimationTypeBox->setCurrentIndex( step->estimationMethod() );
-
-    updateEstimationSuffix();
-
-    this->setEnabled(Ramses::instance()->isAdmin());
-}
-
-void TemplateStepEditWidget::update()
-{
-    if (!m_step) return;
-
-    updating = true;
-
-    m_step->setColor(ui_colorSelector->color());
-    m_step->setType(ui_typeBox->currentData().toString());
-
-
-    // estimations
-    m_step->setEstimationVeryEasy( ui_veryEasyEdit->value() );
-    m_step->setEstimationEasy( ui_easyEdit->value() );
-    m_step->setEstimationMedium( ui_mediumEdit->value() );
-    m_step->setEstimationHard( ui_hardEdit->value() );
-    m_step->setEstimationVeryHard( ui_veryHardEdit->value() );
-
-    if (ui_estimationTypeBox->currentIndex() == 0)
-        m_step->setEstimationMethod( RamStep::EstimatePerShot );
+        updateEstimationSuffix();
+    }
     else
-        m_step->setEstimationMethod( RamStep::EstimatePerSecond );
+    {
+        ui_typeBox->setCurrentIndex(1);
+        ui_colorSelector->setColor(QColor(25,25,25));
 
-    ObjectEditWidget::update();
-
-    updating = false;
+        ui_veryEasyEdit->setValue(0.2);
+        ui_easyEdit->setValue(0.5);
+        ui_mediumEdit->setValue(1.0);
+        ui_hardEdit->setValue(2.0);
+        ui_veryHardEdit->setValue(3.0);
+        ui_estimationTypeBox->setCurrentIndex(0);
+    }
 }
 
 void TemplateStepEditWidget::updateEstimationSuffix()
@@ -140,6 +96,58 @@ void TemplateStepEditWidget::updateEstimationSuffix()
     ui_hardEdit->setSuffix(suffix);
     ui_veryHardEdit->setSuffix(suffix);
 
+}
+
+void TemplateStepEditWidget::setType(int t)
+{
+    Q_UNUSED(t);
+    if (!m_step) return;
+    m_step->setType(ui_typeBox->currentData().toString());
+}
+
+void TemplateStepEditWidget::setColor(QColor c)
+{
+    if (!m_step) return;
+    m_step->setColor(c);
+}
+
+void TemplateStepEditWidget::setEstimationType(int t)
+{
+    if (!m_step) return;
+    if (t == 0)
+        m_step->setEstimationMethod( RamTemplateStep::EstimatePerShot );
+    else
+        m_step->setEstimationMethod( RamTemplateStep::EstimatePerSecond );
+}
+
+void TemplateStepEditWidget::setVeryEasy(double e)
+{
+    if (!m_step) return;
+    m_step->setEstimationVeryEasy(e);
+}
+
+void TemplateStepEditWidget::setEasy(double e)
+{
+    if (!m_step) return;
+    m_step->setEstimationEasy(e);
+}
+
+void TemplateStepEditWidget::setMedium(double e)
+{
+    if (!m_step) return;
+    m_step->setEstimationMedium(e);
+}
+
+void TemplateStepEditWidget::setHard(double e)
+{
+    if (!m_step) return;
+    m_step->setEstimationHard(e);
+}
+
+void TemplateStepEditWidget::setVeryHard(double e)
+{
+    if (!m_step) return;
+    m_step->setEstimationVeryHard(e);
 }
 
 void TemplateStepEditWidget::setupUi()
@@ -220,15 +228,13 @@ void TemplateStepEditWidget::connectEvents()
 {
     connect(ui_typeBox, SIGNAL(currentIndexChanged(int)), this, SLOT(updateEstimationSuffix()));
     connect(ui_estimationTypeBox, SIGNAL(currentIndexChanged(int)), this, SLOT(updateEstimationSuffix()));
-    connect(ui_typeBox, SIGNAL(currentIndexChanged(int)), this, SLOT(update()));
-    connect(ui_colorSelector, SIGNAL(colorChanged(QColor)), this, SLOT(update()));
+    connect(ui_typeBox, SIGNAL(currentIndexChanged(int)), this, SLOT(setType(int)));
+    connect(ui_colorSelector, SIGNAL(colorChanged(QColor)), this, SLOT(setColor(QColor)));
 
-    connect(ui_estimationTypeBox, SIGNAL(currentIndexChanged(int)), this, SLOT(update()));
-    connect(ui_veryEasyEdit, SIGNAL(valueChanged(double)), this, SLOT(update()));
-    connect(ui_easyEdit, SIGNAL(valueChanged(double)), this, SLOT(update()));
-    connect(ui_mediumEdit, SIGNAL(valueChanged(double)), this, SLOT(update()));
-    connect(ui_hardEdit, SIGNAL(valueChanged(double)), this, SLOT(update()));
-    connect(ui_veryHardEdit, SIGNAL(valueChanged(double)), this, SLOT(update()));
-
-    monitorDbQuery("updateTemplateStep");
+    connect(ui_estimationTypeBox, SIGNAL(currentIndexChanged(int)), this, SLOT(setEstimationType(int)));
+    connect(ui_veryEasyEdit, SIGNAL(valueChanged(double)), this, SLOT(setVeryEasy(double)));
+    connect(ui_easyEdit, SIGNAL(valueChanged(double)), this, SLOT(setEasy(double)));
+    connect(ui_mediumEdit, SIGNAL(valueChanged(double)), this, SLOT(setMedium(double)));
+    connect(ui_hardEdit, SIGNAL(valueChanged(double)), this, SLOT(setHard(double)));
+    connect(ui_veryHardEdit, SIGNAL(valueChanged(double)), this, SLOT(setVeryHard(double)));
 }

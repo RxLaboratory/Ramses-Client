@@ -1,5 +1,7 @@
 #include "app-utils.h"
 
+#include "duqf-app/app-style.h"
+
 DuApplication::DuApplication(int &argc, char *argv[]) : QApplication(argc, argv)
 {
 #ifndef QT_DEBUG
@@ -154,7 +156,8 @@ void DuApplication::checkUpdate()
              QString(STR_INTERNALNAME) %
              "&version=" % QString(STR_VERSION) %
              "&os=" % os %
-             "&osVersion=" % distrib % " (" % kernel % ")"
+             "&osVersion=" % distrib % " (" % kernel % ")" %
+             "&languageCode=en"
              );
     QNetworkRequest request;
     request.setUrl(url);
@@ -166,6 +169,7 @@ void DuApplication::checkUpdate()
     qInfo().noquote() << "OS Version: " % distrib % " (" % kernel % ")";
     qInfo().noquote() << "App Name: " % QString(STR_INTERNALNAME);
     qInfo().noquote() << "App Version: " % QString(STR_VERSION);
+    qInfo().noquote() << "Language code: en";
 
     connect(am, SIGNAL(finished(QNetworkReply*)), this, SLOT(gotUpdateInfo(QNetworkReply*)));
     am->get(request);
@@ -224,11 +228,17 @@ void DuApplication::gotUpdateInfo(QNetworkReply *rep)
             qInfo().noquote() << "Update notes: " % _updateInfo.value("description").toString();
             qInfo().noquote() << "Detailed changelog: " % _updateInfo.value("changelogURL").toString();
             qInfo().noquote() << "Download: " % _updateInfo.value("downloadURL").toString();
-            qInfo().noquote() << "Donate: " % _updateInfo.value("donateURL").toString();
         }
         else
         {
             qInfo() << "this version is already up-to-date, congrats!";
+        }
+        qInfo().noquote() << "Donate: " % _updateInfo.value("donateURL").toString();
+        double month = _updateInfo.value("monthlyFund").toDouble(0.0);
+        double goal = _updateInfo.value("fundingGoal").toDouble(4000);
+        if (goal > 0) {
+            double ratio = month / goal * 100;
+            qInfo().noquote() << "This month, we've collected $" % QString::number(month) % ". That's " % QString::number(ratio, 'f', 0) % " % of our monthly goal. Thanks for your support!";
         }
     }
 

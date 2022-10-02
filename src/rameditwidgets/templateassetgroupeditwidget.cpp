@@ -4,41 +4,52 @@ TemplateAssetGroupEditWidget::TemplateAssetGroupEditWidget(QWidget *parent) :
     ObjectEditWidget(parent)
 {
     setupUi();
-    setObject(nullptr);
-
-    monitorDbQuery("updateTemplateAssetGroup");
+    connectEvents();
 }
 
-TemplateAssetGroupEditWidget::TemplateAssetGroupEditWidget(RamAssetGroup *templateAssetGroup, QWidget *parent) :
-    ObjectEditWidget(templateAssetGroup, parent)
+TemplateAssetGroupEditWidget::TemplateAssetGroupEditWidget(RamTemplateAssetGroup *templateAssetGroup, QWidget *parent) :
+    ObjectEditWidget(parent)
 {
     setupUi();
     setObject(templateAssetGroup);
-
-    monitorDbQuery("updateTemplateAssetGroup");
+    connectEvents();
 }
 
-RamAssetGroup *TemplateAssetGroupEditWidget::assetGroup() const
+RamTemplateAssetGroup *TemplateAssetGroupEditWidget::assetGroup() const
 {
-    return _assetGroup;
+    return m_assetGroup;
 }
 
-void TemplateAssetGroupEditWidget::setObject(RamObject *obj)
+void TemplateAssetGroupEditWidget::reInit(RamObject *obj)
 {
-    RamAssetGroup *assetGroup = (RamAssetGroup*)obj;
+    m_assetGroup = qobject_cast<RamTemplateAssetGroup*>(obj);
+    if (m_assetGroup)
+    {
+        ui_colorSelector->setColor(m_assetGroup->color());
+    }
+    else
+    {
+        ui_colorSelector->setColor(QColor(67,67,67));
+    }
+}
 
-    this->setEnabled(false);
-
-    ObjectEditWidget::setObject(assetGroup);
-    _assetGroup = assetGroup;
-
-    if (!assetGroup) return;
-
-    this->setEnabled(Ramses::instance()->isAdmin());
-
+void TemplateAssetGroupEditWidget::setColor(QColor c)
+{
+    if (!m_assetGroup) return;
+    m_assetGroup->setColor(c);
 }
 
 void TemplateAssetGroupEditWidget::setupUi()
 {
+    QLabel *colorLabel = new QLabel("Color", this);
+    ui_mainFormLayout->addWidget(colorLabel, 3, 0);
+    ui_colorSelector = new DuQFColorSelector(this);
+    ui_mainFormLayout->addWidget(ui_colorSelector, 3, 1);
+
     ui_mainLayout->addStretch();
+}
+
+void TemplateAssetGroupEditWidget::connectEvents()
+{
+    connect(ui_colorSelector, &DuQFColorSelector::colorChanged, this, &TemplateAssetGroupEditWidget::setColor);
 }

@@ -1,11 +1,29 @@
 #include "appearancesettingswidget.h"
 
+#include "duqf-app/app-style.h"
+
 AppearanceSettingsWidget::AppearanceSettingsWidget(QWidget *parent) :
     QWidget(parent)
 {
     setupUi(this);
 
     _freezeUI = true;
+
+    // Update UI
+    ui_gridLayout->setAlignment(Qt::AlignVCenter);
+
+    // Date format
+    QDateTime d = QDateTime::fromString("2021-04-26 10:53:31", "yyyy-MM-dd hh:mm:ss");
+    QString f = "yyyy-MM-dd hh:mm:ss";
+    dateFormatBox->addItem(d.toString(f), f);
+    f = "MM.dd.yyyy - h:mm:ss ap";
+    dateFormatBox->addItem(d.toString(f), f);
+    f = "dd/MM/yyyy - hh:mm:ss";
+    dateFormatBox->addItem(d.toString(f), f);
+    f = "ddd MMMM d yyyy 'at' h:mm:ss ap";
+    dateFormatBox->addItem(d.toString(f), f);
+    f = "ddd d MMMM yyyy 'at' hh:mm:ss";
+    dateFormatBox->addItem(d.toString(f), f);
 
     // List available styles
     styleComboBox->addItem("Default",":/styles/default");
@@ -24,6 +42,16 @@ AppearanceSettingsWidget::AppearanceSettingsWidget(QWidget *parent) :
     QString font = settings.value("font", "Ubuntu").toString();
     fontComboBox->setCurrentFont(QFont(font));
 
+    QString dateFormat = settings.value("dateFormat", "yyyy-MM-dd hh:mm:ss").toString();
+    for (int i = 0; i < dateFormatBox->count(); i++)
+    {
+        if (dateFormatBox->itemData(i).toString() == dateFormat)
+        {
+            dateFormatBox->setCurrentIndex(i);
+            break;
+        }
+    }
+
     _freezeUI = false;
 }
 
@@ -41,7 +69,6 @@ void AppearanceSettingsWidget::on_toolsComboBox_currentIndexChanged(int index)
 
     DuUI::setToolButtonStyle(style);
 }
-
 
 void AppearanceSettingsWidget::on_styleComboBox_currentIndexChanged(int index)
 {
@@ -88,4 +115,10 @@ void AppearanceSettingsWidget::on_fontComboBox_currentFontChanged(const QFont &f
 
     qApp->setFont(f);
     DuUI::updateCSS(settings.value("cssFile",":/styles/default").toString());
+}
+
+void AppearanceSettingsWidget::on_dateFormatBox_currentIndexChanged(int index)
+{
+    Q_UNUSED(index);
+    settings.setValue("dateFormat", dateFormatBox->currentData().toString());
 }

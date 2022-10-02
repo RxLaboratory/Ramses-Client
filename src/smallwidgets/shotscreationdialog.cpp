@@ -1,4 +1,7 @@
 #include "shotscreationdialog.h"
+#include "duqf-utils/utils.h"
+
+#include "ramsequence.h"
 
 ShotsCreationDialog::ShotsCreationDialog(RamProject *proj, QWidget *parent) :
     QDialog(parent)
@@ -9,7 +12,8 @@ ShotsCreationDialog::ShotsCreationDialog(RamProject *proj, QWidget *parent) :
     setupUi(this);
 
     // Add the Sequence selector
-    ui_sequenceBox = new RamObjectListComboBox(m_project->sequences(), this);
+    ui_sequenceBox = new RamObjectComboBox(this);
+    ui_sequenceBox->setObjectModel(m_project->sequences());
     ui_sequenceLayout->addWidget(ui_sequenceBox);
 
     QRegExp rxsn = RegExUtils::getRegExp("shotshortname");
@@ -24,6 +28,8 @@ ShotsCreationDialog::ShotsCreationDialog(RamProject *proj, QWidget *parent) :
     QRegExpValidator *vs = new QRegExpValidator(rxs);
     ui_nStartEdit->setValidator(vs);
     ui_nEndEdit->setValidator(vs);
+
+    ui_progressBar->hide();
 
     connect(ui_cancelButton, SIGNAL(clicked()), this, SLOT(reject()));
     connect(ui_createButton, SIGNAL(clicked()), this, SLOT(create()));
@@ -44,12 +50,12 @@ void ShotsCreationDialog::create()
 {
     if( !ui_nStartEdit->hasAcceptableInput() )
     {
-        QMessageBox::information(this, "Invalid number", "You have to choose a start number.");
+        QMessageBox::information(this, tr("Invalid number"), tr("You have to choose a start number."));
         return;
     }
     if( !ui_nEndEdit->hasAcceptableInput() )
     {
-        QMessageBox::information(this, "Invalid number", "You have to choose the end number.");
+        QMessageBox::information(this, tr("Invalid number"), tr("You have to choose the end number."));
         return;
     }
 
@@ -57,24 +63,40 @@ void ShotsCreationDialog::create()
 
     if ( ui_shortNameEdit->text().count() > 9 + numDigits)
     {
-        QMessageBox::information(this, "Invalid ID", "Sorry, the ID can't have more than 10 characters, including the number.");
+        QMessageBox::information(this, tr("Invalid ID"), tr("Sorry, the ID can't have more than 10 characters, including the number."));
         return;
     }
 
     int startNumber = ui_nStartEdit->text().toInt();
     int endNumber = ui_nEndEdit->text().toInt();
 
-    RamSequence *seq = qobject_cast<RamSequence*>( ui_sequenceBox->currentObject() );
+    RamSequence *seq = RamSequence::c( ui_sequenceBox->currentObject() );
+    if (!seq)
+    {
+        QMessageBox::information(this, tr("Invalid Sequence"), tr("You have to choose a sequence."));
+        return;
+    }
 
-    for(int i = startNumber; i <= endNumber; i++)
+    ui_cancelButton->setEnabled(false);
+    ui_createButton->setEnabled(false);
+    ui_progressBar->show();
+    ui_progressBar->setMaximum( endNumber - startNumber +1);
+    ui_progressBar->setValue(0);
+
+    for (int i = startNumber; i <= endNumber; i++)
     {
         RamShot *shot = new RamShot(
                     getShortName(i),
-                    seq,
-                    getName(i)
+                    getName(i),
+                    seq
                     );
-        m_project->shots()->append(shot);
+        m_project->shots()->appendObject(shot->uuid());
+        ui_progressBar->setValue( i - startNumber );
     }
+
+    ui_progressBar->hide();
+    ui_cancelButton->setEnabled(true);
+    ui_createButton->setEnabled(true);
 
     accept();
 }

@@ -4,47 +4,52 @@
 #include <QStringBuilder>
 
 #include "ramobject.h"
+#include "ramobjectmodel.h"
 
-class RamObjectList;
 class RamStep;
+class RamScheduleEntry;
 
 class RamUser : public RamObject
 {
     Q_OBJECT
 public:
-    explicit RamUser(QString shortName, QString name = "", QString uuid = "");
-    ~RamUser();
+
+    // STATIC METHODS //
+
+    static RamUser *get(QString uuid);
+    static RamUser *c(RamObject *o);
+
+    // METHODS //
+
+    RamUser(QString shortName, QString name);
+
+    virtual void setShortName(const QString &shortName) override;
+    virtual bool validateShortName(const QString &shortName) override;
 
     UserRole role() const;
     void setRole(const UserRole &role);
     void setRole(const QString role);
 
-    void updatePassword(QString c, QString n);
-
-    RamObjectList *schedule() const;
+    RamObjectModel *schedule() const;
     bool isStepAssigned(RamStep *step) const;
 
-    static RamUser *user(QString uuid);
-
-    const QColor &color() const;
-    void setColor(const QColor &newColor);
+    virtual QString iconName() const override;
+    virtual QString details() const override;
 
 public slots:
-    void update() override;
     virtual void edit(bool show = true) override;
-    virtual void removeFromDB() override;
-
-private slots:
-    void scheduleChanged(RamObject *entryObj);
 
 protected:
-    virtual QString folderPath() const override;   
+    static QHash<QString, RamUser*> m_existingObjects;
+    RamUser(QString uuid);
+    virtual QString folderPath() const override;
+
+    static QFrame *ui_editWidget;
 
 private:
-    UserRole m_role;
-    RamObjectList *m_schedule;
+    void construct();
 
-    QColor m_color;
+    RamObjectModel *m_schedule;
 };
 
 #endif // RAMUSER_H

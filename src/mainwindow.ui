@@ -105,6 +105,7 @@
     <bool>false</bool>
    </attribute>
    <addaction name="actionLogIn"/>
+   <addaction name="actionSettings"/>
    <addaction name="actionAdmin"/>
    <addaction name="actionProjectSettings"/>
    <addaction name="actionPipeline"/>
@@ -146,8 +147,8 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="resources.qrc">
-     <normaloff>:/icons/admin-settings</normaloff>:/icons/admin-settings</iconset>
+    <iconset resource="duqf_resources.qrc">
+     <normaloff>:/icons/settings</normaloff>:/icons/settings</iconset>
    </property>
    <property name="text">
     <string>Admin</string>
@@ -170,8 +171,8 @@
   </action>
   <action name="actionUserFolder">
    <property name="icon">
-    <iconset resource="resources.qrc">
-     <normaloff>:/icons/reveal-folder</normaloff>:/icons/reveal-folder</iconset>
+    <iconset resource="duqf_resources.qrc">
+     <normaloff>:/icons/folder</normaloff>:/icons/folder</iconset>
    </property>
    <property name="text">
     <string>User folder</string>
@@ -258,8 +259,81 @@
     <string>All shots in a timeline view</string>
    </property>
   </action>
+  <action name="actionSetOnline">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/server-settings</normaloff>:/icons/server-settings</iconset>
+   </property>
+   <property name="text">
+    <string>Set online</string>
+   </property>
+   <property name="toolTip">
+    <string>Activate sync</string>
+   </property>
+  </action>
+  <action name="actionSetOffline">
+   <property name="icon">
+    <iconset resource="duqf_resources.qrc">
+     <normaloff>:/icons/folder</normaloff>:/icons/folder</iconset>
+   </property>
+   <property name="text">
+    <string>Set offline</string>
+   </property>
+   <property name="toolTip">
+    <string>Deactivates sync to work offline.</string>
+   </property>
+  </action>
+  <action name="actionDatabaseSettings">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/storage-settings</normaloff>:/icons/storage-settings</iconset>
+   </property>
+   <property name="text">
+    <string>Database settings</string>
+   </property>
+  </action>
+  <action name="actionSettings">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="duqf_resources.qrc">
+     <normaloff>:/icons/settings</normaloff>:/icons/settings</iconset>
+   </property>
+   <property name="text">
+    <string>Settings</string>
+   </property>
+   <property name="toolTip">
+    <string>Ramses Application settings</string>
+   </property>
+  </action>
+  <action name="actionSync">
+   <property name="icon">
+    <iconset resource="duqf_resources.qrc">
+     <normaloff>:/icons/check-update</normaloff>:/icons/check-update</iconset>
+   </property>
+   <property name="text">
+    <string>Quick sync</string>
+   </property>
+   <property name="toolTip">
+    <string>Quickly syncs the most recent data with the server.</string>
+   </property>
+  </action>
+  <action name="actionFullSync">
+   <property name="icon">
+    <iconset resource="duqf_resources.qrc">
+     <normaloff>:/icons/check-update</normaloff>:/icons/check-update</iconset>
+   </property>
+   <property name="text">
+    <string>Full sync</string>
+   </property>
+   <property name="toolTip">
+    <string>Syncs all the data with the server.</string>
+   </property>
+  </action>
  </widget>
  <resources>
+  <include location="duqf_resources.qrc"/>
   <include location="resources.qrc"/>
  </resources>
  <connections/>

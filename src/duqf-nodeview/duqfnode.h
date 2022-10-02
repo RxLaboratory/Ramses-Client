@@ -41,8 +41,8 @@ public:
     void removeChildNode(DuQFNode *childNode);
     void removeParentNode(DuQFNode *parentNode);
 
-    QList<DuQFNode *> childNodes() const;
-    QList<DuQFNode *> parentNodes() const;
+    QSet<DuQFNode *> childNodes() const;
+    QSet<DuQFNode *> parentNodes() const;
     bool isOrphan() const;
     bool hasChildren() const;
     bool hasParents() const;
@@ -80,8 +80,8 @@ private:
     DuQFSlot *m_defaultOutputSlot;
 
     // Connected nodes
-    QList<DuQFNode*> m_childrenNodes;
-    QList<DuQFNode*> m_parentNodes;
+    QSet<DuQFNode*> m_childrenNodes;
+    QSet<DuQFNode*> m_parentNodes;
 };
 
 #endif // DUQFNODE_H

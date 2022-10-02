@@ -1,45 +1,58 @@
 #include "ramscheduleentry.h"
 
-RamScheduleEntry::RamScheduleEntry(RamUser *user, RamStep *step, QDateTime date):
-       RamObject(user)
-{
-    m_icon = ":/icons/calendar";
-    m_editRole = Lead;
+// STATIC //
 
-    this->setObjectType(ScheduleEntry);
-    setUser(user);
-    setStep(step);
+QHash<QString, RamScheduleEntry*> RamScheduleEntry::m_existingObjects = QHash<QString, RamScheduleEntry*>();
+
+RamScheduleEntry *RamScheduleEntry::get(QString uuid)
+{
+    if (!checkUuid(uuid, ScheduleEntry)) return nullptr;
+
+    RamScheduleEntry *s = m_existingObjects.value(uuid);
+    if (s) return s;
+
+    // Finally return a new instance
+    return new RamScheduleEntry(uuid);
+}
+
+RamScheduleEntry *RamScheduleEntry::c(RamObject *o)
+{
+    //return qobject_cast<RamScheduleEntry*>(o);
+    // For performance, reinterpret_cast, but be careful with the object passed!
+    return reinterpret_cast<RamScheduleEntry*>(o);
+}
+
+// PUBLIC //
+
+RamScheduleEntry::RamScheduleEntry(RamUser *user, QDateTime date):
+       RamObject(user->shortName(), user->name() + " | " + date.toString("yyyy-MM-dd ap"), ObjectType::ScheduleEntry, user)
+{
+    construct();
+
+    m_user = user;
     m_date = date;
-    m_step->countAssignedDays();
-    m_dbi->createSchedule( user->uuid(), step->uuid(), date, m_uuid );
-    this->setObjectName("RamScheduleEntry " + user->shortName() + " | " + step->shortName());
+
+    QJsonObject d = data();
+    d.insert("user", user->uuid());
+    d.insert("step", "none");
+    d.insert("date", date.toString("yyyy-MM-dd hh:mm:ss"));
+    setData(d);
+
+    connectEvents();
 }
 
-RamScheduleEntry::RamScheduleEntry(RamUser *user, RamStep *step, QDateTime date, QString uuid) :
-    RamObject(uuid, user)
+RamScheduleEntry::RamScheduleEntry(QString uuid):
+    RamObject(uuid, ObjectType::ScheduleEntry)
 {
-    this->setObjectType(ScheduleEntry);
-    setUser(user);
-    setStep(step);
-    m_date = date;
-    m_step->countAssignedDays();
-    m_dbi->createSchedule( user->uuid(), step->uuid(), date, m_uuid );
-    this->setObjectName("RamScheduleEntry " + user->shortName() + " | " + step->shortName());
-}
+    construct();
 
-RamScheduleEntry::~RamScheduleEntry()
-{
-    if (m_step) m_step->countAssignedDays();
-}
+    QJsonObject d = data();
+    m_user = RamUser::get( d.value("user").toString() );
+    m_date = QDateTime::fromString( d.value("date").toString(), "yyyy-MM-dd hh:mm:ss");
 
-QString RamScheduleEntry::name() const
-{
-    return m_step->name();
-}
+    this->setParent(m_user);
 
-QString RamScheduleEntry::shortName() const
-{
-    return m_step->shortName();
+    connectEvents();
 }
 
 RamUser *RamScheduleEntry::user() const
@@ -47,41 +60,9 @@ RamUser *RamScheduleEntry::user() const
     return m_user;
 }
 
-void RamScheduleEntry::setUser(RamUser *newUser)
-{
-    if (newUser->is(m_user)) return;
-
-    m_dirty = true;
-
-    m_user = newUser;
-
-    connect(m_user,SIGNAL(removed(RamObject*)), this, SLOT(remove()));
-    emit changed(this);
-}
-
 RamStep *RamScheduleEntry::step() const
 {
-    return m_step;
-}
-
-void RamScheduleEntry::setStep(RamStep *newStep)
-{
-    if (newStep->is(m_step)) return;
-    // update assigned days for the previous step
-    if (m_step) m_step->countAssignedDays();
-
-    m_dirty = true;
-
-    m_step = newStep;
-    // update assigned days for the new step (if not nullptr)
-    if (m_step)
-    {
-        m_step->countAssignedDays();
-
-        connect(m_step,SIGNAL(removed(RamObject*)), this, SLOT(remove()));
-    }
-
-    emit changed(this);
+    return RamStep::get( getData("step").toString() );
 }
 
 const QDateTime &RamScheduleEntry::date() const
@@ -89,39 +70,110 @@ const QDateTime &RamScheduleEntry::date() const
     return m_date;
 }
 
-void RamScheduleEntry::setDate(const QDateTime &newDate)
+void RamScheduleEntry::setStep(RamStep *newStep)
 {
-    if (newDate == m_date) return;
-    m_dirty = true;
-    m_date = newDate;
-    emit changed(this);
+    RamStep *currentStep = step();
+    if (currentStep)
+    {
+        disconnect(currentStep, nullptr, this, nullptr);
+        disconnect(this, nullptr, currentStep, nullptr);
+        currentStep->countAssignedDays();
+    }
+
+    if (newStep)
+    {
+        insertData("step", newStep->uuid());
+        connect(this, SIGNAL(removed(RamObject*)), newStep, SLOT(countAssignedDays()));
+        connect(newStep, SIGNAL(removed(RamObject*)), this, SLOT(stepRemoved()));
+        newStep->countAssignedDays();
+    }
+    else insertData("step", "none");
 }
 
-ScheduleEntryStruct RamScheduleEntry::toStruct() const
+QString RamScheduleEntry::iconName() const
 {
-    ScheduleEntryStruct s;
-    s.uuid = m_uuid;
-    s.userUuid = m_user->uuid();
-    s.stepUuid = m_step->uuid();
-    s.comment = m_comment;
-    s.date = m_date;
-    return s;
+    RamStep *s = this->step();
+    if (!s) return "";
+    switch( s->type() )
+    {
+    case RamStep::PreProduction: return ":/icons/project";
+    case RamStep::ShotProduction: return ":/icons/shot";
+    case RamStep::AssetProduction: return ":/icons/asset";
+    case RamStep::PostProduction: return ":/icons/film";
+    case RamStep::All: return "";
+    }
+    return "";
 }
 
-RamScheduleEntry *RamScheduleEntry::scheduleEntry(QString uuid)
+QVariant RamScheduleEntry::roleData(int role) const
 {
-    RamObject *obj = RamObject::obj(uuid);
-    return qobject_cast<RamScheduleEntry*>( obj );
+    switch(role)
+    {
+    case Qt::DisplayRole: {
+        RamStep *s = this->step();
+        if (s) return this->step()->shortName();
+        else return "";
+    }
+    case Qt::ToolTipRole: {
+
+        RamStep *s = this->step();
+        QString stepName = "";
+        if (s) stepName = s->name();
+
+        RamUser *u = this->user();
+        QString userName = "";
+        if (u) userName = u->name();
+
+        QSettings settings;
+        QString dateFormat = settings.value("appearance/dateFormat", "yyyy-MM-dd").toString();
+        return this->date().toString(dateFormat) +
+                "\n" + stepName +
+                "\n" + userName;
+    }
+    case Qt::StatusTipRole: {
+
+        RamStep *s = this->step();
+        QString stepName = "";
+        if (s) stepName = s->shortName();
+
+        RamUser *u = this->user();
+        QString userName = "";
+        if (u) userName = u->shortName();
+
+        QSettings settings;
+        QString dateFormat = settings.value("appearance/dateFormat", "yyyy-MM-dd").toString();
+        return this->date().toString(dateFormat) +
+                " | " + stepName +
+                " | " + userName;
+    }
+    case Qt::BackgroundRole: {
+        RamStep *s = this->step();
+        if (s) return QBrush(s->color());
+        else return QBrush();
+    }
+    case Qt::EditRole: {
+        RamStep *s = this->step();
+        if (s) return s->uuid();
+        else return "";
+    }
+    case SizeHint: return QSize(75,10);
+    }
+    return RamObject::roleData(role);
 }
 
-void RamScheduleEntry::update()
+void RamScheduleEntry::stepRemoved()
 {
-    if(!m_dirty) return;
-    RamObject::update();
-    m_dbi->updateSchedule(m_uuid, m_user->uuid(), m_step->uuid(), m_date, m_comment );
+    setStep(nullptr);
 }
 
-void RamScheduleEntry::removeFromDB()
+void RamScheduleEntry::construct()
 {
-    m_dbi->removeSchedule(m_uuid);
+    m_existingObjects[m_uuid] = this;
+    m_icon = ":/icons/calendar";
+    m_editRole = Lead;
+}
+
+void RamScheduleEntry::connectEvents()
+{
+    connect(m_user, &RamUser::removed, this, &RamScheduleEntry::remove);
 }

@@ -48,7 +48,7 @@ private:
     QAction *leftAction;
     QAction *rightAction;
 
-    QList<QAction*> m_actions;
+    QVector<QAction*> m_actions;
 };
 
 #endif // TITLEBAR_H

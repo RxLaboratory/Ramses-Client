@@ -9,7 +9,7 @@ ObjectListManagerWidget::ObjectListManagerWidget(QString title, QIcon icon, QWid
     clear();
 }
 
-ObjectListManagerWidget::ObjectListManagerWidget(RamObjectList *objectList, QString title, QIcon icon, QWidget *parent) :
+ObjectListManagerWidget::ObjectListManagerWidget(QAbstractItemModel *objectList, QString title, QIcon icon, QWidget *parent) :
     QWidget(parent)
 {
     setupUi(title,icon);
@@ -18,9 +18,8 @@ ObjectListManagerWidget::ObjectListManagerWidget(RamObjectList *objectList, QStr
     setList(objectList);
 }
 
-void ObjectListManagerWidget::setList(RamObjectList *objectList)
+void ObjectListManagerWidget::setList(QAbstractItemModel *objectList)
 {
-    while  (m_listConnection.count() > 0 ) disconnect( m_listConnection.takeLast() );
     m_listEditWidget->setList( objectList );
     if (!objectList) return;
     this->setEnabled(true);
@@ -29,7 +28,6 @@ void ObjectListManagerWidget::setList(RamObjectList *objectList)
 void ObjectListManagerWidget::clear()
 {
     this->setEnabled(false);
-    while  (m_listConnection.count() > 0 ) disconnect( m_listConnection.takeLast() );
     m_listEditWidget->clear();
 }
 
@@ -72,9 +70,14 @@ void ObjectListManagerWidget::connectEvents()
     connect( ui_removeShortcut, SIGNAL(activated()), m_listEditWidget, SLOT(removeSelectedObjects()));
 }
 
-QString ObjectListManagerWidget::currentFilter() const
+QString ObjectListManagerWidget::currentFilterUuid() const
 {
     return m_listEditWidget->currentFilterUuid();
+}
+
+RamObject *ObjectListManagerWidget::currentFilter() const
+{
+    return m_listEditWidget->currentFilter();
 }
 
 QToolButton *ObjectListManagerWidget::menuButton()

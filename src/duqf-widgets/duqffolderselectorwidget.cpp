@@ -1,5 +1,7 @@
 #include "duqffolderselectorwidget.h"
 
+#include "duqf-utils/utils.h"
+
 DuQFFolderSelectorWidget::DuQFFolderSelectorWidget(SelectorType type, QWidget *parent) :
     QWidget(parent)
 {
@@ -42,10 +44,26 @@ void DuQFFolderSelectorWidget::setDialogTitle(QString t)
     m_dialogTitle = t;
 }
 
+void DuQFFolderSelectorWidget::setMode(SelectorMode newMode)
+{
+    m_mode = newMode;
+}
+
+void DuQFFolderSelectorWidget::setFilter(const QString &filter)
+{
+    m_filter = filter;
+}
+
 void DuQFFolderSelectorWidget::showDeleteButton(QString trashFolder, bool show)
 {
     m_trashFolder = trashFolder;
     ui_deleteButton->setVisible(show);
+}
+
+void DuQFFolderSelectorWidget::showRevealButton(bool show)
+{
+    if (show) ui_exploreButton->show();
+    else ui_exploreButton->hide();
 }
 
 void DuQFFolderSelectorWidget::browseButton_clicked()
@@ -55,7 +73,8 @@ void DuQFFolderSelectorWidget::browseButton_clicked()
     if (d == "") d = ui_folderEdit->toolTip();
     if (d == "") d = ui_folderEdit->placeholderText();
     if (m_type == Folder) p = QFileDialog::getExistingDirectory(this, m_dialogTitle, ui_folderEdit->text());
-    else p = QFileDialog::getOpenFileName(this, m_dialogTitle, ui_folderEdit->text());
+    else if (m_type == File && m_mode == Save) p = QFileDialog::getSaveFileName(this, m_dialogTitle, ui_folderEdit->text(), m_filter);
+    else p = QFileDialog::getOpenFileName(this, m_dialogTitle, ui_folderEdit->text(), m_filter);
     if (p != "")
     {
         setPath(p);
@@ -131,8 +150,9 @@ void DuQFFolderSelectorWidget::setupUi()
 
     ui_exploreButton = new QToolButton(this);
     ui_exploreButton->setObjectName(QStringLiteral("exploreButton"));
-    ui_exploreButton->setIcon(QIcon(":/icons/reveal-folder"));
+    ui_exploreButton->setIcon(QIcon(":/icons/folder"));
 
     horizontalLayout->addWidget(ui_exploreButton);
 }
+
 

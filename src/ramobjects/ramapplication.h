@@ -2,52 +2,65 @@
 #define RAMAPPLICATION_H
 
 #include "ramobject.h"
+
+#include "ramobjectmodel.h"
 #include "ramfiletype.h"
-#include "data-models/ramobjectlist.h"
 
 class RamApplication : public RamObject
 {
     Q_OBJECT
 public:
-    RamApplication(QString shortName, QString name = "", QString executableFilePath = "", QString uuid = "");
-    ~RamApplication();
+
+    // STATIC //
+
+    static RamApplication *get(QString uuid);
+    static RamApplication *c(RamObject *o);
+
+    // OTHER //
+
+    /**
+     * @brief RamApplication creates a new Application in the database
+     * @param shortName
+     * @param name
+     */
+    RamApplication(QString shortName, QString name);
 
     QString executableFilePath() const;
-    void setExecutableFilePath(const QString &executableFilePath);   
+    void setExecutableFilePath(const QString &executableFilePath);
+
+    RamObjectModel *nativeFileTypes() const;
+    RamObjectModel *importFileTypes() const;
+    RamObjectModel *exportFileTypes() const;
 
     bool canExportFileType(RamFileType *ft) const;
     bool canExportFileType(QString extension) const;
     bool canImportFileType(RamFileType *ft) const;
     bool canImportFileType(QString extension) const;
 
-    RamObjectList *nativeFileTypes() const;
-    RamObjectList *importFileTypes() const;
-    RamObjectList *exportFileTypes() const;
-
     bool canOpen(QString filePath) const;
     bool open(QString filePath) const;
 
-    static RamApplication *application(QString uuid);
-
 public slots:
-    void unassignFileType(RamObject *o);
-    void update() override;
+    void unassignFileType(RamFileType *ft);
     virtual void edit(bool show = true) override;
-    virtual void removeFromDB() override;
 
-private slots:
-    void nativeFileTypeUnassigned(const QModelIndex &parent, int first, int last);
-    void nativeFileTypeAssigned(const QModelIndex &parent, int first, int last);
-    void importFileTypeUnassigned(const QModelIndex &parent, int first, int last);
-    void importFileTypeAssigned(const QModelIndex &parent, int first, int last);
-    void exportFileTypeUnassigned(const QModelIndex &parent, int first, int last);
-    void exportFileTypeAssigned(const QModelIndex &parent, int first, int last);
+protected:
+    static QHash<QString, RamApplication*> m_existingObjects;
+    /**
+     * @brief RamApplication constructs a RamApplication from the database
+     * @param uuid
+     */
+    RamApplication(QString uuid);
+    virtual QString folderPath() const override;
+
+    static QFrame *ui_applicationWidget;
 
 private:
-    QString m_executableFilePath;
-    RamObjectList *m_nativeFileTypes;
-    RamObjectList *m_importFileTypes;
-    RamObjectList *m_exportFileTypes;
+    void construct();
+
+    RamObjectModel *m_nativeFileTypes;
+    RamObjectModel *m_importFileTypes;
+    RamObjectModel *m_exportFileTypes;
 };
 
 #endif // RAMAPPLICATION_H

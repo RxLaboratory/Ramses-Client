@@ -7,15 +7,13 @@
 #include <QLineEdit>
 #include <QToolButton>
 
-#include "duqf-utils/utils.h"
-
 class DuQFFolderSelectorWidget : public QWidget
 {
     Q_OBJECT
 
 public:
     enum SelectorType { Folder, File };
-    Q_ENUM(SelectorType)
+    enum SelectorMode {  Save, Open };
 
     explicit DuQFFolderSelectorWidget(SelectorType type = Folder, QWidget *parent = nullptr);
     QString path();
@@ -23,6 +21,10 @@ public:
     void setPlaceHolderText(QString t);
     void setDialogTitle(QString t);
     void showDeleteButton(QString trashFolder, bool show = true);
+    void showRevealButton(bool show = true);
+    void setMode(SelectorMode newMode);
+    void setFilter(const QString &filter);
+
 signals:
     void pathChanged(QString);
     void pathChanging(QString);
@@ -41,7 +43,9 @@ private:
     QToolButton *ui_exploreButton;
     QToolButton *ui_deleteButton;
 
-    SelectorType m_type;
+    SelectorType m_type = Folder;
+    SelectorMode m_mode = Open;
+    QString m_filter = "All files (*.*)";
     // a path, relative to the selected folder/file, to use as a trash before the system trash
     QString m_trashFolder = "";
 };
