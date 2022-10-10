@@ -39,6 +39,7 @@ INCLUDEPATH += rameditwidgets \
     rammanagerwidgets \
 
 SOURCES += \
+    progressmanager.cpp \
     rameditwidgets/objectupdateblocker.cpp \
     rammanagerwidgets/dbmanagerwidget.cpp \
     rammanagerwidgets/objectlistwidget.cpp \
@@ -92,7 +93,6 @@ SOURCES += \
     rammanagerwidgets/applicationmanagerwidget.cpp \
     rameditwidgets/asseteditwidget.cpp \
     rameditwidgets/assetgroupeditwidget.cpp \
-    processmanager.cpp \
     progressbar.cpp \
     progresspage.cpp \
     daemon.cpp \
@@ -201,6 +201,7 @@ SOURCES += \
 
 HEADERS += \
     config.h \
+    progressmanager.h \
     rameditwidgets/objectupdateblocker.h \
     rammanagerwidgets/dbmanagerwidget.h \
     rammanagerwidgets/objectlistwidget.h \
@@ -248,7 +249,6 @@ HEADERS += \
     duqf-widgets/duqftoolbarspacer.h \
     duqf-widgets/duqfupdatedialog.h \
     duqf-widgets/duqfupdatesettingswidget.h \
-    processmanager.h \
     progressbar.h \
     progresspage.h \
     pages/projectpage.h \

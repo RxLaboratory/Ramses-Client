@@ -1,11 +1,11 @@
 #include "schedulemanagerwidget.h"
 
 #include "duqf-utils/guiutils.h"
-#include "processmanager.h"
+#include "progressmanager.h"
 #include "ramscheduleentry.h"
 #include "ramschedulecomment.h"
 #include "ramses.h"
-#include "processmanager.h"
+#include "progressmanager.h"
 
 ScheduleManagerWidget::ScheduleManagerWidget(QWidget *parent) : QWidget(parent)
 {
@@ -121,7 +121,7 @@ void ScheduleManagerWidget::userChanged(RamUser *user)
 
 void ScheduleManagerWidget::assignStep(RamObject *step)
 {
-    ProcessManager *pm = ProcessManager::instance();
+    ProgressManager *pm = ProgressManager::instance();
     pm->setTitle(tr("Creating schedule entries"));
     pm->setText("Assigning step...");
 
@@ -396,7 +396,7 @@ void ScheduleManagerWidget::comment()
     QModelIndexList selection = ui_table->selectionModel()->selectedIndexes();
     if (selection.count() == 0) return;
 
-    ProcessManager *pm = ProcessManager::instance();
+    ProgressManager *pm = ProgressManager::instance();
     pm->setTitle(tr("Creating schedule entries"));
     pm->setText("Setting comment...");
     pm->setMaximum(selection.count());
@@ -437,7 +437,7 @@ void ScheduleManagerWidget::color()
     QModelIndexList selection = ui_table->selectionModel()->selectedIndexes();
     if (selection.count() == 0) return;
 
-    ProcessManager *pm = ProcessManager::instance();
+    ProgressManager *pm = ProgressManager::instance();
     pm->setTitle(tr("Creating schedule entries"));
     pm->setText("Setting color...");
     pm->setMaximum(selection.count());

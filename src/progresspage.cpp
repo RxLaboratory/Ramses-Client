@@ -4,8 +4,8 @@ ProgressPage::ProgressPage(QWidget *parent) : QWidget(parent)
 {
     setupUi();
 
-    ProcessManager *pm = ProcessManager::instance();
-    connect(pm, &ProcessManager::title, this, &ProgressPage::setTitle);
+    ProgressManager *pm = ProgressManager::instance();
+    connect(pm, &ProgressManager::title, this, &ProgressPage::setTitle);
 }
 
 void ProgressPage::setText(const QString &text)

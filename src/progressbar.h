@@ -3,7 +3,7 @@
 
 #include <QProgressBar>
 
-#include "processmanager.h"
+#include "progressmanager.h"
 
 class ProgressBar : public QProgressBar
 {

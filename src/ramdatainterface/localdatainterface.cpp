@@ -2,7 +2,7 @@
 
 #include "datacrypto.h"
 #include "duqf-utils/utils.h"
-#include "processmanager.h"
+#include "progressmanager.h"
 #include "ramuser.h"
 #include "ramses.h"
 
@@ -467,7 +467,7 @@ ServerConfig LocalDataInterface::setDataFile(const QString &file)
     // Clear all cache
     m_uuids.clear();
 
-    ProcessManager *pm = ProcessManager::instance();
+    ProgressManager *pm = ProgressManager::instance();
     pm->setTitle(tr("Loading database"));
     pm->setText(tr("Opening database..."));
 
@@ -549,6 +549,10 @@ ServerConfig LocalDataInterface::setDataFile(const QString &file)
 
 QJsonObject LocalDataInterface::getSync(bool fullSync)
 {
+    ProgressManager *pm = ProgressManager::instance();
+    pm->setTitle(tr("Data sync: Getting local data..."));
+    pm->increment();
+
     // List all tables
     QStringList tNames = tableNames();
     // Get last Sync
@@ -565,9 +569,14 @@ QJsonObject LocalDataInterface::getSync(bool fullSync)
     QString currentUuid = "";
     if (u) currentUuid = u->uuid();
 
+    pm->addToMaximum(tNames.count());
+
     for (int i = 0; i < tNames.count(); i++)
-    {
+    {      
         QString tName = tNames.at(i);
+
+        pm->setText(tr("Scanning table: %1").arg(tName));
+        pm->increment();
 
         QJsonObject table;
         QJsonArray rows;
@@ -606,18 +615,29 @@ QJsonObject LocalDataInterface::getSync(bool fullSync)
     QJsonObject result;
     result.insert("tables", tables);
     result.insert("previousSyncDate", lastSync);
+
+    pm->setText(tr("Successfully scanned local data."));
+    pm->increment();
+
     return result;
     //emit readyToSync(tables, lastSync);
 }
 
 void LocalDataInterface::saveSync(QJsonArray tables)
 {
+    ProgressManager *pm = ProgressManager::instance();
+    pm->addToMaximum(tables.count()*3);
+
     // Insertions
     for (int i = 0; i < tables.count(); i++)
     {
+        pm->increment();
+
         QJsonObject table = tables.at(i).toObject();
         QString tableName = table.value("name").toString();
         if (tableName == "") continue;
+
+        pm->setText(tr("Inserting new data in: %1").arg(tableName));
 
         // Clear cache
         m_uuids.remove(tableName);
@@ -685,9 +705,13 @@ void LocalDataInterface::saveSync(QJsonArray tables)
     // Updates
     for (int i = 0; i < tables.count(); i++)
     {
+        pm->increment();
+
         QJsonObject table = tables.at(i).toObject();
         QString tableName = table.value("name").toString();
         if (tableName == "") continue;
+
+        pm->setText(tr("Updating existing data for: %1").arg(tableName));
 
         // Clear cache
         m_uuids.remove(tableName);
@@ -757,11 +781,17 @@ void LocalDataInterface::saveSync(QJsonArray tables)
 
 void LocalDataInterface::deleteData(QJsonArray tables)
 {
+    ProgressManager *pm = ProgressManager::instance();
+
     for (int i = 0; i < tables.count(); i++)
     {
+        pm->increment();
+
         QJsonObject table = tables.at(i).toObject();
         QString tableName = table.value("name").toString();
         QJsonArray rows = table.value("rows").toArray();
+
+        pm->setText(tr("Removing out-of-date data from: %1").arg(tableName));
 
         for (int j = 0; j < rows.count(); j++)
         {
@@ -796,15 +826,28 @@ void LocalDataInterface::setCurrentUserUuid(QString uuid)
 
 void LocalDataInterface::sync(QJsonObject data)
 {
+    ProgressManager *pm = ProgressManager::instance();
+    pm->reInit();
+    pm->setTitle(tr("Saving Ramses server data."));
+    pm->setText(tr("Updating local data..."));
+    pm->setMaximum(3);
+    pm->start();
+
     saveSync(data.value("tables").toArray());
 
     deleteData(data.value("deletedData").toArray());
 
     // Save sync date
+
+    pm->increment();
+    pm->setText(tr("Cleaning..."));
+
     QString q = "DELETE FROM _Sync;";
     query( q );
     q = "INSERT INTO _Sync ( lastSync) VALUES ( '%1' );";
     query( q.arg( QDateTime::currentDateTimeUtc().toString("yyyy-MM-dd hh:mm:ss") ) );
+
+    pm->finish();
 }
 
 QStringList LocalDataInterface::tableNames()

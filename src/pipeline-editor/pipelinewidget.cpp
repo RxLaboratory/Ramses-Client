@@ -2,7 +2,7 @@
 
 #include "duqf-utils/guiutils.h"
 
-#include "processmanager.h"
+#include "progressmanager.h"
 #include "stepnode.h"
 #include "ramses.h"
 #include "rampipe.h"
@@ -678,7 +678,7 @@ void PipelineWidget::changeProject()
     if (!m_projectChanged) return;
     m_projectChanged = false;
 
-    ProcessManager *pm = ProcessManager::instance();
+    ProgressManager *pm = ProgressManager::instance();
 
     QSignalBlocker b1(m_nodeScene);
     QSignalBlocker b2(ui_nodeView);

@@ -10,7 +10,7 @@ ProjectSelectorWidget::ProjectSelectorWidget(QWidget *parent):
     this->setModel(m_projectFilter);
     this->setMinimumWidth(200);
 
-    m_pm = ProcessManager::instance();
+    m_pm = ProgressManager::instance();
 
     connect(this, &RamObjectComboBox::currentObjectChanged, this,  &ProjectSelectorWidget::setCurrentProject);
     connect(Ramses::instance(), SIGNAL(currentProjectChanged(RamProject*)), this, SLOT(currentProjectChanged(RamProject*)));

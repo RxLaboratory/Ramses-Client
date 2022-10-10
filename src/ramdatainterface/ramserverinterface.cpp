@@ -2,7 +2,7 @@
 
 #include "datacrypto.h"
 #include "duqf-app/app-version.h"
-#include "processmanager.h"
+#include "progressmanager.h"
 #include "ramdatainterface/localdatainterface.h"
 #include "ramdatainterface/logindialog.h"
 #include "duqf-utils/guiutils.h"
@@ -261,6 +261,10 @@ void RamServerInterface::sync(QJsonArray tables, QDateTime prevSyncDate, bool sy
 
 void RamServerInterface::sync(QJsonObject body, bool synchroneous)
 {
+    ProgressManager *pm = ProgressManager::instance();
+    pm->setText(tr("Sending data to the Ramses server..."));
+    pm->increment();
+
     if (!synchroneous) {
         queueRequest("sync", body);
         startQueue();
@@ -269,6 +273,9 @@ void RamServerInterface::sync(QJsonObject body, bool synchroneous)
         Request r = buildRequest("sync", body);
         synchronousRequest(r);
     }
+
+    pm->setText(tr("Data sent!"));
+    pm->increment();
 }
 
 QJsonArray RamServerInterface::downloadData()
@@ -311,7 +318,7 @@ QJsonArray RamServerInterface::downloadData()
 
 void RamServerInterface::setOnline()
 {
-    ProcessManager *pm = ProcessManager::instance();
+    ProgressManager *pm = ProgressManager::instance();
 
     pm->setTitle(tr("Server connexion"));
     pm->setText(tr("Connecting to the Ramses Server..."));

@@ -6,7 +6,7 @@
 #include "ramassetgroup.h"
 #include "ramsequence.h"
 #include "shotscreationdialog.h"
-#include "processmanager.h"
+#include "progressmanager.h"
 
 ItemManagerWidget::ItemManagerWidget(RamTemplateStep::Type type, QWidget *parent) : QWidget(parent)
 {   
@@ -378,7 +378,7 @@ void ItemManagerWidget::assignUser(RamObject *user)
 
     QVector<RamStatus*> status = beginEditSelectedStatus();
 
-    ProcessManager *pm = ProcessManager::instance();
+    ProgressManager *pm = ProgressManager::instance();
     pm->setTitle(tr("Updating status"));
     pm->setText("Assigning user...");
     pm->setMaximum(status.count());
@@ -398,7 +398,7 @@ void ItemManagerWidget::changeState(RamObject *stt)
 
     QVector<RamStatus*> status = beginEditSelectedStatus();
 
-    ProcessManager *pm = ProcessManager::instance();
+    ProgressManager *pm = ProgressManager::instance();
     pm->setTitle(tr("Updating status"));
     pm->setText("Changing status...");
     pm->setMaximum(status.count());
@@ -441,7 +441,7 @@ void ItemManagerWidget::setDiffculty(RamStatus::Difficulty difficulty)
 {
     QVector<RamStatus*> status = beginEditSelectedStatus();
 
-    ProcessManager *pm = ProcessManager::instance();
+    ProgressManager *pm = ProgressManager::instance();
     pm->setTitle(tr("Updating status"));
     pm->setText("Changing difficulty...");
     pm->setMaximum(status.count());
@@ -462,7 +462,7 @@ void ItemManagerWidget::setCompletion()
     int completion = action->data().toInt();
     QVector<RamStatus*> status = beginEditSelectedStatus();
 
-    ProcessManager *pm = ProcessManager::instance();
+    ProgressManager *pm = ProgressManager::instance();
     pm->setTitle(tr("Updating status"));
     pm->setText("Setting completion ratio...");
     pm->setMaximum(status.count());
@@ -512,7 +512,7 @@ void ItemManagerWidget::pasteComment()
 
     QVector<RamStatus*> status = beginEditSelectedStatus();
 
-    ProcessManager *pm = ProcessManager::instance();
+    ProgressManager *pm = ProgressManager::instance();
     pm->setTitle(tr("Updating status"));
     pm->setText("Setting comment...");
     pm->setMaximum(status.count());

@@ -3,12 +3,12 @@
 ProgressBar::ProgressBar(QWidget *parent):
     QProgressBar(parent)
 {
-    ProcessManager *pm = ProcessManager::instance();
-    connect(pm, &ProcessManager::text, this, &QProgressBar::setFormat);
-    connect(pm, &ProcessManager::progress, this, &QProgressBar::setValue);
-    connect(pm, &ProcessManager::maximum, this, &QProgressBar::setMaximum);
-    connect(pm, &ProcessManager::started, this, &QProgressBar::show);
-    connect(pm, &ProcessManager::finished, this, &QProgressBar::hide);
+    ProgressManager *pm = ProgressManager::instance();
+    connect(pm, &ProgressManager::text, this, &QProgressBar::setFormat);
+    connect(pm, &ProgressManager::progress, this, &QProgressBar::setValue);
+    connect(pm, &ProgressManager::maximum, this, &QProgressBar::setMaximum);
+    connect(pm, &ProgressManager::started, this, &QProgressBar::show);
+    connect(pm, &ProgressManager::finished, this, &QProgressBar::hide);
     //connect(pm, SIGNAL(text(QString)), this, SLOT(repaint()));
     //connect(pm, SIGNAL(progress(int)), this, SLOT(repaint()));
     this->hide();

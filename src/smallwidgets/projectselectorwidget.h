@@ -3,7 +3,7 @@
 
 #include <QComboBox>
 
-#include "processmanager.h"
+#include "progressmanager.h"
 #include "ramobjectcombobox.h"
 #include "ramobjectsortfilterproxymodel.h"
 #include "ramproject.h"
@@ -19,7 +19,7 @@ private slots:
     void userChanged(RamUser *user);
 private:
     RamObjectSortFilterProxyModel *m_projectFilter;
-    ProcessManager *m_pm;
+    ProgressManager *m_pm;
 };
 
 #endif // PROJECTSELECTORWIDGET_H

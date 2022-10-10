@@ -1,6 +1,6 @@
 ﻿#include "dbinterface.h"
 #include "duqf-utils/guiutils.h"
-#include "processmanager.h"
+#include "progressmanager.h"
 
 DBInterface *DBInterface::_instance = nullptr;
 
@@ -19,7 +19,7 @@ void DBInterface::setOffline()
 {
     int timeOut = m_rsi->timeOut();
 
-    ProcessManager *pm = ProcessManager::instance();
+    ProgressManager *pm = ProgressManager::instance();
     pm->start();
     pm->setMaximum(timeOut + 2);
 
@@ -137,7 +137,7 @@ const QString &DBInterface::dataFile() const
 
 void DBInterface::setDataFile(const QString &file, bool ignoreUser)
 {
-    ProcessManager *pm = ProcessManager::instance();
+    ProgressManager *pm = ProgressManager::instance();
     pm->start();
     pm->setMaximum(15);
 
@@ -293,10 +293,20 @@ void DBInterface::sync()
         return;
     }
     if (m_connectionStatus != NetworkUtils::Online) return;
+
+    ProgressManager *pm = ProgressManager::instance();
+    pm->reInit();
+    pm->setMaximum(3);
+    pm->setTitle(tr("Quick data sync"));
+    pm->setText(tr("Beginning quick data sync..."));
+    pm->start();
+
     // Get modified rows from local
     QJsonObject syncBody = m_ldi->getSync( false );
     // Post to ramserver
     m_rsi->sync(syncBody);
+
+    pm->finish();
 }
 
 void DBInterface::fullSync(bool synchroneous)
@@ -306,12 +316,22 @@ void DBInterface::fullSync(bool synchroneous)
         return;
     }
     if (m_connectionStatus != NetworkUtils::Online) return;
+
+    ProgressManager *pm = ProgressManager::instance();
+    pm->reInit();
+    pm->setMaximum(3);
+    pm->setTitle(tr("Full data sync"));
+    pm->setText(tr("Beginning full data sync..."));
+    pm->start();
+
     // Get modified rows from local
     QJsonObject syncBody = m_ldi->getSync( true );
     // Cheat the date
     syncBody.insert("previousSyncDate", "1818-05-05 00:00:00");
     // Post to ramserver
     m_rsi->sync(syncBody, synchroneous);
+
+    pm->finish();
 }
 
 void DBInterface::quit()

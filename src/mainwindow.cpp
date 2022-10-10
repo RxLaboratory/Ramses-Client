@@ -1,7 +1,7 @@
 #include "mainwindow.h"
 
 #include "itemmanagerwidget.h"
-#include "processmanager.h"
+#include "progressmanager.h"
 #include "progressbar.h"
 #include "docks/consolewidget.h"
 #include "daemonsettingswidget.h"
@@ -48,7 +48,7 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     // The database interface
     DBInterface::instance();
     // The Process manager
-    ProcessManager::instance();
+    ProgressManager::instance();
     // Ramses
     Ramses::instance();
 
@@ -321,7 +321,7 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
 void MainWindow::connectEvents()
 {
     // Connect events
-    connect(ProcessManager::instance(), &ProcessManager::freezeUI, this, &MainWindow::freezeUI);
+    connect(ProgressManager::instance(), &ProgressManager::freezeUI, this, &MainWindow::freezeUI);
 
     // Toolbar and other tools
     connect(actionLogIn,SIGNAL(triggered()), this, SLOT(loginAction()));

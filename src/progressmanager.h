@@ -1,13 +1,13 @@
-#ifndef PROCESSMANAGER_H
-#define PROCESSMANAGER_H
+#ifndef PROGRESSMANAGER_H
+#define PROGRESSMANAGER_H
 
-#include <QObject>
+#include "duqf-utils/duqflogger.h"
 
-class ProcessManager : public QObject
+class ProgressManager : public DuQFLoggerObject
 {
     Q_OBJECT
 public:
-    static ProcessManager *instance();
+    static ProgressManager *instance();
     void setText(const QString &t);
     void setTitle(const QString &t);
     void setProgress(const int &p);
@@ -30,14 +30,15 @@ signals:
     void started();
 
 protected:
-    static ProcessManager *_instance;
+    static ProgressManager *_instance;
 
 private:
-    explicit ProcessManager(QObject *parent = nullptr);
+    explicit ProgressManager(QObject *parent = nullptr);
 
     int m_val = 0;
     int m_maximum = 0;
     bool m_busy = false;
+    QString m_title = "";
 };
 
-#endif // PROCESSMANAGER_H
+#endif // PROGRESSMANAGER_H
