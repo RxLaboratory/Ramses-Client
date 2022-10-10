@@ -322,6 +322,7 @@ Daemon::Daemon(QObject *parent) : DuQFLoggerObject("Daemon", parent)
     start();
 
     connect(m_tcpServer, &QTcpServer::newConnection, this, &Daemon::newConnection);
+    connect(qApp, &QApplication::aboutToQuit, this, &Daemon::stop);
 }
 
 void Daemon::post(QTcpSocket *client, QJsonObject content, QString query, QString message, bool success, bool accepted)
