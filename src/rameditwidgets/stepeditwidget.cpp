@@ -31,6 +31,7 @@ void StepEditWidget::reInit(RamObject *obj)
     {                
         ui_colorSelector->setColor(m_step->color());
         ui_publishSettingsEdit->setPlainText(m_step->publishSettings());
+        ui_generalSettingsEdit->setPlainText(m_step->customSettings());
 
         ui_folderWidget->setPath( m_step->path() );
 
@@ -66,6 +67,7 @@ void StepEditWidget::reInit(RamObject *obj)
         m_applicationList->clear();
         ui_colorSelector->setColor(QColor(25,25,25));
         ui_publishSettingsEdit->setPlainText("");
+        ui_generalSettingsEdit->setPlainText("");
         ui_typeBox->setCurrentText(0);
 
         ui_veryEasyEdit->setValue(0.2);
@@ -145,6 +147,12 @@ void StepEditWidget::setPublishSettings()
 {
     if (!m_step) return;
     m_step->setPublishSettings(ui_publishSettingsEdit->toPlainText());
+}
+
+void StepEditWidget::setGeneralSettings()
+{
+    if (!m_step) return;
+    m_step->setCustomSettings(ui_generalSettingsEdit->toPlainText());
 }
 
 void StepEditWidget::setColor(QColor c)
@@ -289,9 +297,13 @@ void StepEditWidget::setupUi()
 
     ui_tabWidget->addTab(m_applicationList, QIcon(":/icons/applications"), "Apps");
 
+    ui_generalSettingsEdit = new DuQFTextEdit(ui_tabWidget);
+    ui_generalSettingsEdit->setUseMarkdown(false);
+    ui_tabWidget->addTab(ui_generalSettingsEdit, QIcon(":/icons/settings"), "General");
+
     ui_publishSettingsEdit = new DuQFTextEdit(ui_tabWidget);
     ui_publishSettingsEdit->setUseMarkdown(false);
-    ui_tabWidget->addTab(ui_publishSettingsEdit, QIcon(":/icons/settings"), "Publish settings");
+    ui_tabWidget->addTab(ui_publishSettingsEdit, QIcon(":/icons/settings"), "Publish");
 
     ui_mainLayout->addWidget(ui_tabWidget);
 
@@ -310,6 +322,7 @@ void StepEditWidget::connectEvents()
     connect(ui_estimationTypeBox, SIGNAL(currentIndexChanged(int)), this, SLOT(updateEstimationSuffix()));
     connect(ui_typeBox, SIGNAL(currentIndexChanged(int)), this, SLOT(setType(int)));
     connect(ui_publishSettingsEdit, SIGNAL(editingFinished()), this, SLOT(setPublishSettings()));
+    connect(ui_generalSettingsEdit, SIGNAL(editingFinished()), this, SLOT(setGeneralSettings()));
 
     connect(m_applicationList, SIGNAL(add()), this, SLOT(createApplication()));
     connect(ui_colorSelector, SIGNAL(colorChanged(QColor)), this, SLOT(setColor(QColor)));

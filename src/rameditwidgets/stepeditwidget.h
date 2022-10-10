@@ -34,6 +34,7 @@ private slots:
 
     void setType(int t);
     void setPublishSettings();
+    void setGeneralSettings();
     void setColor(QColor c);
     void setEstimationType(int t);
     void setVeryEasy(double e);
@@ -55,6 +56,7 @@ private:
     QComboBox *ui_estimationTypeBox;
     QLabel *ui_estimationTypeLabel;
     DuQFTextEdit *ui_publishSettingsEdit;
+    DuQFTextEdit *ui_generalSettingsEdit;
     QTabWidget *ui_tabWidget;
     AutoSelectDoubleSpinBox *ui_veryEasyEdit;
     AutoSelectDoubleSpinBox *ui_easyEdit;

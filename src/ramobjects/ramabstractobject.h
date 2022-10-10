@@ -195,6 +195,9 @@ public:
     int order() const;
     void setOrder(int o);
 
+    QString customSettings() const;
+    void setCustomSettings(const QString &newCustomSettings);
+
     QIcon icon() const;
     virtual QString iconName() const { return m_icon; };
     QPixmap iconPixmap() const;

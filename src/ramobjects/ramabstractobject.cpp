@@ -310,6 +310,16 @@ void RamAbstractObject::setOrder(int o)
     insertData("order", o);
 }
 
+QString RamAbstractObject::customSettings() const
+{
+    return getData("customSettings").toString();
+}
+
+void RamAbstractObject::setCustomSettings(const QString &newGeneralSettings)
+{
+    insertData("customSettings", newGeneralSettings);
+}
+
 QIcon RamAbstractObject::icon() const
 {
     return QIcon(iconName());
