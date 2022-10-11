@@ -65,8 +65,9 @@ void DBManagerWidget::accept()
     ui_cancelCleanButton->setEnabled(false);
     ui_acceptCleanButton->setEnabled(false);
     ui_cleanButton->setEnabled(true);
-    RamAbstractObject::removeInvalidObjects();
+
     DBInterface::instance()->acceptClean();
+    RamAbstractObject::removeInvalidObjects();
 }
 
 void DBManagerWidget::setupUi()
