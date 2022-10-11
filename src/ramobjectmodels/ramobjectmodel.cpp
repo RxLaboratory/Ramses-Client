@@ -110,22 +110,26 @@ QVariant RamObjectModel::headerData(int section, Qt::Orientation orientation, in
 
 void RamObjectModel::insertObjects(int row, QVector<QString> uuids)
 {
-    // Check uuids first
-    for (int i = uuids.count() -1; i >= 0; i--)
+    // Check uuids first, and retrieve the objects
+    QVector<RamObject*> objs;
+    for (int i = 0; i <  uuids.count(); i++)
     {
-        if (!RamAbstractObject::checkUuid(uuids.at(i), m_type))
-        {
-            uuids.removeAt(i);
-        }
+        QString uuid = uuids.at(i);
+        if (uuid == "") continue;
+        RamObject *o = getObject(uuid);
+        if (!o) continue;
+        if (!o->isValid()) continue;
+        if (o->isRemoved()) continue;
+        objs << o;
     }
 
     beginInsertRows(QModelIndex(), row, row + uuids.count()-1);
 
-    for (int i = uuids.count()-1; i >= 0; i--)
+    for (int i = objs.count()-1; i >= 0; i--)
     {
-        QString uuid = uuids.at(i);
-        m_objectsUuids.insert(row, uuid);
-        connectObject( uuid );
+        RamObject *o = objs.at(i);
+        m_objectsUuids.insert(row, o->uuid());
+        connectObject( o );
     }
 
     endInsertRows();
@@ -333,7 +337,12 @@ RamObject *RamObjectModel::getObject(QString uuid) const
 void RamObjectModel::connectObject(QString uuid)
 {
     RamObject *obj = getObject( uuid );
-    connect(obj, &RamObject::dataChanged, this, &RamObjectModel::objectDataChanged);
+    connectObject(obj);
+}
+
+void RamObjectModel::connectObject(RamObject *o)
+{
+    connect(o, &RamObject::dataChanged, this, &RamObjectModel::objectDataChanged);
 }
 
 void RamObjectModel::disconnectObject(QString uuid)

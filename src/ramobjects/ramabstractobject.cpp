@@ -15,6 +15,8 @@ QHash<QString, QPixmap> RamAbstractObject::m_iconPixmaps = QHash<QString, QPixma
 
 QHash<QString, RamAbstractObject*> RamAbstractObject::m_allObjects = QHash<QString, RamAbstractObject*>();
 
+QSet<RamAbstractObject*> RamAbstractObject::m_invalidObjects = QSet<RamAbstractObject*>();
+
 const QString RamAbstractObject::objectTypeName(ObjectType type)
 {
     switch (type)
@@ -206,6 +208,17 @@ bool RamAbstractObject::is(RamAbstractObject *other) const
 QString RamAbstractObject::uuid() const
 {
     return m_uuid;
+}
+
+bool RamAbstractObject::isValid() const
+{
+    return m_valid;
+}
+
+void RamAbstractObject::invalidate()
+{
+    m_valid = false;
+    m_invalidObjects.insert(this);
 }
 
 RamAbstractObject::ObjectType RamAbstractObject::objectType() const
@@ -632,6 +645,20 @@ bool RamAbstractObject::checkUuid(QString uuid, ObjectType type, bool mayBeVirtu
     }
 
     return true;
+}
+
+QSet<RamAbstractObject *> RamAbstractObject::invalidObjects()
+{
+    return m_invalidObjects;
+}
+
+void RamAbstractObject::removeInvalidObjects()
+{
+    foreach(RamAbstractObject *o, m_invalidObjects)
+    {
+        o->remove();
+    }
+    m_invalidObjects.clear();
 }
 
 QPixmap RamAbstractObject::iconPixmap(QString iconName)

@@ -76,6 +76,7 @@ private slots:
 private:
     RamObject *getObject(QString uuid) const;
     void connectObject(QString uuid);
+    void connectObject(RamObject *o);
     void disconnectObject(QString uuid);
 
     QVector<QString> m_objectsUuids;

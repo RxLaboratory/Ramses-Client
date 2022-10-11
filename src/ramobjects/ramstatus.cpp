@@ -142,7 +142,7 @@ RamStatus::RamStatus(QString uuid):
     else m_user = RamUser::get( d.value("user").toString("none") );
 
     QString itemType = d.value("itemType").toString("asset");
-    QString itemUuid = d.value("item").toString();
+    QString itemUuid = d.value("item").toString("none");
 
     if (itemType == "shot") {
         m_item = RamShot::get( itemUuid );
@@ -151,9 +151,10 @@ RamStatus::RamStatus(QString uuid):
         m_item = RamAsset::get( itemUuid );
     }
 
-    m_step = RamStep::get( d.value("step").toString() );
+    m_step = RamStep::get( d.value("step").toString("none") );
 
-    connectEvents();
+    if (m_step && m_item) connectEvents();
+    else invalidate();
 }
 
 RamUser *RamStatus::user() const

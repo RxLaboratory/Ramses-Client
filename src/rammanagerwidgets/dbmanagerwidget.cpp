@@ -1,6 +1,7 @@
 #include "dbmanagerwidget.h"
 
 #include "dbinterface.h"
+#include "ramabstractobject.h"
 
 DBManagerWidget::DBManagerWidget(QWidget *parent)
     : QWidget{parent}
@@ -14,6 +15,21 @@ void DBManagerWidget::clean()
     int deleteFrom = -1;
     if (ui_deleteCheckBox->isChecked()) deleteFrom = ui_deleteFromEdit->value();
     QString report = DBInterface::instance()->cleanDabaBase( deleteFrom );
+
+    QSet<RamAbstractObject*> invalidObjects = RamAbstractObject::invalidObjects();
+    int numInvalidObjects = invalidObjects.count();
+    if (numInvalidObjects > 0)
+    {
+        report += ".\n\n## Invalid Objects\n\n";
+        report += "Found " + QString::number(numInvalidObjects) + " invalid objects (with some corrupted data):\n\n";
+        report += "These objects will be marked as removed as they can't be used anymore.\n\n";
+        foreach(RamAbstractObject *o, invalidObjects)
+        {
+            report += "- (" + o->objectTypeName() + ") " + o->shortName() + " | " + o->name() + "\n";
+        }
+    }
+
+
     ui_reportEdit->setMarkdown(report);
     ui_cancelCleanButton->setEnabled(true);
     ui_acceptCleanButton->setEnabled(true);
@@ -49,6 +65,7 @@ void DBManagerWidget::accept()
     ui_cancelCleanButton->setEnabled(false);
     ui_acceptCleanButton->setEnabled(false);
     ui_cleanButton->setEnabled(true);
+    RamAbstractObject::removeInvalidObjects();
     DBInterface::instance()->acceptClean();
 }
 

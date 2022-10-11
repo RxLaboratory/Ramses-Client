@@ -125,6 +125,9 @@ public:
     // and if it exists in the DB
     static bool checkUuid(QString uuid, ObjectType type, bool mayBeVirtual = false);
 
+    static QSet<RamAbstractObject*> invalidObjects();
+    static void removeInvalidObjects();
+
     // METHODS //
 
     RamAbstractObject(QString shortName, QString name, ObjectType type, bool isVirtual = false, bool encryptData = false);
@@ -137,6 +140,14 @@ public:
      * @return
      */
     QString uuid() const;
+
+    /**
+     * @brief isValid checks if the object has valid data. If not, it means the data in the database is corrupted,
+     * And this object should be ignored or deactivated.
+     * @return
+     */
+    bool isValid() const;
+    void invalidate();
 
     /**
      * @brief objectType the type of ramobject
@@ -258,11 +269,12 @@ protected:
     virtual QJsonObject reloadData() = 0;
 
     // SIGNALS in QObject instances
-    virtual void emitRemoved() {};
-    virtual void emitRestored() {};
+    virtual void emitRemoved() = 0;
+    virtual void emitRestored() = 0;
 
     // UTILS
     static QHash<QString, RamAbstractObject*> m_allObjects;
+    static QSet<RamAbstractObject*> m_invalidObjects;
     /**
      * @brief folderPath the folder of this object
      * @return
@@ -290,6 +302,7 @@ private:
     void createData(QString data);
 
     QSettings *m_settings = nullptr;
+    bool m_valid = true;
 };
 
 #endif // RAMABSTRACTOBJECT_H
