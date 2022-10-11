@@ -57,7 +57,7 @@ void DBManagerWidget::setupUi()
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
     mainLayout->setSpacing(3);
 
-    QGridLayout *topLayout = new QGridLayout(this);
+    QGridLayout *topLayout = new QGridLayout();
     topLayout->setSpacing(3);
     topLayout->setContentsMargins(0,0,0,0);
     mainLayout->addLayout(topLayout);

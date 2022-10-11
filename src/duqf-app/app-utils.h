@@ -21,10 +21,6 @@
 #include "app-version.h"
 #include "../duqf-utils/duqflogger.h"
 
-#ifdef Q_OS_WIN
-#include "windows.h"
-#endif
-
 class MessageHandler
 {
 public:
@@ -118,7 +114,7 @@ public:
     // Process the CLI arguments
     bool processArgs(QStringList examples = QStringList(), QStringList helpStrings = QStringList());
 
-    const QJsonObject &updateInfo() const;
+    const QJsonObject &updateInfo();
 
 public slots:
     // Check for updates

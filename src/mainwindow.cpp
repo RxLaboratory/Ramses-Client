@@ -35,9 +35,6 @@
 MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     QMainWindow(parent)
 {
-    // Check for update
-    duqf_checkUpdate();
-
     // Build the form
     setupUi(this);
 
@@ -411,6 +408,7 @@ void MainWindow::duqf_checkUpdate()
         else
         {
             qDebug() << "We'll check again tomorrow.";
+            duqf_updateAvailable(app->updateInfo());
         }
     }
     m_showUpdateAlerts = true;
@@ -543,6 +541,9 @@ void MainWindow::duqf_initUi()
     }
     QAction *aboutQtAction = new QAction(QIcon(":/icons/qt"), "About Qt");
     helpMenu->addAction(aboutQtAction);
+
+    // Check for update
+    duqf_checkUpdate();
 
     // ========= SETTINGS ========
 
@@ -699,7 +700,7 @@ void MainWindow::duqf_updateAvailable(QJsonObject updateInfo)
                 duqf_fundingBar = new QProgressBar(this);
                 duqf_fundingBar->setObjectName("fundingBar");
                 duqf_fundingBar->setMaximumWidth(75);
-                duqf_fundingBar->setFormat("♥ donate");
+                duqf_fundingBar->setFormat("♥ Donate");
                 duqf_fundingBar->installEventFilter(this);
                 mainStatusBar->addPermanentWidget(duqf_fundingBar);
             }

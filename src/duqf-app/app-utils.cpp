@@ -1,5 +1,9 @@
 #include "app-utils.h"
 
+#ifdef Q_OS_WIN
+#include "windows.h"
+#endif
+
 #include "duqf-app/app-style.h"
 
 DuApplication::DuApplication(int &argc, char *argv[]) : QApplication(argc, argv)
@@ -212,14 +216,12 @@ void DuApplication::gotUpdateInfo(QNetworkReply *rep)
         _updateInfo.insert("accepted",false);
         _updateInfo.insert("success",false);
     }
-    else if ( _updateInfo.value("success").toBool() )
+
+    if ( _updateInfo.value("success").toBool() )
     {
         QSettings settings;
         settings.setValue("updates/latestUpdateCheck", QDate::currentDate());
-    }
 
-    if (_updateInfo.value("success").toBool())
-    {
         qInfo() << "Got update information:";
         if (_updateInfo.value("update").toBool())
         {
@@ -240,6 +242,15 @@ void DuApplication::gotUpdateInfo(QNetworkReply *rep)
             double ratio = month / goal * 100;
             qInfo().noquote() << "This month, we've collected $" % QString::number(month) % ". That's " % QString::number(ratio, 'f', 0) % " % of our monthly goal. Thanks for your support!";
         }
+
+        // Save to settings
+        settings.setValue("updates/version", _updateInfo.value("version"));
+        settings.setValue("updates/description", _updateInfo.value("description"));
+        settings.setValue("updates/changelogURL", _updateInfo.value("changelogURL"));
+        settings.setValue("updates/downloadURL", _updateInfo.value("downloadURL"));
+        settings.setValue("updates/donateURL", _updateInfo.value("donateURL"));
+        settings.setValue("updates/monthlyFund", _updateInfo.value("monthlyFund"));
+        settings.setValue("updates/fundingGoal", _updateInfo.value("fundingGoal").toDouble(4000));
     }
 
     emit newUpdateInfo(_updateInfo);
@@ -247,7 +258,25 @@ void DuApplication::gotUpdateInfo(QNetworkReply *rep)
     rep->deleteLater();
 }
 
-const QJsonObject &DuApplication::updateInfo() const
+const QJsonObject &DuApplication::updateInfo()
 {
+    if (!_updateInfo.isEmpty() && _updateInfo.value("success").toBool())
+        return _updateInfo;
+
+    // Build from settigns
+    qDebug() << "Using saved update info.";
+
+    QSettings settings;
+    _updateInfo.insert("message","");
+    _updateInfo.insert("accepted",true);
+    _updateInfo.insert("success",true);
+    _updateInfo.insert("version", settings.value("updates/version").toString());
+    _updateInfo.insert("description", settings.value("updates/description").toString());
+    _updateInfo.insert("changelogURL", settings.value("updates/changelogURL").toString());
+    _updateInfo.insert("downloadURL", settings.value("updates/downloadURL").toString());
+    _updateInfo.insert("donateURL", settings.value("updates/donateURL").toString());
+    _updateInfo.insert("monthlyFund", settings.value("updates/monthlyFund").toDouble());
+    _updateInfo.insert("fundingGoal", settings.value("updates/fundingGoal", 4000).toDouble());
+
     return _updateInfo;
 }
