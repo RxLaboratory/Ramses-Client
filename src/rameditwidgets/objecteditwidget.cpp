@@ -121,7 +121,12 @@ void ObjectEditWidget::setComment()
 {
     if (!m_object) return;
 
+#if (QT_VERSION < QT_VERSION_CHECK(5, 15, 0))
+    m_object->setComment(ui_commentEdit->toPlainText());
+#else
     m_object->setComment(ui_commentEdit->toMarkdown());
+#endif
+
 }
 
 void ObjectEditWidget::objectRemoved(RamObject *o)

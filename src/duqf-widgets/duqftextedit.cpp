@@ -48,7 +48,11 @@ void DuQFTextEdit::finishEditing()
     // Remember cursor position to reset it
     if (m_changed) {
         QTextCursor cursor = this->textCursor();
-        if (m_useMarkdown) this->setMarkdown( this->toMarkdown() );
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
+    if (m_useMarkdown) this->setMarkdown( this->toMarkdown() );
+#endif
+
         this->setTextCursor(cursor);
         emit editingFinished();
     }
@@ -162,17 +166,25 @@ void DuQFTextEdit::setCaptureEnterKey(bool newCaptureEnterKey)
 
 void DuQFTextEdit::showMarkdown()
 {
+#if (QT_VERSION < QT_VERSION_CHECK(5, 15, 0))
+    return;
+#else
     if (!m_useMarkdown) return;
     showRichText();
     QString source = this->toMarkdown();
     this->setCurrentCharFormat(QTextCharFormat());
     this->setPlainText( source );
+#endif
 }
 
 void DuQFTextEdit::showRichText()
 {
+#if (QT_VERSION < QT_VERSION_CHECK(5, 15, 0))
+    return;
+#else
     if (!m_useMarkdown) return;
     this->setMarkdown( this->toMarkdown() );
+#endif
 }
 
 void DuQFTextEdit::pasteNoFormatting()

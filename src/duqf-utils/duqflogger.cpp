@@ -54,6 +54,14 @@ DuQFLogger::DuQFLogger(QObject *parent) : QObject(parent)
 
 // === Log
 
+DuQFLog::DuQFLog()
+{
+    _m = "";
+    _t = DuQFLog::Data;
+    _c = "";
+    _time = QTime::currentTime().toString("[hh:mm:ss.zzz]: ");
+}
+
 DuQFLog::DuQFLog(QString message, DuQFLog::LogType type, QString component)
 {
     _m = message;
@@ -88,6 +96,14 @@ DuQFLog::DuQFLog(QString message, DuQFLog::LogType type, QString component)
     default:
         qDebug() << m;
     }
+}
+
+DuQFLog::DuQFLog(const DuQFLog &l)
+{
+    _m = l.message();
+    _t = l.type();
+    _c = l.component();
+    _time = l.timeString();
 }
 
 QString DuQFLog::message() const

@@ -19,7 +19,9 @@ public:
                    Critical = 3,
                    Fatal = 4 };
 
+    explicit DuQFLog();
     explicit DuQFLog(QString message, LogType type = Information, QString component = "");
+    DuQFLog(const DuQFLog& l); // Copy constructor
 
     QString message() const;
     LogType type() const;

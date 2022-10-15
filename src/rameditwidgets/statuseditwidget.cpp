@@ -51,7 +51,11 @@ void StatusEditWidget::reInit(RamObject *o)
         ui_stateBox->update();
         ui_completionBox->setValue(m_status->completionRatio());
         ui_versionBox->setValue(m_status->version());
-        ui_statusCommentEdit->setMarkdown(m_status->comment());
+#if (QT_VERSION < QT_VERSION_CHECK(5, 15, 0))
+    ui_statusCommentEdit->setPlainText(m_status->comment());
+#else
+    ui_statusCommentEdit->setMarkdown(m_status->comment());
+#endif
         ui_folderWidget->setPath( m_status->path() );
         ui_publishedBox->setChecked( m_status->isPublished() );
 
@@ -233,7 +237,12 @@ void StatusEditWidget::setCompletion(int c)
 void StatusEditWidget::setComment()
 {
     if (!m_status) return;
+#if (QT_VERSION < QT_VERSION_CHECK(5, 15, 0))
+    m_status->setComment( ui_statusCommentEdit->toPlainText() );
+#else
     m_status->setComment( ui_statusCommentEdit->toMarkdown() );
+#endif
+
 }
 
 void StatusEditWidget::assignUser(RamObject *u)

@@ -4,7 +4,10 @@ DuQFServerComboBox::DuQFServerComboBox(QString defaultAddress, QWidget *parent):
     QComboBox(parent)
 {
     this->setEditable(true);
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
     this->setPlaceholderText("sub.domain.tld");
+#endif
 
     // Get the server history
     int historySize = m_settings.beginReadArray("server/serverHistory");

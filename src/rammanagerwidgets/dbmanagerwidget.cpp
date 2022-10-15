@@ -29,8 +29,11 @@ void DBManagerWidget::clean()
         }
     }
 
-
+#if (QT_VERSION < QT_VERSION_CHECK(5, 15, 0))
+    ui_reportEdit->setPlainText(report);
+#else
     ui_reportEdit->setMarkdown(report);
+#endif
     ui_cancelCleanButton->setEnabled(true);
     ui_acceptCleanButton->setEnabled(true);
     ui_cleanButton->setEnabled(false);
