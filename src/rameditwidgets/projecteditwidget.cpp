@@ -29,6 +29,10 @@ void ProjectEditWidget::reInit(RamObject *o)
     m_project = RamProject::c(o);
     if (m_project)
     {
+        QSignalBlocker b1(ui_resolutionWidget);
+        QSignalBlocker b2(ui_framerateWidget);
+        QSignalBlocker b3(ui_deadlineEdit);
+
         ui_resolutionWidget->setHeight(m_project->height());
         ui_resolutionWidget->setWidth(m_project->width());
         ui_framerateWidget->setFramerate(m_project->framerate());
