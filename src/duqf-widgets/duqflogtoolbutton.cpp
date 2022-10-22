@@ -1,4 +1,5 @@
 #include "duqflogtoolbutton.h"
+#include "duqf-widgets/duqfloggingtextedit.h"
 
 DuQFLogToolButton::DuQFLogToolButton(QWidget *parent): QToolButton(parent)
 {
@@ -13,8 +14,11 @@ DuQFLogToolButton::DuQFLogToolButton(QWidget *parent): QToolButton(parent)
 void DuQFLogToolButton::log(DuQFLog m)
 {
     DuQFLog::LogType t = m.type();
+
     if (t > _currentLevel)
     {
+        _currentLevel = t;
+
         switch(t)
         {
         case DuQFLog::Data: break;
@@ -36,15 +40,15 @@ void DuQFLogToolButton::log(DuQFLog m)
             this->setToolTip("A fatal error has occured, we can't continue. Please file a bug report.");
             break;
         }
-
-        _currentLevel = m.type();
     }
+
+    if (m_autoShowLog) showLog();
 }
 
 void DuQFLogToolButton::showLog()
 {
     if (_currentLevel <= DuQFLog::Information) return;
-    _logDialog->exec();
+    _logDialog->show();
 }
 
 void DuQFLogToolButton::setupUi()
@@ -54,26 +58,43 @@ void DuQFLogToolButton::setupUi()
 
     _logDialog = new QDialog(this);
     _logDialog->setModal(true);
+    _logDialog->setMinimumHeight(320);
+    _logDialog->setMinimumWidth(360);
     QVBoxLayout *layout = new QVBoxLayout(_logDialog);
-    layout->setMargin(3);
+    layout->setContentsMargins(3,3,3,3);
     layout->setSpacing(3);
 
     DuQFLoggingTextEdit *logWidget = new DuQFLoggingTextEdit();
     logWidget->setLevel(DuQFLog::Warning);
     layout->addWidget(logWidget);
 
-    QToolButton *cButton = new QToolButton();
+    QHBoxLayout *buttonLayout = new QHBoxLayout();
+    buttonLayout->setContentsMargins(0,0,0,0);
+    buttonLayout->setSpacing(3);
+    layout->addLayout(buttonLayout);
+
+    QPushButton *cButton = new QPushButton();
     cButton->setText("Clear");
-    cButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
-    layout->addWidget(cButton);
+    cButton->setIcon(QIcon(":/icons/clean"));
+    buttonLayout->addWidget(cButton);
+
+    QPushButton *closeButton = new QPushButton();
+    closeButton->setText("Close");
+    closeButton->setIcon(QIcon(":/icons/close"));
+    buttonLayout->addWidget(closeButton);
 
     _logDialog->setLayout(layout);
 
-    QString cssFile = QSettings().value("appearance/cssFile", ":/styles/default").toString();
     _logDialog->setStyleSheet("QDialog, QTextEdit { background-color:#333; }");
 
     connect(cButton, SIGNAL(clicked()), logWidget, SLOT(clear()));
     connect(cButton, SIGNAL(clicked()), this, SLOT(clear()));
+    connect(closeButton, SIGNAL(clicked()), _logDialog, SLOT(reject()));
+}
+
+void DuQFLogToolButton::setAutoShowLog(bool newAutoShowLog)
+{
+    m_autoShowLog = newAutoShowLog;
 }
 
 void DuQFLogToolButton::clear()
@@ -81,5 +102,5 @@ void DuQFLogToolButton::clear()
     this->hide();
     _currentLevel = DuQFLog::Information;
     this->setIcon(QIcon(":/icons/ok"));
-    _logDialog->close();
+    _logDialog->accept();
 }

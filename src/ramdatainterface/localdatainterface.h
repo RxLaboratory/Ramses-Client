@@ -12,25 +12,8 @@ struct ServerConfig {
     int updateDelay = 60000;
     int timeout = 3000;
     bool useSsl = true;
+    int port = 443;
 };
-
-/*class Querier : public DuQFLoggerObject
-{
-    Q_OBJECT
-public:
-    Querier(QString dbName);
-public slots:
-    void setDataFile(QString f);
-    QSqlQuery query(QString q);
-signals:
-    void queryFinished(QString q);
-    void ready(QSqlQuery);
-    void error(QString);
-private:
-    QString m_query;
-    QString m_dataFile;
-    QString m_dbName;
-};*/
 
 class LocalDataInterface : public DuQFLoggerObject
 {
@@ -42,9 +25,6 @@ public:
      * @return the instance.
      */
     static LocalDataInterface *instance();
-
-    //bool isReady() const;
-    //void waitForReady(int timeout=5000) const;
 
     /**
      * @brief setServerSettings updates the server settings for a given database
@@ -105,14 +85,7 @@ public slots:
 
 signals:
     void dataReset();
-    //void newQuery(QString);
-    //void newDataFile(QString);
     void ramsesPathChanged(QString);
-    // emitted when all save queries have terminated
-    // (everything's been written and it's safe to get data again)
-    //void ready();
-    // Sync trigger
-    //void readyToSync(QJsonArray tables, QString lastSyncDate);
     // Sync result
     void synced();
     void dataChanged(QString);
@@ -125,9 +98,7 @@ protected:
 
 private slots:
     void logError(QString err);
-    //void finishQuery(QString q);
     void quit();
-    //void processUpdates();
 
 private:
     /**
@@ -136,8 +107,12 @@ private:
      */
     LocalDataInterface();
 
+    // Opens the database, updates the scheme if needed
+    static bool openDB(QSqlDatabase db, const QString &dbFile);
+
+    // Runs a query on the current database
     QSqlQuery query(QString q) const;
-    //void threadedQuery(QString q);
+    // SQLite vacuum
     void vacuum();
 
     /**
@@ -151,17 +126,6 @@ private:
     // The UUIDS to delete when cleaning the database
     QHash<QString, QSet<QString>> m_uuidsToRemove;
 
-    //QThread m_queryThread;
-    //Querier *m_tQuerier;
-    //Querier *m_querier;
-    //QStringList m_activeQueries;
-
-    /**
-     * Changes to emit after syncing
-     */
-    /*QList<QStringList> m_inserted;
-    QStringList m_updated;
-    QMap<QString, bool> m_availabilityChanged;*/
 };
 
 #endif // LOCALDATAINTERFACE_H

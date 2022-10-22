@@ -65,6 +65,9 @@ public:
 
     void deleteData(QHash<QString, QSet<QString> > uuidsToDelete);
 
+    int serverPort() const;
+    void setServerPort(int newServerPort);
+
 public slots:
     /**
      * @brief setOnline posts a ping, and set the status to "Connecting"
@@ -136,6 +139,13 @@ private:
     // Requests and queue //
 
     /**
+     * @brief checkServer checks if the server is available
+     * @param hostName
+     * @return
+     */
+    bool checkServer(QString hostName);
+
+    /**
      * @brief Posts a request to the server
      * @param request
      */
@@ -192,6 +202,10 @@ private:
      * @brief The version of the server we're connected to
      */
     QString m_serverVersion = "";
+    /**
+     * @brief m_serverPort is the TCP port used to connect to the server
+     */
+    int m_serverPort = 443;
     /**
      * @brief m_timeout How long to wait for the server on ping, in seconds
      */

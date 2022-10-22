@@ -40,7 +40,7 @@ void DuQFLoggingTextEdit::log(DuQFLog m)
     else f.setForeground(QColor(227,227, 227));
     f.setFontWeight(800);
     f.setFontItalic(true);
-    cursor.insertText(m.typeString() + " " + tr("says:") + " ", f);
+    cursor.insertText(m.typeString() + " " + tr("says:") + "\n", f);
 
     // Content
     if (m.type() != DuQFLog::Data) f.setForeground(QColor(227,227, 227));

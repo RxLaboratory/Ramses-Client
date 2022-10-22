@@ -60,6 +60,16 @@ void RamServerInterface::setTimeout(int newTimeout)
     m_timeout = newTimeout;
 }
 
+int RamServerInterface::serverPort() const
+{
+    return m_serverPort;
+}
+
+void RamServerInterface::setServerPort(int newServerPort)
+{
+    m_serverPort = newServerPort;
+}
+
 const QString &RamServerInterface::serverVersion() const
 {
     return m_serverVersion;
@@ -346,9 +356,9 @@ void RamServerInterface::setOnline()
 
     if (!reply)
     {
-        qDebug() << "<<< Can't set online... Ping timed out.";
-        setConnectionStatus(NetworkUtils::Offline, tr("Server unavailable (request timed out)."));
-        emit userChanged("");
+        qDebug() << "<<< Can't set online... Ping failed.";
+        setConnectionStatus(NetworkUtils::Offline, tr("Server unavailable."));
+        pm->setText("Connection failed. Switched to Offline mode.");
         return;
     }
 
@@ -362,7 +372,6 @@ void RamServerInterface::setOnline()
         QString reason = tr("The server is unavailable.\nPlease check your network.\n\n(server ping failed)");
         log(reason, DuQFLog::Warning);
         setConnectionStatus(NetworkUtils::Offline, reason);
-        emit userChanged("");
         return;
     }
 
@@ -677,8 +686,10 @@ Request RamServerInterface::buildRequest(QString query)
     // Get info to build the URL
     QString address = serverAddress();
     QString protocol = serverProtocol();
+    int port = serverPort();
 
     QUrl url(protocol % address % "?" % query);
+    url.setPort(port);
 
     QNetworkRequest request;
     request.setUrl(url);
@@ -736,6 +747,7 @@ QJsonObject RamServerInterface::parseData(QNetworkReply *reply)
     }
 
     QString repAll = reply->readAll();
+    reply->deleteLater();
     QJsonDocument repDoc = QJsonDocument::fromJson(repAll.toUtf8());
     QJsonObject repObj = repDoc.object();
 
@@ -746,6 +758,8 @@ QJsonObject RamServerInterface::parseData(QNetworkReply *reply)
         repObj.insert("success",false);
         repObj.insert("error", true);
         repObj.insert("query", "unknown");
+        log(tr("The server returned invalid data.\n"
+               "This may be a misconfiguration of the server, a temporary network failure, or a bug."), DuQFLog::Warning);
     }
 
     QString repQuery = repObj.value("query").toString();
@@ -762,6 +776,8 @@ QJsonObject RamServerInterface::parseData(QNetworkReply *reply)
     if (repQuery != "login" && !repSuccess) logLevel = DuQFLog::Warning;
     if (repMessage.startsWith("warning", Qt::CaseInsensitive)) logLevel = DuQFLog::Warning;
     log(repMessage, logLevel);
+
+
 
     return repObj;
 }
@@ -847,10 +863,39 @@ const QString RamServerInterface::serverProtocol()
     return "http://";
 }
 
+bool RamServerInterface::checkServer(QString hostName)
+{
+    // Make sure the host is available
+    QHostInfo info = QHostInfo::fromName(hostName);
+    if (info.error() != QHostInfo::NoError)
+    {
+        // Set offline
+        this->setOffline();
+        if (info.error() == QHostInfo::HostNotFound)
+        {
+            log(tr("The Ramses Server at '%1' is unreachable, sorry. Check your connection to the network.\n"
+                   "I'm switching to offline mode.").arg(hostName),
+                DuQFLog::Warning);
+        }
+        else
+        {
+            log(tr("Network or Ramses Server at '%1' unavailable, please check your connection.\n"
+                   "I'm switching to offline mode.").arg(hostName),
+                DuQFLog::Warning);
+        }
+
+        return false;
+    }
+    return true;
+}
+
 void RamServerInterface::postRequest(Request r)
 {
-    QNetworkReply *reply = m_network->post(r.request, r.body.toUtf8());
     QUrl url = r.request.url();
+    QString test = url.host();
+    if (!checkServer(test)) return;
+
+    QNetworkReply *reply = m_network->post(r.request, r.body.toUtf8());
 
     // Log URL / GET
     log( "New request: " +  url.toString(QUrl::RemovePassword), DuQFLog::Debug);
@@ -872,6 +917,9 @@ QNetworkReply *RamServerInterface::synchronousRequest(Request r)
 {
     // Log URL / GET
     QUrl url = r.request.url();
+    QString test = url.host();
+    if (!checkServer(test)) return nullptr;
+
     log( "New request: " +  url.toString(QUrl::RemovePassword), DuQFLog::Debug);
     // Log POST body
     if (r.query == "login")
@@ -884,48 +932,24 @@ QNetworkReply *RamServerInterface::synchronousRequest(Request r)
         log("Request data: " + r.body, DuQFLog::Data);
 
 
-    // Create an eventloop to wait for the data
-    QEventLoop loop;
+    // Create a loop to wait for the data
     QTimer timer;
     timer.setSingleShot(true);
-    connect(&timer, &QTimer::timeout, &loop, [&]{ exit(1); } );
 
     QNetworkReply *reply = m_synchronousNetwork->post(r.request, r.body.toUtf8());
-
     connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this,SLOT(networkError(QNetworkReply::NetworkError)));
-    connect(reply, SIGNAL(finished()), reply, SLOT(deleteLater()));
-    connect(reply, &QNetworkReply::finished, &loop, &QEventLoop::quit);
 
     timer.start( m_timeout );
 
-    // Wait for it
-    if (loop.exec() == 0) timer.stop();
-    else return nullptr;
+    while ( reply->isRunning() )
+    {
+        if (!timer.isActive()) {
+            reply->abort();
+            reply->deleteLater();
+            return nullptr;
+        }
+        qApp->processEvents();
+    }
 
     return reply;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

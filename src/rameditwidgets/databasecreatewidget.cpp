@@ -70,6 +70,7 @@ void DatabaseCreateWidget::createDB()
         s.useSsl = ui_serverEdit->ssl();
         s.updateDelay = ui_serverEdit->updateFreq();
         s.timeout = ui_serverEdit->timeout();
+        s.port = ui_serverEdit->port();
 
         // Create DB
         if (!createNewDB(s)) return;

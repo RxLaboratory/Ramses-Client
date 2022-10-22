@@ -114,5 +114,6 @@
 #include <QVariant>
 #include <QtGlobal>
 #include <QErrorMessage>
+#include <QHostInfo>
 
 #include <cmath>

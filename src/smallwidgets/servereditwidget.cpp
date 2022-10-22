@@ -4,6 +4,7 @@ ServerEditWidget::ServerEditWidget(QWidget *parent)
     : QWidget{parent}
 {
     setupUi();
+    connectEvents();
 }
 
 void ServerEditWidget::setAddress(QString a)
@@ -35,6 +36,7 @@ QString ServerEditWidget::address()
 void ServerEditWidget::setSsl(bool s)
 {
     ui_sslCheckBox->setChecked(s);
+    updatePort(s);
 }
 
 bool ServerEditWidget::ssl() const
@@ -62,9 +64,25 @@ int ServerEditWidget::timeout() const
     return ui_timeoutSpinBox->value()*1000;
 }
 
+void ServerEditWidget::setPort(int p)
+{
+    ui_portBox->setValue(p);
+}
+
+int ServerEditWidget::port() const
+{
+    return ui_portBox->value();
+}
+
 void ServerEditWidget::orderServer()
 {
     QDesktopServices::openUrl ( QUrl( "http://ramses.rxlab.io" ) );
+}
+
+void ServerEditWidget::updatePort(bool useSSL)
+{
+    if (useSSL) ui_portBox->setValue(443);
+    else ui_portBox->setValue(80);
 }
 
 void ServerEditWidget::setupUi()
@@ -100,32 +118,45 @@ void ServerEditWidget::setupUi()
     ui_sslCheckBox->setChecked(true);
     formLayout->addWidget(ui_sslCheckBox, 1, 1);
 
-    QLabel *updateFreqLabel = new QLabel(tr("Update every"), this);
-    formLayout->addWidget(updateFreqLabel, 2, 0);
+    QLabel *portLabel = new QLabel(tr("TCP Port"), this);
+    formLayout->addWidget(portLabel, 2, 0);
+
+    ui_portBox = new QSpinBox(this);
+    ui_portBox->setMinimum(0);
+    ui_portBox->setMaximum(65535);
+    ui_portBox->setValue(443);
+    formLayout->addWidget(ui_portBox, 2, 1);
+
+    QLabel *updateFreqLabel = new QLabel(tr("Sync every"), this);
+    formLayout->addWidget(updateFreqLabel, 3, 0);
 
     ui_updateFreqSpinBox = new QSpinBox(this);
     ui_updateFreqSpinBox->setMinimum(15);
     ui_updateFreqSpinBox->setMaximum(600);
     ui_updateFreqSpinBox->setValue(60);
     ui_updateFreqSpinBox->setSuffix(" seconds");
-    formLayout->addWidget(ui_updateFreqSpinBox, 2, 1);
+    formLayout->addWidget(ui_updateFreqSpinBox, 3, 1);
 
     QLabel *timeOutLabel = new QLabel(tr("Server timeout"), this);
-    formLayout->addWidget(timeOutLabel, 3, 0);
+    formLayout->addWidget(timeOutLabel, 4, 0);
 
     ui_timeoutSpinBox = new QSpinBox(this);
     ui_timeoutSpinBox->setMinimum(1);
     ui_timeoutSpinBox->setMaximum(10);
     ui_timeoutSpinBox->setValue(3);
     ui_timeoutSpinBox->setSuffix(" seconds");
-    formLayout->addWidget(ui_timeoutSpinBox, 3, 1);
+    formLayout->addWidget(ui_timeoutSpinBox, 4, 1);
 
     ui_orderServerButton = new QPushButton(
                 tr("If you don't have access to a server yet,\n"
                    "you can get one on ramses.rxlab.io"),
                 this
                 );
-    formLayout->addWidget(ui_orderServerButton,4,1);
+    formLayout->addWidget(ui_orderServerButton,5,1);
+}
 
+void ServerEditWidget::connectEvents()
+{
     connect(ui_orderServerButton, &QPushButton::clicked, this, &ServerEditWidget::orderServer);
+    connect(ui_sslCheckBox, &QCheckBox::clicked, this, &ServerEditWidget::updatePort);
 }

@@ -31,6 +31,7 @@ void DatabaseEditWidget::setDbFile(const QString &newDbFile)
     ui_serverEdit->setSsl(s.useSsl);
     ui_serverEdit->setTimeout(s.timeout);
     ui_serverEdit->setUpdateFreq(s.updateDelay);
+    ui_serverEdit->setPort(s.port);
 
     // Check if the address is valid
     bool sync = ui_serverEdit->address() != "";
@@ -60,6 +61,7 @@ void DatabaseEditWidget::apply()
         s.useSsl = ui_serverEdit->ssl();
         s.updateDelay = ui_serverEdit->updateFreq();
         s.timeout = ui_serverEdit->timeout();
+        s.port = ui_serverEdit->port();
     }
 
     LocalDataInterface::setRamsesPath(m_dbFile, ui_folderSelector->path());

@@ -6,14 +6,13 @@
 #include <QVBoxLayout>
 #include <QSettings>
 #include "duqf-utils/duqflogger.h"
-#include "duqf-widgets/duqfloggingtextedit.h"
-#include "duqf-app/app-style.h"
 
 class DuQFLogToolButton : public QToolButton
 {
     Q_OBJECT
 public:
     DuQFLogToolButton(QWidget *parent = nullptr);
+    void setAutoShowLog(bool newAutoShowLog);
 
 private slots:
     void log(DuQFLog m);
@@ -23,6 +22,7 @@ private:
     void setupUi();
     DuQFLog::LogType _currentLevel;
     QDialog *_logDialog;
+    bool m_autoShowLog = true;
 };
 
 #endif // DUQFLOGTOOLBUTTON_H

@@ -1,66 +1,12 @@
 #include "localdatainterface.h"
 
 #include "datacrypto.h"
+#include "duqf-app/app-version.h"
 #include "duqf-utils/utils.h"
 #include "progressmanager.h"
 #include "ramuser.h"
 #include "ramses.h"
 
-// QUERIER
-/*
-Querier::Querier(QString dbName): DuQFLoggerObject("Local Data Interface Querier")
-{
-    m_dbName = dbName;
-}
-
-void Querier::setDataFile(QString f)
-{
-    m_dataFile = f;
-
-    QSqlDatabase::removeDatabase(m_dbName);
-    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", m_dbName);
-    db.setHostName("localhost");
-
-    if (m_dataFile == "") return;
-
-    db.setDatabaseName(m_dataFile);
-    if (!db.open())
-    {
-        emit error("Can't access data from the disk.");
-    }
-}
-
-QSqlQuery Querier::query(QString q)
-{
-    if (m_dataFile == "")
-    {
-        emit queryFinished(q);
-        return QSqlQuery();
-    }
-
-    //Load local database
-    QSqlDatabase db = QSqlDatabase::database(m_dbName);
-    QSqlQuery qry = QSqlQuery(db);
-
-    //log(tr("Querying:") + "\n" + q, DuQFLog::Data);
-
-    if (!qry.exec(q))
-    {
-        QString errorMessage = "Something went wrong when %1 the data.\nHere's some information:";
-        if (m_dbName == "getter") errorMessage = errorMessage.arg("getting");
-        else errorMessage = errorMessage.arg("saving");
-        errorMessage += "\n> " + tr("Query:") + "\n" + qry.lastQuery();
-        errorMessage += "\n> " + tr("Database Error:") + "\n" + qry.lastError().databaseText();
-        errorMessage += "\n> " + tr("Driver Error:") + "\n" + qry.lastError().driverText();
-        emit error(errorMessage);
-        emit queryFinished(q);
-        return QSqlQuery();
-    }
-    emit ready(qry);
-    emit queryFinished(q);
-    return qry;
-}
-*/
 // INTERFACE
 
 LocalDataInterface *LocalDataInterface::_instance = nullptr;
@@ -71,33 +17,13 @@ LocalDataInterface *LocalDataInterface::instance()
     return _instance;
 }
 
-/*bool LocalDataInterface::isReady() const
-{
-    return m_activeQueries.isEmpty();
-}*/
-/*
-void LocalDataInterface::waitForReady(int timeout) const
-{
-    QDeadlineTimer t(timeout);
-    while (!LocalDataInterface::isReady())
-    {
-        qApp->processEvents();
-        if (t.hasExpired()) return;
-    }
-    return;
-}
-*/
 void LocalDataInterface::setServerSettings(QString dbFile, ServerConfig c)
 {
     // Make sure the interface is ready
     LocalDataInterface::instance();
 
     QSqlDatabase db = QSqlDatabase::database("editdb");
-    // Set the SQLite file
-    db.close();
-    // Open
-    db.setDatabaseName(dbFile);
-    if (!db.open()) LocalDataInterface::instance()->log("Can't save data to the disk.", DuQFLog::Fatal);
+    if (!openDB(db, dbFile)) LocalDataInterface::instance()->log("Can't save data to the disk.", DuQFLog::Fatal);
 
     // Remove previous settings
     QSqlQuery qry = QSqlQuery(db);
@@ -114,12 +40,12 @@ void LocalDataInterface::setServerSettings(QString dbFile, ServerConfig c)
     }
 
     // Add new settings
-    QString q = "INSERT INTO _Server (address, useSsl, updateDelay, timeout) "
-            "VALUES ('%1', %2, %3, %4)";
+    QString q = "INSERT INTO _Server (address, useSsl, updateDelay, timeout, port) "
+            "VALUES ('%1', %2, %3, %4, %5)";
 
     QString useSsl = "1";
     if (!c.useSsl) useSsl = "0";
-    if (!qry.exec(q.arg(c.address, useSsl, QString::number(c.updateDelay), QString::number(c.timeout))))
+    if (!qry.exec(q.arg(c.address, useSsl, QString::number(c.updateDelay), QString::number(c.timeout), QString::number(c.port))))
     {
         QString errorMessage = "Something went wrong when saving the data.\nHere's some information:";
         errorMessage += "\n> " + tr("Query:") + "\n" + qry.lastQuery();
@@ -137,16 +63,12 @@ ServerConfig LocalDataInterface::getServerSettings(QString dbFile)
     LocalDataInterface::instance();
 
     QSqlDatabase db = QSqlDatabase::database("editdb");
-    // Set the SQLite file
-    db.close();
-    // Open
-    db.setDatabaseName(dbFile);
-    if (!db.open()) LocalDataInterface::instance()->log("Can't save data to the disk.", DuQFLog::Fatal);
+    if (!openDB(db, dbFile)) LocalDataInterface::instance()->log("Can't save data to the disk.", DuQFLog::Fatal);
 
     // Get settings
     QSqlQuery qry = QSqlQuery(db);
 
-    if (!qry.exec("SELECT address, useSsl, updateDelay, timeout FROM _Server;"))
+    if (!qry.exec("SELECT address, useSsl, updateDelay, timeout, port FROM _Server;"))
     {
         QString errorMessage = "Something went wrong when saving the data.\nHere's some information:";
         errorMessage += "\n> " + tr("Query:") + "\n" + qry.lastQuery();
@@ -166,6 +88,7 @@ ServerConfig LocalDataInterface::getServerSettings(QString dbFile)
         s.useSsl = qry.value(1).toBool();
         s.updateDelay = qry.value(2).toInt();
         s.timeout = qry.value(3).toInt();
+        s.port = qry.value(4).toInt();
     }
 
     db.close();
@@ -179,11 +102,7 @@ void LocalDataInterface::setRamsesPath(QString dbFile, QString p)
     LocalDataInterface::instance();
 
     QSqlDatabase db = QSqlDatabase::database("editdb");
-    // Set the SQLite file
-    db.close();
-    // Open
-    db.setDatabaseName(dbFile);
-    if (!db.open()) LocalDataInterface::instance()->log("Can't save data to the disk.", DuQFLog::Fatal);
+    if (!openDB(db, dbFile)) LocalDataInterface::instance()->log("Can't save data to the disk.", DuQFLog::Fatal);
 
     QSqlQuery qry = QSqlQuery(db);
 
@@ -212,10 +131,7 @@ QString LocalDataInterface::getRamsesPath(QString dbFile)
 
     QSqlDatabase db = QSqlDatabase::database("editdb");
     // Set the SQLite file
-    db.close();
-    // Open
-    db.setDatabaseName(dbFile);
-    if (!db.open()) LocalDataInterface::instance()->log("Can't save data to the disk.", DuQFLog::Fatal);
+    if (!openDB(db, dbFile)) LocalDataInterface::instance()->log("Can't save data to the disk.", DuQFLog::Fatal);
 
         QSqlQuery qry = QSqlQuery( db );
     if (!qry.exec("SELECT path FROM _Paths WHERE name = 'Ramses';"))
@@ -421,7 +337,7 @@ bool LocalDataInterface::isUserNameAavailable(const QString &userName)
 
 ServerConfig LocalDataInterface::serverConfig()
 {
-    QString q = "SELECT address, useSsl, updateDelay, timeout FROM _Server;";
+    QString q = "SELECT address, useSsl, updateDelay, timeout, port FROM _Server;";
     QSqlQuery qry = query( q );
 
     ServerConfig config;
@@ -430,6 +346,7 @@ ServerConfig LocalDataInterface::serverConfig()
         config.useSsl = qry.value(1).toBool();
         config.updateDelay = qry.value(2).toInt();
         config.timeout = qry.value(3).toInt();
+        config.port = qry.value(4).toInt();
     }
 
     return config;
@@ -468,15 +385,9 @@ ServerConfig LocalDataInterface::setDataFile(const QString &file)
     m_uuids.clear();
 
     ProgressManager *pm = ProgressManager::instance();
-    pm->setTitle(tr("Loading database"));
-    pm->setText(tr("Opening database..."));
 
     QSqlDatabase db = QSqlDatabase::database("localdata");
-    // Set the SQLite file
-    db.close();
-    // Open
-    db.setDatabaseName(file);
-    if (!db.open()) log("Can't save data to the disk.", DuQFLog::Fatal);
+    openDB(db, file);
 
     pm->increment();
     pm->setText(tr("Loading data..."));
@@ -520,31 +431,6 @@ ServerConfig LocalDataInterface::setDataFile(const QString &file)
     pm->increment();
 
     return serverConfig();
-
-    /*ProcessManager *pm = ProcessManager::instance();
-
-    pm->setTitle(tr("Loading database"));
-    pm->setText(tr("Opening database..."));
-
-    vacuum();
-
-    m_querier->setDataFile(file);
-
-    pm->increment();
-    pm->setText(tr("Preparing database handling thread..."));
-
-    emit newDataFile(file);
-
-    pm->increment();
-    pm->setText(tr("Loading data..."));
-
-    m_dataFile = file;    
-
-    emit dataReset();
-
-    pm->increment();
-
-    return serverConfig();*/
 }
 
 QJsonObject LocalDataInterface::getSync(bool fullSync)
@@ -853,6 +739,7 @@ void LocalDataInterface::sync(QJsonObject data)
 QStringList LocalDataInterface::tableNames()
 {
     QSqlDatabase db = QSqlDatabase::database("infodb");
+    db.close();
 
     // Copy the template to a file we can read
     QString tempDB = FileUtils::copyToTemporary(":/data/template");
@@ -1028,16 +915,6 @@ void LocalDataInterface::logError(QString err)
     log(err, DuQFLog::Critical);
 }
 
-/*void LocalDataInterface::finishQuery(QString q)
-{
-    m_activeQueries.removeOne(q);
-
-    if (m_activeQueries.isEmpty()) {
-        // Give a little bit more time in case other writing operations are coming
-        QTimer::singleShot(1000, this, &LocalDataInterface::processUpdates);
-    }
-}*/
-
 void LocalDataInterface::quit()
 {
     qDebug() << "LocalDataInterface: Vacuuming...";
@@ -1046,50 +923,9 @@ void LocalDataInterface::quit()
     qDebug() << "LocalDataInterface: Everything's clean.";
 }
 
-/*void LocalDataInterface::processUpdates()
-{
-    if (!m_activeQueries.isEmpty()) return;
-
-    // Emit what needs to be emitted
-    for (int i = 0; i < m_inserted.count(); i++)
-    {
-        QStringList ins = m_inserted.at(i);
-        emit inserted(ins.at(0), ins.at(1));
-    }
-    QMapIterator<QString,bool> avIt(m_availabilityChanged);
-    while(avIt.hasNext())
-    {
-        avIt.next();
-        emit availabilityChanged(avIt.key(), avIt.value());
-    }
-    for (int i = 0; i < m_updated.count(); i++)
-    {
-        emit dataChanged(m_updated.at(i));
-    }
-    // Clear all
-    m_inserted.clear();
-    m_availabilityChanged.clear();
-    m_updated.clear();
-
-    qDebug() << "LocalDataInterface Ready!";
-
-    // We're ready!
-    emit ready();
-}*/
-
 LocalDataInterface::LocalDataInterface() :
     DuQFLoggerObject("Local Data Interface")
 {
-    /*m_querier = new Querier("getter");
-    m_tQuerier = new Querier("setter");
-    m_tQuerier->moveToThread(&m_queryThread);
-
-    connect(m_querier, &Querier::error, this, &LocalDataInterface::logError);
-    connect(m_tQuerier, &Querier::error, this, &LocalDataInterface::logError);
-    connect(this, &LocalDataInterface::newQuery, m_tQuerier, &Querier::query);
-    connect(this, &LocalDataInterface::newDataFile, m_tQuerier, &Querier::setDataFile);
-    connect(m_tQuerier, &Querier::queryFinished, this, &LocalDataInterface::finishQuery);*/
-
     //Load local database
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE","localdata");
     db.setHostName("localhost");
@@ -1102,6 +938,100 @@ LocalDataInterface::LocalDataInterface() :
     //m_queryThread.start();
 
     connect(qApp, &QApplication::aboutToQuit, this, &LocalDataInterface::quit);
+}
+
+bool LocalDataInterface::openDB(QSqlDatabase db, const QString &dbFile)
+{
+    ProgressManager *pm = ProgressManager::instance();
+    pm->setTitle(tr("Loading database"));
+    pm->setText(tr("Opening database..."));
+
+    // Make sure the DB is closed
+    db.close();
+    // Open
+    db.setDatabaseName(dbFile);
+    if (!db.open()) {
+        LocalDataInterface::instance()->log("Can't save data to the disk.", DuQFLog::Fatal);
+        return false;
+    }
+
+    // Check the version, and update the db scheme
+    pm->setText(tr("Checking database version"));
+
+    QSqlQuery qry = QSqlQuery(db);
+
+    // Check DB Version
+    qry.exec("CREATE TABLE IF NOT EXISTS _Ramses ("
+                  "\"id\"	INTEGER NOT NULL UNIQUE,"
+                  "\"version\"	TEXT NOT NULL DEFAULT '0.0.0',"
+                  "PRIMARY KEY(\"id\" AUTOINCREMENT)"
+                  ");");
+
+    QVersionNumber currentVersion(0,0,0);
+    QVersionNumber newVersion = QVersionNumber::fromString(STR_VERSION);
+
+    qry.exec("SELECT version FROM _Ramses;");
+    if (qry.first())
+    {
+        currentVersion = QVersionNumber::fromString( qry.value(0).toString() );
+    }
+
+
+    if (currentVersion < newVersion)
+    {
+        pm->setText(tr("Updating database scheme"));
+        QFileInfo dbFileInfo(dbFile);
+        LocalDataInterface::instance()->log(tr("This database was created by an older version of Ramses (%1).\n"
+               "I'm updating it to the current version (%2).\n"
+               "The original file will be renamed to \"%3_%1.ramses\".").arg(currentVersion.toString(), STR_VERSION, dbFileInfo.baseName()));
+
+        FileUtils::copy(dbFile, QString("%1/%2_%3.ramses").arg(
+                            dbFileInfo.path(),
+                            dbFileInfo.baseName(),
+                            currentVersion.toString()));
+
+        bool ok = false;
+        if (currentVersion < QVersionNumber(0, 5, 1))
+        {
+            // Add the port entry to the _server table
+            ok = qry.exec("ALTER TABLE _Server ADD COLUMN \"port\" INTEGER NOT NULL DEFAULT 443;");
+            if (!ok)
+            {
+                QString errorMessage = "Something went wrong when updating the database scheme to the new version.\nHere's some information:";
+                errorMessage += "\n> " + tr("Query:") + "\n" + qry.lastQuery();
+                errorMessage += "\n> " + tr("Database Error:") + "\n" + qry.lastError().databaseText();
+                errorMessage += "\n> " + tr("Driver Error:") + "\n" + qry.lastError().driverText();
+                LocalDataInterface::instance()->log(errorMessage, DuQFLog::Critical);
+            }
+            // Set the port to the default (80/443)
+            qry.exec("UPDATE _Server SET port = 443 WHERE useSsl = 1;");
+            qry.exec("UPDATE _Server SET port = 80 WHERE useSsl = 0;");
+        }
+
+        if (ok)
+        {
+            // Remove previous version and update with ours
+            qry.exec("DELETE FROM _Ramses;");
+            QString q = "INSERT INTO _Ramses (version) VALUES ('%1');";
+            if (!qry.exec(q.arg(STR_VERSION)))
+            {
+                QString errorMessage = "Something went wrong when setting the new version of the database.\nHere's some information:";
+                errorMessage += "\n> " + tr("Query:") + "\n" + qry.lastQuery();
+                errorMessage += "\n> " + tr("Database Error:") + "\n" + qry.lastError().databaseText();
+                errorMessage += "\n> " + tr("Driver Error:") + "\n" + qry.lastError().driverText();
+                LocalDataInterface::instance()->log(errorMessage, DuQFLog::Warning);
+            }
+        }
+    }
+    else if (currentVersion > newVersion)
+    {
+        LocalDataInterface::instance()->log(tr("This database was created by a more recent version of Ramses (%1).\n"
+               "You should update this Ramses application before using this database!\n"
+               "Be careful if you continue, this could lead to data loss or corrupted databases.").arg(currentVersion.toString()),
+            DuQFLog::Critical);
+    }
+
+    return true;
 }
 
 QSqlQuery LocalDataInterface::query(QString q) const
@@ -1126,12 +1056,6 @@ QSqlQuery LocalDataInterface::query(QString q) const
     return qry;
     //return m_querier->query(q);
 }
-
-/*void LocalDataInterface::query(QString q)
-{
-    emit newQuery(q);
-    m_activeQueries << q;
-}*/
 
 void LocalDataInterface::vacuum()
 {

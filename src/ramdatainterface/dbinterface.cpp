@@ -9,11 +9,6 @@ DBInterface *DBInterface::instance()
     if (!_instance) _instance = new DBInterface();
     return _instance;
 }
-/*
-bool DBInterface::isReady() const
-{
-    return m_ldi->isReady();
-}*/
 
 void DBInterface::setOffline()
 {
@@ -148,6 +143,7 @@ void DBInterface::setDataFile(const QString &file, bool ignoreUser)
         m_rsi->setServerAddress(config.address);
         m_rsi->setTimeout(config.timeout);
         m_rsi->setSsl(config.useSsl);
+        m_rsi->setServerPort(config.port);
         m_updateFrequency = config.updateDelay;
 
         // Check the user
