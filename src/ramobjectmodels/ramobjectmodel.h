@@ -17,6 +17,10 @@ public:
 
     explicit RamObjectModel(RamAbstractObject::ObjectType type, QObject *parent = nullptr);
 
+    // Use one of the data roles for fast lookup
+    // Note that this data must be immutable
+    void setLookupRole(int role);
+
     // Data Access
     virtual int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     virtual int columnCount(const QModelIndex &parent = QModelIndex()) const override;
@@ -48,6 +52,8 @@ public:
     static RamObject *get(const QModelIndex &index);
     // An object by its shortname, or name
     RamObject *search(QString searchString) const;
+    // An object by its role data lookup
+    QList<RamObject *> get(QVariant roleData);
 
     // Check if contains
     bool contains(QString uuid) const;
@@ -79,8 +85,17 @@ private:
     void connectObject(RamObject *o);
     void disconnectObject(QString uuid);
 
-    QVector<QString> m_objectsUuids;
+    int m_lookupRole = RamAbstractObject::ShortName;
+
+    // The data and different ways to access it
+    QVector<QString> m_objectUuids;
+    QMultiHash<QVariant,RamObject*> m_lookupTable;
+    QVector<RamObject*> m_objects;
     RamObjectSortFilterProxyModel *m_columnObjects;
 };
+
+// We need a way to hash QVariant
+// (for the types used by RamObjects roleData
+uint qHash( const QVariant & var );
 
 #endif // RAMOBJECTMODEL_H

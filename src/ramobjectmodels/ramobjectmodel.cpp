@@ -21,10 +21,15 @@ RamObjectModel::RamObjectModel(RamAbstractObject::ObjectType type, QObject *pare
     connect(m_columnObjects, &RamObjectModel::rowsMoved, this, &RamObjectModel::moveModelColumns);
 }
 
+void RamObjectModel::setLookupRole(int role)
+{
+    m_lookupRole = role;
+}
+
 int RamObjectModel::rowCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent);
-    return m_objectsUuids.count();
+    return m_objectUuids.count();
 }
 
 int RamObjectModel::columnCount(const QModelIndex &parent) const
@@ -38,7 +43,7 @@ QVariant RamObjectModel::data(const QModelIndex &index, int role) const
     int row = index.row();
     int col = index.column();
 
-    QString uuid = m_objectsUuids.at(row);
+    QString uuid = m_objectUuids.at(row);
 
     // Get the object
     RamObject *obj = getObject(uuid);
@@ -83,7 +88,7 @@ QVariant RamObjectModel::headerData(int section, Qt::Orientation orientation, in
     // Vertical
     if (orientation == Qt::Vertical)
     {
-        QString uuid = m_objectsUuids.at(section);
+        QString uuid = m_objectUuids.at(section);
         if (role == Qt::DisplayRole) {
             RamObject *obj = getObject(uuid);
             if (obj) return obj->roleData(RamObject::ShortName);
@@ -128,7 +133,13 @@ void RamObjectModel::insertObjects(int row, QVector<QString> uuids)
     for (int i = objs.count()-1; i >= 0; i--)
     {
         RamObject *o = objs.at(i);
-        m_objectsUuids.insert(row, o->uuid());
+        // Add to the uuid list
+        m_objectUuids.insert(row, o->uuid());
+        // Add to the object list
+        m_objects.insert(row, o);
+        // Add to the lookup table
+        m_lookupTable.insert( o->roleData(m_lookupRole), o );
+
         connectObject( o );
     }
 
@@ -140,17 +151,25 @@ void RamObjectModel::removeObjects(QStringList uuids)
     // TODO maybe group calls to batch remove contiguous rows
     // if there are performance issues
     // beginRemoveRows can take a group of rows
-    while(!uuids.isEmpty())
+    while (!uuids.isEmpty())
     {
         QString uuid = uuids.takeLast();
-        int i = m_objectsUuids.indexOf(uuid);
+        int i = m_objectUuids.indexOf(uuid);
         if (i>=0) disconnectObject(uuid);
         while( i >= 0 )
         {
             beginRemoveRows(QModelIndex(), i, i);
-            m_objectsUuids.removeAt(i);
+
+            // Remove from lookup table
+            RamObject *o = getObject(uuid);
+            m_lookupTable.remove( o->roleData(m_lookupRole), o );
+            // Remove from uuid list
+            m_objectUuids.removeAt(i);
+            // Remove from object list
+            m_objects.removeAt(i);
+
             endRemoveRows();
-            i = m_objectsUuids.indexOf(uuid);
+            i = m_objectUuids.indexOf(uuid);
         }
     }
 }
@@ -181,8 +200,14 @@ bool RamObjectModel::moveRows(const QModelIndex &sourceParent, int sourceRow, in
 
     for (int i = 0; i < count ; i++)
     {
-        if (destinationChild < sourceRow) m_objectsUuids.move(sourceEnd, destinationChild);
-        else m_objectsUuids.move(sourceRow, destinationChild);
+        if (destinationChild < sourceRow) {
+            m_objectUuids.move(sourceEnd, destinationChild);
+            m_objects.move(sourceEnd, destinationChild);
+        }
+        else {
+            m_objectUuids.move(sourceRow, destinationChild);
+            m_objects.move(sourceRow, destinationChild);
+        }
     }
 
     endMoveRows();
@@ -196,9 +221,9 @@ void RamObjectModel::clear()
 
     beginResetModel();
 
-    while(m_objectsUuids.count() > 0)
+    while(m_objectUuids.count() > 0)
     {
-        disconnectObject( m_objectsUuids.takeLast() );
+        disconnectObject( m_objectUuids.takeLast() );
     }
 
     endResetModel();
@@ -206,7 +231,7 @@ void RamObjectModel::clear()
 
 void RamObjectModel::appendObject(QString uuid)
 {
-    if (m_objectsUuids.contains(uuid)) return;
+    if (m_objectUuids.contains(uuid)) return;
 
     insertObjects(
                 rowCount(),
@@ -233,17 +258,17 @@ RamObject *RamObjectModel::get(const QModelIndex &index)
 RamObject *RamObjectModel::search(QString searchString) const
 {
     // Shortname first
-    for (int i = 0; i < m_objectsUuids.count(); i++)
+    for (int i = 0; i < m_objectUuids.count(); i++)
     {
-        QString uuid = m_objectsUuids.at(i);
+        QString uuid = m_objectUuids.at(i);
         RamObject *o = RamObject::get(uuid, m_type);
         if (!o) continue;
         if (o->shortName() == searchString) return o;
     }
     // Name after
-    for (int i = 0; i < m_objectsUuids.count(); i++)
+    for (int i = 0; i < m_objectUuids.count(); i++)
     {
-        QString uuid = m_objectsUuids.at(i);
+        QString uuid = m_objectUuids.at(i);
         RamObject *o = RamObject::get(uuid, m_type);
         if (!o) continue;
         if (o->name() == searchString) return o;
@@ -251,9 +276,14 @@ RamObject *RamObjectModel::search(QString searchString) const
     return nullptr;
 }
 
+QList<RamObject*> RamObjectModel::get(QVariant roleData)
+{
+    return m_lookupTable.values(roleData);
+}
+
 bool RamObjectModel::contains(QString uuid) const
 {
-    return m_objectsUuids.contains(uuid);
+    return m_objectUuids.contains(uuid);
 }
 
 RamObject::ObjectType RamObjectModel::type() const
@@ -263,12 +293,12 @@ RamObject::ObjectType RamObjectModel::type() const
 
 QVector<QString> RamObjectModel::toVector() const
 {
-    return m_objectsUuids;
+    return m_objectUuids;
 }
 
 QStringList RamObjectModel::toStringList() const
 {
-    QStringList l = m_objectsUuids.toList();
+    QStringList l = m_objectUuids.toList();
     return l;
 }
 
@@ -276,8 +306,8 @@ void RamObjectModel::objectDataChanged(RamObject *obj)
 {
     QString uuid = obj->uuid();
     // Get the coordinates
-    int row = m_objectsUuids.indexOf(uuid);
-    if (row >= 0 && row < m_objectsUuids.count())
+    int row = m_objectUuids.indexOf(uuid);
+    if (row >= 0 && row < m_objectUuids.count())
     {
         QModelIndex i = index(row, 0);
         QModelIndex iEnd = index(row, columnCount() -1);
@@ -349,4 +379,72 @@ void RamObjectModel::disconnectObject(QString uuid)
 {
     RamObject *obj = getObject( uuid );
     if (obj) disconnect(obj, nullptr, this, nullptr);
+}
+
+uint qHash(const QVariant &var)
+{
+    if ( !var.isValid() || var.isNull() )
+        return -1;
+
+   switch ( var.type() )
+   {
+       case QVariant::Int:
+               return qHash( var.toInt() );
+           break;
+       case QVariant::UInt:
+               return qHash( var.toUInt() );
+           break;
+       case QVariant::Bool:
+               return qHash( var.toUInt() );
+           break;
+       case QVariant::Double:
+               return qHash( var.toUInt() );
+           break;
+       case QVariant::LongLong:
+               return qHash( var.toLongLong() );
+           break;
+       case QVariant::ULongLong:
+               return qHash( var.toULongLong() );
+           break;
+       case QVariant::String:
+               return qHash( var.toString() );
+           break;
+       case QVariant::Char:
+               return qHash( var.toChar() );
+           break;
+       case QVariant::StringList:
+               return qHash( var.toString() );
+           break;
+       case QVariant::ByteArray:
+               return qHash( var.toByteArray() );
+           break;
+       case QVariant::Date:
+       case QVariant::Time:
+       case QVariant::DateTime:
+       case QVariant::Url:
+       case QVariant::Locale:
+       case QVariant::RegExp:
+               return qHash( var.toString() );
+           break;
+       case QVariant::Map:
+       case QVariant::List:
+       case QVariant::BitArray:
+       case QVariant::Size:
+       case QVariant::SizeF:
+       case QVariant::Rect:
+       case QVariant::LineF:
+       case QVariant::Line:
+       case QVariant::RectF:
+       case QVariant::Point:
+       case QVariant::PointF:
+           // not supported yet
+           break;
+       case QVariant::UserType:
+       case QVariant::Invalid:
+       default:
+           return -1;
+   }
+
+   // could not generate a hash for the given variant
+   return -1;
 }
