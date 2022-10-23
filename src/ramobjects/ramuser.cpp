@@ -195,4 +195,5 @@ void RamUser::construct()
     m_icon = ":/icons/user";
     m_editRole = Admin;
     m_schedule = createModel(RamObject::ScheduleEntry, "schedule");
+    m_schedule->setLookupRole(RamObject::Date);
 }

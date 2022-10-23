@@ -152,7 +152,7 @@ QVariant RamScheduleTableModel::data(const QModelIndex &index, int role) const
 
     // THE DATE
     QString ampm = "am";
-    if ( headerData(row, Qt::Vertical,  RamObject::IsPM).toBool() )
+    if ( headerData(row, Qt::Vertical,  RamObject::IsPM).toBool())
     {
         ampm = "pm";
         date.setTime(QTime(12,0));
@@ -166,13 +166,19 @@ QVariant RamScheduleTableModel::data(const QModelIndex &index, int role) const
     // THE COMMENT
     if (row == 0 && m_comments)
     {
-        for(int i = 0; i < m_comments->rowCount(); i++)
+        QList<RamObject*> comments = m_comments->get(date);
+        if (!comments.isEmpty())
+        {
+            RamScheduleComment *c = RamScheduleComment::c(comments.first());
+            return c->roleData(role);
+        }
+        /*for(int i = 0; i < m_comments->rowCount(); i++)
         {
             RamScheduleComment *c = RamScheduleComment::c(m_comments->get(i));
             if (!c) continue;
             if (c->date() == date)
                 return c->roleData(role);
-        }
+        }*/
 
         // Needed Default values
 
@@ -196,10 +202,10 @@ QVariant RamScheduleTableModel::data(const QModelIndex &index, int role) const
 
     RamProject *currentProject = Ramses::instance()->currentProject();
 
-    for (int i = 0; i < schedule->rowCount(); i++)
+    QList<RamObject*> entries = schedule->get(date);
+    for (int i = 0; i < entries.count(); i++)
     {
-        RamScheduleEntry *entry = RamScheduleEntry::c(schedule->get(i));
-        if (!entry) continue;
+        RamScheduleEntry *entry = RamScheduleEntry::c(entries.at(i));
         RamStep *entryStep = entry->step();
         if (!entryStep) continue;
         RamProject *entryProj = entryStep->project();
@@ -207,21 +213,18 @@ QVariant RamScheduleTableModel::data(const QModelIndex &index, int role) const
         // For current project only
         if (!entryProj->is(currentProject)) continue;
 
-        if (entry->date() == date)
-        {
-            // Add AMP/PM Info to entry data
-            if ( role == RamObject::IsPM)
-                return ampm == "pm";
+        // Add AMP/PM Info to entry data
+        if ( role == RamObject::IsPM)
+            return ampm == "pm";
 
-            if ( role == Qt::ToolTipRole )
-                return QString(entry->roleData(role).toString() % "\n" % ampm);
+        if ( role == Qt::ToolTipRole )
+            return QString(entry->roleData(role).toString() % "\n" % ampm);
 
-            if ( role == Qt::StatusTipRole )
-                return QString(entry->roleData(role).toString() % " | " % ampm);
+        if ( role == Qt::StatusTipRole )
+            return QString(entry->roleData(role).toString() % " | " % ampm);
 
-            // Or return default
-            return entry->roleData(role);
-        }//*/
+        // Or return default
+        return entry->roleData(role);
     }
 
     if (role == Qt::EditRole) {

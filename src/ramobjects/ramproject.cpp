@@ -416,6 +416,7 @@ void RamProject::construct()
     m_assets = createModel(RamObject::Asset, "assets");
     m_users = createModel(RamObject::User, "users" );
     m_scheduleComments = createModel(RamObject::ScheduleComment, "scheduleComments" );
+    m_scheduleComments->setLookupRole(RamObject::Date);
     m_pipeFiles = createModel(RamObject::PipeFile, "pipeFiles" );
     m_steps = createModel(RamObject::Step, "steps" );
     m_pipeline = createModel(RamObject::Pipe, "pipeline" );
