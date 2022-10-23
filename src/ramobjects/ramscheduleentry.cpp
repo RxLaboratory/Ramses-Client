@@ -157,6 +157,8 @@ QVariant RamScheduleEntry::roleData(int role) const
         else return "";
     }
     case SizeHint: return QSize(75,10);
+    case Date: return this->date();
+    case IsPM: return this->date().time().hour() >= 12;
     }
     return RamObject::roleData(role);
 }

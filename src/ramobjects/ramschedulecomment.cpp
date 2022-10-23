@@ -80,12 +80,3 @@ void RamScheduleComment::construct()
     m_icon = ":/icons/calendar";
     m_editRole = Standard;
 }
-
-
-
-
-
-
-
-
-

@@ -397,7 +397,7 @@ QVariant RamAbstractObject::roleData(int role) const
         return QSize(w, h);
     }
     case RamAbstractObject::IsPM: return false;
-    case RamAbstractObject::Date: return QDate();
+    case RamAbstractObject::Date: return QDateTime();
     case RamAbstractObject::IsComment: return false;
     case RamAbstractObject::Difficulty: return 0;
     case RamAbstractObject::Duration: return 0;

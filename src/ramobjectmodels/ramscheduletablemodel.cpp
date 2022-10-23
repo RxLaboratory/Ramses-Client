@@ -158,9 +158,11 @@ QVariant RamScheduleTableModel::data(const QModelIndex &index, int role) const
         date.setTime(QTime(12,0));
     }
 
-    if (role ==  RamObject::Date ) {
+    if (role ==  RamObject::Date )
+    {
         return date;
     }
+
     // THE COMMENT
     if (row == 0 && m_comments)
     {
