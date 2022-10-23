@@ -44,9 +44,7 @@ QVariant RamObjectModel::data(const QModelIndex &index, int role) const
     int col = index.column();
 
     QString uuid = m_objectUuids.at(row);
-
-    // Get the object
-    RamObject *obj = getObject(uuid);
+    RamObject *obj = m_objects.at(row);
 
     if (role == RamObject::Pointer) {
         if (obj) return reinterpret_cast<quintptr>(obj);
@@ -241,11 +239,7 @@ void RamObjectModel::appendObject(QString uuid)
 
 RamObject *RamObjectModel::get(int row)
 {
-    RamObject *o = get(index(row, 0));
-    // TODO If the object is not available anymore,
-    // We should remove it at some point. (or not insert it at all?)
-    // Be careful, that will break loops which aren't "reversed"
-    return o;
+    return m_objects.at(row);
 }
 
 RamObject *RamObjectModel::get(const QModelIndex &index)
