@@ -576,6 +576,22 @@ void RamServerInterface::dataReceived(QNetworkReply *reply)
     QString repQuery = repObj.value("query").toString();
     bool repSuccess = repObj.value("success").toBool();
     QString repMessage = repObj.value("message").toString();
+    QJsonArray repLog = repObj.value("debug").toArray();
+
+    // Log
+    for (int i = 0; i < repLog.count(); i++)
+    {
+        QJsonObject o = repLog.at(i).toObject();
+        QString level = o.value("level").toString("INFO");
+        QString message = o.value("message").toString("");
+        DuQFLog::LogType l = DuQFLog::Information;
+        if (level == "DATA") l = DuQFLog::Data;
+        else if (level == "DEBUG") l = DuQFLog::Debug;
+        else if (level == "WARNING") l = DuQFLog::Warning;
+        else if (level == "CRITICAL") l = DuQFLog::Critical;
+        else if (level == "FATAL") l = DuQFLog::Fatal;
+        log(tr("Server log:") + " " + message, l);
+    }
 
     // Parse specific data
     if (repQuery == "ping")
