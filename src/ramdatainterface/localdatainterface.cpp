@@ -355,6 +355,14 @@ void LocalDataInterface::updateUser(QString uuid, QString username, QString data
                 "SET data=excluded.data, modified=excluded.modified, userName=excluded.userName, removed=0 ;";
 
     query( q.arg(data, modified, uuid, username) );
+
+    // Remove duplicates if any. This should never happen,
+    // but when messing around with new databases and server install
+    // Users may end up connecting to a new server while already having some users locally
+    QDateTime m = QDateTime::currentDateTimeUtc();
+    modified = m.toString("yyyy-MM-dd hh:mm:ss");
+    q = "UPDATE RamUser SET `removed` = 1, `modified` = '%1' WHERE `userName` = '%2' AND `uuid` != '%3';";
+    query( q.arg(modified, username, uuid) );
 }
 
 ServerConfig LocalDataInterface::serverConfig()

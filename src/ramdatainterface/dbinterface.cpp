@@ -384,9 +384,9 @@ void DBInterface::serverUserChanged(QString userUuid, QString username, QString 
     ServerConfig config = m_ldi->serverConfig();
     if (config.address != "") // online
     {
-        if (userUuid != "" && username != "") // OK
+        if (userUuid != "") // OK
         {
-            m_ldi->updateUser(userUuid, username, data, modified);
+            if (username != "" && data != "") m_ldi->updateUser(userUuid, username, data, modified);
             emit userChanged(userUuid);
             return;
         }
