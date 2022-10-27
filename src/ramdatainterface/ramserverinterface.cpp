@@ -120,7 +120,7 @@ QString RamServerInterface::doLogin(QString username, QString password, bool sav
         qDebug() << "<<< Can't log in... request timed out.";
         setConnectionStatus(NetworkUtils::Offline, tr("Unable to log in (request timed out)."));
         m_currentUserUuid = "";
-        emit userChanged("");
+        emit userChanged("", "", "", "");
         return "";
     }
 
@@ -183,8 +183,15 @@ QString RamServerInterface::doLogin(QString username, QString password, bool sav
         settings.endArray();
     }
 
+    qDebug() << "New user UUID after online login: " << m_currentUserUuid;
+
+    // The data of the user
+    QString un = repObj.value("content").toObject().value("username").toString();
+    QString data = repObj.value("content").toObject().value("data").toString();
+    QString modified = repObj.value("content").toObject().value("modified").toString();
+
     // Warn everyone we've logged in
-    emit userChanged(m_currentUserUuid);
+    emit userChanged(m_currentUserUuid, un, data, modified);
 
     return m_currentUserUuid;
 }

@@ -125,7 +125,7 @@ private slots:
      * @brief serverUserChanged Handles changes of users sent from the server.
      * @param userUuid
      */
-    void serverUserChanged(QString userUuid);
+    void serverUserChanged(QString userUuid, QString username, QString data, QString modified);
 
 private:
     /**

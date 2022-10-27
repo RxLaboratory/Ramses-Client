@@ -84,7 +84,7 @@ signals:
     void connectionStatusChanged(NetworkUtils::NetworkStatus, QString);
     void syncReady(QJsonObject);
     void newData(QJsonObject);
-    void userChanged(QString);
+    void userChanged(QString uuid, QString username, QString userdata, QString modified);
 
 protected:
     static RamServerInterface *_instance;

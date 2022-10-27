@@ -335,6 +335,28 @@ bool LocalDataInterface::isUserNameAavailable(const QString &userName)
     return true;
 }
 
+void LocalDataInterface::updateUser(QString uuid, QString username, QString data, QString modified)
+{
+    // Adjust modified if not provided
+    if (modified == "")
+    {
+        QDateTime m = QDateTime::currentDateTimeUtc();
+        modified = m.toString("yyyy-MM-dd hh:mm:ss");
+    }
+
+    // Encrypt data
+    if (ENCRYPT_USER_DATA) data = DataCrypto::instance()->clientEncrypt( data );
+    else data.replace("'", "''");
+
+    // Insert/update
+    QString q = "INSERT INTO RamUser (data, modified, uuid, userName, removed) "
+                "VALUES ( '%1', '%2', '%3', '%4', 0) "
+                "ON CONFLICT(uuid) DO UPDATE "
+                "SET data=excluded.data, modified=excluded.modified, userName=excluded.userName, removed=0 ;";
+
+    query( q.arg(data, modified, uuid, username) );
+}
+
 ServerConfig LocalDataInterface::serverConfig()
 {
     QString q = "SELECT address, useSsl, updateDelay, timeout, port FROM _Server;";

@@ -55,6 +55,7 @@ public:
 
     void setUsername(QString uuid, QString username);
     bool isUserNameAavailable(const QString &userName);
+    void updateUser(QString uuid, QString username, QString data, QString modified);
 
     ServerConfig serverConfig();
 

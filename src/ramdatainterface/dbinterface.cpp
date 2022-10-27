@@ -149,6 +149,8 @@ void DBInterface::setDataFile(const QString &file, bool ignoreUser)
         // Check the user
         QString userUuid = m_ldi->currentUserUuid();
 
+        qDebug() << "Selected previous user: " << userUuid;
+
         emit userChanged( userUuid );
         setOnline();
 
@@ -376,15 +378,15 @@ void DBInterface::setConnectionStatus(NetworkUtils::NetworkStatus s, QString rea
     emit connectionStatusChanged(s, reason);
 }
 
-void DBInterface::serverUserChanged(QString userUuid)
+void DBInterface::serverUserChanged(QString userUuid, QString username, QString data, QString modified)
 {
     // Check if we should be online
     ServerConfig config = m_ldi->serverConfig();
     if (config.address != "") // online
     {
-        if (userUuid != "") // OK
+        if (userUuid != "" && username != "") // OK
         {
-            m_ldi->setCurrentUserUuid(userUuid);
+            m_ldi->updateUser(userUuid, username, data, modified);
             emit userChanged(userUuid);
             return;
         }
