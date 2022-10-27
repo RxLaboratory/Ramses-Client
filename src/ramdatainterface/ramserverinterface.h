@@ -73,7 +73,7 @@ public slots:
      * @brief setOnline posts a ping, and set the status to "Connecting"
      * Status will be changed to "Connected" if we get a valid pong
      */
-    void setOnline();
+    void setOnline(QString serverUuid = "");
     void setOffline();
     void login();
     QString doLogin(QString username, QString password, bool saveUsername = false, bool savePassword = false);
@@ -82,9 +82,10 @@ public slots:
 signals:
     void sslChanged(bool);
     void connectionStatusChanged(NetworkUtils::NetworkStatus, QString);
-    void syncReady(QJsonObject);
+    void syncReady(QJsonObject data, QString serverUuid);
     void newData(QJsonObject);
     void userChanged(QString uuid, QString username, QString userdata, QString modified);
+    void pong(QString serverUuid);
 
 protected:
     static RamServerInterface *_instance;
@@ -118,6 +119,9 @@ private slots:
      * @brief nextRequest Sends the next request from the requests queue.
      */
     void nextRequest();
+
+    bool checkPing(QJsonObject repObj, QString serverUuid = "");
+    bool checkServerUuid(QJsonObject repObj);
 
 private:
 
@@ -210,6 +214,8 @@ private:
      * @brief m_timeout How long to wait for the server on ping, in seconds
      */
     int m_timeout = 3000;
+
+    QString m_localServerUuid = "";
 
     /**
      * @brief Online / Offline status

@@ -382,6 +382,23 @@ ServerConfig LocalDataInterface::serverConfig()
     return config;
 }
 
+void LocalDataInterface::setServerUuid(QString serverUuid)
+{
+    QString q = "UPDATE _Sync SET uuid = '%1';";
+    query( q.arg(serverUuid) );
+}
+
+QString LocalDataInterface::serverUuid()
+{
+    QString q = "SELECT uuid FROM _Sync;";
+    QSqlQuery qry = query( q );
+    QString uuid = "";
+    if (qry.first()) {
+        uuid = qry.value(0).toString();
+    }
+    return uuid;
+}
+
 QString LocalDataInterface::ramsesPath()
 {
     QString q = "SELECT path FROM _Paths WHERE name = 'Ramses';";
@@ -740,7 +757,7 @@ void LocalDataInterface::setCurrentUserUuid(QString uuid)
     query( q.arg(uuid) );
 }
 
-void LocalDataInterface::sync(QJsonObject data)
+void LocalDataInterface::sync(QJsonObject data, QString serverUuid)
 {
     ProgressManager *pm = ProgressManager::instance();
     pm->reInit();
@@ -760,8 +777,8 @@ void LocalDataInterface::sync(QJsonObject data)
 
     QString q = "DELETE FROM _Sync;";
     query( q );
-    q = "INSERT INTO _Sync ( lastSync) VALUES ( '%1' );";
-    query( q.arg( QDateTime::currentDateTimeUtc().toString("yyyy-MM-dd hh:mm:ss") ) );
+    q = "INSERT INTO _Sync ( lastSync, uuid ) VALUES ( '%1', '%2' );";
+    query( q.arg( QDateTime::currentDateTimeUtc().toString("yyyy-MM-dd hh:mm:ss"), serverUuid ) );
 
     pm->finish();
 }
@@ -953,7 +970,7 @@ void LocalDataInterface::quit()
     qDebug() << "LocalDataInterface: Everything's clean.";
 }
 
-LocalDataInterface::LocalDataInterface() :
+LocalDataInterface::LocalDataInterface():
     DuQFLoggerObject("Local Data Interface")
 {
     //Load local database
@@ -1006,7 +1023,6 @@ bool LocalDataInterface::openDB(QSqlDatabase db, const QString &dbFile)
         currentVersion = QVersionNumber::fromString( qry.value(0).toString() );
     }
 
-
     if (currentVersion < newVersion)
     {
         pm->setText(tr("Updating database scheme"));
@@ -1036,6 +1052,20 @@ bool LocalDataInterface::openDB(QSqlDatabase db, const QString &dbFile)
             // Set the port to the default (80/443)
             qry.exec("UPDATE _Server SET port = 443 WHERE useSsl = 1;");
             qry.exec("UPDATE _Server SET port = 80 WHERE useSsl = 0;");
+        }
+
+        if (currentVersion < QVersionNumber(0, 6, 0))
+        {
+            // Add the uuid entry to the _sync table
+            ok = qry.exec("ALTER TABLE _Sync ADD COLUMN \"uuid\" TEXT;");
+            if (!ok)
+            {
+                QString errorMessage = "Something went wrong when updating the database scheme to the new version.\nHere's some information:";
+                errorMessage += "\n> " + tr("Query:") + "\n" + qry.lastQuery();
+                errorMessage += "\n> " + tr("Database Error:") + "\n" + qry.lastError().databaseText();
+                errorMessage += "\n> " + tr("Driver Error:") + "\n" + qry.lastError().driverText();
+                LocalDataInterface::instance()->log(errorMessage, DuQFLog::Critical);
+            }
         }
 
         if (ok)

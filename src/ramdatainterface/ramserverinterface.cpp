@@ -333,7 +333,7 @@ QJsonArray RamServerInterface::downloadData()
 
 // PUBLIC SLOTS //
 
-void RamServerInterface::setOnline()
+void RamServerInterface::setOnline(QString serverUuid)
 {
     ProgressManager *pm = ProgressManager::instance();
 
@@ -371,16 +371,9 @@ void RamServerInterface::setOnline()
 
     QJsonObject repObj = parseData(reply);
 
-    bool repSuccess = repObj.value("success").toBool();
+    if (!checkPing(repObj, serverUuid)) return;
 
-    // If ping is not successful, set offline.
-    if (!repSuccess)
-    {
-        QString reason = tr("The server is unavailable.\nPlease check your network.\n\n(server ping failed)");
-        log(reason, DuQFLog::Warning);
-        setConnectionStatus(NetworkUtils::Offline, reason);
-        return;
-    }
+    m_localServerUuid = serverUuid;
 
     pm->setText(tr("Pong!"));
     pm->increment();
@@ -584,6 +577,10 @@ void RamServerInterface::dataReceived(QNetworkReply *reply)
     bool repSuccess = repObj.value("success").toBool();
     QString repMessage = repObj.value("message").toString();
     QJsonArray repLog = repObj.value("debug").toArray();
+    QString serverUuid = repObj.value("serverUuid").toString();
+
+    // Check server UUID
+    if (!checkServerUuid(repObj)) return;
 
     // Log
     for (int i = 0; i < repLog.count(); i++)
@@ -603,19 +600,11 @@ void RamServerInterface::dataReceived(QNetworkReply *reply)
     // Parse specific data
     if (repQuery == "ping")
     {
-        // If ping is not successful, set offline.
-        if (!repSuccess)
+        if (checkPing(repObj))
         {
-            QString reason = tr("The server is unavailable.\nPlease check your network.\n\n(server ping failed)");
-            log(reason, DuQFLog::Warning);
-            setConnectionStatus(NetworkUtils::Offline, reason);
-            return;
+            // If we're connecting, login!
+            if (m_status == NetworkUtils::Connecting) login();
         }
-
-        // get the server version
-        m_serverVersion = repObj.value("content").toObject().value("version").toString();
-        // If we're connecting, login!
-        if (m_status == NetworkUtils::Connecting) login();
     }
     else if (repQuery == "loggedout")
     {
@@ -634,7 +623,7 @@ void RamServerInterface::dataReceived(QNetworkReply *reply)
             return;
         }
 
-        emit syncReady(repObj.value("content").toObject());
+        emit syncReady(repObj.value("content").toObject(), serverUuid);
     }
     else if (repQuery == "setPassword")
     {
@@ -670,6 +659,48 @@ void RamServerInterface::nextRequest()
     }
 
     postRequest( m_requestQueue.takeFirst() );
+}
+
+bool RamServerInterface::checkPing(QJsonObject repObj, QString serverUuid)
+{
+    bool repSuccess = repObj.value("success").toBool();
+
+    // If ping is not successful, set offline.
+    if (!repSuccess)
+    {
+        QString reason = tr("The server is unavailable.\nPlease check your network.\n\n(server ping failed)");
+        log(reason, DuQFLog::Warning);
+        setConnectionStatus(NetworkUtils::Offline, reason);
+        return false;
+    }
+
+    // Check the server UUID
+    if (serverUuid != "") m_localServerUuid = serverUuid;
+    if (!checkServerUuid(repObj)) return false;
+
+    // get the server version
+    m_serverVersion = repObj.value("content").toObject().value("version").toString();
+
+    emit pong(repObj.value("serverUuid").toString());
+    return true;
+}
+
+bool RamServerInterface::checkServerUuid(QJsonObject repObj)
+{
+    QString distantUuid = repObj.value("serverUuid").toString();
+    if (m_localServerUuid != "" && distantUuid != "" && m_localServerUuid != distantUuid)
+    {
+        QString reason = tr("This server is not in sync with this local database.\n\n"
+                            "This can happen if you try to connect to a new server from an existing database,\n"
+                            "Of if the server has been updated, or its configuration changed.\n\n"
+                            "Create a new database to connect to this server ( %1 ).").arg(
+                                serverAddress()
+                            );
+        log(reason, DuQFLog::Critical);
+        setConnectionStatus(NetworkUtils::Offline, tr("This server is not in sync with this local database."));
+        return false;
+    }
+    return true;
 }
 
 void RamServerInterface::queueRequest(QString query, QJsonObject body)

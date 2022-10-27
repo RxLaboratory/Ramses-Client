@@ -46,7 +46,7 @@ void DBInterface::setOffline()
     pm->finish();
 }
 
-void DBInterface::setOnline()
+void DBInterface::setOnline(QString serverUuid)
 {
     if (m_ldi->dataFile() == "")
     {
@@ -60,7 +60,7 @@ void DBInterface::setOnline()
     }
 
     // Connects to the Ramses Server and change connection status
-    m_rsi->setOnline();
+    m_rsi->setOnline(serverUuid);
 }
 
 void DBInterface::setRamsesPath(QString p)
@@ -146,13 +146,16 @@ void DBInterface::setDataFile(const QString &file, bool ignoreUser)
         m_rsi->setServerPort(config.port);
         m_updateFrequency = config.updateDelay;
 
+        // Get the serverUuid we should be connecting to
+        QString serverUuid = m_ldi->serverUuid();
+
         // Check the user
         QString userUuid = m_ldi->currentUserUuid();
 
         qDebug() << "Selected previous user: " << userUuid;
 
         emit userChanged( userUuid );
-        setOnline();
+        setOnline(serverUuid);
 
         pm->setText(tr("Ready!"));
         pm->finish();
@@ -356,6 +359,7 @@ void DBInterface::connectEvents()
     connect(m_rsi, &RamServerInterface::connectionStatusChanged, this, &DBInterface::serverConnectionStatusChanged);
     connect(m_rsi, &RamServerInterface::syncReady, m_ldi, &LocalDataInterface::sync);
     connect(m_rsi, &RamServerInterface::userChanged, this, &DBInterface::serverUserChanged);
+    connect(m_rsi, &RamServerInterface::pong, m_ldi, &LocalDataInterface::setServerUuid);
     connect(m_updateTimer, SIGNAL(timeout()), this, SLOT(sync()));
 
     connect(qApp, &QApplication::aboutToQuit, this, &DBInterface::quit);

@@ -58,6 +58,8 @@ public:
     void updateUser(QString uuid, QString username, QString data, QString modified);
 
     ServerConfig serverConfig();
+    void setServerUuid(QString serverUuid);
+    QString serverUuid();
 
     QString ramsesPath();
     void setRamsesPath(QString path);
@@ -82,7 +84,7 @@ public:
     const QHash<QString, QSet<QString> > &deletedUuids() const;
 
 public slots:
-    void sync(QJsonObject data);
+    void sync(QJsonObject data, QString serverUuid = "");
 
 signals:
     void dataReset();

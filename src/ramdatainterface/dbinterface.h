@@ -97,7 +97,7 @@ public slots:
     /**
      * @brief Changes to online mode.
      */
-    void setOnline();
+    void setOnline(QString serverUuid = "");
     // MAINTENANCE //
     QString cleanDabaBase(int deleteDataOlderThan = -1);
     bool undoClean();
