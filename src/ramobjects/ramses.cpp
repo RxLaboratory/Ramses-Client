@@ -18,6 +18,8 @@ void Ramses::setUserUuid(QString uuid)
         return;
     }
     RamUser *u = RamUser::get(uuid);
+    // Add the user to the list in case it's not already there
+    m_users->appendObject(uuid);
     setUser(u);
 }
 
