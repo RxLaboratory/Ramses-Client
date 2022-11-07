@@ -37,16 +37,23 @@ bool RamServerInterface::ssl() const
 
 void RamServerInterface::setSsl(bool useSsl)
 {
+    qDebug() << "==> Set use SSL: " << useSsl;
+
     if (m_ssl == useSsl) return;
 
     if (useSsl && !QSslSocket::supportsSsl()) {
+        qDebug() << "Denied, openSSL not available.";
         log("SSL is not available on this system. Please install OpenSSL to securely connect to the specified server.", DuQFLog::Critical);
         m_ssl = false;
     }
     else
     {
+        qDebug() << "Accepted.";
         m_ssl = useSsl;
     }
+
+    qDebug() << "Using SSL: " << m_ssl;
+
     emit sslChanged(m_ssl);
 }
 
@@ -801,6 +808,12 @@ QJsonObject RamServerInterface::parseData(QNetworkReply *reply)
     }
 
     QString repAll = reply->readAll();
+
+#ifdef DEBUG_ALL_INCOMING_DATA
+    qDebug() << repAll;
+#endif
+
+
     reply->deleteLater();
     QJsonDocument repDoc = QJsonDocument::fromJson(repAll.toUtf8());
     QJsonObject repObj = repDoc.object();
@@ -905,16 +918,19 @@ void RamServerInterface::connectEvents()
 
 const QString RamServerInterface::serverProtocol()
 {
+    QString protocol = "http://";
+
     if (m_ssl)
     {
         if (!QSslSocket::supportsSsl()) {
             log("SSL is not available on this system. Please install OpenSSL to securely connect to the specified server.", DuQFLog::Critical);
-            return "http://";
         }
-        else return "https://";
+        else protocol = "https://";
     }
 
-    return "http://";
+    qDebug() << "Server protocol is " << protocol;
+
+    return protocol;
 }
 
 bool RamServerInterface::checkServer(QString hostName)
