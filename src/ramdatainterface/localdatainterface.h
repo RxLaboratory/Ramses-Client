@@ -77,7 +77,7 @@ public:
     QString currentUserUuid();
     void setCurrentUserUuid(QString uuid);
 
-    QStringList tableNames();
+    static QStringList tableNames();
     QVector<QStringList> users();
 
     // MAINTENANCE //
@@ -123,13 +123,6 @@ private:
 
     // Checks if a table exists
     static bool hasTable(QString tableName, QSqlDatabase db);
-
-    // Creates a new table for a project
-    static bool createTable(QString tableName, QString projectUuid, QSqlDatabase db);
-    // Creates all tables for a project
-    static bool createProjectTables(QString projectUuid, QSqlDatabase db);
-
-    static bool isFromProject(QString tableName, QString data, QString projectUuid, QSqlDatabase db);
 
     // The SQLite file path
     QString m_dataFile;

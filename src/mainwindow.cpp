@@ -863,6 +863,12 @@ void MainWindow::schedule(bool show)
     else home();
 }
 
+void MainWindow::progress(bool show)
+{
+    if (show) mainStack->setCurrentIndex(9);
+    else home();
+}
+
 void MainWindow::install(bool show)
 {
     if (show) mainStack->setCurrentIndex(9);
@@ -974,10 +980,12 @@ void MainWindow::freezeUI(bool f)
     if (f)
     {
         m_currentPageIndex = mainStack->currentIndex();
-        mainStack->setCurrentIndex(8);
+        mainToolBar->hide();
+        progress();
     }
     else
     {
+        mainToolBar->show();
         mainStack->setCurrentIndex(m_currentPageIndex);
     }
     this->repaint();

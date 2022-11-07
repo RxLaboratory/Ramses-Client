@@ -1038,10 +1038,11 @@ bool LocalDataInterface::openDB(QSqlDatabase db, const QString &dbFile)
 
     if (currentVersion < newVersion)
     {
-        pm->setText(tr("Updating database scheme"));
+        pm->freeze(true);
+        pm->setText(tr("Upgrading database scheme"));
         QFileInfo dbFileInfo(dbFile);
         LocalDataInterface::instance()->log(tr("This database was created by an older version of Ramses (%1).\n"
-               "I'm updating it to the current version (%2).\n"
+               "I'm upgrading it to the current version (%2).\n"
                "The original file will be renamed to \"%3_%1.ramses\".").arg(currentVersion.toString(), STR_VERSION, dbFileInfo.baseName()));
 
         FileUtils::copy(dbFile, QString("%1/%2_%3.ramses").arg(
@@ -1083,39 +1084,107 @@ bool LocalDataInterface::openDB(QSqlDatabase db, const QString &dbFile)
 
         if (currentVersion < QVersionNumber(0, 7, 0))
         {
-            // Separate data per project
+            // Add "project" column to all tables
+            QStringList tables = tableNames();
 
-            // List projects
-            ok = qry.exec("SELECT uuid FROM 'RamProject';");
-            if (!ok)
+            pm->addToMaximum(tables.count());
+
+            for (int i = 0; i < tables.count(); i++)
             {
-                QString errorMessage = "Something went wrong when updating the database scheme to the new version.\nHere's some information:";
-                errorMessage += "\n> " + tr("Query:") + "\n" + qry.lastQuery();
-                errorMessage += "\n> " + tr("Database Error:") + "\n" + qry.lastError().databaseText();
-                errorMessage += "\n> " + tr("Driver Error:") + "\n" + qry.lastError().driverText();
-                LocalDataInterface::instance()->log(errorMessage, DuQFLog::Critical);
-            }
-            else
-            {
-                QStringList projectUuids;
-                while (qry.next()) projectUuids << qry.value(0).toString();
-                for (int i = 0; i < projectUuids.count(); i++)
+                QString table = tables.at(i);
+
+                QString tn = table;
+                pm->setText(tr("Upgrading %1 table (this may take a while...)").arg(tn.replace("Ram", "")));
+                pm->increment();
+
+                QString q = "ALTER TABLE `%1` ADD COLUMN \"project\" TEXT;";
+                ok = qry.exec( q.arg( table ) );
+                if (!ok)
                 {
-                    ok = createProjectTables(projectUuids.at(i), db);
-                    if (!ok) break;
+                    QString errorMessage = "Something went wrong when updating the database scheme to the new version.\nHere's some information:";
+                    errorMessage += "\n> " + tr("Query:") + "\n" + qry.lastQuery();
+                    errorMessage += "\n> " + tr("Database Error:") + "\n" + qry.lastError().databaseText();
+                    errorMessage += "\n> " + tr("Driver Error:") + "\n" + qry.lastError().driverText();
+                    LocalDataInterface::instance()->log(errorMessage, DuQFLog::Critical);
+                    break;
                 }
-                // Drop old tables
-                if (ok)
+
+                // Find the project, and copy info to the column
+                q = "SELECT uuid, data FROM `%1`";
+                ok = qry.exec( q.arg( table ) );
+                if (!ok)
                 {
-                    foreach(QString tableName, projectTableNames)
+                    QString errorMessage = "Something went wrong when updating the database scheme to the new version.\nHere's some information:";
+                    errorMessage += "\n> " + tr("Query:") + "\n" + qry.lastQuery();
+                    errorMessage += "\n> " + tr("Database Error:") + "\n" + qry.lastError().databaseText();
+                    errorMessage += "\n> " + tr("Driver Error:") + "\n" + qry.lastError().driverText();
+                    LocalDataInterface::instance()->log(errorMessage, DuQFLog::Critical);
+                    break;
+                }
+
+                // Not a project table, that's all
+                if (!projectTableNames.contains(table)) continue;
+
+                // Check the number of rows
+                // (With SQLite, size() does not work)
+                qry.last();
+                int numObjs = qry.at();
+                pm->addToMaximum(numObjs + 1);
+                qry.seek(-1);
+
+                while (qry.next())
+                {
+                    pm->increment();
+
+                    QString uuid = qry.value(0).toString();
+                    QString data = qry.value(1).toString();
+
+                    // Find project uuid
+                    QJsonDocument doc = QJsonDocument::fromJson(data.toUtf8());
+                    QJsonObject obj = doc.object();
+                    QString projUuid = obj.value("project").toString();
+
+                    if (projUuid == "")
                     {
-                        QString q = "DROP TABLE %1;";
-                        ok = qry.exec(q.arg(tableName));
-                        if (!ok) break;
+                        // For some tables, find the project info in another table
+                        QString otherTable = "";
+                        QString objKey = "";
+                        if (table == "RamScheduleEntry" || table == "RamStatus")
+                        {
+                            otherTable = "RamStep";
+                            objKey = "step";
+                        }
+                        else if (table == "RamPipe")
+                        {
+                            otherTable = "RamStep";
+                            objKey = "inputStep";
+                        }
+
+                        QString otherUuid = obj.value(objKey).toString();
+                        if (otherUuid != "")
+                        {
+                            QSqlQuery qry2 = QSqlQuery(db);
+
+                            QString q = "SELECT data FROM `%1` WHERE uuid = '%2';";
+                            if (qry2.exec(q.arg(otherTable, otherUuid)))
+                            {
+                                if (qry2.next())
+                                {
+                                    QString otherData = qry2.value(0).toString();
+                                    doc = QJsonDocument::fromJson(otherData.toUtf8());
+                                    obj = doc.object();
+                                    projUuid = obj.value("project").toString();
+                                }
+                            }
+                        }
                     }
+
+                    // Set it
+                    q = "UPDATE `%1` SET project = '%2' WHERE uuid = '%3';";
+                    QSqlQuery qry2 = QSqlQuery(db);
+                    qry2.exec( q.arg( table, projUuid, uuid ) );
                 }
             }
-
         }
 
         if (ok)
@@ -1136,6 +1205,9 @@ bool LocalDataInterface::openDB(QSqlDatabase db, const QString &dbFile)
             qry.exec("VACUUM;");
 
         }
+
+        pm->setText(tr("Database upraded to version %1").arg(newVersion.toString()));
+        pm->freeze(false);
     }
     else if (currentVersion > newVersion)
     {
@@ -1184,140 +1256,6 @@ bool LocalDataInterface::hasTable(QString tableName, QSqlDatabase db)
     QSqlQuery qry = QSqlQuery(db);
     if (!qry.exec( q.arg( tableName ) )) return false;
     return qry.next();
-}
-
-bool LocalDataInterface::createTable(QString tableName, QString projectUuid, QSqlDatabase db)
-{
-
-    qDebug() << "=========== > Creating: " << tableName << " for project: " << projectUuid;
-
-    QString q = "CREATE TABLE '%1_%2' ( "
-                "'id'	INTEGER NOT NULL UNIQUE, "
-                "'uuid'	TEXT NOT NULL UNIQUE, "
-                "'data'	TEXT NOT NULL, "
-                "'modified'	timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP, "
-                "'removed'	INTEGER NOT NULL DEFAULT 0, "
-                "PRIMARY KEY('id' AUTOINCREMENT)"
-                ");";
-
-    QSqlQuery qry = QSqlQuery(db);
-
-    if (!qry.exec( q.arg( tableName, projectUuid ) ))
-    {
-        QString errorMessage = "Something went wrong when updating the database scheme to the new version.\nHere's some information:";
-        errorMessage += "\n> Can't create table: " + tableName + "_" + projectUuid;
-        errorMessage += "\n> " + tr("Query:") + "\n" + qry.lastQuery();
-        errorMessage += "\n> " + tr("Database Error:") + "\n" + qry.lastError().databaseText();
-        errorMessage += "\n> " + tr("Driver Error:") + "\n" + qry.lastError().driverText();
-        LocalDataInterface::instance()->log(errorMessage, DuQFLog::Critical);
-        return false;
-    }
-
-    qDebug() << "Created!";
-
-    // Populate data
-    if ( hasTable(tableName, db) )
-    {
-        qDebug() << "Populating...";
-
-        // Find the data associated to the project
-        q = "SELECT uuid, data, modified, removed FROM '%1'";
-
-        if (! qry.exec(q.arg(tableName)))
-        {
-            QString errorMessage = "Something went wrong when updating the database scheme to the new version.\nHere's some information:";
-            errorMessage += "\n> Can't select data from table: " + tableName + "_" + projectUuid;
-            errorMessage += "\n> " + tr("Query:") + "\n" + qry.lastQuery();
-            errorMessage += "\n> " + tr("Database Error:") + "\n" + qry.lastError().databaseText();
-            errorMessage += "\n> " + tr("Driver Error:") + "\n" + qry.lastError().driverText();
-            LocalDataInterface::instance()->log(errorMessage, DuQFLog::Critical);
-            return false;
-        }
-
-        // Save in new table
-        while (qry.next())
-        {
-            QString data = qry.value(1).toString();
-            if (isFromProject(tableName, data, projectUuid, db))
-            {
-                data.replace("'", "''");
-                q = "INSERT INTO '%1_%2' (uuid, data, modified, removed) "
-                    "VALUES ( '%3', '%4', '%5', %6 ) "
-                    "ON CONFLICT(uuid) DO UPDATE "
-                    "SET data=excluded.data, modified=excluded.modified, removed=excluded.removed ;";
-                QSqlQuery qry2 = QSqlQuery(db);
-                if (!qry2.exec(q.arg(
-                                  tableName,
-                                  projectUuid,
-                                  qry.value(0).toString(),
-                                  data,
-                                  qry.value(2).toString(),
-                                  qry.value(3).toString()
-                                  )) )
-                {
-                    QString errorMessage = "Something went wrong when updating the database scheme to the new version.\nHere's some information:";
-                    errorMessage += "\n> Can't insert data into table: " + tableName + "_" + projectUuid;
-                    errorMessage += "\n> " + tr("Query:") + "\n" + qry2.lastQuery();
-                    errorMessage += "\n> " + tr("Database Error:") + "\n" + qry2.lastError().databaseText();
-                    errorMessage += "\n> " + tr("Driver Error:") + "\n" + qry2.lastError().driverText();
-                    LocalDataInterface::instance()->log(errorMessage, DuQFLog::Critical);
-                    return false;
-                }
-            }
-        }
-    }
-
-    return true;
-}
-
-bool LocalDataInterface::createProjectTables(QString projectUuid, QSqlDatabase db)
-{
-    bool ok = true;
-    foreach(QString tableName, projectTableNames)
-    {
-        bool test = createTable(tableName, projectUuid, db);
-        if (ok) ok = test;
-    }
-    return ok;
-}
-
-bool LocalDataInterface::isFromProject(QString tableName, QString data, QString projectUuid, QSqlDatabase db)
-{
-    QJsonDocument doc = QJsonDocument::fromJson(data.toUtf8());
-    QJsonObject obj = doc.object();
-    QString projUuid = obj.value("project").toString();
-
-    if (projUuid == projectUuid) return true;
-
-    // For some tables, find the project info in another table
-    QString otherTable = "";
-    QString objKey = "";
-    if (tableName == "RamScheduleEntry" || tableName == "RamStatus")
-    {
-        otherTable = "RamStep";
-        objKey = "step";
-    }
-    else if (tableName == "RamPipe")
-    {
-        otherTable = "RamStep";
-        objKey = "inputStep";
-    }
-
-    QString otherUuid = obj.value(objKey).toString();
-    if (otherUuid == "") return false;
-
-    QSqlQuery qry = QSqlQuery(db);
-
-    QString q = "SELECT data FROM `%1` WHERE uuid = '%2';";
-    if (!qry.exec(q.arg(otherTable, otherUuid))) return false;
-    if (!qry.next()) return false;
-
-    QString otherData = qry.value(0).toString();
-    doc = QJsonDocument::fromJson(otherData.toUtf8());
-    obj = doc.object();
-    projUuid = obj.value("project").toString();
-
-    return projUuid == projectUuid;
 }
 
 const QHash<QString, QSet<QString> > &LocalDataInterface::deletedUuids() const
