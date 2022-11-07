@@ -1109,6 +1109,9 @@ bool LocalDataInterface::openDB(QSqlDatabase db, const QString &dbFile)
                     break;
                 }
 
+                // Not a project table, that's all
+                if (!projectTableNames.contains(table)) continue;
+
                 // Find the project, and copy info to the column
                 q = "SELECT uuid, data FROM `%1`";
                 ok = qry.exec( q.arg( table ) );
@@ -1121,9 +1124,6 @@ bool LocalDataInterface::openDB(QSqlDatabase db, const QString &dbFile)
                     LocalDataInterface::instance()->log(errorMessage, DuQFLog::Critical);
                     break;
                 }
-
-                // Not a project table, that's all
-                if (!projectTableNames.contains(table)) continue;
 
                 // Check the number of rows
                 // (With SQLite, size() does not work)
