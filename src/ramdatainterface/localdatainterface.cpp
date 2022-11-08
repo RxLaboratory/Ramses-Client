@@ -1036,7 +1036,7 @@ bool LocalDataInterface::openDB(QSqlDatabase db, const QString &dbFile)
                             dbFileInfo.baseName(),
                             currentVersion.toString()));
 
-        bool ok = false;
+        bool ok = true;
         if (currentVersion < QVersionNumber(0, 5, 1))
         {
             // Add the port entry to the _server table
