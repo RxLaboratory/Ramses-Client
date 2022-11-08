@@ -32,6 +32,7 @@ RamUser
 /ok/ RamServerInterface::downloadData only general tables
 /ok/ Server refuses sync in case of wrong app version
 /ok/ Pull missing uuids from server
+// Schedule removals not updated in ui on sync but on reboot
 // Delay loading objects in Models
    > Instead of loading objects, add nullptrs to the list, and replace by the obj when first called
    > all checks of the objs must be done with the data
