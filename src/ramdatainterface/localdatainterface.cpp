@@ -263,7 +263,7 @@ QMap<QString, QString> LocalDataInterface::modificationDates(QString table, QStr
     return dates;
 }
 
-void LocalDataInterface::createObject(QString uuid, QString table, QString data, QString projectUuid)
+void LocalDataInterface::createObject(QString uuid, QString table, QString data, QString projectUuid, bool removed)
 {
     // Remove table cache
     m_uuids.remove(table);
@@ -273,15 +273,19 @@ void LocalDataInterface::createObject(QString uuid, QString table, QString data,
     QDateTime modified = QDateTime::currentDateTimeUtc();
 
     QString q = "INSERT INTO '%1' (uuid, data, modified, removed, project) "
-                "VALUES ('%2', '%3', '%4', 0, '%5') "
+                "VALUES ('%2', '%3', '%4', %5, '%6') "
                 "ON CONFLICT(uuid) DO UPDATE "
-                "SET data=excluded.data, modified=excluded.modified, project=excluded.project ;";
+                "SET data=excluded.data, modified=excluded.modified, project=excluded.project, removed=excluded.removed ;";
+
+    QString rem = "0";
+    if (removed) rem = "1";
 
     query( q.arg(
                   table,
                   uuid,
                   data,
                   modified.toString("yyyy-MM-dd hh:mm:ss"),
+                  rem,
                   projectUuid
                   )
             );

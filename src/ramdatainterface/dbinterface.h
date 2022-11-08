@@ -93,6 +93,7 @@ public slots:
     void quickSync();
     void generalSync(bool synchroneous = false);
     void projectSync(QString projectUuid, bool synchroneous = false);
+    bool pull(QString uuid, QString table);
     void quit();
     /**
      * @brief Changes to offline mode: data is stored locally until we get a connection to the server to sync.

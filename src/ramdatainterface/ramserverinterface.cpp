@@ -339,6 +339,30 @@ QJsonArray RamServerInterface::downloadData()
     return repObj.value("content").toObject().value("tables").toArray();
 }
 
+QJsonObject RamServerInterface::pull(QString uuid, QString table)
+{
+    qDebug() << "Pulling object from server: " << uuid;
+
+    // Create a request to get the data
+    QJsonObject body;
+    body.insert("uuid", uuid);
+    body.insert("table", table);
+    Request r = buildRequest("pull", body);
+
+    // Post the request
+    QNetworkReply *reply = synchronousRequest(r);
+
+    if (!reply)
+    {
+        qDebug() << "Can't pull data... Request timed out.";
+        return QJsonObject();
+    }
+
+    // Parse reply
+    QJsonObject repObj = parseData(reply);
+    return repObj.value("content").toObject();
+}
+
 // PUBLIC SLOTS //
 
 void RamServerInterface::setOnline(QString serverUuid)

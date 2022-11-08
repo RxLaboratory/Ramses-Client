@@ -54,7 +54,7 @@ public:
     bool contains(QString uuid, QString table);
     QMap<QString, QString> modificationDates(QString table, QString projectUuid = "");
 
-    void createObject(QString uuid, QString table, QString data, QString projectUuid = "");
+    void createObject(QString uuid, QString table, QString data, QString projectUuid = "", bool removed = false);
 
     QString objectData(QString uuid, QString table);
     void setObjectData(QString uuid, QString table, QString data);

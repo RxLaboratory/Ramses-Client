@@ -1,7 +1,9 @@
 ﻿#include "dbinterface.h"
+#include "duqf-app/app-config.h"
 #include "duqf-utils/guiutils.h"
 #include "progressmanager.h"
 #include "ramses.h"
+#include "datacrypto.h"
 
 DBInterface *DBInterface::_instance = nullptr;
 
@@ -373,6 +375,44 @@ void DBInterface::projectSync(QString projectUuid, bool synchroneous)
     m_rsi->sync(syncBody, synchroneous);
 
     pm->finish();
+}
+
+bool DBInterface::pull(QString uuid, QString table)
+{
+    if (m_connectionStatus != NetworkUtils::Online) return false;
+
+    QJsonObject obj = m_rsi->pull(uuid, table);
+
+    if (obj.isEmpty()) return false;
+
+    uuid = obj.value("uuid").toString();
+    if (uuid == "") return false;
+
+    if (table == "RamUser")
+    {
+        QString data = obj.value("data").toString();
+        if (ENCRYPT_USER_DATA) data = DataCrypto::instance()->clientEncrypt( data );
+        m_ldi->createObject(
+                uuid,
+                table,
+                data,
+                obj.value("project").toString(),
+                obj.value("removed").toInt(0) == 1
+                );
+        m_ldi->setUsername(uuid, obj.value("userName").toString().replace("'", "''") );
+    }
+    else
+    {
+        m_ldi->createObject(
+                uuid,
+                table,
+                obj.value("data").toString(),
+                obj.value("project").toString(),
+                obj.value("removed").toInt(0) == 1
+                );
+    }
+
+    return true;
 }
 
 void DBInterface::quit()

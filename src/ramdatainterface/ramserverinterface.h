@@ -58,6 +58,7 @@ public:
     void sync(QJsonArray tables, QString projectUuid = "", QDateTime prevSyncDate = QDateTime::fromString("1970-01-01 00:00:00", "yyyy-MM-dd hh:mm:00"), bool synchroneous = false);
     void sync(QJsonObject body, bool synchroneous = false);
     QJsonArray downloadData();
+    QJsonObject pull(QString uuid, QString table);
 
     const QString &currentUserUuid() const;
 
