@@ -320,10 +320,27 @@ void LocalDataInterface::setObjectData(QString uuid, QString table, QString data
 
 QString LocalDataInterface::project(QString uuid, QString table)
 {
-    QString q = "SELECT `project` FROM `%1` WHERE uuid = '%2';";
+    QString q = "SELECT `project`, `data` FROM `%1` WHERE uuid = '%2';";
     QSqlQuery qry = query( q.arg(table, uuid) );
 
-    if (qry.first()) return qry.value(0).toString();
+    QString project = "";
+    if (qry.first())
+    {
+        project = qry.value(0).toString();
+
+        if (project != "") return project;
+
+        // If it's a project table, try with the data
+        if (projectTableNames.contains(table))
+        {
+            QString data = qry.value(1).toString();
+            QSqlDatabase db = QSqlDatabase::database("localdata");
+            project = findProjectUuid(data, table, db);
+            if (project != "") setProject(uuid, table, project);
+            return project;
+        }
+    }
+
     return "";
 }
 
@@ -1236,45 +1253,7 @@ bool LocalDataInterface::openDB(QSqlDatabase db, const QString &dbFile)
                     QString uuid = qry.value(0).toString();
                     QString data = qry.value(1).toString();
 
-                    // Find project uuid
-                    QJsonDocument doc = QJsonDocument::fromJson(data.toUtf8());
-                    QJsonObject obj = doc.object();
-                    QString projUuid = obj.value("project").toString();
-
-                    if (projUuid == "")
-                    {
-                        // For some tables, find the project info in another table
-                        QString otherTable = "";
-                        QString objKey = "";
-                        if (table == "RamScheduleEntry" || table == "RamStatus")
-                        {
-                            otherTable = "RamStep";
-                            objKey = "step";
-                        }
-                        else if (table == "RamPipe")
-                        {
-                            otherTable = "RamStep";
-                            objKey = "inputStep";
-                        }
-
-                        QString otherUuid = obj.value(objKey).toString();
-                        if (otherUuid != "")
-                        {
-                            QSqlQuery qry2 = QSqlQuery(db);
-
-                            QString q = "SELECT data FROM `%1` WHERE uuid = '%2';";
-                            if (qry2.exec(q.arg(otherTable, otherUuid)))
-                            {
-                                if (qry2.next())
-                                {
-                                    QString otherData = qry2.value(0).toString();
-                                    doc = QJsonDocument::fromJson(otherData.toUtf8());
-                                    obj = doc.object();
-                                    projUuid = obj.value("project").toString();
-                                }
-                            }
-                        }
-                    }
+                    QString projUuid = findProjectUuid(data, table, db);
 
                     // Set it
                     q = "UPDATE `%1` SET project = '%2' WHERE uuid = '%3';";
@@ -1315,6 +1294,49 @@ bool LocalDataInterface::openDB(QSqlDatabase db, const QString &dbFile)
     }
 
     return true;
+}
+
+QString LocalDataInterface::findProjectUuid(QString data, QString table, QSqlDatabase db)
+{
+    // Find project uuid
+    QJsonDocument doc = QJsonDocument::fromJson(data.toUtf8());
+    QJsonObject obj = doc.object();
+    QString projUuid = obj.value("project").toString();
+
+    if (projUuid != "") return projUuid;
+
+    // For some tables, find the project info in another table
+    QString otherTable = "";
+    QString objKey = "";
+    if (table == "RamScheduleEntry" || table == "RamStatus")
+    {
+        otherTable = "RamStep";
+        objKey = "step";
+    }
+    else if (table == "RamPipe")
+    {
+        otherTable = "RamStep";
+        objKey = "inputStep";
+    }
+
+    QString otherUuid = obj.value(objKey).toString();
+    if (otherUuid != "")
+    {
+        QSqlQuery qry2 = QSqlQuery(db);
+
+        QString q = "SELECT data FROM `%1` WHERE uuid = '%2';";
+        if (qry2.exec(q.arg(otherTable, otherUuid)))
+        {
+            if (qry2.next())
+            {
+                QString otherData = qry2.value(0).toString();
+                doc = QJsonDocument::fromJson(otherData.toUtf8());
+                obj = doc.object();
+                return obj.value("project").toString();
+            }
+        }
+    }
+    return "";
 }
 
 QSqlQuery LocalDataInterface::query(QString q) const

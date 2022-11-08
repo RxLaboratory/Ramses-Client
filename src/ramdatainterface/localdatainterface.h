@@ -135,6 +135,7 @@ private:
 
     // Opens the database, updates the scheme if needed
     static bool openDB(QSqlDatabase db, const QString &dbFile);
+    static QString findProjectUuid(QString data, QString table, QSqlDatabase db);
 
     // Runs a query on the current database
     QSqlQuery query(QString q) const;

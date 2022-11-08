@@ -40,7 +40,8 @@ RamSequence::RamSequence(QString uuid):
    RamObject(uuid, Sequence)
 {
     construct();
-    setProject( this->project() );
+    RamProject *project = this->project();
+    if (project) setProject( project );
 }
 
 int RamSequence::shotCount() const

@@ -130,7 +130,7 @@ RamStatus::RamStatus(RamUser *user, RamAbstractItem *item, RamStep *step, bool i
 
     setData(d);
 
-    setProject( item->project()->uuid() );
+    setProject( item->projectUuid() );
 }
 
 RamStatus::RamStatus(QString uuid):
@@ -485,7 +485,9 @@ QString RamStatus::createFileFromTemplate(QString filePath) const
     // Generate destination name
     RamNameManager nm;
     nm.setFileName(filePath);
-    nm.setProject( m_item->project()->shortName() );
+    RamProject *proj =  m_item->project();
+    if (proj) nm.setProject(proj->shortName() );
+    else nm.setProject("");
     nm.setStep( m_step->shortName() );
     nm.setResource( nm.shortName() );
     if (m_item->objectType() == Asset) nm.setType("A");

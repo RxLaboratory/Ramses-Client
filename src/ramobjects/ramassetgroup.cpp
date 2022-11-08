@@ -49,7 +49,9 @@ RamAssetGroup::RamAssetGroup(QString uuid):
     RamTemplateAssetGroup(uuid, AssetGroup)
 {
     construct();
-    setProject( this->project() );
+    RamProject *p = this->project();
+    if (p) setProject( p );
+    else invalidate();
 }
 
 int RamAssetGroup::assetCount() const

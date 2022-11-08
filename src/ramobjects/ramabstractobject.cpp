@@ -323,9 +323,15 @@ void RamAbstractObject::setOrder(int o)
     insertData("order", o);
 }
 
-RamProject *RamAbstractObject::project() const
+QString RamAbstractObject::projectUuid() const
 {
     QString puuid = DBInterface::instance()->project( m_uuid, objectTypeName() );
+    return puuid;
+}
+
+RamProject *RamAbstractObject::project() const
+{
+    QString puuid = projectUuid();
     if (puuid == "") return nullptr;
     return RamProject::get( puuid );
 }

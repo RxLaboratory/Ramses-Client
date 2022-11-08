@@ -47,10 +47,10 @@ RamAbstractItem::RamAbstractItem(QString uuid, ObjectType type):
 
     // Get project first
     RamProject *project = this->project();
+
     if (project)
     {
         setParent(project);
-
 
         RamObjectModel *steps = project->steps();
         if (steps && steps->rowCount() > 0) stepInserted(QModelIndex(), 0, steps->rowCount() - 1);

@@ -121,10 +121,16 @@ bool RamUser::isStepAssigned(RamStep *step) const
     if (step->type() != RamStep::ShotProduction && step->type() != RamStep::AssetProduction) return false;
 
     // Check in status
-    RamObjectModel *items;
+    RamObjectModel *items = nullptr;
     RamStep::Type type = step->type();
-    if (type == RamStep::ShotProduction) items = step->project()->shots();
-    else items = step->project()->assets();
+    RamProject *proj = step->project();
+    if (proj)
+    {
+        if (type == RamStep::ShotProduction) items = proj->shots();
+        else items = proj->assets();
+    }
+
+    if (!items) return false;
 
     for (int i =0; i < items->rowCount(); i++)
     {

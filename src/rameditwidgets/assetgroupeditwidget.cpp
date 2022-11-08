@@ -28,7 +28,9 @@ void AssetGroupEditWidget::reInit(RamObject *o)
     m_assetGroup = qobject_cast<RamAssetGroup*>(o);
     if (m_assetGroup)
     {
-        ui_assetsList->setObjectModel(m_assetGroup->project()->assets());
+        RamProject *proj = m_assetGroup->project();
+        if (proj) ui_assetsList->setObjectModel(proj->assets());
+        else ui_assetsList->setObjectModel(nullptr);
         ui_assetsList->setFilter(m_assetGroup);
         ui_colorSelector->setColor(m_assetGroup->color());
 
@@ -55,7 +57,8 @@ void AssetGroupEditWidget::createAsset()
                 "NEW",
                 "New Asset",
                 m_assetGroup);
-    m_assetGroup->project()->assets()->appendObject(asset->uuid());
+    RamProject *proj = m_assetGroup->project();
+    if (proj) proj->assets()->appendObject(asset->uuid());
     asset->edit();
 }
 

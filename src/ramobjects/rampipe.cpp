@@ -43,7 +43,7 @@ RamPipe::RamPipe(RamStep *output, RamStep *input):
 
     RamProject *proj = outputStep()->project();
     this->setParent(proj);
-    this->setProject(proj->uuid());
+    this->setProject( outputStep()->projectUuid() );
 
     connectEvents();
 }

@@ -233,8 +233,8 @@ void Ramses::setCurrentProject(RamProject *project)
         uSettings->setValue("ramses/currentProject", m_currentProject->uuid() );
     }
 
-    // Trigger project sync
-    if (m_currentProject) DBInterface::instance()->projectSync(m_currentProject->uuid());
+    // Trigger project sync and wait for it
+    if (m_currentProject) DBInterface::instance()->projectSync(m_currentProject->uuid(), true);
 
     emit currentProjectChanged(m_currentProject);
 }

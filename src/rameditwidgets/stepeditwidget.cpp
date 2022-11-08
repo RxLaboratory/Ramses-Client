@@ -42,7 +42,9 @@ void StepEditWidget::reInit(RamObject *obj)
 
         m_applicationList->setObjectModel(m_step->applications());
 
-        ui_estimationMultiplierBox->setObjectModel(m_step->project()->assetGroups());
+        RamProject *proj = m_step->project();
+        if (proj) ui_estimationMultiplierBox->setObjectModel(proj->assetGroups());
+        else ui_estimationMultiplierBox->setObjectModel(nullptr);
 
         ui_veryEasyEdit->setValue( m_step->estimationVeryEasy() );
         ui_easyEdit->setValue( m_step->estimationEasy() );

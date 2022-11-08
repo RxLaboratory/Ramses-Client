@@ -208,6 +208,7 @@ public:
     int order() const;
     void setOrder(int o);
 
+    QString projectUuid() const;
     RamProject *project() const;
 
     QString customSettings() const;
