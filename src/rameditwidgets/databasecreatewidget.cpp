@@ -121,15 +121,15 @@ void DatabaseCreateWidget::createDB()
         // Save data to DB
         ldi->saveSync(tables);
 
-        // Trigger the first general Sync (and wait for it)
-        DBInterface::instance()->generalSync( true );
-
         // And finish login
-        Ramses::instance()->setUserUuid( uuid );
+        //Ramses::instance()->setUserUuid( uuid );
 
         // Hide dock
         MainWindow *mw = (MainWindow*)GuiUtils::appMainWindow();
         mw->hidePropertiesDock();
+
+        // Trigger the first general Sync to send data
+        DBInterface::instance()->generalSync( );
     }
 }
 

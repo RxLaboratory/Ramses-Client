@@ -32,9 +32,13 @@ RamUser
 /ok/ RamServerInterface::downloadData only general tables
 /ok/ Server refuses sync in case of wrong app version
 /ok/ Pull missing uuids from server
-// Full sync should always be synchroneous to be sure everything is better
+// Delay loading objects in Models
+   > Instead of loading objects, add nullptrs to the list, and replace by the obj when first called
+   > all checks of the objs must be done with the data
+// RamAbstractObject data integrity checks (a function called on construct, ovrriden by children) calls invalidate() if data is not right
+   > Calls and LDI data integrity check
+// Full sync should always be synchronous to be sure everything is better
 // Refactor localdatainterface to create a new LocalDataManager class with static methods for queries on a specific db
-// RamAbstractObject data integrity checks (a function called on construct, ovrriden by children) calls invalidate() if data is not right.
 // Implement Sync by table (for fullSync and projectSync):
    > table one by one, cache incoming data until we've got all tables (both on server side & client side)
    > server::startSyncSession

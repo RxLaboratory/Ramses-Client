@@ -48,8 +48,6 @@ RamUser::RamUser(QString uuid):
     RamObject(uuid, User, nullptr, ENCRYPT_USER_DATA)
 {
     construct();
-
-    loadModel( m_schedule, "schedule" );
 }
 
 void RamUser::setShortName(const QString &shortName)
@@ -102,8 +100,9 @@ void RamUser::setRole(const QString role)
     insertData("role", role);
 }
 
-RamObjectModel *RamUser::schedule() const
+RamObjectModel *RamUser::schedule()
 {
+    loadSchedule();
     return m_schedule;
 }
 
@@ -202,4 +201,13 @@ void RamUser::construct()
     m_editRole = Admin;
     m_schedule = createModel(RamObject::ScheduleEntry, "schedule");
     m_schedule->setLookupRole(RamObject::Date);
+}
+
+void RamUser::loadSchedule()
+{
+    if (m_scheduleLoaded) return;
+
+    loadModel( m_schedule, "schedule" );
+
+    m_scheduleLoaded = true;
 }

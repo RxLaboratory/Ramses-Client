@@ -307,7 +307,7 @@ QJsonArray RamServerInterface::downloadData()
 {
     qDebug() << ">>> Downloading data";
 
-    QSet<QString> tableNames = LocalDataInterface::generalTableNames;
+    QSet<QString> tableNames = LocalDataInterface::tableNames();
     QJsonArray tables;
     foreach (QString tableName, tableNames)
     {
@@ -341,7 +341,7 @@ QJsonArray RamServerInterface::downloadData()
 
 QJsonObject RamServerInterface::pull(QString uuid, QString table)
 {
-    qDebug() << "Pulling object from server: " << uuid;
+    qDebug() << "Pulling object from server: " << uuid << " (" << table << ")";
 
     // Create a request to get the data
     QJsonObject body;

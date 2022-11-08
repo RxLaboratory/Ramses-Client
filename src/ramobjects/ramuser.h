@@ -30,7 +30,7 @@ public:
     void setRole(const UserRole &role);
     void setRole(const QString role);
 
-    RamObjectModel *schedule() const;
+    RamObjectModel *schedule();
     bool isStepAssigned(RamStep *step) const;
 
     virtual QString iconName() const override;
@@ -50,6 +50,10 @@ private:
     void construct();
 
     RamObjectModel *m_schedule;
+
+    // Delay the loading of the schedule
+    void loadSchedule();
+    bool m_scheduleLoaded = false;
 };
 
 #endif // RAMUSER_H
