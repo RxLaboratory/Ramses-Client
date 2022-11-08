@@ -128,8 +128,8 @@ void DatabaseCreateWidget::createDB()
         MainWindow *mw = (MainWindow*)GuiUtils::appMainWindow();
         mw->hidePropertiesDock();
 
-        // And trigger the first Sync
-        DBInterface::instance()->fullSync();
+        // And trigger the first general Sync
+        DBInterface::instance()->generalSync();
     }
 }
 

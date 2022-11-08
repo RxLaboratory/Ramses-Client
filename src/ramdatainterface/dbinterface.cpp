@@ -1,6 +1,7 @@
 ﻿#include "dbinterface.h"
 #include "duqf-utils/guiutils.h"
 #include "progressmanager.h"
+#include "ramses.h"
 
 DBInterface *DBInterface::_instance = nullptr;
 
@@ -26,7 +27,9 @@ void DBInterface::setOffline()
         pm->setText(tr("One last sync..."));
         pm->increment();
 
-        fullSync();
+        generalSync();
+        RamProject *proj = Ramses::instance()->currentProject();
+        if (proj) projectSync(proj->uuid());
 
         // Wait for server timeout to be able to sync
         QDeadlineTimer t( timeOut );
@@ -127,7 +130,7 @@ void DBInterface::setUsername(QString uuid, QString username)
 {
     m_ldi->setUsername(uuid, username);
     // Setting the username must trigger an instant sync (if it's not new)
-    if (username.toLower() != "new") sync();
+    if (username.toLower() != "new") quickSync();
 }
 
 bool DBInterface::isUserNameAavailable(const QString &userName)
@@ -294,13 +297,15 @@ void DBInterface::acceptClean()
 
     resumeSync();
     // Full sync
-    fullSync();
+    generalSync();
+    RamProject *proj = Ramses::instance()->currentProject();
+    if (proj) projectSync(proj->uuid());
 }
 
-void DBInterface::sync()
+void DBInterface::quickSync()
 {
     if (m_suspended) {
-        log(tr("Sync is suspended!"), DuQFLog::Warning);
+        log(tr("Sync is suspended!"), DuQFLog::Information);
         return;
     }
     if (m_connectionStatus != NetworkUtils::Online) return;
@@ -313,17 +318,17 @@ void DBInterface::sync()
     pm->start();
 
     // Get modified rows from local
-    QJsonObject syncBody = m_ldi->getSync( false );
+    QJsonObject syncBody = m_ldi->getQuickSync();
     // Post to ramserver
     m_rsi->sync(syncBody);
 
     pm->finish();
 }
 
-void DBInterface::fullSync(bool synchroneous)
+void DBInterface::generalSync(bool synchroneous)
 {
     if (m_suspended) {
-        log(tr("Sync is suspended!"), DuQFLog::Warning);
+        log(tr("Sync is suspended!"), DuQFLog::Information);
         return;
     }
     if (m_connectionStatus != NetworkUtils::Online) return;
@@ -331,12 +336,37 @@ void DBInterface::fullSync(bool synchroneous)
     ProgressManager *pm = ProgressManager::instance();
     pm->reInit();
     pm->setMaximum(3);
-    pm->setTitle(tr("Full data sync"));
-    pm->setText(tr("Beginning full data sync..."));
+    pm->setTitle(tr("General data sync"));
+    pm->setText(tr("Beginning general data sync..."));
     pm->start();
 
     // Get modified rows from local
-    QJsonObject syncBody = m_ldi->getSync( true );
+    QJsonObject syncBody = m_ldi->getGeneralSync();
+    // Cheat the date
+    syncBody.insert("previousSyncDate", "1818-05-05 00:00:00");
+    // Post to ramserver
+    m_rsi->sync(syncBody, synchroneous);
+
+    pm->finish();
+}
+
+void DBInterface::projectSync(QString projectUuid, bool synchroneous)
+{
+    if (m_suspended) {
+        log(tr("Sync is suspended!"), DuQFLog::Information);
+        return;
+    }
+    if (m_connectionStatus != NetworkUtils::Online) return;
+
+    ProgressManager *pm = ProgressManager::instance();
+    pm->reInit();
+    pm->setMaximum(3);
+    pm->setTitle(tr("Project data sync"));
+    pm->setText(tr("Beginning project data sync..."));
+    pm->start();
+
+    // Get modified rows from local
+    QJsonObject syncBody = m_ldi->getProjectSync(projectUuid);
     // Cheat the date
     syncBody.insert("previousSyncDate", "1818-05-05 00:00:00");
     // Post to ramserver
@@ -370,7 +400,7 @@ void DBInterface::connectEvents()
     connect(m_rsi, &RamServerInterface::syncReady, m_ldi, &LocalDataInterface::sync);
     connect(m_rsi, &RamServerInterface::userChanged, this, &DBInterface::serverUserChanged);
     connect(m_rsi, &RamServerInterface::pong, m_ldi, &LocalDataInterface::setServerUuid);
-    connect(m_updateTimer, SIGNAL(timeout()), this, SLOT(sync()));
+    connect(m_updateTimer, SIGNAL(timeout()), this, SLOT(quickSync()));
 
     connect(qApp, &QApplication::aboutToQuit, this, &DBInterface::quit);
 }

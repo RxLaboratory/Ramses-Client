@@ -349,8 +349,8 @@ void MainWindow::connectEvents()
     connect(ui_projectSettingsPage, SIGNAL(closeRequested()), this, SLOT(home()));
 
     // Other buttons
-    connect(actionSync, SIGNAL(triggered()), DBInterface::instance(),SLOT(sync()));
-    connect(actionFullSync, SIGNAL(triggered()), DBInterface::instance(),SLOT(fullSync()));
+    connect(actionSync, SIGNAL(triggered()), DBInterface::instance(),SLOT(quickSync()));
+    connect(actionFullSync, SIGNAL(triggered()), this,SLOT(fullSync()));
     connect(mainStack,SIGNAL(currentChanged(int)), this, SLOT(pageChanged(int)));
 
     // Misc
@@ -789,8 +789,13 @@ void MainWindow::setOnlineAction()
 {
     DBInterface::instance()->setOnline();
 
-    // Trigger a full sync
-    if (RamServerInterface::instance()->isOnline()) DBInterface::instance()->fullSync();
+    // Trigger a general sync
+    if (RamServerInterface::instance()->isOnline())
+    {
+        DBInterface::instance()->generalSync();
+        RamProject *proj = Ramses::instance()->currentProject();
+        if (proj) DBInterface::instance()->projectSync(proj->uuid());
+    }
 }
 
 void MainWindow::databaseSettingsAction()
@@ -1025,6 +1030,13 @@ void MainWindow::dbiConnectionStatusChanged(NetworkUtils::NetworkStatus s)
         actionSetOnline->setVisible(true);
         actionSetOffline->setVisible(false);
     }
+}
+
+void MainWindow::fullSync()
+{
+    DBInterface::instance()->generalSync();
+    RamProject *proj = Ramses::instance()->currentProject();
+    if (proj) DBInterface::instance()->projectSync(proj->uuid());
 }
 
 bool MainWindow::eventFilter(QObject *obj, QEvent *event)

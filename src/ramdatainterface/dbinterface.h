@@ -90,8 +90,9 @@ signals:
 public slots:
     void suspendSync();
     void resumeSync();
-    void sync();
-    void fullSync(bool synchroneous = false);
+    void quickSync();
+    void generalSync(bool synchroneous = false);
+    void projectSync(QString projectUuid, bool synchroneous = false);
     void quit();
     /**
      * @brief Changes to offline mode: data is stored locally until we get a connection to the server to sync.

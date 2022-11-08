@@ -275,10 +275,11 @@ void RamServerInterface::login()
     loop.exec();
 }
 
-void RamServerInterface::sync(QJsonArray tables, QDateTime prevSyncDate, bool synchroneous)
+void RamServerInterface::sync(QJsonArray tables, QString projectUuid, QDateTime prevSyncDate, bool synchroneous)
 {
     QJsonObject body;
     body.insert("tables", tables);
+    body.insert("project", projectUuid);
     body.insert("previousSyncDate", prevSyncDate.toString("yyyy-MM-dd hh:mm:ss"));
     sync(body, synchroneous);
 }
@@ -306,7 +307,7 @@ QJsonArray RamServerInterface::downloadData()
 {
     qDebug() << ">>> Downloading data";
 
-    QSet<QString> tableNames = LocalDataInterface::instance()->tableNames();
+    QSet<QString> tableNames = LocalDataInterface::generalTableNames;
     QJsonArray tables;
     foreach (QString tableName, tableNames)
     {

@@ -179,15 +179,20 @@ QString LocalDataInterface::getRamsesPath(QString dbFile)
     return "auto";
 }
 
-QSet<QString> LocalDataInterface::tableUuids(QString table, bool includeRemoved)
+QSet<QString> LocalDataInterface::tableUuids(QString table, bool includeRemoved, QString projectUuid)
 {
     // If we've got the info in the cache, use it.
     if (CACHE_LOCAL_DATA && m_uuids.contains(table) ) return m_uuids.value(table);
 
     QString q = "SELECT uuid FROM '%1'";
     if (!includeRemoved) q += " WHERE removed = 0";
+    if (projectUuid != "") q += " AND `project` = '%2'";
     q += " ;";
-    QSqlQuery qry = query( q.arg(table) );
+
+    if (projectUuid != "") q = q.arg(table, projectUuid);
+    else q = q.arg(table);
+
+    QSqlQuery qry = query( q );
 
     QSet<QString> data;
 
@@ -199,13 +204,17 @@ QSet<QString> LocalDataInterface::tableUuids(QString table, bool includeRemoved)
     return data;
 }
 
-QVector<QStringList> LocalDataInterface::tableData(QString table, bool includeRemoved)
+QVector<QStringList> LocalDataInterface::tableData(QString table, bool includeRemoved, QString projectUuid)
 {
-    QString q = "SELECT `uuid`, `data` FROM '%1'";
-    if (!includeRemoved) q += " WHERE removed = 0";
+    QString q = "SELECT `uuid`, `data`, `project` FROM '%1'";
+    if (!includeRemoved) q += " WHERE `removed` = 0";
+    if (projectUuid != "") q += " AND `project` = '%2'";
     q += " ;";
 
-    QSqlQuery qry = query( q.arg(table) );
+    if (projectUuid != "") q = q.arg(table, projectUuid);
+    else q = q.arg(table);
+
+    QSqlQuery qry = query( q );
 
     QVector<QStringList> data;
 
@@ -214,6 +223,7 @@ QVector<QStringList> LocalDataInterface::tableData(QString table, bool includeRe
         QStringList entry;
         entry << qry.value(0).toString();
         entry << qry.value(1).toString();
+        entry << qry.value(2).toString();
         data << entry;
     }
 
@@ -235,10 +245,15 @@ bool LocalDataInterface::contains(QString uuid, QString table)
     return false;*/
 }
 
-QMap<QString, QString> LocalDataInterface::modificationDates(QString table)
+QMap<QString, QString> LocalDataInterface::modificationDates(QString table, QString projectUuid)
 {
-    QString q = "SELECT uuid, modified FROM '%1';";
-    q = q.arg(table);
+    QString q = "SELECT uuid, modified FROM '%1'";
+    if (projectUuid != "") q += " WHERE `project` = '%2'";
+    q += " ;";
+
+    if (projectUuid != "") q = q.arg(table, projectUuid);
+    else q = q.arg(table);
+
     QSqlQuery qry = query( q );
     QMap<QString, QString> dates;
     while(qry.next())
@@ -519,21 +534,67 @@ ServerConfig LocalDataInterface::setDataFile(const QString &file)
     return serverConfig();
 }
 
-QJsonObject LocalDataInterface::getSync(bool fullSync)
+QJsonObject LocalDataInterface::getQuickSync()
 {
     ProgressManager *pm = ProgressManager::instance();
-    pm->setTitle(tr("Data sync: Getting local data..."));
+    pm->setTitle(tr("Quick data sync: Getting local data..."));
     pm->increment();
 
     // List all tables
     QSet<QString> tNames = tableNames();
+
+    QJsonObject result = getSync(tNames, true);
+
+    pm->setText(tr("Successfully scanned local data."));
+    pm->increment();
+
+    return result;
+    //emit readyToSync(tables, lastSync);
+}
+
+QJsonObject LocalDataInterface::getGeneralSync()
+{
+    ProgressManager *pm = ProgressManager::instance();
+    pm->setTitle(tr("General data sync: Getting local data..."));
+    pm->increment();
+
+    // List general tables
+    QJsonObject result = getSync(generalTableNames, false);
+
+    pm->setText(tr("Successfully scanned local data."));
+    pm->increment();
+
+    return result;
+    //emit readyToSync(tables, lastSync);
+}
+
+QJsonObject LocalDataInterface::getProjectSync(QString projectUuid)
+{
+    ProgressManager *pm = ProgressManager::instance();
+    pm->setTitle(tr("Project data sync: Getting local data..."));
+    pm->increment();
+
+    // List project tables
+    QJsonObject result = getSync(projectTableNames, false, projectUuid);
+
+    pm->setText(tr("Successfully scanned local data."));
+    pm->increment();
+
+    return result;
+    //emit readyToSync(tables, lastSync);
+}
+
+QJsonObject LocalDataInterface::getSync(QSet<QString> tables, bool quick, QString projectUuid)
+{
+    ProgressManager *pm = ProgressManager::instance();
+
     // Get last Sync
-    QString lastSync = "1970-01-01 00:00:00";
+    QString lastSync = "1818-05-05 00:00:00";
     QString q = "SELECT lastSync FROM _Sync ;";
     QSqlQuery qry = query(q);
     if (qry.first()) lastSync = qry.value(0).toString();
 
-    QJsonArray tables;
+    QJsonArray tablesArray;
 
     // For each table, get modified rows
 
@@ -541,10 +602,10 @@ QJsonObject LocalDataInterface::getSync(bool fullSync)
     QString currentUuid = "";
     if (u) currentUuid = u->uuid();
 
-    pm->addToMaximum(tNames.count());
+    pm->addToMaximum(tables.count());
 
-    foreach (QString tName, tNames)
-    {      
+    foreach (QString tName, tables)
+    {
         pm->setText(tr("Scanning table: %1").arg(tName));
         pm->increment();
 
@@ -552,11 +613,18 @@ QJsonObject LocalDataInterface::getSync(bool fullSync)
         QJsonArray rows;
         table.insert("name", tName );
 
-        if (tName == "RamUser") q = "SELECT uuid, data, modified, removed, userName FROM %1 ";
-        else q = "SELECT uuid, data, modified, removed FROM %1 ";
-        if (!fullSync) q += " WHERE modified >= '%2' ;";
+        if (tName == "RamUser") q = "SELECT uuid, data, project, modified, removed, userName FROM %1 ";
+        else q = "SELECT uuid, data, project, modified, removed FROM %1 ";
+        if (quick) q += " WHERE modified >= '%2' ";
 
-        if (!fullSync) q = q.arg(tName, lastSync);
+        if (quick && projectUuid != "") q += " AND ";
+        else if (projectUuid != "") q += " WHERE ";
+
+        if (projectUuid != "") q += "`project` = '" + projectUuid + "' ";
+
+        q += ";";
+
+        if (quick) q = q.arg(tName, lastSync);
         else q = q.arg(tName);
 
         qry = query( q );
@@ -565,13 +633,14 @@ QJsonObject LocalDataInterface::getSync(bool fullSync)
         {
             QJsonObject obj;
             obj.insert("uuid", qry.value(0).toString() );
-            obj.insert("modified", qry.value(2).toString() );
-            obj.insert("removed", qry.value(3).toInt() );
+            obj.insert("project", qry.value(2).toString() );
+            obj.insert("modified", qry.value(3).toString() );
+            obj.insert("removed", qry.value(4).toInt() );
             QString data = qry.value(1).toString();
             if (tName == "RamUser")
             {
                 if (ENCRYPT_USER_DATA) data = DataCrypto::instance()->clientDecrypt( data );
-                obj.insert("userName", qry.value(4).toString());
+                obj.insert("userName", qry.value(5).toString());
             }
 
             obj.insert("data", data );
@@ -579,18 +648,15 @@ QJsonObject LocalDataInterface::getSync(bool fullSync)
         }
 
         table.insert("modifiedRows", rows);
-        tables.append(table);
+        tablesArray.append(table);
     }
 
     QJsonObject result;
-    result.insert("tables", tables);
+    result.insert("tables", tablesArray);
     result.insert("previousSyncDate", lastSync);
-
-    pm->setText(tr("Successfully scanned local data."));
-    pm->increment();
+    result.insert("project", projectUuid);
 
     return result;
-    //emit readyToSync(tables, lastSync);
 }
 
 void LocalDataInterface::saveSync(QJsonArray tables)
@@ -635,6 +701,7 @@ void LocalDataInterface::saveSync(QJsonArray tables)
 
             QString data = incomingRow.value("data").toString();
             QString modified = incomingRow.value("modified").toString();
+            QString project = incomingRow.value("project").toString();
             int removed = incomingRow.value("removed").toInt(0);
 
             if (tableName == "RamUser")
@@ -644,18 +711,18 @@ void LocalDataInterface::saveSync(QJsonArray tables)
                 if (ENCRYPT_USER_DATA) data = DataCrypto::instance()->clientEncrypt( data );
                 else data.replace("'", "''");
 
-                QString q = "INSERT INTO %1 (data, modified, uuid, removed, userName) "
-                            "VALUES ( '%2', '%3', '%4', %5, '%6' );";
+                QString q = "INSERT INTO %1 (data, modified, uuid, removed, userName, project) "
+                            "VALUES ( '%2', '%3', '%4', %5, '%6', '%7' );";
 
-                query( q.arg(tableName, data, modified, uuid, QString::number(removed), userName) );
+                query( q.arg(tableName, data, modified, uuid, QString::number(removed), userName, project) );
             }
             else
             {
                 data.replace("'", "''");
-                QString q = "INSERT INTO %1 (data, modified, uuid, removed) "
-                            "VALUES ( '%2', '%3', '%4', %5 );";
+                QString q = "INSERT INTO %1 (data, modified, uuid, removed, project) "
+                            "VALUES ( '%2', '%3', '%4', %5, '%6' );";
 
-                query( q.arg(tableName, data, modified, uuid, QString::number(removed)) );
+                query( q.arg(tableName, data, modified, uuid, QString::number(removed), project) );
             }
 
             if (removed == 0)
@@ -698,6 +765,7 @@ void LocalDataInterface::saveSync(QJsonArray tables)
 
             QString uuid = incomingRow.value("uuid").toString();
             QString data = incomingRow.value("data").toString();
+            QString project = incomingRow.value("project").toString();
             QString modified = incomingRow.value("modified").toString();
             int rem = incomingRow.value("removed").toInt(0);
             bool hasBeenRemoved = rem == 1;
@@ -725,10 +793,11 @@ void LocalDataInterface::saveSync(QJsonArray tables)
                             "data = '%2', "
                             "modified = '%3', "
                             "removed = %4, "
-                            "userName = '%5' "
-                            "WHERE uuid = '%6' ;";
+                            "userName = '%5', "
+                            "project = '%6' "
+                            "WHERE uuid = '%7' ;";
 
-                query( q.arg(tableName, data, modified, QString::number(rem), userName, uuid) );
+                query( q.arg(tableName, data, modified, QString::number(rem), userName, project, uuid) );
             }
             else
             {
@@ -736,10 +805,11 @@ void LocalDataInterface::saveSync(QJsonArray tables)
                 QString q = "UPDATE %1 SET "
                             "data = '%2', "
                             "modified = '%3', "
-                            "removed = %4 "
-                            "WHERE uuid = '%5' ;";
+                            "removed = %4, "
+                            "project = '%5' "
+                            "WHERE uuid = '%6' ;";
 
-                query( q.arg(tableName, data, modified, QString::number(rem), uuid) );
+                query( q.arg(tableName, data, modified, QString::number(rem), project, uuid) );
             }
 
             emit dataChanged(uuid);
