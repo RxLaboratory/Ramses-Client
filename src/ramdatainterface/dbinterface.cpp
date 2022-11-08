@@ -83,9 +83,9 @@ bool DBInterface::contains(QString uuid, QString table)
     return m_ldi->contains(uuid, table);
 }
 
-void DBInterface::createObject(QString uuid, QString table, QString data)
+void DBInterface::createObject(QString uuid, QString table, QString data, QString projectUuid)
 {
-    m_ldi->createObject(uuid, table, data);
+    m_ldi->createObject(uuid, table, data, projectUuid);
 }
 
 QString DBInterface::objectData(QString uuid, QString table)
@@ -96,6 +96,16 @@ QString DBInterface::objectData(QString uuid, QString table)
 void DBInterface::setObjectData(QString uuid, QString table, QString data)
 {
     m_ldi->setObjectData(uuid, table, data);
+}
+
+QString DBInterface::project(QString uuid, QString table)
+{
+    return m_ldi->project(uuid, table);
+}
+
+void DBInterface::setProject(QString uuid, QString table, QString projectUuid)
+{
+    m_ldi->setProject(uuid, table, projectUuid);
 }
 
 void DBInterface::removeObject(QString uuid, QString table)

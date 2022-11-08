@@ -323,6 +323,13 @@ void RamAbstractObject::setOrder(int o)
     insertData("order", o);
 }
 
+RamProject *RamAbstractObject::project() const
+{
+    QString puuid = DBInterface::instance()->project( m_uuid, objectTypeName() );
+    if (puuid == "") return nullptr;
+    return RamProject::get( puuid );
+}
+
 QString RamAbstractObject::customSettings() const
 {
     return getData("customSettings").toString();
@@ -552,6 +559,11 @@ RamAbstractObject::RamAbstractObject(QString uuid, ObjectType type, bool encrypt
     m_cachedData = dataString();
 
     construct();
+}
+
+void RamAbstractObject::setProject(QString projectUuid)
+{
+    DBInterface::instance()->setProject(m_uuid, objectTypeName(), projectUuid);
 }
 
 bool RamAbstractObject::isSaveSuspended() const

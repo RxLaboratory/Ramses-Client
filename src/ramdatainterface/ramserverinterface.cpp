@@ -306,12 +306,12 @@ QJsonArray RamServerInterface::downloadData()
 {
     qDebug() << ">>> Downloading data";
 
-    QStringList tableNames = LocalDataInterface::instance()->tableNames();
+    QSet<QString> tableNames = LocalDataInterface::instance()->tableNames();
     QJsonArray tables;
-    for(int i = 0; i < tableNames.count(); i++)
+    foreach (QString tableName, tableNames)
     {
         QJsonObject table;
-        table.insert("name", tableNames.at(i));
+        table.insert("name", tableName);
         table.insert("modifiedRows", QJsonArray());
         tables << table;
     }

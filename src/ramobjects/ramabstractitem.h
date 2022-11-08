@@ -22,7 +22,6 @@ public:
 
     virtual RamObject *objectForColumn(QString columnUuid) const;
 
-    RamProject *project() const;
     RamStep::Type productionType() const;
 
     QMap<QString, RamObjectModel *> statusHistory() const;

@@ -22,6 +22,16 @@ QSet<QString> LocalDataInterface::projectTableNames = {
         "RamStep"
     };
 
+QSet<QString> LocalDataInterface::generalTableNames = {
+        "RamApplication",
+        "RamFileType",
+        "RamProject",
+        "RamState",
+        "RamTemplateAssetGroup",
+        "RamTemplateStep",
+        "RamUser"
+    };
+
 LocalDataInterface *LocalDataInterface::_instance = nullptr;
 
 LocalDataInterface *LocalDataInterface::instance()
@@ -238,7 +248,7 @@ QMap<QString, QString> LocalDataInterface::modificationDates(QString table)
     return dates;
 }
 
-void LocalDataInterface::createObject(QString uuid, QString table, QString data)
+void LocalDataInterface::createObject(QString uuid, QString table, QString data, QString projectUuid)
 {
     // Remove table cache
     m_uuids.remove(table);
@@ -247,16 +257,17 @@ void LocalDataInterface::createObject(QString uuid, QString table, QString data)
 
     QDateTime modified = QDateTime::currentDateTimeUtc();
 
-    QString q = "INSERT INTO '%1' (uuid, data, modified, removed) "
-                "VALUES ('%2', '%3', '%4', 0) "
+    QString q = "INSERT INTO '%1' (uuid, data, modified, removed, project) "
+                "VALUES ('%2', '%3', '%4', 0, '%5') "
                 "ON CONFLICT(uuid) DO UPDATE "
-                "SET data=excluded.data, modified=excluded.modified ;";
+                "SET data=excluded.data, modified=excluded.modified, project=excluded.project ;";
 
     query( q.arg(
                   table,
                   uuid,
                   data,
-                  modified.toString("yyyy-MM-dd hh:mm:ss")
+                  modified.toString("yyyy-MM-dd hh:mm:ss"),
+                  projectUuid
                   )
             );
 
@@ -286,6 +297,21 @@ void LocalDataInterface::setObjectData(QString uuid, QString table, QString data
 
     query( q.arg(table, data, modified.toString("yyyy-MM-dd hh:mm:ss"), uuid) );
     emit dataChanged(uuid);
+}
+
+QString LocalDataInterface::project(QString uuid, QString table)
+{
+    QString q = "SELECT `project` FROM `%1` WHERE uuid = '%2';";
+    QSqlQuery qry = query( q.arg(table, uuid) );
+
+    if (qry.first()) return qry.value(0).toString();
+    return "";
+}
+
+void LocalDataInterface::setProject(QString uuid, QString table, QString projectUuid)
+{
+    QString q = "UPDATE `%1` SET `project` = '%2' WHERE `uuid` = '%3';";
+    query( q.arg(table, projectUuid, uuid) );
 }
 
 void LocalDataInterface::removeObject(QString uuid, QString table)
@@ -500,7 +526,7 @@ QJsonObject LocalDataInterface::getSync(bool fullSync)
     pm->increment();
 
     // List all tables
-    QStringList tNames = tableNames();
+    QSet<QString> tNames = tableNames();
     // Get last Sync
     QString lastSync = "1970-01-01 00:00:00";
     QString q = "SELECT lastSync FROM _Sync ;";
@@ -517,10 +543,8 @@ QJsonObject LocalDataInterface::getSync(bool fullSync)
 
     pm->addToMaximum(tNames.count());
 
-    for (int i = 0; i < tNames.count(); i++)
+    foreach (QString tName, tNames)
     {      
-        QString tName = tNames.at(i);
-
         pm->setText(tr("Scanning table: %1").arg(tName));
         pm->increment();
 
@@ -796,9 +820,11 @@ void LocalDataInterface::sync(QJsonObject data, QString serverUuid)
     pm->finish();
 }
 
-QStringList LocalDataInterface::tableNames()
+QSet<QString> LocalDataInterface::tableNames()
 {
-    QSqlDatabase db = QSqlDatabase::database("infodb");
+    QSet<QString> tables = projectTableNames;
+    return tables.unite(generalTableNames);
+    /*QSqlDatabase db = QSqlDatabase::database("infodb");
     db.close();
 
     // Copy the template to a file we can read
@@ -832,7 +858,7 @@ QStringList LocalDataInterface::tableNames()
     // Remove the temp file
     QFile::remove(tempDB);
 
-    return tables;
+    return tables;*/
 }
 
 QVector<QStringList> LocalDataInterface::users()
@@ -913,10 +939,9 @@ QString LocalDataInterface::cleanDataBase(int deleteDataOlderThan)
         m_uuidsToRemove.clear();
 
         // For each table, get UUIDs to clean
-        QStringList tables = tableNames();
-        for (int i = 0; i < tables.count(); i++) {
-
-            QString table = tables[i];
+        QSet<QString> tables = tableNames();
+        foreach(QString table, tables)
+        {
             qDebug() << "    From: " << table;
 
             // List uuids to remove
@@ -1085,14 +1110,12 @@ bool LocalDataInterface::openDB(QSqlDatabase db, const QString &dbFile)
         if (currentVersion < QVersionNumber(0, 7, 0))
         {
             // Add "project" column to all tables
-            QStringList tables = tableNames();
+            QSet<QString> tables = tableNames();
 
             pm->addToMaximum(tables.count());
 
-            for (int i = 0; i < tables.count(); i++)
+            foreach( QString table, tables )
             {
-                QString table = tables.at(i);
-
                 QString tn = table;
                 pm->setText(tr("Upgrading %1 table (this may take a while...)").arg(tn.replace("Ram", "")));
                 pm->increment();

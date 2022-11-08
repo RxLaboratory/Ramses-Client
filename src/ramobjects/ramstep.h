@@ -25,8 +25,6 @@ public:
 
     RamStep(QString shortName, QString name, RamProject *project);
 
-    RamProject *project() const;
-
     RamAssetGroup *estimationMultiplyGroup() const;
     void setEstimationMultiplyGroup(RamObject *newEstimationMultiplyGroup);
 

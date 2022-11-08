@@ -29,7 +29,7 @@ RamScheduleComment *RamScheduleComment::c(RamObject *o)
 RamScheduleComment::RamScheduleComment(RamProject *project)
     : RamObject("schdlCmnt", "Schedule Comment", ObjectType::ScheduleComment, project)
 {
-    insertData("project", project->uuid() );
+    this->setProject(project->uuid());
 }
 
 RamScheduleComment::RamScheduleComment(QString uuid):

@@ -63,22 +63,13 @@ RamStep::RamStep(QString shortName, QString name, RamProject *project):
 {
     construct();
 
-    QJsonObject d = data();
-    d.insert("project", project->uuid());
-
-    setData(d);
+    this->setProject( project->uuid() );
 }
 
 RamStep::RamStep(QString uuid):
     RamTemplateStep(uuid, Step)
 {
     construct();
-}
-
-RamProject *RamStep::project() const
-{
-    QString projUuid = getData("project").toString();
-    return RamProject::get( projUuid );
 }
 
 RamAssetGroup *RamStep::estimationMultiplyGroup() const

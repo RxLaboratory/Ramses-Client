@@ -38,6 +38,7 @@ public:
 
     // The tables for a project
     static QSet<QString> projectTableNames;
+    static QSet<QString> generalTableNames;
 
     // DATA INTERFACE //
 
@@ -47,10 +48,13 @@ public:
     bool contains(QString uuid, QString table);
     QMap<QString, QString> modificationDates(QString table);
 
-    void createObject(QString uuid, QString table, QString data);
+    void createObject(QString uuid, QString table, QString data, QString projectUuid = "");
 
     QString objectData(QString uuid, QString table);
     void setObjectData(QString uuid, QString table, QString data);
+
+    QString project(QString uuid, QString table);
+    void setProject(QString uuid, QString table, QString projectUuid);
 
     void removeObject(QString uuid, QString table);
     void restoreObject(QString uuid, QString table);
@@ -77,7 +81,7 @@ public:
     QString currentUserUuid();
     void setCurrentUserUuid(QString uuid);
 
-    static QStringList tableNames();
+    static QSet<QString> tableNames();
     QVector<QStringList> users();
 
     // MAINTENANCE //
