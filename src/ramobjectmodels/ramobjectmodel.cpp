@@ -239,6 +239,8 @@ void RamObjectModel::appendObject(QString uuid)
 
 RamObject *RamObjectModel::get(int row)
 {
+    if (row < 0) return nullptr;
+    if (row >= m_objects.count()) return nullptr;
     return m_objects.at(row);
 }
 
