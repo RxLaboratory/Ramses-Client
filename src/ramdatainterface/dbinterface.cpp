@@ -169,7 +169,8 @@ void DBInterface::setDataFile(const QString &file, bool ignoreUser)
 
         qDebug() << "Selected previous user: " << userUuid;
 
-        emit userChanged( userUuid );
+        // The user will be set AFTER login/setOnline
+        // emit userChanged( userUuid );
         setOnline(serverUuid);
 
         pm->setText(tr("Ready!"));

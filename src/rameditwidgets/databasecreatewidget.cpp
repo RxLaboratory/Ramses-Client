@@ -72,8 +72,15 @@ void DatabaseCreateWidget::createDB()
         s.timeout = ui_serverEdit->timeout();
         s.port = ui_serverEdit->port();
 
+        // Suspend sync in case it takes a lot of time to create
+        DBInterface::instance()->suspendSync();
+
         // Create DB
-        if (!createNewDB(s)) return;
+        if (!createNewDB(s))
+        {
+            DBInterface::instance()->resumeSync();
+            return;
+        }
 
         // Connect to server
         RamServerInterface *rsi = RamServerInterface::instance();
@@ -89,6 +96,8 @@ void DatabaseCreateWidget::createDB()
                                      tr("Server error"),
                                      tr("Sorry, I can't connect correctly to the server.\nPlease double check the server settings.")
                                      );
+
+            DBInterface::instance()->resumeSync();
             return;
         }
 
@@ -100,10 +109,13 @@ void DatabaseCreateWidget::createDB()
                                      tr("I can't log you in for an unknown reason.\n\n"
                                         "Try again, or file a bug report.")
                                      );
+            DBInterface::instance()->resumeSync();
             return;
         }
 
-        // Download all data
+        ProgressManager::instance()->start();
+
+        // Download general data
         QJsonArray tables = rsi->downloadData();
         if (tables.count() == 0)
         {
@@ -113,6 +125,7 @@ void DatabaseCreateWidget::createDB()
                                         "This may be due to a slow connexion,\n"
                                         "try to increase the server time out.")
                                      );
+            DBInterface::instance()->resumeSync();
             return;
         }
 
@@ -125,11 +138,15 @@ void DatabaseCreateWidget::createDB()
         //Ramses::instance()->setUserUuid( uuid );
 
         // Hide dock
-        MainWindow *mw = (MainWindow*)GuiUtils::appMainWindow();
+        /*MainWindow *mw = (MainWindow*)GuiUtils::appMainWindow();
         mw->hidePropertiesDock();
+
+        DBInterface::instance()->resumeSync();
 
         // Trigger the first general Sync to send data
         DBInterface::instance()->generalSync( );
+
+        ProgressManager::instance()->finish();*/
     }
 }
 

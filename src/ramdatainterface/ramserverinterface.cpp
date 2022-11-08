@@ -305,9 +305,12 @@ void RamServerInterface::sync(QJsonObject body, bool synchroneous)
 
 QJsonArray RamServerInterface::downloadData()
 {
+    ProgressManager *pm = ProgressManager::instance();
+    pm->setText("Downloading data...");
+
     qDebug() << ">>> Downloading data";
 
-    QSet<QString> tableNames = LocalDataInterface::tableNames();
+    QSet<QString> tableNames = LocalDataInterface::generalTableNames;
     QJsonArray tables;
     foreach (QString tableName, tableNames)
     {
@@ -335,7 +338,6 @@ QJsonArray RamServerInterface::downloadData()
     // Parse reply
     QJsonObject repObj = parseData(reply);
 
-    qDebug() << "<<< Downloaded data: " << repObj;
     return repObj.value("content").toObject().value("tables").toArray();
 }
 

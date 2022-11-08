@@ -32,6 +32,9 @@ RamUser
 /ok/ RamServerInterface::downloadData only general tables
 /ok/ Server refuses sync in case of wrong app version
 /ok/ Pull missing uuids from server
+
+
+
 // Schedule removals not updated in ui on sync but on reboot
 // Delay loading objects in Models
    > Instead of loading objects, add nullptrs to the list, and replace by the obj when first called
@@ -48,3 +51,14 @@ RamUser
    > client: when all sent tables are retrieved or if timeout*numTables
    > server::endSyncSession
 // Implement pagination, don't send/return more than 100 rows per table
+
+
+
+
+
+
+1- Download only the general data
+2- Pull objects only when needed (and delay in ramobjectmodel)
+3- sync :
+   - general data, all, send new, modified, receive new, modified
+   - project data, send new and modified, get modified. Pull new when needed (all objects are in the lists)
