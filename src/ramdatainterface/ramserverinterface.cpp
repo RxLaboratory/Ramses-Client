@@ -943,6 +943,40 @@ bool RamServerInterface::checkServer(QString hostName)
     return true;
 }
 
+void RamServerInterface::sync()
+{
+    queueRequest("sync");
+    startQueue();
+}
+
+void RamServerInterface::push(QString table, QJsonArray rows, QString date, bool commit)
+{
+    QJsonObject body;
+    body.insert("table", table);
+    body.insert("rows", rows);
+    body.insert("previousSyncDate", date);
+    body.insert("commit", commit);
+    queueRequest("push", body);
+}
+
+void RamServerInterface::commit()
+{
+    push("", QJsonArray(), "1818-05-05 00:00:00", true);
+}
+
+void RamServerInterface::fetch()
+{
+    queueRequest("fetch");
+}
+
+void RamServerInterface::pull(QString table, int page)
+{
+    QJsonObject body;
+    body.insert("table", table);
+    body.insert("page", page);
+    queueRequest("pull", body);
+}
+
 void RamServerInterface::postRequest(Request r)
 {
     QUrl url = r.request.url();

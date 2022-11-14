@@ -149,6 +149,15 @@ private:
      */
     bool checkServer(QString hostName);
 
+    // Ramses Server API
+
+    // Starts a sync session
+    void sync();
+    void push(QString table, QJsonArray rows = QJsonArray(), QString date = "1818-05-05 00:00:00", bool commit = false);
+    void commit();
+    QJsonObject fetch();
+    QJsonObject pull(QString table, int page = 1);
+
     /**
      * @brief Posts a request to the server
      * @param request
@@ -159,7 +168,7 @@ private:
      * @brief Adds a request to the queue
      * @param r the request to add
      */
-    void queueRequest(QString query, QJsonObject body);
+    void queueRequest(QString query, QJsonObject body = QJsonObject());
     void queueRequest(Request r);
     /**
      * @brief buildRequest Creates a request to be queued or sent to the server
