@@ -661,8 +661,10 @@ void RamServerInterface::dataReceived(QNetworkReply *reply)
         }
         // Store new data
         QJsonArray rowsArray = content.value("rows").toArray();
+        QJsonArray deletedArray = content.value("deleted").toArray();
         QString table = content.value("table").toString();
         QSet<TableRow> rows;
+        QStringList deletedUuids;
         if (m_pullData.tables.contains(table)) rows = m_pullData.tables.value(table);
         for (int i = 0; i < rowsArray.count(); i++)
         {
@@ -675,7 +677,13 @@ void RamServerInterface::dataReceived(QNetworkReply *reply)
             row.userName = rowObj.value("userName").toString();
             rows.insert(row);
         }
+        for (int i = 0; i < deletedArray.count(); i++)
+        {
+            QString uuid = deletedArray.at(i).toString();
+            deletedUuids << uuid;
+        }
         m_pullData.tables.insert(table, rows);
+        m_pullData.deletedUuids.insert(table, deletedUuids);
         // Next pull
         pullNext();
     }

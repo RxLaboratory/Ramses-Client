@@ -304,8 +304,6 @@ void DBInterface::sync()
     SyncData syncData = m_ldi->getSync( false );
     // Post to ramserver
     m_rsi->sync(syncData);
-
-    pm->finish();
 }
 
 void DBInterface::fullSync()
@@ -317,20 +315,14 @@ void DBInterface::fullSync()
     if (m_connectionStatus != NetworkUtils::Online) return;
 
     ProgressManager *pm = ProgressManager::instance();
-    pm->reInit();
     pm->setMaximum(3);
     pm->setTitle(tr("Full data sync"));
     pm->setText(tr("Beginning full data sync..."));
-    pm->start();
 
     // Get modified rows from local
-    QJsonObject syncBody = m_ldi->getSync( true );
-    // Cheat the date
-    syncBody.insert("previousSyncDate", "1818-05-05 00:00:00");
+    SyncData syncData = m_ldi->getSync( true );
     // Post to ramserver
-    m_rsi->sync(syncBody, synchroneous);
-
-    pm->finish();
+    m_rsi->sync(syncData);
 }
 
 void DBInterface::quit()

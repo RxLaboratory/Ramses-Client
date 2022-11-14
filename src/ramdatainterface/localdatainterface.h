@@ -61,8 +61,8 @@ public:
     ServerConfig setDataFile(const QString &file);
 
     SyncData getSync(bool fullSync=true);
-    void saveSync(QJsonArray tables);
-    void deleteData(QJsonArray tables);
+    void saveSync(SyncData syncData);
+    void deleteData(SyncData syncData);
 
     QString currentUserUuid();
     void setCurrentUserUuid(QString uuid);
@@ -77,7 +77,7 @@ public:
     const QHash<QString, QSet<QString> > &deletedUuids() const;
 
 public slots:
-    void sync(QJsonObject data, QString serverUuid = "");
+    void sync(SyncData data, QString serverUuid = "");
 
 signals:
     void dataReset();

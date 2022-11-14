@@ -28,6 +28,7 @@ struct TableRow
 struct SyncData
 {
     QHash<QString, QSet<TableRow>> tables;
+    QHash<QString, QStringList> deletedUuids;
     QString syncDate;
 };
 
