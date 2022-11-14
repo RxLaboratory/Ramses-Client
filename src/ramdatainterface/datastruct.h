@@ -48,4 +48,24 @@ struct FetchData
     int tableCount;
 };
 
+inline bool operator==(const TableFetchData &a, const TableFetchData &b)
+{
+  return a.name == b.name;
+}
+
+inline uint qHash(const TableFetchData &a)
+{
+    return qHash(a.name);
+}
+
+inline bool operator==(const TableRow &a, const TableRow &b)
+{
+  return a.uuid == b.uuid;
+}
+
+inline uint qHash(const TableRow &a)
+{
+    return qHash(a.uuid);
+}
+
 #endif // DATASTRUCT_H
