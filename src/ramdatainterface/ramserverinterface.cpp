@@ -749,8 +749,8 @@ bool RamServerInterface::checkPing(QJsonObject repObj, QString serverUuid)
 
 bool RamServerInterface::checkServerUuid(QJsonObject repObj)
 {
-    QString distantUuid = repObj.value("serverUuid").toString();
-    if (m_localServerUuid != "" && distantUuid != "" && m_localServerUuid != distantUuid)
+    m_serverUuid = repObj.value("serverUuid").toString();
+    if (m_localServerUuid != "" && m_serverUuid != "" && m_localServerUuid != m_serverUuid)
     {
         QString reason = tr("This server is not in sync with this local database.\n\n"
                             "This can happen if you try to connect to a new server from an existing database,\n"
@@ -1120,7 +1120,7 @@ void RamServerInterface::finishSync(bool withError)
     qDebug() << "Server Interface: Finishing sync...";
 
     // Emit result
-    if (!withError) emit syncReady(m_pullData);
+    if (!withError) emit syncReady(m_pullData, m_serverUuid );
 
     // Finish
     m_syncing = false;

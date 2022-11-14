@@ -76,7 +76,7 @@ public slots:
 signals:
     void sslChanged(bool);
     void connectionStatusChanged(NetworkUtils::NetworkStatus, QString);
-    void syncReady(SyncData);
+    void syncReady(SyncData data, QString serverUuid);
     void userChanged(QString uuid, QString username, QString userdata, QString modified);
     void pong(QString serverUuid);
     void syncStarted();
@@ -223,6 +223,7 @@ private:
     int m_timeout = 3000;
 
     QString m_localServerUuid = "";
+    QString m_serverUuid = "";
 
     /**
      * @brief Online / Offline status
