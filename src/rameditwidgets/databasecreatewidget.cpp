@@ -64,7 +64,9 @@ void DatabaseCreateWidget::createDB()
     // Online
     else
     {
-        ServerConfig s;
+        // TODO
+
+        /*ServerConfig s;
         s.address = ui_serverEdit->address();
         if (s.address == "") return;
         s.useSsl = ui_serverEdit->ssl();
@@ -129,7 +131,7 @@ void DatabaseCreateWidget::createDB()
         mw->hidePropertiesDock();
 
         // And trigger the first Sync
-        DBInterface::instance()->fullSync();
+        DBInterface::instance()->fullSync();*/
     }
 }
 
