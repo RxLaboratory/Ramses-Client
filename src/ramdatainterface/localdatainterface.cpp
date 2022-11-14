@@ -587,25 +587,14 @@ void LocalDataInterface::saveSync(SyncData syncData)
         QMap<QString, QString> uuidDates = modificationDates( tableName );
 
         QSet<TableRow> incomingRows = i.value();
-        QSet<TableRow>::const_iterator irows = incomingRows.constEnd();
-        while (irows != incomingRows.constBegin())
+        foreach(TableRow incomingRow, incomingRows)
         {
-            TableRow incomingRow = *irows;
-
             // Check if row exists
             QString uuid = incomingRow.uuid;
-            if (uuid == "")
-            {
-                incomingRows.erase(irows);
-                ++irows;
-                continue;
-            }
 
-            if (uuidDates.contains(uuid))
-            {
-                ++irows;
-                continue;
-            }
+            if (uuid == "") continue;
+
+            if (uuidDates.contains(uuid)) continue;
 
             QString data = incomingRow.data;
             QString modified = incomingRow.modified;
@@ -638,9 +627,6 @@ void LocalDataInterface::saveSync(SyncData syncData)
                 ins << uuid << tableName;
                 insertedObjects << ins;
             }
-
-            incomingRows.erase(irows);
-            ++irows;
         }
 
         // Emit insertions
@@ -669,6 +655,7 @@ void LocalDataInterface::saveSync(SyncData syncData)
         foreach(TableRow incomingRow, incomingRows)
         {
             QString uuid = incomingRow.uuid;
+            if (uuid == "") continue;
             QString data = incomingRow.data;
             QString modified = incomingRow.modified;
             int rem = incomingRow.removed;
@@ -729,6 +716,8 @@ void LocalDataInterface::deleteData(SyncData syncData)
     QHashIterator<QString, QStringList> i(tables);
 
     while (i.hasNext()) {
+
+        i.next();
 
         pm->increment();
 
