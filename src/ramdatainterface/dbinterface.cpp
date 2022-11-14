@@ -316,6 +316,8 @@ void DBInterface::sync()
 
     // Get modified rows from local
     SyncData syncData = m_ldi->getSync( false );
+
+    log(tr("Pushing changes to the server..."));
     // Post to ramserver
     m_rsi->sync(syncData);
 }
@@ -337,6 +339,7 @@ void DBInterface::fullSync()
 
     // Get modified rows from local
     SyncData syncData = m_ldi->getSync( true );
+    log(tr("Pushing data to the server..."));
     // Post to ramserver
     m_rsi->sync(syncData);
 }
@@ -427,6 +430,7 @@ void DBInterface::finishSync()
 {
     emit syncFinished();
     if (!m_autoSyncSuspended) m_updateTimer->start( m_updateFrequency );
+    log(tr("Finished sync."));
 }
 
 void DBInterface::serverConnectionStatusChanged(NetworkUtils::NetworkStatus status)
