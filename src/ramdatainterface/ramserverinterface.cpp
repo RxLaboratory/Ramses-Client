@@ -343,7 +343,8 @@ void RamServerInterface::setOnline(QString serverUuid)
 
     QJsonObject repObj = parseData(reply);
 
-    if (!checkPing(repObj, serverUuid)) return;
+    if (!checkServerUuid(repObj.value("serverUuid").toString())) return;
+    if (!checkPing(repObj)) return;
 
     m_localServerUuid = serverUuid;
 
@@ -553,7 +554,7 @@ void RamServerInterface::dataReceived(QNetworkReply *reply)
     QJsonObject content = repObj.value("content").toObject();
 
     // Check server UUID
-    if (!checkServerUuid(repObj)) return;
+    if (!checkServerUuid(serverUuid)) return;
 
     // Log
     for (int i = 0; i < repLog.count(); i++)
@@ -723,7 +724,7 @@ void RamServerInterface::nextRequest()
     postRequest( m_requestQueue.takeFirst() );
 }
 
-bool RamServerInterface::checkPing(QJsonObject repObj, QString serverUuid)
+bool RamServerInterface::checkPing(QJsonObject repObj)
 {
     bool repSuccess = repObj.value("success").toBool();
 
@@ -736,10 +737,6 @@ bool RamServerInterface::checkPing(QJsonObject repObj, QString serverUuid)
         return false;
     }
 
-    // Check the server UUID
-    if (serverUuid != "") m_localServerUuid = serverUuid;
-    if (!checkServerUuid(repObj)) return false;
-
     // get the server version
     m_serverVersion = repObj.value("content").toObject().value("version").toString();
 
@@ -747,9 +744,9 @@ bool RamServerInterface::checkPing(QJsonObject repObj, QString serverUuid)
     return true;
 }
 
-bool RamServerInterface::checkServerUuid(QJsonObject repObj)
+bool RamServerInterface::checkServerUuid(QString uuid)
 {
-    m_serverUuid = repObj.value("serverUuid").toString();
+    m_serverUuid = uuid;
     if (m_localServerUuid != "" && m_serverUuid != "" && m_localServerUuid != m_serverUuid)
     {
         QString reason = tr("This server is not in sync with this local database.\n\n"
@@ -1101,13 +1098,24 @@ void RamServerInterface::pullNext()
 
     // Get a table and pull its next page
     bool finished = true;
-    foreach(TableFetchData fetchData, m_fetchData.tables)
+    QSet<TableFetchData>::const_iterator i = m_fetchData.tables.constBegin();
+    while(i != m_fetchData.tables.constEnd())
     {
-        if (fetchData.pulled) continue;
+        TableFetchData fetchData = *i;
+
+        if (fetchData.pulled || fetchData.currentPage >= fetchData.pageCount)
+        {
+            i++;
+            continue;
+        }
+
         finished = false;
         fetchData.currentPage++;
         pull( fetchData.name, fetchData.currentPage );
-        if (fetchData.currentPage == fetchData.pageCount ) fetchData.pulled = true;
+        if (fetchData.currentPage >= fetchData.pageCount ) fetchData.pulled = true;
+
+        m_fetchData.tables.erase(i);
+        m_fetchData.tables.insert(fetchData);
         break;
     }
 

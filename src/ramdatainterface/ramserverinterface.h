@@ -115,8 +115,8 @@ private slots:
      */
     void nextRequest();
 
-    bool checkPing(QJsonObject repObj, QString serverUuid = "");
-    bool checkServerUuid(QJsonObject repObj);
+    bool checkPing(QJsonObject repObj);
+    bool checkServerUuid(QString uuid);
 
 private:
 
