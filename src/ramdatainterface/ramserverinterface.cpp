@@ -99,6 +99,11 @@ bool RamServerInterface::isOnline() const
     return false;
 }
 
+bool RamServerInterface::isSyncing() const
+{
+    return m_syncing;
+}
+
 // API
 
 void RamServerInterface::ping()
@@ -587,8 +592,7 @@ void RamServerInterface::dataReceived(QNetworkReply *reply)
         {
             QString reason = tr("The server sync (start sync session) was not successful.\nThis is probably a bug or a configuration error.\nPlease report bugs on %1").arg(URL_SOURCECODE);
             log(reason, DuQFLog::Warning);
-            m_syncing = false;
-            m_syncingData = SyncData();
+            finishSync(true);
             return;
         }
 
@@ -602,8 +606,7 @@ void RamServerInterface::dataReceived(QNetworkReply *reply)
         {
             QString reason = tr("The server sync (push) was not successful.\nThis is probably a bug or a configuration error.\nPlease report bugs on %1").arg(URL_SOURCECODE);
             log(reason, DuQFLog::Warning);
-            m_syncing = false;
-            m_syncingData = SyncData();
+            finishSync(true);
             return;
         }
         // If it's commited, fetch
@@ -622,8 +625,7 @@ void RamServerInterface::dataReceived(QNetworkReply *reply)
         {
             QString reason = tr("The server sync (fetch) was not successful.\nThis is probably a bug or a configuration error.\nPlease report bugs on %1").arg(URL_SOURCECODE);
             log(reason, DuQFLog::Warning);
-            m_syncing = false;
-            m_syncingData = SyncData();
+            finishSync(true);
             return;
         }
         // Get fetch data
@@ -654,9 +656,7 @@ void RamServerInterface::dataReceived(QNetworkReply *reply)
         {
             QString reason = tr("The server sync (pull) was not successful.\nThis is probably a bug or a configuration error.\nPlease report bugs on %1").arg(URL_SOURCECODE);
             log(reason, DuQFLog::Warning);
-            m_syncing = false;
-            m_syncingData = SyncData();
-            m_fetchData = FetchData();
+            finishSync(true);
             return;
         }
         // Store new data
@@ -1004,6 +1004,7 @@ void RamServerInterface::startSync()
     m_syncing = true;
     m_pullData.syncDate = QDateTime::currentDateTimeUtc().toString("yyyy-MM-dd hh:mm:ss");
     m_pullData.tables = QHash<QString, QSet<TableRow>>();
+    emit syncStarted();
 }
 
 void RamServerInterface::push(QString table, QSet<TableRow> rows, QString date, bool commit)
@@ -1096,10 +1097,10 @@ void RamServerInterface::pullNext()
     if (finished) finishSync();
 }
 
-void RamServerInterface::finishSync()
+void RamServerInterface::finishSync(bool withError)
 {
     // Emit result
-    emit syncReady(m_pullData);
+    if (!withError) emit syncReady(m_pullData);
 
     // Finish
     m_syncing = false;
@@ -1107,6 +1108,8 @@ void RamServerInterface::finishSync()
     m_syncingData = SyncData();
     m_fetchData = FetchData();
     m_pullData = SyncData();
+
+    emit syncFinished();
 }
 
 void RamServerInterface::postRequest(Request r)

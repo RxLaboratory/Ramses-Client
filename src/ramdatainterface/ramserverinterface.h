@@ -27,12 +27,14 @@ public:
 
     QString serverAddress() const;
     void setServerAddress(QString newServerAddress);
-
+    int serverPort() const;
+    void setServerPort(int newServerPort);
     bool ssl() const;
     void setSsl(bool useSsl);
-
     int timeOut() const;
     void setTimeout(int newTimeout);
+
+    // Status
 
     const QString &serverVersion() const;
 
@@ -42,6 +44,8 @@ public:
      * @return
      */
     bool isOnline() const;
+
+    bool isSyncing() const;
 
     // API
     /**
@@ -58,9 +62,6 @@ public:
 
     void deleteData(QHash<QString, QSet<QString> > uuidsToDelete);
 
-    int serverPort() const;
-    void setServerPort(int newServerPort);
-
 public slots:
     /**
      * @brief setOnline posts a ping, and set the status to "Connecting"
@@ -76,9 +77,10 @@ signals:
     void sslChanged(bool);
     void connectionStatusChanged(NetworkUtils::NetworkStatus, QString);
     void syncReady(SyncData);
-    void newData(QJsonObject);
     void userChanged(QString uuid, QString username, QString userdata, QString modified);
     void pong(QString serverUuid);
+    void syncStarted();
+    void syncFinished();
 
 protected:
     static RamServerInterface *_instance;
@@ -152,7 +154,7 @@ private:
     void fetch();
     void pull(QString table, int page = 1);
     void pullNext();
-    void finishSync();
+    void finishSync(bool withError = false);
 
     /**
      * @brief Posts a request to the server
