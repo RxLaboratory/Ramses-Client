@@ -1,6 +1,7 @@
 #include "localdatainterface.h"
 
 #include "datacrypto.h"
+#include "datastruct.h"
 #include "duqf-app/app-version.h"
 #include "duqf-utils/utils.h"
 #include "progressmanager.h"
@@ -480,7 +481,7 @@ ServerConfig LocalDataInterface::setDataFile(const QString &file)
     return serverConfig();
 }
 
-QJsonObject LocalDataInterface::getSync(bool fullSync)
+SyncData LocalDataInterface::getSync(bool fullSync)
 {
     ProgressManager *pm = ProgressManager::instance();
     pm->setTitle(tr("Data sync: Getting local data..."));
@@ -489,12 +490,13 @@ QJsonObject LocalDataInterface::getSync(bool fullSync)
     // List all tables
     QStringList tNames = tableNames();
     // Get last Sync
-    QString lastSync = "1970-01-01 00:00:00";
-    QString q = "SELECT lastSync FROM _Sync ;";
-    QSqlQuery qry = query(q);
-    if (qry.first()) lastSync = qry.value(0).toString();
-
-    QJsonArray tables;
+    QString lastSync = "1818-05-05 00:00:00";
+    if (!fullSync)
+    {
+        QString q = "SELECT lastSync FROM _Sync ;";
+        QSqlQuery qry = query(q);
+        if (qry.first()) lastSync = qry.value(0).toString();
+    }
 
     // For each table, get modified rows
 
@@ -504,6 +506,8 @@ QJsonObject LocalDataInterface::getSync(bool fullSync)
 
     pm->addToMaximum(tNames.count());
 
+    QHash<QString, QSet<TableRow>> tables;
+
     for (int i = 0; i < tNames.count(); i++)
     {      
         QString tName = tNames.at(i);
@@ -511,9 +515,7 @@ QJsonObject LocalDataInterface::getSync(bool fullSync)
         pm->setText(tr("Scanning table: %1").arg(tName));
         pm->increment();
 
-        QJsonObject table;
-        QJsonArray rows;
-        table.insert("name", tName );
+        QSet<TableRow> rows;
 
         if (tName == "RamUser") q = "SELECT uuid, data, modified, removed, userName FROM %1 ";
         else q = "SELECT uuid, data, modified, removed FROM %1 ";
@@ -526,34 +528,33 @@ QJsonObject LocalDataInterface::getSync(bool fullSync)
 
         while (qry.next())
         {
-            QJsonObject obj;
-            obj.insert("uuid", qry.value(0).toString() );
-            obj.insert("modified", qry.value(2).toString() );
-            obj.insert("removed", qry.value(3).toInt() );
+            TableRow row;
+            row.uuid = qry.value(0).toString();
+            row.modified = qry.value(2).toString();
+            row.removed = qry.value(3).toInt();
+
             QString data = qry.value(1).toString();
             if (tName == "RamUser")
             {
                 if (ENCRYPT_USER_DATA) data = DataCrypto::instance()->clientDecrypt( data );
-                obj.insert("userName", qry.value(4).toString());
+                row.userName = qry.value(4).toString();
             }
 
-            obj.insert("data", data );
-            rows.append(obj);
+            row.data = data;
+            rows.insert(row);
         }
 
-        table.insert("modifiedRows", rows);
-        tables.append(table);
+        tables.insert(tName, rows);
     }
 
-    QJsonObject result;
-    result.insert("tables", tables);
-    result.insert("previousSyncDate", lastSync);
+    SyncData syncData;
+    syncData.syncDate = lastSync;
+    syncData.tables = tables;
 
     pm->setText(tr("Successfully scanned local data."));
     pm->increment();
 
-    return result;
-    //emit readyToSync(tables, lastSync);
+    return syncData;
 }
 
 void LocalDataInterface::saveSync(QJsonArray tables)

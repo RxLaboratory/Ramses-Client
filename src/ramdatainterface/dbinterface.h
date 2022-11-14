@@ -88,7 +88,7 @@ public slots:
     void suspendSync();
     void resumeSync();
     void sync();
-    void fullSync(bool synchroneous = false);
+    void fullSync();
     void quit();
     /**
      * @brief Changes to offline mode: data is stored locally until we get a connection to the server to sync.

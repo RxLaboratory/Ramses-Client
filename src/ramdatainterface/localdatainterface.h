@@ -6,14 +6,7 @@
 #include <QStringBuilder>
 
 #include "duqf-utils/duqflogger.h"
-
-struct ServerConfig {
-    QString address = "";
-    int updateDelay = 60000;
-    int timeout = 3000;
-    bool useSsl = true;
-    int port = 443;
-};
+#include "datastruct.h"
 
 class LocalDataInterface : public DuQFLoggerObject
 {
@@ -67,7 +60,7 @@ public:
     const QString &dataFile() const;
     ServerConfig setDataFile(const QString &file);
 
-    QJsonObject getSync(bool fullSync=true);
+    SyncData getSync(bool fullSync=true);
     void saveSync(QJsonArray tables);
     void deleteData(QJsonArray tables);
 

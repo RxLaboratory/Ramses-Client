@@ -202,6 +202,7 @@ SOURCES += \
 HEADERS += \
     config.h \
     progressmanager.h \
+    ramdatainterface/datastruct.h \
     rameditwidgets/objectupdateblocker.h \
     rammanagerwidgets/dbmanagerwidget.h \
     rammanagerwidgets/objectlistwidget.h \

@@ -296,21 +296,19 @@ void DBInterface::sync()
     if (m_connectionStatus != NetworkUtils::Online) return;
 
     ProgressManager *pm = ProgressManager::instance();
-    pm->reInit();
-    pm->setMaximum(3);
+    pm->addToMaximum(3);
     pm->setTitle(tr("Quick data sync"));
     pm->setText(tr("Beginning quick data sync..."));
-    pm->start();
 
     // Get modified rows from local
-    QJsonObject syncBody = m_ldi->getSync( false );
+    SyncData syncData = m_ldi->getSync( false );
     // Post to ramserver
-    m_rsi->sync(syncBody);
+    m_rsi->sync(syncData);
 
     pm->finish();
 }
 
-void DBInterface::fullSync(bool synchroneous)
+void DBInterface::fullSync()
 {
     if (m_suspended) {
         log(tr("Sync is suspended!"), DuQFLog::Warning);

@@ -5,13 +5,7 @@
 
 #include "duqf-utils/duqflogger.h"
 #include "duqf-utils/utils.h"
-
-struct Request
-{
-    QNetworkRequest request;
-    QString body;
-    QString query;
-};
+#include "datastruct.h"
 
 class RamServerInterface : public DuQFLoggerObject
 {
@@ -55,9 +49,8 @@ public:
      * @param wait when true, waits for the pong
      */
     void ping();
-    void sync(QJsonArray tables, QDateTime prevSyncDate = QDateTime::fromString("1970-01-01 00:00:00", "yyyy-MM-dd hh:mm:00"), bool synchroneous = false);
-    void sync(QJsonObject body, bool synchroneous = false);
-    QJsonArray downloadData();
+    void sync(SyncData syncData);
+    void downloadData();
 
     const QString &currentUserUuid() const;
 
@@ -82,7 +75,7 @@ public slots:
 signals:
     void sslChanged(bool);
     void connectionStatusChanged(NetworkUtils::NetworkStatus, QString);
-    void syncReady(QJsonObject data, QString serverUuid);
+    void syncReady(SyncData);
     void newData(QJsonObject);
     void userChanged(QString uuid, QString username, QString userdata, QString modified);
     void pong(QString serverUuid);
@@ -152,11 +145,14 @@ private:
     // Ramses Server API
 
     // Starts a sync session
-    void sync();
-    void push(QString table, QJsonArray rows = QJsonArray(), QString date = "1818-05-05 00:00:00", bool commit = false);
+    void startSync();
+    void push(QString table, QSet<TableRow> rows = QSet<TableRow>(), QString date = "1818-05-05 00:00:00", bool commit = false);
+    void pushNext();
     void commit();
-    QJsonObject fetch();
-    QJsonObject pull(QString table, int page = 1);
+    void fetch();
+    void pull(QString table, int page = 1);
+    void pullNext();
+    void finishSync();
 
     /**
      * @brief Posts a request to the server
@@ -247,6 +243,11 @@ private:
      * @brief The waiting list for requests
      */
     QVector<Request> m_requestQueue;
+
+    SyncData m_syncingData;
+    bool m_syncing = false;
+    FetchData m_fetchData;
+    SyncData m_pullData;
 
     // Timers //
 
