@@ -436,10 +436,12 @@ void DBInterface::serverConnectionStatusChanged(NetworkUtils::NetworkStatus stat
     case NetworkUtils::Offline:
         setConnectionStatus(status, "Disconnected from the Ramses Server.");
         suspendSync();
+        suspendAutoSync();
         break;
     case NetworkUtils::Online:
         setConnectionStatus(status, "Connected to the Ramses Server.");
         resumeSync();
+        resumeAutoSync();
         break;
     default:
         return;

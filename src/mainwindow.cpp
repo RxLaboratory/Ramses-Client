@@ -360,7 +360,8 @@ void MainWindow::connectEvents()
     connect(Ramses::instance(),&Ramses::userChanged, this, &MainWindow::currentUserChanged);
     connect(Ramses::instance(), &Ramses::currentProjectChanged, this, &MainWindow::currentProjectChanged);
     connect(DBInterface::instance(),&DBInterface::connectionStatusChanged, this, &MainWindow::dbiConnectionStatusChanged);
-    connect(DBInterface::instance(), SIGNAL(syncFinished()), this, SLOT(update()));
+    connect(DBInterface::instance(), SIGNAL(syncFinished()), this, SLOT(finishSync()));
+    connect(DBInterface::instance(), SIGNAL(syncStarted()), this, SLOT(startSync()));
 }
 
 void MainWindow::connectShortCuts()
@@ -1017,6 +1018,18 @@ void MainWindow::dbiConnectionStatusChanged(NetworkUtils::NetworkStatus s)
         actionSetOnline->setVisible(true);
         actionSetOffline->setVisible(false);
     }
+}
+
+void MainWindow::finishSync()
+{
+    ui_refreshButton->show();
+    mainStatusBar->showMessage(tr("Sync finished!"), 5000);
+}
+
+void MainWindow::startSync()
+{
+    ui_refreshButton->hide();
+    mainStatusBar->showMessage(tr("Syncing..."));
 }
 
 bool MainWindow::eventFilter(QObject *obj, QEvent *event)

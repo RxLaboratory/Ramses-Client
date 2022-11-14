@@ -140,6 +140,8 @@ private slots:
     void currentProjectChanged(RamProject *project);
     void freezeUI(bool f = true);
     void dbiConnectionStatusChanged(NetworkUtils::NetworkStatus s);
+    void finishSync();
+    void startSync();
 
 protected:
     void closeEvent(QCloseEvent *event) override;

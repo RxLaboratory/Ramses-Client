@@ -1,4 +1,4 @@
-- syncing ui feedback (icon, progress?)
+- syncing ui feedback : add icon ( ... )
 - TODO rebuild create online
 - freezeui and wait sync when needed (createdb, other ?)
 - localdatainterface save sync in two single sql queries (update and insert) see on server
