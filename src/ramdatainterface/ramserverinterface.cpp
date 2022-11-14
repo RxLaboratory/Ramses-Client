@@ -564,7 +564,7 @@ void RamServerInterface::dataReceived(QNetworkReply *reply)
         QString message = o.value("message").toString("");
         DuQFLog::LogType l = DuQFLog::Information;
         if (level == "DATA") l = DuQFLog::Data;
-        else if (level == "DEBUG") l = DuQFLog::Debug;
+        else if (level == "DEBUG" || level == "INFO") l = DuQFLog::Debug;
         else if (level == "WARNING") l = DuQFLog::Warning;
         else if (level == "CRITICAL") l = DuQFLog::Critical;
         else if (level == "FATAL") l = DuQFLog::Fatal;
@@ -886,12 +886,10 @@ QJsonObject RamServerInterface::parseData(QNetworkReply *reply)
     bool repSuccess = repObj.value("success").toBool();
 
     // Log the rep message
-    DuQFLog::LogType logLevel = DuQFLog::Information;
+    DuQFLog::LogType logLevel = DuQFLog::Debug;
     if (repQuery != "login" && !repSuccess) logLevel = DuQFLog::Warning;
     if (repMessage.startsWith("warning", Qt::CaseInsensitive)) logLevel = DuQFLog::Warning;
     log(repMessage, logLevel);
-
-
 
     return repObj;
 }
