@@ -1000,6 +1000,8 @@ bool RamServerInterface::checkServer(QString hostName)
 
 void RamServerInterface::startSync()
 {
+    qDebug() << "Server Interface: Starting Sync...";
+
     queueRequest("sync");
     m_syncing = true;
     m_pullData.syncDate = QDateTime::currentDateTimeUtc().toString("yyyy-MM-dd hh:mm:ss");
@@ -1009,6 +1011,8 @@ void RamServerInterface::startSync()
 
 void RamServerInterface::push(QString table, QSet<TableRow> rows, QString date, bool commit)
 {
+    qDebug() << "Server Interface: Pushing " << rows.count() << " rows to " << table;
+
     QJsonObject body;
     body.insert("table", table);
     QJsonArray rowsArray;
@@ -1057,16 +1061,22 @@ void RamServerInterface::pushNext()
 
 void RamServerInterface::commit()
 {
+    qDebug() << "Server Interface: Commit!";
+
     push("", QSet<TableRow>(), "1818-05-05 00:00:00", true);
 }
 
 void RamServerInterface::fetch()
 {
+    qDebug() << "Server Interface: Fetching changes...";
+
     queueRequest("fetch");
 }
 
 void RamServerInterface::pull(QString table, int page)
 {
+    qDebug() << "Server Interface: Pulling page #" << page << " from " << table;
+
     QJsonObject body;
     body.insert("table", table);
     body.insert("page", page);
@@ -1099,6 +1109,8 @@ void RamServerInterface::pullNext()
 
 void RamServerInterface::finishSync(bool withError)
 {
+    qDebug() << "Server Interface: Finishing sync...";
+
     // Emit result
     if (!withError) emit syncReady(m_pullData);
 
@@ -1110,6 +1122,8 @@ void RamServerInterface::finishSync(bool withError)
     m_pullData = SyncData();
 
     emit syncFinished();
+
+    qDebug() << "Server Interface: Sync finished!";
 }
 
 void RamServerInterface::postRequest(Request r)
