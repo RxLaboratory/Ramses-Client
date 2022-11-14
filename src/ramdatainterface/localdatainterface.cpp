@@ -517,6 +517,7 @@ SyncData LocalDataInterface::getSync(bool fullSync)
 
         QSet<TableRow> rows;
 
+        QString q;
         if (tName == "RamUser") q = "SELECT uuid, data, modified, removed, userName FROM %1 ";
         else q = "SELECT uuid, data, modified, removed FROM %1 ";
         if (!fullSync) q += " WHERE modified >= '%2' ;";
@@ -524,7 +525,7 @@ SyncData LocalDataInterface::getSync(bool fullSync)
         if (!fullSync) q = q.arg(tName, lastSync);
         else q = q.arg(tName);
 
-        qry = query( q );
+        QSqlQuery qry = query( q );
 
         while (qry.next())
         {
@@ -586,21 +587,25 @@ void LocalDataInterface::saveSync(SyncData syncData)
         QMap<QString, QString> uuidDates = modificationDates( tableName );
 
         QSet<TableRow> incomingRows = i.value();
-        QSetIterator<TableRow> irows(incomingRows);
-        irows.toBack();
-        while (irows.hasPrevious())
+        QSet<TableRow>::const_iterator irows = incomingRows.constEnd();
+        while (irows != incomingRows.constBegin())
         {
-            TableRow incomingRow = irows.previous();
+            TableRow incomingRow = *irows;
 
             // Check if row exists
             QString uuid = incomingRow.uuid;
             if (uuid == "")
             {
-                incomingRows.remove(incomingRow);
+                incomingRows.erase(irows);
+                ++irows;
                 continue;
             }
 
-            if (uuidDates.contains(uuid)) continue;
+            if (uuidDates.contains(uuid))
+            {
+                ++irows;
+                continue;
+            }
 
             QString data = incomingRow.data;
             QString modified = incomingRow.modified;
@@ -634,7 +639,8 @@ void LocalDataInterface::saveSync(SyncData syncData)
                 insertedObjects << ins;
             }
 
-            incomingRows.remove(incomingRow);
+            incomingRows.erase(irows);
+            ++irows;
         }
 
         // Emit insertions
