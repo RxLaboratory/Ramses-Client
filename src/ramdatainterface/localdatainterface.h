@@ -83,7 +83,7 @@ signals:
     void dataReset();
     void ramsesPathChanged(QString);
     // Sync result
-    void synced();
+    void syncFinished();
     void dataChanged(QString);
     void availabilityChanged(QString,bool);
     void inserted(QString uuid, QString table);

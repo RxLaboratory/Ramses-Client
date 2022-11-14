@@ -21,7 +21,7 @@ void DBInterface::setOffline()
     pm->setTitle(tr("Disconnecting from the Ramses Server..."));
 
     // One last sync
-    if (m_rsi->isOnline() && !m_suspended)
+    if (m_rsi->isOnline() && !m_syncSuspended)
     {
         pm->setText(tr("One last sync..."));
         pm->increment();
@@ -241,12 +241,24 @@ void DBInterface::setCurrentUserUuid(QString uuid)
 void DBInterface::suspendSync()
 {
     m_updateTimer->stop();
-    m_suspended = true;
+    m_syncSuspended = true;
 }
 
 void DBInterface::resumeSync()
 {
-    m_suspended = false;
+    m_syncSuspended = false;
+    m_updateTimer->start(m_updateFrequency);
+}
+
+void DBInterface::suspendAutoSync()
+{
+    m_autoSyncSuspended = true;
+    m_updateTimer->stop();
+}
+
+void DBInterface::resumeAutoSync()
+{
+    m_autoSyncSuspended = false;
     m_updateTimer->start(m_updateFrequency);
 }
 
@@ -289,11 +301,13 @@ void DBInterface::acceptClean()
 
 void DBInterface::sync()
 {
-    if (m_suspended) {
+    if (m_syncSuspended) {
         log(tr("Sync is suspended!"), DuQFLog::Warning);
         return;
     }
     if (m_connectionStatus != NetworkUtils::Online) return;
+
+    emit syncStarted();
 
     ProgressManager *pm = ProgressManager::instance();
     pm->addToMaximum(3);
@@ -308,11 +322,13 @@ void DBInterface::sync()
 
 void DBInterface::fullSync()
 {
-    if (m_suspended) {
+    if (m_syncSuspended) {
         log(tr("Sync is suspended!"), DuQFLog::Warning);
         return;
     }
     if (m_connectionStatus != NetworkUtils::Online) return;
+
+    emit syncStarted();
 
     ProgressManager *pm = ProgressManager::instance();
     pm->setMaximum(3);
@@ -338,6 +354,7 @@ DBInterface::DBInterface(QObject *parent) : DuQFLoggerObject("Database Interface
     m_rsi = RamServerInterface::instance();
 
     m_updateTimer = new QTimer(this);
+    m_updateTimer->setSingleShot(true);
 
     connectEvents();
 }
@@ -345,7 +362,7 @@ DBInterface::DBInterface(QObject *parent) : DuQFLoggerObject("Database Interface
 void DBInterface::connectEvents()
 {
     connect(m_ldi, &LocalDataInterface::dataReset, this, &DBInterface::dataReset);
-    connect(m_ldi, &LocalDataInterface::synced, this, &DBInterface::synced);
+    connect(m_ldi, &LocalDataInterface::syncFinished, this, &DBInterface::finishSync);
     connect(m_rsi, &RamServerInterface::connectionStatusChanged, this, &DBInterface::serverConnectionStatusChanged);
     connect(m_rsi, &RamServerInterface::syncReady, m_ldi, &LocalDataInterface::sync);
     connect(m_rsi, &RamServerInterface::userChanged, this, &DBInterface::serverUserChanged);
@@ -360,9 +377,14 @@ NetworkUtils::NetworkStatus DBInterface::connectionStatus() const
     return m_connectionStatus;
 }
 
-bool DBInterface::isSuspended()
+bool DBInterface::isSyncSuspended()
 {
-    return m_suspended;
+    return m_syncSuspended;
+}
+
+bool DBInterface::isAutoSyncSuspended()
+{
+    return m_autoSyncSuspended;
 }
 
 void DBInterface::setConnectionStatus(NetworkUtils::NetworkStatus s, QString reason)
@@ -399,6 +421,12 @@ void DBInterface::serverUserChanged(QString userUuid, QString username, QString 
             return;
         }
     }
+}
+
+void DBInterface::finishSync()
+{
+    emit syncFinished();
+    if (!m_autoSyncSuspended) m_updateTimer->start( m_updateFrequency );
 }
 
 void DBInterface::serverConnectionStatusChanged(NetworkUtils::NetworkStatus status)

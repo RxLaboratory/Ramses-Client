@@ -360,7 +360,7 @@ void MainWindow::connectEvents()
     connect(Ramses::instance(),&Ramses::userChanged, this, &MainWindow::currentUserChanged);
     connect(Ramses::instance(), &Ramses::currentProjectChanged, this, &MainWindow::currentProjectChanged);
     connect(DBInterface::instance(),&DBInterface::connectionStatusChanged, this, &MainWindow::dbiConnectionStatusChanged);
-    connect(DBInterface::instance(), SIGNAL(synced()), this, SLOT(update()));
+    connect(DBInterface::instance(), SIGNAL(syncFinished()), this, SLOT(update()));
 }
 
 void MainWindow::connectShortCuts()

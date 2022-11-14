@@ -705,7 +705,7 @@ void LocalDataInterface::saveSync(SyncData syncData)
         }
     }
 
-    emit synced();
+    emit syncFinished();
 }
 
 void LocalDataInterface::deleteData(SyncData syncData)
