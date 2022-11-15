@@ -4,17 +4,18 @@
 DBTableModel::DBTableModel(RamAbstractObject::ObjectType type, QObject *parent):
     RamObjectModel(type, parent)
 {
-    // Initial loading
-    reload();
+    m_filterKey = "";
+    m_filterValues = QStringList();
+    construct();
+}
 
-    // Monitor the DB for changes
-    LocalDataInterface *ldi = LocalDataInterface::instance();
-    connect(ldi, &LocalDataInterface::inserted, this, &DBTableModel::insertObject);
-    connect(ldi, &LocalDataInterface::removed, this, &DBTableModel::removeObject);
-    connect(ldi, &LocalDataInterface::dataReset, this, &DBTableModel::reload);
-
-    // Monitor order changes to save the new orders
-    connect(this, &RamObjectModel::rowsMoved, this, &DBTableModel::saveOrder);
+DBTableModel::DBTableModel(RamAbstractObject::ObjectType type, QString filterKey, QStringList filterValues, int lookUpRole, QObject *parent):
+    RamObjectModel(type, parent)
+{
+    m_filterKey = filterKey;
+    m_filterValues = filterValues;
+    this->setLookupRole(lookUpRole);
+    construct();
 }
 
 void DBTableModel::insertObject(QString uuid, QString table)
@@ -40,7 +41,7 @@ void DBTableModel::removeObject(QString uuid, QString table)
 void DBTableModel::reload()
 {
     clear();
-    QVector<QStringList> objs = LocalDataInterface::instance()->tableData( RamObject::objectTypeName( type() ));
+    QVector<QStringList> objs = LocalDataInterface::instance()->tableData( RamObject::objectTypeName( type() ), m_filterKey, m_filterValues );
 
     // Sort
     std::sort(objs.begin(), objs.end(), objSorter);
@@ -69,6 +70,21 @@ void DBTableModel::saveOrder(const QModelIndex &parent, int start, int end, cons
         RamObject *o = this->get(i);
         o->setOrder(i);
     }
+}
+
+void DBTableModel::construct()
+{
+    // Initial loading
+    reload();
+
+    // Monitor the DB for changes
+    LocalDataInterface *ldi = LocalDataInterface::instance();
+    connect(ldi, &LocalDataInterface::inserted, this, &DBTableModel::insertObject);
+    connect(ldi, &LocalDataInterface::removed, this, &DBTableModel::removeObject);
+    connect(ldi, &LocalDataInterface::dataReset, this, &DBTableModel::reload);
+
+    // Monitor order changes to save the new orders
+    connect(this, &RamObjectModel::rowsMoved, this, &DBTableModel::saveOrder);
 }
 
 bool objSorter(const QStringList a, const QStringList b)
