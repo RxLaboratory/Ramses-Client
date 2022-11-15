@@ -40,7 +40,7 @@ public:
 
     QSet<QString> tableUuids(QString table, bool includeRemoved = false);
     // Returns a vector instead of set: tabledata may be sorted later
-    QVector<QStringList> tableData(QString table, bool includeRemoved = false);
+    QVector<QStringList> tableData(QString table, QString filterKey = "", QStringList filterValues = QStringList(), bool includeRemoved = false);
     bool contains(QString uuid, QString table);
     QMap<QString, QString> modificationDates(QString table);
 
