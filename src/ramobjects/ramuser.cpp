@@ -49,7 +49,7 @@ RamUser::RamUser(QString uuid):
 {
     construct();
 
-    loadModel( m_schedule, "schedule" );
+    //loadModel( m_schedule, "schedule" );
 }
 
 void RamUser::setShortName(const QString &shortName)
@@ -102,7 +102,7 @@ void RamUser::setRole(const QString role)
     insertData("role", role);
 }
 
-RamObjectModel *RamUser::schedule() const
+DBTableModel *RamUser::schedule() const
 {
     return m_schedule;
 }
@@ -194,6 +194,12 @@ void RamUser::construct()
     m_existingObjects[m_uuid] = this;
     m_icon = ":/icons/user";
     m_editRole = Admin;
-    m_schedule = createModel(RamObject::ScheduleEntry, "schedule");
-    m_schedule->setLookupRole(RamObject::Date);
+    //m_schedule = createModel(RamObject::ScheduleEntry, "schedule");
+    m_schedule = new DBTableModel (
+                RamAbstractObject::ScheduleEntry,
+                "user",
+                QStringList(this->uuid()),
+                RamObject::Date,
+                this
+                );
 }

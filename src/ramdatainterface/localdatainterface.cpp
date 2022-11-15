@@ -177,7 +177,7 @@ QSet<QString> LocalDataInterface::tableUuids(QString table, bool includeRemoved)
     return data;
 }
 
-QVector<QStringList> LocalDataInterface::tableData(QString table, bool includeRemoved)
+QVector<QStringList> LocalDataInterface::tableData(QString table, QString filterKey, QStringList filterValues, bool includeRemoved)
 {
     QString q = "SELECT `uuid`, `data` FROM '%1'";
     if (!includeRemoved) q += " WHERE removed = 0";
@@ -185,17 +185,33 @@ QVector<QStringList> LocalDataInterface::tableData(QString table, bool includeRe
 
     QSqlQuery qry = query( q.arg(table) );
 
-    QVector<QStringList> data;
+    bool useFilter = filterKey != "" && !filterValues.isEmpty();
+
+    QVector<QStringList> tData;
 
     while (qry.next())
     {
+        QString uuid = qry.value(0).toString();
+        QString data = qry.value(1).toString();
+
+        // Decrypt data if user table
+        if (table == "RamUser" && ENCRYPT_USER_DATA) data = DataCrypto::instance()->clientDecrypt( data );
+
+        // Filter
+        if (useFilter)
+        {
+            QJsonDocument doc = QJsonDocument::fromJson( data.toUtf8() );
+            QJsonObject obj = doc.object();
+            if ( !filterValues.contains( obj.value(filterKey).toString() ) ) continue;
+        }
+
         QStringList entry;
-        entry << qry.value(0).toString();
-        entry << qry.value(1).toString();
-        data << entry;
+        entry << uuid;
+        entry << data;
+        tData << entry;
     }
 
-    return data;
+    return tData;
 }
 
 bool LocalDataInterface::contains(QString uuid, QString table)
@@ -853,7 +869,7 @@ QString LocalDataInterface::cleanDataBase(int deleteDataOlderThan)
     report += "# Cleaning report\n\n";
     report += ".\n\n## Status\n\n";
     int numStatusChanged = 0;
-    QVector<QStringList> statusData = tableData("RamStatus", true);
+    QVector<QStringList> statusData = tableData("RamStatus", "", QStringList(), true);
     for (int i = 0; i < statusData.count(); i++)
     {
         QJsonDocument d = QJsonDocument::fromJson( statusData[i][1].toUtf8() );
