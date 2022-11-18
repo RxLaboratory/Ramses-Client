@@ -24,6 +24,15 @@ void DBTableModel::insertObject(QString uuid, QString table)
     // Not for us
     if (t != m_type) return;
 
+    // Check filters
+    if (m_filterKey != "" && !m_filterValues.isEmpty())
+    {
+        QString dataStr = LocalDataInterface::instance()->objectData(uuid, table);
+        QJsonDocument doc = QJsonDocument::fromJson( dataStr.toUtf8() );
+        QJsonObject obj = doc.object();
+        if ( !m_filterValues.contains( obj.value(m_filterKey).toString() ) ) return;
+    }
+
     // Insert
     insertObjects( rowCount(), QVector<QString>() << uuid );
 }
