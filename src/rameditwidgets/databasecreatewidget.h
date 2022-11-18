@@ -16,6 +16,7 @@ public:
 private slots:
     void checkPath(QString p);
     void createDB();
+    void finishSync();
 
 private:
     void setupUi();
@@ -34,6 +35,8 @@ private:
     QLineEdit *ui_nameEdit;
     ServerEditWidget *ui_serverEdit;
     QPushButton *ui_createButton;
+
+    bool m_downloading = false;
 };
 
 #endif // DATABASECREATEWIDGET_H

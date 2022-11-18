@@ -31,6 +31,13 @@ void DatabaseCreateWidget::createDB()
     else createOnlineDB();
 }
 
+void DatabaseCreateWidget::finishSync()
+{
+    if (!m_downloading) return;
+    ProgressManager *pm = ProgressManager::instance();
+    pm->finish();
+}
+
 void DatabaseCreateWidget::setupUi()
 {
     QWidget *dummy = new QWidget(this);
@@ -119,6 +126,7 @@ void DatabaseCreateWidget::connectEvents()
 {
     connect(ui_fileSelector, &DuQFFolderSelectorWidget::pathChanged, this, &DatabaseCreateWidget::checkPath);
     connect(ui_createButton, &QPushButton::clicked, this, &DatabaseCreateWidget::createDB);
+    connect(DBInterface::instance(), &DBInterface::syncFinished, this, &DatabaseCreateWidget::finishSync);
 }
 
 bool DatabaseCreateWidget::createNewDB()
@@ -225,32 +233,16 @@ void DatabaseCreateWidget::createOnlineDB()
         return;
     }
 
-    // Download all data
-    /*QJsonArray tables = rsi->downloadData();
-    if (tables.count() == 0)
-    {
-        QMessageBox::warning(this,
-                                 tr("Can't find any data"),
-                                 tr("I can't download any data from this server.\n\n"
-                                    "This may be due to a slow connexion,\n"
-                                    "try to increase the server time out.")
-                                 );
-        return;
-    }
-
-    LocalDataInterface *ldi = LocalDataInterface::instance();
-
-    // Save data to DB
-    ldi->saveSync(tables);
-
-    // And finish login
-    Ramses::instance()->setUserUuid( uuid );*/
-
     // Hide dock
     MainWindow *mw = (MainWindow*)GuiUtils::appMainWindow();
     mw->hidePropertiesDock();
 
     // And trigger the first Sync
+    ProgressManager *pm = ProgressManager::instance();
+    pm->setTitle(tr("Downloading data..."));
+    pm->freeze();
+    pm->start();
+    m_downloading = true;
     DBInterface::instance()->fullSync();
 }
 
