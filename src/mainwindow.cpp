@@ -1117,14 +1117,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
         if (r == QMessageBox::Yes) m_readyToClose = true;
     }
 
-    if (m_readyToClose)
-    {
-        QFontDatabase::removeAllApplicationFonts();
-        trayIcon->hide();
-
-        QMainWindow::closeEvent(event);
-    }
-    else
+    if (!m_readyToClose)
     {
         // Get to the home page first to make sure all toolbars are hidden
         home();
@@ -1136,19 +1129,32 @@ void MainWindow::closeEvent(QCloseEvent *event)
         settings.setValue("windowState", this->saveState());
         settings.endGroup();
 
-        // Clean before quit!
-        m_closing = true;
+        if (DBInterface::instance()->connectionStatus() == NetworkUtils::Online)
+        {
+            // Clean before quit!
+            m_closing = true;
 
-        ProgressManager *pm = ProgressManager::instance();
-        pm->setTitle("Disconnecting...");
-        pm->setText("One last sync!");
-        pm->setMaximum(3);
-        pm->start();
-        pm->freeze();
+            ProgressManager *pm = ProgressManager::instance();
+            pm->setTitle("Disconnecting...");
+            pm->setText("One last sync!");
+            pm->setMaximum(3);
+            pm->start();
+            pm->freeze();
 
-        DBInterface::instance()->setOffline();
+            DBInterface::instance()->setOffline();
 
-        event->ignore();
+            event->ignore();
+        }
+        else m_readyToClose = true;
+
+    }
+
+    if (m_readyToClose)
+    {
+        QFontDatabase::removeAllApplicationFonts();
+        trayIcon->hide();
+
+        QMainWindow::closeEvent(event);
     }
 }
 
