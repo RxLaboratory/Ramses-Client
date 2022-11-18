@@ -77,7 +77,7 @@ void DBTableModel::saveOrder(const QModelIndex &parent, int start, int end, cons
     for (int i = first; i <= last; i++)
     {
         RamObject *o = this->get(i);
-        o->setOrder(i);
+        if (o) o->setOrder(i);
     }
 }
 
