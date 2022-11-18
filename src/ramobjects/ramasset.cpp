@@ -35,6 +35,7 @@ RamAsset::RamAsset(QString shortName, QString name, RamAssetGroup *ag) :
     Q_ASSERT_X(ag, "RamAsset(shortname, name, assetgroup)", "AssetGroup can't be null!");
     construct();
     setAssetGroup(ag);
+    createData();
 }
 
 QColor RamAsset::color() const

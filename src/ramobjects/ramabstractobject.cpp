@@ -174,7 +174,7 @@ const QString RamAbstractObject::uuidFromPath(QString path, ObjectType type)
 
 // PUBLIC //
 
-RamAbstractObject::RamAbstractObject(QString shortName, QString name, ObjectType type, bool isVirtual, bool encryptData, bool create)
+RamAbstractObject::RamAbstractObject(QString shortName, QString name, ObjectType type, bool isVirtual, bool encryptData)
 {
     m_uuid = RamUuid::generateUuidString(shortName + name);
     m_objectType = type;
@@ -188,9 +188,7 @@ RamAbstractObject::RamAbstractObject(QString shortName, QString name, ObjectType
     data.insert("comment", "");
     data.insert("order", 0);
 
-    QJsonDocument doc(data);
-    if (create) createData(doc.toJson(QJsonDocument::Compact));
-    else setData(data);
+    setData(data);
 
     construct();
 }

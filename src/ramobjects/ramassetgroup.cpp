@@ -43,6 +43,7 @@ RamAssetGroup::RamAssetGroup(QString shortName, QString name, RamProject *projec
     construct();
     setProject(project);
     insertData("project", project->uuid());
+    createData();
 }
 
 RamAssetGroup::RamAssetGroup(QString uuid):

@@ -129,6 +129,8 @@ RamStatus::RamStatus(RamUser *user, RamAbstractItem *item, RamStep *step, bool i
     d.insert("completionRatio", 0);
 
     setData(d);
+
+    createData();
 }
 
 RamStatus::RamStatus(QString uuid):

@@ -33,6 +33,7 @@ RamProject::RamProject(QString shortName, QString name):
     RamObject(shortName, name, Project)
 {
     construct();
+    createData();
 }
 
 RamProject::RamProject(QString uuid):

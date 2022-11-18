@@ -67,6 +67,8 @@ RamStep::RamStep(QString shortName, QString name, RamProject *project):
     d.insert("project", project->uuid());
 
     setData(d);
+
+    createData();
 }
 
 RamStep::RamStep(QString uuid):

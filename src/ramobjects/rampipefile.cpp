@@ -32,6 +32,8 @@ RamPipeFile::RamPipeFile(QString shortName, RamProject *project) :
     construct();
 
     insertData("project", project->uuid());
+
+    createData();
 }
 
 RamPipeFile::RamPipeFile(QString uuid):

@@ -40,6 +40,8 @@ RamPipe::RamPipe(RamStep *output, RamStep *input):
 
     setData(d);
 
+    createData();
+
     this->setParent(this->project());
     connectEvents();
 }

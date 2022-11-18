@@ -32,6 +32,7 @@ RamTemplateAssetGroup::RamTemplateAssetGroup(QString shortName, QString name, Ob
     RamObject(shortName, name, type)
 {
     construct();
+    createData();
 }
 
 RamTemplateAssetGroup::RamTemplateAssetGroup(QString uuid, ObjectType type):

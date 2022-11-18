@@ -32,6 +32,7 @@ RamState::RamState(QString shortName, QString name) :
     RamObject(shortName, name, State)
 {
     construct();
+    createData();
 }
 
 RamState::RamState(QString uuid):

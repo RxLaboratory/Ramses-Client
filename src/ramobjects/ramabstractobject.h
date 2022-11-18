@@ -130,7 +130,7 @@ public:
 
     // METHODS //
 
-    RamAbstractObject(QString shortName, QString name, ObjectType type, bool isVirtual = false, bool encryptData = false, bool create = true);
+    RamAbstractObject(QString shortName, QString name, ObjectType type, bool isVirtual = false, bool encryptData = false);
     ~RamAbstractObject();
 
     bool is(RamAbstractObject *other) const;

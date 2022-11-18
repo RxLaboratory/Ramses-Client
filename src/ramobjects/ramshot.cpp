@@ -38,6 +38,7 @@ RamShot::RamShot(QString shortName, QString name, RamSequence *sequence):
     Q_ASSERT_X(sequence, "RamAsset(shortname, name, assetgroup)", "Sequence can't be null!");
     construct();
     insertData("sequence", sequence->uuid() );
+    createData();
 }
 
 QColor RamShot::color() const
