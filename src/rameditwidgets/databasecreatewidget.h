@@ -24,6 +24,9 @@ private:
     bool createNewDB();
     bool createNewDB(ServerConfig s);
 
+    void createOnlineDB();
+    void createOfflineDB();
+
     DuQFFolderSelectorWidget *ui_fileSelector;
     DuQFFolderSelectorWidget *ui_folderSelector;
     QTabWidget *ui_tabWidget;

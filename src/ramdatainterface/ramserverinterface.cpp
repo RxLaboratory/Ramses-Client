@@ -308,8 +308,7 @@ void RamServerInterface::downloadData()
 void RamServerInterface::setOnline(QString serverUuid)
 {
     ProgressManager *pm = ProgressManager::instance();
-
-    pm->setTitle(tr("Server connexion"));
+    pm->addToMaximum(5);
     pm->setText(tr("Connecting to the Ramses Server..."));
     pm->increment();
 
@@ -643,6 +642,8 @@ void RamServerInterface::dataReceived(QNetworkReply *reply)
             finishSync();
         }
         QJsonArray fetchedTables = content.value("tables").toArray();
+        ProgressManager *pm = ProgressManager::instance();
+        pm->setText(tr("Sync: fetching new data..."));
         for (int i = 0; i < fetchedTables.count(); i++)
         {
             QJsonObject fetchObj = fetchedTables.at(i).toObject();
@@ -652,6 +653,7 @@ void RamServerInterface::dataReceived(QNetworkReply *reply)
             fetchData.pageCount = fetchObj.value("pageCount").toInt();
             fetchData.deleteCount = fetchObj.value("deleteCount").toInt();
             m_fetchData.tables.insert(fetchData);
+            pm->addToMaximum(fetchData.pageCount);
         }
         // Start pulling
         pullNext();
@@ -1011,6 +1013,10 @@ void RamServerInterface::startSync()
 {
     qDebug() << "Server Interface: Starting Sync...";
 
+    ProgressManager *pm = ProgressManager::instance();
+    pm->setText(tr("Starting server sync session..."));
+    pm->addToMaximum(m_syncingData.tables.count());
+
     queueRequest("sync");
     m_syncing = true;
     m_pullData.syncDate = QDateTime::currentDateTimeUtc().toString("yyyy-MM-dd hh:mm:ss");
@@ -1062,7 +1068,13 @@ void RamServerInterface::pushNext()
     }
 
     // If we've got all rows, remove the table from the data to sync
-    if (rows.isEmpty()) m_syncingData.tables.remove(table);
+    if (rows.isEmpty())
+    {
+        ProgressManager *pm = ProgressManager::instance();
+        pm->increment();
+        pm->setText(tr("Uploading changes to the server..."));
+        m_syncingData.tables.remove(table);
+    }
 
     // Push the rows
     push(table, pushRows, m_syncingData.syncDate, false);
@@ -1113,6 +1125,10 @@ void RamServerInterface::pullNext()
             continue;
         }
 
+        ProgressManager *pm = ProgressManager::instance();
+        pm->increment();
+        pm->setText(tr("Downloading new data from the server..."));
+
         finished = false;
         fetchData.currentPage++;
         pull( fetchData.name, fetchData.currentPage );
@@ -1130,6 +1146,10 @@ void RamServerInterface::pullNext()
 void RamServerInterface::finishSync(bool withError)
 {
     qDebug() << "Server Interface: Finishing sync...";
+
+    ProgressManager *pm = ProgressManager::instance();
+    if (withError) pm->setText(tr("Sync finished with error."));
+    else pm->setText("Sync OK!");
 
     // Emit result
     if (!withError) emit syncReady(m_pullData, m_serverUuid );

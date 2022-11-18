@@ -93,7 +93,6 @@ public slots:
     void resumeAutoSync();
     void sync();
     void fullSync();
-    void quit();
     /**
      * @brief Changes to offline mode: data is stored locally until we get a connection to the server to sync.
      */
@@ -168,6 +167,7 @@ private:
     QTimer *m_updateTimer;
     bool m_syncSuspended = true;
     bool m_autoSyncSuspended = true;
+    bool m_disconnecting = false;
 };
 
 #endif // DBINTERFACE_H

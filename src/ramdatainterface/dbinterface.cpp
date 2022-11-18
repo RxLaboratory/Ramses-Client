@@ -12,38 +12,26 @@ DBInterface *DBInterface::instance()
 
 void DBInterface::setOffline()
 {
-    int timeOut = m_rsi->timeOut();
-
     ProgressManager *pm = ProgressManager::instance();
-    pm->start();
-    pm->setMaximum(timeOut + 2);
+    pm->setText( tr("Disconnecting from the Ramses Server...") );
+    pm->addToMaximum(2);
 
-    pm->setTitle(tr("Disconnecting from the Ramses Server..."));
+    m_disconnecting = true;
 
     // One last sync
     if (m_rsi->isOnline() && !m_syncSuspended)
     {
-        pm->setText(tr("One last sync..."));
+        pm->setText( tr("One last sync!") );
         pm->increment();
 
         fullSync();
-
-        // Wait for server timeout to be able to sync
-        QDeadlineTimer t( timeOut );
-        while (true)
-        {
-            pm->setProgress( timeOut - t.remainingTime() );
-            qApp->processEvents();
-            if (t.hasExpired()) break;
-        }
+        suspendAutoSync();
+        return;
     }
 
-    pm->setText(tr("Disconnecting..."));
+    pm->setText( tr("Disconnecting.") );
     pm->increment();
-    // Disconnects from the Ramses Server
-    m_rsi->setOffline();
-    pm->setText(tr("Ready"));
-    pm->finish();
+    finishSync();
 }
 
 void DBInterface::setOnline(QString serverUuid)
@@ -133,8 +121,7 @@ const QString &DBInterface::dataFile() const
 void DBInterface::setDataFile(const QString &file, bool ignoreUser)
 {
     ProgressManager *pm = ProgressManager::instance();
-    pm->start();
-    pm->setMaximum(15);
+    pm->setText(tr("Loading database..."));
 
     ServerConfig config = m_ldi->setDataFile(file);
     // Set the new server params
@@ -311,7 +298,6 @@ void DBInterface::sync()
 
     ProgressManager *pm = ProgressManager::instance();
     pm->addToMaximum(3);
-    pm->setTitle(tr("Quick data sync"));
     pm->setText(tr("Beginning quick data sync..."));
 
     // Get modified rows from local
@@ -333,8 +319,7 @@ void DBInterface::fullSync()
     emit syncStarted();
 
     ProgressManager *pm = ProgressManager::instance();
-    pm->setMaximum(3);
-    pm->setTitle(tr("Full data sync"));
+    pm->addToMaximum(3);
     pm->setText(tr("Beginning full data sync..."));
 
     // Get modified rows from local
@@ -342,11 +327,6 @@ void DBInterface::fullSync()
     log(tr("Pushing data to the server..."));
     // Post to ramserver
     m_rsi->sync(syncData);
-}
-
-void DBInterface::quit()
-{
-    setOffline();
 }
 
 DBInterface::DBInterface(QObject *parent) : DuQFLoggerObject("Database Interface", parent)
@@ -371,8 +351,6 @@ void DBInterface::connectEvents()
     connect(m_rsi, &RamServerInterface::userChanged, this, &DBInterface::serverUserChanged);
     connect(m_rsi, &RamServerInterface::pong, m_ldi, &LocalDataInterface::setServerUuid);
     connect(m_updateTimer, SIGNAL(timeout()), this, SLOT(sync()));
-
-    connect(qApp, &QApplication::aboutToQuit, this, &DBInterface::quit);
 }
 
 NetworkUtils::NetworkStatus DBInterface::connectionStatus() const
@@ -428,6 +406,12 @@ void DBInterface::serverUserChanged(QString userUuid, QString username, QString 
 
 void DBInterface::finishSync()
 {
+    if (m_disconnecting)
+    {
+        // Disconnects from the Ramses Server
+        m_rsi->setOffline();
+    }
+
     emit syncFinished();
     if (!m_autoSyncSuspended) m_updateTimer->start( m_updateFrequency );
     log(tr("Finished sync."));

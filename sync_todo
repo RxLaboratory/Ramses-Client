@@ -1,3 +1,4 @@
+- on quit: wait for sync to end
 - syncing ui better feedback : a status/connected icon + message user@server ( ... )
 - TODO rebuild create online
 - freezeui and wait sync when needed (createdb, other ?)

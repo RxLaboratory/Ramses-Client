@@ -449,6 +449,7 @@ ServerConfig LocalDataInterface::setDataFile(const QString &file)
     m_uuids.clear();
 
     ProgressManager *pm = ProgressManager::instance();
+    pm->addToMaximum(2);
 
     QSqlDatabase db = QSqlDatabase::database("localdata");
     openDB(db, file);
@@ -500,7 +501,6 @@ ServerConfig LocalDataInterface::setDataFile(const QString &file)
 SyncData LocalDataInterface::getSync(bool fullSync)
 {
     ProgressManager *pm = ProgressManager::instance();
-    pm->setTitle(tr("Data sync: Getting local data..."));
     pm->increment();
 
     // List all tables
@@ -520,7 +520,7 @@ SyncData LocalDataInterface::getSync(bool fullSync)
     QString currentUuid = "";
     if (u) currentUuid = u->uuid();
 
-    pm->addToMaximum(tNames.count());
+    pm->addToMaximum(tNames.count() + 2);
 
     QHash<QString, QSet<TableRow>> tables;
 
@@ -579,7 +579,7 @@ void LocalDataInterface::saveSync(SyncData syncData)
     QHash<QString, QSet<TableRow>> tables = syncData.tables;
 
     ProgressManager *pm = ProgressManager::instance();
-    pm->addToMaximum(tables.count()*3);
+    pm->addToMaximum(tables.count()*2);
 
     // Insertions
     QHashIterator<QString, QSet<TableRow>> i(tables);
@@ -731,6 +731,8 @@ void LocalDataInterface::deleteData(SyncData syncData)
     QHash<QString, QStringList> tables = syncData.deletedUuids;
     QHashIterator<QString, QStringList> i(tables);
 
+    pm->addToMaximum(tables.count());
+
     while (i.hasNext()) {
 
         i.next();
@@ -776,9 +778,8 @@ void LocalDataInterface::setCurrentUserUuid(QString uuid)
 void LocalDataInterface::sync(SyncData data, QString serverUuid)
 {
     ProgressManager *pm = ProgressManager::instance();
-    pm->setTitle(tr("Saving Ramses server data."));
     pm->setText(tr("Updating local data..."));
-    pm->addToMaximum(3);
+    pm->addToMaximum(1);
 
     saveSync(data);
     deleteData(data);
@@ -1001,7 +1002,7 @@ LocalDataInterface::LocalDataInterface():
 bool LocalDataInterface::openDB(QSqlDatabase db, const QString &dbFile)
 {
     ProgressManager *pm = ProgressManager::instance();
-    pm->setTitle(tr("Loading database"));
+    pm->addToMaximum(2);
     pm->setText(tr("Opening database..."));
 
     // Make sure the DB is closed
@@ -1015,6 +1016,7 @@ bool LocalDataInterface::openDB(QSqlDatabase db, const QString &dbFile)
 
     // Check the version, and update the db scheme
     pm->setText(tr("Checking database version"));
+    pm->increment();
 
     QSqlQuery qry = QSqlQuery(db);
 
@@ -1037,6 +1039,7 @@ bool LocalDataInterface::openDB(QSqlDatabase db, const QString &dbFile)
     if (currentVersion < newVersion)
     {
         pm->setText(tr("Updating database scheme"));
+        pm->increment();
         QFileInfo dbFileInfo(dbFile);
         LocalDataInterface::instance()->log(tr("This database was created by an older version of Ramses (%1).\n"
                "I'm updating it to the current version (%2).\n"
