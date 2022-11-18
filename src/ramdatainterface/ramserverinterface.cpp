@@ -544,7 +544,10 @@ void RamServerInterface::sslError(QNetworkReply *reply, QList<QSslError> errs)
 void RamServerInterface::dataReceived(QNetworkReply *reply)
 {
     QJsonObject repObj = parseData(reply);
-    if (repObj.isEmpty()) return;
+    if (repObj.isEmpty()) {
+        finishSync(true);
+        return;
+    }
 
     QString repQuery = repObj.value("query").toString();
     bool repSuccess = repObj.value("success").toBool();
@@ -554,7 +557,10 @@ void RamServerInterface::dataReceived(QNetworkReply *reply)
     QJsonObject content = repObj.value("content").toObject();
 
     // Check server UUID
-    if (!checkServerUuid(serverUuid)) return;
+    if (!checkServerUuid(serverUuid)) {
+        finishSync(true);
+        return;
+    }
 
     // Log
     for (int i = 0; i < repLog.count(); i++)
@@ -1137,7 +1143,8 @@ void RamServerInterface::finishSync(bool withError)
 
     emit syncFinished();
 
-    qDebug() << "Server Interface: Sync finished!";
+    if (!withError) qDebug() << "Server Interface: Sync finished!";
+    else qDebug() << "Server Interface: Sync error!";
 }
 
 void RamServerInterface::postRequest(Request r)
