@@ -130,7 +130,7 @@ public:
 
     // METHODS //
 
-    RamAbstractObject(QString shortName, QString name, ObjectType type, bool isVirtual = false, bool encryptData = false);
+    RamAbstractObject(QString shortName, QString name, ObjectType type, bool isVirtual = false, bool encryptData = false, bool create = true);
     ~RamAbstractObject();
 
     bool is(RamAbstractObject *other) const;
@@ -267,6 +267,7 @@ protected:
     RamAbstractObject(QString uuid, ObjectType type, bool encryptData = false);
 
     virtual QJsonObject reloadData() = 0;
+    void createData(QString data = "");
 
     // SIGNALS in QObject instances
     virtual void emitRemoved() = 0;
@@ -291,6 +292,7 @@ protected:
     QString m_cachedData = "";
     bool m_savingData = false;
     QString m_icon = ":/icons/asset";
+    bool m_created = false;
 
     static QHash<QString, QPixmap> m_iconPixmaps;
     static QPixmap iconPixmap(QString iconName);
@@ -299,7 +301,6 @@ protected:
 
 private:
     void construct();
-    void createData(QString data);
 
     QSettings *m_settings = nullptr;
     bool m_valid = true;
