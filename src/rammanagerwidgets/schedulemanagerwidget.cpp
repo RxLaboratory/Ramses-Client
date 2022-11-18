@@ -155,8 +155,8 @@ void ScheduleManagerWidget::assignStep(RamObject *step)
                 {
                     RamScheduleEntry *entry = RamScheduleEntry::get(entryUuid);
                     if (entry) {
-                        RamUser *u = entry->user();
-                        if (u) u->schedule()->removeObjects(QStringList(entryUuid));
+                        //RamUser *u = entry->user();
+                        //if (u) u->schedule()->removeObjects(QStringList(entryUuid));
                         entry->remove();
                     }
                 }
@@ -186,14 +186,16 @@ void ScheduleManagerWidget::assignStep(RamObject *step)
 
             entry = new RamScheduleEntry( user, date );
             entry->setStep( RamStep::c(step) );
-            user->schedule()->appendObject(entry->uuid());
+            //user->schedule()->appendObject(entry->uuid());
         }
         else
         {
             entry->setStep( RamStep::c(step) );
         }
     }
+
     pm->finish();
+    this->update();
 }
 
 void ScheduleManagerWidget::filterUser(RamObject *user, bool filter)

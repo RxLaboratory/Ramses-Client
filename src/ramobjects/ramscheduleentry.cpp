@@ -29,14 +29,13 @@ RamScheduleEntry::RamScheduleEntry(RamUser *user, QDateTime date):
 {
     construct();
 
-    m_user = user;
-    m_date = date;
-
     QJsonObject d = data();
     d.insert("user", user->uuid());
     d.insert("step", "none");
     d.insert("date", date.toString("yyyy-MM-dd hh:mm:ss"));
     setData(d);
+
+    createData();
 
     connectEvents();
 }
@@ -47,17 +46,19 @@ RamScheduleEntry::RamScheduleEntry(QString uuid):
     construct();
 
     QJsonObject d = data();
-    m_user = RamUser::get( d.value("user").toString() );
-    m_date = QDateTime::fromString( d.value("date").toString(), "yyyy-MM-dd hh:mm:ss");
+    //m_user = RamUser::get( d.value("user").toString() );
+    //m_date = QDateTime::fromString( d.value("date").toString(), "yyyy-MM-dd hh:mm:ss");
 
-    this->setParent(m_user);
+    //this->setParent(m_user);
 
     connectEvents();
 }
 
 RamUser *RamScheduleEntry::user() const
 {
-    return m_user;
+    QString userUuid = getData("user").toString();
+    if (userUuid == "") return nullptr;
+    return RamUser::get( userUuid );
 }
 
 RamStep *RamScheduleEntry::step() const
@@ -65,9 +66,10 @@ RamStep *RamScheduleEntry::step() const
     return RamStep::get( getData("step").toString() );
 }
 
-const QDateTime &RamScheduleEntry::date() const
+const QDateTime RamScheduleEntry::date() const
 {
-    return m_date;
+    QDateTime d = QDateTime::fromString( getData("date").toString(), "yyyy-MM-dd hh:mm:ss");
+    return d;
 }
 
 void RamScheduleEntry::setStep(RamStep *newStep)
@@ -177,5 +179,5 @@ void RamScheduleEntry::construct()
 
 void RamScheduleEntry::connectEvents()
 {
-    connect(m_user, &RamUser::removed, this, &RamScheduleEntry::remove);
+
 }
