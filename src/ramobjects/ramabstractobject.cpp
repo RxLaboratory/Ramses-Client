@@ -161,6 +161,7 @@ const QString RamAbstractObject::uuidFromPath(QString path, ObjectType type)
     {
         i.next();
         RamAbstractObject *o = i.value();
+        if (!o->isValid()) continue;
         if (o->objectType() != type) continue;
 
         // If we have the same starting path, that's the one!
