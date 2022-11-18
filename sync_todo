@@ -1,4 +1,4 @@
-- on create: project not populated
+- on create: wrong order in dbtables; removed ignored?
 - syncing ui better feedback : a status/connected icon + message user@server ( ... )
 - localdatainterface save sync in two single sql queries (update and insert) see on server
 - localdatainterface delete data in a single query (see server)

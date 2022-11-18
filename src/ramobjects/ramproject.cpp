@@ -47,7 +47,7 @@ RamProject::RamProject(QString uuid):
     loadModel(m_users, "users", d);
     loadModel(m_scheduleComments, "scheduleComments", d);
     loadModel(m_pipeFiles, "pipeFiles", d);
-    loadModel(m_steps, "steps", d);
+    //loadModel(m_steps, "steps", d);
     loadModel(m_pipeline, "pipeline", d);
     loadModel(m_sequences, "sequences", d);
     loadModel(m_assetGroups, "assetGroups", d);
@@ -55,7 +55,7 @@ RamProject::RamProject(QString uuid):
     computeEstimation(true);
 }
 
-RamObjectModel *RamProject::steps() const
+DBTableModel *RamProject::steps() const
 {
     return m_steps;
 }
@@ -413,13 +413,21 @@ void RamProject::construct()
     m_icon = ":/icons/project";
     m_editRole = ProjectAdmin;
 
+    m_steps = new DBTableModel(
+                RamAbstractObject::Step,
+                "project",
+                QStringList(this->uuid()),
+                RamObject::ShortName,
+                this
+                );
+
     m_shots = createModel(RamObject::Shot, "shots");
     m_assets = createModel(RamObject::Asset, "assets");
     m_users = createModel(RamObject::User, "users" );
     m_scheduleComments = createModel(RamObject::ScheduleComment, "scheduleComments" );
     m_scheduleComments->setLookupRole(RamObject::Date);
     m_pipeFiles = createModel(RamObject::PipeFile, "pipeFiles" );
-    m_steps = createModel(RamObject::Step, "steps" );
+    //m_steps = createModel(RamObject::Step, "steps" );
     m_pipeline = createModel(RamObject::Pipe, "pipeline" );
     m_sequences = createModel(RamObject::Sequence, "sequences" );
     m_assetGroups = createModel(RamObject::AssetGroup, "assetGroups" );

@@ -173,7 +173,7 @@ void ProjectPage::createStepFromTemplate(RamObject *templateStepObj)
     if (!project) return;
 
     RamStep *step = RamStep::createFromTemplate(templateStep, project);
-    project->steps()->appendObject(step->uuid());
+    //project->steps()->appendObject(step->uuid());
     step->edit();
 }
 
