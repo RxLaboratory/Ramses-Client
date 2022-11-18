@@ -28,7 +28,7 @@ public:
      * @param shortName
      * @param name
      */
-    RamObject(QString shortName, QString name, ObjectType type, QObject *parent = nullptr, bool isVirtual = false, bool encryptData = false);
+    RamObject(QString shortName, QString name, ObjectType type, QObject *parent = nullptr, bool isVirtual = false, bool encryptData = false, bool create = true);
 
     virtual QString filterUuid() const { return QString(); };
     virtual QStringList filterListUuids() const { return QStringList(); }

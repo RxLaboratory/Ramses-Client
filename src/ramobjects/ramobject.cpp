@@ -48,9 +48,9 @@ RamObject *RamObject::get(QString uuid, ObjectType type)
     return nullptr;
 }
 
-RamObject::RamObject(QString shortName, QString name, ObjectType type, QObject *parent, bool isVirtual, bool encryptData):
+RamObject::RamObject(QString shortName, QString name, ObjectType type, QObject *parent, bool isVirtual, bool encryptData, bool create):
     QObject(parent),
-    RamAbstractObject(shortName, name, type, isVirtual, encryptData)
+    RamAbstractObject(shortName, name, type, isVirtual, encryptData, create)
 {
     construct(parent);
 }
