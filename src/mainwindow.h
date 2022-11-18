@@ -135,6 +135,7 @@ private slots:
     void shots(bool show = true);
     void assets(bool show = true);
     void schedule(bool show = true);
+    void progress(bool show = true);
     void install(bool show = true);
     void currentUserChanged();
     void currentProjectChanged(RamProject *project);
@@ -148,5 +149,9 @@ protected:
     void keyPressEvent(QKeyEvent *key) override;
     void keyReleaseEvent(QKeyEvent *key) override;
     bool eventFilter(QObject *obj, QEvent *event) override;
+
+private:
+    bool m_readyToClose = false;
+    bool m_closing = false;
 };
 #endif // MAINWINDOW_H

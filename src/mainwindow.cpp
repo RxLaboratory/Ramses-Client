@@ -814,6 +814,7 @@ void MainWindow::databaseSettingsAction()
 
 void MainWindow::home()
 {
+    mainToolBar->show();
     mainStack->setCurrentIndex(0);
 }
 
@@ -830,38 +831,56 @@ void MainWindow::revealUserFolder()
 
 void MainWindow::admin(bool show)
 {
+    mainToolBar->show();
     if (show) mainStack->setCurrentIndex(3);
     else home();
 }
 
 void MainWindow::projectSettings(bool show)
 {
+    mainToolBar->show();
     if (show) mainStack->setCurrentIndex(4);
     else home();
 }
 
 void MainWindow::pipeline(bool show)
 {
+    mainToolBar->show();
     if (show) mainStack->setCurrentIndex(5);
     else home();
 }
 
 void MainWindow::shots(bool show)
 {
+    mainToolBar->show();
     if (show) mainStack->setCurrentIndex(7);
     else home();
 }
 
 void MainWindow::assets(bool show)
 {
+    mainToolBar->show();
     if (show) mainStack->setCurrentIndex(6);
     else home();
 }
 
 void MainWindow::schedule(bool show)
 {
+    mainToolBar->show();
     if (show) mainStack->setCurrentIndex(8);
     else home();
+}
+
+void MainWindow::progress(bool show)
+{
+    if (show) {
+        mainStack->setCurrentIndex(9);
+        mainToolBar->hide();
+    }
+    else {
+        home();
+        mainToolBar->show();
+    }
 }
 
 void MainWindow::install(bool show)
@@ -975,10 +994,11 @@ void MainWindow::freezeUI(bool f)
     if (f)
     {
         m_currentPageIndex = mainStack->currentIndex();
-        mainStack->setCurrentIndex(8);
+        progress();
     }
     else
     {
+        mainToolBar->show();
         mainStack->setCurrentIndex(m_currentPageIndex);
     }
     this->repaint();
@@ -1022,6 +1042,12 @@ void MainWindow::dbiConnectionStatusChanged(NetworkUtils::NetworkStatus s)
 
 void MainWindow::finishSync()
 {
+    if (m_closing) {
+        m_readyToClose = true;
+        this->close();
+        return;
+    }
+
     ui_refreshButton->show();
     mainStatusBar->showMessage(tr("Sync finished!"), 5000);
 }
@@ -1082,19 +1108,48 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    // Get to the home page first to make sure all toolbars are hidden
-    home();
+    if (m_closing && !m_readyToClose)
+    {
+        QMessageBox::StandardButton r = QMessageBox::question(this,
+                              tr("Closing Ramses..."),
+                              tr("I'm already closing, do you want me to force quit?\n\nThis may cause some data loss if the sync is not finished yet.")
+                              );
+        if (r == QMessageBox::Yes) m_readyToClose = true;
+    }
 
-    // Let's save the ui state
-    QSettings settings;
-    settings.beginGroup("ui");
-    settings.setValue("maximized", this->isMaximized());
-    settings.setValue("windowState", this->saveState());
-    settings.endGroup();
+    if (m_readyToClose)
+    {
+        QFontDatabase::removeAllApplicationFonts();
+        trayIcon->hide();
 
-    QFontDatabase::removeAllApplicationFonts();
-    trayIcon->hide();
-    QMainWindow::closeEvent(event);
+        QMainWindow::closeEvent(event);
+    }
+    else
+    {
+        // Get to the home page first to make sure all toolbars are hidden
+        home();
+
+        // Let's save the ui state
+        QSettings settings;
+        settings.beginGroup("ui");
+        settings.setValue("maximized", this->isMaximized());
+        settings.setValue("windowState", this->saveState());
+        settings.endGroup();
+
+        // Clean before quit!
+        m_closing = true;
+
+        ProgressManager *pm = ProgressManager::instance();
+        pm->setTitle("Disconnecting...");
+        pm->setText("One last sync!");
+        pm->setMaximum(3);
+        pm->start();
+        pm->freeze();
+
+        DBInterface::instance()->setOffline();
+
+        event->ignore();
+    }
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *key)
