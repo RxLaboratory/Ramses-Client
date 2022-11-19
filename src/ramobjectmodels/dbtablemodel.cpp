@@ -4,19 +4,14 @@
 DBTableModel::DBTableModel(RamObject::ObjectType type, QObject *parent):
     RamAbstractObjectModel{type, parent}
 {
-    m_filterKey = "";
-    m_filterValues = QStringList();
     m_lookUpKey = "shortName";
 }
 
-void DBTableModel::setFilterKey(QString key)
+void DBTableModel::addFilterValue(QString key, QString value)
 {
-    m_filterKey = key;
-}
-
-void DBTableModel::addFilterValue(QString value)
-{
-    m_filterValues << value;
+    QStringList filterValues = m_filters.value(key);
+    filterValues << value;
+    m_filters.insert(key, filterValues);
 }
 
 void DBTableModel::setLookUpKey(const QString &newLookUpKey)
@@ -308,13 +303,29 @@ QString DBTableModel::getLookUpValue(QString data)
 
 bool DBTableModel::checkFilters(QString data) const
 {
-    // Check data
-    if (m_filterKey != "" && !m_filterValues.isEmpty())
+    if (m_filters.isEmpty()) return true;
+
+    // Load data
+    QJsonDocument doc = QJsonDocument::fromJson( data.toUtf8() );
+    QJsonObject obj = doc.object();
+
+    // Iterate through the filters;
+    // An STL const iterator is the fastest
+    QHash<QString, QStringList>::const_iterator i = m_filters.constBegin();
+    while (i != m_filters.constEnd())
     {
-        QJsonDocument doc = QJsonDocument::fromJson( data.toUtf8() );
-        QJsonObject obj = doc.object();
-        if ( !m_filterValues.contains( obj.value(m_filterKey).toString() ) ) return false;
+        QString key = i.key();
+        QStringList values = i.value();
+
+        // The data must satisfy ALL the filters
+        if (key != "" && !values.isEmpty())
+        {
+            if ( !values.contains( obj.value(key).toString() ) ) return false;
+        }
+
+        i++;
     }
+
     return true;
 }
 

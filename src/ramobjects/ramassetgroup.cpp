@@ -102,8 +102,7 @@ void RamAssetGroup::construct()
     m_editRole = ProjectAdmin;
 
     m_assets = new DBTableModel( RamObject::Asset, this );
-    m_assets->setFilterKey("assetGroup");
-    m_assets->addFilterValue( this->uuid() );
+    m_assets->addFilterValue( "assetGroup", this->uuid() );
 }
 
 

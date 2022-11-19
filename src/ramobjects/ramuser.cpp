@@ -201,8 +201,7 @@ void RamUser::construct()
                 this
                 );
 
-    m_schedule->setFilterKey( "user" );
-    m_schedule->addFilterValue( this->uuid() );
+    m_schedule->addFilterValue( "user", this->uuid() );
     m_schedule->setLookUpKey( "date" );
     m_schedule->load();
 }

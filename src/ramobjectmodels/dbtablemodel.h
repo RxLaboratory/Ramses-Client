@@ -20,15 +20,10 @@ public:
     // === Parameters to be set before load() ===
 
     /**
-     * @brief setFilterKey Sets the key to be used in the data to filter the objects loaded in this table
-     * @param key The key, as used in the JSON data
-     */
-    void setFilterKey(QString key);
-    /**
      * @brief addFilterValue Adds a value to be accepted with the filter key
      * @param value The value
      */
-    void addFilterValue(QString value);
+    void addFilterValue(QString key, QString value);
     /**
      * @brief setLookUpKey Sets a key of the JSON Data to be used for fast look ups
      * The default is to use the shortName
@@ -64,7 +59,7 @@ public:
     // Clear the model
     virtual void clear() override;
 
-private slots:
+protected slots:
     // Inserts a single object
     void insertObject(QString uuid, QString data, QString table);
     // Removes a single object
@@ -100,8 +95,7 @@ private:
     bool m_isLoaded = false;
 
     // Parameters
-    QString m_filterKey;
-    QStringList m_filterValues;
+    QHash<QString, QStringList> m_filters;
     QString m_lookUpKey = "shortName";
 };
 
