@@ -35,20 +35,31 @@ void DBTableModel::load()
     connect(this, &RamObjectModel::rowsMoved, this, &DBTableModel::saveOrder);
 }
 
-void DBTableModel::insertObject(QString uuid, QString table)
+bool DBTableModel::checkType(QString table)
 {
     RamObject::ObjectType t = RamObject::objectTypeFromName( table );
-    // Not for us
-    if (t != m_type) return;
+    return t == m_type;
+}
 
-    // Check filters
+bool DBTableModel::checkFilters(QString uuid, QString table)
+{
     if (m_filterKey != "" && !m_filterValues.isEmpty())
     {
         QString dataStr = LocalDataInterface::instance()->objectData(uuid, table);
         QJsonDocument doc = QJsonDocument::fromJson( dataStr.toUtf8() );
         QJsonObject obj = doc.object();
-        if ( !m_filterValues.contains( obj.value(m_filterKey).toString() ) ) return;
+        if ( !m_filterValues.contains( obj.value(m_filterKey).toString() ) ) return false;
     }
+    return true;
+}
+
+void DBTableModel::insertObject(QString uuid, QString table)
+{
+    // Not for us
+    if (!checkType(table)) return;
+
+    // Check filters
+    if (!checkFilters(uuid, table)) return;
 
     // Insert
     insertObjects( rowCount(), QVector<QString>() << uuid );
@@ -56,9 +67,8 @@ void DBTableModel::insertObject(QString uuid, QString table)
 
 void DBTableModel::removeObject(QString uuid, QString table)
 {
-    RamObject::ObjectType t = RamObject::objectTypeFromName( table );
     // Not for us
-    if (t != m_type) return;
+    if (!checkType(table)) return;
 
     // Remove
     removeObjects( QStringList(uuid) );
