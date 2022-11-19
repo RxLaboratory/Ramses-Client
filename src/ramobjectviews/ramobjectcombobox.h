@@ -1,8 +1,8 @@
 #ifndef RAMOBJECTCOMBOBOX_H
 #define RAMOBJECTCOMBOBOX_H
 
-#include "ramobjectmodel.h"
-#include <QComboBox>
+#include "ramabstractobjectmodel.h"
+#include "ramobjectsortfilterproxymodel.h"
 
 class RamObjectComboBox : public QComboBox
 {
@@ -10,8 +10,8 @@ class RamObjectComboBox : public QComboBox
 public:
     RamObjectComboBox(QWidget *parent = nullptr);
 
-    void setObjectModel(RamObjectModel *model);
-    void setObjectModel(RamObjectModel *model, QString FilterListName);
+    void setObjectModel(RamAbstractObjectModel *model);
+    void setObjectModel(RamAbstractObjectModel *model, QString FilterListName);
 
     void setSortMode(RamObject::DataRole mode);
 

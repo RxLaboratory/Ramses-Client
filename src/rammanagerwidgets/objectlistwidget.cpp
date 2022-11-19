@@ -10,7 +10,7 @@ ObjectListWidget::ObjectListWidget(bool editableObjects, RamUser::UserRole editR
     connectEvents();
 }
 
-ObjectListWidget::ObjectListWidget(RamObjectModel *objectList, bool editableObjects, RamUser::UserRole editRole, QWidget *parent) :
+ObjectListWidget::ObjectListWidget(RamAbstractObjectModel *objectList, bool editableObjects, RamUser::UserRole editRole, QWidget *parent) :
     QWidget(parent)
 {
     setupUi(editableObjects, editRole);
@@ -18,7 +18,7 @@ ObjectListWidget::ObjectListWidget(RamObjectModel *objectList, bool editableObje
     setObjectModel(objectList);
 }
 
-void ObjectListWidget::setObjectModel(RamObjectModel *objectModel)
+void ObjectListWidget::setObjectModel(RamAbstractObjectModel *objectModel)
 {
     if (ui_objectView->model())
     {
@@ -41,7 +41,7 @@ void ObjectListWidget::setObjectModel(RamObjectModel *objectModel)
     objectAssigned(QModelIndex(), 0, objectModel->rowCount() - 1);
 }
 
-void ObjectListWidget::setFilterList(RamObjectModel *filterList, QString filterListName)
+void ObjectListWidget::setFilterList(RamAbstractObjectModel *filterList, QString filterListName)
 {
     ui_filterBox->setObjectModel(filterList, filterListName);
     if (filterList)
@@ -56,7 +56,7 @@ void ObjectListWidget::setFilterList(RamObjectModel *filterList, QString filterL
     }
 }
 
-void ObjectListWidget::setAssignList(RamObjectModel *assignList)
+void ObjectListWidget::setAssignList(RamAbstractObjectModel *assignList)
 {
     ui_assignMenu->setObjectModel(assignList);
     ui_addButton->setPopupMode(QToolButton::InstantPopup);
@@ -213,7 +213,9 @@ void ObjectListWidget::removeSelectedObjects()
             RamObject *o = RamObject::get(uuid, m_objectModel->type());
             if (o) o->remove();
         }
-        m_objectModel->removeObjects(QStringList(uuid));
+        // If this is an object model we need to remove the object from it
+        RamObjectModel *m = qobject_cast<RamObjectModel*>(m_objectModel);
+        if (m) m->removeObjects(QStringList(uuid));
     }
 }
 

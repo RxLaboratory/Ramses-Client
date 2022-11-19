@@ -33,7 +33,7 @@ public:
 
     QSet<QString> tableUuids(QString table, bool includeRemoved = false);
     // Returns a vector instead of set: tabledata may be sorted later
-    QVector<QStringList> tableData(QString table, QString filterKey = "", QStringList filterValues = QStringList(), bool includeRemoved = false);
+    QVector<QStringList> tableData(QString table, bool includeRemoved = false);
     bool contains(QString uuid, QString table);
     QMap<QString, QString> modificationDates(QString table);
 
@@ -84,9 +84,9 @@ signals:
     void ramsesPathChanged(QString);
     // Sync result
     void syncFinished();
-    void dataChanged(QString);
+    void dataChanged(QString uuid, QString data);
     void availabilityChanged(QString,bool);
-    void inserted(QString uuid, QString table);
+    void inserted(QString uuid, QString data, QString table);
     void removed(QString uuid, QString table);
 
 protected:

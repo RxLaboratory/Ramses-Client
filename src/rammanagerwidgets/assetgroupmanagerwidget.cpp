@@ -36,7 +36,7 @@ RamAssetGroup *AssetGroupManagerWidget::createObject()
                 "New Asset Group",
                 project
                 );
-    project->assetGroups()->appendObject(assetGroup->uuid());
+    //project->assetGroups()->appendObject(assetGroup->uuid());
     assetGroup->edit();
     return assetGroup;
 }

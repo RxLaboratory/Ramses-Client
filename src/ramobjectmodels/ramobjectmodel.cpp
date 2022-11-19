@@ -3,16 +3,8 @@
 #include "ramstep.h"
 #include "ramabstractitem.h"
 
-RamObjectModel *RamObjectModel::m_emptyModel = nullptr;
-
-RamObjectModel *RamObjectModel::emptyModel()
-{
-    if (!m_emptyModel) m_emptyModel = new RamObjectModel(RamObject::Object);
-    return m_emptyModel;
-}
-
 RamObjectModel::RamObjectModel(RamAbstractObject::ObjectType type, QObject *parent)
-    : QAbstractTableModel{parent}
+    : RamAbstractObjectModel{type, parent}
 {
     m_type = type;
     m_columnObjects = new RamObjectSortFilterProxyModel();
@@ -224,6 +216,8 @@ void RamObjectModel::clear()
         disconnectObject( m_objectUuids.takeLast() );
     }
 
+    RamAbstractObjectModel::clear();
+
     endResetModel();
 }
 
@@ -237,18 +231,11 @@ void RamObjectModel::appendObject(QString uuid)
                 );
 }
 
-RamObject *RamObjectModel::get(int row)
+RamObject *RamObjectModel::get(int row) const
 {
     if (row < 0) return nullptr;
     if (row >= m_objects.count()) return nullptr;
     return m_objects.at(row);
-}
-
-RamObject *RamObjectModel::get(const QModelIndex &index)
-{
-    quintptr iptr = index.data(RamObject::Pointer).toULongLong();
-    if (iptr == 0) return nullptr;
-    return reinterpret_cast<RamObject*>( iptr );
 }
 
 RamObject *RamObjectModel::search(QString searchString) const
@@ -272,30 +259,14 @@ RamObject *RamObjectModel::search(QString searchString) const
     return nullptr;
 }
 
-QList<RamObject*> RamObjectModel::get(QVariant roleData)
+QList<RamObject*> RamObjectModel::lookUp(QVariant roleData)
 {
     return m_lookupTable.values(roleData);
-}
-
-bool RamObjectModel::contains(QString uuid) const
-{
-    return m_objectUuids.contains(uuid);
 }
 
 RamObject::ObjectType RamObjectModel::type() const
 {
     return m_type;
-}
-
-QVector<QString> RamObjectModel::toVector() const
-{
-    return m_objectUuids;
-}
-
-QStringList RamObjectModel::toStringList() const
-{
-    QStringList l = m_objectUuids.toList();
-    return l;
 }
 
 void RamObjectModel::objectDataChanged(RamObject *obj)

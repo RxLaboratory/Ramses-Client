@@ -34,10 +34,10 @@ public:
     Q_ENUM( EditMode )
 
     explicit ObjectListWidget(bool editableObjects = false, RamUser::UserRole editRole = RamUser::Admin, QWidget *parent = nullptr);
-    explicit ObjectListWidget(RamObjectModel *objectList, bool editableObjects = false, RamUser::UserRole editRole = RamUser::Admin, QWidget *parent = nullptr);
-    void setObjectModel(RamObjectModel *objectModel);
-    void setFilterList(RamObjectModel *filterList, QString filterListName = "");
-    void setAssignList(RamObjectModel *assignList);
+    explicit ObjectListWidget(RamAbstractObjectModel *objectList, bool editableObjects = false, RamUser::UserRole editRole = RamUser::Admin, QWidget *parent = nullptr);
+    void setObjectModel(RamAbstractObjectModel *objectModel);
+    void setFilterList(RamAbstractObjectModel *filterList, QString filterListName = "");
+    void setAssignList(RamAbstractObjectModel *assignList);
     void setDontRemoveShortNameList(QStringList dontRemove);
     void clear();
     void setEditMode(ObjectListWidget::EditMode editMode);
@@ -89,7 +89,7 @@ private:
     QStringList m_dontRemove;
 
     // Current List
-    RamObjectModel *m_objectModel = nullptr;
+    RamAbstractObjectModel *m_objectModel = nullptr;
 
     QList<QMetaObject::Connection> m_listConnections;
 };

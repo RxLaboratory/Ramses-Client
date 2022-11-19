@@ -418,24 +418,15 @@ void RamProject::construct()
     m_icon = ":/icons/project";
     m_editRole = ProjectAdmin;
 
-    m_assets = new DBTableModel(
-                RamAbstractObject::Asset,
-                this
-                );
+    m_assets = new DBTableModel( RamObject::Asset, this );
     m_assets->setFilterKey( "project" );
     m_assets->addFilterValue( this->uuid() );
 
-    m_steps = new DBTableModel(
-                RamAbstractObject::Step,
-                this
-                );
+    m_steps = new DBTableModel( RamObject::Step, this );
     m_steps->setFilterKey( "project" );
     m_steps->addFilterValue( this->uuid() );
 
-    m_assetGroups = new DBTableModel(
-                RamAbstractObject::AssetGroup,
-                this
-                );
+    m_assetGroups = new DBTableModel( RamObject::AssetGroup, this );
     m_assetGroups->setFilterKey( "project" );
     m_assetGroups->addFilterValue( this->uuid() );
 
@@ -450,7 +441,7 @@ void RamProject::construct()
     m_sequences = createModel(RamObject::Sequence, "sequences" );
     //m_assetGroups = createModel(RamObject::AssetGroup, "assetGroups" );
 
-    m_shots->setColumnModel(m_steps);
+    //m_shots->setColumnModel(m_steps);
     //m_assets->setColumnModel(m_steps);
 }
 

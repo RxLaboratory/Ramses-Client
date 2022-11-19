@@ -1,6 +1,5 @@
 #include "ramobjectsortfilterproxymodel.h"
-
-#include "ramobjectmodel.h"
+#include "ramabstractobjectmodel.h"
 
 RamObjectSortFilterProxyModel::RamObjectSortFilterProxyModel(QObject *parent)
     : QSortFilterProxyModel{parent}
@@ -72,7 +71,7 @@ RamObject *RamObjectSortFilterProxyModel::searchObject(QString searchString) con
 
 RamAbstractObject::ObjectType RamObjectSortFilterProxyModel::type() const
 {
-    RamObjectModel *model = qobject_cast<RamObjectModel*>( sourceModel() );
+    RamAbstractObjectModel *model = static_cast<RamAbstractObjectModel*>( sourceModel() );
     if (!model) return RamObject::Object;
 
     return model->type();
@@ -115,7 +114,8 @@ bool RamObjectSortFilterProxyModel::filterAcceptsRow(int sourceRow, const QModel
 {
     Q_UNUSED(sourceParent)
 
-    RamObjectModel *model = qobject_cast<RamObjectModel*>(sourceModel());
+    RamAbstractObjectModel *model = static_cast<RamAbstractObjectModel*>(sourceModel());
+    if (!model) return false;
     RamObject *obj = model->get(sourceRow);
     if (!obj) return false;
 

@@ -177,15 +177,13 @@ QSet<QString> LocalDataInterface::tableUuids(QString table, bool includeRemoved)
     return data;
 }
 
-QVector<QStringList> LocalDataInterface::tableData(QString table, QString filterKey, QStringList filterValues, bool includeRemoved)
+QVector<QStringList> LocalDataInterface::tableData(QString table, bool includeRemoved)
 {
     QString q = "SELECT `uuid`, `data` FROM '%1'";
     if (!includeRemoved) q += " WHERE removed = 0";
     q += " ;";
 
     QSqlQuery qry = query( q.arg(table) );
-
-    bool useFilter = filterKey != "" && !filterValues.isEmpty();
 
     QVector<QStringList> tData;
 
@@ -196,14 +194,6 @@ QVector<QStringList> LocalDataInterface::tableData(QString table, QString filter
 
         // Decrypt data if user table
         if (table == "RamUser" && ENCRYPT_USER_DATA) data = DataCrypto::instance()->clientDecrypt( data );
-
-        // Filter
-        if (useFilter)
-        {
-            QJsonDocument doc = QJsonDocument::fromJson( data.toUtf8() );
-            QJsonObject obj = doc.object();
-            if ( !filterValues.contains( obj.value(filterKey).toString() ) ) continue;
-        }
 
         QStringList entry;
         entry << uuid;
@@ -247,7 +237,10 @@ void LocalDataInterface::createObject(QString uuid, QString table, QString data)
     // Remove table cache
     m_uuids.remove(table);
 
-    data.replace("'", "''");
+    QString newData = data;
+
+    if (ENCRYPT_USER_DATA && table == "RamUser") newData = DataCrypto::instance()->clientEncrypt(data);
+    else newData.replace("'", "''");
 
     QDateTime modified = QDateTime::currentDateTimeUtc();
 
@@ -259,12 +252,12 @@ void LocalDataInterface::createObject(QString uuid, QString table, QString data)
     query( q.arg(
                   table,
                   uuid,
-                  data,
+                  newData,
                   modified.toString("yyyy-MM-dd hh:mm:ss")
                   )
             );
 
-    emit inserted(uuid, table);
+    emit inserted(uuid, data, table);
 }
 
 QString LocalDataInterface::objectData(QString uuid, QString table)
@@ -272,24 +265,31 @@ QString LocalDataInterface::objectData(QString uuid, QString table)
     QString q = "SELECT data FROM %1 WHERE uuid = '%2';";
     QSqlQuery qry = query( q.arg(table, uuid) );
 
-    if (qry.first()) return qry.value(0).toString();
+    if (qry.first())
+    {
+        QString data = qry.value(0).toString();
+        if (ENCRYPT_USER_DATA && table == "RamUser") data = DataCrypto::instance()->clientDecrypt(data);
+        return data;
+    }
     return "";
 }
 
 void LocalDataInterface::setObjectData(QString uuid, QString table, QString data)
 {
-    data.replace("'", "''");
-
+    QString newData = data;
     QDateTime modified = QDateTime::currentDateTimeUtc();
 
+    if (ENCRYPT_USER_DATA && table == "RamUser") newData = DataCrypto::instance()->clientEncrypt(data);
+    else newData.replace("'", "''");
 
     QString q = "INSERT INTO %1 (data, modified, uuid) "
                 "VALUES ( '%2', '%3', '%4') "
                 "ON CONFLICT(uuid) DO UPDATE "
                 "SET data=excluded.data, modified=excluded.modified ;";
 
-    query( q.arg(table, data, modified.toString("yyyy-MM-dd hh:mm:ss"), uuid) );
-    emit dataChanged(uuid);
+    query( q.arg(table, newData, modified.toString("yyyy-MM-dd hh:mm:ss"), uuid) );
+
+    emit dataChanged(uuid, data);
 }
 
 void LocalDataInterface::removeObject(QString uuid, QString table)
@@ -308,12 +308,18 @@ void LocalDataInterface::restoreObject(QString uuid, QString table)
 {
     QDateTime modified = QDateTime::currentDateTimeUtc();
 
+    // Restore query
     QString q = "UPDATE %1 SET "
                 "removed = 0,"
                 "modified = '%2' "
                 "WHERE uuid = '%3';";
     query( q.arg(table, modified.toString("yyyy-MM-dd hh:mm:ss"), uuid) );
-    emit inserted(uuid, table);
+
+    // Get current data
+    QString data = objectData(uuid, table);
+
+    // Emit inserted
+    emit inserted(uuid, data, table);
 }
 
 bool LocalDataInterface::isRemoved(QString uuid, QString table)
@@ -362,8 +368,9 @@ void LocalDataInterface::updateUser(QString uuid, QString username, QString data
     }
 
     // Encrypt data
-    if (ENCRYPT_USER_DATA) data = DataCrypto::instance()->clientEncrypt( data );
-    else data.replace("'", "''");
+    QString newData = data;
+    if (ENCRYPT_USER_DATA) newData = DataCrypto::instance()->clientEncrypt( newData );
+    else newData.replace("'", "''");
 
     // Insert/update
     QString q = "INSERT INTO RamUser (data, modified, uuid, userName, removed) "
@@ -371,7 +378,7 @@ void LocalDataInterface::updateUser(QString uuid, QString username, QString data
                 "ON CONFLICT(uuid) DO UPDATE "
                 "SET data=excluded.data, modified=excluded.modified, userName=excluded.userName, removed=0 ;";
 
-    query( q.arg(data, modified, uuid, username) );
+    query( q.arg(newData, modified, uuid, username) );
 
     // Remove duplicates if any. This should never happen,
     // but when messing around with new databases and server install
@@ -380,6 +387,8 @@ void LocalDataInterface::updateUser(QString uuid, QString username, QString data
     modified = m.toString("yyyy-MM-dd hh:mm:ss");
     q = "UPDATE RamUser SET `removed` = 1, `modified` = '%1' WHERE `userName` = '%2' AND `uuid` != '%3';";
     query( q.arg(modified, username, uuid) );
+
+    emit dataChanged(uuid, data);
 }
 
 ServerConfig LocalDataInterface::serverConfig()
@@ -640,13 +649,13 @@ void LocalDataInterface::saveSync(SyncData syncData)
             if (removed == 0)
             {
                 QStringList ins;
-                ins << uuid << tableName;
+                ins << uuid << incomingRow.data << tableName;
                 insertedObjects << ins;
             }
         }
 
         // Emit insertions
-        foreach(QStringList io, insertedObjects ) emit inserted( io.at(0), io.at(1) );
+        foreach(QStringList io, insertedObjects ) emit inserted( io.at(0), io.at(1), io.at(2) );
     }
 
     // Updates
@@ -717,7 +726,7 @@ void LocalDataInterface::saveSync(SyncData syncData)
                 query( q.arg(tableName, data, modified, QString::number(rem), uuid) );
             }
 
-            emit dataChanged(uuid);
+            emit dataChanged(uuid, incomingRow.data);
         }
     }
 
@@ -870,7 +879,7 @@ QString LocalDataInterface::cleanDataBase(int deleteDataOlderThan)
     report += "# Cleaning report\n\n";
     report += ".\n\n## Status\n\n";
     int numStatusChanged = 0;
-    QVector<QStringList> statusData = tableData("RamStatus", "", QStringList(), true);
+    QVector<QStringList> statusData = tableData("RamStatus", true);
     for (int i = 0; i < statusData.count(); i++)
     {
         QJsonDocument d = QJsonDocument::fromJson( statusData[i][1].toUtf8() );

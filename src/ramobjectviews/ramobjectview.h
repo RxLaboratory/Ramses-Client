@@ -32,7 +32,7 @@ public:
     void setSortRole(RamObject::DataRole role);
     void sort();
    // Content
-    void setObjectModel(RamObjectModel *model);
+    void setObjectModel(RamAbstractObjectModel *model);
 
 signals:
     void objectSelected(RamObject*);

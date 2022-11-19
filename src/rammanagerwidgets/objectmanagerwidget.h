@@ -11,8 +11,8 @@ class ObjectManagerWidget : public QWidget
     Q_OBJECT
 public:
     explicit ObjectManagerWidget(QString title, QIcon icon = QIcon(), QWidget *parent = nullptr);
-    explicit ObjectManagerWidget(RamObjectModel *objectModel, QString title, QIcon icon = QIcon(), QWidget *parent = nullptr);
-    void setObjectModel(RamObjectModel *objectModel);
+    explicit ObjectManagerWidget(RamAbstractObjectModel *objectModel, QString title, QIcon icon = QIcon(), QWidget *parent = nullptr);
+    void setObjectModel(RamAbstractObjectModel *objectModel);
     void clear();
     QString currentFilterUuid() const;
     RamObject *currentFilter() const;

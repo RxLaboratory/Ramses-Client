@@ -377,7 +377,7 @@ void PipelineWidget::createStep()
                 "NEW",
                 "New step",
                 project);
-    project->steps()->appendObject(step->uuid());
+    //project->steps()->appendObject(step->uuid());
     step->edit();
 }
 
@@ -449,7 +449,7 @@ void PipelineWidget::assignStep()
     RamStep *templateStep = reinterpret_cast<RamStep*>( iptr );
     if (!templateStep) return;
     RamStep *step = RamStep::createFromTemplate(templateStep, project);
-    project->steps()->appendObject(step->uuid());
+    //project->steps()->appendObject(step->uuid());
     step->edit();
 }
 

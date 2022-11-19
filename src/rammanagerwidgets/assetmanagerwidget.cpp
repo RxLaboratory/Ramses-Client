@@ -32,7 +32,7 @@ RamAbstractItem *AssetManagerWidget::createObject()
                 ag
                 );
 
-    project->assets()->appendObject(asset->uuid());
+    //project->assets()->appendObject(asset->uuid());
     asset->edit();
     return asset;
 }

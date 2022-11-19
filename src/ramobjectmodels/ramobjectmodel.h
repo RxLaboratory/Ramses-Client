@@ -1,7 +1,7 @@
 #ifndef RAMOBJECTMODEL_H
 #define RAMOBJECTMODEL_H
 
-#include <QAbstractTableModel>
+#include "ramabstractobjectmodel.h"
 
 #include "ramobject.h"
 #include "ramobjectsortfilterproxymodel.h"
@@ -9,17 +9,11 @@
 /**
  * @brief The RamObjectModel class represents a list of RamObjects
  */
-class RamObjectModel : public QAbstractTableModel
+class RamObjectModel : public RamAbstractObjectModel
 {
     Q_OBJECT
 public:
-    static RamObjectModel *emptyModel();
-
     explicit RamObjectModel(RamAbstractObject::ObjectType type, QObject *parent = nullptr);
-
-    // Use one of the data roles for fast lookup
-    // Note that this data must be immutable
-    void setLookupRole(int role);
 
     // Data Access
     virtual int rowCount(const QModelIndex &parent = QModelIndex()) const override;
@@ -41,33 +35,26 @@ public:
     // Convenience access
 
     // Clear the model
-    void clear();
+    virtual void clear() override;
 
     // Append object
     void appendObject(QString uuid);
 
     // An object by its row
-    RamObject *get(int row);
-    // An object by index
-    static RamObject *get(const QModelIndex &index);
-    // An object by its shortname, or name
-    RamObject *search(QString searchString) const;
-    // An object by its role data lookup
-    QList<RamObject *> get(QVariant roleData);
+    virtual RamObject *get(int row) const override;
+    // Use one of the data roles for fast lookup
+    // Note that this data must be immutable
+    void setLookupRole(int role);
 
-    // Check if contains
-    bool contains(QString uuid) const;
+    // An object by its shortname, or name
+    RamObject *search(QString searchString) const override;
+    // An object by its role data lookup
+    QList<RamObject *> lookUp(QVariant roleData);
 
     // The type of objects contained in this model
     RamObject::ObjectType type() const;
 
-    // All the uuids
-    QVector<QString> toVector() const;
-    QStringList toStringList() const;
-
 protected:
-    static RamObjectModel *m_emptyModel;
-
     RamObject::ObjectType m_type;
 
 private slots:
@@ -88,7 +75,6 @@ private:
     int m_lookupRole = RamAbstractObject::ShortName;
 
     // The data and different ways to access it
-    QVector<QString> m_objectUuids;
     QMultiHash<QVariant,RamObject*> m_lookupTable;
     QVector<RamObject*> m_objects;
     RamObjectSortFilterProxyModel *m_columnObjects;

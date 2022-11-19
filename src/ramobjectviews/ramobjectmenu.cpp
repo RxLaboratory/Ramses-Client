@@ -5,7 +5,7 @@ RamObjectMenu::RamObjectMenu(bool checkable, QWidget *parent):
 {
     m_objects = new RamObjectSortFilterProxyModel("", this);
     setSortMode(RamObject::Order);
-    m_objects->setSourceModel( RamObjectModel::emptyModel() );
+    m_objects->setSourceModel( RamAbstractObjectModel::emptyModel() );
 
     m_checkable = checkable;
 
@@ -28,9 +28,9 @@ RamObjectMenu::RamObjectMenu(bool checkable, QWidget *parent):
     connect(m_objects, SIGNAL(modelReset()),this,SLOT(reset()));
 }
 
-void RamObjectMenu::setObjectModel(RamObjectModel *list)
+void RamObjectMenu::setObjectModel(RamAbstractObjectModel *list)
 {
-    if (!list) m_objects->setSourceModel( RamObjectModel::emptyModel() );
+    if (!list) m_objects->setSourceModel( RamAbstractObjectModel::emptyModel() );
     else {
         m_objects->setSourceModel(list);
         m_objects->sort(0);

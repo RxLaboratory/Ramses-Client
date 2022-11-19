@@ -7,18 +7,18 @@ RamObjectComboBox::RamObjectComboBox(QWidget *parent):
 {
     m_objects = new RamObjectSortFilterProxyModel("", this);
     setSortMode(RamObject::Order);
-    m_objects->setSourceModel( RamObjectModel::emptyModel() );
+    m_objects->setSourceModel( RamAbstractObjectModel::emptyModel() );
     this->setModel(m_objects);
     setupUi();
     //setObjectModel(nullptr);
     connectEvents();
 }
 
-void RamObjectComboBox::setObjectModel(RamObjectModel *model, QString filterListName)
+void RamObjectComboBox::setObjectModel(RamAbstractObjectModel *model, QString filterListName)
 {
     RamFilterListProxyModel *proxyModel = new RamFilterListProxyModel(filterListName, this);
     if (model) proxyModel->setSourceModel(model);
-    else proxyModel->setSourceModel( RamObjectModel::emptyModel() );
+    else proxyModel->setSourceModel( RamAbstractObjectModel::emptyModel() );
     this->setModel(proxyModel);
 }
 
@@ -27,7 +27,7 @@ void RamObjectComboBox::setSortMode(RamAbstractObject::DataRole mode)
     m_objects->setSortRole(mode);
 }
 
-void RamObjectComboBox::setObjectModel(RamObjectModel *model)
+void RamObjectComboBox::setObjectModel(RamAbstractObjectModel *model)
 {
     if (model)
     {
@@ -36,7 +36,7 @@ void RamObjectComboBox::setObjectModel(RamObjectModel *model)
     }
     else
     {
-        m_objects->setSourceModel( RamObjectModel::emptyModel() );
+        m_objects->setSourceModel( RamAbstractObjectModel::emptyModel() );
     }
 }
 

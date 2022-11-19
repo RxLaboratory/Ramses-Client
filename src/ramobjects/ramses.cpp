@@ -19,7 +19,7 @@ void Ramses::setUserUuid(QString uuid)
     }
     RamUser *u = RamUser::get(uuid);
     // Add the user to the list in case it's not already there
-    m_users->appendObject(uuid);
+    //m_users->appendObject(uuid);
     setUser(u);
 }
 
@@ -141,10 +141,10 @@ RamState *Ramses::noState()
     {
         m_noState = new RamState("NO", "Nothing to do");
         m_noState->setColor(QColor(36,36,36));
-        m_states->insertObjects(
+        /*m_states->insertObjects(
                     m_states->rowCount(),
                     QVector<QString>() << m_noState->uuid()
-                    );
+                    );*/
     }
     return m_noState;
 }
@@ -157,10 +157,10 @@ RamState *Ramses::todoState()
     {
         m_todoState = new RamState("TODO", "To do");
         m_todoState->setColor(QColor(85,170,255));
-        m_states->insertObjects(
+        /*m_states->insertObjects(
                     m_states->rowCount(),
                     QVector<QString>() << m_todoState->uuid()
-                    );
+                    );*/
     }
     return m_todoState;
 }
@@ -173,10 +173,10 @@ RamState *Ramses::okState()
     {
         m_okState = new RamState("OK", "Finished");
         m_okState->setColor(QColor(0,170,0));
-        m_states->insertObjects(
+        /*m_states->insertObjects(
                     m_states->rowCount(),
                     QVector<QString>() << m_okState->uuid()
-                    );
+                    );*/
     }
     return m_okState;
 }
@@ -189,10 +189,10 @@ RamState *Ramses::stbState()
     {
         m_stbState = new RamState("STB", "Stand by");
         m_stbState->setColor(QColor(168,168,168));
-        m_states->insertObjects(
+        /*m_states->insertObjects(
                     m_states->rowCount(),
                     QVector<QString>() << m_stbState->uuid()
-                    );
+                    );*/
     }
     return m_stbState;
 }
@@ -205,10 +205,10 @@ RamState *Ramses::wipState()
     {
         m_wipState = new RamState("WIP", "Work in progress");
         m_wipState->setColor(QColor(255,255,127));
-        m_states->insertObjects(
+        /*m_states->insertObjects(
                     m_states->rowCount(),
                     QVector<QString>() << m_wipState->uuid()
-                    );
+                    );*/
     }
     return m_wipState;
 }
@@ -283,19 +283,19 @@ Ramses::Ramses(QObject *parent):
     qDebug() << "Initialising Ramses";
     m_dbi = DBInterface::instance();
 
-    m_states = new DBTableModel(RamAbstractObject::State, this);
+    m_states = new DBTableModel(RamObject::State, this);
     m_states->load();
-    m_users = new DBTableModel(RamAbstractObject::User, this);
+    m_users = new DBTableModel(RamObject::User, this);
     m_users->load();
-    m_templateSteps = new DBTableModel(RamAbstractObject::TemplateStep, this);
+    m_templateSteps = new DBTableModel(RamObject::TemplateStep, this);
     m_templateSteps->load();
-    m_projects = new DBTableModel(RamAbstractObject::Project, this);
+    m_projects = new DBTableModel(RamObject::Project, this);
     m_projects->load();
-    m_templateAssetGroups = new DBTableModel(RamAbstractObject::TemplateAssetGroup, this);
+    m_templateAssetGroups = new DBTableModel(RamObject::TemplateAssetGroup, this);
     m_templateAssetGroups->load();
-    m_fileTypes = new DBTableModel(RamAbstractObject::FileType, this);
+    m_fileTypes = new DBTableModel(RamObject::FileType, this);
     m_fileTypes->load();
-    m_applications = new DBTableModel(RamAbstractObject::Application, this);
+    m_applications = new DBTableModel(RamObject::Application, this);
     m_applications->load();
 
     this->setObjectName( "Ramses Class" );

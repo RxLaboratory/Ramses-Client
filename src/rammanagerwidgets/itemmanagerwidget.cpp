@@ -547,7 +547,7 @@ void ItemManagerWidget::createItem()
                     ag
                     );
 
-        project->assets()->appendObject(asset->uuid());
+        //project->assets()->appendObject(asset->uuid());
         asset->edit();
     }
     else if ( m_productionType == RamStep::ShotProduction )
@@ -593,7 +593,7 @@ void ItemManagerWidget::deleteItems()
         if (m_productionType == RamStep::AssetProduction)
         {
             RamObject *o = RamObject::get(objUuid, RamObject::Asset);
-            m_project->assets()->removeObjects(QStringList(objUuid));
+            //m_project->assets()->removeObjects(QStringList(objUuid));
             if (o) o->remove();
         }
         else if (m_productionType == RamStep::ShotProduction)

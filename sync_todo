@@ -4,6 +4,7 @@
 - localdatainterface save sync in two single sql queries (update and insert) see on server
 - localdatainterface delete data in a single query (see server)
 - more tests
+- tables: add order column, and update datainterface & dbtablemodel
 
 
 4- Ramses and editors

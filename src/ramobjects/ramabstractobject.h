@@ -130,7 +130,7 @@ public:
 
     // METHODS //
 
-    RamAbstractObject(QString shortName, QString name, ObjectType type, bool isVirtual = false, bool encryptData = false);
+    RamAbstractObject(QString shortName, QString name, ObjectType type, bool isVirtual = false);
     ~RamAbstractObject();
 
     bool is(RamAbstractObject *other) const;
@@ -264,7 +264,7 @@ protected:
      * @brief RamAbstractObject constructs an existing object from an existing uuid. This method is private, use obj(QString) to get an object from the uuid
      * @param uuid
      */
-    RamAbstractObject(QString uuid, ObjectType type, bool encryptData = false);
+    RamAbstractObject(QString uuid, ObjectType type);
 
     virtual QJsonObject reloadData() = 0;
     void createData(QString data = "");
@@ -288,7 +288,6 @@ protected:
     ObjectType m_objectType;
     bool m_virtual = false;
     bool m_saveSuspended = false;
-    bool m_dataEncrypted = false;
     QString m_cachedData = "";
     bool m_savingData = false;
     QString m_icon = ":/icons/asset";

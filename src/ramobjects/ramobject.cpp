@@ -48,9 +48,14 @@ RamObject *RamObject::get(QString uuid, ObjectType type)
     return nullptr;
 }
 
-RamObject::RamObject(QString shortName, QString name, ObjectType type, QObject *parent, bool isVirtual, bool encryptData):
+RamObject *RamObject::get(QString uuid, QString tableName)
+{
+    return RamObject::get(uuid, RamObject::objectTypeFromName(tableName));
+}
+
+RamObject::RamObject(QString shortName, QString name, ObjectType type, QObject *parent, bool isVirtual):
     QObject(parent),
-    RamAbstractObject(shortName, name, type, isVirtual, encryptData)
+    RamAbstractObject(shortName, name, type, isVirtual)
 {
     construct(parent);
 }
@@ -81,9 +86,9 @@ void RamObject::reload()
 
 // PROTECTED //
 
-RamObject::RamObject(QString uuid, ObjectType type, QObject *parent, bool encryptData):
+RamObject::RamObject(QString uuid, ObjectType type, QObject *parent):
     QObject(parent),
-    RamAbstractObject(uuid, type, encryptData)
+    RamAbstractObject(uuid, type)
 {
     construct(parent);
 }

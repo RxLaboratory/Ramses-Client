@@ -55,7 +55,7 @@ void AssetGroupEditWidget::createAsset()
                 "NEW",
                 "New Asset",
                 m_assetGroup);
-    m_assetGroup->project()->assets()->appendObject(asset->uuid());
+    //m_assetGroup->project()->assets()->appendObject(asset->uuid());
     asset->edit();
 }
 

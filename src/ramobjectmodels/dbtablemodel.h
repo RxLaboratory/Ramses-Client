@@ -1,15 +1,18 @@
 #ifndef DBTABLEMODEL_H
 #define DBTABLEMODEL_H
 
-#include "ramobjectmodel.h"
+#include "ramabstractobjectmodel.h"
+
+#include "ramobject.h"
 
 /**
  * @brief The DBTableModel class handles a list of objects taken from a complete table in the DB
  */
-class DBTableModel: public RamObjectModel
+class DBTableModel: public RamAbstractObjectModel
 {
     Q_OBJECT
 public:
+
     // === CONSTRUCTOR ===
 
     DBTableModel(RamAbstractObject::ObjectType type, QObject *parent = nullptr);
@@ -26,17 +29,12 @@ public:
      * @param value The value
      */
     void addFilterValue(QString value);
-
     /**
-     * @brief setRowKey Sets the key in the JSON data to be used to assign the object to a row
-     * @param key
+     * @brief setLookUpKey Sets a key of the JSON Data to be used for fast look ups
+     * The default is to use the shortName
+     * @param newLookUpKey The key
      */
-    void setRowKey(QString key);
-    /**
-     * @brief setColumnKey Sets the key in the JSON data to be used to assign the object to a column
-     * @param key
-     */
-    void setColumnKey(QString key);
+    void setLookUpKey(const QString &newLookUpKey);
 
     // === Other Public Methods ===
 
@@ -47,33 +45,64 @@ public:
      */
     void load();
 
-protected:
-    // Checks if the type of this object belongs to this model
-    virtual bool checkType(QString table);
-    // Checks if this object uuid belongs to this model
-    virtual bool checkFilters(QString uuid, QString table);
+    // === QAbstractTableModel Reimplementation ===
 
-protected slots:
-    // Inserts a new object
-    virtual void insertObject(QString uuid, QString table);
-    // Removes an object
-    virtual void removeObject(QString uuid, QString table);
+    // Data access
+    virtual int rowCount(const QModelIndex &parent = QModelIndex()) const override;
+    virtual int columnCount(const QModelIndex &parent = QModelIndex()) const override;
+    virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
+    virtual QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
+    // Support move rows
+    virtual bool moveRows(const QModelIndex &sourceParent, int sourceRow, int count, const QModelIndex &destinationParent, int destinationChild) override;
+
+    // Convenience methods
+    // An object by its shortname, or name
+    virtual RamObject *search(QString searchString) const override;
+    // Objects by its lookup key
+    QList<RamObject *> lookUp(QString lookUpValue);
+
+    // Clear the model
+    virtual void clear() override;
+
+private slots:
+    // Inserts a single object
+    void insertObject(QString uuid, QString data, QString table);
+    // Removes a single object
+    void removeObject(QString uuid, QString table);
     // Clear and reload the data
     void reload();
-    // Save the order of the objects when the rows have been moved
-    void saveOrder(const QModelIndex &parent, int start, int end, const QModelIndex &destination, int row);
+    // Checks and changes the data
+    void changeData(QString uuid, QString data);
 
 private:
+
+    // === METHODS ===
+
+    // Edit structure
+    void insertObjects(int row, QVector<QStringList> data, QString table);
+    void removeObjects(QStringList uuids, QString table = "");
+
+    // Utils
+    // Checks if this object uuid belongs to this model
+    virtual bool checkFilters(QString data) const;
+    // Gets the order from the data
+    int getOrder(QString data);
+    // Gets the lookUp key value from the data
+    QString getLookUpValue(QString data);
+
+    // === ATTRIBUTES ===
+
     // Data
-    QHash<QString, QString> m_rows;
-    QHash<QString, QString> m_columns;
+    // Fast LookUp table
+    QMultiHash<QString, QString> m_lookUpTable;
 
     // This flag is used to check if the table has already been loaded.
-    bool m_isLoaded =false;
+    bool m_isLoaded = false;
 
     // Parameters
     QString m_filterKey;
     QStringList m_filterValues;
+    QString m_lookUpKey = "shortName";
 };
 
 bool objSorter(const QStringList a, const QStringList b);

@@ -31,7 +31,7 @@ RamAssetGroup *RamAssetGroup::createFromTemplate(RamTemplateAssetGroup *tempAG, 
     // Create
     RamAssetGroup *assetGroup = new RamAssetGroup(tempAG->shortName(), tempAG->name(), project);
     assetGroup->setColor(tempAG->color());
-    project->assetGroups()->appendObject(assetGroup->uuid());
+    //project->assetGroups()->appendObject(assetGroup->uuid());
     return assetGroup;
 }
 
@@ -101,10 +101,7 @@ void RamAssetGroup::construct()
     m_icon = ":/icons/asset-group";
     m_editRole = ProjectAdmin;
 
-    m_assets = new DBTableModel(
-                RamAbstractObject::Asset,
-                this
-                );
+    m_assets = new DBTableModel( RamObject::Asset, this );
     m_assets->setFilterKey("assetGroup");
     m_assets->addFilterValue( this->uuid() );
 }

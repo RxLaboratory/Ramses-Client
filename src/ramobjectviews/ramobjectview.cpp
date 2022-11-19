@@ -11,7 +11,7 @@ RamObjectView::RamObjectView(DisplayMode mode, QWidget *parent):
     connectEvents();
 }
 
-void RamObjectView::setObjectModel(RamObjectModel *list)
+void RamObjectView::setObjectModel(RamAbstractObjectModel *list)
 {
     m_objectModel->setSourceModel(list);
     this->setModel(m_objectModel);

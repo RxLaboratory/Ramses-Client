@@ -7,7 +7,6 @@
 #include "ramdatainterface/dbinterface.h"
 #include "ramasset.h"
 #include "ramshot.h"
-#include "duqf-app/app-config.h"
 
 // STATIC //
 
@@ -36,7 +35,7 @@ RamUser *RamUser::c(RamObject *o)
 // PUBLIC //
 
 RamUser::RamUser(QString shortName, QString name) :
-    RamObject(shortName, name, User, nullptr, shortName == "Ramses", ENCRYPT_USER_DATA)
+    RamObject(shortName, name, User, nullptr, shortName == "Ramses")
 {
     construct();
     if (shortName.toLower() != "new" && shortName != "Ramses")
@@ -47,7 +46,7 @@ RamUser::RamUser(QString shortName, QString name) :
 }
 
 RamUser::RamUser(QString uuid):
-    RamObject(uuid, User, nullptr, ENCRYPT_USER_DATA)
+    RamObject(uuid, User, nullptr)
 {
     construct();
 
@@ -123,7 +122,7 @@ bool RamUser::isStepAssigned(RamStep *step) const
     if (step->type() != RamStep::ShotProduction && step->type() != RamStep::AssetProduction) return false;
 
     // Check in status
-    RamObjectModel *items;
+    RamAbstractObjectModel *items;
     RamStep::Type type = step->type();
     if (type == RamStep::ShotProduction) items = step->project()->shots();
     else items = step->project()->assets();
@@ -198,12 +197,12 @@ void RamUser::construct()
     m_editRole = Admin;
     //m_schedule = createModel(RamObject::ScheduleEntry, "schedule");
     m_schedule = new DBTableModel (
-                RamAbstractObject::ScheduleEntry,
+                RamObject::ScheduleEntry,
                 this
                 );
 
-    m_schedule->setFilterKey("user");
+    m_schedule->setFilterKey( "user" );
     m_schedule->addFilterValue( this->uuid() );
-    m_schedule->setLookupRole( RamObject::Date );
+    m_schedule->setLookUpKey( "date" );
     m_schedule->load();
 }

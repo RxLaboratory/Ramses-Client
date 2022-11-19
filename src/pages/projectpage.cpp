@@ -186,7 +186,7 @@ void ProjectPage::createAssetGroupFromTemplate(RamObject *templateAGObj)
     if (!project) return;
 
     RamAssetGroup *ag = RamAssetGroup::createFromTemplate(templateAG, project);
-    project->assetGroups()->appendObject(ag->uuid());
+    //project->assetGroups()->appendObject(ag->uuid());
     ag->edit();
 }
 

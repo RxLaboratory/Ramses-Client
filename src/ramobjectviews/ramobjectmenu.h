@@ -3,7 +3,7 @@
 
 #include <QMenu>
 
-#include "ramobjectmodel.h"
+#include "ramabstractobjectmodel.h"
 #include "ramobjectsortfilterproxymodel.h"
 
 /**
@@ -16,7 +16,7 @@ class RamObjectMenu : public QMenu
     Q_OBJECT
 public:
     RamObjectMenu(bool checkable = false, QWidget *parent = nullptr);
-    void setObjectModel(RamObjectModel *list);
+    void setObjectModel(RamAbstractObjectModel *list);
     RamObjectSortFilterProxyModel *model();
 
     void setSortMode(RamObject::DataRole mode);

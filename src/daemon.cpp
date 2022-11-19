@@ -1,5 +1,6 @@
 #include "daemon.h"
 #include "duqf-app/app-version.h"
+#include "ramobjectmodel.h"
 #include "ramses.h"
 
 Daemon *Daemon::_instance = nullptr;

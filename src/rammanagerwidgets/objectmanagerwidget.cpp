@@ -9,7 +9,7 @@ ObjectManagerWidget::ObjectManagerWidget(QString title, QIcon icon, QWidget *par
     clear();
 }
 
-ObjectManagerWidget::ObjectManagerWidget(RamObjectModel *objectModel, QString title, QIcon icon, QWidget *parent) :
+ObjectManagerWidget::ObjectManagerWidget(RamAbstractObjectModel *objectModel, QString title, QIcon icon, QWidget *parent) :
     QWidget(parent)
 {
     setupUi(title,icon);
@@ -18,7 +18,7 @@ ObjectManagerWidget::ObjectManagerWidget(RamObjectModel *objectModel, QString ti
     setObjectModel(objectModel);
 }
 
-void ObjectManagerWidget::setObjectModel(RamObjectModel *objectModel)
+void ObjectManagerWidget::setObjectModel(RamAbstractObjectModel *objectModel)
 {
     m_listWidget->setObjectModel( objectModel );
     if (!objectModel) return;

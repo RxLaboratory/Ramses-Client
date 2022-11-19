@@ -175,11 +175,10 @@ const QString RamAbstractObject::uuidFromPath(QString path, ObjectType type)
 
 // PUBLIC //
 
-RamAbstractObject::RamAbstractObject(QString shortName, QString name, ObjectType type, bool isVirtual, bool encryptData)
+RamAbstractObject::RamAbstractObject(QString shortName, QString name, ObjectType type, bool isVirtual)
 {
     m_uuid = RamUuid::generateUuidString(shortName + name);
     m_objectType = type;
-    m_dataEncrypted = encryptData;
     m_virtual = isVirtual;
 
     // Create in the database
@@ -542,13 +541,12 @@ QString RamAbstractObject::previewImagePath() const
 
 // PROTECTED //
 
-RamAbstractObject::RamAbstractObject(QString uuid, ObjectType type, bool encryptData)
+RamAbstractObject::RamAbstractObject(QString uuid, ObjectType type)
 {
     m_created = true;
 
     m_uuid = uuid;
     m_objectType = type;
-    m_dataEncrypted = encryptData;
 
     // cache the data
     m_cachedData = dataString();
@@ -575,11 +573,6 @@ void RamAbstractObject::setDataString(QString data)
 
     if (m_virtual || m_saveSuspended || !m_created) return;
 
-    if (m_dataEncrypted)
-    {
-        data = DataCrypto::instance()->clientEncrypt( data );
-    }
-
     /*qDebug() << ">>>";
     qDebug() << "Setting data for: " + shortName() + " (" + objectTypeName() + ")";
     qDebug() << "UUID: " + m_uuid;
@@ -602,11 +595,6 @@ QString RamAbstractObject::dataString() const
 
     QString dataStr = DBInterface::instance()->objectData(m_uuid, objectTypeName());
     if (dataStr == "") return "";
-    // Decrypt
-    if (m_dataEncrypted)
-    {
-        dataStr = DataCrypto::instance()->clientDecrypt( dataStr );
-    }
 
     // Cache the data to improve performance
     //m_cachedData = dataStr;
@@ -622,11 +610,6 @@ void RamAbstractObject::createData(QString data)
 
     // Cache the data to improve performance
     m_cachedData = data;
-
-    if (m_dataEncrypted)
-    {
-        data = DataCrypto::instance()->clientEncrypt( data );
-    }
 
     DBInterface::instance()->createObject(m_uuid, objectTypeName(), data);
 

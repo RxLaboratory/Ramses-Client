@@ -176,7 +176,7 @@ QVector<float> RamStep::stats(RamUser *user)
     }
 
     // check completed days
-    RamObjectModel *items;
+    RamAbstractObjectModel *items;
     if (type() == ShotProduction) items = proj->shots();
     else if(type() == AssetProduction) items = proj->assets();
     else return QVector<float>( {
@@ -327,7 +327,7 @@ void RamStep::computeEstimation()
     if (t == PreProduction) return;
     if (t == PostProduction) return;
 
-    RamObjectModel *items;
+    RamAbstractObjectModel *items;
     if (t == ShotProduction) items = proj->shots();
     else items = proj->assets();
 

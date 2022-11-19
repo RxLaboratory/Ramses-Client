@@ -1,5 +1,6 @@
 #include "ramscheduletablemodel.h"
 
+#include "duqf-app/app-config.h"
 #include "ramschedulecomment.h"
 #include "ramscheduleentry.h"
 #include "ramses.h"
@@ -166,7 +167,7 @@ QVariant RamScheduleTableModel::data(const QModelIndex &index, int role) const
     // THE COMMENT
     if (row == 0 && m_comments)
     {
-        QList<RamObject*> comments = m_comments->get(date);
+        QList<RamObject*> comments = m_comments->lookUp(date);
         if (!comments.isEmpty())
         {
             RamScheduleComment *c = RamScheduleComment::c(comments.first());
@@ -198,11 +199,11 @@ QVariant RamScheduleTableModel::data(const QModelIndex &index, int role) const
     RamObject *usrObj = m_users->get((row-1) / 2);
     RamUser *user = RamUser::c( usrObj );
     if (!user) return QVariant();
-    RamObjectModel *schedule = user->schedule();
+    DBTableModel *schedule = user->schedule();
 
     RamProject *currentProject = Ramses::instance()->currentProject();
 
-    QList<RamObject*> entries = schedule->get(date);
+    QList<RamObject*> entries = schedule->lookUp(date.toString( DATETIME_DATA_FORMAT ));
     for (int i = 0; i < entries.count(); i++)
     {
         RamScheduleEntry *entry = RamScheduleEntry::c(entries.at(i));

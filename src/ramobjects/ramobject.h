@@ -20,6 +20,7 @@ public:
 
     // STATIC METHODS //
     static RamObject *get(QString uuid, ObjectType type);
+    static RamObject *get(QString uuid, QString tableName);
 
     // METHODS //
 
@@ -28,7 +29,7 @@ public:
      * @param shortName
      * @param name
      */
-    RamObject(QString shortName, QString name, ObjectType type, QObject *parent = nullptr, bool isVirtual = false, bool encryptData = false);
+    RamObject(QString shortName, QString name, ObjectType type, QObject *parent = nullptr, bool isVirtual = false);
 
     virtual QString filterUuid() const { return QString(); };
     virtual QStringList filterListUuids() const { return QStringList(); }
@@ -57,7 +58,7 @@ protected:
      * @param uuid
      * @param parent
      */
-    RamObject(QString uuid, ObjectType type, QObject *parent = nullptr, bool encryptData = false);
+    RamObject(QString uuid, ObjectType type, QObject *parent = nullptr);
 
     virtual QJsonObject reloadData() override;
 
