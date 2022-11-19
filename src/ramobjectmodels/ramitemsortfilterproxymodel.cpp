@@ -146,7 +146,7 @@ bool RamItemSortFilterProxyModel::filterAcceptsRow(int sourceRow, const QModelIn
 
     ok = false;
 
-    for(int i = 0; i < m_states.count(); i++)
+    for (int i = 0; i < m_states.count(); i++)
     {
         for (int j = 1; j < sourceModel()->columnCount(); j++)
         {

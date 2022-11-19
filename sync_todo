@@ -1,6 +1,5 @@
 - RamObjectModel: remove columns; better use RamAbstractObjectModel (lookup)
 - RamAbstractItem status methods
-- Status table filters
 - Status delegate crash on click
 - project: use dbtables
 - noState created even if exists (check search?)

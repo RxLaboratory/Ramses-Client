@@ -1,5 +1,4 @@
 #include "ramobjectsortfilterproxymodel.h"
-#include "ramabstractobjectmodel.h"
 
 RamObjectSortFilterProxyModel::RamObjectSortFilterProxyModel(QObject *parent)
     : QSortFilterProxyModel{parent}
@@ -71,10 +70,12 @@ RamObject *RamObjectSortFilterProxyModel::searchObject(QString searchString) con
 
 RamAbstractObject::ObjectType RamObjectSortFilterProxyModel::type() const
 {
-    RamAbstractObjectModel *model = static_cast<RamAbstractObjectModel*>( sourceModel() );
+    QAbstractItemModel *model = sourceModel();
     if (!model) return RamObject::Object;
+    if (model->rowCount() == 0) return RamObject::Object;
 
-    return model->type();
+    int type = model->data( model->index(0, 0 ), RamObject::Type).toInt();
+    return static_cast<RamObject::ObjectType>( type );
 }
 
 void RamObjectSortFilterProxyModel::setFilterUuid(const QString &filterUuid)

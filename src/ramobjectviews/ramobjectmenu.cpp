@@ -256,7 +256,8 @@ void RamObjectMenu::objectChanged(const QModelIndex &topLeft, const QModelIndex 
 void RamObjectMenu::actionAssign(bool checked)
 {
     QAction *a = qobject_cast<QAction*>( sender() );
-    emit assignmentChanged( object(a), checked );
+    RamObject *obj = object(a);
+    emit assignmentChanged( obj, checked );
 }
 
 void RamObjectMenu::actionAssign()
@@ -295,6 +296,6 @@ RamObject *RamObjectMenu::object(QAction *a) const
     QString uuid = a->data().toString();
     if (uuid == "") return nullptr;
     RamObject::ObjectType type = m_objects->type();
-    if (type == RamObject::Object) return nullptr;
-    return RamObject::get(uuid, m_objects->type() );
+    if (type == RamObject::Object || type == RamObject::Item) return nullptr;
+    return RamObject::get(uuid, type );
 }
