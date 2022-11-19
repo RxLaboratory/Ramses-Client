@@ -4,7 +4,6 @@
 #include "ramtemplateassetgroup.h"
 
 #include "ramproject.h"
-#include "ramobjectsortfilterproxymodel.h"
 
 class RamAssetGroup : public RamTemplateAssetGroup
 {
@@ -38,9 +37,8 @@ protected:
 
 private:
     void construct();
-    void setProject(RamProject *project);
 
-    RamObjectSortFilterProxyModel *m_assets;
+    DBTableModel *m_assets;
 };
 
 #endif // RAMASSETGROUP_H

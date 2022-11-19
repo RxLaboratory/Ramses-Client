@@ -43,14 +43,14 @@ RamProject::RamProject(QString uuid):
 
     QJsonObject d = data();
     loadModel(m_shots, "shots", d);
-    loadModel(m_assets, "assets", d);
+    //loadModel(m_assets, "assets", d);
     loadModel(m_users, "users", d);
     loadModel(m_scheduleComments, "scheduleComments", d);
     loadModel(m_pipeFiles, "pipeFiles", d);
     //loadModel(m_steps, "steps", d);
     loadModel(m_pipeline, "pipeline", d);
     loadModel(m_sequences, "sequences", d);
-    loadModel(m_assetGroups, "assetGroups", d);
+    //loadModel(m_assetGroups, "assetGroups", d);
 
     computeEstimation(true);
 }
@@ -60,7 +60,7 @@ DBTableModel *RamProject::steps() const
     return m_steps;
 }
 
-RamObjectModel *RamProject::assetGroups() const
+DBTableModel *RamProject::assetGroups() const
 {
     return m_assetGroups;
 }
@@ -75,7 +75,7 @@ RamObjectModel *RamProject::shots() const
     return m_shots;
 }
 
-RamObjectModel *RamProject::assets() const
+DBTableModel *RamProject::assets() const
 {
     return m_assets;
 }
@@ -413,6 +413,14 @@ void RamProject::construct()
     m_icon = ":/icons/project";
     m_editRole = ProjectAdmin;
 
+    m_assets = new DBTableModel(
+                RamAbstractObject::Asset,
+                "project",
+                QStringList(this->uuid()),
+                RamObject::ShortName,
+                this
+                );
+
     m_steps = new DBTableModel(
                 RamAbstractObject::Step,
                 "project",
@@ -421,8 +429,16 @@ void RamProject::construct()
                 this
                 );
 
+    m_assetGroups = new DBTableModel(
+                RamAbstractObject::AssetGroup,
+                "project",
+                QStringList(this->uuid()),
+                RamObject::ShortName,
+                this
+                );
+
     m_shots = createModel(RamObject::Shot, "shots");
-    m_assets = createModel(RamObject::Asset, "assets");
+    //m_assets = createModel(RamObject::Asset, "assets");
     m_users = createModel(RamObject::User, "users" );
     m_scheduleComments = createModel(RamObject::ScheduleComment, "scheduleComments" );
     m_scheduleComments->setLookupRole(RamObject::Date);
@@ -430,7 +446,7 @@ void RamProject::construct()
     //m_steps = createModel(RamObject::Step, "steps" );
     m_pipeline = createModel(RamObject::Pipe, "pipeline" );
     m_sequences = createModel(RamObject::Sequence, "sequences" );
-    m_assetGroups = createModel(RamObject::AssetGroup, "assetGroups" );
+    //m_assetGroups = createModel(RamObject::AssetGroup, "assetGroups" );
 
     m_shots->setColumnModel(m_steps);
     m_assets->setColumnModel(m_steps);

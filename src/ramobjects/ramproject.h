@@ -30,13 +30,13 @@ public:
     // Steps
     DBTableModel *steps() const;
     // Asset Groups
-    RamObjectModel *assetGroups() const;
+    DBTableModel *assetGroups() const;
     // Sequences
     RamObjectModel *sequences() const;
     // Shots
     RamObjectModel *shots() const;
     // Assets
-    RamObjectModel *assets() const;
+    DBTableModel *assets() const;
     // Pipeline
     RamObjectModel *pipeline() const;
     RamObjectModel *pipeFiles() const;
@@ -122,8 +122,8 @@ private:
     // LISTS
     DBTableModel *m_steps;
     RamObjectModel *m_sequences;
-    RamObjectModel *m_assetGroups;
-    RamObjectModel *m_assets;
+    DBTableModel *m_assetGroups;
+    DBTableModel *m_assets;
     RamObjectModel *m_shots;
     RamObjectModel *m_pipeline;
     RamObjectModel *m_pipeFiles;

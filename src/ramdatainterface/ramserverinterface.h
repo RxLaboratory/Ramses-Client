@@ -264,7 +264,7 @@ private:
      * @brief _requestDelay A delay between requests to avoid spamming the server (and being blacklisted)
      * @todo expose this as a user setting ?
      */
-    int m_requestDelay = 500;
+    int m_requestDelay = 250;
 
     // Authentication //
     QString m_currentUserUuid;

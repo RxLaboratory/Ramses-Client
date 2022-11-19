@@ -50,7 +50,7 @@ RamAbstractItem::RamAbstractItem(QString uuid, ObjectType type):
     {
         RamProject *project = RamProject::get(projectUuid);
         setParent(project);
-        if (project)
+        /*if (project)
         {
             RamObjectModel *steps = project->steps();
             if (steps) {
@@ -63,7 +63,7 @@ RamAbstractItem::RamAbstractItem(QString uuid, ObjectType type):
         }
 
 
-        connectProject(project);
+        connectProject(project);*/
     }
 }
 

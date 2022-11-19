@@ -41,8 +41,10 @@ RamAssetGroup::RamAssetGroup(QString shortName, QString name, RamProject *projec
     RamTemplateAssetGroup(shortName, name, AssetGroup)
 {
     construct();
-    setProject(project);
+
+    this->setParent( project );
     insertData("project", project->uuid());
+
     createData();
 }
 
@@ -54,7 +56,7 @@ RamAssetGroup::RamAssetGroup(QString uuid):
     QJsonObject d = data();
 
     QString projUuid = d.value("project").toString();
-    setProject( RamProject::get(projUuid) );
+    if (projUuid != "") this->setParent( RamProject::get(projUuid) );
 }
 
 int RamAssetGroup::assetCount() const
@@ -95,16 +97,16 @@ void RamAssetGroup::construct()
 {
     m_existingObjects[m_uuid] = this;
     m_objectType = AssetGroup;
-    m_assets = new RamObjectSortFilterProxyModel(this);
-    m_assets->setSingleColumn(true);
     m_icon = ":/icons/asset-group";
     m_editRole = ProjectAdmin;
+
+    m_assets = new DBTableModel(
+                RamAbstractObject::Asset,
+                "assetGroup",
+                QStringList(this->uuid()),
+                RamObject::ShortName,
+                this
+                );
 }
 
-void RamAssetGroup::setProject(RamProject *project)
-{
-    m_assets->setSourceModel( project->assets() );
-    m_assets->setFilterUuid( m_uuid );
-    this->setParent( project );
-}
 
