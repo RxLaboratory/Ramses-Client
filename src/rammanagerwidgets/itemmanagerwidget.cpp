@@ -179,7 +179,7 @@ void ItemManagerWidget::showUser(RamObject *user, bool s)
     if(s)
     {
         ui_table->filteredModel()->showUser( user );
-        //ui_table->resizeRowsToContents();
+        ui_table->resizeRowsToContents();
     }
     else
     {
@@ -195,7 +195,7 @@ void ItemManagerWidget::showStep(RamObject *step, bool s)
     {
         ui_table->filteredModel()->showStep( step );
         ui_table->resizeColumnsToContents();
-        //ui_table->resizeRowsToContents();
+        ui_table->resizeRowsToContents();
     }
     else
     {
@@ -211,6 +211,7 @@ void ItemManagerWidget::showState(RamObject *state, bool s)
     {
         ui_table->filteredModel()->showState(state);
         ui_table->resizeRowsToContents();
+        ui_table->resizeColumnsToContents();
     }
     else
     {
@@ -1065,6 +1066,9 @@ void ItemManagerWidget::changeProject()
     ui_assignUserContextMenu->setObjectModel(m_project->users());
 
     loadSettings();
+
+    ui_table->resizeColumnsToContents();
+    ui_table->resizeRowsToContents();
 }
 
 void ItemManagerWidget::setObjectModel()
