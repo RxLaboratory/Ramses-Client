@@ -4,6 +4,7 @@
 #include "rampipe.h"
 #include "projecteditwidget.h"
 #include "ramshot.h"
+#include "ramstatustablemodel.h"
 
 QFrame *RamProject::ui_editWidget = nullptr;
 
@@ -42,26 +43,34 @@ RamProject::RamProject(QString uuid):
     construct();
 
     QJsonObject d = data();
-    loadModel(m_shots, "shots", d);
-    //loadModel(m_assets, "assets", d);
     loadModel(m_users, "users", d);
     loadModel(m_scheduleComments, "scheduleComments", d);
     loadModel(m_pipeFiles, "pipeFiles", d);
-    //loadModel(m_steps, "steps", d);
     loadModel(m_pipeline, "pipeline", d);
     loadModel(m_sequences, "sequences", d);
-    //loadModel(m_assetGroups, "assetGroups", d);
 
     computeEstimation(true);
 }
 
-DBTableModel *RamProject::steps() const
+DBTableFilterProxyModel *RamProject::steps() const
 {
     m_steps->load();
     return m_steps;
 }
 
-DBTableModel *RamProject::assetGroups() const
+DBTableFilterProxyModel *RamProject::shotSteps() const
+{
+    m_shotSteps->load();
+    return m_shotSteps;
+}
+
+DBTableFilterProxyModel *RamProject::assetSteps() const
+{
+    m_assetSteps->load();
+    return m_assetSteps;
+}
+
+DBTableFilterProxyModel *RamProject::assetGroups() const
 {
     m_assetGroups->load();
     return m_assetGroups;
@@ -72,12 +81,13 @@ RamObjectModel *RamProject::sequences() const
     return m_sequences;
 }
 
-RamObjectModel *RamProject::shots() const
+DBTableFilterProxyModel *RamProject::shots() const
 {
+    m_shots->load();
     return m_shots;
 }
 
-DBTableModel *RamProject::assets() const
+DBTableFilterProxyModel *RamProject::assets() const
 {
     m_assets->load();
     return m_assets;
@@ -101,6 +111,16 @@ RamObjectModel *RamProject::users() const
 RamObjectModel *RamProject::scheduleComments() const
 {
     return m_scheduleComments;
+}
+
+RamStatusTableModel *RamProject::assetStatus() const
+{
+    return m_assetStatus;
+}
+
+RamStatusTableModel *RamProject::shotStatus() const
+{
+    return m_shotStatus;
 }
 
 qreal RamProject::framerate() const
@@ -418,17 +438,30 @@ void RamProject::construct()
     m_icon = ":/icons/project";
     m_editRole = ProjectAdmin;
 
-    m_assets = new DBTableModel( RamObject::Asset, this );
+    m_assets = new DBTableFilterProxyModel( Ramses::instance()->assets(), this );
     m_assets->addFilterValue( "project", this->uuid() );
 
-    m_steps = new DBTableModel( RamObject::Step, this );
+    m_shots = new DBTableFilterProxyModel( Ramses::instance()->shots(), this );
+    m_shots->addFilterValue( "project", this->uuid() );
+
+    m_steps = new DBTableFilterProxyModel( Ramses::instance()->steps(), this );
     m_steps->addFilterValue( "project", this->uuid() );
 
-    m_assetGroups = new DBTableModel( RamObject::AssetGroup, this );
+    m_shotSteps = new DBTableFilterProxyModel( Ramses::instance()->steps(), this );
+    m_shotSteps->addFilterValue( "project", this->uuid() );
+    m_shotSteps->addFilterValue( "type", "shot" );
+
+    m_assetSteps = new DBTableFilterProxyModel( Ramses::instance()->steps(), this );
+    m_assetSteps->addFilterValue( "project", this->uuid() );
+    m_assetSteps->addFilterValue( "type", "asset" );
+
+    m_assetGroups = new DBTableFilterProxyModel( Ramses::instance()->assetGroups(), this );
     m_assetGroups->addFilterValue( "project", this->uuid() );
 
-    m_shots = createModel(RamObject::Shot, "shots");
-    //m_assets = createModel(RamObject::Asset, "assets");
+    m_assetStatus = new RamStatusTableModel( m_steps, m_assets, Ramses::instance()->status(), this);
+
+    m_shotStatus = new RamStatusTableModel( m_steps, m_shots, Ramses::instance()->status(), this);
+
     m_users = createModel(RamObject::User, "users" );
     m_scheduleComments = createModel(RamObject::ScheduleComment, "scheduleComments" );
     m_scheduleComments->setLookupRole(RamObject::Date);

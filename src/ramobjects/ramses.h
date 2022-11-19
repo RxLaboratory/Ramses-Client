@@ -29,6 +29,47 @@ public:
     void setRamsesPath(QString p);
     QString pathFromRamses(QString p = "", bool create = false) const;
 
+    // Applications
+    DBTableModel *applications() const;
+    // Assets
+    DBTableModel *assets() const;
+    // Asset Groups
+    DBTableModel *assetGroups() const;
+    // File Types
+    DBTableModel *fileTypes() const;
+    // Pipes
+    DBTableModel *pipes() const;
+    // Pipe Files
+    DBTableModel *pipeFiles() const;
+    // Projects
+    DBTableModel *projects() const;
+    RamProject *currentProject() const;
+    void setCurrentProject(RamProject *project);
+    void setCurrentProject(QString shortName);
+    void setCurrentProjectUuid(QString uuid);
+    // Schedule Comments
+    DBTableModel *scheduleComments() const;
+    // Schedule
+    DBTableModel *schedule() const;
+    // Sequences
+    DBTableModel *sequences() const;
+    // Shots
+    DBTableModel *shots() const;
+    // States
+    DBTableModel *states() const;
+    RamState *noState();
+    RamState *todoState();
+    RamState *okState();
+    RamState *stbState();
+    RamState *wipState();
+    // Status
+    DBTableModel *status() const;
+    // Steps
+    DBTableModel *steps() const;
+    // Template Asset Groups
+    DBTableModel *templateAssetGroups() const;
+    // Template Steps
+    DBTableModel *templateSteps() const;
     // Users
     DBTableModel *users() const;
     RamUser *currentUser() const;
@@ -37,33 +78,6 @@ public:
     bool isAdmin();
     bool isProjectAdmin();
     bool isLead();
-
-    // States
-    DBTableModel *states() const;
-    RamState *noState();
-    RamState *todoState();
-    RamState *okState();
-    RamState *stbState();
-    RamState *wipState();
-
-    // Projects
-    DBTableModel *projects() const;
-    RamProject *currentProject() const;
-    void setCurrentProject(RamProject *project);
-    void setCurrentProject(QString shortName);
-    void setCurrentProjectUuid(QString uuid);
-
-    // Template Steps
-    DBTableModel *templateSteps() const;
-
-    // Template Asset Groups
-    DBTableModel *templateAssetGroups() const;
-
-    // File Types
-    DBTableModel *fileTypes() const;
-
-    // Applications
-    DBTableModel *applications() const;
 
 signals:
     void userChanged(RamUser*);
@@ -89,13 +103,23 @@ private:
     // ATTRIBUTES //
 
     // DATA (lists)
-    DBTableModel *m_states;
-    DBTableModel *m_users;
-    DBTableModel *m_templateSteps = nullptr;
-    DBTableModel *m_templateAssetGroups = nullptr;
-    DBTableModel *m_fileTypes = nullptr;
     DBTableModel *m_applications = nullptr;
+    DBTableModel *m_assets = nullptr;
+    DBTableModel *m_assetGroups = nullptr;
+    DBTableModel *m_fileTypes = nullptr;
+    DBTableModel *m_pipes = nullptr;
+    DBTableModel *m_pipeFiles = nullptr;
     DBTableModel *m_projects = nullptr;
+    DBTableModel *m_scheduleComments = nullptr;
+    DBTableModel *m_schedule = nullptr;
+    DBTableModel *m_sequences = nullptr;
+    DBTableModel *m_shots = nullptr;
+    DBTableModel *m_states = nullptr;
+    DBTableModel *m_status = nullptr;
+    DBTableModel *m_steps = nullptr;
+    DBTableModel *m_templateAssetGroups = nullptr;
+    DBTableModel *m_templateSteps = nullptr;
+    DBTableModel *m_users = nullptr;;
 
     // Users
     RamUser *m_currentUser = nullptr;

@@ -50,7 +50,7 @@ RamShot *ShotManagerWidget::createObject()
                 seq
                 );
 
-    project->shots()->appendObject(shot->uuid());
+    //project->shots()->appendObject(shot->uuid());
     shot->edit();
     return shot;
 }

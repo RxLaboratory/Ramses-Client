@@ -45,7 +45,9 @@ public:
 
     RamUser *user() const;
     RamStep *step() const;
+    QString stepUuid() const;
     RamAbstractItem *item() const;
+    QString itemUuid() const;
 
     bool isNoState() const;
     bool isDisabled() const override;

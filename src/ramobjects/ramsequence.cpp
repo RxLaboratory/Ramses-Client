@@ -1,6 +1,7 @@
 #include "ramsequence.h"
 
 #include "sequenceeditwidget.h"
+#include "ramobjectmodel.h"
 
 // STATIC //
 

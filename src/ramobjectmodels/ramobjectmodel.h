@@ -40,19 +40,15 @@ public:
     // Append object
     void appendObject(QString uuid);
 
-    // An object by its row
-    virtual RamObject *get(int row) const override;
     // Use one of the data roles for fast lookup
     // Note that this data must be immutable
     void setLookupRole(int role);
 
-    // An object by its shortname, or name
-    RamObject *search(QString searchString) const override;
     // An object by its role data lookup
-    QList<RamObject *> lookUp(QVariant roleData);
+    QList<RamObject *> lookUp(QVariant roleData) const;
 
     // The type of objects contained in this model
-    RamObject::ObjectType type() const;
+    virtual RamObject::ObjectType type() const override;
 
 protected:
     RamObject::ObjectType m_type;

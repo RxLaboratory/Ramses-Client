@@ -11,9 +11,9 @@ RamObjectView::RamObjectView(DisplayMode mode, QWidget *parent):
     connectEvents();
 }
 
-void RamObjectView::setObjectModel(RamAbstractObjectModel *list)
+void RamObjectView::setObjectModel(QAbstractItemModel *model)
 {
-    m_objectModel->setSourceModel(list);
+    m_objectModel->setSourceModel(model);
     this->setModel(m_objectModel);
     //this->resizeRowsToContents();
     //this->resizeColumnsToContents();

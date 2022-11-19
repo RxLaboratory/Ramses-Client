@@ -1,6 +1,7 @@
 #ifndef RAMPROJECT_H
 #define RAMPROJECT_H
 
+#include "dbtablefilterproxymodel.h"
 #include "ramobject.h"
 
 class RamSequence;
@@ -12,6 +13,7 @@ class RamAssetGroup;
 class RamItemTable;
 class RamUser;
 class DBTableModel;
+class RamStatusTableModel;
 
 class RamProject : public RamObject
 {
@@ -28,15 +30,17 @@ public:
     RamProject(QString shortName, QString name);
 
     // Steps
-    DBTableModel *steps() const;
+    DBTableFilterProxyModel *steps() const;
+    DBTableFilterProxyModel *shotSteps() const;
+    DBTableFilterProxyModel *assetSteps() const;
     // Asset Groups
-    DBTableModel *assetGroups() const;
+    DBTableFilterProxyModel *assetGroups() const;
     // Sequences
     RamObjectModel *sequences() const;
     // Shots
-    RamObjectModel *shots() const;
+    DBTableFilterProxyModel *shots() const;
     // Assets
-    DBTableModel *assets() const;
+    DBTableFilterProxyModel *assets() const;
     // Pipeline
     RamObjectModel *pipeline() const;
     RamObjectModel *pipeFiles() const;
@@ -44,6 +48,9 @@ public:
     RamObjectModel *users() const;
     // Schedule comments
     RamObjectModel *scheduleComments() const;
+    // Status
+    RamStatusTableModel *assetStatus() const;
+    RamStatusTableModel *shotStatus() const;
 
     qreal framerate() const;
     void setFramerate(const qreal &newFramerate);
@@ -120,15 +127,19 @@ private:
     void getCreateLists();
 
     // LISTS
-    DBTableModel *m_steps;
+    DBTableFilterProxyModel *m_steps;
+    DBTableFilterProxyModel *m_shotSteps;
+    DBTableFilterProxyModel *m_assetSteps;
     RamObjectModel *m_sequences;
-    DBTableModel *m_assetGroups;
-    DBTableModel *m_assets;
-    RamObjectModel *m_shots;
+    DBTableFilterProxyModel *m_assetGroups;
+    DBTableFilterProxyModel *m_assets;
+    DBTableFilterProxyModel *m_shots;
     RamObjectModel *m_pipeline;
     RamObjectModel *m_pipeFiles;
     RamObjectModel *m_users;
     RamObjectModel *m_scheduleComments;
+    RamStatusTableModel *m_assetStatus;
+    RamStatusTableModel *m_shotStatus;
 
     /**
      * @brief When true, estimations won't be computed.

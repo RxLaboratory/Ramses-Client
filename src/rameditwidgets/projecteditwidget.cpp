@@ -2,6 +2,7 @@
 
 #include "ramproject.h"
 #include "ramses.h"
+#include "ramobjectmodel.h"
 
 ProjectEditWidget::ProjectEditWidget(QWidget *parent) :
     ObjectEditWidget(parent)

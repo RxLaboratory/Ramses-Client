@@ -1,6 +1,7 @@
 #include "pipefilemanagerwidget.h"
 
 #include "ramses.h"
+#include "ramobjectmodel.h"
 
 PipeFileManagerWidget::PipeFileManagerWidget(QWidget *parent):
     ObjectManagerWidget(

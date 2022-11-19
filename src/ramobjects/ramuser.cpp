@@ -103,13 +103,15 @@ void RamUser::setRole(const QString role)
     insertData("role", role);
 }
 
-DBTableModel *RamUser::schedule() const
+DBTableFilterProxyModel *RamUser::schedule() const
 {
+    m_schedule->load();
     return m_schedule;
 }
 
 bool RamUser::isStepAssigned(RamStep *step) const
 {
+    m_schedule->load();
     // Check in schedule
     for(int i = 0; i < m_schedule->rowCount(); i++)
     {
@@ -122,7 +124,7 @@ bool RamUser::isStepAssigned(RamStep *step) const
     if (step->type() != RamStep::ShotProduction && step->type() != RamStep::AssetProduction) return false;
 
     // Check in status
-    RamAbstractObjectModel *items;
+    QAbstractItemModel *items;
     RamStep::Type type = step->type();
     if (type == RamStep::ShotProduction) items = step->project()->shots();
     else items = step->project()->assets();
@@ -130,8 +132,8 @@ bool RamUser::isStepAssigned(RamStep *step) const
     for (int i =0; i < items->rowCount(); i++)
     {
         RamAbstractItem *item;
-        if (type == RamStep::ShotProduction) item = RamShot::c( items->get(i) );
-        else item = RamAsset::c( items->get(i) );
+        if (type == RamStep::ShotProduction) item = RamShot::get( items->data( items->index(i, 0), RamObject::UUID).toString() );
+        else item = RamAsset::get( items->data( items->index(i, 0), RamObject::UUID).toString() );
         RamStatus *status = item->status(step);
         if (!status) continue;
         if (this->is(status->assignedUser())) return true;
@@ -196,12 +198,9 @@ void RamUser::construct()
     m_icon = ":/icons/user";
     m_editRole = Admin;
     //m_schedule = createModel(RamObject::ScheduleEntry, "schedule");
-    m_schedule = new DBTableModel (
-                RamObject::ScheduleEntry,
+    m_schedule = new DBTableFilterProxyModel (
+                Ramses::instance()->schedule(),
                 this
                 );
-
     m_schedule->addFilterValue( "user", this->uuid() );
-    m_schedule->setLookUpKey( "date" );
-    m_schedule->load();
 }

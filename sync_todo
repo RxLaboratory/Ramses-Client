@@ -1,4 +1,9 @@
+- RamObjectModel: remove columns; better use RamAbstractObjectModel (lookup)
+- RamAbstractItem status methods
+- Status table filters
+- Status delegate crash on click
 - project: use dbtables
+- noState created even if exists (check search?)
 - pipeline not shown on first click (issue with progress)
 - syncing ui better feedback : a status/connected icon + message user@server ( ... )
 - localdatainterface save sync in two single sql queries (update and insert) see on server

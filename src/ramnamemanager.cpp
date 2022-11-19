@@ -17,7 +17,7 @@ RamNameManager::RamNameManager()
     for(int i = 0; i < states->rowCount(); i++)
     {
 
-        RamObject *o = states->get( states->index(i, 0) );
+        RamObject *o = states->get( i );
         if (o) stateShortNames << o->shortName();
     }
 

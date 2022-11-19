@@ -231,35 +231,7 @@ void RamObjectModel::appendObject(QString uuid)
                 );
 }
 
-RamObject *RamObjectModel::get(int row) const
-{
-    if (row < 0) return nullptr;
-    if (row >= m_objects.count()) return nullptr;
-    return m_objects.at(row);
-}
-
-RamObject *RamObjectModel::search(QString searchString) const
-{
-    // Shortname first
-    for (int i = 0; i < m_objectUuids.count(); i++)
-    {
-        QString uuid = m_objectUuids.at(i);
-        RamObject *o = RamObject::get(uuid, m_type);
-        if (!o) continue;
-        if (o->shortName() == searchString) return o;
-    }
-    // Name after
-    for (int i = 0; i < m_objectUuids.count(); i++)
-    {
-        QString uuid = m_objectUuids.at(i);
-        RamObject *o = RamObject::get(uuid, m_type);
-        if (!o) continue;
-        if (o->name() == searchString) return o;
-    }
-    return nullptr;
-}
-
-QList<RamObject*> RamObjectModel::lookUp(QVariant roleData)
+QList<RamObject *> RamObjectModel::lookUp(QVariant roleData) const
 {
     return m_lookupTable.values(roleData);
 }

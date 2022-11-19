@@ -18,7 +18,7 @@ ObjectManagerWidget::ObjectManagerWidget(RamAbstractObjectModel *objectModel, QS
     setObjectModel(objectModel);
 }
 
-void ObjectManagerWidget::setObjectModel(RamAbstractObjectModel *objectModel)
+void ObjectManagerWidget::setObjectModel(QAbstractItemModel *objectModel)
 {
     m_listWidget->setObjectModel( objectModel );
     if (!objectModel) return;

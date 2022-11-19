@@ -49,12 +49,15 @@ SOURCES += \
     rammanagerwidgets/statemanagerwidget.cpp \
     rammanagerwidgets/stepmanagerwidget.cpp \
     ramobjectdelegates/ramobjectdelegate.cpp \
+    ramobjectmodels/dbtablefilterproxymodel.cpp \
     ramobjectmodels/dbtablemodel.cpp \
+    ramobjectmodels/ramabstractdatamodel.cpp \
     ramobjectmodels/ramabstractobjectmodel.cpp \
     ramobjectmodels/ramitemsortfilterproxymodel.cpp \
     ramobjectmodels/ramfilterlistproxymodel.cpp \
     ramobjectmodels/ramobjectmodel.cpp \
     ramobjectmodels/ramobjectsortfilterproxymodel.cpp \
+    ramobjectmodels/ramstatustablemodel.cpp \
     ramobjectmodels/statisticsmodel.cpp \
     ramobjectmodels/timelineproxy.cpp \
     ramobjectmodels/ramschedulefilterproxymodel.cpp \
@@ -213,12 +216,15 @@ HEADERS += \
     rammanagerwidgets/statemanagerwidget.h \
     rammanagerwidgets/stepmanagerwidget.h \
     ramobjectdelegates/ramobjectdelegate.h \
+    ramobjectmodels/dbtablefilterproxymodel.h \
     ramobjectmodels/dbtablemodel.h \
+    ramobjectmodels/ramabstractdatamodel.h \
     ramobjectmodels/ramabstractobjectmodel.h \
     ramobjectmodels/ramitemsortfilterproxymodel.h \
     ramobjectmodels/ramfilterlistproxymodel.h \
     ramobjectmodels/ramobjectmodel.h \
     ramobjectmodels/ramobjectsortfilterproxymodel.h \
+    ramobjectmodels/ramstatustablemodel.h \
     ramobjectmodels/statisticsmodel.h \
     ramobjectmodels/timelineproxy.h \
     ramobjectmodels/ramschedulefilterproxymodel.h \

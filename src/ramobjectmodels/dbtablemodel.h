@@ -3,8 +3,6 @@
 
 #include "ramabstractobjectmodel.h"
 
-#include "ramobject.h"
-
 /**
  * @brief The DBTableModel class handles a list of objects taken from a complete table in the DB
  */
@@ -16,20 +14,6 @@ public:
     // === CONSTRUCTOR ===
 
     DBTableModel(RamAbstractObject::ObjectType type, QObject *parent = nullptr);
-
-    // === Parameters to be set before load() ===
-
-    /**
-     * @brief addFilterValue Adds a value to be accepted with the filter key
-     * @param value The value
-     */
-    void addFilterValue(QString key, QString value);
-    /**
-     * @brief setLookUpKey Sets a key of the JSON Data to be used for fast look ups
-     * The default is to use the shortName
-     * @param newLookUpKey The key
-     */
-    void setLookUpKey(const QString &newLookUpKey);
 
     // === Other Public Methods ===
 
@@ -50,15 +34,6 @@ public:
     // Support move rows
     virtual bool moveRows(const QModelIndex &sourceParent, int sourceRow, int count, const QModelIndex &destinationParent, int destinationChild) override;
 
-    // Convenience methods
-    // An object by its shortname, or name
-    virtual RamObject *search(QString searchString) const override;
-    // Objects by its lookup key
-    QList<RamObject *> lookUp(QString lookUpValue);
-
-    // Clear the model
-    virtual void clear() override;
-
 protected slots:
     // Inserts a single object
     void insertObject(QString uuid, QString data, QString table);
@@ -77,26 +52,13 @@ private:
     void insertObjects(int row, QVector<QStringList> data, QString table);
     void removeObjects(QStringList uuids, QString table = "");
 
-    // Utils
-    // Checks if this object uuid belongs to this model
-    virtual bool checkFilters(QString data) const;
     // Gets the order from the data
     int getOrder(QString data);
-    // Gets the lookUp key value from the data
-    QString getLookUpValue(QString data);
 
     // === ATTRIBUTES ===
 
-    // Data
-    // Fast LookUp table
-    QMultiHash<QString, QString> m_lookUpTable;
-
     // This flag is used to check if the table has already been loaded.
     bool m_isLoaded = false;
-
-    // Parameters
-    QHash<QString, QStringList> m_filters;
-    QString m_lookUpKey = "shortName";
 };
 
 bool objSorter(const QStringList a, const QStringList b);

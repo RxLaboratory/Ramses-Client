@@ -1,5 +1,7 @@
 #include "stepstatushistorywidget.h"
 
+#include "ramobjectmodel.h"
+
 StepStatusHistoryWidget::StepStatusHistoryWidget(QWidget *parent) : QWidget(parent)
 {
     setupUi();

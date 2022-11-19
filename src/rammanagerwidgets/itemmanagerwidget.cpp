@@ -7,6 +7,7 @@
 #include "ramsequence.h"
 #include "shotscreationdialog.h"
 #include "progressmanager.h"
+#include "ramstatustablemodel.h"
 
 ItemManagerWidget::ItemManagerWidget(RamTemplateStep::Type type, QWidget *parent) : QWidget(parent)
 {   
@@ -565,7 +566,7 @@ void ItemManagerWidget::createItem()
                     seq
                     );
 
-        project->shots()->appendObject(shot->uuid());
+        //project->shots()->appendObject(shot->uuid());
         shot->edit();
     }
 }
@@ -599,7 +600,7 @@ void ItemManagerWidget::deleteItems()
         else if (m_productionType == RamStep::ShotProduction)
         {
             RamObject *o = RamObject::get(objUuid, RamObject::Shot);
-            m_project->shots()->removeObjects(QStringList(objUuid));
+            //m_project->shots()->removeObjects(QStringList(objUuid));
             if (o) o->remove();
         }
     }
@@ -1047,8 +1048,6 @@ void ItemManagerWidget::changeProject()
     }
     ui_table->filteredModel()->clearUsers();
 
-
-
     if(!m_project)
     {
         ui_table->setObjectModel(nullptr);
@@ -1059,7 +1058,9 @@ void ItemManagerWidget::changeProject()
     setObjectModel();
 
     ui_userMenu->setObjectModel( m_project->users() );
-    ui_stepMenu->setObjectModel( m_project->steps() );
+    if (m_productionType == RamStep::AssetProduction) ui_stepMenu->setObjectModel( m_project->assetSteps() );
+    else ui_stepMenu->setObjectModel( m_project->shotSteps() );
+
     ui_assignUserMenu->setObjectModel(m_project->users());
     ui_assignUserContextMenu->setObjectModel(m_project->users());
 
@@ -1073,12 +1074,12 @@ void ItemManagerWidget::setObjectModel()
     if (!m_project) return;
     if (m_productionType == RamStep::AssetProduction)
     {
-        ui_table->setObjectModel( m_project->assets() );
+        ui_table->setObjectModel( m_project->assetStatus() );
         ui_groupBox->setObjectModel( m_project->assetGroups(), "Assets" );
     }
     else if (m_productionType == RamStep::ShotProduction)
     {
-        ui_table->setObjectModel( m_project->shots() );
+        ui_table->setObjectModel( m_project->shotStatus() );
         ui_groupBox->setObjectModel( m_project->sequences(), "Shots" );
     }
 }

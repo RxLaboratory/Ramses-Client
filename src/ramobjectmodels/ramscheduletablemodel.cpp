@@ -199,14 +199,14 @@ QVariant RamScheduleTableModel::data(const QModelIndex &index, int role) const
     RamObject *usrObj = m_users->get((row-1) / 2);
     RamUser *user = RamUser::c( usrObj );
     if (!user) return QVariant();
-    DBTableModel *schedule = user->schedule();
+    DBTableFilterProxyModel *schedule = user->schedule();
 
     RamProject *currentProject = Ramses::instance()->currentProject();
 
-    QList<RamObject*> entries = schedule->lookUp(date.toString( DATETIME_DATA_FORMAT ));
-    for (int i = 0; i < entries.count(); i++)
+    QSet<RamObject*> entries = schedule->lookUp(date.toString( DATETIME_DATA_FORMAT ));
+    foreach(RamObject *entryObj, entries)
     {
-        RamScheduleEntry *entry = RamScheduleEntry::c(entries.at(i));
+        RamScheduleEntry *entry = RamScheduleEntry::c(entryObj);
         RamStep *entryStep = entry->step();
         if (!entryStep) continue;
         RamProject *entryProj = entryStep->project();

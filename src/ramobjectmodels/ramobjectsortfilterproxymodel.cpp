@@ -114,9 +114,11 @@ bool RamObjectSortFilterProxyModel::filterAcceptsRow(int sourceRow, const QModel
 {
     Q_UNUSED(sourceParent)
 
-    RamAbstractObjectModel *model = static_cast<RamAbstractObjectModel*>(sourceModel());
+    QAbstractItemModel *model = sourceModel();
     if (!model) return false;
-    RamObject *obj = model->get(sourceRow);
+    quintptr iptr = model->index(sourceRow,0).data(RamObject::Pointer).toULongLong();
+    if (iptr == 0) return false;
+    RamObject *obj = reinterpret_cast<RamObject*>(iptr);
     if (!obj) return false;
 
     // filter uuid

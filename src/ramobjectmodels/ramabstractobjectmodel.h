@@ -1,41 +1,87 @@
 #ifndef RAMABSTRACTOBJECTMODEL_H
 #define RAMABSTRACTOBJECTMODEL_H
 
-#include "ramobject.h"
+#include "ramabstractdatamodel.h"
 
-class RamAbstractObjectModel : public QAbstractTableModel
+/**
+ * @brief The RamAbstractObjectModel class is used to store and get access to the underlying data of RamObjectModel and DBTableModel
+ * It does not reimplement anything from QAbstractTableModel, but just provides ways to access the actual data.
+ */
+class RamAbstractObjectModel : public QAbstractTableModel, public RamAbstractDataModel
 {
 public:
     static RamAbstractObjectModel *emptyModel();
 
     explicit RamAbstractObjectModel(RamObject::ObjectType type, QObject *parent = nullptr);
 
-    // Common methods
-    virtual void clear();
+    // === Parameters ===
 
-    // An object by its row
-    virtual RamObject *get(int row) const;
-    // An object by ModelIndex
-    static RamObject *get(const QModelIndex &index);
+    /**
+     * @brief setLookUpKey Sets a key of the JSON Data to be used for fast look ups
+     * The default is to use the shortName
+     * @param newLookUpKey The key
+     */
+    void setLookUpKey(const QString &newLookUpKey);
+
+    // === Data Access ===
+
+    // Number of objects
+    virtual int count() const override;
+
+    // A Uuid
+    virtual QString getUuid(int row) const override;
+    // An object by row
+    virtual RamObject *get(int row) const override;
+
     // An object by its shortname, or name
-    virtual RamObject *search(QString searchString) const = 0;
+    virtual RamObject *search(QString searchString) const override;
+    // Objects by their lookup key
+    virtual QSet<RamObject *> lookUp(QString lookUpValue) const override;
 
     // All the uuids
-    QVector<QString> toVector() const;
-    QStringList toStringList() const;
+    virtual QVector<QString> toVector() const override;
+    virtual QStringList toStringList() const override;
 
     // Check if contains
-    virtual bool contains(QString uuid) const;
+    virtual bool contains(QString uuid) const override;
 
     // The type of objects
-    RamObject::ObjectType type() const;
+    virtual RamObject::ObjectType type() const override;
+
+    virtual int uuidRow(QString uuid) const override;
 
 protected:
+
+    // === Data Edition ===
+
+    virtual void clear();
+    void insertObject(int row, QString uuid, QString data);
+    void removeObject(QString uuid);
+    void updateObject(QString uuid, QString data);
+    void moveObjects(int from, int count, int to);
+
+    // Gets the lookUp key value from the data
+    QString getLookUpValue(QString data);
+    // Remove an object from the lookup table
+    void removeObjectFromLookUp(QString uuid);
+
+    // === Attributes ===
+
     static RamAbstractObjectModel *m_emptyModel;
 
-    // The data
+    // === The Data ===
+
+    // All Uuids, sorted
     QStringList m_objectUuids;
+    // Fast LookUp table (key / uuid)
+    QMultiHash<QString, QString> m_lookUpTable;
+
+    // === Settings ===
+
+    // The table name
     QString m_table;
+    // The key for fast lookup
+    QString m_lookUpKey = "shortName";
 };
 
 #endif // RAMABSTRACTOBJECTMODEL_H

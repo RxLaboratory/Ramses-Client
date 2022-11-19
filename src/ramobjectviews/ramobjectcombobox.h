@@ -10,8 +10,8 @@ class RamObjectComboBox : public QComboBox
 public:
     RamObjectComboBox(QWidget *parent = nullptr);
 
-    void setObjectModel(RamAbstractObjectModel *model);
-    void setObjectModel(RamAbstractObjectModel *model, QString FilterListName);
+    void setObjectModel(QAbstractItemModel *model);
+    void setObjectModel(QAbstractItemModel *model, QString FilterListName);
 
     void setSortMode(RamObject::DataRole mode);
 

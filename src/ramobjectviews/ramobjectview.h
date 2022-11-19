@@ -7,7 +7,6 @@
 #include <QSortFilterProxyModel>
 
 #include "ramobjectdelegate.h"
-#include "ramobjectmodel.h"
 #include "ramobjectsortfilterproxymodel.h"
 #include "ramuser.h"
 
@@ -32,7 +31,7 @@ public:
     void setSortRole(RamObject::DataRole role);
     void sort();
    // Content
-    void setObjectModel(RamAbstractObjectModel *model);
+    void setObjectModel(QAbstractItemModel *model);
 
 signals:
     void objectSelected(RamObject*);

@@ -16,7 +16,7 @@ TimelineView::TimelineView(QWidget *parent):
     connectEvents();
 }
 
-void TimelineView::setObjectModel(RamObjectModel *shots)
+void TimelineView::setObjectModel(QAbstractItemModel *shots)
 {
     if (m_objectList->sourceModel() && m_objectList->sourceModel() != RamObjectModel::emptyModel())
         disconnect(m_objectList->sourceModel(), nullptr, this, nullptr);

@@ -2,6 +2,7 @@
 #include "duqf-app/app-version.h"
 
 #include "ramses.h"
+#include "ramobjectmodel.h"
 
 ObjectListWidget::ObjectListWidget(bool editableObjects, RamUser::UserRole editRole, QWidget *parent) :
     QWidget(parent)
@@ -18,15 +19,12 @@ ObjectListWidget::ObjectListWidget(RamAbstractObjectModel *objectList, bool edit
     setObjectModel(objectList);
 }
 
-void ObjectListWidget::setObjectModel(RamAbstractObjectModel *objectModel)
+void ObjectListWidget::setObjectModel(QAbstractItemModel *objectModel)
 {
     if (ui_objectView->model())
     {
         disconnect(ui_objectView->model(), nullptr, this, nullptr);
     }
-
-    m_objectModel = objectModel;
-
     // Show all
     ui_assignMenu->showAll();
 
@@ -41,7 +39,7 @@ void ObjectListWidget::setObjectModel(RamAbstractObjectModel *objectModel)
     objectAssigned(QModelIndex(), 0, objectModel->rowCount() - 1);
 }
 
-void ObjectListWidget::setFilterList(RamAbstractObjectModel *filterList, QString filterListName)
+void ObjectListWidget::setFilterList(QAbstractItemModel *filterList, QString filterListName)
 {
     ui_filterBox->setObjectModel(filterList, filterListName);
     if (filterList)
@@ -56,7 +54,7 @@ void ObjectListWidget::setFilterList(RamAbstractObjectModel *filterList, QString
     }
 }
 
-void ObjectListWidget::setAssignList(RamAbstractObjectModel *assignList)
+void ObjectListWidget::setAssignList(QAbstractItemModel *assignList)
 {
     ui_assignMenu->setObjectModel(assignList);
     ui_addButton->setPopupMode(QToolButton::InstantPopup);

@@ -116,7 +116,9 @@ RamStatus::RamStatus(RamUser *user, RamAbstractItem *item, RamStep *step, bool i
 
     QJsonObject d = data();
 
-    d.insert("user", user->uuid());
+    if (user) d.insert("user", user->uuid());
+    else d.insert("user", "none");
+
     d.insert("item", item->uuid());
     if (item->objectType() == RamObject::Shot) d.insert("itemType", "shot");
     else if (item->objectType() == RamObject::Asset) d.insert("itemType", "asset");
@@ -172,9 +174,19 @@ RamStep *RamStatus::step() const
     return m_step;
 }
 
+QString RamStatus::stepUuid() const
+{
+    return getData("step").toString();
+}
+
 RamAbstractItem *RamStatus::item() const
 {
     return m_item;
+}
+
+QString RamStatus::itemUuid() const
+{
+    return getData("item").toString();
 }
 
 bool RamStatus::isNoState() const

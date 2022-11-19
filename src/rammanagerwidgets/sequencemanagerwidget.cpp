@@ -2,6 +2,7 @@
 
 #include "ramsequence.h"
 #include "ramses.h"
+#include "ramobjectmodel.h"
 
 SequenceManagerWidget::SequenceManagerWidget(QWidget *parent):
     ObjectManagerWidget(

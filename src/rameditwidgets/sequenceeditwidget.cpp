@@ -52,7 +52,7 @@ void SequenceEditWidget::createShot()
                 "NEW",
                 "New Shot",
                 m_sequence);
-    m_sequence->project()->shots()->appendObject(shot->uuid());
+    //m_sequence->project()->shots()->appendObject(shot->uuid());
     shot->edit();
 }
 

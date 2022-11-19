@@ -1,22 +1,11 @@
 #include "dbtablemodel.h"
 #include "localdatainterface.h"
+#include "progressmanager.h"
 
 DBTableModel::DBTableModel(RamObject::ObjectType type, QObject *parent):
     RamAbstractObjectModel{type, parent}
 {
     m_lookUpKey = "shortName";
-}
-
-void DBTableModel::addFilterValue(QString key, QString value)
-{
-    QStringList filterValues = m_filters.value(key);
-    filterValues << value;
-    m_filters.insert(key, filterValues);
-}
-
-void DBTableModel::setLookUpKey(const QString &newLookUpKey)
-{
-    m_lookUpKey = newLookUpKey;
 }
 
 void DBTableModel::load()
@@ -111,16 +100,6 @@ bool DBTableModel::moveRows(const QModelIndex &sourceParent, int sourceRow, int 
     if (!beginMoveRows(QModelIndex(), sourceRow, sourceEnd, QModelIndex(), d))
         return false;
 
-    for (int i = 0; i < count ; i++)
-    {
-        if (destinationChild < sourceRow) {
-            m_objectUuids.move(sourceEnd, destinationChild);
-        }
-        else {
-            m_objectUuids.move(sourceRow, destinationChild);
-        }
-    }
-
     // Save order
     int movedCount = sourceEnd - sourceRow;
     int first = std::min(sourceRow, d);
@@ -128,109 +107,21 @@ bool DBTableModel::moveRows(const QModelIndex &sourceParent, int sourceRow, int 
 
     for (int i = first; i <= last; i++)
     {
-        RamObject *o = this->get(i);
+        RamObject *o = this->get( i );
         if (o) o->setOrder(i);
     }
+
+    RamAbstractObjectModel::moveObjects(sourceRow, count, destinationChild);
 
     endMoveRows();
 
     return true;
 }
 
-RamObject *DBTableModel::search(QString searchString) const
-{
-    // Shortname first
-    // And try with the lookup table first
-    if (m_lookUpKey == "shortName")
-    {
-        QStringList uuids = m_lookUpTable.values(searchString);
-        for(int i = 0; i < uuids.count(); i++)
-        {
-            QString uuid = uuids.at(i);
-            if (uuid == "") continue;
-            RamObject *o = RamObject::get(uuid, m_table);
-            if (o) return o;
-        }
-    }
-    for (int i = 0; i < m_objectUuids.count(); i++)
-    {
-        QString uuid = m_objectUuids.at(i);
-        if (uuid == "") continue;
-        RamObject *o = RamObject::get(uuid, m_table);
-        if (!o) continue;
-        if (o->shortName() == searchString) return o;
-    }
-    // Name after
-    if (m_lookUpKey == "name")
-    {
-        QStringList uuids = m_lookUpTable.values(searchString);
-        for(int i = 0; i < uuids.count(); i++)
-        {
-            QString uuid = uuids.at(i);
-            if (uuid == "") continue;
-            RamObject *o = RamObject::get(uuid, m_table);
-            if (o) return o;
-        }
-    }
-    for (int i = 0; i < m_objectUuids.count(); i++)
-    {
-        QString uuid = m_objectUuids.at(i);
-        if (uuid == "") continue;
-        RamObject *o = RamObject::get(uuid, m_table);
-        if (!o) continue;
-        if (o->name() == searchString) return o;
-    }
-    return nullptr;
-}
-
-QList<RamObject *> DBTableModel::lookUp(QString lookUpValue)
-{
-    QList<QString> uuids = m_lookUpTable.values(lookUpValue);
-    QList<RamObject *> objs;
-    for (int i = 0; i < uuids.count(); i++)
-    {
-        QString uuid = uuids.at(i);
-        if (uuid == "") continue;
-        RamObject *o = RamObject::get(uuid, m_table);
-        if (!o) continue;
-        objs << o;
-    }
-    return objs;
-}
-
-void DBTableModel::clear()
-{
-    if (rowCount() == 0) return;
-
-    beginResetModel();
-
-    RamAbstractObjectModel::clear();
-    m_lookUpTable.clear();
-
-    endResetModel();
-}
-
 void DBTableModel::insertObjects(int row, QVector<QStringList> data, QString table)
 {
     // Wrong table, not for us
     if (table != m_table) return;
-
-    // Sanitize
-    for (int i = data.count() - 1; i >= 0; i--)
-    {
-        QStringList obj = data.at(i);
-        QString dataStr = obj.last();
-
-        if ( !checkFilters(dataStr) ) {
-            data.removeAt(i);
-            continue;
-        }
-
-        data[i][1] = getLookUpValue(dataStr);
-    }
-
-    // Nothing to insert
-    if (data.count() == 0) return;
 
     // Check row
     if (row < 0) row = 0;
@@ -243,10 +134,9 @@ void DBTableModel::insertObjects(int row, QVector<QStringList> data, QString tab
     {
         QStringList obj = data.at(i);
         QString uuid = obj.first();
-        QString lookUpKey = obj.last();
+        QString dataStr = obj.at(1);
 
-        m_objectUuids.insert(row, uuid);
-        m_lookUpTable.insert(lookUpKey, uuid);
+        RamAbstractObjectModel::insertObject(row, uuid, dataStr);
     }
 
     endInsertRows();
@@ -263,27 +153,15 @@ void DBTableModel::removeObjects(QStringList uuids, QString table)
     while (!uuids.isEmpty())
     {
         QString uuid = uuids.takeLast();
+
         int i = m_objectUuids.indexOf(uuid);
-        while( i >= 0 )
-        {
-            beginRemoveRows(QModelIndex(), i, i);
 
-            // Remove from uuid list
-            m_objectUuids.removeAt(i);
+        beginRemoveRows(QModelIndex(), i, i);
 
-            // Remove from lookup table
-            QMutableHashIterator<QString, QString> it(m_lookUpTable);
-            while (it.hasNext())
-            {
-                it.next();
-                if (it.value() == uuid) it.remove();
-            }
+        // Remove from underlying data
+        RamAbstractObjectModel::removeObject(uuid);
 
-            i = m_objectUuids.indexOf(uuid);
-
-            endRemoveRows();
-
-        }
+        endRemoveRows();
     }
 }
 
@@ -292,41 +170,6 @@ int DBTableModel::getOrder(QString data)
     QJsonDocument doc = QJsonDocument::fromJson( data.toUtf8() );
     QJsonObject obj = doc.object();
     return obj.value("order").toInt(-1);
-}
-
-QString DBTableModel::getLookUpValue(QString data)
-{
-    QJsonDocument doc = QJsonDocument::fromJson( data.toUtf8() );
-    QJsonObject obj = doc.object();
-    return obj.value(m_lookUpKey).toString("default");
-}
-
-bool DBTableModel::checkFilters(QString data) const
-{
-    if (m_filters.isEmpty()) return true;
-
-    // Load data
-    QJsonDocument doc = QJsonDocument::fromJson( data.toUtf8() );
-    QJsonObject obj = doc.object();
-
-    // Iterate through the filters;
-    // An STL const iterator is the fastest
-    QHash<QString, QStringList>::const_iterator i = m_filters.constBegin();
-    while (i != m_filters.constEnd())
-    {
-        QString key = i.key();
-        QStringList values = i.value();
-
-        // The data must satisfy ALL the filters
-        if (key != "" && !values.isEmpty())
-        {
-            if ( !values.contains( obj.value(key).toString() ) ) return false;
-        }
-
-        i++;
-    }
-
-    return true;
 }
 
 void DBTableModel::insertObject(QString uuid, QString data, QString table)
@@ -350,28 +193,35 @@ void DBTableModel::removeObject(QString uuid, QString table)
 
 void DBTableModel::reload()
 {
+    ProgressManager *pm = ProgressManager::instance();
+    pm->setText(tr("Reloading '%1'").arg(m_table));
+
+    beginResetModel();
     // Empty
     clear();
+    endResetModel();
 
     // Get all
     QVector<QStringList> objs = LocalDataInterface::instance()->tableData( m_table );
+    qDebug() << "Got " << objs.count() << " objects from " << m_table;
     // Sort
     std::sort(objs.begin(), objs.end(), objSorter);
     // Insert
     insertObjects(0, objs, m_table);
+    qDebug() << "Objects loaded.";
 }
 
 void DBTableModel::changeData(QString uuid, QString data)
 {
     if (!m_objectUuids.contains(uuid)) return;
 
-    // Check filters
-    if (!checkFilters(data)) removeObject(uuid, m_table);
-
     // Check if the order has changed
     int order = getOrder(data);
     int currentOrder = m_objectUuids.indexOf(uuid);
     if (order >= 0 && order != currentOrder) moveRows(QModelIndex(), currentOrder, 1, QModelIndex(), order);
+
+    // Update stored data
+    RamAbstractObjectModel::updateObject(uuid, data);
 
     // Emit data changed
     QModelIndex i = index( m_objectUuids.indexOf(uuid), 1);

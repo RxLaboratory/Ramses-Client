@@ -76,6 +76,7 @@ QString Ramses::pathFromRamses(QString p, bool create) const
 
 DBTableModel *Ramses::users() const
 {
+    m_users->load();
     return m_users;
 }
 
@@ -86,6 +87,7 @@ RamUser *Ramses::currentUser() const
 
 RamUser *Ramses::ramsesUser()
 {
+    m_users->load();
     if (m_ramsesUser) return m_ramsesUser;
 
     m_ramsesUser = RamUser::c( m_users->search("Ramses") );
@@ -100,6 +102,7 @@ RamUser *Ramses::ramsesUser()
 
 RamUser *Ramses::removedUser()
 {
+    m_users->load();
     if (m_removedUser) return m_removedUser;
 
     m_removedUser = RamUser::c( m_users->search("Removed") );
@@ -130,27 +133,26 @@ bool Ramses::isLead()
 
 DBTableModel *Ramses::states() const
 {
+    m_states->load();
     return m_states;
 }
 
 RamState *Ramses::noState()
 {
+    m_states->load();
     if (m_noState) return m_noState;
     m_noState = RamState::c( m_states->search("NO") );
     if (!m_noState)
     {
         m_noState = new RamState("NO", "Nothing to do");
         m_noState->setColor(QColor(36,36,36));
-        /*m_states->insertObjects(
-                    m_states->rowCount(),
-                    QVector<QString>() << m_noState->uuid()
-                    );*/
     }
     return m_noState;
 }
 
 RamState *Ramses::todoState()
 {
+    m_states->load();
     if(m_todoState) return m_todoState;
     m_todoState =  RamState::c( m_states->search("TODO") );
     if (!m_todoState)
@@ -167,6 +169,7 @@ RamState *Ramses::todoState()
 
 RamState *Ramses::okState()
 {
+    m_states->load();
     if(m_okState) return m_okState;
     m_okState =  RamState::c( m_states->search("OK") );
     if (!m_okState)
@@ -183,6 +186,7 @@ RamState *Ramses::okState()
 
 RamState *Ramses::stbState()
 {
+    m_states->load();
     if(m_stbState) return m_stbState;
     m_stbState = RamState::c( m_states->search("STB") );
     if (!m_stbState)
@@ -199,6 +203,7 @@ RamState *Ramses::stbState()
 
 RamState *Ramses::wipState()
 {
+    m_states->load();
     if (m_wipState) return m_wipState;
     m_wipState = RamState::c( m_states->search("WIP") );
     if (!m_wipState)
@@ -213,8 +218,15 @@ RamState *Ramses::wipState()
     return m_wipState;
 }
 
+DBTableModel *Ramses::status() const
+{
+    m_status->load();
+    return m_status;
+}
+
 DBTableModel *Ramses::projects() const
 {
+    m_projects->load();
     return m_projects;
 }
 
@@ -237,6 +249,7 @@ void Ramses::setCurrentProject(RamProject *project)
 
 void Ramses::setCurrentProject(QString shortName)
 {
+    m_projects->load();
     setCurrentProject( RamProject::c(m_projects->search(shortName)) );
 }
 
@@ -246,24 +259,82 @@ void Ramses::setCurrentProjectUuid(QString uuid)
     setCurrentProject( RamProject::get(uuid) );
 }
 
+DBTableModel *Ramses::scheduleComments() const
+{
+    m_scheduleComments->load();
+    return m_scheduleComments;
+}
+
 DBTableModel *Ramses::templateSteps() const
 {
+    m_templateSteps->load();
     return m_templateSteps;
 }
 
 DBTableModel *Ramses::templateAssetGroups() const
 {
+    m_templateAssetGroups->load();
     return m_templateAssetGroups;
 }
 
 DBTableModel *Ramses::fileTypes() const
 {
+    m_fileTypes->load();
     return m_fileTypes;
+}
+
+DBTableModel *Ramses::pipes() const
+{
+    m_pipes->load();
+    return m_pipes;
+}
+
+DBTableModel *Ramses::pipeFiles() const
+{
+    m_pipeFiles->load();
+    return m_pipeFiles;
 }
 
 DBTableModel *Ramses::applications() const
 {
+    m_applications->load();
     return m_applications;
+}
+
+DBTableModel *Ramses::assets() const
+{
+    m_assets->load();
+    return m_assets;
+}
+
+DBTableModel *Ramses::steps() const
+{
+    m_steps->load();
+    return m_steps;
+}
+
+DBTableModel *Ramses::assetGroups() const
+{
+    m_assetGroups->load();
+    return m_assetGroups;
+}
+
+DBTableModel *Ramses::schedule() const
+{
+    m_schedule->load();
+    return m_schedule;
+}
+
+DBTableModel *Ramses::sequences() const
+{
+    m_sequences->load();
+    return m_sequences;
+}
+
+DBTableModel *Ramses::shots() const
+{
+    m_shots->load();
+    return m_shots;
 }
 
 // PROTECTED
@@ -283,20 +354,27 @@ Ramses::Ramses(QObject *parent):
     qDebug() << "Initialising Ramses";
     m_dbi = DBInterface::instance();
 
-    m_states = new DBTableModel(RamObject::State, this);
-    m_states->load();
-    m_users = new DBTableModel(RamObject::User, this);
-    m_users->load();
-    m_templateSteps = new DBTableModel(RamObject::TemplateStep, this);
-    m_templateSteps->load();
-    m_projects = new DBTableModel(RamObject::Project, this);
-    m_projects->load();
-    m_templateAssetGroups = new DBTableModel(RamObject::TemplateAssetGroup, this);
-    m_templateAssetGroups->load();
-    m_fileTypes = new DBTableModel(RamObject::FileType, this);
-    m_fileTypes->load();
     m_applications = new DBTableModel(RamObject::Application, this);
-    m_applications->load();
+    m_assets = new DBTableModel(RamObject::Asset, this);
+    m_assetGroups = new DBTableModel(RamObject::AssetGroup, this);
+    m_fileTypes = new DBTableModel(RamObject::FileType, this);
+    m_pipes = new DBTableModel(RamObject::Pipe, this);
+    m_pipeFiles = new DBTableModel(RamObject::PipeFile, this);
+    m_projects = new DBTableModel(RamObject::Project, this);
+    m_scheduleComments = new DBTableModel(RamObject::ScheduleComment, this);
+    m_schedule = new DBTableModel(RamObject::ScheduleEntry, this);
+    m_sequences = new DBTableModel(RamObject::Sequence, this);
+    m_shots = new DBTableModel(RamObject::Shot, this);
+    m_states = new DBTableModel(RamObject::State, this);
+    m_status = new DBTableModel(RamObject::Status, this);
+    m_steps = new DBTableModel(RamObject::Step, this);
+    m_templateAssetGroups = new DBTableModel(RamObject::TemplateAssetGroup, this);
+    m_templateSteps = new DBTableModel(RamObject::TemplateStep, this);
+    m_users = new DBTableModel(RamObject::User, this);
+
+    m_status->setLookUpKey("item");
+    m_scheduleComments->setLookUpKey("date");
+    m_schedule->setLookUpKey("date");
 
     this->setObjectName( "Ramses Class" );
 

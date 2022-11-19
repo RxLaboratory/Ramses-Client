@@ -1,5 +1,7 @@
 #include "ramobjectmenu.h"
 
+#include "ramabstractobjectmodel.h"
+
 RamObjectMenu::RamObjectMenu(bool checkable, QWidget *parent):
     QMenu(parent)
 {
@@ -28,7 +30,7 @@ RamObjectMenu::RamObjectMenu(bool checkable, QWidget *parent):
     connect(m_objects, SIGNAL(modelReset()),this,SLOT(reset()));
 }
 
-void RamObjectMenu::setObjectModel(RamAbstractObjectModel *list)
+void RamObjectMenu::setObjectModel(QAbstractItemModel *list)
 {
     if (!list) m_objects->setSourceModel( RamAbstractObjectModel::emptyModel() );
     else {

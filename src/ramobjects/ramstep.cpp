@@ -176,7 +176,7 @@ QVector<float> RamStep::stats(RamUser *user)
     }
 
     // check completed days
-    RamAbstractObjectModel *items;
+    QAbstractItemModel *items;
     if (type() == ShotProduction) items = proj->shots();
     else if(type() == AssetProduction) items = proj->assets();
     else return QVector<float>( {
@@ -194,9 +194,11 @@ QVector<float> RamStep::stats(RamUser *user)
 
     for (int i =0; i < items->rowCount(); i++)
     {
-        RamAbstractItem *item;
-        if (t == ShotProduction) item = RamShot::c(items->get(i));
-        else item = RamAsset::c( items->get(i) );
+        RamAbstractItem *item = nullptr;
+        QString itemUuid = items->data( items->index(i, 0), RamObject::UUID ).toString();
+        if (itemUuid != "") continue;
+        if (t == ShotProduction) item = RamShot::get( itemUuid );
+        else item = RamAsset::get( itemUuid );
 
         RamStatus *status = item->status(this);
 
@@ -327,7 +329,7 @@ void RamStep::computeEstimation()
     if (t == PreProduction) return;
     if (t == PostProduction) return;
 
-    RamAbstractObjectModel *items;
+    QAbstractItemModel *items;
     if (t == ShotProduction) items = proj->shots();
     else items = proj->assets();
 
@@ -344,8 +346,12 @@ void RamStep::computeEstimation()
     for (int i =0; i < items->rowCount(); i++)
     {
         RamAbstractItem *item;
-        if (t == ShotProduction) item = RamShot::c( items->get(i) );
-        else item = RamAsset::c( items->get(i) );
+        QString itemUuid = items->data( items->index(i, 0), RamObject::UUID).toString();
+        if (itemUuid == "") continue;
+        if (t == ShotProduction) item = RamShot::get( itemUuid );
+        else item = RamAsset::get( itemUuid );
+        if (!item) continue;
+
         RamStatus *status = item->status(this);
 
         if (!status) continue;

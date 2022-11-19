@@ -14,7 +14,6 @@
 #include "duqf-widgets/duqfsearchedit.h"
 #include "ramobjectcombobox.h"
 #include "ramobjectmenu.h"
-#include "ramobjectmodel.h"
 #include "ramuser.h"
 #include "ramobjectview.h"
 
@@ -35,9 +34,9 @@ public:
 
     explicit ObjectListWidget(bool editableObjects = false, RamUser::UserRole editRole = RamUser::Admin, QWidget *parent = nullptr);
     explicit ObjectListWidget(RamAbstractObjectModel *objectList, bool editableObjects = false, RamUser::UserRole editRole = RamUser::Admin, QWidget *parent = nullptr);
-    void setObjectModel(RamAbstractObjectModel *objectModel);
-    void setFilterList(RamAbstractObjectModel *filterList, QString filterListName = "");
-    void setAssignList(RamAbstractObjectModel *assignList);
+    void setObjectModel(QAbstractItemModel *objectModel);
+    void setFilterList(QAbstractItemModel *filterList, QString filterListName = "");
+    void setAssignList(QAbstractItemModel *assignList);
     void setDontRemoveShortNameList(QStringList dontRemove);
     void clear();
     void setEditMode(ObjectListWidget::EditMode editMode);

@@ -1,6 +1,7 @@
 #include "ramassetgroup.h"
 
 #include "assetgroupeditwidget.h"
+#include "ramses.h"
 
 // STATIC //
 
@@ -57,6 +58,7 @@ RamAssetGroup::RamAssetGroup(QString uuid):
 
     QString projUuid = d.value("project").toString();
     if (projUuid != "") this->setParent( RamProject::get(projUuid) );
+    else invalidate();
 }
 
 int RamAssetGroup::assetCount() const
@@ -68,6 +70,7 @@ int RamAssetGroup::assetCount() const
 RamProject *RamAssetGroup::project() const
 {
     QString projUuid = getData("project").toString();
+    if (projUuid == "") return nullptr;
     return RamProject::get(projUuid);
 }
 
@@ -101,7 +104,7 @@ void RamAssetGroup::construct()
     m_icon = ":/icons/asset-group";
     m_editRole = ProjectAdmin;
 
-    m_assets = new DBTableModel( RamObject::Asset, this );
+    m_assets = new DBTableFilterProxyModel( Ramses::instance()->assets(), this );
     m_assets->addFilterValue( "assetGroup", this->uuid() );
 }
 

@@ -20,7 +20,7 @@ public:
 
     TimelineView(QWidget *parent = nullptr);
     // Content
-    void setObjectModel(RamObjectModel *shots);
+    void setObjectModel(QAbstractItemModel *shots);
     void zoom(double amount);
     double currentZoom() const;
 
