@@ -6,16 +6,33 @@ DBTableModel::DBTableModel(RamAbstractObject::ObjectType type, QObject *parent):
 {
     m_filterKey = "";
     m_filterValues = QStringList();
-    construct();
 }
 
-DBTableModel::DBTableModel(RamAbstractObject::ObjectType type, QString filterKey, QStringList filterValues, int lookUpRole, QObject *parent):
-    RamObjectModel(type, parent)
+void DBTableModel::setFilterKey(QString key)
 {
-    m_filterKey = filterKey;
-    m_filterValues = filterValues;
-    this->setLookupRole(lookUpRole);
-    construct();
+    m_filterKey = key;
+}
+
+void DBTableModel::addFilterValue(QString value)
+{
+    m_filterValues << value;
+}
+
+void DBTableModel::load()
+{
+    if (m_isLoaded) return;
+    m_isLoaded = true;
+
+    reload();
+
+    // Monitor the DB for changes
+    LocalDataInterface *ldi = LocalDataInterface::instance();
+    connect(ldi, &LocalDataInterface::inserted, this, &DBTableModel::insertObject);
+    connect(ldi, &LocalDataInterface::removed, this, &DBTableModel::removeObject);
+    connect(ldi, &LocalDataInterface::dataReset, this, &DBTableModel::reload);
+
+    // Monitor order changes to save the new orders
+    connect(this, &RamObjectModel::rowsMoved, this, &DBTableModel::saveOrder);
 }
 
 void DBTableModel::insertObject(QString uuid, QString table)
@@ -79,21 +96,6 @@ void DBTableModel::saveOrder(const QModelIndex &parent, int start, int end, cons
         RamObject *o = this->get(i);
         if (o) o->setOrder(i);
     }
-}
-
-void DBTableModel::construct()
-{
-    // Initial loading
-    reload();
-
-    // Monitor the DB for changes
-    LocalDataInterface *ldi = LocalDataInterface::instance();
-    connect(ldi, &LocalDataInterface::inserted, this, &DBTableModel::insertObject);
-    connect(ldi, &LocalDataInterface::removed, this, &DBTableModel::removeObject);
-    connect(ldi, &LocalDataInterface::dataReset, this, &DBTableModel::reload);
-
-    // Monitor order changes to save the new orders
-    connect(this, &RamObjectModel::rowsMoved, this, &DBTableModel::saveOrder);
 }
 
 bool objSorter(const QStringList a, const QStringList b)

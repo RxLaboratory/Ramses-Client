@@ -199,9 +199,11 @@ void RamUser::construct()
     //m_schedule = createModel(RamObject::ScheduleEntry, "schedule");
     m_schedule = new DBTableModel (
                 RamAbstractObject::ScheduleEntry,
-                "user",
-                QStringList(this->uuid()),
-                RamObject::Date,
                 this
                 );
+
+    m_schedule->setFilterKey("user");
+    m_schedule->addFilterValue( this->uuid() );
+    m_schedule->setLookupRole( RamObject::Date );
+    m_schedule->load();
 }

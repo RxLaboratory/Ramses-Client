@@ -61,6 +61,7 @@ RamAssetGroup::RamAssetGroup(QString uuid):
 
 int RamAssetGroup::assetCount() const
 {
+    m_assets->load();
     return m_assets->rowCount();
 }
 
@@ -102,11 +103,10 @@ void RamAssetGroup::construct()
 
     m_assets = new DBTableModel(
                 RamAbstractObject::Asset,
-                "assetGroup",
-                QStringList(this->uuid()),
-                RamObject::ShortName,
                 this
                 );
+    m_assets->setFilterKey("assetGroup");
+    m_assets->addFilterValue( this->uuid() );
 }
 
 

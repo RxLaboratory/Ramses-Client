@@ -11,10 +11,15 @@ class DBTableModel: public RamObjectModel
     Q_OBJECT
 public:
     DBTableModel(RamAbstractObject::ObjectType type, QObject *parent = nullptr);
-    DBTableModel(RamAbstractObject::ObjectType type, QString filterKey, QStringList filterValues, int lookUpRole = RamAbstractObject::ShortName, QObject *parent = nullptr);
 
+    // Parameters to be set before load()
     void setFilterKey(QString key);
     void addFilterValue(QString value);
+
+    // Call it (at least) once to do the initial loading.
+    // Does not reload if it's already been loaded, call reload() instead.
+    // Calling it the first time the model is needed, as late as possible, may improve performance.
+    void load();
 
 private slots:
     void insertObject(QString uuid, QString table);
@@ -23,7 +28,14 @@ private slots:
     void saveOrder(const QModelIndex &parent, int start, int end, const QModelIndex &destination, int row);
 
 private:
-    void construct();
+    // Initial loading
+    // Change: must be explicitly called
+    // to allow setting filters before
+    // It is now the public method load()
+    // void construct();
+    bool m_isLoaded =false;
+
+    // Parameters
     QString m_filterKey;
     QStringList m_filterValues;
 };

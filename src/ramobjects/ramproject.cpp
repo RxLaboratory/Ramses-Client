@@ -57,11 +57,13 @@ RamProject::RamProject(QString uuid):
 
 DBTableModel *RamProject::steps() const
 {
+    m_steps->load();
     return m_steps;
 }
 
 DBTableModel *RamProject::assetGroups() const
 {
+    m_assetGroups->load();
     return m_assetGroups;
 }
 
@@ -77,6 +79,7 @@ RamObjectModel *RamProject::shots() const
 
 DBTableModel *RamProject::assets() const
 {
+    m_assets->load();
     return m_assets;
 }
 
@@ -190,6 +193,7 @@ void RamProject::freezeEstimations(bool freeze, bool reCompute)
     m_freezeEstimations = freeze;
 
     // Freeze steps
+    m_steps->load();
     for(int i = 0; i < m_steps->rowCount(); i++)
     {
         RamStep *step = RamStep::c(m_steps->get(i));
@@ -232,6 +236,7 @@ float RamProject::unassignedDays() const
 QVector<float> RamProject::stats(RamUser *user)
 {
     QVector<float> s(4);
+    m_steps->load();
     for (int i = 0; i < m_steps->rowCount(); i++)
     {
         RamStep *step = RamStep::c(m_steps->get(i));
@@ -415,27 +420,24 @@ void RamProject::construct()
 
     m_assets = new DBTableModel(
                 RamAbstractObject::Asset,
-                "project",
-                QStringList(this->uuid()),
-                RamObject::ShortName,
                 this
                 );
+    m_assets->setFilterKey( "project" );
+    m_assets->addFilterValue( this->uuid() );
 
     m_steps = new DBTableModel(
                 RamAbstractObject::Step,
-                "project",
-                QStringList(this->uuid()),
-                RamObject::ShortName,
                 this
                 );
+    m_steps->setFilterKey( "project" );
+    m_steps->addFilterValue( this->uuid() );
 
     m_assetGroups = new DBTableModel(
                 RamAbstractObject::AssetGroup,
-                "project",
-                QStringList(this->uuid()),
-                RamObject::ShortName,
                 this
                 );
+    m_assetGroups->setFilterKey( "project" );
+    m_assetGroups->addFilterValue( this->uuid() );
 
     m_shots = createModel(RamObject::Shot, "shots");
     //m_assets = createModel(RamObject::Asset, "assets");
@@ -449,6 +451,6 @@ void RamProject::construct()
     //m_assetGroups = createModel(RamObject::AssetGroup, "assetGroups" );
 
     m_shots->setColumnModel(m_steps);
-    m_assets->setColumnModel(m_steps);
+    //m_assets->setColumnModel(m_steps);
 }
 

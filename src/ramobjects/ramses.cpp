@@ -284,12 +284,19 @@ Ramses::Ramses(QObject *parent):
     m_dbi = DBInterface::instance();
 
     m_states = new DBTableModel(RamAbstractObject::State, this);
+    m_states->load();
     m_users = new DBTableModel(RamAbstractObject::User, this);
+    m_users->load();
     m_templateSteps = new DBTableModel(RamAbstractObject::TemplateStep, this);
+    m_templateSteps->load();
     m_projects = new DBTableModel(RamAbstractObject::Project, this);
+    m_projects->load();
     m_templateAssetGroups = new DBTableModel(RamAbstractObject::TemplateAssetGroup, this);
+    m_templateAssetGroups->load();
     m_fileTypes = new DBTableModel(RamAbstractObject::FileType, this);
+    m_fileTypes->load();
     m_applications = new DBTableModel(RamAbstractObject::Application, this);
+    m_applications->load();
 
     this->setObjectName( "Ramses Class" );
 
