@@ -1,3 +1,4 @@
+- Order is not saved
 - RamObjectModel: remove columns; refactor using RamAbstractObjectModel (lookup)
 - RamAbstractItem status methods
 - Check status table sort

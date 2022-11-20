@@ -114,18 +114,14 @@ bool DBTableModel::moveRows(const QModelIndex &sourceParent, int sourceRow, int 
     if (!beginMoveRows(QModelIndex(), sourceRow, sourceEnd, QModelIndex(), d))
         return false;
 
-    // Save order
-    int movedCount = sourceEnd - sourceRow;
-    int first = std::min(sourceRow, d);
-    int last = std::max(sourceEnd, d + movedCount);
+    RamAbstractObjectModel::moveObjects(sourceRow, count, destinationChild);
 
-    for (int i = first; i <= last; i++)
+    // Save order
+    for (int i = 0; i <= rowCount(); i++)
     {
         RamObject *o = this->get( i );
         if (o) o->setOrder(i);
     }
-
-    RamAbstractObjectModel::moveObjects(sourceRow, count, destinationChild);
 
     endMoveRows();
 
@@ -251,7 +247,6 @@ void DBTableModel::reload()
     std::sort(objs.begin(), objs.end(), objSorter);
     // Insert
     insertObjects(0, objs, m_table);
-    qDebug() << "Objects loaded.";
 
     endResetModel();
 }
@@ -263,7 +258,11 @@ void DBTableModel::changeData(QString uuid, QString data)
     // Check if the order has changed
     int order = getOrder(data);
     int currentOrder = m_objectUuids.indexOf(uuid);
-    if (order >= 0 && order != currentOrder) moveRows(QModelIndex(), currentOrder, 1, QModelIndex(), order);
+    if (order >= 0 && order != currentOrder)
+    {
+        if (order > rowCount()) order = rowCount();
+        moveRows(QModelIndex(), currentOrder, 1, QModelIndex(), order);
+    }
 
     // Update stored data
     RamAbstractObjectModel::updateObject(uuid, data);
