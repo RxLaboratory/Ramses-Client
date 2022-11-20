@@ -34,11 +34,13 @@ void ProgressManager::setTitle(const QString &t)
 void ProgressManager::setProgress(const int &p)
 {
     m_val = p;
+    qApp->processEvents();
     emit progress(p);
 }
 
 void ProgressManager::setMaximum(const int &m)
 {
+    qDebug() << "Progress max: " << m;
     m_maximum = m;
     emit maximum(m);
 }

@@ -166,8 +166,6 @@ void RamObjectComboBox::currentObjectIndexChanged(int i)
 
 void RamObjectComboBox::objectIndexActivated(int i)
 {
-    Q_UNUSED(i)
-
 #ifdef DUMP_OBJECT_DEBUG
     dumpObjectInfo();
 #endif

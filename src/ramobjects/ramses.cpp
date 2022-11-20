@@ -232,6 +232,10 @@ void Ramses::setCurrentProject(RamProject *project)
         QSettings *uSettings = m_currentUser->settings();
         uSettings->setValue("ramses/currentProject", m_currentProject->uuid() );
     }
+
+    // Trigger project sync and wait for it
+    if (m_currentProject) DBInterface::instance()->projectSync(m_currentProject->uuid(), true);
+
     emit currentProjectChanged(m_currentProject);
 }
 

@@ -41,11 +41,8 @@ RamSequence::RamSequence(QString uuid):
    RamObject(uuid, Sequence)
 {
     construct();
-
-    QJsonObject d = data();
-
-    QString projUuid = d.value("project").toString();
-    setProject( RamProject::get(projUuid) );
+    RamProject *project = this->project();
+    if (project) setProject( project );
 }
 
 int RamSequence::shotCount() const
@@ -62,12 +59,6 @@ double RamSequence::duration() const
         duration += d;
     }
     return duration;
-}
-
-RamProject *RamSequence::project() const
-{
-    QString projUuid = getData("project").toString();
-    return RamProject::get(projUuid);
 }
 
 QString RamSequence::details() const

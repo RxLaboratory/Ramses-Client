@@ -6,6 +6,8 @@
 #define CACHE_RAMOBJECT_DATA true
 #define CACHE_LOCAL_DATA true
 
+//#define DEBUG_ALL_INCOMING_DATA
+
 //#define FORCE_WELCOME_SCREEN
 
 #endif // APPCONFIG_H

@@ -1,5 +1,7 @@
 #include "progresspage.h"
 
+#include "progressmanager.h"
+
 ProgressPage::ProgressPage(QWidget *parent) : QWidget(parent)
 {
     setupUi();
@@ -35,7 +37,7 @@ void ProgressPage::setupUi()
 
     l->addStretch();
 
-    m_titleLabel = new QLabel("", this);
+    m_titleLabel = new QLabel("Work in progress...", this);
     l->addWidget(m_titleLabel);
 
     m_progressBar = new ProgressBar(this);

@@ -42,7 +42,7 @@ void StatusEditWidget::reInit(RamObject *o)
 
         // Get users from project
         RamProject *project = nullptr;
-        if (m_status->item()) project = m_status->item()->project();
+        if (m_status->item()) project = m_status->project();
         if (!project && m_status->step()) project = m_status->step()->project();
         if (project) ui_userBox->setObjectModel( project->users(), "Users" );
 

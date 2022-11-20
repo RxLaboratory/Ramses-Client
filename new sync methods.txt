@@ -1,0 +1,64 @@
+tables by project
+
+-> fullsync : all tables only if project column is ""
+
+RamApplication
+RamFileType
+RamProject
+RamState
+RamTemplateAssetGroup
+RamTemplateStep
+RamUser
+
+-> projectSync : all tables but with project filter using project column
+
+-> in UI "full sync" = fullsync + current project sync
+
+-> quicksync : doesn't change
+
+
+/ok/ LOCAL data update methods
+/ok/ Server update
+/ok/ ldi: setProject
+/ok/ ldi: getProject
+/ok/ ldi: create with project
+/ok/ ldi: project filters on getters
+/ok/ Reimplement RamObject to set the project column (creation, update data)
+/ok/ on RamObjects storing project, remove project from data and use the column
+/ok/ Add project data to sync (server)
+/ok/ Add project data to sync (client)
+/ok/ Reimplement fullSync
+/ok/ Implement projectSync
+/ok/ RamServerInterface::downloadData only general tables
+/ok/ Server refuses sync in case of wrong app version
+/ok/ Pull missing uuids from server
+
+
+
+// Schedule removals not updated in ui on sync but on reboot
+// Delay loading objects in Models
+   > Instead of loading objects, add nullptrs to the list, and replace by the obj when first called
+   > all checks of the objs must be done with the data
+// RamAbstractObject data integrity checks (a function called on construct, ovrriden by children) calls invalidate() if data is not right
+   > Calls and LDI data integrity check
+// Full sync should always be synchronous to be sure everything is better
+// Refactor localdatainterface to create a new LocalDataManager class with static methods for queries on a specific db
+// Implement Sync by table (for fullSync and projectSync):
+   > table one by one, cache incoming data until we've got all tables (both on server side & client side)
+   > server::startSyncSession
+   > client: send tables one by one
+   > server::sync
+   > client: when all sent tables are retrieved or if timeout*numTables
+   > server::endSyncSession
+// Implement pagination, don't send/return more than 100 rows per table
+
+
+
+
+
+
+1- Download only the general data
+2- Pull objects only when needed (and delay in ramobjectmodel)
+3- sync :
+   - general data, all, send new, modified, receive new, modified
+   - project data, send new and modified, get modified. Pull new when needed (all objects are in the lists)

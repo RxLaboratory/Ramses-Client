@@ -29,18 +29,25 @@ public:
     static void setRamsesPath(QString dbFile, QString p);
     static QString getRamsesPath(QString dbFile);
 
+    // The tables for a project
+    static QSet<QString> projectTableNames;
+    static QSet<QString> generalTableNames;
+
     // DATA INTERFACE //
 
     QSet<QString> tableUuids(QString table, bool includeRemoved = false);
     // Returns a vector instead of set: tabledata may be sorted later
     QVector<QStringList> tableData(QString table, QString filterKey = "", QStringList filterValues = QStringList(), bool includeRemoved = false);
     bool contains(QString uuid, QString table);
-    QMap<QString, QString> modificationDates(QString table);
+    QMap<QString, QString> modificationDates(QString table, QString projectUuid = "");
 
-    void createObject(QString uuid, QString table, QString data);
+    void createObject(QString uuid, QString table, QString data, QString projectUuid = "", bool removed = false);
 
     QString objectData(QString uuid, QString table);
     void setObjectData(QString uuid, QString table, QString data);
+
+    QString project(QString uuid, QString table);
+    void setProject(QString uuid, QString table, QString projectUuid);
 
     void removeObject(QString uuid, QString table);
     void restoreObject(QString uuid, QString table);
@@ -67,7 +74,7 @@ public:
     QString currentUserUuid();
     void setCurrentUserUuid(QString uuid);
 
-    QStringList tableNames();
+    static QSet<QString> tableNames();
     QVector<QStringList> users();
 
     // MAINTENANCE //
@@ -105,15 +112,17 @@ private:
 
     // Opens the database, updates the scheme if needed
     static bool openDB(QSqlDatabase db, const QString &dbFile);
+    static QString findProjectUuid(QString data, QString table, QSqlDatabase db);
 
     // Runs a query on the current database
     QSqlQuery query(QString q) const;
     // SQLite vacuum
     void vacuum();
 
-    /**
-     * @brief m_dataFile The SQLite file path
-     */
+    // Checks if a table exists
+    static bool hasTable(QString tableName, QSqlDatabase db);
+
+    // The SQLite file path
     QString m_dataFile;
 
     // Cache UUIDS to check their existence faster
@@ -121,7 +130,6 @@ private:
 
     // The UUIDS to delete when cleaning the database
     QHash<QString, QSet<QString>> m_uuidsToRemove;
-
 };
 
 #endif // LOCALDATAINTERFACE_H

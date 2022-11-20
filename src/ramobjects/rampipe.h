@@ -3,8 +3,6 @@
 
 #include "ramobject.h"
 
-#include "ramproject.h"
-
 class RamStep;
 
 class RamPipe : public RamObject
@@ -27,8 +25,6 @@ public:
     void setInputStep(RamObject *inputStep);
 
     QString name() const override;
-
-    RamProject *project() const;
 
     RamObjectModel *pipeFiles() const;
 
