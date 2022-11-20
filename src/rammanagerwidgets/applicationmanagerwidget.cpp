@@ -9,9 +9,9 @@ ApplicationManagerWidget::ApplicationManagerWidget(QWidget *parent) :
         QIcon(":icons/application"),
         parent )
 {
-    m_listWidget->setEditMode(ObjectListWidget::RemoveObjects);
-    m_listWidget->setSortMode(RamObject::Name);
-    m_listWidget->sort();
+    ui_listWidget->setEditMode(ObjectListWidget::RemoveObjects);
+    ui_listWidget->setSortMode(RamObject::Name);
+    ui_listWidget->sort();
 }
 
 RamApplication *ApplicationManagerWidget::createObject()

@@ -9,11 +9,11 @@ StateManagerWidget::StateManagerWidget(QWidget *parent) :
         QIcon(":icons/state-l"),
         parent)
 {
-    m_listWidget->setEditMode(ObjectListWidget::RemoveObjects);
+    ui_listWidget->setEditMode(ObjectListWidget::RemoveObjects);
     QStringList dontRemove;
     dontRemove << "TODO" << "STB" << "NO" << "WIP" << "OK";
-    m_listWidget->setDontRemoveShortNameList(dontRemove);
-    m_listWidget->setSortMode(RamObject::Completion);
+    ui_listWidget->setDontRemoveShortNameList(dontRemove);
+    ui_listWidget->setSortMode(RamObject::Completion);
 }
 
 RamState *StateManagerWidget::createObject()

@@ -12,8 +12,8 @@ AssetManagerWidget::AssetManagerWidget(QWidget *parent):
 {
     changeProject(Ramses::instance()->currentProject());
     connect(Ramses::instance(), SIGNAL(currentProjectChanged(RamProject*)), this, SLOT(changeProject(RamProject*)));
-    m_listWidget->setEditMode(ObjectListWidget::RemoveObjects);
-    m_listWidget->setSortable(true);
+    ui_listWidget->setEditMode(ObjectListWidget::RemoveObjects);
+    ui_listWidget->setSortable(true);
 }
 
 RamAbstractItem *AssetManagerWidget::createObject()
@@ -41,5 +41,5 @@ void AssetManagerWidget::changeProject(RamProject *project)
 {
     if (!project) return;
     this->setObjectModel( project->assets() );
-    m_listWidget->setFilterList( project->assetGroups(), "Assets" );
+    ui_listWidget->setFilterList( project->assetGroups(), "Assets" );
 }

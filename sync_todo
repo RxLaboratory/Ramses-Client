@@ -1,4 +1,4 @@
-- Order is not saved
+- Steps not added in tables
 - RamObjectModel: remove columns; refactor using RamAbstractObjectModel (lookup)
 - RamAbstractItem status methods
 - Check status table sort

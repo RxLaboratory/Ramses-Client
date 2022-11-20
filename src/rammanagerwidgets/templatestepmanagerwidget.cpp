@@ -9,8 +9,8 @@ TemplateStepManagerWidget::TemplateStepManagerWidget(QWidget *parent) :
         QIcon(":icons/step"),
         parent )
 {
-    m_listWidget->setEditMode(ObjectListWidget::RemoveObjects);
-    m_listWidget->setSortable(true);
+    ui_listWidget->setEditMode(ObjectListWidget::RemoveObjects);
+    ui_listWidget->setSortable(true);
 }
 
 RamTemplateStep *TemplateStepManagerWidget::createObject()

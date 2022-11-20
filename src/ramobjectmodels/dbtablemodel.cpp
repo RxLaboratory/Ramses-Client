@@ -260,7 +260,7 @@ void DBTableModel::changeData(QString uuid, QString data)
     int currentOrder = m_objectUuids.indexOf(uuid);
     if (order >= 0 && order != currentOrder)
     {
-        if (order > rowCount()) order = rowCount();
+        if (order >= rowCount()) order = rowCount()-1;
         moveRows(QModelIndex(), currentOrder, 1, QModelIndex(), order);
     }
 

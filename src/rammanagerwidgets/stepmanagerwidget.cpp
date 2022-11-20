@@ -10,13 +10,13 @@ ObjectManagerWidget(
 {
     changeProject(Ramses::instance()->currentProject());
     connect(Ramses::instance(), SIGNAL(currentProjectChanged(RamProject*)), this, SLOT(changeProject(RamProject*)));
-    m_listWidget->setEditMode(ObjectListWidget::RemoveObjects);
-    m_listWidget->setSortable(true);
+    ui_listWidget->setEditMode(ObjectListWidget::RemoveObjects);
+    ui_listWidget->setSortable(true);
 
     // Create from template actions
     ui_createMenu = new RamObjectMenu(false, this);
     ui_createMenu->addCreateButton();
-    QToolButton *addButton = m_listWidget->addButton();
+    QToolButton *addButton = ui_listWidget->addButton();
     addButton->setPopupMode(QToolButton::InstantPopup);
     addButton->setMenu(ui_createMenu);
 

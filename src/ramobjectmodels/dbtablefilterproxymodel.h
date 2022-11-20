@@ -25,6 +25,9 @@ public:
      */
     void load();
 
+    // Support move rows
+    virtual bool moveRows(const QModelIndex &sourceParent, int sourceRow, int count, const QModelIndex &destinationParent, int destinationChild) override;
+
     // === Data Access ===
 
     // Number of objects

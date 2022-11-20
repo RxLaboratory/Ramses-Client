@@ -5,7 +5,7 @@ ObjectManagerWidget::ObjectManagerWidget(QString title, QIcon icon, QWidget *par
 {
     setupUi(title,icon);
     connectEvents();
-    m_listWidget->setTitle(title);
+    ui_listWidget->setTitle(title);
     clear();
 }
 
@@ -14,13 +14,13 @@ ObjectManagerWidget::ObjectManagerWidget(RamAbstractObjectModel *objectModel, QS
 {
     setupUi(title,icon);
     connectEvents();
-    m_listWidget->setTitle(title);
+    ui_listWidget->setTitle(title);
     setObjectModel(objectModel);
 }
 
 void ObjectManagerWidget::setObjectModel(QAbstractItemModel *objectModel)
 {
-    m_listWidget->setObjectModel( objectModel );
+    ui_listWidget->setObjectModel( objectModel );
     if (!objectModel) return;
     this->setEnabled(true);
 }
@@ -28,7 +28,7 @@ void ObjectManagerWidget::setObjectModel(QAbstractItemModel *objectModel)
 void ObjectManagerWidget::clear()
 {
     this->setEnabled(false);
-    m_listWidget->clear();
+    ui_listWidget->clear();
 }
 
 void ObjectManagerWidget::setupUi(QString title, QIcon icon)
@@ -36,9 +36,9 @@ void ObjectManagerWidget::setupUi(QString title, QIcon icon)
     QHBoxLayout *lay = new QHBoxLayout(this);
     lay->setContentsMargins(3,0,0,0);
 
-    m_listWidget = new ObjectListWidget( false, RamUser::Admin, this);
-    m_listWidget->setMaximumWidth(500);
-    lay->addWidget(m_listWidget);
+    ui_listWidget = new ObjectListWidget( false, RamUser::Admin, this);
+    ui_listWidget->setMaximumWidth(500);
+    lay->addWidget(ui_listWidget);
 
     lay->addStretch();
 
@@ -64,20 +64,20 @@ void ObjectManagerWidget::setupUi(QString title, QIcon icon)
 
 void ObjectManagerWidget::connectEvents()
 {
-    connect( m_listWidget, SIGNAL(add()), this, SLOT(createObject()) );
+    connect( ui_listWidget, SIGNAL(add()), this, SLOT(createObject()) );
     connect( ui_createAction, SIGNAL(triggered()), this, SLOT(createEditObject()) );
     connect( ui_createShortcut, SIGNAL(activated()), this, SLOT(createObject()));
-    connect( ui_removeShortcut, SIGNAL(activated()), m_listWidget, SLOT(removeSelectedObjects()));
+    connect( ui_removeShortcut, SIGNAL(activated()), ui_listWidget, SLOT(removeSelectedObjects()));
 }
 
 QString ObjectManagerWidget::currentFilterUuid() const
 {
-    return m_listWidget->currentFilterUuid();
+    return ui_listWidget->currentFilterUuid();
 }
 
 RamObject *ObjectManagerWidget::currentFilter() const
 {
-    return m_listWidget->currentFilter();
+    return ui_listWidget->currentFilter();
 }
 
 QToolButton *ObjectManagerWidget::menuButton()

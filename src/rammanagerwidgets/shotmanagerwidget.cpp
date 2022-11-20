@@ -13,8 +13,8 @@ ShotManagerWidget::ShotManagerWidget(QWidget *parent):
 {
     changeProject(Ramses::instance()->currentProject());
     connect(Ramses::instance(), SIGNAL(currentProjectChanged(RamProject*)), this, SLOT(changeProject(RamProject*)));
-    m_listWidget->setEditMode(ObjectListWidget::RemoveObjects);
-    m_listWidget->setSortable(true);
+    ui_listWidget->setEditMode(ObjectListWidget::RemoveObjects);
+    ui_listWidget->setSortable(true);
 
     // Batch create
     QMenu *createMenu = new QMenu(this);
@@ -25,7 +25,7 @@ ShotManagerWidget::ShotManagerWidget(QWidget *parent):
     QAction *batchAction = new QAction("Create multiple shots...");
     createMenu->addAction(batchAction);
 
-    QToolButton *addButton = m_listWidget->addButton();
+    QToolButton *addButton = ui_listWidget->addButton();
     addButton->setPopupMode(QToolButton::InstantPopup);
     addButton->setMenu(createMenu);
 
@@ -61,7 +61,7 @@ void ShotManagerWidget::changeProject(RamProject *project)
     this->clear();
     if (!project) return;
     this->setObjectModel( project->shots() );
-    m_listWidget->setFilterList( project->sequences(), "Shots" );
+    ui_listWidget->setFilterList( project->sequences(), "Shots" );
 }
 
 void ShotManagerWidget::batchCreate()

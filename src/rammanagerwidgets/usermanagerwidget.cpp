@@ -9,12 +9,12 @@ UserManagerWidget::UserManagerWidget(QWidget *parent) :
         QIcon(":icons/user"),
         parent )
 {
-    m_listWidget->setEditMode(ObjectListWidget::RemoveObjects);
+    ui_listWidget->setEditMode(ObjectListWidget::RemoveObjects);
     QStringList dontRemove;
     dontRemove << "Ramses" << "Removed";
-    m_listWidget->setDontRemoveShortNameList(dontRemove);
-    m_listWidget->setSortable(false);
-    m_listWidget->setSortMode(RamObject::ShortName);
+    ui_listWidget->setDontRemoveShortNameList(dontRemove);
+    ui_listWidget->setSortable(false);
+    ui_listWidget->setSortMode(RamObject::ShortName);
 }
 
 RamUser *UserManagerWidget::createObject()

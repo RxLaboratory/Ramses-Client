@@ -20,7 +20,7 @@ public:
     QToolButton *menuButton();
 
 protected:
-    ObjectListWidget *m_listWidget;
+    ObjectListWidget *ui_listWidget;
 
 protected slots:
     virtual RamObject *createObject() { return nullptr; };

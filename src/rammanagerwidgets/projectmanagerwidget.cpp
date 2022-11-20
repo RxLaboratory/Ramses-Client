@@ -9,8 +9,8 @@ ProjectManagerWidget::ProjectManagerWidget(QWidget *parent) :
         QIcon(":icons/project"),
         parent )
 {
-    m_listWidget->setEditMode(ObjectListWidget::RemoveObjects);
-    m_listWidget->setSortable(true);
+    ui_listWidget->setEditMode(ObjectListWidget::RemoveObjects);
+    ui_listWidget->setSortable(true);
 }
 
 RamProject *ProjectManagerWidget::createObject()
