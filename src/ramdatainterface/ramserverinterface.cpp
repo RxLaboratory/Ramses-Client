@@ -1180,15 +1180,10 @@ void RamServerInterface::postRequest(Request r)
 
     // Log URL / GET
     log( "New request: " +  url.toString(QUrl::RemovePassword), DuQFLog::Debug);
-    // Log POST body
-    if (r.query == "login" || r.query == "setPassword")
-        #ifdef QT_DEBUG
-        log("Request data: " + r.body, DuQFLog::Data);
-        #else
-        log("Request data: [Hidden login info]", DuQFLog::Data);
-        #endif
-    else
-        log("Request data: " + r.body, DuQFLog::Data);
+    // Log POST body (in debug mode only!)
+    #ifdef QT_DEBUG
+    log("Request data: " + r.body, DuQFLog::Data);
+    #endif
 
     connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this,SLOT(networkError(QNetworkReply::NetworkError)));
     connect(reply, SIGNAL(finished()), reply, SLOT(deleteLater()));
