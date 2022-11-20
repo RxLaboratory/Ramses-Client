@@ -32,6 +32,7 @@ public:
     void sort();
    // Content
     void setObjectModel(QAbstractItemModel *model);
+    QAbstractItemModel *objectModel() const;
 
 signals:
     void objectSelected(RamObject*);

@@ -19,6 +19,11 @@ void RamObjectView::setObjectModel(QAbstractItemModel *model)
     //this->resizeColumnsToContents();
 }
 
+QAbstractItemModel *RamObjectView::objectModel() const
+{
+    return m_objectModel->sourceModel();
+}
+
 void RamObjectView::setEditableObjects(bool editableObjects, RamUser::UserRole editRole)
 {
     m_delegate->setEditable(editableObjects);

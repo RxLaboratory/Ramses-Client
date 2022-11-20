@@ -11,7 +11,7 @@ ObjectListWidget::ObjectListWidget(bool editableObjects, RamUser::UserRole editR
     connectEvents();
 }
 
-ObjectListWidget::ObjectListWidget(RamAbstractObjectModel *objectList, bool editableObjects, RamUser::UserRole editRole, QWidget *parent) :
+ObjectListWidget::ObjectListWidget(QAbstractItemModel *objectList, bool editableObjects, RamUser::UserRole editRole, QWidget *parent) :
     QWidget(parent)
 {
     setupUi(editableObjects, editRole);
@@ -167,10 +167,9 @@ void ObjectListWidget::removeSelectedObjects()
     // Check if we can remove these objects
     for (int i = 0; i < selection.count(); i++)
     {
-        RamObject *o = RamObject::get(
-                    selection.at(i).data(Qt::UserRole).toString(),
-                    m_objectModel->type()
-                    );
+        quintptr iptr = selection.at(i).data(RamObject::Pointer).toULongLong();
+        if (iptr == 0) continue;
+        RamObject *o = reinterpret_cast<RamObject*>(iptr);
 
         // Don't remove yourself if you're a user
         if (o->objectType() == RamObject::User && m_editMode == RemoveObjects)
@@ -205,21 +204,22 @@ void ObjectListWidget::removeSelectedObjects()
 
     for( int i = selection.count() -1; i >= 0; i--)
     {
-        QString uuid = selection.at(i).data(Qt::UserRole).toString();
-        if (uuid == "") continue;
-        if (m_editMode == RemoveObjects) {
-            RamObject *o = RamObject::get(uuid, m_objectModel->type());
-            if (o) o->remove();
-        }
+        QString uuid = selection.at(i).data(RamObject::UUID).toString();
+        quintptr iptr = selection.at(i).data(RamObject::Pointer).toULongLong();
+        if (iptr == 0) continue;
+        RamObject *o = reinterpret_cast<RamObject*>(iptr);
+
+        if (m_editMode == RemoveObjects) if (o) o->remove();
+
         // If this is an object model we need to remove the object from it
-        RamObjectModel *m = qobject_cast<RamObjectModel*>(m_objectModel);
-        if (m) m->removeObjects(QStringList(uuid));
+        RamObjectModel *objList = qobject_cast<RamObjectModel*>( ui_objectView->objectModel() );
+        if (objList) objList->removeObjects(QStringList(uuid));
     }
 }
 
 void ObjectListWidget::assign(RamObject *obj)
 {
-    RamObjectModel *objList = qobject_cast<RamObjectModel*>( m_objectModel );
+    RamObjectModel *objList = qobject_cast<RamObjectModel*>( ui_objectView->objectModel() );
     if (objList) objList->appendObject(obj->uuid());
 }
 
@@ -298,7 +298,6 @@ void ObjectListWidget::setupUi(bool editableObjects, RamUser::UserRole editRole)
 
     ui_objectView = new RamObjectView(RamObjectView::List, this);
     ui_objectView->setEditableObjects(editableObjects, editRole);
-    ui_objectView->setModel(m_objectModel);
     mainLayout->addWidget(ui_objectView);
 
     mainLayout->setStretch(0, 0);

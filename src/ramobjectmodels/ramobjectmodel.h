@@ -24,6 +24,7 @@ public:
     // Edit structure
     virtual void insertObjects(int row, QVector<QString> uuids);
     virtual void removeObjects(QStringList uuids);
+    //virtual bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex()) override;
 
     // Columns
     void setColumnModel(RamObjectModel *model);

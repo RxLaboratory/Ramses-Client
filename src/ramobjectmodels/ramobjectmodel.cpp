@@ -36,7 +36,9 @@ QVariant RamObjectModel::data(const QModelIndex &index, int role) const
     int col = index.column();
 
     QString uuid = m_objectUuids.at(row);
-    RamObject *obj = m_objects.at(row);
+    //RamObject *obj = m_objects.at(row);
+    RamObject *obj = nullptr;
+    if (uuid != "") obj = RamObject::get(uuid, m_table);
 
     if (role == RamObject::Pointer) {
         if (obj) return reinterpret_cast<quintptr>(obj);
@@ -118,13 +120,13 @@ void RamObjectModel::insertObjects(int row, QVector<QString> uuids)
         objs << o;
     }
 
-    beginInsertRows(QModelIndex(), row, row + uuids.count()-1);
+    beginInsertRows(QModelIndex(), row, row + objs.count()-1);
 
     for (int i = objs.count()-1; i >= 0; i--)
     {
         RamObject *o = objs.at(i);
-        // Add to the uuid list
-        m_objectUuids.insert(row, o->uuid());
+        // Add to the underlying data
+        RamAbstractObjectModel::insertObject(row, o->uuid(), o->dataString());
         // Add to the object list
         m_objects.insert(row, o);
         // Add to the lookup table
@@ -145,21 +147,20 @@ void RamObjectModel::removeObjects(QStringList uuids)
     {
         QString uuid = uuids.takeLast();
         int i = m_objectUuids.indexOf(uuid);
-        if (i>=0) disconnectObject(uuid);
-        while( i >= 0 )
-        {
+        if (i>=0) {
             beginRemoveRows(QModelIndex(), i, i);
+
+            disconnectObject(uuid);
 
             // Remove from lookup table
             RamObject *o = getObject(uuid);
             m_lookupTable.remove( o->roleData(m_lookupRole), o );
-            // Remove from uuid list
-            m_objectUuids.removeAt(i);
             // Remove from object list
             m_objects.removeAt(i);
+            // Remove from underlying data
+            RamAbstractObjectModel::removeObject(uuid);
 
             endRemoveRows();
-            i = m_objectUuids.indexOf(uuid);
         }
     }
 }
