@@ -85,11 +85,11 @@ void ShotsCreationDialog::create()
 
     for (int i = startNumber; i <= endNumber; i++)
     {
-        RamShot *shot = new RamShot(
-                    getShortName(i),
-                    getName(i),
-                    seq
-                    );
+        new RamShot(
+                getShortName(i),
+                getName(i),
+                seq
+                );
         //m_project->shots()->appendObject(shot->uuid());
         ui_progressBar->setValue( i - startNumber );
     }

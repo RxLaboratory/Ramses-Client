@@ -36,7 +36,7 @@ public:
     // Asset Groups
     DBTableFilterProxyModel *assetGroups() const;
     // Sequences
-    RamObjectModel *sequences() const;
+    DBTableFilterProxyModel *sequences() const;
     // Shots
     DBTableFilterProxyModel *shots() const;
     // Assets
@@ -130,7 +130,7 @@ private:
     DBTableFilterProxyModel *m_steps;
     DBTableFilterProxyModel *m_shotSteps;
     DBTableFilterProxyModel *m_assetSteps;
-    RamObjectModel *m_sequences;
+    DBTableFilterProxyModel *m_sequences;
     DBTableFilterProxyModel *m_assetGroups;
     DBTableFilterProxyModel *m_assets;
     DBTableFilterProxyModel *m_shots;

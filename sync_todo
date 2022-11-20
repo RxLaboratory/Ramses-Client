@@ -1,7 +1,6 @@
-- RamObjectModel: remove columns; better use RamAbstractObjectModel (lookup)
+- RamObjectModel: remove columns; refactor using RamAbstractObjectModel (lookup)
 - RamAbstractItem status methods
 - Check status table sort
-- Status delegate crash on click
 - project: use dbtables
 - noState created even if exists (check search?)
 - pipeline not shown on first click (issue with progress)

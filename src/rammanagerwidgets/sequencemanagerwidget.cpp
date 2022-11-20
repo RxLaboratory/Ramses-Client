@@ -2,7 +2,6 @@
 
 #include "ramsequence.h"
 #include "ramses.h"
-#include "ramobjectmodel.h"
 
 SequenceManagerWidget::SequenceManagerWidget(QWidget *parent):
     ObjectManagerWidget(
@@ -24,7 +23,6 @@ RamSequence *SequenceManagerWidget::createObject()
                 "NEW",
                 "New Sequence",
                 project);
-    project->sequences()->appendObject(s->uuid());
     s->edit();
     return s;
 }

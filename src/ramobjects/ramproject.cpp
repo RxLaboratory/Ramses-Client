@@ -47,7 +47,6 @@ RamProject::RamProject(QString uuid):
     loadModel(m_scheduleComments, "scheduleComments", d);
     loadModel(m_pipeFiles, "pipeFiles", d);
     loadModel(m_pipeline, "pipeline", d);
-    loadModel(m_sequences, "sequences", d);
 
     computeEstimation(true);
 }
@@ -76,8 +75,9 @@ DBTableFilterProxyModel *RamProject::assetGroups() const
     return m_assetGroups;
 }
 
-RamObjectModel *RamProject::sequences() const
+DBTableFilterProxyModel *RamProject::sequences() const
 {
+    m_sequences->load();
     return m_sequences;
 }
 
@@ -189,6 +189,7 @@ void RamProject::setDeadline(const QDate &newDeadline)
 
 double RamProject::duration() const
 {
+    m_sequences->load();
     double duration = 0;
     for (int i = 0; i < m_sequences->rowCount(); i++)
     {
@@ -458,6 +459,9 @@ void RamProject::construct()
     m_assetGroups = new DBTableFilterProxyModel( Ramses::instance()->assetGroups(), this );
     m_assetGroups->addFilterValue( "project", this->uuid() );
 
+    m_sequences = new DBTableFilterProxyModel( Ramses::instance()->sequences(), this );
+    m_sequences->addFilterValue( "project", this->uuid() );
+
     m_assetStatus = new RamStatusTableModel( m_steps, m_assets, Ramses::instance()->status(), this);
 
     m_shotStatus = new RamStatusTableModel( m_steps, m_shots, Ramses::instance()->status(), this);
@@ -466,10 +470,7 @@ void RamProject::construct()
     m_scheduleComments = createModel(RamObject::ScheduleComment, "scheduleComments" );
     m_scheduleComments->setLookupRole(RamObject::Date);
     m_pipeFiles = createModel(RamObject::PipeFile, "pipeFiles" );
-    //m_steps = createModel(RamObject::Step, "steps" );
     m_pipeline = createModel(RamObject::Pipe, "pipeline" );
-    m_sequences = createModel(RamObject::Sequence, "sequences" );
-    //m_assetGroups = createModel(RamObject::AssetGroup, "assetGroups" );
 
     //m_shots->setColumnModel(m_steps);
     //m_assets->setColumnModel(m_steps);
