@@ -1057,22 +1057,25 @@ void RamServerInterface::pushNext()
     }
 
     // Get a table and push its first 100 rows
-    QString table = m_syncingData.tables.keys().first();
+    QString table = *m_syncingData.tables.keyBegin();
     QSet<TableRow> rows = m_syncingData.tables.value(table);
     QSet<TableRow> pushRows;
-    while (pushRows.count() < 100 && !rows.isEmpty())
+    while (pushRows.count() < m_requestMaxRows && !rows.isEmpty())
     {
         QSet<TableRow>::const_iterator i = rows.cbegin();
         pushRows.insert( *i );
         rows.erase( i );
     }
 
+    // Update rows in syncing data
+    m_syncingData.tables[table] = rows;
+
     // If we've got all rows, remove the table from the data to sync
     if (rows.isEmpty())
     {
         ProgressManager *pm = ProgressManager::instance();
         pm->increment();
-        pm->setText(tr("Uploading changes to the server..."));
+        pm->setText(tr("Uploading data to the server..."));
         m_syncingData.tables.remove(table);
     }
 
