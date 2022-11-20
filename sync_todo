@@ -1,6 +1,7 @@
 - Steps not added in tables
 - RamObjectModel: remove columns; refactor using RamAbstractObjectModel (lookup)
 - RamAbstractItem status methods
+- Performance issue in statustable (compare with 0.7.0)
 - Check status table sort
 - project: use dbtables
 - sequence use dbtablefilter for included shots
