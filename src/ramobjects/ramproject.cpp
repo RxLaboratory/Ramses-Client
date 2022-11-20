@@ -115,12 +115,14 @@ RamObjectModel *RamProject::scheduleComments() const
 
 RamStatusTableModel *RamProject::assetStatus() const
 {
-    return m_assetStatus;
+    m_assetStatusTable->load();
+    return m_assetStatusTable;
 }
 
 RamStatusTableModel *RamProject::shotStatus() const
 {
-    return m_shotStatus;
+    m_shotStatusTable->load();
+    return m_shotStatusTable;
 }
 
 qreal RamProject::framerate() const
@@ -462,17 +464,14 @@ void RamProject::construct()
     m_sequences = new DBTableFilterProxyModel( Ramses::instance()->sequences(), this );
     m_sequences->addFilterValue( "project", this->uuid() );
 
-    m_assetStatus = new RamStatusTableModel( m_steps, m_assets, Ramses::instance()->status(), this);
+    m_assetStatusTable = new RamStatusTableModel( m_assetSteps, m_assets, this);
 
-    m_shotStatus = new RamStatusTableModel( m_steps, m_shots, Ramses::instance()->status(), this);
+    m_shotStatusTable = new RamStatusTableModel( m_shotSteps, m_shots, this);
 
     m_users = createModel(RamObject::User, "users" );
     m_scheduleComments = createModel(RamObject::ScheduleComment, "scheduleComments" );
     m_scheduleComments->setLookupRole(RamObject::Date);
     m_pipeFiles = createModel(RamObject::PipeFile, "pipeFiles" );
     m_pipeline = createModel(RamObject::Pipe, "pipeline" );
-
-    //m_shots->setColumnModel(m_steps);
-    //m_assets->setColumnModel(m_steps);
 }
 

@@ -8,6 +8,20 @@ DBTableModel::DBTableModel(RamObject::ObjectType type, QObject *parent):
     m_lookUpKey = "shortName";
 }
 
+void DBTableModel::addFilterValue(QString key, QString value)
+{
+    QStringList filterValues = m_filters.value(key);
+    filterValues << value;
+    m_filters.insert(key, filterValues);
+}
+
+void DBTableModel::addFilterValues(QString key, QStringList values)
+{
+    QStringList filterValues = m_filters.value(key);
+    filterValues.append(values);
+    m_filters.insert(key, filterValues);
+}
+
 void DBTableModel::load()
 {
     if (m_isLoaded) return;
@@ -172,9 +186,39 @@ int DBTableModel::getOrder(QString data)
     return obj.value("order").toInt(-1);
 }
 
+bool DBTableModel::checkFilters(QString data) const
+{
+    if (m_filters.isEmpty()) return true;
+
+    QJsonDocument doc = QJsonDocument::fromJson( data.toUtf8() );
+    QJsonObject obj = doc.object();
+
+    // Iterate through the filters;
+    // An STL const iterator is the fastest
+    QHash<QString, QStringList>::const_iterator i = m_filters.constBegin();
+    while (i != m_filters.constEnd())
+    {
+        QString key = i.key();
+        QStringList values = i.value();
+
+        // The data must satisfy ALL the filters
+        if (key != "" && !values.isEmpty())
+        {
+            if ( !values.contains( obj.value(key).toString() ) ) return false;
+        }
+
+        i++;
+    }
+
+    return true;
+}
+
 void DBTableModel::insertObject(QString uuid, QString data, QString table)
 {
     if (table != m_table) return;
+
+    // Filter
+    if (!checkFilters(data)) return;
 
     // Check order
     int order = getOrder(data);
@@ -199,16 +243,17 @@ void DBTableModel::reload()
     beginResetModel();
     // Empty
     clear();
-    endResetModel();
 
     // Get all
-    QVector<QStringList> objs = LocalDataInterface::instance()->tableData( m_table );
+    QVector<QStringList> objs = LocalDataInterface::instance()->tableData( m_table, m_filters );
     qDebug() << "Got " << objs.count() << " objects from " << m_table;
     // Sort
     std::sort(objs.begin(), objs.end(), objSorter);
     // Insert
     insertObjects(0, objs, m_table);
     qDebug() << "Objects loaded.";
+
+    endResetModel();
 }
 
 void DBTableModel::changeData(QString uuid, QString data)

@@ -138,8 +138,10 @@ private:
     RamObjectModel *m_pipeFiles;
     RamObjectModel *m_users;
     RamObjectModel *m_scheduleComments;
-    RamStatusTableModel *m_assetStatus;
-    RamStatusTableModel *m_shotStatus;
+    DBTableModel *m_assetStatusList;
+    DBTableModel *m_shotStatusList;
+    RamStatusTableModel *m_assetStatusTable;
+    RamStatusTableModel *m_shotStatusTable;
 
     /**
      * @brief When true, estimations won't be computed.

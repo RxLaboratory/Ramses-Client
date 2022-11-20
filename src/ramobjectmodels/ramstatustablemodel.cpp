@@ -4,29 +4,25 @@
 #include "ramasset.h"
 #include "ramshot.h"
 
-RamStatusTableModel::RamStatusTableModel(DBTableFilterProxyModel *steps, DBTableFilterProxyModel *items, DBTableModel *status, QObject *parent)
+RamStatusTableModel::RamStatusTableModel(DBTableFilterProxyModel *steps, DBTableFilterProxyModel *items, QObject *parent)
     : QAbstractTableModel{parent}
 {
     m_steps = steps;
     m_items = items;
-    m_status = status;
+
+    m_status = new DBTableModel(RamObject::Status, this);
+    m_status->addFilterValues("step", m_steps->toStringList());
+    m_status->setLookUpKey("item");
+}
+
+void RamStatusTableModel::load()
+{
+    if (m_loaded) return;
+    m_loaded = true;
+
     m_steps->load();
     m_items->load();
-
-    // Don't need filters, using the lookup table
-    /*for (int i = 0; i < m_steps->count(); i++)
-    {
-        QString stepUuid = m_steps->getUuid(i);
-        if (stepUuid == "") continue;
-        m_status->addFilterValue("step", stepUuid);
-    }*/
-
-    /*for (int i = 0; i < m_items->count(); i++)
-    {
-        QString itemUuid = m_items->getUuid(i);
-        if (itemUuid == "") continue;
-        m_status->addFilterValue("item", itemUuid);
-    }*/
+    m_status->load();
 
     // Connect steps & items
     connect(m_steps, &DBTableModel::rowsInserted, this, &RamStatusTableModel::stepsInserted);
@@ -86,8 +82,6 @@ QVariant RamStatusTableModel::data(const QModelIndex &index, int role) const
     // The first column is the item, so -1
     QString stepUuid = m_steps->getUuid(column - 1);
     if (stepUuid == "") return QVariant();
-
-
 
     RamStatus *status = nullptr;
     foreach(RamObject *statusObj, allStatus)
@@ -158,6 +152,16 @@ QVariant RamStatusTableModel::headerData(int section, Qt::Orientation orientatio
 void RamStatusTableModel::stepsInserted(const QModelIndex &parent, int first, int last)
 {
     beginInsertColumns(parent, first+1, last+1);
+
+    // Get the steps uuid
+    QStringList uuids;
+    for (int i = first; i <= last; i++)
+    {
+        QString uuid = m_steps->data( m_steps->index(i, 0), RamObject::UUID).toString();
+        uuids << uuid;
+    }
+    m_status->addFilterValues("step", uuids);
+
     endInsertColumns();
 }
 

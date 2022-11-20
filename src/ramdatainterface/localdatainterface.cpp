@@ -177,10 +177,43 @@ QSet<QString> LocalDataInterface::tableUuids(QString table, bool includeRemoved)
     return data;
 }
 
-QVector<QStringList> LocalDataInterface::tableData(QString table, bool includeRemoved)
+QVector<QStringList> LocalDataInterface::tableData(QString table, QHash<QString, QStringList> filters, bool includeRemoved)
 {
     QString q = "SELECT `uuid`, `data` FROM '%1'";
     if (!includeRemoved) q += " WHERE removed = 0";
+
+    // Add filters
+    if (!filters.isEmpty())
+    {
+        // Iterate through the filters;
+        // An STL const iterator is the fastest
+        QHash<QString, QStringList>::const_iterator i = filters.constBegin();
+        while (i != filters.constEnd())
+        {
+            QString key = i.key();
+            QStringList values = i.value();
+
+            // The data must satisfy ALL the filters
+            if (key != "" && !values.isEmpty())
+            {
+                bool first = true;
+                foreach(QString value, values)
+                {
+                    if (first) {
+                        if (!includeRemoved) q += " AND ";
+                        q += " ( ";
+                    }
+                    else q += " OR ";
+                    first = false;
+                    q += "`data` LIKE '%\"" + key + "\":\"" + value + "\"%'";
+                }
+                q += " )";
+            }
+
+            i++;
+        }
+    }
+
     q += " ;";
 
     QSqlQuery qry = query( q.arg(table) );
@@ -879,7 +912,7 @@ QString LocalDataInterface::cleanDataBase(int deleteDataOlderThan)
     report += "# Cleaning report\n\n";
     report += ".\n\n## Status\n\n";
     int numStatusChanged = 0;
-    QVector<QStringList> statusData = tableData("RamStatus", true);
+    QVector<QStringList> statusData = tableData("RamStatus", QHash<QString,QStringList>(), true);
     for (int i = 0; i < statusData.count(); i++)
     {
         QJsonDocument d = QJsonDocument::fromJson( statusData[i][1].toUtf8() );

@@ -16,6 +16,7 @@ public:
      * @param value The value
      */
     void addFilterValue(QString key, QString value);
+    void addFilterValues(QString key, QStringList values);
 
     /**
      * @brief load Initial loading of the table

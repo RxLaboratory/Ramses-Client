@@ -14,6 +14,13 @@ void DBTableFilterProxyModel::addFilterValue(QString key, QString value)
     m_filters.insert(key, filterValues);
 }
 
+void DBTableFilterProxyModel::addFilterValues(QString key, QStringList values)
+{
+    QStringList filterValues = m_filters.value(key);
+    filterValues.append(values);
+    m_filters.insert(key, filterValues);
+}
+
 void DBTableFilterProxyModel::load()
 {
     m_tableModel->load();

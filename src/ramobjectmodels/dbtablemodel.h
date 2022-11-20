@@ -15,7 +15,14 @@ public:
 
     DBTableModel(RamAbstractObject::ObjectType type, QObject *parent = nullptr);
 
-    // === Other Public Methods ===
+    // === Filter Methods ===
+
+    /**
+     * @brief addFilterValue Adds a value to be accepted with the filter key
+     * @param value The value
+     */
+    void addFilterValue(QString key, QString value);
+    void addFilterValues(QString key, QStringList values);
 
     /**
      * @brief load Initial loading of the table
@@ -54,6 +61,13 @@ private:
 
     // Gets the order from the data
     int getOrder(QString data);
+
+    // Checks the filters
+    bool checkFilters(QString data) const;
+
+    // === Filters ===
+
+    QHash<QString, QStringList> m_filters;
 
     // === ATTRIBUTES ===
 

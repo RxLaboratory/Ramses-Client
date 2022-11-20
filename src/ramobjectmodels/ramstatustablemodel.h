@@ -8,7 +8,9 @@ class RamStatusTableModel : public QAbstractTableModel
     Q_OBJECT
 
 public:
-    explicit RamStatusTableModel(DBTableFilterProxyModel *steps, DBTableFilterProxyModel *items, DBTableModel *status, QObject *parent = nullptr);
+    explicit RamStatusTableModel(DBTableFilterProxyModel *steps, DBTableFilterProxyModel *items, QObject *parent = nullptr);
+
+    void load();
 
     // === QAbstractTableModel Reimplementation ===
 
@@ -38,6 +40,8 @@ private:
     DBTableModel *m_status;
     DBTableFilterProxyModel *m_steps;
     DBTableFilterProxyModel *m_items;
+
+    bool m_loaded = false;
 };
 
 #endif // RAMSTATUSTABLEMODEL_H
