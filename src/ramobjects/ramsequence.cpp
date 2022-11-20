@@ -33,7 +33,8 @@ RamSequence::RamSequence(QString shortName, QString name, RamProject *project):
 {
     construct();
     setProject(project);
-    RamAbstractObject::setProject(project->uuid());
+    insertData("project", project->uuid());
+    createData();
 }
 
 RamSequence::RamSequence(QString uuid):

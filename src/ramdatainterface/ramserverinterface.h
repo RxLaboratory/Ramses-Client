@@ -5,13 +5,7 @@
 
 #include "duqf-utils/duqflogger.h"
 #include "duqf-utils/utils.h"
-
-struct Request
-{
-    QNetworkRequest request;
-    QString body;
-    QString query;
-};
+#include "datastruct.h"
 
 class RamServerInterface : public DuQFLoggerObject
 {
@@ -33,12 +27,14 @@ public:
 
     QString serverAddress() const;
     void setServerAddress(QString newServerAddress);
-
+    int serverPort() const;
+    void setServerPort(int newServerPort);
     bool ssl() const;
     void setSsl(bool useSsl);
-
     int timeOut() const;
     void setTimeout(int newTimeout);
+
+    // Status
 
     const QString &serverVersion() const;
 
@@ -49,25 +45,22 @@ public:
      */
     bool isOnline() const;
 
+    bool isSyncing() const;
+
     // API
     /**
      * @brief ping
      * @param wait when true, waits for the pong
      */
     void ping();
-    void sync(QJsonArray tables, QString projectUuid = "", QDateTime prevSyncDate = QDateTime::fromString("1970-01-01 00:00:00", "yyyy-MM-dd hh:mm:00"), bool synchroneous = false);
-    void sync(QJsonObject body, bool synchroneous = false);
-    QJsonArray downloadData();
-    QJsonObject pull(QString uuid, QString table);
+    void sync(SyncData syncData);
+    void downloadData();
 
     const QString &currentUserUuid() const;
 
     void setUserPassword(QString uuid, QString newPassword, QString currentPassword);
 
     void deleteData(QHash<QString, QSet<QString> > uuidsToDelete);
-
-    int serverPort() const;
-    void setServerPort(int newServerPort);
 
 public slots:
     /**
@@ -83,10 +76,11 @@ public slots:
 signals:
     void sslChanged(bool);
     void connectionStatusChanged(NetworkUtils::NetworkStatus, QString);
-    void syncReady(QJsonObject data, QString serverUuid);
-    void newData(QJsonObject);
+    void syncReady(SyncData data, QString serverUuid);
     void userChanged(QString uuid, QString username, QString userdata, QString modified);
     void pong(QString serverUuid);
+    void syncStarted();
+    void syncFinished();
 
 protected:
     static RamServerInterface *_instance;
@@ -121,8 +115,8 @@ private slots:
      */
     void nextRequest();
 
-    bool checkPing(QJsonObject repObj, QString serverUuid = "");
-    bool checkServerUuid(QJsonObject repObj);
+    bool checkPing(QJsonObject repObj);
+    bool checkServerUuid(QString uuid);
 
 private:
 
@@ -150,6 +144,18 @@ private:
      */
     bool checkServer(QString hostName);
 
+    // Ramses Server API
+
+    // Starts a sync session
+    void startSync();
+    void push(QString table, QSet<TableRow> rows = QSet<TableRow>(), QString date = "1818-05-05 00:00:00", bool commit = false);
+    void pushNext();
+    void commit();
+    void fetch();
+    void pull(QString table, int page = 1);
+    void pullNext();
+    void finishSync(bool withError = false);
+
     /**
      * @brief Posts a request to the server
      * @param request
@@ -160,7 +166,7 @@ private:
      * @brief Adds a request to the queue
      * @param r the request to add
      */
-    void queueRequest(QString query, QJsonObject body);
+    void queueRequest(QString query, QJsonObject body = QJsonObject());
     void queueRequest(Request r);
     /**
      * @brief buildRequest Creates a request to be queued or sent to the server
@@ -217,6 +223,7 @@ private:
     int m_timeout = 3000;
 
     QString m_localServerUuid = "";
+    QString m_serverUuid = "";
 
     /**
      * @brief Online / Offline status
@@ -240,6 +247,11 @@ private:
      */
     QVector<Request> m_requestQueue;
 
+    SyncData m_syncingData;
+    bool m_syncing = false;
+    FetchData m_fetchData;
+    SyncData m_pullData;
+
     // Timers //
 
     /**
@@ -252,7 +264,10 @@ private:
      * @brief _requestDelay A delay between requests to avoid spamming the server (and being blacklisted)
      * @todo expose this as a user setting ?
      */
-    int m_requestDelay = 500;
+    int m_requestDelay = 250;
+
+    // Requests size
+    int m_requestMaxRows = 1000;
 
     // Authentication //
     QString m_currentUserUuid;

@@ -161,6 +161,7 @@ const QString RamAbstractObject::uuidFromPath(QString path, ObjectType type)
     {
         i.next();
         RamAbstractObject *o = i.value();
+        if (!o->isValid()) continue;
         if (o->objectType() != type) continue;
 
         // If we have the same starting path, that's the one!
@@ -188,8 +189,7 @@ RamAbstractObject::RamAbstractObject(QString shortName, QString name, ObjectType
     data.insert("comment", "");
     data.insert("order", 0);
 
-    QJsonDocument doc(data);
-    createData(doc.toJson(QJsonDocument::Compact));
+    setData(data);
 
     construct();
 }
@@ -557,6 +557,8 @@ QString RamAbstractObject::previewImagePath() const
 
 RamAbstractObject::RamAbstractObject(QString uuid, ObjectType type, bool encryptData)
 {
+    m_created = true;
+
     m_uuid = uuid;
     m_objectType = type;
     m_dataEncrypted = encryptData;
@@ -589,7 +591,7 @@ void RamAbstractObject::setDataString(QString data)
     // Cache the data to improve performance
     m_cachedData = data;
 
-    if (m_virtual || m_saveSuspended) return;
+    if (m_virtual || m_saveSuspended || !m_created) return;
 
     if (m_dataEncrypted)
     {
@@ -614,6 +616,8 @@ QString RamAbstractObject::dataString() const
     // If we have cached the data already, return it
     if (m_cachedData != "" && CACHE_RAMOBJECT_DATA) return m_cachedData;
 
+    if (!m_created) return m_cachedData;
+
     QString dataStr = DBInterface::instance()->objectData(m_uuid, objectTypeName());
     if (dataStr == "") return "";
     // Decrypt
@@ -632,6 +636,8 @@ void RamAbstractObject::createData(QString data)
 {
     if (m_virtual || m_saveSuspended) return;
 
+    if (data == "") data = m_cachedData;
+
     // Cache the data to improve performance
     m_cachedData = data;
 
@@ -641,6 +647,8 @@ void RamAbstractObject::createData(QString data)
     }
 
     DBInterface::instance()->createObject(m_uuid, objectTypeName(), data);
+
+    m_created = true;
 }
 
 bool RamAbstractObject::checkUuid(QString uuid, ObjectType type, bool mayBeVirtual)

@@ -106,6 +106,11 @@ bool RamServerInterface::isOnline() const
     return false;
 }
 
+bool RamServerInterface::isSyncing() const
+{
+    return m_syncing;
+}
+
 // API
 
 void RamServerInterface::ping()
@@ -275,70 +280,37 @@ void RamServerInterface::login()
     loop.exec();
 }
 
-void RamServerInterface::sync(QJsonArray tables, QString projectUuid, QDateTime prevSyncDate, bool synchroneous)
+void RamServerInterface::sync(SyncData syncData)
 {
-    QJsonObject body;
-    body.insert("tables", tables);
-    body.insert("project", projectUuid);
-    body.insert("previousSyncDate", prevSyncDate.toString("yyyy-MM-dd hh:mm:ss"));
-    sync(body, synchroneous);
+    // We should not already be in a sync
+    if (m_syncing) return;
+
+    // Save sync data
+    m_syncingData = syncData;
+
+    // Start session
+    startSync();
 }
 
-void RamServerInterface::sync(QJsonObject body, bool synchroneous)
-{
-    ProgressManager *pm = ProgressManager::instance();
-    pm->setText(tr("Sending data to the Ramses server..."));
-    pm->increment();
-
-    if (!synchroneous) {
-        queueRequest("sync", body);
-        startQueue();
-    }
-    else {
-        Request r = buildRequest("sync", body);
-        synchronousRequest(r);
-    }
-
-    pm->setText(tr("Data sent!"));
-    pm->increment();
-}
-
-QJsonArray RamServerInterface::downloadData()
+void RamServerInterface::downloadData()
 {
     ProgressManager *pm = ProgressManager::instance();
     pm->setText("Downloading data...");
 
     qDebug() << ">>> Downloading data";
 
-    QSet<QString> tableNames = LocalDataInterface::generalTableNames;
-    QJsonArray tables;
-    foreach (QString tableName, tableNames)
+    QStringList tableNames = LocalDataInterface::instance()->tableNames();
+
+    SyncData syncData;
+    syncData.syncDate = "1818-05-05 00:00:00";
+
+    for(int i = 0; i < tableNames.count(); i++)
     {
-        QJsonObject table;
-        table.insert("name", tableName);
-        table.insert("modifiedRows", QJsonArray());
-        tables << table;
+        syncData.tables.insert( tableNames.at(i), QSet<TableRow>());
     }
 
     // Create a request to get the data
-    QJsonObject body;
-    body.insert("tables", tables);
-    body.insert("previousSyncDate", "1970-01-01 00:00:00");
-    Request r = buildRequest("sync", body);
-
-    // Post the request
-    QNetworkReply *reply = synchronousRequest(r);
-
-    if (!reply)
-    {
-        qDebug() << "<<< Can't download data... Request timed out.";
-        return QJsonArray();
-    }
-
-    // Parse reply
-    QJsonObject repObj = parseData(reply);
-
-    return repObj.value("content").toObject().value("tables").toArray();
+    sync(syncData);
 }
 
 QJsonObject RamServerInterface::pull(QString uuid, QString table)
@@ -370,8 +342,7 @@ QJsonObject RamServerInterface::pull(QString uuid, QString table)
 void RamServerInterface::setOnline(QString serverUuid)
 {
     ProgressManager *pm = ProgressManager::instance();
-
-    pm->setTitle(tr("Server connexion"));
+    pm->addToMaximum(5);
     pm->setText(tr("Connecting to the Ramses Server..."));
     pm->increment();
 
@@ -405,7 +376,8 @@ void RamServerInterface::setOnline(QString serverUuid)
 
     QJsonObject repObj = parseData(reply);
 
-    if (!checkPing(repObj, serverUuid)) return;
+    if (!checkServerUuid(repObj.value("serverUuid").toString())) return;
+    if (!checkPing(repObj)) return;
 
     m_localServerUuid = serverUuid;
 
@@ -605,16 +577,23 @@ void RamServerInterface::sslError(QNetworkReply *reply, QList<QSslError> errs)
 void RamServerInterface::dataReceived(QNetworkReply *reply)
 {
     QJsonObject repObj = parseData(reply);
-    if (repObj.isEmpty()) return;
+    if (repObj.isEmpty()) {
+        finishSync(true);
+        return;
+    }
 
     QString repQuery = repObj.value("query").toString();
     bool repSuccess = repObj.value("success").toBool();
     QString repMessage = repObj.value("message").toString();
     QJsonArray repLog = repObj.value("debug").toArray();
     QString serverUuid = repObj.value("serverUuid").toString();
+    QJsonObject content = repObj.value("content").toObject();
 
     // Check server UUID
-    if (!checkServerUuid(repObj)) return;
+    if (!checkServerUuid(serverUuid)) {
+        finishSync(true);
+        return;
+    }
 
     // Log
     for (int i = 0; i < repLog.count(); i++)
@@ -624,7 +603,7 @@ void RamServerInterface::dataReceived(QNetworkReply *reply)
         QString message = o.value("message").toString("");
         DuQFLog::LogType l = DuQFLog::Information;
         if (level == "DATA") l = DuQFLog::Data;
-        else if (level == "DEBUG") l = DuQFLog::Debug;
+        else if (level == "DEBUG" || level == "INFO") l = DuQFLog::Debug;
         else if (level == "WARNING") l = DuQFLog::Warning;
         else if (level == "CRITICAL") l = DuQFLog::Critical;
         else if (level == "FATAL") l = DuQFLog::Fatal;
@@ -647,17 +626,109 @@ void RamServerInterface::dataReceived(QNetworkReply *reply)
         setConnectionStatus(NetworkUtils::Offline, tr("The server logged you out."));
     }
     else if (repQuery == "sync")
-    {
-        // If sync is not successful, set offline.
+    {     
+        // If sync is not successful
         if (!repSuccess)
         {
-            QString reason = tr("The server sync was not successful.\nThis is probably a bug or a configuration error.\nPlease report bugs on %1").arg(URL_SOURCECODE);
+            QString reason = tr("The server sync (start sync session) was not successful.\nThis is probably a bug or a configuration error.\nPlease report bugs on %1").arg(URL_SOURCECODE);
             log(reason, DuQFLog::Warning);
-            setConnectionStatus(NetworkUtils::Offline, reason);
+            finishSync(true);
             return;
         }
 
-        emit syncReady(repObj.value("content").toObject(), serverUuid);
+        // Start pushing
+        pushNext();
+    }
+    else if (repQuery == "push")
+    {
+        // If sync is not successful, stop syncing.
+        if (!repSuccess)
+        {
+            QString reason = tr("The server sync (push) was not successful.\nThis is probably a bug or a configuration error.\nPlease report bugs on %1").arg(URL_SOURCECODE);
+            log(reason, DuQFLog::Warning);
+            finishSync(true);
+            return;
+        }
+        // If it's commited, fetch
+        if (content.value("commited").toBool())
+        {
+            fetch();
+            return;
+        }
+        // Continue pushing
+        pushNext();
+    }
+    else if (repQuery == "fetch")
+    {
+        // If sync is not successful, stop syncing.
+        if (!repSuccess)
+        {
+            QString reason = tr("The server sync (fetch) was not successful.\nThis is probably a bug or a configuration error.\nPlease report bugs on %1").arg(URL_SOURCECODE);
+            log(reason, DuQFLog::Warning);
+            finishSync(true);
+            return;
+        }
+        // Get fetch data
+        m_fetchData.tableCount = content.value("tableCount").toInt();
+        m_fetchData.tables = QSet<TableFetchData>();
+        if (m_fetchData.tableCount == 0)
+        {
+            finishSync();
+        }
+        QJsonArray fetchedTables = content.value("tables").toArray();
+        ProgressManager *pm = ProgressManager::instance();
+        pm->setText(tr("Sync: fetching new data..."));
+        for (int i = 0; i < fetchedTables.count(); i++)
+        {
+            QJsonObject fetchObj = fetchedTables.at(i).toObject();
+            TableFetchData fetchData;
+            fetchData.name = fetchObj.value("name").toString();
+            fetchData.rowCount = fetchObj.value("rowCount").toInt();
+            fetchData.pageCount = fetchObj.value("pageCount").toInt();
+            fetchData.deleteCount = fetchObj.value("deleteCount").toInt();
+            m_fetchData.tables.insert(fetchData);
+            pm->addToMaximum(fetchData.pageCount);
+        }
+        // Start pulling
+        pullNext();
+    }
+    else if (repQuery == "pull")
+    {
+        // If sync is not successful, stop syncing.
+        if (!repSuccess)
+        {
+            QString reason = tr("The server sync (pull) was not successful.\nThis is probably a bug or a configuration error.\nPlease report bugs on %1").arg(URL_SOURCECODE);
+            log(reason, DuQFLog::Warning);
+            finishSync(true);
+            return;
+        }
+        // Store new data
+        QJsonArray rowsArray = content.value("rows").toArray();
+        QJsonArray deletedArray = content.value("deleted").toArray();
+        QString table = content.value("table").toString();
+        QSet<TableRow> rows;
+        QStringList deletedUuids;
+        if (m_pullData.tables.contains(table)) rows = m_pullData.tables.value(table);
+        for (int i = 0; i < rowsArray.count(); i++)
+        {
+            TableRow row;
+            QJsonObject rowObj = rowsArray.at(i).toObject();
+            row.uuid = rowObj.value("uuid").toString();
+            row.data = rowObj.value("data").toString();
+            row.modified = rowObj.value("modified").toString();
+            row.removed = rowObj.value("removed").toInt();
+            row.userName = rowObj.value("userName").toString();
+            rows.insert(row);
+        }
+        for (int i = 0; i < deletedArray.count(); i++)
+        {
+            QString uuid = deletedArray.at(i).toString();
+            deletedUuids << uuid;
+        }
+        m_pullData.tables.insert(table, rows);
+        m_pullData.deletedUuids.insert(table, deletedUuids);
+        // Next pull
+        pullNext();
     }
     else if (repQuery == "setPassword")
     {
@@ -695,7 +766,7 @@ void RamServerInterface::nextRequest()
     postRequest( m_requestQueue.takeFirst() );
 }
 
-bool RamServerInterface::checkPing(QJsonObject repObj, QString serverUuid)
+bool RamServerInterface::checkPing(QJsonObject repObj)
 {
     bool repSuccess = repObj.value("success").toBool();
 
@@ -708,10 +779,6 @@ bool RamServerInterface::checkPing(QJsonObject repObj, QString serverUuid)
         return false;
     }
 
-    // Check the server UUID
-    if (serverUuid != "") m_localServerUuid = serverUuid;
-    if (!checkServerUuid(repObj)) return false;
-
     // get the server version
     m_serverVersion = repObj.value("content").toObject().value("version").toString();
 
@@ -719,10 +786,10 @@ bool RamServerInterface::checkPing(QJsonObject repObj, QString serverUuid)
     return true;
 }
 
-bool RamServerInterface::checkServerUuid(QJsonObject repObj)
+bool RamServerInterface::checkServerUuid(QString uuid)
 {
-    QString distantUuid = repObj.value("serverUuid").toString();
-    if (m_localServerUuid != "" && distantUuid != "" && m_localServerUuid != distantUuid)
+    m_serverUuid = uuid;
+    if (m_localServerUuid != "" && m_serverUuid != "" && m_localServerUuid != m_serverUuid)
     {
         QString reason = tr("This server is not in sync with this local database.\n\n"
                             "This can happen if you try to connect to a new server from an existing database,\n"
@@ -741,6 +808,7 @@ void RamServerInterface::queueRequest(QString query, QJsonObject body)
 {
     Request r = buildRequest(query, body);
     queueRequest(r);
+    startQueue();
 }
 
 void RamServerInterface::queueRequest(Request r)
@@ -866,12 +934,10 @@ QJsonObject RamServerInterface::parseData(QNetworkReply *reply)
     bool repSuccess = repObj.value("success").toBool();
 
     // Log the rep message
-    DuQFLog::LogType logLevel = DuQFLog::Information;
+    DuQFLog::LogType logLevel = DuQFLog::Debug;
     if (repQuery != "login" && !repSuccess) logLevel = DuQFLog::Warning;
     if (repMessage.startsWith("warning", Qt::CaseInsensitive)) logLevel = DuQFLog::Warning;
     log(repMessage, logLevel);
-
-
 
     return repObj;
 }
@@ -986,6 +1052,167 @@ bool RamServerInterface::checkServer(QString hostName)
     return true;
 }
 
+void RamServerInterface::startSync()
+{
+    qDebug() << "Server Interface: Starting Sync...";
+
+    ProgressManager *pm = ProgressManager::instance();
+    pm->setText(tr("Starting server sync session..."));
+    pm->addToMaximum(m_syncingData.tables.count());
+
+    queueRequest("sync");
+    m_syncing = true;
+    m_pullData.syncDate = QDateTime::currentDateTimeUtc().toString("yyyy-MM-dd hh:mm:ss");
+    m_pullData.tables = QHash<QString, QSet<TableRow>>();
+    emit syncStarted();
+}
+
+void RamServerInterface::push(QString table, QSet<TableRow> rows, QString date, bool commit)
+{
+    qDebug() << "Server Interface: Pushing " << rows.count() << " rows to " << table;
+
+    QJsonObject body;
+    body.insert("table", table);
+    QJsonArray rowsArray;
+    foreach( TableRow row, rows)
+    {
+        QJsonObject rowObj;
+        rowObj.insert("uuid", row.uuid);
+        rowObj.insert("data", row.data);
+        rowObj.insert("removed", row.removed);
+        rowObj.insert("modified", row.modified);
+        if (table == "RamUser") rowObj.insert("userName", row.userName);
+        rowsArray.append(rowObj);
+    }
+    body.insert("rows", rowsArray);
+    body.insert("previousSyncDate", date);
+    body.insert("commit", commit);
+    queueRequest("push", body);
+}
+
+void RamServerInterface::pushNext()
+{
+    // If the tables list is empty, we've pushed everything, commit
+    if (m_syncingData.tables.isEmpty())
+    {
+        commit();
+        return;
+    }
+
+    // Get a table and push its first 100 rows
+    QString table = *m_syncingData.tables.keyBegin();
+    QSet<TableRow> rows = m_syncingData.tables.value(table);
+    QSet<TableRow> pushRows;
+    while (pushRows.count() < m_requestMaxRows && !rows.isEmpty())
+    {
+        QSet<TableRow>::const_iterator i = rows.cbegin();
+        pushRows.insert( *i );
+        rows.erase( i );
+    }
+
+    // Update rows in syncing data
+    m_syncingData.tables[table] = rows;
+
+    // If we've got all rows, remove the table from the data to sync
+    if (rows.isEmpty())
+    {
+        ProgressManager *pm = ProgressManager::instance();
+        pm->increment();
+        pm->setText(tr("Uploading data to the server..."));
+        m_syncingData.tables.remove(table);
+    }
+
+    // Push the rows
+    push(table, pushRows, m_syncingData.syncDate, false);
+}
+
+void RamServerInterface::commit()
+{
+    qDebug() << "Server Interface: Commit!";
+
+    push("", QSet<TableRow>(), "1818-05-05 00:00:00", true);
+}
+
+void RamServerInterface::fetch()
+{
+    qDebug() << "Server Interface: Fetching changes...";
+
+    queueRequest("fetch");
+}
+
+void RamServerInterface::pull(QString table, int page)
+{
+    qDebug() << "Server Interface: Pulling page #" << page << " from " << table;
+
+    QJsonObject body;
+    body.insert("table", table);
+    body.insert("page", page);
+    queueRequest("pull", body);
+}
+
+void RamServerInterface::pullNext()
+{
+    if (m_fetchData.tables.isEmpty())
+    {
+        finishSync();
+        return;
+    }
+
+    // Get a table and pull its next page
+    bool finished = true;
+    QSet<TableFetchData>::const_iterator i = m_fetchData.tables.constBegin();
+    while(i != m_fetchData.tables.constEnd())
+    {
+        TableFetchData fetchData = *i;
+
+        if (fetchData.pulled || fetchData.currentPage >= fetchData.pageCount)
+        {
+            i++;
+            continue;
+        }
+
+        ProgressManager *pm = ProgressManager::instance();
+        pm->increment();
+        pm->setText(tr("Downloading new data from the server..."));
+
+        finished = false;
+        fetchData.currentPage++;
+        pull( fetchData.name, fetchData.currentPage );
+        if (fetchData.currentPage >= fetchData.pageCount ) fetchData.pulled = true;
+
+        m_fetchData.tables.erase(i);
+        m_fetchData.tables.insert(fetchData);
+        break;
+    }
+
+    // Everything has been pulled
+    if (finished) finishSync();
+}
+
+void RamServerInterface::finishSync(bool withError)
+{
+    qDebug() << "Server Interface: Finishing sync...";
+
+    ProgressManager *pm = ProgressManager::instance();
+    if (withError) pm->setText(tr("Sync finished with error."));
+    else pm->setText("Sync OK!");
+
+    // Emit result
+    if (!withError) emit syncReady(m_pullData, m_serverUuid );
+
+    // Finish
+    m_syncing = false;
+    // Make room
+    m_syncingData = SyncData();
+    m_fetchData = FetchData();
+    m_pullData = SyncData();
+
+    emit syncFinished();
+
+    if (!withError) qDebug() << "Server Interface: Sync finished!";
+    else qDebug() << "Server Interface: Sync error!";
+}
+
 void RamServerInterface::postRequest(Request r)
 {
     QUrl url = r.request.url();
@@ -996,15 +1223,10 @@ void RamServerInterface::postRequest(Request r)
 
     // Log URL / GET
     log( "New request: " +  url.toString(QUrl::RemovePassword), DuQFLog::Debug);
-    // Log POST body
-    if (r.query == "login" || r.query == "setPassword")
-        #ifdef QT_DEBUG
-        log("Request data: " + r.body, DuQFLog::Data);
-        #else
-        log("Request data: [Hidden login info]", DuQFLog::Data);
-        #endif
-    else
-        log("Request data: " + r.body, DuQFLog::Data);
+    // Log POST body (in debug mode only!)
+    #ifdef QT_DEBUG
+    log("Request data: " + r.body, DuQFLog::Data);
+    #endif
 
     connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this,SLOT(networkError(QNetworkReply::NetworkError)));
     connect(reply, SIGNAL(finished()), reply, SLOT(deleteLater()));

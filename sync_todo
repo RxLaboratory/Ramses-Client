@@ -1,3 +1,10 @@
+- project: use dbtables
+- pipeline not shown on first click (issue with progress)
+- syncing ui better feedback : a status/connected icon + message user@server ( ... )
+- localdatainterface delete data in a single query (see server)
+- more tests
+
+
 4- Ramses and editors
 	- asset & shot table
 		- steps menu filter by type?

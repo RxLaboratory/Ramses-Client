@@ -6,14 +6,7 @@
 #include <QStringBuilder>
 
 #include "duqf-utils/duqflogger.h"
-
-struct ServerConfig {
-    QString address = "";
-    int updateDelay = 60000;
-    int timeout = 3000;
-    bool useSsl = true;
-    int port = 443;
-};
+#include "datastruct.h"
 
 class LocalDataInterface : public DuQFLoggerObject
 {
@@ -42,15 +35,9 @@ public:
 
     // DATA INTERFACE //
 
-    QSet<QString> tableUuids(QString table, bool includeRemoved = false, QString projectUuid = "");
-    /**
-     * @brief tableData Returns the data from a table
-     * @param table The table name
-     * @param includeRemoved Set to true to include removed objects
-     * @param projectUuid The project to filter the data and get only objects of a specific project, if not an empty string
-     * @return A vector (may be sorted later, so not a set) of {uuid, data, projectUuid}
-     */
-    QVector<QStringList> tableData(QString table, bool includeRemoved = false, QString projectUuid = "");
+    QSet<QString> tableUuids(QString table, bool includeRemoved = false);
+    // Returns a vector instead of set: tabledata may be sorted later
+    QVector<QStringList> tableData(QString table, QString filterKey = "", QStringList filterValues = QStringList(), bool includeRemoved = false);
     bool contains(QString uuid, QString table);
     QMap<QString, QString> modificationDates(QString table, QString projectUuid = "");
 
@@ -80,19 +67,9 @@ public:
     const QString &dataFile() const;
     ServerConfig setDataFile(const QString &file);
 
-    QJsonObject getQuickSync();
-    QJsonObject getGeneralSync();
-    QJsonObject getProjectSync(QString projectUuid);
-    /**
-     * @brief getSync Gets the modified rows
-     * @param tables The list of tables to get
-     * @param quick If true, gets only the modified rows since last sync, otherwise all rows
-     * @param projectUuid A filter to get the rows only for a specific project
-     * @return
-     */
-    QJsonObject getSync(QSet<QString> tables, bool quick = true, QString projectUuid = "");
-    void saveSync(QJsonArray tables);
-    void deleteData(QJsonArray tables);
+    SyncData getSync(bool fullSync=true);
+    void saveSync(SyncData syncData);
+    void deleteData(SyncData syncData);
 
     QString currentUserUuid();
     void setCurrentUserUuid(QString uuid);
@@ -107,13 +84,13 @@ public:
     const QHash<QString, QSet<QString> > &deletedUuids() const;
 
 public slots:
-    void sync(QJsonObject data, QString serverUuid = "");
+    void sync(SyncData data, QString serverUuid = "");
 
 signals:
     void dataReset();
     void ramsesPathChanged(QString);
     // Sync result
-    void synced();
+    void syncFinished();
     void dataChanged(QString);
     void availabilityChanged(QString,bool);
     void inserted(QString uuid, QString table);

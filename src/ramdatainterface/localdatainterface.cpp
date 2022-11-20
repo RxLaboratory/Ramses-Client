@@ -1,6 +1,7 @@
 #include "localdatainterface.h"
 
 #include "datacrypto.h"
+#include "datastruct.h"
 #include "duqf-app/app-version.h"
 #include "duqf-utils/utils.h"
 #include "progressmanager.h"
@@ -204,7 +205,7 @@ QSet<QString> LocalDataInterface::tableUuids(QString table, bool includeRemoved,
     return data;
 }
 
-QVector<QStringList> LocalDataInterface::tableData(QString table, bool includeRemoved, QString projectUuid)
+QVector<QStringList> LocalDataInterface::tableData(QString table, QString filterKey, QStringList filterValues, bool includeRemoved)
 {
     QString q = "SELECT `uuid`, `data`, `project` FROM '%1'";
     if (!includeRemoved) q += " WHERE `removed` = 0";
@@ -216,18 +217,33 @@ QVector<QStringList> LocalDataInterface::tableData(QString table, bool includeRe
 
     QSqlQuery qry = query( q );
 
-    QVector<QStringList> data;
+    bool useFilter = filterKey != "" && !filterValues.isEmpty();
+
+    QVector<QStringList> tData;
 
     while (qry.next())
     {
+        QString uuid = qry.value(0).toString();
+        QString data = qry.value(1).toString();
+
+        // Decrypt data if user table
+        if (table == "RamUser" && ENCRYPT_USER_DATA) data = DataCrypto::instance()->clientDecrypt( data );
+
+        // Filter
+        if (useFilter)
+        {
+            QJsonDocument doc = QJsonDocument::fromJson( data.toUtf8() );
+            QJsonObject obj = doc.object();
+            if ( !filterValues.contains( obj.value(filterKey).toString() ) ) continue;
+        }
+
         QStringList entry;
-        entry << qry.value(0).toString();
-        entry << qry.value(1).toString();
-        entry << qry.value(2).toString();
-        data << entry;
+        entry << uuid;
+        entry << data;
+        tData << entry;
     }
 
-    return data;
+    return tData;
 }
 
 bool LocalDataInterface::contains(QString uuid, QString table)
@@ -507,6 +523,7 @@ ServerConfig LocalDataInterface::setDataFile(const QString &file)
     m_uuids.clear();
 
     ProgressManager *pm = ProgressManager::instance();
+    pm->addToMaximum(2);
 
     QSqlDatabase db = QSqlDatabase::database("localdata");
     openDB(db, file);
@@ -555,10 +572,9 @@ ServerConfig LocalDataInterface::setDataFile(const QString &file)
     return serverConfig();
 }
 
-QJsonObject LocalDataInterface::getQuickSync()
+SyncData LocalDataInterface::getSync(bool fullSync)
 {
     ProgressManager *pm = ProgressManager::instance();
-    pm->setTitle(tr("Quick data sync: Getting local data..."));
     pm->increment();
 
     // List all tables
@@ -611,11 +627,12 @@ QJsonObject LocalDataInterface::getSync(QSet<QString> tables, bool quick, QStrin
 
     // Get last Sync
     QString lastSync = "1818-05-05 00:00:00";
-    QString q = "SELECT lastSync FROM _Sync ;";
-    QSqlQuery qry = query(q);
-    if (qry.first()) lastSync = qry.value(0).toString();
-
-    QJsonArray tablesArray;
+    if (!fullSync)
+    {
+        QString q = "SELECT lastSync FROM _Sync ;";
+        QSqlQuery qry = query(q);
+        if (qry.first()) lastSync = qry.value(0).toString();
+    }
 
     // For each table, get modified rows
 
@@ -623,127 +640,128 @@ QJsonObject LocalDataInterface::getSync(QSet<QString> tables, bool quick, QStrin
     QString currentUuid = "";
     if (u) currentUuid = u->uuid();
 
-    pm->addToMaximum(tables.count());
+    pm->addToMaximum(tNames.count() + 2);
+
+    QHash<QString, QSet<TableRow>> tables;
+
+    for (int i = 0; i < tNames.count(); i++)
+    {      
+        QString tName = tNames.at(i);
 
     foreach (QString tName, tables)
     {
         pm->setText(tr("Scanning table: %1").arg(tName));
         pm->increment();
 
-        QJsonObject table;
-        QJsonArray rows;
-        table.insert("name", tName );
+        QSet<TableRow> rows;
 
-        if (tName == "RamUser") q = "SELECT uuid, data, project, modified, removed, userName FROM %1 ";
-        else q = "SELECT uuid, data, project, modified, removed FROM %1 ";
-        if (quick) q += " WHERE modified >= '%2' ";
-
-        if (quick && projectUuid != "") q += " AND ";
-        else if (projectUuid != "") q += " WHERE ";
-
-        if (projectUuid != "") q += "`project` = '" + projectUuid + "' ";
+        QString q;
+        if (tName == "RamUser") q = "SELECT uuid, data, modified, removed, userName FROM %1 ";
+        else q = "SELECT uuid, data, modified, removed FROM %1 ";
+        if (!fullSync) q += " WHERE modified >= '%2' ;";
 
         q += ";";
 
         if (quick) q = q.arg(tName, lastSync);
         else q = q.arg(tName);
 
-        qry = query( q );
+        QSqlQuery qry = query( q );
 
         while (qry.next())
         {
-            QJsonObject obj;
-            obj.insert("uuid", qry.value(0).toString() );
-            obj.insert("project", qry.value(2).toString() );
-            obj.insert("modified", qry.value(3).toString() );
-            obj.insert("removed", qry.value(4).toInt() );
+            TableRow row;
+            row.uuid = qry.value(0).toString();
+            row.modified = qry.value(2).toString();
+            row.removed = qry.value(3).toInt();
             QString data = qry.value(1).toString();
             if (tName == "RamUser")
             {
                 if (ENCRYPT_USER_DATA) data = DataCrypto::instance()->clientDecrypt( data );
-                obj.insert("userName", qry.value(5).toString());
+                row.userName = qry.value(4).toString();
             }
 
-            obj.insert("data", data );
-            rows.append(obj);
+            row.data = data;
+            rows.insert(row);
         }
 
-        table.insert("modifiedRows", rows);
-        tablesArray.append(table);
+        tables.insert(tName, rows);
     }
 
-    QJsonObject result;
-    result.insert("tables", tablesArray);
-    result.insert("previousSyncDate", lastSync);
-    result.insert("project", projectUuid);
+    SyncData syncData;
+    syncData.syncDate = lastSync;
+    syncData.tables = tables;
 
-    return result;
+    pm->setText(tr("Successfully scanned local data."));
+    pm->increment();
+
+    return syncData;
 }
 
-void LocalDataInterface::saveSync(QJsonArray tables)
+void LocalDataInterface::saveSync(SyncData syncData)
 {
+    QHash<QString, QSet<TableRow>> tables = syncData.tables;
+
     ProgressManager *pm = ProgressManager::instance();
-    pm->addToMaximum(tables.count()*3);
+    pm->addToMaximum(tables.count()*2);
 
     // Insertions
-    for (int i = 0; i < tables.count(); i++)
-    {
+    QHashIterator<QString, QSet<TableRow>> i(tables);
+
+    while (i.hasNext()) {
+
         pm->increment();
 
-        QJsonObject table = tables.at(i).toObject();
-        QString tableName = table.value("name").toString();
+        i.next();
+        QString tableName = i.key();
         if (tableName == "") continue;
+
+        QSet<QStringList> insertedObjects;
 
         pm->setText(tr("Inserting new data in: %1").arg(tableName));
 
         // Clear cache
         m_uuids.remove(tableName);
 
-        QJsonArray incomingRows = table.value("modifiedRows").toArray();
-
         // We're going to need the uuids and dates of the table
         QMap<QString, QString> uuidDates = modificationDates( tableName );
 
-        // Insert new
-        QSet<QStringList> insertedObjects;
-        for (int r = incomingRows.count() - 1; r >= 0; r--)
-        {
-            QJsonObject incomingRow = incomingRows.at(r).toObject();
+        // In a single query
+        QString q;
+        if (tableName == "RamUser") q = "INSERT INTO %1 (data, modified, uuid, removed, userName) VALUES ";
+        else q = "INSERT INTO %1 (data, modified, uuid, removed) VALUES ";
+        q = q.arg(tableName);
 
+        QStringList values;
+
+        QSet<TableRow> incomingRows = i.value();
+        foreach(TableRow incomingRow, incomingRows)
+        {
             // Check if row exists
-            QString uuid = incomingRow.value("uuid").toString();
-            if (uuid == "")
-            {
-                incomingRows.removeAt(r);
-                continue;
-            }
+            QString uuid = incomingRow.uuid;
+
+            if (uuid == "") continue;
 
             if (uuidDates.contains(uuid)) continue;
 
-            QString data = incomingRow.value("data").toString();
-            QString modified = incomingRow.value("modified").toString();
-            QString project = incomingRow.value("project").toString();
-            int removed = incomingRow.value("removed").toInt(0);
+            QString data = incomingRow.data;
+            QString modified = incomingRow.modified;
+            int removed = incomingRow.removed;
 
             if (tableName == "RamUser")
             {
-                QString userName = incomingRow.value("userName").toString().replace("'", "''");
+                QString userName = incomingRow.userName.replace("'", "''");
                 if (userName == "Ramses") continue;
                 if (ENCRYPT_USER_DATA) data = DataCrypto::instance()->clientEncrypt( data );
                 else data.replace("'", "''");
 
-                QString q = "INSERT INTO %1 (data, modified, uuid, removed, userName, project) "
-                            "VALUES ( '%2', '%3', '%4', %5, '%6', '%7' );";
-
-                query( q.arg(tableName, data, modified, uuid, QString::number(removed), userName, project) );
+                QString v = "( '%1', '%2', '%3', %4, '%5' )";
+                values << v.arg( data, modified, uuid, QString::number(removed), userName );
             }
             else
             {
                 data.replace("'", "''");
-                QString q = "INSERT INTO %1 (data, modified, uuid, removed, project) "
-                            "VALUES ( '%2', '%3', '%4', %5, '%6' );";
-
-                query( q.arg(tableName, data, modified, uuid, QString::number(removed), project) );
+                QString v = "( '%1', '%2', '%3', %4 )";
+                values << v.arg( data, modified, uuid, QString::number(removed) );
             }
 
             if (removed == 0)
@@ -752,21 +770,26 @@ void LocalDataInterface::saveSync(QJsonArray tables)
                 ins << uuid << tableName;
                 insertedObjects << ins;
             }
-
-            incomingRows.removeAt(r);
         }
+
+        // Nothing, next table
+        if (values.count() == 0) continue;
+
+        q += values.join(", ");
+
+        query( q );
 
         // Emit insertions
         foreach(QStringList io, insertedObjects ) emit inserted( io.at(0), io.at(1) );
     }
 
     // Updates
-    for (int i = 0; i < tables.count(); i++)
-    {
+    i.toFront();
+    while (i.hasNext()) {
         pm->increment();
 
-        QJsonObject table = tables.at(i).toObject();
-        QString tableName = table.value("name").toString();
+        i.next();
+        QString tableName = i.key();
         if (tableName == "") continue;
 
         pm->setText(tr("Updating existing data for: %1").arg(tableName));
@@ -774,21 +797,27 @@ void LocalDataInterface::saveSync(QJsonArray tables)
         // Clear cache
         m_uuids.remove(tableName);
 
-        QJsonArray incomingRows = table.value("modifiedRows").toArray();
+        QSet<TableRow> incomingRows = i.value();
 
         // We're going to need the uuids and dates of the table
         QMap<QString, QString> uuidDates = modificationDates( tableName );
 
-        // Update existing
-        for (int r = incomingRows.count() - 1; r >= 0; r--)
-        {
-            QJsonObject incomingRow = incomingRows.at(r).toObject();
+        // In a single query
+        QString q;
+        if (tableName == "RamUser") q = "INSERT INTO %1 (data, modified, uuid, removed, userName) VALUES ";
+        else q = "INSERT INTO %1 (data, modified, uuid, removed) VALUES ";
+        q = q.arg(tableName);
 
-            QString uuid = incomingRow.value("uuid").toString();
-            QString data = incomingRow.value("data").toString();
-            QString project = incomingRow.value("project").toString();
-            QString modified = incomingRow.value("modified").toString();
-            int rem = incomingRow.value("removed").toInt(0);
+        QStringList values;
+        QStringList changedUuids;
+
+        foreach(TableRow incomingRow, incomingRows)
+        {
+            QString uuid = incomingRow.uuid;
+            if (uuid == "") continue;
+            QString data = incomingRow.data;
+            QString modified = incomingRow.modified;
+            int rem = incomingRow.removed;
             bool hasBeenRemoved = rem == 1;
 
             // Only if more recent
@@ -806,57 +835,63 @@ void LocalDataInterface::saveSync(QJsonArray tables)
 
             if (tableName == "RamUser")
             {
-                QString userName = incomingRow.value("userName").toString().replace("'", "''");
+                QString userName = incomingRow.userName.replace("'", "''");
 
                 if (ENCRYPT_USER_DATA) data = DataCrypto::instance()->clientEncrypt( data );
                 else data.replace("'", "''");
-                QString q = "UPDATE %1 SET "
-                            "data = '%2', "
-                            "modified = '%3', "
-                            "removed = %4, "
-                            "userName = '%5', "
-                            "project = '%6' "
-                            "WHERE uuid = '%7' ;";
-
-                query( q.arg(tableName, data, modified, QString::number(rem), userName, project, uuid) );
+                QString v = "( '%1', '%2', '%3', %4, '%5' )";
+                values << v.arg( data, modified, uuid, QString::number(rem), userName );
             }
             else
             {
                 data.replace("'", "''");
-                QString q = "UPDATE %1 SET "
-                            "data = '%2', "
-                            "modified = '%3', "
-                            "removed = %4, "
-                            "project = '%5' "
-                            "WHERE uuid = '%6' ;";
-
-                query( q.arg(tableName, data, modified, QString::number(rem), project, uuid) );
+                QString v = "( '%1', '%2', '%3', %4 )";
+                values << v.arg( data, modified, uuid, QString::number(rem) );
             }
 
-            emit dataChanged(uuid);
+            changedUuids << uuid;
         }
+
+        // Nothing, next table
+        if (values.count() == 0) continue;
+
+        q += values.join(", ") + " ON CONFLICT(uuid) DO UPDATE SET ";
+
+        if (tableName == "RamUser") q +="`data` = excluded.data, `modified` = excluded.modified, `removed` = excluded.removed, `userName` = excluded.userName ;";
+        else q += "`data` = excluded.data, `modified` = excluded.modified, `removed` = excluded.removed ;";
+
+        query( q );
+
+        // Emit
+        foreach(QString uuid, changedUuids) emit dataChanged(uuid);
     }
 
-    emit synced();
+    emit syncFinished();
 }
 
-void LocalDataInterface::deleteData(QJsonArray tables)
+void LocalDataInterface::deleteData(SyncData syncData)
 {
     ProgressManager *pm = ProgressManager::instance();
 
-    for (int i = 0; i < tables.count(); i++)
-    {
+    QHash<QString, QStringList> tables = syncData.deletedUuids;
+    QHashIterator<QString, QStringList> i(tables);
+
+    pm->addToMaximum(tables.count());
+
+    while (i.hasNext()) {
+
+        i.next();
+
         pm->increment();
 
-        QJsonObject table = tables.at(i).toObject();
-        QString tableName = table.value("name").toString();
-        QJsonArray rows = table.value("rows").toArray();
+        QString tableName = i.key();
+        QStringList rows = i.value();
 
         pm->setText(tr("Removing out-of-date data from: %1").arg(tableName));
 
         for (int j = 0; j < rows.count(); j++)
         {
-            QString uuid = rows.at(j).toString();
+            QString uuid = rows.at(j);
             QString q = "DELETE FROM %1 WHERE `uuid` = '%2';";
             query( q.arg( tableName, uuid ) );
         }
@@ -885,18 +920,14 @@ void LocalDataInterface::setCurrentUserUuid(QString uuid)
     query( q.arg(uuid) );
 }
 
-void LocalDataInterface::sync(QJsonObject data, QString serverUuid)
+void LocalDataInterface::sync(SyncData data, QString serverUuid)
 {
     ProgressManager *pm = ProgressManager::instance();
-    pm->reInit();
-    pm->setTitle(tr("Saving Ramses server data."));
     pm->setText(tr("Updating local data..."));
-    pm->setMaximum(3);
-    pm->start();
+    pm->addToMaximum(1);
 
-    saveSync(data.value("tables").toArray());
-
-    deleteData(data.value("deletedData").toArray());
+    saveSync(data);
+    deleteData(data);
 
     // Save sync date
 
@@ -906,9 +937,7 @@ void LocalDataInterface::sync(QJsonObject data, QString serverUuid)
     QString q = "DELETE FROM _Sync;";
     query( q );
     q = "INSERT INTO _Sync ( lastSync, uuid ) VALUES ( '%1', '%2' );";
-    query( q.arg( QDateTime::currentDateTimeUtc().toString("yyyy-MM-dd hh:mm:ss"), serverUuid ) );
-
-    pm->finish();
+    query( q.arg( data.syncDate, serverUuid ) );
 }
 
 QSet<QString> LocalDataInterface::tableNames()
@@ -931,9 +960,10 @@ QSet<QString> LocalDataInterface::tableNames()
     // Get info
     QSqlQuery qry = QSqlQuery(db);
 
-    if (!qry.exec("SELECT name FROM sqlite_schema WHERE type ='table' AND name NOT LIKE 'sqlite_%';"))
+    if (!qry.exec("SELECT name FROM sqlite_master WHERE type ='table' AND name NOT LIKE 'sqlite_%';"))
     {
         qDebug() << "Can't query template DB";
+        qDebug() << qry.lastError().text();
         return QStringList();
     }
 
@@ -988,7 +1018,7 @@ QString LocalDataInterface::cleanDataBase(int deleteDataOlderThan)
     report += "# Cleaning report\n\n";
     report += ".\n\n## Status\n\n";
     int numStatusChanged = 0;
-    QVector<QStringList> statusData = tableData("RamStatus", true);
+    QVector<QStringList> statusData = tableData("RamStatus", "", QStringList(), true);
     for (int i = 0; i < statusData.count(); i++)
     {
         QJsonDocument d = QJsonDocument::fromJson( statusData[i][1].toUtf8() );
@@ -1119,7 +1149,7 @@ LocalDataInterface::LocalDataInterface():
 bool LocalDataInterface::openDB(QSqlDatabase db, const QString &dbFile)
 {
     ProgressManager *pm = ProgressManager::instance();
-    pm->setTitle(tr("Loading database"));
+    pm->addToMaximum(2);
     pm->setText(tr("Opening database..."));
 
     // Make sure the DB is closed
@@ -1133,6 +1163,7 @@ bool LocalDataInterface::openDB(QSqlDatabase db, const QString &dbFile)
 
     // Check the version, and update the db scheme
     pm->setText(tr("Checking database version"));
+    pm->increment();
 
     QSqlQuery qry = QSqlQuery(db);
 
@@ -1154,8 +1185,8 @@ bool LocalDataInterface::openDB(QSqlDatabase db, const QString &dbFile)
 
     if (currentVersion < newVersion)
     {
-        pm->freeze(true);
-        pm->setText(tr("Upgrading database scheme"));
+        pm->setText(tr("Updating database scheme"));
+        pm->increment();
         QFileInfo dbFileInfo(dbFile);
         LocalDataInterface::instance()->log(tr("This database was created by an older version of Ramses (%1).\n"
                "I'm upgrading it to the current version (%2).\n"
@@ -1166,7 +1197,7 @@ bool LocalDataInterface::openDB(QSqlDatabase db, const QString &dbFile)
                             dbFileInfo.baseName(),
                             currentVersion.toString()));
 
-        bool ok = false;
+        bool ok = true;
         if (currentVersion < QVersionNumber(0, 5, 1))
         {
             // Add the port entry to the _server table

@@ -26,128 +26,17 @@ void DatabaseCreateWidget::checkPath(QString p)
 void DatabaseCreateWidget::createDB()
 {
     // Offline
-    if (ui_tabWidget->currentIndex() == 0)
-    {
-        // Check path
-        if (ui_fileSelector->path() == "")
-        {
-            QMessageBox::warning(this, tr("Where should I save the database?"), tr("I'm sorry, you have to choose a file to create the database.") );
-            return;
-        }
-
-        // Check name
-        if (ui_shortNameEdit->text() == "")
-        {
-            QMessageBox::warning(this, tr("What's your name?"), tr("I'm sorry, you have to choose a user ID to create the database.") );
-            return;
-        }
-
-        if (ui_nameEdit->text() == "")
-        {
-            QMessageBox::warning(this, tr("What's your name?"), tr("I'm sorry, you have to choose a user name to create the database.") );
-            return;
-        }
-
-        if (!createNewDB()) return;
-
-        // Create user
-        RamUser *newUser = new RamUser(ui_shortNameEdit->text(), ui_nameEdit->text());
-        newUser->setRole(RamUser::Admin);
-
-        // Login
-        Ramses::instance()->setUser( newUser );
-
-        // Hide dock
-        MainWindow *mw = (MainWindow*)GuiUtils::appMainWindow();
-        mw->hidePropertiesDock();
-    }
+    if (ui_tabWidget->currentIndex() == 0) createOfflineDB();
     // Online
-    else
-    {
-        ServerConfig s;
-        s.address = ui_serverEdit->address();
-        if (s.address == "") return;
-        s.useSsl = ui_serverEdit->ssl();
-        s.updateDelay = ui_serverEdit->updateFreq();
-        s.timeout = ui_serverEdit->timeout();
-        s.port = ui_serverEdit->port();
+    else createOnlineDB();
+}
 
-        // Suspend sync in case it takes a lot of time to create
-        DBInterface::instance()->suspendSync();
+void DatabaseCreateWidget::finishSync()
+{
+    if (!m_downloading) return;
+    ProgressManager *pm = ProgressManager::instance();
+    pm->finish();
 
-        // Create DB
-        if (!createNewDB(s))
-        {
-            DBInterface::instance()->resumeSync();
-            return;
-        }
-
-        // Connect to server
-        RamServerInterface *rsi = RamServerInterface::instance();
-        //rsi->setServerAddress(s.address);
-        //rsi->setSsl(s.useSsl);
-        //rsi->setTimeout(s.timeout);
-
-        // (try to) set online
-        //rsi->setOnline();
-        if (!rsi->isOnline())
-        {
-            QMessageBox::information(this,
-                                     tr("Server error"),
-                                     tr("Sorry, I can't connect correctly to the server.\nPlease double check the server settings.")
-                                     );
-
-            DBInterface::instance()->resumeSync();
-            return;
-        }
-
-        QString uuid = rsi->currentUserUuid();
-        if (uuid == "")
-        {
-            QMessageBox::warning(this,
-                                     tr("Login issue"),
-                                     tr("I can't log you in for an unknown reason.\n\n"
-                                        "Try again, or file a bug report.")
-                                     );
-            DBInterface::instance()->resumeSync();
-            return;
-        }
-
-        ProgressManager::instance()->start();
-
-        // Download general data
-        QJsonArray tables = rsi->downloadData();
-        if (tables.count() == 0)
-        {
-            QMessageBox::warning(this,
-                                     tr("Can't find any data"),
-                                     tr("I can't download any data from this server.\n\n"
-                                        "This may be due to a slow connexion,\n"
-                                        "try to increase the server time out.")
-                                     );
-            DBInterface::instance()->resumeSync();
-            return;
-        }
-
-        LocalDataInterface *ldi = LocalDataInterface::instance();
-
-        // Save data to DB
-        ldi->saveSync(tables);
-
-        // And finish login
-        //Ramses::instance()->setUserUuid( uuid );
-
-        // Hide dock
-        /*MainWindow *mw = (MainWindow*)GuiUtils::appMainWindow();
-        mw->hidePropertiesDock();
-
-        DBInterface::instance()->resumeSync();
-
-        // Trigger the first general Sync to send data
-        DBInterface::instance()->generalSync( );
-
-        ProgressManager::instance()->finish();*/
-    }
 }
 
 void DatabaseCreateWidget::setupUi()
@@ -228,7 +117,9 @@ void DatabaseCreateWidget::setupUi()
     ui_shortNameEdit->setText("Duf");
     ui_nameEdit->setText("Nicolas Dufresne");
 
-    ui_serverEdit->setAddress("ramses.rxlab.io/tests");
+    ui_serverEdit->setAddress("localhost/ramses");
+    ui_serverEdit->setSsl(false);
+    ui_serverEdit->setPort(8001);
 #endif
 }
 
@@ -236,6 +127,7 @@ void DatabaseCreateWidget::connectEvents()
 {
     connect(ui_fileSelector, &DuQFFolderSelectorWidget::pathChanged, this, &DatabaseCreateWidget::checkPath);
     connect(ui_createButton, &QPushButton::clicked, this, &DatabaseCreateWidget::createDB);
+    connect(DBInterface::instance(), &DBInterface::syncFinished, this, &DatabaseCreateWidget::finishSync);
 }
 
 bool DatabaseCreateWidget::createNewDB()
@@ -297,4 +189,96 @@ bool DatabaseCreateWidget::createNewDB(ServerConfig s)
     DBInterface::instance()->setDataFile(newFilePath, true);
 
     return true;
+}
+
+void DatabaseCreateWidget::createOnlineDB()
+{
+    // TODO
+
+    // Get the server config
+    ServerConfig s;
+    s.address = ui_serverEdit->address();
+    if (s.address == "") return;
+    s.useSsl = ui_serverEdit->ssl();
+    s.updateDelay = ui_serverEdit->updateFreq();
+    s.timeout = ui_serverEdit->timeout();
+    s.port = ui_serverEdit->port();
+
+    // Create DB
+    if (!createNewDB(s)) return;
+
+    // Connect to server
+    // The file and server settings are already set in createNewDB()
+    // And the server is also already set online
+    RamServerInterface *rsi = RamServerInterface::instance();
+
+    // If we failed to get online
+    if (!rsi->isOnline())
+    {
+        QMessageBox::information(this,
+                                 tr("Server error"),
+                                 tr("Sorry, I can't connect correctly to the server.\nPlease double check the server settings.")
+                                 );
+        return;
+    }
+
+    // If we're not logged in
+    QString uuid = rsi->currentUserUuid();
+    if (uuid == "")
+    {
+        QMessageBox::warning(this,
+                                 tr("Login issue"),
+                                 tr("I can't log you in for an unknown reason.\n\n"
+                                    "Try again, or file a bug report.")
+                                 );
+        return;
+    }
+
+    // Hide dock
+    MainWindow *mw = (MainWindow*)GuiUtils::appMainWindow();
+    mw->hidePropertiesDock();
+
+    // And trigger the first Sync
+    ProgressManager *pm = ProgressManager::instance();
+    pm->setTitle(tr("Downloading data..."));
+    pm->freeze();
+    pm->start();
+    m_downloading = true;
+    DBInterface::instance()->fullSync();
+}
+
+void DatabaseCreateWidget::createOfflineDB()
+{
+    // Check path
+    if (ui_fileSelector->path() == "")
+    {
+        QMessageBox::warning(this, tr("Where should I save the database?"), tr("I'm sorry, you have to choose a file to create the database.") );
+        return;
+    }
+
+    // Check name
+    if (ui_shortNameEdit->text() == "")
+    {
+        QMessageBox::warning(this, tr("What's your name?"), tr("I'm sorry, you have to choose a user ID to create the database.") );
+        return;
+    }
+
+    if (ui_nameEdit->text() == "")
+    {
+        QMessageBox::warning(this, tr("What's your name?"), tr("I'm sorry, you have to choose a user name to create the database.") );
+        return;
+    }
+
+    if (!createNewDB()) return;
+
+    // Create user
+    RamUser *newUser = new RamUser(ui_shortNameEdit->text(), ui_nameEdit->text());
+    newUser->setRole(RamUser::Admin);
+
+    // Login
+    Ramses::instance()->setUser( newUser );
+
+    // Hide dock
+    MainWindow *mw = (MainWindow*)GuiUtils::appMainWindow();
+    mw->hidePropertiesDock();
 }

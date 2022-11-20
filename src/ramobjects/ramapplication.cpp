@@ -32,6 +32,7 @@ RamApplication::RamApplication(QString shortName, QString name):
     RamObject(shortName, name, ObjectType::Application)
 {
     construct();
+    createData();
 }
 
 QString RamApplication::executableFilePath() const

@@ -63,7 +63,12 @@ RamStep::RamStep(QString shortName, QString name, RamProject *project):
 {
     construct();
 
-    this->setProject( project->uuid() );
+    QJsonObject d = data();
+    d.insert("project", project->uuid());
+
+    setData(d);
+
+    createData();
 }
 
 RamStep::RamStep(QString uuid):

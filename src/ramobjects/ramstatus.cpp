@@ -129,8 +129,7 @@ RamStatus::RamStatus(RamUser *user, RamAbstractItem *item, RamStep *step, bool i
     d.insert("completionRatio", 0);
 
     setData(d);
-
-    setProject( item->projectUuid() );
+    createData();
 }
 
 RamStatus::RamStatus(QString uuid):
@@ -707,6 +706,7 @@ void RamStatus::edit(bool show)
 
 QString RamStatus::folderPath() const
 {
+    if (!m_item) return "";
     RamProject *project = m_item->project();
     QString type = "_G_";
     if (m_item->objectType() == RamObject::Shot) type = "_S_";

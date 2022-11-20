@@ -41,8 +41,9 @@ RamAssetGroup::RamAssetGroup(QString shortName, QString name, RamProject *projec
     RamTemplateAssetGroup(shortName, name, AssetGroup)
 {
     construct();
-    this->setProject(project);
-    RamAbstractObject::setProject( project->uuid() );
+    setProject(project);
+    insertData("project", project->uuid());
+    createData();
 }
 
 RamAssetGroup::RamAssetGroup(QString uuid):

@@ -141,12 +141,18 @@ private slots:
     void currentProjectChanged(RamProject *project);
     void freezeUI(bool f = true);
     void dbiConnectionStatusChanged(NetworkUtils::NetworkStatus s);
-    void fullSync();
+    void finishSync();
+    void startSync();
+
 
 protected:
     void closeEvent(QCloseEvent *event) override;
     void keyPressEvent(QKeyEvent *key) override;
     void keyReleaseEvent(QKeyEvent *key) override;
     bool eventFilter(QObject *obj, QEvent *event) override;
+
+private:
+    bool m_readyToClose = false;
+    bool m_closing = false;
 };
 #endif // MAINWINDOW_H

@@ -229,15 +229,15 @@ void RamScheduleDelegate::setEntry(RamObject *step)
 
         entry = new RamScheduleEntry( user, date );
         entry->setStep( RamStep::c( step ) );
-        user->schedule()->appendObject(entry->uuid());
+        //user->schedule()->appendObject(entry->uuid());
     }
     else if (entry)
     {
         if (step)
             entry->setStep( RamStep::c( step ) );
         else {
-            RamUser *u = entry->user();
-            if (u) u->schedule()->removeObjects(QStringList(entryUuid));
+            //RamUser *u = entry->user();
+            //if (u) u->schedule()->removeObjects(QStringList(entryUuid));
             entry->remove();
         }
     }

@@ -1,7 +1,5 @@
 #include "stepnode.h"
 
-#include "ramproject.h"
-
 StepNode::StepNode(RamStep *step): ObjectNode(step)
 {
     _step = step;
@@ -26,8 +24,8 @@ void StepNode::stepChanged()
 void StepNode::removeStep()
 {
     if (!_step) return;
-    RamProject *p = _step->project();
-    if (p) p->steps()->removeObjects(QStringList(_step->uuid()));
+    //RamProject *p = _step->project();
+    //if (p) p->steps()->removeObjects(QStringList(_step->uuid()));
     _step->remove();
 
 }

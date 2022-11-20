@@ -21,7 +21,7 @@ public:
     explicit RamScheduleEntry(RamUser *user, QDateTime date);
 
     RamUser *user() const;
-    const QDateTime &date() const;
+    const QDateTime date() const;
 
     RamStep *step() const;
     void setStep(RamStep *newStep);
@@ -42,8 +42,8 @@ private:
     void construct();
     void connectEvents();
 
-    RamUser *m_user = nullptr;
-    QDateTime m_date;
+    //RamUser *m_user = nullptr;
+    //QDateTime m_date;
 };
 
 #endif // RAMSCHEDULEENTRY_H

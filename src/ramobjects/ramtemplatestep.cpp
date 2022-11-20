@@ -52,6 +52,8 @@ RamTemplateStep::RamTemplateStep(QString shortName, QString name, ObjectType typ
 
     // Preprod as default step
     setType("pre");
+
+    createData();
 }
 
 RamTemplateStep::RamTemplateStep(QString uuid, ObjectType type):

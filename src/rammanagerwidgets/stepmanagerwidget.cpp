@@ -36,7 +36,7 @@ RamStep *StepManagerWidget::createObject()
                 "New Step",
                 project
                 );
-    project->steps()->appendObject(step->uuid());
+    //project->steps()->appendObject(step->uuid());
     step->edit();
     return step;
 }
@@ -57,6 +57,6 @@ void StepManagerWidget::createFromTemplate(RamObject *templateStepObj)
     RamProject *project = Ramses::instance()->currentProject();
     if (!project) return;
     RamStep *step = RamStep::createFromTemplate(templateStep, project);
-    project->steps()->appendObject(step->uuid());
+    //project->steps()->appendObject(step->uuid());
     step->edit();
 }

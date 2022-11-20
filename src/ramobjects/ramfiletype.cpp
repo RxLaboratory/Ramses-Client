@@ -30,6 +30,7 @@ RamFileType::RamFileType(QString shortName, QString name):
     RamObject(shortName, name, FileType)
 {
     construct();
+    createData();
 }
 
 RamFileType::RamFileType(QString uuid):

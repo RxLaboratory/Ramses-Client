@@ -11,7 +11,7 @@ class RamStep;
 class RamAssetGroup;
 class RamItemTable;
 class RamUser;
-class RamObjectList;
+class DBTableModel;
 
 class RamProject : public RamObject
 {
@@ -28,7 +28,7 @@ public:
     RamProject(QString shortName, QString name);
 
     // Steps
-    RamObjectModel *steps() const;
+    DBTableModel *steps() const;
     // Asset Groups
     RamObjectModel *assetGroups() const;
     // Sequences
@@ -120,7 +120,7 @@ private:
     void getCreateLists();
 
     // LISTS
-    RamObjectModel *m_steps;
+    DBTableModel *m_steps;
     RamObjectModel *m_sequences;
     RamObjectModel *m_assetGroups;
     RamObjectModel *m_assets;

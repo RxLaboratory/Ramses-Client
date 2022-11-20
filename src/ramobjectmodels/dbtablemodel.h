@@ -11,12 +11,21 @@ class DBTableModel: public RamObjectModel
     Q_OBJECT
 public:
     DBTableModel(RamAbstractObject::ObjectType type, QObject *parent = nullptr);
+    DBTableModel(RamAbstractObject::ObjectType type, QString filterKey, QStringList filterValues, int lookUpRole = RamAbstractObject::ShortName, QObject *parent = nullptr);
+
+    void setFilterKey(QString key);
+    void addFilterValue(QString value);
 
 private slots:
     void insertObject(QString uuid, QString table);
     void removeObject(QString uuid, QString table);
     void reload();
     void saveOrder(const QModelIndex &parent, int start, int end, const QModelIndex &destination, int row);
+
+private:
+    void construct();
+    QString m_filterKey;
+    QStringList m_filterValues;
 };
 
 bool objSorter(const QStringList a, const QStringList b);

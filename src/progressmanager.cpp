@@ -76,6 +76,7 @@ void ProgressManager::reInit()
 void ProgressManager::finish()
 {
     m_busy = false;
+    freeze(false);
     emit finished();
 }
 

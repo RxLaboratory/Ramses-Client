@@ -40,7 +40,8 @@ public:
      * @return
      */
     NetworkUtils::NetworkStatus connectionStatus() const;
-    bool isSuspended();
+    bool isSyncSuspended();
+    bool isAutoSyncSuspended();
 
     /**
      * @brief setRamsesPath sets the path to the local data for this database
@@ -85,16 +86,16 @@ signals:
      */
     void dataReset();
     void userChanged(QString);
-    void synced();
+    void syncFinished();
+    void syncStarted();
 
 public slots:
     void suspendSync();
     void resumeSync();
-    void quickSync();
-    void generalSync(bool synchroneous = false);
-    void projectSync(QString projectUuid, bool synchroneous = false);
-    bool pull(QString uuid, QString table);
-    void quit();
+    void suspendAutoSync();
+    void resumeAutoSync();
+    void sync();
+    void fullSync();
     /**
      * @brief Changes to offline mode: data is stored locally until we get a connection to the server to sync.
      */
@@ -131,6 +132,10 @@ private slots:
      * @param userUuid
      */
     void serverUserChanged(QString userUuid, QString username, QString data, QString modified);
+    /**
+     * @brief finishSync is called when the LDI has finished saving sync. Emits syncFinished and Schedules the next autosync.
+     */
+    void finishSync();
 
 private:
     /**
@@ -163,7 +168,9 @@ private:
      */
     int m_updateFrequency = 60000;
     QTimer *m_updateTimer;
-    bool m_suspended = true;
+    bool m_syncSuspended = true;
+    bool m_autoSyncSuspended = true;
+    bool m_disconnecting = false;
 };
 
 #endif // DBINTERFACE_H
