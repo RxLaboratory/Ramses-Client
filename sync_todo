@@ -2,6 +2,7 @@
 - RamAbstractItem status methods
 - Check status table sort
 - project: use dbtables
+- sequence use dbtablefilter for included shots
 - noState created even if exists (check search?)
 - pipeline not shown on first click (issue with progress)
 - syncing ui better feedback : a status/connected icon + message user@server ( ... )
