@@ -35,7 +35,7 @@ private slots:
     void statusDataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &roles = QVector<int>());
 
 private:
-    DBTableFilterProxyModel *m_status;
+    DBTableModel *m_status;
     DBTableFilterProxyModel *m_steps;
     DBTableFilterProxyModel *m_items;
 };

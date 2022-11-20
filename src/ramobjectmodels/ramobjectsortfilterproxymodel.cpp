@@ -17,6 +17,17 @@ void RamObjectSortFilterProxyModel::setSingleColumn(bool singleColumn)
     m_isSingleColumn = singleColumn;
 }
 
+void RamObjectSortFilterProxyModel::freeze()
+{
+    m_frozen = true;
+}
+
+void RamObjectSortFilterProxyModel::unFreeze()
+{
+    m_frozen = false;
+    prepareFilter();
+}
+
 int RamObjectSortFilterProxyModel::columnCount(const QModelIndex &parent) const
 {
     if (m_isSingleColumn) return 1;
@@ -81,13 +92,13 @@ RamAbstractObject::ObjectType RamObjectSortFilterProxyModel::type() const
 void RamObjectSortFilterProxyModel::setFilterUuid(const QString &filterUuid)
 {
     m_currentFilterUuid = filterUuid;
-    prepareFilter();
+    if (!m_frozen) prepareFilter();
 }
 
 void RamObjectSortFilterProxyModel::search(const QString &searchStr)
 {
     m_searchString = searchStr;
-    prepareFilter();
+    if (!m_frozen) prepareFilter();
 }
 
 void RamObjectSortFilterProxyModel::addFilterUuid(const QString &uuid)
@@ -96,24 +107,26 @@ void RamObjectSortFilterProxyModel::addFilterUuid(const QString &uuid)
     {
         m_filterListUuids << uuid;
     }
-    prepareFilter();
+    if (!m_frozen) prepareFilter();
 }
 
 void RamObjectSortFilterProxyModel::removeFilterUuid(const QString &uuid)
 {
     m_filterListUuids.removeAll(uuid);
-    prepareFilter();
+    if (!m_frozen) prepareFilter();
 }
 
 void RamObjectSortFilterProxyModel::clearFilterListUuids()
 {
     m_filterListUuids.clear();
-    prepareFilter();
+    if (!m_frozen) prepareFilter();
 }
 
 bool RamObjectSortFilterProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
 {
     Q_UNUSED(sourceParent)
+
+    if (m_frozen) return false;
 
     QAbstractItemModel *model = sourceModel();
     if (!model) return false;

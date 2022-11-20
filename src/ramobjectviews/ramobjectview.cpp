@@ -13,8 +13,10 @@ RamObjectView::RamObjectView(DisplayMode mode, QWidget *parent):
 
 void RamObjectView::setObjectModel(QAbstractItemModel *model)
 {
+    m_objectModel->freeze();
     m_objectModel->setSourceModel(model);
     this->setModel(m_objectModel);
+    m_objectModel->unFreeze();
     //this->resizeRowsToContents();
     //this->resizeColumnsToContents();
 }

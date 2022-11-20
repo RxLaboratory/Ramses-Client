@@ -15,9 +15,6 @@ public:
 
     explicit RamItemSortFilterProxyModel(QObject *parent = nullptr);
 
-    void freeze();
-    void unFreeze();
-
     void useFilters(bool use = true);
 
     void hideUser(RamObject *u);

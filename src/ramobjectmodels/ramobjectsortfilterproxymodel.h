@@ -21,6 +21,10 @@ public:
     explicit RamObjectSortFilterProxyModel(QString listName, QObject *parent = nullptr);
     void setSingleColumn(bool singleColumn = true);
 
+    // Used to improve performance
+    void freeze();
+    void unFreeze();
+
     // Model reimplementation
     int columnCount(const QModelIndex &parent = QModelIndex()) const override;
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
@@ -53,6 +57,7 @@ private:
     // Config
     QString m_listName;
     bool m_isSingleColumn = false;
+    bool m_frozen = false;
 
     // Filters
     QString m_searchString;

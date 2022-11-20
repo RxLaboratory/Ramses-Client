@@ -8,17 +8,6 @@ RamItemSortFilterProxyModel::RamItemSortFilterProxyModel(QObject *parent) : RamO
 
 }
 
-void RamItemSortFilterProxyModel::freeze()
-{
-    m_frozen = true;
-}
-
-void RamItemSortFilterProxyModel::unFreeze()
-{
-    m_frozen = false;
-    prepareFilter();
-}
-
 void RamItemSortFilterProxyModel::useFilters(bool use)
 {
     m_userFilters = use;
@@ -168,6 +157,8 @@ bool RamItemSortFilterProxyModel::filterAcceptsRow(int sourceRow, const QModelIn
 bool RamItemSortFilterProxyModel::filterAcceptsColumn(int sourceColumn, const QModelIndex &sourceParent) const
 {
     Q_UNUSED(sourceParent);
+
+    if (m_frozen) return false;
 
     if (sourceColumn == 0) return true;
 

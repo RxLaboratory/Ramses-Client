@@ -9,21 +9,24 @@ RamStatusTableModel::RamStatusTableModel(DBTableFilterProxyModel *steps, DBTable
 {
     m_steps = steps;
     m_items = items;
-    m_status = new DBTableFilterProxyModel(status, this);
+    m_status = status;
     m_steps->load();
-    for (int i = 0; i < m_steps->count(); i++)
+    m_items->load();
+
+    // Don't need filters, using the lookup table
+    /*for (int i = 0; i < m_steps->count(); i++)
     {
         QString stepUuid = m_steps->getUuid(i);
         if (stepUuid == "") continue;
         m_status->addFilterValue("step", stepUuid);
-    }
-    m_items->load();
-    for (int i = 0; i < m_items->count(); i++)
+    }*/
+
+    /*for (int i = 0; i < m_items->count(); i++)
     {
         QString itemUuid = m_items->getUuid(i);
         if (itemUuid == "") continue;
         m_status->addFilterValue("item", itemUuid);
-    }
+    }*/
 
     // Connect steps & items
     connect(m_steps, &DBTableModel::rowsInserted, this, &RamStatusTableModel::stepsInserted);
@@ -76,13 +79,15 @@ QVariant RamStatusTableModel::data(const QModelIndex &index, int role) const
     if (itemUuid == "") return QVariant();
 
     // Find the latest status by item
-    QSet<RamObject*> allStatus = m_status->lookUpNoFilter(itemUuid);
+    QSet<RamObject*> allStatus = m_status->lookUp(itemUuid);
     if (allStatus.count() == 0) return QVariant();
 
     // Get the step
     // The first column is the item, so -1
     QString stepUuid = m_steps->getUuid(column - 1);
     if (stepUuid == "") return QVariant();
+
+
 
     RamStatus *status = nullptr;
     foreach(RamObject *statusObj, allStatus)
