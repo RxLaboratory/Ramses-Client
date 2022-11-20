@@ -266,6 +266,9 @@ private:
      */
     int m_requestDelay = 250;
 
+    // Requests size
+    int m_requestMaxRows = 1000;
+
     // Authentication //
     QString m_currentUserUuid;
 };

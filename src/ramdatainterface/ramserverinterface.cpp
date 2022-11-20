@@ -1060,7 +1060,7 @@ void RamServerInterface::pushNext()
     QString table = *m_syncingData.tables.keyBegin();
     QSet<TableRow> rows = m_syncingData.tables.value(table);
     QSet<TableRow> pushRows;
-    while (pushRows.count() < 100 && !rows.isEmpty())
+    while (pushRows.count() < m_requestMaxRows && !rows.isEmpty())
     {
         QSet<TableRow>::const_iterator i = rows.cbegin();
         pushRows.insert( *i );
@@ -1075,7 +1075,7 @@ void RamServerInterface::pushNext()
     {
         ProgressManager *pm = ProgressManager::instance();
         pm->increment();
-        pm->setText(tr("Uploading changes to the server..."));
+        pm->setText(tr("Uploading data to the server..."));
         m_syncingData.tables.remove(table);
     }
 
@@ -1180,15 +1180,10 @@ void RamServerInterface::postRequest(Request r)
 
     // Log URL / GET
     log( "New request: " +  url.toString(QUrl::RemovePassword), DuQFLog::Debug);
-    // Log POST body
-    if (r.query == "login" || r.query == "setPassword")
-        #ifdef QT_DEBUG
-        log("Request data: " + r.body, DuQFLog::Data);
-        #else
-        log("Request data: [Hidden login info]", DuQFLog::Data);
-        #endif
-    else
-        log("Request data: " + r.body, DuQFLog::Data);
+    // Log POST body (in debug mode only!)
+    #ifdef QT_DEBUG
+    log("Request data: " + r.body, DuQFLog::Data);
+    #endif
 
     connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this,SLOT(networkError(QNetworkReply::NetworkError)));
     connect(reply, SIGNAL(finished()), reply, SLOT(deleteLater()));
