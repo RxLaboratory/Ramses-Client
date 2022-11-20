@@ -602,6 +602,14 @@ void LocalDataInterface::saveSync(SyncData syncData)
         // We're going to need the uuids and dates of the table
         QMap<QString, QString> uuidDates = modificationDates( tableName );
 
+        // In a single query
+        QString q;
+        if (tableName == "RamUser") q = "INSERT INTO %1 (data, modified, uuid, removed, userName) VALUES ";
+        else q = "INSERT INTO %1 (data, modified, uuid, removed) VALUES ";
+        q = q.arg(tableName);
+
+        QStringList values;
+
         QSet<TableRow> incomingRows = i.value();
         foreach(TableRow incomingRow, incomingRows)
         {
@@ -623,18 +631,15 @@ void LocalDataInterface::saveSync(SyncData syncData)
                 if (ENCRYPT_USER_DATA) data = DataCrypto::instance()->clientEncrypt( data );
                 else data.replace("'", "''");
 
-                QString q = "INSERT INTO %1 (data, modified, uuid, removed, userName) "
-                            "VALUES ( '%2', '%3', '%4', %5, '%6' );";
-
-                query( q.arg(tableName, data, modified, uuid, QString::number(removed), userName) );
+                QString v = "( '%1', '%2', '%3', %4, '%5' )";
+                values << v.arg( data, modified, uuid, QString::number(removed), userName );
             }
             else
             {
                 data.replace("'", "''");
-                QString q = "INSERT INTO %1 (data, modified, uuid, removed) "
-                            "VALUES ( '%2', '%3', '%4', %5 );";
 
-                query( q.arg(tableName, data, modified, uuid, QString::number(removed)) );
+                QString v = "( '%1', '%2', '%3', %4 )";
+                values << v.arg( data, modified, uuid, QString::number(removed) );
             }
 
             if (removed == 0)
@@ -644,6 +649,13 @@ void LocalDataInterface::saveSync(SyncData syncData)
                 insertedObjects << ins;
             }
         }
+
+        // Nothing, next table
+        if (values.count() == 0) continue;
+
+        q += values.join(", ");
+
+        query( q );
 
         // Emit insertions
         foreach(QStringList io, insertedObjects ) emit inserted( io.at(0), io.at(1) );
@@ -667,6 +679,15 @@ void LocalDataInterface::saveSync(SyncData syncData)
 
         // We're going to need the uuids and dates of the table
         QMap<QString, QString> uuidDates = modificationDates( tableName );
+
+        // In a single query
+        QString q;
+        if (tableName == "RamUser") q = "INSERT INTO %1 (data, modified, uuid, removed, userName) VALUES ";
+        else q = "INSERT INTO %1 (data, modified, uuid, removed) VALUES ";
+        q = q.arg(tableName);
+
+        QStringList values;
+        QStringList changedUuids;
 
         foreach(TableRow incomingRow, incomingRows)
         {
@@ -696,29 +717,32 @@ void LocalDataInterface::saveSync(SyncData syncData)
 
                 if (ENCRYPT_USER_DATA) data = DataCrypto::instance()->clientEncrypt( data );
                 else data.replace("'", "''");
-                QString q = "UPDATE %1 SET "
-                            "data = '%2', "
-                            "modified = '%3', "
-                            "removed = %4, "
-                            "userName = '%5' "
-                            "WHERE uuid = '%6' ;";
 
-                query( q.arg(tableName, data, modified, QString::number(rem), userName, uuid) );
+                QString v = "( '%1', '%2', '%3', %4, '%5' )";
+                values << v.arg( data, modified, uuid, QString::number(rem), userName );
             }
             else
             {
                 data.replace("'", "''");
-                QString q = "UPDATE %1 SET "
-                            "data = '%2', "
-                            "modified = '%3', "
-                            "removed = %4 "
-                            "WHERE uuid = '%5' ;";
-
-                query( q.arg(tableName, data, modified, QString::number(rem), uuid) );
+                QString v = "( '%1', '%2', '%3', %4 )";
+                values << v.arg( data, modified, uuid, QString::number(rem) );
             }
 
-            emit dataChanged(uuid);
+            changedUuids << uuid;
         }
+
+        // Nothing, next table
+        if (values.count() == 0) continue;
+
+        q += values.join(", ") + " ON CONFLICT(uuid) DO UPDATE SET ";
+
+        if (tableName == "RamUser") q +="`data` = excluded.data, `modified` = excluded.modified, `removed` = excluded.removed, `userName` = excluded.userName ;";
+        else q += "`data` = excluded.data, `modified` = excluded.modified, `removed` = excluded.removed ;";
+
+        query( q );
+
+        // Emit
+        foreach(QString uuid, changedUuids) emit dataChanged(uuid);
     }
 
     emit syncFinished();
