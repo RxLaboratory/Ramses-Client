@@ -813,9 +813,10 @@ QStringList LocalDataInterface::tableNames()
     // Get info
     QSqlQuery qry = QSqlQuery(db);
 
-    if (!qry.exec("SELECT name FROM sqlite_schema WHERE type ='table' AND name NOT LIKE 'sqlite_%';"))
+    if (!qry.exec("SELECT name FROM sqlite_master WHERE type ='table' AND name NOT LIKE 'sqlite_%';"))
     {
         qDebug() << "Can't query template DB";
+        qDebug() << qry.lastError().text();
         return QStringList();
     }
 
