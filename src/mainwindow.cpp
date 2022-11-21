@@ -1049,6 +1049,10 @@ void MainWindow::finishSync()
     }
 
     ui_refreshButton->show();
+
+    // Refresh all UI!
+    this->update();
+
     mainStatusBar->showMessage(tr("Sync finished!"), 5000);
 }
 
