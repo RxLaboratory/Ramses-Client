@@ -8,6 +8,7 @@
 - sequence use dbtablefilter for included shots
 - noState created even if exists (check search?)
 - pipeline not shown on first click (issue with progress)
+- schedule not updated after sync (ui not refreshed) > make sure to refresh all ui after sync
 - remove server timeout?
 - syncing ui better feedback : a status/connected icon + message user@server ( ... )
 - localdatainterface delete data in a single query (see server)
