@@ -135,7 +135,6 @@ private slots:
     void shots(bool show = true);
     void assets(bool show = true);
     void schedule(bool show = true);
-    void progress(bool show = true);
     void install(bool show = true);
     void currentUserChanged();
     void currentProjectChanged(RamProject *project);

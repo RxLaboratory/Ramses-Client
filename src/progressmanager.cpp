@@ -45,7 +45,8 @@ void ProgressManager::setMaximum(const int &m)
 
 void ProgressManager::freeze(const bool &f)
 {
-    reInit();
+    if (m_frozen == f) return;
+    m_frozen = f;
     if (f) emit started();
     else emit finished();
     emit freezeUI(f);
@@ -75,6 +76,7 @@ void ProgressManager::finish()
 {
     m_busy = false;
     freeze(false);
+    reInit();
     emit finished();
 }
 
