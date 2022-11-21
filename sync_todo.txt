@@ -1,9 +1,10 @@
 - reimplement status edition (to save existing in the history and edit current, instead of creating a new status)
-- deactivate history for now (history button)
 - server autoclean DB (move old status to status history, delete removed statuses, etc, see in client)
+- deactivate history for now in client (history button)
+- reimplement RamAbstractItem status methods, remove history
+- reimplement daemon/api for new status (no history)
 - Steps not added in tables
 - RamObjectModel: remove columns; refactor using RamAbstractObjectModel (lookup)
-- RamAbstractItem status methods
 - Performance issue in statustable (compare with 0.7.0)
 - Check status table sort
 - project: use dbtables
@@ -13,7 +14,7 @@
 - schedule not updated after sync (ui not refreshed) > make sure to refresh all ui after sync. Done: test!
 - remove server timeout?
 - syncing ui better feedback : a status/connected icon + message user@server ( ... )
-- a new RamStatusHistory object, reactivate history (history button in status tables)
+- a new RamStatusHistory object, reimplement history (history button in status tables)
 - localdatainterface delete data in a single query (see server)
 - more tests
 - tables: add order column, and update datainterface & dbtablemodel
