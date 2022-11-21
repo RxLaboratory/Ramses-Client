@@ -4,10 +4,10 @@
 - reimplement RamAbstractItem status methods, remove history
 - reimplement daemon/api for new status (no history)
 - Steps not added in tables
-- RamObjectModel: remove columns; refactor using RamAbstractObjectModel (lookup)
-- Performance issue in statustable (compare with 0.7.0)
-- Check status table sort
 - project: use dbtables
+- RamObjectModel: remove columns; refactor using RamAbstractObjectModel (lookup)
+- Performance issue in statustable (WIP compare again with 0.7.1 on the same OS)
+- Check status table sort
 - sequence use dbtablefilter for included shots
 - noState created even if exists (check search?)
 - pipeline not shown on first click (issue with progress)
