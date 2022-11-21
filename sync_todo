@@ -1,3 +1,4 @@
+- status: keep history in a new RamStatusHistory table and a new RamStatusHistory object
 - Steps not added in tables
 - RamObjectModel: remove columns; refactor using RamAbstractObjectModel (lookup)
 - RamAbstractItem status methods
