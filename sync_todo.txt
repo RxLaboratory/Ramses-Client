@@ -1,3 +1,4 @@
+- reimplement status edition (to save existing in the history and edit current, instead of creating a new status)
 - server autoclean DB (move old status to status history, delete removed statuses, etc, see in client)
 - status: keep history in a new RamStatusHistory table and a new RamStatusHistory object
 - Steps not added in tables

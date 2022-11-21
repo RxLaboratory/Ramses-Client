@@ -1222,6 +1222,10 @@ void LocalDataInterface::autoCleanDB(QSqlDatabase db)
 
     qry.exec("DELETE FROM RamStatus WHERE `removed` = 1 ;");
 
+    // === Delete removed schedule entries ===
+
+    qry.exec("DELETE FROM RamScheduleEntry WHERE `removed` = 1 ;");
+
     // === Move the oldest statuses to their statushistory table ===
 
     // List all statuses (ignore removed ones)
