@@ -1,6 +1,6 @@
 - reimplement status edition (to save existing in the history and edit current, instead of creating a new status)
+- deactivate history for now (history button)
 - server autoclean DB (move old status to status history, delete removed statuses, etc, see in client)
-- status: keep history in a new RamStatusHistory table and a new RamStatusHistory object
 - Steps not added in tables
 - RamObjectModel: remove columns; refactor using RamAbstractObjectModel (lookup)
 - RamAbstractItem status methods
@@ -13,6 +13,7 @@
 - schedule not updated after sync (ui not refreshed) > make sure to refresh all ui after sync. Done: test!
 - remove server timeout?
 - syncing ui better feedback : a status/connected icon + message user@server ( ... )
+- a new RamStatusHistory object, reactivate history (history button in status tables)
 - localdatainterface delete data in a single query (see server)
 - more tests
 - tables: add order column, and update datainterface & dbtablemodel
