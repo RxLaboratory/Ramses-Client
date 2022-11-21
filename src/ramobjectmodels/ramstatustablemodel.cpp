@@ -74,7 +74,7 @@ QVariant RamStatusTableModel::data(const QModelIndex &index, int role) const
     QString itemUuid = m_items->getUuid(row);
     if (itemUuid == "") return QVariant();
 
-    // Find the latest status by item
+    // Get the statuses for the item
     QSet<RamObject*> allStatus = m_status->lookUp(itemUuid);
     if (allStatus.count() == 0) return QVariant();
 
@@ -83,24 +83,18 @@ QVariant RamStatusTableModel::data(const QModelIndex &index, int role) const
     QString stepUuid = m_steps->getUuid(column - 1);
     if (stepUuid == "") return QVariant();
 
+    // Find the status for the step
     RamStatus *status = nullptr;
     foreach(RamObject *statusObj, allStatus)
     {
         RamStatus *test = RamStatus::c(statusObj);
         if (!test) continue;
         if (test->stepUuid() != stepUuid) continue;
-
-        if (!status)
-        {
-            status = test;
-            continue;
-        }
-
-        if (test->date() < status->date()) continue;
-        status = test;//*/
+        status = test;
+        break;
     }
 
-    // Create a "NO" status
+    // Create a "NO" status if not found
     if (!status)
     {
         // Get the item
