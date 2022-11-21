@@ -111,8 +111,8 @@ void LoginPage::loginButton_clicked()
     }
     settings.endArray();
 
-    // Trigger a general sync
-    if (RamServerInterface::instance()->isOnline()) DBInterface::instance()->generalSync();
+    // Trigger a full sync
+    if (RamServerInterface::instance()->isOnline()) DBInterface::instance()->fullSync();
 }
 
 void LoginPage::userChanged(RamUser *u)

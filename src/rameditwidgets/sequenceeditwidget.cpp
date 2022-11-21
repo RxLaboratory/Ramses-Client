@@ -28,9 +28,7 @@ void SequenceEditWidget::reInit(RamObject *o)
     m_sequence = qobject_cast<RamSequence*>(o);
     if (m_sequence)
     {
-        RamProject *proj = m_sequence->project();
-        if (proj) ui_shotsList->setObjectModel( proj->shots() );
-        else ui_shotsList->setObjectModel(nullptr);
+        ui_shotsList->setObjectModel( m_sequence->project()->shots() );
         ui_shotsList->setFilter(m_sequence);
         ui_colorSelector->setColor(m_sequence->color());
     }
@@ -54,8 +52,7 @@ void SequenceEditWidget::createShot()
                 "NEW",
                 "New Shot",
                 m_sequence);
-    RamProject *proj = m_sequence->project();
-    if (proj) proj->shots()->appendObject(shot->uuid());
+    m_sequence->project()->shots()->appendObject(shot->uuid());
     shot->edit();
 }
 

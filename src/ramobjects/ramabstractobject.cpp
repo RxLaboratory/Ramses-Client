@@ -323,19 +323,6 @@ void RamAbstractObject::setOrder(int o)
     insertData("order", o);
 }
 
-QString RamAbstractObject::projectUuid() const
-{
-    QString puuid = DBInterface::instance()->project( m_uuid, objectTypeName() );
-    return puuid;
-}
-
-RamProject *RamAbstractObject::project() const
-{
-    QString puuid = projectUuid();
-    if (puuid == "") return nullptr;
-    return RamProject::get( puuid );
-}
-
 QString RamAbstractObject::customSettings() const
 {
     return getData("customSettings").toString();
@@ -569,11 +556,6 @@ RamAbstractObject::RamAbstractObject(QString uuid, ObjectType type, bool encrypt
     construct();
 }
 
-void RamAbstractObject::setProject(QString projectUuid)
-{
-    DBInterface::instance()->setProject(m_uuid, objectTypeName(), projectUuid);
-}
-
 bool RamAbstractObject::isSaveSuspended() const
 {
     return m_saveSuspended;
@@ -665,15 +647,9 @@ bool RamAbstractObject::checkUuid(QString uuid, ObjectType type, bool mayBeVirtu
     // Check if the uuid exists in the DB
     if (!DBInterface::instance()->contains(uuid, table))
     {
-        // Try to pull the object from the server
-        bool ok = DBInterface::instance()->pull(uuid, table);
-        if (!ok)
-        {
-            qCritical() << QString("%1::get - This uuid can't be found in the database: %2").arg(table, uuid);
-            // Don't do anything, let the caller handle it
-            return false;
-        }
-        return DBInterface::instance()->contains(uuid, table);
+        qCritical() << QString("%1::get - This uuid can't be found in the database: %2").arg(table, uuid);
+        // Don't do anything, let the caller handle it
+        return false;
     }
 
     return true;

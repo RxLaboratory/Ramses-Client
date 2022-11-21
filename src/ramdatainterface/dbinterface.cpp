@@ -1,9 +1,6 @@
 ﻿#include "dbinterface.h"
-#include "duqf-app/app-config.h"
 #include "duqf-utils/guiutils.h"
 #include "progressmanager.h"
-#include "ramses.h"
-#include "datacrypto.h"
 
 DBInterface *DBInterface::_instance = nullptr;
 
@@ -74,9 +71,9 @@ bool DBInterface::contains(QString uuid, QString table)
     return m_ldi->contains(uuid, table);
 }
 
-void DBInterface::createObject(QString uuid, QString table, QString data, QString projectUuid)
+void DBInterface::createObject(QString uuid, QString table, QString data)
 {
-    m_ldi->createObject(uuid, table, data, projectUuid);
+    m_ldi->createObject(uuid, table, data);
 }
 
 QString DBInterface::objectData(QString uuid, QString table)
@@ -87,16 +84,6 @@ QString DBInterface::objectData(QString uuid, QString table)
 void DBInterface::setObjectData(QString uuid, QString table, QString data)
 {
     m_ldi->setObjectData(uuid, table, data);
-}
-
-QString DBInterface::project(QString uuid, QString table)
-{
-    return m_ldi->project(uuid, table);
-}
-
-void DBInterface::setProject(QString uuid, QString table, QString projectUuid)
-{
-    m_ldi->setProject(uuid, table, projectUuid);
 }
 
 void DBInterface::removeObject(QString uuid, QString table)
@@ -118,7 +105,7 @@ void DBInterface::setUsername(QString uuid, QString username)
 {
     m_ldi->setUsername(uuid, username);
     // Setting the username must trigger an instant sync (if it's not new)
-    if (username.toLower() != "new") quickSync();
+    if (username.toLower() != "new") sync();
 }
 
 bool DBInterface::isUserNameAavailable(const QString &userName)
@@ -154,8 +141,7 @@ void DBInterface::setDataFile(const QString &file, bool ignoreUser)
 
         qDebug() << "Selected previous user: " << userUuid;
 
-        // The user will be set AFTER login/setOnline
-        // emit userChanged( userUuid );
+        emit userChanged( userUuid );
         setOnline(serverUuid);
 
         pm->setText(tr("Ready!"));
@@ -297,12 +283,10 @@ void DBInterface::acceptClean()
 
     resumeSync();
     // Full sync
-    generalSync();
-    RamProject *proj = Ramses::instance()->currentProject();
-    if (proj) projectSync(proj->uuid());
+    fullSync();
 }
 
-void DBInterface::quickSync()
+void DBInterface::sync()
 {
     if (m_syncSuspended) {
         log(tr("Sync is suspended!"), DuQFLog::Warning);

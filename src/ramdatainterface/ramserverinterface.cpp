@@ -37,23 +37,16 @@ bool RamServerInterface::ssl() const
 
 void RamServerInterface::setSsl(bool useSsl)
 {
-    qDebug() << "==> Set use SSL: " << useSsl;
-
     if (m_ssl == useSsl) return;
 
     if (useSsl && !QSslSocket::supportsSsl()) {
-        qDebug() << "Denied, openSSL not available.";
         log("SSL is not available on this system. Please install OpenSSL to securely connect to the specified server.", DuQFLog::Critical);
         m_ssl = false;
     }
     else
     {
-        qDebug() << "Accepted.";
         m_ssl = useSsl;
     }
-
-    qDebug() << "Using SSL: " << m_ssl;
-
     emit sslChanged(m_ssl);
 }
 
@@ -294,9 +287,6 @@ void RamServerInterface::sync(SyncData syncData)
 
 void RamServerInterface::downloadData()
 {
-    ProgressManager *pm = ProgressManager::instance();
-    pm->setText("Downloading data...");
-
     qDebug() << ">>> Downloading data";
 
     QStringList tableNames = LocalDataInterface::instance()->tableNames();
@@ -311,30 +301,6 @@ void RamServerInterface::downloadData()
 
     // Create a request to get the data
     sync(syncData);
-}
-
-QJsonObject RamServerInterface::pull(QString uuid, QString table)
-{
-    qDebug() << "Pulling object from server: " << uuid << " (" << table << ")";
-
-    // Create a request to get the data
-    QJsonObject body;
-    body.insert("uuid", uuid);
-    body.insert("table", table);
-    Request r = buildRequest("pull", body);
-
-    // Post the request
-    QNetworkReply *reply = synchronousRequest(r);
-
-    if (!reply)
-    {
-        qDebug() << "Can't pull data... Request timed out.";
-        return QJsonObject();
-    }
-
-    // Parse reply
-    QJsonObject repObj = parseData(reply);
-    return repObj.value("content").toObject();
 }
 
 // PUBLIC SLOTS //
@@ -903,12 +869,6 @@ QJsonObject RamServerInterface::parseData(QNetworkReply *reply)
     }
 
     QString repAll = reply->readAll();
-
-#ifdef DEBUG_ALL_INCOMING_DATA
-    qDebug() << repAll;
-#endif
-
-
     reply->deleteLater();
     QJsonDocument repDoc = QJsonDocument::fromJson(repAll.toUtf8());
     QJsonObject repObj = repDoc.object();
@@ -1011,19 +971,16 @@ void RamServerInterface::connectEvents()
 
 const QString RamServerInterface::serverProtocol()
 {
-    QString protocol = "http://";
-
     if (m_ssl)
     {
         if (!QSslSocket::supportsSsl()) {
             log("SSL is not available on this system. Please install OpenSSL to securely connect to the specified server.", DuQFLog::Critical);
+            return "http://";
         }
-        else protocol = "https://";
+        else return "https://";
     }
 
-    qDebug() << "Server protocol is " << protocol;
-
-    return protocol;
+    return "http://";
 }
 
 bool RamServerInterface::checkServer(QString hostName)

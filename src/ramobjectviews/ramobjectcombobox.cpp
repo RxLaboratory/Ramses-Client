@@ -19,10 +19,7 @@ void RamObjectComboBox::setObjectModel(RamObjectModel *model, QString filterList
     RamFilterListProxyModel *proxyModel = new RamFilterListProxyModel(filterListName, this);
     if (model) proxyModel->setSourceModel(model);
     else proxyModel->setSourceModel( RamObjectModel::emptyModel() );
-    m_resetting = true;
     this->setModel(proxyModel);
-    m_resetting = false;
-    this->setCurrentIndex(-1);
 }
 
 void RamObjectComboBox::setSortMode(RamAbstractObject::DataRole mode)
@@ -32,7 +29,6 @@ void RamObjectComboBox::setSortMode(RamAbstractObject::DataRole mode)
 
 void RamObjectComboBox::setObjectModel(RamObjectModel *model)
 {
-    m_resetting = true;
     if (model)
     {
         m_objects->setSourceModel(model);
@@ -42,8 +38,6 @@ void RamObjectComboBox::setObjectModel(RamObjectModel *model)
     {
         m_objects->setSourceModel( RamObjectModel::emptyModel() );
     }
-    m_resetting = false;
-    this->setCurrentIndex(-1);
 }
 
 void RamObjectComboBox::setupUi()

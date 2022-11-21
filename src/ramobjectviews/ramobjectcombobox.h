@@ -50,6 +50,7 @@ private:
     bool m_resetting = false;
 
     RamObjectSortFilterProxyModel *m_objects;
+
 };
 
 #endif // RAMOBJECTCOMBOBOX_H

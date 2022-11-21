@@ -77,6 +77,12 @@ RamStep::RamStep(QString uuid):
     construct();
 }
 
+RamProject *RamStep::project() const
+{
+    QString projUuid = getData("project").toString();
+    return RamProject::get( projUuid );
+}
+
 RamAssetGroup *RamStep::estimationMultiplyGroup() const
 {
     return RamAssetGroup::get( getData("estimationMultiplyGroup").toString("none") );

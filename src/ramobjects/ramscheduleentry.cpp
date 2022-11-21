@@ -1,5 +1,4 @@
 #include "ramscheduleentry.h"
-#include "ramproject.h"
 
 // STATIC //
 
@@ -85,7 +84,6 @@ void RamScheduleEntry::setStep(RamStep *newStep)
 
     if (newStep)
     {
-        this->setProject( newStep->projectUuid() );
         insertData("step", newStep->uuid());
         connect(this, SIGNAL(removed(RamObject*)), newStep, SLOT(countAssignedDays()));
         connect(newStep, SIGNAL(removed(RamObject*)), this, SLOT(stepRemoved()));

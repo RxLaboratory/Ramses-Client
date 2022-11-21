@@ -34,8 +34,7 @@ void ShotEditWidget::reInit(RamObject *o)
         // Set sequence
         RamProject *project = m_shot->project();
         QSignalBlocker b(ui_sequencesBox);
-        if (project) ui_sequencesBox->setObjectModel(project->sequences());
-        else ui_sequencesBox->setObjectModel( nullptr );
+        ui_sequencesBox->setObjectModel(project->sequences());
         ui_sequencesBox->setObject( m_shot->sequence() );
 
         // Set assets

@@ -3,8 +3,6 @@
 
 #include <QSettings>
 
-class RamProject;
-
 /**
  * @brief The RamAbstractObject class is the base class for RamObject and RamObjectList
  */
@@ -208,9 +206,6 @@ public:
     int order() const;
     void setOrder(int o);
 
-    QString projectUuid() const;
-    RamProject *project() const;
-
     QString customSettings() const;
     void setCustomSettings(const QString &newCustomSettings);
 
@@ -286,8 +281,6 @@ protected:
      * @return
      */
     virtual QString folderPath() const = 0;
-
-    void setProject(QString projectUuid);
 
     // ATTRIBUTES //
 

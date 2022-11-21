@@ -50,14 +50,22 @@ RamAssetGroup::RamAssetGroup(QString uuid):
     RamTemplateAssetGroup(uuid, AssetGroup)
 {
     construct();
-    RamProject *p = this->project();
-    if (p) setProject( p );
-    else invalidate();
+
+    QJsonObject d = data();
+
+    QString projUuid = d.value("project").toString();
+    setProject( RamProject::get(projUuid) );
 }
 
 int RamAssetGroup::assetCount() const
 {
     return m_assets->rowCount();
+}
+
+RamProject *RamAssetGroup::project() const
+{
+    QString projUuid = getData("project").toString();
+    return RamProject::get(projUuid);
 }
 
 QString RamAssetGroup::details() const

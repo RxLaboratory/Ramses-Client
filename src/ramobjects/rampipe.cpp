@@ -2,7 +2,6 @@
 
 #include "pipeeditwidget.h"
 #include "ramstep.h"
-#include "ramproject.h"
 
 QFrame *RamPipe::ui_editWidget = nullptr;
 
@@ -98,6 +97,11 @@ QString RamPipe::name() const
         nameList << m_pipeFiles->get(i)->name();
     }
     return nameList.join("\n");
+}
+
+RamProject *RamPipe::project() const
+{
+    return outputStep()->project();
 }
 
 RamObjectModel *RamPipe::pipeFiles() const

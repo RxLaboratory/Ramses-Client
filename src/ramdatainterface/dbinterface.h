@@ -55,13 +55,10 @@ public:
     QSet<QString> tableUuids(QString table);
     bool contains(QString uuid, QString table);
 
-    void createObject(QString uuid, QString table, QString data, QString projectUuid = "");
+    void createObject(QString uuid, QString table, QString data);
 
     QString objectData(QString uuid, QString table);
     void setObjectData(QString uuid, QString table, QString data);
-
-    QString project(QString uuid, QString table);
-    void setProject(QString uuid, QString table, QString projectUuid);
 
     void removeObject(QString uuid, QString table);
     void restoreObject(QString uuid, QString table);

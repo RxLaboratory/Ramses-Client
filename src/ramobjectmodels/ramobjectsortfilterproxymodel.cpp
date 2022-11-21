@@ -116,8 +116,6 @@ bool RamObjectSortFilterProxyModel::filterAcceptsRow(int sourceRow, const QModel
     Q_UNUSED(sourceParent)
 
     RamObjectModel *model = qobject_cast<RamObjectModel*>(sourceModel());
-    if (sourceRow < 0) return false;
-    if (sourceRow >= model->rowCount()) return false;
     RamObject *obj = model->get(sourceRow);
     if (!obj) return false;
 

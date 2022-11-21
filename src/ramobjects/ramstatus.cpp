@@ -129,6 +129,7 @@ RamStatus::RamStatus(RamUser *user, RamAbstractItem *item, RamStep *step, bool i
     d.insert("completionRatio", 0);
 
     setData(d);
+
     createData();
 }
 
@@ -484,9 +485,7 @@ QString RamStatus::createFileFromTemplate(QString filePath) const
     // Generate destination name
     RamNameManager nm;
     nm.setFileName(filePath);
-    RamProject *proj =  m_item->project();
-    if (proj) nm.setProject(proj->shortName() );
-    else nm.setProject("");
+    nm.setProject( m_item->project()->shortName() );
     nm.setStep( m_step->shortName() );
     nm.setResource( nm.shortName() );
     if (m_item->objectType() == Asset) nm.setType("A");

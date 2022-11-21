@@ -10,29 +10,6 @@
 
 // INTERFACE
 
-QSet<QString> LocalDataInterface::projectTableNames = {
-        "RamAsset",
-        "RamAssetGroup",
-        "RamPipe",
-        "RamPipeFile",
-        "RamScheduleComment",
-        "RamScheduleEntry",
-        "RamSequence",
-        "RamShot",
-        "RamStatus",
-        "RamStep"
-    };
-
-QSet<QString> LocalDataInterface::generalTableNames = {
-        "RamApplication",
-        "RamFileType",
-        "RamProject",
-        "RamState",
-        "RamTemplateAssetGroup",
-        "RamTemplateStep",
-        "RamUser"
-    };
-
 LocalDataInterface *LocalDataInterface::_instance = nullptr;
 
 LocalDataInterface *LocalDataInterface::instance()
@@ -180,20 +157,15 @@ QString LocalDataInterface::getRamsesPath(QString dbFile)
     return "auto";
 }
 
-QSet<QString> LocalDataInterface::tableUuids(QString table, bool includeRemoved, QString projectUuid)
+QSet<QString> LocalDataInterface::tableUuids(QString table, bool includeRemoved)
 {
     // If we've got the info in the cache, use it.
     if (CACHE_LOCAL_DATA && m_uuids.contains(table) ) return m_uuids.value(table);
 
     QString q = "SELECT uuid FROM '%1'";
     if (!includeRemoved) q += " WHERE removed = 0";
-    if (projectUuid != "") q += " AND `project` = '%2'";
     q += " ;";
-
-    if (projectUuid != "") q = q.arg(table, projectUuid);
-    else q = q.arg(table);
-
-    QSqlQuery qry = query( q );
+    QSqlQuery qry = query( q.arg(table) );
 
     QSet<QString> data;
 
@@ -207,15 +179,11 @@ QSet<QString> LocalDataInterface::tableUuids(QString table, bool includeRemoved,
 
 QVector<QStringList> LocalDataInterface::tableData(QString table, QString filterKey, QStringList filterValues, bool includeRemoved)
 {
-    QString q = "SELECT `uuid`, `data`, `project` FROM '%1'";
-    if (!includeRemoved) q += " WHERE `removed` = 0";
-    if (projectUuid != "") q += " AND `project` = '%2'";
+    QString q = "SELECT `uuid`, `data` FROM '%1'";
+    if (!includeRemoved) q += " WHERE removed = 0";
     q += " ;";
 
-    if (projectUuid != "") q = q.arg(table, projectUuid);
-    else q = q.arg(table);
-
-    QSqlQuery qry = query( q );
+    QSqlQuery qry = query( q.arg(table) );
 
     bool useFilter = filterKey != "" && !filterValues.isEmpty();
 
@@ -261,15 +229,10 @@ bool LocalDataInterface::contains(QString uuid, QString table)
     return false;*/
 }
 
-QMap<QString, QString> LocalDataInterface::modificationDates(QString table, QString projectUuid)
+QMap<QString, QString> LocalDataInterface::modificationDates(QString table)
 {
-    QString q = "SELECT uuid, modified FROM '%1'";
-    if (projectUuid != "") q += " WHERE `project` = '%2'";
-    q += " ;";
-
-    if (projectUuid != "") q = q.arg(table, projectUuid);
-    else q = q.arg(table);
-
+    QString q = "SELECT uuid, modified FROM '%1';";
+    q = q.arg(table);
     QSqlQuery qry = query( q );
     QMap<QString, QString> dates;
     while(qry.next())
@@ -279,7 +242,7 @@ QMap<QString, QString> LocalDataInterface::modificationDates(QString table, QStr
     return dates;
 }
 
-void LocalDataInterface::createObject(QString uuid, QString table, QString data, QString projectUuid, bool removed)
+void LocalDataInterface::createObject(QString uuid, QString table, QString data)
 {
     // Remove table cache
     m_uuids.remove(table);
@@ -288,21 +251,16 @@ void LocalDataInterface::createObject(QString uuid, QString table, QString data,
 
     QDateTime modified = QDateTime::currentDateTimeUtc();
 
-    QString q = "INSERT INTO '%1' (uuid, data, modified, removed, project) "
-                "VALUES ('%2', '%3', '%4', %5, '%6') "
+    QString q = "INSERT INTO '%1' (uuid, data, modified, removed) "
+                "VALUES ('%2', '%3', '%4', 0) "
                 "ON CONFLICT(uuid) DO UPDATE "
-                "SET data=excluded.data, modified=excluded.modified, project=excluded.project, removed=excluded.removed ;";
-
-    QString rem = "0";
-    if (removed) rem = "1";
+                "SET data=excluded.data, modified=excluded.modified ;";
 
     query( q.arg(
                   table,
                   uuid,
                   data,
-                  modified.toString("yyyy-MM-dd hh:mm:ss"),
-                  rem,
-                  projectUuid
+                  modified.toString("yyyy-MM-dd hh:mm:ss")
                   )
             );
 
@@ -332,38 +290,6 @@ void LocalDataInterface::setObjectData(QString uuid, QString table, QString data
 
     query( q.arg(table, data, modified.toString("yyyy-MM-dd hh:mm:ss"), uuid) );
     emit dataChanged(uuid);
-}
-
-QString LocalDataInterface::project(QString uuid, QString table)
-{
-    QString q = "SELECT `project`, `data` FROM `%1` WHERE uuid = '%2';";
-    QSqlQuery qry = query( q.arg(table, uuid) );
-
-    QString project = "";
-    if (qry.first())
-    {
-        project = qry.value(0).toString();
-
-        if (project != "") return project;
-
-        // If it's a project table, try with the data
-        if (projectTableNames.contains(table))
-        {
-            QString data = qry.value(1).toString();
-            QSqlDatabase db = QSqlDatabase::database("localdata");
-            project = findProjectUuid(data, table, db);
-            if (project != "") setProject(uuid, table, project);
-            return project;
-        }
-    }
-
-    return "";
-}
-
-void LocalDataInterface::setProject(QString uuid, QString table, QString projectUuid)
-{
-    QString q = "UPDATE `%1` SET `project` = '%2' WHERE `uuid` = '%3';";
-    query( q.arg(table, projectUuid, uuid) );
 }
 
 void LocalDataInterface::removeObject(QString uuid, QString table)
@@ -578,53 +504,7 @@ SyncData LocalDataInterface::getSync(bool fullSync)
     pm->increment();
 
     // List all tables
-    QSet<QString> tNames = tableNames();
-
-    QJsonObject result = getSync(tNames, true);
-
-    pm->setText(tr("Successfully scanned local data."));
-    pm->increment();
-
-    return result;
-    //emit readyToSync(tables, lastSync);
-}
-
-QJsonObject LocalDataInterface::getGeneralSync()
-{
-    ProgressManager *pm = ProgressManager::instance();
-    pm->setTitle(tr("General data sync: Getting local data..."));
-    pm->increment();
-
-    // List general tables
-    QJsonObject result = getSync(generalTableNames, false);
-
-    pm->setText(tr("Successfully scanned local data."));
-    pm->increment();
-
-    return result;
-    //emit readyToSync(tables, lastSync);
-}
-
-QJsonObject LocalDataInterface::getProjectSync(QString projectUuid)
-{
-    ProgressManager *pm = ProgressManager::instance();
-    pm->setTitle(tr("Project data sync: Getting local data..."));
-    pm->increment();
-
-    // List project tables
-    QJsonObject result = getSync(projectTableNames, false, projectUuid);
-
-    pm->setText(tr("Successfully scanned local data."));
-    pm->increment();
-
-    return result;
-    //emit readyToSync(tables, lastSync);
-}
-
-QJsonObject LocalDataInterface::getSync(QSet<QString> tables, bool quick, QString projectUuid)
-{
-    ProgressManager *pm = ProgressManager::instance();
-
+    QStringList tNames = tableNames();
     // Get last Sync
     QString lastSync = "1818-05-05 00:00:00";
     if (!fullSync)
@@ -648,8 +528,6 @@ QJsonObject LocalDataInterface::getSync(QSet<QString> tables, bool quick, QStrin
     {      
         QString tName = tNames.at(i);
 
-    foreach (QString tName, tables)
-    {
         pm->setText(tr("Scanning table: %1").arg(tName));
         pm->increment();
 
@@ -660,9 +538,7 @@ QJsonObject LocalDataInterface::getSync(QSet<QString> tables, bool quick, QStrin
         else q = "SELECT uuid, data, modified, removed FROM %1 ";
         if (!fullSync) q += " WHERE modified >= '%2' ;";
 
-        q += ";";
-
-        if (quick) q = q.arg(tName, lastSync);
+        if (!fullSync) q = q.arg(tName, lastSync);
         else q = q.arg(tName);
 
         QSqlQuery qry = query( q );
@@ -673,6 +549,7 @@ QJsonObject LocalDataInterface::getSync(QSet<QString> tables, bool quick, QStrin
             row.uuid = qry.value(0).toString();
             row.modified = qry.value(2).toString();
             row.removed = qry.value(3).toInt();
+
             QString data = qry.value(1).toString();
             if (tName == "RamUser")
             {
@@ -760,6 +637,7 @@ void LocalDataInterface::saveSync(SyncData syncData)
             else
             {
                 data.replace("'", "''");
+
                 QString v = "( '%1', '%2', '%3', %4 )";
                 values << v.arg( data, modified, uuid, QString::number(removed) );
             }
@@ -839,6 +717,7 @@ void LocalDataInterface::saveSync(SyncData syncData)
 
                 if (ENCRYPT_USER_DATA) data = DataCrypto::instance()->clientEncrypt( data );
                 else data.replace("'", "''");
+
                 QString v = "( '%1', '%2', '%3', %4, '%5' )";
                 values << v.arg( data, modified, uuid, QString::number(rem), userName );
             }
@@ -940,11 +819,9 @@ void LocalDataInterface::sync(SyncData data, QString serverUuid)
     query( q.arg( data.syncDate, serverUuid ) );
 }
 
-QSet<QString> LocalDataInterface::tableNames()
+QStringList LocalDataInterface::tableNames()
 {
-    QSet<QString> tables = projectTableNames;
-    return tables.unite(generalTableNames);
-    /*QSqlDatabase db = QSqlDatabase::database("infodb");
+    QSqlDatabase db = QSqlDatabase::database("infodb");
     db.close();
 
     // Copy the template to a file we can read
@@ -979,7 +856,7 @@ QSet<QString> LocalDataInterface::tableNames()
     // Remove the temp file
     QFile::remove(tempDB);
 
-    return tables;*/
+    return tables;
 }
 
 QVector<QStringList> LocalDataInterface::users()
@@ -1060,9 +937,10 @@ QString LocalDataInterface::cleanDataBase(int deleteDataOlderThan)
         m_uuidsToRemove.clear();
 
         // For each table, get UUIDs to clean
-        QSet<QString> tables = tableNames();
-        foreach(QString table, tables)
-        {
+        QStringList tables = tableNames();
+        for (int i = 0; i < tables.count(); i++) {
+
+            QString table = tables[i];
             qDebug() << "    From: " << table;
 
             // List uuids to remove
@@ -1189,7 +1067,7 @@ bool LocalDataInterface::openDB(QSqlDatabase db, const QString &dbFile)
         pm->increment();
         QFileInfo dbFileInfo(dbFile);
         LocalDataInterface::instance()->log(tr("This database was created by an older version of Ramses (%1).\n"
-               "I'm upgrading it to the current version (%2).\n"
+               "I'm updating it to the current version (%2).\n"
                "The original file will be renamed to \"%3_%1.ramses\".").arg(currentVersion.toString(), STR_VERSION, dbFileInfo.baseName()));
 
         FileUtils::copy(dbFile, QString("%1/%2_%3.ramses").arg(
@@ -1229,71 +1107,6 @@ bool LocalDataInterface::openDB(QSqlDatabase db, const QString &dbFile)
             }
         }
 
-        if (currentVersion < QVersionNumber(0, 7, 0))
-        {
-            // Add "project" column to all tables
-            QSet<QString> tables = tableNames();
-
-            pm->addToMaximum(tables.count());
-
-            foreach( QString table, tables )
-            {
-                QString tn = table;
-                pm->setText(tr("Upgrading %1 table (this may take a while...)").arg(tn.replace("Ram", "")));
-                pm->increment();
-
-                QString q = "ALTER TABLE `%1` ADD COLUMN \"project\" TEXT;";
-                ok = qry.exec( q.arg( table ) );
-                if (!ok)
-                {
-                    QString errorMessage = "Something went wrong when updating the database scheme to the new version.\nHere's some information:";
-                    errorMessage += "\n> " + tr("Query:") + "\n" + qry.lastQuery();
-                    errorMessage += "\n> " + tr("Database Error:") + "\n" + qry.lastError().databaseText();
-                    errorMessage += "\n> " + tr("Driver Error:") + "\n" + qry.lastError().driverText();
-                    LocalDataInterface::instance()->log(errorMessage, DuQFLog::Critical);
-                    break;
-                }
-
-                // Not a project table, that's all
-                if (!projectTableNames.contains(table)) continue;
-
-                // Find the project, and copy info to the column
-                q = "SELECT uuid, data FROM `%1`";
-                ok = qry.exec( q.arg( table ) );
-                if (!ok)
-                {
-                    QString errorMessage = "Something went wrong when updating the database scheme to the new version.\nHere's some information:";
-                    errorMessage += "\n> " + tr("Query:") + "\n" + qry.lastQuery();
-                    errorMessage += "\n> " + tr("Database Error:") + "\n" + qry.lastError().databaseText();
-                    errorMessage += "\n> " + tr("Driver Error:") + "\n" + qry.lastError().driverText();
-                    LocalDataInterface::instance()->log(errorMessage, DuQFLog::Critical);
-                    break;
-                }
-
-                // Check the number of rows
-                // (With SQLite, size() does not work)
-                qry.last();
-                int numObjs = qry.at();
-                pm->addToMaximum(numObjs + 1);
-                qry.seek(-1);
-
-                while (qry.next())
-                {
-                    pm->increment();
-
-                    QString uuid = qry.value(0).toString();
-                    QString data = qry.value(1).toString();
-
-                    QString projUuid = findProjectUuid(data, table, db);
-
-                    // Set it
-                    q = "UPDATE `%1` SET project = '%2' WHERE uuid = '%3';";
-                    QSqlQuery qry2 = QSqlQuery(db);
-                    qry2.exec( q.arg( table, projUuid, uuid ) );
-                }
-            }
-        }
-
         if (ok)
         {
             // Remove previous version and update with ours
@@ -1307,14 +1120,7 @@ bool LocalDataInterface::openDB(QSqlDatabase db, const QString &dbFile)
                 errorMessage += "\n> " + tr("Driver Error:") + "\n" + qry.lastError().driverText();
                 LocalDataInterface::instance()->log(errorMessage, DuQFLog::Warning);
             }
-
-            // Vacuum
-            qry.exec("VACUUM;");
-
         }
-
-        pm->setText(tr("Database upraded to version %1").arg(newVersion.toString()));
-        pm->freeze(false);
     }
     else if (currentVersion > newVersion)
     {
@@ -1325,49 +1131,6 @@ bool LocalDataInterface::openDB(QSqlDatabase db, const QString &dbFile)
     }
 
     return true;
-}
-
-QString LocalDataInterface::findProjectUuid(QString data, QString table, QSqlDatabase db)
-{
-    // Find project uuid
-    QJsonDocument doc = QJsonDocument::fromJson(data.toUtf8());
-    QJsonObject obj = doc.object();
-    QString projUuid = obj.value("project").toString();
-
-    if (projUuid != "") return projUuid;
-
-    // For some tables, find the project info in another table
-    QString otherTable = "";
-    QString objKey = "";
-    if (table == "RamScheduleEntry" || table == "RamStatus")
-    {
-        otherTable = "RamStep";
-        objKey = "step";
-    }
-    else if (table == "RamPipe")
-    {
-        otherTable = "RamStep";
-        objKey = "inputStep";
-    }
-
-    QString otherUuid = obj.value(objKey).toString();
-    if (otherUuid != "")
-    {
-        QSqlQuery qry2 = QSqlQuery(db);
-
-        QString q = "SELECT data FROM `%1` WHERE uuid = '%2';";
-        if (qry2.exec(q.arg(otherTable, otherUuid)))
-        {
-            if (qry2.next())
-            {
-                QString otherData = qry2.value(0).toString();
-                doc = QJsonDocument::fromJson(otherData.toUtf8());
-                obj = doc.object();
-                return obj.value("project").toString();
-            }
-        }
-    }
-    return "";
 }
 
 QSqlQuery LocalDataInterface::query(QString q) const
@@ -1397,15 +1160,6 @@ void LocalDataInterface::vacuum()
 {
     QString q = "VACUUM;";
     query( q );
-}
-
-bool LocalDataInterface::hasTable(QString tableName, QSqlDatabase db)
-{
-    QString q = "SELECT name FROM sqlite_master WHERE type='table' AND name='%1';";
-
-    QSqlQuery qry = QSqlQuery(db);
-    if (!qry.exec( q.arg( tableName ) )) return false;
-    return qry.next();
 }
 
 const QHash<QString, QSet<QString> > &LocalDataInterface::deletedUuids() const

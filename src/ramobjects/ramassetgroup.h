@@ -22,6 +22,7 @@ public:
     explicit RamAssetGroup(QString shortName, QString name, RamProject *project);
 
     int assetCount() const;
+    RamProject *project() const;
 
     virtual QString details() const override;
 

@@ -16,6 +16,8 @@ RamAbstractItem::RamAbstractItem(QString shortName, QString name, ObjectType typ
     construct();
 
     QJsonObject d = data();
+    d.insert("project", project->uuid());
+    connectProject(project);
 
     // Prepare history
     for (int i = 0; i < project->steps()->rowCount(); i++)
@@ -24,9 +26,6 @@ RamAbstractItem::RamAbstractItem(QString shortName, QString name, ObjectType typ
         createStepHistory(step, d);
     }
     setData(d);
-
-    // Set project
-    this->setProject(project->uuid());
 
     connectProject(project);
 }
@@ -46,14 +45,24 @@ RamAbstractItem::RamAbstractItem(QString uuid, ObjectType type):
     QJsonObject d = data();
 
     // Get project first
-    RamProject *project = this->project();
-
-    if (project)
+    QString projectUuid = d.value("project").toString("");
+    if (projectUuid != "")
     {
+        RamProject *project = RamProject::get(projectUuid);
         setParent(project);
+        if (project)
+        {
+            RamObjectModel *steps = project->steps();
+            if (steps) {
+                for (int i = 0; i < project->steps()->rowCount(); i++)
+                {
+                    RamStep *step = RamStep::c( project->steps()->get(i) );
+                    createStepHistory(step, d);
+                }
+            }
+        }
 
-        RamObjectModel *steps = project->steps();
-        if (steps && steps->rowCount() > 0) stepInserted(QModelIndex(), 0, steps->rowCount() - 1);
+
         connectProject(project);
     }
 }
@@ -62,7 +71,7 @@ void RamAbstractItem::stepInserted(const QModelIndex &parent, int first, int las
 {
     Q_UNUSED(parent);
 
-    RamProject *p = this->project();
+    RamProject *p = RamProject::get( getData("project").toString("none") );
     if (!p) return;
 
     for (int i = first; i <= last; i++)
@@ -88,6 +97,11 @@ void RamAbstractItem::stepRemoved(const QModelIndex &parent, int first, int last
         RamObjectModel *history = m_history.take( step->uuid() );
         if (history) history->deleteLater();
     }
+}
+
+RamProject *RamAbstractItem::project() const
+{
+    return RamProject::get( getData("project").toString("none") );
 }
 
 QMap<QString, RamObjectModel*> RamAbstractItem::statusHistory() const
@@ -263,6 +277,5 @@ void RamAbstractItem::createStepHistory(RamStep *step, QJsonObject d)
     QString modelName = "statusHistory-" + step->uuid();
     RamObjectModel *history = createModel(RamObject::Status, modelName);
     loadModel(history, modelName, d);
-    qDebug() << history->rowCount();
     m_history[step->uuid()] = history;
 }

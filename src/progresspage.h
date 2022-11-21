@@ -6,6 +6,7 @@
 #include <QProgressBar>
 #include <QLabel>
 
+#include "progressmanager.h"
 #include "progressbar.h"
 
 class ProgressPage : public QWidget

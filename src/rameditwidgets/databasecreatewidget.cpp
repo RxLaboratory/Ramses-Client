@@ -36,7 +36,6 @@ void DatabaseCreateWidget::finishSync()
     if (!m_downloading) return;
     ProgressManager *pm = ProgressManager::instance();
     pm->finish();
-
 }
 
 void DatabaseCreateWidget::setupUi()

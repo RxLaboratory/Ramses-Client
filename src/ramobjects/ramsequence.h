@@ -24,6 +24,8 @@ public:
     int shotCount() const;
     double duration() const;
 
+    RamProject *project() const;
+
     virtual QString details() const override;
 
     virtual QVariant roleData(int role) const override;

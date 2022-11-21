@@ -33,16 +33,8 @@ void AssetEditWidget::reInit(RamObject *o)
         //set asset group
         RamProject *project = m_asset->project();
         QSignalBlocker b(ui_assetGroupBox);
-        if (!project)
-        {
-            ui_assetGroupBox->setObjectModel( nullptr );
-            ui_assetGroupBox->setCurrentIndex( -1 );
-        }
-        else
-        {
-            ui_assetGroupBox->setObjectModel( project->assetGroups() );
-            ui_assetGroupBox->setObject( m_asset->assetGroup() );
-        }
+        ui_assetGroupBox->setObjectModel( project->assetGroups() );
+        ui_assetGroupBox->setObject( m_asset->assetGroup() );
     }
     else
     {

@@ -144,7 +144,6 @@ private slots:
     void finishSync();
     void startSync();
 
-
 protected:
     void closeEvent(QCloseEvent *event) override;
     void keyPressEvent(QKeyEvent *key) override;

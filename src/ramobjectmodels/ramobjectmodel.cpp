@@ -126,7 +126,7 @@ void RamObjectModel::insertObjects(int row, QVector<QString> uuids)
         objs << o;
     }
 
-    beginInsertRows(QModelIndex(), row, row + objs.count()-1);
+    beginInsertRows(QModelIndex(), row, row + uuids.count()-1);
 
     for (int i = objs.count()-1; i >= 0; i--)
     {
