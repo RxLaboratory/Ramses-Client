@@ -729,7 +729,7 @@ void LocalDataInterface::saveSync(SyncData syncData)
         q = q.arg(tableName);
 
         QStringList values;
-        QStringList changedUuids;
+        QSet<QStringList> changedUuids;
 
         foreach(TableRow incomingRow, incomingRows)
         {
@@ -770,7 +770,9 @@ void LocalDataInterface::saveSync(SyncData syncData)
                 values << v.arg( data, modified, uuid, QString::number(rem) );
             }
 
-            changedUuids << uuid;
+            QStringList cu;
+            cu << uuid << data;
+            changedUuids << cu;
         }
 
         // Nothing, next table
@@ -784,7 +786,7 @@ void LocalDataInterface::saveSync(SyncData syncData)
         query( q );
 
         // Emit
-        foreach(QString uuid, changedUuids) emit dataChanged(uuid);
+        foreach(QStringList cu, changedUuids) emit dataChanged(cu.first(), cu.last());
     }
 
     emit syncFinished();
@@ -1103,6 +1105,8 @@ bool LocalDataInterface::openDB(QSqlDatabase db, const QString &dbFile)
         currentVersion = QVersionNumber::fromString( qry.value(0).toString() );
     }
 
+    bool ok = true;
+
     if (currentVersion < newVersion)
     {
         pm->setText(tr("Updating database scheme"));
@@ -1117,7 +1121,6 @@ bool LocalDataInterface::openDB(QSqlDatabase db, const QString &dbFile)
                             dbFileInfo.baseName(),
                             currentVersion.toString()));
 
-        bool ok = true;
         if (currentVersion < QVersionNumber(0, 5, 1))
         {
             // Add the port entry to the _server table
@@ -1149,6 +1152,27 @@ bool LocalDataInterface::openDB(QSqlDatabase db, const QString &dbFile)
             }
         }
 
+        if (currentVersion < QVersionNumber(0, 7, 2))
+        {
+            // Create the new RamStatusHistory table
+            ok = qry.exec("CREATE TABLE IF NOT EXISTS 'RamStatusHistory' ( "
+                          "\"id\"	INTEGER NOT NULL UNIQUE, "
+                          "\"uuid\"	TEXT NOT NULL UNIQUE, "
+                          "\"data\"	TEXT NOT NULL, "
+                          "\"modified\"	timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+                          "\"removed\"	INTEGER NOT NULL DEFAULT 0, "
+                          "PRIMARY KEY(\"id\" AUTOINCREMENT) );"
+                      );
+            if (!ok)
+            {
+                QString errorMessage = "Something went wrong when updating the database scheme to the new version.\nHere's some information:";
+                errorMessage += "\n> " + tr("Query:") + "\n" + qry.lastQuery();
+                errorMessage += "\n> " + tr("Database Error:") + "\n" + qry.lastError().databaseText();
+                errorMessage += "\n> " + tr("Driver Error:") + "\n" + qry.lastError().driverText();
+                LocalDataInterface::instance()->log(errorMessage, DuQFLog::Critical);
+            }
+        }
+
         if (ok)
         {
             // Remove previous version and update with ours
@@ -1170,9 +1194,136 @@ bool LocalDataInterface::openDB(QSqlDatabase db, const QString &dbFile)
                "You should update this Ramses application before using this database!\n"
                "Be careful if you continue, this could lead to data loss or corrupted databases.").arg(currentVersion.toString()),
             DuQFLog::Critical);
+        ok = false;
     }
 
+    // If not ok, finished
+    if (!ok) return true;
+
+    // Auto clean!
+    autoCleanDB(db);
+
     return true;
+}
+
+void LocalDataInterface::autoCleanDB(QSqlDatabase db)
+{
+    ProgressManager *pm = ProgressManager::instance();
+    pm->setText("Cleaning the database...");
+
+    QSqlQuery qry = QSqlQuery(db);
+
+    if ( !db.isOpen() )
+    {
+        if ( !db.open() ) return;
+    }
+
+    // === Delete removed statuses ===
+
+    qry.exec("DELETE FROM RamStatus WHERE `removed` = 1 ;");
+
+    // === Move the oldest statuses to their statushistory table ===
+
+    // List all statuses (ignore removed ones)
+    qry.exec("SELECT `uuid`, `data` FROM RamStatus ;");
+
+    // Count the results to help the progress bar
+    qry.last();
+    int numRows = qry.at() + 1;
+    pm->addToMaximum( numRows );
+    qDebug() << "Found " << numRows << " RamStatus...";
+    qry.seek(-1);
+
+    // Parse all data
+    QHash<QString,QHash<QString,QJsonObject>> latestItemStepData; // used to check which is the latest status
+    QHash<QString,QHash<QString,QString>> latestItemStepUuid; // we need to keep the uuid too
+    QStringList statusToMove; // uuid, data to move from one table to the other
+    while (qry.next())
+    {
+        QString dataStr = qry.value(1).toString();
+        // Parse the data
+        QJsonDocument doc = QJsonDocument::fromJson( dataStr.toUtf8() );
+        QJsonObject obj = doc.object();
+        QString itemUuid = obj.value("item").toString();
+        if (itemUuid == "") continue;
+        QString stepUuid = obj.value("step").toString();
+        if (stepUuid == "") continue;
+
+        // Check if we've already found a status for this item/step
+        QHash<QString,QJsonObject> stepData = latestItemStepData.value(itemUuid);
+        QJsonObject other = stepData.value(stepUuid);
+
+        // Not found yet
+        if (other.isEmpty())
+        {
+            // save data
+            stepData.insert(stepUuid, obj);
+            latestItemStepData.insert(itemUuid, stepData);
+            // save uuid
+            QString uuid = qry.value(0).toString();
+            QHash<QString,QString> latestStepUuid = latestItemStepUuid.value(itemUuid);
+            latestStepUuid.insert(stepUuid, uuid);
+            latestItemStepUuid.insert(itemUuid, latestStepUuid);
+        }
+        else
+        {
+            // Compare dates
+            QDateTime currentDate = QDateTime::fromString( obj.value("date").toString(), DATETIME_DATA_FORMAT );
+            QDateTime otherDate = QDateTime::fromString( other.value("date").toString(), DATETIME_DATA_FORMAT );
+            if (currentDate > otherDate)
+            {
+                QHash<QString,QString> latestStepUuid = latestItemStepUuid.value(itemUuid);
+
+                // The other must be moved
+                QString otherUuid = latestStepUuid.value(stepUuid);
+                statusToMove << otherUuid;
+
+                // save data
+                stepData.insert(stepUuid, obj);
+                latestItemStepData.insert(itemUuid, stepData);
+                // save uuid
+                QString uuid = qry.value(0).toString();
+                latestStepUuid.insert(stepUuid, uuid);
+                latestItemStepUuid.insert(itemUuid, latestStepUuid);
+            }
+            else
+            {
+                // This one must be moved
+                QString uuid = qry.value(0).toString();
+                statusToMove << uuid;
+            }
+        }
+    }
+
+    qDebug() << "Found " << statusToMove.count() << " old status to move in the history";
+    qDebug() << "From " << latestItemStepData.count() << " data / " << latestItemStepUuid.count() << " uuids.";
+
+    // Move data to the other table
+    if (!statusToMove.isEmpty())
+    {
+        // Split by 250 rows at a time
+        while (!statusToMove.isEmpty())
+        {
+            QString condition = " `uuid` = '" + statusToMove.takeLast() + "' ";
+            for (int i = 0; i < 250; i++)
+            {
+                condition += " OR `uuid` = '" + statusToMove.takeLast() + "' ";
+                if (statusToMove.isEmpty()) break;
+            }
+
+            qry.exec("INSERT INTO RamStatusHistory (`uuid`, `data`, `modified`, `removed`) "
+                     "SELECT `uuid`, `data`, `modified`, `removed` FROM RamStatus "
+                     "WHERE " + condition
+                     );
+
+            qry.exec("DELETE FROM RamStatus WHERE " + condition);
+        }
+
+    }
+
+    // === Vacuum ===
+
+    qry.exec("VACUUM;");
 }
 
 QSqlQuery LocalDataInterface::query(QString q) const
