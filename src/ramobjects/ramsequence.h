@@ -2,9 +2,6 @@
 #define RAMSEQUENCE_H
 
 #include "ramobject.h"
-
-#include "ramobjectsortfilterproxymodel.h"
-
 #include "ramproject.h"
 
 class RamSequence : public RamObject
@@ -42,9 +39,8 @@ protected:
 
 private:
     void construct();
-    void setProject(RamProject *project);
 
-    RamObjectSortFilterProxyModel *m_shots;
+    DBTableModel *m_shots;
 };
 
 #endif // RAMSEQUENCE_H

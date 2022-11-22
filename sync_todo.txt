@@ -1,7 +1,11 @@
-- crash on edit status
-- reimplement daemon/api for new status (no history)
+- freeze on edit schedule (on assign none especially)
+- reimplement scripting api for new status (no history)
+- triple click to show pipeline
 - Steps not added in tables
-- project: use dbtables
+- project pipeline:
+  - RamPipe should contain project uuid
+  - update db to add project uuid in pipes
+  - use DBTableModel in ramproject to load pipes
 - RamObjectModel: remove columns; refactor using RamAbstractObjectModel (lookup). Remove RamAbstractItem objectForColumn
 - Performance issue in statustable (WIP compare again with 0.7.1 on the same OS)
 - Check status table sort

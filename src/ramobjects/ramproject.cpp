@@ -44,48 +44,46 @@ RamProject::RamProject(QString uuid):
 
     QJsonObject d = data();
     loadModel(m_users, "users", d);
-    loadModel(m_scheduleComments, "scheduleComments", d);
-    loadModel(m_pipeFiles, "pipeFiles", d);
     loadModel(m_pipeline, "pipeline", d);
 }
 
-DBTableFilterProxyModel *RamProject::steps() const
+DBTableModel *RamProject::steps() const
 {
     m_steps->load();
     return m_steps;
 }
 
-DBTableFilterProxyModel *RamProject::shotSteps() const
+DBTableModel *RamProject::shotSteps() const
 {
     m_shotSteps->load();
     return m_shotSteps;
 }
 
-DBTableFilterProxyModel *RamProject::assetSteps() const
+DBTableModel *RamProject::assetSteps() const
 {
     m_assetSteps->load();
     return m_assetSteps;
 }
 
-DBTableFilterProxyModel *RamProject::assetGroups() const
+DBTableModel *RamProject::assetGroups() const
 {
     m_assetGroups->load();
     return m_assetGroups;
 }
 
-DBTableFilterProxyModel *RamProject::sequences() const
+DBTableModel *RamProject::sequences() const
 {
     m_sequences->load();
     return m_sequences;
 }
 
-DBTableFilterProxyModel *RamProject::shots() const
+DBTableModel *RamProject::shots() const
 {
     m_shots->load();
     return m_shots;
 }
 
-DBTableFilterProxyModel *RamProject::assets() const
+DBTableModel *RamProject::assets() const
 {
     m_assets->load();
     return m_assets;
@@ -96,8 +94,9 @@ RamObjectModel *RamProject::pipeline() const
     return m_pipeline;
 }
 
-RamObjectModel *RamProject::pipeFiles() const
+DBTableModel *RamProject::pipeFiles() const
 {
+    m_pipeFiles->load();
     return m_pipeFiles;
 }
 
@@ -106,8 +105,9 @@ RamObjectModel *RamProject::users() const
     return m_users;
 }
 
-RamObjectModel *RamProject::scheduleComments() const
+DBTableModel *RamProject::scheduleComments() const
 {
+    m_scheduleComments->load();
     return m_scheduleComments;
 }
 
@@ -574,37 +574,42 @@ void RamProject::construct()
     m_icon = ":/icons/project";
     m_editRole = ProjectAdmin;
 
-    m_assets = new DBTableFilterProxyModel( Ramses::instance()->assets(), this );
+    m_assets = new DBTableModel(RamObject::Asset, true, this);
     m_assets->addFilterValue( "project", this->uuid() );
 
-    m_shots = new DBTableFilterProxyModel( Ramses::instance()->shots(), this );
+    m_shots = new DBTableModel(RamObject::Shot, true, this);
     m_shots->addFilterValue( "project", this->uuid() );
 
-    m_steps = new DBTableFilterProxyModel( Ramses::instance()->steps(), this );
+    m_steps = new DBTableModel(RamObject::Step, true, this);
     m_steps->addFilterValue( "project", this->uuid() );
 
-    m_shotSteps = new DBTableFilterProxyModel( Ramses::instance()->steps(), this );
+    m_shotSteps = new DBTableModel(RamObject::Step, true, this);
     m_shotSteps->addFilterValue( "project", this->uuid() );
     m_shotSteps->addFilterValue( "type", "shot" );
 
-    m_assetSteps = new DBTableFilterProxyModel( Ramses::instance()->steps(), this );
+    m_assetSteps = new DBTableModel(RamObject::Step, true, this);
     m_assetSteps->addFilterValue( "project", this->uuid() );
     m_assetSteps->addFilterValue( "type", "asset" );
 
-    m_assetGroups = new DBTableFilterProxyModel( Ramses::instance()->assetGroups(), this );
+    m_assetGroups = new DBTableModel(RamObject::AssetGroup, true, this);
     m_assetGroups->addFilterValue( "project", this->uuid() );
 
-    m_sequences = new DBTableFilterProxyModel( Ramses::instance()->sequences(), this );
+    m_sequences = new DBTableModel(RamObject::Sequence, true, this);
     m_sequences->addFilterValue( "project", this->uuid() );
 
     m_assetStatusTable = new RamStatusTableModel( m_assetSteps, m_assets, this);
 
     m_shotStatusTable = new RamStatusTableModel( m_shotSteps, m_shots, this);
 
+    m_scheduleComments = new DBTableModel(RamObject::ScheduleComment, true, this);
+    m_scheduleComments->addFilterValue( "project", this->uuid() );
+    m_scheduleComments->addLookUpKey("date");
+
+    m_pipeFiles = new DBTableModel(RamObject::PipeFile, true, this);
+    m_pipeFiles->addFilterValue( "project", this->uuid() );
+
     m_users = createModel(RamObject::User, "users" );
-    m_scheduleComments = createModel(RamObject::ScheduleComment, "scheduleComments" );
-    m_scheduleComments->setLookupRole(RamObject::Date);
-    m_pipeFiles = createModel(RamObject::PipeFile, "pipeFiles" );
+
     m_pipeline = createModel(RamObject::Pipe, "pipeline" );
 }
 

@@ -1,7 +1,6 @@
 #ifndef RAMASSETGROUP_H
 #define RAMASSETGROUP_H
 
-#include "dbtablefilterproxymodel.h"
 #include "ramtemplateassetgroup.h"
 
 #include "ramproject.h"
@@ -39,7 +38,7 @@ protected:
 private:
     void construct();
 
-    DBTableFilterProxyModel *m_assets;
+    DBTableModel *m_assets;
 };
 
 #endif // RAMASSETGROUP_H

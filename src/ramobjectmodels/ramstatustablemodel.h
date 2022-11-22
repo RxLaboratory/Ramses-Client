@@ -1,7 +1,7 @@
 #ifndef RAMSTATUSTABLEMODEL_H
 #define RAMSTATUSTABLEMODEL_H
 
-#include "dbtablefilterproxymodel.h"
+#include "dbtablemodel.h"
 #include "ramstatus.h"
 
 class RamStatusTableModel : public QAbstractTableModel
@@ -9,7 +9,7 @@ class RamStatusTableModel : public QAbstractTableModel
     Q_OBJECT
 
 public:
-    explicit RamStatusTableModel(DBTableFilterProxyModel *steps, DBTableFilterProxyModel *items, QObject *parent = nullptr);
+    explicit RamStatusTableModel(DBTableModel *steps, DBTableModel *items, QObject *parent = nullptr);
 
     void load();
 
@@ -47,8 +47,8 @@ private slots:
 
 private:
     DBTableModel *m_status;
-    DBTableFilterProxyModel *m_steps;
-    DBTableFilterProxyModel *m_items;
+    DBTableModel *m_steps;
+    DBTableModel *m_items;
 
     bool m_loaded = false;
 };

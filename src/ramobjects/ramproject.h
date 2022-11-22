@@ -33,24 +33,24 @@ public:
     RamProject(QString shortName, QString name);
 
     // Steps
-    DBTableFilterProxyModel *steps() const;
-    DBTableFilterProxyModel *shotSteps() const;
-    DBTableFilterProxyModel *assetSteps() const;
+    DBTableModel *steps() const;
+    DBTableModel *shotSteps() const;
+    DBTableModel *assetSteps() const;
     // Asset Groups
-    DBTableFilterProxyModel *assetGroups() const;
+    DBTableModel *assetGroups() const;
     // Sequences
-    DBTableFilterProxyModel *sequences() const;
+    DBTableModel *sequences() const;
     // Shots
-    DBTableFilterProxyModel *shots() const;
+    DBTableModel *shots() const;
     // Assets
-    DBTableFilterProxyModel *assets() const;
+    DBTableModel *assets() const;
     // Pipeline
     RamObjectModel *pipeline() const;
-    RamObjectModel *pipeFiles() const;
+    DBTableModel *pipeFiles() const;
     // Users
     RamObjectModel *users() const;
     // Schedule comments
-    RamObjectModel *scheduleComments() const;
+    DBTableModel *scheduleComments() const;
     // Status
     RamStatusTableModel *assetStatus() const;
     RamStatusTableModel *shotStatus() const;
@@ -144,19 +144,17 @@ private:
     void getCreateLists();
 
     // LISTS
-    DBTableFilterProxyModel *m_steps;
-    DBTableFilterProxyModel *m_shotSteps;
-    DBTableFilterProxyModel *m_assetSteps;
-    DBTableFilterProxyModel *m_sequences;
-    DBTableFilterProxyModel *m_assetGroups;
-    DBTableFilterProxyModel *m_assets;
-    DBTableFilterProxyModel *m_shots;
+    DBTableModel *m_steps;
+    DBTableModel *m_shotSteps;
+    DBTableModel *m_assetSteps;
+    DBTableModel *m_sequences;
+    DBTableModel *m_assetGroups;
+    DBTableModel *m_assets;
+    DBTableModel *m_shots;
     RamObjectModel *m_pipeline;
-    RamObjectModel *m_pipeFiles;
+    DBTableModel *m_pipeFiles;
     RamObjectModel *m_users;
-    RamObjectModel *m_scheduleComments;
-    DBTableModel *m_assetStatusList;
-    DBTableModel *m_shotStatusList;
+    DBTableModel *m_scheduleComments;
     RamStatusTableModel *m_assetStatusTable;
     RamStatusTableModel *m_shotStatusTable;
 

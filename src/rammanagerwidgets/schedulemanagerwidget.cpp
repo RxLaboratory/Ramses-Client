@@ -144,7 +144,6 @@ void ScheduleManagerWidget::assignStep(RamObject *step)
                     RamScheduleComment *comment = RamScheduleComment::get(commentUuid);
                     if (comment) {
                         comment->remove();
-                        m_project->scheduleComments()->removeObjects(QStringList(commentUuid));
                     }
                 }
             }
@@ -462,7 +461,6 @@ void ScheduleManagerWidget::color()
                 if (!comment) {
                     comment = new RamScheduleComment( m_project );
                     comment->setDate(index.data(RamObject::Date).toDateTime());
-                    m_project->scheduleComments()->appendObject(comment->uuid());
                 }
                 comment->setColor(color);
             }
@@ -781,14 +779,11 @@ void ScheduleManagerWidget::setComment(QString comment, QModelIndex index)
         if (!c && comment != "") {
                 RamScheduleComment *newC = new RamScheduleComment( m_project );
                 newC->setDate(index.data(RamObject::Date).toDateTime());
-                m_project->scheduleComments()->appendObject(newC->uuid());
                 c = newC;
         }
 
         if (c && comment == "") {
             c->remove();
-            // Remove from project
-            m_project->scheduleComments()->removeObjects(QStringList(uuid));
             return;
         }
     }

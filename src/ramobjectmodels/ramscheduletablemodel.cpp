@@ -1,7 +1,6 @@
 #include "ramscheduletablemodel.h"
 
 #include "duqf-app/app-config.h"
-#include "ramschedulecomment.h"
 #include "ramscheduleentry.h"
 #include "ramses.h"
 
@@ -11,7 +10,7 @@ RamScheduleTableModel::RamScheduleTableModel(QObject *parent) : QAbstractTableMo
     m_endDate = QDate::currentDate();
 }
 
-void RamScheduleTableModel::setObjectModel(RamObjectModel *userList, RamObjectModel *comments)
+void RamScheduleTableModel::setObjectModel(RamObjectModel *userList, DBTableModel *comments)
 {
     beginResetModel();
 
@@ -167,10 +166,10 @@ QVariant RamScheduleTableModel::data(const QModelIndex &index, int role) const
     // THE COMMENT
     if (row == 0 && m_comments)
     {
-        QList<RamObject*> comments = m_comments->lookUp(date);
+        QSet<RamObject*> comments = m_comments->lookUp("date", date.toString(DATETIME_DATA_FORMAT));
         if (!comments.isEmpty())
         {
-            RamScheduleComment *c = RamScheduleComment::c(comments.first());
+            RamObject *c = *comments.cbegin();
             return c->roleData(role);
         }
         /*for(int i = 0; i < m_comments->rowCount(); i++)

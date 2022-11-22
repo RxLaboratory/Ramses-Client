@@ -256,12 +256,6 @@ void Ramses::setCurrentProjectUuid(QString uuid)
     setCurrentProject( RamProject::get(uuid) );
 }
 
-DBTableModel *Ramses::scheduleComments() const
-{
-    m_scheduleComments->load();
-    return m_scheduleComments;
-}
-
 DBTableModel *Ramses::templateSteps() const
 {
     m_templateSteps->load();
@@ -280,58 +274,16 @@ DBTableModel *Ramses::fileTypes() const
     return m_fileTypes;
 }
 
-DBTableModel *Ramses::pipes() const
-{
-    m_pipes->load();
-    return m_pipes;
-}
-
-DBTableModel *Ramses::pipeFiles() const
-{
-    m_pipeFiles->load();
-    return m_pipeFiles;
-}
-
 DBTableModel *Ramses::applications() const
 {
     m_applications->load();
     return m_applications;
 }
 
-DBTableModel *Ramses::assets() const
-{
-    m_assets->load();
-    return m_assets;
-}
-
-DBTableModel *Ramses::steps() const
-{
-    m_steps->load();
-    return m_steps;
-}
-
-DBTableModel *Ramses::assetGroups() const
-{
-    m_assetGroups->load();
-    return m_assetGroups;
-}
-
 DBTableModel *Ramses::schedule() const
 {
     m_schedule->load();
     return m_schedule;
-}
-
-DBTableModel *Ramses::sequences() const
-{
-    m_sequences->load();
-    return m_sequences;
-}
-
-DBTableModel *Ramses::shots() const
-{
-    m_shots->load();
-    return m_shots;
 }
 
 // PROTECTED
@@ -352,23 +304,14 @@ Ramses::Ramses(QObject *parent):
     m_dbi = DBInterface::instance();
 
     m_applications = new DBTableModel(RamObject::Application, false, this);
-    m_assets = new DBTableModel(RamObject::Asset, true, this);
-    m_assetGroups = new DBTableModel(RamObject::AssetGroup, true, this);
     m_fileTypes = new DBTableModel(RamObject::FileType, false, this);
-    m_pipes = new DBTableModel(RamObject::Pipe, true, this);
-    m_pipeFiles = new DBTableModel(RamObject::PipeFile, true, this);
     m_projects = new DBTableModel(RamObject::Project, true, this);
-    m_scheduleComments = new DBTableModel(RamObject::ScheduleComment, true, this);
     m_schedule = new DBTableModel(RamObject::ScheduleEntry, true, this);
-    m_sequences = new DBTableModel(RamObject::Sequence, true, this);
-    m_shots = new DBTableModel(RamObject::Shot, true, this);
     m_states = new DBTableModel(RamObject::State, false, this);
-    m_steps = new DBTableModel(RamObject::Step, true, this);
     m_templateAssetGroups = new DBTableModel(RamObject::TemplateAssetGroup, false, this);
     m_templateSteps = new DBTableModel(RamObject::TemplateStep, false, this);
     m_users = new DBTableModel(RamObject::User, false, this);
 
-    m_scheduleComments->addLookUpKey("date");
     m_schedule->addLookUpKey("date");
 
     this->setObjectName( "Ramses Class" );

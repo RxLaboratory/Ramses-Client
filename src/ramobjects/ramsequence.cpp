@@ -1,7 +1,6 @@
 #include "ramsequence.h"
 
 #include "sequenceeditwidget.h"
-#include "ramobjectmodel.h"
 
 // STATIC //
 
@@ -33,7 +32,7 @@ RamSequence::RamSequence(QString shortName, QString name, RamProject *project):
     RamObject(shortName, name, Sequence, project)
 {
     construct();
-    setProject(project);
+    this->setParent( project );
     insertData("project", project->uuid());
     createData();
 }
@@ -46,7 +45,8 @@ RamSequence::RamSequence(QString uuid):
     QJsonObject d = data();
 
     QString projUuid = d.value("project").toString();
-    setProject( RamProject::get(projUuid) );
+    if (projUuid != "") this->setParent( RamProject::get(projUuid) );
+    else invalidate();
 }
 
 int RamSequence::shotCount() const
@@ -105,18 +105,10 @@ void RamSequence::construct()
     m_existingObjects[m_uuid] = this;
     m_icon = ":/icons/sequence";
     m_editRole = ProjectAdmin;
-    m_shots = new RamObjectSortFilterProxyModel(this);
-    m_shots->setSingleColumn(true);
+
+    m_shots = new DBTableModel(RamObject::Shot, true, this);
+    m_shots->addFilterValue( "sequence", this->uuid() );
 }
-
-void RamSequence::setProject(RamProject *project)
-{
-    m_shots->setSourceModel( project->shots() );
-    m_shots->setFilterUuid( m_uuid );
-    this->setParent( project );
-}
-
-
 
 
 

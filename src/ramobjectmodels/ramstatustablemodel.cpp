@@ -4,7 +4,7 @@
 #include "ramasset.h"
 #include "ramshot.h"
 
-RamStatusTableModel::RamStatusTableModel(DBTableFilterProxyModel *steps, DBTableFilterProxyModel *items, QObject *parent)
+RamStatusTableModel::RamStatusTableModel(DBTableModel *steps, DBTableModel *items, QObject *parent)
     : QAbstractTableModel{parent}
 {
     m_steps = steps;

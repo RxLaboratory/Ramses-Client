@@ -1,7 +1,6 @@
 #include "pipefilemanagerwidget.h"
 
 #include "ramses.h"
-#include "ramobjectmodel.h"
 
 PipeFileManagerWidget::PipeFileManagerWidget(QWidget *parent):
     ObjectManagerWidget(
@@ -22,7 +21,6 @@ RamPipeFile *PipeFileManagerWidget::createObject()
     RamPipeFile *pf = new RamPipeFile(
                 "NEW",
                 project);
-    project->pipeFiles()->appendObject(pf->uuid());
     pf->edit();
     return pf;
 }

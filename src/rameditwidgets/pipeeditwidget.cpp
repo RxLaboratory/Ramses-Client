@@ -66,7 +66,6 @@ void PipeEditWidget::createPipeFile()
     RamPipeFile *pipeFile = new RamPipeFile(
                 "NEW",
                 project);
-    project->pipeFiles()->appendObject(pipeFile->uuid());
     m_pipe->pipeFiles()->appendObject(pipeFile->uuid());
     pipeFile->edit();
 }

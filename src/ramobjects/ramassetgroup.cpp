@@ -1,7 +1,6 @@
 #include "ramassetgroup.h"
 
 #include "assetgroupeditwidget.h"
-#include "ramses.h"
 
 // STATIC //
 
@@ -104,7 +103,7 @@ void RamAssetGroup::construct()
     m_icon = ":/icons/asset-group";
     m_editRole = ProjectAdmin;
 
-    m_assets = new DBTableFilterProxyModel( Ramses::instance()->assets(), this );
+    m_assets = new DBTableModel(RamObject::Asset, true, this);
     m_assets->addFilterValue( "assetGroup", this->uuid() );
 }
 
