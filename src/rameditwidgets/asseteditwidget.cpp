@@ -1,6 +1,7 @@
 #include "asseteditwidget.h"
 
 #include "ramproject.h"
+#include "dbtablemodel.h"
 
 AssetEditWidget::AssetEditWidget(QWidget *parent) :
     ObjectEditWidget(parent)

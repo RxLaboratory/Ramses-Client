@@ -2,6 +2,7 @@
 #include "duqf-utils/utils.h"
 
 #include "ramsequence.h"
+#include "dbtablemodel.h"
 
 ShotsCreationDialog::ShotsCreationDialog(RamProject *proj, QWidget *parent) :
     QDialog(parent)

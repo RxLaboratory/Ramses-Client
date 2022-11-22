@@ -1,7 +1,6 @@
 #ifndef RAMOBJECTCOMBOBOX_H
 #define RAMOBJECTCOMBOBOX_H
 
-#include "ramabstractobjectmodel.h"
 #include "ramobjectsortfilterproxymodel.h"
 
 class RamObjectComboBox : public QComboBox
