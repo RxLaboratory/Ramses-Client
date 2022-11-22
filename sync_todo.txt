@@ -11,7 +11,6 @@
 - schedule:
   - update db to add project uuid
 - RamObjectModel: remove columns; refactor using RamAbstractObjectModel (lookup). Remove RamAbstractItem objectForColumn
-- Performance issue in statustable (WIP compare again with 0.7.1 on the same OS)
 - Check status table sort
 - sequence use dbtablefilter for included shots
 - noState created even if exists (check search?)
