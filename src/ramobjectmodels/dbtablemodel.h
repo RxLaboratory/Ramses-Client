@@ -65,6 +65,11 @@ private:
     // Checks the filters
     bool checkFilters(QString data) const;
 
+    // Save the order in the db
+    void saveOrder() const;
+
+    void moveObject(int from, int to);
+
     // === Filters ===
 
     QHash<QString, QStringList> m_filters;

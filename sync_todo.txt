@@ -1,5 +1,6 @@
-- freeze on unassign in schedule
-- freeze on add/remove comment un schedule
+- comment not shown on creation in schedule
+- schedule/status edit return to homepage
+- can't reorder from status table (disabled?)
 - empty statistics
 - reimplement scripting api for new status (no history)
 - triple click to show pipeline

@@ -225,5 +225,6 @@ void RamAbstractObjectModel::removeObjectFromLookUp(QString uuid)
             it.next();
             if (it.value() == uuid) it.remove();
         }
+        i++;
     }
 }
