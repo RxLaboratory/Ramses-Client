@@ -1,4 +1,6 @@
 - freeze on unassign in schedule
+- freeze on add/remove comment un schedule
+- empty statistics
 - reimplement scripting api for new status (no history)
 - triple click to show pipeline
 - Steps not added in tables
