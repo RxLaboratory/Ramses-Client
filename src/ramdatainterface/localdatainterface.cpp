@@ -1228,7 +1228,7 @@ void LocalDataInterface::autoCleanDB(QSqlDatabase db)
 
     // === Move the oldest statuses to their statushistory table ===
 
-    // List all statuses (ignore removed ones)
+    // List all statuses
     qry.exec("SELECT `uuid`, `data` FROM RamStatus ;");
 
     // Count the results to help the progress bar
