@@ -1311,18 +1311,18 @@ void LocalDataInterface::autoCleanDB(QSqlDatabase db)
             QString condition = " `uuid` = '" + statusToMove.takeLast() + "' ";
             for (int i = 0; i < 250; i++)
             {
-                condition += " OR `uuid` = '" + statusToMove.takeLast() + "' ";
                 if (statusToMove.isEmpty()) break;
+                condition += " OR `uuid` = '" + statusToMove.takeLast() + "' ";
             }
 
             qry.exec("INSERT INTO RamStatusHistory (`uuid`, `data`, `modified`, `removed`) "
                      "SELECT `uuid`, `data`, `modified`, `removed` FROM RamStatus "
-                     "WHERE " + condition
+                     "WHERE " + condition + " ON CONFLICT(uuid) DO UPDATE SET "
+                     "`data` = excluded.data, `modified` = excluded.modified, `removed` = excluded.removed ;"
                      );
 
             qry.exec("DELETE FROM RamStatus WHERE " + condition);
         }
-
     }
 
     // === Vacuum ===
