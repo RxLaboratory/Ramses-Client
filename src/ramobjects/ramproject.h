@@ -14,6 +14,9 @@ class RamItemTable;
 class RamUser;
 class DBTableModel;
 class RamStatusTableModel;
+class RamStatus;
+class RamAbstractItem;
+class RamState;
 
 class RamProject : public RamObject
 {
@@ -51,6 +54,20 @@ public:
     // Status
     RamStatusTableModel *assetStatus() const;
     RamStatusTableModel *shotStatus() const;
+    RamStatus *status(RamAbstractItem *item, RamStep *step) const;
+    QSet<RamStatus*> itemStatus(RamAbstractItem *item) const;
+    QSet<RamStatus*> stepStatus(RamStep *step) const;
+    RamState *state(RamAbstractItem *item, RamStep *step) const;
+    bool hasState(RamObject *stateObj, RamAbstractItem *item, RamStep *step) const;
+    bool hasState(RamObject *stateObj, RamStep *step) const;
+    bool hasState(RamObject *stateObj, RamAbstractItem *item) const;
+    RamUser *assignedUser(RamAbstractItem *item, RamStep *step) const;
+    bool isUserAssigned(RamObject *userObj, RamAbstractItem *item, RamStep *step) const;
+    bool isUserAssigned(RamObject *userObj, RamAbstractItem *item) const;
+    bool isUserAssigned(RamObject *userObj, RamStep *step) const;
+    bool isUnassigned(RamAbstractItem *item, RamStep *step) const;
+    bool isUnassigned(RamStep *step) const;
+    bool isUnassigned(RamAbstractItem *item) const;
 
     qreal framerate() const;
     void setFramerate(const qreal &newFramerate);

@@ -12,7 +12,8 @@ RamStatusTableModel::RamStatusTableModel(DBTableFilterProxyModel *steps, DBTable
 
     m_status = new DBTableModel(RamObject::Status, this);
     m_status->addFilterValues("step", m_steps->toStringList());
-    m_status->setLookUpKey("item");
+    m_status->addLookUpKey("item");
+    m_status->addLookUpKey("step");
 }
 
 void RamStatusTableModel::load()
@@ -74,41 +75,12 @@ QVariant RamStatusTableModel::data(const QModelIndex &index, int role) const
     QString itemUuid = m_items->getUuid(row);
     if (itemUuid == "") return QVariant();
 
-    // Get the statuses for the item
-    QSet<RamObject*> allStatus = m_status->lookUp(itemUuid);
-    if (allStatus.count() == 0) return QVariant();
-
     // Get the step
     // The first column is the item, so -1
     QString stepUuid = m_steps->getUuid(column - 1);
     if (stepUuid == "") return QVariant();
 
-    // Find the status for the step
-    RamStatus *status = nullptr;
-    foreach(RamObject *statusObj, allStatus)
-    {
-        RamStatus *test = RamStatus::c(statusObj);
-        if (!test) continue;
-        if (test->stepUuid() != stepUuid) continue;
-        status = test;
-        break;
-    }
-
-    // Create a "NO" status if not found
-    if (!status)
-    {
-        // Get the item
-        RamAbstractItem *item;
-        if (m_items->type() == RamObject::Asset) item = RamAsset::get(itemUuid);
-        else item = RamShot::get(itemUuid);
-        if (!item) return QVariant();
-
-        // Get the step
-        RamStep *step = RamStep::get(stepUuid);
-        if (!step) return QVariant();
-
-        status = RamStatus::noStatus(item, step);
-    }
+    RamStatus *status = getStatus(itemUuid, stepUuid);
 
     if (!status) return QVariant();
 
@@ -141,6 +113,68 @@ QVariant RamStatusTableModel::headerData(int section, Qt::Orientation orientatio
         return m_items->data( m_items->index(section, 0), RamObject::UUID);
 
     return QAbstractTableModel::headerData(section, orientation, role);
+}
+
+RamStatus *RamStatusTableModel::getStatus(RamAbstractItem *item, RamStep *step) const
+{
+    // Get the statuses for the item
+    QSet<RamStatus*> allStatus = getItemStatus(item->uuid());
+    // Find the status for the step
+    foreach(RamStatus *s, allStatus) if (s->stepUuid() == step->uuid()) return s;
+    // Create and return a "NO" status if not found
+    return RamStatus::noStatus(item, step);
+}
+
+RamStatus *RamStatusTableModel::getStatus(QString itemUuid, QString stepUuid) const
+{
+    if (itemUuid == "") return nullptr;
+    if (stepUuid == "") return nullptr;
+
+    // Get the statuses for the item
+    QSet<RamStatus*> allStatus = getItemStatus(itemUuid);
+
+    // Find the status for the step
+    foreach(RamStatus *s, allStatus) if (s->stepUuid() == stepUuid) return s;
+
+    // Create and return a "NO" status if not found
+
+    // Get the item
+    RamAbstractItem *item;
+    if (m_items->type() == RamObject::Asset) item = RamAsset::get(itemUuid);
+    else item = RamShot::get(itemUuid);
+    if (!item) return nullptr;
+
+    // Get the step
+    RamStep *step = RamStep::get(stepUuid);
+    if (!step) return nullptr;
+
+    return RamStatus::noStatus(item, step);
+}
+
+QSet<RamStatus*> RamStatusTableModel::getItemStatus(QString itemUuid) const
+{
+    if (itemUuid == "") return QSet<RamStatus*>();
+    QSet<RamObject*> allStatus = m_status->lookUp("item", itemUuid);
+    QSet<RamStatus*> status;
+    foreach(RamObject *statusObj, allStatus)
+    {
+        RamStatus *s = RamStatus::c(statusObj);
+        if (s) status << s;
+    }
+    return status;
+}
+
+QSet<RamStatus *> RamStatusTableModel::getStepStatus(QString stepUuid) const
+{
+    if (stepUuid == "") return QSet<RamStatus*>();
+    QSet<RamObject*> allStatus = m_status->lookUp("step", stepUuid);
+    QSet<RamStatus*> status;
+    foreach(RamObject *statusObj, allStatus)
+    {
+        RamStatus *s = RamStatus::c(statusObj);
+        if (s) status << s;
+    }
+    return status;
 }
 
 void RamStatusTableModel::stepsInserted(const QModelIndex &parent, int first, int last)

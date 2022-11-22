@@ -47,8 +47,6 @@ RamProject::RamProject(QString uuid):
     loadModel(m_scheduleComments, "scheduleComments", d);
     loadModel(m_pipeFiles, "pipeFiles", d);
     loadModel(m_pipeline, "pipeline", d);
-
-    computeEstimation(true);
 }
 
 DBTableFilterProxyModel *RamProject::steps() const
@@ -123,6 +121,141 @@ RamStatusTableModel *RamProject::shotStatus() const
 {
     m_shotStatusTable->load();
     return m_shotStatusTable;
+}
+
+RamStatus *RamProject::status(RamAbstractItem *item, RamStep *step) const
+{
+    if (item->objectType() == RamObject::Asset)
+        return assetStatus()->getStatus(item, step);
+    return shotStatus()->getStatus(item, step);
+}
+
+QSet<RamStatus *> RamProject::itemStatus(RamAbstractItem *item) const
+{
+    if (item->objectType() == RamObject::Asset)
+        return assetStatus()->getItemStatus(item->uuid());
+    return shotStatus()->getItemStatus(item->uuid());
+}
+
+QSet<RamStatus *> RamProject::stepStatus(RamStep *step) const
+{
+    if (step->type() == RamStep::AssetProduction)
+        return assetStatus()->getStepStatus(step->uuid());
+    else return shotStatus()->getStepStatus(step->uuid());
+}
+
+RamState *RamProject::state(RamAbstractItem *item, RamStep *step) const
+{
+    RamStatus *s = status(item, step);
+    if (!s) return nullptr;
+    return s->state();
+}
+
+bool RamProject::hasState(RamObject *stateObj, RamAbstractItem *item, RamStep *step) const
+{
+    RamState *s = state(item, step);
+    if (!s)
+    {
+        if (Ramses::instance()->noState()->is(stateObj)) return true;
+        return false;
+    }
+    return s->is(stateObj);
+}
+
+bool RamProject::hasState(RamObject *stateObj, RamStep *step) const
+{
+    QSet<RamStatus *> ss = stepStatus(step);
+    foreach(RamStatus *s, ss)
+    {
+        RamState *sta = s->state();
+        if (!sta && Ramses::instance()->noState()->is(stateObj))
+            return true;
+        if (!sta) continue;
+        if (sta->is(stateObj)) return true;
+    }
+    return false;
+}
+
+bool RamProject::hasState(RamObject *stateObj, RamAbstractItem *item) const
+{
+    QSet<RamStatus *> ss = itemStatus(item);
+    foreach(RamStatus *s, ss)
+    {
+        RamState *sta = s->state();
+        if (!sta && Ramses::instance()->noState()->is(stateObj))
+            return true;
+        if (!sta) continue;
+        if (sta->is(stateObj)) return true;
+    }
+    return false;
+}
+
+RamUser *RamProject::assignedUser(RamAbstractItem *item, RamStep *step) const
+{
+    RamStatus *s = status(item, step);
+    if (s) return s->assignedUser();
+    return nullptr;
+}
+
+bool RamProject::isUserAssigned(RamObject *userObj, RamAbstractItem *item, RamStep *step) const
+{
+    RamUser *u = assignedUser(item, step);
+    if (!u) return false;
+    return u->is(userObj);
+}
+
+bool RamProject::isUserAssigned(RamObject *userObj, RamAbstractItem *item) const
+{
+    QSet<RamStatus *> ss = itemStatus(item);
+    foreach(RamStatus *s, ss)
+    {
+        RamUser *u = s->assignedUser();
+        if (!u) continue;
+        if (u->is(userObj)) return true;
+    }
+    return false;
+}
+
+bool RamProject::isUserAssigned(RamObject *userObj, RamStep *step) const
+{
+    QSet<RamStatus *> ss = stepStatus(step);
+    foreach(RamStatus *s, ss)
+    {
+        RamUser *u = s->assignedUser();
+        if (!u) continue;
+        if (u->is(userObj)) return true;
+    }
+    return false;
+}
+
+bool RamProject::isUnassigned(RamAbstractItem *item, RamStep *step) const
+{
+    RamStatus *s = status(item, step);
+    if (!s) return true;
+    if (!s->assignedUser()) return true;
+    return false;
+}
+
+bool RamProject::isUnassigned(RamStep *step) const
+{
+    QSet<RamStatus *> ss = stepStatus(step);
+    foreach(RamStatus *s, ss)
+    {
+        RamUser *u = s->assignedUser();
+        if (u) return false;
+    }
+    return true;
+}
+
+bool RamProject::isUnassigned(RamAbstractItem *item) const
+{
+    QSet<RamStatus *> ss = itemStatus(item);
+    foreach(RamStatus *s, ss)
+    {
+        RamUser *u = s->assignedUser();
+        if (u) return false;
+    }
+    return true;
 }
 
 qreal RamProject::framerate() const

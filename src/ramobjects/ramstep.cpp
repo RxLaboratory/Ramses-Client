@@ -200,7 +200,7 @@ QVector<float> RamStep::stats(RamUser *user)
         if (t == ShotProduction) item = RamShot::get( itemUuid );
         else item = RamAsset::get( itemUuid );
 
-        RamStatus *status = item->status(this);
+        RamStatus *status = proj->status(item, this);
 
         if (!status) continue;
         if (no->is(status->state())) continue;
@@ -352,7 +352,7 @@ void RamStep::computeEstimation()
         else item = RamAsset::get( itemUuid );
         if (!item) continue;
 
-        RamStatus *status = item->status(this);
+        RamStatus *status = proj->status(item, this);
 
         if (!status) continue;
 

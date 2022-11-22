@@ -61,7 +61,7 @@ void StatusEditWidget::reInit(RamObject *o)
 
         // Try to auto compute time spent from previous status
         qint64 timeSpent = m_status->timeSpent();
-        if (!m_status->isTimeSpentManual() || timeSpent == 0)
+        /*if (!m_status->isTimeSpentManual() || timeSpent == 0)
         {
             RamObjectModel *history = m_status->item()->statusHistory( m_status->step() );
             if (history->rowCount() > 1)
@@ -74,7 +74,7 @@ void StatusEditWidget::reInit(RamObject *o)
                     timeSpent += mdm.getTimeRange( previous->date() );
                 }
             }
-        }
+        }*/
 
         // Get info from the files
         RamWorkingFolder statusFolder = m_status->workingFolder();

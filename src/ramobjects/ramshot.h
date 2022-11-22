@@ -22,6 +22,8 @@ public:
 
     RamShot(QString shortName, QString name, RamSequence *sequence);
 
+    virtual RamStep::Type productionType() const override;
+
     QColor color() const override;
 
     RamSequence *sequence() const;

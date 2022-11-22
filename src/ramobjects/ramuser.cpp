@@ -124,22 +124,10 @@ bool RamUser::isStepAssigned(RamStep *step) const
     if (step->type() != RamStep::ShotProduction && step->type() != RamStep::AssetProduction) return false;
 
     // Check in status
-    QAbstractItemModel *items;
-    RamStep::Type type = step->type();
-    if (type == RamStep::ShotProduction) items = step->project()->shots();
-    else items = step->project()->assets();
+    RamProject *proj = step->project();
+    if (!proj) return false;
 
-    for (int i =0; i < items->rowCount(); i++)
-    {
-        RamAbstractItem *item;
-        if (type == RamStep::ShotProduction) item = RamShot::get( items->data( items->index(i, 0), RamObject::UUID).toString() );
-        else item = RamAsset::get( items->data( items->index(i, 0), RamObject::UUID).toString() );
-        RamStatus *status = item->status(step);
-        if (!status) continue;
-        if (this->is(status->assignedUser())) return true;
-    }
-
-    return false;
+    return proj->isUserAssigned(const_cast<RamUser*>(this), step);
 }
 
 QString RamUser::iconName() const

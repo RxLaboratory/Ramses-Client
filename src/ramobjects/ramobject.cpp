@@ -12,6 +12,7 @@
 #include "ramschedulecomment.h"
 #include "ramses.h"
 #include "ramshot.h"
+#include "ramstatus.h"
 
 // PUBLIC //
 

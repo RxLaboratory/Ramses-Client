@@ -5,7 +5,7 @@
 DBTableModel::DBTableModel(RamObject::ObjectType type, QObject *parent):
     RamAbstractObjectModel{type, parent}
 {
-    m_lookUpKey = "shortName";
+
 }
 
 void DBTableModel::addFilterValue(QString key, QString value)

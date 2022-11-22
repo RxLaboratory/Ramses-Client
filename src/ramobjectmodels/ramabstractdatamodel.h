@@ -23,7 +23,7 @@ public:
     // An object by its shortname, or name
     virtual RamObject *search(QString searchString) const = 0;
     // Objects by their lookup key
-    virtual QSet<RamObject *> lookUp(QString lookUpValue) const = 0;
+    virtual QSet<RamObject *> lookUp(QString lookUpKey, QString lookUpValue) const = 0;
 
     // All the uuids
     virtual QVector<QString> toVector() const = 0;

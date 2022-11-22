@@ -38,6 +38,11 @@ RamAsset::RamAsset(QString shortName, QString name, RamAssetGroup *ag) :
     createData();
 }
 
+RamTemplateStep::Type RamAsset::productionType() const
+{
+    return RamStep::AssetProduction;
+}
+
 QColor RamAsset::color() const
 {
     RamAssetGroup *ag = assetGroup();

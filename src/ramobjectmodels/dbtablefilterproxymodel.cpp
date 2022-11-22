@@ -87,9 +87,9 @@ RamObject *DBTableFilterProxyModel::search(QString searchString) const
     else return nullptr;
 }
 
-QSet<RamObject *> DBTableFilterProxyModel::lookUp(QString lookUpValue) const
+QSet<RamObject *> DBTableFilterProxyModel::lookUp(QString lookUpKey, QString lookUpValue) const
 {
-    QSet<RamObject *> objs = m_tableModel->lookUp(lookUpValue);
+    QSet<RamObject *> objs = m_tableModel->lookUp(lookUpKey, lookUpValue);
     QMutableSetIterator<RamObject *> it(objs);
     while (it.hasNext())
     {
@@ -100,9 +100,9 @@ QSet<RamObject *> DBTableFilterProxyModel::lookUp(QString lookUpValue) const
     return objs;
 }
 
-QSet<RamObject *> DBTableFilterProxyModel::lookUpNoFilter(QString lookUpValue) const
+QSet<RamObject *> DBTableFilterProxyModel::lookUpNoFilter(QString lookUpKey, QString lookUpValue) const
 {
-    return m_tableModel->lookUp(lookUpValue);
+    return m_tableModel->lookUp(lookUpKey, lookUpValue);
 }
 
 QVector<QString> DBTableFilterProxyModel::toVector() const

@@ -1,5 +1,6 @@
 #include "ramitemsortfilterproxymodel.h"
 
+#include "ramproject.h"
 #include "ramstep.h"
 #include "ramabstractitem.h"
 
@@ -100,54 +101,33 @@ bool RamItemSortFilterProxyModel::filterAcceptsRow(int sourceRow, const QModelIn
     RamAbstractItem *item = qobject_cast<RamAbstractItem*>(itemObj);
     if(!item) return false;
 
+    return true;
+
+    RamProject *proj = item->project();
+    if (!proj) return false;
+
     // check users
     bool ok = false;
 
     for (int i = 0; i < m_users.count(); i++)
     {
-        for (int j = 1; j < sourceModel()->columnCount(); j++)
-        {
-            // get step
-            RamStep *s = step(j);
-            if (!s) continue;
-            if ( item->isUserAssigned(m_users.at(i), s) )
-            {
-                ok = true;
-                break;
-            }
-        }
+        ok = proj->isUserAssigned(m_users.at(i), item);
         if (ok) break;
     }
 
-    if (!ok && m_showUnassigned) for (int j = 1; j < sourceModel()->columnCount(); j++)
+    if (!ok && m_showUnassigned)
     {
-        // get step
-        RamStep *s = step(j);
-        if (!s) continue;
-        if ( item->isUnassigned(s) )
-        {
-            ok = true;
-            break;
-        }
+        ok = proj->isUnassigned(item);
     }
 
     if (!ok) return false;
 
     ok = false;
 
+    // check states
     for (int i = 0; i < m_states.count(); i++)
     {
-        for (int j = 1; j < sourceModel()->columnCount(); j++)
-        {
-            // get step
-            RamStep *s = step(j);
-            if (!s) continue;
-            if ( item->hasState(m_states.at(i), s) )
-            {
-                ok = true;
-                break;
-            }
-        }
+        ok = proj->hasState(m_states.at(i), item);
         if (ok) break;
     }
 

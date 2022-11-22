@@ -46,7 +46,6 @@ RamStatus *RamStatus::copy(RamStatus *other, RamUser *user)
     status->assignUser( other->assignedUser() );
     status->setDifficulty( other->difficulty() );
     status->setGoal( other->goal() );
-    status->item()->addStatus(status);
     status->setUseAutoEstimation( other->useAutoEstimation() );
     status->setComment( other->comment() );
 
@@ -55,17 +54,11 @@ RamStatus *RamStatus::copy(RamStatus *other, RamUser *user)
 
 RamStatus *RamStatus::noStatus(RamAbstractItem *item, RamStep *step)
 {
-    // Check if this item has an history for the given step
-    // (wrong step types don't have history)
-    RamObjectModel *history = item->statusHistory(step);
-    if (!history) return nullptr;
-
     RamStatus *no = new RamStatus(
                 Ramses::instance()->ramsesUser(),
                 item,
                 step
                 );
-    item->addStatus(no);
     return no;
 }
 

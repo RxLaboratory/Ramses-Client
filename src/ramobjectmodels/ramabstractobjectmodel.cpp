@@ -14,11 +14,13 @@ RamAbstractObjectModel::RamAbstractObjectModel(RamAbstractObject::ObjectType typ
     : QAbstractTableModel{parent}
 {
     m_table = RamAbstractObject::objectTypeName(type);
+    addLookUpKey("shortName");
 }
 
-void RamAbstractObjectModel::setLookUpKey(const QString &newLookUpKey)
+void RamAbstractObjectModel::addLookUpKey(const QString &newLookUpKey)
 {
-    m_lookUpKey = newLookUpKey;
+    if (!m_lookUpTables.contains(newLookUpKey))
+        m_lookUpTables.insert(newLookUpKey, QMultiHash<QString, QString>());
 }
 
 int RamAbstractObjectModel::count() const
@@ -43,16 +45,23 @@ RamObject *RamAbstractObjectModel::get(int row) const
 void RamAbstractObjectModel::clear()
 {
     m_objectUuids.clear();
-    m_lookUpTable.clear();
+    // Clear lookup tables
+    QHash<QString, QMultiHash<QString, QString>>::iterator i = m_lookUpTables.begin();
+    while (i != m_lookUpTables.end())
+    {
+        i.value().clear();
+        i++;
+    }
 }
 
 RamObject *RamAbstractObjectModel::search(QString searchString) const
 {
-    // Shortname first
-    // And try with the lookup table first
-    if (m_lookUpKey == "shortName")
+    // Shortname
+    // Try with the lookup table first
+    QMultiHash<QString, QString> lookUpTable = m_lookUpTables.value("shortName");
+    if (!lookUpTable.isEmpty())
     {
-        QStringList uuids = m_lookUpTable.values(searchString);
+        QStringList uuids = lookUpTable.values(searchString);
         for(int i = 0; i < uuids.count(); i++)
         {
             QString uuid = uuids.at(i);
@@ -70,10 +79,12 @@ RamObject *RamAbstractObjectModel::search(QString searchString) const
         if (!o) continue;
         if (o->shortName() == searchString) return o;
     }
-    // Name after
-    if (m_lookUpKey == "name")
+    // Name
+    // Try with the lookup table first
+    lookUpTable = m_lookUpTables.value("name");
+    if (!lookUpTable.isEmpty())
     {
-        QStringList uuids = m_lookUpTable.values(searchString);
+        QStringList uuids = lookUpTable.values(searchString);
         for(int i = 0; i < uuids.count(); i++)
         {
             QString uuid = uuids.at(i);
@@ -94,9 +105,12 @@ RamObject *RamAbstractObjectModel::search(QString searchString) const
     return nullptr;
 }
 
-QSet<RamObject *> RamAbstractObjectModel::lookUp(QString lookUpValue) const
+QSet<RamObject *> RamAbstractObjectModel::lookUp(QString lookUpKey, QString lookUpValue) const
 {
-    QList<QString> uuids = m_lookUpTable.values(lookUpValue);
+    QMultiHash<QString, QString> lookUpTable = m_lookUpTables.value(lookUpKey);
+    if (lookUpTable.isEmpty()) return QSet<RamObject *>();
+
+    QList<QString> uuids = lookUpTable.values(lookUpValue);
     QSet<RamObject *> objs;
     for (int i = 0; i < uuids.count(); i++)
     {
@@ -138,9 +152,14 @@ void RamAbstractObjectModel::insertObject(int row, QString uuid, QString data)
 {
     // Add to list
     if (!m_objectUuids.contains(uuid)) m_objectUuids.insert(row, uuid);
-    // Insert in lookup table
-    QString lookUpValue = getLookUpValue(data);
-    m_lookUpTable.insert(lookUpValue, uuid);
+    // Insert in lookup tables
+    QHash<QString, QMultiHash<QString, QString>>::iterator i = m_lookUpTables.begin();
+    while (i != m_lookUpTables.end())
+    {
+        QString lookUpValue = getLookUpValue(i.key(), data);
+        i.value().insert(lookUpValue, uuid);
+        i++;
+    }
 }
 
 void RamAbstractObjectModel::removeObject(QString uuid)
@@ -156,14 +175,19 @@ void RamAbstractObjectModel::updateObject(QString uuid, QString data)
     QJsonDocument doc = QJsonDocument::fromJson( data.toUtf8() );
     QJsonObject dataObj = doc.object();
 
-    // Update lookup table
-    QString lookUpValue = getLookUpValue(data);
-
-    QStringList lookup = m_lookUpTable.values(lookUpValue);
-    if (!lookup.contains(uuid))
+    // Update lookup tables
+    QHash<QString, QMultiHash<QString, QString>>::iterator i = m_lookUpTables.begin();
+    while (i != m_lookUpTables.end())
     {
-        removeObjectFromLookUp(uuid);
-        m_lookUpTable.insert(lookUpValue, uuid);
+        QString lookUpValue = getLookUpValue(i.key(), data);
+
+        QStringList lookup = i.value().values(lookUpValue);
+        if (!lookup.contains(uuid))
+        {
+            removeObjectFromLookUp(uuid);
+            i.value().insert(lookUpValue, uuid);
+        }
+        i++;
     }
 }
 
@@ -182,20 +206,24 @@ void RamAbstractObjectModel::moveObjects(int from, int count, int to)
     }
 }
 
-QString RamAbstractObjectModel::getLookUpValue(QString data)
+QString RamAbstractObjectModel::getLookUpValue(QString key, QString data)
 {
     QJsonDocument doc = QJsonDocument::fromJson( data.toUtf8() );
     QJsonObject obj = doc.object();
-    return obj.value(m_lookUpKey).toString("default");
+    return obj.value(key).toString("default");
 }
 
 void RamAbstractObjectModel::removeObjectFromLookUp(QString uuid)
 {
-    // Remove from lookup table
-    QMutableHashIterator<QString, QString> it(m_lookUpTable);
-    while (it.hasNext())
+    QHash<QString, QMultiHash<QString, QString>>::iterator i = m_lookUpTables.begin();
+    while (i != m_lookUpTables.end())
     {
-        it.next();
-        if (it.value() == uuid) it.remove();
+        // Remove from lookup table
+        QMutableHashIterator<QString, QString> it(i.value());
+        while (it.hasNext())
+        {
+            it.next();
+            if (it.value() == uuid) it.remove();
+        }
     }
 }

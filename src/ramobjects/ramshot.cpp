@@ -41,6 +41,11 @@ RamShot::RamShot(QString shortName, QString name, RamSequence *sequence):
     createData();
 }
 
+RamTemplateStep::Type RamShot::productionType() const
+{
+    return RamTemplateStep::ShotProduction;
+}
+
 QColor RamShot::color() const
 {
     RamSequence *s = sequence();

@@ -1,10 +1,8 @@
-- server autoclean DB (move old status to status history, delete removed statuses, etc, see in client)
-- reimplement RamAbstractItem status methods, remove history
 - crash on edit status
 - reimplement daemon/api for new status (no history)
 - Steps not added in tables
 - project: use dbtables
-- RamObjectModel: remove columns; refactor using RamAbstractObjectModel (lookup)
+- RamObjectModel: remove columns; refactor using RamAbstractObjectModel (lookup). Remove RamAbstractItem objectForColumn
 - Performance issue in statustable (WIP compare again with 0.7.1 on the same OS)
 - Check status table sort
 - sequence use dbtablefilter for included shots

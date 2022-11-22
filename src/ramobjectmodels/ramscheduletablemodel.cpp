@@ -203,7 +203,7 @@ QVariant RamScheduleTableModel::data(const QModelIndex &index, int role) const
 
     RamProject *currentProject = Ramses::instance()->currentProject();
 
-    QSet<RamObject*> entries = schedule->lookUp(date.toString( DATETIME_DATA_FORMAT ));
+    QSet<RamObject*> entries = schedule->lookUp("date", date.toString( DATETIME_DATA_FORMAT ));
     foreach(RamObject *entryObj, entries)
     {
         RamScheduleEntry *entry = RamScheduleEntry::c(entryObj);

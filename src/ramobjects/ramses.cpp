@@ -244,6 +244,9 @@ void Ramses::setCurrentProject(RamProject *project)
         QSettings *uSettings = m_currentUser->settings();
         uSettings->setValue("ramses/currentProject", m_currentProject->uuid() );
     }
+
+    if (m_currentProject) m_currentProject->computeEstimation(true);
+
     emit currentProjectChanged(m_currentProject);
 }
 
@@ -372,9 +375,9 @@ Ramses::Ramses(QObject *parent):
     m_templateSteps = new DBTableModel(RamObject::TemplateStep, this);
     m_users = new DBTableModel(RamObject::User, this);
 
-    m_status->setLookUpKey("item");
-    m_scheduleComments->setLookUpKey("date");
-    m_schedule->setLookUpKey("date");
+    m_status->addLookUpKey("item");
+    m_scheduleComments->addLookUpKey("date");
+    m_schedule->addLookUpKey("date");
 
     this->setObjectName( "Ramses Class" );
 

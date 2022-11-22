@@ -41,9 +41,9 @@ public:
     // An object by its shortname, or name
     virtual RamObject *search(QString searchString) const override;
     // Objects by their lookup key
-    virtual QSet<RamObject *> lookUp(QString lookUpValue) const override;
+    virtual QSet<RamObject *> lookUp(QString lookUpKey, QString lookUpValue) const override;
     // This is faster if you know the object doesn't need to be filtered
-    QSet<RamObject *> lookUpNoFilter(QString lookUpValue) const;
+    QSet<RamObject *> lookUpNoFilter(QString lookUpKey, QString lookUpValue) const;
 
     // All the uuids
     virtual QVector<QString> toVector() const override;

@@ -18,6 +18,8 @@ public:
 
     RamAsset(QString shortName, QString name, RamAssetGroup *ag);
 
+    virtual RamStep::Type productionType() const override;
+
     QColor color() const override;
 
     RamAssetGroup *assetGroup() const;
