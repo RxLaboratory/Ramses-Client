@@ -1,7 +1,6 @@
 #ifndef RAMPROJECT_H
 #define RAMPROJECT_H
 
-#include "dbtablefilterproxymodel.h"
 #include "ramobject.h"
 
 class RamSequence;

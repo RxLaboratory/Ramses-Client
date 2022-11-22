@@ -49,7 +49,6 @@ SOURCES += \
     rammanagerwidgets/statemanagerwidget.cpp \
     rammanagerwidgets/stepmanagerwidget.cpp \
     ramobjectdelegates/ramobjectdelegate.cpp \
-    ramobjectmodels/dbtablefilterproxymodel.cpp \
     ramobjectmodels/dbtablemodel.cpp \
     ramobjectmodels/ramabstractdatamodel.cpp \
     ramobjectmodels/ramabstractobjectmodel.cpp \
@@ -216,7 +215,6 @@ HEADERS += \
     rammanagerwidgets/statemanagerwidget.h \
     rammanagerwidgets/stepmanagerwidget.h \
     ramobjectdelegates/ramobjectdelegate.h \
-    ramobjectmodels/dbtablefilterproxymodel.h \
     ramobjectmodels/dbtablemodel.h \
     ramobjectmodels/ramabstractdatamodel.h \
     ramobjectmodels/ramabstractobjectmodel.h \
