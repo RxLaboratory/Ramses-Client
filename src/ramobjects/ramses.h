@@ -39,8 +39,6 @@ public:
     void setCurrentProject(RamProject *project);
     void setCurrentProject(QString shortName);
     void setCurrentProjectUuid(QString uuid);
-    // Schedule
-    DBTableModel *schedule() const;
     // States
     DBTableModel *states() const;
     RamState *noState();
@@ -88,7 +86,6 @@ private:
     DBTableModel *m_applications = nullptr;
     DBTableModel *m_fileTypes = nullptr;
     DBTableModel *m_projects = nullptr;
-    DBTableModel *m_schedule = nullptr;
     DBTableModel *m_states = nullptr;
     DBTableModel *m_templateAssetGroups = nullptr;
     DBTableModel *m_templateSteps = nullptr;

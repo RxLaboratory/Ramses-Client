@@ -1,12 +1,9 @@
 #include "ramuser.h"
 
-#include "ramabstractitem.h"
 #include "ramses.h"
 #include "ramscheduleentry.h"
 #include "usereditwidget.h"
 #include "ramdatainterface/dbinterface.h"
-#include "ramasset.h"
-#include "ramshot.h"
 
 // STATIC //
 
@@ -103,7 +100,7 @@ void RamUser::setRole(const QString role)
     insertData("role", role);
 }
 
-DBTableFilterProxyModel *RamUser::schedule() const
+DBTableModel *RamUser::schedule() const
 {
     m_schedule->load();
     return m_schedule;
@@ -186,9 +183,7 @@ void RamUser::construct()
     m_icon = ":/icons/user";
     m_editRole = Admin;
     //m_schedule = createModel(RamObject::ScheduleEntry, "schedule");
-    m_schedule = new DBTableFilterProxyModel (
-                Ramses::instance()->schedule(),
-                this
-                );
+    m_schedule = new DBTableModel(RamObject::ScheduleEntry, true, this);
     m_schedule->addFilterValue( "user", this->uuid() );
+    m_schedule->addLookUpKey("date");
 }

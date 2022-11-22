@@ -198,7 +198,7 @@ QVariant RamScheduleTableModel::data(const QModelIndex &index, int role) const
     RamObject *usrObj = m_users->get((row-1) / 2);
     RamUser *user = RamUser::c( usrObj );
     if (!user) return QVariant();
-    DBTableFilterProxyModel *schedule = user->schedule();
+    DBTableModel *schedule = user->schedule();
 
     RamProject *currentProject = Ramses::instance()->currentProject();
 

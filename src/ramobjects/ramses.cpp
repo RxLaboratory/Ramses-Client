@@ -280,12 +280,6 @@ DBTableModel *Ramses::applications() const
     return m_applications;
 }
 
-DBTableModel *Ramses::schedule() const
-{
-    m_schedule->load();
-    return m_schedule;
-}
-
 // PROTECTED
 
 QString Ramses::folderPath() const
@@ -306,13 +300,10 @@ Ramses::Ramses(QObject *parent):
     m_applications = new DBTableModel(RamObject::Application, false, this);
     m_fileTypes = new DBTableModel(RamObject::FileType, false, this);
     m_projects = new DBTableModel(RamObject::Project, true, this);
-    m_schedule = new DBTableModel(RamObject::ScheduleEntry, true, this);
     m_states = new DBTableModel(RamObject::State, false, this);
     m_templateAssetGroups = new DBTableModel(RamObject::TemplateAssetGroup, false, this);
     m_templateSteps = new DBTableModel(RamObject::TemplateStep, false, this);
     m_users = new DBTableModel(RamObject::User, false, this);
-
-    m_schedule->addLookUpKey("date");
 
     this->setObjectName( "Ramses Class" );
 
