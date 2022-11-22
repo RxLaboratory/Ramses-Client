@@ -77,11 +77,6 @@ signals:
      * @brief Emitted if the mode has changed
      */
     void connectionStatusChanged(NetworkUtils::NetworkStatus, QString);
-    /**
-     * @brief dataUpdated is emitted when the whole data has changed.
-     * e.g. when the local data file has been changed.
-     */
-    void dataReset();
     void userChanged(QString);
     void syncFinished();
     void syncStarted();

@@ -10,7 +10,7 @@ RamStatusTableModel::RamStatusTableModel(DBTableFilterProxyModel *steps, DBTable
     m_steps = steps;
     m_items = items;
 
-    m_status = new DBTableModel(RamObject::Status, this);
+    m_status = new DBTableModel(RamObject::Status, true, this);
     m_status->addFilterValues("step", m_steps->toStringList());
     m_status->addLookUpKey("item");
     m_status->addLookUpKey("step");

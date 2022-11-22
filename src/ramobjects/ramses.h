@@ -62,8 +62,6 @@ public:
     RamState *okState();
     RamState *stbState();
     RamState *wipState();
-    // Status
-    DBTableModel *status() const;
     // Steps
     DBTableModel *steps() const;
     // Template Asset Groups
@@ -115,7 +113,6 @@ private:
     DBTableModel *m_sequences = nullptr;
     DBTableModel *m_shots = nullptr;
     DBTableModel *m_states = nullptr;
-    DBTableModel *m_status = nullptr;
     DBTableModel *m_steps = nullptr;
     DBTableModel *m_templateAssetGroups = nullptr;
     DBTableModel *m_templateSteps = nullptr;

@@ -344,7 +344,6 @@ DBInterface::DBInterface(QObject *parent) : DuQFLoggerObject("Database Interface
 
 void DBInterface::connectEvents()
 {
-    connect(m_ldi, &LocalDataInterface::dataReset, this, &DBInterface::dataReset);
     connect(m_ldi, &LocalDataInterface::syncFinished, this, &DBInterface::finishSync);
     connect(m_rsi, &RamServerInterface::connectionStatusChanged, this, &DBInterface::serverConnectionStatusChanged);
     connect(m_rsi, &RamServerInterface::syncReady, m_ldi, &LocalDataInterface::sync);

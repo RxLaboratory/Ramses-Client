@@ -501,7 +501,8 @@ ServerConfig LocalDataInterface::setDataFile(const QString &file)
 
     m_dataFile = file;
 
-    emit dataReset();
+    emit dataResetCommon();
+    emit dataResetProject();
 
     // Save the current DB to recent files
     QSettings settings;

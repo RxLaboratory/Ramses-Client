@@ -2,10 +2,10 @@
 #include "localdatainterface.h"
 #include "progressmanager.h"
 
-DBTableModel::DBTableModel(RamObject::ObjectType type, QObject *parent):
+DBTableModel::DBTableModel(RamObject::ObjectType type, bool projectTable, QObject *parent):
     RamAbstractObjectModel{type, parent}
 {
-
+    m_isProjectTable = projectTable;
 }
 
 void DBTableModel::addFilterValue(QString key, QString value)
@@ -34,7 +34,8 @@ void DBTableModel::load()
     connect(ldi, &LocalDataInterface::inserted, this, &DBTableModel::insertObject);
     connect(ldi, &LocalDataInterface::removed, this, &DBTableModel::removeObject);
     connect(ldi, &LocalDataInterface::dataChanged, this, &DBTableModel::changeData);
-    connect(ldi, &LocalDataInterface::dataReset, this, &DBTableModel::reload);
+    if (m_isProjectTable) connect(ldi, &LocalDataInterface::dataResetProject, this, &DBTableModel::reload);
+    else connect(ldi, &LocalDataInterface::dataResetCommon, this, &DBTableModel::reload);
 }
 
 int DBTableModel::rowCount(const QModelIndex &parent) const
@@ -233,6 +234,8 @@ void DBTableModel::removeObject(QString uuid, QString table)
 
 void DBTableModel::reload()
 {
+    if (!m_isLoaded) return;
+
     ProgressManager *pm = ProgressManager::instance();
     pm->setText(tr("Reloading '%1'").arg(m_table));
 
@@ -242,7 +245,7 @@ void DBTableModel::reload()
 
     // Get all
     QVector<QStringList> objs = LocalDataInterface::instance()->tableData( m_table, m_filters );
-    qDebug() << "Got " << objs.count() << " objects from " << m_table;
+    //qDebug() << "Got " << objs.count() << " objects from " << m_table;
     // Sort
     std::sort(objs.begin(), objs.end(), objSorter);
     // Insert

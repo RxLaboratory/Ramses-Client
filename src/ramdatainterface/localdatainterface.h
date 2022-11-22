@@ -80,7 +80,8 @@ public slots:
     void sync(SyncData data, QString serverUuid = "");
 
 signals:
-    void dataReset();
+    void dataResetCommon();
+    void dataResetProject();
     void ramsesPathChanged(QString);
     // Sync result
     void syncFinished();

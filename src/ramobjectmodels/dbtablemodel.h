@@ -13,7 +13,7 @@ public:
 
     // === CONSTRUCTOR ===
 
-    DBTableModel(RamAbstractObject::ObjectType type, QObject *parent = nullptr);
+    DBTableModel(RamAbstractObject::ObjectType type, bool projectTable, QObject *parent = nullptr);
 
     // === Filter Methods ===
 
@@ -73,6 +73,7 @@ private:
 
     // This flag is used to check if the table has already been loaded.
     bool m_isLoaded = false;
+    bool m_isProjectTable = false;
 };
 
 bool objSorter(const QStringList a, const QStringList b);

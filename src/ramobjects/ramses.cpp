@@ -218,12 +218,6 @@ RamState *Ramses::wipState()
     return m_wipState;
 }
 
-DBTableModel *Ramses::status() const
-{
-    m_status->load();
-    return m_status;
-}
-
 DBTableModel *Ramses::projects() const
 {
     m_projects->load();
@@ -357,25 +351,23 @@ Ramses::Ramses(QObject *parent):
     qDebug() << "Initialising Ramses";
     m_dbi = DBInterface::instance();
 
-    m_applications = new DBTableModel(RamObject::Application, this);
-    m_assets = new DBTableModel(RamObject::Asset, this);
-    m_assetGroups = new DBTableModel(RamObject::AssetGroup, this);
-    m_fileTypes = new DBTableModel(RamObject::FileType, this);
-    m_pipes = new DBTableModel(RamObject::Pipe, this);
-    m_pipeFiles = new DBTableModel(RamObject::PipeFile, this);
-    m_projects = new DBTableModel(RamObject::Project, this);
-    m_scheduleComments = new DBTableModel(RamObject::ScheduleComment, this);
-    m_schedule = new DBTableModel(RamObject::ScheduleEntry, this);
-    m_sequences = new DBTableModel(RamObject::Sequence, this);
-    m_shots = new DBTableModel(RamObject::Shot, this);
-    m_states = new DBTableModel(RamObject::State, this);
-    m_status = new DBTableModel(RamObject::Status, this);
-    m_steps = new DBTableModel(RamObject::Step, this);
-    m_templateAssetGroups = new DBTableModel(RamObject::TemplateAssetGroup, this);
-    m_templateSteps = new DBTableModel(RamObject::TemplateStep, this);
-    m_users = new DBTableModel(RamObject::User, this);
+    m_applications = new DBTableModel(RamObject::Application, false, this);
+    m_assets = new DBTableModel(RamObject::Asset, true, this);
+    m_assetGroups = new DBTableModel(RamObject::AssetGroup, true, this);
+    m_fileTypes = new DBTableModel(RamObject::FileType, false, this);
+    m_pipes = new DBTableModel(RamObject::Pipe, true, this);
+    m_pipeFiles = new DBTableModel(RamObject::PipeFile, true, this);
+    m_projects = new DBTableModel(RamObject::Project, true, this);
+    m_scheduleComments = new DBTableModel(RamObject::ScheduleComment, true, this);
+    m_schedule = new DBTableModel(RamObject::ScheduleEntry, true, this);
+    m_sequences = new DBTableModel(RamObject::Sequence, true, this);
+    m_shots = new DBTableModel(RamObject::Shot, true, this);
+    m_states = new DBTableModel(RamObject::State, false, this);
+    m_steps = new DBTableModel(RamObject::Step, true, this);
+    m_templateAssetGroups = new DBTableModel(RamObject::TemplateAssetGroup, false, this);
+    m_templateSteps = new DBTableModel(RamObject::TemplateStep, false, this);
+    m_users = new DBTableModel(RamObject::User, false, this);
 
-    m_status->addLookUpKey("item");
     m_scheduleComments->addLookUpKey("date");
     m_schedule->addLookUpKey("date");
 
