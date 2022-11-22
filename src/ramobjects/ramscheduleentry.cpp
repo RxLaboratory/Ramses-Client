@@ -102,9 +102,7 @@ QString RamScheduleEntry::iconName() const
     case RamStep::ShotProduction: return ":/icons/shot";
     case RamStep::AssetProduction: return ":/icons/asset";
     case RamStep::PostProduction: return ":/icons/film";
-    case RamStep::All: return "";
     }
-    return "";
 }
 
 QVariant RamScheduleEntry::roleData(int role) const

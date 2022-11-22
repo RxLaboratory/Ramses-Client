@@ -21,8 +21,7 @@ RamTemplateStep::Type RamTemplateStep::stepTypeFromName(QString typeName)
     if (typeName == "AssetProduction") return AssetProduction;
     if (typeName == "ShotProduction") return ShotProduction;
     if (typeName == "PostProduction") return PostProduction;
-    if (typeName == "All") return All;
-    return All;
+    return PreProduction;
 }
 
 RamTemplateStep *RamTemplateStep::get(QString uuid)
@@ -73,11 +72,10 @@ RamTemplateStep::Type RamTemplateStep::type() const
 {
     QString typeStr = getData("type").toString();
 
-    if (typeStr == "pre") return PreProduction;
-    else if (typeStr == "asset") return AssetProduction;
+    if (typeStr == "asset") return AssetProduction;
     else if (typeStr == "shot") return ShotProduction;
     else if (typeStr == "post") return PostProduction;
-    else return All;
+    else return PreProduction;
 }
 
 void RamTemplateStep::setType(const Type &type)
@@ -94,9 +92,6 @@ void RamTemplateStep::setType(const Type &type)
         break;
     case PostProduction:
         insertData("type", "post");
-        break;
-    case All:
-        insertData("type", "all");
         break;
     }
 }
@@ -138,10 +133,8 @@ QString RamTemplateStep::iconName() const
         return ":/icons/asset";
     case PostProduction:
         return ":/icons/film";
-    case All:
-        return ":/icons/step";
     }
-    return ":/icons/step";
+    return ":/icons/project";
 }
 
 QString RamTemplateStep::details() const
@@ -156,8 +149,6 @@ QString RamTemplateStep::details() const
         return "Asset production";
     case PostProduction:
         return "Post-production";
-    case All:
-        return "";
     }
     return "";
 }

@@ -54,6 +54,8 @@ RamStatus *RamStatus::copy(RamStatus *other, RamUser *user)
 
 RamStatus *RamStatus::noStatus(RamAbstractItem *item, RamStep *step)
 {
+    qDebug() << "Creating a noStatus for the item: " << item->shortName() << " and step: " << step->shortName();
+
     RamStatus *no = new RamStatus(
                 Ramses::instance()->ramsesUser(),
                 item,

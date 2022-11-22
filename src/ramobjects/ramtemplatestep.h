@@ -15,8 +15,8 @@ public:
     enum Type{ PreProduction,
                AssetProduction,
                ShotProduction,
-               PostProduction,
-               All };
+               PostProduction
+             };
     Q_ENUM(Type)
 
     enum EstimationMethod { EstimatePerShot = 0,

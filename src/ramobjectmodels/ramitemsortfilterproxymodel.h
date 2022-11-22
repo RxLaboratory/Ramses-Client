@@ -46,7 +46,7 @@ protected:
     QVector<RamObject*> m_users;
     QVector<RamObject*> m_hiddenSteps;
     bool m_showUnassigned = true;
-    RamStep::Type m_stepType = RamStep::All;
+    RamStep::Type m_stepType = RamStep::PreProduction;
 
 private:
     /**

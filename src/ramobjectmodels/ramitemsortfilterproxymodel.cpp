@@ -155,7 +155,6 @@ RamStep *RamItemSortFilterProxyModel::step(int column) const
     RamStep *step = RamStep::get(stepUuid);
 
     if (m_hiddenSteps.contains( step )) return nullptr;
-    if (m_stepType == RamStep::All) return step;
     if( step->type() == m_stepType) return step;
     return nullptr;
 }
