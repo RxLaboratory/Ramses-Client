@@ -117,14 +117,9 @@ bool DBTableModel::moveRows(const QModelIndex &sourceParent, int sourceRow, int 
 
     RamAbstractObjectModel::moveObjects(sourceRow, count, destinationChild);
 
-    // Save order
-    for (int i = 0; i <= rowCount(); i++)
-    {
-        RamObject *o = this->get( i );
-        if (o) o->setOrder(i);
-    }
-
     endMoveRows();
+
+    saveOrder();
 
     return true;
 }
@@ -210,6 +205,29 @@ bool DBTableModel::checkFilters(QString data) const
     return true;
 }
 
+void DBTableModel::saveOrder() const
+{
+    // Save order
+    for (int i = 0; i <= rowCount(); i++)
+    {
+        RamObject *o = this->get( i );
+        if (o) o->setOrder(i);
+    }
+}
+
+void DBTableModel::moveObject(int from, int to)
+{
+    int d = to;
+    if (from < to) d++;
+
+    if (!beginMoveRows(QModelIndex(), from, from, QModelIndex(), d))
+        return;
+
+    RamAbstractObjectModel::moveObjects(from, 1, to);
+
+    endMoveRows();
+}
+
 void DBTableModel::insertObject(QString uuid, QString data, QString table)
 {
     if (table != m_table) return;
@@ -264,7 +282,7 @@ void DBTableModel::changeData(QString uuid, QString data)
     if (order >= 0 && order != currentOrder)
     {
         if (order >= rowCount()) order = rowCount()-1;
-        moveRows(QModelIndex(), currentOrder, 1, QModelIndex(), order);
+        moveObject(currentOrder, order);
     }
 
     // Update stored data
