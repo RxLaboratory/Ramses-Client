@@ -1,7 +1,6 @@
-- reimplement status edition (to save existing in the history and edit current, instead of creating a new status)
 - server autoclean DB (move old status to status history, delete removed statuses, etc, see in client)
-- deactivate history for now in client (history button)
 - reimplement RamAbstractItem status methods, remove history
+- crash on edit status
 - reimplement daemon/api for new status (no history)
 - Steps not added in tables
 - project: use dbtables

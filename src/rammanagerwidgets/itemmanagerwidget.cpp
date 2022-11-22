@@ -1147,13 +1147,13 @@ void ItemManagerWidget::setupTable()
 QVector<RamStatus *> ItemManagerWidget::beginEditSelectedStatus()
 {
     QVector<RamStatus*> statuses;
-    RamUser *currentUser = Ramses::instance()->currentUser();
+    //RamUser *currentUser = Ramses::instance()->currentUser();
     QModelIndexList selection = ui_table->selectionModel()->selectedIndexes();
     for (int i = 0; i < selection.count(); i++)
     {
         RamStatus *status = getStatus(selection.at(i));
-        if (!status->user()->is( currentUser ))
-            status = RamStatus::copy( status, currentUser );
+        //if (!status->user()->is( currentUser ))
+        //    status = RamStatus::copy( status, currentUser );
         statuses << status;
     }
     return statuses;

@@ -119,15 +119,15 @@ void RamObjectDelegate::paintButtons(QPainter *painter, PaintParameters *params,
     // Status is specific
     if (type == RamObject::Status)
     {
-        QRect historyButtonRect( xpos, params->bgRect.top() +7, 12, 12);
-        xpos -= 22;
+        //QRect historyButtonRect( xpos, params->bgRect.top() +7, 12, 12);
+        //xpos -= 22;
 
         bool statusNo = index.data(RamObject::Disabled).toBool();
 
-        if (statusNo)
-            drawButton(painter, historyButtonRect, m_historyDarkIcon, m_historyButtonHover == index);
-        else
-            drawButton(painter, historyButtonRect, m_historyIcon, m_historyButtonHover == index);
+        //if (statusNo)
+        //    drawButton(painter, historyButtonRect, m_historyDarkIcon, m_historyButtonHover == index);
+        //else
+        //    drawButton(painter, historyButtonRect, m_historyIcon, m_historyButtonHover == index);
 
         // Draw Folder button
         // Folder button
@@ -496,13 +496,13 @@ bool RamObjectDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, co
     RamObject *o = RamObject::get(uuid, ramtype);
     if (!o) return QStyledItemDelegate::editorEvent( event, model, option, index );
 
-    bool isStatus = ramtype == RamObject::Status;
+    //bool isStatus = ramtype == RamObject::Status;
     bool folder = index.data(RamObject::Path).toString() != "";
 
     int xpos = bgRect.right() - 22;
 
-    const QRect historyButtonRect( xpos, bgRect.top() +7, 20, 20 );
-    if (isStatus) xpos -= 22;
+    //const QRect historyButtonRect( xpos, bgRect.top() +7, 20, 20 );
+    //if (isStatus) xpos -= 22;
 
     const QRect folderButtonRect( xpos, bgRect.top() +7, 20, 20 );
 
@@ -514,11 +514,11 @@ bool RamObjectDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, co
 
         if (e->button() != Qt::LeftButton) return QStyledItemDelegate::editorEvent( event, model, option, index );
 
-        if ( historyButtonRect.contains(e->pos()) && isStatus)
-        {
-            m_historyButtonPressed = true;
-            return true;
-        }
+        //if ( historyButtonRect.contains(e->pos()) && isStatus)
+        //{
+        //    m_historyButtonPressed = true;
+        //    return true;
+        //}
 
         if (folderButtonRect.contains(e->pos()) && folder)
         {
@@ -534,12 +534,12 @@ bool RamObjectDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, co
     {
         QMouseEvent *e = static_cast< QMouseEvent * >( event );
 
-        if (historyButtonRect.contains(e->pos()) && isStatus)
-        {
-            m_historyButtonHover = index;
-            return true;
-        }
-        else if (m_historyButtonHover.isValid())
+        //if (historyButtonRect.contains(e->pos()) && isStatus)
+        //{
+        //    m_historyButtonHover = index;
+        //    return true;
+        //}
+        /*else*/ if (m_historyButtonHover.isValid())
         {
             m_historyButtonHover = QModelIndex();
             return true;
@@ -564,14 +564,14 @@ bool RamObjectDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, co
 
         if (m_historyButtonPressed)
         {
-            if (historyButtonRect.contains(e->pos()) && isStatus)
+            /*if (historyButtonRect.contains(e->pos()) && isStatus)
             {
                 // get the step history
                 RamStatus *status = qobject_cast<RamStatus*>(o);
                 RamStep *step = status->step();
                 RamAbstractItem *item = status->item();
                 item->editHistory(step);
-            }
+            }*/
             m_historyButtonPressed = false;
             m_historyButtonHover = QModelIndex();
             return true;
@@ -593,7 +593,7 @@ bool RamObjectDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, co
             if (bgRect.contains(e->pos()) && e->modifiers().testFlag(Qt::NoModifier) && o)
             {
                 // Check if it's a status
-                if (isStatus)
+                /*if (isStatus)
                 {
                     RamStatus *status = RamStatus::c( o );
 
@@ -605,10 +605,10 @@ bool RamObjectDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, co
                     status->edit();
                 }
                 else
-                {
+                {*/
                     // Get the object to edit it
                     o->edit();
-                }
+                //}
             }
             m_cellPressed = false;
             emit edited(o);
