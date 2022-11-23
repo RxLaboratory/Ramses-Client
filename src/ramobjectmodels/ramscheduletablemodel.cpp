@@ -19,12 +19,22 @@ void RamScheduleTableModel::setObjectModel(RamObjectModel *userList, DBTableMode
     m_users = userList;
     m_comments = comments;
 
+    // TODO connect dataChanged signals too (in insertUser for the schedules)
+
     if (m_users)
     {
         connect( m_users, SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(insertUser(QModelIndex,int,int)));
         connect( m_users, SIGNAL(rowsAboutToBeRemoved(QModelIndex,int,int)), this, SLOT(removeUser(QModelIndex,int,int)));
         connect( m_users, SIGNAL(modelReset()), this, SLOT(resetUsers()));
     }
+
+    // TODO !
+    /*if (m_comments)
+    {
+        connect( m_comments, SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(insertUser(QModelIndex,int,int)));
+        connect( m_comments, SIGNAL(rowsAboutToBeRemoved(QModelIndex,int,int)), this, SLOT(removeUser(QModelIndex,int,int)));
+        connect( m_comments, SIGNAL(modelReset()), this, SLOT(resetUsers()));
+    }*/
 
     endResetModel();
 }

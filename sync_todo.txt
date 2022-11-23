@@ -1,10 +1,10 @@
 - comment not shown on creation in schedule
-- schedule/status edit return to homepage
 - can't reorder from status table (disabled?)
 - empty statistics
 - reimplement scripting api for new status (no history)
 - triple click to show pipeline
 - Steps not added in tables
+- Status : on edit -> check user, if changed, save to history
 - project pipeline:
   - RamPipe should contain project uuid
   - update db to add project uuid in pipes
