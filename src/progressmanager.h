@@ -38,6 +38,7 @@ private:
     int m_val = 0;
     int m_maximum = 0;
     bool m_busy = false;
+    bool m_frozen = false;
     QString m_title = "";
 };
 
