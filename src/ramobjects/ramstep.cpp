@@ -93,54 +93,56 @@ void RamStep::setEstimationMultiplyGroup(RamObject *newEstimationMultiplyGroup)
     if (newEstimationMultiplyGroup) insertData("estimationMultiplyGroup", newEstimationMultiplyGroup->uuid() );
     else insertData("estimationMultiplyGroup", "none" );
 
-    m_estimationChanged = true;
     emit estimationComputed(this);
 }
 
-qint64 RamStep::timeSpent() const
+float RamStep::estimation()
 {
-    return m_timeSpent;
-}
-
-float RamStep::estimation() const
-{
+    computeEstimation();
     return m_estimation;
 }
 
-float RamStep::completionRatio() const
+int RamStep::completionRatio()
 {
+    computeEstimation();
     return m_completionRatio;
 }
 
-float RamStep::latenessRatio() const
+float RamStep::latenessRatio()
 {
     if (neededDays() > 0)
         return missingDays() / neededDays();
     else return 0;
 }
 
-float RamStep::assignedDays() const
+float RamStep::assignedDays()
 {
+    countAssignedDays();
     return m_scheduledHalfDays/2.0;
 }
 
-float RamStep::unassignedDays() const
+float RamStep::unassignedDays()
 {
-    return m_missingDays;
+    countAssignedDays();
+    computeEstimation();
+    return m_estimation - m_scheduledHalfDays/2.0;
 }
 
-float RamStep::missingDays() const
+float RamStep::missingDays()
 {
+    countAssignedDays();
     return neededDays() - m_scheduledFutureHalfDays/2.0;
 }
 
-float RamStep::daysSpent() const
+float RamStep::daysSpent()
 {
+    computeEstimation();
     return m_estimation * m_completionRatio / 100;
 }
 
-float RamStep::neededDays() const
+float RamStep::neededDays()
 {
+    computeEstimation();
     return m_estimation - daysSpent();
 }
 
@@ -221,16 +223,6 @@ QVector<float> RamStep::stats(RamUser *user)
                                static_cast<float>(assignedHalfDays / 2.0),
                                static_cast<float>(assignedFutureHalfDays / 2.0)
                            } );
-}
-
-void RamStep::freezeEstimations(bool freeze, bool reCompute)
-{
-    m_freezeEstimations = freeze;
-    if (!freeze && reCompute)
-    {
-        this->computeEstimation();
-        this->countAssignedDays();
-    }
 }
 
 void RamStep::openFile(QString filePath) const
@@ -319,7 +311,8 @@ void RamStep::edit(bool show)
 
 void RamStep::computeEstimation()
 {
-    if (m_freezeEstimations) return;
+    if (!m_cacheEstimationTimer.hasExpired(1000)) return;
+    m_cacheEstimationTimer.start();
 
     RamProject *proj = project();
     if (!proj) return;
@@ -333,13 +326,8 @@ void RamStep::computeEstimation()
     if (t == ShotProduction) items = proj->shots();
     else items = proj->assets();
 
-    m_timeSpent = 0;
     m_estimation = 0;
     m_completionRatio = 0;
-    m_latenessRatio = 0;
-    int numItems = 0;
-
-    float completedDays = 0;
 
     RamState *no = Ramses::instance()->noState();
 
@@ -358,38 +346,27 @@ void RamStep::computeEstimation()
 
         if (no->is(status->state())) continue;
 
-        m_timeSpent += status->timeSpent();
-
         float estimation = 0;
         if (status->useAutoEstimation()) estimation = status->estimation();
         else estimation = status->goal();
 
-        completedDays += estimation * status->completionRatio() / 100.0;
         m_estimation += estimation;
-
-        m_latenessRatio += status->latenessRatio();
-
-        numItems++;
+        m_completionRatio += status->completionRatio();
     }
 
-    if (numItems > 0) m_latenessRatio /= numItems;
-    else m_latenessRatio = 1;
+    m_completionRatio = m_completionRatio / items->rowCount();
+    m_completionRatio = std::min(100, m_completionRatio);
 
-    if (m_estimation > 0) m_completionRatio = completedDays / m_estimation * 100;
-    else m_completionRatio = 100;
-
-    m_completionRatio = std::min(100, (int)m_completionRatio);
-
-    // update missing days
-    m_missingDays = m_estimation - m_scheduledHalfDays/2.0;
-
-    proj->computeEstimation();
     emit estimationComputed(this);
 }
 
 void RamStep::countAssignedDays()
 {
-    if (m_freezeEstimations) return;
+    if (!m_cacheScheduleTimer.hasExpired(1000)) return;
+    m_cacheScheduleTimer.start();
+
+    qDebug() << "COUNTING " << this->name();
+
     RamProject *proj = project();
     if (!proj) return;
 
@@ -401,21 +378,17 @@ void RamStep::countAssignedDays()
         RamUser *u = RamUser::c( proj->users()->get(i) );
         if (!u) continue;
 
-        for (int j = 0; j < u->schedule()->rowCount(); j++)
+        QSet<RamObject*> entryObjs = u->schedule()->lookUp("step", this->uuid());
+
+        foreach(RamObject *entryObj, entryObjs)
         {
-            RamScheduleEntry *entry = RamScheduleEntry::c( u->schedule()->get(j) );
+            RamScheduleEntry *entry = RamScheduleEntry::c( entryObj );
             if (!entry) continue;
-            if (this->is(entry->step()))
-            {
-                m_scheduledHalfDays++;
-                if (entry->date() > QDateTime::currentDateTime()) m_scheduledFutureHalfDays++;
-            }
+            m_scheduledHalfDays++;
+            if (entry->date() > QDateTime::currentDateTime()) m_scheduledFutureHalfDays++;
         }
     }
 
-    // update missing
-    m_missingDays = m_estimation - m_scheduledHalfDays/2.0;
-    proj->computeEstimation();
     emit estimationComputed(this);
 }
 

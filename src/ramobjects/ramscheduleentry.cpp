@@ -79,7 +79,6 @@ void RamScheduleEntry::setStep(RamStep *newStep)
     {
         disconnect(currentStep, nullptr, this, nullptr);
         disconnect(this, nullptr, currentStep, nullptr);
-        currentStep->countAssignedDays();
     }
 
     if (newStep)
@@ -87,7 +86,6 @@ void RamScheduleEntry::setStep(RamStep *newStep)
         insertData("step", newStep->uuid());
         connect(this, SIGNAL(removed(RamObject*)), newStep, SLOT(countAssignedDays()));
         connect(newStep, SIGNAL(removed(RamObject*)), this, SLOT(stepRemoved()));
-        newStep->countAssignedDays();
     }
     else insertData("step", "none");
 }

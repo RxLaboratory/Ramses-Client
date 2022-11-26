@@ -145,7 +145,7 @@ QVariant StatisticsModel::data(const QModelIndex &index, int role) const
     if (role == Qt::UserRole) return completion;
     if (role == Qt::UserRole +1) return step->latenessRatio();
     if (role == Qt::UserRole +2) return estimation;
-    if (role == Qt::UserRole +3) return step->timeSpent();
+    if (role == Qt::UserRole +3) return QVariant();
     if (role == Qt::UserRole +4) return assigned;
     if (role == Qt::UserRole +5) return unassignedDays;
     if (role == Qt::UserRole +6) return step->type();

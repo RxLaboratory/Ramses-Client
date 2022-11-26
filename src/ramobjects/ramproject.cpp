@@ -344,53 +344,39 @@ RamPipe *RamProject::pipe(RamStep *outputStep, RamStep *inputStep)
     return nullptr;
 }
 
-void RamProject::freezeEstimations(bool freeze, bool reCompute)
+float RamProject::estimation()
 {
-    m_freezeEstimations = freeze;
-
-    // Freeze steps
-    m_steps->load();
-    for(int i = 0; i < m_steps->rowCount(); i++)
-    {
-        RamStep *step = RamStep::c(m_steps->get(i));
-        step->freezeEstimations(freeze, reCompute);
-    }
-
-    // No need to recompute, it's triggered by the steps when unfreezing
-}
-
-qint64 RamProject::timeSpent() const
-{
-    return m_timeSpent;
-}
-
-float RamProject::estimation() const
-{
+    computeEstimation();
     return m_estimation;
 }
 
-int RamProject::completionRatio() const
+int RamProject::completionRatio()
 {
+    computeEstimation();
     return m_completionRatio;
 }
 
-float RamProject::latenessRatio() const
+float RamProject::latenessRatio()
 {
+    computeEstimation();
     return m_latenessRatio;
 }
 
-float RamProject::assignedDays() const
+float RamProject::assignedDays()
 {
+    computeEstimation();
     return m_assignedDays;
 }
 
-float RamProject::unassignedDays() const
+float RamProject::unassignedDays()
 {
+    computeEstimation();
     return m_missingDays;
 }
 
 QVector<float> RamProject::stats(RamUser *user)
 {
+    computeEstimation();
     QVector<float> s(4);
     m_steps->load();
     for (int i = 0; i < m_steps->rowCount(); i++)
@@ -486,10 +472,11 @@ void RamProject::edit(bool show)
     if (show) showEdit( ui_editWidget );
 }
 
-void RamProject::computeEstimation(bool recompute)
+void RamProject::computeEstimation()
 {
-    if (m_freezeEstimations) return;
-    m_timeSpent = 0;
+    if (!m_cacheTimer.hasExpired(1000)) return;
+    m_cacheTimer.start();
+
     m_estimation = 0;
     m_completionRatio = 0;
     m_latenessRatio = 0;
@@ -504,16 +491,9 @@ void RamProject::computeEstimation(bool recompute)
 
         if (!step) continue;
 
-        if (recompute)
-        {
-            step->computeEstimation();
-            step->countAssignedDays();
-        }
-
         //Ignore pre and post procution
         if ( step->type() != RamStep::ShotProduction && step->type() != RamStep::AssetProduction) continue;
 
-        m_timeSpent += step->timeSpent();
         m_estimation += step->estimation();
         m_completionRatio += step->completionRatio();
         m_latenessRatio += step->latenessRatio();
@@ -536,7 +516,6 @@ void RamProject::computeEstimation(bool recompute)
 
     emit completionRatioChanged(m_completionRatio);
     emit latenessRatioChanged(m_latenessRatio);
-    emit timeSpentChanged(m_timeSpent);
     emit estimationChanged(m_estimation);
     emit estimationComputed(this);
 }

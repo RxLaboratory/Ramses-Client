@@ -168,18 +168,21 @@ void RamObjectView::rowMoved(int logicalIndex, int oldVisualIndex, int newVisual
 
     // Get the source model to move the row
     QAbstractItemModel *model = m_objectModel->sourceModel();
+    model->moveRow(QModelIndex(), oldVisualIndex, QModelIndex(), newVisualIndex);
+    // move back to the (new) logical index
+    this->verticalHeader()->moveSection(newVisualIndex, oldVisualIndex);
 
     // Convert the filtered index to the model index
-    QModelIndex oldIndex = m_objectModel->index(oldVisualIndex, 0);
+    /*QModelIndex oldIndex = m_objectModel->index(oldVisualIndex, 0);
     QModelIndex newIndex = m_objectModel->index(newVisualIndex, 0);
 
     oldIndex = m_objectModel->mapToSource(oldIndex);
     newIndex = m_objectModel->mapToSource(newIndex);
 
-    model->moveRow(QModelIndex(), oldIndex.row(), QModelIndex(), newIndex.row());//*/
+    model->moveRow(QModelIndex(), oldIndex.row(), QModelIndex(), newIndex.row());
 
     // move back to the (new) logical index
-    this->verticalHeader()->moveSection(newVisualIndex, oldVisualIndex);
+    this->verticalHeader()->moveSection(newVisualIndex, oldVisualIndex);//*/
 }
 
 void RamObjectView::select(RamObject *o)

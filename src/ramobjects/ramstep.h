@@ -30,28 +30,20 @@ public:
     RamAssetGroup *estimationMultiplyGroup() const;
     void setEstimationMultiplyGroup(RamObject *newEstimationMultiplyGroup);
 
-    qint64 timeSpent() const; //seconds
-    float estimation() const; //days
-    float completionRatio() const;
-    float latenessRatio() const;
-    float assignedDays() const;
-    float unassignedDays() const;
-    float missingDays() const;
-    float daysSpent() const;
-    float neededDays() const;
+    float estimation() ; //days
+    float latenessRatio() ;
+    int completionRatio();
+    float assignedDays() ;
+    float unassignedDays() ;
+    float missingDays() ;
+    float daysSpent() ;
+    float neededDays() ;
+
     /**
      * @brief stats
      * @return a list of number of days <estimation, completed, scheduled, scheduled in the future>
      */
     QVector<float> stats(RamUser *user);
-
-    /**
-     * @brief freezeEstimations stops automatic update of the estimations.
-     * Use this to improve performance when loading a bunch of data.
-     * @param freeze Whether to freeze the estimations
-     * @param reCompute When false, the estimation will not be recomputed on unfreeze
-     */
-    void freezeEstimations(bool freeze = true, bool reCompute = true);
 
     void openFile(QString filePath) const;
     QSet<RamWorkingFolder> templateWorkingFolders() const;
@@ -65,9 +57,6 @@ signals:
 public slots:
     virtual void edit(bool show = true) override;
 
-    void computeEstimation();
-    void countAssignedDays();
-
 protected:
     static QHash<QString, RamStep*> m_existingObjects;
     RamStep(QString uuid);
@@ -78,26 +67,17 @@ protected:
 private:
     void construct();
 
-    /**
-     * @brief When true, estimations won't be computed.
-     * This should be set to true when loading a bunch of data, to improve performance
-     * and reset to false afterwards.
-     */
-    bool m_freezeEstimations = false;
-
-    /**
-     * @brief m_estimationChanged is set to true if the estimation needs to be recomputed
-     */
-    bool m_estimationChanged = false;
+    void computeEstimation();
+    void countAssignedDays();
 
     // Estimation cache
-    qint64 m_timeSpent = 0;
     float m_estimation = 0;
-    float m_completionRatio = 0;
-    float m_latenessRatio = 0;
+    int m_completionRatio = 0;
+    QElapsedTimer m_cacheEstimationTimer;
+    // Schedule cache
     int m_scheduledHalfDays = 0;
     int m_scheduledFutureHalfDays = 0;
-    float m_missingDays = 0;
+    QElapsedTimer m_cacheScheduleTimer;
 };
 
 #endif // RAMSTEP_H

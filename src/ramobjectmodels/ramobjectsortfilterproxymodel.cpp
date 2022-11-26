@@ -46,6 +46,39 @@ QVariant RamObjectSortFilterProxyModel::data(const QModelIndex &index, int role)
     return QSortFilterProxyModel::data( index, role);
 }
 
+bool RamObjectSortFilterProxyModel::moveRows(const QModelIndex &sourceParent, int sourceRow, int count, const QModelIndex &destinationParent, int destinationChild)
+{
+    int sourceEnd = sourceRow + count - 1;
+
+    // We need to move them one at a time to convert the indices
+    for (int i = 0; i < count ; i++)
+    {
+        QModelIndex oldIndex;
+
+        // Convert the sourceRow (starting with the first or last according to the way we're moving)
+        if (destinationChild < sourceRow) oldIndex = index(sourceRow,0);
+        else oldIndex = index(sourceEnd,0);
+
+        // Get the sourcemodel index
+        oldIndex = mapToSource(oldIndex);
+
+        // Get the target row
+        QModelIndex newIndex = index(destinationChild, 0);
+        newIndex = mapToSource(newIndex);
+
+        int source = oldIndex.row();
+        int dest = newIndex.row();
+        int d = dest;
+        if (source < dest) d++;
+
+        if (!beginMoveRows(QModelIndex(), source, 1, QModelIndex(), d))
+            return false;
+        sourceModel()->moveRow(sourceParent, source, destinationParent, dest);
+        endMoveRows();
+    }
+    return true;
+}
+
 RamObject *RamObjectSortFilterProxyModel::get(int row) const
 {
     return get(index(row, 0));

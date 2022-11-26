@@ -22,11 +22,13 @@ void StatisticsWidget::projectChanged(RamProject *project)
 
     ui_userBox->setObjectModel(project->users(), "Users");
 
-    estimationChanged(project);
-    connect(m_project,SIGNAL(estimationComputed(RamProject*)),this,SLOT(estimationChanged(RamProject*)));
+    updateEstimation(project);
+    connect(m_project,SIGNAL(estimationComputed(RamProject*)),this,SLOT(updateEstimation(RamProject*)));
+
+    ui_statsTable->resizeRowsToContents();
 }
 
-void StatisticsWidget::estimationChanged(RamProject *project)
+void StatisticsWidget::updateEstimation(RamProject *project)
 {  
     //ui_progressWidget->setLatenessRatio( project->latenessRatio() );
     //ui_progressWidget->setTimeSpent( project->timeSpent() );
@@ -35,18 +37,11 @@ void StatisticsWidget::estimationChanged(RamProject *project)
     if (!project)
     {
         ui_progressWidget->setCompletionRatio( 0 );
-
-        ui_remainingTimeLabel->setText( "-- days");
-
         ui_scheduledWorkLabel->setText( "-- days");
-
         ui_completionLabel->setText( "-- %" );
-
         ui_remainingWorkLabel->setText( "-- days" );
         return;
     }
-
-    int remainingDays = QDate::currentDate().daysTo( project->deadline() );
 
     RamUser *user = RamUser::c( ui_userBox->currentObject() );
     QVector<float> stats = project->stats(user);
@@ -59,8 +54,6 @@ void StatisticsWidget::estimationChanged(RamProject *project)
         completion = daysSpent / estimation * 100.0;
 
     ui_progressWidget->setCompletionRatio( completion );
-
-    ui_remainingTimeLabel->setText( QString::number(remainingDays, 'f', 0) + " days");
 
     ui_scheduledWorkLabel->setText( QString::number(future, 'f', 0) + " days");
 
@@ -76,7 +69,7 @@ void StatisticsWidget::changeUser(RamObject *userObj)
     RamUser *user = RamUser::c(userObj);
     ui_statsTable->setUser(user);
     ui_statsTable->resizeRowsToContents();
-    estimationChanged(m_project);
+    updateEstimation(m_project);
 }
 
 void StatisticsWidget::setupUi()
@@ -96,13 +89,7 @@ void StatisticsWidget::setupUi()
     detailsLayout->setContentsMargins(0,0,0,0);
     detailsLayout->setSpacing(3);
 
-    QLabel *timeRemaining = new QLabel("Actual remaining time: ", this);
-    detailsLayout->addWidget(timeRemaining, 0, 1);
-
-    ui_remainingTimeLabel = new QLabel("-- days", this);
-    detailsLayout->addWidget(ui_remainingTimeLabel, 0, 2);
-
-    QLabel *scheduled = new QLabel("Scheduled remaining time: ", this);
+    QLabel *scheduled = new QLabel("Remaining: ", this);
     detailsLayout->addWidget(scheduled, 1, 1);
 
     ui_scheduledWorkLabel = new QLabel("-- days", this);

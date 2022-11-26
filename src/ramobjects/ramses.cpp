@@ -239,8 +239,6 @@ void Ramses::setCurrentProject(RamProject *project)
         uSettings->setValue("ramses/currentProject", m_currentProject->uuid() );
     }
 
-    if (m_currentProject) m_currentProject->computeEstimation(true);
-
     emit currentProjectChanged(m_currentProject);
 }
 

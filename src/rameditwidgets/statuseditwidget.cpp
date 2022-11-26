@@ -38,7 +38,6 @@ void StatusEditWidget::reInit(RamObject *o)
         QSignalBlocker b7(ui_publishedBox);
         QSignalBlocker b8(ui_difficultyBox);
         QSignalBlocker b9(ui_autoEstimationBox);
-        QSignalBlocker b10(ui_timeSpent);
 
         // Get users from project
         RamProject *project = nullptr;
@@ -58,23 +57,6 @@ void StatusEditWidget::reInit(RamObject *o)
 #endif
         ui_folderWidget->setPath( m_status->path() );
         ui_publishedBox->setChecked( m_status->isPublished() );
-
-        // Try to auto compute time spent from previous status
-        qint64 timeSpent = m_status->timeSpent();
-        /*if (!m_status->isTimeSpentManual() || timeSpent == 0)
-        {
-            RamObjectModel *history = m_status->item()->statusHistory( m_status->step() );
-            if (history->rowCount() > 1)
-            {
-                RamStatus *previous = RamStatus::c( history->get( history->rowCount() -2) );
-                timeSpent = previous->timeSpent();
-                RamFileMetaDataManager mdm( m_status->path(RamObject::VersionsFolder ));
-                if (mdm.isValid())
-                {
-                    timeSpent += mdm.getTimeRange( previous->date() );
-                }
-            }
-        }*/
 
         // Get info from the files
         RamWorkingFolder statusFolder = m_status->workingFolder();
@@ -157,8 +139,6 @@ void StatusEditWidget::reInit(RamObject *o)
         ui_autoEstimationBox->setChecked( m_status->useAutoEstimation() );
         setAutoEstimation( m_status->useAutoEstimation() );
 
-        ui_timeSpent->setValue( timeSpent / 3600 );
-
         // User rights to assign
         ui_userBox->setEnabled(Ramses::instance()->isLead());
 
@@ -179,7 +159,6 @@ void StatusEditWidget::reInit(RamObject *o)
         ui_statusCommentEdit->setPlainText("");
         ui_publishedBox->setChecked(false);
         ui_userBox->setObject("");
-        ui_timeSpent->setValue(0);
         ui_mainFileList->clear();
         ui_publishedFileList->clear();
         ui_previewFileList->clear();
@@ -277,15 +256,6 @@ void StatusEditWidget::setAutoEstimation(bool a)
 
     ui_estimationEdit->setValue( est );
     ui_estimationEdit->setEnabled(!a);
-}
-
-void StatusEditWidget::setTimeSpent(int t)
-{
-    if (!m_status) return;
-    m_status->setTimeSpent(t*3600);
-
-    float days = RamStatus::hoursToDays(t);
-    ui_timeSpent->setSuffix(" hours (" + QString::number(days, 'f', 2) + " days)");
 }
 
 void StatusEditWidget::setEstimation(double e)
@@ -598,12 +568,6 @@ void StatusEditWidget::setupUi()
     ui_estimationLabel = new QLabel("Estimation", this);
     detailsLayout->addRow(ui_estimationLabel, estimationWidget);
 
-    ui_timeSpent = new AutoSelectSpinBox(this);
-    ui_timeSpent->setMinimum(0);
-    ui_timeSpent->setMaximum(9999);
-    ui_timeSpent->setSuffix(" hours (0 days)");
-    detailsLayout->addRow("Time spent", ui_timeSpent);
-
     ui_versionBox = new AutoSelectSpinBox(this);
     ui_versionBox->setMaximum(1000);
     ui_versionBox->setValue(1);
@@ -752,7 +716,6 @@ void StatusEditWidget::connectEvents()
     connect( ui_userBox, &RamObjectComboBox::currentObjectChanged, this, &StatusEditWidget::assignUser);
     connect( ui_publishedBox, SIGNAL(clicked(bool)), this, SLOT(setPublished(bool)));
     connect( ui_autoEstimationBox, SIGNAL(clicked(bool)), this, SLOT(setAutoEstimation(bool)));
-    connect( ui_timeSpent, SIGNAL(valueChanged(int)), this, SLOT(setTimeSpent(int)));
     connect( ui_estimationEdit, SIGNAL(valueChanged(double)), this, SLOT(setEstimation(double)));
     connect( ui_difficultyBox, SIGNAL(activated(int)), this, SLOT(setDifficulty(int)));
 

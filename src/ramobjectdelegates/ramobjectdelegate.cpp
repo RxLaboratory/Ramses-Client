@@ -201,8 +201,6 @@ void RamObjectDelegate::paintProgress(const QModelIndex &index, QPainter *painte
         QRect statusRect( params->bgRect.left() + 5, params->titleRect.bottom() + 5, statusWidth, 6 );
 
         // Values to be reused
-        float estimation = 0;
-        float timeSpentDays = 0;
         int completionWidth = 0;
 
         if (statusRect.bottom() + 5 < params->bgRect.bottom() && (m_timeTracking || m_completionRatio))
@@ -211,62 +209,6 @@ void RamObjectDelegate::paintProgress(const QModelIndex &index, QPainter *painte
             QPainterPath path;
             path.addRoundedRect(statusRect, 5, 5);
             painter->fillPath(path, statusBrush);
-
-            // Adjust color according to lateness
-            float latenessRatio = index.data(RamObject::Lateness).toInt();
-            // Ratio
-            estimation = index.data(RamObject::Estimation).toInt();
-            timeSpentDays = RamStatus::hoursToDays( index.data(RamObject::TimeSpent).toInt()/3600 );
-            float ratio = 0;
-            if (estimation > 0) ratio = timeSpentDays / estimation;
-
-            QColor timeColor = statusColor;
-
-            //If we're late, draw the timebar first
-            if (latenessRatio > 1 && m_timeTracking)
-            {
-
-
-                if ( latenessRatio < 1.2 )
-                {
-                    int red = std::min( timeColor.red() + 50, 255 );
-                    int green = std::min( timeColor.green() + 50, 255 );
-                    int blue = std::max( timeColor.blue() -50, 0);
-                    timeColor.setRed( red );
-                    timeColor.setGreen( green );
-                    timeColor.setBlue( blue );
-                    timeColor = timeColor.darker(200);
-                }
-                // Very late, orange
-                else if ( latenessRatio < 1.4 )
-                {
-                    int red = std::min( timeColor.red() + 150, 255 );
-                    int green = std::min( timeColor.green() + 25, 255 );
-                    int blue = std::max( timeColor.blue() - 100, 0);
-                    timeColor.setRed( red );
-                    timeColor.setGreen( green );
-                    timeColor.setBlue( blue );
-                    timeColor = timeColor.darker(200);
-                }
-                // Extreme, red
-                else
-                {
-                    int red = std::min( timeColor.red() + 200, 255 );
-                    int green = std::max( timeColor.green() - 150, 0 );
-                    int blue = std::max( timeColor.blue() - 150, 0);
-                    timeColor.setRed( red );
-                    timeColor.setGreen( green );
-                    timeColor.setBlue( blue );
-                    timeColor = timeColor.darker(200);
-                }
-                statusBrush.setColor( timeColor );
-
-                statusRect.setWidth( statusWidth * ratio );
-                if (statusRect.right() > params->bgRect.right() - 5) statusRect.setRight( params->bgRect.right() - 5);
-                QPainterPath timePath;
-                timePath.addRoundedRect(statusRect, 3, 3);
-                painter->fillPath(timePath, statusBrush);
-            }
 
             if (m_completionRatio)
             {
@@ -278,18 +220,6 @@ void RamObjectDelegate::paintProgress(const QModelIndex &index, QPainter *painte
                 QPainterPath completionPath;
                 completionPath.addRoundedRect(statusRect, 5, 5);
                 painter->fillPath(completionPath, statusBrush);
-            }
-
-            // And draw the Time bar if we're early
-            if (latenessRatio <= 1 && m_timeTracking)
-            {
-                // Adjust color according to lateness
-                statusBrush.setColor( timeColor.darker(130) );
-
-                statusRect.setWidth( statusWidth * ratio );
-                QPainterPath timePath;
-                timePath.addRoundedRect(statusRect, 3, 3);
-                painter->fillPath(timePath, statusBrush);
             }
 
             params->detailsRect.moveTop(statusRect.bottom() + 5);

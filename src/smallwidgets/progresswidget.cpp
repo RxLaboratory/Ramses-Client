@@ -59,33 +59,6 @@ void ProgressWidget::paintEvent(QPaintEvent *event)
 
     if (!m_timeTracking && !m_showCompletionRatio) return;
 
-    // Draw a timebar first
-
-    if ( m_timeTracking && m_latenessRatio > 0 )
-    {
-        QColor timeColor;
-        if ( m_latenessRatio < 1.1 ) timeColor = QColor(32,62,32);
-        else if ( m_latenessRatio < 1.2 ) timeColor = QColor(76,30,0);
-        else if ( m_latenessRatio < 1.3 ) timeColor = QColor(93,31,0);
-        else if ( m_latenessRatio < 1.4 ) timeColor = QColor(118,27,0);
-        else if ( m_latenessRatio < 1.5 ) timeColor = QColor(140,23,0);
-        else if ( m_latenessRatio < 1.6 ) timeColor = QColor(168,14,0);
-        else if ( m_latenessRatio < 1.7 ) timeColor = QColor(188,0,0);
-        else if ( m_latenessRatio < 1.8 ) timeColor = QColor(214,0,0);
-        else if ( m_latenessRatio < 1.9 ) timeColor = QColor(236,0,0);
-        else timeColor = QColor(255,0,0);
-        statusBrush.setColor( timeColor );
-
-        float timeSpentDays = RamStatus::hoursToDays( m_timeSpent/3600 );
-        float ratio = timeSpentDays / m_estimation;
-
-        statusRect.setWidth( statusWidth * ratio );
-        if (statusRect.right() > this->width() - 10) statusRect.setRight( this->width() - 10);
-        QPainterPath timePath;
-        timePath.addRoundedRect(statusRect, 3, 3);
-        painter.fillPath(timePath, statusBrush);
-    }
-
     if (m_showCompletionRatio)
     {
         // Set a color according to the completion

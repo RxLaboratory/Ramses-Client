@@ -46,8 +46,6 @@ RamUser::RamUser(QString uuid):
     RamObject(uuid, User, nullptr)
 {
     construct();
-
-    //loadModel( m_schedule, "schedule" );
 }
 
 void RamUser::setShortName(const QString &shortName)
@@ -186,4 +184,5 @@ void RamUser::construct()
     m_schedule = new DBTableModel(RamObject::ScheduleEntry, true, this);
     m_schedule->addFilterValue( "user", this->uuid() );
     m_schedule->addLookUpKey("date");
+    m_schedule->addLookUpKey("step");
 }

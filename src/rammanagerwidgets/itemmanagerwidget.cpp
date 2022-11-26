@@ -500,7 +500,7 @@ void ItemManagerWidget::cutComment()
 
     // If it's not the current user, create a new one
     RamUser *currentUser = Ramses::instance()->currentUser();
-    if(!status->user()->is(currentUser))
+    if(!status->modifiedBy()->is(currentUser))
         status = RamStatus::copy( status, currentUser );
 
     status->setComment("");
@@ -881,7 +881,6 @@ void ItemManagerWidget::setupUi()
     ui_header = new RamStepHeaderView(ui_table);
     ui_table->setHorizontalHeader( ui_header );
     ui_table->setSelectionMode(QAbstractItemView::ExtendedSelection);
-    //ui_table->setTimeTracking(false);
     ui_header->setTimeTracking(false);
     setupTable();
     mainLayout->addWidget(ui_table);

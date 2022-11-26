@@ -88,19 +88,12 @@ public:
 
     RamPipe *pipe(RamStep *outputStep, RamStep *inputStep);
 
-    /**
-     * @brief freezeEstimations stops automatic update of the estimations.
-     * Use this to improve performance when loading a bunch of data.
-     * @param freeze
-     */
-    void freezeEstimations(bool freeze = true, bool reCompute = true);
     // Production Tracking
-    qint64 timeSpent() const; //seconds
-    float estimation() const; //days
-    int completionRatio() const; //%
-    float latenessRatio() const; //ratio
-    float assignedDays() const; //days
-    float unassignedDays() const; //days
+    float estimation(); //days
+    int completionRatio(); //%
+    float latenessRatio(); //ratio
+    float assignedDays(); //days
+    float unassignedDays(); //days
     /**
      * @brief stats
      * @return a list of number of days <estimation, completed, assigned, future>
@@ -129,7 +122,6 @@ signals:
 public slots:
     void updatePath();
     virtual void edit(bool show = true) override;
-    void computeEstimation(bool recompute = false);
 
 protected:
     static QHash<QString, RamProject*> m_existingObjects;
@@ -140,7 +132,7 @@ protected:
 
 private:
     void construct();
-    void getCreateLists();
+    void computeEstimation();
 
     // LISTS
     DBTableModel *m_steps;
@@ -164,12 +156,13 @@ private:
      */
     bool m_freezeEstimations = false;
 
-    qint64 m_timeSpent = 0;
+    // Estimation
     float m_estimation = 0;
     int m_completionRatio = 0;
     float m_latenessRatio = 0;
     float m_missingDays = 0;
     float m_assignedDays = 0;
+    QElapsedTimer m_cacheTimer;
 };
 
 #endif // RAMPROJECT_H

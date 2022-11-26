@@ -44,7 +44,6 @@ private slots:
     void assignUser(RamObject *u);
     void setPublished(bool p);
     void setAutoEstimation(bool a);
-    void setTimeSpent(int t);
     void setEstimation(double e);
     void setDifficulty(int d);
 
@@ -73,7 +72,6 @@ private:
     QToolButton *ui_revertButton;
     QCheckBox *ui_publishedBox;
     RamObjectComboBox *ui_userBox;
-    AutoSelectSpinBox *ui_timeSpent;
     DuQFFileList *ui_mainFileList;
     DuQFFileList *ui_previewFileList;
     DuQFFileList *ui_publishedFileList;

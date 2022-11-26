@@ -1,11 +1,11 @@
 ﻿#include "ramstatus.h"
 
+#include "ramnamemanager.h"
 #include "ramshot.h"
 #include "ramasset.h"
 #include "ramworkingfolder.h"
 #include "statuseditwidget.h"
 #include "ramses.h"
-#include "ramfilemetadatamanager.h"
 
 // PROTECTED //
 
@@ -42,7 +42,6 @@ RamStatus *RamStatus::copy(RamStatus *other, RamUser *user)
     status->setState( other->state() );
     status->setCompletionRatio( other->completionRatio() );
     status->setVersion( other->version() );
-    status->setTimeSpent( other->timeSpent() );
     status->assignUser( other->assignedUser() );
     status->setDifficulty( other->difficulty() );
     status->setGoal( other->goal() );
@@ -64,34 +63,6 @@ RamStatus *RamStatus::noStatus(RamAbstractItem *item, RamStep *step)
     return no;
 }
 
-float RamStatus::hoursToDays(int hours)
-{
-    // 1 day ( more or less )
-    if (hours <= 0) return 0;
-    if (hours == 1) return 0.15;
-    if (hours == 2) return 0.25;
-    if (hours == 3) return 0.4;
-    if (hours == 4) return 0.5;
-    if (hours == 5) return 0.75;
-    if (hours <= 6) return 0.85;
-    if (hours <= 9) return 1;
-
-    // Approximately 2 days
-    if (hours < 11) return 1.25;
-    if (hours < 14) return 1.5;
-    if (hours < 18) return 2;
-
-    // More than that, 8h/day
-    int intDays = hours / 8;
-    return intDays;
-}
-
-int RamStatus::daysToHours(float days)
-{
-    // let's use an 8h-day
-    return days*8;
-}
-
 // PUBLIC //
 
 RamStatus::RamStatus(RamUser *user, RamAbstractItem *item, RamStep *step, bool isVirtual):
@@ -103,7 +74,6 @@ RamStatus::RamStatus(RamUser *user, RamAbstractItem *item, RamStep *step, bool i
 {
     construct();
 
-    m_user = user;
     m_step = step;
     m_item = item;
 
@@ -136,9 +106,6 @@ RamStatus::RamStatus(QString uuid):
     construct();
 
     QJsonObject d = data();
-    QString userUuid( d.value("user").toString() );
-    if (userUuid == "none") m_user = Ramses::instance()->ramsesUser();
-    else m_user = RamUser::get( d.value("user").toString("none") );
 
     QString itemType = d.value("itemType").toString("asset");
     QString itemUuid = d.value("item").toString("none");
@@ -156,12 +123,19 @@ RamStatus::RamStatus(QString uuid):
     else invalidate();
 }
 
-RamUser *RamStatus::user() const
+RamUser *RamStatus::modifiedBy() const
 {
-    if (!m_user) {
-        return Ramses::instance()->ramsesUser();
-    }
-    return m_user;
+    QString userUuid( getData("user").toString("none") );
+    RamUser *u = RamUser::get( userUuid );
+    if (u) return u;
+    return Ramses::instance()->ramsesUser();
+}
+
+void RamStatus::setModifiedBy(RamUser *user)
+{
+    if (!user) insertData("user", "none");
+    insertData("user", user->uuid());
+    // TODO Create history if changed
 }
 
 RamStep *RamStatus::step() const
@@ -225,8 +199,6 @@ void RamStatus::setState(RamState *newState)
     updateData(&d);
 
     connect(newState, SIGNAL(removed(RamObject*)), this, SLOT(stateRemoved()));
-
-    m_step->computeEstimation();
 }
 
 int RamStatus::version() const
@@ -285,35 +257,6 @@ void RamStatus::assignUser(RamObject *user)
     updateData(&d);
 }
 
-qint64 RamStatus::timeSpent() const
-{
-    if (m_virtual) return 0;
-    qint64 ts = getData("timeSpent").toInt();
-    if (ts == 0)
-    {
-        // Detect
-        RamFileMetaDataManager mdm( this->path(RamObject::VersionsFolder) );
-        if (!mdm.isValid()) return ts;
-        return mdm.getTimeRange();
-    }
-    return ts;
-}
-
-void RamStatus::setTimeSpent(const float &ts)
-{
-    QJsonObject d = data();
-    d.insert("timeSpent", ts);
-    d.insert("manualTimeSpent", true);
-    updateData(&d);
-    m_step->computeEstimation();
-}
-
-bool RamStatus::isTimeSpentManual() const
-{
-    if (m_virtual) return true;
-    return getData("manualTimeSpent").toBool(false);
-}
-
 RamStatus::Difficulty RamStatus::difficulty() const
 {
     if (m_virtual) return Medium;
@@ -348,8 +291,6 @@ void RamStatus::setDifficulty(Difficulty newDifficulty)
     }
 
     updateData(&d);
-
-    m_step->computeEstimation();
 }
 
 float RamStatus::goal() const
@@ -369,7 +310,6 @@ void RamStatus::setGoal(float newGoal)
     QJsonObject d = data();
     d.insert("goal", newGoal);
     updateData(&d);
-    m_step->computeEstimation();
 }
 
 float RamStatus::estimation() const
@@ -457,27 +397,6 @@ void RamStatus::setUseAutoEstimation(bool newAutoEstimation)
     if (!newAutoEstimation && d.value("goal").toDouble() <= 0) d.insert("goal", estimation());
 
     updateData(&d);
-
-    m_step->computeEstimation();
-}
-
-float RamStatus::latenessRatio() const
-{
-    if (m_virtual) return 0;
-    QJsonObject d = data();
-
-    float completionRatio = d.value("completionRatio").toInt(50) / 100.0;
-
-    float est;
-    if (useAutoEstimation()) est = estimation();
-    else est = d.value("goal").toDouble();
-
-    if (est <= 0) return 1;
-    if (completionRatio <= 0) return 1;
-
-    float timeRatio = hoursToDays(d.value("timeSpent").toDouble()/3600) / est;
-
-    return timeRatio / completionRatio;
 }
 
 RamWorkingFolder RamStatus::workingFolder() const
@@ -589,32 +508,15 @@ QString RamStatus::details() const
     case RamStatus::VeryHard: { details += "Very hard"; break; }
     }
 
-    qint64 timeSpentSecs = timeSpent();
-    // Convert to hours
-    int timeSpentHours = timeSpentSecs / 3600;
 
     // Ratio
     float est = 0;
     bool useAuto = useAutoEstimation();
     if (useAuto) est = estimation();
     else est = goal();
-    float timeSpentDays = RamStatus::hoursToDays( timeSpentHours/3600 );
 
     // Estimation or goal
-    if (timeSpentHours > 0)
-    {
-        details = details +
-            "\nTime spent: " +
-            QString::number(timeSpentHours) +
-            " hours (" +
-            QString::number(timeSpentDays, 'f', 0) +
-            " days) / " +
-            QString::number(est, 'f', 1) +
-            " days ";
-        if (useAutoEstimation()) details += "(estimated)";
-        else details += "(goal)";
-    }
-    else if (useAuto) details +=
+    if (useAuto) details +=
             "\nEstimation: " +
             QString::number(est, 'f', 1) +
             " days";
@@ -644,7 +546,7 @@ QString RamStatus::subDetails() const
     return "Modified on: " +
             date().toString(dateFormat) +
             "\nBy: " +
-            user()->name();
+            modifiedBy()->name();
 }
 
 QVariant RamStatus::roleData(int role) const
@@ -670,13 +572,11 @@ QVariant RamStatus::roleData(int role) const
         return item->shortName() + " | " + step->shortName() + " | " + state->name();
     }
     case RamAbstractObject::Completion: return this->completionRatio();
-    case RamAbstractObject::Lateness: return this->latenessRatio();
     case RamAbstractObject::Estimation: {
         if (this->useAutoEstimation()) return this->estimation();
         return this->goal();
     }
     case RamAbstractObject::Goal: return this->goal();
-    case RamAbstractObject::TimeSpent: return this->timeSpent();
     case RamAbstractObject::ProgressColor: return this->state()->color();
     case RamAbstractObject::LabelColor: {
         RamUser *u = this->assignedUser();
@@ -727,12 +627,6 @@ void RamStatus::stateRemoved()
     this->setState( Ramses::instance()->wipState() );
 }
 
-void RamStatus::userRemoved()
-{
-    m_user = Ramses::instance()->removedUser();
-    insertData("user", m_user->uuid());
-}
-
 void RamStatus::assignedUserRemoved()
 {
     assignUser(nullptr);
@@ -749,7 +643,6 @@ void RamStatus::construct()
 
 void RamStatus::connectEvents()
 {
-    if (m_user) connect(m_user, &RamUser::removed, this, &RamStatus::userRemoved);
     if (m_item) connect(m_item, &RamAbstractItem::removed, this, &RamStatus::remove);
     if( m_step) connect(m_step, &RamStep::removed, this, &RamStatus::remove);
 }

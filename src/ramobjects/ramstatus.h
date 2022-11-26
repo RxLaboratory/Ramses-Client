@@ -36,14 +36,12 @@ public:
 
     static RamStatus *noStatus(RamAbstractItem *item, RamStep *step);
 
-    static float hoursToDays(int hours);
-    static int daysToHours(float days);
-
     // METHODS //
 
     RamStatus(RamUser *user, RamAbstractItem *item, RamStep *step, bool isVirtual = false);
 
-    RamUser *user() const;
+    RamUser *modifiedBy() const;
+    void setModifiedBy(RamUser *user);
     RamStep *step() const;
     QString stepUuid() const;
     RamAbstractItem *item() const;
@@ -52,7 +50,7 @@ public:
     bool isNoState() const;
     bool isDisabled() const override;
 
-    int completionRatio() const;
+    int completionRatio() const; // 0-100
     void setCompletionRatio(int completionRatio);
 
     RamState *state() const;
@@ -70,10 +68,6 @@ public:
     RamUser *assignedUser() const;
     void assignUser(RamObject *user);
 
-    qint64 timeSpent() const; // seconds
-    void setTimeSpent(const float &ts);
-    bool isTimeSpentManual() const;
-
     Difficulty difficulty() const;
     void setDifficulty(Difficulty newDifficulty);
 
@@ -85,8 +79,6 @@ public:
 
     void setUseAutoEstimation(bool newAutoEstimation);
     bool useAutoEstimation() const;
-
-    float latenessRatio() const;
 
     RamWorkingFolder workingFolder() const;
 
@@ -114,7 +106,6 @@ protected:
 
 private slots:
     void stateRemoved();
-    void userRemoved();
     void assignedUserRemoved();
 
 private:  
@@ -123,7 +114,6 @@ private:
 
     void updateData(QJsonObject *d);
 
-    RamUser *m_user;
     RamAbstractItem *m_item;
     RamStep *m_step;
 };
