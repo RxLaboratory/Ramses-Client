@@ -212,6 +212,7 @@ QVariant RamScheduleTableModel::data(const QModelIndex &index, int role) const
     RamProject *currentProject = Ramses::instance()->currentProject();
 
     QSet<RamObject*> entries = schedule->lookUp("date", date.toString( DATETIME_DATA_FORMAT ));
+    RamScheduleEntry *foundEntry = nullptr;
     foreach(RamObject *entryObj, entries)
     {
         RamScheduleEntry *entry = RamScheduleEntry::c(entryObj);
@@ -222,18 +223,30 @@ QVariant RamScheduleTableModel::data(const QModelIndex &index, int role) const
         // For current project only
         if (!entryProj->is(currentProject)) continue;
 
+        if (!foundEntry)
+        {
+            foundEntry = entry;
+            continue;
+        }
+
+        // In case there are several entries, remove the other ones
+        entry->remove();
+    }
+
+    if (foundEntry)
+    {
         // Add AMP/PM Info to entry data
         if ( role == RamObject::IsPM)
             return ampm == "pm";
 
         if ( role == Qt::ToolTipRole )
-            return QString(entry->roleData(role).toString() % "\n" % ampm);
+            return QString(foundEntry->roleData(role).toString() % "\n" % ampm);
 
         if ( role == Qt::StatusTipRole )
-            return QString(entry->roleData(role).toString() % " | " % ampm);
+            return QString(foundEntry->roleData(role).toString() % " | " % ampm);
 
         // Or return default
-        return entry->roleData(role);
+        return foundEntry->roleData(role);
     }
 
     if (role == Qt::EditRole) {

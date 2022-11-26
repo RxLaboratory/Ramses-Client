@@ -365,8 +365,6 @@ void RamStep::countAssignedDays()
     if (!m_cacheScheduleTimer.hasExpired(1000)) return;
     m_cacheScheduleTimer.start();
 
-    qDebug() << "COUNTING " << this->name();
-
     RamProject *proj = project();
     if (!proj) return;
 
@@ -380,10 +378,21 @@ void RamStep::countAssignedDays()
 
         QSet<RamObject*> entryObjs = u->schedule()->lookUp("step", this->uuid());
 
+        // Check if there are no duplicates
+        QSet<QDateTime> dates;
+
         foreach(RamObject *entryObj, entryObjs)
         {
             RamScheduleEntry *entry = RamScheduleEntry::c( entryObj );
             if (!entry) continue;
+
+            if (dates.contains( entry->date() ))
+            {
+                entry->remove();
+                continue;
+            }
+            dates.insert(entry->date());
+
             m_scheduledHalfDays++;
             if (entry->date() > QDateTime::currentDateTime()) m_scheduledFutureHalfDays++;
         }
