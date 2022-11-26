@@ -217,7 +217,11 @@ QVariant RamScheduleTableModel::data(const QModelIndex &index, int role) const
     {
         RamScheduleEntry *entry = RamScheduleEntry::c(entryObj);
         RamStep *entryStep = entry->step();
-        if (!entryStep) continue;
+        if (!entryStep)
+        {
+            entry->remove();
+            continue;
+        }
         RamProject *entryProj = entryStep->project();
         if (!entryProj) continue;
         // For current project only

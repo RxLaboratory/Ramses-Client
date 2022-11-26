@@ -1,5 +1,10 @@
+=== For 0.8
+- duplicate state list in status table
+- duplicate templatesteps menu
+- Check status table sort
 - reimplement scripting api for new status (no history)
-- Steps not added in tables
+=== Next
+- syncing ui better feedback : a status/connected icon + message user@server ( ... )
 - project pipeline:
   - RamPipe should contain project uuid
   - update db to add project uuid in pipes
@@ -7,13 +12,8 @@
 - schedule:
   - update db to add project uuid
 - RamObjectModel: remove columns; refactor using RamAbstractObjectModel (lookup). Remove RamAbstractItem objectForColumn
-- Check status table sort
-- sequence use dbtablefilter for included shots
-- noState created even if exists (check search?)
-- pipeline not shown on first click (issue with progress?)
 - schedule not updated after sync (ui not refreshed) > make sure to refresh all ui after sync. Done: test!
 - remove server timeout?
-- syncing ui better feedback : a status/connected icon + message user@server ( ... )
 - a new RamStatusHistory object, reimplement history (history button in status tables)
 - localdatainterface delete data in a single query (see server)
 - more tests
@@ -24,8 +24,6 @@
 
 4- Ramses and editors
 	- asset & shot table
-		- steps menu filter by type?
-	- can't reorder project steps
 	- improve console colors
 	
 5A - Settings refactor

@@ -17,7 +17,7 @@ class RamStep : public RamTemplateStep
 {
     Q_OBJECT
 public:
-    static RamStep *get(QString uuid);
+    static RamStep *get(QString uuid, bool includeRemoved = false);
     static RamStep *c(RamObject *o);
     static RamStep *createFromTemplate(RamTemplateStep *tempStep, RamProject *project);
 

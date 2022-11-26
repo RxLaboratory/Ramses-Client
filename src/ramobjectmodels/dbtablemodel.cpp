@@ -274,7 +274,13 @@ void DBTableModel::reload()
 
 void DBTableModel::changeData(QString uuid, QString data)
 {
-    if (!m_objectUuids.contains(uuid)) return;
+    if (!m_objectUuids.contains(uuid))
+    {
+        // This may be a new object to insert according to the filters
+        if (!checkFilters(data)) return;
+        insertObject(uuid, data, m_table);
+        return;
+    }
 
     // Check if the order has changed
     int order = getOrder(data);
