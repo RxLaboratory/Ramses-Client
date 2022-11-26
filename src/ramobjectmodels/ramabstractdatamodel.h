@@ -35,6 +35,7 @@ public:
     // The type of objects
     virtual RamObject::ObjectType type() const = 0;
 
+    virtual int objectRow(RamObject *obj) const = 0;
     virtual int uuidRow(QString uuid) const = 0;
 };
 

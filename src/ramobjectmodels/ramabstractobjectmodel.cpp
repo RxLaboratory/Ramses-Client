@@ -143,6 +143,12 @@ RamAbstractObject::ObjectType RamAbstractObjectModel::type() const
     return RamObject::objectTypeFromName( m_table );
 }
 
+int RamAbstractObjectModel::objectRow(RamObject *obj) const
+{
+    if (!obj) return -1;
+    return uuidRow(obj->uuid());
+}
+
 int RamAbstractObjectModel::uuidRow(QString uuid) const
 {
     return m_objectUuids.indexOf(uuid);

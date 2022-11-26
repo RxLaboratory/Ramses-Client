@@ -48,6 +48,8 @@ public:
     // The type of objects
     virtual RamObject::ObjectType type() const override;
 
+    // The row of an object
+    virtual int objectRow(RamObject *obj) const override;
     virtual int uuidRow(QString uuid) const override;
 
 protected:
