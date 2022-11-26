@@ -1,4 +1,3 @@
-- comment not shown on creation in schedule
 - can't reorder from status table (disabled?)
 - empty statistics
 - reimplement scripting api for new status (no history)

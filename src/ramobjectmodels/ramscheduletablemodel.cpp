@@ -1,6 +1,7 @@
 #include "ramscheduletablemodel.h"
 
 #include "duqf-app/app-config.h"
+#include "ramschedulecomment.h"
 #include "ramscheduleentry.h"
 #include "ramses.h"
 
@@ -15,6 +16,7 @@ void RamScheduleTableModel::setObjectModel(RamObjectModel *userList, DBTableMode
     beginResetModel();
 
     if (m_users) disconnect(m_users, nullptr, this, nullptr);
+    if (m_comments) disconnect(m_comments, nullptr, this, nullptr);
 
     m_users = userList;
     m_comments = comments;
@@ -26,13 +28,12 @@ void RamScheduleTableModel::setObjectModel(RamObjectModel *userList, DBTableMode
         connect( m_users, SIGNAL(modelReset()), this, SLOT(resetUsers()));
     }
 
-    // TODO !
-    /*if (m_comments)
+    if (m_comments)
     {
-        connect( m_comments, SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(insertUser(QModelIndex,int,int)));
-        connect( m_comments, SIGNAL(rowsAboutToBeRemoved(QModelIndex,int,int)), this, SLOT(removeUser(QModelIndex,int,int)));
-        connect( m_comments, SIGNAL(modelReset()), this, SLOT(resetUsers()));
-    }*/
+        connect( m_comments, SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(insertComment(QModelIndex,int,int)));
+        connect( m_comments, SIGNAL(rowsAboutToBeRemoved(QModelIndex,int,int)), this, SLOT(removeComment(QModelIndex,int,int)));
+        connect( m_comments, SIGNAL(modelReset()), this, SLOT(resetComments()));
+    }
 
     endResetModel();
 }
@@ -351,6 +352,45 @@ void RamScheduleTableModel::scheduleRemoved(const QModelIndex &parent, int first
     }
 }
 
+void RamScheduleTableModel::insertComment(const QModelIndex &parent, int first, int last)
+{
+    Q_UNUSED(parent);
+
+    if (!m_comments) return;
+
+    for (int i = first; i <= last; i++)
+    {
+        RamScheduleComment *c = RamScheduleComment::c( m_comments->get(i) );
+        if (!c) continue;
+        qDebug() << c->date();
+        int col = colForDate(c->date());
+        QModelIndex ind = this->index(0, col);
+        emit dataChanged(ind, ind);
+    }
+}
+
+void RamScheduleTableModel::removeComment(const QModelIndex &parent, int first, int last)
+{
+    Q_UNUSED(parent);
+
+    if (!m_comments) return;
+
+    for (int i = first; i <= last; i++)
+    {
+        RamScheduleComment *c = RamScheduleComment::c( m_comments->get(i) );
+        if (!c) continue;
+        int col = colForDate(c->date());
+        QModelIndex ind = this->index(0, col);
+        emit dataChanged(ind, ind);
+    }
+}
+
+void RamScheduleTableModel::resetComments()
+{
+    beginResetModel();
+    endResetModel();
+}
+
 QModelIndex RamScheduleTableModel::entryIndex(RamScheduleEntry *e)
 {
     if (!e) return QModelIndex();
@@ -366,11 +406,7 @@ QModelIndex RamScheduleTableModel::entryIndex(RamScheduleEntry *e)
 
 int RamScheduleTableModel::colForDate(QDateTime date)
 {
-    int days = m_startDate.daysTo(date.date());
-    if (days < 0) return -1;
-    int r = days*2;
-    if (date.time().hour() < 12) return r;
-    else return r+1;
+    return m_startDate.daysTo(date.date());
 }
 
 void RamScheduleTableModel::setEndDate(const QDate &newEndDate)

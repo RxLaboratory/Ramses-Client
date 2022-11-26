@@ -34,6 +34,10 @@ private slots:
     void scheduleInserted(const QModelIndex &parent, int first, int last);
     void scheduleRemoved(const QModelIndex &parent, int first, int last);
 
+    void insertComment(const QModelIndex &parent, int first, int last);
+    void removeComment(const QModelIndex &parent, int first, int last);
+    void resetComments();
+
 private:
     QModelIndex entryIndex(RamScheduleEntry *e);
     int colForDate(QDateTime date);
