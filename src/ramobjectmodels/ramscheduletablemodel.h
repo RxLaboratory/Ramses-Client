@@ -5,6 +5,9 @@
 #include "dbtablemodel.h"
 #include "ramobjectmodel.h"
 
+class RamUser;
+class RamScheduleEntry;
+
 class RamScheduleTableModel : public QAbstractTableModel
 {
     Q_OBJECT
@@ -27,12 +30,21 @@ private slots:
     void removeUser(const QModelIndex &parent, int first, int last);
     void resetUsers();
 
-private:
-     RamObjectModel *m_users = nullptr;
-     DBTableModel *m_comments = nullptr;
+    void scheduleChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &roles = QVector<int>());
+    void scheduleInserted(const QModelIndex &parent, int first, int last);
+    void scheduleRemoved(const QModelIndex &parent, int first, int last);
 
-     QDate m_startDate;
-     QDate m_endDate;
+private:
+    QModelIndex entryIndex(RamScheduleEntry *e);
+    int colForDate(QDateTime date);
+
+    // DATA
+    RamObjectModel *m_users = nullptr;
+    DBTableModel *m_comments = nullptr;
+
+    // SETTINGS
+    QDate m_startDate;
+    QDate m_endDate;
 };
 
 #endif // RAMSCHEDULETABLEMODEL_H

@@ -19,8 +19,6 @@ void RamScheduleTableModel::setObjectModel(RamObjectModel *userList, DBTableMode
     m_users = userList;
     m_comments = comments;
 
-    // TODO connect dataChanged signals too (in insertUser for the schedules)
-
     if (m_users)
     {
         connect( m_users, SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(insertUser(QModelIndex,int,int)));
@@ -261,6 +259,18 @@ void RamScheduleTableModel::insertUser(const QModelIndex &parent, int first, int
     //We're inserting new rows
     beginInsertRows(QModelIndex(), first*2, last*2+1);
 
+    // Let's monitor schedule changes for the new users
+    for(int i = first; i <= last; i++)
+    {
+        RamObject *o = m_users->get(i);
+        if (!o) continue;
+        RamUser *u = RamUser::c(o);
+        if (!u) continue;
+        connect(u->schedule(), &DBTableModel::dataChanged, this, &RamScheduleTableModel::scheduleChanged);
+        connect(u->schedule(), &DBTableModel::rowsInserted, this, &RamScheduleTableModel::scheduleInserted);
+        connect(u->schedule(), &DBTableModel::rowsAboutToBeRemoved, this, &RamScheduleTableModel::scheduleRemoved);
+    }
+
     // Finished!
     endInsertRows();
 }
@@ -274,13 +284,93 @@ void RamScheduleTableModel::removeUser(const QModelIndex &parent, int first, int
     // We're removing rows
     beginRemoveRows(QModelIndex(), first*2, last*2+1);
 
+    // Disconnect schedules
+    for(int i = first; i <= last; i++)
+    {
+        RamObject *o = m_users->get(i);
+        if (!o) continue;
+        RamUser *u = RamUser::c(o);
+        if (!u) continue;
+        disconnect(u->schedule(), nullptr, this, nullptr);
+    }
+
     endRemoveRows();
 }
 
 void RamScheduleTableModel::resetUsers()
 {
     beginResetModel();
+    // Disconnect all schedules
+    for (int i = 0; i < m_users->count(); i++)
+    {
+        RamUser *u = RamUser::c( m_users->get(i) );
+        disconnect(u->schedule(), nullptr, this, nullptr);
+    }
     endResetModel();
+}
+
+void RamScheduleTableModel::scheduleChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &roles)
+{
+    DBTableModel *schedule = reinterpret_cast<DBTableModel*>( QObject::sender() );
+    if (!schedule) return;
+    int first = topLeft.row();
+    int last = bottomRight.row();
+    for (int i = first; i <= last; i++)
+    {
+        RamScheduleEntry *e = RamScheduleEntry::c( schedule->get(i) );
+        QModelIndex ind = entryIndex(e);
+        emit dataChanged(ind, ind, roles);
+    }
+}
+
+void RamScheduleTableModel::scheduleInserted(const QModelIndex &parent, int first, int last)
+{
+    Q_UNUSED(parent);
+
+    DBTableModel *schedule = reinterpret_cast<DBTableModel*>( QObject::sender() );
+    if (!schedule) return;
+    for (int i = first; i <= last; i++)
+    {
+        RamScheduleEntry *e = RamScheduleEntry::c( schedule->get(i) );
+        QModelIndex ind = entryIndex(e);
+        emit dataChanged(ind, ind);
+    }
+}
+
+void RamScheduleTableModel::scheduleRemoved(const QModelIndex &parent, int first, int last)
+{
+    Q_UNUSED(parent);
+
+    DBTableModel *schedule = reinterpret_cast<DBTableModel*>( QObject::sender() );
+    if (!schedule) return;
+    for (int i = first; i <= last; i++)
+    {
+        RamScheduleEntry *e = RamScheduleEntry::c( schedule->get(i) );
+        QModelIndex ind = entryIndex(e);
+        emit dataChanged(ind, ind);
+    }
+}
+
+QModelIndex RamScheduleTableModel::entryIndex(RamScheduleEntry *e)
+{
+    if (!e) return QModelIndex();
+    // Get the user to get the row
+    RamUser *u = e->user();
+    if (!u) return QModelIndex();
+    int row = m_users->objectRow(u);
+    // Get the column from the date
+    QDateTime d = e->date();
+    int col = colForDate(d);
+    return this->index(row, col);
+}
+
+int RamScheduleTableModel::colForDate(QDateTime date)
+{
+    int days = m_startDate.daysTo(date.date());
+    if (days < 0) return -1;
+    int r = days*2;
+    if (date.time().hour() < 12) return r;
+    else return r+1;
 }
 
 void RamScheduleTableModel::setEndDate(const QDate &newEndDate)
