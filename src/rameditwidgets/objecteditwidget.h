@@ -58,6 +58,8 @@ protected:
     DuQFTextEdit *ui_commentEdit;
     QToolButton *ui_lockShortNameButton;
 
+    bool m_reinit = false;
+
 private slots:
     void objectRemoved(RamObject *o);
     void unlockShortName();

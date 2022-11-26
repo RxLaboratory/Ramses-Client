@@ -32,7 +32,13 @@ void ObjectEditWidget::setObject(RamObject *object)
     if (m_object) disconnect(m_object, nullptr, this, nullptr);
     m_object = object;
 
+    m_reinit = true;
+
     ObjectUpdateBlocker b(object);
+
+    QSignalBlocker b1(ui_nameEdit);
+    QSignalBlocker b2(ui_shortNameEdit);
+    QSignalBlocker b3(ui_commentEdit);
 
     if (object) {
         ui_nameEdit->setText(object->name());
@@ -57,6 +63,8 @@ void ObjectEditWidget::setObject(RamObject *object)
         connect( object, &RamObject::removed, this, &ObjectEditWidget::objectRemoved);
         connect( object, &RamObject::dataChanged, this, &ObjectEditWidget::objectChanged);
     }
+
+    m_reinit = false;
 }
 
 void ObjectEditWidget::lockShortName(bool lock)
@@ -67,7 +75,7 @@ void ObjectEditWidget::lockShortName(bool lock)
 
 void ObjectEditWidget::setShortName()
 {
-    if (!m_object) return;
+    if (!m_object || m_reinit) return;
 
     if (ui_shortNameEdit->text() == "")
     {
@@ -99,7 +107,7 @@ void ObjectEditWidget::setShortName()
 
 void ObjectEditWidget::setName()
 {
-    if (!m_object) return;
+    if (!m_object || m_reinit) return;
 
     if (ui_nameEdit->text() == "")
     {
@@ -119,7 +127,7 @@ void ObjectEditWidget::setName()
 
 void ObjectEditWidget::setComment()
 {
-    if (!m_object) return;
+    if (!m_object || m_reinit) return;
 
 #if (QT_VERSION < QT_VERSION_CHECK(5, 15, 0))
     m_object->setComment(ui_commentEdit->toPlainText());

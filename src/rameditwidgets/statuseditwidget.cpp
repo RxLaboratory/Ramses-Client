@@ -38,6 +38,7 @@ void StatusEditWidget::reInit(RamObject *o)
         QSignalBlocker b7(ui_publishedBox);
         QSignalBlocker b8(ui_difficultyBox);
         QSignalBlocker b9(ui_autoEstimationBox);
+        QSignalBlocker b10(ui_estimationEdit);
 
         // Get users from project
         RamProject *project = nullptr;
@@ -189,9 +190,13 @@ void StatusEditWidget::setState(RamState *state)
     {
         ui_completionBox->setValue(50);
     }
-    if (!m_status) return;
+    if (!m_status || m_reinit) return;
+
     m_status->setState(state);
     m_status->setCompletionRatio(ui_completionBox->value());
+
+    RamUser *currentUser = Ramses::instance()->currentUser();
+    m_status->setModifiedBy(currentUser);
 }
 
 void StatusEditWidget::refresh()
@@ -201,44 +206,58 @@ void StatusEditWidget::refresh()
 
 void StatusEditWidget::setVersion( int v )
 {
-    if (!m_status) return;
+    if (!m_status || m_reinit) return;
     bool p = m_status->workingFolder().isPublished(v);
     ui_publishedBox->setChecked(p);
     m_status->setVersion(v);
+
+    RamUser *currentUser = Ramses::instance()->currentUser();
+    m_status->setModifiedBy(currentUser);
 }
 
 void StatusEditWidget::setCompletion(int c)
 {
-    if (!m_status) return;
+    if (!m_status || m_reinit) return;
     m_status->setCompletionRatio(c);
+
+    RamUser *currentUser = Ramses::instance()->currentUser();
+    m_status->setModifiedBy(currentUser);
 }
 
 void StatusEditWidget::setComment()
 {
-    if (!m_status) return;
+    if (!m_status || m_reinit) return;
 #if (QT_VERSION < QT_VERSION_CHECK(5, 15, 0))
     m_status->setComment( ui_statusCommentEdit->toPlainText() );
 #else
     m_status->setComment( ui_statusCommentEdit->toMarkdown() );
 #endif
 
+    RamUser *currentUser = Ramses::instance()->currentUser();
+    m_status->setModifiedBy(currentUser);
 }
 
 void StatusEditWidget::assignUser(RamObject *u)
 {
-    if (!m_status) return;
+    if (!m_status || m_reinit) return;
     m_status->assignUser(u);
+
+    RamUser *currentUser = Ramses::instance()->currentUser();
+    m_status->setModifiedBy(currentUser);
 }
 
 void StatusEditWidget::setPublished(bool p)
 {
-    if (!m_status) return;
+    if (!m_status || m_reinit) return;
     m_status->setPublished(p);
+
+    RamUser *currentUser = Ramses::instance()->currentUser();
+    m_status->setModifiedBy(currentUser);
 }
 
 void StatusEditWidget::setAutoEstimation(bool a)
 {
-    if (!m_status) return;
+    if (!m_status || m_reinit) return;
     m_status->setUseAutoEstimation(a);
 
     float est = 0;
@@ -256,17 +275,23 @@ void StatusEditWidget::setAutoEstimation(bool a)
 
     ui_estimationEdit->setValue( est );
     ui_estimationEdit->setEnabled(!a);
+
+    RamUser *currentUser = Ramses::instance()->currentUser();
+    m_status->setModifiedBy(currentUser);
 }
 
 void StatusEditWidget::setEstimation(double e)
 {
-    if (!m_status) return;
+    if (!m_status || m_reinit) return;
     m_status->setGoal(e);
+
+    RamUser *currentUser = Ramses::instance()->currentUser();
+    m_status->setModifiedBy(currentUser);
 }
 
 void StatusEditWidget::setDifficulty(int d)
 {
-    if (!m_status) return;
+    if (!m_status || m_reinit) return;
     switch(d)
     {
     case 0:
@@ -296,10 +321,15 @@ void StatusEditWidget::setDifficulty(int d)
     }
     }
 
+    RamUser *currentUser = Ramses::instance()->currentUser();
+    m_status->setModifiedBy(currentUser);
+
     if( !ui_autoEstimationBox->isChecked() ) return;
 
     float est = m_status->estimation( ui_difficultyBox->currentIndex() );
     ui_estimationEdit->setValue( est );
+
+
 }
 
 void StatusEditWidget::mainFileSelected()

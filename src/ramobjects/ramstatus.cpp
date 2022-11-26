@@ -6,6 +6,7 @@
 #include "ramworkingfolder.h"
 #include "statuseditwidget.h"
 #include "ramses.h"
+#include "ramuuid.h"
 
 // PROTECTED //
 
@@ -133,9 +134,17 @@ RamUser *RamStatus::modifiedBy() const
 
 void RamStatus::setModifiedBy(RamUser *user)
 {
+    RamUser *prevUser = modifiedBy();
+    if (prevUser->is(user)) return;
+
     if (!user) insertData("user", "none");
-    insertData("user", user->uuid());
-    // TODO Create history if changed
+    else insertData("user", user->uuid());
+    // Create history
+    LocalDataInterface::instance()->createObject(
+                RamUuid::generateUuidString(this->shortName() + this->name()),
+                "RamStatusHistory",
+                this->dataString()
+                );
 }
 
 RamStep *RamStatus::step() const

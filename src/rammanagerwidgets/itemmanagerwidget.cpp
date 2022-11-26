@@ -368,9 +368,11 @@ void ItemManagerWidget::sortByCompletion(bool sort)
 void ItemManagerWidget::unassignUser()
 {
     QVector<RamStatus*> status = beginEditSelectedStatus();
+    RamUser *currentUser = Ramses::instance()->currentUser();
     for (int i = 0; i < status.count(); i++)
     {
         status.at(i)->assignUser(nullptr);
+        status.at(i)->setModifiedBy(currentUser);
     }
 }
 
@@ -380,18 +382,13 @@ void ItemManagerWidget::assignUser(RamObject *user)
 
     QVector<RamStatus*> status = beginEditSelectedStatus();
 
-    ProgressManager *pm = ProgressManager::instance();
-    pm->setTitle(tr("Updating status"));
-    pm->setText("Assigning user...");
-    pm->setMaximum(status.count());
-    pm->start();
+    RamUser *currentUser = Ramses::instance()->currentUser();
 
     for (int i = 0; i < status.count(); i++)
     {
-        pm->increment();
         status.at(i)->assignUser(user);
+        status.at(i)->setModifiedBy(currentUser);
     }
-    pm->finish();
 }
 
 void ItemManagerWidget::changeState(RamObject *stt)
@@ -400,18 +397,13 @@ void ItemManagerWidget::changeState(RamObject *stt)
 
     QVector<RamStatus*> status = beginEditSelectedStatus();
 
-    ProgressManager *pm = ProgressManager::instance();
-    pm->setTitle(tr("Updating status"));
-    pm->setText("Changing status...");
-    pm->setMaximum(status.count());
-    pm->start();
+    RamUser *currentUser = Ramses::instance()->currentUser();
 
     for (int i = 0; i < status.count(); i++)
     {
-        pm->increment();
         status.at(i)->setState(RamState::c( stt ));
+        status.at(i)->setModifiedBy(currentUser);
     }
-    pm->finish();
 }
 
 void ItemManagerWidget::setVeryEasy()
@@ -443,18 +435,13 @@ void ItemManagerWidget::setDiffculty(RamStatus::Difficulty difficulty)
 {
     QVector<RamStatus*> status = beginEditSelectedStatus();
 
-    ProgressManager *pm = ProgressManager::instance();
-    pm->setTitle(tr("Updating status"));
-    pm->setText("Changing difficulty...");
-    pm->setMaximum(status.count());
-    pm->start();
+    RamUser *currentUser = Ramses::instance()->currentUser();
 
     for (int i = 0; i < status.count(); i++)
     {
-        pm->increment();
         status.at(i)->setDifficulty( difficulty );
+        status.at(i)->setModifiedBy(currentUser);
     }
-    pm->finish();
 
 }
 
@@ -464,18 +451,13 @@ void ItemManagerWidget::setCompletion()
     int completion = action->data().toInt();
     QVector<RamStatus*> status = beginEditSelectedStatus();
 
-    ProgressManager *pm = ProgressManager::instance();
-    pm->setTitle(tr("Updating status"));
-    pm->setText("Setting completion ratio...");
-    pm->setMaximum(status.count());
-    pm->start();
+    RamUser *currentUser = Ramses::instance()->currentUser();
 
     for (int i = 0; i < status.count(); i++)
     {
-        pm->increment();
         status.at(i)->setCompletionRatio( completion );
+        status.at(i)->setModifiedBy(currentUser);
     }
-    pm->finish();
 }
 
 void ItemManagerWidget::copyComment()
@@ -514,18 +496,13 @@ void ItemManagerWidget::pasteComment()
 
     QVector<RamStatus*> status = beginEditSelectedStatus();
 
-    ProgressManager *pm = ProgressManager::instance();
-    pm->setTitle(tr("Updating status"));
-    pm->setText("Setting comment...");
-    pm->setMaximum(status.count());
-    pm->start();
+    RamUser *currentUser = Ramses::instance()->currentUser();
 
     for (int i = 0; i < status.count(); i++)
     {
-        pm->increment();
         status.at(i)->setComment( comment );
+        status.at(i)->setModifiedBy(currentUser);
     }
-    pm->finish();
 }
 
 void ItemManagerWidget::createItem()
