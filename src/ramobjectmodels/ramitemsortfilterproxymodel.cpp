@@ -101,8 +101,6 @@ bool RamItemSortFilterProxyModel::filterAcceptsRow(int sourceRow, const QModelIn
     RamAbstractItem *item = qobject_cast<RamAbstractItem*>(itemObj);
     if(!item) return false;
 
-    return true;
-
     RamProject *proj = item->project();
     if (!proj) return false;
 

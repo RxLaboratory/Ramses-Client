@@ -276,7 +276,9 @@ void RamObjectMenu::clear()
     for (int j = actions.count() -1; j >= 0; j--)
     {
         QAction* a = actions.at(j);
-        if (actions.at(j)->data().toString() != "") {
+        RamObject *o = object(a);
+        if (o)
+        {
             this->removeAction(a);
             a->deleteLater();
         }
