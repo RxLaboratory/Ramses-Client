@@ -816,7 +816,7 @@ void ScheduleManagerWidget::changeProject()
 
     m_schedule->setObjectModel( m_project->users(), m_project->scheduleComments() );
     ui_userMenu->setObjectModel( m_project->users() );
-    ui_endDateEdit->setDate( QDate::currentDate().addDays(15) );
+    ui_endDateEdit->setDate( QDate::currentDate().addDays(30) );
     ui_stepMenu->setObjectModel( m_project->steps() );
     ui_stepContextMenu->setObjectModel(m_project->steps());
 
