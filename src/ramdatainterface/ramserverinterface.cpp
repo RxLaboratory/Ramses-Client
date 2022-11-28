@@ -576,6 +576,8 @@ void RamServerInterface::dataReceived(QNetworkReply *reply)
         log(tr("Server log:") + " " + message, l);
     }
 
+    if (!repSuccess) finishSync(true);
+
     // Parse specific data
     if (repQuery == "ping")
     {
@@ -589,6 +591,7 @@ void RamServerInterface::dataReceived(QNetworkReply *reply)
     {
         log(repMessage, DuQFLog::Warning);
         log(tr("The server logged you out."));
+        finishSync(true);
         setConnectionStatus(NetworkUtils::Offline, tr("The server logged you out."));
     }
     else if (repQuery == "sync")
@@ -742,6 +745,7 @@ bool RamServerInterface::checkPing(QJsonObject repObj)
         QString reason = tr("The server is unavailable.\nPlease check your network.\n\n(server ping failed)");
         log(reason, DuQFLog::Warning);
         setConnectionStatus(NetworkUtils::Offline, reason);
+        finishSync(true);
         return false;
     }
 
@@ -1151,8 +1155,10 @@ void RamServerInterface::finishSync(bool withError)
     qDebug() << "Server Interface: Finishing sync...";
 
     ProgressManager *pm = ProgressManager::instance();
-    if (withError) pm->setText(tr("Sync finished with error."));
-    else pm->setText("Sync OK!");
+    if (withError)
+        pm->setText(tr("Sync finished with error."));
+    else
+        pm->setText("Sync OK!");
 
     // Emit result
     if (!withError) emit syncReady(m_pullData, m_serverUuid );
