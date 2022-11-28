@@ -1,5 +1,4 @@
 === For 0.8
-- Check status table sort
 - reimplement scripting api for new status (no history)
 === Next
 - syncing ui better feedback : a status/connected icon + message user@server ( ... )

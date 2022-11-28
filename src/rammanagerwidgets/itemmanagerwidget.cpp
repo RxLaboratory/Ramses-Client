@@ -6,7 +6,6 @@
 #include "ramassetgroup.h"
 #include "ramsequence.h"
 #include "shotscreationdialog.h"
-#include "progressmanager.h"
 #include "ramstatustablemodel.h"
 
 ItemManagerWidget::ItemManagerWidget(RamTemplateStep::Type type, QWidget *parent) : QWidget(parent)
@@ -297,7 +296,7 @@ void ItemManagerWidget::uncheckSort()
     ui_actionSortByShortName->setChecked(false);
     ui_actionSortByName->setChecked(false);
     ui_actionSortByDifficulty->setChecked(false);
-    ui_actionSortByTimeSpent->setChecked(false);
+    //ui_actionSortByTimeSpent->setChecked(false);
     ui_actionSortByEstimation->setChecked(false);
     ui_actionSortByCompletion->setChecked(false);
 }
@@ -338,14 +337,14 @@ void ItemManagerWidget::sortByDifficulty(bool sort)
     ui_table->filteredModel()->setSortMode(RamObject::Difficulty);
 }
 
-void ItemManagerWidget::sortByTimeSpent(bool sort)
+/*void ItemManagerWidget::sortByTimeSpent(bool sort)
 {
     uncheckSort();
     ui_actionSortByTimeSpent->setChecked(sort);
     ui_header->setSortable(sort);
     ui_actionSortDefault->setChecked( !sort );
     ui_table->filteredModel()->setSortMode(RamObject::TimeSpent);
-}
+}*/
 
 void ItemManagerWidget::sortByEstimation(bool sort)
 {
@@ -682,9 +681,9 @@ void ItemManagerWidget::setupUi()
     ui_actionSortByDifficulty->setCheckable(true);
     sortMenu->addAction(ui_actionSortByDifficulty);
 
-    ui_actionSortByTimeSpent = new QAction("By time spent", this);
+    /*ui_actionSortByTimeSpent = new QAction("By time spent", this);
     ui_actionSortByTimeSpent->setCheckable(true);
-    sortMenu->addAction(ui_actionSortByTimeSpent);
+    sortMenu->addAction(ui_actionSortByTimeSpent);*/
 
     ui_actionSortByEstimation = new QAction("By estimation / Goal", this);
     ui_actionSortByEstimation->setCheckable(true);
@@ -941,7 +940,7 @@ void ItemManagerWidget::connectEvents()
     connect(ui_actionSortByShortName, SIGNAL(triggered(bool)), this, SLOT(sortByShortName(bool)));
     connect(ui_actionSortByName, SIGNAL(triggered(bool)), this, SLOT(sortByName(bool)));
     connect(ui_actionSortByDifficulty, SIGNAL(triggered(bool)), this, SLOT(sortByDifficulty(bool)));
-    connect(ui_actionSortByTimeSpent, SIGNAL(triggered(bool)), this, SLOT(sortByTimeSpent(bool)));
+    //connect(ui_actionSortByTimeSpent, SIGNAL(triggered(bool)), this, SLOT(sortByTimeSpent(bool)));
     connect(ui_actionSortByEstimation, SIGNAL(triggered(bool)), this, SLOT(sortByEstimation(bool)));
     connect(ui_actionSortByCompletion, SIGNAL(triggered(bool)), this, SLOT(sortByCompletion(bool)));
     // step actions
