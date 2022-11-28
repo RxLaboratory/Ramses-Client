@@ -49,7 +49,7 @@ protected slots:
     // Clear and reload the data
     void reload();
     // Checks and changes the data
-    void changeData(QString uuid, QString data);
+    void changeData(QString uuid, QString data, QString table = "");
 
 private:
 

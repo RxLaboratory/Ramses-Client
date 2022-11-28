@@ -272,13 +272,16 @@ void DBTableModel::reload()
     endResetModel();
 }
 
-void DBTableModel::changeData(QString uuid, QString data)
+void DBTableModel::changeData(QString uuid, QString data, QString table)
 {
+    // Not for us
+    if (table != "" && table != m_table) return;
+
     if (!m_objectUuids.contains(uuid))
     {
         // This may be a new object to insert according to the filters
         if (!checkFilters(data)) return;
-        insertObject(uuid, data, m_table);
+        insertObject(uuid, data, table);
         return;
     }
 

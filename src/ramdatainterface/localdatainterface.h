@@ -85,7 +85,7 @@ signals:
     void ramsesPathChanged(QString);
     // Sync result
     void syncFinished();
-    void dataChanged(QString uuid, QString data);
+    void dataChanged(QString uuid, QString data, QString table);
     void availabilityChanged(QString,bool);
     void inserted(QString uuid, QString data, QString table);
     void removed(QString uuid, QString table);

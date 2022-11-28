@@ -322,7 +322,7 @@ void LocalDataInterface::setObjectData(QString uuid, QString table, QString data
 
     query( q.arg(table, newData, modified.toString("yyyy-MM-dd hh:mm:ss"), uuid) );
 
-    emit dataChanged(uuid, data);
+    emit dataChanged(uuid, data, table);
 }
 
 void LocalDataInterface::removeObject(QString uuid, QString table)
@@ -421,7 +421,7 @@ void LocalDataInterface::updateUser(QString uuid, QString username, QString data
     q = "UPDATE RamUser SET `removed` = 1, `modified` = '%1' WHERE `userName` = '%2' AND `uuid` != '%3';";
     query( q.arg(modified, username, uuid) );
 
-    emit dataChanged(uuid, data);
+    emit dataChanged(uuid, data, "RamUser");
 }
 
 ServerConfig LocalDataInterface::serverConfig()
@@ -787,7 +787,9 @@ void LocalDataInterface::saveSync(SyncData syncData)
         query( q );
 
         // Emit
-        foreach(QStringList cu, changedUuids) emit dataChanged(cu.first(), cu.last());
+        foreach(QStringList cu, changedUuids) {
+            emit dataChanged(cu.first(), cu.last(), tableName);
+        }
     }
 
     emit syncFinished();
