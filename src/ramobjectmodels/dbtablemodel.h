@@ -56,7 +56,7 @@ private:
     // === METHODS ===
 
     // Edit structure
-    void insertObjects(int row, QVector<QStringList> data, QString table);
+    void insertObjects(int row, QVector<QStringList> data, QString table, bool silent = false);
     void removeObjects(QStringList uuids, QString table = "");
 
     // Gets the order from the data

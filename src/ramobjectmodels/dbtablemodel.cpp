@@ -124,7 +124,7 @@ bool DBTableModel::moveRows(const QModelIndex &sourceParent, int sourceRow, int 
     return true;
 }
 
-void DBTableModel::insertObjects(int row, QVector<QStringList> data, QString table)
+void DBTableModel::insertObjects(int row, QVector<QStringList> data, QString table, bool silent)
 {
     // Wrong table, not for us
     if (table != m_table) return;
@@ -134,7 +134,7 @@ void DBTableModel::insertObjects(int row, QVector<QStringList> data, QString tab
     if (row > rowCount()) row = rowCount();
 
     // Insert
-    beginInsertRows(QModelIndex(), row, row + data.count()-1);
+    if (!silent) beginInsertRows(QModelIndex(), row, row + data.count()-1);
 
     for (int i = data.count() - 1; i >= 0; i--)
     {
@@ -145,7 +145,7 @@ void DBTableModel::insertObjects(int row, QVector<QStringList> data, QString tab
         RamAbstractObjectModel::insertObject(row, uuid, dataStr);
     }
 
-    endInsertRows();
+    if (!silent) endInsertRows();
 }
 
 void DBTableModel::removeObjects(QStringList uuids, QString table)
@@ -267,7 +267,7 @@ void DBTableModel::reload()
     // Sort
     std::sort(objs.begin(), objs.end(), objSorter);
     // Insert
-    insertObjects(0, objs, m_table);
+    insertObjects(0, objs, m_table, true);
 
     endResetModel();
 }

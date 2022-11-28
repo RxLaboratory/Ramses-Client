@@ -36,7 +36,6 @@ RamStep *StepManagerWidget::createObject()
                 "New Step",
                 project
                 );
-    //project->steps()->appendObject(step->uuid());
     step->edit();
     return step;
 }

@@ -1,6 +1,4 @@
 === For 0.8
-- duplicate state list in status table
-- duplicate templatesteps menu
 - Check status table sort
 - reimplement scripting api for new status (no history)
 === Next

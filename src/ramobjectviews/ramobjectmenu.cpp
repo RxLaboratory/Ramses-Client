@@ -37,8 +37,6 @@ void RamObjectMenu::setObjectModel(QAbstractItemModel *list)
         m_objects->setSourceModel(list);
         m_objects->sort(0);
     }
-    clear();
-    reset();
 }
 
 RamObjectSortFilterProxyModel *RamObjectMenu::model()
@@ -299,3 +297,4 @@ RamObject *RamObjectMenu::object(QAction *a) const
     if (type == RamObject::Object || type == RamObject::Item) return nullptr;
     return RamObject::get(uuid, type );
 }
+
