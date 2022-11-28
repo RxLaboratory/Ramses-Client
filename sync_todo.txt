@@ -1,5 +1,10 @@
 === For 0.8
-- reimplement scripting api for new status (no history)
+- reimplement scripting api
+  - Doc:
+    - daemon: getStatus, setStatusModifiedBy
+    - RamItem: remove setStatus and stepStatusHistory
+    - RamStatus: setUser can be None
+  - RamProject: assets, shots, assetGroups, sequences, pipes, steps
 === Next
 - syncing ui better feedback : a status/connected icon + message user@server ( ... )
 - project pipeline:
