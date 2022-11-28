@@ -33,14 +33,20 @@ void ShotEditWidget::reInit(RamObject *o)
 
         // Set sequence
         RamProject *project = m_shot->project();
-        QSignalBlocker b(ui_sequencesBox);
-        ui_sequencesBox->setObjectModel(project->sequences());
-        ui_sequencesBox->setObject( m_shot->sequence() );
+        if (project)
+        {
+            QSignalBlocker b(ui_sequencesBox);
+            ui_sequencesBox->setObjectModel(project->sequences());
+            ui_sequencesBox->setObject( m_shot->sequence() );
+        }
 
         // Set assets
         ui_assetList->setObjectModel( m_shot->assets() );
-        ui_assetList->setFilterList( project->assetGroups() );
-        ui_assetList->setAssignList( project->assets() );
+        if (project)
+        {
+            ui_assetList->setFilterList( project->assetGroups() );
+            ui_assetList->setAssignList( project->assets() );
+        }
     }
     else
     {

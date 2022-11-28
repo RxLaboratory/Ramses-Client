@@ -62,7 +62,7 @@ RamShot::RamShot(QString uuid):
 
 RamSequence *RamShot::sequence() const
 {
-    return RamSequence::get( getData("sequence").toString() );
+    return RamSequence::get( getData("sequence").toString("none") );
 }
 
 void RamShot::setSequence(RamObject *sequence)
