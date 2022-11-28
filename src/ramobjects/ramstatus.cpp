@@ -134,6 +134,9 @@ RamUser *RamStatus::modifiedBy() const
 
 void RamStatus::setModifiedBy(RamUser *user)
 {
+    // Update date
+    setDate();
+
     RamUser *prevUser = modifiedBy();
     if (prevUser->is(user)) return;
 

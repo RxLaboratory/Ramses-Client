@@ -83,6 +83,7 @@ private slots:
      */
     void setCurrentProject(QString uuid, QTcpSocket *client);
 
+
     // DATA
     /**
      * @brief create Creates a new object
@@ -212,6 +213,37 @@ private slots:
      * @param client
      */
     void uuidFromPath(QString path, QString objectType, QTcpSocket *client);
+    /**
+     * @brief getStatus Gets the uuid and data of the status of an item and step
+     * {
+     *  "query": "getStatus",
+     *  "message": "I've found a status.",
+     *  "accepted": true,
+     *  "success": true,
+     *  "content": {
+     *      "uuid": "unique-uid",
+     *      "data": {"Some JSON Data"}
+     *      }
+     * }
+     * @param itemUuid
+     * @param stepUuid
+     * @param client
+     */
+    void getStatus(QString itemUuid, QString stepUuid, QTcpSocket *client);
+    /**
+     * @brief setStatusModifiedBy Sets the user who's modified the status.
+     * {
+     *  "query": "setData",
+     *  "message": "Data updated.",
+     *  "accepted": true,
+     *  "success": true,
+     *  "content": { }
+     * }
+     * @param statusUuid
+     * @param userUuid can be "current" for the current user.
+     * @param client
+     */
+    void setStatusModifiedBy(QString statusUuid, QString userUuid, QTcpSocket *client);
 
     // PATHS
     /**

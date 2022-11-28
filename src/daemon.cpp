@@ -2,6 +2,10 @@
 #include "duqf-app/app-version.h"
 #include "ramobjectmodel.h"
 #include "ramses.h"
+#include "ramstatus.h"
+#include "ramstep.h"
+#include "ramasset.h"
+#include "ramshot.h"
 
 Daemon *Daemon::_instance = nullptr;
 
@@ -127,13 +131,16 @@ void Daemon::reply(QString request, QTcpSocket *client)
             uuidFromPath(args.value("path"), args.value("type"), client);
 
     else if (args.contains("getPath"))
-                getPath(args.value("uuid"), client);
+            getPath(args.value("uuid"), client);
 
     else if (args.contains("getObjects"))
-                getObjects(args.value("type"), client);
+            getObjects(args.value("type"), client);
 
     else if (args.contains("create"))
-                create(args.value("uuid"), args.value("data"), args.value("type"), client);
+            create(args.value("uuid"), args.value("data"), args.value("type"), client);
+
+    else if (args.contains("getStatus"))
+            getStatus(args.value("itemUuid"), args.value("stepUuid"), client);
 
     else
         post(client, QJsonObject(), "", tr("Unknown query: %1").arg(request), false, false);
@@ -301,6 +308,72 @@ void Daemon::uuidFromPath(QString path, QString objectType, QTcpSocket *client)
 
     if (uuid == "") post(client, content, "uuidFromPath", tr("I can't find the object."), false);
     else post(client, content, "uuidFromPath", tr("I've found an object."));
+}
+
+void Daemon::getStatus(QString itemUuid, QString stepUuid, QTcpSocket *client)
+{
+    log(tr("I'm replying to this request: %1.").arg("getStatus"), DuQFLog::Debug);
+    log(tr("This is the item uuid: %1").arg(itemUuid), DuQFLog::Data);
+    log(tr("This is the step uuid: %1").arg(stepUuid), DuQFLog::Data);
+
+    RamProject *proj = Ramses::instance()->currentProject();
+
+    QJsonObject content;
+    content.insert("uuid", "");
+    content.insert("data", "{}");
+
+    if (!proj) {
+        post(client, content, "getStatus", tr("There's no active project. Select a project in the client first."), false);
+        return;
+    }
+
+    RamStep *step = RamStep::get(stepUuid);
+    if (!step) {
+        post(client, content, "getStatus", tr("Unknown step, sorry."), false);
+        return;
+    }
+
+    RamAbstractItem *item = nullptr;
+    if (step->type() == RamStep::AssetProduction) item = RamAsset::get(itemUuid);
+    else if (step->type() == RamStep::ShotProduction) item = RamShot::get(itemUuid);
+    if (!item) {
+        post(client, content, "getStatus", tr("Unknown item, sorry."), false);
+        return;
+    }
+
+    RamStatus *status = proj->status(item, step);
+    if (!status) {
+        post(client, content, "getStatus", tr("I can't find a status for this item and step, sorry."), false);
+        return;
+    }
+
+    content.insert("uuid", status->uuid());
+    content.insert("data", status->data());
+    post(client, content, "getStatus", tr("I've found a status."));
+}
+
+void Daemon::setStatusModifiedBy(QString statusUuid, QString userUuid, QTcpSocket *client)
+{
+    log(tr("I'm replying to this request: %1.").arg("setStatusModifiedBy"), DuQFLog::Debug);
+    log(tr("This is the status uuid: %1").arg(statusUuid), DuQFLog::Data);
+    log(tr("This is the user uuid: %1").arg(userUuid), DuQFLog::Data);
+
+    RamStatus *status = RamStatus::get(statusUuid);
+    if (!status) {
+        post(client, QJsonObject(), "setStatusModifiedBy", tr("Unknown status."), false);
+        return;
+    }
+
+    RamUser *user = nullptr;
+    if (userUuid == "current" || userUuid == "") user = Ramses::instance()->currentUser();
+    else user = RamUser::get(userUuid);
+    if (!user) {
+        post(client, QJsonObject(), "setStatusModifiedBy", tr("Unknown user."), false);
+        return;
+    }
+
+    status->setModifiedBy(user);
+    post(client, QJsonObject(), "setStatusModifiedBy", tr("Data updated."));
 }
 
 void Daemon::getPath(QString uuid, QTcpSocket *client)
