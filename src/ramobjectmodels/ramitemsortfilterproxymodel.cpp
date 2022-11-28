@@ -109,13 +109,27 @@ bool RamItemSortFilterProxyModel::filterAcceptsRow(int sourceRow, const QModelIn
 
     for (int i = 0; i < m_users.count(); i++)
     {
-        ok = proj->isUserAssigned(m_users.at(i), item);
+        // Check for visible steps only
+        for (int j = 0; j < sourceModel()->columnCount(); j++)
+        {
+            RamStep *s = step(j);
+            if (!s) continue;
+            ok = proj->isUserAssigned(m_users.at(i), item, s);
+            if (ok) break;
+        }
         if (ok) break;
     }
 
     if (!ok && m_showUnassigned)
     {
-        ok = proj->isUnassigned(item);
+        // Check for visible steps only
+        for (int j = 0; j < sourceModel()->columnCount(); j++)
+        {
+            RamStep *s = step(j);
+            if (!s) continue;
+            ok = proj->isUnassigned(item, s);
+            if (ok) break;
+        }
     }
 
     if (!ok) return false;
@@ -125,7 +139,14 @@ bool RamItemSortFilterProxyModel::filterAcceptsRow(int sourceRow, const QModelIn
     // check states
     for (int i = 0; i < m_states.count(); i++)
     {
-        ok = proj->hasState(m_states.at(i), item);
+        // Check for visible steps only
+        for (int j = 0; j < sourceModel()->columnCount(); j++)
+        {
+            RamStep *s = step(j);
+            if (!s) continue;
+            ok = proj->hasState(m_states.at(i), item, s);
+            if (ok) break;
+        }
         if (ok) break;
     }
 
