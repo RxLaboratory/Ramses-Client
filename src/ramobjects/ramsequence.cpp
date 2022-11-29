@@ -49,8 +49,15 @@ RamSequence::RamSequence(QString uuid):
     else invalidate();
 }
 
+DBTableModel *RamSequence::shots() const
+{
+    m_shots->load();
+    return m_shots;
+}
+
 int RamSequence::shotCount() const
 {
+    m_shots->load();
     return m_shots->rowCount();
 }
 
@@ -109,12 +116,3 @@ void RamSequence::construct()
     m_shots = new DBTableModel(RamObject::Shot, true, this);
     m_shots->addFilterValue( "sequence", this->uuid() );
 }
-
-
-
-
-
-
-
-
-

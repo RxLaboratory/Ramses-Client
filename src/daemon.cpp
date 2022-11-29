@@ -1,6 +1,7 @@
 #include "daemon.h"
 #include "duqf-app/app-version.h"
 #include "ramobjectmodel.h"
+#include "ramsequence.h"
 #include "ramses.h"
 #include "ramstatus.h"
 #include "ramstep.h"
@@ -142,6 +143,24 @@ void Daemon::reply(QString request, QTcpSocket *client)
     else if (args.contains("getStatus"))
             getStatus(args.value("itemUuid"), args.value("stepUuid"), client);
 
+    else if (args.contains("getAssets"))
+            getAssets(args.value("projectUuid"), args.value("groupUuid"), client);
+
+    else if (args.contains("getShots"))
+            getShots(args.value("projectUuid"), args.value("sequenceUuid"), client);
+
+    else if (args.contains("getAssetGroups"))
+            getAssetGroups(args.value("projectUuid"), client);
+
+    else if (args.contains("getSequences"))
+            getSequences(args.value("projectUuid"), client);
+
+    else if (args.contains("getPipes"))
+            getPipes(args.value("projectUuid"), client);
+
+    else if (args.contains("getSteps"))
+            getSteps(args.value("projectUuid"), args.value("type", "ALL"), client);
+
     else
         post(client, QJsonObject(), "", tr("Unknown query: %1").arg(request), false, false);
 }
@@ -271,6 +290,225 @@ void Daemon::getProjects(QTcpSocket *client)
     post(client, content, "getProjects", tr("I've got the project list."));
 }
 
+void Daemon::getAssets(QString projectUuid, QString assetGroupUuid, QTcpSocket *client)
+{
+    log(tr("I'm replying to this request: %1.").arg("getAssets"), DuQFLog::Debug);
+    log(tr("This is the project uuid: %1").arg(projectUuid), DuQFLog::Data);
+    log(tr("This is the asset group uuid: %1").arg(assetGroupUuid), DuQFLog::Data);
+
+    QJsonObject content;
+
+    QStringList uuids;
+
+    // If from the asset group
+    if (assetGroupUuid != "")
+    {
+        RamAssetGroup *ag = RamAssetGroup::get(assetGroupUuid);
+        if (!ag) {
+            post(client, content, "getAssets", tr("I can't find this asset group."), false);
+            return;
+        }
+
+        uuids = ag->assets()->toStringList();
+    }
+    else
+    {
+        if (projectUuid == "") {
+            post(client, content, "getAssets", tr("You must provide either a project or an asset group UUID."), false);
+            return;
+        }
+
+        RamProject *proj = RamProject::get(projectUuid);
+        if (!proj) {
+            post(client, content, "getAssets", tr("I can't find this project."), false);
+            return;
+        }
+
+        uuids = proj->assets()->toStringList();
+    }
+
+    QJsonArray assets = QJsonArray::fromStringList(uuids);
+    content.insert("assets", assets);
+    post(client, content, "getAssets", tr("I've got the asset list."));
+}
+
+void Daemon::getShots(QString projectUuid, QString sequenceUuid, QTcpSocket *client)
+{
+    log(tr("I'm replying to this request: %1.").arg("getShots"), DuQFLog::Debug);
+    log(tr("This is the project uuid: %1").arg(projectUuid), DuQFLog::Data);
+    log(tr("This is the sequence group uuid: %1").arg(sequenceUuid), DuQFLog::Data);
+
+    QJsonObject content;
+
+    QStringList uuids;
+
+    // If from the asset group
+    if (sequenceUuid != "")
+    {
+        RamSequence *seq = RamSequence::get(sequenceUuid);
+        if (!seq) {
+            post(client, content, "getShots", tr("I can't find this sequence."), false);
+            return;
+        }
+
+        uuids = seq->shots()->toStringList();
+    }
+    else
+    {
+        if (projectUuid == "") {
+            post(client, content, "getShots", tr("You must provide either a project or an asset group UUID."), false);
+            return;
+        }
+
+        RamProject *proj = RamProject::get(projectUuid);
+        if (!proj) {
+            post(client, content, "getShots", tr("I can't find this project."), false);
+            return;
+        }
+
+        uuids = proj->shots()->toStringList();
+    }
+
+    QJsonArray shots = QJsonArray::fromStringList(uuids);
+    content.insert("shots", shots);
+    post(client, content, "getShots", tr("I've got the shot list."));
+}
+
+void Daemon::getAssetGroups(QString projectUuid, QTcpSocket *client)
+{
+    log(tr("I'm replying to this request: %1.").arg("getAssetGroups"), DuQFLog::Debug);
+    log(tr("This is the project uuid: %1").arg(projectUuid), DuQFLog::Data);
+
+    QJsonObject content;
+
+    QStringList uuids;
+
+    if (projectUuid == "") {
+        post(client, content, "getAssetGroups", tr("You must provide either a project or an asset group UUID."), false);
+        return;
+    }
+
+    RamProject *proj = RamProject::get(projectUuid);
+    if (!proj) {
+        post(client, content, "getAssetGroups", tr("I can't find this project."), false);
+        return;
+    }
+
+    uuids = proj->assetGroups()->toStringList();
+
+    QJsonArray ags = QJsonArray::fromStringList(uuids);
+    content.insert("assetGroups", ags);
+    post(client, content, "getAssetGroups", tr("I've got the asset group list."));
+}
+
+void Daemon::getSequences(QString projectUuid, QTcpSocket *client)
+{
+    log(tr("I'm replying to this request: %1.").arg("getSequences"), DuQFLog::Debug);
+    log(tr("This is the project uuid: %1").arg(projectUuid), DuQFLog::Data);
+
+    QJsonObject content;
+
+    QStringList uuids;
+
+    if (projectUuid == "") {
+        post(client, content, "getSequences", tr("You must provide either a project or an asset group UUID."), false);
+        return;
+    }
+
+    RamProject *proj = RamProject::get(projectUuid);
+    if (!proj) {
+        post(client, content, "getSequences", tr("I can't find this project."), false);
+        return;
+    }
+
+    uuids = proj->sequences()->toStringList();
+
+    QJsonArray seqs = QJsonArray::fromStringList(uuids);
+    content.insert("sequences", seqs);
+    post(client, content, "getSequences", tr("I've got the sequence list."));
+}
+
+void Daemon::getPipes(QString projectUuid, QTcpSocket *client)
+{
+    log(tr("I'm replying to this request: %1.").arg("getPipes"), DuQFLog::Debug);
+    log(tr("This is the project uuid: %1").arg(projectUuid), DuQFLog::Data);
+
+    QJsonObject content;
+
+    QStringList uuids;
+
+    if (projectUuid == "") {
+        post(client, content, "getPipes", tr("You must provide either a project or an asset group UUID."), false);
+        return;
+    }
+
+    RamProject *proj = RamProject::get(projectUuid);
+    if (!proj) {
+        post(client, content, "getPipes", tr("I can't find this project."), false);
+        return;
+    }
+
+    uuids = proj->pipeline()->toStringList();
+
+    QJsonArray pps = QJsonArray::fromStringList(uuids);
+    content.insert("pipes", pps);
+    post(client, content, "getPipes", tr("I've got the pipeline."));
+}
+
+void Daemon::getSteps(QString projectUuid, QString stepType, QTcpSocket *client)
+{
+    log(tr("I'm replying to this request: %1.").arg("getSteps"), DuQFLog::Debug);
+    log(tr("This is the project uuid: %1").arg(projectUuid), DuQFLog::Data);
+    log(tr("This is the step type: %1").arg(stepType), DuQFLog::Data);
+
+    QJsonObject content;
+
+    QStringList uuids;
+
+    if (projectUuid == "") {
+        post(client, content, "getSteps", tr("You must provide either a project or an asset group UUID."), false);
+        return;
+    }
+
+    RamProject *proj = RamProject::get(projectUuid);
+    if (!proj) {
+        post(client, content, "getSteps", tr("I can't find this project."), false);
+        return;
+    }
+
+    if (stepType == "ALL") uuids = proj->steps()->toStringList();
+    else if (stepType == "ASSET_PRODUCTION") uuids = proj->assetSteps()->toStringList();
+    else if (stepType == "SHOT_PRODUCTION") uuids = proj->shotSteps()->toStringList();
+    else {
+        DBTableModel *steps = proj->steps();
+        if (stepType == "PRE_PRODUCTION") {
+            for (int i = 0 ; i < steps->count(); i++)
+            {
+                RamStep *step = RamStep::c( steps->get(i) );
+                if (step->type() == RamStep::PreProduction) uuids << step->uuid();
+            }
+        }
+        else if (stepType == "POST_PRODUCTION") {
+            for (int i = 0 ; i < steps->count(); i++)
+            {
+                RamStep *step = RamStep::c( steps->get(i) );
+                if (step->type() == RamStep::PostProduction) uuids << step->uuid();
+            }
+        }
+        else if (stepType == "PRODUCTION") {
+            for (int i = 0 ; i < steps->count(); i++)
+            {
+                RamStep *step = RamStep::c( steps->get(i) );
+                if (step->type() == RamStep::AssetProduction || step->type() == RamStep::ShotProduction) uuids << step->uuid();
+            }
+        }
+    }
+
+    QJsonArray steps = QJsonArray::fromStringList(uuids);
+    content.insert("steps", steps);
+    post(client, content, "getSteps", tr("I've got the step list."));
+}
+
 void Daemon::setData(QString uuid, QString data, QTcpSocket *client)
 {
     log(tr("I'm replying to this request: %1.").arg("setData"), DuQFLog::Debug);
@@ -320,7 +558,7 @@ void Daemon::getStatus(QString itemUuid, QString stepUuid, QTcpSocket *client)
 
     QJsonObject content;
     content.insert("uuid", "");
-    content.insert("data", "{}");
+    content.insert("data", QJsonObject());
 
     if (!proj) {
         post(client, content, "getStatus", tr("There's no active project. Select a project in the client first."), false);

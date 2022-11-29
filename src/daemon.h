@@ -142,7 +142,7 @@ private slots:
      */
     void getRamsesFolder(QTcpSocket *client);
     /**
-     * @brief ping Sends the list of existing projects (for the current user).
+     * @brief getProjects Sends the list of existing projects (for the current user).
      * {
      *  "query": "getProjects",
      *  "message": "I've got the project list.",
@@ -168,6 +168,90 @@ private slots:
      * @param client
      */
     void getProjects(QTcpSocket *client);
+    /**
+     * @brief getAssets Sends the list of existing assets (for the project).
+     * {
+     *  "query": "getAssets",
+     *  "message": "I've got the asset list.",
+     *  "accepted": true,
+     *  "success": true,
+     *  "content": {
+     *      "assets": [ "unique-uid1", "unique-uid2", "unique-uid3" ]
+     *      }
+     * }
+     * @param client
+     */
+    void getAssets(QString projectUuid, QString assetGroupUuid, QTcpSocket *client);
+    /**
+     * @brief getShots Sends the list of existing shots (for the project).
+     * {
+     *  "query": "getShots",
+     *  "message": "I've got the shot list.",
+     *  "accepted": true,
+     *  "success": true,
+     *  "content": {
+     *      "shots": [ "unique-uid1", "unique-uid2", "unique-uid3" ]
+     *      }
+     * }
+     * @param client
+     */
+    void getShots(QString projectUuid, QString sequenceUuid, QTcpSocket *client);
+    /**
+     * @brief getAssetGroups Sends the list of existing asset groups (for the project).
+     * {
+     *  "query": "getAssetGroups",
+     *  "message": "I've got the asset group list.",
+     *  "accepted": true,
+     *  "success": true,
+     *  "content": {
+     *      "assetGroups": [ "unique-uid1", "unique-uid2", "unique-uid3" ]
+     *      }
+     * }
+     * @param client
+     */
+    void getAssetGroups(QString projectUuid, QTcpSocket *client);
+    /**
+     * @brief getSequences Sends the list of existing serquences (for the project).
+     * {
+     *  "query": "getSequences",
+     *  "message": "I've got the sequence list.",
+     *  "accepted": true,
+     *  "success": true,
+     *  "content": {
+     *      "sequences": [ "unique-uid1", "unique-uid2", "unique-uid3" ]
+     *      }
+     * }
+     * @param client
+     */
+    void getSequences(QString projectUuid, QTcpSocket *client);
+    /**
+     * @brief getPipes Sends the list of existing pipes (for the project).
+     * {
+     *  "query": "getPipes",
+     *  "message": "I've got the pipeline.",
+     *  "accepted": true,
+     *  "success": true,
+     *  "content": {
+     *      "pipes": [ "unique-uid1", "unique-uid2", "unique-uid3" ]
+     *      }
+     * }
+     * @param client
+     */
+    void getPipes(QString projectUuid, QTcpSocket *client);
+    /**
+     * @brief getSteps Sends the list of existing steps (for the project).
+     * {
+     *  "query": "getSteps",
+     *  "message": "I've got the step list.",
+     *  "accepted": true,
+     *  "success": true,
+     *  "content": {
+     *      "steps": [ "unique-uid1", "unique-uid2", "unique-uid3" ]
+     *      }
+     * }
+     * @param client
+     */
+    void getSteps(QString projectUuid, QString stepType, QTcpSocket *client);
     /**
      * @brief setData Updates the data of an object.
      * {

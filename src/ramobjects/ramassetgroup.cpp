@@ -60,6 +60,12 @@ RamAssetGroup::RamAssetGroup(QString uuid):
     else invalidate();
 }
 
+DBTableModel *RamAssetGroup::assets() const
+{
+    m_assets->load();
+    return m_assets;
+}
+
 int RamAssetGroup::assetCount() const
 {
     m_assets->load();

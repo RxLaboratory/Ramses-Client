@@ -1,10 +1,10 @@
 === For 0.8
 - reimplement scripting api
   - Doc:
-    - daemon: getStatus, setStatusModifiedBy
     - RamItem: remove setStatus and stepStatusHistory
     - RamStatus: setUser can be None
-  - RamProject: assets, shots, assetGroups, sequences, pipes, steps
+    - RamSequence: shots
+    - RamAssetGroup: assets
 === Next
 - syncing ui better feedback : a status/connected icon + message user@server ( ... )
 - project pipeline:
@@ -14,7 +14,6 @@
 - schedule:
   - update db to add project uuid
 - RamObjectModel: remove columns; refactor using RamAbstractObjectModel (lookup). Remove RamAbstractItem objectForColumn
-- schedule not updated after sync (ui not refreshed) > make sure to refresh all ui after sync. Done: test!
 - remove server timeout?
 - a new RamStatusHistory object, reimplement history (history button in status tables)
 - localdatainterface delete data in a single query (see server)

@@ -27,6 +27,8 @@ public:
 
     virtual QVariant roleData(int role) const override;
 
+    DBTableModel *shots() const;
+
 public slots:
     virtual void edit(bool show = true) override;
 
