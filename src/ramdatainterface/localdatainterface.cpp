@@ -160,7 +160,8 @@ QString LocalDataInterface::getRamsesPath(QString dbFile)
 QSet<QString> LocalDataInterface::tableUuids(QString table, bool includeRemoved)
 {
     // If we've got the info in the cache, use it.
-    if (CACHE_LOCAL_DATA && m_uuids.contains(table) ) return m_uuids.value(table);
+    if (includeRemoved && CACHE_LOCAL_DATA && m_uuids.contains(table) ) return m_uuids.value(table);
+    if (!includeRemoved && CACHE_LOCAL_DATA && m_uuidsWithoutRemoved.contains(table) ) return m_uuidsWithoutRemoved.value(table);
 
     QString q = "SELECT uuid FROM '%1'";
     if (!includeRemoved) q += " WHERE removed = 0";
@@ -172,7 +173,8 @@ QSet<QString> LocalDataInterface::tableUuids(QString table, bool includeRemoved)
     while (qry.next()) data << qry.value(0).toString();
 
     // Cache
-    m_uuids.insert(table, data);
+    if (includeRemoved) m_uuids.insert(table, data);
+    else m_uuidsWithoutRemoved.insert(table, data);
 
     return data;
 }
@@ -237,10 +239,10 @@ QVector<QStringList> LocalDataInterface::tableData(QString table, QHash<QString,
     return tData;
 }
 
-bool LocalDataInterface::contains(QString uuid, QString table)
+bool LocalDataInterface::contains(QString uuid, QString table, bool includeRemoved)
 {
     // Get all UUIDS
-    QSet<QString> uuids = tableUuids(table, true);
+    QSet<QString> uuids = tableUuids(table, includeRemoved);
     return uuids.contains(uuid);
 
 
@@ -269,6 +271,7 @@ void LocalDataInterface::createObject(QString uuid, QString table, QString data)
 {
     // Remove table cache
     m_uuids.remove(table);
+    m_uuidsWithoutRemoved.remove(table);
 
     QString newData = data;
 
@@ -489,6 +492,7 @@ ServerConfig LocalDataInterface::setDataFile(const QString &file)
 {
     // Clear all cache
     m_uuids.clear();
+    m_uuidsWithoutRemoved.clear();
 
     ProgressManager *pm = ProgressManager::instance();
     pm->addToMaximum(2);
@@ -641,6 +645,7 @@ void LocalDataInterface::saveSync(SyncData syncData)
 
         // Clear cache
         m_uuids.remove(tableName);
+        m_uuidsWithoutRemoved.remove(tableName);
 
         // We're going to need the uuids and dates of the table
         QMap<QString, QString> uuidDates = modificationDates( tableName );
@@ -717,6 +722,7 @@ void LocalDataInterface::saveSync(SyncData syncData)
 
         // Clear cache
         m_uuids.remove(tableName);
+        m_uuidsWithoutRemoved.remove(tableName);
 
         QSet<TableRow> incomingRows = i.value();
 
@@ -932,6 +938,7 @@ QString LocalDataInterface::cleanDataBase(int deleteDataOlderThan)
 
     // Clear cache
     m_uuids.clear();
+    m_uuidsWithoutRemoved.clear();
 
     // Get needed data
 

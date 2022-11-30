@@ -123,7 +123,7 @@ public:
 
     // Checks if this is a valid uuid,
     // and if it exists in the DB
-    static bool checkUuid(QString uuid, ObjectType type, bool mayBeVirtual = false);
+    static bool checkUuid(QString uuid, ObjectType type, bool mayBeVirtual = false, bool includeRemoved = false);
 
     static QSet<RamAbstractObject*> invalidObjects();
     static void removeInvalidObjects();

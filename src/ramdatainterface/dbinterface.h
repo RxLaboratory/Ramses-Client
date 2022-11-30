@@ -53,7 +53,7 @@ public:
     // DATA INTERFACE //
 
     QSet<QString> tableUuids(QString table);
-    bool contains(QString uuid, QString table);
+    bool contains(QString uuid, QString table, bool includeRemoved = false);
 
     void createObject(QString uuid, QString table, QString data);
 

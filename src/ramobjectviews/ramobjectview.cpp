@@ -11,6 +11,11 @@ RamObjectView::RamObjectView(DisplayMode mode, QWidget *parent):
     connectEvents();
 }
 
+void RamObjectView::setContextMenuDisabled(bool disabled)
+{
+    m_contextMenuDisabled = disabled;
+}
+
 void RamObjectView::setObjectModel(QAbstractItemModel *model)
 {
     m_objectModel->freeze();
@@ -158,6 +163,21 @@ void RamObjectView::select(const QModelIndex &index)
     emit objectSelected(obj);
 }
 
+void RamObjectView::contextMenuRequested(QPoint p)
+{
+    if (m_contextMenuDisabled) return;
+
+    ui_contextMenu->popup(this->viewport()->mapToGlobal(p));
+}
+
+void RamObjectView::copyUuid()
+{
+    QModelIndex index = this->currentIndex();
+    QString uuid = index.data(RamObject::UUID).toString();
+    QClipboard *clipboard = QGuiApplication::clipboard();
+    clipboard->setText( uuid );
+}
+
 void RamObjectView::rowMoved(int logicalIndex, int oldVisualIndex, int newVisualIndex)
 {
     Q_UNUSED(logicalIndex);
@@ -224,6 +244,7 @@ void RamObjectView::setupUi()
     this->setShowGrid(false);
     this->setColumnWidth( 0, this->size().width() );
     this->setMouseTracking(true);
+    this->setContextMenuPolicy(Qt::CustomContextMenu);
 
     QString style = "QTableView { padding-top: 3px; padding-bottom: 3px; gridline-color: rgba(0,0,0,0); selection-background-color: rgba(0,0,0,0); } ";
     style += "QTableView::item:hover { background-color: none; } ";
@@ -231,6 +252,13 @@ void RamObjectView::setupUi()
 
     m_delegate = new RamObjectDelegate();
     this->setItemDelegate( m_delegate );
+
+    // Context menu
+    ui_contextMenu = new QMenu(this);
+
+    ui_actionCopyUuid = new QAction(tr("Copy UUID"));
+    ui_actionCopyUuid->setIcon(QIcon(":/icons/code"));
+    ui_contextMenu->addAction(ui_actionCopyUuid);
 
     // Set model
     m_objectModel = new RamObjectSortFilterProxyModel(this);
@@ -252,4 +280,7 @@ void RamObjectView::connectEvents()
     // SELECT
     // Unselect before filtering
     connect(m_objectModel, SIGNAL(aboutToFilter()), this->selectionModel(), SLOT(clear()));
+    // Context menu
+    connect(this, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(contextMenuRequested(QPoint)));
+    connect(ui_actionCopyUuid, SIGNAL(triggered()), this, SLOT( copyUuid() ) );
 }

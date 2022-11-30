@@ -1,5 +1,6 @@
 #include "dbtablemodel.h"
 #include "localdatainterface.h"
+#include "dbinterface.h"
 #include "progressmanager.h"
 
 DBTableModel::DBTableModel(RamObject::ObjectType type, bool projectTable, QObject *parent):
@@ -231,6 +232,9 @@ void DBTableModel::moveObject(int from, int to)
 void DBTableModel::insertObject(QString uuid, QString data, QString table)
 {
     if (table != m_table) return;
+
+    // Removed
+    if (DBInterface::instance()->isRemoved(uuid, table)) return;
 
     // Filter
     if (!checkFilters(data)) return;

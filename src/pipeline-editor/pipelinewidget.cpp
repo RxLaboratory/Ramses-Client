@@ -457,6 +457,8 @@ void PipelineWidget::newPipe(RamObject *p)
 {
     RamPipe *pipe = qobject_cast<RamPipe*>(p);
     if (!pipe) return;
+    if (!pipe->inputStep()) return;
+    if (!pipe->outputStep()) return;
 
     // Get nodes
     DuQFNode *inputNode = nullptr;
@@ -537,8 +539,10 @@ void PipelineWidget::connectionRemoved(DuQFConnection *co)
     if (!input) return;
 
     RamPipe *p = project->pipe(output, input);
-    project->pipeline()->removeObjects(QStringList(p->uuid()));
-    if (p) p->remove();
+    if (p) {
+        project->pipeline()->removeObjects(QStringList(p->uuid()));
+        p->remove();
+    }
 }
 
 void PipelineWidget::loadProjectLayout()

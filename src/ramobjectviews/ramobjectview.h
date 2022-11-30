@@ -34,6 +34,8 @@ public:
     void setObjectModel(QAbstractItemModel *model);
     QAbstractItemModel *objectModel() const;
 
+    void setContextMenuDisabled(bool disabled);
+
 signals:
     void objectSelected(RamObject*);
 
@@ -43,6 +45,8 @@ public slots:
     void filter(RamObject *o);
     void setCompletionRatio(bool showCompletion);
     void showDetails(bool s);
+
+    void copyUuid();
 
 protected:
     virtual void mouseMoveEvent(QMouseEvent *event) override;
@@ -60,6 +64,7 @@ protected slots:
 
 private slots:
     void select(const QModelIndex &index);
+    void contextMenuRequested(QPoint p);
 
 private:
     void setupUi();
@@ -73,11 +78,16 @@ private:
     // Filters
     QString m_currentFilterUuid;
 
+    // Context menu
+    QMenu *ui_contextMenu;
+    QAction *ui_actionCopyUuid;
+
     // UI Events
     QPoint m_initialDragPos;
     bool m_dragging = false;
     bool m_layout = false;
     QModelIndex m_clicking = QModelIndex();
+    bool m_contextMenuDisabled = false;
 };
 
 #endif // RAMOBJECTVIEW_H

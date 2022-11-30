@@ -616,7 +616,7 @@ void RamAbstractObject::createData(QString data)
     m_created = true;
 }
 
-bool RamAbstractObject::checkUuid(QString uuid, ObjectType type, bool mayBeVirtual)
+bool RamAbstractObject::checkUuid(QString uuid, ObjectType type, bool mayBeVirtual, bool includeRemoved)
 {
     QString table = objectTypeName(type);
     if (uuid == "")
@@ -628,12 +628,15 @@ bool RamAbstractObject::checkUuid(QString uuid, ObjectType type, bool mayBeVirtu
     if (mayBeVirtual) return true;
 
     // Check if the uuid exists in the DB
-    if (!DBInterface::instance()->contains(uuid, table))
+    if (!DBInterface::instance()->contains(uuid, table, includeRemoved))
     {
         qCritical() << QString("%1::get - This uuid can't be found in the database: %2").arg(table, uuid);
         // Don't do anything, let the caller handle it
         return false;
     }
+
+    // Check if it's removed
+    //if (!includeRemoved && DBInterface::instance()->isRemoved(uuid, table)) return false;
 
     return true;
 }

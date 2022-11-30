@@ -159,6 +159,7 @@ private:
     QAction *ui_pasteComment;
     RamObjectMenu *ui_assignUserContextMenu;
     RamObjectMenu *ui_changeStateContextMenu;
+    QAction *ui_actionCopyUuid;
 
 
     RamProject *m_project = nullptr;

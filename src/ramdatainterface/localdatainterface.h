@@ -34,7 +34,7 @@ public:
     QSet<QString> tableUuids(QString table, bool includeRemoved = false);
     // Returns a vector instead of set: tabledata may be sorted later
     QVector<QStringList> tableData(QString table, QHash<QString, QStringList> filters = QHash<QString, QStringList>(), bool includeRemoved = false);
-    bool contains(QString uuid, QString table);
+    bool contains(QString uuid, QString table, bool includeRemoved = false);
     QMap<QString, QString> modificationDates(QString table);
 
     void createObject(QString uuid, QString table, QString data);
@@ -121,6 +121,7 @@ private:
 
     // Cache UUIDS to check their existence faster
     QHash<QString, QSet<QString>> m_uuids;
+    QHash<QString, QSet<QString>> m_uuidsWithoutRemoved;
 
     // The UUIDS to delete when cleaning the database
     QHash<QString, QSet<QString>> m_uuidsToRemove;

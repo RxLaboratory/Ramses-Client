@@ -853,7 +853,7 @@ void ItemManagerWidget::setupUi()
 
     ui_table = new RamItemView(this);
     ui_table->setEditableObjects(false);
-    ui_table->setContextMenuPolicy(Qt::CustomContextMenu);
+    ui_table->setContextMenuDisabled(true);
     ui_header = new RamStepHeaderView(ui_table);
     ui_table->setHorizontalHeader( ui_header );
     ui_table->setSelectionMode(QAbstractItemView::ExtendedSelection);
@@ -900,6 +900,12 @@ void ItemManagerWidget::setupUi()
     completionContextMenu->addAction(ui_completion90 );
     completionContextMenu->addAction(ui_completion100);
     ui_contextMenu->addMenu(completionContextMenu);
+
+    ui_contextMenu->addSeparator();
+
+    ui_actionCopyUuid = new QAction(tr("Copy UUID"));
+    ui_actionCopyUuid->setIcon(QIcon(":/icons/code"));
+    ui_contextMenu->addAction(ui_actionCopyUuid);
 }
 
 void ItemManagerWidget::connectEvents()
@@ -956,6 +962,8 @@ void ItemManagerWidget::connectEvents()
     connect(ui_copyComment, SIGNAL(triggered()), this, SLOT(copyComment()));
     connect(ui_cutComment, SIGNAL(triggered()), this, SLOT(cutComment()));
     connect(ui_pasteComment, SIGNAL(triggered()), this, SLOT(pasteComment()));
+    // Dev tools
+    connect(ui_actionCopyUuid, SIGNAL(triggered()), ui_table, SLOT(copyUuid()));
     // search
     connect(ui_searchEdit, SIGNAL(changing(QString)), ui_table, SLOT(search(QString)));
     connect(ui_searchEdit, SIGNAL(changed(QString)), ui_table, SLOT(search(QString)));

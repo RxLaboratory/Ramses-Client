@@ -339,7 +339,10 @@ RamPipe *RamProject::pipe(RamStep *outputStep, RamStep *inputStep)
     for (int i = 0; i < m_pipeline->rowCount(); i++)
     {
         RamPipe *p = RamPipe::c( m_pipeline->get(i) );
-        if ( p->outputStep()->is(outputStep) && p->inputStep()->is(inputStep) ) return p;
+        RamStep *thisOutput = p->outputStep();
+        RamStep *thisInput = p->inputStep();
+
+        if ( outputStep->is(thisOutput) && inputStep->is(thisInput) ) return p;
     }
     return nullptr;
 }

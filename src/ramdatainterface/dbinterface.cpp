@@ -66,9 +66,9 @@ QSet<QString> DBInterface::tableUuids(QString table)
     return m_ldi->tableUuids(table);
 }
 
-bool DBInterface::contains(QString uuid, QString table)
+bool DBInterface::contains(QString uuid, QString table, bool includeRemoved)
 {
-    return m_ldi->contains(uuid, table);
+    return m_ldi->contains(uuid, table, includeRemoved);
 }
 
 void DBInterface::createObject(QString uuid, QString table, QString data)
