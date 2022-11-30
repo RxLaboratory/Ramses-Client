@@ -327,6 +327,8 @@ void RamStep::computeEstimation()
     if (t == ShotProduction) items = proj->shots();
     else items = proj->assets();
 
+    if (items->rowCount() == 0) return;
+
     m_estimation = 0;
     m_completionRatio = 0;
 

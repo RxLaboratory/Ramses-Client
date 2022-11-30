@@ -1,3 +1,4 @@
+- On close full sync: ignore ramstatushistory to speed up things a bit
 - syncing ui better feedback : a status/connected icon + message user@server ( ... )
 - project pipeline:
   - RamPipe should contain project uuid
