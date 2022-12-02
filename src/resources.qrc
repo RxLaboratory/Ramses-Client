@@ -72,6 +72,7 @@
         <file alias="lock">resources/icons/lock_sl.svg</file>
         <file alias="tray-color">resources/icons/ramses-picto.svg</file>
         <file alias="code">resources/icons/code_sl.svg</file>
+        <file alias="path">resources/icons/file-path_sl.svg</file>
     </qresource>
     <qresource prefix="/styles">
         <file alias="default-ramses-client">resources/style/style-ramses.css</file>

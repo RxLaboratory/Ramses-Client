@@ -903,6 +903,10 @@ void ItemManagerWidget::setupUi()
 
     ui_contextMenu->addSeparator();
 
+    ui_actionCopyPath = new QAction(tr("Copy folder path"));
+    ui_actionCopyPath->setIcon(QIcon(":/icons/path"));
+    ui_contextMenu->addAction(ui_actionCopyPath);
+
     ui_actionCopyUuid = new QAction(tr("Copy UUID"));
     ui_actionCopyUuid->setIcon(QIcon(":/icons/code"));
     ui_contextMenu->addAction(ui_actionCopyUuid);
@@ -962,7 +966,8 @@ void ItemManagerWidget::connectEvents()
     connect(ui_copyComment, SIGNAL(triggered()), this, SLOT(copyComment()));
     connect(ui_cutComment, SIGNAL(triggered()), this, SLOT(cutComment()));
     connect(ui_pasteComment, SIGNAL(triggered()), this, SLOT(pasteComment()));
-    // Dev tools
+    // other context menu
+    connect(ui_actionCopyPath, SIGNAL(triggered()), ui_table, SLOT(copyPath()));
     connect(ui_actionCopyUuid, SIGNAL(triggered()), ui_table, SLOT(copyUuid()));
     // search
     connect(ui_searchEdit, SIGNAL(changing(QString)), ui_table, SLOT(search(QString)));

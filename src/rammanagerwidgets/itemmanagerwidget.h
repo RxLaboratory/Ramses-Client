@@ -160,7 +160,7 @@ private:
     RamObjectMenu *ui_assignUserContextMenu;
     RamObjectMenu *ui_changeStateContextMenu;
     QAction *ui_actionCopyUuid;
-
+    QAction *ui_actionCopyPath;
 
     RamProject *m_project = nullptr;
     RamStep::Type m_productionType;

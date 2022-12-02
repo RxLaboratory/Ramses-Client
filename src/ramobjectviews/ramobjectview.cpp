@@ -178,6 +178,14 @@ void RamObjectView::copyUuid()
     clipboard->setText( uuid );
 }
 
+void RamObjectView::copyPath()
+{
+    QModelIndex index = this->currentIndex();
+    QString path = index.data(RamObject::Path).toString();
+    QClipboard *clipboard = QGuiApplication::clipboard();
+    clipboard->setText( path );
+}
+
 void RamObjectView::rowMoved(int logicalIndex, int oldVisualIndex, int newVisualIndex)
 {
     Q_UNUSED(logicalIndex);
@@ -256,6 +264,10 @@ void RamObjectView::setupUi()
     // Context menu
     ui_contextMenu = new QMenu(this);
 
+    ui_actionCopyPath = new QAction(tr("Copy folder path"));
+    ui_actionCopyPath->setIcon(QIcon(":/icons/path"));
+    ui_contextMenu->addAction(ui_actionCopyPath);
+
     ui_actionCopyUuid = new QAction(tr("Copy UUID"));
     ui_actionCopyUuid->setIcon(QIcon(":/icons/code"));
     ui_contextMenu->addAction(ui_actionCopyUuid);
@@ -283,4 +295,5 @@ void RamObjectView::connectEvents()
     // Context menu
     connect(this, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(contextMenuRequested(QPoint)));
     connect(ui_actionCopyUuid, SIGNAL(triggered()), this, SLOT( copyUuid() ) );
+    connect(ui_actionCopyPath, SIGNAL(triggered()), this, SLOT( copyPath() ) );
 }
