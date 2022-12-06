@@ -51,6 +51,8 @@ public:
     QSet<RamObject *> inputFileTypes();
     QSet<RamObject *> outputFileTypes();
 
+    virtual QString fileName() const override;
+
 signals:
     void estimationComputed(RamStep*);
 

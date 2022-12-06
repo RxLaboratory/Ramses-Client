@@ -611,6 +611,21 @@ QVariant RamStatus::roleData(int role) const
     return RamObject::roleData(role);
 }
 
+QString RamStatus::fileName() const
+{
+    RamAbstractItem *item = this->item();
+    if (!item) return RamAbstractObject::fileName();
+    RamStep *step = this->step();
+    if (!step) return RamAbstractObject::fileName();
+    RamProject *proj = item->project();
+    if (!proj) proj = step->project();
+    if (!proj) return RamAbstractObject::fileName();
+    QString t = "_G_";
+    if (item->productionType() == RamStep::AssetProduction) t = "_A_";
+    else if (item->productionType() == RamStep::ShotProduction) t = "_S_";
+    return proj->shortName() + t + item->shortName() + "_" + step->shortName();
+}
+
 // PUBLIC SLOTS //
 
 void RamStatus::edit(bool show)

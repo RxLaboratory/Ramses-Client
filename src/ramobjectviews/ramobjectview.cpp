@@ -167,6 +167,12 @@ void RamObjectView::contextMenuRequested(QPoint p)
 {
     if (m_contextMenuDisabled) return;
 
+    // Check the filename
+    QModelIndex index = this->currentIndex();
+    QString f = index.data(RamObject::FileName).toString();
+    if (f == "") ui_actionCopyFileName->setVisible(false);
+    else ui_actionCopyFileName->setVisible(true);
+
     ui_contextMenu->popup(this->viewport()->mapToGlobal(p));
 }
 
@@ -182,8 +188,29 @@ void RamObjectView::copyPath()
 {
     QModelIndex index = this->currentIndex();
     QString path = index.data(RamObject::Path).toString();
+
+    const QFileInfo fileInfo(path);
+    if(!fileInfo.exists())
+    {
+        QMessageBox::StandardButton rep = QMessageBox::question(nullptr,
+                                                                "The folder does not exist",
+                                                                "This folder:\n\n" + path + "\n\ndoes not exist yet.\nDo you want to create it now?",
+                                                                QMessageBox::Yes | QMessageBox::No,
+                                                                QMessageBox::Yes);
+        if (rep == QMessageBox::Yes) QDir(path).mkpath(".");
+    }
+
     QClipboard *clipboard = QGuiApplication::clipboard();
     clipboard->setText( path );
+}
+
+void RamObjectView::copyFileName()
+{
+    QModelIndex index = this->currentIndex();
+    QString f = index.data(RamObject::FileName).toString();
+    if (f == "") return;
+    QClipboard *clipboard = QGuiApplication::clipboard();
+    clipboard->setText( f );
 }
 
 void RamObjectView::rowMoved(int logicalIndex, int oldVisualIndex, int newVisualIndex)
@@ -264,6 +291,10 @@ void RamObjectView::setupUi()
     // Context menu
     ui_contextMenu = new QMenu(this);
 
+    ui_actionCopyFileName = new QAction(tr("Copy file name"));
+    ui_actionCopyFileName->setIcon(QIcon(":/icons/filename"));
+    ui_contextMenu->addAction(ui_actionCopyFileName);
+
     ui_actionCopyPath = new QAction(tr("Copy folder path"));
     ui_actionCopyPath->setIcon(QIcon(":/icons/path"));
     ui_contextMenu->addAction(ui_actionCopyPath);
@@ -296,4 +327,5 @@ void RamObjectView::connectEvents()
     connect(this, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(contextMenuRequested(QPoint)));
     connect(ui_actionCopyUuid, SIGNAL(triggered()), this, SLOT( copyUuid() ) );
     connect(ui_actionCopyPath, SIGNAL(triggered()), this, SLOT( copyPath() ) );
+    connect(ui_actionCopyFileName, SIGNAL(triggered()), this, SLOT( copyFileName() ) );
 }

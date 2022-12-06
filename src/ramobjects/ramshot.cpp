@@ -134,6 +134,13 @@ QVariant RamShot::roleData(int role) const
     return RamObject::roleData(role);
 }
 
+QString RamShot::fileName() const
+{
+    RamProject *proj = this->project();
+    if (!proj) return RamAbstractObject::fileName();
+    return proj->shortName() + "_S_" + this->shortName();
+}
+
 // PUBLIC SLOTS //
 
 void RamShot::edit(bool show)

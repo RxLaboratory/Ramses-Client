@@ -301,6 +301,13 @@ QSet<RamObject *> RamStep::outputFileTypes()
     return fts;
 }
 
+QString RamStep::fileName() const
+{
+    RamProject *proj = this->project();
+    if (!proj) return RamAbstractObject::fileName();
+    return proj->shortName() + "_G_" + this->shortName();
+}
+
 // PUBLIC SLOTS //
 
 void RamStep::edit(bool show)

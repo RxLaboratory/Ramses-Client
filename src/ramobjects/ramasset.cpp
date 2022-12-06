@@ -117,6 +117,13 @@ bool RamAsset::hasTag(QString tag)
     return arr.contains(tag);
 }
 
+QString RamAsset::fileName() const
+{
+    RamProject *proj = this->project();
+    if (!proj) return RamAbstractObject::fileName();
+    return proj->shortName() + "_A_" + this->shortName();
+}
+
 QString RamAsset::filterUuid() const
 {
     return getData("assetGroup").toString();

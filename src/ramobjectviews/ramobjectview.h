@@ -48,6 +48,7 @@ public slots:
 
     void copyUuid();
     void copyPath();
+    void copyFileName();
 
 protected:
     virtual void mouseMoveEvent(QMouseEvent *event) override;
@@ -83,6 +84,7 @@ private:
     QMenu *ui_contextMenu;
     QAction *ui_actionCopyUuid;
     QAction *ui_actionCopyPath;
+    QAction *ui_actionCopyFileName;
 
     // UI Events
     QPoint m_initialDragPos;

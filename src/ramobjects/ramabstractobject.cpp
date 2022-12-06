@@ -401,6 +401,7 @@ QVariant RamAbstractObject::roleData(int role) const
     case RamAbstractObject::Difficulty: return 0;
     case RamAbstractObject::Duration: return 0;
     case RamAbstractObject::Order: return order();
+    case RamAbstractObject::FileName: return fileName();
     }
 
     return this->uuid();
@@ -458,6 +459,11 @@ QString RamAbstractObject::path(SubFolder subFolder, QString subPath, bool creat
     p += "/" + subPath;
 
     return QDir::cleanPath(p);
+}
+
+QString RamAbstractObject::fileName() const
+{
+    return "";
 }
 
 QStringList RamAbstractObject::listFiles(RamObject::SubFolder subFolder, QString subPath) const

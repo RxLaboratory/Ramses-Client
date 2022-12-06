@@ -94,6 +94,8 @@ public:
 
     virtual QVariant roleData(int role) const override;
 
+    virtual QString fileName() const override;
+
 public slots:
     virtual void edit(bool show = true) override;
 

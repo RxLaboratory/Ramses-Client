@@ -42,6 +42,7 @@ public:
         Duration = Qt::UserRole+24,
         Pointer = Qt::UserRole+25,
         Order = Qt::UserRole+26,
+        FileName = Qt::UserRole+27,
     };
     /**
      * @brief The ObjectType enum lists all types of RamObjects
@@ -239,6 +240,7 @@ public:
 
     QString path(SubFolder subFolder = NoFolder, bool create = false) const;
     QString path(SubFolder subFolder, QString subPath, bool create = false) const;
+    virtual QString fileName() const;
     QStringList listFiles(SubFolder subFolder = NoFolder, QString subPath = "") const;
     QFileInfoList listFileInfos(SubFolder subFolder = NoFolder, QString subPath = "") const;
     QStringList listFolders(SubFolder subFolder = NoFolder) const;

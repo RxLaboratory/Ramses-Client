@@ -459,6 +459,11 @@ QStringList RamProject::filterListUuids() const
     return userUuids;
 }
 
+QString RamProject::fileName() const
+{
+    return this->shortName() + "_";
+}
+
 // PUBLIC SLOTS //
 
 void RamProject::updatePath()

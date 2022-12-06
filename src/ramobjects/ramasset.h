@@ -31,6 +31,8 @@ public:
     void removeTag(QString tag);
     bool hasTag(QString tag);
 
+    virtual QString fileName() const override;
+
     QString filterUuid() const override;
 
     virtual QString details() const override;

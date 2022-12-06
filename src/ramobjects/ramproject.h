@@ -112,6 +112,8 @@ public:
 
     virtual QStringList filterListUuids() const override;
 
+    virtual QString fileName() const override;
+
 signals:
     void completionRatioChanged(int);
     void latenessRatioChanged(float);
