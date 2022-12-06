@@ -1,3 +1,4 @@
+- Add an "order" column in all tables and use that instead of storing the order in the data (and separate order changed from data changed signals)
 - On close full sync: ignore ramstatushistory to speed up things a bit
 - syncing ui better feedback : a status/connected icon + message user@server ( ... )
 - project pipeline:
