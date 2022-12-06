@@ -302,7 +302,7 @@ void DBTableModel::changeData(QString uuid, QString data, QString table)
     RamAbstractObjectModel::updateObject(uuid, data);
 
     // Emit data changed
-    QModelIndex i = index( m_objectUuids.indexOf(uuid), 1);
+    QModelIndex i = index( m_objectUuids.indexOf(uuid), 0);
     emit dataChanged(i, i);
 }
 

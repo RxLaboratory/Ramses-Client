@@ -85,7 +85,7 @@ protected:
     void loadModel(RamObjectModel *model, QString modelName, QJsonObject d = QJsonObject());
 
 private slots:
-    void checkData(QString uuid);
+    void checkData(QString uuid, QString d, QString table);
     void checkAvailability(QString uuid, bool availability);
     void saveModel();
 

@@ -101,7 +101,7 @@ QJsonObject RamObject::reloadData()
 
 void RamObject::emitDataChanged()
 {
-    emit dataChanged(this);
+    if (!m_saveSuspended) emit dataChanged(this);
 }
 
 void RamObject::emitRemoved()
@@ -166,16 +166,17 @@ RamObjectModel *RamObject::createModel(RamObject::ObjectType type, QString model
     return model;
 }
 
-void RamObject::checkData(QString uuid)
+void RamObject::checkData(QString uuid, QString d, QString table)
 {
     // Don't reload if we're currently saving the data
     if (m_savingData) return;
     // Not for me...
+    if (table != objectTypeName()) return;
     if (uuid != m_uuid) return;
-    // Empty cache!
-    m_cachedData = "";
+    // Update cache!
+    m_cachedData = d;
     // Reset lists
-    QJsonObject d = data();
+    QJsonObject dataObj = data();
     QMapIterator<RamObjectModel *, QString> it = QMapIterator<RamObjectModel*, QString>( m_subModels );
     while (it.hasNext()) {
         it.next();
@@ -183,7 +184,7 @@ void RamObject::checkData(QString uuid)
         RamObjectModel *model = it.key();
         QString modelName = it.value();
         //if (m_objectType != RamAbstractObject::Project)
-            loadModel(model, modelName, d);
+            loadModel(model, modelName, dataObj);
     }
     emit dataChanged(this);
 }

@@ -38,13 +38,13 @@ void StateEditWidget::reInit(RamObject *o)
 
 void StateEditWidget::setCompletion(int c)
 {
-    if(!m_state) return;
+    if(!m_state || m_reinit) return;
     m_state->setCompletionRatio(c);
 }
 
 void StateEditWidget::setColor(QColor c)
 {
-    if(!m_state) return;
+    if(!m_state || m_reinit) return;
     m_state->setColor(c);
 }
 

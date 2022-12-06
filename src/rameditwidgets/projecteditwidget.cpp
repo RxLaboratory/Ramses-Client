@@ -61,14 +61,14 @@ void ProjectEditWidget::reInit(RamObject *o)
 
 void ProjectEditWidget::setResolution(int w, int h)
 {
-    if(!m_project) return;
+    if(!m_project || m_reinit) return;
     m_project->setWidth(w);
     m_project->setHeight(h);
 }
 
 void ProjectEditWidget::setFramerate(double f)
 {
-    if (!m_project) return;
+    if (!m_project || m_reinit) return;
     m_project->setFramerate(f);
 }
 
@@ -80,13 +80,13 @@ void ProjectEditWidget::updateFolderLabel(QString path)
 
 void ProjectEditWidget::setPath(QString p)
 {
-    if (!m_project) return;
+    if (!m_project || m_reinit) return;
     m_project->setFolderPath(p);
 }
 
 void ProjectEditWidget::setDeadline(QDate d)
 {
-    if (!m_project) return;
+    if (!m_project || m_reinit) return;
     m_project->setDeadline(d);
 }
 
@@ -110,7 +110,7 @@ void ProjectEditWidget::createUser()
 
 void ProjectEditWidget::savePath()
 {
-    if (!m_project) return;
+    if (!m_project || m_reinit) return;
 
     QMessageBox::StandardButton confirm = QMessageBox::question( this,
         "Confirm overwrite",

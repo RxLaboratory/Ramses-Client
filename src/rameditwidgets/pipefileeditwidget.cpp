@@ -45,13 +45,14 @@ void PipeFileEditWidget::reInit(RamObject *o)
 
 void PipeFileEditWidget::setFileType(RamObject *ft)
 {
-    if (!m_pipeFile) return;
+    if (!m_pipeFile || m_reinit) return;
     if (ft) m_pipeFile->setFileType( RamFileType::c( ft ) );
     //ui_customSettingsEdit->setPlainText( m_pipeFile->customSettings() );
 }
 
 void PipeFileEditWidget::setCustomSettings()
 {
+    if (!m_pipeFile || m_reinit) return;
     m_pipeFile->setCustomSettings(ui_customSettingsEdit->toPlainText());
 }
 

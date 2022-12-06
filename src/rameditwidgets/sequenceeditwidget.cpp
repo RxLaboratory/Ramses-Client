@@ -41,13 +41,13 @@ void SequenceEditWidget::reInit(RamObject *o)
 
 void SequenceEditWidget::setColor(QColor c)
 {
-    if (!m_sequence) return;
+    if (!m_sequence || m_reinit) return;
     m_sequence->setColor(c);
 }
 
 void SequenceEditWidget::createShot()
 {
-    if (!m_sequence) return;
+    if (!m_sequence || m_reinit) return;
     RamShot *shot = new RamShot(
                 "NEW",
                 "New Shot",

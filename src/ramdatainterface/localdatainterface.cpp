@@ -706,7 +706,9 @@ void LocalDataInterface::saveSync(SyncData syncData)
         query( q );
 
         // Emit insertions
-        foreach(QStringList io, insertedObjects ) emit inserted( io.at(0), io.at(1), io.at(2) );
+        foreach(QStringList io, insertedObjects ) {
+            emit inserted( io.at(0), io.at(1), io.at(2) );
+        }
     }
 
     // Updates

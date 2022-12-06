@@ -101,19 +101,19 @@ void TemplateStepEditWidget::updateEstimationSuffix()
 void TemplateStepEditWidget::setType(int t)
 {
     Q_UNUSED(t);
-    if (!m_step) return;
+    if (!m_step || m_reinit) return;
     m_step->setType(ui_typeBox->currentData().toString());
 }
 
 void TemplateStepEditWidget::setColor(QColor c)
 {
-    if (!m_step) return;
+    if (!m_step || m_reinit) return;
     m_step->setColor(c);
 }
 
 void TemplateStepEditWidget::setEstimationType(int t)
 {
-    if (!m_step) return;
+    if (!m_step || m_reinit) return;
     if (t == 0)
         m_step->setEstimationMethod( RamTemplateStep::EstimatePerShot );
     else
@@ -122,31 +122,31 @@ void TemplateStepEditWidget::setEstimationType(int t)
 
 void TemplateStepEditWidget::setVeryEasy(double e)
 {
-    if (!m_step) return;
+    if (!m_step || m_reinit) return;
     m_step->setEstimationVeryEasy(e);
 }
 
 void TemplateStepEditWidget::setEasy(double e)
 {
-    if (!m_step) return;
+    if (!m_step || m_reinit) return;
     m_step->setEstimationEasy(e);
 }
 
 void TemplateStepEditWidget::setMedium(double e)
 {
-    if (!m_step) return;
+    if (!m_step || m_reinit) return;
     m_step->setEstimationMedium(e);
 }
 
 void TemplateStepEditWidget::setHard(double e)
 {
-    if (!m_step) return;
+    if (!m_step || m_reinit) return;
     m_step->setEstimationHard(e);
 }
 
 void TemplateStepEditWidget::setVeryHard(double e)
 {
-    if (!m_step) return;
+    if (!m_step || m_reinit) return;
     m_step->setEstimationVeryHard(e);
 }
 

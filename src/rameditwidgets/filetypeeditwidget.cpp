@@ -38,6 +38,7 @@ void FileTypeEditWidget::reInit(RamObject *o)
 
 void FileTypeEditWidget::setExtensions()
 {
+    if (m_fileType  || m_reinit) return;
     QStringList extensions = ui_extensionsEdit->text().split(",");
     QStringList fixedExtensions;
     for (int i = 0; i < extensions.count(); i++)
@@ -48,12 +49,12 @@ void FileTypeEditWidget::setExtensions()
     }
     ui_extensionsEdit->setText( fixedExtensions.join(", "));
 
-    if (m_fileType) m_fileType->setExtensions( ui_extensionsEdit->text() );
+    m_fileType->setExtensions( ui_extensionsEdit->text() );
 }
 
 void FileTypeEditWidget::setPreviewable(bool p)
 {
-    if (!m_fileType) return;
+    if (!m_fileType || m_reinit) return;
     m_fileType->setPreviewable(p);
 }
 

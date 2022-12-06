@@ -47,13 +47,13 @@ void AssetEditWidget::reInit(RamObject *o)
 
 void AssetEditWidget::setTags()
 {
-    if (!m_asset) return;
+    if (!m_asset || m_reinit) return;
     m_asset->setTags(ui_tagsEdit->text());
 }
 
 void AssetEditWidget::setAssetGroup(RamObject *ag)
 {
-    if(!m_asset) return;
+    if(!m_asset || m_reinit) return;
     m_asset->setAssetGroup(RamAssetGroup::c(ag));
 }
 

@@ -72,14 +72,14 @@ void PipeEditWidget::createPipeFile()
 
 void PipeEditWidget::setInputStep(RamObject *step)
 {
-    if (!m_pipe) return;
+    if (!m_pipe || m_reinit) return;
     if (!step) return;
     m_pipe->setInputStep( step );
 }
 
 void PipeEditWidget::setOutputStep(RamObject *step)
 {
-    if (!m_pipe) return;
+    if (!m_pipe || m_reinit) return;
     if (!step) return;
     m_pipe->setOutputStep( step );
 }

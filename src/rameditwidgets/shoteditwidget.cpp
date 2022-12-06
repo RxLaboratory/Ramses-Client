@@ -60,13 +60,13 @@ void ShotEditWidget::reInit(RamObject *o)
 
 void ShotEditWidget::setDuration()
 {
-    if(!m_shot) return;
+    if(!m_shot || m_reinit) return;
     m_shot->setDuration(ui_secondsBox->value());
 }
 
 void ShotEditWidget::setSequence(RamObject *seq)
 {
-    if (!m_shot) return;
+    if (!m_shot || m_reinit) return;
     m_shot->setSequence(seq);
 }
 
