@@ -497,8 +497,8 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     settings.endGroup();
     // re-hide docks
     ui_propertiesDockWidget->hide();
-    ui_statsDockWidget->hide();
-    ui_timelineDockWidget->hide();
+    //ui_statsDockWidget->hide();
+    //ui_timelineDockWidget->hide();
 }
 
 void MainWindow::connectEvents()
@@ -1144,7 +1144,6 @@ void MainWindow::currentProjectChanged(RamProject *project)
     if (!project)
     {
         ui_statsTitle->setTitle( "Project" );
-        ui_statsDockWidget->hide();
         home();
     }
     else
