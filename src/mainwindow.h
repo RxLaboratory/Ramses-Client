@@ -12,7 +12,7 @@
 #include <QMessageBox>
 #include <QSystemTrayIcon>
 
-#include "projectpage.h"
+#include "projecteditwidget.h"
 #include "ui_mainwindow.h"
 
 #include "duqf-widgets/settingswidget.h"
@@ -72,15 +72,46 @@ private:
     QLabel *title;
     QMenu *helpMenu;
     ProgressPage *progressPage;
+
+    // Docks
     QDockWidget *ui_statsDockWidget;
     QDockWidget *ui_consoleDockWidget;
     QDockWidget *ui_propertiesDockWidget;
     QDockWidget *ui_timelineDockWidget;
+    QDockWidget *ui_stepsDockWidget;
+    QDockWidget *ui_pipeFileDockWidget;
+    ProjectEditWidget *ui_projectEditWiget;
+    QDockWidget *ui_projectDockWidget;
+    QDockWidget *ui_assetGroupsDockWidget;
+    QDockWidget *ui_assetsDockWidget;
+    QDockWidget *ui_sequencesDockWidget;
+    QDockWidget *ui_shotsDockWidget;
     DuQFDockTitle *ui_statsTitle;
     DuQFDockTitle *ui_propertiesTitle;
 
+    // ToolBar Menus
+    QAction *ui_projectSelectorAction;
+
+    QToolButton *ui_pipelineButton;
+    QAction *ui_pipelineMenuAction;
+    QAction *ui_projectAction;
+    QAction *ui_stepsAction;
+    QAction *ui_pipeFilesAction;
+
+    QToolButton *ui_assetsButton;
+    QAction *ui_assetMenuAction;
+    QAction *ui_assetGroupAction;
+    QAction *ui_assetListAction;
+
+    QToolButton *ui_shotsButton;
+    QAction *ui_shotMenuAction;
+    QAction *ui_sequenceAction;
+    QAction *ui_shotListAction;
+
+    QToolButton *ui_scheduleButton;
+    QAction *ui_scheduleMenuAction;
+
     SettingsWidget *ui_adminPage;
-    ProjectPage *ui_projectSettingsPage;
 
     DatabaseEditWidget *ui_databaseEditWidget = nullptr;
 
@@ -130,10 +161,9 @@ private slots:
     void userProfile();
     void revealUserFolder();
     void admin(bool show = true);
-    void projectSettings(bool show = true);
-    void pipeline(bool show = true);
-    void shots(bool show = true);
-    void assets(bool show = true);
+    void pipeline();
+    void shots();
+    void assets();
     void schedule(bool show = true);
     void install(bool show = true);
     void currentUserChanged();

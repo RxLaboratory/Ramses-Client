@@ -83,7 +83,7 @@ QToolButton::menu-button {
 }
 
 QToolButton::menu-arrow {
-  image: url(":/icons/select");
+  image: url(":/icons/down-arrow");
   width: @very-small-button-size;
   height: @very-small-button-size;
 }
@@ -216,7 +216,7 @@ QComboBox::indicator, QDateTimeEdit::indicator {
 }
 
 QComboBox::down-arrow, QDateTimeEdit::down-arrow {
-      image: url(:/icons/select);
+      image: url(:/icons/down-arrow);
       width: 10px;
       height: 10px;
       padding-right: @padding-small;
@@ -290,7 +290,7 @@ QSpinBox::down-button, QDoubleSpinBox::down-button, QDateTimeEdit:down-button {
     border:none;
     background-color:@color-very-dark-grey;
     border-radius: @margin;
-    image:url(:/icons/move-down);
+    image:url(:/icons/down-arrow);
     width: @very-small-button-size;
     height: @very-small-button-size;
     padding:2px;
@@ -819,6 +819,7 @@ QDockWidget QWidget {
     background-color: @color-darker-grey;
 }
 
+QDockWidget QComboBox,
 QDockWidget QTextEdit,
 QDockWidget QLineEdit,
 QDockWidget QPlainTextEdit,
@@ -830,7 +831,6 @@ QDockWidget QAbstractItemView
     background-color: @color-very-dark-grey;
 }
 
-QDockWidget QComboBox,
 QDockWidget QPushButton
 {
     background-color: @color-transparent;

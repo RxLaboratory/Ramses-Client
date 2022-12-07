@@ -92,8 +92,14 @@
    <property name="allowedAreas">
     <set>Qt::TopToolBarArea</set>
    </property>
+   <property name="iconSize">
+    <size>
+     <width>16</width>
+     <height>16</height>
+    </size>
+   </property>
    <property name="toolButtonStyle">
-    <enum>Qt::ToolButtonTextUnderIcon</enum>
+    <enum>Qt::ToolButtonTextBesideIcon</enum>
    </property>
    <property name="floatable">
     <bool>false</bool>
@@ -107,13 +113,6 @@
    <addaction name="actionLogIn"/>
    <addaction name="actionSettings"/>
    <addaction name="actionAdmin"/>
-   <addaction name="actionProjectSettings"/>
-   <addaction name="actionPipeline"/>
-   <addaction name="actionAssets"/>
-   <addaction name="actionShots"/>
-   <addaction name="actionTimeline"/>
-   <addaction name="actionSchedule"/>
-   <addaction name="actionStatistics"/>
   </widget>
   <action name="actionLogIn">
    <property name="icon">
@@ -154,21 +153,6 @@
     <string>Admin</string>
    </property>
   </action>
-  <action name="actionProjectSettings">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="icon">
-    <iconset resource="resources.qrc">
-     <normaloff>:/icons/project</normaloff>:/icons/project</iconset>
-   </property>
-   <property name="text">
-    <string>Project</string>
-   </property>
-   <property name="toolTip">
-    <string>Project Admin</string>
-   </property>
-  </action>
   <action name="actionUserFolder">
    <property name="icon">
     <iconset resource="duqf_resources.qrc">
@@ -178,10 +162,7 @@
     <string>User folder</string>
    </property>
   </action>
-  <action name="actionPipeline">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
+  <action name="ui_actionPipeline">
    <property name="icon">
     <iconset resource="resources.qrc">
      <normaloff>:/icons/steps-menu</normaloff>:/icons/steps-menu</iconset>
@@ -190,37 +171,28 @@
     <string>Pipeline</string>
    </property>
   </action>
-  <action name="actionAssets">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
+  <action name="ui_actionAssets">
    <property name="icon">
     <iconset resource="resources.qrc">
      <normaloff>:/icons/assets-table</normaloff>:/icons/assets-table</iconset>
    </property>
    <property name="text">
-    <string>Assets</string>
+    <string>Assets Table</string>
    </property>
   </action>
-  <action name="actionShots">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
+  <action name="ui_actionShots">
    <property name="icon">
     <iconset resource="resources.qrc">
      <normaloff>:/icons/shots-table</normaloff>:/icons/shots-table</iconset>
    </property>
    <property name="text">
-    <string>Shots</string>
+    <string>Shots Table</string>
    </property>
    <property name="toolTip">
     <string>Shots</string>
    </property>
   </action>
-  <action name="actionSchedule">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
+  <action name="ui_actionSchedule">
    <property name="icon">
     <iconset resource="resources.qrc">
      <normaloff>:/icons/calendar</normaloff>:/icons/calendar</iconset>
@@ -232,7 +204,7 @@
     <string>Schedule</string>
    </property>
   </action>
-  <action name="actionStatistics">
+  <action name="ui_actionStatistics">
    <property name="checkable">
     <bool>true</bool>
    </property>
@@ -244,7 +216,7 @@
     <string>Statistics</string>
    </property>
   </action>
-  <action name="actionTimeline">
+  <action name="ui_actionTimeline">
    <property name="checkable">
     <bool>true</bool>
    </property>
@@ -333,8 +305,8 @@
   </action>
  </widget>
  <resources>
-  <include location="duqf_resources.qrc"/>
   <include location="resources.qrc"/>
+  <include location="duqf_resources.qrc"/>
  </resources>
  <connections/>
 </ui>

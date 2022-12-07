@@ -37,10 +37,10 @@ void ObjectManagerWidget::setupUi(QString title, QIcon icon)
     lay->setContentsMargins(3,0,0,0);
 
     ui_listWidget = new ObjectListWidget( false, RamUser::Admin, this);
-    ui_listWidget->setMaximumWidth(500);
+    //ui_listWidget->setMaximumWidth(500);
     lay->addWidget(ui_listWidget);
 
-    lay->addStretch();
+    //lay->addStretch();
 
     // Menu
     QMenu *itemMenu = new QMenu();

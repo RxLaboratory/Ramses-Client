@@ -87,7 +87,6 @@ SOURCES += \
     duqf-widgets/duqftoolbarspacer.cpp \
     duqf-widgets/duqfupdatedialog.cpp \
     duqf-widgets/duqfupdatesettingswidget.cpp \
-    pages/projectpage.cpp \
     ramdatainterface/datacrypto.cpp \
     ramdatainterface/localdatainterface.cpp \
     ramdatainterface/logindialog.cpp \
@@ -258,7 +257,6 @@ HEADERS += \
     duqf-widgets/duqfupdatesettingswidget.h \
     progressbar.h \
     progresspage.h \
-    pages/projectpage.h \
     ramdatainterface/localdatainterface.h \
     ramdatainterface/logindialog.h \
     ramdatainterface/ramserverinterface.h \

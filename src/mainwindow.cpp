@@ -1,11 +1,17 @@
 #include "mainwindow.h"
 
+#include "assetgroupmanagerwidget.h"
+#include "assetmanagerwidget.h"
 #include "itemmanagerwidget.h"
+#include "pipefilemanagerwidget.h"
 #include "progressmanager.h"
 #include "progressbar.h"
 #include "docks/consolewidget.h"
 #include "daemonsettingswidget.h"
 #include "loginpage.h"
+#include "sequencemanagerwidget.h"
+#include "shotmanagerwidget.h"
+#include "stepmanagerwidget.h"
 #include "userprofilepage.h"
 #include "usermanagerwidget.h"
 #include "projectmanagerwidget.h"
@@ -55,19 +61,105 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
 
     qDebug() << "> Setting up menus";
 
+    // Setup toolbar menus
+    QMenu *pipelineMenu = new QMenu(this);
+
+    ui_projectAction = new QAction(tr("Project settings"), this);
+    ui_projectAction->setIcon(QIcon(":/icons/project"));
+    ui_projectAction->setCheckable(true);
+    ui_stepsAction = new QAction(tr("Steps"), this);
+    ui_stepsAction->setIcon(QIcon(":/icons/step"));
+    ui_stepsAction->setCheckable(true);
+    ui_pipeFilesAction = new QAction(tr("Pipe formats"), this);
+    ui_pipeFilesAction->setIcon(QIcon(":/icons/connection"));
+    ui_pipeFilesAction->setCheckable(true);
+
+    pipelineMenu->addAction(ui_actionPipeline);
+    pipelineMenu->addSeparator();
+    pipelineMenu->addAction(ui_projectAction);
+    pipelineMenu->addAction(ui_stepsAction);
+    pipelineMenu->addAction(ui_pipeFilesAction);
+
+    ui_pipelineButton = new QToolButton();
+    ui_pipelineButton->setIcon(QIcon(":icons/steps-menu"));
+    ui_pipelineButton->setText("Pipeline");
+    ui_pipelineButton->setMenu(pipelineMenu);
+    ui_pipelineButton->setIconSize(QSize(16,16));
+    ui_pipelineButton->setPopupMode(QToolButton::MenuButtonPopup);
+    ui_pipelineButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+
+    QMenu *assetsMenu = new QMenu(this);
+
+    ui_assetGroupAction = new QAction(tr("Asset groups"), this);
+    ui_assetGroupAction->setIcon(QIcon(":/icons/asset-group"));
+    ui_assetGroupAction->setCheckable(true);
+    ui_assetListAction = new QAction(tr("Assets"), this);
+    ui_assetListAction->setIcon(QIcon(":/icons/asset"));
+    ui_assetListAction->setCheckable(true);
+
+    assetsMenu->addAction(ui_actionAssets);
+    assetsMenu->addSeparator();
+    assetsMenu->addAction(ui_assetGroupAction);
+    assetsMenu->addAction(ui_assetListAction);
+
+    ui_assetsButton = new QToolButton();
+    ui_assetsButton->setIcon(QIcon(":/icons/asset"));
+    ui_assetsButton->setText("Assets");
+    ui_assetsButton->setMenu(assetsMenu);
+    ui_assetsButton->setIconSize(QSize(16,16));
+    ui_assetsButton->setPopupMode(QToolButton::MenuButtonPopup);
+    ui_assetsButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+
+    QMenu *shotsMenu = new QMenu(this);
+
+    ui_sequenceAction = new QAction(tr("Sequences"), this);
+    ui_sequenceAction->setIcon(QIcon(":/icons/sequence"));
+    ui_sequenceAction->setCheckable(true);
+    ui_shotListAction = new QAction(tr("Shots"), this);
+    ui_shotListAction->setIcon(QIcon(":/icons/shot"));
+    ui_shotListAction->setCheckable(true);
+
+    shotsMenu->addAction(ui_actionShots);
+    shotsMenu->addSeparator();
+    shotsMenu->addAction(ui_sequenceAction);
+    shotsMenu->addAction(ui_shotListAction);
+    shotsMenu->addAction(ui_actionTimeline);
+
+    ui_shotsButton = new QToolButton();
+    ui_shotsButton->setIcon(QIcon(":/icons/shot"));
+    ui_shotsButton->setText("Shots");
+    ui_shotsButton->setMenu(shotsMenu);
+    ui_shotsButton->setIconSize(QSize(16,16));
+    ui_shotsButton->setPopupMode(QToolButton::MenuButtonPopup);
+    ui_shotsButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+
+    QMenu *scheduleMenu = new QMenu(this);
+
+    scheduleMenu->addAction(ui_actionSchedule);
+    scheduleMenu->addSeparator();
+    scheduleMenu->addAction(ui_actionStatistics);
+
+    ui_scheduleButton = new QToolButton();
+    ui_scheduleButton->setIcon(QIcon(":/icons/calendar"));
+    ui_scheduleButton->setText("Schedule");
+    ui_scheduleButton->setMenu(scheduleMenu);
+    ui_scheduleButton->setIconSize(QSize(16,16));
+    ui_scheduleButton->setPopupMode(QToolButton::MenuButtonPopup);
+    ui_scheduleButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+
     // Populate Toolbar
+    ui_projectSelectorAction = mainToolBar->addWidget(new ProjectSelectorWidget(this));
+    ui_pipelineMenuAction = mainToolBar->addWidget(ui_pipelineButton);
+    ui_assetMenuAction = mainToolBar->addWidget(ui_assetsButton);
+    ui_shotMenuAction = mainToolBar->addWidget(ui_shotsButton);
+    ui_scheduleMenuAction = mainToolBar->addWidget(ui_scheduleButton);
+
+    ui_projectSelectorAction->setVisible(false);
     actionAdmin->setVisible(false);
-    actionProjectSettings->setVisible(false);
-    actionPipeline->setVisible(false);
-    actionShots->setVisible(false);
-    actionAssets->setVisible(false);
-    actionSchedule->setVisible(false);
-    actionStatistics->setVisible(false);
-    actionTimeline->setVisible(false);
-
-    mainToolBar->addWidget(new DuQFToolBarSpacer(this));
-
-    mainToolBar->addWidget(new ProjectSelectorWidget(this));
+    ui_pipelineMenuAction->setVisible(false);
+    ui_shotMenuAction->setVisible(false);
+    ui_assetMenuAction->setVisible(false);
+    ui_scheduleMenuAction->setVisible(false);
 
     //Populate status bar
 
@@ -187,10 +279,6 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     ui_adminPage->addPage(dbManager, "Database tools", QIcon(":/icons/applications"));
     qDebug() << "  > DB Manager ok";//*/
 
-    // Project settings
-    ui_projectSettingsPage = new ProjectPage(this);
-    mainStack->addWidget(ui_projectSettingsPage);
-
     // Pipeline editor
 #ifndef DEACTIVATE_PIPELINE
     PipelineWidget *pipelineEditor = new PipelineWidget(this);
@@ -283,7 +371,105 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     this->addDockWidget(Qt::RightDockWidgetArea, ui_propertiesDockWidget);
     ui_propertiesDockWidget->hide();
 
-    qDebug() << "> Properties dock ready";   
+    qDebug() << "> Properties dock ready";
+
+    // The project dock
+    ui_projectEditWiget = new ProjectEditWidget(this);
+    ui_projectDockWidget = new QDockWidget(tr("Project settings"));
+    ui_projectDockWidget->setObjectName("projectDock");
+    DuQFDockTitle *pTitle = new DuQFDockTitle(tr("Project settings"), this);
+    pTitle->setObjectName("dockTitle");
+    pTitle->setIcon(":/icons/project");
+    ui_projectDockWidget->setTitleBarWidget(pTitle);
+    ui_projectDockWidget->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    ui_projectDockWidget->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable );
+    ui_projectDockWidget->setWidget( ui_projectEditWiget );
+    this->addDockWidget(Qt::RightDockWidgetArea, ui_projectDockWidget);
+    ui_projectDockWidget->hide();
+
+    // The steps dock
+    StepManagerWidget *stepWidget = new StepManagerWidget(this);
+    ui_stepsDockWidget = new QDockWidget(tr("Steps"));
+    ui_stepsDockWidget->setObjectName("stepsDock");
+    DuQFDockTitle *sTitle = new DuQFDockTitle(tr("Steps"), this);
+    sTitle->setObjectName("dockTitle");
+    sTitle->setIcon(":/icons/step");
+    ui_stepsDockWidget->setTitleBarWidget(sTitle);
+    ui_stepsDockWidget->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    ui_stepsDockWidget->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable );
+    ui_stepsDockWidget->setWidget( stepWidget );
+    this->addDockWidget(Qt::LeftDockWidgetArea, ui_stepsDockWidget);
+    ui_stepsDockWidget->hide();
+
+    // The pipe formats dock
+    PipeFileManagerWidget *pipeFileWidget = new PipeFileManagerWidget(this);
+    ui_pipeFileDockWidget = new QDockWidget(tr("Pipe formats"));
+    ui_pipeFileDockWidget->setObjectName("pipeFilesDock");
+    DuQFDockTitle *pfTitle = new DuQFDockTitle(tr("Pipe formats"), this);
+    pfTitle->setObjectName("dockTitle");
+    pfTitle->setIcon(":/icons/connection");
+    ui_pipeFileDockWidget->setTitleBarWidget(pfTitle);
+    ui_pipeFileDockWidget->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    ui_pipeFileDockWidget->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable );
+    ui_pipeFileDockWidget->setWidget( pipeFileWidget );
+    this->addDockWidget(Qt::LeftDockWidgetArea, ui_pipeFileDockWidget);
+    ui_pipeFileDockWidget->hide();
+
+    // The asset groups dock
+    AssetGroupManagerWidget *assetGroupWidget = new AssetGroupManagerWidget(this);
+    ui_assetGroupsDockWidget = new QDockWidget(tr("Asset Groups"));
+    ui_assetGroupsDockWidget->setObjectName("assetGroupsDock");
+    DuQFDockTitle *agTitle = new DuQFDockTitle(tr("Asset Groups"), this);
+    agTitle->setObjectName("dockTitle");
+    agTitle->setIcon(":/icons/asset-group");
+    ui_assetGroupsDockWidget->setTitleBarWidget(agTitle);
+    ui_assetGroupsDockWidget->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    ui_assetGroupsDockWidget->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable );
+    ui_assetGroupsDockWidget->setWidget( assetGroupWidget );
+    this->addDockWidget(Qt::LeftDockWidgetArea, ui_assetGroupsDockWidget);
+    ui_assetGroupsDockWidget->hide();
+
+    // The assets dock
+    AssetManagerWidget *assetWidget = new AssetManagerWidget(this);
+    ui_assetsDockWidget = new QDockWidget(tr("Assets"));
+    ui_assetsDockWidget->setObjectName("assetsDock");
+    DuQFDockTitle *aTitle = new DuQFDockTitle(tr("Assets"), this);
+    aTitle->setObjectName("dockTitle");
+    aTitle->setIcon(":/icons/asset");
+    ui_assetsDockWidget->setTitleBarWidget(aTitle);
+    ui_assetsDockWidget->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    ui_assetsDockWidget->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable );
+    ui_assetsDockWidget->setWidget( assetWidget );
+    this->addDockWidget(Qt::LeftDockWidgetArea, ui_assetsDockWidget);
+    ui_assetsDockWidget->hide();
+
+    // The sequences dock
+    SequenceManagerWidget *sequenceWidget = new SequenceManagerWidget(this);
+    ui_sequencesDockWidget = new QDockWidget(tr("Sequences"));
+    ui_sequencesDockWidget->setObjectName("sequencesDock");
+    DuQFDockTitle *seqTitle = new DuQFDockTitle(tr("Sequences"), this);
+    seqTitle->setObjectName("dockTitle");
+    seqTitle->setIcon(":/icons/sequence");
+    ui_sequencesDockWidget->setTitleBarWidget(seqTitle);
+    ui_sequencesDockWidget->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    ui_sequencesDockWidget->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable );
+    ui_sequencesDockWidget->setWidget( sequenceWidget );
+    this->addDockWidget(Qt::LeftDockWidgetArea, ui_sequencesDockWidget);
+    ui_sequencesDockWidget->hide();
+
+    // The assets dock
+    ShotManagerWidget *shotWidget = new ShotManagerWidget(this);
+    ui_shotsDockWidget = new QDockWidget(tr("Assets"));
+    ui_shotsDockWidget->setObjectName("shotsDock");
+    DuQFDockTitle *shTitle = new DuQFDockTitle(tr("Shots"), this);
+    shTitle->setObjectName("dockTitle");
+    shTitle->setIcon(":/icons/shot");
+    ui_shotsDockWidget->setTitleBarWidget(shTitle);
+    ui_shotsDockWidget->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    ui_shotsDockWidget->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable );
+    ui_shotsDockWidget->setWidget( shotWidget );
+    this->addDockWidget(Qt::LeftDockWidgetArea, ui_shotsDockWidget);
+    ui_shotsDockWidget->hide();
 
     // Progress page
     progressPage = new ProgressPage(this);
@@ -320,7 +506,7 @@ void MainWindow::connectEvents()
     // Connect events
     connect(ProgressManager::instance(), &ProgressManager::freezeUI, this, &MainWindow::freezeUI);
 
-    // Toolbar and other tools
+    // Toolbar buttons
     connect(actionLogIn,SIGNAL(triggered()), this, SLOT(loginAction()));
     connect(actionLogOut,SIGNAL(triggered()), this, SLOT(logoutAction()));
     connect(actionSettings, SIGNAL(triggered(bool)), this, SLOT(duqf_settings(bool)));
@@ -330,23 +516,52 @@ void MainWindow::connectEvents()
     connect(actionUserProfile,SIGNAL(triggered()), this, SLOT(userProfile()));
     connect(actionUserFolder,SIGNAL(triggered()), this, SLOT(revealUserFolder()));
     connect(actionAdmin,SIGNAL(triggered(bool)), this, SLOT(admin(bool)));
-    connect(actionProjectSettings,SIGNAL(triggered(bool)), this, SLOT(projectSettings(bool)));
-    connect(actionPipeline, SIGNAL(triggered(bool)), this, SLOT(pipeline(bool)));
-    connect(actionShots,SIGNAL(triggered(bool)), this, SLOT(shots(bool)));
-    connect(actionAssets,SIGNAL(triggered(bool)), this, SLOT(assets(bool)));
-    connect(actionSchedule,SIGNAL(triggered(bool)), this, SLOT(schedule(bool)));
+
+    connect(ui_actionPipeline,SIGNAL(triggered()), this, SLOT(pipeline()));
+    connect(ui_pipelineButton,SIGNAL(clicked()), this, SLOT(pipeline()));
+
+    connect(ui_actionShots,SIGNAL(triggered(bool)), this, SLOT(shots()));
+    connect(ui_shotsButton,SIGNAL(clicked()), this, SLOT(shots()));
+
+    connect(ui_actionAssets,SIGNAL(triggered(bool)), this, SLOT(assets()));
+    connect(ui_assetsButton,SIGNAL(clicked()), this, SLOT(assets()));
+
+    connect(ui_actionSchedule,SIGNAL(triggered(bool)), this, SLOT(schedule()));
+    connect(ui_scheduleButton, SIGNAL(clicked()), this, SLOT(schedule()));
 
     // Docks
-    connect(actionStatistics,SIGNAL(triggered(bool)), ui_statsDockWidget, SLOT(setVisible(bool)));
-    connect(ui_statsDockWidget,SIGNAL(visibilityChanged(bool)), actionStatistics, SLOT(setChecked(bool)));
+    connect(ui_projectAction, SIGNAL(triggered(bool)), ui_projectDockWidget, SLOT(setVisible(bool)));
+    connect(ui_projectDockWidget, SIGNAL(visibilityChanged(bool)), ui_projectAction, SLOT(setChecked(bool)));
+
+    connect(ui_stepsAction, SIGNAL(triggered(bool)), ui_stepsDockWidget, SLOT(setVisible(bool)));
+    connect(ui_stepsDockWidget, SIGNAL(visibilityChanged(bool)), ui_stepsAction, SLOT(setChecked(bool)));
+
+    connect(ui_pipeFilesAction, SIGNAL(triggered(bool)), ui_pipeFileDockWidget, SLOT(setVisible(bool)));
+    connect(ui_pipeFileDockWidget, SIGNAL(visibilityChanged(bool)), ui_pipeFilesAction, SLOT(setChecked(bool)));
+
+    connect(ui_assetGroupAction, SIGNAL(triggered(bool)), ui_assetGroupsDockWidget, SLOT(setVisible(bool)));
+    connect(ui_assetGroupsDockWidget, SIGNAL(visibilityChanged(bool)), ui_assetGroupAction, SLOT(setChecked(bool)));
+
+    connect(ui_assetListAction, SIGNAL(triggered(bool)), ui_assetsDockWidget, SLOT(setVisible(bool)));
+    connect(ui_assetsDockWidget, SIGNAL(visibilityChanged(bool)), ui_assetListAction, SLOT(setChecked(bool)));
+
+    connect(ui_sequenceAction, SIGNAL(triggered(bool)), ui_sequencesDockWidget, SLOT(setVisible(bool)));
+    connect(ui_sequencesDockWidget, SIGNAL(visibilityChanged(bool)), ui_sequenceAction, SLOT(setChecked(bool)));
+
+    connect(ui_shotListAction, SIGNAL(triggered(bool)), ui_shotsDockWidget, SLOT(setVisible(bool)));
+    connect(ui_shotsDockWidget, SIGNAL(visibilityChanged(bool)), ui_shotListAction, SLOT(setChecked(bool)));
+
+    connect(ui_actionStatistics,SIGNAL(triggered(bool)), ui_statsDockWidget, SLOT(setVisible(bool)));
+    connect(ui_statsDockWidget,SIGNAL(visibilityChanged(bool)), ui_actionStatistics, SLOT(setChecked(bool)));
+
     connect(ui_consoleDockWidget,SIGNAL(visibilityChanged(bool)), ui_consoleButton, SLOT(setChecked(bool)));
     connect(ui_consoleButton,SIGNAL(clicked(bool)), ui_consoleDockWidget, SLOT(setVisible(bool)));
-    connect(actionTimeline,SIGNAL(triggered(bool)), ui_timelineDockWidget, SLOT(setVisible(bool)));
-    connect(ui_timelineDockWidget,SIGNAL(visibilityChanged(bool)), actionTimeline, SLOT(setChecked(bool)));
+
+    connect(ui_actionTimeline,SIGNAL(triggered(bool)), ui_timelineDockWidget, SLOT(setVisible(bool)));
+    connect(ui_timelineDockWidget,SIGNAL(visibilityChanged(bool)), ui_actionTimeline, SLOT(setChecked(bool)));
 
     // Pages
     connect(ui_adminPage, SIGNAL(closeRequested()), this, SLOT(home()));
-    connect(ui_projectSettingsPage, SIGNAL(closeRequested()), this, SLOT(home()));
 
     // Other buttons
     connect(actionSync, SIGNAL(triggered()), DBInterface::instance(),SLOT(sync()));
@@ -590,8 +805,8 @@ void MainWindow::duqf_setStyle()
     //and font
     DuUI::setFont(settings.value("appearance/font", "Ubuntu").toString());
     //and tool buttons
-    int styleIndex = settings.value("appearance/toolButtonStyle", 2).toInt();
-    DuUI::setToolButtonStyle(styleIndex);
+    //int styleIndex = settings.value("appearance/toolButtonStyle", 2).toInt();
+    //DuUI::setToolButtonStyle(styleIndex);
 }
 
 void MainWindow::duqf_bugReport()
@@ -748,11 +963,6 @@ void MainWindow::log(DuQFLog m)
 void MainWindow::pageChanged(int i)
 {
     actionAdmin->setChecked(i == 3);
-    actionProjectSettings->setChecked(i == 4);
-    actionPipeline->setChecked(i == 5);
-    actionAssets->setChecked(i == 6);
-    actionShots->setChecked(i == 7);
-    actionSchedule->setChecked(i == 8);
     duqf_settingsButton->setChecked(i == 1);
     actionSettings->setChecked(i == 1);
     actionLogIn->setChecked(i == 0);
@@ -836,44 +1046,34 @@ void MainWindow::admin(bool show)
     else home();
 }
 
-void MainWindow::projectSettings(bool show)
+void MainWindow::pipeline()
 {
     mainToolBar->show();
-    if (show) mainStack->setCurrentIndex(4);
-    else home();
+    mainStack->setCurrentIndex(4);
 }
 
-void MainWindow::pipeline(bool show)
+void MainWindow::shots()
 {
     mainToolBar->show();
-    if (show) mainStack->setCurrentIndex(5);
-    else home();
+    mainStack->setCurrentIndex(6);
 }
 
-void MainWindow::shots(bool show)
+void MainWindow::assets()
+{
+    mainToolBar->show();
+    mainStack->setCurrentIndex(5);
+}
+
+void MainWindow::schedule(bool show)
 {
     mainToolBar->show();
     if (show) mainStack->setCurrentIndex(7);
     else home();
 }
 
-void MainWindow::assets(bool show)
-{
-    mainToolBar->show();
-    if (show) mainStack->setCurrentIndex(6);
-    else home();
-}
-
-void MainWindow::schedule(bool show)
-{
-    mainToolBar->show();
-    if (show) mainStack->setCurrentIndex(8);
-    else home();
-}
-
 void MainWindow::install(bool show)
 {
-    if (show) mainStack->setCurrentIndex(9);
+    if (show) mainStack->setCurrentIndex(8);
     else home();
 }
 
@@ -896,6 +1096,7 @@ void MainWindow::currentUserChanged()
         actionLogOut->setVisible(false);
         actionSettings->setVisible(true);
         ui_networkButton->setVisible(false);
+        ui_projectSelectorAction->setVisible(false);
         home();
         return;
     }
@@ -904,6 +1105,7 @@ void MainWindow::currentUserChanged()
     actionLogOut->setVisible(true);
     ui_networkButton->setVisible(true);
     actionSettings->setVisible(false);
+    ui_projectSelectorAction->setVisible(true);
 
     _currentUserConnection = connect(user, &RamUser::dataChanged, this, &MainWindow::currentUserChanged);
 
@@ -932,17 +1134,12 @@ void MainWindow::currentUserChanged()
 
 void MainWindow::currentProjectChanged(RamProject *project)
 {
-    actionProjectSettings->setVisible(false);
-    actionProjectSettings->setVisible(false);
-    actionPipeline->setVisible(false);
-    actionPipeline->setChecked(false);
-    actionShots->setVisible(false);
-    actionShots->setChecked(false);
-    actionAssets->setVisible(false);
-    actionAssets->setChecked(false);
-    actionSchedule->setVisible(false);
-    actionStatistics->setVisible(false);
-    actionTimeline->setVisible(false);
+    ui_pipelineMenuAction->setVisible(false);
+    ui_shotMenuAction->setVisible(false);
+    ui_assetMenuAction->setVisible(false);
+    ui_scheduleMenuAction->setVisible(false);
+
+    ui_projectEditWiget->setObject(project);
 
     if (!project)
     {
@@ -957,22 +1154,17 @@ void MainWindow::currentProjectChanged(RamProject *project)
 
         ui_statsTitle->setTitle( project->name() );
 
-        actionShots->setVisible(true);
-        actionAssets->setVisible(true);
-        actionSchedule->setVisible(true);
-        actionStatistics->setVisible(true);
-        actionTimeline->setVisible(true);
-
+        ui_shotMenuAction->setVisible(true);
+        ui_assetMenuAction->setVisible(true);
+        ui_scheduleMenuAction->setVisible(true);
 
         if (user->role() == RamUser::Admin)
         {
-            actionProjectSettings->setVisible(true);
-            actionPipeline->setVisible(true);
+            ui_pipelineMenuAction->setVisible(true);
         }
         else if (user->role() == RamUser::ProjectAdmin)
         {
-            actionProjectSettings->setVisible(true);
-            actionPipeline->setVisible(true);
+            ui_pipelineMenuAction->setVisible(true);
         }
     }
 }
