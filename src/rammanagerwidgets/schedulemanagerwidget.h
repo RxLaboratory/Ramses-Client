@@ -60,6 +60,8 @@ private slots:
     void cutComment();
     void pasteComment();
 
+    void copyUuid();
+
     void contextMenuRequested(QPoint p);
     void comment();
     void removeCommment();
@@ -105,6 +107,7 @@ private:
     QAction *ui_commentAction;
     QAction *ui_colorAction;
     QAction *ui_removeCommentAction;
+    QAction *ui_actionCopyUuid;
     QMenu *ui_commentContextMenu;
 
     RamScheduleTableModel *m_schedule;

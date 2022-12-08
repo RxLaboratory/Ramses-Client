@@ -380,6 +380,15 @@ void ScheduleManagerWidget::pasteComment()
     }
 }
 
+void ScheduleManagerWidget::copyUuid()
+{
+    QModelIndex currentIndex = ui_table->selectionModel()->currentIndex();
+    if ( !currentIndex.isValid() ) return;
+    QString uuid = currentIndex.data(RamObject::UUID).toString();
+    QClipboard *clipboard = QGuiApplication::clipboard();
+    clipboard->setText( uuid );
+}
+
 void ScheduleManagerWidget::contextMenuRequested(QPoint p)
 {
     // If it's a comment row, adjust menu
@@ -678,6 +687,12 @@ void ScheduleManagerWidget::setupUi()
     ui_stepContextMenu->actions().at(0)->setText("None");
     ui_contextMenu->addMenu(ui_stepContextMenu);
 
+    ui_contextMenu->addSeparator();
+
+    ui_actionCopyUuid = new QAction(tr("Copy UUID"));
+    ui_actionCopyUuid->setIcon(QIcon(":/icons/code"));
+    ui_contextMenu->addAction(ui_actionCopyUuid);
+
     // Comment context menu
     ui_commentContextMenu = new QMenu(this);
     ui_commentContextMenu->addAction(ui_commentAction);
@@ -696,6 +711,9 @@ void ScheduleManagerWidget::setupUi()
     ui_removeCommentAction = new QAction(QIcon(":/icons/remove"), "Remove", this);
     ui_commentContextMenu->addAction(ui_removeCommentAction);
 
+    ui_commentContextMenu->addSeparator();
+
+    ui_commentContextMenu->addAction(ui_actionCopyUuid);
 }
 
 void ScheduleManagerWidget::connectEvents()
@@ -738,6 +756,8 @@ void ScheduleManagerWidget::connectEvents()
     connect(ui_copyComment, SIGNAL(triggered()), this, SLOT(copyComment()));
     connect(ui_cutComment, SIGNAL(triggered()), this, SLOT(cutComment()));
     connect(ui_pasteComment, SIGNAL(triggered()), this, SLOT(pasteComment()));
+    // other actions
+    connect(ui_actionCopyUuid, SIGNAL(triggered()), this, SLOT(copyUuid()));
     // other
     connect(ui_titleBar, &DuQFTitleBar::closeRequested, this, &ScheduleManagerWidget::closeRequested);
     connect(Ramses::instance(), SIGNAL(currentProjectChanged(RamProject*)), this, SLOT(projectChanged(RamProject*)));
