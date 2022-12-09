@@ -30,6 +30,18 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
     Q_OBJECT
 
 public:
+    enum Page {
+        Home = 0,
+        Settings = 1,
+        UserProfile = 2,
+        Admin = 3,
+        PipeLine = 4,
+        Assets = 5,
+        Shots = 6,
+        Schedule = 7,
+        Progress = 8
+    };
+
     explicit MainWindow(QStringList args, QWidget *parent = nullptr);
 
     void setPropertiesDockWidget(QWidget *w, QString title = "Properties", QString icon = ":/icons/asset");
@@ -164,8 +176,7 @@ private slots:
     void pipeline();
     void shots();
     void assets();
-    void schedule(bool show = true);
-    void install(bool show = true);
+    void schedule();
     void currentUserChanged();
     void currentProjectChanged(RamProject *project);
     void freezeUI(bool f = true);

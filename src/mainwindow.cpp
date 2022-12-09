@@ -476,7 +476,7 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     mainStack->addWidget(progressPage);
 
     // Set UI
-    mainStack->setCurrentIndex(0);
+    mainStack->setCurrentIndex(Home);
 
     qDebug() << "> Connecting events";
 
@@ -839,11 +839,11 @@ void MainWindow::duqf_settings(bool checked)
     duqf_settingsButton->setChecked(checked);
     if (checked)
     {
-        mainStack->setCurrentIndex(1);
+        mainStack->setCurrentIndex(Settings);
     }
     else
     {
-        mainStack->setCurrentIndex(0);
+        mainStack->setCurrentIndex(Home);
     }
 }
 
@@ -971,7 +971,7 @@ void MainWindow::pageChanged(int i)
 
 void MainWindow::serverSettings()
 {
-    mainStack->setCurrentIndex(1);
+    mainStack->setCurrentIndex(Settings);
     settingsWidget->setCurrentIndex(2);
 }
 
@@ -1025,12 +1025,12 @@ void MainWindow::databaseSettingsAction()
 void MainWindow::home()
 {
     mainToolBar->show();
-    mainStack->setCurrentIndex(0);
+    mainStack->setCurrentIndex(Home);
 }
 
 void MainWindow::userProfile()
 {
-    mainStack->setCurrentIndex(2);
+    mainStack->setCurrentIndex(UserProfile);
 }
 
 void MainWindow::revealUserFolder()
@@ -1042,39 +1042,32 @@ void MainWindow::revealUserFolder()
 void MainWindow::admin(bool show)
 {
     mainToolBar->show();
-    if (show) mainStack->setCurrentIndex(3);
+    if (show) mainStack->setCurrentIndex(Admin);
     else home();
 }
 
 void MainWindow::pipeline()
 {
     mainToolBar->show();
-    mainStack->setCurrentIndex(4);
+    mainStack->setCurrentIndex(PipeLine);
 }
 
 void MainWindow::shots()
 {
     mainToolBar->show();
-    mainStack->setCurrentIndex(6);
+    mainStack->setCurrentIndex(Shots);
 }
 
 void MainWindow::assets()
 {
     mainToolBar->show();
-    mainStack->setCurrentIndex(5);
+    mainStack->setCurrentIndex(Assets);
 }
 
-void MainWindow::schedule(bool show)
+void MainWindow::schedule()
 {
     mainToolBar->show();
-    if (show) mainStack->setCurrentIndex(7);
-    else home();
-}
-
-void MainWindow::install(bool show)
-{
-    if (show) mainStack->setCurrentIndex(8);
-    else home();
+    mainStack->setCurrentIndex(Schedule);
 }
 
 void MainWindow::currentUserChanged()
@@ -1142,6 +1135,7 @@ void MainWindow::currentProjectChanged(RamProject *project)
     ui_projectEditWiget->setObject(project);
 
     if (!project)
+
     {
         ui_statsTitle->setTitle( "Project" );
         home();
@@ -1174,7 +1168,7 @@ void MainWindow::freezeUI(bool f)
     {
         m_currentPageIndex = mainStack->currentIndex();
         mainToolBar->hide();
-        mainStack->setCurrentIndex(9);
+        mainStack->setCurrentIndex(Progress);
     }
     else
     {
