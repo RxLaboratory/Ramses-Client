@@ -233,6 +233,9 @@ void DBTableModel::insertObject(QString uuid, QString data, QString table)
 {
     if (table != m_table) return;
 
+    // Already have it
+    if (m_objectUuids.contains(uuid)) return;
+
     // Removed
     if (DBInterface::instance()->isRemoved(uuid, table)) return;
 
