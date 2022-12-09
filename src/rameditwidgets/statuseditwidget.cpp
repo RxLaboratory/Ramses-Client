@@ -257,8 +257,9 @@ void StatusEditWidget::setPublished(bool p)
 
 void StatusEditWidget::setAutoEstimation(bool a)
 {
-    if (!m_status || m_reinit) return;
-    m_status->setUseAutoEstimation(a);
+    if (!m_status) return;
+
+    if (!m_reinit) m_status->setUseAutoEstimation(a);
 
     float est = 0;
 
