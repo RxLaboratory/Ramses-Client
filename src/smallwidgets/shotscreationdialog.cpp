@@ -91,7 +91,6 @@ void ShotsCreationDialog::create()
                 getName(i),
                 seq
                 );
-        //m_project->shots()->appendObject(shot->uuid());
         ui_progressBar->setValue( i - startNumber );
     }
 

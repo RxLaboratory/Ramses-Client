@@ -38,6 +38,9 @@ RamShot::RamShot(QString shortName, QString name, RamSequence *sequence):
     Q_ASSERT_X(sequence, "RamAsset(shortname, name, assetgroup)", "Sequence can't be null!");
     construct();
     insertData("sequence", sequence->uuid() );
+    // Set the order: at the end of the current project
+    RamProject *proj = sequence->project();
+    insertData("order", proj->shots()->rowCount());
     createData();
 }
 
