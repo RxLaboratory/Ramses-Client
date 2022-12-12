@@ -1,4 +1,5 @@
 #include "ramscheduleentry.h"
+#include "ramproject.h"
 
 // STATIC //
 
@@ -24,14 +25,17 @@ RamScheduleEntry *RamScheduleEntry::c(RamObject *o)
 
 // PUBLIC //
 
-RamScheduleEntry::RamScheduleEntry(RamUser *user, QDateTime date):
+RamScheduleEntry::RamScheduleEntry(RamUser *user, RamStep *step, QDateTime date):
        RamObject(user->shortName(), user->name() + " | " + date.toString("yyyy-MM-dd ap"), ObjectType::ScheduleEntry, user)
 {
     construct();
 
     QJsonObject d = data();
     d.insert("user", user->uuid());
-    d.insert("step", "none");
+    d.insert("step", step->uuid());
+    RamProject *proj = step->project();
+    if (proj) d.insert("project", proj->uuid());
+
     d.insert("date", date.toString("yyyy-MM-dd hh:mm:ss"));
     setData(d);
 

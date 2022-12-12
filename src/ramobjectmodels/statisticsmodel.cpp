@@ -156,6 +156,11 @@ QVariant StatisticsModel::data(const QModelIndex &index, int role) const
 
 void StatisticsModel::changeProject(RamProject *project)
 {
+    if (m_project) {
+        disconnect(m_project, nullptr, this, nullptr);
+        disconnect(m_project->steps(), nullptr, this, nullptr);
+    }
+
     beginResetModel();
 
     m_project = project;

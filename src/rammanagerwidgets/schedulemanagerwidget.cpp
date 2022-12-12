@@ -15,7 +15,7 @@ ScheduleManagerWidget::ScheduleManagerWidget(QWidget *parent) : QWidget(parent)
     m_schedule = new RamScheduleTableModel( );
 
     m_scheduleFilter = new RamScheduleFilterProxyModel();
-    m_scheduleFilter->setSourceModel( m_schedule );
+    m_scheduleFilter->setSourceSchedule( m_schedule );
     ui_table->setModel( m_scheduleFilter );
 
     connectEvents();
@@ -119,11 +119,13 @@ void ScheduleManagerWidget::userChanged(RamUser *user)
     ui_stepMenu->setEnabled(user->role() >= RamUser::Lead);
 }
 
-void ScheduleManagerWidget::assignStep(RamObject *step)
+void ScheduleManagerWidget::assignStep(RamObject *stepObj)
 {
     ProgressManager *pm = ProgressManager::instance();
     pm->setTitle(tr("Creating schedule entries"));
     pm->setText("Assigning step...");
+
+    RamStep *step = RamStep::c( stepObj );
 
     QModelIndexList selection = ui_table->selectionModel()->selectedIndexes();
 
@@ -183,13 +185,11 @@ void ScheduleManagerWidget::assignStep(RamObject *step)
             if ( ispm )
                 date.setTime(QTime(12,0));
 
-            entry = new RamScheduleEntry( user, date );
-            entry->setStep( RamStep::c(step) );
-            //user->schedule()->appendObject(entry->uuid());
+            new RamScheduleEntry( user, step, date );
         }
         else
         {
-            entry->setStep( RamStep::c(step) );
+            entry->setStep( step );
         }
     }
 

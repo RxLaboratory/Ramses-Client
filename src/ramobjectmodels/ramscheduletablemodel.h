@@ -11,6 +11,7 @@ class RamScheduleEntry;
 class RamScheduleTableModel : public QAbstractTableModel
 {
     Q_OBJECT
+
 public:
     explicit RamScheduleTableModel(QObject *parent = nullptr);
     void setObjectModel(RamObjectModel *userList, DBTableModel *comments);

@@ -319,8 +319,10 @@ void RamStep::edit(bool show)
 
 void RamStep::computeEstimation()
 {
-    if (!m_cacheEstimationTimer.hasExpired(1000)) return;
-    m_cacheEstimationTimer.start();
+    //if (!m_cacheEstimationTimer.hasExpired(1000)) return;
+    //m_cacheEstimationTimer.start();
+    if (m_computingEstimation) return;
+    m_computingEstimation = true;
 
     RamProject *proj = project();
     if (!proj) return;
@@ -368,6 +370,8 @@ void RamStep::computeEstimation()
     m_completionRatio = std::min(100, m_completionRatio);
 
     emit estimationComputed(this);
+
+    m_computingEstimation = false;
 }
 
 void RamStep::countAssignedDays()

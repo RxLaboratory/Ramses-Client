@@ -26,6 +26,8 @@ void RamScheduleTableModel::setObjectModel(RamObjectModel *userList, DBTableMode
         connect( m_users, SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(insertUser(QModelIndex,int,int)));
         connect( m_users, SIGNAL(rowsAboutToBeRemoved(QModelIndex,int,int)), this, SLOT(removeUser(QModelIndex,int,int)));
         connect( m_users, SIGNAL(modelReset()), this, SLOT(resetUsers()));
+        // Initial users connection
+        insertUser(QModelIndex(), 0, m_users->rowCount() - 1);
     }
 
     if (m_comments)
@@ -33,7 +35,7 @@ void RamScheduleTableModel::setObjectModel(RamObjectModel *userList, DBTableMode
         connect( m_comments, SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(insertComment(QModelIndex,int,int)));
         connect( m_comments, SIGNAL(rowsAboutToBeRemoved(QModelIndex,int,int)), this, SLOT(removeComment(QModelIndex,int,int)));
         connect( m_comments, SIGNAL(modelReset()), this, SLOT(resetComments()));
-    }
+    }   
 
     endResetModel();
 }
@@ -344,28 +346,26 @@ void RamScheduleTableModel::scheduleChanged(const QModelIndex &topLeft, const QM
 void RamScheduleTableModel::scheduleInserted(const QModelIndex &parent, int first, int last)
 {
     Q_UNUSED(parent);
-
     DBTableModel *schedule = reinterpret_cast<DBTableModel*>( QObject::sender() );
     if (!schedule) return;
     for (int i = first; i <= last; i++)
     {
         RamScheduleEntry *e = RamScheduleEntry::c( schedule->get(i) );
         QModelIndex ind = entryIndex(e);
-        emit dataChanged(ind, ind);
+        emit dataChanged(ind, ind, QVector<int>());
     }
 }
 
 void RamScheduleTableModel::scheduleRemoved(const QModelIndex &parent, int first, int last)
 {
     Q_UNUSED(parent);
-
     DBTableModel *schedule = reinterpret_cast<DBTableModel*>( QObject::sender() );
     if (!schedule) return;
     for (int i = first; i <= last; i++)
     {
         RamScheduleEntry *e = RamScheduleEntry::c( schedule->get(i) );
         QModelIndex ind = entryIndex(e);
-        emit dataChanged(ind, ind);
+        emit dataChanged(ind, ind, QVector<int>());
     }
 }
 
@@ -418,6 +418,13 @@ QModelIndex RamScheduleTableModel::entryIndex(RamScheduleEntry *e)
     // Get the column from the date
     QDateTime d = e->date();
     int col = colForDate(d);
+    // Adjust user row
+    // x2 (2 rows per user)
+    // +1 (comments is the first)
+    // +1 if pm
+    row *= 2;
+    row++;
+    if (d.time().hour() >= 12) row++;
     return this->index(row, col);
 }
 

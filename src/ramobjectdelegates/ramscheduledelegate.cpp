@@ -203,9 +203,11 @@ void RamScheduleDelegate::showDetails(bool s)
     m_details = s;
 }
 
-void RamScheduleDelegate::setEntry(RamObject *step)
+void RamScheduleDelegate::setEntry(RamObject *stepObj)
 {
     if (!m_indexPressed.isValid()) return;
+
+    RamStep *step = RamStep::c(stepObj);
 
     // Get current entry if any
     QString entryUuid = m_indexPressed.data(RamObject::UUID).toString();
@@ -227,9 +229,7 @@ void RamScheduleDelegate::setEntry(RamObject *step)
         if (  m_indexPressed.model()->headerData( m_indexPressed.row(), Qt::Vertical, RamObject::IsPM ).toBool() )
             date.setTime(QTime(12,0));
 
-        entry = new RamScheduleEntry( user, date );
-        entry->setStep( RamStep::c( step ) );
-        //user->schedule()->appendObject(entry->uuid());
+        new RamScheduleEntry( user, step, date );
     }
     else if (entry)
     {

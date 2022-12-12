@@ -23,7 +23,7 @@ public:
     bool details() const;
 
 private slots:
-    void setEntry(RamObject *step);
+    void setEntry(RamObject *stepObj);
 
 private:
     // Style

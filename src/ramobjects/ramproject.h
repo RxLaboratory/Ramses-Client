@@ -48,8 +48,9 @@ public:
     DBTableModel *pipeFiles() const;
     // Users
     RamObjectModel *users() const;
-    // Schedule comments
+    // Schedule
     DBTableModel *scheduleComments() const;
+    DBTableModel *schedule() const;
     // Status
     RamStatusTableModel *assetStatus() const;
     RamStatusTableModel *shotStatus() const;
@@ -99,6 +100,7 @@ public:
      * @return a list of number of days <estimation, completed, assigned, future>
      */
     QVector<float> stats(RamUser *user);
+    void computeEstimation();
 
     void setFolderPath(const QString &newFolderPath);
     void resetDbFolderPath();
@@ -134,7 +136,6 @@ protected:
 
 private:
     void construct();
-    void computeEstimation();
 
     // LISTS
     DBTableModel *m_steps;
@@ -144,6 +145,7 @@ private:
     DBTableModel *m_assetGroups;
     DBTableModel *m_assets;
     DBTableModel *m_shots;
+    DBTableModel *m_schedule;
     RamObjectModel *m_pipeline;
     DBTableModel *m_pipeFiles;
     RamObjectModel *m_users;
@@ -165,6 +167,7 @@ private:
     float m_missingDays = 0;
     float m_assignedDays = 0;
     QElapsedTimer m_cacheTimer;
+    bool m_computingEstimation = false;
 };
 
 #endif // RAMPROJECT_H

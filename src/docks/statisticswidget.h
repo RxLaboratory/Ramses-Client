@@ -32,6 +32,8 @@ private:
     QLabel *ui_scheduledWorkLabel;
     QLabel *ui_remainingWorkLabel;
     QLabel *ui_latenessLabel;
+    QLabel *ui_missingLabel;
+    QLabel *ui_missingDaysLabel;
     StatisticsView *ui_statsTable;
 
     RamProject *m_project = nullptr;

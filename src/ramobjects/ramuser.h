@@ -46,6 +46,11 @@ protected:
 
     static QFrame *ui_editWidget;
 
+private slots:
+    void scheduleDataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &roles = QVector<int>());
+    void scheduleRowsInserted(const QModelIndex &parent, int first, int last);
+    void scheduleRowsRemoved(const QModelIndex &parent, int first, int last);
+
 private:
     void construct();
 

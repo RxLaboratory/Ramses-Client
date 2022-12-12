@@ -39,6 +39,9 @@ public:
     float daysSpent() ;
     float neededDays() ;
 
+    void computeEstimation();
+    void countAssignedDays();
+
     /**
      * @brief stats
      * @return a list of number of days <estimation, completed, scheduled, scheduled in the future>
@@ -69,13 +72,11 @@ protected:
 private:
     void construct();
 
-    void computeEstimation();
-    void countAssignedDays();
-
     // Estimation cache
     float m_estimation = 0;
     int m_completionRatio = 0;
     QElapsedTimer m_cacheEstimationTimer;
+    bool m_computingEstimation = false;
     // Schedule cache
     int m_scheduledHalfDays = 0;
     int m_scheduledFutureHalfDays = 0;

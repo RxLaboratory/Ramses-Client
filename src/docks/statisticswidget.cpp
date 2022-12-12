@@ -50,6 +50,7 @@ void StatisticsWidget::updateEstimation(RamProject *project)
     float daysSpent = stats.at(1);
     float future = stats.at(3);
     float completion = 100;
+    float missing = estimation - daysSpent - future;
     if (estimation > 0)
         completion = daysSpent / estimation * 100.0;
 
@@ -60,6 +61,21 @@ void StatisticsWidget::updateEstimation(RamProject *project)
     ui_completionLabel->setText( QString::number( completion, 'f', 0 ) + " %" );
 
     ui_remainingWorkLabel->setText( QString::number( daysSpent, 'f', 0) + " / " + QString::number( estimation, 'f', 0 ) + " days" );
+
+    if (missing > 1) {
+        ui_missingDaysLabel->show();
+        ui_missingLabel->setText("Missing: ");
+        ui_missingDaysLabel->setText( QString::number( missing, 'f', 0) + " days" );
+    }
+    else if (missing < -1) {
+        ui_missingDaysLabel->show();
+        ui_missingLabel->setText("There are ");
+        ui_missingDaysLabel->setText( QString::number( -missing, 'f', 0) + " extra days" );
+    }
+    else {
+        ui_missingLabel->setText("The schedule seems to be OK");
+        ui_missingDaysLabel->hide();
+    }
 
     //ui_latenessLabel->setText( QString::number( project->latenessRatio(), 'f', 0) + " %");
 }
@@ -89,20 +105,26 @@ void StatisticsWidget::setupUi()
     detailsLayout->setContentsMargins(0,0,0,0);
     detailsLayout->setSpacing(3);
 
-    QLabel *scheduled = new QLabel("Remaining: ", this);
-    detailsLayout->addWidget(scheduled, 1, 1);
-
-    ui_scheduledWorkLabel = new QLabel("-- days", this);
-    detailsLayout->addWidget(ui_scheduledWorkLabel, 1, 2);
-
     QLabel *completionLabel = new QLabel("Completion: ", this);
-    detailsLayout->addWidget(completionLabel, 2,1);
+    detailsLayout->addWidget(completionLabel, 0,1);
 
     ui_completionLabel = new QLabel("-- %", this);
-    detailsLayout->addWidget(ui_completionLabel, 2, 2);
+    detailsLayout->addWidget(ui_completionLabel, 0, 2);
 
     ui_remainingWorkLabel = new QLabel("-- days (done) / -- days (total)");
-    detailsLayout->addWidget(ui_remainingWorkLabel, 3, 2);
+    detailsLayout->addWidget(ui_remainingWorkLabel, 1, 2);
+
+    QLabel *scheduled = new QLabel("Scheduled: ", this);
+    detailsLayout->addWidget(scheduled, 2, 1);
+
+    ui_scheduledWorkLabel = new QLabel("-- days", this);
+    detailsLayout->addWidget(ui_scheduledWorkLabel, 2, 2);
+
+    ui_missingLabel = new QLabel("Missing: ", this);
+    detailsLayout->addWidget(ui_missingLabel, 3, 1);
+
+    ui_missingDaysLabel = new QLabel("-- days", this);
+    detailsLayout->addWidget(ui_missingDaysLabel, 3, 2);
 
     //QLabel *latenessLabel = new QLabel("Estimated lateness: ", this);
     //detailsLayout->addWidget(latenessLabel, 4,1);

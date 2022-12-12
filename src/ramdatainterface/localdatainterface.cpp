@@ -1238,6 +1238,97 @@ void LocalDataInterface::autoCleanDB(QSqlDatabase db)
 
     qry.exec("DELETE FROM RamScheduleEntry WHERE `removed` = 1 ;");
 
+    // === Clean Schedule entries ===
+
+    // Add the project in schedule entries data
+    qry.exec("SELECT `uuid`, `data` FROM 'RamScheduleEntry' ;");
+    // To speed up things, keep step/project association
+    QHash<QString,QString> stepProjectUuids;
+    QStringList uuidsToRemove;
+    QVector<QStringList> updateData;
+    while (qry.next())
+    {
+        QString dataStr = qry.value(1).toString();
+        QString uuid = qry.value(0).toString();
+        // Parse the data
+        QJsonDocument doc = QJsonDocument::fromJson( dataStr.toUtf8() );
+        QJsonObject obj = doc.object();
+        QString projUuid = obj.value("project").toString();
+        if (projUuid != "") continue;
+        QString stepUuid = obj.value("step").toString();
+        if (stepUuid == "" || stepUuid == "none") {
+            uuidsToRemove << uuid;
+            continue;
+        }
+        projUuid = stepProjectUuids.value(stepUuid);
+        if (projUuid == "") {
+            // Get the project
+            QSqlQuery qryProj = QSqlQuery(db);
+            QString q = "SELECT `data` FROM 'RamStep' WHERE `uuid` = '%1' ;";
+            qryProj.exec( q.arg(stepUuid) );
+            if (qryProj.first()) {
+                QString stepDataStr = qryProj.value(0).toString();
+                QJsonDocument stepDoc = QJsonDocument::fromJson( stepDataStr.toUtf8() );
+                QJsonObject stepObj = stepDoc.object();
+                projUuid = stepObj.value("project").toString();
+                if (projUuid != "") stepProjectUuids.insert(stepUuid, projUuid);
+            }
+        }
+        if (projUuid != "") {
+            obj.insert("project", projUuid);
+            doc.setObject(obj);
+            QStringList d;
+            d << uuid << doc.toJson(QJsonDocument::Compact);
+            updateData << d;
+        }
+        else uuidsToRemove << uuid;
+    }
+
+    // Remove uuids without project
+    // Split in 250 rows at once
+    if (!uuidsToRemove.isEmpty())
+    {
+        // Split by 250 rows at a time
+        while (!uuidsToRemove.isEmpty())
+        {
+            QString condition = " `uuid` = '" + uuidsToRemove.takeLast() + "' ";
+            for (int i = 0; i < 250; i++)
+            {
+                if (uuidsToRemove.isEmpty()) break;
+                condition += " OR `uuid` = '" + uuidsToRemove.takeLast() + "' ";
+            }
+
+            qry.exec("DELETE FROM 'RamScheduleEntry' WHERE " + condition );
+        }
+    }
+
+    // Set the new data
+    if (!updateData.isEmpty())
+    {
+        // Split by 250 rows at a time
+        while (!updateData.isEmpty())
+        {
+            QStringList data = updateData.takeLast();
+            QString uuid = data.at(0);
+            QString d = data.at(1);
+            QString values = " ( '" + uuid + "', '" + d.replace("'", "''") + "' ) ";
+            for (int i = 0; i < 250; i++)
+            {
+                if (updateData.isEmpty()) break;
+                data = updateData.takeLast();
+                QString uuid = data.at(0);
+                QString d = data.at(1);
+                values += ", ( '" + uuid + "', '" + d.replace("'", "''") + "' ) ";
+            }
+
+            qry.exec("INSERT INTO RamScheduleEntry (`uuid`, `data`) "
+                     "VALUES " + values +
+                     " ON CONFLICT(uuid) DO UPDATE SET "
+                     " `data` = excluded.data ;"
+                     );
+        }
+    }
+
     // === Move the oldest statuses to their statushistory table ===
 
     // List all statuses
@@ -1253,7 +1344,7 @@ void LocalDataInterface::autoCleanDB(QSqlDatabase db)
     // Parse all data
     QHash<QString,QHash<QString,QJsonObject>> latestItemStepData; // used to check which is the latest status
     QHash<QString,QHash<QString,QString>> latestItemStepUuid; // we need to keep the uuid too
-    QStringList statusToMove; // uuid, data to move from one table to the other
+    QStringList statusToMove; // uuids to move from one table to the other
     while (qry.next())
     {
         QString dataStr = qry.value(1).toString();

@@ -18,7 +18,7 @@ public:
 
     // METHODS
 
-    explicit RamScheduleEntry(RamUser *user, QDateTime date);
+    explicit RamScheduleEntry(RamUser *user, RamStep *step, QDateTime date);
 
     RamUser *user() const;
     const QDateTime date() const;

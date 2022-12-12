@@ -482,8 +482,10 @@ void RamProject::edit(bool show)
 
 void RamProject::computeEstimation()
 {
-    if (!m_cacheTimer.hasExpired(1000)) return;
-    m_cacheTimer.start();
+    //if (!m_cacheTimer.hasExpired(100)) return;
+    //m_cacheTimer.start();
+    if (m_computingEstimation) return;
+    m_computingEstimation = true;
 
     m_estimation = 0;
     m_completionRatio = 0;
@@ -526,6 +528,8 @@ void RamProject::computeEstimation()
     emit latenessRatioChanged(m_latenessRatio);
     emit estimationChanged(m_estimation);
     emit estimationComputed(this);
+
+    m_computingEstimation = false;
 }
 
 // PROTECTED //
@@ -598,5 +602,10 @@ void RamProject::construct()
     m_users = createModel(RamObject::User, "users" );
 
     m_pipeline = createModel(RamObject::Pipe, "pipeline" );
+
+    m_schedule = new DBTableModel(RamObject::ScheduleEntry, true, this);
+    m_schedule->addFilterValue( "project", this->uuid() );
+    m_schedule->addLookUpKey("date");
+    m_schedule->addLookUpKey("user");
 }
 
