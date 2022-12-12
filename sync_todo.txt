@@ -66,3 +66,16 @@
 
 8- a reset password method using the user's email
 
+
+
+
+
+
+Hello !
+
+Yep il y a un bug qui traine sur le serveur, mais non ce n'est pas grave ! vérifie juste en bas à droite que tu es pas "offline", et si c'est le cas, pense à te reconnecter.
+
+Normalement ça sera corrigé d'ici demain, l'erreur devrait disparaitre
+
+Bonne soirée,
+Duduf

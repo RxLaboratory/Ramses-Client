@@ -7,16 +7,6 @@ RamScheduleFilterProxyModel::RamScheduleFilterProxyModel(QObject *parent) : QSor
 
 }
 
-void RamScheduleFilterProxyModel::setSourceSchedule(RamScheduleTableModel *sourceModel)
-{
-    QAbstractItemModel *current = this->sourceModel();
-    if (current) disconnect(current, nullptr, this, nullptr);
-    // For some reason, data changed is not forwarded? Do it ourselves
-    connect(sourceModel, &RamScheduleTableModel::dataChanged, this, &RamScheduleFilterProxyModel::changeData);
-
-    QSortFilterProxyModel::setSourceModel(sourceModel);
-}
-
 bool RamScheduleFilterProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
 {
     Q_UNUSED(sourceParent)
@@ -36,13 +26,6 @@ bool RamScheduleFilterProxyModel::filterAcceptsColumn(int sourceCol, const QMode
 
     if (m_hiddenDays.contains(date.dayOfWeek())) return false;
     return true;
-}
-
-void RamScheduleFilterProxyModel::changeData(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &roles)
-{
-    QModelIndex tl = mapFromSource(topLeft);
-    QModelIndex br = mapFromSource(bottomRight);
-    emit dataChanged(tl, br, roles);
 }
 
 void RamScheduleFilterProxyModel::ignoreUserUuid(QString uuid)

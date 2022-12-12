@@ -423,7 +423,7 @@ QModelIndex RamScheduleTableModel::entryIndex(RamScheduleEntry *e)
     // +1 (comments is the first)
     // +1 if pm
     row *= 2;
-    row++;
+    if (m_comments) row++;
     if (d.time().hour() >= 12) row++;
     return this->index(row, col);
 }

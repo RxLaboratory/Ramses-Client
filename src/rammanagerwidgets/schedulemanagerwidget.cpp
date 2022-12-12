@@ -15,8 +15,9 @@ ScheduleManagerWidget::ScheduleManagerWidget(QWidget *parent) : QWidget(parent)
     m_schedule = new RamScheduleTableModel( );
 
     m_scheduleFilter = new RamScheduleFilterProxyModel();
-    m_scheduleFilter->setSourceSchedule( m_schedule );
+    m_scheduleFilter->setSourceModel( m_schedule );
     ui_table->setModel( m_scheduleFilter );
+    //ui_table->setModel( m_schedule );
 
     connectEvents();
 }
@@ -835,6 +836,7 @@ void ScheduleManagerWidget::changeProject()
     this->setEnabled(true);
 
     m_schedule->setObjectModel( m_project->users(), m_project->scheduleComments() );
+
     ui_userMenu->setObjectModel( m_project->users() );
     ui_endDateEdit->setDate( QDate::currentDate().addDays(30) );
     ui_stepMenu->setObjectModel( m_project->steps() );
