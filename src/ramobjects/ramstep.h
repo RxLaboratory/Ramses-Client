@@ -61,6 +61,7 @@ signals:
 
 public slots:
     virtual void edit(bool show = true) override;
+    void freezeEstimation(bool frozen = true);
 
 protected:
     static QHash<QString, RamStep*> m_existingObjects;
@@ -75,8 +76,8 @@ private:
     // Estimation cache
     float m_estimation = 0;
     int m_completionRatio = 0;
-    QElapsedTimer m_cacheEstimationTimer;
     bool m_computingEstimation = false;
+    bool m_estimationFrozen = false;
     // Schedule cache
     int m_scheduledHalfDays = 0;
     int m_scheduledFutureHalfDays = 0;

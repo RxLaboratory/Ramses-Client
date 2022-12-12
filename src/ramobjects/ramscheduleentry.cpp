@@ -85,19 +85,19 @@ const QDateTime RamScheduleEntry::date() const
 
 void RamScheduleEntry::setStep(RamStep *newStep)
 {
-    RamStep *currentStep = step();
-    if (currentStep)
-    {
-        disconnect(currentStep, nullptr, this, nullptr);
-        disconnect(this, nullptr, currentStep, nullptr);
-    }
-
     if (newStep)
     {
+        RamStep *currentStep = step();
+        if (currentStep)
+        {
+            disconnect(currentStep, nullptr, this, nullptr);
+            disconnect(this, nullptr, currentStep, nullptr);
+        }
+
         insertData("step", newStep->uuid());
         connect(newStep, SIGNAL(removed(RamObject*)), this, SLOT(stepRemoved()));
     }
-    else insertData("step", "none");
+    //else insertData("step", "none");
 }
 
 QString RamScheduleEntry::iconName() const
@@ -175,6 +175,7 @@ QVariant RamScheduleEntry::roleData(int role) const
 void RamScheduleEntry::stepRemoved()
 {
     setStep(nullptr);
+    this->remove();
 }
 
 void RamScheduleEntry::construct()

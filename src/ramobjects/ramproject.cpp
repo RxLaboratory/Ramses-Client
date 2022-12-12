@@ -482,8 +482,7 @@ void RamProject::edit(bool show)
 
 void RamProject::computeEstimation()
 {
-    //if (!m_cacheTimer.hasExpired(100)) return;
-    //m_cacheTimer.start();
+    if (m_estimationFrozen) return;
     if (m_computingEstimation) return;
     m_computingEstimation = true;
 
@@ -530,6 +529,17 @@ void RamProject::computeEstimation()
     emit estimationComputed(this);
 
     m_computingEstimation = false;
+}
+
+void RamProject::freezeEstimation(bool frozen)
+{
+    m_estimationFrozen = frozen;
+    for (int i =0; i < m_steps->rowCount(); i++)
+    {
+        RamStep *step = RamStep::c(m_steps->get(i));
+        if (!step) continue;
+        step->freezeEstimation(frozen);
+    }
 }
 
 // PROTECTED //

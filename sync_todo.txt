@@ -1,8 +1,3 @@
-- Schedule issues:
-    - group changes to improve perf
-    - stats widget doesn't get project compute (connected, or not emitted?)
-    - ramproject computeestimation use project schedule
-
 - Add an "order" column in all tables and use that instead of storing the order in the data (and separate order changed from data changed signals)
 - On close full sync: ignore ramstatushistory to speed up things a bit
 - syncing ui better feedback : a status/connected icon + message user@server ( ... )
@@ -68,14 +63,3 @@
 
 
 
-
-
-
-Hello !
-
-Yep il y a un bug qui traine sur le serveur, mais non ce n'est pas grave ! vérifie juste en bas à droite que tu es pas "offline", et si c'est le cas, pense à te reconnecter.
-
-Normalement ça sera corrigé d'ici demain, l'erreur devrait disparaitre
-
-Bonne soirée,
-Duduf

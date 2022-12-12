@@ -150,6 +150,9 @@ float RamStep::neededDays()
 
 QVector<float> RamStep::stats(RamUser *user)
 {
+    computeEstimation();
+    countAssignedDays();
+
     if (!user)
     {
         return QVector<float>( { m_estimation,
@@ -318,10 +321,14 @@ void RamStep::edit(bool show)
     if (show) showEdit( ui_editWidget );
 }
 
+void RamStep::freezeEstimation(bool frozen)
+{
+    m_estimationFrozen = frozen;
+}
+
 void RamStep::computeEstimation()
 {
-    //if (!m_cacheEstimationTimer.hasExpired(1000)) return;
-    //m_cacheEstimationTimer.start();
+    if (m_estimationFrozen) return;
     if (m_computingEstimation) return;
     m_computingEstimation = true;
 
@@ -377,8 +384,9 @@ void RamStep::computeEstimation()
 
 void RamStep::countAssignedDays()
 {
-    if (!m_cacheScheduleTimer.hasExpired(1000)) return;
-    m_cacheScheduleTimer.start();
+    if (m_estimationFrozen) return;
+    if (m_computingEstimation) return;
+    m_computingEstimation = true;
 
     RamProject *proj = project();
     if (!proj) return;
@@ -414,6 +422,8 @@ void RamStep::countAssignedDays()
     }
 
     emit estimationComputed(this);
+
+    m_computingEstimation = false;
 }
 
 // PROTECTED //

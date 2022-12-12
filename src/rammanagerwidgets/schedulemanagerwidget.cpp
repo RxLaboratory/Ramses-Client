@@ -122,11 +122,13 @@ void ScheduleManagerWidget::userChanged(RamUser *user)
 
 void ScheduleManagerWidget::assignStep(RamObject *stepObj)
 {
+    if (!m_project) return;
+
+    m_project->freezeEstimation(true);
+
     ProgressManager *pm = ProgressManager::instance();
     pm->setTitle(tr("Creating schedule entries"));
     pm->setText("Assigning step...");
-
-    RamStep *step = RamStep::c( stepObj );
 
     QModelIndexList selection = ui_table->selectionModel()->selectedIndexes();
 
@@ -138,7 +140,7 @@ void ScheduleManagerWidget::assignStep(RamObject *stepObj)
         pm->increment();
         const QModelIndex &index = selection.at(i);
 
-        if (!step)
+        if (!stepObj)
         {
             if (index.data(RamObject::IsComment).toBool()) {
                 QString commentUuid = index.data(RamObject::UUID).toString();
@@ -157,8 +159,6 @@ void ScheduleManagerWidget::assignStep(RamObject *stepObj)
                 {
                     RamScheduleEntry *entry = RamScheduleEntry::get(entryUuid);
                     if (entry) {
-                        //RamUser *u = entry->user();
-                        //if (u) u->schedule()->removeObjects(QStringList(entryUuid));
                         entry->remove();
                     }
                 }
@@ -167,10 +167,8 @@ void ScheduleManagerWidget::assignStep(RamObject *stepObj)
         }
 
         QString entryUuid = index.data(RamObject::UUID).toString();
-        RamScheduleEntry *entry = nullptr;
-        if (entryUuid != "") entry = RamScheduleEntry::get(entryUuid);
 
-        if (!entry)
+        if (entryUuid == "")
         {
             QString userUuid = ui_table->selectionModel()->model()->headerData( index.row(), Qt::Vertical, RamObject::UUID ).toString();
             if (userUuid == "") continue;
@@ -186,16 +184,20 @@ void ScheduleManagerWidget::assignStep(RamObject *stepObj)
             if ( ispm )
                 date.setTime(QTime(12,0));
 
-            new RamScheduleEntry( user, step, date );
+            new RamScheduleEntry( user, RamStep::c(stepObj), date );
         }
         else
         {
-            entry->setStep( step );
+            RamScheduleEntry *entry = RamScheduleEntry::get(entryUuid);
+            if (entry) entry->setStep( RamStep::c(stepObj) );
         }
     }
 
     pm->finish();
     this->update();
+
+    m_project->freezeEstimation(false);
+    m_project->computeEstimation();
 }
 
 void ScheduleManagerWidget::filterUser(RamObject *user, bool filter)

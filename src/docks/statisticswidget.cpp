@@ -42,6 +42,8 @@ void StatisticsWidget::updateEstimation(RamProject *project)
         ui_scheduledWorkLabel->setText( "-- days");
         ui_completionLabel->setText( "-- %" );
         ui_remainingWorkLabel->setText( "-- days" );
+        ui_missingDaysLabel->setText("-- days");
+        ui_missingLabel->setText("Missing: ");
         return;
     }
 

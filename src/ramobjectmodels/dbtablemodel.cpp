@@ -306,7 +306,7 @@ void DBTableModel::changeData(QString uuid, QString data, QString table)
 
     // Emit data changed
     QModelIndex i = index( m_objectUuids.indexOf(uuid), 0);
-    emit dataChanged(i, i);
+    emit dataChanged(i, i, QVector<int>());
 }
 
 bool objSorter(const QStringList a, const QStringList b)

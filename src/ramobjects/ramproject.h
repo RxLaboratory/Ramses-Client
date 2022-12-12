@@ -126,6 +126,7 @@ public slots:
     void updatePath();
     virtual void edit(bool show = true) override;
     void computeEstimation();
+    void freezeEstimation(bool frozen = true);
 
 protected:
     static QHash<QString, RamProject*> m_existingObjects;
@@ -166,7 +167,7 @@ private:
     float m_latenessRatio = 0;
     float m_missingDays = 0;
     float m_assignedDays = 0;
-    QElapsedTimer m_cacheTimer;
+    bool m_estimationFrozen = false;
     bool m_computingEstimation = false;
 };
 
