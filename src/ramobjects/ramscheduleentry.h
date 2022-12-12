@@ -20,6 +20,8 @@ public:
 
     explicit RamScheduleEntry(RamUser *user, RamStep *step, QDateTime date);
 
+    RamProject *project() const;
+
     RamUser *user() const;
     const QDateTime date() const;
 

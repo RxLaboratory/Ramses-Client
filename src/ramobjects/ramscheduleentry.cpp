@@ -44,6 +44,13 @@ RamScheduleEntry::RamScheduleEntry(RamUser *user, RamStep *step, QDateTime date)
     connectEvents();
 }
 
+RamProject *RamScheduleEntry::project() const
+{
+    QString projUuid = getData("project").toString();
+    if (projUuid != "") return RamProject::get( projUuid );
+    else return nullptr;
+}
+
 RamScheduleEntry::RamScheduleEntry(QString uuid):
     RamObject(uuid, ObjectType::ScheduleEntry)
 {
