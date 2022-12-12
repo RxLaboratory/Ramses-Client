@@ -26,6 +26,8 @@ void StatisticsWidget::projectChanged(RamProject *project)
     connect(m_project,SIGNAL(estimationComputed(RamProject*)),this,SLOT(updateEstimation(RamProject*)));
 
     ui_statsTable->resizeRowsToContents();
+
+    this->update();
 }
 
 void StatisticsWidget::updateEstimation(RamProject *project)

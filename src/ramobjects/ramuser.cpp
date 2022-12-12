@@ -173,57 +173,6 @@ QString RamUser::folderPath() const
     return Ramses::instance()->path(RamObject::UsersFolder) + "/" + shortName();
 }
 
-void RamUser::scheduleDataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &roles)
-{
-    Q_UNUSED(roles);
-
-    for (int row = topLeft.row(); row <= bottomRight.row(); row++) {
-            RamScheduleEntry *s = RamScheduleEntry::c( m_schedule->get(row) );
-            if (!s) continue;
-            RamStep *step = s->step();
-            if (!step) continue;
-            RamProject *proj = step->project();
-            if (!proj) continue;
-            proj->computeEstimation();
-    }
-}
-
-void RamUser::scheduleRowsInserted(const QModelIndex &parent, int first, int last)
-{
-    Q_UNUSED(parent);
-
-    for (int row = first; row <= last; row++) {
-            RamScheduleEntry *s = RamScheduleEntry::c( m_schedule->get(row) );
-            if (!s) continue;
-            RamStep *step = s->step();
-            if (!step) continue;
-            RamProject *proj = step->project();
-            if (!proj) continue;
-            proj->computeEstimation();
-    }
-}
-
-void RamUser::scheduleRowsRemoved(const QModelIndex &parent, int first, int last)
-{
-    Q_UNUSED(parent);
-    Q_UNUSED(first);
-    Q_UNUSED(last);
-
-    QSet<RamProject*> computed;
-
-    for (int row = 0; row < m_schedule->count(); row++) {
-        RamScheduleEntry *s = RamScheduleEntry::c( m_schedule->get(row) );
-        if (!s) continue;
-        RamStep *step = s->step();
-        if (!step) continue;
-        RamProject *proj = step->project();
-        if (!proj) continue;
-        if (computed.contains(proj)) continue;
-        proj->computeEstimation();
-        computed.insert(proj);
-    }
-}
-
 // PRIVATE //
 
 void RamUser::construct()
@@ -236,9 +185,4 @@ void RamUser::construct()
     m_schedule->addFilterValue( "user", this->uuid() );
     m_schedule->addLookUpKey("date");
     m_schedule->addLookUpKey("step");
-
-    // When the schedule changes, notify the step and project
-    connect(m_schedule, &DBTableModel::dataChanged, this, &RamUser::scheduleDataChanged);
-    connect(m_schedule, &DBTableModel::rowsInserted, this, &RamUser::scheduleRowsInserted);
-    connect(m_schedule, &DBTableModel::rowsRemoved, this, &RamUser::scheduleRowsRemoved);
 }

@@ -607,5 +607,10 @@ void RamProject::construct()
     m_schedule->addFilterValue( "project", this->uuid() );
     m_schedule->addLookUpKey("date");
     m_schedule->addLookUpKey("user");
+    m_schedule->load();
+
+    connect(m_schedule, &DBTableModel::dataChanged, this, &RamProject::computeEstimation);
+    connect(m_schedule, &DBTableModel::rowsInserted, this, &RamProject::computeEstimation);
+    connect(m_schedule, &DBTableModel::rowsRemoved, this, &RamProject::computeEstimation);
 }
 

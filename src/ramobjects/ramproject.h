@@ -100,7 +100,6 @@ public:
      * @return a list of number of days <estimation, completed, assigned, future>
      */
     QVector<float> stats(RamUser *user);
-    void computeEstimation();
 
     void setFolderPath(const QString &newFolderPath);
     void resetDbFolderPath();
@@ -126,6 +125,7 @@ signals:
 public slots:
     void updatePath();
     virtual void edit(bool show = true) override;
+    void computeEstimation();
 
 protected:
     static QHash<QString, RamProject*> m_existingObjects;
