@@ -33,6 +33,7 @@ RamScheduleEntry::RamScheduleEntry(RamUser *user, RamStep *step, QDateTime date)
     QJsonObject d = data();
     d.insert("user", user->uuid());
     d.insert("step", step->uuid());
+
     RamProject *proj = step->project();
     if (proj) d.insert("project", proj->uuid());
 
@@ -47,8 +48,13 @@ RamScheduleEntry::RamScheduleEntry(RamUser *user, RamStep *step, QDateTime date)
 RamProject *RamScheduleEntry::project() const
 {
     QString projUuid = getData("project").toString();
-    if (projUuid != "") return RamProject::get( projUuid );
-    else return nullptr;
+    if (projUuid == "") {
+        // Try with the step
+        RamStep *s = this->step();
+        if (s) return s->project();
+    }
+
+    return RamProject::get( projUuid );
 }
 
 RamScheduleEntry::RamScheduleEntry(QString uuid):
@@ -91,7 +97,6 @@ void RamScheduleEntry::setStep(RamStep *newStep)
         if (currentStep)
         {
             disconnect(currentStep, nullptr, this, nullptr);
-            disconnect(this, nullptr, currentStep, nullptr);
         }
 
         insertData("step", newStep->uuid());

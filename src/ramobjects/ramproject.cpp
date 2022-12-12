@@ -540,6 +540,8 @@ void RamProject::freezeEstimation(bool frozen)
         if (!step) continue;
         step->freezeEstimation(frozen);
     }
+
+    if (!frozen) this->computeEstimation();
 }
 
 // PROTECTED //

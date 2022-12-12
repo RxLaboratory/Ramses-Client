@@ -17,7 +17,6 @@ ScheduleManagerWidget::ScheduleManagerWidget(QWidget *parent) : QWidget(parent)
     m_scheduleFilter = new RamScheduleFilterProxyModel();
     m_scheduleFilter->setSourceModel( m_schedule );
     ui_table->setModel( m_scheduleFilter );
-    //ui_table->setModel( m_schedule );
 
     connectEvents();
 }
@@ -197,7 +196,6 @@ void ScheduleManagerWidget::assignStep(RamObject *stepObj)
     this->update();
 
     m_project->freezeEstimation(false);
-    m_project->computeEstimation();
 }
 
 void ScheduleManagerWidget::filterUser(RamObject *user, bool filter)

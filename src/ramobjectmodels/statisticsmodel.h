@@ -34,6 +34,8 @@ private:
     RamProject *m_project = nullptr;
     RamUser *m_user = nullptr;
 
+    QHash<QString, QVector<float>> m_statsPerStep; // step userstats + step lateness ratio
+
     // Connect submodels and relay events
     void connectEvents();
 };

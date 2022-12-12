@@ -66,6 +66,8 @@ protected:
     QString getLookUpValue(QString key, QString data);
     // Remove an object from the lookup table
     void removeObjectFromLookUp(QString uuid);
+    // Adds an object to the lookup table
+    void insertObjectInLookUp(QString uuid, QString data);
 
     // === Attributes ===
 

@@ -52,10 +52,12 @@ QVariant StatisticsModel::data(const QModelIndex &index, int role) const
 {
     int row = index.row();
 
-    RamStep *step = RamStep::c( m_project->steps()->get( row ) );
+    if (!m_project) return QVariant();
+
+    RamStep *step = RamStep::c( m_project->steps()->get(row) );
     if (!step) return QVariant();
 
-    QVector<float> userStats = step->stats(m_user);
+    QVector<float> userStats = m_statsPerStep.value(step->uuid(), QVector<float>(5));
     float estimation = userStats.at(0);
     float daysSpent = userStats.at(1);
     float assigned = userStats.at(2);
@@ -63,6 +65,7 @@ QVariant StatisticsModel::data(const QModelIndex &index, int role) const
     float futureUnassigned = needed - userStats.at(3);
     float unassignedDays = estimation - assigned;
     float completion = 100;
+    float latenessRatio = userStats.at(4);
     if (estimation > 0)
         completion = daysSpent / estimation * 100;
 
@@ -112,7 +115,6 @@ QVariant StatisticsModel::data(const QModelIndex &index, int role) const
     }
     if (role == Qt::ForegroundRole)
     {       
-        float latenessRatio = step->latenessRatio();
         QColor timeColor;
         if ( latenessRatio < -0.05 ) timeColor = QColor(44,98,230);
         else if ( latenessRatio < -0.01 ) timeColor = QColor(50,100,186);
@@ -132,18 +134,18 @@ QVariant StatisticsModel::data(const QModelIndex &index, int role) const
                                                  "\nCompletion: " %
                                                  QString::number( completion, 'f', 0) %
                                                  " %\nLateness: " %
-                                                 QString::number( (step->latenessRatio() -1) * 100, 'f', 0) %
+                                                 QString::number( (latenessRatio -1) * 100, 'f', 0) %
                                                  " %");
 
     if (role == Qt::StatusTipRole) return QString( step->shortName() % " | " % step->name() %
                                                    " | Completion: " %
                                                    QString::number( completion ) %
                                                    " % | Lateness: " %
-                                                   QString::number( (step->latenessRatio() -1) * 100, 'f', 0) %
+                                                   QString::number( (latenessRatio -1) * 100, 'f', 0) %
                                                    " %");
 
     if (role == Qt::UserRole) return completion;
-    if (role == Qt::UserRole +1) return step->latenessRatio();
+    if (role == Qt::UserRole +1) return latenessRatio;
     if (role == Qt::UserRole +2) return estimation;
     if (role == Qt::UserRole +3) return QVariant();
     if (role == Qt::UserRole +4) return assigned;
@@ -185,6 +187,17 @@ void StatisticsModel::removeStep(const QModelIndex &parent, int first, int last)
 
 void StatisticsModel::estimationComputed()
 {
+    m_statsPerStep.clear();
+
+    // Cache data to improve perf
+    if (m_project)
+        for (int i = 0; i < m_project->steps()->rowCount(); i++) {
+            RamStep *step = RamStep::c( m_project->steps()->get(i) );
+            QVector<float> s = step->stats(m_user);
+            s << step->latenessRatio();
+            m_statsPerStep.insert(step->uuid(), s);
+        }
+
     emit dataChanged(createIndex(0,0), createIndex(rowCount()-1, 0));
 }
 

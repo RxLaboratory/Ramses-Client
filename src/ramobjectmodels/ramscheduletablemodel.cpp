@@ -218,13 +218,7 @@ QVariant RamScheduleTableModel::data(const QModelIndex &index, int role) const
     foreach(RamObject *entryObj, entries)
     {
         RamScheduleEntry *entry = RamScheduleEntry::c(entryObj);
-        RamStep *entryStep = entry->step();
-        if (!entryStep)
-        {
-            entry->remove();
-            continue;
-        }
-        RamProject *entryProj = entryStep->project();
+        RamProject *entryProj = entry->project();
         if (!entryProj) continue;
         // For current project only
         if (!entryProj->is(currentProject)) continue;
@@ -232,12 +226,26 @@ QVariant RamScheduleTableModel::data(const QModelIndex &index, int role) const
         if (!foundEntry)
         {
             foundEntry = entry;
-            continue;
+            break;
         }
-
-        // In case there are several entries, remove the other ones
-        entry->remove();
     }
+
+    // try without lookup, just in case
+    if (!foundEntry)
+        for (int i = 0; i < user->schedule()->count(); i++) {
+            RamScheduleEntry *entry = RamScheduleEntry::c( user->schedule()->get(i) );
+            RamProject *entryProj = entry->project();
+            if (!entryProj) continue;
+            // For current project only
+            if (!entryProj->is(currentProject)) continue;
+            if (entry->date() != date) continue;
+
+            if (!foundEntry)
+            {
+                foundEntry = entry;
+                break;
+            }
+        }
 
     if (foundEntry)
     {
