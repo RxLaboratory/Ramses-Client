@@ -231,7 +231,7 @@ QVariant RamScheduleTableModel::data(const QModelIndex &index, int role) const
     }
 
     // try without lookup, just in case
-    if (!foundEntry)
+    /*if (!foundEntry)
         for (int i = 0; i < user->schedule()->count(); i++) {
             RamScheduleEntry *entry = RamScheduleEntry::c( user->schedule()->get(i) );
             RamProject *entryProj = entry->project();
@@ -245,7 +245,7 @@ QVariant RamScheduleTableModel::data(const QModelIndex &index, int role) const
                 foundEntry = entry;
                 break;
             }
-        }
+        }*/
 
     if (foundEntry)
     {
