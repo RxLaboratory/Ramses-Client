@@ -10,8 +10,6 @@
 #include <QStringBuilder>
 #include <QDesktopServices>
 
-#include "duqf-app/app-version.h"
-
 class DuQFUpdateDialog : public QDialog
 {
     Q_OBJECT

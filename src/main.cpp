@@ -11,6 +11,7 @@
 #endif
 
 #include "duqf-app/app-utils.h"
+#include "duqf-widgets/duqfupdatedialog.h"
 
 int main(int argc, char *argv[])
 {
@@ -52,6 +53,29 @@ int main(int argc, char *argv[])
     {
         qDebug() << tcpSocket->errorString();
         qDebug() << tcpSocket->error();
+    }
+
+    // Check for updates, right during startup
+    s->newMessage("Looking for udpates...");
+    QSettings settings;
+    qDebug() << "Update check...";
+    QDateTime lastCheck = settings.value("updates/latestUpdateCheck").toDateTime();
+    qDebug().noquote() << "Last check was on: " + lastCheck.toString("yyyy-MM-dd hh:mm:ss");
+    int days = lastCheck.daysTo(QDateTime::currentDateTime());
+    qDebug().noquote() << days << " days since last check.";
+    if (days > 0 || !lastCheck.isValid() || lastCheck.isNull()) {
+        a.checkUpdate(true);
+        QJsonObject updateInfo = a.updateInfo();
+        if (updateInfo.value("update").toBool()) {
+            s->newMessage("A new version is available!");
+            DuQFUpdateDialog dialog(updateInfo);
+            if (dialog.exec()) return 0;
+        }
+        settings.setValue("updates/latestUpdateCheck", QDateTime::currentDateTime());
+    }
+    else
+    {
+        qDebug() << "We'll check again tomorrow.";
     }
 
     // build and show UI

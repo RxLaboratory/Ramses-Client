@@ -55,10 +55,6 @@ private:
 
     // ========= RxOT UI ==============
     /**
-     * @brief duqf_checkUpdate Called once to check if an update is available
-     */
-    void duqf_checkUpdate();
-    /**
      * @brief initUi Called once to build the default RxOT UI
      */
     void duqf_initUi();

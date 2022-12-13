@@ -30,7 +30,6 @@
 #include "dbmanagerwidget.h"
 #include "duqf-widgets/duqftoolbarspacer.h"
 #include "duqf-widgets/duqflogtoolbutton.h"
-#include "duqf-widgets/duqfupdatedialog.h"
 #include "duqf-widgets/duqfupdatesettingswidget.h"
 #include "duqf-widgets/appearancesettingswidget.h"
 #include "duqf-app/app-version.h"
@@ -601,35 +600,6 @@ void MainWindow::hidePropertiesDock()
     ui_propertiesDockWidget->hide();
 }
 
-void MainWindow::duqf_checkUpdate()
-{
-    DuApplication *app = qobject_cast<DuApplication*>(qApp);
-    connect(app, SIGNAL(newUpdateInfo(QJsonObject)), this, SLOT(duqf_updateAvailable(QJsonObject)));
-    // Check for update
-    QSettings settings;
-    bool doCheckUpdate = settings.value("updates/checkUpdateAtStartup", true).toBool();
-    // Just once a day
-    if (doCheckUpdate)
-    {
-        qDebug() << "Update check...";
-        QDateTime lastCheck = settings.value("updates/latestUpdateCheck").toDateTime();
-        qDebug().noquote() << "Last check was on: " + lastCheck.toString("yyyy-MM-dd hh:mm:ss");
-        int days = lastCheck.daysTo(QDateTime::currentDateTime());
-        qDebug().noquote() << days << " days since last check.";
-        if (days > 0 || !lastCheck.isValid())
-        {
-            app->checkUpdate();
-            return;
-        }
-        else
-        {
-            qDebug() << "We'll check again tomorrow.";
-            duqf_updateAvailable(app->updateInfo());
-        }
-    }
-    m_showUpdateAlerts = true;
-}
-
 void MainWindow::duqf_initUi()
 {
     // ===== SYSTRAY ======
@@ -759,7 +729,8 @@ void MainWindow::duqf_initUi()
     helpMenu->addAction(aboutQtAction);
 
     // Check for update
-    duqf_checkUpdate();
+    // moved in main()
+    //duqf_checkUpdate();
 
     // ========= SETTINGS ========
 
@@ -783,6 +754,9 @@ void MainWindow::duqf_initUi()
     connect(duqf_settingsButton, SIGNAL(clicked(bool)), this, SLOT(duqf_settings(bool)));
     connect(settingsWidget, SIGNAL(closeRequested()), this, SLOT(duqf_closeSettings()));
     connect(settingsWidget, SIGNAL(reinitRequested()), this, SLOT(duqf_reinitSettings()));
+
+    DuApplication *app = qobject_cast<DuApplication*>(qApp);
+    duqf_updateAvailable(app->updateInfo());
 }
 
 void MainWindow::duqf_setStyle()
@@ -932,19 +906,6 @@ void MainWindow::duqf_updateAvailable(QJsonObject updateInfo)
                                              ));
         }
     }
-
-    if (!updateInfo.value("update").toBool() && !m_showUpdateAlerts)
-    {
-        m_showUpdateAlerts = true;
-        return;
-    }
-
-    QSettings settings;
-    QDate latestUpdateCheck = settings.value("updates/latestUpdateCheck", QDate(1970,1,1)).toDate();
-    if (latestUpdateCheck == QDate::currentDate()) return;
-
-    DuQFUpdateDialog *dialog = new DuQFUpdateDialog(updateInfo, this);
-    dialog->show();
 }
 
 void MainWindow::log(DuQFLog m)

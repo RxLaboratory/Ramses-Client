@@ -16,6 +16,7 @@ public:
 
 private slots:
     void checkAtStartup(bool c);
+    void checkUpdate();
 
 private:
     void setupUi();

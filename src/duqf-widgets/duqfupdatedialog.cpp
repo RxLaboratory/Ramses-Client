@@ -1,5 +1,7 @@
 #include "duqfupdatedialog.h"
 
+#include "duqf-app/app-version.h"
+
 DuQFUpdateDialog::DuQFUpdateDialog(QJsonObject updateInfo, QWidget *parent) : QDialog(parent)
 {
     setupUi(updateInfo);
@@ -8,19 +10,19 @@ DuQFUpdateDialog::DuQFUpdateDialog(QJsonObject updateInfo, QWidget *parent) : QD
 void DuQFUpdateDialog::download()
 {
     QDesktopServices::openUrl ( QUrl( m_downloadURL ) );
-    this->close();
+    this->accept();
 }
 
 void DuQFUpdateDialog::changelog()
 {
     QDesktopServices::openUrl ( QUrl( m_changelogURL ) );
-    this->close();
+    this->reject();
 }
 
 void DuQFUpdateDialog::donate()
 {
     QDesktopServices::openUrl ( QUrl( m_donateURL ) );
-    this->close();
+    this->reject();
 }
 
 void DuQFUpdateDialog::setupUi(QJsonObject updateInfo)
@@ -38,8 +40,13 @@ void DuQFUpdateDialog::setupUi(QJsonObject updateInfo)
         QLabel *latestVersionLabel = new QLabel("New version: " % updateInfo.value("version").toString(), this );
         mainLayout->addWidget(latestVersionLabel);
 
-        QTextEdit *descriptionEdit = new QTextEdit(updateInfo.value("description").toString(), this);
+        QTextEdit *descriptionEdit = new QTextEdit(this);
         descriptionEdit->setReadOnly(true);
+#if (QT_VERSION < QT_VERSION_CHECK(5, 15, 0))
+        descriptionEdit->setPlainText( updateInfo.value("description").toString() );
+#else
+        descriptionEdit->setMarkdown( updateInfo.value("description").toString() );
+#endif
         mainLayout->addWidget(descriptionEdit);
 
         QLabel *currentVersionLabel = new QLabel("Current version: " % QString(STR_VERSION), this );

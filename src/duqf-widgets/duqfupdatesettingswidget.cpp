@@ -1,6 +1,7 @@
 #include "duqfupdatesettingswidget.h"
 
 #include "duqf-app/app-utils.h"
+#include "duqf-widgets/duqfupdatedialog.h"
 
 DuQFUpdateSettingsWidget::DuQFUpdateSettingsWidget(QWidget *parent) :
     QWidget(parent)
@@ -17,6 +18,14 @@ DuQFUpdateSettingsWidget::DuQFUpdateSettingsWidget(QWidget *parent) :
 void DuQFUpdateSettingsWidget::checkAtStartup(bool c)
 {
     m_settings.setValue("checkUpdateAtStartup", c);
+}
+
+void DuQFUpdateSettingsWidget::checkUpdate()
+{
+    DuApplication *app = qobject_cast<DuApplication*>(qApp);
+    app->checkUpdate(true);
+    DuQFUpdateDialog dialog( app->updateInfo() );
+    dialog.exec();
 }
 
 void DuQFUpdateSettingsWidget::setupUi()
@@ -51,8 +60,6 @@ void DuQFUpdateSettingsWidget::setupUi()
 
 void DuQFUpdateSettingsWidget::connectEvents()
 {
-    DuApplication *app = qobject_cast<DuApplication*>(qApp);
-
     connect( ui_checkAtStartupBox, SIGNAL(clicked(bool)), this, SLOT(checkAtStartup(bool)));
-    connect( ui_checkNowButton, SIGNAL(clicked()), app, SLOT(checkUpdate()));
+    connect( ui_checkNowButton, SIGNAL(clicked()), this, SLOT(checkUpdate()));
 }

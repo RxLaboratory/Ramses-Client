@@ -132,7 +132,7 @@ bool DuApplication::processArgs(QStringList examples, QStringList helpStrings)
     return help;
 }
 
-void DuApplication::checkUpdate()
+void DuApplication::checkUpdate(bool wait)
 {
     if (QString(URL_UPDATE) == "") return;
 
@@ -175,8 +175,31 @@ void DuApplication::checkUpdate()
     qInfo().noquote() << "App Version: " % QString(STR_VERSION);
     qInfo().noquote() << "Language code: en";
 
-    connect(am, SIGNAL(finished(QNetworkReply*)), this, SLOT(gotUpdateInfo(QNetworkReply*)));
-    am->get(request);
+    if (wait) {
+        // Create a loop to wait for the data
+        QTimer timer;
+        timer.setSingleShot(true);
+
+        QNetworkReply *reply = am->get( request );
+
+        timer.start( 5000 ); // no more than 5 seconds
+
+        while ( reply->isRunning() )
+        {
+            if (!timer.isActive()) {
+                reply->abort();
+                reply->deleteLater();
+                return;
+            }
+            qApp->processEvents();
+        }
+        gotUpdateInfo(reply);
+        reply->deleteLater();
+    }
+    else {
+        connect(am, SIGNAL(finished(QNetworkReply*)), this, SLOT(gotUpdateInfo(QNetworkReply*)));
+        am->get(request);
+    }
 }
 
 bool DuApplication::notify(QObject *receiver, QEvent *ev)

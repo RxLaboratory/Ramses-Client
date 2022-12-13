@@ -118,7 +118,7 @@ public:
 
 public slots:
     // Check for updates
-    void checkUpdate();
+    void checkUpdate(bool wait = false);
 
 signals:
     void idle();
