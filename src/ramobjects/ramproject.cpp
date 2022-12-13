@@ -588,11 +588,11 @@ void RamProject::construct()
     m_steps = new DBTableModel(RamObject::Step, true, true, this);
     m_steps->addFilterValue( "project", this->uuid() );
 
-    m_shotSteps = new DBTableModel(RamObject::Step, true, false, this);
+    m_shotSteps = new DBTableModel(RamObject::Step, true, true, this);
     m_shotSteps->addFilterValue( "project", this->uuid() );
     m_shotSteps->addFilterValue( "type", "shot" );
 
-    m_assetSteps = new DBTableModel(RamObject::Step, true, false, this);
+    m_assetSteps = new DBTableModel(RamObject::Step, true, true, this);
     m_assetSteps->addFilterValue( "project", this->uuid() );
     m_assetSteps->addFilterValue( "type", "asset" );
 
