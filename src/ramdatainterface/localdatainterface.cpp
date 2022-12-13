@@ -1242,6 +1242,14 @@ void LocalDataInterface::autoCleanDB(QSqlDatabase db)
 
     // Add the project in schedule entries data
     qry.exec("SELECT `uuid`, `data` FROM 'RamScheduleEntry' ;");
+
+    // Count the results to help the progress bar
+    qry.last();
+    int numRows = qry.at() + 1;
+    pm->addToMaximum( numRows );
+    qDebug() << "Found " << numRows << " RamScheduleEntry...";
+    qry.seek(-1);
+
     // To speed up things, keep step/project association
     QHash<QString,QString> stepProjectUuids;
     QStringList uuidsToRemove;
@@ -1283,6 +1291,9 @@ void LocalDataInterface::autoCleanDB(QSqlDatabase db)
         }
         else uuidsToRemove << uuid;
     }
+
+    qDebug() << "Found " << uuidsToRemove.count() << " invalid or empty entries to remove.";
+    qDebug() << "From " << updateData.count() << " entries to update with the project info.";
 
     // Remove uuids without project
     // Split in 250 rows at once
@@ -1336,7 +1347,7 @@ void LocalDataInterface::autoCleanDB(QSqlDatabase db)
 
     // Count the results to help the progress bar
     qry.last();
-    int numRows = qry.at() + 1;
+    numRows = qry.at() + 1;
     pm->addToMaximum( numRows );
     qDebug() << "Found " << numRows << " RamStatus...";
     qry.seek(-1);
