@@ -5,6 +5,7 @@
 #include "duqf-app/app-version.h"
 #include "duqf-utils/utils.h"
 #include "progressmanager.h"
+#include "statemanager.h"
 #include "ramuser.h"
 #include "ramses.h"
 
@@ -371,6 +372,19 @@ bool LocalDataInterface::isRemoved(QString uuid, QString table)
     return true;
 }
 
+QString LocalDataInterface::modificationDate(QString uuid, QString table)
+{
+    QString q = "SELECT modified FROM %1 WHERE uuid = '%2';";
+    QSqlQuery qry = query( q.arg(table, uuid) );
+
+    if (qry.first())
+    {
+        return qry.value(0).toString();
+    }
+
+    return "1818-05-05 00:00:00";
+}
+
 void LocalDataInterface::setUsername(QString uuid, QString username)
 {
     username.replace("'", "''");
@@ -490,15 +504,24 @@ const QString &LocalDataInterface::dataFile() const
 
 ServerConfig LocalDataInterface::setDataFile(const QString &file)
 {
+    QElapsedTimer timer;
+    timer.start();
+
+    qDebug() << ">> Opening local file...";
+
     // Clear all cache
     m_uuids.clear();
     m_uuidsWithoutRemoved.clear();
+
+    qDebug() << ">> Cleared cache: " << timer.elapsed()/1000 << " seconds.";
 
     ProgressManager *pm = ProgressManager::instance();
     pm->addToMaximum(2);
 
     QSqlDatabase db = QSqlDatabase::database("localdata");
     openDB(db, file);
+
+    qDebug() << ">> Opened file: " << timer.elapsed()/1000 << " seconds.";
 
     pm->increment();
     pm->setText(tr("Loading data..."));
@@ -541,6 +564,8 @@ ServerConfig LocalDataInterface::setDataFile(const QString &file)
     settings.endArray();
 
     pm->increment();
+
+    qDebug() << ">> Local data ready! " << timer.elapsed()/1000 << " seconds.";
 
     return serverConfig();
 }
@@ -623,6 +648,9 @@ SyncData LocalDataInterface::getSync(bool fullSync)
 
 void LocalDataInterface::saveSync(SyncData syncData)
 {
+    StateManager::State previousState = StateManager::i()->state();
+    StateManager::i()->setState(StateManager::WritingDataBase);
+
     QHash<QString, QSet<TableRow>> tables = syncData.tables;
 
     ProgressManager *pm = ProgressManager::instance();
@@ -706,10 +734,13 @@ void LocalDataInterface::saveSync(SyncData syncData)
         query( q );
 
         // Emit insertions
+        StateManager::i()->setState(StateManager::LoadingDataBase);
         foreach(QStringList io, insertedObjects ) {
             emit inserted( io.at(0), io.at(1), io.at(2) );
         }
     }
+
+    StateManager::i()->setState(StateManager::WritingDataBase);
 
     // Updates
     i.toFront();
@@ -795,12 +826,15 @@ void LocalDataInterface::saveSync(SyncData syncData)
         query( q );
 
         // Emit
+        StateManager::i()->setState(StateManager::LoadingDataBase);
         foreach(QStringList cu, changedUuids) {
             emit dataChanged(cu.first(), cu.last(), tableName);
         }
     }
 
     emit syncFinished();
+
+    StateManager::i()->setState(previousState);
 }
 
 void LocalDataInterface::deleteData(SyncData syncData)
@@ -930,6 +964,9 @@ QVector<QStringList> LocalDataInterface::users()
 
 QString LocalDataInterface::cleanDataBase(int deleteDataOlderThan)
 {
+    StateManager::State previousState = StateManager::i()->state();
+    StateManager::i()->setState(StateManager::WritingDataBase);
+
     QString report = "";
 
     // Backup the DB File
@@ -1030,6 +1067,8 @@ QString LocalDataInterface::cleanDataBase(int deleteDataOlderThan)
 
     qDebug() << "Finished clean.";
 
+    StateManager::i()->setState(previousState);
+
     return report;
 }
 
@@ -1081,7 +1120,7 @@ LocalDataInterface::LocalDataInterface():
 }
 
 bool LocalDataInterface::openDB(QSqlDatabase db, const QString &dbFile)
-{
+{   
     ProgressManager *pm = ProgressManager::instance();
     pm->addToMaximum(2);
     pm->setText(tr("Opening database..."));
@@ -1229,6 +1268,9 @@ void LocalDataInterface::autoCleanDB(QSqlDatabase db)
     {
         if ( !db.open() ) return;
     }
+
+    StateManager::State previousState = StateManager::i()->state();
+    StateManager::i()->setState(StateManager::WritingDataBase);
 
     // === Delete removed statuses ===
 
@@ -1442,6 +1484,8 @@ void LocalDataInterface::autoCleanDB(QSqlDatabase db)
     // === Vacuum ===
 
     qry.exec("VACUUM;");
+
+    StateManager::i()->setState(previousState);
 }
 
 QSqlQuery LocalDataInterface::query(QString q) const

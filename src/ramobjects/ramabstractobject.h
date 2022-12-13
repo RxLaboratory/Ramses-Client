@@ -231,6 +231,8 @@ public:
     void restore();
     bool isRemoved();
 
+    QDateTime modificationDate() const;
+
     /**
      * @brief settings are the settings corresponding to this object
      * @return

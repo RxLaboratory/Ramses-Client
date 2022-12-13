@@ -825,7 +825,7 @@ void ScheduleManagerWidget::changeProject()
     if (!m_project)
     {
         this->setEnabled(false);
-        m_schedule->setObjectModel(nullptr, nullptr);
+        m_schedule->setObjectModel(nullptr, nullptr, nullptr);
         ui_userMenu->setObjectModel(nullptr);
         ui_endDateEdit->setDate(QDate::currentDate());
         ui_stepMenu->setObjectModel(nullptr);
@@ -835,7 +835,7 @@ void ScheduleManagerWidget::changeProject()
     }
     this->setEnabled(true);
 
-    m_schedule->setObjectModel( m_project->users(), m_project->scheduleComments() );
+    m_schedule->setObjectModel( m_project->users(), m_project->schedule(), m_project->scheduleComments() );
 
     ui_userMenu->setObjectModel( m_project->users() );
     ui_endDateEdit->setDate( QDate::currentDate().addDays(30) );

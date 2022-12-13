@@ -4,7 +4,7 @@
 #include <QStringBuilder>
 
 #include "ramobject.h"
-#include "dbtablemodel.h"
+#include "ramschedulemodel.h"
 
 class RamStep;
 class RamScheduleEntry;
@@ -49,7 +49,7 @@ protected:
 private:
     void construct();
 
-    DBTableModel *m_schedule;
+    RamScheduleModel *m_schedule;
 };
 
 #endif // RAMUSER_H

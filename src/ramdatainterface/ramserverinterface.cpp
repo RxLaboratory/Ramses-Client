@@ -6,6 +6,7 @@
 #include "ramdatainterface/localdatainterface.h"
 #include "ramdatainterface/logindialog.h"
 #include "duqf-utils/guiutils.h"
+#include "statemanager.h"
 
 // STATIC //
 
@@ -226,6 +227,9 @@ void RamServerInterface::eraseUserPassword()
 
 void RamServerInterface::login()
 {
+    StateManager::State previousState = StateManager::i()->state();
+    StateManager::i()->setState(StateManager::Connecting);
+
     setConnectionStatus(NetworkUtils::Connecting, "Logging in...");
 
     // Check if we have saved credentials
@@ -253,6 +257,7 @@ void RamServerInterface::login()
     if (username != "" && password != "")
     {
         doLogin(username, password, true, true);
+        StateManager::i()->setState(previousState);
         return;
     }
 
@@ -271,6 +276,8 @@ void RamServerInterface::login()
 
     // Wait for the dialog to return
     loop.exec();
+
+    StateManager::i()->setState(previousState);
 }
 
 void RamServerInterface::sync(SyncData syncData)

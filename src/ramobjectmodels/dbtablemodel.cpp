@@ -3,10 +3,11 @@
 #include "dbinterface.h"
 #include "progressmanager.h"
 
-DBTableModel::DBTableModel(RamObject::ObjectType type, bool projectTable, QObject *parent):
+DBTableModel::DBTableModel(RamObject::ObjectType type, bool projectTable, bool sorted, QObject *parent):
     RamAbstractObjectModel{type, parent}
 {
     m_isProjectTable = projectTable;
+    m_userOrder = sorted;
 }
 
 void DBTableModel::addFilterValue(QString key, QString value)
@@ -137,12 +138,13 @@ void DBTableModel::insertObjects(int row, QVector<QStringList> data, QString tab
     // Insert
     if (!silent) beginInsertRows(QModelIndex(), row, row + data.count()-1);
 
+    //qDebug() << "Inserting " << data.count() << " objects in " << table;
+
     for (int i = data.count() - 1; i >= 0; i--)
     {
         QStringList obj = data.at(i);
         QString uuid = obj.first();
         QString dataStr = obj.at(1);
-
         RamAbstractObjectModel::insertObject(row, uuid, dataStr);
     }
 
@@ -208,6 +210,7 @@ bool DBTableModel::checkFilters(QString data) const
 
 void DBTableModel::saveOrder() const
 {
+    if (!m_userOrder) return;
     // Save order
     for (int i = 0; i <= rowCount(); i++)
     {
@@ -243,7 +246,8 @@ void DBTableModel::insertObject(QString uuid, QString data, QString table)
     if (!checkFilters(data)) return;
 
     // Check order
-    int order = getOrder(data);
+    int order = m_objectUuids.count();
+    if (m_userOrder) order = getOrder(data);
 
     // Insert
     QStringList o;
@@ -270,9 +274,17 @@ void DBTableModel::reload()
 
     // Get all
     QVector<QStringList> objs = LocalDataInterface::instance()->tableData( m_table, m_filters );
-    //qDebug() << "Got " << objs.count() << " objects from " << m_table;
+
+    qDebug() << "Got " << objs.count() << " objects from " << m_table;
+
     // Sort
-    std::sort(objs.begin(), objs.end(), objSorter);
+    if (m_userOrder) {
+        std::sort(objs.begin(), objs.end(), objSorter);
+        qDebug() << "Objects sorted";
+    } else {
+        qDebug() << "Table not sorted";
+    }
+
     // Insert
     insertObjects(0, objs, m_table, true);
 

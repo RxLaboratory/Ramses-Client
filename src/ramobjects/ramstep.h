@@ -34,13 +34,11 @@ public:
     float latenessRatio() ;
     int completionRatio();
     float assignedDays() ;
+    float futureDays();
     float unassignedDays() ;
     float missingDays() ;
     float daysSpent() ;
     float neededDays() ;
-
-    void computeEstimation();
-    void countAssignedDays();
 
     /**
      * @brief stats
@@ -56,12 +54,8 @@ public:
 
     virtual QString fileName() const override;
 
-signals:
-    void estimationComputed(RamStep*);
-
 public slots:
     virtual void edit(bool show = true) override;
-    void freezeEstimation(bool frozen = true);
 
 protected:
     static QHash<QString, RamStep*> m_existingObjects;
@@ -72,16 +66,6 @@ protected:
 
 private:
     void construct();
-
-    // Estimation cache
-    float m_estimation = 0;
-    int m_completionRatio = 0;
-    bool m_computingEstimation = false;
-    bool m_estimationFrozen = false;
-    // Schedule cache
-    int m_scheduledHalfDays = 0;
-    int m_scheduledFutureHalfDays = 0;
-    QElapsedTimer m_cacheScheduleTimer;
 };
 
 #endif // RAMSTEP_H

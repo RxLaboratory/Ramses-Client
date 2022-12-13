@@ -337,6 +337,9 @@ float RamStatus::estimation(int difficulty) const
     RamState *noState = Ramses::instance()->noState();
     if (noState->is(state())) return 0.0;
 
+    // If step doesn't exist, it's 0
+    if (!m_step) return 0.0;
+
     switch (difficulty)
     {
     case VeryEasy:
@@ -371,7 +374,7 @@ float RamStatus::estimation(int difficulty) const
     }
 
     // Multiply by duration and num assets if shot
-    if ( m_item->objectType() == RamObject::Shot)
+    if ( m_item && m_item->objectType() == RamObject::Shot )
     {
         RamShot *shot = qobject_cast<RamShot*>( m_item );
         if (m_step->estimationMethod() == RamStep::EstimatePerSecond)

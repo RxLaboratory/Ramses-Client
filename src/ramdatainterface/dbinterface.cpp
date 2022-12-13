@@ -101,6 +101,11 @@ bool DBInterface::isRemoved(QString uuid, QString table)
     return m_ldi->isRemoved(uuid, table);
 }
 
+QString DBInterface::modificationDate(QString uuid, QString table)
+{
+    return m_ldi->modificationDate(uuid, table);
+}
+
 void DBInterface::setUsername(QString uuid, QString username)
 {
     m_ldi->setUsername(uuid, username);
@@ -120,10 +125,16 @@ const QString &DBInterface::dataFile() const
 
 void DBInterface::setDataFile(const QString &file, bool ignoreUser)
 {
+    QElapsedTimer openTimer;
+    openTimer.start();
+
     ProgressManager *pm = ProgressManager::instance();
     pm->setText(tr("Loading database..."));
 
     ServerConfig config = m_ldi->setDataFile(file);
+
+    qDebug() << "> Database set: " << openTimer.elapsed()/1000 << " seconds.";
+
     // Set the new server params
     if (config.address != "")
     {
@@ -139,10 +150,15 @@ void DBInterface::setDataFile(const QString &file, bool ignoreUser)
         // Check the user
         QString userUuid = m_ldi->currentUserUuid();
 
-        qDebug() << "Selected previous user: " << userUuid;
+        qDebug() << "> Selecting previous user: " << userUuid;
 
         emit userChanged( userUuid );
+
+        qDebug() << "> Selected user: " << openTimer.elapsed()/1000 << " seconds.";
+
         setOnline(serverUuid);
+
+        qDebug() << "> Online! " << openTimer.elapsed()/1000 << " seconds.";
 
         pm->setText(tr("Ready!"));
         pm->finish();
@@ -218,6 +234,8 @@ void DBInterface::setDataFile(const QString &file, bool ignoreUser)
             return;
         }
     }
+
+    qDebug() << "> DB Ready! " << openTimer.elapsed()/1000 << " seconds.";
 }
 
 void DBInterface::setCurrentUserUuid(QString uuid)

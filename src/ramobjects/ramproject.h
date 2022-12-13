@@ -16,6 +16,7 @@ class RamStatusTableModel;
 class RamStatus;
 class RamAbstractItem;
 class RamState;
+class RamScheduleModel;
 
 class RamProject : public RamObject
 {
@@ -50,7 +51,7 @@ public:
     RamObjectModel *users() const;
     // Schedule
     DBTableModel *scheduleComments() const;
-    DBTableModel *schedule() const;
+    RamScheduleModel *schedule() const;
     // Status
     RamStatusTableModel *assetStatus() const;
     RamStatusTableModel *shotStatus() const;
@@ -126,7 +127,7 @@ public slots:
     void updatePath();
     virtual void edit(bool show = true) override;
     void computeEstimation();
-    void freezeEstimation(bool frozen = true);
+    void freezeEstimation(bool frozen = true, bool recompute = true);
 
 protected:
     static QHash<QString, RamProject*> m_existingObjects;
@@ -146,20 +147,13 @@ private:
     DBTableModel *m_assetGroups;
     DBTableModel *m_assets;
     DBTableModel *m_shots;
-    DBTableModel *m_schedule;
+    RamScheduleModel *m_schedule;
     RamObjectModel *m_pipeline;
     DBTableModel *m_pipeFiles;
     RamObjectModel *m_users;
     DBTableModel *m_scheduleComments;
     RamStatusTableModel *m_assetStatusTable;
     RamStatusTableModel *m_shotStatusTable;
-
-    /**
-     * @brief When true, estimations won't be computed.
-     * This should be set to true when loading a bunch of data, to improve performance
-     * and reset to false afterwards.
-     */
-    bool m_freezeEstimations = false;
 
     // Estimation
     float m_estimation = 0;

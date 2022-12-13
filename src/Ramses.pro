@@ -56,6 +56,7 @@ SOURCES += \
     ramobjectmodels/ramfilterlistproxymodel.cpp \
     ramobjectmodels/ramobjectmodel.cpp \
     ramobjectmodels/ramobjectsortfilterproxymodel.cpp \
+    ramobjectmodels/ramschedulemodel.cpp \
     ramobjectmodels/ramstatustablemodel.cpp \
     ramobjectmodels/statisticsmodel.cpp \
     ramobjectmodels/timelineproxy.cpp \
@@ -194,6 +195,7 @@ SOURCES += \
     rameditwidgets/templateassetgroupeditwidget.cpp \
     rameditwidgets/templatestepeditwidget.cpp \
     rameditwidgets/usereditwidget.cpp \
+    statemanager.cpp \
     timelinemanager.cpp \
     userprofilepage.cpp \
     rammanagerwidgets/itemmanagerwidget.cpp \
@@ -221,6 +223,7 @@ HEADERS += \
     ramobjectmodels/ramfilterlistproxymodel.h \
     ramobjectmodels/ramobjectmodel.h \
     ramobjectmodels/ramobjectsortfilterproxymodel.h \
+    ramobjectmodels/ramschedulemodel.h \
     ramobjectmodels/ramstatustablemodel.h \
     ramobjectmodels/statisticsmodel.h \
     ramobjectmodels/timelineproxy.h \
@@ -361,6 +364,7 @@ HEADERS += \
     rameditwidgets/templateassetgroupeditwidget.h \
     rameditwidgets/templatestepeditwidget.h \
     rameditwidgets/usereditwidget.h \
+    statemanager.h \
     timelinemanager.h \
     userprofilepage.h \
     rammanagerwidgets/itemmanagerwidget.h \

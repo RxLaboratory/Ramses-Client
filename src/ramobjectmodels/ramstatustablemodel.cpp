@@ -3,6 +3,7 @@
 #include "ramstatus.h"
 #include "ramasset.h"
 #include "ramshot.h"
+#include "ramstate.h"
 
 RamStatusTableModel::RamStatusTableModel(DBTableModel *steps, DBTableModel *items, QObject *parent)
     : QAbstractTableModel{parent}
@@ -10,7 +11,7 @@ RamStatusTableModel::RamStatusTableModel(DBTableModel *steps, DBTableModel *item
     m_steps = steps;
     m_items = items;
 
-    m_status = new DBTableModel(RamObject::Status, true, this);
+    m_status = new DBTableModel(RamObject::Status, true, false, this);
     m_status->addFilterValues("step", m_steps->toStringList());
     m_status->addLookUpKey("item");
     m_status->addLookUpKey("step");
@@ -36,7 +37,13 @@ void RamStatusTableModel::load()
     connect(m_items, &DBTableModel::rowsMoved, this, &RamStatusTableModel::itemsMoved);
     connect(m_items, &DBTableModel::dataChanged, this, &RamStatusTableModel::itemsDataChanged);
 
+    connect(m_items, &DBTableModel::rowsInserted, this, &RamStatusTableModel::cacheEstimations);
+    connect(m_items, &DBTableModel::rowsRemoved, this, &RamStatusTableModel::cacheEstimations);
+    connect(m_items, &DBTableModel::dataChanged, this, &RamStatusTableModel::cacheEstimations);
+
     connect(m_status, &DBTableModel::dataChanged, this, &RamStatusTableModel::statusDataChanged);
+
+    cacheEstimations();
 }
 
 int RamStatusTableModel::rowCount(const QModelIndex &parent) const
@@ -100,6 +107,10 @@ QVariant RamStatusTableModel::headerData(int section, Qt::Orientation orientatio
         // First column is empty
         if (section == 0) return QVariant();
 
+        QString stepUuid = m_steps->getUuid( section-1 );
+
+        if (role == RamObject::Estimation) return stepEstimation(stepUuid);
+        if (role == RamObject::Completion) return stepCompletionRatio(stepUuid);
         // Other columns are the steps
         return m_steps->data( m_steps->index(section-1, 0), role);
     }
@@ -115,12 +126,13 @@ QVariant RamStatusTableModel::headerData(int section, Qt::Orientation orientatio
     return QAbstractTableModel::headerData(section, orientation, role);
 }
 
-RamStatus *RamStatusTableModel::getStatus(RamAbstractItem *item, RamStep *step) const
+RamStatus *RamStatusTableModel::getStatus(RamObject *itemObj, RamStep *step) const
 {
     // Get the statuses for the item
-    QSet<RamStatus*> allStatus = getItemStatus(item->uuid());
+    QSet<RamStatus*> allStatus = getItemStatus(itemObj->uuid());
     // Find the status for the step
     foreach(RamStatus *s, allStatus) if (s->stepUuid() == step->uuid()) return s;
+    RamAbstractItem *item = reinterpret_cast<RamAbstractItem*>(itemObj);
     // Create and return a "NO" status if not found
     return RamStatus::noStatus(item, step);
 }
@@ -177,6 +189,16 @@ QSet<RamStatus *> RamStatusTableModel::getStepStatus(QString stepUuid) const
     return status;
 }
 
+float RamStatusTableModel::stepEstimation(QString stepUuid) const
+{
+    return m_estimations.value(stepUuid).estimation;
+}
+
+int RamStatusTableModel::stepCompletionRatio(QString stepUuid) const
+{
+    return m_estimations.value(stepUuid).completionRatio;
+}
+
 void RamStatusTableModel::stepsInserted(const QModelIndex &parent, int first, int last)
 {
     beginInsertColumns(parent, first+1, last+1);
@@ -196,6 +218,11 @@ void RamStatusTableModel::stepsInserted(const QModelIndex &parent, int first, in
 void RamStatusTableModel::stepsRemoved(const QModelIndex &parent, int first, int last)
 {
     beginRemoveColumns(parent, first+1, last+1);
+    // Remove unneeded cache
+    for (int i = first; i <= last; i++) {
+        m_estimations.remove( m_steps->getUuid(i) );
+
+    }
     endRemoveColumns();
 }
 
@@ -208,6 +235,13 @@ void RamStatusTableModel::stepsMoved(const QModelIndex &parent, int start, int e
 void RamStatusTableModel::stepsDataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &roles)
 {
     Q_UNUSED(roles);
+
+    // The default estimation may have changed, we need to recompute estimations
+    int first = topLeft.row();
+    int last = bottomRight.row();
+    for (int i = first; i <= last; i++) {
+        cacheStepEstimation( m_steps->getUuid(i) );
+    }
 
     emit headerDataChanged(Qt::Horizontal, topLeft.row() + 1, bottomRight.row() + 1);
 }
@@ -251,10 +285,124 @@ void RamStatusTableModel::statusDataChanged(const QModelIndex &topLeft, const QM
         RamStatus *status = RamStatus::c(statusObj);
         int row = m_items->uuidRow( status->itemUuid() );
         if (row < 0) continue;
-        int col = m_steps->uuidRow( status->stepUuid() );
+        QString stepUuid =  status->stepUuid();
+        int col = m_steps->uuidRow( stepUuid );
         if (col < 0) continue;
+
+        cacheStepEstimation( stepUuid );
+
         QModelIndex i = index(row, col);
         emit dataChanged( i, i, roles );
     }
+}
+
+void RamStatusTableModel::cacheStepEstimation(QString stepUuid)
+{
+    if (stepUuid == "") return;
+
+    m_estimations.remove(stepUuid);
+
+    StepEstimation stepEstim;
+
+    // For each item, get the status
+    int numItems = 0;
+    for (int i = 0; i < m_items->rowCount(); i ++) {
+        RamStatus *status = getStatus( m_items->getUuid(i), stepUuid);
+        if (!status) continue;
+        RamState *state = status->state();
+        if (!state) continue;
+        if (state->shortName() == "NO") continue;
+
+        float estimation = 0;
+        if (status->useAutoEstimation()) estimation = status->estimation();
+        else estimation = status->goal();
+
+        stepEstim.estimation += estimation;
+        stepEstim.completionRatio += status->completionRatio();
+
+        numItems++;
+    }
+
+    if (numItems > 0) {
+        stepEstim.completionRatio = stepEstim.completionRatio /numItems;
+        stepEstim.completionRatio = std::min(100, stepEstim.completionRatio);
+    }
+    else {
+        stepEstim.completionRatio = 100;
+    }
+
+    m_estimations.insert(stepUuid, stepEstim);
+
+    emit stepEstimationChanged( stepUuid );
+}
+
+void RamStatusTableModel::cacheEstimations()
+{
+    qDebug() << "Computing estimations";
+
+    m_estimations.clear();
+
+    QHash<QString, StepEstimation> allEstimation;
+
+    QHash<QString, int> numItems;
+
+    for (int i = 0; i < m_items->rowCount(); i++) {
+        QSet<RamStatus*> allStatus = getItemStatus( m_items->getUuid(i) );
+        foreach(RamStatus *status, allStatus) {
+
+            QString stepUuid = status->stepUuid();
+            if (stepUuid == "") continue;
+
+            RamState *state = status->state();
+            if (!state) continue;
+            if (state->shortName() == "NO") continue;
+
+            float estimation = 0;
+            if (status->useAutoEstimation()) estimation = status->estimation();
+            else estimation = status->goal();
+
+            StepEstimation stepEstim = allEstimation.value(stepUuid);
+            stepEstim.estimation += estimation;
+            stepEstim.completionRatio += status->completionRatio();
+
+            allEstimation.insert( stepUuid, stepEstim );
+
+            int num = numItems.value(stepUuid);
+            num++;
+            numItems.insert(stepUuid, num);
+        }
+    }
+
+    QHash<QString, StepEstimation>::iterator i = allEstimation.begin();
+    while (i != allEstimation.end()) {
+
+        qDebug() << "> Step estimation: " << i.key();
+
+        StepEstimation stepEstim = i.value();
+        int num = numItems.value(i.key());
+
+        if (num > 0) {
+            stepEstim.completionRatio = stepEstim.completionRatio /num;
+            stepEstim.completionRatio = std::min(100, stepEstim.completionRatio);
+        }
+        else {
+            stepEstim.completionRatio = 100;
+        }
+
+        qDebug() << ">> Estimation: " << stepEstim.estimation;
+        qDebug() << ">> Completion: " << stepEstim.completionRatio;
+
+        i.value() = stepEstim;
+
+        emit stepEstimationChanged(i.key());
+
+        i++;
+    }
+
+    m_estimations = allEstimation;
+
+    qDebug() << "> Estimations computed";
+
+    emit estimationsChanged();
 }
 

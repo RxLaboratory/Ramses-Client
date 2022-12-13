@@ -295,13 +295,13 @@ Ramses::Ramses(QObject *parent):
     qDebug() << "Initialising Ramses";
     m_dbi = DBInterface::instance();
 
-    m_applications = new DBTableModel(RamObject::Application, false, this);
-    m_fileTypes = new DBTableModel(RamObject::FileType, false, this);
-    m_projects = new DBTableModel(RamObject::Project, true, this);
-    m_states = new DBTableModel(RamObject::State, false, this);
-    m_templateAssetGroups = new DBTableModel(RamObject::TemplateAssetGroup, false, this);
-    m_templateSteps = new DBTableModel(RamObject::TemplateStep, false, this);
-    m_users = new DBTableModel(RamObject::User, false, this);
+    m_applications = new DBTableModel(RamObject::Application, false, false, this);
+    m_fileTypes = new DBTableModel(RamObject::FileType, false, false, this);
+    m_projects = new DBTableModel(RamObject::Project, true, false, this);
+    m_states = new DBTableModel(RamObject::State, false, false, this);
+    m_templateAssetGroups = new DBTableModel(RamObject::TemplateAssetGroup, false, true, this);
+    m_templateSteps = new DBTableModel(RamObject::TemplateStep, false, true, this);
+    m_users = new DBTableModel(RamObject::User, false, false, this);
 
     this->setObjectName( "Ramses Class" );
 

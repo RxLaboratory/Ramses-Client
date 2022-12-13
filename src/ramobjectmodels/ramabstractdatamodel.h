@@ -24,6 +24,7 @@ public:
     virtual RamObject *search(QString searchString) const = 0;
     // Objects by their lookup key
     virtual QSet<RamObject *> lookUp(QString lookUpKey, QString lookUpValue) const = 0;
+    virtual QSet<RamObject *> intersectLookUp(QString lookUpKey, QString lookUpValue, QSet<RamObject *> objList) const;
 
     // All the uuids
     virtual QVector<QString> toVector() const = 0;

@@ -14,7 +14,7 @@ class RamScheduleTableModel : public QAbstractTableModel
 
 public:
     explicit RamScheduleTableModel(QObject *parent = nullptr);
-    void setObjectModel(RamObjectModel *userList, DBTableModel *comments);
+    void setObjectModel(RamObjectModel *users, DBTableModel *schedule, DBTableModel *comments);
 
     // MODEL REIMPLEMENTATION
     int columnCount(const QModelIndex &parent = QModelIndex()) const override;
@@ -27,14 +27,17 @@ public slots:
     void setEndDate(const QDate &newEndDate);
 
 private slots:
+    void resetUsers();
+    void changeUser(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &roles = QVector<int>());
     void insertUser(const QModelIndex &parent, int first, int last);
     void removeUser(const QModelIndex &parent, int first, int last);
-    void resetUsers();
 
-    void scheduleChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &roles = QVector<int>());
-    void scheduleInserted(const QModelIndex &parent, int first, int last);
-    void scheduleRemoved(const QModelIndex &parent, int first, int last);
+    void resetSchedule();
+    void changeSchedule(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &roles = QVector<int>());
+    void insertSchedule(const QModelIndex &parent, int first, int last);
+    void removeSchedule(const QModelIndex &parent, int first, int last);
 
+    void changeComment(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &roles = QVector<int>());
     void insertComment(const QModelIndex &parent, int first, int last);
     void removeComment(const QModelIndex &parent, int first, int last);
     void resetComments();
@@ -45,6 +48,7 @@ private:
 
     // DATA
     RamObjectModel *m_users = nullptr;
+    DBTableModel *m_schedule = nullptr;
     DBTableModel *m_comments = nullptr;
 
     // SETTINGS

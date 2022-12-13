@@ -424,6 +424,12 @@ bool RamAbstractObject::isRemoved()
     return DBInterface::instance()->isRemoved(m_uuid, objectTypeName());
 }
 
+QDateTime RamAbstractObject::modificationDate() const
+{
+    QString d = DBInterface::instance()->modificationDate(m_uuid, objectTypeName());
+    return QDateTime::fromString(d, DATETIME_DATA_FORMAT);
+}
+
 QSettings *RamAbstractObject::settings()
 {
     if (m_settings) return m_settings;

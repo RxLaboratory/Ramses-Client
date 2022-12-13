@@ -109,7 +109,7 @@ void RamAssetGroup::construct()
     m_icon = ":/icons/asset-group";
     m_editRole = ProjectAdmin;
 
-    m_assets = new DBTableModel(RamObject::Asset, true, this);
+    m_assets = new DBTableModel(RamObject::Asset, true, true, this);
     m_assets->addFilterValue( "assetGroup", this->uuid() );
 }
 

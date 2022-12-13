@@ -64,6 +64,8 @@ public:
     void restoreObject(QString uuid, QString table);
     bool isRemoved(QString uuid, QString table);
 
+    QString modificationDate(QString uuid, QString table);
+
     void setUsername(QString uuid, QString username);
     bool isUserNameAavailable(const QString &userName);
 

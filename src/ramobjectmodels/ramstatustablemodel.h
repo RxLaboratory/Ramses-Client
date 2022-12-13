@@ -4,6 +4,11 @@
 #include "dbtablemodel.h"
 #include "ramstatus.h"
 
+struct StepEstimation {
+    float estimation = 0; // Days
+    int completionRatio = 0; // [0, 100] ratio
+};
+
 class RamStatusTableModel : public QAbstractTableModel
 {
     Q_OBJECT
@@ -24,10 +29,18 @@ public:
     // Status Access
 
     // With the actual item and step, slightly better perf than with Uuids if they already exist
-    RamStatus *getStatus(RamAbstractItem *item, RamStep *step) const;
+    RamStatus *getStatus(RamObject *itemObj, RamStep *step) const;
     RamStatus *getStatus(QString itemUuid, QString stepUuid) const;
     QSet<RamStatus*> getItemStatus(QString itemUuid) const;
     QSet<RamStatus*> getStepStatus(QString stepUuid) const;
+
+    // Estimations
+    float stepEstimation(QString stepUuid) const;
+    int stepCompletionRatio(QString stepUuid) const;
+
+signals:
+    void stepEstimationChanged(QString stepUuid);
+    void estimationsChanged();
 
 private slots:
     // We need to insert/remove rows and columns
@@ -45,10 +58,17 @@ private slots:
 
     void statusDataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &roles = QVector<int>());
 
+    // Cache estimations
+    void cacheStepEstimation(QString stepUuid);
+    void cacheEstimations();
+
 private:
     DBTableModel *m_status;
     DBTableModel *m_steps;
     DBTableModel *m_items;
+
+    // Estimations cache
+    QHash<QString, StepEstimation> m_estimations;
 
     bool m_loaded = false;
 };

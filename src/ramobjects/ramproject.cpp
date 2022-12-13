@@ -1,5 +1,6 @@
 #include "ramproject.h"
 
+#include "ramschedulemodel.h"
 #include "ramses.h"
 #include "rampipe.h"
 #include "projecteditwidget.h"
@@ -109,6 +110,12 @@ DBTableModel *RamProject::scheduleComments() const
 {
     m_scheduleComments->load();
     return m_scheduleComments;
+}
+
+RamScheduleModel *RamProject::schedule() const
+{
+    m_schedule->load();
+    return m_schedule;
 }
 
 RamStatusTableModel *RamProject::assetStatus() const
@@ -493,7 +500,6 @@ void RamProject::computeEstimation()
     m_missingDays = 0;
     int numItems = 0;
 
-
     for (int i =0; i < m_steps->rowCount(); i++)
     {
         RamStep *step = RamStep::c(m_steps->get(i));
@@ -531,17 +537,11 @@ void RamProject::computeEstimation()
     m_computingEstimation = false;
 }
 
-void RamProject::freezeEstimation(bool frozen)
+void RamProject::freezeEstimation(bool frozen, bool recompute)
 {
     m_estimationFrozen = frozen;
-    for (int i =0; i < m_steps->rowCount(); i++)
-    {
-        RamStep *step = RamStep::c(m_steps->get(i));
-        if (!step) continue;
-        step->freezeEstimation(frozen);
-    }
-
-    if (!frozen) this->computeEstimation();
+    m_schedule->freezeEstimation(frozen);
+    if (!frozen && recompute) this->computeEstimation();
 }
 
 // PROTECTED //
@@ -573,56 +573,56 @@ QString RamProject::folderPath() const
 
 void RamProject::construct()
 {
+    m_estimationFrozen = true;
+
     m_existingObjects[m_uuid] = this;
     m_icon = ":/icons/project";
     m_editRole = ProjectAdmin;
 
-    m_assets = new DBTableModel(RamObject::Asset, true, this);
+    m_assets = new DBTableModel(RamObject::Asset, true, true, this);
     m_assets->addFilterValue( "project", this->uuid() );
 
-    m_shots = new DBTableModel(RamObject::Shot, true, this);
+    m_shots = new DBTableModel(RamObject::Shot, true, true, this);
     m_shots->addFilterValue( "project", this->uuid() );
 
-    m_steps = new DBTableModel(RamObject::Step, true, this);
+    m_steps = new DBTableModel(RamObject::Step, true, true, this);
     m_steps->addFilterValue( "project", this->uuid() );
 
-    m_shotSteps = new DBTableModel(RamObject::Step, true, this);
+    m_shotSteps = new DBTableModel(RamObject::Step, true, false, this);
     m_shotSteps->addFilterValue( "project", this->uuid() );
     m_shotSteps->addFilterValue( "type", "shot" );
 
-    m_assetSteps = new DBTableModel(RamObject::Step, true, this);
+    m_assetSteps = new DBTableModel(RamObject::Step, true, false, this);
     m_assetSteps->addFilterValue( "project", this->uuid() );
     m_assetSteps->addFilterValue( "type", "asset" );
 
-    m_assetGroups = new DBTableModel(RamObject::AssetGroup, true, this);
+    m_assetGroups = new DBTableModel(RamObject::AssetGroup, true, true, this);
     m_assetGroups->addFilterValue( "project", this->uuid() );
 
-    m_sequences = new DBTableModel(RamObject::Sequence, true, this);
+    m_sequences = new DBTableModel(RamObject::Sequence, true, true, this);
     m_sequences->addFilterValue( "project", this->uuid() );
 
     m_assetStatusTable = new RamStatusTableModel( m_assetSteps, m_assets, this);
 
     m_shotStatusTable = new RamStatusTableModel( m_shotSteps, m_shots, this);
 
-    m_scheduleComments = new DBTableModel(RamObject::ScheduleComment, true, this);
+    m_scheduleComments = new DBTableModel(RamObject::ScheduleComment, true, false, this);
     m_scheduleComments->addFilterValue( "project", this->uuid() );
     m_scheduleComments->addLookUpKey("date");
 
-    m_pipeFiles = new DBTableModel(RamObject::PipeFile, true, this);
+    m_pipeFiles = new DBTableModel(RamObject::PipeFile, true, false, this);
     m_pipeFiles->addFilterValue( "project", this->uuid() );
 
     m_users = createModel(RamObject::User, "users" );
 
     m_pipeline = createModel(RamObject::Pipe, "pipeline" );
 
-    m_schedule = new DBTableModel(RamObject::ScheduleEntry, true, this);
+    m_schedule = new RamScheduleModel();
     m_schedule->addFilterValue( "project", this->uuid() );
     m_schedule->addLookUpKey("date");
     m_schedule->addLookUpKey("user");
-    m_schedule->load();
+    m_schedule->addLookUpKey("step");
 
-    connect(m_schedule, &DBTableModel::dataChanged, this, &RamProject::computeEstimation);
-    connect(m_schedule, &DBTableModel::rowsInserted, this, &RamProject::computeEstimation);
-    connect(m_schedule, &DBTableModel::rowsRemoved, this, &RamProject::computeEstimation);
+    m_estimationFrozen = false;
 }
 

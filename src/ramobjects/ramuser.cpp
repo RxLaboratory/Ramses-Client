@@ -181,8 +181,9 @@ void RamUser::construct()
     m_icon = ":/icons/user";
     m_editRole = Admin;
     //m_schedule = createModel(RamObject::ScheduleEntry, "schedule");
-    m_schedule = new DBTableModel(RamObject::ScheduleEntry, true, this);
+    m_schedule = new RamScheduleModel();
     m_schedule->addFilterValue( "user", this->uuid() );
     m_schedule->addLookUpKey("date");
     m_schedule->addLookUpKey("step");
+    m_schedule->addLookUpKey("project");
 }

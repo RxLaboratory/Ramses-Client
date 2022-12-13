@@ -113,6 +113,6 @@ void RamSequence::construct()
     m_icon = ":/icons/sequence";
     m_editRole = ProjectAdmin;
 
-    m_shots = new DBTableModel(RamObject::Shot, true, this);
+    m_shots = new DBTableModel(RamObject::Shot, true, true, this);
     m_shots->addFilterValue( "sequence", this->uuid() );
 }
