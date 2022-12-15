@@ -338,8 +338,6 @@ void RamStatusTableModel::cacheStepEstimation(QString stepUuid)
 
 void RamStatusTableModel::cacheEstimations()
 {
-    qDebug() << "Computing estimations";
-
     m_estimations.clear();
 
     QHash<QString, StepEstimation> allEstimation;
@@ -376,8 +374,6 @@ void RamStatusTableModel::cacheEstimations()
     QHash<QString, StepEstimation>::iterator i = allEstimation.begin();
     while (i != allEstimation.end()) {
 
-        qDebug() << "> Step estimation: " << i.key();
-
         StepEstimation stepEstim = i.value();
         int num = numItems.value(i.key());
 
@@ -389,9 +385,6 @@ void RamStatusTableModel::cacheEstimations()
             stepEstim.completionRatio = 100;
         }
 
-        qDebug() << ">> Estimation: " << stepEstim.estimation;
-        qDebug() << ">> Completion: " << stepEstim.completionRatio;
-
         i.value() = stepEstim;
 
         emit stepEstimationChanged(i.key());
@@ -400,8 +393,6 @@ void RamStatusTableModel::cacheEstimations()
     }
 
     m_estimations = allEstimation;
-
-    qDebug() << "> Estimations computed";
 
     emit estimationsChanged();
 }

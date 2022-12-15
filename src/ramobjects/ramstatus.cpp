@@ -644,6 +644,7 @@ QString RamStatus::folderPath() const
 {
     if (!m_item) return "";
     RamProject *project = m_item->project();
+    if (!project) return "";
     QString type = "_G_";
     if (m_item->objectType() == RamObject::Shot) type = "_S_";
     else if (m_item->objectType() == RamObject::Asset) type = "_A_";
