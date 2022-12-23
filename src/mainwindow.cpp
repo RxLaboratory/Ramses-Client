@@ -146,12 +146,57 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     ui_scheduleButton->setPopupMode(QToolButton::MenuButtonPopup);
     ui_scheduleButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
 
+    QMenu *filesMenu = new QMenu(this);
+
+    ui_fileAdminAction = new QAction(tr("Admin"), this);
+    ui_fileAdminAction->setIcon(QIcon(":/icons/settings-w"));
+    ui_filePreprodAction = new QAction(tr("Pre-production"), this);
+    ui_filePreprodAction->setIcon(QIcon(":/icons/project"));
+    ui_fileProdAction = new QAction(tr("Production"), this);
+    ui_fileProdAction->setIcon(QIcon(":/icons/sequence"));
+    ui_filePostProdAction = new QAction(tr("Post-production"), this);
+    ui_filePostProdAction->setIcon(QIcon(":/icons/film"));
+    ui_fileAssetsAction = new QAction(tr("Assets"), this);
+    ui_fileAssetsAction->setIcon(QIcon(":/icons/asset"));
+    ui_fileShotsAction = new QAction(tr("Shots"), this);
+    ui_fileShotsAction->setIcon(QIcon(":/icons/shot"));
+    ui_fileOutputAction = new QAction(tr("Output"), this);
+    ui_fileOutputAction->setIcon(QIcon(":/icons/output-folder"));
+    ui_fileUserAction = new QAction(tr("My user folder"), this);
+    ui_fileUserAction->setIcon(QIcon(":/icons/user"));
+    ui_fileVersionsAction = new QAction(tr("Project versions"), this);
+    ui_fileVersionsAction->setIcon(QIcon(":/icons/versions-folder"));
+    ui_fileTrashAction = new QAction(tr("Project trash"), this);
+    ui_fileTrashAction->setIcon(QIcon(":/icons/trash"));
+
+    filesMenu->addAction(ui_fileAdminAction);
+    filesMenu->addAction(ui_filePreprodAction);
+    filesMenu->addAction(ui_fileProdAction);
+    filesMenu->addAction(ui_filePostProdAction);
+    filesMenu->addAction(ui_fileAssetsAction);
+    filesMenu->addAction(ui_fileShotsAction);
+    filesMenu->addAction(ui_fileOutputAction);
+    filesMenu->addSeparator();
+    filesMenu->addAction(ui_fileUserAction);
+    filesMenu->addSeparator();
+    filesMenu->addAction(ui_fileVersionsAction);
+    filesMenu->addAction(ui_fileTrashAction);
+
+    ui_filesButton = new QToolButton();
+    ui_filesButton->setIcon(QIcon(":/icons/folder"));
+    ui_filesButton->setText("Files");
+    ui_filesButton->setMenu(filesMenu);
+    ui_filesButton->setIconSize(QSize(16,16));
+    ui_filesButton->setPopupMode(QToolButton::InstantPopup);
+    ui_filesButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+
     // Populate Toolbar
     ui_projectSelectorAction = mainToolBar->addWidget(new ProjectSelectorWidget(this));
     ui_pipelineMenuAction = mainToolBar->addWidget(ui_pipelineButton);
     ui_assetMenuAction = mainToolBar->addWidget(ui_assetsButton);
     ui_shotMenuAction = mainToolBar->addWidget(ui_shotsButton);
     ui_scheduleMenuAction = mainToolBar->addWidget(ui_scheduleButton);
+    ui_filesMenuAction = mainToolBar->addWidget(ui_filesButton);
 
     ui_projectSelectorAction->setVisible(false);
     actionAdmin->setVisible(false);
@@ -159,6 +204,7 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     ui_shotMenuAction->setVisible(false);
     ui_assetMenuAction->setVisible(false);
     ui_scheduleMenuAction->setVisible(false);
+    ui_filesMenuAction->setVisible(false);
 
     //Populate status bar
 
@@ -559,6 +605,18 @@ void MainWindow::connectEvents()
     connect(ui_actionTimeline,SIGNAL(triggered(bool)), ui_timelineDockWidget, SLOT(setVisible(bool)));
     connect(ui_timelineDockWidget,SIGNAL(visibilityChanged(bool)), ui_actionTimeline, SLOT(setChecked(bool)));
 
+    // Files
+    connect(ui_fileAdminAction,SIGNAL(triggered()), this, SLOT(revealAdminFolder()));
+    connect(ui_filePreprodAction,SIGNAL(triggered()), this, SLOT(revealPreProdFolder()));
+    connect(ui_fileProdAction,SIGNAL(triggered()), this, SLOT(revealProdFolder()));
+    connect(ui_filePostProdAction,SIGNAL(triggered()), this, SLOT(revealPostProdFolder()));
+    connect(ui_fileAssetsAction,SIGNAL(triggered()), this, SLOT(revealAssetsFolder()));
+    connect(ui_fileShotsAction,SIGNAL(triggered()), this, SLOT(revealShotsFolder()));
+    connect(ui_fileOutputAction,SIGNAL(triggered()), this, SLOT(revealOutputFolder()));
+    connect(ui_fileUserAction,SIGNAL(triggered()), this, SLOT(revealUserFolder()));
+    connect(ui_fileVersionsAction,SIGNAL(triggered()), this, SLOT(revealVersionsFolder()));
+    connect(ui_fileTrashAction,SIGNAL(triggered()), this, SLOT(revealTrashFolder()));
+
     // Pages
     connect(ui_adminPage, SIGNAL(closeRequested()), this, SLOT(home()));
 
@@ -569,8 +627,7 @@ void MainWindow::connectEvents()
 
     // Misc
     connect(DuQFLogger::instance(), &DuQFLogger::newLog, this, &MainWindow::log);
-    connect(Daemon::instance(), &Daemon::raise, this, &MainWindow::raise);
-    connect(Daemon::instance(), &Daemon::raise, this, &MainWindow::show);
+    connect(Daemon::instance(), &Daemon::raise, this, &MainWindow::duqf_raise);
     connect(Ramses::instance(),&Ramses::userChanged, this, &MainWindow::currentUserChanged);
     connect(Ramses::instance(), &Ramses::currentProjectChanged, this, &MainWindow::currentProjectChanged);
     connect(DBInterface::instance(),&DBInterface::connectionStatusChanged, this, &MainWindow::dbiConnectionStatusChanged);
@@ -781,6 +838,15 @@ void MainWindow::duqf_setStyle()
     //and tool buttons
     //int styleIndex = settings.value("appearance/toolButtonStyle", 2).toInt();
     //DuUI::setToolButtonStyle(styleIndex);
+}
+
+void MainWindow::duqf_raise()
+{
+    qDebug() << "Hello!";
+    this->show();
+    this->setWindowState( (windowState() & ~Qt::WindowMinimized) | Qt::WindowActive);
+    this->raise();  // for MacOS
+    this->activateWindow(); // for Windows
 }
 
 void MainWindow::duqf_bugReport()
@@ -994,10 +1060,73 @@ void MainWindow::userProfile()
     mainStack->setCurrentIndex(UserProfile);
 }
 
+void MainWindow::revealAdminFolder()
+{
+    RamProject *proj = Ramses::instance()->currentProject();
+    if (!proj) return;
+    FileUtils::openInExplorer( proj->path(RamProject::AdminFolder), true );
+}
+
+void MainWindow::revealPreProdFolder()
+{
+    RamProject *proj = Ramses::instance()->currentProject();
+    if (!proj) return;
+    FileUtils::openInExplorer( proj->path(RamProject::PreProdFolder), true );
+}
+
+void MainWindow::revealProdFolder()
+{
+    RamProject *proj = Ramses::instance()->currentProject();
+    if (!proj) return;
+    FileUtils::openInExplorer( proj->path(RamProject::ProdFolder), true );
+}
+
+void MainWindow::revealPostProdFolder()
+{
+    RamProject *proj = Ramses::instance()->currentProject();
+    if (!proj) return;
+    FileUtils::openInExplorer( proj->path(RamProject::PostProdFolder), true );
+}
+
+void MainWindow::revealAssetsFolder()
+{
+    RamProject *proj = Ramses::instance()->currentProject();
+    if (!proj) return;
+    FileUtils::openInExplorer( proj->path(RamProject::AssetsFolder), true );
+}
+
+void MainWindow::revealShotsFolder()
+{
+    RamProject *proj = Ramses::instance()->currentProject();
+    if (!proj) return;
+    FileUtils::openInExplorer( proj->path(RamProject::ShotsFolder), true );
+}
+
+void MainWindow::revealOutputFolder()
+{
+    RamProject *proj = Ramses::instance()->currentProject();
+    if (!proj) return;
+    FileUtils::openInExplorer( proj->path(RamProject::OutputFolder), true );
+}
+
 void MainWindow::revealUserFolder()
 {
     RamUser *current = Ramses::instance()->currentUser();
-    if (current) FileUtils::openInExplorer( current->path() );
+    if (current) FileUtils::openInExplorer( current->path(), true );
+}
+
+void MainWindow::revealVersionsFolder()
+{
+    RamProject *proj = Ramses::instance()->currentProject();
+    if (!proj) return;
+    FileUtils::openInExplorer( proj->path(RamProject::VersionsFolder), true );
+}
+
+void MainWindow::revealTrashFolder()
+{
+    RamProject *proj = Ramses::instance()->currentProject();
+    if (!proj) return;
+    FileUtils::openInExplorer( proj->path(RamProject::TrashFolder), true );
 }
 
 void MainWindow::admin(bool show)
@@ -1092,17 +1221,15 @@ void MainWindow::currentProjectChanged(RamProject *project)
     ui_shotMenuAction->setVisible(false);
     ui_assetMenuAction->setVisible(false);
     ui_scheduleMenuAction->setVisible(false);
+    ui_filesMenuAction->setVisible(false);
 
     ui_projectEditWiget->setObject(project);
 
-    if (!project)
-
-    {
+    if (!project) {
         ui_statsTitle->setTitle( "Project" );
         home();
     }
-    else
-    {
+    else {
         RamUser *user = Ramses::instance()->currentUser();
         if (!user) return;
 
@@ -1111,6 +1238,7 @@ void MainWindow::currentProjectChanged(RamProject *project)
         ui_shotMenuAction->setVisible(true);
         ui_assetMenuAction->setVisible(true);
         ui_scheduleMenuAction->setVisible(true);
+        ui_filesMenuAction->setVisible(true);
 
         if (user->role() == RamUser::Admin)
         {

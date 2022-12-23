@@ -104,6 +104,9 @@ class DuApplication : public QApplication
     Q_OBJECT
 public:
     explicit DuApplication(int &argc, char *argv[]);
+    ~DuApplication();
+
+    bool lock();
 
     DuSplashScreen *splashScreen() const;
 
@@ -137,6 +140,9 @@ private:
     int _idleTimeout;
     QStringList _args;
     QJsonObject _updateInfo;
+
+    // Used to check if another instance is running
+    QSharedMemory *m_singular;
 };
 
 #endif // APPUTILS_H

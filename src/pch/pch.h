@@ -115,5 +115,6 @@
 #include <QtGlobal>
 #include <QErrorMessage>
 #include <QHostInfo>
+#include <QSharedMemory>
 
 #include <cmath>

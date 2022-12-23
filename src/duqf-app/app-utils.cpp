@@ -14,6 +14,11 @@ DuApplication::DuApplication(int &argc, char *argv[]) : QApplication(argc, argv)
 #endif
     qDebug() << "Initializing application";
 
+    qDebug() << "Creating a shared memory pointer...";
+    QString sharedMemoryKey = QString(STR_COMPANYDOMAIN) + "_" + QString(STR_PRODUCTNAME) + "_" + QString(STR_VERSION);
+    qDebug() << "Key: " << sharedMemoryKey;
+    m_singular = new QSharedMemory(sharedMemoryKey, this);
+
     //set style
     DuUI::updateCSS(":/styles/default");
 
@@ -47,6 +52,24 @@ DuApplication::DuApplication(int &argc, char *argv[]) : QApplication(argc, argv)
     {
         _args << QString(argv[i]);
     }
+}
+
+DuApplication::~DuApplication()
+{
+    if (m_singular->isAttached()) m_singular->detach();
+}
+
+bool DuApplication::lock()
+{
+    if (m_singular->attach(QSharedMemory::ReadOnly)){
+        m_singular->detach();
+        return false;
+    }
+
+    if (m_singular->create(1))
+        return true;
+
+    return false;
 }
 
 DuSplashScreen *DuApplication::splashScreen() const

@@ -63,6 +63,10 @@ private:
      */
     void duqf_setStyle();
     /**
+     * @brief duqf_raise Tries to (force) raise the window
+     */
+    void duqf_raise();
+    /**
      * @brief Is the tool bar currently clicked or not
      */
     bool duqf_toolBarClicked;
@@ -119,6 +123,19 @@ private:
     QToolButton *ui_scheduleButton;
     QAction *ui_scheduleMenuAction;
 
+    QToolButton *ui_filesButton;
+    QAction *ui_filesMenuAction;
+    QAction *ui_fileAdminAction;
+    QAction *ui_filePreprodAction;
+    QAction *ui_fileProdAction;
+    QAction *ui_filePostProdAction;
+    QAction *ui_fileAssetsAction;
+    QAction *ui_fileShotsAction;
+    QAction *ui_fileOutputAction;
+    QAction *ui_fileUserAction;
+    QAction *ui_fileVersionsAction;
+    QAction *ui_fileTrashAction;
+
     SettingsWidget *ui_adminPage;
 
     DatabaseEditWidget *ui_databaseEditWidget = nullptr;
@@ -167,7 +184,6 @@ private slots:
     void databaseSettingsAction();
     void home();
     void userProfile();
-    void revealUserFolder();
     void admin(bool show = true);
     void pipeline();
     void shots();
@@ -179,6 +195,17 @@ private slots:
     void dbiConnectionStatusChanged(NetworkUtils::NetworkStatus s);
     void finishSync();
     void startSync();
+
+    void revealAdminFolder();
+    void revealPreProdFolder();
+    void revealProdFolder();
+    void revealPostProdFolder();
+    void revealAssetsFolder();
+    void revealShotsFolder();
+    void revealOutputFolder();
+    void revealUserFolder();
+    void revealVersionsFolder();
+    void revealTrashFolder();
 
 protected:
     void closeEvent(QCloseEvent *event) override;

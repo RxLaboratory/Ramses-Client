@@ -1,14 +1,8 @@
-#include "config.h"
-
 #include "mainwindow.h"
 
 #include <QApplication>
 #include <QSettings>
 #include <QTcpSocket>
-
-#ifdef Q_OS_WIN
-#include "windows.h"
-#endif
 
 #include "duqf-app/app-utils.h"
 #include "duqf-widgets/duqfupdatedialog.h"
@@ -20,40 +14,32 @@ int main(int argc, char *argv[])
     // process CLI arguments
     if ( a.processArgs() ) return 0;
 
+    // Check if we're already running
+    if (!a.lock()) {
+        qInfo() << "Ramses is already running, sorry.";
+
+        qDebug() << "Trying to connect to the running instance, sending args and waking it up.";
+
+        QTcpSocket *tcpSocket = new QTcpSocket();
+        tcpSocket->connectToHost(
+                    "127.0.01",
+                    QSettings().value("server/port", 18185).toInt(),
+                    QIODevice::ReadWrite,
+                    QAbstractSocket::IPv4Protocol
+                    );
+        tcpSocket->waitForConnected(1000);
+
+        if (tcpSocket->state() == QAbstractSocket::ConnectedState) {
+            tcpSocket->write("raise");
+            tcpSocket->waitForBytesWritten(100);
+        }
+        return -1;
+    }
+
     // show splashscreen
     a.showSplashScreen();
     DuSplashScreen *s = a.splashScreen();
     s->newMessage("Checking if Ramses is already running...");
-
-    // Single instance, check if the daemon is already running.
-    QTcpSocket *tcpSocket = new QTcpSocket();
-    tcpSocket->connectToHost(
-                "127.0.01",
-                QSettings().value("server/port", 18185).toInt(),
-                QIODevice::ReadWrite,
-                QAbstractSocket::IPv4Protocol);
-    tcpSocket->waitForConnected(1000);
-    if (tcpSocket->state() == QAbstractSocket::ConnectedState)
-    {
-
-        tcpSocket->write("ping");
-        tcpSocket->waitForReadyRead(1000);
-        QJsonDocument reply = QJsonDocument::fromJson( tcpSocket->readAll() );
-        QJsonObject obj = reply.object();
-        QJsonObject content = obj.value("content").toObject();
-        if (content.value("ramses").toString() == STR_INTERNALNAME && content.value("version").toString() == STR_VERSION)
-        {
-            tcpSocket->write("raise");
-            tcpSocket->waitForReadyRead(1000);
-            qDebug("Ramses is already running.");
-            return 0;
-        }
-    }
-    else
-    {
-        qDebug() << tcpSocket->errorString();
-        qDebug() << tcpSocket->error();
-    }
 
     // Check for updates, right during startup
     s->newMessage("Looking for udpates...");
