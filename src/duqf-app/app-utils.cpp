@@ -22,17 +22,6 @@ DuApplication::DuApplication(int &argc, char *argv[]) : QApplication(argc, argv)
     //set style
     DuUI::updateCSS(":/styles/default");
 
-    //create splash screen
-    if (QFile(SPLASH_IMAGE).exists())
-    {
-        QPixmap pixmap(SPLASH_IMAGE);
-        _splashScreen = new DuSplashScreen( pixmap );
-    }
-    else
-    {
-        _splashScreen = new DuSplashScreen( );
-    }
-
     //set app icon
     qApp->setWindowIcon(QIcon(APP_ICON));
 
@@ -72,14 +61,16 @@ bool DuApplication::lock()
     return false;
 }
 
-DuSplashScreen *DuApplication::splashScreen() const
+DuSplashScreen *DuApplication::splashScreen()
 {
-    return _splashScreen;
+    createSplashScreen();
+    return m_splashScreen;
 }
 
 void DuApplication::showSplashScreen()
 {
-    _splashScreen->show();
+    createSplashScreen();
+    m_splashScreen->show();
 }
 
 void DuApplication::setIdleTimeOut(int to)
@@ -304,6 +295,22 @@ void DuApplication::gotUpdateInfo(QNetworkReply *rep)
     rep->deleteLater();
 }
 
+void DuApplication::createSplashScreen()
+{
+    if (m_splashScreen) return;
+
+    //create splash screen
+    if (QFile(SPLASH_IMAGE).exists())
+    {
+        QPixmap pixmap(SPLASH_IMAGE);
+        m_splashScreen = new DuSplashScreen( pixmap );
+    }
+    else
+    {
+        m_splashScreen = new DuSplashScreen( );
+    }
+}
+
 const QJsonObject &DuApplication::updateInfo()
 {
     if (!_updateInfo.isEmpty() && _updateInfo.value("success").toBool())
@@ -325,4 +332,9 @@ const QJsonObject &DuApplication::updateInfo()
     _updateInfo.insert("fundingGoal", settings.value("updates/fundingGoal", 4000).toDouble());
 
     return _updateInfo;
+}
+
+QStringList DuApplication::args() const
+{
+    return _args;
 }

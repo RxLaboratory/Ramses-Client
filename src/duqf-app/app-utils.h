@@ -108,7 +108,7 @@ public:
 
     bool lock();
 
-    DuSplashScreen *splashScreen() const;
+    DuSplashScreen *splashScreen();
 
     void showSplashScreen();
 
@@ -118,6 +118,8 @@ public:
     bool processArgs(QStringList examples = QStringList(), QStringList helpStrings = QStringList());
 
     const QJsonObject &updateInfo();
+
+    QStringList args() const;
 
 public slots:
     // Check for updates
@@ -135,7 +137,9 @@ private slots:
     void gotUpdateInfo(QNetworkReply *rep);
 
 private:
-    DuSplashScreen *_splashScreen;
+    void createSplashScreen();
+
+    DuSplashScreen *m_splashScreen = nullptr;
     QTimer *_idleTimer;
     int _idleTimeout;
     QStringList _args;
