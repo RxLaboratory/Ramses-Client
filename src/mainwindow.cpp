@@ -544,6 +544,23 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     ui_propertiesDockWidget->hide();
     //ui_statsDockWidget->hide();
     //ui_timelineDockWidget->hide();
+
+    // Process arguments
+
+    // Load file
+    DuApplication *app = qobject_cast<DuApplication*>(qApp);
+    QStringList args = app->args();
+    if (args.count() != 1) return;
+
+    QString filePath = args.first();
+    QFileInfo argInfo(filePath);
+    if (argInfo.exists() && argInfo.suffix().toLower() == "ramses") {
+        qDebug() << "Opening " << argInfo.fileName();
+        // Set database
+        DBInterface::instance()->setDataFile( filePath );
+        // Trigger a full sync
+        if (RamServerInterface::instance()->isOnline()) DBInterface::instance()->fullSync();
+    }
 }
 
 void MainWindow::connectEvents()
