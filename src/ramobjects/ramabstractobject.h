@@ -80,7 +80,7 @@ public:
                    PostProdFolder,
                    AssetsFolder,
                    ShotsFolder,
-                   ExportFolder,
+                   OutputFolder,
                    TemplatesFolder,
                    PublishFolder,
                    VersionsFolder,

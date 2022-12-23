@@ -82,7 +82,7 @@ const QString RamAbstractObject::subFolderName(SubFolder folder)
     case PostProdFolder: return "03-POST-PROD";
     case AssetsFolder: return "04-ASSETS";
     case ShotsFolder: return "05-SHOTS";
-    case ExportFolder: return "06-EXPORT";
+    case OutputFolder: return "06-OUTPUT";
     case TemplatesFolder: return "Templates";
     case PublishFolder: return "_published";
     case VersionsFolder: return "_versions";

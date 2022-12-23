@@ -74,6 +74,9 @@
         <file alias="code">resources/icons/code_sl.svg</file>
         <file alias="path">resources/icons/file-path_sl.svg</file>
         <file alias="filename">resources/icons/filename_sl.svg</file>
+        <file alias="trash">resources/icons/trash-bin_sl.svg</file>
+        <file alias="output-folder">resources/icons/export-outout-folder_sl.svg</file>
+        <file alias="versions-folder">resources/icons/restore-versions-folder_sl.svg</file>
     </qresource>
     <qresource prefix="/styles">
         <file alias="default-ramses-client">resources/style/style-ramses.css</file>
