@@ -107,6 +107,8 @@ public:
     ~DuApplication();
 
     bool lock();
+    void detach();
+    void restart(QStringList args = QStringList());
 
     DuSplashScreen *splashScreen();
 
@@ -142,7 +144,8 @@ private:
     DuSplashScreen *m_splashScreen = nullptr;
     QTimer *_idleTimer;
     int _idleTimeout;
-    QStringList _args;
+    QString m_program;
+    QStringList m_args;
     QJsonObject _updateInfo;
 
     // Used to check if another instance is running

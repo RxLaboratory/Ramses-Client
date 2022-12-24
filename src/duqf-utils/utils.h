@@ -1,10 +1,6 @@
 #ifndef UTILS_H
 #define UTILS_H
 
-#ifdef Q_OS_WIN
-#include "windows.h"
-#endif
-
 #include <QString>
 #include <QFile>
 #include <QObject>
@@ -154,10 +150,6 @@ namespace ProcessUtils {
     QProcess *runProcess(QString binary, QStringList arguments = QStringList());
     void runProcess(QProcess *p, QString binary, QStringList arguments = QStringList());
     void runIndependantProcess(QString binary, QStringList arguments = QStringList());
-}
-
-namespace AppUtils {
-    void restartApp();
 }
 
 #endif // UTILS_H

@@ -1,6 +1,7 @@
 ﻿#include "dbinterface.h"
 #include "duqf-utils/guiutils.h"
 #include "progressmanager.h"
+#include "statemanager.h"
 
 DBInterface *DBInterface::_instance = nullptr;
 
@@ -10,7 +11,7 @@ DBInterface *DBInterface::instance()
     return _instance;
 }
 
-void DBInterface::setOffline()
+void DBInterface::setOffline(bool sync)
 {
     ProgressManager *pm = ProgressManager::instance();
     pm->setText( tr("Disconnecting from the Ramses Server...") );
@@ -19,7 +20,7 @@ void DBInterface::setOffline()
     m_disconnecting = true;
 
     // One last sync
-    if (m_rsi->isOnline() && !m_syncSuspended)
+    if (sync && m_rsi->isOnline() && !m_syncSuspended)
     {
         pm->setText( tr("One last sync!") );
         pm->increment();
@@ -288,7 +289,7 @@ bool DBInterface::undoClean()
         return false;
     }
 
-    AppUtils::restartApp();
+    StateManager::i()->restart(false);
     return true;
 }
 

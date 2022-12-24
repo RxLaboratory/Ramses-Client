@@ -554,13 +554,8 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
 
     QString filePath = args.first();
     QFileInfo argInfo(filePath);
-    if (argInfo.exists() && argInfo.suffix().toLower() == "ramses") {
-        qDebug() << "Opening " << argInfo.fileName();
-        // Set database
-        DBInterface::instance()->setDataFile( filePath );
-        // Trigger a full sync
-        if (RamServerInterface::instance()->isOnline()) DBInterface::instance()->fullSync();
-    }
+    if (argInfo.exists() && argInfo.suffix().toLower() == "ramses")
+        StateManager::i()->open(filePath);
 }
 
 void MainWindow::connectEvents()
@@ -569,8 +564,8 @@ void MainWindow::connectEvents()
     connect(ProgressManager::instance(), &ProgressManager::freezeUI, this, &MainWindow::freezeUI);
 
     // Toolbar buttons
-    connect(actionLogIn,SIGNAL(triggered()), this, SLOT(loginAction()));
-    connect(actionLogOut,SIGNAL(triggered()), this, SLOT(logoutAction()));
+    connect(actionLogIn,SIGNAL(triggered()), this, SLOT(home()));
+    connect(actionLogOut,SIGNAL(triggered()), StateManager::i(), SLOT(logout()));
     connect(actionSettings, SIGNAL(triggered(bool)), this, SLOT(duqf_settings(bool)));
     connect(actionSetOnline, &QAction::triggered, this, &MainWindow::setOnlineAction);
     connect(actionSetOffline, &QAction::triggered, this, &MainWindow::setOfflineAction);
@@ -1017,22 +1012,6 @@ void MainWindow::serverSettings()
 {
     mainStack->setCurrentIndex(Settings);
     settingsWidget->setCurrentIndex(2);
-}
-
-void MainWindow::loginAction()
-{
-    home();
-}
-
-void MainWindow::logoutAction()
-{
-    RamServerInterface::instance()->eraseUserPassword();
-    DBInterface::instance()->setOffline();
-    Ramses::instance()->setUser(nullptr);
-    DBInterface::instance()->setDataFile("");
-    home();
-
-    AppUtils::restartApp();
 }
 
 void MainWindow::setOfflineAction()

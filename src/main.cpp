@@ -29,11 +29,28 @@ int main(int argc, char *argv[])
                     );
         tcpSocket->waitForConnected(1000);
 
+        bool mustQuit = true;
+
         if (tcpSocket->state() == QAbstractSocket::ConnectedState) {
-            tcpSocket->write("raise");
-            tcpSocket->waitForBytesWritten(100);
+            // Open the file if one is given
+            if (argc == 2) {
+                QString filePath = argv[1];
+                QFileInfo argInfo(filePath);
+                if (argInfo.exists() && argInfo.suffix().toLower() == "ramses") {
+                    qDebug() << "Opening file " << argInfo.fileName();
+                    // Quit other instance
+                    tcpSocket->write(QString("quit").toUtf8());
+                    mustQuit = false;
+                }
+            }
+
+            if (mustQuit) {
+                tcpSocket->write("raise");
+                tcpSocket->waitForBytesWritten(100);
+            }
         }
-        return -1;
+
+        if (mustQuit) return -1;
     }
 
     // show splashscreen

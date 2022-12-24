@@ -110,6 +110,12 @@ void Daemon::reply(QString request, QTcpSocket *client)
     else if (args.contains("raise"))
         emit raise();
 
+    else if (args.contains("quit"))
+        StateManager::i()->quit();
+
+    else if (args.contains("open"))
+        StateManager::i()->open(args.value("file"));
+
     else if (args.contains("getCurrentProject"))
         getCurrentProject(client);
 

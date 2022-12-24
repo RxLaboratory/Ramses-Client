@@ -460,12 +460,3 @@ QString FileUtils::copyToTemporary(QString from)
     FileUtils::copy(from, tempFileFullPath);
     return tempFileFullPath;
 }
-
-void AppUtils::restartApp()
-{
-    // An restart!
-    QString program = qApp->arguments()[0];
-    QStringList arguments = qApp->arguments().mid(1); // remove the 1st argument - the program name
-    qApp->quit();
-    QProcess::startDetached(program, arguments);
-}

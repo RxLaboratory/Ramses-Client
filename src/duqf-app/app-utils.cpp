@@ -37,9 +37,11 @@ DuApplication::DuApplication(int &argc, char *argv[]) : QApplication(argc, argv)
     _idleTimeout=120*60*1000;
     _idleTimer->start(_idleTimeout);
 
+    m_program = argv[0];
+
     for (int i = 1; i < argc; i++)
     {
-        _args << QString(argv[i]);
+        m_args << QString(argv[i]);
     }
 }
 
@@ -59,6 +61,25 @@ bool DuApplication::lock()
         return true;
 
     return false;
+}
+
+void DuApplication::detach()
+{
+    m_singular->detach();
+}
+
+void DuApplication::restart(QStringList args)
+{
+    qDebug() << "Restarting app...";
+    // Release before everything else
+    this->detach();
+    //  Get args
+    if (args.isEmpty()) args = m_args;
+    qDebug() << "Using these args: " << args;
+    // Quit
+    this->quit();
+    // An restart!
+    QProcess::startDetached(m_program, args);
 }
 
 DuSplashScreen *DuApplication::splashScreen()
@@ -86,11 +107,11 @@ bool DuApplication::processArgs(QStringList examples, QStringList helpStrings)
 
     // No console without args on windows
 #ifdef Q_OS_WIN
-    bool hideConsole = _args.count() == 0;
+    bool hideConsole = m_args.count() == 0;
 #endif
-    for (int i = 0; i < _args.count(); i++)
+    for (int i = 0; i < m_args.count(); i++)
     {
-        QString arg = _args.at(i);
+        QString arg = m_args.at(i);
         if ( arg.toLower() == "--no-banner" ) nobanner = true;
         if (arg.toLower() == "-h" || arg.toLower() == "--help" ) help = true;
 #ifdef Q_OS_WIN
@@ -336,5 +357,5 @@ const QJsonObject &DuApplication::updateInfo()
 
 QStringList DuApplication::args() const
 {
-    return _args;
+    return m_args;
 }

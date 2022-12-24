@@ -93,7 +93,7 @@ public slots:
     /**
      * @brief Changes to offline mode: data is stored locally until we get a connection to the server to sync.
      */
-    void setOffline();
+    void setOffline(bool sync = true);
     /**
      * @brief Changes to online mode.
      */

@@ -177,8 +177,6 @@ private slots:
 
     void pageChanged(int i);
     void serverSettings();
-    void loginAction();
-    void logoutAction();
     void setOfflineAction();
     void setOnlineAction();
     void databaseSettingsAction();

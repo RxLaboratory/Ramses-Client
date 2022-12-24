@@ -1,6 +1,7 @@
 #ifndef STATEMANAGER_H
 #define STATEMANAGER_H
 
+#include "duqf-app/app-utils.h"
 #include <QObject>
 
 class StateManager : public QObject
@@ -29,6 +30,10 @@ signals:
     void stateChanged(StateManager::State);
 
 public slots:
+    void logout(QString reopenFile = "");
+    void quit(bool sync = true);
+    void restart(bool sync = true);
+    void open(QString filePath);
     void setState(StateManager::State newState);
 
 protected:
@@ -43,6 +48,7 @@ private:
 
     State m_state = Idle;
     State m_previousState = Idle;
+    DuApplication *m_app;
 };
 
 #endif // STATEMANAGER_H
