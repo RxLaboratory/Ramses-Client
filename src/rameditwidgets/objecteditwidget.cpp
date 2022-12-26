@@ -24,6 +24,7 @@ void ObjectEditWidget::hideName(bool hide)
     ui_shortNameLabel->setVisible(!hide);
     ui_shortNameEdit->setVisible(!hide);
     ui_lockShortNameButton->setVisible(!hide);
+    m_nameHidden = hide;
 }
 
 void ObjectEditWidget::setObject(RamObject *object)
@@ -70,7 +71,7 @@ void ObjectEditWidget::setObject(RamObject *object)
 void ObjectEditWidget::lockShortName(bool lock)
 {
     ui_shortNameEdit->setEnabled(!lock);
-    ui_lockShortNameButton->setVisible(lock);
+    if (!m_nameHidden) ui_lockShortNameButton->setVisible(lock);
 }
 
 void ObjectEditWidget::setShortName()
@@ -175,6 +176,17 @@ void ObjectEditWidget::checkPath()
     else if (m_object->objectType() == RamObject::Step) lockShortName(true);
 }
 
+void ObjectEditWidget::setFilesTabVisible(bool visible)
+{
+#if (QT_VERSION < QT_VERSION_CHECK(5, 15, 0))
+    if (visible) ui_tabWidget->insertTab(1, ui_fileWidget, "Files");
+    ui_fileWidget.setParent(this);
+    else ui_tabWidget->removeTab(1);
+#else
+    ui_tabWidget->setTabVisible(1, visible);
+#endif
+}
+
 void ObjectEditWidget::showEvent(QShowEvent *event)
 {
     if(!event->spontaneous()) this->setObject(m_object);
@@ -190,20 +202,32 @@ void ObjectEditWidget::setupUi()
 {
     //this->setMaximumWidth(500);
 
-    QWidget *dummy = new QWidget(this);
-    dummy->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    ui_tabWidget = new QTabWidget(this);
+    ui_tabWidget->setTabPosition(QTabWidget::West);
+    ui_tabWidget->tabBar()->setAutoHide(true);
+    ui_tabWidget->tabBar()->setStyleSheet(
+                "QTabBar::tab { max-width: 16px; max-height: 16px; }"
+                );
+    this->setWidget(ui_tabWidget);
+    this->setWidgetResizable(true);
+    this->setFrameStyle(QFrame::NoFrame);
 
-    ui_mainLayout = new QVBoxLayout(dummy);
+    QWidget *mainWidget = new QWidget(this);
+    mainWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    ui_tabWidget->addTab(mainWidget, QIcon(":/icons/status"), "");
+    ui_tabWidget->setTabToolTip(0, tr("Properties"));
+
+    ui_mainLayout = new QVBoxLayout(mainWidget);
     ui_mainLayout->setSpacing(3);
-    ui_mainLayout->setContentsMargins(3, 3, 3, 3);
+    ui_mainLayout->setContentsMargins(0, 3, 3, 3);
 
     ui_mainFormLayout = new QGridLayout();
     ui_mainFormLayout->setSpacing(3);
 
-    ui_nameLabel = new QLabel("Name", dummy);
+    ui_nameLabel = new QLabel("Name", mainWidget);
     ui_mainFormLayout->addWidget(ui_nameLabel, 0, 0);
 
-    ui_nameEdit = new QLineEdit(dummy);
+    ui_nameEdit = new QLineEdit(mainWidget);
     ui_mainFormLayout->addWidget(ui_nameEdit, 0, 1);
 
     // Name validator
@@ -211,11 +235,11 @@ void ObjectEditWidget::setupUi()
     QValidator *nameValidator = new QRegExpValidator(rxn, this);
     ui_nameEdit->setValidator(nameValidator);
 
-    ui_shortNameLabel = new QLabel("ID", dummy);
+    ui_shortNameLabel = new QLabel("ID", mainWidget);
     ui_mainFormLayout->addWidget(ui_shortNameLabel, 1, 0);
 
     QHBoxLayout *shortNameLayout = new QHBoxLayout();
-    ui_shortNameEdit = new QLineEdit(dummy);
+    ui_shortNameEdit = new QLineEdit(mainWidget);
     shortNameLayout->addWidget(ui_shortNameEdit);
 
     ui_lockShortNameButton = new QToolButton(this);
@@ -230,19 +254,29 @@ void ObjectEditWidget::setupUi()
     QValidator *shortNameValidator = new QRegExpValidator(rxsn, this);
     ui_shortNameEdit->setValidator(shortNameValidator);
 
-    ui_commentLabel = new QLabel("Comment", dummy);
+    ui_commentLabel = new QLabel("Comment", mainWidget);
     ui_mainFormLayout->addWidget(ui_commentLabel, 2, 0);
 
-    ui_commentEdit = new DuQFTextEdit(dummy);
+    ui_commentEdit = new DuQFTextEdit(mainWidget);
     ui_commentEdit->setMaximumHeight(80);
     ui_commentEdit->setObjectName("commentEdit");
     ui_mainFormLayout->addWidget(ui_commentEdit, 2, 1);
 
     ui_mainLayout->addLayout(ui_mainFormLayout);
 
-    this->setWidget(dummy);
-    this->setWidgetResizable(true);
-    this->setFrameStyle(QFrame::NoFrame);
+    ui_fileWidget = new QWidget(this);
+    ui_fileWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    QPixmap fileIcon(":/icons/file");
+    QTransform t;
+    t.rotate(90);
+    ui_tabWidget->addTab(ui_fileWidget, QIcon(fileIcon.transformed(t, Qt::FastTransformation)), "");
+    ui_tabWidget->setTabToolTip(1, tr("Files"));
+
+    ui_fileLayout = new QVBoxLayout(ui_fileWidget);
+    ui_fileLayout->setSpacing(3);
+    ui_fileLayout->setContentsMargins(0, 3, 3, 3);
+
+    setFilesTabVisible(false);
 }
 
 void ObjectEditWidget::connectEvents()

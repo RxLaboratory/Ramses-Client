@@ -41,6 +41,8 @@ protected slots:
 
     void checkPath();
 
+    void setFilesTabVisible(bool visible);
+
 protected:
     virtual void reInit(RamObject *o) = 0;
     void showEvent(QShowEvent *event) override;
@@ -48,6 +50,7 @@ protected:
 
     QStringList m_dontRename;
 
+    QTabWidget *ui_tabWidget;
     QVBoxLayout *ui_mainLayout;
     QGridLayout *ui_mainFormLayout;
     QLineEdit *ui_shortNameEdit;
@@ -57,6 +60,8 @@ protected:
     QLabel *ui_commentLabel;
     DuQFTextEdit *ui_commentEdit;
     QToolButton *ui_lockShortNameButton;
+    QVBoxLayout *ui_fileLayout;
+    QWidget *ui_fileWidget;
 
     bool m_reinit = false;
 
@@ -67,6 +72,8 @@ private slots:
 private:
     void setupUi();
     void connectEvents();
+
+    bool m_nameHidden = false;
 
     RamObject *m_object;
 };

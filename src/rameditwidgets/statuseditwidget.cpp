@@ -525,6 +525,8 @@ void StatusEditWidget::setupUi()
 {
     //this->setWidgetResizable(true);
 
+    // === ATTRIBUTES ===
+
     this->hideName();
     ui_commentEdit->hide();
     ui_commentLabel->hide();
@@ -535,6 +537,7 @@ void StatusEditWidget::setupUi()
 
     ui_stateBox = new RamStateBox(this);
     cLayout->addWidget(ui_stateBox);
+    ui_mainLayout->addLayout(cLayout);
 
     ui_completionBox = new DuQFSpinBox(this);
     ui_completionBox->setMaximum(100);
@@ -547,27 +550,10 @@ void StatusEditWidget::setupUi()
     cLayout->setStretch(0,0);
     cLayout->setStretch(1,100);
 
-    ui_mainLayout->addLayout(cLayout);
-
-    ui_commentSplitter = new QSplitter();
-    ui_commentSplitter->setOrientation(Qt::Vertical);
-
-    ui_statusCommentEdit = new DuQFTextEdit(this);
-    ui_statusCommentEdit->setPlaceholderText("Comment...");
-    ui_statusCommentEdit->setMinimumHeight(30);
-    ui_statusCommentEdit->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    ui_commentEdit->setObjectName("commentEdit");
-
-    ui_commentSplitter->addWidget( ui_statusCommentEdit );
-
-    QWidget *bottomWidget = new QWidget(this);
-    QVBoxLayout *bottomLayout = new QVBoxLayout(bottomWidget);
-    bottomLayout->setSpacing(3);
-    bottomLayout->setContentsMargins(0,0,0,0);
-
     QFormLayout *detailsLayout = new QFormLayout();
     detailsLayout->setSpacing(3);
     detailsLayout->setContentsMargins(0,0,0,0);
+    ui_mainLayout->addLayout(detailsLayout);
 
     ui_difficultyBox = new QComboBox(this);
     ui_difficultyBox->addItem("Very easy");
@@ -611,7 +597,16 @@ void StatusEditWidget::setupUi()
     ui_userBox = new RamObjectComboBox(this);
     detailsLayout->addRow("Assigned user", ui_userBox);
 
-    bottomLayout->addLayout( detailsLayout);
+    ui_statusCommentEdit = new DuQFTextEdit(this);
+    ui_statusCommentEdit->setPlaceholderText("Comment...");
+    ui_statusCommentEdit->setMinimumHeight(30);
+    ui_statusCommentEdit->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    ui_commentEdit->setObjectName("commentEdit");
+    ui_mainLayout->addWidget(ui_statusCommentEdit);
+
+    // === FILES ===
+
+    setFilesTabVisible(true);
 
     QTabWidget *tabWidget = new QTabWidget(this);
 
@@ -714,7 +709,7 @@ void StatusEditWidget::setupUi()
 
     tabWidget->addTab(previewFilesWidget, QIcon(":/icons/files"), "Preview");
 
-    bottomLayout->addWidget(tabWidget);
+    ui_fileLayout->addWidget(tabWidget);
 
     QHBoxLayout *buttonsLayout = new QHBoxLayout();
     buttonsLayout->setSpacing(3);
@@ -730,11 +725,7 @@ void StatusEditWidget::setupUi()
     ui_revertButton->setIcon(QIcon(":/icons/undo"));
     buttonsLayout->addWidget(ui_revertButton);
 
-    bottomLayout->addLayout(buttonsLayout);
-
-    ui_commentSplitter->addWidget(bottomWidget);
-
-    ui_mainLayout->addWidget( ui_commentSplitter );
+    ui_fileLayout->addLayout(buttonsLayout);
 }
 
 void StatusEditWidget::connectEvents()
