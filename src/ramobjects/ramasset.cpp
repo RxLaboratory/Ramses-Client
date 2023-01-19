@@ -58,7 +58,9 @@ RamAsset::RamAsset(QString uuid):
 
 RamAssetGroup *RamAsset::assetGroup() const
 {
-    return RamAssetGroup::get( getData("assetGroup").toString() );
+    QString agUuid = getData("assetGroup").toString();
+    if (agUuid == "") return nullptr;
+    return RamAssetGroup::get( agUuid );
 }
 
 void RamAsset::setAssetGroup(RamAssetGroup *ag)
