@@ -208,7 +208,7 @@ QVector<QStringList> LocalDataInterface::tableData(QString table, QHash<QString,
                     }
                     else q += " OR ";
                     first = false;
-                    q += "`data` LIKE '%\"" + key + "\":\"" + value + "\"%'";
+                    q += "REPLACE(`data`, ' ', '') LIKE '%\"" + key + "\":\"" + value + "\"%'";
                 }
                 q += " )";
             }
