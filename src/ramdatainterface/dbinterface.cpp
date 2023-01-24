@@ -87,6 +87,58 @@ void DBInterface::setObjectData(QString uuid, QString table, QString data)
     m_ldi->setObjectData(uuid, table, data);
 }
 
+QString DBInterface::validateObjectData(QString data, QString uuid, QString type, bool ignoreErrors)
+{
+    if (data == "") return "{}";
+    // Try to create a JSON Doc
+    QJsonParseError *e = new QJsonParseError();
+    QJsonDocument doc = QJsonDocument::fromJson(data.toUtf8(), e);
+
+    // OK, return a compact json
+    if (e->error == QJsonParseError::NoError) return doc.toJson(QJsonDocument::Compact);
+
+    if (ignoreErrors) return "";
+
+    // Try some fixes
+    QString testData = data;
+
+    // A common error lies with new lines. Try to fix.
+    // Remove carriage returns, to accept only new lines
+    testData.replace("\r", "");
+    // Try escaping new lines
+    testData.replace("\n","\\n");
+    // Test again
+    testData = validateObjectData(testData, uuid, type, true);
+    // It worked
+    if (testData != "") return testData;
+
+    // Another attempt at fixing new lines
+    testData = data;
+    // Remove carriage returns, to accept only new lines
+    testData.replace("\r", "");
+    // Try removing new lines
+    testData.replace("\n","");
+    // Test again
+    testData = validateObjectData(testData, uuid, type, true);
+    // It worked
+    if (testData != "") return testData;
+
+    // Everything failed
+
+    QString eStr = "";
+    if (uuid != "") eStr = "Object with uuid: " + uuid + " contains invalid data.\n";
+    else eStr = "An unknown object contains invalid data.\n";
+    eStr += "This data will be removed, sorry.";
+    if (type != "") eStr += "Object type: " + type + "\n";
+    eStr += "Parse error: " + e->errorString() + "\n";
+    eStr += "Original data:\n" + data;
+
+    // Log the error
+    log(eStr, DuQFLog::Warning);
+
+    return "{}";
+}
+
 void DBInterface::removeObject(QString uuid, QString table)
 {
     m_ldi->removeObject(uuid, table);

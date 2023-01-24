@@ -879,7 +879,7 @@ QJsonObject RamServerInterface::parseData(QNetworkReply *reply)
         repObj.insert("success",false);
     }
 
-    QString repAll = reply->readAll();
+    QString repAll = QString::fromUtf8(reply->readAll());
     reply->deleteLater();
     QJsonDocument repDoc = QJsonDocument::fromJson(repAll.toUtf8());
     QJsonObject repObj = repDoc.object();

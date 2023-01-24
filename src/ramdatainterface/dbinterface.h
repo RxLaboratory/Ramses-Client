@@ -59,6 +59,11 @@ public:
 
     QString objectData(QString uuid, QString table);
     void setObjectData(QString uuid, QString table, QString data);
+    /**
+     * @brief validateObjectData Checks if the given data is a correct JSON format or tries to fix it
+     * @return The validated/fixed data or an empty string if it's invalid.
+     */
+    QString validateObjectData(QString data, QString uuid = "", QString type = "", bool ignoreErrors = false);
 
     void removeObject(QString uuid, QString table);
     void restoreObject(QString uuid, QString table);

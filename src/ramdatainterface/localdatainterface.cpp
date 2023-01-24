@@ -313,7 +313,8 @@ QString LocalDataInterface::objectData(QString uuid, QString table)
 
 void LocalDataInterface::setObjectData(QString uuid, QString table, QString data)
 {
-    QString newData = data;
+    QString newData = DBInterface::instance()->validateObjectData(data, uuid, table);
+
     QDateTime modified = QDateTime::currentDateTimeUtc();
 
     if (ENCRYPT_USER_DATA && table == "RamUser") newData = DataCrypto::instance()->clientEncrypt(data);
@@ -696,7 +697,8 @@ void LocalDataInterface::saveSync(SyncData syncData)
 
             if (uuidDates.contains(uuid)) continue;
 
-            QString data = incomingRow.data;
+            QString data = DBInterface::instance()->validateObjectData(incomingRow.data, uuid, tableName);
+
             QString modified = incomingRow.modified;
             int removed = incomingRow.removed;
 
@@ -775,7 +777,8 @@ void LocalDataInterface::saveSync(SyncData syncData)
         {
             QString uuid = incomingRow.uuid;
             if (uuid == "") continue;
-            QString data = incomingRow.data;
+            QString data = DBInterface::instance()->validateObjectData(incomingRow.data, uuid, tableName);
+
             QString modified = incomingRow.modified;
             int rem = incomingRow.removed;
             bool hasBeenRemoved = rem == 1;
