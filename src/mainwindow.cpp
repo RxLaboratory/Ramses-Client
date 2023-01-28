@@ -502,9 +502,9 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     this->addDockWidget(Qt::LeftDockWidgetArea, ui_sequencesDockWidget);
     ui_sequencesDockWidget->hide();
 
-    // The assets dock
+    // The Shots dock
     ShotManagerWidget *shotWidget = new ShotManagerWidget(this);
-    ui_shotsDockWidget = new QDockWidget(tr("Assets"));
+    ui_shotsDockWidget = new QDockWidget(tr("Shots"));
     ui_shotsDockWidget->setObjectName("shotsDock");
     DuQFDockTitle *shTitle = new DuQFDockTitle(tr("Shots"), this);
     shTitle->setObjectName("dockTitle");
