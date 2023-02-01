@@ -1,7 +1,4 @@
 #include "ramobjectdelegate.h"
-#include "ramabstractitem.h"
-#include "ramstatus.h"
-#include "ramses.h"
 #include "duqf-app/app-style.h"
 
 PaintParameters RamObjectDelegate::getPaintParameters(const QStyleOptionViewItem &option, const QModelIndex &index) const
@@ -104,6 +101,19 @@ void RamObjectDelegate::paintTitle(const QModelIndex &index, QPainter *painter, 
                 params->bgRect.width() - params->iconRect.width() - 35,
                 params->bgRect.height() - params->titleRect.height() - 15
                 );
+}
+
+void RamObjectDelegate::paintPublished(const QModelIndex &index, QPainter *painter, PaintParameters *params) const
+{
+    if (!index.data(RamAbstractObject::Published).toBool()) return;
+
+    QRect r(
+            params->iconRect.right() + m_padding,
+            params->bgRect.top() + 7,
+            12, 12
+            );
+    painter->drawPixmap( r, m_icons[":/icons/state-l"] );
+    params->titleRect.moveLeft( r.right() + m_padding );
 }
 
 void RamObjectDelegate::paintButtons(QPainter *painter, PaintParameters *params, const QModelIndex &index) const
@@ -319,6 +329,9 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
         }
         else painter->drawPixmap( params.iconRect, icon );
     }
+
+    // Published
+    paintPublished(index, painter, &params);
 
     // Title
     paintTitle(index, painter, &params);

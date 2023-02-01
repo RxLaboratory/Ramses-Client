@@ -402,6 +402,7 @@ QVariant RamAbstractObject::roleData(int role) const
     case RamAbstractObject::Duration: return 0;
     case RamAbstractObject::Order: return order();
     case RamAbstractObject::FileName: return fileName();
+    case RamAbstractObject::Published: return false;
     }
 
     return this->uuid();

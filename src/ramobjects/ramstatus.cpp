@@ -609,6 +609,9 @@ QVariant RamStatus::roleData(int role) const
         if (s.width() < 300) s.setWidth(300);
         return s;
     }
+    case RamAbstractObject::Published: {
+        return this->isPublished();
+    }
     }
 
     return RamObject::roleData(role);
