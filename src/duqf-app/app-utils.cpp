@@ -20,6 +20,7 @@ DuApplication::DuApplication(int &argc, char *argv[]) : QApplication(argc, argv)
     m_singular = new QSharedMemory(sharedMemoryKey, this);
 
     //set style
+    QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps); // DPI support
     DuUI::updateCSS(":/styles/default");
 
     //set app icon

@@ -47,6 +47,14 @@ public:
 
     static int getSize(QString type, QString name = "");
 
+    /**
+     * @brief autoScaleSize scales the given size according to a pixel ratio.
+     * @param v The value to scale
+     * @param pixelRatio If 0, will get the main screen pixel ratio
+     * @return The scaled value
+     */
+    static qreal scaleSize(qreal v, qreal ratio = 0);
+
     void addCssValue(QStringList value);
     QSet<QStringList> cssValues();
     void clearCssValues();

@@ -1,6 +1,7 @@
 #include "duqf-app/app-style.h"
-
 #include "duqf-app/app-version.h"
+
+#include <QScreen>
 
 FrameLessWindow::FrameLessWindow(QMainWindow *target) :
     _target(target),
@@ -282,6 +283,7 @@ QString DuUI::loadCSS(QStringList cssFileNames, QString styleValues)
         {
             DuUI::instance()->clearCssValues();
             css += "\n";
+
             //read lines
             while(!valuesFile.atEnd())
             {
@@ -296,6 +298,14 @@ QString DuUI::loadCSS(QStringList cssFileNames, QString styleValues)
                     QString typeName = match.captured(3);
                     QString name = match.captured(1);
                     QString value = match.captured(4);
+
+                    // Device scaling
+                    int pxIndex = value.indexOf("px");
+                    if (pxIndex > 0) {
+                        qreal v = value.left(pxIndex).toFloat();
+                        value = QString::number( DuUI::scaleSize(v)) + "px";
+                    }
+
                     css.replace(name,value);
                     QStringList cssValue;
                     cssValue << type << typeName << value;
@@ -387,6 +397,14 @@ int DuUI::getSize(QString type, QString name)
         if (cssValue[0] == type && cssValue[1] == name) return cssValue[2].replace("px", "").toInt();
     }
     return 0;
+}
+
+qreal DuUI::scaleSize(qreal v, qreal ratio)
+{
+    if (ratio == 0)
+        ratio = QGuiApplication::primaryScreen()->devicePixelRatio();
+
+    return v*ratio;
 }
 
 void DuUI::addCssValue(QStringList value) {
