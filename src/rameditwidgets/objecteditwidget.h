@@ -62,6 +62,7 @@ protected:
     QToolButton *ui_lockShortNameButton;
     QVBoxLayout *ui_fileLayout;
     QWidget *ui_fileWidget;
+    QIcon ui_fileIcon;
 
     bool m_reinit = false;
 

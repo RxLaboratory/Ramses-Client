@@ -179,9 +179,13 @@ void ObjectEditWidget::checkPath()
 void ObjectEditWidget::setFilesTabVisible(bool visible)
 {
 #if (QT_VERSION < QT_VERSION_CHECK(5, 15, 0))
-    if (visible) ui_tabWidget->insertTab(1, ui_fileWidget, "Files");
-    ui_fileWidget.setParent(this);
-    else ui_tabWidget->removeTab(1);
+    if (visible) {
+        ui_tabWidget->insertTab(1, ui_fileWidget, ui_fileIcon, "");
+        //ui_fileWidget->setParent(this);
+    }
+    else {
+        ui_tabWidget->removeTab(1);
+    }
 #else
     ui_tabWidget->setTabVisible(1, visible);
 #endif
@@ -269,7 +273,8 @@ void ObjectEditWidget::setupUi()
     QPixmap fileIcon(":/icons/file");
     QTransform t;
     t.rotate(90);
-    ui_tabWidget->addTab(ui_fileWidget, QIcon(fileIcon.transformed(t, Qt::FastTransformation)), "");
+    ui_fileIcon = QIcon(fileIcon.transformed(t, Qt::FastTransformation));
+    ui_tabWidget->addTab(ui_fileWidget, ui_fileIcon, "");
     ui_tabWidget->setTabToolTip(1, tr("Files"));
 
     ui_fileLayout = new QVBoxLayout(ui_fileWidget);
