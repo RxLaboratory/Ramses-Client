@@ -55,3 +55,9 @@ compile_commands.json
 *creator.user*
 .DS_Store
 .~lock.TODO.ods#
+
+# Qt build
+.qtc_clangd
+.qmake.stash
+*_x86_64.pch
+Ramses.app

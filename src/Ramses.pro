@@ -36,7 +36,7 @@ INCLUDEPATH += rameditwidgets \
     ramobjectdelegates \
     ramobjectmodels \
     ramobjectviews \
-    rammanagerwidgets \
+    rammanagerwidgets
 
 SOURCES += \
     progressmanager.cpp \
