@@ -623,6 +623,8 @@ void RamProject::construct()
     m_schedule->addLookUpKey("user");
     m_schedule->addLookUpKey("step");
 
+    connect(m_assetStatusTable, &RamStatusTableModel::estimationsChanged, this, &RamProject::computeEstimation);
+
     m_estimationFrozen = false;
 }
 

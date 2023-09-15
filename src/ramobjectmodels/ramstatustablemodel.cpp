@@ -334,6 +334,7 @@ void RamStatusTableModel::cacheStepEstimation(QString stepUuid)
     m_estimations.insert(stepUuid, stepEstim);
 
     emit stepEstimationChanged( stepUuid );
+    emit estimationsChanged();
 }
 
 void RamStatusTableModel::cacheEstimations()
