@@ -1145,6 +1145,7 @@ QVector<RamStatus *> ItemManagerWidget::beginEditSelectedStatus()
     for (int i = 0; i < selection.count(); i++)
     {
         RamStatus *status = getStatus(selection.at(i));
+        if (!status) continue;
         //if (!status->user()->is( currentUser ))
         //    status = RamStatus::copy( status, currentUser );
         statuses << status;
