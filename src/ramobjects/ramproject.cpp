@@ -346,6 +346,7 @@ RamPipe *RamProject::pipe(RamStep *outputStep, RamStep *inputStep)
     for (int i = 0; i < m_pipeline->rowCount(); i++)
     {
         RamPipe *p = RamPipe::c( m_pipeline->get(i) );
+        if (!p) continue;
         RamStep *thisOutput = p->outputStep();
         RamStep *thisInput = p->inputStep();
 
