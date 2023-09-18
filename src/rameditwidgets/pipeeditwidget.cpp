@@ -111,8 +111,8 @@ void PipeEditWidget::setupUi()
 
 void PipeEditWidget::connectEvents()
 {
-    connect(ui_fromBox, &RamObjectComboBox::currentObjectChanged, this, &PipeEditWidget::setOutputStep);
-    connect(ui_toBox,  &RamObjectComboBox::currentObjectChanged, this, &PipeEditWidget::setInputStep);
+    connect(ui_fromBox, &RamObjectComboBox::objectActivated, this, &PipeEditWidget::setOutputStep);
+    connect(ui_toBox,  &RamObjectComboBox::objectActivated, this, &PipeEditWidget::setInputStep);
     connect(ui_pipeFileList, &ObjectListWidget::add, this, &PipeEditWidget::createPipeFile);
 }
 
