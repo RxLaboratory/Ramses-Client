@@ -36,6 +36,8 @@ void RamObjectMenu::setObjectModel(QAbstractItemModel *list)
     else {
         m_objects->setSourceModel(list);
         m_objects->sort(0);
+        // For some reason (?) it seems the list datachanged is not relayed through the proxymodel
+        connect(list, SIGNAL(dataChanged(QModelIndex,QModelIndex,QVector<int>)),this,SLOT(objectChanged(QModelIndex,QModelIndex,QVector<int>)));
     }
 }
 
