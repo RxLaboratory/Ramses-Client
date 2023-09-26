@@ -22,7 +22,7 @@
     ],
     "assets": [
         {
-            "nameRegEx": "ramses-client_[\\d.].zip",
+            "nameRegEx": "ramses-client_[\\d.]*.zip",
             "name": "Ramses Application for Windows",
             "description": "[Read the doc](http://ramses.rxlab.guide/) for installation instructions.",
             "hosts": [ ],
@@ -32,7 +32,7 @@
             ]
         },
         {
-            "nameRegEx": "ramses-client_[\\d.].dmg",
+            "nameRegEx": "ramses-client_[\\d.]*.dmg",
             "name": "Ramses Application for macOS",
             "description": "[Read the doc](http://ramses.rxlab.guide/) for installation instructions.",
             "hosts": [ ],
@@ -42,7 +42,7 @@
             ]
         },
         {
-            "nameRegEx": "ramses-client_[\\d.]-amd64.deb",
+            "nameRegEx": "ramses-client_[\\d.]*-amd64.deb",
             "name": "Ramses Application for Debian/Ubuntu Linux",
             "description": "[Read the doc](http://ramses.rxlab.guide/) for installation instructions.",
             "hosts": [ ],
@@ -52,7 +52,7 @@
             ]
         },
         {
-            "nameRegEx": "ramses-client_[\\d.]-x86_64.AppImage",
+            "nameRegEx": "ramses-client_[\\d.]*-x86_64.AppImage",
             "name": "Ramses Application for Linux (executable AppImage)",
             "description": "[Read the doc](http://ramses.rxlab.guide/) for installation instructions.",
             "hosts": [ ],
@@ -62,7 +62,7 @@
             ]
         },
         {
-            "nameRegEx": "ramses-client_[\\d.].tar.gz",
+            "nameRegEx": "ramses-client_[\\d.]*.tar.gz",
             "name": "Ramses Application for Linux",
             "description": "[Read the doc](http://ramses.rxlab.guide/) for installation instructions.",
             "hosts": [ ],
