@@ -64,6 +64,7 @@ private:
 
     DuQFTitleBar *ui_titleBar;
     DuQFSpinBox *ui_gridSizeBox;
+    DuQFSpinBox *ui_curvatureBox;
     QToolButton *ui_snapButton;
     DuQFNodeScene *m_nodeScene;
     DuQFNodeView *ui_nodeView;

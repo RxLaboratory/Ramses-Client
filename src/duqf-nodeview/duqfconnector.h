@@ -3,9 +3,11 @@
 
 #include <QGraphicsObject>
 #include <QPainter>
-#include <QSettings>
 
-#include "duqf-app/app-style.h"
+struct CurveHandles {
+    QPointF from;
+    QPointF to;
+};
 
 class DuQFConnector : public QGraphicsObject
 {
@@ -48,16 +50,15 @@ private:
     QPointF m_to;
     qreal m_width;
 
-    // Coordinates of the handles
-    QPointF m_fromHandle;
-    QPointF m_toHandle;
-
     // Appearance
     int m_cornerRadius = 5;
     int m_padding = 5;
 
     // Children
     QGraphicsTextItem *m_titleItem;
+
+    // Utils
+    CurveHandles curveHandles(float q=1.0) const;
 };
 
 #endif // DUQFCONNECTOR_H

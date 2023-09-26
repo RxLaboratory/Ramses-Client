@@ -39,6 +39,7 @@ INCLUDEPATH += rameditwidgets \
     rammanagerwidgets
 
 SOURCES += \
+    duqf-app/dusettingsmanager.cpp \
     progressmanager.cpp \
     rameditwidgets/objectupdateblocker.cpp \
     rammanagerwidgets/dbmanagerwidget.cpp \
@@ -205,6 +206,7 @@ SOURCES += \
 
 HEADERS += \
     config.h \
+    duqf-app/dusettingsmanager.h \
     progressmanager.h \
     ramdatainterface/datastruct.h \
     rameditwidgets/objectupdateblocker.h \

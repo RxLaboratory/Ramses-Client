@@ -1,4 +1,6 @@
 #include "duqfconnector.h"
+#include "duqf-app/app-style.h"
+#include "duqf-app/dusettingsmanager.h"
 
 DuQFConnector::DuQFConnector(QString title, QGraphicsItem *parent):
     QGraphicsObject( parent )
@@ -67,18 +69,38 @@ QPainterPath DuQFConnector::shape() const
     QPainterPath path;
     QRectF rect = QRectF(m_from, m_to);
 
-    if (rect.height() > 20 && rect.width() > 20)
+    if (std::abs(rect.height()) > 10 && std::abs(rect.width()) > 10)
     {
+        CurveHandles handles = curveHandles(.5);
         QPolygonF polygon;
         polygon << m_from;
-        polygon << m_fromHandle;
+        polygon << handles.from;
         polygon << m_to;
-        polygon << m_toHandle;
+        polygon << handles.to;
+        polygon << m_from;
         path.addPolygon(polygon);
     }
     else
     {
-        path.addRect( rect.adjusted( -10,-10,10,10));
+        // Adjustments
+        int dx1, dy1, dx2, dy2;
+        if (rect.height() > 0) {
+            dy1 = -5;
+            dy2 = 5;
+        }
+        else {
+            dy1 = 5;
+            dy2 = -5;
+        }
+        if (rect.width() > 0) {
+            dx1 = -5;
+            dx2 = 5;
+        }
+        else {
+            dx1 = 5;
+            dx2 = -5;
+        }
+        path.addRect( rect.adjusted( dx1,dy1,dx2,dy2));
     }
 
     return path;
@@ -91,16 +113,11 @@ void DuQFConnector::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
 
     painter->save();
 
-    // Get handle coordinates
-    float handleWeight = QSettings().value("nodeViews/curvature", 0.5).toFloat();
-    m_fromHandle.setX((m_from.x()*(1.0-handleWeight) + m_to.x()*handleWeight));
-    m_fromHandle.setY(m_from.y());
-    m_toHandle.setX((m_from.x()*handleWeight + m_to.x()*(1.0-handleWeight)));
-    m_toHandle.setY(m_to.y());
+    CurveHandles handles = curveHandles();
 
     // Create path
     QPainterPath path( QPointF( m_from.x(), m_from.y() ) );
-    path.cubicTo( m_fromHandle, m_toHandle, m_to);
+    path.cubicTo( handles.from, handles.to, m_to);
 
     // And draw
     painter->setBrush(QBrush(Qt::transparent));
@@ -112,6 +129,14 @@ void DuQFConnector::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
     painter->setPen(pen);
 
     painter->drawPath(path);
+
+#ifdef QT_DEBUG
+    // Let's draw the selection box
+    QPainterPath selPath = shape();
+    pen.setWidth( m_width/3 );
+    painter->setPen(pen);
+    painter->drawPath(selPath);
+#endif
 
     // Title Background
     if (title() != "")
@@ -208,4 +233,17 @@ void DuQFConnector::updateTitlePos()
     m_titleItem->setPos(p);
     //m_titleItem->setPos(boundingRect().width() / 2 - m_titleItem->boundingRect().width() / 2 + pos().x(),
     //                    boundingRect().height() / 2 - m_titleItem->boundingRect().height() / 2 + pos().y());
+}
+
+CurveHandles DuQFConnector::curveHandles(float q) const
+{
+    // Get handle coordinates
+    float handleWeight = DuSettingsManager::instance()->nodesViewCurvature();
+    handleWeight *= q;
+    CurveHandles handles;
+    handles.from.setX((m_from.x()*(1.0-handleWeight) + m_to.x()*handleWeight));
+    handles.from.setY(m_from.y());
+    handles.to.setX((m_from.x()*handleWeight + m_to.x()*(1.0-handleWeight)));
+    handles.to.setY(m_to.y());
+    return handles;
 }

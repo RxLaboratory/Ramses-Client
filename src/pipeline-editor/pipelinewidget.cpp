@@ -1,6 +1,7 @@
 #include "pipelinewidget.h"
 
 #include "duqf-utils/guiutils.h"
+#include "duqf-app/dusettingsmanager.h"
 
 #include "progressmanager.h"
 #include "stepnode.h"
@@ -175,6 +176,17 @@ PipelineWidget::PipelineWidget(QWidget *parent) :
     ui_gridSizeBox->setPrefix("Grid size: ");
     ui_titleBar->insertRight(ui_gridSizeBox);
 
+    ui_curvatureBox = new DuQFSpinBox(this);
+    ui_curvatureBox->setMinimum(1);
+    ui_curvatureBox->setMaximum(100);
+    ui_curvatureBox->setMaximumWidth(100);
+    ui_curvatureBox->setValue(
+        DuSettingsManager::instance()->nodesViewCurvature()*100
+        );
+    ui_curvatureBox->setSuffix("%");
+    ui_curvatureBox->setPrefix("Curvature: ");
+    ui_titleBar->insertRight(ui_curvatureBox);
+
     ui_snapButton = new QToolButton();
     ui_snapButton->setCheckable(true);
     ui_snapButton->setIcon(QIcon(":/icons/snap"));
@@ -191,6 +203,7 @@ PipelineWidget::PipelineWidget(QWidget *parent) :
     connect(viewSelectedButton, SIGNAL(clicked()), ui_nodeView, SLOT(frameSelected()));
     connect(actionViewAll, SIGNAL(triggered()), ui_nodeView, SLOT(frameSelected()));
     connect(zoomBox, SIGNAL(valueChanged(int)), ui_nodeView, SLOT(setZoom(int)));
+    connect(ui_curvatureBox, &DuQFSpinBox::valueChanged, DuSettingsManager::instance(), &DuSettingsManager::setNodesViewCurvature);
     connect(ui_nodeView, SIGNAL(scaled(int)), zoomBox, SLOT(setValue(int)));
     connect(actionAddStep, SIGNAL(triggered()), this, SLOT(createStep()));
     connect(actionAddStep, SIGNAL(triggered()), ui_nodeView, SLOT(reinitTransform()));
