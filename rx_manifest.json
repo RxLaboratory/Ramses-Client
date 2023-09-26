@@ -1,0 +1,81 @@
+{
+    "title": "Ramses Application",
+    "hosts": [
+        {
+            "name": "",
+            "title": ""
+        }
+    ],
+    "os": [
+        {
+            "name": "mac",
+            "title": "macOS"
+        },
+        {
+            "name": "win",
+            "title": "Windows"
+        },
+        {
+            "name": "linux",
+            "title": "Linux"
+        }
+    ],
+    "assets": [
+        {
+            "nameRegEx": "ramses-client_[\\d.].zip",
+            "name": "Ramses Application for Windows",
+            "description": "[Read the doc](http://ramses.rxlab.guide/) for installation instructions.",
+            "hosts": [ ],
+            "os": [ {"name": "win", "title": "Windows"} ],
+            "urls": [
+                {"title": "Documentation", "url": "http://ramses.rxlab.guide/"}
+            ]
+        },
+        {
+            "nameRegEx": "ramses-client_[\\d.].dmg",
+            "name": "Ramses Application for macOS",
+            "description": "[Read the doc](http://ramses.rxlab.guide/) for installation instructions.",
+            "hosts": [ ],
+            "os": [ {"name": "mac", "title": "macOS"} ],
+            "urls": [
+                {"title": "Documentation", "url": "http://ramses.rxlab.guide/"}
+            ]
+        },
+        {
+            "nameRegEx": "ramses-client_[\\d.]-amd64.deb",
+            "name": "Ramses Application for Debian/Ubuntu Linux",
+            "description": "[Read the doc](http://ramses.rxlab.guide/) for installation instructions.",
+            "hosts": [ ],
+            "os": [ {"name": "deb", "title": "Debian/Ubuntu Linux"} ],
+            "urls": [
+                {"title": "Documentation", "url": "http://ramses.rxlab.guide/"}
+            ]
+        },
+        {
+            "nameRegEx": "ramses-client_[\\d.]-x86_64.AppImage",
+            "name": "Ramses Application for Linux (executable AppImage)",
+            "description": "[Read the doc](http://ramses.rxlab.guide/) for installation instructions.",
+            "hosts": [ ],
+            "os": [ {"name": "linux", "title": "Linux (all distributions)"} ],
+            "urls": [
+                {"title": "Documentation", "url": "http://ramses.rxlab.guide/"}
+            ]
+        },
+        {
+            "nameRegEx": "ramses-client_[\\d.].tar.gz",
+            "name": "Ramses Application for Linux",
+            "description": "[Read the doc](http://ramses.rxlab.guide/) for installation instructions.",
+            "hosts": [ ],
+            "os": [ {"name": "linux", "title": "Linux (all distributions)"} ],
+            "urls": [
+                {"title": "Documentation", "url": "http://ramses.rxlab.guide/"}
+            ]
+        }
+    ],
+    "userGuide": "https://ramses.rxlab.guide/",
+    "apiReference": "https://ramses.rxlab.guide/dev/",
+    "website": "https://rxlaboratory.org/tools/ramses/",
+    "description": "Ramses, the Rx Asset Management System, is a complete framework to help you, your team, your studio, track the production of your films and automate your workflow.",
+    "tutorials": "",
+    "books": ""
+}
