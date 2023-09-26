@@ -60,6 +60,7 @@ private:
     RamObject *object(QAction *a) const;
 
     RamObjectSortFilterProxyModel *m_objects;
+    QAbstractItemModel *m_sourceModel = nullptr;
     bool m_checkable = false;
 };
 

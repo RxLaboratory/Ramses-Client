@@ -25,15 +25,18 @@ RamObjectMenu::RamObjectMenu(bool checkable, QWidget *parent):
 
     connect(m_objects, SIGNAL(rowsInserted(QModelIndex,int,int)),this,SLOT(newObject(QModelIndex,int,int)));
     connect(m_objects, SIGNAL(rowsAboutToBeRemoved(QModelIndex,int,int)),this,SLOT(removeObject(QModelIndex,int,int)));
-    connect(m_objects, SIGNAL(dataChanged(QModelIndex,QModelIndex,QVector<int>)),this,SLOT(objectChanged(QModelIndex,QModelIndex,QVector<int>)));
+    // connect the source list instead, later
+    // connect(m_objects, SIGNAL(dataChanged(QModelIndex,QModelIndex,QVector<int>)),this,SLOT(objectChanged(QModelIndex,QModelIndex,QVector<int>)));
     connect(m_objects, SIGNAL(modelAboutToBeReset()),this,SLOT(clear()));
     connect(m_objects, SIGNAL(modelReset()),this,SLOT(reset()));
 }
 
 void RamObjectMenu::setObjectModel(QAbstractItemModel *list)
 {
+    if (m_sourceModel) disconnect(m_sourceModel, nullptr, this, nullptr);
     if (!list) m_objects->setSourceModel( RamAbstractObjectModel::emptyModel() );
     else {
+        m_sourceModel = list;
         m_objects->setSourceModel(list);
         m_objects->sort(0);
         // For some reason (?) it seems the list datachanged is not relayed through the proxymodel
