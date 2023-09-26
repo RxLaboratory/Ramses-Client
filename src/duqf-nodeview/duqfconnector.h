@@ -26,6 +26,10 @@ public:
     QString title() const;
     void setTitle(const QString &title);
 
+    void setFromColor(const QColor &newFromColor);
+
+    void setToColor(const QColor &newToColor);
+
 public slots:
     void setTo(const QPointF &to);
     void setFrom(const QPointF &from);
@@ -49,6 +53,9 @@ private:
     QPointF m_from;
     QPointF m_to;
     qreal m_width;
+
+    QColor m_fromColor;
+    QColor m_toColor;
 
     // Appearance
     int m_cornerRadius = 5;

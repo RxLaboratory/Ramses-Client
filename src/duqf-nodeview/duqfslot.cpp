@@ -95,6 +95,11 @@ void DuQFSlot::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
     update();
 }
 
+QColor DuQFSlot::color() const
+{
+    return m_color;
+}
+
 DuQFSlot::SlotType DuQFSlot::slotType() const
 {
     return m_slotType;

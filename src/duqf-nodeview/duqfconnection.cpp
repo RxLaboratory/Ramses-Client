@@ -114,6 +114,9 @@ void DuQFConnection::init(DuQFSlot *output, DuQFSlot *input, DuQFConnector *conn
     setInput(m_input);
     setOutput(m_output);
 
+    connector->setFromColor(output->color());
+    connector->setToColor(input->color());
+
     connect(connector, &DuQFConnector::removed, this, &DuQFConnection::remove);
 }
 

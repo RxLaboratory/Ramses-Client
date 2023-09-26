@@ -15,6 +15,9 @@ DuQFConnector::DuQFConnector(QString title, QGraphicsItem *parent):
     setFlags(ItemIsSelectable);
 
     m_titleItem->setPlainText(title);
+
+    m_toColor = DuUI::getColor("light-grey");
+    m_fromColor = DuUI::getColor("light-grey");
 }
 
 DuQFConnector::DuQFConnector(QPointF from, QString title)
@@ -113,19 +116,40 @@ void DuQFConnector::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
 
     painter->save();
 
-    CurveHandles handles = curveHandles();
+    QPainterPath path;
 
     // Create path
-    QPainterPath path( QPointF( m_from.x(), m_from.y() ) );
-    path.cubicTo( handles.from, handles.to, m_to);
+    if (DuSettingsManager::instance()->nodesViewCurvature() < 1) {
+        CurveHandles handles = curveHandles();
+        path = QPainterPath(( QPointF( m_from.x(), m_from.y() ) ));
+        path.cubicTo( handles.from, handles.to, m_to);
+    }
+    else {
+        QPolygonF poly;
+        poly.append(m_from);
+        poly.append(QPointF((m_from.x() + m_to.x()) / 2, m_from.y()));
+        poly.append(QPointF((m_from.x() + m_to.x()) / 2, m_to.y()));
+        poly.append(m_to);
+        path.addPolygon(poly);
+    }
+
 
     // And draw
     painter->setBrush(QBrush(Qt::transparent));
-    QPen pen;
-    if (isSelected()) pen.setColor( DuUI::getColor("light-grey") );
-    else pen.setColor( DuUI::getColor("less-light-grey") );
-    pen.setWidth( m_width );
-    pen.setCapStyle(Qt::RoundCap);
+
+    QLinearGradient gradient(m_from, m_to);
+
+    if (isSelected()) {
+        gradient.setColorAt(0.0, m_fromColor);
+        gradient.setColorAt(0.5, DuUI::getColor("light-grey"));
+        gradient.setColorAt(1.0, m_toColor);
+    }
+    else {
+        gradient.setColorAt(0.0, m_fromColor.darker());
+        gradient.setColorAt(0.5, DuUI::getColor("less-light-grey"));
+        gradient.setColorAt(1.0, m_toColor.darker());
+    }
+    QPen pen(gradient, m_width, Qt::SolidLine, Qt::RoundCap);
     painter->setPen(pen);
 
     painter->drawPath(path);
@@ -233,6 +257,16 @@ void DuQFConnector::updateTitlePos()
     m_titleItem->setPos(p);
     //m_titleItem->setPos(boundingRect().width() / 2 - m_titleItem->boundingRect().width() / 2 + pos().x(),
     //                    boundingRect().height() / 2 - m_titleItem->boundingRect().height() / 2 + pos().y());
+}
+
+void DuQFConnector::setToColor(const QColor &newToColor)
+{
+    m_toColor = newToColor;
+}
+
+void DuQFConnector::setFromColor(const QColor &newFromColor)
+{
+    m_fromColor = newFromColor;
 }
 
 CurveHandles DuQFConnector::curveHandles(float q) const

@@ -33,6 +33,8 @@ public:
     SlotType slotType() const;
     void setSlotType(const SlotType &slotType);
 
+    QColor color() const;
+
 public slots:
     void remove();
 
