@@ -32,6 +32,9 @@ DuQFConnector::DuQFConnector(QPointF from, QString title)
     setFlags(ItemIsSelectable);
 
     m_titleItem->setPlainText(title);
+
+    m_toColor = DuUI::getColor("light-grey");
+    m_fromColor = DuUI::getColor("light-grey");
 }
 
 QRectF DuQFConnector::boundingRect() const
