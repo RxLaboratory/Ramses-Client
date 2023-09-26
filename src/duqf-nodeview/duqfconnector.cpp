@@ -146,7 +146,7 @@ void DuQFConnector::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
     }
     else {
         gradient.setColorAt(0.0, m_fromColor.darker());
-        gradient.setColorAt(0.5, DuUI::getColor("less-light-grey"));
+        //gradient.setColorAt(0.5, DuUI::getColor("less-light-grey"));
         gradient.setColorAt(1.0, m_toColor.darker());
     }
     QPen pen(gradient, m_width, Qt::SolidLine, Qt::RoundCap);
