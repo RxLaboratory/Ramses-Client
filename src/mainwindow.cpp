@@ -2,6 +2,7 @@
 
 #include "assetgroupmanagerwidget.h"
 #include "assetmanagerwidget.h"
+#include "duqf-app/dusettingsmanager.h"
 #include "itemmanagerwidget.h"
 #include "pipefilemanagerwidget.h"
 #include "progressmanager.h"
@@ -28,14 +29,14 @@
 #include "daemon.h"
 #include "projectselectorwidget.h"
 #include "dbmanagerwidget.h"
-#include "duqf-widgets/duqftoolbarspacer.h"
+#include "duqf-widgets/dutoolbarspacer.h"
 #include "duqf-widgets/duqflogtoolbutton.h"
 #include "duqf-widgets/duqfupdatesettingswidget.h"
 #include "duqf-widgets/appearancesettingswidget.h"
 #include "duqf-app/app-version.h"
 #include "duqf-app/app-style.h"
 #include "duqf-app/app-utils.h"
-#include "duqf-widgets/duqftoolbarspacer.h"
+#include "duqf-widgets/dutoolbarspacer.h"
 
 MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     QMainWindow(parent)
@@ -664,13 +665,31 @@ void MainWindow::setPropertiesDockWidget(QWidget *w, QString title, QString icon
     ui_propertiesDockWidget->show();
 }
 
+void MainWindow::setMaximizedState(bool maximized)
+{
+    m_maximizeAction->setChecked(maximized);
+    m_maximized = maximized;
+}
+
 void MainWindow::hidePropertiesDock()
 {
     ui_propertiesDockWidget->hide();
 }
 
+void MainWindow::onQuit()
+{
+    QFontDatabase::removeAllApplicationFonts();
+    trayIcon->hide();
+}
+
 void MainWindow::duqf_initUi()
 {
+    // Set transparent, and draw the background in paintEvent() to have rounded corners
+    setAttribute(Qt::WA_TranslucentBackground, true);
+    setAttribute(Qt::WA_NoSystemBackground, true);
+    setStyleSheet("#centralWidget { background: none; }"
+                  "#mainToolBar { border-radius: 10px; margin: 5px 5px 5px 5px; }");
+
     // ===== SYSTRAY ======
     duqf_actionShowHide = new QAction("Hide " + QString(STR_INTERNALNAME), this);
     duqf_actionShowHide->setIcon(QIcon(":/icons/hide-dark"));
@@ -701,17 +720,29 @@ void MainWindow::duqf_initUi()
 
     // ===== TOOLBAR ======
 
+    mainToolBar->setWindowTitle(QString(STR_FILEDESCRIPTION));
+    QString focusColor = DuSettingsManager::instance()->uiFocusColor(DuSettingsManager::DarkerColor).name();
+    mainToolBar->setStyleSheet("#windowButton:hover,"
+                               "QToolButton:hover"
+                               "{ background-color:" + focusColor + "}");
+
     // remove right click on toolbar
     mainToolBar->setContextMenuPolicy(Qt::PreventContextMenu);
 
     //drag window
     duqf_toolBarClicked = false;
+
+#ifdef Q_OS_LINUX
     mainToolBar->installEventFilter(this);
+#endif
 
     // ==== TOOLBAR BUTTONS
-    mainToolBar->addWidget(new DuQFToolBarSpacer());
+    mainToolBar->addWidget(new DuToolBarSpacer());
     title = new QLabel(STR_FILEDESCRIPTION);
+    title->setAttribute(Qt::WA_TransparentForMouseEvents);
     mainToolBar->addWidget(title);
+
+    mainToolBar->addWidget(new DuToolBarSpacer());
 
     //hide
     QToolButton *hideButton = new QToolButton();
@@ -720,7 +751,42 @@ void MainWindow::duqf_initUi()
         hideButton->setIcon(QIcon(":/icons/hide"));
         hideButton->setObjectName("windowButton");
         mainToolBar->addWidget(hideButton);
+        hideButton->setFixedSize(24,24);
     }
+
+#ifndef Q_OS_LINUX
+
+    m_minimizeAction = new QAction(this);
+    m_minimizeAction->setIcon(QIcon(":/icons/minimize"));
+    mainToolBar->addAction(m_minimizeAction);
+    QWidget *minWidget = mainToolBar->widgetForAction(m_minimizeAction);
+    minWidget->setFixedSize(24,24);
+    minWidget->setObjectName("windowButton");
+    mainToolBar->layout()->setAlignment(minWidget, Qt::AlignTop);
+
+#ifndef Q_OS_MAC
+    m_maximizeAction = new QAction(this);
+    QIcon maximizeIcon;
+    maximizeIcon.addFile(":/icons/maximize", QSize(), QIcon::Normal, QIcon::Off);
+    maximizeIcon.addFile(":/icons/unmaximize", QSize(), QIcon::Normal, QIcon::On);
+    m_maximizeAction->setIcon(maximizeIcon);
+    m_maximizeAction->setCheckable(true);
+    mainToolBar->addAction(m_maximizeAction);
+    QWidget *maxWidget = mainToolBar->widgetForAction(m_maximizeAction);
+    maxWidget->setFixedSize(24,24);
+    maxWidget->setObjectName("windowButton");
+    mainToolBar->layout()->setAlignment(maxWidget, Qt::AlignTop);
+#endif // NOT MAC
+
+    m_closeAction = new QAction(this);
+    m_closeAction->setIcon(QIcon(":/icons/close-simple"));
+    mainToolBar->addAction(m_closeAction);
+    QWidget *closeWidget = mainToolBar->widgetForAction(m_closeAction);
+    closeWidget->setFixedSize(24,24);
+    closeWidget->setObjectName("windowButton");
+    mainToolBar->layout()->setAlignment(closeWidget, Qt::AlignTop);
+
+#endif // Not LINUX
 
     // ===== STATUSBAR ======
 
@@ -826,6 +892,15 @@ void MainWindow::duqf_initUi()
 
     DuApplication *app = qobject_cast<DuApplication*>(qApp);
     duqf_updateAvailable(app->updateInfo());
+
+#ifndef Q_OS_LINUX
+    connect(m_minimizeAction, &QAction::triggered, this, &MainWindow::minimizeTriggered);
+#ifndef Q_OS_MAC
+    connect(m_maximizeAction, &QAction::triggered, this, &MainWindow::maximizeTriggered);
+#endif // Not mac
+    connect(m_closeAction, &QAction::triggered, this, &MainWindow::close);
+    connect(qApp, &QCoreApplication::aboutToQuit, this, &MainWindow::onQuit);
+#endif // Not linux
 }
 
 void MainWindow::duqf_setStyle()
@@ -935,15 +1010,17 @@ void MainWindow::duqf_showHide()
 {
     if (this->isVisible())
     {
-        this->hide();
         duqf_actionShowHide->setIcon(QIcon(":/icons/show-dark"));
         duqf_actionShowHide->setText("Show " + QString(STR_INTERNALNAME));
+        emit hideTriggered();
+        this->hide();
     }
     else
     {
-        this->show();
         duqf_actionShowHide->setIcon(QIcon(":/icons/hide-dark"));
         duqf_actionShowHide->setText("Hide " + QString(STR_INTERNALNAME));
+        emit showTriggered();
+        this->show();
     }
 }
 
@@ -1369,6 +1446,34 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
     return QMainWindow::eventFilter(obj, event);
 }
 
+void MainWindow::paintEvent(QPaintEvent *e)
+{
+    QPainter painter(this);
+    painter.setBrush(palette().window());
+    QPen pen;
+    pen.setColor(palette().window().color());
+    pen.setWidth(2);
+    painter.setPen(pen);
+
+#ifndef Q_OS_LINUX
+    //painter.setBrush(QBrush(Qt::red));
+    if (!m_maximized) {
+        int margin = 0;
+        auto m = QMargins(margin, margin, margin, margin);
+        painter.drawRoundedRect(rect().marginsRemoved(m), 10, 10);
+    }
+    else {
+        painter.drawRect(rect());
+    }
+#else
+    painter.drawRect(rect());
+#endif
+
+    //painter.setRenderHint(QPainter::Antialiasing, false);
+
+    QMainWindow::paintEvent(e);
+}
+
 void MainWindow::closeEvent(QCloseEvent *event)
 {
     if (m_closing && !m_readyToClose)
@@ -1386,11 +1491,10 @@ void MainWindow::closeEvent(QCloseEvent *event)
         home();
 
         // Let's save the ui state
-        QSettings settings;
-        settings.beginGroup("ui");
-        settings.setValue("maximized", this->isMaximized());
-        settings.setValue("windowState", this->saveState());
-        settings.endGroup();
+        DuSettingsManager::instance()->saveUIWindowState(
+            this->saveGeometry(),
+            this->saveState()
+            );
 
         if (DBInterface::instance()->connectionStatus() == NetworkUtils::Online)
         {
@@ -1409,15 +1513,11 @@ void MainWindow::closeEvent(QCloseEvent *event)
             event->ignore();
         }
         else m_readyToClose = true;
-
     }
 
     if (m_readyToClose)
     {
-        QFontDatabase::removeAllApplicationFonts();
-        trayIcon->hide();
-
-        QMainWindow::closeEvent(event);
+        emit closeTriggered();
     }
 }
 

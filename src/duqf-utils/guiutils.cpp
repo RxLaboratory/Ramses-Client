@@ -2,7 +2,7 @@
 
 QMainWindow *GuiUtils::appMainWindow()
 {
-    foreach(QWidget *w, qApp->topLevelWidgets())
+    foreach(QWidget *w, qApp->allWidgets())
     {
         if (w->inherits("MainWindow"))
         {

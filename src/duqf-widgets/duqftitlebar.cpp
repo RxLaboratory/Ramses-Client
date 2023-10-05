@@ -109,7 +109,7 @@ void DuQFTitleBar::setupUi(bool mini)
     }
     else
     {
-        spacer = new DuQFToolBarSpacer(this);
+        spacer = new DuToolBarSpacer(this);
         leftAction = this->addWidget(spacer);
         rightAction = this->addWidget(reinitButton);
     }

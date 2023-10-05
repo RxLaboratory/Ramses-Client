@@ -4,8 +4,19 @@
 #include <QSettings>
 #include <QTcpSocket>
 
+#ifdef Q_OS_WIN
+#include "FramelessWindow/QWinWidget.h"
+#else
+#include "UI/mainwindow.h"
+#endif
+
+#ifdef __APPLE__
+#include "FramelessWindow/OSXHideTitleBar.h"
+#endif
+
 #include "duqf-app/app-utils.h"
 #include "duqf-widgets/duqfupdatedialog.h"
+#include "duqf-app/dusettingsmanager.h"
 
 int main(int argc, char *argv[])
 {
@@ -83,15 +94,32 @@ int main(int argc, char *argv[])
 
     // build and show UI
     s->newMessage("Building UI");
-    MainWindow *w = new MainWindow( a.arguments() );
-#ifndef Q_OS_LINUX
-    //FrameLessWindow f(w);
+
+#ifdef _WIN32
+
+    //On Windows, the widget needs to be encapsulated in a native window for frameless rendering
+    //In this case, QWinWidget creates the mainwindow, and adds it to a layout
+    QWinWidget *w = new QWinWidget(a.arguments());
+
+    // Restore Geometry and state
+    w->restoreGeometry( DuSettingsManager::instance()->uiWindowGeometry() );
+    w->getMainWindow()->restoreState(DuSettingsManager::instance()->uiWindowState());
+
+#else
+    //On OS X / Linux, the widget can handle everything itself so just create Widget as normal
+    MainWindow *w = new MainWindow( args );
+
+    // Restore Geometry and state
+    w->restoreGeometry( DuSettingsManager::instance()->uiWindowGeometry() );
+    w->restoreState(DuSettingsManager::instance()->uiWindowState());
+    // But hide the docks for a cleaner look
+    w->hideAllDocks();
 #endif
+
     w->show();
 
-    // hide splash when finished
-    s->newMessage("Ready!");
-    s->finish(w);//*/
+    //hide splash when finished
+    s->finish(w);
 
     return a.exec();
 }

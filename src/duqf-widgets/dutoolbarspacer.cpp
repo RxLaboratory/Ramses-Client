@@ -1,12 +1,13 @@
-#include "duqftoolbarspacer.h"
+#include "dutoolbarspacer.h"
 
-DuQFToolBarSpacer::DuQFToolBarSpacer(QWidget *parent) :
+DuToolBarSpacer::DuToolBarSpacer(QWidget *parent) :
     QWidget(parent)
 {
     setupUi();
+    this->setAttribute(Qt::WA_TransparentForMouseEvents);
 }
 
-void DuQFToolBarSpacer::setupUi()
+void DuToolBarSpacer::setupUi()
 {
     this->setObjectName("ToolBarSpacer");
 

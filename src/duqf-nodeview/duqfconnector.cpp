@@ -122,7 +122,7 @@ void DuQFConnector::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
     QPainterPath path;
 
     // Create path
-    if (DuSettingsManager::instance()->nodesViewCurvature() < 1) {
+    if (DuSettingsManager::instance()->nvCurvature() < 1) {
         CurveHandles handles = curveHandles();
         path = QPainterPath(( QPointF( m_from.x(), m_from.y() ) ));
         path.cubicTo( handles.from, handles.to, m_to);
@@ -275,7 +275,7 @@ void DuQFConnector::setFromColor(const QColor &newFromColor)
 CurveHandles DuQFConnector::curveHandles(float q) const
 {
     // Get handle coordinates
-    float handleWeight = DuSettingsManager::instance()->nodesViewCurvature();
+    float handleWeight = DuSettingsManager::instance()->nvCurvature();
     handleWeight *= q;
     CurveHandles handles;
     handles.from.setX((m_from.x()*(1.0-handleWeight) + m_to.x()*handleWeight));

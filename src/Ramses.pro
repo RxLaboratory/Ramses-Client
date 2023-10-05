@@ -39,7 +39,9 @@ INCLUDEPATH += rameditwidgets \
     rammanagerwidgets
 
 SOURCES += \
+    FramelessWindow/widget.cpp \
     duqf-app/dusettingsmanager.cpp \
+    duqf-widgets/dutoolbarspacer.cpp \
     progressmanager.cpp \
     rameditwidgets/objectupdateblocker.cpp \
     rammanagerwidgets/dbmanagerwidget.cpp \
@@ -86,7 +88,6 @@ SOURCES += \
     duqf-widgets/duqfsslcheckbox.cpp \
     duqf-widgets/duqftextedit.cpp \
     duqf-widgets/duqftitlebar.cpp \
-    duqf-widgets/duqftoolbarspacer.cpp \
     duqf-widgets/duqfupdatedialog.cpp \
     duqf-widgets/duqfupdatesettingswidget.cpp \
     ramdatainterface/datacrypto.cpp \
@@ -205,8 +206,10 @@ SOURCES += \
     pipeline-editor/stepnode.cpp
 
 HEADERS += \
+    FramelessWindow/widget.h \
     config.h \
     duqf-app/dusettingsmanager.h \
+    duqf-widgets/dutoolbarspacer.h \
     progressmanager.h \
     ramdatainterface/datastruct.h \
     rameditwidgets/objectupdateblocker.h \
@@ -257,7 +260,6 @@ HEADERS += \
     duqf-widgets/duqfsslcheckbox.h \
     duqf-widgets/duqftextedit.h \
     duqf-widgets/duqftitlebar.h \
-    duqf-widgets/duqftoolbarspacer.h \
     duqf-widgets/duqfupdatedialog.h \
     duqf-widgets/duqfupdatesettingswidget.h \
     progressbar.h \
@@ -391,6 +393,22 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 # OS Specific configurations
 win* {
+
+    # ==== FRAMELESS WINDOW ====
+    # Only include / compile these files on Windows
+    SOURCES += \
+        FramelessWindow/qwinwidget.cpp \
+        FramelessWindow/winnativewindow.cpp
+
+    HEADERS += \
+        FramelessWindow/qwinwidget.h \
+        FramelessWindow/winnativewindow.h
+
+    LIBS += -L"C:\Program Files\Microsoft SDKs\Windows\v7.1\Lib" \
+        -ldwmapi \
+        -lgdi32
+    # ========
+
     # Add version and other metadata
     DISTFILES += app.rc
     RC_FILE = app.rc
@@ -398,6 +416,7 @@ win* {
     # Enable console output
     # CONFIG += console
     msvc: LIBS += -luser32
+
 } else:unix {
     # Fix issue with c++ version used to compile Qt in some distros (Ubuntu) with Qt <= 5.12.
     # Need to check the version of c++ used with distros providing Qt > 5.12
@@ -409,6 +428,14 @@ win* {
     QMAKE_CXXFLAGS += -Wdeprecated \
         -Wdeprecated-copy
 } else:macx {
+
+    # ==== FRAMELESS WINDOW ====
+    # Only include / compile these files on OS X
+    OBJECTIVE_SOURCES += \
+        FramelessWindow/OSXHideTitleBar.mm
+    HEADERS  +=\
+        FramelessWindow/OSXHideTitleBar.h
+
     # icon
     ICON = resources/icons/ramses.icns
     CONFIG += sdk_no_version_check

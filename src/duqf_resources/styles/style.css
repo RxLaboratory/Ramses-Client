@@ -4,7 +4,7 @@
         outline: none;
 }
 
-MainWindow, QDialog {
+#MainWindow, QDialog {
     background-color: @color-dark-grey;
 }
 

@@ -26,7 +26,7 @@ DuQFNodeView::DuQFNodeView(QWidget *parent): QGraphicsView(parent)
     setScene(m_scene);
 
     connect(m_grid, SIGNAL(gridSizeChanged()), this, SLOT(update()));
-    connect(DuSettingsManager::instance(), SIGNAL(nodesViewCurvatureChanged(float)), this, SLOT(update()));
+    connect(DuSettingsManager::instance(), SIGNAL(nvCurvatureChanged(float)), this, SLOT(update()));
 }
 
 DuQFGrid *DuQFNodeView::grid() const

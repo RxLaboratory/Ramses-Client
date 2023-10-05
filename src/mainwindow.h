@@ -30,6 +30,11 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
     Q_OBJECT
 
 public:
+
+#ifdef _WIN32
+    friend class QWinWidget;
+#endif
+
     enum Page {
         Home = 0,
         Settings = 1,
@@ -46,8 +51,18 @@ public:
 
     void setPropertiesDockWidget(QWidget *w, QString title = "Properties", QString icon = ":/icons/asset");
 
+    // Used by frameless window
+    void setMaximizedState(bool maximized);
+
 public slots:
     void hidePropertiesDock();
+
+signals:
+    void minimizeTriggered();
+    void maximizeTriggered(bool);
+    void closeTriggered();
+    void hideTriggered();
+    void showTriggered();
 
 private:
     void connectEvents();
@@ -84,6 +99,13 @@ private:
     QLabel *title;
     QMenu *helpMenu;
     ProgressPage *progressPage;
+    bool m_maximized;
+
+    // ====== Actions ======
+
+    QAction *m_minimizeAction;
+    QAction *m_maximizeAction;
+    QAction *m_closeAction;
 
     // Docks
     QDockWidget *ui_statsDockWidget;
@@ -205,11 +227,14 @@ private slots:
     void revealVersionsFolder();
     void revealTrashFolder();
 
+    void onQuit();
+
 protected:
     void closeEvent(QCloseEvent *event) override;
     void keyPressEvent(QKeyEvent *key) override;
     void keyReleaseEvent(QKeyEvent *key) override;
     bool eventFilter(QObject *obj, QEvent *event) override;
+    void paintEvent(QPaintEvent *e) override;
 
 private:
     bool m_readyToClose = false;

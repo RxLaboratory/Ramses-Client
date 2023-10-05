@@ -181,7 +181,7 @@ PipelineWidget::PipelineWidget(QWidget *parent) :
     ui_curvatureBox->setMaximum(100);
     ui_curvatureBox->setMaximumWidth(100);
     ui_curvatureBox->setValue(
-        DuSettingsManager::instance()->nodesViewCurvature()*100
+        DuSettingsManager::instance()->nvCurvature()*100
         );
     ui_curvatureBox->setSuffix("%");
     ui_curvatureBox->setPrefix("Curvature: ");
@@ -203,7 +203,7 @@ PipelineWidget::PipelineWidget(QWidget *parent) :
     connect(viewSelectedButton, SIGNAL(clicked()), ui_nodeView, SLOT(frameSelected()));
     connect(actionViewAll, SIGNAL(triggered()), ui_nodeView, SLOT(frameSelected()));
     connect(zoomBox, SIGNAL(valueChanged(int)), ui_nodeView, SLOT(setZoom(int)));
-    connect(ui_curvatureBox, &DuQFSpinBox::valueChanged, DuSettingsManager::instance(), &DuSettingsManager::setNodesViewCurvature);
+    connect(ui_curvatureBox, &DuQFSpinBox::valueChanged, DuSettingsManager::instance(), &DuSettingsManager::setNVCurvature);
     connect(ui_nodeView, SIGNAL(scaled(int)), zoomBox, SLOT(setValue(int)));
     connect(actionAddStep, SIGNAL(triggered()), this, SLOT(createStep()));
     connect(actionAddStep, SIGNAL(triggered()), ui_nodeView, SLOT(reinitTransform()));

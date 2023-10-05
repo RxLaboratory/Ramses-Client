@@ -14,7 +14,7 @@
 #include <QtWidgets/QWidget>
 #include <QtDebug>
 
-#include "duqftoolbarspacer.h"
+#include "dutoolbarspacer.h"
 
 class DuQFTitleBar : public QToolBar
 {
@@ -39,8 +39,8 @@ private slots:
 
 private:
     void setupUi(bool mini);
-
-    DuQFToolBarSpacer *spacer;
+    
+    DuToolBarSpacer *spacer;
     QLabel *titleLabel;
     QToolButton *reinitButton;
     QToolButton *closeButton;

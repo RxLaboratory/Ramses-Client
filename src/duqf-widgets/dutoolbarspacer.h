@@ -5,10 +5,10 @@
 #include <QHBoxLayout>
 #include <QSpacerItem>
 
-class DuQFToolBarSpacer : public QWidget
+class DuToolBarSpacer : public QWidget
 {
 public:
-    explicit DuQFToolBarSpacer(QWidget *parent = nullptr);
+    explicit DuToolBarSpacer(QWidget *parent = nullptr);
 
 private:
     void setupUi();
