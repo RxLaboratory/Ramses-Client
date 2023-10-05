@@ -687,8 +687,6 @@ void MainWindow::duqf_initUi()
     // Set transparent, and draw the background in paintEvent() to have rounded corners
     setAttribute(Qt::WA_TranslucentBackground, true);
     setAttribute(Qt::WA_NoSystemBackground, true);
-    setStyleSheet("#centralWidget { background: none; }"
-                  "#mainToolBar { border-radius: 10px; margin: 5px 5px 5px 5px; }");
 
     // ===== SYSTRAY ======
     duqf_actionShowHide = new QAction("Hide " + QString(STR_INTERNALNAME), this);
@@ -723,7 +721,8 @@ void MainWindow::duqf_initUi()
 
     mainToolBar->setWindowTitle(QString(STR_FILEDESCRIPTION));
     QString focusColor = DuSettingsManager::instance()->uiFocusColor(DuSettingsManager::DarkerColor).name();
-    mainToolBar->setStyleSheet("#windowButton:hover,"
+    mainToolBar->setStyleSheet("#mainToolBar { padding: 5px; }"
+                               "#windowButton:hover,"
                                "QToolButton:hover"
                                "{ background-color:" + focusColor + "}");
 

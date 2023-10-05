@@ -718,25 +718,6 @@ QToolBar #menuButton:hover {
     background-color: @color-very-dark-grey;
 }
 
-/* MAIN TOOLBAR */
-
-#mainToolBar {
-        background: @color-medium-grey;
-}
-
-#mainToolBar QWidget {
-    margin-right: @margin;
-}
-
-#mainToolBar QLabel {
-    color: @color-light-grey;
-}
-
-#windowButton {
-    width: @small-button-size;
-    height: @small-button-size;
-}
-
 /* STATUSBAR */
 
 QStatusBar {
@@ -864,3 +845,25 @@ DuQFDockTitle #windowButton {
 #duqf_block {
     background-color: @color-very-dark-grey;
 }
+
+/* ====================================== */
+/* ============ UNIQUE WIDGETS ========== */
+/* ====================================== */
+
+#mainToolBar {
+    background: @color-medium-grey;
+    border-radius: 10px;
+    margin: 5px 5px 5px 5px;
+    padding: 5px;
+}
+
+#mainToolBar > * {
+    margin-top: 5px;
+    margin-left: 5px;
+}
+
+#mainToolBar QLabel {
+    color: @color-light-grey;
+}
+
+
