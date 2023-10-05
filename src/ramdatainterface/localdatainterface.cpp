@@ -578,6 +578,10 @@ SyncData LocalDataInterface::getSync(bool fullSync)
 
     // List all tables
     QStringList tNames = tableNames();
+
+    // Ignore History for now to improve performance (as it is not used in Ramses yet)
+    tNames.removeAll("RamStatusHistory");
+
     // Get last Sync
     QString lastSync = "1818-05-05 00:00:00";
     if (!fullSync)
