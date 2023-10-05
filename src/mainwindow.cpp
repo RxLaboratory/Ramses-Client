@@ -698,6 +698,7 @@ void MainWindow::duqf_initUi()
     {
         DuMenu *trayMenu = new DuMenu(QString(STR_INTERNALNAME),this);
         QSettings settings;
+
 #ifdef Q_OS_LINUX
         QString trayIconType = settings.value("appearance/trayIconType", "light").toString();
 #else
@@ -732,7 +733,7 @@ void MainWindow::duqf_initUi()
     //drag window
     duqf_toolBarClicked = false;
 
-#ifdef Q_OS_LINUX
+#ifndef Q_OS_WIN
     mainToolBar->installEventFilter(this);
 #endif
 
@@ -764,7 +765,6 @@ void MainWindow::duqf_initUi()
     minWidget->setObjectName("windowButton");
     mainToolBar->layout()->setAlignment(minWidget, Qt::AlignTop);
 
-#ifndef Q_OS_MAC
     m_maximizeAction = new QAction(this);
     QIcon maximizeIcon;
     maximizeIcon.addFile(":/icons/maximize", QSize(), QIcon::Normal, QIcon::Off);
@@ -776,7 +776,6 @@ void MainWindow::duqf_initUi()
     maxWidget->setFixedSize(24,24);
     maxWidget->setObjectName("windowButton");
     mainToolBar->layout()->setAlignment(maxWidget, Qt::AlignTop);
-#endif // NOT MAC
 
     m_closeAction = new QAction(this);
     m_closeAction->setIcon(QIcon(":/icons/close-simple"));
@@ -786,7 +785,7 @@ void MainWindow::duqf_initUi()
     closeWidget->setObjectName("windowButton");
     mainToolBar->layout()->setAlignment(closeWidget, Qt::AlignTop);
 
-#endif // Not LINUX
+#endif // Not linux
 
     // ===== STATUSBAR ======
 
@@ -893,14 +892,19 @@ void MainWindow::duqf_initUi()
     DuApplication *app = qobject_cast<DuApplication*>(qApp);
     duqf_updateAvailable(app->updateInfo());
 
-#ifndef Q_OS_LINUX
+#ifdef Q_OS_WIN
     connect(m_minimizeAction, &QAction::triggered, this, &MainWindow::minimizeTriggered);
-#ifndef Q_OS_MAC
     connect(m_maximizeAction, &QAction::triggered, this, &MainWindow::maximizeTriggered);
-#endif // Not mac
     connect(m_closeAction, &QAction::triggered, this, &MainWindow::close);
+#endif
+
+#ifdef Q_OS_MAC
+    connect(m_minimizeAction, &QAction::triggered, this, &QMainWindow::showMinimized);
+    connect(m_maximizeAction, &QAction::triggered, this, &MainWindow::maximize);
+    connect(m_closeAction, &QAction::triggered, this, &MainWindow::close);
+#endif
+
     connect(qApp, &QCoreApplication::aboutToQuit, this, &MainWindow::onQuit);
-#endif // Not linux
 }
 
 void MainWindow::duqf_setStyle()
@@ -1061,6 +1065,12 @@ void MainWindow::duqf_updateAvailable(QJsonObject updateInfo)
                                              ));
         }
     }
+}
+
+void MainWindow::maximize(bool m)
+{
+    if (m) showMaximized();
+    else showNormal();
 }
 
 void MainWindow::log(DuQFLog m)

@@ -7,7 +7,7 @@
 #ifdef Q_OS_WIN
 #include "FramelessWindow/QWinWidget.h"
 #else
-#include "UI/mainwindow.h"
+#include "mainwindow.h"
 #endif
 
 #ifdef __APPLE__
@@ -20,6 +20,13 @@
 
 int main(int argc, char *argv[])
 {
+    //This has the app draw at HiDPI scaling on HiDPI displays, usually two pixels for every one logical pixel
+    QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+
+    //This has QPixmap images use the @2x images when available
+    //See this bug for more details on how to get this right: https://bugreports.qt.io/browse/QTBUG-44486#comment-327410
+    QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
+
     DuApplication a(argc, argv);
 
     // process CLI arguments
@@ -107,13 +114,12 @@ int main(int argc, char *argv[])
 
 #else
     //On OS X / Linux, the widget can handle everything itself so just create Widget as normal
-    MainWindow *w = new MainWindow( args );
+    MainWindow *w = new MainWindow( a.arguments() );
 
     // Restore Geometry and state
     w->restoreGeometry( DuSettingsManager::instance()->uiWindowGeometry() );
     w->restoreState(DuSettingsManager::instance()->uiWindowState());
-    // But hide the docks for a cleaner look
-    w->hideAllDocks();
+
 #endif
 
     w->show();

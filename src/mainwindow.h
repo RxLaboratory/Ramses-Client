@@ -193,6 +193,7 @@ private slots:
     void duqf_showHide();
     void duqf_askBeforeClose();
     void duqf_updateAvailable(QJsonObject updateInfo);
+    void maximize(bool m);
 
     void log(DuQFLog m);
 
