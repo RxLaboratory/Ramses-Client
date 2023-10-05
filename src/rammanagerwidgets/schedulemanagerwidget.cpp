@@ -504,7 +504,7 @@ void ScheduleManagerWidget::setupUi()
 
     // Title bar
 
-    QMenu *viewMenu = new QMenu(this);
+    DuMenu *viewMenu = new DuMenu(this);
 
     ui_actionShowDetails = new QAction("Show details", this);
     ui_actionShowDetails->setCheckable(true);
@@ -536,7 +536,7 @@ void ScheduleManagerWidget::setupUi()
 
     ui_titleBar->insertLeft( ui_userButton );
 
-    QMenu *dayMenu = new QMenu(this);
+    DuMenu *dayMenu = new DuMenu(this);
 
     ui_monday    = new QAction("Monday", this);
     ui_monday->setCheckable(true);
@@ -578,7 +578,7 @@ void ScheduleManagerWidget::setupUi()
 
     ui_titleBar->insertLeft( dayButton );
 
-    QMenu *stepMenu = new QMenu(this);
+    DuMenu *stepMenu = new DuMenu(this);
 
     ui_commentAction = new QAction(QIcon(":/icons/comment"), "Comment...", this);
     stepMenu->addAction(ui_commentAction);
@@ -671,7 +671,7 @@ void ScheduleManagerWidget::setupUi()
     ui_titleBar->insertRight(ui_endDateEdit);
 
     // Context menu
-    ui_contextMenu = new QMenu(this);
+    ui_contextMenu = new DuMenu(this);
     ui_contextMenu->addAction(ui_commentAction);
 
     ui_contextMenu->addSeparator();
@@ -695,7 +695,7 @@ void ScheduleManagerWidget::setupUi()
     ui_contextMenu->addAction(ui_actionCopyUuid);
 
     // Comment context menu
-    ui_commentContextMenu = new QMenu(this);
+    ui_commentContextMenu = new DuMenu(this);
     ui_commentContextMenu->addAction(ui_commentAction);
 
     ui_colorAction = new QAction(QIcon(":/icons/color"), "Color...", this);

@@ -62,7 +62,7 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     qDebug() << "> Setting up menus";
 
     // Setup toolbar menus
-    QMenu *pipelineMenu = new QMenu(this);
+    DuMenu *pipelineMenu = new DuMenu(this);
 
     ui_projectAction = new QAction(tr("Project settings"), this);
     ui_projectAction->setIcon(QIcon(":/icons/project"));
@@ -88,7 +88,7 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     ui_pipelineButton->setPopupMode(QToolButton::MenuButtonPopup);
     ui_pipelineButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
 
-    QMenu *assetsMenu = new QMenu(this);
+    DuMenu *assetsMenu = new DuMenu(this);
 
     ui_assetGroupAction = new QAction(tr("Asset groups"), this);
     ui_assetGroupAction->setIcon(QIcon(":/icons/asset-group"));
@@ -110,7 +110,7 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     ui_assetsButton->setPopupMode(QToolButton::MenuButtonPopup);
     ui_assetsButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
 
-    QMenu *shotsMenu = new QMenu(this);
+    DuMenu *shotsMenu = new DuMenu(this);
 
     ui_sequenceAction = new QAction(tr("Sequences"), this);
     ui_sequenceAction->setIcon(QIcon(":/icons/sequence"));
@@ -133,7 +133,7 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     ui_shotsButton->setPopupMode(QToolButton::MenuButtonPopup);
     ui_shotsButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
 
-    QMenu *scheduleMenu = new QMenu(this);
+    DuMenu *scheduleMenu = new DuMenu(this);
 
     scheduleMenu->addAction(ui_actionSchedule);
     scheduleMenu->addSeparator();
@@ -147,7 +147,7 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     ui_scheduleButton->setPopupMode(QToolButton::MenuButtonPopup);
     ui_scheduleButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
 
-    QMenu *filesMenu = new QMenu(this);
+    DuMenu *filesMenu = new DuMenu(this);
 
     ui_fileAdminAction = new QAction(tr("Admin"), this);
     ui_fileAdminAction->setIcon(QIcon(":/icons/settings-w"));
@@ -211,7 +211,7 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
 
     mainStatusBar->addPermanentWidget(new ProgressBar(this));
 
-    ui_refreshMenu = new QMenu();
+    ui_refreshMenu = new DuMenu();
     ui_refreshMenu->addAction(actionSync);
     ui_refreshMenu->addAction(actionFullSync);
 
@@ -234,7 +234,7 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
 
     mainStatusBar->addPermanentWidget(new DuQFLogToolButton(this));
 
-    ui_databaseMenu = new QMenu();
+    ui_databaseMenu = new DuMenu();
     ui_databaseMenu->addAction(actionSetOffline);
     ui_databaseMenu->addAction(actionSetOnline);
     ui_databaseMenu->addAction(actionDatabaseSettings);
@@ -250,7 +250,7 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
     mainStatusBar->addPermanentWidget(ui_networkButton);
     ui_networkButton->setVisible(false);
 
-    ui_userMenu = new QMenu();
+    ui_userMenu = new DuMenu();
     ui_userMenu->addAction(actionLogIn);
     ui_userMenu->addAction(actionUserFolder);
     actionUserFolder->setVisible(false);
@@ -696,7 +696,7 @@ void MainWindow::duqf_initUi()
     bool useSysTray = QSystemTrayIcon::isSystemTrayAvailable() && USE_SYSTRAY;
     if (useSysTray)
     {
-        QMenu *trayMenu = new QMenu(QString(STR_INTERNALNAME),this);
+        DuMenu *trayMenu = new DuMenu(QString(STR_INTERNALNAME),this);
         QSettings settings;
 #ifdef Q_OS_LINUX
         QString trayIconType = settings.value("appearance/trayIconType", "light").toString();
@@ -801,7 +801,7 @@ void MainWindow::duqf_initUi()
     helpButton->setIcon(QIcon(":/icons/help"));
     helpButton->setToolTip("Get Help");
     helpButton->setPopupMode( QToolButton::InstantPopup );
-    helpMenu = new QMenu(this);
+    helpMenu = new DuMenu(this);
 
     helpButton->setMenu(helpMenu);
     mainStatusBar->addPermanentWidget(helpButton);

@@ -55,9 +55,9 @@ void DuQFLoggingTextEdit::log(DuQFLog m)
     //(we don't want to force scrolling to bottom if user is looking at a
     //higher position)
     if (atBottom) {
-
-        QScrollBar* bar =  this->verticalScrollBar();
-        bar->setValue(bar->maximum());
+        this->verticalScrollBar()->setValue(
+            this->verticalScrollBar()->maximum()
+            );
     }
 }
 

@@ -635,7 +635,7 @@ void ItemManagerWidget::setupUi()
     ui_titleBar->insertLeft(ui_searchEdit);
 
     // View Menu
-    QMenu *viewMenu = new QMenu(this);
+    DuMenu *viewMenu = new DuMenu(this);
 
     /*ui_actionTimeTracking = new QAction("Show time tracking", this);
     ui_actionTimeTracking->setCheckable(true);
@@ -662,7 +662,7 @@ void ItemManagerWidget::setupUi()
     ui_titleBar->insertLeft(viewButton);
 
     // Sort Menu
-    QMenu *sortMenu = new QMenu(this);
+    DuMenu *sortMenu = new DuMenu(this);
 
     ui_actionSortDefault = new QAction("Default", this);
     ui_actionSortDefault->setCheckable(true);
@@ -704,7 +704,7 @@ void ItemManagerWidget::setupUi()
     ui_titleBar->insertLeft(sortButton);
 
     // Item Menu
-    ui_itemMenu = new QMenu(this);
+    ui_itemMenu = new DuMenu(this);
 
     setupItemMenu();
 
@@ -767,7 +767,7 @@ void ItemManagerWidget::setupUi()
     ui_titleBar->insertLeft(ui_stateButton);
 
     // Status menu
-    QMenu *statusMenu = new QMenu(this);
+    DuMenu *statusMenu = new DuMenu(this);
 
     ui_copyComment = new QAction("Copy comment", this);
     ui_copyComment->setShortcut(QKeySequence("Ctrl+C"));
@@ -797,7 +797,7 @@ void ItemManagerWidget::setupUi()
     ui_changeStateMenu->setObjectModel(Ramses::instance()->states());
     statusMenu->addMenu(ui_changeStateMenu);
 
-    ui_changeDifficultyMenu = new QMenu("Change difficulty", this);
+    ui_changeDifficultyMenu = new DuMenu("Change difficulty", this);
     ui_veryEasy = new QAction("Very easy", this);
     ui_easy = new QAction("Easy", this);
     ui_medium = new QAction("Medium", this);
@@ -810,7 +810,7 @@ void ItemManagerWidget::setupUi()
     ui_changeDifficultyMenu->addAction(ui_veryHard);
     statusMenu->addMenu(ui_changeDifficultyMenu);
 
-    QMenu *completionMenu = new QMenu("Set completion", this);
+    DuMenu *completionMenu = new DuMenu("Set completion", this);
     ui_completion0   = new QAction("0%",this);
     ui_completion10  = new QAction("10%",this);
     ui_completion25  = new QAction("25%",this);
@@ -863,7 +863,7 @@ void ItemManagerWidget::setupUi()
 
     ui_table->filteredModel()->useFilters(true);
 
-    ui_contextMenu = new QMenu(this);
+    ui_contextMenu = new DuMenu(this);
 
     ui_contextMenu->addAction(ui_copyComment);
     ui_contextMenu->addAction(ui_cutComment);
@@ -883,7 +883,7 @@ void ItemManagerWidget::setupUi()
     ui_changeStateContextMenu->setObjectModel(Ramses::instance()->states());
     ui_contextMenu->addMenu(ui_changeStateContextMenu);
 
-    QMenu *changeDifficultyContextMenu = new QMenu("Change difficulty", this);
+    DuMenu *changeDifficultyContextMenu = new DuMenu("Change difficulty", this);
     changeDifficultyContextMenu->addAction(ui_veryEasy);
     changeDifficultyContextMenu->addAction(ui_easy);
     changeDifficultyContextMenu->addAction(ui_medium);
@@ -891,7 +891,7 @@ void ItemManagerWidget::setupUi()
     changeDifficultyContextMenu->addAction(ui_veryHard);
     ui_contextMenu->addMenu(changeDifficultyContextMenu);
 
-    QMenu *completionContextMenu = new QMenu("Set completion", this);
+    DuMenu *completionContextMenu = new DuMenu("Set completion", this);
     completionContextMenu->addAction(ui_completion0  );
     completionContextMenu->addAction(ui_completion10 );
     completionContextMenu->addAction(ui_completion25 );

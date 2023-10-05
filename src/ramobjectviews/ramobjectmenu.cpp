@@ -3,7 +3,7 @@
 #include "ramabstractobjectmodel.h"
 
 RamObjectMenu::RamObjectMenu(bool checkable, QWidget *parent):
-    QMenu(parent)
+    DuMenu(parent)
 {
     m_objects = new RamObjectSortFilterProxyModel("", this);
     setSortMode(RamObject::Order);

@@ -289,7 +289,7 @@ void RamObjectView::setupUi()
     this->setItemDelegate( m_delegate );
 
     // Context menu
-    ui_contextMenu = new QMenu(this);
+    ui_contextMenu = new DuMenu(this);
 
     ui_actionCopyFileName = new QAction(tr("Copy file name"));
     ui_actionCopyFileName->setIcon(QIcon(":/icons/filename"));

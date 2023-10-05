@@ -17,7 +17,7 @@ ShotManagerWidget::ShotManagerWidget(QWidget *parent):
     ui_listWidget->setSortable(true);
 
     // Batch create
-    QMenu *createMenu = new QMenu(this);
+    DuMenu *createMenu = new DuMenu(this);
 
     QAction *createAction = new QAction("Create new shot...");
     createMenu->addAction(createAction);

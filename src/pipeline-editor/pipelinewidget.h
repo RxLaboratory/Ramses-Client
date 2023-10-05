@@ -2,11 +2,11 @@
 #define PIPELINEWIDGET_H
 
 #include <QCheckBox>
-#include <QMenu>
 #include <QSettings>
 
 #include "ui_pipelinewidget.h"
 
+#include "duqf-widgets/dumenu.h"
 #include "ramproject.h"
 #include "ramuser.h"
 #include "duqf-nodeview/duqfnodeview.h"
@@ -68,7 +68,7 @@ private:
     QToolButton *ui_snapButton;
     DuQFNodeScene *m_nodeScene;
     DuQFNodeView *ui_nodeView;
-    QMenu *ui_stepMenu;
+    DuMenu *ui_stepMenu;
     QAction *ui_stepMenuSeparator;
 
     QMap<QString, QList<QMetaObject::Connection>> m_pipeObjectConnections;

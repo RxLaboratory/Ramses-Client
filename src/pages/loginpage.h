@@ -1,7 +1,6 @@
 #ifndef LOGINPAGE_H
 #define LOGINPAGE_H
 
-#include <QScrollBar>
 #include <QSysInfo>
 
 #include "ramses.h"

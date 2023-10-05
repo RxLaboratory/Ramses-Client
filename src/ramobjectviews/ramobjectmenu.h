@@ -1,16 +1,15 @@
 #ifndef RAMOBJECTMENU_H
 #define RAMOBJECTMENU_H
 
-#include <QMenu>
-
+#include "duqf-widgets/dumenu.h"
 #include "ramobjectsortfilterproxymodel.h"
 
 /**
- * @brief The RamObjectListMenu class is a QMenu showing a RamObjectModel.
+ * @brief The RamObjectListMenu class is a DuMenu showing a RamObjectModel.
  * The items can be checkable to be used as a selection list, and in this case the menu contains a 'Select all' and a 'Select none' QAction.
  * A 'Create new...' QAction can also be added to the top of the list.
  */
-class RamObjectMenu : public QMenu
+class RamObjectMenu : public DuMenu
 {
     Q_OBJECT
 public:

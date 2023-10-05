@@ -43,7 +43,7 @@ void ObjectManagerWidget::setupUi(QString title, QIcon icon)
     //lay->addStretch();
 
     // Menu
-    QMenu *itemMenu = new QMenu();
+    DuMenu *itemMenu = new DuMenu();
 
     ui_createAction = new QAction("Create new", this);
     itemMenu->addAction(ui_createAction);

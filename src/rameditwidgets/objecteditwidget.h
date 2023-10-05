@@ -1,7 +1,6 @@
 #ifndef OBJECTEDITWIDGET_H
 #define OBJECTEDITWIDGET_H
 
-#include <QScrollArea>
 #include <QGridLayout>
 #include <QHBoxLayout>
 #include <QLabel>
@@ -13,12 +12,13 @@
 
 #include "duqf-widgets/duqftextedit.h"
 #include "ramobject.h"
+#include "duqf-widgets/duscrollarea.h"
 
 /**
  * @brief The ObjectEditWidget class is the base class of all editors for RamObjects (Shots, steps, etc)
  * It can be used either in the UI, or in a DockWidget
  */
-class ObjectEditWidget : public QScrollArea
+class ObjectEditWidget : public DuScrollArea
 {
     Q_OBJECT
 

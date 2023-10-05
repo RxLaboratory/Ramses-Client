@@ -1,13 +1,13 @@
 #ifndef DATABASEEDITWIDGET_H
 #define DATABASEEDITWIDGET_H
 
-#include <QScrollArea>
-
 #include "duqf-widgets/duqffolderdisplaywidget.h"
 #include "duqf-widgets/duqffolderselectorwidget.h"
 #include "servereditwidget.h"
+#include "duqf-widgets/duscrollarea.h"
 
-class DatabaseEditWidget : public QScrollArea
+
+class DatabaseEditWidget : public DuScrollArea
 {
     Q_OBJECT
 public:

@@ -3,7 +3,6 @@
 
 #include <QTableView>
 #include <QHeaderView>
-#include <QScrollBar>
 
 #include "ramscheduledelegate.h"
 

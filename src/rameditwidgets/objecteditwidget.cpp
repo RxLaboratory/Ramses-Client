@@ -3,7 +3,7 @@
 #include "objectupdateblocker.h"
 
 ObjectEditWidget::ObjectEditWidget(QWidget *parent) :
-    QScrollArea(parent)
+    DuScrollArea(parent)
 {
     setupUi();
 

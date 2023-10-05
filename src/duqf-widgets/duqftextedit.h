@@ -1,6 +1,7 @@
 #ifndef DUQFTEXTEDIT_H
 #define DUQFTEXTEDIT_H
 
+#include "duqf-widgets/dumenu.h"
 #include <QTextEdit>
 
 /**
@@ -36,7 +37,7 @@ private slots:
 private:
     void connectEvents();
     void setupUi();
-    QMenu *ui_contextMenu;
+    DuMenu *ui_contextMenu;
     QAction *ui_undo;
     QAction *ui_redo;
     QAction *ui_copy;

@@ -3,9 +3,9 @@
 
 #include <QTableView>
 #include <QHeaderView>
-#include <QScrollBar>
 #include <QSortFilterProxyModel>
 
+#include "duqf-widgets/dumenu.h"
 #include "ramobjectdelegate.h"
 #include "ramobjectsortfilterproxymodel.h"
 #include "ramuser.h"
@@ -81,7 +81,7 @@ private:
     QString m_currentFilterUuid;
 
     // Context menu
-    QMenu *ui_contextMenu;
+    DuMenu *ui_contextMenu;
     QAction *ui_actionCopyUuid;
     QAction *ui_actionCopyPath;
     QAction *ui_actionCopyFileName;

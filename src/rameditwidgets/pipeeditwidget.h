@@ -2,7 +2,6 @@
 #define PIPEEDITWIDGET_H
 
 #include <QComboBox>
-#include <QMenu>
 
 #include "objecteditwidget.h"
 #include "objectlistwidget.h"

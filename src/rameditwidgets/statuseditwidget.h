@@ -7,7 +7,6 @@
 #include <QCheckBox>
 #include <QListWidget>
 #include <QShortcut>
-#include <QMenu>
 #include <QSplitter>
 
 #include "duqf-widgets/duqftextedit.h"
@@ -79,7 +78,7 @@ private:
     QComboBox *ui_versionPublishBox;
     QToolButton *ui_openMainFileButton;
     QToolButton *ui_createMainFileButton;
-    QMenu *ui_createFromTemplateMenu;
+    DuMenu *ui_createFromTemplateMenu;
     QToolButton *ui_openPublishedFileButton;
     QToolButton *ui_openPreviewFileButton;
     DuQFFolderDisplayWidget *ui_folderWidget;

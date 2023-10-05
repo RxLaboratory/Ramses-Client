@@ -4,7 +4,6 @@
 #include <QMouseEvent>
 #include <QLabel>
 #include <QToolButton>
-#include <QMenu>
 #include <QDesktopServices>
 #include <QtDebug>
 #include <QSettings>
@@ -97,7 +96,7 @@ private:
     QSystemTrayIcon *trayIcon;
     SettingsWidget *settingsWidget;
     QLabel *title;
-    QMenu *helpMenu;
+    DuMenu *helpMenu;
     ProgressPage *progressPage;
     bool m_maximized;
 
@@ -162,9 +161,9 @@ private:
 
     DatabaseEditWidget *ui_databaseEditWidget = nullptr;
 
-    QMenu *ui_userMenu;
-    QMenu *ui_databaseMenu;
-    QMenu *ui_refreshMenu;
+    DuMenu *ui_userMenu;
+    DuMenu *ui_databaseMenu;
+    DuMenu *ui_refreshMenu;
     DuQFAutoSizeToolButton *ui_userButton;
     DuQFAutoSizeToolButton *ui_networkButton;
     QToolButton *ui_refreshButton;

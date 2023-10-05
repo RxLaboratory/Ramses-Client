@@ -8,7 +8,7 @@
 #include "dbinterface.h"
 
 DatabaseCreateWidget::DatabaseCreateWidget(QWidget *parent) :
-    QScrollArea(parent)
+    DuScrollArea(parent)
 {
     setupUi();
     connectEvents();

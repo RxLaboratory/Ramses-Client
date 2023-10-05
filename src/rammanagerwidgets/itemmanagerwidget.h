@@ -4,7 +4,6 @@
 #include <QWidget>
 #include <QShowEvent>
 #include <QHideEvent>
-#include <QMenu>
 #include <QComboBox>
 #include <QClipboard>
 
@@ -114,7 +113,7 @@ private:
     DuQFSearchEdit *ui_searchEdit;
     QToolButton *ui_itemButton;
     QAction *ui_actionItem;
-    QMenu *ui_itemMenu;
+    DuMenu *ui_itemMenu;
     QAction *ui_actionCreateItem;
     QAction *ui_actionDeleteItem;
     QAction *ui_actionCreateMultiple;
@@ -139,7 +138,7 @@ private:
     QAction *ui_actionSortByCompletion;
     RamObjectMenu *ui_assignUserMenu;
     RamObjectMenu *ui_changeStateMenu;
-    QMenu *ui_changeDifficultyMenu;
+    DuMenu *ui_changeDifficultyMenu;
     QAction *ui_veryEasy;
     QAction *ui_easy;
     QAction *ui_medium;
@@ -153,7 +152,7 @@ private:
     QAction *ui_completion75;
     QAction *ui_completion90;
     QAction *ui_completion100;
-    QMenu *ui_contextMenu;
+    DuMenu *ui_contextMenu;
     QAction *ui_copyComment;
     QAction *ui_cutComment;
     QAction *ui_pasteComment;

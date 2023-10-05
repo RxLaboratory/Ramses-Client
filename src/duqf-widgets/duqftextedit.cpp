@@ -79,7 +79,7 @@ void DuQFTextEdit::contextMenuEvent(QContextMenuEvent *event)
 
 void DuQFTextEdit::setupUi()
 {
-    ui_contextMenu = new QMenu(this);
+    ui_contextMenu = new DuMenu(this);
 
     ui_undo = new QAction("Undo", this);
     ui_undo->setShortcut(QKeySequence(QKeySequence::Undo));

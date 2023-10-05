@@ -7,8 +7,6 @@
 #include <QLabel>
 #include <QToolButton>
 #include <QMessageBox>
-#include <QScrollBar>
-#include <QMenu>
 #include <QShortcut>
 
 #include "duqf-widgets/duqfsearchedit.h"

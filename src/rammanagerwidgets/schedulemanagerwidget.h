@@ -100,7 +100,7 @@ private:
     QToolButton *ui_prevMonth;
     QDateEdit *ui_goTo;
     QLabel *ui_timeRemaining;
-    QMenu *ui_contextMenu;
+    DuMenu *ui_contextMenu;
     QAction *ui_copyComment;
     QAction *ui_cutComment;
     QAction *ui_pasteComment;
@@ -108,7 +108,7 @@ private:
     QAction *ui_colorAction;
     QAction *ui_removeCommentAction;
     QAction *ui_actionCopyUuid;
-    QMenu *ui_commentContextMenu;
+    DuMenu *ui_commentContextMenu;
 
     RamScheduleTableModel *m_schedule;
     RamScheduleFilterProxyModel *m_scheduleFilter;

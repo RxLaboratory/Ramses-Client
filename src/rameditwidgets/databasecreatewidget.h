@@ -1,13 +1,14 @@
 #ifndef DATABASECREATEWIDGET_H
 #define DATABASECREATEWIDGET_H
 
-#include <QScrollArea>
 
 #include "duqf-widgets/duqffolderselectorwidget.h"
 #include "localdatainterface.h"
 #include "servereditwidget.h"
+#include "duqf-widgets/duscrollarea.h"
 
-class DatabaseCreateWidget : public QScrollArea
+
+class DatabaseCreateWidget : public DuScrollArea
 {
     Q_OBJECT
 public:

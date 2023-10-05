@@ -2,7 +2,6 @@
 #define DUQFLOGGINGTEXTEDIT_H
 
 #include <QTextEdit>
-#include <QScrollBar>
 #include "duqf-utils/duqflogger.h"
 
 class DuQFLoggingTextEdit : public QTextEdit

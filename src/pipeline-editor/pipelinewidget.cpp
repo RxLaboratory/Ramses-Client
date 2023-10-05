@@ -25,7 +25,7 @@ PipelineWidget::PipelineWidget(QWidget *parent) :
     ui_titleBar->hide();
 
     // View menu
-    QMenu *viewMenu = new QMenu(this);
+    DuMenu *viewMenu = new DuMenu(this);
 
     QAction *actionReinitView = new QAction("Center view", this);
     actionReinitView->setShortcut(QKeySequence("Home"));
@@ -47,7 +47,7 @@ PipelineWidget::PipelineWidget(QWidget *parent) :
     ui_titleBar->insertLeft(viewButton);
 
     // Select menu
-    QMenu *selectMenu = new QMenu(this);
+    DuMenu *selectMenu = new DuMenu(this);
 
     QAction *actionSelectAll = new QAction("Select all steps", this);
     actionSelectAll->setShortcut(QKeySequence("A"));
@@ -73,7 +73,7 @@ PipelineWidget::PipelineWidget(QWidget *parent) :
     ui_titleBar->insertLeft(selectButton);
 
     // Layout menu
-    QMenu *layMenu = new QMenu(this);
+    DuMenu *layMenu = new DuMenu(this);
 
     QAction *actionLayoutAll = new QAction("Layout all steps", this);
     actionLayoutAll->setShortcut(QKeySequence("Shift+L"));
@@ -105,7 +105,7 @@ PipelineWidget::PipelineWidget(QWidget *parent) :
     ui_titleBar->insertLeft(layButton);
 
     // Step menu
-    ui_stepMenu = new QMenu(this);
+    ui_stepMenu = new DuMenu(this);
 
     QAction *actionAddStep = new QAction("Create new step", this);
     actionAddStep->setShortcut(QKeySequence("Shift+A"));
@@ -133,7 +133,7 @@ PipelineWidget::PipelineWidget(QWidget *parent) :
     ui_titleBar->insertLeft(stepButton);
 
     // Connections menu
-    QMenu *coMenu = new QMenu(this);
+    DuMenu *coMenu = new DuMenu(this);
 
     QAction *actionDeleteConnections = new QAction("Remove selected pipes", this);
     actionDeleteConnections->setShortcut(QKeySequence("Alt+X"));

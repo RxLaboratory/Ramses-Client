@@ -1,8 +1,11 @@
 #include "duqfnodeview.h"
 #include "duqf-app/dusettingsmanager.h"
+#include "duqf-widgets/duscrollbar.h"
 
 DuQFNodeView::DuQFNodeView(QWidget *parent): QGraphicsView(parent)
 {
+    this->setVerticalScrollBar(new DuScrollBar(Qt::Vertical, this));
+    this->setHorizontalScrollBar(new DuScrollBar(Qt::Horizontal, this));
     //setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     //setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 

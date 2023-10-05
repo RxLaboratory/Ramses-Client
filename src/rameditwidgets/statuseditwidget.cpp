@@ -640,7 +640,7 @@ void StatusEditWidget::setupUi()
     ui_createMainFileButton->setEnabled(false);
     mainFileButtonLayout->addWidget(ui_createMainFileButton);
 
-    ui_createFromTemplateMenu = new QMenu(this);
+    ui_createFromTemplateMenu = new DuMenu(this);
     ui_createMainFileButton->setMenu(ui_createFromTemplateMenu);
     ui_createMainFileButton->setPopupMode(QToolButton::InstantPopup);
 

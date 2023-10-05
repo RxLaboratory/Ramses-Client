@@ -3,7 +3,7 @@
 #include "ramdatainterface/dbinterface.h"
 
 DatabaseEditWidget::DatabaseEditWidget(QWidget *parent) :
-    QScrollArea(parent)
+    DuScrollArea(parent)
 {
     setupUi();
     connectEvents();

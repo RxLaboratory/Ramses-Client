@@ -3,7 +3,6 @@
 
 #include <QTableView>
 #include <QHeaderView>
-#include <QScrollBar>
 #include <QMouseEvent>
 
 #include "statisticsmodel.h"

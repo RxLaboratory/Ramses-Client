@@ -8,7 +8,6 @@
 #include <QToolButton>
 #include <QListWidget>
 #include <QFormLayout>
-#include <QMenu>
 
 #include "duqf-widgets/autoselectdoublespinbox.h"
 #include "objecteditwidget.h"

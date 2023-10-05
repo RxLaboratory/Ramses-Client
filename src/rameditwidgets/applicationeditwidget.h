@@ -1,7 +1,6 @@
 #ifndef APPLICATIONEDITWIDGET_H
 #define APPLICATIONEDITWIDGET_H
 
-#include <QMenu>
 #include <QSplitter>
 
 #include "objecteditwidget.h"

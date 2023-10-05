@@ -116,5 +116,7 @@
 #include <QErrorMessage>
 #include <QHostInfo>
 #include <QSharedMemory>
+#include <QVariantAnimation>
+
 
 #include <cmath>
