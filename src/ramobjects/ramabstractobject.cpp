@@ -247,7 +247,8 @@ QJsonValue RamAbstractObject::getData(QString key) const
 void RamAbstractObject::setData(QJsonObject data)
 {
     QJsonDocument doc = QJsonDocument(data);
-    setDataString(doc.toJson(QJsonDocument::Compact));
+    const QString str = doc.toJson(QJsonDocument::Compact);
+    setDataString(str);
 }
 
 void RamAbstractObject::insertData(QString key, QJsonValue value)
@@ -586,11 +587,13 @@ void RamAbstractObject::setDataString(QString data)
 
     if (m_virtual || m_saveSuspended || !m_created) return;
 
-    /*qDebug() << ">>>";
-    qDebug() << "Setting data for: " + shortName() + " (" + objectTypeName() + ")";
-    qDebug() << "UUID: " + m_uuid;
-    qDebug() << "DATA: " + data;
-    qDebug() << ">>>";*/
+#ifdef DEBUG_DATA
+    qDebug() << "<<<";
+    qDebug().noquote() << "Setting data for: " + shortName() + " (" + objectTypeName() + ")";
+    qDebug().noquote() << "UUID: " + m_uuid;
+    qDebug().noquote() << "DATA: " + data;
+    qDebug() << ">>>";
+#endif
 
     DBInterface::instance()->setObjectData(m_uuid, objectTypeName(), data);
 

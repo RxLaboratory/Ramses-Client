@@ -1503,7 +1503,11 @@ QSqlQuery LocalDataInterface::query(QString q) const
     QSqlQuery qry = QSqlQuery(db);
 
     //log(tr("Querying:") + "\n" + q, DuQFLog::Data);
-    //qDebug() << q;
+#ifdef DEBUG_DATA
+    qDebug() << "<<< SQLITE Query";
+    qDebug().noquote() << q;
+    qDebug() << ">>>";
+#endif
 
     if (!qry.exec(q))
     {

@@ -691,6 +691,17 @@ void RamServerInterface::dataReceived(QNetworkReply *reply)
             QJsonObject rowObj = rowsArray.at(i).toObject();
             row.uuid = rowObj.value("uuid").toString();
             row.data = rowObj.value("data").toString();
+
+#ifdef DEBUG_DATA
+                qDebug().noquote() << "<<< Received data";
+                qDebug().noquote() <<"raw data:";
+                qDebug().noquote() << rowObj.value("data");
+                qDebug().noquote() <<"parsed data:";
+                qDebug().noquote() << row.data;
+                qDebug() << ">>>";
+#endif
+
+
             row.modified = rowObj.value("modified").toString();
             row.removed = rowObj.value("removed").toInt();
             row.userName = rowObj.value("userName").toString();
@@ -1078,6 +1089,13 @@ void RamServerInterface::pushNext()
     {
         QSet<TableRow>::const_iterator i = rows.cbegin();
         pushRows.insert( *i );
+
+#ifdef DEBUG_DATA
+            qDebug().noquote() << "<<< SENT DATA";
+            qDebug().noquote() << (*i).data;
+            qDebug() << ">>>";
+#endif
+
         rows.erase( i );
     }
 

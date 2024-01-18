@@ -7,6 +7,9 @@
 #define CACHE_LOCAL_DATA true
 #define DATETIME_DATA_FORMAT "yyyy-MM-dd hh:mm:ss"
 
+// DEBUG UTILS
+
 //#define FORCE_WELCOME_SCREEN
+//#define DEBUG_DATA
 
 #endif // APPCONFIG_H
