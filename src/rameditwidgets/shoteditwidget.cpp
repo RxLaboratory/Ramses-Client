@@ -27,6 +27,7 @@ void ShotEditWidget::reInit(RamObject *o)
     m_shot = qobject_cast<RamShot*>(o);
     if (m_shot)
     {
+        m_duration = m_shot->duration();
         ui_secondsBox->setValue(m_shot->duration());
         secondsChanged();
         ui_folderWidget->setPath( m_shot->path() );
@@ -51,6 +52,7 @@ void ShotEditWidget::reInit(RamObject *o)
     else
     {
         //Reset values
+        m_duration = 0;
         ui_framesBox->setValue(0);
         ui_secondsBox->setValue(0);
         ui_folderWidget->setPath("");
@@ -61,7 +63,7 @@ void ShotEditWidget::reInit(RamObject *o)
 void ShotEditWidget::setDuration()
 {
     if(!m_shot || m_reinit) return;
-    m_shot->setDuration(ui_secondsBox->value());
+    m_shot->setDuration(m_duration);
 }
 
 void ShotEditWidget::setSequence(RamObject *seq)
@@ -75,7 +77,10 @@ void ShotEditWidget::framesChanged()
     RamProject *proj = m_shot->project();
     if (!proj) return;
 
-    ui_secondsBox->setValue( ui_framesBox->value() / proj->framerate() );
+    m_duration = (qreal)ui_framesBox->value() / proj->framerate();
+
+    QSignalBlocker b(ui_secondsBox);
+    ui_secondsBox->setValue( m_duration );
 }
 
 void ShotEditWidget::secondsChanged()
@@ -83,7 +88,10 @@ void ShotEditWidget::secondsChanged()
     RamProject *proj = m_shot->project();
     if (!proj) return;
 
-    ui_framesBox->setValue( ui_secondsBox->value() * proj->framerate() );
+    m_duration = ui_secondsBox->value();
+
+    QSignalBlocker b(ui_framesBox);
+    ui_framesBox->setValue( std::round(m_duration * proj->framerate()) );
 }
 
 void ShotEditWidget::setupUi()
@@ -97,6 +105,7 @@ void ShotEditWidget::setupUi()
     ui_secondsBox->setMaximum(14400.0);
     ui_secondsBox->setSingleStep(0.1);
     ui_secondsBox->setSuffix(" seconds");
+    ui_secondsBox->setDecimals(3);
     ui_mainFormLayout->addWidget(ui_secondsBox, 3, 1);
 
     ui_framesBox = new AutoSelectSpinBox(this);

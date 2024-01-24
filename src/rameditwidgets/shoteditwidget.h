@@ -31,6 +31,8 @@ private slots:
 
 private:
     RamShot *m_shot = nullptr;
+    // Keep not rounded duration!
+    qreal m_duration;
 
     void setupUi();
     void connectEvents();
