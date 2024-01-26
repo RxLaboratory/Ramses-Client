@@ -74,14 +74,14 @@ public:
     void setFramerate(const qreal &newFramerate);
 
     int width() const;
-    void setWidth(const int width, const qreal &pixelAspect = 1);
+    void setWidth(const int width);
 
     int height() const;
-    void setHeight(const int height, const qreal &pixelAspect = 1);
+    void setHeight(const int height);
 
     qreal aspectRatio() const;
-    void updateAspectRatio(const qreal &pixelAspect = 1);
-    void setAspectRatio(const qreal &aspectRatio);
+    qreal pixelAspectRatio() const;
+    void setPixelAspectRatio(const qreal &aspectRatio);
 
     QDate deadline() const;
     void setDeadline(const QDate &newDeadline);

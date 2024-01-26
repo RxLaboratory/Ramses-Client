@@ -280,10 +280,9 @@ int RamProject::width() const
     return getData("width").toInt(1920);
 }
 
-void RamProject::setWidth(const int width, const qreal &pixelAspect)
+void RamProject::setWidth(const int width)
 {
     insertData("width", width);
-    updateAspectRatio(pixelAspect);
 }
 
 int RamProject::height() const
@@ -291,32 +290,27 @@ int RamProject::height() const
     return getData("height").toInt(1080);
 }
 
-void RamProject::setHeight(const int height, const qreal &pixelAspect)
+void RamProject::setHeight(const int height)
 {
     insertData("height", height);
-    updateAspectRatio(pixelAspect);
 }
 
 qreal RamProject::aspectRatio() const
 {
     QJsonObject d = data();
-    double w = d.value("width").toDouble(1920);
-    double h = d.value("height").toDouble(1080);
-    return d.value("aspectRatio").toDouble(w/h);
-}
-
-void RamProject::updateAspectRatio(const qreal &pixelAspect)
-{
-    QJsonObject d = data();
     qreal w = d.value("width").toDouble(1920);
     qreal h = d.value("height").toDouble(1080);
-    qreal r = w / h * pixelAspect;
-    setAspectRatio(r);
+    return w / h * d.value("pixelAspectRatio").toDouble(1.0);
 }
 
-void RamProject::setAspectRatio(const qreal &aspectRatio)
+qreal RamProject::pixelAspectRatio() const
 {
-    insertData("aspectRatio", aspectRatio);
+    return getData("pixelAspectRatio").toDouble(1.0);
+}
+
+void RamProject::setPixelAspectRatio(const qreal &aspectRatio)
+{
+    insertData("pixelAspectRatio", aspectRatio);
 }
 
 QDate RamProject::deadline() const

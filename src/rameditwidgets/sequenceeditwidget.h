@@ -5,6 +5,8 @@
 #include "objectlistwidget.h"
 #include "duqf-widgets/duqfcolorselector.h"
 #include "ramsequence.h"
+#include "resolutionwidget.h"
+#include "frameratewidget.h"
 
 /**
  * @brief The SequenceEditWidget class is used to edit Sequences and can be shown either in the main UI or in the Dock
@@ -24,6 +26,10 @@ protected:
 
 private slots:
     void setColor(QColor c);
+    void setOverrideResolution(bool r);
+    void setOverrideFramerate(bool r);
+    void setResolution(int w, int h);
+    void setFramerate(qreal f);
     void createShot();
 
 private:
@@ -33,6 +39,10 @@ private:
     void connectEvents();
 
     DuQFColorSelector *ui_colorSelector;
+    QCheckBox *ui_resolutionBox;
+    QCheckBox *ui_framerateBox;
+    ResolutionWidget *ui_resolutionWidget;
+    FramerateWidget *ui_framerateWidget;
 
     ObjectListWidget *ui_shotsList;
 };

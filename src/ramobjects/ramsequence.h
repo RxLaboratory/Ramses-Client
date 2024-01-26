@@ -21,6 +21,25 @@ public:
     int shotCount() const;
     double duration() const;
 
+    bool overrideResolution() const;
+    void setOverrideResolution(bool override);
+
+    bool overrideFramerate() const;
+    void setOverrideFramerate(bool override);
+
+    qreal framerate() const;
+    void setFramerate(const qreal &newFramerate);
+
+    int width() const;
+    void setWidth(const int width);
+
+    int height() const;
+    void setHeight(const int height);
+
+    qreal aspectRatio() const;
+    qreal pixelAspectRatio() const;
+    void setPixelAspectRatio(const qreal &aspectRatio);
+
     RamProject *project() const;
 
     virtual QString details() const override;
@@ -28,6 +47,7 @@ public:
     virtual QVariant roleData(int role) const override;
 
     DBTableModel *shots() const;
+
 
 public slots:
     virtual void edit(bool show = true) override;

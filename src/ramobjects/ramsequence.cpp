@@ -45,8 +45,12 @@ RamSequence::RamSequence(QString uuid):
     QJsonObject d = data();
 
     QString projUuid = d.value("project").toString();
-    if (projUuid != "") this->setParent( RamProject::get(projUuid) );
-    else invalidate();
+    if (projUuid != "") {
+        this->setParent( RamProject::get(projUuid) );
+    }
+    else {
+        invalidate();
+    }
 }
 
 DBTableModel *RamSequence::shots() const
@@ -70,6 +74,80 @@ double RamSequence::duration() const
         duration += d;
     }
     return duration;
+}
+
+bool RamSequence::overrideResolution() const
+{
+    return getData("overrideResolution").toBool(false);
+}
+
+void RamSequence::setOverrideResolution(bool override)
+{
+    insertData("overrideResolution", override);
+}
+
+bool RamSequence::overrideFramerate() const
+{
+    return getData("overrideFramerate").toBool(false);
+}
+
+void RamSequence::setOverrideFramerate(bool override)
+{
+    insertData("overrideFramerate", override);
+}
+
+qreal RamSequence::framerate() const
+{
+    if (overrideFramerate())
+        return getData("framerate").toDouble(24);
+    else return project()->framerate();
+}
+
+void RamSequence::setFramerate(const qreal &newFramerate)
+{
+    insertData("framerate", newFramerate);
+}
+
+int RamSequence::width() const
+{
+    if (overrideResolution())
+        return getData("width").toInt(1920);
+    else return project()->width();
+}
+
+void RamSequence::setWidth(const int width)
+{
+    insertData("width", width);
+}
+
+int RamSequence::height() const
+{
+    if (overrideResolution())
+        return getData("height").toInt(1080);
+    else return project()->height();
+}
+
+void RamSequence::setHeight(const int height)
+{
+    insertData("height", height);
+}
+
+qreal RamSequence::aspectRatio() const
+{
+    QJsonObject d = data();
+    qreal w = d.value("width").toDouble(1920);
+    qreal h = d.value("height").toDouble(1080);
+    return w / h * d.value("pixelAspectRatio").toDouble(1.0);
+}
+
+qreal RamSequence::pixelAspectRatio() const
+{
+    return getData("pixelAspectRatio").toDouble(1.0);
+}
+
+void RamSequence::setPixelAspectRatio(const qreal &aspectRatio)
+{
+    insertData("pixelAspectRatio", aspectRatio);
 }
 
 RamProject *RamSequence::project() const
