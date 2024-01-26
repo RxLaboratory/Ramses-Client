@@ -1,7 +1,7 @@
 #include "duqfupdatesettingswidget.h"
 
-#include "duqf-app/app-utils.h"
 #include "duqf-widgets/duqfupdatedialog.h"
+#include "duqf-app/duapplication.h"
 
 DuQFUpdateSettingsWidget::DuQFUpdateSettingsWidget(QWidget *parent) :
     QWidget(parent)

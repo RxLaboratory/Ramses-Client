@@ -1,6 +1,7 @@
 #ifndef DUSETTINGSMANAGER_H
 #define DUSETTINGSMANAGER_H
 
+#include "enums.h"
 
 class DuSettingsManager : public QObject
 {
@@ -8,16 +9,15 @@ class DuSettingsManager : public QObject
 public:
     // Settings keys
     static const QString UI_FOCUS_COLOR;
+    static const QString UI_TOOLBUTTON_STYLE;
     static const QString NV_CURVATURE;
     static const QString UI_WINDOW_GEOMETRY;
     static const QString UI_WINDOW_STATE;
+    static const QString UI_DOCK_SIZE;
+    static const QString UI_ICON_COLOR;
+    static const QString UI_TRAYICON_MODE;
+    static const QString UI_SHOW_TRAYICON;
 
-    // Colors
-    enum ColorVariant {
-        NormalColor,
-        DarkerColor,
-        LighterColor
-    };
 
     static DuSettingsManager *instance();
 
@@ -39,6 +39,14 @@ public:
      */
     QByteArray uiWindowState() const;
 
+    Qt::ToolButtonStyle uiToolButtonStyle() const;
+
+    QSize uiDockSize(const QString &dockName) const;
+
+    QColor uiIconColor(ColorVariant v=NormalColor) const;
+    QColor trayIconColor() const;
+    ColorVariant trayIconMode() const;
+
 public slots:
     void setUIFocusColor(const QColor &color);
     /**
@@ -54,8 +62,22 @@ public slots:
      */
     void saveUIWindowState(const QByteArray &geometry, const QByteArray &state);
 
+    void setUIToolButtonStyle(Qt::ToolButtonStyle style);
+    void setUIToolButtonStyle(int style);
+
+    void setUIDockSize(const QString &dockName, const QSize &size);
+
+    void setUIIconColor(const QColor &color);
+
+     void setTrayIconMode(ColorVariant mode);
+
 signals:
     void nvCurvatureChanged(float);
+    void uiToolButtonStyleChanged(Qt::ToolButtonStyle);
+    void uiIconColorChanged(QColor);
+    void trayIconModeChanged(ColorVariant);
+    void trayIconColorChanged(QColor);
+    void trayIconVisibilityChanged(bool);
 
 protected:
     static DuSettingsManager *_instance;

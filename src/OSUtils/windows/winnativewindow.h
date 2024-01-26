@@ -1,10 +1,7 @@
 #ifndef WINNATIVEWINDOW_H
 #define WINNATIVEWINDOW_H
 
-
 #include "Windows.h"
-#include "Windowsx.h"
-
 #include <QWidget>
 
 class WinNativeWindow

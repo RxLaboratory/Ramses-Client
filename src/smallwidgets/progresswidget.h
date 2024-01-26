@@ -5,8 +5,6 @@
 #include <QPainter>
 #include <QPainterPath>
 
-#include "duqf-app/app-style.h"
-
 class ProgressWidget : public QWidget
 {
     Q_OBJECT

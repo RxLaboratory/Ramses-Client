@@ -53,15 +53,16 @@
 
 #include <QWidget>
 #include <QVBoxLayout>
+#include <QCommandLineParser>
 
-#include "WinNativeWindow.h"
+#include "OSUtils/windows/winnativewindow.h"
 #include "mainwindow.h"
 
 class QWinWidget : public QWidget
 {
     Q_OBJECT
 public:
-    QWinWidget(QStringList args);
+    QWinWidget(const QCommandLineParser &cli);
     ~QWinWidget();
 
     void show();
@@ -77,9 +78,6 @@ public slots:
     void onMaximizeTriggered(bool maximize);
     void onMinimizeTriggered();
     void onCloseTriggered();
-    void onHideTriggered();
-    void onShowTriggered();
-    void onQuit();
 
 protected:
     void childEvent( QChildEvent *e ) override;

@@ -9,8 +9,6 @@
 #include <QGraphicsSvgItem>
 #include <QApplication>
 
-#include "duqf-app/app-style.h"
-
 #include "duqfslot.h"
 #include "duqfgrid.h"
 

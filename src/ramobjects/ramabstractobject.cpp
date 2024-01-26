@@ -5,7 +5,6 @@
 #include "dbinterface.h"
 #include "ramses.h"
 #include "ramnamemanager.h"
-#include "duqf-app/app-style.h"
 
 // STATIC //
 
@@ -304,7 +303,7 @@ void RamAbstractObject::setComment(const QString comment)
 QColor RamAbstractObject::color() const
 {
     QString colorName = getData("color").toString("");
-    if (colorName == "") return DuUI::getColor("less-light-grey");
+    if (colorName == "") return QColor(157,157,157);
     return QColor( colorName );
 }
 

@@ -11,28 +11,24 @@
 #include <QMessageBox>
 #include <QSystemTrayIcon>
 
+#include "duqf-widgets/dumainwindow.h"
 #include "projecteditwidget.h"
-#include "ui_mainwindow.h"
 
 #include "duqf-widgets/settingswidget.h"
 #include "duqf-widgets/aboutdialog.h"
 #include "duqf-utils/utils.h"
 #include "duqf-utils/duqflogger.h"
-#include "duqf-widgets/duqfdocktitle.h"
+#include "duqf-widgets/dudocktitlewidget.h"
 #include "duqf-widgets/duqfautosizetoolbutton.h"
 #include "progresspage.h"
 #include "ramproject.h"
 #include "databaseeditwidget.h"
 
-class MainWindow : public QMainWindow, private Ui::MainWindow
+class MainWindow : public DuMainWindow
 {
     Q_OBJECT
 
 public:
-
-#ifdef _WIN32
-    friend class QWinWidget;
-#endif
 
     enum Page {
         Home = 0,
@@ -46,7 +42,7 @@ public:
         Progress = 8
     };
 
-    explicit MainWindow(QStringList args, QWidget *parent = nullptr);
+    explicit MainWindow(const QCommandLineParser &cli, QWidget *parent = nullptr);
 
     void setPropertiesDockWidget(QWidget *w, QString title = "Properties", QString icon = ":/icons/asset");
 
@@ -64,98 +60,110 @@ signals:
     void showTriggered();
 
 private:
+    void setupActions();
+    void setupUi();
+    void setupToolBar();
+    void setupStatusBar();
+    void setupSysTray();
+    void setupDocks();
     void connectEvents();
     void connectShortCuts();
 
+    // ==== ACTIONS ====
+
+    DuAction *m_actionLogIn;
+    DuAction *m_actionLogOut;
+    DuAction *m_actionUserProfile;
+    DuAction *m_actionAdmin;
+    DuAction *m_actionUserFolder;
+    DuAction *m_actionPipeline;
+    DuAction *m_actionAssets;
+    DuAction *m_actionShots;
+    DuAction *m_actionSchedule;
+    DuAction *m_actionStatistics;
+    DuAction *m_actionTimeline;
+    DuAction *m_actionSetOnline;
+    DuAction *m_actionSetOffline;
+    DuAction *m_actionDatabaseSettings;
+    DuAction *m_actionSettings;
+    DuAction *m_actionSync;
+    DuAction *m_actionFullSync;
+    DuAction *m_projectAction;
+    DuAction *m_stepsAction;
+    DuAction *m_pipeFilesAction;
+    DuAction *m_assetGroupAction;
+    DuAction *m_assetListAction;
+    DuAction *m_sequenceAction;
+    DuAction *m_shotListAction;
+    DuAction *m_fileAdminAction;
+    DuAction *m_filePreprodAction;
+    DuAction *m_fileProdAction;
+    DuAction *m_filePostProdAction;
+    DuAction *m_fileAssetsAction;
+    DuAction *m_fileShotsAction;
+    DuAction *m_fileOutputAction;
+    DuAction *m_fileUserAction;
+    DuAction *m_fileVersionsAction;
+    DuAction *m_fileTrashAction;
+    DuAction *m_actionShowHide;
+
+    // ==== WIDGETS ====
+
+    QStackedWidget *ui_mainStack;
+    QWidget *ui_mainPage;
+    QStatusBar *ui_mainStatusBar;
+    QToolButton *ui_settingsButton;
+
+    // ==== Docks ====
+
+    DuDockWidget *ui_statsDockWidget;
+    DuDockTitleWidget *ui_statsTitle;
+    DuDockWidget *ui_consoleDockWidget;
+    DuDockWidget *ui_propertiesDockWidget;
+    DuDockWidget *ui_timelineDockWidget;
+    DuDockWidget *ui_stepsDockWidget;
+    DuDockWidget *ui_pipeFileDockWidget;
+    ProjectEditWidget *ui_projectEditWiget;
+    DuDockWidget *ui_projectDockWidget;
+    DuDockWidget *ui_assetGroupsDockWidget;
+    DuDockWidget *ui_assetsDockWidget;
+    DuDockWidget *ui_sequencesDockWidget;
+    DuDockWidget *ui_shotsDockWidget;
+    DuDockTitleWidget *ui_propertiesTitle;
+
     // ========= RxOT UI ==============
+
     /**
-     * @brief initUi Called once to build the default RxOT UI
+     * @brief raise Tries to (force) raise the window
      */
-    void duqf_initUi();
-    /**
-     * @brief duqf_setStyle Called once to set the UI Style after all ui have been created
-     */
-    void duqf_setStyle();
-    /**
-     * @brief duqf_raise Tries to (force) raise the window
-     */
-    void duqf_raise();
-    /**
-     * @brief Is the tool bar currently clicked or not
-     */
-    bool duqf_toolBarClicked;
-    /**
-     * @brief Drag position
-     * Used for drag n drop feature
-     */
-    QPoint duqf_dragPosition;
-    QToolButton *duqf_settingsButton;
-    AboutDialog *duqf_aboutDialog;
-    QAction *duqf_actionShowHide;
+    void raise();
+
     QProgressBar *duqf_fundingBar = nullptr;
     QSystemTrayIcon *trayIcon;
-    SettingsWidget *settingsWidget;
+    SettingsWidget *ui_settingsWidget;
     QLabel *title;
     DuMenu *helpMenu;
     ProgressPage *progressPage;
     bool m_maximized;
-
-    // ====== Actions ======
-
-    QAction *m_minimizeAction;
-    QAction *m_maximizeAction;
-    QAction *m_closeAction;
-
-    // Docks
-    QDockWidget *ui_statsDockWidget;
-    QDockWidget *ui_consoleDockWidget;
-    QDockWidget *ui_propertiesDockWidget;
-    QDockWidget *ui_timelineDockWidget;
-    QDockWidget *ui_stepsDockWidget;
-    QDockWidget *ui_pipeFileDockWidget;
-    ProjectEditWidget *ui_projectEditWiget;
-    QDockWidget *ui_projectDockWidget;
-    QDockWidget *ui_assetGroupsDockWidget;
-    QDockWidget *ui_assetsDockWidget;
-    QDockWidget *ui_sequencesDockWidget;
-    QDockWidget *ui_shotsDockWidget;
-    DuQFDockTitle *ui_statsTitle;
-    DuQFDockTitle *ui_propertiesTitle;
 
     // ToolBar Menus
     QAction *ui_projectSelectorAction;
 
     QToolButton *ui_pipelineButton;
     QAction *ui_pipelineMenuAction;
-    QAction *ui_projectAction;
-    QAction *ui_stepsAction;
-    QAction *ui_pipeFilesAction;
 
     QToolButton *ui_assetsButton;
     QAction *ui_assetMenuAction;
-    QAction *ui_assetGroupAction;
-    QAction *ui_assetListAction;
 
     QToolButton *ui_shotsButton;
     QAction *ui_shotMenuAction;
-    QAction *ui_sequenceAction;
-    QAction *ui_shotListAction;
+
 
     QToolButton *ui_scheduleButton;
     QAction *ui_scheduleMenuAction;
 
     QToolButton *ui_filesButton;
     QAction *ui_filesMenuAction;
-    QAction *ui_fileAdminAction;
-    QAction *ui_filePreprodAction;
-    QAction *ui_fileProdAction;
-    QAction *ui_filePostProdAction;
-    QAction *ui_fileAssetsAction;
-    QAction *ui_fileShotsAction;
-    QAction *ui_fileOutputAction;
-    QAction *ui_fileUserAction;
-    QAction *ui_fileVersionsAction;
-    QAction *ui_fileTrashAction;
 
     SettingsWidget *ui_adminPage;
 
@@ -180,19 +188,19 @@ private:
     bool m_showUpdateAlerts = false;
 
 private slots:
-    void duqf_bugReport();
-    void duqf_forum();
-    void duqf_chat();
-    void duqf_doc();
-    void duqf_donate();
-    void duqf_settings(bool checked = true);
-    void duqf_closeSettings();
-    void duqf_reinitSettings();
-    void duqf_about();
-    void duqf_trayClicked(QSystemTrayIcon::ActivationReason reason);
-    void duqf_showHide();
-    void duqf_askBeforeClose();
-    void duqf_updateAvailable(QJsonObject updateInfo);
+    void updateAvailable(QJsonObject updateInfo);
+    void bugReport();
+    void forum();
+    void chat();
+    void doc();
+    void donate();
+    void settings(bool checked = true);
+    void closeSettings();
+    void reinitSettings();
+    void about();
+    void trayClicked(QSystemTrayIcon::ActivationReason reason);
+    void showHide();
+    void askBeforeClose();
     void maximize(bool m);
 
     void log(DuQFLog m);

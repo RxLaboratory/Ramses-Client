@@ -58,6 +58,6 @@ void DuMenu::setupUi()
     setAutoFillBackground(false);
     setStyleSheet("QMenu::item { border-radius: 5px; padding-left: 5px; padding-right: 5px; padding-top: 3px; padding-bottom: 3px; }"
                   "QMenu::item:selected {"
-                  "background-color: " + DuSettingsManager::instance()->uiFocusColor(DuSettingsManager::DarkerColor).name() + "; }"
+                  "background-color: " + DuSettingsManager::instance()->uiFocusColor(DarkerColor).name() + "; }"
                                                                                                          "QMenu::icon { padding-left: 5px; }" );
 }

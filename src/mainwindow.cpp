@@ -10,6 +10,7 @@
 #include "docks/consolewidget.h"
 #include "daemonsettingswidget.h"
 #include "loginpage.h"
+#include "qstatusbar.h"
 #include "sequencemanagerwidget.h"
 #include "shotmanagerwidget.h"
 #include "stepmanagerwidget.h"
@@ -29,22 +30,15 @@
 #include "daemon.h"
 #include "projectselectorwidget.h"
 #include "dbmanagerwidget.h"
-#include "duqf-widgets/dutoolbarspacer.h"
 #include "duqf-widgets/duqflogtoolbutton.h"
 #include "duqf-widgets/duqfupdatesettingswidget.h"
 #include "duqf-widgets/appearancesettingswidget.h"
 #include "duqf-app/app-version.h"
-#include "duqf-app/app-style.h"
-#include "duqf-app/app-utils.h"
-#include "duqf-widgets/dutoolbarspacer.h"
 
-MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
-    QMainWindow(parent)
+MainWindow::MainWindow(const QCommandLineParser &cli, QWidget *parent) :
+    DuMainWindow{parent}
 {
-    // Build the form
-    setupUi(this);
-
-    qDebug() << "> Initiating threads and workers";
+    qDebug() << "> Initializing threads and workers";
 
     // We instantiate all these objects to be sure it's done in the right order.
 
@@ -61,479 +55,31 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
 
     qDebug() << "> Setting up menus";
 
-    // Setup toolbar menus
-    DuMenu *pipelineMenu = new DuMenu(this);
-
-    ui_projectAction = new QAction(tr("Project settings"), this);
-    ui_projectAction->setIcon(QIcon(":/icons/project"));
-    ui_projectAction->setCheckable(true);
-    ui_stepsAction = new QAction(tr("Steps"), this);
-    ui_stepsAction->setIcon(QIcon(":/icons/step"));
-    ui_stepsAction->setCheckable(true);
-    ui_pipeFilesAction = new QAction(tr("Pipe formats"), this);
-    ui_pipeFilesAction->setIcon(QIcon(":/icons/connection"));
-    ui_pipeFilesAction->setCheckable(true);
-
-    pipelineMenu->addAction(ui_actionPipeline);
-    pipelineMenu->addSeparator();
-    pipelineMenu->addAction(ui_projectAction);
-    pipelineMenu->addAction(ui_stepsAction);
-    pipelineMenu->addAction(ui_pipeFilesAction);
-
-    ui_pipelineButton = new QToolButton();
-    ui_pipelineButton->setIcon(QIcon(":icons/steps-menu"));
-    ui_pipelineButton->setText("Pipeline");
-    ui_pipelineButton->setMenu(pipelineMenu);
-    ui_pipelineButton->setIconSize(QSize(16,16));
-    ui_pipelineButton->setPopupMode(QToolButton::MenuButtonPopup);
-    ui_pipelineButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-
-    DuMenu *assetsMenu = new DuMenu(this);
-
-    ui_assetGroupAction = new QAction(tr("Asset groups"), this);
-    ui_assetGroupAction->setIcon(QIcon(":/icons/asset-group"));
-    ui_assetGroupAction->setCheckable(true);
-    ui_assetListAction = new QAction(tr("Assets"), this);
-    ui_assetListAction->setIcon(QIcon(":/icons/asset"));
-    ui_assetListAction->setCheckable(true);
-
-    assetsMenu->addAction(ui_actionAssets);
-    assetsMenu->addSeparator();
-    assetsMenu->addAction(ui_assetGroupAction);
-    assetsMenu->addAction(ui_assetListAction);
-
-    ui_assetsButton = new QToolButton();
-    ui_assetsButton->setIcon(QIcon(":/icons/asset"));
-    ui_assetsButton->setText("Assets");
-    ui_assetsButton->setMenu(assetsMenu);
-    ui_assetsButton->setIconSize(QSize(16,16));
-    ui_assetsButton->setPopupMode(QToolButton::MenuButtonPopup);
-    ui_assetsButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-
-    DuMenu *shotsMenu = new DuMenu(this);
-
-    ui_sequenceAction = new QAction(tr("Sequences"), this);
-    ui_sequenceAction->setIcon(QIcon(":/icons/sequence"));
-    ui_sequenceAction->setCheckable(true);
-    ui_shotListAction = new QAction(tr("Shots"), this);
-    ui_shotListAction->setIcon(QIcon(":/icons/shot"));
-    ui_shotListAction->setCheckable(true);
-
-    shotsMenu->addAction(ui_actionShots);
-    shotsMenu->addSeparator();
-    shotsMenu->addAction(ui_sequenceAction);
-    shotsMenu->addAction(ui_shotListAction);
-    shotsMenu->addAction(ui_actionTimeline);
-
-    ui_shotsButton = new QToolButton();
-    ui_shotsButton->setIcon(QIcon(":/icons/shot"));
-    ui_shotsButton->setText("Shots");
-    ui_shotsButton->setMenu(shotsMenu);
-    ui_shotsButton->setIconSize(QSize(16,16));
-    ui_shotsButton->setPopupMode(QToolButton::MenuButtonPopup);
-    ui_shotsButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-
-    DuMenu *scheduleMenu = new DuMenu(this);
-
-    scheduleMenu->addAction(ui_actionSchedule);
-    scheduleMenu->addSeparator();
-    scheduleMenu->addAction(ui_actionStatistics);
-
-    ui_scheduleButton = new QToolButton();
-    ui_scheduleButton->setIcon(QIcon(":/icons/calendar"));
-    ui_scheduleButton->setText("Schedule");
-    ui_scheduleButton->setMenu(scheduleMenu);
-    ui_scheduleButton->setIconSize(QSize(16,16));
-    ui_scheduleButton->setPopupMode(QToolButton::MenuButtonPopup);
-    ui_scheduleButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-
-    DuMenu *filesMenu = new DuMenu(this);
-
-    ui_fileAdminAction = new QAction(tr("Admin"), this);
-    ui_fileAdminAction->setIcon(QIcon(":/icons/settings-w"));
-    ui_filePreprodAction = new QAction(tr("Pre-production"), this);
-    ui_filePreprodAction->setIcon(QIcon(":/icons/project"));
-    ui_fileProdAction = new QAction(tr("Production"), this);
-    ui_fileProdAction->setIcon(QIcon(":/icons/sequence"));
-    ui_filePostProdAction = new QAction(tr("Post-production"), this);
-    ui_filePostProdAction->setIcon(QIcon(":/icons/film"));
-    ui_fileAssetsAction = new QAction(tr("Assets"), this);
-    ui_fileAssetsAction->setIcon(QIcon(":/icons/asset"));
-    ui_fileShotsAction = new QAction(tr("Shots"), this);
-    ui_fileShotsAction->setIcon(QIcon(":/icons/shot"));
-    ui_fileOutputAction = new QAction(tr("Output"), this);
-    ui_fileOutputAction->setIcon(QIcon(":/icons/output-folder"));
-    ui_fileUserAction = new QAction(tr("My user folder"), this);
-    ui_fileUserAction->setIcon(QIcon(":/icons/user"));
-    ui_fileVersionsAction = new QAction(tr("Project versions"), this);
-    ui_fileVersionsAction->setIcon(QIcon(":/icons/versions-folder"));
-    ui_fileTrashAction = new QAction(tr("Project trash"), this);
-    ui_fileTrashAction->setIcon(QIcon(":/icons/trash"));
-
-    filesMenu->addAction(ui_fileAdminAction);
-    filesMenu->addAction(ui_filePreprodAction);
-    filesMenu->addAction(ui_fileProdAction);
-    filesMenu->addAction(ui_filePostProdAction);
-    filesMenu->addAction(ui_fileAssetsAction);
-    filesMenu->addAction(ui_fileShotsAction);
-    filesMenu->addAction(ui_fileOutputAction);
-    filesMenu->addSeparator();
-    filesMenu->addAction(ui_fileUserAction);
-    filesMenu->addSeparator();
-    filesMenu->addAction(ui_fileVersionsAction);
-    filesMenu->addAction(ui_fileTrashAction);
-
-    ui_filesButton = new QToolButton();
-    ui_filesButton->setIcon(QIcon(":/icons/folder"));
-    ui_filesButton->setText("Files");
-    ui_filesButton->setMenu(filesMenu);
-    ui_filesButton->setIconSize(QSize(16,16));
-    ui_filesButton->setPopupMode(QToolButton::InstantPopup);
-    ui_filesButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-
-    // Populate Toolbar
-    ui_projectSelectorAction = mainToolBar->addWidget(new ProjectSelectorWidget(this));
-    ui_pipelineMenuAction = mainToolBar->addWidget(ui_pipelineButton);
-    ui_assetMenuAction = mainToolBar->addWidget(ui_assetsButton);
-    ui_shotMenuAction = mainToolBar->addWidget(ui_shotsButton);
-    ui_scheduleMenuAction = mainToolBar->addWidget(ui_scheduleButton);
-    ui_filesMenuAction = mainToolBar->addWidget(ui_filesButton);
-
-    ui_projectSelectorAction->setVisible(false);
-    actionAdmin->setVisible(false);
-    ui_pipelineMenuAction->setVisible(false);
-    ui_shotMenuAction->setVisible(false);
-    ui_assetMenuAction->setVisible(false);
-    ui_scheduleMenuAction->setVisible(false);
-    ui_filesMenuAction->setVisible(false);
-
-    //Populate status bar
-
-    mainStatusBar->addPermanentWidget(new ProgressBar(this));
-
-    ui_refreshMenu = new DuMenu();
-    ui_refreshMenu->addAction(actionSync);
-    ui_refreshMenu->addAction(actionFullSync);
-
-    ui_refreshButton = new QToolButton(this);
-    ui_refreshButton->setObjectName("menuButton");
-    ui_refreshButton->setToolButtonStyle(Qt::ToolButtonIconOnly);
-    ui_refreshButton->setText("");
-    ui_refreshButton->setIcon(QIcon(":/icons/reload"));
-    ui_refreshButton->setMenu(ui_refreshMenu);
-    ui_refreshButton->setPopupMode(QToolButton::InstantPopup);
-    mainStatusBar->addPermanentWidget(ui_refreshButton);
-    ui_refreshButton->hide();
-
-    ui_consoleButton = new QToolButton(this);
-    ui_consoleButton->setToolButtonStyle(Qt::ToolButtonIconOnly);
-    ui_consoleButton->setText("");
-    ui_consoleButton->setIcon(QIcon(":/icons/bash"));
-    ui_consoleButton->setCheckable(true);
-    mainStatusBar->addPermanentWidget(ui_consoleButton);
-
-    mainStatusBar->addPermanentWidget(new DuQFLogToolButton(this));
-
-    ui_databaseMenu = new DuMenu();
-    ui_databaseMenu->addAction(actionSetOffline);
-    ui_databaseMenu->addAction(actionSetOnline);
-    ui_databaseMenu->addAction(actionDatabaseSettings);
-    actionSetOffline->setVisible(false);
-    ui_networkButton = new DuQFAutoSizeToolButton(this);
-    ui_networkButton->setObjectName("menuButton");
-    ui_networkButton->setText("Offline");
-    ui_networkButton->setIcon(QIcon(":/icons/storage"));
-    ui_networkButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-    //ui_networkButton->setMinimumWidth(100);
-    ui_networkButton->setMenu(ui_databaseMenu);
-    ui_networkButton->setPopupMode(QToolButton::InstantPopup);
-    mainStatusBar->addPermanentWidget(ui_networkButton);
-    ui_networkButton->setVisible(false);
-
-    ui_userMenu = new DuMenu();
-    ui_userMenu->addAction(actionLogIn);
-    ui_userMenu->addAction(actionUserFolder);
-    actionUserFolder->setVisible(false);
-    ui_userMenu->addAction(actionUserProfile);
-    actionUserProfile->setVisible(false);
-    ui_userMenu->addAction(actionLogOut);
-    actionLogOut->setVisible(false);
-    ui_userButton = new DuQFAutoSizeToolButton(this);
-    ui_userButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-    ui_userButton->setText("Guest");
-    //ui_userButton->setMinimumWidth(75);
-    ui_userButton->setMenu(ui_userMenu);
-    ui_userButton->setPopupMode(QToolButton::InstantPopup);
-    mainStatusBar->addPermanentWidget(ui_userButton);
-
-    // Add default stuff
-    duqf_initUi();
-
-    qDebug() << "> Loading setting pages";
-
-    // Add settings
-    DaemonSettingsWidget *dsw = new DaemonSettingsWidget(this);
-    settingsWidget->addPage(dsw, "Daemon", QIcon(":/icons/daemon"));
-
-    qDebug() << "> Loading pages";
-
-    // Add pages
-    // login
-    LoginPage *lp = new LoginPage(this);
-    mainLayout->addWidget(lp);
-
-    // user profile
-    UserProfilePage *up = new UserProfilePage(this);
-    mainStack->addWidget(up);
-
-    // admin
-    ui_adminPage = new SettingsWidget("Administration", this);
-    ui_adminPage->titleBar()->setObjectName("adminToolBar");
-    ui_adminPage->showReinitButton(false);
-    mainStack->addWidget(ui_adminPage);
-    // Admin tabs
-    qDebug() << "> Admin";
-    UserManagerWidget *userManager = new UserManagerWidget(this);
-    ui_adminPage->addPage(userManager,"Users", QIcon(":/icons/users"));
-    ui_adminPage->titleBar()->insertLeft(userManager->menuButton());
-    qDebug() << "  > users ok";
-    ProjectManagerWidget *projectManager = new ProjectManagerWidget(this);
-    ui_adminPage->addPage(projectManager, "Projects", QIcon(":/icons/projects"));
-    ui_adminPage->titleBar()->insertLeft(projectManager->menuButton());
-    qDebug() << "  > projects ok";
-    TemplateStepManagerWidget *templateStepManager = new TemplateStepManagerWidget(this);
-    ui_adminPage->addPage(templateStepManager, "Template Steps", QIcon(":/icons/steps"));
-    ui_adminPage->titleBar()->insertLeft(templateStepManager->menuButton());
-    qDebug() << "  > template steps ok";
-    TemplateAssetGroupManagerWidget *templateAssetGroupManager = new TemplateAssetGroupManagerWidget(this);
-    ui_adminPage->addPage(templateAssetGroupManager, "Template Asset Groups", QIcon(":/icons/asset-groups"));
-    ui_adminPage->titleBar()->insertLeft(templateAssetGroupManager->menuButton());
-    qDebug() << "  > template assets ok";
-    StateManagerWidget *stateManager = new StateManagerWidget(this);
-    ui_adminPage->addPage(stateManager, "States", QIcon(":/icons/state"));
-    ui_adminPage->titleBar()->insertLeft(stateManager->menuButton());
-    qDebug() << "  > states ok";
-    FileTypeManagerWidget *fileTypeManager = new FileTypeManagerWidget(this);
-    ui_adminPage->addPage(fileTypeManager, "File Types", QIcon(":/icons/files"));
-    ui_adminPage->titleBar()->insertLeft(fileTypeManager->menuButton());
-    qDebug() << "  > file types ok";
-    ApplicationManagerWidget *applicationManager = new ApplicationManagerWidget(this);
-    ui_adminPage->addPage(applicationManager, "Applications", QIcon(":/icons/applications"));
-    ui_adminPage->titleBar()->insertLeft(applicationManager->menuButton());
-    qDebug() << "  > applications ok";
-    DBManagerWidget *dbManager = new DBManagerWidget(this);
-    ui_adminPage->addPage(dbManager, "Database tools", QIcon(":/icons/applications"));
-    qDebug() << "  > DB Manager ok";//*/
-
-    // Pipeline editor
-#ifndef DEACTIVATE_PIPELINE
-    PipelineWidget *pipelineEditor = new PipelineWidget(this);
-    mainStack->addWidget(pipelineEditor);
-    connect(pipelineEditor, SIGNAL(closeRequested()), this, SLOT(home()));
-    qDebug() << "> Pipeline ready";//*/
-#endif
-
-#ifndef DEACTIVATE_ASSETSTABLE
-    ItemManagerWidget *assetsTable = new ItemManagerWidget(RamStep::AssetProduction, this);
-    mainStack->addWidget(assetsTable);
-    connect(assetsTable, SIGNAL(closeRequested()), this, SLOT(home()));
-    qDebug() << "> Assets table ready";
-#endif
-
-#ifndef DEACTIVATE_SHOTSTABLE
-    ItemManagerWidget *shotsTable = new ItemManagerWidget(RamStep::ShotProduction, this);
-    mainStack->addWidget(shotsTable);
-    connect(shotsTable, SIGNAL(closeRequested()), this, SLOT(home()));
-    qDebug() << "> Shots table ready";
-#endif
-
-#ifndef DEACTIVATE_SCHEDULE
-    ScheduleManagerWidget *scheduleTable = new ScheduleManagerWidget(this);
-    mainStack->addWidget(scheduleTable);
-    connect(scheduleTable,SIGNAL(closeRequested()), this, SLOT(home()));
-    qDebug() << "> Schedule ready";
-#endif
-
-    // Docks
-#ifndef DEACTIVATE_STATS
-    StatisticsWidget *statsTable = new StatisticsWidget(this);
-    ui_statsDockWidget = new QDockWidget("Statistics");
-    ui_statsDockWidget->setObjectName("statsDock");
-    ui_statsTitle = new DuQFDockTitle("Statistics", this);
-    ui_statsTitle->setObjectName("dockTitle");
-    ui_statsTitle->setIcon(":/icons/stats");
-    ui_statsDockWidget->setTitleBarWidget(ui_statsTitle);
-    ui_statsDockWidget->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    ui_statsDockWidget->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable );
-    ui_statsDockWidget->setWidget( statsTable );
-    Qt::DockWidgetArea area = static_cast<Qt::DockWidgetArea>( settings.value("ui/statsArea", Qt::LeftDockWidgetArea).toInt() );
-    this->addDockWidget(area, ui_statsDockWidget);
-    ui_statsDockWidget->hide();
-
-    qDebug() << "> Statistics table ready";
-#endif
-
-    // A console in a tab
-    ConsoleWidget *console = new ConsoleWidget(this);
-    ui_consoleDockWidget = new QDockWidget("Console");
-    ui_consoleDockWidget->setObjectName("consoleDock");
-    DuQFDockTitle *consoleTitle = new DuQFDockTitle("Console", this);
-    consoleTitle->setObjectName("dockTitle");
-    consoleTitle->setIcon(":/icons/bash");
-    ui_consoleDockWidget->setTitleBarWidget(consoleTitle);
-    ui_consoleDockWidget->setAllowedAreas(Qt::AllDockWidgetAreas);
-    ui_consoleDockWidget->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable );
-    ui_consoleDockWidget->setWidget( console );
-    this->addDockWidget(Qt::LeftDockWidgetArea, ui_consoleDockWidget);
-    ui_consoleDockWidget->hide();
-
-    qDebug() << "> Console dock ready";
-
-    // The timeline
-    TimelineWidget *timeline = new TimelineWidget(this);
-    ui_timelineDockWidget = new QDockWidget("Timeline");
-    ui_timelineDockWidget->setObjectName("timelineDock");
-    DuQFDockTitle *timelineTitle = new DuQFDockTitle("Timeline", this);
-    timeline->setObjectName("dockTitle");
-    timelineTitle->setIcon(":/icons/timeline");
-    ui_timelineDockWidget->setTitleBarWidget(timelineTitle);
-    ui_timelineDockWidget->setAllowedAreas(Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea);
-    ui_timelineDockWidget->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable );
-    ui_timelineDockWidget->setWidget( timeline );
-    this->addDockWidget(Qt::BottomDockWidgetArea, ui_timelineDockWidget);
-    ui_timelineDockWidget->hide();
-
-    qDebug() << "> Timeline dock ready";
-
-    // The properties dock
-    ui_propertiesDockWidget = new QDockWidget("Properties");
-    ui_propertiesDockWidget->setObjectName("propertiesDock");
-    ui_propertiesTitle = new DuQFDockTitle("Properties", this);
-    ui_propertiesTitle->setObjectName("dockTitle");
-    ui_propertiesTitle->setIcon(":/icons/asset");
-    ui_propertiesDockWidget->setTitleBarWidget(ui_propertiesTitle);
-    ui_propertiesDockWidget->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    ui_propertiesDockWidget->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable );
-    this->addDockWidget(Qt::RightDockWidgetArea, ui_propertiesDockWidget);
-    ui_propertiesDockWidget->hide();
-
-    qDebug() << "> Properties dock ready";
-
-    // The project dock
-    ui_projectEditWiget = new ProjectEditWidget(this);
-    ui_projectDockWidget = new QDockWidget(tr("Project settings"));
-    ui_projectDockWidget->setObjectName("projectDock");
-    DuQFDockTitle *pTitle = new DuQFDockTitle(tr("Project settings"), this);
-    pTitle->setObjectName("dockTitle");
-    pTitle->setIcon(":/icons/project");
-    ui_projectDockWidget->setTitleBarWidget(pTitle);
-    ui_projectDockWidget->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    ui_projectDockWidget->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable );
-    ui_projectDockWidget->setWidget( ui_projectEditWiget );
-    this->addDockWidget(Qt::RightDockWidgetArea, ui_projectDockWidget);
-    ui_projectDockWidget->hide();
-
-    // The steps dock
-    StepManagerWidget *stepWidget = new StepManagerWidget(this);
-    ui_stepsDockWidget = new QDockWidget(tr("Steps"));
-    ui_stepsDockWidget->setObjectName("stepsDock");
-    DuQFDockTitle *sTitle = new DuQFDockTitle(tr("Steps"), this);
-    sTitle->setObjectName("dockTitle");
-    sTitle->setIcon(":/icons/step");
-    ui_stepsDockWidget->setTitleBarWidget(sTitle);
-    ui_stepsDockWidget->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    ui_stepsDockWidget->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable );
-    ui_stepsDockWidget->setWidget( stepWidget );
-    this->addDockWidget(Qt::LeftDockWidgetArea, ui_stepsDockWidget);
-    ui_stepsDockWidget->hide();
-
-    // The pipe formats dock
-    PipeFileManagerWidget *pipeFileWidget = new PipeFileManagerWidget(this);
-    ui_pipeFileDockWidget = new QDockWidget(tr("Pipe formats"));
-    ui_pipeFileDockWidget->setObjectName("pipeFilesDock");
-    DuQFDockTitle *pfTitle = new DuQFDockTitle(tr("Pipe formats"), this);
-    pfTitle->setObjectName("dockTitle");
-    pfTitle->setIcon(":/icons/connection");
-    ui_pipeFileDockWidget->setTitleBarWidget(pfTitle);
-    ui_pipeFileDockWidget->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    ui_pipeFileDockWidget->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable );
-    ui_pipeFileDockWidget->setWidget( pipeFileWidget );
-    this->addDockWidget(Qt::LeftDockWidgetArea, ui_pipeFileDockWidget);
-    ui_pipeFileDockWidget->hide();
-
-    // The asset groups dock
-    AssetGroupManagerWidget *assetGroupWidget = new AssetGroupManagerWidget(this);
-    ui_assetGroupsDockWidget = new QDockWidget(tr("Asset Groups"));
-    ui_assetGroupsDockWidget->setObjectName("assetGroupsDock");
-    DuQFDockTitle *agTitle = new DuQFDockTitle(tr("Asset Groups"), this);
-    agTitle->setObjectName("dockTitle");
-    agTitle->setIcon(":/icons/asset-group");
-    ui_assetGroupsDockWidget->setTitleBarWidget(agTitle);
-    ui_assetGroupsDockWidget->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    ui_assetGroupsDockWidget->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable );
-    ui_assetGroupsDockWidget->setWidget( assetGroupWidget );
-    this->addDockWidget(Qt::LeftDockWidgetArea, ui_assetGroupsDockWidget);
-    ui_assetGroupsDockWidget->hide();
-
-    // The assets dock
-    AssetManagerWidget *assetWidget = new AssetManagerWidget(this);
-    ui_assetsDockWidget = new QDockWidget(tr("Assets"));
-    ui_assetsDockWidget->setObjectName("assetsDock");
-    DuQFDockTitle *aTitle = new DuQFDockTitle(tr("Assets"), this);
-    aTitle->setObjectName("dockTitle");
-    aTitle->setIcon(":/icons/asset");
-    ui_assetsDockWidget->setTitleBarWidget(aTitle);
-    ui_assetsDockWidget->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    ui_assetsDockWidget->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable );
-    ui_assetsDockWidget->setWidget( assetWidget );
-    this->addDockWidget(Qt::LeftDockWidgetArea, ui_assetsDockWidget);
-    ui_assetsDockWidget->hide();
-
-    // The sequences dock
-    SequenceManagerWidget *sequenceWidget = new SequenceManagerWidget(this);
-    ui_sequencesDockWidget = new QDockWidget(tr("Sequences"));
-    ui_sequencesDockWidget->setObjectName("sequencesDock");
-    DuQFDockTitle *seqTitle = new DuQFDockTitle(tr("Sequences"), this);
-    seqTitle->setObjectName("dockTitle");
-    seqTitle->setIcon(":/icons/sequence");
-    ui_sequencesDockWidget->setTitleBarWidget(seqTitle);
-    ui_sequencesDockWidget->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    ui_sequencesDockWidget->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable );
-    ui_sequencesDockWidget->setWidget( sequenceWidget );
-    this->addDockWidget(Qt::LeftDockWidgetArea, ui_sequencesDockWidget);
-    ui_sequencesDockWidget->hide();
-
-    // The Shots dock
-    ShotManagerWidget *shotWidget = new ShotManagerWidget(this);
-    ui_shotsDockWidget = new QDockWidget(tr("Shots"));
-    ui_shotsDockWidget->setObjectName("shotsDock");
-    DuQFDockTitle *shTitle = new DuQFDockTitle(tr("Shots"), this);
-    shTitle->setObjectName("dockTitle");
-    shTitle->setIcon(":/icons/shot");
-    ui_shotsDockWidget->setTitleBarWidget(shTitle);
-    ui_shotsDockWidget->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    ui_shotsDockWidget->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable );
-    ui_shotsDockWidget->setWidget( shotWidget );
-    this->addDockWidget(Qt::LeftDockWidgetArea, ui_shotsDockWidget);
-    ui_shotsDockWidget->hide();
-
-    // Progress page
-    progressPage = new ProgressPage(this);
-    mainStack->addWidget(progressPage);
-
-    // Set UI
-    mainStack->setCurrentIndex(Home);
-
-    qDebug() << "> Connecting events";
-
-    connectEvents();
-    connectShortCuts();
+    // Setup the actions
+    setupActions();
+    // Build the window
+    setupUi();
+    // Build the toolbar
+    setupToolBar();
+    // Build the status bar
+    setupStatusBar();
+    // Build the sys tray icon
+    setupSysTray();
+    // Build the docks
+    setupDocks();
 
     // Set style
+    setStyle();
 
-    qDebug() << "Setting CSS";
+    DuApplication *app = qobject_cast<DuApplication*>(qApp);
+    updateAvailable(app->updateInfo());
 
-    duqf_setStyle();
+    // Set UI
+    ui_mainStack->setCurrentIndex(Home);
+
+    // Everything is ready
+    connectEvents();
+    connectShortCuts();
 
     // Restore UI state
     settings.beginGroup("ui");
@@ -541,111 +87,114 @@ MainWindow::MainWindow(QStringList /*args*/, QWidget *parent) :
         this->showMaximized();
     this->restoreState( settings.value("windowState").toByteArray() );
     settings.endGroup();
-    // re-hide docks
-    ui_propertiesDockWidget->hide();
-    //ui_statsDockWidget->hide();
-    //ui_timelineDockWidget->hide();
 
     // Process arguments
 
     // Load file
-    DuApplication *app = qobject_cast<DuApplication*>(qApp);
-    QStringList args = app->args();
-    if (args.count() != 1) return;
-
-    QString filePath = args.first();
-    QFileInfo argInfo(filePath);
-    if (argInfo.exists() && argInfo.suffix().toLower() == "ramses")
-        StateManager::i()->open(filePath);
+    QStringList args = cli.positionalArguments();
+    for(const QString &filePath: args) {
+        QFileInfo argInfo(filePath);
+        if (argInfo.exists() && argInfo.suffix().toLower() == "ramses")
+        {
+            StateManager::i()->open(filePath);
+            break;
+        }
+    }
 }
 
 void MainWindow::connectEvents()
 {
+    connect(ui_settingsButton, SIGNAL(clicked(bool)), this, SLOT(duqf_settings(bool)));
+    connect(ui_settingsWidget, SIGNAL(closeRequested()), this, SLOT(duqf_closeSettings()));
+    connect(ui_settingsWidget, SIGNAL(reinitRequested()), this, SLOT(duqf_reinitSettings()));
+
     // Connect events
     connect(ProgressManager::instance(), &ProgressManager::freezeUI, this, &MainWindow::freezeUI);
 
     // Toolbar buttons
-    connect(actionLogIn,SIGNAL(triggered()), this, SLOT(home()));
-    connect(actionLogOut,SIGNAL(triggered()), StateManager::i(), SLOT(logout()));
-    connect(actionSettings, SIGNAL(triggered(bool)), this, SLOT(duqf_settings(bool)));
-    connect(actionSetOnline, &QAction::triggered, this, &MainWindow::setOnlineAction);
-    connect(actionSetOffline, &QAction::triggered, this, &MainWindow::setOfflineAction);
-    connect(actionDatabaseSettings, &QAction::triggered, this, &MainWindow::databaseSettingsAction);
-    connect(actionUserProfile,SIGNAL(triggered()), this, SLOT(userProfile()));
-    connect(actionUserFolder,SIGNAL(triggered()), this, SLOT(revealUserFolder()));
-    connect(actionAdmin,SIGNAL(triggered(bool)), this, SLOT(admin(bool)));
+    connect(m_actionLogIn,SIGNAL(triggered()), this, SLOT(home()));
+    connect(m_actionLogOut,SIGNAL(triggered()), StateManager::i(), SLOT(logout()));
+    connect(m_actionSettings, SIGNAL(triggered(bool)), this, SLOT(duqf_settings(bool)));
+    connect(m_actionSetOnline, &QAction::triggered, this, &MainWindow::setOnlineAction);
+    connect(m_actionSetOffline, &QAction::triggered, this, &MainWindow::setOfflineAction);
+    connect(m_actionDatabaseSettings, &QAction::triggered, this, &MainWindow::databaseSettingsAction);
+    connect(m_actionUserProfile,SIGNAL(triggered()), this, SLOT(userProfile()));
+    connect(m_actionUserFolder,SIGNAL(triggered()), this, SLOT(revealUserFolder()));
+    connect(m_actionAdmin,SIGNAL(triggered(bool)), this, SLOT(admin(bool)));
 
-    connect(ui_actionPipeline,SIGNAL(triggered()), this, SLOT(pipeline()));
+    connect(m_actionPipeline,SIGNAL(triggered()), this, SLOT(pipeline()));
     connect(ui_pipelineButton,SIGNAL(clicked()), this, SLOT(pipeline()));
 
-    connect(ui_actionShots,SIGNAL(triggered(bool)), this, SLOT(shots()));
+    connect(m_actionShots,SIGNAL(triggered(bool)), this, SLOT(shots()));
     connect(ui_shotsButton,SIGNAL(clicked()), this, SLOT(shots()));
 
-    connect(ui_actionAssets,SIGNAL(triggered(bool)), this, SLOT(assets()));
+    connect(m_actionAssets,SIGNAL(triggered(bool)), this, SLOT(assets()));
     connect(ui_assetsButton,SIGNAL(clicked()), this, SLOT(assets()));
 
-    connect(ui_actionSchedule,SIGNAL(triggered(bool)), this, SLOT(schedule()));
+    connect(m_actionSchedule,SIGNAL(triggered(bool)), this, SLOT(schedule()));
     connect(ui_scheduleButton, SIGNAL(clicked()), this, SLOT(schedule()));
 
     // Docks
-    connect(ui_projectAction, SIGNAL(triggered(bool)), ui_projectDockWidget, SLOT(setVisible(bool)));
-    connect(ui_projectDockWidget, SIGNAL(visibilityChanged(bool)), ui_projectAction, SLOT(setChecked(bool)));
+    connect(m_projectAction, SIGNAL(triggered(bool)), ui_projectDockWidget, SLOT(setVisible(bool)));
+    connect(ui_projectDockWidget, SIGNAL(visibilityChanged(bool)), m_projectAction, SLOT(setChecked(bool)));
 
-    connect(ui_stepsAction, SIGNAL(triggered(bool)), ui_stepsDockWidget, SLOT(setVisible(bool)));
-    connect(ui_stepsDockWidget, SIGNAL(visibilityChanged(bool)), ui_stepsAction, SLOT(setChecked(bool)));
+    connect(m_stepsAction, SIGNAL(triggered(bool)), ui_stepsDockWidget, SLOT(setVisible(bool)));
+    connect(ui_stepsDockWidget, SIGNAL(visibilityChanged(bool)), m_stepsAction, SLOT(setChecked(bool)));
 
-    connect(ui_pipeFilesAction, SIGNAL(triggered(bool)), ui_pipeFileDockWidget, SLOT(setVisible(bool)));
-    connect(ui_pipeFileDockWidget, SIGNAL(visibilityChanged(bool)), ui_pipeFilesAction, SLOT(setChecked(bool)));
+    connect(m_pipeFilesAction, SIGNAL(triggered(bool)), ui_pipeFileDockWidget, SLOT(setVisible(bool)));
+    connect(ui_pipeFileDockWidget, SIGNAL(visibilityChanged(bool)), m_pipeFilesAction, SLOT(setChecked(bool)));
 
-    connect(ui_assetGroupAction, SIGNAL(triggered(bool)), ui_assetGroupsDockWidget, SLOT(setVisible(bool)));
-    connect(ui_assetGroupsDockWidget, SIGNAL(visibilityChanged(bool)), ui_assetGroupAction, SLOT(setChecked(bool)));
+    connect(m_assetGroupAction, SIGNAL(triggered(bool)), ui_assetGroupsDockWidget, SLOT(setVisible(bool)));
+    connect(ui_assetGroupsDockWidget, SIGNAL(visibilityChanged(bool)), m_assetGroupAction, SLOT(setChecked(bool)));
 
-    connect(ui_assetListAction, SIGNAL(triggered(bool)), ui_assetsDockWidget, SLOT(setVisible(bool)));
-    connect(ui_assetsDockWidget, SIGNAL(visibilityChanged(bool)), ui_assetListAction, SLOT(setChecked(bool)));
+    connect(m_assetListAction, SIGNAL(triggered(bool)), ui_assetsDockWidget, SLOT(setVisible(bool)));
+    connect(ui_assetsDockWidget, SIGNAL(visibilityChanged(bool)), m_assetListAction, SLOT(setChecked(bool)));
 
-    connect(ui_sequenceAction, SIGNAL(triggered(bool)), ui_sequencesDockWidget, SLOT(setVisible(bool)));
-    connect(ui_sequencesDockWidget, SIGNAL(visibilityChanged(bool)), ui_sequenceAction, SLOT(setChecked(bool)));
+    connect(m_sequenceAction, SIGNAL(triggered(bool)), ui_sequencesDockWidget, SLOT(setVisible(bool)));
+    connect(ui_sequencesDockWidget, SIGNAL(visibilityChanged(bool)), m_sequenceAction, SLOT(setChecked(bool)));
 
-    connect(ui_shotListAction, SIGNAL(triggered(bool)), ui_shotsDockWidget, SLOT(setVisible(bool)));
-    connect(ui_shotsDockWidget, SIGNAL(visibilityChanged(bool)), ui_shotListAction, SLOT(setChecked(bool)));
+    connect(m_shotListAction, SIGNAL(triggered(bool)), ui_shotsDockWidget, SLOT(setVisible(bool)));
+    connect(ui_shotsDockWidget, SIGNAL(visibilityChanged(bool)), m_shotListAction, SLOT(setChecked(bool)));
 
-    connect(ui_actionStatistics,SIGNAL(triggered(bool)), ui_statsDockWidget, SLOT(setVisible(bool)));
-    connect(ui_statsDockWidget,SIGNAL(visibilityChanged(bool)), ui_actionStatistics, SLOT(setChecked(bool)));
+    connect(m_actionStatistics,SIGNAL(triggered(bool)), ui_statsDockWidget, SLOT(setVisible(bool)));
+    connect(ui_statsDockWidget,SIGNAL(visibilityChanged(bool)), m_actionStatistics, SLOT(setChecked(bool)));
 
     connect(ui_consoleDockWidget,SIGNAL(visibilityChanged(bool)), ui_consoleButton, SLOT(setChecked(bool)));
     connect(ui_consoleButton,SIGNAL(clicked(bool)), ui_consoleDockWidget, SLOT(setVisible(bool)));
 
-    connect(ui_actionTimeline,SIGNAL(triggered(bool)), ui_timelineDockWidget, SLOT(setVisible(bool)));
-    connect(ui_timelineDockWidget,SIGNAL(visibilityChanged(bool)), ui_actionTimeline, SLOT(setChecked(bool)));
+    connect(m_actionTimeline,SIGNAL(triggered(bool)), ui_timelineDockWidget, SLOT(setVisible(bool)));
+    connect(ui_timelineDockWidget,SIGNAL(visibilityChanged(bool)), m_actionTimeline, SLOT(setChecked(bool)));
 
     // Files
-    connect(ui_fileAdminAction,SIGNAL(triggered()), this, SLOT(revealAdminFolder()));
-    connect(ui_filePreprodAction,SIGNAL(triggered()), this, SLOT(revealPreProdFolder()));
-    connect(ui_fileProdAction,SIGNAL(triggered()), this, SLOT(revealProdFolder()));
-    connect(ui_filePostProdAction,SIGNAL(triggered()), this, SLOT(revealPostProdFolder()));
-    connect(ui_fileAssetsAction,SIGNAL(triggered()), this, SLOT(revealAssetsFolder()));
-    connect(ui_fileShotsAction,SIGNAL(triggered()), this, SLOT(revealShotsFolder()));
-    connect(ui_fileOutputAction,SIGNAL(triggered()), this, SLOT(revealOutputFolder()));
-    connect(ui_fileUserAction,SIGNAL(triggered()), this, SLOT(revealUserFolder()));
-    connect(ui_fileVersionsAction,SIGNAL(triggered()), this, SLOT(revealVersionsFolder()));
-    connect(ui_fileTrashAction,SIGNAL(triggered()), this, SLOT(revealTrashFolder()));
+    connect(m_fileAdminAction,SIGNAL(triggered()), this, SLOT(revealAdminFolder()));
+    connect(m_filePreprodAction,SIGNAL(triggered()), this, SLOT(revealPreProdFolder()));
+    connect(m_fileProdAction,SIGNAL(triggered()), this, SLOT(revealProdFolder()));
+    connect(m_filePostProdAction,SIGNAL(triggered()), this, SLOT(revealPostProdFolder()));
+    connect(m_fileAssetsAction,SIGNAL(triggered()), this, SLOT(revealAssetsFolder()));
+    connect(m_fileShotsAction,SIGNAL(triggered()), this, SLOT(revealShotsFolder()));
+    connect(m_fileOutputAction,SIGNAL(triggered()), this, SLOT(revealOutputFolder()));
+    connect(m_fileUserAction,SIGNAL(triggered()), this, SLOT(revealUserFolder()));
+    connect(m_fileVersionsAction,SIGNAL(triggered()), this, SLOT(revealVersionsFolder()));
+    connect(m_fileTrashAction,SIGNAL(triggered()), this, SLOT(revealTrashFolder()));
 
     // Pages
     connect(ui_adminPage, SIGNAL(closeRequested()), this, SLOT(home()));
 
     // Other buttons
-    connect(actionSync, SIGNAL(triggered()), DBInterface::instance(),SLOT(sync()));
-    connect(actionFullSync, SIGNAL(triggered()), DBInterface::instance(),SLOT(fullSync()));
-    connect(mainStack,SIGNAL(currentChanged(int)), this, SLOT(pageChanged(int)));
+    connect(m_actionSync, SIGNAL(triggered()), DBInterface::instance(),SLOT(sync()));
+    connect(m_actionFullSync, SIGNAL(triggered()), DBInterface::instance(),SLOT(fullSync()));
+    connect(ui_mainStack,SIGNAL(currentChanged(int)), this, SLOT(pageChanged(int)));
 
     // Misc
     connect(DuQFLogger::instance(), &DuQFLogger::newLog, this, &MainWindow::log);
-    connect(Daemon::instance(), &Daemon::raise, this, &MainWindow::duqf_raise);
+    connect(Daemon::instance(), &Daemon::raise, this, &MainWindow::raise);
     connect(Ramses::instance(),&Ramses::userChanged, this, &MainWindow::currentUserChanged);
     connect(Ramses::instance(), &Ramses::currentProjectChanged, this, &MainWindow::currentProjectChanged);
     connect(DBInterface::instance(),&DBInterface::connectionStatusChanged, this, &MainWindow::dbiConnectionStatusChanged);
     connect(DBInterface::instance(), &DBInterface::syncFinished, this, &MainWindow::finishSync);
     connect(DBInterface::instance(), &DBInterface::syncStarted, this, &MainWindow::startSync);
+
+    connect(qApp, &QCoreApplication::aboutToQuit, this, &MainWindow::onQuit);
 }
 
 void MainWindow::connectShortCuts()
@@ -653,8 +202,8 @@ void MainWindow::connectShortCuts()
     QList<QKeySequence> syncSC;
     syncSC << QKeySequence("Ctrl+R");
     syncSC << QKeySequence("F5");
-    actionSync->setShortcuts( syncSC );
-    actionFullSync->setShortcut(QKeySequence("Ctrl+Shift+R"));
+    m_actionSync->setShortcuts( syncSC );
+    m_actionFullSync->setShortcut(QKeySequence("Ctrl+Shift+R"));
 }
 
 void MainWindow::setPropertiesDockWidget(QWidget *w, QString title, QString icon)
@@ -682,255 +231,7 @@ void MainWindow::onQuit()
     trayIcon->hide();
 }
 
-void MainWindow::duqf_initUi()
-{
-    // Set transparent, and draw the background in paintEvent() to have rounded corners
-    setAttribute(Qt::WA_TranslucentBackground, true);
-    setAttribute(Qt::WA_NoSystemBackground, true);
-
-    // ===== SYSTRAY ======
-    duqf_actionShowHide = new QAction("Hide " + QString(STR_INTERNALNAME), this);
-    duqf_actionShowHide->setIcon(QIcon(":/icons/hide-dark"));
-    bool useSysTray = QSystemTrayIcon::isSystemTrayAvailable() && USE_SYSTRAY;
-    if (useSysTray)
-    {
-        DuMenu *trayMenu = new DuMenu(QString(STR_INTERNALNAME),this);
-        QSettings settings;
-
-#ifdef Q_OS_LINUX
-        QString trayIconType = settings.value("appearance/trayIconType", "light").toString();
-#else
-        QString trayIconType = settings.value("appearance/trayIconType", "color").toString();
-#endif
-        trayIcon = new QSystemTrayIcon(QIcon(":/icons/tray-" + trayIconType),this);
-        trayMenu->addAction(duqf_actionShowHide);
-        QAction *actionQuit = new QAction("Quit");
-        actionQuit->setIcon(QIcon(":/icons/close-dark"));
-        trayMenu->addAction(actionQuit);
-        trayIcon->setContextMenu(trayMenu);
-        trayIcon->show();
-        connect(trayIcon,SIGNAL(activated(QSystemTrayIcon::ActivationReason)),this,SLOT(duqf_trayClicked(QSystemTrayIcon::ActivationReason)));
-        connect(duqf_actionShowHide, &QAction::triggered, this, &MainWindow::duqf_showHide);
-        connect(actionQuit, &QAction::triggered, this, &MainWindow::close);
-    }
-
-    // ===== ABOUT ========
-    duqf_aboutDialog = new AboutDialog();
-
-    // ===== TOOLBAR ======
-
-    mainToolBar->setWindowTitle(QString(STR_FILEDESCRIPTION));
-    QString focusColor = DuSettingsManager::instance()->uiFocusColor(DuSettingsManager::DarkerColor).name();
-    mainToolBar->setStyleSheet("#mainToolBar { padding: 5px; }"
-                               "#windowButton:hover,"
-                               "QToolButton:hover"
-                               "{ background-color:" + focusColor + "}");
-
-    // remove right click on toolbar
-    mainToolBar->setContextMenuPolicy(Qt::PreventContextMenu);
-
-    //drag window
-    duqf_toolBarClicked = false;
-
-#ifndef Q_OS_WIN
-    mainToolBar->installEventFilter(this);
-#endif
-
-    // ==== TOOLBAR BUTTONS
-    mainToolBar->addWidget(new DuToolBarSpacer());
-    title = new QLabel(STR_FILEDESCRIPTION);
-    title->setAttribute(Qt::WA_TransparentForMouseEvents);
-    mainToolBar->addWidget(title);
-
-    mainToolBar->addWidget(new DuToolBarSpacer());
-
-    //hide
-    QToolButton *hideButton = new QToolButton();
-    if (useSysTray)
-    {
-        hideButton->setIcon(QIcon(":/icons/hide"));
-        hideButton->setObjectName("windowButton");
-        mainToolBar->addWidget(hideButton);
-        hideButton->setFixedSize(24,24);
-    }
-
-#ifndef Q_OS_LINUX
-
-    m_minimizeAction = new QAction(this);
-    m_minimizeAction->setIcon(QIcon(":/icons/minimize"));
-    mainToolBar->addAction(m_minimizeAction);
-    QWidget *minWidget = mainToolBar->widgetForAction(m_minimizeAction);
-    minWidget->setFixedSize(24,24);
-    minWidget->setObjectName("windowButton");
-    mainToolBar->layout()->setAlignment(minWidget, Qt::AlignTop);
-
-    m_maximizeAction = new QAction(this);
-    QIcon maximizeIcon;
-    maximizeIcon.addFile(":/icons/maximize", QSize(), QIcon::Normal, QIcon::Off);
-    maximizeIcon.addFile(":/icons/unmaximize", QSize(), QIcon::Normal, QIcon::On);
-    m_maximizeAction->setIcon(maximizeIcon);
-    m_maximizeAction->setCheckable(true);
-    mainToolBar->addAction(m_maximizeAction);
-    QWidget *maxWidget = mainToolBar->widgetForAction(m_maximizeAction);
-    maxWidget->setFixedSize(24,24);
-    maxWidget->setObjectName("windowButton");
-    mainToolBar->layout()->setAlignment(maxWidget, Qt::AlignTop);
-
-    m_closeAction = new QAction(this);
-    m_closeAction->setIcon(QIcon(":/icons/close-simple"));
-    mainToolBar->addAction(m_closeAction);
-    QWidget *closeWidget = mainToolBar->widgetForAction(m_closeAction);
-    closeWidget->setFixedSize(24,24);
-    closeWidget->setObjectName("windowButton");
-    mainToolBar->layout()->setAlignment(closeWidget, Qt::AlignTop);
-
-#endif // Not linux
-
-    // ===== STATUSBAR ======
-
-    // version in statusbar
-    mainStatusBar->addPermanentWidget(new QLabel("v" + QString(STR_VERSION)));
-    duqf_settingsButton = new QToolButton();
-    duqf_settingsButton->setIcon(QIcon(":/icons/settings-w"));
-    duqf_settingsButton->setToolTip("Go to Settings");
-    duqf_settingsButton->setCheckable(true);
-    mainStatusBar->addPermanentWidget(duqf_settingsButton);
-    QToolButton *helpButton = new QToolButton();
-    helpButton->setIcon(QIcon(":/icons/help"));
-    helpButton->setToolTip("Get Help");
-    helpButton->setPopupMode( QToolButton::InstantPopup );
-    helpMenu = new DuMenu(this);
-
-    helpButton->setMenu(helpMenu);
-    mainStatusBar->addPermanentWidget(helpButton);
-
-    if (QString(URL_DOC) != "")
-    {
-        QAction *docAction = new QAction(QIcon(":/icons/documentation"), "Help");
-        docAction->setToolTip("Read the documentation");
-        docAction->setShortcut(QKeySequence("F1"));
-        helpMenu->addAction(docAction);
-        connect(docAction, SIGNAL(triggered()), this, SLOT(duqf_doc()));
-    }
-    QAction *aboutAction = new QAction(QIcon(":/icons/info"), "About");
-    helpMenu->addAction(aboutAction);
-    connect(aboutAction, SIGNAL(triggered()), this, SLOT(duqf_about()));
-    helpMenu->addSeparator();
-    bool chat = QString(URL_CHAT) != "";
-    bool bugReport = QString(URL_BUGREPORT) != "";
-    bool forum = QString(URL_FORUM) != "";
-    bool donate = QString(URL_DONATION) != "";
-    if (bugReport)
-    {
-        QAction *bugReportAction = new QAction(QIcon(":/icons/bug-report"), "Bug Report");
-        bugReportAction->setToolTip("Report a bug");
-        helpMenu->addAction(bugReportAction);
-        if (!chat && !forum && !donate) helpMenu->addSeparator();
-        connect(bugReportAction, SIGNAL(triggered()), this, SLOT(duqf_bugReport()));
-    }
-    if (chat)
-    {
-        QAction *chatAction = new QAction(QIcon(":/icons/chat"), "Chat");
-        chatAction->setToolTip("Come and have a chat");
-        helpMenu->addAction(chatAction);
-        if (!forum && !donate) helpMenu->addSeparator();
-        connect(chatAction, SIGNAL(triggered()), this, SLOT(duqf_chat()));
-    }
-    if (forum)
-    {
-        QAction *forumAction = new QAction(QIcon(":/icons/forum"), "Forum");
-        forumAction->setToolTip("Join us on our forum");
-        helpMenu->addAction(forumAction);
-        if (!donate) helpMenu->addSeparator();
-        connect(forumAction, SIGNAL(triggered()), this, SLOT(duqf_forum()));
-    }
-    if (donate)
-    {
-        QAction *donateAction = new QAction(QIcon(":/icons/donate"), "I ♥ " + QString(STR_FILEDESCRIPTION));
-        donateAction->setToolTip("Help us, donate now!");
-        helpMenu->addAction(donateAction);
-        helpMenu->addSeparator();
-        connect(donateAction, SIGNAL(triggered()), this, SLOT(duqf_donate()));
-
-        /*QToolButton *donateButton = new QToolButton();
-        donateButton->setIcon(QIcon(":/icons/donate"));
-        donateButton->setToolTip("I ♥ " + QString(STR_FILEDESCRIPTION));
-        mainStatusBar->addPermanentWidget(donateButton);
-        connect(donateButton, SIGNAL(clicked()), this, SLOT(duqf_donate()));*/
-    }
-    QAction *aboutQtAction = new QAction(QIcon(":/icons/qt"), "About Qt");
-    helpMenu->addAction(aboutQtAction);
-
-    // Check for update
-    // moved in main()
-    //duqf_checkUpdate();
-
-    // ========= SETTINGS ========
-
-    settingsWidget = new SettingsWidget();
-    settingsWidget->titleBar()->setObjectName("settingsToolBar");
-    duqf_settingsLayout->addWidget(settingsWidget);
-
-    AppearanceSettingsWidget *asw = new AppearanceSettingsWidget();
-    settingsWidget->addPage(asw, "Appearance", QIcon(":/icons/color"));
-
-    DuQFUpdateSettingsWidget *usw = new DuQFUpdateSettingsWidget();
-    settingsWidget->addPage(usw, "Updates", QIcon(":/icons/update-settings"));
-
-    // ====== CONNECTIONS ======
-    if (useSysTray)
-    {
-        connect(hideButton, SIGNAL(clicked()), this, SLOT(duqf_showHide()));
-    }
-
-    connect(aboutQtAction, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
-    connect(duqf_settingsButton, SIGNAL(clicked(bool)), this, SLOT(duqf_settings(bool)));
-    connect(settingsWidget, SIGNAL(closeRequested()), this, SLOT(duqf_closeSettings()));
-    connect(settingsWidget, SIGNAL(reinitRequested()), this, SLOT(duqf_reinitSettings()));
-
-    DuApplication *app = qobject_cast<DuApplication*>(qApp);
-    duqf_updateAvailable(app->updateInfo());
-
-#ifdef Q_OS_WIN
-    connect(m_minimizeAction, &QAction::triggered, this, &MainWindow::minimizeTriggered);
-    connect(m_maximizeAction, &QAction::triggered, this, &MainWindow::maximizeTriggered);
-    connect(m_closeAction, &QAction::triggered, this, &MainWindow::close);
-#endif
-
-#ifdef Q_OS_MAC
-    connect(m_minimizeAction, &QAction::triggered, this, &QMainWindow::showMinimized);
-    connect(m_maximizeAction, &QAction::triggered, this, &MainWindow::maximize);
-    connect(m_closeAction, &QAction::triggered, this, &MainWindow::close);
-#endif
-
-    connect(qApp, &QCoreApplication::aboutToQuit, this, &MainWindow::onQuit);
-}
-
-void MainWindow::duqf_setStyle()
-{
-    // ======== STYLE ========
-
-    //Re-set StyleSheet
-    QSettings settings;
-    QString cssFile = settings.value("appearance/cssFile", ":/styles/default").toString();
-    QString style = settings.value("appearance/style","Default").toString();
-    if (cssFile != "")
-    {
-        DuUI::updateCSS(cssFile);
-    }
-    else
-    {
-        DuUI::updateCSS("");
-        qApp->setStyle(QStyleFactory::create(style));
-    }
-    //and font
-    DuUI::setFont(settings.value("appearance/font", "Ubuntu").toString());
-    //and tool buttons
-    //int styleIndex = settings.value("appearance/toolButtonStyle", 2).toInt();
-    //DuUI::setToolButtonStyle(styleIndex);
-}
-
-void MainWindow::duqf_raise()
+void MainWindow::raise()
 {
     qDebug() << "Hello!";
     this->show();
@@ -939,50 +240,50 @@ void MainWindow::duqf_raise()
     this->activateWindow(); // for Windows
 }
 
-void MainWindow::duqf_bugReport()
+void MainWindow::bugReport()
 {
     QDesktopServices::openUrl ( QUrl( URL_BUGREPORT ) );
 }
 
-void MainWindow::duqf_forum()
+void MainWindow::forum()
 {
     QDesktopServices::openUrl ( QUrl( URL_FORUM ) );
 }
 
-void MainWindow::duqf_chat()
+void MainWindow::chat()
 {
     QDesktopServices::openUrl ( QUrl( URL_CHAT ) );
 }
 
-void MainWindow::duqf_doc()
+void MainWindow::doc()
 {
     QDesktopServices::openUrl ( QUrl( URL_DOC ) );
 }
 
-void MainWindow::duqf_donate()
+void MainWindow::donate()
 {
     QDesktopServices::openUrl ( QUrl( URL_DONATION ) );
 }
 
-void MainWindow::duqf_settings(bool checked)
+void MainWindow::settings(bool checked)
 {
-    duqf_settingsButton->setChecked(checked);
+    ui_settingsButton->setChecked(checked);
     if (checked)
     {
-        mainStack->setCurrentIndex(Settings);
+        ui_mainStack->setCurrentIndex(Settings);
     }
     else
     {
-        mainStack->setCurrentIndex(Home);
+        ui_mainStack->setCurrentIndex(Home);
     }
 }
 
-void MainWindow::duqf_closeSettings()
+void MainWindow::closeSettings()
 {
-    duqf_settings(false);
+    settings(false);
 }
 
-void MainWindow::duqf_reinitSettings()
+void MainWindow::reinitSettings()
 {
     QMessageBox::StandardButton choice = QMessageBox::question(this, "Reset settings", "This will reset all settings to their default values and restart the application.\nAre you sure you want to continue?" );
     if (choice == QMessageBox::Yes)
@@ -995,45 +296,45 @@ void MainWindow::duqf_reinitSettings()
     }
 }
 
-void MainWindow::duqf_about()
+void MainWindow::about()
 {
-    duqf_aboutDialog->show();
+    //duqf_aboutDialog->show();
 }
 
-void MainWindow::duqf_trayClicked(QSystemTrayIcon::ActivationReason reason)
+void MainWindow::trayClicked(QSystemTrayIcon::ActivationReason reason)
 {
 
     if (reason == QSystemTrayIcon::Trigger)
     {
-        duqf_showHide();
+        showHide();
     }
 }
 
-void MainWindow::duqf_showHide()
+void MainWindow::showHide()
 {
     if (this->isVisible())
     {
-        duqf_actionShowHide->setIcon(QIcon(":/icons/show-dark"));
-        duqf_actionShowHide->setText("Show " + QString(STR_INTERNALNAME));
+        m_actionShowHide->setIcon(DuIcon(":/icons/show-dark"));
+        m_actionShowHide->setText("Show " + QString(STR_INTERNALNAME));
         emit hideTriggered();
         this->hide();
     }
     else
     {
-        duqf_actionShowHide->setIcon(QIcon(":/icons/hide-dark"));
-        duqf_actionShowHide->setText("Hide " + QString(STR_INTERNALNAME));
+        m_actionShowHide->setIcon(DuIcon(":/icons/hide-dark"));
+        m_actionShowHide->setText("Hide " + QString(STR_INTERNALNAME));
         emit showTriggered();
         this->show();
     }
 }
 
-void MainWindow::duqf_askBeforeClose()
+void MainWindow::askBeforeClose()
 {
     QMessageBox::StandardButton r = QMessageBox::question(this, "Quitting Ramses", "Are you sure you want to quit Ramses?");
     if (r == QMessageBox::Yes) this->close();
 }
 
-void MainWindow::duqf_updateAvailable(QJsonObject updateInfo)
+void MainWindow::updateAvailable(QJsonObject updateInfo)
 {
     // Check funding
     bool donate = QString(URL_DONATION) != "";
@@ -1050,7 +351,7 @@ void MainWindow::duqf_updateAvailable(QJsonObject updateInfo)
                 duqf_fundingBar->setMaximumWidth(75);
                 duqf_fundingBar->setFormat("♥ Donate");
                 duqf_fundingBar->installEventFilter(this);
-                mainStatusBar->addPermanentWidget(duqf_fundingBar);
+                ui_mainStatusBar->addPermanentWidget(duqf_fundingBar);
             }
             duqf_fundingBar->setMaximum(goal);
             duqf_fundingBar->setValue(month);
@@ -1079,25 +380,25 @@ void MainWindow::log(DuQFLog m)
 
     DuQFLog::LogType type = m.type();
 
-    if (type == DuQFLog::Information) mainStatusBar->showMessage(message,5000);
-    else if (type == DuQFLog::Warning) mainStatusBar->showMessage(message,10000);
-    else if (type == DuQFLog::Critical) mainStatusBar->showMessage(message);
-    else if (type == DuQFLog::Fatal) mainStatusBar->showMessage(message);
+    if (type == DuQFLog::Information) ui_mainStatusBar->showMessage(message,5000);
+    else if (type == DuQFLog::Warning) ui_mainStatusBar->showMessage(message,10000);
+    else if (type == DuQFLog::Critical) ui_mainStatusBar->showMessage(message);
+    else if (type == DuQFLog::Fatal) ui_mainStatusBar->showMessage(message);
 }
 
 void MainWindow::pageChanged(int i)
 {
-    actionAdmin->setChecked(i == 3);
-    duqf_settingsButton->setChecked(i == 1);
-    actionSettings->setChecked(i == 1);
-    actionLogIn->setChecked(i == 0);
+    m_actionAdmin->setChecked(i == 3);
+    ui_settingsButton->setChecked(i == 1);
+    m_actionSettings->setChecked(i == 1);
+    m_actionLogIn->setChecked(i == 0);
     ui_propertiesDockWidget->hide();
 }
 
 void MainWindow::serverSettings()
 {
-    mainStack->setCurrentIndex(Settings);
-    settingsWidget->setCurrentIndex(2);
+    ui_mainStack->setCurrentIndex(Settings);
+    ui_settingsWidget->setCurrentIndex(2);
 }
 
 void MainWindow::setOfflineAction()
@@ -1133,13 +434,13 @@ void MainWindow::databaseSettingsAction()
 
 void MainWindow::home()
 {
-    mainToolBar->show();
-    mainStack->setCurrentIndex(Home);
+    ui_mainToolBar->show();
+    ui_mainStack->setCurrentIndex(Home);
 }
 
 void MainWindow::userProfile()
 {
-    mainStack->setCurrentIndex(UserProfile);
+    ui_mainStack->setCurrentIndex(UserProfile);
 }
 
 void MainWindow::revealAdminFolder()
@@ -1213,33 +514,33 @@ void MainWindow::revealTrashFolder()
 
 void MainWindow::admin(bool show)
 {
-    mainToolBar->show();
-    if (show) mainStack->setCurrentIndex(Admin);
+    ui_mainToolBar->show();
+    if (show) ui_mainStack->setCurrentIndex(Admin);
     else home();
 }
 
 void MainWindow::pipeline()
 {
-    mainToolBar->show();
-    mainStack->setCurrentIndex(PipeLine);
+    ui_mainToolBar->show();
+    ui_mainStack->setCurrentIndex(PipeLine);
 }
 
 void MainWindow::shots()
 {
-    mainToolBar->show();
-    mainStack->setCurrentIndex(Shots);
+    ui_mainToolBar->show();
+    ui_mainStack->setCurrentIndex(Shots);
 }
 
 void MainWindow::assets()
 {
-    mainToolBar->show();
-    mainStack->setCurrentIndex(Assets);
+    ui_mainToolBar->show();
+    ui_mainStack->setCurrentIndex(Assets);
 }
 
 void MainWindow::schedule()
 {
-    mainToolBar->show();
-    mainStack->setCurrentIndex(Schedule);
+    ui_mainToolBar->show();
+    ui_mainStack->setCurrentIndex(Schedule);
 }
 
 void MainWindow::currentUserChanged()
@@ -1249,38 +550,38 @@ void MainWindow::currentUserChanged()
     //defaults
     ui_userButton->setText("Guest");
     ui_userButton->setIcon(QIcon(""));
-    actionAdmin->setVisible(false);
-    actionAdmin->setChecked(false);
-    actionUserProfile->setVisible(false);
-    actionUserFolder->setVisible(false);
+    m_actionAdmin->setVisible(false);
+    m_actionAdmin->setChecked(false);
+    m_actionUserProfile->setVisible(false);
+    m_actionUserFolder->setVisible(false);
 
     RamUser *user = Ramses::instance()->currentUser();
     if (!user)
     {
-        actionLogIn->setVisible(true);
-        actionLogOut->setVisible(false);
-        actionSettings->setVisible(true);
+        m_actionLogIn->setVisible(true);
+        m_actionLogOut->setVisible(false);
+        m_actionSettings->setVisible(true);
         ui_networkButton->setVisible(false);
         ui_projectSelectorAction->setVisible(false);
         home();
         return;
     }
 
-    actionLogIn->setVisible(false);
-    actionLogOut->setVisible(true);
+    m_actionLogIn->setVisible(false);
+    m_actionLogOut->setVisible(true);
     ui_networkButton->setVisible(true);
-    actionSettings->setVisible(false);
+    m_actionSettings->setVisible(false);
     ui_projectSelectorAction->setVisible(true);
 
     _currentUserConnection = connect(user, &RamUser::dataChanged, this, &MainWindow::currentUserChanged);
 
     ui_userButton->setText(user->shortName());
-    actionUserProfile->setVisible(true);
-    actionUserFolder->setVisible(true);
+    m_actionUserProfile->setVisible(true);
+    m_actionUserFolder->setVisible(true);
 
     if (user->role() == RamUser::Admin)
     {
-        actionAdmin->setVisible(true);
+        m_actionAdmin->setVisible(true);
         ui_userButton->setIcon(QIcon(":/icons/admin"));
     }
     else if (user->role() == RamUser::ProjectAdmin)
@@ -1337,14 +638,14 @@ void MainWindow::freezeUI(bool f)
 {
     if (f)
     {
-        m_currentPageIndex = mainStack->currentIndex();
-        mainToolBar->hide();
-        mainStack->setCurrentIndex(Progress);
+        m_currentPageIndex = ui_mainStack->currentIndex();
+        ui_mainToolBar->hide();
+        ui_mainStack->setCurrentIndex(Progress);
     }
     else
     {
-        mainStack->setCurrentIndex(m_currentPageIndex);
-        mainToolBar->show();
+        ui_mainStack->setCurrentIndex(m_currentPageIndex);
+        ui_mainToolBar->show();
     }
     this->repaint();
 }
@@ -1356,8 +657,8 @@ void MainWindow::dbiConnectionStatusChanged(NetworkUtils::NetworkStatus s)
     {
         ui_refreshButton->setVisible(true);
         ui_networkButton->setText(address);
-        actionSetOnline->setVisible(false);
-        actionSetOffline->setVisible(true);
+        m_actionSetOnline->setVisible(false);
+        m_actionSetOffline->setVisible(true);
 
         if (RamServerInterface::instance()->ssl())
         {
@@ -1380,8 +681,8 @@ void MainWindow::dbiConnectionStatusChanged(NetworkUtils::NetworkStatus s)
         ui_networkButton->setIcon(QIcon(":/icons/storage"));
         ui_networkButton->setToolTip("Offline.");
         ui_networkButton->setStatusTip("");
-        actionSetOnline->setVisible(true);
-        actionSetOffline->setVisible(false);
+        m_actionSetOnline->setVisible(true);
+        m_actionSetOffline->setVisible(false);
     }
 }
 
@@ -1398,61 +699,25 @@ void MainWindow::finishSync()
     // Refresh all UI!
     this->update();
 
-    mainStatusBar->showMessage(tr("Sync finished!"), 5000);
+    ui_mainStatusBar->showMessage(tr("Sync finished!"), 5000);
 }
 
 void MainWindow::startSync()
 {
     ui_refreshButton->hide();
-    mainStatusBar->showMessage(tr("Syncing..."));
+    ui_mainStatusBar->showMessage(tr("Syncing..."));
 }
 
 bool MainWindow::eventFilter(QObject *obj, QEvent *event)
 {
-    if (obj->objectName() == "mainToolBar")
-    {
-        if (event->type() == QEvent::MouseButtonPress)
-        {
-            QMouseEvent *mouseEvent = (QMouseEvent*)event;
-            if (mouseEvent->button() == Qt::LeftButton)
-            {
-                duqf_toolBarClicked = true;
-                duqf_dragPosition = mouseEvent->globalPos() - this->frameGeometry().topLeft();
-                event->accept();
-            }
-            return true;
-        }
-
-        if (event->type() == QEvent::MouseMove)
-        {
-            QMouseEvent *mouseEvent = (QMouseEvent*)event;
-            if (mouseEvent->buttons() & Qt::LeftButton)
-            {
-                if (duqf_toolBarClicked)
-                {
-                    if (this->isMaximized()) return false;
-                    this->move(mouseEvent->globalPos() - duqf_dragPosition);
-                    event->accept();
-                }
-                return true;
-            }
-            return false;
-        }
-
-        if (event->type() == QEvent::MouseButtonRelease)
-        {
-            duqf_toolBarClicked = false;
-            return false;
-        }
-    }
-    else if (obj->objectName() == "fundingBar")
+    if (obj->objectName() == "fundingBar")
     {
         if (event->type() == QEvent::MouseButtonPress) {
-            duqf_donate();
+            donate();
         }
     }
 
-    return QMainWindow::eventFilter(obj, event);
+    return DuMainWindow::eventFilter(obj, event);
 }
 
 void MainWindow::paintEvent(QPaintEvent *e)
@@ -1546,4 +811,756 @@ void MainWindow::keyReleaseEvent(QKeyEvent *key)
         m_shiftPressed = false;
     }
     QMainWindow::keyReleaseEvent(key);
+}
+
+void MainWindow::setupActions()
+{
+    m_actionLogIn = new DuAction(this);
+    m_actionLogIn->setText(tr("Log in..."));
+    m_actionLogIn->setToolTip(tr("Logs you in the Ramses database."));
+    m_actionLogIn->setIcon(":/icons/login");
+
+    m_actionLogOut = new DuAction(this);
+    m_actionLogOut->setText(tr("Log out"));
+    m_actionLogOut->setToolTip(tr("Logs you out of the Ramses database."));
+    m_actionLogOut->setIcon(":/icons/logout");
+
+    m_actionUserProfile = new DuAction(this);
+    m_actionUserProfile->setText(tr("Profile"));
+    m_actionUserProfile->setToolTip(tr("Edit your user profile."));
+    m_actionUserProfile->setIcon(":/icons/user-settings");
+
+    m_actionAdmin = new DuAction(this);
+    m_actionAdmin->setText(tr("Admin"));
+    m_actionAdmin->setToolTip(tr("Edit global database settings and templates."));
+    m_actionAdmin->setIcon(":/icons/settings");
+
+    m_actionUserFolder = new DuAction(this);
+    m_actionUserFolder->setText(tr("User folder"));
+    m_actionUserFolder->setToolTip(tr("Opens your personal folder."));
+    m_actionUserFolder->setIcon(":/icons/folder");
+
+    m_actionPipeline = new DuAction(this);
+    m_actionPipeline->setText(tr("Pipeline"));
+    m_actionPipeline->setToolTip(tr("Edit the project pipeline."));
+    m_actionPipeline->setIcon(":/icons/steps-menu");
+
+    m_actionAssets = new DuAction(this);
+    m_actionAssets->setText(tr("Assets Table"));
+    m_actionAssets->setToolTip(tr("Track the assets production."));
+    m_actionAssets->setIcon(":/icons/assets-table");
+
+    m_actionShots = new DuAction(this);
+    m_actionShots->setText(tr("Shots Table"));
+    m_actionShots->setToolTip(tr("Track the shots production."));
+    m_actionShots->setIcon(":/icons/shots-table");
+
+    m_actionSchedule = new DuAction(this);
+    m_actionSchedule->setText(tr("Schedule"));
+    m_actionSchedule->setToolTip(tr("Edit the user schedules."));
+    m_actionSchedule->setIcon(":/icons/calendar");
+
+    m_actionStatistics = new DuAction(this);
+    m_actionStatistics->setText(tr("Statistics"));
+    m_actionStatistics->setToolTip(tr("Shows some project statics and production tracking data."));
+    m_actionStatistics->setIcon(":/icons/stats");
+
+    m_actionTimeline = new DuAction(this);
+    m_actionTimeline->setText(tr("Timeline"));
+    m_actionTimeline->setToolTip(tr("Shows the shots in a timeline."));
+    m_actionTimeline->setIcon(":/icons/timeline");
+
+    m_actionSetOnline = new DuAction(this);
+    m_actionSetOnline->setText(tr("Set online"));
+    m_actionSetOnline->setToolTip(tr("Connects to the Ramses server."));
+    m_actionSetOnline->setIcon(":/icons/server-settings");
+
+    m_actionSetOffline = new DuAction(this);
+    m_actionSetOffline->setText(tr("Set offline"));
+    m_actionSetOffline->setToolTip(tr("Disconnects from the Ramses server and deactivates sync."));
+    m_actionSetOffline->setIcon(":/icons/folder");
+
+    m_actionDatabaseSettings = new DuAction(this);
+    m_actionDatabaseSettings->setText(tr("Database settings"));
+    m_actionDatabaseSettings->setToolTip(tr("Edit the database settings."));
+    m_actionDatabaseSettings->setIcon(":/icons/storage-settings");
+
+    m_actionSettings = new DuAction(this);
+    m_actionSettings->setText(tr("Settings"));
+    m_actionSettings->setToolTip(tr("Edit the application settings."));
+    m_actionSettings->setIcon(":/icons/settings");
+
+    m_actionSync = new DuAction(this);
+    m_actionSync->setText(tr("Quick sync"));
+    m_actionSync->setToolTip(tr("Quickly syncs the most recent data with the server."));
+    m_actionSync->setIcon(":/icons/check-update");
+
+    m_actionFullSync = new DuAction(this);
+    m_actionSync->setText(tr("Full sync"));
+    m_actionSync->setToolTip(tr("Syncs all the data with the server."));
+    m_actionSync->setIcon(":/icons/check-update");
+
+    m_projectAction = new DuAction(tr("Project settings"), this);
+    m_projectAction->setIcon(":/icons/project");
+    m_projectAction->setToolTip(tr("Edit the project settings."));
+    m_projectAction->setCheckable(true);
+
+    m_stepsAction = new DuAction(tr("Steps"), this);
+    m_stepsAction->setIcon(":/icons/step");
+    m_stepsAction->setToolTip(tr("Shows the list of steps."));
+    m_stepsAction->setCheckable(true);
+
+    m_pipeFilesAction = new DuAction(tr("Pipe formats"), this);
+    m_pipeFilesAction->setIcon(":/icons/connection");
+    m_pipeFilesAction->setToolTip(tr("Shows the list of pipes."));
+    m_pipeFilesAction->setCheckable(true);
+
+    m_assetGroupAction = new DuAction(tr("Asset groups"), this);
+    m_assetGroupAction->setIcon(":/icons/asset-group");
+    m_assetGroupAction->setToolTip(tr("Shows the list of asset groups."));
+    m_assetGroupAction->setCheckable(true);
+
+    m_assetListAction = new DuAction(tr("Assets"), this);
+    m_assetListAction->setIcon(":/icons/asset");
+    m_assetListAction->setToolTip(tr("Shows the list of assets."));
+    m_assetListAction->setCheckable(true);
+
+    m_sequenceAction = new DuAction(tr("Sequences"), this);
+    m_sequenceAction->setIcon(":/icons/sequence");
+    m_sequenceAction->setToolTip(tr("Shows the list of sequences."));
+    m_sequenceAction->setCheckable(true);
+
+    m_shotListAction = new DuAction(tr("Shots"), this);
+    m_shotListAction->setIcon(":/icons/shot");
+    m_shotListAction->setToolTip(tr("Shows the list of shots."));
+    m_shotListAction->setCheckable(true);
+
+    m_fileAdminAction = new DuAction(tr("Admin"), this);
+    m_fileAdminAction->setIcon(":/icons/settings-w");
+
+    m_filePreprodAction = new DuAction(tr("Pre-production"), this);
+    m_filePreprodAction->setIcon(":/icons/project");
+
+    m_fileProdAction = new DuAction(tr("Production"), this);
+    m_fileProdAction->setIcon(":/icons/sequence");
+
+    m_filePostProdAction = new DuAction(tr("Post-production"), this);
+    m_filePostProdAction->setIcon(":/icons/film");
+
+    m_fileAssetsAction = new DuAction(tr("Assets"), this);
+    m_fileAssetsAction->setIcon(":/icons/asset");
+
+    m_fileShotsAction = new DuAction(tr("Shots"), this);
+    m_fileShotsAction->setIcon(":/icons/shot");
+
+    m_fileOutputAction = new DuAction(tr("Output"), this);
+    m_fileOutputAction->setIcon(":/icons/output-folder");
+
+    m_fileUserAction = new DuAction(tr("My user folder"), this);
+    m_fileUserAction->setIcon(":/icons/user");
+
+    m_fileVersionsAction = new DuAction(tr("Project versions"), this);
+    m_fileVersionsAction->setIcon(":/icons/versions-folder");
+
+    m_fileTrashAction = new DuAction(tr("Project trash"), this);
+    m_fileTrashAction->setIcon(":/icons/trash");
+}
+
+void MainWindow::setupUi()
+{
+    ui_mainStack = new QStackedWidget(this);
+    this->setCentralWidget(ui_mainStack);
+
+    ui_mainPage = new QWidget(ui_mainStack);
+    ui_mainStack->addWidget(ui_mainPage);
+
+    auto mainLayout = new QVBoxLayout(ui_mainPage);
+    mainLayout->setSpacing(0);
+    mainLayout->setContentsMargins(0, 0, 0, 0);
+    LoginPage *lp = new LoginPage(this);
+    mainLayout->addWidget(lp);
+
+    auto settingsPage = new QWidget(ui_mainStack);
+    ui_mainStack->addWidget(settingsPage);
+
+    auto settingsLayout = new QVBoxLayout(settingsPage);
+    settingsLayout->setSpacing(0);
+    settingsLayout->setContentsMargins(0, 0, 0, 0);
+
+    ui_settingsWidget = new SettingsWidget();
+    ui_settingsWidget->titleBar()->setObjectName("settingsToolBar");
+    settingsLayout->addWidget(ui_settingsWidget);
+
+    ui_mainStatusBar = new QStatusBar(this);
+    ui_mainStatusBar->setSizeGripEnabled(false);
+    this->setStatusBar(ui_mainStatusBar);
+
+    AppearanceSettingsWidget *asw = new AppearanceSettingsWidget();
+    ui_settingsWidget->addPage(asw, "Appearance", QIcon(":/icons/color"));
+
+    DuQFUpdateSettingsWidget *usw = new DuQFUpdateSettingsWidget();
+    ui_settingsWidget->addPage(usw, "Updates", QIcon(":/icons/update-settings"));
+
+    DaemonSettingsWidget *dsw = new DaemonSettingsWidget(this);
+    ui_settingsWidget->addPage(dsw, "Daemon", QIcon(":/icons/daemon"));
+
+    // user profile
+    UserProfilePage *up = new UserProfilePage(this);
+    ui_mainStack->addWidget(up);
+
+    // admin
+    ui_adminPage = new SettingsWidget("Administration", this);
+    ui_adminPage->titleBar()->setObjectName("adminToolBar");
+    ui_adminPage->showReinitButton(false);
+    ui_mainStack->addWidget(ui_adminPage);
+    // Admin tabs
+    qDebug() << "> Admin";
+    UserManagerWidget *userManager = new UserManagerWidget(this);
+    ui_adminPage->addPage(userManager,"Users", QIcon(":/icons/users"));
+    ui_adminPage->titleBar()->insertLeft(userManager->menuButton());
+    qDebug() << "  > users ok";
+    ProjectManagerWidget *projectManager = new ProjectManagerWidget(this);
+    ui_adminPage->addPage(projectManager, "Projects", QIcon(":/icons/projects"));
+    ui_adminPage->titleBar()->insertLeft(projectManager->menuButton());
+    qDebug() << "  > projects ok";
+    TemplateStepManagerWidget *templateStepManager = new TemplateStepManagerWidget(this);
+    ui_adminPage->addPage(templateStepManager, "Template Steps", QIcon(":/icons/steps"));
+    ui_adminPage->titleBar()->insertLeft(templateStepManager->menuButton());
+    qDebug() << "  > template steps ok";
+    TemplateAssetGroupManagerWidget *templateAssetGroupManager = new TemplateAssetGroupManagerWidget(this);
+    ui_adminPage->addPage(templateAssetGroupManager, "Template Asset Groups", QIcon(":/icons/asset-groups"));
+    ui_adminPage->titleBar()->insertLeft(templateAssetGroupManager->menuButton());
+    qDebug() << "  > template assets ok";
+    StateManagerWidget *stateManager = new StateManagerWidget(this);
+    ui_adminPage->addPage(stateManager, "States", QIcon(":/icons/state"));
+    ui_adminPage->titleBar()->insertLeft(stateManager->menuButton());
+    qDebug() << "  > states ok";
+    FileTypeManagerWidget *fileTypeManager = new FileTypeManagerWidget(this);
+    ui_adminPage->addPage(fileTypeManager, "File Types", QIcon(":/icons/files"));
+    ui_adminPage->titleBar()->insertLeft(fileTypeManager->menuButton());
+    qDebug() << "  > file types ok";
+    ApplicationManagerWidget *applicationManager = new ApplicationManagerWidget(this);
+    ui_adminPage->addPage(applicationManager, "Applications", QIcon(":/icons/applications"));
+    ui_adminPage->titleBar()->insertLeft(applicationManager->menuButton());
+    qDebug() << "  > applications ok";
+    DBManagerWidget *dbManager = new DBManagerWidget(this);
+    ui_adminPage->addPage(dbManager, "Database tools", QIcon(":/icons/applications"));
+    qDebug() << "  > DB Manager ok";//*/
+
+// Pipeline editor
+#ifndef DEACTIVATE_PIPELINE
+    PipelineWidget *pipelineEditor = new PipelineWidget(this);
+    ui_mainStack->addWidget(pipelineEditor);
+    connect(pipelineEditor, SIGNAL(closeRequested()), this, SLOT(home()));
+    qDebug() << "> Pipeline ready";//*/
+#endif
+
+#ifndef DEACTIVATE_ASSETSTABLE
+    ItemManagerWidget *assetsTable = new ItemManagerWidget(RamStep::AssetProduction, this);
+    ui_mainStack->addWidget(assetsTable);
+    connect(assetsTable, SIGNAL(closeRequested()), this, SLOT(home()));
+    qDebug() << "> Assets table ready";
+#endif
+
+#ifndef DEACTIVATE_SHOTSTABLE
+    ItemManagerWidget *shotsTable = new ItemManagerWidget(RamStep::ShotProduction, this);
+    ui_mainStack->addWidget(shotsTable);
+    connect(shotsTable, SIGNAL(closeRequested()), this, SLOT(home()));
+    qDebug() << "> Shots table ready";
+#endif
+
+#ifndef DEACTIVATE_SCHEDULE
+    ScheduleManagerWidget *scheduleTable = new ScheduleManagerWidget(this);
+    ui_mainStack->addWidget(scheduleTable);
+    connect(scheduleTable,SIGNAL(closeRequested()), this, SLOT(home()));
+    qDebug() << "> Schedule ready";
+#endif
+
+    // Progress page
+    progressPage = new ProgressPage(this);
+    ui_mainStack->addWidget(progressPage);
+}
+
+void MainWindow::setupDocks()
+{
+    QSettings settings;
+
+#ifndef DEACTIVATE_STATS
+    StatisticsWidget *statsTable = new StatisticsWidget(this);
+
+    ui_statsDockWidget = new DuDockWidget(tr("Statistics"));
+    ui_statsDockWidget->setWindowIcon(DuIcon(":/icons/stats"));
+    ui_statsDockWidget->setObjectName("statsDock");
+
+    ui_statsTitle = new DuDockTitleWidget(tr("Statistics"), this);
+    ui_statsTitle->setObjectName("dockTitle");
+    ui_statsTitle->setIcon(":/icons/stats");
+    ui_statsDockWidget->setTitleBarWidget(ui_statsTitle);
+
+    ui_statsDockWidget->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    ui_statsDockWidget->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable );
+    ui_statsDockWidget->setWidget( statsTable );
+    Qt::DockWidgetArea area = static_cast<Qt::DockWidgetArea>( settings.value("ui/statsArea", Qt::LeftDockWidgetArea).toInt() );
+    this->addDockWidget(area, ui_statsDockWidget);
+    ui_statsDockWidget->hide();
+
+    qDebug() << "> Statistics table ready";
+#endif
+
+    // A console in a tab
+    ConsoleWidget *console = new ConsoleWidget(this);
+
+    ui_consoleDockWidget = new DuDockWidget("Console");
+    ui_consoleDockWidget->setWindowIcon(DuIcon(":/icons/bash"));
+    ui_consoleDockWidget->setObjectName("consoleDock");
+
+    auto *consoleTitle = new DuDockTitleWidget("Console", this);
+    consoleTitle->setObjectName("dockTitle");
+    consoleTitle->setIcon(":/icons/bash");
+    ui_consoleDockWidget->setTitleBarWidget(consoleTitle);
+
+    ui_consoleDockWidget->setAllowedAreas(Qt::AllDockWidgetAreas);
+    ui_consoleDockWidget->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable );
+    ui_consoleDockWidget->setWidget( console );
+    this->addDockWidget(Qt::LeftDockWidgetArea, ui_consoleDockWidget);
+    ui_consoleDockWidget->hide();
+
+    qDebug() << "> Console dock ready";
+
+    // The timeline
+    TimelineWidget *timeline = new TimelineWidget(this);
+
+    ui_timelineDockWidget = new DuDockWidget("Timeline");
+    ui_timelineDockWidget->setWindowIcon(DuIcon(":/icons/timeline"));
+    ui_timelineDockWidget->setObjectName("timelineDock");
+
+    auto *timelineTitle = new DuDockTitleWidget("Timeline", this);
+    timelineTitle->setObjectName("dockTitle");
+    timelineTitle->setIcon(":/icons/timeline");
+    ui_timelineDockWidget->setTitleBarWidget(timelineTitle);
+
+    ui_timelineDockWidget->setAllowedAreas(Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea);
+    ui_timelineDockWidget->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable );
+    ui_timelineDockWidget->setWidget( timeline );
+    this->addDockWidget(Qt::BottomDockWidgetArea, ui_timelineDockWidget);
+    ui_timelineDockWidget->hide();
+
+    qDebug() << "> Timeline dock ready";
+
+    // The properties dock
+    ui_propertiesDockWidget = new DuDockWidget("Properties");
+    ui_propertiesDockWidget->setWindowIcon(DuIcon(":/icons/asset"));
+    ui_propertiesDockWidget->setObjectName("propertiesDock");
+
+    ui_propertiesTitle = new DuDockTitleWidget("Properties", this);
+    ui_propertiesTitle->setObjectName("dockTitle");
+    ui_propertiesTitle->setIcon(":/icons/asset");
+    ui_propertiesDockWidget->setTitleBarWidget(ui_propertiesTitle);
+
+    ui_propertiesDockWidget->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    ui_propertiesDockWidget->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable );
+    this->addDockWidget(Qt::RightDockWidgetArea, ui_propertiesDockWidget);
+    ui_propertiesDockWidget->hide();
+
+    qDebug() << "> Properties dock ready";
+
+    // The project dock
+    ui_projectEditWiget = new ProjectEditWidget(this);
+
+    ui_projectDockWidget = new DuDockWidget(tr("Project settings"));
+    ui_projectDockWidget->setWindowIcon(DuIcon(":/icons/project"));
+    ui_projectDockWidget->setObjectName("projectDock");
+
+    auto *pTitle = new DuDockTitleWidget(tr("Project settings"), this);
+    pTitle->setObjectName("dockTitle");
+    pTitle->setIcon(":/icons/project");
+    ui_projectDockWidget->setTitleBarWidget(pTitle);
+
+    ui_projectDockWidget->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    ui_projectDockWidget->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable );
+    ui_projectDockWidget->setWidget( ui_projectEditWiget );
+    this->addDockWidget(Qt::RightDockWidgetArea, ui_projectDockWidget);
+    ui_projectDockWidget->hide();
+
+    // The steps dock
+    StepManagerWidget *stepWidget = new StepManagerWidget(this);
+
+    ui_stepsDockWidget = new DuDockWidget(tr("Steps"));
+    ui_stepsDockWidget->setWindowIcon(DuIcon(":/icons/step"));
+    ui_stepsDockWidget->setObjectName("stepsDock");
+
+    auto *sTitle = new DuDockTitleWidget(tr("Steps"), this);
+    sTitle->setObjectName("dockTitle");
+    sTitle->setIcon(":/icons/step");
+    ui_stepsDockWidget->setTitleBarWidget(sTitle);
+
+    ui_stepsDockWidget->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    ui_stepsDockWidget->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable );
+    ui_stepsDockWidget->setWidget( stepWidget );
+    this->addDockWidget(Qt::LeftDockWidgetArea, ui_stepsDockWidget);
+    ui_stepsDockWidget->hide();
+
+    // The pipe formats dock
+    PipeFileManagerWidget *pipeFileWidget = new PipeFileManagerWidget(this);
+
+    ui_pipeFileDockWidget = new DuDockWidget(tr("Pipe formats"));
+    ui_pipeFileDockWidget->setWindowIcon(DuIcon(":/icons/connection"));
+    ui_pipeFileDockWidget->setObjectName("pipeFilesDock");
+
+    auto *pfTitle = new DuDockTitleWidget(tr("Pipe formats"), this);
+    pfTitle->setObjectName("dockTitle");
+    pfTitle->setIcon(":/icons/connection");
+    ui_pipeFileDockWidget->setTitleBarWidget(pfTitle);
+
+    ui_pipeFileDockWidget->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    ui_pipeFileDockWidget->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable );
+    ui_pipeFileDockWidget->setWidget( pipeFileWidget );
+    this->addDockWidget(Qt::LeftDockWidgetArea, ui_pipeFileDockWidget);
+    ui_pipeFileDockWidget->hide();
+
+    // The asset groups dock
+    AssetGroupManagerWidget *assetGroupWidget = new AssetGroupManagerWidget(this);
+
+    ui_assetGroupsDockWidget = new DuDockWidget(tr("Asset Groups"));
+    ui_assetGroupsDockWidget->setWindowIcon(DuIcon(":/icons/asset-group"));
+    ui_assetGroupsDockWidget->setObjectName("assetGroupsDock");
+
+    auto *agTitle = new DuDockTitleWidget(tr("Asset Groups"), this);
+    agTitle->setObjectName("dockTitle");
+    agTitle->setIcon(":/icons/asset-group");
+    ui_assetGroupsDockWidget->setTitleBarWidget(agTitle);
+
+    ui_assetGroupsDockWidget->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    ui_assetGroupsDockWidget->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable );
+    ui_assetGroupsDockWidget->setWidget( assetGroupWidget );
+    this->addDockWidget(Qt::LeftDockWidgetArea, ui_assetGroupsDockWidget);
+    ui_assetGroupsDockWidget->hide();
+
+    // The assets dock
+    AssetManagerWidget *assetWidget = new AssetManagerWidget(this);
+
+    ui_assetsDockWidget = new DuDockWidget(tr("Assets"));
+    ui_assetsDockWidget->setWindowIcon(DuIcon(":/icons/asset"));
+    ui_assetsDockWidget->setObjectName("assetsDock");
+
+    auto *aTitle = new DuDockTitleWidget(tr("Assets"), this);
+    aTitle->setObjectName("dockTitle");
+    aTitle->setIcon(":/icons/asset");
+    ui_assetsDockWidget->setTitleBarWidget(aTitle);
+
+    ui_assetsDockWidget->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    ui_assetsDockWidget->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable );
+    ui_assetsDockWidget->setWidget( assetWidget );
+    this->addDockWidget(Qt::LeftDockWidgetArea, ui_assetsDockWidget);
+    ui_assetsDockWidget->hide();
+
+    // The sequences dock
+    SequenceManagerWidget *sequenceWidget = new SequenceManagerWidget(this);
+
+    ui_sequencesDockWidget = new DuDockWidget(tr("Sequences"));
+    ui_sequencesDockWidget->setWindowIcon(DuIcon(":/icons/sequence"));
+    ui_sequencesDockWidget->setObjectName("sequencesDock");
+
+    auto *seqTitle = new DuDockTitleWidget(tr("Sequences"), this);
+    seqTitle->setObjectName("dockTitle");
+    seqTitle->setIcon(":/icons/sequence");
+    ui_sequencesDockWidget->setTitleBarWidget(seqTitle);
+
+    ui_sequencesDockWidget->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    ui_sequencesDockWidget->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable );
+    ui_sequencesDockWidget->setWidget( sequenceWidget );
+    this->addDockWidget(Qt::LeftDockWidgetArea, ui_sequencesDockWidget);
+    ui_sequencesDockWidget->hide();
+
+    // The Shots dock
+    ShotManagerWidget *shotWidget = new ShotManagerWidget(this);
+
+    ui_shotsDockWidget = new DuDockWidget(tr("Shots"));
+    ui_shotsDockWidget->setWindowIcon(DuIcon(":/icons/shot"));
+    ui_shotsDockWidget->setObjectName("shotsDock");
+
+    auto *shTitle = new DuDockTitleWidget(tr("Shots"), this);
+    shTitle->setObjectName("dockTitle");
+    shTitle->setIcon(":/icons/shot");
+    ui_shotsDockWidget->setTitleBarWidget(shTitle);
+
+    ui_shotsDockWidget->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    ui_shotsDockWidget->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable );
+    ui_shotsDockWidget->setWidget( shotWidget );
+    this->addDockWidget(Qt::LeftDockWidgetArea, ui_shotsDockWidget);
+    ui_shotsDockWidget->hide();
+}
+
+void MainWindow::setupToolBar()
+{
+    ui_mainToolBar->addAction(m_actionLogIn);
+    ui_mainToolBar->addAction(m_actionSettings);
+    ui_mainToolBar->addAction(m_actionAdmin);
+
+    DuMenu *pipelineMenu = new DuMenu(this);
+
+    pipelineMenu->addAction(m_actionPipeline);
+    pipelineMenu->addSeparator();
+    pipelineMenu->addAction(m_projectAction);
+    pipelineMenu->addAction(m_stepsAction);
+    pipelineMenu->addAction(m_pipeFilesAction);
+
+    ui_pipelineButton = new QToolButton();
+    ui_pipelineButton->setIcon(DuIcon(":icons/steps-menu"));
+    ui_pipelineButton->setText("Pipeline");
+    ui_pipelineButton->setMenu(pipelineMenu);
+    ui_pipelineButton->setIconSize(QSize(16,16));
+    ui_pipelineButton->setPopupMode(QToolButton::MenuButtonPopup);
+    ui_pipelineButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+
+    DuMenu *assetsMenu = new DuMenu(this);
+
+    assetsMenu->addAction(m_actionAssets);
+    assetsMenu->addSeparator();
+    assetsMenu->addAction(m_assetGroupAction);
+    assetsMenu->addAction(m_assetListAction);
+
+    ui_assetsButton = new QToolButton();
+    ui_assetsButton->setIcon(QIcon(":/icons/asset"));
+    ui_assetsButton->setText("Assets");
+    ui_assetsButton->setMenu(assetsMenu);
+    ui_assetsButton->setIconSize(QSize(16,16));
+    ui_assetsButton->setPopupMode(QToolButton::MenuButtonPopup);
+    ui_assetsButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+
+    DuMenu *shotsMenu = new DuMenu(this);
+
+    shotsMenu->addAction(m_actionShots);
+    shotsMenu->addSeparator();
+    shotsMenu->addAction(m_sequenceAction);
+    shotsMenu->addAction(m_shotListAction);
+    shotsMenu->addAction(m_actionTimeline);
+
+    ui_shotsButton = new QToolButton();
+    ui_shotsButton->setIcon(QIcon(":/icons/shot"));
+    ui_shotsButton->setText("Shots");
+    ui_shotsButton->setMenu(shotsMenu);
+    ui_shotsButton->setIconSize(QSize(16,16));
+    ui_shotsButton->setPopupMode(QToolButton::MenuButtonPopup);
+    ui_shotsButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+
+    DuMenu *scheduleMenu = new DuMenu(this);
+
+    scheduleMenu->addAction(m_actionSchedule);
+    scheduleMenu->addSeparator();
+    scheduleMenu->addAction(m_actionStatistics);
+
+    ui_scheduleButton = new QToolButton();
+    ui_scheduleButton->setIcon(QIcon(":/icons/calendar"));
+    ui_scheduleButton->setText("Schedule");
+    ui_scheduleButton->setMenu(scheduleMenu);
+    ui_scheduleButton->setIconSize(QSize(16,16));
+    ui_scheduleButton->setPopupMode(QToolButton::MenuButtonPopup);
+    ui_scheduleButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+
+    DuMenu *filesMenu = new DuMenu(this);
+
+    filesMenu->addAction(m_fileAdminAction);
+    filesMenu->addAction(m_filePreprodAction);
+    filesMenu->addAction(m_fileProdAction);
+    filesMenu->addAction(m_filePostProdAction);
+    filesMenu->addAction(m_fileAssetsAction);
+    filesMenu->addAction(m_fileShotsAction);
+    filesMenu->addAction(m_fileOutputAction);
+    filesMenu->addSeparator();
+    filesMenu->addAction(m_fileUserAction);
+    filesMenu->addSeparator();
+    filesMenu->addAction(m_fileVersionsAction);
+    filesMenu->addAction(m_fileTrashAction);
+
+    ui_filesButton = new QToolButton();
+    ui_filesButton->setIcon(QIcon(":/icons/folder"));
+    ui_filesButton->setText("Files");
+    ui_filesButton->setMenu(filesMenu);
+    ui_filesButton->setIconSize(QSize(16,16));
+    ui_filesButton->setPopupMode(QToolButton::InstantPopup);
+    ui_filesButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+
+    // Populate Toolbar
+    ui_projectSelectorAction = ui_mainToolBar->addWidget(new ProjectSelectorWidget(this));
+    ui_pipelineMenuAction = ui_mainToolBar->addWidget(ui_pipelineButton);
+    ui_assetMenuAction = ui_mainToolBar->addWidget(ui_assetsButton);
+    ui_shotMenuAction = ui_mainToolBar->addWidget(ui_shotsButton);
+    ui_scheduleMenuAction = ui_mainToolBar->addWidget(ui_scheduleButton);
+    ui_filesMenuAction = ui_mainToolBar->addWidget(ui_filesButton);
+
+    ui_projectSelectorAction->setVisible(false);
+    m_actionAdmin->setVisible(false);
+    ui_pipelineMenuAction->setVisible(false);
+    ui_shotMenuAction->setVisible(false);
+    ui_assetMenuAction->setVisible(false);
+    ui_scheduleMenuAction->setVisible(false);
+    ui_filesMenuAction->setVisible(false);
+
+    addWindowButtons();
+}
+
+void MainWindow::setupStatusBar()
+{
+    //Populate status bar
+
+    ui_mainStatusBar->addPermanentWidget(new ProgressBar(this));
+
+    ui_refreshMenu = new DuMenu();
+    ui_refreshMenu->addAction(m_actionSync);
+    ui_refreshMenu->addAction(m_actionFullSync);
+
+    ui_refreshButton = new QToolButton(this);
+    ui_refreshButton->setObjectName("menuButton");
+    ui_refreshButton->setToolButtonStyle(Qt::ToolButtonIconOnly);
+    ui_refreshButton->setText("");
+    ui_refreshButton->setIcon(QIcon(":/icons/reload"));
+    ui_refreshButton->setMenu(ui_refreshMenu);
+    ui_refreshButton->setPopupMode(QToolButton::InstantPopup);
+    ui_mainStatusBar->addPermanentWidget(ui_refreshButton);
+    ui_refreshButton->hide();
+
+    ui_consoleButton = new QToolButton(this);
+    ui_consoleButton->setToolButtonStyle(Qt::ToolButtonIconOnly);
+    ui_consoleButton->setText("");
+    ui_consoleButton->setIcon(QIcon(":/icons/bash"));
+    ui_consoleButton->setCheckable(true);
+    ui_mainStatusBar->addPermanentWidget(ui_consoleButton);
+
+    ui_mainStatusBar->addPermanentWidget(new DuQFLogToolButton(this));
+
+    ui_databaseMenu = new DuMenu();
+    ui_databaseMenu->addAction(m_actionSetOffline);
+    ui_databaseMenu->addAction(m_actionSetOnline);
+    ui_databaseMenu->addAction(m_actionDatabaseSettings);
+    m_actionSetOffline->setVisible(false);
+    ui_networkButton = new DuQFAutoSizeToolButton(this);
+    ui_networkButton->setObjectName("menuButton");
+    ui_networkButton->setText("Offline");
+    ui_networkButton->setIcon(QIcon(":/icons/storage"));
+    ui_networkButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    //ui_networkButton->setMinimumWidth(100);
+    ui_networkButton->setMenu(ui_databaseMenu);
+    ui_networkButton->setPopupMode(QToolButton::InstantPopup);
+    ui_mainStatusBar->addPermanentWidget(ui_networkButton);
+    ui_networkButton->setVisible(false);
+
+    ui_userMenu = new DuMenu();
+    ui_userMenu->addAction(m_actionLogIn);
+    ui_userMenu->addAction(m_actionUserFolder);
+    m_actionUserFolder->setVisible(false);
+    ui_userMenu->addAction(m_actionUserProfile);
+    m_actionUserProfile->setVisible(false);
+    ui_userMenu->addAction(m_actionLogOut);
+    m_actionLogOut->setVisible(false);
+    ui_userButton = new DuQFAutoSizeToolButton(this);
+    ui_userButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    ui_userButton->setText("Guest");
+    //ui_userButton->setMinimumWidth(75);
+    ui_userButton->setMenu(ui_userMenu);
+    ui_userButton->setPopupMode(QToolButton::InstantPopup);
+    ui_mainStatusBar->addPermanentWidget(ui_userButton);
+
+
+    // version in statusbar
+    ui_mainStatusBar->addPermanentWidget(new QLabel("v" + QString(STR_VERSION)));
+    ui_settingsButton = new QToolButton();
+    ui_settingsButton->setIcon(DuIcon(":/icons/settings-w"));
+    ui_settingsButton->setToolTip("Go to Settings");
+    ui_settingsButton->setCheckable(true);
+    ui_mainStatusBar->addPermanentWidget(ui_settingsButton);
+    QToolButton *helpButton = new QToolButton();
+    helpButton->setIcon(QIcon(":/icons/help"));
+    helpButton->setToolTip("Get Help");
+    helpButton->setPopupMode( QToolButton::InstantPopup );
+    helpMenu = new DuMenu(this);
+
+    helpButton->setMenu(helpMenu);
+    ui_mainStatusBar->addPermanentWidget(helpButton);
+
+    if (QString(URL_DOC) != "")
+    {
+        QAction *docAction = new QAction(QIcon(":/icons/documentation"), "Help");
+        docAction->setToolTip("Read the documentation");
+        docAction->setShortcut(QKeySequence("F1"));
+        helpMenu->addAction(docAction);
+        connect(docAction, SIGNAL(triggered()), this, SLOT(duqf_doc()));
+    }
+    QAction *aboutAction = new QAction(QIcon(":/icons/info"), "About");
+    helpMenu->addAction(aboutAction);
+    connect(aboutAction, SIGNAL(triggered()), this, SLOT(duqf_about()));
+    helpMenu->addSeparator();
+    bool chat = QString(URL_CHAT) != "";
+    bool bugReport = QString(URL_BUGREPORT) != "";
+    bool forum = QString(URL_FORUM) != "";
+    bool donate = QString(URL_DONATION) != "";
+    if (bugReport)
+    {
+        QAction *bugReportAction = new QAction(QIcon(":/icons/bug-report"), "Bug Report");
+        bugReportAction->setToolTip("Report a bug");
+        helpMenu->addAction(bugReportAction);
+        if (!chat && !forum && !donate) helpMenu->addSeparator();
+        connect(bugReportAction, SIGNAL(triggered()), this, SLOT(duqf_bugReport()));
+    }
+    if (chat)
+    {
+        QAction *chatAction = new QAction(QIcon(":/icons/chat"), "Chat");
+        chatAction->setToolTip("Come and have a chat");
+        helpMenu->addAction(chatAction);
+        if (!forum && !donate) helpMenu->addSeparator();
+        connect(chatAction, SIGNAL(triggered()), this, SLOT(duqf_chat()));
+    }
+    if (forum)
+    {
+        QAction *forumAction = new QAction(QIcon(":/icons/forum"), "Forum");
+        forumAction->setToolTip("Join us on our forum");
+        helpMenu->addAction(forumAction);
+        if (!donate) helpMenu->addSeparator();
+        connect(forumAction, SIGNAL(triggered()), this, SLOT(duqf_forum()));
+    }
+    if (donate)
+    {
+        QAction *donateAction = new QAction(QIcon(":/icons/donate"), "I ♥ " + QString(STR_FILEDESCRIPTION));
+        donateAction->setToolTip("Help us, donate now!");
+        helpMenu->addAction(donateAction);
+        helpMenu->addSeparator();
+        connect(donateAction, SIGNAL(triggered()), this, SLOT(duqf_donate()));
+
+        /*QToolButton *donateButton = new QToolButton();
+        donateButton->setIcon(QIcon(":/icons/donate"));
+        donateButton->setToolTip("I ♥ " + QString(STR_FILEDESCRIPTION));
+        ui_mainStatusBar->addPermanentWidget(donateButton);
+        connect(donateButton, SIGNAL(clicked()), this, SLOT(duqf_donate()));*/
+    }
+    QAction *aboutQtAction = new QAction(QIcon(":/icons/qt"), "About Qt");
+    helpMenu->addAction(aboutQtAction);
+    connect(aboutQtAction, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
+}
+
+void MainWindow::setupSysTray()
+{
+    m_actionShowHide = new DuAction("Hide " + QString(STR_INTERNALNAME), this);
+    m_actionShowHide->setIcon(":/icons/hide-dark");
+    bool useSysTray = QSystemTrayIcon::isSystemTrayAvailable() && USE_SYSTRAY;
+    if (useSysTray)
+    {
+        DuMenu *trayMenu = new DuMenu(QString(STR_INTERNALNAME),this);
+        QSettings settings;
+
+#ifdef Q_OS_LINUX
+        QString trayIconType = settings.value("appearance/trayIconType", "light").toString();
+#else
+        QString trayIconType = settings.value("appearance/trayIconType", "color").toString();
+#endif
+        trayIcon = new QSystemTrayIcon(QIcon(":/icons/tray-" + trayIconType),this);
+        trayMenu->addAction(m_actionShowHide);
+        DuAction *actionQuit = new DuAction("Quit", this);
+        actionQuit->setIcon(":/icons/close-dark");
+        trayMenu->addAction(actionQuit);
+        trayIcon->setContextMenu(trayMenu);
+        trayIcon->show();
+        connect(trayIcon,SIGNAL(activated(QSystemTrayIcon::ActivationReason)),this,SLOT(duqf_trayClicked(QSystemTrayIcon::ActivationReason)));
+        connect(m_actionShowHide, &QAction::triggered, this, &MainWindow::showHide);
+        connect(actionQuit, &QAction::triggered, this, &MainWindow::close);
+    }
 }

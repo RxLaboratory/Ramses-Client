@@ -41,12 +41,24 @@ INCLUDEPATH += rameditwidgets \
     rammanagerwidgets
 
 SOURCES += \
-    FramelessWindow/widget.cpp \
+    duqf-app/duapplication.cpp \
+    duqf-app/ducli.cpp \
+    duqf-app/dulogger.cpp \
     duqf-app/dusettingsmanager.cpp \
+    duqf-app/dustyle.cpp \
+    duqf-app/duui.cpp \
+    duqf-widgets/duaction.cpp \
+    duqf-widgets/dudocktitlewidget.cpp \
+    duqf-widgets/dudockwidget.cpp \
+    duqf-widgets/duicon.cpp \
+    duqf-widgets/dulabel.cpp \
+    duqf-widgets/dumainwindow.cpp \
     duqf-widgets/dumenu.cpp \
     duqf-widgets/duscrollarea.cpp \
     duqf-widgets/duscrollbar.cpp \
     duqf-widgets/dushadow.cpp \
+    duqf-widgets/dusplashscreen.cpp \
+    duqf-widgets/dusvgiconengine.cpp \
     duqf-widgets/dutoolbarspacer.cpp \
     progressmanager.cpp \
     rameditwidgets/objectupdateblocker.cpp \
@@ -139,8 +151,6 @@ SOURCES += \
     ramobjects/ramworkingfolder.cpp \
     settingswidgets/daemonsettingswidget.cpp \
     ramdatainterface/dbinterface.cpp \
-    duqf-app/app-style.cpp \
-    duqf-app/app-utils.cpp \
     duqf-nodeview/duqfconnection.cpp \
     duqf-nodeview/duqfconnectionmanager.cpp \
     duqf-nodeview/duqfconnector.cpp \
@@ -158,7 +168,6 @@ SOURCES += \
     duqf-widgets/autoselectdoublespinbox.cpp \
     duqf-widgets/autoselectlineedit.cpp \
     duqf-widgets/autoselectspinbox.cpp \
-    duqf-widgets/duqfdocktitle.cpp \
     duqf-widgets/duqfdoubleslider.cpp \
     duqf-widgets/duqfdoublespinbox.cpp \
     duqf-widgets/duqffolderdisplaywidget.cpp \
@@ -212,14 +221,27 @@ SOURCES += \
     pipeline-editor/stepnode.cpp
 
 HEADERS += \
-    FramelessWindow/widget.h \
     config.h \
+    duqf-app/duapplication.h \
+    duqf-app/ducli.h \
+    duqf-app/dulogger.h \
     duqf-app/dusettingsmanager.h \
+    duqf-app/dustyle.h \
+    duqf-app/duui.h \
+    duqf-widgets/duaction.h \
+    duqf-widgets/dudocktitlewidget.h \
+    duqf-widgets/dudockwidget.h \
+    duqf-widgets/duicon.h \
+    duqf-widgets/dulabel.h \
+    duqf-widgets/dumainwindow.h \
     duqf-widgets/dumenu.h \
     duqf-widgets/duscrollarea.h \
     duqf-widgets/duscrollbar.h \
     duqf-widgets/dushadow.h \
+    duqf-widgets/dusplashscreen.h \
+    duqf-widgets/dusvgiconengine.h \
     duqf-widgets/dutoolbarspacer.h \
+    enums.h \
     pch/duwidgets_pch.h \
     progressmanager.h \
     ramdatainterface/datastruct.h \
@@ -315,8 +337,6 @@ HEADERS += \
     ramobjects/ramworkingfolder.h \
     settingswidgets/daemonsettingswidget.h \
     ramdatainterface/dbinterface.h \
-    duqf-app/app-style.h \
-    duqf-app/app-utils.h \
     duqf-app/app-version.h \
     duqf-nodeview/duqfconnection.h \
     duqf-nodeview/duqfconnectionmanager.h \
@@ -335,7 +355,6 @@ HEADERS += \
     duqf-widgets/autoselectdoublespinbox.h \
     duqf-widgets/autoselectlineedit.h \
     duqf-widgets/autoselectspinbox.h \
-    duqf-widgets/duqfdocktitle.h \
     duqf-widgets/duqfdoubleslider.h \
     duqf-widgets/duqfdoublespinbox.h \
     duqf-widgets/duqffolderdisplaywidget.h \
@@ -408,12 +427,12 @@ win* {
     # ==== FRAMELESS WINDOW ====
     # Only include / compile these files on Windows
     SOURCES += \
-        FramelessWindow/qwinwidget.cpp \
-        FramelessWindow/winnativewindow.cpp
+        OSUtils/windows/qwinwidget.cpp \
+        OSUtils/windows/winnativewindow.cpp \
 
     HEADERS += \
-        FramelessWindow/qwinwidget.h \
-        FramelessWindow/winnativewindow.h
+        OSUtils/windows/qwinwidget.h \
+        OSUtils/windows/winnativewindow.h \
 
     LIBS += -L"C:\Program Files\Microsoft SDKs\Windows\v7.1\Lib" \
         -ldwmapi \
@@ -443,9 +462,9 @@ win* {
     # ==== FRAMELESS WINDOW ====
     # Only include / compile these files on OS X
     OBJECTIVE_SOURCES += \
-        FramelessWindow/OSXHideTitleBar.mm
+        OSUtils/mac/OSXHideTitleBar.mm
     HEADERS  +=\
-        FramelessWindow/OSXHideTitleBar.h
+        OSUtils/mac/OSXHideTitleBar.h
 
     # icon
     ICON = resources/icons/ramses.icns

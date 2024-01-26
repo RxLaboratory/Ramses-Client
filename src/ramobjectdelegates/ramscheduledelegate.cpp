@@ -4,17 +4,16 @@
 #include "ramses.h"
 #include "ramscheduleentry.h"
 #include "duqf-utils/guiutils.h"
-#include "duqf-app/app-style.h"
 
 RamScheduleDelegate::RamScheduleDelegate(QObject *parent) : QStyledItemDelegate(parent)
 {
-    m_abyss = DuUI::getColor("abyss-grey");
-    m_dark = DuUI::getColor("dark-grey");
-    m_medium = DuUI::getColor("medium-grey");
-    m_lessLight = DuUI::getColor("less-light-grey");
-    m_light = DuUI::getColor("light-grey");
+    m_abyss = QColor(28,28,28);
+    m_dark = QColor(51,51,51);
+    m_medium = QColor(109,109,109);
+    m_lessLight = QColor(157,157,157);
+    m_light = QColor(227,227,227);
     m_textFont = qApp->font();
-    m_textFont.setPixelSize( DuUI::getSize("font", "size-medium"));
+    m_textFont.setPixelSize( 12 );
     m_detailsFont = m_textFont;
     m_detailsFont.setItalic(true);
     m_padding = 10;

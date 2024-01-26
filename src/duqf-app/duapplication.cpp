@@ -1,64 +1,92 @@
-#include "app-utils.h"
+#include "duapplication.h"
 
 #ifdef Q_OS_WIN
 #include "windows.h"
 #endif
 
-#include "duqf-app/app-style.h"
+#include <QFileInfo>
+#include <QPixmap>
+#include <QIcon>
+#include <QVersionNumber>
 
-DuApplication::DuApplication(int &argc, char *argv[]) : QApplication(argc, argv)
+#include "duqf-app/app-version.h"
+#include "dusettingsmanager.h"
+#include "dulogger.h"
+
+DuApplication::DuApplication(int &argc, char *argv[], QCommandLineParser *parser):
+    QApplication(argc, argv)
 {
-#ifndef QT_DEBUG
-    // handles messages from the app and redirects them to stdout (info) or stderr (debug, warning, critical, fatal)
-    qInstallMessageHandler(MessageHandler::messageOutput);
-#endif
-    qDebug() << "Initializing application";
+    // settings
+    QCoreApplication::setOrganizationName(STR_COMPANYNAME);
+    QCoreApplication::setOrganizationDomain(STR_COMPANYDOMAIN);
+    QCoreApplication::setApplicationName(STR_INTERNALNAME);
+    QCoreApplication::setApplicationVersion(STR_VERSION);
 
     qDebug() << "Creating a shared memory pointer...";
     QString sharedMemoryKey = QString(STR_COMPANYDOMAIN) + "_" + QString(STR_PRODUCTNAME) + "_" + QString(STR_VERSION);
     qDebug() << "Key: " << sharedMemoryKey;
-    m_singular = new QSharedMemory(sharedMemoryKey, this);
+    _singular = new QSharedMemory(sharedMemoryKey, this);
 
-    //set style
-    QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps); // DPI support
-    DuUI::updateCSS(":/styles/default");
+    //create splash screen
+    if (QFileInfo::exists(SPLASH_IMAGE))
+    {
+        QPixmap pixmap(SPLASH_IMAGE);
+        _splashScreen = new DuSplashScreen( pixmap );
+    }
+    else
+    {
+        _splashScreen = new DuSplashScreen( );
+    }
 
     //set app icon
     qApp->setWindowIcon(QIcon(APP_ICON));
 
-    // settings
-    QCoreApplication::setOrganizationName(STR_COMPANYNAME);
-    QCoreApplication::setOrganizationDomain(STR_COMPANYDOMAIN);
-    QCoreApplication::setApplicationName(STR_PRODUCTNAME);
-    QCoreApplication::setApplicationVersion(STR_VERSION);
-
     //idle timer
-    _idleTimer = new QTimer();
+    /*_idleTimer = new QTimer();
     connect(_idleTimer,SIGNAL(timeout()),this,SLOT(idleTimeOut()));
     _idleTimeout=120*60*1000;
-    _idleTimer->start(_idleTimeout);
+    _idleTimer->start(_idleTimeout);*/
 
-    m_program = argv[0];
+    // CLI
+    if (parser) _cliParser = parser;
+    else _cliParser = new QCommandLineParser();
+    _cliParser->setApplicationDescription(STR_PRODUCTDESCRIPTION);
+    _cliParser->addHelpOption();
+    _cliParser->addVersionOption();
 
+    // Connect some stuff
+    connect(DuSettingsManager::instance(), &DuSettingsManager::uiToolButtonStyleChanged,
+            this, [](Qt::ToolButtonStyle st) {
+                DuUI::setAppToolButtonStyle(st);
+            }
+            );
+
+    // Process args
+    processArgs();
+    // Prepare settings
+    initSettings();
+
+    _program = argv[0];
     for (int i = 1; i < argc; i++)
     {
-        m_args << QString(argv[i]);
+        _args << QString(argv[i]);
     }
 }
 
 DuApplication::~DuApplication()
 {
-    if (m_singular->isAttached()) m_singular->detach();
+    qDebug() << "Destroying app";
+    if (_splashScreen) _splashScreen->deleteLater();
 }
 
 bool DuApplication::lock()
 {
-    if (m_singular->attach(QSharedMemory::ReadOnly)){
-        m_singular->detach();
+    if (_singular->attach(QSharedMemory::ReadOnly)){
+        _singular->detach();
         return false;
     }
 
-    if (m_singular->create(1))
+    if (_singular->create(1))
         return true;
 
     return false;
@@ -66,7 +94,7 @@ bool DuApplication::lock()
 
 void DuApplication::detach()
 {
-    m_singular->detach();
+    _singular->detach();
 }
 
 void DuApplication::restart(QStringList args)
@@ -75,55 +103,50 @@ void DuApplication::restart(QStringList args)
     // Release before everything else
     this->detach();
     //  Get args
-    if (args.isEmpty()) args = m_args;
+    if (args.isEmpty()) args = _args;
     qDebug() << "Using these args: " << args;
     // Quit
     this->quit();
     // An restart!
-    QProcess::startDetached(m_program, args);
+    QProcess::startDetached(_program, args);
 }
 
-DuSplashScreen *DuApplication::splashScreen()
+DuSplashScreen *DuApplication::splashScreen() const
 {
-    createSplashScreen();
-    return m_splashScreen;
+    return _splashScreen;
 }
 
 void DuApplication::showSplashScreen()
 {
-    createSplashScreen();
-    m_splashScreen->show();
+    _splashScreen->show();
 }
 
-void DuApplication::setIdleTimeOut(int to)
+void DuApplication::releaseSplashScreen()
 {
-    _idleTimeout = to;
-    _idleTimer->start(_idleTimeout);
+    _splashScreen->deleteLater();
+    _splashScreen = nullptr;
 }
 
-bool DuApplication::processArgs(QStringList examples, QStringList helpStrings)
+void DuApplication::processArgs()
 {
-    bool nobanner = false;
-    bool help = false;
+    // Process
+    _cliParser->process(*this);
 
-    // No console without args on windows
+// Force no console without args on windows
 #ifdef Q_OS_WIN
-    bool hideConsole = m_args.count() == 0;
-#endif
-    for (int i = 0; i < m_args.count(); i++)
+#ifndef QT_DEBUG
+    if (this->arguments().count() < 2 || _cliParser->isSet("hide_console"))
     {
-        QString arg = m_args.at(i);
-        if ( arg.toLower() == "--no-banner" ) nobanner = true;
-        if (arg.toLower() == "-h" || arg.toLower() == "--help" ) help = true;
-#ifdef Q_OS_WIN
-        if (arg.toLower() == "--hide-console") hideConsole = true;
-#endif
+        ShowWindow(GetConsoleWindow(), SW_HIDE);
     }
+#endif
+#endif
 
-    if (!nobanner)
+    if (!_cliParser->isSet("hide_banner"))
     {
         qInfo().noquote() << STR_PRODUCTNAME;
         qInfo().noquote() << "version " + QString(STR_VERSION);
+        qInfo().noquote() << STR_PRODUCTDESCRIPTION;
         qInfo().noquote() << STR_LEGALCOPYRIGHT;
         qInfo() << "";
         qInfo() << "This program comes with ABSOLUTELY NO WARRANTY;";
@@ -136,43 +159,64 @@ bool DuApplication::processArgs(QStringList examples, QStringList helpStrings)
 #endif
     }
 
-    if (help)
-    {
-        qInfo().noquote() << STR_PRODUCTDESCRIPTION;
-        foreach(QString example, examples)
-        {
-            qInfo().noquote() << example;
-        }
-        qInfo() << "General";
-        qInfo() << "    -h / --help       Print basic options without launching the application";
-        qInfo().noquote() << "    See the documentation at " + QString(URL_DOC) + " for detailed descriptions of the options";
-        qInfo() << "    --no-banner       Hides the banner with product information and legal notice";
-        foreach(QString h, helpStrings)
-        {
-            qInfo().noquote() << h;
-        }
-#ifdef Q_OS_WIN
-        qInfo() << "    --hide-console    Hides the console when starting the application using command line arguments";
-#endif
+    if (_cliParser->isSet("reinit")) {
+        QSettings().clear();
     }
 
-#ifdef Q_OS_WIN
-#ifndef QT_DEBUG
-    if (hideConsole)
-    {
-        ShowWindow(GetConsoleWindow(), SW_HIDE);
-    }
-#endif
-#endif
+    initLogger(
+        _cliParser->value("log_level")
+        );
+}
 
-    return help;
+void DuApplication::initLogger(const QString &loglevel)
+{
+    LogType level = InformationLog;
+    if (loglevel == "debug") level = DebugLog;
+    else if (loglevel == "warning") level = WarningLog;
+    else if (loglevel == "error") level = CriticalLog;
+    DuLogger::i()->setAsMessageHandler(level);
+}
+
+void DuApplication::initSettings()
+{
+    _splashScreen->newMessage("Reading settings...");
+    QSettings settings;
+    QString prevVersionStr = settings.value("version", "").toString();
+    QVersionNumber prevVersion = QVersionNumber::fromString( prevVersionStr );
+    if (prevVersionStr != STR_VERSION)
+    {
+        settings.setValue("version", STR_VERSION);
+    }
+}
+
+const QJsonObject &DuApplication::updateInfo()
+{
+    if (!_updateInfo.isEmpty() && _updateInfo.value("success").toBool())
+        return _updateInfo;
+
+    // Build from settigns
+    qDebug() << "Using saved update info.";
+
+    QSettings settings;
+    _updateInfo.insert("message","");
+    _updateInfo.insert("accepted",true);
+    _updateInfo.insert("success",true);
+    _updateInfo.insert("version", settings.value("updates/version").toString());
+    _updateInfo.insert("description", settings.value("updates/description").toString());
+    _updateInfo.insert("changelogURL", settings.value("updates/changelogURL").toString());
+    _updateInfo.insert("downloadURL", settings.value("updates/downloadURL").toString());
+    _updateInfo.insert("donateURL", settings.value("updates/donateURL").toString());
+    _updateInfo.insert("monthlyFund", settings.value("updates/monthlyFund").toDouble());
+    _updateInfo.insert("fundingGoal", settings.value("updates/fundingGoal", 4000).toDouble());
+
+    return _updateInfo;
 }
 
 void DuApplication::checkUpdate(bool wait)
 {
     if (QString(URL_UPDATE) == "") return;
 
-    // Get Sys info
+// Get Sys info
 #ifdef Q_OS_LINUX
     QString os("linux");
     QString distrib = QSysInfo::productType() % "-" % QSysInfo::productVersion();
@@ -238,21 +282,6 @@ void DuApplication::checkUpdate(bool wait)
     }
 }
 
-bool DuApplication::notify(QObject *receiver, QEvent *ev)
-{
-    if(ev->type() == QEvent::KeyPress || ev->type() == QEvent::MouseButtonPress)
-    {
-        //reset timer
-        _idleTimer->start(_idleTimeout);
-    }
-    return QApplication::notify(receiver,ev);
-}
-
-void DuApplication::idleTimeOut()
-{
-    emit idle();
-}
-
 void DuApplication::gotUpdateInfo(QNetworkReply *rep)
 {
     if (rep->error() != QNetworkReply::NoError)
@@ -315,48 +344,4 @@ void DuApplication::gotUpdateInfo(QNetworkReply *rep)
     emit newUpdateInfo(_updateInfo);
 
     rep->deleteLater();
-}
-
-void DuApplication::createSplashScreen()
-{
-    if (m_splashScreen) return;
-
-    //create splash screen
-    if (QFile(SPLASH_IMAGE).exists())
-    {
-        QPixmap pixmap(SPLASH_IMAGE);
-        m_splashScreen = new DuSplashScreen( pixmap );
-    }
-    else
-    {
-        m_splashScreen = new DuSplashScreen( );
-    }
-}
-
-const QJsonObject &DuApplication::updateInfo()
-{
-    if (!_updateInfo.isEmpty() && _updateInfo.value("success").toBool())
-        return _updateInfo;
-
-    // Build from settigns
-    qDebug() << "Using saved update info.";
-
-    QSettings settings;
-    _updateInfo.insert("message","");
-    _updateInfo.insert("accepted",true);
-    _updateInfo.insert("success",true);
-    _updateInfo.insert("version", settings.value("updates/version").toString());
-    _updateInfo.insert("description", settings.value("updates/description").toString());
-    _updateInfo.insert("changelogURL", settings.value("updates/changelogURL").toString());
-    _updateInfo.insert("downloadURL", settings.value("updates/downloadURL").toString());
-    _updateInfo.insert("donateURL", settings.value("updates/donateURL").toString());
-    _updateInfo.insert("monthlyFund", settings.value("updates/monthlyFund").toDouble());
-    _updateInfo.insert("fundingGoal", settings.value("updates/fundingGoal", 4000).toDouble());
-
-    return _updateInfo;
-}
-
-QStringList DuApplication::args() const
-{
-    return m_args;
 }

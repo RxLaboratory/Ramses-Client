@@ -3,7 +3,11 @@
 const QString DuSettingsManager::UI_FOCUS_COLOR = QStringLiteral("UI/focusColor");
 const QString DuSettingsManager::UI_WINDOW_GEOMETRY = QStringLiteral("UI/windowGeometry");
 const QString DuSettingsManager::UI_WINDOW_STATE = QStringLiteral("UI/windowState");
-const QString DuSettingsManager::NV_CURVATURE = QStringLiteral("NV/curvature");;
+const QString DuSettingsManager::NV_CURVATURE = QStringLiteral("NV/curvature");
+const QString DuSettingsManager::UI_TOOLBUTTON_STYLE = QStringLiteral("UI/toolButtonStyle");
+const QString DuSettingsManager::UI_TRAYICON_MODE = QStringLiteral("UI/trayIconMode");
+const QString DuSettingsManager::UI_ICON_COLOR = QStringLiteral("UI/iconColor");
+const QString DuSettingsManager::UI_SHOW_TRAYICON = QStringLiteral("UI/showTrayIcon");
 
 DuSettingsManager *DuSettingsManager::_instance = nullptr;
 
@@ -64,6 +68,79 @@ void DuSettingsManager::saveUIWindowState(const QByteArray &geometry, const QByt
 {
     m_settings.setValue(UI_WINDOW_GEOMETRY, geometry);
     m_settings.setValue(UI_WINDOW_STATE, state);
+}
+
+Qt::ToolButtonStyle DuSettingsManager::uiToolButtonStyle() const
+{
+    int style = m_settings.value(UI_TOOLBUTTON_STYLE, Qt::ToolButtonIconOnly).toInt();
+    return static_cast<Qt::ToolButtonStyle>( style );
+}
+
+void DuSettingsManager::setUIToolButtonStyle(Qt::ToolButtonStyle style)
+{
+    m_settings.setValue(UI_TOOLBUTTON_STYLE, style);
+    emit uiToolButtonStyleChanged(style);
+}
+
+void DuSettingsManager::setUIToolButtonStyle(int style)
+{
+    auto s = static_cast<Qt::ToolButtonStyle>( style );
+    setUIToolButtonStyle(s);
+}
+
+QSize DuSettingsManager::uiDockSize(const QString &dockName) const
+{
+    return m_settings.value(UI_DOCK_SIZE+dockName).toSize();
+}
+
+void DuSettingsManager::setUIDockSize(const QString &dockName, const QSize &size)
+{
+    m_settings.setValue(UI_DOCK_SIZE+dockName, size);
+}
+
+QColor DuSettingsManager::uiIconColor(ColorVariant v) const
+{
+    QColor c = m_settings.value(UI_ICON_COLOR, QColor(177,177,177)).value<QColor>();
+    if (v == DarkerColor) {
+        int lightness = std::max(0, c.lightness() - 50);
+        int saturation = std::max(0, c.hslSaturation() - 50);
+        int hue = c.hslHue();
+        c.setHsl(hue, saturation, lightness);
+    }
+    else if (v == LighterColor) {
+        int lightness = std::min(255, c.lightness() + 50);
+        int saturation = std::min(255, c.hslSaturation() + 50);
+        int hue = c.hslHue();
+        c.setHsl(hue, saturation, lightness);
+    }
+    return c;
+}
+
+void DuSettingsManager::setUIIconColor(const QColor &color)
+{
+    m_settings.setValue(UI_ICON_COLOR, color);
+    emit uiIconColorChanged(color);
+}
+
+ColorVariant DuSettingsManager::trayIconMode() const
+{
+    return static_cast<ColorVariant>(
+        m_settings.value(UI_TRAYICON_MODE, NormalColor).toInt()
+        );
+}
+
+
+QColor DuSettingsManager::trayIconColor() const
+{
+    ColorVariant mode = trayIconMode();
+    switch (mode) {
+    case NormalColor:
+        return uiFocusColor();
+    case DarkerColor:
+        return QColor("#222222");
+    case LighterColor:
+        return QColor("#e3e3e3");
+    }
 }
 
 DuSettingsManager::DuSettingsManager(QObject *parent)

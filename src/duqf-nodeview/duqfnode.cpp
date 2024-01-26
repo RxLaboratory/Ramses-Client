@@ -8,32 +8,32 @@ DuQFNode::DuQFNode(QString title, QGraphicsItem *parent):
 
     QGraphicsDropShadowEffect *shadow = new QGraphicsDropShadowEffect();
     shadow->setBlurRadius(10.0);
-    shadow->setColor(DuUI::getColor("obsidian"));
+    shadow->setColor( QColor(21,21,21));
     shadow->setOffset(5.0,5.0);
     setGraphicsEffect(shadow);
 
-    m_cornerRadius = DuUI::getSize( "padding", "small" );
+    m_cornerRadius = 5;
 
     setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable | ItemSendsGeometryChanges);
     setSelected(false);
 
     // Connectors
 
-    m_defaultInputSlot = new DuQFSlot( DuQFSlot::Input, false, DuUI::getColor("light-blue") );
+    m_defaultInputSlot = new DuQFSlot( DuQFSlot::Input, false, QColor(131,211,246) );
     m_defaultInputSlot->setParentItem(this);
-    m_defaultOutputSlot = new DuQFSlot( DuQFSlot::Output, false, DuUI::getColor("light-green") );
+    m_defaultOutputSlot = new DuQFSlot( DuQFSlot::Output, false, QColor(138,216,145) );
     m_defaultOutputSlot->setParentItem(this);
 
     // Title
 
     m_titleItem = new QGraphicsTextItem(title);
     QFont f = qApp->font();
-    f.setPixelSize( DuUI::getSize("font", "size-small") );
+    f.setPixelSize( 10 );
     f.setWeight(QFont::Bold);
     m_titleItem->setFont(f);
-    m_titleItem->setDefaultTextColor(DuUI::getColor("light-grey"));
+    m_titleItem->setDefaultTextColor( QColor(227,227,227) );
     m_titleItem->setParentItem(this);
-    m_padding = DuUI::getSize("padding", "small");
+    m_padding = 5;
     //m_titleItem->setPos(m_padding, m_padding);
 
     // Icon
@@ -89,14 +89,14 @@ void DuQFNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
     path.addRoundedRect(rect, m_cornerRadius, m_cornerRadius);
     painter->setRenderHint(QPainter::Antialiasing);
 
-    const QBrush brush( DuUI::getColor("medium-grey") );
+    const QBrush brush( QColor(109,109,109) );
     painter->fillPath(path, brush);
 
     // Selection Stroke
 
     if (isSelected())
     {
-        QPen pen( DuUI::getColor("less-light-grey") );
+        QPen pen( QColor(227,227,227) );
         pen.setWidth(2);
         painter->strokePath(path, pen);
     }

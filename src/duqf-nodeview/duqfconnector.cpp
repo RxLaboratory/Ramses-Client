@@ -1,5 +1,4 @@
 #include "duqfconnector.h"
-#include "duqf-app/app-style.h"
 #include "duqf-app/dusettingsmanager.h"
 
 DuQFConnector::DuQFConnector(QString title, QGraphicsItem *parent):
@@ -9,15 +8,15 @@ DuQFConnector::DuQFConnector(QString title, QGraphicsItem *parent):
 
     m_from = QPointF();
     m_to = m_from;
-    m_width = DuUI::getSize("margin");
+    m_width = 3;
     setZValue(-1000);
 
     setFlags(ItemIsSelectable);
 
     m_titleItem->setPlainText(title);
 
-    m_toColor = DuUI::getColor("light-grey");
-    m_fromColor = DuUI::getColor("light-grey");
+    m_toColor = QColor(227,227,227);
+    m_fromColor = QColor(227,227,227);
 }
 
 DuQFConnector::DuQFConnector(QPointF from, QString title)
@@ -26,15 +25,15 @@ DuQFConnector::DuQFConnector(QPointF from, QString title)
 
     m_from = from;
     m_to = m_from;
-    m_width = DuUI::getSize("margin");
+    m_width = 3;
     setZValue(-1000);
 
     setFlags(ItemIsSelectable);
 
     m_titleItem->setPlainText(title);
 
-    m_toColor = DuUI::getColor("light-grey");
-    m_fromColor = DuUI::getColor("light-grey");
+    m_toColor = QColor(227,227,227);
+    m_fromColor = QColor(227,227,227);
 }
 
 QRectF DuQFConnector::boundingRect() const
@@ -144,7 +143,7 @@ void DuQFConnector::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
 
     if (isSelected()) {
         gradient.setColorAt(0.0, m_fromColor);
-        gradient.setColorAt(0.5, DuUI::getColor("light-grey"));
+        gradient.setColorAt(0.5, QColor(227,227,227));
         gradient.setColorAt(1.0, m_toColor);
     }
     else {
@@ -176,14 +175,14 @@ void DuQFConnector::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
         path.addRoundedRect(rect, m_cornerRadius, m_cornerRadius);
          painter->setRenderHint(QPainter::Antialiasing);
 
-         const QBrush brush( DuUI::getColor("less-light-grey") );
+         const QBrush brush( QColor(227,227,227) );
          painter->fillPath(path, brush);
 
          // Selection Stroke
 
          if (isSelected())
          {
-             QPen pen( DuUI::getColor("light-grey") );
+             QPen pen( QColor(227,227,227) );
              pen.setWidth(2);
              painter->strokePath(path, pen);
          }
@@ -245,11 +244,11 @@ void DuQFConnector::setupUi()
 {
     m_titleItem = new QGraphicsTextItem("");
     QFont f = qApp->font();
-    f.setPixelSize( DuUI::getSize("font", "size-small") );
+    f.setPixelSize( 10 );
     m_titleItem->setFont(f);
-    m_titleItem->setDefaultTextColor(DuUI::getColor("dark-grey"));
+    m_titleItem->setDefaultTextColor( QColor(51,51,51) );
     m_titleItem->setParentItem(this);
-    m_padding = DuUI::getSize("padding", "small");
+    m_padding = 5;
 }
 
 void DuQFConnector::updateTitlePos()

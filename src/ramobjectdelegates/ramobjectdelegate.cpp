@@ -1,5 +1,4 @@
 #include "ramobjectdelegate.h"
-#include "duqf-app/app-style.h"
 
 PaintParameters RamObjectDelegate::getPaintParameters(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
@@ -242,15 +241,15 @@ void RamObjectDelegate::paintProgress(const QModelIndex &index, QPainter *painte
 RamObjectDelegate::RamObjectDelegate(QObject *parent)
     : QStyledItemDelegate(parent)
 {
-    m_abyss = DuUI::getColor("abyss-grey");
-    m_dark = DuUI::getColor("dark-grey");
-    m_medium = DuUI::getColor("medium-grey");
-    m_lessLight = DuUI::getColor("less-light-grey");
-    m_light = DuUI::getColor("light-grey");
-    m_transparent = DuUI::getColor("dark-grey");
+    m_abyss = QColor(28,28,28);
+    m_dark = QColor(51,51,51);
+    m_medium = QColor(109,109,109);
+    m_lessLight = QColor(227,227,227);
+    m_light = QColor(227,227,227);
+    m_transparent = QColor(51,51,51);
     m_transparent.setAlpha(0);
     m_textFont = qApp->font();
-    m_textFont.setPixelSize( DuUI::getSize("font", "size-medium"));
+    m_textFont.setPixelSize( 12 );
     m_detailsFont = m_textFont;
     m_detailsFont.setItalic(true);
     m_padding = 10;

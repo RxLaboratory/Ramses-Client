@@ -1,36 +1,33 @@
-#include "mainwindow.h"
-
 #include <QApplication>
 #include <QSettings>
 #include <QTcpSocket>
 
-#ifdef Q_OS_WIN
-#include "FramelessWindow/QWinWidget.h"
-#else
-#include "mainwindow.h"
-#endif
-
-#ifdef __APPLE__
-#include "FramelessWindow/OSXHideTitleBar.h"
-#endif
-
-#include "duqf-app/app-utils.h"
+#include "duqf-app/duapplication.h"
+#include "duqf-app/ducli.h"
 #include "duqf-widgets/duqfupdatedialog.h"
-#include "duqf-app/dusettingsmanager.h"
 
 int main(int argc, char *argv[])
 {
-    //This has the app draw at HiDPI scaling on HiDPI displays, usually two pixels for every one logical pixel
-    QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+    QT_REQUIRE_VERSION(argc, argv, QT_VERSION_STR)
 
-    //This has QPixmap images use the @2x images when available
-    //See this bug for more details on how to get this right: https://bugreports.qt.io/browse/QTBUG-44486#comment-327410
-    QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
+    // Enable HiDPI / Retina
+
+    QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+    QGuiApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0) && defined(Q_OS_WIN)
+    QGuiApplication::setHighDpiScaleFactorRoundingPolicy(Qt::HighDpiScaleFactorRoundingPolicy::PassThrough);
+#endif
+
+    // The CLI
+    QCommandLineParser parser;
+    DuCLI::initParser(&parser);
 
     DuApplication a(argc, argv);
 
-    // process CLI arguments
-    if ( a.processArgs() ) return 0;
+    // show splashscreen
+    a.showSplashScreen();
+    DuSplashScreen *s = a.splashScreen();
+    s->newMessage("Checking if Ramses is already running...");
 
     // Check if we're already running
     if (!a.lock()) {
@@ -71,11 +68,6 @@ int main(int argc, char *argv[])
         if (mustQuit) return -1;
     }
 
-    // show splashscreen
-    a.showSplashScreen();
-    DuSplashScreen *s = a.splashScreen();
-    s->newMessage("Checking if Ramses is already running...");
-
     // Check for updates, right during startup
     s->newMessage("Looking for udpates...");
     QSettings settings;
@@ -100,32 +92,7 @@ int main(int argc, char *argv[])
     }
 
     // build and show UI
-    s->newMessage("Building UI");
-
-#ifdef _WIN32
-
-    //On Windows, the widget needs to be encapsulated in a native window for frameless rendering
-    //In this case, QWinWidget creates the mainwindow, and adds it to a layout
-    QWinWidget *w = new QWinWidget(a.arguments());
-
-    // Restore Geometry and state
-    w->restoreGeometry( DuSettingsManager::instance()->uiWindowGeometry() );
-    w->getMainWindow()->restoreState(DuSettingsManager::instance()->uiWindowState());
-
-#else
-    //On OS X / Linux, the widget can handle everything itself so just create Widget as normal
-    MainWindow *w = new MainWindow( a.arguments() );
-
-    // Restore Geometry and state
-    w->restoreGeometry( DuSettingsManager::instance()->uiWindowGeometry() );
-    w->restoreState(DuSettingsManager::instance()->uiWindowState());
-
-#endif
-
-    w->show();
-
-    //hide splash when finished
-    s->finish(w);
+    DuUI::buildUI(parser, a.splashScreen());
 
     return a.exec();
 }

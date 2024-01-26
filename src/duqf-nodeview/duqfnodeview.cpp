@@ -250,7 +250,7 @@ void DuQFNodeView::drawBackground(QPainter *painter, const QRectF &rect)
 {
     painter->save();
 
-    painter->fillRect(rect, QBrush( DuUI::getColor("very-dark-grey")  ) );
+    painter->fillRect(rect, QBrush( QColor(34,34,34) ) );
 
     const int gridSize = m_grid->size();
 
@@ -279,7 +279,7 @@ void DuQFNodeView::drawBackground(QPainter *painter, const QRectF &rect)
         if (hasFocus())
         {
              QPen pen;
-            pen.setColor( DuUI::getColor("dark-grey") );
+            pen.setColor( QColor(51,51,51) );
             pen.setWidthF(1 / currentZoom());
             painter->setPen(pen);
             painter->drawLines(lines);

@@ -1,7 +1,5 @@
 #include "appearancesettingswidget.h"
 
-#include "duqf-app/app-style.h"
-
 AppearanceSettingsWidget::AppearanceSettingsWidget(QWidget *parent) :
     QWidget(parent)
 {
@@ -67,7 +65,7 @@ void AppearanceSettingsWidget::on_toolsComboBox_currentIndexChanged(int index)
 
     settings.setValue("toolButtonStyle", index);
 
-    DuUI::setToolButtonStyle(style);
+    //DuUI::setToolButtonStyle(style);
 }
 
 void AppearanceSettingsWidget::on_styleComboBox_currentIndexChanged(int index)
@@ -98,11 +96,11 @@ void AppearanceSettingsWidget::on_styleComboBox_currentIndexChanged(int index)
 
     if (cssFile != "")
     {
-        DuUI::updateCSS(cssFile);
+        //DuUI::updateCSS(cssFile);
     }
     else
     {
-        DuUI::updateCSS("");
+        //DuUI::updateCSS("");
         qApp->setStyle(QStyleFactory::create(style));
     }
 }
@@ -114,7 +112,7 @@ void AppearanceSettingsWidget::on_fontComboBox_currentFontChanged(const QFont &f
     settings.setValue("font", f.family());
 
     qApp->setFont(f);
-    DuUI::updateCSS(settings.value("cssFile",":/styles/default").toString());
+    //DuUI::updateCSS(settings.value("cssFile",":/styles/default").toString());
 }
 
 void AppearanceSettingsWidget::on_dateFormatBox_currentIndexChanged(int index)

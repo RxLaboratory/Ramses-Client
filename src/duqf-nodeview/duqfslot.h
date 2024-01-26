@@ -5,8 +5,6 @@
 #include <QPainter>
 #include <QGraphicsSceneHoverEvent>
 
-#include "duqf-app/app-style.h"
-
 class DuQFSlot : public QGraphicsObject
 {
     Q_OBJECT

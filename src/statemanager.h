@@ -1,7 +1,7 @@
 #ifndef STATEMANAGER_H
 #define STATEMANAGER_H
 
-#include "duqf-app/app-utils.h"
+#include "duqf-app/duapplication.h"
 #include <QObject>
 
 class StateManager : public QObject
