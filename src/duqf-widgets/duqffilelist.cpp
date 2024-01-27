@@ -1,7 +1,7 @@
 #include "duqffilelist.h"
 
 DuQFFileList::DuQFFileList(QWidget *parent):
-    QTreeWidget(parent)
+    DuTreeWidget(parent)
 {
     this->setColumnCount(2);
     this->setHeaderLabels(QStringList() << "Name" << "Date");

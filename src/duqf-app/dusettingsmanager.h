@@ -17,7 +17,9 @@ public:
     static const QString UI_ICON_COLOR;
     static const QString UI_TRAYICON_MODE;
     static const QString UI_SHOW_TRAYICON;
-
+    static const QString UI_DATE_FORMAT;
+    static const QString CHECK_UPDATES;
+    static const QString DAEMON_PORT;
 
     static DuSettingsManager *instance();
 
@@ -46,6 +48,10 @@ public:
     QColor uiIconColor(ColorVariant v=NormalColor) const;
     QColor trayIconColor() const;
     ColorVariant trayIconMode() const;
+    bool showTrayIcon() const;
+    QString uiDateFormat() const;
+    bool checkUpdates() const;
+    int daemonPort() const;
 
 public slots:
     void setUIFocusColor(const QColor &color);
@@ -64,20 +70,23 @@ public slots:
 
     void setUIToolButtonStyle(Qt::ToolButtonStyle style);
     void setUIToolButtonStyle(int style);
-
     void setUIDockSize(const QString &dockName, const QSize &size);
-
     void setUIIconColor(const QColor &color);
-
-     void setTrayIconMode(ColorVariant mode);
+    void setTrayIconMode(ColorVariant mode);
+    void setShowTrayIcon(bool show);
+    void setUIDateFormat(const QString f);
+    void setCheckUpdates(bool c);
+    void setDaemonPort(int p);
 
 signals:
     void nvCurvatureChanged(float);
     void uiToolButtonStyleChanged(Qt::ToolButtonStyle);
+    void uiFocusColorChanged(QColor);
     void uiIconColorChanged(QColor);
     void trayIconModeChanged(ColorVariant);
     void trayIconColorChanged(QColor);
     void trayIconVisibilityChanged(bool);
+    void uiDateFormatChanged(QString);
 
 protected:
     static DuSettingsManager *_instance;

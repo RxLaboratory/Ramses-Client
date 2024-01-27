@@ -53,7 +53,7 @@ void ConsoleWidget::setupUi(DuQFLoggerObject *o)
     mainLayout->setContentsMargins(3,3,3,3);
     mainLayout->setSpacing(3);
 
-    ui_levelBox = new QComboBox();
+    ui_levelBox = new DuComboBox();
     ui_levelBox->addItem("Data", DuQFLog::Data);
     ui_levelBox->addItem("Debug", DuQFLog::Debug);
     ui_levelBox->addItem("Information", DuQFLog::Information);

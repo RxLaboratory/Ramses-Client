@@ -1,0 +1,31 @@
+#mainToolBar {
+    background: @color-less-dark-grey;
+    padding: @padding-small @padding-small @padding-small @padding-small;
+}
+
+#mainToolBar[osClass="win"] {
+    border-radius: @padding-large, @padding-large, 0, 0;
+}
+
+#mainToolBar QWidget {
+    margin-right: @margin;
+}
+
+#mainToolBar QLabel {
+    color: @color-light-grey;
+}
+
+#windowButton {
+    width: @small-button-size;
+    height: @small-button-size;
+}
+
+#windowButton:checked {
+    background: none;
+}
+
+#windowButton:hover,
+#mainToolBar QToolButton:hover
+{ 
+    background-color: @focus;
+}

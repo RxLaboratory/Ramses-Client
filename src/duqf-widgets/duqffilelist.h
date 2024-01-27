@@ -1,10 +1,11 @@
 #ifndef DUQFFILELIST_H
 #define DUQFFILELIST_H
 
-#include <QTreeWidget>
 #include <QWidget>
 
-class DuQFFileList : public QTreeWidget
+#include "duqf-widgets/dutreewidget.h"
+
+class DuQFFileList : public DuTreeWidget
 {
     Q_OBJECT
 public:

@@ -106,6 +106,36 @@ void DuUI::addCustomCSS(QWidget *w, const QString &customCSS, bool loadSettings)
         );
 }
 
+void DuUI::replaceCSS(QWidget *w, const QString &css, const QString &where)
+{
+    const QStringList sList = w->styleSheet().split("\n");
+    QStringList newStyleList;
+    bool in = false;
+    bool replaced = false;
+    for (const QString &s: sList) {
+        if (!in)
+            newStyleList << s;
+
+        if (s == "/*DuUI:"+where+"*/") {
+            newStyleList << css;
+            replaced = true;
+            in = true;
+        }
+
+        if (s == "/*DuUI:End:"+where+"*/") {
+            newStyleList << s;
+            in = false;
+        }
+    }
+    if (!replaced) {
+        newStyleList << "/*DuUI:"+where+"*/";
+        newStyleList << css;
+        newStyleList << "/*DuUI:End:"+where+"*/";
+    }
+    qDebug() << newStyleList.join("\n");
+    w->setStyleSheet(newStyleList.join("\n"));
+}
+
 QString DuUI::setCSSVars(const QString &css, bool loadSettings)
 {
     QString s = css;

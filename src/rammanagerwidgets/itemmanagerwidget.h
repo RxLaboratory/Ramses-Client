@@ -4,7 +4,6 @@
 #include <QWidget>
 #include <QShowEvent>
 #include <QHideEvent>
-#include <QComboBox>
 #include <QClipboard>
 
 #include "duqf-widgets/duqftitlebar.h"

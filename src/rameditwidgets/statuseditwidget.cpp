@@ -555,7 +555,7 @@ void StatusEditWidget::setupUi()
     detailsLayout->setContentsMargins(0,0,0,0);
     ui_mainLayout->addLayout(detailsLayout);
 
-    ui_difficultyBox = new QComboBox(this);
+    ui_difficultyBox = new DuComboBox(this);
     ui_difficultyBox->addItem("Very easy");
     ui_difficultyBox->addItem("Easy");
     ui_difficultyBox->addItem("Medium");
@@ -628,7 +628,7 @@ void StatusEditWidget::setupUi()
     mainFileButtonLayout->setSpacing(3);
     mainFileLayout->addLayout(mainFileButtonLayout);
 
-    ui_versionFileBox = new QComboBox(this);
+    ui_versionFileBox = new DuComboBox(this);
     ui_versionFileBox->setEnabled(false);
     mainFileButtonLayout->addWidget(ui_versionFileBox);
 
@@ -659,7 +659,7 @@ void StatusEditWidget::setupUi()
     publishedFileLayout->setContentsMargins(0,3,0,0);
     publishedFileLayout->setSpacing(3);
 
-    ui_versionPublishBox = new QComboBox(this);
+    ui_versionPublishBox = new DuComboBox(this);
     publishedFileLayout->addWidget(ui_versionPublishBox);
 
     ui_publishedFileList = new DuQFFileList(this);

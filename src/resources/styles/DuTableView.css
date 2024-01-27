@@ -1,0 +1,26 @@
+DuTableView {
+    background-color: @color-very-dark-grey;
+    alternate-background-color: @color-darker-grey;
+    color: @color-less-light-grey;
+    selection-color: @focus;
+    selection-background-color: @color-less-dark-grey;
+}
+
+DuTableView::item:hover {
+    background-color: @color-dark-grey;
+}
+
+DuTableView::item:selected {
+    background-color: none;
+    border: none;
+}
+
+DuTableView QLineEdit {
+    background-color: @color-very-dark-grey;
+    selection-background-color: @focus-dark;
+}
+
+DuTableView QTableCornerButton::section {
+    background-color: @color-very-dark-grey;
+    border: none;
+}

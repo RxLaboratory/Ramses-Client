@@ -4,8 +4,8 @@
 #include <QWidget>
 
 #include <QVBoxLayout>
-#include <QComboBox>
 
+#include "duqf-widgets/ducombobox.h"
 #include "duqf-widgets/autoselectspinbox.h"
 
 class ResolutionWidget : public QWidget

@@ -8,7 +8,6 @@
 #include "progressmanager.h"
 #include "progressbar.h"
 #include "docks/consolewidget.h"
-#include "daemonsettingswidget.h"
 #include "loginpage.h"
 #include "qstatusbar.h"
 #include "sequencemanagerwidget.h"
@@ -31,9 +30,8 @@
 #include "projectselectorwidget.h"
 #include "dbmanagerwidget.h"
 #include "duqf-widgets/duqflogtoolbutton.h"
-#include "duqf-widgets/duqfupdatesettingswidget.h"
-#include "duqf-widgets/appearancesettingswidget.h"
 #include "duqf-app/app-version.h"
+#include "docks/settingsdock.h"
 
 MainWindow::MainWindow(const QCommandLineParser &cli, QWidget *parent) :
     DuMainWindow{parent}
@@ -104,23 +102,18 @@ MainWindow::MainWindow(const QCommandLineParser &cli, QWidget *parent) :
 
 void MainWindow::connectEvents()
 {
-    connect(ui_settingsButton, SIGNAL(clicked(bool)), this, SLOT(duqf_settings(bool)));
-    connect(ui_settingsWidget, SIGNAL(closeRequested()), this, SLOT(duqf_closeSettings()));
-    connect(ui_settingsWidget, SIGNAL(reinitRequested()), this, SLOT(duqf_reinitSettings()));
-
     // Connect events
     connect(ProgressManager::instance(), &ProgressManager::freezeUI, this, &MainWindow::freezeUI);
 
     // Toolbar buttons
     connect(m_actionLogIn,SIGNAL(triggered()), this, SLOT(home()));
     connect(m_actionLogOut,SIGNAL(triggered()), StateManager::i(), SLOT(logout()));
-    connect(m_actionSettings, SIGNAL(triggered(bool)), this, SLOT(duqf_settings(bool)));
     connect(m_actionSetOnline, &QAction::triggered, this, &MainWindow::setOnlineAction);
     connect(m_actionSetOffline, &QAction::triggered, this, &MainWindow::setOfflineAction);
     connect(m_actionDatabaseSettings, &QAction::triggered, this, &MainWindow::databaseSettingsAction);
     connect(m_actionUserProfile,SIGNAL(triggered()), this, SLOT(userProfile()));
     connect(m_actionUserFolder,SIGNAL(triggered()), this, SLOT(revealUserFolder()));
-    connect(m_actionAdmin,SIGNAL(triggered(bool)), this, SLOT(admin(bool)));
+    connect(m_actionAdmin,SIGNAL(triggered()), this, SLOT(admin()));
 
     connect(m_actionPipeline,SIGNAL(triggered()), this, SLOT(pipeline()));
     connect(ui_pipelineButton,SIGNAL(clicked()), this, SLOT(pipeline()));
@@ -164,6 +157,9 @@ void MainWindow::connectEvents()
 
     connect(m_actionTimeline,SIGNAL(triggered(bool)), ui_timelineDockWidget, SLOT(setVisible(bool)));
     connect(ui_timelineDockWidget,SIGNAL(visibilityChanged(bool)), m_actionTimeline, SLOT(setChecked(bool)));
+
+    connect(m_actionSettings, &DuAction::triggered, ui_settingsDock, &DuDockWidget::setVisible);
+    connect(ui_settingsDock, &DuDockWidget::visibilityChanged, m_actionSettings, &DuAction::setChecked);
 
     // Files
     connect(m_fileAdminAction,SIGNAL(triggered()), this, SLOT(revealAdminFolder()));
@@ -265,37 +261,6 @@ void MainWindow::donate()
     QDesktopServices::openUrl ( QUrl( URL_DONATION ) );
 }
 
-void MainWindow::settings(bool checked)
-{
-    ui_settingsButton->setChecked(checked);
-    if (checked)
-    {
-        ui_mainStack->setCurrentIndex(Settings);
-    }
-    else
-    {
-        ui_mainStack->setCurrentIndex(Home);
-    }
-}
-
-void MainWindow::closeSettings()
-{
-    settings(false);
-}
-
-void MainWindow::reinitSettings()
-{
-    QMessageBox::StandardButton choice = QMessageBox::question(this, "Reset settings", "This will reset all settings to their default values and restart the application.\nAre you sure you want to continue?" );
-    if (choice == QMessageBox::Yes)
-    {
-        QSettings settings;
-        settings.clear();
-        settings.sync();
-        this->close();
-        QProcess::startDetached(qApp->arguments()[0], qApp->arguments());
-    }
-}
-
 void MainWindow::about()
 {
     //duqf_aboutDialog->show();
@@ -389,16 +354,8 @@ void MainWindow::log(DuQFLog m)
 void MainWindow::pageChanged(int i)
 {
     m_actionAdmin->setChecked(i == 3);
-    ui_settingsButton->setChecked(i == 1);
-    m_actionSettings->setChecked(i == 1);
     m_actionLogIn->setChecked(i == 0);
     ui_propertiesDockWidget->hide();
-}
-
-void MainWindow::serverSettings()
-{
-    ui_mainStack->setCurrentIndex(Settings);
-    ui_settingsWidget->setCurrentIndex(2);
 }
 
 void MainWindow::setOfflineAction()
@@ -512,11 +469,10 @@ void MainWindow::revealTrashFolder()
     FileUtils::openInExplorer( proj->path(RamProject::TrashFolder), true );
 }
 
-void MainWindow::admin(bool show)
+void MainWindow::admin()
 {
     ui_mainToolBar->show();
-    if (show) ui_mainStack->setCurrentIndex(Admin);
-    else home();
+    ui_mainStack->setCurrentIndex(Admin);
 }
 
 void MainWindow::pipeline()
@@ -551,7 +507,6 @@ void MainWindow::currentUserChanged()
     ui_userButton->setText("Guest");
     ui_userButton->setIcon(QIcon(""));
     m_actionAdmin->setVisible(false);
-    m_actionAdmin->setChecked(false);
     m_actionUserProfile->setVisible(false);
     m_actionUserFolder->setVisible(false);
 
@@ -560,7 +515,6 @@ void MainWindow::currentUserChanged()
     {
         m_actionLogIn->setVisible(true);
         m_actionLogOut->setVisible(false);
-        m_actionSettings->setVisible(true);
         ui_networkButton->setVisible(false);
         ui_projectSelectorAction->setVisible(false);
         home();
@@ -570,7 +524,6 @@ void MainWindow::currentUserChanged()
     m_actionLogIn->setVisible(false);
     m_actionLogOut->setVisible(true);
     ui_networkButton->setVisible(true);
-    m_actionSettings->setVisible(false);
     ui_projectSelectorAction->setVisible(true);
 
     _currentUserConnection = connect(user, &RamUser::dataChanged, this, &MainWindow::currentUserChanged);
@@ -888,6 +841,7 @@ void MainWindow::setupActions()
     m_actionSettings = new DuAction(this);
     m_actionSettings->setText(tr("Settings"));
     m_actionSettings->setToolTip(tr("Edit the application settings."));
+    m_actionSettings->setCheckable(true);
     m_actionSettings->setIcon(":/icons/settings");
 
     m_actionSync = new DuAction(this);
@@ -980,29 +934,9 @@ void MainWindow::setupUi()
     LoginPage *lp = new LoginPage(this);
     mainLayout->addWidget(lp);
 
-    auto settingsPage = new QWidget(ui_mainStack);
-    ui_mainStack->addWidget(settingsPage);
-
-    auto settingsLayout = new QVBoxLayout(settingsPage);
-    settingsLayout->setSpacing(0);
-    settingsLayout->setContentsMargins(0, 0, 0, 0);
-
-    ui_settingsWidget = new SettingsWidget();
-    ui_settingsWidget->titleBar()->setObjectName("settingsToolBar");
-    settingsLayout->addWidget(ui_settingsWidget);
-
     ui_mainStatusBar = new QStatusBar(this);
     ui_mainStatusBar->setSizeGripEnabled(false);
     this->setStatusBar(ui_mainStatusBar);
-
-    AppearanceSettingsWidget *asw = new AppearanceSettingsWidget();
-    ui_settingsWidget->addPage(asw, "Appearance", QIcon(":/icons/color"));
-
-    DuQFUpdateSettingsWidget *usw = new DuQFUpdateSettingsWidget();
-    ui_settingsWidget->addPage(usw, "Updates", QIcon(":/icons/update-settings"));
-
-    DaemonSettingsWidget *dsw = new DaemonSettingsWidget(this);
-    ui_settingsWidget->addPage(dsw, "Daemon", QIcon(":/icons/daemon"));
 
     // user profile
     UserProfilePage *up = new UserProfilePage(this);
@@ -1014,38 +948,37 @@ void MainWindow::setupUi()
     ui_adminPage->showReinitButton(false);
     ui_mainStack->addWidget(ui_adminPage);
     // Admin tabs
-    qDebug() << "> Admin";
+
     UserManagerWidget *userManager = new UserManagerWidget(this);
     ui_adminPage->addPage(userManager,"Users", QIcon(":/icons/users"));
     ui_adminPage->titleBar()->insertLeft(userManager->menuButton());
-    qDebug() << "  > users ok";
+
     ProjectManagerWidget *projectManager = new ProjectManagerWidget(this);
     ui_adminPage->addPage(projectManager, "Projects", QIcon(":/icons/projects"));
     ui_adminPage->titleBar()->insertLeft(projectManager->menuButton());
-    qDebug() << "  > projects ok";
+
     TemplateStepManagerWidget *templateStepManager = new TemplateStepManagerWidget(this);
     ui_adminPage->addPage(templateStepManager, "Template Steps", QIcon(":/icons/steps"));
     ui_adminPage->titleBar()->insertLeft(templateStepManager->menuButton());
-    qDebug() << "  > template steps ok";
+
     TemplateAssetGroupManagerWidget *templateAssetGroupManager = new TemplateAssetGroupManagerWidget(this);
     ui_adminPage->addPage(templateAssetGroupManager, "Template Asset Groups", QIcon(":/icons/asset-groups"));
     ui_adminPage->titleBar()->insertLeft(templateAssetGroupManager->menuButton());
-    qDebug() << "  > template assets ok";
+
     StateManagerWidget *stateManager = new StateManagerWidget(this);
     ui_adminPage->addPage(stateManager, "States", QIcon(":/icons/state"));
     ui_adminPage->titleBar()->insertLeft(stateManager->menuButton());
-    qDebug() << "  > states ok";
+
     FileTypeManagerWidget *fileTypeManager = new FileTypeManagerWidget(this);
     ui_adminPage->addPage(fileTypeManager, "File Types", QIcon(":/icons/files"));
     ui_adminPage->titleBar()->insertLeft(fileTypeManager->menuButton());
-    qDebug() << "  > file types ok";
+
     ApplicationManagerWidget *applicationManager = new ApplicationManagerWidget(this);
     ui_adminPage->addPage(applicationManager, "Applications", QIcon(":/icons/applications"));
     ui_adminPage->titleBar()->insertLeft(applicationManager->menuButton());
-    qDebug() << "  > applications ok";
+
     DBManagerWidget *dbManager = new DBManagerWidget(this);
     ui_adminPage->addPage(dbManager, "Database tools", QIcon(":/icons/applications"));
-    qDebug() << "  > DB Manager ok";//*/
 
 // Pipeline editor
 #ifndef DEACTIVATE_PIPELINE
@@ -1084,6 +1017,20 @@ void MainWindow::setupUi()
 void MainWindow::setupDocks()
 {
     QSettings settings;
+
+    // Settings Dock
+    ui_settingsDock = new DuDockWidget("Settings", this);
+    ui_settingsDock->setWindowIcon(DuIcon(":/icons/settings"));
+    ui_settingsDock->setObjectName("settingsDock");
+    DuDockTitleWidget *ui_settingsTitle = new DuDockTitleWidget("Settings", this);
+    ui_settingsTitle->setObjectName("dockTitle");
+    ui_settingsTitle->setIcon(":/icons/settings");
+    ui_settingsDock->setTitleBarWidget(ui_settingsTitle);
+    ui_settingsDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    ui_settingsDock->setFeatures(DuDockWidget::DockWidgetClosable | DuDockWidget::DockWidgetMovable | DuDockWidget::DockWidgetFloatable );
+    ui_settingsDock->setWidget(new SettingsDock(ui_settingsDock));
+    this->addDockWidget(Qt::RightDockWidgetArea, ui_settingsDock);
+    ui_settingsDock->hide();
 
 #ifndef DEACTIVATE_STATS
     StatisticsWidget *statsTable = new StatisticsWidget(this);
@@ -1382,7 +1329,9 @@ void MainWindow::setupToolBar()
     ui_filesButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
 
     // Populate Toolbar
-    ui_projectSelectorAction = ui_mainToolBar->addWidget(new ProjectSelectorWidget(this));
+    auto projectSelector = new ProjectSelectorWidget(this);
+    ui_projectSelectorAction = ui_mainToolBar->addWidget(projectSelector);
+    DuUI::addCustomCSS(projectSelector, "QComboBox { background: #222222; }");
     ui_pipelineMenuAction = ui_mainToolBar->addWidget(ui_pipelineButton);
     ui_assetMenuAction = ui_mainToolBar->addWidget(ui_assetsButton);
     ui_shotMenuAction = ui_mainToolBar->addWidget(ui_shotsButton);
@@ -1464,11 +1413,7 @@ void MainWindow::setupStatusBar()
 
     // version in statusbar
     ui_mainStatusBar->addPermanentWidget(new QLabel("v" + QString(STR_VERSION)));
-    ui_settingsButton = new QToolButton();
-    ui_settingsButton->setIcon(DuIcon(":/icons/settings-w"));
-    ui_settingsButton->setToolTip("Go to Settings");
-    ui_settingsButton->setCheckable(true);
-    ui_mainStatusBar->addPermanentWidget(ui_settingsButton);
+
     QToolButton *helpButton = new QToolButton();
     helpButton->setIcon(QIcon(":/icons/help"));
     helpButton->setToolTip("Get Help");
@@ -1484,11 +1429,11 @@ void MainWindow::setupStatusBar()
         docAction->setToolTip("Read the documentation");
         docAction->setShortcut(QKeySequence("F1"));
         helpMenu->addAction(docAction);
-        connect(docAction, SIGNAL(triggered()), this, SLOT(duqf_doc()));
+        connect(docAction, &DuAction::triggered, this, &MainWindow::doc);
     }
     QAction *aboutAction = new QAction(QIcon(":/icons/info"), "About");
     helpMenu->addAction(aboutAction);
-    connect(aboutAction, SIGNAL(triggered()), this, SLOT(duqf_about()));
+    connect(aboutAction, &DuAction::triggered, this, &MainWindow::about);
     helpMenu->addSeparator();
     bool chat = QString(URL_CHAT) != "";
     bool bugReport = QString(URL_BUGREPORT) != "";
@@ -1500,7 +1445,7 @@ void MainWindow::setupStatusBar()
         bugReportAction->setToolTip("Report a bug");
         helpMenu->addAction(bugReportAction);
         if (!chat && !forum && !donate) helpMenu->addSeparator();
-        connect(bugReportAction, SIGNAL(triggered()), this, SLOT(duqf_bugReport()));
+        connect(bugReportAction, &DuAction::triggered, this, &MainWindow::bugReport);
     }
     if (chat)
     {
@@ -1508,7 +1453,7 @@ void MainWindow::setupStatusBar()
         chatAction->setToolTip("Come and have a chat");
         helpMenu->addAction(chatAction);
         if (!forum && !donate) helpMenu->addSeparator();
-        connect(chatAction, SIGNAL(triggered()), this, SLOT(duqf_chat()));
+        connect(chatAction, &DuAction::triggered, this, &MainWindow::chat);
     }
     if (forum)
     {
@@ -1524,7 +1469,7 @@ void MainWindow::setupStatusBar()
         donateAction->setToolTip("Help us, donate now!");
         helpMenu->addAction(donateAction);
         helpMenu->addSeparator();
-        connect(donateAction, SIGNAL(triggered()), this, SLOT(duqf_donate()));
+        connect(donateAction, &DuAction::triggered, this, &MainWindow::donate);
 
         /*QToolButton *donateButton = new QToolButton();
         donateButton->setIcon(QIcon(":/icons/donate"));
@@ -1559,7 +1504,7 @@ void MainWindow::setupSysTray()
         trayMenu->addAction(actionQuit);
         trayIcon->setContextMenu(trayMenu);
         trayIcon->show();
-        connect(trayIcon,SIGNAL(activated(QSystemTrayIcon::ActivationReason)),this,SLOT(duqf_trayClicked(QSystemTrayIcon::ActivationReason)));
+        connect(trayIcon,SIGNAL(activated(QSystemTrayIcon::ActivationReason)),this,SLOT(trayClicked(QSystemTrayIcon::ActivationReason)));
         connect(m_actionShowHide, &QAction::triggered, this, &MainWindow::showHide);
         connect(actionQuit, &QAction::triggered, this, &MainWindow::close);
     }

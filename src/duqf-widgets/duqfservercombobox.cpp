@@ -1,7 +1,7 @@
 #include "duqfservercombobox.h"
 
 DuQFServerComboBox::DuQFServerComboBox(QString defaultAddress, QWidget *parent):
-    QComboBox(parent)
+    DuComboBox(parent)
 {
     this->setEditable(true);
 
@@ -40,7 +40,7 @@ void DuQFServerComboBox::focusOutEvent(QFocusEvent *e)
 {
     QString text = this->currentText();
     textChanged(text);
-    QComboBox::focusOutEvent(e);
+    DuComboBox::focusOutEvent(e);
 }
 
 void DuQFServerComboBox::textChanged(QString text)

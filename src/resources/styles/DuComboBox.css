@@ -1,0 +1,63 @@
+DuComboBox {
+    background-color: @color-less-dark-grey;
+    border-radius: @padding-small;
+    padding: @padding-small;
+    border:none;
+    color: @color-light-grey;
+}
+
+DuComboBox:hover {
+    background-color: @focus-dark;
+    color: @color-light-grey;
+}
+
+DuComboBox::drop-down {
+    border:none;
+}
+
+DuComboBox::indicator {
+    image:none;
+}
+
+DuComboBox::down-arrow {
+      image: url(:/icons/select);
+      width: @padding-large;
+      height: @padding-large;
+      padding-right: @padding-small;
+}
+
+DuComboBox:disabled {
+    background-color: @color-dark-grey;
+    color: @color-medium-grey;
+}
+
+DuComboBox::down-arrow:disabled {
+      image: none;
+}
+
+DuComboBox::item {
+    background-color: #434343;
+    color: #e3e3e3;
+}
+
+DuComboBox::item:selected{
+    border:none;
+    border-radius: @padding-small;
+    background-color: @focus-dark;
+}
+
+/* Dropdown pane */
+DuComboBox QAbstractItemView { 
+    padding: @padding-small;
+    border-radius: @padding-small;
+    background-color: #434343;
+    color: #e3e3e3;
+}
+
+DuComboBox QScrollBar { 
+    width: @very-small-button-size;
+}
+
+DuComboBox QScrollBar::handle:vertical {
+    min-height: @small-button-size;
+}

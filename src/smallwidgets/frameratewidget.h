@@ -2,8 +2,9 @@
 #define FRAMERATEWIDGET_H
 
 #include <QWidget>
-#include <QComboBox>
 #include <QVBoxLayout>
+
+#include "duqf-widgets/ducombobox.h"
 #include "duqf-widgets/autoselectdoublespinbox.h"
 
 class FramerateWidget : public QWidget
@@ -26,7 +27,7 @@ private:
     void setupUi();
     void connectEvents();
 
-    QComboBox *presetsBox;
+    DuComboBox *presetsBox;
     AutoSelectDoubleSpinBox *framerateBox;
 
 };

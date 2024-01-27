@@ -46,7 +46,7 @@ void FramerateWidget::setupUi()
     l->setContentsMargins(0,0,0,0);
     l->setSpacing(3);
 
-    presetsBox = new QComboBox(this);
+    presetsBox = new DuComboBox(this);
     presetsBox->addItem("Custom", 0.0);
     presetsBox->addItem("8 fps", 8.0);
     presetsBox->addItem("12 fps", 12.0);

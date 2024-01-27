@@ -1,9 +1,10 @@
 #ifndef RAMOBJECTCOMBOBOX_H
 #define RAMOBJECTCOMBOBOX_H
 
+#include "duqf-widgets/ducombobox.h"
 #include "ramobjectsortfilterproxymodel.h"
 
-class RamObjectComboBox : public QComboBox
+class RamObjectComboBox : public DuComboBox
 {
     Q_OBJECT
 public:

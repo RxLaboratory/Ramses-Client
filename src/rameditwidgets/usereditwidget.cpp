@@ -191,7 +191,7 @@ void UserEditWidget::setupUi()
     QLabel *roleLabel = new QLabel("Current role", this);
     ui_mainFormLayout->addWidget(roleLabel, 3, 0);
 
-    ui_roleBox = new QComboBox(this);
+    ui_roleBox = new DuComboBox(this);
     ui_roleBox->addItem(QIcon(":/icons/user"), "Standard");
     ui_roleBox->addItem(QIcon(":/icons/lead"), "Lead");
     ui_roleBox->addItem(QIcon(":/icons/project-admin"), "Project Admin");

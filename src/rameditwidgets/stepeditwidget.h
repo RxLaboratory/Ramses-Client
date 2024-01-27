@@ -1,14 +1,13 @@
 ﻿#ifndef STEPEDITWIDGET_H
 #define STEPEDITWIDGET_H
 
-#include <QComboBox>
 #include <QSplitter>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QToolButton>
-#include <QListWidget>
 #include <QFormLayout>
 
+#include "duqf-widgets/ducombobox.h"
 #include "duqf-widgets/autoselectdoublespinbox.h"
 #include "objecteditwidget.h"
 #include "duqf-widgets/duqffolderdisplaywidget.h"
@@ -50,9 +49,9 @@ private:
 
     RamStep *m_step;
 
-    QComboBox *ui_typeBox;
+    DuComboBox *ui_typeBox;
     QWidget *ui_estimationWidget;
-    QComboBox *ui_estimationTypeBox;
+    DuComboBox *ui_estimationTypeBox;
     QLabel *ui_estimationTypeLabel;
     DuQFTextEdit *ui_publishSettingsEdit;
     DuQFTextEdit *ui_generalSettingsEdit;

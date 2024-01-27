@@ -64,7 +64,7 @@ void ResolutionWidget::setupUi()
     layout->setContentsMargins(0,0,0,0);
     layout->setSpacing(3);
 
-    presetsBox = new QComboBox(this);
+    presetsBox = new DuComboBox(this);
     presetsBox->addItem("Custom", QList<QVariant>() << 0 << 0);
     presetsBox->addItem("Square HD ( 1080x1080 1:1 )", QList<QVariant>() << 1080 << 1080);
     presetsBox->addItem("HD ( 1280x720 1.78:1 )", QList<QVariant>() << 1280 << 720);

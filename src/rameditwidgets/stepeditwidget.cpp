@@ -220,7 +220,7 @@ void StepEditWidget::setupUi()
     QLabel *typeLabel = new QLabel("Type", this);
     ui_mainFormLayout->addWidget(typeLabel, 3,0);
 
-    ui_typeBox = new QComboBox(this);
+    ui_typeBox = new DuComboBox(this);
     ui_typeBox->addItem(QIcon(":/icons/project"), "        Pre-Production", "pre");
     ui_typeBox->addItem(QIcon(":/icons/asset"), "        Asset Production", "asset");
     ui_typeBox->addItem(QIcon(":/icons/shot"), "        Shot Production", "shot");
@@ -242,7 +242,7 @@ void StepEditWidget::setupUi()
 
     ui_estimationTypeLabel = new QLabel("Method", this);
 
-    ui_estimationTypeBox = new QComboBox(this);
+    ui_estimationTypeBox = new DuComboBox(this);
     ui_estimationTypeBox->addItem("Per shot");
     ui_estimationTypeBox->addItem("Per second");
     estimationLayout->addRow(ui_estimationTypeLabel, ui_estimationTypeBox);

@@ -5,10 +5,10 @@
 #include <QToolButton>
 #include <QFormLayout>
 #include <QCheckBox>
-#include <QListWidget>
 #include <QShortcut>
 #include <QSplitter>
 
+#include "duqf-widgets/ducombobox.h"
 #include "duqf-widgets/duqftextedit.h"
 #include "duqf-widgets/duqfspinbox.h"
 #include "duqf-widgets/autoselectspinbox.h"
@@ -74,8 +74,8 @@ private:
     DuQFFileList *ui_mainFileList;
     DuQFFileList *ui_previewFileList;
     DuQFFileList *ui_publishedFileList;
-    QComboBox *ui_versionFileBox;
-    QComboBox *ui_versionPublishBox;
+    DuComboBox *ui_versionFileBox;
+    DuComboBox *ui_versionPublishBox;
     QToolButton *ui_openMainFileButton;
     QToolButton *ui_createMainFileButton;
     DuMenu *ui_createFromTemplateMenu;

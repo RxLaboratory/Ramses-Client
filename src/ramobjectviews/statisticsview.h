@@ -1,22 +1,19 @@
 #ifndef STATISTICSIEW_H
 #define STATISTICSIEW_H
 
-#include <QTableView>
 #include <QHeaderView>
 #include <QMouseEvent>
 
+#include "duqf-widgets/dutableview.h"
 #include "statisticsmodel.h"
 
-class StatisticsView : public QTableView
+class StatisticsView : public DuTableView
 {
 public:
     StatisticsView(QWidget *parent = nullptr);
     void setUser(RamUser *user);
 
 protected:
-    virtual void mouseMoveEvent(QMouseEvent *event) override;
-    virtual void mousePressEvent(QMouseEvent *event) override;
-    virtual void mouseReleaseEvent(QMouseEvent *event) override;
     virtual void showEvent(QShowEvent *event) override;
     virtual void resizeEvent(QResizeEvent *event) override;
 

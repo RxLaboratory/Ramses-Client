@@ -1,9 +1,9 @@
 #ifndef DUQFSERVERCOMBOBOX_H
 #define DUQFSERVERCOMBOBOX_H
 
-#include <QComboBox>
+#include "duqf-widgets/ducombobox.h"
 
-class DuQFServerComboBox : public QComboBox
+class DuQFServerComboBox : public DuComboBox
 {
     Q_OBJECT
 public:

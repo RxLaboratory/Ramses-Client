@@ -3,7 +3,7 @@
 #include "statisticsdelegate.h"
 
 StatisticsView::StatisticsView(QWidget *parent):
-    QTableView(parent)
+    DuTableView(parent)
 {
     setupUi();
     this->setItemDelegate( new StatisticsDelegate(this));
@@ -15,44 +15,6 @@ StatisticsView::StatisticsView(QWidget *parent):
 void StatisticsView::setUser(RamUser *user)
 {
     m_statsModel->setUser(user);
-}
-
-void StatisticsView::mouseMoveEvent(QMouseEvent *event)
-{
-    if (m_dragging)
-    {
-        QPoint newPos = event->globalPos();
-        QPoint _delta = newPos - m_initialDragPos;
-        this->horizontalScrollBar()->setValue( this->horizontalScrollBar()->value() - _delta.x() );
-        this->verticalScrollBar()->setValue( this->verticalScrollBar()->value() - _delta.y() );
-        m_initialDragPos = newPos;
-        event->accept();
-        return;
-    }
-    QTableView::mouseMoveEvent(event);
-}
-
-void StatisticsView::mousePressEvent(QMouseEvent *event)
-{
-    if (event->button() == Qt::MiddleButton)
-    {
-        m_initialDragPos = event->globalPos();
-        m_dragging = true;
-        event->accept();
-        return;
-    }
-    QTableView::mousePressEvent(event);
-}
-
-void StatisticsView::mouseReleaseEvent(QMouseEvent *event)
-{
-    if (event->button() == Qt::MiddleButton)
-    {
-        m_dragging = false;
-        event->accept();
-        return;
-    }
-    QTableView::mouseReleaseEvent(event);
 }
 
 void StatisticsView::showEvent(QShowEvent *event)

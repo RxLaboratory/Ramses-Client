@@ -1,0 +1,46 @@
+/* Docks */
+
+.duDock {
+    border-radius: @padding-large;
+    margin: @padding-small;
+    background: @color-darker-grey;
+}
+
+.duDock QWidget {
+    background-color: rgba(0,0,0,0);
+}
+
+/* Sub Blocks */
+.duDock .duBlock {
+    background-color: @color-very-dark-grey;
+    border-radius: @padding-small;
+}
+
+.duDock DuScrollBar::add-page,
+.duDock DuScrollBar::sub-page {
+    background-color: @color-darker-grey;
+}
+
+.duDock QCheckBox,
+.duDock QLabel,
+.duDock QToolButton,
+.duDock QPushButton,
+.duDock QRadioButton {
+    background-color: rgba(0,0,0,0);
+}
+
+.duDock QCheckBox:hover,
+.duDock QToolButton:hover,
+.duDock QPushButton:hover,
+.duDock QComboBox:hover,
+.duDock QRadioButton:hover {
+    background-color: @focus-dark;
+}
+
+.duDock QCheckBox:disabled,
+.duDock QToolButton:disabled,
+.duDock QPushButton:disabled,
+.duDock QComboBox:disabled,
+.duDock QRadioButton:disabled {
+    background-color: @color-dark-grey;
+}

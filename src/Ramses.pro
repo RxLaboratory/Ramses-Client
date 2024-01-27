@@ -41,6 +41,7 @@ INCLUDEPATH += rameditwidgets \
     rammanagerwidgets
 
 SOURCES += \
+    docks/settingsdock.cpp \
     duqf-app/duapplication.cpp \
     duqf-app/ducli.cpp \
     duqf-app/dulogger.cpp \
@@ -48,18 +49,28 @@ SOURCES += \
     duqf-app/dustyle.cpp \
     duqf-app/duui.cpp \
     duqf-widgets/duaction.cpp \
+    duqf-widgets/ducolorselector.cpp \
+    duqf-widgets/ducombobox.cpp \
     duqf-widgets/dudocktitlewidget.cpp \
     duqf-widgets/dudockwidget.cpp \
     duqf-widgets/duicon.cpp \
     duqf-widgets/dulabel.cpp \
+    duqf-widgets/dulineedit.cpp \
+    duqf-widgets/dulistwidget.cpp \
     duqf-widgets/dumainwindow.cpp \
     duqf-widgets/dumenu.cpp \
     duqf-widgets/duscrollarea.cpp \
     duqf-widgets/duscrollbar.cpp \
     duqf-widgets/dushadow.cpp \
+    duqf-widgets/duspinbox.cpp \
     duqf-widgets/dusplashscreen.cpp \
     duqf-widgets/dusvgiconengine.cpp \
+    duqf-widgets/dutableview.cpp \
+    duqf-widgets/dutabwidget.cpp \
+    duqf-widgets/dutextedit.cpp \
     duqf-widgets/dutoolbarspacer.cpp \
+    duqf-widgets/dutreewidget.cpp \
+    duqf-widgets/settingswidget.cpp \
     progressmanager.cpp \
     rameditwidgets/objectupdateblocker.cpp \
     rammanagerwidgets/dbmanagerwidget.cpp \
@@ -107,7 +118,6 @@ SOURCES += \
     duqf-widgets/duqftextedit.cpp \
     duqf-widgets/duqftitlebar.cpp \
     duqf-widgets/duqfupdatedialog.cpp \
-    duqf-widgets/duqfupdatesettingswidget.cpp \
     ramdatainterface/datacrypto.cpp \
     ramdatainterface/localdatainterface.cpp \
     ramdatainterface/logindialog.cpp \
@@ -149,7 +159,6 @@ SOURCES += \
     ramobjects/ramtemplateassetgroup.cpp \
     ramobjects/ramtemplatestep.cpp \
     ramobjects/ramworkingfolder.cpp \
-    settingswidgets/daemonsettingswidget.cpp \
     ramdatainterface/dbinterface.cpp \
     duqf-nodeview/duqfconnection.cpp \
     duqf-nodeview/duqfconnectionmanager.cpp \
@@ -164,7 +173,6 @@ SOURCES += \
     duqf-utils/language-utils.cpp \
     duqf-utils/utils.cpp \
     duqf-widgets/aboutdialog.cpp \
-    duqf-widgets/appearancesettingswidget.cpp \
     duqf-widgets/autoselectdoublespinbox.cpp \
     duqf-widgets/autoselectlineedit.cpp \
     duqf-widgets/autoselectspinbox.cpp \
@@ -177,7 +185,6 @@ SOURCES += \
     duqf-widgets/duqflogtoolbutton.cpp \
     duqf-widgets/duqfslider.cpp \
     duqf-widgets/duqfspinbox.cpp \
-    duqf-widgets/settingswidget.cpp \
     rameditwidgets/filetypeeditwidget.cpp \
     smallwidgets/frameratewidget.cpp \
     pages/loginpage.cpp \
@@ -222,6 +229,7 @@ SOURCES += \
 
 HEADERS += \
     config.h \
+    docks/settingsdock.h \
     duqf-app/duapplication.h \
     duqf-app/ducli.h \
     duqf-app/dulogger.h \
@@ -229,18 +237,28 @@ HEADERS += \
     duqf-app/dustyle.h \
     duqf-app/duui.h \
     duqf-widgets/duaction.h \
+    duqf-widgets/ducolorselector.h \
+    duqf-widgets/ducombobox.h \
     duqf-widgets/dudocktitlewidget.h \
     duqf-widgets/dudockwidget.h \
     duqf-widgets/duicon.h \
     duqf-widgets/dulabel.h \
+    duqf-widgets/dulineedit.h \
+    duqf-widgets/dulistwidget.h \
     duqf-widgets/dumainwindow.h \
     duqf-widgets/dumenu.h \
     duqf-widgets/duscrollarea.h \
     duqf-widgets/duscrollbar.h \
     duqf-widgets/dushadow.h \
+    duqf-widgets/duspinbox.h \
     duqf-widgets/dusplashscreen.h \
     duqf-widgets/dusvgiconengine.h \
+    duqf-widgets/dutableview.h \
+    duqf-widgets/dutabwidget.h \
+    duqf-widgets/dutextedit.h \
     duqf-widgets/dutoolbarspacer.h \
+    duqf-widgets/dutreewidget.h \
+    duqf-widgets/settingswidget.h \
     enums.h \
     pch/duwidgets_pch.h \
     progressmanager.h \
@@ -294,7 +312,6 @@ HEADERS += \
     duqf-widgets/duqftextedit.h \
     duqf-widgets/duqftitlebar.h \
     duqf-widgets/duqfupdatedialog.h \
-    duqf-widgets/duqfupdatesettingswidget.h \
     progressbar.h \
     progresspage.h \
     ramdatainterface/localdatainterface.h \
@@ -335,7 +352,6 @@ HEADERS += \
     ramobjects/ramtemplateassetgroup.h \
     ramobjects/ramtemplatestep.h \
     ramobjects/ramworkingfolder.h \
-    settingswidgets/daemonsettingswidget.h \
     ramdatainterface/dbinterface.h \
     duqf-app/app-version.h \
     duqf-nodeview/duqfconnection.h \
@@ -351,7 +367,6 @@ HEADERS += \
     duqf-utils/language-utils.h \
     duqf-utils/utils.h \
     duqf-widgets/aboutdialog.h \
-    duqf-widgets/appearancesettingswidget.h \
     duqf-widgets/autoselectdoublespinbox.h \
     duqf-widgets/autoselectlineedit.h \
     duqf-widgets/autoselectspinbox.h \
@@ -364,7 +379,6 @@ HEADERS += \
     duqf-widgets/duqflogtoolbutton.h \
     duqf-widgets/duqfslider.h \
     duqf-widgets/duqfspinbox.h \
-    duqf-widgets/settingswidget.h \
     rameditwidgets/filetypeeditwidget.h \
     smallwidgets/frameratewidget.h \
     pages/loginpage.h \
@@ -407,9 +421,7 @@ HEADERS += \
     pipeline-editor/stepnode.h
 
 FORMS += \
-    settingswidgets/daemonsettingswidget.ui \
     duqf-widgets/aboutdialog.ui \
-    duqf-widgets/appearancesettingswidget.ui \
     duqf-widgets/duqffolderselectorwidget.ui \
     pages/loginpage.ui \
     mainwindow.ui \

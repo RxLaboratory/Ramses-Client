@@ -1,9 +1,9 @@
 #ifndef TEMPLATESTEPEDITWIDGET_H
 #define TEMPLATESTEPEDITWIDGET_H
 
-#include <QComboBox>
 #include <QFormLayout>
 
+#include "duqf-widgets/ducombobox.h"
 #include "duqf-widgets/autoselectdoublespinbox.h"
 #include "objecteditwidget.h"
 #include "duqf-widgets/duqfcolorselector.h"
@@ -40,10 +40,10 @@ private:
     void connectEvents();
 
     // UI Controls
-    QComboBox *ui_typeBox;
+    DuComboBox *ui_typeBox;
     QLabel *ui_estimationLabel;
     QWidget *ui_estimationWidget;
-    QComboBox *ui_estimationTypeBox;
+    DuComboBox *ui_estimationTypeBox;
     QLabel *ui_estimationTypeLabel;
     AutoSelectDoubleSpinBox *ui_veryEasyEdit;
     AutoSelectDoubleSpinBox *ui_easyEdit;

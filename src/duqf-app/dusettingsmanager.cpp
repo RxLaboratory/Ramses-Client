@@ -8,6 +8,10 @@ const QString DuSettingsManager::UI_TOOLBUTTON_STYLE = QStringLiteral("UI/toolBu
 const QString DuSettingsManager::UI_TRAYICON_MODE = QStringLiteral("UI/trayIconMode");
 const QString DuSettingsManager::UI_ICON_COLOR = QStringLiteral("UI/iconColor");
 const QString DuSettingsManager::UI_SHOW_TRAYICON = QStringLiteral("UI/showTrayIcon");
+const QString DuSettingsManager::UI_DOCK_SIZE = QStringLiteral("UI/dockSize/");
+const QString DuSettingsManager::UI_DATE_FORMAT = QStringLiteral("UI/dateFomat");
+const QString DuSettingsManager::CHECK_UPDATES = QStringLiteral("checkUpdates");
+const QString DuSettingsManager::DAEMON_PORT = QStringLiteral("daemonPort");
 
 DuSettingsManager *DuSettingsManager::_instance = nullptr;
 
@@ -53,6 +57,7 @@ QByteArray DuSettingsManager::uiWindowState() const
 void DuSettingsManager::setUIFocusColor(const QColor &color)
 {
     m_settings.setValue(UI_FOCUS_COLOR, color);
+    emit uiFocusColorChanged(color);
 }
 
 void DuSettingsManager::setNVCurvature(float c)
@@ -72,7 +77,7 @@ void DuSettingsManager::saveUIWindowState(const QByteArray &geometry, const QByt
 
 Qt::ToolButtonStyle DuSettingsManager::uiToolButtonStyle() const
 {
-    int style = m_settings.value(UI_TOOLBUTTON_STYLE, Qt::ToolButtonIconOnly).toInt();
+    int style = m_settings.value(UI_TOOLBUTTON_STYLE, Qt::ToolButtonTextBesideIcon).toInt();
     return static_cast<Qt::ToolButtonStyle>( style );
 }
 
@@ -129,6 +134,12 @@ ColorVariant DuSettingsManager::trayIconMode() const
         );
 }
 
+void DuSettingsManager::setTrayIconMode(ColorVariant mode)
+{
+    m_settings.setValue(UI_TRAYICON_MODE, mode);
+    emit trayIconModeChanged(mode);
+    emit trayIconColorChanged(trayIconColor());
+}
 
 QColor DuSettingsManager::trayIconColor() const
 {
@@ -141,6 +152,46 @@ QColor DuSettingsManager::trayIconColor() const
     case LighterColor:
         return QColor("#e3e3e3");
     }
+}
+
+bool DuSettingsManager::showTrayIcon() const
+{
+    return m_settings.value(UI_SHOW_TRAYICON, false).toBool();
+}
+
+QString DuSettingsManager::uiDateFormat() const
+{
+    return m_settings.value(UI_DATE_FORMAT, "yyyy-MM-dd hh:mm:ss").toString();
+}
+
+bool DuSettingsManager::checkUpdates() const
+{
+    return m_settings.value(CHECK_UPDATES, true).toBool();
+}
+
+void DuSettingsManager::setShowTrayIcon(bool show)
+{
+    m_settings.setValue(UI_SHOW_TRAYICON, show);
+    emit trayIconVisibilityChanged(show);
+}
+
+void DuSettingsManager::setUIDateFormat(const QString f)
+{
+    m_settings.setValue(UI_DATE_FORMAT, f);
+    emit uiDateFormatChanged(f);
+}
+
+void DuSettingsManager::setCheckUpdates(bool c)
+{
+    m_settings.setValue(CHECK_UPDATES, c);
+}
+
+int DuSettingsManager::daemonPort() const {
+    return m_settings.value(DAEMON_PORT, 18185).toInt();
+}
+
+void DuSettingsManager::setDaemonPort(int p) {
+    m_settings.setValue(DAEMON_PORT, p);
 }
 
 DuSettingsManager::DuSettingsManager(QObject *parent)

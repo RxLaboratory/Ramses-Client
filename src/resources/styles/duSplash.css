@@ -1,0 +1,19 @@
+.duSplash QProgressBar {
+    color: #9d9d9d;
+    border: none;
+    background-color: #222222;
+    height:  @big-button-size;
+    text-align: left;
+    border-radius: 0;
+    font-size: @font-size-very-small;
+}
+
+.duSplash QProgressBar::chunk {
+    background-color: #434343;
+}
+
+.duSplash QLabel {
+    background: rgba(0,0,0,0);
+    color: #333333;
+    font-size: @font-size-small;
+}

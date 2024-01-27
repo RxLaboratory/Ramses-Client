@@ -1,6 +1,6 @@
 #include "duqfloggingtextedit.h"
 
-DuQFLoggingTextEdit::DuQFLoggingTextEdit(QWidget *parent): QTextEdit(parent)
+DuQFLoggingTextEdit::DuQFLoggingTextEdit(QWidget *parent): DuTextEdit(parent)
 {
     //this->setReadOnly(true);
     _loggerObject = nullptr;
@@ -9,7 +9,7 @@ DuQFLoggingTextEdit::DuQFLoggingTextEdit(QWidget *parent): QTextEdit(parent)
     connect(DuQFLogger::instance(), &DuQFLogger::newLog, this, &DuQFLoggingTextEdit::log);
 }
 
-DuQFLoggingTextEdit::DuQFLoggingTextEdit(DuQFLoggerObject *o, QWidget *parent): QTextEdit(parent)
+DuQFLoggingTextEdit::DuQFLoggingTextEdit(DuQFLoggerObject *o, QWidget *parent): DuTextEdit(parent)
 {
     _loggerObject = o;
     _level = DuQFLog::Debug;

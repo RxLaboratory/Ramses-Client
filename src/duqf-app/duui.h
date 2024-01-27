@@ -7,6 +7,10 @@
 
 class DuSplashScreen;
 
+/**
+ * @brief The DuUI class
+ * @version 1.1.0
+ */
 class DuUI
 {
 public:
@@ -23,6 +27,7 @@ public:
     static void setCSS(QWidget *w, const QString &css, bool loadSettings = true);
     static void addCSS(QWidget *w, const QString &cssClass, bool loadSettings = true);
     static void addCustomCSS(QWidget *w, const QString &customCSS, bool loadSettings = true);
+    static void replaceCSS(QWidget *w, const QString &css, const QString &where);
     static QString setCSSVars(const QString &css, bool loadSettings = true);
     /**
      * @brief The list of variables used in css in the form { "@key": "value" }.

@@ -3,7 +3,7 @@
 #include "ramobjectdelegate.h"
 
 RamObjectComboBox::RamObjectComboBox(QWidget *parent):
-    QComboBox(parent)
+    DuComboBox(parent)
 {
     m_objects = new RamObjectSortFilterProxyModel("", this);
     setSortMode(RamObject::Order);
@@ -133,13 +133,13 @@ void RamObjectComboBox::showPopup()
     // set the view to that width + icon and margins.
     this->view()->setMinimumWidth(width + 40);
 
-    QComboBox::showPopup();
+    DuComboBox::showPopup();
     emit popupShown();
 }
 
 void RamObjectComboBox::hidePopup()
 {
-    QComboBox::hidePopup();
+    DuComboBox::hidePopup();
     emit popupHidden();
 }
 

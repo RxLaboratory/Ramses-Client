@@ -15,7 +15,6 @@
 #include "projecteditwidget.h"
 
 #include "duqf-widgets/settingswidget.h"
-#include "duqf-widgets/aboutdialog.h"
 #include "duqf-utils/utils.h"
 #include "duqf-utils/duqflogger.h"
 #include "duqf-widgets/dudocktitlewidget.h"
@@ -32,14 +31,13 @@ public:
 
     enum Page {
         Home = 0,
-        Settings = 1,
-        UserProfile = 2,
-        Admin = 3,
-        PipeLine = 4,
-        Assets = 5,
-        Shots = 6,
-        Schedule = 7,
-        Progress = 8
+        UserProfile = 1,
+        Admin = 2,
+        PipeLine = 3,
+        Assets = 4,
+        Shots = 5,
+        Schedule = 6,
+        Progress = 7
     };
 
     explicit MainWindow(const QCommandLineParser &cli, QWidget *parent = nullptr);
@@ -53,9 +51,6 @@ public slots:
     void hidePropertiesDock();
 
 signals:
-    void minimizeTriggered();
-    void maximizeTriggered(bool);
-    void closeTriggered();
     void hideTriggered();
     void showTriggered();
 
@@ -112,10 +107,10 @@ private:
     QStackedWidget *ui_mainStack;
     QWidget *ui_mainPage;
     QStatusBar *ui_mainStatusBar;
-    QToolButton *ui_settingsButton;
 
     // ==== Docks ====
 
+    DuDockWidget *ui_settingsDock;
     DuDockWidget *ui_statsDockWidget;
     DuDockTitleWidget *ui_statsTitle;
     DuDockWidget *ui_consoleDockWidget;
@@ -140,7 +135,6 @@ private:
 
     QProgressBar *duqf_fundingBar = nullptr;
     QSystemTrayIcon *trayIcon;
-    SettingsWidget *ui_settingsWidget;
     QLabel *title;
     DuMenu *helpMenu;
     ProgressPage *progressPage;
@@ -194,9 +188,6 @@ private slots:
     void chat();
     void doc();
     void donate();
-    void settings(bool checked = true);
-    void closeSettings();
-    void reinitSettings();
     void about();
     void trayClicked(QSystemTrayIcon::ActivationReason reason);
     void showHide();
@@ -206,13 +197,12 @@ private slots:
     void log(DuQFLog m);
 
     void pageChanged(int i);
-    void serverSettings();
     void setOfflineAction();
     void setOnlineAction();
     void databaseSettingsAction();
     void home();
     void userProfile();
-    void admin(bool show = true);
+    void admin();
     void pipeline();
     void shots();
     void assets();

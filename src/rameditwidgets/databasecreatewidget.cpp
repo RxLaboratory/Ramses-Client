@@ -48,12 +48,15 @@ void DatabaseCreateWidget::setupUi()
 
     QVBoxLayout *mainLayout = new QVBoxLayout(dummy);
     mainLayout->setSpacing(3);
-    mainLayout->setContentsMargins(3, 3, 3, 3);
+    mainLayout->setContentsMargins(6,6,6,6);
 
-    QGridLayout *topLayout = new QGridLayout();
+    auto topWidget = new QWidget(dummy);
+    topWidget->setProperty("class", "duBlock");
+    mainLayout->addWidget(topWidget);
+
+    QGridLayout *topLayout = new QGridLayout(topWidget);
     topLayout->setSpacing(3);
-    topLayout->setContentsMargins(0,0,0,0);
-    mainLayout->addLayout(topLayout);
+    topLayout->setContentsMargins(3,3,3,3);
 
     topLayout->addWidget(new QLabel(tr("Database file")), 0, 0);
 
@@ -76,6 +79,7 @@ void DatabaseCreateWidget::setupUi()
     mainLayout->addWidget(ui_tabWidget);
 
     QWidget *offlineWidget = new QWidget(ui_tabWidget);
+    offlineWidget->setProperty("class", "duBlock");
     ui_tabWidget->addTab(offlineWidget, QIcon(":/icons/folder"), tr("Offline"));
     QGridLayout *offlineLayout = new QGridLayout(offlineWidget);
     offlineLayout->setAlignment(Qt::AlignTop);
@@ -95,6 +99,7 @@ void DatabaseCreateWidget::setupUi()
     offlineLayout->addWidget(ui_nameEdit, 1, 1);
 
     QWidget *onlineWidget = new QWidget(ui_tabWidget);
+    onlineWidget->setProperty("class", "duBlock");
     ui_tabWidget->addTab(onlineWidget, QIcon(":/icons/server-settings"), tr("Online (Sync)"));
     QGridLayout *onlineLayout = new QGridLayout(onlineWidget);
     onlineLayout->setAlignment(Qt::AlignTop);

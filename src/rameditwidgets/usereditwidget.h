@@ -1,9 +1,9 @@
 #ifndef USEREDITWIDGET_H
 #define USEREDITWIDGET_H
 
-#include <QComboBox>
 #include <QToolButton>
 
+#include "duqf-widgets/ducombobox.h"
 #include "duqf-utils/utils.h"
 #include "objecteditwidget.h"
 #include "duqf-widgets/duqffolderdisplaywidget.h"
@@ -37,7 +37,7 @@ private:
     void connectEvents();
 
     DuQFFolderDisplayWidget *ui_folderWidget;
-    QComboBox *ui_roleBox;
+    DuComboBox *ui_roleBox;
     QLineEdit *ui_cpasswordEdit;
     QLineEdit *ui_npassword1Edit;
     QLineEdit *ui_npassword2Edit;

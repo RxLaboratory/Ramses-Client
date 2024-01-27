@@ -77,9 +77,25 @@
         <file alias="trash">resources/icons/trash-bin_sl.svg</file>
         <file alias="output-folder">resources/icons/export-outout-folder_sl.svg</file>
         <file alias="versions-folder">resources/icons/restore-versions-folder_sl.svg</file>
+        <file alias="appearance90">resources/icons/appearance90.svg</file>
+        <file alias="update90">resources/icons/update90.svg</file>
+        <file alias="daemon90">resources/icons/daemon90.svg</file>
     </qresource>
     <qresource prefix="/styles">
-        <file alias="default-ramses-client">resources/style/style-ramses.css</file>
+        <file alias="console">resources/styles/console.css</file>
+        <file alias="duBlock">resources/styles/duBlock.css</file>
+        <file alias="DuComboBox">resources/styles/DuComboBox.css</file>
+        <file alias="duDock">resources/styles/duDock.css</file>
+        <file alias="duDropArea">resources/styles/duDropArea.css</file>
+        <file alias="DuListView">resources/styles/DuListView.css</file>
+        <file alias="DuMenu">resources/styles/DuMenu.css</file>
+        <file alias="duSplash">resources/styles/duSplash.css</file>
+        <file alias="DuTableView">resources/styles/DuTableView.css</file>
+        <file alias="DuTextEdit">resources/styles/DuTextEdit.css</file>
+        <file alias="mainToolBar">resources/styles/mainToolBar.css</file>
+        <file alias="default">resources/styles/style.css</file>
+        <file alias="vars">resources/styles/style-values.rui</file>
+        <file alias="DuTreeView">resources/styles/DuTreeView.css</file>
     </qresource>
     <qresource prefix="/regex">
         <file alias="ramses-filename">resources/regex/ramses_name.txt</file>

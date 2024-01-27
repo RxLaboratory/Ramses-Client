@@ -5,6 +5,7 @@
 
 #include "duqf-widgets/duqfloggingtextedit.h"
 #include "duqf-utils/duqflogger.h"
+#include "duqf-widgets/ducombobox.h"
 
 class ConsoleWidget : public QFrame
 {
@@ -24,7 +25,7 @@ private:
     void connectEvents();
 
     DuQFLoggingTextEdit *ui_consoleEdit;
-    QComboBox *ui_levelBox;
+    DuComboBox *ui_levelBox;
     QPushButton *ui_clearButton;
 };
 

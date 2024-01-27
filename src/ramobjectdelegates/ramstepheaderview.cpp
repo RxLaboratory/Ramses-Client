@@ -39,6 +39,11 @@ void RamStepHeaderView::paintSection(QPainter *painter, const QRect &rect, int l
     RamStep *step = getStep(logicalIndex);
     if (!step) return QHeaderView::paintSection(painter,rect,logicalIndex);
 
+    // Draw background
+    painter->setBrush(m_dark);
+    painter->setPen(QPen(Qt::NoPen));
+    painter->drawRect(rect);
+
     // Draw title
     QRect titleRect( rect.left(), rect.top(), rect.width(), rect.height() - 16 );
     QPen textPen( step->color() );

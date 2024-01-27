@@ -98,37 +98,46 @@ void DatabaseEditWidget::setupUi()
     mainLayout->setSpacing(3);
     mainLayout->setContentsMargins(3, 3, 3, 3);
 
-    QGridLayout *topLayout = new QGridLayout();
-    topLayout->setSpacing(3);
-    topLayout->setContentsMargins(0,0,0,0);
-    mainLayout->addLayout(topLayout);
-
-    QLabel *localLabel = new QLabel(tr("Local Data"));
+    QLabel *localLabel = new QLabel("<b>" + tr("Local Data") + "</b>");
     localLabel->setEnabled(false);
-    topLayout->addWidget(localLabel,0 , 0);
+    mainLayout->addWidget(localLabel);
 
-    topLayout->addWidget(new QLabel(tr("Database")),1 , 0);
+    auto localWidget = new QWidget(this);
+    localWidget->setProperty("class", "duBlock");
+    mainLayout->addWidget(localWidget);
+
+    QGridLayout *localLayout = new QGridLayout(localWidget);
+    localLayout->setSpacing(3);
+    localLayout->setContentsMargins(3,3,3,3);
+
+    localLayout->addWidget(new QLabel(tr("Database")),1 , 0);
 
     ui_folderDisplay = new DuQFFolderDisplayWidget();
-    topLayout->addWidget(ui_folderDisplay,1 , 1);
+    localLayout->addWidget(ui_folderDisplay,1 , 1);
 
-    topLayout->addWidget(new QLabel(tr("Ramses path")),2 , 0);
+    localLayout->addWidget(new QLabel(tr("Ramses path")),2 , 0);
 
     ui_folderSelector = new DuQFFolderSelectorWidget();
-    topLayout->addWidget(ui_folderSelector,2 , 1);
+    localLayout->addWidget(ui_folderSelector,2 , 1);
 
-    QLabel *serverLabel = new QLabel(tr("Ramses Server"));
+    QLabel *serverLabel = new QLabel("<b>" + tr("Ramses Server") + "</b>");
     serverLabel->setEnabled(false);
-    topLayout->addWidget(serverLabel,3 , 0);
+    mainLayout->addWidget(serverLabel);
 
-    topLayout->addWidget(new QLabel(tr("Server")),4 , 0);
+    ui_syncBox = new QCheckBox(tr("Server enabled (Sync)"), dummy);
+    mainLayout->addWidget(ui_syncBox);
 
-    ui_syncBox = new QCheckBox(tr("Online (Sync)"), dummy);
-    topLayout->addWidget(ui_syncBox, 4, 1);
+    auto serverWidget = new QWidget(this);
+    serverWidget->setProperty("class", "duBlock");
+    mainLayout->addWidget(serverWidget);
+
+    auto serverLayout = new QVBoxLayout(serverWidget);
+    serverLayout->setContentsMargins(3,3,3,3);
+    serverLayout->setSpacing(3);
 
     ui_serverEdit = new ServerEditWidget();
     ui_serverEdit->setEnabled(false);
-    mainLayout->addWidget(ui_serverEdit);
+    serverLayout->addWidget(ui_serverEdit);
 
     QHBoxLayout *validButtons = new QHBoxLayout();
     validButtons->setSpacing(3);

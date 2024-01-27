@@ -1,0 +1,41 @@
+DuMenu {
+    background-color: @color-dark-grey;
+    margin: @padding-large;
+    border:none;
+}
+
+DuMenu::item {
+    border-radius: @padding-small;
+    padding-left: @padding-small;
+    padding-right: @padding-small;
+    padding-top: @margin;
+    padding-bottom: @margin;
+    color: @color-light-grey;
+}
+
+DuMenu::item:selected {
+    background-color: @focus-dark;
+    color: @color-light-grey;
+    border:none;
+}
+
+DuMenu::icon {
+    padding-left: @padding-small;
+}
+
+DuMenu::indicator { /* Checked indicator */
+    background-color: @color-very-dark-grey;
+    border-radius: @margin;
+    left: @margin;
+}
+
+DuMenu::indicator:checked {
+    background-color: @color-light-green;
+}
+
+DuMenu::separator {
+  height: @half-margin;
+  background-color: @color-darker-grey;
+  margin-top: @padding-small;
+  margin-bottom: @padding-small;
+}

@@ -39,7 +39,7 @@ void SettingsWidget::setupUi(QString title)
     m_splitter = new QSplitter(this);
     m_splitter->setHandleWidth(6);
 
-    m_mainList = new QListWidget(this);
+    m_mainList = new DuListWidget(this);
     m_mainList->setFrameShape(QFrame::NoFrame);
     m_mainList->setLineWidth(0);
     m_mainList->setResizeMode(QListView::Adjust);

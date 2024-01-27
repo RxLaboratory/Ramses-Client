@@ -2,13 +2,13 @@
 #define SETTINGSWIDGET_H
 
 #include <QWidget>
-#include <QListWidget>
 #include <QHBoxLayout>
 #include <QStackedWidget>
 #include <QSplitter>
 #include <QShowEvent>
 #include <QHideEvent>
 
+#include "duqf-widgets/dulistwidget.h"
 #include "duqf-widgets/duqftitlebar.h"
 
 class SettingsWidget : public QWidget
@@ -33,7 +33,7 @@ private slots:
 private:
     void setupUi(QString title);
     QSplitter *m_splitter;
-    QListWidget *m_mainList;
+    DuListWidget *m_mainList;
     QStackedWidget *m_mainStackWidget;
     DuQFTitleBar *m_titleBar;
 };

@@ -1,0 +1,26 @@
+/* Blocks */
+.duBlock {
+    background-color: #222222; border-radius: @padding-small;
+}
+
+.duBlock QLabel,
+.duBlock QRadioButton,
+.duBlock QCheckBox,
+.duBlock QPushButton,
+.duBlock QToolButton {
+    background-color: rgba(0,0,0,0);
+}
+.duBlock QRadioButton:hover,
+.duBlock QCheckBox:hover,
+.duBlock QComboBox:hover,
+.duBlock QPushButton:hover,
+.duBlock QToolButton:hover {
+    background-color: @focus-dark;
+}
+
+.duBlock QRadioButton:disabled,
+.duBlock QCheckBox:disabled,
+.duBlock QComboBox:disabled,
+.duBlock QPushButton:disabled {
+    background-color: #292929;
+}

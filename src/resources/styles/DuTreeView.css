@@ -1,0 +1,47 @@
+DuTreeView,
+DuTreeWidget {
+    background-color: @color-very-dark-grey;
+    alternate-background-color: @color-darker-grey;
+    color: @color-less-light-grey;
+    selection-color: @focus;
+    selection-background-color: @color-less-dark-grey;
+    border-radius: @padding-small;
+    border: none;
+}
+
+DuTreeView::item,
+DuTreeWidget::item {
+    color: @color-less-light-grey;
+    min-height: @very-big-button-size;
+}
+
+DuTreeView::item:hover,
+DuTreeWidget::item:hover
+{
+    background-color: @color-dark-grey;
+}
+
+DuTreeView::item:selected,
+DuTreeWidget::item:selected
+{
+    background-color: none;
+    border: none;
+    color: @focus;
+}
+
+DuTreeView QLineEdit,
+DuTreeWidget QLineEdit {
+    background-color: @color-very-dark-grey;
+    selection-background-color: @focus-dark;
+    min-height: @big-button-size;
+    padding: 0;
+    margin: 0;
+    border: none;
+}
+
+DuTreeView DuScrollBar::add-page,
+DuTreeView DuScrollBar::sub-page,
+DuTreeWidget DuScrollBar::add-page,
+DuTreeWidget DuScrollBar::sub-page {
+    background-color: @color-very-dark-grey;
+}

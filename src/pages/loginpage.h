@@ -5,6 +5,7 @@
 
 #include "ramses.h"
 
+#include "duqf-widgets/ducombobox.h"
 #include "databasecreatewidget.h"
 #include "databaseeditwidget.h"
 
@@ -35,7 +36,7 @@ private:
     QLabel *ui_statusLabel;
     QPushButton *ui_bigOpenButton;
     QPushButton *ui_bigCreateButton;
-    QComboBox *ui_dataBaseBox;
+    DuComboBox *ui_dataBaseBox;
     QPushButton *ui_createDBButton;
     QPushButton *ui_openDBButton;
     QPushButton *ui_settingsDBButton;

@@ -1,8 +1,6 @@
 #ifndef PIPEEDITWIDGET_H
 #define PIPEEDITWIDGET_H
 
-#include <QComboBox>
-
 #include "objecteditwidget.h"
 #include "objectlistwidget.h"
 #include "ramobjectcombobox.h"

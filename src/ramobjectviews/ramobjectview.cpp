@@ -2,9 +2,10 @@
 
 #include "ramobjectsortfilterproxymodel.h"
 #include "timelinemanager.h"
+#include "duqf-app/duui.h"
 
 RamObjectView::RamObjectView(DisplayMode mode, QWidget *parent):
-        QTableView(parent)
+    DuTableView(parent)
 {
     m_displayMode = mode;
     setupUi();
@@ -71,51 +72,21 @@ void RamObjectView::search(QString s)
     this->resizeRowsToContents();
 }
 
-void RamObjectView::mouseMoveEvent(QMouseEvent *event)
-{
-    if (m_dragging)
-    {
-        QPoint newPos = event->globalPos();
-        QPoint _delta = newPos - m_initialDragPos;
-        this->horizontalScrollBar()->setValue( this->horizontalScrollBar()->value() - _delta.x() );
-        this->verticalScrollBar()->setValue( this->verticalScrollBar()->value() - _delta.y() );
-        m_initialDragPos = newPos;
-        event->accept();
-        return;
-    }
-    QTableView::mouseMoveEvent(event);
-}
-
 void RamObjectView::mousePressEvent(QMouseEvent *event)
 {
-    // Middle click for dragging view
-    if (event->button() == Qt::MiddleButton)
-    {
-        m_initialDragPos = event->globalPos();
-        m_dragging = true;
-        event->accept();
-        return;
-    }
     // Simple click detection
-    else if (event->button() == Qt::LeftButton && event->modifiers().testFlag(Qt::NoModifier))
+    if (event->button() == Qt::LeftButton && event->modifiers().testFlag(Qt::NoModifier))
     {
         // Get the index
         m_clicking = this->indexAt( event->localPos().toPoint() );
     }
-    QTableView::mousePressEvent(event);
+    DuTableView::mousePressEvent(event);
 }
 
 void RamObjectView::mouseReleaseEvent(QMouseEvent *event)
 {
-    // Middle click for dragging view
-    if (event->button() == Qt::MiddleButton)
-    {
-        m_dragging = false;
-        event->accept();
-        return;
-    }
     // Simple click to select
-    else if (m_clicking.isValid())
+    if (m_clicking.isValid())
     {
         // Check index
         QModelIndex testIndex = this->indexAt( event->localPos().toPoint() );
@@ -123,7 +94,7 @@ void RamObjectView::mouseReleaseEvent(QMouseEvent *event)
         // Release
         m_clicking = QModelIndex();
     }
-    QTableView::mouseReleaseEvent(event);
+    DuTableView::mouseReleaseEvent(event);
 }
 
 void RamObjectView::resizeEvent(QResizeEvent *event)
@@ -140,7 +111,7 @@ void RamObjectView::resizeEvent(QResizeEvent *event)
         this->setRowHeight(0,rowHeight);
     }
 
-    QTableView::resizeEvent(event);
+    DuTableView::resizeEvent(event);
 }
 
 void RamObjectView::showEvent(QShowEvent *event)
@@ -152,7 +123,7 @@ void RamObjectView::showEvent(QShowEvent *event)
     //this->resizeColumnsToContents();
     m_layout = true;
 
-    QTableView::showEvent(event);
+    DuTableView::showEvent(event);
 }
 
 void RamObjectView::select(const QModelIndex &index)
@@ -280,10 +251,6 @@ void RamObjectView::setupUi()
     this->setColumnWidth( 0, this->size().width() );
     this->setMouseTracking(true);
     this->setContextMenuPolicy(Qt::CustomContextMenu);
-
-    QString style = "QTableView { padding-top: 3px; padding-bottom: 3px; gridline-color: rgba(0,0,0,0); selection-background-color: rgba(0,0,0,0); } ";
-    style += "QTableView::item:hover { background-color: none; } ";
-    this->setStyleSheet(style);
 
     m_delegate = new RamObjectDelegate();
     this->setItemDelegate( m_delegate );

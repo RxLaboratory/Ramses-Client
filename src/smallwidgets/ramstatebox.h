@@ -1,7 +1,6 @@
 #ifndef STATEBOX_H
 #define STATEBOX_H
 
-#include <QComboBox>
 #include <QPaintEvent>
 #include <QStylePainter>
 

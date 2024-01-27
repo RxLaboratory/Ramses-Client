@@ -1,0 +1,5 @@
+.duDropArea {
+    background-color: rgba(0,0,0,0);
+    border: @margin dashed @color-less-light-grey;
+    border-radius: @padding-large;
+}

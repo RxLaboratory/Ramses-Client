@@ -1,12 +1,12 @@
 #ifndef RAMSCHEDULETABLEVIEW_H
 #define RAMSCHEDULETABLEVIEW_H
 
-#include <QTableView>
 #include <QHeaderView>
 
+#include "duqf-widgets/dutableview.h"
 #include "ramscheduledelegate.h"
 
-class RamScheduleTableView : public QTableView
+class RamScheduleTableView : public DuTableView
 {
     Q_OBJECT
 public:
@@ -14,11 +14,6 @@ public:
 
 public slots:
     void showDetails(bool s);
-
-protected:
-    virtual void mouseMoveEvent(QMouseEvent *event) override;
-    virtual void mousePressEvent(QMouseEvent *event) override;
-    virtual void mouseReleaseEvent(QMouseEvent *event) override;
 
 private slots:
 

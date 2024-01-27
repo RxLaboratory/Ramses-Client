@@ -5,7 +5,7 @@
 #include "ramses.h"
 
 TimelineView::TimelineView(QWidget *parent):
-    QTableView(parent)
+    DuTableView(parent)
 {
     m_delegate = new TimelineDelegate();
 
@@ -52,7 +52,7 @@ void TimelineView::mouseMoveEvent(QMouseEvent *event)
         zoom(dist);
         m_initialDragPos = event->globalPos();
     }
-    QTableView::mouseMoveEvent(event);
+    DuTableView::mouseMoveEvent(event);
 }
 
 void TimelineView::mousePressEvent(QMouseEvent *event)
@@ -78,7 +78,7 @@ void TimelineView::mousePressEvent(QMouseEvent *event)
         // Get the index
         m_clicking = this->indexAt( event->localPos().toPoint() );
     }
-    QTableView::mousePressEvent(event);
+    DuTableView::mousePressEvent(event);
 }
 
 void TimelineView::mouseReleaseEvent(QMouseEvent *event)
@@ -99,7 +99,7 @@ void TimelineView::mouseReleaseEvent(QMouseEvent *event)
         // Release
         m_clicking = QModelIndex();
     }
-    QTableView::mouseReleaseEvent(event);
+    DuTableView::mouseReleaseEvent(event);
 }
 
 void TimelineView::resizeEvent(QResizeEvent *event)

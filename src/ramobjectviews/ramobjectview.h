@@ -1,10 +1,10 @@
 #ifndef RAMOBJECTVIEW_H
 #define RAMOBJECTVIEW_H
 
-#include <QTableView>
 #include <QHeaderView>
 #include <QSortFilterProxyModel>
 
+#include "duqf-widgets/dutableview.h"
 #include "duqf-widgets/dumenu.h"
 #include "ramobjectdelegate.h"
 #include "ramobjectsortfilterproxymodel.h"
@@ -15,7 +15,7 @@
  * It displays a RamObjectList using RamObjectDelegate for the painging.
  * It used mainly in ObjectListEditWidget (in order to manage the list)
  */
-class RamObjectView : public QTableView
+class RamObjectView : public DuTableView
 {
     Q_OBJECT
 public:
@@ -51,7 +51,6 @@ public slots:
     void copyFileName();
 
 protected:
-    virtual void mouseMoveEvent(QMouseEvent *event) override;
     virtual void mousePressEvent(QMouseEvent *event) override;
     virtual void mouseReleaseEvent(QMouseEvent *event) override;
     virtual void resizeEvent(QResizeEvent *event) override;
@@ -87,8 +86,6 @@ private:
     QAction *ui_actionCopyFileName;
 
     // UI Events
-    QPoint m_initialDragPos;
-    bool m_dragging = false;
     bool m_layout = false;
     QModelIndex m_clicking = QModelIndex();
     bool m_contextMenuDisabled = false;

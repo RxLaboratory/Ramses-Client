@@ -1,8 +1,7 @@
 #ifndef TIMELINEVIEW_H
 #define TIMELINEVIEW_H
 
-#include <QTableView>
-
+#include "duqf-widgets/dutableview.h"
 #include "timelineproxy.h"
 #include "ramshot.h"
 #include "timelinedelegate.h"
@@ -11,7 +10,7 @@
  * @brief The TimelineView class displays shots on a horizontal line,
  * derived from a QTableView, using the RamObjectList of the shots, displayed with the TimelineDelegate.
  */
-class TimelineView : public QTableView
+class TimelineView : public DuTableView
 {
     Q_OBJECT
 public:

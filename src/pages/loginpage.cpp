@@ -171,13 +171,13 @@ void LoginPage::setupUi()
     loginLayout->addSpacing(25);
 
     QHBoxLayout *dataBaseLayout = new QHBoxLayout();
-    dataBaseLayout->setSpacing(0);
+    dataBaseLayout->setSpacing(3);
     dataBaseLayout->setContentsMargins(0,0,0,0);
     loginLayout->addLayout(dataBaseLayout);
 
     dataBaseLayout->addWidget(new QLabel(tr("Recent:") + " "));
 
-    ui_dataBaseBox = new QComboBox(this);
+    ui_dataBaseBox = new DuComboBox(this);
     dataBaseLayout->addWidget(ui_dataBaseBox);
 
     ui_settingsDBButton = new QPushButton(this);

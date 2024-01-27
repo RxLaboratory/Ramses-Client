@@ -55,10 +55,7 @@
         <file alias="down-arrow">duqf_resources/icons/down-arrow.svg</file>
     </qresource>
     <qresource prefix="/images"/>
-    <qresource prefix="/styles">
-        <file alias="default">duqf_resources/styles/style.css</file>
-        <file alias="default-values">duqf_resources/styles/style-values.rui</file>
-    </qresource>
+    <qresource prefix="/styles"/>
     <qresource prefix="/fonts">
         <file alias="Ubuntu-B">duqf_resources/fonts/Ubuntu-B.ttf</file>
         <file alias="Ubuntu-BI">duqf_resources/fonts/Ubuntu-BI.ttf</file>

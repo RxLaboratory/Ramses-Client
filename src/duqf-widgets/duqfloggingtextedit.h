@@ -3,8 +3,9 @@
 
 #include <QTextEdit>
 #include "duqf-utils/duqflogger.h"
+#include "duqf-widgets/dutextedit.h"
 
-class DuQFLoggingTextEdit : public QTextEdit
+class DuQFLoggingTextEdit : public DuTextEdit
 {
 public:
     DuQFLoggingTextEdit(QWidget *parent = nullptr);
