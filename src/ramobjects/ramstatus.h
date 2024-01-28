@@ -62,6 +62,11 @@ public:
     QDateTime date() const;
     void setDate(const QDateTime &date = QDateTime::currentDateTimeUtc());
 
+    bool useDueDate() const;
+    void setUseDueDate(bool use);
+    QDate dueDate() const;
+    void setDueDate(const QDate &date);
+
     bool isPublished() const;
     void setPublished(bool published);
 

@@ -45,6 +45,8 @@ private slots:
     void setAutoEstimation(bool a);
     void setEstimation(double e);
     void setDifficulty(int d);
+    void setUseDueDate(bool u);
+    void setDueDate();
 
     void mainFileSelected();
     void openMainFile();
@@ -67,6 +69,8 @@ private:
     RamStateBox *ui_stateBox;
     DuQFSpinBox *ui_completionBox;
     AutoSelectSpinBox *ui_versionBox;
+    QDateEdit *ui_dueDateEdit;
+    QCheckBox *ui_useDueDateBox;
     DuQFTextEdit *ui_statusCommentEdit;
     QToolButton *ui_revertButton;
     QCheckBox *ui_publishedBox;

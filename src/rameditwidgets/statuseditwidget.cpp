@@ -40,6 +40,8 @@ void StatusEditWidget::reInit(RamObject *o)
         QSignalBlocker b8(ui_difficultyBox);
         QSignalBlocker b9(ui_autoEstimationBox);
         QSignalBlocker b10(ui_estimationEdit);
+        QSignalBlocker b11(ui_dueDateEdit);
+        QSignalBlocker b12(ui_useDueDateBox);
 
         // Get users from project
         RamProject *project = nullptr;
@@ -53,12 +55,17 @@ void StatusEditWidget::reInit(RamObject *o)
         ui_completionBox->setValue(m_status->completionRatio());
         ui_versionBox->setValue(m_status->version());
 #if (QT_VERSION < QT_VERSION_CHECK(5, 15, 0))
-    ui_statusCommentEdit->setPlainText(m_status->comment());
+        ui_statusCommentEdit->setPlainText(m_status->comment());
 #else
-    ui_statusCommentEdit->setMarkdown(m_status->comment());
+        ui_statusCommentEdit->setMarkdown(m_status->comment());
 #endif
         ui_folderWidget->setPath( m_status->path() );
         ui_publishedBox->setChecked( m_status->isPublished() );
+
+        ui_dueDateEdit->setDate( m_status->dueDate() );
+        bool useDueDate = m_status->useDueDate();
+        ui_useDueDateBox->setChecked(useDueDate);
+        ui_dueDateEdit->setEnabled(useDueDate);
 
         // Get info from the files
         RamWorkingFolder statusFolder = m_status->workingFolder();
@@ -107,7 +114,7 @@ void StatusEditWidget::reInit(RamObject *o)
         ui_previewFileList->setList(statusFolder.previewFileInfos());
 
         // List templates
-        //Clear
+        // Clear
         QList<QAction*> templateActions = ui_createFromTemplateMenu->actions();
         for (int i = 0; i < templateActions.count(); i++)
         {
@@ -330,8 +337,27 @@ void StatusEditWidget::setDifficulty(int d)
 
     float est = m_status->estimation( ui_difficultyBox->currentIndex() );
     ui_estimationEdit->setValue( est );
+}
 
+void StatusEditWidget::setUseDueDate(bool u)
+{
+    if (!m_status || m_reinit) return;
 
+    m_status->setUseDueDate(u);
+    ui_dueDateEdit->setEnabled(u);
+
+    RamUser *currentUser = Ramses::instance()->currentUser();
+    m_status->setModifiedBy(currentUser);
+}
+
+void StatusEditWidget::setDueDate()
+{
+    if (!m_status || m_reinit) return;
+
+    m_status->setDueDate( ui_dueDateEdit->date() );
+
+    RamUser *currentUser = Ramses::instance()->currentUser();
+    m_status->setModifiedBy(currentUser);
 }
 
 void StatusEditWidget::mainFileSelected()
@@ -524,8 +550,6 @@ void StatusEditWidget::removeSelectedPreviewFile()
 
 void StatusEditWidget::setupUi()
 {
-    //this->setWidgetResizable(true);
-
     // === ATTRIBUTES ===
 
     this->hideName();
@@ -551,10 +575,13 @@ void StatusEditWidget::setupUi()
     cLayout->setStretch(0,0);
     cLayout->setStretch(1,100);
 
-    QFormLayout *detailsLayout = new QFormLayout();
-    detailsLayout->setSpacing(3);
-    detailsLayout->setContentsMargins(0,0,0,0);
-    ui_mainLayout->addLayout(detailsLayout);
+    auto estimWidget = new QWidget(this);
+    estimWidget->setProperty("class", "duBlock");
+    ui_mainLayout->addWidget(estimWidget);
+
+    QFormLayout *estimLayout = new QFormLayout(estimWidget);
+    estimLayout->setSpacing(3);
+    estimLayout->setContentsMargins(3,3,3,3);
 
     ui_difficultyBox = new DuComboBox(this);
     ui_difficultyBox->addItem("Very easy");
@@ -562,7 +589,7 @@ void StatusEditWidget::setupUi()
     ui_difficultyBox->addItem("Medium");
     ui_difficultyBox->addItem("Hard");
     ui_difficultyBox->addItem("Very hard");
-    detailsLayout->addRow("Difficulty", ui_difficultyBox);
+    estimLayout->addRow("Difficulty", ui_difficultyBox);
 
     QWidget *estimationWidget = new QWidget(this);
     QHBoxLayout *estimationLayout = new QHBoxLayout(estimationWidget);
@@ -584,21 +611,56 @@ void StatusEditWidget::setupUi()
     estimationLayout->setStretch(1,0);
 
     ui_estimationLabel = new QLabel("Estimation", this);
-    detailsLayout->addRow(ui_estimationLabel, estimationWidget);
+    estimLayout->addRow(ui_estimationLabel, estimationWidget);
+
+    auto dueDateWidget = new QWidget(this);
+
+    auto dueDateLayout = new QHBoxLayout(dueDateWidget);
+    dueDateLayout->setSpacing(3);
+    dueDateLayout->setContentsMargins(0,0,0,0);
+
+    ui_dueDateEdit = new QDateEdit(this);
+    ui_dueDateEdit->setCalendarPopup(true);
+    dueDateLayout->addWidget(ui_dueDateEdit);
+
+    ui_useDueDateBox = new QCheckBox("Use");
+    dueDateLayout->addWidget(ui_useDueDateBox);
+
+    dueDateLayout->setStretch(0,1);
+    dueDateLayout->setStretch(1,0);
+
+    estimLayout->addRow("Due date", dueDateWidget);
+
+    auto versionWidget = new QWidget(this);
+    versionWidget->setProperty("class", "duBlock");
+    ui_mainLayout->addWidget(versionWidget);
+
+    QFormLayout *versionLayout = new QFormLayout(versionWidget);
+    versionLayout->setSpacing(3);
+    versionLayout->setContentsMargins(3,3,3,3);
 
     ui_versionBox = new AutoSelectSpinBox(this);
     ui_versionBox->setMaximum(1000);
     ui_versionBox->setValue(1);
     ui_versionBox->setPrefix("v");
-    detailsLayout->addRow("Version", ui_versionBox);
+    versionLayout->addRow("Version", ui_versionBox);
 
     ui_publishedBox = new QCheckBox("Published",this);
-    detailsLayout->addRow("Publication", ui_publishedBox);
+    versionLayout->addRow("Publication", ui_publishedBox);
+
+    auto userWidget = new QWidget(this);
+    userWidget->setProperty("class", "duBlock");
+    ui_mainLayout->addWidget(userWidget);
+
+    QFormLayout *userLayout = new QFormLayout(userWidget);
+    userLayout->setSpacing(3);
+    userLayout->setContentsMargins(3,3,3,3);
 
     ui_userBox = new RamObjectComboBox(this);
-    detailsLayout->addRow("Assigned user", ui_userBox);
+    userLayout->addRow("Assigned user", ui_userBox);
 
     ui_statusCommentEdit = new DuQFTextEdit(this);
+    ui_statusCommentEdit->setProperty("class", "duBlock");
     ui_statusCommentEdit->setPlaceholderText("Comment...");
     ui_statusCommentEdit->setMinimumHeight(30);
     ui_statusCommentEdit->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -741,6 +803,8 @@ void StatusEditWidget::connectEvents()
     connect( ui_autoEstimationBox, SIGNAL(clicked(bool)), this, SLOT(setAutoEstimation(bool)));
     connect( ui_estimationEdit, SIGNAL(valueChanged(double)), this, SLOT(setEstimation(double)));
     connect( ui_difficultyBox, SIGNAL(activated(int)), this, SLOT(setDifficulty(int)));
+    connect( ui_useDueDateBox, &QCheckBox::clicked, this, &StatusEditWidget::setUseDueDate );
+    connect( ui_dueDateEdit, &QDateEdit::editingFinished, this, &StatusEditWidget::setDueDate );
 
     connect(ui_mainFileList, SIGNAL(currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)),this, SLOT(mainFileSelected()));
     connect(ui_mainFileList,SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),this,SLOT(openMainFile()));

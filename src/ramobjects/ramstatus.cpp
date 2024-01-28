@@ -237,6 +237,30 @@ void RamStatus::setDate(const QDateTime &date)
     insertData("date", date.toString("yyyy-MM-dd hh:mm:ss"));
 }
 
+bool RamStatus::useDueDate() const
+{
+    if (m_virtual) return false;
+    return getData("useDueDate").toBool(false);
+}
+
+void RamStatus::setUseDueDate(bool use)
+{
+    insertData("useDueDate", use);
+}
+
+QDate RamStatus::dueDate() const
+{
+    QString defaultDate = QDate::currentDate().toString("yyyy-MM-dd");
+    if (m_virtual) return QDate::fromString(defaultDate, "yyyy-MM-dd");
+    return QDate::fromString( getData("dueDate").toString(defaultDate), "yyyy-MM-dd");
+}
+
+void RamStatus::setDueDate(const QDate &date)
+{
+    insertData("dueDate", date.toString("yyyy-MM-dd"));
+    setUseDueDate(true);
+}
+
 bool RamStatus::isPublished() const
 {
     if (m_virtual) return false;
@@ -539,6 +563,8 @@ QString RamStatus::details() const
             "  \nGoal: **" +
             QString::number(est, 'f', 1) +
             " days**";
+
+    if (useDueDate()) details += "  \nDue date: " + dueDate().toString("**yyyy-MM-dd**");
 
    if (isPublished()) details += "  \n► Published";
 
