@@ -377,6 +377,7 @@ QVariant RamAbstractObject::roleData(int role) const
         int h = 30;
         int w = 200;
         QTextDocument td;
+        td.setIndentWidth(20);
         QString comment = this->comment();
         if (comment != "") {
             td.setMarkdown(comment);

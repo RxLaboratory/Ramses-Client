@@ -350,7 +350,7 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
     paintDetails(index, painter, &params);
 
     // Draw Comment
-    QRect commentRect(params.detailsRect.left(), params.detailsRect.bottom() + 3, params.bgRect.width() - 15, params.bgRect.height() - params.detailsRect.height() - params.titleRect.height() - 15);
+    QRect commentRect(params.detailsRect.left(), params.detailsRect.bottom() + 3, params.bgRect.width() - 30, params.bgRect.height() - params.detailsRect.height() - params.titleRect.height() - 15);
     QString comment = index.data(RamObject::Comment).toString();
     if (commentRect.height() > 10 && comment != "")
     {
@@ -617,6 +617,7 @@ int RamObjectDelegate::drawMarkdown(QPainter *painter, QRect rect, const QString
     painter->setFont( m_textFont );
 
     QTextDocument td;
+    td.setIndentWidth(20);
     td.setMarkdown(md);
     td.setTextWidth(rect.width());
 
