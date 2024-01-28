@@ -67,6 +67,8 @@ public:
     QDate dueDate() const;
     void setDueDate(const QDate &date);
 
+    qreal lateness() const;
+
     bool isPublished() const;
     void setPublished(bool published);
 

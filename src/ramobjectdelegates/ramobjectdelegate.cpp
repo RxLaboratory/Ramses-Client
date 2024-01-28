@@ -3,6 +3,8 @@
 #include <QTextFrame>
 
 #include "duqf-widgets/duicon.h"
+#include "duqf-utils/colorutils.h"
+#include "duqf-utils/utils.h"
 
 PaintParameters RamObjectDelegate::getPaintParameters(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
@@ -69,7 +71,7 @@ PaintParameters RamObjectDelegate::getPaintParameters(const QStyleOptionViewItem
     return params;
 }
 
-void RamObjectDelegate::paintBG(QPainter *painter, PaintParameters *params) const
+void RamObjectDelegate::paintBG(const QModelIndex &index, QPainter *painter, PaintParameters *params) const
 {
     painter->setRenderHint(QPainter::Antialiasing);
 
@@ -77,6 +79,15 @@ void RamObjectDelegate::paintBG(QPainter *painter, PaintParameters *params) cons
     QPainterPath path;
     path.addRoundedRect(params->bgRect, 5, 5);
     painter->fillPath(path, QBrush(params->bgColor));
+
+    qreal priority = index.data(RamAbstractObject::Priority).toFloat();
+
+    if (priority > 0.5) {
+        QPen p(priorityColor(priority));
+        p.setWidth(1.5);
+        painter->setPen(p);
+        painter->drawPath(path);
+    }
 
     // Too Small !
     if (params->bgRect.height() < 26 )
@@ -90,6 +101,7 @@ void RamObjectDelegate::paintTitle(const QModelIndex &index, QPainter *painter, 
     // Draw title
     if (index.data(RamObject::Disabled).toBool()) painter->setPen(params->textColor);
     else painter->setPen( index.data(Qt::ForegroundRole).value<QBrush>().color() );
+
     painter->setFont( m_textFont );
     QRect result;
     painter->drawText(
@@ -242,6 +254,41 @@ void RamObjectDelegate::paintProgress(const QModelIndex &index, QPainter *painte
     }
 }
 
+QColor RamObjectDelegate::priorityColor(qreal priority) const
+{
+    if (priority < .75) {
+        qreal v = Interpolations::linear(priority, .5, .75, 0, 1);
+        QColor c(88, 95, 191);
+        c.setAlpha(v*256);
+        return c;
+    }
+    else if (priority < 1) {
+        qreal v = Interpolations::linear(priority, .75, 1, 0, 1);
+
+        return ColorUtils::interpolateRGB(
+            QColor(88, 95, 191),
+            QColor(195, 121, 69),
+            v );
+    }
+    else if (priority < 2) {
+        qreal v = Interpolations::linear(priority, 1, 2, 0, 1);
+
+        return ColorUtils::interpolateRGB(
+            QColor(195, 121, 69),
+            QColor(154, 25, 45),
+            v );
+    }
+    else {
+        qreal v = Interpolations::linear(priority, 2, 3, 0, 1);
+
+        return ColorUtils::interpolateRGB(
+            QColor(154, 25, 45),
+            QColor(127, 52, 157),
+            v );
+    }
+    return QColor();
+}
+
 RamObjectDelegate::RamObjectDelegate(QObject *parent)
     : QStyledItemDelegate(parent)
 {
@@ -308,7 +355,7 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
     PaintParameters params = getPaintParameters(option, index);
 
     // BG
-    paintBG(painter, &params);
+    paintBG(index, painter, &params);
 
     // no more room, finished
     if (params.bgRect.height() < 26 ) return;

@@ -236,6 +236,7 @@ HEADERS += \
     duqf-app/dusettingsmanager.h \
     duqf-app/dustyle.h \
     duqf-app/duui.h \
+    duqf-utils/colorutils.h \
     duqf-widgets/duaction.h \
     duqf-widgets/ducolorselector.h \
     duqf-widgets/ducombobox.h \

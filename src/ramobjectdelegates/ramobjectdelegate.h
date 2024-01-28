@@ -82,12 +82,13 @@ protected:
 private:
     // UTILS //
     PaintParameters getPaintParameters(const QStyleOptionViewItem &option, const QModelIndex &index) const;
-    void paintBG(QPainter *painter, PaintParameters *params) const;
+    void paintBG(const QModelIndex &index, QPainter *painter, PaintParameters *params) const;
     void paintTitle(const QModelIndex &index, QPainter *painter, PaintParameters *params) const;
     void paintPublished(const QModelIndex &index, QPainter *painter, PaintParameters *params) const;
     void paintButtons(QPainter *painter, PaintParameters *params, const QModelIndex &index) const;
     void paintDetails(const QModelIndex &index, QPainter *painter, PaintParameters *params) const;
     void paintProgress(const QModelIndex &index, QPainter *painter, PaintParameters *params) const;
+    QColor priorityColor(qreal priority) const;
 
     // Settings
     bool m_editable = false;

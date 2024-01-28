@@ -261,6 +261,17 @@ void RamStatus::setDueDate(const QDate &date)
     setUseDueDate(true);
 }
 
+qreal RamStatus::lateness() const
+{
+    if (!useDueDate()) return 0;
+    // estimation / days left
+    qreal daysLeft = QDate::currentDate().daysTo( dueDate() );
+    qreal est = qreal(estimation()*(100-completionRatio()))/100.0;
+    if (est <= 0) return 0;
+    if (daysLeft <= 0) return 3;
+    return est/daysLeft;
+}
+
 bool RamStatus::isPublished() const
 {
     if (m_virtual) return false;
@@ -637,6 +648,9 @@ QVariant RamStatus::roleData(int role) const
     }
     case RamAbstractObject::Published: {
         return this->isPublished();
+    }
+    case RamAbstractObject::Priority: {
+        return this->lateness();
     }
     }
 

@@ -45,6 +45,7 @@ public:
         Order = Qt::UserRole+26,
         FileName = Qt::UserRole+27,
         Published = Qt::UserRole+28,
+        Priority = Qt::UserRole+29
     };
     /**
      * @brief The ObjectType enum lists all types of RamObjects
