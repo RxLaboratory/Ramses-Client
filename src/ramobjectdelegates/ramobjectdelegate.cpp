@@ -1,4 +1,7 @@
 #include "ramobjectdelegate.h"
+
+#include <QTextFrame>
+
 #include "duqf-widgets/duicon.h"
 
 PaintParameters RamObjectDelegate::getPaintParameters(const QStyleOptionViewItem &option, const QModelIndex &index) const
@@ -350,14 +353,12 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
 
     // Draw Comment
     QRect commentRect(params.detailsRect.left(), params.detailsRect.bottom() + 3, params.bgRect.width() - 15, params.bgRect.height() - params.detailsRect.height() - params.titleRect.height() - 15);
-    QPen commentPen(m_lessLight);
     QString comment = index.data(RamObject::Comment).toString();
     if (commentRect.height() > 10 && comment != "")
     {
-        painter->setPen( commentPen );
-        painter->setFont(m_textFont);
-        painter->drawText( commentRect, Qt::AlignLeft | Qt::AlignTop | Qt::TextWordWrap, comment, &commentRect);
-        if (commentRect.bottom() + 5 > params.bgRect.bottom()) drawMore(painter, params.bgRect, commentPen);
+        int textHeight = drawMarkdown(painter, commentRect, comment);
+        if (commentRect.height() < textHeight) drawMore(painter, params.bgRect, QPen(m_lessLight));
+        else commentRect.setHeight(textHeight);
     }
     else commentRect.setHeight(0);
 
@@ -380,7 +381,7 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
     else imageRect.setHeight(0);
 
     // Draw subdetails
-    QRect subDetailsRect( params.iconRect.left() + 5, imageRect.bottom() + 5, params.bgRect.width() - 30, params.bgRect.bottom() - imageRect.bottom() - 5);
+    /*QRect subDetailsRect( params.iconRect.left() + 5, imageRect.bottom() + 5, params.bgRect.width() - 30, params.bgRect.bottom() - imageRect.bottom() - 5);
     QString subDetails = index.data(RamObject::SubDetails).toString();
     if (commentRect.bottom() + 20 < params.bgRect.bottom() && subDetails != "")
     {
@@ -388,7 +389,7 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
         painter->setFont( m_detailsFont );
         painter->drawText( subDetailsRect, Qt::AlignLeft | Qt::AlignTop | Qt::TextWordWrap, subDetails, &subDetailsRect);
         if (subDetailsRect.bottom() + 5 > params.bgRect.bottom()) drawMore(painter, params.bgRect, commentPen);
-    }
+    }*/
 //*/
 }
 
@@ -609,4 +610,29 @@ void RamObjectDelegate::drawButton(QPainter *painter, QRect rect, QPixmap icon, 
         painter->fillPath(path, QBrush(m_dark));
     }
     painter->drawPixmap( rect, icon );
+}
+
+int RamObjectDelegate::drawMarkdown(QPainter *painter, QRect rect, const QString &md) const
+{
+    painter->save();
+    painter->setPen( QPen(m_lessLight) );
+    painter->setFont( m_textFont );
+
+    QTextDocument td;
+    td.setMarkdown(md);
+    td.setTextWidth(rect.width());
+
+    QRect clipRect(rect);
+    clipRect.moveTo(0,0);
+    painter->translate(rect.topLeft());
+
+    QAbstractTextDocumentLayout::PaintContext ctx;
+    ctx.palette.setColor(QPalette::Text, painter->pen().color());
+    painter->setClipRect(clipRect);
+    ctx.clip = clipRect;
+    td.documentLayout()->draw(painter, ctx);
+
+    painter->restore();
+
+    return td.size().height();
 }

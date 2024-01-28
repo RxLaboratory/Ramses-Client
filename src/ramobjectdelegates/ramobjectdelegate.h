@@ -52,6 +52,7 @@ protected:
     // drawing specific items
     void drawMore(QPainter *painter, QRect rect, QPen pen) const;
     void drawButton(QPainter *painter, QRect rect, QPixmap icon, bool hover = false) const;
+    int drawMarkdown(QPainter *painter, QRect rect, const QString &md) const;
 
     // Style
     QColor m_abyss;
