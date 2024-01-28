@@ -4,11 +4,12 @@
 #include "ramsequence.h"
 
 #include "shotscreationdialog.h"
+#include "duqf-widgets/duicon.h"
 
 ShotManagerWidget::ShotManagerWidget(QWidget *parent):
     ObjectManagerWidget(
         "Shots",
-        QIcon(":icons/shot"),
+        DuIcon(":icons/shot"),
         parent)
 {
     changeProject(Ramses::instance()->currentProject());

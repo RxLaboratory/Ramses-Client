@@ -1,6 +1,7 @@
 #include "schedulemanagerwidget.h"
 
 #include "duqf-utils/guiutils.h"
+#include "duqf-widgets/duicon.h"
 #include "progressmanager.h"
 #include "ramscheduleentry.h"
 #include "ramschedulecomment.h"
@@ -512,7 +513,7 @@ void ScheduleManagerWidget::setupUi()
 
     QToolButton *viewButton = new QToolButton(this);
     viewButton->setText(" View");
-    viewButton->setIcon(QIcon(":/icons/show"));
+    viewButton->setIcon(DuIcon(":/icons/show"));
     viewButton->setMenu(viewMenu);
     viewButton->setIconSize(QSize(16,16));
     viewButton->setObjectName("menuButton");
@@ -527,7 +528,7 @@ void ScheduleManagerWidget::setupUi()
 
     ui_userButton = new QToolButton(this);
     ui_userButton->setText("Users");
-    ui_userButton->setIcon(QIcon(":/icons/user"));
+    ui_userButton->setIcon(DuIcon(":/icons/user"));
     ui_userButton->setIconSize(QSize(16,16));
     ui_userButton->setObjectName("menuButton");
     ui_userButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
@@ -569,7 +570,7 @@ void ScheduleManagerWidget::setupUi()
 
     QToolButton *dayButton  = new QToolButton(this);
     dayButton->setText("Days");
-    dayButton->setIcon(QIcon(":/icons/calendar"));
+    dayButton->setIcon(DuIcon(":/icons/calendar"));
     dayButton->setIconSize(QSize(16,16));
     dayButton->setObjectName("menuButton");
     dayButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
@@ -580,24 +581,24 @@ void ScheduleManagerWidget::setupUi()
 
     DuMenu *stepMenu = new DuMenu(this);
 
-    ui_commentAction = new QAction(QIcon(":/icons/comment"), "Comment...", this);
+    ui_commentAction = new QAction(DuIcon(":/icons/comment"), "Comment...", this);
     stepMenu->addAction(ui_commentAction);
 
     stepMenu->addSeparator();
 
     ui_copyComment = new QAction("Copy comment", this);
     ui_copyComment->setShortcut(QKeySequence("Ctrl+C"));
-    ui_copyComment->setIcon(QIcon(":/icons/copy"));
+    ui_copyComment->setIcon(DuIcon(":/icons/copy"));
     stepMenu->addAction(ui_copyComment);
 
     ui_cutComment = new QAction("Cut comment", this);
     ui_cutComment->setShortcut(QKeySequence("Ctrl+X"));
-    ui_cutComment->setIcon(QIcon(":/icons/cut"));
+    ui_cutComment->setIcon(DuIcon(":/icons/cut"));
     stepMenu->addAction(ui_cutComment);
 
     ui_pasteComment = new QAction("Paste as comment", this);
     ui_pasteComment->setShortcut(QKeySequence("Ctrl+V"));
-    ui_pasteComment->setIcon(QIcon(":/icons/paste"));
+    ui_pasteComment->setIcon(DuIcon(":/icons/paste"));
     stepMenu->addAction(ui_pasteComment);
 
     stepMenu->addSeparator();
@@ -610,7 +611,7 @@ void ScheduleManagerWidget::setupUi()
 
     QToolButton *stepButton = new QToolButton(this);
     stepButton->setText("Schedule entry");
-    stepButton->setIcon(QIcon(":/icons/step"));
+    stepButton->setIcon(DuIcon(":/icons/step"));
     stepButton->setIconSize(QSize(16,16));
     stepButton->setObjectName("menuButton");
     stepButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
@@ -691,14 +692,14 @@ void ScheduleManagerWidget::setupUi()
     ui_contextMenu->addSeparator();
 
     ui_actionCopyUuid = new QAction(tr("Copy UUID"));
-    ui_actionCopyUuid->setIcon(QIcon(":/icons/code"));
+    ui_actionCopyUuid->setIcon(DuIcon(":/icons/code"));
     ui_contextMenu->addAction(ui_actionCopyUuid);
 
     // Comment context menu
     ui_commentContextMenu = new DuMenu(this);
     ui_commentContextMenu->addAction(ui_commentAction);
 
-    ui_colorAction = new QAction(QIcon(":/icons/color"), "Color...", this);
+    ui_colorAction = new QAction(DuIcon(":/icons/color"), "Color...", this);
     ui_commentContextMenu->addAction(ui_colorAction);
 
     ui_commentContextMenu->addSeparator();
@@ -709,7 +710,7 @@ void ScheduleManagerWidget::setupUi()
 
     ui_commentContextMenu->addSeparator();
 
-    ui_removeCommentAction = new QAction(QIcon(":/icons/remove"), "Remove", this);
+    ui_removeCommentAction = new QAction(DuIcon(":/icons/remove"), "Remove", this);
     ui_commentContextMenu->addAction(ui_removeCommentAction);
 
     ui_commentContextMenu->addSeparator();

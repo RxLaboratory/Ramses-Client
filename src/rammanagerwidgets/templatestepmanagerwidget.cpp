@@ -1,12 +1,13 @@
 #include "templatestepmanagerwidget.h"
 
 #include "ramses.h"
+#include "duqf-widgets/duicon.h"
 
 TemplateStepManagerWidget::TemplateStepManagerWidget(QWidget *parent) :
     ObjectManagerWidget(
         Ramses::instance()->templateSteps(),
         "Template steps",
-        QIcon(":icons/step"),
+        DuIcon(":icons/step"),
         parent )
 {
     ui_listWidget->setEditMode(ObjectListWidget::RemoveObjects);

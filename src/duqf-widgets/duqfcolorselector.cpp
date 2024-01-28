@@ -1,4 +1,5 @@
 #include "duqfcolorselector.h"
+#include "duqf-widgets/duicon.h"
 
 DuQFColorSelector::DuQFColorSelector(QWidget *parent) : QWidget(parent)
 {
@@ -48,7 +49,7 @@ void DuQFColorSelector::setupUi()
     colorLayout->addWidget(ui_colorEdit);
 
     ui_colorButton = new QToolButton(this);
-    ui_colorButton->setIcon(QIcon(":/icons/color-dialog"));
+    ui_colorButton->setIcon(DuIcon(":/icons/color-dialog"));
     colorLayout->addWidget(ui_colorButton);
 
 }

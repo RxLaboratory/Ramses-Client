@@ -1,4 +1,5 @@
 #include "ramobjectdelegate.h"
+#include "duqf-widgets/duicon.h"
 
 PaintParameters RamObjectDelegate::getPaintParameters(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
@@ -254,30 +255,30 @@ RamObjectDelegate::RamObjectDelegate(QObject *parent)
     m_detailsFont.setItalic(true);
     m_padding = 10;
 
-    m_editIcon = QIcon(":/icons/edit").pixmap(QSize(12,12));
-    m_historyIcon = QIcon(":/icons/list").pixmap(QSize(12,12));
-    m_folderIcon = QIcon(":/icons/folder").pixmap(QSize(12,12));
+    m_editIcon = DuIcon(":/icons/edit").pixmap(QSize(12,12));
+    m_historyIcon = DuIcon(":/icons/list").pixmap(QSize(12,12));
+    m_folderIcon = DuIcon(":/icons/folder").pixmap(QSize(12,12));
     m_historyDarkIcon = m_historyIcon;
     m_folderDarkIcon = m_folderIcon;
 
     // The icons
-    m_icons[":/icons/asset"] = QIcon(":/icons/asset").pixmap(QSize(12,12));
-    m_icons[":/icons/application"] = QIcon(":/icons/application").pixmap(QSize(12,12));
-    m_icons[":/icons/asset-group"] = QIcon(":/icons/asset-group").pixmap(QSize(12,12));
-    m_icons[":/icons/file"] = QIcon(":/icons/file").pixmap(QSize(12,12));
-    m_icons[":/icons/connection"] = QIcon(":/icons/connection").pixmap(QSize(12,12));
-    m_icons[":/icons/project"] = QIcon(":/icons/project").pixmap(QSize(12,12));
-    m_icons[":/icons/calendar"] = QIcon(":/icons/calendar").pixmap(QSize(12,12));
-    m_icons[":/icons/sequence"] = QIcon(":/icons/sequence").pixmap(QSize(12,12));
-    m_icons[":/icons/shot"] = QIcon(":/icons/shot").pixmap(QSize(12,12));
-    m_icons[":/icons/state-l"] = QIcon(":/icons/state-l").pixmap(QSize(12,12));
-    m_icons[":/icons/status"] = QIcon(":/icons/status").pixmap(QSize(12,12));
-    m_icons[":/icons/film"] = QIcon(":/icons/film").pixmap(QSize(12,12));
-    m_icons[":/icons/step"] = QIcon(":/icons/step").pixmap(QSize(12,12));
-    m_icons[":/icons/admin"] = QIcon(":/icons/admin").pixmap(QSize(12,12));
-    m_icons[":/icons/project-admin"] = QIcon(":/icons/project-admin").pixmap(QSize(12,12));
-    m_icons[":/icons/lead"] = QIcon(":/icons/lead").pixmap(QSize(12,12));
-    m_icons[":/icons/user"] = QIcon(":/icons/user").pixmap(QSize(12,12));
+    m_icons[":/icons/asset"] = DuIcon(":/icons/asset").pixmap(QSize(12,12));
+    m_icons[":/icons/application"] = DuIcon(":/icons/application").pixmap(QSize(12,12));
+    m_icons[":/icons/asset-group"] = DuIcon(":/icons/asset-group").pixmap(QSize(12,12));
+    m_icons[":/icons/file"] = DuIcon(":/icons/file").pixmap(QSize(12,12));
+    m_icons[":/icons/connection"] = DuIcon(":/icons/connection").pixmap(QSize(12,12));
+    m_icons[":/icons/project"] = DuIcon(":/icons/project").pixmap(QSize(12,12));
+    m_icons[":/icons/calendar"] = DuIcon(":/icons/calendar").pixmap(QSize(12,12));
+    m_icons[":/icons/sequence"] = DuIcon(":/icons/sequence").pixmap(QSize(12,12));
+    m_icons[":/icons/shot"] = DuIcon(":/icons/shot").pixmap(QSize(12,12));
+    m_icons[":/icons/state-l"] = DuIcon(":/icons/state-l").pixmap(QSize(12,12));
+    m_icons[":/icons/status"] = DuIcon(":/icons/status").pixmap(QSize(12,12));
+    m_icons[":/icons/film"] = DuIcon(":/icons/film").pixmap(QSize(12,12));
+    m_icons[":/icons/step"] = DuIcon(":/icons/step").pixmap(QSize(12,12));
+    m_icons[":/icons/admin"] = DuIcon(":/icons/admin").pixmap(QSize(12,12));
+    m_icons[":/icons/project-admin"] = DuIcon(":/icons/project-admin").pixmap(QSize(12,12));
+    m_icons[":/icons/lead"] = DuIcon(":/DuIcon/lead").pixmap(QSize(12,12));
+    m_icons[":/icons/user"] = DuIcon(":/icons/user").pixmap(QSize(12,12));
 
     QPixmap darkMap = QPixmap(12,12);
     darkMap.fill(m_dark);

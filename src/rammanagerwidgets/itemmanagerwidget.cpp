@@ -1,6 +1,7 @@
 #include "itemmanagerwidget.h"
 
 #include "duqf-utils/guiutils.h"
+#include "duqf-widgets/duicon.h"
 #include "ramasset.h"
 #include "ramses.h"
 #include "ramassetgroup.h"
@@ -653,7 +654,7 @@ void ItemManagerWidget::setupUi()
 
     QToolButton *viewButton = new QToolButton(this);
     viewButton->setText(" View");
-    viewButton->setIcon(QIcon(":/icons/show"));
+    viewButton->setIcon(DuIcon(":/icons/show"));
     viewButton->setMenu(viewMenu);
     viewButton->setIconSize(QSize(16,16));
     viewButton->setObjectName("menuButton");
@@ -695,7 +696,7 @@ void ItemManagerWidget::setupUi()
 
     QToolButton *sortButton = new QToolButton(this);
     sortButton->setText(" Sort");
-    sortButton->setIcon(QIcon(":/icons/sort"));
+    sortButton->setIcon(DuIcon(":/icons/sort"));
     sortButton->setMenu(sortMenu);
     sortButton->setIconSize(QSize(16,16));
     sortButton->setObjectName("menuButton");
@@ -722,7 +723,7 @@ void ItemManagerWidget::setupUi()
 
     ui_userButton = new QToolButton(this);
     ui_userButton->setText(" Users");
-    ui_userButton->setIcon(QIcon(":/icons/user"));
+    ui_userButton->setIcon(DuIcon(":/icons/user"));
     ui_userButton->setIconSize(QSize(16,16));
     ui_userButton->setObjectName("menuButton");
     ui_userButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
@@ -739,7 +740,7 @@ void ItemManagerWidget::setupUi()
 
     ui_stepButton = new QToolButton(this);
     ui_stepButton->setText(" Steps");
-    ui_stepButton->setIcon(QIcon(":/icons/step"));
+    ui_stepButton->setIcon(DuIcon(":/icons/step"));
     ui_stepButton->setIconSize(QSize(16,16));
     ui_stepButton->setObjectName("menuButton");
     ui_stepButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
@@ -755,7 +756,7 @@ void ItemManagerWidget::setupUi()
 
     ui_stateButton = new QToolButton(this);
     ui_stateButton->setText(" States");
-    ui_stateButton->setIcon(QIcon(":/icons/state-l"));
+    ui_stateButton->setIcon(DuIcon(":/icons/state-l"));
     ui_stateButton->setIconSize(QSize(16,16));
     ui_stateButton->setObjectName("menuButton");
     ui_stateButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
@@ -771,17 +772,17 @@ void ItemManagerWidget::setupUi()
 
     ui_copyComment = new QAction("Copy comment", this);
     ui_copyComment->setShortcut(QKeySequence("Ctrl+C"));
-    ui_copyComment->setIcon(QIcon(":/icons/copy"));
+    ui_copyComment->setIcon(DuIcon(":/icons/copy"));
     statusMenu->addAction(ui_copyComment);
 
     ui_cutComment = new QAction("Cut comment", this);
     ui_cutComment->setShortcut(QKeySequence("Ctrl+X"));
-    ui_cutComment->setIcon(QIcon(":/icons/cut"));
+    ui_cutComment->setIcon(DuIcon(":/icons/cut"));
     statusMenu->addAction(ui_cutComment);
 
     ui_pasteComment = new QAction("Paste as comment", this);
     ui_pasteComment->setShortcut(QKeySequence("Ctrl+V"));
-    ui_pasteComment->setIcon(QIcon(":/icons/paste"));
+    ui_pasteComment->setIcon(DuIcon(":/icons/paste"));
     statusMenu->addAction(ui_pasteComment);
 
     statusMenu->addSeparator();
@@ -837,7 +838,7 @@ void ItemManagerWidget::setupUi()
 
     QToolButton *statusButton = new QToolButton(this);
     statusButton->setText(" Status");
-    statusButton->setIcon(QIcon(":/icons/status"));
+    statusButton->setIcon(DuIcon(":/icons/status"));
     statusButton->setIconSize(QSize(16,16));
     statusButton->setObjectName("menuButton");
     statusButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
@@ -904,15 +905,15 @@ void ItemManagerWidget::setupUi()
     ui_contextMenu->addSeparator();
 
     ui_actionCopyFileName = new QAction(tr("Copy file name"));
-    ui_actionCopyFileName->setIcon(QIcon(":/icons/filename"));
+    ui_actionCopyFileName->setIcon(DuIcon(":/icons/filename"));
     ui_contextMenu->addAction(ui_actionCopyFileName);
 
     ui_actionCopyPath = new QAction(tr("Copy folder path"));
-    ui_actionCopyPath->setIcon(QIcon(":/icons/path"));
+    ui_actionCopyPath->setIcon(DuIcon(":/icons/path"));
     ui_contextMenu->addAction(ui_actionCopyPath);
 
     ui_actionCopyUuid = new QAction(tr("Copy UUID"));
-    ui_actionCopyUuid->setIcon(QIcon(":/icons/code"));
+    ui_actionCopyUuid->setIcon(DuIcon(":/icons/code"));
     ui_contextMenu->addAction(ui_actionCopyUuid);
 }
 
@@ -1088,15 +1089,15 @@ void ItemManagerWidget::setupItemMenu()
         QString createItemLabel = "Create new asset";
         QString deleteItemLabel = "Remove selected assets";
 
-        ui_actionCreateItem = new QAction(QIcon(":/icons/add"), createItemLabel, this);
+        ui_actionCreateItem = new QAction(DuIcon(":/icons/add"), createItemLabel, this);
         ui_itemMenu->addAction(ui_actionCreateItem);
 
-        ui_actionDeleteItem = new QAction(QIcon(":/icons/remove"), deleteItemLabel, this);
+        ui_actionDeleteItem = new QAction(DuIcon(":/icons/remove"), deleteItemLabel, this);
         ui_itemMenu->addAction(ui_actionDeleteItem);
 
         ui_itemButton = new QToolButton(this);
         ui_itemButton->setText(" Assets");
-        ui_itemButton->setIcon(QIcon(":/icons/asset"));
+        ui_itemButton->setIcon(DuIcon(":/icons/asset"));
         ui_itemButton->setMenu(ui_itemMenu);
         ui_itemButton->setIconSize(QSize(16,16));
         ui_itemButton->setObjectName("menuButton");
@@ -1109,10 +1110,10 @@ void ItemManagerWidget::setupItemMenu()
         QString createItemLabel = "Create new shot";
         QString deleteItemLabel = "Remove selected shots";
 
-        ui_actionCreateItem = new QAction(QIcon(":/icons/add"), createItemLabel, this);
+        ui_actionCreateItem = new QAction(DuIcon(":/icons/add"), createItemLabel, this);
         ui_itemMenu->addAction(ui_actionCreateItem);
 
-        ui_actionDeleteItem = new QAction(QIcon(":/icons/remove"), deleteItemLabel, this);
+        ui_actionDeleteItem = new QAction(DuIcon(":/icons/remove"), deleteItemLabel, this);
         ui_itemMenu->addAction(ui_actionDeleteItem);
 
         ui_actionCreateMultiple = new QAction("Create multiple shots...", this);
@@ -1120,7 +1121,7 @@ void ItemManagerWidget::setupItemMenu()
 
         ui_itemButton = new QToolButton(this);
         ui_itemButton->setText(" Shots");
-        ui_itemButton->setIcon(QIcon(":/icons/shot"));
+        ui_itemButton->setIcon(DuIcon(":/icons/shot"));
         ui_itemButton->setMenu(ui_itemMenu);
         ui_itemButton->setIconSize(QSize(16,16));
         ui_itemButton->setObjectName("menuButton");

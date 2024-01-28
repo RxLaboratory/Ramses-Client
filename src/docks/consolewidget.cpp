@@ -1,4 +1,5 @@
 #include "consolewidget.h"
+#include "duqf-widgets/duicon.h"
 
 ConsoleWidget::ConsoleWidget(QWidget *parent)
     : QFrame{parent}
@@ -68,7 +69,7 @@ void ConsoleWidget::setupUi(DuQFLoggerObject *o)
     mainLayout->addWidget(ui_consoleEdit);
 
     ui_clearButton = new QPushButton(tr("Clear"), this);
-    ui_clearButton->setIcon(QIcon(":/icons/clean"));
+    ui_clearButton->setIcon(DuIcon(":/icons/clean"));
     mainLayout->addWidget(ui_clearButton);
 
     QSettings settings;

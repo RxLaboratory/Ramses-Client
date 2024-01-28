@@ -1,11 +1,12 @@
 #include "stepmanagerwidget.h"
 
 #include "ramses.h"
+#include "duqf-widgets/duicon.h"
 
 StepManagerWidget::StepManagerWidget(QWidget *parent):
 ObjectManagerWidget(
     "Steps",
-    QIcon(":icons/step"),
+    DuIcon(":icons/step"),
     parent )
 {
     changeProject(Ramses::instance()->currentProject());

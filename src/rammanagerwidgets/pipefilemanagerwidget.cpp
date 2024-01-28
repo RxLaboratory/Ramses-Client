@@ -1,11 +1,12 @@
 #include "pipefilemanagerwidget.h"
 
+#include "duqf-widgets/duicon.h"
 #include "ramses.h"
 
 PipeFileManagerWidget::PipeFileManagerWidget(QWidget *parent):
     ObjectManagerWidget(
         "Pipe Types",
-        QIcon(":icons/file"),
+        DuIcon(":icons/file"),
         parent)
 {
     changeProject(Ramses::instance()->currentProject());

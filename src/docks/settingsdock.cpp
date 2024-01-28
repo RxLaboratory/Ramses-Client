@@ -130,7 +130,7 @@ void SettingsDock::setupUpdatesTab()
     updatesLayout->addWidget(ui_checkAtStartupBox);
 
     ui_checkNowButton = new QPushButton("Check now", this);
-    ui_checkNowButton->setIcon(QIcon(":/icons/check-update"));
+    ui_checkNowButton->setIcon(DuIcon(":/icons/check-update"));
     updatesLayout->addWidget(ui_checkNowButton);
 
     auto l = qobject_cast<QVBoxLayout*>( w->layout() );

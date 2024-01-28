@@ -1,12 +1,13 @@
 #include "assetgroupmanagerwidget.h"
 
+#include "duqf-widgets/duicon.h"
 #include "ramassetgroup.h"
 #include "ramses.h"
 
 AssetGroupManagerWidget::AssetGroupManagerWidget(QWidget *parent):
     ObjectManagerWidget(
         "Asset groups",
-        QIcon(":icons/asset-group"),
+        DuIcon(":icons/asset-group"),
         parent)
 {
     changeProject(Ramses::instance()->currentProject());

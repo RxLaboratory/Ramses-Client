@@ -1,5 +1,6 @@
 #include "databaseeditwidget.h"
 
+#include "duqf-widgets/duicon.h"
 #include "ramdatainterface/dbinterface.h"
 
 DatabaseEditWidget::DatabaseEditWidget(QWidget *parent) :
@@ -145,11 +146,11 @@ void DatabaseEditWidget::setupUi()
     mainLayout->addLayout(validButtons);
 
     ui_resetButton = new QPushButton(tr("Reset"));
-    ui_resetButton->setIcon(QIcon(":/icons/reinit"));
+    ui_resetButton->setIcon(DuIcon(":/icons/reinit"));
     validButtons->addWidget(ui_resetButton);
 
     ui_applyButton = new QPushButton(tr("Apply changes"));
-    ui_applyButton->setIcon(QIcon(":/icons/apply"));
+    ui_applyButton->setIcon(DuIcon(":/icons/apply"));
     validButtons->addWidget(ui_applyButton);
 
     mainLayout->addStretch();

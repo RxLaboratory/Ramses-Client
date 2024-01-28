@@ -1,4 +1,5 @@
 #include "duqffilelist.h"
+#include "duqf-widgets/duicon.h"
 
 DuQFFileList::DuQFFileList(QWidget *parent):
     DuTreeWidget(parent)
@@ -25,9 +26,9 @@ void DuQFFileList::addFile(QFileInfo file)
     QTreeWidgetItem *item = new QTreeWidgetItem(label);
     item->setData(0, Qt::UserRole, file.absoluteFilePath() );
     item->setData(0, Qt::UserRole + 1, file.fileName() );
-    if (file.isSymLink()) item->setIcon(0, QIcon(":/icons/shortcut"));
-    else if (file.isFile()) item->setIcon(0, QIcon(":icons/file"));
-    else if (file.isDir()) item->setIcon(0, QIcon(":icons/folder"));
+    if (file.isSymLink()) item->setIcon(0, DuIcon(":/icons/shortcut"));
+    else if (file.isFile()) item->setIcon(0, DuIcon(":icons/file"));
+    else if (file.isDir()) item->setIcon(0, DuIcon(":icons/folder"));
     this->addTopLevelItem(item);
 }
 

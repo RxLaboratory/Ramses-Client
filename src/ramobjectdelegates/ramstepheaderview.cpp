@@ -1,5 +1,6 @@
 #include "ramstepheaderview.h"
 
+#include "duqf-widgets/duicon.h"
 #include "ramstatus.h"
 #include "ramstep.h"
 #include "ramses.h"
@@ -18,11 +19,11 @@ RamStepHeaderView::RamStepHeaderView(QWidget *parent):
     m_detailsFont.setItalic(true);
     m_padding = 10;
 
-    m_editIcon = QIcon(":/icons/edit").pixmap(QSize(12,12));
-    m_folderIcon = QIcon(":/icons/folder").pixmap(QSize(12,12));
-    m_sortIcon = QIcon(":/icons/sort-no").pixmap(QSize(12,12));
-    m_sortUpIcon = QIcon(":/icons/sort-up").pixmap(QSize(12,12));
-    m_sortDownIcon = QIcon(":/icons/sort-down").pixmap(QSize(12,12));
+    m_editIcon = DuIcon(":/icons/edit").pixmap(QSize(12,12));
+    m_folderIcon = DuIcon(":/icons/folder").pixmap(QSize(12,12));
+    m_sortIcon = DuIcon(":/icons/sort-no").pixmap(QSize(12,12));
+    m_sortUpIcon = DuIcon(":/icons/sort-up").pixmap(QSize(12,12));
+    m_sortDownIcon = DuIcon(":/icons/sort-down").pixmap(QSize(12,12));
 
     this->setMinimumHeight( 42 );
 }

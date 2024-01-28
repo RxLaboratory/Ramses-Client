@@ -1,12 +1,13 @@
 #include "applicationmanagerwidget.h"
 
+#include "duqf-widgets/duicon.h"
 #include "ramses.h"
 
 ApplicationManagerWidget::ApplicationManagerWidget(QWidget *parent) :
     ObjectManagerWidget(
         Ramses::instance()->applications(),
         "Applications",
-        QIcon(":icons/application"),
+        DuIcon(":icons/application"),
         parent )
 {
     ui_listWidget->setEditMode(ObjectListWidget::RemoveObjects);

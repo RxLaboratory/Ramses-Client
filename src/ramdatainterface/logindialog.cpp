@@ -1,6 +1,7 @@
 #include "logindialog.h"
 
 #include "datacrypto.h"
+#include "duqf-widgets/duicon.h"
 
 LoginDialog::LoginDialog(QWidget *parent):
     QDialog(parent)
@@ -198,12 +199,12 @@ void LoginDialog::setupUi()
     layout->addLayout(buttonLayout);
 
     ui_cancelButton = new QPushButton(tr("Cancel"), this);
-    ui_cancelButton->setIcon(QIcon(":/icons/close"));
+    ui_cancelButton->setIcon(DuIcon(":/icons/close"));
     ui_cancelButton->setAutoDefault(false);
     buttonLayout->addWidget(ui_cancelButton);
 
     ui_loginButton = new QPushButton(tr("Log in"), this);
-    ui_loginButton->setIcon(QIcon(":/icons/login"));
+    ui_loginButton->setIcon(DuIcon(":/icons/login"));
     buttonLayout->addWidget(ui_loginButton);
 
     // Tab order

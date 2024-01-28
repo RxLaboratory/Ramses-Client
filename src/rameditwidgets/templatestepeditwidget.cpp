@@ -1,4 +1,5 @@
 #include "templatestepeditwidget.h"
+#include "duqf-widgets/duicon.h"
 
 TemplateStepEditWidget::TemplateStepEditWidget(QWidget *parent) :
     ObjectEditWidget(parent)
@@ -156,10 +157,10 @@ void TemplateStepEditWidget::setupUi()
     ui_mainFormLayout->addWidget(typeLabel, 3, 0);
 
     ui_typeBox  = new DuComboBox(this);
-    ui_typeBox->addItem(QIcon(":/icons/project"), "       Pre-Production", "pre");
-    ui_typeBox->addItem(QIcon(":/icons/asset"), "       Asset Production", "asset");
-    ui_typeBox->addItem(QIcon(":/icons/shot"), "       Shot Production", "shot");
-    ui_typeBox->addItem(QIcon(":/icons/film"), "       Post-Production", "post");
+    ui_typeBox->addItem(DuIcon(":/icons/project"), "       Pre-Production", "pre");
+    ui_typeBox->addItem(DuIcon(":/icons/asset"), "       Asset Production", "asset");
+    ui_typeBox->addItem(DuIcon(":/icons/shot"), "       Shot Production", "shot");
+    ui_typeBox->addItem(DuIcon(":/icons/film"), "       Post-Production", "post");
     ui_mainFormLayout->addWidget(ui_typeBox, 3, 1);
 
     QLabel *colorLabel = new QLabel("Color", this);

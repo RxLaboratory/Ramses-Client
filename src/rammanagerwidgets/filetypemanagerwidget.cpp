@@ -1,12 +1,13 @@
 #include "filetypemanagerwidget.h"
 
 #include "ramses.h"
+#include "duqf-widgets/duicon.h"
 
 FileTypeManagerWidget::FileTypeManagerWidget(QWidget *parent) :
     ObjectManagerWidget(
         Ramses::instance()->fileTypes(),
         "File types",
-        QIcon(":icons/file"),
+        DuIcon(":icons/file"),
         parent )
 {
     ui_listWidget->setEditMode(ObjectListWidget::RemoveObjects);

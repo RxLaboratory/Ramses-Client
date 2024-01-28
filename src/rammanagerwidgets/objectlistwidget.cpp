@@ -1,6 +1,7 @@
 #include "objectlistwidget.h"
 #include "duqf-app/app-version.h"
 
+#include "duqf-widgets/duicon.h"
 #include "ramses.h"
 #include "ramobjectmodel.h"
 
@@ -282,12 +283,12 @@ void ObjectListWidget::setupUi(bool editableObjects, RamUser::UserRole editRole)
     buttonsLayout->addWidget(ui_filterBox);
 
     ui_removeButton = new QToolButton(this);
-    ui_removeButton->setIcon(QIcon(":/icons/remove"));
+    ui_removeButton->setIcon(DuIcon(":/icons/remove"));
     ui_removeButton->setIconSize(QSize(12,12));
     buttonsLayout->addWidget(ui_removeButton);
 
     ui_addButton = new QToolButton(this);
-    ui_addButton->setIcon(QIcon(":/icons/add"));
+    ui_addButton->setIcon(DuIcon(":/icons/add"));
     ui_addButton->setIconSize(QSize(12,12));
     buttonsLayout->addWidget(ui_addButton);
 

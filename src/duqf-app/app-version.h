@@ -2,9 +2,9 @@
 #define APPVERSION_H
 
 #define VERSION_MAJOR 0
-#define VERSION_MINOR 9
+#define VERSION_MINOR 8
 #define VERSION_BUILD 0
-#define VERSION_SUFFIX "Beta"
+#define VERSION_SUFFIX "Gamma"
 
 #define STRINGIFY_VERSION(A, B, C) CONCAT(A, B, C )
 #define CONCAT(A, B, C ) STRINGIFY( A##.##B##.##C )

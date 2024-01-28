@@ -535,19 +535,19 @@ void MainWindow::currentUserChanged()
     if (user->role() == RamUser::Admin)
     {
         m_actionAdmin->setVisible(true);
-        ui_userButton->setIcon(QIcon(":/icons/admin"));
+        ui_userButton->setIcon(DuIcon(":/icons/admin"));
     }
     else if (user->role() == RamUser::ProjectAdmin)
     {
-        ui_userButton->setIcon(QIcon(":/icons/project-admin"));
+        ui_userButton->setIcon(DuIcon(":/icons/project-admin"));
     }
     else if (user->role() == RamUser::Lead)
     {
-        ui_userButton->setIcon(QIcon(":/icons/lead"));
+        ui_userButton->setIcon(DuIcon(":/icons/lead"));
     }
     else
     {
-        ui_userButton->setIcon(QIcon(":/icons/user"));
+        ui_userButton->setIcon(DuIcon(":/icons/user"));
     }
 }
 
@@ -615,13 +615,13 @@ void MainWindow::dbiConnectionStatusChanged(NetworkUtils::NetworkStatus s)
 
         if (RamServerInterface::instance()->ssl())
         {
-            ui_networkButton->setIcon(QIcon(":/icons/shield"));
+            ui_networkButton->setIcon(DuIcon(":/icons/shield"));
             ui_networkButton->setToolTip("Connected.");
             ui_networkButton->setStatusTip("");
         }
         else
         {
-            ui_networkButton->setIcon(QIcon(":/icons/no-shield"));
+            ui_networkButton->setIcon(DuIcon(":/icons/no-shield"));
             ui_networkButton->setToolTip("WARNING: Connection is not secured!");
             ui_networkButton->setStatusTip("WARNING: Connection is not secured!");
         }
@@ -631,7 +631,7 @@ void MainWindow::dbiConnectionStatusChanged(NetworkUtils::NetworkStatus s)
     {
         ui_refreshButton->setVisible(false);
         ui_networkButton->setText("Offline");
-        ui_networkButton->setIcon(QIcon(":/icons/storage"));
+        ui_networkButton->setIcon(DuIcon(":/icons/storage"));
         ui_networkButton->setToolTip("Offline.");
         ui_networkButton->setStatusTip("");
         m_actionSetOnline->setVisible(true);
@@ -950,35 +950,35 @@ void MainWindow::setupUi()
     // Admin tabs
 
     UserManagerWidget *userManager = new UserManagerWidget(this);
-    ui_adminPage->addPage(userManager,"Users", QIcon(":/icons/users"));
+    ui_adminPage->addPage(userManager,"Users", DuIcon(":/icons/users"));
     ui_adminPage->titleBar()->insertLeft(userManager->menuButton());
 
     ProjectManagerWidget *projectManager = new ProjectManagerWidget(this);
-    ui_adminPage->addPage(projectManager, "Projects", QIcon(":/icons/projects"));
+    ui_adminPage->addPage(projectManager, "Projects", DuIcon(":/icons/projects"));
     ui_adminPage->titleBar()->insertLeft(projectManager->menuButton());
 
     TemplateStepManagerWidget *templateStepManager = new TemplateStepManagerWidget(this);
-    ui_adminPage->addPage(templateStepManager, "Template Steps", QIcon(":/icons/steps"));
+    ui_adminPage->addPage(templateStepManager, "Template Steps", DuIcon(":/icons/steps"));
     ui_adminPage->titleBar()->insertLeft(templateStepManager->menuButton());
 
     TemplateAssetGroupManagerWidget *templateAssetGroupManager = new TemplateAssetGroupManagerWidget(this);
-    ui_adminPage->addPage(templateAssetGroupManager, "Template Asset Groups", QIcon(":/icons/asset-groups"));
+    ui_adminPage->addPage(templateAssetGroupManager, "Template Asset Groups", DuIcon(":/icons/asset-groups"));
     ui_adminPage->titleBar()->insertLeft(templateAssetGroupManager->menuButton());
 
     StateManagerWidget *stateManager = new StateManagerWidget(this);
-    ui_adminPage->addPage(stateManager, "States", QIcon(":/icons/state"));
+    ui_adminPage->addPage(stateManager, "States", DuIcon(":/icons/state"));
     ui_adminPage->titleBar()->insertLeft(stateManager->menuButton());
 
     FileTypeManagerWidget *fileTypeManager = new FileTypeManagerWidget(this);
-    ui_adminPage->addPage(fileTypeManager, "File Types", QIcon(":/icons/files"));
+    ui_adminPage->addPage(fileTypeManager, "File Types", DuIcon(":/icons/files"));
     ui_adminPage->titleBar()->insertLeft(fileTypeManager->menuButton());
 
     ApplicationManagerWidget *applicationManager = new ApplicationManagerWidget(this);
-    ui_adminPage->addPage(applicationManager, "Applications", QIcon(":/icons/applications"));
+    ui_adminPage->addPage(applicationManager, "Applications", DuIcon(":/icons/applications"));
     ui_adminPage->titleBar()->insertLeft(applicationManager->menuButton());
 
     DBManagerWidget *dbManager = new DBManagerWidget(this);
-    ui_adminPage->addPage(dbManager, "Database tools", QIcon(":/icons/applications"));
+    ui_adminPage->addPage(dbManager, "Database tools", DuIcon(":/icons/applications"));
 
 // Pipeline editor
 #ifndef DEACTIVATE_PIPELINE
@@ -1268,7 +1268,7 @@ void MainWindow::setupToolBar()
     assetsMenu->addAction(m_assetListAction);
 
     ui_assetsButton = new QToolButton();
-    ui_assetsButton->setIcon(QIcon(":/icons/asset"));
+    ui_assetsButton->setIcon(DuIcon(":/icons/asset"));
     ui_assetsButton->setText("Assets");
     ui_assetsButton->setMenu(assetsMenu);
     ui_assetsButton->setIconSize(QSize(16,16));
@@ -1284,7 +1284,7 @@ void MainWindow::setupToolBar()
     shotsMenu->addAction(m_actionTimeline);
 
     ui_shotsButton = new QToolButton();
-    ui_shotsButton->setIcon(QIcon(":/icons/shot"));
+    ui_shotsButton->setIcon(DuIcon(":/icons/shot"));
     ui_shotsButton->setText("Shots");
     ui_shotsButton->setMenu(shotsMenu);
     ui_shotsButton->setIconSize(QSize(16,16));
@@ -1298,7 +1298,7 @@ void MainWindow::setupToolBar()
     scheduleMenu->addAction(m_actionStatistics);
 
     ui_scheduleButton = new QToolButton();
-    ui_scheduleButton->setIcon(QIcon(":/icons/calendar"));
+    ui_scheduleButton->setIcon(DuIcon(":/icons/calendar"));
     ui_scheduleButton->setText("Schedule");
     ui_scheduleButton->setMenu(scheduleMenu);
     ui_scheduleButton->setIconSize(QSize(16,16));
@@ -1321,7 +1321,7 @@ void MainWindow::setupToolBar()
     filesMenu->addAction(m_fileTrashAction);
 
     ui_filesButton = new QToolButton();
-    ui_filesButton->setIcon(QIcon(":/icons/folder"));
+    ui_filesButton->setIcon(DuIcon(":/icons/folder"));
     ui_filesButton->setText("Files");
     ui_filesButton->setMenu(filesMenu);
     ui_filesButton->setIconSize(QSize(16,16));
@@ -1363,7 +1363,7 @@ void MainWindow::setupStatusBar()
     ui_refreshButton->setObjectName("menuButton");
     ui_refreshButton->setToolButtonStyle(Qt::ToolButtonIconOnly);
     ui_refreshButton->setText("");
-    ui_refreshButton->setIcon(QIcon(":/icons/reload"));
+    ui_refreshButton->setIcon(DuIcon(":/icons/reload"));
     ui_refreshButton->setMenu(ui_refreshMenu);
     ui_refreshButton->setPopupMode(QToolButton::InstantPopup);
     ui_mainStatusBar->addPermanentWidget(ui_refreshButton);
@@ -1372,7 +1372,7 @@ void MainWindow::setupStatusBar()
     ui_consoleButton = new QToolButton(this);
     ui_consoleButton->setToolButtonStyle(Qt::ToolButtonIconOnly);
     ui_consoleButton->setText("");
-    ui_consoleButton->setIcon(QIcon(":/icons/bash"));
+    ui_consoleButton->setIcon(DuIcon(":/icons/bash"));
     ui_consoleButton->setCheckable(true);
     ui_mainStatusBar->addPermanentWidget(ui_consoleButton);
 
@@ -1386,7 +1386,7 @@ void MainWindow::setupStatusBar()
     ui_networkButton = new DuQFAutoSizeToolButton(this);
     ui_networkButton->setObjectName("menuButton");
     ui_networkButton->setText("Offline");
-    ui_networkButton->setIcon(QIcon(":/icons/storage"));
+    ui_networkButton->setIcon(DuIcon(":/icons/storage"));
     ui_networkButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     //ui_networkButton->setMinimumWidth(100);
     ui_networkButton->setMenu(ui_databaseMenu);
@@ -1415,7 +1415,7 @@ void MainWindow::setupStatusBar()
     ui_mainStatusBar->addPermanentWidget(new QLabel("v" + QString(STR_VERSION)));
 
     QToolButton *helpButton = new QToolButton();
-    helpButton->setIcon(QIcon(":/icons/help"));
+    helpButton->setIcon(DuIcon(":/icons/help"));
     helpButton->setToolTip("Get Help");
     helpButton->setPopupMode( QToolButton::InstantPopup );
     helpMenu = new DuMenu(this);
@@ -1425,13 +1425,13 @@ void MainWindow::setupStatusBar()
 
     if (QString(URL_DOC) != "")
     {
-        QAction *docAction = new QAction(QIcon(":/icons/documentation"), "Help");
+        QAction *docAction = new QAction(DuIcon(":/icons/documentation"), "Help");
         docAction->setToolTip("Read the documentation");
         docAction->setShortcut(QKeySequence("F1"));
         helpMenu->addAction(docAction);
         connect(docAction, &DuAction::triggered, this, &MainWindow::doc);
     }
-    QAction *aboutAction = new QAction(QIcon(":/icons/info"), "About");
+    QAction *aboutAction = new QAction(DuIcon(":/icons/info"), "About");
     helpMenu->addAction(aboutAction);
     connect(aboutAction, &DuAction::triggered, this, &MainWindow::about);
     helpMenu->addSeparator();
@@ -1442,14 +1442,14 @@ void MainWindow::setupStatusBar()
     if (bugReport)
     {
         QAction *bugReportAction = new QAction(QIcon(":/icons/bug-report"), "Bug Report");
-        bugReportAction->setToolTip("Report a bug");
+        bugReportAction->setToolTip("Report a DuIcon");
         helpMenu->addAction(bugReportAction);
         if (!chat && !forum && !donate) helpMenu->addSeparator();
         connect(bugReportAction, &DuAction::triggered, this, &MainWindow::bugReport);
     }
     if (chat)
     {
-        QAction *chatAction = new QAction(QIcon(":/icons/chat"), "Chat");
+        QAction *chatAction = new QAction(DuIcon(":/icons/chat"), "Chat");
         chatAction->setToolTip("Come and have a chat");
         helpMenu->addAction(chatAction);
         if (!forum && !donate) helpMenu->addSeparator();
@@ -1457,7 +1457,7 @@ void MainWindow::setupStatusBar()
     }
     if (forum)
     {
-        QAction *forumAction = new QAction(QIcon(":/icons/forum"), "Forum");
+        QAction *forumAction = new QAction(DuIcon(":/icons/forum"), "Forum");
         forumAction->setToolTip("Join us on our forum");
         helpMenu->addAction(forumAction);
         if (!donate) helpMenu->addSeparator();
@@ -1465,19 +1465,19 @@ void MainWindow::setupStatusBar()
     }
     if (donate)
     {
-        QAction *donateAction = new QAction(QIcon(":/icons/donate"), "I ♥ " + QString(STR_FILEDESCRIPTION));
+        QAction *donateAction = new QAction(DuIcon(":/icons/donate"), "I ♥ " + QString(STR_FILEDESCRIPTION));
         donateAction->setToolTip("Help us, donate now!");
         helpMenu->addAction(donateAction);
         helpMenu->addSeparator();
         connect(donateAction, &DuAction::triggered, this, &MainWindow::donate);
 
         /*QToolButton *donateButton = new QToolButton();
-        donateButton->setIcon(QIcon(":/icons/donate"));
+        donateButton->setIcon(DuIcon(":/icons/donate"));
         donateButton->setToolTip("I ♥ " + QString(STR_FILEDESCRIPTION));
         ui_mainStatusBar->addPermanentWidget(donateButton);
         connect(donateButton, SIGNAL(clicked()), this, SLOT(duqf_donate()));*/
     }
-    QAction *aboutQtAction = new QAction(QIcon(":/icons/qt"), "About Qt");
+    QAction *aboutQtAction = new QAction(DuIcon(":/icons/qt"), "About Qt");
     helpMenu->addAction(aboutQtAction);
     connect(aboutQtAction, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
 }
@@ -1497,7 +1497,7 @@ void MainWindow::setupSysTray()
 #else
         QString trayIconType = settings.value("appearance/trayIconType", "color").toString();
 #endif
-        trayIcon = new QSystemTrayIcon(QIcon(":/icons/tray-" + trayIconType),this);
+        trayIcon = new QSystemTrayIcon(DuIcon(":/icons/tray-" + trayIconType),this);
         trayMenu->addAction(m_actionShowHide);
         DuAction *actionQuit = new DuAction("Quit", this);
         actionQuit->setIcon(":/icons/close-dark");

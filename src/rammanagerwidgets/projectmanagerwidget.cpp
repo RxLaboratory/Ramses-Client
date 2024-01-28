@@ -1,12 +1,13 @@
 #include "projectmanagerwidget.h"
 
 #include "ramses.h"
+#include "duqf-widgets/duicon.h"
 
 ProjectManagerWidget::ProjectManagerWidget(QWidget *parent) :
     ObjectManagerWidget(
         Ramses::instance()->projects(),
         "Projects",
-        QIcon(":icons/project"),
+        DuIcon(":icons/project"),
         parent )
 {
     ui_listWidget->setEditMode(ObjectListWidget::RemoveObjects);

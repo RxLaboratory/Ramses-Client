@@ -1,12 +1,13 @@
 #include "usermanagerwidget.h"
 
+#include "duqf-widgets/duicon.h"
 #include "ramses.h"
 
 UserManagerWidget::UserManagerWidget(QWidget *parent) :
     ObjectManagerWidget(
         Ramses::instance()->users(),
         "Users",
-        QIcon(":icons/user"),
+        DuIcon(":icons/user"),
         parent )
 {
     ui_listWidget->setEditMode(ObjectListWidget::RemoveObjects);

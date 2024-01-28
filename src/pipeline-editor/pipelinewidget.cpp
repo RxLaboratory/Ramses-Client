@@ -3,6 +3,7 @@
 #include "duqf-utils/guiutils.h"
 #include "duqf-app/dusettingsmanager.h"
 
+#include "duqf-widgets/duicon.h"
 #include "progressmanager.h"
 #include "stepnode.h"
 #include "ramses.h"
@@ -37,7 +38,7 @@ PipelineWidget::PipelineWidget(QWidget *parent) :
 
     QToolButton *viewButton = new QToolButton(this);
     viewButton->setText("View");
-    viewButton->setIcon(QIcon(":/icons/view"));
+    viewButton->setIcon(DuIcon(":/icons/view"));
     viewButton->setIconSize(QSize(16,16));
     viewButton->setObjectName("menuButton");
     viewButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
@@ -63,7 +64,7 @@ PipelineWidget::PipelineWidget(QWidget *parent) :
 
     QToolButton *selectButton = new QToolButton(this);
     selectButton->setText("Select");
-    selectButton->setIcon(QIcon(":/icons/select-menu"));
+    selectButton->setIcon(DuIcon(":/icons/select-menu"));
     selectButton->setIconSize(QSize(16,16));
     selectButton->setObjectName("menuButton");
     selectButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
@@ -85,7 +86,7 @@ PipelineWidget::PipelineWidget(QWidget *parent) :
 
     QToolButton *layButton = new QToolButton(this);
     layButton->setText("Layout");
-    layButton->setIcon(QIcon(":/icons/steps-menu"));
+    layButton->setIcon(DuIcon(":/icons/steps-menu"));
     layButton->setIconSize(QSize(16,16));
     layButton->setObjectName("menuButton");
     layButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
@@ -123,7 +124,7 @@ PipelineWidget::PipelineWidget(QWidget *parent) :
 
     QToolButton *stepButton = new QToolButton(this);
     stepButton->setText("Step");
-    stepButton->setIcon(QIcon(":/icons/step"));
+    stepButton->setIcon(DuIcon(":/icons/step"));
     stepButton->setIconSize(QSize(16,16));
     stepButton->setObjectName("menuButton");
     stepButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
@@ -141,7 +142,7 @@ PipelineWidget::PipelineWidget(QWidget *parent) :
 
     QToolButton *coButton = new QToolButton(this);
     coButton->setText("Pipe");
-    coButton->setIcon(QIcon(":/icons/connection"));
+    coButton->setIcon(DuIcon(":/icons/connection"));
     coButton->setIconSize(QSize(16,16));
     coButton->setObjectName("menuButton");
     coButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
@@ -153,10 +154,10 @@ PipelineWidget::PipelineWidget(QWidget *parent) :
     // Right buttons
 
     QToolButton *viewAllButton = new QToolButton(this);
-    viewAllButton->setIcon(QIcon(":/icons/view-all"));
+    viewAllButton->setIcon(DuIcon(":/icons/view-all"));
     ui_titleBar->insertRight(viewAllButton);
     QToolButton *viewSelectedButton = new QToolButton(this);
-    viewSelectedButton->setIcon(QIcon(":/icons/view-selected"));
+    viewSelectedButton->setIcon(DuIcon(":/icons/view-selected"));
     ui_titleBar->insertRight(viewSelectedButton);
 
     DuQFSpinBox *zoomBox = new DuQFSpinBox(this);
@@ -189,7 +190,7 @@ PipelineWidget::PipelineWidget(QWidget *parent) :
 
     ui_snapButton = new QToolButton();
     ui_snapButton->setCheckable(true);
-    ui_snapButton->setIcon(QIcon(":/icons/snap"));
+    ui_snapButton->setIcon(DuIcon(":/icons/snap"));
     ui_titleBar->insertRight(ui_snapButton);
 
     ui_nodeView = new DuQFNodeView(this);

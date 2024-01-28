@@ -1,4 +1,5 @@
 #include "duqflogtoolbutton.h"
+#include "duqf-widgets/duicon.h"
 #include "duqf-widgets/duqfloggingtextedit.h"
 
 DuQFLogToolButton::DuQFLogToolButton(QWidget *parent): QToolButton(parent)
@@ -26,17 +27,17 @@ void DuQFLogToolButton::log(DuQFLog m)
         case DuQFLog::Information: break;
         case DuQFLog::Warning:
             this->show();
-            this->setIcon(QIcon(":/icons/warning"));
+            this->setIcon(DuIcon(":/icons/warning"));
             this->setToolTip("Warning! Some errors have occured.");
             break;
         case DuQFLog::Critical:
             this->show();
-            this->setIcon(QIcon(":/icons/critical"));
+            this->setIcon(DuIcon(":/icons/critical"));
             this->setToolTip("There are critical errors. You should post a bug report and restart the application. Be careful, you may lose some data.");
             break;
         case DuQFLog::Fatal:
             this->show();
-            this->setIcon(QIcon(":/icons/fatal"));
+            this->setIcon(DuIcon(":/icons/fatal"));
             this->setToolTip("A fatal error has occured, we can't continue. Please file a bug report.");
             break;
         }
@@ -75,12 +76,12 @@ void DuQFLogToolButton::setupUi()
 
     QPushButton *cButton = new QPushButton();
     cButton->setText("Clear");
-    cButton->setIcon(QIcon(":/icons/clean"));
+    cButton->setIcon(DuIcon(":/icons/clean"));
     buttonLayout->addWidget(cButton);
 
     QPushButton *closeButton = new QPushButton();
     closeButton->setText("Close");
-    closeButton->setIcon(QIcon(":/icons/close"));
+    closeButton->setIcon(DuIcon(":/icons/close"));
     buttonLayout->addWidget(closeButton);
 
     _logDialog->setLayout(layout);
@@ -101,6 +102,6 @@ void DuQFLogToolButton::clear()
 {
     this->hide();
     _currentLevel = DuQFLog::Information;
-    this->setIcon(QIcon(":/icons/ok"));
+    this->setIcon(DuIcon(":/icons/ok"));
     _logDialog->accept();
 }

@@ -1,5 +1,6 @@
 #include "usereditwidget.h"
 
+#include "duqf-widgets/duicon.h"
 #include "ramses.h"
 #include "ramdatainterface/datacrypto.h"
 
@@ -192,10 +193,10 @@ void UserEditWidget::setupUi()
     ui_mainFormLayout->addWidget(roleLabel, 3, 0);
 
     ui_roleBox = new DuComboBox(this);
-    ui_roleBox->addItem(QIcon(":/icons/user"), "Standard");
-    ui_roleBox->addItem(QIcon(":/icons/lead"), "Lead");
-    ui_roleBox->addItem(QIcon(":/icons/project-admin"), "Project Admin");
-    ui_roleBox->addItem(QIcon(":/icons/admin"), "Administrator");
+    ui_roleBox->addItem(DuIcon(":/icons/user"), "Standard");
+    ui_roleBox->addItem(DuIcon(":/icons/lead"), "Lead");
+    ui_roleBox->addItem(DuIcon(":/icons/project-admin"), "Project Admin");
+    ui_roleBox->addItem(DuIcon(":/icons/admin"), "Administrator");
     ui_roleBox->setCurrentIndex(0);
     ui_mainFormLayout->addWidget(ui_roleBox, 3, 1);
 

@@ -1,4 +1,5 @@
 ﻿#include "stepeditwidget.h"
+#include "duqf-widgets/duicon.h"
 #include "ramapplication.h"
 #include "ramproject.h"
 #include "ramses.h"
@@ -221,10 +222,10 @@ void StepEditWidget::setupUi()
     ui_mainFormLayout->addWidget(typeLabel, 3,0);
 
     ui_typeBox = new DuComboBox(this);
-    ui_typeBox->addItem(QIcon(":/icons/project"), "        Pre-Production", "pre");
-    ui_typeBox->addItem(QIcon(":/icons/asset"), "        Asset Production", "asset");
-    ui_typeBox->addItem(QIcon(":/icons/shot"), "        Shot Production", "shot");
-    ui_typeBox->addItem(QIcon(":/icons/film"), "        Post-Production", "post");
+    ui_typeBox->addItem(DuIcon(":/icons/project"), "        Pre-Production", "pre");
+    ui_typeBox->addItem(DuIcon(":/icons/asset"), "        Asset Production", "asset");
+    ui_typeBox->addItem(DuIcon(":/icons/shot"), "        Shot Production", "shot");
+    ui_typeBox->addItem(DuIcon(":/icons/film"), "        Post-Production", "post");
     ui_mainFormLayout->addWidget(ui_typeBox, 3, 1);
 
     QLabel *colorLabel = new QLabel("Color", this);
@@ -288,22 +289,22 @@ void StepEditWidget::setupUi()
     ui_estimationMultiplierBox->setEnabled(false);
     estimationLayout->addRow(ui_estimationMultiplierCheckBox, ui_estimationMultiplierBox);
 
-    ui_tabWidget->addTab(ui_estimationWidget, QIcon(":/icons/stats-settings"), "Estim.");
+    ui_tabWidget->addTab(ui_estimationWidget, DuIcon(":/icons/stats-settings"), "Estim.");
 
     m_applicationList = new ObjectListWidget(true, RamUser::ProjectAdmin, this);
     m_applicationList->setEditMode(ObjectListWidget::UnassignObjects);
     m_applicationList->setTitle("Applications");
     m_applicationList->setAssignList(Ramses::instance()->applications());
 
-    ui_tabWidget->addTab(m_applicationList, QIcon(":/icons/applications"), "Apps");
+    ui_tabWidget->addTab(m_applicationList, DuIcon(":/icons/applications"), "Apps");
 
     ui_generalSettingsEdit = new DuQFTextEdit(ui_tabWidget);
     ui_generalSettingsEdit->setUseMarkdown(false);
-    ui_tabWidget->addTab(ui_generalSettingsEdit, QIcon(":/icons/settings"), "General");
+    ui_tabWidget->addTab(ui_generalSettingsEdit, DuIcon(":/icons/settings"), "General");
 
     ui_publishSettingsEdit = new DuQFTextEdit(ui_tabWidget);
     ui_publishSettingsEdit->setUseMarkdown(false);
-    ui_tabWidget->addTab(ui_publishSettingsEdit, QIcon(":/icons/settings"), "Publish");
+    ui_tabWidget->addTab(ui_publishSettingsEdit, DuIcon(":/icons/settings"), "Publish");
 
     ui_mainLayout->addWidget(ui_tabWidget);
 

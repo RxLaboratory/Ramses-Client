@@ -1,6 +1,7 @@
 #include "duqfupdatedialog.h"
 
 #include "duqf-app/app-version.h"
+#include "duqf-widgets/duicon.h"
 
 DuQFUpdateDialog::DuQFUpdateDialog(QJsonObject updateInfo, QWidget *parent) : QDialog(parent)
 {
@@ -57,7 +58,7 @@ void DuQFUpdateDialog::setupUi(QJsonObject updateInfo)
         if (m_downloadURL != "")
         {
             ui_downloadButton = new QPushButton("Download", this);
-            ui_downloadButton->setIcon(QIcon(":/icons/download"));
+            ui_downloadButton->setIcon(DuIcon(":/icons/download"));
             mainLayout->addWidget(ui_downloadButton);
             connect(ui_downloadButton, SIGNAL(clicked()), this, SLOT(download()));
         }
@@ -66,7 +67,7 @@ void DuQFUpdateDialog::setupUi(QJsonObject updateInfo)
         if (m_changelogURL != "")
         {
             ui_changelogButton = new QPushButton("Changelog", this);
-            ui_changelogButton->setIcon(QIcon(":/icons/changelog"));
+            ui_changelogButton->setIcon(DuIcon(":/icons/changelog"));
             mainLayout->addWidget(ui_changelogButton);
             connect(ui_changelogButton, SIGNAL(clicked()), this, SLOT(changelog()));
         }
@@ -75,13 +76,13 @@ void DuQFUpdateDialog::setupUi(QJsonObject updateInfo)
         if (m_donateURL != "")
         {
             ui_donateButton = new QPushButton("I ♥ " % QString(STR_FILEDESCRIPTION), this);
-            ui_donateButton->setIcon(QIcon(":/icons/donate"));
+            ui_donateButton->setIcon(DuIcon(":/icons/donate"));
             mainLayout->addWidget(ui_donateButton);
             connect(ui_donateButton, SIGNAL(clicked()), this, SLOT(donate()));
         }
 
         ui_okButton = new QPushButton("Close", this);
-        ui_okButton->setIcon(QIcon(":/icons/close"));
+        ui_okButton->setIcon(DuIcon(":/icons/close"));
         mainLayout->addWidget(ui_okButton);
         connect(ui_okButton, SIGNAL(clicked()), this, SLOT(reject()));
     }
@@ -93,7 +94,7 @@ void DuQFUpdateDialog::setupUi(QJsonObject updateInfo)
         mainLayout->addWidget(versionLabel);
 
         ui_okButton = new QPushButton("Close", this);
-        ui_okButton->setIcon(QIcon(":/icons/close"));
+        ui_okButton->setIcon(DuIcon(":/icons/close"));
         mainLayout->addWidget(ui_okButton);
         connect(ui_okButton, SIGNAL(clicked()), this, SLOT(reject()));
     }
@@ -109,7 +110,7 @@ void DuQFUpdateDialog::setupUi(QJsonObject updateInfo)
         mainLayout->addWidget(descriptionEdit);
 
         ui_okButton = new QPushButton("Close", this);
-        ui_okButton->setIcon(QIcon(":/icons/close"));
+        ui_okButton->setIcon(DuIcon(":/icons/close"));
         mainLayout->addWidget(ui_okButton);
         connect(ui_okButton, SIGNAL(clicked()), this, SLOT(reject()));
 
@@ -122,7 +123,7 @@ void DuQFUpdateDialog::setupUi(QJsonObject updateInfo)
         mainLayout->addWidget(label);
 
         ui_okButton = new QPushButton("Close", this);
-        ui_okButton->setIcon(QIcon(":/icons/close"));
+        ui_okButton->setIcon(DuIcon(":/icons/close"));
         mainLayout->addWidget(ui_okButton);
         connect(ui_okButton, SIGNAL(clicked()), this, SLOT(reject()));
     }

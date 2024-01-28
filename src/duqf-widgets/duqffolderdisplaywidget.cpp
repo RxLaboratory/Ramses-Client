@@ -1,5 +1,6 @@
 #include "duqffolderdisplaywidget.h"
 #include "duqf-utils/utils.h"
+#include "duqf-widgets/duicon.h"
 
 DuQFFolderDisplayWidget::DuQFFolderDisplayWidget(QWidget *parent) : QWidget(parent)
 {
@@ -42,7 +43,7 @@ void DuQFFolderDisplayWidget::setupUi()
 
     ui_exploreButton = new QToolButton(this);
     ui_exploreButton->setObjectName(QStringLiteral("exploreButton"));
-    ui_exploreButton->setIcon(QIcon(":/icons/folder"));
+    ui_exploreButton->setIcon(DuIcon(":/icons/folder"));
 
     horizontalLayout->addWidget(ui_exploreButton);
 }

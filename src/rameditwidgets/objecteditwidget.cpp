@@ -1,5 +1,6 @@
 ﻿#include "objecteditwidget.h"
 #include "duqf-utils/utils.h"
+#include "duqf-widgets/duicon.h"
 #include "objectupdateblocker.h"
 
 ObjectEditWidget::ObjectEditWidget(QWidget *parent) :
@@ -218,7 +219,7 @@ void ObjectEditWidget::setupUi()
 
     QWidget *mainWidget = new QWidget(this);
     mainWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    ui_tabWidget->addTab(mainWidget, QIcon(":/icons/status"), "");
+    ui_tabWidget->addTab(mainWidget, DuIcon(":/icons/status"), "");
     ui_tabWidget->setTabToolTip(0, tr("Properties"));
 
     ui_mainLayout = new QVBoxLayout(mainWidget);
@@ -247,7 +248,7 @@ void ObjectEditWidget::setupUi()
     shortNameLayout->addWidget(ui_shortNameEdit);
 
     ui_lockShortNameButton = new QToolButton(this);
-    ui_lockShortNameButton->setIcon(QIcon(":/icons/lock"));
+    ui_lockShortNameButton->setIcon(DuIcon(":/icons/lock"));
     shortNameLayout->addWidget(ui_lockShortNameButton);
     ui_lockShortNameButton->hide();
 

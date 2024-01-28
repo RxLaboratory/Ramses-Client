@@ -2,11 +2,12 @@
 
 #include "ramsequence.h"
 #include "ramses.h"
+#include "duqf-widgets/duicon.h"
 
 SequenceManagerWidget::SequenceManagerWidget(QWidget *parent):
     ObjectManagerWidget(
         "Sequences",
-        QIcon(":icons/sequence"),
+        DuIcon(":icons/sequence"),
         parent)
 {
     changeProject(Ramses::instance()->currentProject());

@@ -1,4 +1,5 @@
 #include "duqfsearchedit.h"
+#include "duqf-widgets/duicon.h"
 
 DuQFSearchEdit::DuQFSearchEdit(QWidget *parent) : QWidget(parent)
 {
@@ -28,7 +29,7 @@ void DuQFSearchEdit::setupUi()
     searchLayout->addWidget(m_searchEdit);
 
     m_searchButton = new QToolButton(this);
-    m_searchButton->setIcon(QIcon(":/icons/search"));
+    m_searchButton->setIcon(DuIcon(":/icons/search"));
     m_searchButton->setIconSize(QSize(10,10));
     searchLayout->addWidget(m_searchButton);
 }

@@ -1,6 +1,7 @@
 #include "duqffolderselectorwidget.h"
 
 #include "duqf-utils/utils.h"
+#include "duqf-widgets/duicon.h"
 
 DuQFFolderSelectorWidget::DuQFFolderSelectorWidget(SelectorType type, QWidget *parent) :
     QWidget(parent)
@@ -138,19 +139,19 @@ void DuQFFolderSelectorWidget::setupUi()
     horizontalLayout->addWidget(ui_folderEdit);
 
     ui_deleteButton = new QToolButton(this);
-    ui_deleteButton->setIcon(QIcon(":/icons/remove"));
+    ui_deleteButton->setIcon(DuIcon(":/icons/remove"));
     ui_deleteButton->setVisible(false);
 
     horizontalLayout->addWidget(ui_deleteButton);
 
     ui_browseButton = new QToolButton(this);
-    ui_browseButton->setIcon(QIcon(":/icons/browse-folder"));
+    ui_browseButton->setIcon(DuIcon(":/icons/browse-folder"));
 
     horizontalLayout->addWidget(ui_browseButton);
 
     ui_exploreButton = new QToolButton(this);
     ui_exploreButton->setObjectName(QStringLiteral("exploreButton"));
-    ui_exploreButton->setIcon(QIcon(":/icons/folder"));
+    ui_exploreButton->setIcon(DuIcon(":/icons/folder"));
 
     horizontalLayout->addWidget(ui_exploreButton);
 }

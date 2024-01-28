@@ -332,9 +332,9 @@ void RamAbstractObject::setCustomSettings(const QString &newGeneralSettings)
     insertData("customSettings", newGeneralSettings);
 }
 
-QIcon RamAbstractObject::icon() const
+DuIcon RamAbstractObject::icon() const
 {
-    return QIcon(iconName());
+    return DuIcon(iconName());
 }
 
 QPixmap RamAbstractObject::iconPixmap() const
@@ -675,23 +675,23 @@ QPixmap RamAbstractObject::iconPixmap(QString iconName)
     if (m_iconPixmaps.isEmpty())
     {
         m_iconPixmaps = QHash<QString, QPixmap>({
-                                               {":/icons/asset", QIcon(":/icons/asset").pixmap(QSize(12,12))},
-                                               {":/icons/application", QIcon(":/icons/application").pixmap(QSize(12,12))},
-                                               {":/icons/asset-group", QIcon(":/icons/asset-group").pixmap(QSize(12,12))},
-                                               {":/icons/file", QIcon(":/icons/file").pixmap(QSize(12,12))},
-                                               {":/icons/connection", QIcon(":/icons/connection").pixmap(QSize(12,12))},
-                                               {":/icons/project", QIcon(":/icons/project").pixmap(QSize(12,12))},
-                                               {":/icons/calendar", QIcon(":/icons/calendar").pixmap(QSize(12,12))},
-                                               {":/icons/sequence", QIcon(":/icons/sequence").pixmap(QSize(12,12))},
-                                               {":/icons/shot", QIcon(":/icons/shot").pixmap(QSize(12,12))},
-                                               {":/icons/state-l", QIcon(":/icons/state-l").pixmap(QSize(12,12))},
-                                               {":/icons/status", QIcon(":/icons/status").pixmap(QSize(12,12))},
-                                               {":/icons/film", QIcon(":/icons/film").pixmap(QSize(12,12))},
-                                               {":/icons/step", QIcon(":/icons/step").pixmap(QSize(12,12))},
-                                               {":/icons/admin", QIcon(":/icons/admin").pixmap(QSize(12,12))},
-                                               {":/icons/project-admin", QIcon(":/icons/project-admin").pixmap(QSize(12,12))},
-                                               {":/icons/lead", QIcon(":/icons/lead").pixmap(QSize(12,12))},
-                                               {":/icons/user", QIcon(":/icons/user").pixmap(QSize(12,12))}
+                                               {":/icons/asset", DuIcon(":/icons/asset").pixmap(QSize(12,12))},
+                                               {":/icons/application", DuIcon(":/icons/application").pixmap(QSize(12,12))},
+                                               {":/icons/asset-group", DuIcon(":/icons/asset-group").pixmap(QSize(12,12))},
+                                               {":/icons/file", DuIcon(":/icons/file").pixmap(QSize(12,12))},
+                                               {":/icons/connection", DuIcon(":/icons/connection").pixmap(QSize(12,12))},
+                                               {":/icons/project", DuIcon(":/icons/project").pixmap(QSize(12,12))},
+                                               {":/icons/calendar", DuIcon(":/icons/calendar").pixmap(QSize(12,12))},
+                                               {":/icons/sequence", DuIcon(":/icons/sequence").pixmap(QSize(12,12))},
+                                               {":/icons/shot", DuIcon(":/icons/shot").pixmap(QSize(12,12))},
+                                               {":/icons/state-l", DuIcon(":/icons/state-l").pixmap(QSize(12,12))},
+                                               {":/icons/status", DuIcon(":/icons/status").pixmap(QSize(12,12))},
+                                               {":/icons/film", DuIcon(":/icons/film").pixmap(QSize(12,12))},
+                                               {":/icons/step", DuIcon(":/icons/step").pixmap(QSize(12,12))},
+                                               {":/icons/admin", DuIcon(":/icons/admin").pixmap(QSize(12,12))},
+                                               {":/icons/project-admin", DuIcon(":/icons/project-admin").pixmap(QSize(12,12))},
+                                               {":/icons/lead", DuIcon(":/icons/lead").pixmap(QSize(12,12))},
+                                               {":/icons/user", DuIcon(":/icons/user").pixmap(QSize(12,12))}
                                                 });
     }
     return m_iconPixmaps.value(iconName, QPixmap());

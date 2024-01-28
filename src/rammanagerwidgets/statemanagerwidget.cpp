@@ -1,12 +1,13 @@
 #include "statemanagerwidget.h"
 
 #include "ramses.h"
+#include "duqf-widgets/duicon.h"
 
 StateManagerWidget::StateManagerWidget(QWidget *parent) :
     ObjectManagerWidget(
         Ramses::instance()->states(),
         "States",
-        QIcon(":icons/state-l"),
+        DuIcon(":icons/state-l"),
         parent)
 {
     ui_listWidget->setEditMode(ObjectListWidget::RemoveObjects);

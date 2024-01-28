@@ -1,4 +1,5 @@
 #include "duqftitlebar.h"
+#include "duqf-widgets/duicon.h"
 
 DuQFTitleBar::DuQFTitleBar(QString title, bool mini, QWidget *parent) :
     QToolBar(parent)
@@ -95,10 +96,10 @@ void DuQFTitleBar::setupUi(bool mini)
     titleLabel = new QLabel(this);
 
     reinitButton = new QToolButton(this);
-    reinitButton->setIcon(QIcon(":/icons/reinit"));
+    reinitButton->setIcon(DuIcon(":/icons/reinit"));
 
     closeButton = new QToolButton(this);
-    closeButton->setIcon(QIcon(":/icons/close"));
+    closeButton->setIcon(DuIcon(":/icons/close"));
 
     this->addWidget(titleLabel);
 

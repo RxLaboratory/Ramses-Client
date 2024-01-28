@@ -3,11 +3,12 @@
 #include "ramasset.h"
 #include "ramassetgroup.h"
 #include "ramses.h"
+#include "duqf-widgets/duicon.h"
 
 AssetManagerWidget::AssetManagerWidget(QWidget *parent):
     ObjectManagerWidget(
         "Assets",
-        QIcon(":icons/asset"),
+        DuIcon(":icons/asset"),
         parent)
 {
     changeProject(Ramses::instance()->currentProject());

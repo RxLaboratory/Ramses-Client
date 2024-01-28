@@ -158,13 +158,13 @@ void LoginPage::setupUi()
 
     ui_bigOpenButton = new QPushButton(this);
     ui_bigOpenButton->setText(tr("Open existing database..."));
-    ui_bigOpenButton->setIcon(QIcon(":/icons/storage"));
+    ui_bigOpenButton->setIcon(DuIcon(":/icons/storage"));
     ui_bigOpenButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
     loginLayout->addWidget(ui_bigOpenButton);
 
     ui_bigCreateButton = new QPushButton(this);
     ui_bigCreateButton->setText(tr("Create new database..."));
-    ui_bigCreateButton->setIcon(QIcon(":/icons/add"));
+    ui_bigCreateButton->setIcon(DuIcon(":/icons/add"));
     ui_bigCreateButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
     loginLayout->addWidget(ui_bigCreateButton);
 
@@ -181,7 +181,7 @@ void LoginPage::setupUi()
     dataBaseLayout->addWidget(ui_dataBaseBox);
 
     ui_settingsDBButton = new QPushButton(this);
-    ui_settingsDBButton->setIcon(QIcon(":/icons/settings"));
+    ui_settingsDBButton->setIcon(DuIcon(":/icons/settings"));
     ui_settingsDBButton->setToolTip(tr("Database settings"));
     ui_settingsDBButton->setEnabled(false);
     dataBaseLayout->addWidget(ui_settingsDBButton);
@@ -191,7 +191,7 @@ void LoginPage::setupUi()
     dataBaseLayout->setStretch(2, 0);
 
     ui_loginButton = new QPushButton(tr("Log in"), this);
-    ui_loginButton->setIcon(QIcon(":/icons/login"));
+    ui_loginButton->setIcon(DuIcon(":/icons/login"));
     loginLayout->addWidget(ui_loginButton);
 
     loginLayout->addSpacing(25);

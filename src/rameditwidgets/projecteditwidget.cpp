@@ -170,13 +170,13 @@ void ProjectEditWidget::setupUi()
 
     ui_savePathButton = new QToolButton(this);
     ui_savePathButton->setToolTip("Save path as default");
-    ui_savePathButton->setIcon(QIcon(":/icons/save"));
+    ui_savePathButton->setIcon(DuIcon(":/icons/save"));
     ui_savePathButton->setIconSize(QSize(16,16));
     fLayout->addWidget(ui_savePathButton);
 
     ui_reinitPathButton = new QToolButton(this);
     ui_reinitPathButton->setToolTip("Restore default path");
-    ui_reinitPathButton->setIcon(QIcon(":/icons/reinit"));
+    ui_reinitPathButton->setIcon(DuIcon(":/icons/reinit"));
     ui_reinitPathButton->setIconSize(QSize(16,16));
     fLayout->addWidget(ui_reinitPathButton);
 

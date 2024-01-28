@@ -1,6 +1,7 @@
 #ifndef RAMABSTRACTOBJECT_H
 #define RAMABSTRACTOBJECT_H
 
+#include "duqf-widgets/duicon.h"
 #include <QSettings>
 
 /**
@@ -211,7 +212,7 @@ public:
     QString customSettings() const;
     void setCustomSettings(const QString &newCustomSettings);
 
-    QIcon icon() const;
+    DuIcon icon() const;
     virtual QString iconName() const { return m_icon; };
     QPixmap iconPixmap() const;
 

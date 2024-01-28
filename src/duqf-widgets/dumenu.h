@@ -3,6 +3,10 @@
 
 #include <QMenu>
 
+/**
+ * @brief The DuMenu class
+ * @version 1.0.0
+ */
 class DuMenu : public QMenu
 {
     Q_OBJECT

@@ -1,6 +1,6 @@
 #include "dumenu.h"
-#include "duqf-app/dusettingsmanager.h"
 #include "duqf-widgets/dushadow.h"
+#include "duqf-app/duui.h"
 
 DuMenu::DuMenu(const QString &title, QWidget *parent):
     QMenu(title, parent)
@@ -56,8 +56,5 @@ void DuMenu::setupUi()
     setAttribute(Qt::WA_TranslucentBackground, true);
     setAttribute(Qt::WA_NoSystemBackground, true);
     setAutoFillBackground(false);
-    setStyleSheet("QMenu::item { border-radius: 5px; padding-left: 5px; padding-right: 5px; padding-top: 3px; padding-bottom: 3px; }"
-                  "QMenu::item:selected {"
-                  "background-color: " + DuSettingsManager::instance()->uiFocusColor(DarkerColor).name() + "; }"
-                                                                                                         "QMenu::icon { padding-left: 5px; }" );
+    setStyleSheet( DuUI::css("DuMenu") );
 }

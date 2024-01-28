@@ -3,6 +3,7 @@
 #include "ramobjectsortfilterproxymodel.h"
 #include "timelinemanager.h"
 #include "duqf-app/duui.h"
+#include "duqf-widgets/duicon.h"
 
 RamObjectView::RamObjectView(DisplayMode mode, QWidget *parent):
     DuTableView(parent)
@@ -259,15 +260,15 @@ void RamObjectView::setupUi()
     ui_contextMenu = new DuMenu(this);
 
     ui_actionCopyFileName = new QAction(tr("Copy file name"));
-    ui_actionCopyFileName->setIcon(QIcon(":/icons/filename"));
+    ui_actionCopyFileName->setIcon(DuIcon(":/icons/filename"));
     ui_contextMenu->addAction(ui_actionCopyFileName);
 
     ui_actionCopyPath = new QAction(tr("Copy folder path"));
-    ui_actionCopyPath->setIcon(QIcon(":/icons/path"));
+    ui_actionCopyPath->setIcon(DuIcon(":/icons/path"));
     ui_contextMenu->addAction(ui_actionCopyPath);
 
     ui_actionCopyUuid = new QAction(tr("Copy UUID"));
-    ui_actionCopyUuid->setIcon(QIcon(":/icons/code"));
+    ui_actionCopyUuid->setIcon(DuIcon(":/icons/code"));
     ui_contextMenu->addAction(ui_actionCopyUuid);
 
     // Set model

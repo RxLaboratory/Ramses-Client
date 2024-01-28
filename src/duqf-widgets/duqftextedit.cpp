@@ -1,4 +1,5 @@
 #include "duqftextedit.h"
+#include "duqf-widgets/duicon.h"
 
 DuQFTextEdit::DuQFTextEdit(const QString &text, QWidget *parent):
     QTextEdit(text, parent)
@@ -83,53 +84,53 @@ void DuQFTextEdit::setupUi()
 
     ui_undo = new QAction("Undo", this);
     ui_undo->setShortcut(QKeySequence(QKeySequence::Undo));
-    ui_undo->setIcon(QIcon(":/icons/undo"));
+    ui_undo->setIcon(DuIcon(":/icons/undo"));
     ui_contextMenu->addAction(ui_undo);
 
     ui_redo = new QAction("Redo", this);
     ui_redo->setShortcut(QKeySequence(QKeySequence::Redo));
-    ui_redo->setIcon(QIcon(":/icons/redo"));
+    ui_redo->setIcon(DuIcon(":/icons/redo"));
     ui_contextMenu->addAction(ui_redo);
 
     ui_contextMenu->addSeparator();
 
     ui_copy = new QAction("Copy", this);
     ui_copy->setShortcut(QKeySequence(QKeySequence::Copy));
-    ui_copy->setIcon(QIcon(":/icons/copy"));
+    ui_copy->setIcon(DuIcon(":/icons/copy"));
     ui_contextMenu->addAction(ui_copy);
 
     ui_cut = new QAction("Cut", this);
     ui_cut->setShortcut(QKeySequence(QKeySequence::Cut));
-    ui_cut->setIcon(QIcon(":/icons/cut"));
+    ui_cut->setIcon(DuIcon(":/icons/cut"));
     ui_contextMenu->addAction(ui_cut);
 
     ui_paste = new QAction("Paste", this);
     ui_paste->setShortcut(QKeySequence(QKeySequence::Paste));
-    ui_paste->setIcon(QIcon(":/icons/paste"));
+    ui_paste->setIcon(DuIcon(":/icons/paste"));
     ui_contextMenu->addAction(ui_paste);
 
     ui_pasteNoFormatting = new QAction("Paste without formatting", this);
     ui_pasteNoFormatting->setShortcut(QKeySequence("Ctrl+Shift+V"));
-    ui_pasteNoFormatting->setIcon(QIcon(":/icons/paste"));
+    ui_pasteNoFormatting->setIcon(DuIcon(":/icons/paste"));
     ui_contextMenu->addAction(ui_pasteNoFormatting);
 
     ui_contextMenu->addSeparator();
 
     ui_selectAll = new QAction("Select all", this);
     ui_selectAll->setShortcut(QKeySequence(QKeySequence::SelectAll));
-    ui_selectAll->setIcon(QIcon(":/icons/text-file"));
+    ui_selectAll->setIcon(DuIcon(":/icons/text-file"));
     ui_contextMenu->addAction(ui_selectAll);
 
     ui_contextMenu->addSeparator();
 
     ui_showSource = new QAction("Show source", this);
     ui_showSource->setShortcut(QKeySequence(Qt::Key_F2));
-    ui_showSource->setIcon(QIcon(":/icons/code"));
+    ui_showSource->setIcon(DuIcon(":/icons/code"));
     ui_contextMenu->addAction(ui_showSource);
 
     ui_validate = new QAction("Validate", this);
     ui_validate->setShortcut(QKeySequence(Qt::Key_Enter));
-    ui_validate->setIcon(QIcon(":/icons/ok"));
+    ui_validate->setIcon(DuIcon(":/icons/ok"));
     ui_contextMenu->addAction(ui_validate);
 }
 

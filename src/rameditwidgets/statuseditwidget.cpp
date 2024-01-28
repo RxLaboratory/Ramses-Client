@@ -1,5 +1,6 @@
 #include "statuseditwidget.h"
 
+#include "duqf-widgets/duicon.h"
 #include "ramfilemetadatamanager.h"
 #include "ramabstractitem.h"
 #include "ramses.h"
@@ -636,7 +637,7 @@ void StatusEditWidget::setupUi()
     ui_createMainFileButton->setText("Create");
     ui_createMainFileButton->setToolTip("Create\nCreate a new file from the corresponding step template.");
     ui_createMainFileButton->setStatusTip("Create a new file from template.");
-    ui_createMainFileButton->setIcon(QIcon(":/icons/create"));
+    ui_createMainFileButton->setIcon(DuIcon(":/icons/create"));
     ui_createMainFileButton->setEnabled(false);
     mainFileButtonLayout->addWidget(ui_createMainFileButton);
 
@@ -648,11 +649,11 @@ void StatusEditWidget::setupUi()
     ui_openMainFileButton->setText("Open");
     ui_openMainFileButton->setToolTip("Open\nOpen the file.");
     ui_openMainFileButton->setStatusTip("Open the file.");
-    ui_openMainFileButton->setIcon(QIcon(":/icons/open"));
+    ui_openMainFileButton->setIcon(DuIcon(":/icons/open"));
     ui_openMainFileButton->setEnabled(false);
     mainFileButtonLayout->addWidget(ui_openMainFileButton);
 
-    tabWidget->addTab(mainFilesWidget, QIcon(":/icons/files"), "Work");
+    tabWidget->addTab(mainFilesWidget, DuIcon(":/icons/files"), "Work");
 
     QWidget *publishedFilesWidget = new QWidget(tabWidget);
     QVBoxLayout *publishedFileLayout = new QVBoxLayout(publishedFilesWidget);
@@ -677,11 +678,11 @@ void StatusEditWidget::setupUi()
     ui_openPublishedFileButton->setText("Open");
     ui_openPublishedFileButton->setToolTip("Open\nOpen the published file.");
     ui_openPublishedFileButton->setStatusTip("Open the file.");
-    ui_openPublishedFileButton->setIcon(QIcon(":/icons/open"));
+    ui_openPublishedFileButton->setIcon(DuIcon(":/icons/open"));
     ui_openPublishedFileButton->setEnabled(false);
     publishedFileButtonLayout->addWidget(ui_openPublishedFileButton);
 
-    tabWidget->addTab(publishedFilesWidget, QIcon(":/icons/files"), "Published");
+    tabWidget->addTab(publishedFilesWidget, DuIcon(":/icons/files"), "Published");
 
     QWidget *previewFilesWidget = new QWidget(tabWidget);
     QVBoxLayout *previewFileLayout = new QVBoxLayout(previewFilesWidget);
@@ -703,11 +704,11 @@ void StatusEditWidget::setupUi()
     ui_openPreviewFileButton->setText("Open");
     ui_openPreviewFileButton->setToolTip("Open\nOpen the preview file.");
     ui_openPreviewFileButton->setStatusTip("Open the file.");
-    ui_openPreviewFileButton->setIcon(QIcon(":/icons/open"));
+    ui_openPreviewFileButton->setIcon(DuIcon(":/icons/open"));
     ui_openPreviewFileButton->setEnabled(false);
     previewFileButtonLayout->addWidget(ui_openPreviewFileButton);
 
-    tabWidget->addTab(previewFilesWidget, QIcon(":/icons/files"), "Preview");
+    tabWidget->addTab(previewFilesWidget, DuIcon(":/icons/files"), "Preview");
 
     ui_fileLayout->addWidget(tabWidget);
 
@@ -722,7 +723,7 @@ void StatusEditWidget::setupUi()
     ui_revertButton->setText("Reload");
     ui_revertButton->setToolTip("Reloads the list of available files.");
     ui_revertButton->setStatusTip("Reload the list of available files.");
-    ui_revertButton->setIcon(QIcon(":/icons/undo"));
+    ui_revertButton->setIcon(DuIcon(":/icons/undo"));
     buttonsLayout->addWidget(ui_revertButton);
 
     ui_fileLayout->addLayout(buttonsLayout);
