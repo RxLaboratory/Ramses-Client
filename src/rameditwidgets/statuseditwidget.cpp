@@ -550,6 +550,7 @@ void StatusEditWidget::removeSelectedPreviewFile()
 
 void StatusEditWidget::setupUi()
 {
+    this->setMinimumWidth(300);
     // === ATTRIBUTES ===
 
     this->hideName();
