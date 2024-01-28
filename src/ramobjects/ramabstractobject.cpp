@@ -376,22 +376,28 @@ QVariant RamAbstractObject::roleData(int role) const
     case RamAbstractObject::DetailedSizeHint: {
         int h = 30;
         int w = 200;
+        QTextDocument td;
         QString comment = this->comment();
         if (comment != "") {
-            h += 30 + comment.count("\n") * 15;
+            td.setMarkdown(comment);
+            h += 5 + td.size().height();
+            w = std::fmax(w, td.size().width());
         }
         QString details = this->details();
         if (details != "") {
-            h += 30 + details.count("\n") * 15;
+            td.setMarkdown(details);
+            h += 5 + td.size().height();
+            w = std::fmax(w, td.size().width());
         }
         QString subDetails = this->subDetails();
         if (subDetails != "") {
-            h += 30 + subDetails.count("\n") * 15;
+            td.setMarkdown(subDetails);
+            h += 5 + td.size().height();
+            w = std::fmax(w, td.size().width());
         }
         QString imagePath = this->previewImagePath();
         if (imagePath != "") {
-            h += 250;
-            w = 400;
+            h += w*9/16;
         }
         return QSize(w, h);
     }

@@ -170,11 +170,11 @@ void RamObjectDelegate::paintDetails(const QModelIndex &index, QPainter *painter
     if (params->detailsRect.height() <= 15) return;
 
     painter->setPen( QPen(params->detailsColor) );
-    painter->setFont( m_detailsFont );
-    QRect result;
-    painter->drawText( params->detailsRect, Qt::AlignLeft | Qt::AlignTop | Qt::TextWordWrap, index.data(RamObject::Details).toString(), &result);
-    params->detailsRect = result;
-    if (params->detailsRect.bottom() + 5 > params->bgRect.bottom()) drawMore(painter, params->bgRect, QPen(params->textColor));
+
+    QRect rect(params->detailsRect);
+    int textHeight = drawMarkdown(painter, rect, index.data(RamObject::Details).toString());
+    if (rect.height() < textHeight) drawMore(painter, params->bgRect, QPen(m_lessLight));
+    else params->detailsRect.setHeight(textHeight);
 }
 
 void RamObjectDelegate::paintProgress(const QModelIndex &index, QPainter *painter, PaintParameters *params) const
@@ -254,8 +254,6 @@ RamObjectDelegate::RamObjectDelegate(QObject *parent)
     m_transparent.setAlpha(0);
     m_textFont = qApp->font();
     m_textFont.setPixelSize( 12 );
-    m_detailsFont = m_textFont;
-    m_detailsFont.setItalic(true);
     m_padding = 10;
 
     m_editIcon = DuIcon(":/icons/edit").pixmap(QSize(12,12));
@@ -356,6 +354,7 @@ void RamObjectDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
     QString comment = index.data(RamObject::Comment).toString();
     if (commentRect.height() > 10 && comment != "")
     {
+        painter->setPen( QPen(m_lessLight) );
         int textHeight = drawMarkdown(painter, commentRect, comment);
         if (commentRect.height() < textHeight) drawMore(painter, params.bgRect, QPen(m_lessLight));
         else commentRect.setHeight(textHeight);
@@ -615,7 +614,6 @@ void RamObjectDelegate::drawButton(QPainter *painter, QRect rect, QPixmap icon, 
 int RamObjectDelegate::drawMarkdown(QPainter *painter, QRect rect, const QString &md) const
 {
     painter->save();
-    painter->setPen( QPen(m_lessLight) );
     painter->setFont( m_textFont );
 
     QTextDocument td;

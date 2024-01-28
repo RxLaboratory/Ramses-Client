@@ -509,18 +509,18 @@ QString RamStatus::details() const
     QString details;
 
     RamUser *au = assignedUser();
-    if (au) details = "Assigned to: " +
+    if (au) details = "Assigned to: **" +
             au->name() %
-            "\nDifficulty: ";
-    else details = "Not assigned\nDifficulty: ";
+            "**  \nDifficulty: ";
+    else details = "Not assigned  \nDifficulty: ";
 
     switch( difficulty() )
     {
-    case RamStatus::VeryEasy: { details += "Very easy"; break; }
-    case RamStatus::Easy: { details += "Easy"; break; }
-    case RamStatus::Medium: { details += "Medium"; break; }
-    case RamStatus::Hard: { details += "Hard"; break; }
-    case RamStatus::VeryHard: { details += "Very hard"; break; }
+    case RamStatus::VeryEasy: { details += "**Very easy**"; break; }
+    case RamStatus::Easy: { details += "**Easy**"; break; }
+    case RamStatus::Medium: { details += "**Medium**"; break; }
+    case RamStatus::Hard: { details += "**Hard**"; break; }
+    case RamStatus::VeryHard: { details += "**Very hard**"; break; }
     }
 
 
@@ -532,17 +532,17 @@ QString RamStatus::details() const
 
     // Estimation or goal
     if (useAuto) details +=
-            "\nEstimation: " +
+            "  \nEstimation: **" +
             QString::number(est, 'f', 1) +
-            " days";
+            " days**";
     else details +=
-            "\nGoal: " +
+            "  \nGoal: **" +
             QString::number(est, 'f', 1) +
-            " days";
+            " days**";
 
-   if (isPublished()) details += "\n► Published";
+   if (isPublished()) details += "  \n► Published";
 
-   return details;
+   return "_" + details + "_";
 
 }
 
