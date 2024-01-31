@@ -42,6 +42,7 @@ void StatusEditWidget::reInit(RamObject *o)
         QSignalBlocker b10(ui_estimationEdit);
         QSignalBlocker b11(ui_dueDateEdit);
         QSignalBlocker b12(ui_useDueDateBox);
+        QSignalBlocker b13(ui_priorityBox);
 
         // Get users from project
         RamProject *project = nullptr;
@@ -61,6 +62,8 @@ void StatusEditWidget::reInit(RamObject *o)
 #endif
         ui_folderWidget->setPath( m_status->path() );
         ui_publishedBox->setChecked( m_status->isPublished() );
+
+        ui_priorityBox->setCurrentData(m_status->priority());
 
         ui_dueDateEdit->setDate( m_status->dueDate() );
         bool useDueDate = m_status->useDueDate();
@@ -176,6 +179,7 @@ void StatusEditWidget::reInit(RamObject *o)
         ui_autoEstimationBox->setChecked(true);
         ui_estimationEdit->setValue(0);
         ui_versionPublishBox->clear();
+        ui_priorityBox->setCurrentIndex(0);
 
         // Remove template list
         QList<QAction*> templateActions = ui_createFromTemplateMenu->actions();
@@ -358,6 +362,14 @@ void StatusEditWidget::setDueDate()
 
     RamUser *currentUser = Ramses::instance()->currentUser();
     m_status->setModifiedBy(currentUser);
+}
+
+void StatusEditWidget::setPriority(QVariant p)
+{
+    if (!m_status || m_reinit) return;
+    m_status->setPriority(
+        static_cast<RamStatus::Priority>(p.toInt())
+        );
 }
 
 void StatusEditWidget::mainFileSelected()
@@ -614,6 +626,14 @@ void StatusEditWidget::setupUi()
     ui_estimationLabel = new QLabel("Estimation", this);
     estimLayout->addRow(ui_estimationLabel, estimationWidget);
 
+    ui_priorityBox = new DuComboBox(this);
+    ui_priorityBox->addItem(tr("None"), RamStatus::NoPriority);
+    ui_priorityBox->addItem(tr("Low"), RamStatus::LowPriority);
+    ui_priorityBox->addItem(tr("Medium"), RamStatus::MediumPriority);
+    ui_priorityBox->addItem(tr("High"), RamStatus::HighPriority);
+
+    estimLayout->addRow(tr("Priority"), ui_priorityBox);
+
     auto dueDateWidget = new QWidget(this);
 
     auto dueDateLayout = new QHBoxLayout(dueDateWidget);
@@ -806,6 +826,7 @@ void StatusEditWidget::connectEvents()
     connect( ui_difficultyBox, SIGNAL(activated(int)), this, SLOT(setDifficulty(int)));
     connect( ui_useDueDateBox, &QCheckBox::clicked, this, &StatusEditWidget::setUseDueDate );
     connect( ui_dueDateEdit, &QDateEdit::editingFinished, this, &StatusEditWidget::setDueDate );
+    connect( ui_priorityBox, &DuComboBox::dataActivated, this, &StatusEditWidget::setPriority );
 
     connect(ui_mainFileList, SIGNAL(currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)),this, SLOT(mainFileSelected()));
     connect(ui_mainFileList,SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),this,SLOT(openMainFile()));

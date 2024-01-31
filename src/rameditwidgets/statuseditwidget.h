@@ -47,6 +47,7 @@ private slots:
     void setDifficulty(int d);
     void setUseDueDate(bool u);
     void setDueDate();
+    void setPriority(QVariant p);
 
     void mainFileSelected();
     void openMainFile();
@@ -90,6 +91,7 @@ private:
     AutoSelectDoubleSpinBox *ui_estimationEdit;
     QCheckBox *ui_autoEstimationBox;
     QLabel *ui_estimationLabel;
+    DuComboBox *ui_priorityBox;
 
     QSplitter *ui_commentSplitter;
 

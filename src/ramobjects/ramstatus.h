@@ -27,6 +27,13 @@ public:
     };
     Q_ENUM(Difficulty)
 
+    enum Priority {
+        NoPriority = 0,
+        LowPriority = 1,
+        MediumPriority = 2,
+        HighPriority = 3,
+    };
+
     // STATIC METHODS //
 
     static RamStatus *get(QString uuid);
@@ -66,6 +73,9 @@ public:
     void setUseDueDate(bool use);
     QDate dueDate() const;
     void setDueDate(const QDate &date);
+
+    Priority priority() const;
+    void setPriority(Priority p);
 
     qreal lateness() const;
 

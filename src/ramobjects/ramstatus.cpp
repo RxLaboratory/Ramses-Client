@@ -261,6 +261,16 @@ void RamStatus::setDueDate(const QDate &date)
     setUseDueDate(true);
 }
 
+RamStatus::Priority RamStatus::priority() const
+{
+    return static_cast<Priority>(getData("priority").toInt(NoPriority));
+}
+
+void RamStatus::setPriority(Priority p)
+{
+    insertData("priority", p);
+}
+
 qreal RamStatus::lateness() const
 {
     if (!useDueDate()) return 0;
@@ -577,6 +587,22 @@ QString RamStatus::details() const
 
     if (useDueDate()) details += "  \nDue date: " + dueDate().toString("**yyyy-MM-dd**");
 
+    qDebug() << priority();
+
+    switch (priority()) {
+    case LowPriority:
+        details += "  \nPriority: **Low**";
+        break;
+    case MediumPriority:
+        details += "  \nPriority: **Medium**";
+        break;
+    case HighPriority:
+        details += "  \nPriority: **High**";
+        break;
+    case NoPriority:
+        break;
+    }
+
    if (isPublished()) details += "  \n► Published";
 
    return "_" + details + "_";
@@ -650,7 +676,10 @@ QVariant RamStatus::roleData(int role) const
         return this->isPublished();
     }
     case RamAbstractObject::Priority: {
-        return this->lateness();
+        if (this->completionRatio() >= 100)
+            return 0;
+
+        return this->lateness() + this->priority();
     }
     }
 
