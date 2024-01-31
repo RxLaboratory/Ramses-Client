@@ -68,9 +68,9 @@ private slots:
     void sortByShortName(bool sort = true);
     void sortByName(bool sort = true);
     void sortByDifficulty(bool sort = true);
-    //void sortByTimeSpent(bool sort = true);
     void sortByEstimation(bool sort = true);
     void sortByCompletion(bool sort = true);
+    void sortByPriority(bool sort = true);
 
     // Status
     void unassignUser();
@@ -132,6 +132,7 @@ private:
     QAction *ui_actionSortByShortName;
     QAction *ui_actionSortByName;
     QAction *ui_actionSortByDifficulty;
+    QAction *ui_actionSortByPriority;
     //QAction *ui_actionSortByTimeSpent;
     QAction *ui_actionSortByEstimation;
     QAction *ui_actionSortByCompletion;

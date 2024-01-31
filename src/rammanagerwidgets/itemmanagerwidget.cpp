@@ -365,6 +365,15 @@ void ItemManagerWidget::sortByCompletion(bool sort)
     ui_table->filteredModel()->setSortMode(RamObject::Completion);
 }
 
+void ItemManagerWidget::sortByPriority(bool sort)
+{
+    uncheckSort();
+    ui_actionSortByPriority->setChecked(sort);
+    ui_header->setSortable(sort);
+    ui_actionSortDefault->setChecked( !sort );
+    ui_table->filteredModel()->setSortMode(RamObject::Priority);
+}
+
 void ItemManagerWidget::unassignUser()
 {
     QVector<RamStatus*> status = beginEditSelectedStatus();
@@ -682,9 +691,9 @@ void ItemManagerWidget::setupUi()
     ui_actionSortByDifficulty->setCheckable(true);
     sortMenu->addAction(ui_actionSortByDifficulty);
 
-    /*ui_actionSortByTimeSpent = new QAction("By time spent", this);
-    ui_actionSortByTimeSpent->setCheckable(true);
-    sortMenu->addAction(ui_actionSortByTimeSpent);*/
+    ui_actionSortByPriority = new QAction("By priority", this);
+    ui_actionSortByPriority->setCheckable(true);
+    sortMenu->addAction(ui_actionSortByPriority);
 
     ui_actionSortByEstimation = new QAction("By estimation / Goal", this);
     ui_actionSortByEstimation->setCheckable(true);
@@ -958,6 +967,7 @@ void ItemManagerWidget::connectEvents()
     //connect(ui_actionSortByTimeSpent, SIGNAL(triggered(bool)), this, SLOT(sortByTimeSpent(bool)));
     connect(ui_actionSortByEstimation, SIGNAL(triggered(bool)), this, SLOT(sortByEstimation(bool)));
     connect(ui_actionSortByCompletion, SIGNAL(triggered(bool)), this, SLOT(sortByCompletion(bool)));
+    connect(ui_actionSortByPriority, SIGNAL(triggered(bool)), this, SLOT(sortByPriority(bool)));
     // step actions
     connect(ui_stepMenu,SIGNAL(assignmentChanged(RamObject*,bool)), this, SLOT(showStep(RamObject*,bool)));
     connect(ui_actionSelectMySteps, SIGNAL(triggered()), this, SLOT(selectUserSteps()));
