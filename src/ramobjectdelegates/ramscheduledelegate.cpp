@@ -1,9 +1,11 @@
 #include "ramscheduledelegate.h"
 
+#include "mainwindow.h"
 #include "ramobjectcombobox.h"
 #include "ramses.h"
 #include "ramscheduleentry.h"
 #include "duqf-utils/guiutils.h"
+#include "scheduleentryeditwidget.h"
 
 RamScheduleDelegate::RamScheduleDelegate(QObject *parent) : QStyledItemDelegate(parent)
 {
@@ -172,7 +174,29 @@ bool RamScheduleDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, 
             RamProject *proj = Ramses::instance()->currentProject();
             if (proj)
             {
-                QMainWindow *mw = GuiUtils::appMainWindow();
+                auto mw = qobject_cast<MainWindow*>(GuiUtils::appMainWindow());
+
+                // Get the user and date
+                QString userUuid = m_indexPressed.model()->headerData( m_indexPressed.row(), Qt::Vertical, RamObject::UUID ).toString();
+                RamUser *user = nullptr;
+                if (userUuid != "") user = RamUser::get( userUuid );
+                if (!user) return false;
+
+#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
+                QDateTime date = QDateTime( m_indexPressed.model()->headerData( m_indexPressed.column(), Qt::Horizontal, RamObject::Date).toDate() );
+#else
+                QDateTime date = m_indexPressed.model()->headerData( m_indexPressed.column(), Qt::Horizontal, RamObject::Date).toDate().startOfDay();
+#endif
+                if (  m_indexPressed.model()->headerData( m_indexPressed.row(), Qt::Vertical, RamObject::IsPM ).toBool() )
+                    date.setTime(QTime(12,0));
+
+                // TODO Delete previous editor!
+
+                // Create and show an editor
+                auto editor = new ScheduleEntryEditWidget(proj, user, date);
+                mw->setPropertiesDockWidget(editor, tr("Schedule Entry") /* TODO ICON */);
+
+                /*
                 RamObjectComboBox *editor = new RamObjectComboBox( mw );
                 editor->setObjectModel(proj->steps(), "Steps");
                 QRect rect = option.rect.adjusted(m_padding,2,-m_padding,-2);
@@ -189,6 +213,7 @@ bool RamScheduleDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, 
                 editor->showPopup();
                 connect(editor, &RamObjectComboBox::currentObjectChanged, this, &RamScheduleDelegate::setEntry);
                 connect(editor, &RamObjectComboBox::popupHidden, editor, &RamObjectComboBox::deleteLater);
+                */
             }
         }
         return true;

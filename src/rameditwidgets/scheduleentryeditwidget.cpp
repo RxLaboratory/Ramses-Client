@@ -18,9 +18,14 @@ void ScheduleEntryEditWidget::setupUi()
     this->setWidgetResizable(true);
     this->setFrameStyle(QFrame::NoFrame);
 
-    auto mainLayout = new QFormLayout(mainWidget);
+    auto *dummyLayout = new QVBoxLayout(mainWidget);
+    dummyLayout->setContentsMargins(0,0,0,0);
+    dummyLayout->setSpacing(0);
+
+    auto mainLayout = new QFormLayout();
     mainLayout->setSpacing(3);
     mainLayout->setContentsMargins(3,3,3,3);
+    dummyLayout->addLayout(mainLayout);
 
     ui_userLabel = new QLabel(m_user->name(), this);
     mainLayout->addRow("User", ui_userLabel);
@@ -29,18 +34,21 @@ void ScheduleEntryEditWidget::setupUi()
     if ( m_date.time().hour() >= 12 ) ampm = "pm";
     else ampm = "am";
     ui_dateLabel = new QLabel(
-        m_date.toString("yyyy-MM-dd " + ampm)
+        m_date.toString("yyyy-MM-dd ") + ampm
         );
     mainLayout->addRow("Date", ui_dateLabel );
 
     ui_stepBox = new RamObjectComboBox(this);
     ui_stepBox->setObjectModel(m_project->steps(), "Steps");
     mainLayout->addRow("Step", ui_stepBox);
+    // TODO Get and set the current step
 
     ui_commentEdit = new DuQFTextEdit(mainWidget);
     ui_commentEdit->setMaximumHeight(80);
     ui_commentEdit->setObjectName("commentEdit");
     mainLayout->addRow("Comment", ui_commentEdit);
+
+    dummyLayout->addStretch(1);
 }
 
 void ScheduleEntryEditWidget::connectEvents()
