@@ -6,6 +6,8 @@
 #include <QPainterPath>
 
 #include "ramobject.h"
+#include "ramschedulecomment.h"
+#include "ramuser.h"
 
 class RamScheduleDelegate : public QStyledItemDelegate
 {
@@ -21,6 +23,9 @@ public:
 
     void showDetails(bool s);
     bool details() const;
+
+protected:
+    int drawMarkdown(QPainter *painter, QRect rect, const QString &md) const;
 
 private slots:
     void setEntry(RamObject *stepObj);
@@ -43,6 +48,15 @@ private:
 
     // drawing specific items
     void drawMore(QPainter *painter, QRect rect, QPen pen) const;
+
+    QWidget *m_currentEditor = nullptr;
+
+    // Utils
+    RamUser *getUser(QModelIndex index);
+    QDateTime getDate(QModelIndex index);
+    RamScheduleEntry *getEntry(QModelIndex index);
+    RamScheduleComment *getComment(QModelIndex index);
+
 };
 
 #endif // RAMSCHEDULEDELEGATE_H

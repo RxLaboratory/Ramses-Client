@@ -73,6 +73,7 @@ SOURCES += \
     duqf-widgets/settingswidget.cpp \
     progressmanager.cpp \
     rameditwidgets/objectupdateblocker.cpp \
+    rameditwidgets/schedulecommenteditwidget.cpp \
     rameditwidgets/scheduleentryeditwidget.cpp \
     rammanagerwidgets/dbmanagerwidget.cpp \
     rammanagerwidgets/objectlistwidget.cpp \
@@ -266,6 +267,7 @@ HEADERS += \
     progressmanager.h \
     ramdatainterface/datastruct.h \
     rameditwidgets/objectupdateblocker.h \
+    rameditwidgets/schedulecommenteditwidget.h \
     rameditwidgets/scheduleentryeditwidget.h \
     rammanagerwidgets/dbmanagerwidget.h \
     rammanagerwidgets/objectlistwidget.h \
