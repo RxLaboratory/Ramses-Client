@@ -52,10 +52,11 @@ private:
     QWidget *m_currentEditor = nullptr;
 
     // Utils
-    RamUser *getUser(QModelIndex index);
-    QDateTime getDate(QModelIndex index);
-    RamScheduleEntry *getEntry(QModelIndex index);
-    RamScheduleComment *getComment(QModelIndex index);
+    RamUser *getUser(QModelIndex index) const;
+    QDateTime getDate(QModelIndex index) const;
+    RamScheduleEntry *getEntry(QModelIndex index) const;
+    RamScheduleComment *getComment(QModelIndex index) const;
+    QSet<RamStatus*> getDueTasks(QModelIndex index) const;
 
 };
 

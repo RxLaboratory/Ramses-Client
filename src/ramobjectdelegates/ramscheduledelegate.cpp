@@ -3,6 +3,7 @@
 #include "mainwindow.h"
 #include "ramses.h"
 #include "ramscheduleentry.h"
+#include "ramstatustablemodel.h"
 #include "duqf-utils/guiutils.h"
 #include "schedulecommenteditwidget.h"
 #include "scheduleentryeditwidget.h"
@@ -23,7 +24,7 @@ RamScheduleDelegate::RamScheduleDelegate(QObject *parent) : QStyledItemDelegate(
 
 void RamScheduleDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-     // Base Settings
+    // Base Settings
     const QRect rect = option.rect;
     painter->setRenderHint(QPainter::Antialiasing);
 
@@ -49,6 +50,15 @@ void RamScheduleDelegate::paint(QPainter *painter, const QStyleOptionViewItem &o
     QPainterPath path;
     path.addRoundedRect(bgRect, 5, 5);
     painter->fillPath(path, bgBrush);
+
+    // Border if this is a deadline for some tasks
+    QSet<RamStatus*> tasks = getDueTasks(index);
+    if (!tasks.isEmpty()) {
+        QPen p(QColor(227,227,227));
+        p.setWidth(2);
+        painter->setPen(p);
+        painter->drawPath(path);
+    }
 
     // Text color
     QColor textColor;
@@ -243,7 +253,7 @@ void RamScheduleDelegate::drawMore(QPainter *painter, QRect rect, QPen pen) cons
     painter->restore();
 }
 
-RamUser *RamScheduleDelegate::getUser(QModelIndex index)
+RamUser *RamScheduleDelegate::getUser(QModelIndex index) const
 {
     RamScheduleEntry *entry = getEntry(index);
     if (entry) return entry->user();
@@ -254,7 +264,7 @@ RamUser *RamScheduleDelegate::getUser(QModelIndex index)
 
 }
 
-QDateTime RamScheduleDelegate::getDate(QModelIndex index)
+QDateTime RamScheduleDelegate::getDate(QModelIndex index) const
 {
     RamScheduleEntry *entry = getEntry(index);
     if (entry) return entry->date();
@@ -271,18 +281,33 @@ QDateTime RamScheduleDelegate::getDate(QModelIndex index)
     return date;
 }
 
-RamScheduleEntry *RamScheduleDelegate::getEntry(QModelIndex index)
+RamScheduleEntry *RamScheduleDelegate::getEntry(QModelIndex index) const
 {
     QString entryUuid = index.data(RamObject::UUID).toString();
     if (entryUuid != "") return RamScheduleEntry::get( entryUuid );
     return nullptr;
 }
 
-RamScheduleComment *RamScheduleDelegate::getComment(QModelIndex index)
+RamScheduleComment *RamScheduleDelegate::getComment(QModelIndex index) const
 {
     QString uuid = index.data(RamObject::UUID).toString();
     if (uuid != "") return RamScheduleComment::get( uuid );
     return nullptr;
+}
+
+QSet<RamStatus *> RamScheduleDelegate::getDueTasks(QModelIndex index) const
+{
+    RamProject *proj = Ramses::instance()->currentProject();
+    if (!proj) return QSet<RamStatus *>();
+
+    RamUser *user = getUser(index);
+    if (!user) return QSet<RamStatus *>();
+
+    QDate date = getDate(index).date();
+
+    QSet<RamStatus*> tasks = proj->assetStatus()->getStatus(date, user->uuid());
+    tasks += proj->shotStatus()->getStatus(date, user->uuid());
+    return tasks;
 }
 
 int RamScheduleDelegate::drawMarkdown(QPainter *painter, QRect rect, const QString &md) const

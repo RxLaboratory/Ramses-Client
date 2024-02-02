@@ -31,6 +31,7 @@ public:
     // With the actual item and step, slightly better perf than with Uuids if they already exist
     RamStatus *getStatus(RamObject *itemObj, RamStep *step) const;
     RamStatus *getStatus(QString itemUuid, QString stepUuid) const;
+    QSet<RamStatus*> getStatus(const QDate &date, const QString userUuid = "") const;
     QSet<RamStatus*> getItemStatus(QString itemUuid) const;
     QSet<RamStatus*> getStepStatus(QString stepUuid) const;
 

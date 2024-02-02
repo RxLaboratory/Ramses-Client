@@ -84,7 +84,7 @@ void RamObjectDelegate::paintBG(const QModelIndex &index, QPainter *painter, Pai
 
     if (priority > 0.5) {
         QPen p(priorityColor(priority));
-        p.setWidth(1.5);
+        p.setWidth(1);
         painter->setPen(p);
         painter->drawPath(path);
     }

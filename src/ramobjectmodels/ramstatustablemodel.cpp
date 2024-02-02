@@ -4,6 +4,7 @@
 #include "ramasset.h"
 #include "ramshot.h"
 #include "ramstate.h"
+#include "ramuser.h"
 
 RamStatusTableModel::RamStatusTableModel(DBTableModel *steps, DBTableModel *items, QObject *parent)
     : QAbstractTableModel{parent}
@@ -15,6 +16,7 @@ RamStatusTableModel::RamStatusTableModel(DBTableModel *steps, DBTableModel *item
     m_status->addFilterValues("step", m_steps->toStringList());
     m_status->addLookUpKey("item");
     m_status->addLookUpKey("step");
+    m_status->addLookUpKey("dueDate");
 }
 
 void RamStatusTableModel::load()
@@ -161,6 +163,18 @@ RamStatus *RamStatusTableModel::getStatus(QString itemUuid, QString stepUuid) co
     if (!step) return nullptr;
 
     return RamStatus::noStatus(item, step);
+}
+
+QSet<RamStatus *> RamStatusTableModel::getStatus(const QDate &date, const QString userUuid) const
+{
+    const QSet<RamObject *> all = m_status->lookUp("dueDate", date.toString("yyyy-MM-dd"));
+    QSet<RamStatus *> allStatus;
+    for (auto status: all) {
+        auto st = qobject_cast<RamStatus*>(status);
+        if (userUuid == "" || userUuid == st->assignedUser()->uuid())
+            allStatus << st;
+    }
+    return allStatus;
 }
 
 QSet<RamStatus*> RamStatusTableModel::getItemStatus(QString itemUuid) const
