@@ -4,6 +4,7 @@
 DuQFTitleBar::DuQFTitleBar(QString title, bool mini, QWidget *parent) :
     QToolBar(parent)
 {
+    setupActions(title);
     setupUi(mini);
 
     //this->setAllowedAreas(Qt::TopToolBarArea | Qt::BottomToolBarArea);
@@ -11,14 +12,11 @@ DuQFTitleBar::DuQFTitleBar(QString title, bool mini, QWidget *parent) :
     titleLabel->setText(title);
     reinitButton->setToolTip("Reinitialize " + title);
     reinitButton->setStatusTip("Reinitialize " + title);
-    closeButton->setToolTip("Close " + title);
-    closeButton->setStatusTip("Close " + title);
 
     reinitButton->setObjectName("windowButton");
-    closeButton->setObjectName("windowButton");
 
     connect(reinitButton, &QToolButton::clicked, this, &DuQFTitleBar::reinitRequested);
-    connect(closeButton, &QToolButton::clicked, this, &DuQFTitleBar::closeRequested);
+    connect(m_closeAction, &DuAction::triggered, this, &DuQFTitleBar::closeRequested);
     connect(this, SIGNAL(orientationChanged(Qt::Orientation)), this, SLOT(changeOrientation(Qt::Orientation)));
 
     this->setObjectName("titleBar");
@@ -29,8 +27,7 @@ void DuQFTitleBar::setTitle(QString title)
     titleLabel->setText(title);
     reinitButton->setToolTip("Reinitialize " + title);
     reinitButton->setStatusTip("Reinitialize " + title);
-    closeButton->setToolTip("Close " + title);
-    closeButton->setStatusTip("Close " + title);
+    m_closeAction->setToolTip(tr("Close %1").arg(title));
 }
 
 void DuQFTitleBar::showReinitButton(bool show)
@@ -40,7 +37,7 @@ void DuQFTitleBar::showReinitButton(bool show)
 
 void DuQFTitleBar::showCloseButton(bool show)
 {
-    closeButton->setVisible(show);
+    m_closeAction->setVisible(show);
 }
 
 QAction *DuQFTitleBar::insertRight(QWidget *w)
@@ -89,17 +86,22 @@ void DuQFTitleBar::changeOrientation(Qt::Orientation orientation)
     }
 }
 
+void DuQFTitleBar::setupActions(const QString &title)
+{
+    m_closeAction = new DuAction(this);
+    m_closeAction->setIcon(":/icons/close");
+    m_closeAction->setToolTip(tr("Close %1").arg(title));
+}
+
 void DuQFTitleBar::setupUi(bool mini)
 {
     this->setObjectName(QStringLiteral("TitleBar"));
+    this->setIconSize(QSize(16,16));
 
     titleLabel = new QLabel(this);
 
     reinitButton = new QToolButton(this);
     reinitButton->setIcon(DuIcon(":/icons/reinit"));
-
-    closeButton = new QToolButton(this);
-    closeButton->setIcon(DuIcon(":/icons/close"));
 
     this->addWidget(titleLabel);
 
@@ -117,6 +119,7 @@ void DuQFTitleBar::setupUi(bool mini)
 
     reinitAction = rightAction;
     m_actions.append(reinitAction);
-    QAction *closeAction = this->addWidget(closeButton);
-    m_actions.append(closeAction);
+
+    this->addAction(m_closeAction);
+    m_actions.append(m_closeAction);
 }

@@ -14,6 +14,7 @@
 #include <QtWidgets/QWidget>
 #include <QtDebug>
 
+#include "duqf-widgets/duaction.h"
 #include "dutoolbarspacer.h"
 
 class DuQFTitleBar : public QToolBar
@@ -38,12 +39,14 @@ private slots:
     void changeOrientation(Qt::Orientation orientation);
 
 private:
+    void setupActions(const QString &title);
     void setupUi(bool mini);
+
+    DuAction *m_closeAction;
     
     DuToolBarSpacer *spacer;
     QLabel *titleLabel;
     QToolButton *reinitButton;
-    QToolButton *closeButton;
     QAction *reinitAction;
     QAction *leftAction;
     QAction *rightAction;
