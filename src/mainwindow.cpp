@@ -815,11 +815,13 @@ void MainWindow::setupActions()
 
     m_actionStatistics = new DuAction(this);
     m_actionStatistics->setText(tr("Statistics"));
+    m_actionStatistics->setCheckable(true);
     m_actionStatistics->setToolTip(tr("Shows some project statics and production tracking data."));
     m_actionStatistics->setIcon(":/icons/stats");
 
     m_actionTimeline = new DuAction(this);
     m_actionTimeline->setText(tr("Timeline"));
+    m_actionTimeline->setCheckable(true);
     m_actionTimeline->setToolTip(tr("Shows the shots in a timeline."));
     m_actionTimeline->setIcon(":/icons/timeline");
 
