@@ -152,8 +152,8 @@ void MainWindow::connectEvents()
     connect(m_actionStatistics,SIGNAL(triggered(bool)), ui_statsDockWidget, SLOT(setVisible(bool)));
     connect(ui_statsDockWidget,SIGNAL(visibilityChanged(bool)), m_actionStatistics, SLOT(setChecked(bool)));
 
-    connect(ui_consoleDockWidget,SIGNAL(visibilityChanged(bool)), ui_consoleButton, SLOT(setChecked(bool)));
-    connect(ui_consoleButton,SIGNAL(clicked(bool)), ui_consoleDockWidget, SLOT(setVisible(bool)));
+    connect(ui_consoleDockWidget,&DuDockWidget::visibilityChanged, m_actionConsole, &DuAction::setChecked);
+    connect(m_actionConsole, &DuAction::triggered, ui_consoleDockWidget, &DuDockWidget::setVisible);
 
     connect(m_actionTimeline,SIGNAL(triggered(bool)), ui_timelineDockWidget, SLOT(setVisible(bool)));
     connect(ui_timelineDockWidget,SIGNAL(visibilityChanged(bool)), m_actionTimeline, SLOT(setChecked(bool)));
@@ -608,7 +608,8 @@ void MainWindow::dbiConnectionStatusChanged(NetworkUtils::NetworkStatus s)
     QString address =  RamServerInterface::instance()->serverAddress();
     if (s == NetworkUtils::Online)
     {
-        ui_refreshButton->setVisible(true);
+        m_actionSync->setVisible(true);
+        m_actionFullSync->setVisible(true);
         ui_networkButton->setText(address);
         m_actionSetOnline->setVisible(false);
         m_actionSetOffline->setVisible(true);
@@ -629,7 +630,8 @@ void MainWindow::dbiConnectionStatusChanged(NetworkUtils::NetworkStatus s)
     else if (s == NetworkUtils::Connecting) ui_networkButton->setText("Connecting to " + address);
     else if (s == NetworkUtils::Offline)
     {
-        ui_refreshButton->setVisible(false);
+        m_actionSync->setVisible(false);
+        m_actionFullSync->setVisible(false);
         ui_networkButton->setText("Offline");
         ui_networkButton->setIcon(DuIcon(":/icons/storage"));
         ui_networkButton->setToolTip("Offline.");
@@ -647,7 +649,10 @@ void MainWindow::finishSync()
         return;
     }
 
-    ui_refreshButton->show();
+    m_actionSync->setEnabled(true);
+    m_actionSync->setText(tr("Quick sync"));
+    m_actionFullSync->setEnabled(true);
+    m_actionFullSync->setText(tr("Full sync"));
 
     // Refresh all UI!
     this->update();
@@ -657,8 +662,12 @@ void MainWindow::finishSync()
 
 void MainWindow::startSync()
 {
-    ui_refreshButton->hide();
-    ui_mainStatusBar->showMessage(tr("Syncing..."));
+    m_actionSync->setEnabled(false);
+    m_actionFullSync->setEnabled(false);
+    QString t = tr("Syncing...");
+    m_actionSync->setText(t);
+    m_actionFullSync->setText(t);
+    ui_mainStatusBar->showMessage(t);
 }
 
 bool MainWindow::eventFilter(QObject *obj, QEvent *event)
@@ -768,6 +777,11 @@ void MainWindow::keyReleaseEvent(QKeyEvent *key)
 
 void MainWindow::setupActions()
 {
+    m_actionConsole = new DuAction(this);
+    m_actionConsole->setText(tr("Console"));
+    m_actionConsole->setIcon(DuIcon(":/icons/bash"));
+    m_actionConsole->setCheckable(true);
+
     m_actionLogIn = new DuAction(this);
     m_actionLogIn->setText(tr("Log in..."));
     m_actionLogIn->setToolTip(tr("Logs you in the Ramses database."));
@@ -850,11 +864,13 @@ void MainWindow::setupActions()
     m_actionSync->setText(tr("Quick sync"));
     m_actionSync->setToolTip(tr("Quickly syncs the most recent data with the server."));
     m_actionSync->setIcon(":/icons/check-update");
+    m_actionSync->setShortcut(QKeySequence("Ctrl+R"));
 
     m_actionFullSync = new DuAction(this);
-    m_actionSync->setText(tr("Full sync"));
-    m_actionSync->setToolTip(tr("Syncs all the data with the server."));
-    m_actionSync->setIcon(":/icons/check-update");
+    m_actionFullSync->setText(tr("Full sync"));
+    m_actionFullSync->setToolTip(tr("Syncs all the data with the server."));
+    m_actionFullSync->setIcon(":/icons/check-update");
+    m_actionFullSync->setShortcut(QKeySequence("Ctrl+Shift+R"));
 
     m_projectAction = new DuAction(tr("Project settings"), this);
     m_projectAction->setIcon(":/icons/project");
@@ -1330,6 +1346,21 @@ void MainWindow::setupToolBar()
     ui_filesButton->setPopupMode(QToolButton::InstantPopup);
     ui_filesButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
 
+    DuMenu *moreMenu = new DuMenu(this);
+    moreMenu->addAction(m_actionSync);
+    moreMenu->addAction(m_actionFullSync);
+    moreMenu->addSeparator();
+    moreMenu->addAction(m_actionConsole);
+
+
+    QToolButton *moreButton = new QToolButton();
+    moreButton->setText(tr("More"));
+    moreButton->setIcon(DuIcon(":/icons/more"));
+    moreButton->setPopupMode(QToolButton::InstantPopup);
+    moreButton->setIconSize(QSize(16,16));
+    moreButton->setMenu(moreMenu);
+    moreButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+
     // Populate Toolbar
     auto projectSelector = new ProjectSelectorWidget(this);
     ui_projectSelectorAction = ui_mainToolBar->addWidget(projectSelector);
@@ -1339,6 +1370,7 @@ void MainWindow::setupToolBar()
     ui_shotMenuAction = ui_mainToolBar->addWidget(ui_shotsButton);
     ui_scheduleMenuAction = ui_mainToolBar->addWidget(ui_scheduleButton);
     ui_filesMenuAction = ui_mainToolBar->addWidget(ui_filesButton);
+    ui_mainToolBar->addWidget(moreButton);
 
     ui_projectSelectorAction->setVisible(false);
     m_actionAdmin->setVisible(false);
@@ -1355,28 +1387,6 @@ void MainWindow::setupStatusBar()
 {
     //Populate status bar
 
-    ui_mainStatusBar->addPermanentWidget(new ProgressBar(this));
-
-    ui_refreshMenu = new DuMenu();
-    ui_refreshMenu->addAction(m_actionSync);
-    ui_refreshMenu->addAction(m_actionFullSync);
-
-    ui_refreshButton = new QToolButton(this);
-    ui_refreshButton->setObjectName("menuButton");
-    ui_refreshButton->setToolButtonStyle(Qt::ToolButtonIconOnly);
-    ui_refreshButton->setText("");
-    ui_refreshButton->setIcon(DuIcon(":/icons/reload"));
-    ui_refreshButton->setMenu(ui_refreshMenu);
-    ui_refreshButton->setPopupMode(QToolButton::InstantPopup);
-    ui_mainStatusBar->addPermanentWidget(ui_refreshButton);
-    ui_refreshButton->hide();
-
-    ui_consoleButton = new QToolButton(this);
-    ui_consoleButton->setToolButtonStyle(Qt::ToolButtonIconOnly);
-    ui_consoleButton->setText("");
-    ui_consoleButton->setIcon(DuIcon(":/icons/bash"));
-    ui_consoleButton->setCheckable(true);
-    ui_mainStatusBar->addPermanentWidget(ui_consoleButton);
 
     ui_mainStatusBar->addPermanentWidget(new DuQFLogToolButton(this));
 

@@ -66,6 +66,7 @@ private:
 
     // ==== ACTIONS ====
 
+    DuAction *m_actionConsole;
     DuAction *m_actionLogIn;
     DuAction *m_actionLogOut;
     DuAction *m_actionUserProfile;
@@ -165,11 +166,8 @@ private:
 
     DuMenu *ui_userMenu;
     DuMenu *ui_databaseMenu;
-    DuMenu *ui_refreshMenu;
     DuQFAutoSizeToolButton *ui_userButton;
     DuQFAutoSizeToolButton *ui_networkButton;
-    QToolButton *ui_refreshButton;
-    QToolButton *ui_consoleButton;
     int m_currentPageIndex = 0;
 
     QMetaObject::Connection _currentUserConnection;

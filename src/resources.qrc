@@ -80,6 +80,7 @@
         <file alias="appearance90">resources/icons/appearance90.svg</file>
         <file alias="update90">resources/icons/update90.svg</file>
         <file alias="daemon90">resources/icons/daemon90.svg</file>
+        <file alias="more">resources/icons/more.svg</file>
     </qresource>
     <qresource prefix="/styles">
         <file alias="console">resources/styles/console.css</file>
