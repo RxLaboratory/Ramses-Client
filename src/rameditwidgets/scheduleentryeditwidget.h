@@ -6,6 +6,7 @@
 #include "duqf-widgets/duqftextedit.h"
 #include "duqf-widgets/duscrollarea.h"
 #include "ramobjectcombobox.h"
+#include "ramobjectview.h"
 #include "ramproject.h"
 #include "ramuser.h"
 #include "ramscheduleentry.h"
@@ -28,6 +29,7 @@ private:
     QLabel *ui_dateLabel;
     RamObjectComboBox *ui_stepBox;
     DuQFTextEdit *ui_commentEdit;
+    RamObjectView *ui_dueTasksList;
 
     QPointer<RamUser> m_user;
     QPointer<RamProject> m_project;

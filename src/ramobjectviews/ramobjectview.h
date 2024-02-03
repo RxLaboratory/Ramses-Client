@@ -30,7 +30,7 @@ public:
     void setSortable(bool sortable = true);
     void setSortRole(RamObject::DataRole role);
     void sort();
-   // Content
+    // Content
     void setObjectModel(QAbstractItemModel *model);
     QAbstractItemModel *objectModel() const;
 

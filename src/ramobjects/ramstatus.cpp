@@ -541,6 +541,21 @@ QString RamStatus::restoreVersionFile(QString fileName) const
 
 }
 
+QString RamStatus::name() const
+{
+    RamAbstractItem *item = this->item();
+    RamStep *step = this->step();
+    RamState *state = this->state();
+    return item->name() + " | " + step->name() + " | " + state->shortName();
+}
+
+QString RamStatus::shortName() const
+{
+    RamAbstractItem *item = this->item();
+    RamStep *step = this->step();
+    return item->shortName() + " | " + step->shortName();
+}
+
 QString RamStatus::previewImagePath() const
 {
     if (this->isNoState()) return "";
@@ -631,12 +646,6 @@ QVariant RamStatus::roleData(int role) const
 {
     switch(role)
     {
-    case Qt::DisplayRole: {
-        RamAbstractItem *item = this->item();
-        RamStep *step = this->step();
-        RamState *state = this->state();
-        return item->shortName() + " | " + step->shortName() + " | " + state->shortName();
-    }
     case Qt::ToolTipRole: {
         RamAbstractItem *item = this->item();
         RamStep *step = this->step();

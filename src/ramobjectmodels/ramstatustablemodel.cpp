@@ -167,10 +167,14 @@ RamStatus *RamStatusTableModel::getStatus(QString itemUuid, QString stepUuid) co
 
 QSet<RamStatus *> RamStatusTableModel::getStatus(const QDate &date, const QString userUuid) const
 {
+    if (!date.isValid()) return QSet<RamStatus *>();
+
     const QSet<RamObject *> all = m_status->lookUp("dueDate", date.toString("yyyy-MM-dd"));
     QSet<RamStatus *> allStatus;
     for (auto status: all) {
         auto st = qobject_cast<RamStatus*>(status);
+        if (!st) continue;
+
         if (userUuid == "" || userUuid == st->assignedUser()->uuid())
             allStatus << st;
     }

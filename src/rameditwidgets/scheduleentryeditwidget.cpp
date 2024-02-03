@@ -1,5 +1,7 @@
 #include "scheduleentryeditwidget.h"
 
+#include "ramstatustablemodel.h"
+
 ScheduleEntryEditWidget::ScheduleEntryEditWidget(RamProject *project, RamUser *user, const QDateTime &date, RamScheduleEntry *entry, QWidget *parent) :
     DuScrollArea(parent),
     m_user(user),
@@ -74,7 +76,29 @@ void ScheduleEntryEditWidget::setupUi()
     if (m_entry)
         ui_commentEdit->setMarkdown(m_entry->comment());
 
-    // TODO List tasks due date
+    // Get due tasks
+    const QDate date = m_date.date();
+    const QString uUuid = m_user->uuid();
+    QSet<RamStatus*> tasks = m_project->assetStatus()->getStatus(date, uUuid);
+    tasks += m_project->shotStatus()->getStatus(date, uUuid);
+
+    if (!tasks.isEmpty()) {
+        dummyLayout->addWidget(new QLabel( tr("Due tasks:") ));
+
+        ui_dueTasksList = new RamObjectView(RamObjectView::List, mainWidget);
+        ui_dueTasksList->setProperty("class", "duBlock");
+        ui_dueTasksList->verticalHeader()->hide();
+        dummyLayout->addWidget(ui_dueTasksList);
+
+        auto model = new RamObjectModel(RamAbstractObject::Status, this);
+        for (const auto task: qAsConst(tasks)) {
+            model->appendObject(task->uuid());
+        }
+        ui_dueTasksList->setObjectModel(model);
+        ui_dueTasksList->setEditableObjects(true, RamUser::Lead);
+
+        ui_dueTasksList->verticalHeader()->resizeSections(QHeaderView::ResizeToContents);
+    }
 }
 
 void ScheduleEntryEditWidget::connectEvents()

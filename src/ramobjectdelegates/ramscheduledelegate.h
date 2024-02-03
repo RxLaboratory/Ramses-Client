@@ -27,9 +27,6 @@ public:
 protected:
     int drawMarkdown(QPainter *painter, QRect rect, const QString &md) const;
 
-private slots:
-    void setEntry(RamObject *stepObj);
-
 private:
     // Style
     QColor m_abyss;
