@@ -114,7 +114,7 @@ QVariant RamScheduleTableModel::headerData(int section, Qt::Orientation orientat
             return section % 2 == 1;
 
         if ( role == Qt::DisplayRole )
-            return QString(usrObj->shortName() % "\n" % ampm);
+            return QString(usrObj->name() % "\n" % ampm);
 
         if ( role == Qt::ToolTipRole )
             return QString(usrObj->roleData(role).toString() % " | " % ampm);
