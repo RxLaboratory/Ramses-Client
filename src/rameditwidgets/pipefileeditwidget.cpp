@@ -75,14 +75,25 @@ void PipeFileEditWidget::setupUi()
     //ui_colorSpaceBox = new RamObjectListComboBox<RamObject*>(this);
     //ui_mainFormLayout->addWidget(ui_colorSpaceBox, 4, 1);
 
-    QLabel *customSettingsLabel = new QLabel(tr("Import settings"), this);
-    ui_mainFormLayout->addWidget(customSettingsLabel, 5, 0);
+    ui_mainLayout->addStretch(100);
+
+    auto settingsWidget = new QWidget(this);
+    auto settingsLayout = new QVBoxLayout(settingsWidget);
+    settingsLayout->setContentsMargins(3,6,6,6);
+    settingsLayout->setSpacing(3);
+
+    settingsLayout->addWidget(new QLabel(
+        "<b>"+tr("Import settings")+"</b>"
+        ));
 
     ui_customSettingsEdit = new DuQFTextEdit();
+    ui_customSettingsEdit->setProperty("class", "duBlock");
     ui_customSettingsEdit->setUseMarkdown(false);
-    ui_mainFormLayout->addWidget(ui_customSettingsEdit, 5, 1);
+    ui_customSettingsEdit->setUseMarkdown(false);
+    settingsLayout->addWidget(ui_customSettingsEdit);
 
-    ui_mainLayout->addStretch(100);
+    ui_tabWidget->addTab(settingsWidget, DuIcon(":/icons/settings"), "");
+    ui_tabWidget->setTabToolTip(2, tr("Import settings"));
 }
 
 void PipeFileEditWidget::connectEvents()

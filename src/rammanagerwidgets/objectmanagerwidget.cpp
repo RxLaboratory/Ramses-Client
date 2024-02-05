@@ -1,7 +1,7 @@
 #include "objectmanagerwidget.h"
 
 ObjectManagerWidget::ObjectManagerWidget(QString title, QIcon icon, QWidget *parent) :
-    QWidget(parent)
+    QFrame(parent)
 {
     setupUi(title,icon);
     connectEvents();
@@ -10,7 +10,7 @@ ObjectManagerWidget::ObjectManagerWidget(QString title, QIcon icon, QWidget *par
 }
 
 ObjectManagerWidget::ObjectManagerWidget(RamAbstractObjectModel *objectModel, QString title, QIcon icon, QWidget *parent) :
-    QWidget(parent)
+    QFrame(parent)
 {
     setupUi(title,icon);
     connectEvents();
@@ -34,11 +34,18 @@ void ObjectManagerWidget::clear()
 void ObjectManagerWidget::setupUi(QString title, QIcon icon)
 {
     QHBoxLayout *lay = new QHBoxLayout(this);
-    lay->setContentsMargins(3,0,0,0);
+    lay->setContentsMargins(6,6,6,6);
+
+    auto dummyWidget = new QWidget(this);
+    dummyWidget->setProperty("class", "duBlock");
+    lay->addWidget(dummyWidget);
+
+    auto dummyLayout = new QHBoxLayout(dummyWidget);
+    dummyLayout->setContentsMargins(3,3,3,3);
 
     ui_listWidget = new ObjectListWidget( false, RamUser::Admin, this);
     //ui_listWidget->setMaximumWidth(500);
-    lay->addWidget(ui_listWidget);
+    dummyLayout->addWidget(ui_listWidget);
 
     //lay->addStretch();
 

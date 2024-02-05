@@ -87,7 +87,6 @@ void PipeEditWidget::setOutputStep(RamObject *step)
 void PipeEditWidget::setupUi()
 {
     this->hideName();
-
     ui_commentEdit->hide();
     ui_commentLabel->hide();
 
@@ -103,10 +102,18 @@ void PipeEditWidget::setupUi()
     ui_toBox = new RamObjectComboBox(this);
     ui_mainFormLayout->addWidget(ui_toBox, 4, 1);
 
+    auto listWidget = new QWidget(this);
+    listWidget->setProperty("class", "duBlock");
+    ui_mainLayout->addWidget(listWidget);
+
+    auto listLayout = new QVBoxLayout(listWidget);
+    listLayout->setContentsMargins(3,3,3,3);
+    listLayout->setSpacing(3);
+
     ui_pipeFileList = new ObjectListWidget(true, RamUser::ProjectAdmin, this);
     ui_pipeFileList->setEditMode(ObjectListWidget::UnassignObjects);
     ui_pipeFileList->setTitle("Files");
-    ui_mainLayout->addWidget(ui_pipeFileList);
+    listLayout->addWidget(ui_pipeFileList);
 }
 
 void PipeEditWidget::connectEvents()

@@ -6,7 +6,7 @@
 
 #include "objectlistwidget.h"
 
-class ObjectManagerWidget : public QWidget
+class ObjectManagerWidget : public QFrame
 {
     Q_OBJECT
 public:
