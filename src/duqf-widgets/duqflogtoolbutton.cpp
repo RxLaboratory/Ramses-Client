@@ -25,21 +25,33 @@ void DuQFLogToolButton::log(DuQFLog m)
         case DuQFLog::Data: break;
         case DuQFLog::Debug: break;
         case DuQFLog::Information: break;
-        case DuQFLog::Warning:
+        case DuQFLog::Warning:{
             this->show();
-            this->setIcon(DuIcon(":/icons/warning"));
+            auto iconWarning = new DuSVGIconEngine(":/icons/warning");
+            iconWarning->setMainColor(QColor(236,215,24));
+            this->setIcon(DuIcon(iconWarning));
             this->setToolTip("Warning! Some errors have occured.");
+            emit visibilityChanged(true);
             break;
-        case DuQFLog::Critical:
+        }
+        case DuQFLog::Critical:{
             this->show();
-            this->setIcon(DuIcon(":/icons/critical"));
+            auto iconCritical = new DuSVGIconEngine(":/icons/critical");
+            iconCritical->setMainColor(QColor(236,24,24));
+            this->setIcon(DuIcon(iconCritical));
             this->setToolTip("There are critical errors. You should post a bug report and restart the application. Be careful, you may lose some data.");
+            emit visibilityChanged(true);
+        }
             break;
-        case DuQFLog::Fatal:
+        case DuQFLog::Fatal:{
             this->show();
-            this->setIcon(DuIcon(":/icons/fatal"));
+            auto iconFatal = new DuSVGIconEngine(":/icons/fatal");
+            iconFatal->setMainColor(QColor(187,0,255));
+            this->setIcon(DuIcon(iconFatal));
             this->setToolTip("A fatal error has occured, we can't continue. Please file a bug report.");
+            emit visibilityChanged(true);
             break;
+        }
         }
     }
 
@@ -101,7 +113,10 @@ void DuQFLogToolButton::setAutoShowLog(bool newAutoShowLog)
 void DuQFLogToolButton::clear()
 {
     this->hide();
+    emit visibilityChanged(false);
     _currentLevel = DuQFLog::Information;
-    this->setIcon(DuIcon(":/icons/ok"));
+    auto iconOK = new DuSVGIconEngine(":/icons/warning");
+    iconOK->setMainColor(QColor(236,215,24));
+    this->setIcon(DuIcon(iconOK));
     _logDialog->accept();
 }

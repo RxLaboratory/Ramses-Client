@@ -6,6 +6,7 @@
 #include <QVBoxLayout>
 #include <QSettings>
 #include "duqf-utils/duqflogger.h"
+#include "duqf-widgets/dusvgiconengine.h"
 
 class DuQFLogToolButton : public QToolButton
 {
@@ -13,7 +14,8 @@ class DuQFLogToolButton : public QToolButton
 public:
     DuQFLogToolButton(QWidget *parent = nullptr);
     void setAutoShowLog(bool newAutoShowLog);
-
+signals:
+    void visibilityChanged(bool);
 private slots:
     void log(DuQFLog m);
     void showLog();

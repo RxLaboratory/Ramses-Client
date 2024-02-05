@@ -1374,16 +1374,22 @@ void MainWindow::setupToolBar()
     moreMenu->addSeparator();
     moreMenu->addAction(m_actionSettings);
 
+
     // Populate Toolbar
     auto projectSelector = new ProjectSelectorWidget(this);
     ui_projectSelectorAction = ui_mainToolBar->addWidget(projectSelector);
     DuUI::addCustomCSS(projectSelector, "QComboBox { background: #222222; }");
+
     ui_pipelineMenuAction = ui_mainToolBar->addWidget(ui_pipelineButton);
     ui_assetMenuAction = ui_mainToolBar->addWidget(ui_assetsButton);
     ui_shotMenuAction = ui_mainToolBar->addWidget(ui_shotsButton);
     ui_scheduleMenuAction = ui_mainToolBar->addWidget(ui_scheduleButton);
     ui_filesMenuAction = ui_mainToolBar->addWidget(ui_filesButton);
     ui_mainToolBar->addWidget(moreButton);
+
+    auto logB = new DuQFLogToolButton(this);
+    QAction *logA = ui_mainToolBar->addWidget(logB);
+    connect(logB, &DuQFLogToolButton::visibilityChanged, logA, &QAction::setVisible);
 
     ui_projectSelectorAction->setVisible(false);
     m_actionAdmin->setVisible(false);
@@ -1400,8 +1406,6 @@ void MainWindow::setupStatusBar()
 {
     //Populate status bar
 
-
-    ui_mainStatusBar->addPermanentWidget(new DuQFLogToolButton(this));
 
     ui_databaseMenu = new DuMenu();
     ui_databaseMenu->addAction(m_actionSetOffline);
