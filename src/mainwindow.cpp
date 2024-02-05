@@ -515,7 +515,7 @@ void MainWindow::currentUserChanged()
     {
         m_actionLogIn->setVisible(true);
         m_actionLogOut->setVisible(false);
-        ui_networkButton->setVisible(false);
+        ui_databaseAction->setVisible(false);
         ui_projectSelectorAction->setVisible(false);
         home();
         return;
@@ -523,7 +523,7 @@ void MainWindow::currentUserChanged()
 
     m_actionLogIn->setVisible(false);
     m_actionLogOut->setVisible(true);
-    ui_networkButton->setVisible(true);
+    ui_databaseAction->setVisible(true);
     ui_projectSelectorAction->setVisible(true);
 
     _currentUserConnection = connect(user, &RamUser::dataChanged, this, &MainWindow::currentUserChanged);
@@ -610,32 +610,28 @@ void MainWindow::dbiConnectionStatusChanged(NetworkUtils::NetworkStatus s)
     {
         m_actionSync->setVisible(true);
         m_actionFullSync->setVisible(true);
-        ui_networkButton->setText(address);
+        ui_databaseMenu->setTitle(address);
         m_actionSetOnline->setVisible(false);
         m_actionSetOffline->setVisible(true);
 
         if (RamServerInterface::instance()->ssl())
         {
-            ui_networkButton->setIcon(DuIcon(":/icons/shield"));
-            ui_networkButton->setToolTip("Connected.");
-            ui_networkButton->setStatusTip("");
+            ui_databaseMenu->setIcon(DuIcon(":/icons/shield"));
+            ui_databaseMenu->setToolTip("Connected.");
         }
         else
         {
-            ui_networkButton->setIcon(DuIcon(":/icons/no-shield"));
-            ui_networkButton->setToolTip("WARNING: Connection is not secured!");
-            ui_networkButton->setStatusTip("WARNING: Connection is not secured!");
+            ui_databaseMenu->setIcon(DuIcon(":/icons/no-shield"));
+            ui_databaseMenu->setToolTip(tr("WARNING: Connection is not secured!"));
         }
     }
-    else if (s == NetworkUtils::Connecting) ui_networkButton->setText("Connecting to " + address);
+    else if (s == NetworkUtils::Connecting) ui_databaseMenu->setTitle(tr("Connecting to %1").arg(address));
     else if (s == NetworkUtils::Offline)
     {
         m_actionSync->setVisible(false);
         m_actionFullSync->setVisible(false);
-        ui_networkButton->setText("Offline");
-        ui_networkButton->setIcon(DuIcon(":/icons/storage"));
-        ui_networkButton->setToolTip("Offline.");
-        ui_networkButton->setStatusTip("");
+        ui_databaseMenu->setTitle(tr("Offline"));
+        ui_databaseMenu->setIcon(DuIcon(":/icons/storage"));
         m_actionSetOnline->setVisible(true);
         m_actionSetOffline->setVisible(false);
     }
@@ -1366,6 +1362,16 @@ void MainWindow::setupToolBar()
     m_actionLogOut->setVisible(false);
     moreMenu->addMenu(ui_userMenu);
 
+
+    ui_databaseMenu = new DuMenu();
+    ui_databaseMenu->setTitle("Offline");
+    ui_databaseMenu->setIcon(DuIcon(":/icons/storage"));
+    ui_databaseMenu->addAction(m_actionSetOffline);
+    ui_databaseMenu->addAction(m_actionSetOnline);
+    ui_databaseMenu->addAction(m_actionDatabaseSettings);
+    m_actionSetOffline->setVisible(false);
+    ui_databaseAction = moreMenu->addMenu(ui_databaseMenu);
+
     moreMenu->addSeparator();
     moreMenu->addAction(m_actionSync);
     moreMenu->addAction(m_actionFullSync);
@@ -1373,7 +1379,6 @@ void MainWindow::setupToolBar()
     moreMenu->addAction(m_actionConsole);
     moreMenu->addSeparator();
     moreMenu->addAction(m_actionSettings);
-
 
     // Populate Toolbar
     auto projectSelector = new ProjectSelectorWidget(this);
@@ -1407,21 +1412,7 @@ void MainWindow::setupStatusBar()
     //Populate status bar
 
 
-    ui_databaseMenu = new DuMenu();
-    ui_databaseMenu->addAction(m_actionSetOffline);
-    ui_databaseMenu->addAction(m_actionSetOnline);
-    ui_databaseMenu->addAction(m_actionDatabaseSettings);
-    m_actionSetOffline->setVisible(false);
-    ui_networkButton = new DuQFAutoSizeToolButton(this);
-    ui_networkButton->setObjectName("menuButton");
-    ui_networkButton->setText("Offline");
-    ui_networkButton->setIcon(DuIcon(":/icons/storage"));
-    ui_networkButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-    //ui_networkButton->setMinimumWidth(100);
-    ui_networkButton->setMenu(ui_databaseMenu);
-    ui_networkButton->setPopupMode(QToolButton::InstantPopup);
-    ui_mainStatusBar->addPermanentWidget(ui_networkButton);
-    ui_networkButton->setVisible(false);
+
 
     // version in statusbar
     ui_mainStatusBar->addPermanentWidget(new QLabel("v" + QString(STR_VERSION)));

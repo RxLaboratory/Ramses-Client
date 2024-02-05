@@ -166,7 +166,7 @@ private:
 
     DuMenu *ui_userMenu;
     DuMenu *ui_databaseMenu;
-    DuQFAutoSizeToolButton *ui_networkButton;
+    QAction *ui_databaseAction;
     int m_currentPageIndex = 0;
 
     QMetaObject::Connection _currentUserConnection;

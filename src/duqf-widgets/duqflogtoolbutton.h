@@ -6,7 +6,6 @@
 #include <QVBoxLayout>
 #include <QSettings>
 #include "duqf-utils/duqflogger.h"
-#include "duqf-widgets/dusvgiconengine.h"
 
 class DuQFLogToolButton : public QToolButton
 {
