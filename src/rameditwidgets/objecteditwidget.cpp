@@ -205,7 +205,7 @@ void ObjectEditWidget::hideEvent(QHideEvent *event)
 
 void ObjectEditWidget::setupUi()
 {
-    //this->setMaximumWidth(500);
+    this->setMinimumWidth(300);
 
     ui_tabWidget = new QTabWidget(this);
     ui_tabWidget->setTabPosition(QTabWidget::West);
@@ -226,7 +226,11 @@ void ObjectEditWidget::setupUi()
     ui_mainLayout->setSpacing(3);
     ui_mainLayout->setContentsMargins(0, 3, 3, 3);
 
-    ui_mainFormLayout = new QGridLayout();
+    auto attrWidget = new QWidget(this);
+    attrWidget->setProperty("class", "duBlock");
+    ui_mainLayout->addWidget(attrWidget);
+
+    ui_mainFormLayout = new QGridLayout(attrWidget);
     ui_mainFormLayout->setSpacing(3);
 
     ui_nameLabel = new QLabel("Name", mainWidget);

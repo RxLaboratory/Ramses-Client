@@ -132,32 +132,53 @@ void ProjectEditWidget::reinitPath()
 
 void ProjectEditWidget::setupUi()
 {
+    auto techWidget = new QWidget(this);
+    techWidget->setProperty("class", "duBlock");
+    ui_mainLayout->addWidget(techWidget);
+
+    auto techLayout = new QGridLayout(techWidget);
+    techLayout->setSpacing(3);
+
     QLabel *rLabel = new QLabel("Resolution", this);
-    //rLabel->setAlignment(Qt::AlignTop | Qt::AlignLeft);
-    ui_mainFormLayout->addWidget(rLabel, 3, 0);
+    rLabel->setAlignment(Qt::AlignTop | Qt::AlignLeft);
+    techLayout->addWidget(rLabel, 0, 0);
 
     ui_resolutionWidget = new ResolutionWidget(this);
-    ui_mainFormLayout->addWidget(ui_resolutionWidget, 3, 1);
+    techLayout->addWidget(ui_resolutionWidget, 0, 1);
 
     QLabel *frLabel = new QLabel("Framerate", this);
-    //frLabel->setAlignment(Qt::AlignTop | Qt::AlignLeft);
-    ui_mainFormLayout->addWidget(frLabel, 4, 0);
+    frLabel->setAlignment(Qt::AlignTop | Qt::AlignLeft);
+    techLayout->addWidget(frLabel, 1, 0);
 
     ui_framerateWidget = new FramerateWidget(this);
-    ui_mainFormLayout->addWidget(ui_framerateWidget, 4, 1);
+    techLayout->addWidget(ui_framerateWidget, 1, 1);
+
+    auto dateWidget = new QWidget(this);
+    dateWidget->setProperty("class", "duBlock");
+    ui_mainLayout->addWidget(dateWidget);
+
+    auto dateLayout = new QGridLayout(dateWidget);
+    dateLayout->setSpacing(3);
 
     ui_deadlineEdit = new QDateEdit(this);
     ui_deadlineEdit->setCalendarPopup(true);
     ui_deadlineEdit->setDate( QDate::currentDate() );
-    ui_mainFormLayout->addWidget(new QLabel("Deadline"), 5,0);
-    ui_mainFormLayout->addWidget(ui_deadlineEdit, 5, 1);
+    dateLayout->addWidget(new QLabel("Deadline"), 0,0);
+    dateLayout->addWidget(ui_deadlineEdit, 0, 1);
+
+    auto folderWidget = new QWidget(this);
+    folderWidget->setProperty("class", "duBlock");
+    ui_mainLayout->addWidget(folderWidget);
+
+    auto folderLayout = new QGridLayout(folderWidget);
+    folderLayout->setSpacing(3);
 
     QLabel *fLabel = new QLabel("Folder", this);
-    ui_mainFormLayout->addWidget(fLabel, 6, 0);
+    folderLayout->addWidget(fLabel, 0, 0);
 
     ui_folderSelector = new DuQFFolderSelectorWidget(DuQFFolderSelectorWidget::Folder, this);
     ui_folderSelector->setPlaceHolderText("Default (Ramses/Users/User_ShortName)");
-    ui_mainFormLayout->addWidget(ui_folderSelector,6, 1);
+    folderLayout->addWidget(ui_folderSelector,0, 1);
 
     QWidget *fWidget = new QWidget();
     fWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
@@ -180,14 +201,27 @@ void ProjectEditWidget::setupUi()
     ui_reinitPathButton->setIconSize(QSize(16,16));
     fLayout->addWidget(ui_reinitPathButton);
 
-    ui_mainFormLayout->addWidget(fWidget, 7, 1);
+    folderLayout->addWidget(fWidget, 1, 1);
+
+    ui_mainLayout->addStretch(1);
+
+    auto userWidget = new QWidget(this);
+    userWidget->setProperty("class", "duBlock");
+
+    auto userLayout = new QVBoxLayout(userWidget);
+    userLayout->setContentsMargins(3, 3, 3, 3);
+    userLayout->setSpacing(3);
 
     ui_userList = new ObjectListWidget(true, RamUser::ProjectAdmin, this);
     ui_userList->setEditMode(ObjectListWidget::UnassignObjects);
     ui_userList->setTitle("Users");
     ui_userList->setAssignList(Ramses::instance()->users());
     ui_userList->setSortable(true);
-    ui_mainLayout->addWidget(ui_userList);
+    userLayout->addWidget(ui_userList);
+
+    ui_tabWidget->addTab(userWidget, DuIcon(":/icons/users") ,"");
+    ui_tabWidget->setTabToolTip(1, tr("Users"));
+
 }
 
 void ProjectEditWidget::connectEvents()
