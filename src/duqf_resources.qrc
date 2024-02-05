@@ -47,8 +47,6 @@
         <file alias="code">duqf_resources/icons/code_sl.svg</file>
         <file alias="stats-settings">resources/icons/counter-edit.svg</file>
         <file alias="info">duqf_resources/icons/information.svg</file>
-        <file alias="settings">duqf_resources/icons/settings.svg</file>
-        <file alias="settings-w">duqf_resources/icons/settings2.svg</file>
         <file alias="browse-folder">duqf_resources/icons/folder-settings.svg</file>
         <file alias="copy">duqf_resources/icons/copy.svg</file>
         <file alias="paste">duqf_resources/icons/paste.svg</file>

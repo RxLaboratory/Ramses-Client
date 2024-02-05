@@ -1259,7 +1259,6 @@ void MainWindow::setupDocks()
 void MainWindow::setupToolBar()
 {
     ui_mainToolBar->addAction(m_actionLogIn);
-    ui_mainToolBar->addAction(m_actionSettings);
     ui_mainToolBar->addAction(m_actionAdmin);
 
     DuMenu *pipelineMenu = new DuMenu(this);
@@ -1351,7 +1350,8 @@ void MainWindow::setupToolBar()
     moreMenu->addAction(m_actionFullSync);
     moreMenu->addSeparator();
     moreMenu->addAction(m_actionConsole);
-
+    moreMenu->addSeparator();
+    moreMenu->addAction(m_actionSettings);
 
     QToolButton *moreButton = new QToolButton();
     moreButton->setText(tr("More"));
