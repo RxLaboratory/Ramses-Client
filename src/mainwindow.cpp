@@ -205,6 +205,8 @@ void MainWindow::hidePropertiesDock()
 
 void MainWindow::onQuit()
 {
+
+
     QFontDatabase::removeAllApplicationFonts();
     trayIcon->hide();
 }

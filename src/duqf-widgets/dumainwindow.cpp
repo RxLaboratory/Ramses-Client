@@ -93,7 +93,7 @@ void DuMainWindow::connectEvents()
 #ifdef Q_OS_WIN
     connect(m_minimizeAction, &QAction::triggered, this, &DuMainWindow::minimizeTriggered);
     connect(m_maximizeAction, &QAction::triggered, this, &DuMainWindow::maximizeTriggered);
-    connect(m_closeAction, &QAction::triggered, qApp, &QCoreApplication::quit);
+    connect(m_closeAction, &QAction::triggered, this, &DuMainWindow::close);
 #endif
 }
 
