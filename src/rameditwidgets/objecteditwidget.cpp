@@ -226,11 +226,11 @@ void ObjectEditWidget::setupUi()
     ui_mainLayout->setSpacing(3);
     ui_mainLayout->setContentsMargins(0, 3, 3, 3);
 
-    auto attrWidget = new QWidget(this);
-    attrWidget->setProperty("class", "duBlock");
-    ui_mainLayout->addWidget(attrWidget);
+    ui_attributesWidget = new QWidget(this);
+    ui_attributesWidget->setProperty("class", "duBlock");
+    ui_mainLayout->addWidget(ui_attributesWidget);
 
-    ui_mainFormLayout = new QGridLayout(attrWidget);
+    ui_mainFormLayout = new QGridLayout(ui_attributesWidget);
     ui_mainFormLayout->setSpacing(3);
 
     ui_nameLabel = new QLabel("Name", mainWidget);

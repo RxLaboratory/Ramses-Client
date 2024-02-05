@@ -565,9 +565,8 @@ void StatusEditWidget::setupUi()
     this->setMinimumWidth(300);
     // === ATTRIBUTES ===
 
-    this->hideName();
-    ui_commentEdit->hide();
-    ui_commentLabel->hide();
+    hideName();
+    ui_attributesWidget->hide();
 
     QHBoxLayout *cLayout = new QHBoxLayout();
     cLayout->setContentsMargins(0,0,0,0);

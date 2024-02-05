@@ -50,6 +50,7 @@ protected:
 
     QStringList m_dontRename;
 
+    QWidget *ui_attributesWidget;
     QTabWidget *ui_tabWidget;
     QVBoxLayout *ui_mainLayout;
     QGridLayout *ui_mainFormLayout;

@@ -218,27 +218,46 @@ void StepEditWidget::setMultiplier(RamObject *ag)
 
 void StepEditWidget::setupUi()
 {
+    auto appearanceWidget = new QWidget(this);
+    appearanceWidget->setProperty("class", "duBlock");
+    ui_mainLayout->addWidget(appearanceWidget);
+
+    auto appaeranceLayout = new QGridLayout(appearanceWidget);
+    appaeranceLayout->setSpacing(3);
+
     QLabel *typeLabel = new QLabel("Type", this);
-    ui_mainFormLayout->addWidget(typeLabel, 3,0);
+    appaeranceLayout->addWidget(typeLabel, 0,0);
 
     ui_typeBox = new DuComboBox(this);
     ui_typeBox->addItem(DuIcon(":/icons/project"), "        Pre-Production", "pre");
     ui_typeBox->addItem(DuIcon(":/icons/asset"), "        Asset Production", "asset");
     ui_typeBox->addItem(DuIcon(":/icons/shot"), "        Shot Production", "shot");
     ui_typeBox->addItem(DuIcon(":/icons/film"), "        Post-Production", "post");
-    ui_mainFormLayout->addWidget(ui_typeBox, 3, 1);
+    appaeranceLayout->addWidget(ui_typeBox, 0, 1);
 
     QLabel *colorLabel = new QLabel("Color", this);
-    ui_mainFormLayout->addWidget(colorLabel, 4, 0);
+    appaeranceLayout->addWidget(colorLabel, 1, 0);
 
     ui_colorSelector = new DuQFColorSelector(this);
-    ui_mainFormLayout->addWidget(ui_colorSelector, 4, 1);
+    appaeranceLayout->addWidget(ui_colorSelector, 1, 1);
 
-    ui_tabWidget = new QTabWidget(this);
+    auto estimWidget = new QWidget(this);
+    auto estimLayout = new QVBoxLayout(estimWidget);
+    estimLayout->setContentsMargins(3,6,6,6);
+    estimLayout->setSpacing(3);
+
+    estimLayout->addWidget(new QLabel(
+        "<b>"+tr("Estimations")+"</b>"
+        ));
 
     ui_estimationWidget = new QWidget(ui_tabWidget);
+    ui_estimationWidget->setProperty("class", "duBlock");
+    estimLayout->addWidget(ui_estimationWidget);
+
+    estimLayout->addStretch(1);
+
     QFormLayout *estimationLayout = new QFormLayout(ui_estimationWidget);
-    estimationLayout->setContentsMargins(0,3,0,0);
+    estimationLayout->setContentsMargins(3,3,3,3);
     estimationLayout->setSpacing(3);
 
     ui_estimationTypeLabel = new QLabel("Method", this);
@@ -289,31 +308,70 @@ void StepEditWidget::setupUi()
     ui_estimationMultiplierBox->setEnabled(false);
     estimationLayout->addRow(ui_estimationMultiplierCheckBox, ui_estimationMultiplierBox);
 
-    ui_tabWidget->addTab(ui_estimationWidget, DuIcon(":/icons/stats-settings"), "Estim.");
+    ui_folderWidget = new DuQFFolderDisplayWidget(this);
+    ui_mainLayout->addWidget(ui_folderWidget);
+
+    ui_mainLayout->addStretch(1);
+
+    ui_tabWidget->addTab(estimWidget, DuIcon(":/icons/stats-settings"), "");
+    ui_tabWidget->setTabToolTip(2, tr("Estimations"));
+
+    auto appDummyWidget = new QWidget(this);
+    auto appDummyLayout = new QVBoxLayout(appDummyWidget);
+    appDummyLayout->setContentsMargins(3, 3, 3, 3);
+
+    auto appWidget = new QWidget(this);
+    appWidget->setProperty("class", "duBlock");
+    appDummyLayout->addWidget(appWidget);
+
+    auto appLayout = new QVBoxLayout(appWidget);
+    appLayout->setContentsMargins(3, 3, 3, 3);
+    appLayout->setSpacing(3);
 
     m_applicationList = new ObjectListWidget(true, RamUser::ProjectAdmin, this);
     m_applicationList->setEditMode(ObjectListWidget::UnassignObjects);
     m_applicationList->setTitle("Applications");
     m_applicationList->setAssignList(Ramses::instance()->applications());
+    appLayout->addWidget(m_applicationList);
 
-    ui_tabWidget->addTab(m_applicationList, DuIcon(":/icons/applications"), "Apps");
+    ui_tabWidget->addTab(appDummyWidget, DuIcon(":/icons/applications") ,"");
+    ui_tabWidget->setTabToolTip(4, tr("Apps"));
+
+    auto generalWidget = new QWidget(this);
+    auto generalLayout = new QVBoxLayout(generalWidget);
+    generalLayout->setContentsMargins(3,6,6,6);
+    generalLayout->setSpacing(3);
+
+    generalLayout->addWidget(new QLabel(
+        "<b>"+tr("General settings")+"</b>"
+        ));
 
     ui_generalSettingsEdit = new DuQFTextEdit(ui_tabWidget);
+    ui_generalSettingsEdit->setProperty("class", "duBlock");
     ui_generalSettingsEdit->setUseMarkdown(false);
-    ui_tabWidget->addTab(ui_generalSettingsEdit, DuIcon(":/icons/settings"), "General");
+    ui_generalSettingsEdit->setPlaceholderText(tr("General settings"));
+    generalLayout->addWidget(ui_generalSettingsEdit);
+
+    ui_tabWidget->addTab(generalWidget, DuIcon(":/icons/settings"), "");
+    ui_tabWidget->setTabToolTip(5, tr("General settings"));
+
+    auto publishWidget = new QWidget(this);
+    auto publishLayout = new QVBoxLayout(publishWidget);
+    publishLayout->setContentsMargins(3,6,6,6);
+    publishLayout->setSpacing(3);
+
+    publishLayout->addWidget(new QLabel(
+        "<b>"+tr("Publish settings")+"</b>"
+        ));
 
     ui_publishSettingsEdit = new DuQFTextEdit(ui_tabWidget);
+    ui_publishSettingsEdit->setProperty("class", "duBlock");
     ui_publishSettingsEdit->setUseMarkdown(false);
-    ui_tabWidget->addTab(ui_publishSettingsEdit, DuIcon(":/icons/settings"), "Publish");
+    ui_publishSettingsEdit->setPlaceholderText(tr("Publish settings"));
+    publishLayout->addWidget(ui_publishSettingsEdit);
 
-    ui_mainLayout->addWidget(ui_tabWidget);
-
-    ui_folderWidget = new DuQFFolderDisplayWidget(this);
-    ui_mainLayout->addWidget(ui_folderWidget);
-
-    ui_mainLayout->setStretch(0,0);
-    ui_mainLayout->setStretch(1,100);
-    ui_mainLayout->setStretch(2,0);
+    ui_tabWidget->addTab(publishWidget, DuIcon(":/icons/settings"), "");
+    ui_tabWidget->setTabToolTip(6, tr("Publish settings"));
 }
 
 void StepEditWidget::connectEvents()

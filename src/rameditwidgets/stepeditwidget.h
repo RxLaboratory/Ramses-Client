@@ -55,7 +55,6 @@ private:
     QLabel *ui_estimationTypeLabel;
     DuQFTextEdit *ui_publishSettingsEdit;
     DuQFTextEdit *ui_generalSettingsEdit;
-    QTabWidget *ui_tabWidget;
     AutoSelectDoubleSpinBox *ui_veryEasyEdit;
     AutoSelectDoubleSpinBox *ui_easyEdit;
     AutoSelectDoubleSpinBox *ui_mediumEdit;

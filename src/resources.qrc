@@ -82,6 +82,7 @@
         <file alias="daemon90">resources/icons/daemon90.svg</file>
         <file alias="more">resources/icons/more.svg</file>
         <file alias="settings">resources/icons/settings.svg</file>
+        <file alias="users90">resources/icons/users90.svg</file>
     </qresource>
     <qresource prefix="/styles">
         <file alias="console">resources/styles/console.css</file>

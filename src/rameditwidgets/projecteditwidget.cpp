@@ -205,8 +205,13 @@ void ProjectEditWidget::setupUi()
 
     ui_mainLayout->addStretch(1);
 
+    auto userDummyWidget = new QWidget(this);
+    auto userDummyLayout = new QVBoxLayout(userDummyWidget);
+    userDummyLayout->setContentsMargins(3, 3, 3, 3);
+
     auto userWidget = new QWidget(this);
     userWidget->setProperty("class", "duBlock");
+    userDummyLayout->addWidget(userWidget);
 
     auto userLayout = new QVBoxLayout(userWidget);
     userLayout->setContentsMargins(3, 3, 3, 3);
@@ -219,8 +224,8 @@ void ProjectEditWidget::setupUi()
     ui_userList->setSortable(true);
     userLayout->addWidget(ui_userList);
 
-    ui_tabWidget->addTab(userWidget, DuIcon(":/icons/users") ,"");
-    ui_tabWidget->setTabToolTip(1, tr("Users"));
+    ui_tabWidget->addTab(userDummyWidget, DuIcon(":/icons/users90") ,"");
+    ui_tabWidget->setTabToolTip(2, tr("Users"));
 
 }
 
