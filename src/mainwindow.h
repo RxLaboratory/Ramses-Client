@@ -16,9 +16,7 @@
 
 #include "duqf-widgets/settingswidget.h"
 #include "duqf-utils/utils.h"
-#include "duqf-utils/duqflogger.h"
 #include "duqf-widgets/dudocktitlewidget.h"
-#include "duqf-widgets/duqfautosizetoolbutton.h"
 #include "progresspage.h"
 #include "ramproject.h"
 #include "databaseeditwidget.h"
@@ -58,7 +56,6 @@ private:
     void setupActions();
     void setupUi();
     void setupToolBar();
-    void setupStatusBar();
     void setupSysTray();
     void setupDocks();
     void connectEvents();
@@ -107,7 +104,6 @@ private:
 
     QStackedWidget *ui_mainStack;
     QWidget *ui_mainPage;
-    QStatusBar *ui_mainStatusBar;
 
     // ==== Docks ====
 
@@ -134,10 +130,7 @@ private:
      */
     void raise();
 
-    QProgressBar *duqf_fundingBar = nullptr;
     QSystemTrayIcon *trayIcon;
-    QLabel *title;
-    DuMenu *helpMenu;
     ProgressPage *progressPage;
     bool m_maximized;
 
@@ -152,7 +145,6 @@ private:
 
     QToolButton *ui_shotsButton;
     QAction *ui_shotMenuAction;
-
 
     QToolButton *ui_scheduleButton;
     QAction *ui_scheduleMenuAction;
@@ -179,7 +171,6 @@ private:
     bool m_showUpdateAlerts = false;
 
 private slots:
-    void updateAvailable(QJsonObject updateInfo);
     void bugReport();
     void forum();
     void chat();
@@ -190,8 +181,6 @@ private slots:
     void showHide();
     void askBeforeClose();
     void maximize(bool m);
-
-    void log(DuQFLog m);
 
     void pageChanged(int i);
     void setOfflineAction();

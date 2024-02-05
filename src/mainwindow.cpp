@@ -6,10 +6,8 @@
 #include "itemmanagerwidget.h"
 #include "pipefilemanagerwidget.h"
 #include "progressmanager.h"
-#include "progressbar.h"
 #include "docks/consolewidget.h"
 #include "loginpage.h"
-#include "qstatusbar.h"
 #include "sequencemanagerwidget.h"
 #include "shotmanagerwidget.h"
 #include "stepmanagerwidget.h"
@@ -59,8 +57,6 @@ MainWindow::MainWindow(const QCommandLineParser &cli, QWidget *parent) :
     setupUi();
     // Build the toolbar
     setupToolBar();
-    // Build the status bar
-    setupStatusBar();
     // Build the sys tray icon
     setupSysTray();
     // Build the docks
@@ -68,9 +64,6 @@ MainWindow::MainWindow(const QCommandLineParser &cli, QWidget *parent) :
 
     // Set style
     setStyle();
-
-    DuApplication *app = qobject_cast<DuApplication*>(qApp);
-    updateAvailable(app->updateInfo());
 
     // Set UI
     ui_mainStack->setCurrentIndex(Home);
@@ -181,7 +174,6 @@ void MainWindow::connectEvents()
     connect(ui_mainStack,SIGNAL(currentChanged(int)), this, SLOT(pageChanged(int)));
 
     // Misc
-    connect(DuQFLogger::instance(), &DuQFLogger::newLog, this, &MainWindow::log);
     connect(Daemon::instance(), &Daemon::raise, this, &MainWindow::raise);
     connect(Ramses::instance(),&Ramses::userChanged, this, &MainWindow::currentUserChanged);
     connect(Ramses::instance(), &Ramses::currentProjectChanged, this, &MainWindow::currentProjectChanged);
@@ -289,56 +281,10 @@ void MainWindow::askBeforeClose()
     if (r == QMessageBox::Yes) this->close();
 }
 
-void MainWindow::updateAvailable(QJsonObject updateInfo)
-{
-    // Check funding
-    bool donate = QString(URL_DONATION) != "";
-    if (donate)
-    {
-        double month = updateInfo.value("monthlyFund").toDouble(0.0);
-        double goal = updateInfo.value("fundingGoal").toDouble(4000);
-        if (goal > 0) {
-            double ratio = month / goal * 100;
-            if (!duqf_fundingBar)
-            {
-                duqf_fundingBar = new QProgressBar(this);
-                duqf_fundingBar->setObjectName("fundingBar");
-                duqf_fundingBar->setMaximumWidth(75);
-                duqf_fundingBar->setFormat("♥ Donate");
-                duqf_fundingBar->installEventFilter(this);
-                ui_mainStatusBar->addPermanentWidget(duqf_fundingBar);
-            }
-            duqf_fundingBar->setMaximum(goal);
-            duqf_fundingBar->setValue(month);
-            duqf_fundingBar->setToolTip( tr("This month, we've collected $%1.\n"
-                                            "That's %2 % of our monthly goal.\n"
-                                            "Thanks for your support!\n\n"
-                                            "Click to Donate now!\nor go to: %3").arg(
-                                             QString::number(month),
-                                             QString::number(ratio, 'f', 0),
-                                             QString(URL_DONATION)
-                                             ));
-        }
-    }
-}
-
 void MainWindow::maximize(bool m)
 {
     if (m) showMaximized();
     else showNormal();
-}
-
-void MainWindow::log(DuQFLog m)
-{
-    QString message = m.message();
-    if (message == "") return;
-
-    DuQFLog::LogType type = m.type();
-
-    if (type == DuQFLog::Information) ui_mainStatusBar->showMessage(message,5000);
-    else if (type == DuQFLog::Warning) ui_mainStatusBar->showMessage(message,10000);
-    else if (type == DuQFLog::Critical) ui_mainStatusBar->showMessage(message);
-    else if (type == DuQFLog::Fatal) ui_mainStatusBar->showMessage(message);
 }
 
 void MainWindow::pageChanged(int i)
@@ -642,8 +588,6 @@ void MainWindow::finishSync()
 
     // Refresh all UI!
     this->update();
-
-    ui_mainStatusBar->showMessage(tr("Sync finished!"), 5000);
 }
 
 void MainWindow::startSync()
@@ -653,7 +597,6 @@ void MainWindow::startSync()
     QString t = tr("Syncing...");
     m_actionSync->setText(t);
     m_actionFullSync->setText(t);
-    ui_mainStatusBar->showMessage(t);
 }
 
 bool MainWindow::eventFilter(QObject *obj, QEvent *event)
@@ -940,10 +883,6 @@ void MainWindow::setupUi()
     mainLayout->setContentsMargins(0, 0, 0, 0);
     LoginPage *lp = new LoginPage(this);
     mainLayout->addWidget(lp);
-
-    ui_mainStatusBar = new QStatusBar(this);
-    ui_mainStatusBar->setSizeGripEnabled(false);
-    this->setStatusBar(ui_mainStatusBar);
 
     // user profile
     UserProfilePage *up = new UserProfilePage(this);
@@ -1262,7 +1201,7 @@ void MainWindow::setupToolBar()
     ui_pipelineButton->setText("Pipeline");
     ui_pipelineButton->setMenu(pipelineMenu);
     ui_pipelineButton->setIconSize(QSize(16,16));
-    ui_pipelineButton->setPopupMode(QToolButton::MenuButtonPopup);
+    ui_pipelineButton->setPopupMode(QToolButton::InstantPopup);
     ui_pipelineButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
 
     DuMenu *assetsMenu = new DuMenu(this);
@@ -1277,7 +1216,7 @@ void MainWindow::setupToolBar()
     ui_assetsButton->setText("Assets");
     ui_assetsButton->setMenu(assetsMenu);
     ui_assetsButton->setIconSize(QSize(16,16));
-    ui_assetsButton->setPopupMode(QToolButton::MenuButtonPopup);
+    ui_assetsButton->setPopupMode(QToolButton::InstantPopup);
     ui_assetsButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
 
     DuMenu *shotsMenu = new DuMenu(this);
@@ -1293,7 +1232,7 @@ void MainWindow::setupToolBar()
     ui_shotsButton->setText("Shots");
     ui_shotsButton->setMenu(shotsMenu);
     ui_shotsButton->setIconSize(QSize(16,16));
-    ui_shotsButton->setPopupMode(QToolButton::MenuButtonPopup);
+    ui_shotsButton->setPopupMode(QToolButton::InstantPopup);
     ui_shotsButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
 
     DuMenu *scheduleMenu = new DuMenu(this);
@@ -1307,7 +1246,7 @@ void MainWindow::setupToolBar()
     ui_scheduleButton->setText("Schedule");
     ui_scheduleButton->setMenu(scheduleMenu);
     ui_scheduleButton->setIconSize(QSize(16,16));
-    ui_scheduleButton->setPopupMode(QToolButton::MenuButtonPopup);
+    ui_scheduleButton->setPopupMode(QToolButton::InstantPopup);
     ui_scheduleButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
 
     DuMenu *filesMenu = new DuMenu(this);
@@ -1355,7 +1294,6 @@ void MainWindow::setupToolBar()
     m_actionLogOut->setVisible(false);
     moreMenu->addMenu(ui_userMenu);
 
-
     ui_databaseMenu = new DuMenu();
     ui_databaseMenu->setTitle("Offline");
     ui_databaseMenu->setIcon(DuIcon(":/icons/storage"));
@@ -1371,6 +1309,72 @@ void MainWindow::setupToolBar()
     moreMenu->addSeparator();
     moreMenu->addAction(m_actionConsole);
     moreMenu->addAction(m_actionSettings);
+
+    auto helpMenu = new DuMenu(this);
+    helpMenu->setIcon(DuIcon(":/icons/help"));
+    helpMenu->setTitle(tr("Help"));
+    moreMenu->addSeparator();
+    moreMenu->addMenu(helpMenu);
+
+    if (QString(URL_DOC) != "")
+    {
+        DuAction *docAction = new DuAction("Help", this);
+        docAction->setIcon(":/icons/documentation");
+        docAction->setToolTip("Read the documentation");
+        docAction->setShortcut(QKeySequence("F1"));
+        helpMenu->addAction(docAction);
+        connect(docAction, &DuAction::triggered, this, &MainWindow::doc);
+    }
+    DuAction *aboutAction = new DuAction(tr("About"), this);
+    aboutAction->setIcon(":/icons/info");
+    helpMenu->addAction(aboutAction);
+    connect(aboutAction, &DuAction::triggered, this, &MainWindow::about);
+    helpMenu->addSeparator();
+    bool chat = QString(URL_CHAT) != "";
+    bool bugReport = QString(URL_BUGREPORT) != "";
+    bool forum = QString(URL_FORUM) != "";
+    bool donate = QString(URL_DONATION) != "";
+    if (bugReport)
+    {
+        DuAction *bugReportAction = new DuAction(tr("Bug Report"), this);
+        bugReportAction->setIcon(":/icons/bug-report");
+        bugReportAction->setToolTip("Report a DuIcon");
+        helpMenu->addAction(bugReportAction);
+        if (!chat && !forum && !donate) helpMenu->addSeparator();
+        connect(bugReportAction, &DuAction::triggered, this, &MainWindow::bugReport);
+    }
+    if (chat)
+    {
+        DuAction *chatAction = new DuAction(tr("Chat"), this);
+        chatAction->setIcon(":/icons/chat");
+        chatAction->setToolTip("Come and have a chat");
+        helpMenu->addAction(chatAction);
+        if (!forum && !donate) helpMenu->addSeparator();
+        connect(chatAction, &DuAction::triggered, this, &MainWindow::chat);
+    }
+    if (forum)
+    {
+        DuAction *forumAction = new DuAction(tr("Forum"), this);
+        forumAction->setIcon(":/icons/forum");
+        forumAction->setToolTip("Join us on our forum");
+        helpMenu->addAction(forumAction);
+        if (!donate) helpMenu->addSeparator();
+        connect(forumAction, SIGNAL(triggered()), this, SLOT(duqf_forum()));
+    }
+    if (donate)
+    {
+        DuAction *donateAction = new DuAction("I ♥ " + QString(STR_FILEDESCRIPTION), this);
+        donateAction->setIcon(":/icons/donate");
+        donateAction->setToolTip("Help us, donate now!");
+        helpMenu->addAction(donateAction);
+        helpMenu->addSeparator();
+        moreMenu->addAction(donateAction);
+        connect(donateAction, &DuAction::triggered, this, &MainWindow::donate);
+    }
+    DuAction *aboutQtAction = new DuAction(tr("About Qt"), this);
+    aboutQtAction->setIcon(":/icons/qt");
+    helpMenu->addAction(aboutQtAction);
+    connect(aboutQtAction, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
 
     // Populate Toolbar
     auto projectSelector = new ProjectSelectorWidget(this);
@@ -1397,79 +1401,6 @@ void MainWindow::setupToolBar()
     ui_filesMenuAction->setVisible(false);
 
     addWindowButtons(true);
-}
-
-void MainWindow::setupStatusBar()
-{
-    //Populate status bar
-
-
-    QToolButton *helpButton = new QToolButton();
-    helpButton->setIcon(DuIcon(":/icons/help"));
-    helpButton->setToolTip("Get Help");
-    helpButton->setPopupMode( QToolButton::InstantPopup );
-    helpMenu = new DuMenu(this);
-
-    helpButton->setMenu(helpMenu);
-    ui_mainStatusBar->addPermanentWidget(helpButton);
-
-    if (QString(URL_DOC) != "")
-    {
-        QAction *docAction = new QAction(DuIcon(":/icons/documentation"), "Help");
-        docAction->setToolTip("Read the documentation");
-        docAction->setShortcut(QKeySequence("F1"));
-        helpMenu->addAction(docAction);
-        connect(docAction, &DuAction::triggered, this, &MainWindow::doc);
-    }
-    QAction *aboutAction = new QAction(DuIcon(":/icons/info"), "About");
-    helpMenu->addAction(aboutAction);
-    connect(aboutAction, &DuAction::triggered, this, &MainWindow::about);
-    helpMenu->addSeparator();
-    bool chat = QString(URL_CHAT) != "";
-    bool bugReport = QString(URL_BUGREPORT) != "";
-    bool forum = QString(URL_FORUM) != "";
-    bool donate = QString(URL_DONATION) != "";
-    if (bugReport)
-    {
-        QAction *bugReportAction = new QAction(QIcon(":/icons/bug-report"), "Bug Report");
-        bugReportAction->setToolTip("Report a DuIcon");
-        helpMenu->addAction(bugReportAction);
-        if (!chat && !forum && !donate) helpMenu->addSeparator();
-        connect(bugReportAction, &DuAction::triggered, this, &MainWindow::bugReport);
-    }
-    if (chat)
-    {
-        QAction *chatAction = new QAction(DuIcon(":/icons/chat"), "Chat");
-        chatAction->setToolTip("Come and have a chat");
-        helpMenu->addAction(chatAction);
-        if (!forum && !donate) helpMenu->addSeparator();
-        connect(chatAction, &DuAction::triggered, this, &MainWindow::chat);
-    }
-    if (forum)
-    {
-        QAction *forumAction = new QAction(DuIcon(":/icons/forum"), "Forum");
-        forumAction->setToolTip("Join us on our forum");
-        helpMenu->addAction(forumAction);
-        if (!donate) helpMenu->addSeparator();
-        connect(forumAction, SIGNAL(triggered()), this, SLOT(duqf_forum()));
-    }
-    if (donate)
-    {
-        QAction *donateAction = new QAction(DuIcon(":/icons/donate"), "I ♥ " + QString(STR_FILEDESCRIPTION));
-        donateAction->setToolTip("Help us, donate now!");
-        helpMenu->addAction(donateAction);
-        helpMenu->addSeparator();
-        connect(donateAction, &DuAction::triggered, this, &MainWindow::donate);
-
-        /*QToolButton *donateButton = new QToolButton();
-        donateButton->setIcon(DuIcon(":/icons/donate"));
-        donateButton->setToolTip("I ♥ " + QString(STR_FILEDESCRIPTION));
-        ui_mainStatusBar->addPermanentWidget(donateButton);
-        connect(donateButton, SIGNAL(clicked()), this, SLOT(duqf_donate()));*/
-    }
-    QAction *aboutQtAction = new QAction(DuIcon(":/icons/qt"), "About Qt");
-    helpMenu->addAction(aboutQtAction);
-    connect(aboutQtAction, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
 }
 
 void MainWindow::setupSysTray()
