@@ -77,7 +77,6 @@ MainWindow::MainWindow(const QCommandLineParser &cli, QWidget *parent) :
 
     // Everything is ready
     connectEvents();
-    connectShortCuts();
 
     // Restore UI state
     settings.beginGroup("ui");
@@ -191,15 +190,6 @@ void MainWindow::connectEvents()
     connect(DBInterface::instance(), &DBInterface::syncStarted, this, &MainWindow::startSync);
 
     connect(qApp, &QCoreApplication::aboutToQuit, this, &MainWindow::onQuit);
-}
-
-void MainWindow::connectShortCuts()
-{
-    QList<QKeySequence> syncSC;
-    syncSC << QKeySequence("Ctrl+R");
-    syncSC << QKeySequence("F5");
-    m_actionSync->setShortcuts( syncSC );
-    m_actionFullSync->setShortcut(QKeySequence("Ctrl+Shift+R"));
 }
 
 void MainWindow::setPropertiesDockWidget(QWidget *w, QString title, QString icon)
@@ -857,10 +847,13 @@ void MainWindow::setupActions()
     m_actionSettings->setIcon(":/icons/settings");
 
     m_actionSync = new DuAction(this);
+    QList<QKeySequence> syncSC;
+    syncSC << QKeySequence("Ctrl+R");
+    syncSC << QKeySequence("F5");
+    m_actionSync->setShortcuts( syncSC );
     m_actionSync->setText(tr("Quick sync"));
     m_actionSync->setToolTip(tr("Quickly syncs the most recent data with the server."));
     m_actionSync->setIcon(":/icons/check-update");
-    m_actionSync->setShortcut(QKeySequence("Ctrl+R"));
 
     m_actionFullSync = new DuAction(this);
     m_actionFullSync->setText(tr("Full sync"));
@@ -1366,6 +1359,9 @@ void MainWindow::setupToolBar()
     ui_databaseMenu = new DuMenu();
     ui_databaseMenu->setTitle("Offline");
     ui_databaseMenu->setIcon(DuIcon(":/icons/storage"));
+    ui_databaseMenu->addAction(m_actionSync);
+    ui_databaseMenu->addAction(m_actionFullSync);
+    ui_databaseMenu->addSeparator();
     ui_databaseMenu->addAction(m_actionSetOffline);
     ui_databaseMenu->addAction(m_actionSetOnline);
     ui_databaseMenu->addAction(m_actionDatabaseSettings);
@@ -1373,11 +1369,7 @@ void MainWindow::setupToolBar()
     ui_databaseAction = moreMenu->addMenu(ui_databaseMenu);
 
     moreMenu->addSeparator();
-    moreMenu->addAction(m_actionSync);
-    moreMenu->addAction(m_actionFullSync);
-    moreMenu->addSeparator();
     moreMenu->addAction(m_actionConsole);
-    moreMenu->addSeparator();
     moreMenu->addAction(m_actionSettings);
 
     // Populate Toolbar
@@ -1404,18 +1396,13 @@ void MainWindow::setupToolBar()
     ui_scheduleMenuAction->setVisible(false);
     ui_filesMenuAction->setVisible(false);
 
-    addWindowButtons();
+    addWindowButtons(true);
 }
 
 void MainWindow::setupStatusBar()
 {
     //Populate status bar
 
-
-
-
-    // version in statusbar
-    ui_mainStatusBar->addPermanentWidget(new QLabel("v" + QString(STR_VERSION)));
 
     QToolButton *helpButton = new QToolButton();
     helpButton->setIcon(DuIcon(":/icons/help"));
