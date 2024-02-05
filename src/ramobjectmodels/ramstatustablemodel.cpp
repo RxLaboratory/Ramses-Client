@@ -175,7 +175,13 @@ QSet<RamStatus *> RamStatusTableModel::getStatus(const QDate &date, const QStrin
         auto st = qobject_cast<RamStatus*>(status);
         if (!st) continue;
 
-        if (userUuid == "" || userUuid == st->assignedUser()->uuid())
+        if (userUuid == "")
+            allStatus << st;
+
+        if (!st->assignedUser())
+            continue;
+
+        if (userUuid == st->assignedUser()->uuid())
             allStatus << st;
     }
     return allStatus;
