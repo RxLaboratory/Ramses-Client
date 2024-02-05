@@ -504,8 +504,8 @@ void MainWindow::currentUserChanged()
     disconnect(_currentUserConnection);
 
     //defaults
-    ui_userButton->setText("Guest");
-    ui_userButton->setIcon(QIcon(""));
+    ui_userMenu->setTitle(QString("User (%1)").arg("Guest"));
+    ui_userMenu->setIcon(DuIcon(":/icons/user"));
     m_actionAdmin->setVisible(false);
     m_actionUserProfile->setVisible(false);
     m_actionUserFolder->setVisible(false);
@@ -528,26 +528,26 @@ void MainWindow::currentUserChanged()
 
     _currentUserConnection = connect(user, &RamUser::dataChanged, this, &MainWindow::currentUserChanged);
 
-    ui_userButton->setText(user->shortName());
+    ui_userMenu->setTitle(QString("User (%1)").arg(user->shortName()));
     m_actionUserProfile->setVisible(true);
     m_actionUserFolder->setVisible(true);
 
     if (user->role() == RamUser::Admin)
     {
         m_actionAdmin->setVisible(true);
-        ui_userButton->setIcon(DuIcon(":/icons/admin"));
+        ui_userMenu->setIcon(DuIcon(":/icons/admin"));
     }
     else if (user->role() == RamUser::ProjectAdmin)
     {
-        ui_userButton->setIcon(DuIcon(":/icons/project-admin"));
+        ui_userMenu->setIcon(DuIcon(":/icons/project-admin"));
     }
     else if (user->role() == RamUser::Lead)
     {
-        ui_userButton->setIcon(DuIcon(":/icons/lead"));
+        ui_userMenu->setIcon(DuIcon(":/icons/lead"));
     }
     else
     {
-        ui_userButton->setIcon(DuIcon(":/icons/user"));
+        ui_userMenu->setIcon(DuIcon(":/icons/user"));
     }
 }
 
@@ -1258,7 +1258,6 @@ void MainWindow::setupDocks()
 
 void MainWindow::setupToolBar()
 {
-    ui_mainToolBar->addAction(m_actionLogIn);
     ui_mainToolBar->addAction(m_actionAdmin);
 
     DuMenu *pipelineMenu = new DuMenu(this);
@@ -1346,12 +1345,6 @@ void MainWindow::setupToolBar()
     ui_filesButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
 
     DuMenu *moreMenu = new DuMenu(this);
-    moreMenu->addAction(m_actionSync);
-    moreMenu->addAction(m_actionFullSync);
-    moreMenu->addSeparator();
-    moreMenu->addAction(m_actionConsole);
-    moreMenu->addSeparator();
-    moreMenu->addAction(m_actionSettings);
 
     QToolButton *moreButton = new QToolButton();
     moreButton->setText(tr("More"));
@@ -1360,6 +1353,26 @@ void MainWindow::setupToolBar()
     moreButton->setIconSize(QSize(16,16));
     moreButton->setMenu(moreMenu);
     moreButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+
+    ui_userMenu = new DuMenu();
+    ui_userMenu->setTitle(QString("User (%1)").arg("Guest"));
+    ui_userMenu->setIcon(DuIcon(":/icons/user"));
+    ui_userMenu->addAction(m_actionLogIn);
+    ui_userMenu->addAction(m_actionUserFolder);
+    m_actionUserFolder->setVisible(false);
+    ui_userMenu->addAction(m_actionUserProfile);
+    m_actionUserProfile->setVisible(false);
+    ui_userMenu->addAction(m_actionLogOut);
+    m_actionLogOut->setVisible(false);
+    moreMenu->addMenu(ui_userMenu);
+
+    moreMenu->addSeparator();
+    moreMenu->addAction(m_actionSync);
+    moreMenu->addAction(m_actionFullSync);
+    moreMenu->addSeparator();
+    moreMenu->addAction(m_actionConsole);
+    moreMenu->addSeparator();
+    moreMenu->addAction(m_actionSettings);
 
     // Populate Toolbar
     auto projectSelector = new ProjectSelectorWidget(this);
@@ -1405,23 +1418,6 @@ void MainWindow::setupStatusBar()
     ui_networkButton->setPopupMode(QToolButton::InstantPopup);
     ui_mainStatusBar->addPermanentWidget(ui_networkButton);
     ui_networkButton->setVisible(false);
-
-    ui_userMenu = new DuMenu();
-    ui_userMenu->addAction(m_actionLogIn);
-    ui_userMenu->addAction(m_actionUserFolder);
-    m_actionUserFolder->setVisible(false);
-    ui_userMenu->addAction(m_actionUserProfile);
-    m_actionUserProfile->setVisible(false);
-    ui_userMenu->addAction(m_actionLogOut);
-    m_actionLogOut->setVisible(false);
-    ui_userButton = new DuQFAutoSizeToolButton(this);
-    ui_userButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-    ui_userButton->setText("Guest");
-    //ui_userButton->setMinimumWidth(75);
-    ui_userButton->setMenu(ui_userMenu);
-    ui_userButton->setPopupMode(QToolButton::InstantPopup);
-    ui_mainStatusBar->addPermanentWidget(ui_userButton);
-
 
     // version in statusbar
     ui_mainStatusBar->addPermanentWidget(new QLabel("v" + QString(STR_VERSION)));

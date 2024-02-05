@@ -166,7 +166,6 @@ private:
 
     DuMenu *ui_userMenu;
     DuMenu *ui_databaseMenu;
-    DuQFAutoSizeToolButton *ui_userButton;
     DuQFAutoSizeToolButton *ui_networkButton;
     int m_currentPageIndex = 0;
 
