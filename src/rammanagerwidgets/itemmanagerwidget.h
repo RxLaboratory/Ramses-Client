@@ -83,6 +83,7 @@ private slots:
     void setVeryHard();
     void setDiffculty(RamStatus::Difficulty difficulty);
     void setCompletion();
+    void setPriority();
     void copyComment();
     void cutComment();
     void pasteComment();
@@ -152,6 +153,10 @@ private:
     QAction *ui_completion75;
     QAction *ui_completion90;
     QAction *ui_completion100;
+    QAction *ui_priorityNone;
+    QAction *ui_priorityLow;
+    QAction *ui_priorityMedium;
+    QAction *ui_priorityHigh;
     DuMenu *ui_contextMenu;
     QAction *ui_copyComment;
     QAction *ui_cutComment;
