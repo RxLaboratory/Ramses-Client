@@ -132,7 +132,7 @@ void DuUI::replaceCSS(QWidget *w, const QString &css, const QString &where)
         newStyleList << css;
         newStyleList << "/*DuUI:End:"+where+"*/";
     }
-    qDebug() << newStyleList.join("\n");
+
     w->setStyleSheet(newStyleList.join("\n"));
 }
 

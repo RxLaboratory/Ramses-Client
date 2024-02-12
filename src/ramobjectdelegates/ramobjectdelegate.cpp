@@ -254,7 +254,7 @@ void RamObjectDelegate::paintProgress(const QModelIndex &index, QPainter *painte
     }
 }
 
-QColor RamObjectDelegate::priorityColor(qreal priority) const
+QColor RamObjectDelegate::priorityColor(qreal priority)
 {
     if (priority < .75) {
         qreal v = Interpolations::linear(priority, .5, .75, 0, 1);
