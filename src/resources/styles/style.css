@@ -197,6 +197,86 @@ QDateTimeEdit::down-arrow:disabled {
       image: none;
 }
 
+/* CALENDAR */
+
+/* normal days */
+QCalendarWidget QAbstractItemView:enabled
+{
+    background-color: @color-less-dark-grey;
+    color: @color-light-grey;
+}
+
+/* header row */
+QCalendarWidget QWidget {
+    alternate-background-color: @color-dark-grey;
+}
+
+/* navigation bar */
+QCalendarWidget QWidget#qt_calendar_navigationbar
+{
+    background-color: @color-less-dark-grey;
+}
+
+/*QCalendarWidget QToolButton {
+    height: 60px;
+    width: 150px;
+    color: white;
+    font-size: 24px;
+    icon-size: 56px, 56px;
+    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop: 0 #cccccc, stop: 1 #333333);
+}
+
+QCalendarWidget QMenu {
+    width: 150px;
+    left: 20px;
+    color: white;
+    font-size: 18px;
+    background-color: rgb(100, 100, 100);
+}
+
+QCalendarWidget QSpinBox {
+    width: 150px;
+    font-size:24px;
+    color: white;
+    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop: 0 #cccccc, stop: 1 #333333);
+    selection-background-color: rgb(136, 136, 136);
+    selection-color: rgb(255, 255, 255);
+}
+
+QCalendarWidget QSpinBox::up-button { subcontrol-origin: border;  subcontrol-position: top right;  width:65px; }
+
+QCalendarWidget QSpinBox::down-button {subcontrol-origin: border; subcontrol-position: bottom right;  width:65px;}
+
+QCalendarWidget QSpinBox::up-arrow { width:56px;  height:56px; }
+
+QCalendarWidget QSpinBox::down-arrow { width:56px;  height:56px; }*/
+
+/* header row */
+/*QCalendarWidget QWidget { alternate-background-color: rgb(128, 128, 128); }*/
+
+/* normal days */
+/*QCalendarWidget QAbstractItemView:enabled
+{
+    background-color: blue;
+}
+
+QCalendarWidget
+{
+    background-color: red;
+}*/
+
+/* days in other months */
+/* navigation bar */
+/*QCalendarWidget QWidget#qt_calendar_navigationbar
+{
+    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop: 0 #cccccc, stop: 1 #333333);
+}*/
+
+/*QCalendarWidget QAbstractItemView:disabled
+{
+    color: rgb(64, 64, 64);
+}*/
+
 /* EDIT TEXTS */
 
 QTextEdit,
