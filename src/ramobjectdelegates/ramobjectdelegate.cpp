@@ -258,7 +258,7 @@ QColor RamObjectDelegate::priorityColor(qreal priority)
 {
     if (priority < .75) {
         qreal v = Interpolations::linear(priority, .5, .75, 0, 1);
-        QColor c(88, 95, 191);
+        QColor c(250, 237, 95);
         c.setAlpha(v*256);
         return c;
     }
@@ -266,24 +266,24 @@ QColor RamObjectDelegate::priorityColor(qreal priority)
         qreal v = Interpolations::linear(priority, .75, 1, 0, 1);
 
         return ColorUtils::interpolateRGB(
-            QColor(88, 95, 191),
-            QColor(195, 121, 69),
+            QColor(250, 237, 95),
+            QColor(250, 160, 36),
             v );
     }
     else if (priority < 2) {
         qreal v = Interpolations::linear(priority, 1, 2, 0, 1);
 
         return ColorUtils::interpolateRGB(
-            QColor(195, 121, 69),
-            QColor(154, 25, 45),
+            QColor(250, 160, 36),
+            QColor(250, 20, 20),
             v );
     }
     else {
         qreal v = Interpolations::linear(priority, 2, 3, 0, 1);
 
         return ColorUtils::interpolateRGB(
-            QColor(154, 25, 45),
-            QColor(127, 52, 157),
+            QColor(250, 20, 20),
+            QColor(250, 20, 230),
             v );
     }
     return QColor();
