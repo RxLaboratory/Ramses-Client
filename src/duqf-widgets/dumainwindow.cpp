@@ -48,7 +48,7 @@ void DuMainWindow::addDockWidget(Qt::DockWidgetArea area, DuDockWidget *dockwidg
 
 void DuMainWindow::setupUi()
 {
-    this->setWindowIcon(QIcon(":/icons/app"));
+    this->setWindowIcon(QIcon(APP_ICON));
     QMainWindow::setWindowTitle(QStringLiteral(STR_INTERNALNAME));
 
     QWidget *centralWidget = new QWidget(this);
@@ -69,11 +69,10 @@ void DuMainWindow::setupToolBar()
     ui_mainToolBar->setProperty("osClass", "win");
 #elif defined(Q_OS_MAC)
     ui_mainToolBar->setProperty("osClass", "mac");
-    ui_mainToolBar->installEventFilter(this);
 #elif defined(Q_OS_LINUX)
     ui_mainToolBar->setProperty("osClass", "linux");
-    ui_mainToolBar->installEventFilter(this);
 #endif
+    ui_mainToolBar->installEventFilter(this);
 
     // Appearance
     ui_mainToolBar->setObjectName("mainToolBar");
@@ -91,9 +90,9 @@ void DuMainWindow::connectEvents()
 {
     // Window Buttons
 #ifdef Q_OS_WIN
-    connect(m_minimizeAction, &QAction::triggered, this, &DuMainWindow::minimizeTriggered);
+    /*connect(m_minimizeAction, &QAction::triggered, this, &DuMainWindow::minimizeTriggered);
     connect(m_maximizeAction, &QAction::triggered, this, &DuMainWindow::maximizeTriggered);
-    connect(m_closeAction, &QAction::triggered, this, &DuMainWindow::close);
+    connect(m_closeAction, &QAction::triggered, this, &DuMainWindow::close);*/
 #endif
 }
 
@@ -323,7 +322,7 @@ void DuMainWindow::addWindowButtons(bool showVersion)
     ui_mainToolBar->addWidget(new DuToolBarSpacer());
 
 #ifdef Q_OS_WIN
-    ui_mainToolBar->addAction(m_minimizeAction);
+    /*ui_mainToolBar->addAction(m_minimizeAction);
     QWidget *minWidget = ui_mainToolBar->widgetForAction(m_minimizeAction);
     minWidget->setFixedSize(
         DuUI::adjustToDpi(QSize(24,24))
@@ -345,7 +344,7 @@ void DuMainWindow::addWindowButtons(bool showVersion)
         DuUI::adjustToDpi(QSize(24,24))
         );
     closeWidget->setObjectName("windowButton");
-    ui_mainToolBar->layout()->setAlignment(closeWidget, Qt::AlignTop);
+    ui_mainToolBar->layout()->setAlignment(closeWidget, Qt::AlignTop);*/
 
 #endif // WIN
 }

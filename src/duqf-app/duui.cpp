@@ -36,18 +36,18 @@ void DuUI::buildUI(const QCommandLineParser &cli, DuSplashScreen *s)
 {
     s->newMessage("Building UI");
 
-#ifdef _WIN32
+//#ifdef _WIN32
 
     //On Windows, the widget needs to be encapsulated in a native window for frameless rendering
     //In this case, QWinWidget creates the mainwindow, and adds it to a layout
-    QWinWidget *w = new QWinWidget(cli);
+    /*QWinWidget *w = new QWinWidget(cli);
 
     // Restore Geometry and state
     w->restoreGeometry( DuSettingsManager::instance()->uiWindowGeometry() );
     w->getMainWindow()->restoreState(DuSettingsManager::instance()->uiWindowState());
     // But hide the docks for a cleaner look
-    //w->getMainWindow()->hideAllDocks();
-#else
+    //w->getMainWindow()->hideAllDocks();*/
+//#else
     //On OS X / Linux, the widget can handle everything itself so just create Widget as normal
     MainWindow *w = new MainWindow( cli );
 
@@ -56,7 +56,7 @@ void DuUI::buildUI(const QCommandLineParser &cli, DuSplashScreen *s)
     w->restoreState(DuSettingsManager::instance()->uiWindowState());
     // But hide the docks for a cleaner look
     //w->hideAllDocks();
-#endif
+//#endif
 
     //if (!cli.isSet("no_ui"))
     w->show();
