@@ -317,7 +317,11 @@ int RamScheduleDelegate::drawMarkdown(QPainter *painter, QRect rect, const QStri
 
     QTextDocument td;
     td.setIndentWidth(20);
+#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
+    td.setPlainText(md);
+#else
     td.setMarkdown(md);
+#endif
     td.setTextWidth(rect.width());
 
     QRect clipRect(rect);

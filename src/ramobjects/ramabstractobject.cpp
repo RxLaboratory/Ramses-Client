@@ -380,19 +380,31 @@ QVariant RamAbstractObject::roleData(int role) const
         td.setIndentWidth(20);
         QString comment = this->comment();
         if (comment != "") {
+#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
+            td.setPlainText(comment);
+#else
             td.setMarkdown(comment);
+#endif
             h += 5 + td.size().height();
             w = std::fmax(w, td.size().width());
         }
         QString details = this->details();
         if (details != "") {
+#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
+            td.setPlainText(details);
+#else
             td.setMarkdown(details);
+#endif
             h += 5 + td.size().height();
             w = std::fmax(w, td.size().width());
         }
         QString subDetails = this->subDetails();
         if (subDetails != "") {
+#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
+            td.setPlainText(subDetails);
+#else
             td.setMarkdown(subDetails);
+#endif
             h += 5 + td.size().height();
             w = std::fmax(w, td.size().width());
         }

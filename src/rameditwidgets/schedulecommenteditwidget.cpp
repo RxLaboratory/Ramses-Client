@@ -26,7 +26,11 @@ void ScheduleCommentEditWidget::setColor(const QColor &color)
 
 void ScheduleCommentEditWidget::setComment()
 {
+#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
+    QString comment = ui_commentEdit->toPlainText();
+#else
     QString comment = ui_commentEdit->toMarkdown();
+#endif
     if (!m_comment) {
         m_comment = new RamScheduleComment( m_project );
         m_comment->setDate(m_date);
@@ -71,7 +75,11 @@ void ScheduleCommentEditWidget::setupUi()
     ui_commentEdit->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     dummyLayout->addWidget(ui_commentEdit);
     if (m_comment)
+#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
+        ui_commentEdit->setPlainText(m_comment->comment());
+#else
         ui_commentEdit->setMarkdown(m_comment->comment());
+#endif
 }
 
 void ScheduleCommentEditWidget::connectEvents()

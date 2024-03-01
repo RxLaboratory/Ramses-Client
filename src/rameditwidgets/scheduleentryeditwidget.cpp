@@ -28,8 +28,11 @@ void ScheduleEntryEditWidget::setComment()
         auto step = qobject_cast<RamStep*>(ui_stepBox->currentObject());
         m_entry = new RamScheduleEntry(m_user, step, m_date);
     }
-
+#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
+    m_entry->setComment(ui_commentEdit->toPlainText());
+#else
     m_entry->setComment(ui_commentEdit->toMarkdown());
+#endif
 }
 
 void ScheduleEntryEditWidget::setupUi()
@@ -73,8 +76,12 @@ void ScheduleEntryEditWidget::setupUi()
     ui_commentEdit->setObjectName("commentEdit");
     ui_commentEdit->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     dummyLayout->addWidget(ui_commentEdit);
-    if (m_entry)
+    if (m_entry) 
+#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
+        ui_commentEdit->setPlainText(m_entry->comment());
+#else
         ui_commentEdit->setMarkdown(m_entry->comment());
+#endif
 
     // Get due tasks
     const QDate date = m_date.date();
