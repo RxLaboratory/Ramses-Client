@@ -5,6 +5,7 @@
 #include "ramabstractitem.h"
 #include "ramses.h"
 #include "ramworkingfolder.h"
+#include "ramobjectdelegate.h"
 
 StatusEditWidget::StatusEditWidget(QWidget *parent) :
     ObjectEditWidget( parent)
@@ -190,6 +191,10 @@ void StatusEditWidget::reInit(RamObject *o)
 
         this->setEnabled(false);
     }
+
+
+    // Set the priority color
+    updatePriorityColor();
 }
 
 void StatusEditWidget::setState(RamState *state)
@@ -362,6 +367,8 @@ void StatusEditWidget::setDueDate()
 
     RamUser *currentUser = Ramses::instance()->currentUser();
     m_status->setModifiedBy(currentUser);
+
+    updatePriorityColor();
 }
 
 void StatusEditWidget::setPriority(QVariant p)
@@ -370,6 +377,8 @@ void StatusEditWidget::setPriority(QVariant p)
     m_status->setPriority(
         static_cast<RamStatus::Priority>(p.toInt())
         );
+
+    updatePriorityColor();
 }
 
 void StatusEditWidget::mainFileSelected()
@@ -558,6 +567,27 @@ void StatusEditWidget::removeSelectedPreviewFile()
     DuQFLogger::instance()->log("Deleting " + fileName + "...");
 
     refresh();
+}
+
+void StatusEditWidget::updatePriorityColor()
+{
+    if (!m_status) {
+        DuUI::replaceCSS(ui_priorityBox, "/* Default */", "priorityColor");
+        return;
+    }
+
+    float p = m_status->lateness() + m_status->priority();
+    QColor color = RamObjectDelegate::priorityColor(p);
+
+    if (color.alpha() == 0) {
+        DuUI::replaceCSS(ui_priorityBox, "/* Default */", "priorityColor");
+        return;
+    }
+
+    QString colorStyle = "background-color: " + color.name() + "; ";
+    if (color.lightness() > 80) colorStyle += "color: #232323;  ";
+    colorStyle = "QComboBox { " + colorStyle + "}";
+    DuUI::replaceCSS(ui_priorityBox, colorStyle, "priorityColor");
 }
 
 void StatusEditWidget::setupUi()

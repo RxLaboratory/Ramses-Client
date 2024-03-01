@@ -26,6 +26,8 @@ class RamObjectDelegate : public QStyledItemDelegate
 {
     Q_OBJECT
 public:
+    static QColor priorityColor(qreal priority);
+
     RamObjectDelegate(QObject *parent = nullptr);
 
     void paint(QPainter *painter, const QStyleOptionViewItem &option,
@@ -88,7 +90,6 @@ private:
     void paintButtons(QPainter *painter, PaintParameters *params, const QModelIndex &index) const;
     void paintDetails(const QModelIndex &index, QPainter *painter, PaintParameters *params) const;
     void paintProgress(const QModelIndex &index, QPainter *painter, PaintParameters *params) const;
-    QColor priorityColor(qreal priority) const;
 
     // Settings
     bool m_editable = false;

@@ -64,9 +64,12 @@ private slots:
     void openPreviewFile();
     void removeSelectedPreviewFile();
 
+    void updatePriorityColor();
+
 private:
     void setupUi();
     void connectEvents();
+
     RamStateBox *ui_stateBox;
     DuQFSpinBox *ui_completionBox;
     AutoSelectSpinBox *ui_versionBox;

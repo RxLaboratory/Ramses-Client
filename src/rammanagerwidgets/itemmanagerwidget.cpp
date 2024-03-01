@@ -469,6 +469,21 @@ void ItemManagerWidget::setCompletion()
     }
 }
 
+void ItemManagerWidget::setPriority()
+{
+    QAction* action = qobject_cast<QAction*>( sender() );
+    auto priority = static_cast<RamStatus::Priority>( action->data().toInt() );
+    QVector<RamStatus*> status = beginEditSelectedStatus();
+
+    RamUser *currentUser = Ramses::instance()->currentUser();
+
+    for (int i = 0; i < status.count(); i++)
+    {
+        status.at(i)->setPriority( priority );
+        status.at(i)->setModifiedBy(currentUser);
+    }
+}
+
 void ItemManagerWidget::copyComment()
 {
     QModelIndex currentIndex = ui_table->selectionModel()->currentIndex();
@@ -844,6 +859,21 @@ void ItemManagerWidget::setupUi()
     completionMenu->addAction(ui_completion100);
     statusMenu->addMenu(completionMenu);
 
+    DuMenu *priorityMenu = new DuMenu("Set priority", this);
+    ui_priorityNone   = new QAction("None",this);
+    ui_priorityLow  = new QAction("Low",this);
+    ui_priorityMedium  = new QAction("Medium",this);
+    ui_priorityHigh  = new QAction("High",this);
+    ui_priorityNone->setData(RamStatus::NoPriority);
+    ui_priorityLow->setData(RamStatus::LowPriority);
+    ui_priorityMedium->setData(RamStatus::MediumPriority);
+    ui_priorityHigh->setData(RamStatus::HighPriority);
+    priorityMenu->addAction(ui_priorityNone  );
+    priorityMenu->addAction(ui_priorityLow );
+    priorityMenu->addAction(ui_priorityMedium );
+    priorityMenu->addAction(ui_priorityHigh );
+    statusMenu->addMenu(priorityMenu);
+
 
     QToolButton *statusButton = new QToolButton(this);
     statusButton->setText(" Status");
@@ -911,6 +941,13 @@ void ItemManagerWidget::setupUi()
     completionContextMenu->addAction(ui_completion100);
     ui_contextMenu->addMenu(completionContextMenu);
 
+    DuMenu *priorityContextMenu = new DuMenu("Set priority", this);
+    priorityContextMenu->addAction(ui_priorityNone  );
+    priorityContextMenu->addAction(ui_priorityLow );
+    priorityContextMenu->addAction(ui_priorityMedium );
+    priorityContextMenu->addAction(ui_priorityHigh );
+    ui_contextMenu->addMenu(priorityContextMenu);
+
     ui_contextMenu->addSeparator();
 
     ui_actionCopyFileName = new QAction(tr("Copy file name"));
@@ -952,6 +989,10 @@ void ItemManagerWidget::connectEvents()
     connect(ui_completion75 , SIGNAL(triggered()), this, SLOT( setCompletion() ) );
     connect(ui_completion90 , SIGNAL(triggered()), this, SLOT( setCompletion() ) );
     connect(ui_completion100, SIGNAL(triggered()), this, SLOT( setCompletion() ) );
+    connect(ui_priorityNone, SIGNAL(triggered()), this, SLOT( setPriority() ) );
+    connect(ui_priorityLow, SIGNAL(triggered()), this, SLOT( setPriority() ) );
+    connect(ui_priorityMedium, SIGNAL(triggered()), this, SLOT( setPriority() ) );
+    connect(ui_priorityHigh, SIGNAL(triggered()), this, SLOT( setPriority() ) );
     connect(ui_table, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(contextMenuRequested(QPoint)));
     // view actions
     //connect(ui_actionTimeTracking, SIGNAL(toggled(bool)), ui_table, SLOT(setTimeTracking(bool)));

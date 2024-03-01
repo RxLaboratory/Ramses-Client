@@ -7,8 +7,30 @@
 }
 
 .duDock QWidget {
-    background-color: rgba(0,0,0,0);
+    background-color: transparent;
 }
+
+/* CALENDAR POPUP */
+/* normal days */
+.duDock QCalendarWidget QAbstractItemView:enabled
+{
+    background-color: @color-less-dark-grey;
+    color: @color-light-grey;
+}
+
+/* header row */
+.duDock QCalendarWidget QWidget {
+    alternate-background-color: @color-dark-grey;
+}
+
+/* navigation bar */
+.duDock QCalendarWidget QWidget#qt_calendar_navigationbar
+{
+    background-color: @color-less-dark-grey;
+}
+
+
+/* OTHER */
 
 /* Sub Blocks */
 .duDock .duBlock {
