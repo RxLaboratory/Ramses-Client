@@ -62,7 +62,7 @@
             ]
         },
         {
-            "nameRegEx": "ramses-client_[\\d.]*.tar.gz",
+            "nameRegEx": "ramses-client_[\\d.]*.tar.[gx]z",
             "name": "Ramses Application for Linux",
             "description": "[Read the doc](http://ramses.rxlab.guide/) for installation instructions.",
             "hosts": [ ],
