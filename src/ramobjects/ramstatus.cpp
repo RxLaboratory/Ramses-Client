@@ -546,6 +546,8 @@ QString RamStatus::name() const
     RamAbstractItem *item = this->item();
     RamStep *step = this->step();
     RamState *state = this->state();
+    if (!item || !step) return "Unknwown Task";
+    if (!state) return item->name() + " | " + step->name();
     return item->name() + " | " + step->name() + " | " + state->shortName();
 }
 
@@ -553,6 +555,7 @@ QString RamStatus::shortName() const
 {
     RamAbstractItem *item = this->item();
     RamStep *step = this->step();
+    if (!item || !step) return "Task";
     return item->shortName() + " | " + step->shortName();
 }
 

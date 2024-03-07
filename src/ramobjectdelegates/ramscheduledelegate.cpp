@@ -305,6 +305,10 @@ QSet<RamStatus *> RamScheduleDelegate::getDueTasks(QModelIndex index) const
         i.next();
         if (i.value()->completionRatio() >= 100)
             tasks.remove(i.value());
+        if (!i.value()->item())
+            tasks.remove(i.value());
+        if (!i.value()->step())
+            tasks.remove(i.value());
     }
 
     return tasks;
