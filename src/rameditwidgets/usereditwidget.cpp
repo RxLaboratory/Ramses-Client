@@ -213,8 +213,9 @@ void UserEditWidget::setupUi()
     ui_mainFormLayout->addWidget(ui_folderWidget, 9, 1);
 
     ui_passwordWidget = new QWidget(this);
+    ui_passwordWidget->setProperty("class", "duBlock");
     QGridLayout *passwordLayout = new QGridLayout(ui_passwordWidget);
-    passwordLayout->setContentsMargins(0,0,0,0);
+    passwordLayout->setContentsMargins(3,3,3,3);
     passwordLayout->setSpacing(3);
     ui_mainLayout->addWidget(ui_passwordWidget);
 
@@ -243,7 +244,7 @@ void UserEditWidget::setupUi()
     ui_passwordButton->setText("Change password");
     passwordLayout->addWidget(ui_passwordButton, 3, 1);
 
-    ui_mainLayout->addStretch();
+    ui_mainLayout->addStretch(100);
 
     connectionStatusChanged(RamServerInterface::instance()->status());
 }

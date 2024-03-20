@@ -223,7 +223,6 @@ SOURCES += \
     rameditwidgets/usereditwidget.cpp \
     statemanager.cpp \
     timelinemanager.cpp \
-    userprofilepage.cpp \
     rammanagerwidgets/itemmanagerwidget.cpp \
     pipeline-editor/objectnode.cpp \
     pipeline-editor/pipelinewidget.cpp \
@@ -419,7 +418,6 @@ HEADERS += \
     rameditwidgets/usereditwidget.h \
     statemanager.h \
     timelinemanager.h \
-    userprofilepage.h \
     rammanagerwidgets/itemmanagerwidget.h \
     pipeline-editor/objectnode.h \
     pipeline-editor/pipelinewidget.h \

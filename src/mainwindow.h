@@ -20,6 +20,7 @@
 #include "progresspage.h"
 #include "ramproject.h"
 #include "databaseeditwidget.h"
+#include "usereditwidget.h"
 
 class MainWindow : public DuMainWindow
 {
@@ -29,13 +30,12 @@ public:
 
     enum Page {
         Home = 0,
-        UserProfile = 1,
-        Admin = 2,
-        PipeLine = 3,
-        Assets = 4,
-        Shots = 5,
-        Schedule = 6,
-        Progress = 7
+        Admin = 1,
+        PipeLine = 2,
+        Assets = 3,
+        Shots = 4,
+        Schedule = 5,
+        Progress = 6
     };
 
     explicit MainWindow(const QCommandLineParser &cli, QWidget *parent = nullptr);
@@ -122,6 +122,8 @@ private:
     DuDockWidget *ui_sequencesDockWidget;
     DuDockWidget *ui_shotsDockWidget;
     DuDockTitleWidget *ui_propertiesTitle;
+    UserEditWidget *ui_userWidget;
+    DuDockWidget *ui_userDockWidget;
 
     // ========= RxOT UI ==============
 
@@ -190,7 +192,6 @@ private slots:
     void setOnlineAction();
     void databaseSettingsAction();
     void home();
-    void userProfile();
     void admin();
     void pipeline();
     void shots();

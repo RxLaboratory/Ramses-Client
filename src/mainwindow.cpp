@@ -104,7 +104,7 @@ void MainWindow::connectEvents()
     connect(m_actionSetOnline, &QAction::triggered, this, &MainWindow::setOnlineAction);
     connect(m_actionSetOffline, &QAction::triggered, this, &MainWindow::setOfflineAction);
     connect(m_actionDatabaseSettings, &QAction::triggered, this, &MainWindow::databaseSettingsAction);
-    connect(m_actionUserProfile,SIGNAL(triggered()), this, SLOT(userProfile()));
+    connect(m_actionUserProfile,&QAction::triggered, ui_userDockWidget, &DuDockWidget::show);
     connect(m_actionUserFolder,SIGNAL(triggered()), this, SLOT(revealUserFolder()));
     connect(m_actionAdmin,SIGNAL(triggered()), this, SLOT(admin()));
 
@@ -334,11 +334,6 @@ void MainWindow::home()
     ui_mainStack->setCurrentIndex(Home);
 }
 
-void MainWindow::userProfile()
-{
-    ui_mainStack->setCurrentIndex(UserProfile);
-}
-
 void MainWindow::revealAdminFolder()
 {
     RamProject *proj = Ramses::instance()->currentProject();
@@ -457,6 +452,9 @@ void MainWindow::currentUserChanged()
         ui_databaseButton->setVisible(false);
         ui_projectSelectorAction->setVisible(false);
         ui_userMenuAction->setVisible(false);
+        ui_userWidget->setObject(nullptr);
+        ui_userWidget->setEnabled(false);
+        ui_userDockWidget->hide();
         home();
         return;
     }
@@ -466,6 +464,8 @@ void MainWindow::currentUserChanged()
     ui_databaseButton->setVisible(true);
     ui_projectSelectorAction->setVisible(true);
     ui_userMenuAction->setVisible(true);
+    ui_userWidget->setObject(user);
+    ui_userWidget->setEnabled(true);
 
     _currentUserConnection = connect(user, &RamUser::dataChanged, this, &MainWindow::currentUserChanged);
 
@@ -891,10 +891,6 @@ void MainWindow::setupUi()
     LoginPage *lp = new LoginPage(this);
     mainLayout->addWidget(lp);
 
-    // user profile
-    UserProfilePage *up = new UserProfilePage(this);
-    ui_mainStack->addWidget(up);
-
     // admin
     ui_adminPage = new SettingsWidget("Administration", this);
     ui_adminPage->titleBar()->setObjectName("adminToolBar");
@@ -1189,6 +1185,24 @@ void MainWindow::setupDocks()
     ui_shotsDockWidget->setWidget( shotWidget );
     this->addDockWidget(Qt::LeftDockWidgetArea, ui_shotsDockWidget);
     ui_shotsDockWidget->hide();
+
+    // The User Profile dock
+    ui_userWidget = new UserEditWidget(this);
+
+    ui_userDockWidget = new DuDockWidget(tr("User profile"));
+    ui_userDockWidget->setWindowIcon(DuIcon(":/icons/user"));
+    ui_userDockWidget->setObjectName("userDock");
+
+    auto *userTitle = new DuDockTitleWidget(tr("User profile"), this);
+    userTitle->setObjectName("dockTitle");
+    userTitle->setIcon(":/icons/user");
+    ui_userDockWidget->setTitleBarWidget(userTitle);
+
+    ui_userDockWidget->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    ui_userDockWidget->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable );
+    ui_userDockWidget->setWidget( ui_userWidget );
+    this->addDockWidget(Qt::RightDockWidgetArea, ui_userDockWidget);
+    ui_userDockWidget->hide();
 }
 
 void MainWindow::setupToolBar()
