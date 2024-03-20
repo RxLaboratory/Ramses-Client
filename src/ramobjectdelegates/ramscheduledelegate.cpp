@@ -51,6 +51,10 @@ void RamScheduleDelegate::paint(QPainter *painter, const QStyleOptionViewItem &o
     path.addRoundedRect(bgRect, 5, 5);
     painter->fillPath(path, bgBrush);
 
+    // Empty, we've finished.
+    if (index.data(Qt::DisplayRole).toString() == "")
+        return;
+
     // Text color
     QColor textColor;
     if (bgColor.lightness() > 80) textColor = m_abyss;
@@ -129,7 +133,7 @@ void RamScheduleDelegate::paint(QPainter *painter, const QStyleOptionViewItem &o
             }
         }
         int textHeight = drawMarkdown(painter, commentRect, comment);
-        if (commentRect.height() < textHeight) drawMore(painter, bgRect, textPen);
+        if (commentRect.height() < textHeight && comment != "") drawMore(painter, bgRect, textPen);
     }
 //*/
 }

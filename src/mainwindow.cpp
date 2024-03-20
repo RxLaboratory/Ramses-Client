@@ -11,7 +11,6 @@
 #include "sequencemanagerwidget.h"
 #include "shotmanagerwidget.h"
 #include "stepmanagerwidget.h"
-#include "userprofilepage.h"
 #include "usermanagerwidget.h"
 #include "projectmanagerwidget.h"
 #include "pipeline-editor/pipelinewidget.h"
