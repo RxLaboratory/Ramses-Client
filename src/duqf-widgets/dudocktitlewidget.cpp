@@ -5,21 +5,19 @@
 DuDockTitleWidget::DuDockTitleWidget(QString title, QWidget *parent) : QWidget(parent)
 {
     QVBoxLayout *vlayout = new QVBoxLayout(this);
-    vlayout->setContentsMargins(0,DuUI::adjustToDpi(3),0,DuUI::adjustToDpi(3));
+    vlayout->setContentsMargins(0,0,0,0);
     vlayout->setSpacing(0);
 
     // include in a frame for the BG
     QFrame *mainFrame = new QFrame(this);
 
     _layout = new QHBoxLayout(mainFrame);
-    _layout->setContentsMargins(DuUI::adjustToDpi(3),0,DuUI::adjustToDpi(3),0);
+    _layout->setContentsMargins(16,0,6,0);
     _layout->setSpacing(DuUI::adjustToDpi(3));
 
     _iconLabel = new QLabel(this);
     _iconLabel->setScaledContents(true);
-    _iconLabel->setFixedSize(
-        DuUI::adjustToDpi(QSize(26,21))
-        );
+    _iconLabel->setFixedSize(QSize(16,16));
     _layout->addWidget(_iconLabel);
 
     _titleLabel = new DuLabel(title, Qt::ElideRight, this);

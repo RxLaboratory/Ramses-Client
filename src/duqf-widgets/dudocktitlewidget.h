@@ -11,6 +11,10 @@
 
 #include "duqf-widgets/dulabel.h"
 
+/**
+ * @brief The DuDockTitleWidget class
+ * @version 1.1.0 Improve UI (margins & remove background color in style CSS)
+ */
 class DuDockTitleWidget : public QWidget
 {
     Q_OBJECT
