@@ -30,6 +30,7 @@
 #include "duqf-widgets/duqflogtoolbutton.h"
 #include "duqf-app/app-version.h"
 #include "docks/settingsdock.h"
+#include "duqf-widgets/dutoolbarspacer.h"
 
 MainWindow::MainWindow(const QCommandLineParser &cli, QWidget *parent) :
     DuMainWindow{parent}
@@ -442,8 +443,8 @@ void MainWindow::currentUserChanged()
     disconnect(_currentUserConnection);
 
     //defaults
-    ui_userMenu->setTitle(QString("User (%1)").arg("Guest"));
-    ui_userMenu->setIcon(DuIcon(":/icons/user"));
+    ui_userButton->setText(QString("User (%1)").arg("Guest"));
+    ui_userButton->setIcon(DuIcon(":/icons/user"));
     m_actionAdmin->setVisible(false);
     m_actionUserProfile->setVisible(false);
     m_actionUserFolder->setVisible(false);
@@ -453,39 +454,41 @@ void MainWindow::currentUserChanged()
     {
         m_actionLogIn->setVisible(true);
         m_actionLogOut->setVisible(false);
-        ui_databaseAction->setVisible(false);
+        ui_databaseButton->setVisible(false);
         ui_projectSelectorAction->setVisible(false);
+        ui_userMenuAction->setVisible(false);
         home();
         return;
     }
 
     m_actionLogIn->setVisible(false);
     m_actionLogOut->setVisible(true);
-    ui_databaseAction->setVisible(true);
+    ui_databaseButton->setVisible(true);
     ui_projectSelectorAction->setVisible(true);
+    ui_userMenuAction->setVisible(true);
 
     _currentUserConnection = connect(user, &RamUser::dataChanged, this, &MainWindow::currentUserChanged);
 
-    ui_userMenu->setTitle(QString("User (%1)").arg(user->shortName()));
+    ui_userButton->setText(QString("User (%1)").arg(user->shortName()));
     m_actionUserProfile->setVisible(true);
     m_actionUserFolder->setVisible(true);
 
     if (user->role() == RamUser::Admin)
     {
         m_actionAdmin->setVisible(true);
-        ui_userMenu->setIcon(DuIcon(":/icons/admin"));
+        ui_userButton->setIcon(DuIcon(":/icons/admin"));
     }
     else if (user->role() == RamUser::ProjectAdmin)
     {
-        ui_userMenu->setIcon(DuIcon(":/icons/project-admin"));
+        ui_userButton->setIcon(DuIcon(":/icons/project-admin"));
     }
     else if (user->role() == RamUser::Lead)
     {
-        ui_userMenu->setIcon(DuIcon(":/icons/lead"));
+        ui_userButton->setIcon(DuIcon(":/icons/lead"));
     }
     else
     {
-        ui_userMenu->setIcon(DuIcon(":/icons/user"));
+        ui_userButton->setIcon(DuIcon(":/icons/user"));
     }
 }
 
@@ -543,33 +546,35 @@ void MainWindow::freezeUI(bool f)
 
 void MainWindow::dbiConnectionStatusChanged(NetworkUtils::NetworkStatus s)
 {
+    ui_databaseMenuAction->setVisible(true);
+
     QString address =  RamServerInterface::instance()->serverAddress();
     if (s == NetworkUtils::Online)
     {
         m_actionSync->setVisible(true);
         m_actionFullSync->setVisible(true);
-        ui_databaseMenu->setTitle(address);
+        ui_databaseButton->setText(address);
         m_actionSetOnline->setVisible(false);
         m_actionSetOffline->setVisible(true);
 
         if (RamServerInterface::instance()->ssl())
         {
-            ui_databaseMenu->setIcon(DuIcon(":/icons/shield"));
-            ui_databaseMenu->setToolTip("Connected.");
+            ui_databaseButton->setIcon(DuIcon(":/icons/shield"));
+            ui_databaseButton->setToolTip("Connected.");
         }
         else
         {
-            ui_databaseMenu->setIcon(DuIcon(":/icons/no-shield"));
-            ui_databaseMenu->setToolTip(tr("WARNING: Connection is not secured!"));
+            ui_databaseButton->setIcon(DuIcon(":/icons/no-shield"));
+            ui_databaseButton->setToolTip(tr("WARNING: Connection is not secured!"));
         }
     }
-    else if (s == NetworkUtils::Connecting) ui_databaseMenu->setTitle(tr("Connecting to %1").arg(address));
+    else if (s == NetworkUtils::Connecting) ui_databaseButton->setText(tr("Connecting to %1").arg(address));
     else if (s == NetworkUtils::Offline)
     {
         m_actionSync->setVisible(false);
         m_actionFullSync->setVisible(false);
-        ui_databaseMenu->setTitle(tr("Offline"));
-        ui_databaseMenu->setIcon(DuIcon(":/icons/storage"));
+        ui_databaseButton->setText(tr("Offline"));
+        ui_databaseButton->setIcon(DuIcon(":/icons/storage"));
         m_actionSetOnline->setVisible(true);
         m_actionSetOffline->setVisible(false);
     }
@@ -1274,6 +1279,71 @@ void MainWindow::setupToolBar()
     ui_filesButton->setPopupMode(QToolButton::InstantPopup);
     ui_filesButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
 
+    // Populate Toolbar
+    auto projectSelector = new ProjectSelectorWidget(this);
+    ui_projectSelectorAction = ui_mainToolBar->addWidget(projectSelector);
+    DuUI::addCustomCSS(projectSelector, "QComboBox { background: #222222; }");
+
+    ui_pipelineMenuAction = ui_mainToolBar->addWidget(ui_pipelineButton);
+    ui_assetMenuAction = ui_mainToolBar->addWidget(ui_assetsButton);
+    ui_shotMenuAction = ui_mainToolBar->addWidget(ui_shotsButton);
+    ui_scheduleMenuAction = ui_mainToolBar->addWidget(ui_scheduleButton);
+    ui_filesMenuAction = ui_mainToolBar->addWidget(ui_filesButton);
+
+    auto logB = new DuQFLogToolButton(this);
+    QAction *logA = ui_mainToolBar->addWidget(logB);
+    connect(logB, &DuQFLogToolButton::visibilityChanged, logA, &QAction::setVisible);
+
+    ui_projectSelectorAction->setVisible(false);
+    m_actionAdmin->setVisible(false);
+    ui_pipelineMenuAction->setVisible(false);
+    ui_shotMenuAction->setVisible(false);
+    ui_assetMenuAction->setVisible(false);
+    ui_scheduleMenuAction->setVisible(false);
+    ui_filesMenuAction->setVisible(false);
+
+    ui_mainToolBar->addWidget(new DuToolBarSpacer());
+
+    auto userMenu = new DuMenu();
+    userMenu->addAction(m_actionLogIn);
+    userMenu->addAction(m_actionUserFolder);
+    m_actionUserFolder->setVisible(false);
+    userMenu->addAction(m_actionUserProfile);
+    m_actionUserProfile->setVisible(false);
+    userMenu->addAction(m_actionLogOut);
+    m_actionLogOut->setVisible(false);
+
+    ui_userButton = new QToolButton();
+    ui_userButton->setText(QString("User (%1)").arg("Guest"));
+    ui_userButton->setIcon(DuIcon(":/icons/user"));
+    ui_userButton->setPopupMode(QToolButton::InstantPopup);
+    ui_userButton->setIconSize(QSize(16,16));
+    ui_userButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    ui_userButton->setMenu(userMenu);
+
+    ui_userMenuAction = ui_mainToolBar->addWidget(ui_userButton);
+    ui_userMenuAction->setVisible(false);
+
+    auto databaseMenu = new DuMenu();
+    databaseMenu->addAction(m_actionSync);
+    databaseMenu->addAction(m_actionFullSync);
+    databaseMenu->addSeparator();
+    databaseMenu->addAction(m_actionSetOffline);
+    databaseMenu->addAction(m_actionSetOnline);
+    databaseMenu->addAction(m_actionDatabaseSettings);
+    m_actionSetOffline->setVisible(false);
+
+    ui_databaseButton = new QToolButton();
+    ui_databaseButton->setText(tr("Offline"));
+    ui_databaseButton->setIcon(DuIcon(":/icons/storage"));
+    ui_databaseButton->setPopupMode(QToolButton::InstantPopup);
+    ui_databaseButton->setIconSize(QSize(16,16));
+    ui_databaseButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    ui_databaseButton->setMenu(databaseMenu);
+
+    ui_databaseMenuAction = ui_mainToolBar->addWidget(ui_databaseButton);
+    ui_databaseMenuAction->setVisible(false);
+
     DuMenu *moreMenu = new DuMenu(this);
 
     QToolButton *moreButton = new QToolButton();
@@ -1283,30 +1353,6 @@ void MainWindow::setupToolBar()
     moreButton->setIconSize(QSize(16,16));
     moreButton->setMenu(moreMenu);
     moreButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-
-    ui_userMenu = new DuMenu();
-    ui_userMenu->setTitle(QString("User (%1)").arg("Guest"));
-    ui_userMenu->setIcon(DuIcon(":/icons/user"));
-    ui_userMenu->addAction(m_actionLogIn);
-    ui_userMenu->addAction(m_actionUserFolder);
-    m_actionUserFolder->setVisible(false);
-    ui_userMenu->addAction(m_actionUserProfile);
-    m_actionUserProfile->setVisible(false);
-    ui_userMenu->addAction(m_actionLogOut);
-    m_actionLogOut->setVisible(false);
-    moreMenu->addMenu(ui_userMenu);
-
-    ui_databaseMenu = new DuMenu();
-    ui_databaseMenu->setTitle("Offline");
-    ui_databaseMenu->setIcon(DuIcon(":/icons/storage"));
-    ui_databaseMenu->addAction(m_actionSync);
-    ui_databaseMenu->addAction(m_actionFullSync);
-    ui_databaseMenu->addSeparator();
-    ui_databaseMenu->addAction(m_actionSetOffline);
-    ui_databaseMenu->addAction(m_actionSetOnline);
-    ui_databaseMenu->addAction(m_actionDatabaseSettings);
-    m_actionSetOffline->setVisible(false);
-    ui_databaseAction = moreMenu->addMenu(ui_databaseMenu);
 
     moreMenu->addSeparator();
     moreMenu->addAction(m_actionConsole);
@@ -1378,31 +1424,7 @@ void MainWindow::setupToolBar()
     helpMenu->addAction(aboutQtAction);
     connect(aboutQtAction, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
 
-    // Populate Toolbar
-    auto projectSelector = new ProjectSelectorWidget(this);
-    ui_projectSelectorAction = ui_mainToolBar->addWidget(projectSelector);
-    DuUI::addCustomCSS(projectSelector, "QComboBox { background: #222222; }");
-
-    ui_pipelineMenuAction = ui_mainToolBar->addWidget(ui_pipelineButton);
-    ui_assetMenuAction = ui_mainToolBar->addWidget(ui_assetsButton);
-    ui_shotMenuAction = ui_mainToolBar->addWidget(ui_shotsButton);
-    ui_scheduleMenuAction = ui_mainToolBar->addWidget(ui_scheduleButton);
-    ui_filesMenuAction = ui_mainToolBar->addWidget(ui_filesButton);
     ui_mainToolBar->addWidget(moreButton);
-
-    auto logB = new DuQFLogToolButton(this);
-    QAction *logA = ui_mainToolBar->addWidget(logB);
-    connect(logB, &DuQFLogToolButton::visibilityChanged, logA, &QAction::setVisible);
-
-    ui_projectSelectorAction->setVisible(false);
-    m_actionAdmin->setVisible(false);
-    ui_pipelineMenuAction->setVisible(false);
-    ui_shotMenuAction->setVisible(false);
-    ui_assetMenuAction->setVisible(false);
-    ui_scheduleMenuAction->setVisible(false);
-    ui_filesMenuAction->setVisible(false);
-
-    addWindowButtons(true);
 }
 
 void MainWindow::setupSysTray()

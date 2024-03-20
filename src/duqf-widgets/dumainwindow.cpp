@@ -8,7 +8,6 @@
 
 #include "duqf-app/duui.h"
 #include "duqf-app/dusettingsmanager.h"
-#include "duqf-widgets/dutoolbarspacer.h"
 #include "qtabbar.h"
 #include "duqf-app/app-version.h"
 
@@ -22,21 +21,12 @@ DuMainWindow::DuMainWindow(QWidget *parent)
     setupUi();
     // Build the toolbar
     setupToolBar();
-    // Events
-    connectEvents();
 }
 
 void DuMainWindow::setWindowTitle(const QString &title)
 {
-    if (title != "") QMainWindow::setWindowTitle(QStringLiteral(STR_INTERNALNAME) + " - " + title);
-    else QMainWindow::setWindowTitle(QStringLiteral(STR_INTERNALNAME));
-    ui_titleLabel->setText(title);
-}
-
-void DuMainWindow::setMaximizedState(bool maximized)
-{
-    m_maximizeAction->setChecked(maximized);
-    m_maximized = maximized;
+    if (title != "") QMainWindow::setWindowTitle(QStringLiteral(STR_INTERNALNAME) + " " + QStringLiteral(STR_VERSION) + " - " + title);
+    else QMainWindow::setWindowTitle(QStringLiteral(STR_INTERNALNAME) + " " + QStringLiteral(STR_VERSION));
 }
 
 void DuMainWindow::addDockWidget(Qt::DockWidgetArea area, DuDockWidget *dockwidget)
@@ -49,7 +39,7 @@ void DuMainWindow::addDockWidget(Qt::DockWidgetArea area, DuDockWidget *dockwidg
 void DuMainWindow::setupUi()
 {
     this->setWindowIcon(QIcon(APP_ICON));
-    QMainWindow::setWindowTitle(QStringLiteral(STR_INTERNALNAME));
+    QMainWindow::setWindowTitle(QStringLiteral(STR_FILEDESCRIPTION) + " " + QStringLiteral(STR_VERSION));
 
     QWidget *centralWidget = new QWidget(this);
     this->setCentralWidget(centralWidget);
@@ -84,16 +74,6 @@ void DuMainWindow::setupToolBar()
 
     // remove right click on toolbar
     ui_mainToolBar->setContextMenuPolicy(Qt::PreventContextMenu);
-}
-
-void DuMainWindow::connectEvents()
-{
-    // Window Buttons
-#ifdef Q_OS_WIN
-    /*connect(m_minimizeAction, &QAction::triggered, this, &DuMainWindow::minimizeTriggered);
-    connect(m_maximizeAction, &QAction::triggered, this, &DuMainWindow::maximizeTriggered);
-    connect(m_closeAction, &QAction::triggered, this, &DuMainWindow::close);*/
-#endif
 }
 
 void DuMainWindow::setDockVisible(DuDockWidget *w, bool visible)
@@ -308,49 +288,9 @@ bool DuMainWindow::eventFilter(QObject *obj, QEvent *event)
     return QObject::eventFilter(obj, event);
 }
 
-void DuMainWindow::addWindowButtons(bool showVersion)
-{
-    ui_mainToolBar->addWidget(new DuToolBarSpacer());
-
-    QString labelTxt = QStringLiteral(STR_FILEDESCRIPTION);
-    if (showVersion) labelTxt += " " + QStringLiteral(STR_VERSION);
-
-    ui_titleLabel = new QLabel(labelTxt);
-    ui_titleLabel->setAttribute(Qt::WA_TransparentForMouseEvents);
-    ui_mainToolBar->addWidget(ui_titleLabel);
-
-    ui_mainToolBar->addWidget(new DuToolBarSpacer());
-
-#ifdef Q_OS_WIN
-    /*ui_mainToolBar->addAction(m_minimizeAction);
-    QWidget *minWidget = ui_mainToolBar->widgetForAction(m_minimizeAction);
-    minWidget->setFixedSize(
-        DuUI::adjustToDpi(QSize(24,24))
-        );
-    minWidget->setObjectName("windowButton");
-    ui_mainToolBar->layout()->setAlignment(minWidget, Qt::AlignTop);
-
-    ui_mainToolBar->addAction(m_maximizeAction);
-    QWidget *maxWidget = ui_mainToolBar->widgetForAction(m_maximizeAction);
-    maxWidget->setFixedSize(
-        DuUI::adjustToDpi(QSize(24,24))
-        );
-    maxWidget->setObjectName("windowButton");
-    ui_mainToolBar->layout()->setAlignment(maxWidget, Qt::AlignTop);
-
-    ui_mainToolBar->addAction(m_closeAction);
-    QWidget *closeWidget = ui_mainToolBar->widgetForAction(m_closeAction);
-    closeWidget->setFixedSize(
-        DuUI::adjustToDpi(QSize(24,24))
-        );
-    closeWidget->setObjectName("windowButton");
-    ui_mainToolBar->layout()->setAlignment(closeWidget, Qt::AlignTop);*/
-
-#endif // WIN
-}
-
 void DuMainWindow::setStyle()
 {
+    DuUI::setDarkTitleBar(this);
     // Font first so it's available in the css
     DuUI::setFont("Ubuntu");
     DuUI::setAppCss( DuUI::css() );

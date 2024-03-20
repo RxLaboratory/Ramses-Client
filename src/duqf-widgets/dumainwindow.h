@@ -9,6 +9,10 @@
 #include "duqf-widgets/duaction.h"
 #include "duqf-widgets/dudockwidget.h"
 
+/**
+ * @brief The DuMainWindow class
+ * @version 1.1.0 Removed addWindowButtons and setMaximizedState (not frameless anymore)
+ */
 class DuMainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -22,10 +26,6 @@ public:
 
     // Override to set the title on the toolbar
     void setWindowTitle(const QString &title);
-
-    // Used by frameless window
-    void setMaximizedState(bool maximized);
-
     // Override to make them animatable
     void addDockWidget(Qt::DockWidgetArea area, DuDockWidget *dockwidget);
 
@@ -37,7 +37,6 @@ signals:
 protected:
     bool eventFilter(QObject *obj, QEvent *event) override;
 
-    void addWindowButtons(bool showVersion=false);
     void setStyle();
 
     QToolBar *ui_mainToolBar;
@@ -56,7 +55,6 @@ private:
     void setupActions();
     void setupUi();
     void setupToolBar();
-    void connectEvents();
 
     QVector<DuDockWidget*> ui_docks;
 

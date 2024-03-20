@@ -12,15 +12,10 @@
 #include <QtDebug>
 #include <QLayout>
 
-#ifdef _WIN32
-#include "OSUtils/windows/qwinwidget.h"
-#else
-#include "mainwindow.h"
-#endif
-
 #include "duqf-app/dusettingsmanager.h"
 #include "duqf-app/dustyle.h"
 #include "duqf-widgets/dusplashscreen.h"
+#include "mainwindow.h"
 
 QHash<QString,QString> DuUI::_cssVars = QHash<QString,QString>();
 const QRegularExpression DuUI::_cssVarsRE = QRegularExpression("(@[a-zA-Z0-9-]+)\\s*=\\s*(\\S+)");
@@ -36,19 +31,6 @@ void DuUI::buildUI(const QCommandLineParser &cli, DuSplashScreen *s)
 {
     s->newMessage("Building UI");
 
-//#ifdef _WIN32
-
-    //On Windows, the widget needs to be encapsulated in a native window for frameless rendering
-    //In this case, QWinWidget creates the mainwindow, and adds it to a layout
-    /*QWinWidget *w = new QWinWidget(cli);
-
-    // Restore Geometry and state
-    w->restoreGeometry( DuSettingsManager::instance()->uiWindowGeometry() );
-    w->getMainWindow()->restoreState(DuSettingsManager::instance()->uiWindowState());
-    // But hide the docks for a cleaner look
-    //w->getMainWindow()->hideAllDocks();*/
-//#else
-    //On OS X / Linux, the widget can handle everything itself so just create Widget as normal
     MainWindow *w = new MainWindow( cli );
 
     // Restore Geometry and state
@@ -56,7 +38,6 @@ void DuUI::buildUI(const QCommandLineParser &cli, DuSplashScreen *s)
     w->restoreState(DuSettingsManager::instance()->uiWindowState());
     // But hide the docks for a cleaner look
     //w->hideAllDocks();
-//#endif
 
     //if (!cli.isSet("no_ui"))
     w->show();
@@ -305,4 +286,29 @@ void DuUI::setupLayout(QLayout *l, int margin, int spacing)
     margin = adjustToDpi(margin);
     l->setContentsMargins( margin,margin,margin,margin );
     l->setSpacing(adjustToDpi(spacing));
+}
+
+void DuUI::setDarkTitleBar(QWidget *widget)
+{
+    auto hwnd = reinterpret_cast<HWND>(widget->winId());
+#ifdef Q_OS_WIN
+    HMODULE hUxtheme = LoadLibraryExW(L"uxtheme.dll", NULL, LOAD_LIBRARY_SEARCH_SYSTEM32);
+    HMODULE hUser32 = GetModuleHandleW(L"user32.dll");
+    fnAllowDarkModeForWindow AllowDarkModeForWindow
+        = reinterpret_cast<fnAllowDarkModeForWindow>(GetProcAddress(hUxtheme, MAKEINTRESOURCEA(133)));
+    fnSetPreferredAppMode SetPreferredAppMode
+        = reinterpret_cast<fnSetPreferredAppMode>(GetProcAddress(hUxtheme, MAKEINTRESOURCEA(135)));
+    fnSetWindowCompositionAttribute SetWindowCompositionAttribute
+        = reinterpret_cast<fnSetWindowCompositionAttribute>(GetProcAddress(hUser32, "SetWindowCompositionAttribute"));
+
+    SetPreferredAppMode(AllowDark);
+    BOOL dark = TRUE;
+    AllowDarkModeForWindow(hwnd, dark);
+    WINDOWCOMPOSITIONATTRIBDATA data = {
+        WCA_USEDARKMODECOLORS,
+        &dark,
+        sizeof(dark)
+    };
+    SetWindowCompositionAttribute(hwnd, &data);
+#endif
 }

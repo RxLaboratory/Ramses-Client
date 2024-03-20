@@ -152,13 +152,16 @@ private:
     QToolButton *ui_filesButton;
     QAction *ui_filesMenuAction;
 
+    QToolButton *ui_userButton;
+    QAction *ui_userMenuAction;
+
+    QToolButton *ui_databaseButton;
+    QAction *ui_databaseMenuAction;
+
     SettingsWidget *ui_adminPage;
 
     DatabaseEditWidget *ui_databaseEditWidget = nullptr;
 
-    DuMenu *ui_userMenu;
-    DuMenu *ui_databaseMenu;
-    QAction *ui_databaseAction;
     int m_currentPageIndex = 0;
 
     QMetaObject::Connection _currentUserConnection;
