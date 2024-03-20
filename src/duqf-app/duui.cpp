@@ -290,8 +290,8 @@ void DuUI::setupLayout(QLayout *l, int margin, int spacing)
 
 void DuUI::setDarkTitleBar(QWidget *widget)
 {
-    auto hwnd = reinterpret_cast<HWND>(widget->winId());
 #ifdef Q_OS_WIN
+    auto hwnd = reinterpret_cast<HWND>(widget->winId());
     HMODULE hUxtheme = LoadLibraryExW(L"uxtheme.dll", NULL, LOAD_LIBRARY_SEARCH_SYSTEM32);
     HMODULE hUser32 = GetModuleHandleW(L"user32.dll");
     fnAllowDarkModeForWindow AllowDarkModeForWindow
@@ -310,5 +310,7 @@ void DuUI::setDarkTitleBar(QWidget *widget)
         sizeof(dark)
     };
     SetWindowCompositionAttribute(hwnd, &data);
+#else
+    Q_UNUSED(widget)
 #endif
 }

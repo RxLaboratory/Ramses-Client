@@ -83,6 +83,7 @@ SOURCES += \
     rammanagerwidgets/shotmanagerwidget.cpp \
     rammanagerwidgets/statemanagerwidget.cpp \
     rammanagerwidgets/stepmanagerwidget.cpp \
+    rammanagerwidgets/usermanagerwidget.cpp \
     ramobjectdelegates/ramobjectdelegate.cpp \
     ramobjectmodels/dbtablemodel.cpp \
     ramobjectmodels/ramabstractdatamodel.cpp \
@@ -150,7 +151,6 @@ SOURCES += \
     rammanagerwidgets/templateassetgroupmanagerwidget.cpp \
     rammanagerwidgets/templatestepmanagerwidget.cpp \
     docks/timelinewidget.cpp \
-    rammanagerwidgets/usermanagerwidget.cpp \
     ramfilemetadatamanager.cpp \
     ramnamemanager.cpp \
     ramobjects/ramabstractobject.cpp \
@@ -475,14 +475,6 @@ win* {
     QMAKE_CXXFLAGS += -Wdeprecated \
         -Wdeprecated-copy
 } else:macx {
-
-    # ==== FRAMELESS WINDOW ====
-    # Only include / compile these files on OS X
-    OBJECTIVE_SOURCES += \
-        OSUtils/mac/OSXHideTitleBar.mm
-    HEADERS  +=\
-        OSUtils/mac/OSXHideTitleBar.h
-
     # icon
     ICON = resources/icons/ramses.icns
     CONFIG += sdk_no_version_check
