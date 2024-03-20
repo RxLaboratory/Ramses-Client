@@ -16,6 +16,11 @@ class DuQFNodeScene : public QGraphicsScene
 {
     Q_OBJECT
 public:
+    enum LayoutAlgorithm {
+        Layered,
+        Legacy,
+    };
+
     DuQFNodeScene(DuQFGrid &grid, QObject *parent = nullptr);
     void adjustSceneRect();
     QRectF zoomToFit(bool isForExport = false) const;
@@ -33,7 +38,7 @@ public slots:
     void removeSelection();
     void autoLayoutAll();
     void autoLayoutSelectedNodes();
-    void autoLayoutNodes(QSet<DuQFNode *> nodes);
+    void autoLayoutNodes(QSet<DuQFNode *> nodes, LayoutAlgorithm algo = Layered);
     void moveAllToCenter();
     void selectAllNodes();
     void selectNodes(QSet<DuQFNode *> nodes);

@@ -41,6 +41,7 @@ INCLUDEPATH += rameditwidgets \
     rammanagerwidgets
 
 SOURCES += \
+    DuGraph/dugraph.cpp \
     docks/settingsdock.cpp \
     duqf-app/duapplication.cpp \
     duqf-app/ducli.cpp \
@@ -229,6 +230,7 @@ SOURCES += \
     pipeline-editor/stepnode.cpp
 
 HEADERS += \
+    DuGraph/dugraph.h \
     config.h \
     docks/settingsdock.h \
     duqf-app/duapplication.h \

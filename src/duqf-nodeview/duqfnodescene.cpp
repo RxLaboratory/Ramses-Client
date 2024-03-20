@@ -1,4 +1,5 @@
 #include "duqfnodescene.h"
+#include "DuGraph/dugraph.h"
 
 DuQFNodeScene::DuQFNodeScene(DuQFGrid &grid, QObject *parent):
     QGraphicsScene(parent),
@@ -137,87 +138,143 @@ void DuQFNodeScene::autoLayoutSelectedNodes()
     autoLayoutNodes(selectedNodes());
 }
 
-void DuQFNodeScene::autoLayoutNodes(QSet<DuQFNode *> nodes)
+void DuQFNodeScene::autoLayoutNodes(QSet<DuQFNode *> nodes, LayoutAlgorithm algo)
 {
-    // 1- Move orphan nodes appart
-    qreal x = 0.0;
-    qreal y = 0.0;
+    if (nodes.isEmpty()) return;
 
-    QGraphicsItemGroup *orphanGroup = new QGraphicsItemGroup();
-    addItem(orphanGroup);
+    switch(algo) {
 
-    QSet<DuQFNode*>::iterator n = nodes.begin();
-    while (n != nodes.end()) {
-        if ((*n)->isOrphan()) {
-            (*n)->setPos(x, y);
-            y += (*n)->boundingRect().height() + m_grid.size();
-            orphanGroup->addToGroup(*n);
-            n = nodes.erase(n);
-        } else {
-            n++;
-        }
-    }
-
-    x = orphanGroup->boundingRect().width()*2 + m_grid.gridSize()*3;
-    y = 0.0;
-    destroyItemGroup(orphanGroup);
-
-    // 2- If we still have nodes to arrange
-    if (nodes.count() > 0)
+    case Layered:
     {
-        // Find ancestors
-        QList<DuQFNode*> ancestors;
-        foreach(DuQFNode *n, nodes)
+        // Create a DuGraph to layout
+
+        DuGraph graph(DuGraph::DirectedAcyclic);
+        QHash<DuQFNode*,DuGraph::Vertex*> vertices;
+        for (auto n: nodes) {
+            vertices.insert(
+                n,
+                graph.addVertex(reinterpret_cast<quintptr>(n))
+                );
+        }
+        for (auto n: nodes) {
+            // Don't add twice the same edge, the graph must be a DAG
+            QSet<DuQFNode*> destinations;
+            const auto &children = n->childNodes();
+            for (auto c: children) {
+                if (destinations.contains(c)) continue;
+                if (!vertices.value(c)) continue;
+                destinations << c;
+                graph.addEdge(
+                    vertices.value(n),
+                    vertices.value(c)
+                    );
+            }
+        }
+
+        graph.layout();
+
+        // Apply result to actual position of the nodes
+
+        const auto &vs = graph.vertices();
+        auto v = vs.constFirst();
+        auto n = reinterpret_cast<DuQFNode*>( v->data.toULongLong() );
+        QPointF initialPos = n->pos();
+        for (auto v: vs) {
+            auto n = reinterpret_cast<DuQFNode*>( v->data.toULongLong() );
+            double x = v->position.x();
+            double y = v->position.y();
+            QPointF newPos(
+                initialPos.x() + x*300,
+                initialPos.y() + y*100
+                );
+            n->setPos(newPos);
+        }
+        break;
+    }
+    case Legacy:
+    {
+        // 1- Move orphan nodes appart
+        qreal x = 0.0;
+        qreal y = 0.0;
+
+        QGraphicsItemGroup *orphanGroup = new QGraphicsItemGroup();
+        addItem(orphanGroup);
+
+        QSet<DuQFNode*>::iterator n = nodes.begin();
+        while (n != nodes.end()) {
+            if ((*n)->isOrphan()) {
+                (*n)->setPos(x, y);
+                y += (*n)->boundingRect().height() + m_grid.size();
+                orphanGroup->addToGroup(*n);
+                n = nodes.erase(n);
+            } else {
+                n++;
+            }
+        }
+
+        x = orphanGroup->boundingRect().width()*2 + m_grid.gridSize()*3;
+        y = 0.0;
+        destroyItemGroup(orphanGroup);
+
+        // 2- If we still have nodes to arrange
+        if (nodes.count() > 0)
         {
-            if (!n->hasParents())
+            // Find ancestors
+            QList<DuQFNode*> ancestors;
+            foreach(DuQFNode *n, nodes)
             {
-                ancestors << n;
-                // Move right to orphans
+                if (!n->hasParents())
+                {
+                    ancestors << n;
+                    // Move right to orphans
+                    n->setPos( x, y);
+                }
+            }
+
+            // If no ancestor (it's a loop), pick the first node
+            if (ancestors.count() == 0)
+            {
+                DuQFNode *n = *nodes.begin();
                 n->setPos( x, y);
+                ancestors << n;
             }
-        }
 
-        // If no ancestor (it's a loop), pick the first node
-        if (ancestors.count() == 0)
-        {
-            DuQFNode *n = *nodes.begin();
-            n->setPos( x, y);
-            ancestors << n;
-        }
-
-        // Layout each generation one after the other
-        while (ancestors.count() > 0 && nodes.count() > 0)
-        {
-            // For each ancestor, arrange children
-            QSet<DuQFNode*> nextGeneration;
-            QSet<QGraphicsItemGroup*> trees;
-
-            foreach (DuQFNode *n, ancestors)
+            // Layout each generation one after the other
+            while (ancestors.count() > 0 && nodes.count() > 0)
             {
-                // This one is now ok
-                nodes.remove(n);
+                // For each ancestor, arrange children
+                QSet<DuQFNode*> nextGeneration;
+                QSet<QGraphicsItemGroup*> trees;
 
-                // Get children which are still to be arranged
-                QSet<DuQFNode *> childrenNodes;
-                foreach(DuQFNode *n, n->childNodes())
-                    if (nodes.contains(n)) childrenNodes << n;
-                nextGeneration.unite(childrenNodes);
+                foreach (DuQFNode *n, ancestors)
+                {
+                    // This one is now ok
+                    nodes.remove(n);
 
-                // Layout'em
-                x = n->scenePos().x() + n->boundingRect().width()*2 + m_grid.gridSize()*3;
-                y = n->scenePos().y() + n->boundingRect().height();
-                layoutNodesInColumn( childrenNodes , x, y );
+                    // Get children which are still to be arranged
+                    QSet<DuQFNode *> childrenNodes;
+                    foreach(DuQFNode *n, n->childNodes())
+                        if (nodes.contains(n)) childrenNodes << n;
+                    nextGeneration.unite(childrenNodes);
 
-                QGraphicsItemGroup *tree = createNodeGroup( childrenNodes );
-                tree->addToGroup(n);
-                trees << tree;
+                    // Layout'em
+                    x = n->scenePos().x() + n->boundingRect().width()*2 + m_grid.gridSize()*3;
+                    y = n->scenePos().y() + n->boundingRect().height();
+                    layoutNodesInColumn( childrenNodes , x, y );
+
+                    QGraphicsItemGroup *tree = createNodeGroup( childrenNodes );
+                    tree->addToGroup(n);
+                    trees << tree;
+                }
+                layoutGroupsInColumn( trees );
+
+                ancestors.clear();
+                foreach(DuQFNode *n, nextGeneration)
+                    if (nodes.contains(n)) ancestors << n;
             }
-            layoutGroupsInColumn( trees );
-
-            ancestors.clear();
-            foreach(DuQFNode *n, nextGeneration)
-                if (nodes.contains(n)) ancestors << n;
         }
+        break;
+    }
     }
 }
 
