@@ -5,6 +5,12 @@
 RamScheduleModel::RamScheduleModel(QObject *parent)
     : DBTableModel{RamAbstractObject::ScheduleEntry, true, false, parent}
 {
+    m_uniqueDataKeys = QStringList({
+        "date",
+        "user",
+        "project"
+    });
+
     connect( this, &DBTableModel::rowsInserted, this,&RamScheduleModel::countAll);
     connect( this, &DBTableModel::rowsAboutToBeRemoved, this, &RamScheduleModel::countAll);
     connect( this, &DBTableModel::dataChanged, this, &RamScheduleModel::countAll);

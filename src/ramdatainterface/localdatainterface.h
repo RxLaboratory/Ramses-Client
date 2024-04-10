@@ -87,10 +87,10 @@ signals:
     void ramsesPathChanged(QString);
     // Sync result
     void syncFinished();
-    void dataChanged(QString uuid, QString data, QString table);
+    void dataChanged(const QString &uuid, const QString &data, const QString &modificationDate, const QString &table);
     void availabilityChanged(QString,bool);
-    void inserted(QString uuid, QString data, QString table);
-    void removed(QString uuid, QString table);
+    void inserted(const QString &uuid, const QString &data, const QString &modificationDate, const QString &table);
+    void removed(const QString &uuid, const QString &table);
 
 protected:
     static LocalDataInterface *_instance;

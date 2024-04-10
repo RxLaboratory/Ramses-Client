@@ -1,4 +1,5 @@
 #include "ramscheduleentry.h"
+#include "duqf-app/app-config.h"
 #include "ramproject.h"
 
 // STATIC //
@@ -85,7 +86,7 @@ RamStep *RamScheduleEntry::step() const
 
 const QDateTime RamScheduleEntry::date() const
 {
-    QDateTime d = QDateTime::fromString( getData("date").toString(), "yyyy-MM-dd hh:mm:ss");
+    QDateTime d = QDateTime::fromString( getData("date").toString(), DATETIME_DATA_FORMAT);
     return d;
 }
 

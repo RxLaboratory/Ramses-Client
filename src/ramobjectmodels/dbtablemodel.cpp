@@ -1,4 +1,5 @@
 #include "dbtablemodel.h"
+#include "duqf-app/app-config.h"
 #include "localdatainterface.h"
 #include "dbinterface.h"
 #include "progressmanager.h"
@@ -126,10 +127,10 @@ bool DBTableModel::moveRows(const QModelIndex &sourceParent, int sourceRow, int 
     return true;
 }
 
-void DBTableModel::insertObjects(int row, QVector<QStringList> data, QString table, bool silent)
+void DBTableModel::insertObjects(int row, const QVector<QStringList> &data, const QString &table, bool silent)
 {
     // Wrong table, not for us
-    if (table != m_table) return;
+    if (table != "" && table != m_table) return;
 
     // Check row
     if (row < 0) row = 0;
@@ -151,7 +152,7 @@ void DBTableModel::insertObjects(int row, QVector<QStringList> data, QString tab
     if (!silent) endInsertRows();
 }
 
-void DBTableModel::removeObjects(QStringList uuids, QString table)
+void DBTableModel::removeObjects(QStringList uuids, const QString &table)
 {
     // Not for us
     if (table != "" && table != m_table) return;
@@ -208,6 +209,43 @@ bool DBTableModel::checkFilters(QString data) const
     return true;
 }
 
+QString DBTableModel::checkUnique(const QString &uuid, const QString &data, const QString &modifiedDate)
+{
+    // Nothing to check
+    if (m_uniqueDataKeys.isEmpty())
+        return "";
+
+    QJsonDocument doc = QJsonDocument::fromJson( data.toUtf8() );
+    QJsonObject dataObj = doc.object();
+
+    for (int i = 0; i < count(); i++) {
+        RamObject *obj = get(i);
+        if (!obj)
+            continue;
+        QJsonObject otherData = obj->data();
+        bool ok = false;
+        for(const QString &key: qAsConst(m_uniqueDataKeys)) {
+            // If the key can't be found, consider it ok
+            if (!otherData.contains(key) || !dataObj.contains(key)) {
+                ok = true;
+                break;
+            }
+            if (dataObj.value(key) == otherData.value(key))
+                continue;
+            ok = true;
+            break;
+        }
+        if (!ok) {
+            // Keep the most recent
+            if (QDateTime::fromString(modifiedDate, DATETIME_DATA_FORMAT) >= obj->modificationDate())
+                return obj->uuid();
+            return uuid;
+        }
+    }
+
+    return "";
+}
+
 void DBTableModel::saveOrder() const
 {
     if (!m_userOrder) return;
@@ -232,7 +270,7 @@ void DBTableModel::moveObject(int from, int to)
     endMoveRows();
 }
 
-void DBTableModel::insertObject(QString uuid, QString data, QString table)
+void DBTableModel::insertObject(const QString &uuid, const QString &data, const QString &modificationDate, const QString &table)
 {
     if (table != m_table) return;
 
@@ -241,6 +279,13 @@ void DBTableModel::insertObject(QString uuid, QString data, QString table)
 
     // Removed
     if (DBInterface::instance()->isRemoved(uuid, table)) return;
+
+    // Unique
+    QString uuidToRemove = checkUnique(uuid, data, modificationDate);
+    if (uuidToRemove == uuid) {
+        LocalDataInterface::instance()->removeObject(uuid, table);
+        return;
+    }
 
     // Filter
     if (!checkFilters(data)) return;
@@ -253,6 +298,12 @@ void DBTableModel::insertObject(QString uuid, QString data, QString table)
     QStringList o;
     o << uuid << data;
     insertObjects( order, QVector<QStringList>() << o, table );
+
+    // Remove duplicate
+    if (uuidToRemove != "") {
+        removeObject(uuidToRemove, table);
+        LocalDataInterface::instance()->removeObject(uuid, table);
+    }
 }
 
 void DBTableModel::removeObject(QString uuid, QString table)
@@ -291,7 +342,7 @@ void DBTableModel::reload()
     endResetModel();
 }
 
-void DBTableModel::changeData(QString uuid, QString data, QString table)
+void DBTableModel::changeData(const QString &uuid, const QString &data, const QString &modificationDate, const QString &table)
 {
     // Not for us
     if (table != "" && table != m_table) return;
@@ -300,7 +351,7 @@ void DBTableModel::changeData(QString uuid, QString data, QString table)
     {
         // This may be a new object to insert according to the filters
         if (!checkFilters(data)) return;
-        insertObject(uuid, data, table);
+        insertObject(uuid, data, modificationDate, table);
         return;
     }
 

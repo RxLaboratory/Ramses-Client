@@ -41,29 +41,37 @@ public:
     // Support move rows
     virtual bool moveRows(const QModelIndex &sourceParent, int sourceRow, int count, const QModelIndex &destinationParent, int destinationChild) override;
 
+protected:
+    QStringList m_uniqueDataKeys;
+
 protected slots:
     // Inserts a single object
-    void insertObject(QString uuid, QString data, QString table);
+    void insertObject(const QString &uuid, const QString &data, const QString &modificationDate, const QString &table);
     // Removes a single object
     void removeObject(QString uuid, QString table);
     // Clear and reload the data
     void reload();
     // Checks and changes the data
-    void changeData(QString uuid, QString data, QString table = "");
+    void changeData(const QString &uuid, const QString &data, const QString &modificationDate, const QString &table = "");
 
 private:
 
     // === METHODS ===
 
     // Edit structure
-    void insertObjects(int row, QVector<QStringList> data, QString table, bool silent = false);
-    void removeObjects(QStringList uuids, QString table = "");
+    void insertObjects(int row, const QVector<QStringList> &data, const QString &table = "", bool silent = false);
+    void removeObjects(QStringList uuids, const QString &table = "");
 
     // Gets the order from the data
     int getOrder(QString data);
 
     // Checks the filters
     bool checkFilters(QString data) const;
+    // Checks if this obj may be inserted
+    // Returns a uuid to be removed from
+    // the table after inserting the object
+    // Or an empty string if there's nothing to remove
+    QString checkUnique(const QString &uuid, const QString &data, const QString &modifiedDate);
 
     // Save the order in the db
     void saveOrder() const;

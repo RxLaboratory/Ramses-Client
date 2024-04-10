@@ -294,7 +294,7 @@ void LocalDataInterface::createObject(QString uuid, QString table, QString data)
                   )
             );
 
-    emit inserted(uuid, data, table);
+    emit inserted(uuid, data, modified.toString("yyyy-MM-dd hh:mm:ss"), table);
 }
 
 QString LocalDataInterface::objectData(QString uuid, QString table)
@@ -325,9 +325,10 @@ void LocalDataInterface::setObjectData(QString uuid, QString table, QString data
                 "ON CONFLICT(uuid) DO UPDATE "
                 "SET data=excluded.data, modified=excluded.modified ;";
 
-    query( q.arg(table, newData, modified.toString("yyyy-MM-dd hh:mm:ss"), uuid) );
+    QString modifiedStr = modified.toString("yyyy-MM-dd hh:mm:ss");
+    query( q.arg(table, newData, modifiedStr, uuid) );
 
-    emit dataChanged(uuid, data, table);
+    emit dataChanged(uuid, data, modifiedStr, table);
 }
 
 void LocalDataInterface::removeObject(QString uuid, QString table)
@@ -351,13 +352,14 @@ void LocalDataInterface::restoreObject(QString uuid, QString table)
                 "removed = 0,"
                 "modified = '%2' "
                 "WHERE uuid = '%3';";
-    query( q.arg(table, modified.toString("yyyy-MM-dd hh:mm:ss"), uuid) );
+    QString modifiedStr = modified.toString("yyyy-MM-dd hh:mm:ss");
+    query( q.arg(table, modifiedStr, uuid) );
 
     // Get current data
     QString data = objectData(uuid, table);
 
     // Emit inserted
-    emit inserted(uuid, data, table);
+    emit inserted(uuid, data, modifiedStr, table);
 }
 
 bool LocalDataInterface::isRemoved(QString uuid, QString table)
@@ -439,7 +441,7 @@ void LocalDataInterface::updateUser(QString uuid, QString username, QString data
     q = "UPDATE RamUser SET `removed` = 1, `modified` = '%1' WHERE `userName` = '%2' AND `uuid` != '%3';";
     query( q.arg(modified, username, uuid) );
 
-    emit dataChanged(uuid, data, "RamUser");
+    emit dataChanged(uuid, data, modified, "RamUser");
 }
 
 ServerConfig LocalDataInterface::serverConfig()
@@ -727,7 +729,7 @@ void LocalDataInterface::saveSync(SyncData syncData)
             if (removed == 0)
             {
                 QStringList ins;
-                ins << uuid << incomingRow.data << tableName;
+                ins << uuid << incomingRow.data << modified << tableName;
                 insertedObjects << ins;
             }
         }
@@ -742,7 +744,7 @@ void LocalDataInterface::saveSync(SyncData syncData)
         // Emit insertions
         StateManager::i()->setState(StateManager::LoadingDataBase);
         foreach(QStringList io, insertedObjects ) {
-            emit inserted( io.at(0), io.at(1), io.at(2) );
+            emit inserted( io.at(0), io.at(1), io.at(2), io.at(3) );
         }
     }
 
@@ -818,7 +820,7 @@ void LocalDataInterface::saveSync(SyncData syncData)
             }
 
             QStringList cu;
-            cu << uuid << data;
+            cu << uuid << data << modified;
             changedUuids << cu;
         }
 
@@ -835,7 +837,7 @@ void LocalDataInterface::saveSync(SyncData syncData)
         // Emit
         StateManager::i()->setState(StateManager::LoadingDataBase);
         foreach(QStringList cu, changedUuids) {
-            emit dataChanged(cu.first(), cu.last(), tableName);
+            emit dataChanged(cu.at(0), cu.at(1), cu.at(2), tableName);
         }
     }
 

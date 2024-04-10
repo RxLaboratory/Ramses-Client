@@ -228,8 +228,13 @@ QVariant RamScheduleTableModel::data(const QModelIndex &index, int role) const
         if (!e) continue;
         if (!e->user()) continue;
         if (e->user()->uuid() == usrUuid) {
-            entry = e;
-            break;
+            // Just in case there are multiple entries
+            if (!entry) {
+                entry = e;
+                continue;
+            }
+            if (e->modificationDate() > entry->modificationDate())
+                entry = e;
         }
     }
 
