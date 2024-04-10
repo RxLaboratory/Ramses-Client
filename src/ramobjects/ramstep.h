@@ -12,6 +12,7 @@ class RamFileType;
 class RamUser;
 class RamWorkingFolder;
 class RamObjectList;
+class RamState;
 
 class RamStep : public RamTemplateStep
 {
@@ -39,6 +40,8 @@ public:
     float missingDays() ;
     float daysSpent() ;
     float neededDays() ;
+
+    QHash<RamState*, int> stateCount();
 
     /**
      * @brief stats

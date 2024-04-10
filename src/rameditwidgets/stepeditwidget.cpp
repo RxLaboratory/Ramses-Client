@@ -28,6 +28,10 @@ RamStep *StepEditWidget::step() const
 void StepEditWidget::reInit(RamObject *obj)
 {
     m_step = qobject_cast<RamStep*>( obj );
+
+    while(ui_statesLayout->rowCount() > 0)
+        ui_statesLayout->removeRow(0);
+
     if (m_step)
     {                
         ui_colorSelector->setColor(m_step->color());
@@ -60,6 +64,37 @@ void StepEditWidget::reInit(RamObject *obj)
         }
 
         updateEstimationSuffix();
+
+        RamStep::Type stepType = m_step->type();
+        if (stepType == RamStep::AssetProduction || stepType == RamStep::ShotProduction) {
+            QHash<RamState*, int> states = m_step->stateCount();
+            RamState *noState = Ramses::instance()->noState();
+            DBTableModel *allStates = Ramses::instance()->states();
+            int total = 0;
+            for (int i = 0; i < allStates->count(); i++) {
+                auto s = qobject_cast<RamState*>( allStates->get(i) );
+                if (s->is(noState))
+                    continue;
+                int c = states.value( s, 0 );
+                if (c > 0) {
+                    QString cStr = "<b>"+QString::number(c)+"</b> ";
+                    if (stepType == RamStep::AssetProduction) cStr += "assets";
+                    else cStr += "shots";
+
+                    auto l = new QLabel(s->name(), this);
+                    l->setStyleSheet("QLabel { color: "+s->color().name() + "; }");
+                    ui_statesLayout->addRow( l, new QLabel(cStr, this) );
+                    total += c;
+                }
+            }
+            if (total > 0) {
+                QString cStr = "<b>"+QString::number(total)+"</b> ";
+                if (stepType == RamStep::AssetProduction) cStr += "assets";
+                else cStr += "shots";
+
+                ui_statesLayout->addRow( "Total", new QLabel(cStr, this) );
+            }
+        }
     }
     else
     {
@@ -253,6 +288,14 @@ void StepEditWidget::setupUi()
     ui_estimationWidget = new QWidget(ui_tabWidget);
     ui_estimationWidget->setProperty("class", "duBlock");
     estimLayout->addWidget(ui_estimationWidget);
+
+    estimLayout->addWidget(new QLabel(
+        "<b>"+tr("Status")+"</b>"
+        ));
+
+    ui_statesWidget = new QWidget(ui_tabWidget);
+    ui_statesLayout = new QFormLayout(ui_statesWidget);
+    estimLayout->addWidget(ui_statesWidget);
 
     estimLayout->addStretch(1);
 

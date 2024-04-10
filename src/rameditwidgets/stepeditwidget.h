@@ -51,6 +51,8 @@ private:
 
     DuComboBox *ui_typeBox;
     QWidget *ui_estimationWidget;
+    QWidget *ui_statesWidget;
+    QFormLayout *ui_statesLayout;
     DuComboBox *ui_estimationTypeBox;
     QLabel *ui_estimationTypeLabel;
     DuQFTextEdit *ui_publishSettingsEdit;
