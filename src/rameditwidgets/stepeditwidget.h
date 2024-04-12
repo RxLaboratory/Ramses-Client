@@ -13,6 +13,7 @@
 #include "duqf-widgets/duqffolderdisplaywidget.h"
 #include "duqf-widgets/duqfcolorselector.h"
 #include "objectlistwidget.h"
+#include "progresswidget.h"
 
 class StepEditWidget : public ObjectEditWidget
 {
@@ -52,7 +53,12 @@ private:
     DuComboBox *ui_typeBox;
     QWidget *ui_estimationWidget;
     QWidget *ui_statesWidget;
+    QWidget *ui_completionWidget;
+    ProgressWidget *ui_progressWidget;
+    QLabel *ui_completionLabel;
+    QWidget *ui_difficultiesWidget;
     QFormLayout *ui_statesLayout;
+    QFormLayout *ui_difficultiesLayout;
     DuComboBox *ui_estimationTypeBox;
     QLabel *ui_estimationTypeLabel;
     DuQFTextEdit *ui_publishSettingsEdit;

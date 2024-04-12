@@ -4,6 +4,7 @@
 #include <QDesktopServices>
 
 #include "ramtemplatestep.h"
+#include "ramstatus.h"
 
 class RamAssetGroup;
 class RamProject;
@@ -48,6 +49,7 @@ public:
     float neededDays() ;
 
     QVector<StateCount> stateCount();
+    QMap<RamStatus::Difficulty,int> difficultyCount();
 
     /**
      * @brief stats

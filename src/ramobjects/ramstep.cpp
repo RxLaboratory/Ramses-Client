@@ -10,6 +10,7 @@
 #include "ramworkingfolder.h"
 #include "stepeditwidget.h"
 #include "ramshot.h"
+#include "ramses.h"
 
 // STATIC //
 
@@ -204,6 +205,27 @@ QVector<RamStep::StateCount> RamStep::stateCount()
     });
 
     return count;
+}
+
+QMap<RamStatus::Difficulty, int> RamStep::difficultyCount()
+{
+    QMap<RamStatus::Difficulty, int> difficulty;
+
+    RamProject *proj = project();
+    if (!proj) return difficulty;
+
+    RamState *noState = Ramses::instance()->noState();
+
+    const QSet<RamStatus*> status = proj->stepStatus(this);
+    for(auto st: status) {
+        if (noState->is(st->state()))
+            continue;
+        RamStatus::Difficulty d = st->difficulty();
+        int c = difficulty.value(d, 0);
+        difficulty.insert(d, c+1);
+    }
+
+    return difficulty;
 }
 
 QVector<float> RamStep::stats(RamUser *user)

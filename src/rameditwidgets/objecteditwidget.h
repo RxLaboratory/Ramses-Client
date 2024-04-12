@@ -37,7 +37,7 @@ protected slots:
     void setName();
     void setComment();
 
-    void objectChanged(RamObject *o);
+    void objectChanged(RamObject *o = nullptr);
 
     void checkPath();
 
