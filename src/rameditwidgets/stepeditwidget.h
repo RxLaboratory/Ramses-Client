@@ -68,7 +68,6 @@ private:
     DuQFColorSelector *ui_colorSelector;
 
     ObjectListWidget *m_applicationList;
-
 };
 
 #endif // STEPEDITWIDGET_H

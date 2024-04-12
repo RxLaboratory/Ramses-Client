@@ -18,6 +18,12 @@ class RamStep : public RamTemplateStep
 {
     Q_OBJECT
 public:
+
+    struct StateCount {
+        RamState *state;
+        int count;
+    };
+
     static RamStep *get(QString uuid, bool includeRemoved = false);
     static RamStep *c(RamObject *o);
     static RamStep *createFromTemplate(RamTemplateStep *tempStep, RamProject *project);
@@ -41,7 +47,7 @@ public:
     float daysSpent() ;
     float neededDays() ;
 
-    QHash<RamState*, int> stateCount();
+    QVector<StateCount> stateCount();
 
     /**
      * @brief stats

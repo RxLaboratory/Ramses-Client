@@ -67,26 +67,29 @@ void StepEditWidget::reInit(RamObject *obj)
 
         RamStep::Type stepType = m_step->type();
         if (stepType == RamStep::AssetProduction || stepType == RamStep::ShotProduction) {
-            QHash<RamState*, int> states = m_step->stateCount();
+            const QVector<RamStep::StateCount> stateCount = m_step->stateCount();
             RamState *noState = Ramses::instance()->noState();
-            DBTableModel *allStates = Ramses::instance()->states();
             int total = 0;
-            for (int i = 0; i < allStates->count(); i++) {
-                auto s = qobject_cast<RamState*>( allStates->get(i) );
-                if (s->is(noState))
-                    continue;
-                int c = states.value( s, 0 );
-                if (c > 0) {
-                    QString cStr = "<b>"+QString::number(c)+"</b> ";
-                    if (stepType == RamStep::AssetProduction) cStr += "assets";
-                    else cStr += "shots";
 
-                    auto l = new QLabel(s->name(), this);
-                    l->setStyleSheet("QLabel { color: "+s->color().name() + "; }");
-                    ui_statesLayout->addRow( l, new QLabel(cStr, this) );
-                    total += c;
-                }
+            for(const auto count: stateCount) {
+                int c = count.count;
+                if (c == 0)
+                    continue;
+
+                RamState *state = count.state;
+                if (state->is(noState))
+                    continue;
+
+                QString cStr = "<b>"+QString::number(c)+"</b> ";
+                if (stepType == RamStep::AssetProduction) cStr += "assets";
+                else cStr += "shots";
+
+                auto l = new QLabel(state->name(), this);
+                l->setStyleSheet("QLabel { color: "+state->color().name() + "; }");
+                ui_statesLayout->addRow( l, new QLabel(cStr, this) );
+                total += c;
             }
+
             if (total > 0) {
                 QString cStr = "<b>"+QString::number(total)+"</b> ";
                 if (stepType == RamStep::AssetProduction) cStr += "assets";

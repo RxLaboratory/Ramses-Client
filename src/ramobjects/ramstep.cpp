@@ -179,12 +179,13 @@ float RamStep::neededDays()
     return estimation() - daysSpent();
 }
 
-QHash<RamState *, int> RamStep::stateCount()
+QVector<RamStep::StateCount> RamStep::stateCount()
 {
     QHash<RamState *, int> states;
+    QVector<RamStep::StateCount> count;
 
     RamProject *proj = project();
-    if (!proj) return states;
+    if (!proj) return count;
 
     const QSet<RamStatus*> status = proj->stepStatus(this);
     for(auto st: status) {
@@ -193,7 +194,16 @@ QHash<RamState *, int> RamStep::stateCount()
         states.insert(s, c+1);
     }
 
-    return states;
+    QHashIterator<RamState*,int> i(states);
+    while(i.hasNext()) {
+        i.next();
+        count.append({ i.key(), i.value()} );
+    }
+    std::sort(count.begin(), count.end(), [] (const StateCount &a, const StateCount &b) {
+        return a.state->completionRatio() < b.state->completionRatio();
+    });
+
+    return count;
 }
 
 QVector<float> RamStep::stats(RamUser *user)
