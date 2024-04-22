@@ -17,6 +17,15 @@ RamStatusTableModel::RamStatusTableModel(DBTableModel *steps, DBTableModel *item
     m_status->addLookUpKey("item");
     m_status->addLookUpKey("step");
     m_status->addLookUpKey("dueDate");
+
+    // Update cache only when idle or going back to idle
+    connect(StateManager::i(), &StateManager::stateChanged,
+            this, [this] (StateManager::State state) {
+        if (state == StateManager::Idle)
+            this->setEstimationCacheSuspended(false);
+        else
+            this->setEstimationCacheSuspended(true);
+    });
 }
 
 void RamStatusTableModel::load()
@@ -213,6 +222,13 @@ QSet<RamStatus *> RamStatusTableModel::getStepStatus(QString stepUuid) const
     return status;
 }
 
+void RamStatusTableModel::setEstimationCacheSuspended(bool s)
+{
+    m_cacheSuspended = s;
+    if (!s)
+        cacheEstimations();
+}
+
 float RamStatusTableModel::stepEstimation(const QString &stepUuid, const QString &userUuid) const
 {
     if (userUuid == "")
@@ -332,6 +348,10 @@ void RamStatusTableModel::statusDataChanged(const QModelIndex &topLeft, const QM
 
 void RamStatusTableModel::cacheStepEstimation(QString stepUuid)
 {
+    m_cacheIsOutdated = true;
+    if (m_cacheSuspended)
+        return;
+
     if (stepUuid == "") return;
 
     // Clear this step estimations
@@ -366,12 +386,18 @@ void RamStatusTableModel::cacheStepEstimation(QString stepUuid)
     stepEstim.updateCompletionRatio();
     m_estimations.insert(stepUuid, stepEstim);
 
+    m_cacheIsOutdated = false;
+
     emit stepEstimationChanged( stepUuid );
     emit estimationsChanged();
 }
 
 void RamStatusTableModel::cacheEstimations()
 {
+    m_cacheIsOutdated = true;
+    if (m_cacheSuspended)
+        return;
+
     m_estimations.clear();
     m_userestimations.clear();
 
@@ -399,6 +425,8 @@ void RamStatusTableModel::cacheEstimations()
         is.value().updateCompletionRatio();
         is++;
     }
+
+    m_cacheIsOutdated = false;
 
     emit estimationsChanged();
 }

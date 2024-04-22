@@ -47,6 +47,7 @@ public:
     QSet<RamStatus*> getStepStatus(QString stepUuid) const;
 
     // Estimations
+    void setEstimationCacheSuspended(bool s);
     float stepEstimation(const QString &stepUuid, const QString &userUuid = "") const;
     int stepCompletionRatio(const QString &stepUuid, const QString &userUuid = "") const;
 
@@ -79,6 +80,9 @@ private:
     DBTableModel *m_steps;
     DBTableModel *m_items;
 
+    // Estimation cache
+    bool m_cacheSuspended = false;
+    bool m_cacheIsOutdated = false;
     // Estimations cache per step
     QHash<QString, StepEstimation> m_estimations;
     // Estimations cache per step and user
