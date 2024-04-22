@@ -6,7 +6,18 @@
 
 struct StepEstimation {
     float estimation = 0; // Days
+    int total = 0; // Days
     int completionRatio = 0; // [0, 100] ratio
+
+    // Updates the completion after having cached all status
+    void updateCompletionRatio() {
+        if (this->total > 0)
+            this->completionRatio = this->completionRatio / total;
+        else
+            this->completionRatio = 100;
+
+        this->completionRatio = std::min(100, this->completionRatio);
+    }
 };
 
 class RamStatusTableModel : public QAbstractTableModel
@@ -36,8 +47,8 @@ public:
     QSet<RamStatus*> getStepStatus(QString stepUuid) const;
 
     // Estimations
-    float stepEstimation(QString stepUuid) const;
-    int stepCompletionRatio(QString stepUuid) const;
+    float stepEstimation(const QString &stepUuid, const QString &userUuid = "") const;
+    int stepCompletionRatio(const QString &stepUuid, const QString &userUuid = "") const;
 
 signals:
     void stepEstimationChanged(QString stepUuid);
@@ -68,10 +79,15 @@ private:
     DBTableModel *m_steps;
     DBTableModel *m_items;
 
-    // Estimations cache
+    // Estimations cache per step
     QHash<QString, StepEstimation> m_estimations;
+    // Estimations cache per step and user
+    QHash<QPair<QString,QString>, StepEstimation> m_userestimations;
 
     bool m_loaded = false;
+
+    // Utils
+    void updateStepEstimCache(RamStatus *status, const QString &stepUuid);
 };
 
 #endif // RAMSTATUSTABLEMODEL_H

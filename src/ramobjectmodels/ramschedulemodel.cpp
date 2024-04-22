@@ -21,18 +21,18 @@ RamScheduleModel::RamScheduleModel(QObject *parent)
     countAll();
 }
 
-AssignedCount RamScheduleModel::stepCount(QString stepUuid)
+AssignedCount RamScheduleModel::stepCount(const QString &stepUuid)
 {
     return m_stepCounts.value(stepUuid);
 }
 
-AssignedCount RamScheduleModel::stepUserCount(QString userUuid, QString stepUuid)
+AssignedCount RamScheduleModel::stepUserCount(const QString &userUuid, const QString &stepUuid)
 {
     UserAssignedCount uCount = userCount(userUuid);
     return uCount.stepCounts.value(stepUuid);
 }
 
-UserAssignedCount RamScheduleModel::userCount(QString userUuid)
+UserAssignedCount RamScheduleModel::userCount(const QString &userUuid)
 {
     return m_userCounts.value(userUuid);
 }

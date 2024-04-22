@@ -31,15 +31,11 @@ void StepEditWidget::reInit(RamObject *obj)
 
     m_step = qobject_cast<RamStep*>( obj );
 
+    QSignalBlocker b(ui_userBox);
+
     if (!same)
         connect(m_step->project(), &RamProject::estimationComputed,
                 this, [this](){ reInit(m_step); });
-
-    while(ui_statesLayout->rowCount() > 0)
-        ui_statesLayout->removeRow(0);
-    while(ui_difficultiesLayout->rowCount() > 0)
-        ui_difficultiesLayout->removeRow(0);
-
 
     if (m_step)
     {                
@@ -83,132 +79,17 @@ void StepEditWidget::reInit(RamObject *obj)
         RamStep::Type stepType = m_step->type();
         if (stepType == RamStep::AssetProduction || stepType == RamStep::ShotProduction) {
             ui_completionWidget->show();
-
-            int completion = m_step->completionRatio();
-            ui_progressWidget->setCompletionRatio(completion);
-            if (completion > 99)
-                ui_completionLabel->setText("Finished!");
-            else {
-                ui_completionLabel->setText(
-                    QString("<i>Completion: <b>%1%</b> (%2 / %3 days)</i>")
-                        .arg(completion)
-                        .arg(int(m_step->daysSpent()))
-                        .arg(int(m_step->estimation()))
-                    );
-            }
-
-            const QVector<RamStep::StateCount> stateCount = m_step->stateCount();
-            RamState *noState = Ramses::instance()->noState();
-            float total = 0;
-
-            for(const auto count: stateCount) {
-                int c = count.count;
-                if (c == 0)
-                    continue;
-
-                RamState *state = count.state;
-                if (state->is(noState))
-                    continue;
-
-                total += c;
-            }
-
-            if (total > 0) {
-
-                ui_statesLayout->setWidget( 0, QFormLayout::LabelRole, new QLabel("<b>"+tr("States:")+"</b>") );
-
-                for(const auto count: stateCount) {
-                    float c = count.count;
-                    if (c == 0)
-                        continue;
-
-                    RamState *state = count.state;
-                    if (state->is(noState))
-                        continue;
-
-                    QString cStr = "<b>"+QString::number(c)+"</b> ";
-                    if (stepType == RamStep::AssetProduction) cStr += "assets (";
-                    else cStr += "shots (";
-                    cStr += QString::number(int(c/total*100)) + "%)";
-
-                    auto l = new QLabel(state->name(), this);
-                    l->setStyleSheet("QLabel { color: "+state->color().name() + "; }");
-                    ui_statesLayout->addRow( l, new QLabel(cStr, this) );
-                }
-
-                QString cStr = "<b>"+QString::number(total)+"</b> ";
-                if (stepType == RamStep::AssetProduction) cStr += "assets";
-                else cStr += "shots";
-
-                ui_statesLayout->addRow( "Total", new QLabel(cStr, this) );
-            }
-
-            const QMap<RamStatus::Difficulty, int> difficulties = m_step->difficultyCount();
-            total = 0;
-
-            QMapIterator<RamStatus::Difficulty, int> i(difficulties);
-            while(i.hasNext()) {
-                i.next();
-                float c = i.value();
-                if (c == 0)
-                    continue;
-                total += c;
-            }
-
-            if (total > 0) {
-
-                ui_difficultiesLayout->setWidget( 0, QFormLayout::LabelRole, new QLabel("<b>"+tr("Difficulty:")+"</b>") );
-
-                i.toFront();
-                while(i.hasNext()) {
-                    i.next();
-                    float c = i.value();
-                    if (c == 0)
-                        continue;
-
-                    QString cStr = "<b>"+QString::number(c)+"</b> ";
-                    if (stepType == RamStep::AssetProduction) cStr += "assets (";
-                    else cStr += "shots (";
-                    cStr += QString::number(int(c/total*100)) + "%)";
-
-                    QString label;
-
-                    switch(i.key()) {
-                    case RamStatus::VeryEasy:
-                        label = tr("Very easy");
-                        break;
-                    case RamStatus::Easy:
-                        label = tr("Easy");
-                        break;
-                    case RamStatus::Medium:
-                        label = tr("Medium");
-                        break;
-                    case RamStatus::Hard:
-                        label = tr("Hard");
-                        break;
-                    case RamStatus::VeryHard:
-                        label = tr("Very hard");
-                        break;
-                    }
-
-                    auto l = new QLabel(label, this);
-                    ui_difficultiesLayout->addRow( l, new QLabel(cStr, this) );
-                }
-
-                QString cStr = "<b>"+QString::number(total)+"</b> ";
-                if (stepType == RamStep::AssetProduction) cStr += "assets";
-                else cStr += "shots";
-
-                ui_difficultiesLayout->addRow( "Total", new QLabel(cStr, this) );
-            }
+            ui_userBox->setObjectModel(m_step->project()->users(), "Users");
+            changeUser(ui_userBox->currentObject());
         }
-        else
-        {
+        else  {
             ui_completionWidget->hide();
+            ui_userBox->setObjectModel(nullptr, "Users");
         }
     }
     else
     {
+        ui_userBox->setObjectModel(nullptr, "Users");
         ui_typeBox->setCurrentIndex(1);
         ui_folderWidget->setPath("");
         m_applicationList->clear();
@@ -363,6 +244,140 @@ void StepEditWidget::setMultiplier(RamObject *ag)
     m_step->setEstimationMultiplyGroup( ag );
 }
 
+void StepEditWidget::changeUser(RamObject *userObj)
+{
+    while(ui_statesLayout->rowCount() > 0)
+        ui_statesLayout->removeRow(0);
+    while(ui_difficultiesLayout->rowCount() > 0)
+        ui_difficultiesLayout->removeRow(0);
+
+    if (!m_step) return;
+
+    RamStep::Type stepType = m_step->type();
+    if (stepType != RamStep::AssetProduction && stepType != RamStep::ShotProduction)
+        return;
+
+    RamUser *user = RamUser::c(userObj);
+
+    int completion = m_step->completionRatio(user);
+    ui_progressWidget->setCompletionRatio(completion);
+    if (completion > 99)
+        ui_completionLabel->setText("Finished!");
+    else {
+        ui_completionLabel->setText(
+            QString("<i>Completion: <b>%1%</b> (%2 / %3 days)</i>")
+                .arg(completion)
+                .arg(int(m_step->daysSpent(user)))
+                .arg(int(m_step->estimation(user)))
+            );
+    }
+
+    const QVector<RamStep::StateCount> stateCount = m_step->stateCount(user);
+    RamState *noState = Ramses::instance()->noState();
+    float total = 0;
+
+    for(const auto count: stateCount) {
+        int c = count.count;
+        if (c == 0)
+            continue;
+
+        RamState *state = count.state;
+        if (state->is(noState))
+            continue;
+
+        total += c;
+    }
+
+    if (total > 0) {
+
+        ui_statesLayout->setWidget( 0, QFormLayout::LabelRole, new QLabel("<b>"+tr("States:")+"</b>") );
+
+        for(const auto count: stateCount) {
+            float c = count.count;
+            if (c == 0)
+                continue;
+
+            RamState *state = count.state;
+            if (state->is(noState))
+                continue;
+
+            QString cStr = "<b>"+QString::number(c)+"</b> ";
+            if (stepType == RamStep::AssetProduction) cStr += "assets (";
+            else cStr += "shots (";
+            cStr += QString::number(int(c/total*100)) + "%)";
+
+            auto l = new QLabel(state->name(), this);
+            l->setStyleSheet("QLabel { color: "+state->color().name() + "; }");
+            ui_statesLayout->addRow( l, new QLabel(cStr, this) );
+        }
+
+        QString cStr = "<b>"+QString::number(total)+"</b> ";
+        if (stepType == RamStep::AssetProduction) cStr += "assets";
+        else cStr += "shots";
+
+        ui_statesLayout->addRow( "Total", new QLabel(cStr, this) );
+    }
+
+    const QMap<RamStatus::Difficulty, int> difficulties = m_step->difficultyCount(user);
+    total = 0;
+
+    QMapIterator<RamStatus::Difficulty, int> i(difficulties);
+    while(i.hasNext()) {
+        i.next();
+        float c = i.value();
+        if (c == 0)
+            continue;
+        total += c;
+    }
+
+    if (total > 0) {
+
+        ui_difficultiesLayout->setWidget( 0, QFormLayout::LabelRole, new QLabel("<b>"+tr("Difficulty:")+"</b>") );
+
+        i.toFront();
+        while(i.hasNext()) {
+            i.next();
+            float c = i.value();
+            if (c == 0)
+                continue;
+
+            QString cStr = "<b>"+QString::number(c)+"</b> ";
+            if (stepType == RamStep::AssetProduction) cStr += "assets (";
+            else cStr += "shots (";
+            cStr += QString::number(int(c/total*100)) + "%)";
+
+            QString label;
+
+            switch(i.key()) {
+            case RamStatus::VeryEasy:
+                label = tr("Very easy");
+                break;
+            case RamStatus::Easy:
+                label = tr("Easy");
+                break;
+            case RamStatus::Medium:
+                label = tr("Medium");
+                break;
+            case RamStatus::Hard:
+                label = tr("Hard");
+                break;
+            case RamStatus::VeryHard:
+                label = tr("Very hard");
+                break;
+            }
+
+            auto l = new QLabel(label, this);
+            ui_difficultiesLayout->addRow( l, new QLabel(cStr, this) );
+        }
+
+        QString cStr = "<b>"+QString::number(total)+"</b> ";
+        if (stepType == RamStep::AssetProduction) cStr += "assets";
+        else cStr += "shots";
+
+        ui_difficultiesLayout->addRow( "Total", new QLabel(cStr, this) );
+    }
+}
+
 void StepEditWidget::setupUi()
 {
     auto appearanceWidget = new QWidget(this);
@@ -405,12 +420,15 @@ void StepEditWidget::setupUi()
         "<b>"+tr("Status")+"</b>"
         ));
 
+    ui_userBox = new RamObjectComboBox(this);
+    estimLayout->addWidget(ui_userBox);
+
     ui_completionWidget = new QWidget(this);
     estimLayout->addWidget(ui_completionWidget);
 
     auto completionLayout = new QVBoxLayout(ui_completionWidget);
     completionLayout->setContentsMargins(0,0,0,0);
-    completionLayout->setSpacing(1);
+    completionLayout->setSpacing(5);
 
     ui_progressWidget = new ProgressWidget(this);
     completionLayout->addWidget(ui_progressWidget);
@@ -567,4 +585,6 @@ void StepEditWidget::connectEvents()
     connect(ui_veryHardEdit, SIGNAL(valueChanged(double)), this, SLOT(setVeryHard(double)));
     connect(ui_estimationMultiplierCheckBox, SIGNAL(clicked(bool)), this, SLOT(activateMultiplier(bool)));
     connect(ui_estimationMultiplierBox, &RamObjectComboBox::currentObjectChanged, this, &StepEditWidget::setMultiplier);
+
+    connect(ui_userBox, &RamObjectComboBox::currentObjectChanged, this, &StepEditWidget::changeUser);
 }

@@ -43,6 +43,7 @@ private slots:
     void setVeryHard(double e);
     void activateMultiplier(bool a);
     void setMultiplier(RamObject *ag);
+    void changeUser(RamObject *userObj);
 
 private:
     void setupUi();
@@ -51,6 +52,7 @@ private:
     RamStep *m_step;
 
     DuComboBox *ui_typeBox;
+    RamObjectComboBox *ui_userBox;
     QWidget *ui_estimationWidget;
     QWidget *ui_statesWidget;
     QWidget *ui_completionWidget;

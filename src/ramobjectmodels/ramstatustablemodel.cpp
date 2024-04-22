@@ -213,14 +213,24 @@ QSet<RamStatus *> RamStatusTableModel::getStepStatus(QString stepUuid) const
     return status;
 }
 
-float RamStatusTableModel::stepEstimation(QString stepUuid) const
+float RamStatusTableModel::stepEstimation(const QString &stepUuid, const QString &userUuid) const
 {
-    return m_estimations.value(stepUuid).estimation;
+    if (userUuid == "")
+        return m_estimations.value(stepUuid).estimation;
+
+    return m_userestimations.value(
+        QPair<QString,QString>(stepUuid, userUuid)
+        ).estimation;
 }
 
-int RamStatusTableModel::stepCompletionRatio(QString stepUuid) const
+int RamStatusTableModel::stepCompletionRatio(const QString &stepUuid, const QString &userUuid) const
 {
-    return m_estimations.value(stepUuid).completionRatio;
+    if (userUuid == "")
+        return m_estimations.value(stepUuid).completionRatio;
+
+    return m_userestimations.value(
+        QPair<QString,QString>(stepUuid, userUuid)
+        ).completionRatio;
 }
 
 void RamStatusTableModel::stepsInserted(const QModelIndex &parent, int first, int last)
@@ -324,37 +334,36 @@ void RamStatusTableModel::cacheStepEstimation(QString stepUuid)
 {
     if (stepUuid == "") return;
 
+    // Clear this step estimations
     m_estimations.remove(stepUuid);
-
-    StepEstimation stepEstim;
+    QHashIterator<QPair<QString,QString>, StepEstimation> i(m_userestimations);
+    while (i.hasNext()) {
+        i.next();
+        if (i.key().first != stepUuid)
+            continue;
+        m_userestimations.remove(i.key());
+    }
 
     // For each item, get the status
-    int numItems = 0;
     for (int i = 0; i < m_items->rowCount(); i ++) {
         RamStatus *status = getStatus( m_items->getUuid(i), stepUuid);
         if (!status) continue;
-        RamState *state = status->state();
-        if (!state) continue;
-        if (state->shortName() == "NO") continue;
 
-        float estimation = 0;
-        if (status->useAutoEstimation()) estimation = status->estimation();
-        else estimation = status->goal();
-
-        stepEstim.estimation += estimation;
-        stepEstim.completionRatio += status->completionRatio();
-
-        numItems++;
+        updateStepEstimCache(status, stepUuid);
     }
 
-    if (numItems > 0) {
-        stepEstim.completionRatio = stepEstim.completionRatio /numItems;
-        stepEstim.completionRatio = std::min(100, stepEstim.completionRatio);
-    }
-    else {
-        stepEstim.completionRatio = 100;
+    // Update completion ratios
+
+    QHash<QPair<QString,QString>, StepEstimation>::iterator ius = m_userestimations.begin();
+    while (ius != m_userestimations.end()) {
+        if (ius.key().first != stepUuid)
+            continue;
+        ius.value().updateCompletionRatio();
+        ius++;
     }
 
+    StepEstimation stepEstim = m_estimations.value(stepUuid);
+    stepEstim.updateCompletionRatio();
     m_estimations.insert(stepUuid, stepEstim);
 
     emit stepEstimationChanged( stepUuid );
@@ -364,10 +373,7 @@ void RamStatusTableModel::cacheStepEstimation(QString stepUuid)
 void RamStatusTableModel::cacheEstimations()
 {
     m_estimations.clear();
-
-    QHash<QString, StepEstimation> allEstimation;
-
-    QHash<QString, int> numItems;
+    m_userestimations.clear();
 
     for (int i = 0; i < m_items->rowCount(); i++) {
         QSet<RamStatus*> allStatus = getItemStatus( m_items->getUuid(i) );
@@ -376,49 +382,55 @@ void RamStatusTableModel::cacheEstimations()
             QString stepUuid = status->stepUuid();
             if (stepUuid == "") continue;
 
-            RamState *state = status->state();
-            if (!state) continue;
-            if (state->shortName() == "NO") continue;
-
-            float estimation = 0;
-            if (status->useAutoEstimation()) estimation = status->estimation();
-            else estimation = status->goal();
-
-            StepEstimation stepEstim = allEstimation.value(stepUuid);
-            stepEstim.estimation += estimation;
-            stepEstim.completionRatio += status->completionRatio();
-
-            allEstimation.insert( stepUuid, stepEstim );
-
-            int num = numItems.value(stepUuid);
-            num++;
-            numItems.insert(stepUuid, num);
+            updateStepEstimCache(status, stepUuid);
         }
     }
 
-    QHash<QString, StepEstimation>::iterator i = allEstimation.begin();
-    while (i != allEstimation.end()) {
+    // Update completion ratios
 
-        StepEstimation stepEstim = i.value();
-        int num = numItems.value(i.key());
-
-        if (num > 0) {
-            stepEstim.completionRatio = stepEstim.completionRatio /num;
-            stepEstim.completionRatio = std::min(100, stepEstim.completionRatio);
-        }
-        else {
-            stepEstim.completionRatio = 100;
-        }
-
-        i.value() = stepEstim;
-
-        emit stepEstimationChanged(i.key());
-
-        i++;
+    QHash<QPair<QString,QString>, StepEstimation>::iterator ius = m_userestimations.begin();
+    while (ius != m_userestimations.end()) {
+        ius.value().updateCompletionRatio();
+        ius++;
     }
 
-    m_estimations = allEstimation;
+    QHash<QString, StepEstimation>::iterator is = m_estimations.begin();
+    while (is != m_estimations.end()) {
+        is.value().updateCompletionRatio();
+        is++;
+    }
 
     emit estimationsChanged();
 }
 
+void RamStatusTableModel::updateStepEstimCache(RamStatus *status, const QString &stepUuid)
+{
+    RamState *state = status->state();
+    if (!state)
+        return;
+    if (state->shortName() == "NO")
+        return;
+
+    float estimation = 0;
+    if (status->useAutoEstimation()) estimation = status->estimation();
+    else estimation = status->goal();
+
+    float completionRatio = status->completionRatio();
+
+    StepEstimation stepEstim = m_estimations.value(stepUuid);
+    stepEstim.estimation += estimation;
+    stepEstim.total++;
+    stepEstim.completionRatio += completionRatio;
+    m_estimations.insert( stepUuid, stepEstim );
+
+    RamUser *user = status->assignedUser();
+    if (user) {
+        QPair<QString,QString> k(stepUuid, user->uuid());
+
+        StepEstimation stepUserEstim = m_userestimations.value( k );
+        stepUserEstim.estimation += estimation;
+        stepUserEstim.total++;
+        stepUserEstim.completionRatio += completionRatio;
+        m_userestimations.insert( k, stepUserEstim );
+    }
+}

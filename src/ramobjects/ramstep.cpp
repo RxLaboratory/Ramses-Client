@@ -99,7 +99,7 @@ void RamStep::setEstimationMultiplyGroup(RamObject *newEstimationMultiplyGroup)
         insertData("estimationMultiplyGroup", "none" );
 }
 
-float RamStep::estimation()
+float RamStep::estimation(RamUser *user)
 {
     RamProject *proj = project();
     if (!proj) return 0;
@@ -113,10 +113,12 @@ float RamStep::estimation()
     if (t == ShotProduction) status = proj->shotStatus();
     else status = proj->assetStatus();
 
+    if (user)
+        return status->stepEstimation( m_uuid, user->uuid() );
     return status->stepEstimation( m_uuid );
 }
 
-int RamStep::completionRatio()
+int RamStep::completionRatio(RamUser *user)
 {
     RamProject *proj = project();
     if (!proj) return 0;
@@ -130,34 +132,44 @@ int RamStep::completionRatio()
     if (t == ShotProduction) status = proj->shotStatus();
     else status = proj->assetStatus();
 
+    if (user)
+        return status->stepCompletionRatio( m_uuid, user->uuid() );
     return status->stepCompletionRatio( m_uuid );
 }
 
-float RamStep::latenessRatio()
+float RamStep::latenessRatio(RamUser *user)
 {
-    if (neededDays() > 0)
-        return missingDays() / neededDays();
+    if (neededDays(user) > 0)
+        return missingDays(user) / neededDays(user);
     else return 0;
 }
 
-float RamStep::assignedDays()
+float RamStep::assignedDays(RamUser *user)
 {
     RamProject *proj = project();
     if (!proj) return 0;
 
     RamScheduleModel *schedule = proj->schedule();
 
-    return schedule->stepCount( m_uuid ).total;
+    if (!user)
+        return schedule->stepCount( m_uuid ).total;
+    return schedule->stepUserCount(
+        user->uuid(), m_uuid
+        ).total;
 }
 
-float RamStep::futureDays()
+float RamStep::futureDays(RamUser *user)
 {
     RamProject *proj = project();
     if (!proj) return 0;
 
     RamScheduleModel *schedule = proj->schedule();
 
-    return schedule->stepCount( m_uuid ).future;
+    if (!user)
+        return schedule->stepCount( m_uuid ).future;
+    return schedule->stepUserCount(
+                       user->uuid(), m_uuid
+                       ).future;
 }
 
 float RamStep::unassignedDays()
@@ -165,22 +177,22 @@ float RamStep::unassignedDays()
     return estimation() - assignedDays();
 }
 
-float RamStep::missingDays()
+float RamStep::missingDays(RamUser *user)
 {
-    return neededDays() - futureDays();
+    return neededDays(user) - futureDays(user);
 }
 
-float RamStep::daysSpent()
+float RamStep::daysSpent(RamUser *user)
 {
-    return estimation() * completionRatio() / 100;
+    return estimation(user) * completionRatio(user) / 100;
 }
 
-float RamStep::neededDays()
+float RamStep::neededDays(RamUser *user)
 {
-    return estimation() - daysSpent();
+    return estimation(user) - daysSpent(user);
 }
 
-QVector<RamStep::StateCount> RamStep::stateCount()
+QVector<RamStep::StateCount> RamStep::stateCount(RamUser *user)
 {
     QHash<RamState *, int> states;
     QVector<RamStep::StateCount> count;
@@ -190,7 +202,11 @@ QVector<RamStep::StateCount> RamStep::stateCount()
 
     const QSet<RamStatus*> status = proj->stepStatus(this);
     for(auto st: status) {
+        if (!st->item())
+            continue;
         RamState *s = st->state();
+        if (user && !user->is(st->assignedUser()))
+            continue;
         int c = states.value(s, 0);
         states.insert(s, c+1);
     }
@@ -207,7 +223,7 @@ QVector<RamStep::StateCount> RamStep::stateCount()
     return count;
 }
 
-QMap<RamStatus::Difficulty, int> RamStep::difficultyCount()
+QMap<RamStatus::Difficulty, int> RamStep::difficultyCount(RamUser *user)
 {
     QMap<RamStatus::Difficulty, int> difficulty;
 
@@ -219,6 +235,10 @@ QMap<RamStatus::Difficulty, int> RamStep::difficultyCount()
     const QSet<RamStatus*> status = proj->stepStatus(this);
     for(auto st: status) {
         if (noState->is(st->state()))
+            continue;
+        if (!st->item())
+            continue;
+        if (user && !user->is(st->assignedUser()))
             continue;
         RamStatus::Difficulty d = st->difficulty();
         int c = difficulty.value(d, 0);

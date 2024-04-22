@@ -24,9 +24,9 @@ public:
     explicit RamScheduleModel(QObject *parent = nullptr);
 
     // COUNTS
-    AssignedCount stepCount(QString stepUuid);
-    AssignedCount stepUserCount(QString userUuid, QString stepUuid);
-    UserAssignedCount userCount(QString userUuid);
+    AssignedCount stepCount(const QString &stepUuid);
+    AssignedCount stepUserCount(const QString &userUuid, const QString &stepUuid);
+    UserAssignedCount userCount(const QString &userUuid);
 
 signals:
     void countChanged();

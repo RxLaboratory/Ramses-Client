@@ -38,18 +38,18 @@ public:
     RamAssetGroup *estimationMultiplyGroup() const;
     void setEstimationMultiplyGroup(RamObject *newEstimationMultiplyGroup);
 
-    float estimation() ; //days
-    float latenessRatio() ;
-    int completionRatio();
-    float assignedDays() ;
-    float futureDays();
+    float estimation(RamUser *user = nullptr) ; //days
+    float latenessRatio(RamUser *user = nullptr) ;
+    int completionRatio(RamUser *user = nullptr);
+    float assignedDays(RamUser *user = nullptr) ;
+    float futureDays(RamUser *user = nullptr);
     float unassignedDays() ;
-    float missingDays() ;
-    float daysSpent() ;
-    float neededDays() ;
+    float missingDays(RamUser *user = nullptr) ;
+    float daysSpent(RamUser *user = nullptr);
+    float neededDays(RamUser *user = nullptr) ;
 
-    QVector<StateCount> stateCount();
-    QMap<RamStatus::Difficulty,int> difficultyCount();
+    QVector<StateCount> stateCount(RamUser *user = nullptr);
+    QMap<RamStatus::Difficulty,int> difficultyCount(RamUser *user = nullptr);
 
     /**
      * @brief stats
