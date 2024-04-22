@@ -1,8 +1,10 @@
 #include "ramscheduletablemodel.h"
 
 #include "duqf-app/app-config.h"
-#include "ramschedulecomment.h"
+#include "duqf-app/dusettingsmanager.h"
+#include "duqf-utils/stringutils.h"
 #include "ramscheduleentry.h"
+#include "ramschedulerow.h"
 #include "ramses.h"
 
 RamScheduleTableModel::RamScheduleTableModel(QObject *parent) : QAbstractTableModel(parent)
@@ -11,41 +13,31 @@ RamScheduleTableModel::RamScheduleTableModel(QObject *parent) : QAbstractTableMo
     m_endDate = QDate::currentDate();
 }
 
-void RamScheduleTableModel::setObjectModel(RamObjectModel *users, DBTableModel *schedule, DBTableModel *comments)
+void RamScheduleTableModel::setObjectModel(DBTableModel *rows, DBTableModel *entries)
 {
     beginResetModel();
 
-    if (m_users) disconnect(m_users, nullptr, this, nullptr);
-    if (m_schedule) disconnect(m_schedule, nullptr, this, nullptr);
-    if (m_comments) disconnect(m_comments, nullptr, this, nullptr);
+    if (m_rows) disconnect(m_rows, nullptr, this, nullptr);
+    if (m_entries) disconnect(m_entries, nullptr, this, nullptr);
 
-    m_users = users;
-    m_schedule = schedule;
-    m_comments = comments;
+    m_rows = rows;
+    m_entries = entries;
 
-    if (m_users)
+    if (m_rows)
     {
-        connect( m_users, &RamObjectModel::rowsInserted, this, &RamScheduleTableModel::removeUser);
-        connect( m_users, &RamObjectModel::rowsAboutToBeRemoved, this, &RamScheduleTableModel::insertUser);
-        connect( m_users, &RamObjectModel::dataChanged, this, &RamScheduleTableModel::changeUser);
-        connect( m_users, &RamObjectModel::modelReset, this, &RamScheduleTableModel::resetUsers);
+        connect( m_rows, &DBTableModel::rowsInserted, this, &RamScheduleTableModel::insertScheduleRows);
+        connect( m_rows, &DBTableModel::rowsAboutToBeRemoved, this, &RamScheduleTableModel::removeScheduleRows);
+        connect( m_rows, &DBTableModel::dataChanged, this, &RamScheduleTableModel::changeScheduleRows);
+        connect( m_rows, &DBTableModel::modelReset, this, &RamScheduleTableModel::resetScheduleRows);
     }
 
-    if (m_schedule)
+    if (m_entries)
     {
-        connect( m_schedule, &DBTableModel::rowsInserted, this,&RamScheduleTableModel::removeSchedule);
-        connect( m_schedule, &DBTableModel::rowsAboutToBeRemoved, this, &RamScheduleTableModel::insertSchedule);
-        connect( m_schedule, &DBTableModel::dataChanged, this, &RamScheduleTableModel::changeSchedule);
-        connect( m_schedule, &DBTableModel::modelReset, this, &RamScheduleTableModel::resetSchedule);
+        connect( m_entries, &DBTableModel::rowsInserted, this,&RamScheduleTableModel::insertEntries);
+        connect( m_entries, &DBTableModel::rowsAboutToBeRemoved, this, &RamScheduleTableModel::removeEntries);
+        connect( m_entries, &DBTableModel::dataChanged, this, &RamScheduleTableModel::changeEntries);
+        connect( m_entries, &DBTableModel::modelReset, this, &RamScheduleTableModel::resetEntries);
     }
-
-    if (m_comments)
-    {
-        connect( m_comments, &DBTableModel::rowsInserted, this, &RamScheduleTableModel::insertComment);
-        connect( m_comments, &DBTableModel::rowsAboutToBeRemoved, this, &RamScheduleTableModel::removeComment);
-        connect( m_comments, &DBTableModel::dataChanged, this, &RamScheduleTableModel::changeComment);
-        connect( m_comments, &DBTableModel::modelReset, this, &RamScheduleTableModel::resetComments);
-    }   
 
     endResetModel();
 }
@@ -54,7 +46,7 @@ int RamScheduleTableModel::columnCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent)
 
-    if (!m_schedule) return 0;
+    if (!m_entries) return 0;
 
     return m_startDate.daysTo( m_endDate ) + 1;
 }
@@ -63,388 +55,211 @@ int RamScheduleTableModel::rowCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent)
 
-    int c = 0;
+    if (m_rows)
+        return m_rows->rowCount();
 
-    if (!m_users && !m_comments) return c;
-
-    // Two rows per user: AM and PM
-    if (m_users) c = m_users->rowCount()*2;
-    // If there are comments, it's on an additionnal row
-    if (m_comments) c++;
-
-    return c;
+    return 0;
 }
 
 QVariant RamScheduleTableModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
-    if (!m_users) return QVariant();
-
     if (orientation == Qt::Vertical)
-    {
-        // Invalid index
-        if (section < 0 || section > m_users->rowCount()*2)
-        {
-            //if (role == Qt::DisplayRole) return "Invalid";
-            return QVariant();
-        }
+        return verticalHeaderData(section, role);
 
-        // General
-        if (role == Qt::TextAlignmentRole) return Qt::AlignCenter;
-
-        // The comments
-        if (section == 0 && m_comments) {
-            if ( role == Qt::DisplayRole )
-                return "NOTES";
-            if ( role == Qt::ToolTipRole )
-                return QString("Use this line to add comments for specific dates.");
-            if ( role == RamObject::IsPM )
-                return false;
-            return QAbstractTableModel::headerData(section, orientation, role);
-        }
-
-        if (m_comments) section--;
-        RamObject *usrObj = m_users->get(section / 2);
-
-        // Add AMP/PM Info to user data
-
-        QString ampm = "AM";
-        if (section % 2 == 1) ampm = "PM";
-
-        if ( role == RamObject::IsPM)
-            return section % 2 == 1;
-
-        if ( role == Qt::DisplayRole )
-            return QString(usrObj->name() % "\n" % ampm);
-
-        if ( role == Qt::ToolTipRole )
-            return QString(usrObj->roleData(role).toString() % " | " % ampm);
-
-        if ( role == Qt::StatusTipRole )
-            return QString(usrObj->roleData(role).toString() % " | " % ampm);
-
-        // Or return default
-
-        return usrObj->roleData(role);
-    }
-    else
-    {
-        QDate date = m_startDate.addDays(section);
-
-        if ( role == Qt::DisplayRole )
-        {
-            return QString(date.toString("MMMM\ndddd\nyyyy-MM-dd"));
-        }
-
-        if (role == Qt::ForegroundRole)
-        {
-            if (date == QDate::currentDate())
-                return QBrush(QColor(213,136,241));
-
-            RamProject *proj = Ramses::instance()->currentProject();
-            if (proj)
-            {
-                if (date == proj->deadline()) return QBrush(QColor(249,105,105));
-            }
-
-            if (date.weekNumber() % 2 == 1)
-                return QBrush(QColor(130,130,130));
-            else
-                return QBrush(QColor(170,170,170));
-        }
-
-        if (role ==  RamObject::Date)
-            return date;
-    }
-    return QAbstractTableModel::headerData(section, orientation, role);
+    return horizontalHeaderData(section, role);
 }
 
 QVariant RamScheduleTableModel::data(const QModelIndex &index, int role) const
 {
-    if (!m_users) return QVariant();
+    if (!m_rows) return QVariant();
+    if (!m_entries) return QVariant();
 
     int row = index.row();
     int col = index.column();
 
-#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
-    QDateTime date = QDateTime( m_startDate.addDays(col) );
-#else
-    QDateTime date = QDate( m_startDate.addDays(col) ).startOfDay();
-#endif
-
-    // THE DATE
-    QString ampm = "am";
-    if ( headerData(row, Qt::Vertical,  RamObject::IsPM).toBool())
-    {
-        ampm = "pm";
-        date.setTime(QTime(12,0));
-    }
+    QDate date = horizontalHeaderData(col, RamObject::Date).toDate();
 
     if (role ==  RamObject::Date )
-    {
         return date;
-    }
 
-    // THE COMMENT
-    if (row == 0 && m_comments) {
-        QSet<RamObject*> comments = m_comments->lookUp("date", date.toString(DATETIME_DATA_FORMAT));
-        if (!comments.isEmpty())
-        {
-            RamObject *c = *comments.cbegin();
-            return c->roleData(role);
-        }
-        /*for(int i = 0; i < m_comments->rowCount(); i++)
-        {
-            RamScheduleComment *c = RamScheduleComment::c(m_comments->get(i));
-            if (!c) continue;
-            if (c->date() == date)
-                return c->roleData(role);
-        }*/
+    // Get the entrie(s)
+    const QSet<RamObject*> entries = m_entries->multiLookUp(
+        QStringList( { "date", "row" } ),
+        QStringList( { date.toString( DATE_DATA_FORMAT ), m_rows->getUuid(row) } )
+        );
 
-        // Needed Default values
+    // Empty cell
+    if (entries.isEmpty()) {
 
-        if (role == Qt::BackgroundRole )
-        {
-            if (date.date().weekNumber() % 2 == 1)
+        if ( role == Qt::BackgroundRole ) {
+            if (date.weekNumber() % 2 == 1)
                 return QColor(51,51,51);
             else
                 return QColor(42,42,42);
         }
 
-        if (role == RamObject::IsComment) return true;
-
         return QVariant();
     }
 
-    // THE ENTRY
-
-    // Filters
-    QString usrUuid = m_users->getUuid((row-1) / 2);
-    if (usrUuid == "") return QVariant();
-
-    QSet<RamObject*> entries = m_schedule->lookUp("date", date.toString( DATETIME_DATA_FORMAT ));
-    RamScheduleEntry *entry = nullptr;
-    foreach(RamObject *entryObj, entries) {
-        RamScheduleEntry *e = RamScheduleEntry::c( entryObj );
-        if (!e) continue;
-        if (!e->user()) continue;
-        if (e->user()->uuid() == usrUuid) {
-            // Just in case there are multiple entries
-            if (!entry) {
-                entry = e;
-                continue;
-            }
-            if (e->modificationDate() > entry->modificationDate())
-                entry = e;
+    // Pointer list for Multiple entries,
+    // The delegate should get the list of pointers
+    // to do something with it...
+    if (role == RamAbstractObject::Pointer) {
+        QVariantList ptrs;
+        for (auto entry: entries) {
+            ptrs << reinterpret_cast<qintptr>(entry);
         }
+        return ptrs;
     }
 
-    if (entry)
-    {
-        // Add AMP/PM Info to entry data
-        if ( role == RamObject::IsPM)
-            return ampm == "pm";
-
-        if ( role == Qt::ToolTipRole )
-            return QString(entry->roleData(role).toString() % "\n" % ampm);
-
-        if ( role == Qt::StatusTipRole )
-            return QString(entry->roleData(role).toString() % " | " % ampm);
-
-        // Or return default
-        return entry->roleData(role);
-    }
-
-    if (role == Qt::EditRole) {
-        return "";
-    }
-
-    if (role == Qt::BackgroundRole )
-    {
-        if (date.date().weekNumber() % 2 == 1)
-            return QBrush(QColor(51,51,51));
-        else
-            return QBrush(QColor(42,42,42));
+    // Single entry, return the data
+    if (entries.count() == 1) {
+        auto i = entries.cbegin();
+        return (*i)->roleData(role);
     }
 
     return QVariant();
 }
 
-void RamScheduleTableModel::changeUser(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &roles)
+bool RamScheduleTableModel::moveRows(const QModelIndex &sourceParent, int sourceRow, int count, const QModelIndex &destinationParent, int destinationChild)
 {
-    if (!m_users) return;
-    int first = topLeft.row();
-    int last = bottomRight.row();
+    return m_rows->moveRows(sourceParent, sourceRow, count, destinationParent, destinationChild);
+}
 
-    // 2 rows per user
-    first *= 2;
-    last *= 2;
-    // A comment row
-    if (m_comments) {
-        first++;
-        last++;
+QVector<RamScheduleEntry *> RamScheduleTableModel::scheduleEntries(const QModelIndex &index)
+{
+    QVector<RamScheduleEntry*> entries;
+
+    const QVariantList list = data(index, RamAbstractObject::Pointer).toList();
+
+    for (const auto &i: list) {
+        qintptr iptr = i.toULongLong();
+        if (iptr)
+            entries << reinterpret_cast<RamScheduleEntry*>(iptr);
     }
-    // Last is PM
-    last++;
 
-    QModelIndex tl = index(first, 0);
-    QModelIndex br = index(last, columnCount());
-
-    emit headerDataChanged(Qt::Vertical, first, last);
-    emit dataChanged(tl, br, roles);
+    return entries;
 }
 
-void RamScheduleTableModel::insertUser(const QModelIndex &parent, int first, int last)
+RamScheduleRow *RamScheduleTableModel::scheduleRow(const QModelIndex &index)
 {
-    Q_UNUSED(parent);
+    int r = index.row();
+    if (r < 0 || r >= m_rows->count())
+        return nullptr;
 
-    if (!m_users) return;
-
-    //We're inserting new rows
-    beginInsertRows(QModelIndex(), first*2, last*2+1);
-    // Finished!
-    endInsertRows();
+    return RamScheduleRow::c(
+        m_rows->get(r)
+        );
 }
 
-void RamScheduleTableModel::removeUser(const QModelIndex &parent, int first, int last)
-{
-    Q_UNUSED(parent);
-
-    if (!m_users) return;
-
-    // We're removing rows
-    beginRemoveRows(QModelIndex(), first*2, last*2+1);
-    endRemoveRows();
-}
-
-void RamScheduleTableModel::resetUsers()
+void RamScheduleTableModel::resetEntries()
 {
     beginResetModel();
     endResetModel();
 }
 
-void RamScheduleTableModel::resetSchedule()
+void RamScheduleTableModel::changeEntries(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &roles)
 {
-    beginResetModel();
-    endResetModel();
-}
-
-void RamScheduleTableModel::changeSchedule(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &roles)
-{
-    if (!m_schedule) return;
+    if (!m_entries) return;
     int first = topLeft.row();
     int last = bottomRight.row();
     for (int i = first; i <= last; i++)
     {
-        RamScheduleEntry *e = RamScheduleEntry::c( m_schedule->get(i) );
+        RamScheduleEntry *e = RamScheduleEntry::c( m_entries->get(i) );
         QModelIndex ind = entryIndex(e);
         emit dataChanged(ind, ind, roles);
     }
 }
 
-void RamScheduleTableModel::insertSchedule(const QModelIndex &parent, int first, int last)
+void RamScheduleTableModel::insertEntries(const QModelIndex &parent, int first, int last)
 {
     Q_UNUSED(parent);
 
-    if (!m_schedule) return;
+    if (!m_entries) return;
     for (int i = first; i <= last; i++)
     {
-        RamScheduleEntry *e = RamScheduleEntry::c( m_schedule->get(i) );
+        RamScheduleEntry *e = RamScheduleEntry::c( m_entries->get(i) );
         QModelIndex ind = entryIndex(e);
         emit dataChanged(ind, ind, QVector<int>());
     }
 }
 
-void RamScheduleTableModel::removeSchedule(const QModelIndex &parent, int first, int last)
+void RamScheduleTableModel::removeEntries(const QModelIndex &parent, int first, int last)
 {
     Q_UNUSED(parent);
 
-    if (!m_schedule) return;
+    if (!m_entries) return;
     for (int i = first; i <= last; i++)
     {
-        RamScheduleEntry *e = RamScheduleEntry::c( m_schedule->get(i) );
+        RamScheduleEntry *e = RamScheduleEntry::c( m_entries->get(i) );
         QModelIndex ind = entryIndex(e);
         emit dataChanged(ind, ind, QVector<int>());
     }
-}
-
-void RamScheduleTableModel::changeComment(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &roles)
-{
-    if (!m_comments) return;
-
-    int first = topLeft.row();
-    int last = bottomRight.row();
-
-    for (int i = first; i <= last; i++)
-    {
-        RamScheduleComment *c = RamScheduleComment::c( m_comments->get(i) );
-        if (!c) continue;
-        int col = colForDate(c->date());
-        QModelIndex ind = this->index(0, col);
-        emit dataChanged(ind, ind, roles);
-    }
-}
-
-void RamScheduleTableModel::insertComment(const QModelIndex &parent, int first, int last)
-{
-    Q_UNUSED(parent);
-
-    if (!m_comments) return;
-
-    for (int i = first; i <= last; i++)
-    {
-        RamScheduleComment *c = RamScheduleComment::c( m_comments->get(i) );
-        if (!c) continue;
-        int col = colForDate(c->date());
-        QModelIndex ind = this->index(0, col);
-        emit dataChanged(ind, ind);
-    }
-}
-
-void RamScheduleTableModel::removeComment(const QModelIndex &parent, int first, int last)
-{
-    Q_UNUSED(parent);
-
-    if (!m_comments) return;
-
-    for (int i = first; i <= last; i++)
-    {
-        RamScheduleComment *c = RamScheduleComment::c( m_comments->get(i) );
-        if (!c) continue;
-        int col = colForDate(c->date());
-        QModelIndex ind = this->index(0, col);
-        emit dataChanged(ind, ind);
-    }
-}
-
-void RamScheduleTableModel::resetComments()
-{
-    beginResetModel();
-    endResetModel();
 }
 
 QModelIndex RamScheduleTableModel::entryIndex(RamScheduleEntry *e)
 {
     if (!e) return QModelIndex();
-    // Get the user to get the row
-    RamUser *u = e->user();
-    if (!u) return QModelIndex();
-    int row = m_users->objectRow(u);
-    // Get the column from the date
-    QDateTime d = e->date();
-    int col = colForDate(d);
-    // Adjust user row
-    // x2 (2 rows per user)
-    // +1 (comments is the first)
-    // +1 if pm
-    row *= 2;
-    if (m_comments) row++;
-    if (d.time().hour() >= 12) row++;
-    return this->index(row, col);
+
+    // Get the row
+    RamScheduleRow *row = e->row();
+    int r = m_rows->objectRow(row);
+
+    // Get the column
+    QDate date = e->date();
+    int c = colForDate(date);
+
+    return this->index(r, c);
 }
 
-int RamScheduleTableModel::colForDate(QDateTime date)
+int RamScheduleTableModel::colForDate(const QDate &date)
 {
-    return m_startDate.daysTo(date.date());
+    return m_startDate.daysTo(date);
+}
+
+QVariant RamScheduleTableModel::horizontalHeaderData(int section, int role) const
+{
+    QDate date = m_startDate.addDays(section);
+
+    if ( role == Qt::DisplayRole )
+        return StringUtils::capitalize( date.toString("MMMM\n") ) + // April
+               StringUtils::capitalize( date.toString("dddd\n") ) + // Monday
+               date.toString("yyyy-MM-dd"); // TODO Use settings, 2024-04-22
+
+    if (role == Qt::ForegroundRole)
+    {
+        if (date == QDate::currentDate())
+            return QBrush(DuSettingsManager::instance()->uiFocusColor());
+
+        RamProject *proj = Ramses::instance()->currentProject();
+        if (proj && date == proj->deadline())
+            return QBrush(QColor(249,105,105));
+
+        if (date.weekNumber() % 2 == 1)
+            return QBrush(QColor(130,130,130));
+        else
+            return QBrush(QColor(170,170,170));
+    }
+
+    if (role ==  RamObject::Date)
+        return date;
+
+    return QVariant();
+}
+
+QVariant RamScheduleTableModel::verticalHeaderData(int section, int role) const
+{
+    // Invalid index
+    if (section < 0 || section > m_rows->rowCount())
+        return QVariant();
+
+    // General
+    if (role == Qt::TextAlignmentRole) return Qt::AlignCenter;
+
+    return m_rows->data(
+        m_rows->index(section, 0),
+        role
+        );
 }
 
 void RamScheduleTableModel::setEndDate(const QDate &newEndDate)
@@ -463,6 +278,53 @@ void RamScheduleTableModel::setEndDate(const QDate &newEndDate)
         m_endDate = newEndDate;
         endRemoveColumns();
     }
+}
+
+void RamScheduleTableModel::resetScheduleRows()
+{
+    beginResetModel();
+    endResetModel();
+}
+
+void RamScheduleTableModel::changeScheduleRows(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &roles)
+{
+    if (!m_rows)
+        return;
+
+    int first = topLeft.row();
+    int last = bottomRight.row();
+
+
+    QModelIndex tl = index(first, 0);
+    QModelIndex br = index(last, columnCount());
+
+    emit headerDataChanged(Qt::Vertical, first, last);
+    emit dataChanged(tl, br, roles);
+}
+
+void RamScheduleTableModel::insertScheduleRows(const QModelIndex &parent, int first, int last)
+{
+    Q_UNUSED(parent);
+
+    if (!m_rows)
+        return;
+
+    //We're inserting new rows
+    beginInsertRows(QModelIndex(), first, last);
+    // Finished!
+    endInsertRows();
+}
+
+void RamScheduleTableModel::removeScheduleRows(const QModelIndex &parent, int first, int last)
+{
+    Q_UNUSED(parent);
+
+    if (!m_rows)
+        return;
+
+    // We're removing rows
+    beginRemoveRows(QModelIndex(), first, last);
+    endRemoveRows();
 }
 
 void RamScheduleTableModel::setStartDate(const QDate &newStartDate)

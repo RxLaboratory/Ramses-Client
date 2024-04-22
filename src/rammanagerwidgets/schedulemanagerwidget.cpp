@@ -3,10 +3,10 @@
 #include "duqf-utils/guiutils.h"
 #include "duqf-widgets/duicon.h"
 #include "progressmanager.h"
-#include "ramscheduleentry.h"
 #include "ramschedulecomment.h"
 #include "ramses.h"
 #include "progressmanager.h"
+#include "ramstep.h"
 
 ScheduleManagerWidget::ScheduleManagerWidget(QWidget *parent) : QWidget(parent)
 {
@@ -68,9 +68,9 @@ void ScheduleManagerWidget::checkUserFilter()
 {
     bool ok = ui_userMenu->isAllChecked();
 
-    QString t = ui_userButton->text().replace(" ▽","");
+    QString t = ui_rowsButton->text().replace(" ▽","");
     if (!ok) t = t + " ▽";
-    ui_userButton->setText( t );
+    ui_rowsButton->setText( t );
 }
 
 void ScheduleManagerWidget::usersInserted(const QModelIndex &parent, int first, int last)
@@ -116,13 +116,16 @@ void ScheduleManagerWidget::userChanged(RamUser *user)
     // Reload settings
     loadSettings();
 
-    ui_stepContextMenu->setEnabled(user->role() >= RamUser::Lead);
-    ui_stepMenu->setEnabled(user->role() >= RamUser::Lead);
+    RamUser::UserRole role = user->role();
+    ui_stepContextMenu->setEnabled(role >= RamUser::Lead);
+    ui_stepMenu->setEnabled(role >= RamUser::Lead);
+    ui_addRowAction->setEnabled(role >= RamUser::ProjectAdmin);
+    ui_removeRowAction->setEnabled(role >= RamUser::ProjectAdmin);
 }
 
 void ScheduleManagerWidget::assignStep(RamObject *stepObj)
 {
-    if (!m_project) return;
+    /*if (!m_project) return;
 
     m_project->freezeEstimation(true);
 
@@ -196,7 +199,7 @@ void ScheduleManagerWidget::assignStep(RamObject *stepObj)
     pm->finish();
     this->update();
 
-    m_project->freezeEstimation(false);
+    m_project->freezeEstimation(false);*/
 }
 
 void ScheduleManagerWidget::filterUser(RamObject *user, bool filter)
@@ -223,6 +226,51 @@ void ScheduleManagerWidget::filterMe()
     }
 
     checkUserFilter();
+}
+
+void ScheduleManagerWidget::addRow()
+{
+    RamProject *project = Ramses::instance()->currentProject();
+    if (!project) return;
+
+    QString rowNum = QString::number(
+        project->scheduleRows()->count() + 1
+        );
+
+    auto row = new RamScheduleRow(
+        rowNum,
+        tr("Row %1").arg(rowNum),
+        project
+        );
+
+    row->edit();
+}
+
+void ScheduleManagerWidget::removeSelectedRows()
+{
+    RamProject *project = Ramses::instance()->currentProject();
+    if (!project) return;
+
+    const QModelIndexList selection = ui_table->selectionModel()->selectedIndexes();
+
+    if (selection.count() == 0) return;
+
+    QMessageBox::StandardButton confirm = QMessageBox::question(
+        this,
+        "Confirm deletion",
+        "Are you sure you want to premanently remove the selected rows?"
+        );
+
+    if ( confirm != QMessageBox::Yes) return;
+
+    QSet<RamScheduleRow*> rows;
+    for (const auto index: selection)
+        rows << m_schedule->scheduleRow(index);
+
+    for (auto row: qAsConst(rows)) {
+        qDebug() << "Removing schedule row" << row->name();
+        row->remove();
+    }
 }
 
 void ScheduleManagerWidget::showMonday(bool show)
@@ -354,12 +402,7 @@ void ScheduleManagerWidget::cutComment()
 
     RamObject *c;
 
-    // Remove
-    if (currentIndex.data(RamObject::IsComment).toBool())
-        c = RamObject::get(uuid, RamObject::ScheduleComment);
-    else
-        c = RamObject::get(uuid, RamObject::ScheduleEntry);
-
+    c = RamObject::get(uuid, RamObject::ScheduleEntry);
     if (!c) return;
     c->setComment("");
 }
@@ -468,12 +511,12 @@ void ScheduleManagerWidget::color()
             if (index.data(RamObject::IsComment).toBool()) {
                 QString commentUuid = index.data(RamObject::UUID).toString();
                 if (commentUuid == "") continue;
-                RamScheduleComment *comment = RamScheduleComment::get(commentUuid);
+                /*RamScheduleComment *comment = RamScheduleComment::get(commentUuid);
                 if (!comment) {
                     comment = new RamScheduleComment( m_project );
                     comment->setDate(index.data(RamObject::Date).toDateTime());
                 }
-                comment->setColor(color);
+                comment->setColor(color);*/
             }
         }
     }
@@ -498,7 +541,6 @@ void ScheduleManagerWidget::setupUi()
     mainLayout->setContentsMargins(0,0,0,0);
 
     ui_table = new RamScheduleTableView(this);
-    ui_table->setContextMenuPolicy(Qt::CustomContextMenu);
     mainLayout->addWidget(ui_table);
 
     this->setLayout(mainLayout);
@@ -526,16 +568,24 @@ void ScheduleManagerWidget::setupUi()
     ui_meAction = new QAction("Me", this);
     ui_userMenu->insertAction( ui_userMenu->actions().at(0), ui_meAction);
 
-    ui_userButton = new QToolButton(this);
-    ui_userButton->setText("Users");
-    ui_userButton->setIcon(DuIcon(":/icons/user"));
-    ui_userButton->setIconSize(QSize(16,16));
-    ui_userButton->setObjectName("menuButton");
-    ui_userButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-    ui_userButton->setPopupMode(QToolButton::InstantPopup);
-    ui_userButton->setMenu(ui_userMenu);
+    ui_userMenu->insertSeparator( ui_userMenu->actions().at(0) );
 
-    ui_titleBar->insertLeft( ui_userButton );
+    ui_removeRowAction = new QAction(DuIcon(":/icons/remove"), tr("Remove row"), this);
+    ui_userMenu->insertAction(ui_userMenu->actions().at(0), ui_removeRowAction);
+
+    ui_addRowAction = new QAction(DuIcon(":/icons/add"), tr("Add row"), this);
+    ui_userMenu->insertAction(ui_userMenu->actions().at(0), ui_addRowAction);
+
+    ui_rowsButton = new QToolButton(this);
+    ui_rowsButton->setText("Rows");
+    ui_rowsButton->setIcon(DuIcon(":/icons/user"));
+    ui_rowsButton->setIconSize(QSize(16,16));
+    ui_rowsButton->setObjectName("menuButton");
+    ui_rowsButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    ui_rowsButton->setPopupMode(QToolButton::InstantPopup);
+    ui_rowsButton->setMenu(ui_userMenu);
+
+    ui_titleBar->insertLeft( ui_rowsButton );
 
     DuMenu *dayMenu = new DuMenu(this);
 
@@ -739,9 +789,11 @@ void ScheduleManagerWidget::connectEvents()
     connect(ui_friday,SIGNAL(toggled(bool)),this,SLOT(showFriday(bool)));
     connect(ui_saturday,SIGNAL(toggled(bool)),this,SLOT(showSaturday(bool)));
     connect(ui_sunday,SIGNAL(toggled(bool)),this,SLOT(showSunday(bool)));
-    // users
+    // users & rows
     connect(ui_userMenu,SIGNAL(assignmentChanged(RamObject*,bool)), this, SLOT(filterUser(RamObject*,bool)));
     connect(ui_meAction,SIGNAL(triggered()), this, SLOT(filterMe()));
+    connect(ui_addRowAction, &QAction::triggered, this, &ScheduleManagerWidget::addRow);
+    connect(ui_removeRowAction, &QAction::triggered, this, &ScheduleManagerWidget::removeSelectedRows);
     // batch steps
     connect(ui_stepMenu, SIGNAL(createTriggered()), this, SLOT(assignStep()));
     connect(ui_stepMenu, SIGNAL(assigned(RamObject*)), this, SLOT(assignStep(RamObject*)));
@@ -791,7 +843,7 @@ void ScheduleManagerWidget::loadSettings()
 
 void ScheduleManagerWidget::setComment(QString comment, QModelIndex index)
 {
-    QString uuid = index.data(RamObject::UUID).toString();
+    /*QString uuid = index.data(RamObject::UUID).toString();
 
     RamObject *c = nullptr;
 
@@ -815,7 +867,7 @@ void ScheduleManagerWidget::setComment(QString comment, QModelIndex index)
 
     if (!c) return;
 
-    c->setComment(comment);
+    c->setComment(comment);*/
 }
 
 void ScheduleManagerWidget::changeProject()
@@ -826,7 +878,7 @@ void ScheduleManagerWidget::changeProject()
     if (!m_project)
     {
         this->setEnabled(false);
-        m_schedule->setObjectModel(nullptr, nullptr, nullptr);
+        m_schedule->setObjectModel(nullptr, nullptr);
         ui_userMenu->setObjectModel(nullptr);
         ui_endDateEdit->setDate(QDate::currentDate());
         ui_stepMenu->setObjectModel(nullptr);
@@ -836,14 +888,14 @@ void ScheduleManagerWidget::changeProject()
     }
     this->setEnabled(true);
 
-    m_schedule->setObjectModel( m_project->users(), m_project->schedule(), m_project->scheduleComments() );
+    m_schedule->setObjectModel( m_project->scheduleRows(), m_project->scheduleEntries() );
 
     ui_userMenu->setObjectModel( m_project->users() );
     ui_endDateEdit->setDate( QDate::currentDate().addDays(30) );
     ui_stepMenu->setObjectModel( m_project->steps() );
     ui_stepContextMenu->setObjectModel(m_project->steps());
 
-    ui_table->resizeColumnsToContents();
+    //ui_table->resizeColumnsToContents();
     ui_table->resizeRowsToContents();
 
     int days = QDate::currentDate().daysTo( m_project->deadline() );
@@ -853,5 +905,3 @@ void ScheduleManagerWidget::changeProject()
 
     connect (m_project, &RamProject::dataChanged,this, &ScheduleManagerWidget::projectUpdated);//*/
 }
-
-

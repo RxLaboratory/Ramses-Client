@@ -1,68 +1,73 @@
-#include "ramschedulemodel.h"
+#include "ramscheduleentrymodel.h"
 
 #include "ramscheduleentry.h"
+#include "ramstep.h"
+#include "ramuser.h"
+#include "statemanager.h"
 
-RamScheduleModel::RamScheduleModel(QObject *parent)
+RamScheduleEntryModel::RamScheduleEntryModel(QObject *parent)
     : DBTableModel{RamAbstractObject::ScheduleEntry, true, false, parent}
 {
-    m_uniqueDataKeys = QStringList({
-        "date",
-        "user",
-        "project"
+    addLookUpKey("date");
+    addLookUpKey("row");
+    addLookUpKey("step");
+
+    connect( this, &DBTableModel::rowsInserted, this,&RamScheduleEntryModel::countAll);
+    connect( this, &DBTableModel::rowsAboutToBeRemoved, this, &RamScheduleEntryModel::countAll);
+    connect( this, &DBTableModel::dataChanged, this, &RamScheduleEntryModel::countAll);
+    connect( this, &DBTableModel::modelReset, this, &RamScheduleEntryModel::countAll);
+
+    connect( StateManager::i(), &StateManager::stateChanged,
+            this, [this] (StateManager::State st) {
+        freezeEstimation(st != StateManager::Idle);
     });
-
-    connect( this, &DBTableModel::rowsInserted, this,&RamScheduleModel::countAll);
-    connect( this, &DBTableModel::rowsAboutToBeRemoved, this, &RamScheduleModel::countAll);
-    connect( this, &DBTableModel::dataChanged, this, &RamScheduleModel::countAll);
-    connect( this, &DBTableModel::modelReset, this, &RamScheduleModel::countAll);
-
-    connect( StateManager::i(), &StateManager::stateChanged, this, &RamScheduleModel::stateChanged);
 
     countAll();
 }
 
-AssignedCount RamScheduleModel::stepCount(const QString &stepUuid)
+AssignedCount RamScheduleEntryModel::stepCount(const QString &stepUuid)
 {
     return m_stepCounts.value(stepUuid);
 }
 
-AssignedCount RamScheduleModel::stepUserCount(const QString &userUuid, const QString &stepUuid)
+AssignedCount RamScheduleEntryModel::stepUserCount(const QString &userUuid, const QString &stepUuid)
 {
     UserAssignedCount uCount = userCount(userUuid);
     return uCount.stepCounts.value(stepUuid);
 }
 
-UserAssignedCount RamScheduleModel::userCount(const QString &userUuid)
+UserAssignedCount RamScheduleEntryModel::userCount(const QString &userUuid)
 {
     return m_userCounts.value(userUuid);
 }
 
-void RamScheduleModel::freezeEstimation(bool frozen)
+void RamScheduleEntryModel::freezeEstimation(bool frozen)
 {
     m_estimationFrozen = frozen;
-    if (!frozen) this->countAll();
+    if (!frozen && m_estimationNeedsUpdate) this->countAll();
 }
 
-void RamScheduleModel::countAll()
+void RamScheduleEntryModel::countAll()
 {
+    m_estimationNeedsUpdate = true;
+
     if (m_estimationFrozen) return;
 
-    m_estimationNeedsUpdate = true;
     if (StateManager::i()->isDBBusy()) return;
 
     m_userCounts.clear();
     m_stepCounts.clear();
 
-    QDateTime now = QDateTime::currentDateTime();
+    QDate now = QDate::currentDate();
 
     for (int i = 0; i < this->rowCount(); i++) {
         RamScheduleEntry *entry = RamScheduleEntry::c( this->get(i) );
         if (!entry) continue;
         if (!entry->step()) continue;
-        if (!entry->user()) continue;
+        if (!entry->row()->user()) continue;
 
         QString stepUuid = entry->step()->uuid();
-        QString userUuid = entry->user()->uuid();
+        QString userUuid = entry->row()->user()->uuid();
 
         UserAssignedCount uCount = m_userCounts.value(userUuid);
         AssignedCount userStepCount = uCount.stepCounts.value( stepUuid );
@@ -90,9 +95,4 @@ void RamScheduleModel::countAll()
     emit countChanged();
 
     m_estimationNeedsUpdate = false;
-}
-
-void RamScheduleModel::stateChanged(StateManager::State state)
-{
-    if (state == StateManager::Idle && m_estimationNeedsUpdate) countAll();
 }

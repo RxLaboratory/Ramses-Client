@@ -1,8 +1,7 @@
-#ifndef RAMSCHEDULEMODEL_H
-#define RAMSCHEDULEMODEL_H
+#ifndef RAMSCHEDULEENTRYMODEL_H
+#define RAMSCHEDULEENTRYMODEL_H
 
 #include "dbtablemodel.h"
-#include "statemanager.h"
 
 struct AssignedCount {
     float total = 0;
@@ -17,11 +16,14 @@ struct UserAssignedCount {
     float past = 0;
 };
 
-class RamScheduleModel : public DBTableModel
+/**
+ * @brief The RamScheduleEntryModel class is the list of all schedule entries for a project
+ */
+class RamScheduleEntryModel : public DBTableModel
 {
     Q_OBJECT
 public:
-    explicit RamScheduleModel(QObject *parent = nullptr);
+    explicit RamScheduleEntryModel(QObject *parent = nullptr);
 
     // COUNTS
     AssignedCount stepCount(const QString &stepUuid);
@@ -37,7 +39,6 @@ public slots:
 private slots:
     // Counts
     void countAll();
-    void stateChanged(StateManager::State state);
 
 private:
     // COUNTS
@@ -48,4 +49,4 @@ private:
     bool m_estimationNeedsUpdate = false;
 };
 
-#endif // RAMSCHEDULEMODEL_H
+#endif // RAMSCHEDULEENTRYMODEL_H

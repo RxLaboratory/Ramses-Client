@@ -149,7 +149,7 @@ float RamStep::assignedDays(RamUser *user)
     RamProject *proj = project();
     if (!proj) return 0;
 
-    RamScheduleModel *schedule = proj->schedule();
+    RamScheduleEntryModel *schedule = proj->scheduleEntries();
 
     if (!user)
         return schedule->stepCount( m_uuid ).total;
@@ -163,7 +163,7 @@ float RamStep::futureDays(RamUser *user)
     RamProject *proj = project();
     if (!proj) return 0;
 
-    RamScheduleModel *schedule = proj->schedule();
+    RamScheduleEntryModel *schedule = proj->scheduleEntries();
 
     if (!user)
         return schedule->stepCount( m_uuid ).future;
@@ -267,7 +267,7 @@ QVector<float> RamStep::stats(RamUser *user)
         return QVector<float>( 4 );
     }
 
-    RamScheduleModel *schedule = proj->schedule();
+    RamScheduleEntryModel *schedule = proj->scheduleEntries();
     AssignedCount uCount = schedule->stepUserCount(user->uuid(), m_uuid );
 
     // check completed days
@@ -405,7 +405,8 @@ QString RamStep::fileName() const
 
 void RamStep::edit(bool show)
 {
-    if (!ui_editWidget) ui_editWidget = createEditFrame(new StepEditWidget());
+    if (!ui_editWidget)
+        ui_editWidget = createEditFrame(new StepEditWidget());
 
     if (show) showEdit( ui_editWidget );
 }

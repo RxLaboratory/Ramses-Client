@@ -10,6 +10,7 @@
 #include "dbinterface.h"
 #include "duqf-widgets/duqftitlebar.h"
 #include "ramproject.h"
+#include "ramschedulerowheaderview.h"
 #include "ramscheduletableview.h"
 #include "ramscheduletablemodel.h"
 #include "ramobjectmenu.h"
@@ -40,6 +41,8 @@ private slots:
 
     void filterUser(RamObject *user, bool filter);
     void filterMe();
+    void addRow();
+    void removeSelectedRows();
 
     void showMonday(bool show);
     void showTuesday(bool show);
@@ -80,12 +83,15 @@ private:
     DuQFTitleBar *ui_titleBar;
     QAction *ui_actionShowDetails;
     RamScheduleTableView *ui_table;
+    RamScheduleRowHeaderView *ui_rowHeader;
     QDateEdit *ui_startDateEdit;
     QDateEdit *ui_endDateEdit;
     RamObjectMenu *ui_stepMenu;
     RamObjectMenu *ui_stepContextMenu;
-    QToolButton *ui_userButton;
+    QToolButton *ui_rowsButton;
     RamObjectMenu *ui_userMenu;
+    QAction *ui_addRowAction;
+    QAction *ui_removeRowAction;
     QAction *ui_meAction;
     QAction *ui_monday;
     QAction *ui_tuesday;

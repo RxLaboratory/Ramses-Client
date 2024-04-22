@@ -16,7 +16,8 @@ class RamStatusTableModel;
 class RamStatus;
 class RamAbstractItem;
 class RamState;
-class RamScheduleModel;
+class RamScheduleEntryModel;
+class RamScheduñleTableModel;
 
 class RamProject : public RamObject
 {
@@ -50,8 +51,8 @@ public:
     // Users
     RamObjectModel *users() const;
     // Schedule
-    DBTableModel *scheduleComments() const;
-    RamScheduleModel *schedule() const;
+    DBTableModel *scheduleRows() const;
+    RamScheduleEntryModel *scheduleEntries() const;
     // Status
     RamStatusTableModel *assetStatus() const;
     RamStatusTableModel *shotStatus() const;
@@ -147,11 +148,11 @@ private:
     DBTableModel *m_assetGroups;
     DBTableModel *m_assets;
     DBTableModel *m_shots;
-    RamScheduleModel *m_schedule;
+    DBTableModel *m_scheduleRows;
+    RamScheduleEntryModel *m_scheduleEntries;
     RamObjectModel *m_pipeline;
     DBTableModel *m_pipeFiles;
     RamObjectModel *m_users;
-    DBTableModel *m_scheduleComments;
     RamStatusTableModel *m_assetStatusTable;
     RamStatusTableModel *m_shotStatusTable;
 

@@ -5,6 +5,7 @@
 #include "ramshot.h"
 #include "ramstate.h"
 #include "ramuser.h"
+#include "statemanager.h"
 
 RamStatusTableModel::RamStatusTableModel(DBTableModel *steps, DBTableModel *items, QObject *parent)
     : QAbstractTableModel{parent}

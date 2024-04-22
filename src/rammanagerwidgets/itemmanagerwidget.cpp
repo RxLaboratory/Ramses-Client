@@ -579,7 +579,6 @@ void ItemManagerWidget::deleteItems()
     if (!project) return;
 
     QModelIndexList selection = ui_table->selectionModel()->selectedIndexes();
-    QModelIndexList selectedItems;
 
     if (selection.count() == 0) return;
 

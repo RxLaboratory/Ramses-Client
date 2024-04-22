@@ -49,6 +49,7 @@ SOURCES += \
     duqf-app/dusettingsmanager.cpp \
     duqf-app/dustyle.cpp \
     duqf-app/duui.cpp \
+    duqf-utils/stringutils.cpp \
     duqf-widgets/duaction.cpp \
     duqf-widgets/ducolorselector.cpp \
     duqf-widgets/ducombobox.cpp \
@@ -74,8 +75,8 @@ SOURCES += \
     duqf-widgets/settingswidget.cpp \
     progressmanager.cpp \
     rameditwidgets/objectupdateblocker.cpp \
-    rameditwidgets/schedulecommenteditwidget.cpp \
     rameditwidgets/scheduleentryeditwidget.cpp \
+    rameditwidgets/scheduleroweditwidget.cpp \
     rammanagerwidgets/dbmanagerwidget.cpp \
     rammanagerwidgets/objectlistwidget.cpp \
     rammanagerwidgets/objectmanagerwidget.cpp \
@@ -85,6 +86,7 @@ SOURCES += \
     rammanagerwidgets/stepmanagerwidget.cpp \
     rammanagerwidgets/usermanagerwidget.cpp \
     ramobjectdelegates/ramobjectdelegate.cpp \
+    ramobjectdelegates/ramschedulerowheaderview.cpp \
     ramobjectmodels/dbtablemodel.cpp \
     ramobjectmodels/ramabstractdatamodel.cpp \
     ramobjectmodels/ramabstractobjectmodel.cpp \
@@ -92,12 +94,14 @@ SOURCES += \
     ramobjectmodels/ramfilterlistproxymodel.cpp \
     ramobjectmodels/ramobjectmodel.cpp \
     ramobjectmodels/ramobjectsortfilterproxymodel.cpp \
-    ramobjectmodels/ramschedulemodel.cpp \
+    ramobjectmodels/ramscheduleentrymodel.cpp \
     ramobjectmodels/ramstatustablemodel.cpp \
     ramobjectmodels/statisticsmodel.cpp \
     ramobjectmodels/timelineproxy.cpp \
     ramobjectmodels/ramschedulefilterproxymodel.cpp \
     ramobjectmodels/ramscheduletablemodel.cpp \
+    ramobjects/ramscheduleentry.cpp \
+    ramobjects/ramschedulerow.cpp \
     ramobjectviews/ramitemview.cpp \
     ramobjectviews/ramobjectcombobox.cpp \
     ramobjectviews/ramobjectmenu.cpp \
@@ -156,8 +160,6 @@ SOURCES += \
     ramobjects/ramabstractobject.cpp \
     ramobjects/ramassetgroup.cpp \
     ramobjects/rampipefile.cpp \
-    ramobjects/ramschedulecomment.cpp \
-    ramobjects/ramscheduleentry.cpp \
     ramobjects/ramsequence.cpp \
     ramobjects/ramtemplateassetgroup.cpp \
     ramobjects/ramtemplatestep.cpp \
@@ -240,6 +242,7 @@ HEADERS += \
     duqf-app/dustyle.h \
     duqf-app/duui.h \
     duqf-utils/colorutils.h \
+    duqf-utils/stringutils.h \
     duqf-widgets/duaction.h \
     duqf-widgets/ducolorselector.h \
     duqf-widgets/ducombobox.h \
@@ -268,8 +271,8 @@ HEADERS += \
     progressmanager.h \
     ramdatainterface/datastruct.h \
     rameditwidgets/objectupdateblocker.h \
-    rameditwidgets/schedulecommenteditwidget.h \
     rameditwidgets/scheduleentryeditwidget.h \
+    rameditwidgets/scheduleroweditwidget.h \
     rammanagerwidgets/dbmanagerwidget.h \
     rammanagerwidgets/objectlistwidget.h \
     rammanagerwidgets/objectmanagerwidget.h \
@@ -278,6 +281,7 @@ HEADERS += \
     rammanagerwidgets/statemanagerwidget.h \
     rammanagerwidgets/stepmanagerwidget.h \
     ramobjectdelegates/ramobjectdelegate.h \
+    ramobjectdelegates/ramschedulerowheaderview.h \
     ramobjectmodels/dbtablemodel.h \
     ramobjectmodels/ramabstractdatamodel.h \
     ramobjectmodels/ramabstractobjectmodel.h \
@@ -285,12 +289,14 @@ HEADERS += \
     ramobjectmodels/ramfilterlistproxymodel.h \
     ramobjectmodels/ramobjectmodel.h \
     ramobjectmodels/ramobjectsortfilterproxymodel.h \
-    ramobjectmodels/ramschedulemodel.h \
+    ramobjectmodels/ramscheduleentrymodel.h \
     ramobjectmodels/ramstatustablemodel.h \
     ramobjectmodels/statisticsmodel.h \
     ramobjectmodels/timelineproxy.h \
     ramobjectmodels/ramschedulefilterproxymodel.h \
     ramobjectmodels/ramscheduletablemodel.h \
+    ramobjects/ramscheduleentry.h \
+    ramobjects/ramschedulerow.h \
     ramobjectviews/ramitemview.h \
     ramobjectviews/ramobjectcombobox.h \
     ramobjectviews/ramobjectmenu.h \
@@ -352,8 +358,6 @@ HEADERS += \
     ramobjects/ramabstractobject.h \
     ramobjects/ramassetgroup.h \
     ramobjects/rampipefile.h \
-    ramobjects/ramschedulecomment.h \
-    ramobjects/ramscheduleentry.h \
     ramobjects/ramsequence.h \
     ramobjects/ramtemplateassetgroup.h \
     ramobjects/ramtemplatestep.h \

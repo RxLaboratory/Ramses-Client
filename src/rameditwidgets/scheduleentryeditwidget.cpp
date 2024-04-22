@@ -1,5 +1,6 @@
 #include "scheduleentryeditwidget.h"
 
+#include "ramobjectmodel.h"
 #include "ramstatustablemodel.h"
 
 ScheduleEntryEditWidget::ScheduleEntryEditWidget(RamProject *project, RamUser *user, const QDateTime &date, RamScheduleEntry *entry, QWidget *parent) :
@@ -15,16 +16,16 @@ ScheduleEntryEditWidget::ScheduleEntryEditWidget(RamProject *project, RamUser *u
 
 void ScheduleEntryEditWidget::setStep(RamObject *stepObj)
 {
-    auto step = qobject_cast<RamStep*>(stepObj);
+    /*auto step = qobject_cast<RamStep*>(stepObj);
     if (!m_entry)
         m_entry = new RamScheduleEntry(m_user, step, m_date);
     else
-        m_entry->setStep(step);
+        m_entry->setStep(step);*/
 }
 
 void ScheduleEntryEditWidget::setComment()
 {
-    if (!m_entry) {
+    /*if (!m_entry) {
         auto step = qobject_cast<RamStep*>(ui_stepBox->currentObject());
         m_entry = new RamScheduleEntry(m_user, step, m_date);
     }
@@ -32,12 +33,12 @@ void ScheduleEntryEditWidget::setComment()
     m_entry->setComment(ui_commentEdit->toPlainText());
 #else
     m_entry->setComment(ui_commentEdit->toMarkdown());
-#endif
+#endif*/
 }
 
 void ScheduleEntryEditWidget::setupUi()
 {
-    auto mainWidget = new QWidget(this);
+    /*auto mainWidget = new QWidget(this);
     mainWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     this->setWidget(mainWidget);
     this->setWidgetResizable(true);
@@ -105,14 +106,14 @@ void ScheduleEntryEditWidget::setupUi()
         ui_dueTasksList->setEditableObjects(true, RamUser::Lead);
 
         ui_dueTasksList->verticalHeader()->resizeSections(QHeaderView::ResizeToContents);
-    }
+    }*/
 }
 
 void ScheduleEntryEditWidget::connectEvents()
 {
-    connect(ui_stepBox, &RamObjectComboBox::currentObjectChanged,
+    /*connect(ui_stepBox, &RamObjectComboBox::currentObjectChanged,
             this, &ScheduleEntryEditWidget::setStep);
 
     connect( ui_commentEdit, &DuQFTextEdit::editingFinished,
-            this, &ScheduleEntryEditWidget::setComment);
+            this, &ScheduleEntryEditWidget::setComment);*/
 }

@@ -5,8 +5,6 @@
 #include "ramscheduleentry.h"
 #include "ramstatustablemodel.h"
 #include "duqf-utils/guiutils.h"
-#include "schedulecommenteditwidget.h"
-#include "scheduleentryeditwidget.h"
 
 RamScheduleDelegate::RamScheduleDelegate(QObject *parent) : QStyledItemDelegate(parent)
 {
@@ -193,24 +191,17 @@ bool RamScheduleDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, 
             if (proj)
             {
                 auto mw = qobject_cast<MainWindow*>(GuiUtils::appMainWindow());
-                QDateTime date = getDate(m_indexPressed);
+                QDate date = getDate(m_indexPressed);
 
-                if (index.data(RamObject::IsComment).toBool()) {
-                    RamScheduleComment *comment = getComment(m_indexPressed);
-                    m_currentEditor = new ScheduleCommentEditWidget(proj, date, comment);
-                    mw->setPropertiesDockWidget(m_currentEditor, tr("Schedule Note") /* TODO ICON */);
-                }
-                else {
-                    // Get the user and date
-                    RamUser *user = getUser(m_indexPressed);
-                    if (!user)
-                        return false;
-                    RamScheduleEntry *entry = getEntry(m_indexPressed);
+                // Get the user and date
+                RamUser *user = getUser(m_indexPressed);
+                if (!user)
+                    return false;
+                RamScheduleEntry *entry = getEntry(m_indexPressed);
 
-                    // Create and show an editor
-                    m_currentEditor = new ScheduleEntryEditWidget(proj, user, date, entry);
-                    mw->setPropertiesDockWidget(m_currentEditor, tr("Schedule Entry") /* TODO ICON */);
-                }
+                // Create and show an editor
+                //m_currentEditor = new ScheduleEntryEditWidget(proj, user, date, entry);
+                //mw->setPropertiesDockWidget(m_currentEditor, tr("Schedule Entry") /* TODO ICON */);
             }
         }
         return true;
@@ -244,28 +235,20 @@ void RamScheduleDelegate::drawMore(QPainter *painter, QRect rect, QPen pen) cons
 RamUser *RamScheduleDelegate::getUser(QModelIndex index) const
 {
     RamScheduleEntry *entry = getEntry(index);
-    if (entry) return entry->user();
+    if (entry) return entry->row()->user();
 
     QString userUuid = index.model()->headerData( index.row(), Qt::Vertical, RamObject::UUID ).toString();
     if (userUuid != "") return RamUser::get( userUuid );
     return nullptr;
 }
 
-QDateTime RamScheduleDelegate::getDate(QModelIndex index) const
+QDate RamScheduleDelegate::getDate(QModelIndex index) const
 {
     RamScheduleEntry *entry = getEntry(index);
     if (entry) return entry->date();
 
     // Get Date
-#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
-    QDateTime date = QDateTime( index.model()->headerData( index.column(), Qt::Horizontal, RamObject::Date).toDate() );
-#else
-    QDateTime date = index.model()->headerData( index.column(), Qt::Horizontal, RamObject::Date).toDate().startOfDay();
-#endif
-    if (  index.model()->headerData( index.row(), Qt::Vertical, RamObject::IsPM ).toBool() )
-        date.setTime(QTime(12,0));
-
-    return date;
+    return index.model()->headerData( index.column(), Qt::Horizontal, RamObject::Date).toDate();
 }
 
 RamScheduleEntry *RamScheduleDelegate::getEntry(QModelIndex index) const
@@ -279,17 +262,6 @@ RamScheduleEntry *RamScheduleDelegate::getEntry(QModelIndex index) const
     return nullptr;
 }
 
-RamScheduleComment *RamScheduleDelegate::getComment(QModelIndex index) const
-{
-    // Not first row, return
-    if (index.row() != 0)
-        return nullptr;
-
-    QString uuid = index.data(RamObject::UUID).toString();
-    if (uuid != "") return RamScheduleComment::get( uuid );
-    return nullptr;
-}
-
 QSet<RamStatus *> RamScheduleDelegate::getDueTasks(QModelIndex index) const
 {
     RamProject *proj = Ramses::instance()->currentProject();
@@ -298,7 +270,7 @@ QSet<RamStatus *> RamScheduleDelegate::getDueTasks(QModelIndex index) const
     RamUser *user = getUser(index);
     if (!user) return QSet<RamStatus *>();
 
-    QDate date = getDate(index).date();
+    QDate date = getDate(index);
 
     QSet<RamStatus*> tasks = proj->assetStatus()->getStatus(date, user->uuid());
     tasks += proj->shotStatus()->getStatus(date, user->uuid());

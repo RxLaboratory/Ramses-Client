@@ -2,6 +2,7 @@
 
 #include "ramses.h"
 #include "ramscheduleentry.h"
+#include "ramstep.h"
 #include "usereditwidget.h"
 #include "ramdatainterface/dbinterface.h"
 
@@ -181,7 +182,7 @@ void RamUser::construct()
     m_icon = ":/icons/user";
     m_editRole = Admin;
     //m_schedule = createModel(RamObject::ScheduleEntry, "schedule");
-    m_schedule = new RamScheduleModel();
+    m_schedule = new RamScheduleEntryModel();
     m_schedule->addFilterValue( "user", this->uuid() );
     m_schedule->addLookUpKey("date");
     m_schedule->addLookUpKey("step");

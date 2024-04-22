@@ -6,6 +6,7 @@
 #define CACHE_RAMOBJECT_DATA true
 #define CACHE_LOCAL_DATA true
 #define DATETIME_DATA_FORMAT "yyyy-MM-dd hh:mm:ss"
+#define DATE_DATA_FORMAT "yyyy-MM-dd"
 
 // DEBUG UTILS
 

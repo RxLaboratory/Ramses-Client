@@ -5,8 +5,7 @@
 #include <QPainter>
 #include <QPainterPath>
 
-#include "ramobject.h"
-#include "ramschedulecomment.h"
+#include "ramstatus.h"
 #include "ramuser.h"
 
 class RamScheduleDelegate : public QStyledItemDelegate
@@ -50,9 +49,8 @@ private:
 
     // Utils
     RamUser *getUser(QModelIndex index) const;
-    QDateTime getDate(QModelIndex index) const;
+    QDate getDate(QModelIndex index) const;
     RamScheduleEntry *getEntry(QModelIndex index) const;
-    RamScheduleComment *getComment(QModelIndex index) const;
     QSet<RamStatus*> getDueTasks(QModelIndex index) const;
 
 };

@@ -9,7 +9,6 @@
 #include "rampipefile.h"
 #include "ramsequence.h"
 #include "ramscheduleentry.h"
-#include "ramschedulecomment.h"
 #include "ramses.h"
 #include "ramshot.h"
 #include "ramstatus.h"
@@ -37,7 +36,7 @@ RamObject *RamObject::get(QString uuid, ObjectType type)
     case Step: return RamStep::get(uuid);
     case User: return RamUser::get(uuid);
     case ScheduleEntry: return RamScheduleEntry::get(uuid);
-    case ScheduleComment: return RamScheduleComment::get(uuid);
+    case ScheduleRow: return RamScheduleRow::get(uuid);
     case TemplateStep: return RamTemplateStep::get(uuid);
     case TemplateAssetGroup: return RamTemplateAssetGroup::get(uuid);
     case Ramses: return Ramses::instance();

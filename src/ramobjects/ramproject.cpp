@@ -1,6 +1,6 @@
 #include "ramproject.h"
 
-#include "ramschedulemodel.h"
+#include "ramscheduleentrymodel.h"
 #include "ramses.h"
 #include "rampipe.h"
 #include "projecteditwidget.h"
@@ -106,16 +106,16 @@ RamObjectModel *RamProject::users() const
     return m_users;
 }
 
-DBTableModel *RamProject::scheduleComments() const
+DBTableModel *RamProject::scheduleRows() const
 {
-    m_scheduleComments->load();
-    return m_scheduleComments;
+    m_scheduleRows->load();
+    return m_scheduleRows;
 }
 
-RamScheduleModel *RamProject::schedule() const
+RamScheduleEntryModel *RamProject::scheduleEntries() const
 {
-    m_schedule->load();
-    return m_schedule;
+    m_scheduleEntries->load();
+    return m_scheduleEntries;
 }
 
 RamStatusTableModel *RamProject::assetStatus() const
@@ -535,7 +535,7 @@ void RamProject::computeEstimation()
 void RamProject::freezeEstimation(bool frozen, bool recompute)
 {
     m_estimationFrozen = frozen;
-    m_schedule->freezeEstimation(frozen);
+    m_scheduleEntries->freezeEstimation(frozen);
     if (!frozen && recompute) this->computeEstimation();
 }
 
@@ -601,10 +601,6 @@ void RamProject::construct()
 
     m_shotStatusTable = new RamStatusTableModel( m_shotSteps, m_shots, this);
 
-    m_scheduleComments = new DBTableModel(RamObject::ScheduleComment, true, false, this);
-    m_scheduleComments->addFilterValue( "project", this->uuid() );
-    m_scheduleComments->addLookUpKey("date");
-
     m_pipeFiles = new DBTableModel(RamObject::PipeFile, true, false, this);
     m_pipeFiles->addFilterValue( "project", this->uuid() );
 
@@ -612,11 +608,11 @@ void RamProject::construct()
 
     m_pipeline = createModel(RamObject::Pipe, "pipeline" );
 
-    m_schedule = new RamScheduleModel();
-    m_schedule->addFilterValue( "project", this->uuid() );
-    m_schedule->addLookUpKey("date");
-    m_schedule->addLookUpKey("user");
-    m_schedule->addLookUpKey("step");
+    m_scheduleEntries = new RamScheduleEntryModel();
+    m_scheduleEntries->addFilterValue( "project", this->uuid() );
+
+    m_scheduleRows = new DBTableModel(RamObject::ScheduleRow, true, true, this);
+    m_scheduleRows->addFilterValue( "project", this->uuid() );
 
     connect(m_assetStatusTable, &RamStatusTableModel::estimationsChanged, this, &RamProject::computeEstimation);
 

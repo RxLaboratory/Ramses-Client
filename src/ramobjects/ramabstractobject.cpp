@@ -36,7 +36,7 @@ const QString RamAbstractObject::objectTypeName(ObjectType type)
     case Step: return "RamStep";
     case User: return "RamUser";
     case ScheduleEntry: return "RamScheduleEntry";
-    case ScheduleComment: return "RamScheduleComment";
+    case ScheduleRow: return "RamScheduleRow";
     case TemplateStep: return "RamTemplateStep";
     case TemplateAssetGroup: return "RamTemplateAssetGroup";
     case Ramses: return "Ramses";
@@ -63,7 +63,7 @@ RamAbstractObject::ObjectType RamAbstractObject::objectTypeFromName(QString name
     if (name == "RamStep") return Step;
     if (name == "RamUser") return User;
     if (name == "RamScheduleEntry") return ScheduleEntry;
-    if (name == "RamScheduleComment") return ScheduleComment;
+    if (name == "RamScheduleRow") return ScheduleRow;
     if (name == "RamTemplateStep") return TemplateStep;
     if (name == "RamTemplateAssetGroup") return TemplateAssetGroup;
     if (name == "Ramses") return Ramses;

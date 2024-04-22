@@ -1,4 +1,5 @@
 #include "ramscheduletableview.h"
+#include "ramschedulerowheaderview.h"
 
 RamScheduleTableView::RamScheduleTableView(QWidget *parent):
     DuTableView(parent)
@@ -14,6 +15,24 @@ void RamScheduleTableView::showDetails(bool s)
     this->resizeColumnsToContents();
 }
 
+void RamScheduleTableView::rowMoved(int logicalIndex, int oldVisualIndex, int newVisualIndex)
+{
+    Q_UNUSED(logicalIndex);
+
+    QSignalBlocker b(this->verticalHeader());
+
+    QAbstractItemModel *m = this->model();
+
+    // if there's a filter, get the source model
+    auto fm = qobject_cast<QSortFilterProxyModel*>(m);
+    if (fm)
+        m = fm->sourceModel();
+
+    m->moveRow(QModelIndex(), oldVisualIndex, QModelIndex(), newVisualIndex);
+    // move back to the (new) logical index
+    this->verticalHeader()->moveSection(newVisualIndex, oldVisualIndex);
+}
+
 void RamScheduleTableView::setupUi()
 {
     this->setSelectionMode(QAbstractItemView::ExtendedSelection);
@@ -24,19 +43,22 @@ void RamScheduleTableView::setupUi()
     this->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
     this->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
     this->verticalHeader()->setSectionsMovable(false);
-    // For some reason, the vertical header width is too low
-    this->verticalHeader()->setMinimumWidth(150);
     this->horizontalHeader()->setSectionsMovable(false);
     this->setShowGrid(false);
-    //this->setMouseTracking(true);
-
+    //this->setMouseTracking(true);  
+    this->setContextMenuPolicy(Qt::CustomContextMenu);
     this->setEditTriggers(QAbstractItemView::DoubleClicked | QAbstractItemView::SelectedClicked);
 
     m_delegate = new RamScheduleDelegate(this);
     this->setItemDelegate(m_delegate);
+
+    this->setVerticalHeader(new RamScheduleRowHeaderView(this));
+    this->verticalHeader()->setSectionsMovable(true);
 }
 
 void RamScheduleTableView::connectEvents()
 {
-
+    // SORT
+    connect( this->verticalHeader(), &QHeaderView::sectionMoved,
+            this, &RamScheduleTableView::rowMoved);
 }

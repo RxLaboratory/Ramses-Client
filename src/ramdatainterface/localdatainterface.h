@@ -116,6 +116,10 @@ private:
     // SQLite vacuum
     void vacuum();
 
+    // Makes sure a table exists
+    // Creates if not exists
+    void createTable(const QString &tableName);
+
     /**
      * @brief m_dataFile The SQLite file path
      */

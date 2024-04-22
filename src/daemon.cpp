@@ -7,6 +7,7 @@
 #include "ramstep.h"
 #include "ramasset.h"
 #include "ramshot.h"
+#include "statemanager.h"
 #include "duqf-app/dusettingsmanager.h"
 
 Daemon *Daemon::_instance = nullptr;

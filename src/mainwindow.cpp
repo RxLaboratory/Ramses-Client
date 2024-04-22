@@ -30,6 +30,7 @@
 #include "duqf-app/app-version.h"
 #include "docks/settingsdock.h"
 #include "duqf-widgets/dutoolbarspacer.h"
+#include "statemanager.h"
 
 MainWindow::MainWindow(const QCommandLineParser &cli, QWidget *parent) :
     DuMainWindow{parent}

@@ -15,6 +15,10 @@ public:
 public slots:
     void showDetails(bool s);
 
+protected slots:
+    // Moved
+    void rowMoved( int logicalIndex, int oldVisualIndex, int newVisualIndex);
+
 private slots:
 
 private:

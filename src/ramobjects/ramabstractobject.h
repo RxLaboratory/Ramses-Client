@@ -67,7 +67,7 @@ public:
                     Step,
                     User,
                     ScheduleEntry,
-                    ScheduleComment,
+                    ScheduleRow,
                     TemplateStep,
                     TemplateAssetGroup,
                     Ramses

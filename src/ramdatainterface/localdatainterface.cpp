@@ -164,6 +164,9 @@ QSet<QString> LocalDataInterface::tableUuids(QString table, bool includeRemoved)
     if (includeRemoved && CACHE_LOCAL_DATA && m_uuids.contains(table) ) return m_uuids.value(table);
     if (!includeRemoved && CACHE_LOCAL_DATA && m_uuidsWithoutRemoved.contains(table) ) return m_uuidsWithoutRemoved.value(table);
 
+    // Make sure the table exists
+    createTable(table);
+
     QString q = "SELECT uuid FROM '%1'";
     if (!includeRemoved) q += " WHERE removed = 0";
     q += " ;";
@@ -182,6 +185,9 @@ QSet<QString> LocalDataInterface::tableUuids(QString table, bool includeRemoved)
 
 QVector<QStringList> LocalDataInterface::tableData(QString table, QHash<QString, QStringList> filters, bool includeRemoved)
 {
+    // Make sure the table exists
+    createTable(table);
+
     QString q = "SELECT `uuid`, `data` FROM '%1'";
     if (!includeRemoved) q += " WHERE removed = 0";
 
@@ -257,6 +263,9 @@ bool LocalDataInterface::contains(QString uuid, QString table, bool includeRemov
 
 QMap<QString, QString> LocalDataInterface::modificationDates(QString table)
 {
+    // Make sure the table exists
+    createTable(table);
+
     QString q = "SELECT uuid, modified FROM '%1';";
     q = q.arg(table);
     QSqlQuery qry = query( q );
@@ -270,6 +279,9 @@ QMap<QString, QString> LocalDataInterface::modificationDates(QString table)
 
 void LocalDataInterface::createObject(QString uuid, QString table, QString data)
 {
+    // Make sure the table exists
+    createTable(table);
+
     // Remove table cache
     m_uuids.remove(table);
     m_uuidsWithoutRemoved.remove(table);
@@ -299,6 +311,9 @@ void LocalDataInterface::createObject(QString uuid, QString table, QString data)
 
 QString LocalDataInterface::objectData(QString uuid, QString table)
 {
+    // Make sure the table exists
+    createTable(table);
+
     QString q = "SELECT data FROM %1 WHERE uuid = '%2';";
     QSqlQuery qry = query( q.arg(table, uuid) );
 
@@ -313,6 +328,9 @@ QString LocalDataInterface::objectData(QString uuid, QString table)
 
 void LocalDataInterface::setObjectData(QString uuid, QString table, QString data)
 {
+    // Make sure the table exists
+    createTable(table);
+
     QString newData = DBInterface::instance()->validateObjectData(data, uuid, table);
 
     QDateTime modified = QDateTime::currentDateTimeUtc();
@@ -333,6 +351,9 @@ void LocalDataInterface::setObjectData(QString uuid, QString table, QString data
 
 void LocalDataInterface::removeObject(QString uuid, QString table)
 {
+    // Make sure the table exists
+    createTable(table);
+
     QDateTime modified = QDateTime::currentDateTimeUtc();
 
     QString q = "UPDATE %1 SET "
@@ -345,6 +366,9 @@ void LocalDataInterface::removeObject(QString uuid, QString table)
 
 void LocalDataInterface::restoreObject(QString uuid, QString table)
 {
+    // Make sure the table exists
+    createTable(table);
+
     QDateTime modified = QDateTime::currentDateTimeUtc();
 
     // Restore query
@@ -364,6 +388,9 @@ void LocalDataInterface::restoreObject(QString uuid, QString table)
 
 bool LocalDataInterface::isRemoved(QString uuid, QString table)
 {
+    // Make sure the table exists
+    createTable(table);
+
     QString q = "SELECT removed FROM %1 WHERE uuid = '%2';";
     QSqlQuery qry = query( q.arg(table, uuid) );
 
@@ -377,6 +404,9 @@ bool LocalDataInterface::isRemoved(QString uuid, QString table)
 
 QString LocalDataInterface::modificationDate(QString uuid, QString table)
 {
+    // Make sure the table exists
+    createTable(table);
+
     QString q = "SELECT modified FROM %1 WHERE uuid = '%2';";
     QSqlQuery qry = query( q.arg(table, uuid) );
 
@@ -674,6 +704,9 @@ void LocalDataInterface::saveSync(SyncData syncData)
         QString tableName = i.key();
         if (tableName == "") continue;
 
+        // Make sure the table exists
+        createTable(tableName);
+
         QSet<QStringList> insertedObjects;
 
         pm->setText(tr("Inserting new data in: %1").arg(tableName));
@@ -758,6 +791,9 @@ void LocalDataInterface::saveSync(SyncData syncData)
         i.next();
         QString tableName = i.key();
         if (tableName == "") continue;
+
+        // Make sure the table exists
+        createTable(tableName);
 
         pm->setText(tr("Updating existing data for: %1").arg(tableName));
 
@@ -1528,6 +1564,19 @@ void LocalDataInterface::vacuum()
 {
     QString q = "VACUUM;";
     query( q );
+}
+
+void LocalDataInterface::createTable(const QString &tableName)
+{
+    QString q = "CREATE TABLE IF NOT EXISTS \"%1\" ( "
+                "\"id\"	INTEGER NOT NULL UNIQUE, "
+                "\"uuid\"	TEXT NOT NULL UNIQUE, "
+                "\"data\"	TEXT NOT NULL DEFAULT '{}', "
+                "\"modified\"	timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+                "\"removed\"	INTEGER NOT NULL DEFAULT 0, "
+                "PRIMARY KEY(\"id\" AUTOINCREMENT) "
+                ")";
+    query( q.arg( tableName ) );
 }
 
 const QHash<QString, QSet<QString> > &LocalDataInterface::deletedUuids() const
