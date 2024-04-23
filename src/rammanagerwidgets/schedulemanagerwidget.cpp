@@ -186,6 +186,46 @@ void ScheduleManagerWidget::addEntry(RamObject *stepObj)
     m_project->freezeEstimation(false);
 }
 
+bool ScheduleManagerWidget::clearSelectedEntries()
+{
+    if (!m_project) return false;
+
+    const QModelIndexList selection = ui_table->selectionModel()->selectedIndexes();
+    int count = selection.count();
+
+    if (count == 0)
+        return false;
+
+    bool needConfirm = false;
+    for (const auto &index: selection) {
+        const QVector<RamScheduleEntry*> entries = RamScheduleEntry::get(index);
+        if (entries.isEmpty())
+            continue;
+        needConfirm = true;
+        break;
+    }
+
+    if ( needConfirm && QMessageBox::question(
+        this,
+        tr("Confirm deletion"),
+        tr("Are you sure you want to remove all selected entries?")
+        ) !=  QMessageBox::Yes)
+        return false;
+
+    m_project->freezeEstimation(true);
+
+    for (const auto &index: selection) {
+        const QVector<RamScheduleEntry*> entries = RamScheduleEntry::get(index);
+        for (auto entry: entries) {
+            entry->remove();
+        }
+    }
+
+    m_project->freezeEstimation(false);
+
+    return true;
+}
+
 void ScheduleManagerWidget::filterUser(RamObject *user, bool filter)
 {
     if (filter) m_scheduleFilter->acceptUserUuid( user->uuid() );
@@ -393,7 +433,7 @@ void ScheduleManagerWidget::cutComment()
 
 void ScheduleManagerWidget::pasteComment()
 {
-    QClipboard *clipboard = QGuiApplication::clipboard();
+    /*QClipboard *clipboard = QGuiApplication::clipboard();
     QString comment = clipboard->text();
     if (comment == "") return;
 
@@ -406,7 +446,7 @@ void ScheduleManagerWidget::pasteComment()
         const QModelIndex &index = selection.at(i);
 
         setComment(comment, index);
-    }
+    }*/
 }
 
 void ScheduleManagerWidget::copyUuid()
@@ -431,7 +471,7 @@ void ScheduleManagerWidget::contextMenuRequested(QPoint p)
 
 void ScheduleManagerWidget::comment()
 {
-    // Get selection
+    /*// Get selection
     QModelIndexList selection = ui_table->selectionModel()->selectedIndexes();
     if (selection.count() == 0) return;
 
@@ -455,19 +495,19 @@ void ScheduleManagerWidget::comment()
             setComment(text, selection.at(i));
         }
     }
-    pm->finish();
+    pm->finish();*/
 }
 
 void ScheduleManagerWidget::removeCommment()
 {
-    // Get selection
+    /*// Get selection
     QModelIndexList selection = ui_table->selectionModel()->selectedIndexes();
     if (selection.count() == 0) return;
 
     for (int i = 0; i < selection.count(); i++)
     {
         setComment("", selection.at(i));
-    }
+    }*/
 }
 
 void ScheduleManagerWidget::color()
@@ -714,6 +754,10 @@ void ScheduleManagerWidget::setupUi()
     ui_replaceEntryContextMenu->actions().at(0)->setText("Generic entry");
     ui_contextMenu->addMenu(ui_replaceEntryContextMenu);
 
+    ui_clearAction = new QAction("Clear", this);
+    ui_clearAction->setIcon(DuIcon(":/icons/trash"));
+    ui_contextMenu->addAction(ui_clearAction);
+
     ui_contextMenu->addSeparator();
 
     ui_contextMenu->addAction(ui_commentAction);
@@ -785,6 +829,17 @@ void ScheduleManagerWidget::connectEvents()
     connect(ui_addEntryContextMenu, &RamObjectMenu::createTriggered,
             this, [this] () { addEntry(); });
     connect(ui_addEntryContextMenu, &RamObjectMenu::assigned, this, &ScheduleManagerWidget::addEntry);
+    connect(ui_replaceEntryContextMenu, &RamObjectMenu::createTriggered,
+            this, [this] () {
+        if (clearSelectedEntries())
+            addEntry();
+    });
+    connect(ui_replaceEntryContextMenu, &RamObjectMenu::assigned,
+            this, [this] (RamObject *o) {
+        if (clearSelectedEntries())
+            addEntry(o);
+    });
+    connect(ui_clearAction, &QAction::triggered, this, &ScheduleManagerWidget::clearSelectedEntries);
     // context menu
     connect(ui_table, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(contextMenuRequested(QPoint)));
     connect(ui_commentAction, &QAction::triggered, this, &ScheduleManagerWidget::comment);
@@ -822,35 +877,6 @@ void ScheduleManagerWidget::loadSettings()
     // Users
     ui_userMenu->restoreState(uSettings, "users");
     uSettings->endGroup();
-}
-
-void ScheduleManagerWidget::setComment(QString comment, QModelIndex index)
-{
-    /*QString uuid = index.data(RamObject::UUID).toString();
-
-    RamObject *c = nullptr;
-
-    // Set
-    if (index.data(RamObject::IsComment).toBool()) {
-        if (uuid != "") c = RamObject::get(uuid, RamObject::ScheduleComment);
-        if (!c && comment != "") {
-                RamScheduleComment *newC = new RamScheduleComment( m_project );
-                newC->setDate(index.data(RamObject::Date).toDateTime());
-                c = newC;
-        }
-
-        if (c && comment == "") {
-            c->remove();
-            return;
-        }
-    }
-
-    else if (uuid != "")
-        c = RamObject::get(uuid, RamObject::ScheduleEntry);
-
-    if (!c) return;
-
-    c->setComment(comment);*/
 }
 
 void ScheduleManagerWidget::changeProject()

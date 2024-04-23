@@ -38,6 +38,7 @@ private slots:
     void userChanged(RamUser *user);
 
     void addEntry(RamObject *stepObj = nullptr);
+    bool clearSelectedEntries();
 
     void filterUser(RamObject *user, bool filter);
     void filterMe();
@@ -75,7 +76,6 @@ private:
     void setupUi();
     void connectEvents();
     void loadSettings();
-    void setComment(QString comment, QModelIndex index);
 
     void changeProject();
     bool m_projectChanged = false;
@@ -94,6 +94,7 @@ private:
 
     QAction *ui_addRowAction;
     QAction *ui_removeRowAction;
+    QAction *ui_clearAction;
     QAction *ui_meAction;
 
     QAction *ui_monday;
