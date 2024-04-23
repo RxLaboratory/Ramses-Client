@@ -25,6 +25,14 @@ public:
     void addFilterValues(QString key, QStringList values);
 
     /**
+     * @brief setRejectInvalidData
+     * If set to true, objects with invalid data
+     * can't be inserted in this table.
+     * @param r
+     */
+    void setRejectInvalidData(bool r = true);
+
+    /**
      * @brief load Initial loading of the table
      * Call it (at least) once to do the initial loading.
      * Calling it the first time the model is actually needed, as late as possible, may improve performance.
@@ -67,6 +75,7 @@ private:
 
     // Checks the filters
     bool checkFilters(QString data) const;
+    bool validate(const QString &data, const QString &table);
     // Checks if this obj may be inserted
     // Returns a uuid to be removed from
     // the table after inserting the object
@@ -81,6 +90,7 @@ private:
     // === Filters ===
 
     QHash<QString, QStringList> m_filters;
+    bool m_rejectInvalidData = true;
 
     // === ATTRIBUTES ===
 

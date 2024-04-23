@@ -77,6 +77,7 @@ void RamScheduleRowHeaderView::mousePressEvent(QMouseEvent *event)
     if (ebrect.contains(pos) && canEdit())
     {
         m_editButtonPressed = sectionIndex;
+        event->accept();
         return;
     }
 
@@ -92,13 +93,13 @@ void RamScheduleRowHeaderView::mouseReleaseEvent(QMouseEvent *event)
 
     if (m_editButtonPressed == sectionIndex)
     {
-        if (ebrect.contains(pos))
-        {
+        if (ebrect.contains(pos)) {
             // Get the row
             RamScheduleRow *row = getRow(sectionIndex);
             if (row && canEdit()) row->edit();
         }
         m_editButtonPressed = -1;
+        event->accept();
         return;
     }
 

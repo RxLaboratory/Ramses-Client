@@ -188,7 +188,7 @@ QVector<QStringList> LocalDataInterface::tableData(QString table, QHash<QString,
     // Make sure the table exists
     createTable(table);
 
-    QString q = "SELECT `uuid`, `data` FROM '%1'";
+    QString q = "SELECT `uuid`, `data`, `modified` FROM '%1'";
     if (!includeRemoved) q += " WHERE removed = 0";
 
     // Add filters
@@ -233,6 +233,7 @@ QVector<QStringList> LocalDataInterface::tableData(QString table, QHash<QString,
     {
         QString uuid = qry.value(0).toString();
         QString data = qry.value(1).toString();
+        QString modified = qry.value(2).toString();
 
         // Decrypt data if user table
         if (table == "RamUser" && ENCRYPT_USER_DATA) data = DataCrypto::instance()->clientDecrypt( data );
@@ -240,6 +241,7 @@ QVector<QStringList> LocalDataInterface::tableData(QString table, QHash<QString,
         QStringList entry;
         entry << uuid;
         entry << data;
+        entry << modified;
         tData << entry;
     }
 

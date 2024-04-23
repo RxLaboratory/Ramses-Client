@@ -6,6 +6,7 @@
 #include "ramscheduleentry.h"
 #include "ramschedulerow.h"
 #include "ramses.h"
+#include "ramstep.h"
 
 RamScheduleTableModel::RamScheduleTableModel(QObject *parent) : QAbstractTableModel(parent)
 {
@@ -83,13 +84,13 @@ QVariant RamScheduleTableModel::data(const QModelIndex &index, int role) const
         return date;
 
     // Get the entrie(s)
-    const QSet<RamObject*> entries = m_entries->multiLookUp(
+    const QSet<RamObject*> entriesSet = m_entries->multiLookUp(
         QStringList( { "date", "row" } ),
         QStringList( { date.toString( DATE_DATA_FORMAT ), m_rows->getUuid(row) } )
         );
 
     // Empty cell
-    if (entries.isEmpty()) {
+    if (entriesSet.isEmpty()) {
 
         if ( role == Qt::BackgroundRole ) {
             if (date.weekNumber() % 2 == 1)
@@ -100,6 +101,24 @@ QVariant RamScheduleTableModel::data(const QModelIndex &index, int role) const
 
         return QVariant();
     }
+
+    // Sort the entries by step order, then title
+    QList<RamObject*> entries = entriesSet.values();
+    std::sort( entries.begin(), entries.end(), [] (RamObject *a, RamObject *b) {
+        auto entryA = RamScheduleEntry::c(a);
+        auto entryB = RamScheduleEntry::c(b);
+        auto stepA = entryA->step();
+        auto stepB = entryB->step();
+
+        if (stepA && stepB)
+            return stepA->order() < stepB->order();
+        if (!stepA && stepB)
+            return false;
+        if (stepA && !stepB)
+            return true;
+
+        return entryA->shortName() < entryB->shortName();
+    });
 
     // Pointer list for Multiple entries,
     // The delegate should get the list of pointers
@@ -114,8 +133,7 @@ QVariant RamScheduleTableModel::data(const QModelIndex &index, int role) const
 
     // Single entry, return the data
     if (entries.count() == 1) {
-        auto i = entries.cbegin();
-        return (*i)->roleData(role);
+        return entries.first()->roleData(role);
     }
 
     return QVariant();

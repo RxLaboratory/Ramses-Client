@@ -7,7 +7,7 @@ QHash<QString, RamScheduleEntry*> RamScheduleEntry::m_existingObjects = QHash<QS
 
 RamScheduleEntry *RamScheduleEntry::get(QString uuid)
 {
-    if (!checkUuid(uuid, ScheduleRow)) return nullptr;
+    if (!checkUuid(uuid, ScheduleEntry)) return nullptr;
 
     RamScheduleEntry *e = m_existingObjects.value(uuid);
     if (e) return e;
@@ -23,6 +23,14 @@ RamScheduleEntry *RamScheduleEntry::c(RamObject *o, bool fast)
         return reinterpret_cast<RamScheduleEntry*>(o);
     // Otherwise use the safer qobject_cast
     return qobject_cast<RamScheduleEntry*>(o);
+}
+
+bool RamScheduleEntry::validateData(const QString &data)
+{
+    // Make sure the entry has a row
+    QJsonDocument doc = QJsonDocument::fromJson(data.toUtf8());
+    QJsonObject obj = doc.object();
+    return obj.contains("row");
 }
 
 RamScheduleEntry::RamScheduleEntry(const QString &name, const QDate &date, RamScheduleRow *row):
@@ -92,7 +100,7 @@ RamStep *RamScheduleEntry::step() const
     return RamStep::get( stepUuid );
 }
 
-void RamScheduleEntry::setStep(RamStep *newStep)
+void RamScheduleEntry::setStep(RamObject *newStep)
 {
     // Disconnect previous step
     RamStep *currentStep = step();
@@ -105,7 +113,7 @@ void RamScheduleEntry::setStep(RamStep *newStep)
     if (newStep) {
         insertData("step", newStep->uuid());
         // When the step is removed, the entry must be removed too
-        connect(newStep, &RamStep::removed, this, &RamScheduleEntry::remove);
+        connect(newStep, &RamObject::removed, this, &RamScheduleEntry::remove);
     }
     else {
         insertData("step", "");

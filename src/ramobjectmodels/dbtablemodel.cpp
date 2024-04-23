@@ -25,6 +25,11 @@ void DBTableModel::addFilterValues(QString key, QStringList values)
     m_filters.insert(key, filterValues);
 }
 
+void DBTableModel::setRejectInvalidData(bool r)
+{
+    m_rejectInvalidData = r;
+}
+
 void DBTableModel::load()
 {
     if (m_isLoaded) return;
@@ -209,6 +214,14 @@ bool DBTableModel::checkFilters(QString data) const
     return true;
 }
 
+bool DBTableModel::validate(const QString &data, const QString &table)
+{
+    return RamObject::validateData(
+        data,
+        RamAbstractObject::objectTypeFromName(table)
+        );
+}
+
 QString DBTableModel::checkUnique(const QString &uuid, const QString &data, const QString &modifiedDate)
 {
     // Nothing to check
@@ -287,6 +300,10 @@ void DBTableModel::insertObject(const QString &uuid, const QString &data, const 
         return;
     }
 
+    // Validate
+    if (m_rejectInvalidData && !validate(data, table))
+        return;
+
     // Filter
     if (!checkFilters(data)) return;
 
@@ -298,12 +315,6 @@ void DBTableModel::insertObject(const QString &uuid, const QString &data, const 
     QStringList o;
     o << uuid << data;
     insertObjects( order, QVector<QStringList>() << o, table );
-
-    // Remove duplicate
-    if (uuidToRemove != "") {
-        removeObject(uuidToRemove, table);
-        LocalDataInterface::instance()->removeObject(uuid, table);
-    }
 }
 
 void DBTableModel::removeObject(QString uuid, QString table)
@@ -327,6 +338,32 @@ void DBTableModel::reload()
     QVector<QStringList> objs = LocalDataInterface::instance()->tableData( m_table, m_filters );
 
     qDebug() << "Got " << objs.count() << " objects from " << m_table;
+
+    // Validate and uniqueness
+    if (m_rejectInvalidData || !m_uniqueDataKeys.isEmpty()) {
+        for (int i = objs.count() -1; i >= 0; --i) {
+            QStringList data = objs.at(i);
+            QString uuid = data.at(0);
+            QString objData = data.at(1);
+            QString modified = data.at(2);
+
+            // Unique
+            QString uuidToRemove = checkUnique(uuid, objData, modified);
+            if (uuidToRemove == uuid) {
+                LocalDataInterface::instance()->removeObject(uuid, m_table);
+                objs.removeAt(i);
+                continue;
+            }
+
+            // Validate
+            if (m_rejectInvalidData && !validate(objData, m_table)) {
+                objs.removeAt(i);
+                continue;
+            }
+        }
+    }
+
+    qDebug() << "Got " << objs.count() << " filtered objects from " << m_table;
 
     // Sort
     if (m_userOrder) {

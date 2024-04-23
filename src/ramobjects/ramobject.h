@@ -22,6 +22,9 @@ public:
     static RamObject *get(QString uuid, ObjectType type);
     static RamObject *get(QString uuid, QString tableName);
 
+    static bool validateData(const QString &data, ObjectType type);
+    static bool validateData(const QString &data) { Q_UNUSED(data); return true; }
+
     // METHODS //
 
     /**

@@ -30,6 +30,16 @@ public:
      */
     static RamScheduleEntry *c(RamObject *o, bool fast = true);
 
+    /**
+     * @brief validateData
+     * Validates the data to make sure the entry is valid.
+     * This method is used by the data interface
+     * before loading entries.
+     * @param data
+     * @return
+     */
+    static bool validateData(const QString &data);
+
     // CONSTRUCTORS //
 
     /**
@@ -88,7 +98,7 @@ public:
      * The new step.
      * Set to nullptr to dissociate all steps from this entry.
      */
-    void setStep(RamStep *newStep);
+    void setStep(RamObject *newStep);
 
     /**
      * @brief iconName

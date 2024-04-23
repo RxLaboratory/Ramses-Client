@@ -8,6 +8,7 @@
 RamScheduleEntryModel::RamScheduleEntryModel(QObject *parent)
     : DBTableModel{RamAbstractObject::ScheduleEntry, true, false, parent}
 {
+    setRejectInvalidData(true);
     addLookUpKey("date");
     addLookUpKey("row");
     addLookUpKey("step");
@@ -64,6 +65,7 @@ void RamScheduleEntryModel::countAll()
         RamScheduleEntry *entry = RamScheduleEntry::c( this->get(i) );
         if (!entry) continue;
         if (!entry->step()) continue;
+        if (!entry->row()) continue;
         if (!entry->row()->user()) continue;
 
         QString stepUuid = entry->step()->uuid();

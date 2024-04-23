@@ -37,7 +37,7 @@ private slots:
     void projectUpdated(RamObject*projObj);
     void userChanged(RamUser *user);
 
-    void assignStep(RamObject *stepObj = nullptr);
+    void addEntry(RamObject *stepObj = nullptr);
 
     void filterUser(RamObject *user, bool filter);
     void filterMe();
@@ -87,12 +87,15 @@ private:
     QDateEdit *ui_startDateEdit;
     QDateEdit *ui_endDateEdit;
     RamObjectMenu *ui_stepMenu;
-    RamObjectMenu *ui_stepContextMenu;
+    RamObjectMenu *ui_addEntryContextMenu;
+    RamObjectMenu *ui_replaceEntryContextMenu;
     QToolButton *ui_rowsButton;
     RamObjectMenu *ui_userMenu;
+
     QAction *ui_addRowAction;
     QAction *ui_removeRowAction;
     QAction *ui_meAction;
+
     QAction *ui_monday;
     QAction *ui_tuesday;
     QAction *ui_wednesday;
@@ -100,6 +103,16 @@ private:
     QAction *ui_friday;
     QAction *ui_saturday;
     QAction *ui_sunday;
+
+    QAction *ui_copyComment;
+    QAction *ui_cutComment;
+    QAction *ui_pasteComment;
+    QAction *ui_commentAction;
+
+    QAction *ui_colorAction;
+    QAction *ui_removeCommentAction;
+    QAction *ui_actionCopyUuid;
+
     QToolButton *ui_today;
     QToolButton *ui_deadline;
     QToolButton *ui_nextMonth;
@@ -107,13 +120,7 @@ private:
     QDateEdit *ui_goTo;
     QLabel *ui_timeRemaining;
     DuMenu *ui_contextMenu;
-    QAction *ui_copyComment;
-    QAction *ui_cutComment;
-    QAction *ui_pasteComment;
-    QAction *ui_commentAction;
-    QAction *ui_colorAction;
-    QAction *ui_removeCommentAction;
-    QAction *ui_actionCopyUuid;
+
     DuMenu *ui_commentContextMenu;
 
     RamScheduleTableModel *m_schedule;

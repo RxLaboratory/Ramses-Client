@@ -50,9 +50,8 @@ private:
     // Utils
     RamUser *getUser(QModelIndex index) const;
     QDate getDate(QModelIndex index) const;
-    RamScheduleEntry *getEntry(QModelIndex index) const;
     QSet<RamStatus*> getDueTasks(QModelIndex index) const;
-
+    QColor adjustBackgroundColor(const QColor &color, const QModelIndex &index, const QStyleOptionViewItem &option) const;
 };
 
 #endif // RAMSCHEDULEDELEGATE_H

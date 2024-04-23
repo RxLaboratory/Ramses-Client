@@ -19,7 +19,7 @@ QSet<RamObject *> RamAbstractDataModel::multiLookUp(const QStringList &lookUpKey
 
     QSet<RamObject *> objs = lookUp(
         lookUpKeys.first(),
-        lookUpValues.last()
+        lookUpValues.first()
         );
 
     if (lookUpKeys.count() <= 1)

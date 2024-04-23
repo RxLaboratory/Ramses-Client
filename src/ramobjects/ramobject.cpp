@@ -53,6 +53,51 @@ RamObject *RamObject::get(QString uuid, QString tableName)
     return RamObject::get(uuid, RamObject::objectTypeFromName(tableName));
 }
 
+bool RamObject::validateData(const QString &data, ObjectType type)
+{
+    switch(type) {
+    case Application:
+        return RamApplication::validateData(data);
+    case Asset:
+        return RamAsset::validateData(data);
+    case AssetGroup:
+        return RamAssetGroup::validateData(data);
+    case FileType:
+        return RamFileType::validateData(data);
+    case Pipe:
+        return RamPipe::validateData(data);
+    case PipeFile:
+        return RamPipeFile::validateData(data);
+    case Project:
+        return RamProject::validateData(data);
+    case Sequence:
+        return RamSequence::validateData(data);
+    case Shot:
+        return RamShot::validateData(data);
+    case State:
+        return RamState::validateData(data);
+    case Status:
+        return RamStatus::validateData(data);
+    case Step:
+        return RamStep::validateData(data);
+    case User:
+        return RamUser::validateData(data);
+    case ScheduleEntry:
+        return RamScheduleEntry::validateData(data);
+    case ScheduleRow:
+        return RamScheduleRow::validateData(data);
+    case TemplateStep:
+        return RamTemplateStep::validateData(data);
+    case TemplateAssetGroup:
+        return RamTemplateAssetGroup::validateData(data);
+    case Ramses:
+    case Object:
+    case Item:
+        break;
+    }
+    return true;
+}
+
 RamObject::RamObject(QString shortName, QString name, ObjectType type, QObject *parent, bool isVirtual):
     QObject(parent),
     RamAbstractObject(shortName, name, type, isVirtual)
