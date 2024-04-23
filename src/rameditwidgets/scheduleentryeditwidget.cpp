@@ -177,6 +177,11 @@ void ScheduleEntryEditWidget::connectEvents()
     connect( ui_removeButton, &QToolButton::clicked,
             this, [this] () {
         if (!m_entry) return;
-        m_entry->remove();
+        if (QMessageBox::question(
+                this,
+                tr("Confirm"),
+                tr("Are you sure you want to remove this entry?")
+                ) == QMessageBox::Yes)
+            m_entry->remove();
     });
 }
