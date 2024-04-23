@@ -250,7 +250,7 @@ void DBTableModel::saveOrder() const
 {
     if (!m_userOrder) return;
     // Save order
-    for (int i = 0; i <= rowCount(); i++)
+    for (int i = 0; i < rowCount(); i++)
     {
         RamObject *o = this->get( i );
         if (o) o->setOrder(i);

@@ -59,6 +59,7 @@ void RamScheduleTableView::setupUi()
 void RamScheduleTableView::connectEvents()
 {
     // SORT
-    connect( this->verticalHeader(), &QHeaderView::sectionMoved,
-            this, &RamScheduleTableView::rowMoved);
+    // No need to connect, the slot is overriden
+    //connect( this->verticalHeader(), &QHeaderView::sectionMoved,
+    //        this, &RamScheduleTableView::rowMoved);
 }
