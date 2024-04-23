@@ -59,16 +59,16 @@ void ScheduleManagerWidget::hideEvent(QHideEvent *event)
         // Show details
         uSettings->setValue("showDetails", ui_actionShowDetails->isChecked());
         // User filters
-        ui_userMenu->saveState(uSettings, "users");
+        ui_rowsMenu->saveState(uSettings, "rows");
         uSettings->endGroup();
     }
 
     QWidget::hideEvent(event);
 }
 
-void ScheduleManagerWidget::checkUserFilter()
+void ScheduleManagerWidget::checkRowsFilter()
 {
-    bool ok = ui_userMenu->isAllChecked();
+    bool ok = ui_rowsMenu->isAllChecked();
 
     QString t = ui_rowsButton->text().replace(" ▽","");
     if (!ok) t = t + " ▽";
@@ -119,8 +119,8 @@ void ScheduleManagerWidget::userChanged(RamUser *user)
     loadSettings();
 
     RamUser::UserRole role = user->role();
-    ui_addEntryContextMenu->setEnabled(role >= RamUser::Lead);
-    ui_stepMenu->setEnabled(role >= RamUser::Lead);
+    ui_addEntryMenu->setEnabled(role >= RamUser::Lead);
+    ui_replaceEntryMenu->setEnabled(role >= RamUser::Lead);
     ui_addRowAction->setEnabled(role >= RamUser::ProjectAdmin);
     ui_removeRowAction->setEnabled(role >= RamUser::ProjectAdmin);
 }
@@ -231,25 +231,29 @@ void ScheduleManagerWidget::filterUser(RamObject *user, bool filter)
     if (filter) m_scheduleFilter->acceptUserUuid( user->uuid() );
     else m_scheduleFilter->ignoreUserUuid( user->uuid() );
 
-    checkUserFilter();
+    checkRowsFilter();
 }
 
 void ScheduleManagerWidget::filterMe()
 {  
-    QList<QAction*> actions = ui_userMenu->actions();
+    QList<QAction*> actions = ui_rowsMenu->actions();
     RamUser *u = Ramses::instance()->currentUser();
 
     for (int i = 4; i < actions.count(); i++)
     {
-        RamUser *user = RamUser::c( ui_userMenu->objectAt(i) );
-        if (!user) continue;
-        if (user->is(u))
+        auto scheduleRow = RamScheduleRow::c( ui_rowsMenu->objectAt(i) );
+        if (!scheduleRow)
+            continue;
+
+        RamUser *user = scheduleRow->user();
+
+        if (u->is(user))
             actions[i]->setChecked(true);
         else
             actions[i]->setChecked(false);
     }
 
-    checkUserFilter();
+    checkRowsFilter();
 }
 
 void ScheduleManagerWidget::addRow()
@@ -403,148 +407,79 @@ void ScheduleManagerWidget::goToPreviousMonth()
     ui_goTo->setDate( ui_goTo->date().addMonths(-1) );
 }
 
-void ScheduleManagerWidget::copyComment()
+void ScheduleManagerWidget::copyEntries()
 {
-    QModelIndex currentIndex = ui_table->selectionModel()->currentIndex();
-    if ( !currentIndex.isValid() ) return;
-
-    QClipboard *clipboard = QGuiApplication::clipboard();
-    clipboard->setText( currentIndex.data(RamObject::Comment).toString() );
+    m_entryClipBoard = ui_table->selectionModel()->selectedIndexes();
+    m_clipboardAction = Qt::CopyAction;
 }
 
-void ScheduleManagerWidget::cutComment()
+void ScheduleManagerWidget::cutEntries()
 {
-    QModelIndex currentIndex = ui_table->selectionModel()->currentIndex();
-    if ( !currentIndex.isValid() ) return;
-
-    QString uuid = currentIndex.data(RamObject::UUID).toString();
-    if (uuid == "") return;
-
-    // Copy
-    QClipboard *clipboard = QGuiApplication::clipboard();
-    clipboard->setText( currentIndex.data(RamObject::Comment).toString() );
-
-    RamObject *c;
-
-    c = RamObject::get(uuid, RamObject::ScheduleEntry);
-    if (!c) return;
-    c->setComment("");
+    m_entryClipBoard = ui_table->selectionModel()->selectedIndexes();
+    m_clipboardAction = Qt::MoveAction;
 }
 
-void ScheduleManagerWidget::pasteComment()
+void ScheduleManagerWidget::pasteEntries()
 {
-    /*QClipboard *clipboard = QGuiApplication::clipboard();
-    QString comment = clipboard->text();
-    if (comment == "") return;
+    if (m_entryClipBoard.isEmpty())
+        return;
 
-    // Get selection
-    QModelIndexList selection = ui_table->selectionModel()->selectedIndexes();
-    if (selection.count() == 0) return;
+    // Get the offset
+    QModelIndex newIndex = ui_table->selectionModel()->currentIndex();
+    QModelIndex oldIndex = m_entryClipBoard.first();
 
-    for (int i = 0; i < selection.count(); i++)
-    {
-        const QModelIndex &index = selection.at(i);
+    int rowOffset = newIndex.row() - oldIndex.row();
+    int dayOffset = newIndex.column() - oldIndex.column();
 
-        setComment(comment, index);
-    }*/
-}
+    m_project->freezeEstimation(true);
 
-void ScheduleManagerWidget::copyUuid()
-{
-    QModelIndex currentIndex = ui_table->selectionModel()->currentIndex();
-    if ( !currentIndex.isValid() ) return;
-    QString uuid = currentIndex.data(RamObject::UUID).toString();
-    QClipboard *clipboard = QGuiApplication::clipboard();
-    clipboard->setText( uuid );
+    for (const auto &index: m_entryClipBoard) {
+
+        const QVector<RamScheduleEntry*> entries = RamScheduleEntry::get(index);
+        if (entries.isEmpty())
+            continue;
+
+        RamScheduleEntry *testEntry = entries.first();
+
+        RamScheduleRow *oldRow = testEntry->row();
+        int oldRowIndex = m_project->scheduleRows()->objectRow(oldRow);
+        int newRowIndex = oldRowIndex + rowOffset;
+        if (newRowIndex < 0 || newRowIndex >= m_project->scheduleRows()->count())
+            continue;
+
+        RamObject *newRow = m_project->scheduleRows()->get(newRowIndex);
+        QDate newDate = testEntry->date().addDays(dayOffset);
+
+        for (auto entry: entries) {
+            // Move: update the row and date
+            if (m_clipboardAction == Qt::MoveAction) {
+                entry->setRow(newRow);
+                entry->setDate(newDate);
+            }
+            else if (m_clipboardAction == Qt::CopyAction){
+                auto newEntry = new RamScheduleEntry(
+                    entry->name(),
+                    newDate,
+                    RamScheduleRow::c(newRow)
+                    );
+                newEntry->setStep(entry->step());
+                newEntry->setColor(entry->color());
+                newEntry->setComment(entry->comment());
+            }
+        }
+    }
+
+    m_project->freezeEstimation(false);
+
+    this->update();
 }
 
 void ScheduleManagerWidget::contextMenuRequested(QPoint p)
 {
-    // If it's a comment row, adjust menu
     QModelIndex currentIndex = ui_table->selectionModel()->currentIndex();
     if ( !currentIndex.isValid() ) return;
 
-    // Call the right context menu
-    if( currentIndex.data(RamObject::IsComment).toBool() ) ui_commentContextMenu->popup(ui_table->viewport()->mapToGlobal(p));
-    else ui_contextMenu->popup(ui_table->viewport()->mapToGlobal(p));
-}
-
-void ScheduleManagerWidget::comment()
-{
-    /*// Get selection
-    QModelIndexList selection = ui_table->selectionModel()->selectedIndexes();
-    if (selection.count() == 0) return;
-
-    ProgressManager *pm = ProgressManager::instance();
-    pm->setTitle(tr("Creating schedule entries"));
-    pm->setText("Setting comment...");
-    pm->setMaximum(selection.count());
-    pm->start();
-
-    QModelIndex currentIndex = ui_table->selectionModel()->currentIndex();
-    QString currentComment = currentIndex.data(RamObject::Comment).toString();
-
-    bool ok;
-    QString text = QInputDialog::getMultiLineText(ui_table, tr("Write a comment"),
-                                                  tr("Comment:"), currentComment, &ok);
-    if (ok && !text.isEmpty())
-    {
-        for (int i = 0; i < selection.count(); i++)
-        {
-            pm->increment();
-            setComment(text, selection.at(i));
-        }
-    }
-    pm->finish();*/
-}
-
-void ScheduleManagerWidget::removeCommment()
-{
-    /*// Get selection
-    QModelIndexList selection = ui_table->selectionModel()->selectedIndexes();
-    if (selection.count() == 0) return;
-
-    for (int i = 0; i < selection.count(); i++)
-    {
-        setComment("", selection.at(i));
-    }*/
-}
-
-void ScheduleManagerWidget::color()
-{
-    // Get selection
-    QModelIndexList selection = ui_table->selectionModel()->selectedIndexes();
-    if (selection.count() == 0) return;
-
-    ProgressManager *pm = ProgressManager::instance();
-    pm->setTitle(tr("Creating schedule entries"));
-    pm->setText("Setting color...");
-    pm->setMaximum(selection.count());
-    pm->start();
-
-    QModelIndex currentIndex = ui_table->selectionModel()->currentIndex();
-    QColor currentColor = currentIndex.data(Qt::BackgroundRole).value<QBrush>().color();
-
-    QColor color = QColorDialog::getColor(currentColor, this, "Select color" );
-    if (color.isValid())
-    {
-        for (int i = 0; i < selection.count(); i++)
-        {
-            pm->increment();
-            const QModelIndex &index = selection.at(i);
-            if (index.data(RamObject::IsComment).toBool()) {
-                QString commentUuid = index.data(RamObject::UUID).toString();
-                if (commentUuid == "") continue;
-                /*RamScheduleComment *comment = RamScheduleComment::get(commentUuid);
-                if (!comment) {
-                    comment = new RamScheduleComment( m_project );
-                    comment->setDate(index.data(RamObject::Date).toDateTime());
-                }
-                comment->setColor(color);*/
-            }
-        }
-    }
-    pm->finish();
+    ui_entriesMenu->popup(ui_table->viewport()->mapToGlobal(p));
 }
 
 void ScheduleManagerWidget::setupUi()
@@ -581,18 +516,18 @@ void ScheduleManagerWidget::setupUi()
     detailsButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     ui_titleBar->insertLeft(detailsButton);
 
-    ui_userMenu = new RamObjectMenu(true, this);
+    ui_rowsMenu = new RamObjectMenu(true, this);
 
     ui_meAction = new QAction("Me", this);
-    ui_userMenu->insertAction( ui_userMenu->actions().at(0), ui_meAction);
+    ui_rowsMenu->insertAction( ui_rowsMenu->actions().at(0), ui_meAction);
 
-    ui_userMenu->insertSeparator( ui_userMenu->actions().at(0) );
+    ui_rowsMenu->insertSeparator( ui_rowsMenu->actions().at(0) );
 
     ui_removeRowAction = new QAction(DuIcon(":/icons/remove"), tr("Remove row"), this);
-    ui_userMenu->insertAction(ui_userMenu->actions().at(0), ui_removeRowAction);
+    ui_rowsMenu->insertAction(ui_rowsMenu->actions().at(0), ui_removeRowAction);
 
     ui_addRowAction = new QAction(DuIcon(":/icons/add"), tr("Add row"), this);
-    ui_userMenu->insertAction(ui_userMenu->actions().at(0), ui_addRowAction);
+    ui_rowsMenu->insertAction(ui_rowsMenu->actions().at(0), ui_addRowAction);
 
     ui_rowsButton = new QToolButton(this);
     ui_rowsButton->setText("Rows");
@@ -601,7 +536,7 @@ void ScheduleManagerWidget::setupUi()
     ui_rowsButton->setObjectName("menuButton");
     ui_rowsButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     ui_rowsButton->setPopupMode(QToolButton::InstantPopup);
-    ui_rowsButton->setMenu(ui_userMenu);
+    ui_rowsButton->setMenu(ui_rowsMenu);
 
     ui_titleBar->insertLeft( ui_rowsButton );
 
@@ -647,46 +582,52 @@ void ScheduleManagerWidget::setupUi()
 
     ui_titleBar->insertLeft( dayButton );
 
-    DuMenu *stepMenu = new DuMenu(this);
+    // Context/Entries menu
+    ui_entriesMenu = new DuMenu(this);
 
-    ui_commentAction = new QAction(DuIcon(":/icons/comment"), "Comment...", this);
-    stepMenu->addAction(ui_commentAction);
+    ui_addEntryMenu = new RamObjectMenu(false, this);
+    ui_addEntryMenu->setTitle("Add entry");
+    ui_addEntryMenu->addCreateButton();
+    ui_addEntryMenu->actions().at(0)->setText("Generic entry");
+    ui_entriesMenu->addMenu(ui_addEntryMenu);
 
-    stepMenu->addSeparator();
+    ui_replaceEntryMenu = new RamObjectMenu(false, this);
+    ui_replaceEntryMenu->setTitle("Replace entries");
+    ui_replaceEntryMenu->addCreateButton();
+    ui_replaceEntryMenu->actions().at(0)->setText("Generic entry");
+    ui_entriesMenu->addMenu(ui_replaceEntryMenu);
 
-    ui_copyComment = new QAction("Copy comment", this);
-    ui_copyComment->setShortcut(QKeySequence("Ctrl+C"));
-    ui_copyComment->setIcon(DuIcon(":/icons/copy"));
-    stepMenu->addAction(ui_copyComment);
+    ui_clearAction = new QAction("Clear", this);
+    ui_clearAction->setIcon(DuIcon(":/icons/trash"));
+    ui_entriesMenu->addAction(ui_clearAction);
 
-    ui_cutComment = new QAction("Cut comment", this);
-    ui_cutComment->setShortcut(QKeySequence("Ctrl+X"));
-    ui_cutComment->setIcon(DuIcon(":/icons/cut"));
-    stepMenu->addAction(ui_cutComment);
+    ui_entriesMenu->addSeparator();
 
-    ui_pasteComment = new QAction("Paste as comment", this);
-    ui_pasteComment->setShortcut(QKeySequence("Ctrl+V"));
-    ui_pasteComment->setIcon(DuIcon(":/icons/paste"));
-    stepMenu->addAction(ui_pasteComment);
+    ui_copyEntries = new QAction(DuIcon(":/icons/copy"), tr("Copy entries"), this);
+    ui_copyEntries->setShortcut(QKeySequence::Copy);
 
-    stepMenu->addSeparator();
+    ui_cutEntries = new QAction(DuIcon(":/icons/cut"), tr("Cut entries"), this);
+    ui_cutEntries->setShortcut(QKeySequence::Cut);
 
-    ui_stepMenu = new RamObjectMenu(false, this);
-    ui_stepMenu->setTitle("Assign");
-    ui_stepMenu->addCreateButton();
-    ui_stepMenu->actions().at(0)->setText("None");
-    stepMenu->addMenu(ui_stepMenu);
+    ui_pasteEntries = new QAction(DuIcon(":/icons/paste"), tr("Paste entries"), this);
+    ui_pasteEntries->setShortcut(QKeySequence::Paste);
 
-    QToolButton *stepButton = new QToolButton(this);
-    stepButton->setText("Schedule entry");
-    stepButton->setIcon(DuIcon(":/icons/step"));
-    stepButton->setIconSize(QSize(16,16));
-    stepButton->setObjectName("menuButton");
-    stepButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-    stepButton->setPopupMode(QToolButton::InstantPopup);
-    stepButton->setMenu(stepMenu);
+    ui_entriesMenu->addAction(ui_copyEntries);
+    ui_entriesMenu->addAction(ui_cutEntries);
+    ui_entriesMenu->addAction(ui_pasteEntries);
 
-    ui_titleBar->insertLeft( stepButton );
+    ui_entriesMenu->addSeparator();
+
+    QToolButton *entriesButton = new QToolButton(this);
+    entriesButton->setText("Schedule entry");
+    entriesButton->setIcon(DuIcon(":/icons/step"));
+    entriesButton->setIconSize(QSize(16,16));
+    entriesButton->setObjectName("menuButton");
+    entriesButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    entriesButton->setPopupMode(QToolButton::InstantPopup);
+    entriesButton->setMenu(ui_entriesMenu);
+
+    ui_titleBar->insertLeft( entriesButton );
 
     QLabel *goToLabel = new QLabel("Go to:", this);
     ui_titleBar->insertLeft(goToLabel);
@@ -738,63 +679,6 @@ void ScheduleManagerWidget::setupUi()
     ui_endDateEdit->setCalendarPopup(true);
     ui_endDateEdit->setDate(QDate::currentDate());
     ui_titleBar->insertRight(ui_endDateEdit);
-
-    // Context menu
-    ui_contextMenu = new DuMenu(this);
-
-    ui_addEntryContextMenu = new RamObjectMenu(false, this);
-    ui_addEntryContextMenu->setTitle("Add entry");
-    ui_addEntryContextMenu->addCreateButton();
-    ui_addEntryContextMenu->actions().at(0)->setText("Generic entry");
-    ui_contextMenu->addMenu(ui_addEntryContextMenu);
-
-    ui_replaceEntryContextMenu = new RamObjectMenu(false, this);
-    ui_replaceEntryContextMenu->setTitle("Replace entries");
-    ui_replaceEntryContextMenu->addCreateButton();
-    ui_replaceEntryContextMenu->actions().at(0)->setText("Generic entry");
-    ui_contextMenu->addMenu(ui_replaceEntryContextMenu);
-
-    ui_clearAction = new QAction("Clear", this);
-    ui_clearAction->setIcon(DuIcon(":/icons/trash"));
-    ui_contextMenu->addAction(ui_clearAction);
-
-    ui_contextMenu->addSeparator();
-
-    ui_contextMenu->addAction(ui_commentAction);
-
-    ui_contextMenu->addSeparator();
-
-    ui_contextMenu->addAction(ui_copyComment);
-    ui_contextMenu->addAction(ui_cutComment);
-    ui_contextMenu->addAction(ui_pasteComment);
-
-    ui_contextMenu->addSeparator();
-
-    ui_actionCopyUuid = new QAction(tr("Copy UUID"));
-    ui_actionCopyUuid->setIcon(DuIcon(":/icons/code"));
-    ui_contextMenu->addAction(ui_actionCopyUuid);
-
-    // Comment context menu
-    ui_commentContextMenu = new DuMenu(this);
-    ui_commentContextMenu->addAction(ui_commentAction);
-
-    ui_colorAction = new QAction(DuIcon(":/icons/color"), "Color...", this);
-    ui_commentContextMenu->addAction(ui_colorAction);
-
-    ui_commentContextMenu->addSeparator();
-
-    ui_commentContextMenu->addAction(ui_copyComment);
-    ui_commentContextMenu->addAction(ui_cutComment);
-    ui_commentContextMenu->addAction(ui_pasteComment);
-
-    ui_commentContextMenu->addSeparator();
-
-    ui_removeCommentAction = new QAction(DuIcon(":/icons/remove"), "Remove", this);
-    ui_commentContextMenu->addAction(ui_removeCommentAction);
-
-    ui_commentContextMenu->addSeparator();
-
-    ui_commentContextMenu->addAction(ui_actionCopyUuid);
 }
 
 void ScheduleManagerWidget::connectEvents()
@@ -819,22 +703,20 @@ void ScheduleManagerWidget::connectEvents()
     connect(ui_saturday,SIGNAL(toggled(bool)),this,SLOT(showSaturday(bool)));
     connect(ui_sunday,SIGNAL(toggled(bool)),this,SLOT(showSunday(bool)));
     // users & rows
-    connect(ui_userMenu,SIGNAL(assignmentChanged(RamObject*,bool)), this, SLOT(filterUser(RamObject*,bool)));
+    connect(ui_rowsMenu,SIGNAL(assignmentChanged(RamObject*,bool)), this, SLOT(filterUser(RamObject*,bool)));
     connect(ui_meAction,SIGNAL(triggered()), this, SLOT(filterMe()));
     connect(ui_addRowAction, &QAction::triggered, this, &ScheduleManagerWidget::addRow);
     connect(ui_removeRowAction, &QAction::triggered, this, &ScheduleManagerWidget::removeSelectedRows);
     // batch steps
-    connect(ui_stepMenu, SIGNAL(createTriggered()), this, SLOT(addEntry()));
-    connect(ui_stepMenu, SIGNAL(assigned(RamObject*)), this, SLOT(addEntry(RamObject*)));
-    connect(ui_addEntryContextMenu, &RamObjectMenu::createTriggered,
+    connect(ui_addEntryMenu, &RamObjectMenu::createTriggered,
             this, [this] () { addEntry(); });
-    connect(ui_addEntryContextMenu, &RamObjectMenu::assigned, this, &ScheduleManagerWidget::addEntry);
-    connect(ui_replaceEntryContextMenu, &RamObjectMenu::createTriggered,
+    connect(ui_addEntryMenu, &RamObjectMenu::assigned, this, &ScheduleManagerWidget::addEntry);
+    connect(ui_replaceEntryMenu, &RamObjectMenu::createTriggered,
             this, [this] () {
         if (clearSelectedEntries())
             addEntry();
     });
-    connect(ui_replaceEntryContextMenu, &RamObjectMenu::assigned,
+    connect(ui_replaceEntryMenu, &RamObjectMenu::assigned,
             this, [this] (RamObject *o) {
         if (clearSelectedEntries())
             addEntry(o);
@@ -842,14 +724,11 @@ void ScheduleManagerWidget::connectEvents()
     connect(ui_clearAction, &QAction::triggered, this, &ScheduleManagerWidget::clearSelectedEntries);
     // context menu
     connect(ui_table, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(contextMenuRequested(QPoint)));
-    connect(ui_commentAction, &QAction::triggered, this, &ScheduleManagerWidget::comment);
-    connect(ui_colorAction, SIGNAL(triggered()), this, SLOT(color()));
     // comment actions
-    connect(ui_copyComment, SIGNAL(triggered()), this, SLOT(copyComment()));
-    connect(ui_cutComment, SIGNAL(triggered()), this, SLOT(cutComment()));
-    connect(ui_pasteComment, SIGNAL(triggered()), this, SLOT(pasteComment()));
+    connect(ui_copyEntries, &QAction::triggered, this, &ScheduleManagerWidget::copyEntries);
+    connect(ui_cutEntries, &QAction::triggered, this, &ScheduleManagerWidget::cutEntries);
+    connect(ui_pasteEntries, &QAction::triggered, this, &ScheduleManagerWidget::pasteEntries);
     // other actions
-    connect(ui_actionCopyUuid, SIGNAL(triggered()), this, SLOT(copyUuid()));
     // other
     connect(ui_titleBar, &DuQFTitleBar::closeRequested, this, &ScheduleManagerWidget::closeRequested);
     connect(Ramses::instance(), SIGNAL(currentProjectChanged(RamProject*)), this, SLOT(projectChanged(RamProject*)));
@@ -875,7 +754,7 @@ void ScheduleManagerWidget::loadSettings()
     // Details
     ui_actionShowDetails->setChecked( uSettings->value("showDetails", true).toBool() );
     // Users
-    ui_userMenu->restoreState(uSettings, "users");
+    ui_rowsMenu->restoreState(uSettings, "rows");
     uSettings->endGroup();
 }
 
@@ -888,11 +767,10 @@ void ScheduleManagerWidget::changeProject()
     {
         this->setEnabled(false);
         m_schedule->setObjectModel(nullptr, nullptr);
-        ui_userMenu->setObjectModel(nullptr);
+        ui_rowsMenu->setObjectModel(nullptr);
         ui_endDateEdit->setDate(QDate::currentDate());
-        ui_stepMenu->setObjectModel(nullptr);
-        ui_addEntryContextMenu->setObjectModel(nullptr);
-        ui_replaceEntryContextMenu->setObjectModel(nullptr);
+        ui_addEntryMenu->setObjectModel(nullptr);
+        ui_replaceEntryMenu->setObjectModel(nullptr);
         ui_timeRemaining->setText("");
         return;
     }
@@ -900,11 +778,10 @@ void ScheduleManagerWidget::changeProject()
 
     m_schedule->setObjectModel( m_project->scheduleRows(), m_project->scheduleEntries() );
 
-    ui_userMenu->setObjectModel( m_project->users() );
+    ui_rowsMenu->setObjectModel( m_project->scheduleRows() );
     ui_endDateEdit->setDate( QDate::currentDate().addDays(30) );
-    ui_stepMenu->setObjectModel( m_project->steps() );
-    ui_addEntryContextMenu->setObjectModel(m_project->steps());
-    ui_replaceEntryContextMenu->setObjectModel(m_project->steps());
+    ui_addEntryMenu->setObjectModel(m_project->steps());
+    ui_replaceEntryMenu->setObjectModel(m_project->steps());
 
     //ui_table->resizeColumnsToContents();
     ui_table->resizeRowsToContents();

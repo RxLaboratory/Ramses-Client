@@ -38,8 +38,8 @@ void RamObjectComboBox::setObjectModel(QAbstractItemModel *model)
     }
     else
     {
-        m_objects->sort(0);
         m_objects->setSourceModel( RamAbstractObjectModel::emptyModel() );
+        m_objects->sort(0);
     }
 }
 

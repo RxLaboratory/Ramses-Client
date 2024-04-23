@@ -30,7 +30,7 @@ protected:
     void hideEvent(QHideEvent *event) override;
 
 private slots:
-    void checkUserFilter();
+    void checkRowsFilter();
     void usersInserted(const QModelIndex &parent, int first, int last);
 
     void projectChanged(RamProject *project);
@@ -60,17 +60,11 @@ private slots:
     void goToNextMonth();
     void goToPreviousMonth();
 
-    void copyComment();
-    void cutComment();
-    void pasteComment();
-
-    void copyUuid();
+    void copyEntries();
+    void cutEntries();
+    void pasteEntries();
 
     void contextMenuRequested(QPoint p);
-    void comment();
-    void removeCommment();
-
-    void color();
 
 private:
     void setupUi();
@@ -80,17 +74,19 @@ private:
     void changeProject();
     bool m_projectChanged = false;
 
+    QModelIndexList m_entryClipBoard;
+    Qt::DropAction m_clipboardAction = Qt::CopyAction;
+
     DuQFTitleBar *ui_titleBar;
     QAction *ui_actionShowDetails;
     RamScheduleTableView *ui_table;
     RamScheduleRowHeaderView *ui_rowHeader;
     QDateEdit *ui_startDateEdit;
     QDateEdit *ui_endDateEdit;
-    RamObjectMenu *ui_stepMenu;
-    RamObjectMenu *ui_addEntryContextMenu;
-    RamObjectMenu *ui_replaceEntryContextMenu;
+    RamObjectMenu *ui_addEntryMenu;
+    RamObjectMenu *ui_replaceEntryMenu;
     QToolButton *ui_rowsButton;
-    RamObjectMenu *ui_userMenu;
+    RamObjectMenu *ui_rowsMenu;
 
     QAction *ui_addRowAction;
     QAction *ui_removeRowAction;
@@ -105,14 +101,9 @@ private:
     QAction *ui_saturday;
     QAction *ui_sunday;
 
-    QAction *ui_copyComment;
-    QAction *ui_cutComment;
-    QAction *ui_pasteComment;
-    QAction *ui_commentAction;
-
-    QAction *ui_colorAction;
-    QAction *ui_removeCommentAction;
-    QAction *ui_actionCopyUuid;
+    QAction *ui_copyEntries;
+    QAction *ui_cutEntries;
+    QAction *ui_pasteEntries;
 
     QToolButton *ui_today;
     QToolButton *ui_deadline;
@@ -120,9 +111,7 @@ private:
     QToolButton *ui_prevMonth;
     QDateEdit *ui_goTo;
     QLabel *ui_timeRemaining;
-    DuMenu *ui_contextMenu;
-
-    DuMenu *ui_commentContextMenu;
+    DuMenu *ui_entriesMenu;
 
     RamScheduleTableModel *m_schedule;
     RamScheduleFilterProxyModel *m_scheduleFilter;

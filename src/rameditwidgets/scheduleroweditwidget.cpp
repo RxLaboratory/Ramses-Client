@@ -38,7 +38,7 @@ void ScheduleRowEditWidget::reInit(RamObject *o)
         ui_nameEdit->setText(m_row->getData("name").toString());
     }
     else {
-        ui_userBox->setObjectModel(nullptr);
+        ui_userBox->setObjectModel(nullptr, "users" );
         ui_userBox->setObject("");
         this->setEnabled(false);
     }
