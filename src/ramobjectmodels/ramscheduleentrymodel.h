@@ -34,7 +34,7 @@ signals:
     void countChanged();
 
 public slots:
-    void freezeEstimation(bool frozen = true);
+    void suspendEstimations(bool frozen = true);
 
 private slots:
     // Counts

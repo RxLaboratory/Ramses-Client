@@ -47,7 +47,7 @@ public:
     QSet<RamStatus*> getStepStatus(QString stepUuid) const;
 
     // Estimations
-    void setEstimationCacheSuspended(bool s);
+    void suspendEstimations(bool s);
     float stepEstimation(const QString &stepUuid, const QString &userUuid = "") const;
     int stepCompletionRatio(const QString &stepUuid, const QString &userUuid = "") const;
 

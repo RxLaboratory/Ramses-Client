@@ -78,6 +78,8 @@ void ShotsCreationDialog::create()
         return;
     }
 
+    m_project->suspendEstimations(true);
+
     ui_cancelButton->setEnabled(false);
     ui_createButton->setEnabled(false);
     ui_progressBar->show();
@@ -97,6 +99,8 @@ void ShotsCreationDialog::create()
     ui_progressBar->hide();
     ui_cancelButton->setEnabled(true);
     ui_createButton->setEnabled(true);
+
+    m_project->suspendEstimations(false);
 
     accept();
 }

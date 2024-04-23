@@ -391,6 +391,8 @@ void ItemManagerWidget::assignUser(RamObject *user)
 
     QVector<RamStatus*> status = beginEditSelectedStatus();
 
+    m_project->suspendEstimations(true);
+
     RamUser *currentUser = Ramses::instance()->currentUser();
 
     for (int i = 0; i < status.count(); i++)
@@ -398,6 +400,8 @@ void ItemManagerWidget::assignUser(RamObject *user)
         status.at(i)->assignUser(user);
         status.at(i)->setModifiedBy(currentUser);
     }
+
+    m_project->suspendEstimations(false);
 }
 
 void ItemManagerWidget::changeState(RamObject *stt)
@@ -406,6 +410,8 @@ void ItemManagerWidget::changeState(RamObject *stt)
 
     QVector<RamStatus*> status = beginEditSelectedStatus();
 
+    m_project->suspendEstimations(true);
+
     RamUser *currentUser = Ramses::instance()->currentUser();
 
     for (int i = 0; i < status.count(); i++)
@@ -413,6 +419,8 @@ void ItemManagerWidget::changeState(RamObject *stt)
         status.at(i)->setState(RamState::c( stt ));
         status.at(i)->setModifiedBy(currentUser);
     }
+
+    m_project->suspendEstimations(false);
 }
 
 void ItemManagerWidget::setVeryEasy()
@@ -444,6 +452,8 @@ void ItemManagerWidget::setDiffculty(RamStatus::Difficulty difficulty)
 {
     QVector<RamStatus*> status = beginEditSelectedStatus();
 
+    m_project->suspendEstimations(true);
+
     RamUser *currentUser = Ramses::instance()->currentUser();
 
     for (int i = 0; i < status.count(); i++)
@@ -452,6 +462,7 @@ void ItemManagerWidget::setDiffculty(RamStatus::Difficulty difficulty)
         status.at(i)->setModifiedBy(currentUser);
     }
 
+    m_project->suspendEstimations(false);
 }
 
 void ItemManagerWidget::setCompletion()
@@ -460,6 +471,8 @@ void ItemManagerWidget::setCompletion()
     int completion = action->data().toInt();
     QVector<RamStatus*> status = beginEditSelectedStatus();
 
+    m_project->suspendEstimations(true);
+
     RamUser *currentUser = Ramses::instance()->currentUser();
 
     for (int i = 0; i < status.count(); i++)
@@ -467,6 +480,8 @@ void ItemManagerWidget::setCompletion()
         status.at(i)->setCompletionRatio( completion );
         status.at(i)->setModifiedBy(currentUser);
     }
+
+    m_project->suspendEstimations(false);
 }
 
 void ItemManagerWidget::setPriority()
@@ -475,6 +490,8 @@ void ItemManagerWidget::setPriority()
     auto priority = static_cast<RamStatus::Priority>( action->data().toInt() );
     QVector<RamStatus*> status = beginEditSelectedStatus();
 
+    m_project->suspendEstimations(true);
+
     RamUser *currentUser = Ramses::instance()->currentUser();
 
     for (int i = 0; i < status.count(); i++)
@@ -482,6 +499,8 @@ void ItemManagerWidget::setPriority()
         status.at(i)->setPriority( priority );
         status.at(i)->setModifiedBy(currentUser);
     }
+
+    m_project->suspendEstimations(false);
 }
 
 void ItemManagerWidget::copyComment()
@@ -520,6 +539,8 @@ void ItemManagerWidget::pasteComment()
 
     QVector<RamStatus*> status = beginEditSelectedStatus();
 
+    m_project->suspendEstimations(true);
+
     RamUser *currentUser = Ramses::instance()->currentUser();
 
     for (int i = 0; i < status.count(); i++)
@@ -527,6 +548,8 @@ void ItemManagerWidget::pasteComment()
         status.at(i)->setComment( comment );
         status.at(i)->setModifiedBy(currentUser);
     }
+
+    m_project->suspendEstimations(false, false);
 }
 
 void ItemManagerWidget::createItem()
@@ -588,6 +611,8 @@ void ItemManagerWidget::deleteItems()
 
     if ( confirm != QMessageBox::Yes) return;
 
+    m_project->suspendEstimations(true);
+
     for (int i = 0; i < selection.count(); i++)
     {
         QString objUuid = selection.at(i).data(RamObject::UUID).toString();
@@ -605,6 +630,8 @@ void ItemManagerWidget::deleteItems()
             if (o) o->remove();
         }
     }
+
+    m_project->suspendEstimations(false);
 }
 
 void ItemManagerWidget::createMultiple()

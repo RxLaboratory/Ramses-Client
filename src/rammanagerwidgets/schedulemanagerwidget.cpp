@@ -151,7 +151,7 @@ void ScheduleManagerWidget::addEntry(RamObject *stepObj)
             return;
     }
 
-    m_project->freezeEstimation(true);
+    m_project->suspendEstimations(true);
 
     ProgressManager *pm = ProgressManager::instance();
     pm->setTitle(tr("Creating schedule entries"));
@@ -183,7 +183,7 @@ void ScheduleManagerWidget::addEntry(RamObject *stepObj)
     pm->finish();
     this->update();
 
-    m_project->freezeEstimation(false);
+    m_project->suspendEstimations(false);
 }
 
 bool ScheduleManagerWidget::clearSelectedEntries()
@@ -212,7 +212,7 @@ bool ScheduleManagerWidget::clearSelectedEntries()
         ) !=  QMessageBox::Yes)
         return false;
 
-    m_project->freezeEstimation(true);
+    m_project->suspendEstimations(true);
 
     for (const auto &index: selection) {
         const QVector<RamScheduleEntry*> entries = RamScheduleEntry::get(index);
@@ -221,7 +221,7 @@ bool ScheduleManagerWidget::clearSelectedEntries()
         }
     }
 
-    m_project->freezeEstimation(false);
+    m_project->suspendEstimations(false);
 
     return true;
 }
@@ -431,7 +431,7 @@ void ScheduleManagerWidget::pasteEntries()
     int rowOffset = newIndex.row() - oldIndex.row();
     int dayOffset = newIndex.column() - oldIndex.column();
 
-    m_project->freezeEstimation(true);
+    m_project->suspendEstimations(true);
 
     for (const auto &index: m_entryClipBoard) {
 
@@ -469,7 +469,7 @@ void ScheduleManagerWidget::pasteEntries()
         }
     }
 
-    m_project->freezeEstimation(false);
+    m_project->suspendEstimations(false);
 
     this->update();
 }

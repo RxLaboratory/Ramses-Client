@@ -23,9 +23,9 @@ RamStatusTableModel::RamStatusTableModel(DBTableModel *steps, DBTableModel *item
     connect(StateManager::i(), &StateManager::stateChanged,
             this, [this] (StateManager::State state) {
         if (state == StateManager::Idle)
-            this->setEstimationCacheSuspended(false);
+            this->suspendEstimations(false);
         else
-            this->setEstimationCacheSuspended(true);
+            this->suspendEstimations(true);
     });
 }
 
@@ -223,7 +223,7 @@ QSet<RamStatus *> RamStatusTableModel::getStepStatus(QString stepUuid) const
     return status;
 }
 
-void RamStatusTableModel::setEstimationCacheSuspended(bool s)
+void RamStatusTableModel::suspendEstimations(bool s)
 {
     m_cacheSuspended = s;
     if (!s)

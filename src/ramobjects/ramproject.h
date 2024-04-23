@@ -128,7 +128,7 @@ public slots:
     void updatePath();
     virtual void edit(bool show = true) override;
     void computeEstimation();
-    void freezeEstimation(bool frozen = true, bool recompute = true);
+    void suspendEstimations(bool frozen = true, bool recompute = true);
 
 protected:
     static QHash<QString, RamProject*> m_existingObjects;

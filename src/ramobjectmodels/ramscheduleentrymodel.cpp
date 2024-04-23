@@ -20,7 +20,7 @@ RamScheduleEntryModel::RamScheduleEntryModel(QObject *parent)
 
     connect( StateManager::i(), &StateManager::stateChanged,
             this, [this] (StateManager::State st) {
-        freezeEstimation(st != StateManager::Idle);
+        suspendEstimations(st != StateManager::Idle);
     });
 
     countAll();
@@ -42,7 +42,7 @@ UserAssignedCount RamScheduleEntryModel::userCount(const QString &userUuid)
     return m_userCounts.value(userUuid);
 }
 
-void RamScheduleEntryModel::freezeEstimation(bool frozen)
+void RamScheduleEntryModel::suspendEstimations(bool frozen)
 {
     m_estimationFrozen = frozen;
     if (!frozen && m_estimationNeedsUpdate) this->countAll();

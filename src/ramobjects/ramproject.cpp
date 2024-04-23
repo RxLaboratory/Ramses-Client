@@ -532,10 +532,12 @@ void RamProject::computeEstimation()
     m_computingEstimation = false;
 }
 
-void RamProject::freezeEstimation(bool frozen, bool recompute)
+void RamProject::suspendEstimations(bool frozen, bool recompute)
 {
     m_estimationFrozen = frozen;
-    m_scheduleEntries->freezeEstimation(frozen);
+    m_scheduleEntries->suspendEstimations(frozen);
+    m_assetStatusTable->suspendEstimations(frozen);
+    m_shotStatusTable->suspendEstimations(frozen);
     if (!frozen && recompute) this->computeEstimation();
 }
 
