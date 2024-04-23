@@ -12,10 +12,13 @@ RamScheduleRowHeaderView::RamScheduleRowHeaderView(QWidget *parent):
 
 void RamScheduleRowHeaderView::paintSection(QPainter *painter, const QRect &rect, int logicalIndex) const
 {
+    if (!painter) return;
+    painter->setRenderHint(QPainter::Antialiasing);
+
     bool editor = canEdit();
 
     // The background
-    painter->fillRect(rect, m_dark);
+    painter->fillRect(rect.adjusted(0,1,0,-1), m_dark);
 
     // Get the object
     auto scheduleRow = getScheduleRow(logicalIndex);
@@ -139,7 +142,7 @@ QRect RamScheduleRowHeaderView::editButtonRect(int section) const
 {
     int sectionHeight = sectionSize( section );
 
-    int x = sectionSizeFromContents(section).width() - 26;
+    int x = this->size().width() - 26;
     int y = sectionViewportPosition( section ) + sectionHeight/2 - 10;
 
     return QRect(x,y,20,20);
