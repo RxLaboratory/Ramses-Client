@@ -12,7 +12,7 @@ UserEditWidget::UserEditWidget(RamUser *user, QWidget *parent) :
 
     setObject(user);
 
-     m_dontRename << "Ramses" << "Removed" << "Duduf";
+    m_dontRename << "Ramses" << "Removed" << "Duduf";
 }
 
 UserEditWidget::UserEditWidget(QWidget *parent) :

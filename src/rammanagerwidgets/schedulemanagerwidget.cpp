@@ -8,6 +8,7 @@
 #include "ramses.h"
 #include "progressmanager.h"
 #include "ramstep.h"
+#include "scheduleentrycreationdialog.h"
 
 ScheduleManagerWidget::ScheduleManagerWidget(QWidget *parent) : QWidget(parent)
 {
@@ -128,17 +129,37 @@ void ScheduleManagerWidget::addEntry(RamObject *stepObj)
 {
     if (!m_project) return;
 
+    QModelIndexList selection = ui_table->selectionModel()->selectedIndexes();
+    int count = selection.count();
+
+    if (count == 0)
+        return;
+
+    QString name;
+    QString comment;
+
+    if (stepObj) {
+        name = stepObj->shortName();
+    }
+    else {
+        ScheduleEntryCreationDialog dialog(this);
+        if (dialog.exec()) {
+            name = dialog.title();
+            comment = dialog.comment();
+        }
+        if (name == "" && comment == "")
+            return;
+    }
+
     m_project->freezeEstimation(true);
 
     ProgressManager *pm = ProgressManager::instance();
     pm->setTitle(tr("Creating schedule entries"));
 
-    QModelIndexList selection = ui_table->selectionModel()->selectedIndexes();
-
-    pm->setMaximum(selection.count());
+    pm->setMaximum(count);
     pm->start();
 
-    for (int i = 0; i < selection.count(); i++)
+    for (int i = 0; i < count; i++)
     {
         pm->increment();
         const QModelIndex &index = selection.at(i);
@@ -150,17 +171,13 @@ void ScheduleManagerWidget::addEntry(RamObject *stepObj)
         if (!scheduleRow)
             continue;
 
-        QString name;
-        if (stepObj)
-            name = stepObj->shortName();
-        else
-            name = tr("Entry");
-
         QDate date = index.data(RamObject::Date).toDate();
 
         auto entry = new RamScheduleEntry(name, date, scheduleRow);
         if (stepObj)
             entry->setStep(stepObj);
+        else
+            entry->setComment(comment);
     }
 
     pm->finish();
@@ -514,21 +531,15 @@ void ScheduleManagerWidget::setupUi()
 
     // Title bar
 
-    DuMenu *viewMenu = new DuMenu(this);
-
-    ui_actionShowDetails = new QAction("Show details", this);
+    ui_actionShowDetails = new QAction(" " + tr("Details"), this);
+    ui_actionShowDetails->setIcon(DuIcon(":/icons/show"));
     ui_actionShowDetails->setCheckable(true);
-    viewMenu->addAction(ui_actionShowDetails);
 
-    QToolButton *viewButton = new QToolButton(this);
-    viewButton->setText(" View");
-    viewButton->setIcon(DuIcon(":/icons/show"));
-    viewButton->setMenu(viewMenu);
-    viewButton->setIconSize(QSize(16,16));
-    viewButton->setObjectName("menuButton");
-    viewButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-    viewButton->setPopupMode(QToolButton::InstantPopup);
-    ui_titleBar->insertLeft(viewButton);
+    QToolButton *detailsButton = new QToolButton(this);
+    detailsButton->setDefaultAction(ui_actionShowDetails);
+    detailsButton->setIconSize(QSize(16,16));
+    detailsButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    ui_titleBar->insertLeft(detailsButton);
 
     ui_userMenu = new RamObjectMenu(true, this);
 

@@ -3,37 +3,34 @@
 
 #include <QPointer>
 
+#include "duqf-widgets/dulineedit.h"
+#include "duqf-widgets/duqfcolorselector.h"
 #include "duqf-widgets/duqftextedit.h"
-#include "duqf-widgets/duscrollarea.h"
 #include "ramobjectcombobox.h"
-#include "ramobjectview.h"
-#include "ramproject.h"
 #include "ramuser.h"
 #include "ramscheduleentry.h"
+#include "objecteditwidget.h"
 
-class ScheduleEntryEditWidget : public DuScrollArea
+class ScheduleEntryEditWidget : public ObjectEditWidget
 {
     Q_OBJECT
 public:
-    ScheduleEntryEditWidget(RamProject *project, RamUser *user, const QDateTime &date, RamScheduleEntry *entry = nullptr, QWidget *parent = nullptr);
+    ScheduleEntryEditWidget(RamScheduleEntry *entry, QWidget *parent = nullptr);
 
-private slots:
-    void setStep(RamObject *stepObj);
-    void setComment();
+protected:
+    virtual void reInit(RamObject *o) override;
 
 private:
     void setupUi();
     void connectEvents();
 
-    QLabel *ui_userLabel;
-    QLabel *ui_dateLabel;
+    DuLineEdit *ui_titleEdit;
+    DuQFColorSelector *ui_colorSelector;
     RamObjectComboBox *ui_stepBox;
+    QDateEdit *ui_dateEdit;
+    RamObjectComboBox *ui_rowBox;
     DuQFTextEdit *ui_commentEdit;
-    RamObjectView *ui_dueTasksList;
 
-    QPointer<RamUser> m_user;
-    QPointer<RamProject> m_project;
-    QDateTime m_date;
     QPointer<RamScheduleEntry> m_entry;
 };
 

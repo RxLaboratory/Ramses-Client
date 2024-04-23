@@ -27,6 +27,7 @@ public:
 
     RamObject *object() const;
     void hideName(bool hide = true);
+    void hideShortName(bool hide = true);
 
 public slots:
     void setObject(RamObject *object);

@@ -25,6 +25,7 @@ public:
 
 protected:
     int drawMarkdown(QPainter *painter, QRect rect, const QString &md) const;
+    QTextDocument *markDownTextDocument(const QString &md, const QFont &defaultFont) const;
 
 private:
     // Style
@@ -34,11 +35,9 @@ private:
     QColor m_lessLight;
     QColor m_light;
     QFont m_textFont;
-    QFont m_detailsFont;
-    int m_padding;
 
     // Events
-    QModelIndex m_indexPressed;
+    RamScheduleEntry *m_pressedEntry = nullptr;
 
     bool m_details = false;
 
@@ -52,6 +51,8 @@ private:
     QDate getDate(QModelIndex index) const;
     QSet<RamStatus*> getDueTasks(QModelIndex index) const;
     QColor adjustBackgroundColor(const QColor &color, const QModelIndex &index, const QStyleOptionViewItem &option) const;
+    RamScheduleEntry *mouseEventEntry(QMouseEvent *e, const QModelIndex &index, const QStyleOptionViewItem &option) const;
+    QSize entrySize(RamScheduleEntry *entry) const;
 };
 
 #endif // RAMSCHEDULEDELEGATE_H

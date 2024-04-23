@@ -15,9 +15,6 @@ RamScheduleDelegate::RamScheduleDelegate(QObject *parent) : QStyledItemDelegate(
     m_light = QColor(227,227,227);
     m_textFont = qApp->font();
     m_textFont.setPixelSize( 12 );
-    m_detailsFont = m_textFont;
-    m_detailsFont.setItalic(true);
-    m_padding = 10;
 }
 
 void RamScheduleDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
@@ -32,98 +29,119 @@ void RamScheduleDelegate::paint(QPainter *painter, const QStyleOptionViewItem &o
     QRect bgRect = rect.adjusted(0,1,-3,-1);
 
     // Get entries
-    const QVariantList ptrList = index.data(RamObject::Pointer).toList();
+    QVector<RamScheduleEntry*> entries = RamScheduleEntry::get(index);
 
-    QVector<RamScheduleEntry*> entries;
-    for (const auto &i: ptrList) {
-        qintptr iptr = i.toULongLong();
-        entries << reinterpret_cast<RamScheduleEntry*>(iptr);
-    }
+    // Get Date
+    QDate date = index.model()->headerData(index.column(), Qt::Horizontal, RamObject::Date).toDate();
 
-    // Empty cell
+    // Empty cell background
     if (entries.isEmpty()) {
-        QBrush b = index.data(Qt::BackgroundRole).value<QBrush>();
-        QColor c = adjustBackgroundColor( b.color(), index, option );
+        QColor c = m_dark;
+
+        // Alternate week colors
+        if (date.weekNumber() % 2 == 0)
+            c = c.darker(120);
+
+        c = adjustBackgroundColor( c, index, option );
         painter->fillRect(bgRect, QBrush(c));
-        return;
     }
+    else {
+        // Sub rects for each entry
+        int y = 0;
+        qreal r = qreal(option.rect.height()) / qreal(sizeHint(option, index).height());
 
-    // Sub rects for each entry
-    int h = bgRect.height() / entries.count();
-    bgRect.setHeight( h );
+        for (auto entry: qAsConst(entries)) {
 
-    for (auto entry: qAsConst(entries)) {
+            bgRect.setHeight(
+                entrySize(entry).height() * r
+                );
+            // Round the last rect
+            if (bgRect.bottom() >= option.rect.bottom()-2)
+                bgRect.setBottom(option.rect.bottom()-1);
 
-        QColor bgColor = adjustBackgroundColor( entry->color(), index, option );
-        painter->fillRect(bgRect, QBrush(bgColor));
+            QColor bgColor = adjustBackgroundColor( entry->color(), index, option );
+            if (entry == m_pressedEntry)
+                bgColor = bgColor.darker(150);
+            painter->fillRect(bgRect, QBrush(bgColor));
 
-        // Border if this is a deadline for some tasks
-        const QSet<RamStatus*> tasks = getDueTasks(index);
-        if (!tasks.isEmpty()) {
-            QPen p(QColor(227,227,227));
-            p.setWidth(2);
-            painter->setPen(p);
-            painter->drawRect(bgRect);
-        }
+            // Text color
+            QColor textColor;
+            if (bgColor.lightness() > 80) textColor = m_abyss;
+            else textColor = m_lessLight;
+            QPen textPen(textColor);
 
-        // Text color
-        QColor textColor;
-        if (bgColor.lightness() > 80) textColor = m_abyss;
-        else textColor = m_lessLight;
-        QPen textPen(textColor);
+            // Too Small !
+            if (bgRect.height() < 26 )
+            {
+                drawMore(painter, bgRect, textPen);
+                continue;
+            }
 
-        // Too Small !
-        if (bgRect.height() < 26 )
-        {
-            drawMore(painter, bgRect, textPen);
-            return;
-        }
-
-        // icon
-        const QRect iconRect( bgRect.left() + m_padding, bgRect.top() +7 , 12, 12 );
-        // text
-        const QRect textRect( iconRect.right() + 5, iconRect.top()-5, bgRect.width() - 37, iconRect.height()+5 );
-
-        // icon
-        QPixmap icon = index.data(Qt::DecorationRole).value<QPixmap>();
-        if (!icon.isNull())
-        {
-            // icon color
-            QColor iconColor;
-            if (bgColor.lightness() > 80) iconColor = m_dark;
-            else iconColor = m_medium;
-            QImage iconImage(12,12, QImage::Format_ARGB32);
-            iconImage.fill( iconColor );
-            QPainter iconPainter(&iconImage);
-            iconPainter.setCompositionMode(QPainter::CompositionMode_DestinationIn);
-            iconPainter.drawPixmap( QRect(0,0,12,12), icon );
-            painter->drawImage(iconRect, iconImage);
-        }
-
-        // Title
-        painter->setPen( textPen );
-        painter->setFont( m_textFont );
-        painter->drawText( textRect, Qt::AlignCenter | Qt::AlignHCenter, index.data(Qt::DisplayRole).toString());
-
-        // Comment
-        if (bgRect.height() > 35)
-        {
-            QRect commentRect( iconRect.left(), bgRect.top() + 30, bgRect.width() - m_padding*2, bgRect.height() - 30);
-            QString comment = index.data(RamObject::Comment).toString();
-            // Add the due tasks
-            if (!tasks.isEmpty()) {
-                comment += "\n\n#### Due tasks\n";
-                for (const auto task: tasks) {
-                    comment += "\n- " + task->shortName();
+            // icon
+            QString iconName = entry->iconName();
+            if (iconName != "") {
+                QRect iconRect( bgRect.left() + 10, bgRect.center().y() - 6 , 12, 12 );
+                if (m_details)
+                    iconRect.moveTop(bgRect.top() + 10); // stick on top
+                DuIcon icon(iconName);
+                if (!icon.isNull())
+                {
+                    // icon color
+                    QColor iconColor;
+                    if (bgColor.lightness() > 80) iconColor = m_dark;
+                    else iconColor = m_medium;
+                    QImage iconImage(12,12, QImage::Format_ARGB32);
+                    iconImage.fill( iconColor );
+                    QPainter iconPainter(&iconImage);
+                    iconPainter.setCompositionMode(QPainter::CompositionMode_DestinationIn);
+                    iconPainter.drawPixmap( QRect(0,0,12,12), icon.pixmap(12,12) );
+                    painter->drawImage(iconRect, iconImage);
                 }
             }
-            int textHeight = drawMarkdown(painter, commentRect, comment);
-            if (commentRect.height() < textHeight && comment != "") drawMore(painter, bgRect, textPen);
-        }
 
-        // Next
-        bgRect.moveTop(bgRect.top() + h);
+            // Title
+            // text
+            QRect textRect( bgRect.left() + 22, bgRect.top(), bgRect.width() - 22, bgRect.height() );
+            if (m_details)
+                textRect.setHeight(30); // stick on top
+            painter->setPen( textPen );
+            painter->setFont( m_textFont );
+            painter->drawText( textRect, Qt::AlignCenter, entry->name());
+
+            // Details
+            if (bgRect.height() > 35 && m_details)
+            {
+                QRect detailsRect( bgRect.left() + 22, textRect.bottom() + 10, bgRect.width() - 32, bgRect.height() - textRect.height() - 10);
+                QString details = entry->details();
+
+                int textHeight = drawMarkdown(painter, detailsRect, details);
+
+                if (detailsRect.height() < textHeight && details != "")
+                    drawMore(painter, bgRect, textPen);
+            }
+
+            // Next
+            bgRect.moveTop(bgRect.top() + bgRect.height());
+        }
     }
+
+    // Border if this is a deadline for some tasks
+    const QSet<RamStatus*> tasks = getDueTasks(index);
+    if (!tasks.isEmpty()) {
+        QPen p(QColor(227,227,227));
+        p.setWidth(2);
+        painter->setPen(p);
+        painter->drawRect(bgRect);
+
+        // TODO Add the due tasks
+        /*if (!tasks.isEmpty()) {
+            comment += "\n\n#### Due tasks\n";
+            for (const auto task: tasks) {
+                comment += "\n- " + task->shortName();
+            }
+        }*/
+    }
+
 }
 
 QSize RamScheduleDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
@@ -131,82 +149,74 @@ QSize RamScheduleDelegate::sizeHint(const QStyleOptionViewItem &option, const QM
     Q_UNUSED(option)
 
     // Get entries
-    const QVariantList ptrList = index.data(RamObject::Pointer).toList();
+    const QVector<RamScheduleEntry*> entries = RamScheduleEntry::get(index);
 
     // None
-    if (ptrList.isEmpty())
+    if (entries.isEmpty())
         return QSize(40,40);
 
-    int h = 0;
-    int w = 40;
+    int height = 0;
+    int width = 40;
 
-    for (const auto &i: ptrList) {
-        auto entry = reinterpret_cast<RamScheduleEntry*>(i.toULongLong());
-        QSize s;
-        if (m_details)
-            s = entry->roleData(RamObject::DetailedSizeHint).toSize();
-        else
-            s = entry->roleData(RamObject::SizeHint).toSize();
+    for (const auto entry: entries) {
+        QSize s = entrySize(entry);
 
-        h += s.height();
-        w = std::max(w, s.width());
+        width = std::max(width, s.width());
+        height += s.height();
     }
 
-    return QSize(w,h);
+    // TODO add due tasks
+
+    return QSize(width,height);
 }
 
 bool RamScheduleDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index)
 {
-    /*
     // Return asap if we don't manage the event
     QEvent::Type type = event->type();
     if (type != QEvent::MouseButtonPress && type != QEvent::MouseButtonRelease)
         return QStyledItemDelegate::editorEvent( event, model, option, index );
 
+    // Check if the current user can edit the entry
     RamUser *u = Ramses::instance()->currentUser();
-    if (!u) return QStyledItemDelegate::editorEvent( event, model, option, index );
-    if (u->role() < RamUser::Lead) return QStyledItemDelegate::editorEvent( event, model, option, index );
+    if (!u)
+        return QStyledItemDelegate::editorEvent( event, model, option, index );
+    if (u->role() < RamUser::Lead)
+        return QStyledItemDelegate::editorEvent( event, model, option, index );
 
+    // On press, keep the pressed entry
     if (type == QEvent::MouseButtonPress)
     {
+        m_pressedEntry = nullptr;
         QMouseEvent *e = static_cast< QMouseEvent * >( event );
-        if (e->button() != Qt::LeftButton) return QStyledItemDelegate::editorEvent( event, model, option, index );
-        if (e->modifiers() != Qt::NoModifier) return QStyledItemDelegate::editorEvent( event, model, option, index );
-        m_indexPressed = index;
+
+        if (e->button() != Qt::LeftButton)
+            return QStyledItemDelegate::editorEvent( event, model, option, index );
+        if (e->modifiers() != Qt::NoModifier)
+            return QStyledItemDelegate::editorEvent( event, model, option, index );
+
+        m_pressedEntry = mouseEventEntry(e, index, option);
+
         return QStyledItemDelegate::editorEvent( event, model, option, index );
     }
 
-    if (type == QEvent::MouseButtonRelease)
+    // Show the editor
+    if (type == QEvent::MouseButtonRelease && m_pressedEntry)
     {
         QMouseEvent *e = static_cast< QMouseEvent * >( event );
 
         if (e->button() != Qt::LeftButton)
             return QStyledItemDelegate::editorEvent( event, model, option, index );
 
-        if (m_indexPressed == index && m_indexPressed.isValid())
+        if (m_pressedEntry == mouseEventEntry(e, index, option))
         {
-            if (m_currentEditor)
-                m_currentEditor->deleteLater();
-
-            RamProject *proj = Ramses::instance()->currentProject();
-            if (proj)
-            {
-                auto mw = qobject_cast<MainWindow*>(GuiUtils::appMainWindow());
-                QDate date = getDate(m_indexPressed);
-
-                // Get the user and date
-                RamUser *user = getUser(m_indexPressed);
-                if (!user)
-                    return false;
-                RamScheduleEntry *entry = getEntry(m_indexPressed);
-
-                // Create and show an editor
-                //m_currentEditor = new ScheduleEntryEditWidget(proj, user, date, entry);
-                //mw->setPropertiesDockWidget(m_currentEditor, tr("Schedule Entry")); // TODO Icon
-            }
+            // Edit entry
+            m_pressedEntry->edit();
         }
+
+        m_pressedEntry = nullptr;
         return true;
-    }*/
+    }
 
     return QStyledItemDelegate::editorEvent( event, model, option, index );
 }
@@ -278,8 +288,10 @@ QSet<RamStatus *> RamScheduleDelegate::getDueTasks(QModelIndex index) const
 QColor RamScheduleDelegate::adjustBackgroundColor(const QColor &color, const QModelIndex &index, const QStyleOptionViewItem &option) const
 {
     QColor c = color;
+
     if (option.state & QStyle::State_Selected) c = c.darker();
     else if (option.state & QStyle::State_MouseOver) c = c.lighter();
+
     // before today -> a bit darker
     QDate date = index.data(RamObject::Date).value<QDate>();
     if (date < QDate::currentDate()) c = c.darker(175);
@@ -287,19 +299,57 @@ QColor RamScheduleDelegate::adjustBackgroundColor(const QColor &color, const QMo
     return c;
 }
 
+RamScheduleEntry *RamScheduleDelegate::mouseEventEntry(QMouseEvent *e, const QModelIndex &index, const QStyleOptionViewItem &option) const
+{
+    const QVector<RamScheduleEntry*> entries = RamScheduleEntry::get(index);
+    int count = entries.count();
+    if (count == 0)
+        return nullptr;
+
+    // Check which entry was clicked
+    int y = e->pos().y() - option.rect.top();
+    qreal r = qreal(option.rect.height()) / qreal(sizeHint(option, index).height());
+    int h = 0;
+    int i = 0;
+
+    for (auto entry: entries) {
+        h += entrySize(entry).height() * r;
+        if (y < h)
+            break;
+        ++i;
+    }
+
+    if (i >= 0 && i < count)
+        return entries.at(i);
+
+    return nullptr;
+}
+
+QSize RamScheduleDelegate::entrySize(RamScheduleEntry *entry) const
+{
+    // At Least a title
+    QFontMetrics titleFM(m_textFont);
+    int h = 30;
+    int w = 40 + titleFM.horizontalAdvance(
+                entry->name()
+                );
+
+    QString details = entry->details();
+    if (m_details && details != "") {
+        auto detailsDoc = markDownTextDocument(details, m_textFont);
+        w = std::max(w, int(detailsDoc->size().width() + 40));
+        h += detailsDoc->size().height() + 20;
+    }
+
+    return QSize(w, h);
+}
+
 int RamScheduleDelegate::drawMarkdown(QPainter *painter, QRect rect, const QString &md) const
 {
     painter->save();
-    painter->setFont( m_textFont );
 
-    QTextDocument td;
-    td.setIndentWidth(20);
-#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
-    td.setPlainText(md);
-#else
-    td.setMarkdown(md);
-#endif
-    td.setTextWidth(rect.width());
+    auto td = markDownTextDocument(md, m_textFont);
+    td->setTextWidth(rect.width());
 
     QRect clipRect(rect);
     clipRect.moveTo(0,0);
@@ -309,9 +359,26 @@ int RamScheduleDelegate::drawMarkdown(QPainter *painter, QRect rect, const QStri
     ctx.palette.setColor(QPalette::Text, painter->pen().color());
     painter->setClipRect(clipRect);
     ctx.clip = clipRect;
-    td.documentLayout()->draw(painter, ctx);
+    td->documentLayout()->draw(painter, ctx);
 
     painter->restore();
 
-    return td.size().height();
+    int h = td->size().height();
+    td->deleteLater();
+
+    return h;
+}
+
+QTextDocument *RamScheduleDelegate::markDownTextDocument(const QString &md, const QFont &defaultFont) const
+{
+    auto td = new QTextDocument();
+    td->setIndentWidth(20);
+    td->setDefaultFont(defaultFont);
+#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
+    td->setPlainText(md);
+#else
+    td->setMarkdown(md);
+#endif
+
+    return td;
 }

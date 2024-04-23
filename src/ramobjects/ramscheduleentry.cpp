@@ -2,10 +2,13 @@
 #include "duqf-app/app-config.h"
 #include "ramstep.h"
 #include "ramuser.h"
+#include "scheduleentryeditwidget.h"
+
+QFrame *RamScheduleEntry::ui_editWidget = nullptr;
 
 QHash<QString, RamScheduleEntry*> RamScheduleEntry::m_existingObjects = QHash<QString, RamScheduleEntry*>();
 
-RamScheduleEntry *RamScheduleEntry::get(QString uuid)
+RamScheduleEntry *RamScheduleEntry::get(const QString &uuid)
 {
     if (!checkUuid(uuid, ScheduleEntry)) return nullptr;
 
@@ -14,6 +17,28 @@ RamScheduleEntry *RamScheduleEntry::get(QString uuid)
 
     // Finally return a new instance
     return new RamScheduleEntry(uuid);
+}
+
+QVector<RamScheduleEntry*> RamScheduleEntry::get(const QModelIndex &index)
+{
+    // Schedule entries may come as a list
+    QVector<RamScheduleEntry*> entries;
+
+    // Check the object type
+    auto type = static_cast<RamObject::ObjectType>(
+        index.data(RamObject::Type).toInt()
+        );
+
+    if (type != RamObject::ScheduleEntry)
+        return entries;
+
+    const QVariantList ptrList = index.data(RamObject::Pointer).toList();
+    for(const auto &i: ptrList) {
+        qintptr iptr = i.toULongLong();
+        if (iptr)
+            entries << reinterpret_cast<RamScheduleEntry*>( iptr );
+    }
+    return entries;
 }
 
 RamScheduleEntry *RamScheduleEntry::c(RamObject *o, bool fast)
@@ -73,11 +98,15 @@ RamScheduleRow *RamScheduleEntry::row() const
     return RamScheduleRow::get(rowUuid);
 }
 
-void RamScheduleEntry::setRow(RamScheduleRow *newRow)
+void RamScheduleEntry::setRow(RamObject *newRowObj)
 {
-    Q_ASSERT(newRow);
+    Q_ASSERT(newRowObj);
+    if (!newRowObj)
+        return;
 
-    if (!newRow)
+    auto newRow = RamScheduleRow::c(newRowObj);
+    Q_ASSERT(newRow->project());
+    if (!newRow->project())
         return;
 
     // Disconnect previous row
@@ -86,8 +115,19 @@ void RamScheduleEntry::setRow(RamScheduleRow *newRow)
         disconnect(currentRow, nullptr, this, nullptr);
 
     insertData("row", newRow->uuid());
+    insertData("project", newRow->project()->uuid());
     // If the row is removed, the entry should be removed too
     connect(newRow, &RamScheduleRow::removed, this, &RamScheduleEntry::remove);
+}
+
+RamProject *RamScheduleEntry::project() const
+{
+    QString uuid = getData("project").toString();
+
+    if (uuid == "")
+        return nullptr;
+
+    return RamProject::get( uuid );
 }
 
 RamStep *RamScheduleEntry::step() const
@@ -120,11 +160,20 @@ void RamScheduleEntry::setStep(RamObject *newStep)
     }
 }
 
+QString RamScheduleEntry::name() const
+{
+    RamStep *s = this->step();
+    if (s)
+        return s->shortName();
+
+    return RamObject::name();
+}
+
 QString RamScheduleEntry::iconName() const
 {
     RamStep *s = this->step();
     if (!s)
-        return "";
+        return RamObject::iconName();;
 
     switch( s->type() )
     {
@@ -137,8 +186,6 @@ QString RamScheduleEntry::iconName() const
     case RamStep::PostProduction:
         return ":/icons/film";
     }
-
-    return ":/icons/project";
 }
 
 QColor RamScheduleEntry::color() const
@@ -148,56 +195,12 @@ QColor RamScheduleEntry::color() const
     return RamObject::color();
 }
 
-QVariant RamScheduleEntry::roleData(int role) const
+void RamScheduleEntry::edit(bool show)
 {
-    switch(role)
-    {
-    case Qt::DisplayRole: { // If there's a step, use the step name
-        RamStep *s = this->step();
-        if (s) return this->step()->shortName();
-        return "# " + this->name() + "\n\n" + this->comment();
-    }
-    case Qt::ToolTipRole: {
+    if (!ui_editWidget)
+        ui_editWidget = createEditFrame(new ScheduleEntryEditWidget(this));
 
-        RamStep *s = this->step();
-        QString stepName = "";
-        if (s) stepName = s->name();
-
-        RamUser *u = this->row()->user();
-        QString userName = "";
-        if (u) userName = u->name();
-
-        QSettings settings;
-        QString dateFormat = settings.value("appearance/dateFormat", DATE_DATA_FORMAT).toString();
-        return this->date().toString(dateFormat) +
-               "\n" + stepName +
-               "\n" + userName +
-               "\n" + this->comment();
-    }
-    case Qt::StatusTipRole: {
-
-        RamStep *s = this->step();
-        QString stepName = "";
-        if (s) stepName = s->shortName();
-
-        RamUser *u = this->row()->user();
-        QString userName = "";
-        if (u) userName = u->shortName();
-
-        QSettings settings;
-        QString dateFormat = settings.value("appearance/dateFormat", DATE_DATA_FORMAT).toString();
-        return this->date().toString(dateFormat) +
-               " | " + stepName +
-               " | " + userName +
-               " | " + this->comment();
-    }
-    case Qt::BackgroundRole: {
-        return QBrush(this->color());
-    }
-    case SizeHint: return QSize(75,10);
-    case Date: return this->date();
-    }
-    return RamObject::roleData(role);
+    if (show) showEdit( ui_editWidget );
 }
 
 RamScheduleEntry::RamScheduleEntry(const QString &uuid):

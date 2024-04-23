@@ -90,17 +90,12 @@ QVariant RamScheduleTableModel::data(const QModelIndex &index, int role) const
         );
 
     // Empty cell
-    if (entriesSet.isEmpty()) {
-
-        if ( role == Qt::BackgroundRole ) {
-            if (date.weekNumber() % 2 == 1)
-                return QColor(51,51,51);
-            else
-                return QColor(42,42,42);
-        }
-
+    if (entriesSet.isEmpty())
         return QVariant();
-    }
+
+    // The type
+    if (role == RamAbstractObject::Type)
+        return RamObject::ScheduleEntry;
 
     // Sort the entries by step order, then title
     QList<RamObject*> entries = entriesSet.values();
@@ -125,10 +120,19 @@ QVariant RamScheduleTableModel::data(const QModelIndex &index, int role) const
     // to do something with it...
     if (role == RamAbstractObject::Pointer) {
         QVariantList ptrs;
-        for (auto entry: entries) {
+        for (auto entry: qAsConst(entries)) {
             ptrs << reinterpret_cast<qintptr>(entry);
         }
         return ptrs;
+    }
+
+    // QStringList for UUIDs
+    if (role == RamAbstractObject::UUID) {
+        QStringList uuids;
+        for (auto entry: qAsConst(entries)) {
+            uuids << entry->uuid();
+        }
+        return uuids;
     }
 
     // Single entry, return the data

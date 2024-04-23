@@ -16,7 +16,14 @@ public:
      * @param uuid The UUID of the entry to get.
      * @return The unique instance of the entry.
      */
-    static RamScheduleEntry *get(QString uuid);
+    static RamScheduleEntry *get(const QString &uuid);
+    /**
+     * @brief get
+     * Gets entries from an index in a table
+     * @param index
+     * @return
+     */
+    static QVector<RamScheduleEntry *> get(const QModelIndex &index);
     /**
      * @brief
      * Convenience shortcut to cast a RamObject to a Schedule Entry.
@@ -82,7 +89,14 @@ public:
      * @param newRow
      * The newRow where to move the entry.
      */
-    void setRow(RamScheduleRow *newRow);
+    void setRow(RamObject *newRowObj);
+
+    /**
+     * @brief project
+     * The project this entry belongs to.
+     * @return
+     */
+    RamProject *project() const;
 
     /**
      * @brief step
@@ -99,6 +113,14 @@ public:
      * Set to nullptr to dissociate all steps from this entry.
      */
     void setStep(RamObject *newStep);
+
+    /**
+     * @brief name
+     * The name of the entry.
+     * Overriden to return the step ID if any.
+     * @return
+     */
+    virtual QString name() const override;
 
     /**
      * @brief iconName
@@ -118,15 +140,14 @@ public:
      */
     virtual QColor color() const override;
 
+public slots:
     /**
-     * @brief roleData
-     * Gets some data for this entry.
-     * @param role
-     * The role to get
-     * @return
-     * The data
+     * @brief edit
+     * Creates the widget to edit this Schedule Entry.
+     * @param show
+     * Whether to show the widget immediately after it's been created.
      */
-    virtual QVariant roleData(int role) const override;
+    virtual void edit(bool show = true) override;
 
 protected:
 
@@ -151,6 +172,10 @@ protected:
      * @brief Schedule Entries Lookup Table by UUID
      */
     static QHash<QString, RamScheduleEntry*> m_existingObjects;
+
+    // UI //
+
+    static QFrame *ui_editWidget;
 
 private:
     void construct();

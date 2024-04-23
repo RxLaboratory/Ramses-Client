@@ -51,12 +51,12 @@ public:
      * @brief The ObjectType enum lists all types of RamObjects
      */
     enum ObjectType {
+                    Object,
+                    Item,
                     Application,
                     Asset,
                     AssetGroup,
                     FileType,
-                    Object,
-                    Item,
                     Pipe,
                     PipeFile,
                     Project,
@@ -202,7 +202,7 @@ public:
      * @return
      */
     QString comment() const;
-    void setComment(const QString comment);
+    void setComment(const QString &comment);
 
     virtual QColor color() const;
     void setColor(QColor color);
@@ -217,7 +217,7 @@ public:
     virtual QString iconName() const { return m_icon; };
     QPixmap iconPixmap() const;
 
-    virtual QString details() const { return QString(); };
+    virtual QString details() const { return comment(); };
     virtual QString subDetails() const { return QString(); };
 
     virtual bool isDisabled() const { return false; }

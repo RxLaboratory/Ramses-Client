@@ -28,6 +28,13 @@ void ObjectEditWidget::hideName(bool hide)
     m_nameHidden = hide;
 }
 
+void ObjectEditWidget::hideShortName(bool hide)
+{
+    ui_shortNameLabel->setVisible(!hide);
+    ui_shortNameEdit->setVisible(!hide);
+    ui_lockShortNameButton->setVisible(!hide);
+}
+
 void ObjectEditWidget::setObject(RamObject *object)
 {
     // disconnect

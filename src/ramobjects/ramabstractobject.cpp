@@ -295,7 +295,7 @@ QString RamAbstractObject::comment() const
     return getData("comment").toString("");
 }
 
-void RamAbstractObject::setComment(const QString comment)
+void RamAbstractObject::setComment(const QString &comment)
 {
     insertData("comment", comment.trimmed());
 }

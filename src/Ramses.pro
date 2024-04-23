@@ -149,6 +149,7 @@ SOURCES += \
     ramobjects/ramabstractitem.cpp \
     ramobjectviews/ramobjectview.cpp \
     smallwidgets/ramstatebox.cpp \
+    smallwidgets/scheduleentrycreationdialog.cpp \
     smallwidgets/servereditwidget.cpp \
     docks/statisticswidget.cpp \
     rameditwidgets/stepstatushistorywidget.cpp \
@@ -346,6 +347,7 @@ HEADERS += \
     ramobjects/ramabstractitem.h \
     ramobjectviews/ramobjectview.h \
     smallwidgets/ramstatebox.h \
+    smallwidgets/scheduleentrycreationdialog.h \
     smallwidgets/servereditwidget.h \
     docks/statisticswidget.h \
     rameditwidgets/stepstatushistorywidget.h \

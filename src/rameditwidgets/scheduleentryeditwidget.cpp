@@ -1,89 +1,108 @@
 #include "scheduleentryeditwidget.h"
 
-#include "ramobjectmodel.h"
-#include "ramstatustablemodel.h"
+#include "ramstep.h"
 
-ScheduleEntryEditWidget::ScheduleEntryEditWidget(RamProject *project, RamUser *user, const QDateTime &date, RamScheduleEntry *entry, QWidget *parent) :
-    DuScrollArea(parent),
-    m_user(user),
-    m_project(project),
-    m_date(date),
+ScheduleEntryEditWidget::ScheduleEntryEditWidget(RamScheduleEntry *entry, QWidget *parent) :
+    ObjectEditWidget(parent),
     m_entry(entry)
 {
     setupUi();
     connectEvents();
+
+    setObject(entry);
 }
 
-void ScheduleEntryEditWidget::setStep(RamObject *stepObj)
+void ScheduleEntryEditWidget::reInit(RamObject *o)
 {
-    /*auto step = qobject_cast<RamStep*>(stepObj);
-    if (!m_entry)
-        m_entry = new RamScheduleEntry(m_user, step, m_date);
-    else
-        m_entry->setStep(step);*/
-}
+    m_entry = qobject_cast<RamScheduleEntry*>(o);
 
-void ScheduleEntryEditWidget::setComment()
-{
-    /*if (!m_entry) {
-        auto step = qobject_cast<RamStep*>(ui_stepBox->currentObject());
-        m_entry = new RamScheduleEntry(m_user, step, m_date);
-    }
-#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
-    m_entry->setComment(ui_commentEdit->toPlainText());
-#else
-    m_entry->setComment(ui_commentEdit->toMarkdown());
-#endif*/
-}
+    QSignalBlocker b1(ui_titleEdit);
+    QSignalBlocker b2(ui_colorSelector);
+    QSignalBlocker b3(ui_stepBox);
+    QSignalBlocker b4(ui_dateEdit);
+    QSignalBlocker b5(ui_rowBox);
+    QSignalBlocker b6(ui_commentEdit);
 
-void ScheduleEntryEditWidget::setupUi()
-{
-    /*auto mainWidget = new QWidget(this);
-    mainWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    this->setWidget(mainWidget);
-    this->setWidgetResizable(true);
-    this->setFrameStyle(QFrame::NoFrame);
+    this->setEnabled(false);
 
-    auto *dummyLayout = new QVBoxLayout(mainWidget);
-    dummyLayout->setContentsMargins(3,3,3,3);
-    dummyLayout->setSpacing(3);
+    if (m_entry) {
+        RamProject *project = m_entry->project();
 
-    auto mainLayout = new QFormLayout();
-    mainLayout->setSpacing(3);
-    mainLayout->setContentsMargins(0,0,0,0);
-    dummyLayout->addLayout(mainLayout);
-
-    ui_userLabel = new QLabel("<b>" + m_user->name() + "</b>", mainWidget);
-    mainLayout->addRow("User", ui_userLabel);
-
-    QString ampm;
-    if ( m_date.time().hour() >= 12 ) ampm = "pm";
-    else ampm = "am";
-    ui_dateLabel = new QLabel(
-        "<b>" + m_date.toString("yyyy-MM-dd ") + ampm + "</b>"
-        );
-    mainLayout->addRow("Date", ui_dateLabel );
-
-    ui_stepBox = new RamObjectComboBox(mainWidget);
-    ui_stepBox->setObjectModel(m_project->steps());
-    mainLayout->addRow("Step", ui_stepBox);
-    if (m_entry)
-        ui_stepBox->setObject(m_entry->step());
-
-    ui_commentEdit = new DuQFTextEdit(mainWidget);
-    ui_commentEdit->setProperty("class", "duBlock");
-    ui_commentEdit->setMinimumHeight(30);
-    ui_commentEdit->setPlaceholderText(tr("Comment..."));
-    ui_commentEdit->setObjectName("commentEdit");
-    ui_commentEdit->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    dummyLayout->addWidget(ui_commentEdit);
-    if (m_entry) 
+        ui_titleEdit->setText(m_entry->name());
+        ui_colorSelector->setColor(m_entry->color());
+        ui_dateEdit->setDate(m_entry->date());
 #if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
         ui_commentEdit->setPlainText(m_entry->comment());
 #else
         ui_commentEdit->setMarkdown(m_entry->comment());
 #endif
 
+        if (project) {
+
+            RamStep *step = m_entry->step();
+
+            ui_stepBox->setObjectModel(project->steps(), tr("Steps"));
+            ui_stepBox->setObject(step);
+
+            ui_rowBox->setObjectModel(project->scheduleRows());
+            ui_rowBox->setObject(m_entry->row());
+
+            ui_titleEdit->setEnabled(!step);
+            ui_colorSelector->setEnabled(!step);
+
+            this->setEnabled(true);
+        }
+        else {
+            ui_rowBox->setObjectModel(nullptr);
+            ui_stepBox->setObjectModel(nullptr);
+        }
+    }
+    else {
+        ui_titleEdit->setText("");
+        ui_colorSelector->setColor(QColor());
+        ui_dateEdit->setDate(QDate());
+        ui_commentEdit->setPlainText("");
+        ui_rowBox->setObjectModel(nullptr);
+        ui_stepBox->setObjectModel(nullptr);
+    }
+}
+
+void ScheduleEntryEditWidget::setupUi()
+{
+    hideName();
+    ui_attributesWidget->hide();
+
+    auto formLayout = new QFormLayout();
+    formLayout->setSpacing(3);
+    formLayout->setContentsMargins(3,3,3,3);
+    ui_mainLayout->addLayout(formLayout);
+
+    ui_titleEdit = new DuLineEdit(this);
+    ui_titleEdit->setPlaceholderText(tr("Short Title"));
+    formLayout->addRow(tr("Title"), ui_titleEdit);
+
+    ui_colorSelector = new DuQFColorSelector();
+    formLayout->addRow(tr("Color"), ui_colorSelector);
+
+    ui_stepBox = new RamObjectComboBox(this);
+    formLayout->addRow(tr("Step"), ui_stepBox);
+
+    ui_dateEdit = new QDateEdit(this);
+    ui_dateEdit->setCalendarPopup(true);
+    formLayout->addRow(tr("Date"), ui_dateEdit);
+
+    ui_rowBox = new RamObjectComboBox(this);
+    formLayout->addRow(tr("Row"), ui_rowBox);
+
+    ui_commentEdit = new DuQFTextEdit(this);
+    ui_commentEdit->setProperty("class", "duBlock");
+    ui_commentEdit->setPlaceholderText("Comment...");
+    ui_commentEdit->setMinimumHeight(30);
+    ui_commentEdit->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    ui_commentEdit->setObjectName("commentEdit");
+    ui_mainLayout->addWidget(ui_commentEdit);
+
+    /*
     // Get due tasks
     const QDate date = m_date.date();
     const QString uUuid = m_user->uuid();
@@ -111,9 +130,40 @@ void ScheduleEntryEditWidget::setupUi()
 
 void ScheduleEntryEditWidget::connectEvents()
 {
-    /*connect(ui_stepBox, &RamObjectComboBox::currentObjectChanged,
-            this, &ScheduleEntryEditWidget::setStep);
+    connect(ui_titleEdit, &DuLineEdit::editingFinished,
+            this, [this] () {
+        if (m_entry) m_entry->setName(ui_titleEdit->text());
+    });
+
+    connect(ui_colorSelector, &DuQFColorSelector::colorChanged,
+            this, [this] (const QColor &c) {
+                if (m_entry) m_entry->setColor(c);
+            });
+
+    connect(ui_stepBox, &RamObjectComboBox::currentObjectChanged,
+            this, [this] (RamObject *o) {
+                if (m_entry) m_entry->setStep(o);
+                ui_titleEdit->setEnabled(!o);
+                ui_colorSelector->setEnabled(!o);
+            });
+
+    connect(ui_dateEdit, &QDateEdit::dateChanged,
+            this, [this] (const QDate &date) {
+                if (m_entry) m_entry->setDate(date);
+            });
+
+    connect(ui_rowBox, &RamObjectComboBox::currentObjectChanged,
+            this, [this] (RamObject *o) {
+                if (m_entry) m_entry->setRow(o);
+            });
 
     connect( ui_commentEdit, &DuQFTextEdit::editingFinished,
-            this, &ScheduleEntryEditWidget::setComment);*/
+            this, [this] () {
+        if (m_entry)
+#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
+            m_entry->setComment(ui_commentEdit->toPlainText());
+#else
+            m_entry->setComment(ui_commentEdit->toMarkdown());
+#endif
+    });
 }
