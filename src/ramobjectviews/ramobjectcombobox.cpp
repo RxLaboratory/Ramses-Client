@@ -16,10 +16,12 @@ RamObjectComboBox::RamObjectComboBox(QWidget *parent):
 
 void RamObjectComboBox::setObjectModel(QAbstractItemModel *model, QString filterListName)
 {
-    RamFilterListProxyModel *proxyModel = new RamFilterListProxyModel(filterListName, this);
-    if (model) proxyModel->setSourceModel(model);
-    else proxyModel->setSourceModel( RamAbstractObjectModel::emptyModel() );
-    this->setModel(proxyModel);
+    if (!m_listProxyModel)
+        m_listProxyModel = new RamFilterListProxyModel(filterListName, this);
+
+    if (model) m_listProxyModel->setSourceModel(model);
+    else m_listProxyModel->setSourceModel( RamAbstractObjectModel::emptyModel() );
+    this->setModel(m_listProxyModel);
 }
 
 void RamObjectComboBox::setSortMode(RamAbstractObject::DataRole mode)
@@ -36,6 +38,7 @@ void RamObjectComboBox::setObjectModel(QAbstractItemModel *model)
     }
     else
     {
+        m_objects->sort(0);
         m_objects->setSourceModel( RamAbstractObjectModel::emptyModel() );
     }
 }

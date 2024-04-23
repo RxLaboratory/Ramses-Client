@@ -30,6 +30,7 @@ private:
     QDateEdit *ui_dateEdit;
     RamObjectComboBox *ui_rowBox;
     DuQFTextEdit *ui_commentEdit;
+    QToolButton *ui_removeButton;
 
     QPointer<RamScheduleEntry> m_entry;
 };

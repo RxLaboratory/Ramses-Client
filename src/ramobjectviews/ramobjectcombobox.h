@@ -2,6 +2,7 @@
 #define RAMOBJECTCOMBOBOX_H
 
 #include "duqf-widgets/ducombobox.h"
+#include "ramfilterlistproxymodel.h"
 #include "ramobjectsortfilterproxymodel.h"
 
 class RamObjectComboBox : public DuComboBox
@@ -50,6 +51,7 @@ private:
     bool m_resetting = false;
 
     RamObjectSortFilterProxyModel *m_objects;
+    RamFilterListProxyModel *m_listProxyModel = nullptr;
 
 };
 

@@ -63,7 +63,7 @@ void ScheduleEntryEditWidget::reInit(RamObject *o)
         ui_dateEdit->setDate(QDate());
         ui_commentEdit->setPlainText("");
         ui_rowBox->setObjectModel(nullptr);
-        ui_stepBox->setObjectModel(nullptr);
+        ui_stepBox->setObjectModel(nullptr, tr("Steps"));
     }
 }
 
@@ -101,6 +101,13 @@ void ScheduleEntryEditWidget::setupUi()
     ui_commentEdit->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     ui_commentEdit->setObjectName("commentEdit");
     ui_mainLayout->addWidget(ui_commentEdit);
+
+    ui_removeButton = new QToolButton(this);
+    ui_removeButton->setText(tr("Remove"));
+    ui_removeButton->setIcon(DuIcon(":/icons/trash"));
+    ui_removeButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    ui_mainLayout->addWidget(ui_removeButton);
+    ui_mainLayout->setAlignment(ui_removeButton, Qt::AlignRight);
 
     /*
     // Get due tasks
@@ -165,5 +172,11 @@ void ScheduleEntryEditWidget::connectEvents()
 #else
             m_entry->setComment(ui_commentEdit->toMarkdown());
 #endif
+    });
+
+    connect( ui_removeButton, &QToolButton::clicked,
+            this, [this] () {
+        if (!m_entry) return;
+        m_entry->remove();
     });
 }
