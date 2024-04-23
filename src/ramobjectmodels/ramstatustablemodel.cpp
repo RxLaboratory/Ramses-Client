@@ -352,6 +352,9 @@ void RamStatusTableModel::cacheStepEstimation(QString stepUuid)
     m_cacheIsOutdated = true;
     if (m_cacheSuspended)
         return;
+    m_cacheIsOutdated = false;
+
+    qDebug() << "Caching step estimation" << stepUuid;
 
     if (stepUuid == "") return;
 
@@ -375,19 +378,19 @@ void RamStatusTableModel::cacheStepEstimation(QString stepUuid)
 
     // Update completion ratios
 
-    QHash<QPair<QString,QString>, StepEstimation>::iterator ius = m_userestimations.begin();
-    while (ius != m_userestimations.end()) {
+    QMutableHashIterator<QPair<QString,QString>, StepEstimation> ius(m_userestimations);
+    while (ius.hasNext()) {
+        ius.next();
         if (ius.key().first != stepUuid)
             continue;
         ius.value().updateCompletionRatio();
-        ius++;
     }
 
     StepEstimation stepEstim = m_estimations.value(stepUuid);
     stepEstim.updateCompletionRatio();
     m_estimations.insert(stepUuid, stepEstim);
 
-    m_cacheIsOutdated = false;
+    qDebug() << "Step estimation cached" << stepUuid;
 
     emit stepEstimationChanged( stepUuid );
     emit estimationsChanged();
