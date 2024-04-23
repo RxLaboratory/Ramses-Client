@@ -5,6 +5,7 @@
 #include "ramscheduleentry.h"
 #include "ramstatustablemodel.h"
 #include "duqf-utils/guiutils.h"
+#include "ramstep.h"
 
 RamScheduleDelegate::RamScheduleDelegate(QObject *parent) : QStyledItemDelegate(parent)
 {
@@ -26,7 +27,8 @@ void RamScheduleDelegate::paint(QPainter *painter, const QStyleOptionViewItem &o
     // PAINT BG
 
     // bg
-    QRect bgRect = rect.adjusted(0,1,-3,-1);
+    QRect adjustedRect = rect.adjusted(0,1,-3,-1);
+    QRect bgRect = adjustedRect;
 
     // Get entries
     QVector<RamScheduleEntry*> entries = RamScheduleEntry::get(index);
@@ -125,23 +127,28 @@ void RamScheduleDelegate::paint(QPainter *painter, const QStyleOptionViewItem &o
         }
     }
 
-    // Border if this is a deadline for some tasks
-    const QSet<RamStatus*> tasks = getDueTasks(index);
-    if (!tasks.isEmpty()) {
-        QPen p(QColor(227,227,227));
-        p.setWidth(2);
-        painter->setPen(p);
-        painter->drawRect(bgRect);
+    // Due Tasks
+    if (m_details) {
+        const QSet<RamStatus*> tasks = getDueTasks(index);
+        if (!tasks.isEmpty()) {
+            QPen p(QColor(227,227,227));
+            p.setWidth(2);
+            painter->setPen(p);
+            painter->drawRect(adjustedRect);
 
-        // TODO Add the due tasks
-        /*if (!tasks.isEmpty()) {
-            comment += "\n\n#### Due tasks\n";
-            for (const auto task: tasks) {
-                comment += "\n- " + task->shortName();
-            }
-        }*/
+            QString tasksTxt = getTasksHTML(tasks);
+
+            bgRect.setBottom(adjustedRect.bottom());
+            bgRect.setLeft(bgRect.left() + 10);
+
+            QPen textPen(m_lessLight);
+            painter->setPen(textPen);
+
+            int textHeight = drawHtml(painter, bgRect, tasksTxt);
+            if (textHeight > bgRect.height())
+                drawMore(painter, bgRect, textPen);
+        }
     }
-
 }
 
 QSize RamScheduleDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
@@ -165,7 +172,20 @@ QSize RamScheduleDelegate::sizeHint(const QStyleOptionViewItem &option, const QM
         height += s.height();
     }
 
-    // TODO add due tasks
+    if (m_details) {
+        const QSet<RamStatus *> tasks = getDueTasks(index);
+        if (!tasks.isEmpty()) {
+
+            QString tasksTxt = getTasksHTML(tasks);
+
+            auto tasksDoc = textDocument(m_textFont);
+            tasksDoc->setHtml(tasksTxt);
+
+            QSize s = tasksDoc->size().toSize();
+            height += s.height() + 10;
+            width = std::max(width, s.width() + 40);
+        }
+    }
 
     return QSize(width,height);
 }
@@ -336,7 +356,12 @@ QSize RamScheduleDelegate::entrySize(RamScheduleEntry *entry) const
 
     QString details = entry->details();
     if (m_details && details != "") {
-        auto detailsDoc = markDownTextDocument(details, m_textFont);
+        auto detailsDoc = textDocument( m_textFont);
+#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
+        detailsDoc->setPlainText(details);
+#else
+        detailsDoc->setMarkdown(details);
+#endif
         w = std::max(w, int(detailsDoc->size().width() + 40));
         h += detailsDoc->size().height() + 20;
     }
@@ -344,13 +369,44 @@ QSize RamScheduleDelegate::entrySize(RamScheduleEntry *entry) const
     return QSize(w, h);
 }
 
+QString RamScheduleDelegate::getTasksHTML(QSet<RamStatus *> tasks) const
+{
+    QString tasksTxt = "<h4>Due tasks</h4><ul>";
+    for (const auto task: tasks) {
+        QColor c = task->step()->color();
+        tasksTxt += QString("<li style=\"color: %1\">%2</li>").arg(c.name(), task->shortName());
+    }
+    tasksTxt += "</ul>";
+    return tasksTxt;
+}
+
 int RamScheduleDelegate::drawMarkdown(QPainter *painter, QRect rect, const QString &md) const
 {
     painter->save();
 
-    auto td = markDownTextDocument(md, m_textFont);
+    auto td = textDocument(m_textFont);
+#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
+    td->setPlainText(md);
+#else
+    td->setMarkdown(md);
+#endif
     td->setTextWidth(rect.width());
 
+    return drawTextDocument(painter, rect, td);
+}
+
+int RamScheduleDelegate::drawHtml(QPainter *painter, QRect rect, const QString &md) const
+{
+    painter->save();
+
+    auto td = textDocument(m_textFont);
+    td->setHtml(md);
+
+    return drawTextDocument(painter, rect, td);
+}
+
+int RamScheduleDelegate::drawTextDocument(QPainter *painter, const QRect rect, QTextDocument *td) const
+{
     QRect clipRect(rect);
     clipRect.moveTo(0,0);
     painter->translate(rect.topLeft());
@@ -369,16 +425,10 @@ int RamScheduleDelegate::drawMarkdown(QPainter *painter, QRect rect, const QStri
     return h;
 }
 
-QTextDocument *RamScheduleDelegate::markDownTextDocument(const QString &md, const QFont &defaultFont) const
+QTextDocument *RamScheduleDelegate::textDocument(const QFont &defaultFont) const
 {
     auto td = new QTextDocument();
     td->setIndentWidth(20);
     td->setDefaultFont(defaultFont);
-#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
-    td->setPlainText(md);
-#else
-    td->setMarkdown(md);
-#endif
-
     return td;
 }

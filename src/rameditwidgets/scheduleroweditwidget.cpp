@@ -35,6 +35,7 @@ void ScheduleRowEditWidget::reInit(RamObject *o)
             ui_userBox->setObjectModel( users, "Users" );
             ui_userBox->setObject(m_row->user());
         }
+        ui_nameEdit->setText(m_row->getData("name").toString());
     }
     else {
         ui_userBox->setObjectModel(nullptr);
@@ -53,6 +54,8 @@ void ScheduleRowEditWidget::setUser(RamObject *usrObj)
 
 void ScheduleRowEditWidget::setupUi()
 {
+    this->hideShortName(true);
+
     ui_userBox = new RamObjectComboBox(this);
     ui_mainLayout->addWidget(ui_userBox);
 

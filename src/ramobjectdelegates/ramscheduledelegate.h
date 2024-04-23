@@ -25,7 +25,9 @@ public:
 
 protected:
     int drawMarkdown(QPainter *painter, QRect rect, const QString &md) const;
-    QTextDocument *markDownTextDocument(const QString &md, const QFont &defaultFont) const;
+    int drawHtml(QPainter *painter, QRect rect, const QString &md) const;
+    int drawTextDocument(QPainter *painter, const QRect rect, QTextDocument *td) const;
+    QTextDocument *textDocument(const QFont &defaultFont) const;
 
 private:
     // Style
@@ -53,6 +55,7 @@ private:
     QColor adjustBackgroundColor(const QColor &color, const QModelIndex &index, const QStyleOptionViewItem &option) const;
     RamScheduleEntry *mouseEventEntry(QMouseEvent *e, const QModelIndex &index, const QStyleOptionViewItem &option) const;
     QSize entrySize(RamScheduleEntry *entry) const;
+    QString getTasksHTML(QSet<RamStatus*> tasks) const;
 };
 
 #endif // RAMSCHEDULEDELEGATE_H
