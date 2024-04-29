@@ -17,7 +17,7 @@ class RamStatus;
 class RamAbstractItem;
 class RamState;
 class RamScheduleEntryModel;
-class RamScheduñleTableModel;
+class RamScheduleTableModel;
 
 class RamProject : public RamObject
 {
