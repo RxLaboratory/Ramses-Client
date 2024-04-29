@@ -33,5 +33,9 @@ QString ScheduleEntryCreationDialog::title() const
 
 QString ScheduleEntryCreationDialog::comment() const
 {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
     return ui_commentEdit->toMarkdown();
+#else
+    return ui_commentEdit->toPlainText();
+#endif
 }
