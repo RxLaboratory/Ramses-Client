@@ -3,7 +3,11 @@
 QString StringUtils::toTitleCase(const QString &str) {
     QLocale locale;
 
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
     QStringList parts = str.split(QRegularExpression("[_ ]+"), Qt::SkipEmptyParts);
+#else
+    QStringList parts = str.split(QRegularExpression("[_ ]+"), QString::SkipEmptyParts);
+#endif
     for (int i = 0; i < parts.size(); ++i)
         parts[i].replace(0, 1, locale.toUpper(parts[i].at(0)) );
 
