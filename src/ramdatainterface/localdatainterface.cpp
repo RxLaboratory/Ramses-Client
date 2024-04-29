@@ -644,6 +644,9 @@ SyncData LocalDataInterface::getSync(bool fullSync)
 
         QSet<TableRow> rows;
 
+        // Make sure the table exists
+        createTable(tName);
+
         QString q;
         if (tName == "RamUser") q = "SELECT uuid, data, modified, removed, userName FROM %1 ";
         else q = "SELECT uuid, data, modified, removed FROM %1 ";
