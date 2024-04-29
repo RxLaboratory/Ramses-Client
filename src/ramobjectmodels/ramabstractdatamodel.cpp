@@ -12,32 +12,18 @@ RamObject *RamAbstractDataModel::get(const QModelIndex &index)
     return reinterpret_cast<RamObject*>( iptr );
 }
 
-QSet<RamObject *> RamAbstractDataModel::multiLookUp(const QStringList &lookUpKeys, const QStringList &lookUpValues) const
+QSet<RamObject *> &RamAbstractDataModel::intersectLookUp(QString lookUpKey, QString lookUpValue, QSet<RamObject *> &objList) const
 {
-    Q_ASSERT(!lookUpKeys.isEmpty());
-    Q_ASSERT(lookUpKeys.count() == lookUpValues.count());
-
-    QSet<RamObject *> objs = lookUp(
-        lookUpKeys.first(),
-        lookUpValues.first()
-        );
-
-    if (lookUpKeys.count() <= 1)
-        return objs;
-
-    for (int i = 1; i < lookUpKeys.count(); ++i) {
-        objs.intersect(
-            lookUp(
-                lookUpKeys.at(i),
-                lookUpValues.at(i)
-                )
-            );
+    // Don't use another lookup and QSet::intersect,
+    // as it would be slower
+    // but actually iterate throught the existing set
+    QMutableSetIterator<RamObject*> i(objList);
+    while(i.hasNext()) {
+        i.next();
+        RamObject *obj = i.value();
+        if (obj->getData(lookUpKey).toString() != lookUpValue)
+            objList.remove(obj);
     }
 
-    return objs;
-}
-
-QSet<RamObject *> RamAbstractDataModel::intersectLookUp(QString lookUpKey, QString lookUpValue, QSet<RamObject *> objList) const
-{
-    return objList.intersect( lookUp(lookUpKey, lookUpValue) );
+    return objList;
 }

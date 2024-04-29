@@ -84,10 +84,8 @@ QVariant RamScheduleTableModel::data(const QModelIndex &index, int role) const
         return date;
 
     // Get the entrie(s)
-    const QSet<RamObject*> entriesSet = m_entries->multiLookUp(
-        QStringList( { "date", "row" } ),
-        QStringList( { date.toString( DATE_DATA_FORMAT ), m_rows->getUuid(row) } )
-        );
+    QSet<RamObject*> entriesSet = m_entries->lookUp("date", date.toString( DATE_DATA_FORMAT ));
+    m_entries->intersectLookUp("row",  m_rows->getUuid(row), entriesSet);
 
     // Empty cell
     if (entriesSet.isEmpty())
@@ -97,23 +95,32 @@ QVariant RamScheduleTableModel::data(const QModelIndex &index, int role) const
     if (role == RamAbstractObject::Type)
         return RamObject::ScheduleEntry;
 
-    // Sort the entries by step order, then title
+    // Make sure the steps are always returned in the same order
     QList<RamObject*> entries = entriesSet.values();
     std::sort( entries.begin(), entries.end(), [] (RamObject *a, RamObject *b) {
         auto entryA = RamScheduleEntry::c(a);
         auto entryB = RamScheduleEntry::c(b);
+
+        // Don't actually get the RamStep
+        // To improve performance just use the uuid
+        return entryA->getData("step").toString() < entryB->getData("step").toString();
+
+        // ======= Disabled better sorting
         auto stepA = entryA->step();
         auto stepB = entryB->step();
 
         if (stepA && stepB)
             return stepA->order() < stepB->order();
+
         if (!stepA && stepB)
             return false;
         if (stepA && !stepB)
             return true;
 
         return entryA->shortName() < entryB->shortName();
+        // ==========
     });
+
 
     // Pointer list for Multiple entries,
     // The delegate should get the list of pointers
@@ -140,7 +147,10 @@ QVariant RamScheduleTableModel::data(const QModelIndex &index, int role) const
         return entries.first()->roleData(role);
     }
 
+
+    //*/
     return QVariant();
+
 }
 
 bool RamScheduleTableModel::moveRows(const QModelIndex &sourceParent, int sourceRow, int count, const QModelIndex &destinationParent, int destinationChild)
