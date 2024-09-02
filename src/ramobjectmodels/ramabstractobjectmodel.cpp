@@ -1,5 +1,6 @@
 #include "ramabstractobjectmodel.h"
 
+#include "qjsondocument.h"
 #include "ramobjectmodel.h"
 
 RamAbstractObjectModel *RamAbstractObjectModel::m_emptyModel = nullptr;

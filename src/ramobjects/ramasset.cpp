@@ -1,6 +1,7 @@
 #include "ramasset.h"
 
 #include "asseteditwidget.h"
+#include "qjsonarray.h"
 #include "ramproject.h"
 
 // STATIC //

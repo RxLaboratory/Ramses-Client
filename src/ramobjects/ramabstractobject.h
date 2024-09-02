@@ -2,6 +2,7 @@
 #define RAMABSTRACTOBJECT_H
 
 #include "duqf-widgets/duicon.h"
+#include "qfileinfo.h"
 #include <QSettings>
 
 /**

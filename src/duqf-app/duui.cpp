@@ -1,21 +1,9 @@
 #include "duui.h"
-
-#include <QRegularExpression>
-#include <QFile>
-#include <QMainWindow>
-#include <QStyleFactory>
-#include <QApplication>
-#include <QToolBar>
-#include <QToolButton>
-#include <QFontDatabase>
-#include <QDesktopWidget>
-#include <QtDebug>
-#include <QLayout>
-
-#include "duqf-app/dusettingsmanager.h"
-#include "duqf-app/dustyle.h"
-#include "duqf-widgets/dusplashscreen.h"
 #include "mainwindow.h"
+#include "duqf-app/app-utils.h"
+#include "dustyle.h"
+#include "duqf-app/dusettings.h"
+#include "duqf-utils/ducolorutils.h"
 
 QHash<QString,QString> DuUI::_cssVars = QHash<QString,QString>();
 const QRegularExpression DuUI::_cssVarsRE = QRegularExpression("(@[a-zA-Z0-9-]+)\\s*=\\s*(\\S+)");
@@ -27,6 +15,18 @@ DuUI::DuUI()
 
 }
 
+void DuUI::setUseHDPI()
+{
+    // Not needed on Qt 6
+#if QT_VERSION < QT_VERSION_CHECK(6,0,0)
+    QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+    QGuiApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
+#endif
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0) && defined(Q_OS_WIN)
+    QGuiApplication::setHighDpiScaleFactorRoundingPolicy(Qt::HighDpiScaleFactorRoundingPolicy::PassThrough);
+#endif
+}
+
 void DuUI::buildUI(const QCommandLineParser &cli, DuSplashScreen *s)
 {
     s->newMessage("Building UI");
@@ -34,10 +34,10 @@ void DuUI::buildUI(const QCommandLineParser &cli, DuSplashScreen *s)
     MainWindow *w = new MainWindow( cli );
 
     // Restore Geometry and state
-    w->restoreGeometry( DuSettingsManager::instance()->uiWindowGeometry() );
-    w->restoreState(DuSettingsManager::instance()->uiWindowState());
+    w->restoreGeometry( DuSettings::i()->get(DuSettings::UI_WindowGeometry).toByteArray() );
+    w->restoreState( DuSettings::i()->get(DuSettings::UI_WindowState).toByteArray() );
     // But hide the docks for a cleaner look
-    //w->hideAllDocks();
+    w->hideAllDocks();
 
     //if (!cli.isSet("no_ui"))
     w->show();
@@ -49,10 +49,21 @@ void DuUI::buildUI(const QCommandLineParser &cli, DuSplashScreen *s)
 QString DuUI::css(const QString &cssClass, bool loadSettings)
 {
     QString c = "";
-    QFile f(":/styles/" + cssClass);
-    if (f.exists() && f.open(QFile::ReadOnly)) {
-        c = f.readAll();
-        f.close();
+
+    // Concat all stylesheets
+    QDir d(":/styles/");
+    const QStringList styles = d.entryList(QDir::Files, QDir::Name); // The order is important!
+    for(const auto &style: styles) {
+        if (style == "vars")
+            continue;
+        if (cssClass != ""  && !style.contains(cssClass))
+            continue;
+
+        QFile f(":/styles/"+style);
+        if (f.open(QFile::ReadOnly)) {
+            c += "\n" + f.readAll();
+            f.close();
+        }
     }
 
     // Replace variables
@@ -81,40 +92,10 @@ void DuUI::addCSS(QWidget *w, const QString &cssClass, bool loadSettings)
 
 void DuUI::addCustomCSS(QWidget *w, const QString &customCSS, bool loadSettings)
 {
-    setCSSVars(customCSS, loadSettings);
+    QString css = setCSSVars(customCSS, loadSettings);
     w->setStyleSheet(
-        w->styleSheet() + "\n" + customCSS
+        w->styleSheet() + "\n" + css
         );
-}
-
-void DuUI::replaceCSS(QWidget *w, const QString &css, const QString &where)
-{
-    const QStringList sList = w->styleSheet().split("\n");
-    QStringList newStyleList;
-    bool in = false;
-    bool replaced = false;
-    for (const QString &s: sList) {
-        if (!in)
-            newStyleList << s;
-
-        if (s == "/*DuUI:"+where+"*/") {
-            newStyleList << css;
-            replaced = true;
-            in = true;
-        }
-
-        if (s == "/*DuUI:End:"+where+"*/") {
-            newStyleList << s;
-            in = false;
-        }
-    }
-    if (!replaced) {
-        newStyleList << "/*DuUI:"+where+"*/";
-        newStyleList << css;
-        newStyleList << "/*DuUI:End:"+where+"*/";
-    }
-
-    w->setStyleSheet(newStyleList.join("\n"));
 }
 
 QString DuUI::setCSSVars(const QString &css, bool loadSettings)
@@ -134,19 +115,100 @@ QHash<QString, QString> DuUI::cssVars(bool loadSettings)
 {
     if (!_cssVars.isEmpty()) return _cssVars;
 
+    QColor focus = DuSettings::i()->get(DuSettings::UI_FocusColor).value<QColor>();
+    QColor bg = DuSettings::i()->get(DuSettings::UI_BackgroundColor).value<QColor>();
+    QColor fg = DuSettings::i()->get(DuSettings::UI_ForegroundColor).value<QColor>();
+    int margin = DuSettings::i()->get(DuSettings::UI_Margins).toInt();
+
     // Insert runtime vars
     if (loadSettings) {
         _cssVars.insert(
-            "@focus-dark",
-            DuSettingsManager::instance()->uiFocusColor(DarkerColor).name()
+            "@margin",
+            QString::number(margin) + "px"
+            );
+        _cssVars.insert(
+            "@margin-small",
+            QString::number(margin/2) + "px"
+            );
+        _cssVars.insert(
+            "@margin-big",
+            QString::number(margin*2) + "px"
+            );
+        _cssVars.insert(
+            "@radius",
+            QString::number(margin*2) + "px"
+            );
+        _cssVars.insert(
+            "@radius-big",
+            QString::number(margin*3) + "px"
+            );
+        _cssVars.insert(
+            "@focus-pull",
+            pullColor(focus).name()
+            );
+        _cssVars.insert(
+            "@focus-puller",
+            pullColor(focus, 2).name()
             );
         _cssVars.insert(
             "@focus",
-            DuSettingsManager::instance()->uiFocusColor().name()
+            focus.name()
             );
         _cssVars.insert(
-            "@focus-light",
-            DuSettingsManager::instance()->uiFocusColor(LighterColor).name()
+            "@focus-push",
+            pushColor(focus).name()
+            );
+        _cssVars.insert(
+            "@focus-push-more",
+            pushColor(focus, 2).name()
+            );
+        _cssVars.insert(
+            "@background",
+            bg.name()
+            );
+        _cssVars.insert(
+            "@background-pull",
+            pullColor(bg).name()
+            );
+        _cssVars.insert(
+            "@background-pull-more",
+            pullColor(bg, 2).name()
+            );
+        _cssVars.insert(
+            "@background-push",
+            pushColor(bg).name()
+            );
+        _cssVars.insert(
+            "@background-push-more",
+            pushColor(bg, 2).name()
+            );
+        _cssVars.insert(
+            "@foreground",
+            fg.name()
+            );
+        _cssVars.insert(
+            "@foreground-pull",
+            pullColor(fg).name()
+            );
+        _cssVars.insert(
+            "@foreground-pull-more",
+            pullColor(fg, 2).name()
+            );
+        _cssVars.insert(
+            "@foreground-push",
+            pushColor(fg).name()
+            );
+        _cssVars.insert(
+            "@foreground-push-more",
+            pushColor(fg, 2).name()
+            );
+        _cssVars.insert(
+            "@ui-font",
+            DuSettings::i()->get(DuSettings::UI_UIFont).toString()
+            );
+        _cssVars.insert(
+            "@content-font",
+            DuSettings::i()->get(DuSettings::UI_ContentFont).toString()
             );
     }
 
@@ -156,20 +218,12 @@ QHash<QString, QString> DuUI::cssVars(bool loadSettings)
         while(!varsFile.atEnd())
         {
             QString line = varsFile.readLine();
-
-            qreal s = desktopScale();
-
             //get value and name
             QRegularExpressionMatch match = _cssVarsRE.match(line);
             if (match.hasMatch())
             {
                 QString key = match.captured(1);
                 QString val = match.captured(2);
-                if (val.endsWith("px") && s != 1) {
-                    // Auto Scale pixels
-                    const int v = val.leftRef(val.indexOf("px")).toInt();
-                    val = QString::number( v*s ) + "px";
-                }
                 _cssVars.insert(key, val);
             }
         }
@@ -193,7 +247,7 @@ void DuUI::setAppCss(QString css)
     qApp->setStyle(s);
     // Apply our tweaks to the palette
     QPalette palette;
-    palette.setColor(QPalette::Active, QPalette::Highlight, DuSettingsManager::instance()->uiFocusColor());
+    palette.setColor(QPalette::Active, QPalette::Highlight, DuSettings::i()->get(DuSettings::UI_FocusColor).value<QColor>());
     qApp->setPalette(palette);
 
     // Reset
@@ -223,69 +277,28 @@ void DuUI::setAppToolButtonStyle(Qt::ToolButtonStyle style)
     }
 }
 
+void DuUI::addApplicationFonts()
+{
+    QDir d(":/fonts");
+    const QStringList fontFiles = d.entryList(QDir::Files);
+    for (const auto &fontFile: fontFiles) {
+        QFontDatabase::addApplicationFont(":/fonts/"+fontFile);
+    }
+}
+
 void DuUI::setFont(QString family, int size, int weight)
 {
     Q_UNUSED(size);
     Q_UNUSED(weight);
-    if (family == "Ubuntu")
-    {
-        //add fonts
-        QFontDatabase::addApplicationFont(":/fonts/Ubuntu-B");
-        QFontDatabase::addApplicationFont(":/fonts/Ubuntu-BI");
-        QFontDatabase::addApplicationFont(":/fonts/Ubuntu-C");
-        QFontDatabase::addApplicationFont(":/fonts/Ubuntu-L");
-        QFontDatabase::addApplicationFont(":/fonts/Ubuntu-LI");
-        QFontDatabase::addApplicationFont(":/fonts/Ubuntu-M");
-        QFontDatabase::addApplicationFont(":/fonts/Ubuntu-MI");
-        QFontDatabase::addApplicationFont(":/fonts/Ubuntu-R");
-        QFontDatabase::addApplicationFont(":/fonts/Ubuntu-RI");
-        QFontDatabase::addApplicationFont(":/fonts/Ubuntu-Th");
-        QFontDatabase::addApplicationFont(":/fonts/UbuntuMono-B");
-        QFontDatabase::addApplicationFont(":/fonts/UbuntuMono-BI");
-        QFontDatabase::addApplicationFont(":/fonts/UbuntuMono-R");
-        QFontDatabase::addApplicationFont(":/fonts/UbuntuMono-RI");
-    }
-
     qApp->setFont(QFont(family),"QWidget");
 }
 
-qreal DuUI::desktopScale()
+bool DuUI::negatedTheme()
 {
-    // Get only the first time, kept as a static var
-    if (_desktopScale > 0) return _desktopScale;
+    auto bg = DuSettings::i()->get(DuSettings::UI_BackgroundColor).value<QColor>();
+    auto fg = DuSettings::i()->get(DuSettings::UI_ForegroundColor).value<QColor>();
 
-    qreal dpi = qApp->desktop()->logicalDpiX();
-#ifdef QT_DEBUG
-    qDebug().noquote() << "Desktop DPI: " << dpi;
-#endif
-    _desktopScale = dpi/96.0;
-    return _desktopScale;
-}
-
-int DuUI::adjustToDpi(int px)
-{
-    return px * desktopScale();
-}
-
-qreal DuUI::adjustToDpi(qreal px)
-{
-    return px * desktopScale();
-}
-
-QSize DuUI::adjustToDpi(const QSize &s)
-{
-    return QSize(
-        adjustToDpi( s.width() ),
-        adjustToDpi( s.height() )
-        );
-}
-
-void DuUI::setupLayout(QLayout *l, int margin, int spacing)
-{
-    if (spacing == -1) spacing = margin;
-    margin = adjustToDpi(margin);
-    l->setContentsMargins( margin,margin,margin,margin );
-    l->setSpacing(adjustToDpi(spacing));
+    return fg.lightness() > bg.lightness();
 }
 
 void DuUI::setDarkTitleBar(QWidget *widget)
@@ -294,12 +307,18 @@ void DuUI::setDarkTitleBar(QWidget *widget)
     auto hwnd = reinterpret_cast<HWND>(widget->winId());
     HMODULE hUxtheme = LoadLibraryExW(L"uxtheme.dll", NULL, LOAD_LIBRARY_SEARCH_SYSTEM32);
     HMODULE hUser32 = GetModuleHandleW(L"user32.dll");
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wcast-function-type"
+    // clang-format off
+    // Don't touch this!
     fnAllowDarkModeForWindow AllowDarkModeForWindow
         = reinterpret_cast<fnAllowDarkModeForWindow>(GetProcAddress(hUxtheme, MAKEINTRESOURCEA(133)));
     fnSetPreferredAppMode SetPreferredAppMode
         = reinterpret_cast<fnSetPreferredAppMode>(GetProcAddress(hUxtheme, MAKEINTRESOURCEA(135)));
     fnSetWindowCompositionAttribute SetWindowCompositionAttribute
         = reinterpret_cast<fnSetWindowCompositionAttribute>(GetProcAddress(hUser32, "SetWindowCompositionAttribute"));
+    // clang-format on
+#pragma GCC diagnostic pop
 
     SetPreferredAppMode(AllowDark);
     BOOL dark = TRUE;
@@ -313,4 +332,171 @@ void DuUI::setDarkTitleBar(QWidget *widget)
 #else
     Q_UNUSED(widget)
 #endif
+}
+
+QColor DuUI::pullColor(const QColor &color, qreal q)
+{
+    int contrast = DuSettings::i()->get(
+                                      DuSettings::UI_Contrast
+                                      ).toInt();
+    // The foreground is lighter
+    if (negatedTheme())
+        return DuColorUtils::lighter(
+            color,
+            100 + 20*contrast*q
+            );
+
+    return DuColorUtils::darker(
+        color,
+        100 + 20*contrast*q
+        );
+}
+
+QColor DuUI::pushColor(const QColor &color, qreal q)
+{
+    int contrast = DuSettings::i()->get(
+                                      DuSettings::UI_Contrast
+                                      ).toInt();
+    // The background is darker
+    if (negatedTheme())
+        return DuColorUtils::darker(
+            color,
+            100 + 20*contrast*q
+            );
+
+    return DuColorUtils::lighter(
+        color,
+        100 + 20*contrast*q
+        );
+}
+
+QColor DuUI::toForegroundValue(const QColor &color)
+{
+    QColor fgCol = DuSettings::i()->get(
+                                      DuSettings::UI_ForegroundColor
+                                      ).value<QColor>();
+    return QColor::fromHsv(color.hue(), color.saturation(), fgCol.value());
+}
+
+QMainWindow *DuUI::appMainWindow()
+{
+    foreach(QWidget *w, qApp->allWidgets())
+    {
+        if (w->inherits("MainWindow"))
+        {
+            QMainWindow *mw = qobject_cast<QMainWindow*>(w);
+            if (mw) return mw;
+        }
+    }
+    return nullptr;
+}
+
+void DuUI::setupLayout(QLayout *layout, bool isSubLayout)
+{
+    int m = DuSettings::i()->get(DuSettings::UI_Margins).toInt();
+    if (isSubLayout) layout->setContentsMargins(0,0,0,0);
+    else layout->setContentsMargins(m,m,m,m);
+    layout->setSpacing(m);
+}
+
+QBoxLayout *DuUI::createBoxLayout(Qt::Orientation orientation, bool isSubLayout, QWidget *parent)
+{
+    QBoxLayout *layout;
+
+    switch(orientation) {
+    case Qt::Horizontal:
+        layout = new QHBoxLayout(parent);
+        break;
+    case Qt::Vertical:
+        layout = new QVBoxLayout(parent);
+        break;
+    }
+
+    setupLayout(layout, isSubLayout);
+
+    return layout;
+}
+
+QBoxLayout *DuUI::addBoxLayout(Qt::Orientation orientation, QWidget *parent)
+{
+    return createBoxLayout(orientation, false, parent);
+}
+
+QBoxLayout *DuUI::addBoxLayout(Qt::Orientation orientation, QBoxLayout *parent)
+{
+    QBoxLayout *layout = createBoxLayout(orientation, true);
+    parent->addLayout(layout);
+    return layout;
+}
+
+QBoxLayout *DuUI::addBoxLayout(Qt::Orientation orientation, QGridLayout *parent, int row, int column)
+{
+    QBoxLayout *layout = createBoxLayout(orientation, true);
+    parent->addLayout(layout, row, column);
+    return layout;
+}
+
+QBoxLayout *DuUI::addBoxLayout(Qt::Orientation orientation, QFormLayout *parent, const QString label)
+{
+    QBoxLayout *layout = createBoxLayout(orientation, true);
+    if (label == "") parent->addRow(layout);
+    else parent->addRow(label, layout);
+    return layout;
+}
+
+QFormLayout *DuUI::createFormLayout(bool isSubLayout, QWidget *parent)
+{
+    QFormLayout *layout = new QFormLayout(parent);
+    setupLayout(layout, isSubLayout);
+    return layout;
+}
+
+QFormLayout *DuUI::addFormLayout(QWidget *parent)
+{
+    return createFormLayout(false, parent);
+}
+
+QFormLayout *DuUI::addFormLayout(QBoxLayout *parent)
+{
+    QFormLayout *layout = createFormLayout(true);
+    parent->addLayout(layout);
+    return layout;
+}
+
+QGridLayout *DuUI::createGridLayout(bool isSubLayout, QWidget *parent)
+{
+    QGridLayout *layout = new QGridLayout(parent);
+    setupLayout(layout, isSubLayout);
+    return layout;
+}
+
+QGridLayout *DuUI::addGridLayout(QWidget *parent)
+{
+    return createGridLayout(false, parent);
+}
+
+QGridLayout *DuUI::addGridLayout(QBoxLayout *parent)
+{
+    QGridLayout *layout = createGridLayout(true);
+    parent->addLayout(layout);
+    return layout;
+}
+
+QStackedLayout *DuUI::createStackedLayout(bool isSubLayout, QWidget *parent)
+{
+    auto *layout = new QStackedLayout(parent);
+    setupLayout(layout, isSubLayout);
+    return layout;
+}
+
+QWidget *DuUI::addBlock(QLayout *child, QBoxLayout *parent)
+{
+    auto w = new QWidget();
+    w->setProperty("class", "block");
+    w->setLayout(child);
+    parent->addWidget(w);
+
+    setupLayout(child);
+
+    return w;
 }

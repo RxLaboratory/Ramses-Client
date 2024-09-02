@@ -1,5 +1,10 @@
 #include "ramobjectview.h"
 
+#include "qapplication.h"
+#include "qclipboard.h"
+#include "qdir.h"
+#include "qevent.h"
+#include "qmessagebox.h"
 #include "ramobjectsortfilterproxymodel.h"
 #include "timelinemanager.h"
 #include "duqf-app/duui.h"

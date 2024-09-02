@@ -26,7 +26,7 @@ void RamStateBox::changeCurrentState(RamObject *state)
     if (state->color().lightness() > 80) colorStyle += "color: #232323;  ";
     colorStyle = "QComboBox { " + colorStyle + "}";
 
-    DuUI::replaceCSS(this, colorStyle, "stateColor");
+    DuUI::setCSS(this, colorStyle, true);
 
     this->setToolTip(state->name());
     this->repaint();

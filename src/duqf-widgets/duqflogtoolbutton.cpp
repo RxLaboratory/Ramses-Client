@@ -1,6 +1,7 @@
 #include "duqflogtoolbutton.h"
 #include "duqf-widgets/duicon.h"
 #include "duqf-widgets/duqfloggingtextedit.h"
+#include "qpushbutton.h"
 
 DuQFLogToolButton::DuQFLogToolButton(QWidget *parent): QToolButton(parent)
 {

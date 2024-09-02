@@ -1,6 +1,7 @@
 #ifndef SERVEREDITWIDGET_H
 #define SERVEREDITWIDGET_H
 
+#include "qspinbox.h"
 #include <QWidget>
 #include <QHostInfo>
 #include <QMessageBox>

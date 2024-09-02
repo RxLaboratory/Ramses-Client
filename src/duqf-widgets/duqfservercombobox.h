@@ -2,6 +2,7 @@
 #define DUQFSERVERCOMBOBOX_H
 
 #include "duqf-widgets/ducombobox.h"
+#include "qsettings.h"
 
 class DuQFServerComboBox : public DuComboBox
 {

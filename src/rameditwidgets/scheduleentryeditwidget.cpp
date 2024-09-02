@@ -1,5 +1,7 @@
 #include "scheduleentryeditwidget.h"
 
+#include "qformlayout.h"
+#include "qmessagebox.h"
 #include "ramstep.h"
 
 ScheduleEntryEditWidget::ScheduleEntryEditWidget(RamScheduleEntry *entry, QWidget *parent) :

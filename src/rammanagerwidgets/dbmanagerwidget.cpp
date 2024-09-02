@@ -1,6 +1,7 @@
 #include "dbmanagerwidget.h"
 
 #include "dbinterface.h"
+#include "qboxlayout.h"
 #include "ramabstractobject.h"
 
 DBManagerWidget::DBManagerWidget(QWidget *parent)

@@ -1,6 +1,7 @@
 #include "dutreewidget.h"
 #include "duqf-app/duui.h"
 #include "duqf-widgets/duscrollbar.h"
+#include "qevent.h"
 
 DuTreeWidget::DuTreeWidget(QWidget *parent):
     QTreeWidget (parent)

@@ -1,6 +1,7 @@
 #ifndef COLORUTILS_H
 #define COLORUTILS_H
 
+#include "qcolor.h"
 namespace ColorUtils {
 
 QColor interpolateHSL(const QColor &c1, const QColor &c2, qreal v) {

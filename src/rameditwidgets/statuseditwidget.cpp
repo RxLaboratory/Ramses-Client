@@ -573,7 +573,7 @@ void StatusEditWidget::removeSelectedPreviewFile()
 void StatusEditWidget::updatePriorityColor()
 {
     if (!m_status) {
-        DuUI::replaceCSS(ui_priorityBox, "/* Default */", "priorityColor");
+        DuUI::setCSS(ui_priorityBox, "/* Default */");
         return;
     }
 
@@ -581,14 +581,14 @@ void StatusEditWidget::updatePriorityColor()
     QColor color = RamObjectDelegate::priorityColor(p);
 
     if (color.alpha() == 0) {
-        DuUI::replaceCSS(ui_priorityBox, "/* Default */", "priorityColor");
+        DuUI::setCSS(ui_priorityBox, "/* Default */");
         return;
     }
 
     QString colorStyle = "background-color: " + color.name() + "; ";
     if (color.lightness() > 80) colorStyle += "color: #232323;  ";
     colorStyle = "QComboBox { " + colorStyle + "}";
-    DuUI::replaceCSS(ui_priorityBox, colorStyle, "priorityColor");
+    DuUI::setCSS(ui_priorityBox, colorStyle);
 }
 
 void StatusEditWidget::setupUi()

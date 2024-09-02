@@ -1,5 +1,7 @@
 #include "ramapplication.h"
 
+#include <QProcess>
+
 #include "applicationeditwidget.h"
 
 // STATIC //

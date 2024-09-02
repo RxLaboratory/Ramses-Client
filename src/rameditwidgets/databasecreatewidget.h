@@ -2,8 +2,9 @@
 #define DATABASECREATEWIDGET_H
 
 
+#include "datastruct.h"
 #include "duqf-widgets/duqffolderselectorwidget.h"
-#include "localdatainterface.h"
+#include "qtabwidget.h"
 #include "servereditwidget.h"
 #include "duqf-widgets/duscrollarea.h"
 

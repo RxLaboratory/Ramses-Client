@@ -1,5 +1,7 @@
 #include "duqffilelist.h"
 #include "duqf-widgets/duicon.h"
+#include "qdatetime.h"
+#include "qheaderview.h"
 
 DuQFFileList::DuQFFileList(QWidget *parent):
     DuTreeWidget(parent)

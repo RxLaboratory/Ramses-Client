@@ -1,6 +1,8 @@
 #include "databaseeditwidget.h"
 
 #include "duqf-widgets/duicon.h"
+#include "qcheckbox.h"
+#include "qpushbutton.h"
 #include "ramdatainterface/dbinterface.h"
 
 DatabaseEditWidget::DatabaseEditWidget(QWidget *parent) :

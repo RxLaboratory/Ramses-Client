@@ -1,6 +1,7 @@
 #include "ramfiletype.h"
 
 #include "filetypeeditwidget.h"
+#include "qjsonarray.h"
 
 // STATIC //
 

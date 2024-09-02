@@ -4,6 +4,7 @@
 #include <QWidget>
 
 #include "duqf-widgets/dutreewidget.h"
+#include "qfileinfo.h"
 
 class DuQFFileList : public DuTreeWidget
 {

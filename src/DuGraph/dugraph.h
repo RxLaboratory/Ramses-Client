@@ -1,6 +1,10 @@
 #ifndef DUGRAPH_H
 #define DUGRAPH_H
 
+#include "qpoint.h"
+#include "qvariant.h"
+#include <QSet>
+
 class DuGraph
 {
 public:

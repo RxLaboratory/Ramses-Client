@@ -1,5 +1,6 @@
 #include "statisticsdelegate.h"
 
+#include "qapplication.h"
 #include "ramstep.h"
 
 StatisticsDelegate::StatisticsDelegate(QObject *parent) : QStyledItemDelegate(parent)

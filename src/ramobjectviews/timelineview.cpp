@@ -1,5 +1,8 @@
 #include "timelineview.h"
 
+#include "qevent.h"
+#include "qheaderview.h"
+#include "qscrollbar.h"
 #include "ramproject.h"
 #include "timelinemanager.h"
 #include "ramses.h"

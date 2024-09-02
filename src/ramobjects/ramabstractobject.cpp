@@ -1,10 +1,12 @@
 #include "ramabstractobject.h"
 
 #include "duqf-app/app-config.h"
+#include "qtextdocument.h"
 #include "ramuuid.h"
 #include "dbinterface.h"
 #include "ramses.h"
 #include "ramnamemanager.h"
+#include <cmath>
 
 // STATIC //
 

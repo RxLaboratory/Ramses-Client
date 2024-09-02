@@ -7,12 +7,12 @@
 #include <QPointer>
 
 #include "duqf-app/duui.h"
-#include "duqf-app/dusettingsmanager.h"
+#include "duqf-app/dusettings.h"
 #include "qtabbar.h"
 #include "duqf-app/app-version.h"
 
 DuMainWindow::DuMainWindow(QWidget *parent)
-    : QMainWindow{parent}
+    : QGoodWindow{parent}
 {
     qDebug() << "Create Main Window";
     // Build the actions
@@ -20,74 +20,117 @@ DuMainWindow::DuMainWindow(QWidget *parent)
     // Build the window
     setupUi();
     // Build the toolbar
-    setupToolBar();
+    setupTitleBar();
 }
 
 void DuMainWindow::setWindowTitle(const QString &title)
 {
-    if (title != "") QMainWindow::setWindowTitle(QStringLiteral(STR_INTERNALNAME) + " " + QStringLiteral(STR_VERSION) + " - " + title);
-    else QMainWindow::setWindowTitle(QStringLiteral(STR_INTERNALNAME) + " " + QStringLiteral(STR_VERSION));
+    if (title != "") QGoodWindow::setWindowTitle(QStringLiteral(STR_INTERNALNAME) + " - " + title);
+    else QGoodWindow::setWindowTitle(QStringLiteral(STR_INTERNALNAME));
+    ui_titleLabel->setText(QStringLiteral(STR_INTERNALNAME) + " - " + title);
 }
 
 void DuMainWindow::addDockWidget(Qt::DockWidgetArea area, DuDockWidget *dockwidget)
 {
-    QMainWindow::addDockWidget(area, dockwidget);
-    dockwidget->installEventFilter(this);
+    ui_centralMainWidget->addDockWidget(area, dockwidget);
+    dockwidget->installEventFilter(m_dockEventFilter);
+    connect(dockwidget, &QDockWidget::dockLocationChanged,
+            this, &DuMainWindow::setDockIcons);
     ui_docks << dockwidget;
+}
+
+const QVector<DuDockWidget *> &DuMainWindow::docks() const
+{
+    return ui_docks;
+}
+
+void DuMainWindow::closeEvent(QCloseEvent *event)
+{
+    DuSettings::i()->set(
+        DuSettings::UI_WindowGeometry,
+        this->saveGeometry()
+        );
+    DuSettings::i()->set(
+        DuSettings::UI_WindowState,
+        this->saveState()
+        );
+    QGoodWindow::closeEvent(event);
+}
+
+void DuMainWindow::hideTitle()
+{
+    ui_titleLabel->setVisible(false);
+}
+
+void DuMainWindow::hideAllDocks()
+{
+    for(auto dock: qAsConst(ui_docks))
+        dock->hide();
 }
 
 void DuMainWindow::setupUi()
 {
-    this->setWindowIcon(QIcon(APP_ICON));
-    QMainWindow::setWindowTitle(QStringLiteral(STR_FILEDESCRIPTION) + " " + QStringLiteral(STR_VERSION));
+    ui_goodCentralWidget = new QGoodCentralWidget(this);
+    // Setup the good central widget
+    ui_goodCentralWidget->setActiveBorderColor(
+        DuUI::pushColor(
+            DuSettings::i()->get(DuSettings::UI_BackgroundColor).value<QColor>(), 1.5
+            ));
+    ui_goodCentralWidget->setTitleVisible(false);
+    ui_goodCentralWidget->setIconVisibility(QGoodCentralWidget::IconVisibilityType::IconHiddenAcceptMouseInput);
 
-    QWidget *centralWidget = new QWidget(this);
-    this->setCentralWidget(centralWidget);
 
-    ui_mainLayout = new QVBoxLayout(centralWidget);
+    // Contents of the window
+    // Needs a child mainwindow for the docks
+    ui_centralMainWidget = new QMainWindow(this);
+    QWidget *centralWidget = new QWidget(ui_centralMainWidget);
+    ui_mainLayout = DuUI::createBoxLayout(Qt::Vertical, true, centralWidget);
+    // set as central widget
+    ui_centralMainWidget->setCentralWidget(centralWidget);
+    // Add it to the good central widget
+    ui_goodCentralWidget->setCentralWidget(ui_centralMainWidget);
+
+    //Set the central widget of QGoodWindow which is QGoodCentralWidget
+    this->setCentralWidget(ui_goodCentralWidget);
+
+    // A Label for the title
+    ui_titleLabel = new QLabel(STR_INTERNALNAME);
+    ui_titleLabel->setAttribute(Qt::WA_TransparentForMouseEvents);
+    ui_goodCentralWidget->setRightTitleBarWidget(ui_titleLabel);
+
+    // Dock event filter
+    m_dockEventFilter = new DuDockEventFilter(this);
+    connect(m_dockEventFilter, &DuDockEventFilter::dockVisibilityChanged, this, &DuMainWindow::setDockVisible);
 }
 
-void DuMainWindow::setupToolBar()
+void DuMainWindow::setupTitleBar()
 {
     ui_mainToolBar = new QToolBar(this);
     ui_mainToolBar->setMovable(false);
-    this->addToolBar(Qt::TopToolBarArea, ui_mainToolBar);
-
-// === Adjust toolbar Settings ===
-
-#ifdef Q_OS_WIN
-    ui_mainToolBar->setProperty("osClass", "win");
-#elif defined(Q_OS_MAC)
-    ui_mainToolBar->setProperty("osClass", "mac");
-#elif defined(Q_OS_LINUX)
-    ui_mainToolBar->setProperty("osClass", "linux");
-#endif
-    ui_mainToolBar->installEventFilter(this);
+    ui_goodCentralWidget->setLeftTitleBarWidget(ui_mainToolBar, true);
 
     // Appearance
     ui_mainToolBar->setObjectName("mainToolBar");
-    ui_mainToolBar->setIconSize(
-        DuUI::adjustToDpi(QSize(16,16))
-        );
+    ui_mainToolBar->setIconSize( QSize(16,16) );
     ui_mainToolBar->setWindowTitle(QString(STR_FILEDESCRIPTION) + " main toolbar");
-    ui_mainToolBar->setStyleSheet( DuUI::css("mainToolBar") );
 
     // remove right click on toolbar
     ui_mainToolBar->setContextMenuPolicy(Qt::PreventContextMenu);
+
+    this->setWindowIcon(QIcon(":/icons/app"));
+    this->setWindowTitle(QStringLiteral(STR_INTERNALNAME));
 }
 
-void DuMainWindow::setDockVisible(DuDockWidget *w, bool visible)
+void DuMainWindow::setDockVisible(QDockWidget *w, bool visible)
 {
     // If it's already visible, call show
     if (w->isVisible() == visible) {
         w->setVisible(visible);
-        m_dockInteraction = nullptr;
         return;
     }
     // If the dock is floating, just show
     if (w->isFloating()) {
         w->setVisible(visible);
-        m_dockInteraction = nullptr;
         return;
     }
     // Same if it's tabbed with other (visible and docked) widgets
@@ -95,7 +138,6 @@ void DuMainWindow::setDockVisible(DuDockWidget *w, bool visible)
     for(auto tab: tabs) {
         if (tab->isVisible() == visible && !tab->isFloating()) {
             w->setVisible(visible);
-            m_dockInteraction = nullptr;
             return;
         }
     }
@@ -129,12 +171,20 @@ void DuMainWindow::setDockVisible(DuDockWidget *w, bool visible)
     // Get/Set the size
     QSize s;
     if (visible) {
-        s = DuSettingsManager::instance()->uiDockSize( w->objectName() );
+        s = DuSettings::i()->get(
+                               DuSettings::UI_DockSize,
+                               QVariant(),
+                               w->objectName()
+                               ).toSize();
         if (s.isEmpty()) s = w->sizeHint();
     }
     else {
         s = w->size();
-        DuSettingsManager::instance()->setUIDockSize( w->objectName(),s );
+        DuSettings::i()->set(
+            DuSettings::UI_DockSize,
+            s,
+            w->objectName()
+            );
     }
 
     Qt::DockWidgetArea a = dockWidgetArea(w);
@@ -168,12 +218,12 @@ void DuMainWindow::setDockVisible(DuDockWidget *w, bool visible)
     // Animate
     connect(anim, &QVariantAnimation::valueChanged,
             this, [this, w, o](QVariant v){
-                resizeDocks({w}, {v.toInt()}, o);
+                ui_centralMainWidget->resizeDocks({w}, {v.toInt()}, o);
             });
 
     // Restore current values
     connect(anim, &QVariantAnimation::finished,
-            this, [this, anim, w, wi, tb, cP, cS, cTP, cTS, visible] {
+            this, [ this, anim, w, wi, tb, cP, cS, cTP, cTS, visible] {
                 if (wi) {
                     wi->setSizePolicy(cP);
                     wi->setMinimumSize(cS);
@@ -182,15 +232,22 @@ void DuMainWindow::setDockVisible(DuDockWidget *w, bool visible)
                     tb->setSizePolicy(cTP);
                     tb->setMinimumSize(cTS);
                 }
-                if (!visible) w->hide();
+                if (!visible) {
+                    // Actually hide
+                    m_dockEventFilter->suspend(true);
+                    w->hide();
+                    m_dockEventFilter->suspend(false);
+                }
                 anim->deleteLater();
-                m_dockInteraction = nullptr;
             });
 
-    if (visible) resizeDocks({w}, {1}, o);
-    anim->start(QVariantAnimation::DeleteWhenStopped);
+    // Show right now
+    if (visible) {
+        ui_centralMainWidget->resizeDocks({w}, {1}, o);
+        w->show();
+    }
 
-    if (visible) w->show();
+    anim->start(QVariantAnimation::DeleteWhenStopped);
     setDockIcons();
 }
 
@@ -214,105 +271,70 @@ void DuMainWindow::setDockIcons()
     }
 }
 
-bool DuMainWindow::eventFilter(QObject *obj, QEvent *event)
+void DuMainWindow::setStyle()
 {
-    // Check the object
-    bool onToolbar = obj == ui_mainToolBar;
-    bool onDock = false;
-    auto dock = qobject_cast<DuDockWidget*>(obj);
-    if (dock) onDock = true;
+    // Extact fonts
+    DuUI::addApplicationFonts();
+    // Set CSS
+    DuUI::setAppCss( DuUI::css() );
+    DuUI::setAppToolButtonStyle(
+        static_cast<Qt::ToolButtonStyle>(
+            DuSettings::i()->get(DuSettings::UI_ToolButtonStyle).toInt()
+            )
+        );
+}
+
+void DuMainWindow::setupActions()
+{
+
+}
+
+bool DuDockEventFilter::eventFilter(QObject *obj, QEvent *event)
+{
+    // Check the object, shouldn't be installed on something else
+    auto dock = qobject_cast<QDockWidget*>(obj);
+    Q_ASSERT(dock);
 
     // Check type
     auto type = event->type();
 
     if (type == QEvent::MouseButtonPress)
     {
-        if (onDock) m_dockInteraction = dock;
-        if (onToolbar) {
-            QMouseEvent *mouseEvent = (QMouseEvent*)event;
-            if (mouseEvent->button() == Qt::LeftButton)
-            {
-                m_toolBarClicked = true;
-                m_dragPosition = mouseEvent->globalPos() - this->frameGeometry().topLeft();
-                event->accept();
-            }
-            return true;
-        }
-    }
-    else if (type == QEvent::MouseMove)
-    {
-        if (onToolbar) {
-            if (this->isMaximized()) return false;
-            QMouseEvent *mouseEvent = (QMouseEvent*)event;
-            if (mouseEvent->buttons() & Qt::LeftButton && m_toolBarClicked)
-            {
-                this->move(mouseEvent->globalPos() - m_dragPosition);
-                event->accept();
-            }
-            return true;
-        }
+        m_suspended = true;
+        event->ignore();
+        return false;
     }
     else if (type == QEvent::MouseButtonRelease)
     {
-        if (onDock) m_dockInteraction = nullptr;
-        if (onToolbar) {
-            m_toolBarClicked = false;
-            return true;
-        }
-    }
-#ifndef Q_OS_MAC
-    else if (type == QEvent::MouseButtonDblClick)
-    {
-        if (onToolbar) {
-            if (this->isMaximized()) this->showNormal();
-            else this->showMaximized();
-            event->accept();
-            return true;
-        }
-    }
-#endif
-    else if (type == QEvent::Show || type == QEvent::Hide) {
-        if (onDock && !m_dockInteraction) {
-            m_dockInteraction = dock;
-            // Revert
-            bool v = type == QEvent::Show;
-            dock->setVisible(!v);
-            // Animate
-            setDockVisible(dock, v);
-            event->accept();
-            return true;
-        }
+        m_suspended = false;
+        event->ignore();
+        return false;
     }
 
-    // standard event processing
-    return QObject::eventFilter(obj, event);
-}
+    // Skip and propagate
+    if (m_suspended)
+        return false;
 
-void DuMainWindow::setStyle()
-{
-    DuUI::setDarkTitleBar(this);
-    // Font first so it's available in the css
-    DuUI::setFont("Ubuntu");
-    DuUI::setAppCss( DuUI::css() );
-    DuUI::setAppToolButtonStyle(
-        DuSettingsManager::instance()->uiToolButtonStyle()
-        );
-}
+    // If we're showing or hiding
+    if (type == QEvent::Show || type == QEvent::Hide) {
+        // Start interaction
+        m_suspended = true;
 
-void DuMainWindow::setupActions()
-{
-#ifdef Q_OS_WIN
-    m_minimizeAction = new DuAction(this);
-    m_minimizeAction->setIcon(DuIcon(":/icons/minimize"));
+        // Revert
+        bool v = type == QEvent::Show;
+        dock->setVisible(!v);
+        // Animate
+        emit dockVisibilityChanged(dock, v);
 
-    m_maximizeAction = new DuAction(this);
-    auto maximizeIcon = new DuSVGIconEngine(":/icons/move-up");
-    maximizeIcon->setCheckedFile(":/icons/move-down");
-    maximizeIcon->setCheckedColor( maximizeIcon->mainColor() );
-    m_maximizeAction->setIcon(maximizeIcon);
-    m_maximizeAction->setCheckable(true);
+        // Done
+        event->accept();
+        // Finish interaction
+        m_suspended = false;
+        // Stop propagation
+        return true;
+    }
 
-    m_closeAction = new DuAction(this);
-    m_closeAction->setIcon(DuIcon(":/icons/close"));
-#endif // WIN
+    // propagate event
+    event->ignore();
+    return false;
 }

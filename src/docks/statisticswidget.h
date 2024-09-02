@@ -5,6 +5,7 @@
 #include <QVBoxLayout>
 #include <QGridLayout>
 
+#include "qlabel.h"
 #include "ramobjectcombobox.h"
 #include "statisticsview.h"
 #include "smallwidgets/progresswidget.h"

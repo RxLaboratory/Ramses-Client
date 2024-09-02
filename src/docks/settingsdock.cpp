@@ -4,6 +4,7 @@
 #include "duqf-app/duui.h"
 #include "duqf-widgets/duqfupdatedialog.h"
 #include "daemon.h"
+#include "qformlayout.h"
 
 SettingsDock::SettingsDock(QWidget *parent)
     : DuScrollArea{parent}
@@ -25,11 +26,8 @@ void SettingsDock::setupUi()
     dummy->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
 
     auto *mainLayout = new QVBoxLayout(dummy);
-    mainLayout->setSpacing(DuUI::adjustToDpi(5));
-    mainLayout->setContentsMargins(DuUI::adjustToDpi(6),
-                                   DuUI::adjustToDpi(6),
-                                   DuUI::adjustToDpi(6),
-                                   DuUI::adjustToDpi(6));
+    mainLayout->setSpacing(5);
+    mainLayout->setContentsMargins(6,6,6,6);
 
     ui_tabWidget = new DuTabWidget(dummy);
     ui_tabWidget->setTabPosition(QTabWidget::West);

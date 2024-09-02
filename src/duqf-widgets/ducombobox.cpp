@@ -1,5 +1,6 @@
 #include "ducombobox.h"
 #include "duqf-app/duui.h"
+#include "qabstractitemview.h"
 
 DuComboBox::DuComboBox(QWidget *parent) : QComboBox(parent)
 {

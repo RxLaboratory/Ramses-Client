@@ -3,8 +3,6 @@
 
 #include <QDoubleSpinBox>
 
-#include "duqf-widgets/autoselectlineedit.h"
-
 class AutoSelectDoubleSpinBox : public QDoubleSpinBox
 {
 public:

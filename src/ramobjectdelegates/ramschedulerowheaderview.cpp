@@ -1,5 +1,8 @@
 #include "ramschedulerowheaderview.h"
 
+#include "qevent.h"
+#include "qpainter.h"
+#include "qpainterpath.h"
 #include "ramses.h"
 
 RamScheduleRowHeaderView::RamScheduleRowHeaderView(QWidget *parent):

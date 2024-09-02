@@ -1,6 +1,9 @@
 #ifndef LOGINDIALOG_H
 #define LOGINDIALOG_H
 
+#include "qcheckbox.h"
+#include "qlabel.h"
+#include "qlineedit.h"
 #include <QDialog>
 
 class LoginDialog : public QDialog

@@ -1,6 +1,7 @@
 #ifndef RAMABSTRACTOBJECTMODEL_H
 #define RAMABSTRACTOBJECTMODEL_H
 
+#include "qabstractitemmodel.h"
 #include "ramabstractdatamodel.h"
 
 /**

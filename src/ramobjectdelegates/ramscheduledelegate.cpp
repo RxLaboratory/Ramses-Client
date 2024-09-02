@@ -1,6 +1,7 @@
 #include "ramscheduledelegate.h"
 
 #include "mainwindow.h"
+#include "qabstracttextdocumentlayout.h"
 #include "ramses.h"
 #include "ramscheduleentry.h"
 #include "ramstatustablemodel.h"

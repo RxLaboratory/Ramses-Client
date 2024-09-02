@@ -1,6 +1,9 @@
 #ifndef DATASTRUCT_H
 #define DATASTRUCT_H
 
+#include <QNetworkRequest>
+#include <QSet>
+
 struct ServerConfig {
     QString address = "";
     int updateDelay = 60000;

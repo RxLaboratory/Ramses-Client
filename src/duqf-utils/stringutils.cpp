@@ -1,4 +1,6 @@
 #include "stringutils.h"
+#include "qlocale.h"
+#include "qregularexpression.h"
 
 QString StringUtils::toTitleCase(const QString &str) {
     QLocale locale;

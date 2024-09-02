@@ -1,5 +1,7 @@
 #include "consolewidget.h"
 #include "duqf-widgets/duicon.h"
+#include "qboxlayout.h"
+#include "qsettings.h"
 
 ConsoleWidget::ConsoleWidget(QWidget *parent)
     : QFrame{parent}

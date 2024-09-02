@@ -1,4 +1,7 @@
 #include "objectlistwidget.h"
+
+#include <QDesktopServices>
+
 #include "duqf-app/app-version.h"
 
 #include "duqf-widgets/duicon.h"

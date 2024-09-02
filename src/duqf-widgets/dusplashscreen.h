@@ -24,13 +24,13 @@ public:
         _progressBar = new QProgressBar(this);
         _progressBar->setMinimumWidth( pixmap.width() );
         _progressBar->setMaximumWidth( pixmap.width() );
-        _progressBar->move( 0, pixmap.height() - DuUI::adjustToDpi(25));
+        _progressBar->move( 0, pixmap.height() - 25);
         _progressBar->setAlignment(Qt::AlignVCenter);
         //add a label for the version
         _versionLabel = new QLabel("v" + QString(STR_VERSION), this);
         _versionLabel->setMinimumWidth( pixmap.width() );
         _versionLabel->setMaximumWidth( pixmap.width() );
-        _versionLabel->move( 0, pixmap.height() - DuUI::adjustToDpi(40));
+        _versionLabel->move( 0, pixmap.height() - 40);
     }
 
 public slots:

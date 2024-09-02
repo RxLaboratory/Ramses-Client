@@ -1,4 +1,6 @@
 #include "duapplication.h"
+#include "qjsondocument.h"
+#include "qtimer.h"
 
 #ifdef Q_OS_WIN
 #include "windows.h"
@@ -8,6 +10,9 @@
 #include <QPixmap>
 #include <QIcon>
 #include <QVersionNumber>
+#include <QProcess>
+#include <QSysInfo>
+#include <QStringBuilder>
 
 #include "duqf-app/app-version.h"
 #include "dusettingsmanager.h"

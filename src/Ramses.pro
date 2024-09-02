@@ -5,7 +5,10 @@ QT       += core gui \
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = Ramses
+# On linux, it's more standard to use lower case names
+unix:!macx { TARGET = ramses }
+else { TARGET = DuME }
+
 TEMPLATE = app
 
 # The following define makes your compiler emit warnings if you use
@@ -20,12 +23,6 @@ CONFIG += c++11
 # You can make your code fail to compile if it uses deprecated APIs.
 # In order to do so, uncomment the following line.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
-
-# Try to speed up build with precompiled headers
-PRECOMPILED_HEADER = pch/pch.h \
-    pch/duwidgets_pch.h
-
-CONFIG += precompile_header
 
 INCLUDEPATH += rameditwidgets \
     settingswidgets \
@@ -43,12 +40,14 @@ INCLUDEPATH += rameditwidgets \
 SOURCES += \
     DuGraph/dugraph.cpp \
     docks/settingsdock.cpp \
-    duqf-app/duapplication.cpp \
+    duqf-app/app-utils.cpp \
     duqf-app/ducli.cpp \
     duqf-app/dulogger.cpp \
+    duqf-app/dusettings.cpp \
     duqf-app/dusettingsmanager.cpp \
     duqf-app/dustyle.cpp \
     duqf-app/duui.cpp \
+    duqf-utils/ducolorutils.cpp \
     duqf-utils/stringutils.cpp \
     duqf-widgets/duaction.cpp \
     duqf-widgets/ducolorselector.cpp \
@@ -236,13 +235,15 @@ HEADERS += \
     DuGraph/dugraph.h \
     config.h \
     docks/settingsdock.h \
-    duqf-app/duapplication.h \
+    duqf-app/app-utils.h \
     duqf-app/ducli.h \
     duqf-app/dulogger.h \
+    duqf-app/dusettings.h \
     duqf-app/dusettingsmanager.h \
     duqf-app/dustyle.h \
     duqf-app/duui.h \
     duqf-utils/colorutils.h \
+    duqf-utils/ducolorutils.h \
     duqf-utils/stringutils.h \
     duqf-widgets/duaction.h \
     duqf-widgets/ducolorselector.h \
@@ -268,7 +269,6 @@ HEADERS += \
     duqf-widgets/dutreewidget.h \
     duqf-widgets/settingswidget.h \
     enums.h \
-    pch/duwidgets_pch.h \
     progressmanager.h \
     ramdatainterface/datastruct.h \
     rameditwidgets/objectupdateblocker.h \
@@ -438,6 +438,9 @@ FORMS += \
     mainwindow.ui \
     pipeline-editor/pipelinewidget.ui \
     smallwidgets/shotscreationdialog.ui
+
+include($$PWD/../include/QGoodWindow/QGoodWindow/QGoodWindow.pri)
+include($$PWD/../include/QGoodWindow/QGoodCentralWidget/QGoodCentralWidget.pri)
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

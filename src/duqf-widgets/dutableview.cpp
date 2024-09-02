@@ -1,6 +1,8 @@
 #include "dutableview.h"
 #include "duqf-widgets/duscrollbar.h"
 #include "duqf-app/duui.h"
+#include "qevent.h"
+#include "qheaderview.h"
 
 DuTableView::DuTableView(QWidget *parent):
     QTableView(parent)

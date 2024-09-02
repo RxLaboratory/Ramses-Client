@@ -1,9 +1,10 @@
 #ifndef DUUI_H
 #define DUUI_H
 
-#include <QString>
-#include <QWidget>
 #include <QCommandLineParser>
+#include <QStackedLayout>
+#include <QMainWindow>
+#include <QFormLayout>
 
 #ifdef Q_OS_WIN
 #include "dwmapi.h"
@@ -12,13 +13,29 @@
 class DuSplashScreen;
 
 /**
- * @brief The DuUI class
- * @version 1.2.0 Add setDarkTitleBar
+ * @brief The DuUI class provides UI Tools
+ * @version 1.1.0 Add Layout methods & toolbutton style
  */
 class DuUI
 {
 public:
+
+    // BUILD UI
+
+    /**
+     * @brief Set the correct flags for the app to be scaled on HiDPI/Retina screens
+     * This function must be called before the UI is created, at the beginning of main()
+     */
+    static void setUseHDPI();
+    /**
+     * @brief Create and show a MainWindow instance.
+     * @param cli The command line parser which will be passed to the MainWindow.
+     * @param s The splash screen used during main() which will be hidden when the MainWindow is ready.
+     */
     static void buildUI(const QCommandLineParser &cli, DuSplashScreen *s);
+
+    // STYLESHEETS
+
     /**
      * @brief Gets a stylesheet for a specific css class
      * @param cssClass The name of the class
@@ -27,11 +44,10 @@ public:
      * which is ":/styles/default"
      * @return the style sheets
      */
-    static QString css(const QString &cssClass = "default", bool loadSettings = true);
+    static QString css(const QString &cssClass = "", bool loadSettings = true);
     static void setCSS(QWidget *w, const QString &css, bool loadSettings = true);
     static void addCSS(QWidget *w, const QString &cssClass, bool loadSettings = true);
     static void addCustomCSS(QWidget *w, const QString &customCSS, bool loadSettings = true);
-    static void replaceCSS(QWidget *w, const QString &css, const QString &where);
     static QString setCSSVars(const QString &css, bool loadSettings = true);
     /**
      * @brief The list of variables used in css in the form { "@key": "value" }.
@@ -44,11 +60,13 @@ public:
      * @param css
      */
     static void setAppCss(QString css);
+
+    // FONTS
+
     /**
-     * @brief Sets the application tool buttons style
-     * @param styleIndex
+     * @brief Adds all fonts from :/fonts/ to the application
      */
-    static void setAppToolButtonStyle(Qt::ToolButtonStyle style);
+    static void addApplicationFonts();
     /**
      * @brief Sets the font for the whole app
      * @param family
@@ -57,14 +75,47 @@ public:
      */
     static void setFont(QString family = "Ubuntu", int size=10, int weight=400);
 
-    static qreal desktopScale();
-    static int adjustToDpi(int px);
-    static qreal adjustToDpi(qreal px);
-    static QSize adjustToDpi(const QSize &s);
+    // THEMES
 
-    static void setupLayout(QLayout *l, int margin, int spacing = -1);
-
+    static bool negatedTheme();
     static void setDarkTitleBar(QWidget *widget);
+    static QColor pullColor(const QColor &color, qreal q = 1.0);
+    static QColor pushColor(const QColor &color, qreal q = 1.0);
+    static QColor toForegroundValue(const QColor &color);
+
+    // OTHER STYLE OPTIONS
+
+    /**
+     * @brief Sets the application tool buttons style
+     * @param styleIndex
+     */
+    static void setAppToolButtonStyle(Qt::ToolButtonStyle style);
+
+    // UTILS
+
+    static QMainWindow *appMainWindow();
+
+    // UI Creation
+
+    static void setupLayout(QLayout *layout, bool isSubLayout = false);
+
+    static QBoxLayout *createBoxLayout(Qt::Orientation orientation = Qt::Vertical, bool isSubLayout = true, QWidget *parent = nullptr);
+    static QBoxLayout *addBoxLayout(Qt::Orientation orientation, QWidget *parent);
+    static QBoxLayout *addBoxLayout(Qt::Orientation orientation, QBoxLayout *parent);
+    static QBoxLayout *addBoxLayout(Qt::Orientation orientation, QGridLayout *parent, int row, int column);
+    static QBoxLayout *addBoxLayout(Qt::Orientation orientation, QFormLayout *parent, const QString label = "");
+
+    static QFormLayout *createFormLayout(bool isSubLayout = true, QWidget *parent = nullptr);
+    static QFormLayout *addFormLayout(QWidget *parent);
+    static QFormLayout *addFormLayout(QBoxLayout *parent);
+
+    static QGridLayout *createGridLayout(bool isSubLayout = true, QWidget *parent = nullptr);
+    static QGridLayout *addGridLayout(QWidget *parent);
+    static QGridLayout *addGridLayout(QBoxLayout *parent);
+
+    static QStackedLayout *createStackedLayout(bool isSubLayout = true, QWidget *parent = nullptr);
+
+    static QWidget *addBlock(QLayout *child, QBoxLayout *parent);
 
 protected:
     const static QRegularExpression _cssVarsRE;

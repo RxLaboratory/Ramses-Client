@@ -6,6 +6,7 @@
 #include "duqf-widgets/dulineedit.h"
 #include "duqf-widgets/duqfcolorselector.h"
 #include "duqf-widgets/duqftextedit.h"
+#include "qdatetimeedit.h"
 #include "ramobjectcombobox.h"
 #include "ramuser.h"
 #include "ramscheduleentry.h"

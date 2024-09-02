@@ -91,7 +91,7 @@ void ShotEditWidget::secondsChanged()
     m_duration = ui_secondsBox->value();
 
     QSignalBlocker b(ui_framesBox);
-    ui_framesBox->setValue( std::round(m_duration * proj->framerate()) );
+    ui_framesBox->setValue( qRound(m_duration * proj->framerate()) );
 }
 
 void ShotEditWidget::setupUi()

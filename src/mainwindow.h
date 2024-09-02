@@ -42,9 +42,6 @@ public:
 
     void setPropertiesDockWidget(QWidget *w, QString title = "Properties", QString icon = ":/icons/asset");
 
-    // Used by frameless window
-    void setMaximizedState(bool maximized);
-
 public slots:
     void hidePropertiesDock();
 

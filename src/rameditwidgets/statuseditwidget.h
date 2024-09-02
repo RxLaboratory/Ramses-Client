@@ -16,6 +16,7 @@
 #include "duqf-widgets/duqffolderdisplaywidget.h"
 #include "duqf-widgets/duqffilelist.h"
 #include "objecteditwidget.h"
+#include "qdatetimeedit.h"
 #include "ramstatebox.h"
 #include "ramstatus.h"
 

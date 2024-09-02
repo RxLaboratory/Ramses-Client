@@ -13,7 +13,7 @@ DuDockTitleWidget::DuDockTitleWidget(QString title, QWidget *parent) : QWidget(p
 
     _layout = new QHBoxLayout(mainFrame);
     _layout->setContentsMargins(16,0,6,0);
-    _layout->setSpacing(DuUI::adjustToDpi(3));
+    _layout->setSpacing(3);
 
     _iconLabel = new QLabel(this);
     _iconLabel->setScaledContents(true);
@@ -25,9 +25,7 @@ DuDockTitleWidget::DuDockTitleWidget(QString title, QWidget *parent) : QWidget(p
 
     _menuButton = new QToolButton(this);
     _menuButton->setIcon(DuIcon(":/icons/list"));
-    _menuButton->setFixedSize(
-        DuUI::adjustToDpi(QSize(22,22))
-        );
+    _menuButton->setFixedSize(QSize(22,22));
     _menuButton->setToolTip(tr("Presets and options"));
     _menuButton->setPopupMode(QToolButton::InstantPopup);
     _menuButton->setVisible(false);
@@ -35,9 +33,7 @@ DuDockTitleWidget::DuDockTitleWidget(QString title, QWidget *parent) : QWidget(p
 
     QToolButton *closeButton = new QToolButton(this);
     closeButton->setIcon(DuIcon(":/icons/close"));
-    closeButton->setFixedSize(
-        DuUI::adjustToDpi(QSize(24,24))
-        );
+    closeButton->setFixedSize(QSize(24,24));
     closeButton->setObjectName("windowButton");
 
     _layout->addWidget(closeButton);
@@ -53,9 +49,7 @@ DuDockTitleWidget::DuDockTitleWidget(QString title, QWidget *parent) : QWidget(p
     connect(closeButton, &QToolButton::clicked, this, &DuDockTitleWidget::closeDockWidget);
 
     // Set a minimum size
-    this->setMinimumSize(
-        DuUI::adjustToDpi(QSize(28,28))
-        );
+    this->setMinimumSize(QSize(28,28));
     // But make the frame shrinkable as much as possible
     mainFrame->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     mainFrame->setMinimumSize(1,1);
@@ -83,9 +77,7 @@ void DuDockTitleWidget::setMenu(QMenu *menu)
 void DuDockTitleWidget::addActionButton(QAction *action)
 {
     QToolButton *b = new QToolButton(this);
-    b->setFixedSize(
-        DuUI::adjustToDpi(QSize(22,22))
-        );
+    b->setFixedSize(QSize(22,22));
     b->setDefaultAction(action);
     _layout->insertWidget(2, b);
     _actionButtons << b;

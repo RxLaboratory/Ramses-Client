@@ -1,5 +1,7 @@
 #include "mainwindow.h"
 
+#include <QFontDatabase>
+
 #include "assetgroupmanagerwidget.h"
 #include "assetmanagerwidget.h"
 #include "duqf-app/dusettingsmanager.h"
@@ -193,12 +195,6 @@ void MainWindow::setPropertiesDockWidget(QWidget *w, QString title, QString icon
     ui_propertiesDockWidget->show();
 }
 
-void MainWindow::setMaximizedState(bool maximized)
-{
-    m_maximizeAction->setChecked(maximized);
-    m_maximized = maximized;
-}
-
 void MainWindow::hidePropertiesDock()
 {
     ui_propertiesDockWidget->hide();
@@ -206,8 +202,6 @@ void MainWindow::hidePropertiesDock()
 
 void MainWindow::onQuit()
 {
-
-
     QFontDatabase::removeAllApplicationFonts();
     trayIcon->hide();
 }
@@ -217,7 +211,7 @@ void MainWindow::raise()
     qDebug() << "Hello!";
     this->show();
     this->setWindowState( (windowState() & ~Qt::WindowMinimized) | Qt::WindowActive);
-    this->raise();  // for MacOS
+    DuMainWindow::raise();  // for MacOS
     this->activateWindow(); // for Windows
 }
 
@@ -687,10 +681,6 @@ void MainWindow::closeEvent(QCloseEvent *event)
         else m_readyToClose = true;
     }
 
-    if (m_readyToClose)
-    {
-        emit closeTriggered();
-    }
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *key)

@@ -1,6 +1,10 @@
 #ifndef DUSETTINGSMANAGER_H
 #define DUSETTINGSMANAGER_H
 
+#include <QObject>
+#include <QSettings>
+#include <QColor>
+
 #include "enums.h"
 
 class DuSettingsManager : public QObject

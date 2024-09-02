@@ -1,4 +1,7 @@
 ﻿#include "dbinterface.h"
+
+#include <QInputDialog>
+
 #include "duqf-utils/guiutils.h"
 #include "progressmanager.h"
 #include "statemanager.h"

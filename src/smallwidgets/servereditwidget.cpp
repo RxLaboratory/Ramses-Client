@@ -1,4 +1,11 @@
 #include "servereditwidget.h"
+#include "qcheckbox.h"
+#include "qgridlayout.h"
+#include "qlabel.h"
+#include "qlineedit.h"
+#include "qpushbutton.h"
+#include "qurl.h"
+#include <QDesktopServices>
 
 ServerEditWidget::ServerEditWidget(QWidget *parent)
     : QWidget{parent}

@@ -1,6 +1,7 @@
 #ifndef RAMSCHEDULEFILTERPROXYMODEL_H
 #define RAMSCHEDULEFILTERPROXYMODEL_H
 
+#include "qsortfilterproxymodel.h"
 
 class RamScheduleFilterProxyModel : public QSortFilterProxyModel
 {

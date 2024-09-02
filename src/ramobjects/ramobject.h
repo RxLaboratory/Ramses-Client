@@ -7,6 +7,8 @@
 #include <QStringBuilder>
 #include <QMetaEnum>
 
+#include "qframe.h"
+#include "qjsonobject.h"
 #include "ramabstractobject.h"
 
 class ObjectDockWidget;

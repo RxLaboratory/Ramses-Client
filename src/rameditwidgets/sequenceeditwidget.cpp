@@ -1,5 +1,6 @@
 #include "sequenceeditwidget.h"
 
+#include "qcheckbox.h"
 #include "ramsequence.h"
 #include "ramshot.h"
 

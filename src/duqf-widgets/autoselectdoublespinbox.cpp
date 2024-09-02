@@ -1,4 +1,5 @@
 #include "autoselectdoublespinbox.h"
+#include "duqf-widgets/autoselectlineedit.h"
 
 AutoSelectDoubleSpinBox::AutoSelectDoubleSpinBox(QWidget *parent): QDoubleSpinBox(parent)
 {

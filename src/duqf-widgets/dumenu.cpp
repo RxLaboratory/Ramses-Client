@@ -1,6 +1,7 @@
 #include "dumenu.h"
 #include "duqf-widgets/dushadow.h"
 #include "duqf-app/duui.h"
+#include "qevent.h"
 
 DuMenu::DuMenu(const QString &title, QWidget *parent):
     QMenu(title, parent)

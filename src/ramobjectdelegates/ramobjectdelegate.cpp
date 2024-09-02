@@ -5,6 +5,9 @@
 #include "duqf-widgets/duicon.h"
 #include "duqf-utils/colorutils.h"
 #include "duqf-utils/utils.h"
+#include "qabstracttextdocumentlayout.h"
+#include "qapplication.h"
+#include "qtextdocument.h"
 
 PaintParameters RamObjectDelegate::getPaintParameters(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {

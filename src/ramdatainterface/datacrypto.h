@@ -1,6 +1,8 @@
 #ifndef DATACRYPTO_H
 #define DATACRYPTO_H
 
+#include <QString>
+
 #include "duqf-app/app-config.h"
 
 class DataCrypto

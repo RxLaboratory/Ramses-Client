@@ -1,6 +1,7 @@
 #include "duqfnodeview.h"
 #include "duqf-app/dusettingsmanager.h"
 #include "duqf-widgets/duscrollbar.h"
+#include "qdebug.h"
 
 DuQFNodeView::DuQFNodeView(QWidget *parent): QGraphicsView(parent)
 {

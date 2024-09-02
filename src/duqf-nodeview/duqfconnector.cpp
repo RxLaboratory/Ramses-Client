@@ -1,4 +1,7 @@
 #include "duqfconnector.h"
+
+#include <QApplication>
+
 #include "duqf-app/dusettingsmanager.h"
 
 DuQFConnector::DuQFConnector(QString title, QGraphicsItem *parent):

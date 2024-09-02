@@ -5,6 +5,9 @@
 #include <QCommandLineParser>
 
 #include "duqf-widgets/dusplashscreen.h"
+#include "qjsonobject.h"
+#include "qnetworkreply.h"
+#include "qsharedmemory.h"
 
 class DuApplication : public QApplication
 {

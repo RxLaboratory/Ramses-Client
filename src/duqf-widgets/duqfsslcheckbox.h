@@ -1,6 +1,7 @@
 #ifndef DUQFSSLCHECKBOX_H
 #define DUQFSSLCHECKBOX_H
 
+#include "qsettings.h"
 #include <QCheckBox>
 
 class DuQFSSLCheckbox : public QCheckBox

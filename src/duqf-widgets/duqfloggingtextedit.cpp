@@ -1,4 +1,5 @@
 #include "duqfloggingtextedit.h"
+#include "qscrollbar.h"
 
 DuQFLoggingTextEdit::DuQFLoggingTextEdit(QWidget *parent): DuTextEdit(parent)
 {

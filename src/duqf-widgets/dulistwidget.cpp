@@ -1,6 +1,7 @@
 #include "dulistwidget.h"
 #include "duqf-app/duui.h"
 #include "duqf-widgets/duscrollbar.h"
+#include "qevent.h"
 
 DuListWidget::DuListWidget(QWidget *parent):
     QListWidget (parent)

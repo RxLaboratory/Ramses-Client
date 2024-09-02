@@ -2,6 +2,7 @@
 
 #include "duqf-utils/guiutils.h"
 #include "mainwindow.h"
+#include "qpushbutton.h"
 
 LoginPage::LoginPage(QWidget *parent) :
     QWidget(parent)

@@ -1,4 +1,6 @@
 #include "dugraph.h"
+#include "qdebug.h"
+#include "qelapsedtimer.h"
 
 #include <QQueue>
 

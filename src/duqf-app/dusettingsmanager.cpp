@@ -1,4 +1,6 @@
 #include "dusettingsmanager.h"
+#include "qcolor.h"
+#include "qsize.h"
 
 const QString DuSettingsManager::UI_FOCUS_COLOR = QStringLiteral("UI/focusColor");
 const QString DuSettingsManager::UI_WINDOW_GEOMETRY = QStringLiteral("UI/windowGeometry");

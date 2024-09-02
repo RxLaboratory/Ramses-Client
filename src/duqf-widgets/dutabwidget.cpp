@@ -4,9 +4,7 @@
 DuTabWidget::DuTabWidget(QWidget *parent):
     QTabWidget(parent)
 {
-    this->setIconSize(
-        DuUI::adjustToDpi( QSize(16,16) )
-        );
+    this->setIconSize(QSize(16,16));
     setIconOnly(true);
 }
 

@@ -11,6 +11,7 @@
 #include <QRegExpValidator>
 
 #include "duqf-widgets/duqftextedit.h"
+#include "qtabwidget.h"
 #include "ramobject.h"
 #include "duqf-widgets/duscrollarea.h"
 

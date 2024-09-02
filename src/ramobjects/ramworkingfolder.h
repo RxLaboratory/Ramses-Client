@@ -1,6 +1,9 @@
 #ifndef RAMWORKINGFOLDER_H
 #define RAMWORKINGFOLDER_H
 
+#include "qfileinfo.h"
+#include <QString>
+
 /**
  * @brief The RamFolder class represents a working folder in the Ramses tree,
  * with its versions, published and preview folder

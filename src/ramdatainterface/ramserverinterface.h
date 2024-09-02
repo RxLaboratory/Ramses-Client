@@ -6,6 +6,8 @@
 #include "duqf-utils/duqflogger.h"
 #include "duqf-utils/utils.h"
 #include "datastruct.h"
+#include "qjsonobject.h"
+#include "qnetworkreply.h"
 
 class RamServerInterface : public DuQFLoggerObject
 {

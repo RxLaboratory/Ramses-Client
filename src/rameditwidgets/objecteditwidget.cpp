@@ -2,6 +2,8 @@
 #include "duqf-utils/utils.h"
 #include "duqf-widgets/duicon.h"
 #include "objectupdateblocker.h"
+#include "qtabbar.h"
+#include "qtoolbutton.h"
 
 ObjectEditWidget::ObjectEditWidget(QWidget *parent) :
     DuScrollArea(parent)

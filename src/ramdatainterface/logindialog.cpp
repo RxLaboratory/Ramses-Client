@@ -2,6 +2,10 @@
 
 #include "datacrypto.h"
 #include "duqf-widgets/duicon.h"
+#include "qboxlayout.h"
+#include "qmessagebox.h"
+#include "qpushbutton.h"
+#include "qsettings.h"
 
 LoginDialog::LoginDialog(QWidget *parent):
     QDialog(parent)

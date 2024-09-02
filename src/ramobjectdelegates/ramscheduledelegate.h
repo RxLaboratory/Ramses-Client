@@ -5,6 +5,7 @@
 #include <QPainter>
 #include <QPainterPath>
 
+#include "qtextdocument.h"
 #include "ramstatus.h"
 #include "ramuser.h"
 

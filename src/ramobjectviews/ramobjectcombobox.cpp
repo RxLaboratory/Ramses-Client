@@ -1,4 +1,5 @@
 #include "ramobjectcombobox.h"
+#include "qabstractitemview.h"
 #include "ramfilterlistproxymodel.h"
 #include "ramobjectdelegate.h"
 

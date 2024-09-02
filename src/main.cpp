@@ -5,18 +5,15 @@
 #include "duqf-app/duapplication.h"
 #include "duqf-app/ducli.h"
 #include "duqf-widgets/duqfupdatedialog.h"
+#include "src/qgoodwindow.h"
 
 int main(int argc, char *argv[])
 {
     QT_REQUIRE_VERSION(argc, argv, QT_VERSION_STR)
 
+    QGoodWindow::setup();
     // Enable HiDPI / Retina
-
-    QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-    QGuiApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
-#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0) && defined(Q_OS_WIN)
-    QGuiApplication::setHighDpiScaleFactorRoundingPolicy(Qt::HighDpiScaleFactorRoundingPolicy::PassThrough);
-#endif
+    DuUI::setUseHDPI();
 
     // The CLI
     QCommandLineParser parser;

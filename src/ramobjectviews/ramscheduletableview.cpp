@@ -1,4 +1,5 @@
 #include "ramscheduletableview.h"
+#include "qsortfilterproxymodel.h"
 #include "ramschedulerowheaderview.h"
 
 RamScheduleTableView::RamScheduleTableView(QWidget *parent):

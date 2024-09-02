@@ -1,6 +1,7 @@
 #include "ramstepheaderview.h"
 
 #include "duqf-widgets/duicon.h"
+#include "qevent.h"
 #include "ramstatus.h"
 #include "ramstep.h"
 #include "ramses.h"

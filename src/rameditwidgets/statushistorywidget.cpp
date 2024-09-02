@@ -1,5 +1,6 @@
 ﻿#include "statushistorywidget.h"
 
+#include "qboxlayout.h"
 #include "ramobjectmodel.h"
 
 StatusHistoryWidget::StatusHistoryWidget(RamObjectModel *history, QWidget *parent) : QWidget(parent)

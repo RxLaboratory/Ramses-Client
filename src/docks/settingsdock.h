@@ -8,6 +8,8 @@
 #include "duqf-widgets/dutabwidget.h"
 #include "duqf-widgets/ducolorselector.h"
 #include "duqf-widgets/duspinbox.h"
+#include "qcheckbox.h"
+#include "qpushbutton.h"
 
 class SettingsDock : public DuScrollArea
 {

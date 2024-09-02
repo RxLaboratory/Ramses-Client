@@ -1,5 +1,7 @@
 #include "ramabstractdatamodel.h"
 
+#include "qabstractitemmodel.h"
+
 RamAbstractDataModel::RamAbstractDataModel()
 {
 

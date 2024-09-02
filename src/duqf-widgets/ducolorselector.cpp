@@ -2,6 +2,8 @@
 
 #include "duqf-widgets/duicon.h"
 #include "duqf-app/duui.h"
+#include "qcolordialog.h"
+#include "qtoolbutton.h"
 
 DuColorSelector::DuColorSelector(QWidget *parent) : QWidget(parent)
 {
@@ -44,7 +46,7 @@ void DuColorSelector::setupUi()
     this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
     QHBoxLayout *colorLayout = new QHBoxLayout(this);
-    colorLayout->setSpacing(DuUI::adjustToDpi(3));
+    colorLayout->setSpacing(3);
     colorLayout->setContentsMargins(0,0,0,0);
 
     ui_colorEdit = new DuLineEdit(this);

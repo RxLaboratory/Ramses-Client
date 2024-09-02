@@ -2,6 +2,7 @@
 #include "duscrollbar.h"
 
 #include "duqf-app/duui.h"
+#include "qevent.h"
 
 DuTextEdit::DuTextEdit(QWidget *parent):
     QTextEdit(parent)

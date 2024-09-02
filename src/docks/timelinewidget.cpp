@@ -1,4 +1,5 @@
 #include "timelinewidget.h"
+#include "qboxlayout.h"
 
 TimelineWidget::TimelineWidget(QWidget *parent)
     : QWidget{parent}

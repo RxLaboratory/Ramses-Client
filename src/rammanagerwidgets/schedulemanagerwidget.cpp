@@ -3,6 +3,7 @@
 #include "duqf-utils/guiutils.h"
 #include "duqf-widgets/duicon.h"
 #include "progressmanager.h"
+#include "qscrollbar.h"
 #include "ramschedulecomment.h"
 #include "ramscheduleentry.h"
 #include "ramses.h"
@@ -693,7 +694,7 @@ void ScheduleManagerWidget::connectEvents()
     connect(ui_deadline,SIGNAL(clicked()),this,SLOT(goToDeadline()));
     connect(ui_nextMonth,SIGNAL(clicked()),this,SLOT(goToNextMonth()));
     connect(ui_prevMonth,SIGNAL(clicked()),this,SLOT(goToPreviousMonth()));
-    connect(ui_table->horizontalScrollBar(),SIGNAL(valueChanged(int)),this,SLOT(updateCurrentDate()));
+    connect(ui_table->horizontalScrollBar(),&QScrollBar::valueChanged,this,&ScheduleManagerWidget::updateCurrentDate);
     // days
     connect(ui_monday,SIGNAL(toggled(bool)),this,SLOT(showMonday(bool)));
     connect(ui_tuesday,SIGNAL(toggled(bool)),this,SLOT(showTuesday(bool)));

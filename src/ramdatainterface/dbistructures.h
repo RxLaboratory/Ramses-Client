@@ -1,6 +1,7 @@
 #ifndef DBISTRUCTURES_H
 #define DBISTRUCTURES_H
 
+#include "qcolor.h"
 #include <QString>
 #include <QDateTime>
 
