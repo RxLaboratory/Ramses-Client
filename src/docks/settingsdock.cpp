@@ -1,6 +1,6 @@
 #include "settingsdock.h"
 
-#include "duqf-app/duapplication.h"
+#include "duqf-app/app-utils.h"
 #include "duqf-app/duui.h"
 #include "duqf-widgets/duqfupdatedialog.h"
 #include "daemon.h"
@@ -199,7 +199,7 @@ void SettingsDock::connectEvents()
     connect( ui_checkAtStartupBox, &QCheckBox::clicked, _sm, &DuSettingsManager::setCheckUpdates);
     connect( ui_checkNowButton, &QPushButton::clicked, this, [] () {
         DuApplication *app = qobject_cast<DuApplication*>(qApp);
-        app->checkUpdate(true);
+        app->checkUpdate();
         DuQFUpdateDialog dialog( app->updateInfo() );
         dialog.exec();
     });

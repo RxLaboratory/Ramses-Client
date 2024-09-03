@@ -1,0 +1,59 @@
+QTabWidget {
+    border: none;
+}
+
+QTabWidget::pane { /* Main panel */
+    border: none;
+} 
+
+QTabWidget::pane:left { /* Tabs on left */
+    border-top-right-radius: @radius;
+    border-bottom-right-radius: @radius;
+} 
+
+QTabWidget::pane:top { /* Tabs on top */
+    border-bottom-right-radius: @radius;
+    border-bottom-left-radius: @radius;
+} 
+
+QTabWidget::pane:right { /* Tabs on right */
+    border-top-left-radius: @radius;
+    border-bottom-left-radius: @radius;
+}
+
+QTabWidget::pane:bottom { /* Tabs on bottom */
+    border-top-right-radius: @radius;
+    border-top-left-radius: @radius;
+}
+
+/* Tab buttons */
+QTabBar {
+    border: 0;
+    qproperty-drawBase: 0;
+}
+
+QTabBar::tab {
+    border-radius: @radius;
+    padding: @margin;
+    margin: @margin;
+    background: transparent;
+}
+
+QTabBar::tab:selected {
+    background-color: @background-push;
+    color: @focus;
+}
+
+QTabBar::tab:hover {
+    background-color: @focus;
+    color: @foreground-pull;
+}
+
+QTabBar::close-button {
+    image: url(:/icons/close-simple);
+    border-radius: @radius;
+}
+
+QTabBar::close-button:hover {
+    background-color: @focus;
+}

@@ -1,0 +1,8 @@
+QToolTip {
+    border: none;
+    background: @foreground;
+    color: @background;
+    /*border-radius -> Does not work with tool tips (they're actually QLabel)*/
+    opacity: 200;
+    padding: @margin-big;
+}

@@ -1,0 +1,53 @@
+QScrollBar {
+    border: none;
+    margin: 0;
+    /*border-radius: @padding-small;*/
+}
+
+QScrollBar::add-page, QScrollBar::sub-page {
+    background-color: @background;
+    border:none;
+}
+
+QScrollBar::handle {
+    background-color: @foreground-push;
+    border: none;
+}
+
+QScrollBar::handle:hover {
+    background-color: @focus;
+}
+
+QScrollBar::add-line, QScrollBar::sub-line {
+    border: none;
+    width:0;
+    height:0;
+}
+
+QScrollBar:disabled {
+background-color: @background;
+}
+
+QScrollBar::handle:disabled {
+background-color: @background-pull;
+}
+
+/* VERTICAL */
+
+QScrollBar:vertical {
+    /*width: @very-small-button-size;*/
+}
+
+QScrollBar::handle:vertical {
+        min-height: @margin;
+}
+
+/* HORIZONTAL */
+
+QScrollBar:horizontal {
+        /*height: @very-small-button-size;*/
+}
+
+QScrollBar::handle:horizontal {
+        min-width: @margin;
+}

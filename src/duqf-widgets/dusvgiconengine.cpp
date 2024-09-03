@@ -59,10 +59,8 @@ void DuSVGIconEngine::paint(QPainter *painter, const QRect &rect,
     switch(state) {
     case QIcon::On:
         if (_checkedData != "")
-        {
             d = _checkedData.replace(_reColor, c.name());
-            break;
-        }
+        break;
     case QIcon::Off:
         d = _data.replace(_reColor, c.name());
         break;

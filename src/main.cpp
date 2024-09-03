@@ -2,7 +2,7 @@
 #include <QSettings>
 #include <QTcpSocket>
 
-#include "duqf-app/duapplication.h"
+#include "duqf-app/app-utils.h"
 #include "duqf-app/ducli.h"
 #include "duqf-widgets/duqfupdatedialog.h"
 #include "src/qgoodwindow.h"
@@ -74,7 +74,7 @@ int main(int argc, char *argv[])
     int days = lastCheck.daysTo(QDateTime::currentDateTime());
     qDebug().noquote() << days << " days since last check.";
     if (days > 0 || !lastCheck.isValid() || lastCheck.isNull()) {
-        a.checkUpdate(true);
+        a.checkUpdate();
         QJsonObject updateInfo = a.updateInfo();
         if (updateInfo.value("update").toBool()) {
             s->newMessage("A new version is available!");

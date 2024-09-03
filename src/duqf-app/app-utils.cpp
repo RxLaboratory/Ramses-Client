@@ -2,6 +2,7 @@
 
 #include <QStandardPaths>
 #include <QDir>
+#include <QProcess>
 
 #ifdef Q_OS_WIN
 #include "windows.h"
@@ -47,6 +48,12 @@ DuApplication::DuApplication(int &argc, char *argv[], QCommandLineParser *parser
     _cliParser->setApplicationDescription(STR_PRODUCTDESCRIPTION);
     _cliParser->addHelpOption();
     _cliParser->addVersionOption();
+
+    _program = argv[0];
+    for (int i = 1; i < argc; i++)
+    {
+        _args << QString(argv[i]);
+    }
 
     // Connect some stuff
     connect(DuSettings::i(), &DuSettings::settingChanged,
@@ -180,20 +187,22 @@ void DuApplication::checkUpdate()
     am->get(request);
 }
 
-/*bool DuApplication::notify(QObject *receiver, QEvent *ev)
+void DuApplication::restart()
 {
-    if(ev->type() == QEvent::KeyPress || ev->type() == QEvent::MouseButtonPress)
-    {
-        //reset timer
-        _idleTimer->start(_idleTimeout);
-    }
-    return QApplication::notify(receiver,ev);
-}*/
+    restart(_args);
+}
 
-/*void DuApplication::idleTimeOut()
+void DuApplication::restart(QStringList args)
 {
-    emit idle();
-}*/
+    qDebug() << "Restarting app...";
+    // Release before everything else
+    this->detach();
+    qDebug() << "Using these args: " << args;
+    // Quit
+    this->quit();
+    // An restart!
+    QProcess::startDetached(_program, args);
+}
 
 void DuApplication::gotUpdateInfo(QNetworkReply *rep)
 {

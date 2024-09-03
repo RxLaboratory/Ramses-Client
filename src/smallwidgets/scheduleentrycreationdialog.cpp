@@ -1,4 +1,6 @@
 #include "scheduleentrycreationdialog.h"
+#include "qboxlayout.h"
+#include "qformlayout.h"
 
 ScheduleEntryCreationDialog::ScheduleEntryCreationDialog(QWidget *parent) :
     QDialog(parent)

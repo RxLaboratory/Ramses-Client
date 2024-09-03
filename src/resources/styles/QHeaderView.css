@@ -1,0 +1,18 @@
+QHeaderView {
+    color: @foreground;
+    background-color: transparent;
+}
+
+QHeaderView::section {
+    background-color: transparent;
+    border:none;
+    padding:@margin;
+}
+
+QHeaderView::section:horizontal {
+        border-right: @margin-small solid @background;
+}
+
+QHeaderView::section:vertical {
+        border-bottom: @margin-small solid @background;
+}

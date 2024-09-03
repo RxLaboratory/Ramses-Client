@@ -31,7 +31,6 @@
 #include "duqf-widgets/duqflogtoolbutton.h"
 #include "duqf-app/app-version.h"
 #include "docks/settingsdock.h"
-#include "duqf-widgets/dutoolbarspacer.h"
 #include "statemanager.h"
 
 MainWindow::MainWindow(const QCommandLineParser &cli, QWidget *parent) :
@@ -58,8 +57,8 @@ MainWindow::MainWindow(const QCommandLineParser &cli, QWidget *parent) :
     setupActions();
     // Build the window
     setupUi();
-    // Build the toolbar
-    setupToolBar();
+    // Build the toolbars
+    setupToolBars();
     // Build the sys tray icon
     setupSysTray();
     // Build the docks
@@ -93,6 +92,7 @@ MainWindow::MainWindow(const QCommandLineParser &cli, QWidget *parent) :
             break;
         }
     }
+    //*/
 }
 
 void MainWindow::connectEvents()
@@ -324,7 +324,6 @@ void MainWindow::databaseSettingsAction()
 
 void MainWindow::home()
 {
-    ui_mainToolBar->show();
     ui_mainStack->setCurrentIndex(Home);
 }
 
@@ -399,31 +398,26 @@ void MainWindow::revealTrashFolder()
 
 void MainWindow::admin()
 {
-    ui_mainToolBar->show();
     ui_mainStack->setCurrentIndex(Admin);
 }
 
 void MainWindow::pipeline()
 {
-    ui_mainToolBar->show();
     ui_mainStack->setCurrentIndex(PipeLine);
 }
 
 void MainWindow::shots()
 {
-    ui_mainToolBar->show();
     ui_mainStack->setCurrentIndex(Shots);
 }
 
 void MainWindow::assets()
 {
-    ui_mainToolBar->show();
     ui_mainStack->setCurrentIndex(Assets);
 }
 
 void MainWindow::schedule()
 {
-    ui_mainToolBar->show();
     ui_mainStack->setCurrentIndex(Schedule);
 }
 
@@ -527,13 +521,11 @@ void MainWindow::freezeUI(bool f)
     if (f)
     {
         m_currentPageIndex = ui_mainStack->currentIndex();
-        ui_mainToolBar->hide();
         ui_mainStack->setCurrentIndex(Progress);
     }
     else
     {
         ui_mainStack->setCurrentIndex(m_currentPageIndex);
-        ui_mainToolBar->show();
     }
     this->repaint();
 }
@@ -869,10 +861,9 @@ void MainWindow::setupActions()
 
 void MainWindow::setupUi()
 {
-    ui_mainStack = new QStackedWidget(this);
-    this->setCentralWidget(ui_mainStack);
+    ui_mainStack = DuUI::addStackedLayout(ui_centralWidget);
 
-    ui_mainPage = new QWidget(ui_mainStack);
+    ui_mainPage = new QWidget();
     ui_mainStack->addWidget(ui_mainPage);
 
     auto mainLayout = new QVBoxLayout(ui_mainPage);
@@ -881,13 +872,13 @@ void MainWindow::setupUi()
     LoginPage *lp = new LoginPage(this);
     mainLayout->addWidget(lp);
 
-    // admin
+    // Admin
     ui_adminPage = new SettingsWidget("Administration", this);
     ui_adminPage->titleBar()->setObjectName("adminToolBar");
     ui_adminPage->showReinitButton(false);
     ui_mainStack->addWidget(ui_adminPage);
-    // Admin tabs
 
+    // Admin tabs
     UserManagerWidget *userManager = new UserManagerWidget(this);
     ui_adminPage->addPage(userManager,"Users", DuIcon(":/icons/users"));
     ui_adminPage->titleBar()->insertLeft(userManager->menuButton());
@@ -1195,9 +1186,9 @@ void MainWindow::setupDocks()
     ui_userDockWidget->hide();
 }
 
-void MainWindow::setupToolBar()
+void MainWindow::setupToolBars()
 {
-    ui_mainToolBar->addAction(m_actionAdmin);
+    ui_leftToolBar->addAction(m_actionAdmin);
 
     DuMenu *pipelineMenu = new DuMenu(this);
 
@@ -1285,17 +1276,17 @@ void MainWindow::setupToolBar()
 
     // Populate Toolbar
     auto projectSelector = new ProjectSelectorWidget(this);
-    ui_projectSelectorAction = ui_mainToolBar->addWidget(projectSelector);
+    ui_projectSelectorAction = ui_leftToolBar->addWidget(projectSelector);
     DuUI::addCustomCSS(projectSelector, "QComboBox { background: #222222; }");
 
-    ui_pipelineMenuAction = ui_mainToolBar->addWidget(ui_pipelineButton);
-    ui_assetMenuAction = ui_mainToolBar->addWidget(ui_assetsButton);
-    ui_shotMenuAction = ui_mainToolBar->addWidget(ui_shotsButton);
-    ui_scheduleMenuAction = ui_mainToolBar->addWidget(ui_scheduleButton);
-    ui_filesMenuAction = ui_mainToolBar->addWidget(ui_filesButton);
+    ui_pipelineMenuAction = ui_leftToolBar->addWidget(ui_pipelineButton);
+    ui_assetMenuAction = ui_leftToolBar->addWidget(ui_assetsButton);
+    ui_shotMenuAction = ui_leftToolBar->addWidget(ui_shotsButton);
+    ui_scheduleMenuAction = ui_leftToolBar->addWidget(ui_scheduleButton);
+    ui_filesMenuAction = ui_leftToolBar->addWidget(ui_filesButton);
 
     auto logB = new DuQFLogToolButton(this);
-    QAction *logA = ui_mainToolBar->addWidget(logB);
+    QAction *logA = ui_leftToolBar->addWidget(logB);
     connect(logB, &DuQFLogToolButton::visibilityChanged, logA, &QAction::setVisible);
 
     ui_projectSelectorAction->setVisible(false);
@@ -1305,8 +1296,6 @@ void MainWindow::setupToolBar()
     ui_assetMenuAction->setVisible(false);
     ui_scheduleMenuAction->setVisible(false);
     ui_filesMenuAction->setVisible(false);
-
-    ui_mainToolBar->addWidget(new DuToolBarSpacer());
 
     auto userMenu = new DuMenu();
     userMenu->addAction(m_actionLogIn);
@@ -1325,7 +1314,7 @@ void MainWindow::setupToolBar()
     ui_userButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     ui_userButton->setMenu(userMenu);
 
-    ui_userMenuAction = ui_mainToolBar->addWidget(ui_userButton);
+    ui_userMenuAction = ui_rightToolBar->addWidget(ui_userButton);
     ui_userMenuAction->setVisible(false);
 
     auto databaseMenu = new DuMenu();
@@ -1345,7 +1334,7 @@ void MainWindow::setupToolBar()
     ui_databaseButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     ui_databaseButton->setMenu(databaseMenu);
 
-    ui_databaseMenuAction = ui_mainToolBar->addWidget(ui_databaseButton);
+    ui_databaseMenuAction = ui_rightToolBar->addWidget(ui_databaseButton);
     ui_databaseMenuAction->setVisible(false);
 
     DuMenu *moreMenu = new DuMenu(this);
@@ -1428,7 +1417,7 @@ void MainWindow::setupToolBar()
     helpMenu->addAction(aboutQtAction);
     connect(aboutQtAction, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
 
-    ui_mainToolBar->addWidget(moreButton);
+    ui_rightToolBar->addWidget(moreButton);
 }
 
 void MainWindow::setupSysTray()

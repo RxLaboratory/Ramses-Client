@@ -1,6 +1,8 @@
 #ifndef DUQFTRANSPOSEPROXYMODEL_H
 #define DUQFTRANSPOSEPROXYMODEL_H
 
+#include <QtGlobal>
+
 #if (QT_VERSION < QT_VERSION_CHECK(5, 13, 0))
 
 #include <QIdentityProxyModel>

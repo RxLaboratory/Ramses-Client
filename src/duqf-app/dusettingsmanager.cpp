@@ -154,6 +154,7 @@ QColor DuSettingsManager::trayIconColor() const
     case LighterColor:
         return QColor("#e3e3e3");
     }
+    return uiFocusColor();
 }
 
 bool DuSettingsManager::showTrayIcon() const

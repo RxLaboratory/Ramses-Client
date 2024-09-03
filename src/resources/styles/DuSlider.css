@@ -1,0 +1,14 @@
+DuDoubleSlider QProgressBar,
+DuSlider QProgressBar {
+    color: @foreground;
+}
+
+DuDoubleSlider QProgressBar::chunk,
+DuSlider QProgressBar::chunk {
+    background-color: @background;
+}
+
+DuDoubleSlider QProgressBar::chunk:hover,
+DuSlider QProgressBar::chunk:hover {
+    background-color: @focus;
+}

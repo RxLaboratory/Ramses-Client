@@ -113,6 +113,7 @@ bool DuGraph::validate()
         _isValid = validateRTG();
         return _isValid;
     }
+    return false;
 }
 
 bool DuGraph::hasPath(Vertex *from, Vertex *to, QSet<Edge> *visited) const

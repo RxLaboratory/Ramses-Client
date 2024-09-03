@@ -17,6 +17,7 @@
 #include "duqf-widgets/settingswidget.h"
 #include "duqf-utils/utils.h"
 #include "duqf-widgets/dudocktitlewidget.h"
+#include "duqf-widgets/dudockwidget.h"
 #include "progresspage.h"
 #include "ramproject.h"
 #include "databaseeditwidget.h"
@@ -52,7 +53,7 @@ signals:
 private:
     void setupActions();
     void setupUi();
-    void setupToolBar();
+    void setupToolBars();
     void setupSysTray();
     void setupDocks();
     void connectEvents();
@@ -99,7 +100,7 @@ private:
 
     // ==== WIDGETS ====
 
-    QStackedWidget *ui_mainStack;
+    QStackedLayout *ui_mainStack;
     QWidget *ui_mainPage;
 
     // ==== Docks ====

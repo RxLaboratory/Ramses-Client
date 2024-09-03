@@ -1,0 +1,15 @@
+*{
+    outline: none;
+}
+
+QWidget {
+    background: @background;
+    color: @foreground;
+    border: none;
+    font-family: @ui-font, sans-serif;
+    font-size: @font-size;
+}
+
+QWidget:disabled {
+    color: @foreground-push;
+}

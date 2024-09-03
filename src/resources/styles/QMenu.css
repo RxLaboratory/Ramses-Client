@@ -1,0 +1,42 @@
+QMenu {
+    background-color: @background;
+    margin: @margin-big;
+    border: none;
+    padding: @margin;
+}
+
+QMenu::item {
+    border-radius: @radius;
+    padding-left: @margin;
+    padding-right: 20px;
+    padding-top: @margin;
+    padding-bottom: @margin;
+}
+
+QMenu::item:selected {
+    background-color: @focus;
+    color: @foreground-pull;
+    border:none;
+}
+
+QMenu::icon {
+    padding-left: @margin;
+}
+
+QMenu::indicator { /* Checked indicator */
+    background-color: @background-push-more;
+    border-radius: @radius;
+    left: @margin;
+}
+
+QMenu::indicator:checked {
+    background-color: @focus;
+}
+
+QMenu::separator {
+  height: 1px;
+  background-color: @background-push;
+  margin-top: @margin;
+  margin-bottom: @margin;
+}
+

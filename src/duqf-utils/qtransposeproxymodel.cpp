@@ -1,3 +1,5 @@
+#include <QtGlobal>
+
 #if (QT_VERSION < QT_VERSION_CHECK(5, 13, 0))
 
 #include "qtransposeproxymodel.h"

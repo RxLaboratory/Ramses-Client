@@ -1,0 +1,32 @@
+QComboBox QAbstractItemView {
+    padding: @margin;
+    border-radius: 0;
+    background-color: @background-push-more;
+    selection-background-color: @focus;
+    selection-color: @foreground-pull;
+}
+
+QComboBox::drop-down {
+    border: none;
+}
+
+QComboBox::indicator {
+    image:none;
+}
+
+QComboBox::down-arrow {
+      /*image: url(:/icons/select);*/
+      /*width: @radius;
+      height: @radius;
+      padding-right: @margin;*/
+}
+
+/* Dropdown pane */
+
+QComboBox QScrollBar {
+    width: @margin;
+}
+
+QComboBox QScrollBar::handle:vertical {
+    min-height: @margin-big;
+}

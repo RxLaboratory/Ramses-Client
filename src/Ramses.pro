@@ -64,7 +64,6 @@ SOURCES += \
     duqf-widgets/duscrollbar.cpp \
     duqf-widgets/dushadow.cpp \
     duqf-widgets/duspinbox.cpp \
-    duqf-widgets/dusplashscreen.cpp \
     duqf-widgets/dusvgiconengine.cpp \
     duqf-widgets/dutableview.cpp \
     duqf-widgets/dutabwidget.cpp \
@@ -260,7 +259,6 @@ HEADERS += \
     duqf-widgets/duscrollbar.h \
     duqf-widgets/dushadow.h \
     duqf-widgets/duspinbox.h \
-    duqf-widgets/dusplashscreen.h \
     duqf-widgets/dusvgiconengine.h \
     duqf-widgets/dutableview.h \
     duqf-widgets/dutabwidget.h \
@@ -439,6 +437,10 @@ FORMS += \
     pipeline-editor/pipelinewidget.ui \
     smallwidgets/shotscreationdialog.ui
 
+RESOURCES += \
+    duqf_resources.qrc \
+    resources/resources.qrc
+
 include($$PWD/../include/QGoodWindow/QGoodWindow/QGoodWindow.pri)
 include($$PWD/../include/QGoodWindow/QGoodCentralWidget/QGoodCentralWidget.pri)
 
@@ -488,7 +490,3 @@ win* {
     ICON = resources/icons/ramses.icns
     CONFIG += sdk_no_version_check
 }
-
-RESOURCES += \
-    duqf_resources.qrc \
-    resources.qrc

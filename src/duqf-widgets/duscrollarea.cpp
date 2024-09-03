@@ -1,5 +1,6 @@
 #include "duscrollarea.h"
 #include "duscrollbar.h"
+#include "qevent.h"
 
 DuScrollArea::DuScrollArea(QWidget *parent):
     QScrollArea(parent)

@@ -1,0 +1,12 @@
+QProgressBar {
+    text-align: center;
+    color: @foreground;
+}
+
+QProgressBar::chunk {
+    background-color: @focus;
+}
+
+QProgressBar::chunk:hover {
+    background-color: @focus;
+}

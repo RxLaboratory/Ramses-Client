@@ -1,0 +1,19 @@
+QSplashScreen QProgressBar {
+    color: #9d9d9d;
+    border: none;
+    background-color: #222222;
+    height:  26px;
+    text-align: left;
+    border-radius: 0;
+    font-size: 12px;
+}
+
+QSplashScreen QProgressBar::chunk {
+    background-color: #434343;
+}
+
+QSplashScreen QLabel {
+    background: rgba(0,0,0,0);
+    color: #333333;
+    font-size: 12px;
+}

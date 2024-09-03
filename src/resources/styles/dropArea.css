@@ -1,0 +1,5 @@
+.dropArea {
+    background: transparent;
+    border: @margin dashed @foreground-push;
+    border-radius: @margin;
+}

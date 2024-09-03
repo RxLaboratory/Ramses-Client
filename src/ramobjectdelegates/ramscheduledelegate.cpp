@@ -50,7 +50,6 @@ void RamScheduleDelegate::paint(QPainter *painter, const QStyleOptionViewItem &o
     }
     else {
         // Sub rects for each entry
-        int y = 0;
         qreal r = qreal(option.rect.height()) / qreal(sizeHint(option, index).height());
 
         for (auto entry: qAsConst(entries)) {

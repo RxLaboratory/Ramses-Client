@@ -1,0 +1,32 @@
+QToolBar {
+    padding: @margin-big;
+    border: none;
+    spacing: @margin;
+}
+
+QToolBar QWidget {
+    background: transparent;
+}
+
+QToolBar::handle:top, QToolBar::handle:bottom {
+    padding-left: @margin;
+    padding-right: @margin;
+}
+
+QToolBar::handle:left, QToolBar::handle:right {
+    padding-top: @margin;
+    padding-bottom: @margin;
+}
+
+QToolBar::separator  {
+    background: @background-pull;
+    width: 1px;
+}
+
+QToolBar:top > QWidget, QToolBar:bottom > QWidget {
+    margin-right: @margin;
+}
+
+QToolBar:left > QWidget, QToolBar:right > QWidget {
+    margin-bottom: @margin;
+}

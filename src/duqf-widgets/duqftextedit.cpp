@@ -1,5 +1,6 @@
 #include "duqftextedit.h"
 #include "duqf-widgets/duicon.h"
+#include "qevent.h"
 
 DuQFTextEdit::DuQFTextEdit(const QString &text, QWidget *parent):
     QTextEdit(text, parent)

@@ -1,0 +1,18 @@
+QSpinBox::up-button,
+QDoubleSpinBox::up-button,
+QDateTimeEdit:up-button {
+    border:none;
+    border-radius: @radius;
+    image:url(:/icons/move-up);
+    padding: @margin;
+}
+
+QSpinBox::down-button,
+QDoubleSpinBox::down-button,
+QDateTimeEdit:down-button {
+    border:none;
+    border-radius: @radius;
+    image:url(:/icons/move-down);
+    padding: @margin;
+}
+

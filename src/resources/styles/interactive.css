@@ -1,0 +1,61 @@
+.interactive,
+QLineEdit,
+QTextEdit,
+QTextBrowser,
+QComboBox,
+QAbstractItemView,
+QProgressBar,
+QSpinBox,
+QDoubleSpinBox,
+QDateTimeEdit,
+QDateEdit
+{
+    border: none;
+    padding: @margin;
+    border-radius: @radius;
+    background-color: @background-push-more;
+}
+
+.interactive QWidget
+{
+    background: transparent;
+}
+
+.interactive:disabled,
+QLineEdit:disabled,
+QTextEdit:disabled,
+QTextBrowser:disabled,
+QComboBox:disabled,
+QAbstractItemView:disabled,
+QProgressBar:disabled,
+QSpinBox:disabled,
+QDoubleSpinBox:disabled,
+QDateTimeEdit:disabled,
+QDateEdit:disabled
+{
+    background-color: transparent;
+}
+
+.interactive QScrollBar::add-page,
+.interactive QScrollBar::sub-page,
+QAbstractItemView QScrollBar::add-page,
+QAbstractItemView QScrollBar::sub-page,
+QTextEdit QScrollBar::add-page,
+QTextEdit QScrollBar::sub-page,
+QTextBrowser QScrollBar::add-page,
+QTextBrowser QScrollBar::sub-page
+{
+    background-color: @background-push-more;
+}
+
+DuDoubleSlider::chunk,
+DuSlider::chunk
+{
+    background-color: @background-pull-more;
+}
+
+DuDoubleSlider::chunk:hover,
+DuSlider::chunk:hover
+{
+    background-color: @focus;
+}

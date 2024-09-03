@@ -489,6 +489,18 @@ QStackedLayout *DuUI::createStackedLayout(bool isSubLayout, QWidget *parent)
     return layout;
 }
 
+QStackedLayout *DuUI::addStackedLayout(QWidget *parent)
+{
+    return createStackedLayout(false, parent);
+}
+
+QStackedLayout *DuUI::addStackedLayout(QBoxLayout *parent)
+{
+    QStackedLayout *layout = createStackedLayout(true);
+    parent->addLayout(layout);
+    return layout;
+}
+
 QWidget *DuUI::addBlock(QLayout *child, QBoxLayout *parent)
 {
     auto w = new QWidget();

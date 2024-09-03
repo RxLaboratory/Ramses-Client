@@ -1,5 +1,7 @@
 #include "duqflogger.h"
 
+#include <QtDebug>
+
 // === Logger
 
 DuQFLogger *DuQFLogger::_instance = nullptr;

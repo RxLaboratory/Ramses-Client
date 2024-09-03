@@ -72,6 +72,10 @@ private:
     QLabel *_versionLabel;
 };
 
+/**
+ * @brief The DuApplication class
+ * @version 1.1.0 Added restart() method
+ */
 class DuApplication : public QApplication
 {
     Q_OBJECT
@@ -97,23 +101,32 @@ public slots:
     // Check for updates
     void checkUpdate();
 
+    /**
+     * @brief restart Exits the current app and restart the same executable.
+     * This method will pass the original command line arguments to the new instance;
+     * to restart without arguments, use restart(QStringList());
+     */
+    void restart();
+    /**
+     * @brief restart Exits the current app and restart the same executable
+     * @param args The args to pass when starting the executable
+     */
+    void restart(QStringList args);
+
 signals:
-    //void idle();
     void newUpdateInfo(QJsonObject);
 
-protected:
-           //virtual bool notify(QObject *receiver, QEvent *ev);
-
 private slots:
-    //void idleTimeOut();
     void gotUpdateInfo(QNetworkReply *rep);
 
 private:
     DuSplashScreen *_splashScreen;
-    //QTimer *_idleTimer;
-    //int _idleTimeout;
     QJsonObject _updateInfo;
+
+    // CLI
     QCommandLineParser *_cliParser = nullptr;
+    QStringList _args;
+    QString _program;
 
     // Used to check if another instance is running
     QSharedMemory *m_singular;

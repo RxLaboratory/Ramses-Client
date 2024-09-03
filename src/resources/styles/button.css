@@ -1,0 +1,13 @@
+.button,
+QToolButton,
+QPushButton:flqt {
+    background: transparent;
+    padding: @margin;
+    border-radius: @radius;
+}
+
+.button:pressed,
+QToolButton:pressed {
+    background-color: @focus-pull;
+    color: @background;
+}

@@ -1,5 +1,8 @@
 #include "utils.h"
 
+#include <QApplication>
+#include <QUuid>
+
 void FileUtils::setReadWrite(QFile *file)
 {
     file->setPermissions(QFile::ReadOther | QFile::WriteOther | QFile::ReadUser | QFile::WriteUser | QFile::ReadOwner | QFile::WriteOwner);

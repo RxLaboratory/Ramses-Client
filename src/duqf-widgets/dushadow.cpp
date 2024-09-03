@@ -1,4 +1,6 @@
 #include "duqf-widgets/dushadow.h"
+#include "qgraphicsitem.h"
+#include <QGraphicsScene>
 
 Q_DECL_IMPORT void qt_blurImage(QPainter *p, QImage &blurImage, qreal radius, bool quality, bool alphaOnly, int transposed = 0); // src/widgets/effects/qpixmapfilter.cpp
 

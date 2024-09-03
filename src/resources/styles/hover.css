@@ -1,0 +1,16 @@
+QWidget[cssOption~="hover"]:hover,
+.button:hover,
+QComboBox:hover,
+QToolButton:hover,
+QPushButton:hover,
+QCheckBox:hover,
+QRadioButton:hover,
+QSpinBox::up-button:hover,
+QDoubleSpinBox::up-button:hover,
+QDateTimeEdit:up-button:hover,
+QSpinBox::down-button:hover,
+QDoubleSpinBox::down-button:hover,
+QDateTimeEdit:down-button:hover{
+    background-color: @focus;
+    color: @foreground-pull;
+}

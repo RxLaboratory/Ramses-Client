@@ -1,5 +1,7 @@
 #include "duqfnode.h"
 
+#include <QtDebug>
+
 DuQFNode::DuQFNode(QString title, QGraphicsItem *parent):
     QGraphicsObject(parent)
 {

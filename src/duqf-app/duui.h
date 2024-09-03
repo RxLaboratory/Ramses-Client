@@ -14,7 +14,10 @@ class DuSplashScreen;
 
 /**
  * @brief The DuUI class provides UI Tools
- * @version 1.1.0 Add Layout methods & toolbutton style
+ * @version 1.1.1
+ * Add addStackedLayout() methods
+ * 1.1.0
+ * Add Layout methods & toolbutton style
  */
 class DuUI
 {
@@ -114,6 +117,8 @@ public:
     static QGridLayout *addGridLayout(QBoxLayout *parent);
 
     static QStackedLayout *createStackedLayout(bool isSubLayout = true, QWidget *parent = nullptr);
+    static QStackedLayout *addStackedLayout(QWidget *parent);
+    static QStackedLayout *addStackedLayout(QBoxLayout *parent);
 
     static QWidget *addBlock(QLayout *child, QBoxLayout *parent);
 

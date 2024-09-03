@@ -5,10 +5,10 @@
 #include <QMouseEvent>
 #include <QVariantAnimation>
 #include <QPointer>
+#include <QTabBar>
 
 #include "duqf-app/duui.h"
 #include "duqf-app/dusettings.h"
-#include "qtabbar.h"
 #include "duqf-app/app-version.h"
 
 DuMainWindow::DuMainWindow(QWidget *parent)
@@ -25,12 +25,14 @@ DuMainWindow::DuMainWindow(QWidget *parent)
 
 void DuMainWindow::setWindowTitle(const QString &title)
 {
-    if (title != "") QGoodWindow::setWindowTitle(QStringLiteral(STR_INTERNALNAME) + " - " + title);
-    else QGoodWindow::setWindowTitle(QStringLiteral(STR_INTERNALNAME));
-    ui_titleLabel->setText(QStringLiteral(STR_INTERNALNAME) + " - " + title);
+    QString t = QStringLiteral(STR_FILEDESCRIPTION);
+    if (title != "")
+        t += " - " + title;
+    QGoodWindow::setWindowTitle(t);
+    ui_titleLabel->setText(t);
 }
 
-void DuMainWindow::addDockWidget(Qt::DockWidgetArea area, DuDockWidget *dockwidget)
+void DuMainWindow::addDockWidget(Qt::DockWidgetArea area, QDockWidget *dockwidget)
 {
     ui_centralMainWidget->addDockWidget(area, dockwidget);
     dockwidget->installEventFilter(m_dockEventFilter);
@@ -39,7 +41,7 @@ void DuMainWindow::addDockWidget(Qt::DockWidgetArea area, DuDockWidget *dockwidg
     ui_docks << dockwidget;
 }
 
-const QVector<DuDockWidget *> &DuMainWindow::docks() const
+const QVector<QDockWidget *> &DuMainWindow::docks() const
 {
     return ui_docks;
 }
@@ -68,6 +70,11 @@ void DuMainWindow::hideAllDocks()
         dock->hide();
 }
 
+void DuMainWindow::updateWindow()
+{
+    ui_goodCentralWidget->updateWindow();
+}
+
 void DuMainWindow::setupUi()
 {
     ui_goodCentralWidget = new QGoodCentralWidget(this);
@@ -79,24 +86,17 @@ void DuMainWindow::setupUi()
     ui_goodCentralWidget->setTitleVisible(false);
     ui_goodCentralWidget->setIconVisibility(QGoodCentralWidget::IconVisibilityType::IconHiddenAcceptMouseInput);
 
-
     // Contents of the window
     // Needs a child mainwindow for the docks
     ui_centralMainWidget = new QMainWindow(this);
-    QWidget *centralWidget = new QWidget(ui_centralMainWidget);
-    ui_mainLayout = DuUI::createBoxLayout(Qt::Vertical, true, centralWidget);
+    ui_centralWidget = new QWidget(ui_centralMainWidget);
     // set as central widget
-    ui_centralMainWidget->setCentralWidget(centralWidget);
+    ui_centralMainWidget->setCentralWidget(ui_centralWidget);
     // Add it to the good central widget
     ui_goodCentralWidget->setCentralWidget(ui_centralMainWidget);
 
     //Set the central widget of QGoodWindow which is QGoodCentralWidget
     this->setCentralWidget(ui_goodCentralWidget);
-
-    // A Label for the title
-    ui_titleLabel = new QLabel(STR_INTERNALNAME);
-    ui_titleLabel->setAttribute(Qt::WA_TransparentForMouseEvents);
-    ui_goodCentralWidget->setRightTitleBarWidget(ui_titleLabel);
 
     // Dock event filter
     m_dockEventFilter = new DuDockEventFilter(this);
@@ -105,20 +105,43 @@ void DuMainWindow::setupUi()
 
 void DuMainWindow::setupTitleBar()
 {
-    ui_mainToolBar = new QToolBar(this);
-    ui_mainToolBar->setMovable(false);
-    ui_goodCentralWidget->setLeftTitleBarWidget(ui_mainToolBar, true);
+    // LEFT
+    ui_leftToolBar = new QToolBar(this);
+    ui_leftToolBar->setMovable(false);
+    ui_leftToolBar->setObjectName("leftToolBar");
+    ui_leftToolBar->setIconSize( QSize(16,16) );
+    ui_leftToolBar->setMinimumHeight(16);
+    ui_leftToolBar->setWindowTitle(QString(STR_FILEDESCRIPTION) + " | " + tr("left toolbar"));
+    ui_leftToolBar->setContextMenuPolicy(Qt::PreventContextMenu);
+    ui_goodCentralWidget->setLeftTitleBarWidget(ui_leftToolBar, true);
 
-    // Appearance
-    ui_mainToolBar->setObjectName("mainToolBar");
-    ui_mainToolBar->setIconSize( QSize(16,16) );
-    ui_mainToolBar->setWindowTitle(QString(STR_FILEDESCRIPTION) + " main toolbar");
+    // Middle
+    ui_centerToolBar = new QToolBar(this);
+    ui_centerToolBar->setMovable(false);
+    ui_centerToolBar->setObjectName("centerToolBar");
+    ui_centerToolBar->setIconSize( QSize(16,16) );
+    ui_centerToolBar->setMinimumHeight(16);
+    ui_centerToolBar->setWindowTitle(QString(STR_FILEDESCRIPTION) + " | " + tr("center toolbar"));
+    ui_centerToolBar->setContextMenuPolicy(Qt::PreventContextMenu);
+    ui_goodCentralWidget->setCenterTitleBarWidget(ui_centerToolBar, true);
 
-    // remove right click on toolbar
-    ui_mainToolBar->setContextMenuPolicy(Qt::PreventContextMenu);
+    // RIGHT
+    ui_rightToolBar = new QToolBar(this);
+    ui_rightToolBar->setMovable(false);
+    ui_rightToolBar->setObjectName("rightToolBar");
+    ui_rightToolBar->setIconSize( QSize(16,16) );
+    ui_rightToolBar->setMinimumHeight(16);
+    ui_rightToolBar->setWindowTitle(QString(STR_FILEDESCRIPTION) + " | " + tr("right toolbar"));
+    ui_rightToolBar->setContextMenuPolicy(Qt::PreventContextMenu);
+    ui_goodCentralWidget->setRightTitleBarWidget(ui_rightToolBar, true);
+
+    // A Label for the title
+    ui_titleLabel = new QLabel(STR_FILEDESCRIPTION);
+    ui_titleLabel->setAttribute(Qt::WA_TransparentForMouseEvents, true);
+    ui_rightToolBar->addWidget(ui_titleLabel);
 
     this->setWindowIcon(QIcon(":/icons/app"));
-    this->setWindowTitle(QStringLiteral(STR_INTERNALNAME));
+    setWindowTitle("");
 }
 
 void DuMainWindow::setDockVisible(QDockWidget *w, bool visible)
@@ -282,6 +305,8 @@ void DuMainWindow::setStyle()
             DuSettings::i()->get(DuSettings::UI_ToolButtonStyle).toInt()
             )
         );
+
+    updateWindow();
 }
 
 void DuMainWindow::setupActions()
@@ -293,7 +318,7 @@ bool DuDockEventFilter::eventFilter(QObject *obj, QEvent *event)
 {
     // Check the object, shouldn't be installed on something else
     auto dock = qobject_cast<QDockWidget*>(obj);
-    Q_ASSERT(dock);
+    //Q_ASSERT(dock);
 
     // Check type
     auto type = event->type();

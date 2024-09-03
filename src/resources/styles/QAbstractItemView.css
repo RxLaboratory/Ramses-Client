@@ -1,0 +1,32 @@
+QAbstractItemView {
+    alternate-background-color: @background-push;
+    selection-color: @focus;
+    border-radius: @radius;
+    border: none;
+}
+
+QAbstractItemView::item {
+    margin: @margin-small;
+    padding-left: @margin-big;
+    padding-right: @margin-big;
+    border-radius: @radius;
+}
+
+QAbstractItemView::item:hover {
+    background-color: @focus-push-more;
+}
+
+QAbstractItemView::item:selected {
+    background-color: @background-push;
+    color: @focus;
+}
+
+/* Table specific stuff */
+
+QTableView::item {
+    border-radius: 0;
+}
+
+QTableCornerButton::section {
+    background-color: transparent;
+}

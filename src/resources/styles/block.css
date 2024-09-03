@@ -1,0 +1,11 @@
+.block {
+    padding: @margin;
+    border-radius: @radius;
+    background-color: @background-push;
+}
+
+.block QScrollBar::add-page,
+.block QScrollBar::sub-page
+{
+    background-color: @background-push;
+}
