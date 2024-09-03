@@ -3,7 +3,7 @@
 #include <QPainter>
 #include <QStyleOption>
 
-#include "duapp/dusettingsmanager.h"
+#include "duapp/dusettings.h"
 
 void DuStyle::drawControl(ControlElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
 {
@@ -12,7 +12,7 @@ void DuStyle::drawControl(ControlElement element, const QStyleOption *option, QP
     case QStyle::CE_RubberBand:
     {
         painter->save();
-        QColor c = DuSettingsManager::instance()->uiFocusColor();
+        QColor c = DuSettings::i()->get(DuSettings::UI_FocusColor).value<QColor>();
         QColor bgc = c;
         bgc.setAlpha(85);
         QBrush b(bgc);

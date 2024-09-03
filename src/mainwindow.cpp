@@ -4,7 +4,6 @@
 
 #include "assetgroupmanagerwidget.h"
 #include "assetmanagerwidget.h"
-#include "duapp/dusettingsmanager.h"
 #include "itemmanagerwidget.h"
 #include "pipefilemanagerwidget.h"
 #include "progressmanager.h"
@@ -648,12 +647,6 @@ void MainWindow::closeEvent(QCloseEvent *event)
         // Get to the home page first to make sure all toolbars are hidden
         home();
 
-        // Let's save the ui state
-        DuSettingsManager::instance()->saveUIWindowState(
-            this->saveGeometry(),
-            this->saveState()
-            );
-
         if (DBInterface::instance()->connectionStatus() == NetworkUtils::Online)
         {
             // Clean before quit!
@@ -667,11 +660,14 @@ void MainWindow::closeEvent(QCloseEvent *event)
             pm->freeze();
 
             DBInterface::instance()->setOffline();
-
-            event->ignore();
         }
         else m_readyToClose = true;
     }
+
+    if (m_readyToClose)
+        DuMainWindow::closeEvent(event);
+    else
+        event->ignore();
 
 }
 

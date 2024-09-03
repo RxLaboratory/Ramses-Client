@@ -4,7 +4,8 @@
 #include <QRegularExpression>
 #include <QFile>
 
-#include "duapp/dusettingsmanager.h"
+#include "duapp/dusettings.h"
+#include "duapp/duui.h"
 
 const QRegularExpression DuSVGIconEngine::_reColor = QRegularExpression("#(?:[a-f\\d]{3,6})", QRegularExpression::CaseInsensitiveOption);
 
@@ -26,32 +27,31 @@ void DuSVGIconEngine::paint(QPainter *painter, const QRect &rect,
     if (!painter->isActive()) return;
 
     QColor c;
-    ColorVariant v = NormalColor;
-
-    switch(mode) {
-    case QIcon::Disabled:
-        v = DarkerColor;
-        break;
-    case QIcon::Active:
-    case QIcon::Selected:
-        v = LighterColor;
-        break;
-    case QIcon::Normal:
-        break;
-    }
 
     switch(state) {
     case QIcon::On:
         if (_checkedColor.isValid())
             c = _checkedColor;
         else
-            c = DuSettingsManager::instance()->uiFocusColor(v);
+            c = DuSettings::i()->get(DuSettings::UI_FocusColor).value<QColor>();
         break;
     case QIcon::Off:
         if (_mainColor.isValid())
             c = _mainColor;
         else
-            c = DuSettingsManager::instance()->uiIconColor(v);
+            c = DuSettings::i()->get(DuSettings::UI_IconColor).value<QColor>();
+        break;
+    }
+
+    switch(mode) {
+    case QIcon::Disabled:
+        c = DuUI::pushColor(c, 2);
+        break;
+    case QIcon::Active:
+    case QIcon::Selected:
+        c = DuUI::pullColor(c);
+        break;
+    case QIcon::Normal:
         break;
     }
 
@@ -60,6 +60,8 @@ void DuSVGIconEngine::paint(QPainter *painter, const QRect &rect,
     case QIcon::On:
         if (_checkedData != "")
             d = _checkedData.replace(_reColor, c.name());
+        else
+            d = _data.replace(_reColor, c.name());
         break;
     case QIcon::Off:
         d = _data.replace(_reColor, c.name());
@@ -125,11 +127,13 @@ void DuSVGIconEngine::setCheckedColor(const QColor &color)
 QColor DuSVGIconEngine::mainColor() const
 {
     if (_mainColor.isValid()) return _mainColor;
-    return DuSettingsManager::instance()->uiIconColor(NormalColor);
+    return DuSettings::i()->get(DuSettings::UI_IconColor).value<QColor>();
 }
 
 QColor DuSVGIconEngine::checkedColor() const
 {
     if (_checkedColor.isValid()) return _checkedColor;
-    return DuSettingsManager::instance()->uiFocusColor();
+    return DuSettings::i()->get(
+                              DuSettings::UI_FocusColor
+                              ).value<QColor>();
 }

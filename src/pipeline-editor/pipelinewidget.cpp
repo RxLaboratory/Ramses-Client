@@ -1,7 +1,7 @@
 #include "pipelinewidget.h"
 
 #include "duutils/guiutils.h"
-#include "duapp/dusettingsmanager.h"
+#include "duapp/dusettings.h"
 
 #include "duwidgets/duicon.h"
 #include "progressmanager.h"
@@ -182,7 +182,7 @@ PipelineWidget::PipelineWidget(QWidget *parent) :
     ui_curvatureBox->setMaximum(100);
     ui_curvatureBox->setMaximumWidth(100);
     ui_curvatureBox->setValue(
-        DuSettingsManager::instance()->nvCurvature()*100
+        DuSettings::i()->get(DuSettings::UI_NodeViewCurvature).toReal()*100
         );
     ui_curvatureBox->setSuffix("%");
     ui_curvatureBox->setPrefix("Curvature: ");
@@ -204,7 +204,9 @@ PipelineWidget::PipelineWidget(QWidget *parent) :
     connect(viewSelectedButton, SIGNAL(clicked()), ui_nodeView, SLOT(frameSelected()));
     connect(actionViewAll, SIGNAL(triggered()), ui_nodeView, SLOT(frameSelected()));
     connect(zoomBox, SIGNAL(valueChanged(int)), ui_nodeView, SLOT(setZoom(int)));
-    connect(ui_curvatureBox, &DuQFSpinBox::valueChanged, DuSettingsManager::instance(), &DuSettingsManager::setNVCurvature);
+    connect(ui_curvatureBox, &DuQFSpinBox::valueChanged, this, [] (int val) {
+        DuSettings::i()->set(DuSettings::UI_NodeViewCurvature,val);
+    });
     connect(ui_nodeView, SIGNAL(scaled(int)), zoomBox, SLOT(setValue(int)));
     connect(actionAddStep, SIGNAL(triggered()), this, SLOT(createStep()));
     connect(actionAddStep, SIGNAL(triggered()), ui_nodeView, SLOT(reinitTransform()));

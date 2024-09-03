@@ -44,6 +44,9 @@ protected:
     bool event(QEvent *event) override;
     bool gestureEvent(QGestureEvent *event);
 
+private slots:
+    void updateSettings(int key, const QVariant &value);
+
 private:
     void drawBackground(QPainter * painter, const QRectF & rect) override;
 

@@ -4,16 +4,47 @@
 #include "duapp/duui.h"
 #include "duwidgets/duqfupdatedialog.h"
 #include "daemon.h"
+#include "enums.h"
 #include "qformlayout.h"
+#include "ramsettings.h"
 
 SettingsDock::SettingsDock(QWidget *parent)
     : DuScrollArea{parent}
 {
-    _sm = DuSettingsManager::instance();
+    _sm = DuSettings::i();
     setupUi();
     connectEvents();
 }
 
+void SettingsDock::updateSettings(int key, const QVariant &value)
+{
+    switch(key) {
+    case DuSettings::UI_ToolButtonStyle:
+        ui_toolButtonStyleBox->setCurrentData(value);
+        break;
+    case DuSettings::UI_FocusColor:
+        ui_colorSelector->setColor(value.value<QColor>());
+        break;
+    case DuSettings::UI_IconColor:
+        ui_iconColorSelector->setColor(value.value<QColor>());
+        break;
+    case DuSettings::UI_TrayIconMode:
+        ui_trayIconModeBox->setCurrentData(value);
+        break;
+    case DuSettings::UI_ShowTrayIcon:
+        ui_showTrayIconBox->setChecked(value.toBool());
+        break;
+    case DuSettings::UI_DateTimeFormat:
+        ui_dateFormatBox->setCurrentData(value);
+        break;
+    case DuSettings::APP_CheckUpdates:
+        ui_checkAtStartupBox->setChecked(value.toBool());
+        break;
+    case RamSettings::DaemonPort:
+        ui_daemonPortBox->setValue(value.toInt());
+        break;
+    }
+}
 
 void SettingsDock::setupUi()
 {
@@ -62,22 +93,22 @@ void SettingsDock::setupAppearanceTab()
     ui_toolButtonStyleBox->addItem("Text only", Qt::ToolButtonTextOnly);
     ui_toolButtonStyleBox->addItem("Text under icon", Qt::ToolButtonTextUnderIcon);
     ui_toolButtonStyleBox->addItem("Text beside icon", Qt::ToolButtonTextBesideIcon);
-    ui_toolButtonStyleBox->setCurrentData( _sm->uiToolButtonStyle() );
+    ui_toolButtonStyleBox->setCurrentData( _sm->get(DuSettings::UI_ToolButtonStyle).toInt() );
 
     appearanceLayout->addRow(tr("Tool buttons style"), ui_toolButtonStyleBox);
 
     ui_colorSelector = new DuColorSelector(appearanceWidget);
-    ui_colorSelector->setColor( _sm->uiFocusColor() );
+    ui_colorSelector->setColor( _sm->get(DuSettings::UI_FocusColor).value<QColor>() );
 
     appearanceLayout->addRow(tr("Focus color"), ui_colorSelector);
 
     ui_iconColorSelector = new DuColorSelector(appearanceWidget);
-    ui_iconColorSelector->setColor( _sm->uiIconColor() );
+    ui_iconColorSelector->setColor( _sm->get(DuSettings::UI_IconColor).value<QColor>() );
 
     appearanceLayout->addRow(tr("Icons color"), ui_iconColorSelector);
 
     ui_showTrayIconBox = new QCheckBox(tr("Always show"), this);
-    ui_showTrayIconBox->setChecked( _sm->showTrayIcon() );
+    ui_showTrayIconBox->setChecked( _sm->get(DuSettings::UI_ShowTrayIcon).toBool() );
 
     appearanceLayout->addRow(tr("Tray icon"), ui_showTrayIconBox);
 
@@ -85,7 +116,7 @@ void SettingsDock::setupAppearanceTab()
     ui_trayIconModeBox->addItem(tr("Dark"), DarkerColor);
     ui_trayIconModeBox->addItem(tr("Color"), NormalColor);
     ui_trayIconModeBox->addItem(tr("Light"), LighterColor);
-    ui_trayIconModeBox->setCurrentData( _sm->trayIconMode() );
+    ui_trayIconModeBox->setCurrentData( _sm->get(DuSettings::UI_TrayIconMode) );
 
     appearanceLayout->addRow(tr("Tray icon color"), ui_trayIconModeBox);
 
@@ -101,7 +132,7 @@ void SettingsDock::setupAppearanceTab()
     ui_dateFormatBox->addItem(d.toString(f), f);
     f = "ddd d MMMM yyyy 'at' hh:mm:ss";
     ui_dateFormatBox->addItem(d.toString(f), f);
-    ui_dateFormatBox->setCurrentData(_sm->uiDateFormat());
+    ui_dateFormatBox->setCurrentData( _sm->get(DuSettings::UI_DateTimeFormat) );
 
     appearanceLayout->addRow(tr("Date format"), ui_dateFormatBox);
 
@@ -124,7 +155,7 @@ void SettingsDock::setupUpdatesTab()
     DuUI::setupLayout(updatesLayout, 3);
 
     ui_checkAtStartupBox = new QCheckBox("Check during startup", this);
-    ui_checkAtStartupBox->setChecked(_sm->checkUpdates());
+    ui_checkAtStartupBox->setChecked(_sm->get(DuSettings::APP_CheckUpdates).toBool());
     updatesLayout->addWidget(ui_checkAtStartupBox);
 
     ui_checkNowButton = new QPushButton("Check now", this);
@@ -165,38 +196,46 @@ void SettingsDock::setupDaemonTab()
 
 void SettingsDock::connectEvents()
 {
+    connect(_sm, &DuSettings::settingChanged,
+            this, &SettingsDock::updateSettings);
+
     connect( ui_toolButtonStyleBox, QOverload<int>::of(&DuComboBox::activated),
-            this, [this] (int i) { _sm->setUIToolButtonStyle( ui_toolButtonStyleBox->itemData(i).toInt()); } );
-    connect(_sm, &DuSettingsManager::uiToolButtonStyleChanged,
-            ui_toolButtonStyleBox, &DuComboBox::setCurrentData);
+            this, [this] (int i) {
+                _sm->set( DuSettings::UI_ToolButtonStyle,
+                         ui_toolButtonStyleBox->itemData(i).toInt()
+                         );
+            } );
 
     connect( ui_colorSelector, &DuColorSelector::colorChanged,
-            _sm, &DuSettingsManager::setUIFocusColor);
-    connect(_sm, &DuSettingsManager::uiFocusColorChanged,
-            ui_colorSelector, &DuColorSelector::setColor);
+            this, [this] (const QColor &color) {
+                _sm->set(DuSettings::UI_FocusColor, color);
+            });
 
     connect( ui_iconColorSelector, &DuColorSelector::colorChanged,
-            _sm, &DuSettingsManager::setUIIconColor);
-    connect(_sm, &DuSettingsManager::uiIconColorChanged,
-            ui_iconColorSelector, &DuColorSelector::setColor);
+            this, [this] (const QColor &color) {
+                _sm->set(DuSettings::UI_IconColor, color);
+            });
 
-    connect( ui_trayIconModeBox, QOverload<int>::of(&DuComboBox::activated),
-            this, [this] { _sm->setTrayIconMode( static_cast<ColorVariant>(
-                         ui_trayIconModeBox->currentData().toInt()
-                         ) ); });
-    connect(_sm, &DuSettingsManager::trayIconModeChanged,
-            ui_trayIconModeBox, &DuComboBox::setCurrentData);
+    connect( ui_trayIconModeBox, &DuComboBox::dataActivated,
+            this, [this] (const QVariant &val) {
+                _sm->set(DuSettings::UI_TrayIconMode, val);
+            });
 
     connect( ui_showTrayIconBox, &QCheckBox::clicked,
-            _sm, &DuSettingsManager::setShowTrayIcon);
-    connect(_sm, &DuSettingsManager::trayIconVisibilityChanged,
-            ui_showTrayIconBox, &QCheckBox::setChecked);
+            this, [this] (bool checked) {
+                _sm->set(DuSettings::UI_ShowTrayIcon, checked);
+            });
 
-    connect( ui_dateFormatBox, &DuComboBox::dataActivated, this, [this] (const QVariant f) {
-        _sm->setUIDateFormat(f.toString());
-    });
+    connect( ui_dateFormatBox, &DuComboBox::dataActivated,
+            this, [this] (const QVariant &val) {
+                _sm->set(DuSettings::UI_DateTimeFormat, val);
+            });
 
-    connect( ui_checkAtStartupBox, &QCheckBox::clicked, _sm, &DuSettingsManager::setCheckUpdates);
+    connect( ui_checkAtStartupBox, &QCheckBox::clicked,
+            this, [this] (bool checked) {
+                _sm->set(DuSettings::APP_CheckUpdates, checked);
+            });
+
     connect( ui_checkNowButton, &QPushButton::clicked, this, [] () {
         DuApplication *app = qobject_cast<DuApplication*>(qApp);
         app->checkUpdate();
@@ -204,9 +243,11 @@ void SettingsDock::connectEvents()
         dialog.exec();
     });
 
-    connect( ui_daemonPortBox, &DuSpinBox::editingFinished, this, [this] () {
-        _sm->setDaemonPort(ui_daemonPortBox->value());
-    });
+    connect( ui_daemonPortBox, &DuSpinBox::editingFinished,
+            this, [this] () {
+                _sm->set(RamSettings::DaemonPort, ui_daemonPortBox->value());
+            });
+
     connect( ui_restartDaemonButton, &QPushButton::clicked, Daemon::instance(), &Daemon::restart );
 }
 

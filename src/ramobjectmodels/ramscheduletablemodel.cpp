@@ -1,7 +1,7 @@
 #include "ramscheduletablemodel.h"
 
 #include "duapp/app-config.h"
-#include "duapp/dusettingsmanager.h"
+#include "duapp/dusettings.h"
 #include "duutils/stringutils.h"
 #include "ramscheduleentry.h"
 #include "ramschedulerow.h"
@@ -261,7 +261,7 @@ QVariant RamScheduleTableModel::horizontalHeaderData(int section, int role) cons
     if (role == Qt::ForegroundRole)
     {
         if (date == QDate::currentDate())
-            return QBrush(DuSettingsManager::instance()->uiFocusColor());
+            return QBrush(DuSettings::i()->get(DuSettings::UI_FocusColor).value<QColor>());
 
         RamProject *proj = Ramses::instance()->currentProject();
         if (proj && date == proj->deadline())

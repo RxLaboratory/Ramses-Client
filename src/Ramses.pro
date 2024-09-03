@@ -47,7 +47,6 @@ SOURCES += \
     dumodules/duapp/ducli.cpp \
     dumodules/duapp/dulogger.cpp \
     dumodules/duapp/dusettings.cpp \
-    dumodules/duapp/dusettingsmanager.cpp \
     dumodules/duapp/dustyle.cpp \
     dumodules/duapp/duui.cpp \
     dumodules/duutils/ducolorutils.cpp \
@@ -149,6 +148,7 @@ SOURCES += \
     rammanagerwidgets/schedulemanagerwidget.cpp \
     ramobjects/ramabstractitem.cpp \
     ramobjectviews/ramobjectview.cpp \
+    ramsettings.cpp \
     smallwidgets/ramstatebox.cpp \
     smallwidgets/scheduleentrycreationdialog.cpp \
     smallwidgets/servereditwidget.cpp \
@@ -241,7 +241,6 @@ HEADERS += \
     dumodules/duapp/ducli.h \
     dumodules/duapp/dulogger.h \
     dumodules/duapp/dusettings.h \
-    dumodules/duapp/dusettingsmanager.h \
     dumodules/duapp/dustyle.h \
     dumodules/duapp/duui.h \
     dumodules/duutils/colorutils.h \
@@ -347,6 +346,7 @@ HEADERS += \
     rammanagerwidgets/schedulemanagerwidget.h \
     ramobjects/ramabstractitem.h \
     ramobjectviews/ramobjectview.h \
+    ramsettings.h \
     smallwidgets/ramstatebox.h \
     smallwidgets/scheduleentrycreationdialog.h \
     smallwidgets/servereditwidget.h \

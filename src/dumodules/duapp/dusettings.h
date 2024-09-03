@@ -1,6 +1,7 @@
 #ifndef DUSETTINGS_H
 #define DUSETTINGS_H
 
+#include "qdatetime.h"
 #include <QObject>
 #include <QSettings>
 #include <QColor>
@@ -28,9 +29,12 @@ public: // enums and structs
         UI_NodeViewCurvature,
         UI_DateFormat,
         UI_TimeFormat,
+        UI_DateTimeFormat,
         UI_ShowTrayIcon,
         UI_TrayIconMode,
-        Media_DefaultFPS,
+        APP_Version,
+        APP_CheckUpdates,
+        APP_LastUpdateCheck,
         Other,
     };
 
@@ -57,9 +61,12 @@ private: // The list of settings
         { UI_NodeViewCurvature, { "ui/nodeViewCurvature", 0.333 }},
         { UI_DateFormat, { "ui/dateFormat", "yyyy/MM/dd" }},
         { UI_TimeFormat, { "ui/timeFormat", "hh:mm:ss"}},
+        { UI_DateTimeFormat, { "ui/dateTimeFormat", "yyyy/MM/dd hh:mm:ss"}},
         { UI_ShowTrayIcon, { "ui/showTrayIcon", false}},
         { UI_TrayIconMode, { "ui/trayIconMode", "color"}},
-        { Media_DefaultFPS, { "media/defaultFPS", 24.0 }},  // fps
+        { APP_Version, { "app/version", "0.0.0"}},
+        { APP_CheckUpdates, { "app/checkUpdates", true}},
+        { APP_LastUpdateCheck, {"app/latestUpdateCheck" , QDateTime(QDate(1818,05,05), QTime())}},
     };
 
 public: // Methods

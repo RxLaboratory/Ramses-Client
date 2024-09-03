@@ -1,7 +1,7 @@
 #ifndef SETTINGSDOCK_H
 #define SETTINGSDOCK_H
 
-#include "duapp/dusettingsmanager.h"
+#include "duapp/dusettings.h"
 #include "duwidgets/ducombobox.h"
 #include "duwidgets/duicon.h"
 #include "duwidgets/duscrollarea.h"
@@ -16,6 +16,8 @@ class SettingsDock : public DuScrollArea
     Q_OBJECT
 public:
     SettingsDock(QWidget *parent = nullptr);
+private slots:
+    void updateSettings(int key, const QVariant &value);
 private:
     void setupUi();
     void setupAppearanceTab();
@@ -40,7 +42,7 @@ private:
     QPushButton *ui_restartDaemonButton;
 
     // Shortcut
-    DuSettingsManager *_sm;
+    DuSettings *_sm;
 
     // Utils
     QWidget *addTab(const DuIcon &icon, const QString &name);

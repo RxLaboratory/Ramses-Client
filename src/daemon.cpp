@@ -8,7 +8,8 @@
 #include "ramasset.h"
 #include "ramshot.h"
 #include "statemanager.h"
-#include "duapp/dusettingsmanager.h"
+#include "duapp/dusettings.h"
+#include "ramsettings.h"
 
 Daemon *Daemon::_instance = nullptr;
 
@@ -21,7 +22,9 @@ Daemon* Daemon::instance()
 void Daemon::start()
 {
     QSettings settings;
-    if (!m_tcpServer->listen( QHostAddress::LocalHost, DuSettingsManager::instance()->daemonPort() )) {
+    if (!m_tcpServer->listen( QHostAddress::LocalHost,
+                              DuSettings::i()->get(RamSettings::DaemonPort).toInt()
+                             )) {
         qDebug() << m_tcpServer->errorString();
         log(tr("Unable to start the daemon server.") + "\n" + m_tcpServer->errorString(), DuQFLog::Warning);
     }

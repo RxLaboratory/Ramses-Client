@@ -5,7 +5,26 @@
 #include "duapp/app-utils.h"
 #include "duapp/ducli.h"
 #include "duwidgets/duqfupdatedialog.h"
+#include "ramsettings.h"
 #include "src/qgoodwindow.h"
+
+void initSettings(DuSplashScreen *s)
+{
+    s->newMessage("Reading settings...");
+
+    RamSettings::registerRamsesSettings();
+
+    QString prevVersionStr = DuSettings::i()->get(DuSettings::APP_Version).toString();
+    QVersionNumber prevVersion = QVersionNumber::fromString( prevVersionStr );
+    if (prevVersionStr != STR_VERSION)
+    {
+        // This is a new version,
+        // Do stuff here if needed in this case
+        // ...
+        // And save
+        DuSettings::i()->set(DuSettings::APP_Version, STR_VERSION);
+    }
+}
 
 int main(int argc, char *argv[])
 {
@@ -65,11 +84,14 @@ int main(int argc, char *argv[])
         if (mustQuit) return -1;
     }
 
+    // init settings
+    initSettings(s);
+
     // Check for updates, right during startup
     s->newMessage("Looking for udpates...");
     QSettings settings;
     qDebug() << "Update check...";
-    QDateTime lastCheck = settings.value("updates/latestUpdateCheck").toDateTime();
+    QDateTime lastCheck = DuSettings::i()->get(DuSettings::APP_LastUpdateCheck).toDateTime();
     qDebug().noquote() << "Last check was on: " + lastCheck.toString("yyyy-MM-dd hh:mm:ss");
     int days = lastCheck.daysTo(QDateTime::currentDateTime());
     qDebug().noquote() << days << " days since last check.";
@@ -81,7 +103,7 @@ int main(int argc, char *argv[])
             DuQFUpdateDialog dialog(updateInfo);
             if (dialog.exec()) return 0;
         }
-        settings.setValue("updates/latestUpdateCheck", QDateTime::currentDateTime());
+        DuSettings::i()->set(DuSettings::APP_LastUpdateCheck, QDateTime::currentDateTime());
     }
     else
     {

@@ -1,5 +1,5 @@
 #include "duqfnodeview.h"
-#include "duapp/dusettingsmanager.h"
+#include "duapp/dusettings.h"
 #include "duwidgets/duscrollbar.h"
 #include "qdebug.h"
 
@@ -30,7 +30,7 @@ DuQFNodeView::DuQFNodeView(QWidget *parent): QGraphicsView(parent)
     setScene(m_scene);
 
     connect(m_grid, SIGNAL(gridSizeChanged()), this, SLOT(update()));
-    connect(DuSettingsManager::instance(), SIGNAL(nvCurvatureChanged(float)), this, SLOT(update()));
+    connect(DuSettings::i(), &DuSettings::settingChanged, this, &DuQFNodeView::updateSettings);
 }
 
 DuQFGrid *DuQFNodeView::grid() const
@@ -245,6 +245,17 @@ bool DuQFNodeView::gestureEvent(QGestureEvent *event)
     }
 
     return false;
+}
+
+void DuQFNodeView::updateSettings(int key, const QVariant &value)
+{
+    Q_UNUSED(value)
+
+    switch(key) {
+    case DuSettings::UI_NodeViewCurvature:
+        update();
+        break;
+    }
 }
 
 void DuQFNodeView::drawBackground(QPainter *painter, const QRectF &rect)

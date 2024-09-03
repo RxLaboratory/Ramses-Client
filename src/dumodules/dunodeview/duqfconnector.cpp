@@ -2,7 +2,7 @@
 
 #include <QApplication>
 
-#include "duapp/dusettingsmanager.h"
+#include "duapp/dusettings.h"
 
 DuQFConnector::DuQFConnector(QString title, QGraphicsItem *parent):
     QGraphicsObject( parent )
@@ -124,7 +124,7 @@ void DuQFConnector::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
     QPainterPath path;
 
     // Create path
-    if (DuSettingsManager::instance()->nvCurvature() < 1) {
+    if (DuSettings::i()->get(DuSettings::UI_NodeViewCurvature).toReal() < 1) {
         CurveHandles handles = curveHandles();
         path = QPainterPath(( QPointF( m_from.x(), m_from.y() ) ));
         path.cubicTo( handles.from, handles.to, m_to);
@@ -277,7 +277,7 @@ void DuQFConnector::setFromColor(const QColor &newFromColor)
 CurveHandles DuQFConnector::curveHandles(float q) const
 {
     // Get handle coordinates
-    float handleWeight = DuSettingsManager::instance()->nvCurvature();
+    float handleWeight = DuSettings::i()->get(DuSettings::UI_NodeViewCurvature).toReal();
     handleWeight *= q;
     CurveHandles handles;
     handles.from.setX((m_from.x()*(1.0-handleWeight) + m_to.x()*handleWeight));
