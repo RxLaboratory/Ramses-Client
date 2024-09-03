@@ -1,11 +1,11 @@
 #include "settingsdock.h"
 
+#include <QDir>
+
 #include "duapp/app-utils.h"
 #include "duapp/duui.h"
 #include "duwidgets/duqfupdatedialog.h"
 #include "daemon.h"
-#include "enums.h"
-#include "qformlayout.h"
 #include "ramsettings.h"
 
 SettingsDock::SettingsDock(QWidget *parent)
@@ -22,17 +22,29 @@ void SettingsDock::updateSettings(int key, const QVariant &value)
     case DuSettings::UI_ToolButtonStyle:
         ui_toolButtonStyleBox->setCurrentData(value);
         break;
-    case DuSettings::UI_FocusColor:
-        ui_colorSelector->setColor(value.value<QColor>());
-        break;
     case DuSettings::UI_IconColor:
         ui_iconColorSelector->setColor(value.value<QColor>());
+        break;
+    case DuSettings::UI_FocusColor:
+        ui_focusColorSelector->setColor(value.value<QColor>());
+        break;
+    case DuSettings::UI_ForegroundColor:
+        ui_fgColorSelector->setColor(value.value<QColor>());
+        break;
+    case DuSettings::UI_BackgroundColor:
+        ui_bgColorSelector->setColor(value.value<QColor>());
+        break;
+    case DuSettings::UI_Contrast:
+        ui_contrastBox->setCurrentData(value.toString());
         break;
     case DuSettings::UI_TrayIconMode:
         ui_trayIconModeBox->setCurrentData(value);
         break;
     case DuSettings::UI_ShowTrayIcon:
         ui_showTrayIconBox->setChecked(value.toBool());
+        break;
+    case DuSettings::UI_Margins:
+        ui_marginsBox->setValue(value.toInt());
         break;
     case DuSettings::UI_DateTimeFormat:
         ui_dateFormatBox->setCurrentData(value);
@@ -75,17 +87,18 @@ void SettingsDock::setupUi()
 void SettingsDock::setupAppearanceTab()
 {
     QWidget *w = addTab(DuIcon(":/icons/appearance90"), "Appearance");
+    auto l = qobject_cast<QBoxLayout*>( w->layout() );
 
-    auto appearanceLabel = new QLabel(w);
-    appearanceLabel->setText("<b>" + tr("Appearance:") + "</b>");
-    w->layout()->addWidget( appearanceLabel );
+    QWidget *themeWidget = addSection(tr("Theme"), l);
+    auto themeLayout = qobject_cast<QFormLayout*>( themeWidget->layout() );
 
-    auto appearanceWidget = new QWidget(w);
-    appearanceWidget->setProperty("class", "duBlock");
-    w->layout()->addWidget(appearanceWidget);
+    ui_themeBox = new DuComboBox(this);
+    ui_themeBox->setShrinkable(true);
+    loadThemes();
+    themeLayout->addRow(tr("Preset"), ui_themeBox);
 
-    auto appearanceLayout = new QFormLayout(appearanceWidget);
-    DuUI::setupLayout(appearanceLayout, 3);
+    QWidget *appearanceWidget = addSection(tr("Appearance"), l);
+    auto appearanceLayout = qobject_cast<QFormLayout*>( appearanceWidget->layout() );
 
     ui_toolButtonStyleBox = new DuComboBox(appearanceWidget);
     ui_toolButtonStyleBox->setShrinkable(true);
@@ -93,32 +106,75 @@ void SettingsDock::setupAppearanceTab()
     ui_toolButtonStyleBox->addItem("Text only", Qt::ToolButtonTextOnly);
     ui_toolButtonStyleBox->addItem("Text under icon", Qt::ToolButtonTextUnderIcon);
     ui_toolButtonStyleBox->addItem("Text beside icon", Qt::ToolButtonTextBesideIcon);
-    ui_toolButtonStyleBox->setCurrentData( _sm->get(DuSettings::UI_ToolButtonStyle).toInt() );
+    ui_toolButtonStyleBox->setCurrentData( DuSettings::i()->get(
+        DuSettings::UI_ToolButtonStyle
+        ) );
 
     appearanceLayout->addRow(tr("Tool buttons style"), ui_toolButtonStyleBox);
 
-    ui_colorSelector = new DuColorSelector(appearanceWidget);
-    ui_colorSelector->setColor( _sm->get(DuSettings::UI_FocusColor).value<QColor>() );
-
-    appearanceLayout->addRow(tr("Focus color"), ui_colorSelector);
-
-    ui_iconColorSelector = new DuColorSelector(appearanceWidget);
-    ui_iconColorSelector->setColor( _sm->get(DuSettings::UI_IconColor).value<QColor>() );
-
-    appearanceLayout->addRow(tr("Icons color"), ui_iconColorSelector);
+    ui_marginsBox = new DuSpinBox(this);
+    ui_marginsBox->setMinimum(0);
+    ui_marginsBox->setMaximum(10);
+    ui_marginsBox->setSuffix(" pt");
+    ui_marginsBox->setValue(
+        DuSettings::i()->get(DuSettings::UI_Margins).toInt()
+        );
+    appearanceLayout->addRow(tr("Spacing"), ui_marginsBox);
 
     ui_showTrayIconBox = new QCheckBox(tr("Always show"), this);
-    ui_showTrayIconBox->setChecked( _sm->get(DuSettings::UI_ShowTrayIcon).toBool() );
-
+    ui_showTrayIconBox->setChecked( DuSettings::i()->get(DuSettings::UI_ShowTrayIcon).toBool() );
     appearanceLayout->addRow(tr("Tray icon"), ui_showTrayIconBox);
 
     ui_trayIconModeBox = new DuComboBox(this);
-    ui_trayIconModeBox->addItem(tr("Dark"), DarkerColor);
-    ui_trayIconModeBox->addItem(tr("Color"), NormalColor);
-    ui_trayIconModeBox->addItem(tr("Light"), LighterColor);
-    ui_trayIconModeBox->setCurrentData( _sm->get(DuSettings::UI_TrayIconMode) );
-
+    ui_trayIconModeBox->addItem(tr("Dark"), "dark");
+    ui_trayIconModeBox->addItem(tr("Color"), "color");
+    ui_trayIconModeBox->addItem(tr("Light"), "light");
+    ui_trayIconModeBox->setCurrentData( DuSettings::i()->get(DuSettings::UI_TrayIconMode).toString() );
     appearanceLayout->addRow(tr("Tray icon color"), ui_trayIconModeBox);
+
+    QWidget *ui_colorsWidget = addSection(tr("Colors"), l);
+    auto colorsLayout = qobject_cast<QFormLayout*>( ui_colorsWidget->layout() );
+
+    QColor fgColor = DuSettings::i()->get(
+                                        DuSettings::UI_ForegroundColor
+                                        ).value<QColor>();
+    QColor bgColor = DuSettings::i()->get(
+                                        DuSettings::UI_BackgroundColor
+                                        ).value<QColor>();
+
+    ui_focusColorSelector = new DuColorSelector(ui_colorsWidget);
+    ui_focusColorSelector->setColor( DuSettings::i()->get(
+                                                       DuSettings::UI_FocusColor
+                                                       ).value<QColor>() );
+
+    colorsLayout->addRow(tr("Focus color"), ui_focusColorSelector);
+
+    ui_iconColorSelector = new DuColorSelector(ui_colorsWidget);
+    ui_iconColorSelector->setColor( DuSettings::i()->get(
+                                                      DuSettings::UI_IconColor
+                                                      ).value<QColor>() );
+
+    colorsLayout->addRow(tr("Icons color"), ui_iconColorSelector);
+
+    ui_fgColorSelector = new DuColorSelector(ui_colorsWidget);
+    ui_fgColorSelector->setColor( fgColor );
+
+    colorsLayout->addRow(tr("Foreground color"), ui_fgColorSelector);
+
+    ui_bgColorSelector = new DuColorSelector(ui_colorsWidget);
+    ui_bgColorSelector->setColor( bgColor );
+
+    colorsLayout->addRow(tr("Background color"), ui_bgColorSelector);
+
+    ui_contrastBox = new DuComboBox(ui_colorsWidget);
+    ui_contrastBox->addItem(tr("Low"), 1);
+    ui_contrastBox->addItem(tr("Medium"), 2);
+    ui_contrastBox->addItem(tr("High"), 3);
+    ui_contrastBox->setCurrentData(
+        DuSettings::i()->get(DuSettings::UI_Contrast).toInt()
+        );
+
+    colorsLayout->addRow(tr("Contrast"), ui_contrastBox);
 
     ui_dateFormatBox = new DuComboBox(this);
     QDateTime d = QDateTime::fromString("2021-04-26 10:53:31", "yyyy-MM-dd hh:mm:ss");
@@ -136,8 +192,7 @@ void SettingsDock::setupAppearanceTab()
 
     appearanceLayout->addRow(tr("Date format"), ui_dateFormatBox);
 
-    auto l = qobject_cast<QVBoxLayout*>( w->layout() );
-    l->addStretch();
+    l->addWidget(new QLabel(tr("Restart the application\nfor the changes to take effect.")));
 }
 
 void SettingsDock::setupUpdatesTab()
@@ -199,37 +254,53 @@ void SettingsDock::connectEvents()
     connect(_sm, &DuSettings::settingChanged,
             this, &SettingsDock::updateSettings);
 
+    // APEARANCE
+    connect(ui_themeBox, QOverload<int>::of(&QComboBox::activated),
+            this, &SettingsDock::setTheme);
     connect( ui_toolButtonStyleBox, QOverload<int>::of(&DuComboBox::activated),
             this, [this] (int i) {
                 _sm->set( DuSettings::UI_ToolButtonStyle,
                          ui_toolButtonStyleBox->itemData(i).toInt()
                          );
             } );
-
-    connect( ui_colorSelector, &DuColorSelector::colorChanged,
-            this, [this] (const QColor &color) {
-                _sm->set(DuSettings::UI_FocusColor, color);
-            });
-
-    connect( ui_iconColorSelector, &DuColorSelector::colorChanged,
-            this, [this] (const QColor &color) {
-                _sm->set(DuSettings::UI_IconColor, color);
-            });
-
     connect( ui_trayIconModeBox, &DuComboBox::dataActivated,
             this, [this] (const QVariant &val) {
                 _sm->set(DuSettings::UI_TrayIconMode, val);
             });
-
     connect( ui_showTrayIconBox, &QCheckBox::clicked,
             this, [this] (bool checked) {
                 _sm->set(DuSettings::UI_ShowTrayIcon, checked);
             });
-
+    connect(ui_marginsBox, QOverload<int>::of(&DuSpinBox::valueChanged),
+            this, [this] (int v) {
+                _sm->set(DuSettings::UI_Margins, v);
+            });
+    connect( ui_focusColorSelector, &DuColorSelector::colorChanged,
+            this, [this] (const QColor &color) {
+                _sm->set(DuSettings::UI_FocusColor, color);
+            });
+    connect( ui_iconColorSelector, &DuColorSelector::colorChanged,
+            this, [this] (const QColor &color) {
+                _sm->set(DuSettings::UI_IconColor, color);
+            });
+    connect(ui_fgColorSelector, &DuColorSelector::colorChanged,
+            this, [this] (const QColor &color) {
+                _sm->set(DuSettings::UI_ForegroundColor, color);
+            });
+    connect(ui_bgColorSelector, &DuColorSelector::colorChanged,
+            this, [this] (const QColor &color) {
+                _sm->set(DuSettings::UI_BackgroundColor, color);
+            });
+    connect(ui_contrastBox, QOverload<int>::of(&QComboBox::activated),
+            this, [this] (int i) {
+                _sm->set(DuSettings::UI_Contrast, ui_contrastBox->itemData(i));
+            });
     connect( ui_dateFormatBox, &DuComboBox::dataActivated,
             this, [this] (const QVariant &val) {
                 _sm->set(DuSettings::UI_DateTimeFormat, val);
             });
+
+    // UPDATES
 
     connect( ui_checkAtStartupBox, &QCheckBox::clicked,
             this, [this] (bool checked) {
@@ -242,6 +313,8 @@ void SettingsDock::connectEvents()
         DuQFUpdateDialog dialog( app->updateInfo() );
         dialog.exec();
     });
+
+    // DAEMON
 
     connect( ui_daemonPortBox, &DuSpinBox::editingFinished,
             this, [this] () {
@@ -257,8 +330,129 @@ QWidget *SettingsDock::addTab(const DuIcon &icon, const QString &name)
     ui_tabWidget->addTab(w, icon, "");
     ui_tabWidget->setTabToolTip(ui_tabWidget->count()-1, name);
 
-    auto l = new QVBoxLayout(w);
-    DuUI::setupLayout(l, 3);
-
+    DuUI::addBoxLayout(Qt::Vertical, w);
     return w;
+}
+
+QWidget *SettingsDock::addSection(const QString &name, QBoxLayout *layout)
+{
+    auto label = new QLabel(this);
+    label->setText("<b>" + name + "</b>");
+    layout->addWidget( label );
+
+    auto w = new QWidget(this);
+    w->setProperty("class", "block");
+    layout->addWidget(w);
+
+    DuUI::addFormLayout(w);
+    return w;
+}
+
+QJsonObject SettingsDock::getTheme(const QString &path) const
+{
+    QFile f(path);
+
+    if (!f.open(QFile::ReadOnly))
+        return QJsonObject();
+
+    auto tdoc = QJsonDocument::fromJson(f.readAll());
+    f.close();
+    return tdoc.object();
+}
+
+void SettingsDock::loadThemes()
+{
+    QSignalBlocker b(ui_themeBox);
+    ui_themeBox->clear();
+
+    ui_themeBox->addItem(tr("Custom"), "");
+
+    QDir d(":/themes");
+    const QStringList themes = d.entryList(QDir::Files);
+    qDebug() << "Available themes:" << themes;
+    for (const auto &theme: themes) {
+
+        QJsonObject tobj = getTheme(":/themes/"+theme);
+        if (!tobj.contains("name"))
+            continue;
+
+        ui_themeBox->addItem(
+            tobj.value("name").toString(),
+            ":/themes/"+theme
+            );
+    }
+
+    ui_themeBox->setCurrentIndex(0);
+}
+
+void SettingsDock::setTheme(int t)
+{
+    // Custom
+    if (t == 0) {
+        ui_focusColorSelector->setEnabled(true);
+        ui_iconColorSelector->setEnabled(true);
+        ui_fgColorSelector->setEnabled(true);
+        ui_bgColorSelector->setEnabled(true);
+        ui_contrastBox->setEnabled(true);
+        ui_toolButtonStyleBox->setEnabled(true);
+        ui_trayIconModeBox->setEnabled(true);
+        ui_showTrayIconBox->setEnabled(true);
+        ui_marginsBox->setEnabled(true);
+        return;
+    }
+
+    ui_focusColorSelector->setEnabled(false);
+    ui_iconColorSelector->setEnabled(false);
+    ui_fgColorSelector->setEnabled(false);
+    ui_bgColorSelector->setEnabled(false);
+    ui_contrastBox->setEnabled(false);
+    ui_toolButtonStyleBox->setEnabled(false);
+    ui_trayIconModeBox->setEnabled(false);
+    ui_showTrayIconBox->setEnabled(false);
+    ui_marginsBox->setEnabled(false);
+
+    QString theme = ui_themeBox->itemData(t).toString();
+    QFile f(theme);
+    QJsonObject tobj = getTheme(theme);
+    QJsonObject colors = tobj.value("colors").toObject();
+
+    DuSettings::i()->set(
+        DuSettings::UI_FocusColor,
+        QColor( colors.value("focus").toString("#a526c4") )
+        );
+    DuSettings::i()->set(
+        DuSettings::UI_IconColor,
+        QColor( colors.value("icons").toString("#b1b1b1") )
+        );
+    DuSettings::i()->set(
+        DuSettings::UI_ForegroundColor,
+        QColor( colors.value("foreground").toString("#b1b1b1") )
+        );
+    DuSettings::i()->set(
+        DuSettings::UI_BackgroundColor,
+        QColor( colors.value("background").toString("#333333") )
+        );
+    DuSettings::i()->set(
+        DuSettings::UI_Contrast,
+        colors.value("contrast").toInt(1)
+        );
+
+    QJsonObject appearance = tobj.value("appearance").toObject();
+
+    DuSettings::i()->set(
+        DuSettings::UI_ToolButtonStyle,
+        appearance.value("toolButtonStyle").toInt(0)
+        );
+    DuSettings::i()->set(
+        DuSettings::UI_TrayIconMode,
+        appearance.value("trayIconMode").toString("color")
+        );
+    DuSettings::i()->set(
+        DuSettings::UI_ShowTrayIcon,
+        appearance.value("showTrayIcon").toBool(false)
+        );
+    DuSettings::i()->set(
+        DuSettings::UI_Margins,
+        appearance.value("spacing").toInt(3)
+        );
 }
