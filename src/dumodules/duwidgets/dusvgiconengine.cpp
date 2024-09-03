@@ -47,11 +47,7 @@ void DuSVGIconEngine::paint(QPainter *painter, const QRect &rect,
     case QIcon::Disabled:
         c = DuUI::pushColor(c, 2);
         break;
-    case QIcon::Active:
-    case QIcon::Selected:
-        c = DuUI::pullColor(c);
-        break;
-    case QIcon::Normal:
+    default:
         break;
     }
 

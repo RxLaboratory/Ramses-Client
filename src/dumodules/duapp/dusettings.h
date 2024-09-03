@@ -79,21 +79,65 @@ public: // Methods
 
     /**
      * @brief Get a setting.
+     * @param key
      * @param defaultOverride Overrides the default default value ;)
+     * @param subKey An optional subsection, added to the key
      * @return In this order: The value, or the default override, or the setting default value.
      */
     QVariant get(int key, const QVariant &defaultOverride = QVariant(), const QString &subKey = "") const;
+    /**
+     * @brief getAll Get all settings contained in an array
+     * @param key
+     * @param defaultOverride Overrides the default default value ;)
+     * @param subKey An optional subsection, added to the key
+     * @return In this order: The value, or the default override, or the setting default value.
+     */
+    QVector<QHash<QString,QVariant>> getArray(int key, const QVariant &defaultOverride = QVariant(), const QString &subKey = "");
     /**
      * @brief Set a setting.
      * @param value The value to set.
      * @param doNotEmit Set this to true to prevent the settingChanged signal to be emitted.
      */
     void set(int key, const QVariant &value, const QString &subKey = "", bool doNotEmit = false);
+    /**
+     * @brief getAll Set all settings contained in an array
+     * @param key
+     * @param defaultOverride Overrides the default default value ;)
+     * @param subKey An optional subsection, added to the key
+     * @return In this order: The value, or the default override, or the setting default value.
+     */
+    void setArray(int key, const QVector<QHash<QString, QVariant>> &values, const QString &subKey = "", bool doNotEmit = false);
+    /**
+     * @brief remove Removes a key/value
+     * @param key The key to remove
+     * @param subKey An optional subsection, added to the key
+     * @param doNotEmit Set this to true to prevent the settingChanged signal to be emitted.
+     */
+    void remove(int key, const QString &subKey = "", bool doNotEmit = false);
 
+    /**
+     * @brief getDefault Gets the default value for a given key
+     * @param key
+     * @return
+     */
+    QVariant getDefault(int key) const;
+
+    /**
+     * @brief setDefault Changes the default value for a given key
+     * @param key
+     * @param value
+     */
+    void setDefault(int key, const QVariant &value, bool doNotEmit = true);
+
+    /**
+     * @brief registerSettings Adds custom settings to the predefined list of settings
+     * @param settings A hash of Key-DuSetting pair
+     */
     void registerSettings(const QHash<int, DuSetting> &settings);
 
 signals:
     void settingChanged(int,const QVariant &);
+    void defaultChanged(int, const QVariant &);
 
 private: // Internal stuff
 

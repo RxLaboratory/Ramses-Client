@@ -84,12 +84,13 @@
         <file alias="settings">icons/settings.svg</file>
         <file alias="users90">icons/users90.svg</file>
         <file alias="app">icons/ramses-icon-small.svg</file>
+        <file alias="ramses-file">icons/ramses-file.svg</file>
     </qresource>
     <qresource prefix="/styles">
         <file alias="vars">styles/style-values.rui</file>
         <file alias="0500_block">styles/block.css</file>
-        <file alias="0600_button">styles/button.css</file>
-        <file alias="0700_hover">styles/hover.css</file>
+        <file alias="0700_button">styles/button.css</file>
+        <file alias="0600_hover">styles/hover.css</file>
         <file alias="0800_interactive">styles/interactive.css</file>
         <file alias="0075_QComboBox">styles/QComboBox.css</file>
         <file alias="0050_QScrollBar">styles/QScrollBar.css</file>
@@ -126,5 +127,10 @@
     </qresource>
     <qresource prefix="/data">
         <file alias="template">data/templateDB.sqlite</file>
+    </qresource>
+    <qresource prefix="/themes">
+        <file alias="dark">themes/dark.json</file>
+        <file alias="h4ck3rz">themes/h4cK3rZ.json</file>
+        <file alias="light">themes/light.json</file>
     </qresource>
 </RCC>

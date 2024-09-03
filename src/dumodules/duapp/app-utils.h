@@ -80,6 +80,8 @@ class DuApplication : public QApplication
 {
     Q_OBJECT
 public:
+    static DuApplication *i() { return _instance; }
+
     explicit DuApplication(int &argc, char *argv[], QCommandLineParser *parser = nullptr);
     ~DuApplication();
 
@@ -130,6 +132,9 @@ private:
 
     // Used to check if another instance is running
     QSharedMemory *m_singular;
+
+    // Keep the current app
+    static DuApplication *_instance;
 };
 
 namespace AppUtils

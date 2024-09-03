@@ -11,6 +11,8 @@
 #include "duapp/dusettings.h"
 #include "duapp/duui.h"
 
+DuApplication *DuApplication::_instance = nullptr;
+
 DuApplication::DuApplication(int &argc, char *argv[], QCommandLineParser *parser) : QApplication(argc, argv)
 {
     QString sharedMemoryKey = QString(STR_COMPANYDOMAIN) + "_" + QString(STR_PRODUCTNAME) + "_" + QString(STR_VERSION);
@@ -63,6 +65,8 @@ DuApplication::DuApplication(int &argc, char *argv[], QCommandLineParser *parser
                         static_cast<Qt::ToolButtonStyle>( v.toInt() ));
             }
             );
+
+    _instance = this;
 }
 
 DuApplication::~DuApplication()

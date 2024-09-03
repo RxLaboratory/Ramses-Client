@@ -1,6 +1,5 @@
 #include "statemanager.h"
 #include "daemon.h"
-#include "ramserverinterface.h"
 #include "dbinterface.h"
 
 StateManager *StateManager::_instance = nullptr;
@@ -22,19 +21,6 @@ bool StateManager::isDBBusy() const
             m_state == WritingDataBase );
 }
 
-void StateManager::logout(QString reopenFile)
-{
-    // Release
-    m_app->detach();
-
-    // Stop the daemon
-    Daemon::instance()->stop();
-    RamServerInterface::instance()->eraseUserPassword();
-    DBInterface::instance()->setOffline();
-
-    m_app->restart(QStringList(reopenFile));
-}
-
 void StateManager::quit(bool sync)
 {
     // Release
@@ -47,7 +33,7 @@ void StateManager::quit(bool sync)
     m_app->quit();
 }
 
-void StateManager::restart(bool sync)
+void StateManager::restart(bool sync, const QString &project)
 {
     // Release
     m_app->detach();
@@ -56,23 +42,7 @@ void StateManager::restart(bool sync)
     Daemon::instance()->stop();
     DBInterface::instance()->setOffline(sync);
 
-    m_app->restart();
-}
-
-void StateManager::open(QString filePath)
-{
-    qDebug() << "Opening file: " << filePath;
-
-    QString currentFile = DBInterface::instance()->dataFile();
-    if (currentFile == "") {
-        // Set database
-        DBInterface::instance()->setDataFile( filePath );
-        // Trigger a full sync
-        if (RamServerInterface::instance()->isOnline()) DBInterface::instance()->fullSync();
-        return;
-    }
-
-    logout(filePath);
+    m_app->restart(QStringList(project));
 }
 
 void StateManager::setState(State newState)

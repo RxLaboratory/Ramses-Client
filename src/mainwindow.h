@@ -12,6 +12,7 @@
 #include <QSystemTrayIcon>
 
 #include "duwidgets/dumainwindow.h"
+#include "landingpage.h"
 #include "projecteditwidget.h"
 
 #include "duwidgets/settingswidget.h"
@@ -30,13 +31,14 @@ class MainWindow : public DuMainWindow
 public:
 
     enum Page {
-        Home = 0,
-        Admin = 1,
-        PipeLine = 2,
-        Assets = 3,
-        Shots = 4,
-        Schedule = 5,
-        Progress = 6
+        Landing = 0,
+        Home = 1,
+        Admin = 2,
+        PipeLine = 3,
+        Assets = 4,
+        Shots = 5,
+        Schedule = 6,
+        Progress = 7
     };
 
     explicit MainWindow(const QCommandLineParser &cli, QWidget *parent = nullptr);
@@ -98,10 +100,10 @@ private:
     DuAction *m_fileTrashAction;
     DuAction *m_actionShowHide;
 
-    // ==== WIDGETS ====
+    // ==== PAGES ====
 
     QStackedLayout *ui_mainStack;
-    QWidget *ui_mainPage;
+    LandingPage *ui_landingPage;
 
     // ==== Docks ====
 
@@ -189,12 +191,7 @@ private slots:
     void setOfflineAction();
     void setOnlineAction();
     void databaseSettingsAction();
-    void home();
-    void admin();
-    void pipeline();
-    void shots();
-    void assets();
-    void schedule();
+    void setPage(Page p);
     void currentUserChanged();
     void currentProjectChanged(RamProject *project);
     void freezeUI(bool f = true);

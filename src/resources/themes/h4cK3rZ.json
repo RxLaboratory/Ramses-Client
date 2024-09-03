@@ -1,0 +1,16 @@
+{
+    "name": "h4cK3rZ",
+    "colors": {
+        "background": "#202020",
+        "foreground": "#55ff00",
+        "focus": "#aeffc2",
+        "icons": "#55ff00",
+        "contrast": 1
+    },
+    "appearance": {
+        "toolButtonStyle": 1,
+        "spacing": 1,
+        "trayIconMode": "color",
+        "showTrayIcon": true
+    }
+}

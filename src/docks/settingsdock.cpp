@@ -65,12 +65,12 @@ void SettingsDock::setupUi()
     this->setMinimumWidth(350);
 
     QWidget *dummy = new QWidget(this);
-    dummy->setProperty("class", "duTabs");
     dummy->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
 
-    auto *mainLayout = new QVBoxLayout(dummy);
-    mainLayout->setSpacing(5);
-    mainLayout->setContentsMargins(6,6,6,6);
+    auto *mainLayout = DuUI::addBoxLayout(Qt::Vertical, dummy);
+    int m = DuSettings::i()->get(DuSettings::UI_Margins).toInt();
+    mainLayout->setSpacing(m*2);
+    mainLayout->setContentsMargins(m*3,m*3,m*3,m*3);
 
     ui_tabWidget = new DuTabWidget(dummy);
     ui_tabWidget->setTabPosition(QTabWidget::West);
@@ -198,16 +198,10 @@ void SettingsDock::setupAppearanceTab()
 void SettingsDock::setupUpdatesTab()
 {
     QWidget *w = addTab(DuIcon(":/icons/update90"), "Updates");
+    auto l = qobject_cast<QVBoxLayout*>( w->layout() );
 
-    auto updatesLabel = new QLabel("<b>" + tr("Updates:") + "</b>", w);
-    w->layout()->addWidget( updatesLabel );
-
-    auto updatesWidget = new QWidget(w);
-    updatesWidget->setProperty("class", "duBlock");
-    w->layout()->addWidget(updatesWidget);
-
-    auto updatesLayout = new QVBoxLayout(updatesWidget);
-    DuUI::setupLayout(updatesLayout, 3);
+    QWidget *updatesWidget = addSection(tr("Updates"), l);
+    auto updatesLayout = qobject_cast<QFormLayout*>( updatesWidget->layout() );
 
     ui_checkAtStartupBox = new QCheckBox("Check during startup", this);
     ui_checkAtStartupBox->setChecked(_sm->get(DuSettings::APP_CheckUpdates).toBool());
@@ -217,23 +211,16 @@ void SettingsDock::setupUpdatesTab()
     ui_checkNowButton->setIcon(DuIcon(":/icons/check-update"));
     updatesLayout->addWidget(ui_checkNowButton);
 
-    auto l = qobject_cast<QVBoxLayout*>( w->layout() );
     l->addStretch();
 }
 
 void SettingsDock::setupDaemonTab()
 {
     QWidget *w = addTab(DuIcon(":/icons/daemon90"), "Daemon");
+    auto l = qobject_cast<QVBoxLayout*>( w->layout() );
 
-    auto daemonLabel = new QLabel("<b>" + tr("Ramses daemon:") + "</b>", w);
-    w->layout()->addWidget( daemonLabel );
-
-    auto daemonWidget = new QWidget(w);
-    daemonWidget->setProperty("class", "duBlock");
-    w->layout()->addWidget(daemonWidget);
-
-    auto daemonLayout = new QVBoxLayout(daemonWidget);
-    DuUI::setupLayout(daemonLayout, 3);
+    QWidget *daemonWidget = addSection(tr("Ramses daemon"), l);
+    auto daemonLayout = qobject_cast<QFormLayout*>( daemonWidget->layout() );
 
     ui_daemonPortBox = new DuSpinBox(w);
     ui_daemonPortBox->setPrefix("Port: ");
@@ -245,7 +232,6 @@ void SettingsDock::setupDaemonTab()
     ui_restartDaemonButton = new QPushButton("Restart Daemon");
     daemonLayout->addWidget(ui_restartDaemonButton);
 
-    auto l = qobject_cast<QVBoxLayout*>( w->layout() );
     l->addStretch();
 }
 

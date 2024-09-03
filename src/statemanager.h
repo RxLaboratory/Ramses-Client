@@ -31,10 +31,8 @@ signals:
     void stateChanged(StateManager::State);
 
 public slots:
-    void logout(QString reopenFile = "");
     void quit(bool sync = true);
-    void restart(bool sync = true);
-    void open(QString filePath);
+    void restart(bool sync = true, const QString &project = "");
     void setState(StateManager::State newState);
 
 protected:

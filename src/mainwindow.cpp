@@ -4,11 +4,11 @@
 
 #include "assetgroupmanagerwidget.h"
 #include "assetmanagerwidget.h"
+#include "homepage.h"
 #include "itemmanagerwidget.h"
 #include "pipefilemanagerwidget.h"
 #include "progressmanager.h"
 #include "docks/consolewidget.h"
-#include "loginpage.h"
 #include "sequencemanagerwidget.h"
 #include "shotmanagerwidget.h"
 #include "stepmanagerwidget.h"
@@ -30,7 +30,9 @@
 #include "duwidgets/duqflogtoolbutton.h"
 #include "duapp/app-version.h"
 #include "docks/settingsdock.h"
-#include "statemanager.h"
+#include "ramses.h"
+#include "projectmanager.h"
+#include "duapp/duui.h"
 
 MainWindow::MainWindow(const QCommandLineParser &cli, QWidget *parent) :
     DuMainWindow{parent}
@@ -66,8 +68,8 @@ MainWindow::MainWindow(const QCommandLineParser &cli, QWidget *parent) :
     // Set style
     setStyle();
 
-    // Set UI
-    ui_mainStack->setCurrentIndex(Home);
+    // Initial page
+    setPage(Landing);
 
     // Everything is ready
     connectEvents();
@@ -87,7 +89,7 @@ MainWindow::MainWindow(const QCommandLineParser &cli, QWidget *parent) :
         QFileInfo argInfo(filePath);
         if (argInfo.exists() && argInfo.suffix().toLower() == "ramses")
         {
-            StateManager::i()->open(filePath);
+            ProjectManager::i()->setProject(filePath);
             break;
         }
     }
@@ -97,29 +99,45 @@ MainWindow::MainWindow(const QCommandLineParser &cli, QWidget *parent) :
 void MainWindow::connectEvents()
 {
     // Connect events
+
+    // Progress
     connect(ProgressManager::instance(), &ProgressManager::freezeUI, this, &MainWindow::freezeUI);
 
+    // Project
+    connect(ProjectManager::i(), &ProjectManager::projectChanged,
+            this, [this] () { setPage(Home); } );
+
     // Toolbar buttons
-    connect(m_actionLogIn,SIGNAL(triggered()), this, SLOT(home()));
-    connect(m_actionLogOut,SIGNAL(triggered()), StateManager::i(), SLOT(logout()));
+    connect(m_actionLogIn,&DuAction::triggered,
+            this, [this] () { setPage(Landing); } );
+    connect(m_actionLogOut, &QAction::triggered, ProjectManager::i(), &ProjectManager::closeProject);
     connect(m_actionSetOnline, &QAction::triggered, this, &MainWindow::setOnlineAction);
     connect(m_actionSetOffline, &QAction::triggered, this, &MainWindow::setOfflineAction);
     connect(m_actionDatabaseSettings, &QAction::triggered, this, &MainWindow::databaseSettingsAction);
     connect(m_actionUserProfile,&QAction::triggered, ui_userDockWidget, &DuDockWidget::show);
     connect(m_actionUserFolder,SIGNAL(triggered()), this, SLOT(revealUserFolder()));
-    connect(m_actionAdmin,SIGNAL(triggered()), this, SLOT(admin()));
+    connect(m_actionAdmin,&DuAction::triggered,
+            this, [this] () { setPage(Admin); } );
 
-    connect(m_actionPipeline,SIGNAL(triggered()), this, SLOT(pipeline()));
-    connect(ui_pipelineButton,SIGNAL(clicked()), this, SLOT(pipeline()));
+    connect(m_actionPipeline,&DuAction::triggered,
+            this, [this] () { setPage(PipeLine); } );
+    connect(ui_pipelineButton,&QToolButton::triggered,
+            this, [this] () { setPage(PipeLine); } );
 
-    connect(m_actionShots,SIGNAL(triggered(bool)), this, SLOT(shots()));
-    connect(ui_shotsButton,SIGNAL(clicked()), this, SLOT(shots()));
+    connect(m_actionShots,&DuAction::triggered,
+            this, [this] () { setPage(Shots); } );
+    connect(ui_shotsButton,&QToolButton::triggered,
+            this, [this] () { setPage(Shots); } );
 
-    connect(m_actionAssets,SIGNAL(triggered(bool)), this, SLOT(assets()));
-    connect(ui_assetsButton,SIGNAL(clicked()), this, SLOT(assets()));
+    connect(m_actionAssets,&DuAction::triggered,
+            this, [this] () { setPage(Assets); } );
+    connect(ui_assetsButton,&QToolButton::triggered,
+            this, [this] () { setPage(Assets); } );
 
-    connect(m_actionSchedule,SIGNAL(triggered(bool)), this, SLOT(schedule()));
-    connect(ui_scheduleButton, SIGNAL(clicked()), this, SLOT(schedule()));
+    connect(m_actionSchedule,&DuAction::triggered,
+            this, [this] () { setPage(Schedule); } );
+    connect(ui_scheduleButton,&QToolButton::triggered,
+            this, [this] () { setPage(Schedule); } );
 
     // Docks
     connect(m_projectAction, SIGNAL(triggered(bool)), ui_projectDockWidget, SLOT(setVisible(bool)));
@@ -168,7 +186,7 @@ void MainWindow::connectEvents()
     connect(m_fileTrashAction,SIGNAL(triggered()), this, SLOT(revealTrashFolder()));
 
     // Pages
-    connect(ui_adminPage, SIGNAL(closeRequested()), this, SLOT(home()));
+    connect(ui_adminPage, &SettingsWidget::closeRequested, this, [this] () { setPage(Home); });
 
     // Other buttons
     connect(m_actionSync, SIGNAL(triggered()), DBInterface::instance(),SLOT(sync()));
@@ -321,9 +339,14 @@ void MainWindow::databaseSettingsAction()
     this->setPropertiesDockWidget( ui_databaseEditWidget, tr("Edit %1").arg(dataFile.baseName()), ":/icons/storage" );
 }
 
-void MainWindow::home()
+void MainWindow::setPage(Page p)
 {
-    ui_mainStack->setCurrentIndex(Home);
+    // If the UI is frozen, delay until freezeUI(false) is called
+    if (ui_mainStack->currentIndex() == Progress)
+        m_currentPageIndex = p;
+    // Else sit it right now
+    else
+        ui_mainStack->setCurrentIndex(p);
 }
 
 void MainWindow::revealAdminFolder()
@@ -395,31 +418,6 @@ void MainWindow::revealTrashFolder()
     FileUtils::openInExplorer( proj->path(RamProject::TrashFolder), true );
 }
 
-void MainWindow::admin()
-{
-    ui_mainStack->setCurrentIndex(Admin);
-}
-
-void MainWindow::pipeline()
-{
-    ui_mainStack->setCurrentIndex(PipeLine);
-}
-
-void MainWindow::shots()
-{
-    ui_mainStack->setCurrentIndex(Shots);
-}
-
-void MainWindow::assets()
-{
-    ui_mainStack->setCurrentIndex(Assets);
-}
-
-void MainWindow::schedule()
-{
-    ui_mainStack->setCurrentIndex(Schedule);
-}
-
 void MainWindow::currentUserChanged()
 {
     disconnect(_currentUserConnection);
@@ -442,7 +440,7 @@ void MainWindow::currentUserChanged()
         ui_userWidget->setObject(nullptr);
         ui_userWidget->setEnabled(false);
         ui_userDockWidget->hide();
-        home();
+        setPage(Home);
         return;
     }
 
@@ -491,7 +489,7 @@ void MainWindow::currentProjectChanged(RamProject *project)
 
     if (!project) {
         ui_statsTitle->setTitle( "Project" );
-        home();
+        setPage(Home);
     }
     else {
         RamUser *user = Ramses::instance()->currentUser();
@@ -526,7 +524,7 @@ void MainWindow::freezeUI(bool f)
     {
         ui_mainStack->setCurrentIndex(m_currentPageIndex);
     }
-    this->repaint();
+    //this->repaint();
 }
 
 void MainWindow::dbiConnectionStatusChanged(NetworkUtils::NetworkStatus s)
@@ -645,7 +643,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
     if (!m_readyToClose)
     {
         // Get to the home page first to make sure all toolbars are hidden
-        home();
+        setPage(Home);
 
         if (DBInterface::instance()->connectionStatus() == NetworkUtils::Online)
         {
@@ -859,14 +857,13 @@ void MainWindow::setupUi()
 {
     ui_mainStack = DuUI::addStackedLayout(ui_centralWidget);
 
-    ui_mainPage = new QWidget();
-    ui_mainStack->addWidget(ui_mainPage);
+    // Landing page
+    ui_landingPage = new LandingPage(this);
+    ui_mainStack->addWidget(ui_landingPage);
 
-    auto mainLayout = new QVBoxLayout(ui_mainPage);
-    mainLayout->setSpacing(0);
-    mainLayout->setContentsMargins(0, 0, 0, 0);
-    LoginPage *lp = new LoginPage(this);
-    mainLayout->addWidget(lp);
+    // Home page
+    auto homePage = new HomePage(this);
+    ui_mainStack->addWidget(homePage);
 
     // Admin
     ui_adminPage = new SettingsWidget("Administration", this);
@@ -910,28 +907,28 @@ void MainWindow::setupUi()
 #ifndef DEACTIVATE_PIPELINE
     PipelineWidget *pipelineEditor = new PipelineWidget(this);
     ui_mainStack->addWidget(pipelineEditor);
-    connect(pipelineEditor, SIGNAL(closeRequested()), this, SLOT(home()));
+    connect(pipelineEditor, &PipelineWidget::closeRequested, this, [this] () { setPage(Home); });
     qDebug() << "> Pipeline ready";//*/
 #endif
 
 #ifndef DEACTIVATE_ASSETSTABLE
     ItemManagerWidget *assetsTable = new ItemManagerWidget(RamStep::AssetProduction, this);
     ui_mainStack->addWidget(assetsTable);
-    connect(assetsTable, SIGNAL(closeRequested()), this, SLOT(home()));
+    connect(assetsTable, &ItemManagerWidget::closeRequested, this, [this] () { setPage(Home); });
     qDebug() << "> Assets table ready";
 #endif
 
 #ifndef DEACTIVATE_SHOTSTABLE
     ItemManagerWidget *shotsTable = new ItemManagerWidget(RamStep::ShotProduction, this);
     ui_mainStack->addWidget(shotsTable);
-    connect(shotsTable, SIGNAL(closeRequested()), this, SLOT(home()));
+    connect(shotsTable, &ItemManagerWidget::closeRequested, this, [this] () { setPage(Home); });
     qDebug() << "> Shots table ready";
 #endif
 
 #ifndef DEACTIVATE_SCHEDULE
     ScheduleManagerWidget *scheduleTable = new ScheduleManagerWidget(this);
     ui_mainStack->addWidget(scheduleTable);
-    connect(scheduleTable,SIGNAL(closeRequested()), this, SLOT(home()));
+    connect(scheduleTable,&ScheduleManagerWidget::closeRequested, this, [this] () { setPage(Home); });
     qDebug() << "> Schedule ready";
 #endif
 

@@ -2,20 +2,9 @@ QPushButton {
     padding: @margin-big;
     border-radius: @radius;
     background-color: @background-pull;
-    border: 1px solid transparent;
 }
 
-QPushButton:pressed {
-    background-color: @background;
-    color: @foreground;
-}
 
-QPushButton:open,
-QPushButton:checked {
-    background-color: @background-push;
-    border: 1px solid @background-pull-more;
-}
-
-QPushButton:disqbled {
-    background-color: @transparent;
+QPushButton:disabled {
+    background-color: transparent;
 }

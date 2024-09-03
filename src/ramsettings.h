@@ -7,6 +7,7 @@ namespace RamSettings
 {
     enum SettingKey {
         DaemonPort = DuSettings::Other + 1,
+        RecentProjects = DuSettings::Other +2,
     };
 
     void registerRamsesSettings();

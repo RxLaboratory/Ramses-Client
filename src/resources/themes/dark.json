@@ -1,0 +1,16 @@
+{
+    "name": "Rx Dark",
+    "colors": {
+        "background": "#333333",
+        "foreground": "#b1b1b1",
+        "focus": "#a526c4",
+        "icons": "#b1b1b1",
+        "contrast": 2
+    },
+    "appearance": {
+        "toolButtonStyle": 3,
+        "spacing": 3,
+        "trayIconMode": "color",
+        "showTrayIcon": false
+    }
+}

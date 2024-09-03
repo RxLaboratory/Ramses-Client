@@ -1,0 +1,16 @@
+{
+    "name": "Rx Light",
+    "colors": {
+        "background": "#BBBBBB",
+        "foreground": "#333333",
+        "focus": "#c155dc",
+        "icons": "#333333",
+        "contrast": 1
+    },
+    "appearance": {
+        "toolButtonStyle": 3,
+        "spacing": 3,
+        "trayIconMode": "color",
+        "showTrayIcon": false
+    }
+}

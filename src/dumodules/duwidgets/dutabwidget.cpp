@@ -11,7 +11,7 @@ DuTabWidget::DuTabWidget(QWidget *parent):
 void DuTabWidget::setIconOnly(bool onlyIcon)
 {
     if (onlyIcon) DuUI::setCSS(this,
-                     "QTabBar::tab {width: @medium-icon; height: @medium-icon;}"
+                     "QTabBar::tab {width:16px; height:16px;}"
                      );
     else DuUI::setCSS( this,"" );
 }

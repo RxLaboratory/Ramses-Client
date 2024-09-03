@@ -73,7 +73,10 @@ SOURCES += \
     dumodules/duwidgets/dutoolbarspacer.cpp \
     dumodules/duwidgets/dutreewidget.cpp \
     dumodules/duwidgets/settingswidget.cpp \
+    pages/homepage.cpp \
+    pages/landingpage.cpp \
     progressmanager.cpp \
+    projectmanager.cpp \
     rameditwidgets/objectupdateblocker.cpp \
     rameditwidgets/scheduleentryeditwidget.cpp \
     rameditwidgets/scheduleroweditwidget.cpp \
@@ -269,7 +272,10 @@ HEADERS += \
     dumodules/duwidgets/dutreewidget.h \
     dumodules/duwidgets/settingswidget.h \
     enums.h \
+    pages/homepage.h \
+    pages/landingpage.h \
     progressmanager.h \
+    projectmanager.h \
     ramdatainterface/datastruct.h \
     rameditwidgets/objectupdateblocker.h \
     rameditwidgets/scheduleentryeditwidget.h \

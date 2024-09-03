@@ -10,6 +10,7 @@
 #include "statemanager.h"
 #include "duapp/dusettings.h"
 #include "ramsettings.h"
+#include "projectmanager.h"
 
 Daemon *Daemon::_instance = nullptr;
 
@@ -119,7 +120,7 @@ void Daemon::reply(QString request, QTcpSocket *client)
         StateManager::i()->quit();
 
     else if (args.contains("open"))
-        StateManager::i()->open(args.value("file"));
+        ProjectManager::i()->setProject(args.value("file"));
 
     else if (args.contains("getCurrentProject"))
         getCurrentProject(client);
