@@ -1,7 +1,7 @@
 #include "schedulemanagerwidget.h"
 
-#include "duqf-utils/guiutils.h"
-#include "duqf-widgets/duicon.h"
+#include "duutils/guiutils.h"
+#include "duwidgets/duicon.h"
 #include "progressmanager.h"
 #include "qscrollbar.h"
 #include "ramschedulecomment.h"

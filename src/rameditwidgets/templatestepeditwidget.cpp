@@ -1,5 +1,5 @@
 #include "templatestepeditwidget.h"
-#include "duqf-widgets/duicon.h"
+#include "duwidgets/duicon.h"
 
 TemplateStepEditWidget::TemplateStepEditWidget(QWidget *parent) :
     ObjectEditWidget(parent)

@@ -24,6 +24,9 @@ CONFIG += c++11
 # In order to do so, uncomment the following line.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
+INCLUDEPATH += \
+    dumodules
+
 INCLUDEPATH += rameditwidgets \
     settingswidgets \
     smallwidgets \
@@ -38,39 +41,39 @@ INCLUDEPATH += rameditwidgets \
     rammanagerwidgets
 
 SOURCES += \
-    DuGraph/dugraph.cpp \
+    dumodules/dugraph/dugraph.cpp \
     docks/settingsdock.cpp \
-    duqf-app/app-utils.cpp \
-    duqf-app/ducli.cpp \
-    duqf-app/dulogger.cpp \
-    duqf-app/dusettings.cpp \
-    duqf-app/dusettingsmanager.cpp \
-    duqf-app/dustyle.cpp \
-    duqf-app/duui.cpp \
-    duqf-utils/ducolorutils.cpp \
-    duqf-utils/stringutils.cpp \
-    duqf-widgets/duaction.cpp \
-    duqf-widgets/ducolorselector.cpp \
-    duqf-widgets/ducombobox.cpp \
-    duqf-widgets/dudocktitlewidget.cpp \
-    duqf-widgets/dudockwidget.cpp \
-    duqf-widgets/duicon.cpp \
-    duqf-widgets/dulabel.cpp \
-    duqf-widgets/dulineedit.cpp \
-    duqf-widgets/dulistwidget.cpp \
-    duqf-widgets/dumainwindow.cpp \
-    duqf-widgets/dumenu.cpp \
-    duqf-widgets/duscrollarea.cpp \
-    duqf-widgets/duscrollbar.cpp \
-    duqf-widgets/dushadow.cpp \
-    duqf-widgets/duspinbox.cpp \
-    duqf-widgets/dusvgiconengine.cpp \
-    duqf-widgets/dutableview.cpp \
-    duqf-widgets/dutabwidget.cpp \
-    duqf-widgets/dutextedit.cpp \
-    duqf-widgets/dutoolbarspacer.cpp \
-    duqf-widgets/dutreewidget.cpp \
-    duqf-widgets/settingswidget.cpp \
+    dumodules/duapp/app-utils.cpp \
+    dumodules/duapp/ducli.cpp \
+    dumodules/duapp/dulogger.cpp \
+    dumodules/duapp/dusettings.cpp \
+    dumodules/duapp/dusettingsmanager.cpp \
+    dumodules/duapp/dustyle.cpp \
+    dumodules/duapp/duui.cpp \
+    dumodules/duutils/ducolorutils.cpp \
+    dumodules/duutils/stringutils.cpp \
+    dumodules/duwidgets/duaction.cpp \
+    dumodules/duwidgets/ducolorselector.cpp \
+    dumodules/duwidgets/ducombobox.cpp \
+    dumodules/duwidgets/dudocktitlewidget.cpp \
+    dumodules/duwidgets/dudockwidget.cpp \
+    dumodules/duwidgets/duicon.cpp \
+    dumodules/duwidgets/dulabel.cpp \
+    dumodules/duwidgets/dulineedit.cpp \
+    dumodules/duwidgets/dulistwidget.cpp \
+    dumodules/duwidgets/dumainwindow.cpp \
+    dumodules/duwidgets/dumenu.cpp \
+    dumodules/duwidgets/duscrollarea.cpp \
+    dumodules/duwidgets/duscrollbar.cpp \
+    dumodules/duwidgets/dushadow.cpp \
+    dumodules/duwidgets/duspinbox.cpp \
+    dumodules/duwidgets/dusvgiconengine.cpp \
+    dumodules/duwidgets/dutableview.cpp \
+    dumodules/duwidgets/dutabwidget.cpp \
+    dumodules/duwidgets/dutextedit.cpp \
+    dumodules/duwidgets/dutoolbarspacer.cpp \
+    dumodules/duwidgets/dutreewidget.cpp \
+    dumodules/duwidgets/settingswidget.cpp \
     progressmanager.cpp \
     rameditwidgets/objectupdateblocker.cpp \
     rameditwidgets/scheduleentryeditwidget.cpp \
@@ -112,18 +115,18 @@ SOURCES += \
     ramobjectviews/timelineview.cpp \
     docks/consolewidget.cpp \
     docks/filemanagerwidget.cpp \
-    duqf-utils/qtransposeproxymodel.cpp \
-    duqf-utils/simplecrypt.cpp \
-    duqf-widgets/duqfautosizetoolbutton.cpp \
-    duqf-widgets/duqfcolorselector.cpp \
-    duqf-widgets/duqfelidedlabel.cpp \
-    duqf-widgets/duqffilelist.cpp \
-    duqf-widgets/duqfsearchedit.cpp \
-    duqf-widgets/duqfservercombobox.cpp \
-    duqf-widgets/duqfsslcheckbox.cpp \
-    duqf-widgets/duqftextedit.cpp \
-    duqf-widgets/duqftitlebar.cpp \
-    duqf-widgets/duqfupdatedialog.cpp \
+    dumodules/duutils/qtransposeproxymodel.cpp \
+    dumodules/duutils/simplecrypt.cpp \
+    dumodules/duwidgets/duqfautosizetoolbutton.cpp \
+    dumodules/duwidgets/duqfcolorselector.cpp \
+    dumodules/duwidgets/duqfelidedlabel.cpp \
+    dumodules/duwidgets/duqffilelist.cpp \
+    dumodules/duwidgets/duqfsearchedit.cpp \
+    dumodules/duwidgets/duqfservercombobox.cpp \
+    dumodules/duwidgets/duqfsslcheckbox.cpp \
+    dumodules/duwidgets/duqftextedit.cpp \
+    dumodules/duwidgets/duqftitlebar.cpp \
+    dumodules/duwidgets/duqfupdatedialog.cpp \
     ramdatainterface/datacrypto.cpp \
     ramdatainterface/localdatainterface.cpp \
     ramdatainterface/logindialog.cpp \
@@ -164,31 +167,31 @@ SOURCES += \
     ramobjects/ramtemplatestep.cpp \
     ramobjects/ramworkingfolder.cpp \
     ramdatainterface/dbinterface.cpp \
-    duqf-nodeview/duqfconnection.cpp \
-    duqf-nodeview/duqfconnectionmanager.cpp \
-    duqf-nodeview/duqfconnector.cpp \
-    duqf-nodeview/duqfgrid.cpp \
-    duqf-nodeview/duqfnode.cpp \
-    duqf-nodeview/duqfnodescene.cpp \
-    duqf-nodeview/duqfnodeview.cpp \
-    duqf-nodeview/duqfslot.cpp \
-    duqf-utils/duqflogger.cpp \
-    duqf-utils/guiutils.cpp \
-    duqf-utils/language-utils.cpp \
-    duqf-utils/utils.cpp \
-    duqf-widgets/aboutdialog.cpp \
-    duqf-widgets/autoselectdoublespinbox.cpp \
-    duqf-widgets/autoselectlineedit.cpp \
-    duqf-widgets/autoselectspinbox.cpp \
-    duqf-widgets/duqfdoubleslider.cpp \
-    duqf-widgets/duqfdoublespinbox.cpp \
-    duqf-widgets/duqffolderdisplaywidget.cpp \
-    duqf-widgets/duqffolderselectorwidget.cpp \
-    duqf-widgets/duqflistwidget.cpp \
-    duqf-widgets/duqfloggingtextedit.cpp \
-    duqf-widgets/duqflogtoolbutton.cpp \
-    duqf-widgets/duqfslider.cpp \
-    duqf-widgets/duqfspinbox.cpp \
+    dumodules/dunodeview/duqfconnection.cpp \
+    dumodules/dunodeview/duqfconnectionmanager.cpp \
+    dumodules/dunodeview/duqfconnector.cpp \
+    dumodules/dunodeview/duqfgrid.cpp \
+    dumodules/dunodeview/duqfnode.cpp \
+    dumodules/dunodeview/duqfnodescene.cpp \
+    dumodules/dunodeview/duqfnodeview.cpp \
+    dumodules/dunodeview/duqfslot.cpp \
+    dumodules/duutils/duqflogger.cpp \
+    dumodules/duutils/guiutils.cpp \
+    dumodules/duutils/language-utils.cpp \
+    dumodules/duutils/utils.cpp \
+    dumodules/duwidgets/aboutdialog.cpp \
+    dumodules/duwidgets/autoselectdoublespinbox.cpp \
+    dumodules/duwidgets/autoselectlineedit.cpp \
+    dumodules/duwidgets/autoselectspinbox.cpp \
+    dumodules/duwidgets/duqfdoubleslider.cpp \
+    dumodules/duwidgets/duqfdoublespinbox.cpp \
+    dumodules/duwidgets/duqffolderdisplaywidget.cpp \
+    dumodules/duwidgets/duqffolderselectorwidget.cpp \
+    dumodules/duwidgets/duqflistwidget.cpp \
+    dumodules/duwidgets/duqfloggingtextedit.cpp \
+    dumodules/duwidgets/duqflogtoolbutton.cpp \
+    dumodules/duwidgets/duqfslider.cpp \
+    dumodules/duwidgets/duqfspinbox.cpp \
     rameditwidgets/filetypeeditwidget.cpp \
     smallwidgets/frameratewidget.cpp \
     pages/loginpage.cpp \
@@ -231,41 +234,41 @@ SOURCES += \
     pipeline-editor/stepnode.cpp
 
 HEADERS += \
-    DuGraph/dugraph.h \
+    dumodules/dugraph/dugraph.h \
     config.h \
     docks/settingsdock.h \
-    duqf-app/app-utils.h \
-    duqf-app/ducli.h \
-    duqf-app/dulogger.h \
-    duqf-app/dusettings.h \
-    duqf-app/dusettingsmanager.h \
-    duqf-app/dustyle.h \
-    duqf-app/duui.h \
-    duqf-utils/colorutils.h \
-    duqf-utils/ducolorutils.h \
-    duqf-utils/stringutils.h \
-    duqf-widgets/duaction.h \
-    duqf-widgets/ducolorselector.h \
-    duqf-widgets/ducombobox.h \
-    duqf-widgets/dudocktitlewidget.h \
-    duqf-widgets/dudockwidget.h \
-    duqf-widgets/duicon.h \
-    duqf-widgets/dulabel.h \
-    duqf-widgets/dulineedit.h \
-    duqf-widgets/dulistwidget.h \
-    duqf-widgets/dumainwindow.h \
-    duqf-widgets/dumenu.h \
-    duqf-widgets/duscrollarea.h \
-    duqf-widgets/duscrollbar.h \
-    duqf-widgets/dushadow.h \
-    duqf-widgets/duspinbox.h \
-    duqf-widgets/dusvgiconengine.h \
-    duqf-widgets/dutableview.h \
-    duqf-widgets/dutabwidget.h \
-    duqf-widgets/dutextedit.h \
-    duqf-widgets/dutoolbarspacer.h \
-    duqf-widgets/dutreewidget.h \
-    duqf-widgets/settingswidget.h \
+    dumodules/duapp/app-utils.h \
+    dumodules/duapp/ducli.h \
+    dumodules/duapp/dulogger.h \
+    dumodules/duapp/dusettings.h \
+    dumodules/duapp/dusettingsmanager.h \
+    dumodules/duapp/dustyle.h \
+    dumodules/duapp/duui.h \
+    dumodules/duutils/colorutils.h \
+    dumodules/duutils/ducolorutils.h \
+    dumodules/duutils/stringutils.h \
+    dumodules/duwidgets/duaction.h \
+    dumodules/duwidgets/ducolorselector.h \
+    dumodules/duwidgets/ducombobox.h \
+    dumodules/duwidgets/dudocktitlewidget.h \
+    dumodules/duwidgets/dudockwidget.h \
+    dumodules/duwidgets/duicon.h \
+    dumodules/duwidgets/dulabel.h \
+    dumodules/duwidgets/dulineedit.h \
+    dumodules/duwidgets/dulistwidget.h \
+    dumodules/duwidgets/dumainwindow.h \
+    dumodules/duwidgets/dumenu.h \
+    dumodules/duwidgets/duscrollarea.h \
+    dumodules/duwidgets/duscrollbar.h \
+    dumodules/duwidgets/dushadow.h \
+    dumodules/duwidgets/duspinbox.h \
+    dumodules/duwidgets/dusvgiconengine.h \
+    dumodules/duwidgets/dutableview.h \
+    dumodules/duwidgets/dutabwidget.h \
+    dumodules/duwidgets/dutextedit.h \
+    dumodules/duwidgets/dutoolbarspacer.h \
+    dumodules/duwidgets/dutreewidget.h \
+    dumodules/duwidgets/settingswidget.h \
     enums.h \
     progressmanager.h \
     ramdatainterface/datastruct.h \
@@ -310,19 +313,19 @@ HEADERS += \
     ramdatainterface/dbistructures.h \
     docks/consolewidget.h \
     docks/filemanagerwidget.h \
-    duqf-app/app-config.h \
-    duqf-utils/qtransposeproxymodel.h \
-    duqf-utils/simplecrypt.h \
-    duqf-widgets/duqfautosizetoolbutton.h \
-    duqf-widgets/duqfcolorselector.h \
-    duqf-widgets/duqfelidedlabel.h \
-    duqf-widgets/duqffilelist.h \
-    duqf-widgets/duqfsearchedit.h \
-    duqf-widgets/duqfservercombobox.h \
-    duqf-widgets/duqfsslcheckbox.h \
-    duqf-widgets/duqftextedit.h \
-    duqf-widgets/duqftitlebar.h \
-    duqf-widgets/duqfupdatedialog.h \
+    dumodules/duapp/app-config.h \
+    dumodules/duutils/qtransposeproxymodel.h \
+    dumodules/duutils/simplecrypt.h \
+    dumodules/duwidgets/duqfautosizetoolbutton.h \
+    dumodules/duwidgets/duqfcolorselector.h \
+    dumodules/duwidgets/duqfelidedlabel.h \
+    dumodules/duwidgets/duqffilelist.h \
+    dumodules/duwidgets/duqfsearchedit.h \
+    dumodules/duwidgets/duqfservercombobox.h \
+    dumodules/duwidgets/duqfsslcheckbox.h \
+    dumodules/duwidgets/duqftextedit.h \
+    dumodules/duwidgets/duqftitlebar.h \
+    dumodules/duwidgets/duqfupdatedialog.h \
     progressbar.h \
     progresspage.h \
     ramdatainterface/localdatainterface.h \
@@ -363,32 +366,32 @@ HEADERS += \
     ramobjects/ramtemplatestep.h \
     ramobjects/ramworkingfolder.h \
     ramdatainterface/dbinterface.h \
-    duqf-app/app-version.h \
-    duqf-nodeview/duqfconnection.h \
-    duqf-nodeview/duqfconnectionmanager.h \
-    duqf-nodeview/duqfconnector.h \
-    duqf-nodeview/duqfgrid.h \
-    duqf-nodeview/duqfnode.h \
-    duqf-nodeview/duqfnodescene.h \
-    duqf-nodeview/duqfnodeview.h \
-    duqf-nodeview/duqfslot.h \
-    duqf-utils/duqflogger.h \
-    duqf-utils/guiutils.h \
-    duqf-utils/language-utils.h \
-    duqf-utils/utils.h \
-    duqf-widgets/aboutdialog.h \
-    duqf-widgets/autoselectdoublespinbox.h \
-    duqf-widgets/autoselectlineedit.h \
-    duqf-widgets/autoselectspinbox.h \
-    duqf-widgets/duqfdoubleslider.h \
-    duqf-widgets/duqfdoublespinbox.h \
-    duqf-widgets/duqffolderdisplaywidget.h \
-    duqf-widgets/duqffolderselectorwidget.h \
-    duqf-widgets/duqflistwidget.h \
-    duqf-widgets/duqfloggingtextedit.h \
-    duqf-widgets/duqflogtoolbutton.h \
-    duqf-widgets/duqfslider.h \
-    duqf-widgets/duqfspinbox.h \
+    dumodules/duapp/app-version.h \
+    dumodules/dunodeview/duqfconnection.h \
+    dumodules/dunodeview/duqfconnectionmanager.h \
+    dumodules/dunodeview/duqfconnector.h \
+    dumodules/dunodeview/duqfgrid.h \
+    dumodules/dunodeview/duqfnode.h \
+    dumodules/dunodeview/duqfnodescene.h \
+    dumodules/dunodeview/duqfnodeview.h \
+    dumodules/dunodeview/duqfslot.h \
+    dumodules/duutils/duqflogger.h \
+    dumodules/duutils/guiutils.h \
+    dumodules/duutils/language-utils.h \
+    dumodules/duutils/utils.h \
+    dumodules/duwidgets/aboutdialog.h \
+    dumodules/duwidgets/autoselectdoublespinbox.h \
+    dumodules/duwidgets/autoselectlineedit.h \
+    dumodules/duwidgets/autoselectspinbox.h \
+    dumodules/duwidgets/duqfdoubleslider.h \
+    dumodules/duwidgets/duqfdoublespinbox.h \
+    dumodules/duwidgets/duqffolderdisplaywidget.h \
+    dumodules/duwidgets/duqffolderselectorwidget.h \
+    dumodules/duwidgets/duqflistwidget.h \
+    dumodules/duwidgets/duqfloggingtextedit.h \
+    dumodules/duwidgets/duqflogtoolbutton.h \
+    dumodules/duwidgets/duqfslider.h \
+    dumodules/duwidgets/duqfspinbox.h \
     rameditwidgets/filetypeeditwidget.h \
     smallwidgets/frameratewidget.h \
     pages/loginpage.h \
@@ -430,15 +433,15 @@ HEADERS += \
     pipeline-editor/stepnode.h
 
 FORMS += \
-    duqf-widgets/aboutdialog.ui \
-    duqf-widgets/duqffolderselectorwidget.ui \
+    dumodules/duwidgets/aboutdialog.ui \
+    dumodules/duwidgets/duqffolderselectorwidget.ui \
     pages/loginpage.ui \
     mainwindow.ui \
     pipeline-editor/pipelinewidget.ui \
     smallwidgets/shotscreationdialog.ui
 
 RESOURCES += \
-    duqf_resources.qrc \
+    resources/duresources.qrc \
     resources/resources.qrc
 
 include($$PWD/../include/QGoodWindow/QGoodWindow/QGoodWindow.pri)
@@ -451,26 +454,10 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 # OS Specific configurations
 win* {
-
-    # ==== FRAMELESS WINDOW ====
-    # Only include / compile these files on Windows
-    SOURCES += \
-        OSUtils/windows/qwinwidget.cpp \
-        OSUtils/windows/winnativewindow.cpp \
-
-    HEADERS += \
-        OSUtils/windows/qwinwidget.h \
-        OSUtils/windows/winnativewindow.h \
-
-    LIBS += -L"C:\Program Files\Microsoft SDKs\Windows\v7.1\Lib" \
-        -ldwmapi \
-        -lgdi32
-    # ========
-
     # Add version and other metadata
     DISTFILES += app.rc
     RC_FILE = app.rc
-    !build_pass:touch($$RC_FILE, duqf-app/app-version.h)
+    !build_pass:touch($$RC_FILE, dumodules/duapp/app-version.h)
     # Enable console output
     # CONFIG += console
     msvc: LIBS += -luser32

@@ -3,8 +3,8 @@
 
 #include <QStringBuilder>
 
-#include "duqf-utils/duqflogger.h"
-#include "duqf-utils/utils.h"
+#include "duutils/duqflogger.h"
+#include "duutils/utils.h"
 #include "datastruct.h"
 #include "qjsonobject.h"
 #include "qnetworkreply.h"

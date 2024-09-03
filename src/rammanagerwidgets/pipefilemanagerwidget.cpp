@@ -1,6 +1,6 @@
 #include "pipefilemanagerwidget.h"
 
-#include "duqf-widgets/duicon.h"
+#include "duwidgets/duicon.h"
 #include "ramses.h"
 
 PipeFileManagerWidget::PipeFileManagerWidget(QWidget *parent):

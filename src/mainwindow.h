@@ -11,13 +11,13 @@
 #include <QMessageBox>
 #include <QSystemTrayIcon>
 
-#include "duqf-widgets/dumainwindow.h"
+#include "duwidgets/dumainwindow.h"
 #include "projecteditwidget.h"
 
-#include "duqf-widgets/settingswidget.h"
-#include "duqf-utils/utils.h"
-#include "duqf-widgets/dudocktitlewidget.h"
-#include "duqf-widgets/dudockwidget.h"
+#include "duwidgets/settingswidget.h"
+#include "duutils/utils.h"
+#include "duwidgets/dudocktitlewidget.h"
+#include "duwidgets/dudockwidget.h"
 #include "progresspage.h"
 #include "ramproject.h"
 #include "databaseeditwidget.h"

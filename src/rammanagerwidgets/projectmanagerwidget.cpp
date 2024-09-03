@@ -1,7 +1,7 @@
 #include "projectmanagerwidget.h"
 
 #include "ramses.h"
-#include "duqf-widgets/duicon.h"
+#include "duwidgets/duicon.h"
 
 ProjectManagerWidget::ProjectManagerWidget(QWidget *parent) :
     ObjectManagerWidget(

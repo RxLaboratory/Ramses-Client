@@ -2,9 +2,9 @@
 
 #include <QTextFrame>
 
-#include "duqf-widgets/duicon.h"
-#include "duqf-utils/colorutils.h"
-#include "duqf-utils/utils.h"
+#include "duwidgets/duicon.h"
+#include "duutils/colorutils.h"
+#include "duutils/utils.h"
 #include "qabstracttextdocumentlayout.h"
 #include "qapplication.h"
 #include "qtextdocument.h"

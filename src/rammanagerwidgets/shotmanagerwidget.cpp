@@ -4,7 +4,7 @@
 #include "ramsequence.h"
 
 #include "shotscreationdialog.h"
-#include "duqf-widgets/duicon.h"
+#include "duwidgets/duicon.h"
 
 ShotManagerWidget::ShotManagerWidget(QWidget *parent):
     ObjectManagerWidget(

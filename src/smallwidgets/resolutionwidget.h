@@ -5,8 +5,8 @@
 
 #include <QVBoxLayout>
 
-#include "duqf-widgets/ducombobox.h"
-#include "duqf-widgets/autoselectspinbox.h"
+#include "duwidgets/ducombobox.h"
+#include "duwidgets/autoselectspinbox.h"
 
 class ResolutionWidget : public QWidget
 {

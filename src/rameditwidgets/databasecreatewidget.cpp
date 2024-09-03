@@ -1,7 +1,7 @@
 #include "databasecreatewidget.h"
 
-#include "duqf-utils/guiutils.h"
-#include "duqf-utils/utils.h"
+#include "duutils/guiutils.h"
+#include "duutils/utils.h"
 #include "qpushbutton.h"
 #include "ramuser.h"
 #include "ramses.h"

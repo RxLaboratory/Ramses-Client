@@ -6,9 +6,9 @@
 #include <QHideEvent>
 #include <QClipboard>
 
-#include "duqf-widgets/duqftitlebar.h"
+#include "duwidgets/duqftitlebar.h"
 #include "ramitemview.h"
-#include "duqf-widgets/duqfsearchedit.h"
+#include "duwidgets/duqfsearchedit.h"
 
 #include "ramstepheaderview.h"
 

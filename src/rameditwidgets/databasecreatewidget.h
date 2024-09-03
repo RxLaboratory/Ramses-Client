@@ -3,10 +3,10 @@
 
 
 #include "datastruct.h"
-#include "duqf-widgets/duqffolderselectorwidget.h"
+#include "duwidgets/duqffolderselectorwidget.h"
 #include "qtabwidget.h"
 #include "servereditwidget.h"
-#include "duqf-widgets/duscrollarea.h"
+#include "duwidgets/duscrollarea.h"
 
 
 class DatabaseCreateWidget : public DuScrollArea

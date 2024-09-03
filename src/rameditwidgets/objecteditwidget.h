@@ -10,10 +10,10 @@
 #include <QShowEvent>
 #include <QRegExpValidator>
 
-#include "duqf-widgets/duqftextedit.h"
+#include "duwidgets/duqftextedit.h"
 #include "qtabwidget.h"
 #include "ramobject.h"
-#include "duqf-widgets/duscrollarea.h"
+#include "duwidgets/duscrollarea.h"
 
 /**
  * @brief The ObjectEditWidget class is the base class of all editors for RamObjects (Shots, steps, etc)

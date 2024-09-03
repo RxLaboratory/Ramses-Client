@@ -1,6 +1,6 @@
 #include "applicationmanagerwidget.h"
 
-#include "duqf-widgets/duicon.h"
+#include "duwidgets/duicon.h"
 #include "ramses.h"
 
 ApplicationManagerWidget::ApplicationManagerWidget(QWidget *parent) :

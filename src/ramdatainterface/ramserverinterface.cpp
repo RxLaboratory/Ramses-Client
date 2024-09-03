@@ -1,7 +1,7 @@
 #include "ramserverinterface.h"
 
 #include "datacrypto.h"
-#include "duqf-app/app-version.h"
+#include "duapp/app-version.h"
 #include "progressmanager.h"
 #include "qdeadlinetimer.h"
 #include "qhostinfo.h"
@@ -13,7 +13,7 @@
 #include "qtimer.h"
 #include "ramdatainterface/localdatainterface.h"
 #include "ramdatainterface/logindialog.h"
-#include "duqf-utils/guiutils.h"
+#include "duutils/guiutils.h"
 #include "statemanager.h"
 
 // STATIC //

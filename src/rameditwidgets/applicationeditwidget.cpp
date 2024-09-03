@@ -1,5 +1,5 @@
 #include "applicationeditwidget.h"
-#include "duqf-widgets/duicon.h"
+#include "duwidgets/duicon.h"
 #include "ramfiletype.h"
 #include "ramses.h"
 

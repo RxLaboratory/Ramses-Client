@@ -3,9 +3,9 @@
 
 #include <QFrame>
 
-#include "duqf-widgets/duqfloggingtextedit.h"
-#include "duqf-utils/duqflogger.h"
-#include "duqf-widgets/ducombobox.h"
+#include "duwidgets/duqfloggingtextedit.h"
+#include "duutils/duqflogger.h"
+#include "duwidgets/ducombobox.h"
 #include "qpushbutton.h"
 
 class ConsoleWidget : public QFrame

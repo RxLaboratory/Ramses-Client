@@ -1,6 +1,6 @@
 ﻿#include "objecteditwidget.h"
-#include "duqf-utils/utils.h"
-#include "duqf-widgets/duicon.h"
+#include "duutils/utils.h"
+#include "duwidgets/duicon.h"
 #include "objectupdateblocker.h"
 #include "qtabbar.h"
 #include "qtoolbutton.h"

@@ -1,10 +1,10 @@
 #ifndef DATABASEEDITWIDGET_H
 #define DATABASEEDITWIDGET_H
 
-#include "duqf-widgets/duqffolderdisplaywidget.h"
-#include "duqf-widgets/duqffolderselectorwidget.h"
+#include "duwidgets/duqffolderdisplaywidget.h"
+#include "duwidgets/duqffolderselectorwidget.h"
 #include "servereditwidget.h"
-#include "duqf-widgets/duscrollarea.h"
+#include "duwidgets/duscrollarea.h"
 
 
 class DatabaseEditWidget : public DuScrollArea

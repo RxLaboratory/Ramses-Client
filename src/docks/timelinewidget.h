@@ -3,7 +3,7 @@
 
 #include <QWidget>
 
-#include "duqf-widgets/duqfdoubleslider.h"
+#include "duwidgets/duqfdoubleslider.h"
 #include "timelineview.h"
 
 class TimelineWidget : public QWidget

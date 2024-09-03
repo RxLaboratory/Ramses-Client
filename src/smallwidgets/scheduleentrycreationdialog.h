@@ -4,8 +4,8 @@
 #include "qdialogbuttonbox.h"
 #include <QDialog>
 
-#include "duqf-widgets/dulineedit.h"
-#include "duqf-widgets/duqftextedit.h"
+#include "duwidgets/dulineedit.h"
+#include "duwidgets/duqftextedit.h"
 
 class ScheduleEntryCreationDialog : public QDialog
 {

@@ -1,5 +1,5 @@
 #include "daemon.h"
-#include "duqf-app/app-version.h"
+#include "duapp/app-version.h"
 #include "ramobjectmodel.h"
 #include "ramsequence.h"
 #include "ramses.h"
@@ -8,7 +8,7 @@
 #include "ramasset.h"
 #include "ramshot.h"
 #include "statemanager.h"
-#include "duqf-app/dusettingsmanager.h"
+#include "duapp/dusettingsmanager.h"
 
 Daemon *Daemon::_instance = nullptr;
 

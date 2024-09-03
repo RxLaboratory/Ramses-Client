@@ -4,8 +4,8 @@
 #include "objecteditwidget.h"
 #include "objectlistwidget.h"
 #include "ramassetgroup.h"
-#include "duqf-widgets/duqffolderdisplaywidget.h"
-#include "duqf-widgets/duqfcolorselector.h"
+#include "duwidgets/duqffolderdisplaywidget.h"
+#include "duwidgets/duqfcolorselector.h"
 
 /**
  * @brief The AssetGroupEditWidget class is used to edit AssetGroups and can be shown either in the main UI or in the Dock

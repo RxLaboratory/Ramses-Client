@@ -1,6 +1,6 @@
 #include "loginpage.h"
 
-#include "duqf-utils/guiutils.h"
+#include "duutils/guiutils.h"
 #include "mainwindow.h"
 #include "qpushbutton.h"
 

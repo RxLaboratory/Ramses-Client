@@ -4,7 +4,7 @@
 
 #include "assetgroupmanagerwidget.h"
 #include "assetmanagerwidget.h"
-#include "duqf-app/dusettingsmanager.h"
+#include "duapp/dusettingsmanager.h"
 #include "itemmanagerwidget.h"
 #include "pipefilemanagerwidget.h"
 #include "progressmanager.h"
@@ -28,8 +28,8 @@
 #include "daemon.h"
 #include "projectselectorwidget.h"
 #include "dbmanagerwidget.h"
-#include "duqf-widgets/duqflogtoolbutton.h"
-#include "duqf-app/app-version.h"
+#include "duwidgets/duqflogtoolbutton.h"
+#include "duapp/app-version.h"
 #include "docks/settingsdock.h"
 #include "statemanager.h"
 

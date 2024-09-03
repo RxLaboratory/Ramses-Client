@@ -1,7 +1,7 @@
 #include "itemmanagerwidget.h"
 
-#include "duqf-utils/guiutils.h"
-#include "duqf-widgets/duicon.h"
+#include "duutils/guiutils.h"
+#include "duwidgets/duicon.h"
 #include "ramasset.h"
 #include "ramses.h"
 #include "ramassetgroup.h"

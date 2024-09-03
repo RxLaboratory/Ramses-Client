@@ -2,7 +2,7 @@
 
 #include <QInputDialog>
 
-#include "duqf-utils/guiutils.h"
+#include "duutils/guiutils.h"
 #include "progressmanager.h"
 #include "statemanager.h"
 

@@ -1,6 +1,6 @@
 #include "usermanagerwidget.h"
 
-#include "duqf-widgets/duicon.h"
+#include "duwidgets/duicon.h"
 #include "ramses.h"
 
 UserManagerWidget::UserManagerWidget(QWidget *parent) :

@@ -1,7 +1,7 @@
 #ifndef RAMNAMEMANAGER_H
 #define RAMNAMEMANAGER_H
 
-#include "duqf-utils/utils.h"
+#include "duutils/utils.h"
 
 class RamNameManager
 {

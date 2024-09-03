@@ -1,6 +1,6 @@
 #include "ramobject.h"
 
-#include "duqf-utils/guiutils.h"
+#include "duutils/guiutils.h"
 #include "objecteditwidget.h"
 #include "mainwindow.h"
 #include "ramapplication.h"

@@ -1,7 +1,7 @@
 #ifndef RAMOBJECTCOMBOBOX_H
 #define RAMOBJECTCOMBOBOX_H
 
-#include "duqf-widgets/ducombobox.h"
+#include "duwidgets/ducombobox.h"
 #include "ramfilterlistproxymodel.h"
 #include "ramobjectsortfilterproxymodel.h"
 

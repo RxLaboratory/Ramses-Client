@@ -1,7 +1,7 @@
 #ifndef PROJECTSELECTORWIDGET_H
 #define PROJECTSELECTORWIDGET_H
 
-#include "duqf-widgets/ducombobox.h"
+#include "duwidgets/ducombobox.h"
 #include "progressmanager.h"
 #include "ramobjectcombobox.h"
 #include "ramobjectsortfilterproxymodel.h"

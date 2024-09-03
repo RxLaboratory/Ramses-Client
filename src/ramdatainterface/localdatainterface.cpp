@@ -2,8 +2,8 @@
 
 #include "datacrypto.h"
 #include "datastruct.h"
-#include "duqf-app/app-version.h"
-#include "duqf-utils/utils.h"
+#include "duapp/app-version.h"
+#include "duutils/utils.h"
 #include "progressmanager.h"
 #include "statemanager.h"
 #include "ramuser.h"

@@ -1,7 +1,7 @@
 #ifndef PROGRESSMANAGER_H
 #define PROGRESSMANAGER_H
 
-#include "duqf-utils/duqflogger.h"
+#include "duutils/duqflogger.h"
 
 class ProgressManager : public DuQFLoggerObject
 {

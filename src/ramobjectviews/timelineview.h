@@ -1,7 +1,7 @@
 #ifndef TIMELINEVIEW_H
 #define TIMELINEVIEW_H
 
-#include "duqf-widgets/dutableview.h"
+#include "duwidgets/dutableview.h"
 #include "timelineproxy.h"
 #include "ramshot.h"
 #include "timelinedelegate.h"

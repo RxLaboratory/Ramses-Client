@@ -4,7 +4,7 @@
 #include <QSplitter>
 
 #include "objecteditwidget.h"
-#include "duqf-widgets/duqffolderselectorwidget.h"
+#include "duwidgets/duqffolderselectorwidget.h"
 #include "objectlistwidget.h"
 #include "ramapplication.h"
 

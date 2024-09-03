@@ -8,7 +8,7 @@
 #include <QClipboard>
 
 #include "dbinterface.h"
-#include "duqf-widgets/duqftitlebar.h"
+#include "duwidgets/duqftitlebar.h"
 #include "ramproject.h"
 #include "ramschedulerowheaderview.h"
 #include "ramscheduletableview.h"

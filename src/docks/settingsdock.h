@@ -1,13 +1,13 @@
 #ifndef SETTINGSDOCK_H
 #define SETTINGSDOCK_H
 
-#include "duqf-app/dusettingsmanager.h"
-#include "duqf-widgets/ducombobox.h"
-#include "duqf-widgets/duicon.h"
-#include "duqf-widgets/duscrollarea.h"
-#include "duqf-widgets/dutabwidget.h"
-#include "duqf-widgets/ducolorselector.h"
-#include "duqf-widgets/duspinbox.h"
+#include "duapp/dusettingsmanager.h"
+#include "duwidgets/ducombobox.h"
+#include "duwidgets/duicon.h"
+#include "duwidgets/duscrollarea.h"
+#include "duwidgets/dutabwidget.h"
+#include "duwidgets/ducolorselector.h"
+#include "duwidgets/duspinbox.h"
 #include "qcheckbox.h"
 #include "qpushbutton.h"
 

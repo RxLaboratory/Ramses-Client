@@ -2,7 +2,7 @@
 
 #include "ramsequence.h"
 #include "ramses.h"
-#include "duqf-widgets/duicon.h"
+#include "duwidgets/duicon.h"
 
 SequenceManagerWidget::SequenceManagerWidget(QWidget *parent):
     ObjectManagerWidget(

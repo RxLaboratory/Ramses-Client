@@ -1,6 +1,6 @@
 #include "usereditwidget.h"
 
-#include "duqf-widgets/duicon.h"
+#include "duwidgets/duicon.h"
 #include "ramses.h"
 #include "ramdatainterface/datacrypto.h"
 

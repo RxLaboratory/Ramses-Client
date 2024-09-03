@@ -7,11 +7,11 @@
 #include <QToolButton>
 #include <QFormLayout>
 
-#include "duqf-widgets/ducombobox.h"
-#include "duqf-widgets/autoselectdoublespinbox.h"
+#include "duwidgets/ducombobox.h"
+#include "duwidgets/autoselectdoublespinbox.h"
 #include "objecteditwidget.h"
-#include "duqf-widgets/duqffolderdisplaywidget.h"
-#include "duqf-widgets/duqfcolorselector.h"
+#include "duwidgets/duqffolderdisplaywidget.h"
+#include "duwidgets/duqfcolorselector.h"
 #include "objectlistwidget.h"
 #include "progresswidget.h"
 

@@ -4,8 +4,8 @@
 #include <QWidget>
 #include <QVBoxLayout>
 
-#include "duqf-widgets/ducombobox.h"
-#include "duqf-widgets/autoselectdoublespinbox.h"
+#include "duwidgets/ducombobox.h"
+#include "duwidgets/autoselectdoublespinbox.h"
 
 class FramerateWidget : public QWidget
 {

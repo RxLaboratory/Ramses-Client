@@ -1,7 +1,7 @@
 #ifndef DBMANAGERWIDGET_H
 #define DBMANAGERWIDGET_H
 
-#include "duqf-widgets/autoselectspinbox.h"
+#include "duwidgets/autoselectspinbox.h"
 #include "qcheckbox.h"
 #include "qpushbutton.h"
 #include "qtextedit.h"

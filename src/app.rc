@@ -1,6 +1,6 @@
 1 ICON "ramses.ico"
 
-#include "duqf-app/app-version.h"
+#include "duapp/app-version.h"
 
 1 VERSIONINFO
 FILEVERSION    VER_FILEVERSION

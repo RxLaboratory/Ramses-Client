@@ -4,7 +4,7 @@
 #include <QHeaderView>
 #include <QMouseEvent>
 
-#include "duqf-widgets/dutableview.h"
+#include "duwidgets/dutableview.h"
 #include "statisticsmodel.h"
 
 class StatisticsView : public DuTableView

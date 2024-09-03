@@ -1,6 +1,6 @@
 #include "datacrypto.h"
 
-#include "duqf-utils/simplecrypt.h"
+#include "duutils/simplecrypt.h"
 #include "qcryptographichash.h"
 
 DataCrypto* DataCrypto::_instance = nullptr;

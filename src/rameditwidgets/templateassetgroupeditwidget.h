@@ -3,7 +3,7 @@
 
 #include "objecteditwidget.h"
 #include "ramtemplateassetgroup.h"
-#include "duqf-widgets/duqfcolorselector.h"
+#include "duwidgets/duqfcolorselector.h"
 
 class TemplateAssetGroupEditWidget : public ObjectEditWidget
 {

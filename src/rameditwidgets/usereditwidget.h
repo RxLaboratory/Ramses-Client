@@ -3,11 +3,11 @@
 
 #include <QToolButton>
 
-#include "duqf-widgets/ducombobox.h"
-#include "duqf-utils/utils.h"
+#include "duwidgets/ducombobox.h"
+#include "duutils/utils.h"
 #include "objecteditwidget.h"
-#include "duqf-widgets/duqffolderdisplaywidget.h"
-#include "duqf-widgets/duqfcolorselector.h"
+#include "duwidgets/duqffolderdisplaywidget.h"
+#include "duwidgets/duqfcolorselector.h"
 #include "ramuser.h"
 
 class UserEditWidget : public ObjectEditWidget

@@ -1,7 +1,7 @@
 #include "statemanagerwidget.h"
 
 #include "ramses.h"
-#include "duqf-widgets/duicon.h"
+#include "duwidgets/duicon.h"
 
 StateManagerWidget::StateManagerWidget(QWidget *parent) :
     ObjectManagerWidget(

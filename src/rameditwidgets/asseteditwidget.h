@@ -3,7 +3,7 @@
 
 #include "objecteditwidget.h"
 #include "ramasset.h"
-#include "duqf-widgets/duqffolderdisplaywidget.h"
+#include "duwidgets/duqffolderdisplaywidget.h"
 #include "ramobjectcombobox.h"
 
 /**

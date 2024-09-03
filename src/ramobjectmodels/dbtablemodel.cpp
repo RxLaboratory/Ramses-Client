@@ -1,5 +1,5 @@
 #include "dbtablemodel.h"
-#include "duqf-app/app-config.h"
+#include "duapp/app-config.h"
 #include "localdatainterface.h"
 #include "dbinterface.h"
 #include "progressmanager.h"

@@ -1,6 +1,6 @@
 #include "assetgroupmanagerwidget.h"
 
-#include "duqf-widgets/duicon.h"
+#include "duwidgets/duicon.h"
 #include "ramassetgroup.h"
 #include "ramses.h"
 

@@ -3,7 +3,7 @@
 
 #include <QObject>
 
-#include "duqf-app/app-utils.h"
+#include "duapp/app-utils.h"
 
 class StateManager : public QObject
 {

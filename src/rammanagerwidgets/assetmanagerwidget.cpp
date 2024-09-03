@@ -3,7 +3,7 @@
 #include "ramasset.h"
 #include "ramassetgroup.h"
 #include "ramses.h"
-#include "duqf-widgets/duicon.h"
+#include "duwidgets/duicon.h"
 
 AssetManagerWidget::AssetManagerWidget(QWidget *parent):
     ObjectManagerWidget(

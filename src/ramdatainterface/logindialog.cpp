@@ -1,7 +1,7 @@
 #include "logindialog.h"
 
 #include "datacrypto.h"
-#include "duqf-widgets/duicon.h"
+#include "duwidgets/duicon.h"
 #include "qboxlayout.h"
 #include "qmessagebox.h"
 #include "qpushbutton.h"

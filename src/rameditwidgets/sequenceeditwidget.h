@@ -3,7 +3,7 @@
 
 #include "objecteditwidget.h"
 #include "objectlistwidget.h"
-#include "duqf-widgets/duqfcolorselector.h"
+#include "duwidgets/duqfcolorselector.h"
 #include "ramsequence.h"
 #include "resolutionwidget.h"
 #include "frameratewidget.h"

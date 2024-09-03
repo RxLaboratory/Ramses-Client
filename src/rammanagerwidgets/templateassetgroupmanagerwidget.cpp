@@ -1,7 +1,7 @@
 #include "templateassetgroupmanagerwidget.h"
 
 #include "ramses.h"
-#include "duqf-widgets/duicon.h"
+#include "duwidgets/duicon.h"
 
 TemplateAssetGroupManagerWidget::TemplateAssetGroupManagerWidget(QWidget *parent) :
     ObjectManagerWidget(

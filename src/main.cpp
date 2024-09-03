@@ -2,9 +2,9 @@
 #include <QSettings>
 #include <QTcpSocket>
 
-#include "duqf-app/app-utils.h"
-#include "duqf-app/ducli.h"
-#include "duqf-widgets/duqfupdatedialog.h"
+#include "duapp/app-utils.h"
+#include "duapp/ducli.h"
+#include "duwidgets/duqfupdatedialog.h"
 #include "src/qgoodwindow.h"
 
 int main(int argc, char *argv[])

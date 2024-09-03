@@ -1,5 +1,5 @@
 #include "ramscheduleentry.h"
-#include "duqf-app/app-config.h"
+#include "duapp/app-config.h"
 #include "qjsondocument.h"
 #include "ramstep.h"
 #include "ramuser.h"

@@ -1,5 +1,5 @@
 ﻿#include "stepeditwidget.h"
-#include "duqf-widgets/duicon.h"
+#include "duwidgets/duicon.h"
 #include "qcheckbox.h"
 #include "ramapplication.h"
 #include "ramproject.h"

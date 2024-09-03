@@ -1,6 +1,6 @@
 #include "ramabstractobject.h"
 
-#include "duqf-app/app-config.h"
+#include "duapp/app-config.h"
 #include "qtextdocument.h"
 #include "ramuuid.h"
 #include "dbinterface.h"

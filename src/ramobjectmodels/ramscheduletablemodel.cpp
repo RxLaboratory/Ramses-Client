@@ -1,8 +1,8 @@
 #include "ramscheduletablemodel.h"
 
-#include "duqf-app/app-config.h"
-#include "duqf-app/dusettingsmanager.h"
-#include "duqf-utils/stringutils.h"
+#include "duapp/app-config.h"
+#include "duapp/dusettingsmanager.h"
+#include "duutils/stringutils.h"
 #include "ramscheduleentry.h"
 #include "ramschedulerow.h"
 #include "ramses.h"

@@ -8,7 +8,7 @@
 #include "objecteditwidget.h"
 #include "resolutionwidget.h"
 #include "frameratewidget.h"
-#include "duqf-widgets/duqffolderselectorwidget.h"
+#include "duwidgets/duqffolderselectorwidget.h"
 #include "objectlistwidget.h"
 #include "ramproject.h"
 

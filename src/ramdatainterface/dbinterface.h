@@ -18,8 +18,8 @@
 #include <QProgressBar>
 #include <QVersionNumber>
 
-#include "duqf-utils/utils.h"
-#include "duqf-utils/duqflogger.h"
+#include "duutils/utils.h"
+#include "duutils/duqflogger.h"
 #include "ramserverinterface.h"
 #include "localdatainterface.h"
 

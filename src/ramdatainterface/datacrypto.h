@@ -3,7 +3,7 @@
 
 #include <QString>
 
-#include "duqf-app/app-config.h"
+#include "duapp/app-config.h"
 
 class DataCrypto
 {

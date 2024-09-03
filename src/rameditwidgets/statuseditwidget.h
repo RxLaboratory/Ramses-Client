@@ -8,13 +8,13 @@
 #include <QShortcut>
 #include <QSplitter>
 
-#include "duqf-widgets/ducombobox.h"
-#include "duqf-widgets/duqftextedit.h"
-#include "duqf-widgets/duqfspinbox.h"
-#include "duqf-widgets/autoselectspinbox.h"
-#include "duqf-widgets/autoselectdoublespinbox.h"
-#include "duqf-widgets/duqffolderdisplaywidget.h"
-#include "duqf-widgets/duqffilelist.h"
+#include "duwidgets/ducombobox.h"
+#include "duwidgets/duqftextedit.h"
+#include "duwidgets/duqfspinbox.h"
+#include "duwidgets/autoselectspinbox.h"
+#include "duwidgets/autoselectdoublespinbox.h"
+#include "duwidgets/duqffolderdisplaywidget.h"
+#include "duwidgets/duqffilelist.h"
 #include "objecteditwidget.h"
 #include "qdatetimeedit.h"
 #include "ramstatebox.h"

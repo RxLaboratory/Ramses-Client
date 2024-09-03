@@ -3,7 +3,7 @@
 
 #include <QDockWidget>
 
-#include "duqf-nodeview/duqfnode.h"
+#include "dunodeview/duqfnode.h"
 
 #include "ramobject.h"
 

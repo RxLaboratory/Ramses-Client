@@ -1,9 +1,9 @@
 #include "pipelinewidget.h"
 
-#include "duqf-utils/guiutils.h"
-#include "duqf-app/dusettingsmanager.h"
+#include "duutils/guiutils.h"
+#include "duapp/dusettingsmanager.h"
 
-#include "duqf-widgets/duicon.h"
+#include "duwidgets/duicon.h"
 #include "progressmanager.h"
 #include "stepnode.h"
 #include "ramses.h"

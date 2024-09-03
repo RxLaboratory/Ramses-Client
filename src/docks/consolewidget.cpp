@@ -1,5 +1,5 @@
 #include "consolewidget.h"
-#include "duqf-widgets/duicon.h"
+#include "duwidgets/duicon.h"
 #include "qboxlayout.h"
 #include "qsettings.h"
 

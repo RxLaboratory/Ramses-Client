@@ -1,8 +1,8 @@
 #include "settingsdock.h"
 
-#include "duqf-app/app-utils.h"
-#include "duqf-app/duui.h"
-#include "duqf-widgets/duqfupdatedialog.h"
+#include "duapp/app-utils.h"
+#include "duapp/duui.h"
+#include "duwidgets/duqfupdatedialog.h"
 #include "daemon.h"
 #include "qformlayout.h"
 

@@ -2,9 +2,9 @@
 
 #include <QDesktopServices>
 
-#include "duqf-app/app-version.h"
+#include "duapp/app-version.h"
 
-#include "duqf-widgets/duicon.h"
+#include "duwidgets/duicon.h"
 #include "ramses.h"
 #include "ramobjectmodel.h"
 

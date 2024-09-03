@@ -9,7 +9,7 @@
 #include <QMessageBox>
 #include <QShortcut>
 
-#include "duqf-widgets/duqfsearchedit.h"
+#include "duwidgets/duqfsearchedit.h"
 #include "ramobjectcombobox.h"
 #include "ramobjectmenu.h"
 #include "ramuser.h"

@@ -1,7 +1,7 @@
 #include "templatestepmanagerwidget.h"
 
 #include "ramses.h"
-#include "duqf-widgets/duicon.h"
+#include "duwidgets/duicon.h"
 
 TemplateStepManagerWidget::TemplateStepManagerWidget(QWidget *parent) :
     ObjectManagerWidget(

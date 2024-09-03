@@ -4,8 +4,8 @@
 #include <QColorDialog>
 
 #include "objecteditwidget.h"
-#include "duqf-widgets/duqfspinbox.h"
-#include "duqf-widgets/duqfcolorselector.h"
+#include "duwidgets/duqfspinbox.h"
+#include "duwidgets/duqfcolorselector.h"
 #include "ramstate.h"
 
 class StateEditWidget : public ObjectEditWidget

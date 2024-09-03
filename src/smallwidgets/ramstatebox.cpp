@@ -1,7 +1,7 @@
 #include "ramstatebox.h"
 
 #include "ramses.h"
-#include "duqf-app/duui.h"
+#include "duapp/duui.h"
 
 RamStateBox::RamStateBox(QWidget *parent):
     RamObjectComboBox(parent)

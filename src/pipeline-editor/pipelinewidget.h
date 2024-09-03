@@ -6,13 +6,13 @@
 
 #include "ui_pipelinewidget.h"
 
-#include "duqf-widgets/dumenu.h"
+#include "duwidgets/dumenu.h"
 #include "ramproject.h"
 #include "ramuser.h"
-#include "duqf-nodeview/duqfnodeview.h"
-#include "duqf-nodeview/duqfnodescene.h"
-#include "duqf-widgets/duqftitlebar.h"
-#include "duqf-widgets/duqfspinbox.h"
+#include "dunodeview/duqfnodeview.h"
+#include "dunodeview/duqfnodescene.h"
+#include "duwidgets/duqftitlebar.h"
+#include "duwidgets/duqfspinbox.h"
 
 class PipelineWidget : public QWidget, private Ui::PipelineWidget
 {

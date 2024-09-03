@@ -1,7 +1,7 @@
 #ifndef RAMOBJECTMENU_H
 #define RAMOBJECTMENU_H
 
-#include "duqf-widgets/dumenu.h"
+#include "duwidgets/dumenu.h"
 #include "ramobjectsortfilterproxymodel.h"
 
 /**

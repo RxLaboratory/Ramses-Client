@@ -3,7 +3,7 @@
 
 #include <QHeaderView>
 
-#include "duqf-widgets/dutableview.h"
+#include "duwidgets/dutableview.h"
 #include "ramscheduledelegate.h"
 
 class RamScheduleTableView : public DuTableView

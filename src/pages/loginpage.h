@@ -5,7 +5,7 @@
 
 #include "ramses.h"
 
-#include "duqf-widgets/ducombobox.h"
+#include "duwidgets/ducombobox.h"
 #include "databasecreatewidget.h"
 #include "databaseeditwidget.h"
 

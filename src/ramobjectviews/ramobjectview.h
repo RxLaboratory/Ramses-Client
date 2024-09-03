@@ -4,8 +4,8 @@
 #include <QHeaderView>
 #include <QSortFilterProxyModel>
 
-#include "duqf-widgets/dutableview.h"
-#include "duqf-widgets/dumenu.h"
+#include "duwidgets/dutableview.h"
+#include "duwidgets/dumenu.h"
 #include "ramobjectdelegate.h"
 #include "ramobjectsortfilterproxymodel.h"
 #include "ramuser.h"

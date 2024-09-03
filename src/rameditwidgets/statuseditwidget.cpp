@@ -1,7 +1,7 @@
 #include "statuseditwidget.h"
 
-#include "duqf-widgets/duicon.h"
-#include "duqf-app/duui.h"
+#include "duwidgets/duicon.h"
+#include "duapp/duui.h"
 #include "ramfilemetadatamanager.h"
 #include "ramabstractitem.h"
 #include "ramses.h"

@@ -5,9 +5,9 @@
 #include <QSpinBox>
 
 #include "objecteditwidget.h"
-#include "duqf-widgets/duqffolderdisplaywidget.h"
-#include "duqf-widgets/autoselectdoublespinbox.h"
-#include "duqf-widgets/autoselectspinbox.h"
+#include "duwidgets/duqffolderdisplaywidget.h"
+#include "duwidgets/autoselectdoublespinbox.h"
+#include "duwidgets/autoselectspinbox.h"
 #include "objectlistwidget.h"
 #include "ramshot.h"
 

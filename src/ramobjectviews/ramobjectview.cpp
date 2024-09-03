@@ -7,8 +7,8 @@
 #include "qmessagebox.h"
 #include "ramobjectsortfilterproxymodel.h"
 #include "timelinemanager.h"
-#include "duqf-app/duui.h"
-#include "duqf-widgets/duicon.h"
+#include "duapp/duui.h"
+#include "duwidgets/duicon.h"
 
 RamObjectView::RamObjectView(DisplayMode mode, QWidget *parent):
     DuTableView(parent)

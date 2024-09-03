@@ -5,7 +5,7 @@
 #include <QSqlError>
 #include <QStringBuilder>
 
-#include "duqf-utils/duqflogger.h"
+#include "duutils/duqflogger.h"
 #include "datastruct.h"
 
 class LocalDataInterface : public DuQFLoggerObject

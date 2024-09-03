@@ -1,7 +1,7 @@
 #ifndef TIMELINEPROXY_H
 #define TIMELINEPROXY_H
 
-#include "duqf-utils/qtransposeproxymodel.h"
+#include "duutils/qtransposeproxymodel.h"
 
 class TimeLineProxy : public QTransposeProxyModel
 {

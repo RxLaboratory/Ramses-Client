@@ -1,7 +1,7 @@
 #include "filetypemanagerwidget.h"
 
 #include "ramses.h"
-#include "duqf-widgets/duicon.h"
+#include "duwidgets/duicon.h"
 
 FileTypeManagerWidget::FileTypeManagerWidget(QWidget *parent) :
     ObjectManagerWidget(

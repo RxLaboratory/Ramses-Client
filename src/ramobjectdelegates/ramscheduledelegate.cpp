@@ -5,7 +5,7 @@
 #include "ramses.h"
 #include "ramscheduleentry.h"
 #include "ramstatustablemodel.h"
-#include "duqf-utils/guiutils.h"
+#include "duutils/guiutils.h"
 #include "ramstep.h"
 
 RamScheduleDelegate::RamScheduleDelegate(QObject *parent) : QStyledItemDelegate(parent)
