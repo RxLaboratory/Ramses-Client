@@ -61,16 +61,16 @@ void DatabaseCreateWidget::setupUi()
 
     topLayout->addWidget(new QLabel(tr("Database file")), 0, 0);
 
-    ui_fileSelector = new DuQFFolderSelectorWidget(DuQFFolderSelectorWidget::File, dummy);
+    ui_fileSelector = new DuFolderSelectorWidget(DuFolderSelectorWidget::File, dummy);
     ui_fileSelector->setPlaceHolderText(tr("File path of the Ramses Database..."));
     ui_fileSelector->setDialogTitle(tr("Select the location of the Ramses Database."));
-    ui_fileSelector->setMode(DuQFFolderSelectorWidget::Save);
+    ui_fileSelector->setMode(DuFolderSelectorWidget::Save);
     ui_fileSelector->setFilter(tr("Ramses (*.ramses);;SQLite (*.sqlite);;All Files (*.*)"));
     topLayout->addWidget(ui_fileSelector, 0, 1);
 
     topLayout->addWidget(new QLabel(tr("Ramses path")), 1, 0);
 
-    ui_folderSelector = new DuQFFolderSelectorWidget();
+    ui_folderSelector = new DuFolderSelectorWidget();
     ui_folderSelector->showRevealButton(false);
     ui_folderSelector->setPlaceHolderText(QDir::homePath() + "/Ramses");
     topLayout->addWidget(ui_folderSelector, 1, 1);
@@ -130,7 +130,7 @@ void DatabaseCreateWidget::setupUi()
 
 void DatabaseCreateWidget::connectEvents()
 {
-    connect(ui_fileSelector, &DuQFFolderSelectorWidget::pathChanged, this, &DatabaseCreateWidget::checkPath);
+    connect(ui_fileSelector, &DuFolderSelectorWidget::pathChanged, this, &DatabaseCreateWidget::checkPath);
     connect(ui_createButton, &QPushButton::clicked, this, &DatabaseCreateWidget::createDB);
     connect(DBInterface::instance(), &DBInterface::syncFinished, this, &DatabaseCreateWidget::finishSync);
 }

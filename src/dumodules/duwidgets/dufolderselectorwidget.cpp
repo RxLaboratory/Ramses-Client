@@ -1,9 +1,9 @@
-#include "duqffolderselectorwidget.h"
+#include "dufolderselectorwidget.h"
 
 #include "duutils/utils.h"
 #include "duwidgets/duicon.h"
 
-DuQFFolderSelectorWidget::DuQFFolderSelectorWidget(SelectorType type, QWidget *parent) :
+DuFolderSelectorWidget::DuFolderSelectorWidget(SelectorType type, QWidget *parent) :
     QWidget(parent)
 {
     setupUi();
@@ -13,19 +13,19 @@ DuQFFolderSelectorWidget::DuQFFolderSelectorWidget(SelectorType type, QWidget *p
 
     if (type == File) ui_exploreButton->hide();
 
-    connect(ui_browseButton, &QToolButton::clicked, this, &DuQFFolderSelectorWidget::browseButton_clicked);
-    connect(ui_exploreButton, &QToolButton::clicked, this, &DuQFFolderSelectorWidget::exploreButton_clicked);
-    connect(ui_deleteButton, &QToolButton::clicked, this, &DuQFFolderSelectorWidget::deleteButton_clicked);
-    connect(ui_folderEdit, &QLineEdit::textChanged, this, &DuQFFolderSelectorWidget::pathChanging);
-    connect(ui_folderEdit, &QLineEdit::editingFinished, this, &DuQFFolderSelectorWidget::folderEdit_editingFinished);
+    connect(ui_browseButton, &QToolButton::clicked, this, &DuFolderSelectorWidget::browseButton_clicked);
+    connect(ui_exploreButton, &QToolButton::clicked, this, &DuFolderSelectorWidget::exploreButton_clicked);
+    connect(ui_deleteButton, &QToolButton::clicked, this, &DuFolderSelectorWidget::deleteButton_clicked);
+    connect(ui_folderEdit, &QLineEdit::textChanged, this, &DuFolderSelectorWidget::pathChanging);
+    connect(ui_folderEdit, &QLineEdit::editingFinished, this, &DuFolderSelectorWidget::folderEdit_editingFinished);
 }
 
-QString DuQFFolderSelectorWidget::path()
+QString DuFolderSelectorWidget::path()
 {
     return ui_folderEdit->text();
 }
 
-void DuQFFolderSelectorWidget::setPath(QString p)
+void DuFolderSelectorWidget::setPath(QString p)
 {
     p = QDir::toNativeSeparators(p);
     ui_folderEdit->setText(p);
@@ -34,40 +34,40 @@ void DuQFFolderSelectorWidget::setPath(QString p)
     ui_exploreButton->setToolTip("Reveal folder at " + p);
 }
 
-void DuQFFolderSelectorWidget::setPlaceHolderText(QString t)
+void DuFolderSelectorWidget::setPlaceHolderText(QString t)
 {
     ui_folderEdit->setPlaceholderText(t);
     setPath(ui_folderEdit->text());
 }
 
-void DuQFFolderSelectorWidget::setDialogTitle(QString t)
+void DuFolderSelectorWidget::setDialogTitle(QString t)
 {
     m_dialogTitle = t;
 }
 
-void DuQFFolderSelectorWidget::setMode(SelectorMode newMode)
+void DuFolderSelectorWidget::setMode(SelectorMode newMode)
 {
     m_mode = newMode;
 }
 
-void DuQFFolderSelectorWidget::setFilter(const QString &filter)
+void DuFolderSelectorWidget::setFilter(const QString &filter)
 {
     m_filter = filter;
 }
 
-void DuQFFolderSelectorWidget::showDeleteButton(QString trashFolder, bool show)
+void DuFolderSelectorWidget::showDeleteButton(QString trashFolder, bool show)
 {
     m_trashFolder = trashFolder;
     ui_deleteButton->setVisible(show);
 }
 
-void DuQFFolderSelectorWidget::showRevealButton(bool show)
+void DuFolderSelectorWidget::showRevealButton(bool show)
 {
     if (show) ui_exploreButton->show();
     else ui_exploreButton->hide();
 }
 
-void DuQFFolderSelectorWidget::browseButton_clicked()
+void DuFolderSelectorWidget::browseButton_clicked()
 {
     QString p = "";
     QString d = ui_folderEdit->text();
@@ -83,20 +83,20 @@ void DuQFFolderSelectorWidget::browseButton_clicked()
     }
 }
 
-void DuQFFolderSelectorWidget::exploreButton_clicked()
+void DuFolderSelectorWidget::exploreButton_clicked()
 {
     QString path = ui_folderEdit->text();
     if (path == "" ) path = ui_folderEdit->placeholderText();
     FileUtils::openInExplorer( path, true );
 }
 
-void DuQFFolderSelectorWidget::folderEdit_editingFinished()
+void DuFolderSelectorWidget::folderEdit_editingFinished()
 {
     setPath(ui_folderEdit->text());
     emit pathChanged(ui_folderEdit->text());
 }
 
-void DuQFFolderSelectorWidget::deleteButton_clicked()
+void DuFolderSelectorWidget::deleteButton_clicked()
 {
     QMessageBox::StandardButton confirm = QMessageBox::question( this,
         "Confirm deletion",
@@ -125,7 +125,7 @@ void DuQFFolderSelectorWidget::deleteButton_clicked()
     emit fileRemoved();
 }
 
-void DuQFFolderSelectorWidget::setupUi()
+void DuFolderSelectorWidget::setupUi()
 {
     this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
@@ -145,7 +145,7 @@ void DuQFFolderSelectorWidget::setupUi()
     horizontalLayout->addWidget(ui_deleteButton);
 
     ui_browseButton = new QToolButton(this);
-    ui_browseButton->setIcon(DuIcon(":/icons/browse-folder"));
+    ui_browseButton->setIcon(DuIcon(":/icons/selector-pop-up"));
 
     horizontalLayout->addWidget(ui_browseButton);
 

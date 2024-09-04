@@ -1,0 +1,72 @@
+#include "projectwizard.h"
+
+#include "duapp/duui.h"
+#include "duapp/dusettings.h"
+
+ProjectWizard::ProjectWizard(bool team, QWidget *parent, Qt::WindowFlags flags):
+    QWizard(parent, flags),
+    _isTeamProject(team)
+{
+    setupUi();
+}
+
+void ProjectWizard::setupUi()
+{
+    this->addPage(
+        createPathsPage()
+        );
+    this->addPage(
+        createProjectSettingsPage()
+        );
+}
+
+QWizardPage *ProjectWizard::createPathsPage()
+{
+    auto page = new QWizardPage();
+    page->setTitle(tr("Project location"));
+    page->setSubTitle(tr("Set the path to the Ramses project file, and the location where the working files are stored."));
+
+    auto layout = DuUI::createFormLayout();
+    DuUI::centerLayout(layout, page);
+
+    ui_ramsesFileSelector = new DuFolderSelectorWidget(DuFolderSelectorWidget::File, this);
+    ui_ramsesFileSelector->setPlaceHolderText(tr("File path of the Ramses Database..."));
+    ui_ramsesFileSelector->setDialogTitle(tr("Select the location of the Ramses Database."));
+    ui_ramsesFileSelector->setMode(DuFolderSelectorWidget::Save);
+    ui_ramsesFileSelector->setFilter(tr("Ramses (*.ramses);;SQLite (*.sqlite);;All Files (*.*)"));
+    ui_ramsesFileSelector->setMinimumWidth(300);
+    layout->addRow(tr("Ramses project file"), ui_ramsesFileSelector);
+
+    ui_projectPathSelector = new DuFolderSelectorWidget();
+    ui_projectPathSelector->showRevealButton(false);
+    ui_projectPathSelector->setPlaceHolderText(QDir::homePath() + "/Ramses Project");
+    ui_projectPathSelector->setMinimumWidth(300);
+    layout->addRow(tr("Project working directory"), ui_projectPathSelector);
+
+    return page;
+}
+
+QWizardPage *ProjectWizard::createProjectSettingsPage()
+{
+    auto page = new QWizardPage();
+    page->setTitle(tr("Project settings"));
+    page->setSubTitle(tr("Set the details of the project."));
+
+    auto layout = DuUI::createFormLayout();
+    DuUI::centerLayout(layout, page);
+    int m = DuSettings::i()->get(DuSettings::UI_Margins).toInt();
+    layout->setSpacing(m*3);
+
+    ui_resolutionWidget = new ResolutionWidget(this);
+    layout->addRow(tr("Delivery resolution"), ui_resolutionWidget);
+
+    ui_framerateWidget = new FramerateWidget(this);
+    layout->addRow(tr("Delivery framerate"), ui_framerateWidget);
+
+    ui_deadlineEdit = new QDateEdit(this);
+    ui_deadlineEdit->setCalendarPopup(true);
+    ui_deadlineEdit->setDate( QDate::currentDate() );
+    layout->addRow(tr("Deadline"), ui_deadlineEdit);
+
+    return page;
+}

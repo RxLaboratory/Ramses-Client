@@ -120,6 +120,8 @@ public:
     static QStackedLayout *addStackedLayout(QWidget *parent);
     static QStackedLayout *addStackedLayout(QBoxLayout *parent);
 
+    static void centerLayout(QLayout *child, QWidget *parent);
+
     static QWidget *addBlock(QLayout *child, QBoxLayout *parent);
 
 protected:

@@ -50,6 +50,7 @@
         <file alias="copy">duresources/icons/copy.svg</file>
         <file alias="paste">duresources/icons/paste.svg</file>
         <file alias="down-arrow">duresources/icons/down-arrow.svg</file>
+        <file alias="selector-pop-up">duresources/icons/selector-pop-up.svg</file>
     </qresource>
     <qresource prefix="/images"/>
     <qresource prefix="/styles"/>

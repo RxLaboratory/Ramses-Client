@@ -75,7 +75,7 @@ void ApplicationEditWidget::setupUi()
     QLabel *fileLabel = new QLabel("Executable file", this);
     ui_mainFormLayout->addWidget(fileLabel, 3, 0);
 
-    m_folderSelector = new DuQFFolderSelectorWidget(DuQFFolderSelectorWidget::File, this);
+    m_folderSelector = new DuFolderSelectorWidget(DuFolderSelectorWidget::File, this);
     ui_mainFormLayout->addWidget(m_folderSelector, 3, 1);
 
     QTabWidget *tabWidget = new QTabWidget(this);

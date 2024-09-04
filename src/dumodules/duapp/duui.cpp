@@ -501,6 +501,17 @@ QStackedLayout *DuUI::addStackedLayout(QBoxLayout *parent)
     return layout;
 }
 
+void DuUI::centerLayout(QLayout *child, QWidget *parent)
+{
+    auto hLayout = DuUI::addBoxLayout(Qt::Horizontal, parent);
+    hLayout->addStretch();
+    auto vLayout = DuUI::addBoxLayout(Qt::Vertical, hLayout);
+    vLayout->addStretch();
+    vLayout->addLayout(child);
+    vLayout->addStretch();
+    hLayout->addStretch();
+}
+
 QWidget *DuUI::addBlock(QLayout *child, QBoxLayout *parent)
 {
     auto w = new QWidget();

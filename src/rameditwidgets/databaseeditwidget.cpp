@@ -120,7 +120,7 @@ void DatabaseEditWidget::setupUi()
 
     localLayout->addWidget(new QLabel(tr("Ramses path")),2 , 0);
 
-    ui_folderSelector = new DuQFFolderSelectorWidget();
+    ui_folderSelector = new DuFolderSelectorWidget();
     localLayout->addWidget(ui_folderSelector,2 , 1);
 
     QLabel *serverLabel = new QLabel("<b>" + tr("Ramses Server") + "</b>");

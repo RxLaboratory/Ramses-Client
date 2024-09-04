@@ -3,7 +3,7 @@
 
 
 #include "datastruct.h"
-#include "duwidgets/duqffolderselectorwidget.h"
+#include "duwidgets/dufolderselectorwidget.h"
 #include "qtabwidget.h"
 #include "servereditwidget.h"
 #include "duwidgets/duscrollarea.h"
@@ -30,8 +30,8 @@ private:
     void createOnlineDB();
     void createOfflineDB();
 
-    DuQFFolderSelectorWidget *ui_fileSelector;
-    DuQFFolderSelectorWidget *ui_folderSelector;
+    DuFolderSelectorWidget *ui_fileSelector;
+    DuFolderSelectorWidget *ui_folderSelector;
     QTabWidget *ui_tabWidget;
     QLineEdit *ui_shortNameEdit;
     QLineEdit *ui_nameEdit;

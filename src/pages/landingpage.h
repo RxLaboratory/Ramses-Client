@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QPushButton>
 #include <QToolButton>
+#include <QStackedLayout>
 
 #include "duwidgets/ducombobox.h"
 
@@ -15,11 +16,13 @@ public:
 
 private slots:
     void updateRecentList();
+    void createLocalProject();
 
 private:
     void setupUi();
     void connectEvents();
 
+    QStackedLayout *ui_stackedLayout;
     QPushButton *ui_createLocalProjectButton;
     QPushButton *ui_createTeamProjectButton;
     QPushButton *ui_openProjectButton;

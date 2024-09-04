@@ -9,6 +9,7 @@
 #include "projectmanager.h"
 #include "duapp/duui.h"
 #include "duwidgets/duicon.h"
+#include "wizards/projectwizard.h"
 
 LandingPage::LandingPage(QWidget *parent)
     : QWidget{parent}
@@ -28,9 +29,28 @@ void LandingPage::updateRecentList()
     }
 }
 
+void LandingPage::createLocalProject()
+{
+    // Create a wizard and show it
+    auto pz = new ProjectWizard();
+    ui_stackedLayout->addWidget(pz);
+    ui_stackedLayout->setCurrentIndex(1);
+
+    // Delete it when finished
+    connect(pz, &ProjectWizard::finished, this, [this,pz] () {
+        ui_stackedLayout->setCurrentIndex(0);
+        pz->deleteLater();
+    });
+}
+
 void LandingPage::setupUi()
 {
-    auto mainLayout = DuUI::addBoxLayout(Qt::Horizontal, this);
+    ui_stackedLayout = DuUI::addStackedLayout(this);
+
+    QWidget *landingWidget = new QWidget(this);
+    ui_stackedLayout->addWidget(landingWidget);
+
+    auto mainLayout = DuUI::addBoxLayout(Qt::Horizontal, landingWidget);
     mainLayout->addStretch();
     auto centerLayout = DuUI::addBoxLayout(Qt::Vertical, mainLayout);
     mainLayout->addStretch();
@@ -113,4 +133,7 @@ void LandingPage::connectEvents()
         if (p == "") return;
         ProjectManager::i()->setProject(p);
     });
+
+    connect(ui_createLocalProjectButton, &QPushButton::clicked,
+            this, &LandingPage::createLocalProject);
 }

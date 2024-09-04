@@ -4,7 +4,7 @@
 #include <QSplitter>
 
 #include "objecteditwidget.h"
-#include "duwidgets/duqffolderselectorwidget.h"
+#include "duwidgets/dufolderselectorwidget.h"
 #include "objectlistwidget.h"
 #include "ramapplication.h"
 
@@ -32,7 +32,7 @@ private:
     void setupUi();
     void connectEvents();
 
-    DuQFFolderSelectorWidget *m_folderSelector;
+    DuFolderSelectorWidget *m_folderSelector;
     ObjectListWidget *m_nativeList;
     ObjectListWidget *m_importList;
     ObjectListWidget *m_exportList;

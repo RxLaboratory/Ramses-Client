@@ -2,7 +2,7 @@
 #define DATABASEEDITWIDGET_H
 
 #include "duwidgets/duqffolderdisplaywidget.h"
-#include "duwidgets/duqffolderselectorwidget.h"
+#include "duwidgets/dufolderselectorwidget.h"
 #include "servereditwidget.h"
 #include "duwidgets/duscrollarea.h"
 
@@ -33,7 +33,7 @@ private:
     ServerEditWidget *ui_serverEdit;
     QPushButton *ui_resetButton;
     QPushButton *ui_applyButton;
-    DuQFFolderSelectorWidget *ui_folderSelector;
+    DuFolderSelectorWidget *ui_folderSelector;
     DuQFFolderDisplayWidget *ui_folderDisplay;
 };
 

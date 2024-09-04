@@ -176,7 +176,7 @@ void ProjectEditWidget::setupUi()
     QLabel *fLabel = new QLabel("Folder", this);
     folderLayout->addWidget(fLabel, 0, 0);
 
-    ui_folderSelector = new DuQFFolderSelectorWidget(DuQFFolderSelectorWidget::Folder, this);
+    ui_folderSelector = new DuFolderSelectorWidget(DuFolderSelectorWidget::Folder, this);
     ui_folderSelector->setPlaceHolderText("Default (Ramses/Users/User_ShortName)");
     folderLayout->addWidget(ui_folderSelector,0, 1);
 

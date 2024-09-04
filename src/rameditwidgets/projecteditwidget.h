@@ -8,7 +8,7 @@
 #include "objecteditwidget.h"
 #include "resolutionwidget.h"
 #include "frameratewidget.h"
-#include "duwidgets/duqffolderselectorwidget.h"
+#include "duwidgets/dufolderselectorwidget.h"
 #include "objectlistwidget.h"
 #include "ramproject.h"
 
@@ -43,7 +43,7 @@ private:
     void setupUi();
     void connectEvents();
 
-    DuQFFolderSelectorWidget *ui_folderSelector;
+    DuFolderSelectorWidget *ui_folderSelector;
     QLabel *ui_folderLabel;
     ResolutionWidget *ui_resolutionWidget;
     FramerateWidget *ui_framerateWidget;

@@ -1,5 +1,5 @@
-#ifndef DUQFFOLDERSELECTORWIDGET_H
-#define DUQFFOLDERSELECTORWIDGET_H
+#ifndef DUFOLDERSELECTORWIDGET_H
+#define DUFOLDERSELECTORWIDGET_H
 
 #include <QFileDialog>
 #include <QMessageBox>
@@ -7,7 +7,7 @@
 #include <QLineEdit>
 #include <QToolButton>
 
-class DuQFFolderSelectorWidget : public QWidget
+class DuFolderSelectorWidget : public QWidget
 {
     Q_OBJECT
 
@@ -15,7 +15,7 @@ public:
     enum SelectorType { Folder, File };
     enum SelectorMode {  Save, Open };
 
-    explicit DuQFFolderSelectorWidget(SelectorType type = Folder, QWidget *parent = nullptr);
+    explicit DuFolderSelectorWidget(SelectorType type = Folder, QWidget *parent = nullptr);
     QString path();
     void setPath(QString p);
     void setPlaceHolderText(QString t);
@@ -50,4 +50,4 @@ private:
     QString m_trashFolder = "";
 };
 
-#endif // DUQFFOLDERSELECTORWIDGET_H
+#endif // DUFOLDERSELECTORWIDGET_H

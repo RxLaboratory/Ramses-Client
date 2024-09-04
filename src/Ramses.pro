@@ -56,6 +56,7 @@ SOURCES += \
     dumodules/duwidgets/ducombobox.cpp \
     dumodules/duwidgets/dudocktitlewidget.cpp \
     dumodules/duwidgets/dudockwidget.cpp \
+    dumodules/duwidgets/dufolderselectorwidget.cpp \
     dumodules/duwidgets/duicon.cpp \
     dumodules/duwidgets/dulabel.cpp \
     dumodules/duwidgets/dulineedit.cpp \
@@ -189,7 +190,6 @@ SOURCES += \
     dumodules/duwidgets/duqfdoubleslider.cpp \
     dumodules/duwidgets/duqfdoublespinbox.cpp \
     dumodules/duwidgets/duqffolderdisplaywidget.cpp \
-    dumodules/duwidgets/duqffolderselectorwidget.cpp \
     dumodules/duwidgets/duqflistwidget.cpp \
     dumodules/duwidgets/duqfloggingtextedit.cpp \
     dumodules/duwidgets/duqflogtoolbutton.cpp \
@@ -234,7 +234,8 @@ SOURCES += \
     rammanagerwidgets/itemmanagerwidget.cpp \
     pipeline-editor/objectnode.cpp \
     pipeline-editor/pipelinewidget.cpp \
-    pipeline-editor/stepnode.cpp
+    pipeline-editor/stepnode.cpp \
+    wizards/projectwizard.cpp
 
 HEADERS += \
     dumodules/dugraph/dugraph.h \
@@ -254,6 +255,7 @@ HEADERS += \
     dumodules/duwidgets/ducombobox.h \
     dumodules/duwidgets/dudocktitlewidget.h \
     dumodules/duwidgets/dudockwidget.h \
+    dumodules/duwidgets/dufolderselectorwidget.h \
     dumodules/duwidgets/duicon.h \
     dumodules/duwidgets/dulabel.h \
     dumodules/duwidgets/dulineedit.h \
@@ -392,7 +394,6 @@ HEADERS += \
     dumodules/duwidgets/duqfdoubleslider.h \
     dumodules/duwidgets/duqfdoublespinbox.h \
     dumodules/duwidgets/duqffolderdisplaywidget.h \
-    dumodules/duwidgets/duqffolderselectorwidget.h \
     dumodules/duwidgets/duqflistwidget.h \
     dumodules/duwidgets/duqfloggingtextedit.h \
     dumodules/duwidgets/duqflogtoolbutton.h \
@@ -436,7 +437,8 @@ HEADERS += \
     rammanagerwidgets/itemmanagerwidget.h \
     pipeline-editor/objectnode.h \
     pipeline-editor/pipelinewidget.h \
-    pipeline-editor/stepnode.h
+    pipeline-editor/stepnode.h \
+    wizards/projectwizard.h
 
 FORMS += \
     dumodules/duwidgets/aboutdialog.ui \
