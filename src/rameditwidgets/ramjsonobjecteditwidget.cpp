@@ -1,6 +1,6 @@
 #include "ramjsonobjecteditwidget.h"
 
-#include <QRegExpValidator>
+#include <QRegularExpressionValidator>
 
 #include "duapp/duui.h"
 #include "duutils/utils.h"
@@ -36,25 +36,29 @@ void RamJsonObjectEditWidget::setupUi()
     QWidget *mainWidget = new QWidget(this);
     mainWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     ui_tabWidget->addTab(mainWidget, DuIcon(":/icons/status"), "");
-    ui_tabWidget->setTabToolTip(0, tr("Properties"));
+    ui_tabWidget->setTabToolTip(0, tr("General properties"));
 
     ui_mainLayout = DuUI::addBoxLayout(Qt::Vertical, mainWidget);
+
+    ui_mainLayout->addWidget(new QLabel("<b>" +
+                                        tr("General properties") +
+                                        "</b>"));
 
     ui_attributesLayout = DuUI::createFormLayout();
     DuUI::addBlock(ui_attributesLayout, ui_mainLayout);
 
     ui_nameEdit = new DuLineEdit(mainWidget);
     // Name validator
-    QRegExp rxn = RegExUtils::getRegExp("name");
-    QValidator *nameValidator = new QRegExpValidator(rxn, this);
+    QRegularExpression rxn = RegExUtils::getRegularExpression("name");
+    QValidator *nameValidator = new QRegularExpressionValidator(rxn, this);
     ui_nameEdit->setValidator(nameValidator);
 
     ui_attributesLayout->addRow(tr("Name"), ui_nameEdit);
 
     ui_shortNameEdit = new DuLineEdit(mainWidget);
     // Short Name validator
-    QRegExp rxsn = RegExUtils::getRegExp("shortname");
-    QValidator *shortNameValidator = new QRegExpValidator(rxsn, this);
+    QRegularExpression rxsn = RegExUtils::getRegularExpression("shortname");
+    QValidator *shortNameValidator = new QRegularExpressionValidator(rxsn, this);
     ui_shortNameEdit->setValidator(shortNameValidator);
 
     ui_attributesLayout->addRow(tr("ID"), ui_shortNameEdit);
@@ -67,18 +71,36 @@ void RamJsonObjectEditWidget::setupUi()
     ui_attributesLayout->addRow(tr("Color"), ui_colorSelector);
 
     ui_mainLayout->addStretch(1);
+
+    auto customWidget = new QWidget(this);
+    ui_tabWidget->addTab(customWidget, DuIcon(":/icons/settings"), "");
+    ui_tabWidget->setTabToolTip(1, tr("Custom settings"));
+
+    auto customLayout = DuUI::addBoxLayout(Qt::Vertical, customWidget);
+
+    customLayout->addWidget(new QLabel(
+        "<b>"+tr("Custom settings")+"</b>"
+        ));
+
+    ui_customSettingsEdit = new DuRichTextEdit(ui_tabWidget);
+    ui_customSettingsEdit->setUseMarkdown(false);
+    ui_customSettingsEdit->setPlaceholderText(tr("General settings"));
+    customLayout->addWidget(ui_customSettingsEdit);
 }
 
 void RamJsonObjectEditWidget::connectEvents()
 {
     connect(ui_shortNameEdit, &DuLineEdit::editingFinished,
-            this, [this] () {  emit dataChanged(data()); });
+            this, &RamJsonObjectEditWidget::emitDataChanged);
     connect(ui_nameEdit, &DuLineEdit::editingFinished,
-            this, [this] () {  emit dataChanged(data()); });
+            this, &RamJsonObjectEditWidget::emitDataChanged);
     connect(ui_commentEdit, &DuRichTextEdit::editingFinished,
-            this, [this] () {  emit dataChanged(data()); });
+            this, &RamJsonObjectEditWidget::emitDataChanged);
     connect(ui_colorSelector, &DuColorSelector::colorChanged,
-            this, [this] () {  emit dataChanged(data()); });
+            this, &RamJsonObjectEditWidget::emitDataChanged);
+
+    connect(ui_customSettingsEdit, &DuRichTextEdit::editingFinished,
+            this, &RamJsonObjectEditWidget::emitDataChanged);
 }
 
 void RamJsonObjectEditWidget::setRamObjectData(const QJsonObject &obj)
@@ -87,6 +109,7 @@ void RamJsonObjectEditWidget::setRamObjectData(const QJsonObject &obj)
     ui_shortNameEdit->setText(obj.value(RamAbstractObject::KEY_ShortName).toString(RamAbstractObject::DEFAULT_ShortName));
     ui_commentEdit->setMarkdown(obj.value(RamAbstractObject::KEY_Comment).toString());
     ui_colorSelector->setColor(obj.value(RamAbstractObject::KEY_Color).toString(RamAbstractObject::DEFAULT_Color));
+    ui_customSettingsEdit->setText(obj.value(RamAbstractObject::KEY_CustomSettings).toString( ));
 }
 
 QJsonObject RamJsonObjectEditWidget::ramObjectData() const
@@ -97,6 +120,12 @@ QJsonObject RamJsonObjectEditWidget::ramObjectData() const
     obj.insert(RamAbstractObject::KEY_ShortName, ui_shortNameEdit->text());
     obj.insert(RamAbstractObject::KEY_Comment, ui_commentEdit->toMarkdown());
     obj.insert(RamAbstractObject::KEY_Color, ui_colorSelector->color().name());
+    obj.insert(RamAbstractObject::KEY_CustomSettings, ui_customSettingsEdit->toPlainText());
 
     return obj;
+}
+
+void RamJsonObjectEditWidget::emitDataChanged()
+{
+    emit dataChanged(data());
 }

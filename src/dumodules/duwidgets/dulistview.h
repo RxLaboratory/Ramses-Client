@@ -22,6 +22,7 @@ private:
     QPoint m_initialDragPos;
     bool m_dragging = false;
     bool m_middlePressed = false;
+
 };
 
 #endif // DULISTVIEW_H

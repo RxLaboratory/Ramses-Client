@@ -4,6 +4,7 @@ QT       += core gui \
             svg
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+greaterThan(QT_MAJOR_VERSION, 5): QT += svgwidgets
 
 # On linux, it's more standard to use lower case names
 unix:!macx { TARGET = ramses }

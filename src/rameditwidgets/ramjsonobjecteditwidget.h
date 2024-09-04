@@ -3,6 +3,7 @@
 
 #include <QBoxLayout>
 #include <QFormLayout>
+#include <QJsonObject>
 
 #include "duwidgets/ducolorselector.h"
 #include "duwidgets/dulineedit.h"
@@ -18,6 +19,9 @@ public:
     virtual QJsonObject data() const;
     virtual void setData(const QJsonObject &obj);
 
+public slots:
+    void emitDataChanged();
+
 signals:
     void dataChanged(const QJsonObject &);
 
@@ -29,6 +33,7 @@ protected:
     DuLineEdit *ui_nameEdit;
     DuRichTextEdit *ui_commentEdit;
     DuColorSelector *ui_colorSelector;
+    DuRichTextEdit *ui_customSettingsEdit;
 
     void setRamObjectData(const QJsonObject &obj);
     QJsonObject ramObjectData() const;

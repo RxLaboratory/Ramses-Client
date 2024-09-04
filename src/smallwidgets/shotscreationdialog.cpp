@@ -1,4 +1,7 @@
 #include "shotscreationdialog.h"
+
+#include <QRegularExpressionValidator>
+
 #include "duutils/utils.h"
 
 #include "ramsequence.h"
@@ -17,16 +20,16 @@ ShotsCreationDialog::ShotsCreationDialog(RamProject *proj, QWidget *parent) :
     ui_sequenceBox->setObjectModel(m_project->sequences());
     ui_sequenceLayout->addWidget(ui_sequenceBox);
 
-    QRegExp rxsn = RegExUtils::getRegExp("shotshortname");
-    QRegExpValidator *vsn = new QRegExpValidator(rxsn);
+    QRegularExpression rxsn = RegExUtils::getRegularExpression("shotshortname");
+    QRegularExpressionValidator *vsn = new QRegularExpressionValidator(rxsn);
     ui_shortNameEdit->setValidator(vsn);
 
-    QRegExp rxn = RegExUtils::getRegExp("shotname");
-    QRegExpValidator *vn = new QRegExpValidator(rxn);
+    QRegularExpression rxn = RegExUtils::getRegularExpression("shotname");
+    QRegularExpressionValidator *vn = new QRegularExpressionValidator(rxn);
     ui_nameEdit->setValidator(vn);
 
-    QRegExp rxs = RegExUtils::getRegExp("shotnumber");
-    QRegExpValidator *vs = new QRegExpValidator(rxs);
+    QRegularExpression rxs = RegExUtils::getRegularExpression("shotnumber");
+    QRegularExpressionValidator *vs = new QRegularExpressionValidator(rxs);
     ui_nStartEdit->setValidator(vs);
     ui_nEndEdit->setValidator(vs);
 
@@ -62,7 +65,7 @@ void ShotsCreationDialog::create()
 
     int numDigits = getNumDigits();
 
-    if ( ui_shortNameEdit->text().count() > 9 + numDigits)
+    if ( ui_shortNameEdit->text().length() > 9 + numDigits)
     {
         QMessageBox::information(this, tr("Invalid ID"), tr("Sorry, the ID can't have more than 10 characters, including the number."));
         return;
@@ -128,8 +131,8 @@ int ShotsCreationDialog::getNumDigits()
 {
     QString startNumberStr = ui_nStartEdit->text();
     QString endNumberStr = ui_nEndEdit->text();
-    int numDigits = startNumberStr.count();
-    if (endNumberStr.count() > numDigits) numDigits = endNumberStr.count();
+    int numDigits = startNumberStr.length();
+    if (endNumberStr.length() > numDigits) numDigits = endNumberStr.length();
     if (numDigits == 0) return 3;
     return numDigits;
 }
@@ -139,7 +142,7 @@ QString ShotsCreationDialog::getShortName(int n)
     int numDigits = getNumDigits();
     if (n == -1) n = getMidNumber();
     QString num = QString::number(n);
-    while (num.count() < numDigits) num = "0" + num;
+    while (num.length() < numDigits) num = "0" + num;
     QString shortName = ui_shortNameEdit->text();
     if (shortName == "") shortName = ui_shortNameEdit->placeholderText();
     if (shortName.contains("%")) return shortName.replace("%", num);
@@ -151,7 +154,7 @@ QString ShotsCreationDialog::getName(int n)
     int numDigits = getNumDigits();
     if (n == -1) n = getMidNumber();
     QString num = QString::number(n);
-    while (num.count() < numDigits) num = "0" + num;
+    while (num.length() < numDigits) num = "0" + num;
     QString name = ui_nameEdit->text();
     if (name == "") name = ui_nameEdit->placeholderText();
     if (name.contains("%")) return name.replace("%", num);

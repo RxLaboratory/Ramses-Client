@@ -20,19 +20,50 @@ QVariant RamJsonObjectModel::data(const QModelIndex &index, int role) const
 
     switch(role) {
     case Qt::DisplayRole:
-        return obj.value(RamAbstractObject::KEY_Name).toString(RamAbstractObject::DEFAULT_Name);
+        return obj.value( RamAbstractObject::KEY_Name
+                         ).toString(RamAbstractObject::DEFAULT_Name);
     case Qt::ToolTipRole:
-        return obj.value(RamAbstractObject::KEY_Name).toString(RamAbstractObject::DEFAULT_Name) +
+        return obj.value( RamAbstractObject::KEY_Name
+                         ).toString(RamAbstractObject::DEFAULT_Name) +
                QStringLiteral("\n") +
-               obj.value(RamAbstractObject::KEY_ShortName).toString(RamAbstractObject::DEFAULT_ShortName);
+               obj.value( RamAbstractObject::KEY_ShortName
+                         ).toString(RamAbstractObject::DEFAULT_ShortName);
     case Qt::StatusTipRole:
-        return obj.value(RamAbstractObject::KEY_Name).toString(RamAbstractObject::DEFAULT_Name) +
+        return obj.value( RamAbstractObject::KEY_Name
+                         ).toString(RamAbstractObject::DEFAULT_Name) +
                QStringLiteral(" | ") +
-               obj.value(RamAbstractObject::KEY_ShortName).toString(RamAbstractObject::DEFAULT_ShortName);
+               obj.value( RamAbstractObject::KEY_ShortName
+                         ).toString(RamAbstractObject::DEFAULT_ShortName);
     case Qt::ForegroundRole:
         return QBrush(QColor(
-            obj.value(RamAbstractObject::KEY_Color).toString(RamAbstractObject::DEFAULT_Color)
+            obj.value( RamAbstractObject::KEY_Color
+                      ).toString(RamAbstractObject::DEFAULT_Color)
             ));
+    case Qt::EditRole:
+        return obj;
+    }
+
+    return QVariant();
+}
+
+QVariant RamJsonObjectModel::headerData(int section, Qt::Orientation orientation, int role) const
+{
+    if (role != Qt::DisplayRole)
+        return QVariant();
+
+    if (section < 0)
+        return QVariant();
+    if (section >= _objects.count())
+        return QVariant();
+
+    switch(orientation) {
+    case Qt::Vertical:
+        return object(section).value( RamAbstractObject::KEY_ShortName
+                                     ).toString(RamAbstractObject::DEFAULT_ShortName);
+    case Qt::Horizontal:
+        if (section == 0)
+            return tr("Item");
+        break;
     }
 
     return QVariant();
@@ -86,7 +117,7 @@ bool RamJsonObjectModel::moveRows(const QModelIndex &sourceParent, int sourceRow
         if (up)
             _objects.move(sourceRow+i, destinationChild+i);
         else
-            _objects.move(sourceRow, destinationChild);
+            _objects.move(sourceRow, destinationChild-1);
     }
 
     endMoveRows();

@@ -4,6 +4,7 @@
 #include "duwidgets/duicon.h"
 #include "duwidgets/dusvgiconengine.h"
 #include <QAction>
+#include <QWidget>
 
 class DuAction : public QAction
 {

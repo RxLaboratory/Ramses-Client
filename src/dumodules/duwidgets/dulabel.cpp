@@ -119,7 +119,7 @@ void DuLabel::paintEvent(QPaintEvent *e)
 
     // Center horizontally
     if (align.testFlag(Qt::AlignHCenter)) {
-        int w = fontMetrics.width(elidedLine);
+        int w = fontMetrics.horizontalAdvance(elidedLine);
         int moreWidth = width() - w;
         x = moreWidth / 2 + w;
     }

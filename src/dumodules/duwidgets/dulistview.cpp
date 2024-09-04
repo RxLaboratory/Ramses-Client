@@ -15,6 +15,7 @@ DuListView::DuListView(QWidget *parent):
     this->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
 }
 
+
 void DuListView::mouseMoveEvent(QMouseEvent *event)
 {
     if (!m_middlePressed) {

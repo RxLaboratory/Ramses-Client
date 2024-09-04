@@ -8,7 +8,7 @@
 #include <QVBoxLayout>
 #include <QWidget>
 #include <QShowEvent>
-#include <QRegExpValidator>
+#include <QRegularExpressionValidator>
 
 #include "duwidgets/durichtextedit.h"
 #include "qtabwidget.h"

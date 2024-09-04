@@ -129,9 +129,9 @@ void DuListModelEdit::setupUi(const QString &title)
     topLayout->addWidget(ui_addButton);
 
     ui_listView = new DuListView(this);
-    ui_listView->setDragDropMode(QAbstractItemView::NoDragDrop);
-    ui_listView->setDragEnabled(false);
-    ui_listView->setDefaultDropAction(Qt::IgnoreAction);
+    //ui_listView->horizontalHeader()->hide();
+    //ui_listView->setVerticalHeaderMoveData();
+    //ui_listView->verticalHeader()->setSectionsMovable(true);
     ui_listView->setModel(_model);
     layout->addWidget(ui_listView);
 
@@ -144,6 +144,7 @@ void DuListModelEdit::connectEvents()
     connect(ui_moveUpButton, &QToolButton::clicked, this, &DuListModelEdit::moveUp);
     connect(ui_moveDownButton, &QToolButton::clicked, this, &DuListModelEdit::moveDown);
     connect(ui_clearButton, &QToolButton::clicked, this, &DuListModelEdit::clear);
+    connect(ui_listView, &DuTableView::clicked, this, &DuListModelEdit::editing);
 
     connect(_model, &QAbstractItemModel::rowsInserted, this, &DuListModelEdit::updateList);
     connect(_model, &QAbstractItemModel::rowsRemoved, this, &DuListModelEdit::updateList);

@@ -208,9 +208,13 @@ void MainWindow::setPropertiesDockWidget(QWidget *w, QString title, QString icon
 {
     if (_propertiesWidgetIsTemporary) {
         QWidget *w = ui_propertiesDockWidget->widget();
-        if (w)
+        if (w) {
+            disconnect(w, nullptr, ui_propertiesDockWidget, nullptr);
             w->deleteLater();
+        }
     }
+
+    connect(w, &QWidget::destroyed, ui_propertiesDockWidget, &QDockWidget::hide);
 
     _propertiesWidgetIsTemporary = temporary;
     ui_propertiesDockWidget->setWidget( w );

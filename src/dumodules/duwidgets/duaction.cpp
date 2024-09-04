@@ -3,7 +3,7 @@
 #include <QApplication>
 
 DuAction::DuAction(QWidget *parent)
-    : QAction{parent}
+    : QAction(parent)
 {
     init(parent);
 }

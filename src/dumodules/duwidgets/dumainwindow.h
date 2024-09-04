@@ -58,10 +58,11 @@ public:
     // Override to set the title on the toolbar
     void setWindowTitle(const QString &title);
 
-    // OVerride to make them animatable
+    // Override to make them animatable
     void addDockWidget(Qt::DockWidgetArea area, QDockWidget *dockwidget);
     const QVector<QDockWidget *> &docks() const;
 
+    int execDialog(QDialog *dialog) const;
 
 public slots:
     /**

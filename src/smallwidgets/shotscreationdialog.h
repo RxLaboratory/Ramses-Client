@@ -2,7 +2,6 @@
 #define SHOTSCREATIONDIALOG_H
 
 #include <QDialog>
-#include <QRegExpValidator>
 
 #include "ui_shotscreationdialog.h"
 #include "ramproject.h"

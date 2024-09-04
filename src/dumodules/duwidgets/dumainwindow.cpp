@@ -46,6 +46,11 @@ const QVector<QDockWidget *> &DuMainWindow::docks() const
     return ui_docks;
 }
 
+int DuMainWindow::execDialog(QDialog *dialog) const
+{
+    return QGoodCentralWidget::execDialogWithWindow(dialog, const_cast<DuMainWindow*>(this), ui_goodCentralWidget);
+}
+
 void DuMainWindow::closeEvent(QCloseEvent *event)
 {
     DuSettings::i()->set(

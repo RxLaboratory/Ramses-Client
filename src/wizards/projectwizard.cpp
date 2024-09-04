@@ -17,11 +17,14 @@ ProjectWizard::ProjectWizard(bool team, QWidget *parent, Qt::WindowFlags flags):
 void ProjectWizard::editStep(const QModelIndex &index)
 {
     auto editor = new RamJsonStepEditWidget(this);
+    editor->setData(index.data(Qt::EditRole).toJsonObject());
 
     connect(editor, &RamJsonStepEditWidget::dataChanged,
             this, [this, index] (const QJsonObject &obj) {
         _steps->setData(index, obj);
     });
+    connect(this, &ProjectWizard::destroyed,
+            editor, &RamJsonStepEditWidget::deleteLater);
 
     // Show
     DuUI::appMainWindow()->setPropertiesDockWidget(
@@ -33,13 +36,13 @@ void ProjectWizard::editStep(const QModelIndex &index)
 
 void ProjectWizard::setupUi()
 {
-    this->addPage(
+    addPage(
         createPathsPage()
         );
-    this->addPage(
+    addPage(
         createProjectSettingsPage()
         );
-    this->addPage(
+    addPage(
         createPipelinePage()
         );
 }

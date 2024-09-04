@@ -32,6 +32,7 @@ void DuColorSelector::selectColor()
     cd.setCurrentColor(m_color);
     //cd.setWindowFlags(Qt::FramelessWindowHint);
     //cd.move(this->parentWidget()->parentWidget()->geometry().center().x()-cd.geometry().width()/2,this->parentWidget()->parentWidget()->geometry().center().y()-cd.geometry().height()/2);
+
     if (cd.exec())
     {
         m_color = cd.selectedColor();

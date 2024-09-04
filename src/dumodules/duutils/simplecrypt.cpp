@@ -93,7 +93,7 @@ QByteArray SimpleCrypt::encryptToByteArray(QByteArray plaintext)
         flags |= CryptoFlagCompression;
     } else if (m_compressionMode == CompressionAuto) {
         QByteArray compressed = qCompress(ba, 9);
-        if (compressed.count() < ba.count()) {
+        if (compressed.length() < ba.length()) {
             ba = compressed;
             flags |= CryptoFlagCompression;
         }
@@ -102,7 +102,11 @@ QByteArray SimpleCrypt::encryptToByteArray(QByteArray plaintext)
     QByteArray integrityProtection;
     if (m_protectionMode == ProtectionChecksum) {
         flags |= CryptoFlagChecksum;
-        QDataStream s(&integrityProtection, QIODevice::WriteOnly);
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
+        QDataStream s(&integrityProtection, QDataStream::WriteOnly);
+#else
+    QDataStream s(&integrityProtection, QIODevice::WriteOnly);
+#endif
         s << qChecksum(ba.constData(), ba.length());
     } else if (m_protectionMode == ProtectionHash) {
         flags |= CryptoFlagHash;
@@ -119,7 +123,7 @@ QByteArray SimpleCrypt::encryptToByteArray(QByteArray plaintext)
     int pos(0);
     char lastChar(0);
 
-    int cnt = ba.count();
+    int cnt = ba.length();
 
     while (pos < cnt) {
         ba[pos] = ba.at(pos) ^ m_keyParts.at(pos % 8) ^ lastChar;
@@ -187,7 +191,7 @@ QByteArray SimpleCrypt::decryptToByteArray(QByteArray cypher)
 
     QByteArray ba = cypher;
 
-    if( cypher.count() < 3 )
+    if( cypher.length() < 3 )
         return QByteArray();
 
     char version = ba.at(0);
@@ -202,7 +206,7 @@ QByteArray SimpleCrypt::decryptToByteArray(QByteArray cypher)
 
     ba = ba.mid(2);
     int pos(0);
-    int cnt(ba.count());
+    int cnt(ba.length());
     char lastChar = 0;
 
     while (pos < cnt) {
@@ -222,7 +226,11 @@ QByteArray SimpleCrypt::decryptToByteArray(QByteArray cypher)
         }
         quint16 storedChecksum;
         {
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
+            QDataStream s(&ba, QDataStream::ReadOnly);
+#else
             QDataStream s(&ba, QIODevice::ReadOnly);
+#endif
             s >> storedChecksum;
         }
         ba = ba.mid(2);

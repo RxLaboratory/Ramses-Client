@@ -22,7 +22,11 @@ QSize DuScrollBar::sizeHint() const
         return QSize(1, m_width);
 }
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 void DuScrollBar::enterEvent(QEvent *)
+#else
+void DuScrollBar::enterEvent(QEnterEvent *)
+#endif
 {
     m_sizeAnimation.setDirection(QAbstractAnimation::Forward);
     m_sizeAnimation.start();

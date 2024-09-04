@@ -166,7 +166,7 @@ void DuQFNodeView::keyReleaseEvent(QKeyEvent *event)
 
 void DuQFNodeView::mousePressEvent(QMouseEvent *event)
 {
-    if (event->button() == Qt::MidButton)
+    if (event->button() == Qt::MiddleButton)
     {
         m_mouseMiddlePressed = true;
         if (event->modifiers().testFlag(Qt::ControlModifier))
@@ -190,7 +190,7 @@ void DuQFNodeView::mousePressEvent(QMouseEvent *event)
 
 void DuQFNodeView::mouseReleaseEvent(QMouseEvent *event)
 {
-    if (event->button() == Qt::MidButton)
+    if (event->button() == Qt::MiddleButton)
     {
         m_mouseMiddlePressed = false;
         m_mouseTransformation = None;

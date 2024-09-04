@@ -80,10 +80,11 @@ void DuTableView::moveRowData(int logicalIndex, int oldVisualIndex, int newVisua
     Q_UNUSED(oldVisualIndex);
     // Restore the old header state
     this->verticalHeader()->restoreState(m_vheaderState);
+    if (newVisualIndex > oldVisualIndex)
+        newVisualIndex++;
     // Move in the model
     this->model()->moveRow(QModelIndex(), logicalIndex, QModelIndex(), newVisualIndex);
 }
-
 
 void DuTableView::moveColumnData(int logicalIndex, int oldVisualIndex, int newVisualIndex)
 {

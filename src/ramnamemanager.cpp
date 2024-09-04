@@ -58,7 +58,7 @@ QString RamNameManager::fileName() const
         QString v;
         if (m_state != "") v = m_state;
         QString vNum = QString::number( m_version );
-        while(vNum.count() < 3)
+        while(vNum.length() < 3)
             vNum = "0" + vNum;
         v += vNum;
         nameList << v;
@@ -85,7 +85,7 @@ bool RamNameManager::setFileName(QString name)
 {
 
     // remove trailing "/"
-    return setFileName(QFileInfo( name.replace(QRegExp("[\\/\\\\]$"), "") ));
+    return setFileName(QFileInfo( name.replace(QRegularExpression("[\\/\\\\]$"), "") ));
 }
 
 bool RamNameManager::setFileName(const QFileInfo &name)

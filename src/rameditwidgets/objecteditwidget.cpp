@@ -249,8 +249,8 @@ void ObjectEditWidget::setupUi()
     ui_mainFormLayout->addWidget(ui_nameEdit, 0, 1);
 
     // Name validator
-    QRegExp rxn = RegExUtils::getRegExp("name");
-    QValidator *nameValidator = new QRegExpValidator(rxn, this);
+    QRegularExpression rxn = RegExUtils::getRegularExpression("name");
+    QValidator *nameValidator = new QRegularExpressionValidator(rxn, this);
     ui_nameEdit->setValidator(nameValidator);
 
     ui_shortNameLabel = new QLabel("ID", mainWidget);
@@ -268,8 +268,8 @@ void ObjectEditWidget::setupUi()
     ui_mainFormLayout->addLayout(shortNameLayout, 1, 1);
 
     // Short Name validator
-    QRegExp rxsn = RegExUtils::getRegExp("shortname");
-    QValidator *shortNameValidator = new QRegExpValidator(rxsn, this);
+    QRegularExpression rxsn = RegExUtils::getRegularExpression("shortname");
+    QValidator *shortNameValidator = new QRegularExpressionValidator(rxsn, this);
     ui_shortNameEdit->setValidator(shortNameValidator);
 
     ui_commentLabel = new QLabel("Comment", mainWidget);
