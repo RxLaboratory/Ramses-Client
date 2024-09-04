@@ -1,29 +1,29 @@
-#include "duqftextedit.h"
+#include "durichtextedit.h"
 #include "duwidgets/duicon.h"
 #include "qevent.h"
 
-DuQFTextEdit::DuQFTextEdit(const QString &text, QWidget *parent):
+DuRichTextEdit::DuRichTextEdit(const QString &text, QWidget *parent):
     QTextEdit(text, parent)
 {
     setupUi();
     connectEvents();
 }
 
-DuQFTextEdit::DuQFTextEdit(QWidget *parent):
+DuRichTextEdit::DuRichTextEdit(QWidget *parent):
     QTextEdit(parent)
 {
     setupUi();
     connectEvents();
 }
 
-void DuQFTextEdit::focusOutEvent(QFocusEvent *event)
+void DuRichTextEdit::focusOutEvent(QFocusEvent *event)
 {
     Q_UNUSED(event);
     finishEditing();
     QTextEdit::focusOutEvent(event);
 }
 
-void DuQFTextEdit::keyPressEvent(QKeyEvent *event)
+void DuRichTextEdit::keyPressEvent(QKeyEvent *event)
 {
     int key = event->key();
     Qt::KeyboardModifiers mods = event->modifiers();
@@ -44,7 +44,7 @@ void DuQFTextEdit::keyPressEvent(QKeyEvent *event)
     QTextEdit::keyPressEvent(event);
 }
 
-void DuQFTextEdit::finishEditing()
+void DuRichTextEdit::finishEditing()
 {
     if (m_freezeValidation) return;
     // Remember cursor position to reset it
@@ -62,24 +62,24 @@ void DuQFTextEdit::finishEditing()
 
 }
 
-void DuQFTextEdit::setTextChanged()
+void DuRichTextEdit::setTextChanged()
 {
     m_changed = true;
 }
 
-void DuQFTextEdit::contextMenuHidden()
+void DuRichTextEdit::contextMenuHidden()
 {
     m_freezeValidation = false;
     if (!this->hasFocus()) finishEditing();
 }
 
-void DuQFTextEdit::contextMenuEvent(QContextMenuEvent *event)
+void DuRichTextEdit::contextMenuEvent(QContextMenuEvent *event)
 {
     m_freezeValidation = true;
     ui_contextMenu->popup(event->globalPos());
 }
 
-void DuQFTextEdit::setupUi()
+void DuRichTextEdit::setupUi()
 {
     ui_contextMenu = new DuMenu(this);
 
@@ -135,12 +135,12 @@ void DuQFTextEdit::setupUi()
     ui_contextMenu->addAction(ui_validate);
 }
 
-void DuQFTextEdit::setUseMarkdown(bool use)
+void DuRichTextEdit::setUseMarkdown(bool use)
 {
     m_useMarkdown = use;
 }
 
-void DuQFTextEdit::connectEvents()
+void DuRichTextEdit::connectEvents()
 {
     connect(this, SIGNAL(textChanged()), this, SLOT(setTextChanged()));
 
@@ -156,17 +156,17 @@ void DuQFTextEdit::connectEvents()
     connect(ui_contextMenu, SIGNAL(aboutToHide()), this, SLOT(contextMenuHidden()));
 }
 
-bool DuQFTextEdit::captureEnterKey() const
+bool DuRichTextEdit::captureEnterKey() const
 {
     return m_captureEnterKey;
 }
 
-void DuQFTextEdit::setCaptureEnterKey(bool newCaptureEnterKey)
+void DuRichTextEdit::setCaptureEnterKey(bool newCaptureEnterKey)
 {
     m_captureEnterKey = newCaptureEnterKey;
 }
 
-void DuQFTextEdit::showMarkdown()
+void DuRichTextEdit::showMarkdown()
 {
 #if (QT_VERSION < QT_VERSION_CHECK(5, 15, 0))
     return;
@@ -179,7 +179,7 @@ void DuQFTextEdit::showMarkdown()
 #endif
 }
 
-void DuQFTextEdit::showRichText()
+void DuRichTextEdit::showRichText()
 {
 #if (QT_VERSION < QT_VERSION_CHECK(5, 15, 0))
     return;
@@ -189,7 +189,7 @@ void DuQFTextEdit::showRichText()
 #endif
 }
 
-void DuQFTextEdit::pasteNoFormatting()
+void DuRichTextEdit::pasteNoFormatting()
 {
     bool acceptRichText = this->acceptRichText();
     this->setAcceptRichText(false);

@@ -60,9 +60,12 @@ SOURCES += \
     dumodules/duwidgets/duicon.cpp \
     dumodules/duwidgets/dulabel.cpp \
     dumodules/duwidgets/dulineedit.cpp \
+    dumodules/duwidgets/dulistmodeledit.cpp \
+    dumodules/duwidgets/dulistview.cpp \
     dumodules/duwidgets/dulistwidget.cpp \
     dumodules/duwidgets/dumainwindow.cpp \
     dumodules/duwidgets/dumenu.cpp \
+    dumodules/duwidgets/durichtextedit.cpp \
     dumodules/duwidgets/duscrollarea.cpp \
     dumodules/duwidgets/duscrollbar.cpp \
     dumodules/duwidgets/dushadow.cpp \
@@ -79,6 +82,8 @@ SOURCES += \
     progressmanager.cpp \
     projectmanager.cpp \
     rameditwidgets/objectupdateblocker.cpp \
+    rameditwidgets/ramjsonobjecteditwidget.cpp \
+    rameditwidgets/ramjsonstepeditwidget.cpp \
     rameditwidgets/scheduleentryeditwidget.cpp \
     rameditwidgets/scheduleroweditwidget.cpp \
     rammanagerwidgets/dbmanagerwidget.cpp \
@@ -96,6 +101,7 @@ SOURCES += \
     ramobjectmodels/ramabstractobjectmodel.cpp \
     ramobjectmodels/ramitemsortfilterproxymodel.cpp \
     ramobjectmodels/ramfilterlistproxymodel.cpp \
+    ramobjectmodels/ramjsonobjectmodel.cpp \
     ramobjectmodels/ramobjectmodel.cpp \
     ramobjectmodels/ramobjectsortfilterproxymodel.cpp \
     ramobjectmodels/ramscheduleentrymodel.cpp \
@@ -127,7 +133,6 @@ SOURCES += \
     dumodules/duwidgets/duqfsearchedit.cpp \
     dumodules/duwidgets/duqfservercombobox.cpp \
     dumodules/duwidgets/duqfsslcheckbox.cpp \
-    dumodules/duwidgets/duqftextedit.cpp \
     dumodules/duwidgets/duqftitlebar.cpp \
     dumodules/duwidgets/duqfupdatedialog.cpp \
     ramdatainterface/datacrypto.cpp \
@@ -259,9 +264,12 @@ HEADERS += \
     dumodules/duwidgets/duicon.h \
     dumodules/duwidgets/dulabel.h \
     dumodules/duwidgets/dulineedit.h \
+    dumodules/duwidgets/dulistmodeledit.h \
+    dumodules/duwidgets/dulistview.h \
     dumodules/duwidgets/dulistwidget.h \
     dumodules/duwidgets/dumainwindow.h \
     dumodules/duwidgets/dumenu.h \
+    dumodules/duwidgets/durichtextedit.h \
     dumodules/duwidgets/duscrollarea.h \
     dumodules/duwidgets/duscrollbar.h \
     dumodules/duwidgets/dushadow.h \
@@ -280,6 +288,8 @@ HEADERS += \
     projectmanager.h \
     ramdatainterface/datastruct.h \
     rameditwidgets/objectupdateblocker.h \
+    rameditwidgets/ramjsonobjecteditwidget.h \
+    rameditwidgets/ramjsonstepeditwidget.h \
     rameditwidgets/scheduleentryeditwidget.h \
     rameditwidgets/scheduleroweditwidget.h \
     rammanagerwidgets/dbmanagerwidget.h \
@@ -296,6 +306,7 @@ HEADERS += \
     ramobjectmodels/ramabstractobjectmodel.h \
     ramobjectmodels/ramitemsortfilterproxymodel.h \
     ramobjectmodels/ramfilterlistproxymodel.h \
+    ramobjectmodels/ramjsonobjectmodel.h \
     ramobjectmodels/ramobjectmodel.h \
     ramobjectmodels/ramobjectsortfilterproxymodel.h \
     ramobjectmodels/ramscheduleentrymodel.h \
@@ -330,7 +341,6 @@ HEADERS += \
     dumodules/duwidgets/duqfsearchedit.h \
     dumodules/duwidgets/duqfservercombobox.h \
     dumodules/duwidgets/duqfsslcheckbox.h \
-    dumodules/duwidgets/duqftextedit.h \
     dumodules/duwidgets/duqftitlebar.h \
     dumodules/duwidgets/duqfupdatedialog.h \
     progressbar.h \

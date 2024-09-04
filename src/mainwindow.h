@@ -43,7 +43,7 @@ public:
 
     explicit MainWindow(const QCommandLineParser &cli, QWidget *parent = nullptr);
 
-    void setPropertiesDockWidget(QWidget *w, QString title = "Properties", QString icon = ":/icons/asset");
+    void setPropertiesDockWidget(QWidget *w, QString title = "Properties", QString icon = ":/icons/asset", bool temporary = false);
 
 public slots:
     void hidePropertiesDock();
@@ -124,6 +124,8 @@ private:
     DuDockTitleWidget *ui_propertiesTitle;
     UserEditWidget *ui_userWidget;
     DuDockWidget *ui_userDockWidget;
+
+    bool _propertiesWidgetIsTemporary = false;;
 
     // ========= RxOT UI ==============
 

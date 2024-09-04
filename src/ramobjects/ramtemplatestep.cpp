@@ -2,6 +2,23 @@
 
 #include "templatestepeditwidget.h"
 
+// KEYS //
+
+const QString RamTemplateStep::KEY_StepType = QStringLiteral("type");
+const QString RamTemplateStep::KEY_PublishSettings = QStringLiteral("publishSettings");
+const QString RamTemplateStep::KEY_EstimationMethod = QStringLiteral("shortName");
+const QString RamTemplateStep::KEY_EstimationVeryEasy = QStringLiteral("estimationVeryEasy");
+const QString RamTemplateStep::KEY_EstimationEasy = QStringLiteral("estimationEasy");
+const QString RamTemplateStep::KEY_EstimationMedium = QStringLiteral("estimationMedium");
+const QString RamTemplateStep::KEY_EstimationHard = QStringLiteral("estimationHard");
+const QString RamTemplateStep::KEY_EstimationVeryHard = QStringLiteral("estimationVeryHard");
+
+const QString RamTemplateStep::ENUMVALUE_PreProd = QStringLiteral("pre");
+const QString RamTemplateStep::ENUMVALUE_Shot = QStringLiteral("shot");
+const QString RamTemplateStep::ENUMVALUE_Asset = QStringLiteral("asset");
+const QString RamTemplateStep::ENUMVALUE_PostProd = QStringLiteral("post");
+const QString RamTemplateStep::ENUMVALUE_Second = QStringLiteral("second");
+
 // STATIC //
 
 QFrame *RamTemplateStep::ui_editWidget = nullptr;
@@ -70,11 +87,11 @@ RamObjectModel *RamTemplateStep::applications() const
 
 RamTemplateStep::Type RamTemplateStep::type() const
 {
-    QString typeStr = getData("type").toString();
+    QString typeStr = getData(KEY_StepType).toString();
 
-    if (typeStr == "asset") return AssetProduction;
-    else if (typeStr == "shot") return ShotProduction;
-    else if (typeStr == "post") return PostProduction;
+    if (typeStr == ENUMVALUE_Asset) return AssetProduction;
+    else if (typeStr == ENUMVALUE_Shot) return ShotProduction;
+    else if (typeStr == ENUMVALUE_PostProd) return PostProduction;
     else return PreProduction;
 }
 
@@ -82,43 +99,43 @@ void RamTemplateStep::setType(const Type &type)
 {
     switch(type){
     case PreProduction:
-        insertData("type", "pre");
+        insertData(KEY_StepType, ENUMVALUE_PreProd);
         break;
     case AssetProduction:
-        insertData("type", "asset");
+        insertData(KEY_StepType, ENUMVALUE_Asset);
         break;
     case ShotProduction:
-        insertData("type", "shot");
+        insertData(KEY_StepType, ENUMVALUE_Shot);
         break;
     case PostProduction:
-        insertData("type", "post");
+        insertData(KEY_StepType, ENUMVALUE_PostProd);
         break;
     }
 }
 
 void RamTemplateStep::setType(QString type)
 {
-    insertData("type", type);
+    insertData(KEY_StepType, type);
 }
 
 QString RamTemplateStep::publishSettings() const
 {
-    return getData("publishSettings").toString();
+    return getData(KEY_PublishSettings).toString();
 }
 
 void RamTemplateStep::setPublishSettings(const QString &newPublishSettings)
 {
-    insertData("publishSettings", newPublishSettings);
+    insertData(KEY_PublishSettings, newPublishSettings);
 }
 
 float RamTemplateStep::estimationVeryHard() const
 {
-    return getData("estimationVeryHard").toDouble(4);
+    return getData(KEY_EstimationVeryHard).toDouble(4);
 }
 
 void RamTemplateStep::setEstimationVeryHard(float newEstimationVeryHard)
 {
-    insertData("estimationVeryHard", newEstimationVeryHard);
+    insertData(KEY_EstimationVeryHard, newEstimationVeryHard);
 }
 
 QString RamTemplateStep::iconName() const
@@ -162,48 +179,48 @@ void RamTemplateStep::edit(bool show)
 
 float RamTemplateStep::estimationHard() const
 {
-    return getData("estimationHard").toDouble(2);
+    return getData(KEY_EstimationHard).toDouble(2);
 }
 
 void RamTemplateStep::setEstimationHard(float newEstimationHard)
 {
-    insertData("estimationHard", newEstimationHard);
+    insertData(KEY_EstimationHard, newEstimationHard);
 }
 
 float RamTemplateStep::estimationMedium() const
 {
-    return getData("estimationMedium").toDouble(1);
+    return getData(KEY_EstimationMedium).toDouble(1);
 }
 
 void RamTemplateStep::setEstimationMedium(float newEstimationMedium)
 {
-    insertData("estimationMedium", newEstimationMedium);
+    insertData(KEY_EstimationMedium, newEstimationMedium);
 }
 
 float RamTemplateStep::estimationEasy() const
 {
-    return getData("estimationEasy").toDouble(0.5);
+    return getData(KEY_EstimationEasy).toDouble(0.5);
 }
 
 void RamTemplateStep::setEstimationEasy(float newEstimationEasy)
 {
-    insertData("estimationEasy", newEstimationEasy);
+    insertData(KEY_EstimationEasy, newEstimationEasy);
 }
 
 float RamTemplateStep::estimationVeryEasy() const
 {
-    return getData("estimationVeryEasy").toDouble(0.2);
+    return getData(KEY_EstimationVeryEasy).toDouble(0.2);
 }
 
 void RamTemplateStep::setEstimationVeryEasy(float newEstimationVeryEasy)
 {
-    insertData("estimationVeryEasy", newEstimationVeryEasy);
+    insertData(KEY_EstimationVeryEasy, newEstimationVeryEasy);
 }
 
 RamTemplateStep::EstimationMethod RamTemplateStep::estimationMethod() const
 {
-    QString methodStr = getData("estimationMethod").toString("shot");
-    if (methodStr == "shot") return EstimatePerShot;
+    QString methodStr = getData(KEY_EstimationMethod).toString(ENUMVALUE_Shot);
+    if (methodStr == ENUMVALUE_Shot) return EstimatePerShot;
     else return EstimatePerSecond;
 }
 
@@ -212,10 +229,10 @@ void RamTemplateStep::setEstimationMethod(const EstimationMethod &newEstimationM
     switch(newEstimationMethod)
     {
     case EstimatePerShot:
-        insertData("estimationMethod", "shot");
+        insertData(KEY_EstimationMethod, ENUMVALUE_Shot);
         break;
     case EstimatePerSecond:
-        insertData("estimationMethod", "second");
+        insertData(KEY_EstimationMethod, ENUMVALUE_Second);
         break;
     }
 }

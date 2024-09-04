@@ -538,7 +538,7 @@ void StepEditWidget::setupUi()
         "<b>"+tr("General settings")+"</b>"
         ));
 
-    ui_generalSettingsEdit = new DuQFTextEdit(ui_tabWidget);
+    ui_generalSettingsEdit = new DuRichTextEdit(ui_tabWidget);
     ui_generalSettingsEdit->setProperty("class", "duBlock");
     ui_generalSettingsEdit->setUseMarkdown(false);
     ui_generalSettingsEdit->setPlaceholderText(tr("General settings"));
@@ -556,7 +556,7 @@ void StepEditWidget::setupUi()
         "<b>"+tr("Publish settings")+"</b>"
         ));
 
-    ui_publishSettingsEdit = new DuQFTextEdit(ui_tabWidget);
+    ui_publishSettingsEdit = new DuRichTextEdit(ui_tabWidget);
     ui_publishSettingsEdit->setProperty("class", "duBlock");
     ui_publishSettingsEdit->setUseMarkdown(false);
     ui_publishSettingsEdit->setPlaceholderText(tr("Publish settings"));

@@ -86,7 +86,7 @@ void PipeFileEditWidget::setupUi()
         "<b>"+tr("Import settings")+"</b>"
         ));
 
-    ui_customSettingsEdit = new DuQFTextEdit();
+    ui_customSettingsEdit = new DuRichTextEdit();
     ui_customSettingsEdit->setProperty("class", "duBlock");
     ui_customSettingsEdit->setUseMarkdown(false);
     ui_customSettingsEdit->setUseMarkdown(false);

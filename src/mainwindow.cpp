@@ -204,8 +204,15 @@ void MainWindow::connectEvents()
     connect(qApp, &QCoreApplication::aboutToQuit, this, &MainWindow::onQuit);
 }
 
-void MainWindow::setPropertiesDockWidget(QWidget *w, QString title, QString icon)
+void MainWindow::setPropertiesDockWidget(QWidget *w, QString title, QString icon, bool temporary)
 {
+    if (_propertiesWidgetIsTemporary) {
+        QWidget *w = ui_propertiesDockWidget->widget();
+        if (w)
+            w->deleteLater();
+    }
+
+    _propertiesWidgetIsTemporary = temporary;
     ui_propertiesDockWidget->setWidget( w );
     ui_propertiesTitle->setTitle(title);
     ui_propertiesTitle->setIcon(icon);

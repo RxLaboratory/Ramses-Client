@@ -1,20 +1,20 @@
-#ifndef DUQFTEXTEDIT_H
-#define DUQFTEXTEDIT_H
+#ifndef DURICHTEXTEDIT_H
+#define DURICHTEXTEDIT_H
 
 #include "duwidgets/dumenu.h"
 #include <QTextEdit>
 
 /**
- * @brief The DuQFTextEdit class is a standard QTextEdit but with new signals:
+ * @brief The DuRichTextEdit class is a standard QTextEdit but with new signals:
  * editingFinished (using focusOut)
  * enterPressed (the keypad enter) if set to capture enter key
  */
-class DuQFTextEdit : public QTextEdit
+class DuRichTextEdit : public QTextEdit
 {
     Q_OBJECT
 public:
-    DuQFTextEdit(const QString &text, QWidget *parent = nullptr);
-    DuQFTextEdit(QWidget *parent = nullptr);
+    DuRichTextEdit(const QString &text, QWidget *parent = nullptr);
+    DuRichTextEdit(QWidget *parent = nullptr);
     bool captureEnterKey() const;
     void setCaptureEnterKey(bool newCaptureEnterKey);
     void setUseMarkdown(bool use);
@@ -54,4 +54,4 @@ private:
     bool m_useMarkdown = true;
 };
 
-#endif // DUQFTEXTEDIT_H
+#endif // DURICHTEXTEDIT_H

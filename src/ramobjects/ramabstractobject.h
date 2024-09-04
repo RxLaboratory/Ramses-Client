@@ -133,6 +133,21 @@ public:
     static QSet<RamAbstractObject*> invalidObjects();
     static void removeInvalidObjects();
 
+    // THE DATA KEYS and ENUM VALUES
+
+    static const QString KEY_ShortName;
+    static const QString KEY_Name;
+    static const QString KEY_Comment;
+    static const QString KEY_Color;
+    static const QString KEY_Order;
+    static const QString KEY_CustomSettings;
+
+    static const QString ENUMVALUE_None;
+
+    static const QString DEFAULT_Name;
+    static const QString DEFAULT_ShortName;
+    static const QString DEFAULT_Color;
+
     // METHODS //
 
     RamAbstractObject(QString shortName, QString name, ObjectType type, bool isVirtual = false);

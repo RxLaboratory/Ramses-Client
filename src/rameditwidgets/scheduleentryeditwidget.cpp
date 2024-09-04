@@ -96,7 +96,7 @@ void ScheduleEntryEditWidget::setupUi()
     ui_rowBox = new RamObjectComboBox(this);
     formLayout->addRow(tr("Row"), ui_rowBox);
 
-    ui_commentEdit = new DuQFTextEdit(this);
+    ui_commentEdit = new DuRichTextEdit(this);
     ui_commentEdit->setProperty("class", "duBlock");
     ui_commentEdit->setPlaceholderText("Comment...");
     ui_commentEdit->setMinimumHeight(30);
@@ -166,7 +166,7 @@ void ScheduleEntryEditWidget::connectEvents()
                 if (m_entry) m_entry->setRow(o);
             });
 
-    connect( ui_commentEdit, &DuQFTextEdit::editingFinished,
+    connect( ui_commentEdit, &DuRichTextEdit::editingFinished,
             this, [this] () {
         if (m_entry)
 #if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)

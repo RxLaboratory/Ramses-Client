@@ -10,7 +10,7 @@
 #include <QShowEvent>
 #include <QRegExpValidator>
 
-#include "duwidgets/duqftextedit.h"
+#include "duwidgets/durichtextedit.h"
 #include "qtabwidget.h"
 #include "ramobject.h"
 #include "duwidgets/duscrollarea.h"
@@ -61,7 +61,7 @@ protected:
     QLabel *ui_nameLabel;
     QLabel *ui_shortNameLabel;
     QLabel *ui_commentLabel;
-    DuQFTextEdit *ui_commentEdit;
+    DuRichTextEdit *ui_commentEdit;
     QToolButton *ui_lockShortNameButton;
     QVBoxLayout *ui_fileLayout;
     QWidget *ui_fileWidget;

@@ -1,12 +1,30 @@
 #include "ramabstractobject.h"
 
 #include "duapp/app-config.h"
+#include "duapp/dusettings.h"
 #include "qtextdocument.h"
 #include "ramuuid.h"
 #include "dbinterface.h"
 #include "ramses.h"
 #include "ramnamemanager.h"
 #include <cmath>
+
+// KEYS //
+
+const QString RamAbstractObject::KEY_ShortName = QStringLiteral("shortName");
+const QString RamAbstractObject::KEY_Name = QStringLiteral("name");
+const QString RamAbstractObject::KEY_Comment = QStringLiteral("comment");
+const QString RamAbstractObject::KEY_Color = QStringLiteral("color");
+const QString RamAbstractObject::KEY_Order = QStringLiteral("order");
+const QString RamAbstractObject::KEY_CustomSettings = QStringLiteral("customSettings");
+
+const QString RamAbstractObject::ENUMVALUE_None = QStringLiteral("none");
+
+const QString RamAbstractObject::DEFAULT_Name = QStringLiteral("No name");
+const QString RamAbstractObject::DEFAULT_ShortName = QStringLiteral("No-name");
+const QString RamAbstractObject::DEFAULT_Color = DuSettings::i()->get(
+                                                                      DuSettings::UI_ForegroundColor
+                                                                      ).value<QColor>().name();
 
 // STATIC //
 
@@ -262,12 +280,12 @@ void RamAbstractObject::insertData(QString key, QJsonValue value)
 
 QString RamAbstractObject::shortName() const
 {
-    return getData("shortName").toString("UNKNOWN");
+    return getData(KEY_ShortName).toString("UNKNOWN");
 }
 
 void RamAbstractObject::setShortName(const QString &shortName)
 {
-    insertData("shortName", shortName);
+    insertData(KEY_ShortName, shortName);
 }
 
 bool RamAbstractObject::validateShortName(const QString &shortName)
@@ -284,54 +302,54 @@ bool RamAbstractObject::validateShortName(const QString &shortName)
 
 QString RamAbstractObject::name() const
 {
-    return getData("name").toString("Unnamed");
+    return getData(KEY_Name).toString("Unnamed");
 }
 
 void RamAbstractObject::setName(const QString &name)
 {
-    insertData("name", name);
+    insertData(KEY_Name, name);
 }
 
 QString RamAbstractObject::comment() const
 {
-    return getData("comment").toString("");
+    return getData(KEY_Comment).toString("");
 }
 
 void RamAbstractObject::setComment(const QString &comment)
 {
-    insertData("comment", comment.trimmed());
+    insertData(KEY_Comment, comment.trimmed());
 }
 
 QColor RamAbstractObject::color() const
 {
-    QString colorName = getData("color").toString("");
+    QString colorName = getData(KEY_Color).toString("");
     if (colorName == "") return QColor(157,157,157);
     return QColor( colorName );
 }
 
 void RamAbstractObject::setColor(QColor color)
 {
-    insertData("color", color.name() );
+    insertData(KEY_Color, color.name() );
 }
 
 int RamAbstractObject::order() const
 {
-    return getData("order").toInt(0);
+    return getData(KEY_Order).toInt(0);
 }
 
 void RamAbstractObject::setOrder(int o)
 {
-    insertData("order", o);
+    insertData(KEY_Order, o);
 }
 
 QString RamAbstractObject::customSettings() const
 {
-    return getData("customSettings").toString();
+    return getData(KEY_CustomSettings).toString();
 }
 
 void RamAbstractObject::setCustomSettings(const QString &newGeneralSettings)
 {
-    insertData("customSettings", newGeneralSettings);
+    insertData(KEY_CustomSettings, newGeneralSettings);
 }
 
 DuIcon RamAbstractObject::icon() const

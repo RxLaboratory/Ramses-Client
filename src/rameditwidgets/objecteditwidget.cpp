@@ -275,7 +275,7 @@ void ObjectEditWidget::setupUi()
     ui_commentLabel = new QLabel("Comment", mainWidget);
     ui_mainFormLayout->addWidget(ui_commentLabel, 2, 0);
 
-    ui_commentEdit = new DuQFTextEdit(mainWidget);
+    ui_commentEdit = new DuRichTextEdit(mainWidget);
     ui_commentEdit->setMaximumHeight(80);
     ui_commentEdit->setObjectName("commentEdit");
     ui_mainFormLayout->addWidget(ui_commentEdit, 2, 1);

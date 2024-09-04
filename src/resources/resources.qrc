@@ -113,6 +113,7 @@
         <file alias="0140_QSplashScreen">styles/QSplashScreen.css</file>
         <file alias="0900_dropArea">styles/dropArea.css</file>
         <file alias="0130_QHeaderView">styles/QHeaderView.css</file>
+        <file alias="0001_QWizard">styles/QWizard.css</file>
     </qresource>
     <qresource prefix="/regex">
         <file alias="ramses-filename">regex/ramses_name.txt</file>

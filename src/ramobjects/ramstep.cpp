@@ -12,6 +12,10 @@
 #include "ramshot.h"
 #include "ramses.h"
 
+// KEYS //
+
+const QString RamStep::KEY_EstimationMultiplyGroup = QStringLiteral("estimationMultiplyGroup");
+
 // STATIC //
 
 QFrame *RamStep::ui_editWidget = nullptr;
@@ -88,15 +92,15 @@ RamProject *RamStep::project() const
 
 RamAssetGroup *RamStep::estimationMultiplyGroup() const
 {
-    return RamAssetGroup::get( getData("estimationMultiplyGroup").toString("none") );
+    return RamAssetGroup::get( getData(KEY_EstimationMultiplyGroup).toString(ENUMVALUE_None) );
 }
 
 void RamStep::setEstimationMultiplyGroup(RamObject *newEstimationMultiplyGroup)
 {
     if (newEstimationMultiplyGroup)
-        insertData("estimationMultiplyGroup", newEstimationMultiplyGroup->uuid() );
+        insertData(KEY_EstimationMultiplyGroup, newEstimationMultiplyGroup->uuid() );
     else
-        insertData("estimationMultiplyGroup", "none" );
+        insertData(KEY_EstimationMultiplyGroup, ENUMVALUE_None );
 }
 
 float RamStep::estimation(RamUser *user)

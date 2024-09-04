@@ -29,6 +29,10 @@ public:
     static RamStep *c(RamObject *o);
     static RamStep *createFromTemplate(RamTemplateStep *tempStep, RamProject *project);
 
+    // THE JSON DATA KEYS
+
+    static const QString KEY_EstimationMultiplyGroup;
+
     // METHODS //
 
     RamStep(QString shortName, QString name, RamProject *project);

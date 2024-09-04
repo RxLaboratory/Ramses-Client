@@ -710,7 +710,7 @@ void StatusEditWidget::setupUi()
     ui_userBox = new RamObjectComboBox(this);
     userLayout->addRow("Assigned user", ui_userBox);
 
-    ui_statusCommentEdit = new DuQFTextEdit(this);
+    ui_statusCommentEdit = new DuRichTextEdit(this);
     ui_statusCommentEdit->setProperty("class", "duBlock");
     ui_statusCommentEdit->setPlaceholderText("Comment...");
     ui_statusCommentEdit->setMinimumHeight(30);

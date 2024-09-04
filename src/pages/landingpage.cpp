@@ -31,16 +31,23 @@ void LandingPage::updateRecentList()
 
 void LandingPage::createLocalProject()
 {
+    // Necessary for the margins
+    auto dummy = new QWidget(this);
+    auto l = DuUI::addBoxLayout(Qt::Vertical, dummy);
+    ui_stackedLayout->addWidget(dummy);
+
     // Create a wizard and show it
     auto pz = new ProjectWizard();
-    ui_stackedLayout->addWidget(pz);
-    ui_stackedLayout->setCurrentIndex(1);
+    l->addWidget(pz);
 
     // Delete it when finished
-    connect(pz, &ProjectWizard::finished, this, [this,pz] () {
+    connect(pz, &ProjectWizard::finished, this, [this,pz,dummy] () {
         ui_stackedLayout->setCurrentIndex(0);
         pz->deleteLater();
+        dummy->deleteLater();
     });
+
+    ui_stackedLayout->setCurrentIndex(1);
 }
 
 void LandingPage::setupUi()

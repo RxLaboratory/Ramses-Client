@@ -1,13 +1,34 @@
 #include "projectwizard.h"
 
+#include <QLabel>
+
 #include "duapp/duui.h"
 #include "duapp/dusettings.h"
+#include "ramjsonstepeditwidget.h"
 
 ProjectWizard::ProjectWizard(bool team, QWidget *parent, Qt::WindowFlags flags):
     QWizard(parent, flags),
     _isTeamProject(team)
 {
     setupUi();
+    connectEvents();
+}
+
+void ProjectWizard::editStep(const QModelIndex &index)
+{
+    auto editor = new RamJsonStepEditWidget(this);
+
+    connect(editor, &RamJsonStepEditWidget::dataChanged,
+            this, [this, index] (const QJsonObject &obj) {
+        _steps->setData(index, obj);
+    });
+
+    // Show
+    DuUI::appMainWindow()->setPropertiesDockWidget(
+        editor,
+        tr("Step"),
+        ":/icons/step",
+        true);
 }
 
 void ProjectWizard::setupUi()
@@ -18,6 +39,15 @@ void ProjectWizard::setupUi()
     this->addPage(
         createProjectSettingsPage()
         );
+    this->addPage(
+        createPipelinePage()
+        );
+}
+
+void ProjectWizard::connectEvents()
+{
+    connect(ui_stepList, &DuListModelEdit::editing,
+            this, &ProjectWizard::editStep);
 }
 
 QWizardPage *ProjectWizard::createPathsPage()
@@ -67,6 +97,22 @@ QWizardPage *ProjectWizard::createProjectSettingsPage()
     ui_deadlineEdit->setCalendarPopup(true);
     ui_deadlineEdit->setDate( QDate::currentDate() );
     layout->addRow(tr("Deadline"), ui_deadlineEdit);
+
+    return page;
+}
+
+QWizardPage *ProjectWizard::createPipelinePage()
+{
+    auto page = new QWizardPage();
+    page->setTitle(tr("Production pipeline setup"));
+    page->setSubTitle(tr("To get started, let's add some production steps in the new project pipeline."));
+
+    auto layout = DuUI::createBoxLayout(Qt::Vertical);
+    DuUI::centerLayout(layout, page, 200);
+
+    _steps = new RamJsonObjectModel(this);
+    ui_stepList = new DuListModelEdit(tr("Production steps"), _steps, this);
+    layout->addWidget(ui_stepList);
 
     return page;
 }

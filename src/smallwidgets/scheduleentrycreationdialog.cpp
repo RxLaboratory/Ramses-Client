@@ -16,7 +16,7 @@ ScheduleEntryCreationDialog::ScheduleEntryCreationDialog(QWidget *parent) :
     ui_titleEdit->setPlaceholderText(tr("Short Title"));
     formLayout->addRow(tr("Title"), ui_titleEdit);
 
-    ui_commentEdit = new DuQFTextEdit(this);
+    ui_commentEdit = new DuRichTextEdit(this);
     ui_commentEdit->setUseMarkdown(true);
     ui_commentEdit->setPlaceholderText(tr("Add some details here.\nMarkdown supported."));
     formLayout->addRow(tr("Details"), ui_commentEdit);

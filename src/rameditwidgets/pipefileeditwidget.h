@@ -29,7 +29,7 @@ private:
 
     RamObjectComboBox *ui_fileTypeBox;
     //RamObjectListComboBox<RamObject*> *ui_colorSpaceBox;
-    DuQFTextEdit *ui_customSettingsEdit;
+    DuRichTextEdit *ui_customSettingsEdit;
 };
 
 #endif // PIPEFILEEDITWIDGET_H

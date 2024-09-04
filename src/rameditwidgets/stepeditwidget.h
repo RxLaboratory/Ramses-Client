@@ -63,8 +63,8 @@ private:
     QFormLayout *ui_difficultiesLayout;
     DuComboBox *ui_estimationTypeBox;
     QLabel *ui_estimationTypeLabel;
-    DuQFTextEdit *ui_publishSettingsEdit;
-    DuQFTextEdit *ui_generalSettingsEdit;
+    DuRichTextEdit *ui_publishSettingsEdit;
+    DuRichTextEdit *ui_generalSettingsEdit;
     AutoSelectDoubleSpinBox *ui_veryEasyEdit;
     AutoSelectDoubleSpinBox *ui_easyEdit;
     AutoSelectDoubleSpinBox *ui_mediumEdit;

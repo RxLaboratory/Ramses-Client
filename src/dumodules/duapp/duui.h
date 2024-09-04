@@ -1,6 +1,8 @@
 #ifndef DUUI_H
 #define DUUI_H
 
+#include "duwidgets/dumainwindow.h"
+#include "mainwindow.h"
 #include <QCommandLineParser>
 #include <QStackedLayout>
 #include <QMainWindow>
@@ -96,7 +98,7 @@ public:
 
     // UTILS
 
-    static QMainWindow *appMainWindow();
+    static MainWindow *appMainWindow();
 
     // UI Creation
 
@@ -120,7 +122,7 @@ public:
     static QStackedLayout *addStackedLayout(QWidget *parent);
     static QStackedLayout *addStackedLayout(QBoxLayout *parent);
 
-    static void centerLayout(QLayout *child, QWidget *parent);
+    static void centerLayout(QLayout *child, QWidget *parent, int vstretch = 100, int hstretch = 100);
 
     static QWidget *addBlock(QLayout *child, QBoxLayout *parent);
 
@@ -129,6 +131,7 @@ protected:
     const static QRegularExpression _cssPxValRE;
     static QHash<QString,QString> _cssVars;
     static qreal _desktopScale;
+    static MainWindow *_mw;
 
     DuUI();
 

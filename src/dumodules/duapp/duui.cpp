@@ -9,6 +9,7 @@ QHash<QString,QString> DuUI::_cssVars = QHash<QString,QString>();
 const QRegularExpression DuUI::_cssVarsRE = QRegularExpression("(@[a-zA-Z0-9-]+)\\s*=\\s*(\\S+)");
 const QRegularExpression DuUI::_cssPxValRE = QRegularExpression("(\\d+)px");
 qreal DuUI::_desktopScale = -1;
+MainWindow *DuUI::_mw = nullptr;
 
 DuUI::DuUI()
 {
@@ -31,19 +32,19 @@ void DuUI::buildUI(const QCommandLineParser &cli, DuSplashScreen *s)
 {
     s->newMessage("Building UI");
 
-    MainWindow *w = new MainWindow( cli );
+    _mw = new MainWindow( cli );
 
     // Restore Geometry and state
-    w->restoreGeometry( DuSettings::i()->get(DuSettings::UI_WindowGeometry).toByteArray() );
-    w->restoreState( DuSettings::i()->get(DuSettings::UI_WindowState).toByteArray() );
+    _mw->restoreGeometry( DuSettings::i()->get(DuSettings::UI_WindowGeometry).toByteArray() );
+    _mw->restoreState( DuSettings::i()->get(DuSettings::UI_WindowState).toByteArray() );
     // But hide the docks for a cleaner look
-    w->hideAllDocks();
+    _mw->hideAllDocks();
 
     //if (!cli.isSet("no_ui"))
-    w->show();
+    _mw->show();
 
     //hide splash when finished
-    s->finish(w);
+    s->finish(_mw);
 }
 
 QString DuUI::css(const QString &cssClass, bool loadSettings)
@@ -378,17 +379,9 @@ QColor DuUI::toForegroundValue(const QColor &color)
     return QColor::fromHsv(color.hue(), color.saturation(), fgCol.value());
 }
 
-QMainWindow *DuUI::appMainWindow()
+MainWindow *DuUI::appMainWindow()
 {
-    foreach(QWidget *w, qApp->allWidgets())
-    {
-        if (w->inherits("MainWindow"))
-        {
-            QMainWindow *mw = qobject_cast<QMainWindow*>(w);
-            if (mw) return mw;
-        }
-    }
-    return nullptr;
+    return _mw;
 }
 
 void DuUI::setupLayout(QLayout *layout, bool isSubLayout)
@@ -501,15 +494,18 @@ QStackedLayout *DuUI::addStackedLayout(QBoxLayout *parent)
     return layout;
 }
 
-void DuUI::centerLayout(QLayout *child, QWidget *parent)
+void DuUI::centerLayout(QLayout *child, QWidget *parent, int vstretch, int hstretch)
 {
     auto hLayout = DuUI::addBoxLayout(Qt::Horizontal, parent);
-    hLayout->addStretch();
+    hLayout->addStretch(100);
     auto vLayout = DuUI::addBoxLayout(Qt::Vertical, hLayout);
-    vLayout->addStretch();
+    vLayout->addStretch(100);
     vLayout->addLayout(child);
-    vLayout->addStretch();
-    hLayout->addStretch();
+    vLayout->addStretch(100);
+    hLayout->addStretch(100);
+
+    vLayout->setStretch(1, vstretch);
+    hLayout->setStretch(1, hstretch);
 }
 
 QWidget *DuUI::addBlock(QLayout *child, QBoxLayout *parent)

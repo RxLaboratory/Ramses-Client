@@ -5,7 +5,7 @@
 #include <QDialog>
 
 #include "duwidgets/dulineedit.h"
-#include "duwidgets/duqftextedit.h"
+#include "duwidgets/durichtextedit.h"
 
 class ScheduleEntryCreationDialog : public QDialog
 {
@@ -18,7 +18,7 @@ public:
 
 private:
     DuLineEdit *ui_titleEdit;
-    DuQFTextEdit *ui_commentEdit;
+    DuRichTextEdit *ui_commentEdit;
     QDialogButtonBox *ui_buttonBox;
 };
 

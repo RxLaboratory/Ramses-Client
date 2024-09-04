@@ -1,0 +1,25 @@
+
+QWidget QWizard {
+    border-radius: @radius;
+    margin: @margin;
+}
+
+QWidget QWizard > QWidget {
+    background: @background-push;
+}
+
+QWidget QWizard > QWidget > QWidget {
+    background: @background-push;
+}
+
+QWidget QWizard > QWidget > QPushButton {
+    background: @background-push;
+}
+
+QWidget QWizard > QWidget > QPushButton {
+    background-color: @background-pull;
+}
+
+QWidget QWizard > QWidget > QPushButton:disabled {
+    background-color: transparent;
+}

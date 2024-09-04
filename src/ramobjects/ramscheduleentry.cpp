@@ -174,7 +174,7 @@ QString RamScheduleEntry::iconName() const
 {
     RamStep *s = this->step();
     if (!s)
-        return RamObject::iconName();;
+        return RamObject::iconName();
 
     switch( s->type() )
     {
@@ -187,6 +187,7 @@ QString RamScheduleEntry::iconName() const
     case RamStep::PostProduction:
         return ":/icons/film";
     }
+    return "";
 }
 
 QColor RamScheduleEntry::color() const

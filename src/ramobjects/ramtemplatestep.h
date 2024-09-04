@@ -36,6 +36,23 @@ public:
     static RamTemplateStep *get(QString uuid);
     static RamTemplateStep *c(RamObject *o);
 
+    // THE JSON DATA KEYS and ENUM VALUES
+
+    static const QString KEY_StepType;
+    static const QString KEY_PublishSettings;
+    static const QString KEY_EstimationMethod;
+    static const QString KEY_EstimationVeryEasy;
+    static const QString KEY_EstimationEasy;
+    static const QString KEY_EstimationMedium;
+    static const QString KEY_EstimationHard;
+    static const QString KEY_EstimationVeryHard;
+
+    static const QString ENUMVALUE_PreProd;
+    static const QString ENUMVALUE_Shot;
+    static const QString ENUMVALUE_Asset;
+    static const QString ENUMVALUE_PostProd;
+    static const QString ENUMVALUE_Second;
+
     // OTHER METHODS //
 
     explicit RamTemplateStep(QString shortName, QString name, ObjectType type = TemplateStep);

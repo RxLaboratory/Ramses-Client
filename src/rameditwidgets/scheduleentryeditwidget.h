@@ -5,7 +5,7 @@
 
 #include "duwidgets/dulineedit.h"
 #include "duwidgets/duqfcolorselector.h"
-#include "duwidgets/duqftextedit.h"
+#include "duwidgets/durichtextedit.h"
 #include "qdatetimeedit.h"
 #include "ramobjectcombobox.h"
 #include "ramuser.h"
@@ -30,7 +30,7 @@ private:
     RamObjectComboBox *ui_stepBox;
     QDateEdit *ui_dateEdit;
     RamObjectComboBox *ui_rowBox;
-    DuQFTextEdit *ui_commentEdit;
+    DuRichTextEdit *ui_commentEdit;
     QToolButton *ui_removeButton;
 
     QPointer<RamScheduleEntry> m_entry;

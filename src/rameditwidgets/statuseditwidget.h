@@ -9,7 +9,7 @@
 #include <QSplitter>
 
 #include "duwidgets/ducombobox.h"
-#include "duwidgets/duqftextedit.h"
+#include "duwidgets/durichtextedit.h"
 #include "duwidgets/duqfspinbox.h"
 #include "duwidgets/autoselectspinbox.h"
 #include "duwidgets/autoselectdoublespinbox.h"
@@ -76,7 +76,7 @@ private:
     AutoSelectSpinBox *ui_versionBox;
     QDateEdit *ui_dueDateEdit;
     QCheckBox *ui_useDueDateBox;
-    DuQFTextEdit *ui_statusCommentEdit;
+    DuRichTextEdit *ui_statusCommentEdit;
     QToolButton *ui_revertButton;
     QCheckBox *ui_publishedBox;
     RamObjectComboBox *ui_userBox;
