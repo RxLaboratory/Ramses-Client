@@ -89,7 +89,7 @@ MainWindow::MainWindow(const QCommandLineParser &cli, QWidget *parent) :
         QFileInfo argInfo(filePath);
         if (argInfo.exists() && argInfo.suffix().toLower() == "ramses")
         {
-            ProjectManager::i()->setProject(filePath);
+            ProjectManager::i()->openDatabase(filePath);
             break;
         }
     }
@@ -104,13 +104,13 @@ void MainWindow::connectEvents()
     connect(ProgressManager::instance(), &ProgressManager::freezeUI, this, &MainWindow::freezeUI);
 
     // Project
-    connect(ProjectManager::i(), &ProjectManager::projectChanged,
+    connect(ProjectManager::i(), &ProjectManager::databaseChanged,
             this, [this] () { setPage(Home); } );
 
     // Toolbar buttons
     connect(m_actionLogIn,&DuAction::triggered,
             this, [this] () { setPage(Landing); } );
-    connect(m_actionLogOut, &QAction::triggered, ProjectManager::i(), &ProjectManager::closeProject);
+    connect(m_actionLogOut, &QAction::triggered, ProjectManager::i(), &ProjectManager::closeDatabase);
     connect(m_actionSetOnline, &QAction::triggered, this, &MainWindow::setOnlineAction);
     connect(m_actionSetOffline, &QAction::triggered, this, &MainWindow::setOfflineAction);
     connect(m_actionDatabaseSettings, &QAction::triggered, this, &MainWindow::databaseSettingsAction);

@@ -85,6 +85,7 @@
         <file alias="users90">icons/users90.svg</file>
         <file alias="app">icons/ramses-icon-small.svg</file>
         <file alias="ramses-file">icons/ramses-file.svg</file>
+        <file alias="help-button">icons/help-button.svg</file>
     </qresource>
     <qresource prefix="/styles">
         <file alias="vars">styles/style-values.rui</file>

@@ -68,6 +68,7 @@ public:
 
     EstimationMethod estimationMethod() const;
     void setEstimationMethod(const EstimationMethod &newEstimationMethod);
+    void setEstimationMethod(const QString &newEstimationMethod);
 
     float estimationVeryEasy() const;
     void setEstimationVeryEasy(float newEstimationVeryEasy);

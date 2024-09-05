@@ -93,7 +93,7 @@ void RamJsonStepEditWidget::setupUi()
     ui_typeBox->addItem(DuIcon(":/icons/asset"), "        Asset Production", RamTemplateStep::ENUMVALUE_Asset);
     ui_typeBox->addItem(DuIcon(":/icons/shot"), "        Shot Production", RamTemplateStep::ENUMVALUE_Shot);
     ui_typeBox->addItem(DuIcon(":/icons/film"), "        Post-Production", RamTemplateStep::ENUMVALUE_PostProd);
-    ui_attributesLayout->insertRow(0, tr("Type"), ui_typeBox);
+    ui_propertiesWidget->attributesLayout()->insertRow(0, tr("Type"), ui_typeBox);
 
     auto estimWidget = new QWidget(this);
     ui_tabWidget->insertTab(1, estimWidget, DuIcon(":/icons/stats"), "");

@@ -237,6 +237,11 @@ void RamTemplateStep::setEstimationMethod(const EstimationMethod &newEstimationM
     }
 }
 
+void RamTemplateStep::setEstimationMethod(const QString &newEstimationMethod)
+{
+    insertData(KEY_EstimationMethod, newEstimationMethod);
+}
+
 // PROTECTED //
 
 void RamTemplateStep::construct()

@@ -13,7 +13,7 @@ ProjectManager *ProjectManager::i()
     return _instance;
 }
 
-QStringList ProjectManager::recentProjects() const
+QStringList ProjectManager::recentDatabases() const
 {
     QStringList projects;
 
@@ -27,18 +27,18 @@ QStringList ProjectManager::recentProjects() const
     return projects;
 }
 
-void ProjectManager::setProject(const QString &projectPath)
+void ProjectManager::openDatabase(const QString &dbPath)
 {
-    if (!QFileInfo::exists(projectPath))
+    if (!QFileInfo::exists(dbPath))
         return;
 
     // If there is a current project, just restart the app passing the new project as argument.
     if (_currentProject != "") {
-        StateManager::i()->restart(true, projectPath);
+        StateManager::i()->restart(true, dbPath);
         return;
     }
 
-    _currentProject = projectPath;
+    _currentProject = dbPath;
 
     auto pm = ProgressManager::instance();
     pm->setMaximum(-1);
@@ -47,12 +47,12 @@ void ProjectManager::setProject(const QString &projectPath)
     pm->freeze(true);
 
     // Set database
-    DBInterface::instance()->setDataFile( projectPath );
+    DBInterface::instance()->setDataFile( dbPath );
 
     pm->setText(tr("Preparing sync..."));
 
     // Save the recent list
-    addToRecentList(projectPath);
+    addToRecentList(dbPath);
 
     // Trigger a full sync
     if (RamServerInterface::instance()->isOnline())
@@ -60,15 +60,37 @@ void ProjectManager::setProject(const QString &projectPath)
 
     pm->setText(tr("Project ready!"));
 
-    emit projectChanged(projectPath);
+    emit databaseChanged(dbPath);
     ProgressManager::instance()->freeze(false);
 }
 
-void ProjectManager::closeProject()
+void ProjectManager::loadDatabase(const QString &dbPath)
+{
+    // Set database
+    DBInterface::instance()->setDataFile( dbPath, true );
+    // Save the recent list
+    addToRecentList(dbPath);
+}
+
+void ProjectManager::closeDatabase()
 {
     // If there is a current project, just restart the app without arguments.
     if (_currentProject != "")
         StateManager::i()->restart(true);
+}
+
+bool ProjectManager::createDatabase(const QString &filePath, const QString &projectWorkingFolder)
+{
+    // Copy the file
+    FileUtils::copy(":/data/template", filePath);
+
+    if (!QFileInfo::exists(filePath))
+        return false;
+
+    // Save Ramses Path
+    LocalDataInterface::setRamsesPath(filePath, projectWorkingFolder);
+
+    return true;
 }
 
 ProjectManager::ProjectManager(QObject *parent)
@@ -84,7 +106,7 @@ void ProjectManager::addToRecentList(const QString &projectPath)
     QHash<QString,QVariant> recentProject = {{ "path", projectPath }};
     recentList << recentProject;
 
-    const QStringList &savedRecent = recentProjects();
+    const QStringList &savedRecent = recentDatabases();
     for (const auto &p: savedRecent) {
         if (  projectInfo == QFileInfo(p) )
             continue;

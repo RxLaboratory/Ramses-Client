@@ -1,14 +1,15 @@
-
 QWidget QWizard {
     border-radius: @radius;
     margin: @margin;
 }
 
 QWidget QWizard > QWidget {
+    border-radius: @radius;
     background: @background-push;
 }
 
 QWidget QWizard > QWidget > QWidget {
+    border-radius: @radius;
     background: @background-push;
 }
 

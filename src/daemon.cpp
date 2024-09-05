@@ -120,7 +120,7 @@ void Daemon::reply(QString request, QTcpSocket *client)
         StateManager::i()->quit();
 
     else if (args.contains("open"))
-        ProjectManager::i()->setProject(args.value("file"));
+        ProjectManager::i()->openDatabase(args.value("file"));
 
     else if (args.contains("getCurrentProject"))
         getCurrentProject(client);

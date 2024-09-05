@@ -51,6 +51,7 @@ SOURCES += \
     dumodules/duapp/dustyle.cpp \
     dumodules/duapp/duui.cpp \
     dumodules/duutils/ducolorutils.cpp \
+    dumodules/duutils/dusystemutils.cpp \
     dumodules/duutils/stringutils.cpp \
     dumodules/duwidgets/duaction.cpp \
     dumodules/duwidgets/ducolorselector.cpp \
@@ -85,6 +86,7 @@ SOURCES += \
     rameditwidgets/objectupdateblocker.cpp \
     rameditwidgets/ramjsonobjecteditwidget.cpp \
     rameditwidgets/ramjsonstepeditwidget.cpp \
+    rameditwidgets/ramobjectpropertieswidget.cpp \
     rameditwidgets/scheduleentryeditwidget.cpp \
     rameditwidgets/scheduleroweditwidget.cpp \
     rammanagerwidgets/dbmanagerwidget.cpp \
@@ -241,7 +243,9 @@ SOURCES += \
     pipeline-editor/objectnode.cpp \
     pipeline-editor/pipelinewidget.cpp \
     pipeline-editor/stepnode.cpp \
-    wizards/projectwizard.cpp
+    wizards/projectwizard.cpp \
+    wizards/ramobjectpropertieswizardpage.cpp \
+    wizards/ramprojectpathspage.cpp
 
 HEADERS += \
     dumodules/dugraph/dugraph.h \
@@ -255,6 +259,7 @@ HEADERS += \
     dumodules/duapp/duui.h \
     dumodules/duutils/colorutils.h \
     dumodules/duutils/ducolorutils.h \
+    dumodules/duutils/dusystemutils.h \
     dumodules/duutils/stringutils.h \
     dumodules/duwidgets/duaction.h \
     dumodules/duwidgets/ducolorselector.h \
@@ -291,6 +296,7 @@ HEADERS += \
     rameditwidgets/objectupdateblocker.h \
     rameditwidgets/ramjsonobjecteditwidget.h \
     rameditwidgets/ramjsonstepeditwidget.h \
+    rameditwidgets/ramobjectpropertieswidget.h \
     rameditwidgets/scheduleentryeditwidget.h \
     rameditwidgets/scheduleroweditwidget.h \
     rammanagerwidgets/dbmanagerwidget.h \
@@ -449,7 +455,9 @@ HEADERS += \
     pipeline-editor/objectnode.h \
     pipeline-editor/pipelinewidget.h \
     pipeline-editor/stepnode.h \
-    wizards/projectwizard.h
+    wizards/projectwizard.h \
+    wizards/ramobjectpropertieswizardpage.h \
+    wizards/ramprojectpathspage.h
 
 FORMS += \
     dumodules/duwidgets/aboutdialog.ui \

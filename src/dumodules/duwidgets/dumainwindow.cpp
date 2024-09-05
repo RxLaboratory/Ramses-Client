@@ -303,6 +303,7 @@ void DuMainWindow::setStyle()
 {
     // Extact fonts
     DuUI::addApplicationFonts();
+
     // Set CSS
     DuUI::setAppCss( DuUI::css() );
     DuUI::setAppToolButtonStyle(
@@ -310,6 +311,14 @@ void DuMainWindow::setStyle()
             DuSettings::i()->get(DuSettings::UI_ToolButtonStyle).toInt()
             )
         );
+
+    // Remove lines on QWizard
+    QPalette p(qApp->palette());
+    p.setColor(
+        QPalette::Mid,
+        DuSettings::i()->get(DuSettings::UI_BackgroundColor).value<QColor>()
+        );
+    qApp->setPalette(p);
 
     updateWindow();
 }

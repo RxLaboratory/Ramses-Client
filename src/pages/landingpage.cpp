@@ -22,7 +22,7 @@ LandingPage::LandingPage(QWidget *parent)
 void LandingPage::updateRecentList()
 {
     ui_recentBox->clear();
-    const QStringList projects = ProjectManager::i()->recentProjects();
+    const QStringList projects = ProjectManager::i()->recentDatabases();
     for(const auto &project: projects) {
         QFileInfo f(project);
         ui_recentBox->addItem(f.completeBaseName(), project);
@@ -127,7 +127,7 @@ void LandingPage::connectEvents()
 
     connect(ui_openRecentProjectButton, &QToolButton::clicked,
             this, [this] () {
-        ProjectManager::i()->setProject(ui_recentBox->currentData().toString());
+        ProjectManager::i()->openDatabase(ui_recentBox->currentData().toString());
     });
 
     connect(ui_openProjectButton, &QPushButton::clicked,
@@ -138,7 +138,7 @@ void LandingPage::connectEvents()
             "",
             "Ramses Project (*.ramses);;SQLite (*.sqlite);;All Files (*.*)");
         if (p == "") return;
-        ProjectManager::i()->setProject(p);
+        ProjectManager::i()->openDatabase(p);
     });
 
     connect(ui_createLocalProjectButton, &QPushButton::clicked,

@@ -7,6 +7,24 @@ const QString RamNameManager::AssetType = "A";
 const QString RamNameManager::GeneralType = "G";
 const QString RamNameManager::MetaDataFileName = "_ramses_data.json";
 
+QString RamNameManager::nameToShortName(const QString &name, const QString &prefix)
+{
+    QString p;
+    if (name.startsWith('0') ||
+        name.startsWith('1') ||
+        name.startsWith('1') ||
+        name.startsWith('1') ||
+        name.startsWith('1') ||
+        name.startsWith('1') ||
+        name.startsWith('1') ||
+        name.startsWith('1') ||
+        name.startsWith('1') ||
+        name.startsWith('1') )
+        p = prefix;
+
+    return p + name.left(10).replace(" ", "");
+}
+
 RamNameManager::RamNameManager()
 {
     init();

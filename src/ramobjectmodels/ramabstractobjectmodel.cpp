@@ -209,18 +209,17 @@ void RamAbstractObjectModel::removeObjectFromLookUp(QString uuid)
     while (i != m_lookUpTables.end())
     {
         // Remove from lookup table
-        QMultiHash<QString,QString>::iterator j = i.value().begin();
-        while (j != i.value().end())
-        {
-            if (j.value() == uuid) i.value().remove(j.key());
-            ++j;
-        }
-        /*QMutableHashIterator<QString, QString> it(i.value());
+#if QT_VERSION < QT_VERSION_CHECK(6,0,0)
+        QMutableHashIterator<QString, QString> it(i.value());
+#else
+        QMutableMultiHashIterator<QString, QString> it(i.value());
+#endif
         while (it.hasNext())
         {
             it.next();
             if (it.value() == uuid) it.remove();
-        }*/
+        }
+
         ++i;
     }
 }

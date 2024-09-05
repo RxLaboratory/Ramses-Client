@@ -13,14 +13,16 @@ class ProjectManager : public QObject
 public:
     static ProjectManager *i();
 
-    QStringList recentProjects() const;
+    QStringList recentDatabases() const;
 
 public slots:
-    void setProject(const QString &projectPath);
-    void closeProject();
+    void openDatabase(const QString &dbPath);
+    void loadDatabase(const QString &dbPath);
+    void closeDatabase();
+    bool createDatabase(const QString &filePath, const QString &projectWorkingFolder);
 
 signals:
-    void projectChanged(const QString &);
+    void databaseChanged(const QString &);
 
 private:
     static ProjectManager *_instance;

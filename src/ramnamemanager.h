@@ -6,6 +6,12 @@
 class RamNameManager
 {
 public:
+    // Static utils
+
+    static QString nameToShortName(const QString &name, const QString &prefix = "-");
+
+    // Class methods
+
     RamNameManager();
 
     /**

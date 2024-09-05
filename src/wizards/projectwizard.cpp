@@ -4,6 +4,13 @@
 
 #include "duapp/duui.h"
 #include "duapp/dusettings.h"
+#include "duutils/dusystemutils.h"
+#include "projectmanager.h"
+#include "ramnamemanager.h"
+#include "ramuser.h"
+#include "ramproject.h"
+#include "ramstep.h"
+#include "ramses.h"
 #include "ramjsonstepeditwidget.h"
 
 ProjectWizard::ProjectWizard(bool team, QWidget *parent, Qt::WindowFlags flags):
@@ -12,6 +19,62 @@ ProjectWizard::ProjectWizard(bool team, QWidget *parent, Qt::WindowFlags flags):
 {
     setupUi();
     connectEvents();
+}
+
+void ProjectWizard::done(int r)
+{
+    if (r != QWizard::Accepted)
+        return QWizard::done(r);
+
+    // Create the database and project
+    QString dbPath = ui_pathsPage->dbFilePath();
+
+    // Create the file
+    if (!ProjectManager::i()->createDatabase(
+        dbPath,
+        ui_pathsPage->projectPath())
+        ) {
+        QMessageBox::warning(this,
+                             tr("Can't save the database"),
+                             tr("Sorry, the database creation failed at this location.\nMaybe you can try another location...") + "\n\n" +
+                                 dbPath
+                             );
+        return QWizard::done(r);
+    }
+
+    // Set the file
+    ProjectManager::i()->loadDatabase(dbPath);
+
+    // Create a user
+    QString username = SystemUtils::userName();
+    RamUser *user = new RamUser(
+        RamNameManager::nameToShortName(username),
+        username
+        );
+    user->setRole(RamUser::Admin);
+
+    // Create project
+    RamProject *project = new RamProject(
+        ui_detailsPage->shortName(),
+        ui_detailsPage->name()
+        );
+    // Set the project details
+    project->setWidth(ui_resolutionWidget->getWidth());
+    project->setHeight(ui_resolutionWidget->getHeight());
+    project->setFramerate(ui_framerateWidget->framerate());
+    project->setDeadline(ui_deadlineEdit->date());
+    // Assign the user
+    project->users()->appendObject(user->uuid());
+
+    // Create the steps
+    const QVector<QJsonObject> &jsonSteps = _steps->objects();
+    for(const auto &jsonStep: jsonSteps)
+        RamStep::fromJson(jsonStep, project);
+
+    // Login
+    Ramses::instance()->setUser( user );
+
+    QWizard::done(r);
 }
 
 void ProjectWizard::editStep(const QModelIndex &index)
@@ -36,47 +99,24 @@ void ProjectWizard::editStep(const QModelIndex &index)
 
 void ProjectWizard::setupUi()
 {
-    addPage(
-        createPathsPage()
-        );
+    ui_detailsPage = new RamObjectPropertiesWizardPage(this);
+    addPage( ui_detailsPage );
+
     addPage(
         createProjectSettingsPage()
         );
     addPage(
         createPipelinePage()
         );
+
+    ui_pathsPage = new RamProjectPathsPage(this);
+    addPage( ui_pathsPage );
 }
 
 void ProjectWizard::connectEvents()
 {
     connect(ui_stepList, &DuListModelEdit::editing,
             this, &ProjectWizard::editStep);
-}
-
-QWizardPage *ProjectWizard::createPathsPage()
-{
-    auto page = new QWizardPage();
-    page->setTitle(tr("Project location"));
-    page->setSubTitle(tr("Set the path to the Ramses project file, and the location where the working files are stored."));
-
-    auto layout = DuUI::createFormLayout();
-    DuUI::centerLayout(layout, page);
-
-    ui_ramsesFileSelector = new DuFolderSelectorWidget(DuFolderSelectorWidget::File, this);
-    ui_ramsesFileSelector->setPlaceHolderText(tr("File path of the Ramses Database..."));
-    ui_ramsesFileSelector->setDialogTitle(tr("Select the location of the Ramses Database."));
-    ui_ramsesFileSelector->setMode(DuFolderSelectorWidget::Save);
-    ui_ramsesFileSelector->setFilter(tr("Ramses (*.ramses);;SQLite (*.sqlite);;All Files (*.*)"));
-    ui_ramsesFileSelector->setMinimumWidth(300);
-    layout->addRow(tr("Ramses project file"), ui_ramsesFileSelector);
-
-    ui_projectPathSelector = new DuFolderSelectorWidget();
-    ui_projectPathSelector->showRevealButton(false);
-    ui_projectPathSelector->setPlaceHolderText(QDir::homePath() + "/Ramses Project");
-    ui_projectPathSelector->setMinimumWidth(300);
-    layout->addRow(tr("Project working directory"), ui_projectPathSelector);
-
-    return page;
 }
 
 QWizardPage *ProjectWizard::createProjectSettingsPage()

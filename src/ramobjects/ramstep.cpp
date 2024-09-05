@@ -62,6 +62,34 @@ RamStep *RamStep::createFromTemplate(RamTemplateStep *tempStep, RamProject *proj
     return step;
 }
 
+RamStep *RamStep::fromJson(const QJsonObject &jsonStep, RamProject *project)
+{
+    QString shortName = jsonStep.value(KEY_ShortName).toString();
+    if (shortName == "")
+        return nullptr;
+
+    RamStep *step = new RamStep(
+        shortName,
+        jsonStep.value(KEY_Name).toString(shortName),
+        project);
+
+    // Set settings
+    step->setComment(jsonStep.value(KEY_Comment).toString());
+    step->setColor(jsonStep.value(KEY_Color).toString());
+    step->setCustomSettings(jsonStep.value(KEY_CustomSettings).toString());
+
+    step->setType(jsonStep.value(KEY_StepType).toString());
+    step->setEstimationMethod(jsonStep.value(KEY_EstimationMethod).toString());
+    step->setEstimationVeryEasy(jsonStep.value(KEY_EstimationVeryEasy).toDouble());
+    step->setEstimationEasy(jsonStep.value(KEY_EstimationEasy).toDouble());
+    step->setEstimationMedium(jsonStep.value(KEY_EstimationMedium).toDouble());
+    step->setEstimationHard(jsonStep.value(KEY_EstimationHard).toDouble());
+    step->setEstimationVeryHard(jsonStep.value(KEY_EstimationVeryHard).toDouble());
+    step->setPublishSettings(jsonStep.value(KEY_PublishSettings).toString());
+
+    return step;
+}
+
 // PUBLIC //
 
 RamStep::RamStep(QString shortName, QString name, RamProject *project):

@@ -28,6 +28,7 @@ public:
     static RamStep *get(QString uuid, bool includeRemoved = false);
     static RamStep *c(RamObject *o);
     static RamStep *createFromTemplate(RamTemplateStep *tempStep, RamProject *project);
+    static RamStep *fromJson(const QJsonObject &jsonStep, RamProject *project);
 
     // THE JSON DATA KEYS
 

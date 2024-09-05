@@ -5,11 +5,11 @@
 #include <QFormLayout>
 #include <QJsonObject>
 
-#include "duwidgets/ducolorselector.h"
-#include "duwidgets/dulineedit.h"
+
 #include "duwidgets/duscrollarea.h"
 #include "duwidgets/dutabwidget.h"
 #include "duwidgets/durichtextedit.h"
+#include "ramobjectpropertieswidget.h"
 
 class RamJsonObjectEditWidget : public DuScrollArea
 {
@@ -27,12 +27,7 @@ signals:
 
 protected:
     DuTabWidget *ui_tabWidget;
-    QBoxLayout *ui_mainLayout;
-    QFormLayout *ui_attributesLayout;
-    DuLineEdit *ui_shortNameEdit;
-    DuLineEdit *ui_nameEdit;
-    DuRichTextEdit *ui_commentEdit;
-    DuColorSelector *ui_colorSelector;
+    RamObjectPropertiesWidget *ui_propertiesWidget;
     DuRichTextEdit *ui_customSettingsEdit;
 
     void setRamObjectData(const QJsonObject &obj);
