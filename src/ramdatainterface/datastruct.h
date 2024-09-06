@@ -23,7 +23,7 @@ struct TableRow
 {
     QString uuid;
     QString data;
-    QString userName;
+    QString role;
     QString modified;
     int removed;
 };

@@ -8,8 +8,9 @@
 #include "frameratewidget.h"
 #include "ramjsonobjectmodel.h"
 #include "resolutionwidget.h"
+#include "wizards/loginwizardpage.h"
 #include "wizards/ramobjectpropertieswizardpage.h"
-#include "wizards/ramprojectpathspage.h"
+#include "wizards/ramdatabasepathswizardpage.h"
 
 class ProjectWizard : public QWizard
 {
@@ -31,7 +32,8 @@ private:
     QWizardPage *createPipelinePage();
 
     RamObjectPropertiesWizardPage *ui_detailsPage;
-    RamProjectPathsPage *ui_pathsPage;
+    RamDatabasePathsWizardPage *ui_pathsPage;
+    LoginWizardPage *ui_loginPage;
 
     ResolutionWidget *ui_resolutionWidget;
     FramerateWidget *ui_framerateWidget;
@@ -41,6 +43,10 @@ private:
     RamJsonObjectModel *_steps;
 
     bool _isTeamProject;
+
+    // Utils
+    bool askRemoveExistingFile(const QString &dbPath );
+    bool createDatabase(const QString &dbPath );
 };
 
 #endif // PROJECTWIZARD_H

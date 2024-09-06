@@ -115,6 +115,107 @@ bool RamServerInterface::isSyncing() const
 
 // API
 
+QJsonObject RamServerInterface::ping(bool synchronous)
+{
+    Request r = buildRequest("ping", QJsonObject());
+
+    if (!synchronous) {
+        postRequest(r);
+        return QJsonObject();
+    }
+
+    QJsonObject obj;
+    obj.insert("success", false);
+
+    QNetworkReply *reply = synchronousRequest(r);
+
+    if (!reply)
+    {
+        qDebug() << "<<< Can't contact the server... Ping failed.";
+        setConnectionStatus(NetworkUtils::Offline, tr("Server unavailable."));
+        obj.insert("message", "Connection failed, server unavailable or misconfigured.");
+        return obj;
+    }
+
+    obj = parseData(reply);
+
+    if (!checkServerUuid(obj.value("serverUuid").toString())) {
+        obj.insert("success", false);
+        obj.insert("messsage", tr("This server does not correspond to the local data."));
+        return obj;
+    }
+    if (!checkPing(obj)) {
+        return obj;
+    }
+
+    // get the server version
+    m_serverVersion = obj.value("content").toObject().value("version").toString();
+
+    return obj;
+}
+
+QJsonObject RamServerInterface::login(const QString &username, const QString &password)
+{
+    QJsonObject obj;
+    obj.insert("success", false);
+
+    // Checks
+
+    if (username == "") {
+        obj.insert("messsage", "The username is missing.");
+        return obj;
+    }
+
+    if (password == "") {
+        obj.insert("message", "The password is missing.");
+        return obj;
+    }
+
+    // Ping
+
+    obj = ping(true);
+    if (!obj.value("success").toBool(false))
+        return obj;
+
+    // Hash password
+
+    QString hashedPassword = hashPassword(password);
+
+    QJsonObject body;
+    body.insert("username", username);
+    body.insert("password", hashedPassword);
+    Request r = buildRequest("login", body);
+    QNetworkReply *reply = synchronousRequest(r);
+
+    if (!reply)
+    {
+        qDebug() << "<<< Can't log in... request timed out.";
+        setConnectionStatus(NetworkUtils::Offline, tr("Unable to log in (the request timed out)."));
+        m_currentUserUuid = "";
+        obj.insert("success", false);
+        obj.insert("message", "Unable to log in (the request timed out). Check your internet connection and the server address.");
+        return obj;
+    }
+
+    obj = parseData(reply);
+    bool repSuccess = obj.value("success").toBool();
+
+    if (!repSuccess)
+    {
+        setConnectionStatus(NetworkUtils::Connecting, tr("Login failed."));
+        return obj;
+    }
+
+    // get the new token
+    m_sessionToken = obj.value("content").toObject().value("token").toString();
+    setConnectionStatus(NetworkUtils::Online, tr("Server ready"));
+
+    return obj;
+}
+
+
+
+
 void RamServerInterface::ping()
 {
     Request r = buildRequest("ping", QJsonObject());
@@ -900,8 +1001,6 @@ QJsonObject RamServerInterface::parseData(QNetworkReply *reply)
 
     QString repAll = QString::fromUtf8(reply->readAll());
 
-
-
     reply->deleteLater();
     QJsonDocument repDoc = QJsonDocument::fromJson(repAll.toUtf8());
     QJsonObject repObj = repDoc.object();
@@ -1040,6 +1139,13 @@ bool RamServerInterface::checkServer(QString hostName)
         return false;
     }
     return true;
+}
+
+QString RamServerInterface::hashPassword(const QString &password)
+{
+    QString address = m_serverAddress;
+    address.replace("/", "");
+    return DataCrypto::instance()->generatePassHash(password, address);
 }
 
 void RamServerInterface::startSync()

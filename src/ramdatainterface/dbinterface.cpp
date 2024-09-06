@@ -4,6 +4,7 @@
 
 #include "duutils/guiutils.h"
 #include "progressmanager.h"
+#include "ramserverclient.h"
 #include "statemanager.h"
 
 DBInterface *DBInterface::_instance = nullptr;
@@ -162,18 +163,6 @@ QString DBInterface::modificationDate(QString uuid, QString table)
     return m_ldi->modificationDate(uuid, table);
 }
 
-void DBInterface::setUsername(QString uuid, QString username)
-{
-    m_ldi->setUsername(uuid, username);
-    // Setting the username must trigger an instant sync (if it's not new)
-    if (username.toLower() != "new") sync();
-}
-
-bool DBInterface::isUserNameAavailable(const QString &userName)
-{
-    return m_ldi->isUserNameAavailable(userName);
-}
-
 const QString &DBInterface::dataFile() const
 {
     return m_ldi->dataFile();
@@ -297,6 +286,20 @@ void DBInterface::setDataFile(const QString &file, bool ignoreUser)
 void DBInterface::setCurrentUserUuid(QString uuid)
 {
     m_ldi->setCurrentUserUuid(uuid);
+}
+
+QString DBInterface::getUserRole(const QString &uuid)
+{
+    return m_ldi->getUserRole(uuid);
+}
+
+bool DBInterface::setUserRole(const QString &uuid, const QString role)
+{
+    QJsonObject obj = RamServerClient::i()->setUserRole(uuid, role);
+    if (!obj.value("success").toBool(false))
+        return false;
+    m_ldi->setUserRole(uuid, role);
+    return true;
 }
 
 void DBInterface::suspendSync()

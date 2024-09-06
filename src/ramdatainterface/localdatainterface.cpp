@@ -420,58 +420,35 @@ QString LocalDataInterface::modificationDate(QString uuid, QString table)
     return "1818-05-05 00:00:00";
 }
 
-void LocalDataInterface::setUsername(QString uuid, QString username)
-{
-    username.replace("'", "''");
-
-    QDateTime modified = QDateTime::currentDateTimeUtc();
-
-    QString q = "INSERT INTO RamUser (userName, modified, uuid) "
-                "VALUES ('%1', '%2', '%3') "
-                "ON CONFLICT(uuid) DO UPDATE "
-                "SET userName=excluded.userName, modified=excluded.modified ;";
-    query( q.arg(username, modified.toString("yyyy-MM-dd hh:mm:ss"), uuid) );
-}
-
-bool LocalDataInterface::isUserNameAavailable(const QString &userName)
-{
-    QString q = "SELECT `uuid` FROM `RamUser` WHERE userName = '%1' AND removed = 0;";
-    q = q.arg( userName );
-    QSqlQuery qry = query( q );
-
-    if (qry.first() && qry.value(0) != "") return false;
-    return true;
-}
-
-void LocalDataInterface::updateUser(QString uuid, QString username, QString data, QString modified)
+void LocalDataInterface::updateUser(const QString &uuid, const QString &role, const QString &data, const QString &modified)
 {
     // Adjust modified if not provided
-    if (modified == "")
+    QString mod = modified;
+    if (mod == "")
     {
         QDateTime m = QDateTime::currentDateTimeUtc();
-        modified = m.toString("yyyy-MM-dd hh:mm:ss");
+        mod = m.toString("yyyy-MM-dd hh:mm:ss");
     }
 
     // Encrypt data
     QString newData = data;
-    if (ENCRYPT_USER_DATA) newData = DataCrypto::instance()->clientEncrypt( newData );
-    else newData.replace("'", "''");
+    if (ENCRYPT_USER_DATA)
+        newData = DataCrypto::instance()->clientEncrypt( newData );
+    else
+        newData.replace("'", "''");
+
+    // Encrypt role
+    QString newRole = role;
+    if (ENCRYPT_USER_DATA)
+        newRole = DataCrypto::instance()->clientEncrypt( newRole );
 
     // Insert/update
-    QString q = "INSERT INTO RamUser (data, modified, uuid, userName, removed) "
+    QString q = "INSERT INTO RamUser (data, modified, uuid, role, removed) "
                 "VALUES ( '%1', '%2', '%3', '%4', 0) "
                 "ON CONFLICT(uuid) DO UPDATE "
-                "SET data=excluded.data, modified=excluded.modified, userName=excluded.userName, removed=0 ;";
+                "SET data=excluded.data, modified=excluded.modified, role=excluded.role, removed=0 ;";
 
-    query( q.arg(newData, modified, uuid, username) );
-
-    // Remove duplicates if any. This should never happen,
-    // but when messing around with new databases and server install
-    // Users may end up connecting to a new server while already having some users locally
-    QDateTime m = QDateTime::currentDateTimeUtc();
-    modified = m.toString("yyyy-MM-dd hh:mm:ss");
-    q = "UPDATE RamUser SET `removed` = 1, `modified` = '%1' WHERE `userName` = '%2' AND `uuid` != '%3';";
-    query( q.arg(modified, username, uuid) );
+    query( q.arg(newData, mod, uuid, newRole) );
 
     emit dataChanged(uuid, data, modified, "RamUser");
 }
@@ -648,8 +625,7 @@ SyncData LocalDataInterface::getSync(bool fullSync)
         createTable(tName);
 
         QString q;
-        if (tName == "RamUser") q = "SELECT uuid, data, modified, removed, userName FROM %1 ";
-        else q = "SELECT uuid, data, modified, removed FROM %1 ";
+        q = "SELECT uuid, data, modified, removed FROM %1 ";
         if (!fullSync) q += " WHERE modified >= '%2' ;";
 
         if (!fullSync) q = q.arg(tName, lastSync);
@@ -665,11 +641,8 @@ SyncData LocalDataInterface::getSync(bool fullSync)
             row.removed = qry.value(3).toInt();
 
             QString data = qry.value(1).toString();
-            if (tName == "RamUser")
-            {
-                if (ENCRYPT_USER_DATA) data = DataCrypto::instance()->clientDecrypt( data );
-                row.userName = qry.value(4).toString();
-            }
+            if (tName == "RamUser" && ENCRYPT_USER_DATA)
+                data = DataCrypto::instance()->clientDecrypt( data );
 
             row.data = data;
             rows.insert(row);
@@ -725,7 +698,7 @@ void LocalDataInterface::saveSync(SyncData syncData)
 
         // In a single query
         QString q;
-        if (tableName == "RamUser") q = "INSERT INTO %1 (data, modified, uuid, removed, userName) VALUES ";
+        if (tableName == "RamUser") q = "INSERT INTO %1 (data, modified, uuid, removed, role) VALUES ";
         else q = "INSERT INTO %1 (data, modified, uuid, removed) VALUES ";
         q = q.arg(tableName);
 
@@ -748,13 +721,16 @@ void LocalDataInterface::saveSync(SyncData syncData)
 
             if (tableName == "RamUser")
             {
-                QString userName = incomingRow.userName.replace("'", "''");
-                if (userName == "Ramses") continue;
-                if (ENCRYPT_USER_DATA) data = DataCrypto::instance()->clientEncrypt( data );
-                else data.replace("'", "''");
+                QString userRole = incomingRow.role;
+                if (ENCRYPT_USER_DATA) {
+                    data = DataCrypto::instance()->clientEncrypt( data );
+                    userRole = DataCrypto::instance()->clientEncrypt( userRole );
+                }
+                else
+                    data.replace("'", "''");
 
                 QString v = "( '%1', '%2', '%3', %4, '%5' )";
-                values << v.arg( data, modified, uuid, QString::number(removed), userName );
+                values << v.arg( data, modified, uuid, QString::number(removed), userRole );
             }
             else
             {
@@ -813,7 +789,7 @@ void LocalDataInterface::saveSync(SyncData syncData)
 
         // In a single query
         QString q;
-        if (tableName == "RamUser") q = "INSERT INTO %1 (data, modified, uuid, removed, userName) VALUES ";
+        if (tableName == "RamUser") q = "INSERT INTO %1 (data, modified, uuid, removed, role) VALUES ";
         else q = "INSERT INTO %1 (data, modified, uuid, removed) VALUES ";
         q = q.arg(tableName);
 
@@ -845,13 +821,16 @@ void LocalDataInterface::saveSync(SyncData syncData)
 
             if (tableName == "RamUser")
             {
-                QString userName = incomingRow.userName.replace("'", "''");
+                QString userRole = incomingRow.role;
 
-                if (ENCRYPT_USER_DATA) data = DataCrypto::instance()->clientEncrypt( data );
+                if (ENCRYPT_USER_DATA) {
+                    data = DataCrypto::instance()->clientEncrypt( data );
+                    userRole = DataCrypto::instance()->clientEncrypt( userRole );
+                }
                 else data.replace("'", "''");
 
                 QString v = "( '%1', '%2', '%3', %4, '%5' )";
-                values << v.arg( data, modified, uuid, QString::number(rem), userName );
+                values << v.arg( data, modified, uuid, QString::number(rem), userRole );
             }
             else
             {
@@ -921,7 +900,8 @@ QString LocalDataInterface::currentUserUuid()
     QString q = "SELECT uuid FROM _User WHERE current = 1;";
     QSqlQuery qry = query( q );
 
-    if (qry.first()) return qry.value(0).toString();
+    if (qry.first())
+        return qry.value(0).toString();
     return "";
 }
 
@@ -936,6 +916,24 @@ void LocalDataInterface::setCurrentUserUuid(QString uuid)
                 "SET current=excluded.current ;";
 
     query( q.arg(uuid) );
+}
+
+QString LocalDataInterface::getUserRole(const QString &uuid)
+{
+    QString q = "SELECT role FROM RamUser WHERE uuid = '%1';";
+    QSqlQuery qry = query( q.arg(uuid) );
+    if (qry.first())
+        return qry.value(0).toString();
+    return "standard";
+}
+
+void LocalDataInterface::setUserRole(const QString &uuid, const QString &role)
+{
+    QString q = "UPDATE RamUser "
+                "SET role = %1 "
+                "WHERE uuid = %2 ;";
+
+    query( q.arg(uuid, role) );
 }
 
 void LocalDataInterface::sync(SyncData data, QString serverUuid)
@@ -1000,13 +998,24 @@ QStringList LocalDataInterface::tableNames()
 
 QVector<QStringList> LocalDataInterface::users()
 {
-    QString q = "SELECT uuid, userName FROM RamUSer ORDER BY userName;";
+    QString q = "SELECT uuid, data FROM RamUSer ;";
     QSqlQuery qry = query( q );
     QVector<QStringList> us;
     while(qry.next())
     {
+        QString data = qry.value(1).toString();
+        if (ENCRYPT_USER_DATA) data = DataCrypto::instance()->clientDecrypt( data );
+        QJsonDocument doc = QJsonDocument::fromJson(data.toUtf8());
+        QJsonObject obj = doc.object();
+
+        QString n = obj.value("name").toString();
+        if (n == "")
+            n = obj.value("shortName").toString();
+        if (n == "")
+            continue;
+
         QStringList u;
-        u << qry.value(0).toString() << qry.value(1).toString();
+        u << qry.value(0).toString() << n;
         us << u;
     }
     return us;

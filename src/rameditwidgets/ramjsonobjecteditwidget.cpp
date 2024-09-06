@@ -64,8 +64,8 @@ void RamJsonObjectEditWidget::connectEvents()
 
 void RamJsonObjectEditWidget::setRamObjectData(const QJsonObject &obj)
 {
-    ui_propertiesWidget->setName(obj.value(RamAbstractObject::KEY_Name).toString(RamAbstractObject::DEFAULT_Name));
-    ui_propertiesWidget->setShortName(obj.value(RamAbstractObject::KEY_ShortName).toString(RamAbstractObject::DEFAULT_ShortName));
+    ui_propertiesWidget->setName(obj.value(RamAbstractObject::KEY_Name).toString());
+    ui_propertiesWidget->setShortName(obj.value(RamAbstractObject::KEY_ShortName).toString());
     ui_propertiesWidget->setComment(obj.value(RamAbstractObject::KEY_Comment).toString());
     ui_propertiesWidget->setColor(QColor(
         obj.value(RamAbstractObject::KEY_Color).toString(RamAbstractObject::DEFAULT_Color)

@@ -40,6 +40,7 @@ void RamObjectPropertiesWidget::setupUi()
     DuUI::addBlock(ui_attributesLayout, ui_mainLayout);
 
     ui_nameEdit = new DuLineEdit(this);
+    ui_nameEdit->setPlaceholderText(tr("Object name"));
     // Name validator
     QRegularExpression rxn = RegExUtils::getRegularExpression("name");
     QValidator *nameValidator = new QRegularExpressionValidator(rxn, this);
@@ -58,6 +59,7 @@ void RamObjectPropertiesWidget::setupUi()
     shortNameLabeLayout->addWidget(ui_idHelpButton);
 
     ui_shortNameEdit = new DuLineEdit(this);
+    ui_shortNameEdit->setPlaceholderText("Obj-id");
     // Short Name validator
     QRegularExpression rxsn = RegExUtils::getRegularExpression("shortname");
     QValidator *shortNameValidator = new QRegularExpressionValidator(rxsn, this);

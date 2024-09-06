@@ -1,13 +1,13 @@
-#ifndef RAMPROJECTPATHSPAGE_H
-#define RAMPROJECTPATHSPAGE_H
+#ifndef RAMDATABASEPATHSWIZARDPAGE_H
+#define RAMDATABASEPATHSWIZARDPAGE_H
 
 #include "duwidgets/dufolderselectorwidget.h"
 #include <QWizardPage>
 
-class RamProjectPathsPage : public QWizardPage
+class RamDatabasePathsWizardPage : public QWizardPage
 {
 public:
-    RamProjectPathsPage(QWidget *parent = nullptr);
+    RamDatabasePathsWizardPage(QWidget *parent = nullptr);
 
     virtual bool isComplete() const override;
     virtual bool validatePage() override;
@@ -24,4 +24,4 @@ private:
     DuFolderSelectorWidget *ui_projectPathSelector;
 };
 
-#endif // RAMPROJECTPATHSPAGE_H
+#endif // RAMDATABASEPATHSWIZARDPAGE_H

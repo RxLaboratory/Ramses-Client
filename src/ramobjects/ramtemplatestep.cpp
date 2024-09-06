@@ -6,7 +6,7 @@
 
 const QString RamTemplateStep::KEY_StepType = QStringLiteral("type");
 const QString RamTemplateStep::KEY_PublishSettings = QStringLiteral("publishSettings");
-const QString RamTemplateStep::KEY_EstimationMethod = QStringLiteral("shortName");
+const QString RamTemplateStep::KEY_EstimationMethod = QStringLiteral("estimationMethod");
 const QString RamTemplateStep::KEY_EstimationVeryEasy = QStringLiteral("estimationVeryEasy");
 const QString RamTemplateStep::KEY_EstimationEasy = QStringLiteral("estimationEasy");
 const QString RamTemplateStep::KEY_EstimationMedium = QStringLiteral("estimationMedium");

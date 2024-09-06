@@ -71,13 +71,13 @@ public:
 
     QString modificationDate(QString uuid, QString table);
 
-    void setUsername(QString uuid, QString username);
-    bool isUserNameAavailable(const QString &userName);
-
     const QString &dataFile() const;
     void setDataFile(const QString &file, bool ignoreUser = false);
 
     void setCurrentUserUuid(QString uuid);
+
+    QString getUserRole(const QString &uuid);
+    bool setUserRole(const QString &uuid, const QString role);
 
 signals:
     /**

@@ -29,7 +29,7 @@ void LandingPage::updateRecentList()
     }
 }
 
-void LandingPage::createLocalProject()
+void LandingPage::createProject(bool team)
 {
     // Necessary for the margins
     auto dummy = new QWidget(this);
@@ -37,7 +37,7 @@ void LandingPage::createLocalProject()
     ui_stackedLayout->addWidget(dummy);
 
     // Create a wizard and show it
-    auto pz = new ProjectWizard();
+    auto pz = new ProjectWizard(team);
     l->addWidget(pz);
 
     // Delete it when finished
@@ -142,5 +142,7 @@ void LandingPage::connectEvents()
     });
 
     connect(ui_createLocalProjectButton, &QPushButton::clicked,
-            this, &LandingPage::createLocalProject);
+            this, [this] () { createProject(false); });
+    connect(ui_createTeamProjectButton, &QPushButton::clicked,
+            this, [this] () { createProject(true); });
 }

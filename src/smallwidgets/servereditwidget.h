@@ -28,6 +28,7 @@ public:
     int port() const;
 
 signals:
+    void addressEdited();
 
 private slots:
     void orderServer();

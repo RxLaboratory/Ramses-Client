@@ -6,6 +6,13 @@
 #include "usereditwidget.h"
 #include "ramdatainterface/dbinterface.h"
 
+// KEYS //
+
+const QString RamUser::ENUMVALUE_Admin = QStringLiteral("admin");
+const QString RamUser::ENUMVALUE_ProjectAdmin = QStringLiteral("project");
+const QString RamUser::ENUMVALUE_Lead = QStringLiteral("lead");
+const QString RamUser::ENUMVALUE_Standard = QStringLiteral("standard");
+
 // STATIC //
 
 QFrame *RamUser::ui_editWidget = nullptr;
@@ -36,10 +43,7 @@ RamUser::RamUser(QString shortName, QString name) :
     RamObject(shortName, name, User, nullptr, shortName == "Ramses")
 {
     construct();
-    if (shortName.toLower() != "new" && shortName != "Ramses")
-        DBInterface::instance()->setUsername(m_uuid, shortName);
     if (shortName == "Ramses") m_uuid = "none";
-
     createData();
 }
 
@@ -49,54 +53,43 @@ RamUser::RamUser(QString uuid):
     construct();
 }
 
-void RamUser::setShortName(const QString &shortName)
-{
-    RamAbstractObject::setShortName(shortName);
-    // Set username
-    DBInterface::instance()->setUsername(m_uuid, shortName);
-}
-
-bool RamUser::validateShortName(const QString &shortName)
-{
-    if (!RamAbstractObject::validateShortName(shortName)) return false;
-    return DBInterface::instance()->isUserNameAavailable(shortName);
-}
-
 RamUser::UserRole RamUser::role() const
 {
-    QString roleStr = getData("role").toString("standard");
-    if (roleStr == "admin") return Admin;
-    if (roleStr == "project") return ProjectAdmin;
-    if (roleStr == "lead") return Lead;
+    if (m_role == ENUMVALUE_Admin) return Admin;
+    if (m_role == ENUMVALUE_ProjectAdmin) return ProjectAdmin;
+    if (m_role == ENUMVALUE_Lead) return Lead;
     return Standard;
 }
 
-void RamUser::setRole(const UserRole &role)
+bool RamUser::setRole(const UserRole &role)
 {
     switch(role)
     {
     case Admin:
-        insertData("role", "admin");
-        m_icon = ":/icons/admin";
-        break;
+        return setRole( ENUMVALUE_Admin );
     case ProjectAdmin:
-        insertData("role", "project");
-        m_icon = ":/icons/project-admin";
-        break;
+        return setRole( ENUMVALUE_ProjectAdmin );
     case Lead:
-        insertData("role", "lead");
-        m_icon = ":/icons/lead";
-        break;
+        return setRole( ENUMVALUE_Lead );
     case Standard:
-        insertData("role", "standard");
-        m_icon = ":/icons/user";
-        break;
+        return setRole( ENUMVALUE_Standard );
     }
 }
 
-void RamUser::setRole(const QString role)
+bool RamUser::setRole(const QString role)
 {
-    insertData("role", role);
+    // If we're admin and not modifying our own role only
+    if (Ramses::instance()->currentUser()->uuid() == m_uuid)
+        return false;
+    if (!Ramses::instance()->isAdmin())
+        return false;
+
+    if (DBInterface::instance()->setUserRole(m_uuid, role)) {
+        emitDataChanged();
+        return true;
+    }
+
+    return false;
 }
 
 DBTableModel *RamUser::schedule() const
@@ -128,17 +121,6 @@ bool RamUser::isStepAssigned(RamStep *step) const
 
 QString RamUser::iconName() const
 {
-    switch(role())
-    {
-    case Admin:
-        return ":/icons/admin";
-    case ProjectAdmin:
-        return ":/icons/project-admin";
-    case Lead:
-        return ":/icons/lead";
-    case Standard:
-        return ":/icons/user";
-    }
     return ":/icons/user";
 }
 
@@ -181,6 +163,7 @@ void RamUser::construct()
     m_existingObjects[m_uuid] = this;
     m_icon = ":/icons/user";
     m_editRole = Admin;
+    m_role = DBInterface::instance()->getUserRole(m_uuid);
     //m_schedule = createModel(RamObject::ScheduleEntry, "schedule");
     m_schedule = new RamScheduleEntryModel();
     m_schedule->addFilterValue( "user", this->uuid() );

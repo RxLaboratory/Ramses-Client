@@ -16,7 +16,7 @@ public:
 
 private slots:
     void updateRecentList();
-    void createLocalProject();
+    void createProject(bool team = false);
 
 private:
     void setupUi();

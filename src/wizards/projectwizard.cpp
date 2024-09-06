@@ -29,18 +29,13 @@ void ProjectWizard::done(int r)
     // Create the database and project
     QString dbPath = ui_pathsPage->dbFilePath();
 
+    // Remove existing file
+    if (!askRemoveExistingFile(dbPath))
+        return;
+
     // Create the file
-    if (!ProjectManager::i()->createDatabase(
-        dbPath,
-        ui_pathsPage->projectPath())
-        ) {
-        QMessageBox::warning(this,
-                             tr("Can't save the database"),
-                             tr("Sorry, the database creation failed at this location.\nMaybe you can try another location...") + "\n\n" +
-                                 dbPath
-                             );
-        return QWizard::done(r);
-    }
+    if (!createDatabase(dbPath))
+        return;
 
     // Set the file
     ProjectManager::i()->loadDatabase(dbPath);
@@ -80,7 +75,6 @@ void ProjectWizard::done(int r)
 void ProjectWizard::editStep(const QModelIndex &index)
 {
     auto editor = new RamJsonStepEditWidget(this);
-    editor->setData(index.data(Qt::EditRole).toJsonObject());
 
     connect(editor, &RamJsonStepEditWidget::dataChanged,
             this, [this, index] (const QJsonObject &obj) {
@@ -99,6 +93,11 @@ void ProjectWizard::editStep(const QModelIndex &index)
 
 void ProjectWizard::setupUi()
 {
+    if (_isTeamProject) {
+        ui_loginPage = new LoginWizardPage(this);
+        addPage( ui_loginPage );
+    }
+
     ui_detailsPage = new RamObjectPropertiesWizardPage(this);
     addPage( ui_detailsPage );
 
@@ -109,7 +108,7 @@ void ProjectWizard::setupUi()
         createPipelinePage()
         );
 
-    ui_pathsPage = new RamProjectPathsPage(this);
+    ui_pathsPage = new RamDatabasePathsWizardPage(this);
     addPage( ui_pathsPage );
 }
 
@@ -158,4 +157,37 @@ QWizardPage *ProjectWizard::createPipelinePage()
     layout->addWidget(ui_stepList);
 
     return page;
+}
+
+bool ProjectWizard::askRemoveExistingFile(const QString &dbPath)
+{
+    if (QFileInfo::exists(dbPath)) {
+        QMessageBox::StandardButton ok = QMessageBox::question(
+            this,
+            tr("Confirm file overwrite"),
+            tr("Are you sure you want to overwrite this file?") + "\n\n" + dbPath
+            );
+        if (ok != QMessageBox::Yes)
+            return false;
+
+        FileUtils::remove(dbPath);
+    }
+    return true;
+}
+
+bool ProjectWizard::createDatabase(const QString &dbPath)
+{
+    if (!ProjectManager::i()->createDatabase(
+            dbPath,
+            ui_pathsPage->projectPath())
+        )
+    {
+        QMessageBox::warning(this,
+                             tr("Can't save the database"),
+                             tr("Sorry, the database creation failed at this location.\nMaybe you can try another location...") + "\n\n" +
+                                 dbPath
+                             );
+        return false;
+    }
+    return true;
 }

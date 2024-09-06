@@ -1,21 +1,21 @@
-#include "ramprojectpathspage.h"
+#include "ramdatabasepathswizardpage.h"
 
 #include "duapp/duui.h"
 
-RamProjectPathsPage::RamProjectPathsPage(QWidget *parent):
+RamDatabasePathsWizardPage::RamDatabasePathsWizardPage(QWidget *parent):
     QWizardPage(parent)
 {
     setupUi();
     connectEvents();
 }
 
-bool RamProjectPathsPage::isComplete() const
+bool RamDatabasePathsWizardPage::isComplete() const
 {
     return ui_ramsesFileSelector->path() != "" &&
            QFileInfo::exists(ui_projectPathSelector->path());
 }
 
-bool RamProjectPathsPage::validatePage()
+bool RamDatabasePathsWizardPage::validatePage()
 {
     if (!isComplete()) {
         QMessageBox::warning(this,
@@ -25,24 +25,10 @@ bool RamProjectPathsPage::validatePage()
         return false;
     }
 
-    // Remove existing file
-    QString filePath = dbFilePath();
-    if (!QFileInfo::exists(filePath))
-        return true;
-
-    QMessageBox::StandardButton ok = QMessageBox::question(
-        this,
-        tr("Confirm file overwrite"),
-        tr("Are you sure you want to overwrite this file?") + "\n\n" + filePath
-        );
-    if (ok != QMessageBox::Yes)
-        return false;
-
-    FileUtils::remove(filePath);
     return true;
 }
 
-void RamProjectPathsPage::initializePage()
+void RamDatabasePathsWizardPage::initializePage()
 {
     QString id = field("shortName").toString();
     QString name = field("name").toString();
@@ -51,7 +37,7 @@ void RamProjectPathsPage::initializePage()
     ui_projectPathSelector->setPlaceHolderText(QDir::homePath() + "/" + id + "_" + name);
 }
 
-void RamProjectPathsPage::setupUi()
+void RamDatabasePathsWizardPage::setupUi()
 {
     this->setTitle(tr("Project location"));
     this->setSubTitle(tr("Set the path to the Ramses project file, and the location where the working files are stored."));
@@ -74,10 +60,10 @@ void RamProjectPathsPage::setupUi()
     layout->addRow(tr("Project working directory"), ui_projectPathSelector);
 }
 
-void RamProjectPathsPage::connectEvents()
+void RamDatabasePathsWizardPage::connectEvents()
 {
     connect(ui_ramsesFileSelector, &DuFolderSelectorWidget::pathChanged,
-            this, &RamProjectPathsPage::completeChanged);
+            this, &RamDatabasePathsWizardPage::completeChanged);
     connect(ui_projectPathSelector, &DuFolderSelectorWidget::pathChanged,
-            this, &RamProjectPathsPage::completeChanged);
+            this, &RamDatabasePathsWizardPage::completeChanged);
 }

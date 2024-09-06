@@ -81,8 +81,10 @@ SOURCES += \
     dumodules/duwidgets/settingswidget.cpp \
     pages/homepage.cpp \
     pages/landingpage.cpp \
+    pages/loginpage.cpp \
     progressmanager.cpp \
     projectmanager.cpp \
+    ramdatainterface/ramserverclient.cpp \
     rameditwidgets/objectupdateblocker.cpp \
     rameditwidgets/ramjsonobjecteditwidget.cpp \
     rameditwidgets/ramjsonstepeditwidget.cpp \
@@ -205,7 +207,6 @@ SOURCES += \
     dumodules/duwidgets/duqfspinbox.cpp \
     rameditwidgets/filetypeeditwidget.cpp \
     smallwidgets/frameratewidget.cpp \
-    pages/loginpage.cpp \
     main.cpp \
     mainwindow.cpp \
     rameditwidgets/objecteditwidget.cpp \
@@ -243,9 +244,10 @@ SOURCES += \
     pipeline-editor/objectnode.cpp \
     pipeline-editor/pipelinewidget.cpp \
     pipeline-editor/stepnode.cpp \
+    wizards/loginwizardpage.cpp \
     wizards/projectwizard.cpp \
-    wizards/ramobjectpropertieswizardpage.cpp \
-    wizards/ramprojectpathspage.cpp
+    wizards/ramdatabasepathswizardpage.cpp \
+    wizards/ramobjectpropertieswizardpage.cpp
 
 HEADERS += \
     dumodules/dugraph/dugraph.h \
@@ -290,9 +292,11 @@ HEADERS += \
     enums.h \
     pages/homepage.h \
     pages/landingpage.h \
+    pages/loginpage.h \
     progressmanager.h \
     projectmanager.h \
     ramdatainterface/datastruct.h \
+    ramdatainterface/ramserverclient.h \
     rameditwidgets/objectupdateblocker.h \
     rameditwidgets/ramjsonobjecteditwidget.h \
     rameditwidgets/ramjsonstepeditwidget.h \
@@ -418,7 +422,6 @@ HEADERS += \
     dumodules/duwidgets/duqfspinbox.h \
     rameditwidgets/filetypeeditwidget.h \
     smallwidgets/frameratewidget.h \
-    pages/loginpage.h \
     mainwindow.h \
     rameditwidgets/objecteditwidget.h \
     rameditwidgets/pipeeditwidget.h \
@@ -455,9 +458,10 @@ HEADERS += \
     pipeline-editor/objectnode.h \
     pipeline-editor/pipelinewidget.h \
     pipeline-editor/stepnode.h \
+    wizards/loginwizardpage.h \
     wizards/projectwizard.h \
-    wizards/ramobjectpropertieswizardpage.h \
-    wizards/ramprojectpathspage.h
+    wizards/ramdatabasepathswizardpage.h \
+    wizards/ramobjectpropertieswizardpage.h
 
 FORMS += \
     dumodules/duwidgets/aboutdialog.ui \

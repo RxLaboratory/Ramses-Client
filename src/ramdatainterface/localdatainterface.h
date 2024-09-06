@@ -48,9 +48,7 @@ public:
 
     QString modificationDate(QString uuid, QString table);
 
-    void setUsername(QString uuid, QString username);
-    bool isUserNameAavailable(const QString &userName);
-    void updateUser(QString uuid, QString username, QString data, QString modified);
+    void updateUser(const QString &uuid, const QString &role, const QString &data, const QString &modified);
 
     ServerConfig serverConfig();
     void setServerUuid(QString serverUuid);
@@ -68,6 +66,9 @@ public:
 
     QString currentUserUuid();
     void setCurrentUserUuid(QString uuid);
+
+    QString getUserRole(const QString &uuid);
+    void setUserRole(const QString &uuid, const QString &role);
 
     QStringList tableNames();
     QVector<QStringList> users();

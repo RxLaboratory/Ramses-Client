@@ -19,16 +19,20 @@ public:
     static RamUser *get(QString uuid);
     static RamUser *c(RamObject *o);
 
+    // THE JSON DATA KEYS and ENUM VALUES
+
+    static const QString ENUMVALUE_Admin;
+    static const QString ENUMVALUE_ProjectAdmin;
+    static const QString ENUMVALUE_Lead;
+    static const QString ENUMVALUE_Standard;
+
     // METHODS //
 
     RamUser(QString shortName, QString name);
 
-    virtual void setShortName(const QString &shortName) override;
-    virtual bool validateShortName(const QString &shortName) override;
-
     UserRole role() const;
-    void setRole(const UserRole &role);
-    void setRole(const QString role);
+    bool setRole(const UserRole &role);
+    bool setRole(const QString role);
 
     DBTableModel *schedule() const;
     bool isStepAssigned(RamStep *step) const;
@@ -50,6 +54,7 @@ private:
     void construct();
 
     RamScheduleEntryModel *m_schedule;
+    QString m_role;
 };
 
 #endif // RAMUSER_H

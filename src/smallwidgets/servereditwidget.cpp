@@ -21,23 +21,7 @@ void ServerEditWidget::setAddress(QString a)
 
 QString ServerEditWidget::address()
 {
-    QString t = ui_serverAddressEdit->text();
-    if (t == "") return t;
-
-    QString test = t.split("/")[0];
-
-    // Check if the host exists
-    QHostInfo info = QHostInfo::fromName(test);
-    if (info.error() != QHostInfo::NoError)
-    {
-        QMessageBox::warning(this,
-                             tr("Wrong server"),
-                             tr("Sorry, I can't connect to this server.\nPlease double check the address,\nand make sure you're connected to the internet.")
-                             );
-        return "";
-    }
-
-    return t;
+    return ui_serverAddressEdit->text();
 }
 
 void ServerEditWidget::setSsl(bool s)
@@ -156,7 +140,7 @@ void ServerEditWidget::setupUi()
 
     ui_orderServerButton = new QPushButton(
                 tr("If you don't have access to a server yet,\n"
-                   "you can get one on ramses.rxlab.io"),
+                   "you can order one on ramses.rxlab.io"),
                 this
                 );
     formLayout->addWidget(ui_orderServerButton,5,1);
@@ -166,4 +150,7 @@ void ServerEditWidget::connectEvents()
 {
     connect(ui_orderServerButton, &QPushButton::clicked, this, &ServerEditWidget::orderServer);
     connect(ui_sslCheckBox, &QCheckBox::clicked, this, &ServerEditWidget::updatePort);
+
+    connect(ui_serverAddressEdit, &QLineEdit::textEdited,
+            this, &ServerEditWidget::addressEdited);
 }

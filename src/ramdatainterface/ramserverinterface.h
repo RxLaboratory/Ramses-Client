@@ -25,7 +25,7 @@ public:
 
     // METHODS //
 
-    // Settings
+    // Server Settings
 
     QString serverAddress() const;
     void setServerAddress(QString newServerAddress);
@@ -52,7 +52,6 @@ public:
     // API
     /**
      * @brief ping
-     * @param wait when true, waits for the pong
      */
     void ping();
     void sync(SyncData syncData);
@@ -65,6 +64,14 @@ public:
     void deleteData(QHash<QString, QSet<QString> > uuidsToDelete);
 
 public slots:
+
+    // Ramses API
+
+    QJsonObject ping(bool synchronous);
+    QJsonObject login(const QString &username, const QString &password);
+
+    // Deprecated
+
     /**
      * @brief setOnline posts a ping, and set the status to "Connecting"
      * Status will be changed to "Connected" if we get a valid pong
@@ -72,6 +79,7 @@ public slots:
     void setOnline(QString serverUuid = "");
     void setOffline();
     void login();
+
     QString doLogin(QString username, QString password, bool saveUsername = false, bool savePassword = false);
     void eraseUserPassword();
 
@@ -147,6 +155,8 @@ private:
     bool checkServer(QString hostName);
 
     // Ramses Server API
+
+    QString hashPassword(const QString &password);
 
     // Starts a sync session
     void startSync();
