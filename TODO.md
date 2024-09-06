@@ -21,7 +21,7 @@
 ## Landing
 
 - Local DB: store the project uuid nest to the user uuid and automatically set it
-- server pull and push refuse RamProjet
+- server pull and push refuse RamProjet except current
 
 - Create Team Project
     - FIX: project/user not set after creation?
