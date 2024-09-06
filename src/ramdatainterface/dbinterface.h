@@ -43,6 +43,8 @@ public:
     bool isSyncSuspended();
     bool isAutoSyncSuspended();
 
+    bool isTeamProject();
+
     /**
      * @brief setRamsesPath sets the path to the local data for this database
      * @param p

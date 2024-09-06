@@ -46,7 +46,6 @@ void ProjectWizard::done(int r)
         RamNameManager::nameToShortName(username),
         username
         );
-    user->setRole(RamUser::Admin);
 
     // Create project
     RamProject *project = new RamProject(

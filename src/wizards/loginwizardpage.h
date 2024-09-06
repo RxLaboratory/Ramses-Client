@@ -18,7 +18,7 @@ private:
     void connectEvents();
 
     ServerEditWidget *ui_serverWidget;
-    DuLineEdit *ui_usernameEdit;
+    DuLineEdit *ui_emailEdit;
     DuLineEdit *ui_passwordEdit;
 };
 

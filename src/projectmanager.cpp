@@ -33,12 +33,12 @@ void ProjectManager::openDatabase(const QString &dbPath)
         return;
 
     // If there is a current project, just restart the app passing the new project as argument.
-    if (_currentProject != "") {
+    if (_currentDatabase != "") {
         StateManager::i()->restart(true, dbPath);
         return;
     }
 
-    _currentProject = dbPath;
+    _currentDatabase = dbPath;
 
     auto pm = ProgressManager::instance();
     pm->setMaximum(-1);
@@ -75,7 +75,7 @@ void ProjectManager::loadDatabase(const QString &dbPath)
 void ProjectManager::closeDatabase()
 {
     // If there is a current project, just restart the app without arguments.
-    if (_currentProject != "")
+    if (_currentDatabase != "")
         StateManager::i()->restart(true);
 }
 

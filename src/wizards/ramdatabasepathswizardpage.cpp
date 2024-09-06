@@ -57,6 +57,11 @@ void RamDatabasePathsWizardPage::setupUi()
     ui_projectPathSelector->showRevealButton(false);
     ui_projectPathSelector->setPlaceHolderText(QDir::homePath() + "/Ramses Project");
     ui_projectPathSelector->setMinimumWidth(300);
+
+#ifdef QT_DEBUG
+    ui_projectPathSelector->setPath(QDir::homePath() + "/Ramses");
+#endif
+
     layout->addRow(tr("Project working directory"), ui_projectPathSelector);
 }
 

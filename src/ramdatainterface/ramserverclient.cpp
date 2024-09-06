@@ -96,15 +96,15 @@ QJsonObject RamServerClient::ping(bool synchronous)
     return obj;
 }
 
-QJsonObject RamServerClient::login(const QString &username, const QString &password)
+QJsonObject RamServerClient::login(const QString &email, const QString &password)
 {
     QJsonObject obj;
     obj.insert("success", false);
 
     // Checks
 
-    if (username == "") {
-        obj.insert("messsage", "The username is missing.");
+    if (email == "") {
+        obj.insert("messsage", "The email is missing.");
         return obj;
     }
 
@@ -126,7 +126,7 @@ QJsonObject RamServerClient::login(const QString &username, const QString &passw
     QString hashedPassword = hashPassword(password);
 
     QJsonObject body;
-    body.insert("username", username);
+    body.insert("email", email);
     body.insert("password", hashedPassword);
     Request r = buildRequest("login", body);
     QNetworkReply *reply = synchronousRequest(r);
@@ -345,7 +345,7 @@ void RamServerClient::dataReceived(QNetworkReply *reply)
 
             row.modified = rowObj.value("modified").toString();
             row.removed = rowObj.value("removed").toInt();
-            row.userName = rowObj.value("userName").toString();
+            row.role = rowObj.value("role").toString();
             rows.insert(row);
         }
         for (int i = 0; i < deletedArray.count(); i++)
@@ -641,7 +641,6 @@ void RamServerClient::push(QString table, QSet<TableRow> rows, QString date, boo
         rowObj.insert("data", row.data);
         rowObj.insert("removed", row.removed);
         rowObj.insert("modified", row.modified);
-        if (table == "RamUser") rowObj.insert("userName", row.userName);
         rowsArray.append(rowObj);
     }
     body.insert("rows", rowsArray);

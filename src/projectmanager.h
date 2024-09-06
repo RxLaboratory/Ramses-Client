@@ -28,7 +28,7 @@ private:
     static ProjectManager *_instance;
     explicit ProjectManager(QObject *parent = nullptr);
 
-    QString _currentProject;
+    QString _currentDatabase;
 
     // Helpers
     void addToRecentList(const QString &projectPath);

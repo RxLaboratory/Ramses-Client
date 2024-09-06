@@ -100,6 +100,11 @@ void ServerEditWidget::setupUi()
     QRegularExpression r("^(?!https?:\\/\\/)[-a-zA-Z0-9@:%_\\+.~#?&//=]{2,256}\\.[a-z]{2,63}\\b(\\/[-a-zA-Z0-9@:%_\\+.~#?&//=]*)?$");
     QValidator *validator = new QRegularExpressionValidator(r, this);
     ui_serverAddressEdit->setValidator(validator);
+
+#ifdef QT_DEBUG
+    ui_serverAddressEdit->setText("ramses.rxlab.io/dev");
+#endif
+
     adressLayout->addWidget(ui_serverAddressEdit);
 
     QLabel *sslLabel = new QLabel(tr("Secure connexion"), this);

@@ -115,18 +115,27 @@ RamUser *Ramses::removedUser()
 
 bool Ramses::isAdmin()
 {
+    if (!DBInterface::instance()->isTeamProject())
+        return true;
+
     if (!m_currentUser) return false;
     return m_currentUser->role() >= RamUser::Admin;
 }
 
 bool Ramses::isProjectAdmin()
 {
+    if (!DBInterface::instance()->isTeamProject())
+        return true;
+
     if (!m_currentUser) return false;
     return m_currentUser->role() >= RamUser::ProjectAdmin;
 }
 
 bool Ramses::isLead()
 {
+    if (!DBInterface::instance()->isTeamProject())
+        return true;
+
     if (!m_currentUser) return false;
     return m_currentUser->role() >= RamUser::Lead;
 }

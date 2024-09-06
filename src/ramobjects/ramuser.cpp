@@ -55,6 +55,10 @@ RamUser::RamUser(QString uuid):
 
 RamUser::UserRole RamUser::role() const
 {
+    // Always an admin if this is not a team project
+    if (!DBInterface::instance()->isTeamProject())
+        return Admin;
+
     if (m_role == ENUMVALUE_Admin) return Admin;
     if (m_role == ENUMVALUE_ProjectAdmin) return ProjectAdmin;
     if (m_role == ENUMVALUE_Lead) return Lead;
@@ -74,16 +78,12 @@ bool RamUser::setRole(const UserRole &role)
     case Standard:
         return setRole( ENUMVALUE_Standard );
     }
+
+    return false;
 }
 
 bool RamUser::setRole(const QString role)
 {
-    // If we're admin and not modifying our own role only
-    if (Ramses::instance()->currentUser()->uuid() == m_uuid)
-        return false;
-    if (!Ramses::instance()->isAdmin())
-        return false;
-
     if (DBInterface::instance()->setUserRole(m_uuid, role)) {
         emitDataChanged();
         return true;

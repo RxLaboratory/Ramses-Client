@@ -444,6 +444,12 @@ bool DBInterface::isAutoSyncSuspended()
     return m_autoSyncSuspended;
 }
 
+bool DBInterface::isTeamProject()
+{
+    auto config = m_ldi->serverConfig();
+    return config.address != "";
+}
+
 void DBInterface::setConnectionStatus(NetworkUtils::NetworkStatus s, QString reason)
 {
     if (s == m_connectionStatus) return;

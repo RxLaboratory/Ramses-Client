@@ -28,12 +28,12 @@ bool LoginWizardPage::validatePage()
     }
 
     // Check username and password
-    QString username = ui_usernameEdit->text();
-    if (username == "")
+    QString email = ui_emailEdit->text();
+    if (email == "")
     {
         QMessageBox::warning(this,
-                             tr("Missing username"),
-                             tr("Please set your username to log in.")
+                             tr("Missing email"),
+                             tr("Please set your email to log in.")
                              );
         return false;
     }
@@ -57,7 +57,7 @@ bool LoginWizardPage::validatePage()
     client->setSsl(ui_serverWidget->ssl());
 
     // Login and check admin rights
-    QJsonObject response = client->login(username, password);
+    QJsonObject response = client->login(email, password);
     if (!response.value("success").toBool(false)) {
         QMessageBox::warning(this,
                              tr("Login failed"),
@@ -70,7 +70,7 @@ bool LoginWizardPage::validatePage()
     QString userDataStr = content.value("data").toString();
     QJsonDocument userDoc = QJsonDocument::fromJson(userDataStr.toUtf8());
     QJsonObject userData = userDoc.object();
-    QString userRole = userData.value(RamUser::KEY_UserRole).toString(RamUser::ENUMVALUE_Standard);
+    QString userRole = content.value("role").toString(RamUser::ENUMVALUE_Standard);
     if (userRole != RamUser::ENUMVALUE_Admin) {
         QMessageBox::warning(this,
                              tr("Insuficient rights"),
@@ -96,9 +96,9 @@ void LoginWizardPage::setupUi()
 
     auto loginLayout = DuUI::addFormLayout(layout);
 
-    ui_usernameEdit = new DuLineEdit(this);
-    ui_usernameEdit->setPlaceholderText(tr("Username"));
-    loginLayout->addRow(tr("Username"), ui_usernameEdit);
+    ui_emailEdit = new DuLineEdit(this);
+    ui_emailEdit->setPlaceholderText(tr("user@example.com"));
+    loginLayout->addRow(tr("E-mail"), ui_emailEdit);
 
     ui_passwordEdit = new DuLineEdit(this);
     ui_passwordEdit->setEchoMode(QLineEdit::Password);

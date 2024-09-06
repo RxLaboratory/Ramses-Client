@@ -813,7 +813,7 @@ void RamServerInterface::dataReceived(QNetworkReply *reply)
 
             row.modified = rowObj.value("modified").toString();
             row.removed = rowObj.value("removed").toInt();
-            row.userName = rowObj.value("userName").toString();
+            row.role = rowObj.value("role").toString();
             rows.insert(row);
         }
         for (int i = 0; i < deletedArray.count(); i++)
@@ -1177,7 +1177,7 @@ void RamServerInterface::push(QString table, QSet<TableRow> rows, QString date, 
         rowObj.insert("data", row.data);
         rowObj.insert("removed", row.removed);
         rowObj.insert("modified", row.modified);
-        if (table == "RamUser") rowObj.insert("userName", row.userName);
+        if (table == "RamUser") rowObj.insert("role", row.role);
         rowsArray.append(rowObj);
     }
     body.insert("rows", rowsArray);

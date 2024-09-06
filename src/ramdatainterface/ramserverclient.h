@@ -56,7 +56,7 @@ public:
 
     // Synchronous methods
     QJsonObject ping(bool synchronous);
-    QJsonObject login(const QString &username, const QString &password);
+    QJsonObject login(const QString &email, const QString &password);
     QJsonObject setUserRole(const QString &uuid, const QString &role);
     // QJsonObject setProject(const QString &uuid);
     // QJsonObject setPassword(const QString &userUuid, const QString &newPassword, const QString &currentPassword = "");
