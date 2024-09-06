@@ -3,10 +3,13 @@
 
 #include <QWizard>
 #include <QDateEdit>
+#include <QDoubleSpinBox>
 
 #include "duwidgets/dulistmodeledit.h"
 #include "frameratewidget.h"
 #include "ramjsonobjectmodel.h"
+#include "ramproject.h"
+#include "ramuser.h"
 #include "resolutionwidget.h"
 #include "wizards/loginwizardpage.h"
 #include "wizards/ramobjectpropertieswizardpage.h"
@@ -23,6 +26,7 @@ protected:
 
 private slots:
     void editStep(const QModelIndex &index);
+    void finishProjectSetup();
 
 private:
     void setupUi();
@@ -38,15 +42,22 @@ private:
     ResolutionWidget *ui_resolutionWidget;
     FramerateWidget *ui_framerateWidget;
     QDateEdit *ui_deadlineEdit;
+    QDoubleSpinBox *ui_parBox;
     DuListModelEdit *ui_stepList;
 
     RamJsonObjectModel *_steps;
 
     bool _isTeamProject;
+    QString _projectUuid;
+    QString _userUuid;
 
     // Utils
     bool askRemoveExistingFile(const QString &dbPath );
     bool createDatabase(const QString &dbPath );
+    QString createServerData();
+    bool checkServerReply(const QJsonObject &reply);
+    RamUser *createLocalUser();
+    RamProject *createLocalProject();
 };
 
 #endif // PROJECTWIZARD_H

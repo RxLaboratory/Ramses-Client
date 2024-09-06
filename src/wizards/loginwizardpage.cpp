@@ -74,10 +74,12 @@ bool LoginWizardPage::validatePage()
     if (userRole != RamUser::ENUMVALUE_Admin) {
         QMessageBox::warning(this,
                              tr("Insuficient rights"),
-                             tr("You must be a server administrator to create a team projects.\nPlease contact an administrator of this server.")
+                             tr("You must be a server administrator to create a team project.\nPlease contact an administrator of this server.")
                              );
         return false;
     }
+
+    _uuid = content.value("uuid").toString();
 
     return true;
 }

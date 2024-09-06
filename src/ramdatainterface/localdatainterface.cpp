@@ -931,9 +931,9 @@ void LocalDataInterface::setUserRole(const QString &uuid, const QString &role)
 {
     QString q = "UPDATE RamUser "
                 "SET role = %1 "
-                "WHERE uuid = %2 ;";
+                "WHERE uuid = '%2' ;";
 
-    query( q.arg(uuid, role) );
+    query( q.arg(role, uuid) );
 }
 
 void LocalDataInterface::sync(SyncData data, QString serverUuid)
@@ -954,6 +954,11 @@ void LocalDataInterface::sync(SyncData data, QString serverUuid)
     query( q );
     q = "INSERT INTO _Sync ( lastSync, uuid ) VALUES ( '%1', '%2' );";
     query( q.arg( data.syncDate, serverUuid ) );
+}
+
+void LocalDataInterface::sync(SyncData data)
+{
+    sync(data, "");
 }
 
 QStringList LocalDataInterface::tableNames()

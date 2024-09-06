@@ -32,6 +32,8 @@ public:
 
     // ==== STATUS AND SETTINGS ====
 
+    ServerConfig serverConfig() const;
+
     ClientStatus status() const { return m_status; }
     QString lastError() const { return m_lastError; }
 
@@ -58,10 +60,11 @@ public:
     QJsonObject ping(bool synchronous);
     QJsonObject login(const QString &email, const QString &password);
     QJsonObject setUserRole(const QString &uuid, const QString &role);
-    // QJsonObject setProject(const QString &uuid);
+    QJsonObject createProject(const QString &data, const QString &uuid = "");
+    QJsonObject setProject(const QString &uuid);
+    QJsonObject assignUsers(const QStringList &userUuids, const QString &projectUuid);
     // QJsonObject setPassword(const QString &userUuid, const QString &newPassword, const QString &currentPassword = "");
     // QJsonObject createUser(const QString &userUuid, const QString &username, const QString &password, const QString &userData, const QString &role = "standard" );
-    // QJsonObject assignUser(const QString &userUuid, const QString &projectUuid);
     // QJsonObject unassignUser(const QString &userUuid, const QString &projectUuid);
     // QJsonObject getUsers(const QString &projectUuid = "");
     // QJsonObject getProjects(const QString &userUuid);
@@ -69,7 +72,7 @@ public:
 
     // ASync methods
     // void sync(SyncData syncData);
-    // void downloadAllData();
+    void downloadAllData();
 
 signals:
     void sslChanged(bool);
@@ -106,6 +109,7 @@ private:
 
     // Sync Process
 
+    void startSync();
     void fetch();
     void push(QString table, QSet<TableRow> rows = QSet<TableRow>(), QString date = "1818-05-05 00:00:00", bool commit = false);
     void pull(QString table, int page = 1);

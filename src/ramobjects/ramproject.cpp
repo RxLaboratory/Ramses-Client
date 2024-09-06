@@ -7,6 +7,16 @@
 #include "ramshot.h"
 #include "ramstatustablemodel.h"
 
+// KEYS //
+
+const QString RamProject::KEY_Width = QStringLiteral("width");
+const QString RamProject::KEY_Height = QStringLiteral("height");
+const QString RamProject::KEY_FrameRate = QStringLiteral("framerate");
+const QString RamProject::KEY_Deadline = QStringLiteral("deadline");
+const QString RamProject::KEY_PixelAspectRatio = QStringLiteral("pixelAspectRatio");
+
+// STATIC //
+
 QFrame *RamProject::ui_editWidget = nullptr;
 
 QHash<QString, RamProject*> RamProject::m_existingObjects = QHash<QString, RamProject*>();
@@ -267,60 +277,60 @@ bool RamProject::isUnassigned(RamAbstractItem *item) const
 
 qreal RamProject::framerate() const
 {
-    return getData("framerate").toDouble(24);
+    return getData(KEY_FrameRate).toDouble(24);
 }
 
 void RamProject::setFramerate(const qreal &newFramerate)
 {
-    insertData("framerate", newFramerate);
+    insertData(KEY_FrameRate, newFramerate);
 }
 
 int RamProject::width() const
 {
-    return getData("width").toInt(1920);
+    return getData(KEY_Width).toInt(1920);
 }
 
 void RamProject::setWidth(const int width)
 {
-    insertData("width", width);
+    insertData(KEY_Width, width);
 }
 
 int RamProject::height() const
 {
-    return getData("height").toInt(1080);
+    return getData(KEY_Height).toInt(1080);
 }
 
 void RamProject::setHeight(const int height)
 {
-    insertData("height", height);
+    insertData(KEY_Height, height);
 }
 
 qreal RamProject::aspectRatio() const
 {
     QJsonObject d = data();
-    qreal w = d.value("width").toDouble(1920);
-    qreal h = d.value("height").toDouble(1080);
-    return w / h * d.value("pixelAspectRatio").toDouble(1.0);
+    qreal w = d.value(KEY_Width).toDouble(1920);
+    qreal h = d.value(KEY_Height).toDouble(1080);
+    return w / h * d.value(KEY_PixelAspectRatio).toDouble(1.0);
 }
 
 qreal RamProject::pixelAspectRatio() const
 {
-    return getData("pixelAspectRatio").toDouble(1.0);
+    return getData(KEY_PixelAspectRatio).toDouble(1.0);
 }
 
 void RamProject::setPixelAspectRatio(const qreal &aspectRatio)
 {
-    insertData("pixelAspectRatio", aspectRatio);
+    insertData(KEY_PixelAspectRatio, aspectRatio);
 }
 
 QDate RamProject::deadline() const
 {
-    return QDate::fromString( getData("deadline").toString(), "yyyy-MM-dd");
+    return QDate::fromString( getData(KEY_Deadline).toString(), "yyyy-MM-dd");
 }
 
 void RamProject::setDeadline(const QDate &newDeadline)
 {
-    insertData("deadline", newDeadline.toString("yyyy-MM-dd"));
+    insertData(KEY_Deadline, newDeadline.toString("yyyy-MM-dd"));
 }
 
 double RamProject::duration() const

@@ -16,16 +16,20 @@
 - CLient side
     - WIP reimplement API (add project methods, see python client)
     - refactor logging & console (see DuME)
+- check how serveruuid is used and remove if not needed anymore
 
 ## Landing
 
+- Local DB: store the project uuid nest to the user uuid and automatically set it
+- server pull only the project the user is assigned to when pulling RamProject
+- server push only the project the user is assigned to when pushing RamProject
+
 - Create Team Project
+    - FIX: project/user not set after creation?
     - (Improve server widget (hide details in a QMenu), keep only the address)
-    - Create DB and project (add page to create/assign users)
-    - Create project on server
+    - Setup project (add page to create/assign users)
     - Create users on server
     - Assign users on server
-    - Set current project and Sync
 - Join Team Project
     - Login on server
     - List available projects

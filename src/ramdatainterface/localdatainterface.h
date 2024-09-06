@@ -80,7 +80,8 @@ public:
     const QHash<QString, QSet<QString> > &deletedUuids() const;
 
 public slots:
-    void sync(SyncData data, QString serverUuid = "");
+    void sync(SyncData data, QString serverUuid);
+    void sync(SyncData data);
 
 signals:
     void dataResetCommon();

@@ -10,6 +10,7 @@
 
 #include "duapp/app-version.h"
 #include "datacrypto.h"
+#include "localdatainterface.h"
 
 RamServerClient *RamServerClient::_instance = nullptr;
 
@@ -18,6 +19,16 @@ RamServerClient *RamServerClient::i()
     if (!_instance)
         _instance = new RamServerClient();
     return _instance;
+}
+
+ServerConfig RamServerClient::serverConfig() const
+{
+    ServerConfig c;
+    c.address = serverAddress();
+    c.timeout = timeOut();
+    c.useSsl = ssl();
+    c.port = serverPort();
+    return c;
 }
 
 void RamServerClient::setServerAddress(const QString &newServerAddress)
@@ -172,6 +183,65 @@ QJsonObject RamServerClient::setUserRole(const QString &uuid, const QString &rol
     return parseData(reply);
 }
 
+QJsonObject RamServerClient::createProject(const QString &data, const QString &uuid)
+{
+    QJsonObject body;
+    body.insert("uuid", uuid);
+    body.insert("data", data);
+
+    Request r = buildRequest("createProject", body);
+
+    QNetworkReply *reply = synchronousRequest(r);
+    return parseData(reply);
+}
+
+QJsonObject RamServerClient::setProject(const QString &uuid)
+{
+    QJsonObject body;
+    body.insert("project", uuid);
+
+    Request r = buildRequest("setCurrentProject", body);
+
+    QNetworkReply *reply = synchronousRequest(r);
+    return parseData(reply);
+}
+
+QJsonObject RamServerClient::assignUsers(const QStringList &userUuids, const QString &projectUuid)
+{
+    QJsonObject body;
+    body.insert("project", projectUuid);
+
+    QJsonArray usersArr;
+    for (const auto &uuid: userUuids)
+        usersArr.append(uuid);
+    body.insert("users", usersArr);
+
+    Request r = buildRequest("assignUsers", body);
+
+    QNetworkReply *reply = synchronousRequest(r);
+    return parseData(reply);
+}
+
+void RamServerClient::downloadAllData()
+{
+    if (m_status == Syncing)
+        return;
+
+    QStringList tableNames = LocalDataInterface::instance()->tableNames();
+
+    m_pushingData = SyncData();
+    m_pushingData.syncDate = "1818-05-05 00:00:00";
+
+    for(int i = 0; i < tableNames.count(); i++)
+    {
+        m_pushingData.tables.insert( tableNames.at(i), QSet<TableRow>());
+    }
+
+    // Create a request to get the data
+
+    startSync();
+}
+
 void RamServerClient::nextRequest()
 {
     if (m_requestQueue.isEmpty())
@@ -218,8 +288,10 @@ void RamServerClient::dataReceived(QNetworkReply *reply)
             qDebug().noquote() << "{Client}" << message;
     }
 
-    if (!repSuccess)
+    if (!repSuccess) {
+        qWarning().noquote() << "{Client}" << repObj.value("message").toString("Unknown error");
         finishSync(true);
+    }
 
     // Parse specific data
     if (repQuery == "ping")
@@ -599,10 +671,12 @@ QJsonObject RamServerClient::parseData(QNetworkReply *reply)
         repObj.insert("accepted",false);
         repObj.insert("success",false);
         repObj.insert("query", "unknown");
+
+        qDebug() << "{Client}" << repAll;
+
         return repObj;
     }
 
-    QString repQuery = repObj.value("query").toString();
     QString repMessage = repObj.value("message").toString();
     bool repSuccess = repObj.value("success").toBool();
 
@@ -618,6 +692,18 @@ QJsonObject RamServerClient::parseData(QNetworkReply *reply)
         qInfo().noquote() << "{Client}" << repMessage;
 
     return repObj;
+}
+
+void RamServerClient::startSync()
+{
+    qDebug().noquote() << "{Client}" << "Starting Sync...";
+
+    setStatus(Syncing);
+
+    queueRequest("sync");
+
+    m_pulledData.syncDate = QDateTime::currentDateTimeUtc().toString("yyyy-MM-dd hh:mm:ss");
+    m_pulledData.tables = QHash<QString, QSet<TableRow>>();
 }
 
 void RamServerClient::fetch()
@@ -790,7 +876,12 @@ void RamServerClient::setStatus(ClientStatus status)
         qInfo().noquote() << "{Client}" << tr("Connected!");
         break;
     case Ready:
-        qInfo().noquote() << "{Client}" << tr("Logged in!");
+        if(m_status == Online)
+            qInfo().noquote() << "{Client}" << tr("Logged in!");
+        else if (m_status == Syncing)
+            qInfo().noquote() << "{Client}" << tr("Sync finished.");
+        else
+            qInfo().noquote() << "{Client}" << tr("Ready.");
         break;
     case Syncing:
         qInfo().noquote() << "{Client}" << tr("Synchronization...");

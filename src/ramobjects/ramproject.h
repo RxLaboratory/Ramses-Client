@@ -29,6 +29,14 @@ public:
     static RamProject *get(QString uuid);
     static RamProject *c(RamObject *o);
 
+    // THE JSON DATA KEYS and ENUM VALUES
+
+    static const QString KEY_Width;
+    static const QString KEY_Height;
+    static const QString KEY_FrameRate;
+    static const QString KEY_Deadline;
+    static const QString KEY_PixelAspectRatio;
+
     // METHODS //
 
     RamProject(QString shortName, QString name);

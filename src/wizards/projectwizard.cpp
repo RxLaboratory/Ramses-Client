@@ -7,11 +7,10 @@
 #include "duutils/dusystemutils.h"
 #include "projectmanager.h"
 #include "ramnamemanager.h"
-#include "ramuser.h"
-#include "ramproject.h"
 #include "ramstep.h"
 #include "ramses.h"
 #include "ramjsonstepeditwidget.h"
+#include "ramserverclient.h"
 
 ProjectWizard::ProjectWizard(bool team, QWidget *parent, Qt::WindowFlags flags):
     QWizard(parent, flags),
@@ -26,7 +25,18 @@ void ProjectWizard::done(int r)
     if (r != QWizard::Accepted)
         return QWizard::done(r);
 
-    // Create the database and project
+    if (_isTeamProject)
+        _userUuid = ui_loginPage->uuid();
+
+    // Create distant data
+    // (project, users and assignemnts)
+    if (_isTeamProject) {
+        _projectUuid = createServerData();
+        if (_projectUuid == "")
+            return;
+    }
+
+    // Create the local database
     QString dbPath = ui_pathsPage->dbFilePath();
 
     // Remove existing file
@@ -37,38 +47,36 @@ void ProjectWizard::done(int r)
     if (!createDatabase(dbPath))
         return;
 
+    // Disable while we finish the setup
+    this->setEnabled(false);
+
     // Set the file
     ProjectManager::i()->loadDatabase(dbPath);
 
-    // Create a user
-    QString username = SystemUtils::userName();
-    RamUser *user = new RamUser(
-        RamNameManager::nameToShortName(username),
-        username
-        );
+    // Create local data
+    if (_isTeamProject) {
 
-    // Create project
-    RamProject *project = new RamProject(
-        ui_detailsPage->shortName(),
-        ui_detailsPage->name()
-        );
-    // Set the project details
-    project->setWidth(ui_resolutionWidget->getWidth());
-    project->setHeight(ui_resolutionWidget->getHeight());
-    project->setFramerate(ui_framerateWidget->framerate());
-    project->setDeadline(ui_deadlineEdit->date());
+        // Set the server settings in the DB
+        LocalDataInterface::instance()->setServerSettings(dbPath, RamServerClient::i()->serverConfig());
+
+        // Download distant data
+        RamServerClient::i()->setProject(_projectUuid);
+        // Just wait for it
+        connect(DBInterface::instance(), &DBInterface::syncFinished,
+                this, &ProjectWizard::finishProjectSetup);
+        RamServerClient::i()->downloadAllData();
+        return;
+    }
+
+    RamUser *user = createLocalUser();
+    _userUuid = user->uuid();
+    // Project
+    RamProject *project = createLocalProject();
     // Assign the user
     project->users()->appendObject(user->uuid());
+    _projectUuid = project->uuid();
 
-    // Create the steps
-    const QVector<QJsonObject> &jsonSteps = _steps->objects();
-    for(const auto &jsonStep: jsonSteps)
-        RamStep::fromJson(jsonStep, project);
-
-    // Login
-    Ramses::instance()->setUser( user );
-
-    QWizard::done(r);
+    finishProjectSetup();
 }
 
 void ProjectWizard::editStep(const QModelIndex &index)
@@ -88,6 +96,45 @@ void ProjectWizard::editStep(const QModelIndex &index)
         tr("Step"),
         ":/icons/step",
         true);
+}
+
+void ProjectWizard::finishProjectSetup()
+{
+    disconnect(DBInterface::instance(), nullptr, this, nullptr);
+
+    RamProject *project = RamProject::get(_projectUuid);
+    if (!project) {
+        QMessageBox::warning(
+            this,
+            tr("Project creation failed."),
+            tr("Something went wrong while downloading data from the server, sorry.")
+            );
+        this->setEnabled(true);
+        return;
+    }
+
+    RamUser *user = RamUser::get(_userUuid);
+    if (!user) {
+        QMessageBox::warning(
+            this,
+            tr("Project creation failed."),
+            tr("Something went wrong while downloading data from the server, sorry.")
+            );
+        this->setEnabled(true);
+        return;
+    }
+
+    // Create the steps
+    const QVector<QJsonObject> &jsonSteps = _steps->objects();
+    for(const auto &jsonStep: jsonSteps)
+        RamStep::fromJson(jsonStep, project);
+
+    // Login
+    Ramses::instance()->setUser( user );
+
+    // and accept
+    this->setEnabled(true);
+    QWizard::done(QWizard::Accepted);
 }
 
 void ProjectWizard::setupUi()
@@ -133,6 +180,13 @@ QWizardPage *ProjectWizard::createProjectSettingsPage()
 
     ui_framerateWidget = new FramerateWidget(this);
     layout->addRow(tr("Delivery framerate"), ui_framerateWidget);
+
+    ui_parBox = new QDoubleSpinBox(this);
+    layout->addRow(tr("Delivery pixel aspect ratio"), ui_parBox);
+    ui_parBox->setMinimum(0.01);
+    ui_parBox->setMaximum(10.0);
+    ui_parBox->setDecimals(2);
+    ui_parBox->setValue(1.0);
 
     ui_deadlineEdit = new QDateEdit(this);
     ui_deadlineEdit->setCalendarPopup(true);
@@ -189,4 +243,77 @@ bool ProjectWizard::createDatabase(const QString &dbPath)
         return false;
     }
     return true;
+}
+
+QString ProjectWizard::createServerData()
+{
+    auto rsc = RamServerClient::i();
+
+    // Create project
+
+    QJsonObject projectData;
+    projectData.insert(RamProject::KEY_ShortName, ui_detailsPage->shortName());
+    projectData.insert(RamProject::KEY_Name, ui_detailsPage->name());
+    projectData.insert(RamProject::KEY_Width, ui_resolutionWidget->getWidth());
+    projectData.insert(RamProject::KEY_Height, ui_resolutionWidget->getHeight());
+    projectData.insert(RamProject::KEY_FrameRate, ui_framerateWidget->framerate());
+    projectData.insert(RamProject::KEY_Deadline, ui_deadlineEdit->date().toString("yyyy-MM-dd"));
+    projectData.insert(RamProject::KEY_PixelAspectRatio, ui_parBox->value());
+    QJsonDocument doc;
+    doc.setObject(projectData);
+
+    QJsonObject rep = rsc->createProject(doc.toJson(QJsonDocument::Compact));
+    if (!checkServerReply(rep))
+        return "";
+
+    QString projectUuid = rep.value("content").toString();
+
+    // Create users
+
+    // Assign users
+    // At least ourselves
+    rep = rsc->assignUsers( { _userUuid } , projectUuid);
+    if (!checkServerReply(rep))
+        return "";
+
+    return projectUuid;
+}
+
+bool ProjectWizard::checkServerReply(const QJsonObject &reply)
+{
+    if (!reply.value("success").toBool(false)) {
+        QMessageBox::warning(
+            this,
+            tr("Ramses team project creation failed"),
+            reply.value("message").toString("Unknown error")
+            );
+        return false;
+    }
+    return true;
+}
+
+RamUser *ProjectWizard::createLocalUser()
+{
+    QString username = SystemUtils::userName();
+    RamUser *user = new RamUser(
+        RamNameManager::nameToShortName(username),
+        username
+        );
+    return user;
+}
+
+RamProject *ProjectWizard::createLocalProject()
+{
+    RamProject *project = new RamProject(
+        ui_detailsPage->shortName(),
+        ui_detailsPage->name()
+        );
+    // Set the project details
+    project->setWidth(ui_resolutionWidget->getWidth());
+    project->setHeight(ui_resolutionWidget->getHeight());
+    project->setFramerate(ui_framerateWidget->framerate());
+    project->setDeadline(ui_deadlineEdit->date());
+    project->setPixelAspectRatio(ui_parBox->value());
+
+    return project;
 }
