@@ -9,15 +9,15 @@ PipeFileManagerWidget::PipeFileManagerWidget(QWidget *parent):
         DuIcon(":icons/file"),
         parent)
 {
-    changeProject(Ramses::instance()->currentProject());
-    connect(Ramses::instance(), SIGNAL(currentProjectChanged(RamProject*)), this, SLOT(changeProject(RamProject*)));
+    changeProject(Ramses::i()->project());
+    connect(Ramses::i(), SIGNAL(currentProjectChanged(RamProject*)), this, SLOT(changeProject(RamProject*)));
     ui_listWidget->setEditMode(ObjectListWidget::RemoveObjects);
     ui_listWidget->setSortable(true);
 }
 
 RamPipeFile *PipeFileManagerWidget::createObject()
 {
-    RamProject *project = Ramses::instance()->currentProject();
+    RamProject *project = Ramses::i()->project();
     if (!project) return nullptr;
     RamPipeFile *pf = new RamPipeFile(
                 "NEW",

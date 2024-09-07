@@ -39,7 +39,7 @@ RamObject *RamObject::get(QString uuid, ObjectType type)
     case ScheduleRow: return RamScheduleRow::get(uuid);
     case TemplateStep: return RamTemplateStep::get(uuid);
     case TemplateAssetGroup: return RamTemplateAssetGroup::get(uuid);
-    case Ramses: return Ramses::instance();
+    case Ramses: return Ramses::i();
         // These aren't valid RamObjects
     case Item: return nullptr;
     case Object: return nullptr;
@@ -118,7 +118,7 @@ void RamObject::remove()
 
 bool RamObject::canEdit()
 {
-    RamUser *u = Ramses::instance()->currentUser();
+    RamUser *u = Ramses::i()->currentUser();
     if (!u) return false;
     return u->role() >= m_editRole;
 }
@@ -184,7 +184,7 @@ void RamObject::showEdit(QWidget *w, QString title)
 
     if (m_editable)
     {
-        RamUser *u = Ramses::instance()->currentUser();
+        RamUser *u = Ramses::i()->currentUser();
         if (u)
         {
             w->setEnabled(u->role() >= m_editRole);
@@ -277,7 +277,7 @@ void RamObject::loadModel(RamObjectModel *model, QString modelName, QJsonObject 
 
 void RamObject::construct(QObject *parent)
 {
-    if (!parent && m_objectType != Ramses) this->setParent(Ramses::instance());
+    if (!parent && m_objectType != Ramses) this->setParent(Ramses::i());
     this->setObjectName( objectTypeName() + " | " + shortName() + " (" + m_uuid + ")" );
 
     // Monitor db changes

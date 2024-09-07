@@ -7,7 +7,7 @@ RamStateBox::RamStateBox(QWidget *parent):
     RamObjectComboBox(parent)
 {
     this->setMinimumWidth(150);
-    this->setModel(Ramses::instance()->states());
+    this->setModel(Ramses::i()->states());
     connect(this, &RamObjectComboBox::currentObjectChanged, this, &RamStateBox::changeCurrentState);
 }
 

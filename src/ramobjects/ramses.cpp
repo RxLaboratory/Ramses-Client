@@ -4,51 +4,13 @@
 
 Ramses *Ramses::_instance = nullptr;
 
-Ramses *Ramses::instance()
+Ramses *Ramses::i()
 {
     if(!_instance) _instance = new Ramses();
     return _instance;
 }
 
-void Ramses::setUserUuid(QString uuid)
-{
-    if (uuid == "")
-    {
-        setUser(nullptr);
-        return;
-    }
-    RamUser *u = RamUser::get(uuid);
-    // Add the user to the list in case it's not already there
-    //m_users->appendObject(uuid);
-    setUser(u);
-}
-
 // PUBLIC
-
-void Ramses::setUser(RamUser *u)
-{
-    m_currentUser = u;
-    if (!u)
-    {
-        setCurrentProject(nullptr);
-        emit userChanged(nullptr);
-        qDebug() << "Logged out.";
-        return;
-    }
-
-    // Set current project
-    QSettings *uSettings = m_currentUser->settings();
-    QString projUuid = uSettings->value("ramses/currentProject", "").toString();
-
-    if (projUuid != "") setCurrentProject( RamProject::get(projUuid) );
-    else setCurrentProject(nullptr);
-
-    m_dbi->setCurrentUserUuid(m_currentUser->uuid());
-
-    emit userChanged(m_currentUser);
-
-    qDebug() << "Logged in: " + m_currentUser->name();
-}
 
 void Ramses::setRamsesPath(QString p)
 {
@@ -115,7 +77,7 @@ RamUser *Ramses::removedUser()
 
 bool Ramses::isAdmin()
 {
-    if (!DBInterface::instance()->isTeamProject())
+    if (!DBInterface::i()->isTeamProject())
         return true;
 
     if (!m_currentUser) return false;
@@ -124,7 +86,7 @@ bool Ramses::isAdmin()
 
 bool Ramses::isProjectAdmin()
 {
-    if (!DBInterface::instance()->isTeamProject())
+    if (!DBInterface::i()->isTeamProject())
         return true;
 
     if (!m_currentUser) return false;
@@ -133,7 +95,7 @@ bool Ramses::isProjectAdmin()
 
 bool Ramses::isLead()
 {
-    if (!DBInterface::instance()->isTeamProject())
+    if (!DBInterface::i()->isTeamProject())
         return true;
 
     if (!m_currentUser) return false;
@@ -233,34 +195,9 @@ DBTableModel *Ramses::projects() const
     return m_projects;
 }
 
-RamProject *Ramses::currentProject() const
+RamProject *Ramses::project() const
 {
     return m_currentProject;
-}
-
-void Ramses::setCurrentProject(RamProject *project)
-{
-    m_currentProject = project;
-
-    if (m_currentUser && m_currentProject)
-    {
-        QSettings *uSettings = m_currentUser->settings();
-        uSettings->setValue("ramses/currentProject", m_currentProject->uuid() );
-    }
-
-    emit currentProjectChanged(m_currentProject);
-}
-
-void Ramses::setCurrentProject(QString shortName)
-{
-    m_projects->load();
-    setCurrentProject( RamProject::c(m_projects->search(shortName)) );
-}
-
-void Ramses::setCurrentProjectUuid(QString uuid)
-{
-    if (uuid == "") setCurrentProject( nullptr );
-    setCurrentProject( RamProject::get(uuid) );
 }
 
 DBTableModel *Ramses::templateSteps() const
@@ -302,7 +239,7 @@ Ramses::Ramses(QObject *parent):
     RamObject("RMSS", "Ramses", ObjectType::Ramses, parent, true)
 {
     qDebug() << "Initialising Ramses";
-    m_dbi = DBInterface::instance();
+    m_dbi = DBInterface::i();
 
     m_applications = new DBTableModel(RamObject::Application, false, false, this);
     m_fileTypes = new DBTableModel(RamObject::FileType, false, false, this);
@@ -314,7 +251,7 @@ Ramses::Ramses(QObject *parent):
 
     this->setObjectName( "Ramses Class" );
 
-    connect(m_dbi, &DBInterface::userChanged, this, &Ramses::setUserUuid);
+    connect(m_dbi, &DBInterface::databaseReady, this, &Ramses::loadDatabase);
 
     qDebug() << "Ramses Ready!";
 }
@@ -330,6 +267,28 @@ QString Ramses::createPath(QString p) const
 {
     QDir d = createDir(p);
     return d.absolutePath();
+}
+
+void Ramses::loadDatabase()
+{
+    QString userUuid = LocalDataInterface::instance()->currentUserUuid();
+    auto user = RamUser::get(userUuid);
+    if (!user) return;
+
+    m_currentUser = user;
+
+    // Set current project
+    QString projectUuid = LocalDataInterface::instance()->currentProjectUuid();
+    auto project = RamProject::get(projectUuid);
+    if (!project) return;
+
+    m_currentProject = project;
+
+    qInfo().noquote() << "{Ramses}" << "Logged in: " + m_currentUser->name();
+    qInfo().noquote() << "{Ramses}" << "Project: " + m_currentProject->name();
+
+    emit ready();
+    emit roleChanged(user->role());
 }
 
 

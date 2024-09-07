@@ -274,7 +274,7 @@ void StepEditWidget::changeUser(RamObject *userObj)
     }
 
     const QVector<RamStep::StateCount> stateCount = m_step->stateCount(user);
-    RamState *noState = Ramses::instance()->noState();
+    RamState *noState = Ramses::i()->noState();
     float total = 0;
 
     for(const auto count: stateCount) {
@@ -523,7 +523,7 @@ void StepEditWidget::setupUi()
     m_applicationList = new ObjectListWidget(true, RamUser::ProjectAdmin, this);
     m_applicationList->setEditMode(ObjectListWidget::UnassignObjects);
     m_applicationList->setTitle("Applications");
-    m_applicationList->setAssignList(Ramses::instance()->applications());
+    m_applicationList->setAssignList(Ramses::i()->applications());
     appLayout->addWidget(m_applicationList);
 
     ui_tabWidget->addTab(appDummyWidget, DuIcon(":/icons/applications") ,"");

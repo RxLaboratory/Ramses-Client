@@ -120,7 +120,7 @@ void Daemon::reply(QString request, QTcpSocket *client)
         StateManager::i()->quit();
 
     else if (args.contains("open"))
-        ProjectManager::i()->openDatabase(args.value("file"));
+        DBInterface::i()->loadDataFile(args.value("file"));
 
     else if (args.contains("getCurrentProject"))
         getCurrentProject(client);
@@ -184,7 +184,7 @@ void Daemon::ping(QTcpSocket *client)
     QJsonObject content;
     content.insert("version", STR_VERSION);
     content.insert("ramses", STR_INTERNALNAME);
-    RamUser *user = Ramses::instance()->currentUser();
+    RamUser *user = Ramses::i()->currentUser();
     if (user)
     {
         content.insert("userUuid", user->uuid());
@@ -201,7 +201,7 @@ void Daemon::getCurrentProject(QTcpSocket *client)
     log(tr("I'm replying to this request: %1.").arg("getCurrentProject"), DuQFLog::Debug);
 
     QJsonObject content;
-    RamProject *proj = Ramses::instance()->currentProject();
+    RamProject *proj = Ramses::i()->project();
     QString message = "There's no current project.";
     if (proj)
     {
@@ -225,9 +225,9 @@ void Daemon::setCurrentProject(QString uuid, QTcpSocket *client)
     log(tr("I'm replying to this request: %1.").arg("setCurrentProject"), DuQFLog::Debug);
     log(tr("This is the uuid: %1").arg(uuid), DuQFLog::Data);
 
-    Ramses::instance()->setCurrentProjectUuid(uuid);
+    Ramses::i()->setCurrentProjectUuid(uuid);
 
-    RamProject *p = Ramses::instance()->currentProject();
+    RamProject *p = Ramses::i()->project();
     if (p) post(client, QJsonObject(), "setCurrentProject", tr("Current project set to: \"%1\".").arg(p->name()));
     else post(client, QJsonObject(), "setCurrentProject", tr("Project not found, sorry!"), false);
 }
@@ -274,7 +274,7 @@ void Daemon::getRamsesFolder(QTcpSocket *client)
     log(tr("I'm replying to this request: %1.").arg("getRamsesFolder"), DuQFLog::Debug);
 
     QJsonObject content;
-    content.insert("path", Ramses::instance()->path(RamObject::NoFolder, true));
+    content.insert("path", Ramses::i()->path(RamObject::NoFolder, true));
     post(client, content, "getRamsesFolder", tr("I've got the Ramses folder."));
 }
 
@@ -284,8 +284,8 @@ void Daemon::getProjects(QTcpSocket *client)
 
     QJsonObject content;
     QJsonArray projects;
-    DBTableModel *ramProjects = Ramses::instance()->projects();
-    RamUser *u = Ramses::instance()->currentUser();
+    DBTableModel *ramProjects = Ramses::i()->projects();
+    RamUser *u = Ramses::i()->currentUser();
     if (u)
         for (int i = 0; i < ramProjects->rowCount(); i++)
         {
@@ -566,7 +566,7 @@ void Daemon::getStatus(QString itemUuid, QString stepUuid, QTcpSocket *client)
     log(tr("This is the item uuid: %1").arg(itemUuid), DuQFLog::Data);
     log(tr("This is the step uuid: %1").arg(stepUuid), DuQFLog::Data);
 
-    RamProject *proj = Ramses::instance()->currentProject();
+    RamProject *proj = Ramses::i()->project();
 
     QJsonObject content;
     content.insert("uuid", "");
@@ -615,7 +615,7 @@ void Daemon::setStatusModifiedBy(QString statusUuid, QString userUuid, QTcpSocke
     }
 
     RamUser *user = nullptr;
-    if (userUuid == "current" || userUuid == "") user = Ramses::instance()->currentUser();
+    if (userUuid == "current" || userUuid == "") user = Ramses::i()->currentUser();
     else user = RamUser::get(userUuid);
     if (!user) {
         post(client, QJsonObject(), "setStatusModifiedBy", tr("Unknown user."), false);

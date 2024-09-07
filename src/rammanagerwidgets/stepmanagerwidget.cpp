@@ -9,8 +9,8 @@ ObjectManagerWidget(
     DuIcon(":icons/step"),
     parent )
 {
-    changeProject(Ramses::instance()->currentProject());
-    connect(Ramses::instance(), SIGNAL(currentProjectChanged(RamProject*)), this, SLOT(changeProject(RamProject*)));
+    changeProject(Ramses::i()->project());
+    connect(Ramses::i(), SIGNAL(currentProjectChanged(RamProject*)), this, SLOT(changeProject(RamProject*)));
     ui_listWidget->setEditMode(ObjectListWidget::RemoveObjects);
     ui_listWidget->setSortable(true);
 
@@ -21,7 +21,7 @@ ObjectManagerWidget(
     addButton->setPopupMode(QToolButton::InstantPopup);
     addButton->setMenu(ui_createMenu);
 
-    ui_createMenu->setObjectModel(Ramses::instance()->templateSteps());
+    ui_createMenu->setObjectModel(Ramses::i()->templateSteps());
 
     connect(ui_createMenu, &RamObjectMenu::createTriggered, this, &StepManagerWidget::createObject);
     connect(ui_createMenu, &RamObjectMenu::assigned, this, &StepManagerWidget::createFromTemplate);
@@ -29,7 +29,7 @@ ObjectManagerWidget(
 
 RamStep *StepManagerWidget::createObject()
 {
-    RamProject *project = Ramses::instance()->currentProject();
+    RamProject *project = Ramses::i()->project();
     if (!project) return nullptr;
 
     RamStep *step = new RamStep(
@@ -54,7 +54,7 @@ void StepManagerWidget::createFromTemplate(RamObject *templateStepObj)
     RamTemplateStep *templateStep = RamTemplateStep::c(templateStepObj);
     if (!templateStep) return;
 
-    RamProject *project = Ramses::instance()->currentProject();
+    RamProject *project = Ramses::i()->project();
     if (!project) return;
     RamStep *step = RamStep::createFromTemplate(templateStep, project);
     //project->steps()->appendObject(step->uuid());

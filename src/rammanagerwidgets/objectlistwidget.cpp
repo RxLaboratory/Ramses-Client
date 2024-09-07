@@ -178,7 +178,7 @@ void ObjectListWidget::removeSelectedObjects()
         // Don't remove yourself if you're a user
         if (o->objectType() == RamObject::User && m_editMode == RemoveObjects)
         {
-            if (o->is( Ramses::instance()->currentUser() ))
+            if (o->is( Ramses::i()->currentUser() ))
             {
                 QMessageBox::information(this,
                                          "Can't remove this user",

@@ -5,7 +5,7 @@
 
 TemplateStepManagerWidget::TemplateStepManagerWidget(QWidget *parent) :
     ObjectManagerWidget(
-        Ramses::instance()->templateSteps(),
+        Ramses::i()->templateSteps(),
         "Template steps",
         DuIcon(":icons/step"),
         parent )

@@ -16,6 +16,12 @@
 - CLient side
     - WIP reimplement API (add project methods, see python client)
     - refactor logging & console (see DuME)
+    - Remove all userChanged (the user can't change), but use databaseReady when needed
+    - Implement a Ramses::roleChanged signal, and use everywhere in UI (emit just after ready)
+    - Make sure on sync that the user role is monitored
+    - update settings system: remove per user, per project settings etc
+    - update pipeline: sync node location
+    - Mainwindow etc: build UI only on ramsesReady signal (and disconnect everywhere else)
 - check how serveruuid is used and remove if not needed anymore
 
 ## Landing

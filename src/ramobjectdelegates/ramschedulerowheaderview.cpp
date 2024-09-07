@@ -132,7 +132,7 @@ void RamScheduleRowHeaderView::mouseMoveEvent(QMouseEvent *event)
 
 bool RamScheduleRowHeaderView::canEdit() const
 {
-    return Ramses::instance()->isProjectAdmin();
+    return Ramses::i()->isProjectAdmin();
 }
 
 RamScheduleRow *RamScheduleRowHeaderView::getRow(int section) const

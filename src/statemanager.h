@@ -32,7 +32,7 @@ signals:
 
 public slots:
     void quit(bool sync = true);
-    void restart(bool sync = true, const QString &project = "");
+    void restart(bool sync = true, const QString &dbFile = "");
     void setState(StateManager::State newState);
 
 protected:

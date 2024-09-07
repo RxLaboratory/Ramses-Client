@@ -33,6 +33,7 @@
 #include "ramses.h"
 #include "projectmanager.h"
 #include "duapp/duui.h"
+#include "statemanager.h"
 
 MainWindow::MainWindow(const QCommandLineParser &cli, QWidget *parent) :
     DuMainWindow{parent}
@@ -42,11 +43,11 @@ MainWindow::MainWindow(const QCommandLineParser &cli, QWidget *parent) :
     // We instantiate all these objects to be sure it's done in the right order.
 
     // The database interface
-    DBInterface::instance();
+    DBInterface::i();
     // The Process manager
     ProgressManager::instance();
     // Ramses
-    Ramses::instance();
+    Ramses::i();
 
     qDebug() << "> Loading settings";
 
@@ -84,12 +85,12 @@ MainWindow::MainWindow(const QCommandLineParser &cli, QWidget *parent) :
     // Process arguments
 
     // Load file
-    QStringList args = cli.positionalArguments();
+    const QStringList args = cli.positionalArguments();
     for(const QString &filePath: args) {
         QFileInfo argInfo(filePath);
         if (argInfo.exists() && argInfo.suffix().toLower() == "ramses")
         {
-            ProjectManager::i()->openDatabase(filePath);
+            DBInterface::i()->loadDataFile(filePath);
             break;
         }
     }
@@ -110,7 +111,7 @@ void MainWindow::connectEvents()
     // Toolbar buttons
     connect(m_actionLogIn,&DuAction::triggered,
             this, [this] () { setPage(Landing); } );
-    connect(m_actionLogOut, &QAction::triggered, ProjectManager::i(), &ProjectManager::closeDatabase);
+    connect(m_actionLogOut, &QAction::triggered, StateManager::i(), &StateManager::restart);
     connect(m_actionSetOnline, &QAction::triggered, this, &MainWindow::setOnlineAction);
     connect(m_actionSetOffline, &QAction::triggered, this, &MainWindow::setOfflineAction);
     connect(m_actionDatabaseSettings, &QAction::triggered, this, &MainWindow::databaseSettingsAction);
@@ -189,17 +190,19 @@ void MainWindow::connectEvents()
     connect(ui_adminPage, &SettingsWidget::closeRequested, this, [this] () { setPage(Home); });
 
     // Other buttons
-    connect(m_actionSync, SIGNAL(triggered()), DBInterface::instance(),SLOT(sync()));
-    connect(m_actionFullSync, SIGNAL(triggered()), DBInterface::instance(),SLOT(fullSync()));
+    connect(m_actionSync, SIGNAL(triggered()), DBInterface::i(),SLOT(sync()));
+    connect(m_actionFullSync, SIGNAL(triggered()), DBInterface::i(),SLOT(fullSync()));
     connect(ui_mainStack,SIGNAL(currentChanged(int)), this, SLOT(pageChanged(int)));
 
     // Misc
     connect(Daemon::instance(), &Daemon::raise, this, &MainWindow::raise);
-    connect(Ramses::instance(),&Ramses::userChanged, this, &MainWindow::currentUserChanged);
-    connect(Ramses::instance(), &Ramses::currentProjectChanged, this, &MainWindow::currentProjectChanged);
-    connect(DBInterface::instance(),&DBInterface::connectionStatusChanged, this, &MainWindow::dbiConnectionStatusChanged);
-    connect(DBInterface::instance(), &DBInterface::syncFinished, this, &MainWindow::finishSync);
-    connect(DBInterface::instance(), &DBInterface::syncStarted, this, &MainWindow::startSync);
+
+    connect(Ramses::i(), &Ramses::ready, this, &MainWindow::ramsesReady);
+    connect(Ramses::i(), &Ramses::roleChanged, this, &MainWindow::changeUserRole);
+
+    connect(DBInterface::i(),&DBInterface::connectionStatusChanged, this, &MainWindow::dbiConnectionStatusChanged);
+    connect(DBInterface::i(), &DBInterface::syncFinished, this, &MainWindow::finishSync);
+    connect(DBInterface::i(), &DBInterface::syncStarted, this, &MainWindow::startSync);
 
     connect(qApp, &QCoreApplication::aboutToQuit, this, &MainWindow::onQuit);
 }
@@ -321,20 +324,20 @@ void MainWindow::pageChanged(int i)
 
 void MainWindow::setOfflineAction()
 {
-    DBInterface::instance()->setOffline();
+    DBInterface::i()->setOffline();
 }
 
 void MainWindow::setOnlineAction()
 {
-    DBInterface::instance()->setOnline();
+    DBInterface::i()->setOnline();
 
     // Trigger a full sync
-    if (RamServerInterface::instance()->isOnline()) DBInterface::instance()->fullSync();
+    if (RamServerInterface::instance()->isOnline()) DBInterface::i()->fullSync();
 }
 
 void MainWindow::databaseSettingsAction()
 {
-    QString dataFilePath = DBInterface::instance()->dataFile();
+    QString dataFilePath = DBInterface::i()->dataFile();
     if (dataFilePath == "") return;
 
     QFileInfo dataFile(dataFilePath);
@@ -362,166 +365,121 @@ void MainWindow::setPage(Page p)
 
 void MainWindow::revealAdminFolder()
 {
-    RamProject *proj = Ramses::instance()->currentProject();
+    RamProject *proj = Ramses::i()->project();
     if (!proj) return;
     FileUtils::openInExplorer( proj->path(RamProject::AdminFolder), true );
 }
 
 void MainWindow::revealPreProdFolder()
 {
-    RamProject *proj = Ramses::instance()->currentProject();
+    RamProject *proj = Ramses::i()->project();
     if (!proj) return;
     FileUtils::openInExplorer( proj->path(RamProject::PreProdFolder), true );
 }
 
 void MainWindow::revealProdFolder()
 {
-    RamProject *proj = Ramses::instance()->currentProject();
+    RamProject *proj = Ramses::i()->project();
     if (!proj) return;
     FileUtils::openInExplorer( proj->path(RamProject::ProdFolder), true );
 }
 
 void MainWindow::revealPostProdFolder()
 {
-    RamProject *proj = Ramses::instance()->currentProject();
+    RamProject *proj = Ramses::i()->project();
     if (!proj) return;
     FileUtils::openInExplorer( proj->path(RamProject::PostProdFolder), true );
 }
 
 void MainWindow::revealAssetsFolder()
 {
-    RamProject *proj = Ramses::instance()->currentProject();
+    RamProject *proj = Ramses::i()->project();
     if (!proj) return;
     FileUtils::openInExplorer( proj->path(RamProject::AssetsFolder), true );
 }
 
 void MainWindow::revealShotsFolder()
 {
-    RamProject *proj = Ramses::instance()->currentProject();
+    RamProject *proj = Ramses::i()->project();
     if (!proj) return;
     FileUtils::openInExplorer( proj->path(RamProject::ShotsFolder), true );
 }
 
 void MainWindow::revealOutputFolder()
 {
-    RamProject *proj = Ramses::instance()->currentProject();
+    RamProject *proj = Ramses::i()->project();
     if (!proj) return;
     FileUtils::openInExplorer( proj->path(RamProject::OutputFolder), true );
 }
 
 void MainWindow::revealUserFolder()
 {
-    RamUser *current = Ramses::instance()->currentUser();
+    RamUser *current = Ramses::i()->currentUser();
     if (current) FileUtils::openInExplorer( current->path(), true );
 }
 
 void MainWindow::revealVersionsFolder()
 {
-    RamProject *proj = Ramses::instance()->currentProject();
+    RamProject *proj = Ramses::i()->project();
     if (!proj) return;
     FileUtils::openInExplorer( proj->path(RamProject::VersionsFolder), true );
 }
 
 void MainWindow::revealTrashFolder()
 {
-    RamProject *proj = Ramses::instance()->currentProject();
+    RamProject *proj = Ramses::i()->project();
     if (!proj) return;
     FileUtils::openInExplorer( proj->path(RamProject::TrashFolder), true );
 }
 
-void MainWindow::currentUserChanged()
+void MainWindow::changeUserRole(RamAbstractObject::UserRole role)
 {
-    disconnect(_currentUserConnection);
-
-    //defaults
-    ui_userButton->setText(QString("User (%1)").arg("Guest"));
-    ui_userButton->setIcon(DuIcon(":/icons/user"));
-    m_actionAdmin->setVisible(false);
-    m_actionUserProfile->setVisible(false);
-    m_actionUserFolder->setVisible(false);
-
-    RamUser *user = Ramses::instance()->currentUser();
-    if (!user)
-    {
-        m_actionLogIn->setVisible(true);
-        m_actionLogOut->setVisible(false);
-        ui_databaseButton->setVisible(false);
-        ui_projectSelectorAction->setVisible(false);
-        ui_userMenuAction->setVisible(false);
-        ui_userWidget->setObject(nullptr);
-        ui_userWidget->setEnabled(false);
-        ui_userDockWidget->hide();
-        setPage(Home);
-        return;
+    switch(role) {
+    case RamAbstractObject::Admin:
+        m_actionAdmin->setVisible(true);
+        break;
+    case RamAbstractObject::ProjectAdmin:
+    case RamAbstractObject::Lead:
+    case RamAbstractObject::Standard:
+        break;
     }
+}
 
-    m_actionLogIn->setVisible(false);
-    m_actionLogOut->setVisible(true);
-    ui_databaseButton->setVisible(true);
-    ui_projectSelectorAction->setVisible(true);
-    ui_userMenuAction->setVisible(true);
-    ui_userWidget->setObject(user);
-    ui_userWidget->setEnabled(true);
+void MainWindow::ramsesReady()
+{
+    // Set user
 
-    _currentUserConnection = connect(user, &RamUser::dataChanged, this, &MainWindow::currentUserChanged);
+    // Guaranted to exist,
+    // The signal is emited only if all are ready
+    RamUser *user = Ramses::i()->currentUser();
 
     ui_userButton->setText(QString("User (%1)").arg(user->shortName()));
     m_actionUserProfile->setVisible(true);
     m_actionUserFolder->setVisible(true);
+    m_actionLogIn->setVisible(false);
+    m_actionLogOut->setVisible(true);
+    ui_databaseButton->setVisible(true);
+    ui_userMenuAction->setVisible(true);
+    ui_userWidget->setObject(user);
+    ui_userWidget->setEnabled(true);
 
-    if (user->role() == RamUser::Admin)
-    {
-        m_actionAdmin->setVisible(true);
-        ui_userButton->setIcon(DuIcon(":/icons/admin"));
-    }
-    else if (user->role() == RamUser::ProjectAdmin)
-    {
-        ui_userButton->setIcon(DuIcon(":/icons/project-admin"));
-    }
-    else if (user->role() == RamUser::Lead)
-    {
-        ui_userButton->setIcon(DuIcon(":/icons/lead"));
-    }
-    else
-    {
-        ui_userButton->setIcon(DuIcon(":/icons/user"));
-    }
-}
+    // Set Project
 
-void MainWindow::currentProjectChanged(RamProject *project)
-{
-    ui_pipelineMenuAction->setVisible(false);
-    ui_shotMenuAction->setVisible(false);
-    ui_assetMenuAction->setVisible(false);
-    ui_scheduleMenuAction->setVisible(false);
-    ui_filesMenuAction->setVisible(false);
+    // Guaranted to exist,
+    // The signal is emited only if all are ready
+    RamProject *project = Ramses::i()->project();
 
     ui_projectEditWiget->setObject(project);
+    ui_statsTitle->setTitle( project->name() );
 
-    if (!project) {
-        ui_statsTitle->setTitle( "Project" );
-        setPage(Home);
-    }
-    else {
-        RamUser *user = Ramses::instance()->currentUser();
-        if (!user) return;
+    ui_shotMenuAction->setVisible(true);
+    ui_assetMenuAction->setVisible(true);
+    ui_scheduleMenuAction->setVisible(true);
+    ui_filesMenuAction->setVisible(true);
 
-        ui_statsTitle->setTitle( project->name() );
-
-        ui_shotMenuAction->setVisible(true);
-        ui_assetMenuAction->setVisible(true);
-        ui_scheduleMenuAction->setVisible(true);
-        ui_filesMenuAction->setVisible(true);
-
-        if (user->role() == RamUser::Admin)
-        {
-            ui_pipelineMenuAction->setVisible(true);
-        }
-        else if (user->role() == RamUser::ProjectAdmin)
-        {
-            ui_pipelineMenuAction->setVisible(true);
-        }
-    }
+    ui_pipelineMenuAction->setVisible(
+        Ramses::i()->isProjectAdmin()
+        );
 }
 
 void MainWindow::freezeUI(bool f)
@@ -656,7 +614,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
         // Get to the home page first to make sure all toolbars are hidden
         setPage(Home);
 
-        if (DBInterface::instance()->connectionStatus() == NetworkUtils::Online)
+        if (DBInterface::i()->connectionStatus() == NetworkUtils::Online)
         {
             // Clean before quit!
             m_closing = true;
@@ -668,7 +626,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
             pm->start();
             pm->freeze();
 
-            DBInterface::instance()->setOffline();
+            DBInterface::i()->setOffline();
         }
         else m_readyToClose = true;
     }

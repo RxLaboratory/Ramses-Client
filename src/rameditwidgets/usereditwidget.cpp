@@ -31,7 +31,7 @@ RamUser *UserEditWidget::user() const
 void UserEditWidget::reInit(RamObject *o)
 {
     m_user = qobject_cast<RamUser*>(o);
-    RamUser *current = Ramses::instance()->currentUser();
+    RamUser *current = Ramses::i()->currentUser();
     if (m_user && current)
     {
         ui_cpasswordEdit->setText("");
@@ -97,7 +97,7 @@ void UserEditWidget::reInit(RamObject *o)
     }
 
     // Password field visible only if online
-    ui_passwordWidget->setVisible( DBInterface::instance()->connectionStatus() == NetworkUtils::Online );
+    ui_passwordWidget->setVisible( DBInterface::i()->connectionStatus() == NetworkUtils::Online );
 }
 
 void UserEditWidget::changePassword()
@@ -135,7 +135,7 @@ bool UserEditWidget::checkPasswordInput()
 
     if (ui_npassword1Edit->text() != "")
     {
-        if (ui_cpasswordEdit->text() == "" && m_user->is(Ramses::instance()->currentUser()) )
+        if (ui_cpasswordEdit->text() == "" && m_user->is(Ramses::i()->currentUser()) )
         {
             QMessageBox::warning(this, "What's your password?", "I'm sorry, you have to know your current password to change it.\nPlease try again.\n\n"
                                                                 "If you've forgotten your password, you can ask an(other) administrator to change it.\n\n"
@@ -253,7 +253,6 @@ void UserEditWidget::connectEvents()
 {
     connect(ui_roleBox, SIGNAL(currentIndexChanged(int)), this, SLOT(setRole(int)));
     connect(ui_passwordButton, SIGNAL(clicked()), this, SLOT(changePassword()));
-    //connect(Ramses::instance(), &Ramses::userChanged, this, &UserEditWidget::objectChanged);
     connect(ui_colorSelector, SIGNAL(colorChanged(QColor)), this, SLOT(setColor(QColor)));
     connect(RamServerInterface::instance(), &RamServerInterface::connectionStatusChanged, this, &UserEditWidget::connectionStatusChanged);
 }

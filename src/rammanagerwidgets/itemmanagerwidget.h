@@ -95,7 +95,8 @@ private slots:
 
     void contextMenuRequested(QPoint p);
 
-    void currentUserChanged(RamUser *user);
+    void ramsesReady();
+    void changeUserRole(RamUser::UserRole role);
 
 private:
     void setupUi();

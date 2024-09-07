@@ -132,7 +132,7 @@ void DatabaseCreateWidget::connectEvents()
 {
     connect(ui_fileSelector, &DuFolderSelectorWidget::pathChanged, this, &DatabaseCreateWidget::checkPath);
     connect(ui_createButton, &QPushButton::clicked, this, &DatabaseCreateWidget::createDB);
-    connect(DBInterface::instance(), &DBInterface::syncFinished, this, &DatabaseCreateWidget::finishSync);
+    connect(DBInterface::i(), &DBInterface::syncFinished, this, &DatabaseCreateWidget::finishSync);
 }
 
 bool DatabaseCreateWidget::createNewDB()
@@ -156,10 +156,10 @@ bool DatabaseCreateWidget::createNewDB()
     }
 
     // Save Ramses Path
-    LocalDataInterface::setRamsesPath(newFilePath, ui_folderSelector->path());
+    LocalDataInterface::setWorkingPath(newFilePath, ui_folderSelector->path());
 
     // Set File
-    DBInterface::instance()->setDataFile(newFilePath, true);
+    DBInterface::i()->loadDataFile(newFilePath);
 
     return true;
 }
@@ -188,10 +188,10 @@ bool DatabaseCreateWidget::createNewDB(ServerConfig s)
     LocalDataInterface::instance()->setServerSettings(ui_fileSelector->path(), s);
 
     // Save Ramses Path
-    LocalDataInterface::setRamsesPath(newFilePath, ui_folderSelector->path());
+    LocalDataInterface::setWorkingPath(newFilePath, ui_folderSelector->path());
 
     // Set File
-    DBInterface::instance()->setDataFile(newFilePath, true);
+    DBInterface::i()->loadDataFile(newFilePath, true);
 
     return true;
 }
@@ -249,7 +249,7 @@ void DatabaseCreateWidget::createOnlineDB()
     pm->freeze();
     pm->start();
     m_downloading = true;
-    DBInterface::instance()->fullSync();
+    DBInterface::i()->fullSync();
 }
 
 void DatabaseCreateWidget::createOfflineDB()
@@ -281,7 +281,7 @@ void DatabaseCreateWidget::createOfflineDB()
     newUser->setRole(RamUser::Admin);
 
     // Login
-    Ramses::instance()->setUser( newUser );
+    Ramses::i()->setUser( newUser );
 
     // Hide dock
     MainWindow *mw = (MainWindow*)GuiUtils::appMainWindow();

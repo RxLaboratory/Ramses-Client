@@ -291,7 +291,7 @@ void DBTableModel::insertObject(const QString &uuid, const QString &data, const 
     if (m_objectUuids.contains(uuid)) return;
 
     // Removed
-    if (DBInterface::instance()->isRemoved(uuid, table)) return;
+    if (DBInterface::i()->isRemoved(uuid, table)) return;
 
     // Unique
     QString uuidToRemove = checkUnique(uuid, data, modificationDate);

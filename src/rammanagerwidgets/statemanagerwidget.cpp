@@ -5,7 +5,7 @@
 
 StateManagerWidget::StateManagerWidget(QWidget *parent) :
     ObjectManagerWidget(
-        Ramses::instance()->states(),
+        Ramses::i()->states(),
         "States",
         DuIcon(":icons/state-l"),
         parent)

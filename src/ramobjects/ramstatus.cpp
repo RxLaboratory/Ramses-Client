@@ -58,7 +58,7 @@ RamStatus *RamStatus::noStatus(RamAbstractItem *item, RamStep *step)
     qDebug() << "Creating a noStatus for the item: " << item->shortName() << " and step: " << step->shortName();
 
     RamStatus *no = new RamStatus(
-                Ramses::instance()->ramsesUser(),
+                Ramses::i()->ramsesUser(),
                 item,
                 step
                 );
@@ -93,7 +93,7 @@ RamStatus::RamStatus(RamUser *user, RamAbstractItem *item, RamStep *step, bool i
 
     d.insert("step", step->uuid());
 
-    RamState *state = Ramses::instance()->noState();
+    RamState *state = Ramses::i()->noState();
     d.insert("state", state->uuid());
     d.insert("completionRatio", 0);
 
@@ -130,7 +130,7 @@ RamUser *RamStatus::modifiedBy() const
     QString userUuid( getData("user").toString("none") );
     RamUser *u = RamUser::get( userUuid );
     if (u) return u;
-    return Ramses::instance()->ramsesUser();
+    return Ramses::i()->ramsesUser();
 }
 
 void RamStatus::setModifiedBy(RamUser *user)
@@ -173,7 +173,7 @@ QString RamStatus::itemUuid() const
 
 bool RamStatus::isNoState() const
 {
-    RamState *noState = Ramses::instance()->noState();
+    RamState *noState = Ramses::i()->noState();
     return noState->is(state());
 }
 
@@ -196,7 +196,7 @@ void RamStatus::setCompletionRatio(int completionRatio)
 
 RamState *RamStatus::state() const
 {
-    if (m_virtual) return Ramses::instance()->noState();
+    if (m_virtual) return Ramses::i()->noState();
     return RamState::get( getData("state").toString("none") );
 }
 
@@ -355,7 +355,7 @@ float RamStatus::goal() const
 {
     if (m_virtual) return 0;
     // If state is none, 0!
-    RamState *noState = Ramses::instance()->noState();
+    RamState *noState = Ramses::i()->noState();
     if (noState->is(state())) return 0.0;
 
     float g = getData("goal").toDouble();
@@ -380,7 +380,7 @@ float RamStatus::estimation(int difficulty) const
     float est = 0.0;
 
     // If state is none, 0!
-    RamState *noState = Ramses::instance()->noState();
+    RamState *noState = Ramses::i()->noState();
     if (noState->is(state())) return 0.0;
 
     // If step doesn't exist, it's 0
@@ -444,7 +444,7 @@ float RamStatus::estimation(int difficulty) const
 bool RamStatus::useAutoEstimation() const
 {
     if (m_virtual) return true;
-    RamState *noState = Ramses::instance()->noState();
+    RamState *noState = Ramses::i()->noState();
     if (noState->is(state())) return true;
 
     return getData("useAutoEstimation").toBool(true);
@@ -634,7 +634,7 @@ QString RamStatus::subDetails() const
     if (this->isNoState()) return "";
     //subdetails
     QString dateFormat = DATETIME_DATA_FORMAT;
-    RamUser *u = Ramses::instance()->currentUser();
+    RamUser *u = Ramses::i()->currentUser();
     if (u)
     {
         QSettings settings;
@@ -740,7 +740,7 @@ QString RamStatus::folderPath() const
 
 void RamStatus::stateRemoved()
 {
-    this->setState( Ramses::instance()->wipState() );
+    this->setState( Ramses::i()->wipState() );
 }
 
 void RamStatus::assignedUserRemoved()

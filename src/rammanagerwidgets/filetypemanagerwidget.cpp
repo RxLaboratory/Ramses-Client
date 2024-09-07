@@ -5,7 +5,7 @@
 
 FileTypeManagerWidget::FileTypeManagerWidget(QWidget *parent) :
     ObjectManagerWidget(
-        Ramses::instance()->fileTypes(),
+        Ramses::i()->fileTypes(),
         "File types",
         DuIcon(":icons/file"),
         parent )

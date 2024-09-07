@@ -15,7 +15,7 @@ public:
 private slots:
     void setCurrentProject(RamObject *projObj);
     void currentProjectChanged(RamProject *p);
-    void userChanged(RamUser *user);
+    void ramsesReady();
 private:
     RamObjectSortFilterProxyModel *m_projectFilter;
     ProgressManager *m_pm;

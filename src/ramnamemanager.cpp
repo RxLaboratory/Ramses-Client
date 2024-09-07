@@ -31,7 +31,7 @@ RamNameManager::RamNameManager()
 
     // get state shortnames
     QStringList stateShortNames;
-    DBTableModel *states = Ramses::instance()->states();
+    DBTableModel *states = Ramses::i()->states();
     for(int i = 0; i < states->rowCount(); i++)
     {
 

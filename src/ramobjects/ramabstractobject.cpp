@@ -450,24 +450,24 @@ QVariant RamAbstractObject::roleData(int role) const
 
 void RamAbstractObject::remove()
 {
-    DBInterface::instance()->removeObject(m_uuid, objectTypeName());
+    DBInterface::i()->removeObject(m_uuid, objectTypeName());
     emitRemoved();
 }
 
 void RamAbstractObject::restore()
 {
-    DBInterface::instance()->restoreObject(m_uuid, objectTypeName());
+    DBInterface::i()->restoreObject(m_uuid, objectTypeName());
     emitRestored();
 }
 
 bool RamAbstractObject::isRemoved()
 {
-    return DBInterface::instance()->isRemoved(m_uuid, objectTypeName());
+    return DBInterface::i()->isRemoved(m_uuid, objectTypeName());
 }
 
 QDateTime RamAbstractObject::modificationDate() const
 {
-    QString d = DBInterface::instance()->modificationDate(m_uuid, objectTypeName());
+    QString d = DBInterface::i()->modificationDate(m_uuid, objectTypeName());
     return QDateTime::fromString(d, DATETIME_DATA_FORMAT);
 }
 
@@ -495,7 +495,7 @@ QString RamAbstractObject::path(RamAbstractObject::SubFolder subFolder, bool cre
     QString sub = subFolderName(subFolder);
     if (sub != "") p += "/" + sub;
 
-    return Ramses::instance()->pathFromRamses( p, create );
+    return Ramses::i()->pathFromRamses( p, create );
 }
 
 QString RamAbstractObject::path(SubFolder subFolder, QString subPath, bool create) const
@@ -634,7 +634,7 @@ void RamAbstractObject::setDataString(QString data)
     qDebug() << ">>>";
 #endif
 
-    DBInterface::instance()->setObjectData(m_uuid, objectTypeName(), data);
+    DBInterface::i()->setObjectData(m_uuid, objectTypeName(), data);
 
     m_savingData = false;
 
@@ -648,7 +648,7 @@ QString RamAbstractObject::dataString() const
 
     if (!m_created) return m_cachedData;
 
-    QString dataStr = DBInterface::instance()->objectData(m_uuid, objectTypeName());
+    QString dataStr = DBInterface::i()->objectData(m_uuid, objectTypeName());
     if (dataStr == "") return "";
 
     // Cache the data to improve performance
@@ -666,7 +666,7 @@ void RamAbstractObject::createData(QString data)
     // Cache the data to improve performance
     m_cachedData = data;
 
-    DBInterface::instance()->createObject(m_uuid, objectTypeName(), data);
+    DBInterface::i()->createObject(m_uuid, objectTypeName(), data);
 
     m_created = true;
 }
@@ -683,7 +683,7 @@ bool RamAbstractObject::checkUuid(QString uuid, ObjectType type, bool mayBeVirtu
     if (mayBeVirtual) return true;
 
     // Check if the uuid exists in the DB
-    if (!DBInterface::instance()->contains(uuid, table, includeRemoved))
+    if (!DBInterface::i()->contains(uuid, table, includeRemoved))
     {
         qCritical() << QString("%1::get - This uuid can't be found in the database: %2").arg(table, uuid);
         // Don't do anything, let the caller handle it

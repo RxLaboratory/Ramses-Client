@@ -66,7 +66,7 @@ void PipeFileEditWidget::setupUi()
 
     ui_fileTypeBox = new RamObjectComboBox(this);
     ui_fileTypeBox->setSortMode(RamObject::ShortName);
-    ui_fileTypeBox->setObjectModel(Ramses::instance()->fileTypes());
+    ui_fileTypeBox->setObjectModel(Ramses::i()->fileTypes());
     ui_mainFormLayout->addWidget(ui_fileTypeBox, 3, 1);
 
     QLabel *colorSpaceLabel = new QLabel(tr("Color space"), this);

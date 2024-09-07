@@ -1,6 +1,5 @@
 #include "projecteditwidget.h"
 
-#include "duapp/app-config.h"
 #include "ramproject.h"
 #include "ramses.h"
 #include "ramobjectmodel.h"
@@ -75,7 +74,7 @@ void ProjectEditWidget::setFramerate(double f)
 
 void ProjectEditWidget::updateFolderLabel(QString path)
 {
-    if (path != "") ui_folderLabel->setText( Ramses::instance()->pathFromRamses(path));
+    if (path != "") ui_folderLabel->setText( Ramses::i()->pathFromRamses(path));
     else if (m_project) ui_folderLabel->setText( m_project->defaultPath() );
 }
 
@@ -89,13 +88,6 @@ void ProjectEditWidget::setDeadline(QDate d)
 {
     if (!m_project || m_reinit) return;
     m_project->setDeadline(d);
-}
-
-void ProjectEditWidget::currentUserChanged(RamUser *user)
-{
-    if (!user) return;
-    QSettings settings;
-    ui_deadlineEdit->setDisplayFormat( settings.value("appearance/dateFormat",DATETIME_DATA_FORMAT).toString());
 }
 
 void ProjectEditWidget::createUser()
@@ -221,7 +213,7 @@ void ProjectEditWidget::setupUi()
     ui_userList = new ObjectListWidget(true, RamUser::ProjectAdmin, this);
     ui_userList->setEditMode(ObjectListWidget::UnassignObjects);
     ui_userList->setTitle("Users");
-    ui_userList->setAssignList(Ramses::instance()->users());
+    ui_userList->setAssignList(Ramses::i()->users());
     ui_userList->setSortable(true);
     userLayout->addWidget(ui_userList);
 
@@ -232,7 +224,6 @@ void ProjectEditWidget::setupUi()
 
 void ProjectEditWidget::connectEvents()
 {
-    connect(Ramses::instance(), &Ramses::userChanged, this, &ProjectEditWidget::currentUserChanged);
     connect(ui_resolutionWidget, SIGNAL(resolutionChanged(int,int)), this, SLOT(setResolution(int,int)));
     connect(ui_framerateWidget, SIGNAL(framerateChanged(double)), this, SLOT(setFramerate(double)));
     connect(ui_folderSelector, SIGNAL(pathChanging(QString)), this, SLOT(updateFolderLabel(QString)));

@@ -81,9 +81,7 @@ SOURCES += \
     dumodules/duwidgets/settingswidget.cpp \
     pages/homepage.cpp \
     pages/landingpage.cpp \
-    pages/loginpage.cpp \
     progressmanager.cpp \
-    projectmanager.cpp \
     ramdatainterface/ramserverclient.cpp \
     rameditwidgets/objectupdateblocker.cpp \
     rameditwidgets/ramjsonobjecteditwidget.cpp \
@@ -292,9 +290,7 @@ HEADERS += \
     enums.h \
     pages/homepage.h \
     pages/landingpage.h \
-    pages/loginpage.h \
     progressmanager.h \
-    projectmanager.h \
     ramdatainterface/datastruct.h \
     ramdatainterface/ramserverclient.h \
     rameditwidgets/objectupdateblocker.h \
@@ -466,7 +462,6 @@ HEADERS += \
 FORMS += \
     dumodules/duwidgets/aboutdialog.ui \
     dumodules/duwidgets/duqffolderselectorwidget.ui \
-    pages/loginpage.ui \
     mainwindow.ui \
     pipeline-editor/pipelinewidget.ui \
     smallwidgets/shotscreationdialog.ui

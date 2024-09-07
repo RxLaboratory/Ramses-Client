@@ -5,7 +5,7 @@
 
 ProjectManagerWidget::ProjectManagerWidget(QWidget *parent) :
     ObjectManagerWidget(
-        Ramses::instance()->projects(),
+        Ramses::i()->projects(),
         "Projects",
         DuIcon(":icons/project"),
         parent )

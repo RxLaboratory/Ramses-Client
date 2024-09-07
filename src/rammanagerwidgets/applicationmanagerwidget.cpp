@@ -5,7 +5,7 @@
 
 ApplicationManagerWidget::ApplicationManagerWidget(QWidget *parent) :
     ObjectManagerWidget(
-        Ramses::instance()->applications(),
+        Ramses::i()->applications(),
         "Applications",
         DuIcon(":icons/application"),
         parent )

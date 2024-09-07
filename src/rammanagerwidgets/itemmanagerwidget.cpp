@@ -14,7 +14,7 @@ ItemManagerWidget::ItemManagerWidget(RamTemplateStep::Type type, QWidget *parent
     m_productionType = type;
     setupUi();
 
-    currentUserChanged(nullptr);
+    ramsesReady(nullptr);
     filter(nullptr);
 
     connectEvents();
@@ -32,7 +32,7 @@ void ItemManagerWidget::selectAllSteps()
 void ItemManagerWidget::selectUserSteps()
 {
     QList<QAction*> actions = ui_stepMenu->actions();
-    RamUser *u = Ramses::instance()->currentUser();
+    RamUser *u = Ramses::i()->currentUser();
 
     for (int i = 4; i < actions.count(); i++)
     {
@@ -66,7 +66,7 @@ void ItemManagerWidget::selectAllUsers()
 void ItemManagerWidget::selectMyself()
 {
     QList<QAction*> actions = ui_userMenu->actions();
-    RamUser *u = Ramses::instance()->currentUser();
+    RamUser *u = Ramses::i()->currentUser();
 
     ui_actionNotAssigned->setChecked(false);
 
@@ -132,7 +132,7 @@ void ItemManagerWidget::hideEvent(QHideEvent *event)
     }
 
     // Save filters and layout
-    RamUser *user = Ramses::instance()->currentUser();
+    RamUser *user = Ramses::i()->currentUser();
     if (user)
     {
         QSettings *uSettings = user->settings();
@@ -377,7 +377,7 @@ void ItemManagerWidget::sortByPriority(bool sort)
 void ItemManagerWidget::unassignUser()
 {
     QVector<RamStatus*> status = beginEditSelectedStatus();
-    RamUser *currentUser = Ramses::instance()->currentUser();
+    RamUser *currentUser = Ramses::i()->currentUser();
     for (int i = 0; i < status.count(); i++)
     {
         status.at(i)->assignUser(nullptr);
@@ -393,7 +393,7 @@ void ItemManagerWidget::assignUser(RamObject *user)
 
     m_project->suspendEstimations(true);
 
-    RamUser *currentUser = Ramses::instance()->currentUser();
+    RamUser *currentUser = Ramses::i()->currentUser();
 
     for (int i = 0; i < status.count(); i++)
     {
@@ -412,7 +412,7 @@ void ItemManagerWidget::changeState(RamObject *stt)
 
     m_project->suspendEstimations(true);
 
-    RamUser *currentUser = Ramses::instance()->currentUser();
+    RamUser *currentUser = Ramses::i()->currentUser();
 
     for (int i = 0; i < status.count(); i++)
     {
@@ -454,7 +454,7 @@ void ItemManagerWidget::setDiffculty(RamStatus::Difficulty difficulty)
 
     m_project->suspendEstimations(true);
 
-    RamUser *currentUser = Ramses::instance()->currentUser();
+    RamUser *currentUser = Ramses::i()->currentUser();
 
     for (int i = 0; i < status.count(); i++)
     {
@@ -473,7 +473,7 @@ void ItemManagerWidget::setCompletion()
 
     m_project->suspendEstimations(true);
 
-    RamUser *currentUser = Ramses::instance()->currentUser();
+    RamUser *currentUser = Ramses::i()->currentUser();
 
     for (int i = 0; i < status.count(); i++)
     {
@@ -492,7 +492,7 @@ void ItemManagerWidget::setPriority()
 
     m_project->suspendEstimations(true);
 
-    RamUser *currentUser = Ramses::instance()->currentUser();
+    RamUser *currentUser = Ramses::i()->currentUser();
 
     for (int i = 0; i < status.count(); i++)
     {
@@ -524,7 +524,7 @@ void ItemManagerWidget::cutComment()
     RamStatus *status = getStatus(currentIndex);
 
     // If it's not the current user, create a new one
-    RamUser *currentUser = Ramses::instance()->currentUser();
+    RamUser *currentUser = Ramses::i()->currentUser();
     if(!status->modifiedBy()->is(currentUser))
         status = RamStatus::copy( status, currentUser );
 
@@ -541,7 +541,7 @@ void ItemManagerWidget::pasteComment()
 
     m_project->suspendEstimations(true);
 
-    RamUser *currentUser = Ramses::instance()->currentUser();
+    RamUser *currentUser = Ramses::i()->currentUser();
 
     for (int i = 0; i < status.count(); i++)
     {
@@ -554,7 +554,7 @@ void ItemManagerWidget::pasteComment()
 
 void ItemManagerWidget::createItem()
 {
-    RamProject *project = Ramses::instance()->currentProject();
+    RamProject *project = Ramses::i()->project();
     if (!project) return;
 
     if ( m_productionType == RamStep::AssetProduction )
@@ -598,7 +598,7 @@ void ItemManagerWidget::createItem()
 
 void ItemManagerWidget::deleteItems()
 {
-    RamProject *project = Ramses::instance()->currentProject();
+    RamProject *project = Ramses::i()->project();
     if (!project) return;
 
     QModelIndexList selection = ui_table->selectionModel()->selectedIndexes();
@@ -636,7 +636,7 @@ void ItemManagerWidget::deleteItems()
 
 void ItemManagerWidget::createMultiple()
 {
-    RamProject *project = Ramses::instance()->currentProject();
+    RamProject *project = Ramses::i()->project();
     if (!project) return;
 
     ShotsCreationDialog dialog(project, this);
@@ -649,17 +649,15 @@ void ItemManagerWidget::contextMenuRequested(QPoint p)
     ui_contextMenu->popup(ui_table->viewport()->mapToGlobal(p));
 }
 
-void ItemManagerWidget::currentUserChanged(RamUser *user)
+void ItemManagerWidget::ramsesReady()
 {
     ui_actionItem->setVisible(false);
-    if (!user) return;
-    if (user->role() >= RamUser::ProjectAdmin)
-    {
-        ui_actionItem->setVisible(true);
-    }
     loadSettings();
-    // Reload project
-    //projectChanged(Ramses::instance()->currentProject(), true);
+}
+
+void ItemManagerWidget::changeUserRole(RamAbstractObject::UserRole role)
+{
+    ui_actionItem->setVisible(role >= RamUser::ProjectAdmin);
 }
 
 void ItemManagerWidget::setupUi()
@@ -813,7 +811,7 @@ void ItemManagerWidget::setupUi()
     ui_stateButton->setPopupMode(QToolButton::InstantPopup);
     ui_stateButton->setMenu(ui_stateMenu);
 
-    ui_stateMenu->setObjectModel( Ramses::instance()->states() );
+    ui_stateMenu->setObjectModel( Ramses::i()->states() );
 
     ui_titleBar->insertLeft(ui_stateButton);
 
@@ -845,7 +843,7 @@ void ItemManagerWidget::setupUi()
 
     ui_changeStateMenu = new RamObjectMenu(false, this);
     ui_changeStateMenu->setTitle("Change state");
-    ui_changeStateMenu->setObjectModel(Ramses::instance()->states());
+    ui_changeStateMenu->setObjectModel(Ramses::i()->states());
     statusMenu->addMenu(ui_changeStateMenu);
 
     ui_changeDifficultyMenu = new DuMenu("Change difficulty", this);
@@ -946,7 +944,7 @@ void ItemManagerWidget::setupUi()
     ui_changeStateContextMenu = new RamObjectMenu(false, this);
     ui_changeStateContextMenu->setSortMode(RamObject::Completion);
     ui_changeStateContextMenu->setTitle("Change state");
-    ui_changeStateContextMenu->setObjectModel(Ramses::instance()->states());
+    ui_changeStateContextMenu->setObjectModel(Ramses::i()->states());
     ui_contextMenu->addMenu(ui_changeStateContextMenu);
 
     DuMenu *changeDifficultyContextMenu = new DuMenu("Change difficulty", this);
@@ -1059,8 +1057,9 @@ void ItemManagerWidget::connectEvents()
     connect(ui_groupBox, SIGNAL(currentObjectChanged(RamObject*)), this, SLOT(filter(RamObject*)));
     // other
     connect(ui_titleBar, &DuQFTitleBar::closeRequested, this, &ItemManagerWidget::closeRequested);
-    connect(Ramses::instance(), SIGNAL(currentProjectChanged(RamProject*)), this,SLOT(projectChanged(RamProject*)));
-    connect(Ramses::instance(), &Ramses::userChanged, this, &ItemManagerWidget::currentUserChanged);
+    connect(Ramses::i(), SIGNAL(currentProjectChanged(RamProject*)), this,SLOT(projectChanged(RamProject*)));
+    connect(Ramses::i(), &Ramses::ready, this, &ItemManagerWidget::ramsesReady);
+    connect(Ramses::i(), &Ramses::roleChanged, this, &ItemManagerWidget::changeUserRole);
     connect(ui_header, SIGNAL(sort(int,Qt::SortOrder)), ui_table->filteredModel(), SLOT(resort(int,Qt::SortOrder)));
     connect(ui_header, SIGNAL(unsort()), ui_table->filteredModel(), SLOT(unsort()));
 }
@@ -1070,7 +1069,7 @@ void ItemManagerWidget::loadSettings()
     // Freeze filters to improve performance
     ui_table->filteredModel()->freeze();
 
-    RamUser *u = Ramses::instance()->currentUser();
+    RamUser *u = Ramses::i()->currentUser();
     if (!u) return;
     QSettings *uSettings = u->settings();
 

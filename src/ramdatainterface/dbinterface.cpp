@@ -6,10 +6,45 @@
 #include "progressmanager.h"
 #include "ramserverclient.h"
 #include "statemanager.h"
+#include "ramsettings.h"
 
 DBInterface *DBInterface::_instance = nullptr;
 
-DBInterface *DBInterface::instance()
+QStringList DBInterface::recentDatabases()
+{
+    QStringList projects;
+
+    const QVector<QHash<QString,QVariant>> recentList = DuSettings::i()->getArray(RamSettings::RecentDatabases);
+    for(const auto &recent: recentList) {
+        QString p = recent.value("path", "").toString();
+        if (QFileInfo::exists(p))
+            projects << p;
+    }
+
+    return projects;
+}
+
+void DBInterface::addToRecentList(const QString &dbFile)
+{
+    QFileInfo dbInfo(dbFile);
+
+    QVector<QHash<QString,QVariant>> recentList;
+
+    QHash<QString,QVariant> recentDB = {{ "path", dbFile }};
+    recentList << recentDB;
+
+    const QStringList &savedRecent = recentDatabases();
+    for (const auto &p: savedRecent) {
+        if (  dbInfo == QFileInfo(p) )
+            continue;
+        QHash<QString,QVariant> recentDB = {{ "path", p }};
+        recentList << recentDB;
+    }
+
+    DuSettings::i()->setArray(RamSettings::RecentDatabases, recentList);
+}
+
+DBInterface *DBInterface::i()
 {
     if (!_instance) _instance = new DBInterface();
     return _instance;
@@ -168,21 +203,35 @@ const QString &DBInterface::dataFile() const
     return m_ldi->dataFile();
 }
 
-void DBInterface::setDataFile(const QString &file, bool ignoreUser)
+bool DBInterface::loadDataFile(const QString &file)
 {
+    if (!QFileInfo::exists(file)) {
+        m_lastError = "Invalid path: " + file;
+        qWarning().noquote() << "{DB}" << m_lastError;
+        return false;
+    }
+
+    // If there is a current project, just restart the app passing the new project as argument.
+    if (m_ldi->dataFile() != "") {
+        qInfo().noquote() << "{DB}" << "Restarting the app to load \"" + file + "\"" ;
+        StateManager::i()->restart(true, file);
+        return true;
+    }
+
     QElapsedTimer openTimer;
     openTimer.start();
 
-    ProgressManager *pm = ProgressManager::instance();
-    pm->setText(tr("Loading database..."));
+    qInfo().noquote() << "{DB}" << "Loading database \"" + file + "\"" ;
 
     ServerConfig config = m_ldi->setDataFile(file);
 
-    qDebug() << "> Database set: " << openTimer.elapsed()/1000 << " seconds.";
+    qDebug().noquote() << "{DB}" << "Database loaded: " << openTimer.elapsed()/1000 << " seconds.";
 
-    // Set the new server params
+    // TEAM / ONLINE
     if (config.address != "")
     {
+        // Update server settings
+
         m_rsi->setServerAddress(config.address);
         m_rsi->setTimeout(config.timeout);
         m_rsi->setSsl(config.useSsl);
@@ -191,101 +240,13 @@ void DBInterface::setDataFile(const QString &file, bool ignoreUser)
 
         // Get the serverUuid we should be connecting to
         QString serverUuid = m_ldi->serverUuid();
-
-        // Check the user
-        QString userUuid = m_ldi->currentUserUuid();
-
-        qDebug() << "> Selecting previous user: " << userUuid;
-
-        emit userChanged( userUuid );
-
-        qDebug() << "> Selected user: " << openTimer.elapsed()/1000 << " seconds.";
-
-        setOnline(serverUuid);
-
-        qDebug() << "> Online! " << openTimer.elapsed()/1000 << " seconds.";
-
-        pm->setText(tr("Ready!"));
-        pm->finish();
     }
     else
     {
-        setOffline();
         m_rsi->setServerAddress("");
-        if (file == "")
-        {
-            pm->setText(tr("Ready!"));
-            pm->finish();
-            return;
-        }
-
-        // Check the user
-        QString userUuid = m_ldi->currentUserUuid();
-
-        // Check if it exists in the database
-        if (!m_ldi->contains(userUuid, "RamUser"))
-        {
-            userUuid = "";
-        }
-
-        if (userUuid != "")
-        {
-            emit userChanged( userUuid );
-            pm->setText(tr("Ready!"));
-            pm->finish();
-            return;
-        }
-
-        if (ignoreUser)
-        {
-            emit userChanged( userUuid );
-            pm->setText(tr("Ready!"));
-            pm->finish();
-            return;
-        }
-
-        // We need to show a list of users
-        QVector<QStringList> users = m_ldi->users();
-        QStringList names;
-        for (int i = 0; i < users.count(); i++)
-        {
-            names << users[i][1];
-        }
-        bool ok;
-        QString name = QInputDialog::getItem(
-                    GuiUtils::appMainWindow(),
-                    tr("Unknown user"),
-                    tr("Who are you?"),
-                    names,
-                    0,
-                    false,
-                    &ok );
-
-        if (ok && !name.isEmpty())
-        {
-            QString uuid;
-            for (int i = 0; i < users.count(); i++)
-            {
-                if (users[i][1] == name)
-                {
-                    uuid = users[i][0];
-                    break;
-                }
-            }
-            if (uuid != "") setCurrentUserUuid(uuid);
-            emit userChanged( userUuid );
-            pm->setText(tr("Ready!"));
-            pm->finish();
-            return;
-        }
     }
 
-    qDebug() << "> DB Ready! " << openTimer.elapsed()/1000 << " seconds.";
-}
-
-void DBInterface::setCurrentUserUuid(QString uuid)
-{
-    m_ldi->setCurrentUserUuid(uuid);
+    return true;
 }
 
 QString DBInterface::getUserRole(const QString &uuid)
@@ -428,7 +389,6 @@ void DBInterface::connectEvents()
     // Deprecated
     connect(m_rsi, &RamServerInterface::connectionStatusChanged, this, &DBInterface::serverConnectionStatusChanged);
     connect(m_rsi, &RamServerInterface::syncReady, m_ldi, QOverload<SyncData,QString>::of(&LocalDataInterface::sync));
-    connect(m_rsi, &RamServerInterface::userChanged, this, &DBInterface::serverUserChanged);
     connect(m_rsi, &RamServerInterface::pong, m_ldi, &LocalDataInterface::setServerUuid);
     connect(m_updateTimer, SIGNAL(timeout()), this, SLOT(sync()));
 }
@@ -459,35 +419,6 @@ void DBInterface::setConnectionStatus(NetworkUtils::NetworkStatus s, QString rea
     if (s == m_connectionStatus) return;
     m_connectionStatus = s;
     emit connectionStatusChanged(s, reason);
-}
-
-void DBInterface::serverUserChanged(QString userUuid, QString username, QString data, QString modified)
-{
-    // Check if we should be online
-    ServerConfig config = m_ldi->serverConfig();
-    if (config.address != "") // online
-    {
-        if (userUuid != "") // OK
-        {
-            if (username != "" && data != "") m_ldi->updateUser(userUuid, username, data, modified);
-            emit userChanged(userUuid);
-            return;
-        }
-
-        // The ldi doesn't have user either: can't do anything
-        if (m_ldi->currentUserUuid() == "")
-        {
-            QMessageBox::warning(
-                        GuiUtils::appMainWindow(),
-                        tr("Can't log in"),
-                        tr("I'm sorry, I can't log you in.\n\n"
-                           "I don't know who you are, and the authentification failed on the server.\n"
-                           "You have to connect to the server before you can use this database.")
-                        );
-            emit userChanged("");
-            return;
-        }
-    }
 }
 
 void DBInterface::finishSync()

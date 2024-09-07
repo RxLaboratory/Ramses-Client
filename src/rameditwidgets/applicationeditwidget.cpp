@@ -83,19 +83,19 @@ void ApplicationEditWidget::setupUi()
     m_nativeList = new ObjectListWidget(true, RamUser::Admin);
     m_nativeList->setEditMode(ObjectListWidget::UnassignObjects);
     m_nativeList->setTitle("Native file types");
-    m_nativeList->setAssignList(Ramses::instance()->fileTypes());
+    m_nativeList->setAssignList(Ramses::i()->fileTypes());
     tabWidget->addTab(m_nativeList, DuIcon(":/icons/files"), "Native");
 
     m_importList = new ObjectListWidget(true, RamUser::Admin);
     m_importList->setEditMode(ObjectListWidget::UnassignObjects);
     m_importList->setTitle("Imports");
-    m_importList->setAssignList(Ramses::instance()->fileTypes());
+    m_importList->setAssignList(Ramses::i()->fileTypes());
     tabWidget->addTab(m_importList, DuIcon(":/icons/files"), "Import");
 
     m_exportList = new ObjectListWidget(true, RamUser::Admin);
     m_exportList->setEditMode(ObjectListWidget::UnassignObjects);
     m_exportList->setTitle("Exports");
-    m_exportList->setAssignList(Ramses::instance()->fileTypes());
+    m_exportList->setAssignList(Ramses::i()->fileTypes());
     tabWidget->addTab(m_exportList, DuIcon(":/icons/files"), "Export");
 
     ui_mainLayout->addWidget(tabWidget);

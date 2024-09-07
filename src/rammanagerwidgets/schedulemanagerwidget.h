@@ -35,7 +35,8 @@ private slots:
 
     void projectChanged(RamProject *project);
     void projectUpdated(RamObject*projObj);
-    void userChanged(RamUser *user);
+    void ramsesReady();
+    void changeUserRole(RamUser::UserRole role);
 
     void addEntry(RamObject *stepObj = nullptr);
     bool clearSelectedEntries();

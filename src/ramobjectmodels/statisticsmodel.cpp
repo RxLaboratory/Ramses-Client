@@ -220,5 +220,5 @@ void StatisticsModel::insertStep(const QModelIndex &parent, int first, int last)
 
 void StatisticsModel::connectEvents()
 {
-    connect(Ramses::instance(), SIGNAL(currentProjectChanged(RamProject*)), this, SLOT(changeProject(RamProject*)));
+    connect(Ramses::i(), SIGNAL(currentProjectChanged(RamProject*)), this, SLOT(changeProject(RamProject*)));
 }

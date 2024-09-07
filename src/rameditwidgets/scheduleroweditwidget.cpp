@@ -43,7 +43,7 @@ void ScheduleRowEditWidget::reInit(RamObject *o)
         this->setEnabled(false);
     }
 
-    this->setEnabled(Ramses::instance()->isProjectAdmin());
+    this->setEnabled(Ramses::i()->isProjectAdmin());
 }
 
 void ScheduleRowEditWidget::setUser(RamObject *usrObj)

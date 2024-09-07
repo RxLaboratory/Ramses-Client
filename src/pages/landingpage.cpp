@@ -10,6 +10,7 @@
 #include "duapp/duui.h"
 #include "duwidgets/duicon.h"
 #include "wizards/projectwizard.h"
+#include "dbinterface.h"
 
 LandingPage::LandingPage(QWidget *parent)
     : QWidget{parent}
@@ -22,7 +23,7 @@ LandingPage::LandingPage(QWidget *parent)
 void LandingPage::updateRecentList()
 {
     ui_recentBox->clear();
-    const QStringList projects = ProjectManager::i()->recentDatabases();
+    const QStringList projects = DBInterface::recentDatabases();
     for(const auto &project: projects) {
         QFileInfo f(project);
         ui_recentBox->addItem(f.completeBaseName(), project);
@@ -127,7 +128,7 @@ void LandingPage::connectEvents()
 
     connect(ui_openRecentProjectButton, &QToolButton::clicked,
             this, [this] () {
-        ProjectManager::i()->openDatabase(ui_recentBox->currentData().toString());
+        DBInterface::i()->loadDataFile(ui_recentBox->currentData().toString());
     });
 
     connect(ui_openProjectButton, &QPushButton::clicked,
@@ -138,7 +139,7 @@ void LandingPage::connectEvents()
             "",
             "Ramses Project (*.ramses);;SQLite (*.sqlite);;All Files (*.*)");
         if (p == "") return;
-        ProjectManager::i()->openDatabase(p);
+        DBInterface::i()->loadDataFile(p);
     });
 
     connect(ui_createLocalProjectButton, &QPushButton::clicked,

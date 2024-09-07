@@ -56,7 +56,7 @@ RamUser::RamUser(QString uuid):
 RamUser::UserRole RamUser::role() const
 {
     // Always an admin if this is not a team project
-    if (!DBInterface::instance()->isTeamProject())
+    if (!DBInterface::i()->isTeamProject())
         return Admin;
 
     if (m_role == ENUMVALUE_Admin) return Admin;
@@ -84,7 +84,7 @@ bool RamUser::setRole(const UserRole &role)
 
 bool RamUser::setRole(const QString role)
 {
-    if (DBInterface::instance()->setUserRole(m_uuid, role)) {
+    if (DBInterface::i()->setUserRole(m_uuid, role)) {
         emitDataChanged();
         return true;
     }
@@ -153,7 +153,7 @@ void RamUser::edit(bool show)
 
 QString RamUser::folderPath() const
 {
-    return Ramses::instance()->path(RamObject::UsersFolder) + "/" + shortName();
+    return Ramses::i()->path(RamObject::UsersFolder) + "/" + shortName();
 }
 
 // PRIVATE //
@@ -163,7 +163,7 @@ void RamUser::construct()
     m_existingObjects[m_uuid] = this;
     m_icon = ":/icons/user";
     m_editRole = Admin;
-    m_role = DBInterface::instance()->getUserRole(m_uuid);
+    m_role = DBInterface::i()->getUserRole(m_uuid);
     //m_schedule = createModel(RamObject::ScheduleEntry, "schedule");
     m_schedule = new RamScheduleEntryModel();
     m_schedule->addFilterValue( "user", this->uuid() );

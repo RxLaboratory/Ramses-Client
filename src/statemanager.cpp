@@ -28,21 +28,21 @@ void StateManager::quit(bool sync)
 
     // Stop the daemon
     Daemon::instance()->stop();
-    DBInterface::instance()->setOffline(sync);
+    DBInterface::i()->setOffline(sync);
 
     m_app->quit();
 }
 
-void StateManager::restart(bool sync, const QString &project)
+void StateManager::restart(bool sync, const QString &dbFile)
 {
     // Release
     m_app->detach();
 
     // Stop the daemon
     Daemon::instance()->stop();
-    DBInterface::instance()->setOffline(sync);
+    DBInterface::i()->setOffline(sync);
 
-    m_app->restart(QStringList(project));
+    m_app->restart(QStringList(dbFile));
 }
 
 void StateManager::setState(State newState)

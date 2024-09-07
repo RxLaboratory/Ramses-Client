@@ -27,7 +27,7 @@ private slots:
     void setSnapEnabled(bool enabled);
     void setGridSize(int size);
 
-    void userChanged(RamUser *u);
+    void ramsesReady();
     void setProject(RamProject *project);
 
     void createStep();

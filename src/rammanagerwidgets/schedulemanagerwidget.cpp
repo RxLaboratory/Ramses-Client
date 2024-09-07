@@ -13,7 +13,7 @@
 
 ScheduleManagerWidget::ScheduleManagerWidget(QWidget *parent) : QWidget(parent)
 {
-    m_dbi = DBInterface::instance();
+    m_dbi = DBInterface::i();
 
     setupUi();
     m_schedule = new RamScheduleTableModel( );
@@ -43,7 +43,7 @@ void ScheduleManagerWidget::hideEvent(QHideEvent *event)
     }
 
     // Save filters and layout
-    RamUser *user = Ramses::instance()->currentUser();
+    RamUser *user = Ramses::i()->currentUser();
     if (user)
     {
         QSettings *uSettings = user->settings();
@@ -108,18 +108,14 @@ void ScheduleManagerWidget::projectUpdated(RamObject *projObj)
     ui_timeRemaining->setText("Time remaining: " + QString::number(days) + " days");
 }
 
-void ScheduleManagerWidget::userChanged(RamUser *user)
+void ScheduleManagerWidget::ramsesReady()
 {
-    if (!user)
-    {
-        this->setEnabled(false);
-        return;
-    }
-
     // Reload settings
     loadSettings();
+}
 
-    RamUser::UserRole role = user->role();
+void ScheduleManagerWidget::changeUserRole(RamAbstractObject::UserRole role)
+{
     ui_addEntryMenu->setEnabled(role >= RamUser::Lead);
     ui_replaceEntryMenu->setEnabled(role >= RamUser::Lead);
     ui_addRowAction->setEnabled(role >= RamUser::ProjectAdmin);
@@ -238,7 +234,7 @@ void ScheduleManagerWidget::filterUser(RamObject *user, bool filter)
 void ScheduleManagerWidget::filterMe()
 {  
     QList<QAction*> actions = ui_rowsMenu->actions();
-    RamUser *u = Ramses::instance()->currentUser();
+    RamUser *u = Ramses::i()->currentUser();
 
     for (int i = 4; i < actions.count(); i++)
     {
@@ -259,7 +255,7 @@ void ScheduleManagerWidget::filterMe()
 
 void ScheduleManagerWidget::addRow()
 {
-    RamProject *project = Ramses::instance()->currentProject();
+    RamProject *project = Ramses::i()->project();
     if (!project) return;
 
     QString rowNum = QString::number(
@@ -277,7 +273,7 @@ void ScheduleManagerWidget::addRow()
 
 void ScheduleManagerWidget::removeSelectedRows()
 {
-    RamProject *project = Ramses::instance()->currentProject();
+    RamProject *project = Ramses::i()->project();
     if (!project) return;
 
     const QModelIndexList selection = ui_table->selectionModel()->selectedIndexes();
@@ -391,7 +387,7 @@ void ScheduleManagerWidget::goToToday()
 
 void ScheduleManagerWidget::goToDeadline()
 {
-    RamProject *project = Ramses::instance()->currentProject();
+    RamProject *project = Ramses::i()->project();
     if (!project) return;
     ui_goTo->setDate(project->deadline());
     goTo(ui_goTo->date());
@@ -732,15 +728,16 @@ void ScheduleManagerWidget::connectEvents()
     // other actions
     // other
     connect(ui_titleBar, &DuQFTitleBar::closeRequested, this, &ScheduleManagerWidget::closeRequested);
-    connect(Ramses::instance(), SIGNAL(currentProjectChanged(RamProject*)), this, SLOT(projectChanged(RamProject*)));
-    connect(Ramses::instance(), &Ramses::userChanged, this, &ScheduleManagerWidget::userChanged);
+    connect(Ramses::i(), SIGNAL(currentProjectChanged(RamProject*)), this, SLOT(projectChanged(RamProject*)));
+    connect(Ramses::i(), &Ramses::ready, this, &ScheduleManagerWidget::ramsesReady);
+    connect(Ramses::i(), &Ramses::roleChanged, this, &ScheduleManagerWidget::changeUserRole);
 
     connect(m_schedule, SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(usersInserted(QModelIndex,int,int)));
 }
 
 void ScheduleManagerWidget::loadSettings()
 {
-    RamUser *u = Ramses::instance()->currentUser();
+    RamUser *u = Ramses::i()->currentUser();
     if (!u) return;
     QSettings *uSettings = u->settings();
     uSettings->beginGroup("schedule");

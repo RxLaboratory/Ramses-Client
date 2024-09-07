@@ -198,7 +198,7 @@ bool RamScheduleDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, 
         return QStyledItemDelegate::editorEvent( event, model, option, index );
 
     // Check if the current user can edit the entry
-    RamUser *u = Ramses::instance()->currentUser();
+    RamUser *u = Ramses::i()->currentUser();
     if (!u)
         return QStyledItemDelegate::editorEvent( event, model, option, index );
     if (u->role() < RamUser::Lead)
@@ -279,7 +279,7 @@ QDate RamScheduleDelegate::getDate(QModelIndex index) const
 
 QSet<RamStatus *> RamScheduleDelegate::getDueTasks(QModelIndex index) const
 {
-    RamProject *proj = Ramses::instance()->currentProject();
+    RamProject *proj = Ramses::i()->project();
     if (!proj) return QSet<RamStatus *>();
 
     RamUser *user = getUser(index);

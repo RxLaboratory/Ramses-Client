@@ -15,7 +15,7 @@ void DBManagerWidget::clean()
 {
     int deleteFrom = -1;
     if (ui_deleteCheckBox->isChecked()) deleteFrom = ui_deleteFromEdit->value();
-    QString report = DBInterface::instance()->cleanDabaBase( deleteFrom );
+    QString report = DBInterface::i()->cleanDabaBase( deleteFrom );
 
     QSet<RamAbstractObject*> invalidObjects = RamAbstractObject::invalidObjects();
     int numInvalidObjects = invalidObjects.count();
@@ -53,7 +53,7 @@ void DBManagerWidget::cancel()
                              tr("The application needs to restart to undo all changes.")
                              );
 
-    bool ok = DBInterface::instance()->undoClean();
+    bool ok = DBInterface::i()->undoClean();
 
     if (!ok) QMessageBox::warning(this,
                                   tr("Can't undo!"),
@@ -70,7 +70,7 @@ void DBManagerWidget::accept()
     ui_acceptCleanButton->setEnabled(false);
     ui_cleanButton->setEnabled(true);
 
-    DBInterface::instance()->acceptClean();
+    DBInterface::i()->acceptClean();
     RamAbstractObject::removeInvalidObjects();
 }
 

@@ -56,14 +56,13 @@ void ProjectWizard::done(int r)
 
     // Create local data
     if (_isTeamProject) {
-
         // Set the server settings in the DB
         LocalDataInterface::instance()->setServerSettings(dbPath, RamServerClient::i()->serverConfig());
 
         // Download distant data
         RamServerClient::i()->setProject(_projectUuid);
         // Just wait for it
-        connect(DBInterface::instance(), &DBInterface::syncFinished,
+        connect(DBInterface::i(), &DBInterface::syncFinished,
                 this, &ProjectWizard::finishProjectSetup);
         RamServerClient::i()->downloadAllData();
         return;
@@ -101,7 +100,7 @@ void ProjectWizard::editStep(const QModelIndex &index)
 
 void ProjectWizard::finishProjectSetup()
 {
-    disconnect(DBInterface::instance(), nullptr, this, nullptr);
+    disconnect(DBInterface::i(), nullptr, this, nullptr);
 
     RamProject *project = RamProject::get(_projectUuid);
     if (!project) {
@@ -125,13 +124,16 @@ void ProjectWizard::finishProjectSetup()
         return;
     }
 
+    // Set the project in the DB
+    LocalDataInterface::instance()->setCurrentProjectUser(_projectUuid, _userUuid);
+
     // Create the steps
     const QVector<QJsonObject> &jsonSteps = _steps->objects();
     for(const auto &jsonStep: jsonSteps)
         RamStep::fromJson(jsonStep, project);
 
     // Login
-    Ramses::instance()->setUser( user );
+    Ramses::i()->setUser( user );
 
     // and accept
     this->setEnabled(true);
@@ -231,10 +233,7 @@ bool ProjectWizard::askRemoveExistingFile(const QString &dbPath)
 
 bool ProjectWizard::createDatabase(const QString &dbPath)
 {
-    if (!ProjectManager::i()->createDatabase(
-            dbPath,
-            ui_pathsPage->projectPath())
-        )
+    if (!LocalDataInterface::createNewDatabase( dbPath ) )
     {
         QMessageBox::warning(this,
                              tr("Can't save the database"),
@@ -243,6 +242,8 @@ bool ProjectWizard::createDatabase(const QString &dbPath)
                              );
         return false;
     }
+    LocalDataInterface::setWorkingPath( dbPath, ui_pathsPage->projectPath() );
+
     return true;
 }
 

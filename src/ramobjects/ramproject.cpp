@@ -176,7 +176,7 @@ bool RamProject::hasState(RamObject *stateObj, RamAbstractItem *item, RamStep *s
     RamState *s = state(item, step);
     if (!s)
     {
-        if (Ramses::instance()->noState()->is(stateObj)) return true;
+        if (Ramses::i()->noState()->is(stateObj)) return true;
         return false;
     }
     return s->is(stateObj);
@@ -188,7 +188,7 @@ bool RamProject::hasState(RamObject *stateObj, RamStep *step) const
     foreach(RamStatus *s, ss)
     {
         RamState *sta = s->state();
-        if (!sta && Ramses::instance()->noState()->is(stateObj))
+        if (!sta && Ramses::i()->noState()->is(stateObj))
             return true;
         if (!sta) continue;
         if (sta->is(stateObj)) return true;
@@ -202,7 +202,7 @@ bool RamProject::hasState(RamObject *stateObj, RamAbstractItem *item) const
     foreach(RamStatus *s, ss)
     {
         RamState *sta = s->state();
-        if (!sta && Ramses::instance()->noState()->is(stateObj))
+        if (!sta && Ramses::i()->noState()->is(stateObj))
             return true;
         if (!sta) continue;
         if (sta->is(stateObj)) return true;
@@ -432,7 +432,7 @@ void RamProject::resetDbFolderPath()
 
 QString RamProject::defaultPath() const
 {
-    return Ramses::instance()->path(RamObject::ProjectsFolder) + "/" + shortName();
+    return Ramses::i()->path(RamObject::ProjectsFolder) + "/" + shortName();
 }
 
 bool RamProject::pathIsDefault(QString p) const

@@ -262,7 +262,7 @@ QMap<RamStatus::Difficulty, int> RamStep::difficultyCount(RamUser *user)
     RamProject *proj = project();
     if (!proj) return difficulty;
 
-    RamState *noState = Ramses::instance()->noState();
+    RamState *noState = Ramses::i()->noState();
 
     const QSet<RamStatus*> status = proj->stepStatus(this);
     for(auto st: status) {

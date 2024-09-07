@@ -23,7 +23,7 @@ void DatabaseEditWidget::setDbFile(const QString &newDbFile)
 
     ui_folderDisplay->setPath(m_dbFile);
 
-    QString path = LocalDataInterface::getRamsesPath(m_dbFile);
+    QString path = LocalDataInterface::getWorkingPath(m_dbFile);
     if (path == "" || path == "auto") path = QDir::homePath() + "/Ramses";
     ui_folderSelector->setPath(path);
 
@@ -44,7 +44,7 @@ void DatabaseEditWidget::setDbFile(const QString &newDbFile)
 
 void DatabaseEditWidget::apply()
 {
-    DBInterface *dbi = DBInterface::instance();
+    DBInterface *dbi = DBInterface::i();
     // If this is the current db, restart app
     if (m_dbFile == dbi->dataFile())
     {
@@ -67,7 +67,7 @@ void DatabaseEditWidget::apply()
         s.port = ui_serverEdit->port();
     }
 
-    LocalDataInterface::setRamsesPath(m_dbFile, ui_folderSelector->path());
+    LocalDataInterface::setWorkingPath(m_dbFile, ui_folderSelector->path());
     LocalDataInterface::setServerSettings(m_dbFile, s);
 
     // If this is the current db, restart app

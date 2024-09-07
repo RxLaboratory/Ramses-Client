@@ -98,7 +98,7 @@ ServerConfig LocalDataInterface::getServerSettings(QString dbFile)
     return s;
 }
 
-void LocalDataInterface::setRamsesPath(QString dbFile, QString p)
+void LocalDataInterface::setWorkingPath(QString dbFile, QString p)
 {
     // Make sure the interface is ready
     LocalDataInterface::instance();
@@ -110,7 +110,7 @@ void LocalDataInterface::setRamsesPath(QString dbFile, QString p)
 
     // Add new settings
     QString q = "INSERT INTO _Paths (path, name) "
-                "VALUES ('%1', 'Ramses') "
+                "VALUES ('%1', 'Project') "
                 "ON CONFLICT(name) DO UPDATE "
                 "SET path=excluded.path ;";
 
@@ -126,7 +126,7 @@ void LocalDataInterface::setRamsesPath(QString dbFile, QString p)
     db.close();
 }
 
-QString LocalDataInterface::getRamsesPath(QString dbFile)
+QString LocalDataInterface::getWorkingPath(QString dbFile)
 {
     // Make sure the interface is ready
     LocalDataInterface::instance();
@@ -136,7 +136,7 @@ QString LocalDataInterface::getRamsesPath(QString dbFile)
     if (!openDB(db, dbFile)) LocalDataInterface::instance()->log("Can't save data to the disk.", DuQFLog::Fatal);
 
         QSqlQuery qry = QSqlQuery( db );
-    if (!qry.exec("SELECT path FROM _Paths WHERE name = 'Ramses';"))
+    if (!qry.exec("SELECT path FROM _Paths WHERE name = 'Project';"))
     {
         QString errorMessage = "Something went wrong when saving the data.\nHere's some information:";
         errorMessage += "\n> " + tr("Query:") + "\n" + qry.lastQuery();
@@ -156,6 +156,48 @@ QString LocalDataInterface::getRamsesPath(QString dbFile)
     db.close();
 
     return "auto";
+}
+
+void LocalDataInterface::setProjectUserUuid(const QString &dbFile, const QString &projectUuid, const QString &userUuid)
+{
+    // Make sure the interface is ready
+    LocalDataInterface::instance();
+
+    QSqlDatabase db = QSqlDatabase::database("editdb");
+    if (!openDB(db, dbFile)) LocalDataInterface::instance()->log("Can't save data to the disk.", DuQFLog::Fatal);
+
+    QSqlQuery qry = QSqlQuery(db);
+
+    // Set everyone to not current
+    qry.exec( "UPDATE _User SET current = 0 ;" );
+
+    // Add new settings
+    QString q = "INSERT INTO _User (userUuid, projectUuid, current) "
+                "VALUES ('%1', '%2', 1) "
+                "ON CONFLICT(name) DO UPDATE "
+                "SET current=1, projectUuid=excluded.projectUuid ;";
+
+    if (!qry.exec(q.arg(userUuid, projectUuid)))
+    {
+        QString errorMessage = "Something went wrong when saving the data.\nHere's some information:";
+        errorMessage += "\n> " + tr("Query:") + "\n" + qry.lastQuery();
+        errorMessage += "\n> " + tr("Database Error:") + "\n" + qry.lastError().databaseText();
+        errorMessage += "\n> " + tr("Driver Error:") + "\n" + qry.lastError().driverText();
+        LocalDataInterface::instance()->log(errorMessage, DuQFLog::Critical);
+    }
+
+    db.close();
+}
+
+bool LocalDataInterface::createNewDatabase(const QString &filePath)
+{
+    // Copy the file
+    FileUtils::copy(":/data/template", filePath);
+
+    if (!QFileInfo::exists(filePath))
+        return false;
+
+    return true;
 }
 
 QSet<QString> LocalDataInterface::tableUuids(QString table, bool includeRemoved)
@@ -333,7 +375,7 @@ void LocalDataInterface::setObjectData(QString uuid, QString table, QString data
     // Make sure the table exists
     createTable(table);
 
-    QString newData = DBInterface::instance()->validateObjectData(data, uuid, table);
+    QString newData = DBInterface::i()->validateObjectData(data, uuid, table);
 
     QDateTime modified = QDateTime::currentDateTimeUtc();
 
@@ -543,38 +585,6 @@ ServerConfig LocalDataInterface::setDataFile(const QString &file)
     emit dataResetCommon();
     emit dataResetProject();
 
-    // Save the current DB to recent files
-    QSettings settings;
-    // Get all to remove non existing, and insert new at first
-    QStringList dbs;
-    int n = settings.beginReadArray("database/recent");
-    for (int i = 0; i < n; i++)
-    {
-        settings.setArrayIndex(i);
-        dbs << settings.value("path", "-").toString();
-    }
-    settings.endArray();
-    // Check
-    for (int i = dbs.count() - 1; i >= 0; i--)
-    {
-        if (!QFileInfo::exists(dbs.at(i)))
-        {
-            dbs.removeAt(i);
-            continue;
-        }
-        if (dbs.at(i) == m_dataFile) dbs.removeAt(i);
-    }
-    // Insert
-    dbs.insert(0, m_dataFile);
-    // Write
-    settings.beginWriteArray("database/recent");
-    for (int i = 0; i < dbs.count(); i++)
-    {
-        settings.setArrayIndex(i);
-        settings.setValue("path", dbs.at(i));
-    }
-    settings.endArray();
-
     pm->increment();
 
     qDebug() << ">> Local data ready! " << timer.elapsed()/1000 << " seconds.";
@@ -604,7 +614,7 @@ SyncData LocalDataInterface::getSync(bool fullSync)
 
     // For each table, get modified rows
 
-    RamUser *u = Ramses::instance()->currentUser();
+    RamUser *u = Ramses::i()->currentUser();
     QString currentUuid = "";
     if (u) currentUuid = u->uuid();
 
@@ -714,7 +724,7 @@ void LocalDataInterface::saveSync(SyncData syncData)
 
             if (uuidDates.contains(uuid)) continue;
 
-            QString data = DBInterface::instance()->validateObjectData(incomingRow.data, uuid, tableName);
+            QString data = DBInterface::i()->validateObjectData(incomingRow.data, uuid, tableName);
 
             QString modified = incomingRow.modified;
             int removed = incomingRow.removed;
@@ -800,7 +810,7 @@ void LocalDataInterface::saveSync(SyncData syncData)
         {
             QString uuid = incomingRow.uuid;
             if (uuid == "") continue;
-            QString data = DBInterface::instance()->validateObjectData(incomingRow.data, uuid, tableName);
+            QString data = DBInterface::i()->validateObjectData(incomingRow.data, uuid, tableName);
 
             QString modified = incomingRow.modified;
             int rem = incomingRow.removed;
@@ -897,7 +907,7 @@ void LocalDataInterface::deleteData(SyncData syncData)
 
 QString LocalDataInterface::currentUserUuid()
 {
-    QString q = "SELECT uuid FROM _User WHERE current = 1;";
+    QString q = "SELECT userUuid FROM _User WHERE current = 1;";
     QSqlQuery qry = query( q );
 
     if (qry.first())
@@ -905,17 +915,27 @@ QString LocalDataInterface::currentUserUuid()
     return "";
 }
 
-void LocalDataInterface::setCurrentUserUuid(QString uuid)
+QString LocalDataInterface::currentProjectUuid()
+{
+    QString q = "SELECT projectUuid FROM _User WHERE current = 1;";
+    QSqlQuery qry = query( q );
+
+    if (qry.first())
+        return qry.value(0).toString();
+    return "";
+}
+
+void LocalDataInterface::setCurrentProjectUser(const QString &projectUuid, const QString &userUuid)
 {
     // Set everyone to not current
     query( "UPDATE _User SET current = 0 ;" );
 
-    QString q = "INSERT INTO _User (uuid, current) "
-                "VALUES ('%1', 1 ) "
+    QString q = "INSERT INTO _User (userUuid, projectUuid, current) "
+                "VALUES ('%1', '%2', 1 ) "
                 "ON CONFLICT(uuid) DO UPDATE "
                 "SET current=excluded.current ;";
 
-    query( q.arg(uuid) );
+    query( q.arg(userUuid, projectUuid) );
 }
 
 QString LocalDataInterface::getUserRole(const QString &uuid)

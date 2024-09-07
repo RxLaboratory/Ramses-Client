@@ -53,7 +53,7 @@ private:
 
     // Utils
     bool askRemoveExistingFile(const QString &dbPath );
-    bool createDatabase(const QString &dbPath );
+    bool createDatabase(const QString &dbPath);
     QString createServerData();
     bool checkServerReply(const QJsonObject &reply);
     RamUser *createLocalUser();

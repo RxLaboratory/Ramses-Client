@@ -263,7 +263,7 @@ QVariant RamScheduleTableModel::horizontalHeaderData(int section, int role) cons
         if (date == QDate::currentDate())
             return QBrush(DuSettings::i()->get(DuSettings::UI_FocusColor).value<QColor>());
 
-        RamProject *proj = Ramses::instance()->currentProject();
+        RamProject *proj = Ramses::i()->project();
         if (proj && date == proj->deadline())
             return QBrush(QColor(249,105,105));
 

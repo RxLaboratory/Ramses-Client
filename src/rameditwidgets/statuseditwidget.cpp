@@ -154,10 +154,10 @@ void StatusEditWidget::reInit(RamObject *o)
         setAutoEstimation( m_status->useAutoEstimation() );
 
         // User rights to assign
-        ui_userBox->setEnabled(Ramses::instance()->isLead());
+        ui_userBox->setEnabled(Ramses::i()->isLead());
 
         // Rights to edit
-        RamUser *u = Ramses::instance()->currentUser();
+        RamUser *u = Ramses::i()->currentUser();
         if (u)
         {
             if (u->role() == RamUser::Standard) this->setEnabled( u->is( m_status->assignedUser() ) );
@@ -167,7 +167,7 @@ void StatusEditWidget::reInit(RamObject *o)
     }
     else
     {
-        ui_stateBox->setObject(Ramses::instance()->stbState());
+        ui_stateBox->setObject(Ramses::i()->stbState());
         ui_completionBox->setValue(0);
         ui_versionBox->setValue(1);
         ui_statusCommentEdit->setPlainText("");
@@ -213,7 +213,7 @@ void StatusEditWidget::setState(RamState *state)
     m_status->setState(state);
     m_status->setCompletionRatio(ui_completionBox->value());
 
-    RamUser *currentUser = Ramses::instance()->currentUser();
+    RamUser *currentUser = Ramses::i()->currentUser();
     m_status->setModifiedBy(currentUser);
 }
 
@@ -229,7 +229,7 @@ void StatusEditWidget::setVersion( int v )
     ui_publishedBox->setChecked(p);
     m_status->setVersion(v);
 
-    RamUser *currentUser = Ramses::instance()->currentUser();
+    RamUser *currentUser = Ramses::i()->currentUser();
     m_status->setModifiedBy(currentUser);
 }
 
@@ -238,7 +238,7 @@ void StatusEditWidget::setCompletion(int c)
     if (!m_status || m_reinit) return;
     m_status->setCompletionRatio(c);
 
-    RamUser *currentUser = Ramses::instance()->currentUser();
+    RamUser *currentUser = Ramses::i()->currentUser();
     m_status->setModifiedBy(currentUser);
 }
 
@@ -251,7 +251,7 @@ void StatusEditWidget::setComment()
     m_status->setComment( ui_statusCommentEdit->toMarkdown() );
 #endif
 
-    RamUser *currentUser = Ramses::instance()->currentUser();
+    RamUser *currentUser = Ramses::i()->currentUser();
     m_status->setModifiedBy(currentUser);
 }
 
@@ -260,7 +260,7 @@ void StatusEditWidget::assignUser(RamObject *u)
     if (!m_status || m_reinit) return;
     m_status->assignUser(u);
 
-    RamUser *currentUser = Ramses::instance()->currentUser();
+    RamUser *currentUser = Ramses::i()->currentUser();
     m_status->setModifiedBy(currentUser);
 }
 
@@ -269,7 +269,7 @@ void StatusEditWidget::setPublished(bool p)
     if (!m_status || m_reinit) return;
     m_status->setPublished(p);
 
-    RamUser *currentUser = Ramses::instance()->currentUser();
+    RamUser *currentUser = Ramses::i()->currentUser();
     m_status->setModifiedBy(currentUser);
 }
 
@@ -295,7 +295,7 @@ void StatusEditWidget::setAutoEstimation(bool a)
     ui_estimationEdit->setValue( est );
     ui_estimationEdit->setEnabled(!a);
 
-    RamUser *currentUser = Ramses::instance()->currentUser();
+    RamUser *currentUser = Ramses::i()->currentUser();
     m_status->setModifiedBy(currentUser);
 }
 
@@ -304,7 +304,7 @@ void StatusEditWidget::setEstimation(double e)
     if (!m_status || m_reinit) return;
     m_status->setGoal(e);
 
-    RamUser *currentUser = Ramses::instance()->currentUser();
+    RamUser *currentUser = Ramses::i()->currentUser();
     m_status->setModifiedBy(currentUser);
 }
 
@@ -340,7 +340,7 @@ void StatusEditWidget::setDifficulty(int d)
     }
     }
 
-    RamUser *currentUser = Ramses::instance()->currentUser();
+    RamUser *currentUser = Ramses::i()->currentUser();
     m_status->setModifiedBy(currentUser);
 
     if( !ui_autoEstimationBox->isChecked() ) return;
@@ -356,7 +356,7 @@ void StatusEditWidget::setUseDueDate(bool u)
     m_status->setUseDueDate(u);
     ui_dueDateEdit->setEnabled(u);
 
-    RamUser *currentUser = Ramses::instance()->currentUser();
+    RamUser *currentUser = Ramses::i()->currentUser();
     m_status->setModifiedBy(currentUser);
 }
 
@@ -366,7 +366,7 @@ void StatusEditWidget::setDueDate()
 
     m_status->setDueDate( ui_dueDateEdit->date() );
 
-    RamUser *currentUser = Ramses::instance()->currentUser();
+    RamUser *currentUser = Ramses::i()->currentUser();
     m_status->setModifiedBy(currentUser);
 
     updatePriorityColor();

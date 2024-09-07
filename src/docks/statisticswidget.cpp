@@ -156,6 +156,6 @@ void StatisticsWidget::setupUi()
 
 void StatisticsWidget::connectEvents()
 {
-    connect(Ramses::instance(), SIGNAL(currentProjectChanged(RamProject*)), this, SLOT(projectChanged(RamProject*)));
+    connect(Ramses::i(), SIGNAL(currentProjectChanged(RamProject*)), this, SLOT(projectChanged(RamProject*)));
     connect(ui_userBox, SIGNAL(currentObjectChanged(RamObject*)), this, SLOT(changeUser(RamObject*)));
 }

@@ -31,7 +31,6 @@ private slots:
     void updateFolderLabel(QString path);
     void setPath(QString p);
     void setDeadline(QDate d);
-    void currentUserChanged(RamUser *user);
     void createUser();
 
     void savePath();

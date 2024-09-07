@@ -270,7 +270,7 @@ void RamStepHeaderView::mouseMoveEvent(QMouseEvent *event)
 
 bool RamStepHeaderView::canEdit() const
 {
-    return Ramses::instance()->isProjectAdmin();
+    return Ramses::i()->isProjectAdmin();
 }
 
 RamStep *RamStepHeaderView::getStep(int section) const

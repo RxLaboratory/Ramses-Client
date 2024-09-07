@@ -17,13 +17,9 @@ public:
 
     // STATIC METHODS //
 
-    static Ramses *instance();
+    static Ramses *i();
 
     // OTHER METHODS //
-
-    // User
-    void setUserUuid(QString uuid);
-    void setUser(RamUser *u);
 
     // Tree base
     void setRamsesPath(QString p);
@@ -35,10 +31,7 @@ public:
     DBTableModel *fileTypes() const;
     // Projects
     DBTableModel *projects() const;
-    RamProject *currentProject() const;
-    void setCurrentProject(RamProject *project);
-    void setCurrentProject(QString shortName);
-    void setCurrentProjectUuid(QString uuid);
+    RamProject *project() const;
     // States
     DBTableModel *states() const;
     RamState *noState();
@@ -60,8 +53,8 @@ public:
     bool isLead();
 
 signals:
-    void userChanged(RamUser*);
-    void currentProjectChanged(RamProject*);
+    void ready();
+    void roleChanged(RamUser::UserRole);
 
 protected:
     static Ramses *_instance;
@@ -79,6 +72,8 @@ private:
 
     QDir createDir(QString p) const;
     QString createPath(QString p) const;
+
+    void loadDatabase();
 
     // ATTRIBUTES //
 

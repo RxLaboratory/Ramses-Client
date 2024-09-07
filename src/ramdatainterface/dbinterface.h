@@ -27,11 +27,17 @@ class DBInterface : public DuQFLoggerObject
 {
     Q_OBJECT
 public:
+
+    // ==== STATIC UTILS ====
+
+    static QStringList recentDatabases();
+    static void addToRecentList(const QString &dbFile);
+
     /**
-     * @brief instance Gets the unique DBInterface instance.
-     * @return the unique instance.
+     * @brief i Gets the unique DBInterface i.
+     * @return the unique i.
      */
-    static DBInterface *instance();
+    static DBInterface *i();
 
     //bool isReady() const;
 
@@ -74,19 +80,19 @@ public:
     QString modificationDate(QString uuid, QString table);
 
     const QString &dataFile() const;
-    void setDataFile(const QString &file, bool ignoreUser = false);
-
-    void setCurrentUserUuid(QString uuid);
+    bool loadDataFile(const QString &file);
 
     QString getUserRole(const QString &uuid);
     bool setUserRole(const QString &uuid, const QString role);
+
+    QString lastError() const { return m_lastError; }
 
 signals:
     /**
      * @brief Emitted if the mode has changed
      */
     void connectionStatusChanged(NetworkUtils::NetworkStatus, QString);
-    void userChanged(QString);
+    void databaseReady();
     void syncFinished();
     void syncStarted();
 
@@ -129,11 +135,6 @@ private slots:
      */
     void setConnectionStatus(NetworkUtils::NetworkStatus s, QString reason = "");
     /**
-     * @brief serverUserChanged Handles changes of users sent from the server.
-     * @param userUuid
-     */
-    void serverUserChanged(QString userUuid, QString username, QString data, QString modified);
-    /**
      * @brief finishSync is called when the LDI has finished saving sync. Emits syncFinished and Schedules the next autosync.
      */
     void finishSync();
@@ -172,6 +173,8 @@ private:
     bool m_syncSuspended = true;
     bool m_autoSyncSuspended = true;
     bool m_disconnecting = false;
+
+    QString m_lastError;
 };
 
 #endif // DBINTERFACE_H

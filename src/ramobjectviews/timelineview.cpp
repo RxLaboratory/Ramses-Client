@@ -259,7 +259,7 @@ void TimelineView::setupUi()
 void TimelineView::connectEvents()
 {
     // Update list when project changes
-    connect(Ramses::instance(), &Ramses::currentProjectChanged, this, &TimelineView::changeProject);
+    connect(Ramses::i(), &Ramses::currentProjectChanged, this, &TimelineView::changeProject);
     // Delegate buttons
     connect(m_delegate, SIGNAL(edited(RamObject*)), this, SLOT(select(RamObject*)));
     // Select

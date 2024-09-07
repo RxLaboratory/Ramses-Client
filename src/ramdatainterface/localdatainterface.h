@@ -26,8 +26,10 @@ public:
      */
     static void setServerSettings(QString dbFile, ServerConfig c);
     static ServerConfig getServerSettings(QString dbFile);
-    static void setRamsesPath(QString dbFile, QString p);
-    static QString getRamsesPath(QString dbFile);
+    static void setWorkingPath(QString dbFile, QString p);
+    static QString getWorkingPath(QString dbFile);
+    static void setProjectUserUuid(const QString &dbFile, const QString &projectUuid, const QString &userUuid);
+    static bool createNewDatabase(const QString &filePath);
 
     // DATA INTERFACE //
 
@@ -65,7 +67,8 @@ public:
     void deleteData(SyncData syncData);
 
     QString currentUserUuid();
-    void setCurrentUserUuid(QString uuid);
+    QString currentProjectUuid();
+    void setCurrentProjectUser(const QString &projectUuid, const QString &userUuid);
 
     QString getUserRole(const QString &uuid);
     void setUserRole(const QString &uuid, const QString &role);

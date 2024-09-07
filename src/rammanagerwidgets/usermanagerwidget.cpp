@@ -5,7 +5,7 @@
 
 UserManagerWidget::UserManagerWidget(QWidget *parent) :
     ObjectManagerWidget(
-        Ramses::instance()->users(),
+        Ramses::i()->users(),
         "Users",
         DuIcon(":icons/user"),
         parent )

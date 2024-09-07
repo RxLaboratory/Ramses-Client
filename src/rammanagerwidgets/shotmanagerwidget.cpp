@@ -12,8 +12,8 @@ ShotManagerWidget::ShotManagerWidget(QWidget *parent):
         DuIcon(":icons/shot"),
         parent)
 {
-    changeProject(Ramses::instance()->currentProject());
-    connect(Ramses::instance(), SIGNAL(currentProjectChanged(RamProject*)), this, SLOT(changeProject(RamProject*)));
+    changeProject(Ramses::i()->project());
+    connect(Ramses::i(), SIGNAL(currentProjectChanged(RamProject*)), this, SLOT(changeProject(RamProject*)));
     ui_listWidget->setEditMode(ObjectListWidget::RemoveObjects);
     ui_listWidget->setSortable(true);
 
@@ -37,7 +37,7 @@ ShotManagerWidget::ShotManagerWidget(QWidget *parent):
 
 RamShot *ShotManagerWidget::createObject()
 {
-    RamProject *project = Ramses::instance()->currentProject();
+    RamProject *project = Ramses::i()->project();
     if (!project) return nullptr;
     if (project->sequences()->rowCount() == 0 ) return nullptr;
 
@@ -67,7 +67,7 @@ void ShotManagerWidget::changeProject(RamProject *project)
 
 void ShotManagerWidget::batchCreate()
 {
-    RamProject *project = Ramses::instance()->currentProject();
+    RamProject *project = Ramses::i()->project();
     if (!project) return;
     if (project->sequences()->rowCount() == 0 ) return;
     RamSequence *seq = RamSequence::c( currentFilter() );

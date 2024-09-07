@@ -5,7 +5,7 @@
 
 TemplateAssetGroupManagerWidget::TemplateAssetGroupManagerWidget(QWidget *parent) :
     ObjectManagerWidget(
-        Ramses::instance()->templateAssetGroups(),
+        Ramses::i()->templateAssetGroups(),
         "Template asset groups",
         DuIcon(":icons/asset-group"),
         parent )

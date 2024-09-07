@@ -194,8 +194,8 @@ private slots:
     void setOnlineAction();
     void databaseSettingsAction();
     void setPage(Page p);
-    void currentUserChanged();
-    void currentProjectChanged(RamProject *project);
+    void changeUserRole(RamUser::UserRole role);
+    void ramsesReady();
     void freezeUI(bool f = true);
     void dbiConnectionStatusChanged(NetworkUtils::NetworkStatus s);
     void finishSync();
