@@ -73,6 +73,10 @@ Set per project:
 - setEmail verify if unique
 - createUser(s), verify is email is unique
 
+## Client
+
+- remove databasecreatewidget and databaseeditwidget
+
 ## Server Doc
 
 - createUsers

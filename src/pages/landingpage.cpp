@@ -10,6 +10,7 @@
 #include "duwidgets/duicon.h"
 #include "wizards/projectwizard.h"
 #include "dbinterface.h"
+#include "ramses.h"
 
 LandingPage::LandingPage(QWidget *parent)
     : QWidget{parent}
@@ -128,6 +129,7 @@ void LandingPage::connectEvents()
     connect(ui_openRecentProjectButton, &QToolButton::clicked,
             this, [this] () {
         DBInterface::i()->loadDataFile(ui_recentBox->currentData().toString());
+        Ramses::i()->loadDatabase();
     });
 
     connect(ui_openProjectButton, &QPushButton::clicked,
@@ -139,6 +141,7 @@ void LandingPage::connectEvents()
             "Ramses Project (*.ramses);;SQLite (*.sqlite);;All Files (*.*)");
         if (p == "") return;
         DBInterface::i()->loadDataFile(p);
+        Ramses::i()->loadDatabase();
     });
 
     connect(ui_createLocalProjectButton, &QPushButton::clicked,

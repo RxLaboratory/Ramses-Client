@@ -287,6 +287,10 @@ void Ramses::loadDatabase()
     qInfo().noquote() << "{Ramses}" << "Logged in: " + m_currentUser->name();
     qInfo().noquote() << "{Ramses}" << "Project: " + m_currentProject->name();
 
+    DBInterface::addToRecentList(
+        LocalDataInterface::instance()->dataFile()
+        );
+
     emit ready();
     emit roleChanged(user->role());
 }
