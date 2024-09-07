@@ -332,8 +332,10 @@ QString ProjectWizard::createServerData()
     QJsonArray usersArr;
     QJsonArray serverUsersArr;
     QStringList userUuids;
+
     userUuids << _userUuid;
     usersArr.append(_userUuid);
+
     const QVector<QJsonObject> &jsonUsers = _users->objects();
     for(const auto &jsonUser: jsonUsers) {
         QString uuid = jsonUser.value(RamObject::KEY_Uuid).toString();

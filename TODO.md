@@ -1,18 +1,30 @@
-## Landing
+## Priority fixes
 
-- Create Team Project
-    - (Improve server widget (hide details in a QMenu), keep only the address)
+- titlebars on bottom & fix css
+- can't create shots or assets
+- assign existing users in project wizard
+- Assigned users not listed in projects (at least ourselves after creation, and removed if assign others)
+- Step Edit Widget broken
+- show states (Connect states to indicators in mainwindow (is team, server status & ssl, state manager)
+- offline mode if network unavailable for team projects
+- Update/refactor progressmanager (with state manager) and homepage
 
-## UI
+## Other
+
+- Refactor folders: all from project
+- reimplement save username and savepassword
+- DBInterface::acceptClean -> replace old m_rsi method
+- refactor setonline/setoffline (cf mainwindow)
+
+## Client UI
 
 - Use DuUI Layout methods everywhere
 - DuDockWidget update
 - QDateEdit button CSS
-- Fix title bars
-- Update all the rest
-- Step Edit Widget broken
-- Connect states to indicators in mainwindow (is team, server status & ssl, state manager)
-- Update/refactor progressmanager (with state manager)
+- Improve server widget (hide details in a QMenu), keep only the address
+- refactor logging & console (see DuME)
+- refactor userEditwidget
+- message "not implemented" on forgot password (usereditwidget)
 
 ## Project Wizard
 
@@ -21,17 +33,14 @@
 
 ## New server interface
 
-- CLient side
-    - WIP reimplement API (add project methods, see python client)
-    - refactor logging & console (see DuME)
-    - Remove all userChanged (the user can't change), but use databaseReady when needed
-    - Implement a Ramses::roleChanged signal, and use everywhere in UI (emit just after ready)
-    - Make sure on sync that the user role is monitored
-    - update settings system: remove per user, per project settings etc
-    - update pipeline: sync node location
-    - Mainwindow etc: build UI only on ramsesReady signal (and disconnect everywhere else)
-- check how serveruuid is used and remove if not needed anymore
-
+- WIP reimplement All API
+- Remove all userChanged (the user can't change), but use databaseReady when needed
+- Implement a Ramses::roleChanged signal, and use everywhere in UI (emit just after ready)
+- Make sure on sync that the user role is monitored
+- update settings system: remove per user, per project settings etc
+- update pipeline: sync node location
+- Mainwindow etc: build UI only on ramsesReady signal (and disconnect everywhere else)
+- remove serveruuid
 
 ## Templates & Global & Object changes
 
@@ -48,6 +57,8 @@ offline à la DuME
 
 Remove RamTemplateStep and RamTemplateAssetGroup
 
+- refactor admin page
+
 ### Global objects
 
 Set per project:
@@ -56,25 +67,15 @@ Set per project:
 - RamFileType
 - RamState
 
-### Objects
+## Objects
 
-- RamUser: don't store role or email or shortName in data, but use specific columns (update local data schema)
 - All objects: don't store project in data (not needed anymore)
 
 ## Server changes
 
 - setEmail verify if unique
 - createUser(s), verify is email is unique
-
-## Client
-
-- remove databasecreatewidget and databaseeditwidget
-- Refactor folders: all from project
-- message "not implemented" on forgot password (usereditwidget)
-- reimplement save username and savepassword
-- DBInterface::acceptClean -> replace old m_rsi method
-- refactor setonline/setoffline (cf mainwindow)
-- refacotr quit/last sync, etc, using StateManager
+- reset email system
 
 ## Server Doc
 
