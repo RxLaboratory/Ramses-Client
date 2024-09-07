@@ -226,34 +226,7 @@ PipelineWidget::PipelineWidget(QWidget *parent) :
     connect(m_nodeScene->connectionManager(), SIGNAL(newConnection(DuQFConnection*)), this, SLOT(stepsConnected(DuQFConnection*)));
     connect(m_nodeScene->connectionManager(), SIGNAL(connectionRemoved(DuQFConnection*)), this, SLOT(connectionRemoved(DuQFConnection*)));
     // Ramses connections
-    connect(Ramses::i(), SIGNAL(currentProjectChanged(RamProject*)), this, SLOT(setProject(RamProject*)));
     connect(Ramses::i(), &Ramses::ready, this, &PipelineWidget::ramsesReady);
-}
-
-void PipelineWidget::setProject(RamProject *project)
-{
-    if (m_project && project)
-    {
-        if (m_project->is(project)) return;
-    }
-    else if (!m_project && !project) return;
-
-    m_projectChanged = true;
-
-    // Disconnect
-    if (m_project)
-    {
-        disconnect(m_project->steps(), nullptr, this, nullptr);
-        disconnect(m_project->pipeline(), nullptr, this, nullptr);
-    }
-
-    // Recenter view
-    ui_nodeView->reinitTransform();
-
-    m_project = project;
-    // Reload in the show event if not yet visible
-    // to improve perf: do not refresh all the app when changing the project, only what's visible.
-    if ( this->isVisible() ) changeProject();
 }
 
 void PipelineWidget::newStep(RamObject *obj)
@@ -383,6 +356,17 @@ void PipelineWidget::ramsesReady()
 
     setSnapEnabled(uSettings->value("nodeView/snapToGrid", false).toBool());
     setGridSize(uSettings->value("nodeView/gridSize", 20).toInt());
+
+    m_project = Ramses::i()->project();
+    m_projectChanged = true;
+
+    // Recenter view
+    ui_nodeView->reinitTransform();
+
+    // Reload in the show event if not yet visible
+    // to improve perf: do not refresh all the app when changing the project, only what's visible.
+    if ( this->isVisible() )
+        changeProject();
 }
 
 void PipelineWidget::createStep()

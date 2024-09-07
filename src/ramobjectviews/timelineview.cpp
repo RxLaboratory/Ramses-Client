@@ -126,10 +126,9 @@ void TimelineView::columnMoved(int logicalIndex, int oldVisualIndex, int newVisu
     resetZoom();
 }
 
-void TimelineView::changeProject(RamProject *project)
+void TimelineView::ramsesReady()
 {
-    if (project) this->setObjectModel(project->shots());
-    else this->setObjectModel(nullptr);
+    this->setObjectModel(Ramses::i()->project()->shots());
 }
 
 void TimelineView::select(const QModelIndex &index)
@@ -259,7 +258,7 @@ void TimelineView::setupUi()
 void TimelineView::connectEvents()
 {
     // Update list when project changes
-    connect(Ramses::i(), &Ramses::currentProjectChanged, this, &TimelineView::changeProject);
+    connect(Ramses::i(), &Ramses::ready, this, &TimelineView::ramsesReady);
     // Delegate buttons
     connect(m_delegate, SIGNAL(edited(RamObject*)), this, SLOT(select(RamObject*)));
     // Select

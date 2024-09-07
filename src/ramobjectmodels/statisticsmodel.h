@@ -22,7 +22,7 @@ public:
     void setUser(RamUser *newUser);
 
 private slots:
-    void changeProject(RamProject *project);
+    void ramsesReady();
 
     void insertStep(const QModelIndex &parent, int first, int last);
     void removeStep(const QModelIndex &parent, int first, int last);

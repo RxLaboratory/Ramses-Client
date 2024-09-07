@@ -33,7 +33,6 @@ private slots:
     void checkRowsFilter();
     void usersInserted(const QModelIndex &parent, int first, int last);
 
-    void projectChanged(RamProject *project);
     void projectUpdated(RamObject*projObj);
     void ramsesReady();
     void changeUserRole(RamUser::UserRole role);

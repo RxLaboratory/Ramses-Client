@@ -28,7 +28,6 @@ private slots:
     void setGridSize(int size);
 
     void ramsesReady();
-    void setProject(RamProject *project);
 
     void createStep();
 

@@ -47,9 +47,6 @@ protected:
     DuQFTitleBar *ui_titleBar;
     RamObjectComboBox *ui_groupBox;
 
-protected slots:
-    virtual void projectChanged(RamProject *project, bool force = false);
-
 private slots:
     void showUser(RamObject *user, bool s);
     void showStep(RamObject *step, bool s);

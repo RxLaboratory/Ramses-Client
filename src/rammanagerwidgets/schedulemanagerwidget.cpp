@@ -85,22 +85,6 @@ void ScheduleManagerWidget::usersInserted(const QModelIndex &parent, int first, 
     }
 }
 
-void ScheduleManagerWidget::projectChanged(RamProject *project)
-{
-    if (!m_project && !project) return;
-    if (m_project) if (m_project->is(project) ) return;
-
-    m_projectChanged = true;
-
-    if (m_project) disconnect(m_project, nullptr, this, nullptr);
-
-    m_project = project;
-
-    // Reload in the show event if not yet visible
-    // to improve perf: do not refresh all the app when changing the project, only what's visible.
-    if ( this->isVisible() ) changeProject();
-}
-
 void ScheduleManagerWidget::projectUpdated(RamObject *projObj)
 {
     if (!m_project->is(projObj)) return;
@@ -112,6 +96,14 @@ void ScheduleManagerWidget::ramsesReady()
 {
     // Reload settings
     loadSettings();
+
+    m_projectChanged = true;
+    m_project = Ramses::i()->project();
+
+    // Reload in the show event if not yet visible
+    // to improve perf: do not refresh all the app when changing the project, only what's visible.
+    if ( this->isVisible() )
+        changeProject();
 }
 
 void ScheduleManagerWidget::changeUserRole(RamAbstractObject::UserRole role)
@@ -728,7 +720,6 @@ void ScheduleManagerWidget::connectEvents()
     // other actions
     // other
     connect(ui_titleBar, &DuQFTitleBar::closeRequested, this, &ScheduleManagerWidget::closeRequested);
-    connect(Ramses::i(), SIGNAL(currentProjectChanged(RamProject*)), this, SLOT(projectChanged(RamProject*)));
     connect(Ramses::i(), &Ramses::ready, this, &ScheduleManagerWidget::ramsesReady);
     connect(Ramses::i(), &Ramses::roleChanged, this, &ScheduleManagerWidget::changeUserRole);
 

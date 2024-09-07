@@ -156,24 +156,17 @@ QVariant StatisticsModel::data(const QModelIndex &index, int role) const
     return QVariant();
 }
 
-void StatisticsModel::changeProject(RamProject *project)
+void StatisticsModel::ramsesReady()
 {
-    if (m_project) {
-        disconnect(m_project, nullptr, this, nullptr);
-        disconnect(m_project->steps(), nullptr, this, nullptr);
-    }
-
     beginResetModel();
 
-    m_project = project;
+    m_project = Ramses::i()->project();
 
     endResetModel();
 
-    if (!project) return;
-
     connect( m_project, SIGNAL(estimationComputed(RamProject*)),this,SLOT(estimationComputed()));
-    connect( project->steps(), SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(insertStep(QModelIndex,int,int)));
-    connect( project->steps(), SIGNAL(rowsAboutToBeRemoved(QModelIndex,int,int)), this, SLOT(removeStep(QModelIndex,int,int)));
+    connect( m_project->steps(), SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(insertStep(QModelIndex,int,int)));
+    connect( m_project->steps(), SIGNAL(rowsAboutToBeRemoved(QModelIndex,int,int)), this, SLOT(removeStep(QModelIndex,int,int)));
 }
 
 void StatisticsModel::removeStep(const QModelIndex &parent, int first, int last)
@@ -220,5 +213,5 @@ void StatisticsModel::insertStep(const QModelIndex &parent, int first, int last)
 
 void StatisticsModel::connectEvents()
 {
-    connect(Ramses::i(), SIGNAL(currentProjectChanged(RamProject*)), this, SLOT(changeProject(RamProject*)));
+    connect(Ramses::i(), &Ramses::ready, this, &StatisticsModel::ramsesReady);
 }

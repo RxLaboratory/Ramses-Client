@@ -8,21 +8,12 @@ StatisticsWidget::StatisticsWidget(QWidget *parent) : QWidget(parent)
     connectEvents();
 }
 
-void StatisticsWidget::projectChanged(RamProject *project)
+void StatisticsWidget::ramsesReady()
 {
-    if (m_project) disconnect(m_project, nullptr, this, nullptr);
+    m_project = Ramses::i()->project();
 
-    m_project = project;
-
-    if (!project)
-    {
-        ui_userBox->setObjectModel(nullptr, "Users");
-        return;
-    }
-
-    ui_userBox->setObjectModel(project->users(), "Users");
-
-    updateEstimation(project);
+    ui_userBox->setObjectModel(m_project->users(), "Users");
+    updateEstimation(m_project);
     connect(m_project,SIGNAL(estimationComputed(RamProject*)),this,SLOT(updateEstimation(RamProject*)));
 
     ui_statsTable->resizeRowsToContents();
@@ -156,6 +147,6 @@ void StatisticsWidget::setupUi()
 
 void StatisticsWidget::connectEvents()
 {
-    connect(Ramses::i(), SIGNAL(currentProjectChanged(RamProject*)), this, SLOT(projectChanged(RamProject*)));
+    connect(Ramses::i(), &Ramses::ready, this, &StatisticsWidget::ramsesReady);
     connect(ui_userBox, SIGNAL(currentObjectChanged(RamObject*)), this, SLOT(changeUser(RamObject*)));
 }

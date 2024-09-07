@@ -7,14 +7,13 @@
 #include "ramassetgroup.h"
 #include "ramsequence.h"
 #include "shotscreationdialog.h"
-#include "ramstatustablemodel.h"
 
 ItemManagerWidget::ItemManagerWidget(RamTemplateStep::Type type, QWidget *parent) : QWidget(parent)
 {   
     m_productionType = type;
     setupUi();
 
-    ramsesReady(nullptr);
+    ramsesReady();
     filter(nullptr);
 
     connectEvents();
@@ -156,21 +155,6 @@ void ItemManagerWidget::hideEvent(QHideEvent *event)
         uSettings->endGroup();
     }
     QWidget::hideEvent(event);
-}
-
-void ItemManagerWidget::projectChanged(RamProject *project, bool force)
-{
-    if (m_project) disconnect(m_project, nullptr, this, nullptr);
-
-    if (!m_project && !project) return;
-    if (m_project) if (m_project->is(project) && !force ) return;
-
-    m_projectChanged = true;
-
-    m_project = project;
-    // Reload in the show event if not yet visible
-    // to improve perf: do not refresh all the app when changing the project, only what's visible.
-    if ( this->isVisible() ) changeProject();
 }
 
 void ItemManagerWidget::showUser(RamObject *user, bool s)
@@ -653,6 +637,15 @@ void ItemManagerWidget::ramsesReady()
 {
     ui_actionItem->setVisible(false);
     loadSettings();
+
+
+    m_projectChanged = true;
+
+    m_project = Ramses::i()->project();
+    // Reload in the show event if not yet visible
+    // to improve perf: do not refresh all the app when changing the project, only what's visible.
+    if ( this->isVisible() )
+        changeProject();
 }
 
 void ItemManagerWidget::changeUserRole(RamAbstractObject::UserRole role)
@@ -1057,7 +1050,6 @@ void ItemManagerWidget::connectEvents()
     connect(ui_groupBox, SIGNAL(currentObjectChanged(RamObject*)), this, SLOT(filter(RamObject*)));
     // other
     connect(ui_titleBar, &DuQFTitleBar::closeRequested, this, &ItemManagerWidget::closeRequested);
-    connect(Ramses::i(), SIGNAL(currentProjectChanged(RamProject*)), this,SLOT(projectChanged(RamProject*)));
     connect(Ramses::i(), &Ramses::ready, this, &ItemManagerWidget::ramsesReady);
     connect(Ramses::i(), &Ramses::roleChanged, this, &ItemManagerWidget::changeUserRole);
     connect(ui_header, SIGNAL(sort(int,Qt::SortOrder)), ui_table->filteredModel(), SLOT(resort(int,Qt::SortOrder)));
