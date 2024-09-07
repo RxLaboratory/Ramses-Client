@@ -105,7 +105,7 @@ void MainWindow::connectEvents()
     // Toolbar buttons
     connect(m_actionLogIn,&DuAction::triggered,
             this, [this] () { setPage(Landing); } );
-    connect(m_actionLogOut, &QAction::triggered, StateManager::i(), &StateManager::restart);
+    connect(m_actionLogOut, &QAction::triggered, this, []() { StateManager::i()->restart(); });
     connect(m_actionSetOnline, &QAction::triggered, this, &MainWindow::setOnlineAction);
     connect(m_actionSetOffline, &QAction::triggered, this, &MainWindow::setOfflineAction);
     connect(m_actionDatabaseSettings, &QAction::triggered, this, &MainWindow::databaseSettingsAction);
@@ -1242,7 +1242,6 @@ void MainWindow::setupToolBars()
     QAction *logA = ui_leftToolBar->addWidget(logB);
     connect(logB, &DuQFLogToolButton::visibilityChanged, logA, &QAction::setVisible);
 
-    ui_projectSelectorAction->setVisible(false);
     m_actionAdmin->setVisible(false);
     ui_pipelineMenuAction->setVisible(false);
     ui_shotMenuAction->setVisible(false);

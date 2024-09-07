@@ -10,7 +10,7 @@ PipeFileManagerWidget::PipeFileManagerWidget(QWidget *parent):
         parent)
 {
     changeProject(Ramses::i()->project());
-    connect(Ramses::i(), SIGNAL(currentProjectChanged(RamProject*)), this, SLOT(changeProject(RamProject*)));
+    connect(Ramses::i(), &Ramses::ready, this, [this]() { changeProject(Ramses::i()->project()); });
     ui_listWidget->setEditMode(ObjectListWidget::RemoveObjects);
     ui_listWidget->setSortable(true);
 }

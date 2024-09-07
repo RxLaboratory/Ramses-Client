@@ -51,7 +51,7 @@ void ProjectWizard::done(int r)
     this->setEnabled(false);
 
     // Set the file
-    ProjectManager::i()->loadDatabase(dbPath);
+    DBInterface::i()->loadDataFile(dbPath);
 
     // Create local data
     if (_isTeamProject) {
@@ -131,8 +131,8 @@ void ProjectWizard::finishProjectSetup()
     for(const auto &jsonStep: jsonSteps)
         RamStep::fromJson(jsonStep, project);
 
-    // Login
-    Ramses::i()->setUser( user );
+    // And tell Ramses we're ready
+    Ramses::i()->loadDatabase();
 
     // and accept
     this->setEnabled(true);

@@ -932,7 +932,7 @@ void LocalDataInterface::setCurrentProjectUser(const QString &projectUuid, const
 
     QString q = "INSERT INTO _User (userUuid, projectUuid, current) "
                 "VALUES ('%1', '%2', 1 ) "
-                "ON CONFLICT(uuid) DO UPDATE "
+                "ON CONFLICT(userUuid) DO UPDATE "
                 "SET current=excluded.current ;";
 
     query( q.arg(userUuid, projectUuid) );

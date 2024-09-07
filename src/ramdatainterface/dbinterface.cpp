@@ -237,9 +237,6 @@ bool DBInterface::loadDataFile(const QString &file)
         m_rsi->setSsl(config.useSsl);
         m_rsi->setServerPort(config.port);
         m_updateFrequency = config.updateDelay;
-
-        // Get the serverUuid we should be connecting to
-        QString serverUuid = m_ldi->serverUuid();
     }
     else
     {

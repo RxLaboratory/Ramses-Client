@@ -21,6 +21,11 @@ public:
 
     // OTHER METHODS //
 
+    /**
+     * @brief loadDatabase Tells Ramses that the database is ready
+     */
+    void loadDatabase();
+
     // Tree base
     void setRamsesPath(QString p);
     QString pathFromRamses(QString p = "", bool create = false) const;
@@ -72,8 +77,6 @@ private:
 
     QDir createDir(QString p) const;
     QString createPath(QString p) const;
-
-    void loadDatabase();
 
     // ATTRIBUTES //
 

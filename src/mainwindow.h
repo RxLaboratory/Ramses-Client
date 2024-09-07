@@ -139,7 +139,6 @@ private:
     bool m_maximized;
 
     // ToolBar Menus
-    QAction *ui_projectSelectorAction;
 
     QToolButton *ui_pipelineButton;
     QAction *ui_pipelineMenuAction;

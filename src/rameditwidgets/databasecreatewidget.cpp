@@ -191,7 +191,7 @@ bool DatabaseCreateWidget::createNewDB(ServerConfig s)
     LocalDataInterface::setWorkingPath(newFilePath, ui_folderSelector->path());
 
     // Set File
-    DBInterface::i()->loadDataFile(newFilePath, true);
+    DBInterface::i()->loadDataFile(newFilePath);
 
     return true;
 }
@@ -280,8 +280,6 @@ void DatabaseCreateWidget::createOfflineDB()
     RamUser *newUser = new RamUser(ui_shortNameEdit->text(), ui_nameEdit->text());
     newUser->setRole(RamUser::Admin);
 
-    // Login
-    Ramses::i()->setUser( newUser );
 
     // Hide dock
     MainWindow *mw = (MainWindow*)GuiUtils::appMainWindow();
