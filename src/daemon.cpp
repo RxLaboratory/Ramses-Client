@@ -10,7 +10,6 @@
 #include "statemanager.h"
 #include "duapp/dusettings.h"
 #include "ramsettings.h"
-#include "projectmanager.h"
 
 Daemon *Daemon::_instance = nullptr;
 
@@ -125,9 +124,6 @@ void Daemon::reply(QString request, QTcpSocket *client)
     else if (args.contains("getCurrentProject"))
         getCurrentProject(client);
 
-    else if (args.contains("setCurrentProject"))
-        setCurrentProject(args.value("uuid"), client);
-
     else if (args.contains("getRamsesFolder"))
         getRamsesFolder(client);
 
@@ -218,18 +214,6 @@ void Daemon::getCurrentProject(QTcpSocket *client)
 
 
     post(client, content, "getCurrentProject", message);
-}
-
-void Daemon::setCurrentProject(QString uuid, QTcpSocket *client)
-{
-    log(tr("I'm replying to this request: %1.").arg("setCurrentProject"), DuQFLog::Debug);
-    log(tr("This is the uuid: %1").arg(uuid), DuQFLog::Data);
-
-    Ramses::i()->setCurrentProjectUuid(uuid);
-
-    RamProject *p = Ramses::i()->project();
-    if (p) post(client, QJsonObject(), "setCurrentProject", tr("Current project set to: \"%1\".").arg(p->name()));
-    else post(client, QJsonObject(), "setCurrentProject", tr("Project not found, sorry!"), false);
 }
 
 void Daemon::create(QString uuid, QString data, QString type, QTcpSocket *client)

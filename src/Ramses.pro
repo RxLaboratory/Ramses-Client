@@ -211,7 +211,6 @@ SOURCES += \
     rameditwidgets/pipeeditwidget.cpp \
     rameditwidgets/projecteditwidget.cpp \
     smallwidgets/progresswidget.cpp \
-    smallwidgets/projectselectorwidget.cpp \
     ramobjects/ramapplication.cpp \
     ramobjects/ramasset.cpp \
     ramobjects/ramfiletype.cpp \
@@ -423,7 +422,6 @@ HEADERS += \
     rameditwidgets/pipeeditwidget.h \
     rameditwidgets/projecteditwidget.h \
     smallwidgets/progresswidget.h \
-    smallwidgets/projectselectorwidget.h \
     ramobjects/ramapplication.h \
     ramobjects/ramasset.h \
     ramobjects/ramfiletype.h \

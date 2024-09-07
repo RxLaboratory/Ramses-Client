@@ -6,7 +6,6 @@
 #include <QFileDialog>
 
 #include "duapp/app-version.h"
-#include "projectmanager.h"
 #include "duapp/duui.h"
 #include "duwidgets/duicon.h"
 #include "wizards/projectwizard.h"

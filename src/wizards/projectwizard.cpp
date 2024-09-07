@@ -6,7 +6,6 @@
 #include "duapp/duui.h"
 #include "duapp/dusettings.h"
 #include "duutils/dusystemutils.h"
-#include "projectmanager.h"
 #include "ramnamemanager.h"
 #include "ramstep.h"
 #include "ramses.h"

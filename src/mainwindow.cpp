@@ -25,13 +25,11 @@
 #include "docks/timelinewidget.h"
 #include "dbinterface.h"
 #include "daemon.h"
-#include "projectselectorwidget.h"
 #include "dbmanagerwidget.h"
 #include "duwidgets/duqflogtoolbutton.h"
 #include "duapp/app-version.h"
 #include "docks/settingsdock.h"
 #include "ramses.h"
-#include "projectmanager.h"
 #include "duapp/duui.h"
 #include "statemanager.h"
 
@@ -103,10 +101,6 @@ void MainWindow::connectEvents()
 
     // Progress
     connect(ProgressManager::instance(), &ProgressManager::freezeUI, this, &MainWindow::freezeUI);
-
-    // Project
-    connect(ProjectManager::i(), &ProjectManager::databaseChanged,
-            this, [this] () { setPage(Home); } );
 
     // Toolbar buttons
     connect(m_actionLogIn,&DuAction::triggered,
@@ -1237,9 +1231,6 @@ void MainWindow::setupToolBars()
     ui_filesButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
 
     // Populate Toolbar
-    auto projectSelector = new ProjectSelectorWidget(this);
-    ui_projectSelectorAction = ui_leftToolBar->addWidget(projectSelector);
-    DuUI::addCustomCSS(projectSelector, "QComboBox { background: #222222; }");
 
     ui_pipelineMenuAction = ui_leftToolBar->addWidget(ui_pipelineButton);
     ui_assetMenuAction = ui_leftToolBar->addWidget(ui_assetsButton);

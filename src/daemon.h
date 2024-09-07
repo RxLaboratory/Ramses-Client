@@ -70,19 +70,6 @@ private slots:
      * @param client
      */
     void getCurrentProject(QTcpSocket *client);
-    /**
-     * @brief ping Sends the current project uuid and data.
-     * {
-     *  "query": "getCurrentProject",
-     *  "message": "Current project set to: \"Project Name\".",
-     *  "accepted": true,
-     *  "success": true,
-     *  "content": { }
-     * }
-     * @param client
-     */
-    void setCurrentProject(QString uuid, QTcpSocket *client);
-
 
     // DATA
     /**
