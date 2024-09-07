@@ -285,6 +285,14 @@ QJsonObject RamServerClient::createUsers(const QJsonArray &users)
     return parseData(reply);
 }
 
+QJsonObject RamServerClient::getProjects()
+{
+    Request r = buildRequest("getProjects", QJsonObject());
+
+    QNetworkReply *reply = synchronousRequest(r);
+    return parseData(reply);
+}
+
 void RamServerClient::sync(SyncData syncData)
 {
     // We should not already be in a sync or logged out
@@ -389,10 +397,9 @@ void RamServerClient::dataReceived(QNetworkReply *reply)
         // If sync is not successful
         if (!repSuccess)
         {
-            m_lastError = tr( "The server sync (start sync session) was not successful.\n"
-                              "This is probably a bug or a configuration error.\n"
-                              "Please report bugs on %1").arg(URL_SOURCECODE);
+            m_lastError = tr( "The server sync (start sync session) was not successful." );
             qWarning().noquote() << "{Client}" << m_lastError;
+            finishSync(true);
             return;
         }
 
@@ -408,6 +415,7 @@ void RamServerClient::dataReceived(QNetworkReply *reply)
                              "This is probably a bug or a configuration error.\n"
                              "Please report bugs on %1").arg(URL_SOURCECODE);
             qWarning().noquote() << "{Client}" << m_lastError;
+            finishSync(true);
             return;
         }
         // If it's commited, fetch
@@ -428,6 +436,7 @@ void RamServerClient::dataReceived(QNetworkReply *reply)
                              "This is probably a bug or a configuration error.\n"
                              "Please report bugs on %1").arg(URL_SOURCECODE);
             qWarning().noquote() << "{Client}" << m_lastError;
+            finishSync(true);
             return;
         }
 
@@ -461,6 +470,7 @@ void RamServerClient::dataReceived(QNetworkReply *reply)
                              "This is probably a bug or a configuration error.\n"
                              "Please report bugs on %1").arg(URL_SOURCECODE);
             qWarning().noquote() << "{Client}" << m_lastError;
+            finishSync(true);
             return;
         }
 
@@ -912,6 +922,8 @@ void RamServerClient::finishSync(bool inError)
     // Emit result
     if (!inError)
         emit syncReady( m_pulledData );
+    else
+        emit syncReady(SyncData());
 
     if (m_status == Syncing)
         setStatus(Ready);

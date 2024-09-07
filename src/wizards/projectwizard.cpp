@@ -183,7 +183,7 @@ void ProjectWizard::setupUi()
 {
     // Login
     if (_isTeamProject) {
-        ui_loginPage = new LoginWizardPage(this);
+        ui_loginPage = new LoginWizardPage(true, this);
         setPage(LoginPage, ui_loginPage );
     }
 

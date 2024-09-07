@@ -3,8 +3,9 @@
 #include "duapp/duui.h"
 #include "ramserverclient.h"
 
-LoginWizardPage::LoginWizardPage(QWidget *parent):
-    QWizardPage(parent)
+LoginWizardPage::LoginWizardPage(bool mustBeAdmin, QWidget *parent):
+    QWizardPage(parent),
+    _mustBeAdmin(mustBeAdmin)
 {
     setupUi();
     connectEvents();
@@ -71,7 +72,7 @@ bool LoginWizardPage::validatePage()
     QJsonDocument userDoc = QJsonDocument::fromJson(userDataStr.toUtf8());
     QJsonObject userData = userDoc.object();
     QString userRole = content.value("role").toString(RamUser::ENUMVALUE_Standard);
-    if (userRole != RamUser::ENUMVALUE_Admin) {
+    if (userRole != RamUser::ENUMVALUE_Admin && _mustBeAdmin) {
         QMessageBox::warning(this,
                              tr("Insuficient rights"),
                              tr("You must be a server administrator to create a team project.\nPlease contact an administrator of this server.")

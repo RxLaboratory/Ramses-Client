@@ -34,7 +34,7 @@ void RamDatabasePathsWizardPage::initializePage()
     QString name = field("name").toString();
 
     ui_ramsesFileSelector->setPath(QDir::homePath() + "/" + id + ".ramses");
-    ui_projectPathSelector->setPlaceHolderText(QDir::homePath() + "/" + id + "_" + name);
+    ui_projectPathSelector->setPlaceHolderText(QDir::homePath() + "/Ramses/" + id + "_" + name);
 }
 
 void RamDatabasePathsWizardPage::setupUi()

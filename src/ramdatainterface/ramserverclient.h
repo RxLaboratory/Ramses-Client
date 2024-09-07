@@ -70,9 +70,10 @@ public:
     QJsonObject getEmail(const QString &uuid);
     QJsonObject setEmail(const QString &uuid, const QString &email);
     QJsonObject createUsers(const QJsonArray &users );
+    QJsonObject getProjects();
     // QJsonObject unassignUser(const QString &userUuid, const QString &projectUuid);
     // QJsonObject getUsers(const QString &projectUuid = "");
-    // QJsonObject getProjects(const QString &userUuid);
+    //
     // QJsonObject deleteData(QHash<QString, QSet<QString> > uuidsToDelete);
 
     // ASync methods

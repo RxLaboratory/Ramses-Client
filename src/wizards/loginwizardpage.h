@@ -10,7 +10,7 @@
 class LoginWizardPage : public QWizardPage
 {
 public:
-    LoginWizardPage(QWidget *parent = nullptr);
+    LoginWizardPage(bool mustBeAdmin, QWidget *parent = nullptr);
     bool validatePage() override;
     QString uuid() const { return _uuid; }
 
@@ -23,6 +23,7 @@ private:
     DuLineEdit *ui_passwordEdit;
 
     QString _uuid;
+    bool _mustBeAdmin;
 };
 
 #endif // LOGINWIZARDPAGE_H

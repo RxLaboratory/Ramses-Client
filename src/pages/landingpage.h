@@ -6,6 +6,7 @@
 #include <QToolButton>
 #include <QStackedLayout>
 
+#include "datastruct.h"
 #include "duwidgets/ducombobox.h"
 
 class LandingPage : public QWidget
@@ -18,6 +19,7 @@ private slots:
     void updateRecentList();
     void createDatabase(bool team = false);
     void openDatabase(const QString &dbFile);
+    void joinTeamProject();
 
 private:
     void setupUi();
@@ -30,6 +32,8 @@ private:
     QPushButton *ui_joinTeamProjectButton;
     QToolButton *ui_openRecentDatabaseButton;
     DuComboBox *ui_recentBox;
+
+    QString login(ServerConfig serverSettings, const QString &username, const QString &password);
 };
 
 #endif // LANDINGPAGE_H

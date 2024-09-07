@@ -2,11 +2,6 @@
 
 - Create Team Project
     - (Improve server widget (hide details in a QMenu), keep only the address)
-- Join Team Project
-    - Login on server
-    - List available projects
-    - Create DB (cf former db creator online)
-    - Sync
 
 ## UI
 
@@ -16,6 +11,8 @@
 - Fix title bars
 - Update all the rest
 - Step Edit Widget broken
+- Connect states to indicators in mainwindow (is team, server status & ssl, state manager)
+- Update/refactor progressmanager (with state manager)
 
 ## Project Wizard
 

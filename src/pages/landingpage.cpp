@@ -9,6 +9,7 @@
 #include "duapp/duui.h"
 #include "duwidgets/duicon.h"
 #include "duwidgets/dulogindialog.h"
+#include "wizards/jointeamprojectwizard.h"
 #include "wizards/projectwizard.h"
 #include "dbinterface.h"
 #include "ramses.h"
@@ -40,13 +41,13 @@ void LandingPage::createDatabase(bool team)
     ui_stackedLayout->addWidget(dummy);
 
     // Create a wizard and show it
-    auto pz = new ProjectWizard(team);
-    l->addWidget(pz);
+    auto pw = new ProjectWizard(team);
+    l->addWidget(pw);
 
     // Delete it when finished
-    connect(pz, &ProjectWizard::finished, this, [this,pz,dummy] () {
+    connect(pw, &ProjectWizard::finished, this, [this,pw,dummy] () {
         ui_stackedLayout->setCurrentIndex(0);
-        pz->deleteLater();
+        pw->deleteLater();
         dummy->deleteLater();
     });
 
@@ -63,36 +64,11 @@ void LandingPage::openDatabase(const QString &dbFile)
         if (!d.exec())
             return;
 
-        // Set server settings
-        RamServerClient::i()->setServerSettings(
-            LocalDataInterface::getServerSettings(dbFile)
-            );
-
-        // Login
-        QString userUuid;
-        QJsonObject rep = RamServerClient::i()->login(
+        QString userUuid = login(
+            LocalDataInterface::getServerSettings(dbFile),
             d.username(),
             d.password()
             );
-        if (!rep.value("success").toBool(false)) {
-            QMessageBox::warning(this,
-                                 tr("Login failed"),
-                                 rep.value("message").toString("Unknown error")
-                                 );
-            return;
-        }
-        else
-            userUuid = rep.value("content").toObject().value("uuid").toString();
-
-        if (userUuid == "") {
-            QMessageBox::warning(this,
-                                 tr("Login failed"),
-                                 tr("Can't get your UUID.\n"
-                                    "This is probably a misconfiguration or a bug of the server.\n"
-                                    "Please contact your Ramses administrator.")
-                                 );
-            return;
-        }
 
         // Set current project
 
@@ -109,7 +85,7 @@ void LandingPage::openDatabase(const QString &dbFile)
             return;
         }
 
-        rep = RamServerClient::i()->setProject(projectUuid);
+        QJsonObject rep = RamServerClient::i()->setProject(projectUuid);
         if (!rep.value("success").toBool(false)) {
             QMessageBox::warning(this,
                                  tr("Login failed"),
@@ -128,6 +104,27 @@ void LandingPage::openDatabase(const QString &dbFile)
     if (teamProject)
         DBInterface::i()->fullSync();
     Ramses::i()->loadDatabase();
+}
+
+void LandingPage::joinTeamProject()
+{
+    // Necessary for the margins
+    auto dummy = new QWidget(this);
+    auto l = DuUI::addBoxLayout(Qt::Vertical, dummy);
+    ui_stackedLayout->addWidget(dummy);
+
+    // Create a wizard and show it
+    auto pw = new JoinTeamProjectWizard();
+    l->addWidget(pw);
+
+    // Delete it when finished
+    connect(pw, &ProjectWizard::finished, this, [this,pw,dummy] () {
+        ui_stackedLayout->setCurrentIndex(0);
+        pw->deleteLater();
+        dummy->deleteLater();
+    });
+
+    ui_stackedLayout->setCurrentIndex(1);
 }
 
 void LandingPage::setupUi()
@@ -226,4 +223,38 @@ void LandingPage::connectEvents()
             this, [this] () { createDatabase(false); });
     connect(ui_createTeamProjectButton, &QPushButton::clicked,
             this, [this] () { createDatabase(true); });
+
+    connect(ui_joinTeamProjectButton, &QPushButton::clicked,
+            this, &LandingPage::joinTeamProject);
+}
+
+QString LandingPage::login(ServerConfig serverSettings, const QString &username, const QString &password)
+{
+    // Set server settings
+    RamServerClient::i()->setServerSettings( serverSettings );
+
+    // Login
+
+    QJsonObject rep = RamServerClient::i()->login( username, password );
+    if (!rep.value("success").toBool(false)) {
+        QMessageBox::warning(this,
+                             tr("Login failed"),
+                             rep.value("message").toString("Unknown error")
+                             );
+        return "";
+    }
+
+    QString userUuid = rep.value("content").toObject().value("uuid").toString();
+
+    if (userUuid == "") {
+        QMessageBox::warning(this,
+                             tr("Login failed"),
+                             tr("Can't get your UUID.\n"
+                                "This is probably a misconfiguration or a bug of the server.\n"
+                                "Please contact your Ramses administrator.")
+                             );
+        return "";
+    }
+
+    return userUuid;
 }

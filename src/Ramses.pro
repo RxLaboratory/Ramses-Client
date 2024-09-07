@@ -242,7 +242,9 @@ SOURCES += \
     pipeline-editor/objectnode.cpp \
     pipeline-editor/pipelinewidget.cpp \
     pipeline-editor/stepnode.cpp \
+    wizards/jointeamprojectwizard.cpp \
     wizards/loginwizardpage.cpp \
+    wizards/projectlistwizardpage.cpp \
     wizards/projectwizard.cpp \
     wizards/ramdatabasepathswizardpage.cpp \
     wizards/ramobjectpropertieswizardpage.cpp
@@ -454,7 +456,9 @@ HEADERS += \
     pipeline-editor/objectnode.h \
     pipeline-editor/pipelinewidget.h \
     pipeline-editor/stepnode.h \
+    wizards/jointeamprojectwizard.h \
     wizards/loginwizardpage.h \
+    wizards/projectlistwizardpage.h \
     wizards/projectwizard.h \
     wizards/ramdatabasepathswizardpage.h \
     wizards/ramobjectpropertieswizardpage.h
