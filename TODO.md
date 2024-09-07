@@ -5,6 +5,7 @@
 - QDateEdit button CSS
 - Fix title bars
 - Update all the rest
+- Step Edit Widget broken
 
 ## Project Wizard
 
@@ -29,7 +30,7 @@
 - Local DB: store the project uuid next to the user uuid and automatically set it
 
 - Create Team Project
-    - FIX: project/user not set after creation?
+    - BUG: project user list is empty after creation
     - (Improve server widget (hide details in a QMenu), keep only the address)
     - Setup project (add page to create/assign users)
     - Create users on server
@@ -81,6 +82,7 @@ Set per project:
 
 - createUsers
 - createProject
+- getAllUsers
 - assignUsers
 - unassignUsers
 - setUserRole

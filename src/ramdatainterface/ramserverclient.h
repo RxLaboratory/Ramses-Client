@@ -63,6 +63,7 @@ public:
     QJsonObject createProject(const QString &data, const QString &uuid = "");
     QJsonObject setProject(const QString &uuid);
     QJsonObject assignUsers(const QStringList &userUuids, const QString &projectUuid);
+    QJsonObject getAllUsers();
     // QJsonObject setPassword(const QString &userUuid, const QString &newPassword, const QString &currentPassword = "");
     // QJsonObject createUser(const QString &userUuid, const QString &username, const QString &password, const QString &userData, const QString &role = "standard" );
     // QJsonObject unassignUser(const QString &userUuid, const QString &projectUuid);

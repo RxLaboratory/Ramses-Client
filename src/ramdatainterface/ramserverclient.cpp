@@ -222,6 +222,14 @@ QJsonObject RamServerClient::assignUsers(const QStringList &userUuids, const QSt
     return parseData(reply);
 }
 
+QJsonObject RamServerClient::getAllUsers()
+{
+    Request r = buildRequest("getAllUsers");
+
+    QNetworkReply *reply = synchronousRequest(r);
+    return parseData(reply);
+}
+
 void RamServerClient::downloadAllData()
 {
     if (m_status == Syncing)
