@@ -76,7 +76,7 @@ public:
     // QJsonObject deleteData(QHash<QString, QSet<QString> > uuidsToDelete);
 
     // ASync methods
-    // void sync(SyncData syncData);
+    void sync(SyncData syncData);
     void downloadAllData();
 
 signals:

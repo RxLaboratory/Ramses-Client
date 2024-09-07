@@ -16,6 +16,7 @@ public:
         WritingDataBase = 1,
         Connecting = 2,
         LoadingDataBase = 3,
+        Closing,
     };
 
     /**
@@ -33,6 +34,7 @@ signals:
 public slots:
     void quit(bool sync = true);
     void restart(bool sync = true, const QString &dbFile = "");
+    void forceQuit();
     void setState(StateManager::State newState);
 
 protected:

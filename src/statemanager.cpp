@@ -23,26 +23,62 @@ bool StateManager::isDBBusy() const
 
 void StateManager::quit(bool sync)
 {
+    if (m_state==Closing)
+        return;
+
+    setState(Closing);
+
     // Release
     m_app->detach();
 
     // Stop the daemon
     Daemon::instance()->stop();
-    DBInterface::i()->setOffline(sync);
+
+    // One last sync
+    if (sync) {
+        connect(DBInterface::i(), &DBInterface::syncFinished,
+                m_app, &DuApplication::quit);
+
+        if (DBInterface::i()->fullSync())
+            return;
+    }
 
     m_app->quit();
 }
 
 void StateManager::restart(bool sync, const QString &dbFile)
 {
+    if (m_state==Closing)
+        return;
+
+    setState(Closing);
+
     // Release
     m_app->detach();
 
     // Stop the daemon
     Daemon::instance()->stop();
-    DBInterface::i()->setOffline(sync);
+
+    // One last sync
+    if (sync) {
+        connect(DBInterface::i(), &DBInterface::syncFinished,
+                this, [this, dbFile] () {
+                    m_app->restart(QStringList(dbFile));
+                });
+
+        if (DBInterface::i()->fullSync())
+            return;
+    }
 
     m_app->restart(QStringList(dbFile));
+}
+
+void StateManager::forceQuit()
+{
+    setState(Closing);
+    m_app->detach();
+    Daemon::instance()->stop();
+    m_app->quit();
 }
 
 void StateManager::setState(State newState)

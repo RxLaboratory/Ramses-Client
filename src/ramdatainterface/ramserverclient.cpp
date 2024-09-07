@@ -285,6 +285,18 @@ QJsonObject RamServerClient::createUsers(const QJsonArray &users)
     return parseData(reply);
 }
 
+void RamServerClient::sync(SyncData syncData)
+{
+    // We should not already be in a sync or logged out
+    if (m_status != Ready) return;
+
+    // Save sync data
+    m_pushingData = syncData;
+
+    // Start session
+    startSync();
+}
+
 void RamServerClient::downloadAllData()
 {
     if (m_status == Syncing)

@@ -1,4 +1,12 @@
-- check if user is assigned to the project just after login
+## Landing
+
+- Create Team Project
+    - (Improve server widget (hide details in a QMenu), keep only the address)
+- Join Team Project
+    - Login on server
+    - List available projects
+    - Create DB (cf former db creator online)
+    - Sync
 
 ## UI
 
@@ -27,16 +35,6 @@
     - Mainwindow etc: build UI only on ramsesReady signal (and disconnect everywhere else)
 - check how serveruuid is used and remove if not needed anymore
 
-## Landing
-
-- Create Team Project
-    - (Improve server widget (hide details in a QMenu), keep only the address)
-- Join Team Project
-    - Login on server
-    - List available projects
-    - Create DB (cf former db creator online)
-    - Sync
-- After open: trigger first sync, and regular syncs
 
 ## Templates & Global & Object changes
 
@@ -77,6 +75,9 @@ Set per project:
 - Refactor folders: all from project
 - message "not implemented" on forgot password (usereditwidget)
 - reimplement save username and savepassword
+- DBInterface::acceptClean -> replace old m_rsi method
+- refactor setonline/setoffline (cf mainwindow)
+- refacotr quit/last sync, etc, using StateManager
 
 ## Server Doc
 

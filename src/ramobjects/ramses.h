@@ -27,7 +27,6 @@ public:
     void loadDatabase();
 
     // Tree base
-    void setRamsesPath(QString p);
     QString pathFromRamses(QString p = "", bool create = false) const;
 
     // Applications

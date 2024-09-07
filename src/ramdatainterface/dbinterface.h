@@ -20,7 +20,6 @@
 
 #include "duutils/utils.h"
 #include "duutils/duqflogger.h"
-#include "ramserverinterface.h"
 #include "localdatainterface.h"
 
 class DBInterface : public DuQFLoggerObject
@@ -40,24 +39,8 @@ public:
      */
     static DBInterface *i();
 
-    //bool isReady() const;
-
-    /**
-     * @brief The current status (offline or online, maybe connecting)
-     * @return
-     */
-    NetworkUtils::NetworkStatus connectionStatus() const;
     bool isSyncSuspended();
-    bool isAutoSyncSuspended();
-
     bool isTeamProject();
-
-    /**
-     * @brief setRamsesPath sets the path to the local data for this database
-     * @param p
-     */
-    void setRamsesPath(QString p);
-    QString ramsesPath();
 
     // DATA INTERFACE //
 
@@ -89,10 +72,6 @@ public:
     QString lastError() const { return m_lastError; }
 
 signals:
-    /**
-     * @brief Emitted if the mode has changed
-     */
-    void connectionStatusChanged(NetworkUtils::NetworkStatus, QString);
     void databaseReady();
     void syncFinished();
     void syncStarted();
@@ -100,18 +79,9 @@ signals:
 public slots:
     void suspendSync();
     void resumeSync();
-    void suspendAutoSync();
-    void resumeAutoSync();
-    void sync();
-    void fullSync();
-    /**
-     * @brief Changes to offline mode: data is stored locally until we get a connection to the server to sync.
-     */
-    void setOffline(bool sync = true);
-    /**
-     * @brief Changes to online mode.
-     */
-    void setOnline(QString serverUuid = "");
+    bool sync();
+    bool fullSync();
+
     // MAINTENANCE //
     QString cleanDabaBase(int deleteDataOlderThan = -1);
     bool undoClean();
@@ -124,17 +94,6 @@ protected:
     static DBInterface *_instance;
 
 private slots:
-    /**
-     * @brief Handles changes of status from the Ramses server connection
-     * @param status
-     */
-    void serverConnectionStatusChanged(NetworkUtils::NetworkStatus status);
-    /**
-     * @brief Handles changes of connection status and emits connectionStatusChanged()
-     * @param s The new status
-     * @param reason A user friendly explanation
-     */
-    void setConnectionStatus(NetworkUtils::NetworkStatus s, QString reason = "");
     /**
      * @brief finishSync is called when the LDI has finished saving sync. Emits syncFinished and Schedules the next autosync.
      */
@@ -151,14 +110,6 @@ private:
      */
     void connectEvents();
     /**
-     * @brief The current status (offline, connecting or online)
-     */
-    NetworkUtils::NetworkStatus m_connectionStatus = NetworkUtils::Offline;
-    /**
-     * @brief m_rsi is the interface with the Ramses server.
-     */
-    RamServerInterface *m_rsi;
-    /**
      * @brief m_ldi is the interface with the local data.
      */
     LocalDataInterface *m_ldi;
@@ -172,8 +123,6 @@ private:
     int m_updateFrequency = 60000;
     QTimer *m_updateTimer;
     bool m_syncSuspended = true;
-    bool m_autoSyncSuspended = true;
-    bool m_disconnecting = false;
 
     QString m_lastError;
 };

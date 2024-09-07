@@ -560,9 +560,9 @@ QString LocalDataInterface::serverUuid()
     return uuid;
 }
 
-QString LocalDataInterface::ramsesPath()
+QString LocalDataInterface::workingPath()
 {
-    QString q = "SELECT path FROM _Paths WHERE name = 'Ramses';";
+    QString q = "SELECT path FROM _Paths WHERE name = 'Project';";
     QSqlQuery qry = query( q );
     if (qry.first())
     {
@@ -571,10 +571,10 @@ QString LocalDataInterface::ramsesPath()
     return "auto";
 }
 
-void LocalDataInterface::setRamsesPath(QString path)
+void LocalDataInterface::setWorkingPath(QString path)
 {
     QString q = "INSERT INTO _Paths (path, name) "
-                "VALUES ('%1', 'Ramses') "
+                "VALUES ('%1', 'Project') "
                 "ON CONFLICT(name) DO UPDATE "
                 "SET path=excluded.path ;";
     query( q.arg(path) );

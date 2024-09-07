@@ -56,7 +56,8 @@ void LandingPage::createDatabase(bool team)
 void LandingPage::openDatabase(const QString &dbFile)
 {
     // If this is a team project, login
-    if (DBInterface::isTeamProject(dbFile)) {
+    bool teamProject = DBInterface::isTeamProject(dbFile);
+    if (teamProject) {
 
         DuLoginDialog d("E-mail", this);
         if (!d.exec())
@@ -68,6 +69,7 @@ void LandingPage::openDatabase(const QString &dbFile)
             );
 
         // Login
+        QString userUuid;
         QJsonObject rep = RamServerClient::i()->login(
             d.username(),
             d.password()
@@ -76,6 +78,18 @@ void LandingPage::openDatabase(const QString &dbFile)
             QMessageBox::warning(this,
                                  tr("Login failed"),
                                  rep.value("message").toString("Unknown error")
+                                 );
+            return;
+        }
+        else
+            userUuid = rep.value("content").toObject().value("uuid").toString();
+
+        if (userUuid == "") {
+            QMessageBox::warning(this,
+                                 tr("Login failed"),
+                                 tr("Can't get your UUID.\n"
+                                    "This is probably a misconfiguration or a bug of the server.\n"
+                                    "Please contact your Ramses administrator.")
                                  );
             return;
         }
@@ -104,21 +118,15 @@ void LandingPage::openDatabase(const QString &dbFile)
             return;
         }
 
-        // Save the user in the database
-        QString uuid = rep.value("content").toObject().value("uuid").toString();
-        if (uuid == "") {
-            QMessageBox::warning(this,
-                                 tr("Login failed"),
-                                 tr("Can't get your UUID.\n"
-                                    "This is probably a misconfiguration or a bug of the server.\n"
-                                    "Please contact your Ramses administrator.")
-                                 );
-            return;
-        }
+        // Save the project and user in the database
 
-        LocalDataInterface::setProjectUserUuid(dbFile, projectUuid, uuid);
+        LocalDataInterface::setProjectUserUuid(dbFile, projectUuid, userUuid);
     }
+
     DBInterface::i()->loadDataFile(dbFile);
+    // Restart sync
+    if (teamProject)
+        DBInterface::i()->fullSync();
     Ramses::i()->loadDatabase();
 }
 

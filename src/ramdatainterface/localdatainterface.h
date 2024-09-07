@@ -57,8 +57,8 @@ public:
     void setServerUuid(QString serverUuid);
     QString serverUuid();
 
-    QString ramsesPath();
-    void setRamsesPath(QString path);
+    QString workingPath();
+    void setWorkingPath(QString path);
 
     const QString &dataFile() const;
     ServerConfig setDataFile(const QString &file);

@@ -12,11 +12,6 @@ Ramses *Ramses::i()
 
 // PUBLIC
 
-void Ramses::setRamsesPath(QString p)
-{
-    m_dbi->setRamsesPath(p);
-}
-
 QString Ramses::pathFromRamses(QString p, bool create) const
 {
     if (p == "") return folderPath();
@@ -228,7 +223,7 @@ DBTableModel *Ramses::applications() const
 
 QString Ramses::folderPath() const
 {
-    QString path = m_dbi->ramsesPath();
+    QString path = LocalDataInterface::instance()->workingPath();
     if (path == "" || path == "auto") path = QDir::homePath() + "/Ramses";
     return path;
 }

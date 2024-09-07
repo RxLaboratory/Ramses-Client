@@ -21,7 +21,6 @@
 #include "duwidgets/dudockwidget.h"
 #include "progresspage.h"
 #include "ramproject.h"
-#include "databaseeditwidget.h"
 #include "usereditwidget.h"
 
 class MainWindow : public DuMainWindow
@@ -162,8 +161,6 @@ private:
     QAction *ui_databaseMenuAction;
 
     SettingsWidget *ui_adminPage;
-
-    DatabaseEditWidget *ui_databaseEditWidget = nullptr;
 
     int m_currentPageIndex = 0;
 

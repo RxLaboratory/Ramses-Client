@@ -154,8 +154,6 @@ SOURCES += \
     daemon.cpp \
     rammanagerwidgets/assetgroupmanagerwidget.cpp \
     rammanagerwidgets/assetmanagerwidget.cpp \
-    rameditwidgets/databasecreatewidget.cpp \
-    rameditwidgets/databaseeditwidget.cpp \
     rammanagerwidgets/filetypemanagerwidget.cpp \
     rameditwidgets/pipefileeditwidget.cpp \
     rammanagerwidgets/pipefilemanagerwidget.cpp \
@@ -367,8 +365,6 @@ HEADERS += \
     daemon.h \
     rammanagerwidgets/assetgroupmanagerwidget.h \
     rammanagerwidgets/assetmanagerwidget.h \
-    rameditwidgets/databasecreatewidget.h \
-    rameditwidgets/databaseeditwidget.h \
     rammanagerwidgets/filetypemanagerwidget.h \
     rameditwidgets/pipefileeditwidget.h \
     rammanagerwidgets/pipefilemanagerwidget.h \

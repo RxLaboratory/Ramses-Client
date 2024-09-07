@@ -194,7 +194,6 @@ void MainWindow::connectEvents()
     connect(Ramses::i(), &Ramses::ready, this, &MainWindow::ramsesReady);
     connect(Ramses::i(), &Ramses::roleChanged, this, &MainWindow::changeUserRole);
 
-    connect(DBInterface::i(),&DBInterface::connectionStatusChanged, this, &MainWindow::dbiConnectionStatusChanged);
     connect(DBInterface::i(), &DBInterface::syncFinished, this, &MainWindow::finishSync);
     connect(DBInterface::i(), &DBInterface::syncStarted, this, &MainWindow::startSync);
 
@@ -318,15 +317,15 @@ void MainWindow::pageChanged(int i)
 
 void MainWindow::setOfflineAction()
 {
-    DBInterface::i()->setOffline();
+    //DBInterface::i()->setOffline();
 }
 
 void MainWindow::setOnlineAction()
 {
-    DBInterface::i()->setOnline();
+    /*DBInterface::i()->setOnline();
 
     // Trigger a full sync
-    if (RamServerInterface::instance()->isOnline()) DBInterface::i()->fullSync();
+    if (RamServerInterface::instance()->isOnline()) DBInterface::i()->fullSync();*/
 }
 
 void MainWindow::databaseSettingsAction()
@@ -336,15 +335,6 @@ void MainWindow::databaseSettingsAction()
 
     QFileInfo dataFile(dataFilePath);
     if (!dataFile.exists()) return;
-
-    if (!ui_databaseEditWidget)
-    {
-        ui_databaseEditWidget = new DatabaseEditWidget();
-        connect(ui_databaseEditWidget, &DatabaseEditWidget::applied, this, &MainWindow::hidePropertiesDock);
-    }
-
-    ui_databaseEditWidget->setDbFile( dataFilePath );
-    this->setPropertiesDockWidget( ui_databaseEditWidget, tr("Edit %1").arg(dataFile.baseName()), ":/icons/storage" );
 }
 
 void MainWindow::setPage(Page p)
@@ -492,7 +482,7 @@ void MainWindow::freezeUI(bool f)
 
 void MainWindow::dbiConnectionStatusChanged(NetworkUtils::NetworkStatus s)
 {
-    ui_databaseMenuAction->setVisible(true);
+    /*ui_databaseMenuAction->setVisible(true);
 
     QString address =  RamServerInterface::instance()->serverAddress();
     if (s == NetworkUtils::Online)
@@ -523,7 +513,7 @@ void MainWindow::dbiConnectionStatusChanged(NetworkUtils::NetworkStatus s)
         ui_databaseButton->setIcon(DuIcon(":/icons/storage"));
         m_actionSetOnline->setVisible(true);
         m_actionSetOffline->setVisible(false);
-    }
+    }*/
 }
 
 void MainWindow::finishSync()
@@ -594,42 +584,27 @@ void MainWindow::paintEvent(QPaintEvent *e)
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    if (m_closing && !m_readyToClose)
+    if (StateManager::i()->state() == StateManager::Closing)
     {
         QMessageBox::StandardButton r = QMessageBox::question(this,
                               tr("Closing Ramses..."),
                               tr("I'm already closing, do you want me to force quit?\n\nThis may cause some data loss if the sync is not finished yet.")
                               );
-        if (r == QMessageBox::Yes) m_readyToClose = true;
-    }
-
-    if (!m_readyToClose)
-    {
-        // Get to the home page first to make sure all toolbars are hidden
-        setPage(Home);
-
-        if (DBInterface::i()->connectionStatus() == NetworkUtils::Online)
-        {
-            // Clean before quit!
-            m_closing = true;
-
-            ProgressManager *pm = ProgressManager::instance();
-            pm->setTitle("Disconnecting...");
-            pm->setText("One last sync!");
-            pm->setMaximum(3);
-            pm->start();
-            pm->freeze();
-
-            DBInterface::i()->setOffline();
+        if (r == QMessageBox::Yes) {
+            StateManager::i()->forceQuit();
+            return;
         }
-        else m_readyToClose = true;
     }
 
-    if (m_readyToClose)
-        DuMainWindow::closeEvent(event);
-    else
+    if (m_closing) {
         event->ignore();
+        return;
+    }
 
+    setPage(Home);
+    StateManager::i()->quit();
+    m_closing = true;
+    event->ignore();
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *key)

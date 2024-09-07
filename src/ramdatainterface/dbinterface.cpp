@@ -2,7 +2,6 @@
 
 #include <QInputDialog>
 
-#include "duutils/guiutils.h"
 #include "progressmanager.h"
 #include "ramserverclient.h"
 #include "statemanager.h"
@@ -54,57 +53,6 @@ DBInterface *DBInterface::i()
 {
     if (!_instance) _instance = new DBInterface();
     return _instance;
-}
-
-void DBInterface::setOffline(bool sync)
-{
-    ProgressManager *pm = ProgressManager::instance();
-    pm->setText( tr("Disconnecting from the Ramses Server...") );
-    pm->addToMaximum(2);
-
-    m_disconnecting = true;
-
-    // One last sync
-    if (sync && m_rsi->isOnline() && !m_syncSuspended)
-    {
-        pm->setText( tr("One last sync!") );
-        pm->increment();
-
-        fullSync();
-        suspendAutoSync();
-        return;
-    }
-
-    pm->setText( tr("Disconnecting.") );
-    pm->increment();
-    finishSync();
-}
-
-void DBInterface::setOnline(QString serverUuid)
-{
-    if (m_ldi->dataFile() == "")
-    {
-        QMessageBox::information(
-                    GuiUtils::appMainWindow(),
-                    tr("No database"),
-                    tr("There's no open database.\n\n"
-                       "I'm sorry, you need to open or create a database to get online.")
-                    );
-        return;
-    }
-
-    // Connects to the Ramses Server and change connection status
-    m_rsi->setOnline(serverUuid);
-}
-
-void DBInterface::setRamsesPath(QString p)
-{
-    m_ldi->setRamsesPath(p);
-}
-
-QString DBInterface::ramsesPath()
-{
-    return m_ldi->ramsesPath();
 }
 
 QSet<QString> DBInterface::tableUuids(QString table)
@@ -233,22 +181,6 @@ bool DBInterface::loadDataFile(const QString &file)
 
     qDebug().noquote() << "{DB}" << "Database loaded: " << openTimer.elapsed()/1000 << " seconds.";
 
-    // TEAM / ONLINE
-    if (config.address != "")
-    {
-        // Update server settings
-
-        m_rsi->setServerAddress(config.address);
-        m_rsi->setTimeout(config.timeout);
-        m_rsi->setSsl(config.useSsl);
-        m_rsi->setServerPort(config.port);
-        m_updateFrequency = config.updateDelay;
-    }
-    else
-    {
-        m_rsi->setServerAddress("");
-    }
-
     return true;
 }
 
@@ -275,18 +207,6 @@ void DBInterface::suspendSync()
 void DBInterface::resumeSync()
 {
     m_syncSuspended = false;
-    m_updateTimer->start(m_updateFrequency);
-}
-
-void DBInterface::suspendAutoSync()
-{
-    m_autoSyncSuspended = true;
-    m_updateTimer->stop();
-}
-
-void DBInterface::resumeAutoSync()
-{
-    m_autoSyncSuspended = false;
     m_updateTimer->start(m_updateFrequency);
 }
 
@@ -317,23 +237,34 @@ bool DBInterface::undoClean()
 
 void DBInterface::acceptClean()
 {
-    // Get the data to delete,
+    /*// Get the data to delete,
     // and clean the server data
     QHash<QString, QSet<QString> > deletedUuids = m_ldi->deletedUuids();
     m_rsi->deleteData( deletedUuids );
 
     resumeSync();
     // Full sync
-    fullSync();
+    fullSync();*/
 }
 
-void DBInterface::sync()
+bool DBInterface::sync()
 {
-    if (m_syncSuspended) {
-        log(tr("Sync is suspended!"), DuQFLog::Warning);
-        return;
+    switch (RamServerClient::i()->status()){
+    case RamServerClient::Offline:
+        m_lastError = tr("Can't sync for now, the client is offline.\nYou need to log in first.");
+        qWarning().noquote() << "{DB}" << m_lastError;
+        return false;
+    case RamServerClient::Online:
+        m_lastError = tr("Can't sync for now, we're logged out.\nYou need to log in first.");
+        qWarning().noquote() << "{DB}" << m_lastError;
+        return false;
+    case RamServerClient::Ready:
+        break;
+    case RamServerClient::Syncing:
+        qInfo().noquote() << "{DB}" << tr("Already syncing, please be patient");
+        return true;
+      break;
     }
-    if (m_connectionStatus != NetworkUtils::Online) return;
 
     emit syncStarted();
 
@@ -341,41 +272,59 @@ void DBInterface::sync()
     pm->addToMaximum(3);
     pm->setText(tr("Beginning quick data sync..."));
 
+    qInfo().noquote() << "{DB}" << tr("Beginning quick data sync...");
+
     // Get modified rows from local
     SyncData syncData = m_ldi->getSync( false );
 
-    log(tr("Pushing changes to the server..."));
+    qInfo().noquote() << "{DB}" << tr("Pushing changes to the server...");
+
     // Post to ramserver
-    m_rsi->sync(syncData);
+    RamServerClient::i()->sync(syncData);
+
+    return true;
 }
 
-void DBInterface::fullSync()
+bool DBInterface::fullSync()
 {
-    if (m_syncSuspended) {
-        log(tr("Sync is suspended!"), DuQFLog::Warning);
-        return;
+    switch (RamServerClient::i()->status()){
+    case RamServerClient::Offline:
+        m_lastError = tr("Can't sync for now, the client is offline.\nYou need to log in first.");
+        qWarning().noquote() << "{DB}" << m_lastError;
+        return false;
+    case RamServerClient::Online:
+        m_lastError = tr("Can't sync for now, we're logged out.\nYou need to log in first.");
+        qWarning().noquote() << "{DB}" << m_lastError;
+        return false;
+    case RamServerClient::Ready:
+        break;
+    case RamServerClient::Syncing:
+        qInfo().noquote() << "{DB}" << tr("Already syncing, please be patient");
+        return true;
+        break;
     }
-    if (m_connectionStatus != NetworkUtils::Online) return;
 
     emit syncStarted();
 
     ProgressManager *pm = ProgressManager::instance();
     pm->addToMaximum(3);
     pm->setText(tr("Beginning full data sync..."));
+    qInfo().noquote() << "{DB}" << tr("Beginning full data sync...");
 
     // Get modified rows from local
     SyncData syncData = m_ldi->getSync( true );
-    log(tr("Pushing data to the server..."));
+    qInfo().noquote() << "{DB}" << tr("Pushing changes to the server...");
+
     // Post to ramserver
-    m_rsi->sync(syncData);
+    RamServerClient::i()->sync(syncData);
+
+    return true;
 }
 
 DBInterface::DBInterface(QObject *parent) : DuQFLoggerObject("Database Interface", parent)
 {
     // LOCAL
     m_ldi = LocalDataInterface::instance();
-    // REMOTE
-    m_rsi = RamServerInterface::instance();
 
     m_updateTimer = new QTimer(this);
     m_updateTimer->setSingleShot(true);
@@ -386,29 +335,30 @@ DBInterface::DBInterface(QObject *parent) : DuQFLoggerObject("Database Interface
 void DBInterface::connectEvents()
 {
     connect(RamServerClient::i(), &RamServerClient::syncReady, m_ldi, QOverload<SyncData>::of(&LocalDataInterface::sync));
-
     connect(m_ldi, &LocalDataInterface::syncFinished, this, &DBInterface::finishSync);
-
-    // Deprecated
-    connect(m_rsi, &RamServerInterface::connectionStatusChanged, this, &DBInterface::serverConnectionStatusChanged);
-    connect(m_rsi, &RamServerInterface::syncReady, m_ldi, QOverload<SyncData,QString>::of(&LocalDataInterface::sync));
-    connect(m_rsi, &RamServerInterface::pong, m_ldi, &LocalDataInterface::setServerUuid);
     connect(m_updateTimer, SIGNAL(timeout()), this, SLOT(sync()));
-}
 
-NetworkUtils::NetworkStatus DBInterface::connectionStatus() const
-{
-    return m_connectionStatus;
+    connect(RamServerClient::i(), &RamServerClient::statusChanged,
+            this, [this] (RamServerClient::ClientStatus status){
+        if (m_syncSuspended)
+            return;
+        switch (status) {
+        case RamServerClient::Offline:
+        case RamServerClient::Online:
+            suspendSync();
+            return;
+        case RamServerClient::Ready:
+            resumeSync();
+            return;
+        case RamServerClient::Syncing:
+            break;
+        }
+    } );
 }
 
 bool DBInterface::isSyncSuspended()
 {
     return m_syncSuspended;
-}
-
-bool DBInterface::isAutoSyncSuspended()
-{
-    return m_autoSyncSuspended;
 }
 
 bool DBInterface::isTeamProject()
@@ -417,41 +367,10 @@ bool DBInterface::isTeamProject()
     return config.address != "";
 }
 
-void DBInterface::setConnectionStatus(NetworkUtils::NetworkStatus s, QString reason)
-{
-    if (s == m_connectionStatus) return;
-    m_connectionStatus = s;
-    emit connectionStatusChanged(s, reason);
-}
-
 void DBInterface::finishSync()
 {
-    if (m_disconnecting)
-    {
-        // Disconnects from the Ramses Server
-        m_rsi->setOffline();
-    }
-
     emit syncFinished();
-    if (!m_autoSyncSuspended) m_updateTimer->start( m_updateFrequency );
-    log(tr("Finished sync."));
-}
+    m_updateTimer->start( m_updateFrequency );
 
-void DBInterface::serverConnectionStatusChanged(NetworkUtils::NetworkStatus status)
-{
-    switch(status)
-    {
-    case NetworkUtils::Offline:
-        setConnectionStatus(status, "Disconnected from the Ramses Server.");
-        suspendSync();
-        suspendAutoSync();
-        break;
-    case NetworkUtils::Online:
-        setConnectionStatus(status, "Connected to the Ramses Server.");
-        resumeSync();
-        resumeAutoSync();
-        break;
-    default:
-        return;
-    }
+    log(tr("Finished sync."));
 }

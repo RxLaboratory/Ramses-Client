@@ -96,13 +96,14 @@ void UserEditWidget::reInit(RamObject *o)
         ui_colorSelector->setColor(QColor(200,200,200));
     }
 
-    // Password field visible only if online
-    ui_passwordWidget->setVisible( DBInterface::i()->connectionStatus() == NetworkUtils::Online );
+    // TODO Password field visible only if online
+    //ui_passwordWidget->setVisible( DBInterface::i()->connectionStatus() == NetworkUtils::Online );
 }
 
 void UserEditWidget::changePassword()
 {
-    if (!m_user) return;
+    // TODO
+    /*if (!m_user) return;
     if (!checkPasswordInput()) return;
 
     if (ui_npassword1Edit->text() != "")
@@ -126,7 +127,7 @@ void UserEditWidget::changePassword()
 
     ui_npassword1Edit->setText("");
     ui_npassword2Edit->setText("");
-    ui_cpasswordEdit->setText("");
+    ui_cpasswordEdit->setText("");*/
 }
 
 bool UserEditWidget::checkPasswordInput()
@@ -179,11 +180,12 @@ void UserEditWidget::connectionStatusChanged(NetworkUtils::NetworkStatus status)
     else
     {
         ui_passwordWidget->setEnabled(false);
-        RamServerInterface *rsi = RamServerInterface::instance();
+        // TODO
+        /*RamServerInterface *rsi = RamServerInterface::instance();
         if (rsi->serverAddress() =="" || rsi->serverAddress() == "/")
         {
             ui_passwordWidget->setVisible(false);
-        }
+        }*/
     }
 }
 
@@ -246,7 +248,8 @@ void UserEditWidget::setupUi()
 
     ui_mainLayout->addStretch(100);
 
-    connectionStatusChanged(RamServerInterface::instance()->status());
+    // TODO
+    //connectionStatusChanged(RamServerInterface::instance()->status());
 }
 
 void UserEditWidget::connectEvents()
@@ -254,5 +257,6 @@ void UserEditWidget::connectEvents()
     connect(ui_roleBox, SIGNAL(currentIndexChanged(int)), this, SLOT(setRole(int)));
     connect(ui_passwordButton, SIGNAL(clicked()), this, SLOT(changePassword()));
     connect(ui_colorSelector, SIGNAL(colorChanged(QColor)), this, SLOT(setColor(QColor)));
-    connect(RamServerInterface::instance(), &RamServerInterface::connectionStatusChanged, this, &UserEditWidget::connectionStatusChanged);
+    // TODO
+    //connect(RamServerInterface::instance(), &RamServerInterface::connectionStatusChanged, this, &UserEditWidget::connectionStatusChanged);
 }
