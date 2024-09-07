@@ -133,12 +133,12 @@ QString LocalDataInterface::getWorkingPath(QString dbFile)
 
     QSqlDatabase db = QSqlDatabase::database("editdb");
     // Set the SQLite file
-    if (!openDB(db, dbFile)) LocalDataInterface::instance()->log("Can't save data to the disk.", DuQFLog::Fatal);
+    if (!openDB(db, dbFile)) LocalDataInterface::instance()->log("Can't read data.", DuQFLog::Fatal);
 
-        QSqlQuery qry = QSqlQuery( db );
+    QSqlQuery qry = QSqlQuery( db );
     if (!qry.exec("SELECT path FROM _Paths WHERE name = 'Project';"))
     {
-        QString errorMessage = "Something went wrong when saving the data.\nHere's some information:";
+        QString errorMessage = "Something went wrong when reading the data.\nHere's some information:";
         errorMessage += "\n> " + tr("Query:") + "\n" + qry.lastQuery();
         errorMessage += "\n> " + tr("Database Error:") + "\n" + qry.lastError().databaseText();
         errorMessage += "\n> " + tr("Driver Error:") + "\n" + qry.lastError().driverText();
@@ -174,7 +174,7 @@ void LocalDataInterface::setProjectUserUuid(const QString &dbFile, const QString
     // Add new settings
     QString q = "INSERT INTO _User (userUuid, projectUuid, current) "
                 "VALUES ('%1', '%2', 1) "
-                "ON CONFLICT(name) DO UPDATE "
+                "ON CONFLICT(userUuid) DO UPDATE "
                 "SET current=1, projectUuid=excluded.projectUuid ;";
 
     if (!qry.exec(q.arg(userUuid, projectUuid)))
@@ -187,6 +187,37 @@ void LocalDataInterface::setProjectUserUuid(const QString &dbFile, const QString
     }
 
     db.close();
+}
+
+QString LocalDataInterface::projectUuid(const QString &dbFile)
+{
+    // Make sure the interface is ready
+    LocalDataInterface::instance();
+
+    QSqlDatabase db = QSqlDatabase::database("editdb");
+    if (!openDB(db, dbFile)) LocalDataInterface::instance()->log("Can't read data.", DuQFLog::Fatal);
+
+    QSqlQuery qry = QSqlQuery( db );
+    if (!qry.exec("SELECT projectUuid FROM _User WHERE current = 1;"))
+    {
+        QString errorMessage = "Something went wrong when reading the data.\nHere's some information:";
+        errorMessage += "\n> " + tr("Query:") + "\n" + qry.lastQuery();
+        errorMessage += "\n> " + tr("Database Error:") + "\n" + qry.lastError().databaseText();
+        errorMessage += "\n> " + tr("Driver Error:") + "\n" + qry.lastError().driverText();
+        LocalDataInterface::instance()->log(errorMessage, DuQFLog::Critical);
+
+        db.close();
+        return "";
+    }
+
+    if (qry.first())
+    {
+        return qry.value(0).toString();
+    }
+
+    db.close();
+
+    return "";
 }
 
 bool LocalDataInterface::createNewDatabase(const QString &filePath)

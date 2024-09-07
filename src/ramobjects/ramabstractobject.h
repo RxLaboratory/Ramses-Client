@@ -135,6 +135,7 @@ public:
 
     // THE DATA KEYS and ENUM VALUES
 
+    static const QString KEY_Uuid;
     static const QString KEY_ShortName;
     static const QString KEY_Name;
     static const QString KEY_Comment;

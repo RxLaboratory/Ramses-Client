@@ -73,8 +73,6 @@ void RamObjectPropertiesWidget::setupUi()
 
     ui_colorSelector = new DuColorSelector(this);
     ui_attributesLayout->addRow(tr("Color"), ui_colorSelector);
-
-    ui_mainLayout->addStretch(1);
 }
 
 void RamObjectPropertiesWidget::connectEvents()

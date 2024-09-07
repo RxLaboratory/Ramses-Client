@@ -8,7 +8,7 @@ class RamUuid
 {
 public:
     RamUuid();
-    static QString generateUuidString(QString base = "");
+    static QString generateUuidString(QString base);
     static QString generateUuidString();
 };
 

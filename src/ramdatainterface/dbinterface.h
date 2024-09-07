@@ -32,6 +32,7 @@ public:
 
     static QStringList recentDatabases();
     static void addToRecentList(const QString &dbFile);
+    static bool isTeamProject(const QString &dbFile);
 
     /**
      * @brief i Gets the unique DBInterface i.

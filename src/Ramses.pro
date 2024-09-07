@@ -65,8 +65,10 @@ SOURCES += \
     dumodules/duwidgets/dulistmodeledit.cpp \
     dumodules/duwidgets/dulistview.cpp \
     dumodules/duwidgets/dulistwidget.cpp \
+    dumodules/duwidgets/dulogindialog.cpp \
     dumodules/duwidgets/dumainwindow.cpp \
     dumodules/duwidgets/dumenu.cpp \
+    dumodules/duwidgets/dupassworddialog.cpp \
     dumodules/duwidgets/durichtextedit.cpp \
     dumodules/duwidgets/duscrollarea.cpp \
     dumodules/duwidgets/duscrollbar.cpp \
@@ -86,6 +88,7 @@ SOURCES += \
     rameditwidgets/objectupdateblocker.cpp \
     rameditwidgets/ramjsonobjecteditwidget.cpp \
     rameditwidgets/ramjsonstepeditwidget.cpp \
+    rameditwidgets/ramjsonusereditwidget.cpp \
     rameditwidgets/ramobjectpropertieswidget.cpp \
     rameditwidgets/scheduleentryeditwidget.cpp \
     rameditwidgets/scheduleroweditwidget.cpp \
@@ -272,8 +275,10 @@ HEADERS += \
     dumodules/duwidgets/dulistmodeledit.h \
     dumodules/duwidgets/dulistview.h \
     dumodules/duwidgets/dulistwidget.h \
+    dumodules/duwidgets/dulogindialog.h \
     dumodules/duwidgets/dumainwindow.h \
     dumodules/duwidgets/dumenu.h \
+    dumodules/duwidgets/dupassworddialog.h \
     dumodules/duwidgets/durichtextedit.h \
     dumodules/duwidgets/duscrollarea.h \
     dumodules/duwidgets/duscrollbar.h \
@@ -295,6 +300,7 @@ HEADERS += \
     rameditwidgets/objectupdateblocker.h \
     rameditwidgets/ramjsonobjecteditwidget.h \
     rameditwidgets/ramjsonstepeditwidget.h \
+    rameditwidgets/ramjsonusereditwidget.h \
     rameditwidgets/ramobjectpropertieswidget.h \
     rameditwidgets/scheduleentryeditwidget.h \
     rameditwidgets/scheduleroweditwidget.h \

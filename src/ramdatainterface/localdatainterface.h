@@ -29,6 +29,7 @@ public:
     static void setWorkingPath(QString dbFile, QString p);
     static QString getWorkingPath(QString dbFile);
     static void setProjectUserUuid(const QString &dbFile, const QString &projectUuid, const QString &userUuid);
+    static QString projectUuid(const QString &dbFile);
     static bool createNewDatabase(const QString &filePath);
 
     // DATA INTERFACE //

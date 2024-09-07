@@ -31,6 +31,14 @@ ServerConfig RamServerClient::serverConfig() const
     return c;
 }
 
+void RamServerClient::setServerSettings(ServerConfig settings)
+{
+    setServerAddress(settings.address);
+    setTimeout(settings.timeout);
+    setSsl(settings.useSsl);
+    setServerPort(settings.port);
+}
+
 void RamServerClient::setServerAddress(const QString &newServerAddress)
 {
     m_serverAddress = newServerAddress;
@@ -225,6 +233,53 @@ QJsonObject RamServerClient::assignUsers(const QStringList &userUuids, const QSt
 QJsonObject RamServerClient::getAllUsers()
 {
     Request r = buildRequest("getAllUsers");
+
+    QNetworkReply *reply = synchronousRequest(r);
+    return parseData(reply);
+}
+
+QJsonObject RamServerClient::setPassword(const QString &userUuid, const QString &newPassword, const QString &currentPassword)
+{
+    QJsonObject body;
+    body.insert("uuid", userUuid);
+    body.insert("newPassword", newPassword);
+    body.insert("currentPassword", currentPassword);
+
+    Request r = buildRequest("setPassword", body);
+
+    QNetworkReply *reply = synchronousRequest(r);
+    return parseData(reply);
+}
+
+QJsonObject RamServerClient::getEmail(const QString &uuid)
+{
+    QJsonObject body;
+    body.insert("uuid", uuid);
+
+    Request r = buildRequest("getEmail", body);
+
+    QNetworkReply *reply = synchronousRequest(r);
+    return parseData(reply);
+}
+
+QJsonObject RamServerClient::setEmail(const QString &uuid, const QString &email)
+{
+    QJsonObject body;
+    body.insert("uuid", uuid);
+    body.insert("email", email);
+
+    Request r = buildRequest("setEmail", body);
+
+    QNetworkReply *reply = synchronousRequest(r);
+    return parseData(reply);
+}
+
+QJsonObject RamServerClient::createUsers(const QJsonArray &users)
+{
+    QJsonObject body;
+    body.insert("users", users);
+
+    Request r = buildRequest("createUsers", body);
 
     QNetworkReply *reply = synchronousRequest(r);
     return parseData(reply);

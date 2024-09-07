@@ -39,6 +39,8 @@ public:
 
     // Server Settings
 
+    void setServerSettings(ServerConfig settings);
+
     QString serverAddress() const { return m_serverAddress; }
     void setServerAddress(const QString &newServerAddress);
 
@@ -64,8 +66,10 @@ public:
     QJsonObject setProject(const QString &uuid);
     QJsonObject assignUsers(const QStringList &userUuids, const QString &projectUuid);
     QJsonObject getAllUsers();
-    // QJsonObject setPassword(const QString &userUuid, const QString &newPassword, const QString &currentPassword = "");
-    // QJsonObject createUser(const QString &userUuid, const QString &username, const QString &password, const QString &userData, const QString &role = "standard" );
+    QJsonObject setPassword(const QString &userUuid, const QString &newPassword, const QString &currentPassword = "");
+    QJsonObject getEmail(const QString &uuid);
+    QJsonObject setEmail(const QString &uuid, const QString &email);
+    QJsonObject createUsers(const QJsonArray &users );
     // QJsonObject unassignUser(const QString &userUuid, const QString &projectUuid);
     // QJsonObject getUsers(const QString &projectUuid = "");
     // QJsonObject getProjects(const QString &userUuid);

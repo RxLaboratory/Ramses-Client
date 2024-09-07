@@ -16,7 +16,7 @@ class RamJsonStepEditWidget: public RamJsonObjectEditWidget
 {
     Q_OBJECT
 public:
-    RamJsonStepEditWidget(QWidget *parent = nullptr);
+    RamJsonStepEditWidget(const QString &uuid, QWidget *parent = nullptr);
     virtual QJsonObject data() const;
     virtual void setData(const QJsonObject &obj);
 

@@ -8,9 +8,11 @@
 #include "duapp/app-version.h"
 #include "duapp/duui.h"
 #include "duwidgets/duicon.h"
+#include "duwidgets/dulogindialog.h"
 #include "wizards/projectwizard.h"
 #include "dbinterface.h"
 #include "ramses.h"
+#include "ramserverclient.h"
 
 LandingPage::LandingPage(QWidget *parent)
     : QWidget{parent}
@@ -30,7 +32,7 @@ void LandingPage::updateRecentList()
     }
 }
 
-void LandingPage::createProject(bool team)
+void LandingPage::createDatabase(bool team)
 {
     // Necessary for the margins
     auto dummy = new QWidget(this);
@@ -49,6 +51,75 @@ void LandingPage::createProject(bool team)
     });
 
     ui_stackedLayout->setCurrentIndex(1);
+}
+
+void LandingPage::openDatabase(const QString &dbFile)
+{
+    // If this is a team project, login
+    if (DBInterface::isTeamProject(dbFile)) {
+
+        DuLoginDialog d("E-mail", this);
+        if (!d.exec())
+            return;
+
+        // Set server settings
+        RamServerClient::i()->setServerSettings(
+            LocalDataInterface::getServerSettings(dbFile)
+            );
+
+        // Login
+        QJsonObject rep = RamServerClient::i()->login(
+            d.username(),
+            d.password()
+            );
+        if (!rep.value("success").toBool(false)) {
+            QMessageBox::warning(this,
+                                 tr("Login failed"),
+                                 rep.value("message").toString("Unknown error")
+                                 );
+            return;
+        }
+
+        // Set current project
+
+        QString projectUuid = LocalDataInterface::projectUuid(dbFile);
+        if (projectUuid == "") {
+            QMessageBox::warning(this,
+                                 tr("Login failed"),
+                                 tr("Can't get the project UUID.\n"
+                                    "The local data may be corrupted or incorrectly initialized.\n"
+                                    "Try to remove your *.ramses local file and join the team project again.\n\n"
+                                    "If this problem persists, this may be a bug or a misconfiguration,\n"
+                                    "Please contact your Ramses administrator.")
+                                 );
+            return;
+        }
+
+        rep = RamServerClient::i()->setProject(projectUuid);
+        if (!rep.value("success").toBool(false)) {
+            QMessageBox::warning(this,
+                                 tr("Login failed"),
+                                 rep.value("message").toString("Unknown error")
+                                 );
+            return;
+        }
+
+        // Save the user in the database
+        QString uuid = rep.value("content").toObject().value("uuid").toString();
+        if (uuid == "") {
+            QMessageBox::warning(this,
+                                 tr("Login failed"),
+                                 tr("Can't get your UUID.\n"
+                                    "This is probably a misconfiguration or a bug of the server.\n"
+                                    "Please contact your Ramses administrator.")
+                                 );
+            return;
+        }
+
+        LocalDataInterface::setProjectUserUuid(dbFile, projectUuid, uuid);
+    }
+    DBInterface::i()->loadDataFile(dbFile);
+    Ramses::i()->loadDatabase();
 }
 
 void LandingPage::setupUi()
@@ -88,10 +159,10 @@ void LandingPage::setupUi()
     ui_createTeamProjectButton->setIconSize(QSize(32,32));
     buttonLayout->addWidget(ui_createTeamProjectButton, 0, 1);
 
-    ui_openProjectButton = new QPushButton(tr("Open\nproject..."), this);
-    ui_openProjectButton->setIcon(DuIcon(":/icons/open"));
-    ui_openProjectButton->setIconSize(QSize(32,32));
-    buttonLayout->addWidget(ui_openProjectButton, 1, 0);
+    ui_openDatabaseButton = new QPushButton(tr("Open\nproject..."), this);
+    ui_openDatabaseButton->setIcon(DuIcon(":/icons/open"));
+    ui_openDatabaseButton->setIconSize(QSize(32,32));
+    buttonLayout->addWidget(ui_openDatabaseButton, 1, 0);
 
     ui_joinTeamProjectButton = new QPushButton(tr("Join\nteam project..."), this);
     ui_joinTeamProjectButton->setIcon(DuIcon(":/icons/login"));
@@ -107,10 +178,10 @@ void LandingPage::setupUi()
     ui_recentBox = new DuComboBox(this);
     recentLayout->addWidget(ui_recentBox);
 
-    ui_openRecentProjectButton = new QToolButton(this);
-    ui_openRecentProjectButton->setIcon(DuIcon(":/icons/check"));
-    ui_openRecentProjectButton->setEnabled(ui_recentBox->currentIndex() >= 0);
-    recentLayout->addWidget(ui_openRecentProjectButton);
+    ui_openRecentDatabaseButton = new QToolButton(this);
+    ui_openRecentDatabaseButton->setIcon(DuIcon(":/icons/check"));
+    ui_openRecentDatabaseButton->setEnabled(ui_recentBox->currentIndex() >= 0);
+    recentLayout->addWidget(ui_openRecentDatabaseButton);
 
     recentLayout->setStretch(0, 0);
     recentLayout->setStretch(1, 1);
@@ -123,29 +194,28 @@ void LandingPage::connectEvents()
 {
     connect(ui_recentBox, QOverload<int>::of( &DuComboBox::currentIndexChanged ),
             this, [this] (int index) {
-        ui_openRecentProjectButton->setEnabled(index >= 0);
+        ui_openRecentDatabaseButton->setEnabled(index >= 0);
     });
 
-    connect(ui_openRecentProjectButton, &QToolButton::clicked,
+    connect(ui_openRecentDatabaseButton, &QToolButton::clicked,
             this, [this] () {
-        DBInterface::i()->loadDataFile(ui_recentBox->currentData().toString());
-        Ramses::i()->loadDatabase();
+        openDatabase(ui_recentBox->currentData().toString());
     });
 
-    connect(ui_openProjectButton, &QPushButton::clicked,
+    connect(ui_openDatabaseButton, &QPushButton::clicked,
             this, [this] () {
-        QString p = QFileDialog::getOpenFileName(
+        QString dbFile = QFileDialog::getOpenFileName(
             this,
             STR_INTERNALNAME,
             "",
             "Ramses Project (*.ramses);;SQLite (*.sqlite);;All Files (*.*)");
-        if (p == "") return;
-        DBInterface::i()->loadDataFile(p);
-        Ramses::i()->loadDatabase();
+        if (dbFile == "") return;
+
+        openDatabase(dbFile);
     });
 
     connect(ui_createLocalProjectButton, &QPushButton::clicked,
-            this, [this] () { createProject(false); });
+            this, [this] () { createDatabase(false); });
     connect(ui_createTeamProjectButton, &QPushButton::clicked,
-            this, [this] () { createProject(true); });
+            this, [this] () { createDatabase(true); });
 }

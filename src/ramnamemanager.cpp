@@ -12,14 +12,14 @@ QString RamNameManager::nameToShortName(const QString &name, const QString &pref
     QString p;
     if (name.startsWith('0') ||
         name.startsWith('1') ||
-        name.startsWith('1') ||
-        name.startsWith('1') ||
-        name.startsWith('1') ||
-        name.startsWith('1') ||
-        name.startsWith('1') ||
-        name.startsWith('1') ||
-        name.startsWith('1') ||
-        name.startsWith('1') )
+        name.startsWith('2') ||
+        name.startsWith('3') ||
+        name.startsWith('4') ||
+        name.startsWith('5') ||
+        name.startsWith('6') ||
+        name.startsWith('7') ||
+        name.startsWith('8') ||
+        name.startsWith('9') )
         p = prefix;
 
     return p + name.left(10).replace(" ", "");

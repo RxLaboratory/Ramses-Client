@@ -1,3 +1,5 @@
+- check if user is assigned to the project just after login
+
 ## UI
 
 - Use DuUI Layout methods everywhere
@@ -27,19 +29,14 @@
 
 ## Landing
 
-- Local DB: store the project uuid next to the user uuid and automatically set it
-
 - Create Team Project
-    - BUG: project user list is empty after creation
     - (Improve server widget (hide details in a QMenu), keep only the address)
-    - Setup project (add page to create/assign users)
-    - Create users on server
-    - Assign users on server
 - Join Team Project
     - Login on server
     - List available projects
     - Create DB (cf former db creator online)
     - Sync
+- After open: trigger first sync, and regular syncs
 
 ## Templates & Global & Object changes
 
@@ -77,6 +74,9 @@ Set per project:
 ## Client
 
 - remove databasecreatewidget and databaseeditwidget
+- Refactor folders: all from project
+- message "not implemented" on forgot password (usereditwidget)
+- reimplement save username and savepassword
 
 ## Server Doc
 

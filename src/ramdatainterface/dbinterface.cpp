@@ -44,6 +44,12 @@ void DBInterface::addToRecentList(const QString &dbFile)
     DuSettings::i()->setArray(RamSettings::RecentDatabases, recentList);
 }
 
+bool DBInterface::isTeamProject(const QString &dbFile)
+{
+    auto config = LocalDataInterface::getServerSettings(dbFile);
+    return config.address != "";
+}
+
 DBInterface *DBInterface::i()
 {
     if (!_instance) _instance = new DBInterface();

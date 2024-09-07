@@ -11,6 +11,7 @@
 
 // KEYS //
 
+const QString RamAbstractObject::KEY_Uuid = QStringLiteral("uuid");
 const QString RamAbstractObject::KEY_ShortName = QStringLiteral("shortName");
 const QString RamAbstractObject::KEY_Name = QStringLiteral("name");
 const QString RamAbstractObject::KEY_Comment = QStringLiteral("comment");

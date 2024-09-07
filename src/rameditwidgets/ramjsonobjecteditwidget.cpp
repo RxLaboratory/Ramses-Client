@@ -5,8 +5,9 @@
 #include "duapp/duui.h"
 #include "duwidgets/duicon.h"
 
-RamJsonObjectEditWidget::RamJsonObjectEditWidget(QWidget *parent) :
-    DuScrollArea(parent)
+RamJsonObjectEditWidget::RamJsonObjectEditWidget(const QString &uuid, QWidget *parent) :
+    DuScrollArea(parent),
+    _uuid(uuid)
 {
     setupUi();
     connectEvents();

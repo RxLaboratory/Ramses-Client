@@ -10,7 +10,9 @@
 #include "ramstep.h"
 #include "ramses.h"
 #include "ramjsonstepeditwidget.h"
+#include "ramjsonusereditwidget.h"
 #include "ramserverclient.h"
+#include "ramuuid.h"
 
 ProjectWizard::ProjectWizard(bool team, QWidget *parent, Qt::WindowFlags flags):
     QWizard(parent, flags),
@@ -24,9 +26,6 @@ void ProjectWizard::done(int r)
 {
     if (r != QWizard::Accepted)
         return QWizard::done(r);
-
-    if (_isTeamProject)
-        _userUuid = ui_loginPage->uuid();
 
     // Create distant data
     // (project, users and assignemnts)
@@ -80,7 +79,12 @@ void ProjectWizard::done(int r)
 
 void ProjectWizard::editStep(const QModelIndex &index)
 {
-    auto editor = new RamJsonStepEditWidget(this);
+    QJsonObject data = index.data(Qt::EditRole).toJsonObject();
+    QString uuid = data.value("uuid").toString();
+
+    auto editor = new RamJsonStepEditWidget(uuid, this);
+
+    editor->setData(data);
 
     connect(editor, &RamJsonStepEditWidget::dataChanged,
             this, [this, index] (const QJsonObject &obj) {
@@ -94,6 +98,35 @@ void ProjectWizard::editStep(const QModelIndex &index)
         editor,
         tr("Step"),
         ":/icons/step",
+        true);
+}
+
+void ProjectWizard::editUser(const QModelIndex &index)
+{
+    QJsonObject data = index.data(Qt::EditRole).toJsonObject();
+    QString uuid = data.value("uuid").toString();
+
+    auto editor = new RamJsonUserEditWidget(
+        uuid == _userUuid,
+        _isTeamProject,
+        _isTeamProject,
+        uuid,
+        this);
+
+    editor->setData(data);
+
+    connect(editor, &RamJsonUserEditWidget::dataChanged,
+            this, [this, index] (const QJsonObject &obj) {
+                _users->setData(index, obj);
+            });
+    connect(this, &ProjectWizard::destroyed,
+            editor, &RamJsonUserEditWidget::deleteLater);
+
+    // Show
+    DuUI::appMainWindow()->setPropertiesDockWidget(
+        editor,
+        tr("User"),
+        ":/icons/user",
         true);
 }
 
@@ -139,31 +172,48 @@ void ProjectWizard::finishProjectSetup()
     QWizard::done(QWizard::Accepted);
 }
 
+void ProjectWizard::changeCurrentId(int id)
+{
+    // Get the user ID after login
+    if (id == DetailsPage && _isTeamProject)
+        _userUuid = ui_loginPage->uuid();
+}
+
 void ProjectWizard::setupUi()
 {
+    // Login
     if (_isTeamProject) {
         ui_loginPage = new LoginWizardPage(this);
-        addPage( ui_loginPage );
+        setPage(LoginPage, ui_loginPage );
     }
 
+    // Project details
     ui_detailsPage = new RamObjectPropertiesWizardPage(this);
-    addPage( ui_detailsPage );
+    setPage( DetailsPage, ui_detailsPage );
 
-    addPage(
-        createProjectSettingsPage()
-        );
-    addPage(
-        createPipelinePage()
-        );
+    // Project settings
+    setPage( SettingsPage, createProjectSettingsPage() );
 
+    // Assign users
+    if (_isTeamProject)
+        setPage( UsersPage, createUsersPage() );
+
+    // Pipeline, steps
+    setPage( PipelinePage, createPipelinePage() );
+
+    // DB and working paths
     ui_pathsPage = new RamDatabasePathsWizardPage(this);
-    addPage( ui_pathsPage );
+    setPage( PathsPage, ui_pathsPage );
 }
 
 void ProjectWizard::connectEvents()
 {
+    connect(this, &ProjectWizard::currentIdChanged,
+            this, &ProjectWizard::changeCurrentId);
     connect(ui_stepList, &DuListModelEdit::editing,
             this, &ProjectWizard::editStep);
+    connect(ui_userList, &DuListModelEdit::editing,
+            this, &ProjectWizard::editUser);
 }
 
 QWizardPage *ProjectWizard::createProjectSettingsPage()
@@ -210,6 +260,22 @@ QWizardPage *ProjectWizard::createPipelinePage()
     _steps = new RamJsonObjectModel(this);
     ui_stepList = new DuListModelEdit(tr("Production steps"), _steps, this);
     layout->addWidget(ui_stepList);
+
+    return page;
+}
+
+QWizardPage *ProjectWizard::createUsersPage()
+{
+    auto page = new QWizardPage();
+    page->setTitle(tr("Users"));
+    page->setSubTitle(tr("Assign users working on this project."));
+
+    auto layout = DuUI::createBoxLayout(Qt::Vertical);
+    DuUI::centerLayout(layout, page, 200);
+
+    _users = new RamJsonObjectModel(this);
+    ui_userList = new DuListModelEdit(tr("Users"), _users, this);
+    layout->addWidget(ui_userList);
 
     return page;
 }
@@ -264,7 +330,35 @@ QString ProjectWizard::createServerData()
     // Add the user list
     // At least ourselves
     QJsonArray usersArr;
+    QJsonArray serverUsersArr;
+    QStringList userUuids;
+    userUuids << _userUuid;
     usersArr.append(_userUuid);
+    const QVector<QJsonObject> &jsonUsers = _users->objects();
+    for(const auto &jsonUser: jsonUsers) {
+        QString uuid = jsonUser.value(RamObject::KEY_Uuid).toString();
+        if (uuid != _userUuid) {
+            // Create a UUID
+            if (uuid == "") uuid = RamUuid::generateUuidString(
+                    jsonUser.value(RamObject::KEY_ShortName).toString()
+                    );
+            usersArr.append(uuid);
+
+            userUuids << uuid;
+
+            // The object to create the user server-side
+            QJsonObject userObj;
+            userObj.insert("uuid", uuid);
+            userObj.insert("email", jsonUser.value("email").toString());
+            userObj.insert("role", jsonUser.value("role").toString("standard"));
+            QJsonObject userData = jsonUser;
+            userData.remove("role");
+            userData.remove("email");
+            QJsonDocument dataDoc(userData);
+            userObj.insert("data", QString::fromUtf8(dataDoc.toJson(QJsonDocument::Compact)) );
+            serverUsersArr.append(userObj);
+        }
+    }
     projectData.insert(RamProject::KEY_Users, usersArr);
 
     QJsonDocument doc;
@@ -276,11 +370,16 @@ QString ProjectWizard::createServerData()
 
     QString projectUuid = rep.value("content").toString();
 
-    // Create users
+    // Create users on the server
+    if (!serverUsersArr.isEmpty()) {
+        rep = rsc->createUsers(serverUsersArr);
+        if (!checkServerReply(rep))
+            return "";
+    }
 
     // Assign users on the server
     // At least ourselves
-    rep = rsc->assignUsers( { _userUuid } , projectUuid);
+    rep = rsc->assignUsers( userUuids , projectUuid);
     if (!checkServerReply(rep))
         return "";
 

@@ -5,8 +5,8 @@
 
 #include "ramtemplatestep.h"
 
-RamJsonStepEditWidget::RamJsonStepEditWidget(QWidget *parent):
-    RamJsonObjectEditWidget(parent)
+RamJsonStepEditWidget::RamJsonStepEditWidget(const QString &uuid, QWidget *parent):
+    RamJsonObjectEditWidget(uuid, parent)
 {
     setupUi();
     connectEvents();
@@ -94,6 +94,8 @@ void RamJsonStepEditWidget::setupUi()
     ui_typeBox->addItem(DuIcon(":/icons/shot"), "        Shot Production", RamTemplateStep::ENUMVALUE_Shot);
     ui_typeBox->addItem(DuIcon(":/icons/film"), "        Post-Production", RamTemplateStep::ENUMVALUE_PostProd);
     ui_propertiesWidget->attributesLayout()->insertRow(0, tr("Type"), ui_typeBox);
+
+    ui_propertiesWidget->mainLayout()->addStretch(1);
 
     auto estimWidget = new QWidget(this);
     ui_tabWidget->insertTab(1, estimWidget, DuIcon(":/icons/stats"), "");
