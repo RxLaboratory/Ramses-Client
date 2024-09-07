@@ -304,11 +304,11 @@ void LocalDataInterface::createObject(QString uuid, QString table, QString data)
                   table,
                   uuid,
                   newData,
-                  modified.toString("yyyy-MM-dd hh:mm:ss")
+                  modified.toString(DATETIME_DATA_FORMAT)
                   )
             );
 
-    emit inserted(uuid, data, modified.toString("yyyy-MM-dd hh:mm:ss"), table);
+    emit inserted(uuid, data, modified.toString(DATETIME_DATA_FORMAT), table);
 }
 
 QString LocalDataInterface::objectData(QString uuid, QString table)
@@ -345,7 +345,7 @@ void LocalDataInterface::setObjectData(QString uuid, QString table, QString data
                 "ON CONFLICT(uuid) DO UPDATE "
                 "SET data=excluded.data, modified=excluded.modified ;";
 
-    QString modifiedStr = modified.toString("yyyy-MM-dd hh:mm:ss");
+    QString modifiedStr = modified.toString(DATETIME_DATA_FORMAT);
     query( q.arg(table, newData, modifiedStr, uuid) );
 
     emit dataChanged(uuid, data, modifiedStr, table);
@@ -362,7 +362,7 @@ void LocalDataInterface::removeObject(QString uuid, QString table)
                 "removed = 1,"
                 "modified = '%2' "
                 "WHERE uuid = '%3';";
-    query( q.arg(table, modified.toString("yyyy-MM-dd hh:mm:ss"), uuid) );
+    query( q.arg(table, modified.toString(DATETIME_DATA_FORMAT), uuid) );
     emit removed(uuid, table);
 }
 
@@ -378,7 +378,7 @@ void LocalDataInterface::restoreObject(QString uuid, QString table)
                 "removed = 0,"
                 "modified = '%2' "
                 "WHERE uuid = '%3';";
-    QString modifiedStr = modified.toString("yyyy-MM-dd hh:mm:ss");
+    QString modifiedStr = modified.toString(DATETIME_DATA_FORMAT);
     query( q.arg(table, modifiedStr, uuid) );
 
     // Get current data
@@ -427,7 +427,7 @@ void LocalDataInterface::updateUser(const QString &uuid, const QString &role, co
     if (mod == "")
     {
         QDateTime m = QDateTime::currentDateTimeUtc();
-        mod = m.toString("yyyy-MM-dd hh:mm:ss");
+        mod = m.toString(DATETIME_DATA_FORMAT);
     }
 
     // Encrypt data
@@ -807,8 +807,8 @@ void LocalDataInterface::saveSync(SyncData syncData)
             bool hasBeenRemoved = rem == 1;
 
             // Only if more recent
-            QDateTime incomingDate = QDateTime::fromString(modified, "yyyy-MM-dd hh:mm:ss");
-            QDateTime currentDate = QDateTime::fromString(uuidDates[uuid], "yyyy-MM-dd hh:mm:ss");
+            QDateTime incomingDate = QDateTime::fromString(modified, DATETIME_DATA_FORMAT);
+            QDateTime currentDate = QDateTime::fromString(uuidDates[uuid], DATETIME_DATA_FORMAT);
             if (incomingDate <= currentDate) continue;
 
             // Check if the object has been removed or restored
@@ -1087,7 +1087,7 @@ QString LocalDataInterface::cleanDataBase(int deleteDataOlderThan)
         report += ".\n\n## Deleted Data\n\n";
         qDebug() << ">>> Collecting data older than " << deleteDataOlderThan << " days.";
 
-        QString limitDate = QDateTime::currentDateTimeUtc().addDays(-deleteDataOlderThan).toString("yyyy-MM-dd hh:mm:ss");
+        QString limitDate = QDateTime::currentDateTimeUtc().addDays(-deleteDataOlderThan).toString(DATETIME_DATA_FORMAT);
         qDebug() << "    Date: " << limitDate;
 
         int dataRemoved = false;

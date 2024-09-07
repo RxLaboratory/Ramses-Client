@@ -3,6 +3,7 @@
 
 #include <QWidget>
 
+#include "duapp/app-config.h"
 #include "duwidgets/dutreewidget.h"
 #include "qfileinfo.h"
 
@@ -28,7 +29,7 @@ public:
     void setShowDate(bool newShowDate);
 
 private:
-    QString m_dateFormat = "yyyy-MM-dd hh:mm:ss";
+    QString m_dateFormat = DATETIME_DATA_FORMAT;
     bool m_showDate = true;
 };
 

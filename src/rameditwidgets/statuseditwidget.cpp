@@ -730,7 +730,7 @@ void StatusEditWidget::setupUi()
     mainFileLayout->setSpacing(3);
 
     QSettings settings;
-    QString dateFormat = settings.value("ramses/dateFormat", "yyyy-MM-dd hh:mm:ss").toString();
+    QString dateFormat = settings.value("ramses/dateFormat", DATETIME_DATA_FORMAT).toString();
 
     ui_mainFileList = new DuQFFileList(this);
     ui_mainFileList->setDateFormat(dateFormat);

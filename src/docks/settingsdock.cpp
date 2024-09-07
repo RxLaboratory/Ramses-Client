@@ -2,6 +2,7 @@
 
 #include <QDir>
 
+#include "duapp/app-config.h"
 #include "duapp/app-utils.h"
 #include "duapp/duui.h"
 #include "duwidgets/duqfupdatedialog.h"
@@ -177,8 +178,8 @@ void SettingsDock::setupAppearanceTab()
     colorsLayout->addRow(tr("Contrast"), ui_contrastBox);
 
     ui_dateFormatBox = new DuComboBox(this);
-    QDateTime d = QDateTime::fromString("2021-04-26 10:53:31", "yyyy-MM-dd hh:mm:ss");
-    QString f = "yyyy-MM-dd hh:mm:ss";
+    QDateTime d = QDateTime::fromString("2021-04-26 10:53:31", DATETIME_DATA_FORMAT);
+    QString f = DATETIME_DATA_FORMAT;
     ui_dateFormatBox->addItem(d.toString(f), f);
     f = "MM.dd.yyyy - h:mm:ss ap";
     ui_dateFormatBox->addItem(d.toString(f), f);

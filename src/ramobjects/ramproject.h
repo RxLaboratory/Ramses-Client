@@ -31,6 +31,8 @@ public:
 
     // THE JSON DATA KEYS and ENUM VALUES
 
+    static const QString KEY_Pipeline;
+    static const QString KEY_Users;
     static const QString KEY_Width;
     static const QString KEY_Height;
     static const QString KEY_FrameRate;

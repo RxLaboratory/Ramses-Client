@@ -1,5 +1,6 @@
 #include "ramstatustablemodel.h"
 
+#include "duapp/app-config.h"
 #include "ramstatus.h"
 #include "ramasset.h"
 #include "ramshot.h"
@@ -179,7 +180,7 @@ QSet<RamStatus *> RamStatusTableModel::getStatus(const QDate &date, const QStrin
 {
     if (!date.isValid()) return QSet<RamStatus *>();
 
-    const QSet<RamObject *> all = m_status->lookUp("dueDate", date.toString("yyyy-MM-dd"));
+    const QSet<RamObject *> all = m_status->lookUp("dueDate", date.toString(DATE_DATA_FORMAT));
     QSet<RamStatus *> allStatus;
     for (auto status: all) {
         auto st = qobject_cast<RamStatus*>(status);

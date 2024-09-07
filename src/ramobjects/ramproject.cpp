@@ -1,5 +1,6 @@
 #include "ramproject.h"
 
+#include "duapp/app-config.h"
 #include "ramscheduleentrymodel.h"
 #include "ramses.h"
 #include "rampipe.h"
@@ -9,6 +10,8 @@
 
 // KEYS //
 
+const QString RamProject::KEY_Pipeline = QStringLiteral("pipeline");
+const QString RamProject::KEY_Users = QStringLiteral("users");
 const QString RamProject::KEY_Width = QStringLiteral("width");
 const QString RamProject::KEY_Height = QStringLiteral("height");
 const QString RamProject::KEY_FrameRate = QStringLiteral("framerate");
@@ -54,8 +57,8 @@ RamProject::RamProject(QString uuid):
     construct();
 
     QJsonObject d = data();
-    loadModel(m_users, "users", d);
-    loadModel(m_pipeline, "pipeline", d);
+    loadModel(m_users, KEY_Users, d);
+    loadModel(m_pipeline, KEY_Pipeline, d);
 }
 
 DBTableModel *RamProject::steps() const
@@ -325,12 +328,12 @@ void RamProject::setPixelAspectRatio(const qreal &aspectRatio)
 
 QDate RamProject::deadline() const
 {
-    return QDate::fromString( getData(KEY_Deadline).toString(), "yyyy-MM-dd");
+    return QDate::fromString( getData(KEY_Deadline).toString(), "yyyy-MM-dd"); // TODO Use settings
 }
 
 void RamProject::setDeadline(const QDate &newDeadline)
 {
-    insertData(KEY_Deadline, newDeadline.toString("yyyy-MM-dd"));
+    insertData(KEY_Deadline, newDeadline.toString(DATE_DATA_FORMAT));
 }
 
 double RamProject::duration() const
@@ -616,9 +619,9 @@ void RamProject::construct()
     m_pipeFiles = new DBTableModel(RamObject::PipeFile, true, false, this);
     m_pipeFiles->addFilterValue( "project", this->uuid() );
 
-    m_users = createModel(RamObject::User, "users" );
+    m_users = createModel(RamObject::User, KEY_Users );
 
-    m_pipeline = createModel(RamObject::Pipe, "pipeline" );
+    m_pipeline = createModel(RamObject::Pipe, KEY_Pipeline );
 
     m_scheduleEntries = new RamScheduleEntryModel();
     m_scheduleEntries->addFilterValue( "project", this->uuid() );

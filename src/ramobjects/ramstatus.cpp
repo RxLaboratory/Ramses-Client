@@ -1,5 +1,6 @@
 ﻿#include "ramstatus.h"
 
+#include "duapp/app-config.h"
 #include "ramnamemanager.h"
 #include "ramshot.h"
 #include "ramasset.h"
@@ -229,12 +230,12 @@ void RamStatus::setVersion(int version)
 QDateTime RamStatus::date() const
 {
     if (m_virtual) return QDateTime::currentDateTime();
-    return QDateTime::fromString( getData("date").toString(), "yyyy-MM-dd hh:mm:ss");
+    return QDateTime::fromString( getData("date").toString(), DATETIME_DATA_FORMAT);
 }
 
 void RamStatus::setDate(const QDateTime &date)
 {
-    insertData("date", date.toString("yyyy-MM-dd hh:mm:ss"));
+    insertData("date", date.toString(DATETIME_DATA_FORMAT));
 }
 
 bool RamStatus::useDueDate() const
@@ -250,14 +251,14 @@ void RamStatus::setUseDueDate(bool use)
 
 QDate RamStatus::dueDate() const
 {
-    QString defaultDate = QDate::currentDate().toString("yyyy-MM-dd");
-    if (m_virtual) return QDate::fromString(defaultDate, "yyyy-MM-dd");
-    return QDate::fromString( getData("dueDate").toString(defaultDate), "yyyy-MM-dd");
+    QString defaultDate = QDate::currentDate().toString(DATE_DATA_FORMAT);
+    if (m_virtual) return QDate::fromString(defaultDate, DATE_DATA_FORMAT);
+    return QDate::fromString( getData("dueDate").toString(defaultDate), DATE_DATA_FORMAT);
 }
 
 void RamStatus::setDueDate(const QDate &date)
 {
-    insertData("dueDate", date.toString("yyyy-MM-dd"));
+    insertData("dueDate", date.toString(DATE_DATA_FORMAT));
     setUseDueDate(true);
 }
 
@@ -632,7 +633,7 @@ QString RamStatus::subDetails() const
     if (m_virtual) return "";
     if (this->isNoState()) return "";
     //subdetails
-    QString dateFormat = "yyyy-MM-dd hh:mm:ss";
+    QString dateFormat = DATETIME_DATA_FORMAT;
     RamUser *u = Ramses::instance()->currentUser();
     if (u)
     {
@@ -764,7 +765,7 @@ void RamStatus::connectEvents()
 
 void RamStatus::updateData(QJsonObject *d)
 {
-    d->insert("date", QDateTime::currentDateTimeUtc().toString("yyyy-MM-dd hh:mm:ss"));
+    d->insert("date", QDateTime::currentDateTimeUtc().toString(DATETIME_DATA_FORMAT));
 
     setData(*d);
 

@@ -2,6 +2,7 @@
 
 #include <QLabel>
 
+#include "duapp/app-config.h"
 #include "duapp/duui.h"
 #include "duapp/dusettings.h"
 #include "duutils/dusystemutils.h"
@@ -257,8 +258,15 @@ QString ProjectWizard::createServerData()
     projectData.insert(RamProject::KEY_Width, ui_resolutionWidget->getWidth());
     projectData.insert(RamProject::KEY_Height, ui_resolutionWidget->getHeight());
     projectData.insert(RamProject::KEY_FrameRate, ui_framerateWidget->framerate());
-    projectData.insert(RamProject::KEY_Deadline, ui_deadlineEdit->date().toString("yyyy-MM-dd"));
+    projectData.insert(RamProject::KEY_Deadline, ui_deadlineEdit->date().toString(DATE_DATA_FORMAT));
     projectData.insert(RamProject::KEY_PixelAspectRatio, ui_parBox->value());
+
+    // Add the user list
+    // At least ourselves
+    QJsonArray usersArr;
+    usersArr.append(_userUuid);
+    projectData.insert(RamProject::KEY_Users, usersArr);
+
     QJsonDocument doc;
     doc.setObject(projectData);
 
@@ -270,7 +278,7 @@ QString ProjectWizard::createServerData()
 
     // Create users
 
-    // Assign users
+    // Assign users on the server
     // At least ourselves
     rep = rsc->assignUsers( { _userUuid } , projectUuid);
     if (!checkServerReply(rep))

@@ -2,6 +2,7 @@
 #include <QSettings>
 #include <QTcpSocket>
 
+#include "duapp/app-config.h"
 #include "duapp/app-utils.h"
 #include "duapp/ducli.h"
 #include "duwidgets/duqfupdatedialog.h"
@@ -92,7 +93,7 @@ int main(int argc, char *argv[])
     QSettings settings;
     qDebug() << "Update check...";
     QDateTime lastCheck = DuSettings::i()->get(DuSettings::APP_LastUpdateCheck).toDateTime();
-    qDebug().noquote() << "Last check was on: " + lastCheck.toString("yyyy-MM-dd hh:mm:ss");
+    qDebug().noquote() << "Last check was on: " + lastCheck.toString(DATETIME_DATA_FORMAT);
     int days = lastCheck.daysTo(QDateTime::currentDateTime());
     qDebug().noquote() << days << " days since last check.";
     if (days > 0 || !lastCheck.isValid() || lastCheck.isNull()) {

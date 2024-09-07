@@ -1158,7 +1158,7 @@ void RamServerInterface::startSync()
 
     queueRequest("sync");
     m_syncing = true;
-    m_pullData.syncDate = QDateTime::currentDateTimeUtc().toString("yyyy-MM-dd hh:mm:ss");
+    m_pullData.syncDate = QDateTime::currentDateTimeUtc().toString(DATETIME_DATA_FORMAT);
     m_pullData.tables = QHash<QString, QSet<TableRow>>();
     emit syncStarted();
 }

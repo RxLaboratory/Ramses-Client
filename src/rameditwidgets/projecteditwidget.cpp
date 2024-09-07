@@ -1,5 +1,6 @@
 #include "projecteditwidget.h"
 
+#include "duapp/app-config.h"
 #include "ramproject.h"
 #include "ramses.h"
 #include "ramobjectmodel.h"
@@ -94,7 +95,7 @@ void ProjectEditWidget::currentUserChanged(RamUser *user)
 {
     if (!user) return;
     QSettings settings;
-    ui_deadlineEdit->setDisplayFormat( settings.value("appearance/dateFormat","yyyy-MM-dd hh:mm:ss").toString());
+    ui_deadlineEdit->setDisplayFormat( settings.value("appearance/dateFormat",DATETIME_DATA_FORMAT).toString());
 }
 
 void ProjectEditWidget::createUser()
