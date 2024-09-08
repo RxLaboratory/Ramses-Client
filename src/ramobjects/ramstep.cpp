@@ -116,6 +116,43 @@ RamProject *RamStep::project() const
     else return nullptr;
 }
 
+QJsonObject RamStep::toJson() const
+{
+    QJsonObject obj = RamObject::toJson();
+    obj.insert(RamTemplateStep::KEY_StepType, getData(KEY_StepType).toString() );
+    obj.insert(RamTemplateStep::KEY_EstimationMethod, getData(KEY_EstimationMethod).toString(ENUMVALUE_Shot) );
+
+    auto group = estimationMultiplyGroup();
+    QString groupUuid = "none";
+    if (group)
+        groupUuid = group->uuid();
+
+    obj.insert(RamStep::KEY_EstimationMultiplyGroup, groupUuid);
+    obj.insert(RamTemplateStep::KEY_EstimationVeryEasy, estimationVeryEasy() );
+    obj.insert(RamTemplateStep::KEY_EstimationEasy, estimationEasy() );
+    obj.insert(RamTemplateStep::KEY_EstimationMedium, estimationMedium() );
+    obj.insert(RamTemplateStep::KEY_EstimationHard, estimationHard());
+    obj.insert(RamTemplateStep::KEY_EstimationVeryHard, estimationVeryHard());
+    obj.insert(RamTemplateStep::KEY_PublishSettings, publishSettings());
+
+    return obj;
+}
+
+void RamStep::loadJson(const QJsonObject &obj)
+{
+    RamObject::loadJson(obj);
+
+    setType(obj.value(RamTemplateStep::KEY_StepType).toString( RamTemplateStep::ENUMVALUE_PreProd ));
+    setEstimationMethod(obj.value(RamTemplateStep::KEY_EstimationMethod).toString( RamTemplateStep::ENUMVALUE_Shot ));
+    setEstimationVeryEasy(obj.value(RamTemplateStep::KEY_EstimationVeryEasy).toDouble( 0.2 ));
+    setEstimationEasy(obj.value(RamTemplateStep::KEY_EstimationEasy).toDouble( 0.5 ));
+    setEstimationMedium(obj.value(RamTemplateStep::KEY_EstimationMedium).toDouble( 1 ));
+    setEstimationHard(obj.value(RamTemplateStep::KEY_EstimationHard).toDouble( 2 ));
+    setEstimationVeryHard(obj.value(RamTemplateStep::KEY_EstimationVeryHard).toDouble( 3 ));
+    setPublishSettings(obj.value(RamTemplateStep::KEY_PublishSettings).toString( ));
+    setEstimationMultiplyGroup( RamAssetGroup::get(obj.value(RamStep::KEY_EstimationMultiplyGroup).toString("none")));
+}
+
 RamAssetGroup *RamStep::estimationMultiplyGroup() const
 {
     return RamAssetGroup::get( getData(KEY_EstimationMultiplyGroup).toString(ENUMVALUE_None) );
@@ -438,7 +475,7 @@ void RamStep::edit(bool show)
     // Deprecated
     if (!ui_jsonEditWidget) {
         ui_jsonEditWidget = new RamJsonStepEditWidget(m_uuid);
-        connect(ui_jsonEditWidget, &RamJsonStepEditWidget::dataChanged,
+        connect(ui_jsonEditWidget, &RamJsonStepEditWidget::dataEdited,
                 this, &RamStep::loadJson);
     }
 

@@ -41,6 +41,9 @@ public:
 
     RamProject *project() const;
 
+    QJsonObject toJson() const override;
+    void loadJson(const QJsonObject &obj) override;
+
     RamAssetGroup *estimationMultiplyGroup() const;
     void setEstimationMultiplyGroup(RamObject *newEstimationMultiplyGroup);
 

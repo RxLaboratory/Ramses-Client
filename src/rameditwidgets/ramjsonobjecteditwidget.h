@@ -23,10 +23,18 @@ public:
     void setUuid(const QString &uuid) { _uuid = uuid; }
 
 public slots:
-    void emitDataChanged();
+    void emitEdited();
 
 signals:
+    /**
+     * @brief dataChanged Emitted every time the data is changed
+     */
     void dataChanged(const QJsonObject &);
+    /**
+     * @brief dataEdited emitted only if the user changed the data,
+     * but not programatically
+     */
+    void dataEdited(const QJsonObject &);
 
 protected:
     DuTabWidget *ui_tabWidget;

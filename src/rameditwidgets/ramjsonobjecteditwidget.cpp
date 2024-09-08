@@ -27,6 +27,11 @@ void RamJsonObjectEditWidget::setData(const QJsonObject &obj, const QString &uui
     emit dataChanged(data());
 }
 
+void RamJsonObjectEditWidget::emitEdited()
+{
+    emit dataEdited(data());
+}
+
 void RamJsonObjectEditWidget::setupUi()
 {
     ui_tabWidget = new DuTabWidget(this);
@@ -58,10 +63,10 @@ void RamJsonObjectEditWidget::setupUi()
 void RamJsonObjectEditWidget::connectEvents()
 {
     connect(ui_propertiesWidget, &RamObjectPropertiesWidget::edited,
-            this, &RamJsonObjectEditWidget::emitDataChanged);
+            this, &RamJsonObjectEditWidget::emitEdited);
 
     connect(ui_customSettingsEdit, &DuRichTextEdit::editingFinished,
-            this, &RamJsonObjectEditWidget::emitDataChanged);
+            this, &RamJsonObjectEditWidget::emitEdited);
 }
 
 void RamJsonObjectEditWidget::setRamObjectData(const QJsonObject &obj)
@@ -92,7 +97,3 @@ QJsonObject RamJsonObjectEditWidget::ramObjectData() const
     return obj;
 }
 
-void RamJsonObjectEditWidget::emitDataChanged()
-{
-    emit dataChanged(data());
-}

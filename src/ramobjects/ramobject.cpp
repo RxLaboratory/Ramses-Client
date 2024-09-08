@@ -227,12 +227,18 @@ void RamObject::updateJsonEditor()
         return;
 
     ui_currentJsonEditor->setData(toJson(), m_uuid);
-    qDebug() << "Set editor data" << m_uuid;
 }
 
-void RamObject::loadJson(const QJsonObject &data)
+void RamObject::loadJson(const QJsonObject &obj)
 {
-    qDebug() << "Update from editor" << data;
+    setName(obj.value(RamAbstractObject::KEY_Name).toString());
+    setShortName(obj.value(RamAbstractObject::KEY_ShortName).toString());
+    setComment(obj.value(RamAbstractObject::KEY_Comment).toString());
+    setColor(QColor(
+        obj.value(RamAbstractObject::KEY_Color).toString(RamAbstractObject::DEFAULT_Color)
+        ));
+
+    setCustomSettings(obj.value(RamAbstractObject::KEY_CustomSettings).toString( ));
 }
 
 RamObjectModel *RamObject::createModel(RamObject::ObjectType type, QString modelName)

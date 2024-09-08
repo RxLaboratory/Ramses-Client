@@ -33,9 +33,10 @@ QJsonObject RamJsonUserEditWidget::data() const
     return obj;
 }
 
-void RamJsonUserEditWidget::setData(const QJsonObject &obj)
+void RamJsonUserEditWidget::setData(const QJsonObject &obj, const QString &uuid)
 {
     setRamObjectData(obj);
+    setUuid(uuid);
 
     // Set role
     if (ui_roleBox)
@@ -45,7 +46,7 @@ void RamJsonUserEditWidget::setData(const QJsonObject &obj)
     if (ui_emailEdit) {
         if (exists()) {
             QJsonObject rep = RamServerClient::i()->getEmail(
-                uuid()
+                uuid
                 );
             if (rep.value("success").toBool()) {
                 ui_emailEdit->setText(
@@ -57,6 +58,8 @@ void RamJsonUserEditWidget::setData(const QJsonObject &obj)
             ui_emailEdit->setText(obj.value("email").toString());
         }
     }
+
+    emit dataChanged(data());
 }
 
 void RamJsonUserEditWidget::setupUi()
@@ -129,7 +132,7 @@ void RamJsonUserEditWidget::connectEvents()
     if (ui_emailButton)
         connect(ui_emailButton, &QToolButton::clicked, this, &RamJsonUserEditWidget::updateEmail);
     else if (ui_emailEdit)
-        connect(ui_emailEdit, &DuLineEdit::editingFinished, this, &RamJsonUserEditWidget::emitDataChanged);
+        connect(ui_emailEdit, &DuLineEdit::editingFinished, this, &RamJsonUserEditWidget::emitEdited);
 }
 
 void RamJsonUserEditWidget::updatePassword()
@@ -190,7 +193,7 @@ void RamJsonUserEditWidget::updateRole(const QVariant &role)
     }
 
     _role = r;
-    emitDataChanged();
+    emitEdited();
 }
 
 void RamJsonUserEditWidget::updateEmail()
@@ -226,7 +229,7 @@ void RamJsonUserEditWidget::updateEmail()
     }
 
     _email = email;
-    emitDataChanged();
+    emitEdited();
 }
 
 void RamJsonUserEditWidget::resetPassword()

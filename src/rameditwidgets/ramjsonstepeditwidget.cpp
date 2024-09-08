@@ -179,20 +179,20 @@ void RamJsonStepEditWidget::connectEvents()
             this, &RamJsonStepEditWidget::updateEstimationMethod);
 
     connect(ui_typeBox, &DuComboBox::dataActivated,
-            this, &RamJsonObjectEditWidget::emitDataChanged);
+            this, &RamJsonObjectEditWidget::emitEdited);
     connect(ui_estimationTypeBox, &DuComboBox::dataActivated,
-            this, &RamJsonObjectEditWidget::emitDataChanged);
+            this, &RamJsonObjectEditWidget::emitEdited);
 
     connect(ui_publishSettingsEdit, &DuRichTextEdit::editingFinished,
-            this, &RamJsonObjectEditWidget::emitDataChanged);
+            this, &RamJsonObjectEditWidget::emitEdited);
     connect(ui_veryEasyEdit, &AutoSelectDoubleSpinBox::editingFinished,
-            this, &RamJsonObjectEditWidget::emitDataChanged);
+            this, &RamJsonObjectEditWidget::emitEdited);
     connect(ui_easyEdit, &AutoSelectDoubleSpinBox::editingFinished,
-            this, &RamJsonObjectEditWidget::emitDataChanged);
+            this, &RamJsonObjectEditWidget::emitEdited);
     connect(ui_mediumEdit, &AutoSelectDoubleSpinBox::editingFinished,
-            this, &RamJsonObjectEditWidget::emitDataChanged);
+            this, &RamJsonObjectEditWidget::emitEdited);
     connect(ui_hardEdit, &AutoSelectDoubleSpinBox::editingFinished,
-            this, &RamJsonObjectEditWidget::emitDataChanged);
+            this, &RamJsonObjectEditWidget::emitEdited);
     connect(ui_veryHardEdit, &AutoSelectDoubleSpinBox::editingFinished,
-            this, &RamJsonObjectEditWidget::emitDataChanged);
+            this, &RamJsonObjectEditWidget::emitEdited);
 }
