@@ -55,7 +55,7 @@ int WinUtils::execElevated(QString cmd, QStringList params, bool detached)
 bool WinUtils::logon(HANDLE *h, QString reason)
 {
     // First, ask for username and password
-    DuLoginDialog *loginDialog = new DuLoginDialog();
+    /*DuLoginDialog *loginDialog = new DuLoginDialog();
     if (reason !="") loginDialog->setInfo(reason);
 
     while (loginDialog->exec() == QDialog::Accepted) {
@@ -69,7 +69,7 @@ bool WinUtils::logon(HANDLE *h, QString reason)
         qDebug() <<  QStringLiteral("Windows Logon failed.");
     }
 
-    qDebug() <<  QStringLiteral("Windows Logon canceled.");
+    qDebug() <<  QStringLiteral("Windows Logon canceled.");*/
     return false;
 }
 
