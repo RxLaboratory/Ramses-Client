@@ -90,27 +90,9 @@ QJsonObject RamServerClient::ping(bool synchronous)
         return QJsonObject();
     }
 
-    QJsonObject obj;
-    obj.insert("success", false);
-
-    QNetworkReply *reply = synchronousRequest(r);
-
-    if (!reply)
-    {
-        qCritical().noquote() << "{Client}" << "Can't contact the server... Ping failed.";
-        obj.insert("message", "Connection failed, server unavailable or misconfigured.");
-        return obj;
-    }
-
-    obj = parseData(reply);
-    if (!obj.value("success").toBool(false)) {
-        m_lastError = obj.value("message").toString("Unknown error");
-        qCritical().noquote() << "{Client}" << m_lastError;
-        setStatus(Offline);
-        return obj;
-    }
-
-    setStatus(Online);
+    QJsonObject obj = synchronousRequest(r);
+    if (obj.value("success").toBool(false))
+        setStatus(Online);
 
     return obj;
 }
@@ -148,19 +130,8 @@ QJsonObject RamServerClient::login(const QString &email, const QString &password
     body.insert("email", email);
     body.insert("password", hashedPassword);
     Request r = buildRequest("login", body);
-    QNetworkReply *reply = synchronousRequest(r);
 
-    if (!reply)
-    {
-        m_lastError = tr("Can't log in... request timed out.");
-        qWarning().noquote() << "{Client}" << m_lastError;
-        setStatus(Offline);
-        obj.insert("success", false);
-        obj.insert("message", "Unable to log in (the request timed out). Check your internet connection and the server address.");
-        return obj;
-    }
-
-    obj = parseData(reply);
+    obj = synchronousRequest(r);
     bool repSuccess = obj.value("success").toBool();
 
     if (!repSuccess)
@@ -187,8 +158,7 @@ QJsonObject RamServerClient::setUserRole(const QString &uuid, const QString &rol
 
     Request r = buildRequest("setUserRole", body);
 
-    QNetworkReply *reply = synchronousRequest(r);
-    return parseData(reply);
+    return synchronousRequest(r);
 }
 
 QJsonObject RamServerClient::createProject(const QString &data, const QString &uuid)
@@ -199,8 +169,7 @@ QJsonObject RamServerClient::createProject(const QString &data, const QString &u
 
     Request r = buildRequest("createProject", body);
 
-    QNetworkReply *reply = synchronousRequest(r);
-    return parseData(reply);
+    return synchronousRequest(r);
 }
 
 QJsonObject RamServerClient::setProject(const QString &uuid)
@@ -210,8 +179,7 @@ QJsonObject RamServerClient::setProject(const QString &uuid)
 
     Request r = buildRequest("setCurrentProject", body);
 
-    QNetworkReply *reply = synchronousRequest(r);
-    return parseData(reply);
+    return synchronousRequest(r);
 }
 
 QJsonObject RamServerClient::assignUsers(const QStringList &userUuids, const QString &projectUuid)
@@ -226,16 +194,14 @@ QJsonObject RamServerClient::assignUsers(const QStringList &userUuids, const QSt
 
     Request r = buildRequest("assignUsers", body);
 
-    QNetworkReply *reply = synchronousRequest(r);
-    return parseData(reply);
+    return synchronousRequest(r);
 }
 
 QJsonObject RamServerClient::getAllUsers()
 {
-    Request r = buildRequest("getAllUsers");
+    Request r = buildRequest("getAllUsers", QJsonObject());
 
-    QNetworkReply *reply = synchronousRequest(r);
-    return parseData(reply);
+    return synchronousRequest(r);
 }
 
 QJsonObject RamServerClient::setPassword(const QString &userUuid, const QString &newPassword, const QString &currentPassword)
@@ -247,8 +213,7 @@ QJsonObject RamServerClient::setPassword(const QString &userUuid, const QString 
 
     Request r = buildRequest("setPassword", body);
 
-    QNetworkReply *reply = synchronousRequest(r);
-    return parseData(reply);
+    return synchronousRequest(r);
 }
 
 QJsonObject RamServerClient::getEmail(const QString &uuid)
@@ -258,8 +223,7 @@ QJsonObject RamServerClient::getEmail(const QString &uuid)
 
     Request r = buildRequest("getEmail", body);
 
-    QNetworkReply *reply = synchronousRequest(r);
-    return parseData(reply);
+    return synchronousRequest(r);
 }
 
 QJsonObject RamServerClient::setEmail(const QString &uuid, const QString &email)
@@ -270,8 +234,7 @@ QJsonObject RamServerClient::setEmail(const QString &uuid, const QString &email)
 
     Request r = buildRequest("setEmail", body);
 
-    QNetworkReply *reply = synchronousRequest(r);
-    return parseData(reply);
+    return synchronousRequest(r);
 }
 
 QJsonObject RamServerClient::createUsers(const QJsonArray &users)
@@ -281,16 +244,14 @@ QJsonObject RamServerClient::createUsers(const QJsonArray &users)
 
     Request r = buildRequest("createUsers", body);
 
-    QNetworkReply *reply = synchronousRequest(r);
-    return parseData(reply);
+    return synchronousRequest(r);
 }
 
 QJsonObject RamServerClient::getProjects()
 {
     Request r = buildRequest("getProjects", QJsonObject());
 
-    QNetworkReply *reply = synchronousRequest(r);
-    return parseData(reply);
+    return synchronousRequest(r);
 }
 
 void RamServerClient::sync(SyncData syncData)
@@ -675,11 +636,14 @@ void RamServerClient::postRequest(Request r)
     connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
 }
 
-QNetworkReply *RamServerClient::synchronousRequest(Request r)
+QJsonObject RamServerClient::synchronousRequest(Request r)
 {
     // Log URL / GET
     QUrl url = r.request.url();
     QString host = url.host();
+
+    QJsonObject obj;
+    obj.insert("success", false);
 
     // Verify if host is available
     QHostInfo info = QHostInfo::fromName(host);
@@ -689,8 +653,10 @@ QNetworkReply *RamServerClient::synchronousRequest(Request r)
         setStatus(Offline);
         qWarning().noquote() << "{Client}" << tr("The Ramses Server at '%1' is unreachable, sorry. Check your network connection.\n"
                                                  "We're switching to offline mode.").arg(host);
+
         m_lastError = tr("Server unavailable. Please check the server settings and your network connection.");
-        return nullptr;
+        obj.insert("message", m_lastError);
+        return obj;
     case QHostInfo::NoError:
         break;
     }
@@ -723,22 +689,37 @@ QNetworkReply *RamServerClient::synchronousRequest(Request r)
             setStatus(Offline);
             qWarning().noquote() << "{Client}" << tr("Time out: the Ramses Server at '%1' took too long to respond, sorry. Check your network connection.\n"
                                                      "We're switching to offline mode.").arg(host);
-            m_lastError = tr("Server unavailable. Please check the server settings and your network connection.");
-            return nullptr;
+            m_lastError = tr("Timed out, server unavailable. Please check the server settings and your network connection.");
+            obj.insert("message", m_lastError);
+            return obj;
         }
         qApp->processEvents();
     }
 
-    return reply;
+    return parseData(reply);
 }
 
 QJsonObject RamServerClient::parseData(QNetworkReply *reply)
 {
     if (!reply)
     {
+        qWarning().noquote() << "{Client}" << "Connection failed, server unavailable or misconfigured.";
         QJsonObject obj;
         obj.insert("success", false);
         obj.insert("message", "Connection failed, server unavailable or misconfigured.");
+        return obj;
+    }
+
+    if (reply->error() != QNetworkReply::NoError)
+    {
+        m_lastError = reply->errorString();
+        if (reply->error() == QNetworkReply::SslHandshakeFailedError) {
+            m_lastError += "\nOpenSSL may be missing on your system, or using an incompatible version.";
+        }
+        qWarning().noquote() << "{Client}" << "Connection failed: " << m_lastError;
+        QJsonObject obj;
+        obj.insert("success", false);
+        obj.insert("message", "Connection failed: " + m_lastError);
         return obj;
     }
 

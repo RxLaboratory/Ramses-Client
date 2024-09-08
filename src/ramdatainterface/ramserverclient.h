@@ -109,7 +109,7 @@ private:
     Request buildRequest(QString query);
 
     void postRequest(Request r);
-    QNetworkReply *synchronousRequest(Request r);
+    QJsonObject synchronousRequest(Request r);
 
     QJsonObject parseData(QNetworkReply *reply);
 
