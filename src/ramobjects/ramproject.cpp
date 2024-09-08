@@ -558,25 +558,8 @@ void RamProject::suspendEstimations(bool frozen, bool recompute)
 
 QString RamProject::folderPath() const
 {
-    // Get path in settings first
-    QSettings settings;
-    settings.beginGroup("projects");
-    settings.beginGroup(m_uuid);
-    QString p = settings.value("path", "no-path").toString();
-    settings.endGroup();
-    settings.endGroup();
-
-    if (p == "no-path")
-    {
-        // Then return the DB path
-        p = dbFolderPath();
-    }
-
-    if (pathIsDefault(p))
-    {
-        return defaultPath();
-    }
-    else return p;
+    // Same as Working path
+    return Ramses::i()->path();
 }
 
 // PRIVATE //
