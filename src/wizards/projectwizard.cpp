@@ -175,7 +175,7 @@ void ProjectWizard::setupUi()
 
 void ProjectWizard::connectEvents()
 {
-    connect(ui_stepList, &DuListModelEdit::editing,
+    connect(ui_stepList, &DuListEditView::editing,
             this, &ProjectWizard::editStep);
 }
 
@@ -221,7 +221,7 @@ QWizardPage *ProjectWizard::createPipelinePage()
     DuUI::centerLayout(layout, page, 200);
 
     _steps = new RamJsonObjectModel(this);
-    ui_stepList = new DuListModelEdit(tr("Production steps"), _steps, this);
+    ui_stepList = new DuListEditView(tr("Production steps"), tr("step"), _steps, this);
     layout->addWidget(ui_stepList);
 
     return page;

@@ -1,17 +1,19 @@
-#ifndef DULISTMODELEDIT_H
-#define DULISTMODELEDIT_H
+#ifndef DULISTEDITVIEW_H
+#define DULISTEDITVIEW_H
 
 #include <QWidget>
 #include <QToolButton>
 #include <QAbstractItemModel>
 
 #include "duwidgets/dulistview.h"
+#include "duwidgets/dumenuview.h"
 
-class DuListModelEdit : public QWidget
+class DuListEditView : public QWidget
 {
     Q_OBJECT
 public:
-    explicit DuListModelEdit(const QString &title, QAbstractItemModel *model, QWidget *parent = nullptr);
+    explicit DuListEditView(const QString &title, const QString &itemName, QAbstractItemModel *model, QWidget *parent = nullptr);
+    void setAssignList(QAbstractItemModel *model);
 
 signals:
     void editing(const QModelIndex &);
@@ -23,9 +25,10 @@ private slots:
     void moveDown();
     void clear();
     void updateList();
+    void assign(const QModelIndex &index);
 
 private:
-    void setupUi(const QString &title);
+    void setupUi();
     void connectEvents();
 
     DuListView *ui_listView;
@@ -35,8 +38,14 @@ private:
     QToolButton *ui_moveDownButton;
     QToolButton *ui_clearButton;
 
+    QAction *_addAction;
+    DuMenuView *ui_assignMenu;
+
     QAbstractItemModel *_model;
     QAbstractItemModel *_assignList;
+
+    QString _title;
+    QString _itemName;
 };
 
-#endif // DULISTMODELEDIT_H
+#endif // DULISTEDITVIEW_H

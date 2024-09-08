@@ -100,13 +100,17 @@ void RamJsonUserEditWidget::setupUi()
 
             // Password button
             if (exists()) {
-                ui_passwordButton = new QToolButton(this);
+                ui_passwordButton = new QPushButton(this);
+                ui_passwordButton->setProperty("class", "transparent");
                 ui_passwordButton->setIcon(DuIcon(":/icons/password"));
                 ui_passwordButton->setText("Change password...");
+                loginLayout->addWidget(ui_passwordButton);
 
-                ui_forgotPasswordButton = new QToolButton(this);
+                ui_forgotPasswordButton = new QPushButton(this);
+                ui_forgotPasswordButton->setProperty("class", "transparent");
                 ui_forgotPasswordButton->setIcon(DuIcon(":/icons/forgot-password"));
                 ui_forgotPasswordButton->setText("Reset password...");
+                loginLayout->addWidget(ui_forgotPasswordButton);
             }
         }
     }
@@ -119,7 +123,9 @@ void RamJsonUserEditWidget::connectEvents()
     if (ui_roleBox)
         connect(ui_roleBox, &DuComboBox::dataActivated, this, &RamJsonUserEditWidget::updateRole);
     if (ui_passwordButton)
-        connect(ui_passwordButton, &QToolButton::triggered, this, &RamJsonUserEditWidget::updatePassword);
+        connect(ui_passwordButton, &QToolButton::clicked, this, &RamJsonUserEditWidget::updatePassword);
+    if (ui_forgotPasswordButton)
+        connect(ui_forgotPasswordButton, &QToolButton::clicked, this, &RamJsonUserEditWidget::resetPassword);
     if (ui_emailButton)
         connect(ui_emailButton, &QToolButton::clicked, this, &RamJsonUserEditWidget::updateEmail);
     else if (ui_emailEdit)
@@ -136,8 +142,8 @@ void RamJsonUserEditWidget::updatePassword()
 
     QJsonObject rep = RamServerClient::i()->setPassword(
         d.value("uuid").toString(),
-        dialog.currentPassword(),
-        dialog.newPassword()
+        dialog.newPassword(),
+        dialog.currentPassword()
         );
 
     if (!rep.value("success").toBool(false)) {
@@ -145,6 +151,12 @@ void RamJsonUserEditWidget::updatePassword()
                              tr("Failed to set password"),
                              rep.value("message").toString("Unknown error")
                              );
+    }
+    else {
+        QMessageBox::information(this,
+                                 tr("Password changed"),
+                                 tr("Password successfully changed!")
+                                 );
     }
 }
 
@@ -168,6 +180,12 @@ void RamJsonUserEditWidget::updateRole(const QVariant &role)
             // Revert
             ui_roleBox->setCurrentData(_role);
             return;
+        }
+        else {
+            QMessageBox::information(this,
+                                     tr("Role changed"),
+                                     tr("Role changed!")
+                                     );
         }
     }
 
@@ -199,8 +217,21 @@ void RamJsonUserEditWidget::updateEmail()
             ui_emailEdit->setText(_email);
             return;
         }
+        else {
+            QMessageBox::information(this,
+                                     tr("E-mail changed"),
+                                     tr("E-mail successfully changed!")
+                                     );
+        }
     }
 
     _email = email;
     emitDataChanged();
+}
+
+void RamJsonUserEditWidget::resetPassword()
+{
+    QMessageBox::information(this,
+                             tr("Not implemented"),
+                             tr("You can't reset your password by yourself yet. Please contact your Ramses administrator."));
 }

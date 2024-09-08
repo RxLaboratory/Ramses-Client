@@ -2,6 +2,7 @@
 #define RAMJSONUSEREDITWIDGET_H
 
 #include "duwidgets/ducombobox.h"
+#include "qpushbutton.h"
 #include "ramjsonobjecteditwidget.h"
 #include "ramuser.h"
 
@@ -21,12 +22,13 @@ private:
     void updatePassword();
     void updateRole(const QVariant &role);
     void updateEmail();
+    void resetPassword();
 
     DuComboBox *ui_roleBox = nullptr;
     DuLineEdit *ui_emailEdit = nullptr;
     QToolButton *ui_emailButton = nullptr;
-    QToolButton *ui_passwordButton = nullptr;
-    QToolButton *ui_forgotPasswordButton = nullptr;
+    QPushButton *ui_passwordButton = nullptr;
+    QPushButton *ui_forgotPasswordButton = nullptr;
 
     bool _isSelf;
     bool _isAdmin;

@@ -3,7 +3,7 @@
 
 #include <QWizardPage>
 
-#include "duwidgets/dulistmodeledit.h"
+#include "duwidgets/dulisteditview.h"
 #include "ramjsonobjectmodel.h"
 
 class RamUsersWizardPage : public QWizardPage
@@ -22,7 +22,8 @@ private:
     void connectEvents();
 
     RamJsonObjectModel *_users;
-    DuListModelEdit *ui_userList;
+    RamJsonObjectModel *_assignList = nullptr;
+    DuListEditView *ui_userList;
 };
 
 #endif // RAMUSERSWIZARDPAGE_H

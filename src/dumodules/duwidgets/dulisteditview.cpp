@@ -1,27 +1,49 @@
-#include "dulistmodeledit.h"
+#include "dulisteditview.h"
 
 #include <QLabel>
 
 #include "duapp/duui.h"
 #include "duicon.h"
 
-DuListModelEdit::DuListModelEdit(const QString &title, QAbstractItemModel *model, QWidget *parent)
+DuListEditView::DuListEditView(const QString &title, const QString &itemName, QAbstractItemModel *model, QWidget *parent)
     : QWidget{parent},
-    _model(model)
+    _model(model),
+    _title(title),
+    _itemName(itemName)
 {
-    setupUi(title);
+    setupUi();
     connectEvents();
     updateList();
 }
 
-void DuListModelEdit::add()
+void DuListEditView::setAssignList(QAbstractItemModel *model)
+{
+    ui_assignMenu->setModel(model);
+
+    if (model) {
+        DuMenu *m = new DuMenu(this);
+        m->addAction(_addAction);
+        m->addMenu(ui_assignMenu);
+        ui_addButton->setMenu(m);
+    }
+    else {
+        QMenu *m = ui_addButton->menu();
+        if (m) m->deleteLater();
+    }
+}
+
+void DuListEditView::add()
 {
     int row = _model->rowCount();
     _model->insertRows(row, 1);
-    emit editing(_model->index(row,0));
+    QModelIndex index = _model->index(row,0);
+    // Select it
+    QItemSelectionModel *selection = ui_listView->selectionModel();
+    selection->select(index, QItemSelectionModel::ClearAndSelect);
+    emit editing(index);
 }
 
-void DuListModelEdit::remove()
+void DuListEditView::remove()
 {
     QItemSelectionModel *selection = ui_listView->selectionModel();
     if (!selection->hasSelection())
@@ -33,7 +55,7 @@ void DuListModelEdit::remove()
     }
 }
 
-void DuListModelEdit::moveUp()
+void DuListEditView::moveUp()
 {
     QItemSelectionModel *selection = ui_listView->selectionModel();
     if (!selection->hasSelection())
@@ -53,7 +75,7 @@ void DuListModelEdit::moveUp()
     }
 }
 
-void DuListModelEdit::moveDown()
+void DuListEditView::moveDown()
 {
     QItemSelectionModel *selection = ui_listView->selectionModel();
     if (!selection->hasSelection())
@@ -73,12 +95,12 @@ void DuListModelEdit::moveDown()
     }
 }
 
-void DuListModelEdit::clear()
+void DuListEditView::clear()
 {
     _model->removeRows(0, _model->rowCount());
 }
 
-void DuListModelEdit::updateList()
+void DuListEditView::updateList()
 {
     bool canMove = _model->rowCount() > 1;
     ui_moveUpButton->setEnabled(canMove);
@@ -89,7 +111,15 @@ void DuListModelEdit::updateList()
     ui_clearButton->setEnabled(canRemove);
 }
 
-void DuListModelEdit::setupUi(const QString &title)
+void DuListEditView::assign(const QModelIndex &index)
+{
+    QVariant data = index.data(Qt::EditRole);
+    int i = _model->rowCount();
+    _model->insertRows(i,1);
+    _model->setData(_model->index(i,0), data);
+}
+
+void DuListEditView::setupUi()
 {
     auto layout = DuUI::addBoxLayout(Qt::Vertical, this);
     auto topLayout = DuUI::addBoxLayout(Qt::Horizontal, layout);
@@ -106,7 +136,7 @@ void DuListModelEdit::setupUi(const QString &title)
     ui_moveDownButton->setIconSize(QSize(12,12));
     topLayout->addWidget(ui_moveDownButton);
 
-    auto titleLabel = new QLabel(title, this);
+    auto titleLabel = new QLabel(_title, this);
     titleLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
     topLayout->addWidget(titleLabel);
 
@@ -126,6 +156,7 @@ void DuListModelEdit::setupUi(const QString &title)
     ui_addButton->setText(tr("Add"));
     ui_addButton->setIcon(DuIcon(":/icons/add"));
     ui_addButton->setIconSize(QSize(12,12));
+    ui_addButton->setPopupMode(QToolButton::InstantPopup);
     topLayout->addWidget(ui_addButton);
 
     ui_listView = new DuListView(this);
@@ -135,17 +166,23 @@ void DuListModelEdit::setupUi(const QString &title)
     ui_listView->setModel(_model);
     layout->addWidget(ui_listView);
 
+    _addAction = new QAction(this);
+    _addAction->setText(tr("Create new %1").arg(_itemName));
+
+    ui_assignMenu = new DuMenuView(tr("Assign %1").arg(_itemName), this);
 }
 
-void DuListModelEdit::connectEvents()
+void DuListEditView::connectEvents()
 {
-    connect(ui_addButton, &QToolButton::clicked, this, &DuListModelEdit::add);
-    connect(ui_removeButton, &QToolButton::clicked, this, &DuListModelEdit::remove);
-    connect(ui_moveUpButton, &QToolButton::clicked, this, &DuListModelEdit::moveUp);
-    connect(ui_moveDownButton, &QToolButton::clicked, this, &DuListModelEdit::moveDown);
-    connect(ui_clearButton, &QToolButton::clicked, this, &DuListModelEdit::clear);
-    connect(ui_listView, &DuTableView::clicked, this, &DuListModelEdit::editing);
+    connect(ui_addButton, &QToolButton::clicked, this, &DuListEditView::add);
+    connect(_addAction, &QAction::triggered, this, &DuListEditView::add);
+    connect(ui_removeButton, &QToolButton::clicked, this, &DuListEditView::remove);
+    connect(ui_moveUpButton, &QToolButton::clicked, this, &DuListEditView::moveUp);
+    connect(ui_moveDownButton, &QToolButton::clicked, this, &DuListEditView::moveDown);
+    connect(ui_clearButton, &QToolButton::clicked, this, &DuListEditView::clear);
+    connect(ui_listView, &DuTableView::clicked, this, &DuListEditView::editing);
+    connect(ui_assignMenu, &DuMenuView::indexTriggered, this, &DuListEditView::assign);
 
-    connect(_model, &QAbstractItemModel::rowsInserted, this, &DuListModelEdit::updateList);
-    connect(_model, &QAbstractItemModel::rowsRemoved, this, &DuListModelEdit::updateList);
+    connect(_model, &QAbstractItemModel::rowsInserted, this, &DuListEditView::updateList);
+    connect(_model, &QAbstractItemModel::rowsRemoved, this, &DuListEditView::updateList);
 }

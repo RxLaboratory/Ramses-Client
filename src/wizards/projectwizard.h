@@ -5,7 +5,7 @@
 #include <QDateEdit>
 #include <QDoubleSpinBox>
 
-#include "duwidgets/dulistmodeledit.h"
+#include "duwidgets/dulisteditview.h"
 #include "frameratewidget.h"
 #include "ramjsonobjectmodel.h"
 #include "ramproject.h"
@@ -54,7 +54,7 @@ private:
     FramerateWidget *ui_framerateWidget;
     QDateEdit *ui_deadlineEdit;
     QDoubleSpinBox *ui_parBox;
-    DuListModelEdit *ui_stepList;
+    DuListEditView *ui_stepList;
 
     RamJsonObjectModel *_steps;
     RamJsonObjectModel *_users;

@@ -1,16 +1,12 @@
 ## Priority fixes
 
-- WIP assign existing users in team project wizard
-    - OK get from server
-    - build assing list in widget
-    - populate assign list
-    - check existing user on create project
-- assign users in projecteditwidget (disabled for non admins)
+- Check users creation/assignment
 - Assigned users not listed in projects (at least ourselves after creation, and removed if assign others)
 - Step Edit Widget broken
 - show states (Connect states to indicators in mainwindow (is team, server status & ssl, state manager)
 - offline mode if network unavailable for team projects
 - Update/refactor progressmanager (with state manager) and homepage
+- assign users in projecteditwidget (disabled for non admins)
 
 ## Other
 

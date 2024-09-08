@@ -86,6 +86,8 @@ QJsonObject RamJsonObjectEditWidget::ramObjectData() const
 
     obj.insert(RamAbstractObject::KEY_CustomSettings, ui_customSettingsEdit->toPlainText());
 
+    obj.insert(RamAbstractObject::KEY_Uuid, _uuid);
+
     return obj;
 }
 

@@ -16,6 +16,11 @@ RamUsersWizardPage::RamUsersWizardPage(RamJsonObjectModel *users, QWidget *paren
 
 void RamUsersWizardPage::initializePage()
 {
+    if (_assignList)
+        return;
+
+    _assignList = new RamJsonObjectModel(this);
+
     // List existing users from the server
     QJsonObject obj = RamServerClient::i()->getAllUsers();
     if (!obj.value("success").toBool(false)) {
@@ -27,11 +32,22 @@ void RamUsersWizardPage::initializePage()
     }
 
     const QJsonArray usersArr = obj.value("content").toArray();
-    for (const auto &userVal: usersArr) {
-        QJsonObject userObj = userVal.toObject();
-        qDebug() << userObj.value("name");
+    qDebug() << usersArr;
 
+    for (const auto &userVal: usersArr) {
+        QJsonObject serverObj = userVal.toObject();
+        qDebug() << serverObj.value("uuid");
+        QString dataStr = serverObj.value("data").toString();
+        QJsonDocument dataDoc = QJsonDocument::fromJson(dataStr.toUtf8());
+        QJsonObject userObj = dataDoc.object();
+        userObj.insert(RamObject::KEY_Uuid, serverObj.value("uuid").toString());
+        userObj.insert("role", serverObj.value("role").toString());
+        int i = _assignList->rowCount();
+        _assignList->insertRows(i, 1);
+        _assignList->setData(_assignList->index(i), userObj);
     }
+
+    ui_userList->setAssignList(_assignList);
 }
 
 void RamUsersWizardPage::editUser(const QModelIndex &index)
@@ -71,12 +87,12 @@ void RamUsersWizardPage::setupUi()
     auto layout = DuUI::createBoxLayout(Qt::Vertical);
     DuUI::centerLayout(layout, this, 200);
 
-    ui_userList = new DuListModelEdit(tr("Users"), _users, this);
+    ui_userList = new DuListEditView(tr("Users"), tr("user"), _users, this);
     layout->addWidget(ui_userList);
 }
 
 void RamUsersWizardPage::connectEvents()
 {
-    connect(ui_userList, &DuListModelEdit::editing,
+    connect(ui_userList, &DuListEditView::editing,
             this, &RamUsersWizardPage::editUser);
 }

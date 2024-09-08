@@ -62,12 +62,13 @@ SOURCES += \
     dumodules/duwidgets/duicon.cpp \
     dumodules/duwidgets/dulabel.cpp \
     dumodules/duwidgets/dulineedit.cpp \
-    dumodules/duwidgets/dulistmodeledit.cpp \
+    dumodules/duwidgets/dulisteditview.cpp \
     dumodules/duwidgets/dulistview.cpp \
     dumodules/duwidgets/dulistwidget.cpp \
     dumodules/duwidgets/dulogindialog.cpp \
     dumodules/duwidgets/dumainwindow.cpp \
     dumodules/duwidgets/dumenu.cpp \
+    dumodules/duwidgets/dumenuview.cpp \
     dumodules/duwidgets/dupassworddialog.cpp \
     dumodules/duwidgets/durichtextedit.cpp \
     dumodules/duwidgets/duscrollarea.cpp \
@@ -273,12 +274,13 @@ HEADERS += \
     dumodules/duwidgets/duicon.h \
     dumodules/duwidgets/dulabel.h \
     dumodules/duwidgets/dulineedit.h \
-    dumodules/duwidgets/dulistmodeledit.h \
+    dumodules/duwidgets/dulisteditview.h \
     dumodules/duwidgets/dulistview.h \
     dumodules/duwidgets/dulistwidget.h \
     dumodules/duwidgets/dulogindialog.h \
     dumodules/duwidgets/dumainwindow.h \
     dumodules/duwidgets/dumenu.h \
+    dumodules/duwidgets/dumenuview.h \
     dumodules/duwidgets/dupassworddialog.h \
     dumodules/duwidgets/durichtextedit.h \
     dumodules/duwidgets/duscrollarea.h \
