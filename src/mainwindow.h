@@ -122,8 +122,6 @@ private:
     DuDockWidget *ui_sequencesDockWidget;
     DuDockWidget *ui_shotsDockWidget;
     DuDockTitleWidget *ui_propertiesTitle;
-    UserEditWidget *ui_userWidget;
-    DuDockWidget *ui_userDockWidget;
 
     bool _propertiesWidgetIsTemporary = false;;
 

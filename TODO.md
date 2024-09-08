@@ -1,10 +1,14 @@
 ## Priority fixes
 
 - Check users creation/assignment
-- WIP Step Edit Widget broken
-    - reimplement JSON editor to show estim for steps
+- WIP Edit Widget
+    - toJson loadJson for RamUser
+    - show estim for steps
+    - open folder for users
 - Assigned users not listed in projects on first open (must be an issue with the order of pulling tables)
 - show states (Connect states to indicators in mainwindow (is team, server status & ssl, state manager)
+    - implement a state indicator / progress
+    - add a progress bar to home page
 - offline mode if network unavailable for team projects
 - Update/refactor progressmanager (with state manager) and homepage
 - assign users in projecteditwidget (disabled for non admins)

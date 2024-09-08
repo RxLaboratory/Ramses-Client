@@ -231,6 +231,8 @@ void RamObject::updateJsonEditor()
 
 void RamObject::loadJson(const QJsonObject &obj)
 {
+    auto b = new QSignalBlocker(this);
+
     setName(obj.value(RamAbstractObject::KEY_Name).toString());
     setShortName(obj.value(RamAbstractObject::KEY_ShortName).toString());
     setComment(obj.value(RamAbstractObject::KEY_Comment).toString());
@@ -239,6 +241,9 @@ void RamObject::loadJson(const QJsonObject &obj)
         ));
 
     setCustomSettings(obj.value(RamAbstractObject::KEY_CustomSettings).toString( ));
+
+    delete b;
+    emit dataChanged(this);
 }
 
 RamObjectModel *RamObject::createModel(RamObject::ObjectType type, QString modelName)

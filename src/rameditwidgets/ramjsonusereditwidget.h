@@ -4,7 +4,6 @@
 #include "duwidgets/ducombobox.h"
 #include "qpushbutton.h"
 #include "ramjsonobjecteditwidget.h"
-#include "ramuser.h"
 
 class RamJsonUserEditWidget : public RamJsonObjectEditWidget
 {
@@ -35,7 +34,7 @@ private:
     bool _isTeamProject;
     bool _canEditLogin;
 
-    QString _role = RamUser::ENUMVALUE_Standard;
+    QString _role;
     QString _email;
 };
 

@@ -99,18 +99,26 @@ void MainWindow::connectEvents()
 {
     // Connect events
 
-    // Progress
+    // ==== Progress ====
     connect(ProgressManager::instance(), &ProgressManager::freezeUI, this, &MainWindow::freezeUI);
 
-    // Toolbar buttons
+    // ==== Toolbar buttons ====
+
     connect(m_actionLogIn,&DuAction::triggered,
             this, [this] () { setPage(Landing); } );
     connect(m_actionLogOut, &QAction::triggered, this, []() { StateManager::i()->restart(); });
     connect(m_actionSetOnline, &QAction::triggered, this, &MainWindow::setOnlineAction);
     connect(m_actionSetOffline, &QAction::triggered, this, &MainWindow::setOfflineAction);
     connect(m_actionDatabaseSettings, &QAction::triggered, this, &MainWindow::databaseSettingsAction);
-    connect(m_actionUserProfile,&QAction::triggered, ui_userDockWidget, &DuDockWidget::show);
     connect(m_actionUserFolder,SIGNAL(triggered()), this, SLOT(revealUserFolder()));
+
+    connect(m_actionUserProfile,&QAction::triggered,
+            this, [] () {
+        RamUser *user = Ramses::i()->currentUser();
+        if (user)
+            user->edit(true);
+    });
+
     connect(m_actionAdmin,&DuAction::triggered,
             this, [this] () { setPage(Admin); } );
 
@@ -134,7 +142,8 @@ void MainWindow::connectEvents()
     connect(ui_scheduleButton,&QToolButton::triggered,
             this, [this] () { setPage(Schedule); } );
 
-    // Docks
+    // ==== Docks ====
+
     connect(m_projectAction, SIGNAL(triggered(bool)), ui_projectDockWidget, SLOT(setVisible(bool)));
     connect(ui_projectDockWidget, SIGNAL(visibilityChanged(bool)), m_projectAction, SLOT(setChecked(bool)));
 
@@ -168,7 +177,8 @@ void MainWindow::connectEvents()
     connect(m_actionSettings, &DuAction::triggered, ui_settingsDock, &DuDockWidget::setVisible);
     connect(ui_settingsDock, &DuDockWidget::visibilityChanged, m_actionSettings, &DuAction::setChecked);
 
-    // Files
+    // ==== Files ====
+
     connect(m_fileAdminAction,SIGNAL(triggered()), this, SLOT(revealAdminFolder()));
     connect(m_filePreprodAction,SIGNAL(triggered()), this, SLOT(revealPreProdFolder()));
     connect(m_fileProdAction,SIGNAL(triggered()), this, SLOT(revealProdFolder()));
@@ -180,16 +190,17 @@ void MainWindow::connectEvents()
     connect(m_fileVersionsAction,SIGNAL(triggered()), this, SLOT(revealVersionsFolder()));
     connect(m_fileTrashAction,SIGNAL(triggered()), this, SLOT(revealTrashFolder()));
 
-    // Pages
-    connect(ui_adminPage, &SettingsWidget::closeRequested, this, [this] () { setPage(Home); });
+    // ==== Other buttons ====
 
-    // Other buttons
     connect(m_actionSync, SIGNAL(triggered()), DBInterface::i(),SLOT(sync()));
     connect(m_actionFullSync, SIGNAL(triggered()), DBInterface::i(),SLOT(fullSync()));
     connect(ui_mainStack,SIGNAL(currentChanged(int)), this, SLOT(pageChanged(int)));
 
-    // Misc
+    // ==== Misc ====
+
     connect(Daemon::instance(), &Daemon::raise, this, &MainWindow::raise);
+
+    // TODO Refactor and use StateManager
 
     connect(Ramses::i(), &Ramses::ready, this, &MainWindow::ramsesReady);
     connect(Ramses::i(), &Ramses::roleChanged, this, &MainWindow::changeUserRole);
@@ -431,6 +442,8 @@ void MainWindow::changeUserRole(RamAbstractObject::UserRole role)
 
 void MainWindow::ramsesReady()
 {
+    setPage(Home);
+
     // Set user
 
     // Guaranted to exist,
@@ -444,8 +457,6 @@ void MainWindow::ramsesReady()
     m_actionLogOut->setVisible(true);
     ui_databaseButton->setVisible(true);
     ui_userMenuAction->setVisible(true);
-    ui_userWidget->setObject(user);
-    ui_userWidget->setEnabled(true);
 
     // Set Project
 
@@ -464,6 +475,8 @@ void MainWindow::ramsesReady()
     ui_pipelineMenuAction->setVisible(
         Ramses::i()->isProjectAdmin()
         );
+
+    setWindowTitle(project->name());
 }
 
 void MainWindow::freezeUI(bool f)
@@ -1088,24 +1101,6 @@ void MainWindow::setupDocks()
     ui_shotsDockWidget->setWidget( shotWidget );
     this->addDockWidget(Qt::LeftDockWidgetArea, ui_shotsDockWidget);
     ui_shotsDockWidget->hide();
-
-    // The User Profile dock
-    ui_userWidget = new UserEditWidget(this);
-
-    ui_userDockWidget = new DuDockWidget(tr("User profile"));
-    ui_userDockWidget->setWindowIcon(DuIcon(":/icons/user"));
-    ui_userDockWidget->setObjectName("userDock");
-
-    auto *userTitle = new DuDockTitleWidget(tr("User profile"), this);
-    userTitle->setObjectName("dockTitle");
-    userTitle->setIcon(":/icons/user");
-    ui_userDockWidget->setTitleBarWidget(userTitle);
-
-    ui_userDockWidget->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    ui_userDockWidget->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable );
-    ui_userDockWidget->setWidget( ui_userWidget );
-    this->addDockWidget(Qt::RightDockWidgetArea, ui_userDockWidget);
-    ui_userDockWidget->hide();
 }
 
 void MainWindow::setupToolBars()

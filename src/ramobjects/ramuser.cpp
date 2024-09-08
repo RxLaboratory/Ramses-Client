@@ -3,7 +3,6 @@
 #include "ramses.h"
 #include "ramscheduleentry.h"
 #include "ramstep.h"
-#include "usereditwidget.h"
 #include "ramdatainterface/dbinterface.h"
 
 // KEYS //
@@ -14,8 +13,6 @@ const QString RamUser::ENUMVALUE_Lead = QStringLiteral("lead");
 const QString RamUser::ENUMVALUE_Standard = QStringLiteral("standard");
 
 // STATIC //
-
-QFrame *RamUser::ui_editWidget = nullptr;
 
 QHash<QString, RamUser*> RamUser::m_existingObjects = QHash<QString, RamUser*>();
 
@@ -45,6 +42,27 @@ RamUser::RamUser(QString shortName, QString name) :
     construct();
     if (shortName == "Ramses") m_uuid = "none";
     createData();
+}
+
+QJsonObject RamUser::toJson() const
+{
+    QJsonObject obj = RamObject::toJson();
+
+    obj.insert("role", m_role );
+
+    return obj;
+}
+
+void RamUser::loadJson(const QJsonObject &obj)
+{
+    auto b = new QSignalBlocker(this);
+
+    RamObject::loadJson(obj);
+
+    setRole(obj.value("role").toString("standard"));
+
+    delete b;
+    emit dataChanged(this);
 }
 
 RamUser::RamUser(QString uuid):
@@ -144,9 +162,17 @@ QString RamUser::details() const
 
 void RamUser::edit(bool show)
 {
-    if (!ui_editWidget) ui_editWidget = createEditFrame(new UserEditWidget(this));
+    if (!ui_jsonEditWidget) {
+        ui_jsonEditWidget = new RamJsonUserEditWidget(
+            this == Ramses::i()->currentUser(),
+            Ramses::i()->isAdmin(),
+            DBInterface::i()->isTeamProject(),
+            m_uuid);
+        connect(ui_jsonEditWidget, &RamJsonUserEditWidget::dataEdited,
+                this, &RamUser::loadJson);
+    }
 
-    if (show) showEdit( ui_editWidget  );
+    if (show) showEdit( ui_jsonEditWidget );
 }
 
 // PROTECTED //

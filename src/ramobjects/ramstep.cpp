@@ -151,6 +151,8 @@ void RamStep::loadJson(const QJsonObject &obj)
     setEstimationVeryHard(obj.value(RamTemplateStep::KEY_EstimationVeryHard).toDouble( 3 ));
     setPublishSettings(obj.value(RamTemplateStep::KEY_PublishSettings).toString( ));
     setEstimationMultiplyGroup( RamAssetGroup::get(obj.value(RamStep::KEY_EstimationMultiplyGroup).toString("none")));
+
+    emit dataChanged(this);
 }
 
 RamAssetGroup *RamStep::estimationMultiplyGroup() const
@@ -472,7 +474,6 @@ QString RamStep::fileName() const
 
 void RamStep::edit(bool show)
 {
-    // Deprecated
     if (!ui_jsonEditWidget) {
         ui_jsonEditWidget = new RamJsonStepEditWidget(m_uuid);
         connect(ui_jsonEditWidget, &RamJsonStepEditWidget::dataEdited,

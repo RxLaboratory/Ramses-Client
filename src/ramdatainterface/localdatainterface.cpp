@@ -981,7 +981,7 @@ QString LocalDataInterface::getUserRole(const QString &uuid)
 void LocalDataInterface::setUserRole(const QString &uuid, const QString &role)
 {
     QString q = "UPDATE RamUser "
-                "SET role = %1 "
+                "SET role = '%1' "
                 "WHERE uuid = '%2' ;";
 
     query( q.arg(role, uuid) );

@@ -6,13 +6,15 @@
 #include "duwidgets/duicon.h"
 #include "duwidgets/dupassworddialog.h"
 #include "ramserverclient.h"
+#include "ramuser.h"
 
 RamJsonUserEditWidget::RamJsonUserEditWidget(bool isSelf, bool isAdmin, bool isTeamProject, const QString &uuid, QWidget *parent):
     RamJsonObjectEditWidget(uuid, parent),
     _isSelf(isSelf),
     _isAdmin(isAdmin),
     _isTeamProject(isTeamProject),
-    _canEditLogin((isSelf || isAdmin) && isTeamProject)
+    _canEditLogin((isSelf || isAdmin) && isTeamProject),
+    _role(RamUser::ENUMVALUE_Standard)
 {
     setupUi();
     connectEvents();

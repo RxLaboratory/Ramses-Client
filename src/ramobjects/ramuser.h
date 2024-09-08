@@ -5,6 +5,7 @@
 
 #include "ramobject.h"
 #include "ramscheduleentrymodel.h"
+#include "ramjsonusereditwidget.h"
 
 class RamStep;
 class RamScheduleEntry;
@@ -30,6 +31,9 @@ public:
 
     RamUser(QString shortName, QString name);
 
+    QJsonObject toJson() const override;
+    void loadJson(const QJsonObject &obj) override;
+
     UserRole role() const;
     bool setRole(const UserRole &role);
     bool setRole(const QString role);
@@ -48,7 +52,7 @@ protected:
     RamUser(QString uuid);
     virtual QString folderPath() const override;
 
-    static QFrame *ui_editWidget;
+    QPointer<RamJsonUserEditWidget> ui_jsonEditWidget = nullptr;
 
 private:
     void construct();
