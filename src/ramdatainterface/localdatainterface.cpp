@@ -890,7 +890,7 @@ void LocalDataInterface::saveSync(SyncData syncData)
 
         q += values.join(", ") + " ON CONFLICT(uuid) DO UPDATE SET ";
 
-        if (tableName == "RamUser") q +="`data` = excluded.data, `modified` = excluded.modified, `removed` = excluded.removed, `userName` = excluded.userName ;";
+        if (tableName == "RamUser") q +="`data` = excluded.data, `modified` = excluded.modified, `removed` = excluded.removed, `role` = excluded.role ;";
         else q += "`data` = excluded.data, `modified` = excluded.modified, `removed` = excluded.removed ;";
 
         query( q );
