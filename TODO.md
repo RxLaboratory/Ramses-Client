@@ -1,6 +1,6 @@
 ## Priority fixes
 
-- assign existing users in project wizard
+- assign existing users in team project wizard
 - assign users in projecteditwidget (disabled for non admins)
 - Assigned users not listed in projects (at least ourselves after creation, and removed if assign others)
 - Step Edit Widget broken
