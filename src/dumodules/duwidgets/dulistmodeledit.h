@@ -36,6 +36,7 @@ private:
     QToolButton *ui_clearButton;
 
     QAbstractItemModel *_model;
+    QAbstractItemModel *_assignList;
 };
 
 #endif // DULISTMODELEDIT_H

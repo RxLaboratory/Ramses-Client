@@ -247,7 +247,8 @@ SOURCES += \
     wizards/projectlistwizardpage.cpp \
     wizards/projectwizard.cpp \
     wizards/ramdatabasepathswizardpage.cpp \
-    wizards/ramobjectpropertieswizardpage.cpp
+    wizards/ramobjectpropertieswizardpage.cpp \
+    wizards/ramuserswizardpage.cpp
 
 HEADERS += \
     dumodules/dugraph/dugraph.h \
@@ -461,7 +462,8 @@ HEADERS += \
     wizards/projectlistwizardpage.h \
     wizards/projectwizard.h \
     wizards/ramdatabasepathswizardpage.h \
-    wizards/ramobjectpropertieswizardpage.h
+    wizards/ramobjectpropertieswizardpage.h \
+    wizards/ramuserswizardpage.h
 
 FORMS += \
     dumodules/duwidgets/aboutdialog.ui \

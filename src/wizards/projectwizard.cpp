@@ -10,7 +10,6 @@
 #include "ramstep.h"
 #include "ramses.h"
 #include "ramjsonstepeditwidget.h"
-#include "ramjsonusereditwidget.h"
 #include "ramserverclient.h"
 #include "ramuuid.h"
 
@@ -67,7 +66,7 @@ void ProjectWizard::done(int r)
     }
 
     RamUser *user = createLocalUser();
-    _userUuid = user->uuid();
+    setField("userUuid", user->uuid());
     // Project
     RamProject *project = createLocalProject();
     // Assign the user
@@ -101,35 +100,6 @@ void ProjectWizard::editStep(const QModelIndex &index)
         true);
 }
 
-void ProjectWizard::editUser(const QModelIndex &index)
-{
-    QJsonObject data = index.data(Qt::EditRole).toJsonObject();
-    QString uuid = data.value("uuid").toString();
-
-    auto editor = new RamJsonUserEditWidget(
-        uuid == _userUuid,
-        _isTeamProject,
-        _isTeamProject,
-        uuid,
-        this);
-
-    editor->setData(data);
-
-    connect(editor, &RamJsonUserEditWidget::dataChanged,
-            this, [this, index] (const QJsonObject &obj) {
-                _users->setData(index, obj);
-            });
-    connect(this, &ProjectWizard::destroyed,
-            editor, &RamJsonUserEditWidget::deleteLater);
-
-    // Show
-    DuUI::appMainWindow()->setPropertiesDockWidget(
-        editor,
-        tr("User"),
-        ":/icons/user",
-        true);
-}
-
 void ProjectWizard::finishProjectSetup()
 {
     disconnect(DBInterface::i(), nullptr, this, nullptr);
@@ -145,7 +115,8 @@ void ProjectWizard::finishProjectSetup()
         return;
     }
 
-    RamUser *user = RamUser::get(_userUuid);
+    QString userUuid = field(QStringLiteral("userUuid")).toString();
+    RamUser *user = RamUser::get(userUuid);
     if (!user) {
         QMessageBox::warning(
             this,
@@ -157,7 +128,7 @@ void ProjectWizard::finishProjectSetup()
     }
 
     // Set the project in the DB
-    LocalDataInterface::instance()->setCurrentProjectUser(_projectUuid, _userUuid);
+    LocalDataInterface::instance()->setCurrentProjectUser(_projectUuid, userUuid);
 
     // Create the steps
     const QVector<QJsonObject> &jsonSteps = _steps->objects();
@@ -170,13 +141,6 @@ void ProjectWizard::finishProjectSetup()
     // and accept
     this->setEnabled(true);
     QWizard::done(QWizard::Accepted);
-}
-
-void ProjectWizard::changeCurrentId(int id)
-{
-    // Get the user ID after login
-    if (id == DetailsPage && _isTeamProject)
-        _userUuid = ui_loginPage->uuid();
 }
 
 void ProjectWizard::setupUi()
@@ -195,8 +159,11 @@ void ProjectWizard::setupUi()
     setPage( SettingsPage, createProjectSettingsPage() );
 
     // Assign users
-    if (_isTeamProject)
-        setPage( UsersPage, createUsersPage() );
+    if (_isTeamProject) {
+        _users = new RamJsonObjectModel(this);
+        ui_usersPage = new RamUsersWizardPage(_users, this);
+        setPage( UsersPage, ui_usersPage );
+    }
 
     // Pipeline, steps
     setPage( PipelinePage, createPipelinePage() );
@@ -208,13 +175,8 @@ void ProjectWizard::setupUi()
 
 void ProjectWizard::connectEvents()
 {
-    connect(this, &ProjectWizard::currentIdChanged,
-            this, &ProjectWizard::changeCurrentId);
     connect(ui_stepList, &DuListModelEdit::editing,
             this, &ProjectWizard::editStep);
-    if (ui_userList)
-        connect(ui_userList, &DuListModelEdit::editing,
-                this, &ProjectWizard::editUser);
 }
 
 QWizardPage *ProjectWizard::createProjectSettingsPage()
@@ -261,22 +223,6 @@ QWizardPage *ProjectWizard::createPipelinePage()
     _steps = new RamJsonObjectModel(this);
     ui_stepList = new DuListModelEdit(tr("Production steps"), _steps, this);
     layout->addWidget(ui_stepList);
-
-    return page;
-}
-
-QWizardPage *ProjectWizard::createUsersPage()
-{
-    auto page = new QWizardPage();
-    page->setTitle(tr("Users"));
-    page->setSubTitle(tr("Assign users working on this project."));
-
-    auto layout = DuUI::createBoxLayout(Qt::Vertical);
-    DuUI::centerLayout(layout, page, 200);
-
-    _users = new RamJsonObjectModel(this);
-    ui_userList = new DuListModelEdit(tr("Users"), _users, this);
-    layout->addWidget(ui_userList);
 
     return page;
 }
@@ -334,13 +280,14 @@ QString ProjectWizard::createServerData()
     QJsonArray serverUsersArr;
     QStringList userUuids;
 
-    userUuids << _userUuid;
-    usersArr.append(_userUuid);
+    QString userUuid = field(QStringLiteral("userUuid")).toString();
+    userUuids << userUuid;
+    usersArr.append(userUuid);
 
     const QVector<QJsonObject> &jsonUsers = _users->objects();
     for(const auto &jsonUser: jsonUsers) {
         QString uuid = jsonUser.value(RamObject::KEY_Uuid).toString();
-        if (uuid != _userUuid) {
+        if (uuid != userUuid) {
             // Create a UUID
             if (uuid == "") uuid = RamUuid::generateUuidString(
                     jsonUser.value(RamObject::KEY_ShortName).toString()

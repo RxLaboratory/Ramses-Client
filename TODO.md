@@ -1,6 +1,10 @@
 ## Priority fixes
 
-- assign existing users in team project wizard
+- WIP assign existing users in team project wizard
+    - OK get from server
+    - build assing list in widget
+    - populate assign list
+    - check existing user on create project
 - assign users in projecteditwidget (disabled for non admins)
 - Assigned users not listed in projects (at least ourselves after creation, and removed if assign others)
 - Step Edit Widget broken

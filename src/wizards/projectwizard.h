@@ -14,6 +14,7 @@
 #include "wizards/loginwizardpage.h"
 #include "wizards/ramobjectpropertieswizardpage.h"
 #include "wizards/ramdatabasepathswizardpage.h"
+#include "wizards/ramuserswizardpage.h"
 
 class ProjectWizard : public QWizard
 {
@@ -35,9 +36,7 @@ protected:
 
 private slots:
     void editStep(const QModelIndex &index);
-    void editUser(const QModelIndex &index);
     void finishProjectSetup();
-    void changeCurrentId(int id);
 
 private:
     void setupUi();
@@ -45,25 +44,23 @@ private:
 
     QWizardPage *createProjectSettingsPage();
     QWizardPage *createPipelinePage();
-    QWizardPage *createUsersPage();
 
     RamObjectPropertiesWizardPage *ui_detailsPage;
     RamDatabasePathsWizardPage *ui_pathsPage;
     LoginWizardPage *ui_loginPage;
+    RamUsersWizardPage *ui_usersPage;
 
     ResolutionWidget *ui_resolutionWidget;
     FramerateWidget *ui_framerateWidget;
     QDateEdit *ui_deadlineEdit;
     QDoubleSpinBox *ui_parBox;
     DuListModelEdit *ui_stepList;
-    DuListModelEdit *ui_userList = nullptr;
 
     RamJsonObjectModel *_steps;
     RamJsonObjectModel *_users;
 
     bool _isTeamProject;
     QString _projectUuid;
-    QString _userUuid;
 
     // Utils
     bool askRemoveExistingFile(const QString &dbPath );

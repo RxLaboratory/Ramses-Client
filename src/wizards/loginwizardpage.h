@@ -9,10 +9,14 @@
 
 class LoginWizardPage : public QWizardPage
 {
+    Q_OBJECT
 public:
     LoginWizardPage(bool mustBeAdmin, QWidget *parent = nullptr);
     bool validatePage() override;
     QString uuid() const { return _uuid; }
+
+signals:
+    void uuidChanged(const QString &);
 
 private:
     void setupUi();
@@ -24,6 +28,8 @@ private:
 
     QString _uuid;
     bool _mustBeAdmin;
+
+    Q_PROPERTY(QString uuid READ uuid NOTIFY uuidChanged FINAL)
 };
 
 #endif // LOGINWIZARDPAGE_H

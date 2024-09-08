@@ -81,6 +81,7 @@ bool LoginWizardPage::validatePage()
     }
 
     _uuid = content.value("uuid").toString();
+    emit uuidChanged(_uuid);
 
     return true;
 }
@@ -107,6 +108,8 @@ void LoginWizardPage::setupUi()
     ui_passwordEdit->setEchoMode(QLineEdit::Password);
     ui_passwordEdit->setPlaceholderText(tr("Password"));
     loginLayout->addRow(tr("Password"), ui_passwordEdit);
+
+    registerField("userUuid", this, "uuid", "uuidChanged");
 }
 
 void LoginWizardPage::connectEvents()
