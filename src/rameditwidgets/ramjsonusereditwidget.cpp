@@ -74,7 +74,7 @@ void RamJsonUserEditWidget::setupUi()
         ui_roleBox = new DuComboBox(this);
         ui_roleBox->addItem(DuIcon(":/icons/admin"), "Administrator", RamUser::ENUMVALUE_Admin);
         ui_roleBox->addItem(DuIcon(":/icons/project-admin"), "Project admin", RamUser::ENUMVALUE_ProjectAdmin);
-        ui_roleBox->addItem(DuIcon(":/icons/lead"), "Administrator", RamUser::ENUMVALUE_Lead);
+        ui_roleBox->addItem(DuIcon(":/icons/lead"), "Step lead", RamUser::ENUMVALUE_Lead);
         ui_roleBox->addItem(DuIcon(":/icons/user"), "Standard user", RamUser::ENUMVALUE_Standard);
         ui_propertiesWidget->attributesLayout()->insertRow(0, tr("Role"), ui_roleBox);
         ui_roleBox->setEnabled(!_isSelf && _isAdmin);

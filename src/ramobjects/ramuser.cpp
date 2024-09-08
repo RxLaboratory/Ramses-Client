@@ -103,6 +103,7 @@ bool RamUser::setRole(const UserRole &role)
 bool RamUser::setRole(const QString role)
 {
     if (DBInterface::i()->setUserRole(m_uuid, role)) {
+        m_role = role;
         emitDataChanged();
         return true;
     }
