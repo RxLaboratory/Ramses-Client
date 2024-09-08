@@ -28,9 +28,10 @@ QJsonObject RamJsonStepEditWidget::data() const
     return obj;
 }
 
-void RamJsonStepEditWidget::setData(const QJsonObject &obj)
+void RamJsonStepEditWidget::setData(const QJsonObject &obj, const QString &uuid)
 {
     setRamObjectData(obj);
+    setUuid(uuid);
 
     ui_typeBox->setCurrentData(obj.value(RamTemplateStep::KEY_StepType).toString( RamTemplateStep::ENUMVALUE_PreProd ));
     ui_estimationTypeBox->setCurrentData(obj.value(RamTemplateStep::KEY_EstimationMethod).toString( RamTemplateStep::ENUMVALUE_Shot ));

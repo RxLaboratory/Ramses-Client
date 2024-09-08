@@ -16,9 +16,9 @@ class RamJsonStepEditWidget: public RamJsonObjectEditWidget
 {
     Q_OBJECT
 public:
-    RamJsonStepEditWidget(const QString &uuid, QWidget *parent = nullptr);
+    RamJsonStepEditWidget(const QString &uuid = "", QWidget *parent = nullptr);
     virtual QJsonObject data() const;
-    virtual void setData(const QJsonObject &obj);
+    virtual void setData(const QJsonObject &obj, const QString &uuid);
 
 private slots:
     void updateEstimationMethod();

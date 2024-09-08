@@ -12,6 +12,7 @@
 #include "ramses.h"
 #include "ramshot.h"
 #include "ramstatus.h"
+#include "ramjsonobjecteditwidget.h"
 
 // PUBLIC //
 
@@ -123,6 +124,22 @@ bool RamObject::canEdit()
     return u->role() >= m_editRole;
 }
 
+QJsonObject RamObject::toJson() const
+{
+    QJsonObject obj;
+
+    obj.insert(RamAbstractObject::KEY_Name, name() );
+    obj.insert(RamAbstractObject::KEY_ShortName, shortName());
+    obj.insert(RamAbstractObject::KEY_Comment, comment());
+    obj.insert(RamAbstractObject::KEY_Color, color().name());
+
+    obj.insert(RamAbstractObject::KEY_CustomSettings, customSettings() );
+
+    obj.insert(RamAbstractObject::KEY_Uuid, m_uuid );
+
+    return obj;
+}
+
 void RamObject::reload()
 {
     QJsonObject d = reloadData();
@@ -158,7 +175,7 @@ void RamObject::emitRestored()
     emit restored(this);
 }
 
-QFrame *RamObject::createEditFrame(ObjectEditWidget *w)
+QFrame *RamObject::createEditFrame(QWidget *w)
 {
     QFrame *f = new QFrame();
     QVBoxLayout *l = new QVBoxLayout();
@@ -172,8 +189,17 @@ void RamObject::showEdit(QWidget *w, QString title)
 {
     if (!w) return;
 
-    ObjectEditWidget *oEdit = qobject_cast<ObjectEditWidget*>( w->layout()->itemAt(0)->widget() );
-    if (oEdit) oEdit->setObject(this);
+    // Deprecated
+    auto jsonEdit = qobject_cast<RamJsonObjectEditWidget*>( w );
+    if (jsonEdit) {
+        ui_currentJsonEditor = jsonEdit;
+        updateJsonEditor();
+    }
+    // Deprecated
+    else {
+        ObjectEditWidget *oEdit = qobject_cast<ObjectEditWidget*>( w->layout()->itemAt(0)->widget() );
+        if (oEdit) oEdit->setObject(this);
+    }
 
     MainWindow *mw = (MainWindow*)GuiUtils::appMainWindow();
     if (title == "") title = this->name();
@@ -193,6 +219,20 @@ void RamObject::showEdit(QWidget *w, QString title)
     }
 
     mw->setPropertiesDockWidget( w, title, m_icon);
+}
+
+void RamObject::updateJsonEditor()
+{
+    if (!ui_currentJsonEditor)
+        return;
+
+    ui_currentJsonEditor->setData(toJson(), m_uuid);
+    qDebug() << "Set editor data" << m_uuid;
+}
+
+void RamObject::loadJson(const QJsonObject &data)
+{
+    qDebug() << "Update from editor" << data;
 }
 
 RamObjectModel *RamObject::createModel(RamObject::ObjectType type, QString modelName)
@@ -279,6 +319,9 @@ void RamObject::construct(QObject *parent)
 {
     if (!parent && m_objectType != Ramses) this->setParent(Ramses::i());
     this->setObjectName( objectTypeName() + " | " + shortName() + " (" + m_uuid + ")" );
+
+    // Update editor on data change
+    connect(this, &RamObject::dataChanged, this, &RamObject::updateJsonEditor);
 
     // Monitor db changes
     connect(LocalDataInterface::instance(), &LocalDataInterface::dataChanged, this, &RamObject::checkData);

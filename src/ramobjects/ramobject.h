@@ -6,10 +6,12 @@
 #include <QSettings>
 #include <QStringBuilder>
 #include <QMetaEnum>
+#include <QPointer>
 
 #include "qframe.h"
 #include "qjsonobject.h"
 #include "ramabstractobject.h"
+#include "ramjsonobjecteditwidget.h"
 
 class ObjectDockWidget;
 class ObjectEditWidget;
@@ -41,6 +43,9 @@ public:
     virtual RamObject *objectForColumn(QString columnUuid) const;
 
     virtual bool canEdit();
+
+    virtual QJsonObject toJson() const;
+    virtual void loadJson(const QJsonObject &obj);
 
     void emitDataChanged() override;
 
@@ -74,12 +79,14 @@ protected:
      * @brief createEditFrame sets the widget used to edit this object in the UI
      * @param w
      */
-    QFrame *createEditFrame(ObjectEditWidget *w );
+    QFrame *createEditFrame(QWidget *w );
     /**
      * @brief showEdit shows the edit widget
      * @param title
      */
     void showEdit(QWidget *w = nullptr, QString title = "");
+
+    void updateJsonEditor();
 
     // ATTRIBUTES //
 
@@ -100,6 +107,8 @@ private:
     // models and their names
     QMap<RamObjectModel*, QString> m_subModels;
     bool m_loadingModels = false;
+
+    QPointer<RamJsonObjectEditWidget> ui_currentJsonEditor;
 };
 
 #endif // RAMOBJECT_H

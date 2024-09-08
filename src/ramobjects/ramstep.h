@@ -3,6 +3,7 @@
 
 #include <QDesktopServices>
 
+#include "ramjsonstepeditwidget.h"
 #include "ramtemplatestep.h"
 #include "ramstatus.h"
 
@@ -78,7 +79,8 @@ protected:
     RamStep(QString uuid);
     virtual QString folderPath() const override;
 
-    static QFrame *ui_editWidget;
+    QPointer<RamJsonStepEditWidget> ui_jsonEditWidget = nullptr;
+    //static QFrame *ui_editWidget;
 
 private:
     void construct();

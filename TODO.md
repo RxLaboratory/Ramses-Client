@@ -1,8 +1,11 @@
 ## Priority fixes
 
 - Check users creation/assignment
+- WIP Step Edit Widget broken
+    - implement toJson and loadJson in RamObject and derived classes
+    - reimplement JSON editor to show estim for steps
+    - Later: Properties dock must delete its previous content; use qpointer in classes with property docks (search mw setPropertyDock method in code)
 - Assigned users not listed in projects (at least ourselves after creation, and removed if assign others)
-- Step Edit Widget broken
 - show states (Connect states to indicators in mainwindow (is team, server status & ssl, state manager)
 - offline mode if network unavailable for team projects
 - Update/refactor progressmanager (with state manager) and homepage
@@ -25,6 +28,7 @@
 - refactor userEditwidget
 - message "not implemented" on forgot password (usereditwidget)
 - don't user titlebars where not needed; remove duqftitlebar and use simple titlebar; remove closerequested and reinit
+- reimplement all object editors
 
 ## Project Wizard
 

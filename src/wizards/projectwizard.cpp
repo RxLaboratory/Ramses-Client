@@ -83,7 +83,7 @@ void ProjectWizard::editStep(const QModelIndex &index)
 
     auto editor = new RamJsonStepEditWidget(uuid, this);
 
-    editor->setData(data);
+    editor->setData(data, uuid);
 
     connect(editor, &RamJsonStepEditWidget::dataChanged,
             this, [this, index] (const QJsonObject &obj) {
@@ -304,6 +304,7 @@ QString ProjectWizard::createServerData()
             QJsonObject userData = jsonUser;
             userData.remove("role");
             userData.remove("email");
+            userData.remove("uuid");
             QJsonDocument dataDoc(userData);
             userObj.insert("data", QString::fromUtf8(dataDoc.toJson(QJsonDocument::Compact)) );
             serverUsersArr.append(userObj);

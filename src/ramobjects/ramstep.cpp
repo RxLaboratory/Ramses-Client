@@ -3,12 +3,12 @@
 #include "ramapplication.h"
 #include "ramasset.h"
 #include "ramassetgroup.h"
+#include "ramjsonstepeditwidget.h"
 #include "ramstate.h"
 #include "ramstatus.h"
 #include "ramnamemanager.h"
 #include "ramstatustablemodel.h"
 #include "ramworkingfolder.h"
-#include "stepeditwidget.h"
 #include "ramshot.h"
 #include "ramses.h"
 
@@ -17,8 +17,6 @@
 const QString RamStep::KEY_EstimationMultiplyGroup = QStringLiteral("estimationMultiplyGroup");
 
 // STATIC //
-
-QFrame *RamStep::ui_editWidget = nullptr;
 
 QHash<QString, RamStep*> RamStep::m_existingObjects = QHash<QString, RamStep*>();
 
@@ -437,10 +435,14 @@ QString RamStep::fileName() const
 
 void RamStep::edit(bool show)
 {
-    if (!ui_editWidget)
-        ui_editWidget = createEditFrame(new StepEditWidget());
+    // Deprecated
+    if (!ui_jsonEditWidget) {
+        ui_jsonEditWidget = new RamJsonStepEditWidget(m_uuid);
+        connect(ui_jsonEditWidget, &RamJsonStepEditWidget::dataChanged,
+                this, &RamStep::loadJson);
+    }
 
-    if (show) showEdit( ui_editWidget );
+    if (show) showEdit( ui_jsonEditWidget );
 }
 
 // PROTECTED //
