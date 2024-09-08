@@ -8,7 +8,7 @@ greaterThan(QT_MAJOR_VERSION, 5): QT += svgwidgets
 
 # On linux, it's more standard to use lower case names
 unix:!macx { TARGET = ramses }
-else { TARGET = DuME }
+else { TARGET = Ramses }
 
 TEMPLATE = app
 

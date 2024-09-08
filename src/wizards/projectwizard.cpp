@@ -149,6 +149,8 @@ void ProjectWizard::finishProjectSetup()
 
 void ProjectWizard::setupUi()
 {
+    setWizardStyle(QWizard::ClassicStyle);
+
     // Login
     if (_isTeamProject) {
         ui_loginPage = new LoginWizardPage(true, this);

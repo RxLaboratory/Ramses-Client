@@ -90,6 +90,8 @@ void JoinTeamProjectWizard::finishProjectSetup()
 
 void JoinTeamProjectWizard::setupUi()
 {
+    setWizardStyle(QWizard::ClassicStyle);
+
     // Login
     ui_loginPage = new LoginWizardPage(false, this);
     setPage(LoginPage, ui_loginPage );
