@@ -66,7 +66,7 @@ void ProjectWizard::done(int r)
     }
 
     RamUser *user = createLocalUser();
-    setField("userUuid", user->uuid());
+    _localUserUuid = user->uuid();
     // Project
     RamProject *project = createLocalProject();
     // Assign the user
@@ -115,7 +115,11 @@ void ProjectWizard::finishProjectSetup()
         return;
     }
 
-    QString userUuid = field(QStringLiteral("userUuid")).toString();
+    QString userUuid;
+    if (_isTeamProject)
+        userUuid = field(QStringLiteral("userUuid")).toString();
+    else
+        userUuid = _localUserUuid;
     RamUser *user = RamUser::get(userUuid);
     if (!user) {
         QMessageBox::warning(

@@ -61,6 +61,7 @@ private:
 
     bool _isTeamProject;
     QString _projectUuid;
+    QString _localUserUuid;
 
     // Utils
     bool askRemoveExistingFile(const QString &dbPath );
