@@ -804,39 +804,30 @@ void MainWindow::setupUi()
     ui_mainStack->addWidget(homePage);
 
     // Admin
-    ui_adminPage = new SettingsWidget("Administration", this);
-    ui_adminPage->titleBar()->setObjectName("adminToolBar");
-    ui_adminPage->showReinitButton(false);
+    ui_adminPage = new SettingsWidget(this);
     ui_mainStack->addWidget(ui_adminPage);
 
     // Admin tabs
     UserManagerWidget *userManager = new UserManagerWidget(this);
     ui_adminPage->addPage(userManager,"Users", DuIcon(":/icons/users"));
-    ui_adminPage->titleBar()->insertLeft(userManager->menuButton());
 
     ProjectManagerWidget *projectManager = new ProjectManagerWidget(this);
     ui_adminPage->addPage(projectManager, "Projects", DuIcon(":/icons/projects"));
-    ui_adminPage->titleBar()->insertLeft(projectManager->menuButton());
 
     TemplateStepManagerWidget *templateStepManager = new TemplateStepManagerWidget(this);
     ui_adminPage->addPage(templateStepManager, "Template Steps", DuIcon(":/icons/steps"));
-    ui_adminPage->titleBar()->insertLeft(templateStepManager->menuButton());
 
     TemplateAssetGroupManagerWidget *templateAssetGroupManager = new TemplateAssetGroupManagerWidget(this);
     ui_adminPage->addPage(templateAssetGroupManager, "Template Asset Groups", DuIcon(":/icons/asset-groups"));
-    ui_adminPage->titleBar()->insertLeft(templateAssetGroupManager->menuButton());
 
     StateManagerWidget *stateManager = new StateManagerWidget(this);
     ui_adminPage->addPage(stateManager, "States", DuIcon(":/icons/state"));
-    ui_adminPage->titleBar()->insertLeft(stateManager->menuButton());
 
     FileTypeManagerWidget *fileTypeManager = new FileTypeManagerWidget(this);
     ui_adminPage->addPage(fileTypeManager, "File Types", DuIcon(":/icons/files"));
-    ui_adminPage->titleBar()->insertLeft(fileTypeManager->menuButton());
 
     ApplicationManagerWidget *applicationManager = new ApplicationManagerWidget(this);
     ui_adminPage->addPage(applicationManager, "Applications", DuIcon(":/icons/applications"));
-    ui_adminPage->titleBar()->insertLeft(applicationManager->menuButton());
 
     DBManagerWidget *dbManager = new DBManagerWidget(this);
     ui_adminPage->addPage(dbManager, "Database tools", DuIcon(":/icons/applications"));

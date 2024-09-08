@@ -1,33 +1,19 @@
 #include "settingswidget.h"
 
-#include "duutils/guiutils.h"
-
-SettingsWidget::SettingsWidget(QString title, QWidget *parent) :
+SettingsWidget::SettingsWidget(QWidget *parent) :
     QWidget(parent)
 {
-    setupUi(title);
+    setupUi();
 
-    connect(m_titleBar, &DuQFTitleBar::reinitRequested, this, &SettingsWidget::reinitRequested);
-    connect(m_titleBar, &DuQFTitleBar::closeRequested, this, &SettingsWidget::closeRequested);
     connect(m_mainList, SIGNAL(currentRowChanged(int)), this, SLOT(mainList_currentRowChanged(int)));
 }
 
-void SettingsWidget::setupUi(QString title)
+void SettingsWidget::setupUi()
 {
     this->setObjectName(QStringLiteral("SettingsWidget"));
     QVBoxLayout *verticalLayout = new QVBoxLayout(this);
     verticalLayout->setContentsMargins(0, 0, 0, 0);
     verticalLayout->setSpacing(0);
-
-    // Get the mainwindow to add the titlebar
-    QMainWindow *mw = GuiUtils::appMainWindow();
-    mw->addToolBarBreak(Qt::TopToolBarArea);
-
-    m_titleBar = new DuQFTitleBar(title, false, mw);
-    mw->addToolBar(Qt::TopToolBarArea,m_titleBar);
-    //mw->insertToolBar(mw->findChild<QToolBar*>("mainToolBar"), m_titleBar);
-    m_titleBar->setFloatable(false);
-    m_titleBar->hide();
 
     QWidget *mainWidget = new QWidget(this);
     verticalLayout->addWidget(mainWidget);
@@ -73,25 +59,13 @@ void SettingsWidget::setCurrentIndex(int index)
 
 void SettingsWidget::showEvent(QShowEvent *event)
 {
-    if (!event->spontaneous()) m_titleBar->show();
     m_splitter->setSizes(QList<int>() << 200 << 1000);
     QWidget::showEvent(event);
 }
 
 void SettingsWidget::hideEvent(QHideEvent *event)
 {
-    if (!event->spontaneous()) m_titleBar->hide();
     QWidget::hideEvent(event);
-}
-
-void SettingsWidget::showReinitButton(bool show)
-{
-    m_titleBar->showReinitButton(show);
-}
-
-DuQFTitleBar *SettingsWidget::titleBar()
-{
-    return m_titleBar;
 }
 
 void SettingsWidget::mainList_currentRowChanged(int currentRow)

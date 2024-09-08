@@ -1,6 +1,6 @@
 #include "schedulemanagerwidget.h"
 
-#include "duutils/guiutils.h"
+#include "duapp/duui.h"
 #include "duwidgets/duicon.h"
 #include "progressmanager.h"
 #include "qscrollbar.h"
@@ -29,7 +29,6 @@ void ScheduleManagerWidget::showEvent(QShowEvent *event)
 {
     if (!event->spontaneous())
     {
-        ui_titleBar->show();
         changeProject();
     }
     QWidget::showEvent(event);
@@ -37,11 +36,6 @@ void ScheduleManagerWidget::showEvent(QShowEvent *event)
 
 void ScheduleManagerWidget::hideEvent(QHideEvent *event)
 {
-    if (!event->spontaneous())
-    {
-        ui_titleBar->hide();
-    }
-
     // Save filters and layout
     RamUser *user = Ramses::i()->currentUser();
     if (user)
@@ -473,25 +467,17 @@ void ScheduleManagerWidget::contextMenuRequested(QPoint p)
 
 void ScheduleManagerWidget::setupUi()
 {
-    // Get the mainwindow to add the titlebar
-    QMainWindow *mw = GuiUtils::appMainWindow();
-    mw->addToolBarBreak(Qt::TopToolBarArea);
+    auto mainLayout = DuUI::addBoxLayout(Qt::Vertical, this);
 
-    ui_titleBar = new DuQFTitleBar("Schedule",false, mw);
+    ui_titleBar = new DuQFTitleBar("Schedule",false, this);
+    ui_titleBar->showCloseButton(false);
     ui_titleBar->setObjectName("scheduleToolBar");
     ui_titleBar->showReinitButton(false);
-    mw->addToolBar(Qt::TopToolBarArea,ui_titleBar);
     ui_titleBar->setFloatable(false);
-    ui_titleBar->hide();
-
-    QVBoxLayout *mainLayout = new QVBoxLayout();
-    mainLayout->setSpacing(3);
-    mainLayout->setContentsMargins(0,0,0,0);
+    mainLayout->addWidget(ui_titleBar);
 
     ui_table = new RamScheduleTableView(this);
     mainLayout->addWidget(ui_table);
-
-    this->setLayout(mainLayout);
 
     // Title bar
 
@@ -719,7 +705,6 @@ void ScheduleManagerWidget::connectEvents()
     connect(ui_pasteEntries, &QAction::triggered, this, &ScheduleManagerWidget::pasteEntries);
     // other actions
     // other
-    connect(ui_titleBar, &DuQFTitleBar::closeRequested, this, &ScheduleManagerWidget::closeRequested);
     connect(Ramses::i(), &Ramses::ready, this, &ScheduleManagerWidget::ramsesReady);
     connect(Ramses::i(), &Ramses::roleChanged, this, &ScheduleManagerWidget::changeUserRole);
 

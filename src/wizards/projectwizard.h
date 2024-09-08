@@ -56,7 +56,7 @@ private:
     QDateEdit *ui_deadlineEdit;
     QDoubleSpinBox *ui_parBox;
     DuListModelEdit *ui_stepList;
-    DuListModelEdit *ui_userList;
+    DuListModelEdit *ui_userList = nullptr;
 
     RamJsonObjectModel *_steps;
     RamJsonObjectModel *_users;

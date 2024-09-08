@@ -212,8 +212,9 @@ void ProjectWizard::connectEvents()
             this, &ProjectWizard::changeCurrentId);
     connect(ui_stepList, &DuListModelEdit::editing,
             this, &ProjectWizard::editStep);
-    connect(ui_userList, &DuListModelEdit::editing,
-            this, &ProjectWizard::editUser);
+    if (ui_userList)
+        connect(ui_userList, &DuListModelEdit::editing,
+                this, &ProjectWizard::editUser);
 }
 
 QWizardPage *ProjectWizard::createProjectSettingsPage()

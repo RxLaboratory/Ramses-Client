@@ -16,6 +16,7 @@
 #include "projecteditwidget.h"
 
 #include "duwidgets/settingswidget.h"
+#include "duwidgets/duaction.h"
 #include "duutils/utils.h"
 #include "duwidgets/dudocktitlewidget.h"
 #include "duwidgets/dudockwidget.h"

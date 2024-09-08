@@ -1,6 +1,5 @@
 #include "pipelinewidget.h"
 
-#include "duutils/guiutils.h"
 #include "duapp/dusettings.h"
 
 #include "duwidgets/duicon.h"
@@ -14,16 +13,12 @@ PipelineWidget::PipelineWidget(QWidget *parent) :
 {
     setupUi(this);
 
-    // Get the mainwindow to add the titlebar
-    QMainWindow *mw = GuiUtils::appMainWindow();
-    mw->addToolBarBreak(Qt::TopToolBarArea);
-
-    ui_titleBar = new DuQFTitleBar("Pipeline Editor",false, mw);
+    ui_titleBar = new DuQFTitleBar("Pipeline Editor",false, this);
+    ui_titleBar->showCloseButton(false);
     ui_titleBar->setObjectName("pipelineToolBar");
     ui_titleBar->showReinitButton(false);
-    mw->addToolBar(Qt::TopToolBarArea,ui_titleBar);
     ui_titleBar->setFloatable(false);
-    ui_titleBar->hide();
+    mainLayout->addWidget(ui_titleBar);
 
     // View menu
     DuMenu *viewMenu = new DuMenu(this);
@@ -655,7 +650,6 @@ void PipelineWidget::showEvent(QShowEvent *event)
 {
     if (!event->spontaneous())
     {
-        ui_titleBar->show();
         changeProject();
     }
     QWidget::showEvent(event);
@@ -667,7 +661,6 @@ void PipelineWidget::hideEvent(QHideEvent *event)
     {
         m_nodeScene->clearSelection();
         m_nodeScene->clearFocus();
-        ui_titleBar->hide();
     }
     QWidget::hideEvent(event);
 }

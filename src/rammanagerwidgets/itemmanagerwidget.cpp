@@ -1,6 +1,5 @@
 #include "itemmanagerwidget.h"
 
-#include "duutils/guiutils.h"
 #include "duwidgets/duicon.h"
 #include "ramasset.h"
 #include "ramses.h"
@@ -8,6 +7,7 @@
 #include "ramsequence.h"
 #include "shotscreationdialog.h"
 #include "ramstatustablemodel.h"
+#include "duapp/duui.h"
 
 ItemManagerWidget::ItemManagerWidget(RamTemplateStep::Type type, QWidget *parent) : QWidget(parent)
 {   
@@ -656,16 +656,15 @@ void ItemManagerWidget::changeUserRole(RamAbstractObject::UserRole role)
 
 void ItemManagerWidget::setupUi()
 {
-    // Get the mainwindow to add the titlebar
-    QMainWindow *mw = GuiUtils::appMainWindow();
-    mw->addToolBarBreak(Qt::TopToolBarArea);
 
-    ui_titleBar = new DuQFTitleBar("Assets",false, mw);
+    auto mainLayout = DuUI::addBoxLayout(Qt::Vertical, this);
+
+    ui_titleBar = new DuQFTitleBar("Assets",false, this);
     ui_titleBar->setObjectName("assetToolBar");
     ui_titleBar->showReinitButton(false);
-    mw->addToolBar(Qt::TopToolBarArea,ui_titleBar);
+    ui_titleBar->showCloseButton(false);
     ui_titleBar->setFloatable(false);
-    ui_titleBar->hide();
+    mainLayout->addWidget(ui_titleBar);
 
     // group box
     ui_groupBox = new RamObjectComboBox(this);
@@ -904,11 +903,6 @@ void ItemManagerWidget::setupUi()
 
     ui_titleBar->insertLeft(statusButton);
 
-
-    QVBoxLayout *mainLayout = new QVBoxLayout(this);
-    mainLayout->setSpacing(3);
-    mainLayout->setContentsMargins(0,0,0,0);
-
     ui_table = new RamItemView(this);
     ui_table->setEditableObjects(false);
     ui_table->setContextMenuDisabled(true);
@@ -1050,7 +1044,6 @@ void ItemManagerWidget::connectEvents()
     // group filter
     connect(ui_groupBox, SIGNAL(currentObjectChanged(RamObject*)), this, SLOT(filter(RamObject*)));
     // other
-    connect(ui_titleBar, &DuQFTitleBar::closeRequested, this, &ItemManagerWidget::closeRequested);
     connect(Ramses::i(), &Ramses::ready, this, &ItemManagerWidget::ramsesReady);
     connect(Ramses::i(), &Ramses::roleChanged, this, &ItemManagerWidget::changeUserRole);
     connect(ui_header, SIGNAL(sort(int,Qt::SortOrder)), ui_table->filteredModel(), SLOT(resort(int,Qt::SortOrder)));

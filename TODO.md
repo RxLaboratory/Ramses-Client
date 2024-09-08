@@ -1,8 +1,7 @@
 ## Priority fixes
 
-- titlebars on bottom & fix css
-- can't create shots or assets
 - assign existing users in project wizard
+- assign users in projecteditwidget (disabled for non admins)
 - Assigned users not listed in projects (at least ourselves after creation, and removed if assign others)
 - Step Edit Widget broken
 - show states (Connect states to indicators in mainwindow (is team, server status & ssl, state manager)
@@ -25,11 +24,12 @@
 - refactor logging & console (see DuME)
 - refactor userEditwidget
 - message "not implemented" on forgot password (usereditwidget)
+- don't user titlebars where not needed; remove duqftitlebar and use simple titlebar; remove closerequested and reinit
 
 ## Project Wizard
 
-- Shots
-- Assets
+- Sequences and Shots
+- Asset groups and Assets
 
 ## New server interface
 

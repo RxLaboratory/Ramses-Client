@@ -9,17 +9,14 @@
 #include <QHideEvent>
 
 #include "duwidgets/dulistwidget.h"
-#include "duwidgets/duqftitlebar.h"
 
 class SettingsWidget : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit SettingsWidget(QString title = "Settings", QWidget *parent = nullptr);
+    explicit SettingsWidget(QWidget *parent = nullptr);
     void addPage(QWidget *ui, QString title, QIcon icon=QIcon());
-    void showReinitButton(bool show);
-    DuQFTitleBar *titleBar();
 public slots:
     void setCurrentIndex(int index);
 signals:
@@ -31,11 +28,10 @@ protected:
 private slots:
     void mainList_currentRowChanged(int currentRow);
 private:
-    void setupUi(QString title);
+    void setupUi();
     QSplitter *m_splitter;
     DuListWidget *m_mainList;
     QStackedWidget *m_mainStackWidget;
-    DuQFTitleBar *m_titleBar;
 };
 
 #endif // SETTINGSWIDGET_H
