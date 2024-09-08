@@ -973,8 +973,12 @@ QString LocalDataInterface::getUserRole(const QString &uuid)
 {
     QString q = "SELECT role FROM RamUser WHERE uuid = '%1';";
     QSqlQuery qry = query( q.arg(uuid) );
-    if (qry.first())
-        return qry.value(0).toString();
+    if (qry.first()) {
+        QString role = qry.value(0).toString();
+        if (ENCRYPT_USER_DATA)
+            role = DataCrypto::instance()->clientDecrypt(role);
+        return role;
+    }
     return "standard";
 }
 
@@ -984,7 +988,10 @@ void LocalDataInterface::setUserRole(const QString &uuid, const QString &role)
                 "SET role = '%1' "
                 "WHERE uuid = '%2' ;";
 
-    query( q.arg(role, uuid) );
+    if (ENCRYPT_USER_DATA)
+        query( q.arg(DataCrypto::instance()->clientEncrypt(role), uuid)  );
+    else
+        query( q.arg(role, uuid) );
 }
 
 void LocalDataInterface::sync(SyncData data, QString serverUuid)
