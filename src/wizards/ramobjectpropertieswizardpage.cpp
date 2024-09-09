@@ -28,8 +28,5 @@ void RamObjectPropertiesWizardPage::setupUi()
 
 void RamObjectPropertiesWizardPage::connectEvents()
 {
-    connect(ui_propertiesWidget, &RamObjectPropertiesWidget::edited,
-            this, &RamObjectPropertiesWizardPage::completeChanged);
-    connect(ui_propertiesWidget, &RamObjectPropertiesWidget::shortNameChanged,
-            this, &RamObjectPropertiesWizardPage::completeChanged);
+
 }
