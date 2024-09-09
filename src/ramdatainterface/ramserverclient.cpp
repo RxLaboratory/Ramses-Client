@@ -208,8 +208,11 @@ QJsonObject RamServerClient::setPassword(const QString &userUuid, const QString 
 {
     QJsonObject body;
     body.insert("uuid", userUuid);
-    body.insert("newPassword", newPassword);
-    body.insert("currentPassword", currentPassword);
+    body.insert("newPassword", hashPassword(newPassword));
+    if (currentPassword != "")
+        body.insert("currentPassword", hashPassword(currentPassword));
+    else
+        body.insert("currentPassword", currentPassword);
 
     Request r = buildRequest("setPassword", body);
 
