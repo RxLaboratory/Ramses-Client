@@ -477,6 +477,8 @@ void MainWindow::ramsesReady()
         );
 
     setWindowTitle(project->name());
+
+    updateWindow();
 }
 
 void MainWindow::freezeUI(bool f)
@@ -1331,6 +1333,8 @@ void MainWindow::setupToolBars()
     connect(aboutQtAction, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
 
     ui_rightToolBar->addWidget(moreButton);
+
+    updateWindow();
 }
 
 void MainWindow::setupSysTray()
