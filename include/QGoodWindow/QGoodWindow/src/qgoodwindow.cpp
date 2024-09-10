@@ -394,7 +394,7 @@ QGoodWindow::QGoodWindow(QWidget *parent, const QColor &clear_color) : QMainWind
 
     m_helper_widget = new QWidget();
 
-    //Fix bug that prevents window to close on Qt 6.
+//Fix bug that prevents window to close on Qt 6.
 #ifdef QT_VERSION_QT6
     m_helper_window = new QWindow();
     m_helper_window->setFlags(Qt::Window | Qt::FramelessWindowHint | Qt::Tool);
@@ -720,7 +720,7 @@ void QGoodWindow::setup()
 
         typedef BOOL(*tSetProcessDpiAwarenessContext)(HANDLE);
         tSetProcessDpiAwarenessContext pSetProcessDpiAwarenessContext =
-                tSetProcessDpiAwarenessContext(QLibrary::resolve("user32", "SetProcessDpiAwarenessContext"));
+            tSetProcessDpiAwarenessContext(QLibrary::resolve("user32", "SetProcessDpiAwarenessContext"));
 
         if (pSetProcessDpiAwarenessContext)
             pSetProcessDpiAwarenessContext(HANDLE(AWARENESS_CONTEXT_DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2));
@@ -2150,7 +2150,7 @@ bool QGoodWindow::eventFilter(QObject *watched, QEvent *event)
     }
 #if defined QT_VERSION_QT5 && QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
     else if (watched->metaObject()->className() == QStringLiteral("QMenu") ||
-               watched->metaObject()->className() == QStringLiteral("QComboBoxPrivateContainer"))
+             watched->metaObject()->className() == QStringLiteral("QComboBoxPrivateContainer"))
     {
         bool high_dpi = (windowHandle()->devicePixelRatio() > qreal(1));
 
@@ -2259,10 +2259,10 @@ bool QGoodWindow::eventFilter(QObject *watched, QEvent *event)
         return QMainWindow::eventFilter(watched, event);
 
     if (widget->window() != this
-        #ifdef Q_OS_LINUX
-            && widget != m_shadow
-        #endif
-            )
+#ifdef Q_OS_LINUX
+        && widget != m_shadow
+#endif
+        )
         return QMainWindow::eventFilter(watched, event);
 
     QPoint cursor_pos = QCursor::pos();
@@ -2623,7 +2623,7 @@ bool QGoodWindow::eventFilter(QObject *watched, QEvent *event)
                 case HTCLOSE:
                 {
                     if (QApplication::overrideCursor() &&
-                            QApplication::overrideCursor()->shape() == Qt::ArrowCursor)
+                        QApplication::overrideCursor()->shape() == Qt::ArrowCursor)
                         break;
 
                     QApplication::setOverrideCursor(Qt::ArrowCursor);
@@ -2960,11 +2960,11 @@ LRESULT QGoodWindow::WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
             //which means that only the title bar click and move is valid.
 
             if (lresult != HTNOWHERE
-                    && lresult != HTSYSMENU
-                    && lresult != HTMINBUTTON
-                    && lresult != HTMAXBUTTON
-                    && lresult != HTCLOSE
-                    && lresult != HTCAPTION)
+                && lresult != HTSYSMENU
+                && lresult != HTMINBUTTON
+                && lresult != HTMAXBUTTON
+                && lresult != HTCLOSE
+                && lresult != HTCAPTION)
                 lresult = HTNOWHERE;
 
             return lresult;
@@ -2972,13 +2972,13 @@ LRESULT QGoodWindow::WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
         else if (FIXED_WIDTH(gw))
         {
             if (lresult != HTNOWHERE
-                    && lresult != HTSYSMENU
-                    && lresult != HTMINBUTTON
-                    && lresult != HTMAXBUTTON
-                    && lresult != HTCLOSE
-                    && lresult != HTCAPTION
-                    && lresult != HTTOP
-                    && lresult != HTBOTTOM)
+                && lresult != HTSYSMENU
+                && lresult != HTMINBUTTON
+                && lresult != HTMAXBUTTON
+                && lresult != HTCLOSE
+                && lresult != HTCAPTION
+                && lresult != HTTOP
+                && lresult != HTBOTTOM)
                 lresult = HTNOWHERE;
 
             return lresult;
@@ -2986,13 +2986,13 @@ LRESULT QGoodWindow::WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
         else if (FIXED_HEIGHT(gw))
         {
             if (lresult != HTNOWHERE
-                    && lresult != HTSYSMENU
-                    && lresult != HTMINBUTTON
-                    && lresult != HTMAXBUTTON
-                    && lresult != HTCLOSE
-                    && lresult != HTCAPTION
-                    && lresult != HTLEFT
-                    && lresult != HTRIGHT)
+                && lresult != HTSYSMENU
+                && lresult != HTMINBUTTON
+                && lresult != HTMAXBUTTON
+                && lresult != HTCLOSE
+                && lresult != HTCAPTION
+                && lresult != HTLEFT
+                && lresult != HTRIGHT)
                 lresult = HTNOWHERE;
 
             return lresult;
@@ -4271,7 +4271,7 @@ void QGoodWindow::setCursorForCurrentPos()
     case HTCLOSE:
     {
         if (QApplication::overrideCursor() &&
-                QApplication::overrideCursor()->shape() == Qt::ArrowCursor)
+            QApplication::overrideCursor()->shape() == Qt::ArrowCursor)
             break;
 
         QApplication::setOverrideCursor(Qt::ArrowCursor);
@@ -4494,7 +4494,7 @@ qintptr QGoodWindow::ncHitTest(int pos_x, int pos_y)
     for (QSizeGrip *size_grip : findChildren<QSizeGrip*>())
     {
         if (size_grip->isEnabled() &&
-                !size_grip->window()->windowFlags().testFlag(Qt::SubWindow))
+            !size_grip->window()->windowFlags().testFlag(Qt::SubWindow))
         {
             QPoint cursor_pos_map_widget = size_grip->parentWidget()->mapFromGlobal(cursor_pos);
 
@@ -4558,11 +4558,11 @@ qintptr QGoodWindow::ncHitTest(int pos_x, int pos_y)
 
     //Hit test (HTTOPLEFT, ... HTBOTTOMRIGHT)
     qintptr hitTests[3][3] =
-    {
-        {HTTOPLEFT, on_resize_border ? HTTOP : HTCAPTION, HTTOPRIGHT},
-        {HTLEFT, HTNOWHERE, HTRIGHT},
-        {HTBOTTOMLEFT, HTBOTTOM, HTBOTTOMRIGHT},
-    };
+        {
+         {HTTOPLEFT, on_resize_border ? HTTOP : HTCAPTION, HTTOPRIGHT},
+         {HTLEFT, HTNOWHERE, HTRIGHT},
+         {HTBOTTOMLEFT, HTBOTTOM, HTBOTTOMRIGHT},
+         };
 
     return hitTests[row][col];
 }

@@ -1066,7 +1066,7 @@ void QGoodCentralWidget::updateCaptionButtonsState()
     {
         QRect rect = m_gw->titleBarButtonsRectOnMacOS();
         m_title_bar->m_left_margin_widget_place_holder->setFixedSize(
-                    rect.x() * 2 + rect.width(), rect.y() + rect.height());
+            rect.x() * 2 + rect.width(), rect.y() + rect.height());
         setIconVisibility(IconVisibilityType::IconOnLeftOfTitle);
     }
     else
