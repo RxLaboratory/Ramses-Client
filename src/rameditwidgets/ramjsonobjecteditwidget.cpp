@@ -30,6 +30,7 @@ void RamJsonObjectEditWidget::setData(const QJsonObject &obj, const QString &uui
 void RamJsonObjectEditWidget::emitEdited()
 {
     emit dataEdited(data());
+    emit dataChanged(data());
 }
 
 void RamJsonObjectEditWidget::setupUi()

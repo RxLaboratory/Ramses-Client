@@ -85,7 +85,7 @@ void ProjectWizard::editStep(const QModelIndex &index)
 
     editor->setData(data, uuid);
 
-    connect(editor, &RamJsonStepEditWidget::dataChanged,
+    connect(editor, &RamJsonStepEditWidget::dataEdited,
             this, [this, index] (const QJsonObject &obj) {
         _steps->setData(index, obj);
     });
