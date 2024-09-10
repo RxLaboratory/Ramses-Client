@@ -177,15 +177,18 @@ qint64 MediaUtils::convertToBytes(qint64 value, MediaUtils::SizeUnit from)
 QRegularExpression RegExUtils::getRegularExpression(QString name, QString replace, QString by, bool fullMatch)
 {
     QFile regExFile(":/regex/" + name );
+    QRegularExpression re;
     if (regExFile.open(QFile::ReadOnly))
     {
         QString regExStr = regExFile.readAll().trimmed();
         Q_ASSERT(regExStr != "");
         if (replace != "") regExStr = regExStr.replace(replace, by);
-        if (fullMatch) return QRegularExpression( "^" + regExStr.trimmed() + "$" );
-        return QRegularExpression( regExStr.trimmed() );
+        if (fullMatch) re = QRegularExpression( "^" + regExStr.trimmed() + "$" );
+        else re = QRegularExpression( regExStr.trimmed() );
     }
-    return QRegularExpression();
+    if (!re.isValid())
+        qDebug() << "Regular expression error:" << re.errorString();
+    return re;
 }
 
 double Interpolations::linear(double val, double fromMin, double fromMax, double toMin, double toMax)
