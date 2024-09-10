@@ -94,11 +94,11 @@ void RamObjectPropertiesWidget::connectEvents()
             this, &RamObjectPropertiesWidget::edited);
 
     connect(ui_nameEdit, &DuLineEdit::textEdited,
-            this, &RamObjectPropertiesWidget::nameChanged);
+            this, [this] () { emit nameChanged(ui_nameEdit->text()); });
     connect(ui_shortNameEdit, &DuLineEdit::textEdited,
-            this, &RamObjectPropertiesWidget::shortNameChanged);
+            this, [this] () { emit shortNameChanged(ui_shortNameEdit->text()); });
     connect(ui_commentEdit, &DuRichTextEdit::editingFinished,
-            this, &RamObjectPropertiesWidget::commentChanged);
+            this, [this] () { emit commentChanged(ui_commentEdit->toPlainText()); });
     connect(ui_colorSelector, &DuColorSelector::colorChanged,
             this, &RamObjectPropertiesWidget::colorChanged);
 

@@ -11,6 +11,27 @@ RamObjectPropertiesWizardPage::RamObjectPropertiesWizardPage(QWidget *parent):
     connectEvents();
 }
 
+bool RamObjectPropertiesWizardPage::validatePage()
+{
+    if (ui_propertiesWidget->name() == "") {
+        QMessageBox::information(this,
+                                 tr("Missing name"),
+                                 tr("The project name is empty.")
+                                 );
+        return false;
+    }
+
+    if (ui_propertiesWidget->shortName() == "") {
+        QMessageBox::information(this,
+                                 tr("Missing ID"),
+                                 tr("The ID must be set.")
+                                 );
+        return false;
+    }
+
+    return true;
+}
+
 void RamObjectPropertiesWizardPage::setupUi()
 {
     this->setTitle(tr("Project details"));
@@ -22,14 +43,11 @@ void RamObjectPropertiesWizardPage::setupUi()
     ui_propertiesWidget = new RamObjectPropertiesWidget(this);
     layout->addWidget(ui_propertiesWidget);
 
-    registerField("name*", ui_propertiesWidget, "name");
-    registerField("shortName*", ui_propertiesWidget, "shortName");
+    registerField("name", ui_propertiesWidget, "name", "nameChanged");
+    registerField("shortName", ui_propertiesWidget, "shortName", "shortNameChanged");
 }
 
 void RamObjectPropertiesWizardPage::connectEvents()
 {
-    connect(ui_propertiesWidget, &RamObjectPropertiesWidget::edited,
-            this, &RamObjectPropertiesWizardPage::completeChanged);
-    connect(ui_propertiesWidget, &RamObjectPropertiesWidget::shortNameChanged,
-            this, &RamObjectPropertiesWizardPage::completeChanged);
+
 }

@@ -10,6 +10,8 @@ class RamObjectPropertiesWizardPage : public QWizardPage
 public:
     RamObjectPropertiesWizardPage(QWidget *parent = nullptr);
 
+    virtual bool validatePage() override;
+
     QString name() const { return ui_propertiesWidget->name(); }
     QString shortName() const { return ui_propertiesWidget->shortName(); }
     QString comment() const { return ui_propertiesWidget->comment(); }

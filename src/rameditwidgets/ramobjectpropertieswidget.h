@@ -42,10 +42,10 @@ public slots:
 
 signals:
     void edited();
-    void nameChanged();
-    void shortNameChanged();
-    void commentChanged();
-    void colorChanged();
+    void nameChanged(const QString &);
+    void shortNameChanged(const QString &);
+    void commentChanged(const QString &);
+    void colorChanged(const QColor &);
 
 protected:
     void setupUi();
