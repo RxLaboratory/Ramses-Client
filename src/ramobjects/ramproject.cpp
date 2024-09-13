@@ -401,7 +401,7 @@ QVector<float> RamProject::stats(RamUser *user)
     {
         RamStep *step = RamStep::c(m_steps->get(i));
         if (!step) continue;
-        QVector<float> stepStats = step->stats(user);
+        QVector<qreal> stepStats = step->stats(user);
         s[0] = s.at(0) + stepStats.at(0);
         s[1] = s.at(1) + stepStats.at(1);
         s[2] = s.at(2) + stepStats.at(2);

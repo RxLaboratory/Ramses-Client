@@ -4,16 +4,16 @@
 #include "dbtablemodel.h"
 
 struct AssignedCount {
-    float total = 0;
-    float future = 0;
-    float past = 0;
+    qreal total = 0;
+    qreal future = 0;
+    qreal past = 0;
 };
 
 struct UserAssignedCount {
     QHash<QString, AssignedCount> stepCounts;
-    float total = 0;
-    float future = 0;
-    float past = 0;
+    qreal total = 0;
+    qreal future = 0;
+    qreal past = 0;
 };
 
 /**

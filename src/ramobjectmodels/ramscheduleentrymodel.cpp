@@ -61,6 +61,15 @@ void RamScheduleEntryModel::countAll()
 
     QDate now = QDate::currentDate();
 
+    // We need to sort the entries per row/date
+    QHash <
+        RamScheduleRow*,
+        QHash <
+            QDate,
+            QVector<RamScheduleEntry*>
+            >
+        > sortedEntries;
+
     for (int i = 0; i < this->rowCount(); i++) {
         RamScheduleEntry *entry = RamScheduleEntry::c( this->get(i) );
         if (!entry) continue;
@@ -68,30 +77,66 @@ void RamScheduleEntryModel::countAll()
         if (!entry->row()) continue;
         if (!entry->row()->user()) continue;
 
-        QString stepUuid = entry->step()->uuid();
-        QString userUuid = entry->row()->user()->uuid();
+        auto entriesByDate = sortedEntries.value(entry->row());
+        auto entries = entriesByDate.value(entry->date());
+        entries << entry;
+        entriesByDate.insert(entry->date(), entries);
+        sortedEntries.insert(entry->row(), entriesByDate);
+    }
 
-        UserAssignedCount uCount = m_userCounts.value(userUuid);
-        AssignedCount userStepCount = uCount.stepCounts.value( stepUuid );
-        AssignedCount stepCount = m_stepCounts.value(stepUuid);
+    auto it = QHashIterator<
+        RamScheduleRow*,
+        QHash <
+            QDate,
+            QVector<RamScheduleEntry*>
+            >
+        >(sortedEntries);
 
-        uCount.total += 0.5;
-        userStepCount.total += 0.5;
-        stepCount.total += 0.5;
-        if (entry->date() >= now) {
-            uCount.future += 0.5;
-            stepCount.future += 0.5;
-            userStepCount.future += 0.5;
+    while(it.hasNext()) {
+        it.next();
+
+        QString userUuid = it.key()->user()->uuid();
+        auto entriesByDate = it.value();
+
+        auto itByDate = QHashIterator<
+            QDate,
+            QVector<RamScheduleEntry*>
+            >(entriesByDate);
+
+        while(itByDate.hasNext()) {
+            itByDate.next();
+
+            const auto entries = itByDate.value();
+            auto date = itByDate.key();
+
+            qreal n = entries.count();
+            for(auto entry: entries) {
+                QString stepUuid = entry->step()->uuid();
+
+                UserAssignedCount uCount = m_userCounts.value(userUuid);
+                AssignedCount userStepCount = uCount.stepCounts.value( stepUuid );
+                AssignedCount stepCount = m_stepCounts.value(stepUuid);
+
+                qreal i = 1.0/n;
+                uCount.total += i;
+                userStepCount.total += i;
+                stepCount.total += i;
+                if (date >= now) {
+                    uCount.future += i;
+                    stepCount.future += i;
+                    userStepCount.future += i;
+                }
+                else {
+                    uCount.past += i;
+                    stepCount.past += i;
+                    userStepCount.past += i;
+                }
+
+                uCount.stepCounts.insert(stepUuid, userStepCount);
+                m_userCounts.insert(userUuid, uCount);
+                m_stepCounts.insert(stepUuid, stepCount);
+            }
         }
-        else {
-            uCount.past += 0.5;
-            stepCount.past += 0.5;
-            userStepCount.past += 0.5;
-        }
-
-        uCount.stepCounts.insert(stepUuid, userStepCount);
-        m_userCounts.insert(userUuid, uCount);
-        m_stepCounts.insert(stepUuid, stepCount);
     }
 
     emit countChanged();

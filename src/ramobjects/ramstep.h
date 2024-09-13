@@ -64,7 +64,7 @@ public:
      * @brief stats
      * @return a list of number of days <estimation, completed, scheduled, scheduled in the future>
      */
-    QVector<float> stats(RamUser *user);
+    QVector<qreal> stats(RamUser *user);
 
     void openFile(QString filePath) const;
     QSet<RamWorkingFolder> templateWorkingFolders() const;

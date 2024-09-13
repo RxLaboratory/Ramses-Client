@@ -320,14 +320,14 @@ QMap<RamStatus::Difficulty, int> RamStep::difficultyCount(RamUser *user)
     return difficulty;
 }
 
-QVector<float> RamStep::stats(RamUser *user)
+QVector<qreal> RamStep::stats(RamUser *user)
 {
     float estim = estimation();
     int completion = completionRatio();
 
     if (!user)
     {
-        return QVector<float>( { estim,
+        return QVector<qreal>( { estim,
                                  estim * completion / 100,
                                  static_cast<float>(assignedDays()),
                                  static_cast<float>(futureDays())
@@ -336,7 +336,7 @@ QVector<float> RamStep::stats(RamUser *user)
 
     RamProject *proj = project();
     if (!proj) {
-        return QVector<float>( 4 );
+        return QVector<qreal>( 4 );
     }
 
     RamScheduleEntryModel *schedule = proj->scheduleEntries();
@@ -349,7 +349,7 @@ QVector<float> RamStep::stats(RamUser *user)
     QAbstractItemModel *items;
     if (t == ShotProduction) items = proj->shots();
     else if(t == AssetProduction) items = proj->assets();
-    else return QVector<float>( {
+    else return QVector<qreal>( {
                                     0,
                                     0,
                                     uCount.total,
@@ -383,7 +383,7 @@ QVector<float> RamStep::stats(RamUser *user)
         estimation += estim;
     }
 
-    return QVector<float>( {
+    return QVector<qreal>( {
                                estimation,
                                completedDays,
                                uCount.total,

@@ -57,7 +57,7 @@ QVariant StatisticsModel::data(const QModelIndex &index, int role) const
     RamStep *step = RamStep::c( m_project->steps()->get(row) );
     if (!step) return QVariant();
 
-    QVector<float> userStats = m_statsPerStep.value(step->uuid(), QVector<float>(5));
+    QVector<qreal> userStats = m_statsPerStep.value(step->uuid(), QVector<qreal>(5));
     float estimation = userStats.at(0);
     float daysSpent = userStats.at(1);
     float assigned = userStats.at(2);
@@ -186,7 +186,7 @@ void StatisticsModel::estimationComputed()
     if (m_project)
         for (int i = 0; i < m_project->steps()->rowCount(); i++) {
             RamStep *step = RamStep::c( m_project->steps()->get(i) );
-            QVector<float> s = step->stats(m_user);
+            QVector<qreal> s = step->stats(m_user);
             s << step->latenessRatio();
             m_statsPerStep.insert(step->uuid(), s);
         }
