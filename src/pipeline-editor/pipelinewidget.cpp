@@ -198,9 +198,12 @@ PipelineWidget::PipelineWidget(QWidget *parent) :
     connect(actionReinitView, SIGNAL(triggered()), ui_nodeView, SLOT(reinitTransform()));
     connect(viewSelectedButton, SIGNAL(clicked()), ui_nodeView, SLOT(frameSelected()));
     connect(actionViewAll, SIGNAL(triggered()), ui_nodeView, SLOT(frameSelected()));
-    connect(zoomBox, SIGNAL(valueChanged(int)), ui_nodeView, SLOT(setZoom(int)));
+    connect(zoomBox, SIGNAL(valueChanging(int)), ui_nodeView, SLOT(setZoom(int)));
+    connect(ui_curvatureBox, &DuQFSpinBox::valueChanging, this, [] (int val) {
+        DuSettings::i()->set(DuSettings::UI_NodeViewCurvature,qreal(val) / 100.0);
+    });
     connect(ui_curvatureBox, &DuQFSpinBox::valueChanged, this, [] (int val) {
-        DuSettings::i()->set(DuSettings::UI_NodeViewCurvature,val);
+        DuSettings::i()->set(DuSettings::UI_NodeViewCurvature,qreal(val) / 100.0);
     });
     connect(ui_nodeView, SIGNAL(scaled(int)), zoomBox, SLOT(setValue(int)));
     connect(actionAddStep, SIGNAL(triggered()), this, SLOT(createStep()));
@@ -209,7 +212,7 @@ PipelineWidget::PipelineWidget(QWidget *parent) :
     connect(actionDeleteConnections, SIGNAL(triggered()), m_nodeScene, SLOT(removeSelectedConnections()));
     connect(actionDeleteSelection, SIGNAL(triggered()), m_nodeScene, SLOT(removeSelection()));
     connect(ui_snapButton, SIGNAL(clicked(bool)), this, SLOT(setSnapEnabled(bool)));
-    connect(ui_gridSizeBox, SIGNAL(valueChanged(int)), this, SLOT(setGridSize(int)));
+    connect(ui_gridSizeBox, SIGNAL(valueChanging(int)), this, SLOT(setGridSize(int)));
     connect(actionLayoutAll, SIGNAL(triggered()), m_nodeScene, SLOT(autoLayoutAll()));
     connect(actionLayoutAll, SIGNAL(triggered()), ui_nodeView, SLOT(frameSelected()));
     connect(actionLayoutSelected, SIGNAL(triggered()), m_nodeScene, SLOT(autoLayoutSelectedNodes()));

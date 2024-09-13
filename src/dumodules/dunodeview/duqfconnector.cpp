@@ -252,6 +252,13 @@ void DuQFConnector::setupUi()
     m_titleItem->setDefaultTextColor( QColor(51,51,51) );
     m_titleItem->setParentItem(this);
     m_padding = 5;
+
+    connect(DuSettings::i(), &DuSettings::settingChanged,
+            this, [this] (int key) {
+        if (key != DuSettings::UI_NodeViewCurvature)
+            return;
+        update();
+    });
 }
 
 void DuQFConnector::updateTitlePos()
