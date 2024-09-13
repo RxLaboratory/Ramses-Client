@@ -411,12 +411,15 @@ void ScheduleManagerWidget::pasteEntries()
     QModelIndex newIndex = ui_table->selectionModel()->currentIndex();
     QModelIndex oldIndex = m_entryClipBoard.first();
 
+    QDate newDate = newIndex.data(RamObject::Date).toDate();
+    QDate oldDate = oldIndex.data(RamObject::Date).toDate();
+
     int rowOffset = newIndex.row() - oldIndex.row();
-    int dayOffset = newIndex.column() - oldIndex.column();
+    int dayOffset = oldDate.daysTo(newDate);
 
     m_project->suspendEstimations(true);
 
-    for (const auto &index: m_entryClipBoard) {
+    for (const auto &index: qAsConst(m_entryClipBoard)) {
 
         const QVector<RamScheduleEntry*> entries = RamScheduleEntry::get(index);
         if (entries.isEmpty())
