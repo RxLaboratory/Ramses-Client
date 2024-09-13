@@ -42,6 +42,7 @@ private slots:
 
     void filterUser(RamObject *user, bool filter);
     void filterMe();
+    void filterMeAndGeneric();
     void addRow();
     void removeSelectedRows();
 
@@ -92,6 +93,7 @@ private:
     QAction *ui_removeRowAction;
     QAction *ui_clearAction;
     QAction *ui_meAction;
+    QAction *ui_meAndGenericAction;
 
     QAction *ui_monday;
     QAction *ui_tuesday;

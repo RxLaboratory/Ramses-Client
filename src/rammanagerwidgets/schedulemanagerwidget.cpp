@@ -120,9 +120,11 @@ void ScheduleManagerWidget::addEntry(RamObject *stepObj)
 
     QString name;
     QString comment;
+    QColor color;
 
     if (stepObj) {
         name = stepObj->shortName();
+        color = stepObj->color();
     }
     else {
         ScheduleEntryCreationDialog dialog(this);
@@ -132,6 +134,7 @@ void ScheduleManagerWidget::addEntry(RamObject *stepObj)
         }
         if (name == "" && comment == "")
             return;
+        color = dialog.color();
     }
 
     m_project->suspendEstimations(true);
@@ -159,8 +162,10 @@ void ScheduleManagerWidget::addEntry(RamObject *stepObj)
         auto entry = new RamScheduleEntry(name, date, scheduleRow);
         if (stepObj)
             entry->setStep(stepObj);
-        else
+        else {
             entry->setComment(comment);
+            entry->setColor(color);
+        }
     }
 
     pm->finish();
@@ -222,7 +227,7 @@ void ScheduleManagerWidget::filterMe()
     QList<QAction*> actions = ui_rowsMenu->actions();
     RamUser *u = Ramses::i()->currentUser();
 
-    for (int i = 4; i < actions.count(); i++)
+    for (int i = 5; i < actions.count(); i++)
     {
         auto scheduleRow = RamScheduleRow::c( ui_rowsMenu->objectAt(i) );
         if (!scheduleRow)
@@ -236,6 +241,22 @@ void ScheduleManagerWidget::filterMe()
             actions[i]->setChecked(false);
     }
 
+    checkRowsFilter();
+}
+
+void ScheduleManagerWidget::filterMeAndGeneric()
+{
+    filterMe();
+    const QList<QAction*> actions = ui_rowsMenu->actions();
+    for (int i = 5; i < actions.count(); i++)
+    {
+        auto scheduleRow = RamScheduleRow::c( ui_rowsMenu->objectAt(i) );
+        if (!scheduleRow)
+            continue;
+        RamUser *user = scheduleRow->user();
+        if (!user)
+            actions.at(i)->setChecked(true);
+    }
     checkRowsFilter();
 }
 
@@ -499,6 +520,9 @@ void ScheduleManagerWidget::setupUi()
     ui_meAction = new QAction("Me", this);
     ui_rowsMenu->insertAction( ui_rowsMenu->actions().at(0), ui_meAction);
 
+    ui_meAndGenericAction = new QAction("Me and generic", this);
+    ui_rowsMenu->insertAction( ui_rowsMenu->actions().at(0), ui_meAndGenericAction);
+
     ui_rowsMenu->insertSeparator( ui_rowsMenu->actions().at(0) );
 
     ui_removeRowAction = new QAction(DuIcon(":/icons/remove"), tr("Remove row"), this);
@@ -683,6 +707,7 @@ void ScheduleManagerWidget::connectEvents()
     // users & rows
     connect(ui_rowsMenu,SIGNAL(assignmentChanged(RamObject*,bool)), this, SLOT(filterUser(RamObject*,bool)));
     connect(ui_meAction,SIGNAL(triggered()), this, SLOT(filterMe()));
+    connect(ui_meAndGenericAction,SIGNAL(triggered()), this, SLOT(filterMeAndGeneric()));
     connect(ui_addRowAction, &QAction::triggered, this, &ScheduleManagerWidget::addRow);
     connect(ui_removeRowAction, &QAction::triggered, this, &ScheduleManagerWidget::removeSelectedRows);
     // batch steps
