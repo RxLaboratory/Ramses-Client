@@ -19,12 +19,12 @@ public:
     void addConnection(DuQFConnection *connection);
     /**
      * @brief Adds a connexion to the management, after checking if it is authorized. If not authorized, the connector is deleted.
-     * @param output The output slot of the parent node
-     * @param input The input slot of the child node
+     * @param from The from slot of the parent node
+     * @param to The to slot of the child node
      * @param connection The connector used for this connection
      * @return True if the connection was accepted
      */
-    DuQFConnection * addConnection(DuQFSlot *output, DuQFSlot *input);
+    DuQFConnection * addConnection(DuQFSlot *from, DuQFSlot *to);
     QSet<DuQFConnection *> connections() const;
 
 public slots:

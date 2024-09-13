@@ -12,22 +12,34 @@ void DuQFConnectionManager::addConnection(DuQFConnection *connection)
     emit newConnection(connection);
 }
 
-DuQFConnection * DuQFConnectionManager::addConnection(DuQFSlot *output, DuQFSlot *input)
+DuQFConnection * DuQFConnectionManager::addConnection(DuQFSlot *from, DuQFSlot *to)
 {
     // If input and output are the same
-    if (input == output) return nullptr;
+    if (to == from) return nullptr;
 
     // If one slot is missing
-    if (!input || !output) return nullptr;
+    if (!to || !from) return nullptr;
 
     // Won't connect two inputs or two outputs together
-    if (input->slotType() && input->slotType() == output->slotType()) return nullptr;
+    if (to->slotType() && to->slotType() == from->slotType()) return nullptr;
+
+    // Check which one is the input
+    DuQFSlot *input;
+    DuQFSlot *output;
+    if (to->slotType() == DuQFSlot::Input) {
+        input = to;
+        output = from;
+    }
+    else {
+        input = from;
+        output = to;
+    }
 
     // Check if a connection already exists with the same input/output
     foreach(DuQFConnection *c, m_connections)
     {
         if (input == c->input() && output == c->output()) return c;
-        if (input == c->input() && input->isSingleConnection()) return nullptr;
+        if (input == c->input() && output->isSingleConnection()) return nullptr;
         if (output  == c->output() && output->isSingleConnection()) return nullptr;
     }
 
