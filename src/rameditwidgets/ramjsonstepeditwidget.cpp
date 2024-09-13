@@ -61,9 +61,11 @@ void RamJsonStepEditWidget::setData(const QJsonObject &obj, const QString &uuid)
 
 void RamJsonStepEditWidget::updateUuid()
 {
+    bool e = exists();
+    QString t = ui_typeBox->currentData().toString();
 
-    if (ui_typeBox->currentData().toString() == RamTemplateStep::ENUMVALUE_Shot &&
-        exists()) {
+    if (t == RamTemplateStep::ENUMVALUE_Shot &&
+        e) {
         ui_estimationMultiplierCheckBox->setVisible(true);
         ui_estimationMultiplierBox->setVisible(true);
     }
@@ -74,10 +76,15 @@ void RamJsonStepEditWidget::updateUuid()
     }
 
     RamProject *proj =  Ramses::i()->project();
-    if (proj)
+    if (proj) {
         ui_estimationMultiplierBox->setObjectModel(
             proj->assetGroups()
             );
+        ui_userBox->setObjectModel(
+            proj->users(), "Users"
+            );
+        changeUser(ui_userBox->currentObject());
+    }
 }
 
 void RamJsonStepEditWidget::updateEstimationMethod()
@@ -87,12 +94,27 @@ void RamJsonStepEditWidget::updateEstimationMethod()
         type == RamTemplateStep::ENUMVALUE_PostProd)
     {
         ui_tabWidget->setTabEnabled(1, false);
+        ui_estimWidget->setVisible(false);
+        ui_estimLabel->setVisible(false);
         return;
     }
 
     ui_tabWidget->setTabEnabled(1, true);
+    bool e = exists();
 
-    if (type == RamTemplateStep::ENUMVALUE_Shot && exists())
+    if (type == RamStep::ENUMVALUE_Asset ||
+        type == RamStep::ENUMVALUE_Shot)
+    {
+        ui_estimWidget->setVisible(e);
+        ui_estimLabel->setVisible(e);
+    }
+    else
+    {
+        ui_estimWidget->setVisible(false);
+        ui_estimLabel->setVisible(false);
+    }
+
+    if (type == RamTemplateStep::ENUMVALUE_Shot && e)
     {
         ui_estimationMultiplierBox->setVisible(true);
         ui_estimationMultiplierCheckBox->setVisible(true);
@@ -131,7 +153,153 @@ void RamJsonStepEditWidget::updateEstimationMethod()
     ui_veryHardEdit->setSuffix(suffix);
 }
 
+void RamJsonStepEditWidget::changeUser(RamObject *userObj)
+{
+    while(ui_statesLayout->rowCount() > 0)
+        ui_statesLayout->removeRow(0);
+    while(ui_difficultiesLayout->rowCount() > 0)
+        ui_difficultiesLayout->removeRow(0);
+
+    if (!exists())
+        return;
+
+    RamStep *step = RamStep::get(uuid());
+    if (!step)
+        return;
+
+    RamStep::Type stepType = step->type();
+    if (stepType != RamStep::AssetProduction && stepType != RamStep::ShotProduction)
+        return;
+
+    RamUser *user = RamUser::c(userObj);
+
+    int completion = step->completionRatio(user);
+    ui_progressWidget->setCompletionRatio(completion);
+    if (completion > 99)
+        ui_completionLabel->setText("Finished!");
+    else {
+        ui_completionLabel->setText(
+            QString("<i>Completion: <b>%1%</b> (%2 / %3 days)</i>")
+                .arg(completion)
+                .arg(int(step->daysSpent(user)))
+                .arg(int(step->estimation(user)))
+            );
+    }
+
+    const QVector<RamStep::StateCount> stateCount = step->stateCount(user);
+    RamState *noState = Ramses::i()->noState();
+    float total = 0;
+
+    for(const auto count: stateCount) {
+        int c = count.count;
+        if (c == 0)
+            continue;
+
+        RamState *state = count.state;
+        if (state->is(noState))
+            continue;
+
+        total += c;
+    }
+
+    if (total > 0) {
+
+        ui_statesLayout->setWidget( 0, QFormLayout::LabelRole, new QLabel("<b>"+tr("States:")+"</b>") );
+
+        for(const auto count: stateCount) {
+            float c = count.count;
+            if (c == 0)
+                continue;
+
+            RamState *state = count.state;
+            if (state->is(noState))
+                continue;
+
+            QString cStr = "<b>"+QString::number(c)+"</b> ";
+            if (stepType == RamStep::AssetProduction) cStr += "assets (";
+            else cStr += "shots (";
+            cStr += QString::number(int(c/total*100)) + "%)";
+
+            auto l = new QLabel(state->name(), this);
+            l->setStyleSheet("QLabel { color: "+state->color().name() + "; }");
+            ui_statesLayout->addRow( l, new QLabel(cStr, this) );
+        }
+
+        QString cStr = "<b>"+QString::number(total)+"</b> ";
+        if (stepType == RamStep::AssetProduction) cStr += "assets";
+        else cStr += "shots";
+
+        ui_statesLayout->addRow( "Total", new QLabel(cStr, this) );
+    }
+
+    const QMap<RamStatus::Difficulty, int> difficulties = step->difficultyCount(user);
+    total = 0;
+
+    QMapIterator<RamStatus::Difficulty, int> i(difficulties);
+    while(i.hasNext()) {
+        i.next();
+        float c = i.value();
+        if (c == 0)
+            continue;
+        total += c;
+    }
+
+    if (total > 0) {
+
+        ui_difficultiesLayout->setWidget( 0, QFormLayout::LabelRole, new QLabel("<b>"+tr("Difficulty:")+"</b>") );
+
+        i.toFront();
+        while(i.hasNext()) {
+            i.next();
+            float c = i.value();
+            if (c == 0)
+                continue;
+
+            QString cStr = "<b>"+QString::number(c)+"</b> ";
+            if (stepType == RamStep::AssetProduction) cStr += "assets (";
+            else cStr += "shots (";
+            cStr += QString::number(int(c/total*100)) + "%)";
+
+            QString label;
+
+            switch(i.key()) {
+            case RamStatus::VeryEasy:
+                label = tr("Very easy");
+                break;
+            case RamStatus::Easy:
+                label = tr("Easy");
+                break;
+            case RamStatus::Medium:
+                label = tr("Medium");
+                break;
+            case RamStatus::Hard:
+                label = tr("Hard");
+                break;
+            case RamStatus::VeryHard:
+                label = tr("Very hard");
+                break;
+            }
+
+            auto l = new QLabel(label, this);
+            ui_difficultiesLayout->addRow( l, new QLabel(cStr, this) );
+        }
+
+        QString cStr = "<b>"+QString::number(total)+"</b> ";
+        if (stepType == RamStep::AssetProduction) cStr += "assets";
+        else cStr += "shots";
+
+        ui_difficultiesLayout->addRow( "Total", new QLabel(cStr, this) );
+    }
+}
+
 void RamJsonStepEditWidget::setupUi()
+{
+    setupMainTab();
+    setupEstimTab();
+    setupPublishTab();
+}
+
+void RamJsonStepEditWidget::setupMainTab()
 {
     ui_typeBox = new DuComboBox(this);
     ui_typeBox->addItem(DuIcon(":/icons/project"), "        Pre-Production", RamTemplateStep::ENUMVALUE_PreProd);
@@ -140,8 +308,50 @@ void RamJsonStepEditWidget::setupUi()
     ui_typeBox->addItem(DuIcon(":/icons/film"), "        Post-Production", RamTemplateStep::ENUMVALUE_PostProd);
     ui_propertiesWidget->attributesLayout()->insertRow(0, tr("Type"), ui_typeBox);
 
-    ui_propertiesWidget->mainLayout()->addStretch(1);
+    auto mainLayout = ui_propertiesWidget->mainLayout();
 
+    ui_estimLabel = new QLabel(
+        "<b>"+tr("Estimations")+"</b>"
+        );
+    mainLayout->addWidget(ui_estimLabel);
+
+    auto estimLayout = DuUI::createBoxLayout(Qt::Vertical);
+    ui_estimWidget = DuUI::addBlock(estimLayout, mainLayout);
+
+    estimLayout->addWidget( new QLabel(
+        "<b>"+tr("Status")+"</b>"
+        ) );
+
+    ui_userBox = new RamObjectComboBox(this);
+    estimLayout->addWidget(ui_userBox);
+
+    ui_completionWidget = new QWidget(this);
+    estimLayout->addWidget(ui_completionWidget);
+
+    auto completionLayout = DuUI::addBoxLayout(Qt::Vertical, estimLayout);
+
+    ui_progressWidget = new ProgressWidget(this);
+    completionLayout->addWidget(ui_progressWidget);
+
+    ui_completionLabel = new QLabel(this);
+    completionLayout->addWidget(ui_completionLabel);
+    completionLayout->setAlignment(ui_completionLabel, Qt::AlignCenter);
+
+    ui_statesWidget = new QWidget(ui_tabWidget);
+    ui_statesWidget->setProperty("class", "transparent");
+    ui_statesLayout = new QFormLayout(ui_statesWidget);
+    estimLayout->addWidget(ui_statesWidget);
+
+    ui_difficultiesWidget = new QWidget(ui_tabWidget);
+    ui_difficultiesWidget->setProperty("class", "transparent");
+    ui_difficultiesLayout = new QFormLayout(ui_difficultiesWidget);
+    estimLayout->addWidget(ui_difficultiesWidget);
+
+    mainLayout->addStretch(1);
+}
+
+void RamJsonStepEditWidget::setupEstimTab()
+{
     auto estimWidget = new QWidget(this);
     ui_tabWidget->insertTab(1, estimWidget, DuIcon(":/icons/stats"), "");
     ui_tabWidget->setTabToolTip(1, tr("Estimations"));
@@ -149,8 +359,8 @@ void RamJsonStepEditWidget::setupUi()
     auto estimLayout = DuUI::addBoxLayout(Qt::Vertical, estimWidget);
 
     estimLayout->addWidget(new QLabel("<b>" +
-                                        tr("Estimations") +
-                                        "</b>"));
+                                      tr("Estimations") +
+                                      "</b>"));
 
     auto estimationLayout = DuUI::createFormLayout();
     DuUI::addBlock(estimationLayout, estimLayout);
@@ -204,7 +414,10 @@ void RamJsonStepEditWidget::setupUi()
     estimationLayout->addRow(ui_estimationMultiplierCheckBox, ui_estimationMultiplierBox);
 
     estimLayout->addStretch(1);
+}
 
+void RamJsonStepEditWidget::setupPublishTab()
+{
     auto publishWidget = new QWidget(this);
     ui_tabWidget->addTab(publishWidget, DuIcon(":/icons/settings"), "");
     ui_tabWidget->setTabToolTip(3, tr("Publish settings"));
@@ -253,4 +466,6 @@ void RamJsonStepEditWidget::connectEvents()
 
     connect(ui_estimationMultiplierBox, &RamObjectComboBox::dataActivated,
             this, &RamJsonObjectEditWidget::emitEdited);
+
+    connect(ui_userBox, &RamObjectComboBox::currentObjectChanged, this, &RamJsonStepEditWidget::changeUser);
 }

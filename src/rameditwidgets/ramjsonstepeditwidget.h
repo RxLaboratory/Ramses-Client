@@ -11,6 +11,7 @@
 
 #include "duwidgets/autoselectdoublespinbox.h"
 #include "duwidgets/ducombobox.h"
+#include "progresswidget.h"
 #include "ramjsonobjecteditwidget.h"
 #include "ramobjectcombobox.h"
 
@@ -27,9 +28,13 @@ protected:
 
 private slots:
     void updateEstimationMethod();
+    void changeUser(RamObject *userObj);
 
 private:
     void setupUi();
+    void setupMainTab();
+    void setupEstimTab();
+    void setupPublishTab();
     void connectEvents();
 
     DuComboBox *ui_typeBox;
@@ -43,6 +48,17 @@ private:
     AutoSelectDoubleSpinBox *ui_veryHardEdit;
     QCheckBox *ui_estimationMultiplierCheckBox;
     RamObjectComboBox *ui_estimationMultiplierBox;
+
+    QWidget *ui_estimWidget;
+    QLabel *ui_estimLabel;
+    RamObjectComboBox *ui_userBox;
+    QWidget *ui_completionWidget;
+    ProgressWidget *ui_progressWidget;
+    QLabel *ui_completionLabel;
+    QWidget *ui_statesWidget;
+    QWidget *ui_difficultiesWidget;
+    QFormLayout *ui_statesLayout;
+    QFormLayout *ui_difficultiesLayout;
 
 };
 
