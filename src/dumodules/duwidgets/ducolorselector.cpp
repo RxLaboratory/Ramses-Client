@@ -1,9 +1,9 @@
 #include "ducolorselector.h"
 
 #include "duwidgets/duicon.h"
-#include "duapp/duui.h"
 #include "qcolordialog.h"
 #include "qtoolbutton.h"
+#include "duapp/duui.h"
 
 DuColorSelector::DuColorSelector(QWidget *parent) : QWidget(parent)
 {
@@ -38,6 +38,7 @@ void DuColorSelector::selectColor()
         m_color = cd.selectedColor();
         ui_colorEdit->setText(m_color.name());
         updateColorEditStyle();
+        emit colorEdited(m_color);
     }
     this->setEnabled(true);
 }
@@ -46,9 +47,7 @@ void DuColorSelector::setupUi()
 {
     this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
-    QHBoxLayout *colorLayout = new QHBoxLayout(this);
-    colorLayout->setSpacing(3);
-    colorLayout->setContentsMargins(0,0,0,0);
+    QBoxLayout *colorLayout = DuUI::addBoxLayout(Qt::Horizontal, this);
 
     ui_colorEdit = new DuLineEdit(this);
     colorLayout->addWidget(ui_colorEdit);
@@ -61,8 +60,11 @@ void DuColorSelector::setupUi()
 
 void DuColorSelector::connectEvents()
 {
-    connect(ui_colorEdit, SIGNAL(editingFinished()), this, SLOT(updateColorEditStyle()));
-    connect(ui_colorButton, SIGNAL(clicked()), this, SLOT(selectColor()));
+    connect(ui_colorEdit, &DuLineEdit::editingFinished, this, &DuColorSelector::updateColorEditStyle);
+    connect(ui_colorEdit, &DuLineEdit::editingFinished, this, [this]() {
+        emit colorEdited(m_color);
+    });
+    connect(ui_colorButton, &QToolButton::clicked, this, &DuColorSelector::selectColor);
 }
 
 const QColor &DuColorSelector::color() const

@@ -90,7 +90,7 @@ void RamObjectPropertiesWidget::connectEvents()
             this, &RamObjectPropertiesWidget::edited);
     connect(ui_commentEdit, &DuRichTextEdit::editingFinished,
             this, &RamObjectPropertiesWidget::edited);
-    connect(ui_colorSelector, &DuColorSelector::colorChanged,
+    connect(ui_colorSelector, &DuColorSelector::colorEdited,
             this, &RamObjectPropertiesWidget::edited);
 
     connect(ui_nameEdit, &DuLineEdit::textEdited,

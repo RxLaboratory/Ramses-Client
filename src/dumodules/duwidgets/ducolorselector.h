@@ -14,7 +14,10 @@ public:
     void setColor(const QColor &newColor);
 
 signals:
+    // Emited programatically
     void colorChanged(QColor);
+    // Only on user interaction
+    void colorEdited(QColor);
 
 private slots:
     void updateColorEditStyle();

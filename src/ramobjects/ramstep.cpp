@@ -123,7 +123,7 @@ QJsonObject RamStep::toJson() const
     obj.insert(RamTemplateStep::KEY_EstimationMethod, getData(KEY_EstimationMethod).toString(ENUMVALUE_Shot) );
 
     auto group = estimationMultiplyGroup();
-    QString groupUuid = "none";
+    QString groupUuid = ENUMVALUE_None;
     if (group)
         groupUuid = group->uuid();
 
@@ -140,7 +140,7 @@ QJsonObject RamStep::toJson() const
 
 void RamStep::loadJson(const QJsonObject &obj)
 {
-    RamObject::loadJson(obj);
+    beginLoadJson(obj);
 
     setType(obj.value(RamTemplateStep::KEY_StepType).toString( RamTemplateStep::ENUMVALUE_PreProd ));
     setEstimationMethod(obj.value(RamTemplateStep::KEY_EstimationMethod).toString( RamTemplateStep::ENUMVALUE_Shot ));
@@ -150,9 +150,12 @@ void RamStep::loadJson(const QJsonObject &obj)
     setEstimationHard(obj.value(RamTemplateStep::KEY_EstimationHard).toDouble( 2 ));
     setEstimationVeryHard(obj.value(RamTemplateStep::KEY_EstimationVeryHard).toDouble( 3 ));
     setPublishSettings(obj.value(RamTemplateStep::KEY_PublishSettings).toString( ));
-    setEstimationMultiplyGroup( RamAssetGroup::get(obj.value(RamStep::KEY_EstimationMultiplyGroup).toString("none")));
+    QString groupUuid = obj.value(RamStep::KEY_EstimationMultiplyGroup).toString(ENUMVALUE_None);
+    if (groupUuid == "")
+        groupUuid = ENUMVALUE_None;
+    insertData(KEY_EstimationMultiplyGroup, groupUuid );
 
-    emit dataChanged(this);
+    endLoadJson();
 }
 
 RamAssetGroup *RamStep::estimationMultiplyGroup() const

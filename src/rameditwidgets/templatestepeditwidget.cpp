@@ -166,7 +166,7 @@ void TemplateStepEditWidget::setupUi()
     QLabel *colorLabel = new QLabel("Color", this);
     ui_mainFormLayout->addWidget(colorLabel, 4, 0);
 
-    ui_colorSelector = new DuQFColorSelector(this);
+    ui_colorSelector = new DuColorSelector(this);
     ui_mainFormLayout->addWidget(ui_colorSelector, 4, 1);
 
     ui_estimationLabel = new QLabel("Estimation", this);

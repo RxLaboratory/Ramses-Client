@@ -3,7 +3,7 @@
 
 #include "objecteditwidget.h"
 #include "objectlistwidget.h"
-#include "duwidgets/duqfcolorselector.h"
+#include "duwidgets/ducolorselector.h"
 #include "ramsequence.h"
 #include "resolutionwidget.h"
 #include "frameratewidget.h"
@@ -38,7 +38,7 @@ private:
     void setupUi();
     void connectEvents();
 
-    DuQFColorSelector *ui_colorSelector;
+    DuColorSelector *ui_colorSelector;
     QCheckBox *ui_resolutionBox;
     QCheckBox *ui_framerateBox;
     ResolutionWidget *ui_resolutionWidget;

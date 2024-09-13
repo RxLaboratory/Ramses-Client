@@ -134,7 +134,6 @@ SOURCES += \
     dumodules/duutils/qtransposeproxymodel.cpp \
     dumodules/duutils/simplecrypt.cpp \
     dumodules/duwidgets/duqfautosizetoolbutton.cpp \
-    dumodules/duwidgets/duqfcolorselector.cpp \
     dumodules/duwidgets/duqfelidedlabel.cpp \
     dumodules/duwidgets/duqffilelist.cpp \
     dumodules/duwidgets/duqfsearchedit.cpp \
@@ -350,7 +349,6 @@ HEADERS += \
     dumodules/duutils/qtransposeproxymodel.h \
     dumodules/duutils/simplecrypt.h \
     dumodules/duwidgets/duqfautosizetoolbutton.h \
-    dumodules/duwidgets/duqfcolorselector.h \
     dumodules/duwidgets/duqfelidedlabel.h \
     dumodules/duwidgets/duqffilelist.h \
     dumodules/duwidgets/duqfsearchedit.h \

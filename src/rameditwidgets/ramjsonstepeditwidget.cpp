@@ -2,8 +2,8 @@
 
 #include "duwidgets/duicon.h"
 #include "duapp/duui.h"
-
-#include "ramtemplatestep.h"
+#include "ramstep.h"
+#include "ramses.h"
 
 RamJsonStepEditWidget::RamJsonStepEditWidget(const QString &uuid, QWidget *parent):
     RamJsonObjectEditWidget(uuid, parent)
@@ -24,7 +24,15 @@ QJsonObject RamJsonStepEditWidget::data() const
     obj.insert(RamTemplateStep::KEY_EstimationHard, ui_hardEdit->value());
     obj.insert(RamTemplateStep::KEY_EstimationVeryHard, ui_veryHardEdit->value());
     obj.insert(RamTemplateStep::KEY_PublishSettings, ui_publishSettingsEdit->toPlainText());
+    obj.insert(RamTemplateStep::KEY_PublishSettings, ui_publishSettingsEdit->toPlainText());
 
+    QString mGroup = RamTemplateStep::ENUMVALUE_None;
+    if (ui_estimationMultiplierCheckBox->isChecked() &&
+        ui_typeBox->currentData().toString() == RamTemplateStep::ENUMVALUE_Shot &&
+        exists()) {
+        mGroup = ui_estimationMultiplierBox->currentUuid();
+    }
+    obj.insert(RamStep::KEY_EstimationMultiplyGroup, mGroup);
     return obj;
 }
 
@@ -44,19 +52,55 @@ void RamJsonStepEditWidget::setData(const QJsonObject &obj, const QString &uuid)
 
     updateEstimationMethod();
 
+    QString mGroup = obj.value(RamStep::KEY_EstimationMultiplyGroup).toString(RamStep::ENUMVALUE_None);
+    ui_estimationMultiplierBox->setObject( mGroup );
+    ui_estimationMultiplierCheckBox->setChecked( mGroup != RamStep::ENUMVALUE_None );
+
     emit dataChanged(data());
+}
+
+void RamJsonStepEditWidget::updateUuid()
+{
+
+    if (ui_typeBox->currentData().toString() == RamTemplateStep::ENUMVALUE_Shot &&
+        exists()) {
+        ui_estimationMultiplierCheckBox->setVisible(true);
+        ui_estimationMultiplierBox->setVisible(true);
+    }
+    else
+    {
+        ui_estimationMultiplierCheckBox->setVisible(false);
+        ui_estimationMultiplierBox->setVisible(false);
+    }
+
+    RamProject *proj =  Ramses::i()->project();
+    if (proj)
+        ui_estimationMultiplierBox->setObjectModel(
+            proj->assetGroups()
+            );
 }
 
 void RamJsonStepEditWidget::updateEstimationMethod()
 {
-    if (ui_typeBox->currentData() == RamTemplateStep::ENUMVALUE_PreProd ||
-        ui_typeBox->currentData() == RamTemplateStep::ENUMVALUE_PostProd)
+    QString type = ui_typeBox->currentData().toString();
+    if (type == RamTemplateStep::ENUMVALUE_PreProd ||
+        type == RamTemplateStep::ENUMVALUE_PostProd)
     {
         ui_tabWidget->setTabEnabled(1, false);
         return;
     }
 
     ui_tabWidget->setTabEnabled(1, true);
+
+    if (type == RamTemplateStep::ENUMVALUE_Shot && exists())
+    {
+        ui_estimationMultiplierBox->setVisible(true);
+        ui_estimationMultiplierCheckBox->setVisible(true);
+    }
+    else {
+        ui_estimationMultiplierBox->setVisible(false);
+        ui_estimationMultiplierCheckBox->setVisible(false);
+    }
 
     QString suffix;
 
@@ -153,6 +197,12 @@ void RamJsonStepEditWidget::setupUi()
     ui_veryHardEdit->setValue(3);
     estimationLayout->addRow(tr("Very hard"),ui_veryHardEdit);
 
+    ui_estimationMultiplierCheckBox = new QCheckBox("Multiply by", this);
+    ui_estimationMultiplierCheckBox->setToolTip("Multiply estimation by the number of assets in the specific asset group.");
+    ui_estimationMultiplierBox = new RamObjectComboBox(this);
+    ui_estimationMultiplierBox->setEditable(false);
+    estimationLayout->addRow(ui_estimationMultiplierCheckBox, ui_estimationMultiplierBox);
+
     estimLayout->addStretch(1);
 
     auto publishWidget = new QWidget(this);
@@ -194,5 +244,13 @@ void RamJsonStepEditWidget::connectEvents()
     connect(ui_hardEdit, &AutoSelectDoubleSpinBox::editingFinished,
             this, &RamJsonObjectEditWidget::emitEdited);
     connect(ui_veryHardEdit, &AutoSelectDoubleSpinBox::editingFinished,
+            this, &RamJsonObjectEditWidget::emitEdited);
+
+    connect(ui_estimationMultiplierCheckBox, &QCheckBox::clicked,
+            this, &RamJsonStepEditWidget::emitEdited);
+    connect(ui_estimationMultiplierCheckBox, &QCheckBox::toggled,
+            ui_estimationMultiplierBox, &RamObjectComboBox::setEnabled);
+
+    connect(ui_estimationMultiplierBox, &RamObjectComboBox::dataActivated,
             this, &RamJsonObjectEditWidget::emitEdited);
 }

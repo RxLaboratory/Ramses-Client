@@ -401,7 +401,7 @@ void StepEditWidget::setupUi()
     QLabel *colorLabel = new QLabel("Color", this);
     appaeranceLayout->addWidget(colorLabel, 1, 0);
 
-    ui_colorSelector = new DuQFColorSelector(this);
+    ui_colorSelector = new DuColorSelector(this);
     appaeranceLayout->addWidget(ui_colorSelector, 1, 1);
 
     auto estimWidget = new QWidget(this);

@@ -11,7 +11,7 @@
 #include "duwidgets/autoselectdoublespinbox.h"
 #include "objecteditwidget.h"
 #include "duwidgets/duqffolderdisplaywidget.h"
-#include "duwidgets/duqfcolorselector.h"
+#include "duwidgets/ducolorselector.h"
 #include "objectlistwidget.h"
 #include "progresswidget.h"
 
@@ -73,7 +73,7 @@ private:
     DuQFFolderDisplayWidget *ui_folderWidget;
     QCheckBox *ui_estimationMultiplierCheckBox;
     RamObjectComboBox *ui_estimationMultiplierBox;
-    DuQFColorSelector *ui_colorSelector;
+    DuColorSelector *ui_colorSelector;
 
     ObjectListWidget *m_applicationList;
 };

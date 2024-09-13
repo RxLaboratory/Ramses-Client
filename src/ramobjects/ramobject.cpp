@@ -140,6 +140,12 @@ QJsonObject RamObject::toJson() const
     return obj;
 }
 
+void RamObject::loadJson(const QJsonObject &obj)
+{
+    beginLoadJson(obj);
+    endLoadJson();
+}
+
 void RamObject::reload()
 {
     QJsonObject d = reloadData();
@@ -158,6 +164,28 @@ RamObject::RamObject(QString uuid, ObjectType type, QObject *parent):
 QJsonObject RamObject::reloadData()
 {
     return data();
+}
+
+void RamObject::beginLoadJson(const QJsonObject &obj)
+{
+    blockSignals(true);
+
+    setName(obj.value(RamAbstractObject::KEY_Name).toString());
+    setShortName(obj.value(RamAbstractObject::KEY_ShortName).toString());
+    setComment(obj.value(RamAbstractObject::KEY_Comment).toString());
+    setColor(QColor(
+        obj.value(RamAbstractObject::KEY_Color).toString(RamAbstractObject::DEFAULT_Color)
+        ));
+
+    setCustomSettings(obj.value(RamAbstractObject::KEY_CustomSettings).toString( ));
+}
+
+void RamObject::endLoadJson()
+{
+    blockSignals(false);
+    _blockEditorUpdate = true;
+    emitDataChanged();
+    _blockEditorUpdate = false;
 }
 
 void RamObject::emitDataChanged()
@@ -189,7 +217,6 @@ void RamObject::showEdit(QWidget *w, QString title)
 {
     if (!w) return;
 
-    // Deprecated
     auto jsonEdit = qobject_cast<RamJsonObjectEditWidget*>( w );
     if (jsonEdit) {
         ui_currentJsonEditor = jsonEdit;
@@ -223,27 +250,11 @@ void RamObject::showEdit(QWidget *w, QString title)
 
 void RamObject::updateJsonEditor()
 {
-    if (!ui_currentJsonEditor)
+    if (!ui_currentJsonEditor ||
+        _blockEditorUpdate)
         return;
 
     ui_currentJsonEditor->setData(toJson(), m_uuid);
-}
-
-void RamObject::loadJson(const QJsonObject &obj)
-{
-    auto b = new QSignalBlocker(this);
-
-    setName(obj.value(RamAbstractObject::KEY_Name).toString());
-    setShortName(obj.value(RamAbstractObject::KEY_ShortName).toString());
-    setComment(obj.value(RamAbstractObject::KEY_Comment).toString());
-    setColor(QColor(
-        obj.value(RamAbstractObject::KEY_Color).toString(RamAbstractObject::DEFAULT_Color)
-        ));
-
-    setCustomSettings(obj.value(RamAbstractObject::KEY_CustomSettings).toString( ));
-
-    delete b;
-    emit dataChanged(this);
 }
 
 RamObjectModel *RamObject::createModel(RamObject::ObjectType type, QString modelName)

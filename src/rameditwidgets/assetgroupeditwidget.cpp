@@ -66,7 +66,7 @@ void AssetGroupEditWidget::setupUi()
 
     QLabel *colorLabel = new QLabel("Color", this);
     ui_mainFormLayout->addWidget(colorLabel, 3, 0);
-    ui_colorSelector = new DuQFColorSelector(this);
+    ui_colorSelector = new DuColorSelector(this);
     ui_mainFormLayout->addWidget(ui_colorSelector, 3, 1);
 
     ui_assetsList = new ObjectListWidget(true, RamUser::ProjectAdmin, this);

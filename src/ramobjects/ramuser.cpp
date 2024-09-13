@@ -55,14 +55,9 @@ QJsonObject RamUser::toJson() const
 
 void RamUser::loadJson(const QJsonObject &obj)
 {
-    auto b = new QSignalBlocker(this);
-
-    RamObject::loadJson(obj);
-
+    beginLoadJson(obj);
     setRole(obj.value("role").toString("standard"));
-
-    delete b;
-    emit dataChanged(this);
+    endLoadJson();
 }
 
 RamUser::RamUser(QString uuid):

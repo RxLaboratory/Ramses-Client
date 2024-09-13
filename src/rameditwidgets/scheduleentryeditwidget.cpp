@@ -83,7 +83,7 @@ void ScheduleEntryEditWidget::setupUi()
     ui_titleEdit->setPlaceholderText(tr("Short Title"));
     formLayout->addRow(tr("Title"), ui_titleEdit);
 
-    ui_colorSelector = new DuQFColorSelector();
+    ui_colorSelector = new DuColorSelector();
     formLayout->addRow(tr("Color"), ui_colorSelector);
 
     ui_stepBox = new RamObjectComboBox(this);
@@ -144,7 +144,7 @@ void ScheduleEntryEditWidget::connectEvents()
         if (m_entry) m_entry->setName(ui_titleEdit->text());
     });
 
-    connect(ui_colorSelector, &DuQFColorSelector::colorChanged,
+    connect(ui_colorSelector, &DuColorSelector::colorChanged,
             this, [this] (const QColor &c) {
                 if (m_entry) m_entry->setColor(c);
             });

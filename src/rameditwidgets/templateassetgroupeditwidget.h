@@ -3,7 +3,7 @@
 
 #include "objecteditwidget.h"
 #include "ramtemplateassetgroup.h"
-#include "duwidgets/duqfcolorselector.h"
+#include "duwidgets/ducolorselector.h"
 
 class TemplateAssetGroupEditWidget : public ObjectEditWidget
 {
@@ -25,7 +25,7 @@ private:
     void setupUi();
     void connectEvents();
 
-    DuQFColorSelector *ui_colorSelector;
+    DuColorSelector *ui_colorSelector;
     RamTemplateAssetGroup *m_assetGroup;
 };
 

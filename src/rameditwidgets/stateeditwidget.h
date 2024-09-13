@@ -5,7 +5,7 @@
 
 #include "objecteditwidget.h"
 #include "duwidgets/duqfspinbox.h"
-#include "duwidgets/duqfcolorselector.h"
+#include "duwidgets/ducolorselector.h"
 #include "ramstate.h"
 
 class StateEditWidget : public ObjectEditWidget
@@ -31,7 +31,7 @@ private:
     void setupUi();
     void connectEvents();
 
-    DuQFColorSelector *ui_colorSelector;
+    DuColorSelector *ui_colorSelector;
     DuQFSpinBox *ui_completionSpinBox;
 };
 

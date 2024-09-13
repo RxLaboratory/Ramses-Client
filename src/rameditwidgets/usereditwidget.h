@@ -7,7 +7,7 @@
 #include "duutils/utils.h"
 #include "objecteditwidget.h"
 #include "duwidgets/duqffolderdisplaywidget.h"
-#include "duwidgets/duqfcolorselector.h"
+#include "duwidgets/ducolorselector.h"
 #include "ramuser.h"
 
 class UserEditWidget : public ObjectEditWidget
@@ -43,7 +43,7 @@ private:
     QLineEdit *ui_npassword2Edit;
     QLabel *ui_folderLabel;
     QToolButton *ui_passwordButton;
-    DuQFColorSelector *ui_colorSelector;
+    DuColorSelector *ui_colorSelector;
     QWidget *ui_passwordWidget;
     QLabel *ui_currentPasswordLabel;
 };

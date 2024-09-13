@@ -43,7 +43,7 @@ void TemplateAssetGroupEditWidget::setupUi()
 {
     QLabel *colorLabel = new QLabel("Color", this);
     ui_mainFormLayout->addWidget(colorLabel, 3, 0);
-    ui_colorSelector = new DuQFColorSelector(this);
+    ui_colorSelector = new DuColorSelector(this);
     ui_mainFormLayout->addWidget(ui_colorSelector, 3, 1);
 
     ui_mainLayout->addStretch();
@@ -51,5 +51,5 @@ void TemplateAssetGroupEditWidget::setupUi()
 
 void TemplateAssetGroupEditWidget::connectEvents()
 {
-    connect(ui_colorSelector, &DuQFColorSelector::colorChanged, this, &TemplateAssetGroupEditWidget::setColor);
+    connect(ui_colorSelector, &DuColorSelector::colorChanged, this, &TemplateAssetGroupEditWidget::setColor);
 }

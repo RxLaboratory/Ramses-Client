@@ -6,7 +6,7 @@
 #include "duwidgets/ducombobox.h"
 #include "duwidgets/autoselectdoublespinbox.h"
 #include "objecteditwidget.h"
-#include "duwidgets/duqfcolorselector.h"
+#include "duwidgets/ducolorselector.h"
 #include "ramtemplatestep.h"
 
 class TemplateStepEditWidget : public ObjectEditWidget
@@ -50,7 +50,7 @@ private:
     AutoSelectDoubleSpinBox *ui_mediumEdit;
     AutoSelectDoubleSpinBox *ui_hardEdit;
     AutoSelectDoubleSpinBox *ui_veryHardEdit;
-    DuQFColorSelector *ui_colorSelector;
+    DuColorSelector *ui_colorSelector;
 };
 
 #endif // TEMPLATESTEPEDITWIDGET_H

@@ -5,7 +5,7 @@
 
 #include "ramobjectmodel.h"
 
-class RamTemplateStep : public RamObject
+class  RamTemplateStep : public RamObject
 {
     Q_OBJECT
 public:

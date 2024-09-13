@@ -4,7 +4,7 @@
 #include <QPointer>
 
 #include "duwidgets/dulineedit.h"
-#include "duwidgets/duqfcolorselector.h"
+#include "duwidgets/ducolorselector.h"
 #include "duwidgets/durichtextedit.h"
 #include "qdatetimeedit.h"
 #include "ramobjectcombobox.h"
@@ -26,7 +26,7 @@ private:
     void connectEvents();
 
     DuLineEdit *ui_titleEdit;
-    DuQFColorSelector *ui_colorSelector;
+    DuColorSelector *ui_colorSelector;
     RamObjectComboBox *ui_stepBox;
     QDateEdit *ui_dateEdit;
     RamObjectComboBox *ui_rowBox;

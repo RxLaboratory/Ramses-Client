@@ -7,18 +7,23 @@
 #include <QToolButton>
 #include <QFormLayout>
 #include <QLabel>
+#include <QCheckBox>
 
 #include "duwidgets/autoselectdoublespinbox.h"
 #include "duwidgets/ducombobox.h"
 #include "ramjsonobjecteditwidget.h"
+#include "ramobjectcombobox.h"
 
 class RamJsonStepEditWidget: public RamJsonObjectEditWidget
 {
     Q_OBJECT
 public:
     RamJsonStepEditWidget(const QString &uuid = "", QWidget *parent = nullptr);
-    virtual QJsonObject data() const;
-    virtual void setData(const QJsonObject &obj, const QString &uuid);
+    virtual QJsonObject data() const override;
+    virtual void setData(const QJsonObject &obj, const QString &uuid) override;
+
+protected:
+    virtual void updateUuid() override;
 
 private slots:
     void updateEstimationMethod();
@@ -36,6 +41,8 @@ private:
     AutoSelectDoubleSpinBox *ui_mediumEdit;
     AutoSelectDoubleSpinBox *ui_hardEdit;
     AutoSelectDoubleSpinBox *ui_veryHardEdit;
+    QCheckBox *ui_estimationMultiplierCheckBox;
+    RamObjectComboBox *ui_estimationMultiplierBox;
 
 };
 

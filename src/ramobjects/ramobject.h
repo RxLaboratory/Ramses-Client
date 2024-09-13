@@ -47,6 +47,7 @@ public:
     virtual QJsonObject toJson() const;
     virtual void loadJson(const QJsonObject &obj);
 
+
     void emitDataChanged() override;
 
 public slots:
@@ -71,6 +72,8 @@ protected:
     RamObject(QString uuid, ObjectType type, QObject *parent = nullptr);
 
     virtual QJsonObject reloadData() override;
+    void beginLoadJson(const QJsonObject &obj);
+    void endLoadJson();
 
     void emitRemoved() override;
     void emitRestored() override;
@@ -109,6 +112,7 @@ private:
     bool m_loadingModels = false;
 
     QPointer<RamJsonObjectEditWidget> ui_currentJsonEditor;
+    bool _blockEditorUpdate = false;
 };
 
 #endif // RAMOBJECT_H

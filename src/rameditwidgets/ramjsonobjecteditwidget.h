@@ -20,7 +20,7 @@ public:
     virtual void setData(const QJsonObject &obj, const QString &uuid);
     bool exists() const { return _uuid != ""; }
     QString uuid() const { return _uuid; }
-    void setUuid(const QString &uuid) { _uuid = uuid; }
+    void setUuid(const QString &uuid) { _uuid = uuid; updateUuid(); }
 
 public slots:
     void emitEdited();
@@ -43,6 +43,8 @@ protected:
 
     void setRamObjectData(const QJsonObject &obj);
     QJsonObject ramObjectData() const;
+
+    virtual void updateUuid() {};
 
 private:
     void setupUi();
