@@ -103,11 +103,11 @@ QString RamShot::details() const
     RamProject *proj = project();
     if (!proj) return tr("Invalid Shot.\n\nMaybe the database needs to be repaired.");
 
-    QString details = tr("Duration:") + " " +
+    QString details = tr("**Duration**:") + " " +
                     QString::number(duration(), 'f', 2) +
                     " s | " +
                     QString::number(duration() * proj->framerate(), 'f', 2) +
-                    " f";
+                    " f\n";
 
     // List assigned assets
     QHash<QString,QStringList> assts;
@@ -123,7 +123,7 @@ QString RamShot::details() const
     while(i.hasNext())
     {
         i.next();
-        details = details + "\n" % i.key() + " ► " + i.value().join(", ");
+        details = details + "  \n**" + i.key() + "** ► *" + i.value().join(", ") + "*";
     }
 
     return details;

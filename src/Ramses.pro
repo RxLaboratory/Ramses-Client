@@ -232,7 +232,6 @@ SOURCES += \
     rameditwidgets/stateeditwidget.cpp \
     rameditwidgets/statuseditwidget.cpp \
     rameditwidgets/statushistorywidget.cpp \
-    rameditwidgets/stepeditwidget.cpp \
     rameditwidgets/templateassetgroupeditwidget.cpp \
     rameditwidgets/templatestepeditwidget.cpp \
     rameditwidgets/usereditwidget.cpp \
@@ -447,7 +446,6 @@ HEADERS += \
     rameditwidgets/stateeditwidget.h \
     rameditwidgets/statuseditwidget.h \
     rameditwidgets/statushistorywidget.h \
-    rameditwidgets/stepeditwidget.h \
     rameditwidgets/templateassetgroupeditwidget.h \
     rameditwidgets/templatestepeditwidget.h \
     rameditwidgets/usereditwidget.h \
