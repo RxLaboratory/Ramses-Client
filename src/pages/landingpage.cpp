@@ -62,7 +62,7 @@ void LandingPage::openDatabase(const QString &dbFile)
     if (teamProject) {
 
         DuLoginDialog d("E-mail", this);
-        if (!d.exec())
+        if (!DuUI::execDialog(&d))
             return;
 
         QString userUuid = login(

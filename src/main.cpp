@@ -114,7 +114,7 @@ int main(int argc, char *argv[])
         if (updateInfo.value("update").toBool()) {
             s->newMessage("A new version is available!");
             DuQFUpdateDialog dialog(updateInfo);
-            if (dialog.exec()) return 0;
+            if (DuUI::execDialog(&dialog)) return 0;
         }
         DuSettings::i()->set(DuSettings::APP_LastUpdateCheck, QDateTime::currentDateTime());
     }

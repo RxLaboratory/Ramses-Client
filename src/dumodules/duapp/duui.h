@@ -98,6 +98,7 @@ public:
     // UTILS
 
     static MainWindow *appMainWindow();
+    static int execDialog(QDialog *d);
 
     // UI Creation
 

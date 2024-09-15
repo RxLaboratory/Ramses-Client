@@ -298,7 +298,7 @@ void SettingsDock::connectEvents()
         DuApplication *app = qobject_cast<DuApplication*>(qApp);
         app->checkUpdate();
         DuQFUpdateDialog dialog( app->updateInfo() );
-        dialog.exec();
+        DuUI::execDialog(&dialog);
     });
 
     // DAEMON

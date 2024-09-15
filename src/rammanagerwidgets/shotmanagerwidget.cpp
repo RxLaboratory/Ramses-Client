@@ -5,6 +5,7 @@
 
 #include "shotscreationdialog.h"
 #include "duwidgets/duicon.h"
+#include "duapp/duui.h"
 
 ShotManagerWidget::ShotManagerWidget(QWidget *parent):
     ObjectManagerWidget(
@@ -76,5 +77,5 @@ void ShotManagerWidget::batchCreate()
 
     ShotsCreationDialog dialog(project, this);
     dialog.setSequence(seq);
-    dialog.exec();
+    DuUI::execDialog(&dialog);
 }

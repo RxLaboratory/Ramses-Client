@@ -48,7 +48,12 @@ const QVector<QDockWidget *> &DuMainWindow::docks() const
 
 int DuMainWindow::execDialog(QDialog *dialog) const
 {
-    return QGoodCentralWidget::execDialogWithWindow(dialog, const_cast<DuMainWindow*>(this), ui_goodCentralWidget);
+    //ui_centralWidget->setGraphicsEffect(_colorizer);
+    ui_centralMainWidget->setEnabled(false);
+    int r = QGoodCentralWidget::execDialogWithWindow(dialog, const_cast<DuMainWindow*>(this), ui_goodCentralWidget);
+    //ui_centralWidget->setGraphicsEffect(nullptr);
+    ui_centralMainWidget->setEnabled(true);
+    return r;
 }
 
 void DuMainWindow::closeEvent(QCloseEvent *event)
@@ -82,6 +87,12 @@ void DuMainWindow::updateWindow()
 
 void DuMainWindow::setupUi()
 {
+    /*_colorizer = new QGraphicsColorizeEffect(this);
+    QColor focusColor =  DuSettings::i()->get(DuSettings::UI_FocusColor).value<QColor>();
+    _colorizer->setColor(
+        DuUI::pushColor(focusColor)
+        );*/
+
     ui_goodCentralWidget = new QGoodCentralWidget(this);
     // Setup the good central widget
     ui_goodCentralWidget->setActiveBorderColor(

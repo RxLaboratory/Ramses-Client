@@ -33,7 +33,7 @@ void DuColorSelector::selectColor()
     //cd.setWindowFlags(Qt::FramelessWindowHint);
     //cd.move(this->parentWidget()->parentWidget()->geometry().center().x()-cd.geometry().width()/2,this->parentWidget()->parentWidget()->geometry().center().y()-cd.geometry().height()/2);
 
-    if (cd.exec())
+    if (DuUI::execDialog(&cd))
     {
         m_color = cd.selectedColor();
         ui_colorEdit->setText(m_color.name());

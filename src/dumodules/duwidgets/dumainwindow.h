@@ -5,6 +5,7 @@
 #include <QMainWindow>
 #include <QCommandLineParser>
 #include <QLabel>
+#include <QGraphicsColorizeEffect>
 
 #include "src/qgoodcentralwidget.h"
 #include "src/qgoodwindow.h"
@@ -109,6 +110,8 @@ private:
     QPoint m_dragPosition;
     bool m_maximized = false;
     DuDockEventFilter *m_dockEventFilter;
+
+    QGraphicsColorizeEffect *_colorizer;
 };
 
 #endif // DUMAINWINDOW_H

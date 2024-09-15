@@ -384,6 +384,13 @@ MainWindow *DuUI::appMainWindow()
     return _mw;
 }
 
+int DuUI::execDialog(QDialog *d)
+{
+    if (_mw)
+        return _mw->execDialog(d);
+    return d->exec();
+}
+
 void DuUI::setupLayout(QLayout *layout, bool isSubLayout)
 {
     int m = DuSettings::i()->get(DuSettings::UI_Margins).toInt();

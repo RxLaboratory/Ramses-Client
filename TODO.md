@@ -15,11 +15,17 @@
 - Update/refactor progressmanager (with state manager) and homepage
 - assign users in projecteditwidget (disabled for non admins)
 - Save username and password
+- user update password
 - User reinit password
+- User edit widget: check if the role and email has changed to not update it if not necessary
 - pipeline : crash on layout all steps
 - update daemon to not use project uuid
 - update py api to not use current project
 - auto show console on qcritical
+- user DuUI layout methods
+- DuDockWidget update (and reenable Q_ASSERT in their event filter)
+- QDateEdit css
+- Project wizard: step templates, shots, assets
 
 ## Other
 
