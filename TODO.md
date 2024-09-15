@@ -7,14 +7,13 @@
     - toJson loadJson for RamUser
     - show estim for steps
     - open folder for users
-- Assigned users not listed in projects on first open (must be an issue with the order of pulling tables)
+- Assigned users not listed in projects on first open (must be an issue with the order of pulling tables) (try keeping the uuids to be reoladed later)
 - show states (Connect states to indicators in mainwindow (is team, server status & ssl, state manager)
     - implement a state indicator / progress
     - add a progress bar to home page
-- offline mode if network unavailable for team projects
+- offline mode if network unavailable for team projects (skip login, add a button to skip/set offline on login dialog)
 - Update/refactor progressmanager (with state manager) and homepage
 - assign users in projecteditwidget (disabled for non admins)
-- Windows only: recent list is empty
 - Save username and password
 - User reinit password
 - pipeline : crash on layout all steps
