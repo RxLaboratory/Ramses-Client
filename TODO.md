@@ -14,6 +14,8 @@
 - offline mode if network unavailable for team projects
 - Update/refactor progressmanager (with state manager) and homepage
 - assign users in projecteditwidget (disabled for non admins)
+- Windows only: recent list is empty
+- Save username and password
 
 ## Other
 
@@ -33,6 +35,17 @@
 - message "not implemented" on forgot password (usereditwidget)
 - don't user titlebars where not needed; remove duqftitlebar and use simple titlebar; remove closerequested and reinit
 - reimplement all object editors
+- Idée : verrouiller le pipe
+- schedule : changer les couleurs de plusieurs cases à la fois
+- schedule : déplacements des blocs, en drag'n'drop plutot que copier coller si possible (avec Shift?)
+- schedule : mettre une "frontière" sous certaines lignes pour que ça reste toujours en haut, comme dans excel (quand on a bcp de lignes et qu'on est en bas, on voit plus les deadlines tout en haut)
+- schedule : qu'on puisse zoomer/dézoomer le planning
+- item tables : freeze first column or update header 
+
+## Maya
+
+- assets pas filtrés par group
+- update to PySide6 (replace PySide2 import, QAction is in QtGui, form layout spacing)
 
 ## Project Wizard
 
