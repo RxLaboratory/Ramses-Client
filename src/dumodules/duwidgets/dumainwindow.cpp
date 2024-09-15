@@ -48,11 +48,24 @@ const QVector<QDockWidget *> &DuMainWindow::docks() const
 
 int DuMainWindow::execDialog(QDialog *dialog) const
 {
-    //ui_centralWidget->setGraphicsEffect(_colorizer);
-    ui_centralMainWidget->setEnabled(false);
-    int r = QGoodCentralWidget::execDialogWithWindow(dialog, const_cast<DuMainWindow*>(this), ui_goodCentralWidget);
-    //ui_centralWidget->setGraphicsEffect(nullptr);
-    ui_centralMainWidget->setEnabled(true);
+    //ui_centralMainWidget->setGraphicsEffect(_colorizer);
+    //ui_centralMainWidget->setEnabled(false);
+
+    // Would be better to find a simple way to have both
+    // a frameless dialog AND resizeable
+    //dialog->setWindowFlag(Qt::FramelessWindowHint, true);
+
+
+    // Center over our mainwidget
+    dialog->move(ui_centralWidget->geometry().center() - dialog->rect().center());
+
+    int r = dialog->exec();
+
+    // Too slow!!
+    //int r = QGoodCentralWidget::execDialogWithWindow(dialog, const_cast<DuMainWindow*>(this), ui_goodCentralWidget);
+
+    //ui_centralMainWidget->setGraphicsEffect(nullptr);
+    //ui_centralMainWidget->setEnabled(true);
     return r;
 }
 
@@ -87,11 +100,11 @@ void DuMainWindow::updateWindow()
 
 void DuMainWindow::setupUi()
 {
-    /*_colorizer = new QGraphicsColorizeEffect(this);
+    _colorizer = new QGraphicsColorizeEffect(this);
     QColor focusColor =  DuSettings::i()->get(DuSettings::UI_FocusColor).value<QColor>();
     _colorizer->setColor(
         DuUI::pushColor(focusColor)
-        );*/
+        );
 
     ui_goodCentralWidget = new QGoodCentralWidget(this);
     // Setup the good central widget
