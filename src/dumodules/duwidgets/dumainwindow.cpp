@@ -79,6 +79,7 @@ int DuMainWindow::execDialog(QDialog *dialog) const
     overlay->hide();
     overlay->deleteLater();
     // Repaint ASAP
+    // Otherwise it feels too slow
     ui_centralMainWidget->repaint();
 
     return r;
