@@ -16,6 +16,8 @@
 - assign users in projecteditwidget (disabled for non admins)
 - Windows only: recent list is empty
 - Save username and password
+- User reinit password
+- pipeline : crash on layout all steps
 
 ## Other
 

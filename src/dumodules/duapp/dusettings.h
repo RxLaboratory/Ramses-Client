@@ -141,8 +141,6 @@ signals:
 
 private: // Internal stuff
 
-    // The actual settings managed by Qt
-    QSettings _s;
     // The single instance
     static DuSettings *_instance;
     // This is a singleton

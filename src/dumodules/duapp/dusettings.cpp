@@ -19,11 +19,13 @@ QVariant DuSettings::get(int key, const QVariant &defaultOverride, const QString
     else
         dval = defaultOverride;
 
-    return _s.value(setting.qKey + subKey, dval);
+    return QSettings().value(setting.qKey + subKey, dval);
 }
 
 QVector<QHash<QString,QVariant>> DuSettings::getArray(int key, const QVariant &defaultOverride, const QString &subKey)
 {
+    QSettings qSettings;
+
     auto setting = _settings.value(key);
 
     QVariant dval;
@@ -34,25 +36,21 @@ QVector<QHash<QString,QVariant>> DuSettings::getArray(int key, const QVariant &d
 
     QVector<QHash<QString,QVariant>> values;
 
-    int size = _s.beginReadArray(setting.qKey + subKey);
-    qDebug() << "================";
-    qDebug() << setting.qKey + subKey;
-    qDebug() << size;
+    int size = qSettings.beginReadArray(setting.qKey + subKey);
     for (int i = 0; i < size; i++)
     {
-        _s.setArrayIndex(i);
-        const QStringList keys = _s.allKeys();
-        qDebug() << keys;
+        qSettings.setArrayIndex(i);
+        const QStringList keys = qSettings.allKeys();
         QHash<QString, QVariant> vals;
         for (const auto &k: keys) {
             vals.insert(
                 k,
-                _s.value(k, dval)
+                qSettings.value(k, dval)
                 );
         }
         values << vals;
     }
-    _s.endArray();
+    qSettings.endArray();
 
     return values;
 }
@@ -62,6 +60,8 @@ void DuSettings::set(int key, const QVariant &value, const QString &subKey, bool
     if (!_settings.contains(key))
         return;
 
+    QSettings qSettings;
+
     // Get the current value to check if it's actually changed
     auto current = get(key,QVariant(),subKey);
     if (current == value)
@@ -69,7 +69,7 @@ void DuSettings::set(int key, const QVariant &value, const QString &subKey, bool
 
     // Save
     auto setting = _settings.value(key);
-    _s.setValue(setting.qKey + subKey, value);
+    qSettings.setValue(setting.qKey + subKey, value);
 
     // Emit
     if (!doNotEmit)
@@ -81,20 +81,23 @@ void DuSettings::setArray(int key, const QVector<QHash<QString, QVariant>> &valu
     if (!_settings.contains(key))
         return;
 
+    QSettings qSettings;
+
     auto setting = _settings.value(key);
 
-    _s.beginWriteArray(setting.qKey + subKey);
+    qSettings.beginWriteArray(setting.qKey + subKey);
+
     int i = 0;
     for (const auto &value: values) {
-        _s.setArrayIndex(i);
+        qSettings.setArrayIndex(i);
         QHashIterator<QString,QVariant> it(value);
         while(it.hasNext()) {
             it.next();
-            _s.setValue(it.key(), it.value());
+            qSettings.setValue(it.key(), it.value());
         }
         i++;
     }
-    _s.endArray();
+    qSettings.endArray();
 
     // Emit
     if (!doNotEmit)
@@ -106,8 +109,10 @@ void DuSettings::remove(int key, const QString &subKey, bool doNotEmit)
     if (!_settings.contains(key))
         return;
 
+    QSettings qSettings;
+
     auto setting = _settings.value(key);
-    _s.remove(setting.qKey + subKey);
+    qSettings.remove(setting.qKey + subKey);
 
     if (!doNotEmit)
         emit settingChanged(key, setting.defaultValue);

@@ -14,6 +14,7 @@ QStringList DBInterface::recentDatabases()
     QStringList projects;
 
     const QVector<QHash<QString,QVariant>> recentList = DuSettings::i()->getArray(RamSettings::RecentDatabases);
+
     for(const auto &recent: recentList) {
         QString p = recent.value("path", "").toString();
         if (QFileInfo::exists(p))

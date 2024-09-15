@@ -27,6 +27,7 @@ void LandingPage::updateRecentList()
 {
     ui_recentBox->clear();
     const QStringList projects = DBInterface::recentDatabases();
+
     for(const auto &project: projects) {
         QFileInfo f(project);
         ui_recentBox->addItem(f.completeBaseName(), project);
