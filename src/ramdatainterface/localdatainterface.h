@@ -1,14 +1,14 @@
 #ifndef LOCALDATAINTERFACE_H
 #define LOCALDATAINTERFACE_H
 
+#include <QObject>
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QStringBuilder>
 
-#include "duutils/duqflogger.h"
 #include "datastruct.h"
 
-class LocalDataInterface : public DuQFLoggerObject
+class LocalDataInterface : public QObject
 {
     Q_OBJECT
 
@@ -102,7 +102,6 @@ protected:
     static LocalDataInterface *_instance;
 
 private slots:
-    void logError(QString err);
     void quit();
 
 private:

@@ -4,11 +4,11 @@
 
 #include "assetgroupmanagerwidget.h"
 #include "assetmanagerwidget.h"
+#include "docks/consoledock.h"
 #include "homepage.h"
 #include "itemmanagerwidget.h"
 #include "pipefilemanagerwidget.h"
 #include "progressmanager.h"
-#include "docks/consolewidget.h"
 #include "sequencemanagerwidget.h"
 #include "shotmanagerwidget.h"
 #include "stepmanagerwidget.h"
@@ -26,7 +26,6 @@
 #include "dbinterface.h"
 #include "daemon.h"
 #include "dbmanagerwidget.h"
-#include "duwidgets/duqflogtoolbutton.h"
 #include "duapp/app-version.h"
 #include "docks/settingsdock.h"
 #include "ramses.h"
@@ -922,7 +921,7 @@ void MainWindow::setupDocks()
 #endif
 
     // A console in a tab
-    ConsoleWidget *console = new ConsoleWidget(this);
+    auto *consoleFrame = new ConsoleDock(this);
 
     ui_consoleDockWidget = new DuDockWidget("Console");
     ui_consoleDockWidget->setWindowIcon(DuIcon(":/icons/bash"));
@@ -935,7 +934,7 @@ void MainWindow::setupDocks()
 
     ui_consoleDockWidget->setAllowedAreas(Qt::AllDockWidgetAreas);
     ui_consoleDockWidget->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable );
-    ui_consoleDockWidget->setWidget( console );
+    ui_consoleDockWidget->setWidget( consoleFrame );
     this->addDockWidget(Qt::LeftDockWidgetArea, ui_consoleDockWidget);
     ui_consoleDockWidget->hide();
 
@@ -1200,10 +1199,6 @@ void MainWindow::setupToolBars()
     ui_shotMenuAction = ui_leftToolBar->addWidget(ui_shotsButton);
     ui_scheduleMenuAction = ui_leftToolBar->addWidget(ui_scheduleButton);
     ui_filesMenuAction = ui_leftToolBar->addWidget(ui_filesButton);
-
-    auto logB = new DuQFLogToolButton(this);
-    QAction *logA = ui_leftToolBar->addWidget(logB);
-    connect(logB, &DuQFLogToolButton::visibilityChanged, logA, &QAction::setVisible);
 
     m_actionAdmin->setVisible(false);
     ui_pipelineMenuAction->setVisible(false);

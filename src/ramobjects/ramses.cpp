@@ -1,5 +1,7 @@
 #include "ramses.h"
 
+#include <QDir>
+
 // STATIC //
 
 Ramses *Ramses::_instance = nullptr;

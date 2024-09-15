@@ -18,11 +18,9 @@
 #include <QProgressBar>
 #include <QVersionNumber>
 
-#include "duutils/utils.h"
-#include "duutils/duqflogger.h"
 #include "localdatainterface.h"
 
-class DBInterface : public DuQFLoggerObject
+class DBInterface: public QObject
 {
     Q_OBJECT
 public:

@@ -9,9 +9,7 @@
 #include <QJsonObject>
 #include <QRegularExpression>
 
-#include "duutils/duqflogger.h"
-
-class Daemon : public DuQFLoggerObject
+class Daemon : public QObject
 {
     Q_OBJECT
 public:

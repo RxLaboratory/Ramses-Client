@@ -448,7 +448,7 @@ void StatusEditWidget::openMainFile()
 
     m_status->step()->openFile( filePathToOpen );
 
-    DuQFLogger::instance()->log("Opening " + filePathToOpen + "...");
+    qInfo().noquote() << "Opening " + filePathToOpen + "...";
 
     refresh();
 }
@@ -466,7 +466,7 @@ void StatusEditWidget::removeSelectedMainFile()
 
     m_status->deleteFile( fileName );
 
-    DuQFLogger::instance()->log("Deleting " + fileName + "...");
+    qInfo().noquote() << "Deleting " + fileName + "...";
 
     refresh();
 }
@@ -476,11 +476,11 @@ void StatusEditWidget::createFromTemplate()
     QAction *action = qobject_cast<QAction*>( sender() );
     QString filePath = action->data().toString();
 
-    DuQFLogger::instance()->log("Creating " + action->text() + "...");
+    qInfo().noquote() << "Creating " + action->text() + "...";
 
     QString templateFile = m_status->createFileFromResource( filePath );
 
-    DuQFLogger::instance()->log("Opening " + templateFile + "...");
+    qInfo().noquote() << "Opening " + templateFile + "...";
 
     if (templateFile != "") m_status->step()->openFile(templateFile);
 
@@ -509,7 +509,7 @@ void StatusEditWidget::openPublishedFile()
 
     m_status->step()->openFile( filePathToOpen );
 
-    DuQFLogger::instance()->log("Opening " + filePathToOpen + "...");
+    qInfo().noquote() << "Opening " + filePathToOpen + "...";
 
     refresh();
 }
@@ -527,7 +527,7 @@ void StatusEditWidget::removeSelectedPublishedFile()
 
     m_status->deleteFile( fileName, RamObject::PublishFolder );
 
-    DuQFLogger::instance()->log("Deleting " + fileName + "...");
+    qInfo().noquote() << "Deleting " + fileName + "...";
 
     refresh();
 }
@@ -547,7 +547,7 @@ void StatusEditWidget::openPreviewFile()
     // Try with the default app on the system
     QDesktopServices::openUrl(QUrl("file:///" + filePathToOpen));
 
-    DuQFLogger::instance()->log("Opening " + filePathToOpen + "...");
+    qInfo().noquote() << "Opening " + filePathToOpen + "...";
 
     refresh();
 }
@@ -565,7 +565,7 @@ void StatusEditWidget::removeSelectedPreviewFile()
 
     m_status->deleteFile( fileName, RamObject::PreviewFolder );
 
-    DuQFLogger::instance()->log("Deleting " + fileName + "...");
+    qInfo().noquote() << "Deleting " + fileName + "...";
 
     refresh();
 }

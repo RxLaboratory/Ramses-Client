@@ -1,7 +1,8 @@
 #include "pipelinewidget.h"
 
-#include "duapp/dusettings.h"
+#include <QMessageBox>
 
+#include "duapp/dusettings.h"
 #include "duwidgets/duicon.h"
 #include "progressmanager.h"
 #include "stepnode.h"

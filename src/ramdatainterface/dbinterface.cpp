@@ -2,6 +2,7 @@
 
 #include <QInputDialog>
 
+#include "duapp/dulogger.h"
 #include "progressmanager.h"
 #include "ramserverclient.h"
 #include "statemanager.h"
@@ -128,7 +129,7 @@ QString DBInterface::validateObjectData(QString data, QString uuid, QString type
     eStr += "Original data:\n" + data;
 
     // Log the error
-    log(eStr, DuQFLog::Warning);
+    qWarning().noquote() << "{Database Interface}" << eStr;
 
     return "{}";
 }
@@ -162,13 +163,13 @@ bool DBInterface::loadDataFile(const QString &file)
 {
     if (!QFileInfo::exists(file)) {
         m_lastError = "Invalid path: " + file;
-        qWarning().noquote() << "{DB}" << m_lastError;
+        qWarning().noquote() << "{Database Interface}" << m_lastError;
         return false;
     }
 
     // If there is a current project, just restart the app passing the new project as argument.
     if (m_ldi->dataFile() != "") {
-        qInfo().noquote() << "{DB}" << "Restarting the app to load \"" + file + "\"" ;
+        qInfo().noquote() << "{Database Interface}" << "Restarting the app to load \"" + file + "\"" ;
         StateManager::i()->restart(true, file);
         return true;
     }
@@ -176,11 +177,11 @@ bool DBInterface::loadDataFile(const QString &file)
     QElapsedTimer openTimer;
     openTimer.start();
 
-    qInfo().noquote() << "{DB}" << "Loading database \"" + file + "\"" ;
+    qInfo().noquote() << "{Database Interface}" << "Loading database \"" + file + "\"" ;
 
     ServerConfig config = m_ldi->setDataFile(file);
 
-    qDebug().noquote() << "{DB}" << "Database loaded: " << openTimer.elapsed()/1000 << " seconds.";
+    qDebug().noquote() << "{Database Interface}" << "Database loaded: " << openTimer.elapsed()/1000 << " seconds.";
 
     return true;
 }
@@ -228,7 +229,7 @@ bool DBInterface::undoClean()
 {
     bool ok = m_ldi->undoClean();
     if (!ok) {
-        log(tr("Can't restore DB Backup!"), DuQFLog::Critical);
+        qCritical().noquote() << "{Database Interface}" << tr("Can't restore DB Backup!") ;
         return false;
     }
 
@@ -253,16 +254,16 @@ bool DBInterface::sync()
     switch (RamServerClient::i()->status()){
     case RamServerClient::Offline:
         m_lastError = tr("Can't sync for now, the client is offline.\nYou need to log in first.");
-        qWarning().noquote() << "{DB}" << m_lastError;
+        qWarning().noquote() << "{Database Interface}" << m_lastError;
         return false;
     case RamServerClient::Online:
         m_lastError = tr("Can't sync for now, we're logged out.\nYou need to log in first.");
-        qWarning().noquote() << "{DB}" << m_lastError;
+        qWarning().noquote() << "{Database Interface}" << m_lastError;
         return false;
     case RamServerClient::Ready:
         break;
     case RamServerClient::Syncing:
-        qInfo().noquote() << "{DB}" << tr("Already syncing, please be patient");
+        qInfo().noquote() << "{Database Interface}" << tr("Already syncing, please be patient");
         return true;
       break;
     }
@@ -273,12 +274,12 @@ bool DBInterface::sync()
     pm->addToMaximum(3);
     pm->setText(tr("Beginning quick data sync..."));
 
-    qInfo().noquote() << "{DB}" << tr("Beginning quick data sync...");
+    qInfo().noquote() << "{Database Interface}" << tr("Beginning quick data sync...");
 
     // Get modified rows from local
     SyncData syncData = m_ldi->getSync( false );
 
-    qInfo().noquote() << "{DB}" << tr("Pushing changes to the server...");
+    qInfo().noquote() << "{Database Interface}" << tr("Pushing changes to the server...");
 
     // Post to ramserver
     RamServerClient::i()->sync(syncData);
@@ -291,16 +292,16 @@ bool DBInterface::fullSync()
     switch (RamServerClient::i()->status()){
     case RamServerClient::Offline:
         m_lastError = tr("Can't sync for now, the client is offline.\nYou need to log in first.");
-        qWarning().noquote() << "{DB}" << m_lastError;
+        qWarning().noquote() << "{Database Interface}" << m_lastError;
         return false;
     case RamServerClient::Online:
         m_lastError = tr("Can't sync for now, we're logged out.\nYou need to log in first.");
-        qWarning().noquote() << "{DB}" << m_lastError;
+        qWarning().noquote() << "{Database Interface}" << m_lastError;
         return false;
     case RamServerClient::Ready:
         break;
     case RamServerClient::Syncing:
-        qInfo().noquote() << "{DB}" << tr("Already syncing, please be patient");
+        qInfo().noquote() << "{Database Interface}" << tr("Already syncing, please be patient");
         return true;
         break;
     }
@@ -310,11 +311,11 @@ bool DBInterface::fullSync()
     ProgressManager *pm = ProgressManager::instance();
     pm->addToMaximum(3);
     pm->setText(tr("Beginning full data sync..."));
-    qInfo().noquote() << "{DB}" << tr("Beginning full data sync...");
+    qInfo().noquote() << "{Database Interface}" << tr("Beginning full data sync...");
 
     // Get modified rows from local
     SyncData syncData = m_ldi->getSync( true );
-    qInfo().noquote() << "{DB}" << tr("Pushing changes to the server...");
+    qInfo().noquote() << "{Database Interface}" << tr("Pushing changes to the server...");
 
     // Post to ramserver
     RamServerClient::i()->sync(syncData);
@@ -322,8 +323,11 @@ bool DBInterface::fullSync()
     return true;
 }
 
-DBInterface::DBInterface(QObject *parent) : DuQFLoggerObject("Database Interface", parent)
+DBInterface::DBInterface(QObject *parent) : QObject(parent)
 {
+    // Logs
+    DuLogger::i()->registerComponent("Database Interface", this);
+
     // LOCAL
     m_ldi = LocalDataInterface::instance();
 
@@ -372,6 +376,5 @@ void DBInterface::finishSync()
 {
     emit syncFinished();
     m_updateTimer->start( m_updateFrequency );
-
-    log(tr("Finished sync."));
+    qInfo().noquote() << "Finished sync.";
 }

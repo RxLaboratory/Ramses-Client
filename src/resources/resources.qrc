@@ -88,6 +88,9 @@
         <file alias="help-button">icons/help-button.svg</file>
         <file alias="forgot-password">icons/forgot-key.svg</file>
         <file alias="password">icons/key.svg</file>
+        <file alias="ramses90">icons/ramses90.svg</file>
+        <file alias="server90">icons/server90.svg</file>
+        <file alias="storage90">icons/storage90.svg</file>
     </qresource>
     <qresource prefix="/styles">
         <file alias="vars">styles/style-values.rui</file>

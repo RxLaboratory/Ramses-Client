@@ -3,9 +3,8 @@
 
 #include <QObject>
 #include <QHash>
-#include <QRegularExpression>
 
-#include "enums.h"
+#include"enums.h"
 
 class DuLogger : public QObject
 {

@@ -9,6 +9,7 @@
 #include <QThread>
 
 #include "duapp/app-version.h"
+#include "duapp/dulogger.h"
 #include "datacrypto.h"
 #include "localdatainterface.h"
 
@@ -326,13 +327,13 @@ void RamServerClient::dataReceived(QNetworkReply *reply)
         QString message = o.value("message").toString("");
 
         if (level == "WARNING" || level == "CRITICAL" || level == "FATAL")
-            qWarning().noquote() << "{Client}" << "Server Error | " + level + " | " + message;
+            qWarning().noquote() << "{Server}" << "Server Error | " + level + " | " + message;
 #ifdef QT_DEBUG
         else if (level == "DATA")
-            qDebug().noquote() << "{Client}" << message;
+            qDebug().noquote() << "{Server}" << message;
 #endif
         else if (level == "DEBUG")
-            qDebug().noquote() << "{Client}" << message;
+            qDebug().noquote() << "{Server}" << message;
     }
 
     if (!repSuccess) {
@@ -499,10 +500,10 @@ void RamServerClient::sslError(QNetworkReply *reply, QList<QSslError> errs)
 
     foreach (QSslError err, errs)
     {
-        qWarning() << "{Client}" << err.errorString();
+        qWarning() << "{Server}" << err.errorString();
     }
     m_lastError = tr("An SSL Error has occured. The connection may not be secured.");
-    qWarning() << "{Client}" << m_lastError;
+    qWarning() << "{Server}" << m_lastError;
     setStatus(Offline);
 }
 
@@ -538,7 +539,7 @@ void RamServerClient::networkError(QNetworkReply::NetworkError err)
     if (reply)
         reason = reply->errorString();
 
-    qWarning() << "{Client}" << "A network error has occured: " + reason;
+    qWarning() << "{Server}" << "A network error has occured: " + reason;
     setStatus(Offline);
     m_lastError = reason;
 }
@@ -632,7 +633,9 @@ void RamServerClient::postRequest(Request r)
 
 // Log POST body (in debug mode only!)
 #ifdef QT_DEBUG
+#ifdef SHOWDATA
     qDebug() << "Request data: " + r.body;
+#endif
 #endif
 
     connect(reply, &QNetworkReply::errorOccurred, this, &RamServerClient::networkError);
@@ -669,10 +672,12 @@ QJsonObject RamServerClient::synchronousRequest(Request r)
 
     // Log POST body (in debug mode only!)
 #ifdef QT_DEBUG
+#ifdef SHOWDATA
     if (r.query == "login")
         qDebug() << "Request data: [Hidden login info]";
     else
         qDebug() << "Request data: " + r.body;
+#endif
 #endif
 
     // Create a loop to wait for the data
@@ -690,7 +695,7 @@ QJsonObject RamServerClient::synchronousRequest(Request r)
             reply->abort();
             reply->deleteLater();
             setStatus(Offline);
-            qWarning().noquote() << "{Client}" << tr("Time out: the Ramses Server at '%1' took too long to respond, sorry. Check your network connection.\n"
+            qWarning().noquote() << "{Server}" << tr("Time out: the Ramses Server at '%1' took too long to respond, sorry. Check your network connection.\n"
                                                      "We're switching to offline mode.").arg(host);
             m_lastError = tr("Timed out, server unavailable. Please check the server settings and your network connection.");
             obj.insert("message", m_lastError);
@@ -719,7 +724,7 @@ QJsonObject RamServerClient::parseData(QNetworkReply *reply)
         if (reply->error() == QNetworkReply::SslHandshakeFailedError) {
             m_lastError += "\nOpenSSL may be missing on your system, or using an incompatible version.";
         }
-        qWarning().noquote() << "{Client}" << "Connection failed: " << m_lastError;
+        qWarning().noquote() << "{Server}" << "Connection failed: " << m_lastError;
         QJsonObject obj;
         obj.insert("success", false);
         obj.insert("message", "Connection failed: " + m_lastError);
@@ -741,7 +746,7 @@ QJsonObject RamServerClient::parseData(QNetworkReply *reply)
         repObj.insert("success",false);
         repObj.insert("query", "unknown");
 
-        qDebug() << "{Client}" << repAll;
+        qDebug() << "{Server}" << repAll;
 
         return repObj;
     }
@@ -751,14 +756,14 @@ QJsonObject RamServerClient::parseData(QNetworkReply *reply)
 
     if (!repSuccess) {
         m_lastError = repObj.value("message").toString("Unknown error");
-        qWarning().noquote() << "{Client}" << m_lastError;
+        qWarning().noquote() << "{Server}" << m_lastError;
     }
     else if (repMessage.startsWith("warning", Qt::CaseInsensitive))
-        qWarning().noquote() << "{Client}" << repMessage;
+        qWarning().noquote() << "{Server}" << repMessage;
     else if (repMessage.startsWith("critical", Qt::CaseInsensitive))
-        qCritical().noquote() << "{Client}" << repMessage;
+        qCritical().noquote() << "{Server}" << repMessage;
     else
-        qInfo().noquote() << "{Client}" << repMessage;
+        qInfo().noquote() << "{Server}" << repMessage;
 
     return repObj;
 }
@@ -965,6 +970,9 @@ void RamServerClient::setStatus(ClientStatus status)
 
 RamServerClient::RamServerClient()
 {
+    // Logging
+    DuLogger::i()->registerComponent("Client", this);
+
     // Prepare network connection
     QNetworkCookieJar *cookies = new QNetworkCookieJar();
 

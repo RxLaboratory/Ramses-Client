@@ -1,11 +1,13 @@
 #ifndef DUSETTINGS_H
 #define DUSETTINGS_H
 
-#include "qdatetime.h"
+#include <QDateTime>
 #include <QObject>
 #include <QSettings>
 #include <QColor>
 #include <QSize>
+
+#include "enums.h"
 
 class DuSettings: public QObject
 {
@@ -35,6 +37,7 @@ public: // enums and structs
         APP_Version,
         APP_CheckUpdates,
         APP_LastUpdateCheck,
+        APP_LogLevel,
         Other,
     };
 
@@ -67,6 +70,7 @@ private: // The list of settings
         { APP_Version, { "app/version", "0.0.0"}},
         { APP_CheckUpdates, { "app/checkUpdates", true}},
         { APP_LastUpdateCheck, {"app/latestUpdateCheck" , QDateTime(QDate(1818,05,05), QTime())}},
+        { APP_LogLevel, {"app/logLevel" , InformationLog}},
     };
 
 public: // Methods

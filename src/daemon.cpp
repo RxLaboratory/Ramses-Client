@@ -10,6 +10,7 @@
 #include "statemanager.h"
 #include "duapp/dusettings.h"
 #include "ramsettings.h"
+#include "duapp/dulogger.h"
 
 Daemon *Daemon::_instance = nullptr;
 
@@ -25,24 +26,21 @@ void Daemon::start()
     if (!m_tcpServer->listen( QHostAddress::LocalHost,
                               DuSettings::i()->get(RamSettings::DaemonPort).toInt()
                              )) {
-        qDebug() << m_tcpServer->errorString();
-        log(tr("Unable to start the daemon server.") + "\n" + m_tcpServer->errorString(), DuQFLog::Warning);
+        qWarning().noquote() << tr("Unable to start the daemon server.") + "\n" + m_tcpServer->errorString();
     }
     else
     {
         qDebug() << "Daemon started and listening on port " + QString::number(m_tcpServer->serverPort());
-        log(
-            tr("Daemon started and listening on port %1.").arg(
-                QString::number(m_tcpServer->serverPort() )
-                ),
-            DuQFLog::Information);
+        qInfo().noquote() << tr("Daemon started and listening on port %1.").arg(
+            QString::number(m_tcpServer->serverPort() )
+            );
     }
 }
 
 void Daemon::stop()
 {
     m_tcpServer->close();
-    log("Daemon stopped.", DuQFLog::Information);
+    qInfo().noquote() << "Daemon stopped.";
 }
 
 void Daemon::restart()
@@ -89,7 +87,7 @@ void Daemon::reply(QString request, QTcpSocket *client)
 {
     //split args
     QStringList requestArgs = request.split("&");
-    log("I've got these args: \n" + requestArgs.join("\n"), DuQFLog::Data);
+    qDebug().noquote() << "I've got these args: \n" + requestArgs.join("\n");
 
     //Parse
     QMap<QString, QString> args;
@@ -175,7 +173,7 @@ void Daemon::reply(QString request, QTcpSocket *client)
 
 void Daemon::ping(QTcpSocket *client)
 {
-    log(tr("I'm replying to this request: %1.").arg("ping"), DuQFLog::Debug);
+    qDebug().noquote() << tr("I'm replying to this request: %1.").arg("ping");
 
     QJsonObject content;
     content.insert("version", STR_VERSION);
@@ -194,7 +192,7 @@ void Daemon::ping(QTcpSocket *client)
 
 void Daemon::getCurrentProject(QTcpSocket *client)
 {
-    log(tr("I'm replying to this request: %1.").arg("getCurrentProject"), DuQFLog::Debug);
+    qDebug().noquote() << tr("I'm replying to this request: %1.").arg("getCurrentProject");
 
     QJsonObject content;
     RamProject *proj = Ramses::i()->project();
@@ -218,10 +216,10 @@ void Daemon::getCurrentProject(QTcpSocket *client)
 
 void Daemon::create(QString uuid, QString data, QString type, QTcpSocket *client)
 {
-    log(tr("I'm replying to this request: %1.").arg("create"), DuQFLog::Debug);
-    log(tr("This is the uuid: %1").arg(uuid), DuQFLog::Data);
-    log(tr("This is the data: %1").arg(data), DuQFLog::Data);
-    log(tr("This is the type: %1").arg(type), DuQFLog::Data);
+    qDebug().noquote() << tr("I'm replying to this request: %1.").arg("create");
+    qDebug().noquote() << tr("This is the uuid: %1").arg(uuid);
+    qDebug().noquote() << tr("This is the data: %1").arg(data);
+    qDebug().noquote() << tr("This is the type: %1").arg(type);
 
      LocalDataInterface::instance()->createObject(uuid, type, data);
 
@@ -230,9 +228,8 @@ void Daemon::create(QString uuid, QString data, QString type, QTcpSocket *client
 
 void Daemon::getObjects(QString type, QTcpSocket *client)
 {
-
-    log(tr("I'm replying to this request: %1.").arg("getObjects"), DuQFLog::Debug);
-    log(tr("This is the type: %1").arg(type), DuQFLog::Data);
+    qDebug().noquote() << tr("I'm replying to this request: %1.").arg("getObjects");
+    qDebug().noquote() << tr("This is the type: %1").arg(type);
 
     QVector<QStringList> entries = LocalDataInterface::instance()->tableData(type);
 
@@ -255,7 +252,7 @@ void Daemon::getObjects(QString type, QTcpSocket *client)
 
 void Daemon::getRamsesFolder(QTcpSocket *client)
 {
-    log(tr("I'm replying to this request: %1.").arg("getRamsesFolder"), DuQFLog::Debug);
+    qDebug().noquote() << tr("I'm replying to this request: %1.").arg("getRamsesFolder");
 
     QJsonObject content;
     content.insert("path", Ramses::i()->path(RamObject::NoFolder, true));
@@ -264,7 +261,7 @@ void Daemon::getRamsesFolder(QTcpSocket *client)
 
 void Daemon::getProjects(QTcpSocket *client)
 {
-    log(tr("I'm replying to this request: %1.").arg("getProjects"), DuQFLog::Debug);
+    qDebug().noquote() << tr("I'm replying to this request: %1.").arg("getProjects");
 
     QJsonObject content;
     QJsonArray projects;
@@ -288,9 +285,9 @@ void Daemon::getProjects(QTcpSocket *client)
 
 void Daemon::getAssets(QString projectUuid, QString assetGroupUuid, QTcpSocket *client)
 {
-    log(tr("I'm replying to this request: %1.").arg("getAssets"), DuQFLog::Debug);
-    log(tr("This is the project uuid: %1").arg(projectUuid), DuQFLog::Data);
-    log(tr("This is the asset group uuid: %1").arg(assetGroupUuid), DuQFLog::Data);
+    qDebug().noquote() << tr("I'm replying to this request: %1.").arg("getAssets");
+    qDebug().noquote() << tr("This is the project uuid: %1").arg(projectUuid);
+    qDebug().noquote() << tr("This is the asset group uuid: %1").arg(assetGroupUuid);
 
     QJsonObject content;
 
@@ -330,9 +327,9 @@ void Daemon::getAssets(QString projectUuid, QString assetGroupUuid, QTcpSocket *
 
 void Daemon::getShots(QString projectUuid, QString sequenceUuid, QTcpSocket *client)
 {
-    log(tr("I'm replying to this request: %1.").arg("getShots"), DuQFLog::Debug);
-    log(tr("This is the project uuid: %1").arg(projectUuid), DuQFLog::Data);
-    log(tr("This is the sequence group uuid: %1").arg(sequenceUuid), DuQFLog::Data);
+    qDebug().noquote() << tr("I'm replying to this request: %1.").arg("getShots");
+    qDebug().noquote() << tr("This is the project uuid: %1").arg(projectUuid);
+    qDebug().noquote() << tr("This is the sequence uuid: %1").arg(sequenceUuid);
 
     QJsonObject content;
 
@@ -372,8 +369,8 @@ void Daemon::getShots(QString projectUuid, QString sequenceUuid, QTcpSocket *cli
 
 void Daemon::getAssetGroups(QString projectUuid, QTcpSocket *client)
 {
-    log(tr("I'm replying to this request: %1.").arg("getAssetGroups"), DuQFLog::Debug);
-    log(tr("This is the project uuid: %1").arg(projectUuid), DuQFLog::Data);
+    qDebug().noquote() << tr("I'm replying to this request: %1.").arg("getAssetGroups");
+    qDebug().noquote() << tr("This is the project uuid: %1").arg(projectUuid);
 
     QJsonObject content;
 
@@ -399,8 +396,8 @@ void Daemon::getAssetGroups(QString projectUuid, QTcpSocket *client)
 
 void Daemon::getSequences(QString projectUuid, QTcpSocket *client)
 {
-    log(tr("I'm replying to this request: %1.").arg("getSequences"), DuQFLog::Debug);
-    log(tr("This is the project uuid: %1").arg(projectUuid), DuQFLog::Data);
+    qDebug().noquote() << tr("I'm replying to this request: %1.").arg("getSequences");
+    qDebug().noquote() << tr("This is the project uuid: %1").arg(projectUuid);
 
     QJsonObject content;
 
@@ -426,8 +423,8 @@ void Daemon::getSequences(QString projectUuid, QTcpSocket *client)
 
 void Daemon::getPipes(QString projectUuid, QTcpSocket *client)
 {
-    log(tr("I'm replying to this request: %1.").arg("getPipes"), DuQFLog::Debug);
-    log(tr("This is the project uuid: %1").arg(projectUuid), DuQFLog::Data);
+    qDebug().noquote() << tr("I'm replying to this request: %1.").arg("getPipes");
+    qDebug().noquote() << tr("This is the project uuid: %1").arg(projectUuid);
 
     QJsonObject content;
 
@@ -453,9 +450,9 @@ void Daemon::getPipes(QString projectUuid, QTcpSocket *client)
 
 void Daemon::getSteps(QString projectUuid, QString stepType, QTcpSocket *client)
 {
-    log(tr("I'm replying to this request: %1.").arg("getSteps"), DuQFLog::Debug);
-    log(tr("This is the project uuid: %1").arg(projectUuid), DuQFLog::Data);
-    log(tr("This is the step type: %1").arg(stepType), DuQFLog::Data);
+    qDebug().noquote() << tr("I'm replying to this request: %1.").arg("getSteps");
+    qDebug().noquote() << tr("This is the project uuid: %1").arg(projectUuid);
+    qDebug().noquote() << tr("This is the step type: %1").arg(stepType);
 
     QJsonObject content;
 
@@ -507,9 +504,9 @@ void Daemon::getSteps(QString projectUuid, QString stepType, QTcpSocket *client)
 
 void Daemon::setData(QString uuid, QString data, QTcpSocket *client)
 {
-    log(tr("I'm replying to this request: %1.").arg("setData"), DuQFLog::Debug);
-    log(tr("This is the uuid: %1").arg(uuid), DuQFLog::Data);
-    log(tr("This is the data: %1").arg(data), DuQFLog::Data);
+    qDebug().noquote() << tr("I'm replying to this request: %1.").arg("setData");
+    qDebug().noquote() << tr("This is the uuid: %1").arg(uuid);
+    qDebug().noquote() << tr("This is the data: %1").arg(data);
 
     RamAbstractObject::setObjectData(uuid, data);
 
@@ -518,8 +515,8 @@ void Daemon::setData(QString uuid, QString data, QTcpSocket *client)
 
 void Daemon::getData(QString uuid, QTcpSocket *client)
 {
-    log(tr("I'm replying to this request: %1.").arg("getData"), DuQFLog::Debug);
-    log(tr("This is the uuid: %1").arg(uuid), DuQFLog::Data);
+    qDebug().noquote() << tr("I'm replying to this request: %1.").arg("getData");
+    qDebug().noquote() << tr("This is the uuid: %1").arg(uuid);
 
     QJsonObject data = RamAbstractObject::getObjectData(uuid);
 
@@ -532,8 +529,8 @@ void Daemon::getData(QString uuid, QTcpSocket *client)
 
 void Daemon::uuidFromPath(QString path, QString objectType, QTcpSocket *client)
 {
-    log(tr("I'm replying to this request: %1.").arg("uuidFromPath"), DuQFLog::Debug);
-    log(tr("This is the path: %1").arg(path), DuQFLog::Data);
+    qDebug().noquote() << tr("I'm replying to this request: %1.").arg("uuidFromPath");
+    qDebug().noquote() << tr("This is the path: %1").arg(path);
 
     QString uuid = RamAbstractObject::uuidFromPath(path, RamAbstractObject::objectTypeFromName(objectType));
 
@@ -546,9 +543,9 @@ void Daemon::uuidFromPath(QString path, QString objectType, QTcpSocket *client)
 
 void Daemon::getStatus(QString itemUuid, QString stepUuid, QTcpSocket *client)
 {
-    log(tr("I'm replying to this request: %1.").arg("getStatus"), DuQFLog::Debug);
-    log(tr("This is the item uuid: %1").arg(itemUuid), DuQFLog::Data);
-    log(tr("This is the step uuid: %1").arg(stepUuid), DuQFLog::Data);
+    qDebug().noquote() << tr("I'm replying to this request: %1.").arg("getStatus");
+    qDebug().noquote() << tr("This is the item uuid: %1").arg(itemUuid);
+    qDebug().noquote() << tr("This is the step uuid: %1").arg(stepUuid);
 
     RamProject *proj = Ramses::i()->project();
 
@@ -588,9 +585,9 @@ void Daemon::getStatus(QString itemUuid, QString stepUuid, QTcpSocket *client)
 
 void Daemon::setStatusModifiedBy(QString statusUuid, QString userUuid, QTcpSocket *client)
 {
-    log(tr("I'm replying to this request: %1.").arg("setStatusModifiedBy"), DuQFLog::Debug);
-    log(tr("This is the status uuid: %1").arg(statusUuid), DuQFLog::Data);
-    log(tr("This is the user uuid: %1").arg(userUuid), DuQFLog::Data);
+    qDebug().noquote() << tr("I'm replying to this request: %1.").arg("setStatusModifiedBy");
+    qDebug().noquote() << tr("This is the status uuid: %1").arg(statusUuid);
+    qDebug().noquote() << tr("This is the user uuid: %1").arg(userUuid);
 
     RamStatus *status = RamStatus::get(statusUuid);
     if (!status) {
@@ -612,8 +609,8 @@ void Daemon::setStatusModifiedBy(QString statusUuid, QString userUuid, QTcpSocke
 
 void Daemon::getPath(QString uuid, QTcpSocket *client)
 {
-    log(tr("I'm replying to this request: %1.").arg("getPath"), DuQFLog::Debug);
-    log(tr("This is the uuid: %1").arg(uuid), DuQFLog::Data);
+    qDebug().noquote() << tr("I'm replying to this request: %1.").arg("getPath");
+    qDebug().noquote() << tr("This is the uuid: %1").arg(uuid);
 
     QString path = RamAbstractObject::getObjectPath(uuid);
 
@@ -623,8 +620,10 @@ void Daemon::getPath(QString uuid, QTcpSocket *client)
     post(client, content, "getPath", tr("I've got the path of the object."));
 }
 
-Daemon::Daemon(QObject *parent) : DuQFLoggerObject("Daemon", parent)
+Daemon::Daemon(QObject *parent) : QObject(parent)
 {
+    DuLogger::i()->registerComponent("API", this);
+
     m_tcpServer = new QTcpServer(this);
 
     start();
@@ -646,5 +645,5 @@ void Daemon::post(QTcpSocket *client, QJsonObject content, QString query, QStrin
     QString jsonReply = json.toJson();
     client->write( jsonReply.toUtf8() );
 
-    log("Posting:\n" + jsonReply, DuQFLog::Data);
+    qDebug() << "Posting:\n" + jsonReply;
 }

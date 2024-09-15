@@ -5,7 +5,9 @@
 #include "duapp/app-config.h"
 #include "duapp/app-utils.h"
 #include "duapp/ducli.h"
+#include "duapp/dulogger.h"
 #include "duwidgets/duqfupdatedialog.h"
+#include "enums.h"
 #include "ramsettings.h"
 #include "src/qgoodwindow.h"
 
@@ -27,6 +29,14 @@ void initSettings(DuSplashScreen *s)
     }
 }
 
+void initLogger(const QString &loglevel) {
+    LogType level = InformationLog;
+    if (loglevel == "debug") level = DebugLog;
+    else if (loglevel == "warning") level = WarningLog;
+    else if (loglevel == "error") level = CriticalLog;
+    DuLogger::i()->setAsMessageHandler(level);
+}
+
 int main(int argc, char *argv[])
 {
     QT_REQUIRE_VERSION(argc, argv, QT_VERSION_STR)
@@ -40,6 +50,8 @@ int main(int argc, char *argv[])
     DuCLI::initParser(&parser);
 
     DuApplication a(argc, argv);
+    a.processArgs();
+    initLogger(parser.value("log_level"));
 
     // show splashscreen
     a.showSplashScreen();

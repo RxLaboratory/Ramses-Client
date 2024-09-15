@@ -2,7 +2,7 @@
 
 ProgressManager* ProgressManager::_instance = nullptr;
 
-ProgressManager::ProgressManager(QObject *parent) : DuQFLoggerObject("Ramses", parent)
+ProgressManager::ProgressManager(QObject *parent) : QObject(parent)
 {
 
 }
@@ -20,13 +20,11 @@ ProgressManager *ProgressManager::instance()
 
 void ProgressManager::setText(const QString &t)
 {
-    log(m_title + "\n" + t, DuQFLog::Debug);
     emit text(t);
 }
 
 void ProgressManager::setTitle(const QString &t)
 {
-    log(t, DuQFLog::Information);
     m_title = t;
     emit title(t);
 }

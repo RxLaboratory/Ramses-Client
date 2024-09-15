@@ -1,5 +1,6 @@
 #include "localdatainterface.h"
 
+#include "duapp/dulogger.h"
 #include "datacrypto.h"
 #include "datastruct.h"
 #include "duapp/app-version.h"
@@ -25,7 +26,8 @@ void LocalDataInterface::setServerSettings(QString dbFile, ServerConfig c)
     LocalDataInterface::instance();
 
     QSqlDatabase db = QSqlDatabase::database("editdb");
-    if (!openDB(db, dbFile)) LocalDataInterface::instance()->log("Can't save data to the disk.", DuQFLog::Fatal);
+    if (!openDB(db, dbFile))
+        qCritical().noquote() << "{Local Database}" << "Can't save data to the disk.";
 
     // Remove previous settings
     QSqlQuery qry = QSqlQuery(db);
@@ -35,7 +37,7 @@ void LocalDataInterface::setServerSettings(QString dbFile, ServerConfig c)
         errorMessage += "\n> " + tr("Query:") + "\n" + qry.lastQuery();
         errorMessage += "\n> " + tr("Database Error:") + "\n" + qry.lastError().databaseText();
         errorMessage += "\n> " + tr("Driver Error:") + "\n" + qry.lastError().driverText();
-        LocalDataInterface::instance()->log(errorMessage, DuQFLog::Critical);
+        qCritical().noquote() << "{Local Database}" << errorMessage;
 
         db.close();
         return;
@@ -53,7 +55,7 @@ void LocalDataInterface::setServerSettings(QString dbFile, ServerConfig c)
         errorMessage += "\n> " + tr("Query:") + "\n" + qry.lastQuery();
         errorMessage += "\n> " + tr("Database Error:") + "\n" + qry.lastError().databaseText();
         errorMessage += "\n> " + tr("Driver Error:") + "\n" + qry.lastError().driverText();
-        LocalDataInterface::instance()->log(errorMessage, DuQFLog::Critical);
+        qCritical().noquote() << "{Local Database}" << errorMessage;
     }
 
     db.close();
@@ -65,7 +67,8 @@ ServerConfig LocalDataInterface::getServerSettings(QString dbFile)
     LocalDataInterface::instance();
 
     QSqlDatabase db = QSqlDatabase::database("editdb");
-    if (!openDB(db, dbFile)) LocalDataInterface::instance()->log("Can't save data to the disk.", DuQFLog::Fatal);
+    if (!openDB(db, dbFile))
+        qCritical().noquote() << "{Local Database}" << tr("Can't save data to the disk.");
 
     // Get settings
     QSqlQuery qry = QSqlQuery(db);
@@ -76,7 +79,7 @@ ServerConfig LocalDataInterface::getServerSettings(QString dbFile)
         errorMessage += "\n> " + tr("Query:") + "\n" + qry.lastQuery();
         errorMessage += "\n> " + tr("Database Error:") + "\n" + qry.lastError().databaseText();
         errorMessage += "\n> " + tr("Driver Error:") + "\n" + qry.lastError().driverText();
-        LocalDataInterface::instance()->log(errorMessage, DuQFLog::Critical);
+        qCritical().noquote() << "{Local Database}" << errorMessage;
 
         db.close();
         return ServerConfig();
@@ -104,7 +107,8 @@ void LocalDataInterface::setWorkingPath(QString dbFile, QString p)
     LocalDataInterface::instance();
 
     QSqlDatabase db = QSqlDatabase::database("editdb");
-    if (!openDB(db, dbFile)) LocalDataInterface::instance()->log("Can't save data to the disk.", DuQFLog::Fatal);
+    if (!openDB(db, dbFile))
+        qCritical().noquote() << "{Local Database}" << tr("Can't save data to the disk.");
 
     QSqlQuery qry = QSqlQuery(db);
 
@@ -120,7 +124,7 @@ void LocalDataInterface::setWorkingPath(QString dbFile, QString p)
         errorMessage += "\n> " + tr("Query:") + "\n" + qry.lastQuery();
         errorMessage += "\n> " + tr("Database Error:") + "\n" + qry.lastError().databaseText();
         errorMessage += "\n> " + tr("Driver Error:") + "\n" + qry.lastError().driverText();
-        LocalDataInterface::instance()->log(errorMessage, DuQFLog::Critical);
+        qCritical().noquote() << "{Local Database}" << errorMessage;
     }
 
     db.close();
@@ -133,7 +137,8 @@ QString LocalDataInterface::getWorkingPath(QString dbFile)
 
     QSqlDatabase db = QSqlDatabase::database("editdb");
     // Set the SQLite file
-    if (!openDB(db, dbFile)) LocalDataInterface::instance()->log("Can't read data.", DuQFLog::Fatal);
+    if (!openDB(db, dbFile))
+        qCritical().noquote() << "{Local Database}" << tr("Can't read data.");
 
     QSqlQuery qry = QSqlQuery( db );
     if (!qry.exec("SELECT path FROM _Paths WHERE name = 'Project';"))
@@ -142,7 +147,7 @@ QString LocalDataInterface::getWorkingPath(QString dbFile)
         errorMessage += "\n> " + tr("Query:") + "\n" + qry.lastQuery();
         errorMessage += "\n> " + tr("Database Error:") + "\n" + qry.lastError().databaseText();
         errorMessage += "\n> " + tr("Driver Error:") + "\n" + qry.lastError().driverText();
-        LocalDataInterface::instance()->log(errorMessage, DuQFLog::Critical);
+        qCritical().noquote() << "{Local Database}" <<  errorMessage;
 
         db.close();
         return "auto";
@@ -164,7 +169,8 @@ void LocalDataInterface::setProjectUserUuid(const QString &dbFile, const QString
     LocalDataInterface::instance();
 
     QSqlDatabase db = QSqlDatabase::database("editdb");
-    if (!openDB(db, dbFile)) LocalDataInterface::instance()->log("Can't save data to the disk.", DuQFLog::Fatal);
+    if (!openDB(db, dbFile))
+        qCritical().noquote() << "{Local Database}" << tr("Can't save data to the disk.");
 
     QSqlQuery qry = QSqlQuery(db);
 
@@ -183,7 +189,7 @@ void LocalDataInterface::setProjectUserUuid(const QString &dbFile, const QString
         errorMessage += "\n> " + tr("Query:") + "\n" + qry.lastQuery();
         errorMessage += "\n> " + tr("Database Error:") + "\n" + qry.lastError().databaseText();
         errorMessage += "\n> " + tr("Driver Error:") + "\n" + qry.lastError().driverText();
-        LocalDataInterface::instance()->log(errorMessage, DuQFLog::Critical);
+        qCritical().noquote() << "{Local Database}" << errorMessage;
     }
 
     db.close();
@@ -195,7 +201,8 @@ QString LocalDataInterface::projectUuid(const QString &dbFile)
     LocalDataInterface::instance();
 
     QSqlDatabase db = QSqlDatabase::database("editdb");
-    if (!openDB(db, dbFile)) LocalDataInterface::instance()->log("Can't read data.", DuQFLog::Fatal);
+    if (!openDB(db, dbFile))
+        qCritical().noquote() << "{Local Database}" << tr("Can't read data.");
 
     QSqlQuery qry = QSqlQuery( db );
     if (!qry.exec("SELECT projectUuid FROM _User WHERE current = 1;"))
@@ -204,7 +211,7 @@ QString LocalDataInterface::projectUuid(const QString &dbFile)
         errorMessage += "\n> " + tr("Query:") + "\n" + qry.lastQuery();
         errorMessage += "\n> " + tr("Database Error:") + "\n" + qry.lastError().databaseText();
         errorMessage += "\n> " + tr("Driver Error:") + "\n" + qry.lastError().driverText();
-        LocalDataInterface::instance()->log(errorMessage, DuQFLog::Critical);
+        qCritical().noquote() << "{Local Database}" << errorMessage;
 
         db.close();
         return "";
@@ -1211,11 +1218,6 @@ bool LocalDataInterface::undoClean()
     return true;
 }
 
-void LocalDataInterface::logError(QString err)
-{
-    log(err, DuQFLog::Critical);
-}
-
 void LocalDataInterface::quit()
 {
     qDebug() << "LocalDataInterface: Vacuuming...";
@@ -1225,8 +1227,10 @@ void LocalDataInterface::quit()
 }
 
 LocalDataInterface::LocalDataInterface():
-    DuQFLoggerObject("Local Data Interface")
+    QObject()
 {
+    DuLogger::i()->registerComponent("Local Database", this);
+
     //Load local database
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE","localdata");
     db.setHostName("localhost");
@@ -1252,7 +1256,7 @@ bool LocalDataInterface::openDB(QSqlDatabase db, const QString &dbFile)
     // Open
     db.setDatabaseName(dbFile);
     if (!db.open()) {
-        LocalDataInterface::instance()->log("Can't save data to the disk.", DuQFLog::Fatal);
+        qCritical().noquote() << "{Local Database}" << tr("Can't save data to the disk.");
         return false;
     }
 
@@ -1285,9 +1289,9 @@ bool LocalDataInterface::openDB(QSqlDatabase db, const QString &dbFile)
         pm->setText(tr("Updating database scheme"));
         pm->increment();
         QFileInfo dbFileInfo(dbFile);
-        LocalDataInterface::instance()->log(tr("This database was created by an older version of Ramses (%1).\n"
-               "I'm updating it to the current version (%2).\n"
-               "The original file will be renamed to \"%3_%1.ramses\".").arg(currentVersion.toString(), STR_VERSION, dbFileInfo.baseName()));
+        qInfo().noquote() << "{Local Database}" << tr("This database was created by an older version of Ramses (%1).\n"
+                                                          "I'm updating it to the current version (%2).\n"
+                                                          "The original file will be renamed to \"%3_%1.ramses\".").arg(currentVersion.toString(), STR_VERSION, dbFileInfo.baseName());
 
         FileUtils::copy(dbFile, QString("%1/%2_%3.ramses").arg(
                             dbFileInfo.path(),
@@ -1304,7 +1308,7 @@ bool LocalDataInterface::openDB(QSqlDatabase db, const QString &dbFile)
                 errorMessage += "\n> " + tr("Query:") + "\n" + qry.lastQuery();
                 errorMessage += "\n> " + tr("Database Error:") + "\n" + qry.lastError().databaseText();
                 errorMessage += "\n> " + tr("Driver Error:") + "\n" + qry.lastError().driverText();
-                LocalDataInterface::instance()->log(errorMessage, DuQFLog::Critical);
+                qCritical().noquote() << "{Local Database}" << errorMessage;
             }
             // Set the port to the default (80/443)
             qry.exec("UPDATE _Server SET port = 443 WHERE useSsl = 1;");
@@ -1321,7 +1325,7 @@ bool LocalDataInterface::openDB(QSqlDatabase db, const QString &dbFile)
                 errorMessage += "\n> " + tr("Query:") + "\n" + qry.lastQuery();
                 errorMessage += "\n> " + tr("Database Error:") + "\n" + qry.lastError().databaseText();
                 errorMessage += "\n> " + tr("Driver Error:") + "\n" + qry.lastError().driverText();
-                LocalDataInterface::instance()->log(errorMessage, DuQFLog::Critical);
+                qCritical().noquote() << "{Local Database}" << errorMessage;
             }
         }
 
@@ -1342,7 +1346,7 @@ bool LocalDataInterface::openDB(QSqlDatabase db, const QString &dbFile)
                 errorMessage += "\n> " + tr("Query:") + "\n" + qry.lastQuery();
                 errorMessage += "\n> " + tr("Database Error:") + "\n" + qry.lastError().databaseText();
                 errorMessage += "\n> " + tr("Driver Error:") + "\n" + qry.lastError().driverText();
-                LocalDataInterface::instance()->log(errorMessage, DuQFLog::Critical);
+                qCritical().noquote() << "{Local Database}" << errorMessage;
             }
         }
 
@@ -1357,16 +1361,15 @@ bool LocalDataInterface::openDB(QSqlDatabase db, const QString &dbFile)
                 errorMessage += "\n> " + tr("Query:") + "\n" + qry.lastQuery();
                 errorMessage += "\n> " + tr("Database Error:") + "\n" + qry.lastError().databaseText();
                 errorMessage += "\n> " + tr("Driver Error:") + "\n" + qry.lastError().driverText();
-                LocalDataInterface::instance()->log(errorMessage, DuQFLog::Warning);
+                qWarning().noquote() << "{Local Database}" << errorMessage;
             }
         }
     }
     else if (currentVersion > newVersion)
     {
-        LocalDataInterface::instance()->log(tr("This database was created by a more recent version of Ramses (%1).\n"
-               "You should update this Ramses application before using this database!\n"
-               "Be careful if you continue, this could lead to data loss or corrupted databases.").arg(currentVersion.toString()),
-            DuQFLog::Critical);
+        qCritical().noquote() << "{Local Database}" << tr("This database was created by a more recent version of Ramses (%1).\n"
+                                                          "You should update this Ramses application before using this database!\n"
+                                                          "Be careful if you continue, this could lead to data loss or corrupted databases.").arg(currentVersion.toString());
         ok = false;
     }
 
@@ -1630,7 +1633,7 @@ QSqlQuery LocalDataInterface::query(QString q) const
         errorMessage += "\n> " + tr("Query:") + "\n" + qry.lastQuery();
         errorMessage += "\n> " + tr("Database Error:") + "\n" + qry.lastError().databaseText();
         errorMessage += "\n> " + tr("Driver Error:") + "\n" + qry.lastError().driverText();
-        log(errorMessage, DuQFLog::Critical);
+        qCritical().noquote() << "{Local Database}" << errorMessage;
     }
 
     return qry;

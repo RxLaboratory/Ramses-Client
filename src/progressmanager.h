@@ -1,9 +1,9 @@
 #ifndef PROGRESSMANAGER_H
 #define PROGRESSMANAGER_H
 
-#include "duutils/duqflogger.h"
+#include <QObject>
 
-class ProgressManager : public DuQFLoggerObject
+class ProgressManager : public QObject
 {
     Q_OBJECT
 public:

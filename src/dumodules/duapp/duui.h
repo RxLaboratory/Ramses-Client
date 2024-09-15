@@ -1,7 +1,6 @@
 #ifndef DUUI_H
 #define DUUI_H
 
-#include "duwidgets/dumainwindow.h"
 #include "mainwindow.h"
 #include <QCommandLineParser>
 #include <QStackedLayout>

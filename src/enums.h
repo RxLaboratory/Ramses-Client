@@ -1,6 +1,8 @@
 #ifndef ENUMS_H
 #define ENUMS_H
 
+#include "qobject.h"
+
 enum ColorVariant {
     NormalColor,
     DarkerColor,
@@ -15,5 +17,6 @@ enum LogType {
     CriticalLog = 3,
     FatalLog = 4
 };
+Q_DECLARE_METATYPE(LogType);
 
 #endif // ENUMS_H

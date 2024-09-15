@@ -1,5 +1,7 @@
 #include "dbmanagerwidget.h"
 
+#include <QMessageBox>
+
 #include "dbinterface.h"
 #include "qboxlayout.h"
 #include "ramabstractobject.h"

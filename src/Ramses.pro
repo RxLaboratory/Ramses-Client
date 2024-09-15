@@ -42,6 +42,7 @@ INCLUDEPATH += rameditwidgets \
     rammanagerwidgets
 
 SOURCES += \
+    docks/consoledock.cpp \
     dumodules/dugraph/dugraph.cpp \
     docks/settingsdock.cpp \
     dumodules/duapp/app-utils.cpp \
@@ -56,6 +57,7 @@ SOURCES += \
     dumodules/duwidgets/duaction.cpp \
     dumodules/duwidgets/ducolorselector.cpp \
     dumodules/duwidgets/ducombobox.cpp \
+    dumodules/duwidgets/duconsolewidget.cpp \
     dumodules/duwidgets/dudocktitlewidget.cpp \
     dumodules/duwidgets/dudockwidget.cpp \
     dumodules/duwidgets/dufolderselectorwidget.cpp \
@@ -129,7 +131,6 @@ SOURCES += \
     ramobjectdelegates/timelinedelegate.cpp \
     ramobjectviews/statisticsview.cpp \
     ramobjectviews/timelineview.cpp \
-    docks/consolewidget.cpp \
     docks/filemanagerwidget.cpp \
     dumodules/duutils/qtransposeproxymodel.cpp \
     dumodules/duutils/simplecrypt.cpp \
@@ -144,7 +145,6 @@ SOURCES += \
     ramdatainterface/datacrypto.cpp \
     ramdatainterface/localdatainterface.cpp \
     ramdatainterface/logindialog.cpp \
-    ramdatainterface/ramserverinterface.cpp \
     rameditwidgets/applicationeditwidget.cpp \
     rammanagerwidgets/applicationmanagerwidget.cpp \
     rameditwidgets/asseteditwidget.cpp \
@@ -188,7 +188,6 @@ SOURCES += \
     dumodules/dunodeview/duqfnodescene.cpp \
     dumodules/dunodeview/duqfnodeview.cpp \
     dumodules/dunodeview/duqfslot.cpp \
-    dumodules/duutils/duqflogger.cpp \
     dumodules/duutils/guiutils.cpp \
     dumodules/duutils/language-utils.cpp \
     dumodules/duutils/utils.cpp \
@@ -200,8 +199,6 @@ SOURCES += \
     dumodules/duwidgets/duqfdoublespinbox.cpp \
     dumodules/duwidgets/duqffolderdisplaywidget.cpp \
     dumodules/duwidgets/duqflistwidget.cpp \
-    dumodules/duwidgets/duqfloggingtextedit.cpp \
-    dumodules/duwidgets/duqflogtoolbutton.cpp \
     dumodules/duwidgets/duqfslider.cpp \
     dumodules/duwidgets/duqfspinbox.cpp \
     rameditwidgets/filetypeeditwidget.cpp \
@@ -250,6 +247,7 @@ SOURCES += \
     wizards/ramuserswizardpage.cpp
 
 HEADERS += \
+    docks/consoledock.h \
     dumodules/dugraph/dugraph.h \
     config.h \
     docks/settingsdock.h \
@@ -266,6 +264,7 @@ HEADERS += \
     dumodules/duwidgets/duaction.h \
     dumodules/duwidgets/ducolorselector.h \
     dumodules/duwidgets/ducombobox.h \
+    dumodules/duwidgets/duconsolewidget.h \
     dumodules/duwidgets/dudocktitlewidget.h \
     dumodules/duwidgets/dudockwidget.h \
     dumodules/duwidgets/dufolderselectorwidget.h \
@@ -342,7 +341,6 @@ HEADERS += \
     ramobjectviews/timelineview.h \
     ramdatainterface/datacrypto.h \
     ramdatainterface/dbistructures.h \
-    docks/consolewidget.h \
     docks/filemanagerwidget.h \
     dumodules/duapp/app-config.h \
     dumodules/duutils/qtransposeproxymodel.h \
@@ -359,7 +357,6 @@ HEADERS += \
     progresspage.h \
     ramdatainterface/localdatainterface.h \
     ramdatainterface/logindialog.h \
-    ramdatainterface/ramserverinterface.h \
     rameditwidgets/applicationeditwidget.h \
     rammanagerwidgets/applicationmanagerwidget.h \
     rameditwidgets/asseteditwidget.h \
@@ -403,7 +400,6 @@ HEADERS += \
     dumodules/dunodeview/duqfnodescene.h \
     dumodules/dunodeview/duqfnodeview.h \
     dumodules/dunodeview/duqfslot.h \
-    dumodules/duutils/duqflogger.h \
     dumodules/duutils/guiutils.h \
     dumodules/duutils/language-utils.h \
     dumodules/duutils/utils.h \
@@ -415,8 +411,6 @@ HEADERS += \
     dumodules/duwidgets/duqfdoublespinbox.h \
     dumodules/duwidgets/duqffolderdisplaywidget.h \
     dumodules/duwidgets/duqflistwidget.h \
-    dumodules/duwidgets/duqfloggingtextedit.h \
-    dumodules/duwidgets/duqflogtoolbutton.h \
     dumodules/duwidgets/duqfslider.h \
     dumodules/duwidgets/duqfspinbox.h \
     rameditwidgets/filetypeeditwidget.h \

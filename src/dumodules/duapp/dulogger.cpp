@@ -1,11 +1,11 @@
 #include "dulogger.h"
 
 #include <QtDebug>
+#include <QRegularExpression>
 
 const QRegularExpression DuLogger::_componentRE = QRegularExpression("{(\\w+)}");
 
 DuLogger *DuLogger::_instance = nullptr;
-
 
 DuLogger *DuLogger::i()
 {
@@ -16,7 +16,7 @@ DuLogger *DuLogger::i()
 void DuLogger::setAsMessageHandler(LogType loglevel)
 {
 #ifdef QT_DEBUG
-    Q_UNUSED(loglevel)
+    Q_UNUSED(loglevel);
     _cliLevel = DataLog;
 #else
     _cliLevel = loglevel;
@@ -128,10 +128,12 @@ void DuLogger::printErr(const QString &msg)
 {
     QByteArray localMsg = msg.toLocal8Bit();
     fprintf(stderr, "%s\n", localMsg.constData() );
+    fflush(stderr);
 }
 
 void DuLogger::printOut(const QString &msg)
 {
     QByteArray localMsg = msg.toLocal8Bit();
     fprintf(stdout, "%s\n", localMsg.constData() );
+    fflush(stdout);
 }

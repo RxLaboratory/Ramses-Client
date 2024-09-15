@@ -18,6 +18,9 @@
 - Save username and password
 - User reinit password
 - pipeline : crash on layout all steps
+- update daemon to not use project uuid
+- update py api to not use current project
+- auto show console on qcritical
 
 ## Other
 

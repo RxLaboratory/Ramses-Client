@@ -20,7 +20,7 @@
 
 #include "app-version.h"
 #include "duui.h"
-#include "duutils/duqflogger.h"
+#include "enums.h"
 
 class DuSplashScreen : public QSplashScreen
 {
@@ -44,10 +44,10 @@ public:
     }
 
 public slots:
-    void newMessage(QString message, DuQFLog::LogType lt = DuQFLog::Information)
+    void newMessage(QString message, LogType lt = InformationLog)
     {
         if (!this->isVisible()) return;
-        if (lt == DuQFLog::Debug) return;
+        if (lt == DebugLog) return;
         _progressBar->setFormat( "%p% - " + message );
 #ifdef QT_DEBUG
         qDebug().noquote() << message;
