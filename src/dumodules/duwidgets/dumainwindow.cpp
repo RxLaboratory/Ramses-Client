@@ -48,24 +48,39 @@ const QVector<QDockWidget *> &DuMainWindow::docks() const
 
 int DuMainWindow::execDialog(QDialog *dialog) const
 {
-    //ui_centralMainWidget->setGraphicsEffect(_colorizer);
-    //ui_centralMainWidget->setEnabled(false);
-
     // Would be better to find a simple way to have both
     // a frameless dialog AND resizeable
     //dialog->setWindowFlag(Qt::FramelessWindowHint, true);
 
+    // Set a color overlay
+    QWidget *overlay = new QWidget(ui_centralMainWidget);
+    QColor bgColor = DuSettings::i()->get(DuSettings::UI_BackgroundColor).value<QColor>().name();
+    bgColor = DuUI::pushColor(bgColor,4);
+    QString overlayColor = "rgba(" +
+                           QString::number(bgColor.red()) + ", " +
+                           QString::number(bgColor.green()) + ", " +
+                           QString::number(bgColor.blue()) + ", " +
+                           "0.5 )";
+    overlay->setStyleSheet("background: " + overlayColor + ";");
+    overlay->setGeometry(ui_centralMainWidget->geometry());
+    overlay->show();
 
     // Center over our mainwidget
-    dialog->move(ui_centralWidget->geometry().center() - dialog->rect().center());
+    dialog->setWindowFlag(Qt::WindowContextHelpButtonHint, false);
+    dialog->resize(dialog->sizeHint());
+    dialog->move(
+        dialog->mapFromGlobal(
+            this->frameGeometry().center() - dialog->rect().center()
+            )
+        );
 
     int r = dialog->exec();
 
-    // Too slow!!
-    //int r = QGoodCentralWidget::execDialogWithWindow(dialog, const_cast<DuMainWindow*>(this), ui_goodCentralWidget);
+    overlay->hide();
+    overlay->deleteLater();
+    // Repaint ASAP
+    ui_centralMainWidget->repaint();
 
-    //ui_centralMainWidget->setGraphicsEffect(nullptr);
-    //ui_centralMainWidget->setEnabled(true);
     return r;
 }
 
@@ -100,12 +115,6 @@ void DuMainWindow::updateWindow()
 
 void DuMainWindow::setupUi()
 {
-    _colorizer = new QGraphicsColorizeEffect(this);
-    QColor focusColor =  DuSettings::i()->get(DuSettings::UI_FocusColor).value<QColor>();
-    _colorizer->setColor(
-        DuUI::pushColor(focusColor)
-        );
-
     ui_goodCentralWidget = new QGoodCentralWidget(this);
     // Setup the good central widget
     ui_goodCentralWidget->setActiveBorderColor(

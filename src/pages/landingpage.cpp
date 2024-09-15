@@ -61,7 +61,7 @@ void LandingPage::openDatabase(const QString &dbFile)
     bool teamProject = DBInterface::isTeamProject(dbFile);
     if (teamProject) {
 
-        DuLoginDialog d("E-mail", this);
+        DuLoginDialog d("E-mail");
         if (!DuUI::execDialog(&d))
             return;
 

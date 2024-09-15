@@ -25,6 +25,8 @@
 - user DuUI layout methods
 - DuDockWidget update (and reenable Q_ASSERT in their event filter)
 - QDateEdit css
+- reimplement qmessagebox static methods as dumessagebox to improve display using DuUI::exec
+- do the same as above with qdialog/dudialog
 - Project wizard: step templates, shots, assets
 
 ## Other
