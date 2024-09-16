@@ -13,6 +13,10 @@ QCheckBox::indicator, QRadioButton::indicator {
     height: @indicator;
 }
 
+QCheckBox::indicator:disabled, QRadioButton::indicator:disabloed {
+    border: @margin solid @background-push;
+}
+
 QCheckBox::indicator {
     border-radius: @radius;
 }
@@ -21,7 +25,11 @@ QRadioButton::indicator {
     border-radius: @radius-big;
 }
 
-QCheckBox::indicator:pressed, QRadioButton::indicator:pressed {
+QCheckBox::indicator:unchecked, QRadioButton::indicator:unchecked {
+    background-color: @background-push-more;
+}
+
+QCheckBox::indicator:unchecked:pressed, QRadioButton::indicator:unchecked:pressed {
     background-color: @background-pull;
 }
 
@@ -33,7 +41,12 @@ QCheckBox::indicator:checked:pressed, QRadioButton::indicator:checked:pressed {
     background-color: #ca1325;
 }
 
-QCheckBox::indicator:disabled, QRadioButton::indicator:disabled {
-    background-color: transparent;
+QCheckBox::indicator:unchecked:disabled, QRadioButton::indicator:unchecked:disabled {
+    background-color:  @background-push;
+}
+
+
+QCheckBox::indicator:checked:disabled, QRadioButton::indicator:checked:disabled {
+    background-color: @background;
 }
 

@@ -18,6 +18,7 @@
 - user update password
 - User reinit password
 - User edit widget: check if the role and email has changed to not update it if not necessary
+- why so many status on pull?
 - pipeline : crash on layout all steps
 - update daemon to not use project uuid
 - update py api to not use current project

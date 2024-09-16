@@ -14,6 +14,8 @@
 #include "dbinterface.h"
 #include "ramses.h"
 #include "ramserverclient.h"
+#include "ramsettings.h"
+#include "datacrypto.h"
 
 LandingPage::LandingPage(QWidget *parent)
     : QWidget{parent}
@@ -61,15 +63,81 @@ void LandingPage::openDatabase(const QString &dbFile)
     bool teamProject = DBInterface::isTeamProject(dbFile);
     if (teamProject) {
 
-        DuLoginDialog d("E-mail");
-        if (!DuUI::execDialog(&d))
-            return;
+        QString userUuid = "";
+        ServerConfig serverConfig = LocalDataInterface::getServerSettings(dbFile);
+        QString serverAddressSettings = serverConfig.address;
+        serverAddressSettings.replace("/", "|");
 
-        QString userUuid = login(
-            LocalDataInterface::getServerSettings(dbFile),
-            d.username(),
-            d.password()
-            );
+        auto crypto = DataCrypto::instance();
+
+        // Get saved credentials
+        QString savedUsername = DuSettings::i()->get(
+            RamSettings::Login,
+            "",
+            serverAddressSettings + "/username"
+            ).toString();
+        savedUsername = crypto->machineDecrypt(savedUsername);
+
+        QString savedPassword = DuSettings::i()->get(
+           RamSettings::Login,
+           "",
+           serverAddressSettings + "/password"
+           ).toString();
+        savedPassword = crypto->machineDecrypt(savedPassword);
+
+        // Try to login with saved credentials
+        if (savedUsername != "" && savedPassword != "") {
+            userUuid = login(
+                serverConfig,
+                savedUsername,
+                savedPassword
+                );
+        }
+        // Erase the saved password
+        savedPassword = "";
+
+        while (userUuid == "") {
+
+            DuLoginDialog d("E-mail");
+            d.setUsername(savedUsername);
+            if (!DuUI::execDialog(&d))
+                return; // TODO continue in offline mode
+
+            userUuid = login(
+                serverConfig,
+                d.username(),
+                d.password()
+                );
+
+            if (userUuid == "")
+                continue;
+
+            if (d.saveUsername()) {
+                DuSettings::i()->set(
+                    RamSettings::Login,
+                    crypto->machineEncrypt(d.username()),
+                    serverAddressSettings+ "/username"
+                    );
+                if (d.savePassword())
+                    DuSettings::i()->set(
+                        RamSettings::Login,
+                        crypto->machineEncrypt(d.password()),
+                        serverAddressSettings + "/password"
+                        );
+                else // Erase
+                    DuSettings::i()->set(
+                        RamSettings::Login,
+                        "",
+                        serverAddressSettings + "/password"
+                        );
+            }
+            else // Erase
+                DuSettings::i()->set(
+                    RamSettings::Login,
+                    "",
+                    serverAddressSettings + "/username"
+                    );
+        }
 
         // Set current project
 

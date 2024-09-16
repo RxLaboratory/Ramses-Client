@@ -102,7 +102,7 @@ public:
 
     // UI Creation
 
-    static void setupLayout(QLayout *layout, bool isSubLayout = false);
+    static void setupLayout(QLayout *layout, bool isSubLayout = false, bool isDialog = false);
 
     static QBoxLayout *createBoxLayout(Qt::Orientation orientation = Qt::Vertical, bool isSubLayout = true, QWidget *parent = nullptr);
     static QBoxLayout *addBoxLayout(Qt::Orientation orientation, QWidget *parent);

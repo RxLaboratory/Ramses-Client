@@ -7,7 +7,8 @@ namespace RamSettings
 {
     enum SettingKey {
         DaemonPort = DuSettings::Other + 1,
-        RecentDatabases = DuSettings::Other +2,
+        RecentDatabases = DuSettings::Other + 2,
+        Login = DuSettings::Other + 3,
     };
 
     void registerRamsesSettings();

@@ -4,16 +4,26 @@
 
 #include "duapp/duui.h"
 
-DuLoginDialog::DuLoginDialog(const QString &usernameLabel, QWidget *parent, Qt::WindowFlags f):
+DuLoginDialog::DuLoginDialog(const QString &usernameLabel, bool showSaveBoxes, QWidget *parent, Qt::WindowFlags f):
     QDialog(parent, f)
 {
     this->setWindowTitle(tr("Sign in"));
 
     auto formLayout = DuUI::addFormLayout(this);
 
+    auto usernameLayout = DuUI::createBoxLayout(Qt::Horizontal);
+
     ui_usernameEdit = new DuLineEdit(this);
     ui_usernameEdit->setPlaceholderText(usernameLabel);
-    formLayout->addRow(usernameLabel, ui_usernameEdit);
+    usernameLayout->addWidget(ui_usernameEdit);
+
+    if (showSaveBoxes) {
+        ui_saveUsernameBox = new QCheckBox(tr("Save"));
+        ui_saveUsernameBox->setToolTip(tr("Save username"));
+        usernameLayout->addWidget(ui_saveUsernameBox);
+    }
+
+    formLayout->addRow(usernameLabel, usernameLayout);
 
     auto passwordLayout = DuUI::createBoxLayout(Qt::Horizontal);
 
@@ -28,6 +38,13 @@ DuLoginDialog::DuLoginDialog(const QString &usernameLabel, QWidget *parent, Qt::
     ui_showPasswordButton->setCheckable(true);
     ui_showPasswordButton->setToolTip(tr("Show password"));
     passwordLayout->addWidget(ui_showPasswordButton);
+
+    if (showSaveBoxes) {
+        ui_savePasswordBox = new QCheckBox(tr("Save"));
+        ui_savePasswordBox->setToolTip(tr("Save password"));
+        ui_savePasswordBox->setEnabled(false);
+        passwordLayout->addWidget(ui_savePasswordBox);
+    }
 
     formLayout->addRow(tr("Password"), passwordLayout);
 
@@ -58,4 +75,7 @@ DuLoginDialog::DuLoginDialog(const QString &usernameLabel, QWidget *parent, Qt::
                                  tr("You can't reset your password yet.\nPlease contact one of your Ramses administrator to reset your password.")
                                  );
     });
+
+    connect(ui_saveUsernameBox, &QCheckBox::toggled,
+            ui_savePasswordBox, &QCheckBox::setEnabled);
 }

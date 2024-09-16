@@ -391,10 +391,11 @@ int DuUI::execDialog(QDialog *d)
     return d->exec();
 }
 
-void DuUI::setupLayout(QLayout *layout, bool isSubLayout)
+void DuUI::setupLayout(QLayout *layout, bool isSubLayout, bool isDialog)
 {
     int m = DuSettings::i()->get(DuSettings::UI_Margins).toInt();
-    if (isSubLayout) layout->setContentsMargins(0,0,0,0);
+    if (isDialog) layout->setContentsMargins(m*3,m*3,m*3,m*3);
+    else if (isSubLayout) layout->setContentsMargins(0,0,0,0);
     else layout->setContentsMargins(m,m,m,m);
     layout->setSpacing(m);
 }
@@ -412,7 +413,12 @@ QBoxLayout *DuUI::createBoxLayout(Qt::Orientation orientation, bool isSubLayout,
         break;
     }
 
-    setupLayout(layout, isSubLayout);
+    bool isDialog = false;
+    if (parent) {
+        auto d = qobject_cast<QDialog*>(parent);
+        if (d) isDialog = true;
+    }
+    setupLayout(layout, isSubLayout, isDialog);
 
     return layout;
 }
@@ -447,7 +453,12 @@ QBoxLayout *DuUI::addBoxLayout(Qt::Orientation orientation, QFormLayout *parent,
 QFormLayout *DuUI::createFormLayout(bool isSubLayout, QWidget *parent)
 {
     QFormLayout *layout = new QFormLayout(parent);
-    setupLayout(layout, isSubLayout);
+    bool isDialog = false;
+    if (parent) {
+        auto d = qobject_cast<QDialog*>(parent);
+        if (d) isDialog = true;
+    }
+    setupLayout(layout, isSubLayout, isDialog);
     return layout;
 }
 
@@ -466,7 +477,12 @@ QFormLayout *DuUI::addFormLayout(QBoxLayout *parent)
 QGridLayout *DuUI::createGridLayout(bool isSubLayout, QWidget *parent)
 {
     QGridLayout *layout = new QGridLayout(parent);
-    setupLayout(layout, isSubLayout);
+    bool isDialog = false;
+    if (parent) {
+        auto d = qobject_cast<QDialog*>(parent);
+        if (d) isDialog = true;
+    }
+    setupLayout(layout, isSubLayout, isDialog);
     return layout;
 }
 
@@ -485,7 +501,12 @@ QGridLayout *DuUI::addGridLayout(QBoxLayout *parent)
 QStackedLayout *DuUI::createStackedLayout(bool isSubLayout, QWidget *parent)
 {
     auto *layout = new QStackedLayout(parent);
-    setupLayout(layout, isSubLayout);
+    bool isDialog = false;
+    if (parent) {
+        auto d = qobject_cast<QDialog*>(parent);
+        if (d) isDialog = true;
+    }
+    setupLayout(layout, isSubLayout, isDialog);
     return layout;
 }
 
