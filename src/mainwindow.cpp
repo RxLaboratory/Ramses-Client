@@ -42,7 +42,7 @@ MainWindow::MainWindow(const QCommandLineParser &cli, QWidget *parent) :
     // The database interface
     DBInterface::i();
     // The Process manager
-    ProgressManager::instance();
+    ProgressManager::i();
     // Ramses
     Ramses::i();
 
@@ -97,9 +97,6 @@ MainWindow::MainWindow(const QCommandLineParser &cli, QWidget *parent) :
 void MainWindow::connectEvents()
 {
     // Connect events
-
-    // ==== Progress ====
-    connect(ProgressManager::instance(), &ProgressManager::freezeUI, this, &MainWindow::freezeUI);
 
     // ==== Toolbar buttons ====
 
@@ -350,10 +347,10 @@ void MainWindow::databaseSettingsAction()
 void MainWindow::setPage(Page p)
 {
     // If the UI is frozen, delay until freezeUI(false) is called
-    if (ui_mainStack->currentIndex() == Progress)
+    /*if (ui_mainStack->currentIndex() == Progress)
         m_currentPageIndex = p;
     // Else sit it right now
-    else
+    else*/
         ui_mainStack->setCurrentIndex(p);
 }
 
@@ -482,15 +479,15 @@ void MainWindow::ramsesReady()
 
 void MainWindow::freezeUI(bool f)
 {
-    if (f)
+    /*if (f)
     {
         m_currentPageIndex = ui_mainStack->currentIndex();
         ui_mainStack->setCurrentIndex(Progress);
     }
     else
-    {
+    {*/
         ui_mainStack->setCurrentIndex(m_currentPageIndex);
-    }
+    //}
     //this->repaint();
 }
 
@@ -875,9 +872,6 @@ void MainWindow::setupUi()
     qDebug() << "> Schedule ready";
 #endif
 
-    // Progress page
-    progressPage = new ProgressPage(this);
-    ui_mainStack->addWidget(progressPage);
 }
 
 void MainWindow::setupDocks()

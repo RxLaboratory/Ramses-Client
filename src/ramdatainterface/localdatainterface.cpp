@@ -607,23 +607,19 @@ ServerConfig LocalDataInterface::setDataFile(const QString &file)
 
     qDebug() << ">> Cleared cache: " << timer.elapsed()/1000 << " seconds.";
 
-    ProgressManager *pm = ProgressManager::instance();
-    pm->addToMaximum(2);
+    ProgressManager *pm = ProgressManager::i();
 
     QSqlDatabase db = QSqlDatabase::database("localdata");
     openDB(db, file);
 
     qDebug() << ">> Opened file: " << timer.elapsed()/1000 << " seconds.";
 
-    pm->increment();
     pm->setText(tr("Loading data..."));
 
     m_dataFile = file;
 
     emit dataResetCommon();
     emit dataResetProject();
-
-    pm->increment();
 
     qDebug() << ">> Local data ready! " << timer.elapsed()/1000 << " seconds.";
 
@@ -632,8 +628,9 @@ ServerConfig LocalDataInterface::setDataFile(const QString &file)
 
 SyncData LocalDataInterface::getSync(bool fullSync)
 {
-    ProgressManager *pm = ProgressManager::instance();
-    pm->increment();
+    StateHandler s(StateManager::Syncing);
+
+    ProgressManager *pm = ProgressManager::i();
 
     // List all tables
     QStringList tNames = tableNames();
@@ -654,6 +651,8 @@ SyncData LocalDataInterface::getSync(bool fullSync)
 
     // During full sync, clean the data first
     if (fullSync) {
+        pm->setText(tr("Sanitizing data..."));
+
         sanitizeData();
     }
 
@@ -663,16 +662,13 @@ SyncData LocalDataInterface::getSync(bool fullSync)
     QString currentUuid = "";
     if (u) currentUuid = u->uuid();
 
-    pm->addToMaximum(tNames.count() + 2);
-
     QHash<QString, QSet<TableRow>> tables;
 
     for (int i = 0; i < tNames.count(); i++)
-    {      
+    {
         QString tName = tNames.at(i);
 
         pm->setText(tr("Scanning table: %1").arg(tName));
-        pm->increment();
 
         QSet<TableRow> rows;
 
@@ -711,26 +707,21 @@ SyncData LocalDataInterface::getSync(bool fullSync)
     syncData.tables = tables;
 
     pm->setText(tr("Successfully scanned local data."));
-    pm->increment();
 
     return syncData;
 }
 
 void LocalDataInterface::saveSync(SyncData syncData)
 {
-    StateManager::State previousState = StateManager::i()->state();
-    StateManager::i()->setState(StateManager::WritingDataBase);
+    StateHandler s(StateManager::WritingDataBase);
 
     QHash<QString, QSet<TableRow>> tables = syncData.tables;
 
-    ProgressManager *pm = ProgressManager::instance();
-    pm->addToMaximum(tables.count()*2);
+    ProgressManager *pm = ProgressManager::i();
 
     // Insertions
     QHashIterator<QString, QSet<TableRow>> i(tables);
     while (i.hasNext()) {
-
-        pm->increment();
 
         i.next();
         QString tableName = i.key();
@@ -810,19 +801,17 @@ void LocalDataInterface::saveSync(SyncData syncData)
         query( q );
 
         // Emit insertions
-        StateManager::i()->setState(StateManager::LoadingDataBase);
+        StateHandler s2(StateManager::LoadingDataBase);
         foreach(QStringList io, insertedObjects ) {
             emit inserted( io.at(0), io.at(1), io.at(2), io.at(3) );
         }
     }
 
-    StateManager::i()->setState(StateManager::WritingDataBase);
+    StateHandler s3(StateManager::WritingDataBase);
 
     // Updates
     i.toFront();
     while (i.hasNext()) {
-        pm->increment();
-
         i.next();
         QString tableName = i.key();
         if (tableName == "") continue;
@@ -909,7 +898,7 @@ void LocalDataInterface::saveSync(SyncData syncData)
         query( q );
 
         // Emit
-        StateManager::i()->setState(StateManager::LoadingDataBase);
+        StateHandler s4(StateManager::LoadingDataBase);
         foreach(QStringList cu, changedUuids) {
             emit dataChanged(cu.at(0), cu.at(1), cu.at(2), tableName);
         }
@@ -923,24 +912,19 @@ void LocalDataInterface::saveSync(SyncData syncData)
     vacuum();
 
     emit syncFinished();
-
-    StateManager::i()->setState(previousState);
 }
 
 void LocalDataInterface::deleteData(SyncData syncData)
 {
-    ProgressManager *pm = ProgressManager::instance();
+    StateHandler s(StateManager::WritingDataBase);
+
+    ProgressManager *pm = ProgressManager::i();
 
     QHash<QString, QStringList> tables = syncData.deletedUuids;
     QHashIterator<QString, QStringList> i(tables);
 
-    pm->addToMaximum(tables.count());
-
     while (i.hasNext()) {
-
         i.next();
-
-        pm->increment();
 
         QString tableName = i.key();
         QStringList rows = i.value();
@@ -1016,18 +1000,15 @@ void LocalDataInterface::setUserRole(const QString &uuid, const QString &role)
 
 void LocalDataInterface::sync(SyncData data, QString serverUuid)
 {
-    ProgressManager *pm = ProgressManager::instance();
+    StateHandler s(StateManager::Syncing);
+
+    ProgressManager *pm = ProgressManager::i();
     pm->setText(tr("Updating local data..."));
-    pm->addToMaximum(1);
 
     saveSync(data);
     deleteData(data);
 
     // Save sync date
-
-    pm->increment();
-    pm->setText(tr("Cleaning..."));
-
     QString q = "DELETE FROM _Sync;";
     query( q );
     q = "INSERT INTO _Sync ( lastSync, uuid ) VALUES ( '%1', '%2' );";
@@ -1242,6 +1223,9 @@ void LocalDataInterface::sanitizeData()
 {
     QSignalBlocker b(this);
 
+    auto pm = ProgressManager::i();
+    pm->setText(tr("Sanitizing data..."));
+
     qInfo().noquote() << "Cleaning database: sanitizing data...";
     sanitizeStatusTable();
     sanitizeScheduleTable();
@@ -1266,6 +1250,10 @@ void LocalDataInterface::sanitizeStatusTable()
         > sanitizedData;
 
     const QVector<QStringList> tData = tableData(QStringLiteral("RamStatus"));
+
+    auto pm = ProgressManager::i();
+    pm->setText(tr("Sanitizing Statuses..."));
+
     for (const QStringList &row: tData) {
 
         // This can be long, be nice, process events!
@@ -1338,6 +1326,11 @@ void LocalDataInterface::sanitizeScheduleTable()
     int count = 0;
 
     const QVector<QStringList> tData = tableData(QStringLiteral("RamScheduleEntry"));
+
+    auto pm = ProgressManager::i();
+    pm->setText(tr("Sanitizing Schedule..."));
+
+    int i = 0;
     for (const QStringList &row: tData) {
 
         // This can be long, be nice, process events!
@@ -1366,6 +1359,9 @@ void LocalDataInterface::sanitizeScheduleTable()
 
 void LocalDataInterface::deleteRemovedData()
 {
+    auto pm = ProgressManager::i();
+    pm->setText(tr("Cleaning database..."));
+
     qInfo().noquote() << "Cleaning database: deleting obsolete data...";
     const QStringList tNames = tableNames();
     for(const QString &tName: tNames)
@@ -1381,6 +1377,9 @@ void LocalDataInterface::deleteRemovedData(const QString &tableName)
 
 void LocalDataInterface::backupCurrentDatabase()
 {
+    auto pm = ProgressManager::i();
+    pm->setText(tr("Backuping current database..."));
+
     QFileInfo dbFileInfo(m_dataFile);
     QString backupFile = dbFileInfo.path() + "/" + dbFileInfo.baseName() + "_bak." + dbFileInfo.completeSuffix();
     if (QFileInfo::exists(backupFile)) FileUtils::remove(backupFile);
@@ -1408,8 +1407,7 @@ LocalDataInterface::LocalDataInterface():
 
 bool LocalDataInterface::openDB(QSqlDatabase db, const QString &dbFile)
 {   
-    ProgressManager *pm = ProgressManager::instance();
-    pm->addToMaximum(2);
+    ProgressManager *pm = ProgressManager::i();
     pm->setText(tr("Opening database..."));
 
     // Make sure the DB is closed
@@ -1423,7 +1421,6 @@ bool LocalDataInterface::openDB(QSqlDatabase db, const QString &dbFile)
 
     // Check the version, and update the db scheme
     pm->setText(tr("Checking database version"));
-    pm->increment();
 
     QSqlQuery qry = QSqlQuery(db);
 
@@ -1448,7 +1445,6 @@ bool LocalDataInterface::openDB(QSqlDatabase db, const QString &dbFile)
     if (currentVersion < newVersion)
     {
         pm->setText(tr("Updating database scheme"));
-        pm->increment();
         QFileInfo dbFileInfo(dbFile);
         qInfo().noquote() << "{Local-Database}" << tr("This database was created by an older version of Ramses (%1).\n"
                                                           "I'm updating it to the current version (%2).\n"
@@ -1542,7 +1538,7 @@ bool LocalDataInterface::openDB(QSqlDatabase db, const QString &dbFile)
 
 void LocalDataInterface::autoCleanDB()
 {
-    ProgressManager *pm = ProgressManager::instance();
+    ProgressManager *pm = ProgressManager::i();
     pm->setText("Cleaning the database...");
 
     auto db = QSqlDatabase::database("localdata");

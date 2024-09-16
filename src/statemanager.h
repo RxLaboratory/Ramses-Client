@@ -13,10 +13,12 @@ public:
 
     enum State {
         Idle = 0,
-        WritingDataBase = 1,
-        Connecting = 2,
-        LoadingDataBase = 3,
-        Closing,
+        Opening = 1,
+        WritingDataBase = 2,
+        Connecting = 3,
+        LoadingDataBase = 4,
+        Closing = 5,
+        Syncing = 6,
     };
 
     /**
@@ -50,6 +52,32 @@ private:
     State m_state = Idle;
     State m_previousState = Idle;
     DuApplication *m_app;
+};
+
+class StateHandler
+{
+public:
+    StateHandler(StateManager::State s) {
+        freezeState();
+        StateManager::i()->setState(s);
+    }
+    ~StateHandler() {
+        if (!_r)
+            resetState();
+    }
+
+    void resetState() {
+        StateManager::i()->setState(_p);
+        _r = true;
+    }
+
+    void freezeState() {
+        _p = StateManager::i()->state();
+    }
+
+private:
+    StateManager::State _p;
+    bool _r = false;
 };
 
 #endif // STATEMANAGER_H

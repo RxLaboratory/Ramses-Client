@@ -91,6 +91,7 @@
         <file alias="ramses90">icons/ramses90.svg</file>
         <file alias="server90">icons/server90.svg</file>
         <file alias="storage90">icons/storage90.svg</file>
+        <file alias="wait">icons/wait.svg</file>
     </qresource>
     <qresource prefix="/styles">
         <file alias="vars">styles/style-values.rui</file>

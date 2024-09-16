@@ -9,6 +9,7 @@
 #include "duapp/duui.h"
 #include "duwidgets/duicon.h"
 #include "duwidgets/dulogindialog.h"
+#include "statemanager.h"
 #include "wizards/jointeamprojectwizard.h"
 #include "wizards/projectwizard.h"
 #include "dbinterface.h"
@@ -16,6 +17,7 @@
 #include "ramserverclient.h"
 #include "ramsettings.h"
 #include "datacrypto.h"
+#include "progressmanager.h"
 
 LandingPage::LandingPage(QWidget *parent)
     : QWidget{parent}
@@ -59,9 +61,17 @@ void LandingPage::createDatabase(bool team)
 
 void LandingPage::openDatabase(const QString &dbFile)
 {
+    StateHandler s(StateManager::Opening);
+
+    auto pm = ProgressManager::i();
+    pm->start();
+    pm->setTitle(tr("Opening database: %1").arg(dbFile));
+
     // If this is a team project, login
     bool teamProject = DBInterface::isTeamProject(dbFile);
     if (teamProject) {
+
+        pm->setText(tr("Logging in..."));
 
         QString userUuid = "";
         ServerConfig serverConfig = LocalDataInterface::getServerSettings(dbFile);
@@ -95,6 +105,8 @@ void LandingPage::openDatabase(const QString &dbFile)
         }
         // Erase the saved password
         savedPassword = "";
+
+        pm->setText(tr("Setting current user..."));
 
         while (userUuid == "") {
 
@@ -163,6 +175,8 @@ void LandingPage::openDatabase(const QString &dbFile)
 
         // Set current project
 
+        pm->setText(tr("Setting current project..."));
+
         QString projectUuid = LocalDataInterface::projectUuid(dbFile);
         if (projectUuid == "") {
             QMessageBox::warning(this,
@@ -190,10 +204,28 @@ void LandingPage::openDatabase(const QString &dbFile)
         LocalDataInterface::setProjectUserUuid(dbFile, projectUuid, userUuid);
     }
 
+    pm->setText(tr("Loading data..."));
+
     DBInterface::i()->loadDataFile(dbFile);
+
     // Restart sync
-    if (teamProject)
+    pm->setText(tr("Initial sync..."));
+    if (teamProject) {
+
+        // Keep the state on Opening
+        // Until sync has finished
+        s.freezeState();
+
+        connect(DBInterface::i(), &DBInterface::syncFinished,
+                this, [this]() {
+            StateManager::i()->setState(StateManager::Idle);
+            disconnect(DBInterface::i(), nullptr, this, nullptr);
+        });
+
         DBInterface::i()->fullSync();
+    }
+
+    pm->setText(tr("Init Ramses..."));
     Ramses::i()->loadDatabase();
 }
 

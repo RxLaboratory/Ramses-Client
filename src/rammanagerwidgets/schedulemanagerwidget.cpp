@@ -139,15 +139,13 @@ void ScheduleManagerWidget::addEntry(RamObject *stepObj)
 
     m_project->suspendEstimations(true);
 
-    ProgressManager *pm = ProgressManager::instance();
+    ProgressManager *pm = ProgressManager::i();
     pm->setTitle(tr("Creating schedule entries"));
 
-    pm->setMaximum(count);
     pm->start();
 
     for (int i = 0; i < count; i++)
     {
-        pm->increment();
         const QModelIndex &index = selection.at(i);
 
         QString rowUuid = ui_table->model()->headerData(index.row(), Qt::Vertical, RamObject::UUID).toString();

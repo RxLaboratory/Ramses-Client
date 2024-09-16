@@ -20,9 +20,7 @@
 #include "duutils/utils.h"
 #include "duwidgets/dudocktitlewidget.h"
 #include "duwidgets/dudockwidget.h"
-#include "progresspage.h"
 #include "ramproject.h"
-#include "usereditwidget.h"
 
 class MainWindow : public DuMainWindow
 {
@@ -38,7 +36,6 @@ public:
         Assets = 4,
         Shots = 5,
         Schedule = 6,
-        Progress = 7
     };
 
     explicit MainWindow(const QCommandLineParser &cli, QWidget *parent = nullptr);
@@ -133,7 +130,6 @@ private:
     void raise();
 
     QSystemTrayIcon *trayIcon;
-    ProgressPage *progressPage;
     bool m_maximized;
 
     // ToolBar Menus

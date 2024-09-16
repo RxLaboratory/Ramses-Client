@@ -327,7 +327,7 @@ void DBTableModel::reload()
 {
     if (!m_isLoaded) return;
 
-    ProgressManager *pm = ProgressManager::instance();
+    ProgressManager *pm = ProgressManager::i();
     pm->setText(tr("Reloading '%1'").arg(m_table));
 
     beginResetModel();

@@ -83,6 +83,7 @@ SOURCES += \
     dumodules/duwidgets/dutextedit.cpp \
     dumodules/duwidgets/dutoolbarspacer.cpp \
     dumodules/duwidgets/dutreewidget.cpp \
+    dumodules/duwidgets/duwaiticonwidget.cpp \
     dumodules/duwidgets/settingswidget.cpp \
     pages/homepage.cpp \
     pages/landingpage.cpp \
@@ -148,8 +149,6 @@ SOURCES += \
     rammanagerwidgets/applicationmanagerwidget.cpp \
     rameditwidgets/asseteditwidget.cpp \
     rameditwidgets/assetgroupeditwidget.cpp \
-    progressbar.cpp \
-    progresspage.cpp \
     daemon.cpp \
     rammanagerwidgets/assetgroupmanagerwidget.cpp \
     rammanagerwidgets/assetmanagerwidget.cpp \
@@ -289,6 +288,7 @@ HEADERS += \
     dumodules/duwidgets/dutextedit.h \
     dumodules/duwidgets/dutoolbarspacer.h \
     dumodules/duwidgets/dutreewidget.h \
+    dumodules/duwidgets/duwaiticonwidget.h \
     dumodules/duwidgets/settingswidget.h \
     enums.h \
     pages/homepage.h \
@@ -352,8 +352,6 @@ HEADERS += \
     dumodules/duwidgets/duqfsslcheckbox.h \
     dumodules/duwidgets/duqftitlebar.h \
     dumodules/duwidgets/duqfupdatedialog.h \
-    progressbar.h \
-    progresspage.h \
     ramdatainterface/localdatainterface.h \
     rameditwidgets/applicationeditwidget.h \
     rammanagerwidgets/applicationmanagerwidget.h \

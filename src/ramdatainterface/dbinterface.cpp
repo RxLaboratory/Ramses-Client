@@ -251,6 +251,11 @@ void DBInterface::acceptClean()
 
 bool DBInterface::sync()
 {
+    StateHandler s(StateManager::Syncing);
+
+    ProgressManager *pm = ProgressManager::i();
+    pm->setText(tr("Beginning quick data sync..."));
+
     switch (RamServerClient::i()->status()){
     case RamServerClient::Offline:
         m_lastError = tr("Can't sync for now, the client is offline.\nYou need to log in first.");
@@ -270,10 +275,6 @@ bool DBInterface::sync()
 
     emit syncStarted();
 
-    ProgressManager *pm = ProgressManager::instance();
-    pm->addToMaximum(3);
-    pm->setText(tr("Beginning quick data sync..."));
-
     qInfo().noquote() << "{Database-Interface}" << tr("Beginning quick data sync...");
 
     // Get modified rows from local
@@ -289,6 +290,11 @@ bool DBInterface::sync()
 
 bool DBInterface::fullSync()
 {
+    StateHandler s(StateManager::Syncing);
+
+    ProgressManager *pm = ProgressManager::i();
+    pm->setText(tr("Beginning full data sync..."));
+
     switch (RamServerClient::i()->status()){
     case RamServerClient::Offline:
         m_lastError = tr("Can't sync for now, the client is offline.\nYou need to log in first.");
@@ -308,9 +314,6 @@ bool DBInterface::fullSync()
 
     emit syncStarted();
 
-    ProgressManager *pm = ProgressManager::instance();
-    pm->addToMaximum(3);
-    pm->setText(tr("Beginning full data sync..."));
     qInfo().noquote() << "{Database-Interface}" << tr("Beginning full data sync...");
 
     // Get modified rows from local

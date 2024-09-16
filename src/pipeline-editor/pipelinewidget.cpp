@@ -680,7 +680,7 @@ void PipelineWidget::changeProject()
     if (!m_projectChanged) return;
     m_projectChanged = false;
 
-    ProgressManager *pm = ProgressManager::instance();
+    ProgressManager *pm = ProgressManager::i();
 
     QSignalBlocker b1(m_nodeScene);
     QSignalBlocker b2(ui_nodeView);
@@ -696,13 +696,11 @@ void PipelineWidget::changeProject()
 
     pm->start();
     pm->setText("Loading project...");
-    pm->setMaximum( m_project->steps()->rowCount() + m_project->pipeline()->rowCount() );
 
     // add steps
     for(int i = 0; i < m_project->steps()->rowCount(); i++)
     {
         pm->setText("Building step nodes...");
-        pm->increment();
         newStep( m_project->steps()->get(i) );
     }
 
@@ -710,7 +708,6 @@ void PipelineWidget::changeProject()
     for ( int i = 0; i < m_project->pipeline()->rowCount(); i++ )
     {
         pm->setText("Building pipes...");
-        pm->increment();
         newPipe( m_project->pipeline()->get(i) );
     }
 

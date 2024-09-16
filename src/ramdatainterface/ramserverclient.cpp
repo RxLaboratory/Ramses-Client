@@ -12,6 +12,8 @@
 #include "duapp/dulogger.h"
 #include "datacrypto.h"
 #include "localdatainterface.h"
+#include "progressmanager.h"
+#include "statemanager.h"
 
 RamServerClient *RamServerClient::_instance = nullptr;
 
@@ -277,11 +279,15 @@ QJsonObject RamServerClient::resetPasswordWithEmail(const QString &email)
 
 void RamServerClient::sync(SyncData syncData)
 {
+    StateHandler s(StateManager::Syncing);
+
     // We should not already be in a sync or logged out
     if (m_status != Ready) return;
 
     // Save sync data
     m_pushingData = syncData;
+
+    auto pm = ProgressManager::i();
 
     // Start session
     startSync();
@@ -787,6 +793,8 @@ QJsonObject RamServerClient::parseData(QNetworkReply *reply)
 
 void RamServerClient::startSync()
 {
+    StateHandler s(StateManager::Syncing);
+
     qDebug().noquote() << "{Client}" << "Starting Sync...";
 
     setStatus(Syncing);
@@ -799,6 +807,11 @@ void RamServerClient::startSync()
 
 void RamServerClient::fetch()
 {
+    StateHandler s(StateManager::Syncing);
+
+    auto pm = ProgressManager::i();
+    pm->setText(tr("Fetching server updates..."));
+
     qDebug().noquote() << "{Client}" << "Server Interface: Fetching changes...";
 
     queueRequest("fetch");
@@ -806,6 +819,8 @@ void RamServerClient::fetch()
 
 void RamServerClient::push(QString table, QSet<TableRow> rows, QString date, bool commit)
 {
+    StateHandler s(StateManager::Syncing);
+
     qDebug().noquote() << "{Client}" << "Pushing" << rows.count() << "rows to" << table;
 
     QJsonObject body;
@@ -828,6 +843,8 @@ void RamServerClient::push(QString table, QSet<TableRow> rows, QString date, boo
 
 void RamServerClient::pull(QString table, int page)
 {
+    StateHandler s(StateManager::Syncing);
+
     qDebug().noquote() << "{Client}" << "Pulling page #" << page << " from " << table;
 
     QJsonObject body;
@@ -838,6 +855,8 @@ void RamServerClient::pull(QString table, int page)
 
 void RamServerClient::pushNext()
 {
+    StateHandler s(StateManager::Syncing);
+
     // If the tables list is empty, we've pushed everything, commit
     if (m_pushingData.tables.isEmpty())
     {
@@ -845,10 +864,14 @@ void RamServerClient::pushNext()
         return;
     }
 
-    // Get a table and push its first 100 rows
+    // Get a table and push its first 1000 rows
     QString table = *m_pushingData.tables.keyBegin();
     QSet<TableRow> rows = m_pushingData.tables.value(table);
     QSet<TableRow> pushRows;
+
+    auto pm = ProgressManager::i();
+    pm->setText(tr("Uploading data from %1.").arg(table));
+
     while (pushRows.count() < m_requestMaxRows && !rows.isEmpty())
     {
         QSet<TableRow>::const_iterator i = rows.cbegin();
@@ -879,11 +902,15 @@ void RamServerClient::pushNext()
 
 void RamServerClient::pullNext()
 {
+    StateHandler s(StateManager::Syncing);
+
     if (m_fetchData.tables.isEmpty())
     {
         finishSync();
         return;
     }
+
+    auto pm = ProgressManager::i();
 
     // Get a table and pull its next page
     bool finished = true;
@@ -897,6 +924,8 @@ void RamServerClient::pullNext()
             i++;
             continue;
         }
+
+        pm->setText(tr("Downloading changes from the server (table: %1)...").arg(fetchData.name));
 
         qInfo().noquote() << "{Client}" << tr("Downloading new data from the server...");
 
@@ -916,13 +945,23 @@ void RamServerClient::pullNext()
 
 void RamServerClient::commit()
 {
+    StateHandler s(StateManager::Syncing);
+
     qInfo().noquote() << "{Client}" << "Commit!";
+
+    auto pm = ProgressManager::i();
+    pm->setText(tr("Committing changes..."));
 
     push("", QSet<TableRow>(), "1818-05-05 00:00:00", true);
 }
 
 void RamServerClient::finishSync(bool inError)
 {
+    StateHandler s(StateManager::Syncing);
+
+    auto pm = ProgressManager::i();
+    pm->setText(tr("Saving to local data..."));
+
     qDebug() << "{Client}" << "Finishing sync...";
 
     // Emit result

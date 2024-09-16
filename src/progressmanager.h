@@ -3,29 +3,25 @@
 
 #include <QObject>
 
+
 class ProgressManager : public QObject
 {
     Q_OBJECT
 public:
-    static ProgressManager *instance();
+    static ProgressManager *i();
     void setText(const QString &t);
     void setTitle(const QString &t);
-    void setProgress(const int &p);
-    void setMaximum(const int &m);
-    void freeze(const bool &f=true);
-    void increment();
-    void addToMaximum(const int &m);
+
+    QString text() const { return m_text; }
+    QString title() const { return m_title; }
+
     void reInit();
     void finish();
     void start();
-    bool isBusy() const;
 
 signals:
-    void progress(int);
-    void text(QString);
-    void title(QString);
-    void maximum(int);
-    void freezeUI(bool);
+    void textChanged(QString);
+    void titleChanged(QString);
     void finished();
     void started();
 
@@ -35,11 +31,8 @@ protected:
 private:
     explicit ProgressManager(QObject *parent = nullptr);
 
-    int m_val = 0;
-    int m_maximum = 0;
-    bool m_busy = false;
-    bool m_frozen = false;
     QString m_title = "";
+    QString m_text = "";
 };
 
 #endif // PROGRESSMANAGER_H

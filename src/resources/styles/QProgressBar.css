@@ -4,9 +4,9 @@ QProgressBar {
 }
 
 QProgressBar::chunk {
-    background-color: @focus;
+    background-color: @focus-push-more;
 }
 
 QProgressBar::chunk:hover {
-    background-color: @focus;
+    background-color: @focus-push-more;
 }
