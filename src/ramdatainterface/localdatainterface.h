@@ -125,7 +125,7 @@ private:
     // Opens the database, updates the scheme if needed
     static bool openDB(QSqlDatabase db, const QString &dbFile);
 
-    static void autoCleanDB(QSqlDatabase db);
+    static void autoCleanDB();
 
     // Runs a query on the current database
     QSqlQuery query(QString q) const;

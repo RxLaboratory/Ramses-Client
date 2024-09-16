@@ -1,19 +1,10 @@
 ## Priority fixes
 
-- remove refactor Local:
-    - LDI sync
-    - Continue sync
-    - when saving server data, delete all removed lines
-- Server remove refactor:
-    - on commit/pull: send removed rows only if they were included in the push as non-removed
-
 - Refactor project edit widget
     - and user assignments, for admin only
 - to fix loading order: try to keep the uuid list in the model to reload the objects later (maybe monitor the corresponding dbtable to auto reload)
 - WIP Edit Widget
-    - toJson loadJson for RamUser
-    - show estim for steps
-    - open folder for users
+    - open folder for all objects
 - Assigned users not listed in projects on first open (must be an issue with the order of pulling tables) (try keeping the uuids to be reoladed later)
 - show states (Connect states to indicators in mainwindow (is team, server status & ssl, state manager)
     - implement a state indicator / progress
@@ -21,7 +12,6 @@
 - offline mode if network unavailable for team projects (skip login, add a button to skip/set offline on login dialog)
 - Update/refactor progressmanager (with state manager) and homepage
 - assign users in projecteditwidget (disabled for non admins)
-- why so many status on pull? (and in the table! looks like they're removed instead of being modified)
 - pipeline : crash on layout all steps
 - update daemon to not use project uuid
 - update py api to not use current project
@@ -35,9 +25,8 @@
 
 ## Other
 
-- Refactor folders: all from project
-- reimplement save username and savepassword
-- DBInterface::acceptClean -> replace old m_rsi method
+- Refactor folders: all from project (done ? check)
+- DBInterface::acceptClean -> remove older clean methods, now has an autoclean on sync
 - refactor setonline/setoffline (cf mainwindow)
 
 ## Client UI

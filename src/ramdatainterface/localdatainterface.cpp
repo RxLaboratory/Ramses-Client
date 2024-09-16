@@ -1230,6 +1230,8 @@ bool LocalDataInterface::undoClean()
 
 void LocalDataInterface::quit()
 {
+    // Auto clean!
+    autoCleanDB();
     qDebug() << "LocalDataInterface: Vacuuming...";
     vacuum();
     //waitForReady();
@@ -1535,16 +1537,15 @@ bool LocalDataInterface::openDB(QSqlDatabase db, const QString &dbFile)
     // If not ok, finished
     if (!ok) return true;
 
-    // Auto clean!
-    autoCleanDB(db);
-
     return true;
 }
 
-void LocalDataInterface::autoCleanDB(QSqlDatabase db)
+void LocalDataInterface::autoCleanDB()
 {
     ProgressManager *pm = ProgressManager::instance();
     pm->setText("Cleaning the database...");
+
+    auto db = QSqlDatabase::database("localdata");
 
     QSqlQuery qry = QSqlQuery(db);
 
@@ -1563,211 +1564,6 @@ void LocalDataInterface::autoCleanDB(QSqlDatabase db)
     // === Delete removed schedule entries ===
 
     qry.exec("DELETE FROM RamScheduleEntry WHERE `removed` = 1 ;");
-
-    // === Clean Schedule entries ===
-
-    // Add the project in schedule entries data
-    qry.exec("SELECT `uuid`, `data` FROM 'RamScheduleEntry' ;");
-
-    // Count the results to help the progress bar
-    qry.last();
-    int numRows = qry.at() + 1;
-    pm->addToMaximum( numRows );
-    qDebug() << "Found " << numRows << " RamScheduleEntry...";
-    qry.seek(-1);
-
-    // To speed up things, keep step/project association
-    QHash<QString,QString> stepProjectUuids;
-    QStringList uuidsToRemove;
-    QVector<QStringList> updateData;
-    while (qry.next())
-    {
-        QString dataStr = qry.value(1).toString();
-        QString uuid = qry.value(0).toString();
-        // Parse the data
-        QJsonDocument doc = QJsonDocument::fromJson( dataStr.toUtf8() );
-        QJsonObject obj = doc.object();
-        QString projUuid = obj.value("project").toString();
-        if (projUuid != "") continue;
-        QString stepUuid = obj.value("step").toString();
-        if (stepUuid == "" || stepUuid == "none") {
-            uuidsToRemove << uuid;
-            continue;
-        }
-        projUuid = stepProjectUuids.value(stepUuid);
-        if (projUuid == "") {
-            // Get the project
-            QSqlQuery qryProj = QSqlQuery(db);
-            QString q = "SELECT `data` FROM 'RamStep' WHERE `uuid` = '%1' ;";
-            qryProj.exec( q.arg(stepUuid) );
-            if (qryProj.first()) {
-                QString stepDataStr = qryProj.value(0).toString();
-                QJsonDocument stepDoc = QJsonDocument::fromJson( stepDataStr.toUtf8() );
-                QJsonObject stepObj = stepDoc.object();
-                projUuid = stepObj.value("project").toString();
-                if (projUuid != "") stepProjectUuids.insert(stepUuid, projUuid);
-            }
-        }
-        if (projUuid != "") {
-            obj.insert("project", projUuid);
-            doc.setObject(obj);
-            QStringList d;
-            d << uuid << doc.toJson(QJsonDocument::Compact);
-            updateData << d;
-        }
-        else uuidsToRemove << uuid;
-    }
-
-    qDebug() << "Found " << uuidsToRemove.count() << " invalid or empty entries to remove.";
-    qDebug() << "From " << updateData.count() << " entries to update with the project info.";
-
-    // Remove uuids without project
-    // Split in 250 rows at once
-    if (!uuidsToRemove.isEmpty())
-    {
-        // Split by 250 rows at a time
-        while (!uuidsToRemove.isEmpty())
-        {
-            QString condition = " `uuid` = '" + uuidsToRemove.takeLast() + "' ";
-            for (int i = 0; i < 250; i++)
-            {
-                if (uuidsToRemove.isEmpty()) break;
-                condition += " OR `uuid` = '" + uuidsToRemove.takeLast() + "' ";
-            }
-
-            qry.exec("DELETE FROM 'RamScheduleEntry' WHERE " + condition );
-        }
-    }
-
-    // Set the new data
-    if (!updateData.isEmpty())
-    {
-        // Split by 250 rows at a time
-        while (!updateData.isEmpty())
-        {
-            QStringList data = updateData.takeLast();
-            QString uuid = data.at(0);
-            QString d = data.at(1);
-            QString values = " ( '" + uuid + "', '" + d.replace("'", "''") + "' ) ";
-            for (int i = 0; i < 250; i++)
-            {
-                if (updateData.isEmpty()) break;
-                data = updateData.takeLast();
-                QString uuid = data.at(0);
-                QString d = data.at(1);
-                values += ", ( '" + uuid + "', '" + d.replace("'", "''") + "' ) ";
-            }
-
-            qry.exec("INSERT INTO RamScheduleEntry (`uuid`, `data`) "
-                     "VALUES " + values +
-                     " ON CONFLICT(uuid) DO UPDATE SET "
-                     " `data` = excluded.data ;"
-                     );
-        }
-    }
-
-    // === Move the oldest statuses to their statushistory table ===
-
-    // List all statuses
-    qry.exec("SELECT `uuid`, `data` FROM RamStatus ;");
-
-    // Count the results to help the progress bar
-    qry.last();
-    numRows = qry.at() + 1;
-    pm->addToMaximum( numRows );
-    qDebug() << "Found " << numRows << " RamStatus...";
-    qry.seek(-1);
-
-    // Parse all data
-    QHash<QString,QHash<QString,QJsonObject>> latestItemStepData; // used to check which is the latest status
-    QHash<QString,QHash<QString,QString>> latestItemStepUuid; // we need to keep the uuid too
-    QStringList statusToMove; // uuids to move from one table to the other
-    while (qry.next())
-    {
-        QString dataStr = qry.value(1).toString();
-        // Parse the data
-        QJsonDocument doc = QJsonDocument::fromJson( dataStr.toUtf8() );
-        QJsonObject obj = doc.object();
-        QString itemUuid = obj.value("item").toString();
-        if (itemUuid == "") continue;
-        QString stepUuid = obj.value("step").toString();
-        if (stepUuid == "") continue;
-
-        // Check if we've already found a status for this item/step
-        QHash<QString,QJsonObject> stepData = latestItemStepData.value(itemUuid);
-        QJsonObject other = stepData.value(stepUuid);
-
-        // Not found yet
-        if (other.isEmpty())
-        {
-            // save data
-            stepData.insert(stepUuid, obj);
-            latestItemStepData.insert(itemUuid, stepData);
-            // save uuid
-            QString uuid = qry.value(0).toString();
-            QHash<QString,QString> latestStepUuid = latestItemStepUuid.value(itemUuid);
-            latestStepUuid.insert(stepUuid, uuid);
-            latestItemStepUuid.insert(itemUuid, latestStepUuid);
-        }
-        else
-        {
-            // Compare dates
-            QDateTime currentDate = QDateTime::fromString( obj.value("date").toString(), DATETIME_DATA_FORMAT );
-            QDateTime otherDate = QDateTime::fromString( other.value("date").toString(), DATETIME_DATA_FORMAT );
-            if (currentDate > otherDate)
-            {
-                QHash<QString,QString> latestStepUuid = latestItemStepUuid.value(itemUuid);
-
-                // The other must be moved
-                QString otherUuid = latestStepUuid.value(stepUuid);
-                statusToMove << otherUuid;
-
-                // save data
-                stepData.insert(stepUuid, obj);
-                latestItemStepData.insert(itemUuid, stepData);
-                // save uuid
-                QString uuid = qry.value(0).toString();
-                latestStepUuid.insert(stepUuid, uuid);
-                latestItemStepUuid.insert(itemUuid, latestStepUuid);
-            }
-            else
-            {
-                // This one must be moved
-                QString uuid = qry.value(0).toString();
-                statusToMove << uuid;
-            }
-        }
-    }
-
-    qDebug() << "Found " << statusToMove.count() << " old status to move in the history";
-    qDebug() << "From " << latestItemStepData.count() << " data / " << latestItemStepUuid.count() << " uuids.";
-
-    // Move data to the other table
-    if (!statusToMove.isEmpty())
-    {
-        // Split by 250 rows at a time
-        while (!statusToMove.isEmpty())
-        {
-            QString condition = " `uuid` = '" + statusToMove.takeLast() + "' ";
-            for (int i = 0; i < 250; i++)
-            {
-                if (statusToMove.isEmpty()) break;
-                condition += " OR `uuid` = '" + statusToMove.takeLast() + "' ";
-            }
-
-            qry.exec("INSERT INTO RamStatusHistory (`uuid`, `data`, `modified`, `removed`) "
-                     "SELECT `uuid`, `data`, `modified`, `removed` FROM RamStatus "
-                     "WHERE " + condition + " ON CONFLICT(uuid) DO UPDATE SET "
-                     "`data` = excluded.data, `modified` = excluded.modified, `removed` = excluded.removed ;"
-                     );
-
-            qry.exec("DELETE FROM RamStatus WHERE " + condition);
-        }
-    }
-
-    // === Vacuum ===
-
-    qry.exec("VACUUM;");
 
     StateManager::i()->setState(previousState);
 }
