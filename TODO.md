@@ -15,7 +15,7 @@
 - Update/refactor progressmanager (with state manager) and homepage
 - assign users in projecteditwidget (disabled for non admins)
 - User edit widget: check if the role and email has changed to not update it if not necessary
-- why so many status on pull?
+- why so many status on pull? (and in the table! looks like they're removed instead of being modified)
 - pipeline : crash on layout all steps
 - update daemon to not use project uuid
 - update py api to not use current project
