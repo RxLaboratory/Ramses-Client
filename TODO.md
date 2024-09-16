@@ -14,7 +14,6 @@
 - offline mode if network unavailable for team projects (skip login, add a button to skip/set offline on login dialog)
 - Update/refactor progressmanager (with state manager) and homepage
 - assign users in projecteditwidget (disabled for non admins)
-- User edit widget: check if the role and email has changed to not update it if not necessary
 - why so many status on pull? (and in the table! looks like they're removed instead of being modified)
 - pipeline : crash on layout all steps
 - update daemon to not use project uuid

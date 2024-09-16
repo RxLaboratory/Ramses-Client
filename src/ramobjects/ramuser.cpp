@@ -56,7 +56,9 @@ QJsonObject RamUser::toJson() const
 void RamUser::loadJson(const QJsonObject &obj)
 {
     beginLoadJson(obj);
-    setRole(obj.value("role").toString("standard"));
+    QString newRole = obj.value("role").toString("standard");
+    if (newRole != m_role)
+        setRole(newRole);
     endLoadJson();
 }
 

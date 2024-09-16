@@ -269,8 +269,11 @@ QString Ramses::createPath(QString p) const
 void Ramses::loadDatabase()
 {
     QString userUuid = LocalDataInterface::instance()->currentUserUuid();
+    if (userUuid == "")
+        return;
     auto user = RamUser::get(userUuid);
-    if (!user) return;
+    if (!user)
+        return;
 
     m_currentUser = user;
 
