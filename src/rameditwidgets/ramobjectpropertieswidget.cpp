@@ -13,6 +13,12 @@ RamObjectPropertiesWidget::RamObjectPropertiesWidget(QWidget *parent)
     connectEvents();
 }
 
+void RamObjectPropertiesWidget::showFolder(bool s)
+{
+    ui_folderButton->setVisible(s);
+    ui_folderLabel->setVisible(s);
+}
+
 void RamObjectPropertiesWidget::showIdHelp() const
 {
     QMessageBox::information(const_cast<RamObjectPropertiesWidget*>(this),
@@ -73,6 +79,13 @@ void RamObjectPropertiesWidget::setupUi()
 
     ui_colorSelector = new DuColorSelector(this);
     ui_attributesLayout->addRow(tr("Color"), ui_colorSelector);
+
+    ui_folderButton = new QPushButton(this);
+    ui_folderButton->setIcon(DuIcon(":/icons/folder"));
+    ui_folderButton->setText(tr("Open"));
+    ui_folderButton->setProperty("class", "transparent");
+    ui_folderLabel = new QLabel(tr("Folder"), this);
+    ui_attributesLayout->addRow(ui_folderLabel, ui_folderButton);
 }
 
 void RamObjectPropertiesWidget::connectEvents()
@@ -104,4 +117,7 @@ void RamObjectPropertiesWidget::connectEvents()
 
     connect(ui_idHelpButton, &QToolButton::clicked,
             this, &RamObjectPropertiesWidget::showIdHelp);
+
+    connect(ui_folderButton, &QPushButton::clicked,
+            this, &RamObjectPropertiesWidget::folderClicked);
 }

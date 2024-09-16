@@ -5,10 +5,12 @@
 #include <QBoxLayout>
 #include <QFormLayout>
 #include <QJsonObject>
+#include <QPushButton>
 
 #include "duwidgets/ducolorselector.h"
 #include "duwidgets/dulineedit.h"
 #include "duwidgets/durichtextedit.h"
+#include "qlabel.h"
 
 class RamObjectPropertiesWidget : public QWidget
 {
@@ -21,6 +23,8 @@ class RamObjectPropertiesWidget : public QWidget
 
 public:
     explicit RamObjectPropertiesWidget(QWidget *parent = nullptr);
+
+    void showFolder(bool s = true);
 
     QString name() const { return ui_nameEdit->text(); }
     QString shortName() const { return ui_shortNameEdit->text(); }
@@ -46,6 +50,7 @@ signals:
     void shortNameChanged(const QString &);
     void commentChanged(const QString &);
     void colorChanged(const QColor &);
+    void folderClicked();
 
 protected:
     void setupUi();
@@ -58,6 +63,8 @@ protected:
     DuLineEdit *ui_nameEdit;
     DuRichTextEdit *ui_commentEdit;
     DuColorSelector *ui_colorSelector;
+    QLabel *ui_folderLabel;
+    QPushButton *ui_folderButton;
 
     QToolButton *ui_idHelpButton;
 };

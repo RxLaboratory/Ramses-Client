@@ -41,6 +41,7 @@ void RamJsonObjectEditWidget::setupUi()
     this->setMinimumWidth(300);
 
     ui_propertiesWidget = new RamObjectPropertiesWidget(this);
+    ui_propertiesWidget->showFolder(exists());
 
     ui_tabWidget->addTab(ui_propertiesWidget, DuIcon(":/icons/status"), "");
     ui_tabWidget->setTabToolTip(0, tr("General properties"));
@@ -68,6 +69,10 @@ void RamJsonObjectEditWidget::connectEvents()
 
     connect(ui_customSettingsEdit, &DuRichTextEdit::editingFinished,
             this, &RamJsonObjectEditWidget::emitEdited);
+
+    connect(ui_propertiesWidget, &RamObjectPropertiesWidget::folderClicked,
+            this, &RamJsonObjectEditWidget::folderOpenRequested);
+
 }
 
 void RamJsonObjectEditWidget::setRamObjectData(const QJsonObject &obj)

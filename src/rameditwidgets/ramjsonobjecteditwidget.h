@@ -35,6 +35,10 @@ signals:
      * but not programatically
      */
     void dataEdited(const QJsonObject &);
+    /**
+     * @brief folderOpenRequested The user wants to create/open the corresponding folder
+     */
+    void folderOpenRequested();
 
 protected:
     DuTabWidget *ui_tabWidget;

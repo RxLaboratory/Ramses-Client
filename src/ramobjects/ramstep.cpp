@@ -481,6 +481,8 @@ void RamStep::edit(bool show)
         ui_jsonEditWidget = new RamJsonStepEditWidget(m_uuid);
         connect(ui_jsonEditWidget, &RamJsonStepEditWidget::dataEdited,
                 this, &RamStep::loadJson);
+        connect(ui_jsonEditWidget, &RamJsonStepEditWidget::folderOpenRequested,
+                this, [this]() { revealFolder(); });
     }
 
     if (show) showEdit( ui_jsonEditWidget );

@@ -168,6 +168,8 @@ void RamUser::edit(bool show)
             m_uuid);
         connect(ui_jsonEditWidget, &RamJsonUserEditWidget::dataEdited,
                 this, &RamUser::loadJson);
+        connect(ui_jsonEditWidget, &RamJsonStepEditWidget::folderOpenRequested,
+                this, [this]() { revealFolder(); });
     }
 
     if (show) showEdit( ui_jsonEditWidget );
