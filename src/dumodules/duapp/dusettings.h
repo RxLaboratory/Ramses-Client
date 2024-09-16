@@ -59,7 +59,7 @@ private: // The list of settings
         { UI_Margins, {"ui/margins", 3 }},
         { UI_WindowGeometry, { "ui/windowGeometry", QByteArray() }},
         { UI_WindowState, { "ui/windowState", QByteArray() }},
-        { UI_ToolButtonStyle, { "ui/toolButtonStyle", Qt::ToolButtonIconOnly }},
+        { UI_ToolButtonStyle, { "ui/toolButtonStyle", Qt::ToolButtonTextUnderIcon }},
         { UI_DockSize, { "ui/dockSize/", QSize(300, 300) }},
         { UI_NodeViewCurvature, { "ui/nodeViewCurvature", 0.333 }},
         { UI_DateFormat, { "ui/dateFormat", "yyyy/MM/dd" }},
