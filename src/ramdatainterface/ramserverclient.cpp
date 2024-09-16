@@ -258,6 +258,23 @@ QJsonObject RamServerClient::getProjects()
     return synchronousRequest(r);
 }
 
+QJsonObject RamServerClient::resetPassword(const QString &userUuid)
+{
+    QJsonObject body;
+    body.insert("uuid", userUuid);
+    Request r = buildRequest("resetPassword", body);
+
+    return synchronousRequest(r);
+}
+
+QJsonObject RamServerClient::resetPasswordWithEmail(const QString &email)
+{
+    QJsonObject body;
+    body.insert("email", email);
+    Request r = buildRequest("resetPassword", body);
+    return synchronousRequest(r);
+}
+
 void RamServerClient::sync(SyncData syncData)
 {
     // We should not already be in a sync or logged out

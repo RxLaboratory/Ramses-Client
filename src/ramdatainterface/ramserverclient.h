@@ -71,6 +71,8 @@ public:
     QJsonObject setEmail(const QString &uuid, const QString &email);
     QJsonObject createUsers(const QJsonArray &users );
     QJsonObject getProjects();
+    QJsonObject resetPassword(const QString &userUuid);
+    QJsonObject resetPasswordWithEmail(const QString &email);
     // QJsonObject unassignUser(const QString &userUuid, const QString &projectUuid);
     // QJsonObject getUsers(const QString &projectUuid = "");
     //

@@ -236,7 +236,30 @@ void RamJsonUserEditWidget::updateEmail()
 
 void RamJsonUserEditWidget::resetPassword()
 {
-    QMessageBox::information(this,
-                             tr("Not implemented"),
-                             tr("You can't reset your password by yourself yet. Please contact your Ramses administrator."));
+    if (QMessageBox::question(
+            this,
+            tr("Password reset"),
+            tr("A new password will be sent to your email address.\n"
+               "Do you want to continue?")
+            ) != QMessageBox::Yes)
+        return;
+
+    QJsonObject d = data();
+
+    QJsonObject rep = RamServerClient::i()->resetPassword(
+        d.value("uuid").toString()
+        );
+
+    if (!rep.value("success").toBool(false)) {
+        QMessageBox::warning(this,
+                             tr("Failed to reset password"),
+                             rep.value("message").toString("Unknown error")
+                             );
+    }
+    else {
+        QMessageBox::information(this,
+                                 tr("Password changed"),
+                                 rep.value("message").toString("Password successfully changed!")
+                                 );
+    }
 }

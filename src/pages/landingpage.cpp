@@ -100,8 +100,30 @@ void LandingPage::openDatabase(const QString &dbFile)
 
             DuLoginDialog d("E-mail");
             d.setUsername(savedUsername);
-            if (!DuUI::execDialog(&d))
-                return; // TODO continue in offline mode
+            int r = DuUI::execDialog(&d);
+
+            if (r == -1) { // Reset password
+                QJsonObject rep = RamServerClient::i()->resetPasswordWithEmail(
+                    d.username()
+                    );
+
+                if (!rep.value("success").toBool(false)) {
+                    QMessageBox::warning(this,
+                                         tr("Failed to reset password"),
+                                         rep.value("message").toString("Unknown error")
+                                         );
+                }
+                else {
+                    QMessageBox::information(this,
+                                             tr("Password changed"),
+                                             rep.value("message").toString("Password successfully changed!")
+                                             );
+                }
+                return;
+            }
+
+            if (!r)
+                return;
 
             userUuid = login(
                 serverConfig,
@@ -110,7 +132,7 @@ void LandingPage::openDatabase(const QString &dbFile)
                 );
 
             if (userUuid == "")
-                continue;
+                continue; // TODO Ask to continue in offline mode
 
             if (d.saveUsername()) {
                 DuSettings::i()->set(

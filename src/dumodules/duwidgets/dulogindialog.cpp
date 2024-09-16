@@ -4,7 +4,7 @@
 
 #include "duapp/duui.h"
 
-DuLoginDialog::DuLoginDialog(const QString &usernameLabel, bool showSaveBoxes, QWidget *parent, Qt::WindowFlags f):
+DuLoginDialog::DuLoginDialog(const QString &usernameLabel, bool showSaveBoxes, bool showResetButton, QWidget *parent, Qt::WindowFlags f):
     QDialog(parent, f)
 {
     this->setWindowTitle(tr("Sign in"));
@@ -48,12 +48,14 @@ DuLoginDialog::DuLoginDialog(const QString &usernameLabel, bool showSaveBoxes, Q
 
     formLayout->addRow(tr("Password"), passwordLayout);
 
-    ui_forgotButton = new QPushButton(this);
-    ui_forgotButton->setProperty("class", "transparent");
-    ui_forgotButton->setIconSize(QSize(16,16));
-    ui_forgotButton->setIcon(DuIcon(":/icons/forgot-password"));
-    ui_forgotButton->setText("Forgot password?");
-    formLayout->addRow(ui_forgotButton);
+    if (showResetButton) {
+        ui_forgotButton = new QPushButton(this);
+        ui_forgotButton->setProperty("class", "transparent");
+        ui_forgotButton->setIconSize(QSize(16,16));
+        ui_forgotButton->setIcon(DuIcon(":/icons/forgot-password"));
+        ui_forgotButton->setText("Forgot password?");
+        formLayout->addRow(ui_forgotButton);
+    }
 
     auto buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, this);
     formLayout->addWidget(buttons);
@@ -69,13 +71,26 @@ DuLoginDialog::DuLoginDialog(const QString &usernameLabel, bool showSaveBoxes, Q
             ui_passwordEdit->setEchoMode(QLineEdit::Password);
     });
 
-    connect(ui_forgotButton, &QToolButton::clicked, this, [this] () {
-        QMessageBox::information(this,
-                                 tr("Not implemented"),
-                                 tr("You can't reset your password yet.\nPlease contact one of your Ramses administrator to reset your password.")
-                                 );
-    });
+    if (ui_forgotButton)
+        connect(ui_forgotButton, &QToolButton::clicked, this, [this] () {
+            if (ui_usernameEdit->text() == ""){
+                QMessageBox::information(
+                    this,
+                    tr("Invalid username"),
+                    tr("Please input your username to reset your password"));
+                return;
+            }
+            if (QMessageBox::question(
+                    this,
+                    tr("Password reset"),
+                    tr("You're about to reset your current password.\n"
+                       "Do you want to continue?")
+                    ) != QMessageBox::Yes)
+                return;
+            this->done(-1);
+        });
 
-    connect(ui_saveUsernameBox, &QCheckBox::toggled,
-            ui_savePasswordBox, &QCheckBox::setEnabled);
+    if (ui_saveUsernameBox)
+        connect(ui_saveUsernameBox, &QCheckBox::toggled,
+                ui_savePasswordBox, &QCheckBox::setEnabled);
 }

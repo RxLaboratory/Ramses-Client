@@ -144,7 +144,6 @@ SOURCES += \
     dumodules/duwidgets/duqfupdatedialog.cpp \
     ramdatainterface/datacrypto.cpp \
     ramdatainterface/localdatainterface.cpp \
-    ramdatainterface/logindialog.cpp \
     rameditwidgets/applicationeditwidget.cpp \
     rammanagerwidgets/applicationmanagerwidget.cpp \
     rameditwidgets/asseteditwidget.cpp \
@@ -356,7 +355,6 @@ HEADERS += \
     progressbar.h \
     progresspage.h \
     ramdatainterface/localdatainterface.h \
-    ramdatainterface/logindialog.h \
     rameditwidgets/applicationeditwidget.h \
     rammanagerwidgets/applicationmanagerwidget.h \
     rameditwidgets/asseteditwidget.h \
