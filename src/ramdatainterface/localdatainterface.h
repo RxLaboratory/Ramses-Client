@@ -104,6 +104,17 @@ protected:
 private slots:
     void quit();
 
+    // Methods to clean the database
+
+    void sanitizeData();
+    void sanitizeStatusTable();
+    void sanitizeScheduleTable();
+
+    void deleteRemovedData();
+    void deleteRemovedData(const QString &tableName);
+
+    void backupCurrentDatabase();
+
 private:
     /**
      * @brief This is a singleton, private constructor
@@ -136,6 +147,9 @@ private:
 
     // The UUIDS to delete when cleaning the database
     QHash<QString, QSet<QString>> m_uuidsToRemove;
+
+    // If we're on a full sync or quick sync
+    bool m_fullSync = false;
 
 };
 

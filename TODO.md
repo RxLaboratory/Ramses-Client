@@ -1,5 +1,12 @@
 ## Priority fixes
 
+- remove refactor Local:
+    - LDI sync
+    - Continue sync
+    - when saving server data, delete all removed lines
+- Server remove refactor:
+    - on commit/pull: send removed rows only if they were included in the push as non-removed
+
 - Refactor project edit widget
     - and user assignments, for admin only
 - to fix loading order: try to keep the uuid list in the model to reload the objects later (maybe monitor the corresponding dbtable to auto reload)

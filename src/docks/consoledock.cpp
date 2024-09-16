@@ -32,7 +32,7 @@ void ConsoleDock::log(const QString &msg, LogType type, const QString &component
     if (component == "" || component == "Ramses") ui_general->log(msg, type, component);
     else if (component == "API") ui_daemon->log(msg, type, component);
     else if (component == "Client" || component == "Server") ui_server->log(msg, type, component);
-    else if (component == "Database Interface" || component == "Local Database") ui_db->log(msg, type, component);
+    else if (component == "Database-Interface" || component == "Local-Database") ui_db->log(msg, type, component);
 }
 
 void ConsoleDock::setLevel(QVariant l)

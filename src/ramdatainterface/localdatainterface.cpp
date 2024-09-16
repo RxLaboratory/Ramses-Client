@@ -27,7 +27,7 @@ void LocalDataInterface::setServerSettings(QString dbFile, ServerConfig c)
 
     QSqlDatabase db = QSqlDatabase::database("editdb");
     if (!openDB(db, dbFile))
-        qCritical().noquote() << "{Local Database}" << "Can't save data to the disk.";
+        qCritical().noquote() << "{Local-Database}" << "Can't save data to the disk.";
 
     // Remove previous settings
     QSqlQuery qry = QSqlQuery(db);
@@ -37,7 +37,7 @@ void LocalDataInterface::setServerSettings(QString dbFile, ServerConfig c)
         errorMessage += "\n> " + tr("Query:") + "\n" + qry.lastQuery();
         errorMessage += "\n> " + tr("Database Error:") + "\n" + qry.lastError().databaseText();
         errorMessage += "\n> " + tr("Driver Error:") + "\n" + qry.lastError().driverText();
-        qCritical().noquote() << "{Local Database}" << errorMessage;
+        qCritical().noquote() << "{Local-Database}" << errorMessage;
 
         db.close();
         return;
@@ -55,7 +55,7 @@ void LocalDataInterface::setServerSettings(QString dbFile, ServerConfig c)
         errorMessage += "\n> " + tr("Query:") + "\n" + qry.lastQuery();
         errorMessage += "\n> " + tr("Database Error:") + "\n" + qry.lastError().databaseText();
         errorMessage += "\n> " + tr("Driver Error:") + "\n" + qry.lastError().driverText();
-        qCritical().noquote() << "{Local Database}" << errorMessage;
+        qCritical().noquote() << "{Local-Database}" << errorMessage;
     }
 
     db.close();
@@ -68,7 +68,7 @@ ServerConfig LocalDataInterface::getServerSettings(QString dbFile)
 
     QSqlDatabase db = QSqlDatabase::database("editdb");
     if (!openDB(db, dbFile))
-        qCritical().noquote() << "{Local Database}" << tr("Can't save data to the disk.");
+        qCritical().noquote() << "{Local-Database}" << tr("Can't save data to the disk.");
 
     // Get settings
     QSqlQuery qry = QSqlQuery(db);
@@ -79,7 +79,7 @@ ServerConfig LocalDataInterface::getServerSettings(QString dbFile)
         errorMessage += "\n> " + tr("Query:") + "\n" + qry.lastQuery();
         errorMessage += "\n> " + tr("Database Error:") + "\n" + qry.lastError().databaseText();
         errorMessage += "\n> " + tr("Driver Error:") + "\n" + qry.lastError().driverText();
-        qCritical().noquote() << "{Local Database}" << errorMessage;
+        qCritical().noquote() << "{Local-Database}" << errorMessage;
 
         db.close();
         return ServerConfig();
@@ -108,7 +108,7 @@ void LocalDataInterface::setWorkingPath(QString dbFile, QString p)
 
     QSqlDatabase db = QSqlDatabase::database("editdb");
     if (!openDB(db, dbFile))
-        qCritical().noquote() << "{Local Database}" << tr("Can't save data to the disk.");
+        qCritical().noquote() << "{Local-Database}" << tr("Can't save data to the disk.");
 
     QSqlQuery qry = QSqlQuery(db);
 
@@ -124,7 +124,7 @@ void LocalDataInterface::setWorkingPath(QString dbFile, QString p)
         errorMessage += "\n> " + tr("Query:") + "\n" + qry.lastQuery();
         errorMessage += "\n> " + tr("Database Error:") + "\n" + qry.lastError().databaseText();
         errorMessage += "\n> " + tr("Driver Error:") + "\n" + qry.lastError().driverText();
-        qCritical().noquote() << "{Local Database}" << errorMessage;
+        qCritical().noquote() << "{Local-Database}" << errorMessage;
     }
 
     db.close();
@@ -138,7 +138,7 @@ QString LocalDataInterface::getWorkingPath(QString dbFile)
     QSqlDatabase db = QSqlDatabase::database("editdb");
     // Set the SQLite file
     if (!openDB(db, dbFile))
-        qCritical().noquote() << "{Local Database}" << tr("Can't read data.");
+        qCritical().noquote() << "{Local-Database}" << tr("Can't read data.");
 
     QSqlQuery qry = QSqlQuery( db );
     if (!qry.exec("SELECT path FROM _Paths WHERE name = 'Project';"))
@@ -147,7 +147,7 @@ QString LocalDataInterface::getWorkingPath(QString dbFile)
         errorMessage += "\n> " + tr("Query:") + "\n" + qry.lastQuery();
         errorMessage += "\n> " + tr("Database Error:") + "\n" + qry.lastError().databaseText();
         errorMessage += "\n> " + tr("Driver Error:") + "\n" + qry.lastError().driverText();
-        qCritical().noquote() << "{Local Database}" <<  errorMessage;
+        qCritical().noquote() << "{Local-Database}" <<  errorMessage;
 
         db.close();
         return "auto";
@@ -170,7 +170,7 @@ void LocalDataInterface::setProjectUserUuid(const QString &dbFile, const QString
 
     QSqlDatabase db = QSqlDatabase::database("editdb");
     if (!openDB(db, dbFile))
-        qCritical().noquote() << "{Local Database}" << tr("Can't save data to the disk.");
+        qCritical().noquote() << "{Local-Database}" << tr("Can't save data to the disk.");
 
     QSqlQuery qry = QSqlQuery(db);
 
@@ -189,7 +189,7 @@ void LocalDataInterface::setProjectUserUuid(const QString &dbFile, const QString
         errorMessage += "\n> " + tr("Query:") + "\n" + qry.lastQuery();
         errorMessage += "\n> " + tr("Database Error:") + "\n" + qry.lastError().databaseText();
         errorMessage += "\n> " + tr("Driver Error:") + "\n" + qry.lastError().driverText();
-        qCritical().noquote() << "{Local Database}" << errorMessage;
+        qCritical().noquote() << "{Local-Database}" << errorMessage;
     }
 
     db.close();
@@ -202,7 +202,7 @@ QString LocalDataInterface::projectUuid(const QString &dbFile)
 
     QSqlDatabase db = QSqlDatabase::database("editdb");
     if (!openDB(db, dbFile))
-        qCritical().noquote() << "{Local Database}" << tr("Can't read data.");
+        qCritical().noquote() << "{Local-Database}" << tr("Can't read data.");
 
     QSqlQuery qry = QSqlQuery( db );
     if (!qry.exec("SELECT projectUuid FROM _User WHERE current = 1;"))
@@ -211,7 +211,7 @@ QString LocalDataInterface::projectUuid(const QString &dbFile)
         errorMessage += "\n> " + tr("Query:") + "\n" + qry.lastQuery();
         errorMessage += "\n> " + tr("Database Error:") + "\n" + qry.lastError().databaseText();
         errorMessage += "\n> " + tr("Driver Error:") + "\n" + qry.lastError().driverText();
-        qCritical().noquote() << "{Local Database}" << errorMessage;
+        qCritical().noquote() << "{Local-Database}" << errorMessage;
 
         db.close();
         return "";
@@ -641,6 +641,8 @@ SyncData LocalDataInterface::getSync(bool fullSync)
     // Ignore History for now to improve performance (as it is not used in Ramses yet)
     tNames.removeAll("RamStatusHistory");
 
+    m_fullSync = fullSync;
+
     // Get last Sync
     QString lastSync = "1818-05-05 00:00:00";
     if (!fullSync)
@@ -648,6 +650,11 @@ SyncData LocalDataInterface::getSync(bool fullSync)
         QString q = "SELECT lastSync FROM _Sync ;";
         QSqlQuery qry = query(q);
         if (qry.first()) lastSync = qry.value(0).toString();
+    }
+
+    // During full sync, clean the data first
+    if (fullSync) {
+        sanitizeData();
     }
 
     // For each table, get modified rows
@@ -721,7 +728,6 @@ void LocalDataInterface::saveSync(SyncData syncData)
 
     // Insertions
     QHashIterator<QString, QSet<TableRow>> i(tables);
-
     while (i.hasNext()) {
 
         pm->increment();
@@ -908,6 +914,13 @@ void LocalDataInterface::saveSync(SyncData syncData)
             emit dataChanged(cu.at(0), cu.at(1), cu.at(2), tableName);
         }
     }
+
+    // Clean if this is a full sync
+    if (m_fullSync) {
+        backupCurrentDatabase();
+        deleteRemovedData();
+    }
+    vacuum();
 
     emit syncFinished();
 
@@ -1099,10 +1112,7 @@ QString LocalDataInterface::cleanDataBase(int deleteDataOlderThan)
     QString report = "";
 
     // Backup the DB File
-    QFileInfo dbFileInfo(m_dataFile);
-    QString backupFile = dbFileInfo.path() + "/" + dbFileInfo.baseName() + "_bak." + dbFileInfo.completeSuffix();
-    if (QFileInfo::exists(backupFile)) FileUtils::remove(backupFile);
-    FileUtils::copy(m_dataFile, backupFile);
+    backupCurrentDatabase();
 
     // Clear cache
     m_uuids.clear();
@@ -1226,6 +1236,155 @@ void LocalDataInterface::quit()
     qDebug() << "LocalDataInterface: Everything's clean.";
 }
 
+void LocalDataInterface::sanitizeData()
+{
+    QSignalBlocker b(this);
+
+    qInfo().noquote() << "Cleaning database: sanitizing data...";
+    sanitizeStatusTable();
+    sanitizeScheduleTable();
+}
+
+void LocalDataInterface::sanitizeStatusTable()
+{
+    qDebug().noquote() << "Sanitizing RamStatus table...";
+
+    // There can be a single status per step and item
+    const QSet<QString> stepUuids = tableUuids("RamStep");
+    const QSet<QString> itemUuids = tableUuids("RamShot") + tableUuids("RamAsset");
+
+    int count = 0;
+
+    QHash<
+        QString, // Step UUID
+        QHash<
+            QString, // Item UUID
+            TableRow // Status
+            >
+        > sanitizedData;
+
+    const QVector<QStringList> tData = tableData(QStringLiteral("RamStatus"));
+    for (const QStringList &row: tData) {
+
+        // This can be long, be nice, process events!
+        qApp->processEvents();
+
+        const QString dataStr = row.at(1);
+        const QString uuid = row.constFirst();
+
+        QJsonDocument dataDoc = QJsonDocument::fromJson(dataStr.toUtf8());
+        QJsonObject dataObj = dataDoc.object();
+
+        // Check step
+        QString stepUuid = dataObj.value(
+                                      QStringLiteral("step")
+                                      ).toString("");
+        if (stepUuid == "" ||
+            !stepUuids.contains(stepUuid) ) {
+            removeObject(uuid, QStringLiteral("RamStatus"));
+            ++count;
+            continue;
+        }
+
+        // Check item
+        QString itemUuid = dataObj.value(
+                                      QStringLiteral("item")
+                                      ).toString("");
+        if (itemUuid == "" ||
+            !itemUuids.contains(itemUuid) ) {
+            removeObject(uuid, QStringLiteral("RamStatus"));
+            ++count;
+            continue;
+        }
+
+        // There can be only one! i.e. the most recent
+        QString modified = row.at(2);
+        TableRow current = sanitizedData.value(stepUuid).value(itemUuid);
+        if (modified >= current.modified) { // More recent
+
+            // Delete older status
+            if (current.uuid != "") {
+                removeObject(current.uuid, QStringLiteral("RamStatus"));
+                ++count;
+            }
+
+            // Update current
+            current.modified = modified;
+            current.uuid = uuid;
+
+            // Insert in sanitized data
+            QHash<QString,TableRow> byItem = sanitizedData.value(stepUuid);
+            byItem.insert(itemUuid, current);
+            sanitizedData.insert(stepUuid, byItem);
+        }
+        else { // Older
+            // Just remove
+            removeObject(uuid, QStringLiteral("RamStatus"));
+            ++count;
+        }
+    }
+
+    qDebug().noquote() << "Removed" << count << "obsolete status.";
+}
+
+void LocalDataInterface::sanitizeScheduleTable()
+{
+    // Entries must have an existing row
+
+    const QSet<QString> rowUuids = tableUuids("RamScheduleRow");
+
+    int count = 0;
+
+    const QVector<QStringList> tData = tableData(QStringLiteral("RamScheduleEntry"));
+    for (const QStringList &row: tData) {
+
+        // This can be long, be nice, process events!
+        qApp->processEvents();
+
+        const QString dataStr = row.at(1);
+        const QString uuid = row.constFirst();
+
+        QJsonDocument dataDoc = QJsonDocument::fromJson(dataStr.toUtf8());
+        QJsonObject dataObj = dataDoc.object();
+
+        // check row
+        QString rowUuid = dataObj.value(
+                                     QStringLiteral("row")
+                                     ).toString("");
+        if (rowUuid == "" ||
+            !rowUuids.contains(rowUuid) ) {
+            removeObject(uuid, QStringLiteral("RamScheduleEntry"));
+            ++count;
+            continue;
+        }
+    }
+
+    qDebug().noquote() << "Removed" << count << "obsolete schedule entries.";
+}
+
+void LocalDataInterface::deleteRemovedData()
+{
+    qInfo().noquote() << "Cleaning database: deleting obsolete data...";
+    const QStringList tNames = tableNames();
+    for(const QString &tName: tNames)
+        deleteRemovedData(tName);
+}
+
+void LocalDataInterface::deleteRemovedData(const QString &tableName)
+{
+    qDebug().noquote() << "Deleting obsolete data for table" << tableName;
+    QString q = "DELETE FROM `%1` WHERE `removed` = 1;";
+    query( q.arg(tableName) );
+}
+
+void LocalDataInterface::backupCurrentDatabase()
+{
+    QFileInfo dbFileInfo(m_dataFile);
+    QString backupFile = dbFileInfo.path() + "/" + dbFileInfo.baseName() + "_bak." + dbFileInfo.completeSuffix();
+    if (QFileInfo::exists(backupFile)) FileUtils::remove(backupFile);
+    FileUtils::copy(m_dataFile, backupFile);
+}
+
 LocalDataInterface::LocalDataInterface():
     QObject()
 {
@@ -1256,7 +1415,7 @@ bool LocalDataInterface::openDB(QSqlDatabase db, const QString &dbFile)
     // Open
     db.setDatabaseName(dbFile);
     if (!db.open()) {
-        qCritical().noquote() << "{Local Database}" << tr("Can't save data to the disk.");
+        qCritical().noquote() << "{Local-Database}" << tr("Can't save data to the disk.");
         return false;
     }
 
@@ -1289,7 +1448,7 @@ bool LocalDataInterface::openDB(QSqlDatabase db, const QString &dbFile)
         pm->setText(tr("Updating database scheme"));
         pm->increment();
         QFileInfo dbFileInfo(dbFile);
-        qInfo().noquote() << "{Local Database}" << tr("This database was created by an older version of Ramses (%1).\n"
+        qInfo().noquote() << "{Local-Database}" << tr("This database was created by an older version of Ramses (%1).\n"
                                                           "I'm updating it to the current version (%2).\n"
                                                           "The original file will be renamed to \"%3_%1.ramses\".").arg(currentVersion.toString(), STR_VERSION, dbFileInfo.baseName());
 
@@ -1308,7 +1467,7 @@ bool LocalDataInterface::openDB(QSqlDatabase db, const QString &dbFile)
                 errorMessage += "\n> " + tr("Query:") + "\n" + qry.lastQuery();
                 errorMessage += "\n> " + tr("Database Error:") + "\n" + qry.lastError().databaseText();
                 errorMessage += "\n> " + tr("Driver Error:") + "\n" + qry.lastError().driverText();
-                qCritical().noquote() << "{Local Database}" << errorMessage;
+                qCritical().noquote() << "{Local-Database}" << errorMessage;
             }
             // Set the port to the default (80/443)
             qry.exec("UPDATE _Server SET port = 443 WHERE useSsl = 1;");
@@ -1325,7 +1484,7 @@ bool LocalDataInterface::openDB(QSqlDatabase db, const QString &dbFile)
                 errorMessage += "\n> " + tr("Query:") + "\n" + qry.lastQuery();
                 errorMessage += "\n> " + tr("Database Error:") + "\n" + qry.lastError().databaseText();
                 errorMessage += "\n> " + tr("Driver Error:") + "\n" + qry.lastError().driverText();
-                qCritical().noquote() << "{Local Database}" << errorMessage;
+                qCritical().noquote() << "{Local-Database}" << errorMessage;
             }
         }
 
@@ -1346,7 +1505,7 @@ bool LocalDataInterface::openDB(QSqlDatabase db, const QString &dbFile)
                 errorMessage += "\n> " + tr("Query:") + "\n" + qry.lastQuery();
                 errorMessage += "\n> " + tr("Database Error:") + "\n" + qry.lastError().databaseText();
                 errorMessage += "\n> " + tr("Driver Error:") + "\n" + qry.lastError().driverText();
-                qCritical().noquote() << "{Local Database}" << errorMessage;
+                qCritical().noquote() << "{Local-Database}" << errorMessage;
             }
         }
 
@@ -1361,13 +1520,13 @@ bool LocalDataInterface::openDB(QSqlDatabase db, const QString &dbFile)
                 errorMessage += "\n> " + tr("Query:") + "\n" + qry.lastQuery();
                 errorMessage += "\n> " + tr("Database Error:") + "\n" + qry.lastError().databaseText();
                 errorMessage += "\n> " + tr("Driver Error:") + "\n" + qry.lastError().driverText();
-                qWarning().noquote() << "{Local Database}" << errorMessage;
+                qWarning().noquote() << "{Local-Database}" << errorMessage;
             }
         }
     }
     else if (currentVersion > newVersion)
     {
-        qCritical().noquote() << "{Local Database}" << tr("This database was created by a more recent version of Ramses (%1).\n"
+        qCritical().noquote() << "{Local-Database}" << tr("This database was created by a more recent version of Ramses (%1).\n"
                                                           "You should update this Ramses application before using this database!\n"
                                                           "Be careful if you continue, this could lead to data loss or corrupted databases.").arg(currentVersion.toString());
         ok = false;
@@ -1633,7 +1792,7 @@ QSqlQuery LocalDataInterface::query(QString q) const
         errorMessage += "\n> " + tr("Query:") + "\n" + qry.lastQuery();
         errorMessage += "\n> " + tr("Database Error:") + "\n" + qry.lastError().databaseText();
         errorMessage += "\n> " + tr("Driver Error:") + "\n" + qry.lastError().driverText();
-        qCritical().noquote() << "{Local Database}" << errorMessage;
+        qCritical().noquote() << "{Local-Database}" << errorMessage;
     }
 
     return qry;
