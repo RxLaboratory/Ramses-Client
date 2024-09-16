@@ -39,9 +39,11 @@ void HomePage::setupUi()
     auto textLayout = DuUI::addBoxLayout(Qt::Vertical, layout);
 
     ui_progressTitleLabel = new QLabel(this);
+    DuUI::addCustomCSS(ui_progressTitleLabel, "QLabel { font-weight: 900;  color: @focus-pull; }");
     textLayout->addWidget(ui_progressTitleLabel);
 
     ui_progressTextLabel = new QLabel(this);
+    DuUI::addCustomCSS(ui_progressTextLabel, "QLabel { color: @foreground-push; }");
     textLayout->addWidget(ui_progressTextLabel);
 }
 
