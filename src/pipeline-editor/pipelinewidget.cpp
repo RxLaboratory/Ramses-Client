@@ -460,6 +460,9 @@ void PipelineWidget::newPipe(RamObject *p)
     if (!pipe->inputStep()) return;
     if (!pipe->outputStep()) return;
 
+    if (pipe->inputStep() == pipe->outputStep())
+        return;
+
     // Get nodes
     DuQFNode *inputNode = nullptr;
     DuQFNode *outputNode = nullptr;

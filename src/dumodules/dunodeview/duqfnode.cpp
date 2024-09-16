@@ -161,11 +161,15 @@ DuQFGrid *DuQFNode::grid() const
 
 void DuQFNode::addChildNode(DuQFNode *childNode)
 {
+    if (childNode == this)
+        return;
     m_childrenNodes << childNode;
 }
 
 void DuQFNode::addParentNode(DuQFNode *parentNode)
 {
+    if (parentNode == this)
+        return;
     m_parentNodes << parentNode;
 }
 

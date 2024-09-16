@@ -14,7 +14,6 @@
 - offline mode if network unavailable for team projects (skip login, add a button to skip/set offline on login dialog)
 - Update/refactor progressmanager (with state manager) and homepage
 - assign users in projecteditwidget (disabled for non admins)
-- pipeline : crash on layout all steps
 - update daemon to not use project uuid
 - update py api to not use current project
 - auto show console on qcritical
