@@ -15,7 +15,7 @@ protected slots:
     RamAssetGroup *createObject() override;
 
 private slots:
-    void changeProject(RamProject *project);
+    void setProject(RamProject *project);
 
     void createFromTemplate(RamObject *templateAGObj);
 

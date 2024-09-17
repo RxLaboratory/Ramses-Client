@@ -1,4 +1,4 @@
-#include "settingsdock.h"
+#include "settingsdockwidget.h"
 
 #include <QDir>
 
@@ -9,7 +9,7 @@
 #include "daemon.h"
 #include "ramsettings.h"
 
-SettingsDock::SettingsDock(QWidget *parent)
+SettingsDockWidget::SettingsDockWidget(QWidget *parent)
     : DuScrollArea{parent}
 {
     _sm = DuSettings::i();
@@ -17,7 +17,7 @@ SettingsDock::SettingsDock(QWidget *parent)
     connectEvents();
 }
 
-void SettingsDock::updateSettings(int key, const QVariant &value)
+void SettingsDockWidget::updateSettings(int key, const QVariant &value)
 {
     switch(key) {
     case DuSettings::UI_ToolButtonStyle:
@@ -59,7 +59,7 @@ void SettingsDock::updateSettings(int key, const QVariant &value)
     }
 }
 
-void SettingsDock::setupUi()
+void SettingsDockWidget::setupUi()
 {
     this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     this->setWidgetResizable(true);
@@ -85,7 +85,7 @@ void SettingsDock::setupUi()
     this->setWidget(dummy);
 }
 
-void SettingsDock::setupAppearanceTab()
+void SettingsDockWidget::setupAppearanceTab()
 {
     QWidget *w = addTab(DuIcon(":/icons/appearance90"), "Appearance");
     auto l = qobject_cast<QBoxLayout*>( w->layout() );
@@ -196,7 +196,7 @@ void SettingsDock::setupAppearanceTab()
     l->addWidget(new QLabel(tr("Restart the application\nfor the changes to take effect.")));
 }
 
-void SettingsDock::setupUpdatesTab()
+void SettingsDockWidget::setupUpdatesTab()
 {
     QWidget *w = addTab(DuIcon(":/icons/update90"), "Updates");
     auto l = qobject_cast<QVBoxLayout*>( w->layout() );
@@ -215,7 +215,7 @@ void SettingsDock::setupUpdatesTab()
     l->addStretch();
 }
 
-void SettingsDock::setupDaemonTab()
+void SettingsDockWidget::setupDaemonTab()
 {
     QWidget *w = addTab(DuIcon(":/icons/daemon90"), "Daemon");
     auto l = qobject_cast<QVBoxLayout*>( w->layout() );
@@ -236,14 +236,14 @@ void SettingsDock::setupDaemonTab()
     l->addStretch();
 }
 
-void SettingsDock::connectEvents()
+void SettingsDockWidget::connectEvents()
 {
     connect(_sm, &DuSettings::settingChanged,
-            this, &SettingsDock::updateSettings);
+            this, &SettingsDockWidget::updateSettings);
 
     // APEARANCE
     connect(ui_themeBox, QOverload<int>::of(&QComboBox::activated),
-            this, &SettingsDock::setTheme);
+            this, &SettingsDockWidget::setTheme);
     connect( ui_toolButtonStyleBox, QOverload<int>::of(&DuComboBox::activated),
             this, [this] (int i) {
                 _sm->set( DuSettings::UI_ToolButtonStyle,
@@ -311,7 +311,7 @@ void SettingsDock::connectEvents()
     connect( ui_restartDaemonButton, &QPushButton::clicked, Daemon::instance(), &Daemon::restart );
 }
 
-QWidget *SettingsDock::addTab(const DuIcon &icon, const QString &name)
+QWidget *SettingsDockWidget::addTab(const DuIcon &icon, const QString &name)
 {
     auto *w = new QWidget(ui_tabWidget);
     ui_tabWidget->addTab(w, icon, "");
@@ -321,7 +321,7 @@ QWidget *SettingsDock::addTab(const DuIcon &icon, const QString &name)
     return w;
 }
 
-QWidget *SettingsDock::addSection(const QString &name, QBoxLayout *layout)
+QWidget *SettingsDockWidget::addSection(const QString &name, QBoxLayout *layout)
 {
     auto label = new QLabel(this);
     label->setText("<b>" + name + "</b>");
@@ -335,7 +335,7 @@ QWidget *SettingsDock::addSection(const QString &name, QBoxLayout *layout)
     return w;
 }
 
-QJsonObject SettingsDock::getTheme(const QString &path) const
+QJsonObject SettingsDockWidget::getTheme(const QString &path) const
 {
     QFile f(path);
 
@@ -347,7 +347,7 @@ QJsonObject SettingsDock::getTheme(const QString &path) const
     return tdoc.object();
 }
 
-void SettingsDock::loadThemes()
+void SettingsDockWidget::loadThemes()
 {
     QSignalBlocker b(ui_themeBox);
     ui_themeBox->clear();
@@ -372,7 +372,7 @@ void SettingsDock::loadThemes()
     ui_themeBox->setCurrentIndex(0);
 }
 
-void SettingsDock::setTheme(int t)
+void SettingsDockWidget::setTheme(int t)
 {
     // Custom
     if (t == 0) {

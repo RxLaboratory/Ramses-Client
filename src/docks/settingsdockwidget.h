@@ -1,5 +1,5 @@
-#ifndef SETTINGSDOCK_H
-#define SETTINGSDOCK_H
+#ifndef SETTINGSDOCKWIDGET_H
+#define SETTINGSDOCKWIDGET_H
 
 #include <QBoxLayout>
 #include <QPushButton>
@@ -13,11 +13,11 @@
 #include "duwidgets/ducolorselector.h"
 #include "duwidgets/duspinbox.h"
 
-class SettingsDock : public DuScrollArea
+class SettingsDockWidget : public DuScrollArea
 {
     Q_OBJECT
 public:
-    SettingsDock(QWidget *parent = nullptr);
+    SettingsDockWidget(QWidget *parent = nullptr);
 
 
 private slots:
@@ -64,4 +64,4 @@ private:
     QJsonObject getTheme(const QString &path) const;
 };
 
-#endif // SETTINGSDOCK_H
+#endif // SETTINGSDOCKWIDGET_H

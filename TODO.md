@@ -1,5 +1,6 @@
 ## Priority fixes
 
+- Stats dock, empty list?
 - Refactor project edit widget
     - and user assignments, for admin only
 - to fix loading order: try to keep the uuid list in the model to reload the objects later (maybe monitor the corresponding dbtable to auto reload)
@@ -30,7 +31,6 @@
 ## Client UI
 
 - Use DuUI Layout methods everywhere
-- DuDockWidget update
 - QDateEdit button CSS
 - Improve server widget (hide details in a QMenu), keep only the address
 - refactor logging & console (see DuME)

@@ -11,8 +11,7 @@ AssetManagerWidget::AssetManagerWidget(QWidget *parent):
         DuIcon(":icons/asset"),
         parent)
 {
-    changeProject(Ramses::i()->project());
-    connect(Ramses::i(), &Ramses::ready, this, [this]() { changeProject(Ramses::i()->project()); });
+    setProject(Ramses::i()->project());
     ui_listWidget->setEditMode(ObjectListWidget::RemoveObjects);
     ui_listWidget->setSortable(true);
 }
@@ -38,7 +37,7 @@ RamAbstractItem *AssetManagerWidget::createObject()
     return asset;
 }
 
-void AssetManagerWidget::changeProject(RamProject *project)
+void AssetManagerWidget::setProject(RamProject *project)
 {
     if (!project) return;
     this->setObjectModel( project->assets() );

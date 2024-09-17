@@ -17,6 +17,10 @@ TimelineView::TimelineView(QWidget *parent):
 
     setupUi();
     connectEvents();
+
+    RamProject *project = Ramses::i()->project();
+    Q_ASSERT(project);
+    this->setObjectModel(project->shots());
 }
 
 void TimelineView::setObjectModel(QAbstractItemModel *shots)
@@ -124,11 +128,6 @@ void TimelineView::columnMoved(int logicalIndex, int oldVisualIndex, int newVisu
 
     // Reset column widths
     resetZoom();
-}
-
-void TimelineView::ramsesReady()
-{
-    this->setObjectModel(Ramses::i()->project()->shots());
 }
 
 void TimelineView::select(const QModelIndex &index)
@@ -257,8 +256,6 @@ void TimelineView::setupUi()
 
 void TimelineView::connectEvents()
 {
-    // Update list when project changes
-    connect(Ramses::i(), &Ramses::ready, this, &TimelineView::ramsesReady);
     // Delegate buttons
     connect(m_delegate, SIGNAL(edited(RamObject*)), this, SLOT(select(RamObject*)));
     // Select

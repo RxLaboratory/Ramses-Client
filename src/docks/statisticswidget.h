@@ -19,7 +19,7 @@ public:
 signals:
 
 private slots:
-    void ramsesReady();
+    void setProject();
     void updateEstimation(RamProject *project);
     void changeUser(RamObject *userObj);
 

@@ -6,19 +6,19 @@ StatisticsWidget::StatisticsWidget(QWidget *parent) : QWidget(parent)
 {
     setupUi();
     connectEvents();
+    setProject();
 }
 
-void StatisticsWidget::ramsesReady()
+void StatisticsWidget::setProject()
 {
     m_project = Ramses::i()->project();
+    Q_ASSERT(m_project);
 
     ui_userBox->setObjectModel(m_project->users(), "Users");
     updateEstimation(m_project);
     connect(m_project,SIGNAL(estimationComputed(RamProject*)),this,SLOT(updateEstimation(RamProject*)));
 
     ui_statsTable->resizeRowsToContents();
-
-    this->update();
 }
 
 void StatisticsWidget::updateEstimation(RamProject *project)
@@ -26,17 +26,6 @@ void StatisticsWidget::updateEstimation(RamProject *project)
     //ui_progressWidget->setLatenessRatio( project->latenessRatio() );
     //ui_progressWidget->setTimeSpent( project->timeSpent() );
     //ui_progressWidget->setEstimation( project->estimation() );
-
-    if (!project)
-    {
-        ui_progressWidget->setCompletionRatio( 0 );
-        ui_scheduledWorkLabel->setText( "-- days");
-        ui_completionLabel->setText( "-- %" );
-        ui_remainingWorkLabel->setText( "-- days" );
-        ui_missingDaysLabel->setText("-- days");
-        ui_missingLabel->setText("Missing: ");
-        return;
-    }
 
     RamUser *user = RamUser::c( ui_userBox->currentObject() );
     QVector<float> stats = project->stats(user);
@@ -147,6 +136,5 @@ void StatisticsWidget::setupUi()
 
 void StatisticsWidget::connectEvents()
 {
-    connect(Ramses::i(), &Ramses::ready, this, &StatisticsWidget::ramsesReady);
     connect(ui_userBox, SIGNAL(currentObjectChanged(RamObject*)), this, SLOT(changeUser(RamObject*)));
 }

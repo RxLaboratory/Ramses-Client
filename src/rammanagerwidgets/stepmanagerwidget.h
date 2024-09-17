@@ -14,7 +14,7 @@ public:
 protected slots:
     RamStep *createObject() override;
 private slots:
-    void changeProject(RamProject *project);
+    void setProject(RamProject *project);
 
     void createFromTemplate(RamObject *templateStepObj);
 

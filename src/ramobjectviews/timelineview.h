@@ -44,7 +44,6 @@ protected slots:
     void columnMoved( int logicalIndex, int oldVisualIndex, int newVisualIndex);
 
 private slots:
-    void ramsesReady();
     void select(const QModelIndex &index);
     void selectShot(RamShot *shot);
 

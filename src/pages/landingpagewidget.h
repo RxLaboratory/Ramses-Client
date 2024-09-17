@@ -1,5 +1,5 @@
-#ifndef LANDINGPAGE_H
-#define LANDINGPAGE_H
+#ifndef LANDINGPAGEWIDGET_H
+#define LANDINGPAGEWIDGET_H
 
 #include <QWidget>
 #include <QPushButton>
@@ -9,11 +9,11 @@
 #include "datastruct.h"
 #include "duwidgets/ducombobox.h"
 
-class LandingPage : public QWidget
+class LandingPageWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit LandingPage(QWidget *parent = nullptr);
+    explicit LandingPageWidget(QWidget *parent = nullptr);
 
 private slots:
     void updateRecentList();
@@ -36,4 +36,4 @@ private:
     QString login(ServerConfig serverSettings, const QString &username, const QString &password);
 };
 
-#endif // LANDINGPAGE_H
+#endif // LANDINGPAGEWIDGET_H

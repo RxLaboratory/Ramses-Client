@@ -4,8 +4,8 @@
 
 #include "assetgroupmanagerwidget.h"
 #include "assetmanagerwidget.h"
-#include "docks/consoledock.h"
-#include "homepage.h"
+#include "docks/consoledockwidget.h"
+#include "homepagewidget.h"
 #include "itemmanagerwidget.h"
 #include "pipefilemanagerwidget.h"
 #include "sequencemanagerwidget.h"
@@ -26,7 +26,7 @@
 #include "daemon.h"
 #include "dbmanagerwidget.h"
 #include "duapp/app-version.h"
-#include "docks/settingsdock.h"
+#include "docks/settingsdockwidget.h"
 #include "ramses.h"
 #include "duapp/duui.h"
 #include "config.h"
@@ -66,7 +66,7 @@ MainWindow::MainWindow(const QCommandLineParser &cli, QWidget *parent) :
     setStyle();
 
     // Initial page
-    setPage(Landing);
+    setPage(LandingPage);
 
     // Everything is ready
     connectEvents();
@@ -100,7 +100,7 @@ void MainWindow::connectEvents()
     // ==== Toolbar buttons ====
 
     connect(m_actionLogIn,&DuAction::triggered,
-            this, [this] () { setPage(Landing); } );
+            this, [this] () { setPage(LandingPage); } );
     connect(m_actionLogOut, &QAction::triggered, this, []() { StateManager::i()->restart(); });
     connect(m_actionSetOnline, &QAction::triggered, this, &MainWindow::setOnlineAction);
     connect(m_actionSetOffline, &QAction::triggered, this, &MainWindow::setOfflineAction);
@@ -114,64 +114,37 @@ void MainWindow::connectEvents()
             user->edit(true);
     });
 
+    // ==== Pages ====
+
     connect(m_actionAdmin,&DuAction::triggered,
-            this, [this] () { setPage(Admin); } );
-
+            this, [this] () { setPage(AdminPage); } );
     connect(m_actionPipeline,&DuAction::triggered,
-            this, [this] () { setPage(PipeLine); } );
-    connect(ui_pipelineButton,&QToolButton::triggered,
-            this, [this] () { setPage(PipeLine); } );
-
+            this, [this] () { setPage(PipeLinePage); } );
     connect(m_actionShots,&DuAction::triggered,
-            this, [this] () { setPage(Shots); } );
-    connect(ui_shotsButton,&QToolButton::triggered,
-            this, [this] () { setPage(Shots); } );
-
+            this, [this] () { setPage(ShotsPage); } );
     connect(m_actionAssets,&DuAction::triggered,
-            this, [this] () { setPage(Assets); } );
-    connect(ui_assetsButton,&QToolButton::triggered,
-            this, [this] () { setPage(Assets); } );
-
+            this, [this] () { setPage(AssetsPage); } );
     connect(m_actionSchedule,&DuAction::triggered,
-            this, [this] () { setPage(Schedule); } );
-    connect(ui_scheduleButton,&QToolButton::triggered,
-            this, [this] () { setPage(Schedule); } );
+            this, [this] () { setPage(SchedulePage); } );
 
     // ==== Docks ====
 
-    connect(ui_consoleDockWidget,&DuDockWidget::visibilityChanged, m_actionConsole, &DuAction::setChecked);
-    connect(m_actionConsole, &DuAction::triggered, ui_consoleDockWidget, &DuDockWidget::setVisible);
+    connect(m_actionConsole, &DuAction::triggered, this, [this] () { setDock(ConsoleDock); });
+    connect(m_actionSettings, &DuAction::triggered, this, [this] () { setDock(SettingsDock); });
+    connect(m_stepsAction, &DuAction::triggered, this, [this] () { setDock(StepsDock); });
+    connect(m_pipeFilesAction, &DuAction::triggered, this, [this] () { setDock(PipeFilesDock); });
+    connect(m_assetGroupAction, &DuAction::triggered, this, [this] () { setDock(AssetGroupsDock); });
+    connect(m_assetListAction, &DuAction::triggered, this, [this] () { setDock(AssetsDock); });
+    connect(m_sequenceAction, &DuAction::triggered, this, [this] () { setDock(SequencesDock); });
+    connect(m_shotListAction, &DuAction::triggered, this, [this] () { setDock(ShotsDock); });
+    connect(m_actionStatistics, &DuAction::triggered, this, [this] () { setDock(StatisticsDock); });
+    connect(m_actionTimeline, &DuAction::triggered, this, [this] () { setDock(TimelineDock); });
 
-    connect(m_actionSettings, &DuAction::triggered, ui_settingsDock, &DuDockWidget::setVisible);
-    connect(ui_settingsDock, &DuDockWidget::visibilityChanged, m_actionSettings, &DuAction::setChecked);
-
-    /* Replace by proporties dock, no need for a specific dock for the project
-    connect(m_projectAction, SIGNAL(triggered(bool)), ui_projectDockWidget, SLOT(setVisible(bool)));
-    connect(ui_projectDockWidget, SIGNAL(visibilityChanged(bool)), m_projectAction, SLOT(setChecked(bool)));//*/
-
-    /*connect(m_stepsAction, SIGNAL(triggered(bool)), ui_stepsDockWidget, SLOT(setVisible(bool)));
-    connect(ui_stepsDockWidget, SIGNAL(visibilityChanged(bool)), m_stepsAction, SLOT(setChecked(bool)));
-
-    connect(m_pipeFilesAction, SIGNAL(triggered(bool)), ui_pipeFileDockWidget, SLOT(setVisible(bool)));
-    connect(ui_pipeFileDockWidget, SIGNAL(visibilityChanged(bool)), m_pipeFilesAction, SLOT(setChecked(bool)));
-
-    connect(m_assetGroupAction, SIGNAL(triggered(bool)), ui_assetGroupsDockWidget, SLOT(setVisible(bool)));
-    connect(ui_assetGroupsDockWidget, SIGNAL(visibilityChanged(bool)), m_assetGroupAction, SLOT(setChecked(bool)));
-
-    connect(m_assetListAction, SIGNAL(triggered(bool)), ui_assetsDockWidget, SLOT(setVisible(bool)));
-    connect(ui_assetsDockWidget, SIGNAL(visibilityChanged(bool)), m_assetListAction, SLOT(setChecked(bool)));
-
-    connect(m_sequenceAction, SIGNAL(triggered(bool)), ui_sequencesDockWidget, SLOT(setVisible(bool)));
-    connect(ui_sequencesDockWidget, SIGNAL(visibilityChanged(bool)), m_sequenceAction, SLOT(setChecked(bool)));
-
-    connect(m_shotListAction, SIGNAL(triggered(bool)), ui_shotsDockWidget, SLOT(setVisible(bool)));
-    connect(ui_shotsDockWidget, SIGNAL(visibilityChanged(bool)), m_shotListAction, SLOT(setChecked(bool)));
-
-    connect(m_actionStatistics,SIGNAL(triggered(bool)), ui_statsDockWidget, SLOT(setVisible(bool)));
-    connect(ui_statsDockWidget,SIGNAL(visibilityChanged(bool)), m_actionStatistics, SLOT(setChecked(bool)));
-
-    connect(m_actionTimeline,SIGNAL(triggered(bool)), ui_timelineDockWidget, SLOT(setVisible(bool)));
-    connect(ui_timelineDockWidget,SIGNAL(visibilityChanged(bool)), m_actionTimeline, SLOT(setChecked(bool)));//*/
+    connect(m_projectAction, &DuAction::triggered, this, [] () {
+        RamProject *proj = Ramses::i()->project();
+        if (proj)
+            proj->edit();
+    });
 
     // ==== Files ====
 
@@ -207,20 +180,17 @@ void MainWindow::connectEvents()
 
 void MainWindow::setPropertiesDockWidget(QWidget *w, QString title, QString icon, bool temporary)
 {
-    if (_propertiesWidgetIsTemporary) {
-        QWidget *w = ui_propertiesDockWidget->widget();
-        if (w) {
-            disconnect(w, nullptr, ui_propertiesDockWidget, nullptr);
-            w->deleteLater();
-        }
-    }
 
+    QWidget *previous = ui_propertiesDockWidget->widget();
+    if (previous) {
+        disconnect(previous, nullptr, ui_propertiesDockWidget, nullptr);
+    }
     connect(w, &QWidget::destroyed, ui_propertiesDockWidget, &QDockWidget::hide);
 
-    _propertiesWidgetIsTemporary = temporary;
     ui_propertiesDockWidget->setWidget( w );
-    ui_propertiesTitle->setTitle(title);
-    ui_propertiesTitle->setIcon(icon);
+    ui_propertiesDockWidget->setAutoDeleteWidget(temporary);
+    ui_propertiesDockWidget->dockTitleWidget()->setTitle(title);
+    ui_propertiesDockWidget->dockTitleWidget()->setIcon(icon);
     ui_propertiesDockWidget->show();
 }
 
@@ -347,8 +317,8 @@ void MainWindow::setPage(Page p)
     if (m_currentPage == p)
         return;
 
-    if (p == Landing ||
-        p == Home) {
+    if (p == LandingPage ||
+        p == HomePage) {
         ui_mainStack->setCurrentIndex(p);
         m_currentPage = p;
         return;
@@ -357,7 +327,7 @@ void MainWindow::setPage(Page p)
     // Without project,
     // get home!
     if (!Ramses::i()->project()) {
-        setPage(Home);
+        setPage(HomePage);
         return;
     }
 
@@ -374,34 +344,96 @@ void MainWindow::setPage(Page p)
     QWidget *newWidget = nullptr;
 
     switch(p) {
-    case Landing:
-    case Home:
+    case LandingPage:
+    case HomePage:
         return;
-    case Admin:
+    case AdminPage:
         // TODO
         break;
-    case PipeLine:
+    case PipeLinePage:
         newWidget = new PipelineWidget(this);
         break;
-    case Assets:
+    case AssetsPage:
         newWidget = new ItemManagerWidget(RamStep::AssetProduction, this);
         break;
-    case Shots:
+    case ShotsPage:
         newWidget = new ItemManagerWidget(RamStep::ShotProduction, this);
         break;
-    case Schedule:
+    case SchedulePage:
         newWidget = new ScheduleManagerWidget(this);
         break;
     }
 
     if (!newWidget) {
-        setPage(Home);
+        setPage(HomePage);
         return;
     }
 
     ui_mainStack->insertWidget(2, newWidget);
     ui_mainStack->setCurrentIndex(2);
     m_currentPage = p;
+}
+
+void MainWindow::setDock(Dock d)
+{
+    DuDockWidget *dock = nullptr;
+
+    switch(d) {
+    case SettingsDock:
+        dock = ui_settingsDock;
+        break;
+    case ConsoleDock:
+        dock = ui_consoleDockWidget;
+        break;
+    case PropertiesDock:
+        dock = ui_propertiesDockWidget;
+        break;
+    case StatisticsDock:
+        if (!ui_statsDockWidget->widget())
+            ui_statsDockWidget->setWidget(new StatisticsWidget(this));
+        dock = ui_statsDockWidget;
+        break;
+    case StepsDock:
+        if (!ui_stepsDockWidget->widget())
+            ui_stepsDockWidget->setWidget(new StepManagerWidget(this));
+        dock = ui_stepsDockWidget;
+        break;
+    case PipeFilesDock:
+        if (!ui_pipeFileDockWidget->widget())
+            ui_pipeFileDockWidget->setWidget(new PipeFileManagerWidget(this));
+        dock = ui_pipeFileDockWidget;
+        break;
+    case AssetGroupsDock:
+        if (!ui_assetGroupsDockWidget->widget())
+            ui_assetGroupsDockWidget->setWidget(new AssetGroupManagerWidget(this));
+        dock = ui_assetGroupsDockWidget;
+        break;
+    case AssetsDock:
+        if (!ui_assetsDockWidget->widget())
+            ui_assetsDockWidget->setWidget(new AssetManagerWidget(this));
+        dock = ui_assetsDockWidget;
+        break;
+    case SequencesDock:
+        if (!ui_sequencesDockWidget->widget())
+            ui_sequencesDockWidget->setWidget(new SequenceManagerWidget(this));
+        dock = ui_sequencesDockWidget;
+        break;
+    case ShotsDock:
+        if (!ui_shotsDockWidget->widget())
+            ui_shotsDockWidget->setWidget(new ShotManagerWidget(this));
+        dock = ui_shotsDockWidget;
+        break;
+    case TimelineDock:
+        if (!ui_timelineDockWidget->widget())
+            ui_timelineDockWidget->setWidget(new TimelineWidget(this));
+        dock = ui_timelineDockWidget;
+        break;
+    }
+
+    if (!dock)
+        return;
+
+    dock->show();
 }
 
 void MainWindow::revealAdminFolder()
@@ -509,9 +541,6 @@ void MainWindow::ramsesReady()
     // The signal is emited only if all are ready
     RamProject *project = Ramses::i()->project();
 
-    //ui_projectEditWiget->setObject(project);
-    //ui_statsTitle->setTitle( project->name() );
-
     ui_shotMenuAction->setVisible(true);
     ui_assetMenuAction->setVisible(true);
     ui_scheduleMenuAction->setVisible(true);
@@ -570,7 +599,7 @@ void MainWindow::changeState(StateManager::State s)
     case StateManager::Closing:
         ui_stateWidget->setSVGIcon(":/icons/wait");
         ui_stateWidget->rotate();
-        setPage(Home);
+        setPage(HomePage);
         break;
 
     case StateManager::Connecting:
@@ -665,7 +694,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
         return;
     }
 
-    setPage(Home);
+    setPage(HomePage);
     StateManager::i()->quit();
     m_closing = true;
     event->ignore();
@@ -694,7 +723,6 @@ void MainWindow::setupActions()
     m_actionConsole = new DuAction(this);
     m_actionConsole->setText(tr("Console"));
     m_actionConsole->setIcon(DuIcon(":/icons/bash"));
-    m_actionConsole->setCheckable(true);
 
     m_actionLogIn = new DuAction(this);
     m_actionLogIn->setText(tr("Log in..."));
@@ -743,13 +771,11 @@ void MainWindow::setupActions()
 
     m_actionStatistics = new DuAction(this);
     m_actionStatistics->setText(tr("Statistics"));
-    m_actionStatistics->setCheckable(true);
     m_actionStatistics->setToolTip(tr("Shows some project statics and production tracking data."));
     m_actionStatistics->setIcon(":/icons/stats");
 
     m_actionTimeline = new DuAction(this);
     m_actionTimeline->setText(tr("Timeline"));
-    m_actionTimeline->setCheckable(true);
     m_actionTimeline->setToolTip(tr("Shows the shots in a timeline."));
     m_actionTimeline->setIcon(":/icons/timeline");
 
@@ -771,7 +797,6 @@ void MainWindow::setupActions()
     m_actionSettings = new DuAction(this);
     m_actionSettings->setText(tr("Settings"));
     m_actionSettings->setToolTip(tr("Edit the application settings."));
-    m_actionSettings->setCheckable(true);
     m_actionSettings->setIcon(":/icons/settings");
 
     m_actionSync = new DuAction(this);
@@ -792,22 +817,18 @@ void MainWindow::setupActions()
     m_projectAction = new DuAction(tr("Project settings"), this);
     m_projectAction->setIcon(":/icons/project");
     m_projectAction->setToolTip(tr("Edit the project settings."));
-    m_projectAction->setCheckable(true);
 
     m_stepsAction = new DuAction(tr("Steps"), this);
     m_stepsAction->setIcon(":/icons/step");
     m_stepsAction->setToolTip(tr("Shows the list of steps."));
-    m_stepsAction->setCheckable(true);
 
     m_pipeFilesAction = new DuAction(tr("Pipe formats"), this);
     m_pipeFilesAction->setIcon(":/icons/connection");
     m_pipeFilesAction->setToolTip(tr("Shows the list of pipes."));
-    m_pipeFilesAction->setCheckable(true);
 
     m_assetGroupAction = new DuAction(tr("Asset groups"), this);
     m_assetGroupAction->setIcon(":/icons/asset-group");
     m_assetGroupAction->setToolTip(tr("Shows the list of asset groups."));
-    m_assetGroupAction->setCheckable(true);
 
     m_assetListAction = new DuAction(tr("Assets"), this);
     m_assetListAction->setIcon(":/icons/asset");
@@ -817,12 +838,10 @@ void MainWindow::setupActions()
     m_sequenceAction = new DuAction(tr("Sequences"), this);
     m_sequenceAction->setIcon(":/icons/sequence");
     m_sequenceAction->setToolTip(tr("Shows the list of sequences."));
-    m_sequenceAction->setCheckable(true);
 
     m_shotListAction = new DuAction(tr("Shots"), this);
     m_shotListAction->setIcon(":/icons/shot");
     m_shotListAction->setToolTip(tr("Shows the list of shots."));
-    m_shotListAction->setCheckable(true);
 
     m_fileAdminAction = new DuAction(tr("Admin"), this);
     m_fileAdminAction->setIcon(":/icons/settings-w");
@@ -860,11 +879,11 @@ void MainWindow::setupUi()
     ui_mainStack = DuUI::addStackedLayout(ui_centralWidget);
 
     // Landing page
-    ui_landingPage = new LandingPage(this);
+    ui_landingPage = new LandingPageWidget(this);
     ui_mainStack->addWidget(ui_landingPage);
 
     // Home page
-    auto homePage = new HomePage(this);
+    auto homePage = new HomePageWidget(this);
     ui_mainStack->addWidget(homePage);
 
     // Admin
@@ -902,221 +921,92 @@ void MainWindow::setupDocks()
     QSettings settings;
 
     // Settings Dock
-    ui_settingsDock = new DuDockWidget("Settings", this);
-    ui_settingsDock->setWindowIcon(DuIcon(":/icons/settings"));
-    ui_settingsDock->setObjectName("settingsDock");
-    DuDockTitleWidget *ui_settingsTitle = new DuDockTitleWidget("Settings", this);
-    ui_settingsTitle->setObjectName("dockTitle");
-    ui_settingsTitle->setIcon(":/icons/settings");
-    ui_settingsDock->setTitleBarWidget(ui_settingsTitle);
+    ui_settingsDock = new DuDockWidget("Settings", ":/icons/settings", this);
     ui_settingsDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     ui_settingsDock->setFeatures(DuDockWidget::DockWidgetClosable | DuDockWidget::DockWidgetMovable | DuDockWidget::DockWidgetFloatable );
-    ui_settingsDock->setWidget(new SettingsDock(ui_settingsDock));
+    ui_settingsDock->setWidget(new SettingsDockWidget(ui_settingsDock));
     this->addDockWidget(Qt::RightDockWidgetArea, ui_settingsDock);
     ui_settingsDock->hide();
 
-    /*StatisticsWidget *statsTable = new StatisticsWidget(this);
-
-    ui_statsDockWidget = new DuDockWidget(tr("Statistics"));
-    ui_statsDockWidget->setWindowIcon(DuIcon(":/icons/stats"));
-    ui_statsDockWidget->setObjectName("statsDock");
-
-    ui_statsTitle = new DuDockTitleWidget(tr("Statistics"), this);
-    ui_statsTitle->setObjectName("dockTitle");
-    ui_statsTitle->setIcon(":/icons/stats");
-    ui_statsDockWidget->setTitleBarWidget(ui_statsTitle);
-
-    ui_statsDockWidget->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    ui_statsDockWidget->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable );
-    ui_statsDockWidget->setWidget( statsTable );
-    Qt::DockWidgetArea area = static_cast<Qt::DockWidgetArea>( settings.value("ui/statsArea", Qt::LeftDockWidgetArea).toInt() );
-    this->addDockWidget(area, ui_statsDockWidget);
-    ui_statsDockWidget->hide();
-
-    qDebug() << "> Statistics table ready";//*/
-
     // A console in a tab
-    auto *consoleFrame = new ConsoleDock(this);
-
-    ui_consoleDockWidget = new DuDockWidget("Console");
-    ui_consoleDockWidget->setWindowIcon(DuIcon(":/icons/bash"));
-    ui_consoleDockWidget->setObjectName("consoleDock");
-
-    auto *consoleTitle = new DuDockTitleWidget("Console", this);
-    consoleTitle->setObjectName("dockTitle");
-    consoleTitle->setIcon(":/icons/bash");
-    ui_consoleDockWidget->setTitleBarWidget(consoleTitle);
-
+    ui_consoleDockWidget = new DuDockWidget("Console", ":/icons/bash", this);
     ui_consoleDockWidget->setAllowedAreas(Qt::AllDockWidgetAreas);
     ui_consoleDockWidget->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable );
-    ui_consoleDockWidget->setWidget( consoleFrame );
+    ui_consoleDockWidget->setWidget( new ConsoleDockWidget(this) );
     this->addDockWidget(Qt::LeftDockWidgetArea, ui_consoleDockWidget);
     ui_consoleDockWidget->hide();
 
-    qDebug() << "> Console dock ready";
-
-    // The timeline
-    /*TimelineWidget *timeline = new TimelineWidget(this);
-
-    ui_timelineDockWidget = new DuDockWidget("Timeline");
-    ui_timelineDockWidget->setWindowIcon(DuIcon(":/icons/timeline"));
-    ui_timelineDockWidget->setObjectName("timelineDock");
-
-    auto *timelineTitle = new DuDockTitleWidget("Timeline", this);
-    timelineTitle->setObjectName("dockTitle");
-    timelineTitle->setIcon(":/icons/timeline");
-    ui_timelineDockWidget->setTitleBarWidget(timelineTitle);
-
-    ui_timelineDockWidget->setAllowedAreas(Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea);
-    ui_timelineDockWidget->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable );
-    ui_timelineDockWidget->setWidget( timeline );
-    this->addDockWidget(Qt::BottomDockWidgetArea, ui_timelineDockWidget);
-    ui_timelineDockWidget->hide();
-
-    qDebug() << "> Timeline dock ready";//*/
-
     // The properties dock
-    ui_propertiesDockWidget = new DuDockWidget("Properties");
-    ui_propertiesDockWidget->setWindowIcon(DuIcon(":/icons/asset"));
-    ui_propertiesDockWidget->setObjectName("propertiesDock");
-
-    ui_propertiesTitle = new DuDockTitleWidget("Properties", this);
-    ui_propertiesTitle->setObjectName("dockTitle");
-    ui_propertiesTitle->setIcon(":/icons/asset");
-    ui_propertiesDockWidget->setTitleBarWidget(ui_propertiesTitle);
-
+    ui_propertiesDockWidget = new DuDockWidget("Properties", ":/icons/asset", this);
     ui_propertiesDockWidget->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     ui_propertiesDockWidget->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable );
     this->addDockWidget(Qt::RightDockWidgetArea, ui_propertiesDockWidget);
     ui_propertiesDockWidget->hide();
 
-    qDebug() << "> Properties dock ready";
+    // The timeline
+    ui_timelineDockWidget = new DuDockWidget(tr("Timeline"), ":/icons/timeline", this);
+    ui_timelineDockWidget->setAllowedAreas(Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea);
+    ui_timelineDockWidget->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable );
+    this->addDockWidget(Qt::BottomDockWidgetArea, ui_timelineDockWidget);
+    ui_timelineDockWidget->setAutoDeleteWidget(true);
+    ui_timelineDockWidget->hide();
 
-    // The project dock
-    /*ui_projectEditWiget = new ProjectEditWidget(this);
 
-    ui_projectDockWidget = new DuDockWidget(tr("Project settings"));
-    ui_projectDockWidget->setWindowIcon(DuIcon(":/icons/project"));
-    ui_projectDockWidget->setObjectName("projectDock");
-
-    auto *pTitle = new DuDockTitleWidget(tr("Project settings"), this);
-    pTitle->setObjectName("dockTitle");
-    pTitle->setIcon(":/icons/project");
-    ui_projectDockWidget->setTitleBarWidget(pTitle);
-
-    ui_projectDockWidget->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    ui_projectDockWidget->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable );
-    ui_projectDockWidget->setWidget( ui_projectEditWiget );
-    this->addDockWidget(Qt::RightDockWidgetArea, ui_projectDockWidget);
-    ui_projectDockWidget->hide();//*/
+    ui_statsDockWidget = new DuDockWidget(tr("Statistics"), ":/icons/stats", this);
+    ui_statsDockWidget->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    ui_statsDockWidget->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable );
+    Qt::DockWidgetArea area = static_cast<Qt::DockWidgetArea>( settings.value("ui/statsArea", Qt::LeftDockWidgetArea).toInt() );
+    this->addDockWidget(area, ui_statsDockWidget);
+    ui_statsDockWidget->setAutoDeleteWidget(true);
+    ui_statsDockWidget->hide();
 
     // The steps dock
-    /*StepManagerWidget *stepWidget = new StepManagerWidget(this);
-
-    ui_stepsDockWidget = new DuDockWidget(tr("Steps"));
-    ui_stepsDockWidget->setWindowIcon(DuIcon(":/icons/step"));
-    ui_stepsDockWidget->setObjectName("stepsDock");
-
-    auto *sTitle = new DuDockTitleWidget(tr("Steps"), this);
-    sTitle->setObjectName("dockTitle");
-    sTitle->setIcon(":/icons/step");
-    ui_stepsDockWidget->setTitleBarWidget(sTitle);
-
+    ui_stepsDockWidget = new DuDockWidget(tr("Steps"), ":/icons/step", this);
     ui_stepsDockWidget->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     ui_stepsDockWidget->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable );
-    ui_stepsDockWidget->setWidget( stepWidget );
     this->addDockWidget(Qt::LeftDockWidgetArea, ui_stepsDockWidget);
-    ui_stepsDockWidget->hide();//*/
+    ui_stepsDockWidget->setAutoDeleteWidget(true);
+    ui_stepsDockWidget->hide();
 
     // The pipe formats dock
-    /*PipeFileManagerWidget *pipeFileWidget = new PipeFileManagerWidget(this);
-
-    ui_pipeFileDockWidget = new DuDockWidget(tr("Pipe formats"));
-    ui_pipeFileDockWidget->setWindowIcon(DuIcon(":/icons/connection"));
-    ui_pipeFileDockWidget->setObjectName("pipeFilesDock");
-
-    auto *pfTitle = new DuDockTitleWidget(tr("Pipe formats"), this);
-    pfTitle->setObjectName("dockTitle");
-    pfTitle->setIcon(":/icons/connection");
-    ui_pipeFileDockWidget->setTitleBarWidget(pfTitle);
-
+    ui_pipeFileDockWidget = new DuDockWidget(tr("Pipe formats"), ":/icons/connection", this);
     ui_pipeFileDockWidget->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     ui_pipeFileDockWidget->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable );
-    ui_pipeFileDockWidget->setWidget( pipeFileWidget );
     this->addDockWidget(Qt::LeftDockWidgetArea, ui_pipeFileDockWidget);
-    ui_pipeFileDockWidget->hide();//*/
+    ui_pipeFileDockWidget->setAutoDeleteWidget(true);
+    ui_pipeFileDockWidget->hide();
 
     // The asset groups dock
-    /*AssetGroupManagerWidget *assetGroupWidget = new AssetGroupManagerWidget(this);
-
-    ui_assetGroupsDockWidget = new DuDockWidget(tr("Asset Groups"));
-    ui_assetGroupsDockWidget->setWindowIcon(DuIcon(":/icons/asset-group"));
-    ui_assetGroupsDockWidget->setObjectName("assetGroupsDock");
-
-    auto *agTitle = new DuDockTitleWidget(tr("Asset Groups"), this);
-    agTitle->setObjectName("dockTitle");
-    agTitle->setIcon(":/icons/asset-group");
-    ui_assetGroupsDockWidget->setTitleBarWidget(agTitle);
-
+    ui_assetGroupsDockWidget = new DuDockWidget(tr("Asset Groups"), ":/icons/asset-group", this);
     ui_assetGroupsDockWidget->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     ui_assetGroupsDockWidget->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable );
-    ui_assetGroupsDockWidget->setWidget( assetGroupWidget );
     this->addDockWidget(Qt::LeftDockWidgetArea, ui_assetGroupsDockWidget);
-    ui_assetGroupsDockWidget->hide();//*/
+    ui_assetGroupsDockWidget->setAutoDeleteWidget(true);
+    ui_assetGroupsDockWidget->hide();
 
     // The assets dock
-    /*AssetManagerWidget *assetWidget = new AssetManagerWidget(this);
-
-    ui_assetsDockWidget = new DuDockWidget(tr("Assets"));
-    ui_assetsDockWidget->setWindowIcon(DuIcon(":/icons/asset"));
-    ui_assetsDockWidget->setObjectName("assetsDock");
-
-    auto *aTitle = new DuDockTitleWidget(tr("Assets"), this);
-    aTitle->setObjectName("dockTitle");
-    aTitle->setIcon(":/icons/asset");
-    ui_assetsDockWidget->setTitleBarWidget(aTitle);
-
+    ui_assetsDockWidget = new DuDockWidget(tr("Assets"), ":/icons/asset", this);
     ui_assetsDockWidget->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     ui_assetsDockWidget->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable );
-    ui_assetsDockWidget->setWidget( assetWidget );
     this->addDockWidget(Qt::LeftDockWidgetArea, ui_assetsDockWidget);
-    ui_assetsDockWidget->hide();//*/
+    ui_assetsDockWidget->setAutoDeleteWidget(true);
+    ui_assetsDockWidget->hide();
 
     // The sequences dock
-    /*SequenceManagerWidget *sequenceWidget = new SequenceManagerWidget(this);
-
-    ui_sequencesDockWidget = new DuDockWidget(tr("Sequences"));
-    ui_sequencesDockWidget->setWindowIcon(DuIcon(":/icons/sequence"));
-    ui_sequencesDockWidget->setObjectName("sequencesDock");
-
-    auto *seqTitle = new DuDockTitleWidget(tr("Sequences"), this);
-    seqTitle->setObjectName("dockTitle");
-    seqTitle->setIcon(":/icons/sequence");
-    ui_sequencesDockWidget->setTitleBarWidget(seqTitle);
-
+    ui_sequencesDockWidget = new DuDockWidget(tr("Sequences"), ":/icons/sequence", this);
     ui_sequencesDockWidget->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     ui_sequencesDockWidget->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable );
-    ui_sequencesDockWidget->setWidget( sequenceWidget );
     this->addDockWidget(Qt::LeftDockWidgetArea, ui_sequencesDockWidget);
-    ui_sequencesDockWidget->hide();//*/
+    ui_sequencesDockWidget->setAutoDeleteWidget(true);
+    ui_sequencesDockWidget->hide();
 
     // The Shots dock
-    /*ShotManagerWidget *shotWidget = new ShotManagerWidget(this);
-
-    ui_shotsDockWidget = new DuDockWidget(tr("Shots"));
-    ui_shotsDockWidget->setWindowIcon(DuIcon(":/icons/shot"));
-    ui_shotsDockWidget->setObjectName("shotsDock");
-
-    auto *shTitle = new DuDockTitleWidget(tr("Shots"), this);
-    shTitle->setObjectName("dockTitle");
-    shTitle->setIcon(":/icons/shot");
-    ui_shotsDockWidget->setTitleBarWidget(shTitle);
-
+    ui_shotsDockWidget = new DuDockWidget(tr("Shots"), ":/icons/shot", this);
     ui_shotsDockWidget->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     ui_shotsDockWidget->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable );
-    ui_shotsDockWidget->setWidget( shotWidget );
     this->addDockWidget(Qt::LeftDockWidgetArea, ui_shotsDockWidget);
-    ui_shotsDockWidget->hide();//*/
+    ui_shotsDockWidget->setAutoDeleteWidget(true);
+    ui_shotsDockWidget->hide();
 }
 
 void MainWindow::setupToolBars()

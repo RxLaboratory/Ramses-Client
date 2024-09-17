@@ -574,33 +574,43 @@ void RamProject::construct()
 
     m_assets = new DBTableModel(RamObject::Asset, true, true, this);
     m_assets->addFilterValue( "project", this->uuid() );
+    m_assets->load();
 
     m_shots = new DBTableModel(RamObject::Shot, true, true, this);
     m_shots->addFilterValue( "project", this->uuid() );
+    m_shots->load();
 
     m_steps = new DBTableModel(RamObject::Step, true, true, this);
     m_steps->addFilterValue( "project", this->uuid() );
+    m_steps->load();
 
     m_shotSteps = new DBTableModel(RamObject::Step, true, true, this);
     m_shotSteps->addFilterValue( "project", this->uuid() );
     m_shotSteps->addFilterValue( "type", "shot" );
+    m_shotSteps->load();
 
     m_assetSteps = new DBTableModel(RamObject::Step, true, true, this);
     m_assetSteps->addFilterValue( "project", this->uuid() );
     m_assetSteps->addFilterValue( "type", "asset" );
+    m_assetSteps->load();
 
     m_assetGroups = new DBTableModel(RamObject::AssetGroup, true, true, this);
     m_assetGroups->addFilterValue( "project", this->uuid() );
+    m_assetGroups->load();
 
     m_sequences = new DBTableModel(RamObject::Sequence, true, true, this);
     m_sequences->addFilterValue( "project", this->uuid() );
+    m_sequences->load();
 
     m_assetStatusTable = new RamStatusTableModel( m_assetSteps, m_assets, this);
+    m_assetStatusTable->load();
 
     m_shotStatusTable = new RamStatusTableModel( m_shotSteps, m_shots, this);
+    m_shotStatusTable->load();
 
     m_pipeFiles = new DBTableModel(RamObject::PipeFile, true, false, this);
     m_pipeFiles->addFilterValue( "project", this->uuid() );
+    m_pipeFiles->load();
 
     m_users = createModel(RamObject::User, KEY_Users );
 
@@ -608,9 +618,11 @@ void RamProject::construct()
 
     m_scheduleEntries = new RamScheduleEntryModel();
     m_scheduleEntries->addFilterValue( "project", this->uuid() );
+    m_scheduleEntries->load();
 
     m_scheduleRows = new DBTableModel(RamObject::ScheduleRow, true, true, this);
     m_scheduleRows->addFilterValue( "project", this->uuid() );
+    m_scheduleRows->load();
 
     connect(m_assetStatusTable, &RamStatusTableModel::estimationsChanged, this, &RamProject::computeEstimation);
 

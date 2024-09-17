@@ -1,4 +1,5 @@
 #include "dudocktitlewidget.h"
+#include "duwidgets/dudockwidget.h"
 #include "duwidgets/duicon.h"
 #include "duapp/duui.h"
 
@@ -92,5 +93,9 @@ void DuDockTitleWidget::setActionButtons(const QVector<QAction *> &actions)
 
 void DuDockTitleWidget::closeDockWidget()
 {
-    parentWidget()->hide();
+    auto dock = parentWidget();
+    dock->hide();
+    auto dudock = qobject_cast<DuDockWidget*>(dock);
+    if (dudock)
+        dudock->deleteWidget();
 }

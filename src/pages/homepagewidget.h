@@ -1,5 +1,5 @@
-#ifndef HOMEPAGE_H
-#define HOMEPAGE_H
+#ifndef HOMEPAGEWIDGET_H
+#define HOMEPAGEWIDGET_H
 
 #include <QWidget>
 #include <QProgressBar>
@@ -8,11 +8,11 @@
 #include "duwidgets/duiconwidget.h"
 #include "statemanager.h"
 
-class HomePage : public QWidget
+class HomePageWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit HomePage(QWidget *parent = nullptr);
+    explicit HomePageWidget(QWidget *parent = nullptr);
 
 signals:
 
@@ -28,4 +28,4 @@ private:
     DuIconWidget *ui_waitIcon;
 };
 
-#endif // HOMEPAGE_H
+#endif // HOMEPAGEWIDGET_H

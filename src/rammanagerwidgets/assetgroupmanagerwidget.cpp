@@ -10,8 +10,7 @@ AssetGroupManagerWidget::AssetGroupManagerWidget(QWidget *parent):
         DuIcon(":icons/asset-group"),
         parent)
 {
-    changeProject(Ramses::i()->project());
-    connect(Ramses::i(), &Ramses::ready, this, [this]() { changeProject(Ramses::i()->project()); });
+    setProject(Ramses::i()->project());
     ui_listWidget->setEditMode(ObjectListWidget::RemoveObjects);
     ui_listWidget->setSortable(true);
 
@@ -42,7 +41,7 @@ RamAssetGroup *AssetGroupManagerWidget::createObject()
     return assetGroup;
 }
 
-void AssetGroupManagerWidget::changeProject(RamProject *project)
+void AssetGroupManagerWidget::setProject(RamProject *project)
 {
     // empty list
     this->clear();

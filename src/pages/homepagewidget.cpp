@@ -1,16 +1,16 @@
-#include "homepage.h"
+#include "homepagewidget.h"
 
 #include "duapp/duui.h"
 #include "duapp/dusettings.h"
 
-HomePage::HomePage(QWidget *parent)
+HomePageWidget::HomePageWidget(QWidget *parent)
     : QWidget{parent}
 {
     setupUi();
     connectEvents();
 }
 
-void HomePage::changeState(StateManager::State s)
+void HomePageWidget::changeState(StateManager::State s)
 {
     switch (s) {
     case StateManager::Unknown:
@@ -30,7 +30,7 @@ void HomePage::changeState(StateManager::State s)
     }
 }
 
-void HomePage::setupUi()
+void HomePageWidget::setupUi()
 {
     auto layout = DuUI::createBoxLayout(Qt::Horizontal, false);
     layout->setSpacing(24);
@@ -53,10 +53,12 @@ void HomePage::setupUi()
 
     ui_progressTextLabel = new QLabel(this);
     DuUI::addCustomCSS(ui_progressTextLabel, "QLabel { color: @foreground-push; }");
+    ui_progressTextLabel->setWordWrap(true);
+    ui_progressTextLabel->setMaximumWidth(400);
     textLayout->addWidget(ui_progressTextLabel);
 }
 
-void HomePage::connectEvents()
+void HomePageWidget::connectEvents()
 {
     auto sm = StateManager::i();
     connect(sm, &StateManager::textChanged,
@@ -64,5 +66,5 @@ void HomePage::connectEvents()
     connect(sm, &StateManager::titleChanged,
             ui_progressTitleLabel, &QLabel::setText);
     connect(sm, &StateManager::stateChanged,
-            this, &HomePage::changeState);
+            this, &HomePageWidget::changeState);
 }

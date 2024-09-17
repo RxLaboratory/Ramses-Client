@@ -1,4 +1,4 @@
-#include "consoledock.h"
+#include "consoledockwidget.h"
 
 #include "duapp/dusettings.h"
 #include "duwidgets/duicon.h"
@@ -7,7 +7,7 @@
 #include "duapp/dulogger.h"
 #include "duapp/duui.h"
 
-ConsoleDock::ConsoleDock(QWidget *parent) :
+ConsoleDockWidget::ConsoleDockWidget(QWidget *parent) :
     QFrame(parent)
 {
     setupUi();
@@ -19,7 +19,7 @@ ConsoleDock::ConsoleDock(QWidget *parent) :
     connectEvents();
 }
 
-void ConsoleDock::clear()
+void ConsoleDockWidget::clear()
 {
     ui_general->clear();
     ui_daemon->clear();
@@ -27,7 +27,7 @@ void ConsoleDock::clear()
     ui_db->clear();
 }
 
-void ConsoleDock::log(const QString &msg, LogType type, const QString &component)
+void ConsoleDockWidget::log(const QString &msg, LogType type, const QString &component)
 {
     if (component == "" || component == "Ramses") ui_general->log(msg, type, component);
     else if (component == "API") ui_daemon->log(msg, type, component);
@@ -35,7 +35,7 @@ void ConsoleDock::log(const QString &msg, LogType type, const QString &component
     else if (component == "Database-Interface" || component == "Local-Database") ui_db->log(msg, type, component);
 }
 
-void ConsoleDock::setLevel(QVariant l)
+void ConsoleDockWidget::setLevel(QVariant l)
 {
     int i = l.toInt();
     auto level = static_cast<LogType>( ui_levelBox->itemData(i).toInt() );
@@ -46,7 +46,7 @@ void ConsoleDock::setLevel(QVariant l)
     DuSettings::i()->set(DuSettings::APP_LogLevel, level);
 }
 
-void ConsoleDock::setupUi()
+void ConsoleDockWidget::setupUi()
 {
     this->setMinimumWidth(300);
 
@@ -96,10 +96,10 @@ void ConsoleDock::setupUi()
     mainLayout->addWidget(ui_clearButton);
 }
 
-void ConsoleDock::connectEvents()
+void ConsoleDockWidget::connectEvents()
 {
-    connect(DuLogger::i(), &DuLogger::newLog, this, &ConsoleDock::log);
+    connect(DuLogger::i(), &DuLogger::newLog, this, &ConsoleDockWidget::log);
 
-    connect(ui_clearButton, &QPushButton::clicked, this, &ConsoleDock::clear);
-    connect(ui_levelBox, QOverload<QVariant>::of(&DuComboBox::dataActivated), this, &ConsoleDock::setLevel);
+    connect(ui_clearButton, &QPushButton::clicked, this, &ConsoleDockWidget::clear);
+    connect(ui_levelBox, QOverload<QVariant>::of(&DuComboBox::dataActivated), this, &ConsoleDockWidget::setLevel);
 }

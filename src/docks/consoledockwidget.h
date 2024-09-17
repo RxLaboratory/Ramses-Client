@@ -1,15 +1,15 @@
-#ifndef CONSOLEDOCK_H
-#define CONSOLEDOCK_H
+#ifndef CONSOLEDOCKWIDGET_H
+#define CONSOLEDOCKWIDGET_H
 
 #include <QPushButton>
 
 #include "duwidgets/duconsolewidget.h"
 #include "duwidgets/ducombobox.h"
-class ConsoleDock : public QFrame
+class ConsoleDockWidget : public QFrame
 {
     Q_OBJECT
 public:
-    explicit ConsoleDock(QWidget *parent = nullptr);
+    explicit ConsoleDockWidget(QWidget *parent = nullptr);
     void clear();
 
 private slots:
@@ -28,4 +28,4 @@ private:
     DuConsoleWidget *ui_db;
 };
 
-#endif // CONSOLEDOCK_H
+#endif // CONSOLEDOCKWIDGET_H

@@ -14,7 +14,7 @@ protected slots:
     RamPipeFile *createObject() override;
 
 private slots:
-    void changeProject(RamProject *project);
+    void setProject(RamProject *project);
 
 private:
 };

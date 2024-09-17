@@ -9,8 +9,7 @@ ObjectManagerWidget(
     DuIcon(":icons/step"),
     parent )
 {
-    changeProject(Ramses::i()->project());
-    connect(Ramses::i(), &Ramses::ready, this, [this]() { changeProject(Ramses::i()->project()); });
+    setProject(Ramses::i()->project());
     ui_listWidget->setEditMode(ObjectListWidget::RemoveObjects);
     ui_listWidget->setSortable(true);
 
@@ -41,7 +40,7 @@ RamStep *StepManagerWidget::createObject()
     return step;
 }
 
-void StepManagerWidget::changeProject(RamProject *project)
+void StepManagerWidget::setProject(RamProject *project)
 {
     // empty list
     this->setObjectModel(nullptr);

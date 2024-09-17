@@ -7,7 +7,6 @@ StatisticsView::StatisticsView(QWidget *parent):
 {
     setupUi();
     this->setItemDelegate( new StatisticsDelegate(this));
-    connectEvents();
     m_statsModel = new StatisticsModel(this);
     this->setModel(m_statsModel);
 }
@@ -52,9 +51,4 @@ void StatisticsView::setupUi()
     this->setStyleSheet(style);
 
     this->horizontalHeader()->setStretchLastSection(true);
-}
-
-void StatisticsView::connectEvents()
-{
-
 }

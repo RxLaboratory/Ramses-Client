@@ -42,9 +42,9 @@ INCLUDEPATH += rameditwidgets \
     rammanagerwidgets
 
 SOURCES += \
-    docks/consoledock.cpp \
+    docks/consoledockwidget.cpp \
+    docks/settingsdockwidget.cpp \
     dumodules/dugraph/dugraph.cpp \
-    docks/settingsdock.cpp \
     dumodules/duapp/app-utils.cpp \
     dumodules/duapp/ducli.cpp \
     dumodules/duapp/dulogger.cpp \
@@ -86,8 +86,8 @@ SOURCES += \
     dumodules/duwidgets/dutreewidget.cpp \
     dumodules/duwidgets/duwaiticonwidget.cpp \
     dumodules/duwidgets/settingswidget.cpp \
-    pages/homepage.cpp \
-    pages/landingpage.cpp \
+    pages/homepagewidget.cpp \
+    pages/landingpagewidget.cpp \
     ramdatainterface/ramserverclient.cpp \
     rameditwidgets/objectupdateblocker.cpp \
     rameditwidgets/ramjsonobjecteditwidget.cpp \
@@ -245,10 +245,10 @@ SOURCES += \
     wizards/ramuserswizardpage.cpp
 
 HEADERS += \
-    docks/consoledock.h \
+    docks/consoledockwidget.h \
+    docks/settingsdockwidget.h \
     dumodules/dugraph/dugraph.h \
     config.h \
-    docks/settingsdock.h \
     dumodules/duapp/app-utils.h \
     dumodules/duapp/ducli.h \
     dumodules/duapp/dulogger.h \
@@ -292,8 +292,8 @@ HEADERS += \
     dumodules/duwidgets/duwaiticonwidget.h \
     dumodules/duwidgets/settingswidget.h \
     enums.h \
-    pages/homepage.h \
-    pages/landingpage.h \
+    pages/homepagewidget.h \
+    pages/landingpagewidget.h \
     ramdatainterface/datastruct.h \
     ramdatainterface/ramserverclient.h \
     rameditwidgets/objectupdateblocker.h \

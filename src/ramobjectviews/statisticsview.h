@@ -19,7 +19,6 @@ protected:
 
 private:
     void setupUi();
-    void connectEvents();
 
     // Models
     StatisticsModel *m_statsModel;

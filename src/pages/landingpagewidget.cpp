@@ -1,4 +1,4 @@
-#include "landingpage.h"
+#include "landingpagewidget.h"
 
 #include <QLabel>
 #include <QFileInfo>
@@ -18,7 +18,7 @@
 #include "ramsettings.h"
 #include "datacrypto.h"
 
-LandingPage::LandingPage(QWidget *parent)
+LandingPageWidget::LandingPageWidget(QWidget *parent)
     : QWidget{parent}
 {
     setupUi();
@@ -26,7 +26,7 @@ LandingPage::LandingPage(QWidget *parent)
     updateRecentList();
 }
 
-void LandingPage::updateRecentList()
+void LandingPageWidget::updateRecentList()
 {
     ui_recentBox->clear();
     const QStringList projects = DBInterface::recentDatabases();
@@ -37,7 +37,7 @@ void LandingPage::updateRecentList()
     }
 }
 
-void LandingPage::createDatabase(bool team)
+void LandingPageWidget::createDatabase(bool team)
 {
     // Necessary for the margins
     auto dummy = new QWidget(this);
@@ -58,7 +58,7 @@ void LandingPage::createDatabase(bool team)
     ui_stackedLayout->setCurrentIndex(1);
 }
 
-void LandingPage::openDatabase(const QString &dbFile)
+void LandingPageWidget::openDatabase(const QString &dbFile)
 {
     StateManager::i()->setTitle( tr("Opening database: %1").arg(dbFile) );
 
@@ -227,7 +227,7 @@ void LandingPage::openDatabase(const QString &dbFile)
     Ramses::i()->loadDatabase();
 }
 
-void LandingPage::joinTeamProject()
+void LandingPageWidget::joinTeamProject()
 {
     // Necessary for the margins
     auto dummy = new QWidget(this);
@@ -248,7 +248,7 @@ void LandingPage::joinTeamProject()
     ui_stackedLayout->setCurrentIndex(1);
 }
 
-void LandingPage::setupUi()
+void LandingPageWidget::setupUi()
 {
     ui_stackedLayout = DuUI::addStackedLayout(this);
 
@@ -316,7 +316,7 @@ void LandingPage::setupUi()
     centerLayout->addStretch(2);
 }
 
-void LandingPage::connectEvents()
+void LandingPageWidget::connectEvents()
 {
     connect(ui_recentBox, QOverload<int>::of( &DuComboBox::currentIndexChanged ),
             this, [this] (int index) {
@@ -346,10 +346,10 @@ void LandingPage::connectEvents()
             this, [this] () { createDatabase(true); });
 
     connect(ui_joinTeamProjectButton, &QPushButton::clicked,
-            this, &LandingPage::joinTeamProject);
+            this, &LandingPageWidget::joinTeamProject);
 }
 
-QString LandingPage::login(ServerConfig serverSettings, const QString &username, const QString &password)
+QString LandingPageWidget::login(ServerConfig serverSettings, const QString &username, const QString &password)
 {
     // Set server settings
     RamServerClient::i()->setServerSettings( serverSettings );

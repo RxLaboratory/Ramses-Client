@@ -13,7 +13,7 @@
 
 #include "duwidgets/duiconwidget.h"
 #include "duwidgets/dumainwindow.h"
-#include "landingpage.h"
+#include "landingpagewidget.h"
 #include "projecteditwidget.h"
 
 #include "duwidgets/settingswidget.h"
@@ -32,13 +32,27 @@ class MainWindow : public DuMainWindow
 public:
 
     enum Page {
-        Landing = 0,
-        Home = 1,
-        Admin = 2,
-        PipeLine = 3,
-        Assets = 4,
-        Shots = 5,
-        Schedule = 6,
+        LandingPage = 0,
+        HomePage = 1,
+        AdminPage = 2,
+        PipeLinePage = 3,
+        AssetsPage = 4,
+        ShotsPage = 5,
+        SchedulePage = 6,
+    };
+
+    enum Dock {
+        SettingsDock,
+        ConsoleDock,
+        PropertiesDock,
+        StatisticsDock,
+        StepsDock,
+        PipeFilesDock,
+        AssetGroupsDock,
+        AssetsDock,
+        SequencesDock,
+        ShotsDock,
+        TimelineDock,
     };
 
     explicit MainWindow(const QCommandLineParser &cli, QWidget *parent = nullptr);
@@ -104,28 +118,25 @@ private:
     // ==== PAGES ====
 
     QStackedLayout *ui_mainStack;
-    LandingPage *ui_landingPage;
-    Page m_currentPage = Landing;
+    LandingPageWidget *ui_landingPage;
+    Page m_currentPage = LandingPage;
 
     // ==== Docks ====
 
     DuDockWidget *ui_settingsDock;
     DuDockWidget *ui_statsDockWidget;
-    DuDockTitleWidget *ui_statsTitle;
     DuDockWidget *ui_consoleDockWidget;
     DuDockWidget *ui_propertiesDockWidget;
     DuDockWidget *ui_timelineDockWidget;
     DuDockWidget *ui_stepsDockWidget;
     DuDockWidget *ui_pipeFileDockWidget;
-    ProjectEditWidget *ui_projectEditWiget;
     DuDockWidget *ui_projectDockWidget;
     DuDockWidget *ui_assetGroupsDockWidget;
     DuDockWidget *ui_assetsDockWidget;
     DuDockWidget *ui_sequencesDockWidget;
     DuDockWidget *ui_shotsDockWidget;
-    DuDockTitleWidget *ui_propertiesTitle;
 
-    bool _propertiesWidgetIsTemporary = false;;
+    bool _propertiesWidgetIsTemporary = false;
 
     // ========= RxOT UI ==============
 
@@ -193,6 +204,7 @@ private slots:
     void setOnlineAction();
     void databaseSettingsAction();
     void setPage(Page p);
+    void setDock(Dock d);
     void changeUserRole(RamUser::UserRole role);
     void ramsesReady();
     void dbiConnectionStatusChanged(NetworkUtils::NetworkStatus s);

@@ -14,7 +14,7 @@ protected slots:
     RamAbstractItem *createObject() override;
 
 private slots:
-    void changeProject(RamProject *project);
+    void setProject(RamProject *project);
 };
 
 #endif // ASSETMANAGERWIDGET_H
