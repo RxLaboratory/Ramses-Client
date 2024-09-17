@@ -28,6 +28,7 @@ void ProjectWizard::done(int r)
         return QWizard::done(r);
 
     StateChanger s(StateManager::Opening);
+    StateManager::i()->setTitle(tr("Creating project \"%1\"").arg(ui_detailsPage->name()));
 
     // Create distant data
     // (project, users and assignemnts)
@@ -55,6 +56,7 @@ void ProjectWizard::done(int r)
 
     // Set the file
     DBInterface::i()->loadDataFile(dbPath);
+    s.freezeState();
 
     // Create local data
     if (_isTeamProject) {
@@ -78,7 +80,6 @@ void ProjectWizard::done(int r)
     project->users()->appendObject(user->uuid());
     _projectUuid = project->uuid();
 
-    s.freezeState();
     finishProjectSetup();
 }
 

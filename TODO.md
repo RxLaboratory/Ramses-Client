@@ -1,6 +1,5 @@
 ## Priority fixes
 
-- move ProgressManager into StateManager
 - implement a Busy Icon and a Read/Write Icon
 - Refactor project edit widget
     - and user assignments, for admin only

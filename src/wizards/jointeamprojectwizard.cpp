@@ -8,6 +8,7 @@
 #include "ramserverclient.h"
 #include "ramuser.h"
 #include "ramses.h"
+#include "statemanager.h"
 
 JoinTeamProjectWizard::JoinTeamProjectWizard(QWidget *parent, Qt::WindowFlags flags):
     QWizard(parent, flags)
@@ -20,6 +21,11 @@ void JoinTeamProjectWizard::done(int r)
 {
     if (r != QWizard::Accepted)
         return QWizard::done(r);
+
+    StateChanger s(StateManager::Opening);
+    StateManager::i()->setTitle(tr("Joining team project \"%1\"").arg(ui_projectsPage->name()));
+
+    qInfo().noquote() << tr("Creating local data...");
 
     // Create the local database
     QString dbPath = ui_pathsPage->dbFilePath();
@@ -39,17 +45,27 @@ void JoinTeamProjectWizard::done(int r)
     DBInterface::i()->loadDataFile(dbPath);
     // Set the server settings in the DB
     LocalDataInterface::instance()->setServerSettings(dbPath, RamServerClient::i()->serverConfig());
+
+    qInfo().noquote() << tr("Downloading server data...");
+    s.freezeState();
+
     // Download distant data
     RamServerClient::i()->setProject(ui_projectsPage->uuid());
     // Just wait for it
     connect(DBInterface::i(), &DBInterface::syncFinished,
             this, &JoinTeamProjectWizard::finishProjectSetup);
     RamServerClient::i()->downloadAllData();
+
     return;
 }
 
 void JoinTeamProjectWizard::finishProjectSetup()
 {
+    StateManager::i()->setState(StateManager::Idle);
+    StateChanger s(StateManager::Opening);
+
+    qInfo().noquote() << tr("Loading project...");
+
     disconnect(DBInterface::i(), nullptr, this, nullptr);
 
     QString projectUuid = ui_projectsPage->uuid();

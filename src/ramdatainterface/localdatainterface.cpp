@@ -1346,8 +1346,12 @@ void LocalDataInterface::deleteRemovedData()
 {
     qInfo().noquote() << "Cleaning database: deleting obsolete data...";
     const QStringList tNames = tableNames();
-    for(const QString &tName: tNames)
+    for(const QString &tName: tNames) {
+        // This can be long, be nice, process events!
+        qApp->processEvents();
+
         deleteRemovedData(tName);
+    }
 }
 
 void LocalDataInterface::deleteRemovedData(const QString &tableName)

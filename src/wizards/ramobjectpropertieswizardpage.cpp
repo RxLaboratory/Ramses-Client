@@ -41,6 +41,7 @@ void RamObjectPropertiesWizardPage::setupUi()
     DuUI::centerLayout(layout, this);
 
     ui_propertiesWidget = new RamObjectPropertiesWidget(this);
+    ui_propertiesWidget->showFolder(false);
     layout->addWidget(ui_propertiesWidget);
 
     registerField("name", ui_propertiesWidget, "name", "nameChanged");
