@@ -223,7 +223,8 @@ QWidget *MainWindow::setupAssetsPage()
 
 QWidget *MainWindow::setupShotsPage()
 {
-    return nullptr;
+    ItemManagerWidget *shotsTable = new ItemManagerWidget(RamStep::ShotProduction, this);
+    return shotsTable;
 }
 
 QWidget *MainWindow::setupSchedulePage()

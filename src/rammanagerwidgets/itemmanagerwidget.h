@@ -40,7 +40,6 @@ signals:
     void closeRequested();
 
 protected:
-    void showEvent(QShowEvent *event) override;
     void hideEvent(QHideEvent *event) override;
 
     RamItemView *ui_table;
@@ -92,7 +91,6 @@ private slots:
 
     void contextMenuRequested(QPoint p);
 
-    void ramsesReady();
     void changeUserRole(RamUser::UserRole role);
 
 private:
@@ -100,11 +98,9 @@ private:
     void connectEvents();
     void loadSettings();
 
-    void changeProject();
-    bool m_projectChanged = false;
+    void setProject();
 
     // Specialized functions
-    void setObjectModel();
     void setupItemMenu();
     void setupTable();
 

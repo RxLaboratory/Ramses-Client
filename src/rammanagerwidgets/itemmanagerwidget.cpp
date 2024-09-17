@@ -7,18 +7,23 @@
 #include "ramsequence.h"
 #include "shotscreationdialog.h"
 #include "duutils/utils.h"
-#include "ramstatustablemodel.h"
 #include "duapp/duui.h"
+#include "ramstatustablemodel.h"
 
 ItemManagerWidget::ItemManagerWidget(RamTemplateStep::Type type, QWidget *parent) : QWidget(parent)
-{   
+{
     m_productionType = type;
     setupUi();
 
-    ramsesReady();
     filter(nullptr);
 
     connectEvents();
+
+    setProject();
+
+    RamUser *user = Ramses::i()->currentUser();
+    if (user)
+        changeUserRole(user->role());
 }
 
 void ItemManagerWidget::selectAllSteps()
@@ -116,22 +121,8 @@ void ItemManagerWidget::deselectStates()
     }
 }
 
-void ItemManagerWidget::showEvent(QShowEvent *event)
-{
-    if (!event->spontaneous()) {
-        ui_titleBar->show();
-        changeProject();
-    }
-    QWidget::showEvent(event);
-}
-
 void ItemManagerWidget::hideEvent(QHideEvent *event)
 {
-    if (!event->spontaneous())
-    {
-        ui_titleBar->hide();
-    }
-
     // Save filters and layout
     RamUser *user = Ramses::i()->currentUser();
     if (user)
@@ -635,21 +626,6 @@ void ItemManagerWidget::contextMenuRequested(QPoint p)
     ui_contextMenu->popup(ui_table->viewport()->mapToGlobal(p));
 }
 
-void ItemManagerWidget::ramsesReady()
-{
-    ui_actionItem->setVisible(false);
-    loadSettings();
-
-
-    m_projectChanged = true;
-
-    m_project = Ramses::i()->project();
-    // Reload in the show event if not yet visible
-    // to improve perf: do not refresh all the app when changing the project, only what's visible.
-    if ( this->isVisible() )
-        changeProject();
-}
-
 void ItemManagerWidget::changeUserRole(RamAbstractObject::UserRole role)
 {
     ui_actionItem->setVisible(role >= RamUser::ProjectAdmin);
@@ -983,6 +959,7 @@ void ItemManagerWidget::connectEvents()
     connect(ui_actionDeleteItem,SIGNAL(triggered()),this,SLOT(deleteItems()));
     if (m_productionType == RamStep::ShotProduction)
         connect(ui_actionCreateMultiple,SIGNAL(triggered()),this,SLOT(createMultiple()));
+
     // Status actions
     connect(ui_assignUserMenu,SIGNAL(createTriggered()),this,SLOT(unassignUser()));
     connect(ui_assignUserMenu,SIGNAL(assigned(RamObject*)),this,SLOT(assignUser(RamObject*)));
@@ -1007,6 +984,7 @@ void ItemManagerWidget::connectEvents()
     connect(ui_priorityMedium, SIGNAL(triggered()), this, SLOT( setPriority() ) );
     connect(ui_priorityHigh, SIGNAL(triggered()), this, SLOT( setPriority() ) );
     connect(ui_table, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(contextMenuRequested(QPoint)));
+
     // view actions
     //connect(ui_actionTimeTracking, SIGNAL(toggled(bool)), ui_table, SLOT(setTimeTracking(bool)));
     //connect(ui_actionCompletionRatio, SIGNAL(toggled(bool)), ui_table, SLOT(setCompletionRatio(bool)));
@@ -1044,8 +1022,8 @@ void ItemManagerWidget::connectEvents()
     connect(ui_searchEdit, SIGNAL(changed(QString)), ui_table, SLOT(search(QString)));
     // group filter
     connect(ui_groupBox, SIGNAL(currentObjectChanged(RamObject*)), this, SLOT(filter(RamObject*)));
+
     // other
-    connect(Ramses::i(), &Ramses::ready, this, &ItemManagerWidget::ramsesReady);
     connect(Ramses::i(), &Ramses::roleChanged, this, &ItemManagerWidget::changeUserRole);
     connect(ui_header, SIGNAL(sort(int,Qt::SortOrder)), ui_table->filteredModel(), SLOT(resort(int,Qt::SortOrder)));
     connect(ui_header, SIGNAL(unsort()), ui_table->filteredModel(), SLOT(unsort()));
@@ -1082,38 +1060,25 @@ void ItemManagerWidget::loadSettings()
     ui_table->filteredModel()->unFreeze();
 }
 
-void ItemManagerWidget::changeProject()
+void ItemManagerWidget::setProject()
 {
-    if (!m_projectChanged) return;
-    m_projectChanged = false;
+    m_project = Ramses::i()->project();
+    Q_ASSERT(m_project);
 
     // Don't show details by default (performance issue)
     ui_actionShowDetails->setChecked(false);
 
-    // Clear step list
-    QList<QAction*> actions = ui_stepMenu->actions();
-    for (int i = actions.count() -1; i >= 4; i--)
-    {
-        actions.at(i)->deleteLater();
-    }
-    ui_table->filteredModel()->showAllSteps();
-
-    // Clear user list
-    actions = ui_userMenu->actions();
-    for (int i = actions.count() -1; i >= 5; i--)
-    {
-        actions.at(i)->deleteLater();
-    }
-    ui_table->filteredModel()->clearUsers();
-
-    if(!m_project)
-    {
-        ui_table->setObjectModel(nullptr);
-        return;
-    }
-
     // Populate list and table
-    setObjectModel();
+    if (m_productionType == RamStep::AssetProduction)
+    {
+        ui_table->setObjectModel( m_project->assetStatus() );
+        ui_groupBox->setObjectModel( m_project->assetGroups(), "Assets" );
+    }
+    else if (m_productionType == RamStep::ShotProduction)
+    {
+        ui_table->setObjectModel( m_project->shotStatus() );
+        ui_groupBox->setObjectModel( m_project->sequences(), "Shots" );
+    }
 
     ui_userMenu->setObjectModel( m_project->users() );
     if (m_productionType == RamStep::AssetProduction) ui_stepMenu->setObjectModel( m_project->assetSteps() );
@@ -1126,23 +1091,6 @@ void ItemManagerWidget::changeProject()
 
     ui_table->resizeColumnsToContents();
     ui_table->resizeRowsToContents();
-}
-
-void ItemManagerWidget::setObjectModel()
-{
-    ui_table->setObjectModel( nullptr );
-    ui_groupBox->setObjectModel( nullptr, "" );
-    if (!m_project) return;
-    if (m_productionType == RamStep::AssetProduction)
-    {
-        ui_table->setObjectModel( m_project->assetStatus() );
-        ui_groupBox->setObjectModel( m_project->assetGroups(), "Assets" );
-    }
-    else if (m_productionType == RamStep::ShotProduction)
-    {
-        ui_table->setObjectModel( m_project->shotStatus() );
-        ui_groupBox->setObjectModel( m_project->sequences(), "Shots" );
-    }
 }
 
 void ItemManagerWidget::setupItemMenu()

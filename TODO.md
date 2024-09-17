@@ -1,9 +1,5 @@
 ## Priority fixes
 
-- Fix too many calls to data and db read
-    - empty header on item table calls db
-    - resize ok with item tables
-
 - Refactor project edit widget
     - and user assignments, for admin only
 - to fix loading order: try to keep the uuid list in the model to reload the objects later (maybe monitor the corresponding dbtable to auto reload)
