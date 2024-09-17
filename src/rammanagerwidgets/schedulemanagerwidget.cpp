@@ -1,13 +1,13 @@
 #include "schedulemanagerwidget.h"
 
+#include <QMessageBox>
+
 #include "duapp/duui.h"
 #include "duwidgets/duicon.h"
-#include "progressmanager.h"
 #include "qscrollbar.h"
 #include "ramschedulecomment.h"
 #include "ramscheduleentry.h"
 #include "ramses.h"
-#include "progressmanager.h"
 #include "ramstep.h"
 #include "scheduleentrycreationdialog.h"
 
@@ -139,10 +139,7 @@ void ScheduleManagerWidget::addEntry(RamObject *stepObj)
 
     m_project->suspendEstimations(true);
 
-    ProgressManager *pm = ProgressManager::i();
-    pm->setTitle(tr("Creating schedule entries"));
-
-    pm->start();
+    qInfo().noquote() << tr("Creating schedule entries");
 
     for (int i = 0; i < count; i++)
     {
@@ -166,7 +163,6 @@ void ScheduleManagerWidget::addEntry(RamObject *stepObj)
         }
     }
 
-    pm->finish();
     this->update();
 
     m_project->suspendEstimations(false);

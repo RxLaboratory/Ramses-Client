@@ -8,7 +8,6 @@
 #include "homepage.h"
 #include "itemmanagerwidget.h"
 #include "pipefilemanagerwidget.h"
-#include "progressmanager.h"
 #include "sequencemanagerwidget.h"
 #include "shotmanagerwidget.h"
 #include "stepmanagerwidget.h"
@@ -30,7 +29,6 @@
 #include "docks/settingsdock.h"
 #include "ramses.h"
 #include "duapp/duui.h"
-#include "statemanager.h"
 
 MainWindow::MainWindow(const QCommandLineParser &cli, QWidget *parent) :
     DuMainWindow{parent}
@@ -41,8 +39,8 @@ MainWindow::MainWindow(const QCommandLineParser &cli, QWidget *parent) :
 
     // The database interface
     DBInterface::i();
-    // The Process manager
-    ProgressManager::i();
+    // The State manager
+    StateManager::i();
     // Ramses
     Ramses::i();
 
@@ -192,17 +190,14 @@ void MainWindow::connectEvents()
     connect(m_actionFullSync, SIGNAL(triggered()), DBInterface::i(),SLOT(fullSync()));
     connect(ui_mainStack,SIGNAL(currentChanged(int)), this, SLOT(pageChanged(int)));
 
-    // ==== Misc ====
+    // ==== State ====
+
+    connect(StateManager::i(), &StateManager::stateChanged, this, &MainWindow::changeState);
 
     connect(Daemon::instance(), &Daemon::raise, this, &MainWindow::raise);
 
-    // TODO Refactor and use StateManager
-
     connect(Ramses::i(), &Ramses::ready, this, &MainWindow::ramsesReady);
     connect(Ramses::i(), &Ramses::roleChanged, this, &MainWindow::changeUserRole);
-
-    connect(DBInterface::i(), &DBInterface::syncFinished, this, &MainWindow::finishSync);
-    connect(DBInterface::i(), &DBInterface::syncStarted, this, &MainWindow::startSync);
 
     connect(qApp, &QCoreApplication::aboutToQuit, this, &MainWindow::onQuit);
 }
@@ -432,14 +427,13 @@ void MainWindow::changeUserRole(RamAbstractObject::UserRole role)
     case RamAbstractObject::ProjectAdmin:
     case RamAbstractObject::Lead:
     case RamAbstractObject::Standard:
+        m_actionAdmin->setVisible(false);
         break;
     }
 }
 
 void MainWindow::ramsesReady()
 {
-    setPage(Home);
-
     // Set user
 
     // Guaranted to exist,
@@ -475,20 +469,6 @@ void MainWindow::ramsesReady()
     setWindowTitle(project->name());
 
     updateWindow();
-}
-
-void MainWindow::freezeUI(bool f)
-{
-    /*if (f)
-    {
-        m_currentPageIndex = ui_mainStack->currentIndex();
-        ui_mainStack->setCurrentIndex(Progress);
-    }
-    else
-    {*/
-        ui_mainStack->setCurrentIndex(m_currentPageIndex);
-    //}
-    //this->repaint();
 }
 
 void MainWindow::dbiConnectionStatusChanged(NetworkUtils::NetworkStatus s)
@@ -527,30 +507,20 @@ void MainWindow::dbiConnectionStatusChanged(NetworkUtils::NetworkStatus s)
     }*/
 }
 
-void MainWindow::finishSync()
+void MainWindow::changeState(StateManager::State s)
 {
-    if (m_closing) {
-        m_readyToClose = true;
-        this->close();
-        return;
+    switch (s) {
+    case StateManager::Opening:
+    case StateManager::Closing:
+        setPage(Home);
+        break;
+    case StateManager::WritingDataBase:
+    case StateManager::Connecting:
+    case StateManager::LoadingDataBase:
+    case StateManager::Syncing:
+    case StateManager::Idle:
+        break;
     }
-
-    m_actionSync->setEnabled(true);
-    m_actionSync->setText(tr("Quick sync"));
-    m_actionFullSync->setEnabled(true);
-    m_actionFullSync->setText(tr("Full sync"));
-
-    // Refresh all UI!
-    this->update();
-}
-
-void MainWindow::startSync()
-{
-    m_actionSync->setEnabled(false);
-    m_actionFullSync->setEnabled(false);
-    QString t = tr("Syncing...");
-    m_actionSync->setText(t);
-    m_actionFullSync->setText(t);
 }
 
 bool MainWindow::eventFilter(QObject *obj, QEvent *event)

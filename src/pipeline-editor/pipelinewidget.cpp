@@ -4,10 +4,10 @@
 
 #include "duapp/dusettings.h"
 #include "duwidgets/duicon.h"
-#include "progressmanager.h"
 #include "stepnode.h"
 #include "ramses.h"
 #include "rampipe.h"
+#include "ramstep.h"
 
 PipelineWidget::PipelineWidget(QWidget *parent) :
     QWidget(parent)
@@ -683,8 +683,6 @@ void PipelineWidget::changeProject()
     if (!m_projectChanged) return;
     m_projectChanged = false;
 
-    ProgressManager *pm = ProgressManager::i();
-
     QSignalBlocker b1(m_nodeScene);
     QSignalBlocker b2(ui_nodeView);
     QSignalBlocker b3(m_nodeScene->connectionManager());
@@ -697,20 +695,19 @@ void PipelineWidget::changeProject()
 
     if (!m_project) return;
 
-    pm->start();
-    pm->setText("Loading project...");
+    qInfo().noquote() << "Loading project pipeline...";
 
     // add steps
     for(int i = 0; i < m_project->steps()->rowCount(); i++)
     {
-        pm->setText("Building step nodes...");
+        qInfo().noquote() << "Building step nodes...";
         newStep( m_project->steps()->get(i) );
     }
 
     // add pipes
     for ( int i = 0; i < m_project->pipeline()->rowCount(); i++ )
     {
-        pm->setText("Building pipes...");
+        qInfo().noquote() << "Building pipes...";
         newPipe( m_project->pipeline()->get(i) );
     }
 
@@ -724,7 +721,5 @@ void PipelineWidget::changeProject()
     //_nodeView->frameSelected();
 
     this->setEnabled(true);
-
-    pm->finish();
 }
 

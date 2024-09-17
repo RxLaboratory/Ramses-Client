@@ -4,6 +4,7 @@
 
 #include "duapp/duui.h"
 #include "duwidgets/duicon.h"
+#include "ramabstractobject.h"
 
 RamJsonObjectEditWidget::RamJsonObjectEditWidget(const QString &uuid, QWidget *parent) :
     DuScrollArea(parent),

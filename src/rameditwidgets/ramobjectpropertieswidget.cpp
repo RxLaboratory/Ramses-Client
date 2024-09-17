@@ -1,7 +1,10 @@
 #include "ramobjectpropertieswidget.h"
 
 #include <QMessageBox>
+#include <QRegularExpressionValidator>
+#include <QToolButton>
 
+#include "duwidgets/duicon.h"
 #include "duapp/duui.h"
 #include "duutils/utils.h"
 #include "ramnamemanager.h"

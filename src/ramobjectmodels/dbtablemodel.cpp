@@ -2,7 +2,6 @@
 #include "duapp/app-config.h"
 #include "localdatainterface.h"
 #include "dbinterface.h"
-#include "progressmanager.h"
 
 DBTableModel::DBTableModel(RamObject::ObjectType type, bool projectTable, bool sorted, QObject *parent):
     RamAbstractObjectModel{type, parent}
@@ -327,8 +326,7 @@ void DBTableModel::reload()
 {
     if (!m_isLoaded) return;
 
-    ProgressManager *pm = ProgressManager::i();
-    pm->setText(tr("Reloading '%1'").arg(m_table));
+    qInfo().noquote() << tr("Reloading '%1'").arg(m_table);
 
     beginResetModel();
     // Empty

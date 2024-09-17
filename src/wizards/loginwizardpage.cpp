@@ -1,7 +1,10 @@
 #include "loginwizardpage.h"
 
+#include <QJsonDocument>
+
 #include "duapp/duui.h"
 #include "ramserverclient.h"
+#include "ramuser.h"
 
 LoginWizardPage::LoginWizardPage(bool mustBeAdmin, QWidget *parent):
     QWizardPage(parent),

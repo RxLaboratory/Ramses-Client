@@ -4,6 +4,7 @@
 #include "dustyle.h"
 #include "duapp/dusettings.h"
 #include "duutils/ducolorutils.h"
+#include "mainwindow.h"
 
 QHash<QString,QString> DuUI::_cssVars = QHash<QString,QString>();
 const QRegularExpression DuUI::_cssVarsRE = QRegularExpression("(@[a-zA-Z0-9-]+)\\s*=\\s*(\\S+)");

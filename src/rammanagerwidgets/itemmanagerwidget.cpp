@@ -6,6 +6,7 @@
 #include "ramassetgroup.h"
 #include "ramsequence.h"
 #include "shotscreationdialog.h"
+#include "duutils/utils.h"
 #include "ramstatustablemodel.h"
 #include "duapp/duui.h"
 

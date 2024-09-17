@@ -12,6 +12,7 @@
 #include "ramjsonstepeditwidget.h"
 #include "ramserverclient.h"
 #include "ramuuid.h"
+#include "mainwindow.h"
 
 ProjectWizard::ProjectWizard(bool team, QWidget *parent, Qt::WindowFlags flags):
     QWizard(parent, flags),

@@ -87,7 +87,6 @@ SOURCES += \
     dumodules/duwidgets/settingswidget.cpp \
     pages/homepage.cpp \
     pages/landingpage.cpp \
-    progressmanager.cpp \
     ramdatainterface/ramserverclient.cpp \
     rameditwidgets/objectupdateblocker.cpp \
     rameditwidgets/ramjsonobjecteditwidget.cpp \
@@ -293,7 +292,6 @@ HEADERS += \
     enums.h \
     pages/homepage.h \
     pages/landingpage.h \
-    progressmanager.h \
     ramdatainterface/datastruct.h \
     ramdatainterface/ramserverclient.h \
     rameditwidgets/objectupdateblocker.h \

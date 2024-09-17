@@ -1,7 +1,12 @@
 #include "projectlistwizardpage.h"
 
+#include <QMessageBox>
+#include <QJsonArray>
+#include <QJsonDocument>
+
 #include "duapp/duui.h"
 #include "ramserverclient.h"
+#include "ramproject.h"
 
 ProjectListWizardPage::ProjectListWizardPage(QWidget *parent):
     QWizardPage(parent)

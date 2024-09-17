@@ -3,7 +3,6 @@
 #include <QInputDialog>
 
 #include "duapp/dulogger.h"
-#include "progressmanager.h"
 #include "ramserverclient.h"
 #include "statemanager.h"
 #include "ramsettings.h"
@@ -251,10 +250,9 @@ void DBInterface::acceptClean()
 
 bool DBInterface::sync()
 {
-    StateHandler s(StateManager::Syncing);
+    StateChanger s(StateManager::Syncing);
 
-    ProgressManager *pm = ProgressManager::i();
-    pm->setText(tr("Beginning quick data sync..."));
+    qInfo().noquote() << tr("Beginning quick data sync...");
 
     switch (RamServerClient::i()->status()){
     case RamServerClient::Offline:
@@ -290,10 +288,9 @@ bool DBInterface::sync()
 
 bool DBInterface::fullSync()
 {
-    StateHandler s(StateManager::Syncing);
+    StateChanger s(StateManager::Syncing);
 
-    ProgressManager *pm = ProgressManager::i();
-    pm->setText(tr("Beginning full data sync..."));
+    qInfo().noquote() << tr("Beginning full data sync...");
 
     switch (RamServerClient::i()->status()){
     case RamServerClient::Offline:

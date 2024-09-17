@@ -4,6 +4,7 @@
 
 #include "duapp/duui.h"
 #include "duicon.h"
+#include "dutableview.h"
 
 DuListEditView::DuListEditView(const QString &title, const QString &itemName, QAbstractItemModel *model, QWidget *parent)
     : QWidget{parent},

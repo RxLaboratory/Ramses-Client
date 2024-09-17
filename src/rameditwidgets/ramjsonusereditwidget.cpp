@@ -1,6 +1,7 @@
 #include "ramjsonusereditwidget.h"
 
 #include <QMessageBox>
+#include <QToolButton>
 
 #include "duapp/duui.h"
 #include "duwidgets/duicon.h"

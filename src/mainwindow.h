@@ -21,6 +21,7 @@
 #include "duwidgets/dudocktitlewidget.h"
 #include "duwidgets/dudockwidget.h"
 #include "ramproject.h"
+#include "statemanager.h"
 
 class MainWindow : public DuMainWindow
 {
@@ -187,10 +188,8 @@ private slots:
     void setPage(Page p);
     void changeUserRole(RamUser::UserRole role);
     void ramsesReady();
-    void freezeUI(bool f = true);
     void dbiConnectionStatusChanged(NetworkUtils::NetworkStatus s);
-    void finishSync();
-    void startSync();
+    void changeState(StateManager::State s);
 
     void revealAdminFolder();
     void revealPreProdFolder();

@@ -1,10 +1,14 @@
 #include "ramuserswizardpage.h"
 
 #include <QMessageBox>
+#include <QJsonArray>
+#include <QJsonDocument>
 
 #include "duapp/duui.h"
 #include "ramjsonusereditwidget.h"
 #include "ramserverclient.h"
+#include "ramobject.h"
+#include "mainwindow.h"
 
 RamUsersWizardPage::RamUsersWizardPage(RamJsonObjectModel *users, QWidget *parent):
     QWizardPage(parent),

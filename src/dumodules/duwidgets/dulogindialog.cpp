@@ -1,8 +1,12 @@
 #include "dulogindialog.h"
 
 #include <QMessageBox>
+#include <QToolButton>
+#include <QPushButton>
+#include <QDialogButtonBox>
 
 #include "duapp/duui.h"
+#include "duicon.h"
 
 DuLoginDialog::DuLoginDialog(const QString &usernameLabel, bool showSaveBoxes, bool showResetButton, QWidget *parent, Qt::WindowFlags f):
     QDialog(parent, f)

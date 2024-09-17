@@ -1,7 +1,6 @@
 #ifndef DUUI_H
 #define DUUI_H
 
-#include "mainwindow.h"
 #include <QCommandLineParser>
 #include <QStackedLayout>
 #include <QMainWindow>
@@ -12,6 +11,7 @@
 #endif
 
 class DuSplashScreen;
+class MainWindow;
 
 /**
  * @brief The DuUI class provides UI Tools

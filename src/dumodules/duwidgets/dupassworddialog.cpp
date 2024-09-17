@@ -1,5 +1,10 @@
 #include "dupassworddialog.h"
 
+#include <QLabel>
+#include <QToolButton>
+#include <QPushButton>
+
+#include "duwidgets/duicon.h"
 #include "duapp/duui.h"
 
 DuPasswordDialog::DuPasswordDialog(const QString &username,

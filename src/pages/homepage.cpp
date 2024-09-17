@@ -1,7 +1,7 @@
 #include "homepage.h"
 
 #include "duapp/duui.h"
-#include "progressmanager.h"
+#include "statemanager.h"
 
 HomePage::HomePage(QWidget *parent)
     : QWidget{parent}
@@ -20,10 +20,10 @@ void HomePage::setWaiting()
 
 void HomePage::setWorking()
 {
-    auto pm = ProgressManager::i();
+    auto sm = StateManager::i();
     ui_waitIcon->show();
-    ui_progressTextLabel->setText(pm->text());
-    ui_progressTitleLabel->setText(pm->title());
+    ui_progressTextLabel->setText(sm->text());
+    ui_progressTitleLabel->setText(sm->title());
 }
 
 void HomePage::setupUi()
@@ -49,18 +49,14 @@ void HomePage::setupUi()
 
 void HomePage::connectEvents()
 {
-    auto pm = ProgressManager::i();
-    connect(pm, &ProgressManager::textChanged,
+    auto sm = StateManager::i();
+    connect(sm, &StateManager::textChanged,
             ui_progressTextLabel, &QLabel::setText);
-    connect(pm, &ProgressManager::titleChanged,
+    connect(sm, &StateManager::titleChanged,
             ui_progressTitleLabel, &QLabel::setText);
-    connect(pm, &ProgressManager::finished,
-            this, &HomePage::setWaiting);
-    connect(pm, &ProgressManager::started,
-            this, &HomePage::setWorking);
-
-    connect(pm, SIGNAL(textChanged(QString)),
-            this, SLOT(repaint()));
-    connect(pm, SIGNAL(titleChanged(QString)),
-            this, SLOT(repaint()));
+    connect(sm, &StateManager::stateChanged,
+            this,[this] (StateManager::State s) {
+        if (s == StateManager::Idle) setWaiting();
+        else setWorking();
+    });
 }

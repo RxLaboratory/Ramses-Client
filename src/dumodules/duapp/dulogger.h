@@ -20,7 +20,7 @@ public slots:
     void log(const QString &log, LogType type = InformationLog, const QString &component = "");
 
 signals:
-    void newLog(QString message, LogType type, QString);
+    void newLog(QString message, LogType type, QString componentName);
 
 private:
     explicit DuLogger(QObject *parent = nullptr): QObject(parent) {};

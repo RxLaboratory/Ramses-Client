@@ -1,7 +1,7 @@
 #include "statemanager.h"
 #include "daemon.h"
 #include "dbinterface.h"
-#include "progressmanager.h"
+#include "duapp/dulogger.h"
 
 StateManager *StateManager::_instance = nullptr;
 
@@ -13,6 +13,8 @@ StateManager *StateManager::i()
 
 StateManager::State StateManager::state() const
 {
+    if (m_tempState != Unknown)
+        return m_tempState;
     return m_state;
 }
 
@@ -27,24 +29,22 @@ void StateManager::quit(bool sync)
     if (m_state==Closing)
         return;
 
-    auto pm = ProgressManager::i();
-    pm->start();
-    pm->setTitle(tr("Closing..."));
-    pm->setText("Unlocking unique instance...");
+    setTitle(tr("Closing..."));
+    qInfo().noquote() << "Unlocking unique instance...";
 
     setState(Closing);
 
     // Release
     m_app->detach();
 
-    pm->setText("Stopping the Ramses Daemon...");
+    qInfo().noquote() << "Stopping the Ramses Daemon...";
 
     // Stop the daemon
     Daemon::instance()->stop();
 
     // One last sync
 
-    pm->setText("One last sync...");
+    qInfo().noquote() << "One last sync...";
 
     if (sync) {
         connect(DBInterface::i(), &DBInterface::syncFinished,
@@ -54,7 +54,7 @@ void StateManager::quit(bool sync)
             return;
     }
 
-    pm->setText("Bye!");
+    qInfo().noquote() << "Bye!";
 
     m_app->quit();
 }
@@ -96,17 +96,59 @@ void StateManager::forceQuit()
 
 void StateManager::setState(State newState)
 {
-    if (m_state == Idle)
-        ProgressManager::i()->finish();
-
     if (newState == m_state) return;
-    m_state = newState;
 
+    m_previousState = m_state;
+    m_state = newState;
+    m_tempState = Unknown;
+
+    qDebug().noquote() << "App state changed to" << m_state;
     emit stateChanged(m_state);
+}
+
+void StateManager::setTempState(State tempState)
+{
+    m_tempState = tempState;
+
+    if (m_tempState != Unknown) {
+        qDebug().noquote() << "App state temporarily changed to" << m_tempState;
+        emit stateChanged(m_tempState);
+    }
+    else
+        emit stateChanged(m_state);
+}
+
+void StateManager::keepTempState()
+{
+    if (m_tempState == Unknown)
+        return;
+    m_state = m_tempState;
+    m_tempState = Unknown;
 }
 
 StateManager::StateManager(QObject *parent)
     : QObject{parent}
 {
     m_app = qobject_cast<DuApplication*>(qApp);
+
+    connect(DuLogger::i(), &DuLogger::newLog,
+            this, [this] (const QString &m, LogType t) {
+        if (t > LogType::DebugLog) setText(m);
+    });
+}
+
+void StateManager::setText(const QString &newText)
+{
+    if (m_text == newText)
+        return;
+    m_text = newText;
+    emit textChanged(m_text);
+}
+
+void StateManager::setTitle(const QString &newTitle)
+{
+    if (m_title == newTitle)
+        return;
+    m_title = newTitle;
+    emit titleChanged(m_title);
 }

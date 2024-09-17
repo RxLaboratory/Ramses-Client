@@ -12,6 +12,7 @@ class StateManager : public QObject
 public:
 
     enum State {
+        Unknown = -1,
         Idle = 0,
         Opening = 1,
         WritingDataBase = 2,
@@ -28,16 +29,27 @@ public:
     static StateManager *i();
 
     State state() const;
+    State previousState() const { return m_previousState; }
     bool isDBBusy() const;
+
+    QString title() const { return m_title; }
+    void setTitle(const QString &newTitle);
+
+    QString text() const {  return m_text; }
+    void setText(const QString &newText);
 
 signals:
     void stateChanged(StateManager::State);
+    void titleChanged(QString title);
+    void textChanged(QString text);
 
 public slots:
     void quit(bool sync = true);
     void restart(bool sync = true, const QString &dbFile = "");
     void forceQuit();
     void setState(StateManager::State newState);
+    void setTempState(StateManager::State tempState);
+    void keepTempState();
 
 protected:
     static StateManager *_instance;
@@ -49,35 +61,33 @@ private:
      */
     StateManager(QObject *parent = nullptr);
 
+    QString m_title = "";
+    QString m_text = "";
+
     State m_state = Idle;
     State m_previousState = Idle;
+    State m_tempState = Unknown;
     DuApplication *m_app;
+    Q_PROPERTY(QString title READ title WRITE setTitle NOTIFY titleChanged FINAL)
+    Q_PROPERTY(QString text READ text WRITE setText NOTIFY textChanged FINAL)
 };
 
-class StateHandler
+class StateChanger
 {
 public:
-    StateHandler(StateManager::State s) {
-        freezeState();
-        StateManager::i()->setState(s);
+    StateChanger(StateManager::State s) {
+        StateManager::i()->setTempState(s);
     }
-    ~StateHandler() {
-        if (!_r)
-            resetState();
+    ~StateChanger() {
+        resetState();
     }
 
     void resetState() {
-        StateManager::i()->setState(_p);
-        _r = true;
+        StateManager::i()->setTempState(StateManager::Unknown);
     }
-
     void freezeState() {
-        _p = StateManager::i()->state();
+        StateManager::i()->keepTempState();
     }
-
-private:
-    StateManager::State _p;
-    bool _r = false;
 };
 
 #endif // STATEMANAGER_H
