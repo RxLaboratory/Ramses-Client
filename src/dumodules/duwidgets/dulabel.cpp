@@ -150,10 +150,7 @@ QSize DuLabel::sizeHint() const
     if (_text == "") return this->minimumSizeHint();
 
     // Just a text (or nothing)
-    QPainter painter(
-        const_cast<DuLabel*>(this) // Promise we won't modify anything
-        );
-    QFontMetrics fontMetrics = painter.fontMetrics();
+    QFontMetrics fontMetrics = this->fontMetrics();
     return fontMetrics.size(Qt::TextShowMnemonic, _text);
 }
 

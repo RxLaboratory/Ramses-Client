@@ -76,6 +76,9 @@ QIconEngine *DuSVGIconEngine::clone() const
 QPixmap DuSVGIconEngine::pixmap(const QSize &size, QIcon::Mode mode,
                                 QIcon::State state)
 {
+    if (size.isEmpty())
+        return QPixmap();
+
     QPixmap pix = QPixmap(size);
     pix.fill(QColor(0,0,0,0));
 
