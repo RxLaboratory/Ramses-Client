@@ -23,9 +23,11 @@ ProjectWizard::ProjectWizard(bool team, QWidget *parent, Qt::WindowFlags flags):
 }
 
 void ProjectWizard::done(int r)
-{
+{    
     if (r != QWizard::Accepted)
         return QWizard::done(r);
+
+    StateChanger s(StateManager::Opening);
 
     // Create distant data
     // (project, users and assignemnts)
@@ -34,6 +36,8 @@ void ProjectWizard::done(int r)
         if (_projectUuid == "")
             return;
     }
+
+    qInfo().noquote() << tr("Creating local database...");
 
     // Create the local database
     QString dbPath = ui_pathsPage->dbFilePath();
@@ -74,6 +78,7 @@ void ProjectWizard::done(int r)
     project->users()->appendObject(user->uuid());
     _projectUuid = project->uuid();
 
+    s.freezeState();
     finishProjectSetup();
 }
 
@@ -103,6 +108,9 @@ void ProjectWizard::editStep(const QModelIndex &index)
 
 void ProjectWizard::finishProjectSetup()
 {
+    StateManager::i()->setState(StateManager::Idle);
+    StateChanger s(StateManager::Opening);
+
     disconnect(DBInterface::i(), nullptr, this, nullptr);
 
     RamProject *project = RamProject::get(_projectUuid);
@@ -131,6 +139,8 @@ void ProjectWizard::finishProjectSetup()
         this->setEnabled(true);
         return;
     }
+
+    qInfo().noquote() << tr("Creating pipeline...");
 
     // Set the project in the DB
     LocalDataInterface::instance()->setCurrentProjectUser(_projectUuid, userUuid);
@@ -268,6 +278,8 @@ bool ProjectWizard::createDatabase(const QString &dbPath)
 
 QString ProjectWizard::createServerData()
 {
+    qInfo().noquote() << tr("Uploading project and user data...");
+
     auto rsc = RamServerClient::i();
 
     // Create project
@@ -334,6 +346,8 @@ QString ProjectWizard::createServerData()
         if (!checkServerReply(rep))
             return "";
     }
+
+    qInfo().noquote() << tr("Assigning users to the project...");
 
     // Assign users on the server
     // At least ourselves
