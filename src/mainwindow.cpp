@@ -163,7 +163,6 @@ void MainWindow::connectEvents()
 
     connect(m_actionSync, SIGNAL(triggered()), DBInterface::i(),SLOT(sync()));
     connect(m_actionFullSync, SIGNAL(triggered()), DBInterface::i(),SLOT(fullSync()));
-    connect(ui_mainStack,SIGNAL(currentChanged(int)), this, SLOT(pageChanged(int)));
 
     // ==== State ====
 
@@ -281,13 +280,6 @@ void MainWindow::maximize(bool m)
 {
     if (m) showMaximized();
     else showNormal();
-}
-
-void MainWindow::pageChanged(int i)
-{
-    m_actionAdmin->setChecked(i == 3);
-    m_actionLogIn->setChecked(i == 0);
-    ui_propertiesDockWidget->hide();
 }
 
 void MainWindow::setOfflineAction()
@@ -599,17 +591,23 @@ void MainWindow::changeState(StateManager::State s)
     case StateManager::Closing:
         ui_stateWidget->setSVGIcon(":/icons/wait");
         ui_stateWidget->rotate();
+        hideAllDocks();
         setPage(HomePage);
+        ui_leftToolBar->setEnabled(false);
+        ui_rightToolBar->setEnabled(false);
         break;
 
     case StateManager::Connecting:
     case StateManager::Syncing:
+        ui_rightToolBar->setEnabled(false);
         ui_stateWidget->setSVGIcon(":/icons/wait");
         ui_stateWidget->rotate();
         break;
 
     case StateManager::Idle:
     case StateManager::Unknown:
+        ui_leftToolBar->setEnabled(true);
+        ui_rightToolBar->setEnabled(true);
         ui_stateWidget->setSVGIcon("");
         ui_stateWidget->stopAnimation();
         break;

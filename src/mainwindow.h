@@ -199,7 +199,6 @@ private slots:
     void askBeforeClose();
     void maximize(bool m);
 
-    void pageChanged(int i);
     void setOfflineAction();
     void setOnlineAction();
     void databaseSettingsAction();
