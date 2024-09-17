@@ -1,24 +1,15 @@
 ## Priority fixes
 
 - Stats dock, empty list?
+- Improve server widget (hide details in a QMenu), keep only the address
 - Refactor project edit widget
     - and user assignments, for admin only
-- to fix loading order: try to keep the uuid list in the model to reload the objects later (maybe monitor the corresponding dbtable to auto reload)
-- WIP Edit Widget
-    - open folder for all objects
-- Assigned users not listed in projects on first open (must be an issue with the order of pulling tables) (try keeping the uuids to be reoladed later)
-- show states (Connect states to indicators in mainwindow (is team, server status & ssl, state manager)
-    - implement a state indicator / progress
-    - add a progress bar to home page
+- show online/offline/security/not team
+    - reimplement sync buttons and setonline/setoffline
 - offline mode if network unavailable for team projects (skip login, add a button to skip/set offline on login dialog)
-- Update/refactor progressmanager (with state manager) and homepage
-- assign users in projecteditwidget (disabled for non admins)
 - update daemon to not use project uuid
 - update py api to not use current project
 - auto show console on qcritical
-- user DuUI layout methods
-- DuDockWidget update (and reenable Q_ASSERT in their event filter)
-- QDateEdit css
 - reimplement qmessagebox static methods as dumessagebox to improve display using DuUI::exec
 - do the same as above with qdialog/dudialog
 - Project wizard: step templates, shots, assets
@@ -26,15 +17,11 @@
 ## Other
 
 - Refactor folders: all from project (done ? check)
-- refactor setonline/setoffline (cf mainwindow)
 
 ## Client UI
 
 - Use DuUI Layout methods everywhere
 - QDateEdit button CSS
-- Improve server widget (hide details in a QMenu), keep only the address
-- refactor logging & console (see DuME)
-- refactor userEditwidget
 - don't user titlebars where not needed; remove duqftitlebar and use simple titlebar; remove closerequested and reinit
 - reimplement all object editors
 - Idée : verrouiller le pipe
@@ -42,7 +29,7 @@
 - schedule : déplacements des blocs, en drag'n'drop plutot que copier coller si possible (avec Shift?)
 - schedule : mettre une "frontière" sous certaines lignes pour que ça reste toujours en haut, comme dans excel (quand on a bcp de lignes et qu'on est en bas, on voit plus les deadlines tout en haut)
 - schedule : qu'on puisse zoomer/dézoomer le planning
-- item tables : freeze first column or update header 
+- item tables : freeze first column or create header delegate
 
 ## Maya
 
@@ -56,13 +43,11 @@
 
 ## New server interface
 
-- WIP reimplement All API
 - Remove all userChanged (the user can't change), but use databaseReady when needed
 - Implement a Ramses::roleChanged signal, and use everywhere in UI (emit just after ready)
 - Make sure on sync that the user role is monitored
 - update settings system: remove per user, per project settings etc
 - update pipeline: sync node location
-- Mainwindow etc: build UI only on ramsesReady signal (and disconnect everywhere else)
 - remove serveruuid
 
 ## Templates & Global & Object changes
@@ -101,7 +86,6 @@ Set per project:
 
 - setEmail verify if unique
 - createUser(s), verify is email is unique
-- reset email system
 
 ## Server Doc
 

@@ -366,7 +366,7 @@ bool DuDockEventFilter::eventFilter(QObject *obj, QEvent *event)
 {
     // Check the object, shouldn't be installed on something else
     auto dock = qobject_cast<QDockWidget*>(obj);
-    //Q_ASSERT(dock);
+    Q_ASSERT(dock);
 
     // Check type
     auto type = event->type();
