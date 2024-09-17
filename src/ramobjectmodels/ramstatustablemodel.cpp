@@ -226,6 +226,9 @@ QSet<RamStatus *> RamStatusTableModel::getStepStatus(QString stepUuid) const
 
 void RamStatusTableModel::suspendEstimations(bool s)
 {
+    if (m_cacheSuspended == s)
+        return;
+
     m_cacheSuspended = s;
     if (!s)
         cacheEstimations();

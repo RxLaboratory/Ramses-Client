@@ -37,7 +37,7 @@ void DBTableModel::load()
     reload();
 
     // Monitor the DB for changes
-    LocalDataInterface *ldi = LocalDataInterface::instance();
+    LocalDataInterface *ldi = LocalDataInterface::i();
     connect(ldi, &LocalDataInterface::inserted, this, &DBTableModel::insertObject);
     connect(ldi, &LocalDataInterface::removed, this, &DBTableModel::removeObject);
     connect(ldi, &LocalDataInterface::dataChanged, this, &DBTableModel::changeData);
@@ -295,7 +295,7 @@ void DBTableModel::insertObject(const QString &uuid, const QString &data, const 
     // Unique
     QString uuidToRemove = checkUnique(uuid, data, modificationDate);
     if (uuidToRemove == uuid) {
-        LocalDataInterface::instance()->removeObject(uuid, table);
+        LocalDataInterface::i()->removeObject(uuid, table);
         return;
     }
 
@@ -333,7 +333,7 @@ void DBTableModel::reload()
     clear();
 
     // Get all
-    QVector<QStringList> objs = LocalDataInterface::instance()->tableData( m_table, m_filters );
+    QVector<QStringList> objs = LocalDataInterface::i()->tableData( m_table, m_filters );
 
     qDebug() << "Got " << objs.count() << " objects from " << m_table;
 
@@ -348,7 +348,7 @@ void DBTableModel::reload()
             // Unique
             QString uuidToRemove = checkUnique(uuid, objData, modified);
             if (uuidToRemove == uuid) {
-                LocalDataInterface::instance()->removeObject(uuid, m_table);
+                LocalDataInterface::i()->removeObject(uuid, m_table);
                 objs.removeAt(i);
                 continue;
             }

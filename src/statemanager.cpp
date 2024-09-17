@@ -18,12 +18,6 @@ StateManager::State StateManager::state() const
     return m_state;
 }
 
-bool StateManager::isDBBusy() const
-{
-    return (m_state == LoadingDataBase ||
-            m_state == WritingDataBase );
-}
-
 void StateManager::quit(bool sync)
 {
     if (m_state==Closing)

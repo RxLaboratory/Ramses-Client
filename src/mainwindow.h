@@ -23,6 +23,7 @@
 #include "duwidgets/dudockwidget.h"
 #include "ramproject.h"
 #include "statemanager.h"
+#include "localdatainterface.h"
 
 class MainWindow : public DuMainWindow
 {
@@ -57,8 +58,15 @@ private:
     void setupToolBars();
     void setupSysTray();
     void setupDocks();
+
     void connectEvents();
     void connectShortCuts();
+
+    QWidget *setupAdminPage();
+    QWidget *setupPipelinePage();
+    QWidget *setupAssetsPage();
+    QWidget *setupShotsPage();
+    QWidget *setupSchedulePage();
 
     // ==== ACTIONS ====
 
@@ -103,6 +111,7 @@ private:
 
     QStackedLayout *ui_mainStack;
     LandingPage *ui_landingPage;
+    Page m_currentPage = Landing;
 
     // ==== Docks ====
 
@@ -173,9 +182,6 @@ private:
      */
     bool m_showUpdateAlerts = false;
 
-    int _minIOInterval = 100; //ms
-    QTimer _ioTimer;
-
 private slots:
     void bugReport();
     void forum();
@@ -197,6 +203,7 @@ private slots:
     void ramsesReady();
     void dbiConnectionStatusChanged(NetworkUtils::NetworkStatus s);
     void changeState(StateManager::State s);
+    void changeIOState(LocalDataInterface::State s);
 
     void revealAdminFolder();
     void revealPreProdFolder();

@@ -5,6 +5,7 @@
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QStringBuilder>
+#include <QTimer>
 
 #include "datastruct.h"
 
@@ -13,11 +14,18 @@ class LocalDataInterface : public QObject
     Q_OBJECT
 
 public:
+    enum State {
+        Idle,
+        Reading,
+        Writing,
+        ReadWrite,
+    };
+
     /**
-     * @brief instance returns the unique instance of RamServerInterface.
-     * @return the instance.
+     * @brief i returns the unique i of RamServerInterface.
+     * @return the i.
      */
-    static LocalDataInterface *instance();
+    static LocalDataInterface *i();
 
     /**
      * @brief setServerSettings updates the server settings for a given database
@@ -97,6 +105,8 @@ signals:
     void availabilityChanged(QString,bool);
     void inserted(const QString &uuid, const QString &data, const QString &modificationDate, const QString &table);
     void removed(const QString &uuid, const QString &table);
+    // State
+    void stateChanged(State);
 
 protected:
     static LocalDataInterface *_instance;
@@ -128,7 +138,7 @@ private:
     static void autoCleanDB();
 
     // Runs a query on the current database
-    QSqlQuery query(QString q) const;
+    QSqlQuery query(QString q);
     // SQLite vacuum
     void vacuum();
 
@@ -151,6 +161,11 @@ private:
     // If we're on a full sync or quick sync
     bool m_fullSync = false;
 
+    // Prevent sending too many signals, group them!
+    int _minIOInterval = 100; //ms
+    QTimer _ioTimer;
+    State _waitingIOSignal = Idle;
+    void changeIOState(State s);
 };
 
 #endif // LOCALDATAINTERFACE_H

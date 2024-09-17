@@ -62,7 +62,7 @@ void ProjectWizard::done(int r)
     // Create local data
     if (_isTeamProject) {
         // Set the server settings in the DB
-        LocalDataInterface::instance()->setServerSettings(dbPath, RamServerClient::i()->serverConfig());
+        LocalDataInterface::i()->setServerSettings(dbPath, RamServerClient::i()->serverConfig());
 
         // Download distant data
         RamServerClient::i()->setProject(_projectUuid);
@@ -145,7 +145,7 @@ void ProjectWizard::finishProjectSetup()
     qInfo().noquote() << tr("Creating pipeline...");
 
     // Set the project in the DB
-    LocalDataInterface::instance()->setCurrentProjectUser(_projectUuid, userUuid);
+    LocalDataInterface::i()->setCurrentProjectUser(_projectUuid, userUuid);
 
     // Create the steps
     const QVector<QJsonObject> &jsonSteps = _steps->objects();

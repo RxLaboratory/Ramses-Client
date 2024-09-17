@@ -225,7 +225,7 @@ DBTableModel *Ramses::applications() const
 
 QString Ramses::folderPath() const
 {
-    QString path = LocalDataInterface::instance()->workingPath();
+    QString path = LocalDataInterface::i()->workingPath();
     if (path == "" || path == "auto") path = QDir::homePath() + "/Ramses";
     return path;
 }
@@ -268,7 +268,7 @@ QString Ramses::createPath(QString p) const
 
 void Ramses::loadDatabase()
 {
-    QString userUuid = LocalDataInterface::instance()->currentUserUuid();
+    QString userUuid = LocalDataInterface::i()->currentUserUuid();
     if (userUuid == "")
         return;
     auto user = RamUser::get(userUuid);
@@ -278,7 +278,7 @@ void Ramses::loadDatabase()
     m_currentUser = user;
 
     // Set current project
-    QString projectUuid = LocalDataInterface::instance()->currentProjectUuid();
+    QString projectUuid = LocalDataInterface::i()->currentProjectUuid();
     auto project = RamProject::get(projectUuid);
     if (!project) return;
 
@@ -288,7 +288,7 @@ void Ramses::loadDatabase()
     qInfo().noquote() << "{Ramses}" << "Project: " + m_currentProject->name();
 
     DBInterface::addToRecentList(
-        LocalDataInterface::instance()->dataFile()
+        LocalDataInterface::i()->dataFile()
         );
 
     emit ready();

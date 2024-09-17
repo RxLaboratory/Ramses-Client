@@ -22,6 +22,7 @@ public:
     // Settings
     void setSize(const QSize &s);;
     void setSVGIcon(const QString &iconPath);
+    void setColor(const QColor &color);
 
     // Animation
     void rotate(double speed = 1.0, double fps = 24.0, bool ccw = false);
@@ -41,6 +42,10 @@ private:
     QString _iconPath;
     QPixmap _pix;
     Animation _animation = None;
+    QColor _color;
+
+    void updateIcon();
+    void updatePixmap();
 };
 
 #endif // DUICONWIDGET_H

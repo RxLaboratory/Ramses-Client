@@ -54,8 +54,6 @@ void RamScheduleEntryModel::countAll()
 
     if (m_estimationFrozen) return;
 
-    if (StateManager::i()->isDBBusy()) return;
-
     m_userCounts.clear();
     m_stepCounts.clear();
 

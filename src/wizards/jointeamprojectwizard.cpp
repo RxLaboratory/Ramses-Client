@@ -44,7 +44,7 @@ void JoinTeamProjectWizard::done(int r)
     // Set the file
     DBInterface::i()->loadDataFile(dbPath);
     // Set the server settings in the DB
-    LocalDataInterface::instance()->setServerSettings(dbPath, RamServerClient::i()->serverConfig());
+    LocalDataInterface::i()->setServerSettings(dbPath, RamServerClient::i()->serverConfig());
 
     qInfo().noquote() << tr("Downloading server data...");
     s.freezeState();
@@ -94,7 +94,7 @@ void JoinTeamProjectWizard::finishProjectSetup()
     }
 
     // Set the project in the DB
-    LocalDataInterface::instance()->setCurrentProjectUser(projectUuid, userUuid);
+    LocalDataInterface::i()->setCurrentProjectUser(projectUuid, userUuid);
 
     // And tell Ramses we're ready
     Ramses::i()->loadDatabase();

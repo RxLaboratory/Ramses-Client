@@ -346,8 +346,8 @@ void RamObject::construct(QObject *parent)
     connect(this, &RamObject::dataChanged, this, &RamObject::updateJsonEditor);
 
     // Monitor db changes
-    connect(LocalDataInterface::instance(), &LocalDataInterface::dataChanged, this, &RamObject::checkData);
-    connect(LocalDataInterface::instance(), &LocalDataInterface::availabilityChanged, this, &RamObject::checkAvailability);
+    connect(LocalDataInterface::i(), &LocalDataInterface::dataChanged, this, &RamObject::checkData);
+    connect(LocalDataInterface::i(), &LocalDataInterface::availabilityChanged, this, &RamObject::checkAvailability);
 }
 
 

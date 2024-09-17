@@ -29,6 +29,7 @@
 #include "docks/settingsdock.h"
 #include "ramses.h"
 #include "duapp/duui.h"
+#include "config.h"
 
 MainWindow::MainWindow(const QCommandLineParser &cli, QWidget *parent) :
     DuMainWindow{parent}
@@ -138,10 +139,17 @@ void MainWindow::connectEvents()
 
     // ==== Docks ====
 
-    connect(m_projectAction, SIGNAL(triggered(bool)), ui_projectDockWidget, SLOT(setVisible(bool)));
-    connect(ui_projectDockWidget, SIGNAL(visibilityChanged(bool)), m_projectAction, SLOT(setChecked(bool)));
+    connect(ui_consoleDockWidget,&DuDockWidget::visibilityChanged, m_actionConsole, &DuAction::setChecked);
+    connect(m_actionConsole, &DuAction::triggered, ui_consoleDockWidget, &DuDockWidget::setVisible);
 
-    connect(m_stepsAction, SIGNAL(triggered(bool)), ui_stepsDockWidget, SLOT(setVisible(bool)));
+    connect(m_actionSettings, &DuAction::triggered, ui_settingsDock, &DuDockWidget::setVisible);
+    connect(ui_settingsDock, &DuDockWidget::visibilityChanged, m_actionSettings, &DuAction::setChecked);
+
+    /* Replace by proporties dock, no need for a specific dock for the project
+    connect(m_projectAction, SIGNAL(triggered(bool)), ui_projectDockWidget, SLOT(setVisible(bool)));
+    connect(ui_projectDockWidget, SIGNAL(visibilityChanged(bool)), m_projectAction, SLOT(setChecked(bool)));//*/
+
+    /*connect(m_stepsAction, SIGNAL(triggered(bool)), ui_stepsDockWidget, SLOT(setVisible(bool)));
     connect(ui_stepsDockWidget, SIGNAL(visibilityChanged(bool)), m_stepsAction, SLOT(setChecked(bool)));
 
     connect(m_pipeFilesAction, SIGNAL(triggered(bool)), ui_pipeFileDockWidget, SLOT(setVisible(bool)));
@@ -162,14 +170,8 @@ void MainWindow::connectEvents()
     connect(m_actionStatistics,SIGNAL(triggered(bool)), ui_statsDockWidget, SLOT(setVisible(bool)));
     connect(ui_statsDockWidget,SIGNAL(visibilityChanged(bool)), m_actionStatistics, SLOT(setChecked(bool)));
 
-    connect(ui_consoleDockWidget,&DuDockWidget::visibilityChanged, m_actionConsole, &DuAction::setChecked);
-    connect(m_actionConsole, &DuAction::triggered, ui_consoleDockWidget, &DuDockWidget::setVisible);
-
     connect(m_actionTimeline,SIGNAL(triggered(bool)), ui_timelineDockWidget, SLOT(setVisible(bool)));
-    connect(ui_timelineDockWidget,SIGNAL(visibilityChanged(bool)), m_actionTimeline, SLOT(setChecked(bool)));
-
-    connect(m_actionSettings, &DuAction::triggered, ui_settingsDock, &DuDockWidget::setVisible);
-    connect(ui_settingsDock, &DuDockWidget::visibilityChanged, m_actionSettings, &DuAction::setChecked);
+    connect(ui_timelineDockWidget,SIGNAL(visibilityChanged(bool)), m_actionTimeline, SLOT(setChecked(bool)));//*/
 
     // ==== Files ====
 
@@ -193,11 +195,7 @@ void MainWindow::connectEvents()
     // ==== State ====
 
     connect(StateManager::i(), &StateManager::stateChanged, this, &MainWindow::changeState);
-
-    connect(&_ioTimer, &QTimer::timeout, this, [this] () {
-        ui_ioWidget->setSVGIcon("");
-        _ioTimer.stop();
-    });
+    connect(LocalDataInterface::i(), &LocalDataInterface::stateChanged, this, &MainWindow::changeIOState);
 
     connect(Daemon::instance(), &Daemon::raise, this, &MainWindow::raise);
 
@@ -205,6 +203,32 @@ void MainWindow::connectEvents()
     connect(Ramses::i(), &Ramses::roleChanged, this, &MainWindow::changeUserRole);
 
     connect(qApp, &QCoreApplication::aboutToQuit, this, &MainWindow::onQuit);
+}
+
+QWidget *MainWindow::setupAdminPage()
+{
+    return nullptr;
+}
+
+QWidget *MainWindow::setupPipelinePage()
+{
+    return nullptr;
+}
+
+QWidget *MainWindow::setupAssetsPage()
+{
+    ItemManagerWidget *assetsTable = new ItemManagerWidget(RamStep::AssetProduction, this);
+    return assetsTable;
+}
+
+QWidget *MainWindow::setupShotsPage()
+{
+    return nullptr;
+}
+
+QWidget *MainWindow::setupSchedulePage()
+{
+    return nullptr;
 }
 
 void MainWindow::setPropertiesDockWidget(QWidget *w, QString title, QString icon, bool temporary)
@@ -346,12 +370,53 @@ void MainWindow::databaseSettingsAction()
 
 void MainWindow::setPage(Page p)
 {
-    // If the UI is frozen, delay until freezeUI(false) is called
-    /*if (ui_mainStack->currentIndex() == Progress)
-        m_currentPageIndex = p;
-    // Else sit it right now
-    else*/
+    if (m_currentPage == p)
+        return;
+
+    if (p == Landing ||
+        p == Home) {
         ui_mainStack->setCurrentIndex(p);
+        m_currentPage = p;
+        return;
+    }
+
+    // Delete previous if any
+    QWidget *w = ui_mainStack->widget(2);
+    if (w)
+        w->deleteLater();
+
+    // Build the page and show it
+    QWidget *newWidget = nullptr;
+
+    switch(p) {
+    case Landing:
+    case Home:
+        return;
+    case Admin:
+        newWidget = setupAdminPage();
+        break;
+    case PipeLine:
+        newWidget = setupPipelinePage();
+        break;
+    case Assets:
+        newWidget = setupAssetsPage();
+        break;
+    case Shots:
+        newWidget = setupShotsPage();
+        break;
+    case Schedule:
+        newWidget = setupSchedulePage();
+        break;
+    }
+
+    if (!newWidget) {
+        setPage(Home);
+        return;
+    }
+
+    ui_mainStack->insertWidget(2, newWidget);
+    ui_mainStack->setCurrentIndex(2);
+    m_currentPage = p;
 }
 
 void MainWindow::revealAdminFolder()
@@ -427,8 +492,8 @@ void MainWindow::changeUserRole(RamAbstractObject::UserRole role)
 {
     switch(role) {
     case RamAbstractObject::Admin:
-        m_actionAdmin->setVisible(true);
-        break;
+        //m_actionAdmin->setVisible(true);
+        //break;
     case RamAbstractObject::ProjectAdmin:
     case RamAbstractObject::Lead:
     case RamAbstractObject::Standard:
@@ -459,8 +524,8 @@ void MainWindow::ramsesReady()
     // The signal is emited only if all are ready
     RamProject *project = Ramses::i()->project();
 
-    ui_projectEditWiget->setObject(project);
-    ui_statsTitle->setTitle( project->name() );
+    //ui_projectEditWiget->setObject(project);
+    //ui_statsTitle->setTitle( project->name() );
 
     ui_shotMenuAction->setVisible(true);
     ui_assetMenuAction->setVisible(true);
@@ -514,28 +579,7 @@ void MainWindow::dbiConnectionStatusChanged(NetworkUtils::NetworkStatus s)
 
 void MainWindow::changeState(StateManager::State s)
 {
-    // Set the read/write icon
-    switch(s) {
-    case StateManager::WritingDataBase:
-        ui_ioWidget->setSVGIcon(":/icons/database-write");
-        _ioTimer.start(_minIOInterval);
-        break;
-    case StateManager::LoadingDataBase:
-        ui_ioWidget->setSVGIcon(":/icons/database-read");
-        _ioTimer.start(_minIOInterval);
-        break;
-
-    case StateManager::Unknown:
-    case StateManager::Idle:
-    case StateManager::Opening:
-    case StateManager::Connecting:
-    case StateManager::Closing:
-    case StateManager::Syncing:
-        break;
-    }
-
     // Set busy Icon and home page
-
     switch (s) {
     case StateManager::Opening:
     case StateManager::Closing:
@@ -544,8 +588,6 @@ void MainWindow::changeState(StateManager::State s)
         setPage(Home);
         break;
 
-    case StateManager::LoadingDataBase:
-    case StateManager::WritingDataBase:
     case StateManager::Connecting:
     case StateManager::Syncing:
         ui_stateWidget->setSVGIcon(":/icons/wait");
@@ -556,6 +598,25 @@ void MainWindow::changeState(StateManager::State s)
     case StateManager::Unknown:
         ui_stateWidget->setSVGIcon("");
         ui_stateWidget->stopAnimation();
+        break;
+    }
+}
+
+void MainWindow::changeIOState(LocalDataInterface::State s)
+{
+    // Set the read/write icon
+    switch(s) {
+    case LocalDataInterface::Idle:
+        ui_ioWidget->setSVGIcon("");
+        break;
+    case LocalDataInterface::Reading:
+        ui_ioWidget->setSVGIcon(":/icons/database-read");
+        break;
+    case LocalDataInterface::Writing:
+        ui_ioWidget->setSVGIcon(":/icons/database-write");
+        break;
+    case LocalDataInterface::ReadWrite:
+        ui_ioWidget->setSVGIcon(":/icons/database-read-write");
         break;
     }
 }
@@ -826,7 +887,7 @@ void MainWindow::setupUi()
     ui_mainStack->addWidget(ui_adminPage);
 
     // Admin tabs
-    UserManagerWidget *userManager = new UserManagerWidget(this);
+    /*UserManagerWidget *userManager = new UserManagerWidget(this);
     ui_adminPage->addPage(userManager,"Users", DuIcon(":/icons/users"));
 
     ProjectManagerWidget *projectManager = new ProjectManagerWidget(this);
@@ -848,36 +909,23 @@ void MainWindow::setupUi()
     ui_adminPage->addPage(applicationManager, "Applications", DuIcon(":/icons/applications"));
 
     DBManagerWidget *dbManager = new DBManagerWidget(this);
-    ui_adminPage->addPage(dbManager, "Database tools", DuIcon(":/icons/applications"));
+    ui_adminPage->addPage(dbManager, "Database tools", DuIcon(":/icons/applications"));*/
 
-// Pipeline editor
-#ifndef DEACTIVATE_PIPELINE
-    PipelineWidget *pipelineEditor = new PipelineWidget(this);
+    // Pipeline editor
+    /*PipelineWidget *pipelineEditor = new PipelineWidget(this);
     ui_mainStack->addWidget(pipelineEditor);
     connect(pipelineEditor, &PipelineWidget::closeRequested, this, [this] () { setPage(Home); });
     qDebug() << "> Pipeline ready";//*/
-#endif
 
-#ifndef DEACTIVATE_ASSETSTABLE
-    ItemManagerWidget *assetsTable = new ItemManagerWidget(RamStep::AssetProduction, this);
-    ui_mainStack->addWidget(assetsTable);
-    connect(assetsTable, &ItemManagerWidget::closeRequested, this, [this] () { setPage(Home); });
-    qDebug() << "> Assets table ready";
-#endif
-
-#ifndef DEACTIVATE_SHOTSTABLE
-    ItemManagerWidget *shotsTable = new ItemManagerWidget(RamStep::ShotProduction, this);
+    /*ItemManagerWidget *shotsTable = new ItemManagerWidget(RamStep::ShotProduction, this);
     ui_mainStack->addWidget(shotsTable);
     connect(shotsTable, &ItemManagerWidget::closeRequested, this, [this] () { setPage(Home); });
-    qDebug() << "> Shots table ready";
-#endif
+    qDebug() << "> Shots table ready";//*/
 
-#ifndef DEACTIVATE_SCHEDULE
-    ScheduleManagerWidget *scheduleTable = new ScheduleManagerWidget(this);
+    /*ScheduleManagerWidget *scheduleTable = new ScheduleManagerWidget(this);
     ui_mainStack->addWidget(scheduleTable);
     connect(scheduleTable,&ScheduleManagerWidget::closeRequested, this, [this] () { setPage(Home); });
-    qDebug() << "> Schedule ready";
-#endif
+    qDebug() << "> Schedule ready";//*/
 
 }
 
@@ -899,8 +947,7 @@ void MainWindow::setupDocks()
     this->addDockWidget(Qt::RightDockWidgetArea, ui_settingsDock);
     ui_settingsDock->hide();
 
-#ifndef DEACTIVATE_STATS
-    StatisticsWidget *statsTable = new StatisticsWidget(this);
+    /*StatisticsWidget *statsTable = new StatisticsWidget(this);
 
     ui_statsDockWidget = new DuDockWidget(tr("Statistics"));
     ui_statsDockWidget->setWindowIcon(DuIcon(":/icons/stats"));
@@ -918,8 +965,7 @@ void MainWindow::setupDocks()
     this->addDockWidget(area, ui_statsDockWidget);
     ui_statsDockWidget->hide();
 
-    qDebug() << "> Statistics table ready";
-#endif
+    qDebug() << "> Statistics table ready";//*/
 
     // A console in a tab
     auto *consoleFrame = new ConsoleDock(this);
@@ -942,7 +988,7 @@ void MainWindow::setupDocks()
     qDebug() << "> Console dock ready";
 
     // The timeline
-    TimelineWidget *timeline = new TimelineWidget(this);
+    /*TimelineWidget *timeline = new TimelineWidget(this);
 
     ui_timelineDockWidget = new DuDockWidget("Timeline");
     ui_timelineDockWidget->setWindowIcon(DuIcon(":/icons/timeline"));
@@ -959,7 +1005,7 @@ void MainWindow::setupDocks()
     this->addDockWidget(Qt::BottomDockWidgetArea, ui_timelineDockWidget);
     ui_timelineDockWidget->hide();
 
-    qDebug() << "> Timeline dock ready";
+    qDebug() << "> Timeline dock ready";//*/
 
     // The properties dock
     ui_propertiesDockWidget = new DuDockWidget("Properties");
@@ -979,7 +1025,7 @@ void MainWindow::setupDocks()
     qDebug() << "> Properties dock ready";
 
     // The project dock
-    ui_projectEditWiget = new ProjectEditWidget(this);
+    /*ui_projectEditWiget = new ProjectEditWidget(this);
 
     ui_projectDockWidget = new DuDockWidget(tr("Project settings"));
     ui_projectDockWidget->setWindowIcon(DuIcon(":/icons/project"));
@@ -994,10 +1040,10 @@ void MainWindow::setupDocks()
     ui_projectDockWidget->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable );
     ui_projectDockWidget->setWidget( ui_projectEditWiget );
     this->addDockWidget(Qt::RightDockWidgetArea, ui_projectDockWidget);
-    ui_projectDockWidget->hide();
+    ui_projectDockWidget->hide();//*/
 
     // The steps dock
-    StepManagerWidget *stepWidget = new StepManagerWidget(this);
+    /*StepManagerWidget *stepWidget = new StepManagerWidget(this);
 
     ui_stepsDockWidget = new DuDockWidget(tr("Steps"));
     ui_stepsDockWidget->setWindowIcon(DuIcon(":/icons/step"));
@@ -1012,10 +1058,10 @@ void MainWindow::setupDocks()
     ui_stepsDockWidget->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable );
     ui_stepsDockWidget->setWidget( stepWidget );
     this->addDockWidget(Qt::LeftDockWidgetArea, ui_stepsDockWidget);
-    ui_stepsDockWidget->hide();
+    ui_stepsDockWidget->hide();//*/
 
     // The pipe formats dock
-    PipeFileManagerWidget *pipeFileWidget = new PipeFileManagerWidget(this);
+    /*PipeFileManagerWidget *pipeFileWidget = new PipeFileManagerWidget(this);
 
     ui_pipeFileDockWidget = new DuDockWidget(tr("Pipe formats"));
     ui_pipeFileDockWidget->setWindowIcon(DuIcon(":/icons/connection"));
@@ -1030,10 +1076,10 @@ void MainWindow::setupDocks()
     ui_pipeFileDockWidget->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable );
     ui_pipeFileDockWidget->setWidget( pipeFileWidget );
     this->addDockWidget(Qt::LeftDockWidgetArea, ui_pipeFileDockWidget);
-    ui_pipeFileDockWidget->hide();
+    ui_pipeFileDockWidget->hide();//*/
 
     // The asset groups dock
-    AssetGroupManagerWidget *assetGroupWidget = new AssetGroupManagerWidget(this);
+    /*AssetGroupManagerWidget *assetGroupWidget = new AssetGroupManagerWidget(this);
 
     ui_assetGroupsDockWidget = new DuDockWidget(tr("Asset Groups"));
     ui_assetGroupsDockWidget->setWindowIcon(DuIcon(":/icons/asset-group"));
@@ -1048,10 +1094,10 @@ void MainWindow::setupDocks()
     ui_assetGroupsDockWidget->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable );
     ui_assetGroupsDockWidget->setWidget( assetGroupWidget );
     this->addDockWidget(Qt::LeftDockWidgetArea, ui_assetGroupsDockWidget);
-    ui_assetGroupsDockWidget->hide();
+    ui_assetGroupsDockWidget->hide();//*/
 
     // The assets dock
-    AssetManagerWidget *assetWidget = new AssetManagerWidget(this);
+    /*AssetManagerWidget *assetWidget = new AssetManagerWidget(this);
 
     ui_assetsDockWidget = new DuDockWidget(tr("Assets"));
     ui_assetsDockWidget->setWindowIcon(DuIcon(":/icons/asset"));
@@ -1066,10 +1112,10 @@ void MainWindow::setupDocks()
     ui_assetsDockWidget->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable );
     ui_assetsDockWidget->setWidget( assetWidget );
     this->addDockWidget(Qt::LeftDockWidgetArea, ui_assetsDockWidget);
-    ui_assetsDockWidget->hide();
+    ui_assetsDockWidget->hide();//*/
 
     // The sequences dock
-    SequenceManagerWidget *sequenceWidget = new SequenceManagerWidget(this);
+    /*SequenceManagerWidget *sequenceWidget = new SequenceManagerWidget(this);
 
     ui_sequencesDockWidget = new DuDockWidget(tr("Sequences"));
     ui_sequencesDockWidget->setWindowIcon(DuIcon(":/icons/sequence"));
@@ -1084,10 +1130,10 @@ void MainWindow::setupDocks()
     ui_sequencesDockWidget->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable );
     ui_sequencesDockWidget->setWidget( sequenceWidget );
     this->addDockWidget(Qt::LeftDockWidgetArea, ui_sequencesDockWidget);
-    ui_sequencesDockWidget->hide();
+    ui_sequencesDockWidget->hide();//*/
 
     // The Shots dock
-    ShotManagerWidget *shotWidget = new ShotManagerWidget(this);
+    /*ShotManagerWidget *shotWidget = new ShotManagerWidget(this);
 
     ui_shotsDockWidget = new DuDockWidget(tr("Shots"));
     ui_shotsDockWidget->setWindowIcon(DuIcon(":/icons/shot"));
@@ -1102,7 +1148,7 @@ void MainWindow::setupDocks()
     ui_shotsDockWidget->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable );
     ui_shotsDockWidget->setWidget( shotWidget );
     this->addDockWidget(Qt::LeftDockWidgetArea, ui_shotsDockWidget);
-    ui_shotsDockWidget->hide();
+    ui_shotsDockWidget->hide();//*/
 }
 
 void MainWindow::setupToolBars()
@@ -1209,12 +1255,18 @@ void MainWindow::setupToolBars()
     ui_filesMenuAction->setVisible(false);
 
     ui_stateWidget = new DuIconWidget(this);
+    ui_stateWidget->setColor(
+        DuSettings::i()->get(DuSettings::UI_FocusColor).value<QColor>()
+        );
     ui_rightToolBar->addWidget(ui_stateWidget);
 
     ui_ioWidget = new DuIconWidget(this);
+    ui_ioWidget->setColor(
+        DuUI::pushColor(
+            DuSettings::i()->get(DuSettings::UI_ForegroundColor).value<QColor>(), 2
+            )
+        );
     ui_rightToolBar->addWidget(ui_ioWidget);
-    //_ioTimer.setSingleShot(true);
-
 
     auto userMenu = new DuMenu();
     userMenu->addAction(m_actionLogIn);

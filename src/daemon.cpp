@@ -221,7 +221,7 @@ void Daemon::create(QString uuid, QString data, QString type, QTcpSocket *client
     qDebug().noquote() << tr("This is the data: %1").arg(data);
     qDebug().noquote() << tr("This is the type: %1").arg(type);
 
-     LocalDataInterface::instance()->createObject(uuid, type, data);
+     LocalDataInterface::i()->createObject(uuid, type, data);
 
      post(client, QJsonObject(), "create", tr("I've created a new \"%1\".").arg(type));
 }
@@ -231,7 +231,7 @@ void Daemon::getObjects(QString type, QTcpSocket *client)
     qDebug().noquote() << tr("I'm replying to this request: %1.").arg("getObjects");
     qDebug().noquote() << tr("This is the type: %1").arg(type);
 
-    QVector<QStringList> entries = LocalDataInterface::instance()->tableData(type);
+    QVector<QStringList> entries = LocalDataInterface::i()->tableData(type);
 
     QJsonObject content;
 

@@ -1,6 +1,9 @@
 ## Priority fixes
 
-- implement a Busy Icon and a Read/Write Icon
+- Fix too many calls to data and db read
+    - empty header on item table calls db
+    - resize ok with item tables
+
 - Refactor project edit widget
     - and user assignments, for admin only
 - to fix loading order: try to keep the uuid list in the model to reload the objects later (maybe monitor the corresponding dbtable to auto reload)
@@ -26,7 +29,6 @@
 ## Other
 
 - Refactor folders: all from project (done ? check)
-- DBInterface::acceptClean -> remove older clean methods, now has an autoclean on sync
 - refactor setonline/setoffline (cf mainwindow)
 
 ## Client UI
@@ -37,7 +39,6 @@
 - Improve server widget (hide details in a QMenu), keep only the address
 - refactor logging & console (see DuME)
 - refactor userEditwidget
-- message "not implemented" on forgot password (usereditwidget)
 - don't user titlebars where not needed; remove duqftitlebar and use simple titlebar; remove closerequested and reinit
 - reimplement all object editors
 - Idée : verrouiller le pipe

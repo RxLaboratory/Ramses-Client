@@ -2,6 +2,7 @@
 
 #include <QPaintEvent>
 
+#include "duapp/dusettings.h"
 #include "duwidgets/dusvgiconengine.h"
 #include "qpainter.h"
 #include "duwidgets/duicon.h"
@@ -10,7 +11,7 @@ DuIconWidget::DuIconWidget(QWidget *parent)
     : QWidget{parent}
 {
     setFixedSize(_size);
-
+    _color = DuSettings::i()->get(DuSettings::UI_IconColor).value<QColor>();
     _timer.setInterval(1000.0/24.0);
     connect( &_timer, &QTimer::timeout, this, [this] { update(); });
 }
@@ -76,20 +77,15 @@ void DuIconWidget::setSVGIcon(const QString &iconPath)
         return;
 
     _iconPath = iconPath;
+    updateIcon();
+}
 
-    if (iconPath == "") {
-        _icon = DuIcon();
-        _pix = QPixmap();
-        update();
+void DuIconWidget::setColor(const QColor &color)
+{
+    if(_color == color)
         return;
-    }
-
-    auto icon = new DuSVGIconEngine(iconPath);
-    icon->setMainColor( icon->checkedColor() );
-    _icon = DuIcon(icon);
-    _pix = _icon.pixmap(_size);
-
-    update();
+    _color = color;
+    updateIcon();
 }
 
 void DuIconWidget::paintEvent(QPaintEvent *e)
@@ -119,4 +115,27 @@ void DuIconWidget::paintEvent(QPaintEvent *e)
     }
 
     painter.drawPixmap(0,0, _pix);
+}
+
+void DuIconWidget::updateIcon()
+{
+    if (_iconPath == "") {
+        _icon = DuIcon();
+    }
+    else {
+        auto icon = new DuSVGIconEngine(_iconPath);
+        icon->setMainColor( _color );
+        _icon = DuIcon(icon);
+    }
+
+    updatePixmap();
+}
+
+void DuIconWidget::updatePixmap()
+{
+    if (_icon.isNull())
+        _pix = QPixmap();
+    else
+        _pix = _icon.pixmap(_size);
+    update();
 }

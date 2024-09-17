@@ -295,7 +295,7 @@ void RamServerClient::downloadAllData()
     if (m_status == Syncing)
         return;
 
-    QStringList tableNames = LocalDataInterface::instance()->tableNames();
+    QStringList tableNames = LocalDataInterface::i()->tableNames();
 
     m_pushingData = SyncData();
     m_pushingData.syncDate = "1818-05-05 00:00:00";

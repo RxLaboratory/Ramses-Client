@@ -329,7 +329,7 @@ DBInterface::DBInterface(QObject *parent) : QObject(parent)
     DuLogger::i()->registerComponent("Database Interface", this);
 
     // LOCAL
-    m_ldi = LocalDataInterface::instance();
+    m_ldi = LocalDataInterface::i();
 
     m_updateTimer = new QTimer(this);
     m_updateTimer->setSingleShot(true);

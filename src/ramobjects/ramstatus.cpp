@@ -144,7 +144,7 @@ void RamStatus::setModifiedBy(RamUser *user)
     if (!user) insertData("user", "none");
     else insertData("user", user->uuid());
     // Create history
-    LocalDataInterface::instance()->createObject(
+    LocalDataInterface::i()->createObject(
                 RamUuid::generateUuidString(this->shortName() + this->name()),
                 "RamStatusHistory",
                 this->dataString()

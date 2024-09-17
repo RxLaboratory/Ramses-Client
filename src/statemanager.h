@@ -15,11 +15,9 @@ public:
         Unknown = -1,
         Idle = 0,
         Opening = 1,
-        WritingDataBase = 2,
-        Connecting = 3,
-        LoadingDataBase = 4,
-        Closing = 5,
-        Syncing = 6,
+        Connecting = 2,
+        Closing = 3,
+        Syncing = 4,
     };
 
     /**
@@ -30,7 +28,6 @@ public:
 
     State state() const;
     State previousState() const { return m_previousState; }
-    bool isDBBusy() const;
 
     QString title() const { return m_title; }
     void setTitle(const QString &newTitle);

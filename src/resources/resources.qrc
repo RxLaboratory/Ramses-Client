@@ -94,6 +94,7 @@
         <file alias="wait">icons/wait.svg</file>
         <file alias="database-read">icons/storage-load-read.svg</file>
         <file alias="database-write">icons/storage-save-write.svg</file>
+        <file alias="database-read-write">icons/storage-io-input-output-read-write.svg</file>
     </qresource>
     <qresource prefix="/styles">
         <file alias="vars">styles/style-values.rui</file>
