@@ -239,6 +239,8 @@ bool LocalDataInterface::createNewDatabase(const QString &filePath)
 
 QSet<QString> LocalDataInterface::tableUuids(QString table, bool includeRemoved)
 {
+    StateChanger s(StateManager::LoadingDataBase);
+
     // If we've got the info in the cache, use it.
     if (includeRemoved && CACHE_LOCAL_DATA && m_uuids.contains(table) ) return m_uuids.value(table);
     if (!includeRemoved && CACHE_LOCAL_DATA && m_uuidsWithoutRemoved.contains(table) ) return m_uuidsWithoutRemoved.value(table);
@@ -264,6 +266,8 @@ QSet<QString> LocalDataInterface::tableUuids(QString table, bool includeRemoved)
 
 QVector<QStringList> LocalDataInterface::tableData(QString table, QHash<QString, QStringList> filters, bool includeRemoved)
 {
+    StateChanger s(StateManager::LoadingDataBase);
+
     // Make sure the table exists
     createTable(table);
 
@@ -329,6 +333,8 @@ QVector<QStringList> LocalDataInterface::tableData(QString table, QHash<QString,
 
 bool LocalDataInterface::contains(QString uuid, QString table, bool includeRemoved)
 {
+    StateChanger s(StateManager::LoadingDataBase);
+
     // Get all UUIDS
     QSet<QString> uuids = tableUuids(table, includeRemoved);
     return uuids.contains(uuid);
@@ -344,6 +350,8 @@ bool LocalDataInterface::contains(QString uuid, QString table, bool includeRemov
 
 QMap<QString, QString> LocalDataInterface::modificationDates(QString table)
 {
+    StateChanger s(StateManager::LoadingDataBase);
+
     // Make sure the table exists
     createTable(table);
 
@@ -360,6 +368,8 @@ QMap<QString, QString> LocalDataInterface::modificationDates(QString table)
 
 void LocalDataInterface::createObject(QString uuid, QString table, QString data)
 {
+    StateChanger s(StateManager::WritingDataBase);
+
     // Make sure the table exists
     createTable(table);
 
@@ -392,6 +402,7 @@ void LocalDataInterface::createObject(QString uuid, QString table, QString data)
 
 QString LocalDataInterface::objectData(QString uuid, QString table)
 {
+    StateChanger s(StateManager::LoadingDataBase);
     // Make sure the table exists
     createTable(table);
 
@@ -409,6 +420,8 @@ QString LocalDataInterface::objectData(QString uuid, QString table)
 
 void LocalDataInterface::setObjectData(QString uuid, QString table, QString data)
 {
+    StateChanger s(StateManager::WritingDataBase);
+
     // Make sure the table exists
     createTable(table);
 
@@ -432,6 +445,8 @@ void LocalDataInterface::setObjectData(QString uuid, QString table, QString data
 
 void LocalDataInterface::removeObject(QString uuid, QString table)
 {
+    StateChanger s(StateManager::WritingDataBase);
+
     // Make sure the table exists
     createTable(table);
 
@@ -447,6 +462,8 @@ void LocalDataInterface::removeObject(QString uuid, QString table)
 
 void LocalDataInterface::restoreObject(QString uuid, QString table)
 {
+    StateChanger s(StateManager::WritingDataBase);
+
     // Make sure the table exists
     createTable(table);
 
@@ -469,6 +486,8 @@ void LocalDataInterface::restoreObject(QString uuid, QString table)
 
 bool LocalDataInterface::isRemoved(QString uuid, QString table)
 {
+    StateChanger s(StateManager::LoadingDataBase);
+
     // Make sure the table exists
     createTable(table);
 
@@ -485,6 +504,8 @@ bool LocalDataInterface::isRemoved(QString uuid, QString table)
 
 QString LocalDataInterface::modificationDate(QString uuid, QString table)
 {
+    StateChanger s(StateManager::LoadingDataBase);
+
     // Make sure the table exists
     createTable(table);
 
@@ -501,6 +522,8 @@ QString LocalDataInterface::modificationDate(QString uuid, QString table)
 
 void LocalDataInterface::updateUser(const QString &uuid, const QString &role, const QString &data, const QString &modified)
 {
+    StateChanger s(StateManager::WritingDataBase);
+
     // Adjust modified if not provided
     QString mod = modified;
     if (mod == "")
@@ -534,6 +557,8 @@ void LocalDataInterface::updateUser(const QString &uuid, const QString &role, co
 
 ServerConfig LocalDataInterface::serverConfig()
 {
+    StateChanger s(StateManager::LoadingDataBase);
+
     QString q = "SELECT address, useSsl, updateDelay, timeout, port FROM _Server;";
     QSqlQuery qry = query( q );
 
@@ -551,12 +576,16 @@ ServerConfig LocalDataInterface::serverConfig()
 
 void LocalDataInterface::setServerUuid(QString serverUuid)
 {
+    StateChanger s(StateManager::LoadingDataBase);
+
     QString q = "UPDATE _Sync SET uuid = '%1';";
     query( q.arg(serverUuid) );
 }
 
 QString LocalDataInterface::serverUuid()
 {
+    StateChanger s(StateManager::LoadingDataBase);
+
     QString q = "SELECT uuid FROM _Sync;";
     QSqlQuery qry = query( q );
     QString uuid = "";
@@ -568,6 +597,8 @@ QString LocalDataInterface::serverUuid()
 
 QString LocalDataInterface::workingPath()
 {
+    StateChanger s(StateManager::LoadingDataBase);
+
     QString q = "SELECT path FROM _Paths WHERE name = 'Project';";
     QSqlQuery qry = query( q );
     if (qry.first())
@@ -579,6 +610,8 @@ QString LocalDataInterface::workingPath()
 
 void LocalDataInterface::setWorkingPath(QString path)
 {
+    StateChanger s(StateManager::LoadingDataBase);
+
     QString q = "INSERT INTO _Paths (path, name) "
                 "VALUES ('%1', 'Project') "
                 "ON CONFLICT(name) DO UPDATE "
@@ -595,6 +628,8 @@ const QString &LocalDataInterface::dataFile() const
 
 ServerConfig LocalDataInterface::setDataFile(const QString &file)
 {
+    StateChanger s(StateManager::LoadingDataBase);
+
     QElapsedTimer timer;
     timer.start();
 
@@ -932,6 +967,8 @@ void LocalDataInterface::deleteData(SyncData syncData)
 
 QString LocalDataInterface::currentUserUuid()
 {
+    StateChanger s(StateManager::LoadingDataBase);
+
     QString q = "SELECT userUuid FROM _User WHERE current = 1;";
     QSqlQuery qry = query( q );
 
@@ -942,6 +979,8 @@ QString LocalDataInterface::currentUserUuid()
 
 QString LocalDataInterface::currentProjectUuid()
 {
+    StateChanger s(StateManager::LoadingDataBase);
+
     QString q = "SELECT projectUuid FROM _User WHERE current = 1;";
     QSqlQuery qry = query( q );
 
@@ -952,6 +991,8 @@ QString LocalDataInterface::currentProjectUuid()
 
 void LocalDataInterface::setCurrentProjectUser(const QString &projectUuid, const QString &userUuid)
 {
+    StateChanger s(StateManager::WritingDataBase);
+
     // Set everyone to not current
     query( "UPDATE _User SET current = 0 ;" );
 
@@ -965,6 +1006,8 @@ void LocalDataInterface::setCurrentProjectUser(const QString &projectUuid, const
 
 QString LocalDataInterface::getUserRole(const QString &uuid)
 {
+    StateChanger s(StateManager::LoadingDataBase);
+
     QString q = "SELECT role FROM RamUser WHERE uuid = '%1';";
     QSqlQuery qry = query( q.arg(uuid) );
     if (qry.first()) {
@@ -978,6 +1021,8 @@ QString LocalDataInterface::getUserRole(const QString &uuid)
 
 void LocalDataInterface::setUserRole(const QString &uuid, const QString &role)
 {
+    StateChanger s(StateManager::WritingDataBase);
+
     QString q = "UPDATE RamUser "
                 "SET role = '%1' "
                 "WHERE uuid = '%2' ;";
@@ -1011,6 +1056,8 @@ void LocalDataInterface::sync(SyncData data)
 
 QStringList LocalDataInterface::tableNames()
 {
+    StateChanger s(StateManager::LoadingDataBase);
+
     QSqlDatabase db = QSqlDatabase::database("infodb");
     db.close();
 
@@ -1051,6 +1098,8 @@ QStringList LocalDataInterface::tableNames()
 
 QVector<QStringList> LocalDataInterface::users()
 {
+    StateChanger s(StateManager::LoadingDataBase);
+
     QString q = "SELECT uuid, data FROM RamUSer ;";
     QSqlQuery qry = query( q );
     QVector<QStringList> us;
@@ -1076,8 +1125,7 @@ QVector<QStringList> LocalDataInterface::users()
 
 QString LocalDataInterface::cleanDataBase(int deleteDataOlderThan)
 {
-    StateManager::State previousState = StateManager::i()->state();
-    StateManager::i()->setState(StateManager::WritingDataBase);
+    StateChanger s(StateManager::WritingDataBase);
 
     QString report = "";
 
@@ -1176,8 +1224,6 @@ QString LocalDataInterface::cleanDataBase(int deleteDataOlderThan)
 
     qDebug() << "Finished clean.";
 
-    StateManager::i()->setState(previousState);
-
     return report;
 }
 
@@ -1221,6 +1267,8 @@ void LocalDataInterface::sanitizeData()
 
 void LocalDataInterface::sanitizeStatusTable()
 {
+    StateChanger s(StateManager::WritingDataBase);
+
     qDebug().noquote() << "Sanitizing RamStatus table...";
 
     // There can be a single status per step and item
@@ -1306,6 +1354,8 @@ void LocalDataInterface::sanitizeStatusTable()
 
 void LocalDataInterface::sanitizeScheduleTable()
 {
+    StateChanger s(StateManager::WritingDataBase);
+
     // Entries must have an existing row
 
     const QSet<QString> rowUuids = tableUuids("RamScheduleRow");
@@ -1356,6 +1406,7 @@ void LocalDataInterface::deleteRemovedData()
 
 void LocalDataInterface::deleteRemovedData(const QString &tableName)
 {
+    StateChanger s(StateManager::WritingDataBase);
     qDebug().noquote() << "Deleting obsolete data for table" << tableName;
     QString q = "DELETE FROM `%1` WHERE `removed` = 1;";
     query( q.arg(tableName) );
@@ -1391,7 +1442,8 @@ LocalDataInterface::LocalDataInterface():
 }
 
 bool LocalDataInterface::openDB(QSqlDatabase db, const QString &dbFile)
-{   
+{
+    StateChanger s(StateManager::LoadingDataBase);
     qInfo().noquote() << tr("Opening database...");
 
     // Make sure the DB is closed
@@ -1533,8 +1585,7 @@ void LocalDataInterface::autoCleanDB()
         if ( !db.open() ) return;
     }
 
-    StateManager::State previousState = StateManager::i()->state();
-    StateManager::i()->setState(StateManager::WritingDataBase);
+    StateChanger s(StateManager::WritingDataBase);
 
     // === Delete removed statuses ===
 
@@ -1543,8 +1594,6 @@ void LocalDataInterface::autoCleanDB()
     // === Delete removed schedule entries ===
 
     qry.exec("DELETE FROM RamScheduleEntry WHERE `removed` = 1 ;");
-
-    StateManager::i()->setState(previousState);
 }
 
 QSqlQuery LocalDataInterface::query(QString q) const
@@ -1576,12 +1625,15 @@ QSqlQuery LocalDataInterface::query(QString q) const
 
 void LocalDataInterface::vacuum()
 {
+    StateChanger s(StateManager::WritingDataBase);
     QString q = "VACUUM;";
     query( q );
 }
 
 void LocalDataInterface::createTable(const QString &tableName)
 {
+    StateChanger s(StateManager::WritingDataBase);
+
     QString q = "CREATE TABLE IF NOT EXISTS \"%1\" ( "
                 "\"id\"	INTEGER NOT NULL UNIQUE, "
                 "\"uuid\"	TEXT NOT NULL UNIQUE, "

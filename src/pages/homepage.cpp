@@ -1,29 +1,34 @@
 #include "homepage.h"
 
 #include "duapp/duui.h"
-#include "statemanager.h"
 
 HomePage::HomePage(QWidget *parent)
     : QWidget{parent}
 {
     setupUi();
     connectEvents();
-    setWaiting();
 }
 
-void HomePage::setWaiting()
+void HomePage::changeState(StateManager::State s)
 {
-    ui_waitIcon->hide();
-    ui_progressTextLabel->setText(tr("I hope you're feeling well today!")); // TODO Add random quote
-    ui_progressTitleLabel->setText(tr("Ready."));
-}
-
-void HomePage::setWorking()
-{
-    auto sm = StateManager::i();
-    ui_waitIcon->show();
-    ui_progressTextLabel->setText(sm->text());
-    ui_progressTitleLabel->setText(sm->title());
+    switch (s) {
+    case StateManager::Unknown:
+    case StateManager::Idle:
+        ui_waitIcon->hide();
+        ui_progressTitleLabel->setText(tr("Ready."));
+        ui_progressTextLabel->setText(tr("I hope you're feeling well today!"));
+        break;
+    case StateManager::Opening:
+    case StateManager::WritingDataBase:
+    case StateManager::Connecting:
+    case StateManager::LoadingDataBase:
+    case StateManager::Closing:
+    case StateManager::Syncing:
+        ui_progressTitleLabel->setText(StateManager::i()->title());
+        ui_progressTextLabel->setText(StateManager::i()->text());
+        ui_waitIcon->show();
+        break;
+    }
 }
 
 void HomePage::setupUi()
@@ -32,8 +37,10 @@ void HomePage::setupUi()
     layout->setSpacing(24);
     DuUI::centerLayout(layout, this, 1, 150);
 
-    ui_waitIcon = new DuWaitIconWidget(1, 24, this);
+    ui_waitIcon = new DuIconWidget(this);
     ui_waitIcon->setSize(QSize(48,48));
+    ui_waitIcon->setSVGIcon(":/icons/wait");
+    ui_waitIcon->rotate();
     layout->addWidget(ui_waitIcon);
 
     auto textLayout = DuUI::addBoxLayout(Qt::Vertical, layout);
@@ -55,8 +62,5 @@ void HomePage::connectEvents()
     connect(sm, &StateManager::titleChanged,
             ui_progressTitleLabel, &QLabel::setText);
     connect(sm, &StateManager::stateChanged,
-            this,[this] (StateManager::State s) {
-        if (s == StateManager::Idle) setWaiting();
-        else setWorking();
-    });
+            this, &HomePage::changeState);
 }

@@ -51,12 +51,13 @@ void ProjectWizard::done(int r)
     if (!createDatabase(dbPath))
         return;
 
+    s.freezeState();
+
     // Disable while we finish the setup
     this->setEnabled(false);
 
     // Set the file
     DBInterface::i()->loadDataFile(dbPath);
-    s.freezeState();
 
     // Create local data
     if (_isTeamProject) {

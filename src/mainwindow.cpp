@@ -194,6 +194,11 @@ void MainWindow::connectEvents()
 
     connect(StateManager::i(), &StateManager::stateChanged, this, &MainWindow::changeState);
 
+    connect(&_ioTimer, &QTimer::timeout, this, [this] () {
+        ui_ioWidget->setSVGIcon("");
+        _ioTimer.stop();
+    });
+
     connect(Daemon::instance(), &Daemon::raise, this, &MainWindow::raise);
 
     connect(Ramses::i(), &Ramses::ready, this, &MainWindow::ramsesReady);
@@ -509,16 +514,48 @@ void MainWindow::dbiConnectionStatusChanged(NetworkUtils::NetworkStatus s)
 
 void MainWindow::changeState(StateManager::State s)
 {
+    // Set the read/write icon
+    switch(s) {
+    case StateManager::WritingDataBase:
+        ui_ioWidget->setSVGIcon(":/icons/database-write");
+        _ioTimer.start(_minIOInterval);
+        break;
+    case StateManager::LoadingDataBase:
+        ui_ioWidget->setSVGIcon(":/icons/database-read");
+        _ioTimer.start(_minIOInterval);
+        break;
+
+    case StateManager::Unknown:
+    case StateManager::Idle:
+    case StateManager::Opening:
+    case StateManager::Connecting:
+    case StateManager::Closing:
+    case StateManager::Syncing:
+        break;
+    }
+
+    // Set busy Icon and home page
+
     switch (s) {
     case StateManager::Opening:
     case StateManager::Closing:
+        ui_stateWidget->setSVGIcon(":/icons/wait");
+        ui_stateWidget->rotate();
         setPage(Home);
         break;
+
+    case StateManager::LoadingDataBase:
     case StateManager::WritingDataBase:
     case StateManager::Connecting:
-    case StateManager::LoadingDataBase:
     case StateManager::Syncing:
+        ui_stateWidget->setSVGIcon(":/icons/wait");
+        ui_stateWidget->rotate();
+        break;
+
     case StateManager::Idle:
+    case StateManager::Unknown:
+        ui_stateWidget->setSVGIcon("");
+        ui_stateWidget->stopAnimation();
         break;
     }
 }
@@ -1170,6 +1207,14 @@ void MainWindow::setupToolBars()
     ui_assetMenuAction->setVisible(false);
     ui_scheduleMenuAction->setVisible(false);
     ui_filesMenuAction->setVisible(false);
+
+    ui_stateWidget = new DuIconWidget(this);
+    ui_rightToolBar->addWidget(ui_stateWidget);
+
+    ui_ioWidget = new DuIconWidget(this);
+    ui_rightToolBar->addWidget(ui_ioWidget);
+    //_ioTimer.setSingleShot(true);
+
 
     auto userMenu = new DuMenu();
     userMenu->addAction(m_actionLogIn);

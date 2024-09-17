@@ -62,6 +62,7 @@ SOURCES += \
     dumodules/duwidgets/dudockwidget.cpp \
     dumodules/duwidgets/dufolderselectorwidget.cpp \
     dumodules/duwidgets/duicon.cpp \
+    dumodules/duwidgets/duiconwidget.cpp \
     dumodules/duwidgets/dulabel.cpp \
     dumodules/duwidgets/dulineedit.cpp \
     dumodules/duwidgets/dulisteditview.cpp \
@@ -266,6 +267,7 @@ HEADERS += \
     dumodules/duwidgets/dudockwidget.h \
     dumodules/duwidgets/dufolderselectorwidget.h \
     dumodules/duwidgets/duicon.h \
+    dumodules/duwidgets/duiconwidget.h \
     dumodules/duwidgets/dulabel.h \
     dumodules/duwidgets/dulineedit.h \
     dumodules/duwidgets/dulisteditview.h \

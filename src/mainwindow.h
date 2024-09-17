@@ -11,6 +11,7 @@
 #include <QMessageBox>
 #include <QSystemTrayIcon>
 
+#include "duwidgets/duiconwidget.h"
 #include "duwidgets/dumainwindow.h"
 #include "landingpage.h"
 #include "projecteditwidget.h"
@@ -156,6 +157,9 @@ private:
     QToolButton *ui_databaseButton;
     QAction *ui_databaseMenuAction;
 
+    DuIconWidget *ui_stateWidget;
+    DuIconWidget *ui_ioWidget;
+
     SettingsWidget *ui_adminPage;
 
     int m_currentPageIndex = 0;
@@ -168,6 +172,9 @@ private:
      * @brief m_showUpdateAlerts is set to true after the auto-update check during startup
      */
     bool m_showUpdateAlerts = false;
+
+    int _minIOInterval = 100; //ms
+    QTimer _ioTimer;
 
 private slots:
     void bugReport();

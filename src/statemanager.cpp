@@ -29,10 +29,8 @@ void StateManager::quit(bool sync)
     if (m_state==Closing)
         return;
 
-    setTitle(tr("Closing..."));
+    setState(Closing, tr("Closing..."));
     qInfo().noquote() << "Unlocking unique instance...";
-
-    setState(Closing);
 
     // Release
     m_app->detach();
@@ -64,7 +62,7 @@ void StateManager::restart(bool sync, const QString &dbFile)
     if (m_state==Closing)
         return;
 
-    setState(Closing);
+    setState(Closing, tr("Closing..."));
 
     // Release
     m_app->detach();
@@ -88,7 +86,7 @@ void StateManager::restart(bool sync, const QString &dbFile)
 
 void StateManager::forceQuit()
 {
-    setState(Closing);
+    setState(Closing, tr("Closing..."));
     m_app->detach();
     Daemon::instance()->stop();
     m_app->quit();
@@ -102,20 +100,20 @@ void StateManager::setState(State newState)
     m_state = newState;
     m_tempState = Unknown;
 
-    qDebug().noquote() << "App state changed to" << m_state;
-    emit stateChanged(m_state);
+    emitStateChanged();
+}
+
+void StateManager::setState(State newState, const QString &title)
+{
+    setTitle(title);
+    setState(newState);
 }
 
 void StateManager::setTempState(State tempState)
 {
     m_tempState = tempState;
 
-    if (m_tempState != Unknown) {
-        qDebug().noquote() << "App state temporarily changed to" << m_tempState;
-        emit stateChanged(m_tempState);
-    }
-    else
-        emit stateChanged(m_state);
+    emitStateChanged();
 }
 
 void StateManager::keepTempState()
@@ -135,6 +133,11 @@ StateManager::StateManager(QObject *parent)
             this, [this] (const QString &m, LogType t) {
         if (t > LogType::DebugLog) setText(m);
     });
+}
+
+void StateManager::emitStateChanged()
+{
+    emit stateChanged(state());
 }
 
 void StateManager::setText(const QString &newText)

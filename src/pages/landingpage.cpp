@@ -196,6 +196,8 @@ void LandingPage::openDatabase(const QString &dbFile)
     }
 
     StateChanger s(StateManager::Opening);
+    // Now we're sure to stay on this state
+    s.freezeState();
 
     qInfo().noquote() << tr("Loading data...");
 
@@ -205,17 +207,20 @@ void LandingPage::openDatabase(const QString &dbFile)
     qInfo().noquote() << tr("Initial sync...");
     if (teamProject) {
 
-        // Keep the state on Opening
-        // Until sync has finished
-        s.freezeState();
-
         connect(DBInterface::i(), &DBInterface::syncFinished,
                 this, [this]() {
-            StateManager::i()->setState(StateManager::Idle);
+            StateManager::i()->setState(StateManager::Idle, tr("Ready"));
             disconnect(DBInterface::i(), nullptr, this, nullptr);
         });
 
         DBInterface::i()->fullSync();
+    }
+    else {
+        connect(Ramses::i(), &Ramses::ready,
+                this, [this]() {
+                    StateManager::i()->setState(StateManager::Idle, tr("Ready"));
+                    disconnect(Ramses::i(), nullptr, this, nullptr);
+                });
     }
 
     qInfo().noquote() << tr("Init Ramses...");

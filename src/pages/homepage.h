@@ -1,10 +1,12 @@
 #ifndef HOMEPAGE_H
 #define HOMEPAGE_H
 
-#include "duwidgets/duwaiticonwidget.h"
 #include <QWidget>
 #include <QProgressBar>
 #include <QLabel>
+
+#include "duwidgets/duiconwidget.h"
+#include "statemanager.h"
 
 class HomePage : public QWidget
 {
@@ -15,8 +17,7 @@ public:
 signals:
 
 private slots:
-    void setWaiting();
-    void setWorking();
+    void changeState(StateManager::State s);
 
 private:
     void setupUi();
@@ -24,7 +25,7 @@ private:
 
     QLabel *ui_progressTitleLabel;
     QLabel *ui_progressTextLabel;
-    DuWaitIconWidget *ui_waitIcon;
+    DuIconWidget *ui_waitIcon;
 };
 
 #endif // HOMEPAGE_H

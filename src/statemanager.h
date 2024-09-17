@@ -48,6 +48,7 @@ public slots:
     void restart(bool sync = true, const QString &dbFile = "");
     void forceQuit();
     void setState(StateManager::State newState);
+    void setState(StateManager::State newState, const QString &title);
     void setTempState(StateManager::State tempState);
     void keepTempState();
 
@@ -60,6 +61,8 @@ private:
      * @param parent
      */
     StateManager(QObject *parent = nullptr);
+
+    void emitStateChanged();
 
     QString m_title = "";
     QString m_text = "";
@@ -75,8 +78,8 @@ private:
 class StateChanger
 {
 public:
-    StateChanger(StateManager::State s) {
-        StateManager::i()->setTempState(s);
+    StateChanger(StateManager::State s): _s(s) {
+        StateManager::i()->setTempState(_s);
     }
     ~StateChanger() {
         resetState();
@@ -86,8 +89,11 @@ public:
         StateManager::i()->setTempState(StateManager::Unknown);
     }
     void freezeState() {
-        StateManager::i()->keepTempState();
+        StateManager::i()->setState(_s);
+        resetState();
     }
+private:
+    StateManager::State _s;
 };
 
 #endif // STATEMANAGER_H

@@ -92,6 +92,8 @@
         <file alias="server90">icons/server90.svg</file>
         <file alias="storage90">icons/storage90.svg</file>
         <file alias="wait">icons/wait.svg</file>
+        <file alias="database-read">icons/storage-load-read.svg</file>
+        <file alias="database-write">icons/storage-save-write.svg</file>
     </qresource>
     <qresource prefix="/styles">
         <file alias="vars">styles/style-values.rui</file>
