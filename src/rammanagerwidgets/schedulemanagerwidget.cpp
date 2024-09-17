@@ -16,6 +16,7 @@ ScheduleManagerWidget::ScheduleManagerWidget(QWidget *parent) : QWidget(parent)
     m_dbi = DBInterface::i();
 
     setupUi();
+
     m_schedule = new RamScheduleTableModel( );
 
     m_scheduleFilter = new RamScheduleFilterProxyModel();
@@ -23,15 +24,13 @@ ScheduleManagerWidget::ScheduleManagerWidget(QWidget *parent) : QWidget(parent)
     ui_table->setModel( m_scheduleFilter );
 
     connectEvents();
-}
 
-void ScheduleManagerWidget::showEvent(QShowEvent *event)
-{
-    if (!event->spontaneous())
-    {
-        changeProject();
-    }
-    QWidget::showEvent(event);
+    // Load everything
+    setProject();
+    RamUser *u = Ramses::i()->currentUser();
+    if (u)
+        changeUserRole(u->role());
+    loadSettings();
 }
 
 void ScheduleManagerWidget::hideEvent(QHideEvent *event)
@@ -84,20 +83,6 @@ void ScheduleManagerWidget::projectUpdated(RamObject *projObj)
     if (!m_project->is(projObj)) return;
     int days = QDate::currentDate().daysTo( m_project->deadline() );
     ui_timeRemaining->setText("Time remaining: " + QString::number(days) + " days");
-}
-
-void ScheduleManagerWidget::ramsesReady()
-{
-    // Reload settings
-    loadSettings();
-
-    m_projectChanged = true;
-    m_project = Ramses::i()->project();
-
-    // Reload in the show event if not yet visible
-    // to improve perf: do not refresh all the app when changing the project, only what's visible.
-    if ( this->isVisible() )
-        changeProject();
 }
 
 void ScheduleManagerWidget::changeUserRole(RamAbstractObject::UserRole role)
@@ -727,7 +712,6 @@ void ScheduleManagerWidget::connectEvents()
     connect(ui_pasteEntries, &QAction::triggered, this, &ScheduleManagerWidget::pasteEntries);
     // other actions
     // other
-    connect(Ramses::i(), &Ramses::ready, this, &ScheduleManagerWidget::ramsesReady);
     connect(Ramses::i(), &Ramses::roleChanged, this, &ScheduleManagerWidget::changeUserRole);
 
     connect(m_schedule, SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(usersInserted(QModelIndex,int,int)));
@@ -754,23 +738,10 @@ void ScheduleManagerWidget::loadSettings()
     uSettings->endGroup();
 }
 
-void ScheduleManagerWidget::changeProject()
+void ScheduleManagerWidget::setProject()
 {
-    if (!m_projectChanged) return;
-    m_projectChanged = false;
-
-    if (!m_project)
-    {
-        this->setEnabled(false);
-        m_schedule->setObjectModel(nullptr, nullptr);
-        ui_rowsMenu->setObjectModel(nullptr);
-        ui_endDateEdit->setDate(QDate::currentDate());
-        ui_addEntryMenu->setObjectModel(nullptr);
-        ui_replaceEntryMenu->setObjectModel(nullptr);
-        ui_timeRemaining->setText("");
-        return;
-    }
-    this->setEnabled(true);
+    m_project = Ramses::i()->project();
+    Q_ASSERT(m_project);
 
     m_schedule->setObjectModel( m_project->scheduleRows(), m_project->scheduleEntries() );
 
@@ -784,8 +755,6 @@ void ScheduleManagerWidget::changeProject()
 
     int days = QDate::currentDate().daysTo( m_project->deadline() );
     ui_timeRemaining->setText("Time remaining: " + QString::number(days) + " days");
-
-    loadSettings();
 
     connect (m_project, &RamProject::dataChanged,this, &ScheduleManagerWidget::projectUpdated);//*/
 }

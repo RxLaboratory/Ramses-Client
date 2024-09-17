@@ -205,33 +205,6 @@ void MainWindow::connectEvents()
     connect(qApp, &QCoreApplication::aboutToQuit, this, &MainWindow::onQuit);
 }
 
-QWidget *MainWindow::setupAdminPage()
-{
-    return nullptr;
-}
-
-QWidget *MainWindow::setupPipelinePage()
-{
-    return nullptr;
-}
-
-QWidget *MainWindow::setupAssetsPage()
-{
-    ItemManagerWidget *assetsTable = new ItemManagerWidget(RamStep::AssetProduction, this);
-    return assetsTable;
-}
-
-QWidget *MainWindow::setupShotsPage()
-{
-    ItemManagerWidget *shotsTable = new ItemManagerWidget(RamStep::ShotProduction, this);
-    return shotsTable;
-}
-
-QWidget *MainWindow::setupSchedulePage()
-{
-    return nullptr;
-}
-
 void MainWindow::setPropertiesDockWidget(QWidget *w, QString title, QString icon, bool temporary)
 {
     if (_propertiesWidgetIsTemporary) {
@@ -381,10 +354,21 @@ void MainWindow::setPage(Page p)
         return;
     }
 
+    // Without project,
+    // get home!
+    if (!Ramses::i()->project()) {
+        setPage(Home);
+        return;
+    }
+
     // Delete previous if any
-    QWidget *w = ui_mainStack->widget(2);
-    if (w)
-        w->deleteLater();
+    auto i = ui_mainStack->takeAt(2);
+    if (i) {
+        auto w = i->widget();
+        if (w)
+            w->deleteLater();
+        delete i;
+    }
 
     // Build the page and show it
     QWidget *newWidget = nullptr;
@@ -394,19 +378,19 @@ void MainWindow::setPage(Page p)
     case Home:
         return;
     case Admin:
-        newWidget = setupAdminPage();
+        // TODO
         break;
     case PipeLine:
-        newWidget = setupPipelinePage();
+        newWidget = new PipelineWidget(this);
         break;
     case Assets:
-        newWidget = setupAssetsPage();
+        newWidget = new ItemManagerWidget(RamStep::AssetProduction, this);
         break;
     case Shots:
-        newWidget = setupShotsPage();
+        newWidget = new ItemManagerWidget(RamStep::ShotProduction, this);
         break;
     case Schedule:
-        newWidget = setupSchedulePage();
+        newWidget = new ScheduleManagerWidget(this);
         break;
     }
 
@@ -911,23 +895,6 @@ void MainWindow::setupUi()
 
     DBManagerWidget *dbManager = new DBManagerWidget(this);
     ui_adminPage->addPage(dbManager, "Database tools", DuIcon(":/icons/applications"));*/
-
-    // Pipeline editor
-    /*PipelineWidget *pipelineEditor = new PipelineWidget(this);
-    ui_mainStack->addWidget(pipelineEditor);
-    connect(pipelineEditor, &PipelineWidget::closeRequested, this, [this] () { setPage(Home); });
-    qDebug() << "> Pipeline ready";//*/
-
-    /*ItemManagerWidget *shotsTable = new ItemManagerWidget(RamStep::ShotProduction, this);
-    ui_mainStack->addWidget(shotsTable);
-    connect(shotsTable, &ItemManagerWidget::closeRequested, this, [this] () { setPage(Home); });
-    qDebug() << "> Shots table ready";//*/
-
-    /*ScheduleManagerWidget *scheduleTable = new ScheduleManagerWidget(this);
-    ui_mainStack->addWidget(scheduleTable);
-    connect(scheduleTable,&ScheduleManagerWidget::closeRequested, this, [this] () { setPage(Home); });
-    qDebug() << "> Schedule ready";//*/
-
 }
 
 void MainWindow::setupDocks()

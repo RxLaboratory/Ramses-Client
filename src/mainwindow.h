@@ -62,12 +62,6 @@ private:
     void connectEvents();
     void connectShortCuts();
 
-    QWidget *setupAdminPage();
-    QWidget *setupPipelinePage();
-    QWidget *setupAssetsPage();
-    QWidget *setupShotsPage();
-    QWidget *setupSchedulePage();
-
     // ==== ACTIONS ====
 
     DuAction *m_actionConsole;

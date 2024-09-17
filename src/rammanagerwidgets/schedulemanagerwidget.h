@@ -26,7 +26,6 @@ signals:
     void closeRequested();
 
 protected:
-    void showEvent(QShowEvent *event) override;
     void hideEvent(QHideEvent *event) override;
 
 private slots:
@@ -34,7 +33,6 @@ private slots:
     void usersInserted(const QModelIndex &parent, int first, int last);
 
     void projectUpdated(RamObject*projObj);
-    void ramsesReady();
     void changeUserRole(RamUser::UserRole role);
 
     void addEntry(RamObject *stepObj = nullptr);
@@ -72,8 +70,7 @@ private:
     void connectEvents();
     void loadSettings();
 
-    void changeProject();
-    bool m_projectChanged = false;
+    void setProject();
 
     QModelIndexList m_entryClipBoard;
     Qt::DropAction m_clipboardAction = Qt::CopyAction;

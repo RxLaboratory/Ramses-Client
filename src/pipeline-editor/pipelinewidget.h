@@ -8,7 +8,6 @@
 
 #include "duwidgets/dumenu.h"
 #include "ramproject.h"
-#include "ramuser.h"
 #include "dunodeview/duqfnodeview.h"
 #include "dunodeview/duqfnodescene.h"
 #include "duwidgets/duqftitlebar.h"
@@ -26,8 +25,6 @@ private slots:
     void nodeMoved(QPointF pos);
     void setSnapEnabled(bool enabled);
     void setGridSize(int size);
-
-    void ramsesReady();
 
     void createStep();
 
@@ -51,15 +48,10 @@ private slots:
     void loadProjectLayout();
     void saveProjectLayout();
 
-protected:
-    void showEvent(QShowEvent *event) override;
-    void hideEvent(QHideEvent *event) override;
-
-private slots:
-    void resetProject();
-
 private:
-    void changeProject();
+    void updateSettings();
+    void setProject();
+    void resetPipeline();
 
     DuQFTitleBar *ui_titleBar;
     DuQFSpinBox *ui_gridSizeBox;
@@ -74,7 +66,6 @@ private:
     QMap<QString,DuQFConnection*> m_pipeConnections;
 
     RamProject *m_project = nullptr;
-    bool m_projectChanged = false;
     bool init = true;
 };
 
