@@ -195,9 +195,8 @@ void LandingPageWidget::openDatabase(const QString &dbFile)
         LocalDataInterface::setProjectUserUuid(dbFile, projectUuid, userUuid);
     }
 
-    StateChanger s(StateManager::Opening);
-    // Now we're sure to stay on this state
-    s.freezeState();
+    auto sm = StateManager::i();
+    sm->setState(StateManager::Opening);
 
     qInfo().noquote() << tr("Loading data...");
 
@@ -206,21 +205,15 @@ void LandingPageWidget::openDatabase(const QString &dbFile)
     // Restart sync
     qInfo().noquote() << tr("Initial sync...");
     if (teamProject) {
-
-        connect(DBInterface::i(), &DBInterface::syncFinished,
-                this, [this]() {
-            StateManager::i()->setState(StateManager::Idle, tr("Ready"));
-            disconnect(DBInterface::i(), nullptr, this, nullptr);
-        });
-
+        sm->autoDisconnect(
+            connect(DBInterface::i(), &DBInterface::syncFinished, sm, &StateManager::setIdle)
+            );
         DBInterface::i()->fullSync();
     }
     else {
-        connect(Ramses::i(), &Ramses::ready,
-                this, [this]() {
-                    StateManager::i()->setState(StateManager::Idle, tr("Ready"));
-                    disconnect(Ramses::i(), nullptr, this, nullptr);
-                });
+        sm->autoDisconnect(
+            connect(Ramses::i(), &Ramses::ready, sm, &StateManager::setIdle)
+            );
     }
 
     qInfo().noquote() << tr("Init Ramses...");

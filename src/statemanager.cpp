@@ -88,6 +88,9 @@ void StateManager::forceQuit()
 
 void StateManager::setState(State newState)
 {
+    if (_singleStateConnexion)
+        disconnect(_singleStateConnexion);
+
     if (newState == m_state) return;
 
     m_previousState = m_state;
@@ -149,3 +152,5 @@ void StateManager::setTitle(const QString &newTitle)
     m_title = newTitle;
     emit titleChanged(m_title);
 }
+
+

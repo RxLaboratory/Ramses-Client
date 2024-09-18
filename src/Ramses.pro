@@ -91,6 +91,7 @@ SOURCES += \
     ramdatainterface/ramserverclient.cpp \
     rameditwidgets/objectupdateblocker.cpp \
     rameditwidgets/ramjsonobjecteditwidget.cpp \
+    rameditwidgets/ramjsonprojecteditwidget.cpp \
     rameditwidgets/ramjsonstepeditwidget.cpp \
     rameditwidgets/ramjsonusereditwidget.cpp \
     rameditwidgets/ramobjectpropertieswidget.cpp \
@@ -298,6 +299,7 @@ HEADERS += \
     ramdatainterface/ramserverclient.h \
     rameditwidgets/objectupdateblocker.h \
     rameditwidgets/ramjsonobjecteditwidget.h \
+    rameditwidgets/ramjsonprojecteditwidget.h \
     rameditwidgets/ramjsonstepeditwidget.h \
     rameditwidgets/ramjsonusereditwidget.h \
     rameditwidgets/ramobjectpropertieswidget.h \

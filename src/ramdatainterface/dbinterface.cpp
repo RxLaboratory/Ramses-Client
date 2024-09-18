@@ -251,6 +251,9 @@ void DBInterface::acceptClean()
 bool DBInterface::sync()
 {
     StateChanger s(StateManager::Syncing);
+    s.freezeForIdle(
+        connect(this, &DBInterface::syncFinished, StateManager::i(), &StateManager::setIdle)
+        );
 
     qInfo().noquote() << tr("Beginning quick data sync...");
 
@@ -289,6 +292,9 @@ bool DBInterface::sync()
 bool DBInterface::fullSync()
 {
     StateChanger s(StateManager::Syncing);
+    s.freezeForIdle(
+        connect(this, &DBInterface::syncFinished, StateManager::i(), &StateManager::setIdle)
+        );
 
     qInfo().noquote() << tr("Beginning full data sync...");
 
@@ -341,7 +347,7 @@ void DBInterface::connectEvents()
 {
     connect(RamServerClient::i(), &RamServerClient::syncReady, m_ldi, QOverload<SyncData>::of(&LocalDataInterface::sync));
     connect(m_ldi, &LocalDataInterface::syncFinished, this, &DBInterface::finishSync);
-    connect(m_updateTimer, SIGNAL(timeout()), this, SLOT(sync()));
+    connect(m_updateTimer, &QTimer::timeout, this, &DBInterface::sync);
 
     connect(RamServerClient::i(), &RamServerClient::statusChanged,
             this, [this] (RamServerClient::ClientStatus status){

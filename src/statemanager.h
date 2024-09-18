@@ -35,6 +35,8 @@ public:
     QString text() const {  return m_text; }
     void setText(const QString &newText);
 
+    void autoDisconnect(QMetaObject::Connection co) { _singleStateConnexion = co; }
+
 signals:
     void stateChanged(StateManager::State);
     void titleChanged(QString title);
@@ -48,6 +50,9 @@ public slots:
     void setState(StateManager::State newState, const QString &title);
     void setTempState(StateManager::State tempState);
     void keepTempState();
+
+    // Helpers
+    void setIdle() { setState(Idle, tr("Ready.")); };
 
 protected:
     static StateManager *_instance;
@@ -68,18 +73,26 @@ private:
     State m_previousState = Idle;
     State m_tempState = Unknown;
     DuApplication *m_app;
+    QMetaObject::Connection _singleStateConnexion;
     Q_PROPERTY(QString title READ title WRITE setTitle NOTIFY titleChanged FINAL)
     Q_PROPERTY(QString text READ text WRITE setText NOTIFY textChanged FINAL)
 };
+
+
 
 class StateChanger
 {
 public:
     StateChanger(StateManager::State s): _s(s) {
+        _p = StateManager::i()->state();
         StateManager::i()->setTempState(_s);
     }
     ~StateChanger() {
         resetState();
+    }
+
+    StateManager::State previousState() const {
+        return _p;
     }
 
     void resetState() {
@@ -89,8 +102,19 @@ public:
         StateManager::i()->setState(_s);
         resetState();
     }
+    void freezeState(QMetaObject::Connection co) {
+        freezeState();
+        StateManager::i()->autoDisconnect(co);
+    }
+    void freezeForIdle(QMetaObject::Connection co) {
+        if (_p != StateManager::Idle)
+            return;
+        freezeState(co);
+    }
+
 private:
     StateManager::State _s;
+    StateManager::State _p;
 };
 
 #endif // STATEMANAGER_H
