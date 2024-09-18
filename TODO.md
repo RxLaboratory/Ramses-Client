@@ -1,6 +1,7 @@
 ## Priority fixes
 
 - There's a loop on edit in project and step editors (in step, it recomputes estimations multiple times)
+- in step editor: estimations are not shown
 - Add a server admin mode, from landing page
     - manage all projects (create, disable, remove)
     - manage all users (create, disable, remove)
@@ -36,8 +37,7 @@
 
 ## Maya
 
-- assets pas filtrés par group
-- update to PySide6 (replace PySide2 import, QAction is in QtGui, form layout spacing)
+- assets pas filtrés par group ?
 
 ## Project Wizard
 
