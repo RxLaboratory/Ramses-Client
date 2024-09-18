@@ -17,8 +17,8 @@ RamJsonProjectEditWidget::RamJsonProjectEditWidget(const QString &uuid, QWidget 
 QJsonObject RamJsonProjectEditWidget::data() const
 {
     QJsonObject obj = ramObjectData();
-    obj.insert(RamProject::KEY_Width, ui_resolutionWidget->width());
-    obj.insert(RamProject::KEY_Height, ui_resolutionWidget->height());
+    obj.insert(RamProject::KEY_Width, ui_resolutionWidget->getWidth());
+    obj.insert(RamProject::KEY_Height, ui_resolutionWidget->getHeight());
     obj.insert(RamProject::KEY_FrameRate, ui_framerateWidget->framerate());
     obj.insert(RamProject::KEY_PixelAspectRatio, ui_parBox->value());
     obj.insert(RamProject::KEY_Deadline, ui_deadlineEdit->date().toString(DATE_DATA_FORMAT));
