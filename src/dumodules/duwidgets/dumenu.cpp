@@ -30,6 +30,14 @@ void DuMenu::ensureLoaded() {
     }
 }
 
+QWidgetAction *DuMenu::addWidget(QWidget *w)
+{
+    auto a = new QWidgetAction(this);
+    a->setDefaultWidget(w);
+    this->addAction(a);
+    return a;
+}
+
 void DuMenu::paintEvent(QPaintEvent *e) {
 
     QPainter painter(this);

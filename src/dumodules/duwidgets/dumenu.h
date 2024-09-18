@@ -1,6 +1,7 @@
 #ifndef DUMENU_H
 #define DUMENU_H
 
+#include <QWidgetAction>
 #include <QMenu>
 
 /**
@@ -19,6 +20,8 @@ public:
     int shadowWidth() const;
 
     void ensureLoaded();
+
+    QWidgetAction *addWidget(QWidget *w);
 
 protected:
     void paintEvent(QPaintEvent*e) override;

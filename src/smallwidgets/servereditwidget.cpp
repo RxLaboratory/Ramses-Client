@@ -1,10 +1,16 @@
 #include "servereditwidget.h"
+
+#include "duwidgets/duicon.h"
+#include "duwidgets/dumenu.h"
+#include "duapp/dusettings.h"
+
 #include "qcheckbox.h"
 #include "qgridlayout.h"
 #include "qlabel.h"
 #include "qlineedit.h"
 #include "qpushbutton.h"
 #include "qurl.h"
+#include "qwidgetaction.h"
 #include <QDesktopServices>
 
 ServerEditWidget::ServerEditWidget(QWidget *parent)
@@ -107,45 +113,50 @@ void ServerEditWidget::setupUi()
 
     adressLayout->addWidget(ui_serverAddressEdit);
 
-    QLabel *sslLabel = new QLabel(tr("Secure connexion"), this);
-    formLayout->addWidget(sslLabel, 1, 0);
+    ui_detailsButton = new QToolButton(this);
+    ui_detailsButton->setIcon(DuIcon(":/icons/settings"));
+    ui_detailsButton->setIconSize(QSize(12,12));
+    ui_detailsButton->setPopupMode(QToolButton::InstantPopup);
+    adressLayout->addWidget(ui_detailsButton);
 
-    ui_sslCheckBox = new QCheckBox("Use SSL", this);
+    auto detailsMenu = new DuMenu(tr("Server settings"), this);
+    ui_detailsButton->setMenu(detailsMenu);
+
+    ui_sslCheckBox = new QCheckBox(tr("Use a secured connexion (SSL)"), this);
     ui_sslCheckBox->setChecked(true);
-    formLayout->addWidget(ui_sslCheckBox, 1, 1);
+    detailsMenu->addWidget(ui_sslCheckBox);
 
-    QLabel *portLabel = new QLabel(tr("TCP Port"), this);
-    formLayout->addWidget(portLabel, 2, 0);
+    int m = DuSettings::i()->get(DuSettings::UI_Margins).toInt();
+    QString marginCSS = "margin-bottom: " + QString::number(m) + "px;";
 
     ui_portBox = new QSpinBox(this);
     ui_portBox->setMinimum(0);
     ui_portBox->setMaximum(65535);
     ui_portBox->setValue(443);
-    formLayout->addWidget(ui_portBox, 2, 1);
-
-    QLabel *updateFreqLabel = new QLabel(tr("Sync every"), this);
-    formLayout->addWidget(updateFreqLabel, 3, 0);
+    ui_portBox->setPrefix(tr("TCP Port:") + " ");
+    ui_portBox->setStyleSheet(marginCSS);
+    detailsMenu->addWidget(ui_portBox);
 
     ui_updateFreqSpinBox = new QSpinBox(this);
     ui_updateFreqSpinBox->setMinimum(15);
     ui_updateFreqSpinBox->setMaximum(600);
     ui_updateFreqSpinBox->setValue(60);
-    ui_updateFreqSpinBox->setSuffix(" seconds");
-    formLayout->addWidget(ui_updateFreqSpinBox, 3, 1);
-
-    QLabel *timeOutLabel = new QLabel(tr("Server timeout"), this);
-    formLayout->addWidget(timeOutLabel, 4, 0);
+    ui_updateFreqSpinBox->setPrefix(tr("Sync every") + " ");
+    ui_updateFreqSpinBox->setSuffix(" " + tr("seconds"));
+    ui_updateFreqSpinBox->setStyleSheet(marginCSS);
+    detailsMenu->addWidget(ui_updateFreqSpinBox);
 
     ui_timeoutSpinBox = new QSpinBox(this);
     ui_timeoutSpinBox->setMinimum(1);
     ui_timeoutSpinBox->setMaximum(10);
     ui_timeoutSpinBox->setValue(3);
-    ui_timeoutSpinBox->setSuffix(" seconds");
-    formLayout->addWidget(ui_timeoutSpinBox, 4, 1);
+    ui_timeoutSpinBox->setPrefix(tr("Server timeout:") + " ");
+    ui_timeoutSpinBox->setSuffix(" " + tr("seconds"));
+    ui_timeoutSpinBox->setStyleSheet(marginCSS);
+    detailsMenu->addWidget(ui_timeoutSpinBox);
 
     ui_orderServerButton = new QPushButton(
-                tr("If you don't have access to a server yet,\n"
-                   "you can order one on ramses.rxlab.io"),
+                tr("Order your server on ramses.rxlab.io"),
                 this
                 );
     formLayout->addWidget(ui_orderServerButton,5,1);

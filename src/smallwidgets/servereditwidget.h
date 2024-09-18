@@ -1,10 +1,11 @@
 #ifndef SERVEREDITWIDGET_H
 #define SERVEREDITWIDGET_H
 
-#include "qspinbox.h"
+#include <QSpinBox>
 #include <QWidget>
 #include <QHostInfo>
 #include <QMessageBox>
+#include <QToolButton>
 
 class ServerEditWidget : public QWidget
 {
@@ -39,6 +40,7 @@ private:
     void connectEvents();
 
     QLineEdit *ui_serverAddressEdit;
+    QToolButton *ui_detailsButton;
     QCheckBox *ui_sslCheckBox;
     QSpinBox *ui_portBox;
     QSpinBox *ui_updateFreqSpinBox;
