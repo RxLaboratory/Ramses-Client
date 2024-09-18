@@ -1,6 +1,9 @@
 ## Priority fixes
 
-- After fullsyncs, sync user assign list with server user assignements
+- Add a server admin mode, from landing page
+    - manage all projects (create, disable, remove)
+    - manage all users (create, disable, remove)
+    - manage user assignments (per user or per project)
 - show online/offline/security/not team
     - reimplement sync buttons and setonline/setoffline
 - offline mode if network unavailable for team projects (skip login, add a button to skip/set offline on login dialog)
@@ -11,6 +14,7 @@
 - reimplement qmessagebox static methods as dumessagebox to improve display using DuUI::exec
 - do the same as above with qdialog/dudialog
 - Project wizard: step templates, shots, assets
+- objectlistwidget: add a show details button
 
 ## Other
 
