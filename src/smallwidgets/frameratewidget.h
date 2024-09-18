@@ -17,7 +17,10 @@ public:
     void setFramerate(double fr);
 
 signals:
+    // programatically
     void framerateChanged(double);
+    // user interaction only
+    void framerateEdited(double);
 
 private slots:
     void setPreset(int p);

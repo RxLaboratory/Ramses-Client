@@ -7,6 +7,7 @@
 #include "duwidgets/duicon.h"
 #include "ramses.h"
 #include "ramobjectmodel.h"
+#include "duapp/duui.h"
 
 ObjectListWidget::ObjectListWidget(bool editableObjects, RamUser::UserRole editRole, QWidget *parent) :
     QWidget(parent)
@@ -37,10 +38,10 @@ void ObjectListWidget::setObjectModel(QAbstractItemModel *objectModel)
 
     if (!objectModel) return;
 
-    connect(ui_objectView->model(), SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(objectAssigned(QModelIndex,int,int)));
-    connect(ui_objectView->model(), SIGNAL(rowsAboutToBeRemoved(QModelIndex,int,int)), this, SLOT(objectUnassigned(QModelIndex,int,int)));
+    connect(ui_objectView->model(), SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(assignObject(QModelIndex,int,int)));
+    connect(ui_objectView->model(), SIGNAL(rowsAboutToBeRemoved(QModelIndex,int,int)), this, SLOT(unassignObject(QModelIndex,int,int)));
 
-    objectAssigned(QModelIndex(), 0, objectModel->rowCount() - 1);
+    assignObject(QModelIndex(), 0, objectModel->rowCount() - 1);
 }
 
 void ObjectListWidget::setFilterList(QAbstractItemModel *filterList, QString filterListName)
@@ -87,6 +88,17 @@ void ObjectListWidget::clear()
 void ObjectListWidget::setEditMode(EditMode editMode)
 {
     m_editMode = editMode;
+    switch(editMode) {
+    case NoEdit:
+        ui_addButton->hide();
+        ui_removeButton->hide();
+        break;
+    case UnassignObjects:
+    case RemoveObjects:
+        ui_addButton->show();
+        ui_removeButton->show();
+        break;
+    }
 }
 
 void ObjectListWidget::setEditable(bool editable)
@@ -156,6 +168,9 @@ RamObjectView *ObjectListWidget::listWidget()
 
 void ObjectListWidget::removeSelectedObjects()
 {
+    if (m_editMode == NoEdit)
+        return;
+
     QModelIndexList selection = ui_objectView->selectionModel()->selectedRows();
     if (selection.count() == 0) return;
 
@@ -206,6 +221,8 @@ void ObjectListWidget::removeSelectedObjects()
         }
     }
 
+    QVector <RamObject*> removedObjs;
+
     for( int i = selection.count() -1; i >= 0; i--)
     {
         QString uuid = selection.at(i).data(RamObject::UUID).toString();
@@ -218,16 +235,26 @@ void ObjectListWidget::removeSelectedObjects()
         // If this is an object model we need to remove the object from it
         RamObjectModel *objList = qobject_cast<RamObjectModel*>( ui_objectView->objectModel() );
         if (objList) objList->removeObjects(QStringList(uuid));
+
+        removedObjs << o;
     }
+
+    emit objectsUnassigned(removedObjs);
 }
 
 void ObjectListWidget::assign(RamObject *obj)
 {
+    if (m_editMode == NoEdit)
+        return;
+
     RamObjectModel *objList = qobject_cast<RamObjectModel*>( ui_objectView->objectModel() );
-    if (objList) objList->appendObject(obj->uuid());
+    if (objList) {
+        objList->appendObject(obj->uuid());
+        emit objectAssigned(obj);
+    }
 }
 
-void ObjectListWidget::objectAssigned(const QModelIndex &parent, int first, int last)
+void ObjectListWidget::assignObject(const QModelIndex &parent, int first, int last)
 {
     Q_UNUSED(parent)
 
@@ -243,7 +270,7 @@ void ObjectListWidget::objectAssigned(const QModelIndex &parent, int first, int 
     }
 }
 
-void ObjectListWidget::objectUnassigned(const QModelIndex &parent, int first, int last)
+void ObjectListWidget::unassignObject(const QModelIndex &parent, int first, int last)
 {
     Q_UNUSED(parent)
 
@@ -269,8 +296,7 @@ void ObjectListWidget::setupUi(bool editableObjects, RamUser::UserRole editRole)
 {
     this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
-    QVBoxLayout *mainLayout = new QVBoxLayout();
-    mainLayout->setSpacing(3);
+    auto mainLayout = DuUI::addBoxLayout(Qt::Vertical, this);
     mainLayout->setContentsMargins(0,0,0,0);
 
     QHBoxLayout *buttonsLayout = new QHBoxLayout();

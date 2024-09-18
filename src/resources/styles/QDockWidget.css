@@ -1,3 +1,7 @@
-QDockWidget > QWidget {
-    margin: @margin;
+
+QDockWidget > QWidget
+{
+    margin: @margin ;
+    border-radius: @radius;
+    border: @radius-small dashed @background-push;
 }

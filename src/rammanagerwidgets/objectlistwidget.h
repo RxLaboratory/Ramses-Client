@@ -27,7 +27,7 @@ class ObjectListWidget : public QWidget
 {
     Q_OBJECT
 public:
-    enum EditMode { UnassignObjects, RemoveObjects };
+    enum EditMode { NoEdit, UnassignObjects, RemoveObjects };
     Q_ENUM( EditMode )
 
     explicit ObjectListWidget(bool editableObjects = false, RamUser::UserRole editRole = RamUser::Admin, QWidget *parent = nullptr);
@@ -57,13 +57,15 @@ public slots:
 
 signals:
     void objectSelected(RamObject*);
+    void objectAssigned(RamObject*);
+    void objectsUnassigned(QVector<RamObject*>);
     void add();
 
 private slots:
     void assign(RamObject *obj);
 
-    void objectAssigned(const QModelIndex &parent,int first,int last);
-    void objectUnassigned(const QModelIndex &parent,int first,int last);
+    void assignObject(const QModelIndex &parent,int first,int last);
+    void unassignObject(const QModelIndex &parent,int first,int last);
 
     void setSearchFocus();
 

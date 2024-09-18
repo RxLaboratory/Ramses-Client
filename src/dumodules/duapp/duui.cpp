@@ -141,6 +141,10 @@ QHash<QString, QString> DuUI::cssVars(bool loadSettings)
             QString::number(margin*2) + "px"
             );
         _cssVars.insert(
+            "@radius-small",
+            QString::number(margin*2/3) + "px"
+            );
+        _cssVars.insert(
             "@radius-big",
             QString::number(margin*3) + "px"
             );

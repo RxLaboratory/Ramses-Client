@@ -83,7 +83,6 @@ protected:
     virtual QString folderPath() const override;
 
     QPointer<RamJsonStepEditWidget> ui_jsonEditWidget = nullptr;
-    //static QFrame *ui_editWidget;
 
 private:
     void construct();

@@ -21,7 +21,10 @@ public:
     void setHeight(int h);
 
 signals:
+    // emited programatically
     void resolutionChanged(int,int);
+    // emited only on user interaction
+    void resolutionEdited(int,int);
 
 private slots:
     void setPreset(int p);

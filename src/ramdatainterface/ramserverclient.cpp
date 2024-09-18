@@ -199,6 +199,21 @@ QJsonObject RamServerClient::assignUsers(const QStringList &userUuids, const QSt
     return synchronousRequest(r);
 }
 
+QJsonObject RamServerClient::unassignUsers(const QStringList &userUuids, const QString &projectUuid)
+{
+    QJsonObject body;
+    body.insert("project", projectUuid);
+
+    QJsonArray usersArr;
+    for (const auto &uuid: userUuids)
+        usersArr.append(uuid);
+    body.insert("users", usersArr);
+
+    Request r = buildRequest("unassignUsers", body);
+
+    return synchronousRequest(r);
+}
+
 QJsonObject RamServerClient::getAllUsers()
 {
     Request r = buildRequest("getAllUsers", QJsonObject());

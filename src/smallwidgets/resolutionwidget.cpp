@@ -34,6 +34,11 @@ void ResolutionWidget::setPreset(int p)
 
     widthBox->setValue(resolution.at(0).toInt());
     heightBox->setValue(resolution.at(1).toInt());
+
+    emit resolutionEdited(
+        widthBox->value(),
+        heightBox->value()
+        );
 }
 
 void ResolutionWidget::selectPreset()
@@ -101,7 +106,21 @@ void ResolutionWidget::setupUi()
 
 void ResolutionWidget::connectEvents()
 {
-    connect(presetsBox, SIGNAL(currentIndexChanged(int)), this, SLOT(setPreset(int)));
+    connect(presetsBox, QOverload<int>::of(&QComboBox::activated), this, &ResolutionWidget::setPreset);
     connect(widthBox, SIGNAL(valueChanged(int)), this, SLOT(selectPreset()));
     connect(heightBox, SIGNAL(valueChanged(int)), this, SLOT(selectPreset()));
+
+    connect(widthBox, &AutoSelectSpinBox::editingFinished, this, [this] () {
+        emit resolutionEdited(
+            widthBox->value(),
+            heightBox->value()
+            );
+    });
+
+    connect(heightBox, &AutoSelectSpinBox::editingFinished, this, [this] () {
+        emit resolutionEdited(
+            widthBox->value(),
+            heightBox->value()
+            );
+    });
 }

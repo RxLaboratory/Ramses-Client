@@ -20,8 +20,6 @@ const QString RamProject::KEY_PixelAspectRatio = QStringLiteral("pixelAspectRati
 
 // STATIC //
 
-QFrame *RamProject::ui_editWidget = nullptr;
-
 QHash<QString, RamProject*> RamProject::m_existingObjects = QHash<QString, RamProject*>();
 
 RamProject *RamProject::get(QString uuid)
@@ -49,6 +47,43 @@ RamProject::RamProject(QString shortName, QString name):
 {
     construct();
     createData();
+}
+
+QJsonObject RamProject::toJson() const
+{
+    QJsonObject obj = RamObject::toJson();
+
+    obj.insert(KEY_Width, width());
+    obj.insert(KEY_Height, height());
+    obj.insert(KEY_FrameRate, framerate());
+    obj.insert(KEY_PixelAspectRatio, pixelAspectRatio());
+    obj.insert(KEY_Deadline, getData(KEY_Deadline).toString());
+
+    return obj;
+}
+
+void RamProject::loadJson(const QJsonObject &obj)
+{
+    beginLoadJson(obj);
+
+    setWidth(
+        obj.value(KEY_Width).toInt(1920)
+        );
+    setHeight(
+        obj.value(KEY_Height).toInt(1080)
+        );
+    setFramerate(
+        obj.value(KEY_FrameRate).toInt(24.0)
+        );
+    setPixelAspectRatio(
+        obj.value(KEY_PixelAspectRatio).toInt(1.0)
+        );
+    insertData(
+        KEY_Deadline,
+        obj.value(KEY_Deadline).toString()
+        );
+
+    endLoadJson();
 }
 
 RamProject::RamProject(QString uuid):
@@ -328,7 +363,7 @@ void RamProject::setPixelAspectRatio(const qreal &aspectRatio)
 
 QDate RamProject::deadline() const
 {
-    return QDate::fromString( getData(KEY_Deadline).toString(), "yyyy-MM-dd"); // TODO Use settings
+    return QDate::fromString( getData(KEY_Deadline).toString(), DATE_DATA_FORMAT); // TODO Use settings
 }
 
 void RamProject::setDeadline(const QDate &newDeadline)
@@ -490,9 +525,15 @@ void RamProject::updatePath()
 
 void RamProject::edit(bool show)
 {
-    if (!ui_editWidget) ui_editWidget = createEditFrame(new ProjectEditWidget());
+    if (!ui_jsonEditWidget) {
+        ui_jsonEditWidget = new RamJsonProjectEditWidget(m_uuid);
+        connect(ui_jsonEditWidget, &RamJsonProjectEditWidget::dataEdited,
+                this, &RamProject::loadJson);
+        connect(ui_jsonEditWidget, &RamJsonProjectEditWidget::folderOpenRequested,
+                this, [this]() { revealFolder(); });
+    }
 
-    if (show) showEdit( ui_editWidget );
+    if (show) showEdit( ui_jsonEditWidget );
 }
 
 void RamProject::computeEstimation()

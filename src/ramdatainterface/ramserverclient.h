@@ -65,6 +65,7 @@ public:
     QJsonObject createProject(const QString &data, const QString &uuid = "");
     QJsonObject setProject(const QString &uuid);
     QJsonObject assignUsers(const QStringList &userUuids, const QString &projectUuid);
+    QJsonObject unassignUsers(const QStringList &userUuids, const QString &projectUuid);
     QJsonObject getAllUsers();
     QJsonObject setPassword(const QString &userUuid, const QString &newPassword, const QString &currentPassword = "");
     QJsonObject getEmail(const QString &uuid);
@@ -73,7 +74,6 @@ public:
     QJsonObject getProjects();
     QJsonObject resetPassword(const QString &userUuid);
     QJsonObject resetPasswordWithEmail(const QString &email);
-    // QJsonObject unassignUser(const QString &userUuid, const QString &projectUuid);
     // QJsonObject getUsers(const QString &projectUuid = "");
     //
     // QJsonObject deleteData(QHash<QString, QSet<QString> > uuidsToDelete);

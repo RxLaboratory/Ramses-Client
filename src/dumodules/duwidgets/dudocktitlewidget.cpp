@@ -2,12 +2,13 @@
 #include "duwidgets/dudockwidget.h"
 #include "duwidgets/duicon.h"
 #include "duapp/duui.h"
+#include "duapp/dusettings.h"
 
 DuDockTitleWidget::DuDockTitleWidget(QString title, QWidget *parent) : QWidget(parent)
 {
-    QVBoxLayout *vlayout = new QVBoxLayout(this);
-    vlayout->setContentsMargins(0,0,0,0);
-    vlayout->setSpacing(0);
+    auto vlayout = DuUI::addBoxLayout(Qt::Vertical, this);
+    int m = DuSettings::i()->get(DuSettings::UI_Margins).toInt();
+    vlayout->setContentsMargins(0,0,0,m);
 
     // include in a frame for the BG
     QFrame *mainFrame = new QFrame(this);

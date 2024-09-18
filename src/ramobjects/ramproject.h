@@ -1,6 +1,7 @@
 #ifndef RAMPROJECT_H
 #define RAMPROJECT_H
 
+#include "ramjsonprojecteditwidget.h"
 #include "ramobject.h"
 
 class RamSequence;
@@ -42,6 +43,9 @@ public:
     // METHODS //
 
     RamProject(QString shortName, QString name);
+
+    QJsonObject toJson() const override;
+    void loadJson(const QJsonObject &obj) override;
 
     // Steps
     DBTableModel *steps() const;
@@ -145,7 +149,7 @@ protected:
     RamProject(QString uuid);
     virtual QString folderPath() const override;
 
-    static QFrame *ui_editWidget;
+    QPointer<RamJsonProjectEditWidget> ui_jsonEditWidget = nullptr;
 
 private:
     void construct();
