@@ -102,7 +102,29 @@ void StateManager::setState(State newState)
 
 void StateManager::setState(State newState, const QString &title)
 {
-    setTitle(title);
+    if (title == "") {
+        switch(newState) {
+        case Unknown:
+        case Idle:
+            setTitle(tr("Ready."));
+            break;
+        case Opening:
+            setTitle(tr("Opening..."));
+            break;
+        case Connecting:
+            setTitle(tr("Connecting..."));
+            break;
+        case Closing:
+            setTitle(tr("Closing..."));
+            break;
+        case Syncing:
+            setTitle(tr("Syncing..."));
+            break;
+        }
+    }
+    else
+        setTitle(title);
+
     setState(newState);
 }
 

@@ -98,18 +98,18 @@ public:
     void resetState() {
         StateManager::i()->setTempState(StateManager::Unknown);
     }
-    void freezeState() {
-        StateManager::i()->setState(_s);
+    void freezeState(const QString &title = "") {
+        StateManager::i()->setState(_s, title);
         resetState();
     }
-    void freezeState(QMetaObject::Connection co) {
-        freezeState();
+    void freezeState(QMetaObject::Connection co, const QString &title = "") {
+        freezeState(title);
         StateManager::i()->autoDisconnect(co);
     }
-    void freezeForIdle(QMetaObject::Connection co) {
+    void freezeForIdle(QMetaObject::Connection co, const QString &title = "") {
         if (_p != StateManager::Idle)
             return;
-        freezeState(co);
+        freezeState(co, title);
     }
 
 private:

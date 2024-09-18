@@ -609,6 +609,8 @@ void MainWindow::changeState(StateManager::State s)
         ui_stateWidget->stopAnimation();
         break;
     }
+
+    ui_stateWidget->setToolTip(StateManager::i()->title());
 }
 
 void MainWindow::changeIOState(LocalDataInterface::State s)

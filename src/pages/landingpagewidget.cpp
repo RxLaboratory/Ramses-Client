@@ -60,7 +60,8 @@ void LandingPageWidget::createDatabase(bool team)
 
 void LandingPageWidget::openDatabase(const QString &dbFile)
 {
-    StateManager::i()->setTitle( tr("Opening database: %1").arg(dbFile) );
+    auto sm = StateManager::i();
+    sm->setTitle( tr("Opening database: %1").arg(dbFile) );
 
     // If this is a team project, login
     bool teamProject = DBInterface::isTeamProject(dbFile);
@@ -195,7 +196,6 @@ void LandingPageWidget::openDatabase(const QString &dbFile)
         LocalDataInterface::setProjectUserUuid(dbFile, projectUuid, userUuid);
     }
 
-    auto sm = StateManager::i();
     sm->setState(StateManager::Opening);
 
     qInfo().noquote() << tr("Loading data...");
