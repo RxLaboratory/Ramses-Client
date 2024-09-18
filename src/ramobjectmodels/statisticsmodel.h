@@ -22,7 +22,7 @@ public:
     void setUser(RamUser *newUser);
 
 private slots:
-    void ramsesReady();
+    void setProject();
 
     void insertStep(const QModelIndex &parent, int first, int last);
     void removeStep(const QModelIndex &parent, int first, int last);
@@ -35,9 +35,6 @@ private:
     RamUser *m_user = nullptr;
 
     QHash<QString, QVector<qreal>> m_statsPerStep; // step userstats + step lateness ratio
-
-    // Connect submodels and relay events
-    void connectEvents();
 };
 
 #endif // RAMSTATISTICSTABLE_H

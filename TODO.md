@@ -1,6 +1,5 @@
 ## Priority fixes
 
-- Stats dock, empty list?
 - Improve server widget (hide details in a QMenu), keep only the address
 - Refactor project edit widget
     - and user assignments, for admin only

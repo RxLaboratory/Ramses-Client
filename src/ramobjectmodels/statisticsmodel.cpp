@@ -4,7 +4,7 @@
 
 StatisticsModel::StatisticsModel(QObject *parent) : QAbstractTableModel(parent)
 {
-    connectEvents();
+    setProject();
 }
 
 int StatisticsModel::columnCount(const QModelIndex &parent) const
@@ -156,13 +156,10 @@ QVariant StatisticsModel::data(const QModelIndex &index, int role) const
     return QVariant();
 }
 
-void StatisticsModel::ramsesReady()
+void StatisticsModel::setProject()
 {
-    beginResetModel();
-
     m_project = Ramses::i()->project();
-
-    endResetModel();
+    Q_ASSERT(m_project);
 
     connect( m_project, SIGNAL(estimationComputed(RamProject*)),this,SLOT(estimationComputed()));
     connect( m_project->steps(), SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(insertStep(QModelIndex,int,int)));
@@ -209,9 +206,4 @@ void StatisticsModel::insertStep(const QModelIndex &parent, int first, int last)
     beginInsertRows(QModelIndex(), first, last);
     // Finished!
     endInsertRows();
-}
-
-void StatisticsModel::connectEvents()
-{
-    connect(Ramses::i(), &Ramses::ready, this, &StatisticsModel::ramsesReady);
 }

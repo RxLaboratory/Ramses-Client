@@ -1,6 +1,7 @@
 #include "statisticswidget.h"
 
 #include "ramses.h"
+#include "duapp/duui.h"
 
 StatisticsWidget::StatisticsWidget(QWidget *parent) : QWidget(parent)
 {
@@ -15,8 +16,10 @@ void StatisticsWidget::setProject()
     Q_ASSERT(m_project);
 
     ui_userBox->setObjectModel(m_project->users(), "Users");
-    updateEstimation(m_project);
     connect(m_project,SIGNAL(estimationComputed(RamProject*)),this,SLOT(updateEstimation(RamProject*)));
+
+    m_project->computeEstimation();
+    changeUser(nullptr);
 
     ui_statsTable->resizeRowsToContents();
 }
@@ -74,9 +77,7 @@ void StatisticsWidget::changeUser(RamObject *userObj)
 
 void StatisticsWidget::setupUi()
 {
-    QVBoxLayout *mainLayout = new QVBoxLayout(this);
-    mainLayout->setContentsMargins(0,0,0,0);
-    mainLayout->setSpacing(3);
+    auto mainLayout = DuUI::addBoxLayout(Qt::Vertical, this);
 
     ui_userBox = new RamObjectComboBox(this);
     mainLayout->addWidget(ui_userBox);
