@@ -79,7 +79,6 @@ private:
     // ==== ACTIONS ====
 
     DuAction *m_actionConsole;
-    DuAction *m_actionLogIn;
     DuAction *m_actionLogOut;
     DuAction *m_actionUserProfile;
     DuAction *m_actionAdmin;

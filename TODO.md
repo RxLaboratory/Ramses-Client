@@ -1,6 +1,5 @@
 ## Priority fixes
 
-- Improve server widget (hide details in a QMenu), keep only the address
 - Refactor project edit widget
     - and user assignments, for admin only
 - show online/offline/security/not team

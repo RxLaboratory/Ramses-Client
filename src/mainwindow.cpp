@@ -99,8 +99,6 @@ void MainWindow::connectEvents()
 
     // ==== Toolbar buttons ====
 
-    connect(m_actionLogIn,&DuAction::triggered,
-            this, [this] () { setPage(LandingPage); } );
     connect(m_actionLogOut, &QAction::triggered, this, []() { StateManager::i()->restart(); });
     connect(m_actionSetOnline, &QAction::triggered, this, &MainWindow::setOnlineAction);
     connect(m_actionSetOffline, &QAction::triggered, this, &MainWindow::setOfflineAction);
@@ -522,7 +520,6 @@ void MainWindow::ramsesReady()
     ui_userButton->setText(QString("User (%1)").arg(user->shortName()));
     m_actionUserProfile->setVisible(true);
     m_actionUserFolder->setVisible(true);
-    m_actionLogIn->setVisible(false);
     m_actionLogOut->setVisible(true);
     ui_databaseButton->setVisible(true);
     ui_userMenuAction->setVisible(true);
@@ -722,13 +719,8 @@ void MainWindow::setupActions()
     m_actionConsole->setText(tr("Console"));
     m_actionConsole->setIcon(DuIcon(":/icons/bash"));
 
-    m_actionLogIn = new DuAction(this);
-    m_actionLogIn->setText(tr("Log in..."));
-    m_actionLogIn->setToolTip(tr("Logs you in the Ramses database."));
-    m_actionLogIn->setIcon(":/icons/login");
-
     m_actionLogOut = new DuAction(this);
-    m_actionLogOut->setText(tr("Log out"));
+    m_actionLogOut->setText(tr("Close project"));
     m_actionLogOut->setToolTip(tr("Logs you out of the Ramses database."));
     m_actionLogOut->setIcon(":/icons/logout");
 
@@ -1125,7 +1117,6 @@ void MainWindow::setupToolBars()
     ui_rightToolBar->addWidget(ui_ioWidget);
 
     auto userMenu = new DuMenu();
-    userMenu->addAction(m_actionLogIn);
     userMenu->addAction(m_actionUserFolder);
     m_actionUserFolder->setVisible(false);
     userMenu->addAction(m_actionUserProfile);
