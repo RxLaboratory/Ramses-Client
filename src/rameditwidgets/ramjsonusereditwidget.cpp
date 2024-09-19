@@ -36,10 +36,9 @@ QJsonObject RamJsonUserEditWidget::data() const
     return obj;
 }
 
-void RamJsonUserEditWidget::setData(const QJsonObject &obj, const QString &uuid)
+void RamJsonUserEditWidget::setData(const QJsonObject &obj)
 {
     setRamObjectData(obj);
-    setUuid(uuid);
 
     // Set role
     if (ui_roleBox)
@@ -49,7 +48,7 @@ void RamJsonUserEditWidget::setData(const QJsonObject &obj, const QString &uuid)
     if (ui_emailEdit) {
         if (exists()) {
             QJsonObject rep = RamServerClient::i()->getEmail(
-                uuid
+                uuid()
                 );
             if (rep.value("success").toBool()) {
                 ui_emailEdit->setText(

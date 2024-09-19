@@ -254,7 +254,7 @@ void RamObject::updateJsonEditor()
         _blockEditorUpdate)
         return;
 
-    ui_currentJsonEditor->setData(toJson(), m_uuid);
+    ui_currentJsonEditor->setData(toJson());
 }
 
 RamObjectModel *RamObject::createModel(RamObject::ObjectType type, QString modelName)

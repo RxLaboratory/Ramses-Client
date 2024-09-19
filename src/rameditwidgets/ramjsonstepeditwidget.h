@@ -21,10 +21,7 @@ class RamJsonStepEditWidget: public RamJsonObjectEditWidget
 public:
     RamJsonStepEditWidget(const QString &uuid = "", QWidget *parent = nullptr);
     virtual QJsonObject data() const override;
-    virtual void setData(const QJsonObject &obj, const QString &uuid) override;
-
-protected:
-    virtual void updateUuid() override;
+    virtual void setData(const QJsonObject &obj) override;
 
 private slots:
     void updateEstimationMethod();
@@ -35,6 +32,7 @@ private:
     void setupMainTab();
     void setupEstimTab();
     void setupPublishTab();
+    void setProject();
     void connectEvents();
 
     DuComboBox *ui_typeBox;

@@ -1,7 +1,6 @@
 ## Priority fixes
 
 - There's a loop on edit in project and step editors (in step, it recomputes estimations multiple times)
-- in step editor: estimations are not shown
 - Add a server admin mode, from landing page
     - manage all projects (create, disable, remove)
     - manage all users (create, disable, remove)

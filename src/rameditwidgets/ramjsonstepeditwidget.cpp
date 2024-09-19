@@ -11,6 +11,7 @@ RamJsonStepEditWidget::RamJsonStepEditWidget(const QString &uuid, QWidget *paren
     setupUi();
     connectEvents();
     updateEstimationMethod();
+    setProject();
 }
 
 QJsonObject RamJsonStepEditWidget::data() const
@@ -36,12 +37,11 @@ QJsonObject RamJsonStepEditWidget::data() const
     return obj;
 }
 
-void RamJsonStepEditWidget::setData(const QJsonObject &obj, const QString &uuid)
+void RamJsonStepEditWidget::setData(const QJsonObject &obj)
 {
     setRamObjectData(obj);
-    setUuid(uuid);
 
-    ui_typeBox->setCurrentData(obj.value(RamTemplateStep::KEY_StepType).toString( RamTemplateStep::ENUMVALUE_PreProd ));
+    ui_typeBox->setCurrentData( obj.value(RamTemplateStep::KEY_StepType).toString( RamTemplateStep::ENUMVALUE_PreProd ) );
     ui_estimationTypeBox->setCurrentData(obj.value(RamTemplateStep::KEY_EstimationMethod).toString( RamTemplateStep::ENUMVALUE_Shot ));
     ui_veryEasyEdit->setValue(obj.value(RamTemplateStep::KEY_EstimationVeryEasy).toDouble( 0.2 ));
     ui_easyEdit->setValue(obj.value(RamTemplateStep::KEY_EstimationEasy).toDouble( 0.5 ));
@@ -50,41 +50,13 @@ void RamJsonStepEditWidget::setData(const QJsonObject &obj, const QString &uuid)
     ui_veryHardEdit->setValue(obj.value(RamTemplateStep::KEY_EstimationVeryHard).toDouble( 3 ));
     ui_publishSettingsEdit->setText(obj.value(RamTemplateStep::KEY_PublishSettings).toString( ));
 
-    updateEstimationMethod();
-
     QString mGroup = obj.value(RamStep::KEY_EstimationMultiplyGroup).toString(RamStep::ENUMVALUE_None);
     ui_estimationMultiplierBox->setObject( mGroup );
     ui_estimationMultiplierCheckBox->setChecked( mGroup != RamStep::ENUMVALUE_None );
 
+    updateEstimationMethod();
+
     emit dataChanged(data());
-}
-
-void RamJsonStepEditWidget::updateUuid()
-{
-    bool e = exists();
-    QString t = ui_typeBox->currentData().toString();
-
-    if (t == RamTemplateStep::ENUMVALUE_Shot &&
-        e) {
-        ui_estimationMultiplierCheckBox->setVisible(true);
-        ui_estimationMultiplierBox->setVisible(true);
-    }
-    else
-    {
-        ui_estimationMultiplierCheckBox->setVisible(false);
-        ui_estimationMultiplierBox->setVisible(false);
-    }
-
-    RamProject *proj =  Ramses::i()->project();
-    if (proj) {
-        ui_estimationMultiplierBox->setObjectModel(
-            proj->assetGroups()
-            );
-        ui_userBox->setObjectModel(
-            proj->users(), "Users"
-            );
-        changeUser(ui_userBox->currentObject());
-    }
 }
 
 void RamJsonStepEditWidget::updateEstimationMethod()
@@ -432,6 +404,20 @@ void RamJsonStepEditWidget::setupPublishTab()
     ui_publishSettingsEdit->setUseMarkdown(false);
     ui_publishSettingsEdit->setPlaceholderText(tr("Publish settings"));
     publishLayout->addWidget(ui_publishSettingsEdit);
+}
+
+void RamJsonStepEditWidget::setProject()
+{
+    RamProject *proj =  Ramses::i()->project();
+    if (proj) {
+        ui_estimationMultiplierBox->setObjectModel(
+            proj->assetGroups()
+            );
+        ui_userBox->setObjectModel(
+            proj->users(), "Users"
+            );
+        changeUser(ui_userBox->currentObject());
+    }
 }
 
 void RamJsonStepEditWidget::connectEvents()

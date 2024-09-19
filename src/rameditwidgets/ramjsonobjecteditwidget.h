@@ -17,14 +17,9 @@ class RamJsonObjectEditWidget : public DuScrollArea
 public:
     RamJsonObjectEditWidget(const QString &uuid = "", QWidget *parent = nullptr);
     virtual QJsonObject data() const;
-    virtual void setData(const QJsonObject &obj, const QString &uuid);
+    virtual void setData(const QJsonObject &obj);
     bool exists() const { return _uuid != ""; }
     QString uuid() const { return _uuid; }
-    void setUuid(const QString &uuid) {
-        if (_uuid == uuid) return;
-        _uuid = uuid;
-        updateUuid();
-    }
 
 public slots:
     void emitEdited();
@@ -51,8 +46,6 @@ protected:
 
     void setRamObjectData(const QJsonObject &obj);
     QJsonObject ramObjectData() const;
-
-    virtual void updateUuid() {};
 
 private:
     void setupUi();

@@ -16,13 +16,10 @@ class RamJsonProjectEditWidget : public RamJsonObjectEditWidget
 public:
     RamJsonProjectEditWidget(const QString &uuid = "", QWidget *parent = nullptr);
     virtual QJsonObject data() const override;
-    virtual void setData(const QJsonObject &obj, const QString &uuid) override;
-
-protected:
-    virtual void updateUuid() override;
+    virtual void setData(const QJsonObject &obj) override;
 
 private slots:
-    void updateProject();
+    void setProject();
 
 private:
     void setupUi();

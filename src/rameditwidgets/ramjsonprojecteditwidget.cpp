@@ -3,7 +3,6 @@
 #include "duapp/app-config.h"
 #include "duapp/duui.h"
 #include "ramproject.h"
-#include "ramses.h"
 #include "ramobjectmodel.h"
 
 RamJsonProjectEditWidget::RamJsonProjectEditWidget(const QString &uuid, QWidget *parent):
@@ -11,7 +10,7 @@ RamJsonProjectEditWidget::RamJsonProjectEditWidget(const QString &uuid, QWidget 
 {
     setupUi();
     connectEvents();
-    updateProject();
+    setProject();
 }
 
 QJsonObject RamJsonProjectEditWidget::data() const
@@ -25,10 +24,9 @@ QJsonObject RamJsonProjectEditWidget::data() const
     return obj;
 }
 
-void RamJsonProjectEditWidget::setData(const QJsonObject &obj, const QString &uuid)
+void RamJsonProjectEditWidget::setData(const QJsonObject &obj)
 {
     setRamObjectData(obj);
-    setUuid(uuid);
 
     ui_resolutionWidget->setWidth(
         obj.value(RamProject::KEY_Width).toInt(1920)
@@ -55,12 +53,7 @@ void RamJsonProjectEditWidget::setData(const QJsonObject &obj, const QString &uu
     emit dataChanged(data());
 }
 
-void RamJsonProjectEditWidget::updateUuid()
-{
-    updateProject();
-}
-
-void RamJsonProjectEditWidget::updateProject()
+void RamJsonProjectEditWidget::setProject()
 {
     if (!exists()) {
         return;

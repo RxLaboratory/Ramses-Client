@@ -12,7 +12,7 @@ public:
     RamJsonUserEditWidget(bool isSelf, bool isAdmin, bool isTeamProject, const QString &uuid, QWidget *parent = nullptr);
 
     virtual QJsonObject data() const;
-    virtual void setData(const QJsonObject &obj, const QString &uuid);
+    virtual void setData(const QJsonObject &obj);
 
 private:
     void setupUi();

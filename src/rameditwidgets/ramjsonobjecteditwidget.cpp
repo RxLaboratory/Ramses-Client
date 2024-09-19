@@ -21,10 +21,9 @@ QJsonObject RamJsonObjectEditWidget::data() const
     return ramObjectData();
 }
 
-void RamJsonObjectEditWidget::setData(const QJsonObject &obj, const QString &uuid)
+void RamJsonObjectEditWidget::setData(const QJsonObject &obj)
 {
     setRamObjectData(obj);
-    setUuid(uuid);
     emit dataChanged(data());
 }
 
