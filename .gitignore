@@ -10,6 +10,10 @@
 *.dll
 *.dylib
 
+# Python
+__pycache__
+*.pyc
+
 # Mac Shit
 .DS_Store
 
@@ -57,12 +61,13 @@ compile_commands.json
 .DS_Store
 .~lock.TODO.ods#
 
-# Qt build
+# Qt build and other binaries
 .qtc_clangd
 .qmake.stash
 *_x86_64.pch
 Ramses.app
 build
+bin
 
 # Foldex
 .foldex.ini
