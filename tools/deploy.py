@@ -4,7 +4,6 @@ from rxbuilder import (
     cpp,
     utils,
 )
-from build_app import get_exe
 from config import (
     BUILD_PATH,
     PRO_PATH,
@@ -20,6 +19,7 @@ from config import (
     DEPLOYQT_PATH,
     BIN_PATH
 )
+from build import get_exe
 
 if SYSTEM == "Linux":
     from rxbuilder import deploy_linux as dep
@@ -110,3 +110,4 @@ def deploy():
 # Run
 if __name__ == '__main__':
     deploy()
+    utils.write_version(BUILD_PATH, VERSION)

@@ -53,7 +53,7 @@ def deploy_zip(app_dir, version):
     """
     zip_file = os.path.join(
         os.path.dirname(app_dir),
-        os.path.basename(app_dir) + '-' + version + '.zip'
+        os.path.basename(app_dir) + '_' + version + '.zip'
         )
     with zipfile.ZipFile(zip_file, 'w', zipfile.ZIP_DEFLATED) as z:
         zip_dir(app_dir, z)

@@ -32,7 +32,7 @@ def get_version(h_file):
             s = line.replace('#define VERSION_SUFFIX ', '').strip()
             continue
 
-    return M+'.'+m+'.'+b+s.replace('"', '')
+    return M+'.'+m+'.'+b+'-'+s.replace('"', '')
 
 def build(build_path, pro_path, qmake_path, make_path, num_threads, mode='release'):
     """!

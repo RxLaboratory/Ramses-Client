@@ -14,8 +14,8 @@ if NUM_THREADS == 0:
 # General
 
 PROJECT_NAME = "Ramses"
-TOOLS_PATH = normpath(Path(__file__).resolve())
-REPO_PATH = normpath(Path(TOOLS_PATH).parent.parent.resolve())
+TOOLS_PATH = normpath(Path(__file__).parent.resolve())
+REPO_PATH = normpath(Path(TOOLS_PATH).parent.resolve())
 BUILD_PATH = os.path.join( REPO_PATH, 'build', SYSTEM)
 
 # Sources and other files
