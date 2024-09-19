@@ -56,31 +56,6 @@ DBInterface *DBInterface::i()
     return _instance;
 }
 
-QSet<QString> DBInterface::tableUuids(QString table)
-{
-    return m_ldi->tableUuids(table);
-}
-
-bool DBInterface::contains(QString uuid, QString table, bool includeRemoved)
-{
-    return m_ldi->contains(uuid, table, includeRemoved);
-}
-
-void DBInterface::createObject(QString uuid, QString table, QString data)
-{
-    m_ldi->createObject(uuid, table, data);
-}
-
-QString DBInterface::objectData(QString uuid, QString table)
-{
-    return m_ldi->objectData(uuid, table);
-}
-
-void DBInterface::setObjectData(QString uuid, QString table, QString data)
-{
-    m_ldi->setObjectData(uuid, table, data);
-}
-
 QString DBInterface::validateObjectData(QString data, QString uuid, QString type, bool ignoreErrors)
 {
     if (data == "") return "{}";
@@ -131,31 +106,6 @@ QString DBInterface::validateObjectData(QString data, QString uuid, QString type
     qWarning().noquote() << "{Database-Interface}" << eStr;
 
     return "{}";
-}
-
-void DBInterface::removeObject(QString uuid, QString table)
-{
-    m_ldi->removeObject(uuid, table);
-}
-
-void DBInterface::restoreObject(QString uuid, QString table)
-{
-    m_ldi->restoreObject(uuid, table);
-}
-
-bool DBInterface::isRemoved(QString uuid, QString table)
-{
-    return m_ldi->isRemoved(uuid, table);
-}
-
-QString DBInterface::modificationDate(QString uuid, QString table)
-{
-    return m_ldi->modificationDate(uuid, table);
-}
-
-const QString &DBInterface::dataFile() const
-{
-    return m_ldi->dataFile();
 }
 
 bool DBInterface::loadDataFile(const QString &file)

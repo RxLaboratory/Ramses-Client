@@ -7,6 +7,8 @@
 #include "objectlistwidget.h"
 #include "ramjsonobjecteditwidget.h"
 #include "resolutionwidget.h"
+#include "duwidgets/dudoublespinbox.h"
+#include "duwidgets/dudateedit.h"
 
 class RamProject;
 
@@ -27,10 +29,15 @@ private:
     void setupUsersTab();
     void connectEvents();
 
+    // Cache
+    qreal _par;
+    qreal _fps;
+    QDate _deadline;
+
     ResolutionWidget *ui_resolutionWidget;
     FramerateWidget *ui_framerateWidget;
-    QDoubleSpinBox *ui_parBox;
-    QDateEdit *ui_deadlineEdit;
+    DuDoubleSpinBox *ui_parBox;
+    DuDateEdit *ui_deadlineEdit;
     ObjectListWidget *ui_userList = nullptr;
 
     RamProject *_project = nullptr;

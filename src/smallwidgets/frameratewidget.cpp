@@ -23,7 +23,7 @@ void FramerateWidget::setPreset(int p)
     double v = presetsBox->itemData(p).toDouble();
     framerateBox->setValue( v );
 
-    emit framerateEdited(v);
+    emit emitEdited();
 }
 
 void FramerateWidget::selectPreset(double fr)
@@ -66,7 +66,7 @@ void FramerateWidget::setupUi()
     presetsBox->setCurrentIndex(5);
     l->addWidget(presetsBox);
 
-    framerateBox = new AutoSelectDoubleSpinBox(this);
+    framerateBox = new DuDoubleSpinBox(this);
     framerateBox->setMinimum(0.0);
     framerateBox->setMaximum(1000.0);
     framerateBox->setDecimals(3);
@@ -80,7 +80,14 @@ void FramerateWidget::connectEvents()
 {
     connect(presetsBox, QOverload<int>::of(&QComboBox::activated), this, &FramerateWidget::setPreset);
     connect(framerateBox, SIGNAL(valueChanged(double)), this, SLOT(selectPreset(double)));
-    connect(framerateBox, &QDoubleSpinBox::editingFinished, this, [this]() {
-        emit framerateEdited(framerateBox->value());
-    });
+    connect(framerateBox, &DuDoubleSpinBox::edited, this, &FramerateWidget::emitEdited);
+}
+
+void FramerateWidget::emitEdited()
+{
+    qreal fps = framerateBox->value();
+    if (_fps == fps)
+        return;
+    _fps = fps;
+    emit framerateEdited(_fps);
 }

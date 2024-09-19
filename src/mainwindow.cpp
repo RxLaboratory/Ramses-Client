@@ -295,7 +295,7 @@ void MainWindow::setOnlineAction()
 
 void MainWindow::databaseSettingsAction()
 {
-    QString dataFilePath = DBInterface::i()->dataFile();
+    QString dataFilePath = LocalDataInterface::i()->dataFile();
     if (dataFilePath == "") return;
 
     QFileInfo dataFile(dataFilePath);

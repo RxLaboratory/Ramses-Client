@@ -139,7 +139,7 @@ void ScheduleEntryEditWidget::setupUi()
 
 void ScheduleEntryEditWidget::connectEvents()
 {
-    connect(ui_titleEdit, &DuLineEdit::editingFinished,
+    connect(ui_titleEdit, &DuLineEdit::edited,
             this, [this] () {
         if (m_entry) m_entry->setName(ui_titleEdit->text());
     });

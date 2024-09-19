@@ -4,7 +4,7 @@
 #include <QFormLayout>
 
 #include "duwidgets/ducombobox.h"
-#include "duwidgets/autoselectdoublespinbox.h"
+#include "duwidgets/dudoublespinbox.h"
 #include "objecteditwidget.h"
 #include "duwidgets/ducolorselector.h"
 #include "ramtemplatestep.h"
@@ -45,11 +45,11 @@ private:
     QWidget *ui_estimationWidget;
     DuComboBox *ui_estimationTypeBox;
     QLabel *ui_estimationTypeLabel;
-    AutoSelectDoubleSpinBox *ui_veryEasyEdit;
-    AutoSelectDoubleSpinBox *ui_easyEdit;
-    AutoSelectDoubleSpinBox *ui_mediumEdit;
-    AutoSelectDoubleSpinBox *ui_hardEdit;
-    AutoSelectDoubleSpinBox *ui_veryHardEdit;
+    DuDoubleSpinBox *ui_veryEasyEdit;
+    DuDoubleSpinBox *ui_easyEdit;
+    DuDoubleSpinBox *ui_mediumEdit;
+    DuDoubleSpinBox *ui_hardEdit;
+    DuDoubleSpinBox *ui_veryHardEdit;
     DuColorSelector *ui_colorSelector;
 };
 

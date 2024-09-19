@@ -2,11 +2,11 @@
 #define RESOLUTIONWIDGET_H
 
 #include <QWidget>
-
+#include <QComboBox>
 #include <QVBoxLayout>
 
+#include "duwidgets/duspinbox.h"
 #include "duwidgets/ducombobox.h"
-#include "duwidgets/autoselectspinbox.h"
 
 class ResolutionWidget : public QWidget
 {
@@ -34,10 +34,9 @@ private:
     void setupUi();
     void connectEvents();
 
-    QComboBox *presetsBox;
-    AutoSelectSpinBox *widthBox;
-    AutoSelectSpinBox *heightBox;
-
+    DuComboBox *presetsBox;
+    DuSpinBox *widthBox;
+    DuSpinBox *heightBox;
 };
 
 #endif // RESOLUTIONWIDGET_H

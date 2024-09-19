@@ -5,7 +5,7 @@
 #include <QVBoxLayout>
 
 #include "duwidgets/ducombobox.h"
-#include "duwidgets/autoselectdoublespinbox.h"
+#include "duwidgets/dudoublespinbox.h"
 
 class FramerateWidget : public QWidget
 {
@@ -30,8 +30,12 @@ private:
     void setupUi();
     void connectEvents();
 
+    // Emit only if actually changed
+    void emitEdited();
+    qreal _fps;
+
     DuComboBox *presetsBox;
-    AutoSelectDoubleSpinBox *framerateBox;
+    DuDoubleSpinBox *framerateBox;
 
 };
 

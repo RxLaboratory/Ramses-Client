@@ -15,12 +15,22 @@ public:
     bool autoSelect() const;
     void setAutoSelect(bool newAutoSelect);
 
+signals:
+    /**
+     * @brief edited Emitted on editingFinished
+     * IF AND ONLY IF the value has actually changed.
+     * Emits the new value.
+     */
+    void edited(QString);
+
 protected:
     void focusInEvent(QFocusEvent *event);
     void mousePressEvent(QMouseEvent *me);
 private:
-    bool _selectOnMousePress;
+    void emitEdited();
+    bool _edited = false;
 
+    bool _selectOnMousePress;
     bool _autoSelect = true;
 };
 

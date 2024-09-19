@@ -1,22 +1,22 @@
-#ifndef DUSPINBOX_H
-#define DUSPINBOX_H
+#ifndef DUDOUBLESPINBOX_H
+#define DUDOUBLESPINBOX_H
 
 #include "duwidgets/dulineedit.h"
-#include <QSpinBox>
+#include <QDoubleSpinBox>
 
 /**
- * @brief The DuSpinBox class Improves QSpinBox
+ * @brief The DuDoubleSpinBox class Improves QDoubleSpinBox
  * @version
  * 1.2.0 Adds autoselect options
  * 1.1.0 Adds edited() signal
  */
-class DuSpinBox : public QSpinBox
+class DuDoubleSpinBox : public QDoubleSpinBox
 {
     Q_OBJECT
 public:
-    DuSpinBox(QWidget *parent = nullptr);
+    DuDoubleSpinBox(QWidget *parent = nullptr);
 
-    void setValue(int v);
+    void setValue(double d);
 
     bool autoSelect() const { return _lineEdit->autoSelect(); }
     void setAutoSelect(bool newAutoSelect) { _lineEdit->setAutoSelect(newAutoSelect); }
@@ -27,7 +27,7 @@ signals:
      * IF AND ONLY IF the value has actually changed.
      * Emits the new value.
      */
-    void edited(int);
+    void edited(qreal);
 
 private:
     void emitEdited();
@@ -36,4 +36,4 @@ private:
     DuLineEdit *_lineEdit;
 };
 
-#endif // DUSPINBOX_H
+#endif // DUDOUBLESPINBOX_H

@@ -168,7 +168,7 @@ QJsonObject RamObject::reloadData()
 
 void RamObject::beginLoadJson(const QJsonObject &obj)
 {
-    blockSignals(true);
+    m_dataSignalsBlocked = true;
 
     setName(obj.value(RamAbstractObject::KEY_Name).toString());
     setShortName(obj.value(RamAbstractObject::KEY_ShortName).toString());
@@ -182,7 +182,12 @@ void RamObject::beginLoadJson(const QJsonObject &obj)
 
 void RamObject::endLoadJson()
 {
-    blockSignals(false);
+    m_dataSignalsBlocked = false;
+
+    // Write the data in the local db
+    writeData();
+
+    // Emit, except for the editor
     _blockEditorUpdate = true;
     emitDataChanged();
     _blockEditorUpdate = false;
@@ -190,7 +195,9 @@ void RamObject::endLoadJson()
 
 void RamObject::emitDataChanged()
 {
-    if (!m_saveSuspended) emit dataChanged(this);
+    if (!m_saveSuspended &&
+        !m_dataSignalsBlocked)
+        emit dataChanged(this);
 }
 
 void RamObject::emitRemoved()

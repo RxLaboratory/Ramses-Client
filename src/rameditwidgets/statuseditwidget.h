@@ -11,8 +11,8 @@
 #include "duwidgets/ducombobox.h"
 #include "duwidgets/durichtextedit.h"
 #include "duwidgets/duqfspinbox.h"
-#include "duwidgets/autoselectspinbox.h"
-#include "duwidgets/autoselectdoublespinbox.h"
+#include "duwidgets/duspinbox.h"
+#include "duwidgets/dudoublespinbox.h"
 #include "duwidgets/duqffolderdisplaywidget.h"
 #include "duwidgets/duqffilelist.h"
 #include "objecteditwidget.h"
@@ -73,7 +73,7 @@ private:
 
     RamStateBox *ui_stateBox;
     DuQFSpinBox *ui_completionBox;
-    AutoSelectSpinBox *ui_versionBox;
+    DuSpinBox *ui_versionBox;
     QDateEdit *ui_dueDateEdit;
     QCheckBox *ui_useDueDateBox;
     DuRichTextEdit *ui_statusCommentEdit;
@@ -92,7 +92,7 @@ private:
     QToolButton *ui_openPreviewFileButton;
     DuQFFolderDisplayWidget *ui_folderWidget;
     QComboBox *ui_difficultyBox;
-    AutoSelectDoubleSpinBox *ui_estimationEdit;
+    DuDoubleSpinBox *ui_estimationEdit;
     QCheckBox *ui_autoEstimationBox;
     QLabel *ui_estimationLabel;
     DuComboBox *ui_priorityBox;

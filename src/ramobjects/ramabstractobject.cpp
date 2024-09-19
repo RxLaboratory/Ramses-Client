@@ -451,24 +451,24 @@ QVariant RamAbstractObject::roleData(int role) const
 
 void RamAbstractObject::remove()
 {
-    DBInterface::i()->removeObject(m_uuid, objectTypeName());
+    LocalDataInterface::i()->removeObject(m_uuid, objectTypeName());
     emitRemoved();
 }
 
 void RamAbstractObject::restore()
 {
-    DBInterface::i()->restoreObject(m_uuid, objectTypeName());
+    LocalDataInterface::i()->restoreObject(m_uuid, objectTypeName());
     emitRestored();
 }
 
 bool RamAbstractObject::isRemoved()
 {
-    return DBInterface::i()->isRemoved(m_uuid, objectTypeName());
+    return LocalDataInterface::i()->isRemoved(m_uuid, objectTypeName());
 }
 
 QDateTime RamAbstractObject::modificationDate() const
 {
-    QString d = DBInterface::i()->modificationDate(m_uuid, objectTypeName());
+    QString d = LocalDataInterface::i()->modificationDate(m_uuid, objectTypeName());
     return QDateTime::fromString(d, DATETIME_DATA_FORMAT);
 }
 
@@ -620,12 +620,17 @@ void RamAbstractObject::suspendSave(bool suspend)
 
 void RamAbstractObject::setDataString(QString data)
 {
-    m_savingData = true;
-
     // Cache the data to improve performance
     m_cachedData = data;
+    writeData();
+    emitDataChanged();
+}
 
-    if (m_virtual || m_saveSuspended || !m_created) return;
+void RamAbstractObject::writeData()
+{
+    m_savingData = true;
+    if (m_virtual || m_saveSuspended || !m_created)
+        return;
 
 #ifdef DEBUG_DATA
     qDebug() << "<<<";
@@ -635,11 +640,8 @@ void RamAbstractObject::setDataString(QString data)
     qDebug() << ">>>";
 #endif
 
-    DBInterface::i()->setObjectData(m_uuid, objectTypeName(), data);
-
+    LocalDataInterface::i()->setObjectData(m_uuid, objectTypeName(), m_cachedData, !m_dataSignalsBlocked);
     m_savingData = false;
-
-    emitDataChanged();
 }
 
 QString RamAbstractObject::dataString() const
@@ -649,7 +651,7 @@ QString RamAbstractObject::dataString() const
 
     if (!m_created) return m_cachedData;
 
-    QString dataStr = DBInterface::i()->objectData(m_uuid, objectTypeName());
+    QString dataStr = LocalDataInterface::i()->objectData(m_uuid, objectTypeName());
     if (dataStr == "") return "";
 
     // Cache the data to improve performance
@@ -667,7 +669,7 @@ void RamAbstractObject::createData(QString data)
     // Cache the data to improve performance
     m_cachedData = data;
 
-    DBInterface::i()->createObject(m_uuid, objectTypeName(), data);
+    LocalDataInterface::i()->createObject(m_uuid, objectTypeName(), data);
 
     m_created = true;
 }
@@ -684,7 +686,7 @@ bool RamAbstractObject::checkUuid(QString uuid, ObjectType type, bool mayBeVirtu
     if (mayBeVirtual) return true;
 
     // Check if the uuid exists in the DB
-    if (!DBInterface::i()->contains(uuid, table, includeRemoved))
+    if (!LocalDataInterface::i()->contains(uuid, table, includeRemoved))
     {
         qCritical() << QString("%1::get - This uuid can't be found in the database: %2").arg(table, uuid);
         // Don't do anything, let the caller handle it
@@ -692,7 +694,7 @@ bool RamAbstractObject::checkUuid(QString uuid, ObjectType type, bool mayBeVirtu
     }
 
     // Check if it's removed
-    //if (!includeRemoved && DBInterface::instance()->isRemoved(uuid, table)) return false;
+    //if (!includeRemoved && LocalDataInterface::instance()->isRemoved(uuid, table)) return false;
 
     return true;
 }

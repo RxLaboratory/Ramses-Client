@@ -6,8 +6,8 @@
 
 #include "objecteditwidget.h"
 #include "duwidgets/duqffolderdisplaywidget.h"
-#include "duwidgets/autoselectdoublespinbox.h"
-#include "duwidgets/autoselectspinbox.h"
+#include "duwidgets/dudoublespinbox.h"
+#include "duwidgets/duspinbox.h"
 #include "objectlistwidget.h"
 #include "ramshot.h"
 
@@ -38,8 +38,8 @@ private:
     void connectEvents();
 
     DuQFFolderDisplayWidget *ui_folderWidget;
-    AutoSelectDoubleSpinBox *ui_secondsBox;
-    AutoSelectSpinBox *ui_framesBox;
+    DuDoubleSpinBox *ui_secondsBox;
+    DuSpinBox *ui_framesBox;
     RamObjectComboBox *ui_sequencesBox;
     ObjectListWidget *ui_assetList;
 };

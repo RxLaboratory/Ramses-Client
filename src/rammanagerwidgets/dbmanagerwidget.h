@@ -1,7 +1,7 @@
 #ifndef DBMANAGERWIDGET_H
 #define DBMANAGERWIDGET_H
 
-#include "duwidgets/autoselectspinbox.h"
+#include "duwidgets/duspinbox.h"
 #include "qcheckbox.h"
 #include "qpushbutton.h"
 #include "qtextedit.h"
@@ -27,7 +27,7 @@ private:
     QPushButton *ui_cancelCleanButton;
     QPushButton *ui_acceptCleanButton;
     QTextEdit *ui_reportEdit;
-    AutoSelectSpinBox *ui_deleteFromEdit;
+    DuSpinBox *ui_deleteFromEdit;
     QCheckBox *ui_deleteCheckBox;
 
 };

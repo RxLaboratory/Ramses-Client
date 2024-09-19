@@ -303,7 +303,7 @@ void SettingsDockWidget::connectEvents()
 
     // DAEMON
 
-    connect( ui_daemonPortBox, &DuSpinBox::editingFinished,
+    connect( ui_daemonPortBox, &DuSpinBox::edited,
             this, [this] () {
                 _sm->set(RamSettings::DaemonPort, ui_daemonPortBox->value());
             });

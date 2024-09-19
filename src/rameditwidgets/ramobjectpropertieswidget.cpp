@@ -93,7 +93,7 @@ void RamObjectPropertiesWidget::setupUi()
 
 void RamObjectPropertiesWidget::connectEvents()
 {
-    connect(ui_nameEdit, &DuLineEdit::editingFinished,
+    connect(ui_nameEdit, &DuLineEdit::edited,
             this, [this] () {
                 if (ui_shortNameEdit->text() == "")
                     ui_shortNameEdit->setText(
@@ -102,7 +102,7 @@ void RamObjectPropertiesWidget::connectEvents()
                 emit edited();
             });
 
-    connect(ui_shortNameEdit, &DuLineEdit::editingFinished,
+    connect(ui_shortNameEdit, &DuLineEdit::edited,
             this, &RamObjectPropertiesWidget::edited);
     connect(ui_commentEdit, &DuRichTextEdit::editingFinished,
             this, &RamObjectPropertiesWidget::edited);

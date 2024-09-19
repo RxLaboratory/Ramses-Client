@@ -47,7 +47,6 @@ public:
     virtual QJsonObject toJson() const;
     virtual void loadJson(const QJsonObject &obj);
 
-
     void emitDataChanged() override;
 
 public slots:

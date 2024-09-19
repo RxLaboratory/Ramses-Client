@@ -1,5 +1,5 @@
-#ifndef DUQFDOUBLESLIDER_H
-#define DUQFDOUBLESLIDER_H
+#ifndef DUDOUBLESLIDER_H
+#define DUDOUBLESLIDER_H
 
 #include <QProgressBar>
 #include <QMouseEvent>
@@ -8,11 +8,13 @@
 
 #include <QtDebug>
 
-class DuQFDoubleSlider : public QProgressBar
+class DuDoubleSlider : public QProgressBar
 {
-        Q_OBJECT
+    Q_OBJECT
 public:
-    DuQFDoubleSlider(QWidget *parent = nullptr);
+    DuDoubleSlider(QWidget *parent = nullptr);
+
+    void setValue(double v);
     double value() const;
 
     int decimals() const;
@@ -33,12 +35,11 @@ public:
     void showValue(bool show);
     bool valueVisible() const;
 
-    virtual QString text() const override;
-
-public slots:
-    void setValue(double v);
+    virtual QString text() const Q_DECL_OVERRIDE;
 
 signals:
+    void valueChanged(double);
+    void editingFinished(double);
     void valueChanging(double);
 
 private:
@@ -49,8 +50,11 @@ private:
     QString _prefix;
     QString _suffix;
     bool _showValue;
+    bool _editing = false;
 protected:
-    void mouseMoveEvent ( QMouseEvent * event ) override;
+    void mousePressEvent( QMouseEvent *event ) override;
+    void mouseMoveEvent ( QMouseEvent * event ) Q_DECL_OVERRIDE;
+    void mouseReleaseEvent( QMouseEvent * event ) override;
 };
 
-#endif // DUQFDOUBLESLIDER_H
+#endif // DUDOUBLESLIDER_H

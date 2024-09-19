@@ -357,35 +357,35 @@ void RamJsonStepEditWidget::setupEstimTab()
     ui_estimationTypeBox->addItem("Per second", RamTemplateStep::ENUMVALUE_Second);
     estimationLayout->addRow(ui_estimationTypeLabel, ui_estimationTypeBox);
 
-    ui_veryEasyEdit = new AutoSelectDoubleSpinBox(this);
+    ui_veryEasyEdit = new DuDoubleSpinBox(this);
     ui_veryEasyEdit->setMinimum(0.1);
     ui_veryEasyEdit->setMaximum(100);
     ui_veryEasyEdit->setDecimals(1);
     ui_veryEasyEdit->setValue(0.2);
     estimationLayout->addRow(tr("Very easy"), ui_veryEasyEdit);
 
-    ui_easyEdit = new AutoSelectDoubleSpinBox(this);
+    ui_easyEdit = new DuDoubleSpinBox(this);
     ui_easyEdit->setMinimum(0.1);
     ui_easyEdit->setMaximum(100);
     ui_easyEdit->setDecimals(1);
     ui_easyEdit->setValue(0.5);
     estimationLayout->addRow(tr("Easy"),ui_easyEdit);
 
-    ui_mediumEdit = new AutoSelectDoubleSpinBox(this);
+    ui_mediumEdit = new DuDoubleSpinBox(this);
     ui_mediumEdit->setMinimum(0.1);
     ui_mediumEdit->setMaximum(100);
     ui_mediumEdit->setDecimals(1);
     ui_mediumEdit->setValue(1);
     estimationLayout->addRow(tr("Medium"),ui_mediumEdit);
 
-    ui_hardEdit = new AutoSelectDoubleSpinBox(this);
+    ui_hardEdit = new DuDoubleSpinBox(this);
     ui_hardEdit->setMinimum(0.1);
     ui_hardEdit->setMaximum(100);
     ui_hardEdit->setDecimals(1);
     ui_hardEdit->setValue(2);
     estimationLayout->addRow(tr("Hard"),ui_hardEdit);
 
-    ui_veryHardEdit = new AutoSelectDoubleSpinBox(this);
+    ui_veryHardEdit = new DuDoubleSpinBox(this);
     ui_veryHardEdit->setMinimum(0.1);
     ui_veryHardEdit->setMaximum(100);
     ui_veryHardEdit->setDecimals(1);
@@ -447,15 +447,15 @@ void RamJsonStepEditWidget::connectEvents()
 
     connect(ui_publishSettingsEdit, &DuRichTextEdit::editingFinished,
             this, &RamJsonObjectEditWidget::emitEdited);
-    connect(ui_veryEasyEdit, &AutoSelectDoubleSpinBox::editingFinished,
+    connect(ui_veryEasyEdit, &DuDoubleSpinBox::edited,
             this, &RamJsonObjectEditWidget::emitEdited);
-    connect(ui_easyEdit, &AutoSelectDoubleSpinBox::editingFinished,
+    connect(ui_easyEdit, &DuDoubleSpinBox::edited,
             this, &RamJsonObjectEditWidget::emitEdited);
-    connect(ui_mediumEdit, &AutoSelectDoubleSpinBox::editingFinished,
+    connect(ui_mediumEdit, &DuDoubleSpinBox::edited,
             this, &RamJsonObjectEditWidget::emitEdited);
-    connect(ui_hardEdit, &AutoSelectDoubleSpinBox::editingFinished,
+    connect(ui_hardEdit, &DuDoubleSpinBox::edited,
             this, &RamJsonObjectEditWidget::emitEdited);
-    connect(ui_veryHardEdit, &AutoSelectDoubleSpinBox::editingFinished,
+    connect(ui_veryHardEdit, &DuDoubleSpinBox::edited,
             this, &RamJsonObjectEditWidget::emitEdited);
 
     connect(ui_estimationMultiplierCheckBox, &QCheckBox::clicked,

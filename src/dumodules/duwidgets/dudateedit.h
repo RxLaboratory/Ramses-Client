@@ -1,22 +1,16 @@
-#ifndef DUSPINBOX_H
-#define DUSPINBOX_H
+#ifndef DUDATEEDIT_H
+#define DUDATEEDIT_H
 
+#include <QDateEdit>
 #include "duwidgets/dulineedit.h"
-#include <QSpinBox>
 
-/**
- * @brief The DuSpinBox class Improves QSpinBox
- * @version
- * 1.2.0 Adds autoselect options
- * 1.1.0 Adds edited() signal
- */
-class DuSpinBox : public QSpinBox
+class DuDateEdit : public QDateEdit
 {
     Q_OBJECT
 public:
-    DuSpinBox(QWidget *parent = nullptr);
+    DuDateEdit(QWidget *parent = nullptr);
 
-    void setValue(int v);
+    void setDate(const QDate &date);
 
     bool autoSelect() const { return _lineEdit->autoSelect(); }
     void setAutoSelect(bool newAutoSelect) { _lineEdit->setAutoSelect(newAutoSelect); }
@@ -27,7 +21,7 @@ signals:
      * IF AND ONLY IF the value has actually changed.
      * Emits the new value.
      */
-    void edited(int);
+    void edited(QDate);
 
 private:
     void emitEdited();
@@ -36,4 +30,4 @@ private:
     DuLineEdit *_lineEdit;
 };
 
-#endif // DUSPINBOX_H
+#endif // DUDATEEDIT_H

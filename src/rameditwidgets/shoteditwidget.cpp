@@ -100,7 +100,7 @@ void ShotEditWidget::setupUi()
     QLabel *durationLabel = new QLabel("Duration", this);
     ui_mainFormLayout->addWidget(durationLabel, 3, 0);
 
-    ui_secondsBox = new AutoSelectDoubleSpinBox(this);
+    ui_secondsBox = new DuDoubleSpinBox(this);
     ui_secondsBox->setMinimum(0.0);
     ui_secondsBox->setMaximum(14400.0);
     ui_secondsBox->setSingleStep(0.1);
@@ -108,7 +108,7 @@ void ShotEditWidget::setupUi()
     ui_secondsBox->setDecimals(3);
     ui_mainFormLayout->addWidget(ui_secondsBox, 3, 1);
 
-    ui_framesBox = new AutoSelectSpinBox(this);
+    ui_framesBox = new DuSpinBox(this);
     ui_framesBox->setMinimum(0);
     ui_framesBox->setMaximum(1728000);
     ui_framesBox->setSingleStep(1);

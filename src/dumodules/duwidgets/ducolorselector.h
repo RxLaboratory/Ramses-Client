@@ -17,6 +17,7 @@ signals:
     // Emited programatically
     void colorChanged(QColor);
     // Only on user interaction
+    // If and only if the value has actually changed
     void colorEdited(QColor);
 
 private slots:

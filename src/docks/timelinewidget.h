@@ -3,7 +3,7 @@
 
 #include <QWidget>
 
-#include "duwidgets/duqfdoubleslider.h"
+#include "duwidgets/dudoubleslider.h"
 #include "timelineview.h"
 
 class TimelineWidget : public QWidget
@@ -17,7 +17,7 @@ private:
     void connectEvents();
 
     TimelineView *ui_timeline;
-    DuQFDoubleSlider *ui_zoomSlider;
+    DuDoubleSlider *ui_zoomSlider;
 };
 
 #endif // TIMELINEWIDGET_H

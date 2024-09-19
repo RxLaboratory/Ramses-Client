@@ -14,13 +14,9 @@ DuColorSelector::DuColorSelector(QWidget *parent) : QWidget(parent)
 
 void DuColorSelector::updateColorEditStyle()
 {
-    if (ui_colorEdit->text().count() == 7)
-    {
-        m_color.setNamedColor(ui_colorEdit->text());
-        QString style = "background-color: " + m_color.name() + ";";
-        if (m_color.lightness() > 80) style += "color: #232323;";
-        ui_colorEdit->setStyleSheet(style);
-    }
+    QString style = "background-color: " + m_color.name() + ";";
+    if (m_color.lightness() > 80) style += "color: #232323;";
+    ui_colorEdit->setStyleSheet(style);
     emit colorChanged(m_color);
 }
 
@@ -30,15 +26,16 @@ void DuColorSelector::selectColor()
     QColorDialog cd( m_color, this );
     cd.setOptions(QColorDialog::DontUseNativeDialog);
     cd.setCurrentColor(m_color);
-    //cd.setWindowFlags(Qt::FramelessWindowHint);
-    //cd.move(this->parentWidget()->parentWidget()->geometry().center().x()-cd.geometry().width()/2,this->parentWidget()->parentWidget()->geometry().center().y()-cd.geometry().height()/2);
 
     if (DuUI::execDialog(&cd))
     {
-        m_color = cd.selectedColor();
-        ui_colorEdit->setText(m_color.name());
-        updateColorEditStyle();
-        emit colorEdited(m_color);
+        QColor col = cd.selectedColor();
+        if (col != m_color) {
+            m_color = col;
+            ui_colorEdit->setText(m_color.name());
+            updateColorEditStyle();
+            emit colorEdited(m_color);
+        }
     }
     this->setEnabled(true);
 }
@@ -60,10 +57,20 @@ void DuColorSelector::setupUi()
 
 void DuColorSelector::connectEvents()
 {
-    connect(ui_colorEdit, &DuLineEdit::editingFinished, this, &DuColorSelector::updateColorEditStyle);
     connect(ui_colorEdit, &DuLineEdit::editingFinished, this, [this]() {
+        QString colName = ui_colorEdit->text();
+        if (colName.length() != 7 &&
+            colName.length() != 4)
+            return;
+
+        QColor col(colName);
+        if (col == m_color)
+            return;
+        m_color = col;
+        updateColorEditStyle();
         emit colorEdited(m_color);
     });
+
     connect(ui_colorButton, &QToolButton::clicked, this, &DuColorSelector::selectColor);
 }
 

@@ -9,8 +9,8 @@
 #include <QLabel>
 #include <QCheckBox>
 
-#include "duwidgets/autoselectdoublespinbox.h"
 #include "duwidgets/ducombobox.h"
+#include "duwidgets/dudoublespinbox.h"
 #include "progresswidget.h"
 #include "ramjsonobjecteditwidget.h"
 #include "ramobjectcombobox.h"
@@ -39,11 +39,11 @@ private:
     DuComboBox *ui_estimationTypeBox;
     QLabel *ui_estimationTypeLabel;
     DuRichTextEdit *ui_publishSettingsEdit;
-    AutoSelectDoubleSpinBox *ui_veryEasyEdit;
-    AutoSelectDoubleSpinBox *ui_easyEdit;
-    AutoSelectDoubleSpinBox *ui_mediumEdit;
-    AutoSelectDoubleSpinBox *ui_hardEdit;
-    AutoSelectDoubleSpinBox *ui_veryHardEdit;
+    DuDoubleSpinBox *ui_veryEasyEdit;
+    DuDoubleSpinBox *ui_easyEdit;
+    DuDoubleSpinBox *ui_mediumEdit;
+    DuDoubleSpinBox *ui_hardEdit;
+    DuDoubleSpinBox *ui_veryHardEdit;
     QCheckBox *ui_estimationMultiplierCheckBox;
     RamObjectComboBox *ui_estimationMultiplierBox;
 

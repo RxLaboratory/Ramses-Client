@@ -410,7 +410,7 @@ QString LocalDataInterface::objectData(QString uuid, QString table)
     return "";
 }
 
-void LocalDataInterface::setObjectData(QString uuid, QString table, QString data)
+void LocalDataInterface::setObjectData(QString uuid, QString table, QString data, bool emitChanged)
 {
     // Make sure the table exists
     createTable(table);
@@ -430,7 +430,8 @@ void LocalDataInterface::setObjectData(QString uuid, QString table, QString data
     QString modifiedStr = modified.toString(DATETIME_DATA_FORMAT);
     query( q.arg(table, newData, modifiedStr, uuid) );
 
-    emit dataChanged(uuid, data, modifiedStr, table);
+    if (emitChanged)
+        emit dataChanged(uuid, data, modifiedStr, table);
 }
 
 void LocalDataInterface::removeObject(QString uuid, QString table)

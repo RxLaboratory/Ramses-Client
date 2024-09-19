@@ -24,8 +24,13 @@ public slots:
     void showRichText();
     void pasteNoFormatting();
 signals:
+    /**
+     * @brief editingFinished To the contrary of QLineEdit::editingFinished,
+     * This signal is emitted only if the text has actually changed.
+     */
     void editingFinished();
     void enterPressed();
+
 protected:
     void focusOutEvent(QFocusEvent *event) override;
     void keyPressEvent(QKeyEvent *event) override;

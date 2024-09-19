@@ -91,14 +91,14 @@ void RamJsonProjectEditWidget::setupMainTab()
     ui_framerateWidget = new FramerateWidget(this);
     detailsLayout->addRow(tr("Delivery framerate"), ui_framerateWidget);
 
-    ui_parBox = new QDoubleSpinBox(this);
+    ui_parBox = new DuDoubleSpinBox(this);
     detailsLayout->addRow(tr("Delivery pixel aspect ratio"), ui_parBox);
     ui_parBox->setMinimum(0.01);
     ui_parBox->setMaximum(10.0);
     ui_parBox->setDecimals(2);
     ui_parBox->setValue(1.0);
 
-    ui_deadlineEdit = new QDateEdit(this);
+    ui_deadlineEdit = new DuDateEdit(this);
     ui_deadlineEdit->setCalendarPopup(true);
     ui_deadlineEdit->setDate( QDate::currentDate() );
     detailsLayout->addRow(tr("Deadline"), ui_deadlineEdit);
@@ -128,8 +128,8 @@ void RamJsonProjectEditWidget::connectEvents()
             this, &RamJsonObjectEditWidget::emitEdited);
     connect(ui_framerateWidget, &FramerateWidget::framerateEdited,
             this, &RamJsonObjectEditWidget::emitEdited);
-    connect(ui_parBox, &QDoubleSpinBox::editingFinished,
+    connect(ui_parBox, &DuDoubleSpinBox::edited,
             this, &RamJsonObjectEditWidget::emitEdited);
-    connect(ui_deadlineEdit, &QDateTimeEdit::editingFinished,
+    connect(ui_deadlineEdit, &DuDateEdit::edited,
             this, &RamJsonObjectEditWidget::emitEdited);
 }

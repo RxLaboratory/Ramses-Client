@@ -274,6 +274,7 @@ public:
     // Low level data handling.
     QString dataString() const;
     void setDataString(QString data);
+    void writeData();
 
     virtual void emitDataChanged() {};
 
@@ -316,6 +317,8 @@ protected:
     bool m_savingData = false;
     QString m_icon = ":/icons/asset";
     bool m_created = false;
+
+    bool m_dataSignalsBlocked = false;
 
     static QHash<QString, QPixmap> m_iconPixmaps;
     static QPixmap iconPixmap(QString iconName);

@@ -58,8 +58,12 @@ SOURCES += \
     dumodules/duwidgets/ducolorselector.cpp \
     dumodules/duwidgets/ducombobox.cpp \
     dumodules/duwidgets/duconsolewidget.cpp \
+    dumodules/duwidgets/dudateedit.cpp \
     dumodules/duwidgets/dudocktitlewidget.cpp \
     dumodules/duwidgets/dudockwidget.cpp \
+    dumodules/duwidgets/dudoubleslider.cpp \
+    dumodules/duwidgets/dudoublespinbox.cpp \
+    dumodules/duwidgets/dudoublespinslider.cpp \
     dumodules/duwidgets/dufolderselectorwidget.cpp \
     dumodules/duwidgets/duicon.cpp \
     dumodules/duwidgets/duiconwidget.cpp \
@@ -191,11 +195,6 @@ SOURCES += \
     dumodules/duutils/language-utils.cpp \
     dumodules/duutils/utils.cpp \
     dumodules/duwidgets/aboutdialog.cpp \
-    dumodules/duwidgets/autoselectdoublespinbox.cpp \
-    dumodules/duwidgets/autoselectlineedit.cpp \
-    dumodules/duwidgets/autoselectspinbox.cpp \
-    dumodules/duwidgets/duqfdoubleslider.cpp \
-    dumodules/duwidgets/duqfdoublespinbox.cpp \
     dumodules/duwidgets/duqffolderdisplaywidget.cpp \
     dumodules/duwidgets/duqflistwidget.cpp \
     dumodules/duwidgets/duqfslider.cpp \
@@ -264,8 +263,12 @@ HEADERS += \
     dumodules/duwidgets/ducolorselector.h \
     dumodules/duwidgets/ducombobox.h \
     dumodules/duwidgets/duconsolewidget.h \
+    dumodules/duwidgets/dudateedit.h \
     dumodules/duwidgets/dudocktitlewidget.h \
     dumodules/duwidgets/dudockwidget.h \
+    dumodules/duwidgets/dudoubleslider.h \
+    dumodules/duwidgets/dudoublespinbox.h \
+    dumodules/duwidgets/dudoublespinslider.h \
     dumodules/duwidgets/dufolderselectorwidget.h \
     dumodules/duwidgets/duicon.h \
     dumodules/duwidgets/duiconwidget.h \
@@ -402,11 +405,6 @@ HEADERS += \
     dumodules/duutils/language-utils.h \
     dumodules/duutils/utils.h \
     dumodules/duwidgets/aboutdialog.h \
-    dumodules/duwidgets/autoselectdoublespinbox.h \
-    dumodules/duwidgets/autoselectlineedit.h \
-    dumodules/duwidgets/autoselectspinbox.h \
-    dumodules/duwidgets/duqfdoubleslider.h \
-    dumodules/duwidgets/duqfdoublespinbox.h \
     dumodules/duwidgets/duqffolderdisplaywidget.h \
     dumodules/duwidgets/duqflistwidget.h \
     dumodules/duwidgets/duqfslider.h \

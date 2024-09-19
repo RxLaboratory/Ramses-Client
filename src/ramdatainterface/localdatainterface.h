@@ -51,7 +51,7 @@ public:
     void createObject(QString uuid, QString table, QString data);
 
     QString objectData(QString uuid, QString table);
-    void setObjectData(QString uuid, QString table, QString data);
+    void setObjectData(QString uuid, QString table, QString data, bool emitChanged = true);
 
     void removeObject(QString uuid, QString table);
     void restoreObject(QString uuid, QString table);

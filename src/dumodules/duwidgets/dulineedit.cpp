@@ -3,6 +3,10 @@
 DuLineEdit::DuLineEdit(QWidget *parent): QLineEdit(parent)
 {
     _selectOnMousePress = false;
+
+    connect(this, &QLineEdit::textEdited,
+            this, [this]() { _edited = true; } );
+    connect(this, &DuLineEdit::editingFinished, this, &DuLineEdit::emitEdited);
 }
 
 void DuLineEdit::focusInEvent(QFocusEvent *event)
@@ -31,4 +35,12 @@ bool DuLineEdit::autoSelect() const
 void DuLineEdit::setAutoSelect(bool newAutoSelect)
 {
     _autoSelect = newAutoSelect;
+}
+
+void DuLineEdit::emitEdited()
+{
+    if (!_edited)
+        return;
+    _edited = false;
+    emit edited(text());
 }

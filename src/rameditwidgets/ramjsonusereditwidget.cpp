@@ -134,7 +134,7 @@ void RamJsonUserEditWidget::connectEvents()
     if (ui_emailButton)
         connect(ui_emailButton, &QToolButton::clicked, this, &RamJsonUserEditWidget::updateEmail);
     else if (ui_emailEdit)
-        connect(ui_emailEdit, &DuLineEdit::editingFinished, this, &RamJsonUserEditWidget::emitEdited);
+        connect(ui_emailEdit, &DuLineEdit::edited, this, &RamJsonUserEditWidget::emitEdited);
 }
 
 void RamJsonUserEditWidget::updatePassword()

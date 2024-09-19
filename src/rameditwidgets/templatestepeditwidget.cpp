@@ -185,35 +185,35 @@ void TemplateStepEditWidget::setupUi()
     ui_estimationTypeBox->addItem("Per second");
     estimationLayout->addRow(ui_estimationTypeLabel, ui_estimationTypeBox);
 
-    ui_veryEasyEdit = new AutoSelectDoubleSpinBox(this);
+    ui_veryEasyEdit = new DuDoubleSpinBox(this);
     ui_veryEasyEdit->setMinimum(0.1);
     ui_veryEasyEdit->setMaximum(100);
     ui_veryEasyEdit->setDecimals(1);
     ui_veryEasyEdit->setValue(0.2);
     estimationLayout->addRow("Very easy", ui_veryEasyEdit);
 
-    ui_easyEdit = new AutoSelectDoubleSpinBox(this);
+    ui_easyEdit = new DuDoubleSpinBox(this);
     ui_easyEdit->setMinimum(0.1);
     ui_easyEdit->setMaximum(100);
     ui_easyEdit->setDecimals(1);
     ui_easyEdit->setValue(0.5);
     estimationLayout->addRow("Easy",ui_easyEdit);
 
-    ui_mediumEdit = new AutoSelectDoubleSpinBox(this);
+    ui_mediumEdit = new DuDoubleSpinBox(this);
     ui_mediumEdit->setMinimum(0.1);
     ui_mediumEdit->setMaximum(100);
     ui_mediumEdit->setDecimals(1);
     ui_mediumEdit->setValue(1);
     estimationLayout->addRow("Medium",ui_mediumEdit);
 
-    ui_hardEdit = new AutoSelectDoubleSpinBox(this);
+    ui_hardEdit = new DuDoubleSpinBox(this);
     ui_hardEdit->setMinimum(0.1);
     ui_hardEdit->setMaximum(100);
     ui_hardEdit->setDecimals(1);
     ui_hardEdit->setValue(2);
     estimationLayout->addRow("Hard",ui_hardEdit);
 
-    ui_veryHardEdit = new AutoSelectDoubleSpinBox(this);
+    ui_veryHardEdit = new DuDoubleSpinBox(this);
     ui_veryHardEdit->setMinimum(0.1);
     ui_veryHardEdit->setMaximum(100);
     ui_veryHardEdit->setDecimals(1);

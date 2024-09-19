@@ -639,7 +639,7 @@ void StatusEditWidget::setupUi()
     estimationLayout->setContentsMargins(0,0,0,0);
     estimationLayout->setSpacing(3);
 
-    ui_estimationEdit = new AutoSelectDoubleSpinBox(this);
+    ui_estimationEdit = new DuDoubleSpinBox(this);
     ui_estimationEdit->setMinimum(-1);
     ui_estimationEdit->setMaximum(999);
     ui_estimationEdit->setSuffix(" days");
@@ -690,7 +690,7 @@ void StatusEditWidget::setupUi()
     versionLayout->setSpacing(3);
     versionLayout->setContentsMargins(3,3,3,3);
 
-    ui_versionBox = new AutoSelectSpinBox(this);
+    ui_versionBox = new DuSpinBox(this);
     ui_versionBox->setMaximum(1000);
     ui_versionBox->setValue(1);
     ui_versionBox->setPrefix("v");

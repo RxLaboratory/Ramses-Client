@@ -91,7 +91,7 @@ void DBManagerWidget::setupUi()
     ui_deleteCheckBox->setChecked(false);
     topLayout->addWidget(ui_deleteCheckBox, 0, 0);
 
-    ui_deleteFromEdit = new AutoSelectSpinBox(this);
+    ui_deleteFromEdit = new DuSpinBox(this);
     ui_deleteFromEdit->setMaximum(1000);
     ui_deleteFromEdit->setSuffix(" days");
     ui_deleteFromEdit->setValue(180);
@@ -123,5 +123,5 @@ void DBManagerWidget::connectEvents()
     connect(ui_cleanButton, &QPushButton::clicked, this, &DBManagerWidget::clean);
     connect(ui_cancelCleanButton, &QPushButton::clicked, this, &DBManagerWidget::cancel);
     connect(ui_acceptCleanButton, &QPushButton::clicked, this, &DBManagerWidget::accept);
-    connect(ui_deleteCheckBox, &QCheckBox::clicked, ui_deleteFromEdit, &AutoSelectSpinBox::setEnabled);
+    connect(ui_deleteCheckBox, &QCheckBox::clicked, ui_deleteFromEdit, &DuSpinBox::setEnabled);
 }

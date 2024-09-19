@@ -85,7 +85,7 @@ void ResolutionWidget::setupUi()
     presetsBox->setCurrentIndex(3);
     layout->addWidget(presetsBox);
 
-    widthBox = new AutoSelectSpinBox(this);
+    widthBox = new DuSpinBox(this);
     widthBox->setPrefix("Width: ");
     widthBox->setSuffix("px");
     widthBox->setMinimum(4);
@@ -93,7 +93,7 @@ void ResolutionWidget::setupUi()
     widthBox->setValue(1920);
     layout->addWidget(widthBox);
 
-    heightBox = new AutoSelectSpinBox(this);
+    heightBox = new DuSpinBox(this);
     heightBox->setPrefix("Height: ");
     heightBox->setSuffix("px");
     heightBox->setMinimum(4);
@@ -110,14 +110,13 @@ void ResolutionWidget::connectEvents()
     connect(widthBox, SIGNAL(valueChanged(int)), this, SLOT(selectPreset()));
     connect(heightBox, SIGNAL(valueChanged(int)), this, SLOT(selectPreset()));
 
-    connect(widthBox, &AutoSelectSpinBox::editingFinished, this, [this] () {
+    connect(widthBox, &DuSpinBox::edited, this, [this]() {
         emit resolutionEdited(
             widthBox->value(),
             heightBox->value()
             );
     });
-
-    connect(heightBox, &AutoSelectSpinBox::editingFinished, this, [this] () {
+    connect(heightBox, &DuSpinBox::edited, this, [this]() {
         emit resolutionEdited(
             widthBox->value(),
             heightBox->value()
