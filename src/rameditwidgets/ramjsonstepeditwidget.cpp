@@ -193,15 +193,20 @@ void RamJsonStepEditWidget::changeUser(RamObject *userObj)
             cStr += QString::number(int(c/total*100)) + "%)";
 
             auto l = new QLabel(state->name(), this);
+            l->setAttribute(Qt::WA_TransparentForMouseEvents, true);
             l->setStyleSheet("QLabel { color: "+state->color().name() + "; }");
-            ui_statesLayout->addRow( l, new QLabel(cStr, this) );
+            auto l2 = new QLabel(cStr, this);
+            l2->setAttribute(Qt::WA_TransparentForMouseEvents, true);
+            ui_statesLayout->addRow( l, l2 );
         }
 
         QString cStr = "<b>"+QString::number(total)+"</b> ";
         if (stepType == RamStep::AssetProduction) cStr += "assets";
         else cStr += "shots";
 
-        ui_statesLayout->addRow( "Total", new QLabel(cStr, this) );
+        auto l = new QLabel(cStr, this);
+        l->setAttribute(Qt::WA_TransparentForMouseEvents, true);
+        ui_statesLayout->addRow( "Total", l );
     }
 
     const QMap<RamStatus::Difficulty, int> difficulties = step->difficultyCount(user);
@@ -253,14 +258,19 @@ void RamJsonStepEditWidget::changeUser(RamObject *userObj)
             }
 
             auto l = new QLabel(label, this);
-            ui_difficultiesLayout->addRow( l, new QLabel(cStr, this) );
+            l->setAttribute(Qt::WA_TransparentForMouseEvents, true);
+            auto l2 = new QLabel(cStr, this);
+            l2->setAttribute(Qt::WA_TransparentForMouseEvents, true);
+            ui_difficultiesLayout->addRow( l, l2 );
         }
 
         QString cStr = "<b>"+QString::number(total)+"</b> ";
         if (stepType == RamStep::AssetProduction) cStr += "assets";
         else cStr += "shots";
 
-        ui_difficultiesLayout->addRow( "Total", new QLabel(cStr, this) );
+        auto l = new QLabel(cStr, this);
+        l->setAttribute(Qt::WA_TransparentForMouseEvents, true);
+        ui_difficultiesLayout->addRow( tr("Total"), l );
     }
 }
 
@@ -306,16 +316,19 @@ void RamJsonStepEditWidget::setupMainTab()
     completionLayout->addWidget(ui_progressWidget);
 
     ui_completionLabel = new QLabel(this);
+    ui_completionLabel->setAttribute(Qt::WA_TransparentForMouseEvents, true);
     completionLayout->addWidget(ui_completionLabel);
     completionLayout->setAlignment(ui_completionLabel, Qt::AlignCenter);
 
     ui_statesWidget = new QWidget(ui_tabWidget);
     ui_statesWidget->setProperty("class", "transparent");
+    ui_statesWidget->setAttribute(Qt::WA_TransparentForMouseEvents, true);
     ui_statesLayout = new QFormLayout(ui_statesWidget);
     estimLayout->addWidget(ui_statesWidget);
 
     ui_difficultiesWidget = new QWidget(ui_tabWidget);
     ui_difficultiesWidget->setProperty("class", "transparent");
+    ui_difficultiesWidget->setAttribute(Qt::WA_TransparentForMouseEvents, true);
     ui_difficultiesLayout = new QFormLayout(ui_difficultiesWidget);
     estimLayout->addWidget(ui_difficultiesWidget);
 
