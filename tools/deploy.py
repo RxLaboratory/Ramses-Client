@@ -17,7 +17,8 @@ from config import (
     QMAKE_PATH,
     MAKE_PATH,
     DEPLOYQT_PATH,
-    BIN_PATH
+    BIN_PATH,
+    REPO_PATH
 )
 from build import get_exe
 
@@ -110,4 +111,4 @@ def deploy():
 # Run
 if __name__ == '__main__':
     deploy()
-    utils.write_version(BUILD_PATH, VERSION)
+    utils.write_version(REPO_PATH, VERSION)

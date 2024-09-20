@@ -1,5 +1,7 @@
 ## Priority fixes
 
+- pipes are not saved ?
+- maya lock transform fails on publish
 - Add a server admin mode, from landing page
     - manage all projects (create, disable, remove)
     - manage all users (create, disable, remove)
