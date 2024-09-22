@@ -1,54 +1,56 @@
-<?xml version="1.0" encoding="utf-8"?>
-<svg width="32" height="32" viewBox="0 0 8.4666666 8.4666666" version="1.1" id="svg8" xmlns="http://www.w3.org/2000/svg">
-  <defs id="defs2">
-    <style id="style1399">.cls-1{fill:#e3e3e3;}</style>
-    <style id="style1399-1">.cls-1{fill:#e3e3e3;}</style>
-    <style id="style1399-5">.cls-1{fill:#e3e3e3;}</style>
-    <style id="style1399-8">.cls-1{fill:#e3e3e3;}</style>
-    <style id="style1399-7">.cls-1{fill:#e3e3e3;}</style>
-    <style id="style1399-1-5">.cls-1{fill:#e3e3e3;}</style>
-    <style id="style1399-5-6">.cls-1{fill:#e3e3e3;}</style>
-    <style id="style1399-8-9">.cls-1{fill:#e3e3e3;}</style>
-    <style id="style1399-2">.cls-1{fill:#e3e3e3;}</style>
-    <style id="style1399-1-1">.cls-1{fill:#e3e3e3;}</style>
-    <style id="style1399-5-5">.cls-1{fill:#e3e3e3;}</style>
-    <style id="style1399-8-99">.cls-1{fill:#e3e3e3;}</style>
-    <style id="style1399-4">.cls-1{fill:#e3e3e3;}</style>
-    <style id="style1399-1-2">.cls-1{fill:#e3e3e3;}</style>
-    <style id="style1399-5-7">.cls-1{fill:#e3e3e3;}</style>
-    <style id="style1399-8-5">.cls-1{fill:#e3e3e3;}</style>
-    <style id="style1399-7-3">.cls-1{fill:#e3e3e3;}</style>
-    <style id="style1399-1-5-9">.cls-1{fill:#e3e3e3;}</style>
-    <style id="style1399-5-6-0">.cls-1{fill:#e3e3e3;}</style>
-    <style id="style1399-8-9-2">.cls-1{fill:#e3e3e3;}</style>
-    <style id="style1399-2-6">.cls-1{fill:#e3e3e3;}</style>
-    <style id="style1399-1-1-4">.cls-1{fill:#e3e3e3;}</style>
-    <style id="style1399-5-5-2">.cls-1{fill:#e3e3e3;}</style>
-    <style id="style1399-8-99-3">.cls-1{fill:#e3e3e3;}</style>
-    <style id="style1399-6">.cls-1{fill:#e3e3e3;}</style>
-    <style id="style1399-1-8">.cls-1{fill:#e3e3e3;}</style>
-    <style id="style1399-5-2">.cls-1{fill:#e3e3e3;}</style>
-    <style id="style1399-8-0">.cls-1{fill:#e3e3e3;}</style>
-    <style id="style1399-7-30">.cls-1{fill:#e3e3e3;}</style>
-    <style id="style1399-1-5-7">.cls-1{fill:#e3e3e3;}</style>
-    <style id="style1399-5-6-1">.cls-1{fill:#e3e3e3;}</style>
-    <style id="style1399-8-9-3">.cls-1{fill:#e3e3e3;}</style>
-    <style id="style1399-2-8">.cls-1{fill:#e3e3e3;}</style>
-    <style id="style1399-1-1-1">.cls-1{fill:#e3e3e3;}</style>
-    <style id="style1399-5-5-27">.cls-1{fill:#e3e3e3;}</style>
-    <style id="style1399-8-99-35">.cls-1{fill:#e3e3e3;}</style>
-    <style id="style1399-50">.cls-1{fill:#e3e3e3;}</style>
-    <style id="style1399-1-56">.cls-1{fill:#e3e3e3;}</style>
-    <style id="style1399-5-21">.cls-1{fill:#e3e3e3;}</style>
-    <style id="style1399-8-96">.cls-1{fill:#e3e3e3;}</style>
-    <style id="style1399-7-8">.cls-1{fill:#e3e3e3;}</style>
-    <style id="style1399-1-5-73">.cls-1{fill:#e3e3e3;}</style>
-    <style id="style1399-5-6-06">.cls-1{fill:#e3e3e3;}</style>
-    <style id="style1399-8-9-1">.cls-1{fill:#e3e3e3;}</style>
-    <style id="style1399-2-2">.cls-1{fill:#e3e3e3;}</style>
-    <style id="style1399-1-1-8">.cls-1{fill:#e3e3e3;}</style>
-    <style id="style1399-5-5-3">.cls-1{fill:#e3e3e3;}</style>
-    <style id="style1399-8-99-7">.cls-1{fill:#e3e3e3;}</style>
-  </defs>
-  <path id="path899" style="fill-opacity: 1; stroke-width: 0.0498701; fill: rgb(227, 227, 227);" d="M 10.125 3.8710938 C 8.8049271 3.8710938 7.7324219 5.006925 7.7324219 6.4042969 L 7.7324219 25.412109 C 7.7324219 26.809482 8.8049271 27.945313 10.125 27.945312 L 21.675781 27.945312 C 22.995853 27.945312 24.070313 26.809482 24.070312 25.412109 L 24.070312 6.4042969 C 24.070312 5.006925 22.995853 3.8710937 21.675781 3.8710938 L 10.125 3.8710938 z M 19.25 14.353516 C 20.131212 14.353516 20.845703 15.068007 20.845703 15.949219 C 20.846268 16.830431 20.13171 17.546875 19.25 17.546875 C 18.368787 17.546875 17.654297 16.830431 17.654297 15.949219 C 17.654297 15.068007 18.368787 14.353516 19.25 14.353516 z " transform="scale(0.26458333)"/>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="32"
+   height="32"
+   viewBox="0 0 8.4666666 8.4666666"
+   version="1.1"
+   id="svg8"
+   sodipodi:docname="logout_sl.svg"
+   inkscape:version="1.3.2 (1:1.3.2+202311252150+091e20ef0f)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     showgrid="true"
+     inkscape:zoom="36.6875"
+     inkscape:cx="10.166951"
+     inkscape:cy="15.236797"
+     inkscape:window-width="3392"
+     inkscape:window-height="1371"
+     inkscape:window-x="1968"
+     inkscape:window-y="32"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg8">
+    <inkscape:grid
+       id="grid1"
+       units="px"
+       originx="0"
+       originy="0"
+       spacingx="0.26458333"
+       spacingy="0.26458333"
+       empcolor="#0099e5"
+       empopacity="0.30196078"
+       color="#0099e5"
+       opacity="0.14901961"
+       empspacing="5"
+       dotted="false"
+       gridanglex="30"
+       gridanglez="30"
+       visible="true" />
+  </sodipodi:namedview>
+  <defs
+     id="defs2" />
+  <path
+     id="path899"
+     style="fill:#e3e3e3;fill-opacity:1;stroke-width:0.0130375"
+     d="m 2.7366107,1.0583333 c -0.3420458,0 -0.6199441,0.2995955 -0.6199441,0.668177 V 6.740156 c 0,0.3685817 0.2778983,0.6681772 0.6199441,0.6681769 H 5.7295494 C 6.0715952,7.4083329 6.35,7.1087377 6.3499997,6.740156 V 1.7265103 c 0,-0.3685815 -0.2784045,-0.668177 -0.6204503,-0.668177 z M 5.101002,3.823257 c 0.2283321,0 0.4134648,0.1884597 0.4134648,0.4208949 1.464e-4,0.2324352 -0.1850037,0.4214099 -0.4134648,0.4214099 -0.2283322,0 -0.4134648,-0.1889747 -0.4134648,-0.4214099 0,-0.2324352 0.1851326,-0.4208949 0.4134648,-0.4208949 z" />
 </svg>
