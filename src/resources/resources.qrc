@@ -1,7 +1,7 @@
 <RCC>
     <qresource prefix="/icons">
         <file alias="icon-large">icons/ramses-icon-large.svg</file>
-        <file alias="server-settings">icons/server-settings.svg</file>
+        <file alias="online">icons/server-settings.svg</file>
         <file alias="login">icons/login_sl.svg</file>
         <file alias="logout">icons/logout_sl.svg</file>
         <file alias="user-settings">icons/user-settings_sl.svg</file>
@@ -64,8 +64,8 @@
         <file alias="create">icons/create-from-template.svg</file>
         <file alias="status-edit">icons/status_edit.svg</file>
         <file alias="timeline">icons/timeline-time_sl.svg</file>
-        <file alias="shield">icons/shield-secure-block-ssl_sl.svg</file>
-        <file alias="no-shield">icons/shield-unsecure-unblock_sl.svg</file>
+        <file alias="secure">icons/shield-secure-block-ssl_sl.svg</file>
+        <file alias="insecure">icons/shield-unsecure-unblock_sl.svg</file>
         <file alias="clean">icons/clean-empty-broom_sl.svg</file>
         <file alias="storage">icons/storage.svg</file>
         <file alias="storage-settings">icons/storage_settings.svg</file>
@@ -95,6 +95,8 @@
         <file alias="database-read">icons/storage-load-read.svg</file>
         <file alias="database-write">icons/storage-save-write.svg</file>
         <file alias="database-read-write">icons/storage-io-input-output-read-write.svg</file>
+        <file alias="local">icons/computer-desktop-local.svg</file>
+        <file alias="offline">icons/offline.svg</file>
     </qresource>
     <qresource prefix="/styles">
         <file alias="vars">styles/style-values.rui</file>

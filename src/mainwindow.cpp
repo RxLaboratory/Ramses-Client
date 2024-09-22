@@ -586,6 +586,7 @@ void MainWindow::changeState(StateManager::State s)
     switch (s) {
     case StateManager::Opening:
     case StateManager::Closing:
+        ui_stateWidget->setColor(focusStateIconColor());
         ui_stateWidget->setSVGIcon(":/icons/wait");
         ui_stateWidget->rotate();
         hideAllDocks();
@@ -597,6 +598,7 @@ void MainWindow::changeState(StateManager::State s)
     case StateManager::Connecting:
     case StateManager::Syncing:
         ui_rightToolBar->setEnabled(false);
+        ui_stateWidget->setColor(focusStateIconColor());
         ui_stateWidget->setSVGIcon(":/icons/wait");
         ui_stateWidget->rotate();
         break;
@@ -605,8 +607,8 @@ void MainWindow::changeState(StateManager::State s)
     case StateManager::Unknown:
         ui_leftToolBar->setEnabled(true);
         ui_rightToolBar->setEnabled(true);
-        ui_stateWidget->setSVGIcon("");
         ui_stateWidget->stopAnimation();
+        changeServerState(RamServerClient::i()->status());
         break;
     }
 
@@ -615,19 +617,68 @@ void MainWindow::changeState(StateManager::State s)
 
 void MainWindow::changeIOState(LocalDataInterface::State s)
 {
+    ui_stateWidget->setToolTip("");
+
     // Set the read/write icon
     switch(s) {
     case LocalDataInterface::Idle:
-        ui_ioWidget->setSVGIcon("");
+        if (DBInterface::i()->isTeamProject()) {
+            if (RamServerClient::i()->ssl()) {
+                ui_ioWidget->setColor(normalStateIconColor());
+                ui_ioWidget->setSVGIcon(":/icons/secure");
+                ui_stateWidget->setToolTip(tr("Secured connection"));
+            }
+            else {
+                ui_ioWidget->setColor(warningStateIconColor());
+                ui_ioWidget->setSVGIcon(":/icons/insecure");
+                ui_stateWidget->setToolTip(tr("Warning: insecure connection!"));
+            }
+        }
+        else {
+            ui_ioWidget->setColor(normalStateIconColor());
+            ui_ioWidget->setSVGIcon("");
+        }
         break;
     case LocalDataInterface::Reading:
+        ui_ioWidget->setColor(normalStateIconColor());
         ui_ioWidget->setSVGIcon(":/icons/database-read");
         break;
     case LocalDataInterface::Writing:
+        ui_ioWidget->setColor(normalStateIconColor());
         ui_ioWidget->setSVGIcon(":/icons/database-write");
         break;
     case LocalDataInterface::ReadWrite:
+        ui_ioWidget->setColor(normalStateIconColor());
         ui_ioWidget->setSVGIcon(":/icons/database-read-write");
+        break;
+    }
+}
+
+void MainWindow::changeServerState(RamServerClient::ClientStatus s)
+{
+    if (StateManager::i()->state() != StateManager::Idle &&
+        StateManager::i()->state() != StateManager::Unknown)
+        return;
+
+    if (!DBInterface::i()->isTeamProject()) {
+        ui_stateWidget->setColor(normalStateIconColor());
+        ui_stateWidget->setSVGIcon(":/icons/local");
+        ui_stateWidget->setToolTip(tr("Local project"));
+        return;
+    }
+
+    switch(s) {
+    case RamServerClient::Offline:
+        ui_stateWidget->setColor(warningStateIconColor());
+        ui_stateWidget->setSVGIcon(":/icons/offline");
+        ui_stateWidget->setToolTip(tr("Team project\nWarning: Offline!"));
+        break;
+    case RamServerClient::Online:
+    case RamServerClient::Ready:
+    case RamServerClient::Syncing:
+        ui_stateWidget->setColor(normalStateIconColor());
+        ui_stateWidget->setSVGIcon(":/icons/online");
+        ui_stateWidget->setToolTip(tr("Team project"));
         break;
     }
 }
@@ -670,6 +721,23 @@ void MainWindow::paintEvent(QPaintEvent *e)
     //painter.setRenderHint(QPainter::Antialiasing, false);
 
     QMainWindow::paintEvent(e);
+}
+
+QColor MainWindow::normalStateIconColor()
+{
+    return DuUI::pushColor(
+        DuSettings::i()->get(DuSettings::UI_IconColor).value<QColor>(), 2
+        );
+}
+
+QColor MainWindow::warningStateIconColor()
+{
+    return DuSettings::i()->get(DuSettings::UI_IconColor).value<QColor>();
+}
+
+QColor MainWindow::focusStateIconColor()
+{
+    return DuSettings::i()->get(DuSettings::UI_FocusColor).value<QColor>();
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
@@ -774,7 +842,7 @@ void MainWindow::setupActions()
     m_actionSetOnline = new DuAction(this);
     m_actionSetOnline->setText(tr("Set online"));
     m_actionSetOnline->setToolTip(tr("Connects to the Ramses server."));
-    m_actionSetOnline->setIcon(":/icons/server-settings");
+    m_actionSetOnline->setIcon(":/icons/online");
 
     m_actionSetOffline = new DuAction(this);
     m_actionSetOffline->setText(tr("Set offline"));
@@ -1111,11 +1179,7 @@ void MainWindow::setupToolBars()
     ui_rightToolBar->addWidget(ui_stateWidget);
 
     ui_ioWidget = new DuIconWidget(this);
-    ui_ioWidget->setColor(
-        DuUI::pushColor(
-            DuSettings::i()->get(DuSettings::UI_ForegroundColor).value<QColor>(), 2
-            )
-        );
+    ui_ioWidget->setColor( normalStateIconColor() );
     ui_rightToolBar->addWidget(ui_ioWidget);
 
     auto userMenu = new DuMenu();

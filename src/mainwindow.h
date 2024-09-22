@@ -24,6 +24,7 @@
 #include "ramproject.h"
 #include "statemanager.h"
 #include "localdatainterface.h"
+#include "ramserverclient.h"
 
 class MainWindow : public DuMainWindow
 {
@@ -208,6 +209,7 @@ private slots:
     void dbiConnectionStatusChanged(NetworkUtils::NetworkStatus s);
     void changeState(StateManager::State s);
     void changeIOState(LocalDataInterface::State s);
+    void changeServerState(RamServerClient::ClientStatus s);
 
     void revealAdminFolder();
     void revealPreProdFolder();
@@ -232,5 +234,10 @@ protected:
 private:
     bool m_readyToClose = false;
     bool m_closing = false;
+
+    // Utils
+    QColor normalStateIconColor();
+    QColor warningStateIconColor();
+    QColor focusStateIconColor();
 };
 #endif // MAINWINDOW_H
