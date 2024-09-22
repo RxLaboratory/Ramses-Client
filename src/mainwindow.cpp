@@ -508,8 +508,8 @@ void MainWindow::ramsesReady()
     // The signal is emited only if all are ready
     RamUser *user = Ramses::i()->currentUser();
 
-    ui_userMenu->setTitle(QString("User (%1)").arg(user->shortName()));
-    ui_userMenu->setVisible(true);
+    ui_userMenuAction->setText(QString("User (%1)").arg(user->shortName()));
+    ui_userMenuAction->setVisible(true);
     m_actionUserProfile->setVisible(true);
     m_actionUserFolder->setVisible(true);
     m_actionCloseProject->setVisible(true);
@@ -618,12 +618,12 @@ void MainWindow::changeServerState(RamServerClient::ClientStatus s)
         ui_stateWidget->setColor(normalStateIconColor());
         ui_stateWidget->setSVGIcon(":/icons/local");
         ui_stateWidget->setToolTip(tr("Local project"));
-        ui_serverMenu->setVisible(false);
+        ui_serverMenuAction->setVisible(false);
         updateWindow();
         return;
     }
 
-    ui_serverMenu->setVisible(true);
+    ui_serverMenuAction->setVisible(true);
     updateWindow();
 
     if (s == RamServerClient::Offline) {
@@ -1199,7 +1199,8 @@ void MainWindow::setupToolBars()
     ui_userMenu->addAction(m_actionUserProfile);
     m_actionUserProfile->setVisible(false);
 
-    moreMenu->addMenu(ui_userMenu);
+    ui_userMenuAction = moreMenu->addMenu(ui_userMenu);
+    ui_userMenuAction->setVisible(false);
 
     ui_serverMenu = new DuMenu(tr("Server"));
     ui_serverMenu->setIcon(DuIcon(":/icons/server"));
@@ -1208,7 +1209,8 @@ void MainWindow::setupToolBars()
     ui_serverMenu->addSeparator();
     ui_serverMenu->addAction(m_actionSetOnline);
 
-    moreMenu->addMenu(ui_serverMenu);
+    ui_serverMenuAction = moreMenu->addMenu(ui_serverMenu);
+    ui_serverMenuAction->setVisible(false);
 
     moreMenu->addSeparator();
     moreMenu->addAction(m_actionConsole);

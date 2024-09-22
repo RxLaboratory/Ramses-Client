@@ -98,6 +98,7 @@
         <file alias="local">icons/computer-desktop-local.svg</file>
         <file alias="offline">icons/offline.svg</file>
         <file alias="server">icons/server.svg</file>
+        <file alias="project-settings">icons/settings-file.svg</file>
     </qresource>
     <qresource prefix="/styles">
         <file alias="vars">styles/style-values.rui</file>

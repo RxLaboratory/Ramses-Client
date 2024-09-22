@@ -4,6 +4,7 @@
 #include <QFileInfo>
 #include <QtDebug>
 #include <QFileDialog>
+#include <QDesktopServices>
 
 #include "duapp/app-version.h"
 #include "duapp/duui.h"
@@ -17,6 +18,7 @@
 #include "ramserverclient.h"
 #include "ramsettings.h"
 #include "datacrypto.h"
+#include "wizards/serverwizard.h"
 
 LandingPageWidget::LandingPageWidget(QWidget *parent)
     : QWidget{parent}
@@ -39,23 +41,7 @@ void LandingPageWidget::updateRecentList()
 
 void LandingPageWidget::createDatabase(bool team)
 {
-    // Necessary for the margins
-    auto dummy = new QWidget(this);
-    auto l = DuUI::addBoxLayout(Qt::Vertical, dummy);
-    ui_stackedLayout->addWidget(dummy);
-
-    // Create a wizard and show it
-    auto pw = new ProjectWizard(team);
-    l->addWidget(pw);
-
-    // Delete it when finished
-    connect(pw, &ProjectWizard::finished, this, [this,pw,dummy] () {
-        ui_stackedLayout->setCurrentIndex(0);
-        pw->deleteLater();
-        dummy->deleteLater();
-    });
-
-    ui_stackedLayout->setCurrentIndex(1);
+    showWizard(new ProjectWizard(team));
 }
 
 void LandingPageWidget::openDatabase(const QString &dbFile)
@@ -235,23 +221,12 @@ void LandingPageWidget::openDatabase(const QString &dbFile)
 
 void LandingPageWidget::joinTeamProject()
 {
-    // Necessary for the margins
-    auto dummy = new QWidget(this);
-    auto l = DuUI::addBoxLayout(Qt::Vertical, dummy);
-    ui_stackedLayout->addWidget(dummy);
+    showWizard(new JoinTeamProjectWizard());
+}
 
-    // Create a wizard and show it
-    auto pw = new JoinTeamProjectWizard();
-    l->addWidget(pw);
-
-    // Delete it when finished
-    connect(pw, &ProjectWizard::finished, this, [this,pw,dummy] () {
-        ui_stackedLayout->setCurrentIndex(0);
-        pw->deleteLater();
-        dummy->deleteLater();
-    });
-
-    ui_stackedLayout->setCurrentIndex(1);
+void LandingPageWidget::manageServer()
+{
+    showWizard(new ServerWizard());
 }
 
 void LandingPageWidget::setupUi()
@@ -319,6 +294,28 @@ void LandingPageWidget::setupUi()
     recentLayout->setStretch(1, 1);
     recentLayout->setStretch(2, 0);
 
+    centerLayout->addStretch(1);
+
+    auto toolsLayout = DuUI::addBoxLayout(Qt::Horizontal, centerLayout);
+
+    ui_manageServerButton = new QToolButton(this);
+    ui_manageServerButton->setText(tr("Server..."));
+    ui_manageServerButton->setToolTip(tr("Manage your Ramses server users and projects"));
+    ui_manageServerButton->setIcon(DuIcon(":/icons/server"));
+    toolsLayout->addWidget(ui_manageServerButton);
+
+    ui_helpButton = new QToolButton(this);
+    ui_helpButton->setText(tr("User guide"));
+    ui_helpButton->setToolTip(tr("Open the online Ramses user guide."));
+    ui_helpButton->setIcon(DuIcon(":/icons/documentation"));
+    toolsLayout->addWidget(ui_helpButton);
+
+    ui_donateButton = new QToolButton(this);
+    ui_donateButton->setText(tr("Donate"));
+    ui_donateButton->setToolTip(tr("Support free and open source software development."));
+    ui_donateButton->setIcon(DuIcon(":/icons/donate"));
+    toolsLayout->addWidget(ui_donateButton);
+
     centerLayout->addStretch(2);
 }
 
@@ -353,6 +350,12 @@ void LandingPageWidget::connectEvents()
 
     connect(ui_joinTeamProjectButton, &QPushButton::clicked,
             this, &LandingPageWidget::joinTeamProject);
+
+    connect(ui_manageServerButton, &QPushButton::clicked,
+            this, &LandingPageWidget::manageServer);
+
+    connect(ui_donateButton, &QToolButton::clicked, this, []() { QDesktopServices::openUrl ( QUrl( URL_DONATION ) ); });
+    connect(ui_helpButton, &QToolButton::clicked, this, []() { QDesktopServices::openUrl ( QUrl( URL_DOC ) ); });
 }
 
 QString LandingPageWidget::login(ServerConfig serverSettings, const QString &username, const QString &password, bool silentFail)
@@ -386,4 +389,24 @@ QString LandingPageWidget::login(ServerConfig serverSettings, const QString &use
     }
 
     return userUuid;
+}
+
+void LandingPageWidget::showWizard(QWizard *w)
+{
+    // Necessary for the margins
+    auto dummy = new QWidget(this);
+    auto l = DuUI::addBoxLayout(Qt::Vertical, dummy);
+    ui_stackedLayout->addWidget(dummy);
+
+    // Create the wizard and show it
+    l->addWidget(w);
+
+    // Delete it when finished
+    connect(w, &ProjectWizard::finished, this, [this,w,dummy] () {
+        ui_stackedLayout->setCurrentIndex(0);
+        w->deleteLater();
+        dummy->deleteLater();
+    });
+
+    ui_stackedLayout->setCurrentIndex(1);
 }

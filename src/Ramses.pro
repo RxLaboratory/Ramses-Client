@@ -242,7 +242,8 @@ SOURCES += \
     wizards/projectwizard.cpp \
     wizards/ramdatabasepathswizardpage.cpp \
     wizards/ramobjectpropertieswizardpage.cpp \
-    wizards/ramuserswizardpage.cpp
+    wizards/ramuserswizardpage.cpp \
+    wizards/serverwizard.cpp
 
 HEADERS += \
     docks/consoledockwidget.h \
@@ -451,7 +452,8 @@ HEADERS += \
     wizards/projectwizard.h \
     wizards/ramdatabasepathswizardpage.h \
     wizards/ramobjectpropertieswizardpage.h \
-    wizards/ramuserswizardpage.h
+    wizards/ramuserswizardpage.h \
+    wizards/serverwizard.h
 
 FORMS += \
     dumodules/duwidgets/aboutdialog.ui \

@@ -165,8 +165,10 @@ private:
     QAction *ui_filesMenuAction;
 
     DuMenu *ui_userMenu;
+    QAction *ui_userMenuAction;
 
     DuMenu *ui_serverMenu;
+    QAction *ui_serverMenuAction;
 
     DuIconWidget *ui_stateWidget;
     DuIconWidget *ui_ioWidget;

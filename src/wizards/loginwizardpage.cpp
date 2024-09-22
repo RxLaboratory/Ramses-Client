@@ -78,7 +78,7 @@ bool LoginWizardPage::validatePage()
     if (userRole != RamUser::ENUMVALUE_Admin && _mustBeAdmin) {
         QMessageBox::warning(this,
                              tr("Insuficient rights"),
-                             tr("You must be a server administrator to create a team project.\nPlease contact an administrator of this server.")
+                             tr("You must be a server administrator.\nPlease contact an administrator of this server.")
                              );
         return false;
     }
