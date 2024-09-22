@@ -1,6 +1,5 @@
 ## Priority fixes
 
-- pipes are not saved ?
 - maya lock transform fails on publish
 - add client version check at startup
 - Add a server admin mode, from landing page
@@ -10,7 +9,6 @@
 - update daemon to not use project uuid
 - update py api to not use current project
 - add pixel aspect ratio in py api
-- auto show console on qcritical
 - reimplement qmessagebox static methods as dumessagebox to improve display using DuUI::exec
 - do the same as above with qdialog/dudialog
 - Project wizard: step templates, shots, assets
