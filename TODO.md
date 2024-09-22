@@ -6,8 +6,6 @@
     - manage all projects (create, disable, remove)
     - manage all users (create, disable, remove)
     - manage user assignments (per user or per project)
-- show online/offline/security/not team
-    - reimplement sync buttons and setonline/setoffline
 - update daemon to not use project uuid
 - update py api to not use current project
 - add pixel aspect ratio in py api

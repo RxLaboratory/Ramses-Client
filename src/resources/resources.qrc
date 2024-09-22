@@ -97,6 +97,7 @@
         <file alias="database-read-write">icons/storage-io-input-output-read-write.svg</file>
         <file alias="local">icons/computer-desktop-local.svg</file>
         <file alias="offline">icons/offline.svg</file>
+        <file alias="server">icons/server.svg</file>
     </qresource>
     <qresource prefix="/styles">
         <file alias="vars">styles/style-values.rui</file>

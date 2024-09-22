@@ -202,7 +202,8 @@ bool DBInterface::sync()
 {
     StateChanger s(StateManager::Syncing);
     s.freezeForIdle(
-        connect(this, &DBInterface::syncFinished, StateManager::i(), &StateManager::setIdle)
+        connect(this, &DBInterface::syncFinished, StateManager::i(), &StateManager::setIdle),
+        tr("Quick sync!")
         );
 
     qInfo().noquote() << tr("Beginning quick data sync...");
@@ -243,8 +244,7 @@ bool DBInterface::fullSync()
 {
     StateChanger s(StateManager::Syncing);
     s.freezeForIdle(
-        connect(this, &DBInterface::syncFinished, StateManager::i(), &StateManager::setIdle),
-        tr("Quick sync!")
+        connect(this, &DBInterface::syncFinished, StateManager::i(), &StateManager::setIdle)
         );
 
     qInfo().noquote() << tr("Beginning full data sync...");

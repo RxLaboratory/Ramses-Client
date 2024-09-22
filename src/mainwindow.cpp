@@ -99,11 +99,11 @@ void MainWindow::connectEvents()
 
     // ==== Toolbar buttons ====
 
-    connect(m_actionLogOut, &QAction::triggered, this, []() { StateManager::i()->restart(); });
+    connect(m_actionCloseProject, &QAction::triggered, this, []() { StateManager::i()->restart(); });
     connect(m_actionSetOnline, &QAction::triggered, this, &MainWindow::setOnlineAction);
-    connect(m_actionSetOffline, &QAction::triggered, this, &MainWindow::setOfflineAction);
-    connect(m_actionDatabaseSettings, &QAction::triggered, this, &MainWindow::databaseSettingsAction);
     connect(m_actionUserFolder,SIGNAL(triggered()), this, SLOT(revealUserFolder()));
+    connect(m_actionSync, SIGNAL(triggered()), DBInterface::i(),SLOT(sync()));
+    connect(m_actionFullSync, SIGNAL(triggered()), DBInterface::i(),SLOT(fullSync()));
 
     connect(m_actionUserProfile,&QAction::triggered,
             this, [] () {
@@ -156,11 +156,6 @@ void MainWindow::connectEvents()
     connect(m_fileUserAction,SIGNAL(triggered()), this, SLOT(revealUserFolder()));
     connect(m_fileVersionsAction,SIGNAL(triggered()), this, SLOT(revealVersionsFolder()));
     connect(m_fileTrashAction,SIGNAL(triggered()), this, SLOT(revealTrashFolder()));
-
-    // ==== Other buttons ====
-
-    connect(m_actionSync, SIGNAL(triggered()), DBInterface::i(),SLOT(sync()));
-    connect(m_actionFullSync, SIGNAL(triggered()), DBInterface::i(),SLOT(fullSync()));
 
     // ==== State ====
 
@@ -280,26 +275,12 @@ void MainWindow::maximize(bool m)
     else showNormal();
 }
 
-void MainWindow::setOfflineAction()
-{
-    //DBInterface::i()->setOffline();
-}
-
 void MainWindow::setOnlineAction()
 {
     /*DBInterface::i()->setOnline();
 
     // Trigger a full sync
     if (RamServerInterface::instance()->isOnline()) DBInterface::i()->fullSync();*/
-}
-
-void MainWindow::databaseSettingsAction()
-{
-    QString dataFilePath = LocalDataInterface::i()->dataFile();
-    if (dataFilePath == "") return;
-
-    QFileInfo dataFile(dataFilePath);
-    if (!dataFile.exists()) return;
 }
 
 void MainWindow::setPage(Page p)
@@ -517,12 +498,11 @@ void MainWindow::ramsesReady()
     // The signal is emited only if all are ready
     RamUser *user = Ramses::i()->currentUser();
 
-    ui_userButton->setText(QString("User (%1)").arg(user->shortName()));
+    ui_userMenu->setTitle(QString("User (%1)").arg(user->shortName()));
+    ui_userMenu->setVisible(true);
     m_actionUserProfile->setVisible(true);
     m_actionUserFolder->setVisible(true);
-    m_actionLogOut->setVisible(true);
-    ui_databaseButton->setVisible(true);
-    ui_userMenuAction->setVisible(true);
+    m_actionCloseProject->setVisible(true);
 
     // Set Project
 
@@ -542,42 +522,6 @@ void MainWindow::ramsesReady()
     setWindowTitle(project->name());
 
     updateWindow();
-}
-
-void MainWindow::dbiConnectionStatusChanged(NetworkUtils::NetworkStatus s)
-{
-    /*ui_databaseMenuAction->setVisible(true);
-
-    QString address =  RamServerInterface::instance()->serverAddress();
-    if (s == NetworkUtils::Online)
-    {
-        m_actionSync->setVisible(true);
-        m_actionFullSync->setVisible(true);
-        ui_databaseButton->setText(address);
-        m_actionSetOnline->setVisible(false);
-        m_actionSetOffline->setVisible(true);
-
-        if (RamServerInterface::instance()->ssl())
-        {
-            ui_databaseButton->setIcon(DuIcon(":/icons/shield"));
-            ui_databaseButton->setToolTip("Connected.");
-        }
-        else
-        {
-            ui_databaseButton->setIcon(DuIcon(":/icons/no-shield"));
-            ui_databaseButton->setToolTip(tr("WARNING: Connection is not secured!"));
-        }
-    }
-    else if (s == NetworkUtils::Connecting) ui_databaseButton->setText(tr("Connecting to %1").arg(address));
-    else if (s == NetworkUtils::Offline)
-    {
-        m_actionSync->setVisible(false);
-        m_actionFullSync->setVisible(false);
-        ui_databaseButton->setText(tr("Offline"));
-        ui_databaseButton->setIcon(DuIcon(":/icons/storage"));
-        m_actionSetOnline->setVisible(true);
-        m_actionSetOffline->setVisible(false);
-    }*/
 }
 
 void MainWindow::changeState(StateManager::State s)
@@ -664,21 +608,42 @@ void MainWindow::changeServerState(RamServerClient::ClientStatus s)
         ui_stateWidget->setColor(normalStateIconColor());
         ui_stateWidget->setSVGIcon(":/icons/local");
         ui_stateWidget->setToolTip(tr("Local project"));
+        ui_serverMenu->setVisible(false);
+        updateWindow();
         return;
     }
 
-    switch(s) {
-    case RamServerClient::Offline:
+    ui_serverMenu->setVisible(true);
+    updateWindow();
+
+    if (s == RamServerClient::Offline) {
         ui_stateWidget->setColor(warningStateIconColor());
         ui_stateWidget->setSVGIcon(":/icons/offline");
         ui_stateWidget->setToolTip(tr("Team project\nWarning: Offline!"));
+        m_actionSync->setVisible(false);
+        m_actionFullSync->setVisible(false);
+        m_actionSetOnline->setVisible(true);
+        return;
+    }
+
+    ui_stateWidget->setColor(normalStateIconColor());
+    ui_stateWidget->setSVGIcon(":/icons/online");
+    ui_stateWidget->setToolTip(tr("Team project"));
+    m_actionSetOnline->setVisible(false);
+    m_actionSync->setVisible(true);
+    m_actionFullSync->setVisible(true);
+
+    switch(s) {
+    case RamServerClient::Offline:
         break;
     case RamServerClient::Online:
     case RamServerClient::Ready:
+        m_actionSync->setEnabled(true);
+        m_actionFullSync->setEnabled(true);
+        break;
     case RamServerClient::Syncing:
-        ui_stateWidget->setColor(normalStateIconColor());
-        ui_stateWidget->setSVGIcon(":/icons/online");
-        ui_stateWidget->setToolTip(tr("Team project"));
+        m_actionSync->setEnabled(false);
+        m_actionFullSync->setEnabled(false);
         break;
     }
 }
@@ -789,10 +754,10 @@ void MainWindow::setupActions()
     m_actionConsole->setText(tr("Console"));
     m_actionConsole->setIcon(DuIcon(":/icons/bash"));
 
-    m_actionLogOut = new DuAction(this);
-    m_actionLogOut->setText(tr("Close project"));
-    m_actionLogOut->setToolTip(tr("Logs you out of the Ramses database."));
-    m_actionLogOut->setIcon(":/icons/logout");
+    m_actionCloseProject = new DuAction(this);
+    m_actionCloseProject->setText(tr("Close project"));
+    m_actionCloseProject->setToolTip(tr("Logs you out of the Ramses database."));
+    m_actionCloseProject->setIcon(":/icons/logout");
 
     m_actionUserProfile = new DuAction(this);
     m_actionUserProfile->setText(tr("Profile"));
@@ -840,19 +805,9 @@ void MainWindow::setupActions()
     m_actionTimeline->setIcon(":/icons/timeline");
 
     m_actionSetOnline = new DuAction(this);
-    m_actionSetOnline->setText(tr("Set online"));
+    m_actionSetOnline->setText(tr("Set online (sign in)"));
     m_actionSetOnline->setToolTip(tr("Connects to the Ramses server."));
     m_actionSetOnline->setIcon(":/icons/online");
-
-    m_actionSetOffline = new DuAction(this);
-    m_actionSetOffline->setText(tr("Set offline"));
-    m_actionSetOffline->setToolTip(tr("Disconnects from the Ramses server and deactivates sync."));
-    m_actionSetOffline->setIcon(":/icons/folder");
-
-    m_actionDatabaseSettings = new DuAction(this);
-    m_actionDatabaseSettings->setText(tr("Database settings"));
-    m_actionDatabaseSettings->setToolTip(tr("Edit the database settings."));
-    m_actionDatabaseSettings->setIcon(":/icons/storage-settings");
 
     m_actionSettings = new DuAction(this);
     m_actionSettings->setText(tr("Settings"));
@@ -1182,54 +1137,26 @@ void MainWindow::setupToolBars()
     ui_ioWidget->setColor( normalStateIconColor() );
     ui_rightToolBar->addWidget(ui_ioWidget);
 
-    auto userMenu = new DuMenu();
-    userMenu->addAction(m_actionUserFolder);
-    m_actionUserFolder->setVisible(false);
-    userMenu->addAction(m_actionUserProfile);
-    m_actionUserProfile->setVisible(false);
-    userMenu->addAction(m_actionLogOut);
-    m_actionLogOut->setVisible(false);
-
-    ui_userButton = new QToolButton();
-    ui_userButton->setText(QString("User (%1)").arg("Guest"));
-    ui_userButton->setIcon(DuIcon(":/icons/user"));
-    ui_userButton->setPopupMode(QToolButton::InstantPopup);
-    ui_userButton->setIconSize(QSize(16,16));
-    ui_userButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-    ui_userButton->setMenu(userMenu);
-
-    ui_userMenuAction = ui_rightToolBar->addWidget(ui_userButton);
-    ui_userMenuAction->setVisible(false);
-
-    auto databaseMenu = new DuMenu();
-    databaseMenu->addAction(m_actionSync);
-    databaseMenu->addAction(m_actionFullSync);
-    databaseMenu->addSeparator();
-    databaseMenu->addAction(m_actionSetOffline);
-    databaseMenu->addAction(m_actionSetOnline);
-    databaseMenu->addAction(m_actionDatabaseSettings);
-    m_actionSetOffline->setVisible(false);
-
-    ui_databaseButton = new QToolButton();
-    ui_databaseButton->setText(tr("Offline"));
-    ui_databaseButton->setIcon(DuIcon(":/icons/storage"));
-    ui_databaseButton->setPopupMode(QToolButton::InstantPopup);
-    ui_databaseButton->setIconSize(QSize(16,16));
-    ui_databaseButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-    ui_databaseButton->setMenu(databaseMenu);
-
-    ui_databaseMenuAction = ui_rightToolBar->addWidget(ui_databaseButton);
-    ui_databaseMenuAction->setVisible(false);
-
     DuMenu *moreMenu = new DuMenu(this);
 
-    QToolButton *moreButton = new QToolButton();
-    moreButton->setText(tr("More"));
-    moreButton->setIcon(DuIcon(":/icons/more"));
-    moreButton->setPopupMode(QToolButton::InstantPopup);
-    moreButton->setIconSize(QSize(16,16));
-    moreButton->setMenu(moreMenu);
-    moreButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    ui_userMenu = new DuMenu(tr("User (%1)").arg(tr("Guest")));
+    ui_userMenu->setIcon(DuIcon(":/icons/user"));
+
+    ui_userMenu->addAction(m_actionUserFolder);
+    m_actionUserFolder->setVisible(false);
+    ui_userMenu->addAction(m_actionUserProfile);
+    m_actionUserProfile->setVisible(false);
+
+    moreMenu->addMenu(ui_userMenu);
+
+    ui_serverMenu = new DuMenu(tr("Server"));
+    ui_serverMenu->setIcon(DuIcon(":/icons/server"));
+    ui_serverMenu->addAction(m_actionSync);
+    ui_serverMenu->addAction(m_actionFullSync);
+    ui_serverMenu->addSeparator();
+    ui_serverMenu->addAction(m_actionSetOnline);
+
+    moreMenu->addMenu(ui_serverMenu);
 
     moreMenu->addSeparator();
     moreMenu->addAction(m_actionConsole);
@@ -1300,6 +1227,18 @@ void MainWindow::setupToolBars()
     aboutQtAction->setIcon(":/icons/qt");
     helpMenu->addAction(aboutQtAction);
     connect(aboutQtAction, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
+
+    moreMenu->addSeparator();
+    moreMenu->addAction(m_actionCloseProject);
+    m_actionCloseProject->setVisible(false);
+
+    QToolButton *moreButton = new QToolButton();
+    moreButton->setText(tr("More"));
+    moreButton->setIcon(DuIcon(":/icons/more"));
+    moreButton->setPopupMode(QToolButton::InstantPopup);
+    moreButton->setIconSize(QSize(16,16));
+    moreButton->setMenu(moreMenu);
+    moreButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
 
     ui_rightToolBar->addWidget(moreButton);
 

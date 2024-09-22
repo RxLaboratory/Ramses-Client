@@ -80,7 +80,7 @@ private:
     // ==== ACTIONS ====
 
     DuAction *m_actionConsole;
-    DuAction *m_actionLogOut;
+    DuAction *m_actionCloseProject;
     DuAction *m_actionUserProfile;
     DuAction *m_actionAdmin;
     DuAction *m_actionUserFolder;
@@ -91,8 +91,6 @@ private:
     DuAction *m_actionStatistics;
     DuAction *m_actionTimeline;
     DuAction *m_actionSetOnline;
-    DuAction *m_actionSetOffline;
-    DuAction *m_actionDatabaseSettings;
     DuAction *m_actionSettings;
     DuAction *m_actionSync;
     DuAction *m_actionFullSync;
@@ -165,11 +163,9 @@ private:
     QToolButton *ui_filesButton;
     QAction *ui_filesMenuAction;
 
-    QToolButton *ui_userButton;
-    QAction *ui_userMenuAction;
+    DuMenu *ui_userMenu;
 
-    QToolButton *ui_databaseButton;
-    QAction *ui_databaseMenuAction;
+    DuMenu *ui_serverMenu;
 
     DuIconWidget *ui_stateWidget;
     DuIconWidget *ui_ioWidget;
@@ -199,14 +195,11 @@ private slots:
     void askBeforeClose();
     void maximize(bool m);
 
-    void setOfflineAction();
     void setOnlineAction();
-    void databaseSettingsAction();
     void setPage(Page p);
     void setDock(Dock d);
     void changeUserRole(RamUser::UserRole role);
     void ramsesReady();
-    void dbiConnectionStatusChanged(NetworkUtils::NetworkStatus s);
     void changeState(StateManager::State s);
     void changeIOState(LocalDataInterface::State s);
     void changeServerState(RamServerClient::ClientStatus s);
