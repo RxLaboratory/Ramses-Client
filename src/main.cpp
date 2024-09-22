@@ -2,11 +2,9 @@
 #include <QSettings>
 #include <QTcpSocket>
 
-#include "duapp/app-config.h"
 #include "duapp/app-utils.h"
 #include "duapp/ducli.h"
 #include "duapp/dulogger.h"
-#include "duwidgets/duqfupdatedialog.h"
 #include "enums.h"
 #include "ramsettings.h"
 #include "src/qgoodwindow.h"
@@ -99,29 +97,6 @@ int main(int argc, char *argv[])
 
     // init settings
     initSettings(s);
-
-    // Check for updates, right during startup
-    s->newMessage("Looking for udpates...");
-    QSettings settings;
-    qDebug() << "Update check...";
-    QDateTime lastCheck = DuSettings::i()->get(DuSettings::APP_LastUpdateCheck).toDateTime();
-    qDebug().noquote() << "Last check was on: " + lastCheck.toString(DATETIME_DATA_FORMAT);
-    int days = lastCheck.daysTo(QDateTime::currentDateTime());
-    qDebug().noquote() << days << " days since last check.";
-    if (days > 0 || !lastCheck.isValid() || lastCheck.isNull()) {
-        a.checkUpdate();
-        QJsonObject updateInfo = a.updateInfo();
-        if (updateInfo.value("update").toBool()) {
-            s->newMessage("A new version is available!");
-            DuQFUpdateDialog dialog(updateInfo);
-            if (DuUI::execDialog(&dialog)) return 0;
-        }
-        DuSettings::i()->set(DuSettings::APP_LastUpdateCheck, QDateTime::currentDateTime());
-    }
-    else
-    {
-        qDebug() << "We'll check again tomorrow.";
-    }
 
     // build and show UI
     DuUI::buildUI(parser, a.splashScreen());

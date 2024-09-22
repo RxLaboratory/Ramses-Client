@@ -74,6 +74,8 @@ private:
     void setupSysTray();
     void setupDocks();
 
+    bool updateCheck(bool force = false);
+
     void connectEvents();
     void connectShortCuts();
 
@@ -94,6 +96,7 @@ private:
     DuAction *m_actionSettings;
     DuAction *m_actionSync;
     DuAction *m_actionFullSync;
+    DuAction *m_actionUpdate;
     DuAction *m_projectAction;
     DuAction *m_stepsAction;
     DuAction *m_pipeFilesAction;
@@ -135,8 +138,6 @@ private:
     DuDockWidget *ui_shotsDockWidget;
 
     bool _propertiesWidgetIsTemporary = false;
-
-    // ========= RxOT UI ==============
 
     /**
      * @brief raise Tries to (force) raise the window

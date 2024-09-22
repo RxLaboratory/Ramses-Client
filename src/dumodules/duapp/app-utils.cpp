@@ -146,7 +146,7 @@ void DuApplication::processArgs()
     }
 }
 
-void DuApplication::checkUpdate()
+void DuApplication::checkUpdate(bool synchronous)
 {
     if (QString(URL_UPDATE) == "") return;
 
@@ -187,8 +187,32 @@ void DuApplication::checkUpdate()
     qInfo().noquote() << "App Name: " % QString(STR_INTERNALNAME);
     qInfo().noquote() << "App Version: " % QString(STR_VERSION);
 
+    // Create a loop to wait for the data
+    QTimer timer;
+    timer.setSingleShot(true);
+
     connect(am, SIGNAL(finished(QNetworkReply*)), this, SLOT(gotUpdateInfo(QNetworkReply*)));
-    am->get(request);
+    QNetworkReply *reply = am->get(request);
+
+    if (synchronous) {
+
+        // 3-second timeout
+        timer.start( 3000 );
+
+        while ( reply->isRunning() )
+        {
+            if (!timer.isActive()) {
+                reply->abort();
+                reply->deleteLater();
+                qInfo().noquote() << "{Server}" << tr(
+                                                       "Time out: the server at '%1' took too long to respond, sorry. Check your network connection."
+                                                       ).arg(URL_UPDATE);
+                return;
+            }
+            qApp->processEvents();
+        }
+
+    }
 }
 
 void DuApplication::restart()

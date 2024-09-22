@@ -5,6 +5,8 @@
 #include "assetgroupmanagerwidget.h"
 #include "assetmanagerwidget.h"
 #include "docks/consoledockwidget.h"
+#include "duapp/app-config.h"
+#include "duwidgets/duqfupdatedialog.h"
 #include "homepagewidget.h"
 #include "itemmanagerwidget.h"
 #include "pipefilemanagerwidget.h"
@@ -68,15 +70,15 @@ MainWindow::MainWindow(const QCommandLineParser &cli, QWidget *parent) :
     // Initial page
     setPage(LandingPage);
 
+    // Show new updates if any
+#ifndef QT_DEBUG
+    updateCheck();
+#else
+    updateCheck(true);
+#endif
+
     // Everything is ready
     connectEvents();
-
-    // Restore UI state
-    settings.beginGroup("ui");
-    if (settings.value("maximized", false).toBool() )
-        this->showMaximized();
-    this->restoreState( settings.value("windowState").toByteArray() );
-    settings.endGroup();
 
     // Process arguments
 
@@ -90,7 +92,6 @@ MainWindow::MainWindow(const QCommandLineParser &cli, QWidget *parent) :
             break;
         }
     }
-    //*/
 }
 
 void MainWindow::connectEvents()
@@ -104,6 +105,15 @@ void MainWindow::connectEvents()
     connect(m_actionUserFolder,SIGNAL(triggered()), this, SLOT(revealUserFolder()));
     connect(m_actionSync, SIGNAL(triggered()), DBInterface::i(),SLOT(sync()));
     connect(m_actionFullSync, SIGNAL(triggered()), DBInterface::i(),SLOT(fullSync()));
+
+    connect(m_actionUpdate, &QAction::triggered,
+            this, [this] () {
+        if (!updateCheck(true))
+            QMessageBox::information(
+                this,
+                tr("Already up-to-date"),
+                tr("This application is already up-to-date, congrats!"));
+    });
 
     connect(m_actionUserProfile,&QAction::triggered,
             this, [] () {
@@ -829,6 +839,11 @@ void MainWindow::setupActions()
     m_actionFullSync->setIcon(":/icons/check-update");
     m_actionFullSync->setShortcut(QKeySequence("Ctrl+Shift+R"));
 
+    m_actionUpdate = new DuAction(this);
+    m_actionUpdate->setText(tr("Ramses update..."));
+    m_actionUpdate->setToolTip(tr("Checks if an update of the application is available."));
+    m_actionUpdate->setIcon(":/icons/check-update");
+
     m_projectAction = new DuAction(tr("Project settings"), this);
     m_projectAction->setIcon(":/icons/project");
     m_projectAction->setToolTip(tr("Edit the project settings."));
@@ -1024,6 +1039,43 @@ void MainWindow::setupDocks()
     ui_shotsDockWidget->hide();
 }
 
+bool MainWindow::updateCheck(bool force)
+{
+    // Check for updates, right during startup
+    qInfo() << "Update check...";
+
+    QDateTime lastCheck = DuSettings::i()->get(DuSettings::APP_LastUpdateCheck).toDateTime();
+    qDebug().noquote() << "Last check was on: " + lastCheck.toString(DATETIME_DATA_FORMAT);
+    int days = lastCheck.daysTo(QDateTime::currentDateTime());
+    qDebug().noquote() << days << " days since last check.";
+
+    if (
+        days > 0 ||
+        !lastCheck.isValid() ||
+        lastCheck.isNull() ||
+        force
+        )
+    {
+        DuApplication::i()->checkUpdate(true);
+        DuSettings::i()->set(DuSettings::APP_LastUpdateCheck, QDateTime::currentDateTime());
+        QJsonObject updateInfo = DuApplication::i()->updateInfo();
+
+        if (updateInfo.value("update").toBool())
+        {
+            DuQFUpdateDialog dialog(updateInfo);
+            if (DuUI::execDialog(&dialog))
+                StateManager::i()->quit(true, 500); // We need a delay in case the app is still starting
+            return true;
+        }
+    }
+    else
+    {
+        qDebug() << "We'll check again tomorrow.";
+    }
+
+    return false;
+}
+
 void MainWindow::setupToolBars()
 {
     ui_leftToolBar->addAction(m_actionAdmin);
@@ -1161,6 +1213,7 @@ void MainWindow::setupToolBars()
     moreMenu->addSeparator();
     moreMenu->addAction(m_actionConsole);
     moreMenu->addAction(m_actionSettings);
+    moreMenu->addAction(m_actionUpdate);
 
     auto helpMenu = new DuMenu(this);
     helpMenu->setIcon(DuIcon(":/icons/help"));

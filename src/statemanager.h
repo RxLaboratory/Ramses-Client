@@ -43,7 +43,7 @@ signals:
     void textChanged(QString text);
 
 public slots:
-    void quit(bool sync = true);
+    void quit(bool sync = true, int delay = 0);
     void restart(bool sync = true, const QString &dbFile = "");
     void forceQuit();
     void setState(StateManager::State newState);

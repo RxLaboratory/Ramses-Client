@@ -18,7 +18,7 @@ StateManager::State StateManager::state() const
     return m_state;
 }
 
-void StateManager::quit(bool sync)
+void StateManager::quit(bool sync, int delay)
 {
     if (m_state==Closing)
         return;
@@ -48,7 +48,8 @@ void StateManager::quit(bool sync)
 
     qInfo().noquote() << "Bye!";
 
-    m_app->quit();
+
+    QTimer::singleShot(delay, m_app, &QApplication::quit);
 }
 
 void StateManager::restart(bool sync, const QString &dbFile)

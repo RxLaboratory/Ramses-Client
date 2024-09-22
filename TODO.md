@@ -1,7 +1,6 @@
 ## Priority fixes
 
 - maya lock transform fails on publish
-- add client version check at startup
 - Add a server admin mode, from landing page
     - manage all projects (create, disable, remove)
     - manage all users (create, disable, remove)

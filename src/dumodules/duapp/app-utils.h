@@ -101,7 +101,7 @@ public:
 
 public slots:
     // Check for updates
-    void checkUpdate();
+    void checkUpdate(bool synchronous = false);
 
     /**
      * @brief restart Exits the current app and restart the same executable.
