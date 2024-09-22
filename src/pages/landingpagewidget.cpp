@@ -94,7 +94,8 @@ void LandingPageWidget::openDatabase(const QString &dbFile)
             userUuid = login(
                 serverConfig,
                 savedUsername,
-                savedPassword
+                savedPassword,
+                true
                 );
         }
         // Erase the saved password
@@ -135,9 +136,19 @@ void LandingPageWidget::openDatabase(const QString &dbFile)
                 d.password()
                 );
 
-            if (userUuid == "")
-                continue; // TODO Ask to continue in offline mode
+            if (userUuid == "") { // Ask to continue in offline mode
+                if (QMessageBox::question(
+                    this,
+                    tr("Continue in offline mode"),
+                    tr("Login failed. Do you want to continue in offline mode?\n\n"
+                       "The data will not be synced until you login again, but you can still work locally." )
+                    ) != QMessageBox::Yes )
+                    continue;
+                else
+                    break;
+            }
 
+            // Save username
             if (d.saveUsername()) {
                 DuSettings::i()->set(
                     RamSettings::Login,
@@ -165,35 +176,37 @@ void LandingPageWidget::openDatabase(const QString &dbFile)
                     );
         }
 
-        // Set current project
+        // Set current project if we're online
 
-        StateChanger s(StateManager::Opening);
+        if (userUuid != "") {
+            StateChanger s(StateManager::Opening);
 
-        QString projectUuid = LocalDataInterface::projectUuid(dbFile);
-        if (projectUuid == "") {
-            QMessageBox::warning(this,
-                                 tr("Login failed"),
-                                 tr("Can't get the project UUID.\n"
-                                    "The local data may be corrupted or incorrectly initialized.\n"
-                                    "Try to remove your *.ramses local file and join the team project again.\n\n"
-                                    "If this problem persists, this may be a bug or a misconfiguration,\n"
-                                    "Please contact your Ramses administrator.")
-                                 );
-            return;
+            QString projectUuid = LocalDataInterface::projectUuid(dbFile);
+            if (projectUuid == "") {
+                QMessageBox::warning(this,
+                                     tr("Login failed"),
+                                     tr("Can't get the project UUID.\n"
+                                        "The local data may be corrupted or incorrectly initialized.\n"
+                                        "Try to remove your *.ramses local file and join the team project again.\n\n"
+                                        "If this problem persists, this may be a bug or a misconfiguration,\n"
+                                        "Please contact your Ramses administrator.")
+                                     );
+                return;
+            }
+
+            QJsonObject rep = RamServerClient::i()->setProject(projectUuid);
+            if (!rep.value("success").toBool(false)) {
+                QMessageBox::warning(this,
+                                     tr("Login failed"),
+                                     rep.value("message").toString("Unknown error")
+                                     );
+                return;
+            }
+
+            // Save the project and user in the database
+
+            LocalDataInterface::setProjectUserUuid(dbFile, projectUuid, userUuid);
         }
-
-        QJsonObject rep = RamServerClient::i()->setProject(projectUuid);
-        if (!rep.value("success").toBool(false)) {
-            QMessageBox::warning(this,
-                                 tr("Login failed"),
-                                 rep.value("message").toString("Unknown error")
-                                 );
-            return;
-        }
-
-        // Save the project and user in the database
-
-        LocalDataInterface::setProjectUserUuid(dbFile, projectUuid, userUuid);
     }
 
     sm->setState(StateManager::Opening);
@@ -204,7 +217,7 @@ void LandingPageWidget::openDatabase(const QString &dbFile)
 
     // Restart sync
     qInfo().noquote() << tr("Initial sync...");
-    if (teamProject) {
+    if (teamProject && RamServerClient::i()->status() != RamServerClient::Offline) {
         sm->autoDisconnect(
             connect(DBInterface::i(), &DBInterface::syncFinished, sm, &StateManager::setIdle)
             );
@@ -342,7 +355,7 @@ void LandingPageWidget::connectEvents()
             this, &LandingPageWidget::joinTeamProject);
 }
 
-QString LandingPageWidget::login(ServerConfig serverSettings, const QString &username, const QString &password)
+QString LandingPageWidget::login(ServerConfig serverSettings, const QString &username, const QString &password, bool silentFail)
 {
     // Set server settings
     RamServerClient::i()->setServerSettings( serverSettings );
@@ -351,22 +364,24 @@ QString LandingPageWidget::login(ServerConfig serverSettings, const QString &use
 
     QJsonObject rep = RamServerClient::i()->login( username, password );
     if (!rep.value("success").toBool(false)) {
-        QMessageBox::warning(this,
-                             tr("Login failed"),
-                             rep.value("message").toString("Unknown error")
-                             );
+        if (!silentFail)
+            QMessageBox::warning(this,
+                                 tr("Login failed"),
+                                 rep.value("message").toString("Unknown error")
+                                 );
         return "";
     }
 
     QString userUuid = rep.value("content").toObject().value("uuid").toString();
 
     if (userUuid == "") {
-        QMessageBox::warning(this,
-                             tr("Login failed"),
-                             tr("Can't get your UUID.\n"
-                                "This is probably a misconfiguration or a bug of the server.\n"
-                                "Please contact your Ramses administrator.")
-                             );
+        if (!silentFail)
+            QMessageBox::warning(this,
+                                 tr("Login failed"),
+                                 tr("Can't get your UUID.\n"
+                                    "This is probably a misconfiguration or a bug of the server.\n"
+                                    "Please contact your Ramses administrator.")
+                                 );
         return "";
     }
 

@@ -33,7 +33,7 @@ private:
     QToolButton *ui_openRecentDatabaseButton;
     DuComboBox *ui_recentBox;
 
-    QString login(ServerConfig serverSettings, const QString &username, const QString &password);
+    QString login(ServerConfig serverSettings, const QString &username, const QString &password, bool silentFail = false);
 };
 
 #endif // LANDINGPAGEWIDGET_H
