@@ -402,7 +402,7 @@ void LandingPageWidget::showWizard(QWizard *w)
     l->addWidget(w);
 
     // Delete it when finished
-    connect(w, &ProjectWizard::finished, this, [this,w,dummy] () {
+    connect(w, &QWizard::finished, this, [this,w,dummy] () {
         ui_stackedLayout->setCurrentIndex(0);
         w->deleteLater();
         dummy->deleteLater();
