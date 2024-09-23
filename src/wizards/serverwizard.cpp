@@ -192,6 +192,9 @@ void ServerWizard::applyChanges()
         }
     }
 
+    // List project assignments
+    QHash<QString, RamJsonObjectModel*> assignments = ui_projectsPage->userAssignments();
+
     // Add and update projects
     QJsonArray serverProjectsArr;
     const QVector<QJsonObject> &jsonProjects = _projects->objects();
@@ -208,6 +211,19 @@ void ServerWizard::applyChanges()
         projectObj.insert("uuid", uuid);
         QJsonObject projectData = jsonProject;
         projectData.remove("uuid");
+
+        // Update the user list
+        RamJsonObjectModel *usersModel = assignments.value(uuid);
+        if (usersModel) {
+            QJsonArray userUuids;
+            for (int i = 0; i < usersModel->rowCount(); ++i) {
+                QString userUuid = usersModel->data(usersModel->index(i), Qt::EditRole).toJsonObject().value("uuid").toString();
+                if (userUuid != "")
+                    userUuids << userUuid;
+            }
+            projectData.insert("users", userUuids);
+        }
+
         QJsonDocument dataDoc(projectData);
         projectObj.insert("data", QString::fromUtf8(dataDoc.toJson(QJsonDocument::Compact)) );
         serverProjectsArr.append(projectObj);
@@ -221,6 +237,22 @@ void ServerWizard::applyChanges()
         }
     }
 
+
+    // Update user assignments
+    QHashIterator<QString, RamJsonObjectModel*> it(assignments);
+    while(it.hasNext()) {
+        it.next();
+        QString projectUuid = it.key();
+        RamJsonObjectModel *usersModel = it.value();
+        QStringList userUuids;
+        for (int i = 0; i < usersModel->rowCount(); ++i) {
+            QString userUuid = usersModel->data(usersModel->index(i), Qt::EditRole).toJsonObject().value("uuid").toString();
+            if (userUuid != "")
+                userUuids << userUuid;
+        }
+
+        RamServerClient::i()->setUserAssignments(userUuids, projectUuid);
+    }
 
     // Reinit with (new) server data
     cancelChanges();

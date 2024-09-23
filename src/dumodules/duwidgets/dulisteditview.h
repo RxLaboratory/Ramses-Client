@@ -13,7 +13,7 @@ class DuListEditView : public QWidget
     Q_OBJECT
 public:
     explicit DuListEditView(const QString &title, const QString &itemName, QAbstractItemModel *model, QWidget *parent = nullptr);
-    void setAssignList(QAbstractItemModel *model);
+    void setAssignList(QAbstractItemModel *model, bool removeCreateButton = false);
 
 signals:
     void editing(const QModelIndex &);

@@ -53,6 +53,13 @@ void RamJsonProjectEditWidget::setData(const QJsonObject &obj)
     emit dataChanged(data());
 }
 
+void RamJsonProjectEditWidget::hideUsersTab()
+{
+    if (!ui_userList)
+        return;
+    ui_tabWidget->setTabVisible(1, false);
+}
+
 void RamJsonProjectEditWidget::setProject()
 {
     if (!exists()) {

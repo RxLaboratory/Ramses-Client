@@ -20,6 +20,8 @@ public:
     virtual QJsonObject data() const override;
     virtual void setData(const QJsonObject &obj) override;
 
+    void hideUsersTab();
+
 private slots:
     void setProject();
 

@@ -96,6 +96,7 @@ Set per project:
 - setUserRole
 - removeProjects
 - removeUsers
+- setUserAssignments
 - setEmail
 - getEmail
 - sync : username is not included, role can only be pulled but not pushed, email is ignored

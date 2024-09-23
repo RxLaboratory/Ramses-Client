@@ -197,8 +197,6 @@ QJsonObject RamServerClient::createProjects(const QJsonArray &projects)
     QJsonObject body;
     body.insert("projects", projects);
 
-    qDebug() << body;
-
     Request r = buildRequest("createProjects", body);
 
     return synchronousRequest(r);
@@ -238,6 +236,21 @@ QJsonObject RamServerClient::assignUsers(const QStringList &userUuids, const QSt
     body.insert("users", usersArr);
 
     Request r = buildRequest("assignUsers", body);
+
+    return synchronousRequest(r);
+}
+
+QJsonObject RamServerClient::setUserAssignments(const QStringList &userUuids, const QString &projectUuid)
+{
+    QJsonObject body;
+    body.insert("project", projectUuid);
+
+    QJsonArray usersArr;
+    for (const auto &uuid: userUuids)
+        usersArr.append(uuid);
+    body.insert("users", usersArr);
+
+    Request r = buildRequest("setUserAssignments", body);
 
     return synchronousRequest(r);
 }
@@ -326,6 +339,16 @@ QJsonObject RamServerClient::removeUsers(const QStringList &uuids)
 QJsonObject RamServerClient::getProjects()
 {
     Request r = buildRequest("getProjects", QJsonObject());
+
+    return synchronousRequest(r);
+}
+
+QJsonObject RamServerClient::getUsers(const QString &projectUuid)
+{
+    QJsonObject body;
+    body.insert("project", projectUuid);
+
+    Request r = buildRequest("getUsers", body);
 
     return synchronousRequest(r);
 }

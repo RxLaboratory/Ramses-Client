@@ -17,19 +17,27 @@ DuListEditView::DuListEditView(const QString &title, const QString &itemName, QA
     updateList();
 }
 
-void DuListEditView::setAssignList(QAbstractItemModel *model)
+void DuListEditView::setAssignList(QAbstractItemModel *model, bool removeCreateButton)
 {
     ui_assignMenu->setModel(model);
 
     if (model) {
-        DuMenu *m = new DuMenu(this);
-        m->addAction(_addAction);
-        m->addMenu(ui_assignMenu);
-        ui_addButton->setMenu(m);
+
+        if (!removeCreateButton) {
+            DuMenu *m = new DuMenu(this);
+            m->addAction(_addAction);
+            m->addMenu(ui_assignMenu);
+            ui_addButton->setMenu(m);
+        }
+        else {
+            ui_addButton->setMenu(ui_assignMenu);
+        }
+
     }
     else {
         QMenu *m = ui_addButton->menu();
-        if (m) m->deleteLater();
+        if (m != ui_assignMenu) m->deleteLater();
+        else ui_addButton->setMenu(nullptr);
     }
 }
 
