@@ -18,6 +18,8 @@ ProjectWizard::ProjectWizard(bool team, QWidget *parent, Qt::WindowFlags flags):
     QWizard(parent, flags),
     _isTeamProject(team)
 {
+    setOptions( options() | QWizard::NoBackButtonOnStartPage );
+
     setupUi();
     connectEvents();
 }
@@ -180,7 +182,7 @@ void ProjectWizard::setupUi()
     // Assign users
     if (_isTeamProject) {
         _users = new RamJsonObjectModel(this);
-        ui_usersPage = new RamUsersWizardPage(_users, this);
+        ui_usersPage = new RamUsersWizardPage(_users, false, this);
         setPage( UsersPage, ui_usersPage );
     }
 

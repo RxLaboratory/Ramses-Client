@@ -242,6 +242,7 @@ SOURCES += \
     wizards/projectwizard.cpp \
     wizards/ramdatabasepathswizardpage.cpp \
     wizards/ramobjectpropertieswizardpage.cpp \
+    wizards/ramprojectswizardpage.cpp \
     wizards/ramuserswizardpage.cpp \
     wizards/serverwizard.cpp
 
@@ -452,6 +453,7 @@ HEADERS += \
     wizards/projectwizard.h \
     wizards/ramdatabasepathswizardpage.h \
     wizards/ramobjectpropertieswizardpage.h \
+    wizards/ramprojectswizardpage.h \
     wizards/ramuserswizardpage.h \
     wizards/serverwizard.h
 

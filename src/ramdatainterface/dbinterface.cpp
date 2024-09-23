@@ -200,6 +200,10 @@ void DBInterface::acceptClean()
 
 bool DBInterface::sync()
 {
+    // Nothing to sync
+    if (LocalDataInterface::i()->dataFile() == "")
+        return false;
+
     StateChanger s(StateManager::Syncing);
     s.freezeForIdle(
         connect(this, &DBInterface::syncFinished, StateManager::i(), &StateManager::setIdle),
@@ -242,6 +246,10 @@ bool DBInterface::sync()
 
 bool DBInterface::fullSync()
 {
+    // Nothing to sync
+    if (LocalDataInterface::i()->dataFile() == "")
+        return false;
+
     StateChanger s(StateManager::Syncing);
     s.freezeForIdle(
         connect(this, &DBInterface::syncFinished, StateManager::i(), &StateManager::setIdle)

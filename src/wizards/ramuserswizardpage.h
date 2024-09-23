@@ -10,8 +10,9 @@ class RamUsersWizardPage : public QWizardPage
 {
     Q_OBJECT
 public:
-    RamUsersWizardPage(RamJsonObjectModel *users, QWidget *parent = nullptr);
+    RamUsersWizardPage(RamJsonObjectModel *users, bool serverEdit, QWidget *parent = nullptr);
 
+    void reinit();
     virtual void initializePage() override;
 
 private slots:
@@ -21,9 +22,16 @@ private:
     void setupUi();
     void connectEvents();
 
+    void initializeAssignList();
+    void initializeServerList();
+    void addUserToModel(const QJsonValue &userVal, RamJsonObjectModel *model);
+    QJsonArray getServerUsers();
+
     RamJsonObjectModel *_users;
     RamJsonObjectModel *_assignList = nullptr;
     DuListEditView *ui_userList;
+    bool _editingServer = false;
+    bool _initialized = false;
 };
 
 #endif // RAMUSERSWIZARDPAGE_H

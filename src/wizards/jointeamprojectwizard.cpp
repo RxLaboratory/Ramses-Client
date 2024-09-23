@@ -13,6 +13,8 @@
 JoinTeamProjectWizard::JoinTeamProjectWizard(QWidget *parent, Qt::WindowFlags flags):
     QWizard(parent, flags)
 {
+    setOptions( options() | QWizard::NoBackButtonOnStartPage );
+
     setupUi();
     connectEvents();
 }

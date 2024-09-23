@@ -152,6 +152,24 @@ QJsonObject RamServerClient::login(const QString &email, const QString &password
     return obj;
 }
 
+QJsonObject RamServerClient::logout()
+{
+    Request r = buildRequest("logout", QJsonObject());
+    QJsonObject rep = synchronousRequest(r);
+
+    setStatus(Offline);
+
+    // Delete all data
+
+    m_pulledData = SyncData();
+    m_pushingData = SyncData();
+    m_fetchData = FetchData();
+
+    m_sessionToken = "";
+
+    return rep;
+}
+
 QJsonObject RamServerClient::setUserRole(const QString &uuid, const QString &role)
 {
     QJsonObject body;
@@ -170,6 +188,19 @@ QJsonObject RamServerClient::createProject(const QString &data, const QString &u
     body.insert("data", data);
 
     Request r = buildRequest("createProject", body);
+
+    return synchronousRequest(r);
+}
+
+QJsonObject RamServerClient::removeProjects(const QStringList &uuids)
+{
+    QJsonObject body;
+    QJsonArray uuidArr;
+    for(const auto &uuid: uuids)
+        uuidArr << uuid;
+    body.insert("projects", uuidArr);
+
+    Request r = buildRequest("removeProjects", body);
 
     return synchronousRequest(r);
 }
@@ -263,6 +294,19 @@ QJsonObject RamServerClient::createUsers(const QJsonArray &users)
     body.insert("users", users);
 
     Request r = buildRequest("createUsers", body);
+
+    return synchronousRequest(r);
+}
+
+QJsonObject RamServerClient::removeUsers(const QStringList &uuids)
+{
+    QJsonObject body;
+    QJsonArray uuidArr;
+    for(const auto &uuid: uuids)
+        uuidArr << uuid;
+    body.insert("users", uuidArr);
+
+    Request r = buildRequest("removeUsers", body);
 
     return synchronousRequest(r);
 }

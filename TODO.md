@@ -5,6 +5,7 @@
     - manage all projects (create, disable, remove)
     - manage all users (create, disable, remove)
     - manage user assignments (per user or per project)
+    - Apply button
 - update daemon to not use project uuid
 - update py api to not use current project
 - add pixel aspect ratio in py api
@@ -93,6 +94,8 @@ Set per project:
 - assignUsers
 - unassignUsers
 - setUserRole
+- removeProjects
+- removeUsers
 - setEmail
 - getEmail
 - sync : username is not included, role can only be pulled but not pushed, email is ignored

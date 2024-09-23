@@ -61,8 +61,10 @@ public:
     // Synchronous methods
     QJsonObject ping(bool synchronous);
     QJsonObject login(const QString &email, const QString &password);
+    QJsonObject logout();
     QJsonObject setUserRole(const QString &uuid, const QString &role);
     QJsonObject createProject(const QString &data, const QString &uuid = "");
+    QJsonObject removeProjects(const QStringList &uuids);
     QJsonObject setProject(const QString &uuid);
     QJsonObject assignUsers(const QStringList &userUuids, const QString &projectUuid);
     QJsonObject unassignUsers(const QStringList &userUuids, const QString &projectUuid);
@@ -71,6 +73,7 @@ public:
     QJsonObject getEmail(const QString &uuid);
     QJsonObject setEmail(const QString &uuid, const QString &email);
     QJsonObject createUsers(const QJsonArray &users );
+    QJsonObject removeUsers(const QStringList &uuids);
     QJsonObject getProjects();
     QJsonObject resetPassword(const QString &userUuid);
     QJsonObject resetPasswordWithEmail(const QString &email);

@@ -10,48 +10,38 @@
 #include "ramobject.h"
 #include "mainwindow.h"
 
-RamUsersWizardPage::RamUsersWizardPage(RamJsonObjectModel *users, QWidget *parent):
+RamUsersWizardPage::RamUsersWizardPage(RamJsonObjectModel *users, bool serverEdit, QWidget *parent):
     QWizardPage(parent),
-    _users(users)
+    _users(users),
+    _editingServer(serverEdit)
 {
     setupUi();
     connectEvents();
 }
 
+void RamUsersWizardPage::reinit()
+{
+    if (_users->rowCount() > 0)
+        _users->removeRows(0, _users->rowCount());
+
+    if (_assignList && _assignList->rowCount() > 0)
+        _assignList->removeRows(0, _assignList->rowCount());
+
+    _initialized = false;
+
+    initializePage();
+}
+
 void RamUsersWizardPage::initializePage()
 {
-    if (_assignList)
+    if (_initialized)
         return;
+    _initialized = true;
 
-    _assignList = new RamJsonObjectModel(this);
-
-    // List existing users from the server
-    QJsonObject obj = RamServerClient::i()->getAllUsers();
-    if (!obj.value("success").toBool(false)) {
-        QMessageBox::warning(this,
-                             tr("User list"),
-                             tr("Can't get the user list from the server, sorry!") + "\n" + obj.value("message").toString()
-                             );
-        return;
-    }
-
-    const QJsonArray usersArr = obj.value("content").toArray();
-    qDebug() << usersArr;
-
-    for (const auto &userVal: usersArr) {
-        QJsonObject serverObj = userVal.toObject();
-        qDebug() << serverObj.value("uuid");
-        QString dataStr = serverObj.value("data").toString();
-        QJsonDocument dataDoc = QJsonDocument::fromJson(dataStr.toUtf8());
-        QJsonObject userObj = dataDoc.object();
-        userObj.insert(RamObject::KEY_Uuid, serverObj.value("uuid").toString());
-        userObj.insert("role", serverObj.value("role").toString());
-        int i = _assignList->rowCount();
-        _assignList->insertRows(i, 1);
-        _assignList->setData(_assignList->index(i), userObj);
-    }
-
-    ui_userList->setAssignList(_assignList);
+    if (_editingServer)
+        initializeServerList();
+    else
+        initializeAssignList();
 }
 
 void RamUsersWizardPage::editUser(const QModelIndex &index)
@@ -86,7 +76,10 @@ void RamUsersWizardPage::editUser(const QModelIndex &index)
 void RamUsersWizardPage::setupUi()
 {
     this->setTitle(tr("Users"));
-    this->setSubTitle(tr("Assign users working on this project."));
+    if (_editingServer)
+        this->setSubTitle(tr("Manage server users."));
+    else
+        this->setSubTitle(tr("Assign users working on this project."));
 
     auto layout = DuUI::createBoxLayout(Qt::Vertical);
     DuUI::centerLayout(layout, this, 200);
@@ -99,4 +92,54 @@ void RamUsersWizardPage::connectEvents()
 {
     connect(ui_userList, &DuListEditView::editing,
             this, &RamUsersWizardPage::editUser);
+}
+
+void RamUsersWizardPage::initializeAssignList()
+{
+    if (!_assignList) {
+        _assignList = new RamJsonObjectModel(this);
+        ui_userList->setAssignList(_assignList);
+    }
+
+    const QJsonArray usersArr = getServerUsers();
+
+    for (const auto &userVal: usersArr)
+        addUserToModel(userVal, _assignList);
+
+}
+
+void RamUsersWizardPage::initializeServerList()
+{
+    const QJsonArray usersArr = getServerUsers();
+
+    for (const auto &userVal: usersArr)
+        addUserToModel(userVal, _users);
+}
+
+void RamUsersWizardPage::addUserToModel(const QJsonValue &userVal, RamJsonObjectModel *model)
+{
+    QJsonObject serverObj = userVal.toObject();
+    QString dataStr = serverObj.value("data").toString();
+    QJsonDocument dataDoc = QJsonDocument::fromJson(dataStr.toUtf8());
+    QJsonObject userObj = dataDoc.object();
+    userObj.insert(RamObject::KEY_Uuid, serverObj.value("uuid").toString());
+    userObj.insert("role", serverObj.value("role").toString());
+    int i = model->rowCount();
+    model->insertRows(i, 1);
+    model->setData(model->index(i), userObj);
+}
+
+QJsonArray RamUsersWizardPage::getServerUsers()
+{
+    // List existing users from the server
+    QJsonObject obj = RamServerClient::i()->getAllUsers();
+    if (!obj.value("success").toBool(false)) {
+        QMessageBox::warning(this,
+                             tr("User list"),
+                             tr("Can't get the user list from the server, sorry!") + "\n" + obj.value("message").toString()
+                             );
+        return QJsonArray();
+    }
+
+    return obj.value("content").toArray();
 }

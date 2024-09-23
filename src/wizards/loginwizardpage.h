@@ -14,6 +14,7 @@ public:
     LoginWizardPage(bool mustBeAdmin, QWidget *parent = nullptr);
     bool validatePage() override;
     QString uuid() const { return _uuid; }
+    QString serverAddress() const { return ui_serverWidget->address(); }
 
 signals:
     void uuidChanged(const QString &);

@@ -647,6 +647,9 @@ void MainWindow::changeServerState(RamServerClient::ClientStatus s)
     case RamServerClient::Offline:
         break;
     case RamServerClient::Online:
+        m_actionSync->setEnabled(false);
+        m_actionFullSync->setEnabled(false);
+        break;
     case RamServerClient::Ready:
         m_actionSync->setEnabled(true);
         m_actionFullSync->setEnabled(true);
