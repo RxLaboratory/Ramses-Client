@@ -1,11 +1,6 @@
 ## Priority fixes
 
 - maya lock transform fails on publish
-- Add a server admin mode, from landing page
-    - manage all projects (create, disable, remove)
-    - manage all users (create, disable, remove)
-    - manage user assignments (per user or per project)
-    - Apply button
 - update daemon to not use project uuid
 - update py api to not use current project
 - add pixel aspect ratio in py api
