@@ -1,6 +1,12 @@
 #include "serverwizard.h"
 
+#include <QJsonArray>
+#include <QJsonDocument>
+
 #include "ramserverclient.h"
+#include "ramuser.h"
+#include "ramuuid.h"
+#include "ramproject.h"
 
 ServerWizard::ServerWizard(QWidget *parent, Qt::WindowFlags flags):
     QWizard(parent, flags)
@@ -123,19 +129,19 @@ void ServerWizard::removeProjects(const QModelIndex &parent, int first, int last
 
 void ServerWizard::applyChanges()
 {
+    QString userUuid = ui_loginPage->uuid();
+
     // Remove users
     if (!_removedUsers.isEmpty()) {
         QStringList removedUserUuids;
         for (const auto &userObj: qAsConst(_removedUsers)) {
-            removedUserUuids << userObj.value("uuid").toString();
+            // Don't remove ourselves
+            QString uuid = userObj.value("uuid").toString();
+            if (uuid != userUuid)
+                removedUserUuids << uuid;
         }
         QJsonObject rep = RamServerClient::i()->removeUsers(removedUserUuids);
-        if (!rep.value("success").toBool(false)) {
-            QMessageBox::warning(
-                this,
-                tr("Remove users failed"),
-                rep.value("message").toString()
-                );
+        if (!checkServerReply(rep)) {
             cancelChanges();
             return;
         }
@@ -148,16 +154,73 @@ void ServerWizard::applyChanges()
             removedProjectUuids << projectObj.value("uuid").toString();
         }
         QJsonObject rep = RamServerClient::i()->removeProjects(removedProjectUuids);
-        if (!rep.value("success").toBool(false)) {
-            QMessageBox::warning(
-                this,
-                tr("Remove projects failed"),
-                rep.value("message").toString()
-                );
+        if (!checkServerReply(rep)) {
             cancelChanges();
             return;
         }
     }
+
+    // Add and update users
+    QJsonArray serverUsersArr;
+    const QVector<QJsonObject> &jsonUsers = _users->objects();
+    for(const auto &jsonUser: jsonUsers) {
+        QString uuid = jsonUser.value(RamUser::KEY_Uuid).toString();
+        // Create a UUID
+        if (uuid == "") uuid = RamUuid::generateUuidString(
+                jsonUser.value(RamObject::KEY_ShortName).toString()
+                );
+
+        // The object to create the user server-side
+        QJsonObject userObj;
+        userObj.insert("uuid", uuid);
+        userObj.insert("email", jsonUser.value("email").toString());
+        userObj.insert("role", jsonUser.value("role").toString("standard"));
+        QJsonObject userData = jsonUser;
+        userData.remove("role");
+        userData.remove("email");
+        userData.remove("uuid");
+        QJsonDocument dataDoc(userData);
+        userObj.insert("data", QString::fromUtf8(dataDoc.toJson(QJsonDocument::Compact)) );
+        serverUsersArr.append(userObj);
+    }
+
+    if (!serverUsersArr.isEmpty()) {
+        QJsonObject rep = RamServerClient::i()->createUsers(serverUsersArr);
+        if (!checkServerReply(rep)) {
+            cancelChanges();
+            return;
+        }
+    }
+
+    // Add and update projects
+    QJsonArray serverProjectsArr;
+    const QVector<QJsonObject> &jsonProjects = _projects->objects();
+    for(const auto &jsonProject: jsonProjects) {
+        QString uuid = jsonProject.value(RamProject::KEY_Uuid).toString();
+        // Create a UUID
+        if (uuid == "")
+            uuid = RamUuid::generateUuidString(
+                jsonProject.value(RamObject::KEY_ShortName).toString()
+                );
+
+        // The object to create the project server-side
+        QJsonObject projectObj;
+        projectObj.insert("uuid", uuid);
+        QJsonObject projectData = jsonProject;
+        projectData.remove("uuid");
+        QJsonDocument dataDoc(projectData);
+        projectObj.insert("data", QString::fromUtf8(dataDoc.toJson(QJsonDocument::Compact)) );
+        serverProjectsArr.append(projectObj);
+    }
+
+    if (!serverProjectsArr.isEmpty()) {
+        QJsonObject rep = RamServerClient::i()->createProjects(serverProjectsArr);
+        if (!checkServerReply(rep)) {
+            cancelChanges();
+            return;
+        }
+    }
+
 
     // Reinit with (new) server data
     cancelChanges();
@@ -169,4 +232,17 @@ void ServerWizard::cancelChanges()
     ui_projectsPage->reinit();
     _removedUsers.clear();
     _removedProjects.clear();
+}
+
+bool ServerWizard::checkServerReply(const QJsonObject &reply)
+{
+    if (!reply.value("success").toBool(false)) {
+        QMessageBox::warning(
+            this,
+            tr("Update server data changed"),
+            reply.value("message").toString("Unknown error")
+            );
+        return false;
+    }
+    return true;
 }

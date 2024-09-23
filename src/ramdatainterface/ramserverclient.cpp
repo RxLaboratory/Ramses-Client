@@ -192,6 +192,18 @@ QJsonObject RamServerClient::createProject(const QString &data, const QString &u
     return synchronousRequest(r);
 }
 
+QJsonObject RamServerClient::createProjects(const QJsonArray &projects)
+{
+    QJsonObject body;
+    body.insert("projects", projects);
+
+    qDebug() << body;
+
+    Request r = buildRequest("createProjects", body);
+
+    return synchronousRequest(r);
+}
+
 QJsonObject RamServerClient::removeProjects(const QStringList &uuids)
 {
     QJsonObject body;

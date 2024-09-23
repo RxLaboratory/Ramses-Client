@@ -32,6 +32,8 @@ private:
     void applyChanges();
     void cancelChanges();
 
+    bool checkServerReply(const QJsonObject &reply);
+
     LoginWizardPage *ui_loginPage;
     RamUsersWizardPage *ui_usersPage;
     RamProjectsWizardPage *ui_projectsPage;

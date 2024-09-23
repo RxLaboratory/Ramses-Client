@@ -64,6 +64,7 @@ public:
     QJsonObject logout();
     QJsonObject setUserRole(const QString &uuid, const QString &role);
     QJsonObject createProject(const QString &data, const QString &uuid = "");
+    QJsonObject createProjects(const QJsonArray &projects );
     QJsonObject removeProjects(const QStringList &uuids);
     QJsonObject setProject(const QString &uuid);
     QJsonObject assignUsers(const QStringList &userUuids, const QString &projectUuid);
