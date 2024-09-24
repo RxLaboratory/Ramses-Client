@@ -85,7 +85,8 @@ void RamProjectsWizardPage::editProject(const QModelIndex &index)
     editor->setData(data);
 
     connect(editor, &RamJsonProjectEditWidget::dataEdited,
-            this, [this, index] (const QJsonObject &obj) {
+            this, [this, index] (QJsonObject obj) {
+                obj.insert("edited", true);
                 _projects->setData(index, obj);
             });
     connect(this, &RamProjectsWizardPage::destroyed,

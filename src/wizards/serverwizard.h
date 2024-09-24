@@ -33,6 +33,7 @@ private:
     void cancelChanges();
 
     bool checkServerReply(const QJsonObject &reply);
+    void returnFromApply();
 
     LoginWizardPage *ui_loginPage;
     RamUsersWizardPage *ui_usersPage;

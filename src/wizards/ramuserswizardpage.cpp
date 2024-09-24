@@ -59,7 +59,8 @@ void RamUsersWizardPage::editUser(const QModelIndex &index)
     editor->setData(data);
 
     connect(editor, &RamJsonUserEditWidget::dataEdited,
-            this, [this, index] (const QJsonObject &obj) {
+            this, [this, index] (QJsonObject obj) {
+                obj.insert("edited", true);
                 _users->setData(index, obj);
             });
     connect(this, &RamUsersWizardPage::destroyed,

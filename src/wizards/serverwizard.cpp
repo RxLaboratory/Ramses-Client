@@ -2,6 +2,7 @@
 
 #include <QJsonArray>
 #include <QJsonDocument>
+#include <QApplication>
 
 #include "ramserverclient.h"
 #include "ramuser.h"
@@ -131,6 +132,14 @@ void ServerWizard::applyChanges()
 {
     QString userUuid = ui_loginPage->uuid();
 
+    // Raise the time out as these operations can be longer than usual
+    int currentTimeout = RamServerClient::i()->timeOut();
+    if (currentTimeout < 10)
+        RamServerClient::i()->setTimeout(10);
+
+    this->setEnabled(false);
+    qApp->setOverrideCursor(Qt::WaitCursor);
+
     // Remove users
     if (!_removedUsers.isEmpty()) {
         QStringList removedUserUuids;
@@ -142,8 +151,7 @@ void ServerWizard::applyChanges()
         }
         QJsonObject rep = RamServerClient::i()->removeUsers(removedUserUuids);
         if (!checkServerReply(rep)) {
-            cancelChanges();
-            return;
+            return returnFromApply();
         }
     }
 
@@ -155,8 +163,7 @@ void ServerWizard::applyChanges()
         }
         QJsonObject rep = RamServerClient::i()->removeProjects(removedProjectUuids);
         if (!checkServerReply(rep)) {
-            cancelChanges();
-            return;
+            return returnFromApply();
         }
     }
 
@@ -164,6 +171,10 @@ void ServerWizard::applyChanges()
     QJsonArray serverUsersArr;
     const QVector<QJsonObject> &jsonUsers = _users->objects();
     for(const auto &jsonUser: jsonUsers) {
+        // Only users which have been edited
+        if (!jsonUser.value("edited").toBool(false))
+            continue;
+
         QString uuid = jsonUser.value(RamUser::KEY_Uuid).toString();
         // Create a UUID
         if (uuid == "") uuid = RamUuid::generateUuidString(
@@ -179,6 +190,7 @@ void ServerWizard::applyChanges()
         userData.remove("role");
         userData.remove("email");
         userData.remove("uuid");
+        userData.remove("edited");
         QJsonDocument dataDoc(userData);
         userObj.insert("data", QString::fromUtf8(dataDoc.toJson(QJsonDocument::Compact)) );
         serverUsersArr.append(userObj);
@@ -187,8 +199,7 @@ void ServerWizard::applyChanges()
     if (!serverUsersArr.isEmpty()) {
         QJsonObject rep = RamServerClient::i()->createUsers(serverUsersArr);
         if (!checkServerReply(rep)) {
-            cancelChanges();
-            return;
+            return returnFromApply();
         }
     }
 
@@ -211,6 +222,7 @@ void ServerWizard::applyChanges()
         projectObj.insert("uuid", uuid);
         QJsonObject projectData = jsonProject;
         projectData.remove("uuid");
+        projectData.remove("edited");
 
         // Update the user list
         RamJsonObjectModel *usersModel = assignments.value(uuid);
@@ -223,6 +235,9 @@ void ServerWizard::applyChanges()
             }
             projectData.insert("users", userUuids);
         }
+        // The project hasn't been edited and there's no new user, skip
+        else if (!jsonProject.value("edited").toBool(false))
+                continue;
 
         QJsonDocument dataDoc(projectData);
         projectObj.insert("data", QString::fromUtf8(dataDoc.toJson(QJsonDocument::Compact)) );
@@ -232,11 +247,9 @@ void ServerWizard::applyChanges()
     if (!serverProjectsArr.isEmpty()) {
         QJsonObject rep = RamServerClient::i()->createProjects(serverProjectsArr);
         if (!checkServerReply(rep)) {
-            cancelChanges();
-            return;
+            return returnFromApply();
         }
     }
-
 
     // Update user assignments
     QHashIterator<QString, RamJsonObjectModel*> it(assignments);
@@ -251,11 +264,14 @@ void ServerWizard::applyChanges()
                 userUuids << userUuid;
         }
 
-        RamServerClient::i()->setUserAssignments(userUuids, projectUuid);
+        QJsonObject rep = RamServerClient::i()->setUserAssignments(userUuids, projectUuid);
+        if (!checkServerReply(rep)) {
+            return returnFromApply();
+        }
     }
 
     // Reinit with (new) server data
-    cancelChanges();
+    returnFromApply();
 }
 
 void ServerWizard::cancelChanges()
@@ -277,4 +293,11 @@ bool ServerWizard::checkServerReply(const QJsonObject &reply)
         return false;
     }
     return true;
+}
+
+void ServerWizard::returnFromApply()
+{
+    cancelChanges();
+    this->setEnabled(true);
+    qApp->restoreOverrideCursor();
 }
