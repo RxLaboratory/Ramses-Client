@@ -42,19 +42,13 @@ def deploy():
 
     exe_path = get_exe()
 
-    # Build if it's not already built in release mode
-    if exe_path == "":
-        utils.wipe(BUILD_PATH)
-        cpp.build(
-            BUILD_PATH,
-            PRO_PATH,
-            QMAKE_PATH,
-            MAKE_PATH,
-            NUM_THREADS
-            )
-        cpp.clean(
-            BUILD_PATH,
-            MAKE_PATH
+    # Rebuild
+    cpp.build(
+        BUILD_PATH,
+        PRO_PATH,
+        QMAKE_PATH,
+        MAKE_PATH,
+        NUM_THREADS
         )
 
     exe_path = get_exe()

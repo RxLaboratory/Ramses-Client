@@ -72,9 +72,4 @@ if __name__ == '__main__':
         NUM_THREADS
         )
 
-    clean(
-        BUILD_PATH,
-        MAKE_PATH
-    )
-
     run()
