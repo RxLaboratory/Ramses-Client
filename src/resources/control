@@ -7,5 +7,5 @@ Priority: optional
 Depends: libqt5core5a (>= 5.15.0), libqt5gui5 (>= 5.15.0) | libqt5gui5-gles (>= 5.15.0), libqt5network5 (>= 5.15.0), libqt5sql5 (>= 5.15.0), libqt5svg5 (>= 5.15.0), libqt5widgets5 (>= 5.15.0), openssl
 Maintainer: Duduf
 Installed-Size: #size#
-Description: The Renewed Asset Management System, pipeline automation, production tracking and planning
+Description: The Ramses Asset Management System, pipeline automation, production tracking and planning
 Homepage: https://rxlaboratory.org/tools/ramses/

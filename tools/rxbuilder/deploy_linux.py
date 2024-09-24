@@ -3,6 +3,7 @@ import os
 import shutil
 import subprocess
 import tempfile
+import tarfile
 from .utils import (
     get_dir_size,
     replace_in_file
@@ -10,7 +11,7 @@ from .utils import (
 
 def deploy_qt(app_dir, icon_set, desktop_path, exe_path):
     """!
-    @brief Deploys DuME main (common) directory
+    @brief Deploys app main (common) directory
     """
     print("> Deploying main dir in "+app_dir+" ...")
 
@@ -137,12 +138,31 @@ def deploy_deb(usr_dir, resources_path, version, exe_name):
             )
 
         cmd_str = "find . -type f ! -regex '.*.hg.*' ! -regex '.*?debian-binary.*' ! -regex '.*?DEBIAN.*' -printf '%P ' | xargs md5sum > DEBIAN/md5sums"
+        deb_file = exe_name + '-' + version.replace('-', '_') + '-amd64.deb'
         subprocess.run(cmd_str, shell=True, cwd=deb_folder, check=False)
         subprocess.run("chmod 755 DEBIAN", shell=True, cwd=deb_folder, check=False)
-        subprocess.run("dpkg -b deb dume.deb", shell=True, cwd=tmpdata_folder, check=False)
+        subprocess.run("dpkg -b deb " + deb_file, shell=True, cwd=tmpdata_folder, check=False)
 
         # Get the result
         shutil.copy(
-            os.path.join(tmpdata_folder, exe_name + '.deb'),
-            os.path.join(os.path.dirname(usr_dir), exe_name + '-' + version.replace('-', '_') + '-amd64.deb' )
+            os.path.join(tmpdata_folder, deb_file ),
+            os.path.join(os.path.dirname(usr_dir), deb_file )
             )
+
+def deploy_tar(app_dir, version, f='xz'):
+    """!
+    @brief Exports to a tar.gz/xz/bz2
+
+    Parameters : 
+        @param app_dir => The app dir path
+        @param version => The app version
+        @param format = 'xz' => The tar compression, either 'xz', 'gz', or 'bz2'.
+
+    """
+    tar_name = os.path.basename(app_dir).replace(".AppDir", "")
+    tar_file = os.path.join(
+        os.path.dirname(app_dir),
+        tar_name + '_' + version + '.tar.' + f
+        )
+    with tarfile.open(tar_file, "w:"+f) as tar:
+        tar.add(app_dir, arcname=tar_name)

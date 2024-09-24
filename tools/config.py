@@ -42,4 +42,4 @@ elif SYSTEM == 'Linux':
     MAKE_PATH = "make"
     DEPLOYQT_PATH = "~/Deploy/linuxdeployqt.AppImage"
     # General
-    EXE_NAME = "dume"
+    EXE_NAME = "ramses"

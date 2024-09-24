@@ -2,8 +2,8 @@
 Type=Application
 Name=Ramses
 GenericName=Production Manager
-Comment=The Renewed Asset Management System, pipeline automation, production tracking and planning
+Comment=The Ramses Asset Management System, pipeline automation, production tracking and planning
 Exec=ramses
 Icon=ramses
-Categories=Office;Utility;ProjectManagement;Publishing;Archiving;FileTools;Monitor;Qt;
+Categories=Office;ProjectManagement;Publishing;Archiving;FileTools;Qt;
 Name[en_EN]=Ramses.desktop

@@ -36,7 +36,7 @@ def get_version(h_file):
 
 def build(build_path, pro_path, qmake_path, make_path, num_threads, mode='release'):
     """!
-    @brief Builds DuME
+    @brief Builds the app
 
     Parameters : 
         @param mode = 'release' => either 'release' or 'debug'

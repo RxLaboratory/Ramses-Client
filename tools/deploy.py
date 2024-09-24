@@ -82,8 +82,10 @@ def deploy():
             VERSION,
             os.path.basename(exe_path)
         )
-        # TODO .tar.xz
-        # TODO installer
+        dep.deploy_tar(
+            app_dir + '.AppDir',
+            VERSION
+        )
     elif SYSTEM == "Windows":
         dep.deploy_qt(
             app_dir,

@@ -54,7 +54,7 @@ def get_exe(mode='release'):
     if SYSTEM == 'Windows':
         exe_path = os.path.join(BUILD_PATH, mode, mode, EXE_NAME)
     else:
-        exe_path = os.path.join(BUILD_PATH, mode, EXE_NAME)
+        exe_path = os.path.join(BUILD_PATH, mode, EXE_NAME )
 
     if os.path.isfile(exe_path):
         return exe_path
@@ -62,7 +62,7 @@ def get_exe(mode='release'):
 
 # Run
 if __name__ == '__main__':
-    wipe(BUILD_PATH)
+    # wipe(BUILD_PATH)
 
     build(
         BUILD_PATH,
