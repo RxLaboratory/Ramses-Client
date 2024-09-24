@@ -1,5 +1,7 @@
 ## Priority fixes
 
+- Wizards button hidden on windows (until the window is resized)
+- Update colors to use DuSettings everywhere
 - maya lock transform fails on publish
 - update daemon to not use project uuid
 - update py api to not use current project
