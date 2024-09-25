@@ -7,6 +7,7 @@
 #define CACHE_LOCAL_DATA true
 #define DATETIME_DATA_FORMAT "yyyy-MM-dd hh:mm:ss"
 #define DATE_DATA_FORMAT "yyyy-MM-dd"
+#define TIME_DATA_FORMAT "hh:mm:ss"
 
 // DEBUG UTILS
 

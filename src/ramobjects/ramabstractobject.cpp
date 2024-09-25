@@ -469,7 +469,9 @@ bool RamAbstractObject::isRemoved()
 QDateTime RamAbstractObject::modificationDate() const
 {
     QString d = LocalDataInterface::i()->modificationDate(m_uuid, objectTypeName());
-    return QDateTime::fromString(d, DATETIME_DATA_FORMAT);
+    return QDateTime::fromString(d,
+                                 DuSettings::i()->get(DuSettings::UI_DateTimeFormat).toString()
+                                 );
 }
 
 QSettings *RamAbstractObject::settings()

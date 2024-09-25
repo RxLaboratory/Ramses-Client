@@ -48,6 +48,7 @@ private:
     DuComboBox *ui_trayIconModeBox;
     QCheckBox *ui_showTrayIconBox;
     DuComboBox *ui_dateFormatBox;
+    DuComboBox *ui_timeFormatBox;
 
     QCheckBox *ui_checkAtStartupBox;
     QPushButton *ui_checkNowButton;

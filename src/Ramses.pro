@@ -64,6 +64,7 @@ SOURCES += \
     dumodules/duwidgets/dudoubleslider.cpp \
     dumodules/duwidgets/dudoublespinbox.cpp \
     dumodules/duwidgets/dudoublespinslider.cpp \
+    dumodules/duwidgets/dufilelistwidget.cpp \
     dumodules/duwidgets/dufolderselectorwidget.cpp \
     dumodules/duwidgets/duicon.cpp \
     dumodules/duwidgets/duiconwidget.cpp \
@@ -142,7 +143,6 @@ SOURCES += \
     dumodules/duutils/simplecrypt.cpp \
     dumodules/duwidgets/duqfautosizetoolbutton.cpp \
     dumodules/duwidgets/duqfelidedlabel.cpp \
-    dumodules/duwidgets/duqffilelist.cpp \
     dumodules/duwidgets/duqfsearchedit.cpp \
     dumodules/duwidgets/duqfservercombobox.cpp \
     dumodules/duwidgets/duqfsslcheckbox.cpp \
@@ -271,6 +271,7 @@ HEADERS += \
     dumodules/duwidgets/dudoubleslider.h \
     dumodules/duwidgets/dudoublespinbox.h \
     dumodules/duwidgets/dudoublespinslider.h \
+    dumodules/duwidgets/dufilelistwidget.h \
     dumodules/duwidgets/dufolderselectorwidget.h \
     dumodules/duwidgets/duicon.h \
     dumodules/duwidgets/duiconwidget.h \
@@ -353,7 +354,6 @@ HEADERS += \
     dumodules/duutils/simplecrypt.h \
     dumodules/duwidgets/duqfautosizetoolbutton.h \
     dumodules/duwidgets/duqfelidedlabel.h \
-    dumodules/duwidgets/duqffilelist.h \
     dumodules/duwidgets/duqfsearchedit.h \
     dumodules/duwidgets/duqfservercombobox.h \
     dumodules/duwidgets/duqfsslcheckbox.h \
