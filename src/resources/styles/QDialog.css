@@ -1,0 +1,8 @@
+QDialog {
+    border-radius: @radius;
+    border: 1px solid @background-pull;
+}
+
+QDialog QSizeGrip {
+    border-radius: @radius;
+}

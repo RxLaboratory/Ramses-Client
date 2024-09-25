@@ -59,6 +59,7 @@ SOURCES += \
     dumodules/duwidgets/ducombobox.cpp \
     dumodules/duwidgets/duconsolewidget.cpp \
     dumodules/duwidgets/dudateedit.cpp \
+    dumodules/duwidgets/dudialog.cpp \
     dumodules/duwidgets/dudocktitlewidget.cpp \
     dumodules/duwidgets/dudockwidget.cpp \
     dumodules/duwidgets/dudoubleslider.cpp \
@@ -266,6 +267,7 @@ HEADERS += \
     dumodules/duwidgets/ducombobox.h \
     dumodules/duwidgets/duconsolewidget.h \
     dumodules/duwidgets/dudateedit.h \
+    dumodules/duwidgets/dudialog.h \
     dumodules/duwidgets/dudocktitlewidget.h \
     dumodules/duwidgets/dudockwidget.h \
     dumodules/duwidgets/dudoubleslider.h \

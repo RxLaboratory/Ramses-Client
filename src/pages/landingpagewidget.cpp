@@ -91,7 +91,7 @@ void LandingPageWidget::openDatabase(const QString &dbFile)
 
             DuLoginDialog d("E-mail");
             d.setUsername(savedUsername);
-            int r = DuUI::execDialog(&d);
+            int r = d.exec();
 
             if (r == -1) { // Reset password
                 QJsonObject rep = RamServerClient::i()->resetPasswordWithEmail(
