@@ -13,8 +13,7 @@ DuLoginDialog::DuLoginDialog(const QString &usernameLabel, bool showSaveBoxes, b
 {
     this->setWindowTitle(tr("Sign in"));
 
-    auto formLayout = DuUI::createFormLayout();
-    DuUI::addBlock(formLayout, this->layout());
+    auto formLayout = DuUI::addFormLayout(this->layout());
 
     auto usernameLayout = DuUI::createBoxLayout(Qt::Horizontal);
 

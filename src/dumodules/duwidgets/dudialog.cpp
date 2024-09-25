@@ -7,6 +7,7 @@
 #include "duapp/app-version.h"
 #include "duapp/dusettings.h"
 #include "duapp/duui.h"
+#include "duwidgets/duicon.h"
 #include "duwidgets/dutoolbarspacer.h"
 
 DuDialog::DuDialog(QWidget *parent, Qt::WindowFlags f):
@@ -44,7 +45,7 @@ DuDialog::DuDialog(QWidget *parent, Qt::WindowFlags f):
 
     // The close button
     ui_closeButton  = new QToolButton(this);
-    ui_closeButton->setIcon(QIcon(":/icons/close"));
+    ui_closeButton->setIcon(DuIcon(":/icons/close"));
     ui_closeButton->setToolTip(tr("Cancel"));
     ui_closeButton->setIconSize(QSize(12,12));
     ui_titleBar->addWidget(ui_closeButton);
