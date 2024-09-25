@@ -45,10 +45,10 @@ void StatisticsView::setupUi()
     this->setMouseTracking(true);
     this->horizontalHeader()->hide();
 
-    QString style = "QTableView { background-color: #222222; padding-top: 3px; padding-bottom: 3px; gridline-color: rgba(0,0,0,0); selection-background-color: rgba(0,0,0,0); } ";
+    /*QString style = "QTableView { background-color: #222222; padding-top: 3px; padding-bottom: 3px; gridline-color: rgba(0,0,0,0); selection-background-color: rgba(0,0,0,0); } ";
     style += "QTableView::item:hover { background-color: none; } ";
     style += "QHeaderView { background-color: #222222; }";
-    this->setStyleSheet(style);
+    this->setStyleSheet(style);*/
 
     this->horizontalHeader()->setStretchLastSection(true);
 }
