@@ -256,7 +256,9 @@ QVariant RamScheduleTableModel::horizontalHeaderData(int section, int role) cons
     if ( role == Qt::DisplayRole )
         return StringUtils::capitalize( date.toString("MMMM\n") ) + // April
                StringUtils::capitalize( date.toString("dddd\n") ) + // Monday
-               date.toString("yyyy-MM-dd"); // TODO Use settings, 2024-04-22
+               date.toString(
+                   DuSettings::i()->get(DuSettings::UI_DateFormat).toString()
+                   );
 
     if (role == Qt::ForegroundRole)
     {

@@ -605,7 +605,9 @@ QString RamStatus::details() const
             QString::number(est, 'f', 1) +
             " days**";
 
-    if (useDueDate()) details += "  \nDue date: " + dueDate().toString("**yyyy-MM-dd**");
+    if (useDueDate()) details += "  \nDue date: " + dueDate().toString("**" +
+                                                         DuSettings::i()->get(DuSettings::UI_DateFormat).toString()
+                                                         + "**");
 
     qDebug() << priority();
 
