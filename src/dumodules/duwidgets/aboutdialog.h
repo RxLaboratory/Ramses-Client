@@ -3,7 +3,9 @@
 
 #include "ui_aboutdialog.h"
 
-class AboutDialog : public QDialog, private Ui::AboutDialog
+#include "duwidgets/dudialog.h"
+
+class AboutDialog : public DuDialog, private Ui::AboutDialog
 {
 public:
     explicit AboutDialog(QWidget *parent = nullptr);

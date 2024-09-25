@@ -76,5 +76,5 @@ void ShotManagerWidget::batchCreate()
 
     ShotsCreationDialog dialog(project, this);
     dialog.setSequence(seq);
-    DuUI::execDialog(&dialog);
+    dialog.exec();
 }

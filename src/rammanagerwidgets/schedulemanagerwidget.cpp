@@ -113,7 +113,7 @@ void ScheduleManagerWidget::addEntry(RamObject *stepObj)
     }
     else {
         ScheduleEntryCreationDialog dialog(this);
-        if (DuUI::execDialog(&dialog)) {
+        if (dialog.exec()) {
             name = dialog.title();
             comment = dialog.comment();
         }

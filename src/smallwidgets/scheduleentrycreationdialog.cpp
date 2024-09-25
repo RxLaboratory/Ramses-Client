@@ -6,11 +6,12 @@
 #include "duapp/dusettings.h"
 
 ScheduleEntryCreationDialog::ScheduleEntryCreationDialog(QWidget *parent) :
-    QDialog(parent)
+    DuDialog(parent)
 {
     this->setWindowTitle(tr("Create schedule entry"));
 
-    auto mainLayout = new QVBoxLayout(this);
+    auto mainLayout = new QVBoxLayout();
+    this->setLayout(mainLayout);
 
     auto formLayout = new QFormLayout();
     mainLayout->addLayout(formLayout);

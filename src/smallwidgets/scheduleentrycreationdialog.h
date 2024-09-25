@@ -3,12 +3,12 @@
 
 #include "duwidgets/ducolorselector.h"
 #include "qdialogbuttonbox.h"
-#include <QDialog>
 
 #include "duwidgets/dulineedit.h"
 #include "duwidgets/durichtextedit.h"
+#include "duwidgets/dudialog.h"
 
-class ScheduleEntryCreationDialog : public QDialog
+class ScheduleEntryCreationDialog : public DuDialog
 {
     Q_OBJECT
 public:

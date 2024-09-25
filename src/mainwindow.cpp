@@ -1068,7 +1068,7 @@ bool MainWindow::updateCheck(bool force)
         if (updateInfo.value("update").toBool())
         {
             DuQFUpdateDialog dialog(updateInfo);
-            if (DuUI::execDialog(&dialog))
+            if (dialog.exec())
                 StateManager::i()->quit(true, 500); // We need a delay in case the app is still starting
             return true;
         }

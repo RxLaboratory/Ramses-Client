@@ -326,9 +326,9 @@ void SettingsDockWidget::connectEvents()
 
     connect( ui_checkNowButton, &QPushButton::clicked, this, [] () {
         DuApplication *app = qobject_cast<DuApplication*>(qApp);
-        app->checkUpdate();
+        app->checkUpdate(true);
         DuQFUpdateDialog dialog( app->updateInfo() );
-        DuUI::execDialog(&dialog);
+        dialog.exec();
     });
 
     // DAEMON

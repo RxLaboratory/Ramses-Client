@@ -1,7 +1,6 @@
 #ifndef DULOGINDIALOG_H
 #define DULOGINDIALOG_H
 
-#include <QDialog>
 #include <QCheckBox>
 
 #include "duwidgets/dudialog.h"

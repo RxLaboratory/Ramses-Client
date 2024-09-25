@@ -142,7 +142,7 @@ void RamJsonUserEditWidget::updatePassword()
     QJsonObject d = data();
 
     DuPasswordDialog dialog(d.value("name").toString(), _isSelf, this );
-    if (DuUI::execDialog(&dialog) != QDialog::Accepted)
+    if (dialog.exec() != QDialog::Accepted)
         return;
 
     QJsonObject rep = RamServerClient::i()->setPassword(

@@ -617,7 +617,7 @@ void ItemManagerWidget::createMultiple()
     if (!project) return;
 
     ShotsCreationDialog dialog(project, this);
-    DuUI::execDialog(&dialog);
+    dialog.exec();
 }
 
 void ItemManagerWidget::contextMenuRequested(QPoint p)

@@ -1,7 +1,6 @@
 #ifndef DUQFUPDATEDIALOG_H
 #define DUQFUPDATEDIALOG_H
 
-#include <QDialog>
 #include <QJsonObject>
 #include <QLabel>
 #include <QVBoxLayout>
@@ -10,7 +9,9 @@
 #include <QStringBuilder>
 #include <QDesktopServices>
 
-class DuQFUpdateDialog : public QDialog
+#include "duwidgets/dudialog.h"
+
+class DuQFUpdateDialog : public DuDialog
 {
     Q_OBJECT
 public:
