@@ -1,7 +1,6 @@
 ## Priority fixes
 
 - Wizards button hidden on windows (until the window is resized)
-- Update colors to use DuSettings everywhere
 - forgot password button on server pages
 - combobox with recent servers on server pages
 - maya lock transform fails on publish

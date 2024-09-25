@@ -2,14 +2,19 @@
 
 #include "qapplication.h"
 #include "ramstep.h"
+#include "duapp/dusettings.h"
+#include "duapp/duui.h"
 
 StatisticsDelegate::StatisticsDelegate(QObject *parent) : QStyledItemDelegate(parent)
 {
-    m_abyss = QColor(28,28,28);
-    m_dark = QColor(51,51,51);
-    m_medium = QColor(109,109,109);
-    m_lessLight = QColor(227,227,227);
-    m_light = QColor(227,227,227);
+    QColor bgColor = DuSettings::i()->get(DuSettings::UI_BackgroundColor).value<QColor>();
+    QColor fgColor = DuSettings::i()->get(DuSettings::UI_ForegroundColor).value<QColor>();
+    m_abyss = DuUI::pushColor(bgColor, 2);
+    m_dark = bgColor;
+    m_medium = DuUI::pullColor(bgColor);
+    m_lessLight = fgColor;
+    m_light = DuUI::pullColor(fgColor);
+
     m_textFont = qApp->font();
     m_textFont.setPixelSize( 12 );
     m_detailsFont = m_textFont;
@@ -38,8 +43,8 @@ void StatisticsDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
 
     if (option.state & QStyle::State_MouseOver)
     {
-        bgColor = bgColor.lighter();
-        detailsColor = detailsColor.darker();
+        bgColor = DuUI::pullColor(bgColor);
+        detailsColor = DuUI::pushColor(detailsColor);
     }
 
     QBrush bgBrush(bgColor);

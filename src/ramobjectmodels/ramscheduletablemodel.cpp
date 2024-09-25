@@ -2,6 +2,7 @@
 
 #include "duapp/app-config.h"
 #include "duapp/dusettings.h"
+#include "duapp/duui.h"
 #include "duutils/stringutils.h"
 #include "ramscheduleentry.h"
 #include "ramschedulerow.h"
@@ -269,10 +270,14 @@ QVariant RamScheduleTableModel::horizontalHeaderData(int section, int role) cons
         if (proj && date == proj->deadline())
             return QBrush(QColor(249,105,105));
 
+        QColor fgColor = DuSettings::i()->get(DuSettings::UI_ForegroundColor).value<QColor>();
+
         if (date.weekNumber() % 2 == 1)
-            return QBrush(QColor(130,130,130));
+            return QBrush(
+                DuUI::pushColor(fgColor)
+                );
         else
-            return QBrush(QColor(170,170,170));
+            return QBrush(fgColor);
     }
 
     if (role ==  RamObject::Date)

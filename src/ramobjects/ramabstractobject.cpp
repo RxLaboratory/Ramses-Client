@@ -2,6 +2,7 @@
 
 #include "duapp/app-config.h"
 #include "duapp/dusettings.h"
+#include "duapp/duui.h"
 #include "qtextdocument.h"
 #include "ramuuid.h"
 #include "dbinterface.h"
@@ -324,7 +325,9 @@ void RamAbstractObject::setComment(const QString &comment)
 QColor RamAbstractObject::color() const
 {
     QString colorName = getData(KEY_Color).toString("");
-    if (colorName == "") return QColor(157,157,157);
+    if (colorName == "") return DuUI::pushColor(
+            DuSettings::i()->get(DuSettings::UI_ForegroundColor).value<QColor>()
+            );
     return QColor( colorName );
 }
 

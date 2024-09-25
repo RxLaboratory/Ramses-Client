@@ -71,3 +71,25 @@ QColor DuColorUtils::colorFromHue(int hue, int saturation, int value)
 {
     return QColor::fromHsv(hue, saturation, value);
 }
+
+QColor DuColorUtils::contrasting(const QColor &foreground, const QColor &background, int minContrast)
+{
+    int fgL = foreground.value();
+    int bgL = background.value();
+    int diff = fgL - bgL;
+    if (diff >= minContrast)
+        return foreground;
+
+
+    if (diff < 0)
+        fgL = bgL - minContrast;
+    else
+        fgL = bgL + minContrast;
+
+
+    return QColor::fromHsv(
+        foreground.hue(),
+        foreground.saturation(),
+        fgL
+        );
+}

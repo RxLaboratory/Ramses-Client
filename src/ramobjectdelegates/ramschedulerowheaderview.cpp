@@ -3,13 +3,17 @@
 #include "qevent.h"
 #include "qpainter.h"
 #include "qpainterpath.h"
+#include "duapp/dusettings.h"
 #include "ramses.h"
+#include "duapp/duui.h"
+#include "duapp/dusettings.h"
 
 RamScheduleRowHeaderView::RamScheduleRowHeaderView(QWidget *parent):
     QHeaderView(Qt::Vertical, parent)
 {
-    m_abyss = QBrush(QColor(28,28,28));
-    m_dark = QBrush(QColor(51,51,51));
+    QColor bgColor = DuSettings::i()->get(DuSettings::UI_BackgroundColor).value<QColor>();
+    m_abyss = DuUI::pushColor(bgColor, 2);
+    m_dark = bgColor;
     m_editIcon = DuIcon(":/icons/edit").pixmap(QSize(12,12));
 }
 
