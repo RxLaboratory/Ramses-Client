@@ -1,5 +1,6 @@
 #include "duqfnodeview.h"
 #include "duapp/dusettings.h"
+#include "duapp/duui.h"
 #include "duwidgets/duscrollbar.h"
 #include "qdebug.h"
 
@@ -262,7 +263,10 @@ void DuQFNodeView::drawBackground(QPainter *painter, const QRectF &rect)
 {
     painter->save();
 
-    painter->fillRect(rect, QBrush( QColor(34,34,34) ) );
+    painter->fillRect(rect, QBrush( DuUI::pushColor(
+                                DuSettings::i()->get(DuSettings::UI_BackgroundColor).value<QColor>(),
+                                2
+                                ) ) );
 
     const int gridSize = m_grid->size();
 
@@ -291,7 +295,7 @@ void DuQFNodeView::drawBackground(QPainter *painter, const QRectF &rect)
         if (hasFocus())
         {
              QPen pen;
-            pen.setColor( QColor(51,51,51) );
+            pen.setColor( DuSettings::i()->get(DuSettings::UI_BackgroundColor).value<QColor>() );
             pen.setWidthF(1 / currentZoom());
             painter->setPen(pen);
             painter->drawLines(lines);

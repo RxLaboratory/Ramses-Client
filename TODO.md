@@ -2,10 +2,10 @@
 
 - Wizards button hidden on windows (until the window is resized)
 - Update colors to use DuSettings everywhere
-- Date format settings
 - forgot password button on server pages
 - combobox with recent servers on server pages
 - maya lock transform fails on publish
+- maya replace issues (Kenopsia/alicehk)
 - update daemon to not use project uuid
 - update py api to not use current project
 - add pixel aspect ratio in py api
