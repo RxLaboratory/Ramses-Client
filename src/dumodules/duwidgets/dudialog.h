@@ -26,12 +26,16 @@ public slots:
 
 protected:
     virtual bool eventFilter(QObject *obj, QEvent *event) override;
+    void paintEvent(QPaintEvent *ev) override;
 
 private:
     QBoxLayout *ui_layout;
     QToolBar *ui_titleBar;
     QLabel *ui_titleLabel;
     QToolButton *ui_closeButton;
+
+    // Settings
+    int _margin;
 
     // Interactions
     bool _launching = false;
