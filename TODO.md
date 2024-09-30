@@ -5,7 +5,6 @@
 - Date format settings
 - forgot password button on server pages
 - combobox with recent servers on server pages
-- maya lock transform fails on publish
 - update daemon to not use project uuid
 - update py api to not use current project
 - add pixel aspect ratio in py api
@@ -34,6 +33,8 @@
 ## Maya
 
 - assets pas filtrés par group ?
+- maya lock transform fails on publish
+- special chars in maya
 
 ## Project Wizard
 
