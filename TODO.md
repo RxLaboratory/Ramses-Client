@@ -1,15 +1,12 @@
 ## Priority fixes
 
 - Wizards button hidden on windows (until the window is resized)
-- Update colors to use DuSettings everywhere
-- Date format settings
 - forgot password button on server pages
 - combobox with recent servers on server pages
 - update daemon to not use project uuid
 - update py api to not use current project
 - add pixel aspect ratio in py api
 - reimplement qmessagebox static methods as dumessagebox to improve display using DuUI::exec
-- do the same as above with qdialog/dudialog
 - Project wizard: step templates, shots, assets
 - objectlistwidget: add a show details button
 

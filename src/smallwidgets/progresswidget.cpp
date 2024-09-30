@@ -1,14 +1,19 @@
 #include "progresswidget.h"
 
+#include "duapp/dusettings.h"
+#include "duapp/duui.h"
+
 ProgressWidget::ProgressWidget(QWidget *parent) : QWidget(parent)
 {
     this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum );
 
-    m_abyss = QColor(28,28,28);
-    m_dark = QColor(51,51,51);
-    m_medium = QColor(109,109,109);
-    m_lessLight = QColor(157,157,157);
-    m_light = QColor(227,227,227);
+    QColor bgColor = DuSettings::i()->get(DuSettings::UI_BackgroundColor).value<QColor>();
+    QColor fgColor = DuSettings::i()->get(DuSettings::UI_ForegroundColor).value<QColor>();
+    m_abyss = DuUI::pushColor(bgColor, 2);
+    m_dark = bgColor;
+    m_medium = DuUI::pullColor(bgColor);
+    m_lessLight = fgColor;
+    m_light = DuUI::pullColor(fgColor);
 
     m_padding = 10;
 

@@ -8,12 +8,13 @@
 #include "dbtablemodel.h"
 
 ShotsCreationDialog::ShotsCreationDialog(RamProject *proj, QWidget *parent) :
-    QDialog(parent)
+    DuDialog(parent)
 {
     m_project = proj;
 
     // Build the form
     setupUi(this);
+    this->setLayout(verticalLayout);
 
     // Add the Sequence selector
     ui_sequenceBox = new RamObjectComboBox(this);

@@ -1048,7 +1048,9 @@ bool MainWindow::updateCheck(bool force)
     qInfo() << "Update check...";
 
     QDateTime lastCheck = DuSettings::i()->get(DuSettings::APP_LastUpdateCheck).toDateTime();
-    qDebug().noquote() << "Last check was on: " + lastCheck.toString(DATETIME_DATA_FORMAT);
+    qDebug().noquote() << "Last check was on: " + lastCheck.toString(
+                              DuSettings::i()->get(DuSettings::UI_DateTimeFormat).toString()
+                              );
     int days = lastCheck.daysTo(QDateTime::currentDateTime());
     qDebug().noquote() << days << " days since last check.";
 
@@ -1066,7 +1068,7 @@ bool MainWindow::updateCheck(bool force)
         if (updateInfo.value("update").toBool())
         {
             DuQFUpdateDialog dialog(updateInfo);
-            if (DuUI::execDialog(&dialog))
+            if (dialog.exec())
                 StateManager::i()->quit(true, 500); // We need a delay in case the app is still starting
             return true;
         }

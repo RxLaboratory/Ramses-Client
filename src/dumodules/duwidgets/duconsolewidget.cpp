@@ -28,13 +28,13 @@ void DuConsoleWidget::log(const QString &msg, LogType type, const QString &compo
     cursor.beginEditBlock();
     cursor.insertBlock();
 
+    QColor fgColor = DuSettings::i()->get(DuSettings::UI_ForegroundColor).value<QColor>();
+
     // Time
     QTextCharFormat f;
-    f.setForeground( QColor(109,109,109) );
+    f.setForeground( DuUI::pushColor(fgColor,2) );
     f.setFontWeight(300);
     cursor.insertText(QTime::currentTime().toString("[hh:mm:ss.zzz]: "), f);
-
-    QColor fgColor = DuSettings::i()->get(DuSettings::UI_ForegroundColor).value<QColor>();
 
     // Title
     QColor c;

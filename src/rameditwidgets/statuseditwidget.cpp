@@ -1,5 +1,6 @@
 #include "statuseditwidget.h"
 
+#include "duapp/dusettings.h"
 #include "duwidgets/duicon.h"
 #include "duapp/duui.h"
 #include "ramfilemetadatamanager.h"
@@ -108,7 +109,9 @@ void StatusEditWidget::reInit(RamObject *o)
             }
 
             // Add date
-            title = title + " | " + folderInfo.lastModified().toString(ui_mainFileList->dateFormat());
+            title = title + " | " + folderInfo.lastModified().toString(
+                        DuSettings::i()->get(DuSettings::UI_DateTimeFormat).toString()
+                        );
 
             ui_versionPublishBox->addItem( title, folderInfo.absoluteFilePath() );
         }
@@ -415,7 +418,9 @@ void StatusEditWidget::mainFileSelected()
         // Retrieve comment if any
         QString comment = mdm.getComment(file.fileName());
         if (comment != "") title += " | " + comment;
-        title += " | " + file.lastModified().toString(ui_mainFileList->dateFormat());
+        title += " | " + file.lastModified().toString(
+                     DuSettings::i()->get(DuSettings::UI_DateTimeFormat).toString()
+                                                      );
         files[title] = file.absoluteFilePath();
     }
 
@@ -729,11 +734,7 @@ void StatusEditWidget::setupUi()
     mainFileLayout->setContentsMargins(0,0,0,0);
     mainFileLayout->setSpacing(3);
 
-    QSettings settings;
-    QString dateFormat = settings.value("ramses/dateFormat", DATETIME_DATA_FORMAT).toString();
-
-    ui_mainFileList = new DuQFFileList(this);
-    ui_mainFileList->setDateFormat(dateFormat);
+    ui_mainFileList = new DuFileListWidget(this);
     ui_mainFileList->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     mainFileLayout->addWidget(ui_mainFileList);
 
@@ -776,8 +777,7 @@ void StatusEditWidget::setupUi()
     ui_versionPublishBox = new DuComboBox(this);
     publishedFileLayout->addWidget(ui_versionPublishBox);
 
-    ui_publishedFileList = new DuQFFileList(this);
-    ui_publishedFileList->setDateFormat(dateFormat);
+    ui_publishedFileList = new DuFileListWidget(this);
     ui_publishedFileList->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     publishedFileLayout->addWidget(ui_publishedFileList);
 
@@ -802,8 +802,7 @@ void StatusEditWidget::setupUi()
     previewFileLayout->setContentsMargins(0,0,0,0);
     previewFileLayout->setSpacing(3);
 
-    ui_previewFileList = new DuQFFileList(this);
-    ui_previewFileList->setDateFormat(dateFormat);
+    ui_previewFileList = new DuFileListWidget(this);
     ui_previewFileList->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     previewFileLayout->addWidget(ui_previewFileList);
 

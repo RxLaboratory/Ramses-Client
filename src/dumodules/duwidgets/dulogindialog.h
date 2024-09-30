@@ -1,12 +1,12 @@
 #ifndef DULOGINDIALOG_H
 #define DULOGINDIALOG_H
 
-#include <QDialog>
 #include <QCheckBox>
 
+#include "duwidgets/dudialog.h"
 #include "duwidgets/dulineedit.h"
 
-class DuLoginDialog : public QDialog
+class DuLoginDialog : public DuDialog
 {
     Q_OBJECT
 public:

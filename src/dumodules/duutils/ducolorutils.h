@@ -34,6 +34,8 @@ QColor lighter(const QColor &color, int factor = 110);
  */
 QColor shiftHue(const QColor &color, int offset = 30);
 
+QColor contrasting(const QColor &foreground, const QColor &background, int minContrast = 80);
+
 QColor colorFromString(const QString &str, int saturation = 180, int value = 100);
 QColor colorFromDate(const QDateTime &date, int saturation = 180, int value = 100);
 QColor colorFromHue(int hue, int saturation = 180, int value = 100);

@@ -1,12 +1,12 @@
 #ifndef DUPASSWORDDIALOG_H
 #define DUPASSWORDDIALOG_H
 
-#include <QDialog>
 #include <QDialogButtonBox>
 
 #include "dulineedit.h"
+#include "duwidgets/dudialog.h"
 
-class DuPasswordDialog : public QDialog
+class DuPasswordDialog : public DuDialog
 {
     Q_OBJECT
 public:

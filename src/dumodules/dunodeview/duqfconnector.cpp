@@ -18,8 +18,8 @@ DuQFConnector::DuQFConnector(QString title, QGraphicsItem *parent):
 
     m_titleItem->setPlainText(title);
 
-    m_toColor = QColor(227,227,227);
-    m_fromColor = QColor(227,227,227);
+    m_toColor = DuSettings::i()->get(DuSettings::UI_ForegroundColor).value<QColor>();
+    m_fromColor = m_toColor;
 }
 
 DuQFConnector::DuQFConnector(QPointF from, QString title)
@@ -35,8 +35,8 @@ DuQFConnector::DuQFConnector(QPointF from, QString title)
 
     m_titleItem->setPlainText(title);
 
-    m_toColor = QColor(227,227,227);
-    m_fromColor = QColor(227,227,227);
+    m_toColor = DuSettings::i()->get(DuSettings::UI_ForegroundColor).value<QColor>();
+    m_fromColor = m_toColor;
 }
 
 QRectF DuQFConnector::boundingRect() const
@@ -146,7 +146,9 @@ void DuQFConnector::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
 
     if (isSelected()) {
         gradient.setColorAt(0.0, m_fromColor);
-        gradient.setColorAt(0.5, QColor(227,227,227));
+        gradient.setColorAt(0.5,
+                            DuSettings::i()->get(DuSettings::UI_ForegroundColor).value<QColor>()
+                            );
         gradient.setColorAt(1.0, m_toColor);
     }
     else {
@@ -178,14 +180,15 @@ void DuQFConnector::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
         path.addRoundedRect(rect, m_cornerRadius, m_cornerRadius);
          painter->setRenderHint(QPainter::Antialiasing);
 
-         const QBrush brush( QColor(227,227,227) );
+        QColor fgColor = DuSettings::i()->get(DuSettings::UI_ForegroundColor).value<QColor>();
+         const QBrush brush( fgColor );
          painter->fillPath(path, brush);
 
          // Selection Stroke
 
          if (isSelected())
          {
-             QPen pen( QColor(227,227,227) );
+             QPen pen( fgColor );
              pen.setWidth(2);
              painter->strokePath(path, pen);
          }
@@ -249,7 +252,7 @@ void DuQFConnector::setupUi()
     QFont f = qApp->font();
     f.setPixelSize( 10 );
     m_titleItem->setFont(f);
-    m_titleItem->setDefaultTextColor( QColor(51,51,51) );
+    m_titleItem->setDefaultTextColor( DuSettings::i()->get(DuSettings::UI_BackgroundColor).value<QColor>() );
     m_titleItem->setParentItem(this);
     m_padding = 5;
 

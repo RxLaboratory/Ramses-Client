@@ -25,6 +25,9 @@ signals:
 
 private:
     void emitEdited();
+
+    void updateSettings(int key,const QVariant &val);
+
     bool _edited = false;
     bool _editing = true;
     DuLineEdit *_lineEdit;

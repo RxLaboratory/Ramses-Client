@@ -3,7 +3,7 @@
 #include "duapp/app-version.h"
 #include "duwidgets/duicon.h"
 
-DuQFUpdateDialog::DuQFUpdateDialog(QJsonObject updateInfo, QWidget *parent) : QDialog(parent)
+DuQFUpdateDialog::DuQFUpdateDialog(QJsonObject updateInfo, QWidget *parent) : DuDialog(parent)
 {
     setupUi(updateInfo);
 }

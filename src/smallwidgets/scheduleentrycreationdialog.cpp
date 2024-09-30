@@ -6,11 +6,12 @@
 #include "duapp/dusettings.h"
 
 ScheduleEntryCreationDialog::ScheduleEntryCreationDialog(QWidget *parent) :
-    QDialog(parent)
+    DuDialog(parent)
 {
     this->setWindowTitle(tr("Create schedule entry"));
 
-    auto mainLayout = new QVBoxLayout(this);
+    auto mainLayout = new QVBoxLayout();
+    this->setLayout(mainLayout);
 
     auto formLayout = new QFormLayout();
     mainLayout->addLayout(formLayout);
@@ -25,7 +26,10 @@ ScheduleEntryCreationDialog::ScheduleEntryCreationDialog(QWidget *parent) :
     formLayout->addRow(tr("Details"), ui_commentEdit);
 
     ui_colorSelector = new DuColorSelector(this);
-    ui_colorSelector->setColor(QColor(157,157,157));
+    ui_colorSelector->setColor( DuUI::pushColor(
+        DuSettings::i()->get(DuSettings::UI_ForegroundColor).value<QColor>(),
+        2
+        ));
     formLayout->addRow(tr("Color"), ui_colorSelector);
 
     ui_buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, this);

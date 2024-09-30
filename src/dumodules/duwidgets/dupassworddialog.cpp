@@ -11,9 +11,9 @@ DuPasswordDialog::DuPasswordDialog(const QString &username,
                                    bool useCurrent,
                                    QWidget *parent,
                                    Qt::WindowFlags f):
-    QDialog(parent, f)
+    DuDialog(parent, f)
 {
-    auto mainLayout = DuUI::addBoxLayout(Qt::Vertical, this);
+    auto mainLayout = DuUI::addBoxLayout(Qt::Vertical, this->layout());
     auto topLayout = DuUI::addBoxLayout(Qt::Horizontal, mainLayout);
 
     topLayout->addWidget(new QLabel(tr(

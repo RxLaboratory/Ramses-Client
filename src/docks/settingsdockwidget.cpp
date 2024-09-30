@@ -47,7 +47,10 @@ void SettingsDockWidget::updateSettings(int key, const QVariant &value)
     case DuSettings::UI_Margins:
         ui_marginsBox->setValue(value.toInt());
         break;
-    case DuSettings::UI_DateTimeFormat:
+    case DuSettings::UI_TimeFormat:
+        ui_timeFormatBox->setCurrentData(value);
+        break;
+    case DuSettings::UI_DateFormat:
         ui_dateFormatBox->setCurrentData(value);
         break;
     case DuSettings::APP_CheckUpdates:
@@ -178,20 +181,36 @@ void SettingsDockWidget::setupAppearanceTab()
     colorsLayout->addRow(tr("Contrast"), ui_contrastBox);
 
     ui_dateFormatBox = new DuComboBox(this);
-    QDateTime d = QDateTime::fromString("2021-04-26 10:53:31", DATETIME_DATA_FORMAT);
-    QString f = DATETIME_DATA_FORMAT;
-    ui_dateFormatBox->addItem(d.toString(f), f);
-    f = "MM.dd.yyyy - h:mm:ss ap";
-    ui_dateFormatBox->addItem(d.toString(f), f);
-    f = "dd/MM/yyyy - hh:mm:ss";
-    ui_dateFormatBox->addItem(d.toString(f), f);
-    f = "ddd MMMM d yyyy 'at' h:mm:ss ap";
-    ui_dateFormatBox->addItem(d.toString(f), f);
-    f = "ddd d MMMM yyyy 'at' hh:mm:ss";
-    ui_dateFormatBox->addItem(d.toString(f), f);
-    ui_dateFormatBox->setCurrentData( _sm->get(DuSettings::UI_DateTimeFormat) );
+    QDate date = QDate::currentDate();
+    QString f = "yyyy/MM/dd";
+    ui_dateFormatBox->addItem(date.toString(f), f);
+    f = DATE_DATA_FORMAT;
+    ui_dateFormatBox->addItem(date.toString(f), f);
+    f = "MM.dd.yyyy";
+    ui_dateFormatBox->addItem(date.toString(f), f);
+    f = "dd/MM/yyyy";
+    ui_dateFormatBox->addItem(date.toString(f), f);
+    f = "ddd MMMM d yyyy";
+    ui_dateFormatBox->addItem(date.toString(f), f);
+    f = "ddd d MMMM yyyy";
+    ui_dateFormatBox->addItem(date.toString(f), f);
+    ui_dateFormatBox->setCurrentData( _sm->get(DuSettings::UI_DateFormat) );
 
     appearanceLayout->addRow(tr("Date format"), ui_dateFormatBox);
+
+    ui_timeFormatBox = new DuComboBox(this);
+    QTime time = QTime(18, 37, 23);
+    f = TIME_DATA_FORMAT;
+    ui_timeFormatBox->addItem(time.toString(f), f);
+    f = "h:mm:ss ap";
+    ui_timeFormatBox->addItem(time.toString(f), f);
+    f = "hh:mm";
+    ui_timeFormatBox->addItem(time.toString(f), f);
+    f = "h:mm ap";
+    ui_timeFormatBox->addItem(time.toString(f), f);
+    ui_timeFormatBox->setCurrentData( _sm->get(DuSettings::UI_TimeFormat) );
+
+    appearanceLayout->addRow(tr("Time format"), ui_timeFormatBox);
 
     l->addWidget(new QLabel(tr("Restart the application\nfor the changes to take effect.")));
 }
@@ -284,8 +303,19 @@ void SettingsDockWidget::connectEvents()
             });
     connect( ui_dateFormatBox, &DuComboBox::dataActivated,
             this, [this] (const QVariant &val) {
-                _sm->set(DuSettings::UI_DateTimeFormat, val);
+                _sm->set(DuSettings::UI_DateFormat, val);
+                QString dateTime = val.toString() + " - " +
+                                   _sm->get(DuSettings::UI_TimeFormat).toString();
+                _sm->set(DuSettings::UI_DateTimeFormat, dateTime);
             });
+    connect( ui_timeFormatBox, &DuComboBox::dataActivated,
+            this, [this] (const QVariant &val) {
+                _sm->set(DuSettings::UI_TimeFormat, val);
+                QString dateTime = _sm->get(DuSettings::UI_DateFormat).toString() + " - " +
+                                   val.toString();
+                _sm->set(DuSettings::UI_DateTimeFormat, dateTime);
+            });
+
 
     // UPDATES
 
@@ -296,9 +326,9 @@ void SettingsDockWidget::connectEvents()
 
     connect( ui_checkNowButton, &QPushButton::clicked, this, [] () {
         DuApplication *app = qobject_cast<DuApplication*>(qApp);
-        app->checkUpdate();
+        app->checkUpdate(true);
         DuQFUpdateDialog dialog( app->updateInfo() );
-        DuUI::execDialog(&dialog);
+        dialog.exec();
     });
 
     // DAEMON

@@ -1,20 +1,22 @@
 #include "ramscheduledelegate.h"
 
-#include "mainwindow.h"
 #include "qabstracttextdocumentlayout.h"
 #include "ramses.h"
 #include "ramscheduleentry.h"
 #include "ramstatustablemodel.h"
-#include "duutils/guiutils.h"
 #include "ramstep.h"
+#include "duapp/dusettings.h"
+#include "duapp/duui.h"
 
 RamScheduleDelegate::RamScheduleDelegate(QObject *parent) : QStyledItemDelegate(parent)
 {
-    m_abyss = QColor(28,28,28);
-    m_dark = QColor(51,51,51);
-    m_medium = QColor(109,109,109);
-    m_lessLight = QColor(157,157,157);
-    m_light = QColor(227,227,227);
+    QColor bgColor = DuSettings::i()->get(DuSettings::UI_BackgroundColor).value<QColor>();
+    QColor fgColor = DuSettings::i()->get(DuSettings::UI_ForegroundColor).value<QColor>();
+    m_abyss = DuUI::pushColor(bgColor, 2);
+    m_dark = bgColor;
+    m_medium = DuUI::pullColor(bgColor);
+    m_lessLight = fgColor;
+    m_light = DuUI::pullColor(fgColor);
     m_textFont = qApp->font();
     m_textFont.setPixelSize( 12 );
 }
@@ -43,7 +45,7 @@ void RamScheduleDelegate::paint(QPainter *painter, const QStyleOptionViewItem &o
 
         // Alternate week colors
         if (date.weekNumber() % 2 == 0)
-            c = c.darker(120);
+            c = DuUI::pushColor(c, .5);
 
         c = adjustBackgroundColor( c, index, option );
         painter->fillRect(bgRect, QBrush(c));
@@ -131,7 +133,7 @@ void RamScheduleDelegate::paint(QPainter *painter, const QStyleOptionViewItem &o
     if (m_details) {
         const QSet<RamStatus*> tasks = getDueTasks(index);
         if (!tasks.isEmpty()) {
-            QPen p(QColor(227,227,227));
+            QPen p(m_light);
             p.setWidth(2);
             painter->setPen(p);
             painter->drawRect(adjustedRect);
@@ -309,12 +311,12 @@ QColor RamScheduleDelegate::adjustBackgroundColor(const QColor &color, const QMo
 {
     QColor c = color;
 
-    if (option.state & QStyle::State_Selected) c = c.darker();
-    else if (option.state & QStyle::State_MouseOver) c = c.lighter();
+    if (option.state & QStyle::State_Selected) c = DuUI::pushColor(c);
+    else if (option.state & QStyle::State_MouseOver) c = DuUI::pullColor(c);
 
     // before today -> a bit darker
     QDate date = index.data(RamObject::Date).value<QDate>();
-    if (date < QDate::currentDate()) c = c.darker(175);
+    if (date < QDate::currentDate()) c = DuUI::pushColor(c);
 
     return c;
 }

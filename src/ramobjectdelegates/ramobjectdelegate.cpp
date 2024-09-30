@@ -2,9 +2,11 @@
 
 #include <QTextFrame>
 
+#include "duapp/dusettings.h"
 #include "duwidgets/duicon.h"
 #include "duutils/colorutils.h"
 #include "duutils/utils.h"
+#include "duapp/duui.h"
 #include "qabstracttextdocumentlayout.h"
 #include "qapplication.h"
 #include "qtextdocument.h"
@@ -47,27 +49,27 @@ PaintParameters RamObjectDelegate::getPaintParameters(const QStyleOptionViewItem
     {
         params.textColor = index.data(Qt::ForegroundRole).value<QBrush>().color();
         params.detailsColor = m_medium;
-        if (m_comboBox) params.textColor = QColor(150,150,150);
+        if (m_comboBox) params.textColor = m_light;
     }
     else
     {
         params.textColor = index.data(Qt::ForegroundRole).value<QBrush>().color();
     }
 
-
-    if (params.textColor.lightness() < 150 && !mustBeDark) params.textColor.setHsl( params.textColor.hue(), params.textColor.saturation(), 150);
+    if (!mustBeDark)
+        params.textColor = DuUI::toForegroundValue(params.textColor);
 
     if (option.state & QStyle::State_MouseOver)
     {
-        params.bgColor = params.bgColor.lighter(120);
+        params.bgColor = DuUI::pullColor(params.bgColor, .5);
         params.bgColor.setAlpha(255);
-        params.detailsColor = params.detailsColor.lighter(120);
-        params.textColor = params.textColor.lighter(120);
+        params.detailsColor = DuUI::pullColor(params.detailsColor);
+        params.textColor = DuUI::pullColor(params.textColor);
     }
     // Selected
     if (option.state & QStyle::State_Selected)
     {
-        params.bgColor = params.bgColor.darker();
+        params.bgColor = DuUI::pushColor(params.bgColor);
         params.bgColor.setAlpha(255);
     }
 
@@ -223,8 +225,8 @@ void RamObjectDelegate::paintProgress(const QModelIndex &index, QPainter *painte
     {
         // Draw a progress bar
         QColor statusColor = index.data(RamObject::ProgressColor).value<QColor>();
-        if (!m_completionRatio) statusColor = QColor(150,150,150);
-        QBrush statusBrush(statusColor.darker(300));
+        if (!m_completionRatio) statusColor = DuUI::pullColor(statusColor);
+        QBrush statusBrush(DuUI::pushColor(statusColor, 2));
         int statusWidth = params->bgRect.width() - m_padding;
         QRect statusRect( params->bgRect.left() + 5, params->titleRect.bottom() + 5, statusWidth, 6 );
 
@@ -295,12 +297,14 @@ QColor RamObjectDelegate::priorityColor(qreal priority)
 RamObjectDelegate::RamObjectDelegate(QObject *parent)
     : QStyledItemDelegate(parent)
 {
-    m_abyss = QColor(28,28,28);
-    m_dark = QColor(51,51,51);
-    m_medium = QColor(109,109,109);
-    m_lessLight = QColor(227,227,227);
-    m_light = QColor(227,227,227);
-    m_transparent = QColor(51,51,51);
+    QColor bgColor = DuSettings::i()->get(DuSettings::UI_BackgroundColor).value<QColor>();
+    QColor fgColor = DuSettings::i()->get(DuSettings::UI_ForegroundColor).value<QColor>();
+    m_abyss = DuUI::pushColor(bgColor, 2);
+    m_dark = bgColor;
+    m_medium = DuUI::pullColor(bgColor);
+    m_lessLight = fgColor;
+    m_light = DuUI::pullColor(fgColor);
+    m_transparent = bgColor;
     m_transparent.setAlpha(0);
     m_textFont = qApp->font();
     m_textFont.setPixelSize( 12 );

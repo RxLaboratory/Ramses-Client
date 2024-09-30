@@ -9,11 +9,11 @@
 #include "duicon.h"
 
 DuLoginDialog::DuLoginDialog(const QString &usernameLabel, bool showSaveBoxes, bool showResetButton, QWidget *parent, Qt::WindowFlags f):
-    QDialog(parent, f)
+    DuDialog(parent, f)
 {
     this->setWindowTitle(tr("Sign in"));
 
-    auto formLayout = DuUI::addFormLayout(this);
+    auto formLayout = DuUI::addFormLayout(this->layout());
 
     auto usernameLayout = DuUI::createBoxLayout(Qt::Horizontal);
 
@@ -62,7 +62,7 @@ DuLoginDialog::DuLoginDialog(const QString &usernameLabel, bool showSaveBoxes, b
     }
 
     auto buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, this);
-    formLayout->addWidget(buttons);
+    this->layout()->addWidget(buttons);
     buttons->button(QDialogButtonBox::Ok)->setText(tr("Sign in"));
 
     connect(buttons, &QDialogButtonBox::accepted, this, &DuLoginDialog::accept);

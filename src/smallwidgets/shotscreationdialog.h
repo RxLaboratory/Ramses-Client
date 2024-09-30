@@ -1,14 +1,13 @@
 #ifndef SHOTSCREATIONDIALOG_H
 #define SHOTSCREATIONDIALOG_H
 
-#include <QDialog>
-
 #include "ui_shotscreationdialog.h"
 #include "ramproject.h"
 #include "ramshot.h"
 #include "ramobjectcombobox.h"
+#include "duwidgets/dudialog.h"
 
-class ShotsCreationDialog : public QDialog, private Ui::ShotsCreationDialog
+class ShotsCreationDialog : public DuDialog, private Ui::ShotsCreationDialog
 {
     Q_OBJECT
 

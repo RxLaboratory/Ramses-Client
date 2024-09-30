@@ -1,4 +1,6 @@
 #include "duqfnode.h"
+#include "duapp/dusettings.h"
+#include "duapp/duui.h"
 
 #include <QtDebug>
 
@@ -10,7 +12,7 @@ DuQFNode::DuQFNode(QString title, QGraphicsItem *parent):
 
     QGraphicsDropShadowEffect *shadow = new QGraphicsDropShadowEffect();
     shadow->setBlurRadius(10.0);
-    shadow->setColor( QColor(21,21,21));
+    shadow->setColor( QColor(0,0,0,128));
     shadow->setOffset(5.0,5.0);
     setGraphicsEffect(shadow);
 
@@ -33,7 +35,9 @@ DuQFNode::DuQFNode(QString title, QGraphicsItem *parent):
     f.setPixelSize( 10 );
     f.setWeight(QFont::Bold);
     m_titleItem->setFont(f);
-    m_titleItem->setDefaultTextColor( QColor(227,227,227) );
+    m_titleItem->setDefaultTextColor(
+        DuSettings::i()->get(DuSettings::UI_ForegroundColor).value<QColor>()
+        );
     m_titleItem->setParentItem(this);
     m_padding = 5;
     //m_titleItem->setPos(m_padding, m_padding);
@@ -91,14 +95,19 @@ void DuQFNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
     path.addRoundedRect(rect, m_cornerRadius, m_cornerRadius);
     painter->setRenderHint(QPainter::Antialiasing);
 
-    const QBrush brush( QColor(109,109,109) );
+    const QBrush brush( DuUI::pushColor(
+        DuSettings::i()->get(DuSettings::UI_ForegroundColor).value<QColor>(),
+        2
+        ));
     painter->fillPath(path, brush);
 
     // Selection Stroke
 
     if (isSelected())
     {
-        QPen pen( QColor(227,227,227) );
+        QPen pen(
+            DuSettings::i()->get(DuSettings::UI_ForegroundColor).value<QColor>()
+            );
         pen.setWidth(2);
         painter->strokePath(path, pen);
     }

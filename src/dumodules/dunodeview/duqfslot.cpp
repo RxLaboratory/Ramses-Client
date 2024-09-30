@@ -1,4 +1,6 @@
 #include "duqfslot.h"
+#include "duapp/dusettings.h"
+#include "duapp/duui.h"
 
 DuQFSlot::DuQFSlot(SlotType type, bool singleConnection, QColor color, QGraphicsItem *parent):
     QGraphicsObject(parent)
@@ -7,7 +9,7 @@ DuQFSlot::DuQFSlot(SlotType type, bool singleConnection, QColor color, QGraphics
     m_size = QSizeF(s,s);
 
     if (color.isValid()) m_color = color;
-    else m_color = QColor(51,51,51);
+    else m_color = DuSettings::i()->get(DuSettings::UI_BackgroundColor).value<QColor>();
 
     m_slotType = type;
     m_singleConnection = singleConnection;
@@ -32,7 +34,9 @@ void DuQFSlot::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
     // Background
     if (m_hover || m_connecting) painter->setBrush(QBrush(m_color));
     else painter->setBrush(QBrush(m_color.lighter(50)));
-    QPen pen( QColor(34,34,34) );
+    QPen pen( DuUI::pushColor(
+        DuSettings::i()->get(DuSettings::UI_BackgroundColor).value<QColor>()
+        ) );
     pen.setWidth(1);
     painter->setPen(pen);
     painter->drawEllipse(m_boundingRect);

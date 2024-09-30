@@ -1,6 +1,7 @@
 ﻿#include "ramstatus.h"
 
 #include "duapp/app-config.h"
+#include "duapp/dusettings.h"
 #include "ramnamemanager.h"
 #include "ramshot.h"
 #include "ramasset.h"
@@ -604,7 +605,9 @@ QString RamStatus::details() const
             QString::number(est, 'f', 1) +
             " days**";
 
-    if (useDueDate()) details += "  \nDue date: " + dueDate().toString("**yyyy-MM-dd**");
+    if (useDueDate()) details += "  \nDue date: " + dueDate().toString("**" +
+                                                         DuSettings::i()->get(DuSettings::UI_DateFormat).toString()
+                                                         + "**");
 
     qDebug() << priority();
 
@@ -633,13 +636,7 @@ QString RamStatus::subDetails() const
     if (m_virtual) return "";
     if (this->isNoState()) return "";
     //subdetails
-    QString dateFormat = DATETIME_DATA_FORMAT;
-    RamUser *u = Ramses::i()->currentUser();
-    if (u)
-    {
-        QSettings settings;
-        dateFormat = settings.value("appearance/dateFormat", dateFormat).toString();
-    }
+    QString dateFormat = DuSettings::i()->get(DuSettings::UI_DateTimeFormat).toString();
     return "Modified on: " +
             date().toString(dateFormat) +
             "\nBy: " +

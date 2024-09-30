@@ -14,7 +14,7 @@
 #include "duwidgets/duspinbox.h"
 #include "duwidgets/dudoublespinbox.h"
 #include "duwidgets/duqffolderdisplaywidget.h"
-#include "duwidgets/duqffilelist.h"
+#include "duwidgets/dufilelistwidget.h"
 #include "objecteditwidget.h"
 #include "qdatetimeedit.h"
 #include "ramstatebox.h"
@@ -80,9 +80,9 @@ private:
     QToolButton *ui_revertButton;
     QCheckBox *ui_publishedBox;
     RamObjectComboBox *ui_userBox;
-    DuQFFileList *ui_mainFileList;
-    DuQFFileList *ui_previewFileList;
-    DuQFFileList *ui_publishedFileList;
+    DuFileListWidget *ui_mainFileList;
+    DuFileListWidget *ui_previewFileList;
+    DuFileListWidget *ui_publishedFileList;
     DuComboBox *ui_versionFileBox;
     DuComboBox *ui_versionPublishBox;
     QToolButton *ui_openMainFileButton;
