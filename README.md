@@ -1,7 +1,9 @@
 # Ramses Client
- The Client application for Ramses - Rx Asset Management System
+ The Client application for the Ramses Asset Management System
 
-## Dependencies
+## Relocation notice!
 
-- OpenSSL >= 1.1.0 On Mac OS and Windows
-- OpenSSL >= 1.0.0 On Linux
+The canonical repository for **Ramses-Client** is now [on
+Codeberg](https://codeberg.org/Ramses/Ramses-Client).
+
+The repo on github will be left around as an archive, but will eventually be deleted. You should update your remotes to the _Codeberg_ repo as soon as possible.
